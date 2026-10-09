@@ -18,25 +18,31 @@
 export function canvasTextProbe() {
   if (window.__forge3Canvas) return;
   const P = CanvasRenderingContext2D.prototype;
-  const st = { recs: [], frames: new WeakMap() };
+  // per canvas: only its CURRENT frame's text runs (bounded), so a 60 fps engine never grows memory (a first version kept
+  // every run and crashed the judge page in the round 3 re-certification)
+  const st = { byCanvas: new Map() };
   window.__forge3Canvas = st;
-  const frameOf = (cv) => st.frames.get(cv) ?? 0;
-  const covers = (ctx, x, y, w, h) => {
-    try {
-      const m = ctx.getTransform();
-      const W = Math.abs(w * m.a), H = Math.abs(h * m.d);
-      return W * H >= 0.9 * ctx.canvas.width * ctx.canvas.height;
-    } catch { return false; }
+  const cur = (cv) => {
+    let e = st.byCanvas.get(cv);
+    if (!e) {
+      // canvases a piece has unmounted are dropped (each judged piece mounts new ones)
+      if (st.byCanvas.size > 24) for (const k of st.byCanvas.keys()) if (!k.isConnected) st.byCanvas.delete(k);
+      e = { frame: 0, recs: [] }; st.byCanvas.set(cv, e);
+    }
+    return e;
   };
-  const bump = (cv) => { st.frames.set(cv, frameOf(cv) + 1); if (st.recs.length > 6000) st.recs.splice(0, 3000); };
+  const covers = (ctx, w, h) => {
+    try { const m = ctx.getTransform(); return Math.abs(w * m.a) * Math.abs(h * m.d) >= 0.9 * ctx.canvas.width * ctx.canvas.height; } catch { return false; }
+  };
+  const bump = (cv) => { const e = cur(cv); e.frame++; e.recs = []; };
   for (const name of ["clearRect", "fillRect"]) {
     const o = P[name];
-    P[name] = function (x, y, w, h) { if (covers(this, x, y, w, h)) bump(this.canvas); return o.apply(this, arguments); };
+    P[name] = function (x, y, w, h) { if (covers(this, w, h)) bump(this.canvas); return o.apply(this, arguments); };
   }
   const di = P.drawImage;
   P.drawImage = function (img, ...a) {
-    const w = a.length >= 4 ? a[a.length === 4 ? 2 : 6] : img?.width, h = a.length >= 4 ? a[a.length === 4 ? 3 : 7] : img?.height;
-    if (w && h && covers(this, 0, 0, w, h)) bump(this.canvas);
+    const w = a.length === 4 ? a[2] : a.length === 8 ? a[6] : img?.width, h = a.length === 4 ? a[3] : a.length === 8 ? a[7] : img?.height;
+    if (w && h && covers(this, w, h)) bump(this.canvas);
     return di.call(this, img, ...a);
   };
   const ft = P.fillText;
@@ -44,6 +50,8 @@ export function canvasTextProbe() {
     try {
       const cv = this.canvas;
       if (cv && cv.isConnected) {
+        const e = cur(cv);
+        if (e.recs.length >= 400) e.recs = e.recs.slice(-200);
         const m = this.getTransform();
         const fs = parseFloat((/(\d+(?:\.\d+)?)px/.exec(this.font) ?? [0, "10"])[1]);
         const w = this.measureText(String(text)).width;
@@ -51,12 +59,9 @@ export function canvasTextProbe() {
         const x0 = al === "center" ? x - w / 2 : al === "right" || al === "end" ? x - w : x;
         const y0 = bl === "middle" ? y - fs / 2 : bl === "top" || bl === "hanging" ? y : bl === "bottom" || bl === "ideographic" ? y - fs : y - fs * 0.8;
         const pts = [[x0, y0], [x0 + w, y0], [x0, y0 + fs], [x0 + w, y0 + fs]].map(([px, py]) => [m.a * px + m.c * py + m.e, m.b * px + m.d * py + m.f]);
-        const r = cv.getBoundingClientRect();
-        const sx = r.width / cv.width, sy = r.height / cv.height;
         const xs = pts.map((q) => q[0]), ys = pts.map((q) => q[1]);
-        st.recs.push({ cv, frame: frameOf(cv), t: String(text).slice(0, 80), px: Math.round(fs * Math.hypot(m.a, m.b) * sx * 10) / 10,
-          x: r.left + Math.min(...xs) * sx, y: r.top + Math.min(...ys) * sy, w: (Math.max(...xs) - Math.min(...xs)) * sx, h: (Math.max(...ys) - Math.min(...ys)) * sy,
-          alpha: this.globalAlpha });
+        // canvas pixels; mapped to CSS px when measured (the canvas may move or resize between frames)
+        e.recs.push({ t: String(text).slice(0, 80), fs: fs * Math.hypot(m.a, m.b), x: Math.min(...xs), y: Math.min(...ys), w: Math.max(...xs) - Math.min(...xs), h: Math.max(...ys) - Math.min(...ys), alpha: this.globalAlpha });
       }
     } catch { /* never break the page */ }
     return ft.apply(this, arguments);
@@ -214,14 +219,17 @@ export function measureStage() {
   peStyle.remove();
   // ── text drawn on a canvas (canvasTextProbe): the latest frame of each canvas inside the region, at ≥ 50% opacity ──
   const ct = window.__forge3Canvas;
-  if (ct && Array.isArray(ct.recs)) {
-    const latest = new Map();
-    for (const r of ct.recs) if (r.cv && root.contains(r.cv)) latest.set(r.cv, Math.max(latest.get(r.cv) ?? -1, r.frame));
-    for (const r of ct.recs) {
-      if (!r.cv || latest.get(r.cv) !== r.frame || (r.alpha ?? 1) < 0.5 || !String(r.t).trim() || !vis(r.cv)) continue;
-      const rr = { x: Math.round(r.x), y: Math.round(r.y), w: Math.round(r.w), h: Math.round(r.h) };
-      out.texts.push({ t: r.t, px: r.px, ...rr, outside: !inside(rr, region), ellipsis: false, chrome: false, svg: false, canvas: true });
-      grow({ left: rr.x, top: rr.y, right: rr.x + rr.w, bottom: rr.y + rr.h, width: rr.w, height: rr.h });
+  if (ct && ct.byCanvas) {
+    for (const [cv, e] of ct.byCanvas) {
+      if (!cv.isConnected || !root.contains(cv) || !vis(cv)) continue;
+      const r = cv.getBoundingClientRect();
+      const sx = r.width / (cv.width || 1), sy = r.height / (cv.height || 1);
+      for (const q of e.recs) {
+        if ((q.alpha ?? 1) < 0.5 || !String(q.t).trim()) continue;
+        const rr = { x: Math.round(r.left + q.x * sx), y: Math.round(r.top + q.y * sy), w: Math.round(q.w * sx), h: Math.round(q.h * sy) };
+        out.texts.push({ t: q.t, px: Math.round(q.fs * sx * 10) / 10, ...rr, outside: !inside(rr, region), ellipsis: false, chrome: false, svg: false, canvas: true });
+        grow({ left: rr.x, top: rr.y, right: rr.x + rr.w, bottom: rr.y + rr.h, width: rr.w, height: rr.h });
+      }
     }
     out.canvasText = out.texts.filter((x) => x.canvas).length;
   }

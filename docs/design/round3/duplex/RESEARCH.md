@@ -60,15 +60,16 @@ reproduces the shipped engine exactly (MAI 19/147 cut-offs, gap p50 911 ms; D4 1
    broken word ("हर्ष वि-") or an unclosed number ended **0-4 of 400 turns against 17-33 thinking pauses**; the open-tail
    shapes (postposition, conjunction, "मेरा नंबर है") 27 ends vs 10 pauses. Unclosed plain words are NOT a hold on D4 (9 ends
    vs 3 pauses).
-4. **"Complete-looking" words are genuinely ambiguous at a pause.** A closed sentence / verb-final clause / closed number:
-   63 thinking pauses against 267 turn ends (MAI). Inside that set:
-   - prosody separates weakly: pitch position at the pause AUC 0.70, pitch slope 0.67, energy slope 0.45, final lengthening 0.50;
-   - **text alone, by the production fast model (grok-4-1-fast-non-reasoning), AUC 0.58** (0.70 on all pauses);
-   - **text alone by a stronger model (taxila-fast, gpt-5.6-luna), AUC 0.79** (0.83 on all) — the information exists, but the
-     answer takes **1,219 ms p50** (US), i.e. it lands after the 1.1 s wait it would replace. Offline and with no latency
-     budget (`eot-sem-ceiling.mjs`, n = 538 pauses, 2026-10-09).
+4. **"Complete-looking" words are genuinely ambiguous at a pause.** Words closed by "।" / "." with no hold shape and no
+   question: 66 thinking pauses against 292 turn ends (MAI, n = 358 of 538 covered pauses). Inside that set:
+   - prosody separates weakly: pitch position at the pause AUC 0.70, pitch slope 0.67, energy slope 0.45, final lengthening 0.50
+     (all ambiguous classes);
+   - **text alone, by the production fast model (grok-4-1-fast-non-reasoning, p50 563 ms), AUC 0.57** (0.70 on all pauses);
+   - **text alone by a stronger model (taxila-fast, gpt-5.6-luna), AUC 0.80** (0.83 on all) — the information exists, but the
+     answer takes **1,219 ms p50 / 1,494 p90** (US), i.e. it lands after the 1.1 s wait it would replace. Offline, no latency
+     budget (`eot-sem-ceiling.mjs`, `results/r3-sem-ceiling.json`, n = 538 pauses, 2026-10-09).
    So no Azure model can shorten the wait on open speech in time today, and stage A's own projected pComplete is flat
-   (AUC 0.50) at the moment the words cover the audio.
+   (AUC 0.49-0.50) at the moment the words cover the audio.
 5. **The best class-and-wait policy on TRAIN** (even ids, both lanes, <= 3 % cut-offs) holds 1,600 ms on a hold shape,
    1,200 ms while a number is being read out, 900 ms after a complete question to her, 1,100 ms otherwise. On TEST (odd ids,
    never used to choose) it cuts **4/70 = 5.7 %** on both lanes (shipped: MAI 10.0 %, D4 7.1 %), gap p50 ~1.02 s (+100 ms)
@@ -95,7 +96,19 @@ kept); this round makes the three hard decisions word-aware and measured on real
    decision does not wait on it and never changes because of it. It is the signal the turn prefetch needs to start classify,
    the note and the speculative replies ~0.3-0.6 s before the commit (relational-human's `src/latency/duplexTurn.ts` is the
    consumer; it keys on `draft`, which fires at projected pComplete >= 0.5 on stale prefixes; `eager` is the measured one).
-3. **Overlap** (barge-in, continuers, the room): §5 of this file is filled from the AMI diagnosis (below).
+3. **Overlap: one classifier, reversible, word-confirmed** (LiveKit adaptive interruption's shape on our stack). The AMI
+   diagnosis (real meetings, real STT events) found the hush, the step that makes her inaudible within ~150 ms, switched OFF
+   for the rest of the lesson after 4 wordless bursts (`hushGiveUp`, meant for her own echo): 13 of 22 real barge-ins in two
+   meetings got no hush at all. And the revoke fired on ANY sound in the first 1.5 s of her reply, so a "yeah" stopped her and
+   dropped the reply. Changes, each a config row:
+   - the give-up counts only ECHO-LIKE wordless bursts (within 10 dB of her echo estimate) and a confirmed burst resets it;
+   - while she is hushed, an acoustics-only PAUSE waits for 1,000 ms of voice or the words (the hush already met the child);
+   - an ended burst <= 650 ms with no words is never an acoustic barge-in (rising contour, her yes/no question excepted);
+   - the revoke is ARMED by an onset over an open reply and fired by the same classifier (words, sustain); a continuer's words
+     disarm it; a pending verdict still revokes at once (round 2's `rj-dxr-armed-revoke` tried arming without the hush fix
+     and without the word-only disarm: +4/195 continuers, -2/51 barge-ins);
+   - when a burst over her goes quiet the engine sends the micro-commit probe, so its words (continuer, "ruko", a turn) come
+     back in ~0.3-0.6 s instead of the lane's first-text delay (D4 p90 2.0 s, MAI 3.2 s): "she can hear ruko while speaking".
 4. **The owner-test cohort.** `TAXILA_DUPLEX_LIVE_FOR` (guardian emails or their sha256) gets `on` from
    `GET /api/duplex/config` while production stays `shadow`; the kill switch wins; a slow or failing lookup answers shadow.
 

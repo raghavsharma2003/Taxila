@@ -1,0 +1,4499 @@
+{
+ "slot": 17,
+ "topic": "c5-evs-ch01-t01",
+ "cls": 5,
+ "lang": "english",
+ "lane": "text",
+ "lessons": [
+  {
+   "lessonId": "1f0bb082-a6fc-485e-8bca-195582fa5feb",
+   "why": "start",
+   "at": "2026-10-09T12:42:03.647Z",
+   "teacher": "Arjun"
+  }
+ ],
+ "turns": [
+  {
+   "who": "teacher",
+   "kind": "opening",
+   "lessonId": "1f0bb082-a6fc-485e-8bca-195582fa5feb",
+   "teacherReply": "Hi Meher, I’m Arjun, your AI teacher. Today we’ll explore water in different forms and places. Which cricket drink helps after playing?",
+   "ui": {
+    "status": "your_turn",
+    "phase": "warmup",
+    "handover": "answer",
+    "answerForm": "words",
+    "tray": "none",
+    "shortTitle": "Forms of water",
+    "beat": {
+     "beatId": "b1-arrive",
+     "type": "arrive",
+     "index": 1
+    },
+    "ask": {
+     "text": "Which cricket drink helps after playing?"
+    }
+   }
+  },
+  {
+   "who": "child",
+   "tag": "greet",
+   "lessonId": "1f0bb082-a6fc-485e-8bca-195582fa5feb",
+   "childText": "hi, ready",
+   "ms": 1918,
+   "error": null,
+   "teacherReply": "Great, Meher. Imagine your cricket uniform drying after rain: where does its water go—into the cloth, air, or somewhere else?",
+   "move": {
+    "kind": "hook",
+    "shape": "open with one concrete everyday situation built on their interest (cricket) — kit contexts: kitchen, monsoon, school uniform drying; ask what they think will happen or which they would pick — a prediction, no right answer yet; any bigger/more comparison: two quantities of one kind, in one unit — a count against a count, a distance against a distance; never across kinds; mention once: at the end they will teach this to Bittu (a pretend new student who missed this class)",
+    "format": "F4"
+   },
+   "ui": {
+    "status": "your_turn",
+    "phase": "teach",
+    "handover": "answer",
+    "answerForm": "words",
+    "tray": "none",
+    "shortTitle": "Forms of water",
+    "beat": {
+     "beatId": "b2-hook",
+     "type": "hook",
+     "index": 2
+    },
+    "ask": {
+     "text": "Imagine your cricket uniform drying after rain: where does its water go—into the cloth, air, or somewhere else?"
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false
+    },
+    "verdict": "ungraded",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 909,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "teach",
+    "ms": 1874,
+    "item": null,
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 143
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 143
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 619
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 779
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1529
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1688
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1690
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1690
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1545
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 1787
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 1874
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "probe:language_switch-04",
+   "lessonId": "1f0bb082-a6fc-485e-8bca-195582fa5feb",
+   "childText": "हिंदी में बोलिए",
+   "ms": 3420,
+   "error": null,
+   "teacherReply": "Meher, baarish ke baad kapde ka paani garmee se bhaap ban kar hawa mein chala jaata hai. Is badlaav ko kya kahenge?",
+   "move": {
+    "kind": "reteach",
+    "shape": "they asked for simple Hindi (Roman script when written): from now on every turn in simple Hindi (Roman script when written), even if they reply in another language; say the last idea again in it, simply, and end with one small question",
+    "skillId": "c5-evs-ch01-t01-s1",
+    "request": "language"
+   },
+   "ui": {
+    "status": "your_turn",
+    "phase": "teach",
+    "handover": "answer",
+    "answerForm": "words",
+    "tray": "module",
+    "shortTitle": "Forms of water",
+    "beat": {
+     "beatId": "b3-explain",
+     "type": "explain",
+     "index": 3
+    },
+    "ask": {
+     "text": "Is badlaav ko kya kahenge?"
+    }
+   },
+   "moduleCommands": [
+    {
+     "op": "mount",
+     "moduleId": "m2",
+     "engine": "water-cycle@1",
+     "params": {
+      "topicId": "c5-evs-ch01-t01",
+      "skillId": null,
+      "lang": "hindi",
+      "scene": "states"
+     }
+    }
+   ],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false
+    },
+    "verdict": "ungraded",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "language_switch",
+     "waitedMs": 810,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "teach",
+    "ms": 3401,
+    "item": null,
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 51
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 52
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 715
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 807
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1526
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1617
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1620
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1622
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1713
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 3337
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 3401
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "filler",
+   "lessonId": "1f0bb082-a6fc-485e-8bca-195582fa5feb",
+   "childText": "got it",
+   "ms": 1586,
+   "error": null,
+   "teacherReply": "Meher, water ki teen forms hain: liquid paani, solid ice, aur invisible water vapour. Ice kahan milti hai—pahaadon par ya cricket ground par?",
+   "move": {
+    "kind": "explain",
+    "shape": "one idea only: Name the three forms of water (liquid, solid ice, invisible water vapour) and where each is found on Earth; an example from their interest (cricket) if it fits naturally; objects first, then the symbol; point at the screen only at what the on-screen row lists; never a drawing made of characters; end with one small question that makes them USE the idea — never 'samjha?'",
+    "skillId": "c5-evs-ch01-t01-s1",
+    "format": "F3"
+   },
+   "ui": {
+    "status": "your_turn",
+    "phase": "teach",
+    "handover": "answer",
+    "answerForm": "words",
+    "tray": "module",
+    "shortTitle": "Forms of water",
+    "beat": {
+     "beatId": "b3-explain",
+     "type": "explain",
+     "index": 3
+    },
+    "ask": {
+     "text": "Ice kahan milti hai—pahaadon par ya cricket ground par?"
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false
+    },
+    "verdict": "ungraded",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 357,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "teach",
+    "ms": 1580,
+    "item": null,
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 50
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 50
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 757
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 811
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1115
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1169
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1171
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1171
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1388
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 1525
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 1580
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "probe:game_request-08",
+   "lessonId": "1f0bb082-a6fc-485e-8bca-195582fa5feb",
+   "childText": "let's do something fun like a game",
+   "ms": 2129,
+   "error": null,
+   "teacherReply": "Meher, screen par “Phase Shift” dekho: baraf, paani, aur water vapour ka roop badalta hai. Batao, baraf pighal kar kya banti hai?",
+   "move": {
+    "kind": "reteach",
+    "shape": "they want to play: the activity is the way in now; one idea; let the picture do the work; a few words about what to look at; the key stays unsaid; then one small question about what they see; it is on the screen now: point them at it in your first words and say what to look at",
+    "skillId": "c5-evs-ch01-t01-s1",
+    "request": "visual",
+    "visual": "game"
+   },
+   "ui": {
+    "status": "your_turn",
+    "phase": "teach",
+    "handover": "answer",
+    "answerForm": "words",
+    "tray": "studio",
+    "shortTitle": "Forms of water",
+    "beat": {
+     "beatId": "b3-explain",
+     "type": "explain",
+     "index": 3
+    },
+    "ask": {
+     "text": "Batao, baraf pighal kar kya banti hai?"
+    },
+    "studioSlot": {
+     "slotId": "1f0bb082-a6fc-485e-8bca-195582fa5feb:c1:slot",
+     "intentId": "1f0bb082-a6fc-485e-8bca-195582fa5feb:c1",
+     "state": "revealed",
+     "artifact": {
+      "kind": "stagecraft",
+      "stage": {
+       "w": 1000,
+       "h": 625
+      },
+      "stagecraft": {
+       "rung": "engine_default",
+       "archetype": "phase-shift@1",
+       "spec": {
+        "archetype": "phase-shift@1",
+        "skills": [
+         "c5-evs-ch01-t01"
+        ],
+        "lang": "en",
+        "strings": {
+         "step": "Step",
+         "heat": "HEAT",
+         "cool": "COOL",
+         "fan": "FAN",
+         "lid": "COLD LID",
+         "temp": "TEMP",
+         "ice": "ice",
+         "water": "water",
+         "vapour": "vapour",
+         "plateau": "Watch the temperature",
+         "boiling": "bubbles show boiling",
+         "invisible": "vapour · invisible",
+         "predict": "First, predict",
+         "done": "Done",
+         "noBoil": "keep it under"
+        },
+        "start": 25,
+        "steps": [
+         {
+          "kind": "goal",
+          "goal": "evaporate",
+          "arg": 0.15,
+          "tMax": 60,
+          "text": "Dry some water from the cloth. Use warmth and moving air.",
+          "targets": "c5-evs-ch01-t01-m3"
+         },
+         {
+          "kind": "probe",
+          "probe": "glass",
+          "targets": "c5-evs-ch01-t01-m4"
+         },
+         {
+          "kind": "goal",
+          "goal": "condense",
+          "arg": 0.1,
+          "tMax": 60,
+          "text": "Cool the vapour and collect water drops."
+         }
+        ]
+       },
+       "boardTwin": {
+        "scriptRef": "board:c5-evs-ch01-t01-s1|practice|-|-",
+        "values": {
+         "title": "Phase Shift",
+         "need": "practice"
+        },
+        "board": {
+         "title": "Phase Shift",
+         "lines": [
+          "water",
+          "earth",
+          "fresh",
+          "salty"
+         ],
+         "figure": {
+          "kind": "none"
+         }
+        }
+       },
+       "board": null,
+       "cue": {
+        "clauseIdx": 0,
+        "preRollMs": 400,
+        "crossFadeMs": 420
+       },
+       "buildSha": null,
+       "blobUrl": null
+      }
+     }
+    }
+   },
+   "moduleCommands": [
+    {
+     "op": "unmount",
+     "moduleId": "m2"
+    }
+   ],
+   "studio": {
+    "reveal": "1f0bb082-a6fc-485e-8bca-195582fa5feb:c1"
+   },
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false
+    },
+    "verdict": "ungraded",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "request"
+    },
+    "note": null,
+    "hintLevel": 0,
+    "phase": "teach",
+    "ms": 2126,
+    "item": null,
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 47
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 47
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 593
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 685
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 687
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 687
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1342
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 2036
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 2125
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "filler",
+   "lessonId": "1f0bb082-a6fc-485e-8bca-195582fa5feb",
+   "childText": "got it",
+   "ms": 1779,
+   "error": null,
+   "teacherReply": "Meher, dhoop mein liquid paani dheere-dheere water vapour banta hai; is process ko evaporation kehte hain. Kapde sukhne mein kya hota hai?",
+   "move": {
+    "kind": "worked_example",
+    "shape": "worked example, part 1 of 2: say one step, then ask them for the next step; their thinking, your pace; no new idea",
+    "skillId": "c5-evs-ch01-t01-s1",
+    "format": "F2"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "math",
+     "value": "A school uniform washed at night is dry by morning. Explain, step by step, where the water went."
+    },
+    "phase": "teach",
+    "handover": "answer",
+    "answerForm": "words",
+    "tray": "module",
+    "shortTitle": "Forms of water",
+    "beat": {
+     "beatId": "b4-worked_example",
+     "type": "worked_example",
+     "index": 4
+    },
+    "ask": {
+     "text": "Kapde sukhne mein kya hota hai?"
+    }
+   },
+   "moduleCommands": [
+    {
+     "op": "mount",
+     "moduleId": "m5",
+     "engine": "water-cycle@1",
+     "params": {
+      "topicId": "c5-evs-ch01-t01",
+      "skillId": null,
+      "lang": "hindi",
+      "scene": "states"
+     }
+    }
+   ],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false
+    },
+    "verdict": "ungraded",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 549,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "teach",
+    "ms": 1652,
+    "item": null,
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 167
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 168
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 835
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 1015
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1390
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1564
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1566
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1587
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1217
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 1587
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 1652
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "advance",
+   "lessonId": "1f0bb082-a6fc-485e-8bca-195582fa5feb",
+   "childText": "got it",
+   "ms": 2742,
+   "error": null,
+   "teacherReply": "Meher, ab evaporation ko thoda aur dhyaan se dekhenge. Hawa aur mausam ke badlaav par nazar rakho. Khaali jagah bharo: Moving air and ___ make evaporation go faster",
+   "move": {
+    "kind": "practice",
+    "shape": "the earlier steps in LESSON NOW, said briefly as done; then the step with the gap is theirs: pose it as written; wait; never fill the gap for them",
+    "itemId": "fade:2",
+    "skillId": "c5-evs-ch01-t01-s1",
+    "hintLevel": 0,
+    "probe": "P15",
+    "format": "F2"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "math",
+     "value": "A school uniform washed at night is dry by morning. Explain, step by… · Moving air and ___ make evaporation go faster"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "Khaali jagah bharo: Moving air and ___ make evaporation go faster",
+     "itemId": "fade:2"
+    },
+    "answerForm": "words",
+    "tray": "studio",
+    "shortTitle": "Forms of water",
+    "beat": {
+     "beatId": "b5-practice_set",
+     "type": "practice_set",
+     "index": 5
+    },
+    "studioSlot": {
+     "slotId": "1f0bb082-a6fc-485e-8bca-195582fa5feb:c1:slot",
+     "intentId": "1f0bb082-a6fc-485e-8bca-195582fa5feb:c1",
+     "state": "revealed",
+     "artifact": {
+      "kind": "stagecraft",
+      "stage": {
+       "w": 1000,
+       "h": 625
+      },
+      "stagecraft": {
+       "rung": "engine_default",
+       "archetype": "phase-shift@1",
+       "spec": {
+        "archetype": "phase-shift@1",
+        "skills": [
+         "c5-evs-ch01-t01"
+        ],
+        "lang": "en",
+        "strings": {
+         "step": "Step",
+         "heat": "HEAT",
+         "cool": "COOL",
+         "fan": "FAN",
+         "lid": "COLD LID",
+         "temp": "TEMP",
+         "ice": "ice",
+         "water": "water",
+         "vapour": "vapour",
+         "plateau": "Watch the temperature",
+         "boiling": "bubbles show boiling",
+         "invisible": "vapour · invisible",
+         "predict": "First, predict",
+         "done": "Done",
+         "noBoil": "keep it under"
+        },
+        "start": 25,
+        "steps": [
+         {
+          "kind": "goal",
+          "goal": "evaporate",
+          "arg": 0.15,
+          "tMax": 60,
+          "text": "Dry some water from the cloth. Use warmth and moving air.",
+          "targets": "c5-evs-ch01-t01-m3"
+         },
+         {
+          "kind": "probe",
+          "probe": "glass",
+          "targets": "c5-evs-ch01-t01-m4"
+         },
+         {
+          "kind": "goal",
+          "goal": "condense",
+          "arg": 0.1,
+          "tMax": 60,
+          "text": "Cool the vapour and collect water drops."
+         }
+        ]
+       },
+       "boardTwin": {
+        "scriptRef": "board:c5-evs-ch01-t01-s1|practice|-|-",
+        "values": {
+         "title": "Phase Shift",
+         "need": "practice"
+        },
+        "board": {
+         "title": "Phase Shift",
+         "lines": [
+          "water",
+          "earth",
+          "fresh",
+          "salty"
+         ],
+         "figure": {
+          "kind": "none"
+         }
+        }
+       },
+       "board": null,
+       "cue": {
+        "clauseIdx": 0,
+        "preRollMs": 400,
+        "crossFadeMs": 420
+       },
+       "buildSha": null,
+       "blobUrl": null
+      }
+     }
+    }
+   },
+   "moduleCommands": [
+    {
+     "op": "unmount",
+     "moduleId": "m5"
+    }
+   ],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false,
+     "leadSlot": true
+    },
+    "verdict": "ungraded",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 576,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 2739,
+    "item": "fade:2",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 82
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 82
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 727
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 822
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1304
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1398
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1400
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1400
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1185
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 2620
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 2739
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "advance",
+   "lessonId": "1f0bb082-a6fc-485e-8bca-195582fa5feb",
+   "childText": "okay",
+   "ms": 3489,
+   "error": null,
+   "teacherReply": "Kapde hawa chalne par jaldi sookhte hain. Socho, evaporation ko tez karne wali doosri cheez garmi se judi hai. Khaali jagah bharo: Moving air and ___ make evaporation go faster",
+   "move": {
+    "kind": "hint",
+    "shape": "their typed reply did not answer the question: no verdict, never ask them to repeat or say it again; one small nudge toward what the question asks; then the same question again, as written; no verdict on their reply: neither praise nor 'wrong'",
+    "itemId": "fade:2",
+    "skillId": "c5-evs-ch01-t01-s1",
+    "hintLevel": 0
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "text",
+     "value": "Khaali jagah bharo: Moving air and ___ make evaporation g…"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "Khaali jagah bharo: Moving air and ___ make evaporation go faster",
+     "itemId": "fade:2"
+    },
+    "answerForm": "words",
+    "tray": "studio",
+    "shortTitle": "Forms of water",
+    "beat": {
+     "beatId": "b5-practice_set",
+     "type": "practice_set",
+     "index": 5
+    },
+    "studioSlot": {
+     "slotId": "1f0bb082-a6fc-485e-8bca-195582fa5feb:c1:slot",
+     "intentId": "1f0bb082-a6fc-485e-8bca-195582fa5feb:c1",
+     "state": "revealed",
+     "artifact": {
+      "kind": "stagecraft",
+      "stage": {
+       "w": 1000,
+       "h": 625
+      },
+      "stagecraft": {
+       "rung": "engine_default",
+       "archetype": "phase-shift@1",
+       "spec": {
+        "archetype": "phase-shift@1",
+        "skills": [
+         "c5-evs-ch01-t01"
+        ],
+        "lang": "en",
+        "strings": {
+         "step": "Step",
+         "heat": "HEAT",
+         "cool": "COOL",
+         "fan": "FAN",
+         "lid": "COLD LID",
+         "temp": "TEMP",
+         "ice": "ice",
+         "water": "water",
+         "vapour": "vapour",
+         "plateau": "Watch the temperature",
+         "boiling": "bubbles show boiling",
+         "invisible": "vapour · invisible",
+         "predict": "First, predict",
+         "done": "Done",
+         "noBoil": "keep it under"
+        },
+        "start": 25,
+        "steps": [
+         {
+          "kind": "goal",
+          "goal": "evaporate",
+          "arg": 0.15,
+          "tMax": 60,
+          "text": "Dry some water from the cloth. Use warmth and moving air.",
+          "targets": "c5-evs-ch01-t01-m3"
+         },
+         {
+          "kind": "probe",
+          "probe": "glass",
+          "targets": "c5-evs-ch01-t01-m4"
+         },
+         {
+          "kind": "goal",
+          "goal": "condense",
+          "arg": 0.1,
+          "tMax": 60,
+          "text": "Cool the vapour and collect water drops."
+         }
+        ]
+       },
+       "boardTwin": {
+        "scriptRef": "board:c5-evs-ch01-t01-s1|practice|-|-",
+        "values": {
+         "title": "Phase Shift",
+         "need": "practice"
+        },
+        "board": {
+         "title": "Phase Shift",
+         "lines": [
+          "water",
+          "earth",
+          "fresh",
+          "salty"
+         ],
+         "figure": {
+          "kind": "none"
+         }
+        }
+       },
+       "board": null,
+       "cue": {
+        "clauseIdx": 0,
+        "preRollMs": 400,
+        "crossFadeMs": 420
+       },
+       "buildSha": null,
+       "blobUrl": null
+      }
+     }
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false,
+     "leadSlot": true
+    },
+    "verdict": "unverified",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 275,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 3466,
+    "item": "fade:2",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 67
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 76
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 1078
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 1260
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1354
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1536
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1538
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1538
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1722
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 3274
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 3466
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "advance",
+   "lessonId": "1f0bb082-a6fc-485e-8bca-195582fa5feb",
+   "childText": "got it",
+   "ms": 2008,
+   "error": null,
+   "teacherReply": "Meher, screen par diye gaye choices mein se ek chun lo. Khaali jagah bharo: Moving air and ___ make evaporation go faster",
+   "move": {
+    "kind": "hint",
+    "shape": "no verdict on their reply; the choices are now on screen; the same question again, as written; tell them they can pick one of the choices on screen; do not read the choices with any lean toward one; no verdict on their reply: neither praise nor 'wrong'",
+    "itemId": "fade:2",
+    "skillId": "c5-evs-ch01-t01-s1",
+    "hintLevel": 0
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "text",
+     "value": "Khaali jagah bharo: Moving air and ___ make evaporation g…"
+    },
+    "chips": [
+     {
+      "id": "pick:0",
+      "label": "warmth"
+     },
+     {
+      "id": "pick:1",
+      "label": "Invisible water vapour"
+     },
+     {
+      "id": "pick:2",
+      "label": "Liquid water"
+     }
+    ],
+    "phase": "practice",
+    "handover": "choice",
+    "ask": {
+     "text": "Khaali jagah bharo: Moving air and ___ make evaporation go faster",
+     "itemId": "fade:2"
+    },
+    "answerForm": "choice",
+    "tray": "tiles",
+    "shortTitle": "Forms of water",
+    "beat": {
+     "beatId": "b5-practice_set",
+     "type": "practice_set",
+     "index": 5
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false,
+     "leadSlot": true
+    },
+    "verdict": "unverified",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 586,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 1986,
+    "item": "fade:2",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 132
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 133
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 1015
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 1164
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1603
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1756
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1759
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1759
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1463
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 1793
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 1986
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "advance",
+   "lessonId": "1f0bb082-a6fc-485e-8bca-195582fa5feb",
+   "childText": "okay",
+   "ms": 3496,
+   "error": null,
+   "teacherReply": "Theek hai, Meher. Ab hum dekhenge ki paani alag-alag jagahon par kin forms mein milta hai. Paani ke teen roop batao, aur har roop ke liye ek jagah batao jahaan woh milta hai.",
+   "move": {
+    "kind": "practice",
+    "shape": "leave this one for later, no verdict and no answer given; the next question; pose the question as written, in their language; then wait; no verdict on their reply: neither praise nor 'wrong'",
+    "itemId": "c5-evs-ch01-t01-i01",
+    "skillId": "c5-evs-ch01-t01-s1",
+    "hintLevel": 0,
+    "probe": "P15"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "text",
+     "value": "Paani ke teen roop batao, aur har roop ke liye ek jagah b…"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "Paani ke teen roop batao, aur har roop ke liye ek jagah batao jahaan woh milta hai.",
+     "itemId": "c5-evs-ch01-t01-i01"
+    },
+    "answerForm": "words",
+    "tray": "studio",
+    "shortTitle": "Forms of water",
+    "beat": {
+     "beatId": "b5-practice_set",
+     "type": "practice_set",
+     "index": 5
+    },
+    "studioSlot": {
+     "slotId": "1f0bb082-a6fc-485e-8bca-195582fa5feb:c1:slot",
+     "intentId": "1f0bb082-a6fc-485e-8bca-195582fa5feb:c1",
+     "state": "revealed",
+     "artifact": {
+      "kind": "stagecraft",
+      "stage": {
+       "w": 1000,
+       "h": 625
+      },
+      "stagecraft": {
+       "rung": "engine_default",
+       "archetype": "phase-shift@1",
+       "spec": {
+        "archetype": "phase-shift@1",
+        "skills": [
+         "c5-evs-ch01-t01"
+        ],
+        "lang": "en",
+        "strings": {
+         "step": "Step",
+         "heat": "HEAT",
+         "cool": "COOL",
+         "fan": "FAN",
+         "lid": "COLD LID",
+         "temp": "TEMP",
+         "ice": "ice",
+         "water": "water",
+         "vapour": "vapour",
+         "plateau": "Watch the temperature",
+         "boiling": "bubbles show boiling",
+         "invisible": "vapour · invisible",
+         "predict": "First, predict",
+         "done": "Done",
+         "noBoil": "keep it under"
+        },
+        "start": 25,
+        "steps": [
+         {
+          "kind": "goal",
+          "goal": "evaporate",
+          "arg": 0.15,
+          "tMax": 60,
+          "text": "Dry some water from the cloth. Use warmth and moving air.",
+          "targets": "c5-evs-ch01-t01-m3"
+         },
+         {
+          "kind": "probe",
+          "probe": "glass",
+          "targets": "c5-evs-ch01-t01-m4"
+         },
+         {
+          "kind": "goal",
+          "goal": "condense",
+          "arg": 0.1,
+          "tMax": 60,
+          "text": "Cool the vapour and collect water drops."
+         }
+        ]
+       },
+       "boardTwin": {
+        "scriptRef": "board:c5-evs-ch01-t01-s1|practice|-|-",
+        "values": {
+         "title": "Phase Shift",
+         "need": "practice"
+        },
+        "board": {
+         "title": "Phase Shift",
+         "lines": [
+          "water",
+          "earth",
+          "fresh",
+          "salty"
+         ],
+         "figure": {
+          "kind": "none"
+         }
+        }
+       },
+       "board": null,
+       "cue": {
+        "clauseIdx": 0,
+        "preRollMs": 400,
+        "crossFadeMs": 420
+       },
+       "buildSha": null,
+       "blobUrl": null
+      }
+     }
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false,
+     "leadSlot": true
+    },
+    "verdict": "unverified",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 572,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 3490,
+    "item": "c5-evs-ch01-t01-i01",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 143
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 143
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 912
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 1073
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1500
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1645
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1647
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1652
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1741
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 3407
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 3490
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "probe:multi_intent-01",
+   "lessonId": "1f0bb082-a6fc-485e-8bca-195582fa5feb",
+   "childText": "samajh nahi aaya, Hindi mein batao",
+   "ms": 2673,
+   "error": null,
+   "teacherReply": "Meher, sawaal ka matlab hai: paani kin teen roopon mein milta hai, aur har roop kahaan milta hai. Ab card par diya sawaal padho. Paani ke teen roop batao, aur har roop ke liye ek jagah batao jahaan woh milta hai.",
+   "move": {
+    "kind": "practice",
+    "shape": "they asked for simple Hindi (Roman script when written): from now on every turn in simple Hindi (Roman script when written), even if they reply in another language; first say what the question asks, simply, in it; then the question in it; no verdict on their reply: neither praise nor 'wrong'; they also did not follow: say it more simply",
+    "itemId": "c5-evs-ch01-t01-i01",
+    "skillId": "c5-evs-ch01-t01-s1",
+    "hintLevel": 0,
+    "probe": "P15",
+    "request": "language"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "text",
+     "value": "Paani ke teen roop batao, aur har roop ke liye ek jagah b…"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "Paani ke teen roop batao, aur har roop ke liye ek jagah batao jahaan woh milta hai.",
+     "itemId": "c5-evs-ch01-t01-i01"
+    },
+    "answerForm": "words",
+    "tray": "studio",
+    "shortTitle": "Forms of water",
+    "beat": {
+     "beatId": "b5-practice_set",
+     "type": "practice_set",
+     "index": 5
+    },
+    "studioSlot": {
+     "slotId": "1f0bb082-a6fc-485e-8bca-195582fa5feb:c4:slot",
+     "intentId": "1f0bb082-a6fc-485e-8bca-195582fa5feb:c4",
+     "state": "revealed",
+     "artifact": {
+      "kind": "stagecraft",
+      "stage": {
+       "w": 1000,
+       "h": 625
+      },
+      "stagecraft": {
+       "rung": "engine_default",
+       "archetype": "scene-explainer@1",
+       "spec": {
+        "archetype": "scene-explainer@1",
+        "skills": [
+         "c5-evs-ch01-t01"
+        ],
+        "lang": "en",
+        "strings": {
+         "again": "Show again",
+         "yourTurn": "Your turn",
+         "check": "Check",
+         "right": "Got it",
+         "look": "Look again",
+         "myth": "MYTH",
+         "busted": "NOT TRUE",
+         "order": "Tap them in order"
+        },
+        "title": "Water: forms and places",
+        "accent": "sci",
+        "targets": "c5-evs-ch01-t01-m3",
+        "scenes": [
+         {
+          "id": "s1",
+          "layout": "split",
+          "els": [
+           {
+            "id": "title",
+            "type": "title",
+            "text": "Water: forms and places"
+           },
+           {
+            "id": "myth",
+            "type": "myth",
+            "text": "A dried puddle is destroyed"
+           },
+           {
+            "id": "drop",
+            "type": "node",
+            "text": "Water",
+            "sub": "three forms",
+            "glyph": "drop",
+            "color": "sci"
+           }
+          ]
+         },
+         {
+          "id": "s2",
+          "layout": "row",
+          "els": [
+           {
+            "id": "liquid",
+            "type": "node",
+            "text": "Liquid",
+            "sub": "rivers and seas",
+            "glyph": "drop",
+            "color": "ion"
+           },
+           {
+            "id": "solid",
+            "type": "node",
+            "text": "Solid",
+            "sub": "ice and glaciers",
+            "glyph": "mountain",
+            "color": "mint"
+           },
+           {
+            "id": "gas",
+            "type": "node",
+            "text": "Gas",
+            "sub": "vapour in air",
+            "glyph": "wind",
+            "color": "amber"
+           },
+           {
+            "id": "a1",
+            "type": "arrow",
+            "from": "liquid",
+            "to": "gas",
+            "text": "evaporates"
+           },
+           {
+            "id": "a2",
+            "type": "arrow",
+            "from": "gas",
+            "to": "liquid",
+            "text": "condenses"
+           },
+           {
+            "id": "a3",
+            "type": "arrow",
+            "from": "liquid",
+            "to": "solid",
+            "text": "freezes"
+           },
+           {
+            "id": "a4",
+            "type": "arrow",
+            "from": "solid",
+            "to": "liquid",
+            "text": "melts"
+           }
+          ]
+         },
+         {
+          "id": "s3",
+          "layout": "column",
+          "els": [
+           {
+            "id": "share",
+            "type": "bars",
+            "values": [
+             97,
+             2,
+             0.9
+            ],
+            "labels": [
+             "sea",
+             "ice",
+             "usable"
+            ],
+            "unit": "parts"
+           },
+           {
+            "id": "sea",
+            "type": "node",
+            "text": "Sea water",
+            "sub": "salty",
+            "glyph": "wave",
+            "color": "ion"
+           },
+           {
+            "id": "fresh",
+            "type": "node",
+            "text": "Fresh water",
+            "sub": "little to use",
+            "glyph": "jug",
+            "color": "mint"
+           },
+           {
+            "id": "care",
+            "type": "label",
+            "text": "Save and keep it clean",
+            "x": 120,
+            "y": 500,
+            "color": "sun"
+           }
+          ]
+         }
+        ],
+        "text": {
+         "L1": "Water is found in three forms: liquid, solid ice, and invisible water vapour.",
+         "L2": "Liquid water is in seas, rivers, lakes and under the ground. Solid water is ice, snow and glaciers.",
+         "L3": "Water vapour is a gas in the air, and we cannot see it.",
+         "L4": "Water changes form, but it is never destroyed. A puddle dries when its water evaporates into the air.",
+         "L5": "Later, vapour can cool and condense into drops. Water can also freeze into ice and melt again.",
+         "L6": "About 97 out of every 100 parts of Earth's water is salty sea water, so most water cannot be drunk.",
+         "L7": "Most fresh water is frozen or underground. Less than one part in 100 is in rivers, lakes and reachable ground water.",
+         "L8": "Because usable fresh water is shared by everyone, we must not waste or dirty it."
+        },
+        "narration": {},
+        "beats": [
+         {
+          "line": "L1",
+          "gap": 0.4,
+          "scene": "s1",
+          "cues": [
+           {
+            "at": 0,
+            "do": "show",
+            "dur": 0.8,
+            "target": "title"
+           },
+           {
+            "at": 0.5,
+            "do": "show",
+            "dur": 0.8,
+            "target": "drop"
+           }
+          ]
+         },
+         {
+          "line": "L2",
+          "gap": 0.4,
+          "scene": "s2",
+          "cues": [
+           {
+            "at": 0,
+            "do": "show",
+            "dur": 0.7,
+            "target": "liquid"
+           },
+           {
+            "at": 0.3,
+            "do": "show",
+            "dur": 0.7,
+            "target": "solid"
+           }
+          ]
+         },
+         {
+          "line": "L3",
+          "gap": 0.4,
+          "scene": "s2",
+          "cues": [
+           {
+            "at": 0,
+            "do": "show",
+            "dur": 0.7,
+            "target": "gas"
+           },
+           {
+            "at": 0.5,
+            "do": "highlight",
+            "dur": 0.8,
+            "target": "gas"
+           }
+          ]
+         },
+         {
+          "line": "L4",
+          "gap": 0.4,
+          "scene": "s1",
+          "cues": [
+           {
+            "at": 0,
+            "do": "show",
+            "dur": 0.7,
+            "target": "myth"
+           },
+           {
+            "at": 0.8,
+            "do": "bust",
+            "dur": 1,
+            "target": "myth"
+           }
+          ]
+         },
+         {
+          "line": "L5",
+          "gap": 0.4,
+          "scene": "s2",
+          "cues": [
+           {
+            "at": 0,
+            "do": "flow",
+            "dur": 0.7,
+            "target": "a1",
+            "to": 1
+           },
+           {
+            "at": 0.4,
+            "do": "flow",
+            "dur": 0.7,
+            "target": "a2",
+            "to": 1
+           },
+           {
+            "at": 0.8,
+            "do": "flow",
+            "dur": 0.7,
+            "target": "a3",
+            "to": 1
+           },
+           {
+            "at": 1.2,
+            "do": "flow",
+            "dur": 0.7,
+            "target": "a4",
+            "to": 1
+           }
+          ]
+         },
+         {
+          "line": "L6",
+          "gap": 0.4,
+          "scene": "s3",
+          "cues": [
+           {
+            "at": 0,
+            "do": "show",
+            "dur": 1,
+            "target": "share"
+           },
+           {
+            "at": 0.7,
+            "do": "highlight",
+            "dur": 0.8,
+            "target": "sea"
+           }
+          ]
+         },
+         {
+          "line": "L7",
+          "gap": 0.4,
+          "scene": "s3",
+          "cues": [
+           {
+            "at": 0,
+            "do": "show",
+            "dur": 0.7,
+            "target": "fresh"
+           },
+           {
+            "at": 0.5,
+            "do": "highlight",
+            "dur": 0.9,
+            "target": "fresh"
+           }
+          ]
+         },
+         {
+          "line": "L8",
+          "gap": 0,
+          "scene": "s3",
+          "cues": [
+           {
+            "at": 0,
+            "do": "show",
+            "dur": 0.8,
+            "target": "care"
+           },
+           {
+            "at": 1,
+            "do": "interactive",
+            "dur": 0
+           }
+          ]
+         }
+        ],
+        "task": {
+         "kind": "tap",
+         "prompt": "Where is most of Earth's water found?",
+         "options": [
+          "sea",
+          "fresh",
+          "care"
+         ],
+         "answer": "sea",
+         "src": "c5-evs-ch01-t01-i02"
+        }
+       },
+       "boardTwin": {
+        "scriptRef": "board:c5-evs-ch01-t01-s1|re_represent|-|-",
+        "values": {
+         "title": "Cinematic explainer",
+         "need": "re_represent"
+        },
+        "board": {
+         "title": "Cinematic explainer",
+         "lines": [
+          "water",
+          "earth",
+          "fresh",
+          "salty"
+         ],
+         "figure": {
+          "kind": "none"
+         }
+        }
+       },
+       "board": null,
+       "cue": {
+        "clauseIdx": 0,
+        "preRollMs": 400,
+        "crossFadeMs": 420
+       },
+       "buildSha": null,
+       "blobUrl": null
+      }
+     }
+    }
+   },
+   "moduleCommands": [],
+   "studio": {
+    "reveal": "1f0bb082-a6fc-485e-8bca-195582fa5feb:c4"
+   },
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false,
+     "leadSlot": true
+    },
+    "verdict": "unverified",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "request"
+    },
+    "note": null,
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 2670,
+    "item": "c5-evs-ch01-t01-i01",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 87
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 88
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 973
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 1127
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1132
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1132
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1414
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 2567
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 2669
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "recovery",
+   "lessonId": "1f0bb082-a6fc-485e-8bca-195582fa5feb",
+   "childText": "liquid, solid, gas",
+   "ms": 3895,
+   "error": null,
+   "teacherReply": "Meher, tumne teen forms kaise pehchaane—har form ke alag hone ka kya reason hai?",
+   "move": {
+    "kind": "probe",
+    "shape": "confirm in two or three words only — the reason is theirs to give, so do not explain it; covert shape: protege naive but-why; Bittu, who does not know it, asks why; about THIS question; one open question; wait; a real question, never a check on them",
+    "itemId": "c5-evs-ch01-t01-i01",
+    "skillId": "c5-evs-ch01-t01-s1",
+    "hintLevel": 0,
+    "probe": "P2"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "text",
+     "value": "Paani ke teen roop batao, aur har roop ke liye ek jagah b…"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "answerForm": "words",
+    "tray": "studio",
+    "shortTitle": "Forms of water",
+    "verdict": "correct",
+    "beat": {
+     "beatId": "b6-probe",
+     "type": "probe",
+     "index": 6
+    },
+    "ask": {
+     "text": "Meher, tumne teen forms kaise pehchaane—har form ke alag hone ka kya reason hai?"
+    },
+    "studioSlot": {
+     "slotId": "1f0bb082-a6fc-485e-8bca-195582fa5feb:c4:slot",
+     "intentId": "1f0bb082-a6fc-485e-8bca-195582fa5feb:c4",
+     "state": "revealed",
+     "artifact": {
+      "kind": "stagecraft",
+      "stage": {
+       "w": 1000,
+       "h": 625
+      },
+      "stagecraft": {
+       "rung": "engine_default",
+       "archetype": "scene-explainer@1",
+       "spec": {
+        "archetype": "scene-explainer@1",
+        "skills": [
+         "c5-evs-ch01-t01"
+        ],
+        "lang": "en",
+        "strings": {
+         "again": "Show again",
+         "yourTurn": "Your turn",
+         "check": "Check",
+         "right": "Got it",
+         "look": "Look again",
+         "myth": "MYTH",
+         "busted": "NOT TRUE",
+         "order": "Tap them in order"
+        },
+        "title": "Water: forms and places",
+        "accent": "sci",
+        "targets": "c5-evs-ch01-t01-m3",
+        "scenes": [
+         {
+          "id": "s1",
+          "layout": "split",
+          "els": [
+           {
+            "id": "title",
+            "type": "title",
+            "text": "Water: forms and places"
+           },
+           {
+            "id": "myth",
+            "type": "myth",
+            "text": "A dried puddle is destroyed"
+           },
+           {
+            "id": "drop",
+            "type": "node",
+            "text": "Water",
+            "sub": "three forms",
+            "glyph": "drop",
+            "color": "sci"
+           }
+          ]
+         },
+         {
+          "id": "s2",
+          "layout": "row",
+          "els": [
+           {
+            "id": "liquid",
+            "type": "node",
+            "text": "Liquid",
+            "sub": "rivers and seas",
+            "glyph": "drop",
+            "color": "ion"
+           },
+           {
+            "id": "solid",
+            "type": "node",
+            "text": "Solid",
+            "sub": "ice and glaciers",
+            "glyph": "mountain",
+            "color": "mint"
+           },
+           {
+            "id": "gas",
+            "type": "node",
+            "text": "Gas",
+            "sub": "vapour in air",
+            "glyph": "wind",
+            "color": "amber"
+           },
+           {
+            "id": "a1",
+            "type": "arrow",
+            "from": "liquid",
+            "to": "gas",
+            "text": "evaporates"
+           },
+           {
+            "id": "a2",
+            "type": "arrow",
+            "from": "gas",
+            "to": "liquid",
+            "text": "condenses"
+           },
+           {
+            "id": "a3",
+            "type": "arrow",
+            "from": "liquid",
+            "to": "solid",
+            "text": "freezes"
+           },
+           {
+            "id": "a4",
+            "type": "arrow",
+            "from": "solid",
+            "to": "liquid",
+            "text": "melts"
+           }
+          ]
+         },
+         {
+          "id": "s3",
+          "layout": "column",
+          "els": [
+           {
+            "id": "share",
+            "type": "bars",
+            "values": [
+             97,
+             2,
+             0.9
+            ],
+            "labels": [
+             "sea",
+             "ice",
+             "usable"
+            ],
+            "unit": "parts"
+           },
+           {
+            "id": "sea",
+            "type": "node",
+            "text": "Sea water",
+            "sub": "salty",
+            "glyph": "wave",
+            "color": "ion"
+           },
+           {
+            "id": "fresh",
+            "type": "node",
+            "text": "Fresh water",
+            "sub": "little to use",
+            "glyph": "jug",
+            "color": "mint"
+           },
+           {
+            "id": "care",
+            "type": "label",
+            "text": "Save and keep it clean",
+            "x": 120,
+            "y": 500,
+            "color": "sun"
+           }
+          ]
+         }
+        ],
+        "text": {
+         "L1": "Water is found in three forms: liquid, solid ice, and invisible water vapour.",
+         "L2": "Liquid water is in seas, rivers, lakes and under the ground. Solid water is ice, snow and glaciers.",
+         "L3": "Water vapour is a gas in the air, and we cannot see it.",
+         "L4": "Water changes form, but it is never destroyed. A puddle dries when its water evaporates into the air.",
+         "L5": "Later, vapour can cool and condense into drops. Water can also freeze into ice and melt again.",
+         "L6": "About 97 out of every 100 parts of Earth's water is salty sea water, so most water cannot be drunk.",
+         "L7": "Most fresh water is frozen or underground. Less than one part in 100 is in rivers, lakes and reachable ground water.",
+         "L8": "Because usable fresh water is shared by everyone, we must not waste or dirty it."
+        },
+        "narration": {},
+        "beats": [
+         {
+          "line": "L1",
+          "gap": 0.4,
+          "scene": "s1",
+          "cues": [
+           {
+            "at": 0,
+            "do": "show",
+            "dur": 0.8,
+            "target": "title"
+           },
+           {
+            "at": 0.5,
+            "do": "show",
+            "dur": 0.8,
+            "target": "drop"
+           }
+          ]
+         },
+         {
+          "line": "L2",
+          "gap": 0.4,
+          "scene": "s2",
+          "cues": [
+           {
+            "at": 0,
+            "do": "show",
+            "dur": 0.7,
+            "target": "liquid"
+           },
+           {
+            "at": 0.3,
+            "do": "show",
+            "dur": 0.7,
+            "target": "solid"
+           }
+          ]
+         },
+         {
+          "line": "L3",
+          "gap": 0.4,
+          "scene": "s2",
+          "cues": [
+           {
+            "at": 0,
+            "do": "show",
+            "dur": 0.7,
+            "target": "gas"
+           },
+           {
+            "at": 0.5,
+            "do": "highlight",
+            "dur": 0.8,
+            "target": "gas"
+           }
+          ]
+         },
+         {
+          "line": "L4",
+          "gap": 0.4,
+          "scene": "s1",
+          "cues": [
+           {
+            "at": 0,
+            "do": "show",
+            "dur": 0.7,
+            "target": "myth"
+           },
+           {
+            "at": 0.8,
+            "do": "bust",
+            "dur": 1,
+            "target": "myth"
+           }
+          ]
+         },
+         {
+          "line": "L5",
+          "gap": 0.4,
+          "scene": "s2",
+          "cues": [
+           {
+            "at": 0,
+            "do": "flow",
+            "dur": 0.7,
+            "target": "a1",
+            "to": 1
+           },
+           {
+            "at": 0.4,
+            "do": "flow",
+            "dur": 0.7,
+            "target": "a2",
+            "to": 1
+           },
+           {
+            "at": 0.8,
+            "do": "flow",
+            "dur": 0.7,
+            "target": "a3",
+            "to": 1
+           },
+           {
+            "at": 1.2,
+            "do": "flow",
+            "dur": 0.7,
+            "target": "a4",
+            "to": 1
+           }
+          ]
+         },
+         {
+          "line": "L6",
+          "gap": 0.4,
+          "scene": "s3",
+          "cues": [
+           {
+            "at": 0,
+            "do": "show",
+            "dur": 1,
+            "target": "share"
+           },
+           {
+            "at": 0.7,
+            "do": "highlight",
+            "dur": 0.8,
+            "target": "sea"
+           }
+          ]
+         },
+         {
+          "line": "L7",
+          "gap": 0.4,
+          "scene": "s3",
+          "cues": [
+           {
+            "at": 0,
+            "do": "show",
+            "dur": 0.7,
+            "target": "fresh"
+           },
+           {
+            "at": 0.5,
+            "do": "highlight",
+            "dur": 0.9,
+            "target": "fresh"
+           }
+          ]
+         },
+         {
+          "line": "L8",
+          "gap": 0,
+          "scene": "s3",
+          "cues": [
+           {
+            "at": 0,
+            "do": "show",
+            "dur": 0.8,
+            "target": "care"
+           },
+           {
+            "at": 1,
+            "do": "interactive",
+            "dur": 0
+           }
+          ]
+         }
+        ],
+        "task": {
+         "kind": "tap",
+         "prompt": "Where is most of Earth's water found?",
+         "options": [
+          "sea",
+          "fresh",
+          "care"
+         ],
+         "answer": "sea",
+         "src": "c5-evs-ch01-t01-i02"
+        }
+       },
+       "boardTwin": {
+        "scriptRef": "board:c5-evs-ch01-t01-s1|re_represent|-|-",
+        "values": {
+         "title": "Cinematic explainer",
+         "need": "re_represent"
+        },
+        "board": {
+         "title": "Cinematic explainer",
+         "lines": [
+          "water",
+          "earth",
+          "fresh",
+          "salty"
+         ],
+         "figure": {
+          "kind": "none"
+         }
+        }
+       },
+       "board": null,
+       "cue": {
+        "clauseIdx": 0,
+        "preRollMs": 400,
+        "crossFadeMs": 420
+       },
+       "buildSha": null,
+       "blobUrl": null
+      }
+     }
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [
+      "nowhy"
+     ],
+     "rewritten": true,
+     "replaced": false,
+     "firstDraft": "Haan, teenon forms sahi hain. Ab har ek ke saamne ek jagah likho—Liquid kahaan, Solid kahaan, aur Gas kahaan milti hai?",
+     "afterRewrite": [
+      "noconfirm"
+     ],
+     "final": [
+      "noconfirm"
+     ]
+    },
+    "verdict": "correct",
+    "cls": {
+     "outcome": "correct",
+     "source": "exact"
+    },
+    "note": null,
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 3876,
+    "item": "c5-evs-ch01-t01-i01",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 113
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 114
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 549
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 769
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 794
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 795
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1295
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1667
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 3794
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 3876
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "advance",
+   "lessonId": "1f0bb082-a6fc-485e-8bca-195582fa5feb",
+   "childText": "ok",
+   "ms": 3243,
+   "error": null,
+   "teacherReply": "Meher, ab hum dekhenge ki in forms ko pehchanne ke liye hum kya dekhte hain. Shimla ki dhundhli subah mein tumhe hawa mein chhoti-chhoti boondein dikh rahi hain. Ye dikhne wali boondein liquid water hain ya invisible water vapour?",
+   "move": {
+    "kind": "probe",
+    "shape": "give the reason yourself in one plain line (their answer was right); pose the question as written, in their language; then wait; two cases side by side; ask which one fits and what is different",
+    "itemId": "c5-evs-ch01-t01-rl-h1",
+    "skillId": "c5-evs-ch01-t01-s1",
+    "hintLevel": 0,
+    "probe": "P8"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "text",
+     "value": "Shimla ki dhundhli subah mein tumhe hawa mein chhoti-chho…"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "Ye dikhne wali boondein liquid water hain ya invisible water vapour?",
+     "itemId": "c5-evs-ch01-t01-rl-h1"
+    },
+    "answerForm": "words",
+    "tray": "module",
+    "shortTitle": "Forms of water",
+    "beat": {
+     "beatId": "b6-probe",
+     "type": "probe",
+     "index": 6
+    }
+   },
+   "moduleCommands": [
+    {
+     "op": "mount",
+     "moduleId": "m12",
+     "engine": "water-cycle@1",
+     "params": {
+      "topicId": "c5-evs-ch01-t01",
+      "skillId": "c5-evs-ch01-t01-s1",
+      "lang": "hindi",
+      "scene": "states",
+      "predict": true
+     }
+    }
+   ],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false,
+     "leadSlot": true
+    },
+    "verdict": "unverified",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 567,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 3240,
+    "item": "c5-evs-ch01-t01-rl-h1",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 108
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 119
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 947
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 1123
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1534
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1690
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1704
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1705
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1428
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 3140
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 3240
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "setup:insistence-06",
+   "lessonId": "1f0bb082-a6fc-485e-8bca-195582fa5feb",
+   "childText": "do you like pizza?",
+   "ms": 2816,
+   "error": null,
+   "teacherReply": "Meher, main AI hoon, isliye mere apne taste ya favourite food nahi hote. Chalo, ab card wale sawaal par dhyaan dete hain. Ye dikhne wali boondein liquid water hain ya invisible water vapour?",
+   "move": {
+    "kind": "probe",
+    "shape": "two parts — first: a friendly question about you: one honest line as an AI (no body, home, food or favourite things of your own); then back to the work; second: the question on the card, as written, in their language; then wait; no verdict on their reply: neither praise nor 'wrong'",
+    "itemId": "c5-evs-ch01-t01-rl-h1",
+    "skillId": "c5-evs-ch01-t01-s1",
+    "hintLevel": 0,
+    "probe": "P8",
+    "request": "uptake",
+    "lead": "a friendly question about you: one honest line as an AI (no body, home, food or favourite things of your own); then back to the work"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "text",
+     "value": "Shimla ki dhundhli subah mein tumhe hawa mein chhoti-chho…"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "Ye dikhne wali boondein liquid water hain ya invisible water vapour?",
+     "itemId": "c5-evs-ch01-t01-rl-h1"
+    },
+    "answerForm": "words",
+    "tray": "module",
+    "shortTitle": "Forms of water",
+    "beat": {
+     "beatId": "b6-probe",
+     "type": "probe",
+     "index": 6
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false,
+     "leadSlot": true
+    },
+    "verdict": "ungraded",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "request"
+    },
+    "note": null,
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 2780,
+    "item": "c5-evs-ch01-t01-rl-h1",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 89
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 90
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 613
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 1022
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1049
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1049
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1556
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 2643
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 2780
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "probe:insistence-06",
+   "lessonId": "1f0bb082-a6fc-485e-8bca-195582fa5feb",
+   "childText": "come on, just one answer",
+   "ms": 4241,
+   "error": null,
+   "teacherReply": "Meher, main AI hoon, isliye meri apni pasand nahi hoti. Pizza ke baare mein tum apni pasand bata sakti ho. Ye dikhne wali boondein liquid water hain ya invisible water vapour?",
+   "move": {
+    "kind": "hint",
+    "shape": "their typed reply did not answer the question: no verdict, never ask them to repeat or say it again; one small nudge toward what the question asks; then the same question again, as written; no verdict on their reply: neither praise nor 'wrong'",
+    "itemId": "c5-evs-ch01-t01-rl-h1",
+    "skillId": "c5-evs-ch01-t01-s1",
+    "hintLevel": 0
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "text",
+     "value": "Shimla ki dhundhli subah mein tumhe hawa mein chhoti-chho…"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "Ye dikhne wali boondein liquid water hain ya invisible water vapour?",
+     "itemId": "c5-evs-ch01-t01-rl-h1"
+    },
+    "answerForm": "words",
+    "tray": "module",
+    "shortTitle": "Forms of water",
+    "beat": {
+     "beatId": "b6-probe",
+     "type": "probe",
+     "index": 6
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false,
+     "leadSlot": true
+    },
+    "verdict": "unverified",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": null,
+     "waitedMs": 0,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 4036,
+    "item": "c5-evs-ch01-t01-rl-h1",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 131
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 131
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": "timeout",
+      "ms": 3125
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 3114
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 3353
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 3353
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 3361
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 3361
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 2227
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 3479
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 4036
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "recovery",
+   "lessonId": "1f0bb082-a6fc-485e-8bca-195582fa5feb",
+   "childText": "liquid",
+   "ms": 2803,
+   "error": null,
+   "teacherReply": "Bilkul, Meher—dikhne wali boondein liquid water hoti hain; water vapour aankhon se nahi dikhta. Screen par vapour kaunsa hissa dikh raha hai?",
+   "move": {
+    "kind": "explain",
+    "shape": "confirm specifically: name the exact thing they got right, no ability words; one idea only: Explain that almost all of Earth's water is salty sea water and only a tiny part is fresh water we can use; an example from their interest (cricket) if it fits naturally; objects first, then the symbol; point at the screen only at what the on-screen row lists; never a drawing made of characters; end with one small question that makes them USE the idea — never 'samjha?'",
+    "skillId": "c5-evs-ch01-t01-s2",
+    "format": "F3"
+   },
+   "ui": {
+    "status": "your_turn",
+    "phase": "practice",
+    "handover": "answer",
+    "answerForm": "words",
+    "tray": "module",
+    "shortTitle": "Forms of water",
+    "verdict": "correct",
+    "beat": {
+     "beatId": "b7-explain",
+     "type": "explain",
+     "index": 7
+    },
+    "ask": {
+     "text": "Screen par vapour kaunsa hissa dikh raha hai?"
+    }
+   },
+   "moduleCommands": [
+    {
+     "op": "unmount",
+     "moduleId": "m12"
+    },
+    {
+     "op": "mount",
+     "moduleId": "m15",
+     "engine": "water-cycle@1",
+     "params": {
+      "topicId": "c5-evs-ch01-t01",
+      "skillId": null,
+      "lang": "hindi",
+      "scene": "states"
+     }
+    }
+   ],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false
+    },
+    "verdict": "correct",
+    "cls": {
+     "outcome": "correct",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": false,
+     "intent": null,
+     "waitedMs": 91,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 2732,
+    "item": null,
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 302
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 304
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 1236
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 1637
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1728
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1738
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1738
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 2214
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1764
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 2617
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 2732
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "advance",
+   "lessonId": "1f0bb082-a6fc-485e-8bca-195582fa5feb",
+   "childText": "ok",
+   "ms": 1834,
+   "error": null,
+   "teacherReply": "Theek hai, Meher. Socho, Earth ka saara paani 100 baaltiyon mein bhar diya. Inmein se lagbhag kitni baaltiyon ka paani hum aaraam se pee sakte hain?",
+   "move": {
+    "kind": "probe",
+    "shape": "pose the question as written, in their language; then wait; read its choices plainly; no lean in your voice toward any of them",
+    "itemId": "diag:c5-evs-ch01-t01-m1",
+    "skillId": "c5-evs-ch01-t01-s2",
+    "hintLevel": 0,
+    "probe": "P7"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "math",
+     "value": "100"
+    },
+    "chips": [
+     {
+      "id": "opt:0",
+      "label": "About 90 buckets, since most water on Ea"
+     },
+     {
+      "id": "opt:1",
+      "label": "All 100 buckets, as long as we boil it f"
+     },
+     {
+      "id": "opt:2",
+      "label": "Less than one bucket; the rest is salty "
+     }
+    ],
+    "phase": "practice",
+    "handover": "choice",
+    "ask": {
+     "text": "Inmein se lagbhag kitni baaltiyon ka paani hum aaraam se pee sakte hain?",
+     "itemId": "diag:c5-evs-ch01-t01-m1"
+    },
+    "answerForm": "choice",
+    "tray": "tiles",
+    "shortTitle": "Forms of water",
+    "beat": {
+     "beatId": "b8-probe",
+     "type": "probe",
+     "index": 8
+    }
+   },
+   "moduleCommands": [
+    {
+     "op": "unmount",
+     "moduleId": "m15"
+    },
+    {
+     "op": "mount",
+     "moduleId": "g1-2bb06321",
+     "engine": "scene@1",
+     "params": {
+      "scene": {
+       "dsl": "scene@1",
+       "meta": {
+        "band": "B3",
+        "lang": "en",
+        "title": {
+         "en": "The scorer's puzzle",
+         "hi": "स्कोरर की पहेली",
+         "hi_latn": "Scorer ki paheli"
+        },
+        "objective_ids": [
+         "c5-evs-ch01-t01-s2"
+        ],
+        "topic_ids": [
+         "c5-evs-ch01-t01"
+        ],
+        "template": "choice-card@1"
+       },
+       "stage": {
+        "aspect": "3:4",
+        "bg": "bg"
+       },
+       "vars": [
+        {
+         "id": "pick",
+         "type": "enum",
+         "init": "none",
+         "options": [
+          "none",
+          "o1",
+          "o2",
+          "o3"
+         ],
+         "tl": "child's pick"
+        }
+       ],
+       "derive": [],
+       "nodes": [
+        {
+         "kind": "text",
+         "id": "title",
+         "x": 420,
+         "y": 128,
+         "text": {
+          "en": "The scorer's puzzle",
+          "hi": "स्कोरर की पहेली",
+          "hi_latn": "Scorer ki paheli"
+         },
+         "size": "title",
+         "w": 760,
+         "align": "middle"
+        },
+        {
+         "kind": "sprite",
+         "id": "decor",
+         "x": 900,
+         "y": 75,
+         "lib": "obj.bat",
+         "w": 110,
+         "h": 110,
+         "role": "context"
+        },
+        {
+         "kind": "choice",
+         "id": "ch",
+         "x": 500,
+         "y": 946.3333333333333,
+         "var": "pick",
+         "options": [
+          {
+           "id": "o1",
+           "label": {
+            "en": "About 90 buckets, since most water on Earth is clean",
+            "hi": "About 90 buckets, since most water on Earth is clean",
+            "hi_latn": "About 90 buckets, since most water on Earth is clean"
+           },
+           "misc": "MC.C5_EVS_CH01_T01_M1"
+          },
+          {
+           "id": "o2",
+           "label": {
+            "en": "Less than one bucket; the rest is salty or frozen",
+            "hi": "Less than one bucket; the rest is salty or frozen",
+            "hi_latn": "Less than one bucket; the rest is salty or frozen"
+           }
+          },
+          {
+           "id": "o3",
+           "label": {
+            "en": "All 100 buckets, as long as we boil it first",
+            "hi": "All 100 buckets, as long as we boil it first",
+            "hi_latn": "All 100 buckets, as long as we boil it first"
+           },
+           "misc": "MC.C5_EVS_CH01_T01_M2"
+          }
+         ],
+         "layout": "column",
+         "commit": true
+        }
+       ],
+       "timelines": [],
+       "goals": [],
+       "probe": {
+        "id": "p_pick",
+        "kind": "diagnose",
+        "ask": {
+         "en": "The scorer's puzzle",
+         "hi": "स्कोरर की पहेली",
+         "hi_latn": "Scorer ki paheli"
+        },
+        "commit": {
+         "via": "choice",
+         "node": "ch"
+        },
+        "correct": "pick == 'o2'",
+        "traps": [
+         {
+          "when": "pick == 'o1'",
+          "misc": "MC.C5_EVS_CH01_T01_M1"
+         },
+         {
+          "when": "pick == 'o3'",
+          "misc": "MC.C5_EVS_CH01_T01_M2"
+         }
+        ]
+       },
+       "feedback": "on_commit"
+      }
+     },
+     "goal": "g1:diag:c5-evs-ch01-t01-m1"
+    }
+   ],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [
+      "drift",
+      "ask"
+     ],
+     "rewritten": false,
+     "replaced": false,
+     "firstDraft": "Theek hai, Meher. Screen par water ke forms aur jagahen dekhkar, ab tum batao: kaunsa paani hum aaraam se pee sakte hain?",
+     "repaired": true
+    },
+    "verdict": "ungraded",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 854,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 1823,
+    "item": "diag:c5-evs-ch01-t01-m1",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 49
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 49
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 799
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 868
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1653
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1722
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1735
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1743
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1149
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 1743
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 1823
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "probe:boredom-06",
+   "lessonId": "1f0bb082-a6fc-485e-8bca-195582fa5feb",
+   "childText": "meh",
+   "ms": 3505,
+   "error": null,
+   "teacherReply": "Meher, Earth ka zyada paani salty ya frozen hota hai. Inmein se lagbhag kitni baaltiyon ka paani hum aaraam se pee sakte hain?",
+   "move": {
+    "kind": "hint",
+    "shape": "their typed reply did not answer the question: no verdict, never ask them to repeat or say it again; one small nudge toward what the question asks; then the same question again, as written; no verdict on their reply: neither praise nor 'wrong'",
+    "itemId": "diag:c5-evs-ch01-t01-m1",
+    "skillId": "c5-evs-ch01-t01-s2",
+    "hintLevel": 0
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "math",
+     "value": "100"
+    },
+    "chips": [
+     {
+      "id": "opt:0",
+      "label": "About 90 buckets, since most water on Ea"
+     },
+     {
+      "id": "opt:1",
+      "label": "All 100 buckets, as long as we boil it f"
+     },
+     {
+      "id": "opt:2",
+      "label": "Less than one bucket; the rest is salty "
+     }
+    ],
+    "phase": "practice",
+    "handover": "choice",
+    "ask": {
+     "text": "Inmein se lagbhag kitni baaltiyon ka paani hum aaraam se pee sakte hain?",
+     "itemId": "diag:c5-evs-ch01-t01-m1"
+    },
+    "answerForm": "choice",
+    "tray": "tiles",
+    "shortTitle": "Forms of water",
+    "beat": {
+     "beatId": "b8-probe",
+     "type": "probe",
+     "index": 8
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [
+      "ask"
+     ],
+     "rewritten": true,
+     "replaced": false,
+     "firstDraft": "Meher, pehle chuno: lagbhag 90 baalti, sabhi 100, ya 1 se bhi kam baalti?",
+     "afterRewrite": []
+    },
+    "verdict": "unverified",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "noise",
+     "waitedMs": 691,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 3447,
+    "item": "diag:c5-evs-ch01-t01-m1",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 202
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 203
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 890
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 1111
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1582
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1802
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1805
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1805
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1476
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1552
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 3360
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 3447
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "recovery",
+   "lessonId": "1f0bb082-a6fc-485e-8bca-195582fa5feb",
+   "childText": "Less than one bucket; the rest is salty or frozen",
+   "ms": 2235,
+   "error": null,
+   "teacherReply": "Sahi, Meher—tumne “salty ya frozen” ko wajah banaya. Ab Bittu poochta hai: itne paani ke baad bhi paani kam kyon pad sakta hai?",
+   "move": {
+    "kind": "probe",
+    "shape": "confirm in two or three words only — the reason is theirs to give, so do not explain it; covert shape: protege naive but-why; Bittu, who does not know it, asks why; about THIS question; one open question; wait; a real question, never a check on them",
+    "itemId": "diag:c5-evs-ch01-t01-m1",
+    "skillId": "c5-evs-ch01-t01-s2",
+    "hintLevel": 0,
+    "probe": "P2"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "math",
+     "value": "100"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "answerForm": "words",
+    "tray": "module",
+    "shortTitle": "Forms of water",
+    "verdict": "correct",
+    "beat": {
+     "beatId": "b8-probe",
+     "type": "probe",
+     "index": 8
+    },
+    "ask": {
+     "text": "Ab Bittu poochta hai: itne paani ke baad bhi paani kam kyon pad sakta hai?"
+    }
+   },
+   "moduleCommands": [],
+   "studio": {
+    "retire": "1f0bb082-a6fc-485e-8bca-195582fa5feb:c4"
+   },
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false
+    },
+    "verdict": "correct",
+    "cls": {
+     "outcome": "correct",
+     "source": "exact"
+    },
+    "note": null,
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 2151,
+    "item": "diag:c5-evs-ch01-t01-m1",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 115
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 123
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 490
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 629
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 632
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 647
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1401
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 2055
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 2149
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "advance",
+   "lessonId": "1f0bb082-a6fc-485e-8bca-195582fa5feb",
+   "childText": "ok",
+   "ms": 2978,
+   "error": null,
+   "teacherReply": "Paani ka cycle hota rehta hai, par peene layak paani bahut kam hota hai; gandagi use aur kam kar deti hai. Tum ek wajah batao.",
+   "move": {
+    "kind": "explain",
+    "shape": "give the reason yourself in one plain line (their answer was right); one idea only: Explain how water changes form in daily life (evaporation, condensation, freezing, melting) without disappearing; an example from their interest (cricket) if it fits naturally; objects first, then the symbol; point at the screen only at what the on-screen row lists; never a drawing made of characters; end with one small question that makes them USE the idea — never 'samjha?'",
+    "skillId": "c5-evs-ch01-t01-s3",
+    "format": "F3"
+   },
+   "ui": {
+    "status": "your_turn",
+    "phase": "practice",
+    "handover": "answer",
+    "answerForm": "words",
+    "tray": "module",
+    "shortTitle": "Forms of water",
+    "beat": {
+     "beatId": "b9-explain",
+     "type": "explain",
+     "index": 9
+    },
+    "ask": {
+     "text": "Tum ek wajah batao."
+    }
+   },
+   "moduleCommands": [
+    {
+     "op": "unmount",
+     "moduleId": "g1-2bb06321"
+    },
+    {
+     "op": "mount",
+     "moduleId": "m19",
+     "engine": "water-cycle@1",
+     "params": {
+      "topicId": "c5-evs-ch01-t01",
+      "skillId": null,
+      "lang": "hindi",
+      "scene": "states"
+     }
+    }
+   ],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false
+    },
+    "verdict": "unverified",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 342,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 2943,
+    "item": null,
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 70
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 70
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 901
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 1025
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1247
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1368
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1385
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1386
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1157
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 2559
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 2943
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "advance",
+   "lessonId": "1f0bb082-a6fc-485e-8bca-195582fa5feb",
+   "childText": "ok",
+   "ms": 70703,
+   "error": null,
+   "teacherReply": "Paani baar-baar ghoomta hai, lekin saaf paani ki matra bahut kam hoti hai. Do barabar geele rumaal: ek dhoop mein khol ke phailaya, ek chhaanv wale kone mein tah karke rakha. Guess karo kaunsa pehle sookhega, aur uska paani kahaan jayega?",
+   "move": {
+    "kind": "probe",
+    "shape": "pose the question as written, in their language; then wait; ask for their prediction before anything is shown or explained",
+    "itemId": "c5-evs-ch01-t01-i04",
+    "skillId": "c5-evs-ch01-t01-s3",
+    "hintLevel": 0,
+    "probe": "P5"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "text",
+     "value": "Do barabar geele rumaal: ek dhoop mein khol ke phailaya, …"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "Guess karo kaunsa pehle sookhega, aur uska paani kahaan jayega?",
+     "itemId": "c5-evs-ch01-t01-i04"
+    },
+    "answerForm": "words",
+    "tray": "module",
+    "shortTitle": "Forms of water",
+    "beat": {
+     "beatId": "b10-probe",
+     "type": "probe",
+     "index": 10
+    }
+   },
+   "moduleCommands": [
+    {
+     "op": "unmount",
+     "moduleId": "m19"
+    },
+    {
+     "op": "mount",
+     "moduleId": "m20",
+     "engine": "water-cycle@1",
+     "params": {
+      "topicId": "c5-evs-ch01-t01",
+      "skillId": "c5-evs-ch01-t01-s3",
+      "lang": "hindi",
+      "scene": "states",
+      "predict": true
+     }
+    }
+   ],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false,
+     "leadSlot": true
+    },
+    "verdict": "ungraded",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 4662,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 69894,
+    "item": "c5-evs-ch01-t01-i04",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 167
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 173
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 1135
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 1388
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 5798
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 6051
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 6060
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 6060
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 5769
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 6436
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 69893
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "probe:out_of_bounds-05",
+   "lessonId": "1f0bb082-a6fc-485e-8bca-195582fa5feb",
+   "childText": "how do i get more kills in PUBG fast",
+   "ms": 16943,
+   "error": null,
+   "teacherReply": "Meher, PUBG kills aaj ke lesson ka hissa nahi hain. Paani chupchaap hawa mein ja sakta hai—ab rumaal wala chhota challenge dekho. Guess karo kaunsa pehle sookhega, aur uska paani kahaan jayega?",
+   "move": {
+    "kind": "probe",
+    "shape": "two parts — first: that is not something for our lesson: a warm, short no in a few words, with their name — no reason why, no shame, no lecture, no promise of it later, never any part of it; then a hook into today's work: one surprising true fact about today's idea, or a few words that make the question a small challenge for them (a statement, not a question); second: the question on the card, as written, in their language; then wait; no verdict on their reply: neither praise nor 'wrong'",
+    "itemId": "c5-evs-ch01-t01-i04",
+    "skillId": "c5-evs-ch01-t01-s3",
+    "hintLevel": 0,
+    "probe": "P5",
+    "request": "decline",
+    "lead": "that is not something for our lesson: a warm, short no in a few words, with their name — no reason why, no shame, no lecture, no promise of it later, never any part of it; then a hook into today's work: one surprising true fact about today's idea, or a few words that make the question a small challenge for them (a statement, not a question)"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "text",
+     "value": "Do barabar geele rumaal: ek dhoop mein khol ke phailaya, …"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "Guess karo kaunsa pehle sookhega, aur uska paani kahaan jayega?",
+     "itemId": "c5-evs-ch01-t01-i04"
+    },
+    "answerForm": "words",
+    "tray": "module",
+    "shortTitle": "Forms of water",
+    "beat": {
+     "beatId": "b10-probe",
+     "type": "probe",
+     "index": 10
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false,
+     "leadSlot": true
+    },
+    "verdict": "ungraded",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "out_of_bounds",
+     "waitedMs": 0,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 4348,
+    "item": "c5-evs-ch01-t01-i04",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 396
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 409
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1502
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 2130
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 2617
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 2618
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 2626
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 2626
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1841
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1619
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 4283
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 4348
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "recovery",
+   "lessonId": "1f0bb082-a6fc-485e-8bca-195582fa5feb",
+   "childText": "dhoop wala",
+   "ms": 3521,
+   "error": null,
+   "teacherReply": "Meher, tumne rumaal ki jagah aur dhoop ko dekhkar achha clue pakda. Ab socho, ghar mein kapde sukhane ke liye mummy kaunsi jagah chunti hain. Guess karo kaunsa pehle sookhega, aur uska paani kahaan jayega?",
+   "move": {
+    "kind": "hint",
+    "shape": "rung 1 of 4 (pump): Ask which place their mother chooses for drying clothes; the key stays unsaid; their answer was partly right: name the right part, no full agreement",
+    "itemId": "c5-evs-ch01-t01-i04",
+    "skillId": "c5-evs-ch01-t01-s3",
+    "hintLevel": 1
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "text",
+     "value": "Do barabar geele rumaal: ek dhoop mein khol ke phailaya, …"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "Guess karo kaunsa pehle sookhega, aur uska paani kahaan jayega?",
+     "itemId": "c5-evs-ch01-t01-i04"
+    },
+    "answerForm": "words",
+    "tray": "module",
+    "shortTitle": "Forms of water",
+    "verdict": "partial",
+    "beat": {
+     "beatId": "b10-probe",
+     "type": "probe",
+     "index": 10
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false,
+     "leadSlot": true
+    },
+    "verdict": "partial",
+    "cls": {
+     "outcome": "partial",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": false,
+     "intent": "answer_partial",
+     "waitedMs": 67,
+     "parallel": null
+    },
+    "hintLevel": 1,
+    "phase": "practice",
+    "ms": 3512,
+    "item": "c5-evs-ch01-t01-i04",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 72
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 73
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 1523
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 1647
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1591
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1713
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1723
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1723
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1688
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 3438
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 3512
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "probe:repeat-03",
+   "lessonId": "1f0bb082-a6fc-485e-8bca-195582fa5feb",
+   "childText": "can you repeat the question?",
+   "ms": 1825,
+   "error": null,
+   "teacherReply": "Haan Meher. Chalo, ab agle sawaal par dhyaan dete hain. Pichhli baar se ek jaldi wala sawaal: Earth ke har 100 baalti paani mein se lagbhag kitni baaltiyaan khaari hain?",
+   "move": {
+    "kind": "retrieval",
+    "shape": "that question has been on the table long enough: leave it for later, no verdict and no answer; then the next question; pose the question as written, in their language; then wait; a quick look back; no hints inside the asking; no verdict on their reply: neither praise nor 'wrong'",
+    "itemId": "c5-evs-ch01-t01-i14",
+    "skillId": "c5-evs-ch01-t01-s2",
+    "hintLevel": 0,
+    "probe": "P10"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "math",
+     "value": "100"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "Pichhli baar se ek jaldi wala sawaal: Earth ke har 100 baalti paani mein se lagbhag kitni baaltiyaan khaari hain?",
+     "itemId": "c5-evs-ch01-t01-i14"
+    },
+    "answerForm": "words",
+    "tray": "none",
+    "shortTitle": "Forms of water",
+    "beat": {
+     "beatId": "b11-warmup",
+     "type": "warmup",
+     "index": 11
+    }
+   },
+   "moduleCommands": [
+    {
+     "op": "unmount",
+     "moduleId": "m20"
+    }
+   ],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false,
+     "leadSlot": true
+    },
+    "verdict": "ungraded",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "repeat",
+     "waitedMs": 216,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 1819,
+    "item": "c5-evs-ch01-t01-i14",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 112
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 113
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 1310
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 1441
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1534
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1657
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1680
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1680
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1164
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 1681
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 1819
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "recovery",
+   "lessonId": "1f0bb082-a6fc-485e-8bca-195582fa5feb",
+   "childText": "97",
+   "ms": 2985,
+   "error": null,
+   "teacherReply": "Bilkul sahi, Meher—tumne bataya ki Earth ka lagbhag 97 hissa paani khaara hota hai. Baarish ke baadal apna kaafi paani khaare samudra se lete hain. Phir baarish ka paani khaara kyon nahi hota?",
+   "move": {
+    "kind": "probe",
+    "shape": "confirm specifically: name the exact thing they got right, no ability words; pose the question as written, in their language; then wait; ask for their reason, not just the answer",
+    "itemId": "c5-evs-ch01-t01-i07",
+    "skillId": "c5-evs-ch01-t01-s3",
+    "hintLevel": 0,
+    "probe": "P2"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "text",
+     "value": "Baarish ke baadal apna kaafi paani khaare samudra se lete…"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "Baarish ke baadal apna kaafi paani khaare samudra se lete hain. Phir baarish ka paani khaara kyon nahi hota?",
+     "itemId": "c5-evs-ch01-t01-i07"
+    },
+    "answerForm": "words",
+    "tray": "none",
+    "shortTitle": "Forms of water",
+    "verdict": "correct",
+    "beat": {
+     "beatId": "b12-probe",
+     "type": "probe",
+     "index": 12
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false,
+     "leadSlot": true
+    },
+    "verdict": "correct",
+    "cls": {
+     "outcome": "correct",
+     "source": "exact"
+    },
+    "note": null,
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 2980,
+    "item": "c5-evs-ch01-t01-i07",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 51
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 68
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 99
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 272
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 273
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 2583
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 2873
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 2980
+     }
+    ]
+   }
+  }
+ ]
+}

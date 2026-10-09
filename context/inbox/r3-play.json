@@ -1,0 +1,193 @@
+{
+ "nodes": [
+  {
+   "id": "r3p-play-grammar-v1",
+   "kind": "decision",
+   "title": "Gamified learning = play@1 (shared/play.ts, GRAMMAR.md): four deep families (Todo-Jodo split/merge: atoms, strips, bundles; Taraazu balance; Nishana number line: place/compare/round; Kyun-Lab fair test, 12 labs) whose levels are built by code in milliseconds, proven solvable and shortcut-free by the family's own solver, and graded on the server by replaying the child's raw acts through the same pure law; no model call anywhere on the play path. Why: the round-2 content was a 181 x 113 px dark stamp bound to the wrong skill and graded by frame claims; a code law cannot be wrong about the maths and a 429 cannot stop it. Reverse if: a pilot shows families do not beat today's lesson on bare items >= 2 days later (within-child crossover, ~105 completers for d_z 0.3), or forge's agent-built G2 mechanics pass the same solver/shortcut/replay gates at equal latency.",
+   "at": "2026-10-09"
+  },
+  {
+   "id": "r3p-model-never-grades-play",
+   "kind": "constraint",
+   "title": "Play grading: the server replays raw acts from init(level) through the family's apply(); any act field named like a verdict (CLAIM_KEYS) is stripped first; a model never grades, never writes a key, a position, a count or a physical outcome; lab outcomes come from labs.ts causal models only.",
+   "at": "2026-10-09"
+  },
+  {
+   "id": "r3p-signed-play-evidence",
+   "kind": "decision",
+   "title": "Play evidence reaches the ledger only as server-signed tokens (server/play/evidence.js: HMAC evidence token per level + seam token carrying a key=value PLAY facts row, bound to child and lesson); the lesson turn verifies, folds one item.open via:'game' episode per level on the lesson's kit skills only (patch 03), and deletes any device-sent row/data; the ledger never lets a game event be the delayed check or set unaided (patch 02). Why: the device is not trusted and a game success is not mastery (in-game-success-as-mastery). Reverse if: a separate verified channel (e.g. forge host re-grade bound to the session) replaces it with equal guarantees, or children's game evidence is shown to predict delayed bare items at precision >= 0.80 (then a weight change, still never the check).",
+   "at": "2026-10-09"
+  },
+  {
+   "id": "r3p-honest-approx-labels",
+   "kind": "decision",
+   "title": "A number the law computes only approximately is labelled 'lagbhag / about' on screen and in the reaction bank (number-line gaps that are not an exact simple fraction of the step; lab models not marked exact: pendulum time, shadow length, evaporation...). Why: an earlier build printed '1/3 ka farak' for a 0.18 gap and exact-looking lab numbers from approximate models. Reverse if: every model is made exact for the values shown (then the label is dropped per lab, not globally).",
+   "at": "2026-10-09"
+  },
+  {
+   "id": "r3p-voice-closed-grammar",
+   "kind": "decision",
+   "title": "Voice in play = a closed code grammar (src/play/core/voice.ts): <= 6 words, every word known, mapped to the same control presses touch makes (via:'voice'); bas/stop/ruko/help/madad/dar/dard/rona/nahi/mat, feelings and sentences are never acts; every committed utterance is ALSO sent as the normal turn (patch 05), so scanSafety, the model distress read and the stop check-in see it. Why: an LLM intent parser could turn a distressed 'bas' into a game move and costs a call per utterance. Reverse if: a measured child corpus shows the closed grammar misses > 30% of real play commands AND a classifier with the same never-list as a code predicate does better.",
+   "at": "2026-10-09"
+  },
+  {
+   "id": "r3p-desk-play-mode",
+   "kind": "decision",
+   "title": "Embedded play mode inside the lesson Desk (patch 04): the question card folds (the game's goal rail is the card), her speech row keeps FACE_MIN+8, the tray takes the rest; the renderer refuses any box under MIN_BOX 300 x 440 (src/play/core/box.ts) and the board twin shows instead. Why: the 181 x 113 px tray defect; on a 360 x 690 phone the old layout gave the tray 430 px. Reverse if: the forge/Desk owners give the Studio slot a full-screen takeover that measures larger at every viewport.",
+   "at": "2026-10-09"
+  },
+  {
+   "id": "r3p-world-ledger-view",
+   "kind": "decision",
+   "title": "Play world = a pure view of the learner ledger per family (stations by topic: ahead/hatched/pencil/ink + a re-check dot; routes only where data/curriculum prerequisites or a kit's prereqSkillIds cite an edge); no counts, XP, unlocks, streaks, clocks; absence-invariant (same ledger renders identically at +365 days). Reverse if: a pilot shows children cannot find their way without a suggested-next marker (add one drawn from the planner, still no counters).",
+   "at": "2026-10-09"
+  },
+  {
+   "id": "ms-r3p-coverage-2026-10-09",
+   "kind": "measurement",
+   "title": "Play coverage (data/play/coverage.json, server/play/tools/build-coverage.mjs RULES over data/curriculum c4-c7 maths, c4-c5 EVS, c6-c7 science; 2026-10-09): 47/250 in-scope topics have a play entry (maths 32/141, science 13/69, EVS 2/40; class 4 8/50, 5 7/52, 6 16/69, 7 16/79), 57 entries, 146 skills admitted, 71 kit misconceptions mapped to family mal-rules; up from 36 topics earlier the same day (5 labs + rounding + decimal place + HCF/LCM rules). Adolescence topics excluded by rule.",
+   "at": "2026-10-09"
+  },
+  {
+   "id": "ms-r3p-fit-shots-2026-10-09",
+   "kind": "measurement",
+   "title": "Play fit: 16 game modes x 3 viewports (360x800, 412x915, 1366x768, DPR 1) x 4 art directions = 192 screenshots, all pass the floor audit (canvas text >= 14 px measured by an instrumented fillText, DOM text >= 14 px, targets >= 44 px, 0 text out of box, 0 clipped labels via Painter.textFit audit, 0 clipped buttons, 0 page errors). Method: docs/design/round3/play/harness/shots.mjs --shots --all-arts, Playwright headless Chromium on the dev harness built from the working tree; NOT a phone, NOT inside the lesson Desk. Date 2026-10-09; files shots/all/*.jpg + report-all.json.",
+   "at": "2026-10-09"
+  },
+  {
+   "id": "ms-r3p-fps-proxy-2026-10-09",
+   "kind": "measurement",
+   "title": "Play frame-rate proxy: 412x915 DPR 2, 4x CDP CPU throttle, 6 s scripted drag/run per mode, median of 3 runs, headless software raster on a 4-core sandbox at load average 17-28 from other agents: 6/16 modes >= 50 fps median (strips 56.3/56.0, equality 53.1, lab-golu 52.3, lab-magnet 51.8, line-round 51.5), min 40.1 (lab-predict), others 40.7-49.0. Short of the >= 50 bar on 10/16 under this proxy; not a phone. Draw JS is not the cost (partial repaint, no repaint on idle pointer moves and a cached tick band did not move the line modes beyond noise). Files shots/report-fps.json, report-fps-line.json.",
+   "at": "2026-10-09"
+  },
+  {
+   "id": "ms-r3p-diagnosis-sim-2026-10-09",
+   "kind": "measurement",
+   "title": "Misconception diagnosis, SIMULATED learners (one kit mal-rule or none, eps 0.1, n = 120 per topic per policy, Bayesian stop at 0.9, max 12 levels, same proven candidate pool; harness/diagnose-sim.mjs): production picker needs 0.60 x random's levels on average over 17 topics (EIG optimum 0.60; bar <= 0.50 missed) and 0.50 over the 13 topics where random needs >= 2 levels (4 topics are at ceiling, ~1 level for every policy); correct classification 1905/2040 picker vs 1749/2040 random. c5 strips/equal: 6.6 levels and 60/120 for every policy (the pool cannot tell its two mal-rules apart). 5 topics skipped (< 2 discriminable mal-rules). Not children.",
+   "at": "2026-10-09"
+  },
+  {
+   "id": "ms-r3p-local-acceptance-2026-10-09",
+   "kind": "measurement",
+   "title": "tests/prod/round3-play.mjs against a local production server (copy of the working tree with patches 01-05, NODE_ENV=production, Neon TEST branch, this sandbox): 93/93 checks, twice (12:03 and 12:44 UTC; admit, 8 level cases solved through the server grade, ledger truth, claims stripped, tamper/mismatch refused, doors, reaction guards, world routes cite edges, in-lesson loop). After a solved atoms level the lesson turn replied from the verified PLAY row (n = 2, one per run: 'Riya, aapne composite number ko prime factors mein todkar 2.2.5.13 tak pahunchaya; ab isi method ka naam bataiye.' 2.6 s; 'Riya, aapne 250 ko prime factors mein toda: 2 x 5 x 5 x 5. Ab isi method se 150 ko todkar likhiye.' 2.2 s); exactly one kt_evidence row via 'game' per level; a replayed level and a forged token folded nothing. Latency local: start p90 380 / 528 ms (n 8 each), act p90 199 / 196 ms (n 41 / 40). taxila.dev: 0/1 (P0: play routes 404, patch 01 unapplied), re-checked 2026-10-09.",
+   "at": "2026-10-09"
+  },
+  {
+   "id": "rj-r3p-gap-label-exact",
+   "kind": "rejection",
+   "title": "Labelling every number-line gap as an exact fraction of the step: a 0.18 gap was drawn as '1/3 ka farak' (nearest simple fraction printed as if exact) and the reaction bank echoed it; replaced by gapInfo {g, exact} with 'lagbhag' shapes when not exact.",
+   "at": "2026-10-09"
+  },
+  {
+   "id": "rj-r3p-picker-wall-clock-gate",
+   "kind": "rejection",
+   "title": "Gating the play picker on wall-clock p95 <= 50 ms in npm test on this shared host: wall p95 was 56-73 ms at load average 11-30 from other agents while CPU-time p95 was 22 ms (after capping the atoms candidate sample at 64); the test now gates CPU time and prints wall. A wall gate here measures the neighbours, not the code.",
+   "at": "2026-10-09"
+  },
+  {
+   "id": "rj-r3p-rows-cache-and-band",
+   "kind": "rejection",
+   "title": "Caching static canvas content to raise the fps proxy: a Kyun-Lab rows cache and a number-line tick band (offscreen canvas blitted per frame) did not move the 4x-throttled software-raster fps beyond run-to-run noise (line-place 43.8 -> 42.8, n = 3 runs each, load 13-17 vs 22-28); per-frame draw JS was already 0.2-0.6 ms p50 in spot checks. The rows cache was removed; the band was kept (harmless, fewer strokes per drag frame). The cost is raster/compositing in headless Chromium, which this proxy cannot separate from host load.",
+   "at": "2026-10-09"
+  },
+  {
+   "id": "rj-r3p-reread-request-body",
+   "kind": "rejection",
+   "title": "Reading the request stream inside a route handler (readJson(req)) when server/router already parsed it: the second read returned {} and every POST /api/play/* failed 'childId required' on the first local production run; handlers now take the router's body argument and read the stream only when it is absent.",
+   "at": "2026-10-09"
+  },
+  {
+   "id": "r3p-open-not-on-children",
+   "kind": "open",
+   "title": "Play is engineering-complete and unproven on children: no child has played a family; fps measured only as a contended headless proxy (no real mid-range phone); latency only local (not India); coverage 47/250 topics; patches 01-05 unapplied so taxila.dev serves none of it; the model judges are advisory (rj-holistic-model-judge-gate); micro-reaction TTS pre-synthesis not built (captions only).",
+   "at": "2026-10-09"
+  }
+ ],
+ "edges": [
+  {
+   "src": "r3p-play-grammar-v1",
+   "rel": "constrains",
+   "dst": "r3p-model-never-grades-play"
+  },
+  {
+   "src": "r3p-play-grammar-v1",
+   "rel": "measured_by",
+   "dst": "ms-r3p-coverage-2026-10-09"
+  },
+  {
+   "src": "r3p-play-grammar-v1",
+   "rel": "measured_by",
+   "dst": "ms-r3p-fit-shots-2026-10-09"
+  },
+  {
+   "src": "r3p-play-grammar-v1",
+   "rel": "measured_by",
+   "dst": "ms-r3p-fps-proxy-2026-10-09"
+  },
+  {
+   "src": "r3p-play-grammar-v1",
+   "rel": "measured_by",
+   "dst": "ms-r3p-diagnosis-sim-2026-10-09"
+  },
+  {
+   "src": "r3p-play-grammar-v1",
+   "rel": "inherits",
+   "dst": "forge-dumb-policy-gate"
+  },
+  {
+   "src": "r3p-model-never-grades-play",
+   "rel": "inherits",
+   "dst": "rj-ot-frame-claim-as-grade"
+  },
+  {
+   "src": "r3p-signed-play-evidence",
+   "rel": "inherits",
+   "dst": "game-evidence-into-kt-not-bayesnets"
+  },
+  {
+   "src": "r3p-signed-play-evidence",
+   "rel": "caused_by",
+   "dst": "in-game-success-as-mastery"
+  },
+  {
+   "src": "r3p-signed-play-evidence",
+   "rel": "part_of",
+   "dst": "learner-bktr-ledger"
+  },
+  {
+   "src": "r3p-signed-play-evidence",
+   "rel": "measured_by",
+   "dst": "ms-r3p-local-acceptance-2026-10-09"
+  },
+  {
+   "src": "r3p-honest-approx-labels",
+   "rel": "caused_by",
+   "dst": "rj-r3p-gap-label-exact"
+  },
+  {
+   "src": "r3p-desk-play-mode",
+   "rel": "inherits",
+   "dst": "ds-layout-dp-budget"
+  },
+  {
+   "src": "r3p-world-ledger-view",
+   "rel": "part_of",
+   "dst": "r3p-play-grammar-v1"
+  },
+  {
+   "src": "r3p-voice-closed-grammar",
+   "rel": "part_of",
+   "dst": "r3p-play-grammar-v1"
+  },
+  {
+   "src": "ms-r3p-fps-proxy-2026-10-09",
+   "rel": "caused_by",
+   "dst": "rj-r3p-rows-cache-and-band"
+  },
+  {
+   "src": "r3p-open-not-on-children",
+   "rel": "blocks",
+   "dst": "r3p-play-grammar-v1"
+  }
+ ]
+}

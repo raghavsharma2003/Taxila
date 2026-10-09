@@ -11,7 +11,9 @@ what a child sees, not how often (the library matrix below gives the rates).
 
 Screenshots: `before/<case>/01-ask-<size>.png` (the ask), `02-turn-*` / `03-turn-*` (the next practice turns when the tray
 changed). Records with every turn response and slot: `before/<case>/record.json`. The library matrix (every catalogue piece
-at the same tray boxes, judged by `server/forge3/qa`): `matrix-before/` (summary.json, matrix.json, a sample of shots).
+at the same tray boxes, judged by `server/forge3/qa`): `matrix-before/` (HEAD) and `matrix-after/` (the forge tree, 12:18
+UTC). The acceptance harness (`tests/prod/round3-forge.mjs`, the same file before and after): `before-prod-harness/`
+(taxila.dev, 11:28 UTC) and `after-local/` (local forge build, 12:03 UTC). Before / after numbers: `../RESULTS.md`.
 
 ## 1. What the child saw, case by case (12 asks)
 
@@ -95,6 +97,6 @@ cycle@1 — written as five words by a model and drawn as boxes and arrows wheth
 ## 5. Not covered by this audit (said plainly)
 
 - The Young Desk (classes 1-4 typed lane has no input; a class 4 child without a microphone could not answer the warm-up
-  "Tumhe kaunsa cartoon pasand hai?" at all — seen in the smoke run, `../RESULTS.md` §5) and the voice lane.
+  "Tumhe kaunsa cartoon pasand hai?" at all — seen in the forge smoke run on taxila.dev, 2026-10-09) and the voice lane.
 - Stagecraft pieces on the live site: none appeared in this walk; the library matrix covers how they render.
 - Real phones (all views are desktop Chromium at phone sizes, DPR 2), Indian networks, and children.

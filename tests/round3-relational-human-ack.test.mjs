@@ -7,7 +7,7 @@ import { describe, test, beforeEach } from "node:test";
 import assert from "node:assert/strict";
 
 import { publishPerception, awaitPerception, perceptionsFor, __bus } from "../server/latency/bus.js";
-import { ackPlanOf, ackPhraseOf, ACK_FLOOR_MS, ACK_WINDOW_MAX } from "../server/latency/ack.js";
+import { ackPlanOf, ackPhraseOf, ACK_FLOOR_MS, ACK_AT_MS, ACK_WINDOW_MAX } from "../server/latency/ack.js";
 import { ackAudio, __ackAudio } from "../server/latency/ackAudio.js";
 import { ackDecision, __ack } from "../server/latency/routes.js";
 import { AckClient, isAckEcho, MAX_AGE_MS } from "../src/latency/ack.ts";
@@ -69,6 +69,10 @@ describe("the ack plan (ack.js ackPlanOf / ackPhraseOf)", () => {
     assert.equal(t(13, hist).kind, "echo", "the oldest left the window");
   });
   test("the floor is a fixed time (no timing verdict leak)", () => assert.ok(ACK_FLOOR_MS >= 500 && ACK_FLOOR_MS <= 1200));
+  test("the shipped rule is the FIXED instant (ack-leak C: AUC 0.44 vs the floor's 0.86), set above the prod classify's usual time", () => {
+    if (process.env.TAXILA_ACK_AT_MS === undefined) assert.equal(ACK_AT_MS, 1200);
+    else assert.ok(ACK_AT_MS === null || Number.isFinite(ACK_AT_MS));
+  });
 });
 
 describe("the clip (ackAudio.js)", () => {

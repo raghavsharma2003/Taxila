@@ -150,11 +150,38 @@ def f1_best(val_sweep, mf=10):
     return max(rs, key=f)
 
 
-def train(files_tr, files_va, hidden, bi, epochs, steps, log, neg_weight=1.0):
+def init_from_onnx(m, path):
+    """Load the shipped bi-GRU's weights from its ONNX export into T.Det (warm start). ONNX GRU gates are (z, r, h) and
+    B = [Wb; Rb]; PyTorch's are (r, z, n): reorder. Checked against onnxruntime by the caller (maxAbsDiff)."""
+    import onnx
+    from onnx import numpy_helper
+    g = onnx.load(path).graph
+    W = {i.name: numpy_helper.to_array(i) for i in g.initializer}
+    gru = next(n for n in g.node if n.op_type == "GRU")
+    Wx, Rx, Bx = W[gru.input[1]], W[gru.input[2]], W[gru.input[3]]
+    H = Rx.shape[2]
+    perm = lambda a: np.concatenate([a[H:2 * H], a[0:H], a[2 * H:3 * H]], axis=0)  # (z, r, h) -> (r, z, n)
+    sd = m.state_dict()
+    for d, suf in ((0, ""), (1, "_reverse")):
+        sd[f"gru.weight_ih_l0{suf}"] = torch.from_numpy(perm(Wx[d]).copy())
+        sd[f"gru.weight_hh_l0{suf}"] = torch.from_numpy(perm(Rx[d]).copy())
+        sd[f"gru.bias_ih_l0{suf}"] = torch.from_numpy(perm(Bx[d][:3 * H]).copy())
+        sd[f"gru.bias_hh_l0{suf}"] = torch.from_numpy(perm(Bx[d][3 * H:]).copy())
+    mm = next(n for n in g.node if n.op_type == "MatMul")
+    sd["out.weight"] = torch.from_numpy(W[mm.input[1]].T.copy())
+    sd["out.bias"] = torch.from_numpy(W["m.out.bias"].copy())
+    m.load_state_dict(sd)
+    return m
+
+
+def train(files_tr, files_va, hidden, bi, epochs, steps, log, neg_weight=1.0, init=None, lr=3e-3):
     torch.manual_seed(SEED)
     rng = np.random.default_rng(SEED)
     m = T.Det(files_tr[0]["x"].shape[1], hidden, bi)
-    opt = torch.optim.Adam(m.parameters(), lr=3e-3)
+    if init:
+        init_from_onnx(m, init)
+        log(json.dumps({"warmStart": os.path.basename(init)}))
+    opt = torch.optim.Adam(m.parameters(), lr=lr)
     sched = torch.optim.lr_scheduler.CosineAnnealingLR(opt, T_max=epochs)
     lab = np.concatenate([d["lab"] for d in files_tr if d["meta"].get("corpus") == "ami"])
     pos_w = torch.tensor(min(20.0, (lab == 0).sum() / max(1, (lab == 1).sum())) / 4)
@@ -184,8 +211,15 @@ def train(files_tr, files_va, hidden, bi, epochs, steps, log, neg_weight=1.0):
             opt.step()
             tot += float(loss.detach())
         sched.step()
-        pv = [T.predict(m, d) for d in files_va]
-        wt = T.word_table(files_va, pv)
+        # checkpoint selection on a fixed val subset (the first channel of each val meeting): the full val is used once at
+        # the end for the operating point (the box is shared; a full val pass per epoch cost minutes)
+        seen, sub = set(), []
+        for d in files_va:
+            if d["meta"]["meeting"] not in seen:
+                seen.add(d["meta"]["meeting"])
+                sub.append(d)
+        pv = [T.predict(m, d) for d in sub]
+        wt = T.word_table(sub, pv)
         a = T.auroc([r["p"] for r in wt], [r["y"] for r in wt])
         hist.append({"epoch": ep, "loss": round(tot / steps, 4), "valWordAuroc": round(a, 4), "s": round(time.time() - t0, 1)})
         log(json.dumps(hist[-1]))
@@ -302,13 +336,16 @@ def main():
     if a.baseline_only:
         return
     os.makedirs(a.model_dir, exist_ok=True)
-    plan = {"bi32-more": (32, True, False), "bi32-more-neg": (32, True, True), "bi48-more-neg": (48, True, True), "bi32-more-neg2": (32, True, "x2")}
+    plan = {"bi32-more": (32, True, False), "bi32-more-neg": (32, True, True), "bi48-more-neg": (48, True, True), "bi32-more-neg2": (32, True, "x2"),
+            "bi32-ft-neg": (32, True, True), "bi32-ft": (32, True, False)}
     for name in a.cands.split(","):
         if name not in plan:
             continue
         hid, bi, neg = plan[name]
         tr = S["train"] + (neg_tr if neg else [])
-        m, best, hist = train(tr, S["val"], hid, bi, a.epochs, a.steps, lambda s, n=name: log(n + " " + s), neg_weight=2.0 if neg == "x2" else 1.0)
+        ft = name.startswith("bi32-ft")
+        m, best, hist = train(tr, S["val"], hid, bi, a.epochs, a.steps, lambda s, n=name: log(n + " " + s), neg_weight=2.0 if neg == "x2" else 1.0,
+                              init=a.baseline if ft else None, lr=1e-3 if ft else 3e-3)
         pred = lambda d, m=m: T.predict(m, d)
         r = evaluate(name, pred, S, fleurs, a.target, log)
         r["params"] = sum(p.numel() for p in m.parameters())

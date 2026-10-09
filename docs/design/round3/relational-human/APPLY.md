@@ -1,8 +1,10 @@
 # Round 3 relational-human: how to apply
 
-Base: HEAD `cadf527` (branch `claude/blissful-mayer-icwe2j`). Every patch passes `git apply --check` on HEAD on its own, and
-the set applies in order 01 → 05. Patches 01 and 03 touch the same file (`server/brain/turn.js`) in different hunks. 03 was
-generated on top of 01, and it also applies alone.
+Base: the stream started on HEAD `cadf527`. The main loop's WIP checkpoints `7773366` / `a29cc0b` committed this stream's
+owned paths, so they are already in HEAD. Every patch passes `git apply --check` on HEAD `a29cc0b` (re-checked
+2026-10-09 12:55 UTC) on its own, and the set applies in order 01 → 05. Patches 01 and 03 touch the same file
+(`server/brain/turn.js`) in different hunks. 03 was generated on top of 01, and it also applies alone. "Before" in every
+measurement is `cadf527` (the prod runtime 145996f).
 
 The owned paths are already edited in the working tree and need no patch. Their tests run in `npm test` today:
 - `server/relational/**`

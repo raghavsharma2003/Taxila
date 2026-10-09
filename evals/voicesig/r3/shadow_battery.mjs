@@ -7,7 +7,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { withTestAccount, BASE, isLocal } from "../../../tests/prod/lib.mjs";
-import { emotionWordsDeep } from "../../../server/voicesig/lint.js";
+import { cleanCodes } from "../../../server/voicesig/lint.js";
 
 if (!isLocal) throw new Error("local only: debug.vs is served to localhost requests only");
 const argv = process.argv.slice(2);
@@ -62,7 +62,8 @@ const res = {
   changes: changed.map((r) => `${r.shadow.actual?.move}${r.shadow.actual?.probe ? "+" + r.shadow.actual.probe : ""} -> ${r.shadow.shadow?.move}${r.shadow.shadow?.probe ? "+" + r.shadow.shadow.probe : ""} (${r.would.join(",")})`),
   holdFiredTurns: rows.filter((r) => r.codes.includes("vs_hold.fired")).length,
   counterfactualMs: { n: ran.length, p50: q(ran.map((r) => r.shadow.ms), 0.5), p95: q(ran.map((r) => r.shadow.ms), 0.95), max: ran.length ? Math.max(...ran.map((r) => r.shadow.ms)) : null },
-  r12Hits: emotionWordsDeep(rows).length,
+  // restriction 12: every voicesig code the turns carried passes the runtime guard (dropped = a state-of-mind word)
+  r12Dropped: cleanCodes(rows.flatMap((r) => r.codes)).dropped.length,
 };
 fs.mkdirSync(path.join(path.dirname(new URL(import.meta.url).pathname), "../results/2026-10-09"), { recursive: true });
 fs.writeFileSync(path.join(path.dirname(new URL(import.meta.url).pathname), "../results/2026-10-09/shadow-battery-local.json"), JSON.stringify({ ...res, rows }, null, 1));

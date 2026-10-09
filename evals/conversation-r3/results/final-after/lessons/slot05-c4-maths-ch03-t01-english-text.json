@@ -1,0 +1,4776 @@
+{
+ "slot": 5,
+ "topic": "c4-maths-ch03-t01",
+ "cls": 4,
+ "lang": "english",
+ "lane": "text",
+ "lessons": [
+  {
+   "lessonId": "98d4c517-55bd-423a-87f2-8a926a3f0d6c",
+   "why": "start",
+   "at": "2026-10-09T12:34:48.385Z",
+   "teacher": "Asha"
+  }
+ ],
+ "turns": [
+  {
+   "who": "teacher",
+   "kind": "opening",
+   "lessonId": "98d4c517-55bd-423a-87f2-8a926a3f0d6c",
+   "teacherReply": "Hi Riya, I’m Asha, your AI teacher. We’ll find odd and even numbers using little drawn pairs. Ready to draw?",
+   "ui": {
+    "status": "your_turn",
+    "phase": "warmup",
+    "handover": "answer",
+    "answerForm": "words",
+    "tray": "none",
+    "shortTitle": "Odd and even numbers",
+    "beat": {
+     "beatId": "b1-arrive",
+     "type": "arrive",
+     "index": 1
+    },
+    "ask": {
+     "text": "Ready to draw?"
+    }
+   }
+  },
+  {
+   "who": "child",
+   "tag": "greet",
+   "lessonId": "98d4c517-55bd-423a-87f2-8a926a3f0d6c",
+   "childText": "hi, ready",
+   "ms": 1775,
+   "error": null,
+   "teacherReply": "Draw 6 balloons and pair them two-by-two. Do all balloons get a partner, Riya?",
+   "move": {
+    "kind": "hook",
+    "shape": "open with one concrete everyday situation built on their interest (drawing) — kit contexts: dance partners, rotis and laddoos, cricket runs; ask what they think will happen or which they would pick — a prediction, no right answer yet; any bigger/more comparison: two quantities of one kind, in one unit — a count against a count, a distance against a distance; never across kinds; mention once: at the end they will teach this to Golu (a pretend baby elephant just starting school)",
+    "format": "F4"
+   },
+   "ui": {
+    "status": "your_turn",
+    "phase": "teach",
+    "handover": "answer",
+    "answerForm": "words",
+    "tray": "none",
+    "shortTitle": "Odd and even numbers",
+    "beat": {
+     "beatId": "b2-hook",
+     "type": "hook",
+     "index": 2
+    },
+    "ask": {
+     "text": "Do all balloons get a partner, Riya?"
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false
+    },
+    "verdict": "ungraded",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 489,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "teach",
+    "ms": 1761,
+    "item": null,
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 78
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 79
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 774
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 867
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1276
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1356
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1358
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1358
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1512
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 1679
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 1761
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "probe:language_switch-01",
+   "lessonId": "98d4c517-55bd-423a-87f2-8a926a3f0d6c",
+   "childText": "can you explain in hindi?",
+   "ms": 1798,
+   "error": null,
+   "teacherReply": "Haan Riya. 6 gubbare do-do ke jodon mein banao. Kya sabko saathi milta hai?",
+   "move": {
+    "kind": "reteach",
+    "shape": "they asked for simple Hindi (Roman script when written): from now on every turn in simple Hindi (Roman script when written), even if they reply in another language; say the last idea again in it, simply, and end with one small question",
+    "skillId": "c4-maths-ch03-t01-s1",
+    "request": "language"
+   },
+   "ui": {
+    "status": "your_turn",
+    "phase": "teach",
+    "handover": "answer",
+    "answerForm": "words",
+    "tray": "module",
+    "shortTitle": "Odd and even numbers",
+    "beat": {
+     "beatId": "b3-explain",
+     "type": "explain",
+     "index": 3
+    },
+    "ask": {
+     "text": "Kya sabko saathi milta hai?"
+    }
+   },
+   "moduleCommands": [
+    {
+     "op": "mount",
+     "moduleId": "m2",
+     "engine": "collections@1",
+     "params": {
+      "topicId": "c4-maths-ch03-t01",
+      "skillId": null,
+      "lang": "hindi",
+      "fractions": [],
+      "numbers": [
+       247
+      ]
+     }
+    }
+   ],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false
+    },
+    "verdict": "ungraded",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "request"
+    },
+    "note": null,
+    "hintLevel": 0,
+    "phase": "teach",
+    "ms": 1775,
+    "item": null,
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 57
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 57
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 629
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 705
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 715
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 715
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 983
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 1700
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 1775
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "filler",
+   "lessonId": "98d4c517-55bd-423a-87f2-8a926a3f0d6c",
+   "childText": "got it",
+   "ms": 1858,
+   "error": null,
+   "teacherReply": "Ab screen par 247 dekho: aakhri digit 7 hai. Kya 7 ko do-do ke jodon mein baant sakte ho?",
+   "move": {
+    "kind": "explain",
+    "shape": "one idea only: Sort small numbers as odd or even by making pairs; an example from their interest (drawing) if it fits naturally; objects first, then the symbol; point at the screen only at what the on-screen row lists; never a drawing made of characters; end with one small question that makes them USE the idea — never 'samjha?'",
+    "skillId": "c4-maths-ch03-t01-s1",
+    "format": "F3"
+   },
+   "ui": {
+    "status": "your_turn",
+    "phase": "teach",
+    "handover": "answer",
+    "answerForm": "words",
+    "tray": "module",
+    "shortTitle": "Odd and even numbers",
+    "beat": {
+     "beatId": "b3-explain",
+     "type": "explain",
+     "index": 3
+    },
+    "ask": {
+     "text": "Kya 7 ko do-do ke jodon mein baant sakte ho?"
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false
+    },
+    "verdict": "ungraded",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 801,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "teach",
+    "ms": 1854,
+    "item": null,
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 54
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 54
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 913
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 970
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1714
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1770
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1777
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1777
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1091
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 1778
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 1854
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "probe:animation_request-04",
+   "lessonId": "98d4c517-55bd-423a-87f2-8a926a3f0d6c",
+   "childText": "is there a video of this?",
+   "ms": 4153,
+   "error": null,
+   "teacherReply": "Screen par 8 rotis ko do-do ke jodon mein drag karo. Dekho, har roti ko saathi milta hai ya nahi?",
+   "move": {
+    "kind": "reteach",
+    "shape": "they asked to see it moving: name the movement in your first words — what on the screen they can move, drag or tap, and what changes as they do (never a video you do not have); one idea; let the picture do the work; a few words about what to look at; the key stays unsaid; then one small question about what they see; it is on the screen now: point them at it in your first words and say what to look at",
+    "skillId": "c4-maths-ch03-t01-s1",
+    "request": "visual",
+    "visual": "animation"
+   },
+   "ui": {
+    "status": "your_turn",
+    "phase": "teach",
+    "handover": "answer",
+    "answerForm": "words",
+    "tray": "studio",
+    "shortTitle": "Odd and even numbers",
+    "beat": {
+     "beatId": "b3-explain",
+     "type": "explain",
+     "index": 3
+    },
+    "ask": {
+     "text": "Dekho, har roti ko saathi milta hai ya nahi?"
+    },
+    "studioSlot": {
+     "slotId": "98d4c517-55bd-423a-87f2-8a926a3f0d6c:c1:slot",
+     "intentId": "98d4c517-55bd-423a-87f2-8a926a3f0d6c:c1",
+     "state": "revealed",
+     "artifact": {
+      "kind": "stagecraft",
+      "stage": {
+       "w": 1000,
+       "h": 625
+      },
+      "stagecraft": {
+       "rung": "engine_default",
+       "archetype": "scene-explainer@1",
+       "spec": {
+        "archetype": "scene-explainer@1",
+        "skills": [
+         "c4-maths-ch03-t01"
+        ],
+        "lang": "en",
+        "strings": {
+         "again": "Show again",
+         "yourTurn": "Your turn",
+         "check": "Check",
+         "right": "Got it",
+         "look": "Look again",
+         "myth": "MYTH",
+         "busted": "NOT TRUE",
+         "order": "Tap them in order"
+        },
+        "title": "Odd or even?",
+        "accent": "mint",
+        "targets": "c4-maths-ch03-t01-m-any-odd-digit",
+        "scenes": [
+         {
+          "id": "s1",
+          "layout": "split",
+          "els": [
+           {
+            "id": "title",
+            "type": "title",
+            "text": "Odd or even?"
+           },
+           {
+            "id": "myth",
+            "type": "myth",
+            "text": "34 is odd because 3 is odd"
+           }
+          ]
+         },
+         {
+          "id": "s2",
+          "layout": "row",
+          "els": [
+           {
+            "id": "num247",
+            "type": "node",
+            "text": "247",
+            "sub": "number",
+            "glyph": "ruler",
+            "color": "mint"
+           },
+           {
+            "id": "ones7",
+            "type": "node",
+            "text": "Ones: 7",
+            "sub": "look here",
+            "glyph": "eye",
+            "color": "amber"
+           },
+           {
+            "id": "pairs7",
+            "type": "bar",
+            "parts": 7,
+            "shaded": 7,
+            "x": 120,
+            "y": 360,
+            "w": 420,
+            "text": "7 things"
+           },
+           {
+            "id": "left1",
+            "type": "node",
+            "text": "1 left",
+            "sub": "odd",
+            "glyph": "person",
+            "color": "amber"
+           }
+          ]
+         },
+         {
+          "id": "s3",
+          "layout": "cycle",
+          "els": [
+           {
+            "id": "odd3",
+            "type": "bar",
+            "parts": 3,
+            "shaded": 3,
+            "x": 80,
+            "y": 300,
+            "w": 260,
+            "text": "3 rotis"
+           },
+           {
+            "id": "odd5",
+            "type": "bar",
+            "parts": 5,
+            "shaded": 5,
+            "x": 80,
+            "y": 420,
+            "w": 260,
+            "text": "5 rotis"
+           },
+           {
+            "id": "sum8",
+            "type": "node",
+            "text": "8 rotis",
+            "sub": "even",
+            "glyph": "plate",
+            "color": "mint"
+           }
+          ]
+         },
+         {
+          "id": "s4",
+          "layout": "row",
+          "els": [
+           {
+            "id": "n43",
+            "type": "node",
+            "text": "43",
+            "sub": "odd",
+            "glyph": "question",
+            "color": "amber"
+           },
+           {
+            "id": "n34",
+            "type": "node",
+            "text": "34",
+            "sub": "even",
+            "color": "mint"
+           },
+           {
+            "id": "prompt",
+            "type": "label",
+            "text": "Which is even?",
+            "x": 300,
+            "y": 180,
+            "color": "ion"
+           }
+          ]
+         }
+        ],
+        "text": {
+         "L1": "Numbers can be sorted by pairing their things. A full set of pairs is even; one left over is odd.",
+         "L2": "Here is a common mistake: 34 is not odd just because it contains the odd digit 3.",
+         "L3": "Only the ones digit decides. Tens and hundreds make full pairs.",
+         "L4": "Look at 247. Its ones digit is 7, and 7 makes three pairs with one left over.",
+         "L5": "So 247 is odd. The same rule says numbers ending in 0, 2, 4, 6 or 8 are even; 0 is even too.",
+         "L6": "Now add two odd numbers, such as 3 and 5. Their two leftovers pair up, making 8, an even number.",
+         "L7": "Even plus even is even, while odd plus even stays odd because one leftover remains.",
+         "L8": "Your turn: tap the number that is even."
+        },
+        "narration": {},
+        "beats": [
+         {
+          "line": "L1",
+          "gap": 0.4,
+          "scene": "s1",
+          "cues": [
+           {
+            "at": 0,
+            "do": "show",
+            "dur": 0.8,
+            "target": "title"
+           }
+          ]
+         },
+         {
+          "line": "L2",
+          "gap": 0.5,
+          "cues": [
+           {
+            "at": 0,
+            "do": "show",
+            "dur": 0.8,
+            "target": "myth"
+           },
+           {
+            "at": "s1",
+            "do": "bust",
+            "dur": 1,
+            "target": "myth"
+           }
+          ]
+         },
+         {
+          "line": "L3",
+          "gap": 0.4,
+          "scene": "s2",
+          "cues": [
+           {
+            "at": 0,
+            "do": "show",
+            "dur": 0.7,
+            "target": "num247"
+           },
+           {
+            "at": 0.4,
+            "do": "show",
+            "dur": 0.8,
+            "target": "ones7"
+           },
+           {
+            "at": 1,
+            "do": "highlight",
+            "dur": 1,
+            "target": "ones7"
+           }
+          ]
+         },
+         {
+          "line": "L4",
+          "gap": 0.4,
+          "cues": [
+           {
+            "at": 0,
+            "do": "show",
+            "dur": 0.8,
+            "target": "pairs7"
+           },
+           {
+            "at": 0.5,
+            "do": "show",
+            "dur": 0.8,
+            "target": "left1"
+           },
+           {
+            "at": 1,
+            "do": "highlight",
+            "dur": 0.8,
+            "target": "left1"
+           }
+          ]
+         },
+         {
+          "line": "L5",
+          "gap": 0.4,
+          "cues": [
+           {
+            "at": 0,
+            "do": "focus",
+            "dur": 0.8,
+            "target": "ones7"
+           },
+           {
+            "at": 0.6,
+            "do": "show",
+            "dur": 0.8,
+            "target": "left1"
+           }
+          ]
+         },
+         {
+          "line": "L6",
+          "gap": 0.4,
+          "scene": "s3",
+          "cues": [
+           {
+            "at": 0,
+            "do": "show",
+            "dur": 0.8,
+            "target": [
+             "odd3",
+             "odd5"
+            ]
+           },
+           {
+            "at": 0.7,
+            "do": "show",
+            "dur": 0.8,
+            "target": "sum8"
+           }
+          ]
+         },
+         {
+          "line": "L7",
+          "gap": 0.4,
+          "cues": [
+           {
+            "at": 0,
+            "do": "highlight",
+            "dur": 1,
+            "target": "sum8"
+           },
+           {
+            "at": 1,
+            "do": "count",
+            "dur": 0.8,
+            "target": "sum8",
+            "to": 1
+           }
+          ]
+         },
+         {
+          "line": "L8",
+          "gap": 0,
+          "scene": "s4",
+          "cues": [
+           {
+            "at": 0,
+            "do": "show",
+            "dur": 0.8,
+            "target": [
+             "n43",
+             "n34",
+             "prompt"
+            ]
+           },
+           {
+            "at": "end",
+            "do": "interactive",
+            "dur": 0
+           }
+          ]
+         }
+        ],
+        "task": {
+         "kind": "tap",
+         "prompt": "Tap the number that is even.",
+         "options": [
+          "n43",
+          "n34"
+         ],
+         "answer": "n34",
+         "src": "c4-maths-ch03-t01-i06"
+        }
+       },
+       "boardTwin": {
+        "scriptRef": "board:c4-maths-ch03-t01-s1|explain|-|-",
+        "values": {
+         "title": "Cinematic explainer",
+         "need": "explain"
+        },
+        "board": {
+         "title": "Cinematic explainer",
+         "lines": [
+          "number",
+          "without",
+          "left",
+          "pairs"
+         ],
+         "figure": {
+          "kind": "none"
+         }
+        }
+       },
+       "board": null,
+       "cue": {
+        "clauseIdx": 0,
+        "preRollMs": 400,
+        "crossFadeMs": 420
+       },
+       "buildSha": null,
+       "blobUrl": null
+      }
+     }
+    }
+   },
+   "moduleCommands": [
+    {
+     "op": "unmount",
+     "moduleId": "m2"
+    }
+   ],
+   "studio": {
+    "reveal": "98d4c517-55bd-423a-87f2-8a926a3f0d6c:c1"
+   },
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [
+      "leak"
+     ],
+     "rewritten": true,
+     "replaced": false,
+     "firstDraft": "Video nahi, par screen par 247 ke ones ko drag karke do-do ke jode banao. Kya 1 bach raha hai?",
+     "afterRewrite": []
+    },
+    "verdict": "ungraded",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "request"
+    },
+    "note": null,
+    "hintLevel": 0,
+    "phase": "teach",
+    "ms": 4145,
+    "item": null,
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 63
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 63
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 620
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 698
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 701
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 701
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1797
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1382
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 3899
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 4144
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "filler",
+   "lessonId": "98d4c517-55bd-423a-87f2-8a926a3f0d6c",
+   "childText": "got it",
+   "ms": 3719,
+   "error": null,
+   "teacherReply": "Ab 247 mein ones digit 7 hai. Batao, 7 odd hai ya even?",
+   "move": {
+    "kind": "worked_example",
+    "shape": "worked example, part 1 of 2: say one step, then ask them for the next step; their thinking, your pace; no new idea",
+    "skillId": "c4-maths-ch03-t01-s1",
+    "format": "F2"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "math",
+     "value": "Is 247 odd or even?"
+    },
+    "phase": "teach",
+    "handover": "answer",
+    "answerForm": "words",
+    "tray": "module",
+    "shortTitle": "Odd and even numbers",
+    "beat": {
+     "beatId": "b4-worked_example",
+     "type": "worked_example",
+     "index": 4
+    },
+    "ask": {
+     "text": "Batao, 7 odd hai ya even?"
+    }
+   },
+   "moduleCommands": [
+    {
+     "op": "mount",
+     "moduleId": "m5",
+     "engine": "collections@1",
+     "params": {
+      "topicId": "c4-maths-ch03-t01",
+      "skillId": null,
+      "lang": "hindi",
+      "fractions": [],
+      "numbers": [
+       247
+      ]
+     }
+    }
+   ],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false
+    },
+    "verdict": "ungraded",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 571,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "teach",
+    "ms": 3700,
+    "item": null,
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 83
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 84
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 844
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 936
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1416
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1507
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1510
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1514
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 3438
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 3593
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 3699
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "advance",
+   "lessonId": "98d4c517-55bd-423a-87f2-8a926a3f0d6c",
+   "childText": "okay",
+   "ms": 2805,
+   "error": null,
+   "teacherReply": "Riya, ab ek nayi sankhya ko do-do ke jodon mein dekhkar uska type pehchanenge. Khaali jagah bharo: 7 makes ___ pairs with 1 left over.",
+   "move": {
+    "kind": "practice",
+    "shape": "the earlier steps in LESSON NOW, said briefly as done; then the step with the gap is theirs: pose it as written; wait; never fill the gap for them",
+    "itemId": "fade:2",
+    "skillId": "c4-maths-ch03-t01-s1",
+    "hintLevel": 0,
+    "probe": "P15",
+    "format": "F2"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "math",
+     "value": "Is 247 odd or even? · 7 makes ___ pairs with 1 left over."
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "Khaali jagah bharo: 7 makes ___ pairs with 1 left over.",
+     "itemId": "fade:2"
+    },
+    "answerForm": "number",
+    "tray": "studio",
+    "shortTitle": "Odd and even numbers",
+    "beat": {
+     "beatId": "b5-practice_set",
+     "type": "practice_set",
+     "index": 5
+    },
+    "studioSlot": {
+     "slotId": "98d4c517-55bd-423a-87f2-8a926a3f0d6c:c1:slot",
+     "intentId": "98d4c517-55bd-423a-87f2-8a926a3f0d6c:c1",
+     "state": "revealed",
+     "artifact": {
+      "kind": "stagecraft",
+      "stage": {
+       "w": 1000,
+       "h": 625
+      },
+      "stagecraft": {
+       "rung": "engine_default",
+       "archetype": "scene-explainer@1",
+       "spec": {
+        "archetype": "scene-explainer@1",
+        "skills": [
+         "c4-maths-ch03-t01"
+        ],
+        "lang": "en",
+        "strings": {
+         "again": "Show again",
+         "yourTurn": "Your turn",
+         "check": "Check",
+         "right": "Got it",
+         "look": "Look again",
+         "myth": "MYTH",
+         "busted": "NOT TRUE",
+         "order": "Tap them in order"
+        },
+        "title": "Odd or even?",
+        "accent": "mint",
+        "targets": "c4-maths-ch03-t01-m-any-odd-digit",
+        "scenes": [
+         {
+          "id": "s1",
+          "layout": "split",
+          "els": [
+           {
+            "id": "title",
+            "type": "title",
+            "text": "Odd or even?"
+           },
+           {
+            "id": "myth",
+            "type": "myth",
+            "text": "34 is odd because 3 is odd"
+           }
+          ]
+         },
+         {
+          "id": "s2",
+          "layout": "row",
+          "els": [
+           {
+            "id": "num247",
+            "type": "node",
+            "text": "247",
+            "sub": "number",
+            "glyph": "ruler",
+            "color": "mint"
+           },
+           {
+            "id": "ones7",
+            "type": "node",
+            "text": "Ones: 7",
+            "sub": "look here",
+            "glyph": "eye",
+            "color": "amber"
+           },
+           {
+            "id": "pairs7",
+            "type": "bar",
+            "parts": 7,
+            "shaded": 7,
+            "x": 120,
+            "y": 360,
+            "w": 420,
+            "text": "7 things"
+           },
+           {
+            "id": "left1",
+            "type": "node",
+            "text": "1 left",
+            "sub": "odd",
+            "glyph": "person",
+            "color": "amber"
+           }
+          ]
+         },
+         {
+          "id": "s3",
+          "layout": "cycle",
+          "els": [
+           {
+            "id": "odd3",
+            "type": "bar",
+            "parts": 3,
+            "shaded": 3,
+            "x": 80,
+            "y": 300,
+            "w": 260,
+            "text": "3 rotis"
+           },
+           {
+            "id": "odd5",
+            "type": "bar",
+            "parts": 5,
+            "shaded": 5,
+            "x": 80,
+            "y": 420,
+            "w": 260,
+            "text": "5 rotis"
+           },
+           {
+            "id": "sum8",
+            "type": "node",
+            "text": "8 rotis",
+            "sub": "even",
+            "glyph": "plate",
+            "color": "mint"
+           }
+          ]
+         },
+         {
+          "id": "s4",
+          "layout": "row",
+          "els": [
+           {
+            "id": "n43",
+            "type": "node",
+            "text": "43",
+            "sub": "odd",
+            "glyph": "question",
+            "color": "amber"
+           },
+           {
+            "id": "n34",
+            "type": "node",
+            "text": "34",
+            "sub": "even",
+            "color": "mint"
+           },
+           {
+            "id": "prompt",
+            "type": "label",
+            "text": "Which is even?",
+            "x": 300,
+            "y": 180,
+            "color": "ion"
+           }
+          ]
+         }
+        ],
+        "text": {
+         "L1": "Numbers can be sorted by pairing their things. A full set of pairs is even; one left over is odd.",
+         "L2": "Here is a common mistake: 34 is not odd just because it contains the odd digit 3.",
+         "L3": "Only the ones digit decides. Tens and hundreds make full pairs.",
+         "L4": "Look at 247. Its ones digit is 7, and 7 makes three pairs with one left over.",
+         "L5": "So 247 is odd. The same rule says numbers ending in 0, 2, 4, 6 or 8 are even; 0 is even too.",
+         "L6": "Now add two odd numbers, such as 3 and 5. Their two leftovers pair up, making 8, an even number.",
+         "L7": "Even plus even is even, while odd plus even stays odd because one leftover remains.",
+         "L8": "Your turn: tap the number that is even."
+        },
+        "narration": {},
+        "beats": [
+         {
+          "line": "L1",
+          "gap": 0.4,
+          "scene": "s1",
+          "cues": [
+           {
+            "at": 0,
+            "do": "show",
+            "dur": 0.8,
+            "target": "title"
+           }
+          ]
+         },
+         {
+          "line": "L2",
+          "gap": 0.5,
+          "cues": [
+           {
+            "at": 0,
+            "do": "show",
+            "dur": 0.8,
+            "target": "myth"
+           },
+           {
+            "at": "s1",
+            "do": "bust",
+            "dur": 1,
+            "target": "myth"
+           }
+          ]
+         },
+         {
+          "line": "L3",
+          "gap": 0.4,
+          "scene": "s2",
+          "cues": [
+           {
+            "at": 0,
+            "do": "show",
+            "dur": 0.7,
+            "target": "num247"
+           },
+           {
+            "at": 0.4,
+            "do": "show",
+            "dur": 0.8,
+            "target": "ones7"
+           },
+           {
+            "at": 1,
+            "do": "highlight",
+            "dur": 1,
+            "target": "ones7"
+           }
+          ]
+         },
+         {
+          "line": "L4",
+          "gap": 0.4,
+          "cues": [
+           {
+            "at": 0,
+            "do": "show",
+            "dur": 0.8,
+            "target": "pairs7"
+           },
+           {
+            "at": 0.5,
+            "do": "show",
+            "dur": 0.8,
+            "target": "left1"
+           },
+           {
+            "at": 1,
+            "do": "highlight",
+            "dur": 0.8,
+            "target": "left1"
+           }
+          ]
+         },
+         {
+          "line": "L5",
+          "gap": 0.4,
+          "cues": [
+           {
+            "at": 0,
+            "do": "focus",
+            "dur": 0.8,
+            "target": "ones7"
+           },
+           {
+            "at": 0.6,
+            "do": "show",
+            "dur": 0.8,
+            "target": "left1"
+           }
+          ]
+         },
+         {
+          "line": "L6",
+          "gap": 0.4,
+          "scene": "s3",
+          "cues": [
+           {
+            "at": 0,
+            "do": "show",
+            "dur": 0.8,
+            "target": [
+             "odd3",
+             "odd5"
+            ]
+           },
+           {
+            "at": 0.7,
+            "do": "show",
+            "dur": 0.8,
+            "target": "sum8"
+           }
+          ]
+         },
+         {
+          "line": "L7",
+          "gap": 0.4,
+          "cues": [
+           {
+            "at": 0,
+            "do": "highlight",
+            "dur": 1,
+            "target": "sum8"
+           },
+           {
+            "at": 1,
+            "do": "count",
+            "dur": 0.8,
+            "target": "sum8",
+            "to": 1
+           }
+          ]
+         },
+         {
+          "line": "L8",
+          "gap": 0,
+          "scene": "s4",
+          "cues": [
+           {
+            "at": 0,
+            "do": "show",
+            "dur": 0.8,
+            "target": [
+             "n43",
+             "n34",
+             "prompt"
+            ]
+           },
+           {
+            "at": "end",
+            "do": "interactive",
+            "dur": 0
+           }
+          ]
+         }
+        ],
+        "task": {
+         "kind": "tap",
+         "prompt": "Tap the number that is even.",
+         "options": [
+          "n43",
+          "n34"
+         ],
+         "answer": "n34",
+         "src": "c4-maths-ch03-t01-i06"
+        }
+       },
+       "boardTwin": {
+        "scriptRef": "board:c4-maths-ch03-t01-s1|explain|-|-",
+        "values": {
+         "title": "Cinematic explainer",
+         "need": "explain"
+        },
+        "board": {
+         "title": "Cinematic explainer",
+         "lines": [
+          "number",
+          "without",
+          "left",
+          "pairs"
+         ],
+         "figure": {
+          "kind": "none"
+         }
+        }
+       },
+       "board": null,
+       "cue": {
+        "clauseIdx": 0,
+        "preRollMs": 400,
+        "crossFadeMs": 420
+       },
+       "buildSha": null,
+       "blobUrl": null
+      }
+     }
+    }
+   },
+   "moduleCommands": [
+    {
+     "op": "unmount",
+     "moduleId": "m5"
+    }
+   ],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false,
+     "leadSlot": true
+    },
+    "verdict": "ungraded",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 672,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 2800,
+    "item": "fade:2",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 88
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 88
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 762
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 856
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1435
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1528
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1531
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1535
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1180
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 2722
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 2800
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "advance",
+   "lessonId": "98d4c517-55bd-423a-87f2-8a926a3f0d6c",
+   "childText": "ok",
+   "ms": 2824,
+   "error": null,
+   "teacherReply": "Riya, 7 ko do-do ke jodon mein baanto. Har poora joda alag gino. Khaali jagah bharo: 7 makes ___ pairs with 1 left over.",
+   "move": {
+    "kind": "hint",
+    "shape": "their typed reply did not answer the question: no verdict, never ask them to repeat or say it again; one small nudge toward what the question asks; then the same question again, as written; no verdict on their reply: neither praise nor 'wrong'",
+    "itemId": "fade:2",
+    "skillId": "c4-maths-ch03-t01-s1",
+    "hintLevel": 0
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "math",
+     "value": "7  ·  1"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "Khaali jagah bharo: 7 makes ___ pairs with 1 left over.",
+     "itemId": "fade:2"
+    },
+    "answerForm": "number",
+    "tray": "studio",
+    "shortTitle": "Odd and even numbers",
+    "beat": {
+     "beatId": "b5-practice_set",
+     "type": "practice_set",
+     "index": 5
+    },
+    "studioSlot": {
+     "slotId": "98d4c517-55bd-423a-87f2-8a926a3f0d6c:c4:slot",
+     "intentId": "98d4c517-55bd-423a-87f2-8a926a3f0d6c:c4",
+     "state": "revealed",
+     "artifact": {
+      "kind": "stagecraft",
+      "stage": {
+       "w": 1000,
+       "h": 625
+      },
+      "stagecraft": {
+       "rung": "engine_default",
+       "archetype": "sieve-storm@1",
+       "spec": {
+        "archetype": "sieve-storm@1",
+        "skills": [
+         "c4-maths-ch03-t01"
+        ],
+        "lang": "en",
+        "strings": {
+         "round": "Round",
+         "slashed": "right calls",
+         "combo": "combo",
+         "coach": "Swipe the numbers that fit the rule",
+         "runDone": "Storm over",
+         "prime": "prime",
+         "composite": "composite",
+         "even": "even",
+         "odd": "odd",
+         "multipleOf": "multiples of",
+         "commonOf": "common multiples of",
+         "factorOf": "factors of",
+         "cfactorOf": "common factors of",
+         "divisibleBy": "divisible by",
+         "coprimeWith": "co-prime with",
+         "square": "square numbers",
+         "palindrome": "palindromes",
+         "slipped": "slipped",
+         "wrongCut": "not this one",
+         "and": "and"
+        },
+        "title": "Sieve Storm: Odd and Even",
+        "rounds": [
+         {
+          "rule": "even",
+          "title": "Pair the numbers",
+          "sub": "Swipe numbers that make full pairs",
+          "lo": 0,
+          "hi": 30,
+          "count": 10,
+          "hitRate": 0.5,
+          "seed": 11,
+          "speed": 0.7,
+          "targets": "c4-maths-ch03-t01-m-zero-not-even"
+         },
+         {
+          "rule": "odd",
+          "title": "Find the leftovers",
+          "sub": "Look at the ones place",
+          "lo": 10,
+          "hi": 99,
+          "count": 12,
+          "hitRate": 0.5,
+          "seed": 23,
+          "speed": 0.85,
+          "targets": "c4-maths-ch03-t01-m-any-odd-digit"
+         },
+         {
+          "rule": "odd",
+          "title": "Read the last digit",
+          "sub": "Big numbers still follow the rule",
+          "lo": 100,
+          "hi": 999,
+          "count": 14,
+          "hitRate": 0.45,
+          "seed": 37,
+          "speed": 1.05,
+          "targets": "c4-maths-ch03-t01-m-any-odd-digit"
+         },
+         {
+          "rule": "even",
+          "title": "Final number storm",
+          "sub": "Check each ones digit quickly",
+          "lo": 1000,
+          "hi": 9999,
+          "count": 16,
+          "hitRate": 0.5,
+          "seed": 404,
+          "speed": 1.25,
+          "targets": "c4-maths-ch03-t01-m-any-odd-digit"
+         }
+        ]
+       },
+       "boardTwin": {
+        "scriptRef": "board:c4-maths-ch03-t01-s1|practice|-|-",
+        "values": {
+         "title": "Sieve Storm",
+         "need": "practice"
+        },
+        "board": {
+         "title": "Sieve Storm",
+         "lines": [
+          "number",
+          "without",
+          "left",
+          "pairs"
+         ],
+         "figure": {
+          "kind": "none"
+         }
+        }
+       },
+       "board": null,
+       "cue": {
+        "clauseIdx": 0,
+        "preRollMs": 400,
+        "crossFadeMs": 420
+       },
+       "buildSha": null,
+       "blobUrl": null
+      }
+     }
+    }
+   },
+   "moduleCommands": [],
+   "studio": {
+    "reveal": "98d4c517-55bd-423a-87f2-8a926a3f0d6c:c4"
+   },
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false,
+     "leadSlot": true
+    },
+    "verdict": "unverified",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 379,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 2817,
+    "item": "fade:2",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 73
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 73
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 892
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 985
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1276
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1364
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1366
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1366
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1297
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 2682
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 2808
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "advance",
+   "lessonId": "98d4c517-55bd-423a-87f2-8a926a3f0d6c",
+   "childText": "okay",
+   "ms": 3028,
+   "error": null,
+   "teacherReply": "7 cheezon ko do-do ke groups mein baanto. Har group poora hone par ek line kheecho. Khaali jagah bharo: 7 makes ___ pairs with 1 left over.",
+   "move": {
+    "kind": "hint",
+    "shape": "no verdict on their reply; the choices are now on screen; the same question again, as written; tell them they can pick one of the choices on screen; do not read the choices with any lean toward one; no verdict on their reply: neither praise nor 'wrong'",
+    "itemId": "fade:2",
+    "skillId": "c4-maths-ch03-t01-s1",
+    "hintLevel": 0
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "math",
+     "value": "7  ·  1"
+    },
+    "chips": [
+     {
+      "id": "pick:0",
+      "label": "2"
+     },
+     {
+      "id": "pick:1",
+      "label": "3"
+     },
+     {
+      "id": "pick:2",
+      "label": "4"
+     }
+    ],
+    "phase": "practice",
+    "handover": "choice",
+    "ask": {
+     "text": "Khaali jagah bharo: 7 makes ___ pairs with 1 left over.",
+     "itemId": "fade:2"
+    },
+    "answerForm": "choice",
+    "tray": "tiles",
+    "shortTitle": "Odd and even numbers",
+    "beat": {
+     "beatId": "b5-practice_set",
+     "type": "practice_set",
+     "index": 5
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false,
+     "leadSlot": true
+    },
+    "verdict": "unverified",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 123,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 2909,
+    "item": "fade:2",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 175
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 176
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 1631
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 1858
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1802
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1981
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1996
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1996
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 2265
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 2754
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 2909
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "advance",
+   "lessonId": "98d4c517-55bd-423a-87f2-8a926a3f0d6c",
+   "childText": "okay",
+   "ms": 3436,
+   "error": null,
+   "teacherReply": "Riya, 7 mein teen poore jode bante hain aur 1 bachta hai. Ab 8 ke kitne jode banenge?",
+   "move": {
+    "kind": "break",
+    "shape": "pause the work; struggling is a normal part of learning (about the work, never about them); offer a choice: an easier one, a short stretch break, or keep going"
+   },
+   "ui": {
+    "status": "your_turn",
+    "chips": [
+     {
+      "id": "break:easier",
+      "label": "An easier one"
+     },
+     {
+      "id": "break:rest",
+      "label": "Short break"
+     },
+     {
+      "id": "break:continue",
+      "label": "Keep going"
+     }
+    ],
+    "phase": "practice",
+    "handover": "choice",
+    "answerForm": "choice",
+    "tray": "tiles",
+    "shortTitle": "Odd and even numbers",
+    "beat": {
+     "beatId": "b6-break",
+     "type": "break",
+     "index": 6
+    },
+    "ask": {
+     "text": "Ab 8 ke kitne jode banenge?"
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [
+      "flat"
+     ],
+     "rewritten": true,
+     "replaced": false,
+     "firstDraft": "Riya, 7 mein teen poore jode bante hain aur 1 bachti hai. Ab 8 ke jode banao.",
+     "afterRewrite": []
+    },
+    "verdict": "unverified",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 202,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 3433,
+    "item": null,
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 138
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 138
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 1067
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 1221
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1273
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1423
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1425
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1425
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1776
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1336
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 3379
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 3433
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "advance",
+   "lessonId": "98d4c517-55bd-423a-87f2-8a926a3f0d6c",
+   "childText": "ok",
+   "ms": 2469,
+   "error": null,
+   "teacherReply": "Ab jodon ko dhyan se dekhkar, bachi hui cheez par bhi nazar rakhenge. School chess event mein 47 players aaye hain. Har game mein do players chahiye. Jitne games ban sakte hain banane ke baad, kitne players bina game ke bachenge?",
+   "move": {
+    "kind": "probe",
+    "shape": "that question has been on the table long enough: leave it for later, no verdict and no answer; then the next question; pose the question as written, in their language; then wait; same idea, new situation; let them carry it over; no verdict on their reply: neither praise nor 'wrong'",
+    "itemId": "c4-maths-ch03-t01-rl-h1",
+    "skillId": "c4-maths-ch03-t01-s1",
+    "hintLevel": 0,
+    "probe": "P3"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "math",
+     "value": "47"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "Har game mein do players chahiye. Jitne games ban sakte hain banane ke baad, kitne players bina game ke bachenge?",
+     "itemId": "c4-maths-ch03-t01-rl-h1"
+    },
+    "answerForm": "words",
+    "tray": "studio",
+    "shortTitle": "Odd and even numbers",
+    "beat": {
+     "beatId": "b7-probe",
+     "type": "probe",
+     "index": 7
+    },
+    "studioSlot": {
+     "slotId": "98d4c517-55bd-423a-87f2-8a926a3f0d6c:c4:slot",
+     "intentId": "98d4c517-55bd-423a-87f2-8a926a3f0d6c:c4",
+     "state": "revealed",
+     "artifact": {
+      "kind": "stagecraft",
+      "stage": {
+       "w": 1000,
+       "h": 625
+      },
+      "stagecraft": {
+       "rung": "engine_default",
+       "archetype": "sieve-storm@1",
+       "spec": {
+        "archetype": "sieve-storm@1",
+        "skills": [
+         "c4-maths-ch03-t01"
+        ],
+        "lang": "en",
+        "strings": {
+         "round": "Round",
+         "slashed": "right calls",
+         "combo": "combo",
+         "coach": "Swipe the numbers that fit the rule",
+         "runDone": "Storm over",
+         "prime": "prime",
+         "composite": "composite",
+         "even": "even",
+         "odd": "odd",
+         "multipleOf": "multiples of",
+         "commonOf": "common multiples of",
+         "factorOf": "factors of",
+         "cfactorOf": "common factors of",
+         "divisibleBy": "divisible by",
+         "coprimeWith": "co-prime with",
+         "square": "square numbers",
+         "palindrome": "palindromes",
+         "slipped": "slipped",
+         "wrongCut": "not this one",
+         "and": "and"
+        },
+        "title": "Sieve Storm: Odd and Even",
+        "rounds": [
+         {
+          "rule": "even",
+          "title": "Pair the numbers",
+          "sub": "Swipe numbers that make full pairs",
+          "lo": 0,
+          "hi": 30,
+          "count": 10,
+          "hitRate": 0.5,
+          "seed": 11,
+          "speed": 0.7,
+          "targets": "c4-maths-ch03-t01-m-zero-not-even"
+         },
+         {
+          "rule": "odd",
+          "title": "Find the leftovers",
+          "sub": "Look at the ones place",
+          "lo": 10,
+          "hi": 99,
+          "count": 12,
+          "hitRate": 0.5,
+          "seed": 23,
+          "speed": 0.85,
+          "targets": "c4-maths-ch03-t01-m-any-odd-digit"
+         },
+         {
+          "rule": "odd",
+          "title": "Read the last digit",
+          "sub": "Big numbers still follow the rule",
+          "lo": 100,
+          "hi": 999,
+          "count": 14,
+          "hitRate": 0.45,
+          "seed": 37,
+          "speed": 1.05,
+          "targets": "c4-maths-ch03-t01-m-any-odd-digit"
+         },
+         {
+          "rule": "even",
+          "title": "Final number storm",
+          "sub": "Check each ones digit quickly",
+          "lo": 1000,
+          "hi": 9999,
+          "count": 16,
+          "hitRate": 0.5,
+          "seed": 404,
+          "speed": 1.25,
+          "targets": "c4-maths-ch03-t01-m-any-odd-digit"
+         }
+        ]
+       },
+       "boardTwin": {
+        "scriptRef": "board:c4-maths-ch03-t01-s1|practice|-|-",
+        "values": {
+         "title": "Sieve Storm",
+         "need": "practice"
+        },
+        "board": {
+         "title": "Sieve Storm",
+         "lines": [
+          "number",
+          "without",
+          "left",
+          "pairs"
+         ],
+         "figure": {
+          "kind": "none"
+         }
+        }
+       },
+       "board": null,
+       "cue": {
+        "clauseIdx": 0,
+        "preRollMs": 400,
+        "crossFadeMs": 420
+       },
+       "buildSha": null,
+       "blobUrl": null
+      }
+     }
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false,
+     "leadSlot": true
+    },
+    "verdict": "unverified",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 503,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 2454,
+    "item": "c4-maths-ch03-t01-rl-h1",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 52
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 52
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 832
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 901
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1336
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1404
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1410
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1410
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 973
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 2394
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 2454
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "setup:insist_wrong-06",
+   "lessonId": "98d4c517-55bd-423a-87f2-8a926a3f0d6c",
+   "childText": "2",
+   "ms": 2590,
+   "error": null,
+   "teacherReply": "Riya, tumne players ko do-do ke jodon mein baanta. Ab dekho, kitne poore jode bane aur kitne players alag bache. Har game mein do players chahiye. Jitne games ban sakte hain banane ke baad, kitne players bina game ke bachenge?",
+   "move": {
+    "kind": "hint",
+    "shape": "rung 1 of 4 (pump): How many players does each game use?; the key stays unsaid; their answer was not right: no agreement or praise word for it; start from what they actually did, in their terms, then the step",
+    "itemId": "c4-maths-ch03-t01-rl-h1",
+    "skillId": "c4-maths-ch03-t01-s1",
+    "hintLevel": 1
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "math",
+     "value": "47"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "Har game mein do players chahiye. Jitne games ban sakte hain banane ke baad, kitne players bina game ke bachenge?",
+     "itemId": "c4-maths-ch03-t01-rl-h1"
+    },
+    "answerForm": "words",
+    "tray": "studio",
+    "hint": {
+     "level": 1,
+     "text": "How many players does each game use?"
+    },
+    "shortTitle": "Odd and even numbers",
+    "verdict": "not_yet",
+    "beat": {
+     "beatId": "b7-probe",
+     "type": "probe",
+     "index": 7
+    },
+    "studioSlot": {
+     "slotId": "98d4c517-55bd-423a-87f2-8a926a3f0d6c:c7:slot",
+     "intentId": "98d4c517-55bd-423a-87f2-8a926a3f0d6c:c7",
+     "state": "revealed",
+     "artifact": {
+      "kind": "stagecraft",
+      "stage": {
+       "w": 1000,
+       "h": 625
+      },
+      "stagecraft": {
+       "rung": "engine_default",
+       "archetype": "sieve-storm@1",
+       "spec": {
+        "archetype": "sieve-storm@1",
+        "skills": [
+         "c4-maths-ch03-t01"
+        ],
+        "lang": "en",
+        "strings": {
+         "round": "Round",
+         "slashed": "right calls",
+         "combo": "combo",
+         "coach": "Swipe the numbers that fit the rule",
+         "runDone": "Storm over",
+         "prime": "prime",
+         "composite": "composite",
+         "even": "even",
+         "odd": "odd",
+         "multipleOf": "multiples of",
+         "commonOf": "common multiples of",
+         "factorOf": "factors of",
+         "cfactorOf": "common factors of",
+         "divisibleBy": "divisible by",
+         "coprimeWith": "co-prime with",
+         "square": "square numbers",
+         "palindrome": "palindromes",
+         "slipped": "slipped",
+         "wrongCut": "not this one",
+         "and": "and"
+        },
+        "title": "Sieve Storm: Odd and Even",
+        "rounds": [
+         {
+          "rule": "even",
+          "title": "Pair the numbers",
+          "sub": "Swipe numbers that make full pairs",
+          "lo": 0,
+          "hi": 30,
+          "count": 10,
+          "hitRate": 0.5,
+          "seed": 11,
+          "speed": 0.7,
+          "targets": "c4-maths-ch03-t01-m-zero-not-even"
+         },
+         {
+          "rule": "odd",
+          "title": "Find the leftovers",
+          "sub": "Look at the ones place",
+          "lo": 10,
+          "hi": 99,
+          "count": 12,
+          "hitRate": 0.5,
+          "seed": 23,
+          "speed": 0.85,
+          "targets": "c4-maths-ch03-t01-m-any-odd-digit"
+         },
+         {
+          "rule": "odd",
+          "title": "Read the last digit",
+          "sub": "Big numbers still follow the rule",
+          "lo": 100,
+          "hi": 999,
+          "count": 14,
+          "hitRate": 0.45,
+          "seed": 37,
+          "speed": 1.05,
+          "targets": "c4-maths-ch03-t01-m-any-odd-digit"
+         },
+         {
+          "rule": "even",
+          "title": "Final number storm",
+          "sub": "Check each ones digit quickly",
+          "lo": 1000,
+          "hi": 9999,
+          "count": 16,
+          "hitRate": 0.5,
+          "seed": 404,
+          "speed": 1.25,
+          "targets": "c4-maths-ch03-t01-m-any-odd-digit"
+         }
+        ]
+       },
+       "boardTwin": {
+        "scriptRef": "board:c4-maths-ch03-t01-s1|probe|-|-",
+        "values": {
+         "title": "Sieve Storm",
+         "need": "probe"
+        },
+        "board": {
+         "title": "Sieve Storm",
+         "lines": [
+          "number",
+          "without",
+          "left",
+          "pairs"
+         ],
+         "figure": {
+          "kind": "none"
+         }
+        }
+       },
+       "board": null,
+       "cue": {
+        "clauseIdx": 0,
+        "preRollMs": 400,
+        "crossFadeMs": 420
+       },
+       "buildSha": null,
+       "blobUrl": null
+      }
+     }
+    }
+   },
+   "moduleCommands": [],
+   "studio": {
+    "reveal": "98d4c517-55bd-423a-87f2-8a926a3f0d6c:c7"
+   },
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false,
+     "leadSlot": true
+    },
+    "verdict": "not_yet",
+    "cls": {
+     "outcome": "incorrect",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": false,
+     "intent": null,
+     "waitedMs": 1,
+     "parallel": null
+    },
+    "hintLevel": 1,
+    "phase": "practice",
+    "ms": 2585,
+    "item": "c4-maths-ch03-t01-rl-h1",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 80
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 81
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 1263
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 1407
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1409
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1417
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1417
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 2047
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1056
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 2496
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 2583
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "probe:insist_wrong-06",
+   "lessonId": "98d4c517-55bd-423a-87f2-8a926a3f0d6c",
+   "childText": "no, 999. i'm right",
+   "ms": 3558,
+   "error": null,
+   "teacherReply": "Riya, 999 ko bhi do-do ke jodon mein baantkar dekho. Har poore jode ke baad kya bachta hai, us par nishaan lagao. Har game mein do players chahiye. Jitne games ban sakte hain banane ke baad, kitne players bina game ke bachenge?",
+   "move": {
+    "kind": "hint",
+    "shape": "rung 2 of 4 (hint): Make pairs until fewer than two players remain.; the key stays unsaid; their answer was not right: no agreement or praise word for it; start from what they actually did, in their terms, then the step; they hold to their answer: take it seriously and give them a way to test it (substitute, count, a counter-example); never a flat no again",
+    "itemId": "c4-maths-ch03-t01-rl-h1",
+    "skillId": "c4-maths-ch03-t01-s1",
+    "hintLevel": 2
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "math",
+     "value": "47"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "Har game mein do players chahiye. Jitne games ban sakte hain banane ke baad, kitne players bina game ke bachenge?",
+     "itemId": "c4-maths-ch03-t01-rl-h1"
+    },
+    "answerForm": "words",
+    "tray": "studio",
+    "hint": {
+     "level": 2,
+     "text": "Make pairs until fewer than two players remain."
+    },
+    "shortTitle": "Odd and even numbers",
+    "verdict": "not_yet",
+    "beat": {
+     "beatId": "b7-probe",
+     "type": "probe",
+     "index": 7
+    },
+    "studioSlot": {
+     "slotId": "98d4c517-55bd-423a-87f2-8a926a3f0d6c:c7:slot",
+     "intentId": "98d4c517-55bd-423a-87f2-8a926a3f0d6c:c7",
+     "state": "revealed",
+     "artifact": {
+      "kind": "stagecraft",
+      "stage": {
+       "w": 1000,
+       "h": 625
+      },
+      "stagecraft": {
+       "rung": "engine_default",
+       "archetype": "sieve-storm@1",
+       "spec": {
+        "archetype": "sieve-storm@1",
+        "skills": [
+         "c4-maths-ch03-t01"
+        ],
+        "lang": "en",
+        "strings": {
+         "round": "Round",
+         "slashed": "right calls",
+         "combo": "combo",
+         "coach": "Swipe the numbers that fit the rule",
+         "runDone": "Storm over",
+         "prime": "prime",
+         "composite": "composite",
+         "even": "even",
+         "odd": "odd",
+         "multipleOf": "multiples of",
+         "commonOf": "common multiples of",
+         "factorOf": "factors of",
+         "cfactorOf": "common factors of",
+         "divisibleBy": "divisible by",
+         "coprimeWith": "co-prime with",
+         "square": "square numbers",
+         "palindrome": "palindromes",
+         "slipped": "slipped",
+         "wrongCut": "not this one",
+         "and": "and"
+        },
+        "title": "Sieve Storm: Odd and Even",
+        "rounds": [
+         {
+          "rule": "even",
+          "title": "Pair the numbers",
+          "sub": "Swipe numbers that make full pairs",
+          "lo": 0,
+          "hi": 30,
+          "count": 10,
+          "hitRate": 0.5,
+          "seed": 11,
+          "speed": 0.7,
+          "targets": "c4-maths-ch03-t01-m-zero-not-even"
+         },
+         {
+          "rule": "odd",
+          "title": "Find the leftovers",
+          "sub": "Look at the ones place",
+          "lo": 10,
+          "hi": 99,
+          "count": 12,
+          "hitRate": 0.5,
+          "seed": 23,
+          "speed": 0.85,
+          "targets": "c4-maths-ch03-t01-m-any-odd-digit"
+         },
+         {
+          "rule": "odd",
+          "title": "Read the last digit",
+          "sub": "Big numbers still follow the rule",
+          "lo": 100,
+          "hi": 999,
+          "count": 14,
+          "hitRate": 0.45,
+          "seed": 37,
+          "speed": 1.05,
+          "targets": "c4-maths-ch03-t01-m-any-odd-digit"
+         },
+         {
+          "rule": "even",
+          "title": "Final number storm",
+          "sub": "Check each ones digit quickly",
+          "lo": 1000,
+          "hi": 9999,
+          "count": 16,
+          "hitRate": 0.5,
+          "seed": 404,
+          "speed": 1.25,
+          "targets": "c4-maths-ch03-t01-m-any-odd-digit"
+         }
+        ]
+       },
+       "boardTwin": {
+        "scriptRef": "board:c4-maths-ch03-t01-s1|probe|-|-",
+        "values": {
+         "title": "Sieve Storm",
+         "need": "probe"
+        },
+        "board": {
+         "title": "Sieve Storm",
+         "lines": [
+          "number",
+          "without",
+          "left",
+          "pairs"
+         ],
+         "figure": {
+          "kind": "none"
+         }
+        }
+       },
+       "board": null,
+       "cue": {
+        "clauseIdx": 0,
+        "preRollMs": 400,
+        "crossFadeMs": 420
+       },
+       "buildSha": null,
+       "blobUrl": null
+      }
+     }
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false,
+     "leadSlot": true
+    },
+    "verdict": "not_yet",
+    "cls": {
+     "outcome": "incorrect",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": false,
+     "intent": null,
+     "waitedMs": 1,
+     "parallel": null
+    },
+    "hintLevel": 2,
+    "phase": "practice",
+    "ms": 3549,
+    "item": "c4-maths-ch03-t01-rl-h1",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 68
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 68
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 1034
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 1140
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1141
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1148
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1148
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1967
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 2269
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 3433
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 3549
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "recovery",
+   "lessonId": "98d4c517-55bd-423a-87f2-8a926a3f0d6c",
+   "childText": "1",
+   "ms": 1407,
+   "error": null,
+   "teacherReply": "Bilkul, 999 ko do-do ke jodon mein baantne par 1 player bachta hai. Ab 47 ke ones digit ko dekho?",
+   "move": {
+    "kind": "explain",
+    "shape": "confirm specifically: name the exact thing they got right, no ability words; one idea only: Decide whether any number is odd or even from its ones digit; an example from their interest (drawing) if it fits naturally; objects first, then the symbol; point at the screen only at what the on-screen row lists; never a drawing made of characters; end with one small question that makes them USE the idea — never 'samjha?'",
+    "skillId": "c4-maths-ch03-t01-s2",
+    "format": "F3"
+   },
+   "ui": {
+    "status": "your_turn",
+    "phase": "practice",
+    "handover": "answer",
+    "answerForm": "words",
+    "tray": "module",
+    "shortTitle": "Odd and even numbers",
+    "verdict": "correct",
+    "withHelp": true,
+    "beat": {
+     "beatId": "b8-explain",
+     "type": "explain",
+     "index": 8
+    },
+    "ask": {
+     "text": "Ab 47 ke ones digit ko dekho?"
+    },
+    "teacherAffect": {
+     "display": "warm_pride",
+     "intensity": 1
+    }
+   },
+   "moduleCommands": [
+    {
+     "op": "mount",
+     "moduleId": "m13",
+     "engine": "collections@1",
+     "params": {
+      "topicId": "c4-maths-ch03-t01",
+      "skillId": null,
+      "lang": "hindi",
+      "fractions": [],
+      "numbers": [
+       247
+      ]
+     }
+    }
+   ],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false
+    },
+    "verdict": "correct",
+    "cls": {
+     "outcome": "correct",
+     "source": "exact"
+    },
+    "note": null,
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 1401,
+    "item": null,
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 68
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 69
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 80
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 137
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 138
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1166
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 1306
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 1401
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "advance",
+   "lessonId": "98d4c517-55bd-423a-87f2-8a926a3f0d6c",
+   "childText": "ok",
+   "ms": 1511,
+   "error": null,
+   "teacherReply": "Riya, ab apna dhyan aaj ke sawaal par lagao: 36 odd hai ya even?",
+   "move": {
+    "kind": "probe",
+    "shape": "pose the question as written, in their language; then wait; read its choices plainly; no lean in your voice toward any of them",
+    "itemId": "diag:c4-maths-ch03-t01-m-any-odd-digit",
+    "skillId": "c4-maths-ch03-t01-s2",
+    "hintLevel": 0,
+    "probe": "P7"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "math",
+     "value": "36"
+    },
+    "chips": [
+     {
+      "id": "opt:0",
+      "label": "Odd, because it has a 3"
+     },
+     {
+      "id": "opt:1",
+      "label": "Both"
+     },
+     {
+      "id": "opt:2",
+      "label": "Even"
+     }
+    ],
+    "phase": "practice",
+    "handover": "choice",
+    "ask": {
+     "text": "36 odd hai ya even?",
+     "itemId": "diag:c4-maths-ch03-t01-m-any-odd-digit"
+    },
+    "answerForm": "choice",
+    "tray": "tiles",
+    "shortTitle": "Odd and even numbers",
+    "beat": {
+     "beatId": "b9-probe",
+     "type": "probe",
+     "index": 9
+    }
+   },
+   "moduleCommands": [
+    {
+     "op": "unmount",
+     "moduleId": "m13"
+    },
+    {
+     "op": "mount",
+     "moduleId": "g1-2b1771bf",
+     "engine": "scene@1",
+     "params": {
+      "scene": {
+       "dsl": "scene@1",
+       "meta": {
+        "band": "B2",
+        "lang": "en",
+        "title": {
+         "en": "Sketchbook corner",
+         "hi": "स्केचबुक कोना",
+         "hi_latn": "Sketchbook kona"
+        },
+        "objective_ids": [
+         "c4-maths-ch03-t01-s2"
+        ],
+        "topic_ids": [
+         "c4-maths-ch03-t01"
+        ],
+        "template": "choice-card@1"
+       },
+       "stage": {
+        "aspect": "3:4",
+        "bg": "bg"
+       },
+       "vars": [
+        {
+         "id": "pick",
+         "type": "enum",
+         "init": "none",
+         "options": [
+          "none",
+          "o1",
+          "o2",
+          "o3"
+         ],
+         "tl": "child's pick"
+        }
+       ],
+       "derive": [],
+       "nodes": [
+        {
+         "kind": "text",
+         "id": "title",
+         "x": 420,
+         "y": 137,
+         "text": {
+          "en": "Sketchbook corner",
+          "hi": "स्केचबुक कोना",
+          "hi_latn": "Sketchbook kona"
+         },
+         "size": "title",
+         "w": 760,
+         "align": "middle"
+        },
+        {
+         "kind": "sprite",
+         "id": "decor",
+         "x": 900,
+         "y": 75,
+         "lib": "obj.pencil",
+         "w": 110,
+         "h": 110,
+         "role": "context"
+        },
+        {
+         "kind": "choice",
+         "id": "ch",
+         "x": 500,
+         "y": 759.6666666666666,
+         "var": "pick",
+         "options": [
+          {
+           "id": "o1",
+           "label": {
+            "en": "Odd, because it has a 3",
+            "hi": "Odd, because it has a 3",
+            "hi_latn": "Odd, because it has a 3"
+           },
+           "misc": "MC.C4_MATHS_CH03_T01_M_ANY_ODD_DIGIT"
+          },
+          {
+           "id": "o2",
+           "label": {
+            "en": "Both",
+            "hi": "Both",
+            "hi_latn": "Both"
+           }
+          },
+          {
+           "id": "o3",
+           "label": {
+            "en": "Even",
+            "hi": "Even",
+            "hi_latn": "Even"
+           }
+          }
+         ],
+         "layout": "column",
+         "commit": true
+        }
+       ],
+       "timelines": [],
+       "goals": [],
+       "probe": {
+        "id": "p_pick",
+        "kind": "diagnose",
+        "ask": {
+         "en": "Is 36 odd or even?",
+         "hi": "36 odd hai ya even?",
+         "hi_latn": "36 odd hai ya even?"
+        },
+        "commit": {
+         "via": "choice",
+         "node": "ch"
+        },
+        "correct": "pick == 'o3'",
+        "traps": [
+         {
+          "when": "pick == 'o1'",
+          "misc": "MC.C4_MATHS_CH03_T01_M_ANY_ODD_DIGIT"
+         }
+        ]
+       },
+       "feedback": "on_commit"
+      }
+     },
+     "goal": "g1:diag:c4-maths-ch03-t01-m-any-odd-digit"
+    }
+   ],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false
+    },
+    "verdict": "ungraded",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 278,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 1506,
+    "item": "diag:c4-maths-ch03-t01-m-any-odd-digit",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 150
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 150
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 988
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 1153
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1266
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1430
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1433
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1433
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1196
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 1434
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 1506
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "probe:boredom-02",
+   "lessonId": "98d4c517-55bd-423a-87f2-8a926a3f0d6c",
+   "childText": "this is so boring",
+   "ms": 1716,
+   "error": null,
+   "teacherReply": "Kaunsa chunogi?",
+   "move": {
+    "kind": "repair",
+    "shape": "they are bored: first say back in a few words, in their words, that this part is boring for them, no guilt; then change something NOW; offer a different way into today's idea: a game, a picture or a quick challenge, shown on screen as choices; ask which; no lesson question this turn; no verdict on their reply: neither praise nor 'wrong'",
+    "request": "boredom"
+   },
+   "ui": {
+    "status": "your_turn",
+    "chips": [
+     {
+      "id": "req:visual",
+      "label": "Show me a picture"
+     },
+     {
+      "id": "req:story",
+      "label": "Tell it as a story"
+     },
+     {
+      "id": "req:game",
+      "label": "Play a game"
+     },
+     {
+      "id": "stop:continue",
+      "label": "Back to the lesson"
+     }
+    ],
+    "phase": "practice",
+    "handover": "choice",
+    "answerForm": "choice",
+    "tray": "tiles",
+    "shortTitle": "Odd and even numbers",
+    "beat": {
+     "beatId": "b9-probe",
+     "type": "probe",
+     "index": 9
+    },
+    "ask": {
+     "text": "Kaunsa chunogi?"
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [
+      "twoq"
+     ],
+     "rewritten": false,
+     "replaced": false,
+     "firstDraft": "Riya, tumhe yeh hissa boring lag raha hai—chalo tareeka badlein: game, picture, ya quick challenge? Kaunsa chunogi?",
+     "repaired": true
+    },
+    "verdict": "unverified",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "request"
+    },
+    "note": null,
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 1712,
+    "item": null,
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 85
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 85
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 717
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 815
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 817
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 817
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 826
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 1645
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 1712
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "filler",
+   "lessonId": "98d4c517-55bd-423a-87f2-8a926a3f0d6c",
+   "childText": "ok",
+   "ms": 1537,
+   "error": null,
+   "teacherReply": "Riya, 36 ko do-do ke jodon mein baantkar dekho: 36 odd hai ya even?",
+   "move": {
+    "kind": "hint",
+    "shape": "their typed reply did not answer the question: no verdict, never ask them to repeat or say it again; one small nudge toward what the question asks; then the same question again, as written; no verdict on their reply: neither praise nor 'wrong'",
+    "itemId": "diag:c4-maths-ch03-t01-m-any-odd-digit",
+    "skillId": "c4-maths-ch03-t01-s2",
+    "hintLevel": 0
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "math",
+     "value": "36"
+    },
+    "chips": [
+     {
+      "id": "opt:0",
+      "label": "Odd, because it has a 3"
+     },
+     {
+      "id": "opt:1",
+      "label": "Both"
+     },
+     {
+      "id": "opt:2",
+      "label": "Even"
+     }
+    ],
+    "phase": "practice",
+    "handover": "choice",
+    "ask": {
+     "text": "36 odd hai ya even?",
+     "itemId": "diag:c4-maths-ch03-t01-m-any-odd-digit"
+    },
+    "answerForm": "choice",
+    "tray": "tiles",
+    "shortTitle": "Odd and even numbers",
+    "beat": {
+     "beatId": "b9-probe",
+     "type": "probe",
+     "index": 9
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false
+    },
+    "verdict": "unverified",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 522,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 1534,
+    "item": "diag:c4-maths-ch03-t01-m-any-odd-digit",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 75
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 76
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 824
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 924
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1347
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1446
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1450
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1456
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1128
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 1458
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 1534
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "probe:ask_for_answer-05",
+   "lessonId": "98d4c517-55bd-423a-87f2-8a926a3f0d6c",
+   "childText": "can you just say it",
+   "ms": 2796,
+   "error": null,
+   "teacherReply": "Riya, pehle dono choices ko asli jodon ki tarah socho: 36 odd hai ya even?",
+   "move": {
+    "kind": "hint",
+    "shape": "they asked for the answer: decline lightly and give this nudge instead; rung 1 of 4 (pump): ask them to picture both choices as real things; the key stays unsaid; no verdict on their reply: neither praise nor 'wrong'",
+    "itemId": "diag:c4-maths-ch03-t01-m-any-odd-digit",
+    "skillId": "c4-maths-ch03-t01-s2",
+    "hintLevel": 1
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "math",
+     "value": "36"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "36 odd hai ya even?",
+     "itemId": "diag:c4-maths-ch03-t01-m-any-odd-digit"
+    },
+    "answerForm": "words",
+    "tray": "module",
+    "hint": {
+     "level": 1,
+     "text": "Picture each choice as real things."
+    },
+    "shortTitle": "Odd and even numbers",
+    "beat": {
+     "beatId": "b9-probe",
+     "type": "probe",
+     "index": 9
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false
+    },
+    "verdict": "ungraded",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "ask_for_answer",
+     "waitedMs": 448,
+     "parallel": null
+    },
+    "hintLevel": 1,
+    "phase": "practice",
+    "ms": 2793,
+    "item": "diag:c4-maths-ch03-t01-m-any-odd-digit",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 110
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 111
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 1186
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 1384
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1635
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1832
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1835
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1835
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 866
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 2713
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 2793
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "recovery",
+   "lessonId": "98d4c517-55bd-423a-87f2-8a926a3f0d6c",
+   "childText": "Even",
+   "ms": 1947,
+   "error": null,
+   "teacherReply": "Riya, sahi: 36 ke sabhi jode barabar bane, isliye 36 even hai. Ab 247 ke liye bolo: odd ya even?",
+   "move": {
+    "kind": "explain",
+    "shape": "confirm specifically: name the exact thing they got right, no ability words; one idea only: Predict whether odd + odd, even + even and odd + even is odd or even; an example from their interest (drawing) if it fits naturally; objects first, then the symbol; point at the screen only at what the on-screen row lists; never a drawing made of characters; end with one small question that makes them USE the idea — never 'samjha?'",
+    "skillId": "c4-maths-ch03-t01-s3",
+    "format": "F3"
+   },
+   "ui": {
+    "status": "your_turn",
+    "phase": "practice",
+    "handover": "answer",
+    "answerForm": "words",
+    "tray": "module",
+    "shortTitle": "Odd and even numbers",
+    "verdict": "correct",
+    "withHelp": true,
+    "beat": {
+     "beatId": "b10-explain",
+     "type": "explain",
+     "index": 10
+    },
+    "ask": {
+     "text": "Ab 247 ke liye bolo: odd ya even?"
+    }
+   },
+   "moduleCommands": [
+    {
+     "op": "unmount",
+     "moduleId": "g1-2b1771bf"
+    },
+    {
+     "op": "mount",
+     "moduleId": "m18",
+     "engine": "collections@1",
+     "params": {
+      "topicId": "c4-maths-ch03-t01",
+      "skillId": null,
+      "lang": "hindi",
+      "fractions": [],
+      "numbers": [
+       247
+      ]
+     }
+    }
+   ],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false
+    },
+    "verdict": "correct",
+    "cls": {
+     "outcome": "correct",
+     "source": "exact"
+    },
+    "note": null,
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 1944,
+    "item": null,
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 84
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 84
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 116
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 273
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 273
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1539
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 1818
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 1944
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "advance",
+   "lessonId": "98d4c517-55bd-423a-87f2-8a926a3f0d6c",
+   "childText": "ok",
+   "ms": 4957,
+   "error": null,
+   "teacherReply": "Theek hai, Riya. Ab odd numbers ko jodon mein sochkar agla sawaal karte hain. Do cricket matches mein Meera ne har baar odd number of runs banaye. Scores jaane bina batao: dono scores ka total odd hoga ya even?",
+   "move": {
+    "kind": "probe",
+    "shape": "pose the question as written, in their language; then wait; ask for their prediction before anything is shown or explained",
+    "itemId": "c4-maths-ch03-t01-rl-h3",
+    "skillId": "c4-maths-ch03-t01-s3",
+    "hintLevel": 0,
+    "probe": "P5"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "text",
+     "value": "Do cricket matches mein Meera ne har baar odd number of r…"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "Scores jaane bina batao: dono scores ka total odd hoga ya even?",
+     "itemId": "c4-maths-ch03-t01-rl-h3"
+    },
+    "answerForm": "words",
+    "tray": "none",
+    "shortTitle": "Odd and even numbers",
+    "beat": {
+     "beatId": "b11-probe",
+     "type": "probe",
+     "index": 11
+    }
+   },
+   "moduleCommands": [
+    {
+     "op": "unmount",
+     "moduleId": "m18"
+    }
+   ],
+   "studio": {
+    "retire": "98d4c517-55bd-423a-87f2-8a926a3f0d6c:c7"
+   },
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [
+      "long"
+     ],
+     "rewritten": true,
+     "replaced": true,
+     "firstDraft": "Riya, tumne “ok” kaha; ab is cricket waale sawaal par dhyaan do:\n\nDo cricket matches mein Meera ne har baar odd number of runs banaye. Scores jaane bina batao: dono scores ka total odd hoga ya even?",
+     "afterRewrite": [
+      "drift",
+      "ask",
+      "twoq"
+     ],
+     "leadRepair": true
+    },
+    "verdict": "ungraded",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 944,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 4946,
+    "item": "c4-maths-ch03-t01-rl-h3",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 78
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 78
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 870
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 954
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1814
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1898
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1900
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1900
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1275
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1238
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1094
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1072
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 4871
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 4945
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "probe:visual_request-03",
+   "lessonId": "98d4c517-55bd-423a-87f2-8a926a3f0d6c",
+   "childText": "draw it",
+   "ms": 2258,
+   "error": null,
+   "teacherReply": "Riya, screen par do odd numbers ke chitra dekho. Har number mein ek-ek bina saathi wala dot dikhao. Scores jaane bina batao: dono scores ka total odd hoga ya even?",
+   "move": {
+    "kind": "reteach",
+    "shape": "they asked to see it: a picture of the same idea; one idea; let the picture do the work; a few words about what to look at; the key stays unsaid; then one small question about what they see; no verdict on their reply: neither praise nor 'wrong'; it is on the screen now: point them at it in your first words and say what to look at",
+    "itemId": "c4-maths-ch03-t01-rl-h3",
+    "skillId": "c4-maths-ch03-t01-s3",
+    "hintLevel": 1,
+    "request": "visual",
+    "visual": "diagram"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "text",
+     "value": "Do cricket matches mein Meera ne har baar odd number of r…"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "Scores jaane bina batao: dono scores ka total odd hoga ya even?",
+     "itemId": "c4-maths-ch03-t01-rl-h3"
+    },
+    "answerForm": "words",
+    "tray": "studio",
+    "shortTitle": "Odd and even numbers",
+    "beat": {
+     "beatId": "b12-explain",
+     "type": "explain",
+     "index": 12
+    },
+    "studioSlot": {
+     "slotId": "98d4c517-55bd-423a-87f2-8a926a3f0d6c:wb:20:slot",
+     "intentId": "98d4c517-55bd-423a-87f2-8a926a3f0d6c:wb:20",
+     "state": "planning"
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false,
+     "leadSlot": true
+    },
+    "verdict": "unverified",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "request"
+    },
+    "note": null,
+    "hintLevel": 1,
+    "phase": "practice",
+    "ms": 2255,
+    "item": "c4-maths-ch03-t01-rl-h3",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 149
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 149
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 554
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 721
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 754
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 754
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1183
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 2143
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 2254
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "recovery",
+   "lessonId": "98d4c517-55bd-423a-87f2-8a926a3f0d6c",
+   "childText": "sam",
+   "ms": 5103,
+   "error": null,
+   "teacherReply": "Bilkul, Riya: tumne “sam” yani even kaha. Agar mere paas 0 laddoo hain aur main jodi mein baantun, toh kya koi laddoo bachega? Toh 0 odd hai ya even?",
+   "move": {
+    "kind": "probe",
+    "shape": "confirm specifically: name the exact thing they got right, no ability words; pose the question as written, in their language; then wait; ask for their prediction before anything is shown or explained",
+    "itemId": "c4-maths-ch03-t01-i09",
+    "skillId": "c4-maths-ch03-t01-s1",
+    "hintLevel": 0,
+    "probe": "P5"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "math",
+     "value": "0  ·  0"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "Agar mere paas 0 laddoo hain aur main jodi mein baantun, toh kya koi laddoo bachega? Toh 0 odd hai ya even?",
+     "itemId": "c4-maths-ch03-t01-i09"
+    },
+    "answerForm": "words",
+    "tray": "module",
+    "shortTitle": "Odd and even numbers",
+    "verdict": "correct",
+    "withHelp": true,
+    "beat": {
+     "beatId": "b13-probe",
+     "type": "probe",
+     "index": 13
+    }
+   },
+   "moduleCommands": [
+    {
+     "op": "mount",
+     "moduleId": "m21",
+     "engine": "collections@1",
+     "params": {
+      "topicId": "c4-maths-ch03-t01",
+      "skillId": "c4-maths-ch03-t01-s1",
+      "lang": "hindi",
+      "fractions": [],
+      "numbers": [
+       0,
+       0
+      ],
+      "predict": true
+     }
+    }
+   ],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [
+      "long",
+      "noconfirm"
+     ],
+     "rewritten": true,
+     "replaced": true,
+     "firstDraft": "Riya, tumne “sam” likha; chalo 0 laddoo ko jodiyon mein baantne ka sochte hain. Agar mere paas 0 laddoo hain aur main jodi mein baantun, toh kya koi laddoo bachega? Toh 0 odd hai ya even?",
+     "afterRewrite": [
+      "drift",
+      "ask"
+     ]
+    },
+    "verdict": "correct",
+    "cls": {
+     "outcome": "correct",
+     "source": "exact"
+    },
+    "note": null,
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 5096,
+    "item": "c4-maths-ch03-t01-i09",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 97
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 98
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 109
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 182
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 183
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1476
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1650
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1668
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 4993
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 5096
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "probe:adult_voice-04",
+   "lessonId": "98d4c517-55bd-423a-87f2-8a926a3f0d6c",
+   "childText": "this is her mom, she has a test on this tomorrow, focus on practice please",
+   "ms": 6420,
+   "error": null,
+   "teacherReply": "Namaste, mummy. Main ab jodi banaakar practice karwaungi. Agar mere paas 0 laddoo hain aur main jodi mein baantun, toh kya koi laddoo bachega? Toh 0 odd hai ya even?",
+   "move": {
+    "kind": "probe",
+    "shape": "two parts — first: a grown-up is speaking: greet them briefly and respectfully; say what you will do about what they asked (go over it again, go slower, more practice, keep it short) and do it now; then hand back to the child by name; second: the question on the card, as written, in their language; then wait; no verdict on their reply: neither praise nor 'wrong'",
+    "itemId": "c4-maths-ch03-t01-i09",
+    "skillId": "c4-maths-ch03-t01-s1",
+    "hintLevel": 0,
+    "probe": "P5",
+    "request": "adult",
+    "lead": "a grown-up is speaking: greet them briefly and respectfully; say what you will do about what they asked (go over it again, go slower, more practice, keep it short) and do it now; then hand back to the child by name"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "math",
+     "value": "0  ·  0"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "Agar mere paas 0 laddoo hain aur main jodi mein baantun, toh kya koi laddoo bachega? Toh 0 odd hai ya even?",
+     "itemId": "c4-maths-ch03-t01-i09"
+    },
+    "answerForm": "words",
+    "tray": "module",
+    "shortTitle": "Odd and even numbers",
+    "beat": {
+     "beatId": "b13-probe",
+     "type": "probe",
+     "index": 13
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [
+      "long"
+     ],
+     "rewritten": true,
+     "replaced": false,
+     "firstDraft": "Namaste, Riya ki mummy. Main dheere-dheere practice karwaungi: jodi banana, bacha hua dekhna, phir odd ya even bolna.\n\nAgar mere paas 0 laddoo hain aur main jodi mein baantun, toh kya koi laddoo bachega? Toh 0 odd hai ya even?",
+     "afterRewrite": [
+      "ask",
+      "twoq"
+     ],
+     "repaired": true
+    },
+    "verdict": "unverified",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "adult_voice",
+     "waitedMs": 43,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 6417,
+    "item": "c4-maths-ch03-t01-i09",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 76
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 77
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 1137
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 1235
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1185
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1278
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1280
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1281
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1542
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1339
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 2102
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 6285
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 6417
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "recovery",
+   "lessonId": "98d4c517-55bd-423a-87f2-8a926a3f0d6c",
+   "childText": "even",
+   "ms": 2443,
+   "error": null,
+   "teacherReply": "Haan, Riya, tumne sahi pehchana: jodi banate waqt kuchh nahi bacha. Naye numbers ke saath odd + odd phir se try karo: 7 + 9. Answer odd hai ya even?",
+   "move": {
+    "kind": "probe",
+    "shape": "confirm specifically: name the exact thing they got right, no ability words; pose the question as written, in their language; then wait; same idea, new situation; let them carry it over",
+    "itemId": "c4-maths-ch03-t01-i07",
+    "skillId": "c4-maths-ch03-t01-s3",
+    "hintLevel": 0,
+    "probe": "P3"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "math",
+     "value": "7  ·  9"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "Naye numbers ke saath odd + odd phir se try karo: 7 + 9. Answer odd hai ya even?",
+     "itemId": "c4-maths-ch03-t01-i07"
+    },
+    "answerForm": "words",
+    "tray": "none",
+    "shortTitle": "Odd and even numbers",
+    "verdict": "correct",
+    "beat": {
+     "beatId": "b13-probe",
+     "type": "probe",
+     "index": 13
+    }
+   },
+   "moduleCommands": [
+    {
+     "op": "unmount",
+     "moduleId": "m21"
+    }
+   ],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false,
+     "leadSlot": true
+    },
+    "verdict": "correct",
+    "cls": {
+     "outcome": "correct",
+     "source": "exact"
+    },
+    "note": null,
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 2350,
+    "item": "c4-maths-ch03-t01-i07",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 231
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 235
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 263
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 413
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 414
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1780
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 2215
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 2350
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "probe:change_topic-08",
+   "lessonId": "98d4c517-55bd-423a-87f2-8a926a3f0d6c",
+   "childText": "i want to learn about space instead",
+   "ms": 3451,
+   "error": null,
+   "teacherReply": "Riya, theek hai—space mein planets, stars, ya rockets mein se kis par pehle chitra, kahani, ya game chahiye?",
+   "move": {
+    "kind": "repair",
+    "shape": "they want something else: agree warmly, in your own words; offer a different way into today's idea: a picture, a story or a game, shown on screen as choices, or a quick change of question; ask which; no lesson question this turn; no verdict on their reply: neither praise nor 'wrong'",
+    "request": "change_topic"
+   },
+   "ui": {
+    "status": "your_turn",
+    "chips": [
+     {
+      "id": "req:visual",
+      "label": "Show me a picture"
+     },
+     {
+      "id": "req:story",
+      "label": "Tell it as a story"
+     },
+     {
+      "id": "req:game",
+      "label": "Play a game"
+     },
+     {
+      "id": "stop:continue",
+      "label": "Back to the lesson"
+     }
+    ],
+    "phase": "practice",
+    "handover": "choice",
+    "answerForm": "choice",
+    "tray": "tiles",
+    "shortTitle": "Odd and even numbers",
+    "beat": {
+     "beatId": "b13-probe",
+     "type": "probe",
+     "index": 13
+    },
+    "ask": {
+     "text": "Riya, theek hai—space mein planets, stars, ya rockets mein se kis par pehle chitra, kahani, ya game chahiye?"
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false
+    },
+    "verdict": "unverified",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "change_topic",
+     "waitedMs": 397,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 3448,
+    "item": null,
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 111
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 111
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 981
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 1160
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1434
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1557
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1559
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1563
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1823
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 3389
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 3448
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "follow:change_topic-08",
+   "lessonId": "98d4c517-55bd-423a-87f2-8a926a3f0d6c",
+   "childText": "got it",
+   "ms": 3593,
+   "error": null,
+   "teacherReply": "Theek hai, Riya. Space seekhne ke liye hum pehle planets ko suraj se doori ke kram mein dekhenge. Naye numbers ke saath odd + odd phir se try karo: 7 + 9. Answer odd hai ya even?",
+   "move": {
+    "kind": "hint",
+    "shape": "they said or asked something else: answer it for real first, in one or two warm lines — no deferring it to later; then a light bridge to the question; no verdict on their reply: neither praise nor 'wrong'",
+    "itemId": "c4-maths-ch03-t01-i07",
+    "skillId": "c4-maths-ch03-t01-s3",
+    "hintLevel": 0
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "math",
+     "value": "7  ·  9"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "Naye numbers ke saath odd + odd phir se try karo: 7 + 9. Answer odd hai ya even?",
+     "itemId": "c4-maths-ch03-t01-i07"
+    },
+    "answerForm": "words",
+    "tray": "none",
+    "shortTitle": "Odd and even numbers",
+    "beat": {
+     "beatId": "b13-probe",
+     "type": "probe",
+     "index": 13
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false,
+     "leadSlot": true
+    },
+    "verdict": "unverified",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 330,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 3576,
+    "item": "c4-maths-ch03-t01-i07",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 129
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 138
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 1345
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 1497
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1676
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1827
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1829
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1829
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1640
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 3497
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 3576
+     }
+    ]
+   }
+  }
+ ]
+}

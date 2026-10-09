@@ -9,7 +9,7 @@
  } from "../comprehension/index.js";
  import { skillSess } from "../comprehension/budget.js";
  import { equityProfile, lessonGuidance, teachPlanFor, fadeItem, fadedContent, workedLeadContent, fadeBoard, startedFirstStep, FADE_PREFIX, clip } from "./fading.js";
-@@ -429,11 +429,25 @@
+@@ -429,11 +429,27 @@
  function trap(s, kit, item, misconceptionId) {
    const m = kit.misconceptions.find((x) => x.id === misconceptionId);
    if (m) s.flagged[m.id] = (s.flagged[m.id] ?? 0) + 1;
@@ -30,13 +30,15 @@
 + */
 +function logReteach(s, kind, skillId, mis) {
 +  if (!reteachLogOn()) return;
-+  bookDirectorReteach(s, directorReteachDecision({ kind, skillId, mis }), RETEACH_COOLDOWN);
++  bookDirectorReteach(s, directorReteachDecision({ kind, skillId, mis, chosenBy: kind === "change_approach" ? CHANGE_APPROACH.chosenBy : null }), RETEACH_COOLDOWN);
 +}
++/** The change of approach is the Director's own fixed rule (reteach_attempts.chosen_by 'rule': migration 023 allows it). */
++const CHANGE_APPROACH = Object.freeze({ chosenBy: "rule" });
 +
  /** V1.4 pace bookkeeping for one graded answer on a practice item (never a warm-up check, a faded step or a diagnostic). */
  export const PACE = Object.freeze({ fastP: 0.85, settleP: 0.9, settleRun: 2, parkTries: 7 });
  function notePace(s, item, right) {
-@@ -506,14 +520,16 @@
+@@ -506,14 +522,16 @@
    const m = cls?.outcome === "misconception" ? (item.misconceptions ?? kit.misconceptions).find((x) => x.id === cls.misconceptionId) : null;
    if (m) s.flagged[m.id] = (s.flagged[m.id] ?? 0) + 1;
    // P21: no 3-in-a-row in ~10 opportunities — a different approach, not more of the same.

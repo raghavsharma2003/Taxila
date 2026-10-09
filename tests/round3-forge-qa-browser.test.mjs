@@ -49,6 +49,27 @@ describe("round3 forge: visual QA in the browser", { skip: SKIP, timeout: 240_00
     assert.equal(r.piece.byViewport.l1366, true);
     assert.ok(r.views.find((v) => v.vp === "p360").verdict.fails.includes("Q1.legible"), JSON.stringify(r.piece));
   });
+  it("words drawn on a canvas are measured: two labels painted over each other fail Q3, a small one fails Q1", async () => {
+    const { canvasTextProbe, measureStage } = await import("../server/forge3/qa/measure.js");
+    const { judgeView } = await import("../server/forge3/qa/checks.js");
+    const ctx = await browser.newContext({ viewport: { width: 360, height: 800 } });
+    await ctx.addInitScript(canvasTextProbe);
+    const page = await ctx.newPage();
+    await page.setContent('<section data-testid="tray" style="position:absolute;left:0;top:0;width:340px;height:400px"><div data-testid="studio-box" style="position:absolute;left:0;top:0;width:340px;height:400px"><canvas id="c" width="680" height="800" style="width:340px;height:400px"></canvas></div></section>');
+    await page.evaluate(() => {
+      const c = document.getElementById("c").getContext("2d");
+      c.setTransform(2, 0, 0, 2, 0, 0); c.fillStyle = "#eee"; c.fillRect(0, 0, 340, 400); c.fillStyle = "#000";
+      c.font = "16px sans-serif"; c.textAlign = "center"; c.textBaseline = "middle";
+      c.fillText("10,000", 100, 100); c.fillText("20,000", 112, 100);
+      c.font = "10px sans-serif"; c.fillText("tiny", 200, 300);
+    });
+    const m = await page.evaluate(measureStage);
+    const v = judgeView(m, {});
+    await ctx.close();
+    assert.ok(m.canvasText >= 3, `canvas runs ${m.canvasText}`);
+    assert.ok(v.fails.includes("Q3.apart"), JSON.stringify(v.fails));
+    assert.ok(v.fails.includes("Q1.legible"), JSON.stringify(v.fails));
+  });
   it("a Studio v2 world in the tight phone tray becomes its board twin (legible), never the unusable game", async () => {
     const topic = JSON.parse(readFileSync(new URL("../data/studio-catalogue/topics/c4-maths-ch05-t01.json", import.meta.url), "utf8"));
     const art = { kind: "stagecraft", stage: { w: 1000, h: 625 }, stagecraft: { rung: "library", archetype: topic.game.archetype, spec: topic.game.spec,

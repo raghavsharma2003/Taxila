@@ -1,0 +1,1835 @@
+{
+ "slot": 17,
+ "topic": "c5-evs-ch01-t01",
+ "cls": 5,
+ "lang": "english",
+ "lane": "text",
+ "lessons": [
+  {
+   "lessonId": "548b975f-5f48-43bd-aa83-a7768d2ff1ee",
+   "why": "start",
+   "at": "2026-10-09T12:52:14.566Z",
+   "teacher": "Arjun"
+  }
+ ],
+ "turns": [
+  {
+   "who": "teacher",
+   "kind": "opening",
+   "lessonId": "548b975f-5f48-43bd-aa83-a7768d2ff1ee",
+   "teacherReply": "Hello Aarav, I’m Arjun, your AI teacher. Today we’ll explore water’s forms and places—like unlocking levels. Which game do you enjoy?",
+   "ui": {
+    "status": "your_turn",
+    "phase": "warmup",
+    "handover": "answer",
+    "answerForm": "words",
+    "tray": "none",
+    "shortTitle": "Forms of water",
+    "beat": {
+     "beatId": "b1-arrive",
+     "type": "arrive",
+     "index": 1
+    },
+    "ask": {
+     "text": "Which game do you enjoy?"
+    }
+   }
+  },
+  {
+   "who": "child",
+   "tag": "greet",
+   "lessonId": "548b975f-5f48-43bd-aa83-a7768d2ff1ee",
+   "childText": "hi, ready",
+   "ms": 1891,
+   "error": null,
+   "teacherReply": "Aarav, imagine a game map: monsoon rain fills puddles, while wet school uniforms slowly dry. What do you predict happens to that water? At the end, teach Bittu.",
+   "move": {
+    "kind": "hook",
+    "shape": "open with one concrete everyday situation built on their interest (video games) — kit contexts: kitchen, monsoon, school uniform drying; ask what they think will happen or which they would pick — a prediction, no right answer yet; any bigger/more comparison: two quantities of one kind, in one unit — a count against a count, a distance against a distance; never across kinds; mention once: at the end they will teach this to Bittu (a pretend new student who missed this class)",
+    "format": "F4"
+   },
+   "ui": {
+    "status": "your_turn",
+    "phase": "teach",
+    "handover": "answer",
+    "answerForm": "words",
+    "tray": "none",
+    "shortTitle": "Forms of water",
+    "beat": {
+     "beatId": "b2-hook",
+     "type": "hook",
+     "index": 2
+    },
+    "ask": {
+     "text": "What do you predict happens to that water?"
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false
+    },
+    "verdict": "ungraded",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 73,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "teach",
+    "ms": 1865,
+    "item": null,
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 272
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 272
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 1434
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 1713
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1510
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1786
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1787
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1787
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1321
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 1788
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 1865
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "advance",
+   "lessonId": "548b975f-5f48-43bd-aa83-a7768d2ff1ee",
+   "childText": "ok",
+   "ms": 3032,
+   "error": null,
+   "teacherReply": "Water has three forms: liquid in rivers, solid ice in glaciers, and invisible water vapour in air. Which form is found in clouds?",
+   "move": {
+    "kind": "explain",
+    "shape": "one idea only: Name the three forms of water (liquid, solid ice, invisible water vapour) and where each is found on Earth; an example from their interest (video games) if it fits naturally; objects first, then the symbol; point at the screen only at what the on-screen row lists; never a drawing made of characters; end with one small question that makes them USE the idea — never 'samjha?'",
+    "skillId": "c5-evs-ch01-t01-s1",
+    "format": "F3"
+   },
+   "ui": {
+    "status": "your_turn",
+    "phase": "teach",
+    "handover": "answer",
+    "answerForm": "words",
+    "tray": "module",
+    "shortTitle": "Forms of water",
+    "beat": {
+     "beatId": "b3-explain",
+     "type": "explain",
+     "index": 3
+    },
+    "ask": {
+     "text": "Which form is found in clouds?"
+    }
+   },
+   "moduleCommands": [
+    {
+     "op": "mount",
+     "moduleId": "m2",
+     "engine": "water-cycle@1",
+     "params": {
+      "topicId": "c5-evs-ch01-t01",
+      "skillId": null,
+      "lang": "english",
+      "scene": "states"
+     }
+    }
+   ],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [
+      "flat"
+     ],
+     "rewritten": true,
+     "replaced": false,
+     "firstDraft": "Water has three forms: liquid in rivers, solid ice in glaciers, and invisible water vapour in air. Point to each on screen and name one place.",
+     "afterRewrite": []
+    },
+    "verdict": "ungraded",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 0,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "teach",
+    "ms": 3028,
+    "item": null,
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 106
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 107
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1383
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 1486
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 1599
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1599
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1644
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1644
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1630
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1067
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 2963
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 3028
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "advance",
+   "lessonId": "548b975f-5f48-43bd-aa83-a7768d2ff1ee",
+   "childText": "okay",
+   "ms": 1555,
+   "error": null,
+   "teacherReply": "At night, the uniform is heavy and wet; by morning, it is light and dry. What change do you notice?",
+   "move": {
+    "kind": "worked_example",
+    "shape": "worked example, part 1 of 2: say one step, then ask them for the next step; their thinking, your pace; no new idea",
+    "skillId": "c5-evs-ch01-t01-s1",
+    "format": "F2"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "math",
+     "value": "A school uniform washed at night is dry by morning. Explain, step by step, where the water went."
+    },
+    "phase": "teach",
+    "handover": "answer",
+    "answerForm": "words",
+    "tray": "module",
+    "shortTitle": "Forms of water",
+    "beat": {
+     "beatId": "b4-worked_example",
+     "type": "worked_example",
+     "index": 4
+    },
+    "ask": {
+     "text": "What change do you notice?"
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false
+    },
+    "verdict": "ungraded",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 131,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "teach",
+    "ms": 1553,
+    "item": null,
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 71
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 72
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 1271
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 1345
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1403
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1476
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1478
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1478
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1307
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 1481
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 1553
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "advance",
+   "lessonId": "548b975f-5f48-43bd-aa83-a7768d2ff1ee",
+   "childText": "alright",
+   "ms": 1820,
+   "error": null,
+   "teacherReply": "Most water turned into invisible water vapour; this is evaporation. Fill the gap: Moving air and ___ make evaporation go faster.",
+   "move": {
+    "kind": "practice",
+    "shape": "the earlier steps in LESSON NOW, said briefly as done; then the step with the gap is theirs: pose it as written; wait; never fill the gap for them",
+    "itemId": "fade:2",
+    "skillId": "c5-evs-ch01-t01-s1",
+    "hintLevel": 0,
+    "probe": "P15",
+    "format": "F2"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "math",
+     "value": "A school uniform washed at night is dry by morning. Explain, step by… · Moving air and ___ make evaporation go faster"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "Fill the gap: Moving air and ___ make evaporation go faster",
+     "itemId": "fade:2"
+    },
+    "answerForm": "words",
+    "tray": "none",
+    "shortTitle": "Forms of water",
+    "beat": {
+     "beatId": "b5-practice_set",
+     "type": "practice_set",
+     "index": 5
+    }
+   },
+   "moduleCommands": [
+    {
+     "op": "unmount",
+     "moduleId": "m2"
+    }
+   ],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false
+    },
+    "verdict": "ungraded",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 0,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 1817,
+    "item": "fade:2",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 52
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 53
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1154
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 1190
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 1245
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1245
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1247
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1247
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1566
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 1702
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 1817
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "advance",
+   "lessonId": "548b975f-5f48-43bd-aa83-a7768d2ff1ee",
+   "childText": "okay",
+   "ms": 4180,
+   "error": null,
+   "teacherReply": "Aarav, think about what makes water particles move faster—sunlight or heat gives them extra energy. Fill the gap: Moving air and ___ make evaporation go faster",
+   "move": {
+    "kind": "hint",
+    "shape": "their typed reply did not answer the question: no verdict, never ask them to repeat or say it again; one small nudge toward what the question asks; then the same question again, as written; no verdict on their reply: neither praise nor 'wrong'",
+    "itemId": "fade:2",
+    "skillId": "c5-evs-ch01-t01-s1",
+    "hintLevel": 0
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "text",
+     "value": "Fill the gap: Moving air and ___ make evaporation go faster"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "Fill the gap: Moving air and ___ make evaporation go faster",
+     "itemId": "fade:2"
+    },
+    "answerForm": "words",
+    "tray": "studio",
+    "shortTitle": "Forms of water",
+    "beat": {
+     "beatId": "b5-practice_set",
+     "type": "practice_set",
+     "index": 5
+    },
+    "studioSlot": {
+     "slotId": "548b975f-5f48-43bd-aa83-a7768d2ff1ee:c1:slot",
+     "intentId": "548b975f-5f48-43bd-aa83-a7768d2ff1ee:c1",
+     "state": "revealed",
+     "artifact": {
+      "kind": "stagecraft",
+      "stage": {
+       "w": 1000,
+       "h": 625
+      },
+      "stagecraft": {
+       "rung": "engine_default",
+       "archetype": "phase-shift@1",
+       "spec": {
+        "archetype": "phase-shift@1",
+        "skills": [
+         "c5-evs-ch01-t01"
+        ],
+        "lang": "en",
+        "strings": {
+         "step": "Step",
+         "heat": "HEAT",
+         "cool": "COOL",
+         "fan": "FAN",
+         "lid": "COLD LID",
+         "temp": "TEMP",
+         "ice": "ice",
+         "water": "water",
+         "vapour": "vapour",
+         "plateau": "Watch the temperature",
+         "boiling": "bubbles show boiling",
+         "invisible": "vapour · invisible",
+         "predict": "First, predict",
+         "done": "Done",
+         "noBoil": "keep it under"
+        },
+        "start": 25,
+        "steps": [
+         {
+          "kind": "goal",
+          "goal": "evaporate",
+          "arg": 0.15,
+          "tMax": 60,
+          "text": "Dry some water from the cloth. Use warmth and moving air.",
+          "targets": "c5-evs-ch01-t01-m3"
+         },
+         {
+          "kind": "probe",
+          "probe": "glass",
+          "targets": "c5-evs-ch01-t01-m4"
+         },
+         {
+          "kind": "goal",
+          "goal": "condense",
+          "arg": 0.1,
+          "tMax": 60,
+          "text": "Cool the vapour and collect water drops."
+         }
+        ]
+       },
+       "boardTwin": {
+        "scriptRef": "board:c5-evs-ch01-t01-s1|practice|-|-",
+        "values": {
+         "title": "Phase Shift",
+         "need": "practice"
+        },
+        "board": {
+         "title": "Phase Shift",
+         "lines": [
+          "water",
+          "earth",
+          "fresh",
+          "salty"
+         ],
+         "figure": {
+          "kind": "none"
+         }
+        }
+       },
+       "board": null,
+       "cue": {
+        "clauseIdx": 0,
+        "preRollMs": 400,
+        "crossFadeMs": 420
+       },
+       "buildSha": null,
+       "blobUrl": null
+      }
+     }
+    }
+   },
+   "moduleCommands": [],
+   "studio": {
+    "reveal": "548b975f-5f48-43bd-aa83-a7768d2ff1ee:c1"
+   },
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false,
+     "leadSlot": true
+    },
+    "verdict": "unverified",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 0,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 4178,
+    "item": "fade:2",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 51
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 52
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1200
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 2807
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 2873
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 2874
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 2875
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 2875
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1728
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1145
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 4029
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 4177
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "advance",
+   "lessonId": "548b975f-5f48-43bd-aa83-a7768d2ff1ee",
+   "childText": "alright",
+   "ms": 2008,
+   "error": null,
+   "teacherReply": "Aarav, the choices are now on screen. Pick the one you think completes the sentence. Fill the gap: Moving air and ___ make evaporation go faster",
+   "move": {
+    "kind": "hint",
+    "shape": "no verdict on their reply; the choices are now on screen; the same question again, as written; tell them they can pick one of the choices on screen; do not read the choices with any lean toward one; no verdict on their reply: neither praise nor 'wrong'",
+    "itemId": "fade:2",
+    "skillId": "c5-evs-ch01-t01-s1",
+    "hintLevel": 0
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "text",
+     "value": "Fill the gap: Moving air and ___ make evaporation go faster"
+    },
+    "chips": [
+     {
+      "id": "pick:0",
+      "label": "warmth"
+     },
+     {
+      "id": "pick:1",
+      "label": "Liquid water"
+     },
+     {
+      "id": "pick:2",
+      "label": "Invisible water vapour"
+     }
+    ],
+    "phase": "practice",
+    "handover": "choice",
+    "ask": {
+     "text": "Fill the gap: Moving air and ___ make evaporation go faster",
+     "itemId": "fade:2"
+    },
+    "answerForm": "choice",
+    "tray": "tiles",
+    "shortTitle": "Forms of water",
+    "beat": {
+     "beatId": "b5-practice_set",
+     "type": "practice_set",
+     "index": 5
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false,
+     "leadSlot": true
+    },
+    "verdict": "unverified",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 0,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 1996,
+    "item": "fade:2",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 141
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 142
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1271
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 1758
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 1908
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1908
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1909
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1910
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1125
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 1910
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 1996
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "advance",
+   "lessonId": "548b975f-5f48-43bd-aa83-a7768d2ff1ee",
+   "childText": "alright",
+   "ms": 4637,
+   "error": null,
+   "teacherReply": "Aarav, let’s leave that one for later. Name the three forms of water and give one place where you can find each.",
+   "move": {
+    "kind": "practice",
+    "shape": "leave this one for later, no verdict and no answer given; the next question; pose the question as written, in their language; then wait; no verdict on their reply: neither praise nor 'wrong'",
+    "itemId": "c5-evs-ch01-t01-i01",
+    "skillId": "c5-evs-ch01-t01-s1",
+    "hintLevel": 0,
+    "probe": "P15"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "text",
+     "value": "Name the three forms of water and give one place where yo…"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "Name the three forms of water and give one place where you can find each.",
+     "itemId": "c5-evs-ch01-t01-i01"
+    },
+    "answerForm": "words",
+    "tray": "studio",
+    "shortTitle": "Forms of water",
+    "beat": {
+     "beatId": "b5-practice_set",
+     "type": "practice_set",
+     "index": 5
+    },
+    "studioSlot": {
+     "slotId": "548b975f-5f48-43bd-aa83-a7768d2ff1ee:c1:slot",
+     "intentId": "548b975f-5f48-43bd-aa83-a7768d2ff1ee:c1",
+     "state": "revealed",
+     "artifact": {
+      "kind": "stagecraft",
+      "stage": {
+       "w": 1000,
+       "h": 625
+      },
+      "stagecraft": {
+       "rung": "engine_default",
+       "archetype": "phase-shift@1",
+       "spec": {
+        "archetype": "phase-shift@1",
+        "skills": [
+         "c5-evs-ch01-t01"
+        ],
+        "lang": "en",
+        "strings": {
+         "step": "Step",
+         "heat": "HEAT",
+         "cool": "COOL",
+         "fan": "FAN",
+         "lid": "COLD LID",
+         "temp": "TEMP",
+         "ice": "ice",
+         "water": "water",
+         "vapour": "vapour",
+         "plateau": "Watch the temperature",
+         "boiling": "bubbles show boiling",
+         "invisible": "vapour · invisible",
+         "predict": "First, predict",
+         "done": "Done",
+         "noBoil": "keep it under"
+        },
+        "start": 25,
+        "steps": [
+         {
+          "kind": "goal",
+          "goal": "evaporate",
+          "arg": 0.15,
+          "tMax": 60,
+          "text": "Dry some water from the cloth. Use warmth and moving air.",
+          "targets": "c5-evs-ch01-t01-m3"
+         },
+         {
+          "kind": "probe",
+          "probe": "glass",
+          "targets": "c5-evs-ch01-t01-m4"
+         },
+         {
+          "kind": "goal",
+          "goal": "condense",
+          "arg": 0.1,
+          "tMax": 60,
+          "text": "Cool the vapour and collect water drops."
+         }
+        ]
+       },
+       "boardTwin": {
+        "scriptRef": "board:c5-evs-ch01-t01-s1|practice|-|-",
+        "values": {
+         "title": "Phase Shift",
+         "need": "practice"
+        },
+        "board": {
+         "title": "Phase Shift",
+         "lines": [
+          "water",
+          "earth",
+          "fresh",
+          "salty"
+         ],
+         "figure": {
+          "kind": "none"
+         }
+        }
+       },
+       "board": null,
+       "cue": {
+        "clauseIdx": 0,
+        "preRollMs": 400,
+        "crossFadeMs": 420
+       },
+       "buildSha": null,
+       "blobUrl": null
+      }
+     }
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [
+      "flat"
+     ],
+     "rewritten": true,
+     "replaced": false,
+     "firstDraft": "Aarav, leave that one for later. Name the three forms of water and give one place where you can find each.",
+     "afterRewrite": [
+      "flat"
+     ],
+     "repaired": true,
+     "final": [
+      "flat"
+     ]
+    },
+    "verdict": "unverified",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 0,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 4633,
+    "item": "c5-evs-ch01-t01-i01",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 70
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 70
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1150
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 1871
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 1949
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1949
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1958
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1958
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1490
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1156
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1428
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 4549
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 4633
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "probe:h-frustration-03",
+   "lessonId": "548b975f-5f48-43bd-aa83-a7768d2ff1ee",
+   "childText": "ugh this makes no sense to me",
+   "ms": 5737,
+   "error": null,
+   "teacherReply": "Aarav, that sentence was confusing because we switched questions. Look at the freezer, sky, and tap: name water’s three forms and one place for each. Name the three forms of water and give one place where you can find each.",
+   "move": {
+    "kind": "hint",
+    "shape": "first: one short line that this one is hard work and that is okay (about the work, never about them, no ability words); then a smaller first step on the same question; rung 1 of 4 (pump): Invite them to think about the freezer, the sky and the tap; the key stays unsaid; no verdict on their reply: neither praise nor 'wrong'",
+    "itemId": "c5-evs-ch01-t01-i01",
+    "skillId": "c5-evs-ch01-t01-s1",
+    "hintLevel": 1,
+    "request": "frustration"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "text",
+     "value": "Name the three forms of water and give one place where yo…"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "Name the three forms of water and give one place where you can find each.",
+     "itemId": "c5-evs-ch01-t01-i01"
+    },
+    "answerForm": "words",
+    "tray": "studio",
+    "hint": {
+     "level": 1,
+     "text": "Invite them to think about the freezer, the sky and the tap"
+    },
+    "shortTitle": "Forms of water",
+    "beat": {
+     "beatId": "b5-practice_set",
+     "type": "practice_set",
+     "index": 5
+    },
+    "studioSlot": {
+     "slotId": "548b975f-5f48-43bd-aa83-a7768d2ff1ee:c1:slot",
+     "intentId": "548b975f-5f48-43bd-aa83-a7768d2ff1ee:c1",
+     "state": "revealed",
+     "artifact": {
+      "kind": "stagecraft",
+      "stage": {
+       "w": 1000,
+       "h": 625
+      },
+      "stagecraft": {
+       "rung": "engine_default",
+       "archetype": "phase-shift@1",
+       "spec": {
+        "archetype": "phase-shift@1",
+        "skills": [
+         "c5-evs-ch01-t01"
+        ],
+        "lang": "en",
+        "strings": {
+         "step": "Step",
+         "heat": "HEAT",
+         "cool": "COOL",
+         "fan": "FAN",
+         "lid": "COLD LID",
+         "temp": "TEMP",
+         "ice": "ice",
+         "water": "water",
+         "vapour": "vapour",
+         "plateau": "Watch the temperature",
+         "boiling": "bubbles show boiling",
+         "invisible": "vapour · invisible",
+         "predict": "First, predict",
+         "done": "Done",
+         "noBoil": "keep it under"
+        },
+        "start": 25,
+        "steps": [
+         {
+          "kind": "goal",
+          "goal": "evaporate",
+          "arg": 0.15,
+          "tMax": 60,
+          "text": "Dry some water from the cloth. Use warmth and moving air.",
+          "targets": "c5-evs-ch01-t01-m3"
+         },
+         {
+          "kind": "probe",
+          "probe": "glass",
+          "targets": "c5-evs-ch01-t01-m4"
+         },
+         {
+          "kind": "goal",
+          "goal": "condense",
+          "arg": 0.1,
+          "tMax": 60,
+          "text": "Cool the vapour and collect water drops."
+         }
+        ]
+       },
+       "boardTwin": {
+        "scriptRef": "board:c5-evs-ch01-t01-s1|practice|-|-",
+        "values": {
+         "title": "Phase Shift",
+         "need": "practice"
+        },
+        "board": {
+         "title": "Phase Shift",
+         "lines": [
+          "water",
+          "earth",
+          "fresh",
+          "salty"
+         ],
+         "figure": {
+          "kind": "none"
+         }
+        }
+       },
+       "board": null,
+       "cue": {
+        "clauseIdx": 0,
+        "preRollMs": 400,
+        "crossFadeMs": 420
+       },
+       "buildSha": null,
+       "blobUrl": null
+      }
+     }
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [
+      "flat"
+     ],
+     "rewritten": true,
+     "replaced": false,
+     "firstDraft": "Aarav, that sentence was confusing because we switched questions. Let’s reset: look at three places—freezer, sky, and tap—and notice how water appears in each. Name the three forms of water and give one place where you can find each.",
+     "leadSlot": true,
+     "afterRewrite": [
+      "flat",
+      "ask"
+     ],
+     "repaired": true,
+     "final": [
+      "flat"
+     ]
+    },
+    "verdict": "unverified",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "frustration",
+     "waitedMs": 0,
+     "parallel": null
+    },
+    "hintLevel": 1,
+    "phase": "practice",
+    "ms": 5733,
+    "item": "c5-evs-ch01-t01-i01",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 59
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 60
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1356
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 1556
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 1622
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1622
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1624
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1624
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1583
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 2371
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1667
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 5678
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 5733
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "recovery",
+   "lessonId": "548b975f-5f48-43bd-aa83-a7768d2ff1ee",
+   "childText": "liquid, solid, gas",
+   "ms": 4691,
+   "error": null,
+   "teacherReply": "Aarav, you correctly named liquid, solid, and gas. On a misty morning in Shimla, you can see tiny drops floating near you. Are those visible drops liquid water or invisible water vapour?",
+   "move": {
+    "kind": "probe",
+    "shape": "confirm specifically: name the exact thing they got right, no ability words; pose the question as written, in their language; then wait; two cases side by side; ask which one fits and what is different",
+    "itemId": "c5-evs-ch01-t01-rl-h1",
+    "skillId": "c5-evs-ch01-t01-s1",
+    "hintLevel": 0,
+    "probe": "P8"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "text",
+     "value": "On a misty morning in Shimla, you can see tiny drops floa…"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "Are those visible drops liquid water or invisible water vapour?",
+     "itemId": "c5-evs-ch01-t01-rl-h1"
+    },
+    "answerForm": "words",
+    "tray": "module",
+    "shortTitle": "Forms of water",
+    "verdict": "correct",
+    "withHelp": true,
+    "beat": {
+     "beatId": "b6-probe",
+     "type": "probe",
+     "index": 6
+    }
+   },
+   "moduleCommands": [
+    {
+     "op": "mount",
+     "moduleId": "m9",
+     "engine": "water-cycle@1",
+     "params": {
+      "topicId": "c5-evs-ch01-t01",
+      "skillId": "c5-evs-ch01-t01-s1",
+      "lang": "english",
+      "scene": "states",
+      "predict": true
+     }
+    }
+   ],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [
+      "drift",
+      "ask",
+      "noconfirm"
+     ],
+     "rewritten": true,
+     "replaced": false,
+     "firstDraft": "Aarav, you named the three forms correctly: liquid, solid, and gas. Now give one example or place for each form. Where can you find each?",
+     "afterRewrite": [
+      "noconfirm"
+     ],
+     "final": [
+      "noconfirm"
+     ]
+    },
+    "verdict": "correct",
+    "cls": {
+     "outcome": "correct",
+     "source": "exact"
+    },
+    "note": null,
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 4683,
+    "item": "c5-evs-ch01-t01-rl-h1",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 81
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 82
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 1716
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 1800
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1808
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1808
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1185
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1433
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1340
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 4609
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 4683
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "probe:h-clarify-02",
+   "lessonId": "548b975f-5f48-43bd-aa83-a7768d2ff1ee",
+   "childText": "what does that word in the question mean?",
+   "ms": 3099,
+   "error": null,
+   "teacherReply": "Aarav, “misty” means the air has many tiny water drops, like a light cloud near the ground. Are those visible drops liquid water or invisible water vapour?",
+   "move": {
+    "kind": "repair",
+    "shape": "they asked what the question means: say what it asks in simpler words, and what a hard word in it means; one tiny example of the word if it helps, never of the answer; the key stays unsaid; then the same question again; no verdict on their reply: neither praise nor 'wrong'",
+    "itemId": "c5-evs-ch01-t01-rl-h1",
+    "skillId": "c5-evs-ch01-t01-s1",
+    "hintLevel": 0,
+    "request": "clarify",
+    "lead": "they asked what the question means"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "text",
+     "value": "On a misty morning in Shimla, you can see tiny drops floa…"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "Are those visible drops liquid water or invisible water vapour?",
+     "itemId": "c5-evs-ch01-t01-rl-h1"
+    },
+    "answerForm": "words",
+    "tray": "module",
+    "shortTitle": "Forms of water",
+    "beat": {
+     "beatId": "b6-probe",
+     "type": "probe",
+     "index": 6
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [
+      "ask"
+     ],
+     "rewritten": false,
+     "replaced": false,
+     "firstDraft": "Aarav, “misty” means the air has many tiny water drops, like a light cloud near the ground. Are the visible drops liquid water or invisible water vapour?",
+     "repaired": true
+    },
+    "verdict": "ungraded",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "clarify",
+     "waitedMs": 764,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 3090,
+    "item": "c5-evs-ch01-t01-rl-h1",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 102
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 103
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 1006
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 1137
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1771
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1901
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1903
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1903
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1110
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 3026
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 3090
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "recovery",
+   "lessonId": "548b975f-5f48-43bd-aa83-a7768d2ff1ee",
+   "childText": "liquid",
+   "ms": 1349,
+   "error": null,
+   "teacherReply": "Correct—the visible tiny drops are liquid water. Why can you see these drops, but not water vapour?",
+   "move": {
+    "kind": "probe",
+    "shape": "confirm in two or three words only — the reason is theirs to give, so do not explain it; covert shape: protege naive but-why; Bittu, who does not know it, asks why; about THIS question; one open question; wait; a real question, never a check on them",
+    "itemId": "c5-evs-ch01-t01-rl-h1",
+    "skillId": "c5-evs-ch01-t01-s1",
+    "hintLevel": 0,
+    "probe": "P2"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "text",
+     "value": "On a misty morning in Shimla, you can see tiny drops floa…"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "answerForm": "words",
+    "tray": "module",
+    "shortTitle": "Forms of water",
+    "verdict": "correct",
+    "beat": {
+     "beatId": "b6-probe",
+     "type": "probe",
+     "index": 6
+    },
+    "ask": {
+     "text": "Why can you see these drops, but not water vapour?"
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false
+    },
+    "verdict": "correct",
+    "cls": {
+     "outcome": "correct",
+     "source": "exact"
+    },
+    "note": null,
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 1346,
+    "item": "c5-evs-ch01-t01-rl-h1",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 75
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 75
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 79
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 198
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 199
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1070
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 1272
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 1345
+     }
+    ]
+   }
+  }
+ ]
+}

@@ -1,39 +1,64 @@
 --- a/server/brain/turn.js
 +++ b/server/brain/turn.js
-@@ -435,6 +435,18 @@
-   let plan = await planTurn(state, cls, { ...planCtx, now });
-   let { evidence, writes, skillChanges, incident, r, instructions, skipped } = plan;
-   mark("planned");
-+  // round 3 voicesig (server/voicesig/lesson.js shadowDiff): what she WOULD have done. Only when this spoken turn's voice
-+  // read is shadow AND would hand the Director a tie-breaker: the same pure plan again (planTurn clones the state; its
-+  // staged writes are dropped, as the speculative plan's are) with those tie-breakers, compared on move kinds only.
-+  // Never on a safety turn (voicesig returns nothing there); TAXILA_VOICESIG_COUNTERFACTUAL=0 switches it off.
-+  let vsShadow = null;
-+  if (vsTurn && Object.keys(vsTurn.would ?? {}).length && process.env.TAXILA_VOICESIG_COUNTERFACTUAL !== "0") {
-+    const tCf = performance.now();
-+    const cfVoice = { signals: { ...(planCtx.voice?.signals ?? {}), ...vsTurn.would }, z: planCtx.voice?.z ?? {} };
-+    const cf = await seamSafe("voicesig.counterfactual", () => planTurn(state, cls, { ...planCtx, voice: cfVoice, now }), null);
-+    vsShadow = { ...voicesigSeam.shadowDiff(vsTurn, plan, cf), ms: Math.round((performance.now() - tCf) * 10) / 10 };
-+    mark("vs_counterfactual");
-+  }
-   let next = r.state;
-   // Seam (W2-I, server/relational/seam.js): one RelationalDirective per turn (pure, ≤ 3 ms). null = no relational move, and
-   // nothing below changes. W2-E's BR5 splits it into the kernel's authority ranks; until then only its face display rides
-@@ -763,7 +775,7 @@
+@@ -9,6 +9,7 @@
+ import { sessionTokenHash } from "../auth.js";
+ import { turnVoice } from "../voice/features.js";
+ import { voicesigSeam } from "../voicesig/lesson.js";
++import { knownReasons } from "./reasons.js";
+ import { getTopic } from "../content/index.js";
+ import { gamingDiscount, nextAffect } from "../learner/affect.js";
+ import { skillStateStmt, evidenceStmt, misconceptionFlagStmt, misconceptionResolveStmt } from "../learner/model.js";
+@@ -763,7 +764,7 @@
    // from a safety turn (a disclosure's timing is never part of the child's usual pace), and the codes go to the trace only.
    const vsSafety = r.move.kind === "safeguard" || !!incident;
    if (vsTurn && !late) next.vsb = vsSafety ? state.vsb : vsTurn.vsb;
 -  const vsReasons = vsTurn && !vsSafety && !late ? vsTurn.reasons ?? [] : [];
-+  const vsReasons = vsTurn && !vsSafety && !late ? [...(vsTurn.reasons ?? []), ...(vsTurn.shadowReasons ?? []), ...(vsShadow?.codes ?? [])] : [];
++  const vsReasons = vsTurn && !vsSafety && !late ? [...(vsTurn.reasons ?? []), ...(vsTurn.shadowReasons ?? [])] : [];
    // The dedupe record lands in the same transaction as the turn: a resend of this turnSeq replays outCore.
    if (turnSeq != null) {
      next.acks = [...(prev.acks ?? []).filter((a) => a.turnSeq !== turnSeq), { turnSeq, ...(edited ? { edited: true } : {}) }].slice(-ACKS_MAX);
-@@ -865,7 +877,8 @@
+@@ -834,6 +835,27 @@
+     throw new HttpError(409, ended && !late ? "lesson has ended" : "another turn for this lesson landed first; retry");
+   }
+   mark("stored");
++  // round 3 voicesig (server/voicesig/lesson.js shadowDiff): what she WOULD have done. AFTER the commit and never awaited
++  // by the reply on a hosted server (speed is never traded away); only when this spoken turn's voice read is shadow AND
++  // would hand the Director a tie-breaker: the same pure plan again (planTurn clones the state; its staged writes are
++  // dropped, as the speculative plan's are) with those tie-breakers, compared on move kinds and a hash of the move's
++  // shape (never words); the trace row then gains vs_diff.*. Local debug awaits it (debug.vs.shadow). Never on a safety
++  // or late turn, nor after a re-plan (relational overlay: its inputs differ, so a diff would not be voice's);
++  // TAXILA_VOICESIG_COUNTERFACTUAL=0 switches it off.
++  const vsShadowP = vsTurn && !vsSafety && !late && !kernel.replanned && Object.keys(vsTurn.would ?? {}).length && process.env.TAXILA_VOICESIG_COUNTERFACTUAL !== "0"
++    ? (async () => {
++      const tCf = performance.now();
++      const cfVoice = { signals: { ...(planCtx.voice?.signals ?? {}), ...vsTurn.would }, z: planCtx.voice?.z ?? {} };
++      const cf = await seamSafe("voicesig.counterfactual", () => planTurn(state, cls, { ...planCtx, voice: cfVoice, now }), null);
++      const d = { ...voicesigSeam.shadowDiff(vsTurn, plan, cf), ms: Math.round((performance.now() - tCf) * 10) / 10 };
++      const codes = knownReasons(d.codes);
++      if (traceOk && codes.length) {
++        await q("update brain_trace set reasons = reasons || $3::text[] where lesson_id = $1 and turn = $2", [lesson.id, next.turn, codes])
++          .catch((e) => console.warn("[voicesig] shadow codes not stored:", e?.message));
++      }
++      return d;
++    })().catch(() => null)
++    : null;
+   // Seam (W2-H): the committed turn revealed / retired a Studio piece (mount row, SSE status); after commit, never awaited.
+   if (turnStudio) seamSafe("studio.onReveal", () => studioSeam.onReveal({ lessonId: lesson.id, childId: child.id, turn: next.turn, studio: turnStudio }), null);
+   // The online fold is the cache only if our inserts got the next seqs (no interleaved writer); else replay next turn.
+@@ -849,6 +871,7 @@
+   console.info(`[lesson] turn ${lesson.id} #${next.turn} ${r.move.kind}${r.hold ? " (hold)" : ""}${late ? " (late)" : ""} cls=${cls ? `${cls.outcome}/${cls.source}` : "module"}${speculation ? ` spec=${speculation.hit ? "hit" : "miss"}/${speculation.tried}` : ""} ${ms}ms`);
+   /** @type {import("../../shared/contracts").TurnResponse} */
+   const out = { ...(late ? {} : clientInstructions(state.mode, instructions)), ...outCore };
++  const vsShadow = vsShadowP && debugFor(req) ? await vsShadowP : null;
+   if (debugFor(req)) {
+     const item = r.item;
+     out.debug = {
+@@ -865,7 +888,8 @@
        stage: { accepted: kernel.arb.accepted.map((p) => p.kind), rejected: kernel.arb.rejected.map((x) => `${x.p.kind}:${x.why}`), wb: kernel.wb?.declined ?? null, studioPropose: studioView?.propose ?? null,
          point: stagecraftPoint ? { want: stagecraftPoint.want?.family ?? null, request: stagecraftPoint.request?.kind ?? null } : null, slot: studioSlot?.artifact?.kind ?? null, tray: r.ui?.tray ?? null },
        ...(voice ? { voice: { reliable: voice.reliable, signals: voice.signals, z: voice.z } } : {}),
 -      ...(vsTurn?.trace && !vsSafety ? { vs: { ...vsTurn.trace, read: vsTurn.read, hints: vsTurn.hints, reasons: vsReasons } } : {}),
-+      ...(vsTurn?.trace && !vsSafety ? { vs: { ...vsTurn.trace, read: vsTurn.read, hints: vsTurn.hints, reasons: vsReasons,
++      ...(vsTurn?.trace && !vsSafety ? { vs: { ...vsTurn.trace, read: vsTurn.read, hints: vsTurn.hints, reasons: [...vsReasons, ...(vsShadow?.codes ?? [])],
 +        ...(vsShadow?.record ? { shadow: { ...vsShadow.record, ms: vsShadow.ms } } : {}) } } : {}),
      };
    }

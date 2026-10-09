@@ -110,9 +110,11 @@ def main():
     out = {"label": "HiACC (EVALUATION ONLY; CC BY 4.0 per Zenodo / CC BY-NC 4.0 per the article: the stricter reading applied). 20 children aged 10-14 and 20 adults, Hinglish, Samsung Galaxy M34, 16 kHz. NOT a precision: the transcripts do not mark fillers. Fire rates under identical conditions, children vs adults.",
            "models": {}}
     for spec in a.models.split(","):
-        m, thr = spec.split(":")[0], float(spec.split(":")[1])
-        rows = [r for r in results if r["model"] == m and abs(r["thr"] - thr) < 1e-9]
-        out["models"][f"{os.path.relpath(m, ROOT)}@{thr}"] = {"thr": thr,
+        parts = spec.split(":")
+        m, thr = parts[0], float(parts[1])
+        mn = int(parts[2]) if len(parts) > 2 else 200
+        rows = [r for r in results if r["model"] == m and abs(r["thr"] - thr) < 1e-9 and r.get("minMs", 200) == mn]
+        out["models"][f"{os.path.relpath(m, ROOT)}@{thr}/{mn}ms"] = {"thr": thr, "minMs": mn,
             **{f"{g}.{k}": agg([{**r, "per": [u for u in r["per"] if k == "all" or u["kind"] == k]} for r in rows if r["group"] == g]) for g in ("children", "adult") for k in ("all", "answer", "prompt")}}
     json.dump({**out, "rows": results}, open(a.out, "w"), indent=1, ensure_ascii=False)
     print(json.dumps(out, indent=1, ensure_ascii=False))

@@ -19,7 +19,7 @@ import { join, resolve } from "node:path";
 const arg = (k, d = null) => { const i = process.argv.indexOf(`--${k}`); return i > 0 ? process.argv[i + 1] : d; };
 const flag = (k) => process.argv.includes(`--${k}`);
 const PLAY = arg("play"), BEFORE = arg("before"), OUT = resolve(arg("out", "docs/design/round3/play/shots"));
-const DO_SHOTS = flag("shots"), DO_FPS = flag("fps"), DO_BA = flag("before-after");
+const DO_SHOTS = flag("shots"), DO_FPS = flag("fps"), DO_BA = flag("before-after"), DO_MISTAKES = flag("mistakes");
 /** --all-arts: every mode × viewport × art direction (JPEG to keep the folder small); default: one rotating art per cell (PNG) */
 const ALL_ARTS = flag("all-arts");
 const ONLY = arg("only");
@@ -40,6 +40,12 @@ const INSTRUMENT = `(() => {
   requestAnimationFrame(tick);
 })();`;
 
+/** the host is shared with other agents (load average 15-30 on 4 cores): one slow capture is retried, not fatal */
+async function snap(page, o) {
+  for (let k = 0; ; k++) {
+    try { return await page.screenshot({ ...o, timeout: 60000 }); } catch (e) { if (k >= 2) throw e; console.log(`  (screenshot retry ${k + 1}: ${String(e.message ?? e).split("\n")[0]})`); }
+  }
+}
 const VIEWPORTS = [{ id: "p360", w: 360, h: 800, dpr: 1 }, { id: "p412", w: 412, h: 915, dpr: 1 }, { id: "l1366", w: 1366, h: 768, dpr: 1 }];
 const ARTS = ["kagaz", "chalk", "blueprint", "raat"];
 /** the matrix: every family and mode; a mid-play state after `steps` of the level's own solution (or custom acts) */
@@ -66,7 +72,7 @@ const young = (q) => Number(/class=(\d)/.exec(q)?.[1] ?? 6) <= 5;
 
 const pct = (a, q) => { if (!a.length) return null; const s = [...a].sort((x, y) => x - y); return s[Math.min(s.length - 1, Math.floor(q * s.length))]; };
 
-async function shotOne(browser, m, vp, art) {
+async function shotOne(browser, m, vp, art, { mistake = false } = {}) {
   const ctx = await browser.newContext({ viewport: { width: vp.w, height: vp.h }, deviceScaleFactor: vp.dpr, hasTouch: vp.w < 600 });
   await ctx.addInitScript(INSTRUMENT);
   const page = await ctx.newPage();
@@ -76,7 +82,20 @@ async function shotOne(browser, m, vp, art) {
   await page.goto(`${PLAY}?${m.q}&art=${art}`);
   await page.waitForFunction(() => !!window.__play, null, { timeout: 15000 });
   await page.waitForTimeout(700);
-  if (m.custom === "miss") {
+  let malId = null;
+  if (mistake) {
+    // the state right after a typical mistake: the first of the level's own mal-rules that applies, played as a child holding
+    // that belief would play it (the law's consequence and the teacher's caption are what the still shows)
+    let plan = await page.evaluate(() => { for (const id of window.__play.mal()) { const a = window.__play.malActs(id); if (a && a.length) return { id, acts: a }; } return null; });
+    // families whose mal-rules show as a REFUSED move rather than an end state (no mal acts replay): the move the belief makes
+    if (!plan) plan = await page.evaluate((mode) => {
+      const p = window.__play.level.params, dig = (n, q) => Math.floor(n / 10 ** q) % 10;
+      if (mode === "bundles") for (let q = 0; q < p.places; q++) if (dig(p.a, q) < dig(p.b, q)) return { id: "refused:take-without-regrouping", acts: [{ kind: "take", place: q, n: dig(p.b, q) }] };
+      if (mode === "strips-add") return { id: "refused:pour-unlike-pieces", acts: [{ kind: "pour", from: 0, to: 2 }] };
+      return null;
+    }, m.id);
+    if (plan) { malId = plan.id; for (const a of plan.acts) { await page.evaluate((x) => window.__play.dispatch(x), a); await page.waitForTimeout(380); } }
+  } else if (m.custom === "miss") {
     await page.evaluate(() => { const v = window.__play.level.params.values[0]; window.__play.dispatch({ kind: "place", which: 0, x: v.num / v.den + 0.18 }); window.__play.dispatch({ kind: "commit" }); });
   } else if (m.steps) {
     const sol = await page.evaluate(() => window.__play.solve());
@@ -87,8 +106,8 @@ async function shotOne(browser, m, vp, art) {
   // the floors are judged on the settled frame (a 250 ms spring-in scales text on the way; that frame is not the layout)
   await page.evaluate(() => { window.__txt = []; window.__play.invalidate(); });
   await page.waitForTimeout(150);
-  const file = `${m.id}-${vp.id}-${art}.${ALL_ARTS ? "jpg" : "png"}`;
-  await page.screenshot({ path: join(OUT, file), ...(ALL_ARTS ? { type: "jpeg", quality: 82 } : {}) });
+  const file = `${mistake ? "mistake-" : ""}${m.id}-${vp.id}-${art}.${ALL_ARTS || mistake ? "jpg" : "png"}`;
+  await snap(page, { path: join(OUT, file), ...(ALL_ARTS || mistake ? { type: "jpeg", quality: 82 } : {}) });
   const a = await page.evaluate((y) => {
     const au = window.__play.audit, floor = y ? 16 : 14;
     const box = au.box, texts = au.texts.map((t) => t.px), targets = au.targets.map((t) => Math.min(t.w, t.h));
@@ -107,7 +126,7 @@ async function shotOne(browser, m, vp, art) {
   await ctx.close();
   const pass = (a.canvasTextMin === null || a.canvasTextMin >= a.floor - 0.01) && (a.drawnTextMinInstr === null || a.drawnTextMinInstr >= a.floor - 0.01) && (a.domTextMin === null || a.domTextMin >= 14) &&
     (a.targetMin === null || a.targetMin >= 44) && (a.buttonMin === null || a.buttonMin >= 44) && !a.hOverflow && a.textOutOfBox === 0 && a.clipped === 0 && a.buttonsClipped === 0 && errors.length === 0;
-  return { mode: m.id, family: famOf(m.q), vp: vp.id, art, file, pass, errors, ...a };
+  return { mode: m.id, family: famOf(m.q), vp: vp.id, art, file, pass, errors, ...(mistake ? { malId } : {}), ...a };
 }
 
 async function fpsPlay(browser, m, art, { throttle = 4, secs = 6, w = 412, h = 915, dpr = 2 } = {}) {
@@ -144,13 +163,13 @@ async function fpsPlay(browser, m, art, { throttle = 4, secs = 6, w = 412, h = 9
 async function beforeOne(browser, engine, { throttle = 4, secs = 6, box = { w: 181, h: 113 }, page: pg = { w: 360, h: 800 }, dpr = 2, shot = null } = {}) {
   const ctx = await browser.newContext({ viewport: { width: pg.w, height: pg.h }, deviceScaleFactor: dpr });
   await ctx.addInitScript(INSTRUMENT);
-  await ctx.addInitScript(`document.addEventListener("DOMContentLoaded", () => { const s = document.createElement("style"); s.textContent = ".solo-slot.sv2-slot, .solo-slot { position:absolute !important; inset:auto !important; left:${(pg.w - box.w) / 2}px !important; top:${Math.round(pg.h * 0.5)}px !important; width:${box.w}px !important; height:${box.h}px !important; }"; document.head.appendChild(s); });`);
+  await ctx.addInitScript(`document.addEventListener("DOMContentLoaded", () => { const s = document.createElement("style"); s.textContent = ".solo-slot.sv2-slot, .solo-slot { position:absolute !important; inset:auto !important; left:${(pg.w - box.w) / 2}px !important; top:${Math.min(Math.round(pg.h * 0.5), pg.h - box.h - 64)}px !important; width:${box.w}px !important; height:${box.h}px !important; }"; document.head.appendChild(s); });`);
   const page = await ctx.newPage();
   const errors = []; page.on("pageerror", (e) => errors.push(String(e).slice(0, 160)));
   await page.goto(`${BEFORE}?engine=${encodeURIComponent(engine)}&sound=off&audio=0`);
   await page.waitForTimeout(2500);
   const slot = await page.locator(".solo-slot").boundingBox();
-  if (shot) await page.screenshot({ path: join(OUT, shot) });
+  if (shot) await snap(page, { path: join(OUT, shot) });
   const cdp = await ctx.newCDPSession(page);
   await cdp.send("Emulation.setCPUThrottlingRate", { rate: throttle });
   await page.evaluate(() => { window.__frames = []; window.__txt = []; });
@@ -205,6 +224,17 @@ try {
     report.artsPerFamily = Object.fromEntries(Object.entries(arts).map(([k, v]) => [k, [...v]]));
     report.shotsPass = `${report.shots.filter((s) => s.pass).length}/${report.shots.length}`;
   }
+  if (DO_MISTAKES) {
+    // one "after a typical mistake" screen per mode at 412 × 915 in the art direction the judges see for that phone
+    report.mistakes = [];
+    for (const [mi, m] of MODES.entries()) {
+      if (ONLY && !m.id.startsWith(ONLY)) continue;
+      const r = await shotOne(browser, m, VIEWPORTS[1], ARTS[(mi + 1) % ARTS.length], { mistake: true });
+      report.mistakes.push(r);
+      console.log(`${r.pass ? "PASS" : "FAIL"} ${r.file} mal=${r.malId} text≥${r.canvasTextMin} target≥${r.targetMin} clipText=${r.clipped} err=${r.errors.length}`);
+    }
+    report.mistakesPass = `${report.mistakes.filter((s) => s.pass).length}/${report.mistakes.length}`;
+  }
   if (DO_FPS) {
     // the host is shared (other agents: load average logged); each mode is measured REPS times and the median run reported
     const REPS = Number(arg("reps", 1));
@@ -227,8 +257,12 @@ try {
     report.beforeAfter = [];
     for (const [i, [eng, mode]] of PAIRS.entries()) {
       const b = await beforeOne(browser, eng, { shot: `before-${eng.replace("@1", "")}-p360.png` });
+      // the same engine given the play world's own box (360 × 576 on this page): separates "the box was tiny" from "the
+      // engine was cheap" (the judges see both pairs)
+      const bf = await beforeOne(browser, eng, { box: { w: 360, h: 576 }, shot: `before-${eng.replace("@1", "")}-p360-full.png` });
       const a = await afterOne(browser, MODES.find((x) => x.id === mode), ARTS[i % ARTS.length]);
-      report.beforeAfter.push({ before: b, after: a });
+      report.beforeAfter.push({ before: b, beforeFullBox: bf, after: a });
+      console.log(`  before at the full box ${bf.box.w}x${bf.box.h} text min ${bf.textMin} p50 ${bf.textP50} fps ${bf.fps}`);
       console.log(`before ${eng} box ${b.box.w}x${b.box.h} text min ${b.textMin} p50 ${b.textP50} fps ${b.fps} | after ${mode} box ${a.box.w}x${a.box.h} text min ${a.textMin} p50 ${a.textP50} target ${a.targetMin} fps ${a.fps}`);
     }
   }

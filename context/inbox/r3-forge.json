@@ -131,31 +131,145 @@
       "kind": "open",
       "title": "Timing bars not shown met: request -> piece p90 <= 3 s was 3560-6687 ms in local forge runs (n = 2-3 per run; the piece rides the ask turn's response and the turn itself was p90 4.5-4.8 s both before and after on a contended 4-core sandbox; composeAsk adds 4-8 ms warm, 39 ms max); board lateness p90 <= 1.5 s was -700 to 2618 ms locally (n = 5-10) and 2374 ms on taxila.dev before (n = 11). Forge does not touch the reply path; the bar needs a prod or quiet-machine measurement after deploy.",
       "at": "2026-10-09"
+    },
+    {
+      "id": "dec-r3f-keep-engine-before-play",
+      "kind": "decision",
+      "title": "On a game / animation / simulation ask, an engine already in the tray (not the template rung) is KEPT before a play piece is composed (patch 03 keepEngineFor runs first), although compose()'s content ladder ranks a play level above it: the engine in the tray is the current item's input, and swapping it mid-item for a different activity breaks the item. Seen in the after-run: the c4 fractions@1 engine (a plain bar, +/- and Check) stayed although the topic is admitted to the richer play strips game. Reverse if: children asked to play prefer, or learn more from, the play piece over the kept engine (pilot), or the Director can close the item before the swap.",
+      "at": "2026-10-09"
+    },
+    {
+      "id": "o-r3f-play-piece-holds-tray",
+      "kind": "open",
+      "title": "A play piece on the Studio slot has no 'complete' in the studio seam (its level end reaches the lesson as a play module event, not a Studio grade), so requestIntent declines every whiteboard and composeAsk declines another game until the seam retires the piece (8 conversation turns). Needs a studio-seam hook for play's level_end (turn.js, where play's patch 03 already reads verified play events).",
+      "at": "2026-10-09"
     }
   ],
   "edges": [
-    { "src": "dec-r3f-board-laid-out-for-box", "rel": "measured_by", "dst": "ms-r3f-boardfit-pure-2026-10-09" },
-    { "src": "dec-r3f-board-laid-out-for-box", "rel": "measured_by", "dst": "ms-r3f-library-matrix-2026-10-09" },
-    { "src": "dec-r3f-board-laid-out-for-box", "rel": "supersedes", "dst": "rj-r3f-shrink-board-into-box" },
-    { "src": "dec-r3f-board-laid-out-for-box", "rel": "caused_by", "dst": "rj-r3f-server-refit-board" },
-    { "src": "dec-r3f-live-play-piece", "rel": "measured_by", "dst": "ms-r3f-acceptance-2026-10-09" },
-    { "src": "dec-r3f-live-play-piece", "rel": "caused_by", "dst": "ms-r3f-prod-walk-2026-10-09" },
-    { "src": "dec-r3f-live-play-piece", "rel": "constrains", "dst": "live-free-generation" },
-    { "src": "dec-r3f-serving-floor", "rel": "measured_by", "dst": "ms-r3f-play-cert-2026-10-09" },
-    { "src": "dec-r3f-qa-deterministic-measured", "rel": "inherits", "dst": "rj-holistic-model-judge-gate" },
-    { "src": "dec-r3f-qa-deterministic-measured", "rel": "measured_by", "dst": "ms-r3f-canvas-probe" },
-    { "src": "dec-r3f-qa-deterministic-measured", "rel": "supersedes", "dst": "rj-r3f-qa-dom-only" },
-    { "src": "dec-r3f-qa-deterministic-measured", "rel": "supersedes", "dst": "rj-r3f-qa-own-opacity" },
-    { "src": "dec-r3f-wb-gate-3", "rel": "caused_by", "dst": "ms-r3f-prod-walk-2026-10-09" },
-    { "src": "dec-r3f-wb-gate-3", "rel": "caused_by", "dst": "rj-r3f-w14-hard" },
-    { "src": "dec-r3f-wb-gate-3", "rel": "part_of", "dst": "dec-content-board-first" },
-    { "src": "dec-r3f-empty-tray-given-back", "rel": "caused_by", "dst": "dec-r3f-wb-gate-3" },
-    { "src": "dec-r3f-empty-tray-given-back", "rel": "measured_by", "dst": "ms-r3f-acceptance-2026-10-09" },
-    { "src": "ms-r3f-variety-2026-10-09", "rel": "caused_by", "dst": "ms-r3f-prod-walk-2026-10-09" },
-    { "src": "o-r3f-play-canvas-defects", "rel": "caused_by", "dst": "ms-r3f-canvas-probe" },
-    { "src": "o-r3f-stagecraft-off-on-practice", "rel": "blocks", "dst": "dec-r3f-live-play-piece" },
-    { "src": "o-r3f-timing-bars-local", "rel": "caused_by", "dst": "ms-r3f-acceptance-2026-10-09" },
-    { "src": "ms-r3f-acceptance-2026-10-09", "rel": "caused_by", "dst": "rj-r3f-contaminated-measurement-tree" },
-    { "src": "ms-r3f-library-matrix-2026-10-09", "rel": "caused_by", "dst": "studio-v2-engine-plus-spec" }
+    {
+      "src": "dec-r3f-board-laid-out-for-box",
+      "rel": "measured_by",
+      "dst": "ms-r3f-boardfit-pure-2026-10-09"
+    },
+    {
+      "src": "dec-r3f-board-laid-out-for-box",
+      "rel": "measured_by",
+      "dst": "ms-r3f-library-matrix-2026-10-09"
+    },
+    {
+      "src": "dec-r3f-board-laid-out-for-box",
+      "rel": "supersedes",
+      "dst": "rj-r3f-shrink-board-into-box"
+    },
+    {
+      "src": "dec-r3f-board-laid-out-for-box",
+      "rel": "caused_by",
+      "dst": "rj-r3f-server-refit-board"
+    },
+    {
+      "src": "dec-r3f-live-play-piece",
+      "rel": "measured_by",
+      "dst": "ms-r3f-acceptance-2026-10-09"
+    },
+    {
+      "src": "dec-r3f-live-play-piece",
+      "rel": "caused_by",
+      "dst": "ms-r3f-prod-walk-2026-10-09"
+    },
+    {
+      "src": "dec-r3f-live-play-piece",
+      "rel": "constrains",
+      "dst": "live-free-generation"
+    },
+    {
+      "src": "dec-r3f-serving-floor",
+      "rel": "measured_by",
+      "dst": "ms-r3f-play-cert-2026-10-09"
+    },
+    {
+      "src": "dec-r3f-qa-deterministic-measured",
+      "rel": "inherits",
+      "dst": "rj-holistic-model-judge-gate"
+    },
+    {
+      "src": "dec-r3f-qa-deterministic-measured",
+      "rel": "measured_by",
+      "dst": "ms-r3f-canvas-probe"
+    },
+    {
+      "src": "dec-r3f-qa-deterministic-measured",
+      "rel": "supersedes",
+      "dst": "rj-r3f-qa-dom-only"
+    },
+    {
+      "src": "dec-r3f-qa-deterministic-measured",
+      "rel": "supersedes",
+      "dst": "rj-r3f-qa-own-opacity"
+    },
+    {
+      "src": "dec-r3f-wb-gate-3",
+      "rel": "caused_by",
+      "dst": "ms-r3f-prod-walk-2026-10-09"
+    },
+    {
+      "src": "dec-r3f-wb-gate-3",
+      "rel": "caused_by",
+      "dst": "rj-r3f-w14-hard"
+    },
+    {
+      "src": "dec-r3f-wb-gate-3",
+      "rel": "part_of",
+      "dst": "dec-content-board-first"
+    },
+    {
+      "src": "dec-r3f-empty-tray-given-back",
+      "rel": "caused_by",
+      "dst": "dec-r3f-wb-gate-3"
+    },
+    {
+      "src": "dec-r3f-empty-tray-given-back",
+      "rel": "measured_by",
+      "dst": "ms-r3f-acceptance-2026-10-09"
+    },
+    {
+      "src": "ms-r3f-variety-2026-10-09",
+      "rel": "caused_by",
+      "dst": "ms-r3f-prod-walk-2026-10-09"
+    },
+    {
+      "src": "o-r3f-play-canvas-defects",
+      "rel": "caused_by",
+      "dst": "ms-r3f-canvas-probe"
+    },
+    {
+      "src": "o-r3f-stagecraft-off-on-practice",
+      "rel": "blocks",
+      "dst": "dec-r3f-live-play-piece"
+    },
+    {
+      "src": "o-r3f-timing-bars-local",
+      "rel": "caused_by",
+      "dst": "ms-r3f-acceptance-2026-10-09"
+    },
+    {
+      "src": "ms-r3f-acceptance-2026-10-09",
+      "rel": "caused_by",
+      "dst": "rj-r3f-contaminated-measurement-tree"
+    },
+    {
+      "src": "ms-r3f-library-matrix-2026-10-09",
+      "rel": "caused_by",
+      "dst": "studio-v2-engine-plus-spec"
+    },
+    {
+      "src": "dec-r3f-keep-engine-before-play",
+      "rel": "constrains",
+      "dst": "dec-r3f-live-play-piece"
+    },
+    {
+      "src": "o-r3f-play-piece-holds-tray",
+      "rel": "caused_by",
+      "dst": "dec-r3f-live-play-piece"
+    }
   ]
 }

@@ -170,7 +170,9 @@ gets the truth from the consent state. A forget request is honoured, and the par
   never on a goodbye, never twice running, ≤ 4 in any 10 turns.
 - **Safety floor first:** the predicate (`scanSafety`) runs on the words before anything is synthesised. The ack is
   decided only after classify has returned, with its model distress read whenever the floor asks for one. Never with a
-  safeguarding episode open, a content-filter block, or a duplex partial-safety hit.
+  safeguarding episode open, a content-filter block (on classify, or on a speculative reply on the same words: the turn
+  will then fail closed into safeguarding — measured once, `RESULTS.md` §1), or a duplex partial-safety hit. The device
+  also stops a sounding echo the moment her reply carries the helplines.
 - **Zero extra model calls:** the route never classifies. It waits on the PERCEPTION BUS (`server/latency/bus.js`), where
   the prefetch and the turn publish their classify promise per (lesson, words, turn). Quotas are maxed, so this matters.
   The same words on a later turn never reuse an earlier turn's classify (measured defect fixed: ack-leak run A, answer 25).
@@ -225,9 +227,11 @@ echo is ~0.8 s later than it could be after an exact-key answer. That is the pri
   Never in the first meeting. Never on a correction, hint, re-teach, repair, safeguard or wrap move, a boundary turn, or
   a withdrawn turn. In the opener window or by deixis (the skill on the table). An interest only as the setting of an
   explanation or a worked example. Verdict-blind (the same decision after a right and a wrong answer: tested).
-- **Placement** (patch 04): a memory about the child leads the turn, as a note in the LAST section. Position is
-  mechanism: in the move section it was voiced 0/3 in the opener (`RESULTS.md` §5). An interest stays in the move as
-  the setting of the example.
+- **Placement** (patch 04): a memory about the child leads the turn, as a note in the LAST section ("OPEN THIS TURN WITH
+  what you remember of them, in a few words of your own, before the move …"). Position is mechanism, but position alone
+  was not enough. The opener callback was voiced 0/3 in the move section, 0/3 as a bare "FIRST" note in the last
+  section (the hook shape's own "open with …" won), and 3/3 with this wording (`RESULTS.md` §5). An interest stays in
+  the move as the setting of the example.
 - **The claim check** (F9, `memory.js claimProblem`): any sentence of her reply that refers to the child's past ("last
   time", "pichhli baar", "tumne bataya tha") must be backed. Backing is the callback this turn carried, or this lesson's
   own child words, compared on content words (English and Hinglish function words removed). The kit's own words are NOT

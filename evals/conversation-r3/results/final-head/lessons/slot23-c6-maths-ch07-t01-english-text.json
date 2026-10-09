@@ -1,0 +1,4732 @@
+{
+ "slot": 23,
+ "topic": "c6-maths-ch07-t01",
+ "cls": 6,
+ "lang": "english",
+ "lane": "text",
+ "lessons": [
+  {
+   "lessonId": "a17585ca-97fc-4ecd-8b8e-54081c9e6ae0",
+   "why": "start",
+   "at": "2026-10-09T12:45:04.399Z",
+   "teacher": "Arjun"
+  }
+ ],
+ "turns": [
+  {
+   "who": "teacher",
+   "kind": "opening",
+   "lessonId": "a17585ca-97fc-4ecd-8b8e-54081c9e6ae0",
+   "teacherReply": "Hi Anaya, I’m Arjun, your AI teacher. Today we’ll explore equal shares and fractions—like dividing a football fairly. Which football position do you enjoy?",
+   "ui": {
+    "status": "your_turn",
+    "phase": "warmup",
+    "handover": "answer",
+    "answerForm": "words",
+    "tray": "none",
+    "shortTitle": "Fractional units",
+    "beat": {
+     "beatId": "b1-arrive",
+     "type": "arrive",
+     "index": 1
+    },
+    "ask": {
+     "text": "Which football position do you enjoy?"
+    }
+   }
+  },
+  {
+   "who": "child",
+   "tag": "greet",
+   "lessonId": "a17585ca-97fc-4ecd-8b8e-54081c9e6ae0",
+   "childText": "hi, ready",
+   "ms": 2664,
+   "error": null,
+   "teacherReply": "Imagine two teams sharing the same football-shaped cake equally. Would you pick one of 2 equal pieces or one of 6? Why do you think so?",
+   "move": {
+    "kind": "hook",
+    "shape": "open with one concrete everyday situation built on their interest (football) — kit contexts: sharing rotis among siblings, chikki and laddoos, rakhi ribbons; ask what they think will happen or which they would pick — a prediction, no right answer yet; any bigger/more comparison: two quantities of one kind, in one unit — a count against a count, a distance against a distance; never across kinds; mention once: at the end they will teach this to Bittu (a pretend new student who missed this class)",
+    "format": "F4"
+   },
+   "ui": {
+    "status": "your_turn",
+    "phase": "teach",
+    "handover": "answer",
+    "answerForm": "words",
+    "tray": "none",
+    "shortTitle": "Fractional units",
+    "beat": {
+     "beatId": "b2-hook",
+     "type": "hook",
+     "index": 2
+    },
+    "ask": {
+     "text": "Why do you think so?"
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [
+      "twoq"
+     ],
+     "rewritten": false,
+     "replaced": false,
+     "firstDraft": "Great, Anaya. Imagine two teams sharing the same football-shaped cake equally: would you pick one of 2 equal pieces or one of 6? Why?",
+     "repaired": true,
+     "regutted": true,
+     "final": [
+      "twoq"
+     ]
+    },
+    "verdict": "ungraded",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 233,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "teach",
+    "ms": 2596,
+    "item": null,
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 53
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 53
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 930
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 985
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1163
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1218
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1219
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1220
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1357
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 994
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 2507
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 2596
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "probe:question_on_topic-04",
+   "lessonId": "a17585ca-97fc-4ecd-8b8e-54081c9e6ae0",
+   "childText": "why does a bigger number at the bottom make the piece smaller?",
+   "ms": 5497,
+   "error": null,
+   "teacherReply": "Anaya, splitting one whole into more equal parts makes each part smaller; one of 3 parts is smaller than one of 2. Which part would you choose?",
+   "move": {
+    "kind": "explain",
+    "shape": "they asked a real question about today's idea: answer it in at most two sentences, correctly and simply, without giving the key; then the question; one idea only: Recognise a fractional unit 1/n as one of n equal parts of a whole; an example from their interest (football) if it fits naturally; objects first, then the symbol; point at the screen only at what the on-screen row lists; never a drawing made of characters; end with one small question that makes them USE the idea — never 'samjha?'",
+    "skillId": "c6-maths-ch07-t01-s1",
+    "format": "F3",
+    "request": "answer_q",
+    "lead": "they asked a real question about today's idea: answer it in at most two sentences, correctly and simply, without giving the key; then the question"
+   },
+   "ui": {
+    "status": "your_turn",
+    "phase": "teach",
+    "handover": "answer",
+    "answerForm": "words",
+    "tray": "studio",
+    "shortTitle": "Fractional units",
+    "beat": {
+     "beatId": "b3-explain",
+     "type": "explain",
+     "index": 3
+    },
+    "ask": {
+     "text": "Which part would you choose?"
+    },
+    "studioSlot": {
+     "slotId": "a17585ca-97fc-4ecd-8b8e-54081c9e6ae0:wb:2:slot",
+     "intentId": "a17585ca-97fc-4ecd-8b8e-54081c9e6ae0:wb:2",
+     "state": "revealed",
+     "artifact": {
+      "kind": "whiteboard",
+      "stage": {
+       "w": 800,
+       "h": 500
+      },
+      "script": {
+       "v": 1,
+       "scriptId": "a17585ca-97fc-4ecd-8b8e-54081c9e6ae0:wb:2",
+       "line": {
+        "lessonId": "a17585ca-97fc-4ecd-8b8e-54081c9e6ae0",
+        "teacherReplySeq": 5
+       },
+       "anchor": "line_audio_start",
+       "board": {
+        "w": 800,
+        "h": 500,
+        "ground": "chalk"
+       },
+       "mode": "fresh",
+       "durationMs": 12364,
+       "ops": [
+        {
+         "id": "large",
+         "op": "rect",
+         "startMs": 0,
+         "endMs": 1520,
+         "ink": "chalk",
+         "weight": 2,
+         "at": [
+          70,
+          150
+         ],
+         "w": 250,
+         "h": 220
+        },
+        {
+         "id": "largecut",
+         "op": "line",
+         "startMs": 1774,
+         "endMs": 2787,
+         "ink": "mark",
+         "weight": 2,
+         "from": [
+          195,
+          150
+         ],
+         "to": [
+          195,
+          370
+         ]
+        },
+        {
+         "id": "small",
+         "op": "rect",
+         "startMs": 3294,
+         "endMs": 4815,
+         "ink": "chalk",
+         "weight": 2,
+         "at": [
+          450,
+          150
+         ],
+         "w": 250,
+         "h": 220
+        },
+        {
+         "id": "smallcut1",
+         "op": "line",
+         "startMs": 5068,
+         "endMs": 6082,
+         "ink": "mark",
+         "weight": 2,
+         "from": [
+          533,
+          150
+         ],
+         "to": [
+          533,
+          370
+         ]
+        },
+        {
+         "id": "smallcut2",
+         "op": "line",
+         "startMs": 6082,
+         "endMs": 7095,
+         "ink": "mark",
+         "weight": 2,
+         "from": [
+          616,
+          150
+         ],
+         "to": [
+          616,
+          370
+         ]
+        },
+        {
+         "id": "smallpart",
+         "op": "highlight",
+         "startMs": 7856,
+         "endMs": 9883,
+         "ink": "accent",
+         "weight": 2,
+         "target": "smallcut1",
+         "style": "circle"
+        },
+        {
+         "id": "smaller",
+         "op": "arrow",
+         "startMs": 10390,
+         "endMs": 12164,
+         "ink": "accent",
+         "weight": 2,
+         "from": [
+          320,
+          400
+         ],
+         "to": [
+          450,
+          400
+         ]
+        }
+       ],
+       "facts": {
+        "kind": "diagram",
+        "archetype": "whiteboard",
+        "onScreen": {}
+       }
+      }
+     }
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [
+      "parts"
+     ],
+     "rewritten": true,
+     "replaced": false,
+     "firstDraft": "Anaya, the same whole split into more equal parts gives smaller pieces; 1/6 is one of six parts, while 1/2 is one of two. Which is smaller: 1/2 or 1/6?",
+     "afterRewrite": []
+    },
+    "verdict": "ungraded",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "question_on_topic",
+     "waitedMs": 730,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "teach",
+    "ms": 5480,
+    "item": null,
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 104
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 108
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 869
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 1012
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1612
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1742
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1745
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1745
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 2026
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1451
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 5382
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 5479
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "filler",
+   "lessonId": "a17585ca-97fc-4ecd-8b8e-54081c9e6ae0",
+   "childText": "got it",
+   "ms": 2774,
+   "error": null,
+   "teacherReply": "Good—you noticed the key idea: more equal parts means each fractional part is smaller. Now, shall we apply it to the laddoos?",
+   "move": {
+    "kind": "worked_example",
+    "shape": "worked example, part 1 of 2: say one step, then ask them for the next step; their thinking, your pace; no new idea",
+    "skillId": "c6-maths-ch07-t01-s1",
+    "format": "F2"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "math",
+     "value": "5 laddoos are shared equally by 3 children. How much does each child get?"
+    },
+    "phase": "teach",
+    "handover": "answer",
+    "answerForm": "words",
+    "tray": "studio",
+    "shortTitle": "Fractional units",
+    "beat": {
+     "beatId": "b4-worked_example",
+     "type": "worked_example",
+     "index": 4
+    },
+    "ask": {
+     "text": "Now, shall we apply it to the laddoos?"
+    },
+    "studioSlot": {
+     "slotId": "a17585ca-97fc-4ecd-8b8e-54081c9e6ae0:wb:3:slot",
+     "intentId": "a17585ca-97fc-4ecd-8b8e-54081c9e6ae0:wb:3",
+     "state": "planning"
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false
+    },
+    "verdict": "ungraded",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 470,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "teach",
+    "ms": 2762,
+    "item": null,
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 68
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 69
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 771
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 842
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1241
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1312
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1321
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1322
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1476
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 1662
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 2762
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "probe:diversion-07",
+   "lessonId": "a17585ca-97fc-4ecd-8b8e-54081c9e6ae0",
+   "childText": "do you like pizza?",
+   "ms": 2536,
+   "error": null,
+   "teacherReply": "As an AI, I don’t eat or have personal food preferences. Let’s return to our fraction work with the laddoo sharing. Fill the gap: Each child gets 5/3 of a laddoo, which is 1 whole and ___ more.",
+   "move": {
+    "kind": "practice",
+    "shape": "a friendly question about you: one honest line as an AI (no body, home, food or favourite things of your own); then back to the work; the earlier steps in LESSON NOW, said briefly as done; then the step with the gap is theirs: pose it as written; wait; never fill the gap for them",
+    "itemId": "fade:3",
+    "skillId": "c6-maths-ch07-t01-s1",
+    "hintLevel": 0,
+    "probe": "P15",
+    "format": "F2",
+    "request": "uptake",
+    "lead": "a friendly question about you: one honest line as an AI (no body, home, food or favourite things of your own); then back to the work"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "math",
+     "value": "5 laddoos are shared equally by 3 children. How much… · Each child gets 5/3 of a laddoo, which is 1 whole and ___ more."
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "Fill the gap: Each child gets 5/3 of a laddoo, which is 1 whole and ___ more.",
+     "itemId": "fade:3"
+    },
+    "answerForm": "number",
+    "tray": "none",
+    "shortTitle": "Fractional units",
+    "beat": {
+     "beatId": "b5-practice_set",
+     "type": "practice_set",
+     "index": 5
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false,
+     "leadSlot": true
+    },
+    "verdict": "ungraded",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "request"
+    },
+    "note": null,
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 2510,
+    "item": "fade:3",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 66
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 67
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 453
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 531
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 594
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 595
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1840
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 2451
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 2510
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "filler",
+   "lessonId": "a17585ca-97fc-4ecd-8b8e-54081c9e6ae0",
+   "childText": "okay",
+   "ms": 3510,
+   "error": null,
+   "teacherReply": "Anaya, break 5 parts into 3 equal groups: 3 parts make one whole. Notice how many parts remain after that. Fill the gap: Each child gets 5/3 of a laddoo, which is 1 whole and ___ more.",
+   "move": {
+    "kind": "hint",
+    "shape": "their typed reply did not answer the question: no verdict, never ask them to repeat or say it again; one small nudge toward what the question asks; then the same question again, as written; no verdict on their reply: neither praise nor 'wrong'",
+    "itemId": "fade:3",
+    "skillId": "c6-maths-ch07-t01-s1",
+    "hintLevel": 0
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "math",
+     "value": "5/3"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "Fill the gap: Each child gets 5/3 of a laddoo, which is 1 whole and ___ more.",
+     "itemId": "fade:3"
+    },
+    "answerForm": "number",
+    "tray": "studio",
+    "shortTitle": "Fractional units",
+    "beat": {
+     "beatId": "b5-practice_set",
+     "type": "practice_set",
+     "index": 5
+    },
+    "studioSlot": {
+     "slotId": "a17585ca-97fc-4ecd-8b8e-54081c9e6ae0:c1:slot",
+     "intentId": "a17585ca-97fc-4ecd-8b8e-54081c9e6ae0:c1",
+     "state": "revealed",
+     "artifact": {
+      "kind": "stagecraft",
+      "stage": {
+       "w": 1000,
+       "h": 625
+      },
+      "stagecraft": {
+       "rung": "engine_default",
+       "archetype": "slice-at@1",
+       "spec": {
+        "archetype": "slice-at@1",
+        "skills": [
+         "c6-maths-ch07-t01"
+        ],
+        "lang": "en",
+        "strings": {
+         "coach": "Swipe through the bar",
+         "wave": "Wave",
+         "cut": "Cut",
+         "parts": "Equal parts",
+         "exact": "CLEAN CUT",
+         "close": "CLOSE",
+         "offBy": "off by",
+         "runDone": "Run complete",
+         "accuracy": "accuracy",
+         "sliced": "sliced",
+         "chain": "chain",
+         "smaller": "smaller piece"
+        },
+        "waves": [
+         {
+          "title": "Fractional units",
+          "sub": "make equal pieces of the whole",
+          "items": [
+           {
+            "cut": "1/2"
+           },
+           {
+            "cut": "1/3"
+           },
+           {
+            "cut": "1/4"
+           }
+          ],
+          "gravity": 0.8,
+          "gap": 2.8,
+          "marks": true
+         },
+         {
+          "title": "Share the bar",
+          "sub": "slice carefully into equal shares",
+          "items": [
+           {
+            "parts": 3
+           },
+           {
+            "parts": 4
+           },
+           {
+            "parts": 5
+           }
+          ],
+          "gravity": 0.9,
+          "gap": 2.6,
+          "marks": false,
+          "targets": "c6-maths-ch07-t01-m-unequal-parts"
+         },
+         {
+          "title": "More pieces, smaller",
+          "sub": "compare unit fractions on one bar",
+          "items": [
+           {
+            "cut": "1/4"
+           },
+           {
+            "cut": "1/5"
+           },
+           {
+            "cut": "1/6"
+           },
+           {
+            "cut": "1/8"
+           }
+          ],
+          "gravity": 1,
+          "gap": 2.3,
+          "marks": false,
+          "targets": "c6-maths-ch07-t01-m-bigger-denominator"
+         },
+         {
+          "title": "Parts of a whole",
+          "sub": "use the same whole each time",
+          "items": [
+           {
+            "cut": "2/3"
+           },
+           {
+            "cut": "3/4"
+           },
+           {
+            "cut": "2/5"
+           },
+           {
+            "cut": "5/6"
+           }
+          ],
+          "gravity": 1.1,
+          "gap": 2.1,
+          "marks": false
+         }
+        ]
+       },
+       "boardTwin": {
+        "scriptRef": "board:c6-maths-ch07-t01-s1|practice|-|-",
+        "values": {
+         "title": "Fraction Slice",
+         "need": "practice"
+        },
+        "board": {
+         "title": "Fraction Slice",
+         "lines": [
+          "equal",
+          "pieces",
+          "fraction",
+          "among"
+         ],
+         "figure": {
+          "kind": "none"
+         }
+        }
+       },
+       "board": null,
+       "cue": {
+        "clauseIdx": 0,
+        "preRollMs": 400,
+        "crossFadeMs": 420
+       },
+       "buildSha": null,
+       "blobUrl": null
+      }
+     }
+    }
+   },
+   "moduleCommands": [],
+   "studio": {
+    "reveal": "a17585ca-97fc-4ecd-8b8e-54081c9e6ae0:c1"
+   },
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false,
+     "leadSlot": true
+    },
+    "verdict": "unverified",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 833,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 3501,
+    "item": "fade:3",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 72
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 73
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 833
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 919
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1667
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1753
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1754
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1754
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1668
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 3435
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 3500
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "advance",
+   "lessonId": "a17585ca-97fc-4ecd-8b8e-54081c9e6ae0",
+   "childText": "got it",
+   "ms": 3336,
+   "error": null,
+   "teacherReply": "You’re focusing on taking one whole from 5/3; now count the parts left after removing 3 of the 5 parts. Fill the gap: Each child gets 5/3 of a laddoo, which is 1 whole and ___ more.",
+   "move": {
+    "kind": "hint",
+    "shape": "no verdict on their reply; the choices are now on screen; the same question again, as written; tell them they can pick one of the choices on screen; do not read the choices with any lean toward one; no verdict on their reply: neither praise nor 'wrong'",
+    "itemId": "fade:3",
+    "skillId": "c6-maths-ch07-t01-s1",
+    "hintLevel": 0
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "math",
+     "value": "5/3"
+    },
+    "chips": [
+     {
+      "id": "pick:0",
+      "label": "3/2"
+     },
+     {
+      "id": "pick:1",
+      "label": "2/3"
+     },
+     {
+      "id": "pick:2",
+      "label": "3/3"
+     }
+    ],
+    "phase": "practice",
+    "handover": "choice",
+    "ask": {
+     "text": "Fill the gap: Each child gets 5/3 of a laddoo, which is 1 whole and ___ more.",
+     "itemId": "fade:3"
+    },
+    "answerForm": "choice",
+    "tray": "tiles",
+    "shortTitle": "Fractional units",
+    "beat": {
+     "beatId": "b5-practice_set",
+     "type": "practice_set",
+     "index": 5
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [
+      "praise"
+     ],
+     "rewritten": true,
+     "replaced": false,
+     "firstDraft": "Nice, you used the step of taking one whole from the fraction and checking what remains. Fill the gap: Each child gets 5/3 of a laddoo, which is 1 whole and ___ more.",
+     "leadSlot": true,
+     "afterRewrite": [
+      "ask"
+     ],
+     "repaired": true
+    },
+    "verdict": "unverified",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 620,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 3322,
+    "item": "fade:3",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 78
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 79
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 738
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 834
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1359
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1454
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1456
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1456
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1445
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1486
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 3230
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 3322
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "advance",
+   "lessonId": "a17585ca-97fc-4ecd-8b8e-54081c9e6ae0",
+   "childText": "ok",
+   "ms": 3994,
+   "error": null,
+   "teacherReply": "A school has 1 litre of paint for a mural. Each identical pot holds 125 mL, and all the paint fills the pots exactly. What fraction of the paint is in one pot?",
+   "move": {
+    "kind": "probe",
+    "shape": "leave this one for later, no verdict and no answer given; the next question; pose the question as written, in their language; then wait; same idea, new situation; let them carry it over; no verdict on their reply: neither praise nor 'wrong'",
+    "itemId": "c6-maths-ch07-t01-rl-h1",
+    "skillId": "c6-maths-ch07-t01-s1",
+    "hintLevel": 0,
+    "probe": "P3"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "math",
+     "value": "1  ·  125"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "Each identical pot holds 125 mL, and all the paint fills the pots exactly. What fraction of the paint is in one pot?",
+     "itemId": "c6-maths-ch07-t01-rl-h1"
+    },
+    "answerForm": "number",
+    "tray": "studio",
+    "shortTitle": "Fractional units",
+    "beat": {
+     "beatId": "b6-probe",
+     "type": "probe",
+     "index": 6
+    },
+    "studioSlot": {
+     "slotId": "a17585ca-97fc-4ecd-8b8e-54081c9e6ae0:c1:slot",
+     "intentId": "a17585ca-97fc-4ecd-8b8e-54081c9e6ae0:c1",
+     "state": "revealed",
+     "artifact": {
+      "kind": "stagecraft",
+      "stage": {
+       "w": 1000,
+       "h": 625
+      },
+      "stagecraft": {
+       "rung": "engine_default",
+       "archetype": "slice-at@1",
+       "spec": {
+        "archetype": "slice-at@1",
+        "skills": [
+         "c6-maths-ch07-t01"
+        ],
+        "lang": "en",
+        "strings": {
+         "coach": "Swipe through the bar",
+         "wave": "Wave",
+         "cut": "Cut",
+         "parts": "Equal parts",
+         "exact": "CLEAN CUT",
+         "close": "CLOSE",
+         "offBy": "off by",
+         "runDone": "Run complete",
+         "accuracy": "accuracy",
+         "sliced": "sliced",
+         "chain": "chain",
+         "smaller": "smaller piece"
+        },
+        "waves": [
+         {
+          "title": "Fractional units",
+          "sub": "make equal pieces of the whole",
+          "items": [
+           {
+            "cut": "1/2"
+           },
+           {
+            "cut": "1/3"
+           },
+           {
+            "cut": "1/4"
+           }
+          ],
+          "gravity": 0.8,
+          "gap": 2.8,
+          "marks": true
+         },
+         {
+          "title": "Share the bar",
+          "sub": "slice carefully into equal shares",
+          "items": [
+           {
+            "parts": 3
+           },
+           {
+            "parts": 4
+           },
+           {
+            "parts": 5
+           }
+          ],
+          "gravity": 0.9,
+          "gap": 2.6,
+          "marks": false,
+          "targets": "c6-maths-ch07-t01-m-unequal-parts"
+         },
+         {
+          "title": "More pieces, smaller",
+          "sub": "compare unit fractions on one bar",
+          "items": [
+           {
+            "cut": "1/4"
+           },
+           {
+            "cut": "1/5"
+           },
+           {
+            "cut": "1/6"
+           },
+           {
+            "cut": "1/8"
+           }
+          ],
+          "gravity": 1,
+          "gap": 2.3,
+          "marks": false,
+          "targets": "c6-maths-ch07-t01-m-bigger-denominator"
+         },
+         {
+          "title": "Parts of a whole",
+          "sub": "use the same whole each time",
+          "items": [
+           {
+            "cut": "2/3"
+           },
+           {
+            "cut": "3/4"
+           },
+           {
+            "cut": "2/5"
+           },
+           {
+            "cut": "5/6"
+           }
+          ],
+          "gravity": 1.1,
+          "gap": 2.1,
+          "marks": false
+         }
+        ]
+       },
+       "boardTwin": {
+        "scriptRef": "board:c6-maths-ch07-t01-s1|practice|-|-",
+        "values": {
+         "title": "Fraction Slice",
+         "need": "practice"
+        },
+        "board": {
+         "title": "Fraction Slice",
+         "lines": [
+          "equal",
+          "pieces",
+          "fraction",
+          "among"
+         ],
+         "figure": {
+          "kind": "none"
+         }
+        }
+       },
+       "board": null,
+       "cue": {
+        "clauseIdx": 0,
+        "preRollMs": 400,
+        "crossFadeMs": 420
+       },
+       "buildSha": null,
+       "blobUrl": null
+      }
+     }
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [
+      "long"
+     ],
+     "rewritten": true,
+     "replaced": false,
+     "firstDraft": "Anaya, let’s pause that example and try this: A school has 1 litre of paint for a mural. Each identical pot holds 125 mL, and all the paint fills the pots exactly. What fraction of the paint is in one pot?",
+     "afterRewrite": [
+      "ask"
+     ],
+     "repaired": true,
+     "tidied": true,
+     "final": [
+      "bare"
+     ]
+    },
+    "verdict": "unverified",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 401,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 3990,
+    "item": "c6-maths-ch07-t01-rl-h1",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 75
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 75
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 674
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 765
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1080
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1166
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1169
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1173
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1479
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1247
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 3905
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 3990
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "probe:frustration-05",
+   "lessonId": "a17585ca-97fc-4ecd-8b8e-54081c9e6ae0",
+   "childText": "ugh i hate fractions",
+   "ms": 2091,
+   "error": null,
+   "teacherReply": "Anaya, this step is hard work, and that’s okay. Start by changing 1 litre into millilitres; remember, 1 litre has 1000 millilitres. Each identical pot holds 125 mL, and all the paint fills the pots exactly. What fraction of the paint is in one pot?",
+   "move": {
+    "kind": "hint",
+    "shape": "first: one short line that this one is hard work and that is okay (about the work, never about them, no ability words); then a smaller first step on the same question; rung 1 of 4 (pump): How many millilitres are in the whole supply?; the key stays unsaid; no verdict on their reply: neither praise nor 'wrong'",
+    "itemId": "c6-maths-ch07-t01-rl-h1",
+    "skillId": "c6-maths-ch07-t01-s1",
+    "hintLevel": 1,
+    "request": "frustration"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "math",
+     "value": "1  ·  125"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "Each identical pot holds 125 mL, and all the paint fills the pots exactly. What fraction of the paint is in one pot?",
+     "itemId": "c6-maths-ch07-t01-rl-h1"
+    },
+    "answerForm": "number",
+    "tray": "studio",
+    "hint": {
+     "level": 1,
+     "text": "How many millilitres are in the whole supply?"
+    },
+    "shortTitle": "Fractional units",
+    "beat": {
+     "beatId": "b6-probe",
+     "type": "probe",
+     "index": 6
+    },
+    "studioSlot": {
+     "slotId": "a17585ca-97fc-4ecd-8b8e-54081c9e6ae0:c4:slot",
+     "intentId": "a17585ca-97fc-4ecd-8b8e-54081c9e6ae0:c4",
+     "state": "revealed",
+     "artifact": {
+      "kind": "stagecraft",
+      "stage": {
+       "w": 1000,
+       "h": 625
+      },
+      "stagecraft": {
+       "rung": "engine_default",
+       "archetype": "slice-at@1",
+       "spec": {
+        "archetype": "slice-at@1",
+        "skills": [
+         "c6-maths-ch07-t01"
+        ],
+        "lang": "en",
+        "strings": {
+         "coach": "Swipe through the bar",
+         "wave": "Wave",
+         "cut": "Cut",
+         "parts": "Equal parts",
+         "exact": "CLEAN CUT",
+         "close": "CLOSE",
+         "offBy": "off by",
+         "runDone": "Run complete",
+         "accuracy": "accuracy",
+         "sliced": "sliced",
+         "chain": "chain",
+         "smaller": "smaller piece"
+        },
+        "waves": [
+         {
+          "title": "Fractional units",
+          "sub": "make equal pieces of the whole",
+          "items": [
+           {
+            "cut": "1/2"
+           },
+           {
+            "cut": "1/3"
+           },
+           {
+            "cut": "1/4"
+           }
+          ],
+          "gravity": 0.8,
+          "gap": 2.8,
+          "marks": true
+         },
+         {
+          "title": "Share the bar",
+          "sub": "slice carefully into equal shares",
+          "items": [
+           {
+            "parts": 3
+           },
+           {
+            "parts": 4
+           },
+           {
+            "parts": 5
+           }
+          ],
+          "gravity": 0.9,
+          "gap": 2.6,
+          "marks": false,
+          "targets": "c6-maths-ch07-t01-m-unequal-parts"
+         },
+         {
+          "title": "More pieces, smaller",
+          "sub": "compare unit fractions on one bar",
+          "items": [
+           {
+            "cut": "1/4"
+           },
+           {
+            "cut": "1/5"
+           },
+           {
+            "cut": "1/6"
+           },
+           {
+            "cut": "1/8"
+           }
+          ],
+          "gravity": 1,
+          "gap": 2.3,
+          "marks": false,
+          "targets": "c6-maths-ch07-t01-m-bigger-denominator"
+         },
+         {
+          "title": "Parts of a whole",
+          "sub": "use the same whole each time",
+          "items": [
+           {
+            "cut": "2/3"
+           },
+           {
+            "cut": "3/4"
+           },
+           {
+            "cut": "2/5"
+           },
+           {
+            "cut": "5/6"
+           }
+          ],
+          "gravity": 1.1,
+          "gap": 2.1,
+          "marks": false
+         }
+        ]
+       },
+       "boardTwin": {
+        "scriptRef": "board:c6-maths-ch07-t01-s1|probe|-|-",
+        "values": {
+         "title": "Fraction Slice",
+         "need": "probe"
+        },
+        "board": {
+         "title": "Fraction Slice",
+         "lines": [
+          "equal",
+          "pieces",
+          "fraction",
+          "among"
+         ],
+         "figure": {
+          "kind": "none"
+         }
+        }
+       },
+       "board": null,
+       "cue": {
+        "clauseIdx": 0,
+        "preRollMs": 400,
+        "crossFadeMs": 420
+       },
+       "buildSha": null,
+       "blobUrl": null
+      }
+     }
+    }
+   },
+   "moduleCommands": [],
+   "studio": {
+    "reveal": "a17585ca-97fc-4ecd-8b8e-54081c9e6ae0:c4"
+   },
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false,
+     "leadSlot": true
+    },
+    "verdict": "unverified",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "request"
+    },
+    "note": null,
+    "hintLevel": 1,
+    "phase": "practice",
+    "ms": 2087,
+    "item": "c6-maths-ch07-t01-rl-h1",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 81
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 82
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 423
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 532
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 534
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 534
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1434
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 1997
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 2087
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "recovery",
+   "lessonId": "a17585ca-97fc-4ecd-8b8e-54081c9e6ae0",
+   "childText": "1/8",
+   "ms": 4106,
+   "error": null,
+   "teacherReply": "One group is what fraction of the total?",
+   "move": {
+    "kind": "explain",
+    "shape": "confirm specifically: name the exact thing they got right, no ability words; one idea only: Compare unit fractions: more equal parts means smaller parts; an example from their interest (football) if it fits naturally; objects first, then the symbol; point at the screen only at what the on-screen row lists; never a drawing made of characters; end with one small question that makes them USE the idea — never 'samjha?'",
+    "skillId": "c6-maths-ch07-t01-s2",
+    "format": "F3"
+   },
+   "ui": {
+    "status": "your_turn",
+    "phase": "practice",
+    "handover": "answer",
+    "answerForm": "words",
+    "tray": "module",
+    "shortTitle": "Fractional units",
+    "verdict": "correct",
+    "withHelp": true,
+    "beat": {
+     "beatId": "b7-explain",
+     "type": "explain",
+     "index": 7
+    },
+    "ask": {
+     "text": "One group is what fraction of the total?"
+    }
+   },
+   "moduleCommands": [
+    {
+     "op": "mount",
+     "moduleId": "m9",
+     "engine": "explainer@1",
+     "params": {
+      "script": {
+       "v": 1,
+       "scriptId": "ex-6xe4b4",
+       "line": {
+        "lessonId": "a17585ca-97fc-4ecd-8b8e-54081c9e6ae0"
+       },
+       "anchor": "line_audio_start",
+       "board": {
+        "w": 400,
+        "h": 300,
+        "ground": "chalk"
+       },
+       "mode": "fresh",
+       "durationMs": 5450,
+       "ops": [
+        {
+         "id": "o1",
+         "op": "ellipse",
+         "startMs": 120,
+         "endMs": 500,
+         "weight": 1,
+         "c": [
+          86.7,
+          110
+         ],
+         "rx": 50.7,
+         "ry": 62
+        },
+        {
+         "id": "o2",
+         "op": "circle",
+         "startMs": 540,
+         "endMs": 650,
+         "ink": "accent",
+         "weight": 1,
+         "c": [
+          77.7,
+          97
+         ],
+         "r": 5,
+         "fill": "accent"
+        },
+        {
+         "id": "o3",
+         "op": "circle",
+         "startMs": 690,
+         "endMs": 800,
+         "ink": "accent",
+         "weight": 1,
+         "c": [
+          95.7,
+          97
+         ],
+         "r": 5,
+         "fill": "accent"
+        },
+        {
+         "id": "o4",
+         "op": "circle",
+         "startMs": 840,
+         "endMs": 950,
+         "ink": "accent",
+         "weight": 1,
+         "c": [
+          77.7,
+          110
+         ],
+         "r": 5,
+         "fill": "accent"
+        },
+        {
+         "id": "o5",
+         "op": "circle",
+         "startMs": 990,
+         "endMs": 1100,
+         "ink": "accent",
+         "weight": 1,
+         "c": [
+          95.7,
+          110
+         ],
+         "r": 5,
+         "fill": "accent"
+        },
+        {
+         "id": "o6",
+         "op": "circle",
+         "startMs": 1140,
+         "endMs": 1250,
+         "ink": "accent",
+         "weight": 1,
+         "c": [
+          77.7,
+          123
+         ],
+         "r": 5,
+         "fill": "accent"
+        },
+        {
+         "id": "o7",
+         "op": "ellipse",
+         "startMs": 1370,
+         "endMs": 1750,
+         "weight": 1,
+         "c": [
+          200,
+          110
+         ],
+         "rx": 50.7,
+         "ry": 62
+        },
+        {
+         "id": "o8",
+         "op": "circle",
+         "startMs": 1790,
+         "endMs": 1900,
+         "ink": "accent",
+         "weight": 1,
+         "c": [
+          191,
+          97
+         ],
+         "r": 5,
+         "fill": "accent"
+        },
+        {
+         "id": "o9",
+         "op": "circle",
+         "startMs": 1940,
+         "endMs": 2050,
+         "ink": "accent",
+         "weight": 1,
+         "c": [
+          209,
+          97
+         ],
+         "r": 5,
+         "fill": "accent"
+        },
+        {
+         "id": "o10",
+         "op": "circle",
+         "startMs": 2090,
+         "endMs": 2200,
+         "ink": "accent",
+         "weight": 1,
+         "c": [
+          191,
+          110
+         ],
+         "r": 5,
+         "fill": "accent"
+        },
+        {
+         "id": "o11",
+         "op": "circle",
+         "startMs": 2240,
+         "endMs": 2350,
+         "ink": "accent",
+         "weight": 1,
+         "c": [
+          209,
+          110
+         ],
+         "r": 5,
+         "fill": "accent"
+        },
+        {
+         "id": "o12",
+         "op": "circle",
+         "startMs": 2390,
+         "endMs": 2500,
+         "ink": "accent",
+         "weight": 1,
+         "c": [
+          191,
+          123
+         ],
+         "r": 5,
+         "fill": "accent"
+        },
+        {
+         "id": "o13",
+         "op": "ellipse",
+         "startMs": 2620,
+         "endMs": 3000,
+         "weight": 1,
+         "c": [
+          313.3,
+          110
+         ],
+         "rx": 50.7,
+         "ry": 62
+        },
+        {
+         "id": "o14",
+         "op": "circle",
+         "startMs": 3040,
+         "endMs": 3150,
+         "ink": "accent",
+         "weight": 1,
+         "c": [
+          304.3,
+          97
+         ],
+         "r": 5,
+         "fill": "accent"
+        },
+        {
+         "id": "o15",
+         "op": "circle",
+         "startMs": 3190,
+         "endMs": 3300,
+         "ink": "accent",
+         "weight": 1,
+         "c": [
+          322.3,
+          97
+         ],
+         "r": 5,
+         "fill": "accent"
+        },
+        {
+         "id": "o16",
+         "op": "circle",
+         "startMs": 3340,
+         "endMs": 3450,
+         "ink": "accent",
+         "weight": 1,
+         "c": [
+          304.3,
+          110
+         ],
+         "r": 5,
+         "fill": "accent"
+        },
+        {
+         "id": "o17",
+         "op": "circle",
+         "startMs": 3490,
+         "endMs": 3600,
+         "ink": "accent",
+         "weight": 1,
+         "c": [
+          322.3,
+          110
+         ],
+         "r": 5,
+         "fill": "accent"
+        },
+        {
+         "id": "o18",
+         "op": "circle",
+         "startMs": 3640,
+         "endMs": 3750,
+         "ink": "accent",
+         "weight": 1,
+         "c": [
+          304.3,
+          123
+         ],
+         "r": 5,
+         "fill": "accent"
+        },
+        {
+         "id": "eq",
+         "op": "numwork",
+         "startMs": 4050,
+         "endMs": 5050,
+         "weight": 2,
+         "at": [
+          110,
+          240
+         ],
+         "layout": "equation",
+         "rows": [
+          [
+           "3",
+           "×",
+           "5",
+           "=",
+           "15"
+          ]
+         ]
+        }
+       ],
+       "facts": {
+        "kind": "animation",
+        "archetype": "equal-groups@1",
+        "onScreen": {
+         "groups": 3,
+         "each": 5,
+         "total": 15
+        }
+       }
+      },
+      "template": "equal-groups@1",
+      "mode": "play"
+     }
+    }
+   ],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [
+      "parts"
+     ],
+     "rewritten": true,
+     "replaced": true,
+     "firstDraft": "Correct: you used 125 out of 1000 millilitres, then simplified 125/1000 to 1/8. One pot contains what fraction of the total paint?",
+     "afterRewrite": [
+      "parts"
+     ],
+     "final": [
+      "noconfirm"
+     ]
+    },
+    "verdict": "correct",
+    "cls": {
+     "outcome": "correct",
+     "source": "exact"
+    },
+    "note": null,
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 4093,
+    "item": null,
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 87
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 88
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 95
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 156
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 156
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1256
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1289
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1268
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 3991
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 4093
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "advance",
+   "lessonId": "a17585ca-97fc-4ecd-8b8e-54081c9e6ae0",
+   "childText": "ok",
+   "ms": 5970,
+   "error": null,
+   "teacherReply": "Let’s pause the fractions for a moment. Your answer, 1/8, came from noticing that one pot is one of eight equal parts. Two students travel parts of the same metro route. Asha travels 1/7 of it; Kabir travels 1/9 of it. Who travels farther?",
+   "move": {
+    "kind": "probe",
+    "shape": "pose the question as written, in their language; then wait; same idea, new situation; let them carry it over",
+    "itemId": "c6-maths-ch07-t01-rl-o2",
+    "skillId": "c6-maths-ch07-t01-s2",
+    "hintLevel": 0,
+    "probe": "P3"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "math",
+     "value": "1/7  ·  1/9"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "Two students travel parts of the same metro route. Asha travels 1/7 of it; Kabir travels 1/9 of it. Who travels farther?",
+     "itemId": "c6-maths-ch07-t01-rl-o2"
+    },
+    "answerForm": "words",
+    "tray": "studio",
+    "shortTitle": "Fractional units",
+    "beat": {
+     "beatId": "b8-probe",
+     "type": "probe",
+     "index": 8
+    },
+    "studioSlot": {
+     "slotId": "a17585ca-97fc-4ecd-8b8e-54081c9e6ae0:c4:slot",
+     "intentId": "a17585ca-97fc-4ecd-8b8e-54081c9e6ae0:c4",
+     "state": "revealed",
+     "artifact": {
+      "kind": "stagecraft",
+      "stage": {
+       "w": 1000,
+       "h": 625
+      },
+      "stagecraft": {
+       "rung": "engine_default",
+       "archetype": "slice-at@1",
+       "spec": {
+        "archetype": "slice-at@1",
+        "skills": [
+         "c6-maths-ch07-t01"
+        ],
+        "lang": "en",
+        "strings": {
+         "coach": "Swipe through the bar",
+         "wave": "Wave",
+         "cut": "Cut",
+         "parts": "Equal parts",
+         "exact": "CLEAN CUT",
+         "close": "CLOSE",
+         "offBy": "off by",
+         "runDone": "Run complete",
+         "accuracy": "accuracy",
+         "sliced": "sliced",
+         "chain": "chain",
+         "smaller": "smaller piece"
+        },
+        "waves": [
+         {
+          "title": "Fractional units",
+          "sub": "make equal pieces of the whole",
+          "items": [
+           {
+            "cut": "1/2"
+           },
+           {
+            "cut": "1/3"
+           },
+           {
+            "cut": "1/4"
+           }
+          ],
+          "gravity": 0.8,
+          "gap": 2.8,
+          "marks": true
+         },
+         {
+          "title": "Share the bar",
+          "sub": "slice carefully into equal shares",
+          "items": [
+           {
+            "parts": 3
+           },
+           {
+            "parts": 4
+           },
+           {
+            "parts": 5
+           }
+          ],
+          "gravity": 0.9,
+          "gap": 2.6,
+          "marks": false,
+          "targets": "c6-maths-ch07-t01-m-unequal-parts"
+         },
+         {
+          "title": "More pieces, smaller",
+          "sub": "compare unit fractions on one bar",
+          "items": [
+           {
+            "cut": "1/4"
+           },
+           {
+            "cut": "1/5"
+           },
+           {
+            "cut": "1/6"
+           },
+           {
+            "cut": "1/8"
+           }
+          ],
+          "gravity": 1,
+          "gap": 2.3,
+          "marks": false,
+          "targets": "c6-maths-ch07-t01-m-bigger-denominator"
+         },
+         {
+          "title": "Parts of a whole",
+          "sub": "use the same whole each time",
+          "items": [
+           {
+            "cut": "2/3"
+           },
+           {
+            "cut": "3/4"
+           },
+           {
+            "cut": "2/5"
+           },
+           {
+            "cut": "5/6"
+           }
+          ],
+          "gravity": 1.1,
+          "gap": 2.1,
+          "marks": false
+         }
+        ]
+       },
+       "boardTwin": {
+        "scriptRef": "board:c6-maths-ch07-t01-s1|probe|-|-",
+        "values": {
+         "title": "Fraction Slice",
+         "need": "probe"
+        },
+        "board": {
+         "title": "Fraction Slice",
+         "lines": [
+          "equal",
+          "pieces",
+          "fraction",
+          "among"
+         ],
+         "figure": {
+          "kind": "none"
+         }
+        }
+       },
+       "board": null,
+       "cue": {
+        "clauseIdx": 0,
+        "preRollMs": 400,
+        "crossFadeMs": 420
+       },
+       "buildSha": null,
+       "blobUrl": null
+      }
+     }
+    }
+   },
+   "moduleCommands": [
+    {
+     "op": "unmount",
+     "moduleId": "m9"
+    }
+   ],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [
+      "ask"
+     ],
+     "rewritten": true,
+     "replaced": false,
+     "firstDraft": "Let’s return to the metro route: Asha travels 1/7 and Kabir 1/9 of the same route. Who travels farther?",
+     "afterRewrite": [
+      "bare"
+     ],
+     "leadRepair": true
+    },
+    "verdict": "ungraded",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 825,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 5965,
+    "item": "c6-maths-ch07-t01-rl-o2",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 53
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 53
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 583
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 665
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1408
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1489
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1499
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1499
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1492
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1417
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1452
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 5889
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 5965
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "probe:meta_feedback-04",
+   "lessonId": "a17585ca-97fc-4ecd-8b8e-54081c9e6ae0",
+   "childText": "your explanations are confusing",
+   "ms": 2417,
+   "error": null,
+   "teacherReply": "Anaya, the unclear step was mixing two different examples. Two students travel parts of the same metro route. Asha travels 1/7 of it; Kabir travels 1/9 of it. Who travels farther?",
+   "move": {
+    "kind": "reteach",
+    "shape": "they asked for it another way: one new, simpler picture of the same idea, with a different example and different numbers; the key stays unsaid; then the same question again, as written; no verdict on their reply: neither praise nor 'wrong'",
+    "itemId": "c6-maths-ch07-t01-rl-o2",
+    "skillId": "c6-maths-ch07-t01-s2",
+    "hintLevel": 1,
+    "request": "another"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "math",
+     "value": "1/7  ·  1/9"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "Two students travel parts of the same metro route. Asha travels 1/7 of it; Kabir travels 1/9 of it. Who travels farther?",
+     "itemId": "c6-maths-ch07-t01-rl-o2"
+    },
+    "answerForm": "words",
+    "tray": "module",
+    "shortTitle": "Fractional units",
+    "beat": {
+     "beatId": "b9-explain",
+     "type": "explain",
+     "index": 9
+    }
+   },
+   "moduleCommands": [
+    {
+     "op": "mount",
+     "moduleId": "m11",
+     "engine": "fraction-bars@1",
+     "params": {
+      "topicId": "c6-maths-ch07-t01",
+      "skillId": "c6-maths-ch07-t01-s2",
+      "lang": "english",
+      "denominators": [
+       7,
+       9
+      ]
+     }
+    }
+   ],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [
+      "ask"
+     ],
+     "rewritten": false,
+     "replaced": false,
+     "firstDraft": "Anaya, the unclear step was mixing two different examples. Let’s use one picture: which is larger, one part when a route is split into 7 parts or 9 parts?",
+     "repaired": true
+    },
+    "verdict": "unverified",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "request"
+    },
+    "note": null,
+    "hintLevel": 1,
+    "phase": "practice",
+    "ms": 2404,
+    "item": "c6-maths-ch07-t01-rl-o2",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 62
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 69
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 611
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 710
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 717
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 718
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1594
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 2332
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 2404
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "recovery",
+   "lessonId": "a17585ca-97fc-4ecd-8b8e-54081c9e6ae0",
+   "childText": "Asha",
+   "ms": 3664,
+   "error": null,
+   "teacherReply": "A chocolate bar is broken into 3 pieces: one big and two small. Is each piece 1/3 of the bar?",
+   "move": {
+    "kind": "probe",
+    "shape": "confirm specifically: name the exact thing they got right, no ability words; pose the question as written, in their language; then wait; read its choices plainly; no lean in your voice toward any of them",
+    "itemId": "diag:c6-maths-ch07-t01-m-unequal-parts",
+    "skillId": "c6-maths-ch07-t01-s1",
+    "hintLevel": 0,
+    "probe": "P7"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "math",
+     "value": "1/3"
+    },
+    "chips": [
+     {
+      "id": "opt:0",
+      "label": "Yes, there are 3 pieces"
+     },
+     {
+      "id": "opt:1",
+      "label": "No, the pieces must be equal for each to"
+     }
+    ],
+    "phase": "practice",
+    "handover": "choice",
+    "ask": {
+     "text": "A chocolate bar is broken into 3 pieces: one big and two small. Is each piece 1/3 of the bar?",
+     "itemId": "diag:c6-maths-ch07-t01-m-unequal-parts"
+    },
+    "answerForm": "choice",
+    "tray": "tiles",
+    "shortTitle": "Fractional units",
+    "verdict": "correct",
+    "withHelp": true,
+    "beat": {
+     "beatId": "b10-probe",
+     "type": "probe",
+     "index": 10
+    }
+   },
+   "moduleCommands": [
+    {
+     "op": "unmount",
+     "moduleId": "m11"
+    },
+    {
+     "op": "mount",
+     "moduleId": "g1-c5e477ce",
+     "engine": "scene@1",
+     "params": {
+      "scene": {
+       "dsl": "scene@1",
+       "meta": {
+        "band": "B3",
+        "lang": "en",
+        "title": {
+         "en": "Coach's practice drill",
+         "hi": "कोच की प्रैक्टिस",
+         "hi_latn": "Coach ki practice"
+        },
+        "objective_ids": [
+         "c6-maths-ch07-t01-s1"
+        ],
+        "topic_ids": [
+         "c6-maths-ch07-t01"
+        ],
+        "template": "choice-card@1"
+       },
+       "stage": {
+        "aspect": "3:4",
+        "bg": "bg"
+       },
+       "vars": [
+        {
+         "id": "pick",
+         "type": "enum",
+         "init": "none",
+         "options": [
+          "none",
+          "o1",
+          "o2"
+         ],
+         "tl": "child's pick"
+        }
+       ],
+       "derive": [],
+       "nodes": [
+        {
+         "kind": "text",
+         "id": "title",
+         "x": 420,
+         "y": 128,
+         "text": {
+          "en": "Coach's practice drill",
+          "hi": "कोच की प्रैक्टिस",
+          "hi_latn": "Coach ki practice"
+         },
+         "size": "title",
+         "w": 760,
+         "align": "middle"
+        },
+        {
+         "kind": "sprite",
+         "id": "decor",
+         "x": 900,
+         "y": 75,
+         "lib": "obj.ball",
+         "w": 110,
+         "h": 110,
+         "role": "context"
+        },
+        {
+         "kind": "choice",
+         "id": "ch",
+         "x": 500,
+         "y": 1066.3333333333333,
+         "var": "pick",
+         "options": [
+          {
+           "id": "o1",
+           "label": {
+            "en": "No, the pieces must be equal for each to be 1/3",
+            "hi": "No, the pieces must be equal for each to be 1/3",
+            "hi_latn": "No, the pieces must be equal for each to be 1/3"
+           }
+          },
+          {
+           "id": "o2",
+           "label": {
+            "en": "Yes, there are 3 pieces",
+            "hi": "Yes, there are 3 pieces",
+            "hi_latn": "Yes, there are 3 pieces"
+           },
+           "misc": "MC.C6_MATHS_CH07_T01_M_UNEQUAL_PARTS"
+          }
+         ],
+         "layout": "column",
+         "commit": true
+        }
+       ],
+       "timelines": [],
+       "goals": [],
+       "probe": {
+        "id": "p_pick",
+        "kind": "diagnose",
+        "ask": {
+         "en": "Coach's practice drill",
+         "hi": "कोच की प्रैक्टिस",
+         "hi_latn": "Coach ki practice"
+        },
+        "commit": {
+         "via": "choice",
+         "node": "ch"
+        },
+        "correct": "pick == 'o1'",
+        "traps": [
+         {
+          "when": "pick == 'o2'",
+          "misc": "MC.C6_MATHS_CH07_T01_M_UNEQUAL_PARTS"
+         }
+        ]
+       },
+       "feedback": "on_commit"
+      }
+     },
+     "goal": "g1:diag:c6-maths-ch07-t01-m-unequal-parts"
+    }
+   ],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [
+      "parts",
+      "drift",
+      "ask"
+     ],
+     "rewritten": true,
+     "replaced": true,
+     "firstDraft": "Correct: Asha travels farther because, with the same whole, fewer equal parts make each part larger. Now compare 1/5 and 1/8: which is larger?",
+     "afterRewrite": [
+      "parts",
+      "noconfirm"
+     ],
+     "final": [
+      "bare",
+      "noconfirm"
+     ]
+    },
+    "verdict": "correct",
+    "cls": {
+     "outcome": "correct",
+     "source": "exact"
+    },
+    "note": null,
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 3648,
+    "item": "diag:c6-maths-ch07-t01-m-unequal-parts",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 58
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 59
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 61
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 127
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 127
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1994
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1390
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 3561
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 3648
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "probe:backchannel-02",
+   "lessonId": "a17585ca-97fc-4ecd-8b8e-54081c9e6ae0",
+   "childText": "ok",
+   "ms": 1527,
+   "error": null,
+   "teacherReply": "Anaya, focus on equality: three pieces make 1/3 each only when their sizes match. A chocolate bar is broken into 3 pieces: one big and two small. Is each piece 1/3 of the bar?",
+   "move": {
+    "kind": "hint",
+    "shape": "their typed reply did not answer the question: no verdict, never ask them to repeat or say it again; one small nudge toward what the question asks; then the same question again, as written; no verdict on their reply: neither praise nor 'wrong'",
+    "itemId": "diag:c6-maths-ch07-t01-m-unequal-parts",
+    "skillId": "c6-maths-ch07-t01-s1",
+    "hintLevel": 0
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "math",
+     "value": "1/3"
+    },
+    "chips": [
+     {
+      "id": "opt:0",
+      "label": "Yes, there are 3 pieces"
+     },
+     {
+      "id": "opt:1",
+      "label": "No, the pieces must be equal for each to"
+     }
+    ],
+    "phase": "practice",
+    "handover": "choice",
+    "ask": {
+     "text": "A chocolate bar is broken into 3 pieces: one big and two small. Is each piece 1/3 of the bar?",
+     "itemId": "diag:c6-maths-ch07-t01-m-unequal-parts"
+    },
+    "answerForm": "choice",
+    "tray": "tiles",
+    "shortTitle": "Fractional units",
+    "beat": {
+     "beatId": "b10-probe",
+     "type": "probe",
+     "index": 10
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [
+      "ask"
+     ],
+     "rewritten": false,
+     "replaced": false,
+     "firstDraft": "Anaya, focus on equality: three pieces make 1/3 each only when their sizes match. Is each piece 1/3?",
+     "repaired": true
+    },
+    "verdict": "unverified",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 538,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 1524,
+    "item": "diag:c6-maths-ch07-t01-m-unequal-parts",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 73
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 73
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 765
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 851
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1304
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1389
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1391
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1391
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1271
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 1446
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 1524
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "recovery",
+   "lessonId": "a17585ca-97fc-4ecd-8b8e-54081c9e6ae0",
+   "childText": "No, the pieces must be equal for each to be 1/3",
+   "ms": 4155,
+   "error": null,
+   "teacherReply": "Correct—the equal-size condition is right. How did you know each piece had to be equal for it to be 1/3?",
+   "move": {
+    "kind": "probe",
+    "shape": "confirm in two or three words only — the reason is theirs to give, so do not explain it; covert shape: protege naive but-why; Bittu, who does not know it, asks why; about THIS question; one open question; wait; a real question, never a check on them",
+    "itemId": "diag:c6-maths-ch07-t01-m-unequal-parts",
+    "skillId": "c6-maths-ch07-t01-s1",
+    "hintLevel": 0,
+    "probe": "P2"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "math",
+     "value": "1/3"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "answerForm": "words",
+    "tray": "module",
+    "shortTitle": "Fractional units",
+    "verdict": "correct",
+    "beat": {
+     "beatId": "b10-probe",
+     "type": "probe",
+     "index": 10
+    },
+    "ask": {
+     "text": "How did you know each piece had to be equal for it to be 1/3?"
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [
+      "nowhy",
+      "noconfirm"
+     ],
+     "rewritten": true,
+     "replaced": false,
+     "firstDraft": "Right—the equal-size condition is the key. For 1/3, the whole must be split into three equal parts. Imagine a bar split into 4 equal pieces: what fraction is one piece?",
+     "afterRewrite": []
+    },
+    "verdict": "correct",
+    "cls": {
+     "outcome": "correct",
+     "source": "exact"
+    },
+    "note": null,
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 4147,
+    "item": "diag:c6-maths-ch07-t01-m-unequal-parts",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 89
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 89
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 551
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 658
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 665
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 665
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1515
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1865
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 4066
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 4147
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "advance",
+   "lessonId": "a17585ca-97fc-4ecd-8b8e-54081c9e6ae0",
+   "childText": "got it",
+   "ms": 4936,
+   "error": null,
+   "teacherReply": "Anaya, when equal shares are made among more friends, each share becomes smaller. One roti is shared by 3 friends, and a same-size roti by 5 friends. Predict: who gets more, one of the 3 or one of the 5?",
+   "move": {
+    "kind": "probe",
+    "shape": "give the reason yourself in one plain line (their answer was right); pose the question as written, in their language; then wait; ask for their prediction before anything is shown or explained",
+    "itemId": "c6-maths-ch07-t01-i03",
+    "skillId": "c6-maths-ch07-t01-s2",
+    "hintLevel": 0,
+    "probe": "P5"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "math",
+     "value": "3  ·  5  ·  3  ·  5"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "Predict: who gets more, one of the 3 or one of the 5?",
+     "itemId": "c6-maths-ch07-t01-i03"
+    },
+    "answerForm": "words",
+    "tray": "studio",
+    "shortTitle": "Fractional units",
+    "beat": {
+     "beatId": "b10-probe",
+     "type": "probe",
+     "index": 10
+    },
+    "studioSlot": {
+     "slotId": "a17585ca-97fc-4ecd-8b8e-54081c9e6ae0:c4:slot",
+     "intentId": "a17585ca-97fc-4ecd-8b8e-54081c9e6ae0:c4",
+     "state": "revealed",
+     "artifact": {
+      "kind": "stagecraft",
+      "stage": {
+       "w": 1000,
+       "h": 625
+      },
+      "stagecraft": {
+       "rung": "engine_default",
+       "archetype": "slice-at@1",
+       "spec": {
+        "archetype": "slice-at@1",
+        "skills": [
+         "c6-maths-ch07-t01"
+        ],
+        "lang": "en",
+        "strings": {
+         "coach": "Swipe through the bar",
+         "wave": "Wave",
+         "cut": "Cut",
+         "parts": "Equal parts",
+         "exact": "CLEAN CUT",
+         "close": "CLOSE",
+         "offBy": "off by",
+         "runDone": "Run complete",
+         "accuracy": "accuracy",
+         "sliced": "sliced",
+         "chain": "chain",
+         "smaller": "smaller piece"
+        },
+        "waves": [
+         {
+          "title": "Fractional units",
+          "sub": "make equal pieces of the whole",
+          "items": [
+           {
+            "cut": "1/2"
+           },
+           {
+            "cut": "1/3"
+           },
+           {
+            "cut": "1/4"
+           }
+          ],
+          "gravity": 0.8,
+          "gap": 2.8,
+          "marks": true
+         },
+         {
+          "title": "Share the bar",
+          "sub": "slice carefully into equal shares",
+          "items": [
+           {
+            "parts": 3
+           },
+           {
+            "parts": 4
+           },
+           {
+            "parts": 5
+           }
+          ],
+          "gravity": 0.9,
+          "gap": 2.6,
+          "marks": false,
+          "targets": "c6-maths-ch07-t01-m-unequal-parts"
+         },
+         {
+          "title": "More pieces, smaller",
+          "sub": "compare unit fractions on one bar",
+          "items": [
+           {
+            "cut": "1/4"
+           },
+           {
+            "cut": "1/5"
+           },
+           {
+            "cut": "1/6"
+           },
+           {
+            "cut": "1/8"
+           }
+          ],
+          "gravity": 1,
+          "gap": 2.3,
+          "marks": false,
+          "targets": "c6-maths-ch07-t01-m-bigger-denominator"
+         },
+         {
+          "title": "Parts of a whole",
+          "sub": "use the same whole each time",
+          "items": [
+           {
+            "cut": "2/3"
+           },
+           {
+            "cut": "3/4"
+           },
+           {
+            "cut": "2/5"
+           },
+           {
+            "cut": "5/6"
+           }
+          ],
+          "gravity": 1.1,
+          "gap": 2.1,
+          "marks": false
+         }
+        ]
+       },
+       "boardTwin": {
+        "scriptRef": "board:c6-maths-ch07-t01-s1|probe|-|-",
+        "values": {
+         "title": "Fraction Slice",
+         "need": "probe"
+        },
+        "board": {
+         "title": "Fraction Slice",
+         "lines": [
+          "equal",
+          "pieces",
+          "fraction",
+          "among"
+         ],
+         "figure": {
+          "kind": "none"
+         }
+        }
+       },
+       "board": null,
+       "cue": {
+        "clauseIdx": 0,
+        "preRollMs": 400,
+        "crossFadeMs": 420
+       },
+       "buildSha": null,
+       "blobUrl": null
+      }
+     }
+    }
+   },
+   "moduleCommands": [
+    {
+     "op": "unmount",
+     "moduleId": "g1-c5e477ce"
+    }
+   ],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [
+      "drift",
+      "flat",
+      "ask"
+     ],
+     "rewritten": true,
+     "replaced": false,
+     "firstDraft": "Good, Anaya. Equal shares mean each part is the same size; unequal pieces are not equal fractions.",
+     "afterRewrite": []
+    },
+    "verdict": "unverified",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 518,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 4922,
+    "item": "c6-maths-ch07-t01-i03",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 76
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 76
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 752
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 843
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1272
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1361
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1363
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1364
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1025
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 2430
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 4841
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 4922
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "probe:multi_intent-03",
+   "lessonId": "a17585ca-97fc-4ecd-8b8e-54081c9e6ae0",
+   "childText": "i don't get it, can you draw it?",
+   "ms": 2820,
+   "error": null,
+   "teacherReply": "Anaya, picture two same-size rotis. Draw one with 3 equal boxes and the other with 5 equal boxes; compare the box sizes. Predict: who gets more, one of the 3 or one of the 5?",
+   "move": {
+    "kind": "reteach",
+    "shape": "they asked to see it: a picture of the same idea; one idea; let the picture do the work; a few words about what to look at; the key stays unsaid; then one small question about what they see; no verdict on their reply: neither praise nor 'wrong'; it is on the screen now: point them at it in your first words and say what to look at",
+    "itemId": "c6-maths-ch07-t01-i03",
+    "skillId": "c6-maths-ch07-t01-s2",
+    "hintLevel": 1,
+    "request": "visual",
+    "visual": "diagram"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "math",
+     "value": "3  ·  5  ·  3  ·  5"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "Predict: who gets more, one of the 3 or one of the 5?",
+     "itemId": "c6-maths-ch07-t01-i03"
+    },
+    "answerForm": "words",
+    "tray": "studio",
+    "shortTitle": "Fractional units",
+    "beat": {
+     "beatId": "b11-explain",
+     "type": "explain",
+     "index": 11
+    },
+    "studioSlot": {
+     "slotId": "a17585ca-97fc-4ecd-8b8e-54081c9e6ae0:wb:16:slot",
+     "intentId": "a17585ca-97fc-4ecd-8b8e-54081c9e6ae0:wb:16",
+     "state": "revealed",
+     "artifact": {
+      "kind": "whiteboard",
+      "stage": {
+       "w": 800,
+       "h": 500
+      },
+      "script": {
+       "v": 1,
+       "scriptId": "a17585ca-97fc-4ecd-8b8e-54081c9e6ae0:wb:16",
+       "line": {
+        "lessonId": "a17585ca-97fc-4ecd-8b8e-54081c9e6ae0",
+        "teacherReplySeq": 33
+       },
+       "anchor": "line_audio_start",
+       "board": {
+        "w": 800,
+        "h": 500,
+        "ground": "chalk"
+       },
+       "mode": "fresh",
+       "durationMs": 15543,
+       "ops": [
+        {
+         "id": "large",
+         "op": "rect",
+         "startMs": 0,
+         "endMs": 1918,
+         "ink": "chalk",
+         "weight": 2,
+         "at": [
+          70,
+          150
+         ],
+         "w": 250,
+         "h": 220
+        },
+        {
+         "id": "largecut",
+         "op": "line",
+         "startMs": 2237,
+         "endMs": 3516,
+         "ink": "mark",
+         "weight": 2,
+         "from": [
+          195,
+          150
+         ],
+         "to": [
+          195,
+          370
+         ]
+        },
+        {
+         "id": "small",
+         "op": "rect",
+         "startMs": 4155,
+         "endMs": 6073,
+         "ink": "chalk",
+         "weight": 2,
+         "at": [
+          450,
+          150
+         ],
+         "w": 250,
+         "h": 220
+        },
+        {
+         "id": "smallcut1",
+         "op": "line",
+         "startMs": 6392,
+         "endMs": 7671,
+         "ink": "mark",
+         "weight": 2,
+         "from": [
+          533,
+          150
+         ],
+         "to": [
+          533,
+          370
+         ]
+        },
+        {
+         "id": "smallcut2",
+         "op": "line",
+         "startMs": 7671,
+         "endMs": 8950,
+         "ink": "mark",
+         "weight": 2,
+         "from": [
+          616,
+          150
+         ],
+         "to": [
+          616,
+          370
+         ]
+        },
+        {
+         "id": "smallpart",
+         "op": "highlight",
+         "startMs": 9909,
+         "endMs": 12465,
+         "ink": "accent",
+         "weight": 2,
+         "target": "smallcut1",
+         "style": "circle"
+        },
+        {
+         "id": "smaller",
+         "op": "arrow",
+         "startMs": 13106,
+         "endMs": 15343,
+         "ink": "accent",
+         "weight": 2,
+         "from": [
+          320,
+          400
+         ],
+         "to": [
+          450,
+          400
+         ]
+        }
+       ],
+       "facts": {
+        "kind": "diagram",
+        "archetype": "whiteboard",
+        "onScreen": {}
+       }
+      }
+     }
+    }
+   },
+   "moduleCommands": [],
+   "studio": {
+    "retire": "a17585ca-97fc-4ecd-8b8e-54081c9e6ae0:c4"
+   },
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false,
+     "leadSlot": true
+    },
+    "verdict": "ungraded",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "request"
+    },
+    "note": null,
+    "hintLevel": 1,
+    "phase": "practice",
+    "ms": 2816,
+    "item": "c6-maths-ch07-t01-i03",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 107
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 110
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 768
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 892
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 899
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 899
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1730
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 2730
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 2816
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "recovery",
+   "lessonId": "a17585ca-97fc-4ecd-8b8e-54081c9e6ae0",
+   "childText": "1/3",
+   "ms": 3532,
+   "error": null,
+   "teacherReply": "Yes, 1/3 is larger because the same whole is split into fewer equal parts.",
+   "move": {
+    "kind": "explain",
+    "shape": "confirm specifically: name the exact thing they got right, no ability words; one idea only: Share and measure with fractional units, e.g. 3 rotis among 4 is 3/4 each; an example from their interest (football) if it fits naturally; objects first, then the symbol; point at the screen only at what the on-screen row lists; never a drawing made of characters; end with one small question that makes them USE the idea — never 'samjha?'",
+    "skillId": "c6-maths-ch07-t01-s3",
+    "format": "F3"
+   },
+   "ui": {
+    "status": "your_turn",
+    "phase": "practice",
+    "handover": "answer",
+    "answerForm": "words",
+    "tray": "module",
+    "shortTitle": "Fractional units",
+    "verdict": "correct",
+    "withHelp": true,
+    "beat": {
+     "beatId": "b11-explain",
+     "type": "explain",
+     "index": 11
+    },
+    "ask": {
+     "text": "Yes, 1/3 is larger because the same whole is split into fewer equal parts."
+    }
+   },
+   "moduleCommands": [
+    {
+     "op": "mount",
+     "moduleId": "m17",
+     "engine": "explainer@1",
+     "params": {
+      "script": {
+       "v": 1,
+       "scriptId": "ex-6xe4b4",
+       "line": {
+        "lessonId": "a17585ca-97fc-4ecd-8b8e-54081c9e6ae0"
+       },
+       "anchor": "line_audio_start",
+       "board": {
+        "w": 400,
+        "h": 300,
+        "ground": "chalk"
+       },
+       "mode": "fresh",
+       "durationMs": 5450,
+       "ops": [
+        {
+         "id": "o1",
+         "op": "ellipse",
+         "startMs": 120,
+         "endMs": 500,
+         "weight": 1,
+         "c": [
+          86.7,
+          110
+         ],
+         "rx": 50.7,
+         "ry": 62
+        },
+        {
+         "id": "o2",
+         "op": "circle",
+         "startMs": 540,
+         "endMs": 650,
+         "ink": "accent",
+         "weight": 1,
+         "c": [
+          77.7,
+          97
+         ],
+         "r": 5,
+         "fill": "accent"
+        },
+        {
+         "id": "o3",
+         "op": "circle",
+         "startMs": 690,
+         "endMs": 800,
+         "ink": "accent",
+         "weight": 1,
+         "c": [
+          95.7,
+          97
+         ],
+         "r": 5,
+         "fill": "accent"
+        },
+        {
+         "id": "o4",
+         "op": "circle",
+         "startMs": 840,
+         "endMs": 950,
+         "ink": "accent",
+         "weight": 1,
+         "c": [
+          77.7,
+          110
+         ],
+         "r": 5,
+         "fill": "accent"
+        },
+        {
+         "id": "o5",
+         "op": "circle",
+         "startMs": 990,
+         "endMs": 1100,
+         "ink": "accent",
+         "weight": 1,
+         "c": [
+          95.7,
+          110
+         ],
+         "r": 5,
+         "fill": "accent"
+        },
+        {
+         "id": "o6",
+         "op": "circle",
+         "startMs": 1140,
+         "endMs": 1250,
+         "ink": "accent",
+         "weight": 1,
+         "c": [
+          77.7,
+          123
+         ],
+         "r": 5,
+         "fill": "accent"
+        },
+        {
+         "id": "o7",
+         "op": "ellipse",
+         "startMs": 1370,
+         "endMs": 1750,
+         "weight": 1,
+         "c": [
+          200,
+          110
+         ],
+         "rx": 50.7,
+         "ry": 62
+        },
+        {
+         "id": "o8",
+         "op": "circle",
+         "startMs": 1790,
+         "endMs": 1900,
+         "ink": "accent",
+         "weight": 1,
+         "c": [
+          191,
+          97
+         ],
+         "r": 5,
+         "fill": "accent"
+        },
+        {
+         "id": "o9",
+         "op": "circle",
+         "startMs": 1940,
+         "endMs": 2050,
+         "ink": "accent",
+         "weight": 1,
+         "c": [
+          209,
+          97
+         ],
+         "r": 5,
+         "fill": "accent"
+        },
+        {
+         "id": "o10",
+         "op": "circle",
+         "startMs": 2090,
+         "endMs": 2200,
+         "ink": "accent",
+         "weight": 1,
+         "c": [
+          191,
+          110
+         ],
+         "r": 5,
+         "fill": "accent"
+        },
+        {
+         "id": "o11",
+         "op": "circle",
+         "startMs": 2240,
+         "endMs": 2350,
+         "ink": "accent",
+         "weight": 1,
+         "c": [
+          209,
+          110
+         ],
+         "r": 5,
+         "fill": "accent"
+        },
+        {
+         "id": "o12",
+         "op": "circle",
+         "startMs": 2390,
+         "endMs": 2500,
+         "ink": "accent",
+         "weight": 1,
+         "c": [
+          191,
+          123
+         ],
+         "r": 5,
+         "fill": "accent"
+        },
+        {
+         "id": "o13",
+         "op": "ellipse",
+         "startMs": 2620,
+         "endMs": 3000,
+         "weight": 1,
+         "c": [
+          313.3,
+          110
+         ],
+         "rx": 50.7,
+         "ry": 62
+        },
+        {
+         "id": "o14",
+         "op": "circle",
+         "startMs": 3040,
+         "endMs": 3150,
+         "ink": "accent",
+         "weight": 1,
+         "c": [
+          304.3,
+          97
+         ],
+         "r": 5,
+         "fill": "accent"
+        },
+        {
+         "id": "o15",
+         "op": "circle",
+         "startMs": 3190,
+         "endMs": 3300,
+         "ink": "accent",
+         "weight": 1,
+         "c": [
+          322.3,
+          97
+         ],
+         "r": 5,
+         "fill": "accent"
+        },
+        {
+         "id": "o16",
+         "op": "circle",
+         "startMs": 3340,
+         "endMs": 3450,
+         "ink": "accent",
+         "weight": 1,
+         "c": [
+          304.3,
+          110
+         ],
+         "r": 5,
+         "fill": "accent"
+        },
+        {
+         "id": "o17",
+         "op": "circle",
+         "startMs": 3490,
+         "endMs": 3600,
+         "ink": "accent",
+         "weight": 1,
+         "c": [
+          322.3,
+          110
+         ],
+         "r": 5,
+         "fill": "accent"
+        },
+        {
+         "id": "o18",
+         "op": "circle",
+         "startMs": 3640,
+         "endMs": 3750,
+         "ink": "accent",
+         "weight": 1,
+         "c": [
+          304.3,
+          123
+         ],
+         "r": 5,
+         "fill": "accent"
+        },
+        {
+         "id": "eq",
+         "op": "numwork",
+         "startMs": 4050,
+         "endMs": 5050,
+         "weight": 2,
+         "at": [
+          110,
+          240
+         ],
+         "layout": "equation",
+         "rows": [
+          [
+           "3",
+           "×",
+           "5",
+           "=",
+           "15"
+          ]
+         ]
+        }
+       ],
+       "facts": {
+        "kind": "animation",
+        "archetype": "equal-groups@1",
+        "onScreen": {
+         "groups": 3,
+         "each": 5,
+         "total": 15
+        }
+       }
+      },
+      "template": "equal-groups@1",
+      "mode": "play"
+     }
+    }
+   ],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [
+      "parts"
+     ],
+     "rewritten": true,
+     "replaced": true,
+     "firstDraft": "Yes, you chose 1/3: with only 3 equal parts, each part is larger than one of 5. Now compare 1/3 and 1/5— which is smaller?",
+     "afterRewrite": [
+      "parts"
+     ],
+     "repaired": true,
+     "final": [
+      "flat"
+     ]
+    },
+    "verdict": "correct",
+    "cls": {
+     "outcome": "correct",
+     "source": "exact"
+    },
+    "note": null,
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 3529,
+    "item": null,
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 88
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 88
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 97
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 192
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 192
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1700
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1554
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 3451
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 3529
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "advance",
+   "lessonId": "a17585ca-97fc-4ecd-8b8e-54081c9e6ae0",
+   "childText": "got it",
+   "ms": 2110,
+   "error": null,
+   "teacherReply": "Anaya, 3 rotis are shared equally among 4 children. How much does each child get?",
+   "move": {
+    "kind": "practice",
+    "shape": "pose the question as written, in their language; then wait",
+    "itemId": "c6-maths-ch07-t01-i05",
+    "skillId": "c6-maths-ch07-t01-s3",
+    "hintLevel": 0,
+    "probe": "P15"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "math",
+     "value": "3  ·  4"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "3 rotis are shared equally among 4 children. How much does each child get?",
+     "itemId": "c6-maths-ch07-t01-i05"
+    },
+    "answerForm": "words",
+    "tray": "none",
+    "shortTitle": "Fractional units",
+    "beat": {
+     "beatId": "b12-practice_set",
+     "type": "practice_set",
+     "index": 12
+    }
+   },
+   "moduleCommands": [
+    {
+     "op": "unmount",
+     "moduleId": "m17"
+    }
+   ],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false
+    },
+    "verdict": "ungraded",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 972,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 2105,
+    "item": "c6-maths-ch07-t01-i05",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 92
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 95
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 911
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 1017
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1892
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1989
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 2013
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 2013
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1186
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 2014
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 2105
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "probe:story-02",
+   "lessonId": "a17585ca-97fc-4ecd-8b8e-54081c9e6ae0",
+   "childText": "can you tell it like a story?",
+   "ms": 2536,
+   "error": null,
+   "teacherReply": "One day, Riya shared 4 rotis equally among 5 children. Each child’s share is one part of the whole rotis. Now try: 3 rotis are shared equally among 4 children. How much does each child get?",
+   "move": {
+    "kind": "reteach",
+    "shape": "they asked for a story: tell it in story form — a named character, a moment (one day…), what happened — with DIFFERENT numbers from the question, so it never states its answer; the key stays unsaid; then the same question again, as written; no verdict on their reply: neither praise nor 'wrong'",
+    "itemId": "c6-maths-ch07-t01-i05",
+    "skillId": "c6-maths-ch07-t01-s3",
+    "hintLevel": 1,
+    "request": "story"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "math",
+     "value": "3  ·  4"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "3 rotis are shared equally among 4 children. How much does each child get?",
+     "itemId": "c6-maths-ch07-t01-i05"
+    },
+    "answerForm": "words",
+    "tray": "module",
+    "shortTitle": "Fractional units",
+    "beat": {
+     "beatId": "b13-explain",
+     "type": "explain",
+     "index": 13
+    }
+   },
+   "moduleCommands": [
+    {
+     "op": "mount",
+     "moduleId": "m19",
+     "engine": "explainer@1",
+     "params": {
+      "script": {
+       "v": 1,
+       "scriptId": "ex-xjf0n0",
+       "line": {
+        "lessonId": "a17585ca-97fc-4ecd-8b8e-54081c9e6ae0"
+       },
+       "anchor": "line_audio_start",
+       "board": {
+        "w": 400,
+        "h": 300,
+        "ground": "chalk"
+       },
+       "mode": "fresh",
+       "durationMs": 5000,
+       "ops": [
+        {
+         "id": "o1",
+         "op": "ellipse",
+         "startMs": 120,
+         "endMs": 500,
+         "weight": 1,
+         "c": [
+          86.7,
+          110
+         ],
+         "rx": 50.7,
+         "ry": 62
+        },
+        {
+         "id": "o2",
+         "op": "circle",
+         "startMs": 540,
+         "endMs": 650,
+         "ink": "accent",
+         "weight": 1,
+         "c": [
+          86.7,
+          90.5
+         ],
+         "r": 5,
+         "fill": "accent"
+        },
+        {
+         "id": "o3",
+         "op": "circle",
+         "startMs": 690,
+         "endMs": 800,
+         "ink": "accent",
+         "weight": 1,
+         "c": [
+          86.7,
+          103.5
+         ],
+         "r": 5,
+         "fill": "accent"
+        },
+        {
+         "id": "o4",
+         "op": "circle",
+         "startMs": 840,
+         "endMs": 950,
+         "ink": "accent",
+         "weight": 1,
+         "c": [
+          86.7,
+          116.5
+         ],
+         "r": 5,
+         "fill": "accent"
+        },
+        {
+         "id": "o5",
+         "op": "circle",
+         "startMs": 990,
+         "endMs": 1100,
+         "ink": "accent",
+         "weight": 1,
+         "c": [
+          86.7,
+          129.5
+         ],
+         "r": 5,
+         "fill": "accent"
+        },
+        {
+         "id": "o6",
+         "op": "ellipse",
+         "startMs": 1220,
+         "endMs": 1600,
+         "weight": 1,
+         "c": [
+          200,
+          110
+         ],
+         "rx": 50.7,
+         "ry": 62
+        },
+        {
+         "id": "o7",
+         "op": "circle",
+         "startMs": 1640,
+         "endMs": 1750,
+         "ink": "accent",
+         "weight": 1,
+         "c": [
+          200,
+          90.5
+         ],
+         "r": 5,
+         "fill": "accent"
+        },
+        {
+         "id": "o8",
+         "op": "circle",
+         "startMs": 1790,
+         "endMs": 1900,
+         "ink": "accent",
+         "weight": 1,
+         "c": [
+          200,
+          103.5
+         ],
+         "r": 5,
+         "fill": "accent"
+        },
+        {
+         "id": "o9",
+         "op": "circle",
+         "startMs": 1940,
+         "endMs": 2050,
+         "ink": "accent",
+         "weight": 1,
+         "c": [
+          200,
+          116.5
+         ],
+         "r": 5,
+         "fill": "accent"
+        },
+        {
+         "id": "o10",
+         "op": "circle",
+         "startMs": 2090,
+         "endMs": 2200,
+         "ink": "accent",
+         "weight": 1,
+         "c": [
+          200,
+          129.5
+         ],
+         "r": 5,
+         "fill": "accent"
+        },
+        {
+         "id": "o11",
+         "op": "ellipse",
+         "startMs": 2320,
+         "endMs": 2700,
+         "weight": 1,
+         "c": [
+          313.3,
+          110
+         ],
+         "rx": 50.7,
+         "ry": 62
+        },
+        {
+         "id": "o12",
+         "op": "circle",
+         "startMs": 2740,
+         "endMs": 2850,
+         "ink": "accent",
+         "weight": 1,
+         "c": [
+          313.3,
+          90.5
+         ],
+         "r": 5,
+         "fill": "accent"
+        },
+        {
+         "id": "o13",
+         "op": "circle",
+         "startMs": 2890,
+         "endMs": 3000,
+         "ink": "accent",
+         "weight": 1,
+         "c": [
+          313.3,
+          103.5
+         ],
+         "r": 5,
+         "fill": "accent"
+        },
+        {
+         "id": "o14",
+         "op": "circle",
+         "startMs": 3040,
+         "endMs": 3150,
+         "ink": "accent",
+         "weight": 1,
+         "c": [
+          313.3,
+          116.5
+         ],
+         "r": 5,
+         "fill": "accent"
+        },
+        {
+         "id": "o15",
+         "op": "circle",
+         "startMs": 3190,
+         "endMs": 3300,
+         "ink": "accent",
+         "weight": 1,
+         "c": [
+          313.3,
+          129.5
+         ],
+         "r": 5,
+         "fill": "accent"
+        },
+        {
+         "id": "eq",
+         "op": "numwork",
+         "startMs": 3600,
+         "endMs": 4600,
+         "weight": 2,
+         "at": [
+          110,
+          240
+         ],
+         "layout": "equation",
+         "rows": [
+          [
+           "3",
+           "×",
+           "4",
+           "=",
+           "?"
+          ]
+         ]
+        }
+       ],
+       "facts": {
+        "kind": "animation",
+        "archetype": "equal-groups@1",
+        "onScreen": {
+         "groups": 3,
+         "each": 4,
+         "total": "? (child works it out)"
+        }
+       }
+      },
+      "template": "equal-groups@1",
+      "mode": "play"
+     }
+    }
+   ],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false
+    },
+    "verdict": "ungraded",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "request"
+    },
+    "note": null,
+    "hintLevel": 1,
+    "phase": "practice",
+    "ms": 2514,
+    "item": "c6-maths-ch07-t01-i05",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 77
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 78
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 673
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 762
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 765
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 766
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1592
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 2412
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 2514
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "recovery",
+   "lessonId": "a17585ca-97fc-4ecd-8b8e-54081c9e6ae0",
+   "childText": "3/4",
+   "ms": 3136,
+   "error": null,
+   "teacherReply": "Anaya, look at the 3-part bars on screen and predict first: A chocolate bar is broken into 3 pieces: one big and two small. Is each piece 1/3?",
+   "move": {
+    "kind": "probe",
+    "shape": "confirm specifically: name the exact thing they got right, no ability words; pose the question as written, in their language; then wait; two cases side by side; ask which one fits and what is different",
+    "itemId": "c6-maths-ch07-t01-i02",
+    "skillId": "c6-maths-ch07-t01-s1",
+    "hintLevel": 0,
+    "probe": "P8"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "math",
+     "value": "1/3"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "A chocolate bar is broken into 3 pieces: one big and two small. Is each piece 1/3?",
+     "itemId": "c6-maths-ch07-t01-i02"
+    },
+    "answerForm": "words",
+    "tray": "module",
+    "shortTitle": "Fractional units",
+    "verdict": "correct",
+    "withHelp": true,
+    "beat": {
+     "beatId": "b14-probe",
+     "type": "probe",
+     "index": 14
+    }
+   },
+   "moduleCommands": [
+    {
+     "op": "unmount",
+     "moduleId": "m19"
+    },
+    {
+     "op": "mount",
+     "moduleId": "m20",
+     "engine": "fraction-bars@1",
+     "params": {
+      "topicId": "c6-maths-ch07-t01",
+      "skillId": "c6-maths-ch07-t01-s1",
+      "lang": "english",
+      "denominators": [
+       3
+      ],
+      "predict": true
+     }
+    }
+   ],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [
+      "parts",
+      "drift",
+      "flat",
+      "ask"
+     ],
+     "rewritten": true,
+     "replaced": false,
+     "firstDraft": "Correct: 3 rotis shared equally among 4 children gives each child 3/4 roti.",
+     "afterRewrite": [
+      "noconfirm"
+     ],
+     "final": [
+      "noconfirm"
+     ]
+    },
+    "verdict": "correct",
+    "cls": {
+     "outcome": "correct",
+     "source": "exact"
+    },
+    "note": null,
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 3131,
+    "item": "c6-maths-ch07-t01-i02",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 72
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 73
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 79
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 145
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 145
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1695
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1134
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 3029
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 3131
+     }
+    ]
+   }
+  }
+ ]
+}

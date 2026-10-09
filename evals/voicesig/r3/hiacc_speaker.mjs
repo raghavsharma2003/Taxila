@@ -12,10 +12,10 @@ const [wav, segPath, ...models] = process.argv.slice(2);
 const segs = JSON.parse(fs.readFileSync(segPath, "utf8")); // [{ id, startMs, endMs, kind }]
 const x = f32(fs.readFileSync(wav).subarray(44));
 const { frames, xs } = features(x);
-const need = Math.ceil(FILLER_MIN_MS / 20);
 for (const spec of models) {
-  const [model, thrS] = spec.split(":");
+  const [model, thrS, minS] = spec.split(":");
   const thr = Number(thrS);
+  const need = Math.ceil(Number(minS || FILLER_MIN_MS) / 20);
   const det = await loadDetector(model);
   // the detector over each utterance window (+-300 ms), as the head reads a committed turn
   const per = [];
@@ -38,11 +38,11 @@ for (const spec of models) {
     per.push({ id: s.id, kind: s.kind, speechMs: speech * 20, runs, runMs, f0Median: f0.length ? f0[Math.floor(f0.length / 2)] : null });
   }
   // the thinking-pause cue over the whole session: every utterance end is a pause (the next utterance is another prompt)
-  const core = new HoldCueCore({ ...HOLD_CUE_DEFAULTS, thr });
+  const core = new HoldCueCore({ ...HOLD_CUE_DEFAULTS, thr, minFillerMs: need * 20 });
   let reads = 0, fired = 0;
   for (let i = 0; i < frames.length; i++) {
     const a = core.frame(frames[i], xs[i]);
     if (a.kind === "read") { reads++; const r = core.result(a.pauseId, await det.detect(a.x, a.frames), a.offsetIdx); if (r?.fired) fired++; }
   }
-  console.log(JSON.stringify({ model, thr, per, cue: { reads, fired } }));
+  console.log(JSON.stringify({ model, thr, minMs: need * 20, per, cue: { reads, fired } }));
 }

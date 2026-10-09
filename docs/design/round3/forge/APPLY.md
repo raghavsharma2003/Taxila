@@ -1,6 +1,6 @@
 # Round 3 · forge · APPLY
 
-## What is already in the tree (owned paths, not committed)
+## What is already in the tree (owned paths; carried by the main loop's WIP checkpoint commits 7773366 / a29cc0b, not gated)
 
 | path | what |
 |---|---|
@@ -11,7 +11,7 @@
 | `server/forge3/**` (new) | `live.js` (the live play piece), `compose.js` (the ladder), `art.js`, `gate.js` + `qa-service.mjs` + `infra/Dockerfile` (the QA service), `certify.js` + `play-cert.js` (certificates), `qa/*` (render, measure, checks, harness), `certs/catalogue.json` + `certs/play.json` |
 | `tests/round3-forge-unit.test.mjs`, `-semantics`, `-live` (new), `-qa-browser`; `tests/fixtures/round3-forge/`; `tests/prod/round3-forge.mjs` | unit, browser and acceptance |
 
-## Patches (unified diffs against HEAD `cadf527`; `git apply --check` clean on 2026-10-09; apply 04 first, then 01-03, 05-07)
+## Patches (unified diffs written against `cadf527`; all eight also apply cleanly on the WIP checkpoint HEAD `a29cc0b`, alone and after play 01-05, checked 2026-10-09 ~13:00 UTC; apply 04 first, then 01-03, 05-08)
 
 Order and the test proving each:
 
@@ -24,6 +24,7 @@ Order and the test proving each:
 | 05 | `05-stagecraft-catalogue-qa-certificate.diff` | `server/stagecraft/catalogue.js` | a catalogue game / explainer broken at EVERY judged size (`server/forge3/certs/catalogue.json`) is not served; never judged = allowed | `node --test tests/stagecraft.test.mjs`; `certify.js` output | `FORGE3_QA_CERTS=0` ignores the certificates |
 | 06 | `06-geoboard-no-area-task-in-a-perimeter-ask.diff` | `src/modules/frame/engines/geoboard.logic.ts`, new `tests/round3-forge-geoboard.test.mjs` | a perimeter ask never defaults to an area target | `node --test tests/round3-forge-geoboard.test.mjs` | none |
 | 07 | `07-desk-gives-back-an-empty-studio-tray.diff` | `src/child/lesson/useDesk.ts`, `src/child/lesson/WorkTray.tsx` | the Studio stage reports a slot that ENDED with nothing to show (board refused / failed, piece retired: `{ type: "empty" }`, `src/studio/StudioStage.tsx`); the Desk gives the tray back (Face layout) instead of an empty white box | `tests/prod/round3-forge.mjs` R4 (Q5.drawn views) | none; a new slot id holds the tray again |
+| 08 | `08-simulation-ask-is-interactive.diff` | `server/director/requests.js`, new `tests/round3-forge-requests.test.mjs` | "simulation dikhao" / "simulate karo" / "show me a simulation" are read as interactive visual requests in code (kind animation); before, no pattern matched them and only the model classifier's flag sometimes did (2 of 5 forge acceptance runs read the c7 ask as a plain worked example and gave a board) | `node --test tests/round3-forge-requests.test.mjs tests/owner-requests.test.mjs` (19/19 with the patch) | none |
 
 **Order with the play stream's patches** (`docs/design/round3/play/patches/01-05`): both orders apply cleanly on HEAD
 (checked with `git apply` on a HEAD export, 2026-10-09: play 01-05 then forge 01-07, and forge 01-07 then play 01-05);

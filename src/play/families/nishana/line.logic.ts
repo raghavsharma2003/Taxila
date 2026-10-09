@@ -187,7 +187,10 @@ export function gapInfo(v: LineValue, x: number): { g: string; exact: boolean } 
   if (v.form === "fraction" || v.form === "mixed") {
     const q = v.den;
     for (const m of [q, 2 * q, 3 * q, 4 * q]) { const k = Math.round(d * m); if (k > 0 && Math.abs(d - k / m) < 1e-6) return { g: red(k, m), exact: true }; }
-    for (const m of [q, 2 * q, 4 * q, 8 * q]) { const k = Math.round(d * m); if (k >= 1) return { g: red(k, m), exact: false }; }
+    // not exact: the COARSEST step fraction that is within a third of its own step of the gap (so "about 1/6" for 0.18 on
+    // a thirds line, "about 1/2" for 0.45, never "11/24"). The first build took the coarsest denominator that merely rounded
+    // to ≥ 1 and printed "lagbhag 1/3" for a 0.18 gap (a model judge caught it, 2026-10-09)
+    for (const m of [q, 2 * q, 4 * q, 8 * q]) { const k = Math.max(1, Math.round(d * m)); if (Math.abs(d - k / m) <= 1 / (3 * m) + 1e-9) return { g: red(k, m), exact: false }; }
     return { g: red(1, 8 * q), exact: false };
   }
   const r2 = Math.round(d * 100) / 100;

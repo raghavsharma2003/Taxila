@@ -176,6 +176,12 @@
    "kind": "open",
    "title": "The truthful answer to 'will you remember everything forever?' reads as policy: judges' natural 2.33/5 after vs 3.50 before (n = 6 ratings each), e.g. 'main AI hoon, isliye insaan ki tarah sab baatein hamesha yaad nahi rakhti' then an abrupt return to the card. The memory_keeps_* shape sits mid-brief (relational note, MOVE section) and the conversation guards pull the turn back to the item.",
    "at": "2026-10-09"
+  },
+  {
+   "id": "ms-r3rh-first-sound-prod-before-2026-10-09",
+   "kind": "measurement",
+   "title": "First sound on production as deployed (taxila.dev, web 145996f, prefetch off, no ack route), evals/relational-human/first-sound.mjs --base https://taxila.dev from the US sandbox through the agent proxy, with the transcription session minted by prod and a synthetic child, 1 cascade lesson, n = 20 turns, 2026-10-09: first sound p50 5,991 / p90 6,780 ms. Brain (turn -> JSON) 3,241 / 4,277; final transcript 1,637 / 2,165 after speech end; endpoint 1,092 / 1,189; TTS first byte 929 / 988. The local before arm (6,107 / 7,856, n = 90) reproduces it.",
+   "at": "2026-10-09"
   }
  ],
  "edges": [
@@ -298,6 +304,11 @@
    "src": "open-r3rh-memory-answer-policy-tone",
    "rel": "caused_by",
    "dst": "ms-r3rh-memory-2day-2026-10-09"
+  },
+  {
+   "src": "open-r3rh-first-sound-900",
+   "rel": "caused_by",
+   "dst": "ms-r3rh-first-sound-prod-before-2026-10-09"
   }
  ]
 }

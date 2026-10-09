@@ -1,0 +1,2259 @@
+{
+ "slot": 14,
+ "topic": "c5-maths-ch01-t01",
+ "cls": 5,
+ "lang": "english",
+ "lane": "voice",
+ "lessons": [
+  {
+   "lessonId": "f17ac36d-1351-4ab6-93e4-d3a336da7207",
+   "why": "start",
+   "at": "2026-10-09T12:48:45.869Z",
+   "teacher": "Arjun"
+  }
+ ],
+ "turns": [
+  {
+   "who": "teacher",
+   "kind": "opening",
+   "lessonId": "f17ac36d-1351-4ab6-93e4-d3a336da7207",
+   "teacherReply": "Hello Riya! I’m Arjun, your AI teacher. Today we’ll explore big numbers—like drawing numbers in neat place-value boxes. What do you enjoy drawing?",
+   "ui": {
+    "status": "your_turn",
+    "phase": "warmup",
+    "handover": "answer",
+    "answerForm": "words",
+    "tray": "none",
+    "shortTitle": "Big numbers",
+    "beat": {
+     "beatId": "b1-arrive",
+     "type": "arrive",
+     "index": 1
+    },
+    "ask": {
+     "text": "What do you enjoy drawing?"
+    }
+   }
+  },
+  {
+   "who": "child",
+   "tag": "greet",
+   "lessonId": "f17ac36d-1351-4ab6-93e4-d3a336da7207",
+   "childText": "hi ready",
+   "ms": 3308,
+   "error": null,
+   "teacherReply": "Riya, imagine drawing two train routes: 1,25,000 kilometres and 75,000 kilometres. Which route looks longer? At the end, you’ll teach this to Bittu.",
+   "move": {
+    "kind": "hook",
+    "shape": "open with one concrete everyday situation built on their interest (drawing) — kit contexts: highway distances (Delhi to Kanyakumari), cricket stadium crowds, train route kilometres; ask what they think will happen or which they would pick — a prediction, no right answer yet; any bigger/more comparison: two quantities of one kind, in one unit — a count against a count, a distance against a distance; never across kinds; mention once: at the end they will teach this to Bittu (a pretend new student who missed this class)",
+    "format": "F4"
+   },
+   "ui": {
+    "status": "your_turn",
+    "phase": "teach",
+    "handover": "answer",
+    "answerForm": "words",
+    "tray": "none",
+    "shortTitle": "Big numbers",
+    "beat": {
+     "beatId": "b2-hook",
+     "type": "hook",
+     "index": 2
+    },
+    "ask": {
+     "text": "Which route looks longer?"
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [
+      "units"
+     ],
+     "rewritten": true,
+     "replaced": false,
+     "firstDraft": "Riya, imagine drawing a train route of 1,25,000 kilometres. Which looks bigger to you: this route or a stadium crowd of 75,000 people?",
+     "afterRewrite": []
+    },
+    "verdict": "ungraded",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 557,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "teach",
+    "ms": 3284,
+    "item": null,
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 66
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 66
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 686
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 758
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1244
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1315
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1317
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1317
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1677
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1395
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 3220
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 3284
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "advance",
+   "lessonId": "f17ac36d-1351-4ab6-93e4-d3a336da7207",
+   "childText": "okay",
+   "ms": 2312,
+   "error": null,
+   "teacherReply": "Riya, begin from the left: 1,07,040 reads one lakh seven thousand forty. How would you write “two lakh five thousand” in numerals?",
+   "move": {
+    "kind": "explain",
+    "shape": "one idea only: Read and write 5- and 6-digit numbers in numerals and words; an example from their interest (drawing) if it fits naturally; objects first, then the symbol; point at the screen only at what the on-screen row lists; never a drawing made of characters; end with one small question that makes them USE the idea — never 'samjha?'",
+    "skillId": "c5-maths-ch01-t01-s1",
+    "format": "F3"
+   },
+   "ui": {
+    "status": "your_turn",
+    "phase": "teach",
+    "handover": "answer",
+    "answerForm": "words",
+    "tray": "studio",
+    "shortTitle": "Big numbers",
+    "beat": {
+     "beatId": "b3-explain",
+     "type": "explain",
+     "index": 3
+    },
+    "ask": {
+     "text": "How would you write “two lakh five thousand” in numerals?"
+    },
+    "studioSlot": {
+     "slotId": "f17ac36d-1351-4ab6-93e4-d3a336da7207:wb:2:slot",
+     "intentId": "f17ac36d-1351-4ab6-93e4-d3a336da7207:wb:2",
+     "state": "planning"
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false
+    },
+    "verdict": "ungraded",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 23,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "teach",
+    "ms": 2309,
+    "item": null,
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 73
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 73
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 1099
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 1179
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1127
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1202
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1205
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1205
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1480
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 1658
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 2309
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "advance",
+   "lessonId": "f17ac36d-1351-4ab6-93e4-d3a336da7207",
+   "childText": "got it",
+   "ms": 4417,
+   "error": null,
+   "teacherReply": "Good—you identified the place-value parts. Now try this: write “one lakh seven thousand forty” in numerals with commas.",
+   "move": {
+    "kind": "worked_example",
+    "shape": "worked example, part 1 of 2: say one step, then ask them for the next step; their thinking, your pace; no new idea",
+    "skillId": "c5-maths-ch01-t01-s1",
+    "format": "F2"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "math",
+     "value": "Write 'one lakh seven thousand forty' in numerals with commas."
+    },
+    "phase": "teach",
+    "handover": "answer",
+    "answerForm": "words",
+    "tray": "studio",
+    "shortTitle": "Big numbers",
+    "beat": {
+     "beatId": "b4-worked_example",
+     "type": "worked_example",
+     "index": 4
+    },
+    "ask": {
+     "text": "Now try this: write “one lakh seven thousand forty” in numerals with commas."
+    },
+    "studioSlot": {
+     "slotId": "f17ac36d-1351-4ab6-93e4-d3a336da7207:wb:3:slot",
+     "intentId": "f17ac36d-1351-4ab6-93e4-d3a336da7207:wb:3",
+     "state": "planning"
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false
+    },
+    "verdict": "ungraded",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": null,
+     "waitedMs": 1356,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "teach",
+    "ms": 4385,
+    "item": null,
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 62
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 63
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 844
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 909
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 2266
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 2289
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 2289
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": "timeout",
+      "ms": 2774
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 3173
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 3359
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 4385
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "advance",
+   "lessonId": "f17ac36d-1351-4ab6-93e4-d3a336da7207",
+   "childText": "got it",
+   "ms": 1745,
+   "error": null,
+   "teacherReply": "Excellent, Riya—you have the place values ready. Keep each digit in its correct place, then add commas neatly. Fill the gap: Commas the Indian way: ___.",
+   "move": {
+    "kind": "practice",
+    "shape": "the earlier steps in LESSON NOW, said briefly as done; then the step with the gap is theirs: pose it as written; wait; never fill the gap for them",
+    "itemId": "fade:4",
+    "skillId": "c5-maths-ch01-t01-s1",
+    "hintLevel": 0,
+    "probe": "P15",
+    "format": "F2"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "math",
+     "value": "Write 'one lakh seven thousand forty' in numerals with commas. · Commas the Indian way: ___."
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "Fill the gap: Commas the Indian way: ___.",
+     "itemId": "fade:4"
+    },
+    "answerForm": "number",
+    "padComma": true,
+    "tray": "none",
+    "shortTitle": "Big numbers",
+    "beat": {
+     "beatId": "b5-practice_set",
+     "type": "practice_set",
+     "index": 5
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false,
+     "leadSlot": true
+    },
+    "verdict": "ungraded",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 324,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 1724,
+    "item": "fade:4",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 62
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 63
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 1093
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 1172
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1424
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1497
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1499
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1499
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1437
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 1649
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 1724
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "advance",
+   "lessonId": "f17ac36d-1351-4ab6-93e4-d3a336da7207",
+   "childText": "ok",
+   "ms": 6422,
+   "error": null,
+   "teacherReply": "Riya, you said “ok”; I still need the number. Fill the gap: Commas the Indian way: ___.",
+   "move": {
+    "kind": "repair",
+    "shape": "you did not catch it clearly: ask them to say it once more; no verdict on their reply: neither praise nor 'wrong'",
+    "itemId": "fade:4",
+    "skillId": "c5-maths-ch01-t01-s1",
+    "hintLevel": 0
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "text",
+     "value": "Fill the gap: Commas the Indian way: ___."
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "Fill the gap: Commas the Indian way: ___.",
+     "itemId": "fade:4"
+    },
+    "answerForm": "number",
+    "padComma": true,
+    "tray": "studio",
+    "shortTitle": "Big numbers",
+    "beat": {
+     "beatId": "b5-practice_set",
+     "type": "practice_set",
+     "index": 5
+    },
+    "studioSlot": {
+     "slotId": "f17ac36d-1351-4ab6-93e4-d3a336da7207:c1:slot",
+     "intentId": "f17ac36d-1351-4ab6-93e4-d3a336da7207:c1",
+     "state": "revealed",
+     "artifact": {
+      "kind": "stagecraft",
+      "stage": {
+       "w": 1000,
+       "h": 625
+      },
+      "stagecraft": {
+       "rung": "engine_default",
+       "archetype": "vault-heist@1",
+       "spec": {
+        "archetype": "vault-heist@1",
+        "skills": [
+         "c5-maths-ch01-t01"
+        ],
+        "lang": "en",
+        "strings": {
+         "coach": "Tap place-value blocks to load the vault",
+         "round": "Vault",
+         "target": "TARGET",
+         "loaded": "loaded",
+         "over": "over by",
+         "under": "short by",
+         "cracked": "VAULT OPEN",
+         "regroup": "REGROUPED",
+         "runDone": "Heist complete",
+         "words": "say it",
+         "time": "laser"
+        },
+        "system": "indian",
+        "belt": 1,
+        "rounds": [
+         {
+          "target": 24360,
+          "seconds": 35,
+          "show": "digits",
+          "denoms": [
+           1,
+           10,
+           100,
+           1000,
+           10000
+          ]
+         },
+         {
+          "target": 10500,
+          "seconds": 40,
+          "show": "words",
+          "denoms": [
+           1,
+           10,
+           100,
+           1000,
+           10000
+          ]
+         },
+         {
+          "target": 102345,
+          "seconds": 50,
+          "show": "digits",
+          "denoms": [
+           1,
+           10,
+           100,
+           1000,
+           10000,
+           100000
+          ]
+         },
+         {
+          "target": 125000,
+          "seconds": 55,
+          "show": "words",
+          "denoms": [
+           1,
+           10,
+           100,
+           1000,
+           10000,
+           100000
+          ]
+         }
+        ]
+       },
+       "boardTwin": {
+        "scriptRef": "board:c5-maths-ch01-t01-s1|practice|-|-",
+        "values": {
+         "title": "Vault Heist",
+         "need": "practice"
+        },
+        "board": {
+         "title": "Vault Heist",
+         "lines": [
+          "place",
+          "indian",
+          "number",
+          "thousand"
+         ],
+         "figure": {
+          "kind": "none"
+         }
+        }
+       },
+       "board": null,
+       "cue": {
+        "clauseIdx": 0,
+        "preRollMs": 400,
+        "crossFadeMs": 420
+       },
+       "buildSha": null,
+       "blobUrl": null
+      }
+     }
+    }
+   },
+   "moduleCommands": [],
+   "studio": {
+    "reveal": "f17ac36d-1351-4ab6-93e4-d3a336da7207:c1"
+   },
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [
+      "praise"
+     ],
+     "rewritten": true,
+     "replaced": false,
+     "firstDraft": "Riya, let’s pause: I didn’t catch your answer clearly. Please say it once more, exactly as you meant it. Fill the gap: Commas the Indian way: ___.",
+     "leadSlot": true,
+     "afterRewrite": [
+      "ask"
+     ],
+     "repaired": true,
+     "tidied": true
+    },
+    "verdict": "unverified",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 367,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 6402,
+    "item": "fade:4",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 58
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 59
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 973
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 1090
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1365
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1457
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1459
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1459
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1499
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 3300
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 6281
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 6401
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "advance",
+   "lessonId": "f17ac36d-1351-4ab6-93e4-d3a336da7207",
+   "childText": "alright",
+   "ms": 2843,
+   "error": null,
+   "teacherReply": "Riya, choose any one of the choices shown on the screen and enter it in the gap. Fill the gap: Commas the Indian way: ___.",
+   "move": {
+    "kind": "repair",
+    "shape": "no verdict on their reply; the choices are now on screen; the same question again, as written; tell them they can pick one of the choices on screen; do not read the choices with any lean toward one; no verdict on their reply: neither praise nor 'wrong'",
+    "itemId": "fade:4",
+    "skillId": "c5-maths-ch01-t01-s1",
+    "hintLevel": 0
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "text",
+     "value": "Fill the gap: Commas the Indian way: ___."
+    },
+    "chips": [
+     {
+      "id": "pick:0",
+      "label": "1,07,039"
+     },
+     {
+      "id": "pick:1",
+      "label": "1,07,040"
+     },
+     {
+      "id": "pick:2",
+      "label": "1,07,041"
+     }
+    ],
+    "phase": "practice",
+    "handover": "choice",
+    "ask": {
+     "text": "Fill the gap: Commas the Indian way: ___.",
+     "itemId": "fade:4"
+    },
+    "answerForm": "choice",
+    "tray": "tiles",
+    "shortTitle": "Big numbers",
+    "beat": {
+     "beatId": "b5-practice_set",
+     "type": "practice_set",
+     "index": 5
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false,
+     "leadSlot": true
+    },
+    "verdict": "unverified",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 903,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 2836,
+    "item": "fade:4",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 109
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 110
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 1053
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 1195
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1970
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 2097
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 2367
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 2367
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 857
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 2372
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 2836
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "advance",
+   "lessonId": "f17ac36d-1351-4ab6-93e4-d3a336da7207",
+   "childText": "ok",
+   "ms": 3139,
+   "error": null,
+   "teacherReply": "No problem, Riya. Let’s leave that one for later and move to the next number-place challenge. A school library has eighty-two thousand and seven books. Write the number in numerals.",
+   "move": {
+    "kind": "practice",
+    "shape": "leave this one for later, no verdict and no answer given; the next question; pose the question as written, in their language; then wait; no verdict on their reply: neither praise nor 'wrong'",
+    "itemId": "c5-maths-ch01-t01-rl-o1",
+    "skillId": "c5-maths-ch01-t01-s1",
+    "hintLevel": 0,
+    "probe": "P15"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "text",
+     "value": "A school library has eighty-two thousand and seven books.…"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "A school library has eighty-two thousand and seven books. Write the number in numerals.",
+     "itemId": "c5-maths-ch01-t01-rl-o1"
+    },
+    "answerForm": "number",
+    "padComma": true,
+    "tray": "studio",
+    "shortTitle": "Big numbers",
+    "beat": {
+     "beatId": "b5-practice_set",
+     "type": "practice_set",
+     "index": 5
+    },
+    "studioSlot": {
+     "slotId": "f17ac36d-1351-4ab6-93e4-d3a336da7207:c1:slot",
+     "intentId": "f17ac36d-1351-4ab6-93e4-d3a336da7207:c1",
+     "state": "revealed",
+     "artifact": {
+      "kind": "stagecraft",
+      "stage": {
+       "w": 1000,
+       "h": 625
+      },
+      "stagecraft": {
+       "rung": "engine_default",
+       "archetype": "vault-heist@1",
+       "spec": {
+        "archetype": "vault-heist@1",
+        "skills": [
+         "c5-maths-ch01-t01"
+        ],
+        "lang": "en",
+        "strings": {
+         "coach": "Tap place-value blocks to load the vault",
+         "round": "Vault",
+         "target": "TARGET",
+         "loaded": "loaded",
+         "over": "over by",
+         "under": "short by",
+         "cracked": "VAULT OPEN",
+         "regroup": "REGROUPED",
+         "runDone": "Heist complete",
+         "words": "say it",
+         "time": "laser"
+        },
+        "system": "indian",
+        "belt": 1,
+        "rounds": [
+         {
+          "target": 24360,
+          "seconds": 35,
+          "show": "digits",
+          "denoms": [
+           1,
+           10,
+           100,
+           1000,
+           10000
+          ]
+         },
+         {
+          "target": 10500,
+          "seconds": 40,
+          "show": "words",
+          "denoms": [
+           1,
+           10,
+           100,
+           1000,
+           10000
+          ]
+         },
+         {
+          "target": 102345,
+          "seconds": 50,
+          "show": "digits",
+          "denoms": [
+           1,
+           10,
+           100,
+           1000,
+           10000,
+           100000
+          ]
+         },
+         {
+          "target": 125000,
+          "seconds": 55,
+          "show": "words",
+          "denoms": [
+           1,
+           10,
+           100,
+           1000,
+           10000,
+           100000
+          ]
+         }
+        ]
+       },
+       "boardTwin": {
+        "scriptRef": "board:c5-maths-ch01-t01-s1|practice|-|-",
+        "values": {
+         "title": "Vault Heist",
+         "need": "practice"
+        },
+        "board": {
+         "title": "Vault Heist",
+         "lines": [
+          "place",
+          "indian",
+          "number",
+          "thousand"
+         ],
+         "figure": {
+          "kind": "none"
+         }
+        }
+       },
+       "board": null,
+       "cue": {
+        "clauseIdx": 0,
+        "preRollMs": 400,
+        "crossFadeMs": 420
+       },
+       "buildSha": null,
+       "blobUrl": null
+      }
+     }
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false,
+     "leadSlot": true
+    },
+    "verdict": "unverified",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 322,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 3079,
+    "item": "c5-maths-ch01-t01-rl-o1",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 91
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 91
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 904
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 1009
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1228
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1331
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1337
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1337
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1649
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 3011
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 3079
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "probe:h-change_topic-01",
+   "lessonId": "f17ac36d-1351-4ab6-93e4-d3a336da7207",
+   "childText": "can we do some other topic now",
+   "ms": 3001,
+   "error": null,
+   "teacherReply": "Sure, Riya—you want to stop this topic. Choose: keep going, take a short break, or stop for today.",
+   "move": {
+    "kind": "break",
+    "shape": "they said they want to stop: first say back in a few warm words, in their words, that they want to stop, no guilt and no pressure; then offer the three choices on the chips (keep going, a short break, or stop for today) and wait; no lesson question this turn",
+    "checkin": "stop"
+   },
+   "ui": {
+    "status": "your_turn",
+    "chips": [
+     {
+      "id": "stop:continue",
+      "label": "Keep going"
+     },
+     {
+      "id": "break:rest",
+      "label": "Short break"
+     },
+     {
+      "id": "stop:end",
+      "label": "Stop for today"
+     }
+    ],
+    "phase": "practice",
+    "handover": "choice",
+    "answerForm": "choice",
+    "tray": "tiles",
+    "shortTitle": "Big numbers",
+    "beat": {
+     "beatId": "b6-break",
+     "type": "break",
+     "index": 6
+    },
+    "ask": {
+     "text": "Choose: keep going, take a short break, or stop for today."
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false
+    },
+    "verdict": "ungraded",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "change_topic",
+     "waitedMs": 558,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 2997,
+    "item": null,
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 76
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 77
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 892
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 979
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1451
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1537
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1550
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1550
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1358
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 2912
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 2997
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "filler",
+   "lessonId": "f17ac36d-1351-4ab6-93e4-d3a336da7207",
+   "childText": "ok",
+   "ms": 2847,
+   "error": null,
+   "teacherReply": "Theek hai, Riya. We’ll switch topics now—tell me the new topic you want to practise. A school library has eighty-two thousand and seven books. Write the number in numerals.",
+   "move": {
+    "kind": "practice",
+    "shape": "back to the question, fresh; pose the question as written, in their language; then wait; no verdict on their reply: neither praise nor 'wrong'; after the check-in they did not ask to stop: carry on as normal, warmly; no talk of resting, breaks or ending",
+    "itemId": "c5-maths-ch01-t01-rl-o1",
+    "skillId": "c5-maths-ch01-t01-s1",
+    "hintLevel": 0,
+    "probe": "P15"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "text",
+     "value": "A school library has eighty-two thousand and seven books.…"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "A school library has eighty-two thousand and seven books. Write the number in numerals.",
+     "itemId": "c5-maths-ch01-t01-rl-o1"
+    },
+    "answerForm": "number",
+    "padComma": true,
+    "tray": "studio",
+    "shortTitle": "Big numbers",
+    "beat": {
+     "beatId": "b7-practice_set",
+     "type": "practice_set",
+     "index": 7
+    },
+    "studioSlot": {
+     "slotId": "f17ac36d-1351-4ab6-93e4-d3a336da7207:c1:slot",
+     "intentId": "f17ac36d-1351-4ab6-93e4-d3a336da7207:c1",
+     "state": "revealed",
+     "artifact": {
+      "kind": "stagecraft",
+      "stage": {
+       "w": 1000,
+       "h": 625
+      },
+      "stagecraft": {
+       "rung": "engine_default",
+       "archetype": "vault-heist@1",
+       "spec": {
+        "archetype": "vault-heist@1",
+        "skills": [
+         "c5-maths-ch01-t01"
+        ],
+        "lang": "en",
+        "strings": {
+         "coach": "Tap place-value blocks to load the vault",
+         "round": "Vault",
+         "target": "TARGET",
+         "loaded": "loaded",
+         "over": "over by",
+         "under": "short by",
+         "cracked": "VAULT OPEN",
+         "regroup": "REGROUPED",
+         "runDone": "Heist complete",
+         "words": "say it",
+         "time": "laser"
+        },
+        "system": "indian",
+        "belt": 1,
+        "rounds": [
+         {
+          "target": 24360,
+          "seconds": 35,
+          "show": "digits",
+          "denoms": [
+           1,
+           10,
+           100,
+           1000,
+           10000
+          ]
+         },
+         {
+          "target": 10500,
+          "seconds": 40,
+          "show": "words",
+          "denoms": [
+           1,
+           10,
+           100,
+           1000,
+           10000
+          ]
+         },
+         {
+          "target": 102345,
+          "seconds": 50,
+          "show": "digits",
+          "denoms": [
+           1,
+           10,
+           100,
+           1000,
+           10000,
+           100000
+          ]
+         },
+         {
+          "target": 125000,
+          "seconds": 55,
+          "show": "words",
+          "denoms": [
+           1,
+           10,
+           100,
+           1000,
+           10000,
+           100000
+          ]
+         }
+        ]
+       },
+       "boardTwin": {
+        "scriptRef": "board:c5-maths-ch01-t01-s1|practice|-|-",
+        "values": {
+         "title": "Vault Heist",
+         "need": "practice"
+        },
+        "board": {
+         "title": "Vault Heist",
+         "lines": [
+          "place",
+          "indian",
+          "number",
+          "thousand"
+         ],
+         "figure": {
+          "kind": "none"
+         }
+        }
+       },
+       "board": null,
+       "cue": {
+        "clauseIdx": 0,
+        "preRollMs": 400,
+        "crossFadeMs": 420
+       },
+       "buildSha": null,
+       "blobUrl": null
+      }
+     }
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false,
+     "leadSlot": true
+    },
+    "verdict": "unverified",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 373,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 2845,
+    "item": "c5-maths-ch01-t01-rl-o1",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 55
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 55
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 884
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 943
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1258
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1316
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1321
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1321
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1433
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 2768
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 2845
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "probe:h-easier-01",
+   "lessonId": "f17ac36d-1351-4ab6-93e4-d3a336da7207",
+   "childText": "can i get an easier one first",
+   "ms": 2138,
+   "error": null,
+   "teacherReply": "Sure, Riya. Try this easier one: five thousand and six. Say it in numerals. What number will you write?",
+   "move": {
+    "kind": "explain",
+    "shape": "they asked for an easier one: a short warm line, no fuss; the easier question; one idea only: Place commas the Indian way (thousands, lakhs); an example from their interest (drawing) if it fits naturally; objects first, then the symbol; point at the screen only at what the on-screen row lists; never a drawing made of characters; end with one small question that makes them USE the idea — never 'samjha?'; no verdict on their reply: neither praise nor 'wrong'",
+    "skillId": "c5-maths-ch01-t01-s2",
+    "format": "F3",
+    "request": "easier"
+   },
+   "ui": {
+    "status": "your_turn",
+    "phase": "practice",
+    "handover": "answer",
+    "answerForm": "words",
+    "tray": "module",
+    "shortTitle": "Big numbers",
+    "beat": {
+     "beatId": "b8-explain",
+     "type": "explain",
+     "index": 8
+    },
+    "ask": {
+     "text": "What number will you write?"
+    }
+   },
+   "moduleCommands": [
+    {
+     "op": "mount",
+     "moduleId": "m10",
+     "engine": "explainer@1",
+     "params": {
+      "script": {
+       "v": 1,
+       "scriptId": "ex-1b561ls",
+       "line": {
+        "lessonId": "f17ac36d-1351-4ab6-93e4-d3a336da7207"
+       },
+       "anchor": "line_audio_start",
+       "board": {
+        "w": 400,
+        "h": 300,
+        "ground": "chalk"
+       },
+       "mode": "fresh",
+       "durationMs": 8040,
+       "ops": [
+        {
+         "id": "b0",
+         "op": "rect",
+         "startMs": 80,
+         "endMs": 500,
+         "weight": 2,
+         "at": [
+          25,
+          30
+         ],
+         "w": 160,
+         "h": 58,
+         "round": 10
+        },
+        {
+         "id": "t0",
+         "op": "text",
+         "startMs": 540,
+         "endMs": 1040,
+         "at": [
+          105,
+          61
+         ],
+         "text": "One lakh",
+         "size": "m"
+        },
+        {
+         "id": "o1",
+         "op": "arrow",
+         "startMs": 1200,
+         "endMs": 1650,
+         "ink": "accent",
+         "from": [
+          105,
+          91
+         ],
+         "to": [
+          105,
+          133
+         ]
+        },
+        {
+         "id": "b1",
+         "op": "rect",
+         "startMs": 1730,
+         "endMs": 2150,
+         "weight": 2,
+         "at": [
+          25,
+          136
+         ],
+         "w": 160,
+         "h": 58,
+         "round": 10
+        },
+        {
+         "id": "t1",
+         "op": "text",
+         "startMs": 2190,
+         "endMs": 2690,
+         "at": [
+          105,
+          167
+         ],
+         "text": "Seven thousand",
+         "size": "s"
+        },
+        {
+         "id": "o2",
+         "op": "arrow",
+         "startMs": 2850,
+         "endMs": 3300,
+         "ink": "accent",
+         "from": [
+          105,
+          197
+         ],
+         "to": [
+          105,
+          239
+         ]
+        },
+        {
+         "id": "b2",
+         "op": "rect",
+         "startMs": 3380,
+         "endMs": 3800,
+         "weight": 2,
+         "at": [
+          25,
+          242
+         ],
+         "w": 160,
+         "h": 58,
+         "round": 10
+        },
+        {
+         "id": "t2",
+         "op": "text",
+         "startMs": 3840,
+         "endMs": 4340,
+         "at": [
+          105,
+          273
+         ],
+         "text": "Forty",
+         "size": "m"
+        },
+        {
+         "id": "o3",
+         "op": "arrow",
+         "startMs": 4500,
+         "endMs": 4950,
+         "ink": "accent",
+         "from": [
+          188,
+          271
+         ],
+         "to": [
+          212,
+          59
+         ],
+         "bend": 0.2
+        },
+        {
+         "id": "b3",
+         "op": "rect",
+         "startMs": 5030,
+         "endMs": 5450,
+         "weight": 2,
+         "at": [
+          215,
+          30
+         ],
+         "w": 160,
+         "h": 58,
+         "round": 10
+        },
+        {
+         "id": "t3",
+         "op": "text",
+         "startMs": 5490,
+         "endMs": 5990,
+         "at": [
+          295,
+          61
+         ],
+         "text": "1 0 7 0 4 0",
+         "size": "s"
+        },
+        {
+         "id": "o4",
+         "op": "arrow",
+         "startMs": 6150,
+         "endMs": 6600,
+         "ink": "accent",
+         "from": [
+          295,
+          91
+         ],
+         "to": [
+          295,
+          133
+         ]
+        },
+        {
+         "id": "b4",
+         "op": "rect",
+         "startMs": 6680,
+         "endMs": 7100,
+         "weight": 2,
+         "at": [
+          215,
+          136
+         ],
+         "w": 160,
+         "h": 58,
+         "round": 10
+        },
+        {
+         "id": "t4",
+         "op": "text",
+         "startMs": 7140,
+         "endMs": 7640,
+         "at": [
+          295,
+          167
+         ],
+         "text": "1,07,040",
+         "size": "m"
+        }
+       ],
+       "facts": {
+        "kind": "diagram",
+        "archetype": "flow@1",
+        "onScreen": {
+         "steps": 5,
+         "step1": "One lakh",
+         "step2": "Seven thousand",
+         "step3": "Forty",
+         "step4": "1 0 7 0 4 0",
+         "step5": "1,07,040"
+        }
+       }
+      },
+      "template": "flow@1",
+      "mode": "play"
+     }
+    }
+   ],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false,
+     "spoken": true
+    },
+    "verdict": "ungraded",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "request"
+    },
+    "note": null,
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 2134,
+    "item": null,
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 106
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 107
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 454
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 565
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 572
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 572
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1478
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 2054
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 2134
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "filler",
+   "lessonId": "f17ac36d-1351-4ab6-93e4-d3a336da7207",
+   "childText": "okay",
+   "ms": 1597,
+   "error": null,
+   "teacherReply": "Write five thousand and six in numerals. Which is the right way to write one lakh twenty-five thousand with commas?",
+   "move": {
+    "kind": "probe",
+    "shape": "pose the question as written, in their language; then wait; read its choices plainly; no lean in your voice toward any of them",
+    "itemId": "diag:c5-maths-ch01-t01-m-comma-anywhere",
+    "skillId": "c5-maths-ch01-t01-s2",
+    "hintLevel": 0,
+    "probe": "P7"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "text",
+     "value": "Which is the right way to write one lakh twenty-five thou…"
+    },
+    "chips": [
+     {
+      "id": "opt:0",
+      "label": "1250,00"
+     },
+     {
+      "id": "opt:1",
+      "label": "1,25,000"
+     },
+     {
+      "id": "opt:2",
+      "label": "12,5000"
+     }
+    ],
+    "phase": "practice",
+    "handover": "choice",
+    "ask": {
+     "text": "Which is the right way to write one lakh twenty-five thousand with commas?",
+     "itemId": "diag:c5-maths-ch01-t01-m-comma-anywhere"
+    },
+    "answerForm": "choice",
+    "tray": "tiles",
+    "shortTitle": "Big numbers",
+    "beat": {
+     "beatId": "b9-probe",
+     "type": "probe",
+     "index": 9
+    }
+   },
+   "moduleCommands": [
+    {
+     "op": "unmount",
+     "moduleId": "m10"
+    },
+    {
+     "op": "mount",
+     "moduleId": "g1-12362602",
+     "engine": "scene@1",
+     "params": {
+      "scene": {
+       "dsl": "scene@1",
+       "meta": {
+        "band": "B3",
+        "lang": "en",
+        "title": {
+         "en": "Sketchbook corner",
+         "hi": "स्केचबुक कोना",
+         "hi_latn": "Sketchbook kona"
+        },
+        "objective_ids": [
+         "c5-maths-ch01-t01-s2"
+        ],
+        "topic_ids": [
+         "c5-maths-ch01-t01"
+        ],
+        "template": "choice-card@1"
+       },
+       "stage": {
+        "aspect": "3:4",
+        "bg": "bg"
+       },
+       "vars": [
+        {
+         "id": "pick",
+         "type": "enum",
+         "init": "none",
+         "options": [
+          "none",
+          "o1",
+          "o2",
+          "o3"
+         ],
+         "tl": "child's pick"
+        }
+       ],
+       "derive": [],
+       "nodes": [
+        {
+         "kind": "text",
+         "id": "title",
+         "x": 420,
+         "y": 89,
+         "text": {
+          "en": "Sketchbook corner",
+          "hi": "स्केचबुक कोना",
+          "hi_latn": "Sketchbook kona"
+         },
+         "size": "title",
+         "w": 760,
+         "align": "middle"
+        },
+        {
+         "kind": "sprite",
+         "id": "decor",
+         "x": 900,
+         "y": 75,
+         "lib": "obj.pencil",
+         "w": 110,
+         "h": 110,
+         "role": "context"
+        },
+        {
+         "kind": "text",
+         "id": "question",
+         "x": 500,
+         "y": 310,
+         "text": {
+          "en": "Which is the right way to write one lakh twenty-five thousand with commas?",
+          "hi": "Ek lakh pachchees hazaar ko commas ke saath sahi kaise likhenge?",
+          "hi_latn": "Ek lakh pachchees hazaar ko commas ke saath sahi kaise likhenge?"
+         },
+         "size": "caption",
+         "w": 900,
+         "align": "middle"
+        },
+        {
+         "kind": "choice",
+         "id": "ch",
+         "x": 500,
+         "y": 946.3333333333333,
+         "var": "pick",
+         "options": [
+          {
+           "id": "o1",
+           "label": {
+            "en": "1250,00",
+            "hi": "1250,00",
+            "hi_latn": "1250,00"
+           },
+           "misc": "MC.C5_MATHS_CH01_T01_M_COMMA_ANYWHERE"
+          },
+          {
+           "id": "o2",
+           "label": {
+            "en": "1,25,000",
+            "hi": "1,25,000",
+            "hi_latn": "1,25,000"
+           }
+          },
+          {
+           "id": "o3",
+           "label": {
+            "en": "12,5000",
+            "hi": "12,5000",
+            "hi_latn": "12,5000"
+           },
+           "misc": "MC.C5_MATHS_CH01_T01_M_COMMA_ANYWHERE"
+          }
+         ],
+         "layout": "column",
+         "commit": true
+        }
+       ],
+       "timelines": [],
+       "goals": [],
+       "probe": {
+        "id": "p_pick",
+        "kind": "diagnose",
+        "ask": {
+         "en": "Which is the right way to write one lakh twenty-five thousand with commas?",
+         "hi": "Ek lakh pachchees hazaar ko commas ke saath sahi kaise likhenge?",
+         "hi_latn": "Ek lakh pachchees hazaar ko commas ke saath sahi kaise likhenge?"
+        },
+        "commit": {
+         "via": "choice",
+         "node": "ch"
+        },
+        "correct": "pick == 'o2'",
+        "traps": [
+         {
+          "when": "pick == 'o1'",
+          "misc": "MC.C5_MATHS_CH01_T01_M_COMMA_ANYWHERE"
+         },
+         {
+          "when": "pick == 'o3'",
+          "misc": "MC.C5_MATHS_CH01_T01_M_COMMA_ANYWHERE"
+         }
+        ]
+       },
+       "feedback": "on_commit"
+      }
+     },
+     "goal": "g1:diag:c5-maths-ch01-t01-m-comma-anywhere"
+    }
+   ],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [
+      "drift",
+      "ask"
+     ],
+     "rewritten": false,
+     "replaced": false,
+     "firstDraft": "Write five thousand and six in numerals. What number do you get?",
+     "repaired": true
+    },
+    "verdict": "ungraded",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 620,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 1594,
+    "item": "diag:c5-maths-ch01-t01-m-comma-anywhere",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 90
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 91
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 754
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 871
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1390
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1491
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1495
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1503
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1332
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 1515
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 1594
+     }
+    ]
+   }
+  }
+ ]
+}

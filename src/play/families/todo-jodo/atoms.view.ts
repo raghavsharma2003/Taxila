@@ -42,7 +42,7 @@ export const makeAtomsView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
   const st = () => ctl.state;
   const trees = () => st().trees;
   const isMine = (id: string) => id.startsWith("A") || (pairMode && id.startsWith("B"));
-  const textPx = () => clamp(blockH * 0.4, api.P.minText + 2, 28);
+  const textPx = () => clamp(blockH * 0.4, api.P.minText + 2, wide ? 34 : 28);
 
   // ── layout: tree positions at this box
   function layoutTree(t: AtomTree, r: Box): void {
@@ -96,7 +96,8 @@ export const makeAtomsView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
     // the block height that lets the deepest tree fit its region (never below the 44 px target)
     const maxDepth = Math.max(1, ...ts.map((t) => Math.max(...Object.keys(t.nodes).map((id) => id.length - 1))));
     const fitH = Math.min(...regions.map((r) => (r.h - 10 * maxDepth) / (1 + maxDepth)));
-    blockH = clamp(Math.min(wide ? Math.min(h / 8, 76) : blockH, fitH), 44, wide ? 76 : 64);
+    // a laptop box uses its room: shallow trees grow up to 96 px blocks (judges, 2026-10-09: "most of the laptop canvas unused")
+    blockH = clamp(Math.min(wide ? Math.min(h / 7, 96) : blockH, fitH), 44, wide ? 96 : 64);
     ts.forEach((t, i) => layoutTree(t, regions[i]));
     stripBox = stripH ? { x: pad0, y: h - pad0 - stripH, w: w - pad0 * 2, h: stripH } : null;
     for (const [id, b] of target) if (!disp.has(id)) disp.set(id, { ...b, s: 1, a: 1, born: -9 });

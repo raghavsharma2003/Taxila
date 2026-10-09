@@ -1,0 +1,1479 @@
+{
+ "slot": 5,
+ "topic": "c4-maths-ch03-t01",
+ "cls": 4,
+ "lang": "english",
+ "lane": "text",
+ "lessons": [
+  {
+   "lessonId": "955c4fe8-0907-499d-8cc2-9d8369eefa6a",
+   "why": "start",
+   "at": "2026-10-09T12:42:01.760Z",
+   "teacher": "Asha"
+  }
+ ],
+ "turns": [
+  {
+   "who": "teacher",
+   "kind": "opening",
+   "lessonId": "955c4fe8-0907-499d-8cc2-9d8369eefa6a",
+   "teacherReply": "Hello Anaya, I’m Asha, your AI teacher. Today we’ll find odd and even numbers with dance-like pairs. Ready to begin?",
+   "ui": {
+    "status": "your_turn",
+    "phase": "warmup",
+    "handover": "answer",
+    "answerForm": "words",
+    "tray": "none",
+    "shortTitle": "Odd and even numbers",
+    "beat": {
+     "beatId": "b1-arrive",
+     "type": "arrive",
+     "index": 1
+    },
+    "ask": {
+     "text": "Ready to begin?"
+    }
+   }
+  },
+  {
+   "who": "child",
+   "tag": "greet",
+   "lessonId": "955c4fe8-0907-499d-8cc2-9d8369eefa6a",
+   "childText": "hello",
+   "ms": 1659,
+   "error": null,
+   "teacherReply": "Hello Anaya! Imagine dancers forming pairs. With 6 dancers, will everyone get a partner, or will one stand alone?",
+   "move": {
+    "kind": "hook",
+    "shape": "open with one concrete everyday situation built on their interest (dance) — kit contexts: dance partners, rotis and laddoos, cricket runs; ask what they think will happen or which they would pick — a prediction, no right answer yet; any bigger/more comparison: two quantities of one kind, in one unit — a count against a count, a distance against a distance; never across kinds; mention once: at the end they will teach this to Golu (a pretend baby elephant just starting school)",
+    "format": "F4"
+   },
+   "ui": {
+    "status": "your_turn",
+    "phase": "teach",
+    "handover": "answer",
+    "answerForm": "words",
+    "tray": "none",
+    "shortTitle": "Odd and even numbers",
+    "beat": {
+     "beatId": "b2-hook",
+     "type": "hook",
+     "index": 2
+    },
+    "ask": {
+     "text": "With 6 dancers, will everyone get a partner, or will one stand alone?"
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false
+    },
+    "verdict": "ungraded",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 281,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "teach",
+    "ms": 1637,
+    "item": null,
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 51
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 52
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 910
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 980
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1208
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1261
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1263
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1263
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1128
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 1277
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 1637
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "probe:h-question_on_topic-02",
+   "lessonId": "955c4fe8-0907-499d-8cc2-9d8369eefa6a",
+   "childText": "why do we need a number line for this?",
+   "ms": 2755,
+   "error": null,
+   "teacherReply": "Anaya, a number line helps us see numbers in order, but pairing objects also works. For 6, can you make pairs?",
+   "move": {
+    "kind": "explain",
+    "shape": "they asked a real question about today's idea: answer it in at most two sentences, correctly and simply, without giving the key; then the question; one idea only: Sort small numbers as odd or even by making pairs; an example from their interest (dance) if it fits naturally; objects first, then the symbol; point at the screen only at what the on-screen row lists; never a drawing made of characters; end with one small question that makes them USE the idea — never 'samjha?'",
+    "skillId": "c4-maths-ch03-t01-s1",
+    "format": "F3",
+    "request": "answer_q",
+    "lead": "they asked a real question about today's idea: answer it in at most two sentences, correctly and simply, without giving the key; then the question"
+   },
+   "ui": {
+    "status": "your_turn",
+    "phase": "teach",
+    "handover": "answer",
+    "answerForm": "words",
+    "tray": "module",
+    "shortTitle": "Odd and even numbers",
+    "beat": {
+     "beatId": "b3-explain",
+     "type": "explain",
+     "index": 3
+    },
+    "ask": {
+     "text": "For 6, can you make pairs?"
+    }
+   },
+   "moduleCommands": [
+    {
+     "op": "mount",
+     "moduleId": "m2",
+     "engine": "collections@1",
+     "params": {
+      "topicId": "c4-maths-ch03-t01",
+      "skillId": null,
+      "lang": "english",
+      "fractions": [],
+      "numbers": [
+       247
+      ]
+     }
+    }
+   ],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false
+    },
+    "verdict": "ungraded",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "question_on_topic",
+     "waitedMs": 521,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "teach",
+    "ms": 2751,
+    "item": null,
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 67
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 67
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 744
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 822
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1267
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1343
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1347
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1348
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1126
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 2479
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 2751
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "filler",
+   "lessonId": "955c4fe8-0907-499d-8cc2-9d8369eefa6a",
+   "childText": "okay",
+   "ms": 1874,
+   "error": null,
+   "teacherReply": "Great, Anaya. For 247, look only at the ones digit. Which digit is at the end?",
+   "move": {
+    "kind": "worked_example",
+    "shape": "worked example, part 1 of 2: say one step, then ask them for the next step; their thinking, your pace; no new idea",
+    "skillId": "c4-maths-ch03-t01-s1",
+    "format": "F2"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "math",
+     "value": "Is 247 odd or even?"
+    },
+    "phase": "teach",
+    "handover": "answer",
+    "answerForm": "words",
+    "tray": "module",
+    "shortTitle": "Odd and even numbers",
+    "beat": {
+     "beatId": "b4-worked_example",
+     "type": "worked_example",
+     "index": 4
+    },
+    "ask": {
+     "text": "Which digit is at the end?"
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false
+    },
+    "verdict": "ungraded",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 845,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "teach",
+    "ms": 1871,
+    "item": null,
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 175
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 176
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 668
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 850
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1514
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1695
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1762
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1771
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1341
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 1771
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 1871
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "advance",
+   "lessonId": "955c4fe8-0907-499d-8cc2-9d8369eefa6a",
+   "childText": "okay",
+   "ms": 1688,
+   "error": null,
+   "teacherReply": "Let’s use the last digit to spot the pairing pattern quickly. Fill the gap: 7 makes ___ pairs with 1 left over.",
+   "move": {
+    "kind": "practice",
+    "shape": "the earlier steps in LESSON NOW, said briefly as done; then the step with the gap is theirs: pose it as written; wait; never fill the gap for them",
+    "itemId": "fade:2",
+    "skillId": "c4-maths-ch03-t01-s1",
+    "hintLevel": 0,
+    "probe": "P15",
+    "format": "F2"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "math",
+     "value": "Is 247 odd or even? · 7 makes ___ pairs with 1 left over."
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "Fill the gap: 7 makes ___ pairs with 1 left over.",
+     "itemId": "fade:2"
+    },
+    "answerForm": "number",
+    "tray": "none",
+    "shortTitle": "Odd and even numbers",
+    "beat": {
+     "beatId": "b5-practice_set",
+     "type": "practice_set",
+     "index": 5
+    }
+   },
+   "moduleCommands": [
+    {
+     "op": "unmount",
+     "moduleId": "m2"
+    }
+   ],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false,
+     "leadSlot": true
+    },
+    "verdict": "ungraded",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 815,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 1685,
+    "item": "fade:2",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 62
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 62
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 660
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 724
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1475
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1539
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1546
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1547
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1423
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 1575
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 1685
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "advance",
+   "lessonId": "955c4fe8-0907-499d-8cc2-9d8369eefa6a",
+   "childText": "got it",
+   "ms": 3194,
+   "error": null,
+   "teacherReply": "Use small dots for 7, then circle two dots at a time. One dot will remain outside. Fill the gap: 7 makes ___ pairs with 1 left over.",
+   "move": {
+    "kind": "hint",
+    "shape": "their typed reply did not answer the question: no verdict, never ask them to repeat or say it again; one small nudge toward what the question asks; then the same question again, as written; no verdict on their reply: neither praise nor 'wrong'",
+    "itemId": "fade:2",
+    "skillId": "c4-maths-ch03-t01-s1",
+    "hintLevel": 0
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "math",
+     "value": "7  ·  1"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "Fill the gap: 7 makes ___ pairs with 1 left over.",
+     "itemId": "fade:2"
+    },
+    "answerForm": "number",
+    "tray": "studio",
+    "shortTitle": "Odd and even numbers",
+    "beat": {
+     "beatId": "b5-practice_set",
+     "type": "practice_set",
+     "index": 5
+    },
+    "studioSlot": {
+     "slotId": "955c4fe8-0907-499d-8cc2-9d8369eefa6a:c1:slot",
+     "intentId": "955c4fe8-0907-499d-8cc2-9d8369eefa6a:c1",
+     "state": "revealed",
+     "artifact": {
+      "kind": "stagecraft",
+      "stage": {
+       "w": 1000,
+       "h": 625
+      },
+      "stagecraft": {
+       "rung": "engine_default",
+       "archetype": "sieve-storm@1",
+       "spec": {
+        "archetype": "sieve-storm@1",
+        "skills": [
+         "c4-maths-ch03-t01"
+        ],
+        "lang": "en",
+        "strings": {
+         "round": "Round",
+         "slashed": "right calls",
+         "combo": "combo",
+         "coach": "Swipe the numbers that fit the rule",
+         "runDone": "Storm over",
+         "prime": "prime",
+         "composite": "composite",
+         "even": "even",
+         "odd": "odd",
+         "multipleOf": "multiples of",
+         "commonOf": "common multiples of",
+         "factorOf": "factors of",
+         "cfactorOf": "common factors of",
+         "divisibleBy": "divisible by",
+         "coprimeWith": "co-prime with",
+         "square": "square numbers",
+         "palindrome": "palindromes",
+         "slipped": "slipped",
+         "wrongCut": "not this one",
+         "and": "and"
+        },
+        "title": "Sieve Storm: Odd and Even",
+        "rounds": [
+         {
+          "rule": "even",
+          "title": "Pair the numbers",
+          "sub": "Swipe numbers that make full pairs",
+          "lo": 0,
+          "hi": 30,
+          "count": 10,
+          "hitRate": 0.5,
+          "seed": 11,
+          "speed": 0.7,
+          "targets": "c4-maths-ch03-t01-m-zero-not-even"
+         },
+         {
+          "rule": "odd",
+          "title": "Find the leftovers",
+          "sub": "Look at the ones place",
+          "lo": 10,
+          "hi": 99,
+          "count": 12,
+          "hitRate": 0.5,
+          "seed": 23,
+          "speed": 0.85,
+          "targets": "c4-maths-ch03-t01-m-any-odd-digit"
+         },
+         {
+          "rule": "odd",
+          "title": "Read the last digit",
+          "sub": "Big numbers still follow the rule",
+          "lo": 100,
+          "hi": 999,
+          "count": 14,
+          "hitRate": 0.45,
+          "seed": 37,
+          "speed": 1.05,
+          "targets": "c4-maths-ch03-t01-m-any-odd-digit"
+         },
+         {
+          "rule": "even",
+          "title": "Final number storm",
+          "sub": "Check each ones digit quickly",
+          "lo": 1000,
+          "hi": 9999,
+          "count": 16,
+          "hitRate": 0.5,
+          "seed": 404,
+          "speed": 1.25,
+          "targets": "c4-maths-ch03-t01-m-any-odd-digit"
+         }
+        ]
+       },
+       "boardTwin": {
+        "scriptRef": "board:c4-maths-ch03-t01-s1|practice|-|-",
+        "values": {
+         "title": "Sieve Storm",
+         "need": "practice"
+        },
+        "board": {
+         "title": "Sieve Storm",
+         "lines": [
+          "number",
+          "without",
+          "left",
+          "pairs"
+         ],
+         "figure": {
+          "kind": "none"
+         }
+        }
+       },
+       "board": null,
+       "cue": {
+        "clauseIdx": 0,
+        "preRollMs": 400,
+        "crossFadeMs": 420
+       },
+       "buildSha": null,
+       "blobUrl": null
+      }
+     }
+    }
+   },
+   "moduleCommands": [],
+   "studio": {
+    "reveal": "955c4fe8-0907-499d-8cc2-9d8369eefa6a:c1"
+   },
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false,
+     "leadSlot": true
+    },
+    "verdict": "unverified",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 517,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 3190,
+    "item": "fade:2",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 85
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 85
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 935
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 1048
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1457
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1565
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1567
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1579
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1486
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 3088
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 3187
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "advance",
+   "lessonId": "955c4fe8-0907-499d-8cc2-9d8369eefa6a",
+   "childText": "okay",
+   "ms": 1760,
+   "error": null,
+   "teacherReply": "Draw 7 small dots. Circle two dots together each time, and leave the last dot uncircled. Fill the gap: 7 makes ___ pairs with 1 left over.",
+   "move": {
+    "kind": "hint",
+    "shape": "no verdict on their reply; the choices are now on screen; the same question again, as written; tell them they can pick one of the choices on screen; do not read the choices with any lean toward one; no verdict on their reply: neither praise nor 'wrong'",
+    "itemId": "fade:2",
+    "skillId": "c4-maths-ch03-t01-s1",
+    "hintLevel": 0
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "math",
+     "value": "7  ·  1"
+    },
+    "chips": [
+     {
+      "id": "pick:0",
+      "label": "2"
+     },
+     {
+      "id": "pick:1",
+      "label": "4"
+     },
+     {
+      "id": "pick:2",
+      "label": "3"
+     }
+    ],
+    "phase": "practice",
+    "handover": "choice",
+    "ask": {
+     "text": "Fill the gap: 7 makes ___ pairs with 1 left over.",
+     "itemId": "fade:2"
+    },
+    "answerForm": "choice",
+    "tray": "tiles",
+    "shortTitle": "Odd and even numbers",
+    "beat": {
+     "beatId": "b5-practice_set",
+     "type": "practice_set",
+     "index": 5
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false,
+     "leadSlot": true
+    },
+    "verdict": "unverified",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 736,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 1745,
+    "item": "fade:2",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 82
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 82
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 821
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 918
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1558
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1654
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1668
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1668
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1088
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 1668
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 1745
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "advance",
+   "lessonId": "955c4fe8-0907-499d-8cc2-9d8369eefa6a",
+   "childText": "okay",
+   "ms": 3277,
+   "error": null,
+   "teacherReply": "You grouped objects in pairs and checked what remained. At a school chess event, 47 players arrive. Games need two players each. After making as many games as possible, how many players are left without a game?",
+   "move": {
+    "kind": "probe",
+    "shape": "leave this one for later, no verdict and no answer given; the next question; pose the question as written, in their language; then wait; same idea, new situation; let them carry it over; no verdict on their reply: neither praise nor 'wrong'",
+    "itemId": "c4-maths-ch03-t01-rl-h1",
+    "skillId": "c4-maths-ch03-t01-s1",
+    "hintLevel": 0,
+    "probe": "P3"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "math",
+     "value": "47"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "Games need two players each. After making as many games as possible, how many players are left without a game?",
+     "itemId": "c4-maths-ch03-t01-rl-h1"
+    },
+    "answerForm": "words",
+    "tray": "studio",
+    "shortTitle": "Odd and even numbers",
+    "beat": {
+     "beatId": "b6-probe",
+     "type": "probe",
+     "index": 6
+    },
+    "studioSlot": {
+     "slotId": "955c4fe8-0907-499d-8cc2-9d8369eefa6a:c1:slot",
+     "intentId": "955c4fe8-0907-499d-8cc2-9d8369eefa6a:c1",
+     "state": "revealed",
+     "artifact": {
+      "kind": "stagecraft",
+      "stage": {
+       "w": 1000,
+       "h": 625
+      },
+      "stagecraft": {
+       "rung": "engine_default",
+       "archetype": "sieve-storm@1",
+       "spec": {
+        "archetype": "sieve-storm@1",
+        "skills": [
+         "c4-maths-ch03-t01"
+        ],
+        "lang": "en",
+        "strings": {
+         "round": "Round",
+         "slashed": "right calls",
+         "combo": "combo",
+         "coach": "Swipe the numbers that fit the rule",
+         "runDone": "Storm over",
+         "prime": "prime",
+         "composite": "composite",
+         "even": "even",
+         "odd": "odd",
+         "multipleOf": "multiples of",
+         "commonOf": "common multiples of",
+         "factorOf": "factors of",
+         "cfactorOf": "common factors of",
+         "divisibleBy": "divisible by",
+         "coprimeWith": "co-prime with",
+         "square": "square numbers",
+         "palindrome": "palindromes",
+         "slipped": "slipped",
+         "wrongCut": "not this one",
+         "and": "and"
+        },
+        "title": "Sieve Storm: Odd and Even",
+        "rounds": [
+         {
+          "rule": "even",
+          "title": "Pair the numbers",
+          "sub": "Swipe numbers that make full pairs",
+          "lo": 0,
+          "hi": 30,
+          "count": 10,
+          "hitRate": 0.5,
+          "seed": 11,
+          "speed": 0.7,
+          "targets": "c4-maths-ch03-t01-m-zero-not-even"
+         },
+         {
+          "rule": "odd",
+          "title": "Find the leftovers",
+          "sub": "Look at the ones place",
+          "lo": 10,
+          "hi": 99,
+          "count": 12,
+          "hitRate": 0.5,
+          "seed": 23,
+          "speed": 0.85,
+          "targets": "c4-maths-ch03-t01-m-any-odd-digit"
+         },
+         {
+          "rule": "odd",
+          "title": "Read the last digit",
+          "sub": "Big numbers still follow the rule",
+          "lo": 100,
+          "hi": 999,
+          "count": 14,
+          "hitRate": 0.45,
+          "seed": 37,
+          "speed": 1.05,
+          "targets": "c4-maths-ch03-t01-m-any-odd-digit"
+         },
+         {
+          "rule": "even",
+          "title": "Final number storm",
+          "sub": "Check each ones digit quickly",
+          "lo": 1000,
+          "hi": 9999,
+          "count": 16,
+          "hitRate": 0.5,
+          "seed": 404,
+          "speed": 1.25,
+          "targets": "c4-maths-ch03-t01-m-any-odd-digit"
+         }
+        ]
+       },
+       "boardTwin": {
+        "scriptRef": "board:c4-maths-ch03-t01-s1|practice|-|-",
+        "values": {
+         "title": "Sieve Storm",
+         "need": "practice"
+        },
+        "board": {
+         "title": "Sieve Storm",
+         "lines": [
+          "number",
+          "without",
+          "left",
+          "pairs"
+         ],
+         "figure": {
+          "kind": "none"
+         }
+        }
+       },
+       "board": null,
+       "cue": {
+        "clauseIdx": 0,
+        "preRollMs": 400,
+        "crossFadeMs": 420
+       },
+       "buildSha": null,
+       "blobUrl": null
+      }
+     }
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false,
+     "leadSlot": true
+    },
+    "verdict": "unverified",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 844,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 3250,
+    "item": "c4-maths-ch03-t01-rl-h1",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 65
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 65
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 843
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 928
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1688
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1772
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1790
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1790
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1383
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 3189
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 3250
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "probe:h-animation_request-01",
+   "lessonId": "955c4fe8-0907-499d-8cc2-9d8369eefa6a",
+   "childText": "can you make it move on the screen",
+   "ms": 1988,
+   "error": null,
+   "teacherReply": "Sure, Anaya. Watch the dots pair up on the screen, two at a time, with one dot left outside. Games need two players each. After making as many games as possible, how many players are left without a game?",
+   "move": {
+    "kind": "reteach",
+    "shape": "they asked to see it: a picture of the same idea; one idea; let the picture do the work; a few words about what to look at; the key stays unsaid; then one small question about what they see; no verdict on their reply: neither praise nor 'wrong'; it is on the screen now: point them at it in your first words and say what to look at",
+    "itemId": "c4-maths-ch03-t01-rl-h1",
+    "skillId": "c4-maths-ch03-t01-s1",
+    "hintLevel": 1,
+    "request": "visual",
+    "visual": "diagram"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "math",
+     "value": "47"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "Games need two players each. After making as many games as possible, how many players are left without a game?",
+     "itemId": "c4-maths-ch03-t01-rl-h1"
+    },
+    "answerForm": "words",
+    "tray": "module",
+    "shortTitle": "Odd and even numbers",
+    "beat": {
+     "beatId": "b7-explain",
+     "type": "explain",
+     "index": 7
+    }
+   },
+   "moduleCommands": [
+    {
+     "op": "mount",
+     "moduleId": "m8",
+     "engine": "collections@1",
+     "params": {
+      "topicId": "c4-maths-ch03-t01",
+      "skillId": "c4-maths-ch03-t01-s1",
+      "lang": "english",
+      "representation": "diagram",
+      "fractions": [],
+      "numbers": [
+       47
+      ]
+     }
+    }
+   ],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false,
+     "leadSlot": true
+    },
+    "verdict": "ungraded",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "request"
+    },
+    "note": null,
+    "hintLevel": 1,
+    "phase": "practice",
+    "ms": 1980,
+    "item": "c4-maths-ch03-t01-rl-h1",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 71
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 71
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 566
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 652
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 655
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 655
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1165
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 1858
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 1980
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "recovery",
+   "lessonId": "955c4fe8-0907-499d-8cc2-9d8369eefa6a",
+   "childText": "1",
+   "ms": 1955,
+   "error": null,
+   "teacherReply": "Yes, Anaya—47 makes pairs with 1 player left. Now predict: odd plus odd gives odd or even?",
+   "move": {
+    "kind": "explain",
+    "shape": "confirm specifically: name the exact thing they got right, no ability words; one idea only: Predict whether odd + odd, even + even and odd + even is odd or even; an example from their interest (dance) if it fits naturally; objects first, then the symbol; point at the screen only at what the on-screen row lists; never a drawing made of characters; end with one small question that makes them USE the idea — never 'samjha?'",
+    "skillId": "c4-maths-ch03-t01-s3",
+    "format": "F3"
+   },
+   "ui": {
+    "status": "your_turn",
+    "phase": "practice",
+    "handover": "answer",
+    "answerForm": "words",
+    "tray": "module",
+    "shortTitle": "Odd and even numbers",
+    "verdict": "correct",
+    "withHelp": true,
+    "beat": {
+     "beatId": "b7-explain",
+     "type": "explain",
+     "index": 7
+    },
+    "ask": {
+     "text": "Now predict: odd plus odd gives odd or even?"
+    }
+   },
+   "moduleCommands": [
+    {
+     "op": "unmount",
+     "moduleId": "m8"
+    },
+    {
+     "op": "mount",
+     "moduleId": "m9",
+     "engine": "collections@1",
+     "params": {
+      "topicId": "c4-maths-ch03-t01",
+      "skillId": null,
+      "lang": "english",
+      "fractions": [],
+      "numbers": [
+       247
+      ]
+     }
+    }
+   ],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false
+    },
+    "verdict": "correct",
+    "cls": {
+     "outcome": "correct",
+     "source": "exact"
+    },
+    "note": null,
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 1952,
+    "item": null,
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 67
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 67
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 82
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 646
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 647
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1226
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 1876
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 1952
+     }
+    ]
+   }
+  }
+ ]
+}

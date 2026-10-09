@@ -107,6 +107,8 @@ export function PlayStage(props: PlayStageProps) {
         say: (text: string) => { const intent = parseVoice(text, lang), v = viewRef.current; const pr = intent && v ? pressesFor(intent, v.controls()) : null; if (pr) ctl.withVia("voice", () => { for (const id of pr) viewRef.current?.controls().find((c) => c.id === id)?.onPress(); }); changed(); return { intent, pressed: pr }; },
         demo: () => viewRef.current?.demo?.(),
         acts: () => ctl.acts,
+        // the harness's "after a typical mistake" screen: the level's own mal-rules, replayed as the child would play them
+        mal: () => logic.malRules.slice(), malActs: (id: string) => logic.malActs(level, id),
       };
     }
     return () => { stage.dispose(); ctl.dispose(); stageRef.current = null; viewRef.current = null; ctlRef.current = null; };
@@ -150,7 +152,8 @@ export function PlayStage(props: PlayStageProps) {
       </header>
       <div className="pl-teacher" aria-live="polite">
         <span className="pl-face" aria-hidden="true">{props.face ?? <span className="pl-face-disc">{(props.teacherName ?? "T").slice(0, 1)}</span>}</span>
-        <p className="pl-caption" data-testid="play-caption">{props.caption ?? ""}</p>
+        {/* without a live face (standalone stage) her name says whose words these are (judges, 2026-10-09: a lone initial in a disc read as a cryptic icon) */}
+        <p className="pl-caption" data-testid="play-caption">{!props.face && props.teacherName && props.caption ? <b className="pl-tname">{props.teacherName}: </b> : null}{props.caption ?? ""}</p>
       </div>
       <div className="pl-world" ref={worldRef} data-testid="play-world" />
       <div className="pl-rail">

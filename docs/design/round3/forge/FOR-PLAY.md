@@ -39,7 +39,12 @@ measurements of play's files AS THEY WERE in the tree on 2026-10-09 ~11:20 UTC (
    4-5 ("Split & Merge", "On the Line" titles; the strips goal line), so those pieces fail Q1 at every size for c4-c5.
 3. **The goal line is ellipsised at 360 px** on some atoms levels ("Pair the matching atoms, then name the LCM" clipped:
    Q2 at 360 × 576).
-4. **The board twin is thin for some levels**: strips "make" levels start from one unsplit bar, so the twin reads
+4. **Canvas-drawn labels overlap** (found with the canvas probe, `server/forge3/qa/measure.js canvasTextProbe`, 12:40 UTC):
+   a nishana compare level for c5 (0 to 1,00,000, kagaz) draws every tick label over its neighbours — Q3 with 11 overlaps
+   at 360 × 576, 10 at 412 × 691 and 1 at 1006 × 768 — seen live in a lesson at 360 × 800 (RESULTS.md §1, §4); a kyun-lab
+   fair-test level has 2 overlapping labels at 360. The tick labels need thinning (label every k-th major tick, or the
+   ends plus the landmark only) when `labelWidth > tickGap`. Full re-certification numbers: RESULTS.md §4.
+5. **The board twin is thin for some levels**: strips "make" levels start from one unsplit bar, so the twin reads
    "Barabar hisse / 1: 0 (0/1)". The twin is what a 360-phone child sees until play mode lands; it should carry the goal
    (e.g. the target fraction) when the goal is on screen in the game too.
 

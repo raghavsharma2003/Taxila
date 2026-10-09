@@ -27,7 +27,7 @@ const model = opt("--model", ROOT + "models/voicesig/filler-gru.onnx");
 const thr = Number(opt("--thr", 0.44));
 const name = opt("--name", `pauses-eot-hi-${path.basename(model, ".onnx")}`);
 const limit = Number(opt("--limit", 400));
-const cfg = { ...HOLD_CUE_DEFAULTS, thr, tailGapMs: Number(opt("--tail", 120)), readAfterMs: Number(opt("--read", 120)) };
+const cfg = { ...HOLD_CUE_DEFAULTS, thr, tailGapMs: Number(opt("--tail", 120)), readAfterMs: Number(opt("--read", 120)), minFillerMs: Number(opt("--minms", HOLD_CUE_DEFAULTS.minFillerMs)) };
 const thrs = (opt("--sweep", "") || "").split(",").filter(Boolean).map(Number);
 
 const idx = JSON.parse(fs.readFileSync(path.join(dir, "index.json"), "utf8"));

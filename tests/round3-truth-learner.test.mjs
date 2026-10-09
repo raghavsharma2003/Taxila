@@ -29,7 +29,8 @@ describe("round3 truth: learner and comprehension (owned paths)", () => {
     assert.deepEqual({ move: d.move, skillId: d.skillId, misId: d.misId, trigger: d.trigger, chosenBy: d.chosenBy, armId: d.armId, repClass: d.repClass },
       { move: "reteach", skillId: S2, misId: M.id, trigger: "misconception_seen", chosenBy: "kit_primary", armId: primary.id, repClass: primary.repClass });
     assert.equal(directorReteachDecision({ kind: "kit", skillId: S2, mis: { id: "m-x" } }), null, "no remediation, nothing to record");
-    const w = directorReteachDecision({ kind: "change_approach", skillId: S2 });
+    assert.equal(directorReteachDecision({ kind: "change_approach", skillId: S2 }), null, "the caller names the chooser");
+    const w = directorReteachDecision({ kind: "change_approach", skillId: S2, chosenBy: "rule" });
     assert.deepEqual([w.trigger, w.chosenBy, w.armId, w.misId], ["wheel_spin", "rule", "gen:worked", null]);
   });
 

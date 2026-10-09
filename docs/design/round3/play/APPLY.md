@@ -1,7 +1,7 @@
 # Play · APPLY (round 3, stream play)
 
-Five unified diffs against HEAD (`cadf527`), each checked with `git apply --check` and `git apply --check --cached` on
-2026-10-09. They touch shared hot files the play stream does not own; everything else the stream built is in its own paths
+Five unified diffs, each checked with `git apply --check` (working tree) and `git apply --check --cached` (index) on
+2026-10-09, first on HEAD `cadf527` and again on HEAD `a29cc0b` (the main loop's later WIP checkpoint). They touch shared hot files the play stream does not own; everything else the stream built is in its own paths
 (`src/play/**`, `server/play/**`, `data/play/**`, `shared/play.ts`, `tests/play-*.test.mjs`, `tests/prod/round3-play.mjs`,
 `docs/design/round3/play/**`) and needs no patch.
 
@@ -13,7 +13,7 @@ Order matters only for 03 → 04 (the client sends what the turn reads); 01 can 
 
 | # | file(s) | what | proof (test, where it passed) |
 |---|---|---|---|
-| 01 | `server/index.js` | mount `/api/play/*` (one import + one spread) | `tests/prod/round3-play.mjs` 87/87 against a local production server with 01 applied (Neon TEST, 2026-10-09); taxila.dev today: P0 404 (routes absent) |
+| 01 | `server/index.js` | mount `/api/play/*` (one import + one spread) | `tests/prod/round3-play.mjs` 93/93 against a local production server with 01-05 applied (Neon TEST, 2026-10-09); taxila.dev today: P0 404 (routes absent) |
 | 02 | `server/learner/kt/ledger.js` + new `tests/play-ledger-seam.test.mjs` | a game event (`via: "game"`, also a late correction of one) is never the delayed check, never spends it, never sets `unaided`: only a bare item outside the game can make a skill learned or secure | the new test: 4/4 with the patch, 1/4 on HEAD (it fails on HEAD by design); `tests/learner-*.test.mjs`, `bkt`, `comprehension-{engine,schedule,reteach}`, `round2-truth*`: same 132 pass / 4 environment fails with and without the patch (scratch copy without `db/`, `evals/`) |
 | 03 | `server/brain/turn.js` + new `tests/play-turn-seam.test.mjs` | the lesson turn folds the play server's OWN grade: an evidence token (HMAC, bound to child + lesson, server/play/evidence.js) verified, folded once per level as one `via: "game"` item episode on the lesson's kit skills only; a seam's PLAY facts row reaches the reply only from a verified seam token, key=value pairs only (the recitation law); any device-sent row or data on a play event is deleted first | the new test 5/5 (forged, foreign-child, foreign-lesson, edited, out-of-kit tokens fold nothing; a sentence signed into a row is cut to its pairs); `brain-*`, `learner-live`, `safety-content-filter`, `voice-*`, `lesson-{safety,truth}`: identical results with and without the patch (102 pass / 9 environment fails from the scratch copy's missing `evals/`) |
 | 04 | `src/child/lesson/{deskLayout.ts,useDesk.ts,Desk.tsx,WorkTray.tsx}` + new `tests/play-desk-seam.test.mjs` | PLAY MODE: with a play piece in the Studio slot the question card folds (the game's goal rail is the card), her speech row keeps its minimum and the tray takes the rest, so the embedded play box (`src/play/core/box.ts MIN_BOX` 300 × 440) fits on phones ≥ 690 CSS px tall; WorkTray forwards a play piece's signed tokens as module events through `src/play/lessonBridge.ts` (level end → `goal_met`, impasse / misconception → `stuck`, evidence and predictions ride along; acts stay on the device) | the new test 10/10; `ui-v2-deskLayout`, `client-runtime`, `duplex-runtime`, `voice-features-runtime`: 92/92 with the patch; `tsc` clean on the patched scratch tree apart from a missing `models/` json the copy did not carry |

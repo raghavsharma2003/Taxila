@@ -1,0 +1,265 @@
+{
+ "nodes": [
+  {
+   "id": "ms-r3truth-reteach-rootcause-2026-10-09",
+   "kind": "measurement",
+   "title": "Root cause of prod w1c-reteach 7/13 with 0 reteach_attempts rows (ms-reteach-attempts-zero-prod-2026-10-07), reproduced on ONE tree (HEAD cadf527 = prod 145996f server code) and ONE database (Neon TEST), local server, scripted adult child, changing only env: prod profile (NODE_ENV=production, DEPLOY_CLASSIFY=grok-4-1-fast-non-reasoning as scripts/deploy-azure.mjs sets it, hedge 1500, prefetch off) 6/13 and 6/13, 0 rows, failedArms {} as on prod; DEPLOY_CLASSIFY=grok alone 6/13, 0 rows; local profile (taxila-fast classify) 13/13 and 13/13 (n=2 each). Two causes: (1) a reply that is only a wrong number ('999' for '1/4') always goes to the model (V1.1's by-value path decides credit only), and grok abstains on it (isolated: 3/32 grok vs 0/32 taxila-fast, cls-probe 8 per item x 4 items; in-lesson per-turn trace: 'i01' first try null on grok, not_yet on taxila-fast), so the hint ladder does not move, the card cap LEAVES instead of asserting, failsPostRung3 never reaches 2 and engineReteach never runs; (2) the Director's own re-teaches (kit remediation in afterMiss/trap, the P21 change of approach) never set lastReteach, so the re-teach MOVES prod saw wrote no row (round3-truth A2 on prod-profile HEAD: 1 row for 2 re-teach moves, 2/2 runs; B1: the kit re-teach after a misconception pick wrote nothing). Method: tests/prod/w1c-reteach.mjs, tests/prod/round3-truth.mjs, scratch trace-reteach.mjs / cls-probe.mjs. Date 2026-10-09.",
+   "at": "2026-10-09"
+  },
+  {
+   "id": "ms-r3truth-reteach-after-2026-10-09",
+   "kind": "measurement",
+   "title": "After round3 truth patches 01-07 (+ owned comprehension/learner/grading changes), local prod-profile server, Neon TEST, scripted adult child: w1c-reteach 13/13 and 12/13 (guardian counter) on the final code (and 12/13, 13/13, 12/13 on the pre-gate code; the 12/13 fails were the global guardian counter and one repeated arm gen:worked -> gen:worked that the logging exposed and directorMayReteach now forbids); every run: s1 failed two arms, prerequisite descent to c4-maths-ch05-t01-s1, parked, all attempts resolved at +1 day. round3-truth: 11/11, 9/10 (guardian counter only), 11/11 on pre-gate code; final code: one run hit a 500 (BudgetError, see open-r3t-move-section-overflow), the next 4 passed every product check; A2 every re-teach move but a descent has its row (incl. a wheel_spin/rule row), B1 kit row 'c4-maths-ch05-t01-m-bigger-denominator-bigger:primary (misconception_seen/kit_primary)' inserted (migration 023 on TEST). HEAD prod profile: 9/11 and 9/12 (A2 fails both). taxila.dev (prod HEAD 145996f, API only): round3-truth A1 FAIL 2/3 (a bare '999' on rl-o1 ungraded). Date 2026-10-09.",
+   "at": "2026-10-09"
+  },
+  {
+   "id": "ms-r3truth-grading-c19-shipped-parts-2026-10-09",
+   "kind": "measurement",
+   "title": "Grading-truth battery with data/kits-parts.json shipped (production config since 2026-10-09), evals/grading-truth/run.mjs --classes 1-9 --parts parts-labels-c1-9.json, deterministic (no network), seeds 7/11/13, HEAD and patched identical: classifyFast 10/9/9 wrong of 89,560 (one part of a multi-part key credited via an UNLABELLED disputed acceptable entry: 'More', 'Grateful', 'No', '9/16', '7 incorrect answers', 'बाँधो', '6, 1, 5, 2, 4, 3'; 1 bare number of a decisive key; 1 'false fail' whose truth is the weak kit-claim fallback, '₹40' graded partial on the two-question '40; ₹40'); modules frame/flat 0, studio.v2 0, placement 0, rKey 0; studio.w2h 5/4/2 (known wrong-try:no-item-id). With truth = '+ P1 entries are not complete' (both raters partial-or-wrong): HEAD shipped data 290 wrong (281 = P1 entries credited complete); the P1 candidate 8 (circular). Date 2026-10-09.",
+   "at": "2026-10-09"
+  },
+  {
+   "id": "ms-r3truth-model-leg-grok-2026-10-09",
+   "kind": "measurement",
+   "title": "First grading-truth model leg on PRODUCTION's classifier (grok-4-1-fast-non-reasoning, hedge 1500 to taxila-fast; round 2 measured taxila-fast only), --model 1200 stratified, seed 13, classes 1-9, n=1,131, 0 model errors, 0 HTTP 429: HEAD 15 wrong (1.3%: 14 false credit, 1 partial miss; proven-class 6 = negated key x3 + hint-as-answer x3; weak-truth 3; two-rater 6), abstain 477, uncredited right answers 36/306. Patched (run with corroboration/overridden tags, so HEAD's rules are re-scored on the SAME labels): wrong 15 vs 15, abstain 393 vs 475; the parts rule turned 78 two-rater-partial answers and 1 weak-truth 'incorrect' from no evidence into partial (partial(2-rater) bucket abstain 133 -> 55), the bare-number floor 3 abstentions into incorrect (all truth incorrect). Date 2026-10-09.",
+   "at": "2026-10-09"
+  },
+  {
+   "id": "ms-r3truth-floor-safety-2026-10-09",
+   "kind": "measurement",
+   "title": "Bare-wrong-number floor safety (evals/grading-truth/round3/floor-safety.mjs, deterministic): over 1,103 number-key items in classes 1-9 and every surface form the oracle writes (digits, Indian/intl grouping, English/Roman-Hindi/Devanagari words and digits, fractions, decimals), 0 of 6,657 RIGHT forms are marked bareWrongNumber (no false fail possible by construction); 3,309 of 3,309 near-miss wrong values are. Date 2026-10-09.",
+   "at": "2026-10-09"
+  },
+  {
+   "id": "ms-r3truth-human-pass-2026-10-09",
+   "kind": "measurement",
+   "title": "The parts data's open rows (docs/design/round3/truth/data/human-pass.csv, evals/grading-truth/round3/human-pass.mjs): 4,290 rater disagreements without a row (3,029 acceptable-entry labels + 1,261 parts counts) over 2,074 items, 667 items with no row at all; every one of the 3,029 disputed entries is credited COMPLETE today. Queue: P1 336 both raters not complete (partial vs wrong); P2 2,527 complete vs partial; P3 166 complete vs wrong; P4 570 parts disputed, no row (single-part today); P5 113 agreed labels flagged by a number check (66 'partial but carries a number of every part', incl. c8-maths-ch01-t01-i07 '49, 1 left out'; 47 'complete but misses a part's numbers'); P6 71 agreed wrong. Third-family read (this stream, Claude; not human, not labels): P1 30/30 sampled read as not complete; P5 about 1-2/20 look mislabelled (queue, not finding); a word-token P5 version was 2/20 and was replaced. Date 2026-10-09.",
+   "at": "2026-10-09"
+  },
+  {
+   "id": "ms-r3truth-threeday-2026-10-09",
+   "kind": "measurement",
+   "title": "w1c-three-day (prod 21/23 on 2026-10-07): the two fails ('+2 days with reasons above shallow', 'card state row changes by +3') come from the scripted +2-day child failing its OWN teach-back: replyFor without `teach` answers it with the topic's first expectation only, graded mid then fail; local trace U(s1) 0.421 -> 0.548 < U_FRAGILE 0.6; an offline fuseEvidence fold of the same events gives 0.693 (why pass alone) and 0.868 (why pass + passing teach-back), both fragile. Intermittent: the old script passed both checks in 2/2 local prod-profile runs (one cut short later by an outside pkill). New script (+2-day child teaches back, as day 0): HEAD local 22/23 and 22/23 (each fail = the global guardian counter), patched local 23/23. Date 2026-10-09.",
+   "at": "2026-10-09"
+  },
+  {
+   "id": "ms-r3truth-owner1-v11-2026-10-09",
+   "kind": "measurement",
+   "title": "owner-1 with the V1.1 oracle (parts data as truth; disputed items reported, never scored; partial graded not_yet = partial_miss) and place-value compare commits checked from first principles: taxila.dev (prod 145996f), seed 13666: 7/7 (typed 0/60 wrong; words 0; modules 0/38; frame 0 misgrades over 242 verifiable commits, was 189: place-value 51/51 compare commits verifiable, 25 true-claims true + 26 false-claims false; every bindable engine verifiable 8/8, was 7/8); V1.1 partial answers 4: graded partial 1, re-asked 3. Local same seed: HEAD 'partial graded' 1/6 (5 re-asked); patched 2/2 (the corroborate parts rule). The HEAD-local run's 6 frame 'misgrades' were the harness reading pv.write's target `value` as the committed entry (fixed; re-scored from the logged payloads: 0 real). Date 2026-10-09.",
+   "at": "2026-10-09"
+  },
+  {
+   "id": "ms-r3truth-reteach-density-sim-2026-10-09",
+   "kind": "measurement",
+   "title": "Deterministic Director + real compile sim (scratch budget-sim.mjs; 514 topics with kit remediation x 3 seeds, always-struggling child alternating misconception / incorrect, 45 turns, text lane): re-teach moves HEAD 9,375 (6,063 engine, 3,261 unlogged kit, 51 descents) vs patched 10,836 (5,289 engine, 3,270 logged kit, 2,277 prerequisite descents); 0 lessons with an arm used twice on either; 0 BudgetErrors in ~59.5k compiles on either. With a CONV2 'insist' mod on every graded turn: HEAD 6 vs patched 3 BudgetErrors, all MOVE section 266-267 tokens > cap 260 on EXPLAIN moves (c5-evs-ch04-t02, c7-science-ch06-t01): a pre-existing compile overflow, not the patches (seen once live as a 500 in a patched local round3-truth run, no-item move). Date 2026-10-09.",
+   "at": "2026-10-09"
+  },
+  {
+   "id": "ms-r3truth-content-filter-fp-2026-10-09",
+   "kind": "measurement",
+   "title": "Safety observation (not changed by this stream): on the local prod-profile HEAD server a scripted child's typed misconception answer '1/3, because 3 is bigger than 2' (c4-maths-ch05-t01, after '999' turns) raised a content_filter safeguarding incident, then a model_note one on 'pata nahi, bas aise hi aata hai'; the account (TEST branch, prod-r3truth-b+179154589233356fc9b@taxila.test) is left for a human safeguarding step. Not reproduced in 6 isolated classify() calls (that diagnostic is graded exact before any model). n=1 in ~14 local lessons. Date 2026-10-09.",
+   "at": "2026-10-09"
+  },
+  {
+   "id": "r3t-every-director-reteach-is-logged",
+   "kind": "decision",
+   "title": "Every re-teach the Director takes is ONE logged decision (Decision Service rule, Agarwal et al. 2016 F2: log the action actually taken where it is taken): the kit's remediation (trigger misconception_seen, chosen_by kit_primary, the kit's primary arm) and the P21 change of approach (wheel_spin, rule, gen:worked) get a reteach_attempts row, resolve at the next start, are excluded from selectReteach for the lesson and start the 2-item re-check; directorMayReteach applies the engine's own rules to them (no arm twice in a lesson; the change of approach never inside a running re-check). Switch TAXILA_RETEACH_LOG=off. Migration 023 widens the two checks and must ship first. Reverse if, on >= 200 resolved misconception_seen rows, the kit arms' resolution makes the population posteriors worse calibrated than engine-chosen arms (then keep the rows, exclude the trigger from arm_posteriors), or if a human review of 50 struggling lessons finds the added prerequisite descents unhelpful.",
+   "at": "2026-10-09"
+  },
+  {
+   "id": "r3t-bare-wrong-number-is-code-graded",
+   "kind": "decision",
+   "title": "A reply that is only a number (ASCII or Devanagari digits), not the key's value, is graded incorrect in code whenever the model abstains or both classifier deployments fail; the model may still name the misconception it shows; distress and stop flags always win. Switch TAXILA_NUMBER_FLOOR=off. Reverse if a human review of 200 floor fires on real children finds > 1% that were not an answer to the question on the card (e.g. a typed option number).",
+   "at": "2026-10-09"
+  },
+  {
+   "id": "r3t-number-source-is-code",
+   "kind": "decision",
+   "title": "classifyFast's by-value verdicts (source number / number_selfcorrect) are CODE grades in the learner model (live.js CODE_SOURCES): before, they were folded with the model's 0.7 confusion, dropped from theta and shown to parents as 'AI-checked against the book's key idea'. Stored rows keep their grader; replay unchanged. Reverse if a grading audit finds by-value number verdicts wrong at > 0.5% (then they are not code-reliable).",
+   "at": "2026-10-09"
+  },
+  {
+   "id": "r3t-parts-decide-partial",
+   "kind": "decision",
+   "title": "corroborate.js: on an item WITH adjudicated parts (data/kits-parts.json), a model incorrect/partial on a reply made of the key's own words that carries some parts (each checked like a complete form) and not all is graded partial in code (V1.1); without a parts row the old rule stands (no evidence). Measured on the same grok labels: 78 two-rater partial answers graded partial instead of re-asked, 0 new wrong grades. Reverse if the human pass shows the shipped parts rows wrong at > 5% on the items this rule fires on.",
+   "at": "2026-10-09"
+  },
+  {
+   "id": "r3t-praise-wide-except-graded-partial",
+   "kind": "decision",
+   "title": "G-PRAISE-1 catches 'aapne <up to 8 words> sahi <verb>' on every verdict except a GRADED partial, where naming the right part is honest elaborated feedback (Shute 2008; Hattie & Timperley 2007); a graded partial still never gets whole-answer praise ('Bilkul sahi!'). Fixes owner-1 2026-10-09 c5-maths-ch07-t02-i06 (praise on an ungraded re-ask). Reverse if a review of 100 graded-partial turns finds children read the part-praise as 'my whole answer was right' in > 5%.",
+   "at": "2026-10-09"
+  },
+  {
+   "id": "r3t-owner1-follows-parts-data",
+   "kind": "decision",
+   "title": "owner-1's typed oracle follows V1.1 from the parts DATA: correct = the key or an entry labelled complete (an unlabelled entry only on an undisputed item), partial = an entry labelled partial or one adjudicated part, never a split on the key's punctuation; partial graded not_yet is a wrong grade (partial_miss). Reverse when the parts data is withdrawn or replaced by authored per-item rubrics.",
+   "at": "2026-10-09"
+  },
+  {
+   "id": "rj-r3t-realistic-wrong-child",
+   "kind": "rejection",
+   "title": "Tried: giving w1c-reteach's scripted child realistic wrong answers instead of '999'. Broke: it would have hidden the product defect (a bare wrong number earning no evidence on prod's classifier); the scripted child stays and round3-truth A1 asserts the grade.",
+   "at": "2026-10-09"
+  },
+  {
+   "id": "rj-r3t-kit-as-confirmed-trigger",
+   "kind": "rejection",
+   "title": "Tried: logging the kit's once-per-misconception re-teach under trigger 'misconception_confirmed' to avoid a migration. Broke: one classified answer is not the belief's confirmed misconception; the ladder and the bandit read the trigger, so the row would be false data. Instead: migration 023 adds 'misconception_seen' and chosen_by 'rule'.",
+   "at": "2026-10-09"
+  },
+  {
+   "id": "rj-r3t-teachback-u-to-all-skills",
+   "kind": "rejection",
+   "title": "Considered: crediting the teach-back's U to every skill in skill_ids (as round 2 did for the ledger display) to make w1c-three-day pass. Rejected: kit expectations are topic-level, not skill-tagged, so it over-credits (E7); the three-day fail was the scripted child's failing teach-back (U 0.548 reproduced exactly offline), not the credit rule.",
+   "at": "2026-10-09"
+  },
+  {
+   "id": "rj-r3t-p5-word-tokens",
+   "kind": "rejection",
+   "title": "Tried: flagging agreed-partial labels whose entry shares a WORD with every part (P5). Broke: a 20-row read found 2/20 plausibly mislabelled (shared words like 'metals', 'resources' are not the parts); replaced by a number-only check (66 rows), itself ~1-2/20; P5 stays a human queue.",
+   "at": "2026-10-09"
+  },
+  {
+   "id": "rj-r3t-change-approach-in-recheck",
+   "kind": "rejection",
+   "title": "Found by logging (local patched run 2026-10-09): the P21 change-of-approach fallback in afterMiss fired on the turn right after the engine's own worked-example re-teach, inside its re-check, re-teaching gen:worked twice (gen:story -> gen:worked -> gen:worked); on HEAD the same pattern existed unlogged, and the kit path repeated the engine's kit-primary arm on a diagnostic in 6/6 seeds of round2-truth's fixture. Now forbidden by directorMayReteach (no arm twice; no change of approach inside a running re-check).",
+   "at": "2026-10-09"
+  },
+  {
+   "id": "open-r3t-parts-human-pass",
+   "kind": "open",
+   "title": "The kit answer-part data still needs its human pass: 4,290 rater disagreements (P1 336, P2 2,527, P3 166 acceptable entries credited complete today; P4 570 items graded single-part) and 113 P5 + 71 P6 agreed labels to confirm, in docs/design/round3/truth/data/human-pass.csv. A P1-as-partial candidate (docs/design/round3/truth/data/kits-parts.p1-candidate.json, not shipped) removes 281 deterministic false credits; shipping it before the pass is an owner decision.",
+   "at": "2026-10-09"
+  },
+  {
+   "id": "open-r3t-move-section-overflow",
+   "kind": "open",
+   "title": "Pre-existing: the compiler MOVE section can exceed its 260-token cap when a CONV2 mod note (e.g. insist) rides an explain move (sim: c5-evs-ch04-t02, c7-science-ch06-t01; HEAD 6, patched 3 BudgetErrors in ~59k compiles) and POST /api/lesson/turn then answers 500 on a no-item move (instructionsAfter can only skip an item); seen once live on a local patched server. Owner: compiler / conversation streams.",
+   "at": "2026-10-09"
+  },
+  {
+   "id": "open-r3t-content-filter-fp",
+   "kind": "open",
+   "title": "A content_filter safeguarding incident on a benign typed maths answer ('1/3, because 3 is bigger than 2') on a local prod-profile server, n=1, not reproduced in isolation; the floor fails closed by design and is not weakened. Owner: safety; the blocked call (classifier or reply) must be identified before any change.",
+   "at": "2026-10-09"
+  }
+ ],
+ "edges": [
+  {
+   "src": "r3t-every-director-reteach-is-logged",
+   "rel": "caused_by",
+   "dst": "ms-reteach-attempts-zero-prod-2026-10-07"
+  },
+  {
+   "src": "r3t-bare-wrong-number-is-code-graded",
+   "rel": "caused_by",
+   "dst": "ms-reteach-attempts-zero-prod-2026-10-07"
+  },
+  {
+   "src": "r3t-every-director-reteach-is-logged",
+   "rel": "measured_by",
+   "dst": "ms-r3truth-reteach-rootcause-2026-10-09"
+  },
+  {
+   "src": "r3t-every-director-reteach-is-logged",
+   "rel": "measured_by",
+   "dst": "ms-r3truth-reteach-after-2026-10-09"
+  },
+  {
+   "src": "r3t-every-director-reteach-is-logged",
+   "rel": "measured_by",
+   "dst": "ms-r3truth-reteach-density-sim-2026-10-09"
+  },
+  {
+   "src": "r3t-bare-wrong-number-is-code-graded",
+   "rel": "measured_by",
+   "dst": "ms-r3truth-reteach-rootcause-2026-10-09"
+  },
+  {
+   "src": "r3t-bare-wrong-number-is-code-graded",
+   "rel": "measured_by",
+   "dst": "ms-r3truth-floor-safety-2026-10-09"
+  },
+  {
+   "src": "r3t-bare-wrong-number-is-code-graded",
+   "rel": "measured_by",
+   "dst": "ms-r3truth-model-leg-grok-2026-10-09"
+  },
+  {
+   "src": "r3t-number-source-is-code",
+   "rel": "caused_by",
+   "dst": "r3t-bare-wrong-number-is-code-graded"
+  },
+  {
+   "src": "r3t-parts-decide-partial",
+   "rel": "measured_by",
+   "dst": "ms-r3truth-model-leg-grok-2026-10-09"
+  },
+  {
+   "src": "r3t-parts-decide-partial",
+   "rel": "measured_by",
+   "dst": "ms-r3truth-owner1-v11-2026-10-09"
+  },
+  {
+   "src": "r3t-owner1-follows-parts-data",
+   "rel": "measured_by",
+   "dst": "ms-r3truth-owner1-v11-2026-10-09"
+  },
+  {
+   "src": "r3t-owner1-follows-parts-data",
+   "rel": "caused_by",
+   "dst": "v1-rj-multipartkey-punctuation"
+  },
+  {
+   "src": "r3t-praise-wide-except-graded-partial",
+   "rel": "measured_by",
+   "dst": "ms-r3truth-owner1-v11-2026-10-09"
+  },
+  {
+   "src": "ms-r3truth-grading-c19-shipped-parts-2026-10-09",
+   "rel": "supersedes",
+   "dst": "ms-truth-grading-det-noparts-2026-10-06"
+  },
+  {
+   "src": "ms-r3truth-human-pass-2026-10-09",
+   "rel": "caused_by",
+   "dst": "ms-truth-parts-labels-c1-9-2026-10-06"
+  },
+  {
+   "src": "open-r3t-parts-human-pass",
+   "rel": "caused_by",
+   "dst": "ms-r3truth-human-pass-2026-10-09"
+  },
+  {
+   "src": "open-r3t-move-section-overflow",
+   "rel": "caused_by",
+   "dst": "ms-r3truth-reteach-density-sim-2026-10-09"
+  },
+  {
+   "src": "open-r3t-content-filter-fp",
+   "rel": "caused_by",
+   "dst": "ms-r3truth-content-filter-fp-2026-10-09"
+  },
+  {
+   "src": "rj-r3t-change-approach-in-recheck",
+   "rel": "caused_by",
+   "dst": "reteach-without-cooldown"
+  },
+  {
+   "src": "rj-r3t-kit-as-confirmed-trigger",
+   "rel": "caused_by",
+   "dst": "rj-w2c-child-history-unwritable"
+  },
+  {
+   "src": "rj-r3t-teachback-u-to-all-skills",
+   "rel": "caused_by",
+   "dst": "rj-truth-teachback-credits-first-skill-only"
+  },
+  {
+   "src": "ms-r3truth-threeday-2026-10-09",
+   "rel": "caused_by",
+   "dst": "ms-round2-prod-2026-10-07"
+  }
+ ]
+}

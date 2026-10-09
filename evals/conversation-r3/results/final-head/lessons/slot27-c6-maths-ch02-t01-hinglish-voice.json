@@ -1,0 +1,7488 @@
+{
+ "slot": 27,
+ "topic": "c6-maths-ch02-t01",
+ "cls": 6,
+ "lang": "hinglish",
+ "lane": "voice",
+ "lessons": [
+  {
+   "lessonId": "fc71c272-5f64-49f2-ad20-0fcd726aca7a",
+   "why": "start",
+   "at": "2026-10-09T12:50:33.919Z",
+   "teacher": "Arjun"
+  }
+ ],
+ "turns": [
+  {
+   "who": "teacher",
+   "kind": "opening",
+   "lessonId": "fc71c272-5f64-49f2-ad20-0fcd726aca7a",
+   "teacherReply": "Namaste Vihaan, main Arjun, aapka AI teacher hoon. Aaj points, line segment, line aur ray ko dance steps ki tarah dekhenge. Aap ready hain?",
+   "ui": {
+    "status": "your_turn",
+    "phase": "warmup",
+    "handover": "answer",
+    "answerForm": "words",
+    "tray": "none",
+    "shortTitle": "Points, lines and rays",
+    "beat": {
+     "beatId": "b1-arrive",
+     "type": "arrive",
+     "index": 1
+    },
+    "ask": {
+     "text": "Aap ready hain?"
+    }
+   }
+  },
+  {
+   "who": "child",
+   "tag": "greet",
+   "lessonId": "fc71c272-5f64-49f2-ad20-0fcd726aca7a",
+   "childText": "haan ready hoon",
+   "ms": 2958,
+   "error": null,
+   "teacherReply": "Dance floor par torch ki beam sochiye: aapke hisaab se beam line, ray ya line segment mein se kya hogi?",
+   "move": {
+    "kind": "hook",
+    "shape": "open with one concrete everyday situation built on their interest (dance) — kit contexts: torch beams, railway tracks, ruler edges; ask what they think will happen or which they would pick — a prediction, no right answer yet; any bigger/more comparison: two quantities of one kind, in one unit — a count against a count, a distance against a distance; never across kinds; mention once: at the end they will teach this to Bittu (a pretend new student who missed this class); address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu",
+    "format": "F4"
+   },
+   "ui": {
+    "status": "your_turn",
+    "phase": "teach",
+    "handover": "answer",
+    "answerForm": "words",
+    "tray": "none",
+    "shortTitle": "Points, lines and rays",
+    "beat": {
+     "beatId": "b2-hook",
+     "type": "hook",
+     "index": 2
+    },
+    "ask": {
+     "text": "Dance floor par torch ki beam sochiye: aapke hisaab se beam line, ray ya line segment mein se kya hogi?"
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [
+      "script"
+     ],
+     "rewritten": true,
+     "replaced": false,
+     "firstDraft": "Dance floor par torch ki beam sochiye: aapke hisaab se beam ko line, ray ya line segment mein se kya kahenge? કારણ",
+     "afterRewrite": []
+    },
+    "verdict": "attempt",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 425,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "teach",
+    "ms": 2941,
+    "item": null,
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 90
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 90
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 720
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 812
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1146
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1237
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1239
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1239
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1064
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1606
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 2852
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 2941
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "probe:visual_request-11",
+   "lessonId": "fc71c272-5f64-49f2-ad20-0fcd726aca7a",
+   "childText": "can i see a picture of a ray",
+   "ms": 3419,
+   "error": null,
+   "teacherReply": "Screen par Ray wali figure dekhiye: ek endpoint hai, phir line sirf ek direction mein aage jaati hai. Aap kya notice karte hain?",
+   "move": {
+    "kind": "reteach",
+    "shape": "they asked to see it: a picture of the same idea; one idea; let the picture do the work; a few words about what to look at; the key stays unsaid; then one small question about what they see; address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu; it is on the screen now: point them at it in your first words and say what to look at",
+    "skillId": "c6-maths-ch02-t01-s1",
+    "request": "visual",
+    "visual": "diagram"
+   },
+   "ui": {
+    "status": "your_turn",
+    "phase": "teach",
+    "handover": "answer",
+    "answerForm": "words",
+    "tray": "studio",
+    "shortTitle": "Points, lines and rays",
+    "beat": {
+     "beatId": "b3-explain",
+     "type": "explain",
+     "index": 3
+    },
+    "ask": {
+     "text": "Aap kya notice karte hain?"
+    },
+    "studioSlot": {
+     "slotId": "fc71c272-5f64-49f2-ad20-0fcd726aca7a:c1:slot",
+     "intentId": "fc71c272-5f64-49f2-ad20-0fcd726aca7a:c1",
+     "state": "revealed",
+     "artifact": {
+      "kind": "stagecraft",
+      "stage": {
+       "w": 1000,
+       "h": 625
+      },
+      "stagecraft": {
+       "rung": "engine_default",
+       "archetype": "scene-explainer@1",
+       "spec": {
+        "archetype": "scene-explainer@1",
+        "skills": [
+         "c6-maths-ch02-t01"
+        ],
+        "lang": "en",
+        "strings": {
+         "again": "Show again",
+         "yourTurn": "Your turn",
+         "check": "Check",
+         "right": "Got it",
+         "look": "Look again",
+         "myth": "MYTH",
+         "busted": "NOT TRUE",
+         "order": "Tap them in order"
+        },
+        "title": "Point, line segment, line and ray",
+        "accent": "ion",
+        "targets": "c6-maths-ch02-t01-m-longer-line",
+        "scenes": [
+         {
+          "id": "s1",
+          "layout": "row",
+          "els": [
+           {
+            "id": "title",
+            "type": "title",
+            "text": "Point, line segment, line and ray"
+           },
+           {
+            "id": "myth",
+            "type": "myth",
+            "text": "A longer drawing is a bigger line"
+           }
+          ]
+         },
+         {
+          "id": "s2",
+          "layout": "grid",
+          "els": [
+           {
+            "id": "point",
+            "type": "node",
+            "text": "Point",
+            "sub": "exact position",
+            "glyph": "spark",
+            "color": "ion"
+           },
+           {
+            "id": "segment",
+            "type": "node",
+            "text": "Segment",
+            "sub": "2 endpoints",
+            "glyph": "ruler",
+            "color": "mint"
+           },
+           {
+            "id": "line",
+            "type": "node",
+            "text": "Line",
+            "sub": "both ways",
+            "glyph": "road",
+            "color": "sci"
+           },
+           {
+            "id": "ray",
+            "type": "node",
+            "text": "Ray",
+            "sub": "1 endpoint",
+            "glyph": "torch",
+            "color": "amber"
+           }
+          ]
+         },
+         {
+          "id": "s3",
+          "layout": "split",
+          "els": [
+           {
+            "id": "segTitle",
+            "type": "title",
+            "text": "Fixed length"
+           },
+           {
+            "id": "segEnds",
+            "type": "label",
+            "text": "A       B",
+            "x": 180,
+            "y": 330,
+            "color": "mint"
+           },
+           {
+            "id": "segBar",
+            "type": "bar",
+            "parts": 1,
+            "shaded": 1,
+            "x": 180,
+            "y": 360,
+            "w": 420,
+            "text": "segment"
+           },
+           {
+            "id": "lineTitle",
+            "type": "title",
+            "text": "No endpoints"
+           },
+           {
+            "id": "lineEnds",
+            "type": "label",
+            "text": "arrow     arrow",
+            "x": 560,
+            "y": 330,
+            "color": "sci"
+           }
+          ]
+         },
+         {
+          "id": "s4",
+          "layout": "cycle",
+          "els": [
+           {
+            "id": "o",
+            "type": "node",
+            "text": "O",
+            "sub": "endpoint",
+            "color": "amber"
+           },
+           {
+            "id": "a",
+            "type": "node",
+            "text": "A",
+            "sub": "point",
+            "glyph": "spark",
+            "color": "ion"
+           },
+           {
+            "id": "b",
+            "type": "node",
+            "text": "B",
+            "sub": "point",
+            "glyph": "spark",
+            "color": "ion"
+           },
+           {
+            "id": "oa",
+            "type": "arrow",
+            "from": "o",
+            "to": "a",
+            "text": "ray OA",
+            "bend": -0.2
+           },
+           {
+            "id": "ob",
+            "type": "arrow",
+            "from": "o",
+            "to": "b",
+            "text": "ray OB",
+            "bend": 0.2
+           },
+           {
+            "id": "op",
+            "type": "label",
+            "text": "endpoint first",
+            "x": 350,
+            "y": 260,
+            "color": "amber"
+           }
+          ]
+         },
+         {
+          "id": "s5",
+          "layout": "grid",
+          "els": [
+           {
+            "id": "taskTitle",
+            "type": "title",
+            "text": "Your turn"
+           },
+           {
+            "id": "optPoint",
+            "type": "node",
+            "text": "Point",
+            "sub": "no size",
+            "glyph": "spark",
+            "color": "ion"
+           },
+           {
+            "id": "optSeg",
+            "type": "node",
+            "text": "Segment",
+            "sub": "2 endpoints",
+            "glyph": "ruler",
+            "color": "mint"
+           },
+           {
+            "id": "optLine",
+            "type": "node",
+            "text": "Line",
+            "sub": "2 directions",
+            "glyph": "road",
+            "color": "sci"
+           },
+           {
+            "id": "optRay",
+            "type": "node",
+            "text": "Ray",
+            "sub": "1 endpoint",
+            "glyph": "torch",
+            "color": "amber"
+           }
+          ]
+         }
+        ],
+        "text": {
+         "L1": "A point marks an exact position. It has no size.",
+         "L2": "A line segment has two endpoints and a fixed length you can measure.",
+         "L3": "A line has no endpoints and continues forever in both directions.",
+         "L4": "Drawing it longer on paper does not make a different line; paper shows only part.",
+         "L5": "A ray has one endpoint and continues forever in one direction.",
+         "L6": "Ray AB starts at A and passes through B, so ray BA points the other way.",
+         "L7": "In our example, both rays start at O: ray OA and ray OB. They point in opposite directions, so they are different rays.",
+         "L8": "Which figure has one endpoint and continues in one direction? Tap it."
+        },
+        "narration": {
+         "L1": {
+          "text": "A point marks an exact position. It has no size.",
+          "dur": 3,
+          "lead": 0,
+          "tail": 0.3,
+          "pauses": []
+         },
+         "L2": {
+          "text": "A line segment has two endpoints and a fixed length you can measure.",
+          "dur": 4,
+          "lead": 0,
+          "tail": 0.3,
+          "pauses": []
+         },
+         "L3": {
+          "text": "A line has no endpoints and continues forever in both directions.",
+          "dur": 4,
+          "lead": 0,
+          "tail": 0.3,
+          "pauses": []
+         },
+         "L4": {
+          "text": "Drawing it longer on paper does not make a different line; paper shows only part.",
+          "dur": 4,
+          "lead": 0,
+          "tail": 0.3,
+          "pauses": []
+         },
+         "L5": {
+          "text": "A ray has one endpoint and continues forever in one direction.",
+          "dur": 3.5,
+          "lead": 0,
+          "tail": 0.3,
+          "pauses": []
+         },
+         "L6": {
+          "text": "Ray AB starts at A and passes through B, so ray BA points the other way.",
+          "dur": 4,
+          "lead": 0,
+          "tail": 0.3,
+          "pauses": []
+         },
+         "L7": {
+          "text": "In our example, both rays start at O: ray OA and ray OB. They point in opposite directions, so they are different rays.",
+          "dur": 5,
+          "lead": 0,
+          "tail": 0.3,
+          "pauses": []
+         },
+         "L8": {
+          "text": "Which figure has one endpoint and continues in one direction? Tap it.",
+          "dur": 3,
+          "lead": 0,
+          "tail": 0.3,
+          "pauses": []
+         }
+        },
+        "beats": [
+         {
+          "line": "L1",
+          "gap": 0.4,
+          "scene": "s2",
+          "cues": [
+           {
+            "at": 0,
+            "do": "show",
+            "dur": 0.8,
+            "target": "point"
+           },
+           {
+            "at": 0.8,
+            "do": "highlight",
+            "dur": 1,
+            "target": "point"
+           }
+          ]
+         },
+         {
+          "line": "L2",
+          "gap": 0.4,
+          "scene": "s2",
+          "cues": [
+           {
+            "at": 0,
+            "do": "show",
+            "dur": 0.8,
+            "target": "segment"
+           },
+           {
+            "at": 0.8,
+            "do": "highlight",
+            "dur": 1,
+            "target": "segment"
+           }
+          ]
+         },
+         {
+          "line": "L3",
+          "gap": 0.4,
+          "scene": "s2",
+          "cues": [
+           {
+            "at": 0,
+            "do": "show",
+            "dur": 0.8,
+            "target": "line"
+           }
+          ]
+         },
+         {
+          "line": "L4",
+          "gap": 0.5,
+          "scene": "s1",
+          "cues": [
+           {
+            "at": 0,
+            "do": "show",
+            "dur": 0.8,
+            "target": "myth"
+           },
+           {
+            "at": 1,
+            "do": "bust",
+            "dur": 1.2,
+            "target": "myth"
+           }
+          ]
+         },
+         {
+          "line": "L5",
+          "gap": 0.4,
+          "scene": "s2",
+          "cues": [
+           {
+            "at": 0,
+            "do": "show",
+            "dur": 0.8,
+            "target": "ray"
+           }
+          ]
+         },
+         {
+          "line": "L6",
+          "gap": 0.4,
+          "scene": "s4",
+          "cues": [
+           {
+            "at": 0,
+            "do": "show",
+            "dur": 0.8,
+            "target": [
+             "o",
+             "a",
+             "b"
+            ]
+           },
+           {
+            "at": 0.8,
+            "do": "flow",
+            "dur": 0.8,
+            "target": "oa",
+            "to": 1
+           },
+           {
+            "at": 1.6,
+            "do": "flow",
+            "dur": 0.8,
+            "target": "ob",
+            "to": 1
+           }
+          ]
+         },
+         {
+          "line": "L7",
+          "gap": 0.4,
+          "scene": "s4",
+          "cues": [
+           {
+            "at": 0,
+            "do": "highlight",
+            "dur": 0.8,
+            "target": "o"
+           },
+           {
+            "at": 0.8,
+            "do": "highlight",
+            "dur": 1.2,
+            "target": [
+             "oa",
+             "ob"
+            ]
+           }
+          ]
+         },
+         {
+          "line": "L8",
+          "gap": 0,
+          "scene": "s5",
+          "cues": [
+           {
+            "at": 0,
+            "do": "show",
+            "dur": 0.8,
+            "target": "taskTitle"
+           },
+           {
+            "at": 0.8,
+            "do": "interactive",
+            "dur": 0
+           }
+          ]
+         }
+        ],
+        "task": {
+         "kind": "tap",
+         "prompt": "Which figure has one endpoint and continues in one direction?",
+         "options": [
+          "optPoint",
+          "optSeg",
+          "optLine",
+          "optRay"
+         ],
+         "answer": "optRay",
+         "src": "c6-maths-ch02-t01-i01"
+        }
+       },
+       "boardTwin": {
+        "scriptRef": "board:c6-maths-ch02-t01-s1|explain|-|-",
+        "values": {
+         "title": "Cinematic explainer",
+         "need": "explain"
+        },
+        "board": {
+         "title": "Cinematic explainer",
+         "lines": [
+          "line",
+          "segment",
+          "different",
+          "point"
+         ],
+         "figure": {
+          "kind": "none"
+         }
+        }
+       },
+       "board": null,
+       "cue": {
+        "clauseIdx": 0,
+        "preRollMs": 400,
+        "crossFadeMs": 420
+       },
+       "buildSha": null,
+       "blobUrl": null
+      }
+     }
+    }
+   },
+   "moduleCommands": [],
+   "studio": {
+    "reveal": "fc71c272-5f64-49f2-ad20-0fcd726aca7a:c1"
+   },
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false
+    },
+    "verdict": "ungraded",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "visual_request",
+     "waitedMs": 415,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "teach",
+    "ms": 3170,
+    "item": null,
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 291
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 296
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 819
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 1154
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1235
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1570
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1572
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1573
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1519
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 3094
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 3169
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "filler",
+   "lessonId": "fc71c272-5f64-49f2-ad20-0fcd726aca7a",
+   "childText": "achha",
+   "ms": 1858,
+   "error": null,
+   "teacherReply": "Ray ka ek fixed endpoint hota hai aur woh ek direction mein endlessly jaati hai; line segment ke do endpoints hote hain. Point kisey kahenge?",
+   "move": {
+    "kind": "explain",
+    "shape": "one idea only: Tell a point, line segment, line and ray apart by their endpoints; an example from their interest (dance) if it fits naturally; objects first, then the symbol; point at the screen only at what the on-screen row lists; never a drawing made of characters; end with one small question that makes them USE the idea — never 'samjha?'; address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu",
+    "skillId": "c6-maths-ch02-t01-s1",
+    "format": "F3"
+   },
+   "ui": {
+    "status": "your_turn",
+    "phase": "teach",
+    "handover": "answer",
+    "answerForm": "words",
+    "tray": "module",
+    "shortTitle": "Points, lines and rays",
+    "beat": {
+     "beatId": "b3-explain",
+     "type": "explain",
+     "index": 3
+    },
+    "ask": {
+     "text": "Point kisey kahenge?"
+    }
+   },
+   "moduleCommands": [
+    {
+     "op": "mount",
+     "moduleId": "m3",
+     "engine": "explainer@1",
+     "params": {
+      "script": {
+       "v": 1,
+       "scriptId": "ex-1cma0f1",
+       "line": {
+        "lessonId": "fc71c272-5f64-49f2-ad20-0fcd726aca7a"
+       },
+       "anchor": "line_audio_start",
+       "board": {
+        "w": 400,
+        "h": 300,
+        "ground": "chalk"
+       },
+       "mode": "fresh",
+       "durationMs": 5540,
+       "ops": [
+        {
+         "id": "h0",
+         "op": "text",
+         "startMs": 150,
+         "endMs": 650,
+         "ink": "accent",
+         "at": [
+          107.5,
+          36
+         ],
+         "text": "Line segment",
+         "size": "s"
+        },
+        {
+         "id": "o1",
+         "op": "line",
+         "startMs": 690,
+         "endMs": 990,
+         "ink": "accent",
+         "weight": 1,
+         "from": [
+          28,
+          62
+         ],
+         "to": [
+          187,
+          62
+         ]
+        },
+        {
+         "id": "h1",
+         "op": "text",
+         "startMs": 1140,
+         "endMs": 1640,
+         "ink": "accent",
+         "at": [
+          297.5,
+          36
+         ],
+         "text": "Ray",
+         "size": "s"
+        },
+        {
+         "id": "o2",
+         "op": "line",
+         "startMs": 1680,
+         "endMs": 1980,
+         "ink": "accent",
+         "weight": 1,
+         "from": [
+          218,
+          62
+         ],
+         "to": [
+          377,
+          62
+         ]
+        },
+        {
+         "id": "o3",
+         "op": "line",
+         "startMs": 2160,
+         "endMs": 2660,
+         "ink": "soft",
+         "weight": 1,
+         "from": [
+          200,
+          30
+         ],
+         "to": [
+          200,
+          280
+         ]
+        },
+        {
+         "id": "c00",
+         "op": "text",
+         "startMs": 2880,
+         "endMs": 3360,
+         "at": [
+          107.5,
+          100
+         ],
+         "text": "two endpoints",
+         "size": "s"
+        },
+        {
+         "id": "c10",
+         "op": "text",
+         "startMs": 3420,
+         "endMs": 3900,
+         "at": [
+          297.5,
+          100
+         ],
+         "text": "one endpoint",
+         "size": "s"
+        },
+        {
+         "id": "c01",
+         "op": "text",
+         "startMs": 4120,
+         "endMs": 4600,
+         "at": [
+          107.5,
+          152
+         ],
+         "text": "fixed length",
+         "size": "s"
+        },
+        {
+         "id": "c11",
+         "op": "text",
+         "startMs": 4660,
+         "endMs": 5140,
+         "at": [
+          297.5,
+          152
+         ],
+         "text": "one direction",
+         "size": "s"
+        }
+       ],
+       "facts": {
+        "kind": "diagram",
+        "archetype": "compare@1",
+        "onScreen": {
+         "left": "Line segment",
+         "right": "Ray",
+         "rows": 2,
+         "left1": "two endpoints",
+         "left2": "fixed length",
+         "right1": "one endpoint",
+         "right2": "one direction"
+        }
+       }
+      },
+      "template": "compare@1",
+      "mode": "play"
+     }
+    }
+   ],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false
+    },
+    "verdict": "ungraded",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 931,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "teach",
+    "ms": 1850,
+    "item": null,
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 96
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 96
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 721
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 828
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1653
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1759
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1767
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1767
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1493
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 1779
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 1850
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "probe:joke-05",
+   "lessonId": "fc71c272-5f64-49f2-ad20-0fcd726aca7a",
+   "childText": "aap robot ho toh aapko bhookh nahi lagti na haha",
+   "ms": 2625,
+   "error": null,
+   "teacherReply": "Haan, main AI teacher hoon, isliye mujhe bhookh nahi lagti—haha. Ab example: ray ka naam endpoint se shuru hota hai; OA ka agla step aap batayiye.",
+   "move": {
+    "kind": "worked_example",
+    "shape": "they asked what you are: plainly an AI teacher, in one line (no body, home, food or family); then back to the work; worked example, part 1 of 2: say one step, then ask them for the next step; their thinking, your pace; no new idea; address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu",
+    "skillId": "c6-maths-ch02-t01-s1",
+    "format": "F2",
+    "request": "identity",
+    "lead": "they asked what you are: plainly an AI teacher, in one line (no body, home, food or family); then back to the work"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "math",
+     "value": "Name all the rays starting at O that pass through the points A and B, where A, O, B are on a straight line with O in…"
+    },
+    "phase": "teach",
+    "handover": "answer",
+    "answerForm": "words",
+    "tray": "module",
+    "shortTitle": "Points, lines and rays",
+    "beat": {
+     "beatId": "b4-worked_example",
+     "type": "worked_example",
+     "index": 4
+    },
+    "ask": {
+     "text": "Ab example: ray ka naam endpoint se shuru hota hai; OA ka agla step aap batayiye."
+    },
+    "teacherAffect": {
+     "display": "playful",
+     "intensity": 1
+    }
+   },
+   "moduleCommands": [
+    {
+     "op": "set_param",
+     "moduleId": "m3",
+     "name": "script",
+     "value": {
+      "v": 1,
+      "scriptId": "ex-1cma0f1",
+      "line": {
+       "lessonId": "fc71c272-5f64-49f2-ad20-0fcd726aca7a"
+      },
+      "anchor": "line_audio_start",
+      "board": {
+       "w": 400,
+       "h": 300,
+       "ground": "chalk"
+      },
+      "mode": "fresh",
+      "durationMs": 5540,
+      "ops": [
+       {
+        "id": "h0",
+        "op": "text",
+        "startMs": 150,
+        "endMs": 650,
+        "ink": "accent",
+        "at": [
+         107.5,
+         36
+        ],
+        "text": "Line segment",
+        "size": "s"
+       },
+       {
+        "id": "o1",
+        "op": "line",
+        "startMs": 690,
+        "endMs": 990,
+        "ink": "accent",
+        "weight": 1,
+        "from": [
+         28,
+         62
+        ],
+        "to": [
+         187,
+         62
+        ]
+       },
+       {
+        "id": "h1",
+        "op": "text",
+        "startMs": 1140,
+        "endMs": 1640,
+        "ink": "accent",
+        "at": [
+         297.5,
+         36
+        ],
+        "text": "Ray",
+        "size": "s"
+       },
+       {
+        "id": "o2",
+        "op": "line",
+        "startMs": 1680,
+        "endMs": 1980,
+        "ink": "accent",
+        "weight": 1,
+        "from": [
+         218,
+         62
+        ],
+        "to": [
+         377,
+         62
+        ]
+       },
+       {
+        "id": "o3",
+        "op": "line",
+        "startMs": 2160,
+        "endMs": 2660,
+        "ink": "soft",
+        "weight": 1,
+        "from": [
+         200,
+         30
+        ],
+        "to": [
+         200,
+         280
+        ]
+       },
+       {
+        "id": "c00",
+        "op": "text",
+        "startMs": 2880,
+        "endMs": 3360,
+        "at": [
+         107.5,
+         100
+        ],
+        "text": "two endpoints",
+        "size": "s"
+       },
+       {
+        "id": "c10",
+        "op": "text",
+        "startMs": 3420,
+        "endMs": 3900,
+        "at": [
+         297.5,
+         100
+        ],
+        "text": "one endpoint",
+        "size": "s"
+       },
+       {
+        "id": "c01",
+        "op": "text",
+        "startMs": 4120,
+        "endMs": 4600,
+        "at": [
+         107.5,
+         152
+        ],
+        "text": "fixed length",
+        "size": "s"
+       },
+       {
+        "id": "c11",
+        "op": "text",
+        "startMs": 4660,
+        "endMs": 5140,
+        "at": [
+         297.5,
+         152
+        ],
+        "text": "one direction",
+        "size": "s"
+       }
+      ],
+      "facts": {
+       "kind": "diagram",
+       "archetype": "compare@1",
+       "onScreen": {
+        "left": "Line segment",
+        "right": "Ray",
+        "rows": 2,
+        "left1": "two endpoints",
+        "left2": "fixed length",
+        "right1": "one endpoint",
+        "right2": "one direction"
+       }
+      }
+     }
+    }
+   ],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false
+    },
+    "verdict": "ungraded",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "request"
+    },
+    "note": null,
+    "hintLevel": 0,
+    "phase": "teach",
+    "ms": 2623,
+    "item": null,
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 252
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 252
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 622
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 877
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 881
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 883
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1674
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 2559
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 2623
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "filler",
+   "lessonId": "fc71c272-5f64-49f2-ad20-0fcd726aca7a",
+   "childText": "hmm achha",
+   "ms": 2842,
+   "error": null,
+   "teacherReply": "(Hint: ek common direction ka ulta. Khaali jagah bhariye: They point in ___ directions, so they are two different rays.",
+   "move": {
+    "kind": "practice",
+    "shape": "the earlier steps in LESSON NOW, said briefly as done; then the step with the gap is theirs: pose it as written; wait; never fill the gap for them; address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu",
+    "itemId": "fade:3",
+    "skillId": "c6-maths-ch02-t01-s1",
+    "hintLevel": 0,
+    "probe": "P15",
+    "format": "F2"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "math",
+     "value": "Name all the rays starting at O that pass through the… · They point in ___ directions, so they are two different rays."
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "Khaali jagah bhariye: They point in ___ directions, so they are two different rays.",
+     "itemId": "fade:3"
+    },
+    "answerForm": "words",
+    "tray": "studio",
+    "shortTitle": "Points, lines and rays",
+    "beat": {
+     "beatId": "b5-practice_set",
+     "type": "practice_set",
+     "index": 5
+    },
+    "studioSlot": {
+     "slotId": "fc71c272-5f64-49f2-ad20-0fcd726aca7a:c1:slot",
+     "intentId": "fc71c272-5f64-49f2-ad20-0fcd726aca7a:c1",
+     "state": "revealed",
+     "artifact": {
+      "kind": "stagecraft",
+      "stage": {
+       "w": 1000,
+       "h": 625
+      },
+      "stagecraft": {
+       "rung": "engine_default",
+       "archetype": "scene-explainer@1",
+       "spec": {
+        "archetype": "scene-explainer@1",
+        "skills": [
+         "c6-maths-ch02-t01"
+        ],
+        "lang": "en",
+        "strings": {
+         "again": "Show again",
+         "yourTurn": "Your turn",
+         "check": "Check",
+         "right": "Got it",
+         "look": "Look again",
+         "myth": "MYTH",
+         "busted": "NOT TRUE",
+         "order": "Tap them in order"
+        },
+        "title": "Point, line segment, line and ray",
+        "accent": "ion",
+        "targets": "c6-maths-ch02-t01-m-longer-line",
+        "scenes": [
+         {
+          "id": "s1",
+          "layout": "row",
+          "els": [
+           {
+            "id": "title",
+            "type": "title",
+            "text": "Point, line segment, line and ray"
+           },
+           {
+            "id": "myth",
+            "type": "myth",
+            "text": "A longer drawing is a bigger line"
+           }
+          ]
+         },
+         {
+          "id": "s2",
+          "layout": "grid",
+          "els": [
+           {
+            "id": "point",
+            "type": "node",
+            "text": "Point",
+            "sub": "exact position",
+            "glyph": "spark",
+            "color": "ion"
+           },
+           {
+            "id": "segment",
+            "type": "node",
+            "text": "Segment",
+            "sub": "2 endpoints",
+            "glyph": "ruler",
+            "color": "mint"
+           },
+           {
+            "id": "line",
+            "type": "node",
+            "text": "Line",
+            "sub": "both ways",
+            "glyph": "road",
+            "color": "sci"
+           },
+           {
+            "id": "ray",
+            "type": "node",
+            "text": "Ray",
+            "sub": "1 endpoint",
+            "glyph": "torch",
+            "color": "amber"
+           }
+          ]
+         },
+         {
+          "id": "s3",
+          "layout": "split",
+          "els": [
+           {
+            "id": "segTitle",
+            "type": "title",
+            "text": "Fixed length"
+           },
+           {
+            "id": "segEnds",
+            "type": "label",
+            "text": "A       B",
+            "x": 180,
+            "y": 330,
+            "color": "mint"
+           },
+           {
+            "id": "segBar",
+            "type": "bar",
+            "parts": 1,
+            "shaded": 1,
+            "x": 180,
+            "y": 360,
+            "w": 420,
+            "text": "segment"
+           },
+           {
+            "id": "lineTitle",
+            "type": "title",
+            "text": "No endpoints"
+           },
+           {
+            "id": "lineEnds",
+            "type": "label",
+            "text": "arrow     arrow",
+            "x": 560,
+            "y": 330,
+            "color": "sci"
+           }
+          ]
+         },
+         {
+          "id": "s4",
+          "layout": "cycle",
+          "els": [
+           {
+            "id": "o",
+            "type": "node",
+            "text": "O",
+            "sub": "endpoint",
+            "color": "amber"
+           },
+           {
+            "id": "a",
+            "type": "node",
+            "text": "A",
+            "sub": "point",
+            "glyph": "spark",
+            "color": "ion"
+           },
+           {
+            "id": "b",
+            "type": "node",
+            "text": "B",
+            "sub": "point",
+            "glyph": "spark",
+            "color": "ion"
+           },
+           {
+            "id": "oa",
+            "type": "arrow",
+            "from": "o",
+            "to": "a",
+            "text": "ray OA",
+            "bend": -0.2
+           },
+           {
+            "id": "ob",
+            "type": "arrow",
+            "from": "o",
+            "to": "b",
+            "text": "ray OB",
+            "bend": 0.2
+           },
+           {
+            "id": "op",
+            "type": "label",
+            "text": "endpoint first",
+            "x": 350,
+            "y": 260,
+            "color": "amber"
+           }
+          ]
+         },
+         {
+          "id": "s5",
+          "layout": "grid",
+          "els": [
+           {
+            "id": "taskTitle",
+            "type": "title",
+            "text": "Your turn"
+           },
+           {
+            "id": "optPoint",
+            "type": "node",
+            "text": "Point",
+            "sub": "no size",
+            "glyph": "spark",
+            "color": "ion"
+           },
+           {
+            "id": "optSeg",
+            "type": "node",
+            "text": "Segment",
+            "sub": "2 endpoints",
+            "glyph": "ruler",
+            "color": "mint"
+           },
+           {
+            "id": "optLine",
+            "type": "node",
+            "text": "Line",
+            "sub": "2 directions",
+            "glyph": "road",
+            "color": "sci"
+           },
+           {
+            "id": "optRay",
+            "type": "node",
+            "text": "Ray",
+            "sub": "1 endpoint",
+            "glyph": "torch",
+            "color": "amber"
+           }
+          ]
+         }
+        ],
+        "text": {
+         "L1": "A point marks an exact position. It has no size.",
+         "L2": "A line segment has two endpoints and a fixed length you can measure.",
+         "L3": "A line has no endpoints and continues forever in both directions.",
+         "L4": "Drawing it longer on paper does not make a different line; paper shows only part.",
+         "L5": "A ray has one endpoint and continues forever in one direction.",
+         "L6": "Ray AB starts at A and passes through B, so ray BA points the other way.",
+         "L7": "In our example, both rays start at O: ray OA and ray OB. They point in opposite directions, so they are different rays.",
+         "L8": "Which figure has one endpoint and continues in one direction? Tap it."
+        },
+        "narration": {
+         "L1": {
+          "text": "A point marks an exact position. It has no size.",
+          "dur": 3,
+          "lead": 0,
+          "tail": 0.3,
+          "pauses": []
+         },
+         "L2": {
+          "text": "A line segment has two endpoints and a fixed length you can measure.",
+          "dur": 4,
+          "lead": 0,
+          "tail": 0.3,
+          "pauses": []
+         },
+         "L3": {
+          "text": "A line has no endpoints and continues forever in both directions.",
+          "dur": 4,
+          "lead": 0,
+          "tail": 0.3,
+          "pauses": []
+         },
+         "L4": {
+          "text": "Drawing it longer on paper does not make a different line; paper shows only part.",
+          "dur": 4,
+          "lead": 0,
+          "tail": 0.3,
+          "pauses": []
+         },
+         "L5": {
+          "text": "A ray has one endpoint and continues forever in one direction.",
+          "dur": 3.5,
+          "lead": 0,
+          "tail": 0.3,
+          "pauses": []
+         },
+         "L6": {
+          "text": "Ray AB starts at A and passes through B, so ray BA points the other way.",
+          "dur": 4,
+          "lead": 0,
+          "tail": 0.3,
+          "pauses": []
+         },
+         "L7": {
+          "text": "In our example, both rays start at O: ray OA and ray OB. They point in opposite directions, so they are different rays.",
+          "dur": 5,
+          "lead": 0,
+          "tail": 0.3,
+          "pauses": []
+         },
+         "L8": {
+          "text": "Which figure has one endpoint and continues in one direction? Tap it.",
+          "dur": 3,
+          "lead": 0,
+          "tail": 0.3,
+          "pauses": []
+         }
+        },
+        "beats": [
+         {
+          "line": "L1",
+          "gap": 0.4,
+          "scene": "s2",
+          "cues": [
+           {
+            "at": 0,
+            "do": "show",
+            "dur": 0.8,
+            "target": "point"
+           },
+           {
+            "at": 0.8,
+            "do": "highlight",
+            "dur": 1,
+            "target": "point"
+           }
+          ]
+         },
+         {
+          "line": "L2",
+          "gap": 0.4,
+          "scene": "s2",
+          "cues": [
+           {
+            "at": 0,
+            "do": "show",
+            "dur": 0.8,
+            "target": "segment"
+           },
+           {
+            "at": 0.8,
+            "do": "highlight",
+            "dur": 1,
+            "target": "segment"
+           }
+          ]
+         },
+         {
+          "line": "L3",
+          "gap": 0.4,
+          "scene": "s2",
+          "cues": [
+           {
+            "at": 0,
+            "do": "show",
+            "dur": 0.8,
+            "target": "line"
+           }
+          ]
+         },
+         {
+          "line": "L4",
+          "gap": 0.5,
+          "scene": "s1",
+          "cues": [
+           {
+            "at": 0,
+            "do": "show",
+            "dur": 0.8,
+            "target": "myth"
+           },
+           {
+            "at": 1,
+            "do": "bust",
+            "dur": 1.2,
+            "target": "myth"
+           }
+          ]
+         },
+         {
+          "line": "L5",
+          "gap": 0.4,
+          "scene": "s2",
+          "cues": [
+           {
+            "at": 0,
+            "do": "show",
+            "dur": 0.8,
+            "target": "ray"
+           }
+          ]
+         },
+         {
+          "line": "L6",
+          "gap": 0.4,
+          "scene": "s4",
+          "cues": [
+           {
+            "at": 0,
+            "do": "show",
+            "dur": 0.8,
+            "target": [
+             "o",
+             "a",
+             "b"
+            ]
+           },
+           {
+            "at": 0.8,
+            "do": "flow",
+            "dur": 0.8,
+            "target": "oa",
+            "to": 1
+           },
+           {
+            "at": 1.6,
+            "do": "flow",
+            "dur": 0.8,
+            "target": "ob",
+            "to": 1
+           }
+          ]
+         },
+         {
+          "line": "L7",
+          "gap": 0.4,
+          "scene": "s4",
+          "cues": [
+           {
+            "at": 0,
+            "do": "highlight",
+            "dur": 0.8,
+            "target": "o"
+           },
+           {
+            "at": 0.8,
+            "do": "highlight",
+            "dur": 1.2,
+            "target": [
+             "oa",
+             "ob"
+            ]
+           }
+          ]
+         },
+         {
+          "line": "L8",
+          "gap": 0,
+          "scene": "s5",
+          "cues": [
+           {
+            "at": 0,
+            "do": "show",
+            "dur": 0.8,
+            "target": "taskTitle"
+           },
+           {
+            "at": 0.8,
+            "do": "interactive",
+            "dur": 0
+           }
+          ]
+         }
+        ],
+        "task": {
+         "kind": "tap",
+         "prompt": "Which figure has one endpoint and continues in one direction?",
+         "options": [
+          "optPoint",
+          "optSeg",
+          "optLine",
+          "optRay"
+         ],
+         "answer": "optRay",
+         "src": "c6-maths-ch02-t01-i01"
+        }
+       },
+       "boardTwin": {
+        "scriptRef": "board:c6-maths-ch02-t01-s1|explain|-|-",
+        "values": {
+         "title": "Cinematic explainer",
+         "need": "explain"
+        },
+        "board": {
+         "title": "Cinematic explainer",
+         "lines": [
+          "line",
+          "segment",
+          "different",
+          "point"
+         ],
+         "figure": {
+          "kind": "none"
+         }
+        }
+       },
+       "board": null,
+       "cue": {
+        "clauseIdx": 0,
+        "preRollMs": 400,
+        "crossFadeMs": 420
+       },
+       "buildSha": null,
+       "blobUrl": null
+      }
+     }
+    }
+   },
+   "moduleCommands": [
+    {
+     "op": "unmount",
+     "moduleId": "m3"
+    }
+   ],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [
+      "drift",
+      "ask"
+     ],
+     "rewritten": false,
+     "replaced": false,
+     "firstDraft": "Vihaan, A se O ki taraf aur B se O ki taraf rays kis direction mein point karti hain? (Hint: ek common direction ka ulta.)",
+     "repaired": true,
+     "tidied": true
+    },
+    "verdict": "ungraded",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 322,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 2834,
+    "item": "fade:3",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 82
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 83
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 752
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 838
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1075
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1160
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1163
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1163
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1572
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 2752
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 2834
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "advance",
+   "lessonId": "fc71c272-5f64-49f2-ad20-0fcd726aca7a",
+   "childText": "haan theek hai",
+   "ms": 6448,
+   "error": null,
+   "teacherReply": "Vihaan, ek baar phir try kijiye— Khaali jagah bhariye: They point in ___ directions, so they are two different rays.",
+   "move": {
+    "kind": "repair",
+    "shape": "you did not catch it clearly: ask them to say it once more; no verdict on their reply: neither praise nor 'wrong'; address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu",
+    "itemId": "fade:3",
+    "skillId": "c6-maths-ch02-t01-s1",
+    "hintLevel": 0
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "text",
+     "value": "Khaali jagah bhariye: They point in ___ directions, so th…"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "Khaali jagah bhariye: They point in ___ directions, so they are two different rays.",
+     "itemId": "fade:3"
+    },
+    "answerForm": "words",
+    "tray": "studio",
+    "shortTitle": "Points, lines and rays",
+    "beat": {
+     "beatId": "b5-practice_set",
+     "type": "practice_set",
+     "index": 5
+    },
+    "studioSlot": {
+     "slotId": "fc71c272-5f64-49f2-ad20-0fcd726aca7a:c4:slot",
+     "intentId": "fc71c272-5f64-49f2-ad20-0fcd726aca7a:c4",
+     "state": "revealed",
+     "artifact": {
+      "kind": "stagecraft",
+      "stage": {
+       "w": 1000,
+       "h": 625
+      },
+      "stagecraft": {
+       "rung": "engine_default",
+       "archetype": "sort-storm@1",
+       "spec": {
+        "archetype": "sort-storm@1",
+        "skills": [
+         "c6-maths-ch02-t01"
+        ],
+        "lang": "en",
+        "strings": {
+         "round": "Round",
+         "sorted": "sorted",
+         "tests": "tests",
+         "coach": "Read and sort the cards",
+         "runDone": "Belt cleared",
+         "missed": "missed",
+         "why": "because",
+         "yes": "yes",
+         "no": "no",
+         "magnetic": "magnetic",
+         "light": "light",
+         "floats": "floats",
+         "conducts": "conducts",
+         "burns": "burns",
+         "starch": "starch",
+         "tMagnet": "Magnet",
+         "tTorch": "Torch",
+         "tTank": "Water",
+         "tTester": "Circuit",
+         "tFlame": "Flame",
+         "tIodine": "Iodine",
+         "tPaper": "Paper",
+         "tBiuret": "Copper test",
+         "tTurmeric": "Turmeric",
+         "tLitmus": "Litmus",
+         "tRose": "China rose",
+         "fat": "fat",
+         "protein": "protein",
+         "acidity": "acidity",
+         "acid": "acid",
+         "base": "base",
+         "neutral": "neutral"
+        },
+        "title": "Line Sort Storm",
+        "rounds": [
+         {
+          "title": "Two ends or one?",
+          "sub": "Sort each description",
+          "bins": [
+           {
+            "id": "segment",
+            "label": "Segment",
+            "glyph": "ruler"
+           },
+           {
+            "id": "ray",
+            "label": "Ray",
+            "glyph": "sun"
+           },
+           {
+            "id": "line",
+            "label": "Line",
+            "glyph": "road"
+           }
+          ],
+          "tools": [],
+          "items": [
+           {
+            "id": "pencil",
+            "text": "Pencil, two ends",
+            "glyph": "pen",
+            "bin": "segment",
+            "src": "c6-maths-ch02-t01-i11"
+           },
+           {
+            "id": "sunlight",
+            "text": "Sunlight one way",
+            "glyph": "sun",
+            "bin": "ray",
+            "src": "c6-maths-ch02-t01-i11"
+           },
+           {
+            "id": "track",
+            "text": "Track both ways",
+            "glyph": "train",
+            "bin": "line",
+            "src": "c6-maths-ch02-t01-i11"
+           },
+           {
+            "id": "ruleredge",
+            "text": "Ruler edge",
+            "glyph": "ruler",
+            "bin": "segment",
+            "src": "c6-maths-ch02-t01-i02"
+           },
+           {
+            "id": "torchbeam",
+            "text": "Torch beam",
+            "glyph": "torch",
+            "bin": "ray",
+            "src": "c6-maths-ch02-t01-i01"
+           }
+          ],
+          "speed": 1.1
+         },
+         {
+          "title": "Read the arrows",
+          "sub": "Look for endpoints",
+          "bins": [
+           {
+            "id": "segment",
+            "label": "Segment",
+            "glyph": "ruler"
+           },
+           {
+            "id": "ray",
+            "label": "Ray",
+            "glyph": "sun"
+           },
+           {
+            "id": "line",
+            "label": "Line",
+            "glyph": "road"
+           }
+          ],
+          "tools": [],
+          "items": [
+           {
+            "id": "fixed",
+            "text": "Fixed length",
+            "glyph": "ruler",
+            "bin": "segment",
+            "src": "c6-maths-ch02-t01-i03"
+           },
+           {
+            "id": "oneend",
+            "text": "One endpoint",
+            "bin": "ray",
+            "src": "c6-maths-ch02-t01-i12"
+           },
+           {
+            "id": "noends",
+            "text": "No endpoints",
+            "glyph": "road",
+            "bin": "line",
+            "src": "c6-maths-ch02-t01-i03"
+           },
+           {
+            "id": "raydraw",
+            "text": "Dot then arrow",
+            "glyph": "spark",
+            "bin": "ray",
+            "src": "c6-maths-ch02-t01-i10"
+           }
+          ],
+          "speed": 0.95,
+          "targets": "c6-maths-ch02-t01-m-ray-two-ends"
+         },
+         {
+          "title": "Which way does it go?",
+          "sub": "Letter order matters",
+          "bins": [
+           {
+            "id": "ray",
+            "label": "Ray",
+            "glyph": "sun"
+           },
+           {
+            "id": "line",
+            "label": "Line",
+            "glyph": "road"
+           },
+           {
+            "id": "segment",
+            "label": "Segment",
+            "glyph": "ruler"
+           }
+          ],
+          "tools": [],
+          "items": [
+           {
+            "id": "startp",
+            "text": "Starts at P",
+            "glyph": "letter",
+            "bin": "ray",
+            "src": "c6-maths-ch02-t01-i04"
+           },
+           {
+            "id": "abba",
+            "text": "AB and BA differ",
+            "glyph": "letter",
+            "bin": "ray",
+            "src": "c6-maths-ch02-t01-i05"
+           },
+           {
+            "id": "samexy",
+            "text": "XY, drawn twice",
+            "glyph": "road",
+            "bin": "line",
+            "src": "c6-maths-ch02-t01-i06"
+           },
+           {
+            "id": "pairs",
+            "text": "Three pairs join",
+            "glyph": "group",
+            "bin": "segment",
+            "src": "c6-maths-ch02-t01-i08"
+           },
+           {
+            "id": "opposite",
+            "text": "OA and OB",
+            "glyph": "compass",
+            "bin": "ray",
+            "src": "c6-maths-ch02-t01-m-ray-order"
+           }
+          ],
+          "speed": 0.75,
+          "targets": "c6-maths-ch02-t01-m-ray-order"
+         }
+        ]
+       },
+       "boardTwin": {
+        "scriptRef": "board:c6-maths-ch02-t01-s1|practice|-|-",
+        "values": {
+         "title": "Test Bench Sort",
+         "need": "practice"
+        },
+        "board": {
+         "title": "Test Bench Sort",
+         "lines": [
+          "line",
+          "segment",
+          "different",
+          "point"
+         ],
+         "figure": {
+          "kind": "none"
+         }
+        }
+       },
+       "board": null,
+       "cue": {
+        "clauseIdx": 0,
+        "preRollMs": 400,
+        "crossFadeMs": 420
+       },
+       "buildSha": null,
+       "blobUrl": null
+      }
+     }
+    }
+   },
+   "moduleCommands": [],
+   "studio": {
+    "reveal": "fc71c272-5f64-49f2-ad20-0fcd726aca7a:c4"
+   },
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [
+      "ask"
+     ],
+     "rewritten": true,
+     "replaced": false,
+     "firstDraft": "Vihaan, ek baar phir boliye: “They point in ___ directions, so they are two different rays.” Aap blank mein kya likhenge?",
+     "afterRewrite": [],
+     "tidied": true
+    },
+    "verdict": "unverified",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 1269,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 6446,
+    "item": "fade:3",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 64
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 65
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 919
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 1015
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 2189
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 2284
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 2286
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 2287
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1534
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1076
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1448
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 6358
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 6445
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "advance",
+   "lessonId": "fc71c272-5f64-49f2-ad20-0fcd726aca7a",
+   "childText": "hmm achha",
+   "ms": 1927,
+   "error": null,
+   "teacherReply": "Vihaan, screen par choices di hui hain. Aap unmein se koi ek choose kijiye. Khaali jagah bhariye: They point in ___ directions, so they are two different rays.",
+   "move": {
+    "kind": "repair",
+    "shape": "no verdict on their reply; the choices are now on screen; the same question again, as written; tell them they can pick one of the choices on screen; do not read the choices with any lean toward one; no verdict on their reply: neither praise nor 'wrong'; address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu",
+    "itemId": "fade:3",
+    "skillId": "c6-maths-ch02-t01-s1",
+    "hintLevel": 0
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "text",
+     "value": "Khaali jagah bhariye: They point in ___ directions, so th…"
+    },
+    "chips": [
+     {
+      "id": "pick:0",
+      "label": "opposite"
+     },
+     {
+      "id": "pick:1",
+      "label": "A ray"
+     },
+     {
+      "id": "pick:2",
+      "label": "A line segment"
+     }
+    ],
+    "phase": "practice",
+    "handover": "choice",
+    "ask": {
+     "text": "Khaali jagah bhariye: They point in ___ directions, so they are two different rays.",
+     "itemId": "fade:3"
+    },
+    "answerForm": "choice",
+    "tray": "tiles",
+    "shortTitle": "Points, lines and rays",
+    "beat": {
+     "beatId": "b5-practice_set",
+     "type": "practice_set",
+     "index": 5
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false,
+     "leadSlot": true
+    },
+    "verdict": "unverified",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 627,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 1924,
+    "item": "fade:3",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 94
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 94
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 946
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 1049
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1573
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1676
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1678
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1678
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1691
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 1864
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 1924
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "advance",
+   "lessonId": "fc71c272-5f64-49f2-ad20-0fcd726aca7a",
+   "childText": "haan theek hai",
+   "ms": 3391,
+   "error": null,
+   "teacherReply": "Vihaan, ab is question par aaiye: School sports-field ke plan mein ek seedhi marking ke A aur B par dots hain, arrows nahin hain. Yeh point, line segment, line ya ray hai?",
+   "move": {
+    "kind": "practice",
+    "shape": "leave this one for later, no verdict and no answer given; the next question; pose the question as written, in their language; then wait; no verdict on their reply: neither praise nor 'wrong'; address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu",
+    "itemId": "c6-maths-ch02-t01-rl-o1",
+    "skillId": "c6-maths-ch02-t01-s1",
+    "hintLevel": 0,
+    "probe": "P15"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "text",
+     "value": "School sports-field ke plan mein ek seedhi marking ke A a…"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "Yeh point, line segment, line ya ray hai?",
+     "itemId": "c6-maths-ch02-t01-rl-o1"
+    },
+    "answerForm": "words",
+    "tray": "studio",
+    "shortTitle": "Points, lines and rays",
+    "beat": {
+     "beatId": "b5-practice_set",
+     "type": "practice_set",
+     "index": 5
+    },
+    "studioSlot": {
+     "slotId": "fc71c272-5f64-49f2-ad20-0fcd726aca7a:c4:slot",
+     "intentId": "fc71c272-5f64-49f2-ad20-0fcd726aca7a:c4",
+     "state": "revealed",
+     "artifact": {
+      "kind": "stagecraft",
+      "stage": {
+       "w": 1000,
+       "h": 625
+      },
+      "stagecraft": {
+       "rung": "engine_default",
+       "archetype": "sort-storm@1",
+       "spec": {
+        "archetype": "sort-storm@1",
+        "skills": [
+         "c6-maths-ch02-t01"
+        ],
+        "lang": "en",
+        "strings": {
+         "round": "Round",
+         "sorted": "sorted",
+         "tests": "tests",
+         "coach": "Read and sort the cards",
+         "runDone": "Belt cleared",
+         "missed": "missed",
+         "why": "because",
+         "yes": "yes",
+         "no": "no",
+         "magnetic": "magnetic",
+         "light": "light",
+         "floats": "floats",
+         "conducts": "conducts",
+         "burns": "burns",
+         "starch": "starch",
+         "tMagnet": "Magnet",
+         "tTorch": "Torch",
+         "tTank": "Water",
+         "tTester": "Circuit",
+         "tFlame": "Flame",
+         "tIodine": "Iodine",
+         "tPaper": "Paper",
+         "tBiuret": "Copper test",
+         "tTurmeric": "Turmeric",
+         "tLitmus": "Litmus",
+         "tRose": "China rose",
+         "fat": "fat",
+         "protein": "protein",
+         "acidity": "acidity",
+         "acid": "acid",
+         "base": "base",
+         "neutral": "neutral"
+        },
+        "title": "Line Sort Storm",
+        "rounds": [
+         {
+          "title": "Two ends or one?",
+          "sub": "Sort each description",
+          "bins": [
+           {
+            "id": "segment",
+            "label": "Segment",
+            "glyph": "ruler"
+           },
+           {
+            "id": "ray",
+            "label": "Ray",
+            "glyph": "sun"
+           },
+           {
+            "id": "line",
+            "label": "Line",
+            "glyph": "road"
+           }
+          ],
+          "tools": [],
+          "items": [
+           {
+            "id": "pencil",
+            "text": "Pencil, two ends",
+            "glyph": "pen",
+            "bin": "segment",
+            "src": "c6-maths-ch02-t01-i11"
+           },
+           {
+            "id": "sunlight",
+            "text": "Sunlight one way",
+            "glyph": "sun",
+            "bin": "ray",
+            "src": "c6-maths-ch02-t01-i11"
+           },
+           {
+            "id": "track",
+            "text": "Track both ways",
+            "glyph": "train",
+            "bin": "line",
+            "src": "c6-maths-ch02-t01-i11"
+           },
+           {
+            "id": "ruleredge",
+            "text": "Ruler edge",
+            "glyph": "ruler",
+            "bin": "segment",
+            "src": "c6-maths-ch02-t01-i02"
+           },
+           {
+            "id": "torchbeam",
+            "text": "Torch beam",
+            "glyph": "torch",
+            "bin": "ray",
+            "src": "c6-maths-ch02-t01-i01"
+           }
+          ],
+          "speed": 1.1
+         },
+         {
+          "title": "Read the arrows",
+          "sub": "Look for endpoints",
+          "bins": [
+           {
+            "id": "segment",
+            "label": "Segment",
+            "glyph": "ruler"
+           },
+           {
+            "id": "ray",
+            "label": "Ray",
+            "glyph": "sun"
+           },
+           {
+            "id": "line",
+            "label": "Line",
+            "glyph": "road"
+           }
+          ],
+          "tools": [],
+          "items": [
+           {
+            "id": "fixed",
+            "text": "Fixed length",
+            "glyph": "ruler",
+            "bin": "segment",
+            "src": "c6-maths-ch02-t01-i03"
+           },
+           {
+            "id": "oneend",
+            "text": "One endpoint",
+            "bin": "ray",
+            "src": "c6-maths-ch02-t01-i12"
+           },
+           {
+            "id": "noends",
+            "text": "No endpoints",
+            "glyph": "road",
+            "bin": "line",
+            "src": "c6-maths-ch02-t01-i03"
+           },
+           {
+            "id": "raydraw",
+            "text": "Dot then arrow",
+            "glyph": "spark",
+            "bin": "ray",
+            "src": "c6-maths-ch02-t01-i10"
+           }
+          ],
+          "speed": 0.95,
+          "targets": "c6-maths-ch02-t01-m-ray-two-ends"
+         },
+         {
+          "title": "Which way does it go?",
+          "sub": "Letter order matters",
+          "bins": [
+           {
+            "id": "ray",
+            "label": "Ray",
+            "glyph": "sun"
+           },
+           {
+            "id": "line",
+            "label": "Line",
+            "glyph": "road"
+           },
+           {
+            "id": "segment",
+            "label": "Segment",
+            "glyph": "ruler"
+           }
+          ],
+          "tools": [],
+          "items": [
+           {
+            "id": "startp",
+            "text": "Starts at P",
+            "glyph": "letter",
+            "bin": "ray",
+            "src": "c6-maths-ch02-t01-i04"
+           },
+           {
+            "id": "abba",
+            "text": "AB and BA differ",
+            "glyph": "letter",
+            "bin": "ray",
+            "src": "c6-maths-ch02-t01-i05"
+           },
+           {
+            "id": "samexy",
+            "text": "XY, drawn twice",
+            "glyph": "road",
+            "bin": "line",
+            "src": "c6-maths-ch02-t01-i06"
+           },
+           {
+            "id": "pairs",
+            "text": "Three pairs join",
+            "glyph": "group",
+            "bin": "segment",
+            "src": "c6-maths-ch02-t01-i08"
+           },
+           {
+            "id": "opposite",
+            "text": "OA and OB",
+            "glyph": "compass",
+            "bin": "ray",
+            "src": "c6-maths-ch02-t01-m-ray-order"
+           }
+          ],
+          "speed": 0.75,
+          "targets": "c6-maths-ch02-t01-m-ray-order"
+         }
+        ]
+       },
+       "boardTwin": {
+        "scriptRef": "board:c6-maths-ch02-t01-s1|practice|-|-",
+        "values": {
+         "title": "Test Bench Sort",
+         "need": "practice"
+        },
+        "board": {
+         "title": "Test Bench Sort",
+         "lines": [
+          "line",
+          "segment",
+          "different",
+          "point"
+         ],
+         "figure": {
+          "kind": "none"
+         }
+        }
+       },
+       "board": null,
+       "cue": {
+        "clauseIdx": 0,
+        "preRollMs": 400,
+        "crossFadeMs": 420
+       },
+       "buildSha": null,
+       "blobUrl": null
+      }
+     }
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false
+    },
+    "verdict": "unverified",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 594,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 3386,
+    "item": "c6-maths-ch02-t01-rl-o1",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 88
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 89
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 1129
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 1231
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1727
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1825
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1827
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1827
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1468
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 3314
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 3386
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "probe:noise-04",
+   "lessonId": "fc71c272-5f64-49f2-ad20-0fcd726aca7a",
+   "childText": "mmm haa teen ki",
+   "ms": 5105,
+   "error": null,
+   "teacherReply": "School sports-field ke plan mein ek seedhi marking ke A aur B par dots hain, arrows nahin hain. Yeh point, line segment, line ya ray hai?",
+   "move": {
+    "kind": "practice",
+    "shape": "two parts — first: you did not catch all of what they said: no verdict and no blame (the line was unclear, never them); ask them in a few warm words to say it again or finish the thought; second: the question on the card, as written, in their language; then wait; no verdict on their reply: neither praise nor 'wrong'; address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu",
+    "itemId": "c6-maths-ch02-t01-rl-o1",
+    "skillId": "c6-maths-ch02-t01-s1",
+    "hintLevel": 0,
+    "probe": "P15",
+    "request": "unclear",
+    "lead": "you did not catch all of what they said: no verdict and no blame (the line was unclear, never them); ask them in a few warm words to say it again or finish the thought"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "text",
+     "value": "School sports-field ke plan mein ek seedhi marking ke A a…"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "Yeh point, line segment, line ya ray hai?",
+     "itemId": "c6-maths-ch02-t01-rl-o1"
+    },
+    "answerForm": "words",
+    "tray": "studio",
+    "shortTitle": "Points, lines and rays",
+    "beat": {
+     "beatId": "b5-practice_set",
+     "type": "practice_set",
+     "index": 5
+    },
+    "studioSlot": {
+     "slotId": "fc71c272-5f64-49f2-ad20-0fcd726aca7a:c4:slot",
+     "intentId": "fc71c272-5f64-49f2-ad20-0fcd726aca7a:c4",
+     "state": "revealed",
+     "artifact": {
+      "kind": "stagecraft",
+      "stage": {
+       "w": 1000,
+       "h": 625
+      },
+      "stagecraft": {
+       "rung": "engine_default",
+       "archetype": "sort-storm@1",
+       "spec": {
+        "archetype": "sort-storm@1",
+        "skills": [
+         "c6-maths-ch02-t01"
+        ],
+        "lang": "en",
+        "strings": {
+         "round": "Round",
+         "sorted": "sorted",
+         "tests": "tests",
+         "coach": "Read and sort the cards",
+         "runDone": "Belt cleared",
+         "missed": "missed",
+         "why": "because",
+         "yes": "yes",
+         "no": "no",
+         "magnetic": "magnetic",
+         "light": "light",
+         "floats": "floats",
+         "conducts": "conducts",
+         "burns": "burns",
+         "starch": "starch",
+         "tMagnet": "Magnet",
+         "tTorch": "Torch",
+         "tTank": "Water",
+         "tTester": "Circuit",
+         "tFlame": "Flame",
+         "tIodine": "Iodine",
+         "tPaper": "Paper",
+         "tBiuret": "Copper test",
+         "tTurmeric": "Turmeric",
+         "tLitmus": "Litmus",
+         "tRose": "China rose",
+         "fat": "fat",
+         "protein": "protein",
+         "acidity": "acidity",
+         "acid": "acid",
+         "base": "base",
+         "neutral": "neutral"
+        },
+        "title": "Line Sort Storm",
+        "rounds": [
+         {
+          "title": "Two ends or one?",
+          "sub": "Sort each description",
+          "bins": [
+           {
+            "id": "segment",
+            "label": "Segment",
+            "glyph": "ruler"
+           },
+           {
+            "id": "ray",
+            "label": "Ray",
+            "glyph": "sun"
+           },
+           {
+            "id": "line",
+            "label": "Line",
+            "glyph": "road"
+           }
+          ],
+          "tools": [],
+          "items": [
+           {
+            "id": "pencil",
+            "text": "Pencil, two ends",
+            "glyph": "pen",
+            "bin": "segment",
+            "src": "c6-maths-ch02-t01-i11"
+           },
+           {
+            "id": "sunlight",
+            "text": "Sunlight one way",
+            "glyph": "sun",
+            "bin": "ray",
+            "src": "c6-maths-ch02-t01-i11"
+           },
+           {
+            "id": "track",
+            "text": "Track both ways",
+            "glyph": "train",
+            "bin": "line",
+            "src": "c6-maths-ch02-t01-i11"
+           },
+           {
+            "id": "ruleredge",
+            "text": "Ruler edge",
+            "glyph": "ruler",
+            "bin": "segment",
+            "src": "c6-maths-ch02-t01-i02"
+           },
+           {
+            "id": "torchbeam",
+            "text": "Torch beam",
+            "glyph": "torch",
+            "bin": "ray",
+            "src": "c6-maths-ch02-t01-i01"
+           }
+          ],
+          "speed": 1.1
+         },
+         {
+          "title": "Read the arrows",
+          "sub": "Look for endpoints",
+          "bins": [
+           {
+            "id": "segment",
+            "label": "Segment",
+            "glyph": "ruler"
+           },
+           {
+            "id": "ray",
+            "label": "Ray",
+            "glyph": "sun"
+           },
+           {
+            "id": "line",
+            "label": "Line",
+            "glyph": "road"
+           }
+          ],
+          "tools": [],
+          "items": [
+           {
+            "id": "fixed",
+            "text": "Fixed length",
+            "glyph": "ruler",
+            "bin": "segment",
+            "src": "c6-maths-ch02-t01-i03"
+           },
+           {
+            "id": "oneend",
+            "text": "One endpoint",
+            "bin": "ray",
+            "src": "c6-maths-ch02-t01-i12"
+           },
+           {
+            "id": "noends",
+            "text": "No endpoints",
+            "glyph": "road",
+            "bin": "line",
+            "src": "c6-maths-ch02-t01-i03"
+           },
+           {
+            "id": "raydraw",
+            "text": "Dot then arrow",
+            "glyph": "spark",
+            "bin": "ray",
+            "src": "c6-maths-ch02-t01-i10"
+           }
+          ],
+          "speed": 0.95,
+          "targets": "c6-maths-ch02-t01-m-ray-two-ends"
+         },
+         {
+          "title": "Which way does it go?",
+          "sub": "Letter order matters",
+          "bins": [
+           {
+            "id": "ray",
+            "label": "Ray",
+            "glyph": "sun"
+           },
+           {
+            "id": "line",
+            "label": "Line",
+            "glyph": "road"
+           },
+           {
+            "id": "segment",
+            "label": "Segment",
+            "glyph": "ruler"
+           }
+          ],
+          "tools": [],
+          "items": [
+           {
+            "id": "startp",
+            "text": "Starts at P",
+            "glyph": "letter",
+            "bin": "ray",
+            "src": "c6-maths-ch02-t01-i04"
+           },
+           {
+            "id": "abba",
+            "text": "AB and BA differ",
+            "glyph": "letter",
+            "bin": "ray",
+            "src": "c6-maths-ch02-t01-i05"
+           },
+           {
+            "id": "samexy",
+            "text": "XY, drawn twice",
+            "glyph": "road",
+            "bin": "line",
+            "src": "c6-maths-ch02-t01-i06"
+           },
+           {
+            "id": "pairs",
+            "text": "Three pairs join",
+            "glyph": "group",
+            "bin": "segment",
+            "src": "c6-maths-ch02-t01-i08"
+           },
+           {
+            "id": "opposite",
+            "text": "OA and OB",
+            "glyph": "compass",
+            "bin": "ray",
+            "src": "c6-maths-ch02-t01-m-ray-order"
+           }
+          ],
+          "speed": 0.75,
+          "targets": "c6-maths-ch02-t01-m-ray-order"
+         }
+        ]
+       },
+       "boardTwin": {
+        "scriptRef": "board:c6-maths-ch02-t01-s1|practice|-|-",
+        "values": {
+         "title": "Test Bench Sort",
+         "need": "practice"
+        },
+        "board": {
+         "title": "Test Bench Sort",
+         "lines": [
+          "line",
+          "segment",
+          "different",
+          "point"
+         ],
+         "figure": {
+          "kind": "none"
+         }
+        }
+       },
+       "board": null,
+       "cue": {
+        "clauseIdx": 0,
+        "preRollMs": 400,
+        "crossFadeMs": 420
+       },
+       "buildSha": null,
+       "blobUrl": null
+      }
+     }
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [
+      "drift"
+     ],
+     "rewritten": true,
+     "replaced": false,
+     "firstDraft": "Vihaan, aapki baat poori clear nahi sun paaya. Kripya apna answer ya thought ek baar phir se kahiye. Yeh point, line segment, line ya ray hai?",
+     "leadSlot": true,
+     "afterRewrite": [
+      "bare",
+      "same"
+     ],
+     "final": [
+      "bare",
+      "same"
+     ]
+    },
+    "verdict": "unverified",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "request"
+    },
+    "note": null,
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 5101,
+    "item": "c6-maths-ch02-t01-rl-o1",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 67
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 67
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 511
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 586
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 589
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 589
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1644
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1535
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1238
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 5031
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 5101
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "recovery",
+   "lessonId": "fc71c272-5f64-49f2-ad20-0fcd726aca7a",
+   "childText": "segment",
+   "ms": 1871,
+   "error": null,
+   "teacherReply": "Sahi— aapne do endpoints A aur B pehchane. Ab batayiye, segment ki length fixed kyun hoti hai?",
+   "move": {
+    "kind": "probe",
+    "shape": "confirm in two or three words only — the reason is theirs to give, so do not explain it; covert shape: protege naive but-why; Bittu, who does not know it, asks why; about THIS question; one open question; wait; a real question, never a check on them; address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu",
+    "itemId": "c6-maths-ch02-t01-rl-o1",
+    "skillId": "c6-maths-ch02-t01-s1",
+    "hintLevel": 0,
+    "probe": "P2"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "text",
+     "value": "School sports-field ke plan mein ek seedhi marking ke A a…"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "answerForm": "words",
+    "tray": "studio",
+    "shortTitle": "Points, lines and rays",
+    "verdict": "correct",
+    "beat": {
+     "beatId": "b6-probe",
+     "type": "probe",
+     "index": 6
+    },
+    "ask": {
+     "text": "Ab batayiye, segment ki length fixed kyun hoti hai?"
+    },
+    "studioSlot": {
+     "slotId": "fc71c272-5f64-49f2-ad20-0fcd726aca7a:c4:slot",
+     "intentId": "fc71c272-5f64-49f2-ad20-0fcd726aca7a:c4",
+     "state": "revealed",
+     "artifact": {
+      "kind": "stagecraft",
+      "stage": {
+       "w": 1000,
+       "h": 625
+      },
+      "stagecraft": {
+       "rung": "engine_default",
+       "archetype": "sort-storm@1",
+       "spec": {
+        "archetype": "sort-storm@1",
+        "skills": [
+         "c6-maths-ch02-t01"
+        ],
+        "lang": "en",
+        "strings": {
+         "round": "Round",
+         "sorted": "sorted",
+         "tests": "tests",
+         "coach": "Read and sort the cards",
+         "runDone": "Belt cleared",
+         "missed": "missed",
+         "why": "because",
+         "yes": "yes",
+         "no": "no",
+         "magnetic": "magnetic",
+         "light": "light",
+         "floats": "floats",
+         "conducts": "conducts",
+         "burns": "burns",
+         "starch": "starch",
+         "tMagnet": "Magnet",
+         "tTorch": "Torch",
+         "tTank": "Water",
+         "tTester": "Circuit",
+         "tFlame": "Flame",
+         "tIodine": "Iodine",
+         "tPaper": "Paper",
+         "tBiuret": "Copper test",
+         "tTurmeric": "Turmeric",
+         "tLitmus": "Litmus",
+         "tRose": "China rose",
+         "fat": "fat",
+         "protein": "protein",
+         "acidity": "acidity",
+         "acid": "acid",
+         "base": "base",
+         "neutral": "neutral"
+        },
+        "title": "Line Sort Storm",
+        "rounds": [
+         {
+          "title": "Two ends or one?",
+          "sub": "Sort each description",
+          "bins": [
+           {
+            "id": "segment",
+            "label": "Segment",
+            "glyph": "ruler"
+           },
+           {
+            "id": "ray",
+            "label": "Ray",
+            "glyph": "sun"
+           },
+           {
+            "id": "line",
+            "label": "Line",
+            "glyph": "road"
+           }
+          ],
+          "tools": [],
+          "items": [
+           {
+            "id": "pencil",
+            "text": "Pencil, two ends",
+            "glyph": "pen",
+            "bin": "segment",
+            "src": "c6-maths-ch02-t01-i11"
+           },
+           {
+            "id": "sunlight",
+            "text": "Sunlight one way",
+            "glyph": "sun",
+            "bin": "ray",
+            "src": "c6-maths-ch02-t01-i11"
+           },
+           {
+            "id": "track",
+            "text": "Track both ways",
+            "glyph": "train",
+            "bin": "line",
+            "src": "c6-maths-ch02-t01-i11"
+           },
+           {
+            "id": "ruleredge",
+            "text": "Ruler edge",
+            "glyph": "ruler",
+            "bin": "segment",
+            "src": "c6-maths-ch02-t01-i02"
+           },
+           {
+            "id": "torchbeam",
+            "text": "Torch beam",
+            "glyph": "torch",
+            "bin": "ray",
+            "src": "c6-maths-ch02-t01-i01"
+           }
+          ],
+          "speed": 1.1
+         },
+         {
+          "title": "Read the arrows",
+          "sub": "Look for endpoints",
+          "bins": [
+           {
+            "id": "segment",
+            "label": "Segment",
+            "glyph": "ruler"
+           },
+           {
+            "id": "ray",
+            "label": "Ray",
+            "glyph": "sun"
+           },
+           {
+            "id": "line",
+            "label": "Line",
+            "glyph": "road"
+           }
+          ],
+          "tools": [],
+          "items": [
+           {
+            "id": "fixed",
+            "text": "Fixed length",
+            "glyph": "ruler",
+            "bin": "segment",
+            "src": "c6-maths-ch02-t01-i03"
+           },
+           {
+            "id": "oneend",
+            "text": "One endpoint",
+            "bin": "ray",
+            "src": "c6-maths-ch02-t01-i12"
+           },
+           {
+            "id": "noends",
+            "text": "No endpoints",
+            "glyph": "road",
+            "bin": "line",
+            "src": "c6-maths-ch02-t01-i03"
+           },
+           {
+            "id": "raydraw",
+            "text": "Dot then arrow",
+            "glyph": "spark",
+            "bin": "ray",
+            "src": "c6-maths-ch02-t01-i10"
+           }
+          ],
+          "speed": 0.95,
+          "targets": "c6-maths-ch02-t01-m-ray-two-ends"
+         },
+         {
+          "title": "Which way does it go?",
+          "sub": "Letter order matters",
+          "bins": [
+           {
+            "id": "ray",
+            "label": "Ray",
+            "glyph": "sun"
+           },
+           {
+            "id": "line",
+            "label": "Line",
+            "glyph": "road"
+           },
+           {
+            "id": "segment",
+            "label": "Segment",
+            "glyph": "ruler"
+           }
+          ],
+          "tools": [],
+          "items": [
+           {
+            "id": "startp",
+            "text": "Starts at P",
+            "glyph": "letter",
+            "bin": "ray",
+            "src": "c6-maths-ch02-t01-i04"
+           },
+           {
+            "id": "abba",
+            "text": "AB and BA differ",
+            "glyph": "letter",
+            "bin": "ray",
+            "src": "c6-maths-ch02-t01-i05"
+           },
+           {
+            "id": "samexy",
+            "text": "XY, drawn twice",
+            "glyph": "road",
+            "bin": "line",
+            "src": "c6-maths-ch02-t01-i06"
+           },
+           {
+            "id": "pairs",
+            "text": "Three pairs join",
+            "glyph": "group",
+            "bin": "segment",
+            "src": "c6-maths-ch02-t01-i08"
+           },
+           {
+            "id": "opposite",
+            "text": "OA and OB",
+            "glyph": "compass",
+            "bin": "ray",
+            "src": "c6-maths-ch02-t01-m-ray-order"
+           }
+          ],
+          "speed": 0.75,
+          "targets": "c6-maths-ch02-t01-m-ray-order"
+         }
+        ]
+       },
+       "boardTwin": {
+        "scriptRef": "board:c6-maths-ch02-t01-s1|practice|-|-",
+        "values": {
+         "title": "Test Bench Sort",
+         "need": "practice"
+        },
+        "board": {
+         "title": "Test Bench Sort",
+         "lines": [
+          "line",
+          "segment",
+          "different",
+          "point"
+         ],
+         "figure": {
+          "kind": "none"
+         }
+        }
+       },
+       "board": null,
+       "cue": {
+        "clauseIdx": 0,
+        "preRollMs": 400,
+        "crossFadeMs": 420
+       },
+       "buildSha": null,
+       "blobUrl": null
+      }
+     }
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false
+    },
+    "verdict": "correct",
+    "cls": {
+     "outcome": "correct",
+     "source": "exact"
+    },
+    "note": null,
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 1850,
+    "item": "c6-maths-ch02-t01-rl-o1",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 61
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 62
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 64
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 144
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 145
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1607
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 1767
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 1850
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "advance",
+   "lessonId": "fc71c272-5f64-49f2-ad20-0fcd726aca7a",
+   "childText": "achha",
+   "ms": 4964,
+   "error": null,
+   "teacherReply": "Vihaan, segment ki length fixed hoti hai kyunki uske dono endpoints fixed hote hain. Torch ki roshni torch se shuru hoti hai aur aage badhti jaati hai. Yeh line segment, line ya ray mein se kiske jaisi hai?",
+   "move": {
+    "kind": "practice",
+    "shape": "give the reason yourself in one plain line (their answer was right); pose the question as written, in their language; then wait; address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu",
+    "itemId": "c6-maths-ch02-t01-i01",
+    "skillId": "c6-maths-ch02-t01-s1",
+    "hintLevel": 0,
+    "probe": "P15"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "text",
+     "value": "Torch ki roshni torch se shuru hoti hai aur aage badhti j…"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "Yeh line segment, line ya ray mein se kiske jaisi hai?",
+     "itemId": "c6-maths-ch02-t01-i01"
+    },
+    "answerForm": "words",
+    "tray": "studio",
+    "shortTitle": "Points, lines and rays",
+    "beat": {
+     "beatId": "b7-practice_set",
+     "type": "practice_set",
+     "index": 7
+    },
+    "studioSlot": {
+     "slotId": "fc71c272-5f64-49f2-ad20-0fcd726aca7a:c4:slot",
+     "intentId": "fc71c272-5f64-49f2-ad20-0fcd726aca7a:c4",
+     "state": "revealed",
+     "artifact": {
+      "kind": "stagecraft",
+      "stage": {
+       "w": 1000,
+       "h": 625
+      },
+      "stagecraft": {
+       "rung": "engine_default",
+       "archetype": "sort-storm@1",
+       "spec": {
+        "archetype": "sort-storm@1",
+        "skills": [
+         "c6-maths-ch02-t01"
+        ],
+        "lang": "en",
+        "strings": {
+         "round": "Round",
+         "sorted": "sorted",
+         "tests": "tests",
+         "coach": "Read and sort the cards",
+         "runDone": "Belt cleared",
+         "missed": "missed",
+         "why": "because",
+         "yes": "yes",
+         "no": "no",
+         "magnetic": "magnetic",
+         "light": "light",
+         "floats": "floats",
+         "conducts": "conducts",
+         "burns": "burns",
+         "starch": "starch",
+         "tMagnet": "Magnet",
+         "tTorch": "Torch",
+         "tTank": "Water",
+         "tTester": "Circuit",
+         "tFlame": "Flame",
+         "tIodine": "Iodine",
+         "tPaper": "Paper",
+         "tBiuret": "Copper test",
+         "tTurmeric": "Turmeric",
+         "tLitmus": "Litmus",
+         "tRose": "China rose",
+         "fat": "fat",
+         "protein": "protein",
+         "acidity": "acidity",
+         "acid": "acid",
+         "base": "base",
+         "neutral": "neutral"
+        },
+        "title": "Line Sort Storm",
+        "rounds": [
+         {
+          "title": "Two ends or one?",
+          "sub": "Sort each description",
+          "bins": [
+           {
+            "id": "segment",
+            "label": "Segment",
+            "glyph": "ruler"
+           },
+           {
+            "id": "ray",
+            "label": "Ray",
+            "glyph": "sun"
+           },
+           {
+            "id": "line",
+            "label": "Line",
+            "glyph": "road"
+           }
+          ],
+          "tools": [],
+          "items": [
+           {
+            "id": "pencil",
+            "text": "Pencil, two ends",
+            "glyph": "pen",
+            "bin": "segment",
+            "src": "c6-maths-ch02-t01-i11"
+           },
+           {
+            "id": "sunlight",
+            "text": "Sunlight one way",
+            "glyph": "sun",
+            "bin": "ray",
+            "src": "c6-maths-ch02-t01-i11"
+           },
+           {
+            "id": "track",
+            "text": "Track both ways",
+            "glyph": "train",
+            "bin": "line",
+            "src": "c6-maths-ch02-t01-i11"
+           },
+           {
+            "id": "ruleredge",
+            "text": "Ruler edge",
+            "glyph": "ruler",
+            "bin": "segment",
+            "src": "c6-maths-ch02-t01-i02"
+           },
+           {
+            "id": "torchbeam",
+            "text": "Torch beam",
+            "glyph": "torch",
+            "bin": "ray",
+            "src": "c6-maths-ch02-t01-i01"
+           }
+          ],
+          "speed": 1.1
+         },
+         {
+          "title": "Read the arrows",
+          "sub": "Look for endpoints",
+          "bins": [
+           {
+            "id": "segment",
+            "label": "Segment",
+            "glyph": "ruler"
+           },
+           {
+            "id": "ray",
+            "label": "Ray",
+            "glyph": "sun"
+           },
+           {
+            "id": "line",
+            "label": "Line",
+            "glyph": "road"
+           }
+          ],
+          "tools": [],
+          "items": [
+           {
+            "id": "fixed",
+            "text": "Fixed length",
+            "glyph": "ruler",
+            "bin": "segment",
+            "src": "c6-maths-ch02-t01-i03"
+           },
+           {
+            "id": "oneend",
+            "text": "One endpoint",
+            "bin": "ray",
+            "src": "c6-maths-ch02-t01-i12"
+           },
+           {
+            "id": "noends",
+            "text": "No endpoints",
+            "glyph": "road",
+            "bin": "line",
+            "src": "c6-maths-ch02-t01-i03"
+           },
+           {
+            "id": "raydraw",
+            "text": "Dot then arrow",
+            "glyph": "spark",
+            "bin": "ray",
+            "src": "c6-maths-ch02-t01-i10"
+           }
+          ],
+          "speed": 0.95,
+          "targets": "c6-maths-ch02-t01-m-ray-two-ends"
+         },
+         {
+          "title": "Which way does it go?",
+          "sub": "Letter order matters",
+          "bins": [
+           {
+            "id": "ray",
+            "label": "Ray",
+            "glyph": "sun"
+           },
+           {
+            "id": "line",
+            "label": "Line",
+            "glyph": "road"
+           },
+           {
+            "id": "segment",
+            "label": "Segment",
+            "glyph": "ruler"
+           }
+          ],
+          "tools": [],
+          "items": [
+           {
+            "id": "startp",
+            "text": "Starts at P",
+            "glyph": "letter",
+            "bin": "ray",
+            "src": "c6-maths-ch02-t01-i04"
+           },
+           {
+            "id": "abba",
+            "text": "AB and BA differ",
+            "glyph": "letter",
+            "bin": "ray",
+            "src": "c6-maths-ch02-t01-i05"
+           },
+           {
+            "id": "samexy",
+            "text": "XY, drawn twice",
+            "glyph": "road",
+            "bin": "line",
+            "src": "c6-maths-ch02-t01-i06"
+           },
+           {
+            "id": "pairs",
+            "text": "Three pairs join",
+            "glyph": "group",
+            "bin": "segment",
+            "src": "c6-maths-ch02-t01-i08"
+           },
+           {
+            "id": "opposite",
+            "text": "OA and OB",
+            "glyph": "compass",
+            "bin": "ray",
+            "src": "c6-maths-ch02-t01-m-ray-order"
+           }
+          ],
+          "speed": 0.75,
+          "targets": "c6-maths-ch02-t01-m-ray-order"
+         }
+        ]
+       },
+       "boardTwin": {
+        "scriptRef": "board:c6-maths-ch02-t01-s1|practice|-|-",
+        "values": {
+         "title": "Test Bench Sort",
+         "need": "practice"
+        },
+        "board": {
+         "title": "Test Bench Sort",
+         "lines": [
+          "line",
+          "segment",
+          "different",
+          "point"
+         ],
+         "figure": {
+          "kind": "none"
+         }
+        }
+       },
+       "board": null,
+       "cue": {
+        "clauseIdx": 0,
+        "preRollMs": 400,
+        "crossFadeMs": 420
+       },
+       "buildSha": null,
+       "blobUrl": null
+      }
+     }
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [
+      "long"
+     ],
+     "rewritten": true,
+     "replaced": true,
+     "firstDraft": "Vihaan, segment ke dono endpoints fixed hote hain, isliye uski length bhi fixed hoti hai. Ab torch wali roshni ko sochiye: Torch ki roshni torch se shuru hoti hai aur aage badhti jaati hai. Yeh line segment, line ya ray mein se kiske jaisi hai?",
+     "afterRewrite": [
+      "drift",
+      "ask"
+     ]
+    },
+    "verdict": "unverified",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": null,
+     "waitedMs": 1556,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 4956,
+    "item": "c6-maths-ch02-t01-i01",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 78
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 78
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 642
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 751
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 2307
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 2328
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 2328
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 2283
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1654
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 890
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 4878
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 4956
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "probe:thinking_aloud-01",
+   "lessonId": "fc71c272-5f64-49f2-ad20-0fcd726aca7a",
+   "childText": "ruko ruko soch raha hoon pehle total dekhna padega na",
+   "ms": 2019,
+   "error": null,
+   "teacherReply": "Pehle endpoints aur arrows dekhiye, phir total shape decide kijiye— aap sochkar batayiye.",
+   "move": {
+    "kind": "repair",
+    "shape": "they are thinking aloud: no verdict and no answer; a two-to-four word go-on so they finish the thought; never a new question or the question again; no verdict on their reply: neither praise nor 'wrong'; address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu",
+    "request": "thinking"
+   },
+   "ui": {
+    "status": "your_turn",
+    "phase": "practice",
+    "handover": "answer",
+    "answerForm": "words",
+    "tray": "studio",
+    "shortTitle": "Points, lines and rays",
+    "beat": {
+     "beatId": "b7-practice_set",
+     "type": "practice_set",
+     "index": 7
+    },
+    "ask": {
+     "text": "Pehle endpoints aur arrows dekhiye, phir total shape decide kijiye— aap sochkar batayiye."
+    },
+    "studioSlot": {
+     "slotId": "fc71c272-5f64-49f2-ad20-0fcd726aca7a:c4:slot",
+     "intentId": "fc71c272-5f64-49f2-ad20-0fcd726aca7a:c4",
+     "state": "revealed",
+     "artifact": {
+      "kind": "stagecraft",
+      "stage": {
+       "w": 1000,
+       "h": 625
+      },
+      "stagecraft": {
+       "rung": "engine_default",
+       "archetype": "sort-storm@1",
+       "spec": {
+        "archetype": "sort-storm@1",
+        "skills": [
+         "c6-maths-ch02-t01"
+        ],
+        "lang": "en",
+        "strings": {
+         "round": "Round",
+         "sorted": "sorted",
+         "tests": "tests",
+         "coach": "Read and sort the cards",
+         "runDone": "Belt cleared",
+         "missed": "missed",
+         "why": "because",
+         "yes": "yes",
+         "no": "no",
+         "magnetic": "magnetic",
+         "light": "light",
+         "floats": "floats",
+         "conducts": "conducts",
+         "burns": "burns",
+         "starch": "starch",
+         "tMagnet": "Magnet",
+         "tTorch": "Torch",
+         "tTank": "Water",
+         "tTester": "Circuit",
+         "tFlame": "Flame",
+         "tIodine": "Iodine",
+         "tPaper": "Paper",
+         "tBiuret": "Copper test",
+         "tTurmeric": "Turmeric",
+         "tLitmus": "Litmus",
+         "tRose": "China rose",
+         "fat": "fat",
+         "protein": "protein",
+         "acidity": "acidity",
+         "acid": "acid",
+         "base": "base",
+         "neutral": "neutral"
+        },
+        "title": "Line Sort Storm",
+        "rounds": [
+         {
+          "title": "Two ends or one?",
+          "sub": "Sort each description",
+          "bins": [
+           {
+            "id": "segment",
+            "label": "Segment",
+            "glyph": "ruler"
+           },
+           {
+            "id": "ray",
+            "label": "Ray",
+            "glyph": "sun"
+           },
+           {
+            "id": "line",
+            "label": "Line",
+            "glyph": "road"
+           }
+          ],
+          "tools": [],
+          "items": [
+           {
+            "id": "pencil",
+            "text": "Pencil, two ends",
+            "glyph": "pen",
+            "bin": "segment",
+            "src": "c6-maths-ch02-t01-i11"
+           },
+           {
+            "id": "sunlight",
+            "text": "Sunlight one way",
+            "glyph": "sun",
+            "bin": "ray",
+            "src": "c6-maths-ch02-t01-i11"
+           },
+           {
+            "id": "track",
+            "text": "Track both ways",
+            "glyph": "train",
+            "bin": "line",
+            "src": "c6-maths-ch02-t01-i11"
+           },
+           {
+            "id": "ruleredge",
+            "text": "Ruler edge",
+            "glyph": "ruler",
+            "bin": "segment",
+            "src": "c6-maths-ch02-t01-i02"
+           },
+           {
+            "id": "torchbeam",
+            "text": "Torch beam",
+            "glyph": "torch",
+            "bin": "ray",
+            "src": "c6-maths-ch02-t01-i01"
+           }
+          ],
+          "speed": 1.1
+         },
+         {
+          "title": "Read the arrows",
+          "sub": "Look for endpoints",
+          "bins": [
+           {
+            "id": "segment",
+            "label": "Segment",
+            "glyph": "ruler"
+           },
+           {
+            "id": "ray",
+            "label": "Ray",
+            "glyph": "sun"
+           },
+           {
+            "id": "line",
+            "label": "Line",
+            "glyph": "road"
+           }
+          ],
+          "tools": [],
+          "items": [
+           {
+            "id": "fixed",
+            "text": "Fixed length",
+            "glyph": "ruler",
+            "bin": "segment",
+            "src": "c6-maths-ch02-t01-i03"
+           },
+           {
+            "id": "oneend",
+            "text": "One endpoint",
+            "bin": "ray",
+            "src": "c6-maths-ch02-t01-i12"
+           },
+           {
+            "id": "noends",
+            "text": "No endpoints",
+            "glyph": "road",
+            "bin": "line",
+            "src": "c6-maths-ch02-t01-i03"
+           },
+           {
+            "id": "raydraw",
+            "text": "Dot then arrow",
+            "glyph": "spark",
+            "bin": "ray",
+            "src": "c6-maths-ch02-t01-i10"
+           }
+          ],
+          "speed": 0.95,
+          "targets": "c6-maths-ch02-t01-m-ray-two-ends"
+         },
+         {
+          "title": "Which way does it go?",
+          "sub": "Letter order matters",
+          "bins": [
+           {
+            "id": "ray",
+            "label": "Ray",
+            "glyph": "sun"
+           },
+           {
+            "id": "line",
+            "label": "Line",
+            "glyph": "road"
+           },
+           {
+            "id": "segment",
+            "label": "Segment",
+            "glyph": "ruler"
+           }
+          ],
+          "tools": [],
+          "items": [
+           {
+            "id": "startp",
+            "text": "Starts at P",
+            "glyph": "letter",
+            "bin": "ray",
+            "src": "c6-maths-ch02-t01-i04"
+           },
+           {
+            "id": "abba",
+            "text": "AB and BA differ",
+            "glyph": "letter",
+            "bin": "ray",
+            "src": "c6-maths-ch02-t01-i05"
+           },
+           {
+            "id": "samexy",
+            "text": "XY, drawn twice",
+            "glyph": "road",
+            "bin": "line",
+            "src": "c6-maths-ch02-t01-i06"
+           },
+           {
+            "id": "pairs",
+            "text": "Three pairs join",
+            "glyph": "group",
+            "bin": "segment",
+            "src": "c6-maths-ch02-t01-i08"
+           },
+           {
+            "id": "opposite",
+            "text": "OA and OB",
+            "glyph": "compass",
+            "bin": "ray",
+            "src": "c6-maths-ch02-t01-m-ray-order"
+           }
+          ],
+          "speed": 0.75,
+          "targets": "c6-maths-ch02-t01-m-ray-order"
+         }
+        ]
+       },
+       "boardTwin": {
+        "scriptRef": "board:c6-maths-ch02-t01-s1|practice|-|-",
+        "values": {
+         "title": "Test Bench Sort",
+         "need": "practice"
+        },
+        "board": {
+         "title": "Test Bench Sort",
+         "lines": [
+          "line",
+          "segment",
+          "different",
+          "point"
+         ],
+         "figure": {
+          "kind": "none"
+         }
+        }
+       },
+       "board": null,
+       "cue": {
+        "clauseIdx": 0,
+        "preRollMs": 400,
+        "crossFadeMs": 420
+       },
+       "buildSha": null,
+       "blobUrl": null
+      }
+     }
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false
+    },
+    "verdict": "unverified",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "request"
+    },
+    "note": null,
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 2012,
+    "item": null,
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 76
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 76
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 451
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 547
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 549
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 550
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1373
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 1941
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 2012
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "filler",
+   "lessonId": "fc71c272-5f64-49f2-ad20-0fcd726aca7a",
+   "childText": "haan theek hai",
+   "ms": 3165,
+   "error": null,
+   "teacherReply": "Theek hai, Vihaan. Pehle dekhiye: shape kahan se shuru hoti hai, aur uska doosra end fixed hai ya aage khula hai. Yeh line segment, line ya ray mein se kiske jaisi hai?",
+   "move": {
+    "kind": "repair",
+    "shape": "you did not catch it clearly: ask them to say it once more; no verdict on their reply: neither praise nor 'wrong'; address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu",
+    "itemId": "c6-maths-ch02-t01-i01",
+    "skillId": "c6-maths-ch02-t01-s1",
+    "hintLevel": 0
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "text",
+     "value": "Torch ki roshni torch se shuru hoti hai aur aage badhti j…"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "Yeh line segment, line ya ray mein se kiske jaisi hai?",
+     "itemId": "c6-maths-ch02-t01-i01"
+    },
+    "answerForm": "words",
+    "tray": "studio",
+    "shortTitle": "Points, lines and rays",
+    "beat": {
+     "beatId": "b7-practice_set",
+     "type": "practice_set",
+     "index": 7
+    },
+    "studioSlot": {
+     "slotId": "fc71c272-5f64-49f2-ad20-0fcd726aca7a:c4:slot",
+     "intentId": "fc71c272-5f64-49f2-ad20-0fcd726aca7a:c4",
+     "state": "revealed",
+     "artifact": {
+      "kind": "stagecraft",
+      "stage": {
+       "w": 1000,
+       "h": 625
+      },
+      "stagecraft": {
+       "rung": "engine_default",
+       "archetype": "sort-storm@1",
+       "spec": {
+        "archetype": "sort-storm@1",
+        "skills": [
+         "c6-maths-ch02-t01"
+        ],
+        "lang": "en",
+        "strings": {
+         "round": "Round",
+         "sorted": "sorted",
+         "tests": "tests",
+         "coach": "Read and sort the cards",
+         "runDone": "Belt cleared",
+         "missed": "missed",
+         "why": "because",
+         "yes": "yes",
+         "no": "no",
+         "magnetic": "magnetic",
+         "light": "light",
+         "floats": "floats",
+         "conducts": "conducts",
+         "burns": "burns",
+         "starch": "starch",
+         "tMagnet": "Magnet",
+         "tTorch": "Torch",
+         "tTank": "Water",
+         "tTester": "Circuit",
+         "tFlame": "Flame",
+         "tIodine": "Iodine",
+         "tPaper": "Paper",
+         "tBiuret": "Copper test",
+         "tTurmeric": "Turmeric",
+         "tLitmus": "Litmus",
+         "tRose": "China rose",
+         "fat": "fat",
+         "protein": "protein",
+         "acidity": "acidity",
+         "acid": "acid",
+         "base": "base",
+         "neutral": "neutral"
+        },
+        "title": "Line Sort Storm",
+        "rounds": [
+         {
+          "title": "Two ends or one?",
+          "sub": "Sort each description",
+          "bins": [
+           {
+            "id": "segment",
+            "label": "Segment",
+            "glyph": "ruler"
+           },
+           {
+            "id": "ray",
+            "label": "Ray",
+            "glyph": "sun"
+           },
+           {
+            "id": "line",
+            "label": "Line",
+            "glyph": "road"
+           }
+          ],
+          "tools": [],
+          "items": [
+           {
+            "id": "pencil",
+            "text": "Pencil, two ends",
+            "glyph": "pen",
+            "bin": "segment",
+            "src": "c6-maths-ch02-t01-i11"
+           },
+           {
+            "id": "sunlight",
+            "text": "Sunlight one way",
+            "glyph": "sun",
+            "bin": "ray",
+            "src": "c6-maths-ch02-t01-i11"
+           },
+           {
+            "id": "track",
+            "text": "Track both ways",
+            "glyph": "train",
+            "bin": "line",
+            "src": "c6-maths-ch02-t01-i11"
+           },
+           {
+            "id": "ruleredge",
+            "text": "Ruler edge",
+            "glyph": "ruler",
+            "bin": "segment",
+            "src": "c6-maths-ch02-t01-i02"
+           },
+           {
+            "id": "torchbeam",
+            "text": "Torch beam",
+            "glyph": "torch",
+            "bin": "ray",
+            "src": "c6-maths-ch02-t01-i01"
+           }
+          ],
+          "speed": 1.1
+         },
+         {
+          "title": "Read the arrows",
+          "sub": "Look for endpoints",
+          "bins": [
+           {
+            "id": "segment",
+            "label": "Segment",
+            "glyph": "ruler"
+           },
+           {
+            "id": "ray",
+            "label": "Ray",
+            "glyph": "sun"
+           },
+           {
+            "id": "line",
+            "label": "Line",
+            "glyph": "road"
+           }
+          ],
+          "tools": [],
+          "items": [
+           {
+            "id": "fixed",
+            "text": "Fixed length",
+            "glyph": "ruler",
+            "bin": "segment",
+            "src": "c6-maths-ch02-t01-i03"
+           },
+           {
+            "id": "oneend",
+            "text": "One endpoint",
+            "bin": "ray",
+            "src": "c6-maths-ch02-t01-i12"
+           },
+           {
+            "id": "noends",
+            "text": "No endpoints",
+            "glyph": "road",
+            "bin": "line",
+            "src": "c6-maths-ch02-t01-i03"
+           },
+           {
+            "id": "raydraw",
+            "text": "Dot then arrow",
+            "glyph": "spark",
+            "bin": "ray",
+            "src": "c6-maths-ch02-t01-i10"
+           }
+          ],
+          "speed": 0.95,
+          "targets": "c6-maths-ch02-t01-m-ray-two-ends"
+         },
+         {
+          "title": "Which way does it go?",
+          "sub": "Letter order matters",
+          "bins": [
+           {
+            "id": "ray",
+            "label": "Ray",
+            "glyph": "sun"
+           },
+           {
+            "id": "line",
+            "label": "Line",
+            "glyph": "road"
+           },
+           {
+            "id": "segment",
+            "label": "Segment",
+            "glyph": "ruler"
+           }
+          ],
+          "tools": [],
+          "items": [
+           {
+            "id": "startp",
+            "text": "Starts at P",
+            "glyph": "letter",
+            "bin": "ray",
+            "src": "c6-maths-ch02-t01-i04"
+           },
+           {
+            "id": "abba",
+            "text": "AB and BA differ",
+            "glyph": "letter",
+            "bin": "ray",
+            "src": "c6-maths-ch02-t01-i05"
+           },
+           {
+            "id": "samexy",
+            "text": "XY, drawn twice",
+            "glyph": "road",
+            "bin": "line",
+            "src": "c6-maths-ch02-t01-i06"
+           },
+           {
+            "id": "pairs",
+            "text": "Three pairs join",
+            "glyph": "group",
+            "bin": "segment",
+            "src": "c6-maths-ch02-t01-i08"
+           },
+           {
+            "id": "opposite",
+            "text": "OA and OB",
+            "glyph": "compass",
+            "bin": "ray",
+            "src": "c6-maths-ch02-t01-m-ray-order"
+           }
+          ],
+          "speed": 0.75,
+          "targets": "c6-maths-ch02-t01-m-ray-order"
+         }
+        ]
+       },
+       "boardTwin": {
+        "scriptRef": "board:c6-maths-ch02-t01-s1|practice|-|-",
+        "values": {
+         "title": "Test Bench Sort",
+         "need": "practice"
+        },
+        "board": {
+         "title": "Test Bench Sort",
+         "lines": [
+          "line",
+          "segment",
+          "different",
+          "point"
+         ],
+         "figure": {
+          "kind": "none"
+         }
+        }
+       },
+       "board": null,
+       "cue": {
+        "clauseIdx": 0,
+        "preRollMs": 400,
+        "crossFadeMs": 420
+       },
+       "buildSha": null,
+       "blobUrl": null
+      }
+     }
+    }
+   },
+   "moduleCommands": [],
+   "studio": {
+    "reveal": "fc71c272-5f64-49f2-ad20-0fcd726aca7a:c4"
+   },
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false,
+     "leadSlot": true
+    },
+    "verdict": "unverified",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 251,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 3149,
+    "item": "c6-maths-ch02-t01-i01",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 78
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 78
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 1072
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 1181
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1329
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1431
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1434
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1434
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1604
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 3056
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 3148
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "probe:easier-01",
+   "lessonId": "fc71c272-5f64-49f2-ad20-0fcd726aca7a",
+   "childText": "bahut tough hai easy wala do",
+   "ms": 1774,
+   "error": null,
+   "teacherReply": "Aap choice padhiye. Line PQ ek notebook mein 4 cm lambi aur doosri mein 12 cm lambi banayi gayi hai. Kya sach hai?",
+   "move": {
+    "kind": "probe",
+    "shape": "they asked for an easier one: a short warm line, no fuss; the easier question; pose the question as written, in their language; then wait; read its choices plainly; no lean in your voice toward any of them; no verdict on their reply: neither praise nor 'wrong'; address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu",
+    "itemId": "diag:c6-maths-ch02-t01-m-longer-line",
+    "skillId": "c6-maths-ch02-t01-s1",
+    "hintLevel": 0,
+    "probe": "P7",
+    "request": "easier"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "math",
+     "value": "4  ·  12"
+    },
+    "chips": [
+     {
+      "id": "opt:0",
+      "label": "It is the same line; a line goes on fore"
+     },
+     {
+      "id": "opt:1",
+      "label": "Both are line segments, so they can be m"
+     },
+     {
+      "id": "opt:2",
+      "label": "The 12 cm one is a longer line"
+     }
+    ],
+    "phase": "practice",
+    "handover": "choice",
+    "ask": {
+     "text": "Line PQ ek notebook mein 4 cm lambi aur doosri mein 12 cm lambi banayi gayi hai. Kya sach hai?",
+     "itemId": "diag:c6-maths-ch02-t01-m-longer-line"
+    },
+    "answerForm": "choice",
+    "tray": "tiles",
+    "shortTitle": "Points, lines and rays",
+    "beat": {
+     "beatId": "b8-probe",
+     "type": "probe",
+     "index": 8
+    }
+   },
+   "moduleCommands": [
+    {
+     "op": "mount",
+     "moduleId": "g1-4d5808e6",
+     "engine": "scene@1",
+     "params": {
+      "scene": {
+       "dsl": "scene@1",
+       "meta": {
+        "band": "B3",
+        "lang": "hi-Latn+en",
+        "title": {
+         "en": "Band practice",
+         "hi": "बैंड प्रैक्टिस",
+         "hi_latn": "Band practice"
+        },
+        "objective_ids": [
+         "c6-maths-ch02-t01-s1"
+        ],
+        "topic_ids": [
+         "c6-maths-ch02-t01"
+        ],
+        "template": "choice-card@1"
+       },
+       "stage": {
+        "aspect": "3:4",
+        "bg": "bg"
+       },
+       "vars": [
+        {
+         "id": "pick",
+         "type": "enum",
+         "init": "none",
+         "options": [
+          "none",
+          "o1",
+          "o2",
+          "o3"
+         ],
+         "tl": "child's pick"
+        }
+       ],
+       "derive": [],
+       "nodes": [
+        {
+         "kind": "text",
+         "id": "title",
+         "x": 420,
+         "y": 89,
+         "text": {
+          "en": "Band practice",
+          "hi": "बैंड प्रैक्टिस",
+          "hi_latn": "Band practice"
+         },
+         "size": "title",
+         "w": 760,
+         "align": "middle"
+        },
+        {
+         "kind": "sprite",
+         "id": "decor",
+         "x": 900,
+         "y": 75,
+         "lib": "sky.star",
+         "w": 110,
+         "h": 110,
+         "role": "context"
+        },
+        {
+         "kind": "choice",
+         "id": "ch",
+         "x": 500,
+         "y": 946.3333333333333,
+         "var": "pick",
+         "options": [
+          {
+           "id": "o1",
+           "label": {
+            "en": "The 12 cm one is a longer line",
+            "hi": "The 12 cm one is a longer line",
+            "hi_latn": "The 12 cm one is a longer line"
+           },
+           "misc": "MC.C6_MATHS_CH02_T01_M_LONGER_LINE"
+          },
+          {
+           "id": "o2",
+           "label": {
+            "en": "It is the same line; a line goes on forever, so a drawing shows only part of it",
+            "hi": "It is the same line; a line goes on forever, so a drawing shows only part of it",
+            "hi_latn": "It is the same line; a line goes on forever, so a drawing shows only part of it"
+           }
+          },
+          {
+           "id": "o3",
+           "label": {
+            "en": "Both are line segments, so they can be measured",
+            "hi": "Both are line segments, so they can be measured",
+            "hi_latn": "Both are line segments, so they can be measured"
+           },
+           "misc": "MC.C6_MATHS_CH02_T01_M_LONGER_LINE"
+          }
+         ],
+         "layout": "column",
+         "commit": true
+        }
+       ],
+       "timelines": [],
+       "goals": [],
+       "probe": {
+        "id": "p_pick",
+        "kind": "diagnose",
+        "ask": {
+         "en": "Band practice",
+         "hi": "बैंड प्रैक्टिस",
+         "hi_latn": "Band practice"
+        },
+        "commit": {
+         "via": "choice",
+         "node": "ch"
+        },
+        "correct": "pick == 'o2'",
+        "traps": [
+         {
+          "when": "pick == 'o1'",
+          "misc": "MC.C6_MATHS_CH02_T01_M_LONGER_LINE"
+         },
+         {
+          "when": "pick == 'o3'",
+          "misc": "MC.C6_MATHS_CH02_T01_M_LONGER_LINE"
+         }
+        ]
+       },
+       "feedback": "on_commit"
+      }
+     },
+     "goal": "g1:diag:c6-maths-ch02-t01-m-longer-line"
+    }
+   ],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [
+      "ask"
+     ],
+     "rewritten": false,
+     "replaced": false,
+     "firstDraft": "Vihaan, easy wala: Line PQ ek notebook mein 4 cm aur doosri mein 12 cm banayi gayi. Kya sach hai? Aap choice padhiye.",
+     "repaired": true
+    },
+    "verdict": "unverified",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "request"
+    },
+    "note": null,
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 1771,
+    "item": "diag:c6-maths-ch02-t01-m-longer-line",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 67
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 68
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 452
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 529
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 533
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 533
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1126
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 1664
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 1771
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "recovery",
+   "lessonId": "fc71c272-5f64-49f2-ad20-0fcd726aca7a",
+   "childText": "it is the same line a line goes on forever so a drawing shows only part of it",
+   "ms": 2055,
+   "error": null,
+   "teacherReply": "Vihaan, aapne sahi pakda: line dono directions mein forever jaati hai; drawing sirf uska chhota part dikhati hai. Ray mein kitne fixed endpoints hote hain?",
+   "move": {
+    "kind": "explain",
+    "shape": "confirm specifically: name the exact thing they got right, no ability words; one idea only: Count the segments that join a set of points; an example from their interest (dance) if it fits naturally; objects first, then the symbol; point at the screen only at what the on-screen row lists; never a drawing made of characters; end with one small question that makes them USE the idea — never 'samjha?'; address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu",
+    "skillId": "c6-maths-ch02-t01-s3",
+    "format": "F3"
+   },
+   "ui": {
+    "status": "your_turn",
+    "phase": "practice",
+    "handover": "answer",
+    "answerForm": "words",
+    "tray": "studio",
+    "shortTitle": "Points, lines and rays",
+    "verdict": "correct",
+    "beat": {
+     "beatId": "b9-explain",
+     "type": "explain",
+     "index": 9
+    },
+    "ask": {
+     "text": "Ray mein kitne fixed endpoints hote hain?"
+    },
+    "studioSlot": {
+     "slotId": "fc71c272-5f64-49f2-ad20-0fcd726aca7a:wb:15:slot",
+     "intentId": "fc71c272-5f64-49f2-ad20-0fcd726aca7a:wb:15",
+     "state": "revealed",
+     "artifact": {
+      "kind": "whiteboard",
+      "stage": {
+       "w": 400,
+       "h": 300
+      },
+      "script": {
+       "v": 1,
+       "scriptId": "fc71c272-5f64-49f2-ad20-0fcd726aca7a:wb:15",
+       "line": {
+        "lessonId": "fc71c272-5f64-49f2-ad20-0fcd726aca7a",
+        "teacherReplySeq": 31
+       },
+       "anchor": "line_audio_start",
+       "board": {
+        "w": 400,
+        "h": 300,
+        "ground": "chalk"
+       },
+       "mode": "fresh",
+       "durationMs": 12844,
+       "ops": [
+        {
+         "id": "h0",
+         "op": "text",
+         "startMs": 369,
+         "endMs": 1599,
+         "ink": "accent",
+         "at": [
+          107.5,
+          36
+         ],
+         "text": "Line segment",
+         "size": "s"
+        },
+        {
+         "id": "o1",
+         "op": "line",
+         "startMs": 1697,
+         "endMs": 2435,
+         "ink": "accent",
+         "weight": 1,
+         "from": [
+          28,
+          62
+         ],
+         "to": [
+          187,
+          62
+         ]
+        },
+        {
+         "id": "h1",
+         "op": "text",
+         "startMs": 2805,
+         "endMs": 4034,
+         "ink": "accent",
+         "at": [
+          297.5,
+          36
+         ],
+         "text": "Ray",
+         "size": "s"
+        },
+        {
+         "id": "o2",
+         "op": "line",
+         "startMs": 4132,
+         "endMs": 4871,
+         "ink": "accent",
+         "weight": 1,
+         "from": [
+          218,
+          62
+         ],
+         "to": [
+          377,
+          62
+         ]
+        },
+        {
+         "id": "o3",
+         "op": "line",
+         "startMs": 5314,
+         "endMs": 6543,
+         "ink": "soft",
+         "weight": 1,
+         "from": [
+          200,
+          30
+         ],
+         "to": [
+          200,
+          280
+         ]
+        },
+        {
+         "id": "c00",
+         "op": "text",
+         "startMs": 7085,
+         "endMs": 8266,
+         "at": [
+          107.5,
+          100
+         ],
+         "text": "two endpoints",
+         "size": "s"
+        },
+        {
+         "id": "c10",
+         "op": "text",
+         "startMs": 8413,
+         "endMs": 9594,
+         "at": [
+          297.5,
+          100
+         ],
+         "text": "one endpoint",
+         "size": "s"
+        },
+        {
+         "id": "c01",
+         "op": "text",
+         "startMs": 10135,
+         "endMs": 11316,
+         "at": [
+          107.5,
+          152
+         ],
+         "text": "fixed length",
+         "size": "s"
+        },
+        {
+         "id": "c11",
+         "op": "text",
+         "startMs": 11464,
+         "endMs": 12644,
+         "at": [
+          297.5,
+          152
+         ],
+         "text": "one direction",
+         "size": "s"
+        }
+       ],
+       "facts": {
+        "kind": "diagram",
+        "archetype": "whiteboard",
+        "onScreen": {
+         "labels": "Line segment | Ray | two endpoints | one"
+        }
+       }
+      }
+     }
+    }
+   },
+   "moduleCommands": [
+    {
+     "op": "unmount",
+     "moduleId": "g1-4d5808e6"
+    }
+   ],
+   "studio": {
+    "retire": "fc71c272-5f64-49f2-ad20-0fcd726aca7a:c4"
+   },
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false
+    },
+    "verdict": "correct",
+    "cls": {
+     "outcome": "correct",
+     "source": "exact"
+    },
+    "note": null,
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 2046,
+    "item": null,
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 105
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 106
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 408
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 538
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 553
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 553
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1330
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 1952
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 2046
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "advance",
+   "lessonId": "fc71c272-5f64-49f2-ad20-0fcd726aca7a",
+   "childText": "achha",
+   "ms": 1955,
+   "error": null,
+   "teacherReply": "Vihaan, ab original par lautte hain: A, B, C ke har pair ko ek baar jodiye. Teen points A, B, C ek seedhi line pe nahi hain. Inhe pairs mein jodne se kitne line segments bante hain? Naam bataiye.",
+   "move": {
+    "kind": "probe",
+    "shape": "pose the question as written, in their language; then wait; same idea, new situation; let them carry it over; address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu",
+    "itemId": "c6-maths-ch02-t01-i08",
+    "skillId": "c6-maths-ch02-t01-s3",
+    "hintLevel": 0,
+    "probe": "P3"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "text",
+     "value": "Teen points A, B, C ek seedhi line pe nahi hain. Inhe pai…"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "Teen points A, B, C ek seedhi line pe nahi hain. Inhe pairs mein jodne se kitne line segments bante hain? Naam bataiye.",
+     "itemId": "c6-maths-ch02-t01-i08"
+    },
+    "answerForm": "words",
+    "tray": "none",
+    "shortTitle": "Points, lines and rays",
+    "beat": {
+     "beatId": "b10-probe",
+     "type": "probe",
+     "index": 10
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [
+      "drift",
+      "ask"
+     ],
+     "rewritten": false,
+     "replaced": false,
+     "firstDraft": "Vihaan, ab original par lautte hain: A, B, C ke har pair ko ek baar jodiye. Kitne line segments aur unke naam batayiye?",
+     "repaired": true
+    },
+    "verdict": "ungraded",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 628,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 1907,
+    "item": "c6-maths-ch02-t01-i08",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 70
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 71
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 1067
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 1143
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1696
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1771
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1793
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1794
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1659
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 1819
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 1907
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "probe:answer_correct-06",
+   "lessonId": "fc71c272-5f64-49f2-ad20-0fcd726aca7a",
+   "childText": "3 hoga",
+   "ms": 3299,
+   "error": null,
+   "teacherReply": "Pehla pair A aur B ko jodiye: AB. Ab isi tarah baaki pairs sochiye—har point ko doosre points se ek baar jodna hai. Teen points A, B, C ek seedhi line pe nahi hain. Inhe pairs mein jodne se kitne line segments bante hain? Naam bataiye.",
+   "move": {
+    "kind": "hint",
+    "shape": "rung 1 of 4 (pump): Start with A: which points can it join?; the key stays unsaid; their answer was partly right: name the right part, no full agreement; address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu",
+    "itemId": "c6-maths-ch02-t01-i08",
+    "skillId": "c6-maths-ch02-t01-s3",
+    "hintLevel": 1
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "text",
+     "value": "Teen points A, B, C ek seedhi line pe nahi hain. Inhe pai…"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "Teen points A, B, C ek seedhi line pe nahi hain. Inhe pairs mein jodne se kitne line segments bante hain? Naam bataiye.",
+     "itemId": "c6-maths-ch02-t01-i08"
+    },
+    "answerForm": "words",
+    "tray": "studio",
+    "hint": {
+     "level": 1,
+     "text": "Start with A: which points can it join?"
+    },
+    "shortTitle": "Points, lines and rays",
+    "verdict": "partial",
+    "beat": {
+     "beatId": "b10-probe",
+     "type": "probe",
+     "index": 10
+    },
+    "studioSlot": {
+     "slotId": "fc71c272-5f64-49f2-ad20-0fcd726aca7a:c7:slot",
+     "intentId": "fc71c272-5f64-49f2-ad20-0fcd726aca7a:c7",
+     "state": "revealed",
+     "artifact": {
+      "kind": "stagecraft",
+      "stage": {
+       "w": 1000,
+       "h": 625
+      },
+      "stagecraft": {
+       "rung": "engine_default",
+       "archetype": "sort-storm@1",
+       "spec": {
+        "archetype": "sort-storm@1",
+        "skills": [
+         "c6-maths-ch02-t01"
+        ],
+        "lang": "en",
+        "strings": {
+         "round": "Round",
+         "sorted": "sorted",
+         "tests": "tests",
+         "coach": "Read and sort the cards",
+         "runDone": "Belt cleared",
+         "missed": "missed",
+         "why": "because",
+         "yes": "yes",
+         "no": "no",
+         "magnetic": "magnetic",
+         "light": "light",
+         "floats": "floats",
+         "conducts": "conducts",
+         "burns": "burns",
+         "starch": "starch",
+         "tMagnet": "Magnet",
+         "tTorch": "Torch",
+         "tTank": "Water",
+         "tTester": "Circuit",
+         "tFlame": "Flame",
+         "tIodine": "Iodine",
+         "tPaper": "Paper",
+         "tBiuret": "Copper test",
+         "tTurmeric": "Turmeric",
+         "tLitmus": "Litmus",
+         "tRose": "China rose",
+         "fat": "fat",
+         "protein": "protein",
+         "acidity": "acidity",
+         "acid": "acid",
+         "base": "base",
+         "neutral": "neutral"
+        },
+        "title": "Line Sort Storm",
+        "rounds": [
+         {
+          "title": "Two ends or one?",
+          "sub": "Sort each description",
+          "bins": [
+           {
+            "id": "segment",
+            "label": "Segment",
+            "glyph": "ruler"
+           },
+           {
+            "id": "ray",
+            "label": "Ray",
+            "glyph": "sun"
+           },
+           {
+            "id": "line",
+            "label": "Line",
+            "glyph": "road"
+           }
+          ],
+          "tools": [],
+          "items": [
+           {
+            "id": "pencil",
+            "text": "Pencil, two ends",
+            "glyph": "pen",
+            "bin": "segment",
+            "src": "c6-maths-ch02-t01-i11"
+           },
+           {
+            "id": "sunlight",
+            "text": "Sunlight one way",
+            "glyph": "sun",
+            "bin": "ray",
+            "src": "c6-maths-ch02-t01-i11"
+           },
+           {
+            "id": "track",
+            "text": "Track both ways",
+            "glyph": "train",
+            "bin": "line",
+            "src": "c6-maths-ch02-t01-i11"
+           },
+           {
+            "id": "ruleredge",
+            "text": "Ruler edge",
+            "glyph": "ruler",
+            "bin": "segment",
+            "src": "c6-maths-ch02-t01-i02"
+           },
+           {
+            "id": "torchbeam",
+            "text": "Torch beam",
+            "glyph": "torch",
+            "bin": "ray",
+            "src": "c6-maths-ch02-t01-i01"
+           }
+          ],
+          "speed": 1.1
+         },
+         {
+          "title": "Read the arrows",
+          "sub": "Look for endpoints",
+          "bins": [
+           {
+            "id": "segment",
+            "label": "Segment",
+            "glyph": "ruler"
+           },
+           {
+            "id": "ray",
+            "label": "Ray",
+            "glyph": "sun"
+           },
+           {
+            "id": "line",
+            "label": "Line",
+            "glyph": "road"
+           }
+          ],
+          "tools": [],
+          "items": [
+           {
+            "id": "fixed",
+            "text": "Fixed length",
+            "glyph": "ruler",
+            "bin": "segment",
+            "src": "c6-maths-ch02-t01-i03"
+           },
+           {
+            "id": "oneend",
+            "text": "One endpoint",
+            "bin": "ray",
+            "src": "c6-maths-ch02-t01-i12"
+           },
+           {
+            "id": "noends",
+            "text": "No endpoints",
+            "glyph": "road",
+            "bin": "line",
+            "src": "c6-maths-ch02-t01-i03"
+           },
+           {
+            "id": "raydraw",
+            "text": "Dot then arrow",
+            "glyph": "spark",
+            "bin": "ray",
+            "src": "c6-maths-ch02-t01-i10"
+           }
+          ],
+          "speed": 0.95,
+          "targets": "c6-maths-ch02-t01-m-ray-two-ends"
+         },
+         {
+          "title": "Which way does it go?",
+          "sub": "Letter order matters",
+          "bins": [
+           {
+            "id": "ray",
+            "label": "Ray",
+            "glyph": "sun"
+           },
+           {
+            "id": "line",
+            "label": "Line",
+            "glyph": "road"
+           },
+           {
+            "id": "segment",
+            "label": "Segment",
+            "glyph": "ruler"
+           }
+          ],
+          "tools": [],
+          "items": [
+           {
+            "id": "startp",
+            "text": "Starts at P",
+            "glyph": "letter",
+            "bin": "ray",
+            "src": "c6-maths-ch02-t01-i04"
+           },
+           {
+            "id": "abba",
+            "text": "AB and BA differ",
+            "glyph": "letter",
+            "bin": "ray",
+            "src": "c6-maths-ch02-t01-i05"
+           },
+           {
+            "id": "samexy",
+            "text": "XY, drawn twice",
+            "glyph": "road",
+            "bin": "line",
+            "src": "c6-maths-ch02-t01-i06"
+           },
+           {
+            "id": "pairs",
+            "text": "Three pairs join",
+            "glyph": "group",
+            "bin": "segment",
+            "src": "c6-maths-ch02-t01-i08"
+           },
+           {
+            "id": "opposite",
+            "text": "OA and OB",
+            "glyph": "compass",
+            "bin": "ray",
+            "src": "c6-maths-ch02-t01-m-ray-order"
+           }
+          ],
+          "speed": 0.75,
+          "targets": "c6-maths-ch02-t01-m-ray-order"
+         }
+        ]
+       },
+       "boardTwin": {
+        "scriptRef": "board:c6-maths-ch02-t01-s1|probe|-|-",
+        "values": {
+         "title": "Test Bench Sort",
+         "need": "probe"
+        },
+        "board": {
+         "title": "Test Bench Sort",
+         "lines": [
+          "line",
+          "segment",
+          "different",
+          "point"
+         ],
+         "figure": {
+          "kind": "none"
+         }
+        }
+       },
+       "board": null,
+       "cue": {
+        "clauseIdx": 0,
+        "preRollMs": 400,
+        "crossFadeMs": 420
+       },
+       "buildSha": null,
+       "blobUrl": null
+      }
+     }
+    }
+   },
+   "moduleCommands": [],
+   "studio": {
+    "reveal": "fc71c272-5f64-49f2-ad20-0fcd726aca7a:c7"
+   },
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false,
+     "leadSlot": true
+    },
+    "verdict": "partial",
+    "cls": {
+     "outcome": "partial",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": false,
+     "intent": "answer_partial",
+     "waitedMs": 0,
+     "parallel": null
+    },
+    "hintLevel": 1,
+    "phase": "practice",
+    "ms": 3292,
+    "item": "c6-maths-ch02-t01-i08",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 70
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 70
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1313
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 1387
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 1477
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1477
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1479
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1482
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1705
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 3204
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 3291
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "recovery",
+   "lessonId": "fc71c272-5f64-49f2-ad20-0fcd726aca7a",
+   "childText": "3",
+   "ms": 4686,
+   "error": null,
+   "teacherReply": "Ab teenon pairs ke names khud bataiye. Teen points A, B, C ek seedhi line pe nahi hain. Inhe pairs mein jodne se kitne line segments bante hain? Naam bataiye.",
+   "move": {
+    "kind": "hint",
+    "shape": "rung 2 of 4 (hint): A joins B and C; then B joins C.; the key stays unsaid; their answer was partly right: name the right part, no full agreement; address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu",
+    "itemId": "c6-maths-ch02-t01-i08",
+    "skillId": "c6-maths-ch02-t01-s3",
+    "hintLevel": 2
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "text",
+     "value": "Teen points A, B, C ek seedhi line pe nahi hain. Inhe pai…"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "Teen points A, B, C ek seedhi line pe nahi hain. Inhe pairs mein jodne se kitne line segments bante hain? Naam bataiye.",
+     "itemId": "c6-maths-ch02-t01-i08"
+    },
+    "answerForm": "words",
+    "tray": "studio",
+    "hint": {
+     "level": 2,
+     "text": "A joins B and C; then B joins C."
+    },
+    "shortTitle": "Points, lines and rays",
+    "verdict": "partial",
+    "beat": {
+     "beatId": "b10-probe",
+     "type": "probe",
+     "index": 10
+    },
+    "studioSlot": {
+     "slotId": "fc71c272-5f64-49f2-ad20-0fcd726aca7a:c7:slot",
+     "intentId": "fc71c272-5f64-49f2-ad20-0fcd726aca7a:c7",
+     "state": "revealed",
+     "artifact": {
+      "kind": "stagecraft",
+      "stage": {
+       "w": 1000,
+       "h": 625
+      },
+      "stagecraft": {
+       "rung": "engine_default",
+       "archetype": "sort-storm@1",
+       "spec": {
+        "archetype": "sort-storm@1",
+        "skills": [
+         "c6-maths-ch02-t01"
+        ],
+        "lang": "en",
+        "strings": {
+         "round": "Round",
+         "sorted": "sorted",
+         "tests": "tests",
+         "coach": "Read and sort the cards",
+         "runDone": "Belt cleared",
+         "missed": "missed",
+         "why": "because",
+         "yes": "yes",
+         "no": "no",
+         "magnetic": "magnetic",
+         "light": "light",
+         "floats": "floats",
+         "conducts": "conducts",
+         "burns": "burns",
+         "starch": "starch",
+         "tMagnet": "Magnet",
+         "tTorch": "Torch",
+         "tTank": "Water",
+         "tTester": "Circuit",
+         "tFlame": "Flame",
+         "tIodine": "Iodine",
+         "tPaper": "Paper",
+         "tBiuret": "Copper test",
+         "tTurmeric": "Turmeric",
+         "tLitmus": "Litmus",
+         "tRose": "China rose",
+         "fat": "fat",
+         "protein": "protein",
+         "acidity": "acidity",
+         "acid": "acid",
+         "base": "base",
+         "neutral": "neutral"
+        },
+        "title": "Line Sort Storm",
+        "rounds": [
+         {
+          "title": "Two ends or one?",
+          "sub": "Sort each description",
+          "bins": [
+           {
+            "id": "segment",
+            "label": "Segment",
+            "glyph": "ruler"
+           },
+           {
+            "id": "ray",
+            "label": "Ray",
+            "glyph": "sun"
+           },
+           {
+            "id": "line",
+            "label": "Line",
+            "glyph": "road"
+           }
+          ],
+          "tools": [],
+          "items": [
+           {
+            "id": "pencil",
+            "text": "Pencil, two ends",
+            "glyph": "pen",
+            "bin": "segment",
+            "src": "c6-maths-ch02-t01-i11"
+           },
+           {
+            "id": "sunlight",
+            "text": "Sunlight one way",
+            "glyph": "sun",
+            "bin": "ray",
+            "src": "c6-maths-ch02-t01-i11"
+           },
+           {
+            "id": "track",
+            "text": "Track both ways",
+            "glyph": "train",
+            "bin": "line",
+            "src": "c6-maths-ch02-t01-i11"
+           },
+           {
+            "id": "ruleredge",
+            "text": "Ruler edge",
+            "glyph": "ruler",
+            "bin": "segment",
+            "src": "c6-maths-ch02-t01-i02"
+           },
+           {
+            "id": "torchbeam",
+            "text": "Torch beam",
+            "glyph": "torch",
+            "bin": "ray",
+            "src": "c6-maths-ch02-t01-i01"
+           }
+          ],
+          "speed": 1.1
+         },
+         {
+          "title": "Read the arrows",
+          "sub": "Look for endpoints",
+          "bins": [
+           {
+            "id": "segment",
+            "label": "Segment",
+            "glyph": "ruler"
+           },
+           {
+            "id": "ray",
+            "label": "Ray",
+            "glyph": "sun"
+           },
+           {
+            "id": "line",
+            "label": "Line",
+            "glyph": "road"
+           }
+          ],
+          "tools": [],
+          "items": [
+           {
+            "id": "fixed",
+            "text": "Fixed length",
+            "glyph": "ruler",
+            "bin": "segment",
+            "src": "c6-maths-ch02-t01-i03"
+           },
+           {
+            "id": "oneend",
+            "text": "One endpoint",
+            "bin": "ray",
+            "src": "c6-maths-ch02-t01-i12"
+           },
+           {
+            "id": "noends",
+            "text": "No endpoints",
+            "glyph": "road",
+            "bin": "line",
+            "src": "c6-maths-ch02-t01-i03"
+           },
+           {
+            "id": "raydraw",
+            "text": "Dot then arrow",
+            "glyph": "spark",
+            "bin": "ray",
+            "src": "c6-maths-ch02-t01-i10"
+           }
+          ],
+          "speed": 0.95,
+          "targets": "c6-maths-ch02-t01-m-ray-two-ends"
+         },
+         {
+          "title": "Which way does it go?",
+          "sub": "Letter order matters",
+          "bins": [
+           {
+            "id": "ray",
+            "label": "Ray",
+            "glyph": "sun"
+           },
+           {
+            "id": "line",
+            "label": "Line",
+            "glyph": "road"
+           },
+           {
+            "id": "segment",
+            "label": "Segment",
+            "glyph": "ruler"
+           }
+          ],
+          "tools": [],
+          "items": [
+           {
+            "id": "startp",
+            "text": "Starts at P",
+            "glyph": "letter",
+            "bin": "ray",
+            "src": "c6-maths-ch02-t01-i04"
+           },
+           {
+            "id": "abba",
+            "text": "AB and BA differ",
+            "glyph": "letter",
+            "bin": "ray",
+            "src": "c6-maths-ch02-t01-i05"
+           },
+           {
+            "id": "samexy",
+            "text": "XY, drawn twice",
+            "glyph": "road",
+            "bin": "line",
+            "src": "c6-maths-ch02-t01-i06"
+           },
+           {
+            "id": "pairs",
+            "text": "Three pairs join",
+            "glyph": "group",
+            "bin": "segment",
+            "src": "c6-maths-ch02-t01-i08"
+           },
+           {
+            "id": "opposite",
+            "text": "OA and OB",
+            "glyph": "compass",
+            "bin": "ray",
+            "src": "c6-maths-ch02-t01-m-ray-order"
+           }
+          ],
+          "speed": 0.75,
+          "targets": "c6-maths-ch02-t01-m-ray-order"
+         }
+        ]
+       },
+       "boardTwin": {
+        "scriptRef": "board:c6-maths-ch02-t01-s1|probe|-|-",
+        "values": {
+         "title": "Test Bench Sort",
+         "need": "probe"
+        },
+        "board": {
+         "title": "Test Bench Sort",
+         "lines": [
+          "line",
+          "segment",
+          "different",
+          "point"
+         ],
+         "figure": {
+          "kind": "none"
+         }
+        }
+       },
+       "board": null,
+       "cue": {
+        "clauseIdx": 0,
+        "preRollMs": 400,
+        "crossFadeMs": 420
+       },
+       "buildSha": null,
+       "blobUrl": null
+      }
+     }
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [
+      "leak",
+      "ask"
+     ],
+     "rewritten": true,
+     "replaced": true,
+     "firstDraft": "Aapne count 3 sahi kiya. Ab teen pairs likhiye: AB, phir A ke saath C, aur B ke saath C. Names bataiye.",
+     "afterRewrite": [
+      "leak"
+     ],
+     "spoken": true
+    },
+    "verdict": "partial",
+    "cls": {
+     "outcome": "partial",
+     "source": "exact"
+    },
+    "note": null,
+    "hintLevel": 2,
+    "phase": "practice",
+    "ms": 4675,
+    "item": "c6-maths-ch02-t01-i08",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 166
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 167
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 177
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 249
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 249
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1661
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1525
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1090
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 4547
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 4675
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "setup:insistence_oob-01",
+   "lessonId": "fc71c272-5f64-49f2-ad20-0fcd726aca7a",
+   "childText": "ghost story sunao darawni wali",
+   "ms": 3011,
+   "error": null,
+   "teacherReply": "Vihaan, abhi ghost story nahi—pehle maths ka yeh chhota challenge. Kabaddi court ke diagram mein paanch players paanch marked points par khade hain. Har pair ke points ko ek line segment se jodiye. Kul kitne alag segments banenge?",
+   "move": {
+    "kind": "probe",
+    "shape": "that is not something for our lesson: a clear, warm, short no — no shame, no lecture, no promise of it later, never any part of it; then one genuinely interesting hook from today's idea (a surprising fact or a quick challenge) that pulls them back, and the work; that question has been on the table long enough: give its answer plainly with one line of why (in LESSON NOW), no verdict on them; then the next question; pose the question as written, in their language; then wait; same idea, new situation; let them carry it over; no verdict on their reply: neither praise nor 'wrong'; address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu",
+    "itemId": "c6-maths-ch02-t01-rl-h3",
+    "skillId": "c6-maths-ch02-t01-s3",
+    "hintLevel": 0,
+    "probe": "P3"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "text",
+     "value": "Kabaddi court ke diagram mein paanch players paanch marke…"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "Har pair ke points ko ek line segment se jodiye. Kul kitne alag segments banenge?",
+     "itemId": "c6-maths-ch02-t01-rl-h3"
+    },
+    "answerForm": "words",
+    "tray": "studio",
+    "shortTitle": "Points, lines and rays",
+    "beat": {
+     "beatId": "b10-probe",
+     "type": "probe",
+     "index": 10
+    },
+    "studioSlot": {
+     "slotId": "fc71c272-5f64-49f2-ad20-0fcd726aca7a:c7:slot",
+     "intentId": "fc71c272-5f64-49f2-ad20-0fcd726aca7a:c7",
+     "state": "revealed",
+     "artifact": {
+      "kind": "stagecraft",
+      "stage": {
+       "w": 1000,
+       "h": 625
+      },
+      "stagecraft": {
+       "rung": "engine_default",
+       "archetype": "sort-storm@1",
+       "spec": {
+        "archetype": "sort-storm@1",
+        "skills": [
+         "c6-maths-ch02-t01"
+        ],
+        "lang": "en",
+        "strings": {
+         "round": "Round",
+         "sorted": "sorted",
+         "tests": "tests",
+         "coach": "Read and sort the cards",
+         "runDone": "Belt cleared",
+         "missed": "missed",
+         "why": "because",
+         "yes": "yes",
+         "no": "no",
+         "magnetic": "magnetic",
+         "light": "light",
+         "floats": "floats",
+         "conducts": "conducts",
+         "burns": "burns",
+         "starch": "starch",
+         "tMagnet": "Magnet",
+         "tTorch": "Torch",
+         "tTank": "Water",
+         "tTester": "Circuit",
+         "tFlame": "Flame",
+         "tIodine": "Iodine",
+         "tPaper": "Paper",
+         "tBiuret": "Copper test",
+         "tTurmeric": "Turmeric",
+         "tLitmus": "Litmus",
+         "tRose": "China rose",
+         "fat": "fat",
+         "protein": "protein",
+         "acidity": "acidity",
+         "acid": "acid",
+         "base": "base",
+         "neutral": "neutral"
+        },
+        "title": "Line Sort Storm",
+        "rounds": [
+         {
+          "title": "Two ends or one?",
+          "sub": "Sort each description",
+          "bins": [
+           {
+            "id": "segment",
+            "label": "Segment",
+            "glyph": "ruler"
+           },
+           {
+            "id": "ray",
+            "label": "Ray",
+            "glyph": "sun"
+           },
+           {
+            "id": "line",
+            "label": "Line",
+            "glyph": "road"
+           }
+          ],
+          "tools": [],
+          "items": [
+           {
+            "id": "pencil",
+            "text": "Pencil, two ends",
+            "glyph": "pen",
+            "bin": "segment",
+            "src": "c6-maths-ch02-t01-i11"
+           },
+           {
+            "id": "sunlight",
+            "text": "Sunlight one way",
+            "glyph": "sun",
+            "bin": "ray",
+            "src": "c6-maths-ch02-t01-i11"
+           },
+           {
+            "id": "track",
+            "text": "Track both ways",
+            "glyph": "train",
+            "bin": "line",
+            "src": "c6-maths-ch02-t01-i11"
+           },
+           {
+            "id": "ruleredge",
+            "text": "Ruler edge",
+            "glyph": "ruler",
+            "bin": "segment",
+            "src": "c6-maths-ch02-t01-i02"
+           },
+           {
+            "id": "torchbeam",
+            "text": "Torch beam",
+            "glyph": "torch",
+            "bin": "ray",
+            "src": "c6-maths-ch02-t01-i01"
+           }
+          ],
+          "speed": 1.1
+         },
+         {
+          "title": "Read the arrows",
+          "sub": "Look for endpoints",
+          "bins": [
+           {
+            "id": "segment",
+            "label": "Segment",
+            "glyph": "ruler"
+           },
+           {
+            "id": "ray",
+            "label": "Ray",
+            "glyph": "sun"
+           },
+           {
+            "id": "line",
+            "label": "Line",
+            "glyph": "road"
+           }
+          ],
+          "tools": [],
+          "items": [
+           {
+            "id": "fixed",
+            "text": "Fixed length",
+            "glyph": "ruler",
+            "bin": "segment",
+            "src": "c6-maths-ch02-t01-i03"
+           },
+           {
+            "id": "oneend",
+            "text": "One endpoint",
+            "bin": "ray",
+            "src": "c6-maths-ch02-t01-i12"
+           },
+           {
+            "id": "noends",
+            "text": "No endpoints",
+            "glyph": "road",
+            "bin": "line",
+            "src": "c6-maths-ch02-t01-i03"
+           },
+           {
+            "id": "raydraw",
+            "text": "Dot then arrow",
+            "glyph": "spark",
+            "bin": "ray",
+            "src": "c6-maths-ch02-t01-i10"
+           }
+          ],
+          "speed": 0.95,
+          "targets": "c6-maths-ch02-t01-m-ray-two-ends"
+         },
+         {
+          "title": "Which way does it go?",
+          "sub": "Letter order matters",
+          "bins": [
+           {
+            "id": "ray",
+            "label": "Ray",
+            "glyph": "sun"
+           },
+           {
+            "id": "line",
+            "label": "Line",
+            "glyph": "road"
+           },
+           {
+            "id": "segment",
+            "label": "Segment",
+            "glyph": "ruler"
+           }
+          ],
+          "tools": [],
+          "items": [
+           {
+            "id": "startp",
+            "text": "Starts at P",
+            "glyph": "letter",
+            "bin": "ray",
+            "src": "c6-maths-ch02-t01-i04"
+           },
+           {
+            "id": "abba",
+            "text": "AB and BA differ",
+            "glyph": "letter",
+            "bin": "ray",
+            "src": "c6-maths-ch02-t01-i05"
+           },
+           {
+            "id": "samexy",
+            "text": "XY, drawn twice",
+            "glyph": "road",
+            "bin": "line",
+            "src": "c6-maths-ch02-t01-i06"
+           },
+           {
+            "id": "pairs",
+            "text": "Three pairs join",
+            "glyph": "group",
+            "bin": "segment",
+            "src": "c6-maths-ch02-t01-i08"
+           },
+           {
+            "id": "opposite",
+            "text": "OA and OB",
+            "glyph": "compass",
+            "bin": "ray",
+            "src": "c6-maths-ch02-t01-m-ray-order"
+           }
+          ],
+          "speed": 0.75,
+          "targets": "c6-maths-ch02-t01-m-ray-order"
+         }
+        ]
+       },
+       "boardTwin": {
+        "scriptRef": "board:c6-maths-ch02-t01-s1|probe|-|-",
+        "values": {
+         "title": "Test Bench Sort",
+         "need": "probe"
+        },
+        "board": {
+         "title": "Test Bench Sort",
+         "lines": [
+          "line",
+          "segment",
+          "different",
+          "point"
+         ],
+         "figure": {
+          "kind": "none"
+         }
+        }
+       },
+       "board": null,
+       "cue": {
+        "clauseIdx": 0,
+        "preRollMs": 400,
+        "crossFadeMs": 420
+       },
+       "buildSha": null,
+       "blobUrl": null
+      }
+     }
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [
+      "drift",
+      "ask"
+     ],
+     "rewritten": false,
+     "replaced": false,
+     "firstDraft": "Vihaan, abhi ghost story nahi—pehle maths ka yeh chhota challenge. A-B, B-C, aur A-C: in teen pairs ko jodne par kul kitne segments?",
+     "repaired": true
+    },
+    "verdict": "unverified",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "request"
+    },
+    "note": null,
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 2983,
+    "item": "c6-maths-ch02-t01-rl-h3",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 89
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 102
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 1037
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 1147
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1154
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1155
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1654
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 2844
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 2983
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "probe:insistence_oob-01",
+   "lessonId": "fc71c272-5f64-49f2-ad20-0fcd726aca7a",
+   "childText": "please na bas ek chhoti si ghost story",
+   "ms": 2288,
+   "error": null,
+   "teacherReply": "Vihaan, ab ghost story nahi—maths ka ek quick challenge: har nayi jodi ko sirf ek baar count karenge, warna segments repeat ho jaayenge. Har pair ke points ko ek line segment se jodiye. Kul kitne alag segments banenge?",
+   "move": {
+    "kind": "probe",
+    "shape": "two parts — first: that is not something for our lesson: a clear, warm, short no — no shame, no lecture, no promise of it later, never any part of it; then one genuinely interesting hook from today's idea (a surprising fact or a quick challenge) that pulls them back, and the work; second: the question on the card, as written, in their language; then wait; no verdict on their reply: neither praise nor 'wrong'; address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu",
+    "itemId": "c6-maths-ch02-t01-rl-h3",
+    "skillId": "c6-maths-ch02-t01-s3",
+    "hintLevel": 0,
+    "probe": "P3",
+    "request": "decline",
+    "lead": "that is not something for our lesson: a clear, warm, short no — no shame, no lecture, no promise of it later, never any part of it; then one genuinely interesting hook from today's idea (a surprising fact or a quick challenge) that pulls them back, and the work"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "text",
+     "value": "Kabaddi court ke diagram mein paanch players paanch marke…"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "Har pair ke points ko ek line segment se jodiye. Kul kitne alag segments banenge?",
+     "itemId": "c6-maths-ch02-t01-rl-h3"
+    },
+    "answerForm": "words",
+    "tray": "studio",
+    "shortTitle": "Points, lines and rays",
+    "beat": {
+     "beatId": "b10-probe",
+     "type": "probe",
+     "index": 10
+    },
+    "studioSlot": {
+     "slotId": "fc71c272-5f64-49f2-ad20-0fcd726aca7a:c7:slot",
+     "intentId": "fc71c272-5f64-49f2-ad20-0fcd726aca7a:c7",
+     "state": "revealed",
+     "artifact": {
+      "kind": "stagecraft",
+      "stage": {
+       "w": 1000,
+       "h": 625
+      },
+      "stagecraft": {
+       "rung": "engine_default",
+       "archetype": "sort-storm@1",
+       "spec": {
+        "archetype": "sort-storm@1",
+        "skills": [
+         "c6-maths-ch02-t01"
+        ],
+        "lang": "en",
+        "strings": {
+         "round": "Round",
+         "sorted": "sorted",
+         "tests": "tests",
+         "coach": "Read and sort the cards",
+         "runDone": "Belt cleared",
+         "missed": "missed",
+         "why": "because",
+         "yes": "yes",
+         "no": "no",
+         "magnetic": "magnetic",
+         "light": "light",
+         "floats": "floats",
+         "conducts": "conducts",
+         "burns": "burns",
+         "starch": "starch",
+         "tMagnet": "Magnet",
+         "tTorch": "Torch",
+         "tTank": "Water",
+         "tTester": "Circuit",
+         "tFlame": "Flame",
+         "tIodine": "Iodine",
+         "tPaper": "Paper",
+         "tBiuret": "Copper test",
+         "tTurmeric": "Turmeric",
+         "tLitmus": "Litmus",
+         "tRose": "China rose",
+         "fat": "fat",
+         "protein": "protein",
+         "acidity": "acidity",
+         "acid": "acid",
+         "base": "base",
+         "neutral": "neutral"
+        },
+        "title": "Line Sort Storm",
+        "rounds": [
+         {
+          "title": "Two ends or one?",
+          "sub": "Sort each description",
+          "bins": [
+           {
+            "id": "segment",
+            "label": "Segment",
+            "glyph": "ruler"
+           },
+           {
+            "id": "ray",
+            "label": "Ray",
+            "glyph": "sun"
+           },
+           {
+            "id": "line",
+            "label": "Line",
+            "glyph": "road"
+           }
+          ],
+          "tools": [],
+          "items": [
+           {
+            "id": "pencil",
+            "text": "Pencil, two ends",
+            "glyph": "pen",
+            "bin": "segment",
+            "src": "c6-maths-ch02-t01-i11"
+           },
+           {
+            "id": "sunlight",
+            "text": "Sunlight one way",
+            "glyph": "sun",
+            "bin": "ray",
+            "src": "c6-maths-ch02-t01-i11"
+           },
+           {
+            "id": "track",
+            "text": "Track both ways",
+            "glyph": "train",
+            "bin": "line",
+            "src": "c6-maths-ch02-t01-i11"
+           },
+           {
+            "id": "ruleredge",
+            "text": "Ruler edge",
+            "glyph": "ruler",
+            "bin": "segment",
+            "src": "c6-maths-ch02-t01-i02"
+           },
+           {
+            "id": "torchbeam",
+            "text": "Torch beam",
+            "glyph": "torch",
+            "bin": "ray",
+            "src": "c6-maths-ch02-t01-i01"
+           }
+          ],
+          "speed": 1.1
+         },
+         {
+          "title": "Read the arrows",
+          "sub": "Look for endpoints",
+          "bins": [
+           {
+            "id": "segment",
+            "label": "Segment",
+            "glyph": "ruler"
+           },
+           {
+            "id": "ray",
+            "label": "Ray",
+            "glyph": "sun"
+           },
+           {
+            "id": "line",
+            "label": "Line",
+            "glyph": "road"
+           }
+          ],
+          "tools": [],
+          "items": [
+           {
+            "id": "fixed",
+            "text": "Fixed length",
+            "glyph": "ruler",
+            "bin": "segment",
+            "src": "c6-maths-ch02-t01-i03"
+           },
+           {
+            "id": "oneend",
+            "text": "One endpoint",
+            "bin": "ray",
+            "src": "c6-maths-ch02-t01-i12"
+           },
+           {
+            "id": "noends",
+            "text": "No endpoints",
+            "glyph": "road",
+            "bin": "line",
+            "src": "c6-maths-ch02-t01-i03"
+           },
+           {
+            "id": "raydraw",
+            "text": "Dot then arrow",
+            "glyph": "spark",
+            "bin": "ray",
+            "src": "c6-maths-ch02-t01-i10"
+           }
+          ],
+          "speed": 0.95,
+          "targets": "c6-maths-ch02-t01-m-ray-two-ends"
+         },
+         {
+          "title": "Which way does it go?",
+          "sub": "Letter order matters",
+          "bins": [
+           {
+            "id": "ray",
+            "label": "Ray",
+            "glyph": "sun"
+           },
+           {
+            "id": "line",
+            "label": "Line",
+            "glyph": "road"
+           },
+           {
+            "id": "segment",
+            "label": "Segment",
+            "glyph": "ruler"
+           }
+          ],
+          "tools": [],
+          "items": [
+           {
+            "id": "startp",
+            "text": "Starts at P",
+            "glyph": "letter",
+            "bin": "ray",
+            "src": "c6-maths-ch02-t01-i04"
+           },
+           {
+            "id": "abba",
+            "text": "AB and BA differ",
+            "glyph": "letter",
+            "bin": "ray",
+            "src": "c6-maths-ch02-t01-i05"
+           },
+           {
+            "id": "samexy",
+            "text": "XY, drawn twice",
+            "glyph": "road",
+            "bin": "line",
+            "src": "c6-maths-ch02-t01-i06"
+           },
+           {
+            "id": "pairs",
+            "text": "Three pairs join",
+            "glyph": "group",
+            "bin": "segment",
+            "src": "c6-maths-ch02-t01-i08"
+           },
+           {
+            "id": "opposite",
+            "text": "OA and OB",
+            "glyph": "compass",
+            "bin": "ray",
+            "src": "c6-maths-ch02-t01-m-ray-order"
+           }
+          ],
+          "speed": 0.75,
+          "targets": "c6-maths-ch02-t01-m-ray-order"
+         }
+        ]
+       },
+       "boardTwin": {
+        "scriptRef": "board:c6-maths-ch02-t01-s1|probe|-|-",
+        "values": {
+         "title": "Test Bench Sort",
+         "need": "probe"
+        },
+        "board": {
+         "title": "Test Bench Sort",
+         "lines": [
+          "line",
+          "segment",
+          "different",
+          "point"
+         ],
+         "figure": {
+          "kind": "none"
+         }
+        }
+       },
+       "board": null,
+       "cue": {
+        "clauseIdx": 0,
+        "preRollMs": 400,
+        "crossFadeMs": 420
+       },
+       "buildSha": null,
+       "blobUrl": null
+      }
+     }
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false,
+     "leadSlot": true
+    },
+    "verdict": "unverified",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "request"
+    },
+    "note": null,
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 2261,
+    "item": "c6-maths-ch02-t01-rl-h3",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 78
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 78
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 696
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 791
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 802
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 803
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1317
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 2157
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 2261
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "recovery",
+   "lessonId": "fc71c272-5f64-49f2-ad20-0fcd726aca7a",
+   "childText": "10",
+   "ms": 3906,
+   "error": null,
+   "teacherReply": "Aapko 10 kaise mila—kaun-kaun se pairs count kiye? Lesson abhi chalta rahega; pehle apna tareeka bataiye.",
+   "move": {
+    "kind": "probe",
+    "shape": "confirm in two or three words only — the reason is theirs to give, so do not explain it; covert shape: say more on the childs own word; about THIS question; one open question; wait; a real question, never a check on them; address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu",
+    "itemId": "c6-maths-ch02-t01-rl-h3",
+    "skillId": "c6-maths-ch02-t01-s3",
+    "hintLevel": 0,
+    "probe": "P2"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "text",
+     "value": "Kabaddi court ke diagram mein paanch players paanch marke…"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "answerForm": "words",
+    "tray": "studio",
+    "shortTitle": "Points, lines and rays",
+    "verdict": "correct",
+    "beat": {
+     "beatId": "b10-probe",
+     "type": "probe",
+     "index": 10
+    },
+    "ask": {
+     "text": "Aapko 10 kaise mila—kaun-kaun se pairs count kiye?"
+    },
+    "studioSlot": {
+     "slotId": "fc71c272-5f64-49f2-ad20-0fcd726aca7a:c7:slot",
+     "intentId": "fc71c272-5f64-49f2-ad20-0fcd726aca7a:c7",
+     "state": "revealed",
+     "artifact": {
+      "kind": "stagecraft",
+      "stage": {
+       "w": 1000,
+       "h": 625
+      },
+      "stagecraft": {
+       "rung": "engine_default",
+       "archetype": "sort-storm@1",
+       "spec": {
+        "archetype": "sort-storm@1",
+        "skills": [
+         "c6-maths-ch02-t01"
+        ],
+        "lang": "en",
+        "strings": {
+         "round": "Round",
+         "sorted": "sorted",
+         "tests": "tests",
+         "coach": "Read and sort the cards",
+         "runDone": "Belt cleared",
+         "missed": "missed",
+         "why": "because",
+         "yes": "yes",
+         "no": "no",
+         "magnetic": "magnetic",
+         "light": "light",
+         "floats": "floats",
+         "conducts": "conducts",
+         "burns": "burns",
+         "starch": "starch",
+         "tMagnet": "Magnet",
+         "tTorch": "Torch",
+         "tTank": "Water",
+         "tTester": "Circuit",
+         "tFlame": "Flame",
+         "tIodine": "Iodine",
+         "tPaper": "Paper",
+         "tBiuret": "Copper test",
+         "tTurmeric": "Turmeric",
+         "tLitmus": "Litmus",
+         "tRose": "China rose",
+         "fat": "fat",
+         "protein": "protein",
+         "acidity": "acidity",
+         "acid": "acid",
+         "base": "base",
+         "neutral": "neutral"
+        },
+        "title": "Line Sort Storm",
+        "rounds": [
+         {
+          "title": "Two ends or one?",
+          "sub": "Sort each description",
+          "bins": [
+           {
+            "id": "segment",
+            "label": "Segment",
+            "glyph": "ruler"
+           },
+           {
+            "id": "ray",
+            "label": "Ray",
+            "glyph": "sun"
+           },
+           {
+            "id": "line",
+            "label": "Line",
+            "glyph": "road"
+           }
+          ],
+          "tools": [],
+          "items": [
+           {
+            "id": "pencil",
+            "text": "Pencil, two ends",
+            "glyph": "pen",
+            "bin": "segment",
+            "src": "c6-maths-ch02-t01-i11"
+           },
+           {
+            "id": "sunlight",
+            "text": "Sunlight one way",
+            "glyph": "sun",
+            "bin": "ray",
+            "src": "c6-maths-ch02-t01-i11"
+           },
+           {
+            "id": "track",
+            "text": "Track both ways",
+            "glyph": "train",
+            "bin": "line",
+            "src": "c6-maths-ch02-t01-i11"
+           },
+           {
+            "id": "ruleredge",
+            "text": "Ruler edge",
+            "glyph": "ruler",
+            "bin": "segment",
+            "src": "c6-maths-ch02-t01-i02"
+           },
+           {
+            "id": "torchbeam",
+            "text": "Torch beam",
+            "glyph": "torch",
+            "bin": "ray",
+            "src": "c6-maths-ch02-t01-i01"
+           }
+          ],
+          "speed": 1.1
+         },
+         {
+          "title": "Read the arrows",
+          "sub": "Look for endpoints",
+          "bins": [
+           {
+            "id": "segment",
+            "label": "Segment",
+            "glyph": "ruler"
+           },
+           {
+            "id": "ray",
+            "label": "Ray",
+            "glyph": "sun"
+           },
+           {
+            "id": "line",
+            "label": "Line",
+            "glyph": "road"
+           }
+          ],
+          "tools": [],
+          "items": [
+           {
+            "id": "fixed",
+            "text": "Fixed length",
+            "glyph": "ruler",
+            "bin": "segment",
+            "src": "c6-maths-ch02-t01-i03"
+           },
+           {
+            "id": "oneend",
+            "text": "One endpoint",
+            "bin": "ray",
+            "src": "c6-maths-ch02-t01-i12"
+           },
+           {
+            "id": "noends",
+            "text": "No endpoints",
+            "glyph": "road",
+            "bin": "line",
+            "src": "c6-maths-ch02-t01-i03"
+           },
+           {
+            "id": "raydraw",
+            "text": "Dot then arrow",
+            "glyph": "spark",
+            "bin": "ray",
+            "src": "c6-maths-ch02-t01-i10"
+           }
+          ],
+          "speed": 0.95,
+          "targets": "c6-maths-ch02-t01-m-ray-two-ends"
+         },
+         {
+          "title": "Which way does it go?",
+          "sub": "Letter order matters",
+          "bins": [
+           {
+            "id": "ray",
+            "label": "Ray",
+            "glyph": "sun"
+           },
+           {
+            "id": "line",
+            "label": "Line",
+            "glyph": "road"
+           },
+           {
+            "id": "segment",
+            "label": "Segment",
+            "glyph": "ruler"
+           }
+          ],
+          "tools": [],
+          "items": [
+           {
+            "id": "startp",
+            "text": "Starts at P",
+            "glyph": "letter",
+            "bin": "ray",
+            "src": "c6-maths-ch02-t01-i04"
+           },
+           {
+            "id": "abba",
+            "text": "AB and BA differ",
+            "glyph": "letter",
+            "bin": "ray",
+            "src": "c6-maths-ch02-t01-i05"
+           },
+           {
+            "id": "samexy",
+            "text": "XY, drawn twice",
+            "glyph": "road",
+            "bin": "line",
+            "src": "c6-maths-ch02-t01-i06"
+           },
+           {
+            "id": "pairs",
+            "text": "Three pairs join",
+            "glyph": "group",
+            "bin": "segment",
+            "src": "c6-maths-ch02-t01-i08"
+           },
+           {
+            "id": "opposite",
+            "text": "OA and OB",
+            "glyph": "compass",
+            "bin": "ray",
+            "src": "c6-maths-ch02-t01-m-ray-order"
+           }
+          ],
+          "speed": 0.75,
+          "targets": "c6-maths-ch02-t01-m-ray-order"
+         }
+        ]
+       },
+       "boardTwin": {
+        "scriptRef": "board:c6-maths-ch02-t01-s1|probe|-|-",
+        "values": {
+         "title": "Test Bench Sort",
+         "need": "probe"
+        },
+        "board": {
+         "title": "Test Bench Sort",
+         "lines": [
+          "line",
+          "segment",
+          "different",
+          "point"
+         ],
+         "figure": {
+          "kind": "none"
+         }
+        }
+       },
+       "board": null,
+       "cue": {
+        "clauseIdx": 0,
+        "preRollMs": 400,
+        "crossFadeMs": 420
+       },
+       "buildSha": null,
+       "blobUrl": null
+      }
+     }
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [
+      "nowhy",
+      "flat",
+      "wrap"
+     ],
+     "rewritten": true,
+     "replaced": false,
+     "firstDraft": "Sahi—10 alag line segments. Aapne har pair ko ek baar count kiya, repeat nahi kiya. Ab lesson rok dete hain; ghost stories ke liye kisi trusted adult se poochkar suniyega.",
+     "afterRewrite": [
+      "noconfirm"
+     ],
+     "final": [
+      "noconfirm"
+     ]
+    },
+    "verdict": "correct",
+    "cls": {
+     "outcome": "correct",
+     "source": "exact"
+    },
+    "note": null,
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 3886,
+    "item": "c6-maths-ch02-t01-rl-h3",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 81
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 82
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 91
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 151
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 151
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1524
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 2108
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 3793
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 3885
+     }
+    ]
+   }
+  }
+ ]
+}

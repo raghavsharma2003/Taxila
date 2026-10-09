@@ -12,6 +12,7 @@ import { mulberry32 } from "../src/play/core/rng.ts";
 import { gcd, lcm, isPrime } from "../src/play/core/rat.ts";
 import { LABS, outcomeOf } from "../src/play/families/kyun-lab/labs.ts";
 import { labHelpers } from "../src/play/families/kyun-lab/lab.logic.ts";
+import { gapInfo } from "../src/play/families/nishana/line.logic.ts";
 
 const MODES = [
   { key: "todo-jodo/atoms", goals: ["atoms", "two-trees", "hcf", "lcm"], topic: "c6-maths-ch05-t04" },
@@ -209,5 +210,22 @@ describe("play logic: evidence is decided by the first decisive moment", () => {
     assert.equal(g.evidence[0].outcome, "incorrect");
     assert.equal(g.evidence[0].via, "game");
     assert.equal(g.evidence[0].weight, 0.5);
+  });
+});
+
+describe("play logic: the number line never states a gap it did not measure", () => {
+  const third = { text: "1/3", num: 1, den: 3, form: "fraction" };
+  it("an exact gap is named exactly", () => {
+    assert.deepEqual(gapInfo(third, 1 / 3 + 1 / 6), { g: "1/6", exact: true });
+    assert.deepEqual(gapInfo(third, 1 / 3 + 1 / 3), { g: "1/3", exact: true });
+  });
+  it("an inexact gap is the NEAREST simple fraction, marked not exact (0.18 on a thirds line is about 1/6, not 1/3)", () => {
+    assert.deepEqual(gapInfo(third, 1 / 3 + 0.18), { g: "1/6", exact: false });
+    assert.deepEqual(gapInfo(third, 1 / 3 - 0.3), { g: "1/3", exact: false });
+    assert.deepEqual(gapInfo(third, 1 / 3 + 0.45), { g: "1/2", exact: false });
+    const g = gapInfo(third, 1 / 3 + 0.01);
+    assert.equal(g.exact, false);
+    const [k, m] = g.g.split("/").map(Number);
+    assert.ok(Math.abs(k / m - 0.01) <= Math.abs(1 / 12 - 0.01), g.g);
   });
 });

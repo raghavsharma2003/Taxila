@@ -54,7 +54,7 @@ for (const m of meetings) {
     for (const Y of Object.keys(M.chans).sort().filter((a) => a !== X)) {
       trace = [];
       const cx = M.chans[X];
-      const r = await runSession({ id: `${m}-${X}${Y}`, x: new Float32Array(0), frames: { db: cx.db, f0: cx.f0 }, floorDb: floorOf(cx.db), her: herLines(M, Y), stt: { replay: R.sttLog }, band: "B4", DuplexLive, log: true });
+      const r = await runSession({ id: `${m}-${X}${Y}`, x: new Float32Array(0), frames: { db: cx.db, f0: cx.f0 }, floorDb: floorOf(cx.db), her: herLines(M, Y), stt: { replay: R.sttLog }, band: "B4", DuplexLive });
       const s = scoreOverlap(M, X, Y, r.acts, r.logs);
       // attribute each barge-in / failed continuer to the hush trace near its onset
       const near = (t0) => { const w = trace.filter(([t]) => t >= t0 - 100 && t <= t0 + 600).map((x) => x[2]); return w.length ? w[w.length - 1] : "none"; };
@@ -66,8 +66,23 @@ for (const m of meetings) {
         agg.barge[why] = (agg.barge[why] ?? 0) + 1;
       }
       for (const c of s.cont) { agg.contN++; const k = c.ok ? "ok" : (c.why.split(",")[0] || "none").split("|")[0]; agg.cont[k] = (agg.cont[k] ?? 0) + 1; }
+      // continuers: why the hush did or did not meet each listening burst, and how it ended
+      const yw = M.chans[Y].words.map(([a, b, w]) => [a, b, dec(w)]);
+      const others = Object.keys(M.chans).filter((z) => z !== X && z !== Y).flatMap((z) => M.chans[z].words);
+      const talk = (words, a, b) => words.some(([s0, e0]) => s0 < b && e0 > a);
+      const LISTEN = new Set(["yeah", "yes", "yep", "yup", "mm-hmm", "mm", "hmm", "mhm", "uh-huh", "okay", "ok", "right", "sure", "alright", "oh", "uh", "huh", "ah", "mmm", "hm"]);
+      for (const y of spurts(yw, 700).filter((q) => q.end - q.start >= 600)) for (const b of xb) {
+        if (b.start < y.start + 300 || b.start > y.end - 200 || talk(others, b.start - 1000, b.end + 1000)) continue;
+        const toks = b.words.map((w) => w[2].toLowerCase());
+        if (!toks.every((w) => LISTEN.has(w)) || b.end - b.start > 1200 || y.end - b.end < 1000) continue;
+        const yl = r.logs.find(([t, a]) => a === "YIELD" && t >= b.start - 20 && t <= b.end + 1000);
+        const hz = r.logs.find(([t, a]) => a === "HUSH" && t >= b.start - 20 && t <= b.end + 300);
+        const why = hz ? "hushed" : near(b.start);
+        const key = `${yl ? "YIELD" : "kept"}:${why}`;
+        agg.contWhy = agg.contWhy ?? {}; agg.contWhy[key] = (agg.contWhy[key] ?? 0) + 1;
+      }
     }
-    console.log(m, X, JSON.stringify(agg.barge));
+    console.log(m, X, JSON.stringify(agg.barge), JSON.stringify(agg.contWhy ?? {}));
   }
 }
 console.log(JSON.stringify(agg, null, 1));

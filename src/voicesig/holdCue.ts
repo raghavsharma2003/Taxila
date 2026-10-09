@@ -95,6 +95,7 @@ export class HoldCueCore {
   readonly cfg: HoldCueConfig;
   private ring: Hop[] = [];
   private voicedRunMs = 0;
+  private shortGapMs = 0;
   private offsetT: number | null = null;
   private pauseId = 0;
   private asked = false;
@@ -118,23 +119,34 @@ export class HoldCueCore {
     if (this.ring.length > 2 * this.ringMax) this.ring.splice(0, this.ring.length - this.ringMax);
     if (herAudible) { this.reset(); return { kind: "none" }; }
     if (f.speech) {
-      // the child is speaking: any open pause is over (the last estimate goes stale on its own within 300 ms)
-      if (this.offsetT !== null) this.reset();
+      // the child is speaking: a pause that was READ is over (its estimate goes stale on its own within 300 ms) and a new
+      // voiced run starts; a gap shorter than readAfterMs was a flicker inside the run, which keeps counting
+      if (this.offsetT !== null) {
+        const read = this.asked;
+        this.offsetT = null; this.asked = false; this.holding = null;
+        if (read) this.voicedRunMs = 0;
+      }
       this.voicedRunMs += 20;
+      this.shortGapMs = 0;
       return { kind: "none" };
     }
     if (this.offsetT === null) {
-      if (this.voicedRunMs < this.cfg.minVoicedMs) { this.voicedRunMs = 0; return { kind: "none" }; }
+      if (this.voicedRunMs < this.cfg.minVoicedMs) {
+        // too little voice so far: a click, or a run broken by a one-hop flicker; only a real silence forgets it
+        this.shortGapMs += 20;
+        if (this.shortGapMs >= this.cfg.readAfterMs) this.voicedRunMs = 0;
+        return { kind: "none" };
+      }
       this.offsetT = f.t;
       this.pauseId++;
-      this.stats.pauses++;
       this.asked = false;
       this.holding = null;
     }
-    this.voicedRunMs = 0;
     const age = f.t - this.offsetT;
     if (!this.asked && age >= this.cfg.readAfterMs) {
       this.asked = true;
+      this.voicedRunMs = 0;
+      this.stats.pauses++;
       const from = Math.max(0, this.ring.length - Math.ceil((this.cfg.windowMs + age) / 20) - 1);
       const hops = this.ring.slice(from);
       const dim = hops[0].x.length;
@@ -174,6 +186,7 @@ export class HoldCueCore {
     this.asked = false;
     this.holding = null;
     this.voicedRunMs = 0;
+    this.shortGapMs = 0;
   }
 }
 

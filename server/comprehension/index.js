@@ -7,7 +7,7 @@ export { nextProbe, noteOutcome, markAsked, openSession, eig, eligible, u01 } fr
 export { newProbeSession, recordTurn, windowWeight, sessionWeight, loadPer10, lexiconHit, fits, deferenceDiscountOn } from "./budget.js";
 export { enqueue as weaveEnqueue, onTopicPlanned, markDone as weaveDone, expire as weaveExpire, planChecks, consumeExpired, wovenEvent } from "./weave.js";
 export { selectReteach as reteachPlan, reteachTrigger, armsFromKit, armReward, updatePosterior, GENERIC_ARMS, reteachSessionInputs, noteReteach,
-  directorReteachDecision, bookDirectorReteach, reteachLogOn, directorMayReteach } from "./reteach.js";
+  directorReteachDecision, directorArmOf, bookDirectorReteach, reteachLogOn, directorMayReteach } from "./reteach.js";
 export { SHAPES, shapeById, familyOf, lintShapes, testWeight } from "./probes/shapes.js";
 export { newProtege, protegeStep, protegeReturn, teacherResolves } from "./probes/protege.js";
 export { rKey, rOpt, rCatch, optOutcome, whyOutcome, teachbackOutcome, instOutcome } from "./grade/ops.js";

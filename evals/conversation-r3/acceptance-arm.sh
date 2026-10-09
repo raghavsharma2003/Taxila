@@ -11,6 +11,9 @@ run() { name="$1"; shift; echo "[$ARM] $name start $(date -u +%H:%M:%S)"; env NO
 run owner-2 tests/prod/owner-2-no-confusion.mjs --sessions 6 --turns 14 --seed 157001 --judge model --out "$OUT/owner-2"
 run owner-4 tests/prod/owner-4-steering.mjs --seed 157001 --out "$OUT/owner-4"
 run round3-conversation tests/prod/round3-conversation.mjs
+run owner-3 tests/prod/owner-3-ending.mjs --seed 157001 --out "$OUT/owner-3"
+run w1a-battery tests/prod/w1a-battery.mjs
+run p5-interaction-acceptance tests/prod/p5-interaction-acceptance.mjs
 run round2-conversation tests/prod/round2-conversation.mjs
 run owner-1 tests/prod/owner-1-grading.mjs --seed 13666 --no-browser --out "$OUT/owner-1"
 echo "[$ARM] all done"

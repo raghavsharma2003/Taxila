@@ -331,3 +331,17 @@ describe("round3 voicesig: the gate reads a children's interval, and the run len
     assert.equal(fillerRuns(frames, p, 0.5, 20, 300).runs.length, 0);
   });
 });
+
+describe("round3 voicesig: a one-hop flicker inside a voiced run does not split it", () => {
+  test("140 ms + 20 ms gap + 140 ms of voice, then silence: one pause, read once", () => {
+    const core = new HoldCueCore();
+    const acts = [];
+    let t = 0;
+    for (let k = 0; k < 7; k++, t += 20) acts.push(core.frame(fr(t, true), x0()));
+    acts.push(core.frame(fr(t, false), x0())); t += 20;
+    for (let k = 0; k < 7; k++, t += 20) acts.push(core.frame(fr(t, true), x0()));
+    for (let k = 0; k < 30; k++, t += 20) acts.push(core.frame(fr(t, false), x0()));
+    assert.equal(acts.filter((a) => a.kind === "read").length, 1, "the 280 ms run counts once the flicker is bridged");
+    assert.equal(core.stats.pauses, 1);
+  });
+});

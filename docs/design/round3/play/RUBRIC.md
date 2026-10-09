@@ -24,6 +24,10 @@ grok-4-20 gave 8/44 false passes on diagram labels (`rj-grok-label-judge`); its 
 
 ## Part A · one game, three screens (phone 360 × 800, phone 412 × 915, laptop 1366 × 768; three art directions)
 
+Pass 2 adds a fourth screen: the 412 × 915 phone right after a typical mistake (the first of the level's own mal-rules,
+played as a child holding that belief would play it; `harness/shots.mjs --mistakes`). Pass 1 judges could not see any
+wrong-action state and said so; D2 and B4 need one.
+
 ### A1. Atomic checks (yes / no, each with a one-line reason)
 
 | id | check |
@@ -66,4 +70,6 @@ when it is the same screen in both orders (a flip is reported as "position-drive
 The pairs: the shipped studio-v2 engine as production showed it on a phone (its 16:10 world scaled into the lesson tray:
 181 × 113 CSS px on a 360 × 800 page, measured by live-tech §1.1) against a play family on the same idea at the same phone,
 in play mode. This is a comparison of what a child saw before with what this stream built; it is not a comparison with
-the reference products.
+the reference products. Each pair is asked in two variants: **tray** (the old engine at the box production gave it) and
+**full** (the same old engine given the play world's own 360 × 576 box), so that a win can be read as "the box was
+too small" (tray only) or "the game itself is better" (full as well).

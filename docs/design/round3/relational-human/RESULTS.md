@@ -30,15 +30,28 @@ routes, and the device's prefetch and echo rules simulated exactly. Load arms: 3
 - **Why the echo did not play on 8 of 20 graded turns:** classify not settled by the fixed instant ("late", more under
   load), a token outside the closed class (Devanagari "कोना" against an English key, for example), the no-two-running
   rule, or the reply arriving first.
+- **One safety-relevant event, fixed:** in load-after-1, L1 turn 7, the child said "छह faces." Classify graded it
+  correct with a clean distress read, so the echo played (4.29 s). Then the reply call was blocked by the Azure content
+  filter, and the turn failed closed into the safeguarding move (the turn path's rule). The echo preceded a safeguard.
+  Now an echo is refused when a speculative reply on the same words was filter-blocked (bus `filtered`, tested), and the
+  device stops a sounding echo when her reply carries the helplines (patch 02). Load-after-2 ran on the fixed tree: 0
+  safeguards. The false-positive filter block itself (1 of 180 turns) belongs to the turn path.
 - **Earlier single-lesson pairs** (`before-local-3` / `after-local-3`; classify on taxila-fast because the local env
   lacked the prod `DEPLOY_CLASSIFY` until 12:00): first sound 6,106 / 7,013 → 4,989 / 7,458 (n = 20 / 19), graded
   6,370 → 2,940 p50 (n = 6 / 5). Same direction, smaller n. `after-local-1` is excluded: the prefetch never fired, because
   the local STT model differed from prod (the harness defect is fixed).
-- **Production as deployed (taxila.dev, web 145996f):** see §1.1.
+- **Production as deployed (taxila.dev, web 145996f):** 5,991 / 6,780 ms, n = 20 (§1.1). The local before arm reproduces
+  it.
 
 ### 1.1 Production, before (taxila.dev)
 
-`prod-before-1.json`: PENDING (filled in below when the run finishes).
+`prod-before-1.json`, the same harness with `--base https://taxila.dev`. This is the deployed web build (145996f, prefetch
+off, no ack route), driven from this US sandbox through the agent proxy, with the transcription session minted by prod
+and the same synthetic child. n = 20 turns, one lesson: **first sound p50 5,991 / p90 6,780 ms**. Brain (turn → JSON)
+3,241 / 4,277; final transcript 1,637 / 2,165 after speech end; endpoint 1,092 / 1,189; TTS first byte 929 / 988 (US →
+centralindia speech). Remote runs carry no debug, so the graded split and the rewrites are unknown here. This matches
+the brief's "~6.0 s on prod" and the local before arm (6,107 p50). The after arm cannot run on prod: nothing of this
+stream is deployed (no commit, push or deploy, by rule).
 
 ## 2. The echo's timing must not tell the verdict
 

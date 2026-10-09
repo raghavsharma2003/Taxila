@@ -29,7 +29,7 @@ const recName = opt("--rec", "eot-D4-after");
 const arm = opt("--arm", "cue");
 const shards = Number(opt("--shards", 8));
 const model = opt("--model", ROOT + "models/voicesig/filler-gru.onnx");
-const cfg = { ...HOLD_CUE_DEFAULTS, thr: Number(opt("--thr", 0.44)), pComplete: Number(opt("--pcomplete", HOLD_CUE_DEFAULTS.pComplete)) };
+const cfg = { ...HOLD_CUE_DEFAULTS, thr: Number(opt("--thr", 0.44)), pComplete: Number(opt("--pcomplete", HOLD_CUE_DEFAULTS.pComplete)), minFillerMs: Number(opt("--minms", HOLD_CUE_DEFAULTS.minFillerMs)) };
 const name = opt("--name", `duplex-${recName}-${arm}`);
 const srcRoot = path.resolve(opt("--src", ROOT)) + "/";
 const { DuplexLive } = await import(path.join(srcRoot, "src/duplex/live.ts"));
@@ -109,7 +109,7 @@ const perTurn = out.flatMap((o) => o.scored);
 const res = {
   id: `voicesig-r3-${name}`, date: new Date().toISOString().slice(0, 10), arm, rec: recName, srcRoot: srcRoot === ROOT ? "working tree" : srcRoot,
   label: "REAL RECORDED ADULT SPEECH (LiveKit EOT-Bench Hindi, CC BY 4.0) + REAL STT EVENTS recorded live from the production socket (duplex-real E1), REPLAYED through the current duplex bridge; the cue on the voicesig product front-end + detector (onnxruntime-web). Not children.",
-  model: path.relative(ROOT, model), cfg: { thr: cfg.thr, pComplete: cfg.pComplete, tailGapMs: cfg.tailGapMs, readAfterMs: cfg.readAfterMs, maxHoldMs: cfg.maxHoldMs },
+  model: path.relative(ROOT, model), cfg: { thr: cfg.thr, pComplete: cfg.pComplete, minFillerMs: cfg.minFillerMs, tailGapMs: cfg.tailGapMs, readAfterMs: cfg.readAfterMs, maxHoldMs: cfg.maxHoldMs },
   seconds: Math.round((Date.now() - t0) / 1000),
   // the duplex stream edits src/duplex in this tree concurrently: every arm records the engine files it ran on
   engineHash: Object.fromEntries(["src/duplex/config.ts", "src/duplex/engineRules.ts", "src/duplex/governor.ts", "src/duplex/host.ts", "src/duplex/live.ts"].map((f) => [f.split("/").pop(), crypto.createHash("sha1").update(fs.readFileSync(path.join(srcRoot, f))).digest("hex").slice(0, 10)])),

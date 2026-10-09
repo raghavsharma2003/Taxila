@@ -215,24 +215,27 @@ export const reteachLogOn = (env = process.env) => !/^(off|0|false|no)$/i.test(S
  * brain/turn.js writes it as a reteach_attempts row, comprehension/resolve.js resolves it and brain/trace.js records it).
  *   kind "kit": the kit's remediation for the misconception the child's answer just showed (one observation, not the
  *     belief's confirmed misconception: trigger `misconception_seen`, migration 023), the kit's primary arm (armsFromKit).
- *   kind "change_approach": the P21 fallback (no belief to run the engine on): the worked example, `gen:worked`, by rule.
- * Pure. null when there is nothing to record (a kit misconception with no remediation).
- * @param {{ kind: "kit"|"change_approach", skillId: string, mis?: any }} c
+ *   kind "change_approach": the P21 fallback (no belief to run the engine on): the worked example, `gen:worked`, chosen by
+ *     the Director's rule; the caller names the chooser (`chosenBy`, director/state.js: "rule", migration 023).
+ * Pure. null when there is nothing to record (a kit misconception with no remediation; a change of approach with no chooser).
+ * @param {{ kind: "kit"|"change_approach", skillId: string, mis?: any, chosenBy?: string|null }} c
  */
-export function directorReteachDecision({ kind, skillId, mis = null }) {
-  if (!skillId) return null;
+export function directorReteachDecision({ kind, skillId, mis = null, chosenBy = null }) {
+  const arm = skillId ? directorArmOf(kind, mis) : null;
+  if (!arm) return null;
   if (kind === "kit") {
-    const arms = armsFromKit(mis);
-    const arm = arms.find((a) => a.primary) ?? arms[0];
-    if (!arm) return null;
     return { move: "reteach", skillId, misId: mis.id, trigger: "misconception_seen", chosenBy: "kit_primary", suppression: true,
       armId: arm.id, repClass: arm.repClass, representation: arm.representationId ?? null, offerPick: null, source: "kit" };
   }
-  if (kind === "change_approach") {
-    const arm = GENERIC_ARMS.find((a) => a.id === "gen:worked");
-    return { move: "reteach", skillId, misId: null, trigger: "wheel_spin", chosenBy: "rule", suppression: true,
-      armId: arm.id, repClass: arm.repClass, representation: arm.representationId, offerPick: null, source: "change_approach" };
-  }
+  if (!chosenBy) return null;
+  return { move: "reteach", skillId, misId: null, trigger: "wheel_spin", chosenBy, suppression: true,
+    armId: arm.id, repClass: arm.repClass, representation: arm.representationId, offerPick: null, source: "change_approach" };
+}
+
+/** The arm a Director re-teach of this kind uses: the kit's primary arm for the misconception, or the worked example. */
+export function directorArmOf(kind, mis = null) {
+  if (kind === "kit") { const arms = armsFromKit(mis); return arms.find((a) => a.primary) ?? arms[0] ?? null; }
+  if (kind === "change_approach") return GENERIC_ARMS.find((a) => a.id === "gen:worked") ?? null;
   return null;
 }
 
@@ -249,9 +252,9 @@ export function directorReteachDecision({ kind, skillId, mis = null }) {
  */
 export function directorMayReteach(s, kind, skillId, mis = null) {
   if (!reteachLogOn()) return true;
-  const d = directorReteachDecision({ kind, skillId, mis });
-  if (!d) return true;
-  if ((s.armsUsed ?? []).includes(d.armId)) return false;
+  const arm = directorArmOf(kind, mis);
+  if (!arm) return true;
+  if ((s.armsUsed ?? []).includes(arm.id)) return false;
   if (kind === "change_approach" && (s.reteachCool?.[skillId] ?? 0) > 0) return false;
   return true;
 }

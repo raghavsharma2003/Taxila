@@ -2,7 +2,8 @@
 
 **Stream:** play · **Date:** 2026-10-09 · **Inputs:** `docs/design/round3/game/concepts/{mechanics,world,live-tech}.md`,
 `RESEARCH.md` (this folder), `context/rejected.md` (read first), `docs/design/reset/{VALUES-100,DESIGN-V3,STUDIO-V2}.md`,
-`docs/research/content/game-mechanics.md` (G1-G14). **Contract:** `GRAMMAR.md` and `shared/play.ts`.
+`docs/research/content/game-mechanics.md` (G1-G14). **Contract:** `GRAMMAR.md` and `shared/play.ts`. **What was built and
+measured:** `RESULTS.md` (every number with n, method and where); the hot-file patches: `APPLY.md`.
 
 The child-safety floor and NEVER MANIPULATE sit above everything in this document. Teacher lines quoted below are
 illustrations of register for human readers; they are never pasted into a prompt.
@@ -30,9 +31,11 @@ illustrations of register for human readers; they are never pasted into a prompt
    - **Todo-Jodo** (split and merge): number atoms (primes, factorisation, HCF/LCM), fraction strips (equal parts,
      equivalence, comparison, adding), place-value bundles (regrouping, borrowing).
    - **Taraazu** (balance): equality and equations as a two-pan scale with mystery bags.
-   - **Nishana** (land it on the line): whole numbers, fractions, decimals, integers and measures on a number line.
-   - **Kyun-Lab** (fair test): science labs whose outcomes are computed by reviewed causal models (germination,
-     evaporation, pendulum, rusting, dissolving, shadows, heat conduction, absorbing heat, floating).
+   - **Nishana** (land it on the line): whole numbers, fractions, decimals, integers and measures on a number line; place,
+     compare, and round (which landmark is nearer).
+   - **Kyun-Lab** (fair test): twelve science labs whose outcomes are computed by reviewed causal models (germination,
+     evaporation, pendulum, rusting, dissolving, shadows, absorbing heat, floating and sinking, keeping ice, magnets,
+     conductors in a circuit, mould on bread, starch in a leaf), each with its own drawn apparatus.
 6. **Four art directions** through one style interface, chosen per topic and per child: **Kagaz** (paper-cut, warm cream
    ground, matches the shipped Desk), **Chalk** (slate board, chalk strokes), **Blueprint** (deep blue drafting sheet),
    **Raat** (the night-lab instrument look, refined).
@@ -185,7 +188,11 @@ comparison, adding and subtracting):
 - *Verb:* place, then "yahan!" (commit). Compare mode: place two values and read the order. Hop mode (integers): build the
   hops for s + k and s − k.
 - *Law:* the true position is computed from the exact value. The pod lands where the child put it, the true flag rises at
-  the truth, and the gap is drawn with an exact label ("¼ ka farak").
+  the truth, and the gap is labelled exactly only when it IS a simple fraction of the line's step ("¼ ka farak");
+  otherwise it says "lagbhag" (about). An earlier build printed "1/3 ka farak" for a 0.18 gap: the label was a lie.
+- *Round goal* (class 4-5 rounding): the value is placed between two landmarks (hundreds, thousands …), the halfway mark is
+  drawn, and the child sends it down or up. Wrong answers are matched to named mal-rules (truncate, chain-round, round on
+  the last digit).
 - *Discrimination by range and form:* 3/4 on a 0-2 line separates the line-as-unit belief from the truth; 0.07 vs 0.7 on 0-1
   separates the place-value slip; −3 on −10…10 separates the sign-ignored placement; ranges and forms are mixed on purpose
   (Nuraydin's narrow transfer).
@@ -195,8 +202,14 @@ comparison, adding and subtracting):
 
 - *World:* two (or three) set-ups side by side (trays of moong on cotton, two wet shirts on a line, two pendulums, two nails in
   test tubes …), each with condition chips; a day/time dial; a tally or readout per set-up.
-- *Law:* a deterministic causal model per lab (`data/play/labs/*.json`), written from the kit's expectations and reviewed:
-  each factor level multiplies a rate or a final amount; outcomes animate from the model, never from free generation.
+- *Law:* a deterministic causal model per lab (`src/play/families/kyun-lab/labs.ts`, pure, shared by client and server),
+  written from the kit's expectations: each factor level multiplies a rate or a final amount, or a binary outcome (sticks,
+  glows, starch) is decided by rule; outcomes animate from the model, never from free generation. A model that is only
+  approximate (how far a shadow falls, how long a swing takes) is shown as "lagbhag"; only labs marked `exact` print bare
+  numbers.
+- *Apparatus:* `scenes.ts` draws each lab's set-up from its chosen conditions (the wool-wrapped ice, the bulb in the cell
+  circuit, the leaf with a foil strip) and animates the outcome by the run's progress; the race clock follows the faster
+  set-up so the slow one is visibly behind.
 - *The fair-test meter* lights every condition that differs between the set-ups. A confounded test may run; its result is
   marked "do badlav — kis wajah se?" and "can't tell" is then the right conclusion.
 - *Verbs:* set a chip; commit a prediction; run time; conclude which condition made the difference.
@@ -248,9 +261,12 @@ Rules (all checked in code or tests):
 | **seam turn** (a full Director turn) | level end, impasse (no productive act for the child's own p75 hesitation, floor 8 s), a committed prediction, the child speaks, a confirmed mal-rule signature | the existing turn path, plus a telegraphic `PLAY` facts row (values only) | everything the turn path already has: scanSafety + model distress read on every committed turn, rung rules, the stop check-in |
 | **ghost move** (teacher as teammate) | class 4-5 first contact; "aap karke dikhao"; the worked-example rung | the view animates one legal act with a soft hand in the direction's style, timed to her clause | only legal acts; never on the item being assessed; never the last step of a graded level; it is evidence of nothing |
 
-**Voice as a verb** (`src/play/core/voice.ts`): a closed code grammar maps a committed utterance's numbers and verbs in
-Hindi, English and Hinglish ("teen se todo", "4 by 4", "aadha", "ho gaya", "yahan", "phir se") to the same acts touch makes;
-a spoken act is echoed in the world at once and undo is free. Discrete acts only.
+**Voice as a verb** (`src/play/core/voice.ts`, built): a closed code grammar maps a committed utterance's numbers and verbs
+in Hindi, English and Hinglish ("teen se todo", "4 by 4", "aadha", "ho gaya", "yahan", "phir se") to the same control
+presses touch makes (`pressesFor`), tagged `via: "voice"`; a spoken act is echoed in the world at once and undo is free.
+Discrete acts only; at most six words; any unknown word makes the whole utterance not a command. "Bas", "stop", "ruko",
+"help", "madad", feelings and sentences are never acts: they stay ordinary turns, so the safety path sees every one (patch
+05 dispatches each committed utterance to the game AND sends the turn as before).
 
 **Knowledge states only** (Microsoft CoC restriction 12): play signals (time to first act, undo bursts, oscillation,
 search-like divisor sequences) are candidate knowledge states for the comprehension engine, in shadow until precision ≥ 0.80
@@ -279,7 +295,10 @@ child may look at any station; nothing is locked). Named real Indian places are 
 
 ## 7. The screen
 
-**Play mode** takes the Desk over while a play segment runs (patch `docs/design/round3/play/patches/`):
+**Play mode** takes the Desk over while a play segment runs. Two forms were built: the standalone stage drawn below
+(`src/play/PlayStage.tsx`, the dev harness and the screenshots) and the **embedded** form inside the lesson Desk (patch 04:
+the question card folds because the game's goal rail is the card, her speech row keeps its minimum, the tray takes the
+rest; the embedded stage drops its own teacher row and refuses any box under 300 × 440 so the board twin shows instead):
 
 ```
 phone (≤ 600 px wide)                 wide (≥ 900 px)
@@ -312,7 +331,12 @@ arrangement cannot meet the floors, it steps down (fewer items, then the board t
 - **Evidence:** one row per level per skill at the game weight (`via: "game"`, the existing `sourceOf` path), first committed
   act per level only; misconception hits and discriminating corrects through the existing log-LR machinery
   (`server/learner/kt/misconception.js`: LR_HIT 6.9, LR_DISCRIMINATING_CORRECT 0.49) scaled by the game weight.
-- **Mastery:** no play act can make a skill secure. The bare item and the delayed check do that, as today.
+- **The path, as built:** the play server signs what it graded (`server/play/evidence.js`: an evidence token per level and a
+  seam token carrying the PLAY facts row, HMAC, bound to child and lesson); the Desk forwards the tokens as module events
+  (`src/play/lessonBridge.ts`); the lesson turn verifies them, folds one `item.open` episode per level on the lesson's kit
+  skills only, and gives the reply the facts row (patch 03). Anything the device sends besides a token is deleted first.
+- **Mastery:** no play act can make a skill secure. The bare item and the delayed check do that, as today; patch 02 makes the
+  ledger enforce it (a `via: "game"` event is never the delayed check and never sets `unaided`).
 - **A model never grades** and never writes a key, a position, a count or a physical outcome.
 
 ---
@@ -324,7 +348,7 @@ arrangement cannot meet the floors, it steps down (fewer items, then the board t
 | admit by skill (`playFor`) | server | < 1 ms | no |
 | enumerate, solve, shortcut-check, score, pick two doors | server (`server/play/levels.js`) | p95 ≤ 50 ms | no |
 | reaction bank for the level | server | < 2 ms | no |
-| pre-synthesise the 3 most likely reaction clips | server, TTS lane | overlaps play | TTS only |
+| pre-synthesise the 3 most likely reaction clips | server, TTS lane | overlaps play | TTS only (NOT built this round: reactions show as captions; the seam turn speaks) |
 | client layout + first frame | device | ≤ 300 ms warm | no |
 
 There is no model call on the play path at all. The teacher's full turns at seams are the existing Director turns. On a
@@ -360,7 +384,7 @@ recorded and the session says so to the Director on reconnect).
 | P-O6 frame rate | ≥ 50 fps median under 4× CDP CPU throttling at 412 × 915 (proxy, software raster; labelled) |
 | P-O7 reaction guards | 0 verdict words, 0 unrevealed keys, 0 floor violations over the whole bank × all moments × all facts |
 | P-O8 world | absence invariance byte-identical at +365 days; 100% of routes cite a real edge |
-| P-O9 misconception diagnosis (simulated) | information-gain level choice needs ≤ 50% of random's levels to classify a mal-rule (synthetic learners; labelled simulated) |
+| P-O9 misconception diagnosis (simulated) | information-gain level choice needs ≤ 50% of random's levels to classify a mal-rule (synthetic learners; labelled simulated). Measured 0.60 mean: short of the bar, see `RESULTS.md` |
 | P-J judges | two blind model judges of different families score on the written rubric (`RUBRIC.md`) vs Duolingo, Prodigy, Brilliant, DragonBox; reported as measured, no bar invented |
 
 **Children (pilot; not this round):** within-child crossover (family session vs today's lesson, equal time) and a
