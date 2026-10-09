@@ -1,0 +1,13 @@
+{
+ "date": "2026-10-09",
+ "box": "shared 4-vCPU Xeon sandbox, load average 15-28 from other streams' tests and servers during every measurement: absolute numbers are pessimistic and noisy",
+ "holdCueCore": {"what": "HoldCueCore.frame() per 20 ms hop, excluding the detector", "method": "process.cpuUsage over 10 min of synthetic hops (2 s voice / 1 s pause), 3 runs", "cpuMsPerAudioSecond": [0.077, 0.049, 0.067]},
+ "detectorWasm": {"what": "one detector call in onnxruntime-web WASM, 1 thread (the device runtime), n = 20 after 1 warm-up", "rows": [
+   {"model": "filler-gru/1", "window": "3 s (the cue's read)", "p50Ms": 0.96, "p95Ms": 13.09},
+   {"model": "filler-gru/1", "window": "30 s (a long turn)", "p50Ms": 5.27, "p95Ms": 17.17},
+   {"model": "filler-gru/2 (round 3)", "window": "3 s", "p50Ms": 0.43, "p95Ms": 12.73},
+   {"model": "filler-gru/2 (round 3)", "window": "30 s", "p50Ms": 7.08, "p95Ms": 12.73}],
+   "note": "same architecture and size (10,817 params, 45,496 bytes): any difference is load noise"},
+ "counterfactualPlan": {"what": "patch 02's second planTurn, after the commit (never on a hosted reply's path)", "source": "shadow-battery-local.json (n = 24 runs) and tests/prod/round3-voicesig.mjs local runs", "p50Ms": 11.5, "p95Ms": 44, "maxMs": 84.6,
+   "earlierInlineVariant": {"p50Ms": [3.4, 6.1, 8.7], "p95Ms": [19.2, 15.4, 23.6], "note": "three battery runs before it was moved off the reply path (rejected: rj-r3vs-inline-counterfactual)"}}
+}
