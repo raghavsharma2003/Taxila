@@ -13,7 +13,7 @@ If this page and the file disagree, the file wins and this page is the bug. Publ
 | a level (`PlayLevel`): numbers, positions, set-ups, the goal | a family **generator** in code (`src/play/families/<f>/logic.ts`), solver-checked | any model |
 | the key / the true outcome | the family's **law** (`apply`, `solve`) | any model, the frame, the device |
 | the grade and the evidence | the **server** replaying raw acts (`server/play/grade.js` → `FamilyLogic.grade`) | the frame's claim (`CLAIM_KEYS` are stripped) |
-| child-facing words in play | the authored bank `data/play/reactions.json`, filled with on-screen facts by `server/play/react.js` | a model (no model call exists on the play path) |
+| child-facing words in play | the authored bank `data/play/reactions.json`, filled with on-screen facts by `server/play/react.js`; a shape true in one context only starts with a condition (`{?why=not_enough}`, `{?mal=include-one}`, `{?mode=strips}`, `{?goal=equal}`, `{?predicted}`) and is skipped elsewhere; every `law_refused` shape names its refusal | a model (no model call exists on the play path) |
 | which art direction | `pickArt()` (pure) from the family, topic, class, child choice and last art shown | a model |
 | which context skin | the coverage file's `contexts` ∩ the child's interest tags (code) | a model writing a new context |
 | when play appears | the Director / Stagecraft policy (other streams), admitting by **skill** via `playFor(skillId)` | topic-tag or keyword matching (`rj-studio-fraction-mention-as-topic`) |

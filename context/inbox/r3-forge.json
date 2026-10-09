@@ -129,7 +129,7 @@
     {
       "id": "o-r3f-timing-bars-local",
       "kind": "open",
-      "title": "Timing bars not shown met: request -> piece p90 <= 3 s was 3560-6687 ms in local forge runs (n = 2-3 per run; the piece rides the ask turn's response and the turn itself was p90 4.5-4.8 s both before and after on a contended 4-core sandbox; composeAsk adds 4-8 ms warm, 39 ms max); board lateness p90 <= 1.5 s was -700 to 2618 ms locally (n = 5-10) and 2374 ms on taxila.dev before (n = 11). Forge does not touch the reply path; the bar needs a prod or quiet-machine measurement after deploy.",
+      "title": "Timing bars not shown met: request -> piece p90 <= 3 s was 3161 ms in the final local forge run (p50 352, n=4) and 3560-6687 ms in earlier ones (n=2-3 each); the piece rides the ask turn's response and the server turn itself was p90 4.5-4.8 s before and after alike on a contended 4-core sandbox (35-42 turns per run); composeAsk adds 4.0 ms p50 / 8.3 ms p90 / 38.8 ms max warm (n=30). Board lateness p90 <= 1.5 s: -700 ms locally in the final forge run (n=8; earlier runs -700, -700, 2618) and 2374 ms on taxila.dev before (n=11). Forge does not touch the reply path; the bars need a production or quiet-machine measurement after deploy.",
       "at": "2026-10-09"
     },
     {
