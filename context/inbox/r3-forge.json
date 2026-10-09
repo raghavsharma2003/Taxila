@@ -1,0 +1,161 @@
+{
+  "nodes": [
+    {
+      "id": "ms-r3f-prod-walk-2026-10-09",
+      "kind": "measurement",
+      "title": "Round 3 forge audit walk on taxila.dev (web 145996f, 2026-10-09 09:20-09:55 UTC; real child client in Chromium through the sandbox proxy with TLS verified; one adult-scripted lesson per case on the practice route, typed lane; the child's visual ask as the 3rd turn; each view shot at 360x800, 412x915, 1366x768; n = 12 asks, 51 measured views): game / animation / simulation asks 0/6 got anything the child could do (2/2 that had an engine in the tray lost it to a static board); 7/12 boards contradicted or gave away her line (a number line with no ticks under '5 equal gaps', 3 groups of 3 under '3 groups of 5', the answer 'One lakh / Seven thousand / Forty' written, a label 'Screen'); 12/12 boards the same chalk ground; module engines cut off at 360 (number pad, geoboard grid and buttons) and an area task in a perimeter lesson. Catalogue: docs/design/round3/forge/audit/README.md, shots audit/before/.",
+      "at": "2026-10-09"
+    },
+    {
+      "id": "ms-r3f-acceptance-2026-10-09",
+      "kind": "measurement",
+      "title": "tests/prod/round3-forge.mjs, the same file before and after (12 visual asks, one fresh adult-scripted child each, practice route, typed lane, views measured at 360x800 / 412x915 / 1366x768 with the forge3 checks; Q3 overlaps of a word with a prefix of itself (the handwriting reveal mid-write) re-judged as not overlaps in runs made before measure.js skipped them). taxila.dev HEAD 145996f 11:3x UTC: real 11/12, asks answered with something to do 0/6, nonsense boards 2/17, broken views 7/36, grounds 1 (chalk), board lateness p90 2374 ms (n=11). Local production build of HEAD (Neon TEST, US sandbox, load avg 15-24 on 4 cores): real 11/12, do 0/6, nonsense 3/16, broken 10/36, grounds 1. Local forge (HEAD + forge owned + play files + play patches 01-05 + forge patches 01-07): real 12/12, do 3/6, playable at the child's size 9/18 interactive views, nonsense 0/16, broken 3/36 (a module engine 13.1 px at 360 and blank at 1366; one board 14% of its box), grounds 3. Two earlier forge-only runs without play mode: do 3/6 both, broken 1/36 and 13/36 (11 of them empty Studio boxes after a refused board, fixed by patch 07). Timing (local, contended): request->piece p90 3560-6687 ms (n=2-3 per run; the piece rides the ask turn, turn p90 4.5-4.8 s before and after), board lateness p90 -700 to 2618 ms (n=5-10). Raw: docs/design/round3/forge/audit/before-prod-harness, after-local; RESULTS.md.",
+      "at": "2026-10-09"
+    },
+    {
+      "id": "ms-r3f-library-matrix-2026-10-09",
+      "kind": "measurement",
+      "title": "Every catalogue piece rendered in the real Desk tray + StudioStage (server/forge3/qa harness, local Chromium, fake clock to the settled state) at the tray boxes taxila.dev gives on 360x800 (328x404), 412x915 (380x519), 1366x768 (752x408), classes 4-5 at the 16 px floor, judged by server/forge3/qa/checks.js. HEAD (10:02 UTC) -> forge tree (12:18 UTC): catalogue boards broken at 360 381/382 -> 101/382, at 412 367 -> 56, at 1366 9 -> 2; the 20 taxila.dev boards' views 9/60 -> 2/60; Studio v2 games broken at every size 378/378 -> 0/378 (at 360 every one is now its board twin; 149 still fail at 412, mostly the classes 4-5 16 px floor); scene explainer 382/382 -> 0/382 broken everywhere (150 fail at 412). Text drawn on the engines' canvases was judged by the host's design-unit minimums in these runs (see ms-r3f-canvas-probe).",
+      "at": "2026-10-09"
+    },
+    {
+      "id": "ms-r3f-boardfit-pure-2026-10-09",
+      "kind": "measurement",
+      "title": "src/studio/boardFit.ts over the 382 catalogue first beats + the 20 taxila.dev boards (pure code, the boxes of the three judged screens, 2026-10-09): boards whose smallest word is under 14 px at the 360 phone box 312/402 -> 61/402, at 412 271 -> 36, at 1366 0 -> 0; none gained an overlapping word or a word crossed by a line; 1.65 ms per board over the catalogue, 0.17 ms over the taxila.dev boards (most need nothing).",
+      "at": "2026-10-09"
+    },
+    {
+      "id": "ms-r3f-play-cert-2026-10-09",
+      "kind": "measurement",
+      "title": "server/forge3/play-cert.js, first run (11:21-12:30 UTC, play's files as they were): every data/play/coverage.json entry (57), the levels the play server's picker serves to fresh children (2 seeds), in all 4 art directions, on src/play/PlayStage.tsx in play mode at 360x576 / 412x691 / 1006x768 = 456 level x art samples: classes 6-7 280/320 pass at every size (40 fail only at 360: the atoms goal line ellipsised); classes 4-5 0/136 pass at the 16 px young floor (play's own chrome labels at 14 px); art never changed a verdict. Canvas-drawn world text was NOT measured in this run (see ms-r3f-canvas-probe).",
+      "at": "2026-10-09"
+    },
+    {
+      "id": "ms-r3f-canvas-probe",
+      "kind": "measurement",
+      "title": "Round 3 forge, 2026-10-09 12:40 UTC: the forge3 QA measured only DOM and SVG text, so text a play piece (or a Studio v2 engine) draws on its canvas was invisible to it: an after-run screenshot of a nishana compare level (0..1,00,000, class 5) at 360 x 800 showed every tick label drawn over its neighbours while R4 passed. With measure.js canvasTextProbe (fillText recorded with its rendered box per canvas frame) the same level fails Q3 with 11 overlaps at 360, 10 at 412 and 1 at 1366, and a kyun-lab fair-test level fails Q3 at 360 (2 overlaps). Re-certification numbers: RESULTS.md.",
+      "at": "2026-10-09"
+    },
+    {
+      "id": "ms-r3f-variety-2026-10-09",
+      "kind": "measurement",
+      "title": "Variety, pure code (2026-10-09): boards over the 12 audit lessons with random lesson ids (50 reps) use 3 grounds every time and never the same ground twice in a row (before: 12/12 chalk on taxila.dev); live play pieces for one child, one per covered topic in a row (47 pieces): 3 of 4 art directions (kagaz 23, blueprint 13, chalk 11; raat never picked: pickArt prefers light grounds and the topic rules), 8 forms (family/mode), never the same art twice in a row; the same topic asked 4 times in one lesson: kagaz, chalk, kagaz, chalk. Acceptance runs: 3 grounds over 12-16 boards after vs 1 before.",
+      "at": "2026-10-09"
+    },
+    {
+      "id": "dec-r3f-board-laid-out-for-box",
+      "kind": "decision",
+      "title": "A whiteboard is laid out FOR the child's box on the client (src/studio/boardFit.ts): the geometry scales to the box while every word keeps its s/m/l size (the map-label rule), the board becomes the union of the scaled drawing and its words, and a layout is used only when it is as clean as the original (no new overlapping words, nothing outside the board, no word newly crossed by a line); the largest scale that brings the smallest word to the floor (14 px, 16 px for classes 4-5) wins; a continue board reuses its fresh board's transform. Rationale: shrinking the whole board into a 324 px phone box put 800-unit boards' words at 9-13 px (381/382 catalogue boards under the floor at 360); the camera alone only helps corner drawings. Reverse if: a rendered or child audit shows laid-out boards misread (a word read as belonging to the wrong part) more often than scaled ones, or the server learns the child's box and can lay out once for it.",
+      "at": "2026-10-09"
+    },
+    {
+      "id": "dec-r3f-live-play-piece",
+      "kind": "decision",
+      "title": "A game / animation / simulation ask with no engine to keep is answered by a play@1 piece composed live (server/forge3/live.js via studioSeam.composeAsk, before the kernel, shown by this turn's slotFor): compose()'s ladder, the play stream's own session start (coverage entry, solver-checked shortcut-free level, pickArt rotation), the visual-QA certificate for the art, and the level's board twin attached for a box that cannot hold it. No model call; FORGE3_PLAY=0 turns it off. Rationale: 0/6 such asks got anything to do on taxila.dev; a code-built level is correct by construction and costs 4-8 ms warm. Reverse if: a child pilot shows play pieces no better than the board for the delayed item, the ask turn's latency budget cannot carry it, or play coverage stays too thin to matter.",
+      "at": "2026-10-09"
+    },
+    {
+      "id": "dec-r3f-serving-floor",
+      "kind": "decision",
+      "title": "Serving rule of the visual-QA certificates (server/forge3/certify.js servesView) = the device's swap rule: a view may reach a child when every hard check passes, or when its only failure is the classes 4-5 16 px floor and its smallest text is still >= 14 px. The quality numbers keep the strict 16 px verdict. Rationale: with the strict rule every class 4-5 play piece (0/136) and most class 4-5 library games would be refused for a 2 px gap, leaving a still board; a slightly small game the child can play beats a board. Reverse if: observed misreads or mis-taps by class 4-5 children at 14-16 px.",
+      "at": "2026-10-09"
+    },
+    {
+      "id": "dec-r3f-qa-deterministic-measured",
+      "kind": "decision",
+      "title": "The forge3 visual QA is deterministic and measured in the rendered page (server/forge3/qa: text px from the DOM, SVG and canvas fillText boxes, clipping against the box, overlaps between runs, occlusion by painted elements, targets, blank, composition) at the three judged sizes; a model judge may only add refusals offline and never runs on the child's path. Library and play pieces are certified offline (certs/catalogue.json, certs/play.json), generated pieces through the QA service (gate.js, not deployed: unjudged = not shown), and the device's own box decides last (twin). Rationale: this repo's model judges false-passed wrong counts and labels (rj-holistic-model-judge-gate). Reverse if: a model judge is measured below 1% false passes on the forge defect classes over >= 200 labelled views.",
+      "at": "2026-10-09"
+    },
+    {
+      "id": "dec-r3f-wb-gate-3",
+      "kind": "decision",
+      "title": "wb-gate@3 (server/studio/qa/semantics.js): W10 every count her line says is on the screen is drawn, W11 a board shows an idea (not only medium or category words), W12 no drawing of the step her question asks for, W13 named fractions agree, W9+ a long word answer is withheld; W14 'shares a word with her line' is advisory only. Rationale: 7/12 taxila.dev boards contradicted or answered her line and W0-W9 passed all of them. Reverse if: W10-W13 refuse more than 5% of boards a reviewer marks correct on a labelled set of >= 100 real boards.",
+      "at": "2026-10-09"
+    },
+    {
+      "id": "dec-r3f-empty-tray-given-back",
+      "kind": "decision",
+      "title": "A Studio slot that ENDS with nothing to show (its board refused by the gate or failed, the piece retired) gives the tray back (StudioStage emits 'empty'; patch 07: useDesk drops the studio tray, Face layout) instead of holding an empty white box. Rationale: once wb-gate@3 refused nonsense boards, the empty box became the commonest broken view (11/36 views in one forge run; 2-3/36 on HEAD). Reverse if: children are measured to lose their place when the tray collapses (a layout jump read as a crash), in which case show the line as a caption card instead.",
+      "at": "2026-10-09"
+    },
+    {
+      "id": "rj-r3f-shrink-board-into-box",
+      "kind": "rejection",
+      "title": "Fitting a whole fixed board (400x300 to 800x500 units) into the phone tray by uniform scaling: an 800-unit board's 24-unit words render at 9.7 px in a 324 px box; 381/382 catalogue boards were under 14 px at 360 x 800. Shrinking words is the defect, not a fix; replaced by dec-r3f-board-laid-out-for-box.",
+      "at": "2026-10-09"
+    },
+    {
+      "id": "rj-r3f-server-refit-board",
+      "kind": "rejection",
+      "title": "Refitting board coordinates on the SERVER (scale and translate the ops to fill the board): a continue board draws on the previous board matched by board size (src/modules/whiteboard/StudioWhiteboard.tsx priorFor), and the server does not know the child's box; the client's layout-for-the-box reuses one transform per lesson board instead.",
+      "at": "2026-10-09"
+    },
+    {
+      "id": "rj-r3f-w14-hard",
+      "kind": "rejection",
+      "title": "W14 'the board shares a content word or number with her line' as a hard gate check: flagged 69/234 real boards, with false refusals across Hindi and English ('paani garam hokar upar jaata hai' over an 'evaporates' board, 'one-third' vs '1/3'); kept advisory.",
+      "at": "2026-10-09"
+    },
+    {
+      "id": "rj-r3f-qa-dom-only",
+      "kind": "rejection",
+      "title": "A visual QA that measures only DOM and SVG text: it passed a play number line whose canvas-drawn tick labels sat on top of each other at 360 x 800 (R4 3/3 while the screenshot was unreadable), and it judged Studio v2 canvases only by design-unit minimums. Replaced by measure.js canvasTextProbe (ms-r3f-canvas-probe).",
+      "at": "2026-10-09"
+    },
+    {
+      "id": "rj-r3f-qa-own-opacity",
+      "kind": "rejection",
+      "title": "Judging a text run visible from its OWN opacity, and every two coincident runs as an overlap: on the live lesson page this flagged Q3 on 8/12 taxila.dev boards that rendered alone showed none (a fading earlier piece under a transparent ancestor; the handwriting reveal drawing 'togeth' over 'together'; a continue board re-drawing its earlier ops). measure.js now uses effective opacity and counts same-word coincidences as writing / duplicate draws (soft S4), not overlaps.",
+      "at": "2026-10-09"
+    },
+    {
+      "id": "rj-r3f-contaminated-measurement-tree",
+      "kind": "rejection",
+      "title": "Measuring a stream's 'after' from a copy of the SHARED working tree: at 11:30 UTC it carried six other streams' uncommitted edits (latency, comprehension, relational, duplex, voicesig); its run could not be attributed to forge. After-trees are built from git HEAD (git archive) plus the stream's owned paths and its patches only.",
+      "at": "2026-10-09"
+    },
+    {
+      "id": "o-r3f-stagecraft-off-on-practice",
+      "kind": "open",
+      "title": "On the practice route (the only way the audit can pick a topic) the lesson runs no Stagecraft host (seam prefetch: practice = no Studio pieces), so a game / animation / simulation ask on a topic without play coverage (and no engine in the tray) still gets a board: 3/6 interactive audit asks after (perimeter, how scientists find out, locating places). Play coverage is 47 of 250 class 4-7 topics; real lessons (Conductor-chosen) were not walked.",
+      "at": "2026-10-09"
+    },
+    {
+      "id": "o-r3f-play-canvas-defects",
+      "kind": "open",
+      "title": "Play pieces measured with the canvas probe show real layout defects the first certification missed: nishana compare tick labels overlap at 360 and 412 (and once at 1366), a kyun-lab level's labels overlap at 360, the atoms goal line is ellipsised at 360, play's chrome renders 14 px labels for classes 4-5 (16 px floor). These are play-stream fixes (docs/design/round3/forge/FOR-PLAY.md); forge serves an art only where its certificate cell passed.",
+      "at": "2026-10-09"
+    },
+    {
+      "id": "o-r3f-timing-bars-local",
+      "kind": "open",
+      "title": "Timing bars not shown met: request -> piece p90 <= 3 s was 3560-6687 ms in local forge runs (n = 2-3 per run; the piece rides the ask turn's response and the turn itself was p90 4.5-4.8 s both before and after on a contended 4-core sandbox; composeAsk adds 4-8 ms warm, 39 ms max); board lateness p90 <= 1.5 s was -700 to 2618 ms locally (n = 5-10) and 2374 ms on taxila.dev before (n = 11). Forge does not touch the reply path; the bar needs a prod or quiet-machine measurement after deploy.",
+      "at": "2026-10-09"
+    }
+  ],
+  "edges": [
+    { "src": "dec-r3f-board-laid-out-for-box", "rel": "measured_by", "dst": "ms-r3f-boardfit-pure-2026-10-09" },
+    { "src": "dec-r3f-board-laid-out-for-box", "rel": "measured_by", "dst": "ms-r3f-library-matrix-2026-10-09" },
+    { "src": "dec-r3f-board-laid-out-for-box", "rel": "supersedes", "dst": "rj-r3f-shrink-board-into-box" },
+    { "src": "dec-r3f-board-laid-out-for-box", "rel": "caused_by", "dst": "rj-r3f-server-refit-board" },
+    { "src": "dec-r3f-live-play-piece", "rel": "measured_by", "dst": "ms-r3f-acceptance-2026-10-09" },
+    { "src": "dec-r3f-live-play-piece", "rel": "caused_by", "dst": "ms-r3f-prod-walk-2026-10-09" },
+    { "src": "dec-r3f-live-play-piece", "rel": "constrains", "dst": "live-free-generation" },
+    { "src": "dec-r3f-serving-floor", "rel": "measured_by", "dst": "ms-r3f-play-cert-2026-10-09" },
+    { "src": "dec-r3f-qa-deterministic-measured", "rel": "inherits", "dst": "rj-holistic-model-judge-gate" },
+    { "src": "dec-r3f-qa-deterministic-measured", "rel": "measured_by", "dst": "ms-r3f-canvas-probe" },
+    { "src": "dec-r3f-qa-deterministic-measured", "rel": "supersedes", "dst": "rj-r3f-qa-dom-only" },
+    { "src": "dec-r3f-qa-deterministic-measured", "rel": "supersedes", "dst": "rj-r3f-qa-own-opacity" },
+    { "src": "dec-r3f-wb-gate-3", "rel": "caused_by", "dst": "ms-r3f-prod-walk-2026-10-09" },
+    { "src": "dec-r3f-wb-gate-3", "rel": "caused_by", "dst": "rj-r3f-w14-hard" },
+    { "src": "dec-r3f-wb-gate-3", "rel": "part_of", "dst": "dec-content-board-first" },
+    { "src": "dec-r3f-empty-tray-given-back", "rel": "caused_by", "dst": "dec-r3f-wb-gate-3" },
+    { "src": "dec-r3f-empty-tray-given-back", "rel": "measured_by", "dst": "ms-r3f-acceptance-2026-10-09" },
+    { "src": "ms-r3f-variety-2026-10-09", "rel": "caused_by", "dst": "ms-r3f-prod-walk-2026-10-09" },
+    { "src": "o-r3f-play-canvas-defects", "rel": "caused_by", "dst": "ms-r3f-canvas-probe" },
+    { "src": "o-r3f-stagecraft-off-on-practice", "rel": "blocks", "dst": "dec-r3f-live-play-piece" },
+    { "src": "o-r3f-timing-bars-local", "rel": "caused_by", "dst": "ms-r3f-acceptance-2026-10-09" },
+    { "src": "ms-r3f-acceptance-2026-10-09", "rel": "caused_by", "dst": "rj-r3f-contaminated-measurement-tree" },
+    { "src": "ms-r3f-library-matrix-2026-10-09", "rel": "caused_by", "dst": "studio-v2-engine-plus-spec" }
+  ]
+}

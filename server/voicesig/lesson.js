@@ -101,12 +101,23 @@ export function holdOf(kv) {
   return { read: f.pausesRead ?? 0, fired: f.thinkPauses ?? 0 };
 }
 
-/** The decision fields the shadow comparison reads off a plan (planTurn's r): the move and the rung / probe it set. */
+/** FNV-1a of a JSON value: the shadow record compares the move's shape (a teacher note; may quote kit text) by hash only. */
+function fnv(v) {
+  const s = JSON.stringify(v ?? null);
+  let h = 0x811c9dc5;
+  for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 0x01000193) >>> 0; }
+  return h.toString(16);
+}
+
+/**
+ * The decision fields the shadow comparison reads off a plan (planTurn's r): the move, the rung / probe it set, and a hash
+ * of the move's shape (gentlerHint changes a rung's CONTENT, not its level: director/state.js "gentle").
+ */
 export function decisionOf(plan) {
   const r = plan?.r ?? plan;
   if (!r?.move) return null;
   const pp = r.state?.pendingProbe;
-  return { move: String(r.move.kind ?? "none"), hintLevel: r.state?.hintLevel ?? null, probe: pp ? String(pp.cls ?? pp.shapeId ?? "probe") : null };
+  return { move: String(r.move.kind ?? "none"), hintLevel: r.state?.hintLevel ?? null, probe: pp ? String(pp.cls ?? pp.shapeId ?? "probe") : null, shape: fnv(r.move.shape) };
 }
 
 /**
@@ -124,7 +135,7 @@ export function shadowDiff(vsTurn, actualPlan, shadowPlan) {
     const a = decisionOf(actualPlan);
     const s = decisionOf(shadowPlan);
     if (!a || !s) return { codes: ["vs_diff.not_run"], record: { would: wouldKeys, actual: a, shadow: null, changed: null } };
-    const changed = a.move !== s.move || a.hintLevel !== s.hintLevel || a.probe !== s.probe;
+    const changed = a.move !== s.move || a.hintLevel !== s.hintLevel || a.probe !== s.probe || a.shape !== s.shape;
     return { codes: [changed ? "vs_diff.changed" : "vs_diff.same"], record: { would: wouldKeys, actual: a, shadow: s, changed } };
   } catch {
     return { codes: [], record: null };

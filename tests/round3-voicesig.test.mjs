@@ -181,7 +181,11 @@ describe("round3 voicesig: server shadow log (what she would have done)", () => 
     assert.deepEqual(shadowDiff(vs, plan("advance"), plan("advance")).codes, ["vs_diff.same"]);
     const d = shadowDiff(vs, plan("advance"), plan("probe", 0, "probe.why"));
     assert.deepEqual(d.codes, ["vs_diff.changed"]);
-    assert.deepEqual(d.record.shadow, { move: "probe", hintLevel: 0, probe: "probe.why" });
+    assert.equal(d.record.shadow.move, "probe");
+    assert.equal(d.record.shadow.probe, "probe.why");
+    assert.match(d.record.shadow.shape, /^[0-9a-f]+$/, "the shape only as a hash");
+    const g = (shape) => ({ r: { move: { kind: "hint", shape }, state: { hintLevel: 2 } } });
+    assert.deepEqual(shadowDiff({ would: { gentlerHint: true } }, g("rung 2 note"), g("gentler rung 2 note")).codes, ["vs_diff.changed"], "a gentler rung's content is a change");
     assert.ok(!JSON.stringify(d).includes("words never copied"));
     assert.deepEqual(shadowDiff(vs, plan("advance"), null).codes, ["vs_diff.not_run"]);
     assert.deepEqual(shadowDiff({ would: {} }, plan("advance"), plan("probe")).codes, []);

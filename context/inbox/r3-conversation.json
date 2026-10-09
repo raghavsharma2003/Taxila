@@ -1,0 +1,116 @@
+{
+  "nodes": [
+    {
+      "id": "r3c-first-pose-lead-slot",
+      "kind": "decision",
+      "title": "Round 3 conversation (patch 01): the FIRST pose of a kit question is a lead-slot turn, like round 2's re-poses and requests: the reply model writes only a bridge (<= 18 words for 10-15, <= 14 for 6-9, >= 2; after a right answer the slot's own last note asks for the confirmation first; 'the lesson goes on'), code strips its questions and appends the verified question byte for byte. Why: on HEAD the posing moves were rewritten on 123 of 234 turns (base-head-1, local battery 2026-10-09): the draft re-worded the kit question, asked its own follow-up, or said goodbye mid-lesson (ask 186, drift 158, flat 94, wrap 33 over 687 turns), although the compiled prompt says to pose it as written twice, once last. Kill switch TAXILA_P5_R3CONV=off. Reverse if: the judges' or the owner's ear says first poses sound stitched (a measured drop in flows-naturally on answer_correct / filler turns), the bridge openers become a monotone (same two opening words as the previous turn above ~10 % of turns; 4.8 % measured interim), or a key leak is traced to a bridge.",
+      "at": "2026-10-09"
+    },
+    {
+      "id": "r3c-drift-first-pose-only",
+      "kind": "decision",
+      "title": "Round 3 conversation (patch 01): the reply guard's 'drift' check (half the full prompt's content words) applies to a FIRST pose only; a re-pose that ends on the card's form of the question has posed it (the 'ask' parity guard still requires that ending). Before, the lead slot itself ends on the card form, so every request answered on a question already posed (small talk, a question of theirs, an insistence) tripped drift, and the rewrite or the drift repair cut what the draft had said to the child: 'pehle mera sawaal, phir padhai' got a real rainbow answer in the draft and shipped as the bare flags question; 'aap kahan rehte ho?' shipped as the bare question. Reverse if a misgrade is traced to a re-pose that ended on the card form while the child had been asked a different question.",
+      "at": "2026-10-09"
+    },
+    {
+      "id": "r3c-repair-ladder-ends-in-code",
+      "kind": "decision",
+      "title": "Round 3 conversation (patch 01): a re-pose still only the card question after every model repair gets a fixed code lead (fallback-lead.js: the kit hint's statements when they never state the key and she has not said them this lesson, else one of three nudge variants she has not said this lesson; 'welcome back' after a return), never the bare question (owner-2 R3 on prod: 4 of 90 turns). The lead-only repair may now run after a leak catch (the new lead is key-checked and the joined turn may carry no problem the repaired one did not, a leak included); it still never runs after a floor catch (rj-conv-lead-repair-after-floor). Reverse if the owner hears the fixed leads as robotic, or they produce R4 repeats (owner-2 J >= 0.8).",
+      "at": "2026-10-09"
+    },
+    {
+      "id": "r3c-one-call-turn-note-last",
+      "kind": "decision",
+      "title": "Round 3 conversation (patch 01): every one-call reply (the lead slot not used) gets its own turn shape as the LAST message (compose.js turnNote: end with exactly the card question, or hand the floor back with no goodbye), and a request answered with no card question gets the request's note before it (requestNote). The compiled prompt's TURN SHAPE line is last in the system prompt but the history and the child's words follow it, so it is not last in what the model reads (position is mechanism). Not on a check-in, a granted break, a thinking-aloud wait, a why-probe, a diagnostic or a closing move. Reverse if replies get measurably longer or more formulaic with it (own words p50/p90, opener repetition) or a judged quality drop is traced to it.",
+      "at": "2026-10-09"
+    },
+    {
+      "id": "r3c-guards-agree",
+      "kind": "decision",
+      "title": "Round 3 conversation (patch 01): reply guards that read the wrong thing were narrowed to what they mean: a granted break needs no hand-back (breakYes says 'no question now'; 3 of 3 breaks were rewritten into a lesson question); agreeing to a non-answer request on an UNVERIFIED reading is not praise of an answer (a graded wrong answer keeps every praise check); a confirmation word among the first two statements confirms a right answer ('Kabir, haan, 1 player bach jaata hai' was rewritten as not confirming); the answered item's own question and key may be named when confirming it (the parts check cut 'Flag A mein 4 equal sections hain'); a turn ending on the pinned kit question has handed back whatever its verb. Reverse per item if a praise-on-wrong, an unconfirmed right answer, or a screen contradiction is traced to the relaxation.",
+      "at": "2026-10-09"
+    },
+    {
+      "id": "r3c-share-kept-later",
+      "kind": "decision",
+      "title": "Round 3 conversation (patch 02): a share from the child's life (the note's personal_share: 'mere paas naya cycle aaya hai', 'meri cousin ki shaadi hai') is noticed now AND kept in s.later (topic screened by unsafeChildPhrase), served once when the question resolves (also via the why-probe path, which reached poseNext with no active item and so kept 'right after this question' only at the wrap) or before the wrap, as what they TOLD her (one warm line, no question). The uptake never names a feeling of theirs (MS CoC restriction 12; the first smoke said 'yeh baat tumne khushi se batayi'). Reverse if the owner finds the return awkward, or a kept topic is ever unsafe.",
+      "at": "2026-10-09"
+    },
+    {
+      "id": "r3c-questions-about-her-answered-now",
+      "kind": "decision",
+      "title": "Round 3 conversation: a question about HER ('aapko kaunsa cricketer pasand hai?', 'PUBG khelte ho?', 'do you like pizza?') is answered now as an AI teacher, never parked: owner-2 R7.defer (deferring is ignoring, F11) wins over the conversation-v2 battery's diversion gold, which expects a park for some of these lines. The lexicon reads 'X khelte/dekhte ho?' to her as small talk (second person only). Cost: the battery's diversion 'parks' check fails on those cases by design. Reverse if the owner changes F11.",
+      "at": "2026-10-09"
+    },
+    {
+      "id": "r3c-decline-avoid-name-hook",
+      "kind": "decision",
+      "title": "Round 3 conversation (patch 02): an out-of-bounds decline is a warm short no with the child's name, no reason given, then a hook into today's work (a surprising true fact, or a few words that make the question a small challenge; a statement). Evidence: Chirpy Cardinal (Alexa Prize, arXiv 2008.12348) re-offence per strategy: avoid + name + prompt 0.346, empathetic 0.461, counter-argument + prompt 0.567, why + name 0.638; round 2 run C out_of_bounds 'reengages' failed 8 of 12 and 'kisi ko hurt karna theek nahi' read as a lecture. Out-of-bounds stays a code decision (lexicon oob, policy decline). Reverse if a decline without a reason is judged cold, or re-asks rise.",
+      "at": "2026-10-09"
+    },
+    {
+      "id": "r3c-stop-checkin-is-a-choice",
+      "kind": "decision",
+      "title": "Round 3 conversation (patches 01-03): a stop check-in must offer going on or a break as well as stopping ('nochoice' → the check-in's own rewrite, then the fixed check-in line); English 'we'll stop the lesson here' / 'lesson ended' are goodbye words before they chose; the stop check-in and the boredom offer say back what the child asked, in their words, before the choices; the move after a check-in that was not a stop carries on ('no talk of resting, breaks or ending'). On HEAD 'end the lesson' got 'Okay, Meher. We'll stop the lesson here.' and the child's 'yes' then got 'Lesson ended, Meher. You may close the book now. <a question>'. Observed: after 'tum padhai band karna chahte ho' a plain 'haan' may now end the lesson (letting them go is allowed under NEVER MANIPULATE). Reverse if owner-3 regresses.",
+      "at": "2026-10-09"
+    },
+    {
+      "id": "r3c-praise-guard-clause",
+      "kind": "decision",
+      "title": "Round 3 conversation (patch 03): G-PRAISE-1's praise-of-the-answer pattern allows a clause (<= 60 characters, one sentence) between 'aapne / tumne / you' and 'sahi / correct / right + a verb of saying, finding, working out or doing' (nikala, pehchaana, kiya, gina, samjha, lagaya …): a superset of the owner checker's RX.praiseAny. Prod owner-1 2026-10-09: c5-maths-ch07-t02-i06 (no verdict) 'Aapne Pattern A ka niyam sahi pehchaana' shipped (the old pattern allowed 3 words between), and the same lesson shipped 'Aapne pattern ka agla number sahi nikala' twice on module answers graded not_yet (uncounted: the checker reads typed rows only). The verdict itself (null on a partial answer) is the truth stream's. Reverse if a correct-verdict turn's honest confirmation is ever stripped by it (the pattern does not run on a correct verdict).",
+      "at": "2026-10-09"
+    },
+    {
+      "id": "r3c-optional-move-notes-bounded",
+      "kind": "decision",
+      "title": "Round 3 conversation (patch 02): optional move notes (after a check-in, a second need) are added only while the move shape stays <= 760 characters (the MOVE section cap is 260 tokens at 3.5 characters per token with two header lines); the shape is not droppable and an over-cap MOVE section is a BudgetError (a 500 on a live turn). Unit test: every round-3 shape with every optional note fits, 15 request types x 2 registers x 2 bands x 2 lanes. Reverse never without a droppable MOVE part in compile.js.",
+      "at": "2026-10-09"
+    },
+    {
+      "id": "rj-r3c-optional-notes-unbounded",
+      "kind": "rejection",
+      "title": "Tried (round 3 conversation, first cut): appending the after-check-in note and up to two second-need notes to the move shape unconditionally. Broke (a budget probe before any live run, scratch/budget-probe.mjs): a decline after a stop check-in with two second needs in the aap register needed 267 tokens in the MOVE section (cap 260) and compile threw BudgetError for both age bands: a 500 on a live turn (the ship5 w2c-personalisation failure class). Replaced by r3c-optional-move-notes-bounded.",
+      "at": "2026-10-09"
+    },
+    {
+      "id": "rj-r3c-drift-on-repose",
+      "kind": "rejection",
+      "title": "Round 2's reply guard as shipped: the 'drift' check (a posing move at rung 0 must carry half the full prompt's content words) also ran on re-poses, while the lead slot and the 'ask' parity guard end a re-pose on the card's SHORT form. Broke: every request answered on a question already posed was a guard conflict by construction; on base-head-1 (local battery on HEAD, 2026-10-09) drift fired on 158 of 687 turns, and the rewrite / drift repair dropped the response to the child (the battery's insistence 'engages_brief: no', small talk shipped as the bare question). Replaced by r3c-drift-first-pose-only.",
+      "at": "2026-10-09"
+    },
+    {
+      "id": "rj-r3c-lead-repair-barred-after-leak",
+      "kind": "rejection",
+      "title": "Round 2's rule 'the lead-only repair never runs after a floor or a leak catch'. Broke for the leak half: a leak caught on a hint (often the key's number used as the method's count: key '3 drumsticks', draft '9 ko 3 barabar groups mein baanto', 4 of the 14 identifiable leak catches on base-head-1) was cut, nothing else could speak, and the turn shipped as the bare card question after a wrong answer (owner-2 R3). The floor half stands. Replaced by r3c-repair-ladder-ends-in-code; the leak predicate's own false positive is handed to the truth stream (revealsAnswer is theirs).",
+      "at": "2026-10-09"
+    },
+    {
+      "id": "rj-r3c-recited-sensible",
+      "kind": "rejection",
+      "title": "The not-yet verdict note 'name what is sensible in it' (shapes.js VERDICT_NOTE, and the praise rewrite reason). Broke: recited as the word itself, also on non-verdict turns through her own history: 5 of 599 battery replies in round 2 run C ('B chunna sensible tha', 'Minecraft ka bada ghar alag baat hai; aapne usse yaad dilaya, sensible') and on taxila.dev 2026-10-09 'Zoya, paani peena sensible break hai' (tests/prod/round3-conversation H). Same law: the park note's 'kindly name that it is a different thing from today's work' came back as one sentence in every park, the frustration note's 'this one is hard work and that is okay' as 'is question mein hard work hai, aur yeh okay hai'. Replaced by shapes with no quotable words (start from what they actually did; the empathy line described by what it does).",
+      "at": "2026-10-09"
+    },
+    {
+      "id": "rj-r3c-park-questions-about-her",
+      "kind": "rejection",
+      "title": "Considered: making every off-lesson question park with a promise (the conversation-v2 battery's diversion rubric expects 'parks' on 'aapko kaunsa cricketer pasand hai?' and 'do you like pizza?'). Rejected before building: owner-2 R7.defer counts any deferral of the child's question as ignoring it (F11, owner rule), and owner-2's off-topic lines are exactly these questions about her. Questions about her are answered now; statements from the child's life are parked with a kept promise (r3c-share-kept-later).",
+      "at": "2026-10-09"
+    },
+    {
+      "id": "rj-r3c-relax-leak-predicate-here",
+      "kind": "rejection",
+      "title": "Considered: treating a small number key as named by the question when it is the denominator of a fraction word in it ('ek-tihaai' → 3), so '9 ko 3 barabar groups mein baanto' is not a leak. Not built by the conversation stream: revealsAnswer is the truth stream's predicate, and a named number is a leak only beside a VERDICT word, so 'toh 3 drumsticks' (a real reveal, no verdict word) would pass. Needs the truth stream's paired replay; handed over with the count (4 of 14 identifiable leak catches on base-head-1).",
+      "at": "2026-10-09"
+    }
+  ],
+  "edges": [
+    { "src": "r3c-first-pose-lead-slot", "rel": "extends", "dst": "p5-reply-guards" },
+    { "src": "r3c-drift-first-pose-only", "rel": "supersedes", "dst": "rj-r3c-drift-on-repose" },
+    { "src": "r3c-repair-ladder-ends-in-code", "rel": "supersedes", "dst": "rj-r3c-lead-repair-barred-after-leak" },
+    { "src": "r3c-optional-move-notes-bounded", "rel": "supersedes", "dst": "rj-r3c-optional-notes-unbounded" },
+    { "src": "r3c-questions-about-her-answered-now", "rel": "supersedes", "dst": "rj-r3c-park-questions-about-her" },
+    { "src": "r3c-share-kept-later", "rel": "constrains", "dst": "r3c-questions-about-her-answered-now" },
+    { "src": "r3c-one-call-turn-note-last", "rel": "extends", "dst": "r3c-first-pose-lead-slot" },
+    { "src": "rj-r3c-relax-leak-predicate-here", "rel": "constrains", "dst": "r3c-repair-ladder-ends-in-code" }
+  ]
+}

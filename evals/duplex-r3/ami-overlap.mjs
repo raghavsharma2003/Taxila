@@ -4,6 +4,7 @@
 // own bleed), run one meeting per process in parallel so a before/after fits in a working session. Scoring is imported,
 // never copied. Turn-end rows are not part of this runner (E1 / eot-bench measures turn ends).
 //   node evals/duplex-r3/ami-overlap.mjs <frames_dir> --name <x> [--meetings ES2004b,ES2005b,IS1004b,IS1008b] [--rec ami-raw-D4] [--tmp dir]
+//        [--set OVERLAP.armedRevoke=false,...]   (ablation of one mutable config row)
 //   (internal) --one <meeting> --out <file>
 import fs from "node:fs";
 import path from "node:path";
@@ -21,8 +22,20 @@ const floorOf = (db) => [...db].sort((a, b) => a - b)[Math.floor(db.length * 0.1
 function spurts(words, maxGap) { const out = []; for (const [s, e, w] of words) { const l = out.at(-1); if (l && s - l.end < maxGap) { l.end = Math.max(l.end, e); l.words.push([s, e, w]); } else out.push({ start: s, end: e, words: [[s, e, w]] }); } return out; }
 const herLines = (M, Y) => spurts(M.chans[Y].words.map(([s, e, w]) => [s, e, dec(w)]), 700).filter((s) => s.end - s.start >= 600).map((s) => ({ start: s.start, end: s.end, text: s.words.map((w) => w[2]).join(" "), outDb: M.chans[Y].db }));
 
+/** `--set OVERLAP.armedRevoke=false,PAUSE_WAIT.question=0`: ablations on the engine's mutable config rows (eval only). */
+async function applySets(sets) {
+  if (!sets) return;
+  const cfg = await import(ROOT + "src/duplex/config.ts");
+  for (const kv of sets.split(",")) {
+    const [k, v] = kv.split("=");
+    const [obj, key] = k.split(".");
+    cfg[obj][key] = v === "true" ? true : v === "false" ? false : Number(v);
+  }
+}
+
 async function one(framesDir, m, rec, outFile) {
   loadEnv();
+  await applySets(opt("--set", null));
   const { DuplexLive } = await import(ROOT + "src/duplex/live.ts");
   const M = JSON.parse(fs.readFileSync(path.join(framesDir, `${m}.json`), "utf8"));
   const all = { cont: [], barge: [], room: [], echoSpurts: 0, echoYields: 0, pairs: 0, hushes: 0, hushLatency: [] };
@@ -79,14 +92,14 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   fs.mkdirSync(tmp, { recursive: true });
   const t0 = Date.now();
   await Promise.all(meetings.map((m) => new Promise((resolve, reject) => {
-    const p = spawn(process.execPath, [new URL(import.meta.url).pathname, framesDir, "--one", m, "--rec", rec, "--out", path.join(tmp, `${m}.json`)], { stdio: ["ignore", "ignore", "inherit"] });
+    const p = spawn(process.execPath, [new URL(import.meta.url).pathname, framesDir, "--one", m, "--rec", rec, "--out", path.join(tmp, `${m}.json`), ...(opt("--set", null) ? ["--set", opt("--set")] : [])], { stdio: ["ignore", "ignore", "inherit"] });
     p.on("exit", (code) => (code === 0 ? resolve() : reject(new Error(`${m} exit ${code}`))));
   })));
   const parts = meetings.map((m) => JSON.parse(fs.readFileSync(path.join(tmp, `${m}.json`), "utf8")));
   const crypto = await import("node:crypto");
   const hash = (f) => crypto.createHash("sha1").update(fs.readFileSync(ROOT + f)).digest("hex").slice(0, 10);
   const out = summarize(parts, {
-    id: `duplex-r3-${name}`, date: new Date().toISOString().slice(0, 10), rec, meetings, seconds: Math.round((Date.now() - t0) / 1000),
+    id: `duplex-r3-${name}`, date: new Date().toISOString().slice(0, 10), rec, meetings, seconds: Math.round((Date.now() - t0) / 1000), set: opt("--set", null),
     engineHash: { config: hash("src/duplex/config.ts"), rules: hash("src/duplex/engineRules.ts"), overlap: hash("src/duplex/overlap.ts"), host: hash("src/duplex/host.ts"), governor: hash("src/duplex/governor.ts") },
     label: "REAL RECORDED ADULT SPEECH (AMI, CC BY 4.0, English incl. Indian-L1 adults; evaluation only) + REAL STT events (production gpt-live-transcribe socket, recorded live in round 2), replayed open loop per her = Y through the current engine. Not children, not Hindi.",
   });

@@ -1,0 +1,36 @@
+{
+ "id": "duplex-r3-sem-ceiling",
+ "date": "2026-10-09",
+ "label": "REAL RECORDED ADULT SPEECH (eot-bench Hindi, CC BY 4.0; evaluation only) + the REAL MAI STT text the engine had when its words first covered the audio; Azure models asked OFFLINE (no latency budget) whether the speaker had finished. Not children.",
+ "n": 538,
+ "holds": 139,
+ "ends": 399,
+ "completeLooking": {
+  "n": 358,
+  "holds": 66
+ },
+ "models": {
+  "grok-4-1-fast-non-reasoning": {
+   "answered": 538,
+   "aucAll": 0.701,
+   "aucCompleteLooking": 0.569,
+   "latencyMs": {
+    "p50": 563,
+    "p90": 873
+   }
+  },
+  "taxila-fast": {
+   "answered": 538,
+   "aucAll": 0.825,
+   "aucCompleteLooking": 0.795,
+   "latencyMs": {
+    "p50": 1219,
+    "p90": 1494
+   }
+  }
+ },
+ "stageA_pProjected": {
+  "aucAll": 0.504,
+  "aucCompleteLooking": 0.487
+ }
+}
