@@ -237,8 +237,13 @@ every visible text node's rendered size (SVG text included, via its screen matri
 horizontal overflow.
 
 - **Horizontal page scroll:** 0 of 21 renders.
-- **Smallest rendered text:** see `audit.json` (target ≥ 14.0 px everywhere; the home illustration and dial labels were
-  raised after the first audit found 12.9 px and 13.5 px).
+- **Smallest rendered text:** 14.0 px in all 21 renders, 0 nodes below 14 px (final run, 2026-10-09). The first audit
+  found the home illustration at 12.9 px and the dial numbers at 13.5 px; both were raised.
+- **Tap targets under 44 px:** 0 in all 21 renders (the first audit found the caption-script button at 44 × 40 and the
+  dial numbers at 31 px; both fixed).
+- **Elements past the screen edge:** 2 reported, both clipped by their parents and invisible: the teacher's aura
+  (inside an `overflow: hidden` window) and the dial's rotating group (its axis-aligned box grows when rotated; the SVG
+  clips it).
 - **Targets:** every button, key, card and input ≥ 44 × 44 px; dial chapter numbers have a 46 px hit circle; the dial
   is also a keyboard `slider` (arrow keys).
 - **Contrast:** §1 (all text pairs ≥ 4.5:1; graphics ≥ 3:1).
