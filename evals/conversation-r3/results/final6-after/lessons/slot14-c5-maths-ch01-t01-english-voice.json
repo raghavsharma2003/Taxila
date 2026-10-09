@@ -1,0 +1,5603 @@
+{
+ "slot": 14,
+ "topic": "c5-maths-ch01-t01",
+ "cls": 5,
+ "lang": "english",
+ "lane": "voice",
+ "lessons": [
+  {
+   "lessonId": "738980e4-34ce-492f-86d2-6f7fdc62589a",
+   "why": "start",
+   "at": "2026-10-09T14:24:43.509Z",
+   "teacher": "Arjun"
+  }
+ ],
+ "turns": [
+  {
+   "who": "teacher",
+   "kind": "opening",
+   "lessonId": "738980e4-34ce-492f-86d2-6f7fdc62589a",
+   "teacherReply": "Hi Meher, I’m Arjun, your AI teacher. Today we’ll explore big numbers, like football scores with extra digits! Which number do you see most often?",
+   "ui": {
+    "status": "your_turn",
+    "phase": "warmup",
+    "handover": "answer",
+    "answerForm": "words",
+    "tray": "none",
+    "shortTitle": "Big numbers",
+    "beat": {
+     "beatId": "b1-arrive",
+     "type": "arrive",
+     "index": 1
+    },
+    "ask": {
+     "text": "Which number do you see most often?"
+    }
+   }
+  },
+  {
+   "who": "child",
+   "tag": "greet",
+   "lessonId": "738980e4-34ce-492f-86d2-6f7fdc62589a",
+   "childText": "hello",
+   "ms": 1865,
+   "error": null,
+   "teacherReply": "Hello Meher! Imagine a football stadium with 45,000 fans—what do you think happens when we add more digits to a number?",
+   "move": {
+    "kind": "hook",
+    "shape": "open with one concrete everyday situation built on their interest (football) — kit contexts: highway distances (Delhi to Kanyakumari), cricket stadium crowds, train route kilometres; ask what they think will happen or which they would pick — a prediction, no right answer yet; any bigger/more comparison: two quantities of one kind, in one unit — a count against a count, a distance against a distance; never across kinds; mention once: at the end they will teach this to Bittu (a pretend new student who missed this class)",
+    "format": "F4"
+   },
+   "ui": {
+    "status": "your_turn",
+    "phase": "teach",
+    "handover": "answer",
+    "answerForm": "words",
+    "tray": "none",
+    "shortTitle": "Big numbers",
+    "beat": {
+     "beatId": "b2-hook",
+     "type": "hook",
+     "index": 2
+    },
+    "ask": {
+     "text": "Imagine a football stadium with 45,000 fans—what do you think happens when we add more digits to a number?"
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false
+    },
+    "verdict": "ungraded",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 648,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "teach",
+    "ms": 1857,
+    "item": null,
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 65
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 65
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 669
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 736
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1318
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1384
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1386
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1386
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1609
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 1749
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 1857
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "probe:language_switch-08",
+   "lessonId": "738980e4-34ce-492f-86d2-6f7fdc62589a",
+   "childText": "thoda hindi mein batao na",
+   "ms": 3060,
+   "error": null,
+   "teacherReply": "Meher, bade number ko daahine se teen-teen ankon ke hisson mein padte hain: hazaar, lakh. 1,07,040 ko bolo.",
+   "move": {
+    "kind": "reteach",
+    "shape": "they asked for simple Hindi (Roman script when written): from now on every turn in simple Hindi (Roman script when written), even if they reply in another language; say the last idea again in it, simply, and end with one small question",
+    "skillId": "c5-maths-ch01-t01-s1",
+    "request": "language"
+   },
+   "ui": {
+    "status": "your_turn",
+    "phase": "teach",
+    "handover": "answer",
+    "answerForm": "words",
+    "tray": "studio",
+    "shortTitle": "Big numbers",
+    "beat": {
+     "beatId": "b3-explain",
+     "type": "explain",
+     "index": 3
+    },
+    "ask": {
+     "text": "1,07,040 ko bolo."
+    },
+    "studioSlot": {
+     "slotId": "738980e4-34ce-492f-86d2-6f7fdc62589a:wb:2:slot",
+     "intentId": "738980e4-34ce-492f-86d2-6f7fdc62589a:wb:2",
+     "state": "planning"
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false
+    },
+    "verdict": "ungraded",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "request"
+    },
+    "note": null,
+    "hintLevel": 0,
+    "phase": "teach",
+    "ms": 3052,
+    "item": null,
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 105
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 105
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 748
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 860
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 866
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 867
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1671
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 2756
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 3052
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "filler",
+   "lessonId": "738980e4-34ce-492f-86d2-6f7fdc62589a",
+   "childText": "ok",
+   "ms": 1807,
+   "error": null,
+   "teacherReply": "Meher, 1,07,040 ko “ek lakh saat hazaar chaalis” padhenge. Ab batao, 7 kis hissa ko dikhata hai?",
+   "move": {
+    "kind": "explain",
+    "shape": "one idea only: Read and write 5- and 6-digit numbers in numerals and words; an example from their interest (football) if it fits naturally; objects first, then the symbol; point at the screen only at what the on-screen row lists; never a drawing made of characters; end with one small question that makes them USE the idea — never 'samjha?'",
+    "skillId": "c5-maths-ch01-t01-s1",
+    "format": "F3"
+   },
+   "ui": {
+    "status": "your_turn",
+    "phase": "teach",
+    "handover": "answer",
+    "answerForm": "words",
+    "tray": "studio",
+    "shortTitle": "Big numbers",
+    "beat": {
+     "beatId": "b3-explain",
+     "type": "explain",
+     "index": 3
+    },
+    "ask": {
+     "text": "Ab batao, 7 kis hissa ko dikhata hai?"
+    },
+    "studioSlot": {
+     "slotId": "738980e4-34ce-492f-86d2-6f7fdc62589a:wb:3:slot",
+     "intentId": "738980e4-34ce-492f-86d2-6f7fdc62589a:wb:3",
+     "state": "planning"
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false
+    },
+    "verdict": "ungraded",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 654,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "teach",
+    "ms": 1805,
+    "item": null,
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 88
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 88
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 834
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 925
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1489
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1579
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1586
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1586
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1460
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 1618
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 1805
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "probe:repeat-06",
+   "lessonId": "738980e4-34ce-492f-86d2-6f7fdc62589a",
+   "childText": "say that again",
+   "ms": 1957,
+   "error": null,
+   "teacherReply": "1,07,040 ko “ek lakh saat hazaar chaalis” padhenge. Isme 7 ka hissa hazaar hai—7 se pehle kaun-sa hissa hai?",
+   "move": {
+    "kind": "explain",
+    "shape": "they did not catch it: the last point again, shorter and slower; nothing new; one idea only: Read and write 5- and 6-digit numbers in numerals and words; an example from their interest (football) if it fits naturally; objects first, then the symbol; point at the screen only at what the on-screen row lists; never a drawing made of characters; end with one small question that makes them USE the idea — never 'samjha?'",
+    "skillId": "c5-maths-ch01-t01-s1",
+    "request": "repeat"
+   },
+   "ui": {
+    "status": "your_turn",
+    "phase": "teach",
+    "handover": "answer",
+    "answerForm": "words",
+    "tray": "studio",
+    "shortTitle": "Big numbers",
+    "beat": {
+     "beatId": "b3-explain",
+     "type": "explain",
+     "index": 3
+    },
+    "ask": {
+     "text": "Isme 7 ka hissa hazaar hai—7 se pehle kaun-sa hissa hai?"
+    },
+    "studioSlot": {
+     "slotId": "738980e4-34ce-492f-86d2-6f7fdc62589a:wb:4:slot",
+     "intentId": "738980e4-34ce-492f-86d2-6f7fdc62589a:wb:4",
+     "state": "planning"
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false
+    },
+    "verdict": "ungraded",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "request"
+    },
+    "note": null,
+    "hintLevel": 0,
+    "phase": "teach",
+    "ms": 1953,
+    "item": null,
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 51
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 51
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 397
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 451
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 456
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 456
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1300
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 1759
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 1953
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "filler",
+   "lessonId": "738980e4-34ce-492f-86d2-6f7fdc62589a",
+   "childText": "alright",
+   "ms": 1663,
+   "error": null,
+   "teacherReply": "7 se pehle 0 ten-thousands aur 1 lakh hai. Ab 0 ko dekhkar batao, ten-thousands mein kitne hain?",
+   "move": {
+    "kind": "worked_example",
+    "shape": "worked example, part 1 of 2: say one step, then ask them for the next step; their thinking, your pace; no new idea",
+    "skillId": "c5-maths-ch01-t01-s1",
+    "format": "F2"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "math",
+     "value": "Write 'one lakh seven thousand forty' in numerals with commas."
+    },
+    "phase": "teach",
+    "handover": "answer",
+    "answerForm": "words",
+    "tray": "studio",
+    "shortTitle": "Big numbers",
+    "beat": {
+     "beatId": "b4-worked_example",
+     "type": "worked_example",
+     "index": 4
+    },
+    "ask": {
+     "text": "Ab 0 ko dekhkar batao, ten-thousands mein kitne hain?"
+    },
+    "studioSlot": {
+     "slotId": "738980e4-34ce-492f-86d2-6f7fdc62589a:wb:5:slot",
+     "intentId": "738980e4-34ce-492f-86d2-6f7fdc62589a:wb:5",
+     "state": "planning"
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false
+    },
+    "verdict": "ungraded",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 392,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "teach",
+    "ms": 1660,
+    "item": null,
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 84
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 84
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 679
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 766
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1071
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1158
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1161
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1165
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1361
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 1543
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 1660
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "advance",
+   "lessonId": "738980e4-34ce-492f-86d2-6f7fdc62589a",
+   "childText": "okay",
+   "ms": 1527,
+   "error": null,
+   "teacherReply": "Ab place value ka dhyaan rakhenge. Khaali jagah bharo: Commas the Indian way: ___.",
+   "move": {
+    "kind": "practice",
+    "shape": "the earlier steps in LESSON NOW, said briefly as done; then the step with the gap is theirs: pose it as written; wait; never fill the gap for them",
+    "itemId": "fade:4",
+    "skillId": "c5-maths-ch01-t01-s1",
+    "hintLevel": 0,
+    "probe": "P15",
+    "format": "F2"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "math",
+     "value": "Write 'one lakh seven thousand forty' in numerals with commas. · Commas the Indian way: ___."
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "Khaali jagah bharo: Commas the Indian way: ___.",
+     "itemId": "fade:4"
+    },
+    "answerForm": "number",
+    "padComma": true,
+    "tray": "none",
+    "shortTitle": "Big numbers",
+    "beat": {
+     "beatId": "b5-practice_set",
+     "type": "practice_set",
+     "index": 5
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false,
+     "leadSlot": true
+    },
+    "verdict": "ungraded",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 420,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 1519,
+    "item": "fade:4",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 102
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 102
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 809
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 922
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1237
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1342
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1344
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1344
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1254
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 1436
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 1519
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "advance",
+   "lessonId": "738980e4-34ce-492f-86d2-6f7fdc62589a",
+   "childText": "alright",
+   "ms": 3655,
+   "error": null,
+   "teacherReply": "Meher, pehle right side se 3 digits ka group banao. Uske baad bache hue digits ko 2-2 ke groups mein rakho. Khaali jagah bharo: Commas the Indian way: ___.",
+   "move": {
+    "kind": "repair",
+    "shape": "you did not catch it clearly: ask them to say it once more; no verdict on their reply: neither praise nor 'wrong'",
+    "itemId": "fade:4",
+    "skillId": "c5-maths-ch01-t01-s1",
+    "hintLevel": 0
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "text",
+     "value": "Khaali jagah bharo: Commas the Indian way: ___."
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "Khaali jagah bharo: Commas the Indian way: ___.",
+     "itemId": "fade:4"
+    },
+    "answerForm": "number",
+    "padComma": true,
+    "tray": "studio",
+    "shortTitle": "Big numbers",
+    "beat": {
+     "beatId": "b5-practice_set",
+     "type": "practice_set",
+     "index": 5
+    },
+    "studioSlot": {
+     "slotId": "738980e4-34ce-492f-86d2-6f7fdc62589a:c1:slot",
+     "intentId": "738980e4-34ce-492f-86d2-6f7fdc62589a:c1",
+     "state": "revealed",
+     "artifact": {
+      "kind": "stagecraft",
+      "stage": {
+       "w": 1000,
+       "h": 625
+      },
+      "stagecraft": {
+       "rung": "engine_default",
+       "archetype": "vault-heist@1",
+       "spec": {
+        "archetype": "vault-heist@1",
+        "skills": [
+         "c5-maths-ch01-t01"
+        ],
+        "lang": "en",
+        "strings": {
+         "coach": "Tap place-value blocks to load the vault",
+         "round": "Vault",
+         "target": "TARGET",
+         "loaded": "loaded",
+         "over": "over by",
+         "under": "short by",
+         "cracked": "VAULT OPEN",
+         "regroup": "REGROUPED",
+         "runDone": "Heist complete",
+         "words": "say it",
+         "time": "laser"
+        },
+        "system": "indian",
+        "belt": 1,
+        "rounds": [
+         {
+          "target": 24360,
+          "seconds": 35,
+          "show": "digits",
+          "denoms": [
+           1,
+           10,
+           100,
+           1000,
+           10000
+          ]
+         },
+         {
+          "target": 10500,
+          "seconds": 40,
+          "show": "words",
+          "denoms": [
+           1,
+           10,
+           100,
+           1000,
+           10000
+          ]
+         },
+         {
+          "target": 102345,
+          "seconds": 50,
+          "show": "digits",
+          "denoms": [
+           1,
+           10,
+           100,
+           1000,
+           10000,
+           100000
+          ]
+         },
+         {
+          "target": 125000,
+          "seconds": 55,
+          "show": "words",
+          "denoms": [
+           1,
+           10,
+           100,
+           1000,
+           10000,
+           100000
+          ]
+         }
+        ]
+       },
+       "boardTwin": {
+        "scriptRef": "board:c5-maths-ch01-t01-s1|practice|-|-",
+        "values": {
+         "title": "Vault Heist",
+         "need": "practice"
+        },
+        "board": {
+         "title": "Vault Heist",
+         "lines": [
+          "place",
+          "indian",
+          "number",
+          "thousand"
+         ],
+         "figure": {
+          "kind": "none"
+         }
+        }
+       },
+       "board": null,
+       "cue": {
+        "clauseIdx": 0,
+        "preRollMs": 400,
+        "crossFadeMs": 420
+       },
+       "buildSha": null,
+       "blobUrl": null
+      }
+     }
+    }
+   },
+   "moduleCommands": [],
+   "studio": {
+    "reveal": "738980e4-34ce-492f-86d2-6f7fdc62589a:c1"
+   },
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false,
+     "leadSlot": true
+    },
+    "verdict": "unverified",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 1181,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 3652,
+    "item": "fade:4",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 55
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 55
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 793
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 858
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1975
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 2039
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 2045
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 2046
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1497
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 3556
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 3651
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "advance",
+   "lessonId": "738980e4-34ce-492f-86d2-6f7fdc62589a",
+   "childText": "ok",
+   "ms": 1572,
+   "error": null,
+   "teacherReply": "Meher, right side se pehle 3 digits alag karo. Phir bache hue digits ko 2-2 ke groups mein baanto. Khaali jagah bharo: Commas the Indian way: ___.",
+   "move": {
+    "kind": "repair",
+    "shape": "no verdict on their reply; the choices are now on screen; the same question again, as written; tell them they can pick one of the choices on screen; do not read the choices with any lean toward one; no verdict on their reply: neither praise nor 'wrong'",
+    "itemId": "fade:4",
+    "skillId": "c5-maths-ch01-t01-s1",
+    "hintLevel": 0
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "text",
+     "value": "Khaali jagah bharo: Commas the Indian way: ___."
+    },
+    "chips": [
+     {
+      "id": "pick:0",
+      "label": "1,07,040"
+     },
+     {
+      "id": "pick:1",
+      "label": "1,07,041"
+     },
+     {
+      "id": "pick:2",
+      "label": "1,07,039"
+     }
+    ],
+    "phase": "practice",
+    "handover": "choice",
+    "ask": {
+     "text": "Khaali jagah bharo: Commas the Indian way: ___.",
+     "itemId": "fade:4"
+    },
+    "answerForm": "choice",
+    "tray": "tiles",
+    "shortTitle": "Big numbers",
+    "beat": {
+     "beatId": "b5-practice_set",
+     "type": "practice_set",
+     "index": 5
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false,
+     "leadSlot": true
+    },
+    "verdict": "unverified",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 563,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 1568,
+    "item": "fade:4",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 79
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 80
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 856
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 945
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1420
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1508
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1510
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1510
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1259
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 1511
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 1568
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "advance",
+   "lessonId": "738980e4-34ce-492f-86d2-6f7fdc62589a",
+   "childText": "okay",
+   "ms": 2419,
+   "error": null,
+   "teacherReply": "Ab ek naya number dekhenge. Is baar place value ko dhyaan se pakadna hoga. School library mein bayaasi hazaar saat books hain. Is number ko numerals mein likho.",
+   "move": {
+    "kind": "practice",
+    "shape": "leave this one for later, no verdict and no answer given; the next question; pose the question as written, in their language; then wait; no verdict on their reply: neither praise nor 'wrong'",
+    "itemId": "c5-maths-ch01-t01-rl-o1",
+    "skillId": "c5-maths-ch01-t01-s1",
+    "hintLevel": 0,
+    "probe": "P15"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "text",
+     "value": "School library mein bayaasi hazaar saat books hain. Is nu…"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "School library mein bayaasi hazaar saat books hain. Is number ko numerals mein likho.",
+     "itemId": "c5-maths-ch01-t01-rl-o1"
+    },
+    "answerForm": "number",
+    "padComma": true,
+    "tray": "studio",
+    "shortTitle": "Big numbers",
+    "beat": {
+     "beatId": "b5-practice_set",
+     "type": "practice_set",
+     "index": 5
+    },
+    "studioSlot": {
+     "slotId": "738980e4-34ce-492f-86d2-6f7fdc62589a:c1:slot",
+     "intentId": "738980e4-34ce-492f-86d2-6f7fdc62589a:c1",
+     "state": "revealed",
+     "artifact": {
+      "kind": "stagecraft",
+      "stage": {
+       "w": 1000,
+       "h": 625
+      },
+      "stagecraft": {
+       "rung": "engine_default",
+       "archetype": "vault-heist@1",
+       "spec": {
+        "archetype": "vault-heist@1",
+        "skills": [
+         "c5-maths-ch01-t01"
+        ],
+        "lang": "en",
+        "strings": {
+         "coach": "Tap place-value blocks to load the vault",
+         "round": "Vault",
+         "target": "TARGET",
+         "loaded": "loaded",
+         "over": "over by",
+         "under": "short by",
+         "cracked": "VAULT OPEN",
+         "regroup": "REGROUPED",
+         "runDone": "Heist complete",
+         "words": "say it",
+         "time": "laser"
+        },
+        "system": "indian",
+        "belt": 1,
+        "rounds": [
+         {
+          "target": 24360,
+          "seconds": 35,
+          "show": "digits",
+          "denoms": [
+           1,
+           10,
+           100,
+           1000,
+           10000
+          ]
+         },
+         {
+          "target": 10500,
+          "seconds": 40,
+          "show": "words",
+          "denoms": [
+           1,
+           10,
+           100,
+           1000,
+           10000
+          ]
+         },
+         {
+          "target": 102345,
+          "seconds": 50,
+          "show": "digits",
+          "denoms": [
+           1,
+           10,
+           100,
+           1000,
+           10000,
+           100000
+          ]
+         },
+         {
+          "target": 125000,
+          "seconds": 55,
+          "show": "words",
+          "denoms": [
+           1,
+           10,
+           100,
+           1000,
+           10000,
+           100000
+          ]
+         }
+        ]
+       },
+       "boardTwin": {
+        "scriptRef": "board:c5-maths-ch01-t01-s1|practice|-|-",
+        "values": {
+         "title": "Vault Heist",
+         "need": "practice"
+        },
+        "board": {
+         "title": "Vault Heist",
+         "lines": [
+          "place",
+          "indian",
+          "number",
+          "thousand"
+         ],
+         "figure": {
+          "kind": "none"
+         }
+        }
+       },
+       "board": null,
+       "cue": {
+        "clauseIdx": 0,
+        "preRollMs": 400,
+        "crossFadeMs": 420
+       },
+       "buildSha": null,
+       "blobUrl": null
+      }
+     }
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false,
+     "leadSlot": true
+    },
+    "verdict": "unverified",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 0,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 2417,
+    "item": "c5-maths-ch01-t01-rl-o1",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 52
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 52
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1195
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 1321
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 1378
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1378
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1380
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1381
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 969
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 2355
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 2417
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "probe:multi_intent-05",
+   "lessonId": "738980e4-34ce-492f-86d2-6f7fdc62589a",
+   "childText": "slowly and in hindi please",
+   "ms": 2068,
+   "error": null,
+   "teacherReply": "Haan, Meher. Dheere-dheere karenge. Pehle “bayaasi hazaar” ka number batao, phir “saat” ko uske baad jodo. School library mein bayaasi hazaar saat books hain. Is number ko numerals mein likho.",
+   "move": {
+    "kind": "practice",
+    "shape": "they asked for simple Hindi (Roman script when written): from now on every turn in simple Hindi (Roman script when written), even if they reply in another language; first say what the question asks, simply, in it; then the question in it; no verdict on their reply: neither praise nor 'wrong'; they also asked you to go slower: short simple sentences, one small step",
+    "itemId": "c5-maths-ch01-t01-rl-o1",
+    "skillId": "c5-maths-ch01-t01-s1",
+    "hintLevel": 0,
+    "probe": "P15",
+    "request": "language"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "text",
+     "value": "School library mein bayaasi hazaar saat books hain. Is nu…"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "School library mein bayaasi hazaar saat books hain. Is number ko numerals mein likho.",
+     "itemId": "c5-maths-ch01-t01-rl-o1"
+    },
+    "answerForm": "number",
+    "padComma": true,
+    "tray": "studio",
+    "shortTitle": "Big numbers",
+    "beat": {
+     "beatId": "b5-practice_set",
+     "type": "practice_set",
+     "index": 5
+    },
+    "studioSlot": {
+     "slotId": "738980e4-34ce-492f-86d2-6f7fdc62589a:c1:slot",
+     "intentId": "738980e4-34ce-492f-86d2-6f7fdc62589a:c1",
+     "state": "revealed",
+     "artifact": {
+      "kind": "stagecraft",
+      "stage": {
+       "w": 1000,
+       "h": 625
+      },
+      "stagecraft": {
+       "rung": "engine_default",
+       "archetype": "vault-heist@1",
+       "spec": {
+        "archetype": "vault-heist@1",
+        "skills": [
+         "c5-maths-ch01-t01"
+        ],
+        "lang": "en",
+        "strings": {
+         "coach": "Tap place-value blocks to load the vault",
+         "round": "Vault",
+         "target": "TARGET",
+         "loaded": "loaded",
+         "over": "over by",
+         "under": "short by",
+         "cracked": "VAULT OPEN",
+         "regroup": "REGROUPED",
+         "runDone": "Heist complete",
+         "words": "say it",
+         "time": "laser"
+        },
+        "system": "indian",
+        "belt": 1,
+        "rounds": [
+         {
+          "target": 24360,
+          "seconds": 35,
+          "show": "digits",
+          "denoms": [
+           1,
+           10,
+           100,
+           1000,
+           10000
+          ]
+         },
+         {
+          "target": 10500,
+          "seconds": 40,
+          "show": "words",
+          "denoms": [
+           1,
+           10,
+           100,
+           1000,
+           10000
+          ]
+         },
+         {
+          "target": 102345,
+          "seconds": 50,
+          "show": "digits",
+          "denoms": [
+           1,
+           10,
+           100,
+           1000,
+           10000,
+           100000
+          ]
+         },
+         {
+          "target": 125000,
+          "seconds": 55,
+          "show": "words",
+          "denoms": [
+           1,
+           10,
+           100,
+           1000,
+           10000,
+           100000
+          ]
+         }
+        ]
+       },
+       "boardTwin": {
+        "scriptRef": "board:c5-maths-ch01-t01-s1|practice|-|-",
+        "values": {
+         "title": "Vault Heist",
+         "need": "practice"
+        },
+        "board": {
+         "title": "Vault Heist",
+         "lines": [
+          "place",
+          "indian",
+          "number",
+          "thousand"
+         ],
+         "figure": {
+          "kind": "none"
+         }
+        }
+       },
+       "board": null,
+       "cue": {
+        "clauseIdx": 0,
+        "preRollMs": 400,
+        "crossFadeMs": 420
+       },
+       "buildSha": null,
+       "blobUrl": null
+      }
+     }
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false,
+     "leadSlot": true,
+     "spoken": true
+    },
+    "verdict": "unverified",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "request"
+    },
+    "note": null,
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 2065,
+    "item": "c5-maths-ch01-t01-rl-o1",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 84
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 85
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 478
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 573
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 577
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 578
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1402
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 1995
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 2065
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "recovery",
+   "lessonId": "738980e4-34ce-492f-86d2-6f7fdc62589a",
+   "childText": "82007",
+   "ms": 1881,
+   "error": null,
+   "teacherReply": "Meher, 82,007 bilkul sahi hai. Tumne “82 hazaar” ke baad 7 ko ones place par rakha—ye kaise jaana ki beech mein do zero aayenge?",
+   "move": {
+    "kind": "probe",
+    "shape": "confirm in two or three words only — the reason is theirs to give, so do not explain it; covert shape: protege naive but-why; Bittu, who does not know it, asks why; about THIS question; one open question; wait; a real question, never a check on them",
+    "itemId": "c5-maths-ch01-t01-rl-o1",
+    "skillId": "c5-maths-ch01-t01-s1",
+    "hintLevel": 0,
+    "probe": "P2"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "text",
+     "value": "School library mein bayaasi hazaar saat books hain. Is nu…"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "answerForm": "words",
+    "tray": "studio",
+    "shortTitle": "Big numbers",
+    "verdict": "correct",
+    "beat": {
+     "beatId": "b6-probe",
+     "type": "probe",
+     "index": 6
+    },
+    "ask": {
+     "text": "Tumne “82 hazaar” ke baad 7 ko ones place par rakha—ye kaise jaana ki beech mein do zero aayenge?"
+    },
+    "studioSlot": {
+     "slotId": "738980e4-34ce-492f-86d2-6f7fdc62589a:c1:slot",
+     "intentId": "738980e4-34ce-492f-86d2-6f7fdc62589a:c1",
+     "state": "revealed",
+     "artifact": {
+      "kind": "stagecraft",
+      "stage": {
+       "w": 1000,
+       "h": 625
+      },
+      "stagecraft": {
+       "rung": "engine_default",
+       "archetype": "vault-heist@1",
+       "spec": {
+        "archetype": "vault-heist@1",
+        "skills": [
+         "c5-maths-ch01-t01"
+        ],
+        "lang": "en",
+        "strings": {
+         "coach": "Tap place-value blocks to load the vault",
+         "round": "Vault",
+         "target": "TARGET",
+         "loaded": "loaded",
+         "over": "over by",
+         "under": "short by",
+         "cracked": "VAULT OPEN",
+         "regroup": "REGROUPED",
+         "runDone": "Heist complete",
+         "words": "say it",
+         "time": "laser"
+        },
+        "system": "indian",
+        "belt": 1,
+        "rounds": [
+         {
+          "target": 24360,
+          "seconds": 35,
+          "show": "digits",
+          "denoms": [
+           1,
+           10,
+           100,
+           1000,
+           10000
+          ]
+         },
+         {
+          "target": 10500,
+          "seconds": 40,
+          "show": "words",
+          "denoms": [
+           1,
+           10,
+           100,
+           1000,
+           10000
+          ]
+         },
+         {
+          "target": 102345,
+          "seconds": 50,
+          "show": "digits",
+          "denoms": [
+           1,
+           10,
+           100,
+           1000,
+           10000,
+           100000
+          ]
+         },
+         {
+          "target": 125000,
+          "seconds": 55,
+          "show": "words",
+          "denoms": [
+           1,
+           10,
+           100,
+           1000,
+           10000,
+           100000
+          ]
+         }
+        ]
+       },
+       "boardTwin": {
+        "scriptRef": "board:c5-maths-ch01-t01-s1|practice|-|-",
+        "values": {
+         "title": "Vault Heist",
+         "need": "practice"
+        },
+        "board": {
+         "title": "Vault Heist",
+         "lines": [
+          "place",
+          "indian",
+          "number",
+          "thousand"
+         ],
+         "figure": {
+          "kind": "none"
+         }
+        }
+       },
+       "board": null,
+       "cue": {
+        "clauseIdx": 0,
+        "preRollMs": 400,
+        "crossFadeMs": 420
+       },
+       "buildSha": null,
+       "blobUrl": null
+      }
+     }
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false
+    },
+    "verdict": "correct",
+    "cls": {
+     "outcome": "correct",
+     "source": "exact"
+    },
+    "note": null,
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 1877,
+    "item": "c5-maths-ch01-t01-rl-o1",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 81
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 82
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 93
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 175
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 175
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1576
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 1764
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 1877
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "advance",
+   "lessonId": "738980e4-34ce-492f-86d2-6f7fdc62589a",
+   "childText": "got it",
+   "ms": 3303,
+   "error": null,
+   "teacherReply": "Ab place value ko ulte kram mein padhenge: ones, tens, hundreds, thousands aur lakh. Cricket highlights video ko 4,08,019 views mile hain. Is number ko words mein bolo.",
+   "move": {
+    "kind": "probe",
+    "shape": "give the reason yourself in one plain line (their answer was right); pose the question as written, in their language; then wait; same idea, new situation; let them carry it over",
+    "itemId": "c5-maths-ch01-t01-rl-h1",
+    "skillId": "c5-maths-ch01-t01-s1",
+    "hintLevel": 0,
+    "probe": "P3"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "math",
+     "value": "4  ·  8  ·  19"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "Cricket highlights video ko 4,08,019 views mile hain. Is number ko words mein bolo.",
+     "itemId": "c5-maths-ch01-t01-rl-h1"
+    },
+    "answerForm": "words",
+    "tray": "studio",
+    "shortTitle": "Big numbers",
+    "beat": {
+     "beatId": "b6-probe",
+     "type": "probe",
+     "index": 6
+    },
+    "studioSlot": {
+     "slotId": "738980e4-34ce-492f-86d2-6f7fdc62589a:c1:slot",
+     "intentId": "738980e4-34ce-492f-86d2-6f7fdc62589a:c1",
+     "state": "revealed",
+     "artifact": {
+      "kind": "stagecraft",
+      "stage": {
+       "w": 1000,
+       "h": 625
+      },
+      "stagecraft": {
+       "rung": "engine_default",
+       "archetype": "vault-heist@1",
+       "spec": {
+        "archetype": "vault-heist@1",
+        "skills": [
+         "c5-maths-ch01-t01"
+        ],
+        "lang": "en",
+        "strings": {
+         "coach": "Tap place-value blocks to load the vault",
+         "round": "Vault",
+         "target": "TARGET",
+         "loaded": "loaded",
+         "over": "over by",
+         "under": "short by",
+         "cracked": "VAULT OPEN",
+         "regroup": "REGROUPED",
+         "runDone": "Heist complete",
+         "words": "say it",
+         "time": "laser"
+        },
+        "system": "indian",
+        "belt": 1,
+        "rounds": [
+         {
+          "target": 24360,
+          "seconds": 35,
+          "show": "digits",
+          "denoms": [
+           1,
+           10,
+           100,
+           1000,
+           10000
+          ]
+         },
+         {
+          "target": 10500,
+          "seconds": 40,
+          "show": "words",
+          "denoms": [
+           1,
+           10,
+           100,
+           1000,
+           10000
+          ]
+         },
+         {
+          "target": 102345,
+          "seconds": 50,
+          "show": "digits",
+          "denoms": [
+           1,
+           10,
+           100,
+           1000,
+           10000,
+           100000
+          ]
+         },
+         {
+          "target": 125000,
+          "seconds": 55,
+          "show": "words",
+          "denoms": [
+           1,
+           10,
+           100,
+           1000,
+           10000,
+           100000
+          ]
+         }
+        ]
+       },
+       "boardTwin": {
+        "scriptRef": "board:c5-maths-ch01-t01-s1|practice|-|-",
+        "values": {
+         "title": "Vault Heist",
+         "need": "practice"
+        },
+        "board": {
+         "title": "Vault Heist",
+         "lines": [
+          "place",
+          "indian",
+          "number",
+          "thousand"
+         ],
+         "figure": {
+          "kind": "none"
+         }
+        }
+       },
+       "board": null,
+       "cue": {
+        "clauseIdx": 0,
+        "preRollMs": 400,
+        "crossFadeMs": 420
+       },
+       "buildSha": null,
+       "blobUrl": null
+      }
+     }
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false,
+     "leadSlot": true
+    },
+    "verdict": "unverified",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 1168,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 3301,
+    "item": "c5-maths-ch01-t01-rl-h1",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 72
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 72
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 694
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 778
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1862
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1946
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1948
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1948
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1273
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 3235
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 3301
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "probe:self_correction-06",
+   "lessonId": "738980e4-34ce-492f-86d2-6f7fdc62589a",
+   "childText": "oh wait i mean chaar lakh aath hazaar unnees",
+   "ms": 1825,
+   "error": null,
+   "teacherReply": "Bilkul, Meher: 4,08,019 ko “chaar lakh aath hazaar unnees” padhenge. Yahan 019 mein zero tens place dikhata hai. 019 mein tens ka ank kaunsa hai?",
+   "move": {
+    "kind": "explain",
+    "shape": "confirm specifically: name the exact thing they got right, no ability words; one idea only: Place commas the Indian way (thousands, lakhs); an example from their interest (football) if it fits naturally; objects first, then the symbol; point at the screen only at what the on-screen row lists; never a drawing made of characters; end with one small question that makes them USE the idea — never 'samjha?'",
+    "skillId": "c5-maths-ch01-t01-s2",
+    "format": "F3"
+   },
+   "ui": {
+    "status": "your_turn",
+    "phase": "practice",
+    "handover": "answer",
+    "answerForm": "words",
+    "tray": "module",
+    "shortTitle": "Big numbers",
+    "verdict": "correct",
+    "beat": {
+     "beatId": "b7-explain",
+     "type": "explain",
+     "index": 7
+    },
+    "ask": {
+     "text": "019 mein tens ka ank kaunsa hai?"
+    }
+   },
+   "moduleCommands": [
+    {
+     "op": "mount",
+     "moduleId": "m13",
+     "engine": "explainer@1",
+     "params": {
+      "script": {
+       "v": 1,
+       "scriptId": "ex-1b561ls",
+       "line": {
+        "lessonId": "738980e4-34ce-492f-86d2-6f7fdc62589a"
+       },
+       "anchor": "line_audio_start",
+       "board": {
+        "w": 400,
+        "h": 300,
+        "ground": "chalk"
+       },
+       "mode": "fresh",
+       "durationMs": 8040,
+       "ops": [
+        {
+         "id": "b0",
+         "op": "rect",
+         "startMs": 80,
+         "endMs": 500,
+         "weight": 2,
+         "at": [
+          25,
+          30
+         ],
+         "w": 160,
+         "h": 58,
+         "round": 10
+        },
+        {
+         "id": "t0",
+         "op": "text",
+         "startMs": 540,
+         "endMs": 1040,
+         "at": [
+          105,
+          61
+         ],
+         "text": "One lakh",
+         "size": "m"
+        },
+        {
+         "id": "o1",
+         "op": "arrow",
+         "startMs": 1200,
+         "endMs": 1650,
+         "ink": "accent",
+         "from": [
+          105,
+          91
+         ],
+         "to": [
+          105,
+          133
+         ]
+        },
+        {
+         "id": "b1",
+         "op": "rect",
+         "startMs": 1730,
+         "endMs": 2150,
+         "weight": 2,
+         "at": [
+          25,
+          136
+         ],
+         "w": 160,
+         "h": 58,
+         "round": 10
+        },
+        {
+         "id": "t1",
+         "op": "text",
+         "startMs": 2190,
+         "endMs": 2690,
+         "at": [
+          105,
+          167
+         ],
+         "text": "Seven thousand",
+         "size": "s"
+        },
+        {
+         "id": "o2",
+         "op": "arrow",
+         "startMs": 2850,
+         "endMs": 3300,
+         "ink": "accent",
+         "from": [
+          105,
+          197
+         ],
+         "to": [
+          105,
+          239
+         ]
+        },
+        {
+         "id": "b2",
+         "op": "rect",
+         "startMs": 3380,
+         "endMs": 3800,
+         "weight": 2,
+         "at": [
+          25,
+          242
+         ],
+         "w": 160,
+         "h": 58,
+         "round": 10
+        },
+        {
+         "id": "t2",
+         "op": "text",
+         "startMs": 3840,
+         "endMs": 4340,
+         "at": [
+          105,
+          273
+         ],
+         "text": "Forty",
+         "size": "m"
+        },
+        {
+         "id": "o3",
+         "op": "arrow",
+         "startMs": 4500,
+         "endMs": 4950,
+         "ink": "accent",
+         "from": [
+          188,
+          271
+         ],
+         "to": [
+          212,
+          59
+         ],
+         "bend": 0.2
+        },
+        {
+         "id": "b3",
+         "op": "rect",
+         "startMs": 5030,
+         "endMs": 5450,
+         "weight": 2,
+         "at": [
+          215,
+          30
+         ],
+         "w": 160,
+         "h": 58,
+         "round": 10
+        },
+        {
+         "id": "t3",
+         "op": "text",
+         "startMs": 5490,
+         "endMs": 5990,
+         "at": [
+          295,
+          61
+         ],
+         "text": "1 0 7 0 4 0",
+         "size": "s"
+        },
+        {
+         "id": "o4",
+         "op": "arrow",
+         "startMs": 6150,
+         "endMs": 6600,
+         "ink": "accent",
+         "from": [
+          295,
+          91
+         ],
+         "to": [
+          295,
+          133
+         ]
+        },
+        {
+         "id": "b4",
+         "op": "rect",
+         "startMs": 6680,
+         "endMs": 7100,
+         "weight": 2,
+         "at": [
+          215,
+          136
+         ],
+         "w": 160,
+         "h": 58,
+         "round": 10
+        },
+        {
+         "id": "t4",
+         "op": "text",
+         "startMs": 7140,
+         "endMs": 7640,
+         "at": [
+          295,
+          167
+         ],
+         "text": "1,07,040",
+         "size": "m"
+        }
+       ],
+       "facts": {
+        "kind": "diagram",
+        "archetype": "flow@1",
+        "onScreen": {
+         "steps": 5,
+         "step1": "One lakh",
+         "step2": "Seven thousand",
+         "step3": "Forty",
+         "step4": "1 0 7 0 4 0",
+         "step5": "1,07,040"
+        }
+       }
+      },
+      "template": "flow@1",
+      "mode": "play"
+     }
+    }
+   ],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false
+    },
+    "verdict": "correct",
+    "cls": {
+     "outcome": "correct",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": false,
+     "intent": null,
+     "waitedMs": 1,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 1823,
+    "item": null,
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 76
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 76
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 879
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 962
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 963
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 971
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 971
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1231
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1559
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 1725
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 1823
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "filler",
+   "lessonId": "738980e4-34ce-492f-86d2-6f7fdc62589a",
+   "childText": "okay",
+   "ms": 2074,
+   "error": null,
+   "teacherReply": "Theek hai, Meher. Dhyaan rahe: 019 mein tens place par 1 hota hai. Ek lakh pachchees hazaar ko commas ke saath sahi kaise likhenge?",
+   "move": {
+    "kind": "probe",
+    "shape": "pose the question as written, in their language; then wait; read its choices plainly; no lean in your voice toward any of them",
+    "itemId": "diag:c5-maths-ch01-t01-m-comma-anywhere",
+    "skillId": "c5-maths-ch01-t01-s2",
+    "hintLevel": 0,
+    "probe": "P7"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "text",
+     "value": "Ek lakh pachchees hazaar ko commas ke saath sahi kaise li…"
+    },
+    "chips": [
+     {
+      "id": "opt:0",
+      "label": "12,5000"
+     },
+     {
+      "id": "opt:1",
+      "label": "1250,00"
+     },
+     {
+      "id": "opt:2",
+      "label": "1,25,000"
+     }
+    ],
+    "phase": "practice",
+    "handover": "choice",
+    "ask": {
+     "text": "Ek lakh pachchees hazaar ko commas ke saath sahi kaise likhenge?",
+     "itemId": "diag:c5-maths-ch01-t01-m-comma-anywhere"
+    },
+    "answerForm": "choice",
+    "tray": "tiles",
+    "shortTitle": "Big numbers",
+    "beat": {
+     "beatId": "b8-probe",
+     "type": "probe",
+     "index": 8
+    }
+   },
+   "moduleCommands": [
+    {
+     "op": "unmount",
+     "moduleId": "m13"
+    },
+    {
+     "op": "mount",
+     "moduleId": "g1-c7c96e94",
+     "engine": "scene@1",
+     "params": {
+      "scene": {
+       "dsl": "scene@1",
+       "meta": {
+        "band": "B3",
+        "lang": "en",
+        "title": {
+         "en": "Coach's practice drill",
+         "hi": "कोच की प्रैक्टिस",
+         "hi_latn": "Coach ki practice"
+        },
+        "objective_ids": [
+         "c5-maths-ch01-t01-s2"
+        ],
+        "topic_ids": [
+         "c5-maths-ch01-t01"
+        ],
+        "template": "choice-card@1"
+       },
+       "stage": {
+        "aspect": "3:4",
+        "bg": "bg"
+       },
+       "vars": [
+        {
+         "id": "pick",
+         "type": "enum",
+         "init": "none",
+         "options": [
+          "none",
+          "o1",
+          "o2",
+          "o3"
+         ],
+         "tl": "child's pick"
+        }
+       ],
+       "derive": [],
+       "nodes": [
+        {
+         "kind": "text",
+         "id": "title",
+         "x": 420,
+         "y": 128,
+         "text": {
+          "en": "Coach's practice drill",
+          "hi": "कोच की प्रैक्टिस",
+          "hi_latn": "Coach ki practice"
+         },
+         "size": "title",
+         "w": 760,
+         "align": "middle"
+        },
+        {
+         "kind": "sprite",
+         "id": "decor",
+         "x": 900,
+         "y": 75,
+         "lib": "obj.ball",
+         "w": 110,
+         "h": 110,
+         "role": "context"
+        },
+        {
+         "kind": "text",
+         "id": "question",
+         "x": 500,
+         "y": 388,
+         "text": {
+          "en": "Which is the right way to write one lakh twenty-five thousand with commas?",
+          "hi": "Ek lakh pachchees hazaar ko commas ke saath sahi kaise likhenge?",
+          "hi_latn": "Ek lakh pachchees hazaar ko commas ke saath sahi kaise likhenge?"
+         },
+         "size": "caption",
+         "w": 900,
+         "align": "middle"
+        },
+        {
+         "kind": "choice",
+         "id": "ch",
+         "x": 500,
+         "y": 946.3333333333333,
+         "var": "pick",
+         "options": [
+          {
+           "id": "o1",
+           "label": {
+            "en": "1,25,000",
+            "hi": "1,25,000",
+            "hi_latn": "1,25,000"
+           }
+          },
+          {
+           "id": "o2",
+           "label": {
+            "en": "1250,00",
+            "hi": "1250,00",
+            "hi_latn": "1250,00"
+           },
+           "misc": "MC.C5_MATHS_CH01_T01_M_COMMA_ANYWHERE"
+          },
+          {
+           "id": "o3",
+           "label": {
+            "en": "12,5000",
+            "hi": "12,5000",
+            "hi_latn": "12,5000"
+           },
+           "misc": "MC.C5_MATHS_CH01_T01_M_COMMA_ANYWHERE"
+          }
+         ],
+         "layout": "column",
+         "commit": true
+        }
+       ],
+       "timelines": [],
+       "goals": [],
+       "probe": {
+        "id": "p_pick",
+        "kind": "diagnose",
+        "ask": {
+         "en": "Which is the right way to write one lakh twenty-five thousand with commas?",
+         "hi": "Ek lakh pachchees hazaar ko commas ke saath sahi kaise likhenge?",
+         "hi_latn": "Ek lakh pachchees hazaar ko commas ke saath sahi kaise likhenge?"
+        },
+        "commit": {
+         "via": "choice",
+         "node": "ch"
+        },
+        "correct": "pick == 'o1'",
+        "traps": [
+         {
+          "when": "pick == 'o2'",
+          "misc": "MC.C5_MATHS_CH01_T01_M_COMMA_ANYWHERE"
+         },
+         {
+          "when": "pick == 'o3'",
+          "misc": "MC.C5_MATHS_CH01_T01_M_COMMA_ANYWHERE"
+         }
+        ]
+       },
+       "feedback": "on_commit"
+      }
+     },
+     "goal": "g1:diag:c5-maths-ch01-t01-m-comma-anywhere"
+    }
+   ],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [
+      "drift",
+      "flat",
+      "ask",
+      "wrap"
+     ],
+     "rewritten": false,
+     "replaced": false,
+     "firstDraft": "Theek hai, Meher. Aaj ke liye itna hi. Dhyaan rahe: 019 mein tens place par 1 hota hai.",
+     "repaired": true
+    },
+    "verdict": "ungraded",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 1240,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 2065,
+    "item": "diag:c5-maths-ch01-t01-m-comma-anywhere",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 77
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 77
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 663
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 751
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1904
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1991
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1994
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1994
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1283
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 1994
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 2065
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "probe:method_instruction-10",
+   "lessonId": "738980e4-34ce-492f-86d2-6f7fdc62589a",
+   "childText": "don't give me options i'll answer myself",
+   "ms": 3099,
+   "error": null,
+   "teacherReply": "Theek hai, Meher—ab bina options ke hi karenge. Ek lakh pachchees hazaar ko commas ke saath sahi kaise likhenge?",
+   "move": {
+    "kind": "probe",
+    "shape": "two parts — first: they said how they want it (Do not give options let the child answer independently): do it that way from now on, or say kindly why not and do the nearest thing; second: the question on the card, as written, in their language; then wait; read its choices plainly; no lean in your voice toward any of them; no verdict on their reply: neither praise nor 'wrong'",
+    "prefs": [
+     "Do not give options let the child answer"
+    ],
+    "itemId": "diag:c5-maths-ch01-t01-m-comma-anywhere",
+    "skillId": "c5-maths-ch01-t01-s2",
+    "hintLevel": 0,
+    "probe": "P7",
+    "request": "adopt",
+    "lead": "they said how they want it (Do not give options let the child answer independently): do it that way from now on, or say kindly why not and do the nearest thing"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "text",
+     "value": "Ek lakh pachchees hazaar ko commas ke saath sahi kaise li…"
+    },
+    "chips": [
+     {
+      "id": "opt:0",
+      "label": "12,5000"
+     },
+     {
+      "id": "opt:1",
+      "label": "1250,00"
+     },
+     {
+      "id": "opt:2",
+      "label": "1,25,000"
+     }
+    ],
+    "phase": "practice",
+    "handover": "choice",
+    "ask": {
+     "text": "Ek lakh pachchees hazaar ko commas ke saath sahi kaise likhenge?",
+     "itemId": "diag:c5-maths-ch01-t01-m-comma-anywhere"
+    },
+    "answerForm": "choice",
+    "tray": "tiles",
+    "shortTitle": "Big numbers",
+    "beat": {
+     "beatId": "b8-probe",
+     "type": "probe",
+     "index": 8
+    }
+   },
+   "moduleCommands": [],
+   "studio": {
+    "retire": "738980e4-34ce-492f-86d2-6f7fdc62589a:c1"
+   },
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false
+    },
+    "verdict": "unverified",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "method_instruction",
+     "waitedMs": 333,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 3097,
+    "item": "diag:c5-maths-ch01-t01-m-comma-anywhere",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 98
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 99
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 1179
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 1290
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1517
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1623
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1627
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1627
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1393
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 3024
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 3096
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "recovery",
+   "lessonId": "738980e4-34ce-492f-86d2-6f7fdc62589a",
+   "childText": "1 25 000",
+   "ms": 2937,
+   "error": null,
+   "teacherReply": "Meher, 1 25 000 mein commas kin jagahon par lagaye, aur kyun?",
+   "move": {
+    "kind": "probe",
+    "shape": "confirm in two or three words only — the reason is theirs to give, so do not explain it; covert shape: protege naive but-why; Bittu, who does not know it, asks why; about THIS question; one open question; wait; a real question, never a check on them",
+    "prefs": [
+     "Do not give options let the child answer"
+    ],
+    "itemId": "diag:c5-maths-ch01-t01-m-comma-anywhere",
+    "skillId": "c5-maths-ch01-t01-s2",
+    "hintLevel": 0,
+    "probe": "P2"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "text",
+     "value": "Ek lakh pachchees hazaar ko commas ke saath sahi kaise li…"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "answerForm": "words",
+    "tray": "module",
+    "shortTitle": "Big numbers",
+    "verdict": "correct",
+    "beat": {
+     "beatId": "b8-probe",
+     "type": "probe",
+     "index": 8
+    },
+    "ask": {
+     "text": "Meher, 1 25 000 mein commas kin jagahon par lagaye, aur kyun?"
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [
+      "nowhy",
+      "flat"
+     ],
+     "rewritten": true,
+     "replaced": false,
+     "firstDraft": "Meher, digits sahi hain; bas Indian commas lagao: lakh ke baad, phir hazaar ke baad. Ab ise commas ke saath likho.",
+     "afterRewrite": [
+      "noconfirm"
+     ],
+     "final": [
+      "noconfirm"
+     ]
+    },
+    "verdict": "correct",
+    "cls": {
+     "outcome": "correct",
+     "source": "exact"
+    },
+    "note": null,
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 2934,
+    "item": "diag:c5-maths-ch01-t01-m-comma-anywhere",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 78
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 79
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 90
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 150
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 150
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1261
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1422
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 2844
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 2934
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "advance",
+   "lessonId": "738980e4-34ce-492f-86d2-6f7fdc62589a",
+   "childText": "alright",
+   "ms": 3248,
+   "error": null,
+   "teacherReply": "Ab comma har teen ank ke baad nahi, Indian place value ke hisaab se lagta hai. 1,00,000 aur 10,000 dekho. Dono ke naam kya hain, aur pehla kitne guna bada hai?",
+   "move": {
+    "kind": "probe",
+    "shape": "give the reason yourself in one plain line (their answer was right); pose the question as written, in their language; then wait; two cases side by side; ask which one fits and what is different",
+    "prefs": [
+     "Do not give options let the child answer"
+    ],
+    "itemId": "c5-maths-ch01-t01-i07",
+    "skillId": "c5-maths-ch01-t01-s2",
+    "hintLevel": 0,
+    "probe": "P8"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "text",
+     "value": "1,00,000 aur 10,000 dekho. Dono ke naam kya hain, aur peh…"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "1,00,000 aur 10,000 dekho. Dono ke naam kya hain, aur pehla kitne guna bada hai?",
+     "itemId": "c5-maths-ch01-t01-i07"
+    },
+    "answerForm": "words",
+    "tray": "module",
+    "shortTitle": "Big numbers",
+    "beat": {
+     "beatId": "b8-probe",
+     "type": "probe",
+     "index": 8
+    }
+   },
+   "moduleCommands": [
+    {
+     "op": "unmount",
+     "moduleId": "g1-c7c96e94"
+    },
+    {
+     "op": "mount",
+     "moduleId": "m17",
+     "engine": "place-value@1",
+     "params": {
+      "topicId": "c5-maths-ch01-t01",
+      "skillId": "c5-maths-ch01-t01-s2",
+      "lang": "hindi",
+      "mode": "compare",
+      "a": 100000,
+      "b": 10000,
+      "question": "bigger",
+      "predict": true
+     }
+    }
+   ],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false,
+     "leadSlot": true
+    },
+    "verdict": "unverified",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 505,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 3245,
+    "item": "c5-maths-ch01-t01-i07",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 89
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 90
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 754
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 852
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1260
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1358
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1362
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1366
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1773
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 3143
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 3245
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "probe:visual_request-09",
+   "lessonId": "738980e4-34ce-492f-86d2-6f7fdc62589a",
+   "childText": "show me on the screen",
+   "ms": 2679,
+   "error": null,
+   "teacherReply": "Screen par wahi place-value chart dekho. Commas ke baad pehle do ank wala hissa aur uske baad teen ank wala hissa pehchano. 1,00,000 aur 10,000 dekho. Dono ke naam kya hain, aur pehla kitne guna bada hai?",
+   "move": {
+    "kind": "reteach",
+    "shape": "they asked to see it: a picture of the same idea; one idea; let the picture do the work; a few words about what to look at; the key stays unsaid; then one small question about what they see; no verdict on their reply: neither praise nor 'wrong'; it is on the screen now: point them at it in your first words and say what to look at",
+    "prefs": [
+     "Do not give options let the child answer"
+    ],
+    "itemId": "c5-maths-ch01-t01-i07",
+    "skillId": "c5-maths-ch01-t01-s2",
+    "hintLevel": 1,
+    "request": "visual",
+    "visual": "diagram"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "text",
+     "value": "1,00,000 aur 10,000 dekho. Dono ke naam kya hain, aur peh…"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "1,00,000 aur 10,000 dekho. Dono ke naam kya hain, aur pehla kitne guna bada hai?",
+     "itemId": "c5-maths-ch01-t01-i07"
+    },
+    "answerForm": "words",
+    "tray": "studio",
+    "shortTitle": "Big numbers",
+    "beat": {
+     "beatId": "b9-explain",
+     "type": "explain",
+     "index": 9
+    },
+    "studioSlot": {
+     "slotId": "738980e4-34ce-492f-86d2-6f7fdc62589a:c9:slot",
+     "intentId": "738980e4-34ce-492f-86d2-6f7fdc62589a:c9",
+     "state": "revealed",
+     "artifact": {
+      "kind": "stagecraft",
+      "stage": {
+       "w": 1000,
+       "h": 625
+      },
+      "stagecraft": {
+       "rung": "engine_default",
+       "archetype": "scene-explainer@1",
+       "spec": {
+        "archetype": "scene-explainer@1",
+        "skills": [
+         "c5-maths-ch01-t01"
+        ],
+        "lang": "en",
+        "strings": {
+         "again": "Show again",
+         "yourTurn": "Your turn",
+         "check": "Check",
+         "right": "Got it",
+         "look": "Look again",
+         "myth": "MYTH",
+         "busted": "NOT TRUE",
+         "order": "Tap them in order"
+        },
+        "title": "Numbers in thousands and beyond",
+        "accent": "ion",
+        "targets": "c5-maths-ch01-t01-m-comma-anywhere",
+        "scenes": [
+         {
+          "id": "s1",
+          "layout": "split",
+          "els": [
+           {
+            "id": "title",
+            "type": "title",
+            "text": "Place value and commas"
+           },
+           {
+            "id": "myth",
+            "type": "myth",
+            "text": "Commas can go anywhere"
+           },
+           {
+            "id": "comma",
+            "type": "label",
+            "text": "Indian commas",
+            "x": 650,
+            "y": 300,
+            "color": "ion"
+           }
+          ]
+         },
+         {
+          "id": "s2",
+          "layout": "row",
+          "els": [
+           {
+            "id": "lakhs",
+            "type": "node",
+            "text": "Lakhs",
+            "sub": "1,00,000",
+            "glyph": "bank",
+            "color": "ion"
+           },
+           {
+            "id": "tenth",
+            "type": "node",
+            "text": "Ten thousands",
+            "sub": "10,000",
+            "glyph": "ruler",
+            "color": "sci"
+           },
+           {
+            "id": "thou",
+            "type": "node",
+            "text": "Thousands",
+            "sub": "1,000",
+            "glyph": "book",
+            "color": "mint"
+           },
+           {
+            "id": "hund",
+            "type": "node",
+            "text": "Hundreds",
+            "sub": "100",
+            "glyph": "coin",
+            "color": "amber"
+           },
+           {
+            "id": "tens",
+            "type": "node",
+            "text": "Tens",
+            "sub": "10",
+            "glyph": "gear",
+            "color": "sun"
+           },
+           {
+            "id": "ones",
+            "type": "node",
+            "text": "Ones",
+            "sub": "1",
+            "glyph": "spark",
+            "color": "volt"
+           },
+           {
+            "id": "p1",
+            "type": "arrow",
+            "from": "lakhs",
+            "to": "tenth",
+            "text": "10 times"
+           },
+           {
+            "id": "p2",
+            "type": "arrow",
+            "from": "tenth",
+            "to": "thou",
+            "text": "10 times"
+           },
+           {
+            "id": "p3",
+            "type": "arrow",
+            "from": "thou",
+            "to": "hund",
+            "text": "10 times"
+           },
+           {
+            "id": "p4",
+            "type": "arrow",
+            "from": "hund",
+            "to": "tens",
+            "text": "10 times"
+           },
+           {
+            "id": "p5",
+            "type": "arrow",
+            "from": "tens",
+            "to": "ones",
+            "text": "10 times"
+           }
+          ]
+         },
+         {
+          "id": "s3",
+          "layout": "column",
+          "els": [
+           {
+            "id": "example",
+            "type": "title",
+            "text": "One lakh seven thousand forty"
+           },
+           {
+            "id": "part1",
+            "type": "node",
+            "text": "1 lakh",
+            "glyph": "bank",
+            "color": "ion"
+           },
+           {
+            "id": "part2",
+            "type": "node",
+            "text": "7 thousand",
+            "glyph": "book",
+            "color": "mint"
+           },
+           {
+            "id": "part3",
+            "type": "node",
+            "text": "40",
+            "glyph": "coin",
+            "color": "amber"
+           },
+           {
+            "id": "result",
+            "type": "node",
+            "text": "1,07,040",
+            "glyph": "note",
+            "color": "volt"
+           },
+           {
+            "id": "zero",
+            "type": "label",
+            "text": "Zeros hold places",
+            "x": 650,
+            "y": 360,
+            "color": "sci"
+           },
+           {
+            "id": "indian",
+            "type": "node",
+            "text": "1,25,000",
+            "color": "mint"
+           },
+           {
+            "id": "wrong",
+            "type": "node",
+            "text": "125,000",
+            "glyph": "question",
+            "color": "amber"
+           },
+           {
+            "id": "six",
+            "type": "node",
+            "text": "1,00,000",
+            "sub": "one lakh",
+            "glyph": "bank",
+            "color": "ion"
+           },
+           {
+            "id": "five",
+            "type": "node",
+            "text": "10,000",
+            "sub": "ten thousand",
+            "glyph": "ruler",
+            "color": "sci"
+           },
+           {
+            "id": "tenx",
+            "type": "arrow",
+            "from": "five",
+            "to": "six",
+            "text": "10 times"
+           }
+          ]
+         }
+        ],
+        "text": {
+         "L1": "Numbers become larger as we move left through place values.",
+         "L2": "A comma is not decorative. In the Indian system, its position follows a fixed pattern.",
+         "L3": "Each place is ten times the place to its right: ones, tens, hundreds, thousands and lakhs.",
+         "L4": "To write one lakh seven thousand forty, place the digits as 1, 0, 7, 0, 4, 0.",
+         "L5": "The zeros hold empty places, so the number is 1,07,040, not a shorter number.",
+         "L6": "First put a comma after three digits from the right, then after every two digits.",
+         "L7": "A number with more digits is bigger; 1,00,000 is the smallest six-digit number and is ten times 10,000.",
+         "L8": "Now choose the correct Indian comma pattern for 125000."
+        },
+        "narration": {},
+        "beats": [
+         {
+          "line": "L1",
+          "gap": 0.4,
+          "scene": "s1",
+          "cues": [
+           {
+            "at": 0,
+            "do": "show",
+            "dur": 0.8,
+            "target": "title"
+           },
+           {
+            "at": 0.4,
+            "do": "show",
+            "dur": 0.6,
+            "target": "comma"
+           }
+          ]
+         },
+         {
+          "line": "L2",
+          "gap": 0.4,
+          "scene": "s1",
+          "cues": [
+           {
+            "at": 0,
+            "do": "show",
+            "dur": 0.7,
+            "target": "myth"
+           },
+           {
+            "at": 0.8,
+            "do": "bust",
+            "dur": 1,
+            "target": "myth"
+           }
+          ]
+         },
+         {
+          "line": "L3",
+          "gap": 0.4,
+          "scene": "s2",
+          "cues": [
+           {
+            "at": 0,
+            "do": "show",
+            "dur": 0.8,
+            "target": [
+             "lakhs",
+             "tenth",
+             "thou",
+             "hund",
+             "tens",
+             "ones"
+            ]
+           },
+           {
+            "at": 0.7,
+            "do": "flow",
+            "dur": 1.2,
+            "target": [
+             "p1",
+             "p2",
+             "p3",
+             "p4",
+             "p5"
+            ],
+            "to": 1
+           }
+          ]
+         },
+         {
+          "line": "L4",
+          "gap": 0.4,
+          "scene": "s3",
+          "cues": [
+           {
+            "at": 0,
+            "do": "show",
+            "dur": 0.5,
+            "target": "example"
+           },
+           {
+            "at": 0.3,
+            "do": "show",
+            "dur": 0.8,
+            "target": [
+             "part1",
+             "part2",
+             "part3"
+            ]
+           },
+           {
+            "at": 1,
+            "do": "show",
+            "dur": 0.8,
+            "target": "result"
+           }
+          ]
+         },
+         {
+          "line": "L5",
+          "gap": 0.4,
+          "scene": "s3",
+          "cues": [
+           {
+            "at": 0,
+            "do": "highlight",
+            "dur": 0.9,
+            "target": "zero"
+           },
+           {
+            "at": 0.5,
+            "do": "focus",
+            "dur": 0.8,
+            "target": "result"
+           }
+          ]
+         },
+         {
+          "line": "L6",
+          "gap": 0.4,
+          "scene": "s3",
+          "cues": [
+           {
+            "at": 0,
+            "do": "show",
+            "dur": 0.8,
+            "target": [
+             "indian",
+             "wrong"
+            ]
+           },
+           {
+            "at": 0.8,
+            "do": "highlight",
+            "dur": 0.8,
+            "target": "indian"
+           }
+          ]
+         },
+         {
+          "line": "L7",
+          "gap": 0.4,
+          "scene": "s3",
+          "cues": [
+           {
+            "at": 0,
+            "do": "show",
+            "dur": 0.8,
+            "target": [
+             "six",
+             "five",
+             "tenx"
+            ]
+           },
+           {
+            "at": 0.8,
+            "do": "flow",
+            "dur": 0.7,
+            "target": "tenx",
+            "to": 1
+           }
+          ]
+         },
+         {
+          "line": "L8",
+          "gap": 0,
+          "scene": "s3",
+          "cues": [
+           {
+            "at": 0,
+            "do": "interactive",
+            "dur": 0.5
+           }
+          ]
+         }
+        ],
+        "task": {
+         "kind": "tap",
+         "prompt": "Which display uses Indian commas for 125000?",
+         "options": [
+          "indian",
+          "wrong"
+         ],
+         "answer": "indian",
+         "src": "c5-maths-ch01-t01-i03"
+        }
+       },
+       "boardTwin": {
+        "scriptRef": "board:c5-maths-ch01-t01-s1|explain|-|-",
+        "values": {
+         "title": "Cinematic explainer",
+         "need": "explain"
+        },
+        "board": {
+         "title": "Cinematic explainer",
+         "lines": [
+          "place",
+          "indian",
+          "number",
+          "thousand"
+         ],
+         "figure": {
+          "kind": "none"
+         }
+        }
+       },
+       "board": null,
+       "cue": {
+        "clauseIdx": 0,
+        "preRollMs": 400,
+        "crossFadeMs": 420
+       },
+       "buildSha": null,
+       "blobUrl": null
+      }
+     }
+    }
+   },
+   "moduleCommands": [
+    {
+     "op": "unmount",
+     "moduleId": "m17"
+    }
+   ],
+   "studio": {
+    "reveal": "738980e4-34ce-492f-86d2-6f7fdc62589a:c9"
+   },
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false,
+     "leadSlot": true
+    },
+    "verdict": "unverified",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "visual_request",
+     "waitedMs": 394,
+     "parallel": null
+    },
+    "hintLevel": 1,
+    "phase": "practice",
+    "ms": 2676,
+    "item": "c5-maths-ch01-t01-i07",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 57
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 57
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 863
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 934
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1258
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1328
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1333
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1333
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1266
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 2607
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 2675
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "recovery",
+   "lessonId": "738980e4-34ce-492f-86d2-6f7fdc62589a",
+   "childText": "10 times",
+   "ms": 4266,
+   "error": null,
+   "teacherReply": "Ab dono ke naam bhi batao. 1,00,000 aur 10,000 dekho. Dono ke naam kya hain, aur pehla kitne guna bada hai?",
+   "move": {
+    "kind": "hint",
+    "shape": "rung 2 of 4 (hint): One more zero means one place further left.; the key stays unsaid; their answer was partly right: name the right part, no full agreement",
+    "prefs": [
+     "Do not give options let the child answer"
+    ],
+    "itemId": "c5-maths-ch01-t01-i07",
+    "skillId": "c5-maths-ch01-t01-s2",
+    "hintLevel": 2
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "text",
+     "value": "1,00,000 aur 10,000 dekho. Dono ke naam kya hain, aur peh…"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "1,00,000 aur 10,000 dekho. Dono ke naam kya hain, aur pehla kitne guna bada hai?",
+     "itemId": "c5-maths-ch01-t01-i07"
+    },
+    "answerForm": "words",
+    "tray": "studio",
+    "hint": {
+     "level": 2,
+     "text": "One more zero means one place further left."
+    },
+    "shortTitle": "Big numbers",
+    "verdict": "partial",
+    "beat": {
+     "beatId": "b9-explain",
+     "type": "explain",
+     "index": 9
+    },
+    "studioSlot": {
+     "slotId": "738980e4-34ce-492f-86d2-6f7fdc62589a:c9:slot",
+     "intentId": "738980e4-34ce-492f-86d2-6f7fdc62589a:c9",
+     "state": "revealed",
+     "artifact": {
+      "kind": "stagecraft",
+      "stage": {
+       "w": 1000,
+       "h": 625
+      },
+      "stagecraft": {
+       "rung": "engine_default",
+       "archetype": "scene-explainer@1",
+       "spec": {
+        "archetype": "scene-explainer@1",
+        "skills": [
+         "c5-maths-ch01-t01"
+        ],
+        "lang": "en",
+        "strings": {
+         "again": "Show again",
+         "yourTurn": "Your turn",
+         "check": "Check",
+         "right": "Got it",
+         "look": "Look again",
+         "myth": "MYTH",
+         "busted": "NOT TRUE",
+         "order": "Tap them in order"
+        },
+        "title": "Numbers in thousands and beyond",
+        "accent": "ion",
+        "targets": "c5-maths-ch01-t01-m-comma-anywhere",
+        "scenes": [
+         {
+          "id": "s1",
+          "layout": "split",
+          "els": [
+           {
+            "id": "title",
+            "type": "title",
+            "text": "Place value and commas"
+           },
+           {
+            "id": "myth",
+            "type": "myth",
+            "text": "Commas can go anywhere"
+           },
+           {
+            "id": "comma",
+            "type": "label",
+            "text": "Indian commas",
+            "x": 650,
+            "y": 300,
+            "color": "ion"
+           }
+          ]
+         },
+         {
+          "id": "s2",
+          "layout": "row",
+          "els": [
+           {
+            "id": "lakhs",
+            "type": "node",
+            "text": "Lakhs",
+            "sub": "1,00,000",
+            "glyph": "bank",
+            "color": "ion"
+           },
+           {
+            "id": "tenth",
+            "type": "node",
+            "text": "Ten thousands",
+            "sub": "10,000",
+            "glyph": "ruler",
+            "color": "sci"
+           },
+           {
+            "id": "thou",
+            "type": "node",
+            "text": "Thousands",
+            "sub": "1,000",
+            "glyph": "book",
+            "color": "mint"
+           },
+           {
+            "id": "hund",
+            "type": "node",
+            "text": "Hundreds",
+            "sub": "100",
+            "glyph": "coin",
+            "color": "amber"
+           },
+           {
+            "id": "tens",
+            "type": "node",
+            "text": "Tens",
+            "sub": "10",
+            "glyph": "gear",
+            "color": "sun"
+           },
+           {
+            "id": "ones",
+            "type": "node",
+            "text": "Ones",
+            "sub": "1",
+            "glyph": "spark",
+            "color": "volt"
+           },
+           {
+            "id": "p1",
+            "type": "arrow",
+            "from": "lakhs",
+            "to": "tenth",
+            "text": "10 times"
+           },
+           {
+            "id": "p2",
+            "type": "arrow",
+            "from": "tenth",
+            "to": "thou",
+            "text": "10 times"
+           },
+           {
+            "id": "p3",
+            "type": "arrow",
+            "from": "thou",
+            "to": "hund",
+            "text": "10 times"
+           },
+           {
+            "id": "p4",
+            "type": "arrow",
+            "from": "hund",
+            "to": "tens",
+            "text": "10 times"
+           },
+           {
+            "id": "p5",
+            "type": "arrow",
+            "from": "tens",
+            "to": "ones",
+            "text": "10 times"
+           }
+          ]
+         },
+         {
+          "id": "s3",
+          "layout": "column",
+          "els": [
+           {
+            "id": "example",
+            "type": "title",
+            "text": "One lakh seven thousand forty"
+           },
+           {
+            "id": "part1",
+            "type": "node",
+            "text": "1 lakh",
+            "glyph": "bank",
+            "color": "ion"
+           },
+           {
+            "id": "part2",
+            "type": "node",
+            "text": "7 thousand",
+            "glyph": "book",
+            "color": "mint"
+           },
+           {
+            "id": "part3",
+            "type": "node",
+            "text": "40",
+            "glyph": "coin",
+            "color": "amber"
+           },
+           {
+            "id": "result",
+            "type": "node",
+            "text": "1,07,040",
+            "glyph": "note",
+            "color": "volt"
+           },
+           {
+            "id": "zero",
+            "type": "label",
+            "text": "Zeros hold places",
+            "x": 650,
+            "y": 360,
+            "color": "sci"
+           },
+           {
+            "id": "indian",
+            "type": "node",
+            "text": "1,25,000",
+            "color": "mint"
+           },
+           {
+            "id": "wrong",
+            "type": "node",
+            "text": "125,000",
+            "glyph": "question",
+            "color": "amber"
+           },
+           {
+            "id": "six",
+            "type": "node",
+            "text": "1,00,000",
+            "sub": "one lakh",
+            "glyph": "bank",
+            "color": "ion"
+           },
+           {
+            "id": "five",
+            "type": "node",
+            "text": "10,000",
+            "sub": "ten thousand",
+            "glyph": "ruler",
+            "color": "sci"
+           },
+           {
+            "id": "tenx",
+            "type": "arrow",
+            "from": "five",
+            "to": "six",
+            "text": "10 times"
+           }
+          ]
+         }
+        ],
+        "text": {
+         "L1": "Numbers become larger as we move left through place values.",
+         "L2": "A comma is not decorative. In the Indian system, its position follows a fixed pattern.",
+         "L3": "Each place is ten times the place to its right: ones, tens, hundreds, thousands and lakhs.",
+         "L4": "To write one lakh seven thousand forty, place the digits as 1, 0, 7, 0, 4, 0.",
+         "L5": "The zeros hold empty places, so the number is 1,07,040, not a shorter number.",
+         "L6": "First put a comma after three digits from the right, then after every two digits.",
+         "L7": "A number with more digits is bigger; 1,00,000 is the smallest six-digit number and is ten times 10,000.",
+         "L8": "Now choose the correct Indian comma pattern for 125000."
+        },
+        "narration": {},
+        "beats": [
+         {
+          "line": "L1",
+          "gap": 0.4,
+          "scene": "s1",
+          "cues": [
+           {
+            "at": 0,
+            "do": "show",
+            "dur": 0.8,
+            "target": "title"
+           },
+           {
+            "at": 0.4,
+            "do": "show",
+            "dur": 0.6,
+            "target": "comma"
+           }
+          ]
+         },
+         {
+          "line": "L2",
+          "gap": 0.4,
+          "scene": "s1",
+          "cues": [
+           {
+            "at": 0,
+            "do": "show",
+            "dur": 0.7,
+            "target": "myth"
+           },
+           {
+            "at": 0.8,
+            "do": "bust",
+            "dur": 1,
+            "target": "myth"
+           }
+          ]
+         },
+         {
+          "line": "L3",
+          "gap": 0.4,
+          "scene": "s2",
+          "cues": [
+           {
+            "at": 0,
+            "do": "show",
+            "dur": 0.8,
+            "target": [
+             "lakhs",
+             "tenth",
+             "thou",
+             "hund",
+             "tens",
+             "ones"
+            ]
+           },
+           {
+            "at": 0.7,
+            "do": "flow",
+            "dur": 1.2,
+            "target": [
+             "p1",
+             "p2",
+             "p3",
+             "p4",
+             "p5"
+            ],
+            "to": 1
+           }
+          ]
+         },
+         {
+          "line": "L4",
+          "gap": 0.4,
+          "scene": "s3",
+          "cues": [
+           {
+            "at": 0,
+            "do": "show",
+            "dur": 0.5,
+            "target": "example"
+           },
+           {
+            "at": 0.3,
+            "do": "show",
+            "dur": 0.8,
+            "target": [
+             "part1",
+             "part2",
+             "part3"
+            ]
+           },
+           {
+            "at": 1,
+            "do": "show",
+            "dur": 0.8,
+            "target": "result"
+           }
+          ]
+         },
+         {
+          "line": "L5",
+          "gap": 0.4,
+          "scene": "s3",
+          "cues": [
+           {
+            "at": 0,
+            "do": "highlight",
+            "dur": 0.9,
+            "target": "zero"
+           },
+           {
+            "at": 0.5,
+            "do": "focus",
+            "dur": 0.8,
+            "target": "result"
+           }
+          ]
+         },
+         {
+          "line": "L6",
+          "gap": 0.4,
+          "scene": "s3",
+          "cues": [
+           {
+            "at": 0,
+            "do": "show",
+            "dur": 0.8,
+            "target": [
+             "indian",
+             "wrong"
+            ]
+           },
+           {
+            "at": 0.8,
+            "do": "highlight",
+            "dur": 0.8,
+            "target": "indian"
+           }
+          ]
+         },
+         {
+          "line": "L7",
+          "gap": 0.4,
+          "scene": "s3",
+          "cues": [
+           {
+            "at": 0,
+            "do": "show",
+            "dur": 0.8,
+            "target": [
+             "six",
+             "five",
+             "tenx"
+            ]
+           },
+           {
+            "at": 0.8,
+            "do": "flow",
+            "dur": 0.7,
+            "target": "tenx",
+            "to": 1
+           }
+          ]
+         },
+         {
+          "line": "L8",
+          "gap": 0,
+          "scene": "s3",
+          "cues": [
+           {
+            "at": 0,
+            "do": "interactive",
+            "dur": 0.5
+           }
+          ]
+         }
+        ],
+        "task": {
+         "kind": "tap",
+         "prompt": "Which display uses Indian commas for 125000?",
+         "options": [
+          "indian",
+          "wrong"
+         ],
+         "answer": "indian",
+         "src": "c5-maths-ch01-t01-i03"
+        }
+       },
+       "boardTwin": {
+        "scriptRef": "board:c5-maths-ch01-t01-s1|explain|-|-",
+        "values": {
+         "title": "Cinematic explainer",
+         "need": "explain"
+        },
+        "board": {
+         "title": "Cinematic explainer",
+         "lines": [
+          "place",
+          "indian",
+          "number",
+          "thousand"
+         ],
+         "figure": {
+          "kind": "none"
+         }
+        }
+       },
+       "board": null,
+       "cue": {
+        "clauseIdx": 0,
+        "preRollMs": 400,
+        "crossFadeMs": 420
+       },
+       "buildSha": null,
+       "blobUrl": null
+      }
+     }
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [
+      "leak"
+     ],
+     "rewritten": true,
+     "replaced": false,
+     "firstDraft": "Haan, pehla 10 times bada hai. Ab dono numbers ke naam bhi batao. 1,00,000 aur 10,000 dekho. Dono ke naam kya hain, aur pehla kitne guna bada hai?",
+     "afterRewrite": [
+      "ask"
+     ],
+     "repaired": true
+    },
+    "verdict": "partial",
+    "cls": {
+     "outcome": "partial",
+     "source": "exact"
+    },
+    "note": null,
+    "hintLevel": 2,
+    "phase": "practice",
+    "ms": 4261,
+    "item": "c5-maths-ch01-t01-i07",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 74
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 75
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 84
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 147
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 147
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1586
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1368
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1072
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 4186
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 4261
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "probe:thinking_aloud-07",
+   "lessonId": "738980e4-34ce-492f-86d2-6f7fdc62589a",
+   "childText": "hmm so it can't be that because wait",
+   "ms": 2493,
+   "error": null,
+   "teacherReply": "Haan, apni soch poori karo—comma aur place value ko saath mein dekho.",
+   "move": {
+    "kind": "repair",
+    "shape": "they are thinking aloud: no verdict and no answer; a two-to-four word go-on so they finish the thought; never a new question or the question again; no verdict on their reply: neither praise nor 'wrong'",
+    "prefs": [
+     "Do not give options let the child answer"
+    ],
+    "request": "thinking"
+   },
+   "ui": {
+    "status": "your_turn",
+    "phase": "practice",
+    "handover": "answer",
+    "answerForm": "words",
+    "tray": "studio",
+    "shortTitle": "Big numbers",
+    "beat": {
+     "beatId": "b9-explain",
+     "type": "explain",
+     "index": 9
+    },
+    "ask": {
+     "text": "Haan, apni soch poori karo—comma aur place value ko saath mein dekho."
+    },
+    "teacherAffect": {
+     "display": "delight",
+     "intensity": 1
+    },
+    "studioSlot": {
+     "slotId": "738980e4-34ce-492f-86d2-6f7fdc62589a:c9:slot",
+     "intentId": "738980e4-34ce-492f-86d2-6f7fdc62589a:c9",
+     "state": "revealed",
+     "artifact": {
+      "kind": "stagecraft",
+      "stage": {
+       "w": 1000,
+       "h": 625
+      },
+      "stagecraft": {
+       "rung": "engine_default",
+       "archetype": "scene-explainer@1",
+       "spec": {
+        "archetype": "scene-explainer@1",
+        "skills": [
+         "c5-maths-ch01-t01"
+        ],
+        "lang": "en",
+        "strings": {
+         "again": "Show again",
+         "yourTurn": "Your turn",
+         "check": "Check",
+         "right": "Got it",
+         "look": "Look again",
+         "myth": "MYTH",
+         "busted": "NOT TRUE",
+         "order": "Tap them in order"
+        },
+        "title": "Numbers in thousands and beyond",
+        "accent": "ion",
+        "targets": "c5-maths-ch01-t01-m-comma-anywhere",
+        "scenes": [
+         {
+          "id": "s1",
+          "layout": "split",
+          "els": [
+           {
+            "id": "title",
+            "type": "title",
+            "text": "Place value and commas"
+           },
+           {
+            "id": "myth",
+            "type": "myth",
+            "text": "Commas can go anywhere"
+           },
+           {
+            "id": "comma",
+            "type": "label",
+            "text": "Indian commas",
+            "x": 650,
+            "y": 300,
+            "color": "ion"
+           }
+          ]
+         },
+         {
+          "id": "s2",
+          "layout": "row",
+          "els": [
+           {
+            "id": "lakhs",
+            "type": "node",
+            "text": "Lakhs",
+            "sub": "1,00,000",
+            "glyph": "bank",
+            "color": "ion"
+           },
+           {
+            "id": "tenth",
+            "type": "node",
+            "text": "Ten thousands",
+            "sub": "10,000",
+            "glyph": "ruler",
+            "color": "sci"
+           },
+           {
+            "id": "thou",
+            "type": "node",
+            "text": "Thousands",
+            "sub": "1,000",
+            "glyph": "book",
+            "color": "mint"
+           },
+           {
+            "id": "hund",
+            "type": "node",
+            "text": "Hundreds",
+            "sub": "100",
+            "glyph": "coin",
+            "color": "amber"
+           },
+           {
+            "id": "tens",
+            "type": "node",
+            "text": "Tens",
+            "sub": "10",
+            "glyph": "gear",
+            "color": "sun"
+           },
+           {
+            "id": "ones",
+            "type": "node",
+            "text": "Ones",
+            "sub": "1",
+            "glyph": "spark",
+            "color": "volt"
+           },
+           {
+            "id": "p1",
+            "type": "arrow",
+            "from": "lakhs",
+            "to": "tenth",
+            "text": "10 times"
+           },
+           {
+            "id": "p2",
+            "type": "arrow",
+            "from": "tenth",
+            "to": "thou",
+            "text": "10 times"
+           },
+           {
+            "id": "p3",
+            "type": "arrow",
+            "from": "thou",
+            "to": "hund",
+            "text": "10 times"
+           },
+           {
+            "id": "p4",
+            "type": "arrow",
+            "from": "hund",
+            "to": "tens",
+            "text": "10 times"
+           },
+           {
+            "id": "p5",
+            "type": "arrow",
+            "from": "tens",
+            "to": "ones",
+            "text": "10 times"
+           }
+          ]
+         },
+         {
+          "id": "s3",
+          "layout": "column",
+          "els": [
+           {
+            "id": "example",
+            "type": "title",
+            "text": "One lakh seven thousand forty"
+           },
+           {
+            "id": "part1",
+            "type": "node",
+            "text": "1 lakh",
+            "glyph": "bank",
+            "color": "ion"
+           },
+           {
+            "id": "part2",
+            "type": "node",
+            "text": "7 thousand",
+            "glyph": "book",
+            "color": "mint"
+           },
+           {
+            "id": "part3",
+            "type": "node",
+            "text": "40",
+            "glyph": "coin",
+            "color": "amber"
+           },
+           {
+            "id": "result",
+            "type": "node",
+            "text": "1,07,040",
+            "glyph": "note",
+            "color": "volt"
+           },
+           {
+            "id": "zero",
+            "type": "label",
+            "text": "Zeros hold places",
+            "x": 650,
+            "y": 360,
+            "color": "sci"
+           },
+           {
+            "id": "indian",
+            "type": "node",
+            "text": "1,25,000",
+            "color": "mint"
+           },
+           {
+            "id": "wrong",
+            "type": "node",
+            "text": "125,000",
+            "glyph": "question",
+            "color": "amber"
+           },
+           {
+            "id": "six",
+            "type": "node",
+            "text": "1,00,000",
+            "sub": "one lakh",
+            "glyph": "bank",
+            "color": "ion"
+           },
+           {
+            "id": "five",
+            "type": "node",
+            "text": "10,000",
+            "sub": "ten thousand",
+            "glyph": "ruler",
+            "color": "sci"
+           },
+           {
+            "id": "tenx",
+            "type": "arrow",
+            "from": "five",
+            "to": "six",
+            "text": "10 times"
+           }
+          ]
+         }
+        ],
+        "text": {
+         "L1": "Numbers become larger as we move left through place values.",
+         "L2": "A comma is not decorative. In the Indian system, its position follows a fixed pattern.",
+         "L3": "Each place is ten times the place to its right: ones, tens, hundreds, thousands and lakhs.",
+         "L4": "To write one lakh seven thousand forty, place the digits as 1, 0, 7, 0, 4, 0.",
+         "L5": "The zeros hold empty places, so the number is 1,07,040, not a shorter number.",
+         "L6": "First put a comma after three digits from the right, then after every two digits.",
+         "L7": "A number with more digits is bigger; 1,00,000 is the smallest six-digit number and is ten times 10,000.",
+         "L8": "Now choose the correct Indian comma pattern for 125000."
+        },
+        "narration": {},
+        "beats": [
+         {
+          "line": "L1",
+          "gap": 0.4,
+          "scene": "s1",
+          "cues": [
+           {
+            "at": 0,
+            "do": "show",
+            "dur": 0.8,
+            "target": "title"
+           },
+           {
+            "at": 0.4,
+            "do": "show",
+            "dur": 0.6,
+            "target": "comma"
+           }
+          ]
+         },
+         {
+          "line": "L2",
+          "gap": 0.4,
+          "scene": "s1",
+          "cues": [
+           {
+            "at": 0,
+            "do": "show",
+            "dur": 0.7,
+            "target": "myth"
+           },
+           {
+            "at": 0.8,
+            "do": "bust",
+            "dur": 1,
+            "target": "myth"
+           }
+          ]
+         },
+         {
+          "line": "L3",
+          "gap": 0.4,
+          "scene": "s2",
+          "cues": [
+           {
+            "at": 0,
+            "do": "show",
+            "dur": 0.8,
+            "target": [
+             "lakhs",
+             "tenth",
+             "thou",
+             "hund",
+             "tens",
+             "ones"
+            ]
+           },
+           {
+            "at": 0.7,
+            "do": "flow",
+            "dur": 1.2,
+            "target": [
+             "p1",
+             "p2",
+             "p3",
+             "p4",
+             "p5"
+            ],
+            "to": 1
+           }
+          ]
+         },
+         {
+          "line": "L4",
+          "gap": 0.4,
+          "scene": "s3",
+          "cues": [
+           {
+            "at": 0,
+            "do": "show",
+            "dur": 0.5,
+            "target": "example"
+           },
+           {
+            "at": 0.3,
+            "do": "show",
+            "dur": 0.8,
+            "target": [
+             "part1",
+             "part2",
+             "part3"
+            ]
+           },
+           {
+            "at": 1,
+            "do": "show",
+            "dur": 0.8,
+            "target": "result"
+           }
+          ]
+         },
+         {
+          "line": "L5",
+          "gap": 0.4,
+          "scene": "s3",
+          "cues": [
+           {
+            "at": 0,
+            "do": "highlight",
+            "dur": 0.9,
+            "target": "zero"
+           },
+           {
+            "at": 0.5,
+            "do": "focus",
+            "dur": 0.8,
+            "target": "result"
+           }
+          ]
+         },
+         {
+          "line": "L6",
+          "gap": 0.4,
+          "scene": "s3",
+          "cues": [
+           {
+            "at": 0,
+            "do": "show",
+            "dur": 0.8,
+            "target": [
+             "indian",
+             "wrong"
+            ]
+           },
+           {
+            "at": 0.8,
+            "do": "highlight",
+            "dur": 0.8,
+            "target": "indian"
+           }
+          ]
+         },
+         {
+          "line": "L7",
+          "gap": 0.4,
+          "scene": "s3",
+          "cues": [
+           {
+            "at": 0,
+            "do": "show",
+            "dur": 0.8,
+            "target": [
+             "six",
+             "five",
+             "tenx"
+            ]
+           },
+           {
+            "at": 0.8,
+            "do": "flow",
+            "dur": 0.7,
+            "target": "tenx",
+            "to": 1
+           }
+          ]
+         },
+         {
+          "line": "L8",
+          "gap": 0,
+          "scene": "s3",
+          "cues": [
+           {
+            "at": 0,
+            "do": "interactive",
+            "dur": 0.5
+           }
+          ]
+         }
+        ],
+        "task": {
+         "kind": "tap",
+         "prompt": "Which display uses Indian commas for 125000?",
+         "options": [
+          "indian",
+          "wrong"
+         ],
+         "answer": "indian",
+         "src": "c5-maths-ch01-t01-i03"
+        }
+       },
+       "boardTwin": {
+        "scriptRef": "board:c5-maths-ch01-t01-s1|explain|-|-",
+        "values": {
+         "title": "Cinematic explainer",
+         "need": "explain"
+        },
+        "board": {
+         "title": "Cinematic explainer",
+         "lines": [
+          "place",
+          "indian",
+          "number",
+          "thousand"
+         ],
+         "figure": {
+          "kind": "none"
+         }
+        }
+       },
+       "board": null,
+       "cue": {
+        "clauseIdx": 0,
+        "preRollMs": 400,
+        "crossFadeMs": 420
+       },
+       "buildSha": null,
+       "blobUrl": null
+      }
+     }
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false
+    },
+    "verdict": "unverified",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "request"
+    },
+    "note": null,
+    "hintLevel": 2,
+    "phase": "practice",
+    "ms": 2483,
+    "item": null,
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 68
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 68
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 1085
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 1160
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1162
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1162
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1243
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 2409
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 2483
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "filler",
+   "lessonId": "738980e4-34ce-492f-86d2-6f7fdc62589a",
+   "childText": "okay",
+   "ms": 2868,
+   "error": null,
+   "teacherReply": "Ab Indian commas ka pattern yaad rakho: daahini taraf teen ank, phir do-do ankon ke group bante hain. Ek music video ko 236408 views mile. Is number mein Indian system ke hisaab se commas lagao.",
+   "move": {
+    "kind": "practice",
+    "shape": "that question has been on the table long enough: give its answer plainly with one line of why (in LESSON NOW), no verdict on them; then the next question; pose the question as written, in their language; then wait; no verdict on their reply: neither praise nor 'wrong'",
+    "prefs": [
+     "Do not give options let the child answer"
+    ],
+    "itemId": "c5-maths-ch01-t01-rl-o2",
+    "skillId": "c5-maths-ch01-t01-s2",
+    "hintLevel": 0,
+    "probe": "P15"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "math",
+     "value": "236408"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "Ek music video ko 236408 views mile. Is number mein Indian system ke hisaab se commas lagao.",
+     "itemId": "c5-maths-ch01-t01-rl-o2"
+    },
+    "answerForm": "number",
+    "padComma": true,
+    "tray": "studio",
+    "shortTitle": "Big numbers",
+    "beat": {
+     "beatId": "b10-practice_set",
+     "type": "practice_set",
+     "index": 10
+    },
+    "studioSlot": {
+     "slotId": "738980e4-34ce-492f-86d2-6f7fdc62589a:c9:slot",
+     "intentId": "738980e4-34ce-492f-86d2-6f7fdc62589a:c9",
+     "state": "revealed",
+     "artifact": {
+      "kind": "stagecraft",
+      "stage": {
+       "w": 1000,
+       "h": 625
+      },
+      "stagecraft": {
+       "rung": "engine_default",
+       "archetype": "scene-explainer@1",
+       "spec": {
+        "archetype": "scene-explainer@1",
+        "skills": [
+         "c5-maths-ch01-t01"
+        ],
+        "lang": "en",
+        "strings": {
+         "again": "Show again",
+         "yourTurn": "Your turn",
+         "check": "Check",
+         "right": "Got it",
+         "look": "Look again",
+         "myth": "MYTH",
+         "busted": "NOT TRUE",
+         "order": "Tap them in order"
+        },
+        "title": "Numbers in thousands and beyond",
+        "accent": "ion",
+        "targets": "c5-maths-ch01-t01-m-comma-anywhere",
+        "scenes": [
+         {
+          "id": "s1",
+          "layout": "split",
+          "els": [
+           {
+            "id": "title",
+            "type": "title",
+            "text": "Place value and commas"
+           },
+           {
+            "id": "myth",
+            "type": "myth",
+            "text": "Commas can go anywhere"
+           },
+           {
+            "id": "comma",
+            "type": "label",
+            "text": "Indian commas",
+            "x": 650,
+            "y": 300,
+            "color": "ion"
+           }
+          ]
+         },
+         {
+          "id": "s2",
+          "layout": "row",
+          "els": [
+           {
+            "id": "lakhs",
+            "type": "node",
+            "text": "Lakhs",
+            "sub": "1,00,000",
+            "glyph": "bank",
+            "color": "ion"
+           },
+           {
+            "id": "tenth",
+            "type": "node",
+            "text": "Ten thousands",
+            "sub": "10,000",
+            "glyph": "ruler",
+            "color": "sci"
+           },
+           {
+            "id": "thou",
+            "type": "node",
+            "text": "Thousands",
+            "sub": "1,000",
+            "glyph": "book",
+            "color": "mint"
+           },
+           {
+            "id": "hund",
+            "type": "node",
+            "text": "Hundreds",
+            "sub": "100",
+            "glyph": "coin",
+            "color": "amber"
+           },
+           {
+            "id": "tens",
+            "type": "node",
+            "text": "Tens",
+            "sub": "10",
+            "glyph": "gear",
+            "color": "sun"
+           },
+           {
+            "id": "ones",
+            "type": "node",
+            "text": "Ones",
+            "sub": "1",
+            "glyph": "spark",
+            "color": "volt"
+           },
+           {
+            "id": "p1",
+            "type": "arrow",
+            "from": "lakhs",
+            "to": "tenth",
+            "text": "10 times"
+           },
+           {
+            "id": "p2",
+            "type": "arrow",
+            "from": "tenth",
+            "to": "thou",
+            "text": "10 times"
+           },
+           {
+            "id": "p3",
+            "type": "arrow",
+            "from": "thou",
+            "to": "hund",
+            "text": "10 times"
+           },
+           {
+            "id": "p4",
+            "type": "arrow",
+            "from": "hund",
+            "to": "tens",
+            "text": "10 times"
+           },
+           {
+            "id": "p5",
+            "type": "arrow",
+            "from": "tens",
+            "to": "ones",
+            "text": "10 times"
+           }
+          ]
+         },
+         {
+          "id": "s3",
+          "layout": "column",
+          "els": [
+           {
+            "id": "example",
+            "type": "title",
+            "text": "One lakh seven thousand forty"
+           },
+           {
+            "id": "part1",
+            "type": "node",
+            "text": "1 lakh",
+            "glyph": "bank",
+            "color": "ion"
+           },
+           {
+            "id": "part2",
+            "type": "node",
+            "text": "7 thousand",
+            "glyph": "book",
+            "color": "mint"
+           },
+           {
+            "id": "part3",
+            "type": "node",
+            "text": "40",
+            "glyph": "coin",
+            "color": "amber"
+           },
+           {
+            "id": "result",
+            "type": "node",
+            "text": "1,07,040",
+            "glyph": "note",
+            "color": "volt"
+           },
+           {
+            "id": "zero",
+            "type": "label",
+            "text": "Zeros hold places",
+            "x": 650,
+            "y": 360,
+            "color": "sci"
+           },
+           {
+            "id": "indian",
+            "type": "node",
+            "text": "1,25,000",
+            "color": "mint"
+           },
+           {
+            "id": "wrong",
+            "type": "node",
+            "text": "125,000",
+            "glyph": "question",
+            "color": "amber"
+           },
+           {
+            "id": "six",
+            "type": "node",
+            "text": "1,00,000",
+            "sub": "one lakh",
+            "glyph": "bank",
+            "color": "ion"
+           },
+           {
+            "id": "five",
+            "type": "node",
+            "text": "10,000",
+            "sub": "ten thousand",
+            "glyph": "ruler",
+            "color": "sci"
+           },
+           {
+            "id": "tenx",
+            "type": "arrow",
+            "from": "five",
+            "to": "six",
+            "text": "10 times"
+           }
+          ]
+         }
+        ],
+        "text": {
+         "L1": "Numbers become larger as we move left through place values.",
+         "L2": "A comma is not decorative. In the Indian system, its position follows a fixed pattern.",
+         "L3": "Each place is ten times the place to its right: ones, tens, hundreds, thousands and lakhs.",
+         "L4": "To write one lakh seven thousand forty, place the digits as 1, 0, 7, 0, 4, 0.",
+         "L5": "The zeros hold empty places, so the number is 1,07,040, not a shorter number.",
+         "L6": "First put a comma after three digits from the right, then after every two digits.",
+         "L7": "A number with more digits is bigger; 1,00,000 is the smallest six-digit number and is ten times 10,000.",
+         "L8": "Now choose the correct Indian comma pattern for 125000."
+        },
+        "narration": {},
+        "beats": [
+         {
+          "line": "L1",
+          "gap": 0.4,
+          "scene": "s1",
+          "cues": [
+           {
+            "at": 0,
+            "do": "show",
+            "dur": 0.8,
+            "target": "title"
+           },
+           {
+            "at": 0.4,
+            "do": "show",
+            "dur": 0.6,
+            "target": "comma"
+           }
+          ]
+         },
+         {
+          "line": "L2",
+          "gap": 0.4,
+          "scene": "s1",
+          "cues": [
+           {
+            "at": 0,
+            "do": "show",
+            "dur": 0.7,
+            "target": "myth"
+           },
+           {
+            "at": 0.8,
+            "do": "bust",
+            "dur": 1,
+            "target": "myth"
+           }
+          ]
+         },
+         {
+          "line": "L3",
+          "gap": 0.4,
+          "scene": "s2",
+          "cues": [
+           {
+            "at": 0,
+            "do": "show",
+            "dur": 0.8,
+            "target": [
+             "lakhs",
+             "tenth",
+             "thou",
+             "hund",
+             "tens",
+             "ones"
+            ]
+           },
+           {
+            "at": 0.7,
+            "do": "flow",
+            "dur": 1.2,
+            "target": [
+             "p1",
+             "p2",
+             "p3",
+             "p4",
+             "p5"
+            ],
+            "to": 1
+           }
+          ]
+         },
+         {
+          "line": "L4",
+          "gap": 0.4,
+          "scene": "s3",
+          "cues": [
+           {
+            "at": 0,
+            "do": "show",
+            "dur": 0.5,
+            "target": "example"
+           },
+           {
+            "at": 0.3,
+            "do": "show",
+            "dur": 0.8,
+            "target": [
+             "part1",
+             "part2",
+             "part3"
+            ]
+           },
+           {
+            "at": 1,
+            "do": "show",
+            "dur": 0.8,
+            "target": "result"
+           }
+          ]
+         },
+         {
+          "line": "L5",
+          "gap": 0.4,
+          "scene": "s3",
+          "cues": [
+           {
+            "at": 0,
+            "do": "highlight",
+            "dur": 0.9,
+            "target": "zero"
+           },
+           {
+            "at": 0.5,
+            "do": "focus",
+            "dur": 0.8,
+            "target": "result"
+           }
+          ]
+         },
+         {
+          "line": "L6",
+          "gap": 0.4,
+          "scene": "s3",
+          "cues": [
+           {
+            "at": 0,
+            "do": "show",
+            "dur": 0.8,
+            "target": [
+             "indian",
+             "wrong"
+            ]
+           },
+           {
+            "at": 0.8,
+            "do": "highlight",
+            "dur": 0.8,
+            "target": "indian"
+           }
+          ]
+         },
+         {
+          "line": "L7",
+          "gap": 0.4,
+          "scene": "s3",
+          "cues": [
+           {
+            "at": 0,
+            "do": "show",
+            "dur": 0.8,
+            "target": [
+             "six",
+             "five",
+             "tenx"
+            ]
+           },
+           {
+            "at": 0.8,
+            "do": "flow",
+            "dur": 0.7,
+            "target": "tenx",
+            "to": 1
+           }
+          ]
+         },
+         {
+          "line": "L8",
+          "gap": 0,
+          "scene": "s3",
+          "cues": [
+           {
+            "at": 0,
+            "do": "interactive",
+            "dur": 0.5
+           }
+          ]
+         }
+        ],
+        "task": {
+         "kind": "tap",
+         "prompt": "Which display uses Indian commas for 125000?",
+         "options": [
+          "indian",
+          "wrong"
+         ],
+         "answer": "indian",
+         "src": "c5-maths-ch01-t01-i03"
+        }
+       },
+       "boardTwin": {
+        "scriptRef": "board:c5-maths-ch01-t01-s1|explain|-|-",
+        "values": {
+         "title": "Cinematic explainer",
+         "need": "explain"
+        },
+        "board": {
+         "title": "Cinematic explainer",
+         "lines": [
+          "place",
+          "indian",
+          "number",
+          "thousand"
+         ],
+         "figure": {
+          "kind": "none"
+         }
+        }
+       },
+       "board": null,
+       "cue": {
+        "clauseIdx": 0,
+        "preRollMs": 400,
+        "crossFadeMs": 420
+       },
+       "buildSha": null,
+       "blobUrl": null
+      }
+     }
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false,
+     "leadSlot": true
+    },
+    "verdict": "unverified",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 307,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 2862,
+    "item": "c5-maths-ch01-t01-rl-o2",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 93
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 93
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 981
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 1079
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1289
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1386
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1393
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1393
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1397
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 2795
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 2862
+     }
+    ]
+   }
+  }
+ ]
+}

@@ -1,6 +1,2830 @@
 {
  "base": "http://127.0.0.1:18911",
  "seed": 157001,
- "results": [],
- "transcripts": []
+ "results": [
+  {
+   "phrase": "lesson khatam",
+   "spoken": false,
+   "after": "confirm",
+   "persona": "Aarav",
+   "checkIn": true,
+   "problems": [],
+   "stop": {
+    "reply": "Theek hai Aarav, aap teen choices mein se batayiye: keep going, short break, ya stop for today?",
+    "kind": "break",
+    "end": false,
+    "chips": [
+     {
+      "id": "stop:continue",
+      "label": "Keep going"
+     },
+     {
+      "id": "break:rest",
+      "label": "Short break"
+     },
+     {
+      "id": "stop:end",
+      "label": "Stop for today"
+     }
+    ]
+   },
+   "confirm": {
+    "via": "chip stop:end",
+    "ended": true,
+    "reply": "Theek hai Aarav, aaj ke liye yahin rukte hain. Aapne 5/4 ko 1 se aage place karne ka step pakda. Shubh raatri, Aarav."
+   }
+  },
+  {
+   "phrase": "end the lesson",
+   "spoken": true,
+   "after": {
+    "via": "chip stop:continue",
+    "ended": false,
+    "back": true
+   },
+   "persona": "Meher",
+   "checkIn": true,
+   "problems": [],
+   "stop": {
+    "reply": "Of course, Meher. You can keep going, take a short break, or stop for today—what would you choose?",
+    "kind": "break",
+    "end": false,
+    "chips": [
+     {
+      "id": "stop:continue",
+      "label": "Keep going"
+     },
+     {
+      "id": "break:rest",
+      "label": "Short break"
+     },
+     {
+      "id": "stop:end",
+      "label": "Stop for today"
+     }
+    ]
+   }
+  },
+  {
+   "phrase": "I'm done",
+   "spoken": false,
+   "after": {
+    "via": "chip break:rest",
+    "ended": false,
+    "back": true
+   },
+   "persona": "Zoya",
+   "checkIn": true,
+   "problems": [],
+   "stop": {
+    "reply": "Theek hai, Zoya. Aap keep going, short break, ya stop for today mein se choose kijiye.",
+    "kind": "break",
+    "end": false,
+    "chips": [
+     {
+      "id": "stop:continue",
+      "label": "Keep going"
+     },
+     {
+      "id": "break:rest",
+      "label": "Short break"
+     },
+     {
+      "id": "stop:end",
+      "label": "Stop for today"
+     }
+    ]
+   }
+  },
+  {
+   "phrase": "bas",
+   "spoken": true,
+   "after": "confirm",
+   "persona": "Kabir",
+   "checkIn": true,
+   "problems": [],
+   "stop": {
+    "reply": "Theek hai Kabir—pressure bilkul nahi. Aap keep going, short break, ya aaj stop karna chunenge?",
+    "kind": "break",
+    "end": false,
+    "chips": [
+     {
+      "id": "stop:continue",
+      "label": "Keep going"
+     },
+     {
+      "id": "break:rest",
+      "label": "Short break"
+     },
+     {
+      "id": "stop:end",
+      "label": "Stop for today"
+     }
+    ]
+   },
+   "confirm": {
+    "via": "chip stop:end",
+    "ended": true,
+    "reply": "Theek hai Kabir, aaj ke liye yahin stop. Aapne numerator multiply karne ka step kiya—goodbye, apna dhyaan rakhiye."
+   }
+  },
+  {
+   "phrase": "lesson is over",
+   "spoken": false,
+   "after": {
+    "via": "chip stop:continue",
+    "ended": false,
+    "back": true
+   },
+   "persona": "Aarav",
+   "checkIn": true,
+   "problems": [],
+   "stop": {
+    "reply": "Theek hai Aarav—ab aap teen choices mein se chunenge: continue karein, short break lein, ya stop for today?",
+    "kind": "break",
+    "end": false,
+    "chips": [
+     {
+      "id": "stop:continue",
+      "label": "Keep going"
+     },
+     {
+      "id": "break:rest",
+      "label": "Short break"
+     },
+     {
+      "id": "stop:end",
+      "label": "Stop for today"
+     }
+    ]
+   }
+  },
+  {
+   "phrase": "ab band karo",
+   "spoken": true,
+   "after": {
+    "via": "chip break:rest",
+    "ended": false,
+    "back": true
+   },
+   "persona": "Meher",
+   "checkIn": true,
+   "problems": [],
+   "stop": {
+    "reply": "Theek hai, Meher. Choose: keep going, take a short break, or stop for today.",
+    "kind": "break",
+    "end": false,
+    "chips": [
+     {
+      "id": "stop:continue",
+      "label": "Keep going"
+     },
+     {
+      "id": "break:rest",
+      "label": "Short break"
+     },
+     {
+      "id": "stop:end",
+      "label": "Stop for today"
+     }
+    ]
+   }
+  },
+  {
+   "phrase": "mujhe lesson khatam karna hai",
+   "spoken": false,
+   "after": "confirm",
+   "persona": "Zoya",
+   "checkIn": true,
+   "problems": [],
+   "stop": {
+    "reply": "Theek hai, Zoya. Aap choose kijiye: continue, short break, ya aaj ke liye stop?",
+    "kind": "break",
+    "end": false,
+    "chips": [
+     {
+      "id": "stop:continue",
+      "label": "Keep going"
+     },
+     {
+      "id": "break:rest",
+      "label": "Short break"
+     },
+     {
+      "id": "stop:end",
+      "label": "Stop for today"
+     }
+    ]
+   },
+   "confirm": {
+    "via": "chip stop:end",
+    "ended": true,
+    "reply": "Theek hai, Zoya. Aaj ke liye lesson yahin stop karte hain. Namaste, apna dhyaan rakhiye."
+   }
+  },
+  {
+   "phrase": "I want to stop",
+   "spoken": true,
+   "after": {
+    "via": "chip stop:continue",
+    "ended": false,
+    "back": true
+   },
+   "persona": "Kabir",
+   "checkIn": true,
+   "problems": [],
+   "stop": {
+    "reply": "Theek hai Kabir— aap keep going, short break, ya aaj ke liye stop choose kijiye.",
+    "kind": "break",
+    "end": false,
+    "chips": [
+     {
+      "id": "stop:continue",
+      "label": "Keep going"
+     },
+     {
+      "id": "break:rest",
+      "label": "Short break"
+     },
+     {
+      "id": "stop:end",
+      "label": "Stop for today"
+     }
+    ]
+   }
+  },
+  {
+   "phrase": "bas, aaj ke liye itna hi",
+   "spoken": false,
+   "after": {
+    "via": "chip break:rest",
+    "ended": false,
+    "back": true
+   },
+   "persona": "Aarav",
+   "checkIn": true,
+   "problems": [],
+   "stop": {
+    "reply": "Theek hai Aarav— aap continue karenge, short break lenge, ya aaj ke liye stop karenge?",
+    "kind": "break",
+    "end": false,
+    "chips": [
+     {
+      "id": "stop:continue",
+      "label": "Keep going"
+     },
+     {
+      "id": "break:rest",
+      "label": "Short break"
+     },
+     {
+      "id": "stop:end",
+      "label": "Stop for today"
+     }
+    ]
+   }
+  },
+  {
+   "phrase": "अब बस करते हैं",
+   "spoken": true,
+   "after": "confirm",
+   "persona": "Meher",
+   "checkIn": true,
+   "problems": [],
+   "stop": {
+    "reply": "That's okay. We can keep going, take a short break, or stop for today. You choose.",
+    "kind": "break",
+    "end": false,
+    "chips": [
+     {
+      "id": "stop:continue",
+      "label": "Keep going"
+     },
+     {
+      "id": "break:rest",
+      "label": "Short break"
+     },
+     {
+      "id": "stop:end",
+      "label": "Stop for today"
+     }
+    ]
+   },
+   "confirm": {
+    "via": "chip stop:end",
+    "ended": true,
+    "reply": "Theek hai, Meher. Aaj ke liye yahin rukte hain. Goodbye, take care."
+   }
+  }
+ ],
+ "transcripts": [
+  {
+   "tag": "\"lesson khatam\" (typed, then confirm)",
+   "lessonId": "d64cf6cd-47d5-4bce-92a7-2187bd6988e2",
+   "mode": "text",
+   "topicId": "c5-maths-ch02-t01",
+   "opening": {
+    "reply": "Namaste Aarav, main Arjun, aapka AI teacher. Aaj fractions ko number line par cricket pitch ki tarah place karenge. Aapko cricket mein kya pasand hai?",
+    "ui": {
+     "status": "your_turn",
+     "phase": "warmup",
+     "handover": "answer",
+     "answerForm": "words",
+     "tray": "none",
+     "shortTitle": "Fractions on a line",
+     "beat": {
+      "beatId": "b1-arrive",
+      "type": "arrive",
+      "index": 1
+     },
+     "ask": {
+      "text": "Aapko cricket mein kya pasand hai?"
+     }
+    },
+    "moduleCommands": []
+   },
+   "rows": [
+    {
+     "n": 1,
+     "child": "haan ready hoon",
+     "kind": "greet",
+     "ms": 2049,
+     "r": {
+      "move": {
+       "kind": "hook"
+      },
+      "teacherReply": "Aarav, cricket pitch ko 4 equal parts mein baantkar 5/4 ko pitch se aage kaunse point par rakhenge—apna prediction dijiye; ant mein Bittu ko samjhayenge.",
+      "ui": {
+       "status": "your_turn",
+       "phase": "teach",
+       "handover": "answer",
+       "answerForm": "words",
+       "tray": "none",
+       "shortTitle": "Fractions on a line",
+       "beat": {
+        "beatId": "b2-hook",
+        "type": "hook",
+        "index": 2
+       },
+       "ask": {
+        "text": "Aarav, cricket pitch ko 4 equal parts mein baantkar 5/4 ko pitch se aage kaunse point par rakhenge—apna prediction…"
+       }
+      },
+      "moduleCommands": []
+     }
+    },
+    {
+     "n": 2,
+     "child": "ok samajh gaya",
+     "kind": "filler",
+     "ms": 1861,
+     "r": {
+      "move": {
+       "kind": "explain"
+      },
+      "teacherReply": "Aarav, pehle 0 se 1 ke beech 5 equal gaps banaiye; phir har gap ko 1/5 bolenge. Screen par 2/5 ka point kaunsa hai?",
+      "ui": {
+       "status": "your_turn",
+       "phase": "teach",
+       "handover": "answer",
+       "answerForm": "words",
+       "tray": "module",
+       "shortTitle": "Fractions on a line",
+       "beat": {
+        "beatId": "b3-explain",
+        "type": "explain",
+        "index": 3
+       },
+       "ask": {
+        "text": "Screen par 2/5 ka point kaunsa hai?"
+       }
+      },
+      "moduleCommands": [
+       {
+        "op": "mount",
+        "moduleId": "m2",
+        "engine": "number-line@1",
+        "params": {
+         "topicId": "c5-maths-ch02-t01",
+         "skillId": null,
+         "lang": "hinglish",
+         "fractions": [
+          [
+           2,
+           5
+          ]
+         ],
+         "numbers": [
+          0,
+          1
+         ]
+        }
+       }
+      ]
+     }
+    },
+    {
+     "n": 3,
+     "child": "lesson khatam",
+     "kind": "stop",
+     "ms": 3832,
+     "r": {
+      "move": {
+       "kind": "break"
+      },
+      "teacherReply": "Theek hai Aarav, aap teen choices mein se batayiye: keep going, short break, ya stop for today?",
+      "ui": {
+       "status": "your_turn",
+       "chips": [
+        {
+         "id": "stop:continue",
+         "label": "Keep going"
+        },
+        {
+         "id": "break:rest",
+         "label": "Short break"
+        },
+        {
+         "id": "stop:end",
+         "label": "Stop for today"
+        }
+       ],
+       "phase": "teach",
+       "handover": "choice",
+       "answerForm": "choice",
+       "tray": "tiles",
+       "shortTitle": "Fractions on a line",
+       "beat": {
+        "beatId": "b4-break",
+        "type": "break",
+        "index": 4
+       },
+       "ask": {
+        "text": "Theek hai Aarav, aap teen choices mein se batayiye: keep going, short break, ya stop for today?"
+       }
+      },
+      "moduleCommands": [
+       {
+        "op": "unmount",
+        "moduleId": "m2"
+       }
+      ]
+     }
+    },
+    {
+     "n": 4,
+     "child": "Stop for today",
+     "kind": "stop",
+     "ms": 3157,
+     "r": {
+      "move": {
+       "kind": "wrap"
+      },
+      "teacherReply": "Theek hai Aarav, aaj ke liye yahin rukte hain. Aapne 5/4 ko 1 se aage place karne ka step pakda. Shubh raatri, Aarav.",
+      "end": true,
+      "ui": {
+       "status": "your_turn",
+       "phase": "wrap",
+       "handover": "finish",
+       "answerForm": "words",
+       "tray": "none",
+       "shortTitle": "Fractions on a line",
+       "beat": {
+        "beatId": "b5-wrap",
+        "type": "wrap",
+        "index": 5
+       }
+      },
+      "moduleCommands": []
+     }
+    }
+   ]
+  },
+  {
+   "tag": "\"end the lesson\" (spoken, then continue)",
+   "lessonId": "d1046883-2d17-4b82-9848-454ca8f8156d",
+   "mode": "cascade",
+   "topicId": "c6-maths-ch07-t01",
+   "opening": {
+    "reply": "Hi Meher, I’m Arjun, your AI teacher. Today we’ll explore equal shares and fractions—like dividing a painting into equal sections. What do you enjoy painting?",
+    "ui": {
+     "status": "your_turn",
+     "phase": "warmup",
+     "handover": "answer",
+     "answerForm": "words",
+     "tray": "none",
+     "shortTitle": "Fractional units",
+     "beat": {
+      "beatId": "b1-arrive",
+      "type": "arrive",
+      "index": 1
+     },
+     "ask": {
+      "text": "What do you enjoy painting?"
+     }
+    },
+    "moduleCommands": []
+   },
+   "rows": [
+    {
+     "n": 1,
+     "child": "hi yes i'm ready",
+     "kind": "greet",
+     "ms": 1606,
+     "r": {
+      "move": {
+       "kind": "hook"
+      },
+      "teacherReply": "Meher, imagine splitting one painted circle into 2 equal parts or 6 equal parts. Which piece would you choose, and why? Tell me your prediction.",
+      "ui": {
+       "status": "your_turn",
+       "phase": "teach",
+       "handover": "answer",
+       "answerForm": "words",
+       "tray": "none",
+       "shortTitle": "Fractional units",
+       "beat": {
+        "beatId": "b2-hook",
+        "type": "hook",
+        "index": 2
+       },
+       "ask": {
+        "text": "Which piece would you choose, and why?"
+       }
+      },
+      "moduleCommands": []
+     }
+    },
+    {
+     "n": 2,
+     "child": "got it",
+     "kind": "filler",
+     "ms": 5065,
+     "r": {
+      "move": {
+       "kind": "explain"
+      },
+      "teacherReply": "Meher, one fractional unit means one of equal parts: one part from three is one-third. On screen, which fraction names one of three equal groups?",
+      "ui": {
+       "status": "your_turn",
+       "phase": "teach",
+       "handover": "answer",
+       "answerForm": "words",
+       "tray": "studio",
+       "shortTitle": "Fractional units",
+       "beat": {
+        "beatId": "b3-explain",
+        "type": "explain",
+        "index": 3
+       },
+       "ask": {
+        "text": "On screen, which fraction names one of three equal groups?"
+       },
+       "studioSlot": {
+        "slotId": "d1046883-2d17-4b82-9848-454ca8f8156d:wb:2:slot",
+        "intentId": "d1046883-2d17-4b82-9848-454ca8f8156d:wb:2",
+        "state": "planning"
+       }
+      },
+      "moduleCommands": []
+     }
+    },
+    {
+     "n": 3,
+     "child": "end the lesson",
+     "kind": "stop",
+     "ms": 2623,
+     "r": {
+      "move": {
+       "kind": "break"
+      },
+      "teacherReply": "Of course, Meher. You can keep going, take a short break, or stop for today—what would you choose?",
+      "ui": {
+       "status": "your_turn",
+       "chips": [
+        {
+         "id": "stop:continue",
+         "label": "Keep going"
+        },
+        {
+         "id": "break:rest",
+         "label": "Short break"
+        },
+        {
+         "id": "stop:end",
+         "label": "Stop for today"
+        }
+       ],
+       "phase": "teach",
+       "handover": "choice",
+       "answerForm": "choice",
+       "tray": "tiles",
+       "shortTitle": "Fractional units",
+       "beat": {
+        "beatId": "b4-break",
+        "type": "break",
+        "index": 4
+       },
+       "ask": {
+        "text": "You can keep going, take a short break, or stop for today—what would you choose?"
+       }
+      },
+      "moduleCommands": []
+     }
+    },
+    {
+     "n": 4,
+     "child": "keep going",
+     "kind": "steer",
+     "ms": 2579,
+     "r": {
+      "move": {
+       "kind": "worked_example"
+      },
+      "teacherReply": "Meher, first step: cut each of the 5 laddoos into 3 equal parts. Each piece is one-third. What should we count next?",
+      "ui": {
+       "status": "your_turn",
+       "whiteboard": {
+        "kind": "math",
+        "value": "5 laddoos are shared equally by 3 children. How much does each child get?"
+       },
+       "phase": "teach",
+       "handover": "answer",
+       "answerForm": "words",
+       "tray": "studio",
+       "shortTitle": "Fractional units",
+       "beat": {
+        "beatId": "b5-worked_example",
+        "type": "worked_example",
+        "index": 5
+       },
+       "ask": {
+        "text": "What should we count next?"
+       },
+       "studioSlot": {
+        "slotId": "d1046883-2d17-4b82-9848-454ca8f8156d:wb:4:slot",
+        "intentId": "d1046883-2d17-4b82-9848-454ca8f8156d:wb:4",
+        "state": "planning"
+       }
+      },
+      "moduleCommands": []
+     }
+    },
+    {
+     "n": 5,
+     "child": "got it",
+     "kind": "answer",
+     "ms": 1814,
+     "r": {
+      "move": {
+       "kind": "practice",
+       "itemId": "fade:3"
+      },
+      "teacherReply": "The 5 laddoos make 15 one-third pieces, shared among 3 children. Fill the gap: Each child gets 5/3 of a laddoo, which is 1 whole and ___ more.",
+      "ui": {
+       "status": "your_turn",
+       "whiteboard": {
+        "kind": "math",
+        "value": "5 laddoos are shared equally by 3 children. How much… · Each child gets 5/3 of a laddoo, which is 1 whole and ___ more."
+       },
+       "phase": "practice",
+       "handover": "answer",
+       "ask": {
+        "text": "Fill the gap: Each child gets 5/3 of a laddoo, which is 1 whole and ___ more.",
+        "itemId": "fade:3"
+       },
+       "answerForm": "number",
+       "tray": "none",
+       "shortTitle": "Fractional units",
+       "beat": {
+        "beatId": "b6-practice_set",
+        "type": "practice_set",
+        "index": 6
+       }
+      },
+      "moduleCommands": []
+     }
+    }
+   ]
+  },
+  {
+   "tag": "\"I'm done\" (typed, then break)",
+   "lessonId": "4d1ebbba-a570-4102-8778-f50f2dff8e8c",
+   "mode": "text",
+   "topicId": "c5-evs-ch01-t01",
+   "opening": {
+    "reply": "Namaste Zoya, main Arjun, aapka AI teacher hoon. Aaj water ke forms aur places ko dance steps ki tarah dekhenge. Aapko dance mein kaunsa step pasand hai?",
+    "ui": {
+     "status": "your_turn",
+     "phase": "warmup",
+     "handover": "answer",
+     "answerForm": "words",
+     "tray": "none",
+     "shortTitle": "Forms of water",
+     "beat": {
+      "beatId": "b1-arrive",
+      "type": "arrive",
+      "index": 1
+     },
+     "ask": {
+      "text": "Aapko dance mein kaunsa step pasand hai?"
+     }
+    },
+    "moduleCommands": []
+   },
+   "rows": [
+    {
+     "n": 1,
+     "child": "haan ready hoon",
+     "kind": "greet",
+     "ms": 1947,
+     "r": {
+      "move": {
+       "kind": "hook"
+      },
+      "teacherReply": "Zoya, monsoon mein school uniform geeli ho jaati hai; dhoop mein rakhne par kya hoga—paani gayab hoga ya form badlega? End mein aap Bittu ko sikhaayenge.",
+      "ui": {
+       "status": "your_turn",
+       "phase": "teach",
+       "handover": "answer",
+       "answerForm": "words",
+       "tray": "none",
+       "shortTitle": "Forms of water",
+       "beat": {
+        "beatId": "b2-hook",
+        "type": "hook",
+        "index": 2
+       },
+       "ask": {
+        "text": "Zoya, monsoon mein school uniform geeli ho jaati hai; dhoop mein rakhne par kya hoga—paani gayab hoga ya form badlega?"
+       }
+      },
+      "moduleCommands": []
+     }
+    },
+    {
+     "n": 2,
+     "child": "haan",
+     "kind": "filler",
+     "ms": 2189,
+     "r": {
+      "move": {
+       "kind": "explain"
+      },
+      "teacherReply": "Paani teen forms mein milta hai: liquid lakes mein, solid ice glaciers mein, aur invisible water vapour hawa mein. Screen ki row mein kaunsa form dikhta hai?",
+      "ui": {
+       "status": "your_turn",
+       "phase": "teach",
+       "handover": "answer",
+       "answerForm": "words",
+       "tray": "module",
+       "shortTitle": "Forms of water",
+       "beat": {
+        "beatId": "b3-explain",
+        "type": "explain",
+        "index": 3
+       },
+       "ask": {
+        "text": "Screen ki row mein kaunsa form dikhta hai?"
+       }
+      },
+      "moduleCommands": [
+       {
+        "op": "mount",
+        "moduleId": "m2",
+        "engine": "water-cycle@1",
+        "params": {
+         "topicId": "c5-evs-ch01-t01",
+         "skillId": null,
+         "lang": "hinglish",
+         "scene": "states"
+        }
+       }
+      ]
+     }
+    },
+    {
+     "n": 3,
+     "child": "I'm done",
+     "kind": "stop",
+     "ms": 1327,
+     "r": {
+      "move": {
+       "kind": "break"
+      },
+      "teacherReply": "Theek hai, Zoya. Aap keep going, short break, ya stop for today mein se choose kijiye.",
+      "ui": {
+       "status": "your_turn",
+       "chips": [
+        {
+         "id": "stop:continue",
+         "label": "Keep going"
+        },
+        {
+         "id": "break:rest",
+         "label": "Short break"
+        },
+        {
+         "id": "stop:end",
+         "label": "Stop for today"
+        }
+       ],
+       "phase": "teach",
+       "handover": "choice",
+       "answerForm": "choice",
+       "tray": "tiles",
+       "shortTitle": "Forms of water",
+       "beat": {
+        "beatId": "b4-break",
+        "type": "break",
+        "index": 4
+       },
+       "ask": {
+        "text": "Aap keep going, short break, ya stop for today mein se choose kijiye."
+       }
+      },
+      "moduleCommands": [
+       {
+        "op": "unmount",
+        "moduleId": "m2"
+       }
+      ]
+     }
+    },
+    {
+     "n": 4,
+     "child": "Short break",
+     "kind": "steer",
+     "ms": 3432,
+     "r": {
+      "move": {
+       "kind": "break"
+      },
+      "teacherReply": "Bilkul, Zoya—short break lijiye. Lesson yahin rukta hai; wapas aakar water ke forms ko ek picture se jodenge.",
+      "ui": {
+       "status": "your_turn",
+       "phase": "teach",
+       "handover": "answer",
+       "answerForm": "words",
+       "tray": "none",
+       "shortTitle": "Forms of water",
+       "beat": {
+        "beatId": "b4-break",
+        "type": "break",
+        "index": 4
+       },
+       "ask": {
+        "text": "Lesson yahin rukta hai; wapas aakar water ke forms ko ek picture se jodenge."
+       }
+      },
+      "moduleCommands": []
+     }
+    },
+    {
+     "n": 5,
+     "child": "ok wapas aa gaya",
+     "kind": "answer",
+     "ms": 2002,
+     "r": {
+      "move": {
+       "kind": "worked_example"
+      },
+      "teacherReply": "Welcome back, Zoya. Raat mein uniform heavy aur wet tha; subah light aur dry—ab paani kahan gaya?",
+      "ui": {
+       "status": "your_turn",
+       "whiteboard": {
+        "kind": "math",
+        "value": "A school uniform washed at night is dry by morning. Explain, step by step, where the water went."
+       },
+       "phase": "teach",
+       "handover": "answer",
+       "answerForm": "words",
+       "tray": "module",
+       "shortTitle": "Forms of water",
+       "beat": {
+        "beatId": "b5-worked_example",
+        "type": "worked_example",
+        "index": 5
+       },
+       "ask": {
+        "text": "Raat mein uniform heavy aur wet tha; subah light aur dry—ab paani kahan gaya?"
+       }
+      },
+      "moduleCommands": [
+       {
+        "op": "mount",
+        "moduleId": "m5",
+        "engine": "water-cycle@1",
+        "params": {
+         "topicId": "c5-evs-ch01-t01",
+         "skillId": null,
+         "lang": "hinglish",
+         "scene": "states"
+        }
+       }
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "tag": "\"bas\" (spoken, then confirm)",
+   "lessonId": "09baf4fc-c113-45c7-8f8c-9bd20f4ab056",
+   "mode": "cascade",
+   "topicId": "c7-maths-ch08-t01",
+   "opening": {
+    "reply": "Namaste Kabir, main Arjun, aapka AI teacher. Aaj fractions multiply karenge—cricket ke scorecards jaisa. Aapko cricket mein kya pasand hai?",
+    "ui": {
+     "status": "your_turn",
+     "phase": "warmup",
+     "handover": "answer",
+     "answerForm": "words",
+     "tray": "none",
+     "shortTitle": "Multiplying fractions",
+     "beat": {
+      "beatId": "b1-arrive",
+      "type": "arrive",
+      "index": 1
+     },
+     "ask": {
+      "text": "Aapko cricket mein kya pasand hai?"
+     }
+    },
+    "moduleCommands": []
+   },
+   "rows": [
+    {
+     "n": 1,
+     "child": "haan bhai ready chalo shuru karo haha",
+     "kind": "greet",
+     "ms": 3150,
+     "r": {
+      "move": {
+       "kind": "hook"
+      },
+      "teacherReply": "Kabir, maan lijiye aapne match ka 3/4 hissa dekha, aur usmein 2/3 overs powerplay the—kitna hissa powerplay hua? Bittu ko aap end mein sikhaayenge.",
+      "ui": {
+       "status": "your_turn",
+       "phase": "teach",
+       "handover": "answer",
+       "answerForm": "words",
+       "tray": "none",
+       "shortTitle": "Multiplying fractions",
+       "beat": {
+        "beatId": "b2-hook",
+        "type": "hook",
+        "index": 2
+       },
+       "ask": {
+        "text": "Kabir, maan lijiye aapne match ka 3/4 hissa dekha, aur usmein 2/3 overs powerplay the—kitna hissa powerplay hua?"
+       },
+       "teacherAffect": {
+        "display": "playful",
+        "intensity": 1
+       }
+      },
+      "moduleCommands": []
+     }
+    },
+    {
+     "n": 2,
+     "child": "haan haan samajh gaya boss",
+     "kind": "filler",
+     "ms": 5149,
+     "r": {
+      "move": {
+       "kind": "explain"
+      },
+      "teacherReply": "Kabir, screen par roti ke 5 parts mein 3 shaded hain: fraction 3/5. Ab numerator 3 guna 2 kitna hoga?",
+      "ui": {
+       "status": "your_turn",
+       "phase": "teach",
+       "handover": "answer",
+       "answerForm": "words",
+       "tray": "studio",
+       "shortTitle": "Multiplying fractions",
+       "beat": {
+        "beatId": "b3-explain",
+        "type": "explain",
+        "index": 3
+       },
+       "ask": {
+        "text": "Ab numerator 3 guna 2 kitna hoga?"
+       },
+       "studioSlot": {
+        "slotId": "09baf4fc-c113-45c7-8f8c-9bd20f4ab056:wb:2:slot",
+        "intentId": "09baf4fc-c113-45c7-8f8c-9bd20f4ab056:wb:2",
+        "state": "revealed",
+        "artifact": {
+         "kind": "whiteboard",
+         "stage": {
+          "w": 800,
+          "h": 500
+         },
+         "script": {
+          "v": 1,
+          "scriptId": "09baf4fc-c113-45c7-8f8c-9bd20f4ab056:wb:2",
+          "line": {
+           "lessonId": "09baf4fc-c113-45c7-8f8c-9bd20f4ab056",
+           "teacherReplySeq": 5
+          },
+          "anchor": "line_audio_start",
+          "board": {
+           "w": 800,
+           "h": 500,
+           "ground": "chalk"
+          },
+          "mode": "fresh",
+          "durationMs": 10494,
+          "ops": [
+           {
+            "id": "f1",
+            "op": "text",
+            "startMs": 0,
+            "endMs": 1853,
+            "ink": "chalk",
+            "weight": 1,
+            "at": [
+             170,
+             150
+            ],
+            "text": "fraction",
+            "size": "l"
+           },
+           {
+            "id": "of",
+            "op": "text",
+            "startMs": 1029,
+            "endMs": 2265,
+            "ink": "accent",
+            "weight": 1,
+            "at": [
+             375,
+             150
+            ],
+            "text": "of",
+            "size": "l"
+           },
+           {
+            "id": "f2",
+            "op": "text",
+            "startMs": 1647,
+            "endMs": 3500,
+            "ink": "chalk",
+            "weight": 1,
+            "at": [
+             480,
+             150
+            ],
+            "text": "fraction",
+            "size": "l"
+           },
+           {
+            "id": "mult",
+            "op": "arrow",
+            "startMs": 3912,
+            "endMs": 5559,
+            "ink": "mark",
+            "weight": 2,
+            "from": [
+             390,
+             210
+            ],
+            "to": [
+             390,
+             310
+            ]
+           },
+           {
+            "id": "times",
+            "op": "text",
+            "startMs": 5765,
+            "endMs": 8029,
+            "ink": "good",
+            "weight": 2,
+            "at": [
+             350,
+             350
+            ],
+            "text": "multiply",
+            "size": "l"
+           },
+           {
+            "id": "h1",
+            "op": "highlight",
+            "startMs": 8235,
+            "endMs": 10294,
+            "ink": "good",
+            "weight": 2,
+            "target": "times",
+            "style": "underline"
+           }
+          ],
+          "facts": {
+           "kind": "diagram",
+           "archetype": "whiteboard",
+           "onScreen": {
+            "labels": "fraction | of | fraction | multiply"
+           }
+          }
+         }
+        }
+       }
+      },
+      "moduleCommands": []
+     }
+    },
+    {
+     "n": 3,
+     "child": "bas",
+     "kind": "stop",
+     "ms": 1608,
+     "r": {
+      "move": {
+       "kind": "break"
+      },
+      "teacherReply": "Theek hai Kabir—pressure bilkul nahi. Aap keep going, short break, ya aaj stop karna chunenge?",
+      "ui": {
+       "status": "your_turn",
+       "chips": [
+        {
+         "id": "stop:continue",
+         "label": "Keep going"
+        },
+        {
+         "id": "break:rest",
+         "label": "Short break"
+        },
+        {
+         "id": "stop:end",
+         "label": "Stop for today"
+        }
+       ],
+       "phase": "teach",
+       "handover": "choice",
+       "answerForm": "choice",
+       "tray": "tiles",
+       "shortTitle": "Multiplying fractions",
+       "beat": {
+        "beatId": "b4-break",
+        "type": "break",
+        "index": 4
+       },
+       "ask": {
+        "text": "Aap keep going, short break, ya aaj stop karna chunenge?"
+       }
+      },
+      "moduleCommands": []
+     }
+    },
+    {
+     "n": 4,
+     "child": "stop for today",
+     "kind": "stop",
+     "ms": 3116,
+     "r": {
+      "move": {
+       "kind": "wrap"
+      },
+      "teacherReply": "Theek hai Kabir, aaj ke liye yahin stop. Aapne numerator multiply karne ka step kiya—goodbye, apna dhyaan rakhiye.",
+      "end": true,
+      "ui": {
+       "status": "your_turn",
+       "phase": "wrap",
+       "handover": "finish",
+       "answerForm": "words",
+       "tray": "none",
+       "shortTitle": "Multiplying fractions",
+       "beat": {
+        "beatId": "b5-wrap",
+        "type": "wrap",
+        "index": 5
+       }
+      },
+      "moduleCommands": []
+     }
+    }
+   ]
+  },
+  {
+   "tag": "\"lesson is over\" (typed, then continue)",
+   "lessonId": "a15ea54c-adb5-4bd3-976a-1ff9a823299b",
+   "mode": "text",
+   "topicId": "c5-maths-ch02-t01",
+   "opening": {
+    "reply": "Namaste Aarav, main Arjun, aapka AI teacher. Aaj number line par fractions rakhenge—cricket pitch ki marking jaisa. Aapko cricket mein kya pasand hai?",
+    "ui": {
+     "status": "your_turn",
+     "phase": "warmup",
+     "handover": "answer",
+     "answerForm": "words",
+     "tray": "none",
+     "shortTitle": "Fractions on a line",
+     "beat": {
+      "beatId": "b1-arrive",
+      "type": "arrive",
+      "index": 1
+     },
+     "ask": {
+      "text": "Aapko cricket mein kya pasand hai?"
+     }
+    },
+    "moduleCommands": []
+   },
+   "rows": [
+    {
+     "n": 1,
+     "child": "haan ready hoon",
+     "kind": "greet",
+     "ms": 1516,
+     "r": {
+      "move": {
+       "kind": "hook"
+      },
+      "teacherReply": "Aarav, cricket pitch ko 1 poora maan lijiye; agar use 4 barabar parts mein baante, 1 part ko fraction mein kaise likhenge? Bittu ko aakhir mein sikhayenge.",
+      "ui": {
+       "status": "your_turn",
+       "phase": "teach",
+       "handover": "answer",
+       "answerForm": "words",
+       "tray": "none",
+       "shortTitle": "Fractions on a line",
+       "beat": {
+        "beatId": "b2-hook",
+        "type": "hook",
+        "index": 2
+       },
+       "ask": {
+        "text": "Aarav, cricket pitch ko 1 poora maan lijiye; agar use 4 barabar parts mein baante, 1 part ko fraction mein kaise…"
+       }
+      },
+      "moduleCommands": []
+     }
+    },
+    {
+     "n": 2,
+     "child": "haan bolo",
+     "kind": "filler",
+     "ms": 1662,
+     "r": {
+      "move": {
+       "kind": "explain"
+      },
+      "teacherReply": "Aarav, 0 se 1 tak 5 equal gaps banaiye; har gap 1/5 hoga. Screen par 2/5 ke liye 0 se kitne gaps count karenge?",
+      "ui": {
+       "status": "your_turn",
+       "phase": "teach",
+       "handover": "answer",
+       "answerForm": "words",
+       "tray": "module",
+       "shortTitle": "Fractions on a line",
+       "beat": {
+        "beatId": "b3-explain",
+        "type": "explain",
+        "index": 3
+       },
+       "ask": {
+        "text": "Screen par 2/5 ke liye 0 se kitne gaps count karenge?"
+       }
+      },
+      "moduleCommands": [
+       {
+        "op": "mount",
+        "moduleId": "m2",
+        "engine": "number-line@1",
+        "params": {
+         "topicId": "c5-maths-ch02-t01",
+         "skillId": null,
+         "lang": "hinglish",
+         "fractions": [
+          [
+           2,
+           5
+          ]
+         ],
+         "numbers": [
+          0,
+          1
+         ]
+        }
+       }
+      ]
+     }
+    },
+    {
+     "n": 3,
+     "child": "lesson is over",
+     "kind": "stop",
+     "ms": 3478,
+     "r": {
+      "move": {
+       "kind": "break"
+      },
+      "teacherReply": "Theek hai Aarav—ab aap teen choices mein se chunenge: continue karein, short break lein, ya stop for today?",
+      "ui": {
+       "status": "your_turn",
+       "chips": [
+        {
+         "id": "stop:continue",
+         "label": "Keep going"
+        },
+        {
+         "id": "break:rest",
+         "label": "Short break"
+        },
+        {
+         "id": "stop:end",
+         "label": "Stop for today"
+        }
+       ],
+       "phase": "teach",
+       "handover": "choice",
+       "answerForm": "choice",
+       "tray": "tiles",
+       "shortTitle": "Fractions on a line",
+       "beat": {
+        "beatId": "b4-break",
+        "type": "break",
+        "index": 4
+       },
+       "ask": {
+        "text": "Theek hai Aarav—ab aap teen choices mein se chunenge: continue karein, short break lein, ya stop for today?"
+       }
+      },
+      "moduleCommands": [
+       {
+        "op": "unmount",
+        "moduleId": "m2"
+       }
+      ]
+     }
+    },
+    {
+     "n": 4,
+     "child": "Keep going",
+     "kind": "steer",
+     "ms": 1808,
+     "r": {
+      "move": {
+       "kind": "worked_example"
+      },
+      "teacherReply": "Aarav, theek hai. 0 se 1 tak 5 equal gaps ban chuke hain; ab 2/5 ke liye 0 se kitne gaps aage jaayenge?",
+      "ui": {
+       "status": "your_turn",
+       "whiteboard": {
+        "kind": "math",
+        "value": "Mark 2/5 on a number line from 0 to 1."
+       },
+       "phase": "teach",
+       "handover": "answer",
+       "answerForm": "words",
+       "tray": "module",
+       "shortTitle": "Fractions on a line",
+       "beat": {
+        "beatId": "b5-worked_example",
+        "type": "worked_example",
+        "index": 5
+       },
+       "ask": {
+        "text": "0 se 1 tak 5 equal gaps ban chuke hain; ab 2/5 ke liye 0 se kitne gaps aage jaayenge?"
+       }
+      },
+      "moduleCommands": [
+       {
+        "op": "mount",
+        "moduleId": "m4",
+        "engine": "number-line@1",
+        "params": {
+         "topicId": "c5-maths-ch02-t01",
+         "skillId": null,
+         "lang": "hinglish",
+         "fractions": [
+          [
+           2,
+           5
+          ]
+         ],
+         "numbers": [
+          0,
+          1
+         ]
+        }
+       }
+      ]
+     }
+    },
+    {
+     "n": 5,
+     "child": "haan",
+     "kind": "answer",
+     "ms": 4561,
+     "r": {
+      "move": {
+       "kind": "practice",
+       "itemId": "fade:4"
+      },
+      "teacherReply": "Aarav, aapne “haan” kaha—ab apna answer likhne ke liye ready ho jaiye. Main sirf aapka try dekhunga, answer nahi bataunga. Khaali jagah bhariye: Check: 2/5 is ___ the middle, because 2/5 is less than 1/2.",
+      "ui": {
+       "status": "your_turn",
+       "whiteboard": {
+        "kind": "math",
+        "value": "Mark 2/5 on a number line from 0 to 1. · Check: 2/5 is ___ the middle, because 2/5 is less than 1/2."
+       },
+       "phase": "practice",
+       "handover": "answer",
+       "ask": {
+        "text": "Khaali jagah bhariye: Check: 2/5 is ___ the middle, because 2/5 is less than 1/2.",
+        "itemId": "fade:4"
+       },
+       "answerForm": "words",
+       "tray": "none",
+       "shortTitle": "Fractions on a line",
+       "beat": {
+        "beatId": "b6-practice_set",
+        "type": "practice_set",
+        "index": 6
+       }
+      },
+      "moduleCommands": [
+       {
+        "op": "unmount",
+        "moduleId": "m4"
+       }
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "tag": "\"ab band karo\" (spoken, then break)",
+   "lessonId": "de38f750-6075-432f-8f4d-ff74ed3d5dad",
+   "mode": "cascade",
+   "topicId": "c6-maths-ch07-t01",
+   "opening": {
+    "reply": "Hi Meher, I’m Arjun, your AI teacher. Today we’ll explore equal shares, like dividing paint equally. What do you enjoy painting most?",
+    "ui": {
+     "status": "your_turn",
+     "phase": "warmup",
+     "handover": "answer",
+     "answerForm": "words",
+     "tray": "none",
+     "shortTitle": "Fractional units",
+     "beat": {
+      "beatId": "b1-arrive",
+      "type": "arrive",
+      "index": 1
+     },
+     "ask": {
+      "text": "What do you enjoy painting most?"
+     }
+    },
+    "moduleCommands": []
+   },
+   "rows": [
+    {
+     "n": 1,
+     "child": "hi yes i'm ready",
+     "kind": "greet",
+     "ms": 1687,
+     "r": {
+      "move": {
+       "kind": "hook"
+      },
+      "teacherReply": "Meher, imagine one paint colour shared equally into 2 cups or 5 cups. Which cup gets the bigger share? Later, you’ll teach this to Bittu.",
+      "ui": {
+       "status": "your_turn",
+       "phase": "teach",
+       "handover": "answer",
+       "answerForm": "words",
+       "tray": "none",
+       "shortTitle": "Fractional units",
+       "beat": {
+        "beatId": "b2-hook",
+        "type": "hook",
+        "index": 2
+       },
+       "ask": {
+        "text": "Which cup gets the bigger share?"
+       }
+      },
+      "moduleCommands": []
+     }
+    },
+    {
+     "n": 2,
+     "child": "okay",
+     "kind": "filler",
+     "ms": 3987,
+     "r": {
+      "move": {
+       "kind": "explain"
+      },
+      "teacherReply": "Meher, one whole split into 3 equal parts gives one-third. Each part is smaller than the whole. What fraction names one part?",
+      "ui": {
+       "status": "your_turn",
+       "phase": "teach",
+       "handover": "answer",
+       "answerForm": "words",
+       "tray": "studio",
+       "shortTitle": "Fractional units",
+       "beat": {
+        "beatId": "b3-explain",
+        "type": "explain",
+        "index": 3
+       },
+       "ask": {
+        "text": "What fraction names one part?"
+       },
+       "studioSlot": {
+        "slotId": "de38f750-6075-432f-8f4d-ff74ed3d5dad:wb:2:slot",
+        "intentId": "de38f750-6075-432f-8f4d-ff74ed3d5dad:wb:2",
+        "state": "planning"
+       }
+      },
+      "moduleCommands": []
+     }
+    },
+    {
+     "n": 3,
+     "child": "ab band karo",
+     "kind": "stop",
+     "ms": 1962,
+     "r": {
+      "move": {
+       "kind": "break"
+      },
+      "teacherReply": "Theek hai, Meher. Choose: keep going, take a short break, or stop for today.",
+      "ui": {
+       "status": "your_turn",
+       "chips": [
+        {
+         "id": "stop:continue",
+         "label": "Keep going"
+        },
+        {
+         "id": "break:rest",
+         "label": "Short break"
+        },
+        {
+         "id": "stop:end",
+         "label": "Stop for today"
+        }
+       ],
+       "phase": "teach",
+       "handover": "choice",
+       "answerForm": "choice",
+       "tray": "tiles",
+       "shortTitle": "Fractional units",
+       "beat": {
+        "beatId": "b4-break",
+        "type": "break",
+        "index": 4
+       },
+       "ask": {
+        "text": "Choose: keep going, take a short break, or stop for today."
+       }
+      },
+      "moduleCommands": []
+     }
+    },
+    {
+     "n": 4,
+     "child": "short break",
+     "kind": "steer",
+     "ms": 4629,
+     "r": {
+      "move": {
+       "kind": "break"
+      },
+      "teacherReply": "Theek hai, Meher. Short break le lo; lesson yahin rukta hai. Wapas aakar equal parts se unit fractions compare karenge—ready ho toh “back” likhna.",
+      "ui": {
+       "status": "your_turn",
+       "phase": "teach",
+       "handover": "answer",
+       "answerForm": "words",
+       "tray": "none",
+       "shortTitle": "Fractional units",
+       "beat": {
+        "beatId": "b4-break",
+        "type": "break",
+        "index": 4
+       },
+       "ask": {
+        "text": "Wapas aakar equal parts se unit fractions compare karenge—ready ho toh “back” likhna."
+       }
+      },
+      "moduleCommands": []
+     }
+    },
+    {
+     "n": 5,
+     "child": "ok i'm back",
+     "kind": "answer",
+     "ms": 2104,
+     "r": {
+      "move": {
+       "kind": "worked_example"
+      },
+      "teacherReply": "Welcome back, Meher. Each laddoo is cut into 3 equal parts, so each part is one-third. What should we do with 5 laddoos next?",
+      "ui": {
+       "status": "your_turn",
+       "whiteboard": {
+        "kind": "math",
+        "value": "5 laddoos are shared equally by 3 children. How much does each child get?"
+       },
+       "phase": "teach",
+       "handover": "answer",
+       "answerForm": "words",
+       "tray": "studio",
+       "shortTitle": "Fractional units",
+       "beat": {
+        "beatId": "b5-worked_example",
+        "type": "worked_example",
+        "index": 5
+       },
+       "ask": {
+        "text": "What should we do with 5 laddoos next?"
+       },
+       "studioSlot": {
+        "slotId": "de38f750-6075-432f-8f4d-ff74ed3d5dad:wb:5:slot",
+        "intentId": "de38f750-6075-432f-8f4d-ff74ed3d5dad:wb:5",
+        "state": "planning"
+       }
+      },
+      "moduleCommands": []
+     }
+    }
+   ]
+  },
+  {
+   "tag": "\"mujhe lesson khatam karna hai\" (typed, then confirm)",
+   "lessonId": "4af1bd90-ecd4-4889-b1d4-1d716f696573",
+   "mode": "text",
+   "topicId": "c5-evs-ch01-t01",
+   "opening": {
+    "reply": "Namaste Zoya, main Arjun, aapka AI teacher hoon. Aaj water ke forms aur places ko dance steps ki tarah dekhenge—ready hain?",
+    "ui": {
+     "status": "your_turn",
+     "phase": "warmup",
+     "handover": "answer",
+     "answerForm": "words",
+     "tray": "none",
+     "shortTitle": "Forms of water",
+     "beat": {
+      "beatId": "b1-arrive",
+      "type": "arrive",
+      "index": 1
+     },
+     "ask": {
+      "text": "Aaj water ke forms aur places ko dance steps ki tarah dekhenge—ready hain?"
+     }
+    },
+    "moduleCommands": []
+   },
+   "rows": [
+    {
+     "n": 1,
+     "child": "haan ready hoon",
+     "kind": "greet",
+     "ms": 1609,
+     "r": {
+      "move": {
+       "kind": "hook"
+      },
+      "teacherReply": "Zoya, dance practice ke baad aapki uniform geeli hai; aap use dhoop mein rakhenge ya chhaon mein? Kya hoga, batayiye.",
+      "ui": {
+       "status": "your_turn",
+       "phase": "teach",
+       "handover": "answer",
+       "answerForm": "words",
+       "tray": "none",
+       "shortTitle": "Forms of water",
+       "beat": {
+        "beatId": "b2-hook",
+        "type": "hook",
+        "index": 2
+       },
+       "ask": {
+        "text": "Zoya, dance practice ke baad aapki uniform geeli hai; aap use dhoop mein rakhenge ya chhaon mein?"
+       }
+      },
+      "moduleCommands": []
+     }
+    },
+    {
+     "n": 2,
+     "child": "ek min... haan bolo",
+     "kind": "filler",
+     "ms": 3228,
+     "r": {
+      "move": {
+       "kind": "hook"
+      },
+      "teacherReply": "Zoya, geeli uniform ko dhoop mein rakhiye—dhoop se water dheere-dheere vapour ban kar hawa mein chala jaata hai. Aap kya notice karenge?",
+      "ui": {
+       "status": "your_turn",
+       "phase": "teach",
+       "handover": "answer",
+       "answerForm": "words",
+       "tray": "none",
+       "shortTitle": "Forms of water",
+       "beat": {
+        "beatId": "b2-hook",
+        "type": "hook",
+        "index": 2
+       },
+       "ask": {
+        "text": "Aap kya notice karenge?"
+       }
+      },
+      "moduleCommands": []
+     }
+    },
+    {
+     "n": 3,
+     "child": "mujhe lesson khatam karna hai",
+     "kind": "stop",
+     "ms": 2076,
+     "r": {
+      "move": {
+       "kind": "break"
+      },
+      "teacherReply": "Theek hai, Zoya. Aap choose kijiye: continue, short break, ya aaj ke liye stop?",
+      "ui": {
+       "status": "your_turn",
+       "chips": [
+        {
+         "id": "stop:continue",
+         "label": "Keep going"
+        },
+        {
+         "id": "break:rest",
+         "label": "Short break"
+        },
+        {
+         "id": "stop:end",
+         "label": "Stop for today"
+        }
+       ],
+       "phase": "teach",
+       "handover": "choice",
+       "answerForm": "choice",
+       "tray": "tiles",
+       "shortTitle": "Forms of water",
+       "beat": {
+        "beatId": "b3-break",
+        "type": "break",
+        "index": 3
+       },
+       "ask": {
+        "text": "Aap choose kijiye: continue, short break, ya aaj ke liye stop?"
+       }
+      },
+      "moduleCommands": []
+     }
+    },
+    {
+     "n": 4,
+     "child": "Stop for today",
+     "kind": "stop",
+     "ms": 2926,
+     "r": {
+      "move": {
+       "kind": "wrap"
+      },
+      "teacherReply": "Theek hai, Zoya. Aaj ke liye lesson yahin stop karte hain. Namaste, apna dhyaan rakhiye.",
+      "end": true,
+      "ui": {
+       "status": "your_turn",
+       "phase": "wrap",
+       "handover": "finish",
+       "answerForm": "words",
+       "tray": "none",
+       "shortTitle": "Forms of water",
+       "beat": {
+        "beatId": "b4-wrap",
+        "type": "wrap",
+        "index": 4
+       }
+      },
+      "moduleCommands": []
+     }
+    }
+   ]
+  },
+  {
+   "tag": "\"I want to stop\" (spoken, then continue)",
+   "lessonId": "4d9f90cd-3a17-4cb0-8bfc-dac4a5ead875",
+   "mode": "cascade",
+   "topicId": "c7-maths-ch08-t01",
+   "opening": {
+    "reply": "Namaste Kabir, main Arjun, aapka AI teacher. Aaj fractions multiply karenge—cricket ke scorecards jaisa. Aapko cricket mein kya pasand hai?",
+    "ui": {
+     "status": "your_turn",
+     "phase": "warmup",
+     "handover": "answer",
+     "answerForm": "words",
+     "tray": "none",
+     "shortTitle": "Multiplying fractions",
+     "beat": {
+      "beatId": "b1-arrive",
+      "type": "arrive",
+      "index": 1
+     },
+     "ask": {
+      "text": "Aapko cricket mein kya pasand hai?"
+     }
+    },
+    "moduleCommands": []
+   },
+   "rows": [
+    {
+     "n": 1,
+     "child": "haan bhai ready chalo shuru karo haha",
+     "kind": "greet",
+     "ms": 3618,
+     "r": {
+      "move": {
+       "kind": "hook"
+      },
+      "teacherReply": "Haha, cricket pitch ready—ab ek situation: match ka 3/4 overs bacha, uska 2/5 hissa powerplay hai. Aap kya predict karenge: total overs ka kaunsa fraction? At end, aap Bittu ko sikhaayenge.",
+      "ui": {
+       "status": "your_turn",
+       "phase": "teach",
+       "handover": "answer",
+       "answerForm": "words",
+       "tray": "none",
+       "shortTitle": "Multiplying fractions",
+       "beat": {
+        "beatId": "b2-hook",
+        "type": "hook",
+        "index": 2
+       },
+       "ask": {
+        "text": "Aap kya predict karenge: total overs ka kaunsa fraction?"
+       },
+       "teacherAffect": {
+        "display": "playful",
+        "intensity": 1
+       }
+      },
+      "moduleCommands": []
+     }
+    },
+    {
+     "n": 2,
+     "child": "achha achha aage",
+     "kind": "filler",
+     "ms": 4253,
+     "r": {
+      "move": {
+       "kind": "explain"
+      },
+      "teacherReply": "Kabir, “3/5 ka 2/5” matlab 3/5 ko 5 barabar parts mein baantkar 2 parts lena. Numerator aur denominator kaise multiply karenge?",
+      "ui": {
+       "status": "your_turn",
+       "phase": "teach",
+       "handover": "answer",
+       "answerForm": "words",
+       "tray": "studio",
+       "shortTitle": "Multiplying fractions",
+       "beat": {
+        "beatId": "b3-explain",
+        "type": "explain",
+        "index": 3
+       },
+       "ask": {
+        "text": "Numerator aur denominator kaise multiply karenge?"
+       },
+       "studioSlot": {
+        "slotId": "4d9f90cd-3a17-4cb0-8bfc-dac4a5ead875:wb:2:slot",
+        "intentId": "4d9f90cd-3a17-4cb0-8bfc-dac4a5ead875:wb:2",
+        "state": "revealed",
+        "artifact": {
+         "kind": "whiteboard",
+         "stage": {
+          "w": 800,
+          "h": 500
+         },
+         "script": {
+          "v": 1,
+          "scriptId": "4d9f90cd-3a17-4cb0-8bfc-dac4a5ead875:wb:2",
+          "line": {
+           "lessonId": "4d9f90cd-3a17-4cb0-8bfc-dac4a5ead875",
+           "teacherReplySeq": 5
+          },
+          "anchor": "line_audio_start",
+          "board": {
+           "w": 800,
+           "h": 500,
+           "ground": "chalk"
+          },
+          "mode": "fresh",
+          "durationMs": 13762,
+          "ops": [
+           {
+            "id": "f1",
+            "op": "text",
+            "startMs": 0,
+            "endMs": 2441,
+            "ink": "chalk",
+            "weight": 1,
+            "at": [
+             170,
+             150
+            ],
+            "text": "fraction",
+            "size": "l"
+           },
+           {
+            "id": "of",
+            "op": "text",
+            "startMs": 1356,
+            "endMs": 2984,
+            "ink": "accent",
+            "weight": 1,
+            "at": [
+             375,
+             150
+            ],
+            "text": "of",
+            "size": "l"
+           },
+           {
+            "id": "f2",
+            "op": "text",
+            "startMs": 2170,
+            "endMs": 4611,
+            "ink": "chalk",
+            "weight": 1,
+            "at": [
+             480,
+             150
+            ],
+            "text": "fraction",
+            "size": "l"
+           },
+           {
+            "id": "mult",
+            "op": "arrow",
+            "startMs": 5153,
+            "endMs": 7323,
+            "ink": "mark",
+            "weight": 2,
+            "from": [
+             390,
+             210
+            ],
+            "to": [
+             390,
+             310
+            ]
+           },
+           {
+            "id": "times",
+            "op": "text",
+            "startMs": 7595,
+            "endMs": 10578,
+            "ink": "good",
+            "weight": 2,
+            "at": [
+             350,
+             350
+            ],
+            "text": "multiply",
+            "size": "l"
+           },
+           {
+            "id": "h1",
+            "op": "highlight",
+            "startMs": 10849,
+            "endMs": 13562,
+            "ink": "good",
+            "weight": 2,
+            "target": "times",
+            "style": "underline"
+           }
+          ],
+          "facts": {
+           "kind": "diagram",
+           "archetype": "whiteboard",
+           "onScreen": {
+            "labels": "fraction | of | fraction | multiply"
+           }
+          }
+         }
+        }
+       }
+      },
+      "moduleCommands": []
+     }
+    },
+    {
+     "n": 3,
+     "child": "i want to stop",
+     "kind": "stop",
+     "ms": 2904,
+     "r": {
+      "move": {
+       "kind": "break"
+      },
+      "teacherReply": "Theek hai Kabir— aap keep going, short break, ya aaj ke liye stop choose kijiye.",
+      "ui": {
+       "status": "your_turn",
+       "chips": [
+        {
+         "id": "stop:continue",
+         "label": "Keep going"
+        },
+        {
+         "id": "break:rest",
+         "label": "Short break"
+        },
+        {
+         "id": "stop:end",
+         "label": "Stop for today"
+        }
+       ],
+       "phase": "teach",
+       "handover": "choice",
+       "answerForm": "choice",
+       "tray": "tiles",
+       "shortTitle": "Multiplying fractions",
+       "beat": {
+        "beatId": "b4-break",
+        "type": "break",
+        "index": 4
+       },
+       "ask": {
+        "text": "Theek hai Kabir— aap keep going, short break, ya aaj ke liye stop choose kijiye."
+       }
+      },
+      "moduleCommands": []
+     }
+    },
+    {
+     "n": 4,
+     "child": "keep going",
+     "kind": "steer",
+     "ms": 3042,
+     "r": {
+      "move": {
+       "kind": "worked_example"
+      },
+      "teacherReply": "Welcome back, Kabir. Example hai: cake ka 3/5 of 2/3. Yeh problem aapse kya nikalne ko keh rahi hai?",
+      "ui": {
+       "status": "your_turn",
+       "whiteboard": {
+        "kind": "math",
+        "value": "Find 3/5 of 2/3 of a cake."
+       },
+       "phase": "teach",
+       "handover": "answer",
+       "answerForm": "words",
+       "tray": "studio",
+       "shortTitle": "Multiplying fractions",
+       "beat": {
+        "beatId": "b5-worked_example",
+        "type": "worked_example",
+        "index": 5
+       },
+       "ask": {
+        "text": "Yeh problem aapse kya nikalne ko keh rahi hai?"
+       },
+       "studioSlot": {
+        "slotId": "4d9f90cd-3a17-4cb0-8bfc-dac4a5ead875:wb:4:slot",
+        "intentId": "4d9f90cd-3a17-4cb0-8bfc-dac4a5ead875:wb:4",
+        "state": "revealed",
+        "artifact": {
+         "kind": "whiteboard",
+         "stage": {
+          "w": 800,
+          "h": 500
+         },
+         "script": {
+          "v": 1,
+          "scriptId": "4d9f90cd-3a17-4cb0-8bfc-dac4a5ead875:wb:4",
+          "line": {
+           "lessonId": "4d9f90cd-3a17-4cb0-8bfc-dac4a5ead875",
+           "teacherReplySeq": 9
+          },
+          "anchor": "line_audio_start",
+          "board": {
+           "w": 800,
+           "h": 500,
+           "ground": "chalk"
+          },
+          "mode": "fresh",
+          "durationMs": 10249,
+          "ops": [
+           {
+            "id": "f1",
+            "op": "text",
+            "startMs": 0,
+            "endMs": 1809,
+            "ink": "chalk",
+            "weight": 1,
+            "at": [
+             170,
+             150
+            ],
+            "text": "fraction",
+            "size": "l"
+           },
+           {
+            "id": "of",
+            "op": "text",
+            "startMs": 1005,
+            "endMs": 2211,
+            "ink": "accent",
+            "weight": 1,
+            "at": [
+             375,
+             150
+            ],
+            "text": "of",
+            "size": "l"
+           },
+           {
+            "id": "f2",
+            "op": "text",
+            "startMs": 1608,
+            "endMs": 3417,
+            "ink": "chalk",
+            "weight": 1,
+            "at": [
+             480,
+             150
+            ],
+            "text": "fraction",
+            "size": "l"
+           },
+           {
+            "id": "mult",
+            "op": "arrow",
+            "startMs": 3819,
+            "endMs": 5426,
+            "ink": "mark",
+            "weight": 2,
+            "from": [
+             390,
+             210
+            ],
+            "to": [
+             390,
+             310
+            ]
+           },
+           {
+            "id": "times",
+            "op": "text",
+            "startMs": 5627,
+            "endMs": 7838,
+            "ink": "good",
+            "weight": 2,
+            "at": [
+             350,
+             350
+            ],
+            "text": "multiply",
+            "size": "l"
+           },
+           {
+            "id": "h1",
+            "op": "highlight",
+            "startMs": 8039,
+            "endMs": 10049,
+            "ink": "good",
+            "weight": 2,
+            "target": "times",
+            "style": "underline"
+           }
+          ],
+          "facts": {
+           "kind": "diagram",
+           "archetype": "whiteboard",
+           "onScreen": {
+            "labels": "fraction | of | fraction | multiply"
+           }
+          }
+         }
+        }
+       }
+      },
+      "moduleCommands": []
+     }
+    },
+    {
+     "n": 5,
+     "child": "achha achha aage",
+     "kind": "answer",
+     "ms": 2810,
+     "r": {
+      "move": {
+       "kind": "probe",
+       "itemId": "c7-maths-ch08-t01-rl-h1"
+      },
+      "teacherReply": "Kabir, pehle 120 tickets ka 3/4 hissa nikaaliye. Phir us mile hue hissa ka 2/3 nikaalna hai—do steps, ek saath nahi. School fair ke 120 tickets hain. Class 7 ko unka 3/4 milta hai, phir woh apne hisse ka 2/3 bechti hai. Class 7 kitne tickets bechti hai?",
+      "ui": {
+       "status": "your_turn",
+       "whiteboard": {
+        "kind": "math",
+        "value": "3/4  ·  2/3"
+       },
+       "phase": "practice",
+       "handover": "answer",
+       "ask": {
+        "text": "Class 7 ko unka 3/4 milta hai, phir woh apne hisse ka 2/3 bechti hai. Class 7 kitne tickets bechti hai?",
+        "itemId": "c7-maths-ch08-t01-rl-h1"
+       },
+       "answerForm": "words",
+       "tray": "none",
+       "shortTitle": "Multiplying fractions",
+       "beat": {
+        "beatId": "b6-probe",
+        "type": "probe",
+        "index": 6
+       }
+      },
+      "moduleCommands": []
+     }
+    }
+   ]
+  },
+  {
+   "tag": "\"bas, aaj ke liye itna hi\" (typed, then break)",
+   "lessonId": "557b0fcc-3d59-46ff-9566-60b09dbd8eee",
+   "mode": "text",
+   "topicId": "c5-maths-ch02-t01",
+   "opening": {
+    "reply": "Namaste Aarav, main Arjun, aapka AI teacher. Aaj fractions ko number line par cricket pitch ki tarah rakhenge. Aapka favourite cricket shot kaunsa hai?",
+    "ui": {
+     "status": "your_turn",
+     "phase": "warmup",
+     "handover": "answer",
+     "answerForm": "words",
+     "tray": "none",
+     "shortTitle": "Fractions on a line",
+     "beat": {
+      "beatId": "b1-arrive",
+      "type": "arrive",
+      "index": 1
+     },
+     "ask": {
+      "text": "Aapka favourite cricket shot kaunsa hai?"
+     }
+    },
+    "moduleCommands": []
+   },
+   "rows": [
+    {
+     "n": 1,
+     "child": "haan ready hoon",
+     "kind": "greet",
+     "ms": 1754,
+     "r": {
+      "move": {
+       "kind": "hook"
+      },
+      "teacherReply": "Cricket pitch ko 4 equal parts mein baantiye; 5/4 pitch ke ek poore length se kitna aage hoga? Bittu ko baad mein samjhayenge.",
+      "ui": {
+       "status": "your_turn",
+       "phase": "teach",
+       "handover": "answer",
+       "answerForm": "words",
+       "tray": "none",
+       "shortTitle": "Fractions on a line",
+       "beat": {
+        "beatId": "b2-hook",
+        "type": "hook",
+        "index": 2
+       },
+       "ask": {
+        "text": "Cricket pitch ko 4 equal parts mein baantiye; 5/4 pitch ke ek poore length se kitna aage hoga?"
+       }
+      },
+      "moduleCommands": []
+     }
+    },
+    {
+     "n": 2,
+     "child": "theek hai, aage",
+     "kind": "filler",
+     "ms": 1911,
+     "r": {
+      "move": {
+       "kind": "explain"
+      },
+      "teacherReply": "Aarav, 0 se 1 tak 2 equal gaps banenge; screen par 2/5 nahi—ab 2/5 ko 0 aur 1 ke beech kahan rakhenge?",
+      "ui": {
+       "status": "your_turn",
+       "phase": "teach",
+       "handover": "answer",
+       "answerForm": "words",
+       "tray": "module",
+       "shortTitle": "Fractions on a line",
+       "beat": {
+        "beatId": "b3-explain",
+        "type": "explain",
+        "index": 3
+       },
+       "ask": {
+        "text": "Aarav, 0 se 1 tak 2 equal gaps banenge; screen par 2/5 nahi—ab 2/5 ko 0 aur 1 ke beech kahan rakhenge?"
+       }
+      },
+      "moduleCommands": [
+       {
+        "op": "mount",
+        "moduleId": "m2",
+        "engine": "number-line@1",
+        "params": {
+         "topicId": "c5-maths-ch02-t01",
+         "skillId": null,
+         "lang": "hinglish",
+         "fractions": [
+          [
+           2,
+           5
+          ]
+         ],
+         "numbers": [
+          0,
+          1
+         ]
+        }
+       }
+      ]
+     }
+    },
+    {
+     "n": 3,
+     "child": "bas, aaj ke liye itna hi",
+     "kind": "stop",
+     "ms": 3795,
+     "r": {
+      "move": {
+       "kind": "break"
+      },
+      "teacherReply": "Theek hai Aarav— aap continue karenge, short break lenge, ya aaj ke liye stop karenge?",
+      "ui": {
+       "status": "your_turn",
+       "chips": [
+        {
+         "id": "stop:continue",
+         "label": "Keep going"
+        },
+        {
+         "id": "break:rest",
+         "label": "Short break"
+        },
+        {
+         "id": "stop:end",
+         "label": "Stop for today"
+        }
+       ],
+       "phase": "teach",
+       "handover": "choice",
+       "answerForm": "choice",
+       "tray": "tiles",
+       "shortTitle": "Fractions on a line",
+       "beat": {
+        "beatId": "b4-break",
+        "type": "break",
+        "index": 4
+       },
+       "ask": {
+        "text": "Theek hai Aarav— aap continue karenge, short break lenge, ya aaj ke liye stop karenge?"
+       }
+      },
+      "moduleCommands": [
+       {
+        "op": "unmount",
+        "moduleId": "m2"
+       }
+      ]
+     }
+    },
+    {
+     "n": 4,
+     "child": "Short break",
+     "kind": "steer",
+     "ms": 2530,
+     "r": {
+      "move": {
+       "kind": "break"
+      },
+      "teacherReply": "Bilkul Aarav, short break lijiye; lesson yahin rukta hai. Wapas aakar hum 5/4 ko number line par rakhenge.",
+      "ui": {
+       "status": "your_turn",
+       "phase": "teach",
+       "handover": "answer",
+       "answerForm": "words",
+       "tray": "none",
+       "shortTitle": "Fractions on a line",
+       "beat": {
+        "beatId": "b4-break",
+        "type": "break",
+        "index": 4
+       },
+       "ask": {
+        "text": "Wapas aakar hum 5/4 ko number line par rakhenge."
+       }
+      },
+      "moduleCommands": []
+     }
+    },
+    {
+     "n": 5,
+     "child": "ok wapas aa gaya",
+     "kind": "answer",
+     "ms": 3489,
+     "r": {
+      "move": {
+       "kind": "worked_example"
+      },
+      "teacherReply": "Welcome back, Aarav. 0 se 1 ko 5 equal gaps mein baantkar 2/5 ko number line par kahan rakhenge?",
+      "ui": {
+       "status": "your_turn",
+       "whiteboard": {
+        "kind": "math",
+        "value": "Mark 2/5 on a number line from 0 to 1."
+       },
+       "phase": "teach",
+       "handover": "answer",
+       "answerForm": "words",
+       "tray": "module",
+       "shortTitle": "Fractions on a line",
+       "beat": {
+        "beatId": "b5-worked_example",
+        "type": "worked_example",
+        "index": 5
+       },
+       "ask": {
+        "text": "0 se 1 ko 5 equal gaps mein baantkar 2/5 ko number line par kahan rakhenge?"
+       }
+      },
+      "moduleCommands": [
+       {
+        "op": "mount",
+        "moduleId": "m5",
+        "engine": "number-line@1",
+        "params": {
+         "topicId": "c5-maths-ch02-t01",
+         "skillId": null,
+         "lang": "hinglish",
+         "fractions": [
+          [
+           2,
+           5
+          ]
+         ],
+         "numbers": [
+          0,
+          1
+         ]
+        }
+       }
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "tag": "\"अब बस करते हैं\" (spoken, then confirm)",
+   "lessonId": "da5c560d-7ef0-422e-a9f1-0278efe36701",
+   "mode": "cascade",
+   "topicId": "c6-maths-ch07-t01",
+   "opening": {
+    "reply": "Hi Meher, I’m Arjun, your AI teacher. Today we’ll explore equal shares in fractions, like dividing paint equally. Which painting subject do you enjoy?",
+    "ui": {
+     "status": "your_turn",
+     "phase": "warmup",
+     "handover": "answer",
+     "answerForm": "words",
+     "tray": "none",
+     "shortTitle": "Fractional units",
+     "beat": {
+      "beatId": "b1-arrive",
+      "type": "arrive",
+      "index": 1
+     },
+     "ask": {
+      "text": "Which painting subject do you enjoy?"
+     }
+    },
+    "moduleCommands": []
+   },
+   "rows": [
+    {
+     "n": 1,
+     "child": "hi yes i'm ready",
+     "kind": "greet",
+     "ms": 1916,
+     "r": {
+      "move": {
+       "kind": "hook"
+      },
+      "teacherReply": "Meher, imagine sharing one paint palette equally among 2 or 6 children. Which share would you pick, and why? Later, you’ll teach this to Bittu.",
+      "ui": {
+       "status": "your_turn",
+       "phase": "teach",
+       "handover": "answer",
+       "answerForm": "words",
+       "tray": "none",
+       "shortTitle": "Fractional units",
+       "beat": {
+        "beatId": "b2-hook",
+        "type": "hook",
+        "index": 2
+       },
+       "ask": {
+        "text": "Which share would you pick, and why?"
+       }
+      },
+      "moduleCommands": []
+     }
+    },
+    {
+     "n": 2,
+     "child": "hmm okay",
+     "kind": "filler",
+     "ms": 4198,
+     "r": {
+      "move": {
+       "kind": "explain"
+      },
+      "teacherReply": "Meher, the watch shows 3 equal groups. One group is one out of three equal parts: the fraction is one-third. What fraction is one group?",
+      "ui": {
+       "status": "your_turn",
+       "phase": "teach",
+       "handover": "answer",
+       "answerForm": "words",
+       "tray": "studio",
+       "shortTitle": "Fractional units",
+       "beat": {
+        "beatId": "b3-explain",
+        "type": "explain",
+        "index": 3
+       },
+       "ask": {
+        "text": "What fraction is one group?"
+       },
+       "studioSlot": {
+        "slotId": "da5c560d-7ef0-422e-a9f1-0278efe36701:wb:2:slot",
+        "intentId": "da5c560d-7ef0-422e-a9f1-0278efe36701:wb:2",
+        "state": "planning"
+       }
+      },
+      "moduleCommands": []
+     }
+    },
+    {
+     "n": 3,
+     "child": "अब बस करते हैं",
+     "kind": "stop",
+     "ms": 4157,
+     "r": {
+      "move": {
+       "kind": "break"
+      },
+      "teacherReply": "That's okay. We can keep going, take a short break, or stop for today. You choose.",
+      "ui": {
+       "status": "your_turn",
+       "chips": [
+        {
+         "id": "stop:continue",
+         "label": "Keep going"
+        },
+        {
+         "id": "break:rest",
+         "label": "Short break"
+        },
+        {
+         "id": "stop:end",
+         "label": "Stop for today"
+        }
+       ],
+       "phase": "teach",
+       "handover": "choice",
+       "answerForm": "choice",
+       "tray": "tiles",
+       "shortTitle": "Fractional units",
+       "beat": {
+        "beatId": "b4-break",
+        "type": "break",
+        "index": 4
+       },
+       "ask": {
+        "text": "You choose."
+       }
+      },
+      "moduleCommands": []
+     }
+    },
+    {
+     "n": 4,
+     "child": "stop for today",
+     "kind": "stop",
+     "ms": 4071,
+     "r": {
+      "move": {
+       "kind": "wrap"
+      },
+      "teacherReply": "Theek hai, Meher. Aaj ke liye yahin rukte hain. Goodbye, take care.",
+      "end": true,
+      "ui": {
+       "status": "your_turn",
+       "phase": "wrap",
+       "handover": "finish",
+       "answerForm": "words",
+       "tray": "none",
+       "shortTitle": "Fractional units",
+       "beat": {
+        "beatId": "b5-wrap",
+        "type": "wrap",
+        "index": 5
+       }
+      },
+      "moduleCommands": []
+     }
+    }
+   ]
+  },
+  {
+   "tag": "goodbye bye! mujhe jaana hai",
+   "lessonId": "67afcb4c-2656-4ef5-8a42-b6f317632e69",
+   "mode": "text",
+   "topicId": "c4-maths-ch05-t01",
+   "opening": {
+    "reply": "Namaste Golu, main Asha, tumhari AI teacher hoon. Aaj fractions ko cartoon-pizza jaisi equal shares mein dekhenge. Tumhe cartoons mein kya pasand hai?",
+    "ui": {
+     "status": "your_turn",
+     "phase": "warmup",
+     "handover": "answer",
+     "answerForm": "words",
+     "tray": "none",
+     "shortTitle": "Equal shares",
+     "beat": {
+      "beatId": "b1-arrive",
+      "type": "arrive",
+      "index": 1
+     },
+     "ask": {
+      "text": "Tumhe cartoons mein kya pasand hai?"
+     }
+    },
+    "moduleCommands": []
+   },
+   "rows": [
+    {
+     "n": 1,
+     "child": "haan",
+     "kind": "greet",
+     "ms": 1822,
+     "r": {
+      "move": {
+       "kind": "hook"
+      },
+      "teacherReply": "Golu, maan lo cartoon party mein ek paratha chaar friends ko dena hai—tum kaise baantoge, taaki sabko equal share mile?",
+      "ui": {
+       "status": "your_turn",
+       "phase": "teach",
+       "handover": "answer",
+       "answerForm": "words",
+       "tray": "none",
+       "shortTitle": "Equal shares",
+       "beat": {
+        "beatId": "b2-hook",
+        "type": "hook",
+        "index": 2
+       },
+       "ask": {
+        "text": "Golu, maan lo cartoon party mein ek paratha chaar friends ko dena hai—tum kaise baantoge, taaki sabko equal share mile?"
+       }
+      },
+      "moduleCommands": []
+     }
+    },
+    {
+     "n": 2,
+     "child": "bye! mujhe jaana hai",
+     "kind": "stop",
+     "ms": 2292,
+     "r": {
+      "move": {
+       "kind": "wrap"
+      },
+      "teacherReply": "Theek hai Golu, aaj ke liye itna hi. Tumhara samay achchha guzre. Bye!",
+      "end": true,
+      "ui": {
+       "status": "your_turn",
+       "phase": "wrap",
+       "handover": "finish",
+       "answerForm": "words",
+       "tray": "none",
+       "shortTitle": "Equal shares",
+       "beat": {
+        "beatId": "b3-wrap",
+        "type": "wrap",
+        "index": 3
+       },
+       "teacherAffect": {
+        "display": "neutral_warm",
+        "intensity": 1
+       }
+      },
+      "moduleCommands": []
+     }
+    }
+   ]
+  },
+  {
+   "tag": "goodbye ok bye, I have to go now",
+   "lessonId": "3571f816-6142-4b36-afb3-401a8243f922",
+   "mode": "cascade",
+   "topicId": "c6-maths-ch07-t01",
+   "opening": {
+    "reply": "Hello Meher, I’m Arjun, your AI teacher. Today we’ll explore equal shares in fractions, like dividing paint equally. What do you enjoy painting?",
+    "ui": {
+     "status": "your_turn",
+     "phase": "warmup",
+     "handover": "answer",
+     "answerForm": "words",
+     "tray": "none",
+     "shortTitle": "Fractional units",
+     "beat": {
+      "beatId": "b1-arrive",
+      "type": "arrive",
+      "index": 1
+     },
+     "ask": {
+      "text": "What do you enjoy painting?"
+     }
+    },
+    "moduleCommands": []
+   },
+   "rows": [
+    {
+     "n": 1,
+     "child": "hi yes i'm ready",
+     "kind": "greet",
+     "ms": 1640,
+     "r": {
+      "move": {
+       "kind": "hook"
+      },
+      "teacherReply": "Meher, imagine sharing one paint palette equally between 2 or 5 painters. Which share would you choose, and why? Later, you’ll teach this to Bittu.",
+      "ui": {
+       "status": "your_turn",
+       "phase": "teach",
+       "handover": "answer",
+       "answerForm": "words",
+       "tray": "none",
+       "shortTitle": "Fractional units",
+       "beat": {
+        "beatId": "b2-hook",
+        "type": "hook",
+        "index": 2
+       },
+       "ask": {
+        "text": "Which share would you choose, and why?"
+       }
+      },
+      "moduleCommands": []
+     }
+    },
+    {
+     "n": 2,
+     "child": "ok bye i have to go now",
+     "kind": "stop",
+     "ms": 2270,
+     "r": {
+      "move": {
+       "kind": "wrap"
+      },
+      "teacherReply": "Bye Meher, take care. Tumne equal shares ka main idea pakda—more equal parts means smaller parts.",
+      "end": true,
+      "ui": {
+       "status": "your_turn",
+       "phase": "wrap",
+       "handover": "finish",
+       "answerForm": "words",
+       "tray": "none",
+       "shortTitle": "Fractional units",
+       "beat": {
+        "beatId": "b3-wrap",
+        "type": "wrap",
+        "index": 3
+       },
+       "teacherAffect": {
+        "display": "neutral_warm",
+        "intensity": 1
+       }
+      },
+      "moduleCommands": []
+     }
+    }
+   ]
+  }
+ ]
 }

@@ -19,10 +19,10 @@ E2 = AMI (CC BY 4.0, evaluation only): 4 meetings, 16 headset channels, 48 her/c
 | R1b | commits while the speaker is still voicing <= 1 % of turns (MAI) | 7/400 = 1.8 % | **4/400 = 1.0 %** | **yes** (at the bar) |
 | R2 | decision gap p50 <= 350 ms on the India lane | 910 ms | 1,011 ms (free exchange 1,021; question to her 811; closed answers 451, n = 9) | **no** |
 | R2b | turns never decided within 5 s <= 2 % | 1/400 | 1/400 | **yes** |
-| R3 | keeps talking through continuers >= 90 % (E2) | 139/195 = 71.3 % [64.6-77.2] | **146/195 = 74.9 %** [68.3-80.4] | **no** |
-| R4 | her audio stops (hush or yield) within 200 ms in >= 50 % of real barge-ins (E2) | 17/51 = 33.3 % (p50 among stopped 310 ms) | **25/51 = 49.0 %** [35.9-62.3] (p50 among stopped 170 ms; stopped 35 → 39) | **no** (one barge-in short) |
-| R5 | false yields to other voices in the room <= 10 % (E2; adults, not a TV or a sibling) | 37/239 = 15.5 % [11.4-20.6] | **32/239 = 13.4 %** [9.6-18.3] (room bursts hushed 5.9 → 15.5 %) | **no** |
-| R6 | self-yields on her own bleed <= 2 % (E2; headset bleed, harsher than a phone's AEC) | 116/730 = 15.9 % [13.4-18.7] | **97/730 = 13.3 %** [11.0-15.9] | **no** |
+| R3 | keeps talking through continuers >= 90 % (E2) | 139/195 = 71.3 % [64.6-77.2] | **154/195 = 79.0 %** [72.7-84.1] | **no** |
+| R4 | her audio stops (hush or yield) within 200 ms in >= 50 % of real barge-ins (E2) | 17/51 = 33.3 % (p50 among stopped 310 ms) | **24/51 = 47.1 %** [34.1-60.5] (p50 among stopped 160 ms, p90 740; stopped at all 35 → 36) | **no** (two barge-ins short) |
+| R5 | false yields to other voices in the room <= 10 % (E2; adults, not a TV or a sibling) | 37/239 = 15.5 % [11.4-20.6] | **32/239 = 13.4 %** [9.6-18.3] (room bursts hushed 14 → 39 of 239) | **no** |
+| R6 | self-yields on her own bleed <= 2 % (E2; headset bleed, harsher than a phone's AEC) | 116/730 = 15.9 % [13.4-18.7] | **101/730 = 13.8 %** [11.5-16.5] | **no** |
 | R7 | child-safety floor never weaker (unit + replay suites) | green | green (§4) | **yes** |
 
 ## 2. E1 in detail (end of turn), TRAIN (chosen on) vs TEST (held out)
@@ -51,18 +51,22 @@ By the engine's exchange context at the turn end (ALL, MAI / D4):
 - India lane from India is ESTIMATE only: MAI commit→final is 68 ms from Chennai vs 320 ms from the US, so the covered-words
   moment (and every gap that waits on it) is ~250 ms earlier there: closed answers ≈ 200 ms p50, the free exchange is wait-bound (1.1 s).
 
-## 3. E2 in detail (overlap), `evals/duplex-real/results/r3-ami-after.json`
+## 3. E2 in detail (overlap), `evals/duplex-real/results/r3-ami-after2.json` (the shipped tree; `r3-ami-after.json` = the same without `acousticYieldNeedsNonEcho`)
 
-- **Continuers** 139 → 146/195. Revokes on a continuer 26 → 19 (the armed revoke); acoustic barge-in yields on a continuer
-  26 → 26: they are bursts the hush never met (the mic within 3 dB of her bleed: echo-like, so no hush, yet sustained), i.e.
-  the AMI bleed rig, where her voice reaches his headset at −10 to −22 dB. Continuers hushed (her dip, then back) 38 %.
-- **Barge-ins** 17 → 25/51 stopped within 200 ms; 18 hushed (hush latency p50 160 ms, 16 of 18 <= 200 ms); 33 never hushed
-  for the same echo-like reason or because the open-loop rig had already yielded on that line (phase child_turn while her line
-  continues: an artefact of open-loop replay; on a device she stops). Pauses within 1 s 26 → 19: the hush stands in for them.
-- **Room voices** 37 → 32/239 false yields, but hushed 14 → 37: she dips under another adult's voice more often (an audible
+- **Continuers** 139 → 154/195. Revokes on a continuer 26 → 18 (the armed revoke); acoustic barge-in yields on a continuer
+  26 → 21 (`acousticYieldNeedsNonEcho`: a burst within 3 dB of her bleed is left to its words); the 21 left are sustained
+  bursts the hush never met on the AMI bleed rig, where her voice reaches his headset at −10 to −22 dB. Continuers hushed
+  (her dip, then back) 79/195 = 41 %.
+- **Barge-ins** 17 → 24/51 stopped within 200 ms (p50 among stopped 160 ms, p90 740); the rest never hushed for the same
+  echo-like reason or because the open-loop rig had already yielded on that line (phase child_turn while her line continues:
+  an artefact of open-loop replay; on a device she stops). Against the first after-run (25/51) `acousticYieldNeedsNonEcho`
+  lost 3 barge-ins (two echo-like bursts that had been yielded on acoustics at 110 / 540 ms, one hushed at 110 ms whose line
+  the rig had yielded earlier) and gained 2 (hushed at 140 / 150 ms): −1 net, inside the noise. Pauses within 1 s 26 → 17:
+  the hush stands in for them.
+- **Room voices** 37 → 32/239 false yields, but hushed 14 → 39: she dips under another adult's voice more often (an audible
   cost, not a criterion). No speaker model: TV / sibling rejection beyond pitch attribution is not solved (§5).
-- **Her own bleed** 116 → 97/730: reasons sustained voice 35, G11 forced yield 30, lexical "open tail" 9 (her words through
-  the bleed): a speakerphone with AEC leaks far less; this rig over-states echo (round 2 says the same).
+- **Her own bleed** 116 → 101/730: reasons sustained voice 38, G11 forced yield 30, lexical "open tail" 9 (her words through
+  the bleed), prosody 6: a speakerphone with AEC leaks far less; this rig over-states echo (round 2 says the same).
 - **SIMULATED TaxilaFDB TEST** (child-like TTS, 960 streams x 3 lanes): continuers 0.944 → 0.986 (D4), stop <= 200 ms
   unchanged 105/108, safety unchanged; pauses within 1 s fall with the 1,000 ms hushed sustain (§6).
 
@@ -90,3 +94,22 @@ means "no words in that audio" (the predicate has nothing to read there either).
 4. **Nothing here is a child.** Children pause more (age 9: 85 % of >= 250 ms silences are holds). The pilot refits PAUSE_WAIT.
 5. **Gate S (prod shadow) has no data, and cannot get any without voice lessons:** 512 lesson starts in 3 days, 5 duplex
    config reads, 0 real shadow summaries (Log Analytics, 2026-10-07..09). The owner cohort is the first source.
+
+## 6. Ablations (AMI real speech, the same recorded events; which round-3 overlap rows earned their place)
+
+| arm | meetings (pairs) | continuers kept | barge-ins stopped <= 200 ms | room false yields | bleed self-yields |
+|---|---|---|---|---|---|
+| BEFORE (round-2 engine) | 4 (48) | 139/195 | 17/51 | 37/239 | 116/730 |
+| first after-run (all rows except `acousticYieldNeedsNonEcho`) | 4 (48) | 146/195 | 25/51 | 32/239 | 97/730 |
+| same, armed revoke OFF | 4 (48) | 143/195 | 25/51 | 35/239 | 103/730 |
+| first after-run | 2 (24): IS1008b, ES2004b | 72/103 | 11/22 | 12/101 | 79/421 |
+| + `acousticYieldNeedsNonEcho` (adopted) | 2 (24) | 78/103 | 13/22 | 13/101 | 78/421 |
+| **AFTER (shipped: every row on)** | 4 (48) | **154/195** | **24/51** | **32/239** | **101/730** |
+| first after-run with `hushedSustainMs` 600 instead of 1,000 (rejected) | 2 (24) | 73/103 | 10/22 | 14/101 | 94/421 |
+
+On all four meetings `acousticYieldNeedsNonEcho` bought +8 continuers for −1 barge-in and +4 bleed yields (2 meetings said −1
+bleed): kept for the continuers, which is the larger and the child-facing failure (her stopping because he said "haan").
+The armed revoke this time costs no barge-in stop (round 2's arming did: −2/51) and wins +3 continuers, −3 room and −6 bleed
+yields; small, inside the noise, kept because it costs nothing. Simulated TaxilaFDB TEST: `acousticYieldNeedsNonEcho` changes
+nothing; `hushedSustainMs` 600 raises "paused within 1 s" (D4 0.22 → 0.50) but real speech says otherwise, and the child-facing
+stop (the hush, 105/108 within 200 ms) is the same either way.

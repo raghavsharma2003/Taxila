@@ -11,7 +11,7 @@ const read = (f) => { const p = path.join(RES, f); return fs.existsSync(p) ? JSO
 
 export const FILES = {
   before: { e1: "r3-base-MAI.json", e1d4: "r3-base-D4.json", e2: "r3-base-ami.json" },
-  after: { e1: "r3-after-MAI.json", e1d4: "r3-after-D4.json", e2: "r3-ami-after.json" },
+  after: { e1: "r3-after-MAI.json", e1d4: "r3-after-D4.json", e2: "r3-ami-after2.json" },
 };
 
 /** The rows for one arm (default: after, falling back to before for a file that does not exist yet). */

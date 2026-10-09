@@ -31,7 +31,7 @@ learners. Model-judge numbers are advisory (`rj-holistic-model-judge-gate`). The
 | P-O2 generator latency | p95 ≤ 50 ms | picker CPU p95 22.4 ms; wall p95 59.4 ms | n = 171 picks (every coverage entry × every fade), one process, `tests/play-server.test.mjs`, host load ≈ 30 on 4 cores | met on CPU time; the wall number measures the neighbours (`rj-r3p-picker-wall-clock-gate`) |
 | P-O3 shortcut-free served levels | 100% | 100% (the server serves only levels `proveLevel` accepts) | same test, all entries | met |
 | P-O4 grading truth | 0 wrong grades, ≥ 2000 random acts per family, 0 forged claims | 0 wrong; ≥ 2000 acts per MODE; claims stripped and tampered/mismatched acts refused | `tests/play-logic.test.mjs`, `tests/play-server.test.mjs`; `tests/prod/round3-play.mjs` P3/P4 on the local server | met |
-| P-O5 fit | 0 overflow, text ≥ 14 px, targets ≥ 44 px, 3 viewports × every mode × art | {{FIT}} | `harness/shots.mjs --shots --all-arts`, dev harness, headless Chromium, DPR 1; files `shots/all/*.jpg`, `shots/all/report-all.json` | {{FITV}} |
+| P-O5 fit | 0 overflow, text ≥ 14 px, targets ≥ 44 px, 3 viewports × every mode × art | **192 / 192** pass: smallest canvas text 14 px (16 for class 4-5 modes), smallest target 44 px, smallest button 44 px, 0 labels clipped, 0 buttons clipped, 0 text out of box, 0 horizontal overflow, 0 page errors; the 16 mistake-state screens 16 / 16 | `harness/shots.mjs --shots --all-arts`, dev harness, headless Chromium, DPR 1; files `shots/all/*.jpg`, `shots/all/report-all.json` | met on the dev harness (final run 14:02 UTC on the final build); not measured inside the lesson Desk or on a phone |
 | P-O6 frame rate | ≥ 50 fps median, 4× CPU throttle, 412 × 915 | 6 / 16 modes ≥ 50 (strips-compare 56.3, strips-add 56.0, equality 53.1, lab-golu 52.3, lab-magnet 51.8, line-round 51.5); the rest 40.1-49.0 (lab-predict 40.1, lab-mould 40.7, line-place 42.8, line-compare 43.4, lab-ice 45.2, lab-leaf 45.5, atoms-hcf 46.9, bundles 47.4, balance 48.3, atoms 49.0) | median of 3 runs × 6 s of scripted drag/run per mode, DPR 2, headless SOFTWARE raster, host load 17-28 on 4 cores; `shots/report-fps.json`, `report-fps-line.json` | **short on 10 / 16** under this proxy; no real phone measured |
 | P-O7 reaction guards | 0 verdict words, 0 unrevealed keys, 0 floor violations | 0 / 0 / 0 over the whole bank × every moment × sample facts | `tests/play-react.test.mjs`; P6 on the local server | met |
 | P-O8 world | absence invariance at +365 days; every route cites an edge | byte-identical; 100% cited (18 / 1 / 6 / 1 routes for the 4 families on the test account) | `tests/play-server.test.mjs`; P7 on the local server | met |
@@ -41,22 +41,28 @@ learners. Model-judge numbers are advisory (`rj-holistic-model-judge-gate`). The
 ## 3. The in-lesson loop (end to end, local)
 
 `tests/prod/round3-play.mjs` against a local production server (`node server/serve.mjs`, NODE_ENV=production) on a copy of
-the working tree with patches 01-05 applied, Neon TEST branch: **93 / 93**, run twice (12:03 and 12:44 UTC). The P8 block
+the working tree with patches 01-05 applied, Neon TEST branch: **93 / 93** on the final code (14:21 UTC); six runs today
+(`results/prod-local-2026-10-09.json` history): four 93 / 93, one 92 / 93 (the global count of test accounts on the shared
+TEST branch rose while other streams ran theirs; this run deleted its own) and one 88 / 89 (P8 `fetch failed` while a
+screenshot run loaded the host: lesson start took 9.2 s). The P8 block
 starts a lesson, starts play inside it, solves a level through the server grade, receives the signed evidence and the
 level-end seam, posts them as module events on `POST /api/lesson/turn`, and reads the database:
 
-- the teacher took a full turn at the level end (move `celebrate`) grounded in the verified PLAY row, n = 2 (one per run):
-  "Riya, aapne composite number ko prime factors mein todkar 2·2·5·13 tak pahunchaya; ab isi method ka naam bataiye."
-  (2.6 s) · "Riya, aapne 250 ko prime factors mein toda: 2 × 5 × 5 × 5. Ab isi method se 150 ko todkar likhiye." (2.2 s);
+- the teacher took a full turn at the level end (move `celebrate`) grounded in the verified PLAY row, one reply per passing
+  run, e.g. "Riya, aapne composite number ko prime factors mein todkar 2·2·5·13 tak pahunchaya; ab isi method ka naam
+  bataiye." (2.6 s) · "Riya, aapne 250 ko prime factors mein toda: 2 × 5 × 5 × 5. Ab isi method se 150 ko todkar
+  likhiye." (2.2 s) · "Riya, aapne composite number ko prime factors mein todkar 2·2·5·13 likha; ab isi method ka ek
+  chhota check kijiye: 260 ko dobara multiply karke dikhaiye." (1.9 s, final code);
 - exactly one `kt_evidence` row `via: "game"` for the level; the same level again and a forged token folded nothing;
-- latency (local server, this sandbox): play start p90 380 / 528 ms (n 8 / 8), act p90 199 / 196 ms (n 41 / 40).
+- latency (local server, this sandbox, host shared): play start p90 196-528 ms (n 8 per run), act p90 118-199 ms (n 38-41
+  per run); final run 231 / 124 ms.
 
 **taxila.dev today: 0 / 1** (P0: `/api/play/*` is 404 because patch 01 is not applied), re-checked 2026-10-09 12:46 UTC. The
 India-side latency and the deployed loop are unmeasured.
 
 ## 4. Before / after on the same harness
 
-`harness/shots.mjs --before-after` (2026-10-09 12:47 UTC; `shots/report-before-after.json`, shots `shots/before-*.png`):
+`harness/shots.mjs --before-after` (2026-10-09 12:47 UTC, on the build of that hour; `shots/report-before-after.json`, shots `shots/before-*.png`):
 the shipped studio-v2 engine (a local production build of HEAD's `src/studio-v2/gallery`) against the play family on the
 same idea, all on a 360 × 800 page, DPR 2. "Tray" is the box production gave the engine (181 × 113 CSS px, measured by
 live-tech §1.1); "full box" is the same engine given the play world's own 360 × 576 box (it keeps its fixed 16:10 stage,
@@ -82,7 +88,15 @@ Other before → after pairs inside this round, same harness each time:
 - picker wall p95 72.6 ms → 56-59 ms after capping the atoms candidate sample at 64 (CPU p95 22-22.4 ms after; the CPU
   time was not recorded before the cap, so only the wall pair is a before/after, and it is host-bound);
 - clipped labels in lab chips ("band dabb"): 0 after `Painter.textFit` (audited per frame, in every shot above);
-- `POST /api/play/*` body read twice → `{}` → every POST failed "childId required" (first local run) → fixed, 93 / 93.
+- `POST /api/play/*` body read twice → `{}` → every POST failed "childId required" (first local run) → fixed, 93 / 93;
+- the gap label's first fix still printed "lagbhag 1/3" for 0.18 on a thirds line → "lagbhag 1/6" (caught by a judge);
+- refusal and misconception lines said in the wrong mode ("these pieces are different sizes" for a place-value refusal;
+  "does not share equally" for a one-sided removal) → 0 after shape conditions, enforced by a test over the whole bank;
+- the place-value refusal said "hundreds" in a Hinglish line under a column labelled "sau" → "Sau mein sirf 0 hain.";
+- "no air" drawn as a sealed box and "no CO2" as a bare jar → air pumped out, and a jar with a dish of KOH;
+- a wrong "which is smaller" left no consequence on screen → the line draws its own answer (arrow + "baayein wala chhota");
+- judges' code verdict 6 / 16 (pass 1) → 5 / 16 (pass 2, new screens exposed new defects) → 7 / 16 (pass 3, after the
+  fixes); "feedback that teaches" 1.92 / 2.50 → 3.06 / 3.64 (brain / grok).
 
 ## 5. Model judges (advisory)
 
@@ -90,7 +104,9 @@ Two vision judges of different families, blind (never told what made a screen), 
 `taxila-brain` (OpenAI gpt-5.6-sol, reasoning medium) and `grok-4-20-reasoning` (xAI), both Azure AI Foundry deployments.
 Atomic yes/no checks first; the pass/fail verdict is computed in code (B1, B2, B3, B6, B8 yes on both judges); the 1-5
 scores are reported as given. Still screenshots only: no judge played a level, heard a sound or saw motion. Raw answers:
-`judge/results-2026-10-09-pass1.json` (screens judged: `shots/judge-pass1/`) and `judge/results-2026-10-09-pass2.json`.
+`judge/results-2026-10-09-pass1.json` (the screens judged are archived in `shots/judge-pass1/`), `-pass2.json` and
+`-pass3.json` (pass 3 judged the final `shots/all/` and `shots/mistake/`; the pass-2 screens were overwritten by the
+final run).
 
 ### Pass 1 (16 games × 2 judges × 3 screens; 5 blind pairs × 2 variants × 2 judges × 2 orders)
 
@@ -162,7 +178,45 @@ a wrong "which is smaller" left on screen with only the two placement ticks, whi
 draws its own answer under the pods and the teacher says a compare-specific noticing line), and one was the same
 misreading as pass 1 (the tipped scale's live "x + 1 < 11"). `rj-r3p-lab-setups-that-lie`, `rj-r3p-silent-wrong-order`.
 
-{{PASS3}}
+### Pass 3 (final build, same protocol as pass 2)
+
+| | taxila-brain | grok-4-20 | both agree |
+|---|---|---|---|
+| B1 text readable | 16/16 | 16/16 | 16/16 |
+| B2 targets clear and big | 16/16 | 16/16 | 16/16 |
+| B3 the act is the idea | 13/16 | 9/16 | 8/16 |
+| B4 a visible consequence | 15/16 | 14/16 | 15/16 |
+| B5 symbol beside the picture | 16/16 | 16/16 | 16/16 |
+| B6 no points / coins / streaks / timers / ads | 16/16 | 16/16 | 16/16 |
+| B7 one product across arts | 16/16 | 16/16 | 16/16 |
+| B8 nothing factually wrong | 15/16 | 16/16 | 15/16 |
+| **code verdict (B1 B2 B3 B6 B8 on both)** | | | **7/16** (atoms, atoms-hcf, bundles, line-place, lab-predict, lab-leaf, lab-mould) |
+
+Mean scores, brain / grok: D1 4.06 / 3.24 · D2 3.06 / 3.64 · D3 4.03 / 4.42 · D4 3.72 / 3.73 · D5 3.71 / 3.45 · D6 4.24 /
+3.58. Placement against the references over all dimension × game answers (brain n = 96; grok n = 96, Duolingo 78):
+**DragonBox** better 0 / 1, equal 12 / 36, worse 84 / 59 · **Brilliant** better 2 / 3, equal 47 / 63, worse 47 / 30 ·
+**Prodigy** better 49 / 76, equal 18 / 8, worse 29 / 12 · **Duolingo** better 49 / 67, equal 13 / 11, worse 34 / 0.
+
+Read honestly: both judges put this work clearly above Prodigy and Duolingo Math on most dimensions, around Brilliant (an
+even split on brain, "about equal" most often on grok), and **below DragonBox** on nearly every dimension, with the biggest
+gaps on D1 (the act is the idea) and D2 (feedback that teaches). The remaining code-verdict failures are all B3 except one:
+compare, predict, round and the equality keypad end in a choice, and the judges count a choice as "picking from a list"
+(fair: the commit step is a choice); the exception is brain's B8 on the balance, the same misreading of the tipped
+scale's "x + 1 < 11" for the third time, which is now treated as a legibility signal (a child could read it the same way)
+and left open. Line-round B4 failed on both judges: its mistake shows a hint, not a consequence.
+
+Part B, pass 3 (picks that hold in both orders; after / before / position-driven):
+
+| variant | judge | legible | idea | craft | overall |
+|---|---|---|---|---|---|
+| tray | brain | 5 / 0 / 0 | 5 / 0 / 0 | 5 / 0 / 0 | 5 / 0 / 0 |
+| tray | grok | 4 / 0 / 1 | 2 / 1 / 2 | 3 / 0 / 2 | 3 / 0 / 2 |
+| full box | brain | 4 / 0 / 1 | 4 / 1 / 0 | 4 / 0 / 1 | 4 / 0 / 1 |
+| full box | grok | 1 / 0 / 4 | 1 / 2 / 2 | 0 / 4 / 1 | 0 / 1 / 4 |
+
+Grok flips with screen order on most full-box pairs and, when consistent, prefers the old engines' dark sci-fi chrome on
+craft (4 / 5). Brain prefers the play families on every criterion in both variants. Nobody should read Part B as more than
+"against what a child saw, the new screens win; against the old engines at the same size, craft is contested."
 
 ## 6. What is short of the bar, and why
 
@@ -180,3 +234,15 @@ misreading as pass 1 (the tipped scale's live "x + 1 < 11"). `rj-r3p-lab-setups-
 6. **Screens are the dev harness**, not the lesson Desk: the embedded play mode is proven by the layout test in patch 04
    (box ≥ 300 × 440 on phones ≥ 690 px tall) and by the module-event path, not by screenshots of a live lesson.
 7. **Sound and juice** are built but were not judged (a still cannot show them); TTS for micro-reactions is not built.
+8. **Below DragonBox on the judges' rubric.** The commit step of compare, predict, round and the equality keypad is a
+   choice between buttons; both judges count it as "picking from a list" (B3 fails on 9 of 16 games on at least one
+   judge). The next step is a commit made on the object itself (tap the longer strip, drag the pod to the nearer
+   landmark, drop blocks into the box), not a new family.
+9. **Feedback that teaches is noticing, not explaining** (D2 3.1 / 3.6 of 5). By design the micro-line points at the
+   world and the explanation comes in the teacher's full turn at the seam, which no still shows. Round's mistake shows a
+   hint, not a consequence (B4 fails on both judges); the balance's live "x + 1 < 11" after a one-sided move was read as
+   an inequality task by one judge three times running and is left open as a legibility risk.
+10. **Two instances of this stream ran at once from 13:28 to about 13:40 UTC** (the workflow resumed the agent while it was
+    still running). Both wrote to the same screenshot folders and inbox file for about ten minutes. Every number above was
+    re-measured after that window on the final build: screens 14:02, judges pass 3, local acceptance 14:21. The pass-2
+    judge screens were overwritten.

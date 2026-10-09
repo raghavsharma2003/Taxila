@@ -1,5 +1,5 @@
 diff --git a/server/conversation/lexicon.js b/server/conversation/lexicon.js
-index 85a0080..88c0c8a 100644
+index 85a0080..9761591 100644
 --- a/server/conversation/lexicon.js
 +++ b/server/conversation/lexicon.js
 @@ -30,6 +30,8 @@
@@ -11,7 +11,7 @@ index 85a0080..88c0c8a 100644
  const T = (s) => String(s ?? "").toLowerCase().normalize("NFKC").replace(/[’`]/g, "'").replace(/\s+/g, " ").trim();
  const words = (t) => t.split(/\s+/).filter(Boolean).length;
  
-@@ -72,6 +74,55 @@ export function fragmentLike(t) {
+@@ -72,6 +74,58 @@ export function fragmentLike(t) {
    return (stutter || filler) && content && DANGLING.test(w.at(-1));
  }
  
@@ -61,13 +61,16 @@ index 85a0080..88c0c8a 100644
 +}
 +/** Round 3: a question to HER about what she does ("PUBG khelte ho?", "Free Fire khelte ho?", "tumne woh movie dekhi?"):
 + *  small talk she answers honestly now (owner-2 OFFTOPIC "PUBG khelte ho?"; R7.defer: deferring it is ignoring it, F11). */
-+const SMALL_TALK_DO = /^(?:(?:aap|tum|tu)\s+)?[\p{L} ]{1,24}?\s+(?:khelte|khelti|dekhte|dekhti|sunte|sunti|khaate|khate|khaati|padhte|padhti)\s+(?:ho|h)\s*\?+$|^aap\s+[\p{L} ]{1,24}?\s+(?:khelte|khelti|dekhte|dekhti|sunte|sunti|khaate|khate|padhte|padhti)\s+(?:hain|hai)\s*\?+$|^(?:aapne|tumne)\s+[\p{L} ]{1,24}?\s+(?:dekhi|dekha|khela|khele|suna|suni|padhi|padha)\s*\?+$|^do\s+you\s+(?:play|watch|like\s+playing)\s+[\p{L} ]{1,24}\?+$/iu;
++// (round 3, owner-2 on the patched local tree: a SPOKEN "pubg khelte ho" has no "?" and was deferred, R7.defer: the "you do
++// X?" forms take an optional "?" and a trailing "kya" / "na"; "tumne … dekha" keeps its "?", since "tumne galat dekha" is
++// not small talk)
++const SMALL_TALK_DO = /^(?:kya\s+)?(?:(?:aap|tum|tu)\s+)?[\p{L} ]{1,24}?\s+(?:khelte|khelti|dekhte|dekhti|sunte|sunti|khaate|khate|khaati|padhte|padhti)\s+(?:ho|h)(?:\s+(?:kya|na|didi))?\s*\?*$|^(?:kya\s+)?aap\s+[\p{L} ]{1,24}?\s+(?:khelte|khelti|dekhte|dekhti|sunte|sunti|khaate|khate|padhte|padhti)\s+(?:hain|hai)(?:\s+(?:kya|na))?\s*\?*$|^(?:aapne|tumne)\s+[\p{L} ]{1,24}?\s+(?:dekhi|dekha|khela|khele|suna|suni|padhi|padha)\s*\?+$|^do\s+you\s+(?:play|watch|like\s+playing)\s+[\p{L} ]{1,24}\?*$/iu;
 +/** Giving up on the work said beside a confusion ("…, chhodo", "…, i give up on this question", "rehne do"). */
 +const GIVE_UP = /(?:^|[\s,.!])(?:chhodo|chhod\s+do|chodo|chod\s+do|rehne\s+do|rahne\s+do|jane\s+do|jaane\s+do|forget\s+it|i\s+quit|give\s+up|gave\s+up)(?:$|[\s,.!?])|छोड़ो|रहने\s+दो/i;
  /** Words of an attempt (a number), or more words than a request carries: never read as one of these. */
  const attemptLike = (t) => /\d/.test(t);
  
-@@ -97,15 +148,19 @@ export function readIntent(text) {
+@@ -97,15 +151,19 @@ export function readIntent(text) {
    // or finish it) serves a child who was also thinking
    if (fragmentLike(t)) return hit("unclear");
    if (BREAK.test(t)) return hit("break");
@@ -91,7 +94,7 @@ index 85a0080..88c0c8a 100644
    if (KNOW.test(t)) return hit("know");
    if (HARDER.test(t)) return hit("harder");
    if (EASIER.test(t)) return hit("easier");
-@@ -114,7 +169,7 @@ export function readIntent(text) {
+@@ -114,7 +172,7 @@ export function readIntent(text) {
    if (REPEAT.test(t)) return hit("repeat");
    if (ASK_INVITE.test(t)) return hit("ask_invite");
    if (IDENTITY.test(t)) return hit("identity");

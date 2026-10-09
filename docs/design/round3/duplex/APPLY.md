@@ -10,7 +10,7 @@ are edited in place; two SHARED test/client files change only through the patche
 | 01 | `patches/01-duplex-runtime-test-hushed-sustain.diff` | `tests/duplex-runtime.test.mjs` | the barge-in test now asserts the round-3 overlap rule: the hush meets the child within 200 ms, the PAUSE waits for the words or `OVERLAP.hushedSustainMs` (1,000 ms) of voice (was: paused at 600 ms of voice) | the patched file: 42/42 (scratch tree with this stream's tree, 2026-10-09). **Apply together with this stream's in-place `src/duplex` changes: without it `tests/duplex-runtime.test.mjs` has 1 failing test (the old 700 ms assertion).** |
 | 02 | `patches/02-duplex-switch-fails-to-shadow.diff` | `src/duplex/flags.ts`, `tests/p1-duplex-live.test.mjs` | a hands-free switch that cannot be read (route missing, slow 1.5 s, error) runs SHADOW, never live (was: failed OPEN to the build default "on" while production is shadow); a build default "off" still wins; a device forced on/off and the server's answer are unchanged | `tests/p1-duplex-live.test.mjs` patched: 17/17 (scratch tree) |
 
-`git apply --check` passes on HEAD (cadf527) for both. They are independent of each other.
+`git apply --check` passes for both on cadf527 and on the current HEAD 6aeda52 (re-checked 2026-10-09). They are independent of each other.
 
 ## 2. Edited in place (this stream's paths)
 
@@ -32,9 +32,11 @@ New: `evals/duplex-r3/*` (pause table, policy simulator, semantic ceiling, AMI o
 D4 events of eot-bench turns, CC BY 4.0, no audio), `tests/prod/round3-duplex.mjs`, result files
 `evals/duplex-real/results/r3-*.json`.
 
-Pre-existing, not this stream: `tests/p1-duplex-link.test.mjs` test 1 fails ("frames come from the shared tap": the voicesig
-`src/voicesig/tapUrl.ts` `?worker&url` import cannot load under node --test since 7773366); it fails identically with cadf527's
-`src/duplex` + `server/duplex` (checked 2026-10-09).
+Full `npm test` on the tree as it stood at 6aeda52 + this stream's working files (2026-10-09, one process, 26 min, under load
+from other agents): 2,432 tests, 2,425 pass, 4 fail. Mine: `tests/duplex-runtime.test.mjs` #384 (patch 01 fixes it). Not this
+stream: `tests/p3-voicesig-client.test.mjs` "never delay the turn" (a timing test: 10/10 alone afterwards),
+`tests/round2-content.test.mjs` "board-first preselect", `tests/studio-stage-geometry.test.mjs`. `tests/p1-duplex-link.test.mjs`
+(failing at 7773366 on the voicesig `?worker&url` import) now passes.
 
 ## 3. Flags and environment
 

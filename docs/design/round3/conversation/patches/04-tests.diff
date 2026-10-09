@@ -17,10 +17,10 @@ index dfa5a8b..9a98fae 100644
  
 diff --git a/tests/round3-conversation.test.mjs b/tests/round3-conversation.test.mjs
 new file mode 100644
-index 0000000..a733521
+index 0000000..a6436af
 --- /dev/null
 +++ b/tests/round3-conversation.test.mjs
-@@ -0,0 +1,355 @@
+@@ -0,0 +1,382 @@
 +// Round 3 (conversation stream, 2026-10-09): replies right the first time. The first pose of a question is a lead-slot turn
 +// (the model writes only the bridge, code adds the verified question), a re-pose that ends on the card's form is not
 +// "drift", a re-pose still bare after every repair gets a fixed code lead (never the bare question), the praise guard reads
@@ -32,7 +32,7 @@ index 0000000..a733521
 +import { leadSlotWanted, leadSlotNote, requestNote, turnNote, LEAD_MAX_FIRST } from "../server/conversation/compose.js";
 +import { fallbackLead, FALLBACK_LEADS, LEAD_VARIANTS } from "../server/conversation/fallback-lead.js";
 +import { requestFromNote } from "../server/conversation/policy.js";
-+import { textReply, replyDeps, checkInProblems, FALLBACK } from "../server/brain/say.js";
++import { textReply, replyDeps, checkInProblems, FALLBACK, hintStatements } from "../server/brain/say.js";
 +import { chat } from "../server/azure.js";
 +import { initLessonState, step } from "../server/director/state.js";
 +import { promptFor, asksWhy } from "../server/director/items.js";
@@ -374,5 +374,32 @@ index 0000000..a733521
 +    assert.equal(lastQuestionOnly(t), "Kaunsa chunogi?");
 +    assert.equal(lastQuestionOnly(t, { keepContent: true }), "Riya, tumhe yeh hissa boring lag raha hai: game, picture, ya quick challenge?");
 +    assert.equal(lastQuestionOnly("Kya tum ready ho? Batao, 3 aur 4 milkar kitne hote hain?", { keepContent: true }), "Batao, 3 aur 4 milkar kitne hote hain?");
++  });
++
++  test("a question about what SHE does needs no question mark (a spoken 'pubg khelte ho' was deferred); 'tumne galat dekha' is not small talk", () => {
++    for (const t of ["pubg khelte ho", "free fire khelte ho kya", "kya tum cartoon dekhte ho", "aap cricket dekhte hain", "do you play minecraft"])
++      assert.equal(readIntent(t)?.type, "small_talk", t);
++    for (const t of ["tumne galat dekha", "hum log ludo khelte hain", "main roz cricket khelta hoon"]) assert.notEqual(readIntent(t)?.type, "small_talk", t);
++  });
++
++  test("a help request answered with only the card question gets a line of her own, on a first pose too (owner-2 'samajh nahi aaya' on a faded step)", async () => {
++    let r = step(fresh(), { event: "start", kit: K, now: 0 });
++    for (let i = 0; i < 30 && !(r.move.itemId ?? "").startsWith("fade:"); i++) r = turn(r, cls("no_evidence"));
++    const a = turn(r, req("another", { confused: true }));
++    const st = { ...a.state, pinRun: 1 };
++    const ask = a.ui.ask.text;
++    scripted(ask, ask, ask);
++    const out = await textReply({ instructions: "x", state: st, kit: K, childText: "samajh nahi aaya", history: [], ui: a.ui, module: st.module, verdict: "unverified" });
++    const own = out.reply.split(ask).join(" ").trim();
++    assert.ok(own.split(/\s+/).length >= 4 && out.reply.trim().endsWith(ask.trim()), out.reply);
++    assert.match(own, /^[A-Z]/);
++    process.env.TAXILA_P5_R3CONV = "off";
++    scripted(ask, ask, ask);
++    const off = await textReply({ instructions: "x", state: st, kit: K, childText: "samajh nahi aaya", history: [], ui: a.ui, module: st.module, verdict: "unverified" });
++    assert.equal(off.reply.trim(), ask.trim(), "kill switch: round 2 behaviour");
++  });
++
++  test("a kit hint used as her lead starts with a capital letter and ends with a stop", () => {
++    assert.equal(hintStatements({ id: "z", answer: "9", hints: ["look at the step just before"] }, 1), "Look at the step just before.");
 +  });
 +});

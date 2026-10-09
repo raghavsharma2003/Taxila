@@ -1,8 +1,8 @@
 diff --git a/server/brain/say.js b/server/brain/say.js
-index 9b1ba8f..c1a8735 100644
+index 9b1ba8f..26bd589 100644
 --- a/server/brain/say.js
 +++ b/server/brain/say.js
-@@ -15,7 +15,7 @@ import { mixedUnitComparison, withoutMixedUnits } from "../director/units.js";
+@@ -15,10 +15,11 @@ import { mixedUnitComparison, withoutMixedUnits } from "../director/units.js";
  import { screenContradiction, stripStrayParts } from "../director/modules.js";
  import { isBare, repeatsEarlier, tidy, leadWithoutQuestion, sentences } from "../conversation/guards.js";
  import { p5Flag } from "../conversation/flags.js";
@@ -11,7 +11,11 @@ index 9b1ba8f..c1a8735 100644
  import { fallbackLead } from "../conversation/fallback-lead.js";
  
  /** p5-interaction: problems a gutted teaching turn's one retry may still carry, because code repairs them (never truth). */
-@@ -118,8 +118,14 @@ export function checkInProblems(t, { kind = "stop", active = null, lang = "hingl
++const HELP_ASKS = new Set(["another", "clarify", "slower", "example", "story", "frustration", "easier"]);
+ const SOFT_FIX = new Set(["long", "twoq", "wrap", "script", "register", "stage", "cantshow"]);
+ /** Text-mode hard ceiling for the reply guard (the compiled rule asks for TURN_WORDS). */
+ export const REPLY_MAX_WORDS = { "6-9": 30, "10-15": 40 };
+@@ -118,8 +119,14 @@ export function checkInProblems(t, { kind = "stop", active = null, lang = "hingl
      || (String(text).match(/[^.!?।]*[?？]/g) ?? []).some((q) => /\d/.test(q)) || HOLD_WORDS.test(text);
    if (asksLesson) out.push("hold");
    if (!STOP_OFFER.test(text)) out.push("nostop");
@@ -26,7 +30,7 @@ index 9b1ba8f..c1a8735 100644
  /**
   * The fixed safeguarding line (both helplines) in the child's language mode and address form: W2-I's vetted opening
   * (server/relational/openings.js, identical to the client's src/lesson/safetyStrings.ts) and then one check-in question.
-@@ -223,13 +229,16 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
+@@ -223,13 +230,16 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
    // A diagnostic's options are content read aloud, so they do not count against the turn length.
    const max = REPLY_MAX_WORDS[state.ctx.ageBand] + (item?.diagnostic ? words(item.options.map((o) => o.text).join(" ")) : 0);
    const guardable = item && state.hintLevel < 4 && state.pendingWhy !== item.id;
@@ -45,7 +49,7 @@ index 9b1ba8f..c1a8735 100644
    const whyProbe = !!item && state.pendingWhy === item.id;
    // A comparison across kinds of quantity (45,000 fans vs 4,500 km) in the teacher's OWN words; the kit's posed
    // question is verified content and is not judged here.
-@@ -248,7 +257,13 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
+@@ -248,7 +258,13 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
    // (owner-3: the lesson goes on after it); it is still caught, but its repair is the check-in's own (below), never
    // stripWrap — which cut the stop option out and left "the lesson goes on" (adversarial B2)
    const wrapping = !CLOSING_MOVES.has(kindNow);
@@ -60,7 +64,7 @@ index 9b1ba8f..c1a8735 100644
    // p5-interaction guards (conversation/guards.js): her earlier lines of this lesson (the repeat guard reads the last six)
    const G = p5Flag("GUARDS");
    const earlier = G ? history.filter((t) => t.who === "teacher").slice(-6).map((t) => t.text) : [];
-@@ -256,6 +271,21 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
+@@ -256,6 +272,23 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
    // a re-pose ends on the card's form of it (UiDirectives.ask.text, ≤ 120 characters: the question sentence itself)
    const rePose = !!item && state.pinItem === item.id && (state.pinRun ?? 0) > 1;
    const askEnd = item ? (G && pinned && rePose ? pinned : promptFor(item, lang)) : null;
@@ -71,6 +75,8 @@ index 9b1ba8f..c1a8735 100644
 +  // drift on 26 of 90 turns, and the rewrite or the drift repair dropped what the draft had said to the child
 +  // ("pehle mera sawaal": the rainbow answer cut, insistence "engages_brief" no).
 +  const R3 = G && p5Flag("R3CONV");
++  // round 3: the help requests whose turn must carry a line of her own before the card question (never only the question)
++  const helpAsk = R3 && HELP_ASKS.has(String(state.lastMove?.request ?? ""));
 +  const mustPose = posingTurn && !(R3 && pinned && rePose);
 +  const firstPose = R3 && !!pinned && !rePose && posingTurn;
 +  // round 3 (conversation; smoke on the round-3 tree): confirming a RIGHT answer names the parts of the question they just
@@ -82,7 +88,7 @@ index 9b1ba8f..c1a8735 100644
    // round 2 (conversation): a lead-slot turn's length is its OWN words (the card question after them is verified content,
    // like a diagnostic's options): within the lead budget it is not "long"
    const slotState = { on: false };
-@@ -272,7 +302,7 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
+@@ -272,7 +305,7 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
      // W2-B #1: the line names parts the mounted module does not show (she said quarters over fifths). Her OWN words only:
      // the kit's posed question is verified content (W2-E: the replay showed the predicate flagging a verified question
      // that names halves/quarters/eighths beside a 1/2-only predict screen, which cost a rewrite and her lead-in).
@@ -91,7 +97,7 @@ index 9b1ba8f..c1a8735 100644
      registerBroken(t, address) && "register",
      leaksStage(t) && "stage",
      saysCantShow(t) && "cantshow",
-@@ -280,14 +310,17 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
+@@ -280,14 +313,19 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
      mixedUnitComparison(own(t)) && "units",
      mustPose && !posesItem(t, item, lang) && "drift",
      whyProbe && !asksWhy(t) && "nowhy",
@@ -107,11 +113,13 @@ index 9b1ba8f..c1a8735 100644
      // p5-interaction: the reply is only the question again (owner-2 R3, 9 / 90), or a line she already said (R4, 8 / 90)
 -    G && pinned && isBare(t, promptFor(item, lang), pinned, rePose ? undefined : 1) && "bare",
 +    // round 3: a welcome back is short by nature ("Wapas aa gaye, Riya!"): two own words are a response there
-+    G && pinned && isBare(t, promptFor(item, lang), pinned, !rePose ? 1 : R3 && state.lastMove?.request === "back" ? 2 : undefined) && "bare",
++    // round 3 (owner-2 on both trees: "samajh nahi aaya" on a faded step got only the step's question, R3 + R7.same_again): a
++    // turn answering a request for help carries a real line of its own even on a first pose
++    G && pinned && isBare(t, promptFor(item, lang), pinned, helpAsk ? undefined : !rePose ? 1 : R3 && state.lastMove?.request === "back" ? 2 : undefined) && "bare",
      G && repeatsEarlier(t, earlier) && "same",
      // a mid-thought gets no question (conversation-v2 thinking_aloud 1/8: "new_question"); a right answer is confirmed
      // before anything else (answer_correct 4/8: a covert probe with no uptake)
-@@ -301,7 +334,7 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
+@@ -301,7 +339,7 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
      let out = f.includes("wrap") ? stripWrap(t) : t;
      if (pinned) out = endOnAsk(out, askEnd);
      else if (f.includes("drift")) out = repairDrift(out, item, lang);
@@ -120,7 +128,7 @@ index 9b1ba8f..c1a8735 100644
      return out;
    };
    const SHAPE = new Set(["drift", "flat", "ask", "twoq", "wrap"]);
-@@ -325,18 +358,29 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
+@@ -325,18 +363,29 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
    // question again, is written as two parts: the model writes only what comes before the question, code adds the question
    // byte for byte (conversation/compose.js). A lead that comes back unusable falls through to the one-call path.
    const slot = G && p5Flag("LEADSLOT") && !!item && leadSlotWanted({ request: state.lastMove?.request ?? null, rePose, pinned, diagnostic: !!item?.diagnostic,
@@ -155,7 +163,7 @@ index 9b1ba8f..c1a8735 100644
    } catch (e) {
      if (isContentFilter(e)) { console.warn("[lesson] reply blocked by the content filter"); return blocked(); }
      console.warn("[lesson] reply unavailable, falling back:", e.message);
-@@ -371,11 +415,15 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
+@@ -371,11 +420,15 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
        found.includes("long") && `it is too long — at most ${TURN_WORDS[state.ctx.ageBand]} words`,
        found.includes("units") && "it asks which is bigger between two different kinds of quantity — compare like with like (two counts, or two lengths in one unit)",
        found.includes("floor") && `it breaks the safety floor — ${floorOf(reply).map((k) => FLOOR_FIX[k]).filter(Boolean).join("; ")}`,
@@ -173,7 +181,15 @@ index 9b1ba8f..c1a8735 100644
        found.includes("cantshow") && "it says you cannot show or draw — never say that; the board draws for you: talk about the idea itself",
        found.includes("stage") && "it reads out a field name, markup or a text picture (like 'Whiteboard:', brackets or rows of symbols like ●●●) — plain spoken words only; the board draws pictures, never your words",
        found.includes("register") && (address === "aap" ? "it uses tum forms — address the child with aap forms only (aap, aapka; verbs ending -iye)" : "it uses aap — address the child with tum forms (tum, tumhara)"),
-@@ -390,6 +438,7 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
+@@ -383,13 +436,14 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
+       found.includes("twoq") && !found.includes("ask") && "it asks more than one question — keep only one question, at the end",
+       found.includes("wrap") && (checkin ? "it already says goodbye, but they have not chosen yet — offer stopping as one of the choices (stop for today), not as a goodbye"
+         : "it says goodbye or that the lesson is over, but the lesson goes on — no goodbye words"),
+-      found.includes("bare") && (rePose ? "it is only the question again — first answer what they just said, or give the nudge or the step, in one short line of your own; then the question"
++      found.includes("bare") && (rePose || helpAsk ? "it is only the question again — first answer what they just said, or give the nudge or the step, in one short line of your own; then the question"
+         : "it is only the question — say a short bridge of your own first (a few words to what they said), then the question"),
+       found.includes("same") && "it repeats what you already said earlier, almost word for word — say something new (a different nudge, example or way in); then the question",
+       found.includes("thinkq") && "they are in the middle of a thought — ask nothing at all; only a few words that let them go on and finish it",
        found.includes("noconfirm") && "their answer was right — open by confirming it in a few words, naming what they got right, before anything else",
        found.includes("hold") && "they asked to stop: it asks a lesson question or holds them for one more — this turn asks nothing about the lesson; only offer the choices",
        found.includes("nostop") && (checkin === "rel" ? "it must say plainly that stopping now is fine" : "it leaves out stopping — name all three choices: keep going, a short break, or stop for today"),
@@ -181,7 +197,7 @@ index 9b1ba8f..c1a8735 100644
      ].filter(Boolean).join("; and ");
      try {
        reply = await ask([...messages, { role: "assistant", content: reply }, { role: "system", content: checkin
-@@ -402,7 +451,7 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
+@@ -402,7 +456,7 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
        console.warn("[lesson] rewrite unavailable, guarding the draft:", e.message); // the draft's problems stand
      }
      guard.afterRewrite = found;
@@ -190,7 +206,7 @@ index 9b1ba8f..c1a8735 100644
        // a check-in that still asks a lesson question, holds them, or drops the stop option is never sent: the fixed line
        reply = fallbackReply(state, null);
        guard.replaced = true;
-@@ -445,7 +494,7 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
+@@ -445,7 +499,7 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
        if (found.includes("corrects")) { reply = keepOr(stripCorrection(reply, right)); guard.replaced = true; }
        if (found.includes("screen")) { reply = keepOr(stripScreenRefs(reply)); guard.replaced = true; }
        // W2-B fixer: a rewrite that still names part counts the screen does not show loses those sentences
@@ -199,7 +215,7 @@ index 9b1ba8f..c1a8735 100644
        if (found.includes("register") && address === "aap") { reply = toAap(reply); guard.repaired = true; }
        if (found.includes("stage")) { reply = stripStage(reply) || fallbackReply(state, item); guard.replaced = true; }
        if (found.includes("cantshow")) { reply = keepOr(stripCantShow(reply)); guard.replaced = true; }
-@@ -502,7 +551,11 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
+@@ -502,7 +556,11 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
      // round 2 (conversation): a turn still only the question, or a line she already said, after every repair above: one
      // lead-slot call (the model writes only the response to what they said; code adds the question). Used only when the
      // joined turn has no problem the old one did not have; never after a floor or leak catch (a truth repair stands).
@@ -212,7 +228,7 @@ index 9b1ba8f..c1a8735 100644
        const left = problems(reply);
        if (left.includes("bare") || left.includes("same")) {
          try {
-@@ -513,11 +566,25 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
+@@ -513,11 +571,25 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
              const was = new Set(left), prevOn = slotState.on;
              slotState.on = true;
              const now = problems(again);
@@ -225,7 +241,7 @@ index 9b1ba8f..c1a8735 100644
 +    // round 3: a re-pose STILL only the question after every model repair gets the fixed code lead (conversation/
 +    // fallback-lead.js: the kit hint's statements when safe and not said yet, else a generic nudge she has not said this
 +    // lesson), never the bare question: owner-2 R3 on prod 4 of 90 turns. Code lines, never prompt text (nothing to recite).
-+    if (R3 && item && pinned && rePose && !whyProbe && !item.diagnostic && !CLOSING_MOVES.has(kindNow) && !checkin && !guard.caught.includes("floor")
++    if (R3 && item && pinned && (rePose || helpAsk) && !whyProbe && !item.diagnostic && !CLOSING_MOVES.has(kindNow) && !checkin && !guard.caught.includes("floor")
 +      && problems(reply).includes("bare")) {
 +      const fixedLead = fallbackLead({ request: state.lastMove?.request ?? null, hint: hintStatements(item, state.lastMove?.hintLevel), rePose: true, lang, avoid: earlier });
 +      if (fixedLead) {
@@ -239,17 +255,19 @@ index 9b1ba8f..c1a8735 100644
      // the cut marks the repairs leave (an orphan quote, an empty fragment) and a lead sentence that re-poses the question
      const tidied = tidyAround(reply, pinned ? askEnd : null);
      if (tidied && tidied !== reply) { reply = tidied; guard.tidied = true; }
-@@ -554,7 +621,8 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
+@@ -554,7 +626,10 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
  export function hintStatements(item, hintLevel) {
    const h = stripRungLabel(String(item?.hints?.[(hintLevel ?? 1) - 1] ?? "")).replace(/\s+/g, " ").trim();
    if (!h || revealsAnswer(h, item) || hintShapeWords(h)) return "";
 -  return sentences(h).map((x) => x.trim()).filter((x) => x && !/[?？]/.test(x)).join(" ").trim();
 +  // round 3: a kit hint with no closing stop ran into the question ("…as places they live What are microbes…?", base-head-1)
-+  return sentences(h).map((x) => x.trim()).filter((x) => x && !/[?？]/.test(x)).map((x) => (/[.!।…]$/.test(x) ? x : `${x}.`)).join(" ").trim();
++  const out = sentences(h).map((x) => x.trim()).filter((x) => x && !/[?？]/.test(x)).map((x) => (/[.!।…]$/.test(x) ? x : `${x}.`)).join(" ").trim();
++  // it opens her turn: a capital first letter ("look at the step just before…" came out lower-case)
++  return out ? out[0].toUpperCase() + out.slice(1) : "";
  }
  
  export function keepLastLeadQuestion(reply, ask) {
-@@ -575,9 +643,15 @@ export function tidyAround(reply, ask) {
+@@ -575,9 +650,15 @@ export function tidyAround(reply, ask) {
  }
  
  /** p5-interaction: does a reply to a RIGHT answer confirm it in its first two sentences (agreement / praise of the answer)? */

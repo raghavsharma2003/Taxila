@@ -51,7 +51,7 @@
   {
    "id": "ms-r3p-fit-shots-2026-10-09",
    "kind": "measurement",
-   "title": "Play fit: 16 game modes x 3 viewports (360x800, 412x915, 1366x768, DPR 1) x 4 art directions = 192 screenshots, all pass the floor audit (canvas text >= 14 px measured by an instrumented fillText, DOM text >= 14 px, targets >= 44 px, 0 text out of box, 0 clipped labels via Painter.textFit audit, 0 clipped buttons, 0 page errors). Method: docs/design/round3/play/harness/shots.mjs --shots --all-arts, Playwright headless Chromium on the dev harness built from the working tree; NOT a phone, NOT inside the lesson Desk. Date 2026-10-09; files shots/all/*.jpg + report-all.json.",
+   "title": "Play fit: 16 game modes x 3 viewports (360x800, 412x915, 1366x768, DPR 1) x 4 art directions = 192 screenshots, all pass the floor audit on the final build (run 14:02 UTC; also on the three earlier builds that day): canvas text >= 14 px (16 for class 4-5 modes) by an instrumented fillText, DOM text >= 14 px, targets and buttons >= 44 px, 0 text out of box, 0 clipped labels (Painter.textFit audit), 0 clipped buttons, 0 horizontal overflow, 0 page errors; plus 16/16 mistake-state screens at 412x915. Method: docs/design/round3/play/harness/shots.mjs --shots --all-arts / --mistakes, Playwright headless Chromium on the dev harness built from the working tree; NOT a phone, NOT inside the lesson Desk. Files shots/all/*.jpg + report-all.json, shots/mistake/.",
    "at": "2026-10-09"
   },
   {
@@ -69,7 +69,7 @@
   {
    "id": "ms-r3p-local-acceptance-2026-10-09",
    "kind": "measurement",
-   "title": "tests/prod/round3-play.mjs against a local production server (copy of the working tree with patches 01-05, NODE_ENV=production, Neon TEST branch, this sandbox): 93/93 checks, twice (12:03 and 12:44 UTC; admit, 8 level cases solved through the server grade, ledger truth, claims stripped, tamper/mismatch refused, doors, reaction guards, world routes cite edges, in-lesson loop). After a solved atoms level the lesson turn replied from the verified PLAY row (n = 2, one per run: 'Riya, aapne composite number ko prime factors mein todkar 2.2.5.13 tak pahunchaya; ab isi method ka naam bataiye.' 2.6 s; 'Riya, aapne 250 ko prime factors mein toda: 2 x 5 x 5 x 5. Ab isi method se 150 ko todkar likhiye.' 2.2 s); exactly one kt_evidence row via 'game' per level; a replayed level and a forged token folded nothing. Latency local: start p90 380 / 528 ms (n 8 each), act p90 199 / 196 ms (n 41 / 40). taxila.dev: 0/1 (P0: play routes 404, patch 01 unapplied), re-checked 2026-10-09.",
+   "title": "tests/prod/round3-play.mjs against a local production server (copy of the working tree with patches 01-05, NODE_ENV=production, Neon TEST branch, this sandbox): 93/93 on the final code (14:21 UTC); six runs that day: four 93/93, one 92/93 (global count of @taxila.test accounts on the shared TEST branch rose while other streams tested; this run deleted its own), one 88/89 (P8 fetch failed: lesson start took 9.2 s while a screenshot run loaded the host). After a solved atoms level the lesson turn replied from the verified PLAY row every passing run (e.g. 'Riya, aapne 250 ko prime factors mein toda: 2 x 5 x 5 x 5. Ab isi method se 150 ko todkar likhiye.'); exactly one kt_evidence row via 'game' per level; a replayed level and a forged token folded nothing. Latency local: start p90 196-528 ms, act p90 118-199 ms (n 8 / ~40 per run). taxila.dev: 0/1 (P0: play routes 404, patch 01 unapplied), re-checked 2026-10-09. results/prod-local-2026-10-09.json.",
    "at": "2026-10-09"
   },
   {
@@ -99,7 +99,7 @@
   {
    "id": "r3p-open-not-on-children",
    "kind": "open",
-   "title": "Play is engineering-complete and unproven on children: no child has played a family; fps measured only as a contended headless proxy (no real mid-range phone); latency only local (not India); coverage 47/250 topics; patches 01-05 unapplied so taxila.dev serves none of it; the model judges are advisory (rj-holistic-model-judge-gate); micro-reaction TTS pre-synthesis not built (captions only).",
+   "title": "Play is engineering-complete and unproven on children: no child has played a family; fps measured only as a contended headless proxy (6/16 modes >= 50, no real mid-range phone); latency only local (not India); coverage 47/250 topics; patches 01-05 unapplied so taxila.dev serves none of it; model judges (advisory) place it below DragonBox, mainly because compare / predict / round / equality commit by choosing a button; micro-reaction TTS pre-synthesis not built (captions only).",
    "at": "2026-10-09"
   },
   {
@@ -142,6 +142,12 @@
    "id": "ms-r3p-judges-pass2-2026-10-09",
    "kind": "measurement",
    "title": "Play judges pass 2 (same judges and rubric, a fourth screen per game: the 412x915 phone right after a typical mistake): code verdict 5/16; B4 'visible consequence' 16/16 brain, 14/16 grok (was 10/16, 8/16); mean D2 2.90 / 3.52 (was 1.92 / 2.50); B3 14/16 brain, 7/16 grok; B8 12/16 brain: 4 flags of which 3 real (sealed box as 'no air', bare jar as 'no CO2', a wrong comparison left with only approval-looking ticks) and 1 repeated misreading (a tipped scale's live 'x + 1 < 11' taken for an inequality task). Fixed before pass 3. judge/results-2026-10-09-pass2.json.",
+   "at": "2026-10-09"
+  },
+  {
+   "id": "ms-r3p-judges-pass3-2026-10-09",
+   "kind": "measurement",
+   "title": "Play judges pass 3 (final build; taxila-brain + grok-4-20-reasoning, blind, RUBRIC.md, 16 games x 4 screens incl. the mistake state): code verdict (B1 B2 B3 B6 B8 yes on both) 7/16 (pass 1: 6, pass 2: 5); B3 13/16 brain, 9/16 grok (every remaining failure but one is a choice-shaped commit: compare, predict, round, equality keypad); B4 15/16, 14/16; B8 15/16 (the balance's tipped 'x + 1 < 11' read as an inequality task, third time); mean D1 4.06 / 3.24, D2 3.06 / 3.64, D3 4.03 / 4.42, D4 3.72 / 3.73, D5 3.71 / 3.45, D6 4.24 / 3.58; vs DragonBox worse on 84/96 and 59/96 placements, vs Brilliant split (brain 2 better / 47 equal / 47 worse; grok 3 / 63 / 30), vs Prodigy better 49/96 and 76/96, vs Duolingo better 49/96 and 67/78. Blind pairs: brain prefers the play family on every criterion vs the shipped tray (5/5) and vs the old engines at the same box (4/5); grok 3/5 overall vs the tray and 0/5 (4 position flips) vs the full box, preferring the old engines' craft 4/5. Advisory; stills only; judge/results-2026-10-09-pass3.json.",
    "at": "2026-10-09"
   }
  ],
@@ -270,6 +276,16 @@
    "src": "r3p-play-grammar-v1",
    "rel": "measured_by",
    "dst": "ms-r3p-judges-pass2-2026-10-09"
+  },
+  {
+   "src": "ms-r3p-judges-pass3-2026-10-09",
+   "rel": "supersedes",
+   "dst": "ms-r3p-judges-pass2-2026-10-09"
+  },
+  {
+   "src": "r3p-play-grammar-v1",
+   "rel": "measured_by",
+   "dst": "ms-r3p-judges-pass3-2026-10-09"
   }
  ]
 }

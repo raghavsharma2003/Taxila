@@ -1,0 +1,5803 @@
+{
+ "slot": 29,
+ "topic": "c6-science-ch01-t01",
+ "cls": 6,
+ "lang": "english",
+ "lane": "text",
+ "lessons": [
+  {
+   "lessonId": "c8781a82-d916-4cf6-9044-80ef7148131c",
+   "why": "start",
+   "at": "2026-10-09T14:34:28.314Z",
+   "teacher": "Arjun"
+  }
+ ],
+ "turns": [
+  {
+   "who": "teacher",
+   "kind": "opening",
+   "lessonId": "c8781a82-d916-4cf6-9044-80ef7148131c",
+   "teacherReply": "Hi Ishaan, I’m Arjun, your AI teacher. Today we’ll see how scientists test ideas—like debugging a video game. What game do you enjoy?",
+   "ui": {
+    "status": "your_turn",
+    "phase": "warmup",
+    "handover": "answer",
+    "answerForm": "words",
+    "tray": "none",
+    "shortTitle": "How scientists find out",
+    "beat": {
+     "beatId": "b1-arrive",
+     "type": "arrive",
+     "index": 1
+    },
+    "ask": {
+     "text": "What game do you enjoy?"
+    }
+   }
+  },
+  {
+   "who": "child",
+   "tag": "greet",
+   "lessonId": "c8781a82-d916-4cf6-9044-80ef7148131c",
+   "childText": "yes let's start",
+   "ms": 1593,
+   "error": null,
+   "teacherReply": "Imagine a game character choosing ice or fire power. Which would work better against a water monster, and why? Tell your prediction.",
+   "move": {
+    "kind": "hook",
+    "shape": "open with one concrete everyday situation built on their interest (video games) — kit contexts: kitchen, curd and milk, balcony plants; ask what they think will happen or which they would pick — a prediction, no right answer yet; any bigger/more comparison: two quantities of one kind, in one unit — a count against a count, a distance against a distance; never across kinds; mention once: at the end they will teach this to Bittu (a pretend new student who missed this class)",
+    "format": "F4"
+   },
+   "ui": {
+    "status": "your_turn",
+    "phase": "teach",
+    "handover": "answer",
+    "answerForm": "words",
+    "tray": "none",
+    "shortTitle": "How scientists find out",
+    "beat": {
+     "beatId": "b2-hook",
+     "type": "hook",
+     "index": 2
+    },
+    "ask": {
+     "text": "Which would work better against a water monster, and why?"
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false
+    },
+    "verdict": "attempt",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 680,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "teach",
+    "ms": 1587,
+    "item": null,
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 48
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 49
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 793
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 844
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1474
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1524
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1526
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1526
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1246
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 1527
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 1587
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "probe:game_request-04",
+   "lessonId": "c8781a82-d916-4cf6-9044-80ef7148131c",
+   "childText": "make it a game",
+   "ms": 2133,
+   "error": null,
+   "teacherReply": "On screen: two same bowls—one milk, one milk with starter. Predict: which bowl will set into curd, and why?",
+   "move": {
+    "kind": "reteach",
+    "shape": "they asked to see it: a picture of the same idea; one idea; let the picture do the work; a few words about what to look at; the key stays unsaid; then one small question about what they see; it is on the screen now: point them at it in your first words and say what to look at",
+    "skillId": "c6-science-ch01-t01-s1",
+    "request": "visual",
+    "visual": "diagram"
+   },
+   "ui": {
+    "status": "your_turn",
+    "phase": "teach",
+    "handover": "answer",
+    "answerForm": "words",
+    "tray": "studio",
+    "shortTitle": "How scientists find out",
+    "beat": {
+     "beatId": "b3-explain",
+     "type": "explain",
+     "index": 3
+    },
+    "ask": {
+     "text": "Predict: which bowl will set into curd, and why?"
+    },
+    "studioSlot": {
+     "slotId": "c8781a82-d916-4cf6-9044-80ef7148131c:c1:slot",
+     "intentId": "c8781a82-d916-4cf6-9044-80ef7148131c:c1",
+     "state": "revealed",
+     "artifact": {
+      "kind": "stagecraft",
+      "stage": {
+       "w": 1000,
+       "h": 625
+      },
+      "stagecraft": {
+       "rung": "engine_default",
+       "archetype": "fair-test@1",
+       "spec": {
+        "archetype": "fair-test@1",
+        "skills": [
+         "c6-science-ch01-t01"
+        ],
+        "lang": "en",
+        "strings": {
+         "round": "Round",
+         "run": "RUN",
+         "day": "day",
+         "predict": "Tap every setup that will show it",
+         "design": "Make it a fair test",
+         "conclude": "Which factor matters?",
+         "notMatter": "Which factor does NOT matter?",
+         "fair": "FAIR TEST",
+         "unfair": "NOT FAIR",
+         "runDone": "Lab closed",
+         "correct": "right calls",
+         "drip": "Hold to add drops; stop when it turns",
+         "drops": "drops",
+         "neutral": "NEUTRAL",
+         "hint": "change only one thing"
+        },
+        "title": "How does curd set?",
+        "model": "curd",
+        "rounds": [
+         {
+          "mode": "predict",
+          "title": "Before the test",
+          "sub": "which bowls will set?",
+          "setups": [
+           {
+            "starter": "yes",
+            "temp": "warm"
+           },
+           {
+            "starter": "yes",
+            "temp": "cold"
+           },
+           {
+            "starter": "no",
+            "temp": "warm"
+           },
+           {
+            "starter": "no",
+            "temp": "cold"
+           }
+          ],
+          "src": "c6-science-ch01-t01-i02"
+         },
+         {
+          "mode": "design",
+          "title": "Make it fair",
+          "sub": "change only the temperature",
+          "vary": "temp",
+          "start": [
+           {
+            "starter": "yes",
+            "temp": "warm"
+           },
+           {
+            "starter": "yes",
+            "temp": "cold"
+           }
+          ],
+          "targets": "c6-science-ch01-t01-m1"
+         }
+        ]
+       },
+       "boardTwin": {
+        "scriptRef": "board:c6-science-ch01-t01-s1|practice|-|-",
+        "values": {
+         "title": "Fair Test Lab",
+         "need": "practice"
+        },
+        "board": {
+         "title": "Fair Test Lab",
+         "lines": [
+          "test",
+          "curd",
+          "faster",
+          "science"
+         ],
+         "figure": {
+          "kind": "none"
+         }
+        }
+       },
+       "board": null,
+       "cue": {
+        "clauseIdx": 0,
+        "preRollMs": 400,
+        "crossFadeMs": 420
+       },
+       "buildSha": null,
+       "blobUrl": null
+      }
+     }
+    }
+   },
+   "moduleCommands": [],
+   "studio": {
+    "reveal": "c8781a82-d916-4cf6-9044-80ef7148131c:c1"
+   },
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false
+    },
+    "verdict": "ungraded",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "request"
+    },
+    "note": null,
+    "hintLevel": 0,
+    "phase": "teach",
+    "ms": 2131,
+    "item": null,
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 50
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 50
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 473
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 529
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 532
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 532
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1530
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 2066
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 2130
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "filler",
+   "lessonId": "c8781a82-d916-4cf6-9044-80ef7148131c",
+   "childText": "okay",
+   "ms": 3453,
+   "error": null,
+   "teacherReply": "A testable question can be checked by comparing two similar bowls, changing only one thing. Here, both have milk, but only one gets starter. What will you compare?",
+   "move": {
+    "kind": "explain",
+    "shape": "one idea only: Turn an observation into a question that can be checked by testing; an example from their interest (video games) if it fits naturally; objects first, then the symbol; point at the screen only at what the on-screen row lists; never a drawing made of characters; end with one small question that makes them USE the idea — never 'samjha?'",
+    "skillId": "c6-science-ch01-t01-s1",
+    "format": "F1"
+   },
+   "ui": {
+    "status": "your_turn",
+    "phase": "teach",
+    "handover": "answer",
+    "answerForm": "words",
+    "tray": "module",
+    "shortTitle": "How scientists find out",
+    "beat": {
+     "beatId": "b3-explain",
+     "type": "explain",
+     "index": 3
+    },
+    "ask": {
+     "text": "What will you compare?"
+    }
+   },
+   "moduleCommands": [
+    {
+     "op": "mount",
+     "moduleId": "m3",
+     "engine": "explainer@1",
+     "params": {
+      "script": {
+       "v": 1,
+       "scriptId": "ex-2dhb9y",
+       "line": {
+        "lessonId": "c8781a82-d916-4cf6-9044-80ef7148131c"
+       },
+       "anchor": "line_audio_start",
+       "board": {
+        "w": 400,
+        "h": 300,
+        "ground": "chalk"
+       },
+       "mode": "fresh",
+       "durationMs": 8340,
+       "ops": [
+        {
+         "id": "b0",
+         "op": "rect",
+         "startMs": 80,
+         "endMs": 500,
+         "weight": 2,
+         "at": [
+          25,
+          30
+         ],
+         "w": 160,
+         "h": 58,
+         "round": 10
+        },
+        {
+         "id": "t0",
+         "op": "text",
+         "startMs": 540,
+         "endMs": 1040,
+         "at": [
+          105,
+          61
+         ],
+         "text": "Observe",
+         "size": "m"
+        },
+        {
+         "id": "o1",
+         "op": "arrow",
+         "startMs": 1200,
+         "endMs": 1650,
+         "ink": "accent",
+         "from": [
+          105,
+          91
+         ],
+         "to": [
+          105,
+          133
+         ]
+        },
+        {
+         "id": "b1",
+         "op": "rect",
+         "startMs": 1730,
+         "endMs": 2150,
+         "weight": 2,
+         "at": [
+          25,
+          136
+         ],
+         "w": 160,
+         "h": 58,
+         "round": 10
+        },
+        {
+         "id": "t1",
+         "op": "text",
+         "startMs": 2190,
+         "endMs": 2490,
+         "at": [
+          105,
+          155
+         ],
+         "text": "Ask a testable",
+         "size": "s"
+        },
+        {
+         "id": "o2",
+         "op": "text",
+         "startMs": 2490,
+         "endMs": 2790,
+         "at": [
+          105,
+          179
+         ],
+         "text": "question",
+         "size": "s"
+        },
+        {
+         "id": "o3",
+         "op": "arrow",
+         "startMs": 2950,
+         "endMs": 3400,
+         "ink": "accent",
+         "from": [
+          105,
+          197
+         ],
+         "to": [
+          105,
+          239
+         ]
+        },
+        {
+         "id": "b2",
+         "op": "rect",
+         "startMs": 3480,
+         "endMs": 3900,
+         "weight": 2,
+         "at": [
+          25,
+          242
+         ],
+         "w": 160,
+         "h": 58,
+         "round": 10
+        },
+        {
+         "id": "t2",
+         "op": "text",
+         "startMs": 3940,
+         "endMs": 4240,
+         "at": [
+          105,
+          261
+         ],
+         "text": "Predict with",
+         "size": "s"
+        },
+        {
+         "id": "o4",
+         "op": "text",
+         "startMs": 4240,
+         "endMs": 4540,
+         "at": [
+          105,
+          285
+         ],
+         "text": "a reason",
+         "size": "s"
+        },
+        {
+         "id": "o5",
+         "op": "arrow",
+         "startMs": 4700,
+         "endMs": 5150,
+         "ink": "accent",
+         "from": [
+          188,
+          271
+         ],
+         "to": [
+          212,
+          59
+         ],
+         "bend": 0.2
+        },
+        {
+         "id": "b3",
+         "op": "rect",
+         "startMs": 5230,
+         "endMs": 5650,
+         "weight": 2,
+         "at": [
+          215,
+          30
+         ],
+         "w": 160,
+         "h": 58,
+         "round": 10
+        },
+        {
+         "id": "t3",
+         "op": "text",
+         "startMs": 5690,
+         "endMs": 6190,
+         "at": [
+          295,
+          61
+         ],
+         "text": "Test fairly",
+         "size": "s"
+        },
+        {
+         "id": "o6",
+         "op": "arrow",
+         "startMs": 6350,
+         "endMs": 6800,
+         "ink": "accent",
+         "from": [
+          295,
+          91
+         ],
+         "to": [
+          295,
+          133
+         ]
+        },
+        {
+         "id": "b4",
+         "op": "rect",
+         "startMs": 6880,
+         "endMs": 7300,
+         "weight": 2,
+         "at": [
+          215,
+          136
+         ],
+         "w": 160,
+         "h": 58,
+         "round": 10
+        },
+        {
+         "id": "t4",
+         "op": "text",
+         "startMs": 7340,
+         "endMs": 7640,
+         "at": [
+          295,
+          155
+         ],
+         "text": "Observe and",
+         "size": "s"
+        },
+        {
+         "id": "o7",
+         "op": "text",
+         "startMs": 7640,
+         "endMs": 7940,
+         "at": [
+          295,
+          179
+         ],
+         "text": "conclude",
+         "size": "s"
+        }
+       ],
+       "facts": {
+        "kind": "diagram",
+        "archetype": "flow@1",
+        "onScreen": {
+         "steps": 5,
+         "step1": "Observe",
+         "step2": "Ask a testable question",
+         "step3": "Predict with a reason",
+         "step4": "Test fairly",
+         "step5": "Observe and conclude"
+        }
+       }
+      },
+      "template": "flow@1",
+      "mode": "play"
+     }
+    }
+   ],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [
+      "twoq"
+     ],
+     "rewritten": false,
+     "replaced": false,
+     "firstDraft": "Now turn the observation into a testable question: “Will adding starter make milk set into curd?” What would you compare?",
+     "repaired": true,
+     "regutted": true
+    },
+    "verdict": "ungraded",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 922,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "teach",
+    "ms": 3450,
+    "item": null,
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 69
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 70
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 627
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 700
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1550
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1622
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1625
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1625
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1543
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1703
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 3378
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 3450
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "advance",
+   "lessonId": "c8781a82-d916-4cf6-9044-80ef7148131c",
+   "childText": "got it",
+   "ms": 1599,
+   "error": null,
+   "teacherReply": "Ishaan, first we Observe: curd takes longer to set in winter than summer. What observation would you record in this game?",
+   "move": {
+    "kind": "worked_example",
+    "shape": "worked example, part 1 of 2: say one step, then ask them for the next step; their thinking, your pace; no new idea",
+    "skillId": "c6-science-ch01-t01-s1",
+    "format": "F2"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "math",
+     "value": "Does curd set faster in a warm place?"
+    },
+    "phase": "teach",
+    "handover": "answer",
+    "answerForm": "words",
+    "tray": "module",
+    "shortTitle": "How scientists find out",
+    "beat": {
+     "beatId": "b4-worked_example",
+     "type": "worked_example",
+     "index": 4
+    },
+    "ask": {
+     "text": "What observation would you record in this game?"
+    }
+   },
+   "moduleCommands": [
+    {
+     "op": "set_param",
+     "moduleId": "m3",
+     "name": "script",
+     "value": {
+      "v": 1,
+      "scriptId": "ex-2dhb9y",
+      "line": {
+       "lessonId": "c8781a82-d916-4cf6-9044-80ef7148131c"
+      },
+      "anchor": "line_audio_start",
+      "board": {
+       "w": 400,
+       "h": 300,
+       "ground": "chalk"
+      },
+      "mode": "fresh",
+      "durationMs": 8340,
+      "ops": [
+       {
+        "id": "b0",
+        "op": "rect",
+        "startMs": 80,
+        "endMs": 500,
+        "weight": 2,
+        "at": [
+         25,
+         30
+        ],
+        "w": 160,
+        "h": 58,
+        "round": 10
+       },
+       {
+        "id": "t0",
+        "op": "text",
+        "startMs": 540,
+        "endMs": 1040,
+        "at": [
+         105,
+         61
+        ],
+        "text": "Observe",
+        "size": "m"
+       },
+       {
+        "id": "o1",
+        "op": "arrow",
+        "startMs": 1200,
+        "endMs": 1650,
+        "ink": "accent",
+        "from": [
+         105,
+         91
+        ],
+        "to": [
+         105,
+         133
+        ]
+       },
+       {
+        "id": "b1",
+        "op": "rect",
+        "startMs": 1730,
+        "endMs": 2150,
+        "weight": 2,
+        "at": [
+         25,
+         136
+        ],
+        "w": 160,
+        "h": 58,
+        "round": 10
+       },
+       {
+        "id": "t1",
+        "op": "text",
+        "startMs": 2190,
+        "endMs": 2490,
+        "at": [
+         105,
+         155
+        ],
+        "text": "Ask a testable",
+        "size": "s"
+       },
+       {
+        "id": "o2",
+        "op": "text",
+        "startMs": 2490,
+        "endMs": 2790,
+        "at": [
+         105,
+         179
+        ],
+        "text": "question",
+        "size": "s"
+       },
+       {
+        "id": "o3",
+        "op": "arrow",
+        "startMs": 2950,
+        "endMs": 3400,
+        "ink": "accent",
+        "from": [
+         105,
+         197
+        ],
+        "to": [
+         105,
+         239
+        ]
+       },
+       {
+        "id": "b2",
+        "op": "rect",
+        "startMs": 3480,
+        "endMs": 3900,
+        "weight": 2,
+        "at": [
+         25,
+         242
+        ],
+        "w": 160,
+        "h": 58,
+        "round": 10
+       },
+       {
+        "id": "t2",
+        "op": "text",
+        "startMs": 3940,
+        "endMs": 4240,
+        "at": [
+         105,
+         261
+        ],
+        "text": "Predict with",
+        "size": "s"
+       },
+       {
+        "id": "o4",
+        "op": "text",
+        "startMs": 4240,
+        "endMs": 4540,
+        "at": [
+         105,
+         285
+        ],
+        "text": "a reason",
+        "size": "s"
+       },
+       {
+        "id": "o5",
+        "op": "arrow",
+        "startMs": 4700,
+        "endMs": 5150,
+        "ink": "accent",
+        "from": [
+         188,
+         271
+        ],
+        "to": [
+         212,
+         59
+        ],
+        "bend": 0.2
+       },
+       {
+        "id": "b3",
+        "op": "rect",
+        "startMs": 5230,
+        "endMs": 5650,
+        "weight": 2,
+        "at": [
+         215,
+         30
+        ],
+        "w": 160,
+        "h": 58,
+        "round": 10
+       },
+       {
+        "id": "t3",
+        "op": "text",
+        "startMs": 5690,
+        "endMs": 6190,
+        "at": [
+         295,
+         61
+        ],
+        "text": "Test fairly",
+        "size": "s"
+       },
+       {
+        "id": "o6",
+        "op": "arrow",
+        "startMs": 6350,
+        "endMs": 6800,
+        "ink": "accent",
+        "from": [
+         295,
+         91
+        ],
+        "to": [
+         295,
+         133
+        ]
+       },
+       {
+        "id": "b4",
+        "op": "rect",
+        "startMs": 6880,
+        "endMs": 7300,
+        "weight": 2,
+        "at": [
+         215,
+         136
+        ],
+        "w": 160,
+        "h": 58,
+        "round": 10
+       },
+       {
+        "id": "t4",
+        "op": "text",
+        "startMs": 7340,
+        "endMs": 7640,
+        "at": [
+         295,
+         155
+        ],
+        "text": "Observe and",
+        "size": "s"
+       },
+       {
+        "id": "o7",
+        "op": "text",
+        "startMs": 7640,
+        "endMs": 7940,
+        "at": [
+         295,
+         179
+        ],
+        "text": "conclude",
+        "size": "s"
+       }
+      ],
+      "facts": {
+       "kind": "diagram",
+       "archetype": "flow@1",
+       "onScreen": {
+        "steps": 5,
+        "step1": "Observe",
+        "step2": "Ask a testable question",
+        "step3": "Predict with a reason",
+        "step4": "Test fairly",
+        "step5": "Observe and conclude"
+       }
+      }
+     }
+    }
+   ],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false
+    },
+    "verdict": "ungraded",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 558,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "teach",
+    "ms": 1597,
+    "item": null,
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 90
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 90
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 790
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 884
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1348
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1442
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1444
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1445
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1360
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 1531
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 1597
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "advance",
+   "lessonId": "c8781a82-d916-4cf6-9044-80ef7148131c",
+   "childText": "ok",
+   "ms": 3116,
+   "error": null,
+   "teacherReply": "Nice—your game has recorded the observation. Fill the gap: Predict with a reason: the warm bowl will set first because ___",
+   "move": {
+    "kind": "practice",
+    "shape": "the earlier steps in LESSON NOW, said briefly as done; then the step with the gap is theirs: pose it as written; wait; never fill the gap for them",
+    "itemId": "fade:2",
+    "skillId": "c6-science-ch01-t01-s1",
+    "hintLevel": 0,
+    "probe": "P15",
+    "format": "F2"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "math",
+     "value": "Does curd set faster in a warm place? · Predict with a reason: the warm bowl will set first because ___"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "Fill the gap: Predict with a reason: the warm bowl will set first because ___",
+     "itemId": "fade:2"
+    },
+    "answerForm": "words",
+    "tray": "studio",
+    "shortTitle": "How scientists find out",
+    "beat": {
+     "beatId": "b5-practice_set",
+     "type": "practice_set",
+     "index": 5
+    },
+    "studioSlot": {
+     "slotId": "c8781a82-d916-4cf6-9044-80ef7148131c:c1:slot",
+     "intentId": "c8781a82-d916-4cf6-9044-80ef7148131c:c1",
+     "state": "revealed",
+     "artifact": {
+      "kind": "stagecraft",
+      "stage": {
+       "w": 1000,
+       "h": 625
+      },
+      "stagecraft": {
+       "rung": "engine_default",
+       "archetype": "fair-test@1",
+       "spec": {
+        "archetype": "fair-test@1",
+        "skills": [
+         "c6-science-ch01-t01"
+        ],
+        "lang": "en",
+        "strings": {
+         "round": "Round",
+         "run": "RUN",
+         "day": "day",
+         "predict": "Tap every setup that will show it",
+         "design": "Make it a fair test",
+         "conclude": "Which factor matters?",
+         "notMatter": "Which factor does NOT matter?",
+         "fair": "FAIR TEST",
+         "unfair": "NOT FAIR",
+         "runDone": "Lab closed",
+         "correct": "right calls",
+         "drip": "Hold to add drops; stop when it turns",
+         "drops": "drops",
+         "neutral": "NEUTRAL",
+         "hint": "change only one thing"
+        },
+        "title": "How does curd set?",
+        "model": "curd",
+        "rounds": [
+         {
+          "mode": "predict",
+          "title": "Before the test",
+          "sub": "which bowls will set?",
+          "setups": [
+           {
+            "starter": "yes",
+            "temp": "warm"
+           },
+           {
+            "starter": "yes",
+            "temp": "cold"
+           },
+           {
+            "starter": "no",
+            "temp": "warm"
+           },
+           {
+            "starter": "no",
+            "temp": "cold"
+           }
+          ],
+          "src": "c6-science-ch01-t01-i02"
+         },
+         {
+          "mode": "design",
+          "title": "Make it fair",
+          "sub": "change only the temperature",
+          "vary": "temp",
+          "start": [
+           {
+            "starter": "yes",
+            "temp": "warm"
+           },
+           {
+            "starter": "yes",
+            "temp": "cold"
+           }
+          ],
+          "targets": "c6-science-ch01-t01-m1"
+         }
+        ]
+       },
+       "boardTwin": {
+        "scriptRef": "board:c6-science-ch01-t01-s1|practice|-|-",
+        "values": {
+         "title": "Fair Test Lab",
+         "need": "practice"
+        },
+        "board": {
+         "title": "Fair Test Lab",
+         "lines": [
+          "test",
+          "curd",
+          "faster",
+          "science"
+         ],
+         "figure": {
+          "kind": "none"
+         }
+        }
+       },
+       "board": null,
+       "cue": {
+        "clauseIdx": 0,
+        "preRollMs": 400,
+        "crossFadeMs": 420
+       },
+       "buildSha": null,
+       "blobUrl": null
+      }
+     }
+    }
+   },
+   "moduleCommands": [
+    {
+     "op": "unmount",
+     "moduleId": "m3"
+    }
+   ],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false,
+     "leadSlot": true
+    },
+    "verdict": "ungraded",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 453,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 3113,
+    "item": "fade:2",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 70
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 70
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 936
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 1010
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1390
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1462
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1465
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1465
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1589
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 3058
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 3113
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "advance",
+   "lessonId": "c8781a82-d916-4cf6-9044-80ef7148131c",
+   "childText": "alright",
+   "ms": 3729,
+   "error": null,
+   "teacherReply": "Think about what happens to the tiny organisms that help milk become curd when the bowl is warmer. Fill the gap: Predict with a reason: the warm bowl will set first because ___",
+   "move": {
+    "kind": "hint",
+    "shape": "their typed reply did not answer the question: no verdict, never ask them to repeat or say it again; one small nudge toward what the question asks; then the same question again, as written; no verdict on their reply: neither praise nor 'wrong'",
+    "itemId": "fade:2",
+    "skillId": "c6-science-ch01-t01-s1",
+    "hintLevel": 0
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "text",
+     "value": "Fill the gap: Predict with a reason: the warm bowl will s…"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "Fill the gap: Predict with a reason: the warm bowl will set first because ___",
+     "itemId": "fade:2"
+    },
+    "answerForm": "words",
+    "tray": "studio",
+    "shortTitle": "How scientists find out",
+    "beat": {
+     "beatId": "b5-practice_set",
+     "type": "practice_set",
+     "index": 5
+    },
+    "studioSlot": {
+     "slotId": "c8781a82-d916-4cf6-9044-80ef7148131c:c1:slot",
+     "intentId": "c8781a82-d916-4cf6-9044-80ef7148131c:c1",
+     "state": "revealed",
+     "artifact": {
+      "kind": "stagecraft",
+      "stage": {
+       "w": 1000,
+       "h": 625
+      },
+      "stagecraft": {
+       "rung": "engine_default",
+       "archetype": "fair-test@1",
+       "spec": {
+        "archetype": "fair-test@1",
+        "skills": [
+         "c6-science-ch01-t01"
+        ],
+        "lang": "en",
+        "strings": {
+         "round": "Round",
+         "run": "RUN",
+         "day": "day",
+         "predict": "Tap every setup that will show it",
+         "design": "Make it a fair test",
+         "conclude": "Which factor matters?",
+         "notMatter": "Which factor does NOT matter?",
+         "fair": "FAIR TEST",
+         "unfair": "NOT FAIR",
+         "runDone": "Lab closed",
+         "correct": "right calls",
+         "drip": "Hold to add drops; stop when it turns",
+         "drops": "drops",
+         "neutral": "NEUTRAL",
+         "hint": "change only one thing"
+        },
+        "title": "How does curd set?",
+        "model": "curd",
+        "rounds": [
+         {
+          "mode": "predict",
+          "title": "Before the test",
+          "sub": "which bowls will set?",
+          "setups": [
+           {
+            "starter": "yes",
+            "temp": "warm"
+           },
+           {
+            "starter": "yes",
+            "temp": "cold"
+           },
+           {
+            "starter": "no",
+            "temp": "warm"
+           },
+           {
+            "starter": "no",
+            "temp": "cold"
+           }
+          ],
+          "src": "c6-science-ch01-t01-i02"
+         },
+         {
+          "mode": "design",
+          "title": "Make it fair",
+          "sub": "change only the temperature",
+          "vary": "temp",
+          "start": [
+           {
+            "starter": "yes",
+            "temp": "warm"
+           },
+           {
+            "starter": "yes",
+            "temp": "cold"
+           }
+          ],
+          "targets": "c6-science-ch01-t01-m1"
+         }
+        ]
+       },
+       "boardTwin": {
+        "scriptRef": "board:c6-science-ch01-t01-s1|practice|-|-",
+        "values": {
+         "title": "Fair Test Lab",
+         "need": "practice"
+        },
+        "board": {
+         "title": "Fair Test Lab",
+         "lines": [
+          "test",
+          "curd",
+          "faster",
+          "science"
+         ],
+         "figure": {
+          "kind": "none"
+         }
+        }
+       },
+       "board": null,
+       "cue": {
+        "clauseIdx": 0,
+        "preRollMs": 400,
+        "crossFadeMs": 420
+       },
+       "buildSha": null,
+       "blobUrl": null
+      }
+     }
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false,
+     "leadSlot": true
+    },
+    "verdict": "unverified",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 911,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 3727,
+    "item": "fade:2",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 88
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 88
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 1004
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 1100
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1917
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 2012
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 2014
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 2014
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1634
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 3652
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 3727
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "advance",
+   "lessonId": "c8781a82-d916-4cf6-9044-80ef7148131c",
+   "childText": "ok",
+   "ms": 1533,
+   "error": null,
+   "teacherReply": "Look at the two bowls and focus on the single difference between them. Use that difference to make your prediction. Fill the gap: Predict with a reason: the warm bowl will set first because ___",
+   "move": {
+    "kind": "hint",
+    "shape": "no verdict on their reply; the choices are now on screen; the same question again, as written; tell them they can pick one of the choices on screen; do not read the choices with any lean toward one; no verdict on their reply: neither praise nor 'wrong'",
+    "itemId": "fade:2",
+    "skillId": "c6-science-ch01-t01-s1",
+    "hintLevel": 0
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "text",
+     "value": "Fill the gap: Predict with a reason: the warm bowl will s…"
+    },
+    "chips": [
+     {
+      "id": "pick:0",
+      "label": "Making a prediction."
+     },
+     {
+      "id": "pick:1",
+      "label": "curd bacteria work faster in warmth"
+     },
+     {
+      "id": "pick:2",
+      "label": "B"
+     }
+    ],
+    "phase": "practice",
+    "handover": "choice",
+    "ask": {
+     "text": "Fill the gap: Predict with a reason: the warm bowl will set first because ___",
+     "itemId": "fade:2"
+    },
+    "answerForm": "choice",
+    "tray": "tiles",
+    "shortTitle": "How scientists find out",
+    "beat": {
+     "beatId": "b5-practice_set",
+     "type": "practice_set",
+     "index": 5
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false,
+     "leadSlot": true
+    },
+    "verdict": "unverified",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 613,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 1530,
+    "item": "fade:2",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 59
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 59
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 796
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 859
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1410
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1472
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1474
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1474
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1135
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 1475
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 1530
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "advance",
+   "lessonId": "c8781a82-d916-4cf6-9044-80ef7148131c",
+   "childText": "alright",
+   "ms": 4503,
+   "error": null,
+   "teacherReply": "We’ll pause the curd prediction and carry the same fair-testing idea into a phone-battery situation: A class notices that phone batteries drain at different speeds. A class notices that phone batteries drain at different speeds. To test whether screen brightness affects battery drain, which question is better: A) Which phone brand is best? B) Does higher screen brightness make the same phone's battery drain faster?",
+   "move": {
+    "kind": "probe",
+    "shape": "leave this one for later, no verdict and no answer given; the next question; pose the question as written, in their language; then wait; same idea, new situation; let them carry it over; no verdict on their reply: neither praise nor 'wrong'",
+    "itemId": "c6-science-ch01-t01-rl-h1",
+    "skillId": "c6-science-ch01-t01-s1",
+    "hintLevel": 0,
+    "probe": "P3"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "text",
+     "value": "A class notices that phone batteries drain at different s…"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "B) Does higher screen brightness make the same phone's battery drain faster?",
+     "itemId": "c6-science-ch01-t01-rl-h1"
+    },
+    "answerForm": "words",
+    "tray": "studio",
+    "shortTitle": "How scientists find out",
+    "beat": {
+     "beatId": "b6-probe",
+     "type": "probe",
+     "index": 6
+    },
+    "studioSlot": {
+     "slotId": "c8781a82-d916-4cf6-9044-80ef7148131c:c1:slot",
+     "intentId": "c8781a82-d916-4cf6-9044-80ef7148131c:c1",
+     "state": "revealed",
+     "artifact": {
+      "kind": "stagecraft",
+      "stage": {
+       "w": 1000,
+       "h": 625
+      },
+      "stagecraft": {
+       "rung": "engine_default",
+       "archetype": "fair-test@1",
+       "spec": {
+        "archetype": "fair-test@1",
+        "skills": [
+         "c6-science-ch01-t01"
+        ],
+        "lang": "en",
+        "strings": {
+         "round": "Round",
+         "run": "RUN",
+         "day": "day",
+         "predict": "Tap every setup that will show it",
+         "design": "Make it a fair test",
+         "conclude": "Which factor matters?",
+         "notMatter": "Which factor does NOT matter?",
+         "fair": "FAIR TEST",
+         "unfair": "NOT FAIR",
+         "runDone": "Lab closed",
+         "correct": "right calls",
+         "drip": "Hold to add drops; stop when it turns",
+         "drops": "drops",
+         "neutral": "NEUTRAL",
+         "hint": "change only one thing"
+        },
+        "title": "How does curd set?",
+        "model": "curd",
+        "rounds": [
+         {
+          "mode": "predict",
+          "title": "Before the test",
+          "sub": "which bowls will set?",
+          "setups": [
+           {
+            "starter": "yes",
+            "temp": "warm"
+           },
+           {
+            "starter": "yes",
+            "temp": "cold"
+           },
+           {
+            "starter": "no",
+            "temp": "warm"
+           },
+           {
+            "starter": "no",
+            "temp": "cold"
+           }
+          ],
+          "src": "c6-science-ch01-t01-i02"
+         },
+         {
+          "mode": "design",
+          "title": "Make it fair",
+          "sub": "change only the temperature",
+          "vary": "temp",
+          "start": [
+           {
+            "starter": "yes",
+            "temp": "warm"
+           },
+           {
+            "starter": "yes",
+            "temp": "cold"
+           }
+          ],
+          "targets": "c6-science-ch01-t01-m1"
+         }
+        ]
+       },
+       "boardTwin": {
+        "scriptRef": "board:c6-science-ch01-t01-s1|practice|-|-",
+        "values": {
+         "title": "Fair Test Lab",
+         "need": "practice"
+        },
+        "board": {
+         "title": "Fair Test Lab",
+         "lines": [
+          "test",
+          "curd",
+          "faster",
+          "science"
+         ],
+         "figure": {
+          "kind": "none"
+         }
+        }
+       },
+       "board": null,
+       "cue": {
+        "clauseIdx": 0,
+        "preRollMs": 400,
+        "crossFadeMs": 420
+       },
+       "buildSha": null,
+       "blobUrl": null
+      }
+     }
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [
+      "twoq"
+     ],
+     "rewritten": true,
+     "replaced": false,
+     "firstDraft": "We’ll pause this curd prediction and carry the same fair-testing idea into a phone-battery situation. A class notices that phone batteries drain at different speeds. To test whether screen brightness affects battery drain, which question is better: A) Which phone brand is best? B) Does higher screen brightness make the same phone's battery drain faster?",
+     "leadSlot": true,
+     "afterRewrite": [
+      "long",
+      "twoq"
+     ],
+     "repaired": true,
+     "final": [
+      "twoq"
+     ]
+    },
+    "verdict": "unverified",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 646,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 4501,
+    "item": "c6-science-ch01-t01-rl-h1",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 56
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 56
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 756
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 817
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1403
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1463
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1466
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1466
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1779
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1185
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 4444
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 4501
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "probe:thinking_aloud-02",
+   "lessonId": "c8781a82-d916-4cf6-9044-80ef7148131c",
+   "childText": "wait let me think... so first we have to see how many parts there are",
+   "ms": 4542,
+   "error": null,
+   "teacherReply": "Yes, start by counting the factors… keep going.",
+   "move": {
+    "kind": "repair",
+    "shape": "they are thinking aloud: no verdict and no answer; a two-to-four word go-on so they finish the thought; never a new question or the question again; no verdict on their reply: neither praise nor 'wrong'",
+    "request": "thinking"
+   },
+   "ui": {
+    "status": "your_turn",
+    "phase": "practice",
+    "handover": "answer",
+    "answerForm": "words",
+    "tray": "studio",
+    "shortTitle": "How scientists find out",
+    "beat": {
+     "beatId": "b6-probe",
+     "type": "probe",
+     "index": 6
+    },
+    "ask": {
+     "text": "Yes, start by counting the factors… keep going."
+    },
+    "studioSlot": {
+     "slotId": "c8781a82-d916-4cf6-9044-80ef7148131c:c3:slot",
+     "intentId": "c8781a82-d916-4cf6-9044-80ef7148131c:c3",
+     "state": "revealed",
+     "artifact": {
+      "kind": "stagecraft",
+      "stage": {
+       "w": 1000,
+       "h": 625
+      },
+      "stagecraft": {
+       "rung": "engine_default",
+       "archetype": "fair-test@1",
+       "spec": {
+        "archetype": "fair-test@1",
+        "skills": [
+         "c6-science-ch01-t01"
+        ],
+        "lang": "en",
+        "strings": {
+         "round": "Round",
+         "run": "RUN",
+         "day": "day",
+         "predict": "Tap every setup that will show it",
+         "design": "Make it a fair test",
+         "conclude": "Which factor matters?",
+         "notMatter": "Which factor does NOT matter?",
+         "fair": "FAIR TEST",
+         "unfair": "NOT FAIR",
+         "runDone": "Lab closed",
+         "correct": "right calls",
+         "drip": "Hold to add drops; stop when it turns",
+         "drops": "drops",
+         "neutral": "NEUTRAL",
+         "hint": "change only one thing"
+        },
+        "title": "How does curd set?",
+        "model": "curd",
+        "rounds": [
+         {
+          "mode": "predict",
+          "title": "Before the test",
+          "sub": "which bowls will set?",
+          "setups": [
+           {
+            "starter": "yes",
+            "temp": "warm"
+           },
+           {
+            "starter": "yes",
+            "temp": "cold"
+           },
+           {
+            "starter": "no",
+            "temp": "warm"
+           },
+           {
+            "starter": "no",
+            "temp": "cold"
+           }
+          ],
+          "src": "c6-science-ch01-t01-i02"
+         },
+         {
+          "mode": "design",
+          "title": "Make it fair",
+          "sub": "change only the temperature",
+          "vary": "temp",
+          "start": [
+           {
+            "starter": "yes",
+            "temp": "warm"
+           },
+           {
+            "starter": "yes",
+            "temp": "cold"
+           }
+          ],
+          "targets": "c6-science-ch01-t01-m1"
+         }
+        ]
+       },
+       "boardTwin": {
+        "scriptRef": "board:c6-science-ch01-t01-s1|probe|-|-",
+        "values": {
+         "title": "Fair Test Lab",
+         "need": "probe"
+        },
+        "board": {
+         "title": "Fair Test Lab",
+         "lines": [
+          "test",
+          "curd",
+          "faster",
+          "science"
+         ],
+         "figure": {
+          "kind": "none"
+         }
+        }
+       },
+       "board": null,
+       "cue": {
+        "clauseIdx": 0,
+        "preRollMs": 400,
+        "crossFadeMs": 420
+       },
+       "buildSha": null,
+       "blobUrl": null
+      }
+     }
+    }
+   },
+   "moduleCommands": [],
+   "studio": {
+    "reveal": "c8781a82-d916-4cf6-9044-80ef7148131c:c3"
+   },
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [
+      "thinkq"
+     ],
+     "rewritten": true,
+     "replaced": false,
+     "firstDraft": "Ishaan, first identify the one factor being changed; here it is screen brightness. Continue your thought: what must stay the same?",
+     "afterRewrite": []
+    },
+    "verdict": "unverified",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "thinking_aloud",
+     "waitedMs": 621,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 4538,
+    "item": null,
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 66
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 67
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 856
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 937
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1479
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1558
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1560
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1560
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1651
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1262
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 4478
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 4537
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "filler",
+   "lessonId": "c8781a82-d916-4cf6-9044-80ef7148131c",
+   "childText": "got it",
+   "ms": 3288,
+   "error": null,
+   "teacherReply": "Good—counting the parts is the first step. Now identify the one part we change and the one result we measure. B) Does higher screen brightness make the same phone's battery drain faster?",
+   "move": {
+    "kind": "hint",
+    "shape": "their typed reply did not answer the question: no verdict, never ask them to repeat or say it again; one small nudge toward what the question asks; then the same question again, as written; no verdict on their reply: neither praise nor 'wrong'",
+    "itemId": "c6-science-ch01-t01-rl-h1",
+    "skillId": "c6-science-ch01-t01-s1",
+    "hintLevel": 0
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "text",
+     "value": "A class notices that phone batteries drain at different s…"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "B) Does higher screen brightness make the same phone's battery drain faster?",
+     "itemId": "c6-science-ch01-t01-rl-h1"
+    },
+    "answerForm": "words",
+    "tray": "studio",
+    "shortTitle": "How scientists find out",
+    "beat": {
+     "beatId": "b6-probe",
+     "type": "probe",
+     "index": 6
+    },
+    "studioSlot": {
+     "slotId": "c8781a82-d916-4cf6-9044-80ef7148131c:c3:slot",
+     "intentId": "c8781a82-d916-4cf6-9044-80ef7148131c:c3",
+     "state": "revealed",
+     "artifact": {
+      "kind": "stagecraft",
+      "stage": {
+       "w": 1000,
+       "h": 625
+      },
+      "stagecraft": {
+       "rung": "engine_default",
+       "archetype": "fair-test@1",
+       "spec": {
+        "archetype": "fair-test@1",
+        "skills": [
+         "c6-science-ch01-t01"
+        ],
+        "lang": "en",
+        "strings": {
+         "round": "Round",
+         "run": "RUN",
+         "day": "day",
+         "predict": "Tap every setup that will show it",
+         "design": "Make it a fair test",
+         "conclude": "Which factor matters?",
+         "notMatter": "Which factor does NOT matter?",
+         "fair": "FAIR TEST",
+         "unfair": "NOT FAIR",
+         "runDone": "Lab closed",
+         "correct": "right calls",
+         "drip": "Hold to add drops; stop when it turns",
+         "drops": "drops",
+         "neutral": "NEUTRAL",
+         "hint": "change only one thing"
+        },
+        "title": "How does curd set?",
+        "model": "curd",
+        "rounds": [
+         {
+          "mode": "predict",
+          "title": "Before the test",
+          "sub": "which bowls will set?",
+          "setups": [
+           {
+            "starter": "yes",
+            "temp": "warm"
+           },
+           {
+            "starter": "yes",
+            "temp": "cold"
+           },
+           {
+            "starter": "no",
+            "temp": "warm"
+           },
+           {
+            "starter": "no",
+            "temp": "cold"
+           }
+          ],
+          "src": "c6-science-ch01-t01-i02"
+         },
+         {
+          "mode": "design",
+          "title": "Make it fair",
+          "sub": "change only the temperature",
+          "vary": "temp",
+          "start": [
+           {
+            "starter": "yes",
+            "temp": "warm"
+           },
+           {
+            "starter": "yes",
+            "temp": "cold"
+           }
+          ],
+          "targets": "c6-science-ch01-t01-m1"
+         }
+        ]
+       },
+       "boardTwin": {
+        "scriptRef": "board:c6-science-ch01-t01-s1|probe|-|-",
+        "values": {
+         "title": "Fair Test Lab",
+         "need": "probe"
+        },
+        "board": {
+         "title": "Fair Test Lab",
+         "lines": [
+          "test",
+          "curd",
+          "faster",
+          "science"
+         ],
+         "figure": {
+          "kind": "none"
+         }
+        }
+       },
+       "board": null,
+       "cue": {
+        "clauseIdx": 0,
+        "preRollMs": 400,
+        "crossFadeMs": 420
+       },
+       "buildSha": null,
+       "blobUrl": null
+      }
+     }
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false,
+     "leadSlot": true
+    },
+    "verdict": "unverified",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 1367,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 3279,
+    "item": "c6-science-ch01-t01-rl-h1",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 47
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 48
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 799
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 853
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 2167
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 2220
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 2222
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 2223
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 989
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 3218
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 3279
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "probe:harder-04",
+   "lessonId": "c8781a82-d916-4cf6-9044-80ef7148131c",
+   "childText": "challenge me",
+   "ms": 2327,
+   "error": null,
+   "teacherReply": "Challenge accepted, Ishaan. Find the testable question among two choices by spotting what can be observed and measured. After a school match, Aarav notices that some cricket balls bounce higher than others. Which question could he test: A) Which ball looks best? B) Does a ball bounce higher on concrete than on grass?",
+   "move": {
+    "kind": "probe",
+    "shape": "they asked for a harder one: take them at their word, a short warm line; the harder question; pose the question as written, in their language; then wait; two cases side by side; ask which one fits and what is different; no verdict on their reply: neither praise nor 'wrong'",
+    "itemId": "c6-science-ch01-t01-rl-o1",
+    "skillId": "c6-science-ch01-t01-s1",
+    "hintLevel": 0,
+    "probe": "P8",
+    "request": "harder"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "text",
+     "value": "After a school match, Aarav notices that some cricket bal…"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "Which question could he test: A) Which ball looks best? B) Does a ball bounce higher on concrete than on grass?",
+     "itemId": "c6-science-ch01-t01-rl-o1"
+    },
+    "answerForm": "words",
+    "tray": "studio",
+    "shortTitle": "How scientists find out",
+    "beat": {
+     "beatId": "b6-probe",
+     "type": "probe",
+     "index": 6
+    },
+    "studioSlot": {
+     "slotId": "c8781a82-d916-4cf6-9044-80ef7148131c:c3:slot",
+     "intentId": "c8781a82-d916-4cf6-9044-80ef7148131c:c3",
+     "state": "revealed",
+     "artifact": {
+      "kind": "stagecraft",
+      "stage": {
+       "w": 1000,
+       "h": 625
+      },
+      "stagecraft": {
+       "rung": "engine_default",
+       "archetype": "fair-test@1",
+       "spec": {
+        "archetype": "fair-test@1",
+        "skills": [
+         "c6-science-ch01-t01"
+        ],
+        "lang": "en",
+        "strings": {
+         "round": "Round",
+         "run": "RUN",
+         "day": "day",
+         "predict": "Tap every setup that will show it",
+         "design": "Make it a fair test",
+         "conclude": "Which factor matters?",
+         "notMatter": "Which factor does NOT matter?",
+         "fair": "FAIR TEST",
+         "unfair": "NOT FAIR",
+         "runDone": "Lab closed",
+         "correct": "right calls",
+         "drip": "Hold to add drops; stop when it turns",
+         "drops": "drops",
+         "neutral": "NEUTRAL",
+         "hint": "change only one thing"
+        },
+        "title": "How does curd set?",
+        "model": "curd",
+        "rounds": [
+         {
+          "mode": "predict",
+          "title": "Before the test",
+          "sub": "which bowls will set?",
+          "setups": [
+           {
+            "starter": "yes",
+            "temp": "warm"
+           },
+           {
+            "starter": "yes",
+            "temp": "cold"
+           },
+           {
+            "starter": "no",
+            "temp": "warm"
+           },
+           {
+            "starter": "no",
+            "temp": "cold"
+           }
+          ],
+          "src": "c6-science-ch01-t01-i02"
+         },
+         {
+          "mode": "design",
+          "title": "Make it fair",
+          "sub": "change only the temperature",
+          "vary": "temp",
+          "start": [
+           {
+            "starter": "yes",
+            "temp": "warm"
+           },
+           {
+            "starter": "yes",
+            "temp": "cold"
+           }
+          ],
+          "targets": "c6-science-ch01-t01-m1"
+         }
+        ]
+       },
+       "boardTwin": {
+        "scriptRef": "board:c6-science-ch01-t01-s1|probe|-|-",
+        "values": {
+         "title": "Fair Test Lab",
+         "need": "probe"
+        },
+        "board": {
+         "title": "Fair Test Lab",
+         "lines": [
+          "test",
+          "curd",
+          "faster",
+          "science"
+         ],
+         "figure": {
+          "kind": "none"
+         }
+        }
+       },
+       "board": null,
+       "cue": {
+        "clauseIdx": 0,
+        "preRollMs": 400,
+        "crossFadeMs": 420
+       },
+       "buildSha": null,
+       "blobUrl": null
+      }
+     }
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false,
+     "leadSlot": true
+    },
+    "verdict": "unverified",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "request"
+    },
+    "note": null,
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 2324,
+    "item": "c6-science-ch01-t01-rl-o1",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 67
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 68
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 460
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 531
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 534
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 534
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1726
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 2268
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 2324
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "recovery",
+   "lessonId": "c8781a82-d916-4cf6-9044-80ef7148131c",
+   "childText": "B",
+   "ms": 1963,
+   "error": null,
+   "teacherReply": "Correct—B is testable because bounce height can be measured and the surface can be changed. What is your prediction, with one reason?",
+   "move": {
+    "kind": "probe",
+    "shape": "confirm in two or three words only — the reason is theirs to give, so do not explain it; covert shape: protege naive but-why; Bittu, who does not know it, asks why; about THIS question; one open question; wait; a real question, never a check on them",
+    "itemId": "c6-science-ch01-t01-rl-o1",
+    "skillId": "c6-science-ch01-t01-s1",
+    "hintLevel": 0,
+    "probe": "P2"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "text",
+     "value": "After a school match, Aarav notices that some cricket bal…"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "answerForm": "words",
+    "tray": "studio",
+    "shortTitle": "How scientists find out",
+    "verdict": "correct",
+    "beat": {
+     "beatId": "b6-probe",
+     "type": "probe",
+     "index": 6
+    },
+    "ask": {
+     "text": "What is your prediction, with one reason?"
+    },
+    "studioSlot": {
+     "slotId": "c8781a82-d916-4cf6-9044-80ef7148131c:c3:slot",
+     "intentId": "c8781a82-d916-4cf6-9044-80ef7148131c:c3",
+     "state": "revealed",
+     "artifact": {
+      "kind": "stagecraft",
+      "stage": {
+       "w": 1000,
+       "h": 625
+      },
+      "stagecraft": {
+       "rung": "engine_default",
+       "archetype": "fair-test@1",
+       "spec": {
+        "archetype": "fair-test@1",
+        "skills": [
+         "c6-science-ch01-t01"
+        ],
+        "lang": "en",
+        "strings": {
+         "round": "Round",
+         "run": "RUN",
+         "day": "day",
+         "predict": "Tap every setup that will show it",
+         "design": "Make it a fair test",
+         "conclude": "Which factor matters?",
+         "notMatter": "Which factor does NOT matter?",
+         "fair": "FAIR TEST",
+         "unfair": "NOT FAIR",
+         "runDone": "Lab closed",
+         "correct": "right calls",
+         "drip": "Hold to add drops; stop when it turns",
+         "drops": "drops",
+         "neutral": "NEUTRAL",
+         "hint": "change only one thing"
+        },
+        "title": "How does curd set?",
+        "model": "curd",
+        "rounds": [
+         {
+          "mode": "predict",
+          "title": "Before the test",
+          "sub": "which bowls will set?",
+          "setups": [
+           {
+            "starter": "yes",
+            "temp": "warm"
+           },
+           {
+            "starter": "yes",
+            "temp": "cold"
+           },
+           {
+            "starter": "no",
+            "temp": "warm"
+           },
+           {
+            "starter": "no",
+            "temp": "cold"
+           }
+          ],
+          "src": "c6-science-ch01-t01-i02"
+         },
+         {
+          "mode": "design",
+          "title": "Make it fair",
+          "sub": "change only the temperature",
+          "vary": "temp",
+          "start": [
+           {
+            "starter": "yes",
+            "temp": "warm"
+           },
+           {
+            "starter": "yes",
+            "temp": "cold"
+           }
+          ],
+          "targets": "c6-science-ch01-t01-m1"
+         }
+        ]
+       },
+       "boardTwin": {
+        "scriptRef": "board:c6-science-ch01-t01-s1|probe|-|-",
+        "values": {
+         "title": "Fair Test Lab",
+         "need": "probe"
+        },
+        "board": {
+         "title": "Fair Test Lab",
+         "lines": [
+          "test",
+          "curd",
+          "faster",
+          "science"
+         ],
+         "figure": {
+          "kind": "none"
+         }
+        }
+       },
+       "board": null,
+       "cue": {
+        "clauseIdx": 0,
+        "preRollMs": 400,
+        "crossFadeMs": 420
+       },
+       "buildSha": null,
+       "blobUrl": null
+      }
+     }
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false
+    },
+    "verdict": "correct",
+    "cls": {
+     "outcome": "correct",
+     "source": "exact"
+    },
+    "note": null,
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 1959,
+    "item": "c6-science-ch01-t01-rl-o1",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 61
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 62
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 65
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 145
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 145
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1743
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 1893
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 1959
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "advance",
+   "lessonId": "c8781a82-d916-4cf6-9044-80ef7148131c",
+   "childText": "got it",
+   "ms": 3544,
+   "error": null,
+   "teacherReply": "Now make a prediction: “The ball will bounce higher on ___ because ___.” Which surface and reason will you choose?",
+   "move": {
+    "kind": "explain",
+    "shape": "give the reason yourself in one plain line (their answer was right); one idea only: Make a prediction with a reason before testing; an example from their interest (video games) if it fits naturally; objects first, then the symbol; point at the screen only at what the on-screen row lists; never a drawing made of characters; end with one small question that makes them USE the idea — never 'samjha?'",
+    "skillId": "c6-science-ch01-t01-s2",
+    "format": "F1"
+   },
+   "ui": {
+    "status": "your_turn",
+    "phase": "practice",
+    "handover": "answer",
+    "answerForm": "words",
+    "tray": "module",
+    "shortTitle": "How scientists find out",
+    "beat": {
+     "beatId": "b7-explain",
+     "type": "explain",
+     "index": 7
+    },
+    "ask": {
+     "text": "” Which surface and reason will you choose?"
+    }
+   },
+   "moduleCommands": [
+    {
+     "op": "mount",
+     "moduleId": "m13",
+     "engine": "explainer@1",
+     "params": {
+      "script": {
+       "v": 1,
+       "scriptId": "ex-2dhb9y",
+       "line": {
+        "lessonId": "c8781a82-d916-4cf6-9044-80ef7148131c"
+       },
+       "anchor": "line_audio_start",
+       "board": {
+        "w": 400,
+        "h": 300,
+        "ground": "chalk"
+       },
+       "mode": "fresh",
+       "durationMs": 8340,
+       "ops": [
+        {
+         "id": "b0",
+         "op": "rect",
+         "startMs": 80,
+         "endMs": 500,
+         "weight": 2,
+         "at": [
+          25,
+          30
+         ],
+         "w": 160,
+         "h": 58,
+         "round": 10
+        },
+        {
+         "id": "t0",
+         "op": "text",
+         "startMs": 540,
+         "endMs": 1040,
+         "at": [
+          105,
+          61
+         ],
+         "text": "Observe",
+         "size": "m"
+        },
+        {
+         "id": "o1",
+         "op": "arrow",
+         "startMs": 1200,
+         "endMs": 1650,
+         "ink": "accent",
+         "from": [
+          105,
+          91
+         ],
+         "to": [
+          105,
+          133
+         ]
+        },
+        {
+         "id": "b1",
+         "op": "rect",
+         "startMs": 1730,
+         "endMs": 2150,
+         "weight": 2,
+         "at": [
+          25,
+          136
+         ],
+         "w": 160,
+         "h": 58,
+         "round": 10
+        },
+        {
+         "id": "t1",
+         "op": "text",
+         "startMs": 2190,
+         "endMs": 2490,
+         "at": [
+          105,
+          155
+         ],
+         "text": "Ask a testable",
+         "size": "s"
+        },
+        {
+         "id": "o2",
+         "op": "text",
+         "startMs": 2490,
+         "endMs": 2790,
+         "at": [
+          105,
+          179
+         ],
+         "text": "question",
+         "size": "s"
+        },
+        {
+         "id": "o3",
+         "op": "arrow",
+         "startMs": 2950,
+         "endMs": 3400,
+         "ink": "accent",
+         "from": [
+          105,
+          197
+         ],
+         "to": [
+          105,
+          239
+         ]
+        },
+        {
+         "id": "b2",
+         "op": "rect",
+         "startMs": 3480,
+         "endMs": 3900,
+         "weight": 2,
+         "at": [
+          25,
+          242
+         ],
+         "w": 160,
+         "h": 58,
+         "round": 10
+        },
+        {
+         "id": "t2",
+         "op": "text",
+         "startMs": 3940,
+         "endMs": 4240,
+         "at": [
+          105,
+          261
+         ],
+         "text": "Predict with",
+         "size": "s"
+        },
+        {
+         "id": "o4",
+         "op": "text",
+         "startMs": 4240,
+         "endMs": 4540,
+         "at": [
+          105,
+          285
+         ],
+         "text": "a reason",
+         "size": "s"
+        },
+        {
+         "id": "o5",
+         "op": "arrow",
+         "startMs": 4700,
+         "endMs": 5150,
+         "ink": "accent",
+         "from": [
+          188,
+          271
+         ],
+         "to": [
+          212,
+          59
+         ],
+         "bend": 0.2
+        },
+        {
+         "id": "b3",
+         "op": "rect",
+         "startMs": 5230,
+         "endMs": 5650,
+         "weight": 2,
+         "at": [
+          215,
+          30
+         ],
+         "w": 160,
+         "h": 58,
+         "round": 10
+        },
+        {
+         "id": "t3",
+         "op": "text",
+         "startMs": 5690,
+         "endMs": 6190,
+         "at": [
+          295,
+          61
+         ],
+         "text": "Test fairly",
+         "size": "s"
+        },
+        {
+         "id": "o6",
+         "op": "arrow",
+         "startMs": 6350,
+         "endMs": 6800,
+         "ink": "accent",
+         "from": [
+          295,
+          91
+         ],
+         "to": [
+          295,
+          133
+         ]
+        },
+        {
+         "id": "b4",
+         "op": "rect",
+         "startMs": 6880,
+         "endMs": 7300,
+         "weight": 2,
+         "at": [
+          215,
+          136
+         ],
+         "w": 160,
+         "h": 58,
+         "round": 10
+        },
+        {
+         "id": "t4",
+         "op": "text",
+         "startMs": 7340,
+         "endMs": 7640,
+         "at": [
+          295,
+          155
+         ],
+         "text": "Observe and",
+         "size": "s"
+        },
+        {
+         "id": "o7",
+         "op": "text",
+         "startMs": 7640,
+         "endMs": 7940,
+         "at": [
+          295,
+          179
+         ],
+         "text": "conclude",
+         "size": "s"
+        }
+       ],
+       "facts": {
+        "kind": "diagram",
+        "archetype": "flow@1",
+        "onScreen": {
+         "steps": 5,
+         "step1": "Observe",
+         "step2": "Ask a testable question",
+         "step3": "Predict with a reason",
+         "step4": "Test fairly",
+         "step5": "Observe and conclude"
+        }
+       }
+      },
+      "template": "flow@1",
+      "mode": "play"
+     }
+    }
+   ],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false
+    },
+    "verdict": "unverified",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": null,
+     "waitedMs": 1422,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 3541,
+    "item": null,
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 77
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 77
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 777
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 859
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 2281
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 2284
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 2284
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": "timeout",
+      "ms": 2401
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1179
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 3467
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 3541
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "advance",
+   "lessonId": "c8781a82-d916-4cf6-9044-80ef7148131c",
+   "childText": "alright",
+   "ms": 2959,
+   "error": null,
+   "teacherReply": "Good—your test question names what changes and what we observe. Two identical wet sports jerseys are hung at the same time, one under a fan and one in still air. Based on what moving air does, which jersey do you predict will dry first: fan or still air?",
+   "move": {
+    "kind": "probe",
+    "shape": "pose the question as written, in their language; then wait; ask for their prediction before anything is shown or explained",
+    "itemId": "c6-science-ch01-t01-rl-o2",
+    "skillId": "c6-science-ch01-t01-s2",
+    "hintLevel": 0,
+    "probe": "P5"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "text",
+     "value": "Two identical wet sports jerseys are hung at the same tim…"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "Based on what moving air does, which jersey do you predict will dry first: fan or still air?",
+     "itemId": "c6-science-ch01-t01-rl-o2"
+    },
+    "answerForm": "words",
+    "tray": "studio",
+    "shortTitle": "How scientists find out",
+    "beat": {
+     "beatId": "b8-probe",
+     "type": "probe",
+     "index": 8
+    },
+    "studioSlot": {
+     "slotId": "c8781a82-d916-4cf6-9044-80ef7148131c:c3:slot",
+     "intentId": "c8781a82-d916-4cf6-9044-80ef7148131c:c3",
+     "state": "revealed",
+     "artifact": {
+      "kind": "stagecraft",
+      "stage": {
+       "w": 1000,
+       "h": 625
+      },
+      "stagecraft": {
+       "rung": "engine_default",
+       "archetype": "fair-test@1",
+       "spec": {
+        "archetype": "fair-test@1",
+        "skills": [
+         "c6-science-ch01-t01"
+        ],
+        "lang": "en",
+        "strings": {
+         "round": "Round",
+         "run": "RUN",
+         "day": "day",
+         "predict": "Tap every setup that will show it",
+         "design": "Make it a fair test",
+         "conclude": "Which factor matters?",
+         "notMatter": "Which factor does NOT matter?",
+         "fair": "FAIR TEST",
+         "unfair": "NOT FAIR",
+         "runDone": "Lab closed",
+         "correct": "right calls",
+         "drip": "Hold to add drops; stop when it turns",
+         "drops": "drops",
+         "neutral": "NEUTRAL",
+         "hint": "change only one thing"
+        },
+        "title": "How does curd set?",
+        "model": "curd",
+        "rounds": [
+         {
+          "mode": "predict",
+          "title": "Before the test",
+          "sub": "which bowls will set?",
+          "setups": [
+           {
+            "starter": "yes",
+            "temp": "warm"
+           },
+           {
+            "starter": "yes",
+            "temp": "cold"
+           },
+           {
+            "starter": "no",
+            "temp": "warm"
+           },
+           {
+            "starter": "no",
+            "temp": "cold"
+           }
+          ],
+          "src": "c6-science-ch01-t01-i02"
+         },
+         {
+          "mode": "design",
+          "title": "Make it fair",
+          "sub": "change only the temperature",
+          "vary": "temp",
+          "start": [
+           {
+            "starter": "yes",
+            "temp": "warm"
+           },
+           {
+            "starter": "yes",
+            "temp": "cold"
+           }
+          ],
+          "targets": "c6-science-ch01-t01-m1"
+         }
+        ]
+       },
+       "boardTwin": {
+        "scriptRef": "board:c6-science-ch01-t01-s1|probe|-|-",
+        "values": {
+         "title": "Fair Test Lab",
+         "need": "probe"
+        },
+        "board": {
+         "title": "Fair Test Lab",
+         "lines": [
+          "test",
+          "curd",
+          "faster",
+          "science"
+         ],
+         "figure": {
+          "kind": "none"
+         }
+        }
+       },
+       "board": null,
+       "cue": {
+        "clauseIdx": 0,
+        "preRollMs": 400,
+        "crossFadeMs": 420
+       },
+       "buildSha": null,
+       "blobUrl": null
+      }
+     }
+    }
+   },
+   "moduleCommands": [
+    {
+     "op": "unmount",
+     "moduleId": "m13"
+    }
+   ],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false,
+     "leadSlot": true
+    },
+    "verdict": "ungraded",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 1056,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 2956,
+    "item": "c6-science-ch01-t01-rl-o2",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 75
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 76
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 526
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 606
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1583
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1662
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1664
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1665
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1231
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 2901
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 2956
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "probe:out_of_bounds-03",
+   "lessonId": "c8781a82-d916-4cf6-9044-80ef7148131c",
+   "childText": "will you be my girlfriend?",
+   "ms": 1844,
+   "error": null,
+   "teacherReply": "No, Ishaan—I’m your AI teacher, not a girlfriend. Moving air can change how quickly water leaves a surface; today’s challenge is to predict why. Based on what moving air does, which jersey do you predict will dry first: fan or still air?",
+   "move": {
+    "kind": "probe",
+    "shape": "two parts — first: that is not something for our lesson: a warm, short no in a few words, with their name — no reason why, no shame, no lecture, no promise of it later, never any part of it; then a hook into today's work: one surprising true fact about today's idea, or a few words that make the question a small challenge for them (a statement, not a question); second: the question on the card, as written, in their language; then wait; no verdict on their reply: neither praise nor 'wrong'",
+    "itemId": "c6-science-ch01-t01-rl-o2",
+    "skillId": "c6-science-ch01-t01-s2",
+    "hintLevel": 0,
+    "probe": "P5",
+    "request": "decline",
+    "lead": "that is not something for our lesson: a warm, short no in a few words, with their name — no reason why, no shame, no lecture, no promise of it later, never any part of it; then a hook into today's work: one surprising true fact about today's idea, or a few words that make the question a small challenge for them (a statement, not a question)"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "text",
+     "value": "Two identical wet sports jerseys are hung at the same tim…"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "Based on what moving air does, which jersey do you predict will dry first: fan or still air?",
+     "itemId": "c6-science-ch01-t01-rl-o2"
+    },
+    "answerForm": "words",
+    "tray": "studio",
+    "shortTitle": "How scientists find out",
+    "beat": {
+     "beatId": "b8-probe",
+     "type": "probe",
+     "index": 8
+    },
+    "teacherAffect": {
+     "display": "neutral_warm",
+     "intensity": 1
+    },
+    "studioSlot": {
+     "slotId": "c8781a82-d916-4cf6-9044-80ef7148131c:c3:slot",
+     "intentId": "c8781a82-d916-4cf6-9044-80ef7148131c:c3",
+     "state": "revealed",
+     "artifact": {
+      "kind": "stagecraft",
+      "stage": {
+       "w": 1000,
+       "h": 625
+      },
+      "stagecraft": {
+       "rung": "engine_default",
+       "archetype": "fair-test@1",
+       "spec": {
+        "archetype": "fair-test@1",
+        "skills": [
+         "c6-science-ch01-t01"
+        ],
+        "lang": "en",
+        "strings": {
+         "round": "Round",
+         "run": "RUN",
+         "day": "day",
+         "predict": "Tap every setup that will show it",
+         "design": "Make it a fair test",
+         "conclude": "Which factor matters?",
+         "notMatter": "Which factor does NOT matter?",
+         "fair": "FAIR TEST",
+         "unfair": "NOT FAIR",
+         "runDone": "Lab closed",
+         "correct": "right calls",
+         "drip": "Hold to add drops; stop when it turns",
+         "drops": "drops",
+         "neutral": "NEUTRAL",
+         "hint": "change only one thing"
+        },
+        "title": "How does curd set?",
+        "model": "curd",
+        "rounds": [
+         {
+          "mode": "predict",
+          "title": "Before the test",
+          "sub": "which bowls will set?",
+          "setups": [
+           {
+            "starter": "yes",
+            "temp": "warm"
+           },
+           {
+            "starter": "yes",
+            "temp": "cold"
+           },
+           {
+            "starter": "no",
+            "temp": "warm"
+           },
+           {
+            "starter": "no",
+            "temp": "cold"
+           }
+          ],
+          "src": "c6-science-ch01-t01-i02"
+         },
+         {
+          "mode": "design",
+          "title": "Make it fair",
+          "sub": "change only the temperature",
+          "vary": "temp",
+          "start": [
+           {
+            "starter": "yes",
+            "temp": "warm"
+           },
+           {
+            "starter": "yes",
+            "temp": "cold"
+           }
+          ],
+          "targets": "c6-science-ch01-t01-m1"
+         }
+        ]
+       },
+       "boardTwin": {
+        "scriptRef": "board:c6-science-ch01-t01-s1|probe|-|-",
+        "values": {
+         "title": "Fair Test Lab",
+         "need": "probe"
+        },
+        "board": {
+         "title": "Fair Test Lab",
+         "lines": [
+          "test",
+          "curd",
+          "faster",
+          "science"
+         ],
+         "figure": {
+          "kind": "none"
+         }
+        }
+       },
+       "board": null,
+       "cue": {
+        "clauseIdx": 0,
+        "preRollMs": 400,
+        "crossFadeMs": 420
+       },
+       "buildSha": null,
+       "blobUrl": null
+      }
+     }
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false,
+     "leadSlot": true
+    },
+    "verdict": "ungraded",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "request"
+    },
+    "note": null,
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 1841,
+    "item": "c6-science-ch01-t01-rl-o2",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 72
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 72
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 461
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 538
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 540
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 543
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1228
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 1779
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 1841
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "recovery",
+   "lessonId": "c8781a82-d916-4cf6-9044-80ef7148131c",
+   "childText": "fan",
+   "ms": 1823,
+   "error": null,
+   "teacherReply": "Correct: fan. What is your reason—how does moving air help water leave the jersey?",
+   "move": {
+    "kind": "probe",
+    "shape": "confirm in two or three words only — the reason is theirs to give, so do not explain it; covert shape: protege naive but-why; Bittu, who does not know it, asks why; about THIS question; one open question; wait; a real question, never a check on them",
+    "itemId": "c6-science-ch01-t01-rl-o2",
+    "skillId": "c6-science-ch01-t01-s2",
+    "hintLevel": 0,
+    "probe": "P2"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "text",
+     "value": "Two identical wet sports jerseys are hung at the same tim…"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "answerForm": "words",
+    "tray": "studio",
+    "shortTitle": "How scientists find out",
+    "verdict": "correct",
+    "beat": {
+     "beatId": "b8-probe",
+     "type": "probe",
+     "index": 8
+    },
+    "ask": {
+     "text": "What is your reason—how does moving air help water leave the jersey?"
+    },
+    "studioSlot": {
+     "slotId": "c8781a82-d916-4cf6-9044-80ef7148131c:c3:slot",
+     "intentId": "c8781a82-d916-4cf6-9044-80ef7148131c:c3",
+     "state": "revealed",
+     "artifact": {
+      "kind": "stagecraft",
+      "stage": {
+       "w": 1000,
+       "h": 625
+      },
+      "stagecraft": {
+       "rung": "engine_default",
+       "archetype": "fair-test@1",
+       "spec": {
+        "archetype": "fair-test@1",
+        "skills": [
+         "c6-science-ch01-t01"
+        ],
+        "lang": "en",
+        "strings": {
+         "round": "Round",
+         "run": "RUN",
+         "day": "day",
+         "predict": "Tap every setup that will show it",
+         "design": "Make it a fair test",
+         "conclude": "Which factor matters?",
+         "notMatter": "Which factor does NOT matter?",
+         "fair": "FAIR TEST",
+         "unfair": "NOT FAIR",
+         "runDone": "Lab closed",
+         "correct": "right calls",
+         "drip": "Hold to add drops; stop when it turns",
+         "drops": "drops",
+         "neutral": "NEUTRAL",
+         "hint": "change only one thing"
+        },
+        "title": "How does curd set?",
+        "model": "curd",
+        "rounds": [
+         {
+          "mode": "predict",
+          "title": "Before the test",
+          "sub": "which bowls will set?",
+          "setups": [
+           {
+            "starter": "yes",
+            "temp": "warm"
+           },
+           {
+            "starter": "yes",
+            "temp": "cold"
+           },
+           {
+            "starter": "no",
+            "temp": "warm"
+           },
+           {
+            "starter": "no",
+            "temp": "cold"
+           }
+          ],
+          "src": "c6-science-ch01-t01-i02"
+         },
+         {
+          "mode": "design",
+          "title": "Make it fair",
+          "sub": "change only the temperature",
+          "vary": "temp",
+          "start": [
+           {
+            "starter": "yes",
+            "temp": "warm"
+           },
+           {
+            "starter": "yes",
+            "temp": "cold"
+           }
+          ],
+          "targets": "c6-science-ch01-t01-m1"
+         }
+        ]
+       },
+       "boardTwin": {
+        "scriptRef": "board:c6-science-ch01-t01-s1|probe|-|-",
+        "values": {
+         "title": "Fair Test Lab",
+         "need": "probe"
+        },
+        "board": {
+         "title": "Fair Test Lab",
+         "lines": [
+          "test",
+          "curd",
+          "faster",
+          "science"
+         ],
+         "figure": {
+          "kind": "none"
+         }
+        }
+       },
+       "board": null,
+       "cue": {
+        "clauseIdx": 0,
+        "preRollMs": 400,
+        "crossFadeMs": 420
+       },
+       "buildSha": null,
+       "blobUrl": null
+      }
+     }
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false
+    },
+    "verdict": "correct",
+    "cls": {
+     "outcome": "correct",
+     "source": "exact"
+    },
+    "note": null,
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 1820,
+    "item": "c6-science-ch01-t01-rl-o2",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 70
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 70
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 75
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 136
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 136
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1608
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 1749
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 1820
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "advance",
+   "lessonId": "c8781a82-d916-4cf6-9044-80ef7148131c",
+   "childText": "ok",
+   "ms": 3749,
+   "error": null,
+   "teacherReply": "Moving air carries away water vapour, so evaporation speeds up. What should we keep the same to make this a fair test?",
+   "move": {
+    "kind": "explain",
+    "shape": "give the reason yourself in one plain line (their answer was right); one idea only: Describe the cycle of finding out: observe, question, predict, test, conclude, ask again; an example from their interest (video games) if it fits naturally; objects first, then the symbol; point at the screen only at what the on-screen row lists; never a drawing made of characters; end with one small question that makes them USE the idea — never 'samjha?'",
+    "skillId": "c6-science-ch01-t01-s3",
+    "format": "F1"
+   },
+   "ui": {
+    "status": "your_turn",
+    "phase": "practice",
+    "handover": "answer",
+    "answerForm": "words",
+    "tray": "studio",
+    "shortTitle": "How scientists find out",
+    "beat": {
+     "beatId": "b9-explain",
+     "type": "explain",
+     "index": 9
+    },
+    "ask": {
+     "text": "What should we keep the same to make this a fair test?"
+    },
+    "studioSlot": {
+     "slotId": "c8781a82-d916-4cf6-9044-80ef7148131c:wb:17:slot",
+     "intentId": "c8781a82-d916-4cf6-9044-80ef7148131c:wb:17",
+     "state": "revealed",
+     "artifact": {
+      "kind": "whiteboard",
+      "stage": {
+       "w": 400,
+       "h": 300
+      },
+      "script": {
+       "v": 1,
+       "scriptId": "c8781a82-d916-4cf6-9044-80ef7148131c:wb:17",
+       "line": {
+        "lessonId": "c8781a82-d916-4cf6-9044-80ef7148131c",
+        "teacherReplySeq": 35
+       },
+       "anchor": "line_audio_start",
+       "board": {
+        "w": 400,
+        "h": 300,
+        "ground": "chalk"
+       },
+       "mode": "fresh",
+       "durationMs": 9911,
+       "ops": [
+        {
+         "id": "b0",
+         "op": "rect",
+         "startMs": 98,
+         "endMs": 612,
+         "weight": 2,
+         "at": [
+          25,
+          30
+         ],
+         "w": 160,
+         "h": 58,
+         "round": 10
+        },
+        {
+         "id": "t0",
+         "op": "text",
+         "startMs": 660,
+         "endMs": 1272,
+         "at": [
+          105,
+          61
+         ],
+         "text": "Observe",
+         "size": "m"
+        },
+        {
+         "id": "o1",
+         "op": "arrow",
+         "startMs": 1468,
+         "endMs": 2018,
+         "ink": "accent",
+         "from": [
+          105,
+          91
+         ],
+         "to": [
+          105,
+          133
+         ]
+        },
+        {
+         "id": "b1",
+         "op": "rect",
+         "startMs": 2116,
+         "endMs": 2629,
+         "weight": 2,
+         "at": [
+          25,
+          136
+         ],
+         "w": 160,
+         "h": 58,
+         "round": 10
+        },
+        {
+         "id": "t1",
+         "op": "text",
+         "startMs": 2678,
+         "endMs": 3045,
+         "at": [
+          105,
+          155
+         ],
+         "text": "Ask a testable",
+         "size": "s"
+        },
+        {
+         "id": "o2",
+         "op": "text",
+         "startMs": 3045,
+         "endMs": 3412,
+         "at": [
+          105,
+          179
+         ],
+         "text": "question",
+         "size": "s"
+        },
+        {
+         "id": "o3",
+         "op": "arrow",
+         "startMs": 3608,
+         "endMs": 4158,
+         "ink": "accent",
+         "from": [
+          105,
+          197
+         ],
+         "to": [
+          105,
+          239
+         ]
+        },
+        {
+         "id": "b2",
+         "op": "rect",
+         "startMs": 4256,
+         "endMs": 4770,
+         "weight": 2,
+         "at": [
+          25,
+          242
+         ],
+         "w": 160,
+         "h": 58,
+         "round": 10
+        },
+        {
+         "id": "t2",
+         "op": "text",
+         "startMs": 4819,
+         "endMs": 5186,
+         "at": [
+          105,
+          261
+         ],
+         "text": "Predict with",
+         "size": "s"
+        },
+        {
+         "id": "o4",
+         "op": "text",
+         "startMs": 5186,
+         "endMs": 5552,
+         "at": [
+          105,
+          285
+         ],
+         "text": "a reason",
+         "size": "s"
+        },
+        {
+         "id": "o5",
+         "op": "arrow",
+         "startMs": 5748,
+         "endMs": 6299,
+         "ink": "accent",
+         "from": [
+          188,
+          271
+         ],
+         "to": [
+          212,
+          59
+         ],
+         "bend": 0.2
+        },
+        {
+         "id": "b3",
+         "op": "rect",
+         "startMs": 6396,
+         "endMs": 6910,
+         "weight": 2,
+         "at": [
+          215,
+          30
+         ],
+         "w": 160,
+         "h": 58,
+         "round": 10
+        },
+        {
+         "id": "t3",
+         "op": "text",
+         "startMs": 6959,
+         "endMs": 7570,
+         "at": [
+          295,
+          61
+         ],
+         "text": "Test fairly",
+         "size": "s"
+        },
+        {
+         "id": "o6",
+         "op": "arrow",
+         "startMs": 7766,
+         "endMs": 8316,
+         "ink": "accent",
+         "from": [
+          295,
+          91
+         ],
+         "to": [
+          295,
+          133
+         ]
+        },
+        {
+         "id": "b4",
+         "op": "rect",
+         "startMs": 8414,
+         "endMs": 8928,
+         "weight": 2,
+         "at": [
+          215,
+          136
+         ],
+         "w": 160,
+         "h": 58,
+         "round": 10
+        },
+        {
+         "id": "t4",
+         "op": "text",
+         "startMs": 8977,
+         "endMs": 9344,
+         "at": [
+          295,
+          155
+         ],
+         "text": "Observe and",
+         "size": "s"
+        },
+        {
+         "id": "o7",
+         "op": "text",
+         "startMs": 9344,
+         "endMs": 9711,
+         "at": [
+          295,
+          179
+         ],
+         "text": "conclude",
+         "size": "s"
+        }
+       ],
+       "facts": {
+        "kind": "diagram",
+        "archetype": "whiteboard",
+        "onScreen": {
+         "labels": "Observe | Ask a testable | question | Pr"
+        }
+       }
+      }
+     }
+    }
+   },
+   "moduleCommands": [],
+   "studio": {
+    "retire": "c8781a82-d916-4cf6-9044-80ef7148131c:c3"
+   },
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [
+      "flat"
+     ],
+     "rewritten": true,
+     "replaced": false,
+     "firstDraft": "Moving air carries away water vapour, so evaporation speeds up. Now give one fair-test rule for comparing both jerseys.",
+     "afterRewrite": []
+    },
+    "verdict": "unverified",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 157,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 3746,
+    "item": null,
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 67
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 68
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 938
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 1011
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1096
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1168
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1171
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1171
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1235
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1238
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 3668
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 3746
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "advance",
+   "lessonId": "c8781a82-d916-4cf6-9044-80ef7148131c",
+   "childText": "got it",
+   "ms": 2008,
+   "error": null,
+   "teacherReply": "Good—“fan” is your prediction, and moving air is your reason. A fair test keeps the jerseys and starting conditions the same. Riya wants to know whether curd sets faster in a warm place. What is the most scientific way for her to find out?",
+   "move": {
+    "kind": "probe",
+    "shape": "pose the question as written, in their language; then wait; read its choices plainly; no lean in your voice toward any of them",
+    "itemId": "diag:c6-science-ch01-t01-m1",
+    "skillId": "c6-science-ch01-t01-s3",
+    "hintLevel": 0,
+    "probe": "P7"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "text",
+     "value": "Riya wants to know whether curd sets faster in a warm pla…"
+    },
+    "chips": [
+     {
+      "id": "opt:0",
+      "label": "Ask one friend and simply believe whatev"
+     },
+     {
+      "id": "opt:1",
+      "label": "Read the answer in a book and simply mem"
+     },
+     {
+      "id": "opt:2",
+      "label": "Set up two same bowls, one warm, one coo"
+     }
+    ],
+    "phase": "practice",
+    "handover": "choice",
+    "ask": {
+     "text": "Riya wants to know whether curd sets faster in a warm place. What is the most scientific way for her to find out?",
+     "itemId": "diag:c6-science-ch01-t01-m1"
+    },
+    "answerForm": "choice",
+    "tray": "tiles",
+    "shortTitle": "How scientists find out",
+    "beat": {
+     "beatId": "b10-probe",
+     "type": "probe",
+     "index": 10
+    }
+   },
+   "moduleCommands": [
+    {
+     "op": "mount",
+     "moduleId": "g1-0e24db1e",
+     "engine": "scene@1",
+     "params": {
+      "scene": {
+       "dsl": "scene@1",
+       "meta": {
+        "band": "B3",
+        "lang": "en",
+        "title": {
+         "en": "Your turn to try",
+         "hi": "अब तुम्हारी बारी",
+         "hi_latn": "Ab tumhari baari"
+        },
+        "objective_ids": [
+         "c6-science-ch01-t01-s3"
+        ],
+        "topic_ids": [
+         "c6-science-ch01-t01"
+        ],
+        "template": "choice-card@1"
+       },
+       "stage": {
+        "aspect": "3:4",
+        "bg": "bg"
+       },
+       "vars": [
+        {
+         "id": "pick",
+         "type": "enum",
+         "init": "none",
+         "options": [
+          "none",
+          "o1",
+          "o2",
+          "o3"
+         ],
+         "tl": "child's pick"
+        }
+       ],
+       "derive": [],
+       "nodes": [
+        {
+         "kind": "text",
+         "id": "title",
+         "x": 420,
+         "y": 89,
+         "text": {
+          "en": "Your turn to try",
+          "hi": "अब तुम्हारी बारी",
+          "hi_latn": "Ab tumhari baari"
+         },
+         "size": "title",
+         "w": 760,
+         "align": "middle"
+        },
+        {
+         "kind": "sprite",
+         "id": "decor",
+         "x": 900,
+         "y": 75,
+         "lib": "obj.book",
+         "w": 110,
+         "h": 110,
+         "role": "context"
+        },
+        {
+         "kind": "choice",
+         "id": "ch",
+         "x": 500,
+         "y": 946.3333333333333,
+         "var": "pick",
+         "options": [
+          {
+           "id": "o1",
+           "label": {
+            "en": "Ask one friend and simply believe whatever they tell her",
+            "hi": "Ask one friend and simply believe whatever they tell her",
+            "hi_latn": "Ask one friend and simply believe whatever they tell her"
+           },
+           "misc": "MC.C6_SCIENCE_CH01_T01_M1"
+          },
+          {
+           "id": "o2",
+           "label": {
+            "en": "Set up two same bowls, one warm, one cool, and compare",
+            "hi": "Set up two same bowls, one warm, one cool, and compare",
+            "hi_latn": "Set up two same bowls, one warm, one cool, and compare"
+           }
+          },
+          {
+           "id": "o3",
+           "label": {
+            "en": "Read the answer in a book and simply memorise it",
+            "hi": "Read the answer in a book and simply memorise it",
+            "hi_latn": "Read the answer in a book and simply memorise it"
+           },
+           "misc": "MC.C6_SCIENCE_CH01_T01_M1"
+          }
+         ],
+         "layout": "column",
+         "commit": true
+        }
+       ],
+       "timelines": [],
+       "goals": [],
+       "probe": {
+        "id": "p_pick",
+        "kind": "diagnose",
+        "ask": {
+         "en": "Your turn to try",
+         "hi": "अब तुम्हारी बारी",
+         "hi_latn": "Ab tumhari baari"
+        },
+        "commit": {
+         "via": "choice",
+         "node": "ch"
+        },
+        "correct": "pick == 'o2'",
+        "traps": [
+         {
+          "when": "pick == 'o1'",
+          "misc": "MC.C6_SCIENCE_CH01_T01_M1"
+         },
+         {
+          "when": "pick == 'o3'",
+          "misc": "MC.C6_SCIENCE_CH01_T01_M1"
+         }
+        ]
+       },
+       "feedback": "on_commit"
+      }
+     },
+     "goal": "g1:diag:c6-science-ch01-t01-m1"
+    }
+   ],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [
+      "drift",
+      "flat",
+      "ask"
+     ],
+     "rewritten": false,
+     "replaced": false,
+     "firstDraft": "Good—“fan” is your prediction, and moving air is your reason. A fair test keeps the jerseys and starting conditions the same.",
+     "repaired": true
+    },
+    "verdict": "ungraded",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 564,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 1993,
+    "item": "diag:c6-science-ch01-t01-m1",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 58
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 58
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 748
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 815
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1313
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1379
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1381
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1382
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1764
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 1929
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 1993
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "probe:method_instruction-03",
+   "lessonId": "c8781a82-d916-4cf6-9044-80ef7148131c",
+   "childText": "let me try first, don't give me hints",
+   "ms": 2373,
+   "error": null,
+   "teacherReply": "Sure, Ishaan. Take your time and choose the option you think best answers it. Riya wants to know whether curd sets faster in a warm place. What is the most scientific way for her to find out?",
+   "move": {
+    "kind": "hint",
+    "shape": "their typed reply did not answer the question: no verdict, never ask them to repeat or say it again; one small nudge toward what the question asks; then the same question again, as written; no verdict on their reply: neither praise nor 'wrong'",
+    "itemId": "diag:c6-science-ch01-t01-m1",
+    "skillId": "c6-science-ch01-t01-s3",
+    "hintLevel": 0
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "text",
+     "value": "Riya wants to know whether curd sets faster in a warm pla…"
+    },
+    "chips": [
+     {
+      "id": "opt:0",
+      "label": "Ask one friend and simply believe whatev"
+     },
+     {
+      "id": "opt:1",
+      "label": "Read the answer in a book and simply mem"
+     },
+     {
+      "id": "opt:2",
+      "label": "Set up two same bowls, one warm, one coo"
+     }
+    ],
+    "phase": "practice",
+    "handover": "choice",
+    "ask": {
+     "text": "Riya wants to know whether curd sets faster in a warm place. What is the most scientific way for her to find out?",
+     "itemId": "diag:c6-science-ch01-t01-m1"
+    },
+    "answerForm": "choice",
+    "tray": "tiles",
+    "shortTitle": "How scientists find out",
+    "beat": {
+     "beatId": "b10-probe",
+     "type": "probe",
+     "index": 10
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [
+      "flat",
+      "ask"
+     ],
+     "rewritten": false,
+     "replaced": false,
+     "firstDraft": "Sure, Ishaan. Take your time and choose the option you think best answers it.",
+     "repaired": true
+    },
+    "verdict": "unverified",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": null,
+     "waitedMs": 1524,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 2370,
+    "item": "diag:c6-science-ch01-t01-m1",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 98
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 99
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 673
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 780
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 2304
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 2307
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 2307
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 877
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 2308
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 2370
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "recovery",
+   "lessonId": "c8781a82-d916-4cf6-9044-80ef7148131c",
+   "childText": "Set up two same bowls, one warm, one cool, and compare",
+   "ms": 2046,
+   "error": null,
+   "teacherReply": "Correct. You changed only the temperature and compared the results. What would you predict before testing, and why?",
+   "move": {
+    "kind": "probe",
+    "shape": "confirm in two or three words only — the reason is theirs to give, so do not explain it; covert shape: say more on the childs own word; about THIS question; one open question; wait; a real question, never a check on them",
+    "itemId": "diag:c6-science-ch01-t01-m1",
+    "skillId": "c6-science-ch01-t01-s3",
+    "hintLevel": 0,
+    "probe": "P2"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "text",
+     "value": "Riya wants to know whether curd sets faster in a warm pla…"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "answerForm": "words",
+    "tray": "module",
+    "shortTitle": "How scientists find out",
+    "verdict": "correct",
+    "beat": {
+     "beatId": "b10-probe",
+     "type": "probe",
+     "index": 10
+    },
+    "ask": {
+     "text": "What would you predict before testing, and why?"
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false
+    },
+    "verdict": "correct",
+    "cls": {
+     "outcome": "correct",
+     "source": "exact"
+    },
+    "note": null,
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 2038,
+    "item": "diag:c6-science-ch01-t01-m1",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 70
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 71
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 613
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 687
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 690
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 690
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1275
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 1975
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 2038
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "advance",
+   "lessonId": "c8781a82-d916-4cf6-9044-80ef7148131c",
+   "childText": "alright",
+   "ms": 3711,
+   "error": null,
+   "teacherReply": "Now we’ll use the same idea: predict first, then test fairly. A scientist's way of finding out starts when you first notice something. Put these steps in order, starting from noticing, and draw them as a circle: test, predict, ask a question, conclude, observe (notice something).",
+   "move": {
+    "kind": "probe",
+    "shape": "give the reason yourself in one plain line (their answer was right); pose the question as written, in their language; then wait; ask them to show or say it another way (story, picture, number line)",
+    "itemId": "c6-science-ch01-t01-i09",
+    "skillId": "c6-science-ch01-t01-s3",
+    "hintLevel": 0,
+    "probe": "P14"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "text",
+     "value": "A scientist's way of finding out starts when you first no…"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "A scientist's way of finding out starts when you first notice something. Put these steps in order, starting from…",
+     "itemId": "c6-science-ch01-t01-i09"
+    },
+    "answerForm": "words",
+    "tray": "none",
+    "shortTitle": "How scientists find out",
+    "beat": {
+     "beatId": "b10-probe",
+     "type": "probe",
+     "index": 10
+    }
+   },
+   "moduleCommands": [
+    {
+     "op": "unmount",
+     "moduleId": "g1-0e24db1e"
+    }
+   ],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false,
+     "leadSlot": true
+    },
+    "verdict": "unverified",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 1219,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 3705,
+    "item": "c6-science-ch01-t01-i09",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 73
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 74
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 752
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 831
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1971
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 2049
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 2052
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 2052
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1576
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 3640
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 3705
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "probe:answer_hedged-04",
+   "lessonId": "c8781a82-d916-4cf6-9044-80ef7148131c",
+   "childText": "is it soch samajh ke guess? idk",
+   "ms": 3124,
+   "error": null,
+   "teacherReply": "Yes, “predict” means a soch-samajh kar guess, made before testing, using a reason. A scientist's way of finding out starts when you first notice something. Put these steps in order, starting from…",
+   "move": {
+    "kind": "repair",
+    "shape": "they asked what the question means: say what it asks in simpler words, and what a hard word in it means; one tiny example of the word if it helps, never of the answer; the key stays unsaid; then the same question again; no verdict on their reply: neither praise nor 'wrong'",
+    "itemId": "c6-science-ch01-t01-i09",
+    "skillId": "c6-science-ch01-t01-s3",
+    "hintLevel": 0,
+    "request": "clarify",
+    "lead": "they asked what the question means"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "text",
+     "value": "A scientist's way of finding out starts when you first no…"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "A scientist's way of finding out starts when you first notice something. Put these steps in order, starting from…",
+     "itemId": "c6-science-ch01-t01-i09"
+    },
+    "answerForm": "words",
+    "tray": "none",
+    "shortTitle": "How scientists find out",
+    "beat": {
+     "beatId": "b10-probe",
+     "type": "probe",
+     "index": 10
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false
+    },
+    "verdict": "ungraded",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "clarify",
+     "waitedMs": 607,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 3121,
+    "item": "c6-science-ch01-t01-i09",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 88
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 88
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 886
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 994
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1500
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1601
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1603
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1605
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1445
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 3059
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 3121
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "recovery",
+   "lessonId": "c8781a82-d916-4cf6-9044-80ef7148131c",
+   "childText": "dekho, poochho, guess, test, nateeja",
+   "ms": 2354,
+   "error": null,
+   "teacherReply": "Bilkul, Ishaan—order sahi hai: observe, ask, predict, test, conclude. Predict karte waqt reason kaise doge?",
+   "move": {
+    "kind": "probe",
+    "shape": "confirm in two or three words only — the reason is theirs to give, so do not explain it; covert shape: would-you-rather where the concept decides (they judge or choose between views); about THIS question; one open question; wait; a real question, never a check on them",
+    "itemId": "c6-science-ch01-t01-i09",
+    "skillId": "c6-science-ch01-t01-s3",
+    "hintLevel": 0,
+    "probe": "P2"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "text",
+     "value": "A scientist's way of finding out starts when you first no…"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "answerForm": "words",
+    "tray": "none",
+    "shortTitle": "How scientists find out",
+    "verdict": "correct",
+    "beat": {
+     "beatId": "b10-probe",
+     "type": "probe",
+     "index": 10
+    },
+    "ask": {
+     "text": "Predict karte waqt reason kaise doge?"
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false
+    },
+    "verdict": "correct",
+    "cls": {
+     "outcome": "correct",
+     "source": "exact"
+    },
+    "note": null,
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 2352,
+    "item": "c6-science-ch01-t01-i09",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 77
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 78
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 709
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 793
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 797
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 797
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1492
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 2292
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 2352
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "advance",
+   "lessonId": "c8781a82-d916-4cf6-9044-80ef7148131c",
+   "childText": "got it",
+   "ms": 2782,
+   "error": null,
+   "teacherReply": "Ab prediction ko reason se jodkar sochenge; test tabhi useful hota hai jab comparison fair ho. A kabaddi team finds that its water bottles feel warmer in direct sun than in shade. Before testing, which prediction has a reason: A) The shaded bottle stays cooler because it receives less sunlight. B) The shaded bottle stays cooler because I like blue bottles?",
+   "move": {
+    "kind": "probe",
+    "shape": "give the reason yourself in one plain line (their answer was right); pose the question as written, in their language; then wait; ask for their prediction before anything is shown or explained",
+    "itemId": "c6-science-ch01-t01-rl-h2",
+    "skillId": "c6-science-ch01-t01-s2",
+    "hintLevel": 0,
+    "probe": "P5"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "text",
+     "value": "A kabaddi team finds that its water bottles feel warmer i…"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "B) The shaded bottle stays cooler because I like blue bottles?",
+     "itemId": "c6-science-ch01-t01-rl-h2"
+    },
+    "answerForm": "words",
+    "tray": "none",
+    "shortTitle": "How scientists find out",
+    "beat": {
+     "beatId": "b10-probe",
+     "type": "probe",
+     "index": 10
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false,
+     "leadSlot": true
+    },
+    "verdict": "unverified",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 416,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 2778,
+    "item": "c6-science-ch01-t01-rl-h2",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 76
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 77
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 848
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 930
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1264
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1346
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1349
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1349
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1348
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 2706
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 2778
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "probe:end_request-10",
+   "lessonId": "c8781a82-d916-4cf6-9044-80ef7148131c",
+   "childText": "i want to stop",
+   "ms": 2090,
+   "error": null,
+   "teacherReply": "You want to stop for now. You can keep going, take a short break, or stop for today—choose one.",
+   "move": {
+    "kind": "break",
+    "shape": "they said they want to stop: first say back in a few warm words, in their words, that they want to stop, no guilt and no pressure; then offer the three choices on the chips (keep going, a short break, or stop for today) and wait; no lesson question this turn",
+    "checkin": "stop"
+   },
+   "ui": {
+    "status": "your_turn",
+    "chips": [
+     {
+      "id": "stop:continue",
+      "label": "Keep going"
+     },
+     {
+      "id": "break:rest",
+      "label": "Short break"
+     },
+     {
+      "id": "stop:end",
+      "label": "Stop for today"
+     }
+    ],
+    "phase": "practice",
+    "handover": "choice",
+    "answerForm": "choice",
+    "tray": "tiles",
+    "shortTitle": "How scientists find out",
+    "beat": {
+     "beatId": "b11-break",
+     "type": "break",
+     "index": 11
+    },
+    "ask": {
+     "text": "You can keep going, take a short break, or stop for today—choose one."
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false
+    },
+    "verdict": "unverified",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": null,
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 2088,
+    "item": null,
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 73
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 73
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 934
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 1015
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1020
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1020
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1869
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 2023
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 2088
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "follow:end_request-10",
+   "lessonId": "c8781a82-d916-4cf6-9044-80ef7148131c",
+   "childText": "yes",
+   "ms": 3399,
+   "error": null,
+   "teacherReply": "Theek hai, Ishaan. Aaj ke liye yahin stop karte hain—tumne observe, ask, predict, test, conclude ka order pakda. Goodbye, Ishaan.",
+   "move": {
+    "kind": "wrap",
+    "shape": "they want to stop: stop now; short warm goodbye; nothing left hanging"
+   },
+   "ui": {
+    "status": "your_turn",
+    "phase": "wrap",
+    "handover": "finish",
+    "answerForm": "words",
+    "tray": "none",
+    "shortTitle": "How scientists find out",
+    "beat": {
+     "beatId": "b12-wrap",
+     "type": "wrap",
+     "index": 12
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": true,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false
+    },
+    "verdict": "unverified",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "end_request",
+     "waitedMs": 774,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "done",
+    "ms": 3394,
+    "item": null,
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 75
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 76
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 630
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 712
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1405
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1486
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1488
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1489
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1846
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 3340
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 3394
+     }
+    ]
+   }
+  }
+ ]
+}

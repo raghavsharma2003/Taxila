@@ -1,7 +1,7 @@
 # Round 3 · stream conversation: apply order and proof
 
 2026-10-09. Built on **HEAD cadf527**: every server file is identical to prod 145996f. The files these patches touch are
-also unchanged in today's HEAD **566b28b**. Patches = scratch freeze `b78808e`, the tree measured in RESULTS.md pair 2.
+also unchanged in today's HEAD **566b28b**. Patches = scratch freeze `46cc018` (freeze 6). Pair 2 in RESULTS.md measured freeze 5b (`b78808e`). Freeze 6 adds three narrow fixes from owner-2 on the patched tree, and it has its own battery run (RESULTS.md "Freeze 6").
 
 - Every patch passes `git apply --check` on 566b28b, alone and in order. They touch disjoint files.
 - **With round3 truth (the only other stream that touches these files):**
@@ -25,6 +25,8 @@ also unchanged in today's HEAD **566b28b**. Patches = scratch freeze `b78808e`, 
   - Freeze 5: skip in words, the card cap yields to re-presentation asks, the two-question repair keeps the carrying
     question.
   - Freeze 5b (`b78808e`): praise detection deferred to truth 04.
+  - Freeze 6 (`46cc018`): a question about her needs no "?" (spoken "pubg khelte ho"); a help-request pose carries
+    her own line, on a first pose too; the hint lead is capitalised.
 - **New files, owned paths, no patch needed:**
   - `evals/conversation-r3/`: the battery harness with the debug read, `codemetrics.mjs`, `compare.mjs`, the judge fork,
     `acceptance-arm.sh`, results.
@@ -45,7 +47,7 @@ also unchanged in today's HEAD **566b28b**. Patches = scratch freeze `b78808e`, 
 | 01 | `01-composed-turns.diff` | `server/brain/say.js`, `server/conversation/compose.js`, `server/conversation/fallback-lead.js`, `server/conversation/flags.js` | See "What each patch does" below. | `tests/round3-conversation.test.mjs`: first pose, confirm, kill switch, re-pose not drift, code lead, variants, check-in, break, request praise, request note, one-call turn note, no-answer praise reason |
 | 02 | `02-readings-moves-shapes.diff` | `server/conversation/lexicon.js`, `server/conversation/policy.js`, `server/director/state.js`, `server/director/shapes.js` | See below. | `tests/round3-conversation.test.mjs`: two needs, lexicon, skip in words, card cap, park push, share kept, after check-in, recited notes, small talk, say-back. Plus **budget: every new shape with every optional note fits the MOVE section, 2 registers × 2 bands × 2 lanes × 15 request types** |
 | 03 | `03-guards-why-wrap-twoq.diff` | `server/director/say.js`, `server/director/items.js` | See below. | `tests/round3-conversation.test.mjs`: why-probe, stop check-in, two questions, praise no-false-catch |
-| 04 | `04-tests.diff` | `tests/round3-conversation.test.mjs` (new, 28 tests), `tests/p5-interaction-director.test.mjs` | The stream's unit tests. Two existing asserts accept the R3 wording of the frustration and boredom shapes; the old wording still passes with the kill switch. | `node --test tests/round3-conversation.test.mjs`: 28/28 |
+| 04 | `04-tests.diff` | `tests/round3-conversation.test.mjs` (new, 31 tests), `tests/p5-interaction-director.test.mjs` | The stream's unit tests. Two existing asserts accept the R3 wording of the frustration and boredom shapes; the old wording still passes with the kill switch. | `node --test tests/round3-conversation.test.mjs`: 31/31 |
 
 ## What each patch does
 
@@ -73,13 +75,19 @@ also unchanged in today's HEAD **566b28b**. Patches = scratch freeze `b78808e`, 
 - The praise rewrite reason is "start from what they actually did" on a graded not-yet. On a turn with no answer it is
   "go straight on" (no echo of the filler).
 - The two-question code repair keeps the question that carries the turn.
+- **A turn that answers a request for help** (another way, clarify, slower, example, story, frustration, easier) must
+  carry ≥ 4 words of her own before the card question, on a first pose too. If it is still bare after the model
+  repairs, the fixed code lead applies, as on a re-pose. Owner-2 on both trees: "samajh nahi aaya" on a faded step got
+  only the step's question.
+- A kit hint used as her lead starts with a capital letter.
 
 **02, readings, moves and shapes.**
 - Readings:
   - not following + giving up → `frustration`;
   - a hold word before a request ("ruko, pehle diagram dikhao") is not a thought in progress;
   - "aa gaya, chalo" / "back, let's go" / "आ गया" → `back`;
-  - a question about what SHE does ("PUBG khelte ho?") → small talk, answered now (owner-2 R7.defer);
+  - a question about what SHE does ("PUBG khelte ho?", and without the "?" as a spoken line arrives) → small talk,
+    answered now (owner-2 R7.defer);
   - **a skip in the child's words with a demonstrative or a next-one tail** ("ye wala skip karo", "isko chhodo dusra
     do", "next question please") → `skip` in code, so the classifier's stop flag can no longer turn it into "you want
     to stop";

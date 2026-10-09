@@ -114,9 +114,13 @@ kept); this round makes the three hard decisions word-aware and measured on real
    - when a burst over her goes quiet the engine sends the micro-commit probe, so its words (continuer, "ruko", a turn) come
      back in ~0.3-0.6 s instead of the lane's first-text delay (D4 p90 2.0 s, MAI 3.2 s): "she can hear ruko while speaking";
    - a burst too close to her own echo to be hushed (echoLikelihood >= 0.5) is never stopped for on acoustics alone; its words
-     decide (added after the first AMI after-run showed 26/195 continuer failures were un-hushed sustained bursts).
-   Rejected on the same data: pausing at 600 ms of voice while hushed (AMI 2 meetings: bleed self-yields 79 → 94/421,
-   barge-ins stopped 18 → 16); kept at 1,000 ms although the simulated TaxilaFDB prefers 600 for "paused within 1 s".
+     decide (added after the first AMI after-run showed 26/195 continuer failures were un-hushed sustained bursts; on all
+     4 meetings it bought +8 continuers, 146 → 154/195, for −1 barge-in stopped within 200 ms, 25 → 24/51).
+   Rejected on the same data: pausing at 600 ms of voice while hushed (AMI 2 meetings, against the first after-run: bleed
+   self-yields 79 → 94/421, barge-ins stopped at all 18 → 16, within 200 ms 11 → 10/22); kept at 1,000 ms although the
+   simulated TaxilaFDB prefers 600 for "paused within 1 s".
+   Net on AMI (4 meetings, 48 pairs, real adult speech, real D4 events): continuers kept 139 → 154/195, barge-ins stopped
+   within 200 ms 17 → 24/51, room false yields 37 → 32/239, bleed self-yields 116 → 101/730 (CRITERIA.md §3).
 4. **The owner-test cohort.** `TAXILA_DUPLEX_LIVE_FOR` (guardian emails or their sha256) gets `on` from
    `GET /api/duplex/config` while production stays `shadow`; the kill switch wins; a slow or failing lookup answers shadow.
 

@@ -1,7 +1,7 @@
 # Play · APPLY (round 3, stream play)
 
 Five unified diffs, each checked with `git apply --check` (working tree) and `git apply --check --cached` (index) on
-2026-10-09, first on HEAD `cadf527` and again on HEAD `a29cc0b` (the main loop's later WIP checkpoint). They touch shared hot files the play stream does not own; everything else the stream built is in its own paths
+2026-10-09, first on HEAD `cadf527`, then again on `a29cc0b` and on `6aeda52` (the main loop's later WIP checkpoints). They touch shared hot files the play stream does not own; everything else the stream built is in its own paths
 (`src/play/**`, `server/play/**`, `data/play/**`, `shared/play.ts`, `tests/play-*.test.mjs`, `tests/prod/round3-play.mjs`,
 `docs/design/round3/play/**`) and needs no patch.
 
