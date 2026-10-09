@@ -52,7 +52,9 @@ function answerFor(itemId, right) {
   const said = (t) => t.replace(/\d+/g, (d) => NUM_HL[Number(d)] ?? d).replace(/^(an?|the) /i, "");
   if (right) return `${said(short)}.`;
   if (/\d/.test(short)) return `${said(short.replace(/\d+/, (d) => String(Number(d) + (Number(d) > 2 ? -2 : 2))))}.`;
-  const other = (it.options ?? []).map((o) => String(o.text ?? o)).find((o) => o.trim().toLowerCase() !== short.toLowerCase());
+  const other = (it.options ?? []).map((o) => String(o.text ?? o)).find((o) => o.trim().toLowerCase() !== short.toLowerCase())
+    // no options: another item's short word key from the same kit (a plausible wrong word: "edge" for "corner")
+    ?? (KIT?.items ?? []).map((x) => String(x.answer ?? "").split(/[;:.(]/)[0].trim()).find((k) => k && !/\d/.test(k) && k.split(/\s+/).length <= 2 && k.toLowerCase().replace(/^(an?|the) /, "") !== short.toLowerCase().replace(/^(an?|the) /, ""));
   return other ? `${said(other)}.` : null;
 }
 /** A faded worked-example step (W2-C "fade:N"): the words the faded line lacks are its blanks (the first-sound harness's rule). */
@@ -109,6 +111,7 @@ if (deployed) {
       const { s, itemId, seq } = await toItem(api, child.id);
       if (!itemId) { warn(`${arm}: no short-key item reached in 6 turns`); return; }
       const text = answerFor(itemId, arm !== "wrong");
+      if (!text) { warn(`${arm}: no ${arm === "wrong" ? "wrong" : "right"} short answer for ${itemId}`); return; }
       const a = await askAck(api, s.lessonId, text);
       const r = await api("POST", "/api/lesson/turn", { lessonId: s.lessonId, childText: text, typed: false, asrConfidence: 0.95, turnSeq: seq + 1 });
       got.push({ arm, itemId, text, status: a.status, why: a.why, phrase: a.body?.ack?.phrase ?? null, decidedMs: a.body?.ack?.decidedMs ?? null, clip: sha(a.body?.ack?.pcm),

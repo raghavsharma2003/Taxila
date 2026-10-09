@@ -180,24 +180,35 @@ EOT-Bench Hindi (CC BY 4.0, evaluation of the thinking-pause cue). ICSI (CC BY 4
   strongly than the evidence), `pHoldWanted` 0.8. It is never ≥ 0.5, so it can never vouch that a turn ended
   (`HORIZON_ACOUSTIC_P` 0.8 is out of reach by construction). Narrowband routes (bt, speakerphone) are off.
 - **How duplex hears it without either stream editing the other:** `src/voicesig/holdBus.ts` (publish / subscribe);
-  patch 03 adds a public `DuplexLive.estimate()` and subscribes in `src/duplex/liveTap.ts`; patch 02 lets the engine count
+  patch 03 adds a public `DuplexLive.estimate()` and subscribes in `src/duplex/liveTap.ts`; patch 04 lets the engine count
   a fresh acoustic hold exactly as it counts the lexical `fillerTail` (zH and the governor's backstop stretch, `max()` so
-  never both). Without patch 02 the estimate still lowers zBase through the engine's existing acoustic term.
+  never both). Without patch 04 the estimate still lowers zBase through the engine's existing acoustic term.
 - **Why the engine change is needed:** the governor stretches its silence backstop only for lexical hold markers or a
   governed pHoldWanted ≥ 0.6; in the replay most turn ends (303/400) are decided by the backstop, so an estimate that
   only lowers pComplete cannot stop a backstop cut.
 - **Shadow by default:** duplex is itself in shadow on production; the cue's counters ride on kv (`pausesRead`,
   `thinkPauses`) and reach the trace as `vs_hold.fired`, so production lessons measure how often the cue fires on real
   children before anyone relies on it.
+- **What the measurement then showed (RESULTS.md §2):** on adult Hindi task calls the cue is precise but rare (about 3%
+  of holds), and none of the 12 thinking pauses the duplex engine cuts today is filler-final: they follow content words,
+  five of them are pauses between digit groups of a dictated number. So the cue cannot fix today's measured cut-offs,
+  with or without the engine patch, and a false fire at a turn end costs that turn the backstop's extra 2 s. It stays
+  shadow; the duplex stream's lever for those cut-offs is a list / number-projection cue, and the cue's own test is the
+  children's pilot (children fill more on slow and wrong answers, West et al. 2025).
 
-### 4.3 What she would have done (server/voicesig/lesson.js + patches 04-05)
+### 4.3 What she would have done (server/voicesig/lesson.js + patches 01-02)
 
 - For every committed spoken turn whose voice read lands on a state that is shadow (all of them today), the seam returns
   the tie-breakers that state **would** hand the Director (`would`, the adapter's licence: cheap moves only without Tier-T
   agreement) and shadow codes `vs_would.<hint>`.
-- Patch 05 runs the counterfactual plan (`planTurn` on a clone of the same state with those hints; pure, no writes) and
-  `shadowDiff()` records `vs_diff.changed` / `vs_diff.same` plus the move kinds (never words) in the trace row. The cost
-  is one extra pure plan on the minority of turns with a would-hint; it is measured in `RESULTS.md` and capped by a flag.
+- Patch 02 runs the counterfactual plan (`planTurn` on a clone of the same state with those hints; pure, no writes)
+  AFTER the commit, never on a hosted reply's path, and `shadowDiff()` records `vs_diff.changed` / `vs_diff.same` (move
+  kind, rung, probe, and a hash of the move's shape: never words) by updating the turn's trace row. Not run on safety,
+  late or re-planned turns. Cost and change rates are in `RESULTS.md` §4; `TAXILA_VOICESIG_COUNTERFACTUAL=0` turns it off.
+- **First finding (scripted turns, local):** the tie-breakers voice would hand change her move rarely, and only through
+  `gentlerHint` (a gentler rung's content); `followUpProbe` changed nothing, because the Director reads it as a one-slot
+  shortening of the optional-probe gap. Voice becoming "major" in moves therefore needs the Director's consumers to
+  give these tie-breakers a real effect once a state is proven, which is the ladder's L1 step, not this round's.
 - This is the "measure before you intervene" design of SPEC §6.3 extended to every production lesson: the comparison
   between what she did and what voice would have made her do accrues on real children with outcomes joined later, so the
   pilot's VS-A13 analysis does not start from zero.

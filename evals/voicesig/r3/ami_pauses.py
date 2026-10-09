@@ -83,6 +83,7 @@ def main():
     ap.add_argument("--thr", type=float, required=True)
     ap.add_argument("--out", required=True)
     ap.add_argument("--split", default="test")
+    ap.add_argument("--minms", type=int, default=200, help="the operating point's minimum filler run (model card minRunMs)")
     a = ap.parse_args()
     import onnxruntime as ort
     sess = ort.InferenceSession(a.model, providers=["CPUExecutionProvider"])
@@ -119,7 +120,7 @@ def main():
                     break
             if off < 0:
                 continue
-            fired, run = trailing_filler(sp, p, off, a.thr)
+            fired, run = trailing_filler(sp, p, off, a.thr, min_ms=a.minms)
             rows.append({"m": m, "spk": f"{m}.{ag}", "label": label, "gapMs": round((s1 - s0) * 1000), "goldFiller": last in FILLER, "fired": bool(fired), "runMs": int(run)})
 
     def rate(k, n):
@@ -137,7 +138,7 @@ def main():
     F = [r for r in rows if r["fired"]]
     res = {
         "label": "AMI Meeting Corpus (CC BY 4.0), test split (Indian-L1 series), ADULT English meetings, own headset channel; gold word times for events and fillers. Not children.",
-        "model": os.path.relpath(a.model, os.path.abspath(os.path.join(HERE, "../../.."))), "thr": a.thr, "events": len(rows), "holds": len(H), "shifts": len(S),
+        "model": os.path.relpath(a.model, os.path.abspath(os.path.join(HERE, "../../.."))), "thr": a.thr, "minMs": a.minms, "events": len(rows), "holds": len(H), "shifts": len(S),
         "baseHold": rate(len(H), len(rows)),
         "ceiling_PholdGivenGoldFillerLast": rate(sum(r["label"] == "hold" for r in G), len(G)),
         "cue_PholdGivenFired": rate(sum(r["label"] == "hold" for r in F), len(F)),

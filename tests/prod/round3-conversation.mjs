@@ -16,6 +16,7 @@
 //   G. a re-pose after two "pata nahi": never only the card question (owner-2 R3)
 //   H. over every reply: no "sensible" (a recited prompt word), no helpline on a non-distress turn, no reply that is only the
 //      card question after a child line, none repeating an earlier line (J >= 0.8)
+//   J. a skip in their own words ("is sawaal ko chhodo, agla sawaal do") is a skip, never the stop check-in
 //   I. LOCAL ONLY (the debug read): the share of turns the reply guard rewrote, and the codes, reported (not a gate)
 // No disclosure is sent. Each lesson is fresh; the account is deleted in a finally.
 //
@@ -162,6 +163,19 @@ await withTestAccount(async ({ api }) => {
         const r = track(await L.turn("pata nahi", { kind: "idk" })).r;
         ok(!bare(r), `G "pata nahi" #${i + 1}: not only the card question (${words(own(r))} own words) — "${String(r?.teacherReply ?? "").slice(0, 120)}"`);
       }
+    }
+    await L.end();
+  }
+
+  // J. a skip in their own words is a skip (round 3 freeze 5: the classifier's stop flag made "ye wala skip karo" the stop
+  // check-in "you want to stop")
+  {
+    const L = await open(PERSONAS.aarav, 0);
+    await L.turn("haan ready hoon", { kind: "greet" });
+    if (!(await toQuestion(L))) ok(false, "J: no question on the card");
+    else {
+      const r = track(await L.turn("is sawaal ko chhodo, agla sawaal do", { kind: "steer" })).r;
+      ok(!r?.end && r?.move?.checkin !== "stop" && r?.move?.request === "skip", `J: read as a skip, never the stop check-in (move ${r?.move?.kind}, request ${r?.move?.request ?? "none"}) — "${String(r?.teacherReply ?? "").slice(0, 120)}"`);
     }
     await L.end();
   }

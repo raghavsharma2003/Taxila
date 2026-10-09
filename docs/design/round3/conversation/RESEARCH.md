@@ -152,11 +152,23 @@ which the owner checker did not count because it reads typed rows only [M] (`eva
    "we'll stop the lesson here" is a goodbye), and the turn after a check-in that was not a stop carries on; a share from
    their life is noticed and kept in `s.later`, served once when the question resolves or before the wrap (a promise she
    keeps); a decline is avoid + name + hook (Chirpy Cardinal's lowest re-offence strategy), no reason given.
-5. **Truth guard for the prod case**: the praise pattern allows a clause (≤ 60 characters, within one sentence) between
-   "aapne / tumne / you" and "sahi / correct / right + verb", with the verbs of finding and working out; a superset of the
-   owner checker's own pattern.
+5. **The prod praise case**: detection is round3 truth patch 04 (`PRAISE_ANY_WIDE`). A wider pattern of this stream's own
+   was measured in pair 1 and then dropped: it also fired on a graded partial, and it was a second patch to the same regex.
+   This stream changes what happens around the catch:
+   - the bridge after a non-answer line asks for no praise or agreement word, which prevents the praise;
+   - the rewrite reason on a turn with no answer goes straight on, with no echo of the filler (the first wording was
+     recited: "Tumne bas 'haan' kaha");
+   - agreeing to a request is not praise.
 6. **Recited notes reworded as shapes**: the not-yet note "start from what they actually did, in their terms" (uptake, no
    quotable adjective), the park note without its "different thing" clause, the frustration note as what the line does.
+7. **From reading every pair-1 loss** (freeze 5): this is Rasa CALM's point that repair is a pattern in code, not in the
+   prompt.
+   - A skip in the child's own words is a skip in code, so the classifier's stop flag cannot turn it into "you want to
+     stop".
+   - The card cap yields for one turn to an ask to hear THIS question again. Without that, "can you repeat the question?"
+     got "leave it for later".
+   - The two-question repair keeps the question that carries the turn. Before, "…game, picture, ya quick challenge?
+     Kaunsa chunogi?" was cut to the tag.
 
 Why not a planner call (Bridge-style): the decision is already code, and a second call is ~1 s on every turn. Why not more
 wording on the pose: the prompt already says it twice, once last, and 28 of 37 posing turns still failed [M]. Why not a JSON

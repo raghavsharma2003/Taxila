@@ -74,7 +74,7 @@ describe("play reactions: the authored bank", () => {
     }
     // the defect this rule closes: taking 5 hundreds from 0 in the place-value game drew "these pieces are different sizes"
     for (let i = 0; i < 20; i++) {
-      const r = pickReaction(bank, [{ kind: "law_refused", seq: 1, facts: { why: "not_enough", place: "sau", have: 0, need: 5 } }], { lang: "hinglish", family: "todo-jodo", seed: `B${i}`, hist: newHistory(), nowS: 100 });
+      const r = pickReaction(bank, [{ kind: "law_refused", seq: 1, facts: { why: "not_enough", place: "hundreds", place_hl: "sau", place_hi: "सौ", have: 0, need: 5 } }], { lang: "hinglish", family: "todo-jodo", seed: `B${i}`, hist: newHistory(), nowS: 100 });
       assert.ok(r && /sau/.test(r.text) && !/tukde/.test(r.text), r?.text);
     }
     assert.equal(fill("{?why=tipped}Taraazu jhuk gaya.", { why: "not_alone" }), null);

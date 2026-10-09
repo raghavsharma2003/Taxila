@@ -18,6 +18,11 @@ export interface BundlesState extends Undoable<BundlesState> {
 }
 export const BUNDLES_MAL = ["smaller-from-larger", "zero-regroup", "no-decrement"] as const;
 export const PLACE_NAMES = ["ones", "tens", "hundreds", "thousands", "ten-thousands", "lakhs"] as const;
+// the place as the child's screen names it (src/play/copy.ts bundles.places), for the teacher's line in each language: an
+// English "hundreds" in a Hinglish line under a column labelled "sau" is a mismatch (mistake-state still, 2026-10-09)
+const PLACE_HL = ["ek", "das", "sau", "hazaar", "das hazaar", "lakh"] as const;
+const PLACE_HI = ["इकाई", "दस", "सौ", "हज़ार", "दस हज़ार", "लाख"] as const;
+const placeFacts = (q: number) => ({ place: PLACE_NAMES[q], place_hl: PLACE_HL[q], place_hi: PLACE_HI[q] });
 
 export const digitsOf = (n: number, places: number) => Array.from({ length: places }, (_, p) => Math.floor(n / 10 ** p) % 10);
 const valueOfCols = (cols: number[]) => cols.reduce((s, c, p) => s + c * 10 ** p, 0);
@@ -63,7 +68,7 @@ function apply(level: PlayLevel<BundlesParams>, s: BundlesState, act: BundlesAct
     case "unbundle": {
       const q = act.place;
       if (!placeOk(q) || q === 0) return { state: bump(s), moments: out, refused: "bad_place" };
-      if (s.cols[q] < 1) { out.push(mom("law_refused", seq, { why: "empty_place", place: PLACE_NAMES[q] })); return { state: bump(s), moments: out, refused: "empty" }; }
+      if (s.cols[q] < 1) { out.push(mom("law_refused", seq, { why: "empty_place", ...placeFacts(q) })); return { state: bump(s), moments: out, refused: "empty" }; }
       const cols = s.cols.map((c, i) => (i === q ? c - 1 : i === q - 1 ? c + 10 : c));
       const unbundled = s.unbundled.map((u, i) => (i === q ? u + 1 : u));
       out.push(mom("progress", seq, { unbundled: PLACE_NAMES[q], into: PLACE_NAMES[q - 1], now: cols.slice().reverse().join("|") }));
@@ -73,10 +78,10 @@ function apply(level: PlayLevel<BundlesParams>, s: BundlesState, act: BundlesAct
       const q = act.place, n = Math.round(Number(act.n));
       if (!placeOk(q) || !Number.isInteger(n) || n < 1) return { state: bump(s), moments: out, refused: "bad_take" };
       const need = B[q] - s.taken[q];
-      if (n > need) { out.push(mom("law_refused", seq, { why: "more_than_asked", place: PLACE_NAMES[q], need })); return { state: bump(s), moments: out, refused: "too_many" }; }
-      if (s.cols[q] < n) { out.push(mom("law_refused", seq, { why: "not_enough", place: PLACE_NAMES[q], have: s.cols[q], need: n })); return { state: bump(s), moments: out, refused: "not_enough" }; }
+      if (n > need) { out.push(mom("law_refused", seq, { why: "more_than_asked", ...placeFacts(q), need })); return { state: bump(s), moments: out, refused: "too_many" }; }
+      if (s.cols[q] < n) { out.push(mom("law_refused", seq, { why: "not_enough", ...placeFacts(q), have: s.cols[q], need: n })); return { state: bump(s), moments: out, refused: "not_enough" }; }
       const cols = s.cols.map((c, i) => (i === q ? c - n : c)), taken = s.taken.map((t, i) => (i === q ? t + n : t));
-      out.push(mom("progress", seq, { took: n, place: PLACE_NAMES[q], left: cols[q] }));
+      out.push(mom("progress", seq, { took: n, ...placeFacts(q), left: cols[q] }));
       return { state: bump(pushUndo(s, { ...s, cols, taken })), moments: out };
     }
     case "write": {

@@ -197,11 +197,37 @@ the prompt reply on the 2 gap controls is not listening to timing.
 
 ## 8. Gates, tests and cost of the policy
 
-- Unit tests (`npm test` picks them up): `tests/round3-relational-human-ack.test.mjs` 29/29,
-  `-face` 7/7, `-memory` 20/20; patch 04 brings `-compile` 4/4. Related suites stay green: `latency-prefetch` 19/19,
-  `p2-face-unit` 17/17, `relational-*` and `floor-relational`.
-- AT-U8 (`relational-policy`: p99 ≤ 3 ms) fails under this machine's load on HEAD and on this tree alike: 3.0-14.9 ms
-  measured on both. An alternating same-process benchmark, 400 × 60 turns per arm (n = 24,000 each,
-  `scratchpad bench-policy.mjs`): HEAD p50 0.0166 / p90 0.0296 / p99 0.0713 ms vs this tree 0.0168 / 0.0306 /
-  0.0698 ms. No cost added.
-- The after-tree gates (`tsc -b`, `vite build`, full `npm test`) and the acceptance run: see the final report.
+- **Unit tests** (`npm test` picks them up): `tests/round3-relational-human-ack.test.mjs` 30/30, `-face` 7/7,
+  `-memory` 20/20. Patch 04 adds `tests/round3-relational-human-compile.test.mjs` 4/4.
+- **`npx tsc -b` and `npx vite build`** on the after tree (HEAD + owned paths + patches 01-05): exit 0, exit 0.
+- **Differential test gate.** 43 existing test files touch the changed code: brain-turn, compiler, lesson-safety,
+  relational-*, p1-duplex-link, voice-cascade, p2-face-*, w2c-director, ship5-*, w2d-voice-lanes,
+  runtime-image-imports and others (list in the scratch `gatefiles.txt`). They ran with
+  `node --test --test-concurrency=2`, TAXILA_DB=test, at machine load ~17-27, with evals/docs/context/public linked in
+  and module symlinks preserved:
+
+  | tree | tests | pass | fail |
+  |---|---|---|---|
+  | `cadf527` (the stream's base) | 470 | 467 | 3: CascadeLink "speaks a stored reply…" (`sleep(40)` then 4 chunks expected), p1-duplex-link "duplex on…", AT-U8 |
+  | after (+ the 4 new files) | 530 | **529** | **1:** the same CascadeLink test, failing on the base too |
+
+  No test fails on the after tree that passes on the base. A full `node --test tests/` run of the HEAD tree at load ~27
+  failed 934 of 1,477 tests, mostly TimeoutErrors in unrelated files, so it says nothing about this change and was
+  stopped before the after tree's run. The targeted differential is the gate reported. A full `npm test` on a quiet
+  machine is still owed before merge.
+- **Acceptance, local** (`tests/prod/round3-relational-human.mjs` against the after tree's production build: `node
+  server/serve.mjs`, NODE_ENV=production, Neon TEST, port 8793): **29/29**.
+  - The ack route's gates: lane, empty, no session, ended, consent.
+  - A right ("corner.") and a wrong ("edge.") answer on the same item, decided at 1,198 vs 1,184 ms.
+  - The same words in two lessons gave byte-identical clips.
+  - A disclosure is never echoed (204 safety), and the turn is the safeguard with 1098 and 14416 digit-exact.
+  - The parent's memory page: locked outside the corner; consents, interests, delete validation.
+  - No promise on "will you remember everything", no companion register; the forget request is on the page, nothing kept.
+  - The 3 disclosure accounts are held by the safeguarding guard on the TEST branch (expected; a human clears them).
+  - An earlier run had 1 FAIL from the global "leftover @taxila.test guardians" count moving while other agents ran
+    tests at the same time.
+- **Acceptance, taxila.dev:** 0/2, "POST /api/lesson/turn-ack is not deployed (404)" and "GET /api/parent/memory is not
+  deployed (404)". True: nothing is deployed.
+- **AT-U8** (`relational-policy`: p99 ≤ 3 ms) fails under this machine's load on the base and the after tree alike.
+  An alternating same-process benchmark, 400 × 60 turns per arm (n = 24,000 each): HEAD p50 0.0166 / p90 0.0296 /
+  p99 0.0713 ms vs this tree 0.0168 / 0.0306 / 0.0698 ms. No cost added.

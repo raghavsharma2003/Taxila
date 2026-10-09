@@ -86,7 +86,63 @@ Other before → after pairs inside this round, same harness each time:
 
 ## 5. Model judges (advisory)
 
-{{JUDGES}}
+Two vision judges of different families, blind (never told what made a screen), on the written rubric (`RUBRIC.md`):
+`taxila-brain` (OpenAI gpt-5.6-sol, reasoning medium) and `grok-4-20-reasoning` (xAI), both Azure AI Foundry deployments.
+Atomic yes/no checks first; the pass/fail verdict is computed in code (B1, B2, B3, B6, B8 yes on both judges); the 1-5
+scores are reported as given. Still screenshots only: no judge played a level, heard a sound or saw motion. Raw answers:
+`judge/results-2026-10-09-pass1.json` (screens judged: `shots/judge-pass1/`) and `judge/results-2026-10-09-pass2.json`.
+
+### Pass 1 (16 games × 2 judges × 3 screens; 5 blind pairs × 2 variants × 2 judges × 2 orders)
+
+| | taxila-brain | grok-4-20 | both agree |
+|---|---|---|---|
+| B1 text readable | 16/16 | 16/16 | 16/16 |
+| B2 targets clear and big | 15/16 | 16/16 | 15/16 |
+| B3 the act is the idea (not a pick from a list) | 12/16 | 8/16 | 12/16 |
+| B4 a visible consequence | 10/16 | 8/16 | 10/16 |
+| B5 symbol beside the picture | 16/16 | 14/16 | 14/16 |
+| B6 no points / coins / streaks / timers / ads | 16/16 | 16/16 | 16/16 |
+| B7 one product across arts | 16/16 | 16/16 | 16/16 |
+| B8 nothing factually wrong | 14/16 | 16/16 | 14/16 |
+| **code verdict (B1 B2 B3 B6 B8 on both)** | | | **6/16** (atoms, atoms-hcf, strips-add, bundles, line-compare, lab-leaf) |
+
+Mean scores (1-5), brain / grok: D1 act is the idea 3.77 / 2.88 · D2 feedback that teaches 1.92 / 2.50 · D3 legibility 3.91 /
+4.30 · D4 craft 3.65 / 3.53 · D5 world and style 3.60 / 3.28 · D6 path to the symbol 4.13 / 3.26. Placement against the
+references, counted over every dimension of every game (brain n = 96 each; grok n = 95-96, Duolingo 42 because grok often
+left it out): vs **DragonBox**
+better 0 / 0, about equal 11 / 30, worse 85 / 65 · vs **Brilliant** better 5 / 3, equal 37 / 45, worse 54 / 48 · vs
+**Prodigy** better 44 / 66, equal 24 / 17, worse 28 / 13 · vs **Duolingo** better 41 / 25, equal 14 / 15, worse 41 / 2.
+
+What the failures were, read against the screens:
+- **B3** (8 games on at least one judge): every mode whose last step is a choice reads as a pick from a list: compare
+  ("A zyada / Barabar / B zyada"), lab predict ("A pehle / Barabar / B pehle"), round ("↓ 1,000 / 2,000 ↑"), and the
+  equality keypad. The judges are right that the commit step is a choice; the operations before it (cutting strips, setting
+  conditions, placing on the line) did not register on stills. Not fixed this round.
+- **B8**: one real defect, one misreading. Real: line-place labelled a 0.18 gap "lagbhag 1/3" on a thirds line (fixed;
+  `rj-r3p-gap-label-exact`). Misread: brain took the live "x + 1 < 11" readout of a tipped scale for the level's goal.
+- **B2**: brain read the "Socho =" readout pill as a 30 px button (readouts restyled as plain text).
+- **D2 1.9 / 2.5**: neither judge could see a wrong move on mid-play stills and both said "cannot tell"; pass 2 adds a
+  mistake-state screen (`r3p-judge-stills-need-mistake-state`). Building those screens exposed two more real defects:
+  family-wide reaction lines said in the wrong mode (`rj-r3p-unconditioned-reaction-shapes`) and an English place name in
+  a Hinglish line; both fixed before pass 2.
+- Laptop: "a narrow sidebar with a large empty middle, the question far from its controls" (brain on 14 of 16 games, grok
+  on 5). The question now sits just above the controls, and atoms blocks grow to 96 px on a laptop. Grok on 3 games: "three
+  art directions look like three prototypes" (B7 was still yes on both judges).
+
+Part B (blind pairs, a judge's pick counts only when it names the same screen in both orders):
+
+| variant | judge | legible after / before / position-driven | idea | craft | overall |
+|---|---|---|---|---|---|
+| tray (as shipped) | brain | 5 / 0 / 0 | 5 / 0 / 0 | 5 / 0 / 0 | 5 / 0 / 0 |
+| tray | grok | 2 / 0 / 3 | 2 / 1 / 2 | 2 / 0 / 3 | 2 / 0 / 3 |
+| full box | brain | 4 / 1 / 0 | 3 / 1 / 1 | 3 / 1 / 1 | 4 / 1 / 0 |
+| full box | grok | 1 / 2 / 2 | 1 / 2 / 2 | 0 / 3 / 2 | 0 / 2 / 3 |
+
+Against what a child actually saw (the tray), no consistent vote went to the old screen. Against the old engines given the
+same box, brain still prefers the play family 4 / 5 overall; grok prefers the old engine 2 / 5 overall and 3 / 5 on craft
+("its sci-fi wrapper is more premium") and flips with position on 2-3 of 5. Craft is contested; the size win is not.
+
+{{PASS2}}
 
 ## 6. What is short of the bar, and why
 

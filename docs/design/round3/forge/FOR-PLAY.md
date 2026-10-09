@@ -18,9 +18,12 @@ measurements of play's files AS THEY WERE in the tree on 2026-10-09 ~11:20 UTC (
 - **Rendering on the Desk**: `src/studio/renderers.ts` registers `src/play/PlayStudioRenderer.tsx` (build-time glob);
   `src/studio/StudioStage.tsx` gives a play piece the WHOLE tray (no fixed aspect) and, when the renderer emits
   `{ type: "error", message: "layout" }`, shows the piece's board twin; a box that later grows by ≥ 8% retries the piece.
-- **Certification** (`server/forge3/play-cert.js`): every coverage entry, the levels play's picker serves to fresh children
-  (2 seeds), in every art in `FAMILY_ARTS`, on `src/play/PlayStage.tsx` in play mode at 360 × 576, 412 × 691 and 1006 × 768,
-  judged by `server/forge3/qa/checks.js` with `FLOORS` (classes 4-5 at `textYoung`). Output `server/forge3/certs/play.json`.
+- **Certification** (`server/forge3/play-cert.js`): every coverage entry, the level play's picker serves a fresh child, in
+  every art in `FAMILY_ARTS`, judged as the child sees it — a PlayArtifact on the real Studio stage (PlayStudioRenderer →
+  PlaySession) in the Desk play-mode boxes measured live with play patch 04 (324 × 528, 376 × 643, 736 × 536) — by
+  `server/forge3/qa/checks.js` with `FLOORS` (classes 4-5 at `textYoung`) and with canvas text measured (`canvasTextProbe`).
+  Output `server/forge3/certs/play.json` (cells per family/mode/art/band plus every sample; live.js uses the topic's own
+  samples when it has them, and judges an unknown device as the 360 phone).
 
 ## 2. What forge measured that play needs to act on (bug reports, with the shot paths in RESULTS.md §4)
 
