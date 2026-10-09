@@ -80,3 +80,20 @@ describe("round 3 integration: a stop check-in carries none of the owner's goodb
     assert.ok(!checkInProblems("Rukna bilkul theek hai, lesson khatam karna ho to bhi theek. Kya tum abhi theek ho?", { kind: "rel" }).includes("wrap"));
   });
 });
+
+describe("round 3 integration: a play piece speaks the lesson's language (PlayStudioRenderer)", () => {
+  test("the Desk's lesson-language names map to play's codes; play's own codes pass through; unknown is Hinglish", async () => {
+    const { playLangOf } = await import("../src/play/lessonLang.ts");
+    assert.equal(playLangOf("english"), "en");
+    assert.equal(playLangOf("hindi"), "hi");
+    assert.equal(playLangOf("hinglish"), "hinglish");
+    assert.equal(playLangOf("en"), "en");
+    assert.equal(playLangOf("hi"), "hi");
+    assert.equal(playLangOf(undefined), "hinglish");
+    assert.equal(playLangOf("tamil"), "hinglish");
+  });
+  test("the renderer uses the mapping (an English lesson's game was Hinglish before)", () => {
+    const src = readFileSync(new URL("../src/play/PlayStudioRenderer.tsx", import.meta.url), "utf8");
+    assert.match(src, /const lang = playLangOf\(props\.lang\);/);
+  });
+});

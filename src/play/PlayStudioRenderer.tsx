@@ -11,13 +11,13 @@
 // Committed child utterances arrive as a window event (PLAY_HEARD) the lesson runtime dispatches: the closed voice grammar
 // maps commands to presses.
 import { useEffect, useState } from "react";
-import type { ArtId, Lang, PlayArtifact, PlayLevel } from "../../shared/play.ts";
+import type { ArtId, PlayArtifact, PlayLevel } from "../../shared/play.ts";
 import type { ArtifactRendererProps } from "../studio/renderers.ts";
 import { PlaySession } from "./PlaySession.tsx";
 import { playApi } from "./client.ts";
 
 import { MIN_BOX, PLAY_HEARD } from "./core/box.ts";
-const LANGS: Lang[] = ["hinglish", "en", "hi"];
+import { playLangOf } from "./lessonLang.ts";
 
 export default function PlayStudioRenderer(props: ArtifactRendererProps) {
   const art = (props.artifact as unknown as PlayArtifact).play;
@@ -43,7 +43,8 @@ export default function PlayStudioRenderer(props: ArtifactRendererProps) {
     return () => window.removeEventListener(PLAY_HEARD, on);
   }, []);
   if (small || !state) return null;
-  const lang = (LANGS.includes(props.lang as Lang) ? props.lang : "hinglish") as Lang;
+  // round 3 integration: the Desk passes the lesson language as the product names it ("english" / "hindi" / "hinglish")
+  const lang = playLangOf(props.lang);
   return (
     <div style={{ width: props.px.w, height: props.px.h, position: "relative" }} data-testid="play-studio">
       <PlaySession sessionId={state.sid} level={state.level} art={state.art} lang={lang} classLevel={props.young ? 4 : 6} reducedMotion={props.reducedMotion} embedded heard={heard}

@@ -1,0 +1,35 @@
+(node:9878) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+PASS config: GET /api/duplex/config → 200 {"duplex":"shadow"}
+PASS config: production stays shadow for an anonymous device (shadow)
+PASS config: no-store (no-store)
+PASS config: Vary: cookie, so no cache keys a cohort answer on the URL alone (cookie; missing = round-3 config not deployed)
+PASS config: an anonymous answer names no cohort
+PASS everyone: a signed-in parent outside the cohort still gets shadow ({"duplex":"shadow"})
+cleanup: account deleted
+PASS leftover @taxila.test guardians 102 → 102
+PASS owner: the cohort account gets the hands-free teacher live ({"duplex":"on","cohort":"owner"})
+cleanup: owner test account deleted
+PASS browser (owner): the page heard the cohort answer ([{"duplex":"on","cohort":"owner"}])
+PASS browser (owner): no talk button: the teacher is hands-free for the owner
+PASS browser (owner): the duplex engine committed a spoken turn from the fake mic with no click (5 spoken: "मुझे लगता है बारह", "मुझे लगता है बारह", "मुझे लगता है बारह", "मुझे लगता है बारह", "मुझे लगता है बारह")
+PASS browser (everyone): the page heard shadow, not on ([{"duplex":"shadow"}])
+PASS browser (everyone): no turn carries a duplex summary: today's path decides, the engine only logs (5 spoken)
+cleanup: account deleted
+PASS leftover @taxila.test guardians 102 → 102
+PASS browser (slow switch): with GET /api/duplex/config answering after 4 s, no turn carries a duplex summary (the lesson stays shadow; 5 spoken)
+cleanup: account deleted
+PASS leftover @taxila.test guardians 102 → 102
+PASS shadow: POST /api/duplex/shadow → 204
+PASS bundle: the client carries the round-3 engine (word-aware end of turn true, eager end of turn true; 55 chunks read)
+INFO criterion R1 NOT MET: thinking-pause cut-offs, holds >= 500 ms (ADULT Hindi, India lane) = 0.041 (n 147) bar <= 3 % and <= silence-900 on the same holds [duplex-real-r3-after-MAI]
+INFO criterion R2 NOT MET: decision gap p50 after the annotated turn end (ADULT Hindi, India lane, measured from the US sandbox) = 1011 (n 399) bar <= 350 ms (measured from India; a US number is an upper bound) [duplex-real-r3-after-MAI]
+INFO criterion R2b MET: turns with no decision within 5 s = 0.0025 (n 400) bar <= 2 % [duplex-real-r3-after-MAI]
+INFO criterion R1b MET: commits while the speaker is still voicing (in-speech) = 0.01 (n 400) bar <= 1 % of turns [duplex-real-r3-after-MAI]
+INFO criterion R1-D4 NOT MET: thinking-pause cut-offs on the eastus2 fallback lane (D4) = 0.048 (n 147) bar <= 3 % [duplex-real-r3-after-D4]
+INFO criterion R3 NOT MET: keeps talking through continuers (ADULT English AMI, real STT) = 0.79 (n 195) bar >= 90 % [duplex-r3-r3-ami-after2]
+INFO criterion R4 NOT MET: barge-in: her audio stops (hush or yield) within 200 ms, over all real barge-ins = 0.47058823529411764 (n 51) bar >= 50 % (p50 <= 200 ms) [stretch: >= 90 %] [duplex-r3-r3-ami-after2]
+INFO criterion R5 NOT MET: false yields to other adults in the room (proxy for TV / sibling; not a child sibling) = 0.134 (n 239) bar <= 10 % [duplex-r3-r3-ami-after2]
+INFO criterion R6 NOT MET: self-yields on her own bleed (headset bleed, not a speakerphone) = 0.138 (n 730) bar <= 2 % [duplex-r3-r3-ami-after2]
+
+18/18 checks passed (http://127.0.0.1:18990)

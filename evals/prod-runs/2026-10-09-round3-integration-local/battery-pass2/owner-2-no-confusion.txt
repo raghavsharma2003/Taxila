@@ -1,0 +1,30 @@
+(node:12100) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+owner-2 against http://127.0.0.1:18990: 6 sessions × 14 turns, seed 56780
+s1-aarav-typed-c5-maths-ch02-t01: 14 turns, 1 defects [R7.defer ×1]
+s2-meher-spoken-c6-maths-ch07-t01: 14 turns, 0 defects [none]
+s3-golu-typed-c4-maths-ch05-t01: 14 turns, 2 defects [R3.bare_question ×2]
+s4-kabir-spoken-c7-maths-ch08-t01: 14 turns, 0 defects [none]
+s5-zoya-typed-c5-evs-ch01-t01: 14 turns, 1 defects [R5.loop ×1]
+s6-ishaan-spoken-c6-science-ch01-t01: 14 turns, 0 defects [none]
+cleanup: account deleted
+
+90 teacher turns judged (incl. openings), 4 with a defect; by code: R3.bare_question ×2, R7.defer ×1, R5.loop ×1  → /home/user/Taxila/evals/owner-truth/results/acceptance-2026-10-09T19-10-56/owner-2.json
+  R7.defer s1-aarav-typed-c5-maths-ch02-t01 t8 | child: aapko kaunsa cricketer pasand hai? | teacher: Main AI hoon, isliye mera koi personal favourite cricketer nahi hai. Chaliye, ab fraction wale question par wapas aate h | deferred what the child said ('baad mein', 'later') instead of answering it (F11)
+  R3.bare_question s3-golu-typed-c4-maths-ch05-t01 t10 | child: hmm | teacher: Music club ke paas 9 drumsticks hain. Unka ek-tihaai hissa spare rakha hai. Kitni drumsticks spare hain? | the reply is only the pinned question: what the child said got no answer (F17/F19)
+  R3.bare_question s3-golu-typed-c4-maths-ch05-t01 t13 | child: pata nahi | teacher: Kaun bada hai: ek roti ka 1/3 ya usi roti ka 1/2? | the reply is only the pinned question: what the child said got no answer (F17/F19)
+  R5.loop s5-zoya-typed-c5-evs-ch01-t01 t7 | child: ek min... haan bolo | teacher: Zoya, sochiye: kapde dhoop ya garam jagah par jaldi sookhte hain. Yahan doosri condition ka clue temperature se milta ha | the same question on the card for 4 turns: "Khaali jagah bhariye: Moving air and ___ make evaporation go faster" (F19)
+PASS all 6 sessions ran (6)
+FAIL zero confused / error / fallback / loop / repeat / ignored replies over 6 sessions (90 turns): 4 defects on 4 turns
+PASS R1: 0 defects
+PASS R2: 0 defects
+FAIL R3: 2 defects (R3.bare_question ×2)
+PASS R4: 0 defects
+FAIL R5: 1 defects (R5.loop ×1)
+PASS R6: 0 defects
+FAIL R7: 1 defects (R7.defer ×1)
+PASS R8: 0 defects
+PASS R9: 0 defects
+PASS J: 0 defects
+
+8/12 checks passed, 4 FAILED (http://127.0.0.1:18990)

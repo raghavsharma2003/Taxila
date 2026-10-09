@@ -1,0 +1,30 @@
+(node:7362) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+owner-2 against http://127.0.0.1:18990: 6 sessions × 14 turns, seed 411660
+s1-aarav-typed-c5-maths-ch02-t01: 14 turns, 0 defects [none]
+s2-meher-spoken-c6-maths-ch07-t01: 14 turns, 1 defects [R6.gutted ×1]
+s3-golu-typed-c4-maths-ch05-t01: 14 turns, 0 defects [none]
+s4-kabir-spoken-c7-maths-ch08-t01: 14 turns, 2 defects [R2.fallback ×1, R7.defer ×1]
+s5-zoya-typed-c5-evs-ch01-t01: 14 turns, 0 defects [none]
+s6-ishaan-spoken-c6-science-ch01-t01: 14 turns, 1 defects [R7.defer ×1]
+cleanup: account deleted
+
+90 teacher turns judged (incl. openings), 4 with a defect; by code: R7.defer ×2, R6.gutted ×1, R2.fallback ×1  → /home/user/Taxila/evals/owner-truth/results/acceptance-2026-10-09T17-53-31/owner-2.json
+  R6.gutted s2-meher-spoken-c6-maths-ch07-t01 t1 | child: hi yes i'm ready | teacher: Say your prediction. | a hook turn with almost no content: "Say your prediction." (F18)
+  R2.fallback s4-kabir-spoken-c7-maths-ch08-t01 t7 | child: 3/8 | teacher: Ek second, meri baat atak gayi. Kya aap phir se bata sakte hain? | the fixed model-failure line was shipped
+  R7.defer s4-kabir-spoken-c7-maths-ch08-t01 t8 | child: pubg khelte ho | teacher: Main AI hoon, isliye PUBG khel nahi sakta. Chaliye, ab fraction wale step par wapas aate hain. Ek poster ki width ka 2/3 | deferred what the child said ('baad mein', 'later') instead of answering it (F11)
+  R7.defer s6-ishaan-spoken-c6-science-ch01-t01 t8 | child: आपको कौन सा खेल पसंद है | teacher: Ishaan, main AI hoon, isliye mera apna favourite game nahi hota. Ab hum science wale observation aur checking par wapas  | deferred what the child said ('baad mein', 'later') instead of answering it (F11)
+PASS all 6 sessions ran (6)
+FAIL zero confused / error / fallback / loop / repeat / ignored replies over 6 sessions (90 turns): 4 defects on 4 turns
+PASS R1: 0 defects
+FAIL R2: 1 defects (R2.fallback ×1)
+PASS R3: 0 defects
+PASS R4: 0 defects
+PASS R5: 0 defects
+FAIL R6: 1 defects (R6.gutted ×1)
+FAIL R7: 2 defects (R7.defer ×2)
+PASS R8: 0 defects
+PASS R9: 0 defects
+PASS J: 0 defects
+
+8/12 checks passed, 4 FAILED (http://127.0.0.1:18990)

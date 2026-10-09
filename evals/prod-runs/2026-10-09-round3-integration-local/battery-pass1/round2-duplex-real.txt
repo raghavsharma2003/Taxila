@@ -1,0 +1,22 @@
+(node:9202) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+PASS config: GET /api/duplex/config → 200 {"duplex":"shadow"}
+INFO duplex mode on this server: shadow
+PASS shadow: a well-formed summary → 204 (404 = patches/01-register-shadow-route.diff not deployed)
+PASS shadow: the beacon form (text/plain body, as navigator.sendBeacon sends it) → 204
+PASS shadow: an off-schema summary is dropped quietly → 204
+PASS shadow: words smuggled into a summary → 204 (dropped by the sanitizer)
+PASS shadow: a malformed body never 5xx (400)
+PASS bundle: the client ships the shadow telemetry (schema true, route true; 55 chunks read)
+WARN log: set DUPLEX_REAL_LOG to the server's stdout file to check the written line
+INFO criterion R1 NOT MET: thinking-pause cut-offs, holds >= 500 ms (ADULT Hindi, India lane) = 0.129 (n 147) bar <= 3 % and <= silence-900 on the same holds
+INFO criterion R2 NOT MET: decision gap p50 after the annotated turn end (ADULT Hindi, India lane, measured from the US sandbox) = 910 (n 399) bar <= 350 ms (measured from India; a US number is an upper bound)
+INFO criterion R2b MET: turns with no decision within 5 s = 0.0025 (n 400) bar <= 2 %
+INFO criterion R1b NOT MET: commits while the speaker is still voicing (in-speech) = 0.0175 (n 400) bar <= 1 % of turns
+INFO criterion R1-D4 NOT MET: thinking-pause cut-offs on the eastus2 fallback lane (D4) = 0.082 (n 147) bar <= 3 %
+INFO criterion R3 NOT MET: keeps talking through continuers (ADULT English AMI, real STT) = 0.713 (n 195) bar >= 90 %
+INFO criterion R4 NOT MET: barge-in: her audio stops (hush or yield) within 200 ms, over all real barge-ins = 0.3333333333333333 (n 51) bar >= 50 % (p50 <= 200 ms) [stretch: >= 90 %]
+INFO criterion R5 NOT MET: false yields to other adults in the room (proxy for TV / sibling; not a child sibling) = 0.155 (n 239) bar <= 10 %
+INFO criterion R6 NOT MET: self-yields on her own bleed (headset bleed, not a speakerphone) = 0.159 (n 730) bar <= 2 %
+
+7/7 checks passed (http://127.0.0.1:18990)

@@ -1,0 +1,61 @@
+Round 3 integration, LOCAL battery, 2026-10-09 (integrator).
+Where: local production build of the integrated tree (node server/serve.mjs + server/worker.mjs, NODE_ENV=production, TAXILA_DB=test
+-> the Neon TEST branch, Neon HTTP/WebSocket driver because the sandbox proxy carries HTTPS only; prod model routing:
+DEPLOY_CLASSIFY=grok-4-1-fast-non-reasoning, TAXILA_CLASSIFY_HEDGE_MS=1500, TAXILA_TURN_PREFETCH=off, TAXILA_DUPLEX=shadow,
+TAXILA_DUPLEX_LIVE_FOR=<a TEST account>), real Azure models, US sandbox, adult-scripted children, single lane, n=1 run per file
+unless noted. Not taxila.dev. Not children. Other agents shared the box and the Azure quota (load 1-5; 216 taxila-fast 429s
+in pass 1 of 10,884 model calls).
+
+Pass 1 = 16:34-18:40 UTC on the integrated tree (before the check-in and play-language fixes).
+Pass 2 = 18:41-19:28 UTC, final server code (re-runs of failures + files the check-in fix touches).
+
+file                          pass 1                      pass 2 / extra arm
+w0-smoke                      5/5
+w1a-battery                   16/16
+w1a-practice-ask              24/24
+w1a-text-voice                3/3
+w1a-young-text                14/14
+w1b-mounts                    50/50
+w1b-tray                      10/10
+w1c-reteach                   13/13                       (taxila.dev 2026-10-07: 7/13)
+w1c-settle                    killed at 540 s (3/4 delays) 5/5 at 1800 s cap, BUT 0 held verdicts in 8 lessons: settle rate not measured (vacuous)
+w1c-three-day                 23/23                       (taxila.dev 21/23)
+w1d-conductor                 11/11
+w1d-eyes                      12/12
+w1f-face                      33/33
+w2a-home-states               47/47
+w2a-parent-truth              65/65
+w2b-explain-rungs             36/36
+w2b-first-paint               killed (browser closed)     killed again at 920 s ("Target page, context or browser has been closed"); same as round 2 local
+w2c-personalisation           8/8
+w2c-practice-ask              13/13
+w2d-voice-lanes               22/22
+w2e-brain                     24/24
+w2f-studio-gate               18/18
+w2flow-walk                   74/78                       78/79 after two harness fixes (framed-board check; cleanup through the page); the 1 fail: the sibling lesson revealed no non-whiteboard Studio piece in 12 turns
+w2g-voice                     29/29
+w2h-studio                    17/17
+w2i-release                   39/39
+w2i-safety                    39/39
+w2seam-contracts              13/13
+owner-1-grading               7/7 (typed 0/54 wrong; modules 0/37; frame 0/226 misgrades; 8/8 engines verifiable) [process hung after done(): exit 124]
+owner-2-no-confusion          8/12 (4 defects/90 turns: R7.defer x2, R6.gutted, R2.fallback)   8/12 (4/90: R3.bare_question x2, R7.defer, R5.loop)
+owner-3-ending                45/48 (check-in said back "lesson khatam")                       48/48 with the check-in fix
+owner-4-steering              17/17
+owner-5-visual                11/14 (11/12 asks on stage)                                     9/14 (9/12); W10-off A/B arm: 13/14 (12/12), 12/14 (11/12)
+p5-interaction-acceptance     42/42                       42/42
+round2-truth                  23/25 (one 500: NeonDbError on the turn's first select; 1/17 proven-wrong credited: sequence-reversed)
+round2-conversation           31/31
+round2-content                27/30 (slot failed while she pointed at the screen; no item-bound mount on c6)
+round2-latency                7/15 (prefetch off: route answers 204 off)                     15/15 with TAXILA_TURN_PREFETCH=on (adopted 10/10; final->first PCM p50 3614 -> 2521 ms, p90 4029 -> 4050 ms, n=10 each)
+round2-duplex-real            7/7
+round3-truth                  11/11
+round3-conversation           5/6 (lesson start refused: 23:59 IST hours window)             22/28 (B defer-checker, C share not served later, a false safeguard: 2 helpline turns on "haan, aage" after an Azure content-filter block -> account held erase_review, 1 repeated line)
+round3-relational-human       18/22 (3 starts refused at 23:59 IST)                           23/24 prefetch off (echo 0/3: no_perception); 29/29 prefetch on (echo 3/3)
+round3-voicesig               39/39
+round3-play                   93/93
+round3-forge                  40/47 (real 11/12; doable 2/6; playable views 6/18; nonsense boards 0/14; broken views 1/36; request->piece p90 4145 ms n=3)
+round3-duplex                 18/18 (owner cohort arm + browser arms)
+
+Screenshots: shots/ (phone 360x800, phone 412x915, laptop 1366x768; 8 steps per lesson), shots.json, shots.mjs.
+Duplex replay on the merged engine (eot-D4-after, real adult Hindi speech, deterministic): duplex-replay/.

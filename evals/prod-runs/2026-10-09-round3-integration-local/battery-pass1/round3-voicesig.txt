@@ -1,0 +1,45 @@
+(node:9389) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+PASS config: GET /api/voicesig/config → 200
+PASS config: ship5 shape unchanged, holdCue only as a kill (detector,frontend,mode,ver)
+PASS status: 8 knowledge states (8)
+PASS status: fluentRecall stays shadow (simulated)
+PASS status: workingAloud stays shadow (none)
+PASS status: fragileCorrect stays shadow (simulated)
+PASS status: heldBelief stays shadow (simulated)
+PASS status: effortfulGuess stays shadow (simulated)
+PASS status: rapidGuess stays shadow (simulated)
+PASS status: searching stays shadow (simulated)
+PASS status: absent stays shadow (simulated)
+PASS status: filler detector row names population/n/method/date (adult, n 774, 2026-10-09)
+PASS status: the round-3 detector is served (precision 0.842 on ADULT AMI held-out speakers, filler-gru/2-bi32-ft-neg) [needs this round's server/voicesig]
+PASS status: the thinking-pause cue row (adult, P(hold|fired) 1, n 11) [needs this round's server/voicesig]
+PASS status: no state-of-mind word in the payload
+PASS bundle: the client carries the round-3 detector card filler-gru/2 (47 chunks read) [needs this round's build]
+PASS bundle: the client carries the thinking-pause cue (vs-hold/1) [needs this round's build]
+PASS lesson: starts
+PASS lesson: spoken turn with the cue's counters in kv accepted ("umm shayad paanch": 200)
+PASS lesson: spoken turn with the cue's counters in kv accepted ("aaa... baarah": 200)
+PASS lesson: spoken turn with the cue's counters in kv accepted ("pata nahi": 200)
+PASS lesson: spoken turn with the cue's counters in kv accepted ("yaad nahi aa raha": 200)
+PASS lesson: spoken turn with the cue's counters in kv accepted ("umm saat": 200)
+PASS lesson: spoken turn with the cue's counters in kv accepted ("haan ji, das": 200)
+PASS lesson: debug.vs present on 6/6 turns (local)
+PASS lesson: debug.vs.hold carries the cue's counters ([{"read":2,"fired":1},{"read":2,"fired":1},{"read":2,"fired":1},{"read":2,"fired":1},{"read":2,"fired":1},{"read":2,"fired":1}])
+PASS lesson: every turn with a would-hint ran the counterfactual (2/2) [patch 02]
+     what she would have done: practice→practice 3.7 ms; hint→hint 3.5 ms
+PASS lesson: the counterfactual costs < 50 ms per turn (3.7, 3.5 ms) [patch 02]
+PASS lesson: debug.vs names no state of mind
+PASS lesson: brain_trace carries vs_hold.fired [patches 01 + 02] (vs_hold.fired,vs_hold.fired,vs_hold.fired,vs_gate.not_measured_on_children,vs_would.gentlerHint,vs_hold.fired,vs_diff.same,vs_gate.not_measured_on_children,vs_would.gentlerHint,vs_hold.fired,vs_diff.same,vs_hold.fired)
+PASS lesson: a vs_would code always comes with its vs_diff outcome [patch 02]
+PASS lesson: no state-of-mind word in any trace code
+PASS shadow: the move is the same with and without kv (hook / hook)
+cleanup: account deleted
+PASS leftover @taxila.test guardians 101 → 101
+PASS safety: the disclosure turn with kv is accepted
+PASS safety: the safeguard move (safeguard)
+PASS safety: both helplines (Childline 1098, Tele-MANAS 14416) reach the child
+PASS safety: no voicesig read, no shadow record on the safety turn
+PASS safety: no vs* code in the disclosure turn's trace row
+
+39/39 checks passed (http://127.0.0.1:18990)

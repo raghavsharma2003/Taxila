@@ -1,0 +1,43 @@
+(node:9054) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+PASS R picture "picture dikhao" (spoken, c5-maths-ch02-t01, rep 1): on stage and pointed at — stagecraft (2282 ms) | "Aarav, screen par number line dekhiye: 0 se 1 tak 4 equal parts banenge. 5/4, 1 ke baad pe"
+PASS R picture "picture dikhao" (typed, c5-maths-ch02-t01, rep 1): on stage and pointed at — stagecraft (2345 ms) | "Aarav, screen par 0 se 1 tak 4 equal parts dekhiye; 1 ke baad ek aur part, wahi 5/4 hai. A"
+PASS R diagram "show me a diagram" (typed, c6-maths-ch07-t01, rep 1): on stage and pointed at — board (board late -47 ms) | "Meher, look at the screen: 15 dots make 3 equal groups, with 5 dots in each. How many dots"
+PASS R diagram "show me a diagram" (spoken, c6-maths-ch07-t01, rep 1): on stage and pointed at — board (board late 1440 ms) | "Meher, look at the three equal groups on screen. One group is what fraction of the whole?"
+PASS R draw "draw it" (typed, c5-evs-ch01-t01, rep 1): on stage and pointed at — board (board late -700 ms, in the turn response) | "Screen par dekhiye: geela kapda → dhoop ki heat → water vapour hawa mein. Is picture mein "
+PASS R draw "draw it" (spoken, c5-evs-ch01-t01, rep 1): on stage and pointed at — board (board late -700 ms, in the turn response) | "Screen par dekhiye: puddle → dhoop → water vapour upar. Picture mein water kis direction m"
+PASS R whiteboard "whiteboard pe bana ke samjhao" (typed, c7-maths-ch08-t01, rep 1): on stage and pointed at — board (board late -700 ms, in the turn response) | "Screen par 5 equal parts ki roti dekhiye; 3 shaded parts 3/5 hain. Ab shaded parts ko gin "
+PASS R game "game khelna hai" (typed, c4-maths-ch05-t01, rep 1): on stage and pointed at — module (1830 ms) | "Screen par 1/3 ko game-piece samjho: 3 equal parts mein 1 part. Batao, total parts kitne h"
+PASS R whiteboard "whiteboard pe bana ke samjhao" (spoken, c7-maths-ch08-t01, rep 1): on stage and pointed at — board (board late 3421 ms) | "Screen par 5 equal parts ki roti dekhiye: 3 shaded parts count kijiye. Aap bataiye, shaded"
+PASS R game "game khelna hai" (spoken, c4-maths-ch05-t01, rep 1): on stage and pointed at — module (2026 ms) | "Golu, screen par 1/3 ko game-piece samjho: total kitne equal pieces dikh rahe hain—gin kar"
+PASS R animation "animation dikhao na" (typed, c6-science-ch01-t01, rep 1): on stage and pointed at — stagecraft (2074 ms) | "Screen par Observe, Ask, Predict, Test ko drag karke order badaliye; har step move hone pa"
+PASS R animation "animation dikhao na" (spoken, c6-science-ch01-t01, rep 1): on stage and pointed at — stagecraft (2211 ms) | "Screen par Observe, Ask, Predict, Test cards ko drag karke isi order mein rakhiye; move ka"
+cleanup: account deleted
+PASS B c7-science-ch01-t01: the board re-passes strict shape + lint + W0-W9 against her line (ok; late -700 ms, in the turn response)
+PASS B c6-science-ch01-t01: the board re-passes strict shape + lint + W0-W9 against her line (ok; late -700 ms, in the turn response)
+PASS B c5-maths-ch02-t01: the board re-passes strict shape + lint + W0-W9 against her line (ok; late -700 ms, in the turn response)
+PASS B c4-maths-ch05-t01: the board re-passes strict shape + lint + W0-W9 against her line (ok; late -650 ms)
+PASS B c6-science-ch01-t01: the board re-passes strict shape + lint + W0-W9 against her line (ok; late -700 ms, in the turn response)
+FAIL B c7-science-ch01-t01: a board slot that did not fill (slot:failed) is not pointed at ("Aarav, screen par dekhiye: Do same cups → sirf light badliye → roz height likhiy")
+PASS B c6-maths-ch07-t01: a board slot that did not fill (slot:failed) is not pointed at ("Aarav, whole ko 3 equal pieces mein baantne par har piece chhota hota hai. 1 out")
+PASS B c5-evs-ch01-t01: the board re-passes strict shape + lint + W0-W9 against her line (ok; late -700 ms, in the turn response)
+PASS B c6-maths-ch07-t01: the board re-passes strict shape + lint + W0-W9 against her line (ok; late -114 ms)
+cleanup: account deleted
+PASS M c4-maths-ch05-t01: an item-bound mount (goal item:<id> or g1:<id>) in the lesson — fractions@1 name item:c4-maths-ch05-t01-i01
+  M c4-maths-ch05-t01 posed: hook:- explain:- worked_example:- practice:fade:0 hint:fade:0 hint:fade:0 practice:i01
+FAIL M c6-maths-ch07-t01: an item-bound mount (goal item:<id> or g1:<id>) in the lesson — none (mounts: none)
+  M c6-maths-ch07-t01 posed: hook:- explain:- worked_example:- practice:fade:3 hint:fade:3 hint:fade:3 probe:rl-h1 explain:- probe:rl-o2
+PASS M c7-maths-ch08-t01: an item-bound mount (goal item:<id> or g1:<id>) in the lesson — scene@1  g1:diag:c7-maths-ch08-t01-m-mult-bigger
+  M c7-maths-ch08-t01 posed: hook:- explain:- probe:rl-h1 probe:- explain:- practice:rl-o2 probe:- probe:diag:c7-maths-ch08-t01-m-mult-bigger
+cleanup: account deleted
+D coverage (board-first): game 368 · explainer 369 · live board 344 · validated key 385 · ALL FOUR 330/385; maths bound items 83/2497
+PASS D: 385 class 4-7 topics counted (385 expected)
+PASS R: 12/12 requests put something real on the stage
+PASS R: request → piece on stage p50 2074 ms, p90 2345 ms ≤ 3000 (n = 6; API time from a local server)
+PASS R+B: board lateness after her audio starts p50 -700 ms, p90 1440 ms ≤ 1500 (n = 13; 8 in the turn response)
+B: 7/9 board slots filled; 0 filled boards failed the re-gate
+FAIL R+B: slots that failed while her line pointed at the screen: 1
+summary {"pieceMs":{"n":6,"p50":2074,"p90":2345},"boardLate":{"n":13,"p50":-700,"p90":1440},"realRequests":"12/12","boardSlotsFilled":"7/9","gateFails":0,"pointedEmpty":1,"wallMs":151780}
+PASS finished in 152 s (≤ 15 min)
+
+27/30 checks passed, 3 FAILED (http://127.0.0.1:18990)
