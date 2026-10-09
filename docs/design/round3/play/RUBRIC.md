@@ -24,7 +24,7 @@ grok-4-20 gave 8/44 false passes on diagram labels (`rj-grok-label-judge`); its 
 
 ## Part A · one game, three screens (phone 360 × 800, phone 412 × 915, laptop 1366 × 768; three art directions)
 
-Pass 2 adds a fourth screen: the 412 × 915 phone right after a typical mistake (the first of the level's own mal-rules,
+Passes 2 and 3 add a fourth screen: the 412 × 915 phone right after a typical mistake (the first of the level's own mal-rules,
 played as a child holding that belief would play it; `harness/shots.mjs --mistakes`). Pass 1 judges could not see any
 wrong-action state and said so; D2 and B4 need one.
 

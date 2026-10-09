@@ -146,7 +146,96 @@ that is not recited. Freeze 5b then dropped this stream's own praise pattern in 
 
 ## Pair 2: full battery, freeze 5b (the shipped patches) with a second HEAD sample
 
-PENDING
+`evals/conversation-r3/results/final2-head`, `final5-after`; `compare-final2.json` / `.md`. Same harness, cases, seed,
+concurrency and servers as pair 1. The HEAD server code is unchanged, so HEAD run 2 measures run-to-run noise.
+
+| score | HEAD run 2 | patched (5b) | lost / gained | McNemar |
+|---|---|---|---|---|
+| strict | 204/353 (57.8 %) | 218/353 (61.8 %) | 36 / 50 | 1.97 |
+| J1 | 249/353 (70.5 %) | 256/353 (72.5 %) | 35 / 42 | 0.47 |
+| lenient | 281/353 (79.6 %) | 282/353 (79.9 %) | 26 / 27 | 0.00 |
+
+**Noise check, identical HEAD code (run 1 vs run 2):** strict 57.5 → 57.8 %, with 39 cases lost and 40 gained. About
+one case in nine flips between two runs of the same code. Any one family or intent row moves by ±10 points on noise
+alone, so only the pooled rows mean much.
+
+**Pooled, both runs per arm (706 case-runs each):**
+
+| score | HEAD | patched |
+|---|---|---|
+| strict | 407 / 706 = **57.6 %** | 430 / 706 = **60.9 %** (+3.3) |
+| J1 | 503 / 706 = 71.2 % | 507 / 706 = 71.8 % (+0.6) |
+| lenient | 562 / 706 = 79.6 % | 555 / 706 = 78.6 % (−1.0) |
+
+Reading: the patched replies satisfy BOTH judges more often (strict up; judge agreement kappa 0.72-0.73 on HEAD vs 0.77-0.78 patched). The cases that
+neither judge passes did not shrink (lenient flat). The patches make turns cleaner and more consistent. They do not yet
+make the content of a hard move (an easier step, a story, the answer to a clarify) better.
+
+| family (pair 2) | n | HEAD strict | patched strict | HEAD J1 | patched J1 |
+|---|---|---|---|---|---|
+| A work | 64 | 57.8 | 45.3 | 67.2 | 65.6 |
+| B questions | 34 | 55.9 | 55.9 | 79.4 | 73.5 |
+| C steering | 113 | 54.9 | 62.8 | 68.1 | 71.7 |
+| D attention | 71 | 59.2 | 69.0 | 67.6 | 71.8 |
+| E energy | 32 | 65.6 | 75.0 | 75.0 | 75.0 |
+| F session | 17 | 70.6 | 94.1 | 88.2 | 94.1 |
+| G low-signal | 22 | 50.0 | 45.5 | 68.2 | 77.3 |
+
+Over both pairs, the families that moved the same way twice:
+
+| family | HEAD strict, run 1 / run 2 | patched strict, pair 1 / pair 2 | direction |
+|---|---|---|---|
+| D attention | 54.9 / 59.2 | 69.0 / 69.0 | up |
+| F session | 70.6 / 70.6 | 94.1 / 94.1 | up |
+| E energy | 62.5 / 65.6 | 62.5 / 75.0 | up or flat |
+| A work | 46.9 / 57.8 | 53.1 / 45.3 | one up, one down: noise |
+| C steering | 61.9 / 54.9 | 55.8 / 62.8 | one up, one down: noise |
+| G low-signal | 45.5 / 50.0 | 45.5 / 45.5 | flat |
+| B questions | 64.7 / 55.9 | 58.8 / 55.9 | flat |
+
+The freeze-5 targets:
+- skip_item 3/5 → 5/5. HEAD run 2 turned "ye wala skip karo" and "isko chhodo dusra do" into the stop check-in again;
+  the patched arm read all 5 as skips.
+- boredom 3 → 6/8; explain_differently 4 → 7/10.
+- Capped request turns: the card cap no longer overrides repeat / another-way / clarify asks (explain_differently-04/06
+  and clarify-07 are off the capped list).
+- No two-question repair cut a turn to its tag (0, vs 2 in pair 1). Every
+A-family case lost in pair 2 was read:
+- verdict errors from the classifier (truth stream);
+- a diagnostic key stated as "36 even hai, kyunki …", which the leak predicate does not catch (see "Still short");
+- "they want to stop" wraps that all four arms produced for a thinking-aloud line;
+- model variance on the same code path (a cave on insist_wrong, a why-probe rewrite that dropped the confirmation).
+
+None traces to a patched line.
+
+Code metrics, pair 2 (every turn, local):
+
+| metric | HEAD run 2 | patched 5b |
+|---|---|---|
+| model turns | 1,041 | 1,046 |
+| **rewritten by the guards** | **35.6 %** | **18.9 %** |
+| first draft clean | 50.5 % | 74.8 % |
+| repaired in code only | 13.8 % | 6.3 % |
+| a guard code still on the shipped turn | 15.2 % | 6.6 % |
+| bare re-pose | 8/364 | 3/364 |
+| repeats an earlier line (J ≥ 0.8) | 7 | 1 |
+| "sensible" recited | 10 | 0 |
+| praise words on a not-correct verdict (owner checker's pattern) | 5 | 3 |
+| same opener as her previous turn | 3.3 % | 1.7 % |
+| opens "Theek hai" | 13.5 % | 8.4 % |
+| own words p50 / p90 | 19 / 27 | 19 / 27 |
+| reply model calls per turn | 1.47 | 1.26 |
+| reply stage p50 / p90 (s) | 1.52 / 3.41 | 1.41 / 2.96 |
+| server turn p50 / p90 (s) | 2.88 / 4.74 | 2.64 / 4.09 |
+
+About the 3 praise lines on the patched arm:
+- 1 is a graded partial ("Aapne total count sahi pakda"), which truth 04 allows by design.
+- 1 is caught by truth 04's PRAISE_ANY_WIDE in the combined tree.
+- 1 is not: "Tumne 5 × 12 + 20 ka total sahi nikala tha", where truth's token class stops at "×". This is handed to the
+  truth stream.
+
+First-draft codes on the patched arm: ask 72, flat 49, twoq 38, nowhy 33, drift 32, parts 29, leak 28, praise 23,
+noconfirm 19. On HEAD: ask 283, drift 218, flat 153, wrap 62, noconfirm 54, parts 47, leak 41.
 
 ## Owner scripts and acceptance (local, one lane per arm)
 

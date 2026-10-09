@@ -1,0 +1,197 @@
+{
+ "nodes": [
+  {
+   "id": "r3vs-filler-reproduced-2026-10-09",
+   "kind": "measurement",
+   "at": "2026-10-09",
+   "title": "Filled-pause detector harness reproduced exactly: the shipped graph (filler-gru/1-bi32) on AMI test features regenerated today from the source audio through today's front-end gives precision 0.7526, recall 0.6012, 1241 runs, 1,522 filler words, word AUROC 0.9421 (= 2026-10-04), on float32 and on the float16 storage. Speaker-clustered 95% CI of that precision: [0.694, 0.8036] (32 speakers). FLEURS hi/en dev15 false runs per speech-minute 3.801 / 3.363 (= 2026-10-04); all of dev 4.202 / 3.924. ADULT speech. evals/voicesig/r3/train_r3.py."
+  },
+  {
+   "id": "r3vs-filler-r3-adult-2026-10-09",
+   "kind": "measurement",
+   "at": "2026-10-09",
+   "title": "Round-3 detector (bi32-ft-neg: the shipped bi-GRU 32 warm-started, fine-tuned on AMI 84 speakers / 32.7 h + FLEURS hi/en train read speech as negatives, CC BY 4.0; operating point thr 0.55 / >= 300 ms chosen on VAL at precision >= 0.82, test read once): AMI test (same 32 held-out ADULT speakers) precision 0.8424 (speaker-clustered 95% [0.7948, 0.885], Wilson [0.815, 0.8663]), recall 0.5059, n 774 runs; Indian-L1 speakers' channels 0.7988 / 0.4411. Hindi read-speech false runs per speech-minute (FLEURS dev, disjoint speakers) 0.168 (shipped @0.44: 4.202); English 0.448 (3.924). Same harness, shipped model at the same val rule: precision 0.8183, recall 0.5226, Hindi FA 2.051. ADULT English meetings; not children."
+  },
+  {
+   "id": "r3vs-holdcue-eot-hi-2026-10-09",
+   "kind": "measurement",
+   "at": "2026-10-09",
+   "title": "Thinking-pause cue (src/voicesig/holdCue.ts: a filled-pause run >= the card's minimum ending within 120 ms of the last speech frame, read 120 ms into the silence) on LiveKit EOT-Bench Hindi (CC BY 4.0, 400 ADULT turns, 674 annotated holds, 400 ends): shipped detector fired on 21 pauses, P(speaker went on | fired) 1 (Wilson [0.845, 1]), recall of holds 0.031, at turn ends 0/400; round-3 detector fired 11, P 1 ([0.741, 1]), recall 0.016, ends 0/400. High precision, ~3% recall: filled pauses precede few holds in adult task calls. evals/voicesig/r3/pauses.mjs."
+  },
+  {
+   "id": "r3vs-holdcue-ami-gold-2026-10-09",
+   "kind": "measurement",
+   "at": "2026-10-09",
+   "title": "Ceiling check, AMI test channels (4-party English meetings, gold word times; VAP-style events: mutual silence >= 250 ms after >= 1 s of one speaker): base P(hold) 0.64 (n 1095); P(hold | the speaker's last word is a GOLD um/uh) 0.71 [0.624, 0.782] (n 124): in multi-party talk a filler before a silence is only weakly a hold. The detector as a trailing-filler detector vs gold: precision 0.925, recall 0.597 (shipped model). ADULT. evals/voicesig/r3/ami_pauses.py."
+  },
+  {
+   "id": "r3vs-duplex-replay-2026-10-09",
+   "kind": "measurement",
+   "at": "2026-10-09",
+   "title": "The cue through the REAL duplex bridge (duplex-real E1: EOT-Bench Hindi + the real STT events recorded from the production socket, replayed; engine = frozen git-archive HEAD copy, hashes recorded): off 12/147 cut-offs on holds >= 500 ms, gap p50/p90 923/2060 ms; + cue (zero-edit path, shipped detector) 12/147, 923/2224; + cue (round-3 detector) 12/147, 923/2060; + cue + patch 04 (acoustic hold in zH and the backstop stretch) 12/147, 923/2060. None of the 12 cut holds is filler-final (they follow content words; 5 are digit-group pauses in dictated numbers), so a filler cue cannot prevent them. ADULT; not children. evals/voicesig/r3/duplex_replay.mjs."
+  },
+  {
+   "id": "r3vs-hiacc-fire-rates-2026-10-09",
+   "kind": "measurement",
+   "at": "2026-10-09",
+   "title": "HiACC (Hinglish, 20 children aged 10-14 and 24 adults recorded on the same Samsung M34 phone, 16 kHz; EVALUATION ONLY under its stricter licence reading CC BY-NC 4.0): detector fire rates per speech-minute, children vs adults under identical conditions: models/voicesig/filler-gru.onnx@0.44/200ms: children 2.812 vs adults 2.804 (child f0 median 259.3 Hz vs 174.5); models/voicesig/filler-gru.onnx@0.53/300ms: children 1.308 vs adults 1.46 (child f0 median 259.3 Hz vs 174.5); models/voicesig/filler-gru-r3.onnx@0.55/300ms: children 0.222 vs adults 0.774 (child f0 median 259.3 Hz vs 174.5). Not a precision: the transcripts do not mark fillers. Says the detector does not over-fire on these children's voices relative to adults; says nothing about its precision on children. evals/voicesig/r3/hiacc_eval.py."
+  },
+  {
+   "id": "r3vs-shadow-battery-local-2026-10-09",
+   "kind": "measurement",
+   "at": "2026-10-09",
+   "title": "What she would have done (patch 02 counterfactual plan, after commit): 96 SCRIPTED child turns (not children) on a LOCAL production build (HEAD + this stream + patches 01-04, Neon TEST): 26 turns read a state, 24 would have handed a tie-breaker, the counterfactual ran on all 24, her move would have changed on 3 (all gentlerHint: a gentler rung's content; followUpProbe changed nothing: it only shortens the optional-probe gap by one slot). Counterfactual cost p50 11.5 / p95 44 ms on a shared box at load ~20 (after the commit, never on the reply path on a hosted server). 0 state-of-mind codes."
+  },
+  {
+   "id": "r3vs-prod-before-2026-10-09",
+   "kind": "measurement",
+   "at": "2026-10-09",
+   "title": "tests/prod/round3-voicesig.mjs on taxila.dev BEFORE this round is deployed: 21/25 (the 4 FAILs are exactly this round's: the r3 detector row and the hold-cue row on /api/voicesig/status, the r3 card and the cue in the client bundle). kv carrying the new counters is accepted (200) by the old server, which drops it (never a 400). In shadow the move is the same with and without kv. AFTER (local production build of HEAD + this stream + patches 01-04, Neon TEST branch): 39/39, including the safety arm (safeguard move, Childline 1098 and Tele-MANAS 14416 verbatim, no voicesig read and no vs* code on the disclosure turn)."
+  },
+  {
+   "id": "r3vs-op-point-val-rule",
+   "kind": "decision",
+   "at": "2026-10-09",
+   "title": "The detector's operating point is a threshold AND a minimum run length, chosen on VAL only by a pre-registered rule (max val recall at val precision >= 0.82), test read once; it ships in the model card (threshold, minRunMs) and the head, the cue and the pilot scorer all read it from there. Reverse if the consented pilot measures the card's point below 0.80 precision on children (then re-choose on pilot val children, never on the scored children)."
+  },
+  {
+   "id": "r3vs-filler-r3-adopted",
+   "kind": "decision",
+   "at": "2026-10-09",
+   "title": "models/voicesig/filler-gru-r3 (bi32-ft-neg) replaces filler-gru/1 on the device (src/voicesig/ort.ts); the old file stays for the before/after harness. Same input (vsgru-in/1), same size class (45 KB), CC BY 4.0 data only (AMI + FLEURS), attribution in the card. Reverse if on-device latency regresses (> 20 ms p95 for a 30 s turn on the mid class) or the pilot shows it worse than filler-gru/1 on children."
+  },
+  {
+   "id": "r3vs-holdcue-shadow",
+   "kind": "decision",
+   "at": "2026-10-09",
+   "title": "The thinking-pause cue is wired (holdBus → patch 03 DuplexLive.estimate; patch 04 counts a fresh acoustic hold like the lexical fillerTail) but stays SHADOW with duplex: on adult Hindi task calls it is precise and rare and prevented none of the measured cut-offs (they are not filler-final). It may argue for waiting only (pComplete = 1 - the lower Wilson bound of P(hold | fired), never >= 0.5). Kill: TAXILA_VOICESIG_HOLDCUE=0. Reverse (go live) only if the pilot measures P(continued | fired) >= 0.85 (lower bound >= 0.75) on children AND a children's replay shows cut-offs prevented with no turn-end delay over 1 s in more than 1% of turns."
+  },
+  {
+   "id": "r3vs-counterfactual-after-commit",
+   "kind": "decision",
+   "at": "2026-10-09",
+   "title": "What she WOULD have done is computed by running planTurn again with the shadow state's tie-breakers AFTER the commit (never on the reply path on a hosted server; local debug awaits it), compared on move kind, rung, probe and a hash of the move's shape (never words), and logged as vs_would.* / vs_diff.* trace codes; not run on safety, late or re-planned turns. Reverse if its p95 cost exceeds 50 ms on production or it ever changes the real plan (the shadow test: same move with and without kv)."
+  },
+  {
+   "id": "r3vs-pilot-protocol-v2",
+   "kind": "decision",
+   "at": "2026-10-09",
+   "title": "The consented real-child pilot (docs/design/round3/voicesig/PILOT-PROTOCOL.md, vs-pilot-2): 32 children aged 9-14 (>= 14 per band), 3 sessions over ~10 days, the device's own P track recorded only behind a coordinator's ?vspilot code with a visible badge and downloaded on the device (no upload path), blind coder marks (fillers, pause continuation), outcomes O1-O4; bars frozen in evals/voicesig/r3/pilot_score.mjs: detector precision >= 0.80 with child-clustered lower bound >= 0.72 (>= 300 runs, >= 20 children, every group >= 0.75); cue P(continued | fired) >= 0.85, lower bound >= 0.75; each state >= 0.80 with lower bound >= 0.70 (>= 100 firings, >= 20 children, no child > 10%); coder filler F1 >= 0.80 or the result is not judgeable. Reverse if the IEC / counsel review requires changes (then a new protocol version and date)."
+  },
+  {
+   "id": "r3vs-hiacc-eval-only",
+   "kind": "decision",
+   "at": "2026-10-09",
+   "title": "HiACC is used for evaluation only: its Zenodo record says CC BY 4.0 but the data article says CC BY-NC 4.0 'academic/research use', and parental consent is not described; the stricter reading governs, numbers only, every wav and the zip deleted. Reverse if the authors confirm CC BY 4.0 in writing and describe parental consent."
+  },
+  {
+   "id": "rj-r3vs-filler-cue-cannot-fix-cut-holds",
+   "kind": "rejection",
+   "at": "2026-10-09",
+   "title": "Tried: the voicesig filler-tail cue as the fix for duplex's thinking-pause cut-offs (12/147 holds >= 500 ms on EOT-Bench Hindi). Broke: none of the 12 cut holds is filler-final (they follow content words; 5 are pauses between digit groups of a dictated number), so the cue prevented 0 of them, with or without the engine patch, while one false fire at a turn end (a single elongated word) delayed that turn by 2.0 s. Instead: the cue stays shadow; the duplex stream needs a list / number-projection cue for dictated digits, and the pilot measures the cue on children, who fill more."
+  },
+  {
+   "id": "rj-r3vs-inline-counterfactual",
+   "kind": "rejection",
+   "at": "2026-10-09",
+   "title": "Tried: running the counterfactual plan inline, before the turn's commit. Broke: it sat on the reply path of every shadow turn that would hand a tie-breaker: p50 3.4-8.7 / p95 15.4-23.6 ms over 3 scripted batteries on a local production build (shared box), added to the child's wait for a record nobody acts on. Instead: after the commit, never awaited by a hosted reply; the trace row gains vs_diff.* by an update (its own cost, p50 11.5 / p95 44 ms at higher load, no longer delays a reply)."
+  },
+  {
+   "id": "rj-r3vs-shadowdiff-kinds-only",
+   "kind": "rejection",
+   "at": "2026-10-09",
+   "title": "Tried: comparing the real and counterfactual plans on move kind, hint level and probe only. Broke: gentlerHint changes a rung's CONTENT, not its level (director/state.js 'gentle'), so 0 of 20 counterfactuals read as changed although several had changed the rung's content. Instead: also compare an FNV hash of the move's shape (no words leave)."
+  },
+  {
+   "id": "rj-r3vs-measure-duplex-on-moving-tree",
+   "kind": "rejection",
+   "at": "2026-10-09",
+   "title": "Tried: measuring the cue's duplex arms on the working tree. Broke: the duplex stream modified 5 src/duplex files during the run, so arms ran on different engines. Instead: every arm loads the engine and the duplex-real harness from a frozen `git archive HEAD` copy (patch 04 applied for its arm) and records the engine hashes."
+  },
+  {
+   "id": "rj-r3vs-ort-web-concurrent-runs",
+   "kind": "rejection",
+   "at": "2026-10-09",
+   "title": "Tried: one onnxruntime-web WASM session shared by parallel eval shards (concurrent session.run). Broke: TypeError 'Cannot read properties of null (reading '3')' inside ort.node.min.mjs. Instead: runs are chained one at a time (evals/voicesig/r3/lib.mjs); the device already runs one detector call at a time."
+  },
+  {
+   "id": "rj-r3vs-from-scratch-on-shared-box",
+   "kind": "rejection",
+   "at": "2026-10-09",
+   "title": "Tried: training the detector from scratch on 3x the AMI data (16 epochs) on the shared 4-core box. Broke: 450-960 s per epoch at load 18-28 (other streams' tests and servers), ~4 h projected, and a background-task time limit killed the first run. Instead: warm start from the shipped filler-gru/1 weights (ONNX GRU gates mapped to PyTorch, max abs diff 7.5e-8), 3 epochs at lr 1e-3, per-epoch selection on a val subset, the operating point on full val. Cost of the workaround: only one candidate finished, so the Hindi false-alarm gain cannot be split between more AMI speakers and the FLEURS negatives."
+  },
+  {
+   "id": "rj-r3vs-pkill-pattern-in-own-command",
+   "kind": "rejection",
+   "at": "2026-10-09",
+   "title": "Tried (ops): `pkill -f <pattern>` / `pgrep -f '[x]yz'` in a command line that also contained the pattern's text. Broke: the invoking shell matched and was killed (exit 144), twice taking a background job with it. Instead: kill by PID from a separate command, or a pattern that cannot occur in the command itself."
+  }
+ ],
+ "edges": [
+  {
+   "src": "r3vs-filler-r3-adult-2026-10-09",
+   "rel": "supersedes",
+   "dst": "p3vs-filler-detector-adult"
+  },
+  {
+   "src": "r3vs-filler-r3-adopted",
+   "rel": "measured_by",
+   "dst": "r3vs-filler-r3-adult-2026-10-09"
+  },
+  {
+   "src": "r3vs-filler-r3-adopted",
+   "rel": "measured_by",
+   "dst": "r3vs-hiacc-fire-rates-2026-10-09"
+  },
+  {
+   "src": "r3vs-op-point-val-rule",
+   "rel": "measured_by",
+   "dst": "r3vs-filler-reproduced-2026-10-09"
+  },
+  {
+   "src": "r3vs-holdcue-shadow",
+   "rel": "measured_by",
+   "dst": "r3vs-holdcue-eot-hi-2026-10-09"
+  },
+  {
+   "src": "r3vs-holdcue-shadow",
+   "rel": "measured_by",
+   "dst": "r3vs-duplex-replay-2026-10-09"
+  },
+  {
+   "src": "r3vs-holdcue-shadow",
+   "rel": "measured_by",
+   "dst": "r3vs-holdcue-ami-gold-2026-10-09"
+  },
+  {
+   "src": "r3vs-holdcue-shadow",
+   "rel": "constrains",
+   "dst": "ct-no-voice-emotion-inference"
+  },
+  {
+   "src": "r3vs-counterfactual-after-commit",
+   "rel": "measured_by",
+   "dst": "r3vs-shadow-battery-local-2026-10-09"
+  },
+  {
+   "src": "r3vs-counterfactual-after-commit",
+   "rel": "supersedes",
+   "dst": "rj-r3vs-inline-counterfactual"
+  },
+  {
+   "src": "r3vs-pilot-protocol-v2",
+   "rel": "constrains",
+   "dst": "p3vs-ship-shadow-gated"
+  },
+  {
+   "src": "rj-r3vs-filler-cue-cannot-fix-cut-holds",
+   "rel": "measured_by",
+   "dst": "r3vs-duplex-replay-2026-10-09"
+  },
+  {
+   "src": "r3vs-hiacc-eval-only",
+   "rel": "constrains",
+   "dst": "rj-nc-data-and-weights-in-product"
+  }
+ ]
+}

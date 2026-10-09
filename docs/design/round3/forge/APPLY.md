@@ -11,7 +11,7 @@
 | `server/forge3/**` (new) | `live.js` (the live play piece), `compose.js` (the ladder), `art.js`, `gate.js` + `qa-service.mjs` + `infra/Dockerfile` (the QA service), `certify.js` + `play-cert.js` (certificates), `qa/*` (render, measure, checks, harness), `certs/catalogue.json` + `certs/play.json` |
 | `tests/round3-forge-unit.test.mjs`, `-semantics`, `-live` (new), `-qa-browser`; `tests/fixtures/round3-forge/`; `tests/prod/round3-forge.mjs` | unit, browser and acceptance |
 
-## Patches (unified diffs written against `cadf527`; all eight also apply cleanly on the WIP checkpoint HEAD `a29cc0b`, alone and after play 01-05, checked 2026-10-09 ~13:00 UTC; apply 04 first, then 01-03, 05-08)
+## Patches (unified diffs written against `cadf527`; all eight also apply cleanly on the WIP checkpoint HEAD `a29cc0b`, alone and after play 01-05, checked 2026-10-09 ~13:00 UTC, and in sequence on HEAD `a8a6b56` (~14:00 UTC); apply 04 first, then 01-03, 05-08)
 
 Order and the test proving each:
 

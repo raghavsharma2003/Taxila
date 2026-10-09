@@ -225,10 +225,12 @@ export const OVERLAP = {
    */
   overlapProbe: true,
   /**
-   * Round 3 (experiment, OFF): an acoustics-only yield (the sustain rule, G11's forced yield) requires the same "not her echo"
-   * evidence as the hush (echoLikelihood < 0.5): a burst too close to her own echo to be hushed is left to its words.
+   * Round 3: an acoustics-only yield (the sustain rule, G11's forced yield) requires the same "not her echo" evidence as the
+   * hush (echoLikelihood < 0.5): a burst too close to her own echo to be hushed is left to its words (which the overlap probe
+   * fetches). AMI real speech, 2 meetings (24 pairs), all other round-3 rows on: continuers kept 72 → 78/103, barge-ins stopped
+   * within 200 ms 11 → 13/22, room false yields 12 → 13/101, bleed self-yields 79 → 78/421; TaxilaFDB TEST (simulated) unchanged.
    */
-  acousticYieldNeedsNonEcho: false,
+  acousticYieldNeedsNonEcho: true,
 };
 
 /**

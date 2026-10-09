@@ -1,0 +1,2753 @@
+{
+ "base": "http://127.0.0.1:18911",
+ "seed": 157001,
+ "outcomes": [
+  {
+   "id": "talk_else",
+   "spoken": false,
+   "persona": "Meher",
+   "ok": true,
+   "problems": [],
+   "reply": "Of course, Meher. We can switch to a picture, a short story, or a quick game about fractions—or change the question. Which sounds best?",
+   "kind": "repair",
+   "end": false
+  },
+  {
+   "id": "talk_else",
+   "spoken": true,
+   "persona": "Meher",
+   "ok": true,
+   "problems": [],
+   "reply": "Sure, Meher. We can switch to a picture, a short plant story, a sorting game, or a quick new question. Which sounds best?",
+   "kind": "repair",
+   "end": false
+  },
+  {
+   "id": "topic_interest",
+   "spoken": false,
+   "persona": "Aarav",
+   "ok": true,
+   "problems": [],
+   "reply": "Aarav, cricket mein pitch ki crease distance ko guide karti hai; fractions mein number line ke marks guide karte hain. Aap 2/5 par kitne gaps ginenge?",
+   "kind": "reteach",
+   "end": false
+  },
+  {
+   "id": "topic_interest",
+   "spoken": true,
+   "persona": "Aarav",
+   "ok": true,
+   "problems": [],
+   "reply": "Aarav, cricket mein score ko place value se padhte hain; jaise 1,07,040 runs ko “one lakh seven thousand forty” bolenge. Aap ise Hindi mein boliye.",
+   "kind": "reteach",
+   "end": false
+  },
+  {
+   "id": "differently",
+   "spoken": false,
+   "persona": "Zoya",
+   "ok": true,
+   "problems": [],
+   "reply": "Kya aap abhi theek hain? Agar koi baat pareshan kar rahi hai, toh kisi bade ko bataiye jis par bharosa ho, ya Childline 1098 ya Tele-MANAS 14416 pe call kariye.",
+   "kind": "safeguard",
+   "end": false
+  },
+  {
+   "id": "differently",
+   "spoken": true,
+   "persona": "Zoya",
+   "ok": true,
+   "problems": [],
+   "reply": "Ek chocolate ko 5 ya 3 equal parts mein baantiye: fewer parts means bigger pieces. Isliye 2/3 aur 2/5 mein kaunsa fraction bada hai?",
+   "kind": "reteach",
+   "end": false
+  },
+  {
+   "id": "slowly",
+   "spoken": false,
+   "persona": "Golu",
+   "ok": true,
+   "problems": [],
+   "reply": "Theek hai, dheere chalte hain. 1/3 mein poori cheez 3 equal parts hoti hai; tum kitna part lete ho?",
+   "kind": "reteach",
+   "end": false
+  },
+  {
+   "id": "slowly",
+   "spoken": true,
+   "persona": "Golu",
+   "ok": true,
+   "problems": [],
+   "reply": "Haan Golu, dheere chalenge. Community means log ek jagah rehkar ek-doosre ki help karte hain. Tum ek example batao.",
+   "kind": "reteach",
+   "end": false
+  },
+  {
+   "id": "example",
+   "spoken": false,
+   "persona": "Kabir",
+   "ok": false,
+   "problems": [
+    {
+     "code": "S.example",
+     "why": "the turn failed (null)"
+    },
+    {
+     "code": "R1.error",
+     "why": "the turn failed:  fetch failed"
+    }
+   ],
+   "reply": "",
+   "end": false
+  }
+ ],
+ "transcripts": [
+  {
+   "tag": "talk_else \"can we talk about something else\" (typed, Meher)",
+   "lessonId": "a694be48-64c5-4045-a472-7d76123728fc",
+   "mode": "text",
+   "topicId": "c6-maths-ch07-t01",
+   "opening": {
+    "reply": "Hi Meher, I’m Arjun, your AI teacher. Today we’ll explore equal shares in fractions—like dividing a painting into equal sections. What do you enjoy painting?",
+    "ui": {
+     "status": "your_turn",
+     "phase": "warmup",
+     "handover": "answer",
+     "answerForm": "words",
+     "tray": "none",
+     "shortTitle": "Fractional units",
+     "beat": {
+      "beatId": "b1-arrive",
+      "type": "arrive",
+      "index": 1
+     },
+     "ask": {
+      "text": "What do you enjoy painting?"
+     }
+    },
+    "moduleCommands": []
+   },
+   "rows": [
+    {
+     "n": 1,
+     "child": "hi! yes I'm ready",
+     "kind": "greet",
+     "ms": 2023,
+     "r": {
+      "move": {
+       "kind": "hook"
+      },
+      "teacherReply": "Meher, imagine splitting one painting into 2 equal sections or 6 equal sections. Why? At the end, you’ll teach Bittu.",
+      "ui": {
+       "status": "your_turn",
+       "phase": "teach",
+       "handover": "answer",
+       "answerForm": "words",
+       "tray": "none",
+       "shortTitle": "Fractional units",
+       "beat": {
+        "beatId": "b2-hook",
+        "type": "hook",
+        "index": 2
+       },
+       "ask": {
+        "text": "Why?"
+       }
+      },
+      "moduleCommands": []
+     }
+    },
+    {
+     "n": 2,
+     "child": "yes",
+     "kind": "filler",
+     "ms": 4149,
+     "r": {
+      "move": {
+       "kind": "explain"
+      },
+      "teacherReply": "Meher, a fractional unit means one of equal parts: one part from 3 parts is written 1/3. What is one part of 3 equal painting sections?",
+      "ui": {
+       "status": "your_turn",
+       "phase": "teach",
+       "handover": "answer",
+       "answerForm": "words",
+       "tray": "studio",
+       "shortTitle": "Fractional units",
+       "beat": {
+        "beatId": "b3-explain",
+        "type": "explain",
+        "index": 3
+       },
+       "ask": {
+        "text": "What is one part of 3 equal painting sections?"
+       },
+       "studioSlot": {
+        "slotId": "a694be48-64c5-4045-a472-7d76123728fc:wb:2:slot",
+        "intentId": "a694be48-64c5-4045-a472-7d76123728fc:wb:2",
+        "state": "planning"
+       }
+      },
+      "moduleCommands": []
+     }
+    },
+    {
+     "n": 3,
+     "child": "can we talk about something else",
+     "kind": "steer",
+     "ms": 2311,
+     "r": {
+      "move": {
+       "kind": "repair"
+      },
+      "teacherReply": "Of course, Meher. We can switch to a picture, a short story, or a quick game about fractions—or change the question. Which sounds best?",
+      "ui": {
+       "status": "your_turn",
+       "chips": [
+        {
+         "id": "req:visual",
+         "label": "Show me a picture"
+        },
+        {
+         "id": "req:story",
+         "label": "Tell it as a story"
+        },
+        {
+         "id": "req:game",
+         "label": "Play a game"
+        },
+        {
+         "id": "stop:continue",
+         "label": "Back to the lesson"
+        }
+       ],
+       "phase": "teach",
+       "handover": "choice",
+       "answerForm": "choice",
+       "tray": "tiles",
+       "shortTitle": "Fractional units",
+       "beat": {
+        "beatId": "b3-explain",
+        "type": "explain",
+        "index": 3
+       },
+       "ask": {
+        "text": "Which sounds best?"
+       }
+      },
+      "moduleCommands": []
+     }
+    },
+    {
+     "n": 4,
+     "child": "got it",
+     "kind": "answer",
+     "ms": 1844,
+     "r": {
+      "move": {
+       "kind": "worked_example"
+      },
+      "teacherReply": "Nice, Meher. You identified that one part out of three equal parts is 1/3. Want to pause here?",
+      "ui": {
+       "status": "your_turn",
+       "whiteboard": {
+        "kind": "math",
+        "value": "5 laddoos are shared equally by 3 children. How much does each child get?"
+       },
+       "phase": "teach",
+       "handover": "answer",
+       "answerForm": "words",
+       "tray": "studio",
+       "shortTitle": "Fractional units",
+       "beat": {
+        "beatId": "b4-worked_example",
+        "type": "worked_example",
+        "index": 4
+       },
+       "ask": {
+        "text": "Want to pause here?"
+       },
+       "studioSlot": {
+        "slotId": "a694be48-64c5-4045-a472-7d76123728fc:wb:4:slot",
+        "intentId": "a694be48-64c5-4045-a472-7d76123728fc:wb:4",
+        "state": "planning"
+       }
+      },
+      "moduleCommands": []
+     }
+    }
+   ]
+  },
+  {
+   "tag": "talk_else \"can we talk about something else\" (spoken, Meher)",
+   "lessonId": "b8932100-5ff7-4e79-b8ff-6c6507f1e4f5",
+   "mode": "cascade",
+   "topicId": "c6-science-ch02-t01",
+   "opening": {
+    "reply": "Hi Meher, I’m Arjun, your AI teacher. Today we’ll group plants like colours in a painting: herbs, shrubs, and trees. Which plant do you enjoy painting?",
+    "ui": {
+     "status": "your_turn",
+     "phase": "warmup",
+     "handover": "answer",
+     "answerForm": "words",
+     "tray": "none",
+     "shortTitle": "Grouping plants",
+     "beat": {
+      "beatId": "b1-arrive",
+      "type": "arrive",
+      "index": 1
+     },
+     "ask": {
+      "text": "Which plant do you enjoy painting?"
+     }
+    },
+    "moduleCommands": []
+   },
+   "rows": [
+    {
+     "n": 1,
+     "child": "hi yes i'm ready",
+     "kind": "greet",
+     "ms": 2089,
+     "r": {
+      "move": {
+       "kind": "hook"
+      },
+      "teacherReply": "Great, Meher. Imagine painting your neighbourhood garden: which plant would you pick first, and what do you predict its stem feels like—soft or hard?",
+      "ui": {
+       "status": "your_turn",
+       "phase": "teach",
+       "handover": "answer",
+       "answerForm": "words",
+       "tray": "none",
+       "shortTitle": "Grouping plants",
+       "beat": {
+        "beatId": "b2-hook",
+        "type": "hook",
+        "index": 2
+       },
+       "ask": {
+        "text": "Imagine painting your neighbourhood garden: which plant would you pick first, and what do you predict its stem feels…"
+       }
+      },
+      "moduleCommands": []
+     }
+    },
+    {
+     "n": 2,
+     "child": "got it",
+     "kind": "filler",
+     "ms": 4232,
+     "r": {
+      "move": {
+       "kind": "explain"
+      },
+      "teacherReply": "Meher, a soft green stem bends easily; a hard woody stem stays firm, like a paintbrush handle. Which shrub has a hard woody stem?",
+      "ui": {
+       "status": "your_turn",
+       "phase": "teach",
+       "handover": "answer",
+       "answerForm": "words",
+       "tray": "studio",
+       "shortTitle": "Grouping plants",
+       "beat": {
+        "beatId": "b3-explain",
+        "type": "explain",
+        "index": 3
+       },
+       "ask": {
+        "text": "Which shrub has a hard woody stem?"
+       },
+       "studioSlot": {
+        "slotId": "b8932100-5ff7-4e79-b8ff-6c6507f1e4f5:wb:2:slot",
+        "intentId": "b8932100-5ff7-4e79-b8ff-6c6507f1e4f5:wb:2",
+        "state": "revealed",
+        "artifact": {
+         "kind": "whiteboard",
+         "stage": {
+          "w": 400,
+          "h": 300
+         },
+         "script": {
+          "v": 1,
+          "scriptId": "b8932100-5ff7-4e79-b8ff-6c6507f1e4f5:wb:2",
+          "line": {
+           "lessonId": "b8932100-5ff7-4e79-b8ff-6c6507f1e4f5",
+           "teacherReplySeq": 5
+          },
+          "anchor": "line_audio_start",
+          "board": {
+           "w": 400,
+           "h": 300,
+           "ground": "chalk"
+          },
+          "mode": "fresh",
+          "durationMs": 10791,
+          "ops": [
+           {
+            "id": "h0",
+            "op": "text",
+            "startMs": 238,
+            "endMs": 1032,
+            "ink": "accent",
+            "at": [
+             107.5,
+             36
+            ],
+            "text": "Shrubs",
+            "size": "m"
+           },
+           {
+            "id": "o1",
+            "op": "line",
+            "startMs": 1096,
+            "endMs": 1572,
+            "ink": "accent",
+            "weight": 1,
+            "from": [
+             28,
+             62
+            ],
+            "to": [
+             187,
+             62
+            ]
+           },
+           {
+            "id": "h1",
+            "op": "text",
+            "startMs": 1811,
+            "endMs": 2605,
+            "ink": "accent",
+            "at": [
+             297.5,
+             36
+            ],
+            "text": "Trees",
+            "size": "m"
+           },
+           {
+            "id": "o2",
+            "op": "line",
+            "startMs": 2668,
+            "endMs": 3145,
+            "ink": "accent",
+            "weight": 1,
+            "from": [
+             218,
+             62
+            ],
+            "to": [
+             377,
+             62
+            ]
+           },
+           {
+            "id": "o3",
+            "op": "line",
+            "startMs": 3431,
+            "endMs": 4225,
+            "ink": "soft",
+            "weight": 1,
+            "from": [
+             200,
+             30
+            ],
+            "to": [
+             200,
+             280
+            ]
+           },
+           {
+            "id": "c00",
+            "op": "text",
+            "startMs": 4574,
+            "endMs": 5032,
+            "at": [
+             107.5,
+             88
+            ],
+            "text": "hard woody",
+            "size": "s"
+           },
+           {
+            "id": "o4",
+            "op": "text",
+            "startMs": 5032,
+            "endMs": 5489,
+            "at": [
+             107.5,
+             112
+            ],
+            "text": "stems",
+            "size": "s"
+           },
+           {
+            "id": "c10",
+            "op": "text",
+            "startMs": 5585,
+            "endMs": 6347,
+            "at": [
+             297.5,
+             100
+            ],
+            "text": "one thick trunk",
+            "size": "s"
+           },
+           {
+            "id": "c01",
+            "op": "text",
+            "startMs": 6697,
+            "endMs": 7154,
+            "at": [
+             107.5,
+             140
+            ],
+            "text": "branch",
+            "size": "s"
+           },
+           {
+            "id": "o5",
+            "op": "text",
+            "startMs": 7154,
+            "endMs": 7611,
+            "at": [
+             107.5,
+             164
+            ],
+            "text": "near ground",
+            "size": "s"
+           },
+           {
+            "id": "c11",
+            "op": "text",
+            "startMs": 7707,
+            "endMs": 8164,
+            "at": [
+             297.5,
+             140
+            ],
+            "text": "branches",
+            "size": "s"
+           },
+           {
+            "id": "o6",
+            "op": "text",
+            "startMs": 8164,
+            "endMs": 8622,
+            "at": [
+             297.5,
+             164
+            ],
+            "text": "higher up",
+            "size": "s"
+           },
+           {
+            "id": "c02",
+            "op": "text",
+            "startMs": 8971,
+            "endMs": 9733,
+            "at": [
+             107.5,
+             204
+            ],
+            "text": "medium-sized",
+            "size": "s"
+           },
+           {
+            "id": "c12",
+            "op": "text",
+            "startMs": 9829,
+            "endMs": 10591,
+            "at": [
+             297.5,
+             204
+            ],
+            "text": "usually tall",
+            "size": "s"
+           }
+          ],
+          "facts": {
+           "kind": "diagram",
+           "archetype": "whiteboard",
+           "onScreen": {
+            "labels": "Shrubs | Trees | hard woody | stems | on"
+           }
+          }
+         }
+        }
+       }
+      },
+      "moduleCommands": []
+     }
+    },
+    {
+     "n": 3,
+     "child": "can we talk about something else",
+     "kind": "steer",
+     "ms": 1941,
+     "r": {
+      "move": {
+       "kind": "repair"
+      },
+      "teacherReply": "Sure, Meher. We can switch to a picture, a short plant story, a sorting game, or a quick new question. Which sounds best?",
+      "ui": {
+       "status": "your_turn",
+       "chips": [
+        {
+         "id": "req:visual",
+         "label": "Show me a picture"
+        },
+        {
+         "id": "req:story",
+         "label": "Tell it as a story"
+        },
+        {
+         "id": "req:game",
+         "label": "Play a game"
+        },
+        {
+         "id": "stop:continue",
+         "label": "Back to the lesson"
+        }
+       ],
+       "phase": "teach",
+       "handover": "choice",
+       "answerForm": "choice",
+       "tray": "tiles",
+       "shortTitle": "Grouping plants",
+       "beat": {
+        "beatId": "b3-explain",
+        "type": "explain",
+        "index": 3
+       },
+       "ask": {
+        "text": "Which sounds best?"
+       }
+      },
+      "moduleCommands": []
+     }
+    },
+    {
+     "n": 4,
+     "child": "okay",
+     "kind": "answer",
+     "ms": 3164,
+     "r": {
+      "move": {
+       "kind": "worked_example"
+      },
+      "teacherReply": "Meher, let’s switch topics. Tell me one subject you feel like discussing now.",
+      "ui": {
+       "status": "your_turn",
+       "whiteboard": {
+        "kind": "math",
+        "value": "Is a hibiscus (gudhal) plant a herb, a shrub or a tree?"
+       },
+       "phase": "teach",
+       "handover": "answer",
+       "answerForm": "words",
+       "tray": "studio",
+       "shortTitle": "Grouping plants",
+       "beat": {
+        "beatId": "b4-worked_example",
+        "type": "worked_example",
+        "index": 4
+       },
+       "ask": {
+        "text": "Tell me one subject you feel like discussing now."
+       },
+       "studioSlot": {
+        "slotId": "b8932100-5ff7-4e79-b8ff-6c6507f1e4f5:wb:4:slot",
+        "intentId": "b8932100-5ff7-4e79-b8ff-6c6507f1e4f5:wb:4",
+        "state": "revealed",
+        "artifact": {
+         "kind": "whiteboard",
+         "stage": {
+          "w": 400,
+          "h": 300
+         },
+         "script": {
+          "v": 1,
+          "scriptId": "b8932100-5ff7-4e79-b8ff-6c6507f1e4f5:wb:4",
+          "line": {
+           "lessonId": "b8932100-5ff7-4e79-b8ff-6c6507f1e4f5",
+           "teacherReplySeq": 9
+          },
+          "anchor": "line_audio_start",
+          "board": {
+           "w": 400,
+           "h": 300,
+           "ground": "chalk"
+          },
+          "mode": "fresh",
+          "durationMs": 6868,
+          "ops": [
+           {
+            "id": "h0",
+            "op": "text",
+            "startMs": 150,
+            "endMs": 650,
+            "ink": "accent",
+            "at": [
+             107.5,
+             36
+            ],
+            "text": "Shrubs",
+            "size": "m"
+           },
+           {
+            "id": "o1",
+            "op": "line",
+            "startMs": 690,
+            "endMs": 990,
+            "ink": "accent",
+            "weight": 1,
+            "from": [
+             28,
+             62
+            ],
+            "to": [
+             187,
+             62
+            ]
+           },
+           {
+            "id": "h1",
+            "op": "text",
+            "startMs": 1140,
+            "endMs": 1640,
+            "ink": "accent",
+            "at": [
+             297.5,
+             36
+            ],
+            "text": "Trees",
+            "size": "m"
+           },
+           {
+            "id": "o2",
+            "op": "line",
+            "startMs": 1680,
+            "endMs": 1980,
+            "ink": "accent",
+            "weight": 1,
+            "from": [
+             218,
+             62
+            ],
+            "to": [
+             377,
+             62
+            ]
+           },
+           {
+            "id": "o3",
+            "op": "line",
+            "startMs": 2160,
+            "endMs": 2660,
+            "ink": "soft",
+            "weight": 1,
+            "from": [
+             200,
+             30
+            ],
+            "to": [
+             200,
+             280
+            ]
+           },
+           {
+            "id": "c00",
+            "op": "text",
+            "startMs": 2880,
+            "endMs": 3168,
+            "at": [
+             107.5,
+             88
+            ],
+            "text": "hard woody",
+            "size": "s"
+           },
+           {
+            "id": "o4",
+            "op": "text",
+            "startMs": 3168,
+            "endMs": 3456,
+            "at": [
+             107.5,
+             112
+            ],
+            "text": "stems",
+            "size": "s"
+           },
+           {
+            "id": "c10",
+            "op": "text",
+            "startMs": 3516,
+            "endMs": 3996,
+            "at": [
+             297.5,
+             100
+            ],
+            "text": "one thick trunk",
+            "size": "s"
+           },
+           {
+            "id": "c01",
+            "op": "text",
+            "startMs": 4216,
+            "endMs": 4504,
+            "at": [
+             107.5,
+             140
+            ],
+            "text": "branch",
+            "size": "s"
+           },
+           {
+            "id": "o5",
+            "op": "text",
+            "startMs": 4504,
+            "endMs": 4792,
+            "at": [
+             107.5,
+             164
+            ],
+            "text": "near ground",
+            "size": "s"
+           },
+           {
+            "id": "c11",
+            "op": "text",
+            "startMs": 4852,
+            "endMs": 5140,
+            "at": [
+             297.5,
+             140
+            ],
+            "text": "branches",
+            "size": "s"
+           },
+           {
+            "id": "o6",
+            "op": "text",
+            "startMs": 5140,
+            "endMs": 5428,
+            "at": [
+             297.5,
+             164
+            ],
+            "text": "higher up",
+            "size": "s"
+           },
+           {
+            "id": "c02",
+            "op": "text",
+            "startMs": 5648,
+            "endMs": 6128,
+            "at": [
+             107.5,
+             204
+            ],
+            "text": "medium-sized",
+            "size": "s"
+           },
+           {
+            "id": "c12",
+            "op": "text",
+            "startMs": 6188,
+            "endMs": 6668,
+            "at": [
+             297.5,
+             204
+            ],
+            "text": "usually tall",
+            "size": "s"
+           }
+          ],
+          "facts": {
+           "kind": "diagram",
+           "archetype": "whiteboard",
+           "onScreen": {
+            "labels": "Shrubs | Trees | hard woody | stems | on"
+           }
+          }
+         }
+        }
+       }
+      },
+      "moduleCommands": []
+     }
+    }
+   ]
+  },
+  {
+   "tag": "topic_interest \"cricket ke baare mein baat karo\" (typed, Aarav)",
+   "lessonId": "c3d276ce-d7e0-4fd9-9a5e-034241f82c0f",
+   "mode": "text",
+   "topicId": "c5-maths-ch02-t01",
+   "opening": {
+    "reply": "Namaste Aarav, main Arjun, aapka AI teacher hoon. Aaj fractions ko number line par cricket pitch ki tarah place karenge. Aapko cricket mein kya pasand hai?",
+    "ui": {
+     "status": "your_turn",
+     "phase": "warmup",
+     "handover": "answer",
+     "answerForm": "words",
+     "tray": "none",
+     "shortTitle": "Fractions on a line",
+     "beat": {
+      "beatId": "b1-arrive",
+      "type": "arrive",
+      "index": 1
+     },
+     "ask": {
+      "text": "Aapko cricket mein kya pasand hai?"
+     }
+    },
+    "moduleCommands": []
+   },
+   "rows": [
+    {
+     "n": 1,
+     "child": "haan ready hoon",
+     "kind": "greet",
+     "ms": 1365,
+     "r": {
+      "move": {
+       "kind": "hook"
+      },
+      "teacherReply": "Aarav, cricket pitch ko 4 barabar parts mein baantiye; 5/4 pitch ke end se aage hoga ya pehle? Sochiye, phir Bittu ko samjhayenge.",
+      "ui": {
+       "status": "your_turn",
+       "phase": "teach",
+       "handover": "answer",
+       "answerForm": "words",
+       "tray": "none",
+       "shortTitle": "Fractions on a line",
+       "beat": {
+        "beatId": "b2-hook",
+        "type": "hook",
+        "index": 2
+       },
+       "ask": {
+        "text": "Aarav, cricket pitch ko 4 barabar parts mein baantiye; 5/4 pitch ke end se aage hoga ya pehle?"
+       }
+      },
+      "moduleCommands": []
+     }
+    },
+    {
+     "n": 2,
+     "child": "haan bolo",
+     "kind": "filler",
+     "ms": 1686,
+     "r": {
+      "move": {
+       "kind": "explain"
+      },
+      "teacherReply": "Aarav, 0 se 1 tak 5 equal gaps banaiye; har gap 1/5 hai. Screen par 2/5 ke liye 0 se kitne gaps chalenge?",
+      "ui": {
+       "status": "your_turn",
+       "phase": "teach",
+       "handover": "answer",
+       "answerForm": "words",
+       "tray": "module",
+       "shortTitle": "Fractions on a line",
+       "beat": {
+        "beatId": "b3-explain",
+        "type": "explain",
+        "index": 3
+       },
+       "ask": {
+        "text": "Screen par 2/5 ke liye 0 se kitne gaps chalenge?"
+       }
+      },
+      "moduleCommands": [
+       {
+        "op": "mount",
+        "moduleId": "m2",
+        "engine": "number-line@1",
+        "params": {
+         "topicId": "c5-maths-ch02-t01",
+         "skillId": null,
+         "lang": "hinglish",
+         "fractions": [
+          [
+           2,
+           5
+          ]
+         ],
+         "numbers": [
+          0,
+          1
+         ]
+        }
+       }
+      ]
+     }
+    },
+    {
+     "n": 3,
+     "child": "cricket ke baare mein baat karo",
+     "kind": "steer",
+     "ms": 2422,
+     "r": {
+      "move": {
+       "kind": "reteach"
+      },
+      "teacherReply": "Aarav, cricket mein pitch ki crease distance ko guide karti hai; fractions mein number line ke marks guide karte hain. Aap 2/5 par kitne gaps ginenge?",
+      "ui": {
+       "status": "your_turn",
+       "phase": "teach",
+       "handover": "answer",
+       "answerForm": "words",
+       "tray": "module",
+       "shortTitle": "Fractions on a line",
+       "beat": {
+        "beatId": "b3-explain",
+        "type": "explain",
+        "index": 3
+       },
+       "ask": {
+        "text": "Aap 2/5 par kitne gaps ginenge?"
+       }
+      },
+      "moduleCommands": []
+     }
+    },
+    {
+     "n": 4,
+     "child": "haan bolo",
+     "kind": "answer",
+     "ms": 1683,
+     "r": {
+      "move": {
+       "kind": "worked_example"
+      },
+      "teacherReply": "Aarav, 0 se 1 tak 5 equal gaps hain; 2/5 ke liye 0 se do gaps giniye. Ab 2/5 ka mark kahan aayega?",
+      "ui": {
+       "status": "your_turn",
+       "whiteboard": {
+        "kind": "math",
+        "value": "Mark 2/5 on a number line from 0 to 1."
+       },
+       "phase": "teach",
+       "handover": "answer",
+       "answerForm": "words",
+       "tray": "module",
+       "shortTitle": "Fractions on a line",
+       "beat": {
+        "beatId": "b4-worked_example",
+        "type": "worked_example",
+        "index": 4
+       },
+       "ask": {
+        "text": "Ab 2/5 ka mark kahan aayega?"
+       }
+      },
+      "moduleCommands": []
+     }
+    }
+   ]
+  },
+  {
+   "tag": "topic_interest \"cricket ke baare mein baat karo\" (spoken, Aarav)",
+   "lessonId": "d0151b8e-e1aa-454d-b361-27c150f41c2c",
+   "mode": "cascade",
+   "topicId": "c5-maths-ch01-t01",
+   "opening": {
+    "reply": "Namaste Aarav, main Arjun, aapka AI teacher hoon. Aaj hum thousands se bade numbers padhenge—cricket score jaisa. Aapko cricket mein kya pasand hai?",
+    "ui": {
+     "status": "your_turn",
+     "phase": "warmup",
+     "handover": "answer",
+     "answerForm": "words",
+     "tray": "none",
+     "shortTitle": "Big numbers",
+     "beat": {
+      "beatId": "b1-arrive",
+      "type": "arrive",
+      "index": 1
+     },
+     "ask": {
+      "text": "Aapko cricket mein kya pasand hai?"
+     }
+    },
+    "moduleCommands": []
+   },
+   "rows": [
+    {
+     "n": 1,
+     "child": "haan ready hoon",
+     "kind": "greet",
+     "ms": 1847,
+     "r": {
+      "move": {
+       "kind": "hook"
+      },
+      "teacherReply": "Aarav, stadium mein 45,000 fans aur 78,000 fans hon, toh kaunsa crowd bada lagega? Aap pehle prediction kijiye. Bittu ko end mein samjhayenge.",
+      "ui": {
+       "status": "your_turn",
+       "phase": "teach",
+       "handover": "answer",
+       "answerForm": "words",
+       "tray": "none",
+       "shortTitle": "Big numbers",
+       "beat": {
+        "beatId": "b2-hook",
+        "type": "hook",
+        "index": 2
+       },
+       "ask": {
+        "text": "Aarav, stadium mein 45,000 fans aur 78,000 fans hon, toh kaunsa crowd bada lagega?"
+       }
+      },
+      "moduleCommands": []
+     }
+    },
+    {
+     "n": 2,
+     "child": "haan",
+     "kind": "filler",
+     "ms": 1818,
+     "r": {
+      "move": {
+       "kind": "explain"
+      },
+      "teacherReply": "Aarav, 1 lakh ko 1,00,000 likhte hain; 7 thousand, 40 jodne par 1,07,040 banta hai. Aap 1,07,040 words mein bataiye.",
+      "ui": {
+       "status": "your_turn",
+       "phase": "teach",
+       "handover": "answer",
+       "answerForm": "words",
+       "tray": "studio",
+       "shortTitle": "Big numbers",
+       "beat": {
+        "beatId": "b3-explain",
+        "type": "explain",
+        "index": 3
+       },
+       "ask": {
+        "text": "Aap 1,07,040 words mein bataiye."
+       },
+       "studioSlot": {
+        "slotId": "d0151b8e-e1aa-454d-b361-27c150f41c2c:wb:2:slot",
+        "intentId": "d0151b8e-e1aa-454d-b361-27c150f41c2c:wb:2",
+        "state": "planning"
+       }
+      },
+      "moduleCommands": []
+     }
+    },
+    {
+     "n": 3,
+     "child": "cricket ke baare mein baat karo",
+     "kind": "steer",
+     "ms": 2248,
+     "r": {
+      "move": {
+       "kind": "reteach"
+      },
+      "teacherReply": "Aarav, cricket mein score ko place value se padhte hain; jaise 1,07,040 runs ko “one lakh seven thousand forty” bolenge. Aap ise Hindi mein boliye.",
+      "ui": {
+       "status": "your_turn",
+       "phase": "teach",
+       "handover": "answer",
+       "answerForm": "words",
+       "tray": "studio",
+       "shortTitle": "Big numbers",
+       "beat": {
+        "beatId": "b3-explain",
+        "type": "explain",
+        "index": 3
+       },
+       "ask": {
+        "text": "Aap ise Hindi mein boliye."
+       },
+       "studioSlot": {
+        "slotId": "d0151b8e-e1aa-454d-b361-27c150f41c2c:wb:3:slot",
+        "intentId": "d0151b8e-e1aa-454d-b361-27c150f41c2c:wb:3",
+        "state": "planning"
+       }
+      },
+      "moduleCommands": []
+     }
+    },
+    {
+     "n": 4,
+     "child": "haan",
+     "kind": "answer",
+     "ms": 1836,
+     "r": {
+      "move": {
+       "kind": "worked_example"
+      },
+      "teacherReply": "Aarav, ab example ka agla step: 1 lakh ke baad 7 thousand ke liye ten-thousands place mein 0 aur thousands place mein 7 rakhiye. Aap digits batayiye.",
+      "ui": {
+       "status": "your_turn",
+       "whiteboard": {
+        "kind": "math",
+        "value": "Write 'one lakh seven thousand forty' in numerals with commas."
+       },
+       "phase": "teach",
+       "handover": "answer",
+       "answerForm": "words",
+       "tray": "studio",
+       "shortTitle": "Big numbers",
+       "beat": {
+        "beatId": "b4-worked_example",
+        "type": "worked_example",
+        "index": 4
+       },
+       "ask": {
+        "text": "Aap digits batayiye."
+       },
+       "studioSlot": {
+        "slotId": "d0151b8e-e1aa-454d-b361-27c150f41c2c:wb:4:slot",
+        "intentId": "d0151b8e-e1aa-454d-b361-27c150f41c2c:wb:4",
+        "state": "planning"
+       }
+      },
+      "moduleCommands": []
+     }
+    }
+   ]
+  },
+  {
+   "tag": "differently \"explain it differently\" (typed, Zoya)",
+   "lessonId": "66ed614e-13a3-45c2-9f03-504a9308caf0",
+   "mode": "text",
+   "topicId": "c5-evs-ch01-t01",
+   "opening": {
+    "reply": "Namaste Zoya, main Arjun, aapka AI teacher. Aaj water ke forms aur places dekhenge—dance steps jaise badalte hain. Aapko dance mein kya pasand hai?",
+    "ui": {
+     "status": "your_turn",
+     "phase": "warmup",
+     "handover": "answer",
+     "answerForm": "words",
+     "tray": "none",
+     "shortTitle": "Forms of water",
+     "beat": {
+      "beatId": "b1-arrive",
+      "type": "arrive",
+      "index": 1
+     },
+     "ask": {
+      "text": "Aapko dance mein kya pasand hai?"
+     }
+    },
+    "moduleCommands": []
+   },
+   "rows": [
+    {
+     "n": 1,
+     "child": "haan ready hoon",
+     "kind": "greet",
+     "ms": 1660,
+     "r": {
+      "move": {
+       "kind": "hook"
+      },
+      "teacherReply": "Zoya, monsoon mein dance practice ke baad aapka school uniform geela hai. Aap use dhoop mein rakhenge ya andar—kya hoga, bataiye?",
+      "ui": {
+       "status": "your_turn",
+       "phase": "teach",
+       "handover": "answer",
+       "answerForm": "words",
+       "tray": "none",
+       "shortTitle": "Forms of water",
+       "beat": {
+        "beatId": "b2-hook",
+        "type": "hook",
+        "index": 2
+       },
+       "ask": {
+        "text": "Aap use dhoop mein rakhenge ya andar—kya hoga, bataiye?"
+       }
+      },
+      "moduleCommands": []
+     }
+    },
+    {
+     "n": 2,
+     "child": "ek min... haan bolo",
+     "kind": "filler",
+     "ms": 1910,
+     "r": {
+      "move": {
+       "kind": "explain"
+      },
+      "teacherReply": "Zoya, water ki teen forms hoti hain: liquid paani, solid ice, aur invisible water vapour. Screen par examples dekhkar batayiye—ice kahan milti hai?",
+      "ui": {
+       "status": "your_turn",
+       "phase": "teach",
+       "handover": "answer",
+       "answerForm": "words",
+       "tray": "module",
+       "shortTitle": "Forms of water",
+       "beat": {
+        "beatId": "b3-explain",
+        "type": "explain",
+        "index": 3
+       },
+       "ask": {
+        "text": "Screen par examples dekhkar batayiye—ice kahan milti hai?"
+       }
+      },
+      "moduleCommands": [
+       {
+        "op": "mount",
+        "moduleId": "m2",
+        "engine": "water-cycle@1",
+        "params": {
+         "topicId": "c5-evs-ch01-t01",
+         "skillId": null,
+         "lang": "hinglish",
+         "scene": "states"
+        }
+       }
+      ]
+     }
+    },
+    {
+     "n": 3,
+     "child": "explain it differently",
+     "kind": "steer",
+     "ms": 2229,
+     "r": {
+      "move": {
+       "kind": "safeguard"
+      },
+      "teacherReply": "Kya aap abhi theek hain? Agar koi baat pareshan kar rahi hai, toh kisi bade ko bataiye jis par bharosa ho, ya Childline 1098 ya Tele-MANAS 14416 pe call kariye.",
+      "ui": {
+       "status": "your_turn",
+       "whiteboard": {
+        "kind": "text",
+        "value": "Childline 1098 · Tele-MANAS 14416"
+       },
+       "phase": "teach",
+       "handover": "answer",
+       "answerForm": "words",
+       "tray": "none",
+       "shortTitle": "Forms of water",
+       "beat": {
+        "beatId": "b4-safeguard",
+        "type": "safeguard",
+        "index": 4
+       },
+       "ask": {
+        "text": "Kya aap abhi theek hain?"
+       },
+       "teacherAffect": {
+        "display": "calm_steady",
+        "intensity": 1
+       }
+      },
+      "moduleCommands": [
+       {
+        "op": "unmount",
+        "moduleId": "m2"
+       }
+      ]
+     }
+    },
+    {
+     "n": 4,
+     "child": "ok",
+     "kind": "answer",
+     "ms": 3011,
+     "r": {
+      "move": {
+       "kind": "safeguard"
+      },
+      "teacherReply": "Theek hai, Zoya. Agar aapko kabhi madad chahiye, kisi trusted adult ko bataiye; Childline 1098 ya Tele-MANAS 14416 par call kijiye.",
+      "ui": {
+       "status": "your_turn",
+       "whiteboard": {
+        "kind": "text",
+        "value": "Childline 1098 · Tele-MANAS 14416"
+       },
+       "phase": "teach",
+       "handover": "answer",
+       "answerForm": "words",
+       "tray": "none",
+       "shortTitle": "Forms of water",
+       "beat": {
+        "beatId": "b4-safeguard",
+        "type": "safeguard",
+        "index": 4
+       },
+       "ask": {
+        "text": "Agar aapko kabhi madad chahiye, kisi trusted adult ko bataiye; Childline 1098 ya Tele-MANAS 14416 par call kijiye."
+       },
+       "teacherAffect": {
+        "display": "calm_steady",
+        "intensity": 1
+       }
+      },
+      "moduleCommands": []
+     }
+    }
+   ]
+  },
+  {
+   "tag": "differently \"explain it differently\" (spoken, Zoya)",
+   "lessonId": "4a51511d-7878-4fd9-ae72-47f33c14722f",
+   "mode": "cascade",
+   "topicId": "c5-maths-ch02-t02",
+   "opening": {
+    "reply": "Namaste Zoya! Main Arjun, aapka AI teacher hoon. Aaj fractions compare karenge—dance ke steps jaise, pehle ek chhota warm-up. Aap fractions mein kya jaanti hain?",
+    "ui": {
+     "status": "your_turn",
+     "phase": "warmup",
+     "handover": "answer",
+     "answerForm": "words",
+     "tray": "none",
+     "shortTitle": "Comparing fractions",
+     "beat": {
+      "beatId": "b1-arrive",
+      "type": "arrive",
+      "index": 1
+     },
+     "ask": {
+      "text": "Aap fractions mein kya jaanti hain?"
+     }
+    },
+    "moduleCommands": []
+   },
+   "rows": [
+    {
+     "n": 1,
+     "child": "haan ready hoon",
+     "kind": "greet",
+     "ms": 2020,
+     "r": {
+      "move": {
+       "kind": "hook"
+      },
+      "teacherReply": "Dance practice mein ek pizza ko dancers mein baantna ho: aap 1/4 lenge ya 1/8? Kaunsa tukda bada hoga—pehle prediction dijiye. Bittu ko baad mein samjhayenge.",
+      "ui": {
+       "status": "your_turn",
+       "phase": "teach",
+       "handover": "answer",
+       "answerForm": "words",
+       "tray": "none",
+       "shortTitle": "Comparing fractions",
+       "beat": {
+        "beatId": "b2-hook",
+        "type": "hook",
+        "index": 2
+       },
+       "ask": {
+        "text": "Dance practice mein ek pizza ko dancers mein baantna ho: aap 1/4 lenge ya 1/8?"
+       }
+      },
+      "moduleCommands": []
+     }
+    },
+    {
+     "n": 2,
+     "child": "ok",
+     "kind": "filler",
+     "ms": 2881,
+     "r": {
+      "move": {
+       "kind": "explain"
+      },
+      "teacherReply": "2/5 bada hoga, kyunki same whole ko 5 parts mein baantne par har part, 2/3 ke do parts se chhota hota hai. Aap bada fraction batayiye.",
+      "ui": {
+       "status": "your_turn",
+       "phase": "teach",
+       "handover": "answer",
+       "answerForm": "words",
+       "tray": "module",
+       "shortTitle": "Comparing fractions",
+       "beat": {
+        "beatId": "b3-explain",
+        "type": "explain",
+        "index": 3
+       },
+       "ask": {
+        "text": "Aap bada fraction batayiye."
+       }
+      },
+      "moduleCommands": [
+       {
+        "op": "mount",
+        "moduleId": "m2",
+        "engine": "fractions@1",
+        "params": {
+         "topicId": "c5-maths-ch02-t02",
+         "skillId": null,
+         "lang": "hinglish",
+         "fractions": [
+          [
+           2,
+           5
+          ],
+          [
+           2,
+           3
+          ]
+         ],
+         "numbers": []
+        }
+       }
+      ]
+     }
+    },
+    {
+     "n": 3,
+     "child": "explain it differently",
+     "kind": "steer",
+     "ms": 2149,
+     "r": {
+      "move": {
+       "kind": "reteach"
+      },
+      "teacherReply": "Ek chocolate ko 5 ya 3 equal parts mein baantiye: fewer parts means bigger pieces. Isliye 2/3 aur 2/5 mein kaunsa fraction bada hai?",
+      "ui": {
+       "status": "your_turn",
+       "phase": "teach",
+       "handover": "answer",
+       "answerForm": "words",
+       "tray": "module",
+       "shortTitle": "Comparing fractions",
+       "beat": {
+        "beatId": "b3-explain",
+        "type": "explain",
+        "index": 3
+       },
+       "ask": {
+        "text": "Isliye 2/3 aur 2/5 mein kaunsa fraction bada hai?"
+       }
+      },
+      "moduleCommands": []
+     }
+    },
+    {
+     "n": 4,
+     "child": "ok",
+     "kind": "answer",
+     "ms": 7788,
+     "r": {
+      "move": {
+       "kind": "worked_example"
+      },
+      "teacherReply": "Dono fractions mein 2 pieces hain, isliye ab ek piece ka size dekhiye: fifth ya third mein kaunsa piece bada hai?",
+      "ui": {
+       "status": "your_turn",
+       "whiteboard": {
+        "kind": "math",
+        "value": "Which is bigger: 2/5 or 2/3?"
+       },
+       "phase": "teach",
+       "handover": "answer",
+       "answerForm": "words",
+       "tray": "module",
+       "shortTitle": "Comparing fractions",
+       "beat": {
+        "beatId": "b4-worked_example",
+        "type": "worked_example",
+        "index": 4
+       },
+       "ask": {
+        "text": "Dono fractions mein 2 pieces hain, isliye ab ek piece ka size dekhiye: fifth ya third mein kaunsa piece bada hai?"
+       }
+      },
+      "moduleCommands": []
+     }
+    }
+   ]
+  },
+  {
+   "tag": "slowly \"slowly please\" (typed, Golu)",
+   "lessonId": "53fc42a5-b96e-4c50-afb1-1c887afd80e4",
+   "mode": "text",
+   "topicId": "c4-maths-ch05-t01",
+   "opening": {
+    "reply": "Namaste Golu, main Asha, tumhari AI teacher hoon. Aaj cartoons ki tarah fractions ke equal shares dekhenge—tumhara favourite cartoon kaunsa hai?",
+    "ui": {
+     "status": "your_turn",
+     "phase": "warmup",
+     "handover": "answer",
+     "answerForm": "words",
+     "tray": "none",
+     "shortTitle": "Equal shares",
+     "beat": {
+      "beatId": "b1-arrive",
+      "type": "arrive",
+      "index": 1
+     },
+     "ask": {
+      "text": "Aaj cartoons ki tarah fractions ke equal shares dekhenge—tumhara favourite cartoon kaunsa hai?"
+     }
+    },
+    "moduleCommands": []
+   },
+   "rows": [
+    {
+     "n": 1,
+     "child": "haan",
+     "kind": "greet",
+     "ms": 1533,
+     "r": {
+      "move": {
+       "kind": "hook"
+      },
+      "teacherReply": "Golu, socho cartoon party mein ek roti do friends mein baantni ho—tum kaise baantoge, taaki dono ko equal share mile?",
+      "ui": {
+       "status": "your_turn",
+       "phase": "teach",
+       "handover": "answer",
+       "answerForm": "words",
+       "tray": "none",
+       "shortTitle": "Equal shares",
+       "beat": {
+        "beatId": "b2-hook",
+        "type": "hook",
+        "index": 2
+       },
+       "ask": {
+        "text": "Golu, socho cartoon party mein ek roti do friends mein baantni ho—tum kaise baantoge, taaki dono ko equal share mile?"
+       }
+      },
+      "moduleCommands": []
+     }
+    },
+    {
+     "n": 2,
+     "child": "hmm",
+     "kind": "filler",
+     "ms": 3506,
+     "r": {
+      "move": {
+       "kind": "explain"
+      },
+      "teacherReply": "Golu, screen par 1/3 hai: poori cheez ko 3 equal parts mein baantkar 1 part ka naam kya hoga?",
+      "ui": {
+       "status": "your_turn",
+       "phase": "teach",
+       "handover": "answer",
+       "answerForm": "words",
+       "tray": "module",
+       "shortTitle": "Equal shares",
+       "beat": {
+        "beatId": "b3-explain",
+        "type": "explain",
+        "index": 3
+       },
+       "ask": {
+        "text": "Golu, screen par 1/3 hai: poori cheez ko 3 equal parts mein baantkar 1 part ka naam kya hoga?"
+       }
+      },
+      "moduleCommands": [
+       {
+        "op": "mount",
+        "moduleId": "m2",
+        "engine": "fractions@1",
+        "params": {
+         "topicId": "c4-maths-ch05-t01",
+         "skillId": null,
+         "lang": "hinglish",
+         "fractions": [
+          [
+           1,
+           3
+          ]
+         ],
+         "numbers": [
+          15
+         ]
+        }
+       }
+      ]
+     }
+    },
+    {
+     "n": 3,
+     "child": "slowly please",
+     "kind": "steer",
+     "ms": 1684,
+     "r": {
+      "move": {
+       "kind": "reteach"
+      },
+      "teacherReply": "Theek hai, dheere chalte hain. 1/3 mein poori cheez 3 equal parts hoti hai; tum kitna part lete ho?",
+      "ui": {
+       "status": "your_turn",
+       "phase": "teach",
+       "handover": "answer",
+       "answerForm": "words",
+       "tray": "module",
+       "shortTitle": "Equal shares",
+       "beat": {
+        "beatId": "b3-explain",
+        "type": "explain",
+        "index": 3
+       },
+       "ask": {
+        "text": "1/3 mein poori cheez 3 equal parts hoti hai; tum kitna part lete ho?"
+       }
+      },
+      "moduleCommands": []
+     }
+    },
+    {
+     "n": 4,
+     "child": "pata nahi",
+     "kind": "answer",
+     "ms": 2790,
+     "r": {
+      "move": {
+       "kind": "worked_example"
+      },
+      "teacherReply": "Golu, 1/3 ka matlab hai teen equal parts mein se ek part; ab 15 pencils ko 3 groups mein socho.",
+      "ui": {
+       "status": "your_turn",
+       "whiteboard": {
+        "kind": "math",
+        "value": "What is 1/3 of 15 pencils?"
+       },
+       "phase": "teach",
+       "handover": "answer",
+       "answerForm": "words",
+       "tray": "module",
+       "shortTitle": "Equal shares",
+       "beat": {
+        "beatId": "b4-worked_example",
+        "type": "worked_example",
+        "index": 4
+       },
+       "ask": {
+        "text": "Golu, 1/3 ka matlab hai teen equal parts mein se ek part; ab 15 pencils ko 3 groups mein socho."
+       }
+      },
+      "moduleCommands": []
+     }
+    }
+   ]
+  },
+  {
+   "tag": "slowly \"slowly please\" (spoken, Golu)",
+   "lessonId": "af682c31-90ba-415c-9747-e8db7ee6ca27",
+   "mode": "cascade",
+   "topicId": "c4-evs-ch01-t01",
+   "opening": {
+    "reply": "Namaste Golu, main Asha, tumhari AI teacher hoon. Aaj community mein milkar rehna seekhenge—cartoons mein tumhe kaunsa character pasand hai?",
+    "ui": {
+     "status": "your_turn",
+     "phase": "warmup",
+     "handover": "answer",
+     "answerForm": "words",
+     "tray": "none",
+     "shortTitle": "Living as a community",
+     "beat": {
+      "beatId": "b1-arrive",
+      "type": "arrive",
+      "index": 1
+     },
+     "ask": {
+      "text": "Aaj community mein milkar rehna seekhenge—cartoons mein tumhe kaunsa character pasand hai?"
+     }
+    },
+    "moduleCommands": []
+   },
+   "rows": [
+    {
+     "n": 1,
+     "child": "haan",
+     "kind": "greet",
+     "ms": 1815,
+     "r": {
+      "move": {
+       "kind": "hook"
+      },
+      "teacherReply": "Golu, socho colony mein festival hai: sab milkar decoration karein, toh tumhare hisaab se kya hoga? Golu ko ant mein samjhaana.",
+      "ui": {
+       "status": "your_turn",
+       "phase": "teach",
+       "handover": "answer",
+       "answerForm": "words",
+       "tray": "none",
+       "shortTitle": "Living as a community",
+       "beat": {
+        "beatId": "b2-hook",
+        "type": "hook",
+        "index": 2
+       },
+       "ask": {
+        "text": "Golu, socho colony mein festival hai: sab milkar decoration karein, toh tumhare hisaab se kya hoga?"
+       }
+      },
+      "moduleCommands": []
+     }
+    },
+    {
+     "n": 2,
+     "child": "pata nahi",
+     "kind": "filler",
+     "ms": 2819,
+     "r": {
+      "move": {
+       "kind": "explain"
+      },
+      "teacherReply": "Koi baat nahi, Golu. Jab sab milkar decoration karte hain, kaam jaldi hota hai. Tum ek community ka example batao.",
+      "ui": {
+       "status": "your_turn",
+       "phase": "teach",
+       "handover": "answer",
+       "answerForm": "words",
+       "tray": "studio",
+       "shortTitle": "Living as a community",
+       "beat": {
+        "beatId": "b3-explain",
+        "type": "explain",
+        "index": 3
+       },
+       "ask": {
+        "text": "Tum ek community ka example batao."
+       },
+       "studioSlot": {
+        "slotId": "af682c31-90ba-415c-9747-e8db7ee6ca27:wb:2:slot",
+        "intentId": "af682c31-90ba-415c-9747-e8db7ee6ca27:wb:2",
+        "state": "revealed",
+        "artifact": {
+         "kind": "whiteboard",
+         "stage": {
+          "w": 400,
+          "h": 300
+         },
+         "script": {
+          "v": 1,
+          "scriptId": "af682c31-90ba-415c-9747-e8db7ee6ca27:wb:2",
+          "line": {
+           "lessonId": "af682c31-90ba-415c-9747-e8db7ee6ca27",
+           "teacherReplySeq": 5
+          },
+          "anchor": "line_audio_start",
+          "board": {
+           "w": 400,
+           "h": 300,
+           "ground": "chalk"
+          },
+          "mode": "fresh",
+          "durationMs": 10522,
+          "ops": [
+           {
+            "id": "b0",
+            "op": "rect",
+            "startMs": 104,
+            "endMs": 650,
+            "weight": 2,
+            "at": [
+             25,
+             30
+            ],
+            "w": 160,
+            "h": 58,
+            "round": 10
+           },
+           {
+            "id": "t0",
+            "op": "text",
+            "startMs": 702,
+            "endMs": 1352,
+            "at": [
+             105,
+             61
+            ],
+            "text": "List the jobs",
+            "size": "s"
+           },
+           {
+            "id": "o1",
+            "op": "arrow",
+            "startMs": 1560,
+            "endMs": 2145,
+            "ink": "accent",
+            "from": [
+             105,
+             91
+            ],
+            "to": [
+             105,
+             133
+            ]
+           },
+           {
+            "id": "b1",
+            "op": "rect",
+            "startMs": 2249,
+            "endMs": 2795,
+            "weight": 2,
+            "at": [
+             25,
+             136
+            ],
+            "w": 160,
+            "h": 58,
+            "round": 10
+           },
+           {
+            "id": "t1",
+            "op": "text",
+            "startMs": 2847,
+            "endMs": 3237,
+            "at": [
+             105,
+             155
+            ],
+            "text": "Match jobs",
+            "size": "s"
+           },
+           {
+            "id": "o2",
+            "op": "text",
+            "startMs": 3237,
+            "endMs": 3627,
+            "at": [
+             105,
+             179
+            ],
+            "text": "to people",
+            "size": "s"
+           },
+           {
+            "id": "o3",
+            "op": "arrow",
+            "startMs": 3835,
+            "endMs": 4420,
+            "ink": "accent",
+            "from": [
+             105,
+             197
+            ],
+            "to": [
+             105,
+             239
+            ]
+           },
+           {
+            "id": "b2",
+            "op": "rect",
+            "startMs": 4524,
+            "endMs": 5070,
+            "weight": 2,
+            "at": [
+             25,
+             242
+            ],
+            "w": 160,
+            "h": 58,
+            "round": 10
+           },
+           {
+            "id": "t2",
+            "op": "text",
+            "startMs": 5122,
+            "endMs": 5772,
+            "at": [
+             105,
+             273
+            ],
+            "text": "Pick a time",
+            "size": "s"
+           },
+           {
+            "id": "o4",
+            "op": "arrow",
+            "startMs": 5980,
+            "endMs": 6565,
+            "ink": "accent",
+            "from": [
+             188,
+             271
+            ],
+            "to": [
+             212,
+             59
+            ],
+            "bend": 0.2
+           },
+           {
+            "id": "b3",
+            "op": "rect",
+            "startMs": 6669,
+            "endMs": 7215,
+            "weight": 2,
+            "at": [
+             215,
+             30
+            ],
+            "w": 160,
+            "h": 58,
+            "round": 10
+           },
+           {
+            "id": "t3",
+            "op": "text",
+            "startMs": 7267,
+            "endMs": 7657,
+            "at": [
+             295,
+             49
+            ],
+            "text": "Do the work",
+            "size": "s"
+           },
+           {
+            "id": "o5",
+            "op": "text",
+            "startMs": 7657,
+            "endMs": 8047,
+            "at": [
+             295,
+             73
+            ],
+            "text": "together",
+            "size": "s"
+           },
+           {
+            "id": "o6",
+            "op": "arrow",
+            "startMs": 8255,
+            "endMs": 8840,
+            "ink": "accent",
+            "from": [
+             295,
+             91
+            ],
+            "to": [
+             295,
+             133
+            ]
+           },
+           {
+            "id": "b4",
+            "op": "rect",
+            "startMs": 8944,
+            "endMs": 9490,
+            "weight": 2,
+            "at": [
+             215,
+             136
+            ],
+            "w": 160,
+            "h": 58,
+            "round": 10
+           },
+           {
+            "id": "t4",
+            "op": "text",
+            "startMs": 9542,
+            "endMs": 9932,
+            "at": [
+             295,
+             155
+            ],
+            "text": "Job done",
+            "size": "s"
+           },
+           {
+            "id": "o7",
+            "op": "text",
+            "startMs": 9932,
+            "endMs": 10322,
+            "at": [
+             295,
+             179
+            ],
+            "text": "faster",
+            "size": "s"
+           }
+          ],
+          "facts": {
+           "kind": "diagram",
+           "archetype": "whiteboard",
+           "onScreen": {
+            "labels": "List the jobs | Match jobs | to people |"
+           }
+          }
+         }
+        }
+       }
+      },
+      "moduleCommands": []
+     }
+    },
+    {
+     "n": 3,
+     "child": "slowly please",
+     "kind": "steer",
+     "ms": 3290,
+     "r": {
+      "move": {
+       "kind": "reteach"
+      },
+      "teacherReply": "Haan Golu, dheere chalenge. Community means log ek jagah rehkar ek-doosre ki help karte hain. Tum ek example batao.",
+      "ui": {
+       "status": "your_turn",
+       "phase": "teach",
+       "handover": "answer",
+       "answerForm": "words",
+       "tray": "studio",
+       "shortTitle": "Living as a community",
+       "beat": {
+        "beatId": "b3-explain",
+        "type": "explain",
+        "index": 3
+       },
+       "ask": {
+        "text": "Tum ek example batao."
+       },
+       "studioSlot": {
+        "slotId": "af682c31-90ba-415c-9747-e8db7ee6ca27:wb:3:slot",
+        "intentId": "af682c31-90ba-415c-9747-e8db7ee6ca27:wb:3",
+        "state": "revealed",
+        "artifact": {
+         "kind": "whiteboard",
+         "stage": {
+          "w": 400,
+          "h": 300
+         },
+         "script": {
+          "v": 1,
+          "scriptId": "af682c31-90ba-415c-9747-e8db7ee6ca27:wb:3",
+          "line": {
+           "lessonId": "af682c31-90ba-415c-9747-e8db7ee6ca27",
+           "teacherReplySeq": 7
+          },
+          "anchor": "line_audio_start",
+          "board": {
+           "w": 400,
+           "h": 300,
+           "ground": "chalk"
+          },
+          "mode": "continue",
+          "durationMs": 9601,
+          "ops": [
+           {
+            "id": "b0",
+            "op": "rect",
+            "startMs": 95,
+            "endMs": 592,
+            "weight": 2,
+            "at": [
+             25,
+             30
+            ],
+            "w": 160,
+            "h": 58,
+            "round": 10
+           },
+           {
+            "id": "t0",
+            "op": "text",
+            "startMs": 639,
+            "endMs": 1231,
+            "at": [
+             105,
+             61
+            ],
+            "text": "List the jobs",
+            "size": "s"
+           },
+           {
+            "id": "o1",
+            "op": "arrow",
+            "startMs": 1421,
+            "endMs": 1954,
+            "ink": "accent",
+            "from": [
+             105,
+             91
+            ],
+            "to": [
+             105,
+             133
+            ]
+           },
+           {
+            "id": "b1",
+            "op": "rect",
+            "startMs": 2048,
+            "endMs": 2546,
+            "weight": 2,
+            "at": [
+             25,
+             136
+            ],
+            "w": 160,
+            "h": 58,
+            "round": 10
+           },
+           {
+            "id": "t1",
+            "op": "text",
+            "startMs": 2593,
+            "endMs": 2948,
+            "at": [
+             105,
+             155
+            ],
+            "text": "Match jobs",
+            "size": "s"
+           },
+           {
+            "id": "o2",
+            "op": "text",
+            "startMs": 2948,
+            "endMs": 3303,
+            "at": [
+             105,
+             179
+            ],
+            "text": "to people",
+            "size": "s"
+           },
+           {
+            "id": "o3",
+            "op": "arrow",
+            "startMs": 3493,
+            "endMs": 4026,
+            "ink": "accent",
+            "from": [
+             105,
+             197
+            ],
+            "to": [
+             105,
+             239
+            ]
+           },
+           {
+            "id": "b2",
+            "op": "rect",
+            "startMs": 4120,
+            "endMs": 4618,
+            "weight": 2,
+            "at": [
+             25,
+             242
+            ],
+            "w": 160,
+            "h": 58,
+            "round": 10
+           },
+           {
+            "id": "t2",
+            "op": "text",
+            "startMs": 4665,
+            "endMs": 5257,
+            "at": [
+             105,
+             273
+            ],
+            "text": "Pick a time",
+            "size": "s"
+           },
+           {
+            "id": "o4",
+            "op": "arrow",
+            "startMs": 5446,
+            "endMs": 5979,
+            "ink": "accent",
+            "from": [
+             188,
+             271
+            ],
+            "to": [
+             212,
+             59
+            ],
+            "bend": 0.2
+           },
+           {
+            "id": "b3",
+            "op": "rect",
+            "startMs": 6074,
+            "endMs": 6571,
+            "weight": 2,
+            "at": [
+             215,
+             30
+            ],
+            "w": 160,
+            "h": 58,
+            "round": 10
+           },
+           {
+            "id": "t3",
+            "op": "text",
+            "startMs": 6618,
+            "endMs": 6974,
+            "at": [
+             295,
+             49
+            ],
+            "text": "Do the work",
+            "size": "s"
+           },
+           {
+            "id": "o5",
+            "op": "text",
+            "startMs": 6974,
+            "endMs": 7329,
+            "at": [
+             295,
+             73
+            ],
+            "text": "together",
+            "size": "s"
+           },
+           {
+            "id": "o6",
+            "op": "arrow",
+            "startMs": 7518,
+            "endMs": 8051,
+            "ink": "accent",
+            "from": [
+             295,
+             91
+            ],
+            "to": [
+             295,
+             133
+            ]
+           },
+           {
+            "id": "b4",
+            "op": "rect",
+            "startMs": 8146,
+            "endMs": 8643,
+            "weight": 2,
+            "at": [
+             215,
+             136
+            ],
+            "w": 160,
+            "h": 58,
+            "round": 10
+           },
+           {
+            "id": "t4",
+            "op": "text",
+            "startMs": 8690,
+            "endMs": 9046,
+            "at": [
+             295,
+             155
+            ],
+            "text": "Job done",
+            "size": "s"
+           },
+           {
+            "id": "o7",
+            "op": "text",
+            "startMs": 9046,
+            "endMs": 9401,
+            "at": [
+             295,
+             179
+            ],
+            "text": "faster",
+            "size": "s"
+           }
+          ],
+          "facts": {
+           "kind": "diagram",
+           "archetype": "whiteboard",
+           "onScreen": {
+            "labels": "List the jobs | Match jobs | to people |"
+           }
+          }
+         }
+        }
+       }
+      },
+      "moduleCommands": []
+     }
+    },
+    {
+     "n": 4,
+     "child": "ok",
+     "kind": "answer",
+     "ms": 3052,
+     "r": {
+      "move": {
+       "kind": "worked_example"
+      },
+      "teacherReply": "Park saaf karne ke jobs hain: sweeping, garbage collect karna, flags lagana, water arrange karna. Ab jobs ko logon se milao?",
+      "ui": {
+       "status": "your_turn",
+       "whiteboard": {
+        "kind": "math",
+        "value": "Your colony wants a clean park for Republic Day. How can the community plan it together?"
+       },
+       "phase": "teach",
+       "handover": "answer",
+       "answerForm": "words",
+       "tray": "studio",
+       "shortTitle": "Living as a community",
+       "beat": {
+        "beatId": "b4-worked_example",
+        "type": "worked_example",
+        "index": 4
+       },
+       "ask": {
+        "text": "Ab jobs ko logon se milao?"
+       },
+       "studioSlot": {
+        "slotId": "af682c31-90ba-415c-9747-e8db7ee6ca27:wb:4:slot",
+        "intentId": "af682c31-90ba-415c-9747-e8db7ee6ca27:wb:4",
+        "state": "revealed",
+        "artifact": {
+         "kind": "whiteboard",
+         "stage": {
+          "w": 400,
+          "h": 300
+         },
+         "script": {
+          "v": 1,
+          "scriptId": "af682c31-90ba-415c-9747-e8db7ee6ca27:wb:4",
+          "line": {
+           "lessonId": "af682c31-90ba-415c-9747-e8db7ee6ca27",
+           "teacherReplySeq": 9
+          },
+          "anchor": "line_audio_start",
+          "board": {
+           "w": 400,
+           "h": 300,
+           "ground": "chalk"
+          },
+          "mode": "fresh",
+          "durationMs": 10522,
+          "ops": [
+           {
+            "id": "b0",
+            "op": "rect",
+            "startMs": 104,
+            "endMs": 650,
+            "weight": 2,
+            "at": [
+             25,
+             30
+            ],
+            "w": 160,
+            "h": 58,
+            "round": 10
+           },
+           {
+            "id": "t0",
+            "op": "text",
+            "startMs": 702,
+            "endMs": 1352,
+            "at": [
+             105,
+             61
+            ],
+            "text": "List the jobs",
+            "size": "s"
+           },
+           {
+            "id": "o1",
+            "op": "arrow",
+            "startMs": 1560,
+            "endMs": 2145,
+            "ink": "accent",
+            "from": [
+             105,
+             91
+            ],
+            "to": [
+             105,
+             133
+            ]
+           },
+           {
+            "id": "b1",
+            "op": "rect",
+            "startMs": 2249,
+            "endMs": 2795,
+            "weight": 2,
+            "at": [
+             25,
+             136
+            ],
+            "w": 160,
+            "h": 58,
+            "round": 10
+           },
+           {
+            "id": "t1",
+            "op": "text",
+            "startMs": 2847,
+            "endMs": 3237,
+            "at": [
+             105,
+             155
+            ],
+            "text": "Match jobs",
+            "size": "s"
+           },
+           {
+            "id": "o2",
+            "op": "text",
+            "startMs": 3237,
+            "endMs": 3627,
+            "at": [
+             105,
+             179
+            ],
+            "text": "to people",
+            "size": "s"
+           },
+           {
+            "id": "o3",
+            "op": "arrow",
+            "startMs": 3835,
+            "endMs": 4420,
+            "ink": "accent",
+            "from": [
+             105,
+             197
+            ],
+            "to": [
+             105,
+             239
+            ]
+           },
+           {
+            "id": "b2",
+            "op": "rect",
+            "startMs": 4524,
+            "endMs": 5070,
+            "weight": 2,
+            "at": [
+             25,
+             242
+            ],
+            "w": 160,
+            "h": 58,
+            "round": 10
+           },
+           {
+            "id": "t2",
+            "op": "text",
+            "startMs": 5122,
+            "endMs": 5772,
+            "at": [
+             105,
+             273
+            ],
+            "text": "Pick a time",
+            "size": "s"
+           },
+           {
+            "id": "o4",
+            "op": "arrow",
+            "startMs": 5980,
+            "endMs": 6565,
+            "ink": "accent",
+            "from": [
+             188,
+             271
+            ],
+            "to": [
+             212,
+             59
+            ],
+            "bend": 0.2
+           },
+           {
+            "id": "b3",
+            "op": "rect",
+            "startMs": 6669,
+            "endMs": 7215,
+            "weight": 2,
+            "at": [
+             215,
+             30
+            ],
+            "w": 160,
+            "h": 58,
+            "round": 10
+           },
+           {
+            "id": "t3",
+            "op": "text",
+            "startMs": 7267,
+            "endMs": 7657,
+            "at": [
+             295,
+             49
+            ],
+            "text": "Do the work",
+            "size": "s"
+           },
+           {
+            "id": "o5",
+            "op": "text",
+            "startMs": 7657,
+            "endMs": 8047,
+            "at": [
+             295,
+             73
+            ],
+            "text": "together",
+            "size": "s"
+           },
+           {
+            "id": "o6",
+            "op": "arrow",
+            "startMs": 8255,
+            "endMs": 8840,
+            "ink": "accent",
+            "from": [
+             295,
+             91
+            ],
+            "to": [
+             295,
+             133
+            ]
+           },
+           {
+            "id": "b4",
+            "op": "rect",
+            "startMs": 8944,
+            "endMs": 9490,
+            "weight": 2,
+            "at": [
+             215,
+             136
+            ],
+            "w": 160,
+            "h": 58,
+            "round": 10
+           },
+           {
+            "id": "t4",
+            "op": "text",
+            "startMs": 9542,
+            "endMs": 9932,
+            "at": [
+             295,
+             155
+            ],
+            "text": "Job done",
+            "size": "s"
+           },
+           {
+            "id": "o7",
+            "op": "text",
+            "startMs": 9932,
+            "endMs": 10322,
+            "at": [
+             295,
+             179
+            ],
+            "text": "faster",
+            "size": "s"
+           }
+          ],
+          "facts": {
+           "kind": "diagram",
+           "archetype": "whiteboard",
+           "onScreen": {
+            "labels": "List the jobs | Match jobs | to people |"
+           }
+          }
+         }
+        }
+       }
+      },
+      "moduleCommands": []
+     }
+    }
+   ]
+  },
+  {
+   "tag": "example \"example do\" (typed, Kabir)",
+   "lessonId": "636bed5a-7516-48d2-8fee-7d7ac20e05c5",
+   "mode": "text",
+   "topicId": "c7-maths-ch08-t01",
+   "opening": {
+    "reply": "Namaste Kabir, main Arjun, aapka AI teacher. Aaj fractions multiply karenge—cricket ke scorecards jaisa. Aap fractions mein kya jaante hain?",
+    "ui": {
+     "status": "your_turn",
+     "phase": "warmup",
+     "handover": "answer",
+     "answerForm": "words",
+     "tray": "none",
+     "shortTitle": "Multiplying fractions",
+     "beat": {
+      "beatId": "b1-arrive",
+      "type": "arrive",
+      "index": 1
+     },
+     "ask": {
+      "text": "Aap fractions mein kya jaante hain?"
+     }
+    },
+    "moduleCommands": []
+   },
+   "rows": [
+    {
+     "n": 1,
+     "child": "haan bhai ready, chalo shuru karo haha",
+     "kind": "greet",
+     "ms": 2600,
+     "r": {
+      "move": null,
+      "error": {
+       "status": null,
+       "message": "fetch failed"
+      }
+     }
+    },
+    {
+     "n": 2,
+     "child": "achha achha, aage",
+     "kind": "filler",
+     "ms": 3,
+     "r": {
+      "move": null,
+      "error": {
+       "status": null,
+       "message": "fetch failed"
+      }
+     }
+    },
+    {
+     "n": 3,
+     "child": "example do",
+     "kind": "steer",
+     "ms": 1,
+     "r": {
+      "move": null,
+      "error": {
+       "status": null,
+       "message": "fetch failed"
+      }
+     }
+    },
+    {
+     "n": 4,
+     "child": "haha ok bhai",
+     "kind": "answer",
+     "ms": 1,
+     "r": {
+      "move": null,
+      "error": {
+       "status": null,
+       "message": "fetch failed"
+      }
+     }
+    }
+   ]
+  }
+ ]
+}

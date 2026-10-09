@@ -119,6 +119,30 @@
    "kind": "decision",
    "title": "The teacher's in-play micro-lines stay an authored, code-filled bank (no model writes or picks them) and every line that is true only in one context carries a code condition on the moment's refusal, mal-rule, mode or goal; a line whose condition does not hold is never said (silence is the fallback). Why: a fluent line that is false in context costs her credibility with the child more than silence. Reverse if: a measured child-facing study shows the conditioned bank is silent so often that children read the silence as absence (then author more conditioned lines, still no free generation).",
    "at": "2026-10-09"
+  },
+  {
+   "id": "rj-r3p-lab-setups-that-lie",
+   "kind": "rejection",
+   "title": "Drawing a lab condition as a set-up that does not actually produce it: Kyun-Lab showed 'no air' for germination as a sealed box (it still holds air: moong can sprout on the trapped oxygen) and 'no CO2' for photosynthesis as a bare closed jar (it still holds CO2). A model judge (taxila-brain) flagged both on stills, 2026-10-09 pass 2. Now: 'air pumped out' (hawa nikaali; model 0, not 0.1) and a jar with a dish of KOH, as in the NCERT set-up. Rule kept: a condition's drawing must be one that would really give that condition.",
+   "at": "2026-10-09"
+  },
+  {
+   "id": "rj-r3p-silent-wrong-order",
+   "kind": "rejection",
+   "title": "Leaving a wrong comparison on the number line with no consequence: after 'which is smaller' was answered wrong (-1 vs -12), the screen kept the two correct placement ticks and showed nothing else, and no shape in the bank could be filled for the order mistake, so a judge read the ticks as approval of the mistake (pass 2, 2026-10-09). Now the line draws its own answer (an arrow from the right-hand pod to the left-hand one, 'baayein wala chhota') and the teacher says a goal-specific noticing line.",
+   "at": "2026-10-09"
+  },
+  {
+   "id": "ms-r3p-judges-pass1-2026-10-09",
+   "kind": "measurement",
+   "title": "Play judged by two blind vision models of different families (taxila-brain = OpenAI gpt-5.6-sol, grok-4-20-reasoning = xAI; Azure AI Foundry) on docs/design/round3/play/RUBRIC.md, pass 1 = 16 games x 3 mid-play screens (360x800, 412x915, 1366x768, 3 art directions): code verdict (B1 B2 B3 B6 B8 yes on both) 6/16; B3 'the act is the idea' 12/16 brain, 8/16 grok (compare / predict / round / keypad commits read as picks from a list); mean D2 'feedback that teaches' 1.92 / 2.50 (both 'cannot tell' from mid-play stills); vs DragonBox worse on 85/96 and 65/95 dimension placements, vs Prodigy better on 44/96 and 66/96. Blind pairs (5 ideas, both orders): against the shipped tray (181x113) brain picks the play family 5/5 on every criterion, grok 2/5 with 3 flips; against the old engines given the same 360x576 box brain 4/5 overall, grok 0/5 overall and 3/5 craft for the old engine. Advisory (rj-holistic-model-judge-gate); stills only; judge/results-2026-10-09-pass1.json.",
+   "at": "2026-10-09"
+  },
+  {
+   "id": "ms-r3p-judges-pass2-2026-10-09",
+   "kind": "measurement",
+   "title": "Play judges pass 2 (same judges and rubric, a fourth screen per game: the 412x915 phone right after a typical mistake): code verdict 5/16; B4 'visible consequence' 16/16 brain, 14/16 grok (was 10/16, 8/16); mean D2 2.90 / 3.52 (was 1.92 / 2.50); B3 14/16 brain, 7/16 grok; B8 12/16 brain: 4 flags of which 3 real (sealed box as 'no air', bare jar as 'no CO2', a wrong comparison left with only approval-looking ticks) and 1 repeated misreading (a tipped scale's live 'x + 1 < 11' taken for an inequality task). Fixed before pass 3. judge/results-2026-10-09-pass2.json.",
+   "at": "2026-10-09"
   }
  ],
  "edges": [
@@ -221,6 +245,31 @@
    "src": "r3p-reaction-shape-conditions",
    "rel": "part_of",
    "dst": "r3p-play-grammar-v1"
+  },
+  {
+   "src": "r3p-judge-stills-need-a-mistake",
+   "rel": "caused_by",
+   "dst": "ms-r3p-judges-pass1-2026-10-09"
+  },
+  {
+   "src": "ms-r3p-judges-pass2-2026-10-09",
+   "rel": "supersedes",
+   "dst": "ms-r3p-judges-pass1-2026-10-09"
+  },
+  {
+   "src": "rj-r3p-lab-setups-that-lie",
+   "rel": "caused_by",
+   "dst": "ms-r3p-judges-pass2-2026-10-09"
+  },
+  {
+   "src": "rj-r3p-silent-wrong-order",
+   "rel": "caused_by",
+   "dst": "ms-r3p-judges-pass2-2026-10-09"
+  },
+  {
+   "src": "r3p-play-grammar-v1",
+   "rel": "measured_by",
+   "dst": "ms-r3p-judges-pass2-2026-10-09"
   }
  ]
 }

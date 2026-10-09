@@ -3,7 +3,7 @@
 Everything in the stream's owned paths is already in the working tree (not committed): `src/voicesig/**`,
 `server/voicesig/**`, `evals/voicesig/**`, the new `models/voicesig/filler-gru-r3.{onnx,json}`, `tests/round3-voicesig.test.mjs`,
 `tests/prod/round3-voicesig.mjs`. Four patches touch files this stream does not own; each is a unified diff against HEAD
-(written against `cadf527`; re-checked against `1fb079b`, the main loop's later WIP checkpoint that already contains part of the duplex stream's work) and passes `git apply --check --cached` (the index = HEAD) on both, 2026-10-09.
+(written against `cadf527`; re-checked against `1fb079b` and `a8a6b56`, the main loop's later WIP checkpoints) and passes `git apply --check --cached` (the index = HEAD) on all three, 2026-10-09.
 
 | order | patch | files | what it does | flag / kill | the test that proves it |
 |---|---|---|---|---|---|

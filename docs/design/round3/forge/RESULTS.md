@@ -22,6 +22,8 @@ The owner's complaint is reproduced (`audit/README.md`) and its causes that forg
   twice in a row.
 - **Something to DO when the child asks to play:** 0/6 interactive asks → **2/6** in the final clean run (3/6 in an earlier
   run), and **2/2 more for the simulation ask with patch 08**; at the child's own size **6/18** views playable (0/18 before).
+  Caveat: the final play certificate (§4, made after that run) refuses the c5 compare piece at the phone box, so with
+  today's files the expected count on this set is **2/6 with patch 08** (kept engine + c7 fair test), not 3/6.
 
 Still short: **3 interactive asks get a board** (no play game for those topics, and the practice route runs no Stagecraft);
 **play's canvas layouts** fail on some levels (the certification in §4 now refuses them); the **classes 4-5 16 px floor**;
@@ -76,7 +78,7 @@ Why the rest fail: boards at 360 — no clean layout reaches the floor (dense la
 explainers at 412 — mostly classes 4-5 at 14.3 px against 16 px (served under the 14 px rule, §6), plus 31 clipped pills.
 The pure prediction agrees (boards under 14 px at 360: 312 → 61 of 402). At 360 every Studio v2 piece is its **board
 twin**: legible, but words, not a game. These two runs measured Studio v2 canvas text by the host's design-unit minimums;
-the canvas-probe re-run of games and explainers is MATRIX-3 in §4.
+the canvas-probe re-run (MATRIX-3, §4) finds more at 1366: games 43, explainers 27 broken views (still 0 at every size).
 
 ## 3. Variety (pure code)
 
@@ -104,9 +106,22 @@ counts).
 |---|---|---|---|---|---|
 | 1 (11:21) | PlayStage, planned worlds, DOM text only | 456 (2 seeds) | 280/320 | 0/136 (16 px) | 44/48 at every size |
 | 2 (13:0x) | PlayStage, planned worlds, + canvas probe | 228 (1 seed) | 112/160 | 0/68 | 28/48; 4 nowhere (nishana compare c4) |
-| **final** | **Studio stage, Desk play-mode boxes, + canvas probe** | PLAY-CERT-4 | | | |
+| **final** (13:4x) | **Studio stage, Desk play-mode boxes, + canvas probe** | 228 (1 seed, 4 arts) | **140/160** | **48/68** (16 px) | **36/48** at every size; **0 nowhere** |
 
-MATRIX-3 (Studio v2 games and explainers with the canvas probe): see below when filled.
+Final run (`server/forge3/certs/play.json`, shots `audit/play-cert/`): all three sizes 188/228 levels; by size 360 188,
+412 212, 1366 224. By form (levels passing at every size): strips 40/40, equation 12/12, place 36/36, fair-test 76/76;
+atoms 12/32 (goal line ellipsised at the 324 px box: Q2 ×20), bundles 4/8 (Q3 at 360), compare 8/20 (tick labels
+overlap: Q3 at 360 and 412, 12 each), equality 0/4 (c4-5 labels at 14 px against 16 px everywhere; servable under the
+14 px rule). Cells servable at the 360 box: atoms 0/4, bundles 0/4, compare 4/8 — so live.js (which judges an unknown
+device as the 360 phone) refuses those, **including the c5 compare piece that §1's after-run served**: with these
+certificates the expected interactive count on §1's set is 2/6 (the kept engine + the c7 fair test with patch 08), not
+more, until play fixes those views. Art never changed a verdict (every failing cell failed in all its arts).
+
+**MATRIX-3** (13:2x, Studio v2 games and explainers re-judged with the canvas probe, same boxes as §2), broken views at
+360 / 412 / 1366: games (378) **0 (all twins) / 163 / 43**, explainers (382) **0 (twins) / 165 / 27**; broken at every
+size 0 and 0; not servable anywhere 0. Against §2's design-unit run the 1366 column rises from 1 → 43 and 2 → 27: canvas
+words clipped at the frame (Q2, mostly beat-line and era-drop) and overlapping canvas labels (Q3, 51 in explainers) that
+the earlier run could not see. `certs/catalogue.json` is built from this merged matrix (boards from §2's 12:18 run).
 
 ## 5. Timing bars
 

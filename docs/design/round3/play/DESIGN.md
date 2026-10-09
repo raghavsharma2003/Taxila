@@ -209,7 +209,8 @@ comparison, adding and subtracting):
   numbers.
 - *Apparatus:* `scenes.ts` draws each lab's set-up from its chosen conditions (the wool-wrapped ice, the bulb in the cell
   circuit, the leaf with a foil strip) and animates the outcome by the run's progress; the race clock follows the faster
-  set-up so the slow one is visibly behind.
+  set-up so the slow one is visibly behind. A condition is drawn only as a set-up that would really give it ("no air" is
+  air pumped out, not a closed box; "no CO2" is a jar with a dish of KOH, not a bare jar).
 - *The fair-test meter* lights every condition that differs between the set-ups. A confounded test may run; its result is
   marked "do badlav — kis wajah se?" and "can't tell" is then the right conclusion.
 - *Verbs:* set a chip; commit a prediction; run time; conclude which condition made the difference.

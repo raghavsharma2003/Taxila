@@ -142,7 +142,27 @@ Against what a child actually saw (the tray), no consistent vote went to the old
 same box, brain still prefers the play family 4 / 5 overall; grok prefers the old engine 2 / 5 overall and 3 / 5 on craft
 ("its sci-fi wrapper is more premium") and flips with position on 2-3 of 5. Craft is contested; the size win is not.
 
-{{PASS2}}
+### Pass 2 (a fourth screen per game: the 412 × 915 phone right after a typical mistake)
+
+The mistake is the first of the level's own mal-rules, replayed as a child holding it would play it (two families whose
+beliefs show as a refused move get that move: taking 5 hundreds from 0, pouring unlike pieces together);
+`shots/mistake/`, `harness/shots.mjs --mistakes`.
+
+| | brain pass 1 → 2 | grok pass 1 → 2 |
+|---|---|---|
+| B3 the act is the idea | 12 → 14 /16 | 8 → 7 /16 |
+| B4 a visible consequence | 10 → 16 /16 | 8 → 14 /16 |
+| B8 nothing factually wrong | 14 → 12 /16 | 16 → 16 /16 |
+| D1 / D2 / D3 / D4 / D5 / D6 | 4.02 / **2.90** / 4.03 / 3.73 / 3.64 / 4.25 | 2.98 / **3.52** / 4.36 / 3.65 / 3.39 / 3.44 |
+| code verdict (both) | 5/16 | |
+
+The four B8 flags in pass 2: three were real and are fixed (germination "no air" drawn as a sealed box, which still holds
+air → "air pumped out", model 0; photosynthesis "no CO2" drawn as a bare jar → a jar with a dish of KOH, the NCERT set-up;
+a wrong "which is smaller" left on screen with only the two placement ticks, which brain read as approval → the line now
+draws its own answer under the pods and the teacher says a compare-specific noticing line), and one was the same
+misreading as pass 1 (the tipped scale's live "x + 1 < 11"). `rj-r3p-lab-setups-that-lie`, `rj-r3p-silent-wrong-order`.
+
+{{PASS3}}
 
 ## 6. What is short of the bar, and why
 

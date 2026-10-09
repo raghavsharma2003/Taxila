@@ -18,7 +18,8 @@ are edited in place; two SHARED test/client files change only through the patche
 |---|---|---|
 | `src/duplex/markers.ts`, `src/duplex/engine.ts` | `endShape` (terminal / comma / broken / unclosed, only once the session's transcriber has punctuated; null on simulated STT) and `enumerating` on `LexicalMarkers` (optional fields); `PauseClass`; `PrepareHint.eager`; `OverlapFeatures.hushed` | `tests/round3-duplex-eot.test.mjs` |
 | `src/duplex/engineRules.ts` | `pauseClass()`; `extraWait` outside closed answers = `PAUSE_WAIT[class]` (was `OPEN_TURN_WAIT` 1,100 ms for everything and 0 ms for a question to her); the eager end of turn in `prepare()`; stage A version `2026-10-09.r3` | `tests/round3-duplex-eot.test.mjs`; eot-bench replays (CRITERIA.md) |
-| `src/duplex/config.ts` | `PAUSE_WAIT` {hold 1,600, enumerating 1,200, question 900, idk 0, complete 1,100} chosen on TRAIN; `OVERLAP.hushGiveUpEchoOnly`, `hushedSustainMs` 1,000, `endedShortWaitsForWords`, `armedRevoke`, `overlapProbe` (all on) | as above + AMI replay |
+| `src/duplex/config.ts` | `PAUSE_WAIT` {hold 1,600, enumerating 1,200, question 900, idk 0, complete 1,100} chosen on TRAIN; `OVERLAP.hushGiveUpEchoOnly`, `hushedSustainMs` 1,000, `endedShortWaitsForWords`, `armedRevoke`, `overlapProbe`, `acousticYieldNeedsNonEcho` (all on; each ablated on AMI, CRITERIA.md §6) | as above + AMI replay |
+| `src/duplex/overlap.ts`, `governor.ts` G11 | `acousticYieldNeedsNonEcho`: a burst too close to her echo to be hushed is never stopped for on acoustics alone (its words decide) | AMI ablation (CRITERIA.md §6); TaxilaFDB unchanged |
 | `src/duplex/governor.ts` | G10: in free / question-to-her / chit-chat the class wait IS the backstop (floored by the child's pace); G7: an onset over an OPEN reply inside the revoke window ARMS the revoke (the overlap classifier decides; a pending verdict still revokes at once) | `tests/round3-duplex-eot.test.mjs`, `tests/ship5-fix-duplex-revoke.test.mjs` (5/5), `tests/duplex-runtime.test.mjs` G7 tests |
 | `src/duplex/overlap.ts` | an ended burst <= 650 ms with no words waits for its words; while hushed, an acoustics-only yield needs 1,000 ms of voice | `tests/round3-duplex-eot.test.mjs` |
 | `src/duplex/host.ts` | hush give-up counts only echo-like bursts and resets on a confirmed one; the overlap micro-commit probe (live only); `hushed` in the overlap features; the eager hint is part of the think-track change key | `tests/round3-duplex-eot.test.mjs` |
@@ -31,15 +32,20 @@ New: `evals/duplex-r3/*` (pause table, policy simulator, semantic ceiling, AMI o
 D4 events of eot-bench turns, CC BY 4.0, no audio), `tests/prod/round3-duplex.mjs`, result files
 `evals/duplex-real/results/r3-*.json`.
 
+Pre-existing, not this stream: `tests/p1-duplex-link.test.mjs` test 1 fails ("frames come from the shared tap": the voicesig
+`src/voicesig/tapUrl.ts` `?worker&url` import cannot load under node --test since 7773366); it fails identically with cadf527's
+`src/duplex` + `server/duplex` (checked 2026-10-09).
+
 ## 3. Flags and environment
 
 - **Production stays `TAXILA_DUPLEX=shadow`.** The switch criteria are not met (CRITERIA.md).
 - **Owner test:** set `TAXILA_DUPLEX_LIVE_FOR=<sha256 of the owner's lower-case login email>` (a plain email also works) on the
   `taxila-web` Container App. The owner then gets the hands-free teacher on any signed-in device; everyone else stays shadow;
-  `TAXILA_DUPLEX=off` still kills it for everyone. The device switch `?duplex=1` / `?duplex=default` keeps working as before.
+  `TAXILA_DUPLEX=off` still kills it for everyone. The device switch `?duplex=1` / `?duplex=default` keeps working as before
+  (a device forced on is still live whatever the server says: the owner's old URL trick; patch 02 does not change it).
 - Kill switches for the round-3 behaviour (each a constant in `src/duplex/config.ts`, rebuild needed): `PAUSE_WAIT` (set every
   class to 1,100 to return to round 2's open wait), `OVERLAP.armedRevoke`, `hushGiveUpEchoOnly`, `endedShortWaitsForWords`,
-  `overlapProbe`, `hushedSustainMs` (= `sustainedMs` restores the 600 ms pause).
+  `overlapProbe`, `acousticYieldNeedsNonEcho`, `hushedSustainMs` (= `sustainedMs` restores the 600 ms pause; AMI says keep 1,000).
 - No migration. No new model, route or secret.
 
 ## 4. Coordination with relational-human (round 3)
