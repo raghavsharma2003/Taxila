@@ -353,7 +353,7 @@ svg { display: block; }
    4 · GAME (the stone yard: Todo-Jodo atoms)
    ============================================================ */
 #s-game { background: #1A1430; }
-.gm { position: absolute; inset: 0; display: grid; grid-template-rows: auto minmax(0, 1fr) auto; }
+.gm { position: absolute; inset: 0; display: grid; grid-template-rows: auto auto minmax(0, 1fr) auto; }
 .gm-hud { position: relative; z-index: 6; display: flex; align-items: center; gap: 8px; padding: calc(8px + var(--safe-t)) 60px 4px 8px; }
 .gm-hud .ttl b { display: block; font: 700 18px/1.1 var(--f-display); }
 .gm-hud .ttl span { font: 500 14px var(--f-ui); color: var(--ink-3); }
@@ -398,14 +398,14 @@ svg { display: block; }
 .chisel-lab b { color: var(--lamp); font-family: var(--f-display); font-size: 18px; }
 .gm-actions { display: flex; gap: 8px; }
 .gm-actions .btn { flex: 1; }
-.react { position: absolute; z-index: 8; left: 12px; right: 12px; top: 6px; display: flex; gap: 10px; align-items: center; padding: 8px 12px 8px 8px;
-  opacity: 0; transform: translateY(-6px); transition: opacity 260ms var(--e-out), transform 260ms var(--e-out); pointer-events: none; }
-.react.show { opacity: 1; transform: none; }
-.react .mini { width: 44px; height: 52px; flex: none; position: relative; }
+.react { position: relative; display: flex; gap: 10px; align-items: center; min-height: 48px; padding: 0 2px; }
+.react .sel-lab { margin-left: auto; flex: none; font: 500 15px var(--f-ui); color: var(--ink-2); white-space: nowrap; }
+.react .sel-lab b { color: var(--lamp); font-family: var(--f-display); font-size: 18px; }
+.react .mini { width: 38px; height: 48px; flex: none; position: relative; }
 .react .mini .jharokha { position: absolute; inset: 0; }
 .react .mini img { position: absolute; width: 100%; left: 0; top: 0; }
-.react .t { font: 500 16px/1.35 var(--f-ui); color: var(--ink); }
-.react .t b { display: block; font: 700 14px/1 var(--f-ui); letter-spacing: .12em; color: var(--lamp); margin-bottom: 3px; }
+.react .t { min-width: 0; font: 500 16px/1.3 var(--f-ui); color: var(--ink); }
+.react .t b { display: block; font: 700 14px/1 var(--f-ui); letter-spacing: .12em; color: var(--lamp); margin-bottom: 2px; }
 .finale { position: absolute; inset: 0; z-index: 9; display: none; flex-direction: column; align-items: center; justify-content: flex-end; padding: 16px 12px calc(14px + var(--safe-b));
   background: linear-gradient(180deg, rgba(14,10,30,0) 0%, rgba(14,10,30,.65) 46%, rgba(14,10,30,.92) 100%); }
 .finale.on { display: flex; animation: fadeIn 500ms var(--e-out); }
@@ -533,11 +533,10 @@ svg { display: block; }
   .dlg .cap { font-size: 19px; }
 
   .gm { grid-template-columns: minmax(0, 1fr) 380px; grid-template-rows: auto minmax(0, 1fr); }
-  .gm-hud { grid-column: 1 / -1; padding: 14px 20px 6px; }
-  .doors { position: absolute; right: 400px; top: 14px; padding: 0; }
+  .gm-hud { grid-column: 1 / -1; grid-row: 1; padding: 14px 20px 6px; }
+  .doors { grid-column: 2; grid-row: 1; justify-self: end; align-self: center; padding: 0 20px 0 0; }
   .gm-stage { grid-row: 2; grid-column: 1; margin: 6px 12px 20px 20px; }
   .gm-tray { grid-row: 2; grid-column: 2; align-content: end; padding: 6px 20px 20px 8px; }
-  .react { left: 20px; right: auto; width: 460px; top: 14px; }
 
   .mp-legend { left: auto; right: 20px; bottom: 20px; width: 440px; }
   .mp-sheet { left: auto; right: 20px; top: 76px; bottom: 20px; width: 420px; max-height: none; transform: translateX(110%); }
@@ -565,6 +564,66 @@ svg { display: block; }
   .mp-sheet, .react, .niche { transition: none; }
 }
 @keyframes placeNameStill { 0%, 90% { opacity: 1; } 100% { opacity: 0; } }
+
+.pausesheet[hidden] { display: none !important; }
+.mp-hud .ttl { min-width: 0; }
+.mp-hud .ttl b, .mp-hud .ttl span { white-space: nowrap; }
+@container tx (max-width: 420px) { .pr-top .brand span { display: none; } .mp-hud .ttl b { font-size: 20px; } }
+.home-greet-wrap { display: none; }
+@container tx (max-width: 899px) {
+  .home-scene { height: 392px; }
+  .home-greet-wrap { display: block; position: relative; margin: -6px 0 0; }
+  .home-greet-wrap .greet { position: relative; left: auto; right: auto; bottom: auto; }
+  .home-greet-wrap .greet::before { content: ""; position: absolute; left: 50%; top: -9px; width: 16px; height: 16px; margin-left: -8px; transform: rotate(45deg);
+    background: rgba(21,18,42,.92); border-left: 1px solid var(--hair); border-top: 1px solid var(--hair); z-index: 2; }
+}
+@container tx (min-width: 900px) {
+  .home-scene { background: linear-gradient(180deg, #16133A 0%, #2C2454 26%, #5A3A68 48%, #A3566C 64%, #E2845F 76%, #3B2649 82%, #1E1430 100%); }
+  .home-scene .scene { right: 380px; -webkit-mask-image: linear-gradient(90deg, #000 78%, transparent); mask-image: linear-gradient(90deg, #000 78%, transparent); }
+  .home-body { z-index: 7; }
+}
+.h-veil { position: absolute; inset: 0; z-index: 1; pointer-events: none; opacity: 0; transition: opacity 900ms var(--e-out);
+  background: linear-gradient(180deg, rgba(40,22,52,0) 46%, rgba(40,22,52,.38) 70%, rgba(30,16,40,.62) 100%); }
+.h-veil.on { opacity: 1; }
+
+/* the slate: deep stone, chalk haze, a brass-edged ledge with a stick of chalk and a duster */
+.board .slate::after { background:
+  radial-gradient(60% 50% at 30% 30%, rgba(244,231,201,.06), transparent 70%),
+  radial-gradient(40% 30% at 75% 70%, rgba(244,231,201,.045), transparent 70%),
+  radial-gradient(120% 90% at 40% 20%, #2C3150 0%, #1C1F35 60%, #15172A 100%); }
+.board .ledge { position: absolute; left: 6%; right: 6%; bottom: -2px; height: 10px; z-index: 3; background: linear-gradient(180deg, #8C5A3A, #5A3524); border-top: 1px solid rgba(255,214,160,.45); border-radius: 0 0 2px 2px; }
+.board .ledge .chalk { position: absolute; left: 14%; top: -6px; width: 30px; height: 6px; border-radius: 3px; background: linear-gradient(180deg, #FFFDF4, #DCD3BE); }
+.board .ledge .duster { position: absolute; right: 16%; top: -11px; width: 38px; height: 11px; border-radius: 2px; background: linear-gradient(180deg, #6E4A34, #3E2618); box-shadow: inset 0 -4px 0 #CFC6B4; }
+.ai-tag { display: inline-block; margin-left: 6px; padding: 0 6px; font: 700 14px/20px var(--f-ui); letter-spacing: .08em; color: var(--lamp-ink); background: var(--lamp); vertical-align: 1px; }
+/* the chisel: brass tokens, not a keypad */
+.chisel { gap: 8px; justify-items: center; }
+.chisel button { width: 100%; max-width: 68px; height: 50px; border-radius: 25px; font: 700 22px/1 var(--f-display); color: #FFE9BF;
+  background: radial-gradient(90% 120% at 50% 20%, #4A3A62 0%, #2A2140 70%); border: 0;
+  box-shadow: inset 0 0 0 2px #B98A3E, inset 0 0 0 3px rgba(255,226,161,.35), inset 0 -5px 0 rgba(0,0,0,.25), 0 6px 10px rgba(0,0,0,.35); }
+.chisel button:disabled { opacity: .38; }
+.chisel button:not(:disabled):active { transform: translateY(2px); box-shadow: inset 0 0 0 2px #FFC24D, inset 0 -2px 0 rgba(0,0,0,.25), 0 2px 4px rgba(0,0,0,.35); }
+.btn.ghost.light { color: #2C1A33; }
+.btn.ghost.light::after { background: rgba(255,246,236,.55); border-color: rgba(60,30,50,.35); }
+@container tx (min-width: 900px) {
+  .dlg .portrait { height: 250px; }
+  .ls-low { overflow-y: auto; scrollbar-width: none; }
+}
+
+.seg button { display: inline-flex; align-items: center; gap: 6px; min-width: 44px; justify-content: center; }
+.seg button svg { width: 18px; height: 18px; }
+@container tx (max-width: 520px) { .seg .lbl { display: none; } }
+
+i.op { font-family: var(--f-ui); font-style: normal; font-weight: 600; color: var(--ink-2); padding: 0 .08em; }
+@container tx (max-width: 899px) { .ls { grid-template-columns: minmax(0, 1fr); } }
+.ls-low { grid-template-columns: minmax(0, 1fr); }
+.typerow input { width: 0; }
+.gm-tray { grid-template-columns: minmax(0, 1fr); }
+
+.board .bh { position: absolute; left: 16px; right: 16px; top: 12px; z-index: 2; display: flex; justify-content: space-between; align-items: baseline;
+  font: 600 15px/1.2 var(--f-display); color: rgba(244,231,201,.72); padding-bottom: 6px; border-bottom: 1px solid rgba(244,231,201,.18); }
+.board .bh span + span { font: 500 14px var(--f-ui); color: rgba(244,231,201,.6); }
+.board svg.tree { top: 44px; height: calc(100% - 56px); }
+.typerow.on ~ .hint, .mid:has(.typerow.on) .hint { display: none; }
 
 </style>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -825,6 +884,7 @@ const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
 const html = (s) => { const t = document.createElement("template"); t.innerHTML = s.trim(); return t.content.firstElementChild; };
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+const ops = (str) => String(str).replace(/[×=≠÷]/g, (m) => `<i class="op">${m}</i>`);
 const clamp = (x, a, b) => (x < a ? a : x > b ? b : x);
 const lerp = (a, b, t) => a + (b - a) * t;
 function rng(seed) { let a = seed >>> 0; return () => { a |= 0; a = (a + 0x6D2B79F5) | 0; let t = Math.imul(a ^ (a >>> 15), 1 | a); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
@@ -846,6 +906,7 @@ const ICON = {
   tick: I('<path d="m4.5 12.5 4.5 4.5L19.5 6.5"/>'),
   look: I('<circle cx="10.5" cy="10.5" r="5.5"/><path d="m15 15 4.5 4.5"/>'),
   locate: I('<circle cx="12" cy="12" r="3"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3"/><circle cx="12" cy="12" r="7.5"/>'),
+  map: I('<path d="M3.5 6.5 9 4l6 2.5 5.5-2.5v13L15 19.5 9 17l-5.5 2.5z"/><path d="M9 4v13M15 6.5v13"/>'),
   list: I('<path d="M9 6.5h11M9 12h11M9 17.5h11"/><circle cx="4.8" cy="6.5" r=".9" fill="currentColor"/><circle cx="4.8" cy="12" r=".9" fill="currentColor"/><circle cx="4.8" cy="17.5" r=".9" fill="currentColor"/>'),
   shield: I('<path d="M12 3.5 19 6v5.5c0 4.4-3 7.8-7 9-4-1.2-7-4.6-7-9V6z"/><path d="m8.8 12.2 2.3 2.3 4.4-4.6"/>'),
   door: I('<path d="M6 20.5V4.5h9.5v16M3.5 20.5h17"/><circle cx="12.6" cy="12.5" r=".9" fill="currentColor"/>'),
@@ -1044,7 +1105,7 @@ function seq() { const g = GEN; return { alive: () => g === GEN, wait: async (ms
    ============================================================ */
 function ridge(r, x0, x1, yb, amp, bottom, step = 10, f = [0.006, 0.017, 0.041]) {
   const ph = f.map(() => r() * Math.PI * 2), am = [1, 0.45, 0.16];
-  let d = `M${x0},${bottom} L${x0},`;
+  let d = `M${x0},${bottom} L`;
   const pts = [];
   for (let x = x0; x <= x1 + step; x += step) { let y = yb; f.forEach((k, i) => (y -= amp * am[i] * Math.sin(x * k + ph[i]))); pts.push(`${x.toFixed(0)},${y.toFixed(1)}`); }
   return d + pts.join(" L") + ` L${x1 + step},${bottom} Z`;
@@ -1090,47 +1151,57 @@ const DEFS = `<svg width="0" height="0" style="position:absolute" aria-hidden="t
 </defs></svg>`;
 
 /* ---------- 1 · dawn at the gate (viewBox 1200×800) ---------- */
+function archShape(x0, x1, yS, yA, yB) {
+  const w = x1 - x0, m = (x0 + x1) / 2, d = yS - yA;
+  return `M${x0},${yB} L${x0},${yS} C${x0},${yS - d * .45} ${x0 + w * .22},${yS - d * .65} ${x0 + w * .38},${yS - d * .78} C${x0 + w * .45},${yS - d * .83} ${m - 1},${yS - d * .92} ${m},${yA} C${m + 1},${yS - d * .92} ${x0 + w * .55},${yS - d * .83} ${x0 + w * .62},${yS - d * .78} C${x0 + w * .78},${yS - d * .65} ${x1},${yS - d * .45} ${x1},${yS} L${x1},${yB} Z`;
+}
 function sceneDawn() {
-  const r = rng(11);
-  const archOuter = (x0, x1, yS, yA) => { const w = x1 - x0, m = (x0 + x1) / 2; return `M${x0},800 L${x0},${yS} C${x0},${yS - (yS - yA) * .45} ${x0 + w * .22},${yS - (yS - yA) * .65} ${x0 + w * .38},${yS - (yS - yA) * .78} C${x0 + w * .45},${yS - (yS - yA) * .83} ${m - 1},${yS - (yS - yA) * .92} ${m},${yA} C${m + 1},${yS - (yS - yA) * .92} ${x0 + w * .55},${yS - (yS - yA) * .83} ${x0 + w * .62},${yS - (yS - yA) * .78} C${x0 + w * .78},${yS - (yS - yA) * .65} ${x1},${yS - (yS - yA) * .45} ${x1},${yS} L${x1},800 Z`; };
-  const rays = [[-330, .10], [-170, .13], [-40, .16], [90, .13], [250, .1], [400, .07]].map(([dx, o]) => `<path d="M600,440 L${600 + dx - 60},800 L${600 + dx + 60},800 Z" fill="#FFE7C2" opacity="${o}"/>`).join("");
-  return `<svg viewBox="0 0 1200 800" preserveAspectRatio="xMidYMax slice" aria-hidden="true">
+  const r = rng(11), GY = 488;
+  const rays = [[-260, .07], [-120, .1], [0, .12], [120, .1], [260, .07]].map(([dx, o]) => `<path d="M${585 + dx * 0.05},${GY} L${615 + dx * 0.05},${GY} L${600 + dx + 70},800 L${600 + dx - 70},800 Z" fill="#FFE2B8" opacity="${o}"/>`).join("");
+  let diyas = "";
+  for (let k = 0; k < 9; k++) { const t = k / 8, e = Math.pow(t, 1.5), y = 506 + e * 290, xl = 556 - e * 170 - 10, xr = 644 + e * 170 + 10, rr = 1.5 + e * 3.4;
+    for (const x of [xl, xr]) diyas += `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${(rr * 5).toFixed(1)}" fill="url(#dDiya)"/><circle cx="${x.toFixed(1)}" cy="${(y - rr * 0.6).toFixed(1)}" r="${rr.toFixed(2)}" fill="#FFE3A8"/>`; }
+  return `<svg viewBox="0 0 1200 800" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
   <defs>
-    <linearGradient id="dSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6E73A8"/><stop offset=".32" stop-color="#A895BC"/><stop offset=".55" stop-color="#E2B2B4"/><stop offset=".7" stop-color="#F7CFAE"/><stop offset=".78" stop-color="#FCE5C6"/></linearGradient>
-    <radialGradient id="dSun" cx="600" cy="452" r="430" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#FFF6E2" stop-opacity="1"/><stop offset=".12" stop-color="#FFE9C4" stop-opacity=".9"/><stop offset=".4" stop-color="#FFD6A8" stop-opacity=".35"/><stop offset="1" stop-color="#FFC8A0" stop-opacity="0"/></radialGradient>
-    <linearGradient id="dFloor" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#CFA5B2"/><stop offset="1" stop-color="#A8809D"/></linearGradient>
-    <linearGradient id="dGround" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5E3D5E"/><stop offset=".5" stop-color="#40273F"/><stop offset="1" stop-color="#2A1A2C"/></linearGradient>
-    <linearGradient id="dGate" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#4A2E48"/><stop offset=".5" stop-color="#5A3854"/><stop offset="1" stop-color="#432843"/></linearGradient>
-    <linearGradient id="dSoffit" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#F3B98E"/><stop offset="1" stop-color="#B9727A"/></linearGradient>
-    <linearGradient id="dMist" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFF1E2" stop-opacity="0"/><stop offset=".5" stop-color="#FFF1E2" stop-opacity=".55"/><stop offset="1" stop-color="#FFF1E2" stop-opacity="0"/></linearGradient>
+    <linearGradient id="dSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#666DA4"/><stop offset=".28" stop-color="#A08FBA"/><stop offset=".46" stop-color="#DBADB4"/><stop offset=".56" stop-color="#F5C9A9"/><stop offset=".62" stop-color="#FCE3C4"/></linearGradient>
+    <radialGradient id="dSun" cx="600" cy="360" r="420" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#FFF6E2" stop-opacity="1"/><stop offset=".1" stop-color="#FFE9C4" stop-opacity=".9"/><stop offset=".38" stop-color="#FFD6A8" stop-opacity=".32"/><stop offset="1" stop-color="#FFC8A0" stop-opacity="0"/></radialGradient>
+    <linearGradient id="dFloor" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#D2A8B4"/><stop offset="1" stop-color="#9C7896"/></linearGradient>
+    <linearGradient id="dGround" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5A3A5C"/><stop offset=".35" stop-color="#3A2440"/><stop offset="1" stop-color="#1C1222"/></linearGradient>
+    <linearGradient id="dGate" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#47294A"/><stop offset=".5" stop-color="#5A3856"/><stop offset="1" stop-color="#3F2541"/></linearGradient>
+    <linearGradient id="dSoffit" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#F6BE92"/><stop offset=".5" stop-color="#E2A08E"/><stop offset="1" stop-color="#A9677A"/></linearGradient>
+    <linearGradient id="dChan" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4A3E66"/><stop offset="1" stop-color="#141026"/></linearGradient>
+    <linearGradient id="dRefl" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFE7C6" stop-opacity=".5"/><stop offset="1" stop-color="#FFE7C6" stop-opacity="0"/></linearGradient>
+    <radialGradient id="dDiya" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#FFC874" stop-opacity=".7"/><stop offset="1" stop-color="#FF9C40" stop-opacity="0"/></radialGradient>
+    <linearGradient id="dMist" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFF1E2" stop-opacity="0"/><stop offset=".5" stop-color="#FFF1E2" stop-opacity=".5"/><stop offset="1" stop-color="#FFF1E2" stop-opacity="0"/></linearGradient>
   </defs>
-  <g class="layer" data-depth="0"><rect width="1200" height="800" fill="url(#dSky)"/><rect width="1200" height="800" fill="url(#dSun)"/><circle cx="600" cy="452" r="52" fill="#FFF8EC"/></g>
-  <g class="layer" data-depth=".15"><path d="${ridge(r, -40, 1240, 496, 16, 800)}" fill="#D9B2BC"/>
-    <path d="${shikhara(408, 492, 1)} ${shikhara(812, 486, .8)} ${chhatri(300, 494, .9)} ${chhatri(960, 488, 1)}" fill="#D2A8B6"/></g>
-  <g class="layer" data-depth=".3"><path d="${ridge(r, -40, 1240, 538, 22, 800)}" fill="#BD91AA"/><path d="${fort(140, 470, 546, 22)} ${fort(760, 1090, 540, 18)}" fill="#B1849F"/></g>
-  <rect x="-20" y="520" width="1240" height="90" fill="url(#dMist)"/>
-  <g class="layer" data-depth=".45"><path d="${ridge(r, -40, 1240, 592, 18, 800)}" fill="#A3799A"/>
-    <path d="M0,640 L1200,640 L1200,800 L0,800 Z" fill="url(#dFloor)"/>
-    <path d="M0,660 L1200,660 M0,700 L1200,700 M0,752 L1200,752" stroke="#E7C5C9" stroke-opacity=".35" stroke-width="1.5"/></g>
-  <g class="gate" style="transform-origin:600px 470px">
-    <path d="M-20,628 L1220,628 L1220,800 L-20,800 Z" fill="url(#dGround)"/>
-    ${rays}
-    <g>
-      <path d="M380,640 L380,214 L392,214 L392,196 L808,196 L808,214 L820,214 L820,640 Z" fill="url(#dGate)"/>
-      ${Array.from({ length: 21 }, (_, i) => `<rect x="${384 + i * 20}" y="184" width="11" height="12" fill="#4A2E48"/>`).join("")}
-      <path d="${chhatri(420, 186, 1.25)} ${chhatri(780, 186, 1.25)} ${chhatri(600, 186, 1.6)}" fill="#4A2E48"/>
-      <path d="M380,300 L820,300 M380,420 L478,420 M722,420 L820,420 M380,540 L478,540 M722,540 L820,540" stroke="#6A4566" stroke-width="2"/>
-      <path d="${archOuter(470, 730, 470, 236)}" fill="#3A2238"/>
-      <path d="${archOuter(482, 718, 474, 252)}" fill="url(#dSoffit)" opacity=".95"/>
-      <path d="${archOuter(500, 700, 480, 272)}" fill="url(#dSky)"/>
-      <path d="${archOuter(500, 700, 480, 272)}" fill="url(#dSun)"/>
-      <circle cx="600" cy="452" r="52" fill="#FFF8EC"/>
-      <path d="${archOuter(500, 700, 480, 272)}" fill="none" stroke="#FFD7AE" stroke-width="2.5" opacity=".9"/>
-      <circle cx="600" cy="228" r="13" fill="none" stroke="#7A4E6E" stroke-width="2"/><circle cx="600" cy="228" r="4" fill="#E9A23B"/>
-      <path d="M352,640 L848,640 L862,660 L338,660 Z M330,660 L870,660 L884,682 L316,682 Z" fill="#5B3B57"/>
-      <path d="M352,640 L848,640 M330,660 L870,660" stroke="#E8A57F" stroke-width="2" opacity=".6"/>
-    </g>
-    <g fill="#2A1A2E">${neem(90, 650, 1.6, "#2A1A2E")}${neem(1120, 660, 1.5, "#2A1A2E")}</g>
+  <g class="layer" data-depth="0"><rect width="1200" height="800" fill="url(#dSky)"/><rect width="1200" height="800" fill="url(#dSun)"/><circle cx="600" cy="360" r="46" fill="#FFF8EC"/></g>
+  <g class="layer" data-depth=".15"><path d="${ridge(r, -40, 1240, 410, 14, 800)}" fill="#D9B2BC"/>
+    <path d="${shikhara(330, 408, .85)} ${shikhara(868, 404, .75)} ${chhatri(250, 410, .8)} ${chhatri(960, 406, .9)}" fill="#D0A6B4"/></g>
+  <g class="layer" data-depth=".3"><path d="${ridge(r, -40, 1240, 440, 18, 800)}" fill="#BD91AA"/><path d="${fort(100, 380, 446, 18)} ${fort(820, 1120, 442, 16)}" fill="#B1849F"/></g>
+  <rect x="-20" y="420" width="1240" height="80" fill="url(#dMist)"/>
+  <g class="layer" data-depth=".45"><path d="${ridge(r, -40, 1240, 472, 12, 800)}" fill="#A3799A"/>
+    <path d="M-20,484 L1220,484 L1220,800 L-20,800 Z" fill="url(#dFloor)"/>
+    <path d="M-20,510 L1220,510 M-20,548 L1220,548 M-20,604 L1220,604 M-20,690 L1220,690" stroke="#EBCBCD" stroke-opacity=".3" stroke-width="1.4"/></g>
+  <g class="gate" style="transform-origin:600px 340px">
+    <path d="M-20,${GY - 10} L1220,${GY - 10} L1220,800 L-20,800 Z" fill="url(#dGround)"/>
+    <path d="M556,${GY + 12} L644,${GY + 12} L820,800 L380,800 Z" fill="url(#dChan)"/>
+    <path d="M556,${GY + 12} L380,800 M644,${GY + 12} L820,800" stroke="#E9A57F" stroke-opacity=".45" stroke-width="2"/>
+    <path d="M592,${GY + 14} L608,${GY + 14} L632,800 L568,800 Z" fill="url(#dRefl)" opacity=".55"/>
+    ${rays}${diyas}
+    <g transform="translate(600 488) scale(.9) translate(-600 -488)"><path d="M404,${GY} L404,140 L796,140 L796,${GY} Z" fill="url(#dGate)"/>
+    ${Array.from({ length: 20 }, (_, i) => `<rect x="${406 + i * 20}" y="128" width="11" height="12" fill="#47294A"/>`).join("")}
+    <path d="${chhatri(446, 128, 1.1)} ${chhatri(754, 128, 1.1)} ${chhatri(600, 128, 1.55)}" fill="#47294A"/>
+    <path d="M404,262 L492,262 M708,262 L796,262 M404,382 L492,382 M708,382 L796,382 M404,150 L796,150" stroke="#6E4868" stroke-width="2"/>
+    <circle cx="448" cy="206" r="14" fill="none" stroke="#7A4E6E" stroke-width="2"/><circle cx="752" cy="206" r="14" fill="none" stroke="#7A4E6E" stroke-width="2"/>
+    <path d="${archShape(490, 710, 330, 172, GY)}" fill="#331E35"/>
+    <path d="${archShape(497, 703, 332, 184, GY)}" fill="url(#dSoffit)"/>
+    <path d="${archShape(510, 690, 336, 200, GY)}" fill="url(#dSky)"/>
+    <path d="${archShape(510, 690, 336, 200, GY)}" fill="url(#dSun)"/>
+    <circle cx="600" cy="360" r="46" fill="#FFF8EC"/>
+    <path d="${archShape(510, 690, 336, 200, GY)}" fill="none" stroke="#FFD9B0" stroke-width="2.5" opacity=".9"/>
+    <circle cx="600" cy="164" r="5" fill="#E9A23B"/>
+    <path d="M380,${GY} L820,${GY} L834,${GY + 12} L366,${GY + 12} Z" fill="#5E3D5A"/><path d="M380,${GY} L820,${GY}" stroke="#EDA986" stroke-width="2" opacity=".7"/></g>
+    <g>${neem(70, GY + 20, 1.6, "#24162A")}${neem(1130, GY + 24, 1.5, "#24162A")}</g>
   </g>
 </svg>`;
 }
@@ -1138,59 +1209,61 @@ function sceneDawn() {
 /* ---------- 2 · the terrace at dusk (viewBox 1200×720) ---------- */
 function sceneDusk() {
   const r = rng(5);
-  const jaali = Array.from({ length: 44 }, (_, i) => `<path d="M${46 + i * 26},604 l6,-8 l6,8 l-6,8 z" fill="#E78F66" opacity=".55"/>`).join("");
+  const jaali = Array.from({ length: 44 }, (_, i) => `<path d="M${46 + i * 26},604 l6,-8 l6,8 l-6,8 z" fill="#E78F66" opacity=".5"/>`).join("");
   const courses = Array.from({ length: 6 }, (_, i) => `<path d="M0,${626 + i * 18} L1200,${626 + i * 18}" stroke="#2F1E3E" stroke-width="1.5" opacity=".7"/>`).join("");
+  const diyas = Array.from({ length: 21 }, (_, i) => { const x = 30 + i * 57; return `<circle cx="${x}" cy="582" r="20" fill="url(#kDiya)"/><path d="M${x - 5},586 q5,4 10,0 z" fill="#B0603A"/><path d="M${x},576 c3,3 3,7 0,9 c-3,-2 -3,-6 0,-9z" fill="#FFD27A"/>`; }).join("");
   return `<svg viewBox="0 0 1200 720" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
   <defs>
     <linearGradient id="kSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#16133A"/><stop offset=".26" stop-color="#2C2454"/><stop offset=".48" stop-color="#5A3A68"/><stop offset=".64" stop-color="#A3566C"/><stop offset=".76" stop-color="#E2845F"/><stop offset=".84" stop-color="#F6B466"/></linearGradient>
-    <radialGradient id="kSun" cx="360" cy="520" r="420" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#FFD9A0" stop-opacity=".95"/><stop offset=".2" stop-color="#FFB37A" stop-opacity=".55"/><stop offset="1" stop-color="#FF9C70" stop-opacity="0"/></radialGradient>
+    <radialGradient id="kSun" cx="420" cy="520" r="430" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#FFD9A0" stop-opacity=".95"/><stop offset=".2" stop-color="#FFB37A" stop-opacity=".5"/><stop offset="1" stop-color="#FF9C70" stop-opacity="0"/></radialGradient>
     <linearGradient id="kWall" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4A3058"/><stop offset="1" stop-color="#26182F"/></linearGradient>
     <linearGradient id="kWater" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#E9906A"/><stop offset=".5" stop-color="#7A4B6E"/><stop offset="1" stop-color="#2D2348"/></linearGradient>
-    <linearGradient id="kStone" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#F0A673"/><stop offset=".18" stop-color="#9C5E6A"/><stop offset="1" stop-color="#5C3A62"/></linearGradient>
-    <linearGradient id="kDome" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#F4B07C"/><stop offset=".35" stop-color="#B76D6E"/><stop offset="1" stop-color="#5A3760"/></linearGradient>
+    <linearGradient id="kStone" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#F0A673"/><stop offset=".22" stop-color="#9C5E6A"/><stop offset="1" stop-color="#5C3A62"/></linearGradient>
+    <linearGradient id="kDome" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#F6B582"/><stop offset=".38" stop-color="#B96F70"/><stop offset="1" stop-color="#55345E"/></linearGradient>
     <radialGradient id="kLamp" cx="0.5" cy="0.5" r="0.5"><stop offset="0" stop-color="#FFD48A" stop-opacity=".9"/><stop offset=".35" stop-color="#FFB25A" stop-opacity=".35"/><stop offset="1" stop-color="#FF9C40" stop-opacity="0"/></radialGradient>
+    <radialGradient id="kDiya" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#FFC874" stop-opacity=".65"/><stop offset="1" stop-color="#FF9C40" stop-opacity="0"/></radialGradient>
   </defs>
   <rect width="1200" height="720" fill="url(#kSky)"/>
   <g>${stars(r, 70, 0, 1200, 10, 300)}</g>
-  <path d="M968,96 a26,26 0 1,0 22,40 a20,20 0 1,1 -22,-40z" fill="#FBEFD9" opacity=".92"/>
+  <path d="M820,84 a26,26 0 1,0 22,40 a20,20 0 1,1 -22,-40z" fill="#FBEFD9" opacity=".92"/>
   <rect width="1200" height="720" fill="url(#kSun)"/>
-  <g class="layer" data-depth=".12"><path d="${ridge(r, -40, 1240, 462, 14, 720)}" fill="#8B5674"/><path d="${shikhara(520, 458, .9)} ${shikhara(698, 452, 1.1)} ${chhatri(1000, 456, .9)} ${shikhara(180, 460, .8)}" fill="#7E4D6C"/></g>
-  <g class="layer" data-depth=".25"><path d="${ridge(r, -40, 1240, 500, 22, 720)}" fill="#653E66"/><path d="${fort(760, 1160, 506, 26, 100)} ${fort(60, 300, 512, 20)}" fill="#5A3760"/></g>
+  <g class="layer" data-depth=".12"><path d="${ridge(r, -40, 1240, 462, 14, 720)}" fill="#8B5674"/><path d="${shikhara(470, 458, .9)} ${shikhara(760, 452, 1.1)} ${chhatri(1010, 456, .9)} ${shikhara(190, 460, .8)}" fill="#7E4D6C"/></g>
+  <g class="layer" data-depth=".25"><path d="${ridge(r, -40, 1240, 500, 22, 720)}" fill="#653E66"/><path d="${fort(780, 1160, 506, 26, 100)} ${fort(40, 300, 512, 20)}" fill="#5A3760"/></g>
   <g class="layer" data-depth=".4"><path d="${ridge(r, -40, 1240, 548, 16, 720)}" fill="#432B54"/></g>
   <g class="layer" data-depth=".6">
     <rect x="-20" y="586" width="1240" height="140" fill="url(#kWall)"/>${courses}
     <path d="M-20,586 L1220,586 L1220,592 L-20,592 Z" fill="#E99A6C" opacity=".7"/>
     <rect x="-20" y="592" width="1240" height="24" fill="#3B2649"/>${jaali}
-    <path d="M250,616 L250,720 L470,720 L470,616 Z" fill="#1E1430"/>
-    ${[0, 1, 2, 3, 4].map((i) => `<path d="M${250 + i * 22},${616 + i * 18} L${470 - i * 22},${616 + i * 18} L${470 - i * 22},${634 + i * 18} L${250 + i * 22},${634 + i * 18} Z" fill="${i % 2 ? "#4B3058" : "#583966"}"/><path d="M${250 + i * 22},${616 + i * 18} L${470 - i * 22},${616 + i * 18}" stroke="#F09A6A" stroke-opacity=".55" stroke-width="2"/>`).join("")}
-    <rect x="360" y="706" width="0" height="0"/>
-    <path d="M360,706 L360,720" />
-    <rect x="${250 + 5 * 22}" y="${616 + 5 * 18}" width="${220 - 10 * 22}" height="40" fill="url(#kWater)"/>
-    <!-- the half-built idea: stone base, two pillars set, scaffold, a lantern -->
+    <!-- the stepwell, cut away -->
+    <path d="M790,616 L790,720 L1010,720 L1010,616 Z" fill="#1E1430"/>
+    ${[0, 1, 2, 3, 4].map((i) => `<path d="M${790 + i * 22},${616 + i * 18} L${1010 - i * 22},${616 + i * 18} L${1010 - i * 22},${634 + i * 18} L${790 + i * 22},${634 + i * 18} Z" fill="${i % 2 ? "#4B3058" : "#583966"}"/><path d="M${790 + i * 22},${616 + i * 18} L${1010 - i * 22},${616 + i * 18}" stroke="#F09A6A" stroke-opacity=".55" stroke-width="2"/>`).join("")}
+    <rect x="900" y="706" width="0" height="0" fill="none"/>
+    <rect x="${790 + 5 * 22}" y="${616 + 5 * 18}" width="${220 - 10 * 22}" height="30" fill="url(#kWater)"/>
+    <!-- the half-built idea: stone base, two pillars set, bamboo scaffold, a lantern (got it today) -->
     <g>
-      <rect x="490" y="560" width="150" height="26" fill="url(#kStone)"/>
-      <rect x="502" y="470" width="16" height="90" fill="url(#kStone)"/><rect x="612" y="470" width="16" height="90" fill="#5C3A62"/>
-      <rect x="494" y="458" width="142" height="12" fill="url(#kStone)"/>
-      <g stroke="#D6A86C" stroke-width="3" stroke-linecap="round" opacity=".9">
-        <path d="M540,586 L540,404 M590,586 L590,404 M532,520 L598,520 M532,456 L598,456 M532,410 L598,410 M540,520 L590,456 M590,520 L540,456"/></g>
-      <path d="M565,404 L565,428" stroke="#D6A86C" stroke-width="1.5"/>
-      <circle cx="565" cy="440" r="44" fill="url(#kLamp)"/><path d="M558,430 h14 l3,8 v10 l-3,4 h-14 l-3,-4 v-10 z" fill="#FFC86E"/>
+      <rect x="296" y="560" width="150" height="26" fill="url(#kStone)"/>
+      <rect x="308" y="470" width="16" height="90" fill="url(#kStone)"/><rect x="418" y="470" width="16" height="90" fill="#5C3A62"/>
+      <rect x="300" y="458" width="142" height="12" fill="url(#kStone)"/>
+      <g stroke="#D6A86C" stroke-width="3" stroke-linecap="round" opacity=".9"><path d="M346,586 L346,404 M396,586 L396,404 M338,520 L404,520 M338,456 L404,456 M338,410 L404,410 M346,520 L396,456 M396,520 L346,456"/></g>
+      <path d="M371,404 L371,428" stroke="#D6A86C" stroke-width="1.5"/>
+      <circle cx="371" cy="440" r="48" fill="url(#kLamp)"/><path d="M364,430 h14 l3,8 v10 l-3,4 h-14 l-3,-4 v-10 z" fill="#FFC86E"/>
     </g>
     <!-- the pavilion where Asha waits -->
-    <g>
-      <path d="M660,586 L660,568 L960,568 L960,586 Z" fill="url(#kStone)"/>
-      <path d="M672,568 L672,556 L948,556 L948,568 Z" fill="#7A4B66"/>
-      <rect x="684" y="318" width="22" height="238" fill="url(#kStone)"/><rect x="914" y="318" width="22" height="238" fill="#56365E"/>
-      <rect x="690" y="330" width="240" height="226" fill="#2A1A2E"/>
-      <circle cx="810" cy="440" r="170" fill="url(#kLamp)"/>
-      <rect id="ashaSlot" x="736" y="352" width="148" height="192" fill="none"/>
-      <path d="M664,318 L956,318 L972,300 L648,300 Z" fill="#E59A6C"/><path d="M648,300 L972,300 L972,292 L648,292 Z" fill="#B66A6A"/>
-      <path d="M690,292 C690,214 760,196 810,150 C860,196 930,214 930,292 Z" fill="url(#kDome)"/>
-      <path d="M690,292 C690,214 760,196 810,150" stroke="#FFC28E" stroke-width="3" fill="none" opacity=".8"/>
-      <path d="M806,150 L810,118 L814,150 Z" fill="#E9A23B"/><circle cx="810" cy="114" r="5" fill="#FFC24D"/>
-      <path d="M700,292 L920,292 L920,286 L700,286 Z" fill="#8E5468"/>
+    <g transform="translate(600 586) scale(1.2) translate(-600 -586)">
+      <path d="M450,586 L450,568 L750,568 L750,586 Z" fill="url(#kStone)"/>
+      <path d="M462,568 L462,556 L738,556 L738,568 Z" fill="#7A4B66"/>
+      <rect x="474" y="318" width="22" height="238" fill="url(#kStone)"/><rect x="704" y="318" width="22" height="238" fill="#56365E"/>
+      <rect x="480" y="330" width="240" height="226" fill="#2A1A2E"/>
+      <circle cx="600" cy="440" r="176" fill="url(#kLamp)"/>
+      <rect id="ashaSlot" x="526" y="352" width="148" height="192" fill="none"/>
+      <path d="M454,318 L746,318 L762,300 L438,300 Z" fill="#E59A6C"/><path d="M438,300 L762,300 L762,292 L438,292 Z" fill="#B66A6A"/>
+      <path d="M480,292 C480,214 550,196 600,150 C650,196 720,214 720,292 Z" fill="url(#kDome)"/>
+      <path d="M480,292 C480,214 550,196 600,150" stroke="#FFC28E" stroke-width="3" fill="none" opacity=".8"/>
+      <path d="M596,150 L600,118 L604,150 Z" fill="#E9A23B"/><circle cx="600" cy="114" r="5" fill="#FFC24D"/>
+      <path d="M490,292 L710,292 L710,286 L490,286 Z" fill="#8E5468"/>
     </g>
-    <g>${neem(1100, 586, 1.4, "#22152B")}${neem(120, 590, 1.1, "#22152B")}</g>
+    ${diyas}
+    <g>${neem(1120, 586, 1.4, "#22152B")}${neem(110, 590, 1.15, "#22152B")}</g>
   </g>
 </svg>`;
 }
@@ -1326,6 +1399,8 @@ Screens.hello = {
   build() {
     const el = html(`<section class="screen" id="s-hello" aria-label="First run: choose your teacher">
       <div class="scene">${sceneDawn()}</div>
+      <div class="h-veil on" id="hVeilA" style="background:linear-gradient(180deg,rgba(20,10,28,0) 52%,rgba(20,10,28,.5) 74%,rgba(16,8,22,.78) 100%)"></div>
+      <div class="h-veil" id="hVeilB"></div>
       <div class="h-ui">
         <div class="h-step" data-step="a">
           <div class="brandmark" style="color:#FBEBDD">${BRAND}<span>TAXILA</span></div>
@@ -1355,7 +1430,7 @@ Screens.hello = {
               <button class="pickhit" aria-label="Choose Arjun"></button>
             </div>
           </div>
-          <div class="hear"><button class="btn ghost" id="hHear">${ICON.speaker}<span>Hear Asha</span></button></div>
+          <div class="hear"><button class="btn ghost light" id="hHear">${ICON.speaker}<span>Hear Asha</span></button></div>
           <div class="capbox panel" aria-live="polite"><div class="who">Asha · AI teacher</div><div class="txt" id="hCap">Tap “Hear Asha”. She introduces herself in her own voice.</div></div>
           <div class="pick-cta"><button class="btn lamp block" id="hGo">Learn with Asha</button></div>
         </div>
@@ -1381,6 +1456,7 @@ Screens.hello = {
         gate.animate([{ transform: "scale(1)", opacity: 1 }, { transform: "scale(3.1)", opacity: 0 }], { duration: 1150, easing: "cubic-bezier(.65,0,.2,1)", fill: "forwards" });
       }
       stepA.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 300, fill: "forwards" });
+      $("#hVeilA", el).classList.remove("on"); $("#hVeilB", el).classList.add("on");
       setTimeout(() => { if (!s.alive()) return; stepA.hidden = true; stepB.hidden = false; Face.attach(ashaWin, [150, 40, 724]); setPick("asha");
         $$(".pick-head, .niche, .hear, .capbox, .pick-cta", el).forEach((n, i) => n.animate([{ opacity: 0, transform: "translateY(16px)" }, { opacity: 1, transform: "none" }], { duration: 560, delay: i * 70, easing: "cubic-bezier(.22,.8,.2,1)", fill: "backwards" })); }, RM ? 60 : 700);
     };
@@ -1405,6 +1481,7 @@ Screens.hello = {
     gate.getAnimations().forEach((a) => a.cancel()); gate.style.opacity = "";
     stepA.getAnimations().forEach((a) => a.cancel());
     stepA.hidden = false; stepB.hidden = true;
+    $("#hVeilA", el).classList.add("on"); $("#hVeilB", el).classList.remove("on");
     settleLayers(el);
   },
   leave() { Face.stopClip(); },
@@ -1454,6 +1531,7 @@ Screens.home = {
           <div class="greet panel" aria-live="polite"><div class="who"><b>Asha</b><span class="floor" id="kFloor"></span></div><div class="txt" id="kCap">Kal tumne common factors pakke kiye. Aaj ek number ko uske primes tak todenge.</div></div>
         </div>
         <div class="home-body">
+          <div class="home-greet-wrap"></div>
           <div class="today panel solid rise">
             <div class="eyebrow lamp">Today · Chapter 5, Prime Time</div>
             <h2>Prime factorisation</h2>
@@ -1485,6 +1563,9 @@ Screens.home = {
     this.ro = new ResizeObserver(() => this.place()); this.ro.observe(el);
   },
   place() {
+    const greet = $(".greet", this.el), narrow = this.el.clientWidth < 900;
+    const want = narrow ? $(".home-greet-wrap", this.el) : $(".home-scene", this.el);
+    if (greet.parentElement !== want) want.appendChild(greet);
     const slot = $("#ashaSlot", this.el), win = $(".asha-win", this.el), host = $(".home-scene", this.el);
     if (!slot) return; const a = slot.getBoundingClientRect(), b = host.getBoundingClientRect();
     if (!a.width) return;
@@ -1530,14 +1611,14 @@ Screens.lesson = {
           <div class="ttl"><b>Prime factorisation</b><div class="phases"><span data-p="warm">Warm-up</span><span data-p="learn" class="on">Learn</span><span data-p="try">Try</span><span data-p="wrap">Wrap</span></div></div>
         </div>
         <div class="ls-board"><div class="board">
-          <div class="slate panel solid" style="--c:12px"></div>
-          <svg class="tree" viewBox="0 0 360 300" preserveAspectRatio="xMidYMid meet" aria-label="Asha's board"><g id="bEx"></g><g id="bMain"></g></svg>
+          <div class="slate panel solid" style="--c:12px"></div><div class="ledge" aria-hidden="true"><i class="chalk"></i><i class="duster"></i></div>
+          <div class="bh" aria-hidden="true"><span>Prime factorisation</span><span>Fri, 9 Oct</span></div><svg class="tree" viewBox="0 0 320 306" preserveAspectRatio="xMidYMin meet" aria-label="Asha's board"><g id="bEx"></g><g id="bMain"></g></svg>
         </div></div>
         <div class="ls-low">
           <div class="dlg panel solid">
             <div class="portrait">${jharokha()}</div>
             <div class="dl-in">
-              <div class="nameplate"><b>Asha · AI teacher</b><span class="floor" id="lFloor"></span></div>
+              <div class="nameplate"><b>Asha <span class="ai-tag">AI</span></b><span class="floor" id="lFloor"></span></div>
               <div class="cap" id="lCap" aria-live="polite"></div>
             </div>
           </div>
@@ -1598,7 +1679,7 @@ Screens.lesson = {
     mic.classList.remove("yt", "li", "th");
     clearTimeout(this.thT);
     if (f === "speaking") { fl.innerHTML = `<i>${FLOOR.speaking}</i>Talking`; turn.className = "floor"; turn.innerHTML = ""; hint.textContent = "Tap the mic to interrupt her"; mic.setAttribute("aria-label", "Interrupt Asha"); Face.setStatus("speaking"); }
-    if (f === "your_turn") { fl.innerHTML = `<i>${FLOOR.your_turn}</i>Waiting for you`; mic.classList.add("yt"); turn.className = "floor yt"; turn.innerHTML = `<i>${FLOOR.your_turn}</i>Your turn`; hint.textContent = "Speak, or type your answer"; mic.setAttribute("aria-label", "Speak your answer"); Face.setStatus("your_turn");
+    if (f === "your_turn") { fl.innerHTML = `<i>${FLOOR.your_turn}</i>Waiting`; mic.classList.add("yt"); turn.className = "floor yt"; turn.innerHTML = `<i>${FLOOR.your_turn}</i>Your turn`; hint.textContent = "Speak, or type your answer"; mic.setAttribute("aria-label", "Speak your answer"); Face.setStatus("your_turn");
       if (!quiet) { Sfx.turn(); try { navigator.vibrate && navigator.vibrate(20); } catch {} } }
     if (f === "listening") { fl.innerHTML = `<i>${FLOOR.listening}</i>Listening`; mic.classList.add("li"); turn.className = "floor li"; turn.innerHTML = `<i>${FLOOR.listening}</i>Listening…`; hint.textContent = "Prototype: plays a sample spoken answer"; mic.setAttribute("aria-label", "Done speaking"); Face.setStatus("listening"); }
     if (f === "thinking") { mic.classList.add("th"); turn.className = "floor"; fl.innerHTML = ""; Face.setStatus("thinking");
@@ -1748,22 +1829,24 @@ Screens.lesson = {
   text(g, x, y, str, size = 20, fill = "#F7EEDB", delay = 0, anchor = "middle") {
     const t = document.createElementNS("http://www.w3.org/2000/svg", "text");
     t.setAttribute("x", x); t.setAttribute("y", y); t.setAttribute("text-anchor", anchor); t.setAttribute("font-family", "Eczar, Georgia, serif"); t.setAttribute("font-weight", "700"); t.setAttribute("font-size", size); t.setAttribute("fill", fill);
-    t.textContent = str; g.appendChild(t);
+    t.innerHTML = String(str).replace(/[×=≠]/g, (m) => `<tspan font-family="Mukta, sans-serif" font-weight="600">${m}</tspan>`); g.appendChild(t);
     if (!RM) t.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 500, delay, fill: "both" });
     return t;
   },
   drawEx(step, instant) {
     const g = this.ex;
     if (instant) { g.innerHTML = ""; for (let i = 0; i <= step; i++) this.drawEx(i); return; }
-    if (step === 0) { g.innerHTML = ""; this.n12 = this.node(g, 180, 50, 12, "comp", 0, true); }
-    if (step === 1) { this.chalkLine(g, 168, 74, 124, 116); this.chalkLine(g, 192, 74, 236, 116, 120); this.n3 = this.node(g, 116, 136, 3, "comp", 380); this.n4 = this.node(g, 244, 136, 4, "comp", 480); }
+    if (step === 0) { g.innerHTML = ""; this.n12 = this.node(g, 160, 50, 12, "comp", 0, true); }
+    if (step === 1) { this.chalkLine(g, 148, 74, 104, 116); this.chalkLine(g, 172, 74, 216, 116, 120); this.n3 = this.node(g, 96, 136, 3, "comp", 380); this.n4 = this.node(g, 224, 136, 4, "comp", 480); }
     if (step === 2 && this.n3 && this.n3.isConnected) this.primeUp(this.n3);
-    if (step === 3) { this.chalkLine(g, 234, 158, 206, 196); this.chalkLine(g, 254, 158, 282, 196, 120); this.node(g, 200, 214, 2, "prime", 420); this.node(g, 288, 214, 2, "prime", 520); }
-    if (step === 4) this.text(g, 180, 284, "12 = 2 × 2 × 3", 22, "#FFE2A1");
+    if (step === 3) { this.chalkLine(g, 214, 158, 186, 196); this.chalkLine(g, 234, 158, 262, 196, 120); this.node(g, 180, 214, 2, "prime", 420); this.node(g, 268, 214, 2, "prime", 520); }
+    if (step === 4) this.text(g, 160, 284, "12 = 2 × 2 × 3", 22, "#FFE2A1");
     if (step === 5) {
-      if (!RM) g.animate([{ transform: "translate(0,0) scale(1)" }, { transform: "translate(6px,4px) scale(.38)" }], { duration: 700, easing: "cubic-bezier(.65,0,.2,1)", fill: "forwards" });
-      else g.setAttribute("transform", "translate(6 4) scale(.38)");
-      setTimeout(() => { this.main.innerHTML = ""; this.n36 = this.node(this.main, 210, 54, 36, "comp", 0, true); }, RM ? 0 : 420);
+      const fade = RM ? Promise.resolve() : g.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 380, fill: "forwards" }).finished.catch(() => {});
+      fade.then(() => { g.getAnimations().forEach((a) => a.cancel()); g.innerHTML = "";
+        this.text(g, 4, 6, "Example", 14, "#F4E7C9", 0, "start").setAttribute("opacity", ".6");
+        this.text(g, 4, 28, "12 = 2 × 2 × 3", 17, "#FFE2A1", 80, "start");
+        this.main.innerHTML = ""; this.n36 = this.node(this.main, 172, 54, 36, "comp", 0, true); });
     }
   },
   drawChildAnswer(nums) {
@@ -1776,32 +1859,33 @@ Screens.lesson = {
     const grp = document.createElementNS("http://www.w3.org/2000/svg", "g"); grp.classList.add("ans"); g.appendChild(grp);
     if (correctNow && prev && prev.comps.length && prev.prod === 36) {
       // the child's own earlier tree grows: every composite on it breaks into its primes
-      prev.kids.forEach(({ v, x, el }) => { if (isPrime(v)) return; const pf = primeFactors(v), w = 40;
-        pf.forEach((p, i) => { const cx = x + (i - (pf.length - 1) / 2) * w; this.chalkLine(grp, x, 156, cx, 194, i * 90); this.node(grp, cx, 214, p, "prime", 300 + i * 90); }); });
-      this.pending = { y: 284 };
+      prev.kids.forEach(({ v, x, el }) => { if (isPrime(v)) return; const pf = primeFactors(v), w = 46;
+        pf.forEach((p, i) => { const cx = x + (i - (pf.length - 1) / 2) * (pf.length > 2 ? 30 : w); this.chalkLine(grp, x, 156, cx, 194, i * 90); this.node(grp, cx, 214, p, "prime", 300 + i * 90); }); });
+      this.pending = { y: 280 };
       return;
     }
     $$(".fan", g).forEach((n) => n.remove());
     const fan = document.createElementNS("http://www.w3.org/2000/svg", "g"); fan.classList.add("fan"); g.appendChild(fan);
-    const n = nums.length, sp = n > 1 ? Math.min(72, 260 / (n - 1)) : 0, kids = [];
-    nums.forEach((v, i) => { const x = 210 + (i - (n - 1) / 2) * sp; this.chalkLine(fan, 210, 80, x, 116, i * 70); kids.push({ v, x, el: this.node(fan, x, 136, v, "comp", 260 + i * 70) }); });
+    const n = nums.length, sp = n > 1 ? Math.min(110, 250 / (n - 1)) : 0, kids = [];
+    nums.forEach((v, i) => { const x = 172 + (i - (n - 1) / 2) * sp; this.chalkLine(fan, 172, 80, x, 116, i * 70); kids.push({ v, x, el: this.node(fan, x, 136, v, "comp", 260 + i * 70) }); });
     this.prevFan = { kids, prod, comps: nums.filter((v) => v > 1 && !isPrime(v)) };
-    this.pending = { y: 230 };
+    this.pending = { y: 232 };
   },
   boardVerdict(verdict, nums) {
     const g = this.main, fan = $(".fan", g), y = (this.pending && this.pending.y) || 240;
     if (!nums.length) return;
     const prod = nums.reduce((a, b) => a * b, 1);
     if (verdict === "right") {
+      $$("path[stroke-dasharray='1 6']", g).forEach((d) => d.remove());
       $$("g[data-v]", g).forEach((n) => { if (isPrime(+n.dataset.v) && !n.querySelector("circle")) this.primeUp(n); });
       const row = document.createElementNS("http://www.w3.org/2000/svg", "g"); row.classList.add("ans"); g.appendChild(row);
-      this.text(row, 196, y, "36 = " + nums.slice().sort((a, b) => a - b).join(" × "), 22, "#FFE2A1");
-      const tick = this.chalkLine(row, 300, y - 8, 310, y + 2, 300, 260); tick.setAttribute("stroke", "#FFD27A"); tick.setAttribute("stroke-width", "3.4");
-      const tick2 = this.chalkLine(row, 310, y + 2, 330, y - 22, 540, 300); tick2.setAttribute("stroke", "#FFD27A"); tick2.setAttribute("stroke-width", "3.4");
+      this.text(row, 150, y, "36 = " + nums.slice().sort((a, b) => a - b).join(" × "), 22, "#FFE2A1");
+      const tick = this.chalkLine(row, 262, y - 8, 272, y + 2, 300, 260); tick.setAttribute("stroke", "#FFD27A"); tick.setAttribute("stroke-width", "3.4");
+      const tick2 = this.chalkLine(row, 272, y + 2, 292, y - 22, 540, 300); tick2.setAttribute("stroke", "#FFD27A"); tick2.setAttribute("stroke-width", "3.4");
       if (!RM) $$("g[data-v]", g).forEach((n, i) => n.animate([{ opacity: 1 }, { opacity: .55 }, { opacity: 1 }], { duration: 900, delay: i * 40 }));
     } else if (fan) {
       const row = document.createElementNS("http://www.w3.org/2000/svg", "g"); row.classList.add("ans"); g.appendChild(row);
-      this.text(row, 210, y, nums.join(" × ") + " = " + prod + (prod === 36 ? "" : "  ≠ 36"), 20, prod === 36 ? "#F7EEDB" : "#9FD3F7");
+      this.text(row, 160, y, nums.join(" × ") + " = " + prod + (prod === 36 ? "" : "  ≠ 36"), 20, prod === 36 ? "#F7EEDB" : "#9FD3F7");
       $$("g[data-v]", fan).forEach((n) => {
         const v = +n.dataset.v; if (v <= 1 || isPrime(v)) return;
         const crack = document.createElementNS("http://www.w3.org/2000/svg", "path");
@@ -1836,7 +1920,7 @@ Screens.game = {
       <div class="gm">
         <div class="gm-hud">
           <button class="iconbtn" id="gBack" aria-label="Back to the lesson">${ICON.back}</button>
-          <div class="ttl"><b>Todo-Jodo · <span id="gN">72</span></b><span>Split every block down to primes</span></div>
+          <div class="ttl"><b>Todo-Jodo · <span id="gN">72</span></b><span>Break it down to primes</span></div>
           <button class="iconbtn" id="gSnd" aria-label="Sound on" style="margin-left:auto">${ICON.soundOn}</button>
         </div>
         <div class="doors" role="group" aria-label="Choose a level">
@@ -1848,17 +1932,16 @@ Screens.game = {
           <svg class="gm-bonds" id="gBonds"></svg>
           <div class="blocks" id="gBlocks"></div>
           <canvas class="gm-fx" id="gFx"></canvas>
-          <div class="react panel solid" id="gReact" aria-live="polite"><div class="mini"><div class="jharokha" style="clip-path:url(#jhClip)"><div class="jh-face"></div></div></div><div class="t"><b>ASHA</b><span id="gSay"></span></div></div>
           <div class="finale" id="gFin"><div class="card panel solid">
             <div class="eyebrow lamp">Back to <span class="fN">72</span></div>
-            <h3 id="gFinH">72 = 2 × 2 × 2 × 3 × 3</h3>
+            <h3 id="gFinH"></h3>
             <p>Placed on your terrace, in pencil. It turns to stone when you break a new number on another day, without help.</p>
             <div class="row"><button class="btn ghost" id="gToLesson">Lesson</button><button class="btn lamp" id="gToMap">See your valley</button></div>
           </div></div>
         </div>
         <div class="gm-tray">
+          <div class="react" id="gReact" aria-live="polite"><div class="mini"><div class="jharokha" style="clip-path:url(#jhClip)"><div class="jh-face"></div></div></div><div class="t"><b>ASHA</b><span id="gSay"></span></div><span class="sel-lab" id="gLab"></span></div>
           <div class="strip panel" id="gStrip" aria-live="polite"></div>
-          <div class="chisel-lab"><span id="gLab">Split <b>72</b> by</span><span style="color:var(--ink-3);font-size:14px" id="gLab2"></span></div>
           <div class="chisel" id="gChisel">${[2, 3, 4, 5, 6, 7, 8, 9].map((d) => `<button data-d="${d}" aria-label="Split by ${d}">${d}</button>`).join("")}</div>
           <div class="gm-actions"><button class="btn ghost" id="gUndo">${ICON.undo}<span>Undo</span></button><button class="btn lamp" id="gDone">${ICON.tick}<span>Done</span></button></div>
         </div>
@@ -1895,7 +1978,7 @@ Screens.game = {
     this.layout(true);
     this.select(root);
     this.updateStrip();
-    this.say(n === 72 ? "72 ko todo — har block, primes tak." : "360: ek circle mein itne degree. Primes tak todo.", true);
+    this.say(n === 72 ? "72 ko primes tak todo." : "360, ek circle ke degree. Primes tak todo.", true);
     this.loop();
   },
   mk(v, parent) {
@@ -1919,9 +2002,9 @@ Screens.game = {
   layout(snap) {
     if (!this.nodes.length) return;
     const L = this.leaves(), maxD = Math.max(...this.nodes.map((n) => n.depth));
-    const top = 64, rowH = Math.min(96, (this.H - top - 70) / Math.max(1, maxD));
+    const top = this.H > 600 ? 96 : 66, rowH = Math.min(this.H > 600 ? 128 : 96, (this.H - top - 70) / Math.max(1, maxD));
     const colW = (this.W - 20) / L.length;
-    this.bs = Math.max(44, Math.min(62, rowH * 0.66, colW * 0.84));
+    this.bs = Math.max(44, Math.min(this.H > 600 ? 84 : 62, rowH * 0.66, colW * 0.84));
     L.forEach((n, i) => (n.tx = 10 + (i + 0.5) * colW));
     const up = (n) => { if (n.kids.length) { n.kids.forEach(up); n.tx = (n.kids[0].tx + n.kids[n.kids.length - 1].tx) / 2; } n.ty = top + n.depth * rowH; };
     up(this.nodes[0]);
@@ -1930,9 +2013,9 @@ Screens.game = {
   },
   select(n) {
     this.sel = n; this.nodes.forEach((m) => m.el.classList.toggle("sel", m === n));
-    const lab = $("#gLab", this.el), lab2 = $("#gLab2", this.el);
-    if (n && n.state === "whole") { lab.innerHTML = `Split <b>${n.v}</b> by`; lab2.textContent = ""; $$("#gChisel button", this.el).forEach((b) => (b.disabled = false)); }
-    else { lab.innerHTML = "Tap a block"; lab2.textContent = "then choose what to divide by"; $$("#gChisel button", this.el).forEach((b) => (b.disabled = true)); }
+    const lab = $("#gLab", this.el);
+    if (n && n.state === "whole") { lab.innerHTML = `Split <b>${n.v}</b> by`; $$("#gChisel button", this.el).forEach((b) => (b.disabled = false)); }
+    else { lab.innerHTML = "Tap a block"; $$("#gChisel button", this.el).forEach((b) => (b.disabled = true)); }
   },
   tapBlock(n) {
     Sfx.ensure();
@@ -2008,19 +2091,19 @@ Screens.game = {
     let acc = 1; const strip = $("#gStrip", this.el);
     for (let i = 0; i < L.length; i++) {
       await sleep(RM ? 40 : 230); acc *= L[i].v;
-      strip.innerHTML = L.slice(0, i + 1).map((n) => `<span class="p">${n.v}</span>`).join(" × ") + (i ? ` <span>= ${acc}</span>` : "");
+      strip.innerHTML = L.slice(0, i + 1).map((n) => `<span class="p">${n.v}</span>`).join(ops(" × ")) + (i ? ` ${ops("=")} <span>${acc}</span>` : "");
       Sfx.bell(440 * Math.pow(2, i / 7), 0.12); this.spark(L[i].tx, y, 6);
     }
     const root = this.nodes[0];
     root.el.classList.remove("split"); root.el.querySelector(".crack")?.remove(); root.el.classList.add("sel");
     Sfx.finale(); this.spark(root.x, root.y, 28); this.ring(root.x, root.y);
     this.say(fill(BANK.solved, { n: this.N }), true);
-    $("#gFinH", this.el).textContent = `${this.N} = ${L.map((n) => n.v).join(" × ")}`;
+    $("#gFinH", this.el).innerHTML = ops(`${this.N} = ${L.map((n) => n.v).join(" × ")}`);
     setTimeout(() => { if (this.finished && CUR === "game") $("#gFin", this.el).classList.add("on"); }, RM ? 300 : 1500);
   },
   updateStrip() {
     const L = this.leaves();
-    $("#gStrip", this.el).innerHTML = L.length === 1 ? `<span>${this.N}</span>` : `<span>${this.N} =</span> ` + L.map((n) => (n.state === "prime" ? `<span class="p">${n.v}</span>` : `<span>${n.v}</span>`)).join(" × ");
+    $("#gStrip", this.el).innerHTML = L.length === 1 ? `<span>${this.N}</span>` : `<span>${this.N}</span> ${ops("=")} ` + L.map((n) => (n.state === "prime" ? `<span class="p">${n.v}</span>` : `<span>${n.v}</span>`)).join(ops(" × "));
   },
   floatChip(n, txt) {
     const c = html(`<div style="position:absolute;z-index:7;left:${n.x}px;top:${n.y - this.bs / 2 - 30}px;transform:translateX(-50%);padding:4px 10px;font:600 15px var(--f-ui);color:#E6F4FF;background:rgba(18,30,52,.92);border:1px solid rgba(134,201,246,.6);white-space:nowrap;pointer-events:none">${txt}</div>`);
@@ -2028,8 +2111,8 @@ Screens.game = {
     c.animate([{ opacity: 0, transform: "translate(-50%,6px)" }, { opacity: 1, transform: "translate(-50%,0)", offset: 0.15 }, { opacity: 1, offset: 0.8 }, { opacity: 0, transform: "translate(-50%,-8px)" }], { duration: 2200, easing: "ease-out" }).finished.then(() => c.remove());
   },
   say(t, force) {
-    const r = $("#gReact", this.el); $("#gSay", this.el).textContent = t; r.classList.add("show");
-    clearTimeout(this.sayT); this.sayT = setTimeout(() => r.classList.remove("show"), 3000);
+    const r = $("#gReact", this.el), sp = $("#gSay", this.el); sp.textContent = t; r.classList.add("show");
+    if (!RM) sp.animate([{ opacity: 0, transform: "translateY(4px)" }, { opacity: 1, transform: "none" }], { duration: 260, easing: "cubic-bezier(.22,.8,.2,1)" });
   },
   shake() {
     if (RM) return; const s = this.stage, t0 = performance.now();
@@ -2098,7 +2181,7 @@ Screens.map = {
         <div class="mp-hud">
           <button class="iconbtn" id="mBack" aria-label="Home" style="background:rgba(14,12,30,.6);box-shadow:inset 0 0 0 1px var(--hair-2)">${ICON.back}</button>
           <div class="ttl"><b>Your valley</b><span>Class 6 · Mathematics</span></div>
-          <div class="seg" role="group" aria-label="View"><button aria-pressed="true" id="mMapB">Map</button><button aria-pressed="false" id="mListB">List</button></div>
+          <div class="seg" role="group" aria-label="View"><button aria-pressed="true" id="mMapB" aria-label="Map">${ICON.map}<span class="lbl">Map</span></button><button aria-pressed="false" id="mListB" aria-label="List">${ICON.list}<span class="lbl">List</span></button></div>
         </div>
         <button class="chipbtn mp-here" id="mHere">${ICON.locate}<span>Your class</span></button>
         <div class="mp-legend panel solid" aria-label="What the pavilions mean">${[1, 2, 3, 4].map((s) => `<div class="lg">${stateGlyph(s)}<span>${STATE_WORD[s]}</span></div>`).join("")}</div>
@@ -2146,7 +2229,8 @@ Screens.map = {
       + this.poly([P(x, y, z + h), P(x + w, y, z + h), P(x + w, y + d, z + h), P(x, y + d, z + h)], top, extra);
   },
   pavilion(px, py, z, st, key) {
-    const s = this.s, P = (a, b, c) => this.P(a, b, c);
+    const s = this.s * 1.18, P = (a, b, c) => { const q = this.P(px + (a - px) * 1.18, py + (b - py) * 1.18, z + (c - z) * 1.18); return q; };
+    const box = (x, y, zz, w, d, h, t, l, r) => { const P0 = (a, b, c) => P(a, b, c); return this.poly([P0(x, y + d, zz + h), P0(x + w, y + d, zz + h), P0(x + w, y + d, zz), P0(x, y + d, zz)], l) + this.poly([P0(x + w, y, zz + h), P0(x + w, y + d, zz + h), P0(x + w, y + d, zz), P0(x + w, y, zz)], r) + this.poly([P0(x, y, zz + h), P0(x + w, y, zz + h), P0(x + w, y + d, zz + h), P0(x, y + d, zz + h)], t); };
     let g = "";
     const [cx, cy] = P(px, py, z);
     if (st === 1) { // chalk plan on the ground
@@ -2159,12 +2243,12 @@ Screens.map = {
     const lit = st >= 3;
     const stoneT = lit ? "#B9A7D6" : "#8F8CC6", stoneL = lit ? "#8C7FB8" : "#6A6AA6", stoneR = "#3E3F78";
     if (lit) { const [gx, gy] = P(px, py, z + 0.42); g += `<circle cx="${gx}" cy="${gy}" r="${(st === 4 ? 1.25 : 0.95) * s}" fill="url(#mLamp)"/>`; }
-    g += this.box(px - 0.45, py - 0.45, z, 0.9, 0.9, 0.16, stoneT, stoneL, stoneR);
+    g += box(px - 0.45, py - 0.45, z, 0.9, 0.9, 0.16, stoneT, stoneL, stoneR);
     const pil = [[-0.34, -0.34], [0.22, -0.34], [-0.34, 0.22], [0.22, 0.22]];
     if (lit) { const [lx, ly] = P(px, py, z + 0.42); g += `<circle cx="${lx}" cy="${ly}" r="${0.2 * s}" fill="#FFE2A1"/><circle cx="${lx}" cy="${ly}" r="${0.42 * s}" fill="#FFC24D" opacity=".35"/>`; }
-    pil.forEach(([u, v]) => (g += this.box(px + u, py + v, z + 0.16, 0.12, 0.12, 0.62, stoneT, stoneL, stoneR)));
+    pil.forEach(([u, v]) => (g += box(px + u, py + v, z + 0.16, 0.12, 0.12, 0.62, stoneT, stoneL, stoneR)));
     if (st >= 3) {
-      g += this.box(px - 0.52, py - 0.52, z + 0.78, 1.04, 1.04, 0.1, stoneT, stoneL, stoneR);
+      g += box(px - 0.52, py - 0.52, z + 0.78, 1.04, 1.04, 0.1, stoneT, stoneL, stoneR);
       const [dx, dy] = P(px, py, z + 0.88), rx = 0.42 * s * 1.2247, ry = 0.42 * s * 0.707, h = 0.6 * s;
       g += `<path d="M${dx - rx},${dy} A${rx},${ry} 0 0 0 ${dx + rx},${dy} C${dx + rx},${dy - h * .65} ${dx + rx * .35},${dy - h} ${dx},${dy - h} C${dx - rx * .35},${dy - h} ${dx - rx},${dy - h * .65} ${dx - rx},${dy} Z" fill="url(#mDome)"/>`;
       g += `<path d="M${dx},${dy - h} L${dx},${dy - h - 0.28 * s}" stroke="${st === 4 ? "#FFC24D" : "#C9B98F"}" stroke-width="1.6"/><circle cx="${dx}" cy="${dy - h - 0.3 * s}" r="${st === 4 ? 2.6 : 1.8}" fill="${st === 4 ? "#FFD27A" : "#C9B98F"}"/>`;
@@ -2197,6 +2281,7 @@ Screens.map = {
       <radialGradient id="mLamp" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#FFC874" stop-opacity=".75"/><stop offset=".45" stop-color="#FFA94A" stop-opacity=".22"/><stop offset="1" stop-color="#FF9C40" stop-opacity="0"/></radialGradient>
       <linearGradient id="mDome" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#D9CCF2"/><stop offset=".45" stop-color="#8F84C2"/><stop offset="1" stop-color="#40407A"/></linearGradient>
       <linearGradient id="mMist" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8F96E0" stop-opacity="0"/><stop offset=".55" stop-color="#8F96E0" stop-opacity=".22"/><stop offset="1" stop-color="#8F96E0" stop-opacity="0"/></linearGradient>
+      <radialGradient id="mPool" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#FFB45E" stop-opacity=".55"/><stop offset=".6" stop-color="#E8894A" stop-opacity=".16"/><stop offset="1" stop-color="#E8894A" stop-opacity="0"/></radialGradient>
       <linearGradient id="mFaceL" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3B3F7C"/><stop offset="1" stop-color="#1A1C46"/></linearGradient>
       <linearGradient id="mFaceR" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#23265A"/><stop offset="1" stop-color="#121432"/></linearGradient></defs>`;
     decor.forEach(({ X, Y }) => { const hh = 1.1; const sum = Y / (0.5 * s), dif = X / (0.866 * s), cx = (sum + dif) / 2, cy = (sum - dif) / 2;
@@ -2218,17 +2303,19 @@ Screens.map = {
       const at = {}; ch.topics.forEach((t, i) => (at[t.id] = [cx + spots[i][0], cy + spots[i][1]]));
       ch.topics.forEach((t) => t.pre.forEach((p) => { const pid = p.split("-").slice(-1)[0]; if (p.startsWith(`c6-maths-ch${String(ch.n).padStart(2, "0")}`) && at[pid]) { const a = P(...at[pid], zt), b = P(...at[t.id], zt); g += `<path d="M${a[0]},${a[1]} L${b[0]},${b[1]}" stroke="#6C70B4" stroke-width="5" stroke-linecap="round"/><path d="M${a[0]},${a[1]} L${b[0]},${b[1]}" stroke="#9EA3E6" stroke-width="1" stroke-linecap="round" opacity=".7"/>`; } }));
       const tops = ch.topics.map((t, i) => ({ t, i, p: at[t.id] })).sort((a, b) => a.p[0] + a.p[1] - (b.p[0] + b.p[1]));
+      tops.forEach(({ i, p }) => { const st = stateOf(ch.n, i); if (st < 3) return; const c = P(p[0], p[1], zt); g += `<ellipse cx="${c[0]}" cy="${c[1]}" rx="${(st === 4 ? 1.5 : 1.15) * s * 1.22}" ry="${(st === 4 ? 1.5 : 1.15) * s * 0.7}" fill="url(#mPool)"/>`; });
       tops.forEach(({ t, i, p }) => (g += this.pavilion(p[0], p[1], zt, stateOf(ch.n, i), `${ch.n}-${t.id}`)));
       // label and the hit area
       const top = P(cx - h, cy - h, zt), L = P(cx - h, cy + h, zt), R = P(cx + h, cy - h, zt), B = P(cx + h, cy + h, zt);
       const lit = ch.topics.filter((_, i) => stateOf(ch.n, i) >= 3).length;
-      g += `<text x="${top[0]}" y="${top[1] - 22}" text-anchor="middle" font-family="Eczar, Georgia, serif" font-weight="700" font-size="16" fill="#F7F0E6" stroke="#0B0D27" stroke-width="4" paint-order="stroke" letter-spacing=".02em">${ch.n} · ${ch.t}</text>`;
+      const anc = this.wide ? "middle" : ch.X > 0 ? "end" : "start", lx = this.wide ? top[0] : top[0] + (ch.X > 0 ? 64 : -64);
+      g += `<text x="${lx}" y="${top[1] - 24}" text-anchor="${anc}" font-family="Eczar, Georgia, serif" font-weight="700" font-size="16" fill="#F7F0E6" stroke="#0B0D27" stroke-width="4" paint-order="stroke" letter-spacing=".02em">${ch.n} · ${ch.t}</text>`;
       if (ch.n === 5) { const pole = P(cx + h - 0.15, cy - h + 0.15, zt); g += `<path d="M${pole[0]},${pole[1]} L${pole[0]},${pole[1] - 2.4 * s}" stroke="#E9C27A" stroke-width="2"/><path d="M${pole[0]},${pole[1] - 2.4 * s} l${0.9 * s},${0.3 * s} l${-0.9 * s},${0.3 * s} z" fill="#FFC24D"/>
-        <g transform="translate(${pole[0] + 0.9 * s + 6} ${pole[1] - 2.1 * s})"><rect x="0" y="-13" width="128" height="24" fill="#FFC24D"/><text x="8" y="4" font-family="Mukta, sans-serif" font-weight="700" font-size="14" fill="#2A1607">Your class is here</text></g>`; }
+        <g transform="translate(${pole[0] - 136} ${pole[1] - 1.6 * s})"><rect x="0" y="-13" width="128" height="24" fill="#FFC24D"/><path d="M128,-6 l6,5 l-6,5z" fill="#FFC24D"/><text x="8" y="4" font-family="Mukta, sans-serif" font-weight="700" font-size="14" fill="#2A1607">Your class is here</text></g>`; }
       const hit = [P(cx - h, cy - h, zt + 2), R, P(cx + h, cy + h, zb + 4), P(cx - h, cy + h, zb + 4), L];
       w += `<g class="mesa" data-ch="${ch.n}">${g}<path class="hit" d="M${[top, R, B, P(cx + h, cy + h, zt - 3), P(cx - h, cy + h, zt - 3), L].map((p) => p[0].toFixed(1) + "," + p[1].toFixed(1)).join(" L")} Z" transform="translate(0 -14)" fill="transparent" role="button" tabindex="0" aria-label="Chapter ${ch.n}, ${ch.t}: ${lit} of ${ch.topics.length} ideas lit"/></g>`;
       const mb = P(cx, cy, zt - 6.2);
-      w += `<rect x="${mb[0] - 420}" y="${mb[1] - 60}" width="840" height="140" fill="url(#mMist)" pointer-events="none"/>`;
+      w += `<rect x="${mb[0] - 1400}" y="${mb[1] - 60}" width="2800" height="140" fill="url(#mMist)" pointer-events="none"/>`;
     }
     w += `<g id="mThreads"></g>`;
     // world bounds
@@ -2244,7 +2331,7 @@ Screens.map = {
     const c = this.C.find((x) => x.n === n); if (!c) return;
     const vw = this.view.clientWidth, vh = this.view.clientHeight;
     const sheetW = this.wide ? 440 : 0;
-    const tx = -(c.X - this.bounds.x0) + (vw - sheetW) / 2, ty = -(c.Y - this.bounds.y0) + vh * (this.wide ? 0.5 : 0.42);
+    const tx = -((this.wide ? c.X : 0) - this.bounds.x0) + (vw - sheetW) / 2, ty = -(c.Y - this.bounds.y0) + vh * (this.wide ? 0.5 : 0.42);
     if (anim && !RM) { const fx = this.pan.x, fy = this.pan.y, t0 = performance.now(); const f = (now) => { const k = Math.min(1, (now - t0) / 700), e = 1 - Math.pow(1 - k, 3); this.pan.x = lerp(fx, tx, e); this.pan.y = lerp(fy, ty, e); this.apply(); if (k < 1) requestAnimationFrame(f); }; requestAnimationFrame(f); }
     else { this.pan.x = tx; this.pan.y = ty; this.apply(); }
   },
@@ -2399,6 +2486,7 @@ Screens.parent = {
 /* ============================================================
    boot: the shell, the laptop desk bar (Laptop | Phone), the phone screen menu
    ============================================================ */
+window.TX = { Screens: null, go: null };
 (function boot() {
   document.body.insertAdjacentHTML("afterbegin", DEFS + `<div id="shell">
     <div id="deskbar"><div class="db-brand">${BRAND}<span>TAXILA</span><small>Prakash · game-native world</small></div>
@@ -2409,7 +2497,7 @@ Screens.parent = {
       <div id="screensSheet" role="dialog" aria-label="Screens"><div class="sheet panel solid"><h2>Taxila · Prakash</h2><p>A game-native world. Six screens, all live.</p>
         ${ORDER.map((s, i) => `<button class="row" data-s="${s}"><b>${i + 1}</b><span>${NAMES[s][0]}<small>${NAMES[s][1]}</small></span></button>`).join("")}</div></div>
     </div></div></div>`);
-  const shell = $("#shell");
+  const shell = $("#shell"); window.TX = { Screens, go, Face, Progress };
   $$(".db-tab").forEach((b) => (b.onclick = () => go(b.dataset.s)));
   $$(".db-view button").forEach((b) => (b.onclick = () => {
     $$(".db-view button").forEach((x) => x.setAttribute("aria-pressed", String(x === b)));

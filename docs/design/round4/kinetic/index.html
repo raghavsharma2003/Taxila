@@ -92,7 +92,7 @@ i[data-ic] svg{width:18px;height:18px}
 
 /* type roles */
 .eyebrow{font-size:14px;font-weight:650;font-stretch:78%;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);line-height:1.2}
-.eyebrow[lang="hi"]{text-transform:none;font-stretch:100%}
+.eyebrow[lang="hi"]{text-transform:none;font-stretch:100%;line-height:1.5;font-size:15px}
 .display{font-weight:800;font-stretch:125%;line-height:.92;letter-spacing:-.025em;text-wrap:balance;margin:0}
 .display [lang="hi"],.display[lang="hi"]{line-height:1.12}
 .h2{font-size:24px;font-weight:750;font-stretch:112%;line-height:1.08;letter-spacing:-.01em;margin:0;text-wrap:balance}
@@ -178,7 +178,7 @@ i[data-ic] svg{width:18px;height:18px}
 .tcard[aria-checked="true"]{box-shadow:0 0 0 3px var(--rani),7px 7px 0 0 var(--rani-edge);transform:translate(-3px,-3px)}
 .tcard .art{position:relative;flex:1 1 auto;min-height:150px;overflow:hidden;background:radial-gradient(90% 80% at 50% 100%,rgba(255,176,0,.22),transparent 70%)}
 .tcard .art svg{position:absolute;left:50%;bottom:-2%;height:112%;transform:translateX(-50%)}
-.tcard .chosen{position:absolute;top:10px;left:10px;display:none;align-items:center;gap:6px;background:var(--rani);color:var(--kajal);font-weight:800;font-stretch:85%;font-size:14px;letter-spacing:.06em;padding:6px 9px 4px;border-radius:2px}
+.tcard .chosen{position:absolute;z-index:2;top:10px;left:10px;display:none;align-items:center;gap:6px;background:var(--rani);color:var(--kajal);font-weight:800;font-stretch:85%;font-size:14px;letter-spacing:.06em;padding:6px 9px 4px;border-radius:2px}
 .tcard[aria-checked="true"] .chosen{display:inline-flex}
 .tcard .meta{padding:12px 14px 14px;display:flex;flex-direction:column;gap:6px}
 .tcard .nm{display:flex;flex-direction:column;gap:0}
@@ -227,7 +227,7 @@ i[data-ic] svg{width:18px;height:18px}
 .big360{position:relative;margin:14px 0 2px;height:clamp(80px,28cqw,150px)}
 .big360 .n{position:absolute;left:-.04em;top:0;white-space:nowrap;font-weight:800;font-stretch:125%;font-size:clamp(96px,34cqw,180px);line-height:.82;letter-spacing:-.05em;color:var(--kajal)}
 .big360 .n span{display:inline-block}
-.big360 svg.crack{position:absolute;left:0;top:-8%;height:116%;width:56px;overflow:visible}
+.big360 svg.crack{position:absolute;left:0;top:-4%;height:100%;width:56px;overflow:visible}
 .primes{display:flex;flex-wrap:wrap;gap:4px;margin:6px 0 10px;align-items:center}
 .primes span{display:inline-grid;place-items:center;min-width:34px;height:34px;padding:0 4px;border-radius:50%;background:var(--kajal);color:var(--genda);font-weight:800;font-stretch:110%;font-size:17px}
 .primes i{font-style:normal;font-weight:700;font-size:14px;color:rgba(14,11,18,.7);width:10px;text-align:center}
@@ -285,7 +285,9 @@ i[data-ic] svg{width:18px;height:18px}
 .ibtn svg{width:22px;height:22px}
 .ibtn:hover{color:var(--ink);background:var(--kajal-2)}
 .stage{position:relative;min-height:0;overflow:hidden;background:radial-gradient(80% 70% at 50% 40%,#1c1524 0%,var(--kajal) 75%)}
-.stage .slot{position:absolute;inset:10px 10px 8px}
+.stage .slot{position:absolute;inset:10px 10px 54px}
+.stage .ghostnum{position:absolute;right:-.04em;bottom:-.2em;font-weight:800;font-stretch:125%;font-size:min(60cqw,380px);line-height:.8;color:transparent;-webkit-text-stroke:2px rgba(255,176,0,.10);letter-spacing:-.05em;pointer-events:none;opacity:0;transition:opacity 900ms var(--e-heavy)}
+.stage[data-board="on"] .ghostnum{opacity:1}
 .stage-label{position:absolute;left:12px;top:10px;z-index:3}
 .stage .title-poster{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:flex-end;padding:16px;pointer-events:none;transition:opacity 420ms var(--e-heavy),transform 640ms var(--e-heavy)}
 .stage .title-poster b{font-weight:800;font-stretch:125%;font-size:clamp(34px,11cqw,92px);line-height:.92;letter-spacing:-.03em;color:var(--ink)}
@@ -416,7 +418,7 @@ i[data-ic] svg{width:18px;height:18px}
 .door span{font-size:15px;color:var(--ink-2)}
 .door.hot{background:var(--rani-edge)}
 .door.hot b{color:var(--ink)}
-.solved{position:absolute;left:0;right:0;top:12%;z-index:8;display:flex;flex-direction:column;align-items:center;pointer-events:none;opacity:0}
+.solved{position:absolute;left:0;right:0;top:6%;z-index:8;display:flex;flex-direction:column;align-items:center;pointer-events:none;opacity:0;padding:24px 0 40px;background:radial-gradient(closest-side,rgba(14,23,72,.96) 55%,rgba(14,23,72,0))}
 .solved .big{font-weight:800;font-stretch:125%;font-size:clamp(64px,22cqw,150px);line-height:.85;color:var(--genda);letter-spacing:-.04em}
 .solved .eq{font-weight:750;font-size:clamp(20px,6cqw,34px);font-stretch:105%;margin-top:6px}
 @container dev (min-width:900px){
@@ -461,6 +463,7 @@ i[data-ic] svg{width:18px;height:18px}
 .st:focus-visible .hit{stroke:var(--genda);stroke-width:3}
 .today-card{background:var(--mor-2);border-radius:6px;padding:16px;display:flex;flex-direction:column;gap:8px;box-shadow:inset 0 0 0 1.5px var(--line)}
 .today-card .h2{font-size:22px}
+.today-card .eyebrow{color:var(--ink-2)}
 .today-card blockquote{margin:4px 0;padding:0 0 0 12px;border-left:3px solid var(--rani);font-size:18px;font-weight:600;color:var(--ink)}
 .today-card .slab{align-self:flex-start}
 .chapters{display:flex;gap:10px;overflow-x:auto;margin:0 calc(-1 * var(--gut));padding:4px var(--gut) 8px;scrollbar-width:none}
@@ -497,7 +500,6 @@ i[data-ic] svg{width:18px;height:18px}
 .who .av{width:44px;height:44px;border-radius:50%;background:var(--rani-deep);color:#fff;display:grid;place-items:center;font-weight:800;font-stretch:120%}
 .who b{display:block;font-size:17px}
 .who span{font-size:14px;color:var(--p-ink-2)}
-.lead{margin-top:-4px}
 .lead h1{font-family:var(--f-ed);font-weight:700;font-size:clamp(32px,9.4cqw,58px);line-height:1.04;letter-spacing:-.015em;margin:8px 0 12px;text-wrap:balance}
 .lead h1[lang="hi"]{line-height:1.3}
 .lead h1 mark{background:linear-gradient(transparent 58%,var(--genda-soft) 58%);color:inherit;padding:0 .04em}
@@ -648,7 +650,7 @@ i[data-ic] svg{width:18px;height:18px}
             <section class="panel later" data-k>
               <div class="eyebrow">Your Later list</div>
               <q data-t="laterQ"></q>
-              <p class="small" style="margin:0">You asked this on Wednesday. Asha brings it back at the end of today's lesson.</p>
+              <p class="small" style="margin:0">You asked this on Wednesday. <span data-tname>Asha</span> brings it back at the end of today's lesson.</p>
             </section>
             <section class="panel" data-k>
               <div class="eyebrow">This week</div>
@@ -682,6 +684,7 @@ i[data-ic] svg{width:18px;height:18px}
           </div>
           <div class="stage" id="lStage" data-board="off">
             <div class="title-poster" aria-hidden="true"><b>Prime<br>factorisation</b><span lang="hi">अभाज्य गुणनखंडन</span></div>
+            <div class="ghostnum num" aria-hidden="true">72</div>
             <div class="hero-slot" id="heroSlot"></div>
             <div class="slot" id="boardSlot"></div>
             <div class="strip"><div class="eq num" id="lStrip">72 = <b>2</b> × <b>2</b> × <b>2</b> × <b>3</b> × <b>3</b></div></div>
@@ -738,7 +741,7 @@ i[data-ic] svg{width:18px;height:18px}
               <button class="door" data-level="60"><b>GARAM</b><span class="dn num">60</span><span data-t="garam"></span></button>
               <button class="door hot" data-level="360"><b>TEEKHA</b><span class="dn num">360</span><span data-t="teekha"></span></button>
             </div>
-            <div style="display:flex;gap:10px;flex-wrap:wrap"><button class="slab ghost sm" data-go="map">See it on your map</button><button class="slab ghost sm" data-go="lesson">Back to Asha</button></div>
+            <div style="display:flex;gap:10px;flex-wrap:wrap"><button class="slab ghost sm" data-go="map">See it on your map</button><button class="slab ghost sm" data-go="lesson"><span>Back to <span data-tname>Asha</span></span></button></div>
           </div>
         </div>
       </section>
@@ -989,6 +992,14 @@ function mountPortraits() {
     el.prepend(disc); if (!el.querySelector(".ring")) { const r = document.createElement("div"); r.className = "ring"; el.appendChild(r); }
   });
 }
+const TNAME = () => (S.teacher === "asha" ? "Asha" : "Arjun");
+const SHE = () => (S.teacher === "asha" ? "She" : "He");
+function applyTeacher() {
+  $$("[data-face]").forEach((el) => { el.dataset.face = S.teacher; const d = el.querySelector(".disc"); if (d) d.innerHTML = portraitSVG(S.teacher, "p" + ++pid); });
+  $("#capName").textContent = TNAME(); $("#gWho").textContent = `${TNAME()} · watching`;
+  $$(".tk-note .tface").forEach((el) => el.style.setProperty("--tbg", S.teacher === "asha" ? "#E59A00" : "#16245E"));
+  $$("[data-tname]").forEach((el) => (el.textContent = TNAME()));
+}
 /* mouth shapes (visemes) and the face's life */
 const VIS = {
   closed: { d: "M-11 0 Q0 0 11 0 Q0 0 -11 0 Z", lo: 0, sx: 1, amp: 0 },
@@ -1013,10 +1024,10 @@ function visemeFor(ch) {
   return VIS.small;
 }
 function blinkLoop(face) {
-  const lids = $$(".pt-lid", face); if (!lids.length) return;
   const OPEN = "M-11 0 Q0 -8 11 0 Q0 -8 -11 0 Z", SHUT = "M-11 0 Q0 -8 11 0 Q0 6 -11 0 Z";
   const tick = () => {
-    if (face.isConnected && face.closest(".scr.on") && !RM) {
+    const lids = $$(".pt-lid", face);
+    if (lids.length && face.isConnected && face.closest(".scr.on") && !RM) {
       lids.forEach((l) => l.setAttribute("d", SHUT));
       setTimeout(() => lids.forEach((l) => l.setAttribute("d", OPEN)), 120);
     }
@@ -1142,7 +1153,7 @@ class TreeView {
   note(id, html, cls) {
     const p = this.P.get(id); if (!p) return; const n = document.createElement("div"); n.className = "float-note " + (cls || ""); n.innerHTML = html; this.el.appendChild(n);
     const w = n.offsetWidth, W = this.slot.clientWidth; const x = Math.min(Math.max(4, p.x - w / 2), W - w - 4);
-    Object.assign(n.style, { left: x + "px", top: Math.max(0, p.y - this.s / 2 - 40) + "px" });
+    const above = p.y - this.s / 2 - 44; Object.assign(n.style, { left: x + "px", top: (above >= 0 ? above : p.y + this.s / 2 + 10) + "px" });
     anim(n, [{ opacity: 0, transform: "translateY(8px)" }, { opacity: 1, transform: "none", offset: 0.12 }, { opacity: 1, offset: 0.82 }, { opacity: 0 }], { duration: 2200, easing: "ease-out", fill: "forwards" }).finished.then(() => n.remove());
     if (RM) setTimeout(() => n.remove(), 2200);
   }
@@ -1286,7 +1297,7 @@ function tState(s) {
   L.state = s; const f = $("#lFace"); f.dataset.state = s; const ts = $("#tState"); ts.dataset.state = s;
   ts.lastChild.textContent = { speaking: "Speaking", listening: "Listening", thinking: "Thinking", idle: "Ready", yours: "Listening" }[s] || s;
   if (s === "yours") { f.dataset.state = "listening"; ts.dataset.state = "listening"; }
-  const m = { speaking: ["Speak anytime", "She pauses for you"], listening: ["Listening", "Go on, she won't cut in"], yours: ["Your move", "Say it, or tap the keyboard"], thinking: ["Got it", "Hands-free"], idle: ["Speak anytime", "Hands-free"] }[s];
+  const m = { speaking: ["Speak anytime", `${SHE()} pauses for you`], listening: ["Listening", `Go on, ${SHE().toLowerCase()} won't cut in`], yours: ["Your move", "Say it, or tap the keyboard"], thinking: ["Got it", "Hands-free"], idle: ["Speak anytime", "Hands-free"] }[s];
   $("#micA").textContent = m[0]; $("#micB").textContent = m[1];
   if (s !== "speaking") setMouth(f, VIS.closed);
 }
@@ -1364,7 +1375,7 @@ async function speak(line, run, opt = {}) {
   const toks = parseLine(line); const cap = $("#cap"); cap.classList.remove("child"); cap.lang = langAttr();
   cap.innerHTML = toks.map((tk, i) => `<span class="w" data-i="${i}">${esc(tk.text)}</span>`).join(" ");
   const spans = $$(".w", cap); tState("speaking"); const face = $("#lFace");
-  if (opt.ask) railSet("none", "Board", "She draws as she talks.");
+
   for (let i = 0; i < toks.length; i++) {
     if (run !== L.run) return false;
     const tk = toks[i], el = spans[i];
@@ -1405,6 +1416,7 @@ async function lessonRun(from = 0) {
       const ans = await waitAnswer(run); if (run !== L.run) return;
       const first = !L.alt && L.seq.indexOf("WAIT") === i;
       const ok = await childSays(ans.text, run); if (!ok) return;
+      railSet("none", "Board", `${SHE()} draws as ${SHE().toLowerCase()} talks.`);
       if (first && sayNo(ans.text)) { L.alt = true; buildSeq(); }
       continue;
     }
@@ -1418,7 +1430,7 @@ async function lessonRun(from = 0) {
 function lessonStart(opt = {}) {
   L.run++; L.alt = false; L.ended = false; L.speed = 1; L.waiting = null; buildSeq();
   if (!L.view) L.view = new TreeView($("#boardSlot"), { rowsHint: 4, max: 112 });
-  boardReset(); railSet("none", "Board", "She draws as she talks."); chipsRender();
+  boardReset(); railSet("none", "Board", `${SHE()} draws as ${SHE().toLowerCase()} talks.`); chipsRender();
   $("#cap").innerHTML = ""; tState("idle");
   const r0 = L.run; placeTeacher("hero", false);
   requestAnimationFrame(() => { placeTeacher($("#lStage").dataset.board === "on" ? "cap" : "hero", false); });
@@ -1532,9 +1544,14 @@ async function gameDone() {
   if (comp.length) { G.view.hum(comp.map((x) => x.id)); SFX.refuse(); react("notDone", comp.length); return; }
   G.solved = true; busy = true; keysOn(false); const v = G.view; const ls = G.tree.leaves();
   react("solved", G.n);
-  const prod = []; let acc = 1;
-  for (let i = 0; i < ls.length; i++) { acc *= ls[i].n; prod.push(acc); v.squash(ls[i].id); v.shock(ls[i].id); SFX.step(i); if (!RM) await sleep(170); }
-  $("#solvedBig").textContent = G.n; $("#solvedEq").textContent = `= ${ls.map((x) => x.n).join(" × ")}`;
+  let acc = ls[0].n; const st = $("#gStrip");
+  for (let i = 0; i < ls.length; i++) {
+    if (i > 0) { const prev = acc; acc *= ls[i].n; st.innerHTML = `<span>${prev}</span><span class="x">×</span><span class="p">${ls[i].n}</span><span class="eqv">=</span><span>${acc}</span>`; anim(st, [{ transform: "scale(1.12)" }, { transform: "scale(1)" }], { duration: 200, easing: "cubic-bezier(.2,.9,.1,1)" }); }
+    v.squash(ls[i].id); v.shock(ls[i].id); SFX.step(i); if (!RM) await sleep(i ? 300 : 160);
+  }
+  const sorted = ls.map((x) => x.n).sort((a, b) => a - b);
+  $("#solvedBig").textContent = G.n; $("#solvedEq").textContent = `= ${sorted.join(" × ")}`;
+  st.innerHTML = `${sorted.map((n) => `<span class="p">${n}</span>`).join('<span class="x">×</span>')} <span class="eqv">= ${G.n}</span>`;
   const sv = $("#solved"); sv.style.opacity = 1;
   anim(sv, [{ opacity: 0, transform: "scale(1.35)" }, { opacity: 1, transform: "scale(.97)", offset: 0.6 }, { opacity: 1, transform: "scale(1)" }], { duration: 420, easing: "cubic-bezier(.2,.9,.1,1)" });
   $$(".nd", $("#gameSlot")).forEach((n) => anim(n, [{ opacity: 1 }, { opacity: 0.22 }], { duration: 300, fill: "forwards" }));
@@ -1588,7 +1605,7 @@ function mapEnter() {
 }
 function openStation(i) {
   const s = ST[i];
-  $("#sheetBody").innerHTML = `<div class="eyebrow">${s.cls}</div><div class="h2" style="margin:6px 0 2px">${s.en}</div><div style="color:var(--genda);font-size:19px;font-weight:650" lang="hi">${s.hi}</div><p class="body">${s.why}</p>${s.quote ? `<p style="font-size:18px;font-weight:650;border-left:3px solid var(--rani);padding-left:12px">${s.quote}</p>` : ""}<button class="slab sm" data-go="${s.st === "pencil" ? "game" : "lesson"}">${s.st === "pencil" ? "Play Todo-Jodo" : "Learn with Asha"} <span class="ar">→</span></button>`;
+  $("#sheetBody").innerHTML = `<div class="eyebrow">${s.cls}</div><div class="h2" style="margin:6px 0 2px">${s.en}</div><div style="color:var(--genda);font-size:19px;font-weight:650" lang="hi">${s.hi}</div><p class="body">${s.why}</p>${s.quote ? `<p style="font-size:18px;font-weight:650;border-left:3px solid var(--rani);padding-left:12px">${s.quote}</p>` : ""}<button class="slab sm" data-go="${s.st === "pencil" ? "game" : "lesson"}">${s.st === "pencil" ? "Play Todo-Jodo" : `Learn with ${TNAME()}`} <span class="ar">→</span></button>`;
   const sh = $("#sheet"); sh.classList.add("on"); sh.setAttribute("aria-hidden", "false"); sh.inert = false;
 }
 function replayInk() {
@@ -1668,13 +1685,13 @@ function setLang(l, fromLesson) {
 /* ---------------- wiring ---------------- */
 document.addEventListener("click", (e) => {
   const g = e.target.closest("[data-go]"); if (g) { e.preventDefault(); go(g.dataset.go); return; }
-  const lg = e.target.closest("[data-lang]"); if (lg) { setLang(lg.dataset.lang); return; }
-  const vw = e.target.closest("[data-view]"); if (vw) { setView(vw.dataset.view); return; }
+  const lg = e.target.closest("button[data-lang]"); if (lg) { setLang(lg.dataset.lang); return; }
+  const vw = e.target.closest("button[data-view]"); if (vw) { setView(vw.dataset.view); return; }
   const hr = e.target.closest("[data-hear]"); if (hr) { e.stopPropagation(); hear(hr.dataset.hear); return; }
   const tc = e.target.closest(".tcard"); if (tc) { pickTeacher(tc.dataset.who); return; }
   const dv = e.target.closest("[data-div]"); if (dv) { gameKey(+dv.dataset.div); return; }
-  const lv = e.target.closest("[data-level]"); if (lv) { gameStart(+lv.dataset.level); return; }
-  const pl = e.target.closest("[data-plang]"); if (pl) { S.plang = pl.dataset.plang; parentRender(); return; }
+  const lv = e.target.closest("button[data-level]"); if (lv) { gameStart(+lv.dataset.level); return; }
+  const pl = e.target.closest("button[data-plang]"); if (pl) { S.plang = pl.dataset.plang; parentRender(); return; }
   const dm = e.target.closest("[data-demo]"); if (dm && L.waiting) { const b = LB[S.lang]; L.waiting(dm.dataset.demo === "yes" ? b.child : b.childNo, "voice"); return; }
   const ch = e.target.closest("[data-chip]"); if (ch) { chip(+ch.dataset.chip, ch.textContent); return; }
   if (!e.target.closest("#pmenu") && !e.target.closest("#ptitle")) { $("#pmenu").hidden = true; $("#ptitle").setAttribute("aria-expanded", "false"); }
@@ -1692,11 +1709,11 @@ $("#prev").addEventListener("click", () => { const i = SCREENS.findIndex((s) => 
 $("#next").addEventListener("click", () => { const i = SCREENS.findIndex((s) => s.id === S.screen); go(SCREENS[(i + 1) % SCREENS.length].id); });
 $("#langcycle").addEventListener("click", () => { const o = ["hinglish", "hi", "en"]; setLang(o[(o.indexOf(S.lang) + 1) % 3]); });
 $("#toB").addEventListener("click", () => { $("#s-hello").dataset.step = "b"; stagger($("#s-hello .hello-b")); });
-$("#startWith").addEventListener("click", () => { $("#capName").textContent = S.teacher === "asha" ? "Asha" : "Arjun"; go("home"); });
+$("#startWith").addEventListener("click", () => { applyTeacher(); go("home"); });
 $("#lReplay").addEventListener("click", () => lessonStart());
 $("#lPause").addEventListener("click", () => { if (L.state === "speaking" || L.waiting) { lessonStop(); tState("idle"); $("#lPause").innerHTML = icon("play"); $("#lPause").setAttribute("aria-label", "Resume"); } else { $("#lPause").innerHTML = icon("pause"); $("#lPause").setAttribute("aria-label", "Pause the lesson"); lessonRun(L.at); } });
 $("#kbd").addEventListener("click", () => { const t = $("#typer"); t.classList.toggle("on"); if (t.classList.contains("on")) $("#typeIn").focus(); requestAnimationFrame(() => placeTeacher(L.where || "cap", false)); });
-$("#typer").addEventListener("submit", (e) => { e.preventDefault(); const v = $("#typeIn").value.trim(); if (!v) return; $("#typeIn").value = ""; if (L.waiting) L.waiting(v, "typed"); else interrupt(v, LB[S.lang].re.park); });
+$("#typer").addEventListener("submit", (e) => { e.preventDefault(); const v = $("#typeIn").value.trim(); if (!v) return; $("#typeIn").value = ""; $("#typer").classList.remove("on"); requestAnimationFrame(() => placeTeacher(L.where || "cap", false)); if (L.waiting) L.waiting(v, "typed"); else interrupt(v, S.teacher === "asha" ? LB[S.lang].re.park : LB[S.lang].re.park.replace("rahi hoon", "raha hoon").replace("रही हूँ", "रहा हूँ")); });
 $("#gUndo").addEventListener("click", gameUndo);
 $("#gDone").addEventListener("click", gameDone);
 $("#gSound").addEventListener("click", () => { SFX.set(!SFX.on); const b = $("#gSound"); b.innerHTML = icon(SFX.on ? "sound" : "mute"); b.setAttribute("aria-pressed", String(SFX.on)); b.setAttribute("aria-label", SFX.on ? "Sound on" : "Sound off"); });
@@ -1714,7 +1731,7 @@ S.screen = first; $("#s-" + first).classList.add("on"); updateBar(); enter(first
 
 /* hooks for the screenshot harness */
 window.taal = {
-  go: (id) => go(id, { instant: true }), setLang, setView,
+  go: (id) => go(id, { instant: true }), setLang, setView, state: () => ({ sel: G.sel, busy, solved: G.solved, n: G.n }),
   helloStep: (s) => { $("#s-hello").dataset.step = s; },
   lessonAt(stage) {
     lessonStart({ hold: true }); L.instant = true; const run = ++L.run; const b = LB[S.lang];

@@ -1,6 +1,6 @@
 <title>Taxila — Instrument</title>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..700&family=Instrument+Serif:ital@0;1&family=Geist+Mono:wght@400..600&family=Noto+Sans+Devanagari:wght@400..600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..700&family=Instrument+Serif:ital@0;1&family=Geist+Mono:wght@400..600&family=Noto+Sans+Devanagari:wght@400..600&family=Tiro+Devanagari+Hindi&display=swap');
 
 /* ───────────── tokens: Night (child default) ───────────── */
 :root{
@@ -26,8 +26,8 @@
   --hair:rgba(20,21,24,.08); --hair-2:rgba(20,21,24,.13); --hair-3:rgba(20,21,24,.22);
   --ink:#131417; --ink-2:#4E5056; --ink-3:#64666C;
   --her:#8A5A1E; --her-dim:rgba(138,90,30,.10);
-  --ember:#C2410C; --ember-ink:#FFFFFF; --ember-soft:rgba(194,65,12,.08); --ember-line:rgba(194,65,12,.45);
-  --got:#0A7A52; --got-soft:rgba(10,122,82,.08);
+  --ember:#B23A0A; --ember-ink:#FFFFFF; --ember-soft:rgba(194,65,12,.08); --ember-line:rgba(194,65,12,.45);
+  --got:#08704A; --got-soft:rgba(8,112,74,.08);
   --look:#3E4BC4; --look-soft:rgba(62,75,196,.08);
   --metal-hi:rgba(255,255,255,.9); --metal-lo:rgba(20,21,24,.10);
   color-scheme:light;
@@ -100,7 +100,7 @@ svg{display:block}
 .btn:active{transform:translateY(1px) scale(.985)}
 .btn-ember{background:linear-gradient(180deg,#FF7A3F,#F25F22);color:var(--ember-ink);
   box-shadow:inset 0 1px 0 rgba(255,255,255,.35),inset 0 -1px 0 rgba(0,0,0,.18),0 1px 2px rgba(0,0,0,.5),0 10px 24px -10px rgba(255,107,44,.6)}
-.day .btn-ember{background:linear-gradient(180deg,#D04A12,#B83C0A);color:#fff}
+.day .btn-ember{background:linear-gradient(180deg,#C2400D,#A83608);color:#fff}
 .btn-ember[disabled]{background:var(--bg-3);color:var(--ink-3);box-shadow:inset 0 1px 0 var(--metal-hi);cursor:default}
 .btn-ghost{background:linear-gradient(180deg,var(--bg-3),var(--bg-2));border:1px solid var(--hair-2);color:var(--ink);
   box-shadow:inset 0 1px 0 var(--metal-hi),0 1px 2px var(--metal-lo)}
@@ -137,7 +137,7 @@ svg{display:block}
 .tp[data-state="speaking"] .aura{opacity:var(--amp-o,.6)}
 .tp[data-state="listening"] .aura{opacity:.0}
 .tp .listenring{position:absolute;inset:0;border-radius:inherit;box-shadow:inset 0 0 0 2px var(--ember);opacity:0;transition:opacity .35s var(--e-out);pointer-events:none}
-.tp[data-state="listening"] .listenring,.tp[data-state="yourturn"] .listenring{opacity:.0}
+.tp[data-state="listening"] .listenring{opacity:.75}
 .tstate{display:inline-flex;align-items:center;gap:8px;font-size:14px;color:var(--ink-2);font-weight:500;white-space:nowrap}
 .tstate .glyph{width:18px;height:14px;display:flex;align-items:center;gap:2px}
 .tstate .glyph i{display:block;width:3px;border-radius:2px;background:var(--her);height:4px;transition:height .1s}
@@ -174,7 +174,8 @@ svg{display:block}
 .seg2 button{flex:1;min-height:44px;padding:0 12px;border-radius:10px;font-size:15px;color:var(--ink-2);font-weight:500;white-space:nowrap}
 .seg2 button[aria-pressed="true"]{background:linear-gradient(180deg,var(--bg-4),var(--bg-3));color:var(--ink);box-shadow:inset 0 1px 0 var(--metal-hi),0 1px 2px var(--metal-lo)}
 .day .seg2 button[aria-pressed="true"]{background:var(--bg-1);box-shadow:0 1px 2px rgba(20,21,24,.12),0 0 0 1px var(--hair)}
-.seg2.small button{min-height:44px;padding:0 10px;font-size:14px}
+.seg2.small button{min-height:44px;min-width:44px;padding:0 8px;font-size:14px}
+.gm-legend{display:none}
 
 /* tabs */
 .tabs{display:flex;flex:none;height:68px;padding:0 6px 6px;border-top:1px solid var(--hair);background:var(--bg)}
@@ -223,7 +224,7 @@ svg{display:block}
 .home-head{display:flex;flex-direction:column;gap:6px;padding:4px 2px 2px}
 .upnext{padding:18px 18px 18px;display:flex;flex-direction:column;gap:10px;border-radius:24px}
 .un-top{display:flex;align-items:center;justify-content:space-between;gap:8px}
-.un-art{height:132px;margin:2px -6px 0;border-radius:14px;background:
+.un-art{height:178px;margin:2px -6px 0;border-radius:14px;background:
    radial-gradient(70% 90% at 50% 0%,rgba(243,217,166,.07),transparent 70%),
    repeating-linear-gradient(0deg,rgba(255,255,255,.035) 0 1px,transparent 1px 22px),
    repeating-linear-gradient(90deg,rgba(255,255,255,.035) 0 1px,transparent 1px 22px);
@@ -268,7 +269,7 @@ svg{display:block}
 .ls-t{font-size:16px;font-weight:600;letter-spacing:-.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .phase{display:flex;gap:8px;font-size:14px;color:var(--ink-3);white-space:nowrap;overflow:hidden}
 .phase span.on{color:var(--ink);font-weight:600}
-.scriptbtn{font-size:15px;min-width:44px;padding:0 10px;justify-content:center;border:1px solid var(--hair-2);height:40px;border-radius:12px}
+.scriptbtn{font-size:15px;min-width:44px;padding:0 10px;justify-content:center;border:1px solid var(--hair-2);height:44px;border-radius:12px}
 .hide-s{display:none}
 .ai-badge{position:absolute;left:6px;bottom:6px;z-index:3;font-family:var(--f-mono);font-size:14px;line-height:18px;padding:1px 6px;border-radius:6px;background:rgba(10,11,13,.78);color:var(--ink-2);border:1px solid var(--hair-2);letter-spacing:.04em}
 .lesson{flex:1;min-height:0;display:flex;flex-direction:column;padding:0 12px 10px;gap:10px}
@@ -530,11 +531,16 @@ details.how[open] summary svg{transform:rotate(-90deg)}
   .qcard{left:50%;right:auto;width:min(520px,80%);transform:translate(-50%,130%)}
   .qcard.on{transform:translate(-50%,0)}
   /* game */
-  .game{display:grid;grid-template-columns:minmax(0,1fr) 360px;grid-template-rows:auto 1fr auto;grid-template-areas:"stage react" "stage strip" "stage pad";gap:16px 24px;padding:0 24px 24px}
+  .game{display:grid;grid-template-columns:minmax(0,1fr) 360px;grid-template-rows:auto 1fr auto auto;grid-template-areas:"stage react" "stage legend" "stage strip" "stage pad";gap:16px 24px;padding:0 24px 24px}
   .gm-stage{grid-area:stage}.gm-react{grid-area:react;align-items:flex-start;padding-top:8px}.gm-strip{grid-area:strip;align-items:flex-end;justify-content:flex-start;font-size:22px;text-align:left}.gm-pad{grid-area:pad}
   .gm-tp{width:88px;height:104px;border-radius:22px}
   .gm-say{font-size:19px;line-height:28px;min-height:84px}
   .key{height:60px}
+  .gm-legend{display:flex;flex-direction:column;gap:10px;grid-area:legend;align-self:end;padding:14px 16px;border:1px solid var(--hair);border-radius:18px;font-size:14px;color:var(--ink-2)}
+  .gm-legend div{display:flex;align-items:center;gap:12px}
+  .gm-legend .lg-b{width:34px;height:22px;border-radius:7px;background:linear-gradient(180deg,#2E3137,#1A1C20);box-shadow:inset 0 0 0 1px rgba(255,255,255,.14);flex:none}
+  .gm-legend .lg-a{width:22px;height:22px;border-radius:50%;background:radial-gradient(70% 70% at 38% 30%,#4d3a27,#16110c);box-shadow:inset 0 0 0 1.4px var(--her);margin:0 6px;flex:none}
+  .gm-legend kbd{font-family:var(--f-mono);font-size:14px;padding:1px 6px;border-radius:6px;border:1px solid var(--hair-2);color:var(--ink)}
   /* map */
   .map{padding:0 40px 40px}
   .map-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:48px;max-width:1080px;margin:0 auto;align-items:start}
@@ -619,7 +625,7 @@ details.how[open] summary svg{transform:rotate(-90deg)}
       <span class="brandmark"><svg width="28" height="28"><use href="#mark"/></svg><span>Taxila</span></span>
       <div class="grow"></div>
       <button class="ibtn sndbtn" aria-label="Sound"><svg><use href="#i-hear"/></svg></button>
-      <button class="ibtn idxbtn" aria-label="All screens"><svg><use href="#i-grid"/></svg></button>
+      <button class="tbtn idxbtn" aria-label="All six screens"><svg width="20" height="20"><use href="#i-grid"/></svg>Screens</button>
     </div>
     <div class="hello">
       <div class="hello-a" id="hello-a">
@@ -689,11 +695,11 @@ details.how[open] summary svg{transform:rotate(-90deg)}
           </header>
           <article class="panel lit upnext" id="upnext">
             <div class="un-top">
-              <p class="eyebrow">Up next · <b>Class 6 maths</b></p>
-              <span class="chip"><i style="color:#A3ACFF"></i>Prime Time</span>
+              <p class="eyebrow">Up next</p>
+              <span class="chip"><i style="color:#A3ACFF"></i>Maths · Prime Time</span>
             </div>
             <div class="un-art" aria-hidden="true">
-              <svg id="un-tree" viewBox="0 0 300 150"></svg>
+              <svg id="un-tree" viewBox="0 0 300 172"></svg>
             </div>
             <h2 class="un-title">Prime factorisation</h2>
             <p class="un-why">Why <span class="tnum">36</span> split as <span class="tnum">4 × 9</span> and as <span class="tnum">6 × 6</span> lands on the same primes.</p>
@@ -731,7 +737,7 @@ details.how[open] summary svg{transform:rotate(-90deg)}
     <nav class="tabs" aria-label="Child">
       <button aria-current="true"><svg><use href="#i-today"/></svg>Today</button>
       <button data-go="map"><svg><use href="#i-map"/></svg>Map</button>
-      <button data-go="game"><svg><use href="#i-lib"/></svg>Made for you</button>
+      <button data-go="game"><svg><use href="#i-lib"/></svg>Library</button>
       <button data-go="hello"><svg><use href="#i-you"/></svg>You</button>
     </nav>
   </section>
@@ -803,6 +809,11 @@ details.how[open] summary svg{transform:rotate(-90deg)}
         <svg class="tree-svg" id="gm-svg"></svg>
         <div class="coach" id="coach">Tap a block, then a key to split it</div>
       </div>
+      <div class="gm-legend" aria-hidden="true">
+        <div><span class="lg-b"></span>A block can still split</div>
+        <div><span class="lg-a"></span>An atom: a prime, it never splits</div>
+        <div><span><kbd>2</kbd>–<kbd>9</kbd> split</span><span><kbd>⏎</kbd> done</span><span><kbd>⌫</kbd> undo</span></div>
+      </div>
       <div class="gm-strip mono tnum" id="gm-strip" aria-live="polite"></div>
       <div class="gm-pad" id="gm-pad" role="group" aria-label="Split by">
         <div class="keys" id="keys"></div>
@@ -853,7 +864,7 @@ details.how[open] summary svg{transform:rotate(-90deg)}
     <nav class="tabs" aria-label="Child">
       <button data-go="home"><svg><use href="#i-today"/></svg>Today</button>
       <button aria-current="true"><svg><use href="#i-map"/></svg>Map</button>
-      <button data-go="game"><svg><use href="#i-lib"/></svg>Made for you</button>
+      <button data-go="game"><svg><use href="#i-lib"/></svg>Library</button>
       <button data-go="hello"><svg><use href="#i-you"/></svg>You</button>
     </nav>
   </section>
@@ -863,7 +874,7 @@ details.how[open] summary svg{transform:rotate(-90deg)}
     <div class="top ptop">
       <button class="tbtn kidsw"><span class="kid sm">A</span>Aarav <svg width="18" height="18" style="transform:rotate(90deg)"><use href="#i-chev"/></svg></button>
       <div class="grow"></div>
-      <div class="seg2 small" role="group" aria-label="Report language"><button data-rl="en" aria-pressed="true">English</button><button data-rl="hi" aria-pressed="false" class="deva">हिंदी</button></div>
+      <div class="seg2 small" role="group" aria-label="Report language"><button data-rl="en" aria-pressed="true" aria-label="English">EN</button><button data-rl="hi" aria-pressed="false" class="deva" aria-label="हिंदी">हिं</button></div>
       <button class="ibtn" data-go="home" aria-label="Lock parent corner"><svg><use href="#i-lock"/></svg></button>
       <button class="ibtn idxbtn" aria-label="All screens"><svg><use href="#i-grid"/></svg></button>
     </div>
@@ -991,7 +1002,7 @@ class Spring {
   constructor(v = 0, d = 0.5, b = 0) { this.x = v; this.v = 0; this.t = v; this.set(d, b); }
   set(d, b) { this.k = (2 * Math.PI / d) ** 2; this.c = (4 * Math.PI * (1 - b)) / d; return this; }
   step(dt) {
-    const h = 1 / 240; let n = Math.min(40, Math.ceil(dt / h));
+    const h = 1 / 240; let n = Math.max(0, Math.min(40, Math.ceil((dt > 0 ? dt : 0) / h)));
     while (n--) { const a = -this.k * (this.x - this.t) - this.c * this.v; this.v += a * h; this.x += this.v * h; }
     if (RM) { this.x = this.t; this.v = 0; }
   }
@@ -1003,7 +1014,7 @@ const Loop = {
   add(fn) { this.fns.add(fn); this.start(); return () => this.fns.delete(fn); },
   start() { if (this.running) return; this.running = true; this.last = performance.now(); requestAnimationFrame(this.tick); },
   tick: (now) => {
-    const L = Loop; const dt = Math.min(0.05, (now - L.last) / 1000); L.last = now;
+    const L = Loop; const dt = Math.max(0, Math.min(0.05, (now - L.last) / 1000)); L.last = Math.max(L.last, now);
     for (const f of L.fns) { try { f(dt, now); } catch (e) { console.error(e); L.fns.delete(f); } }
     if (L.fns.size) requestAnimationFrame(L.tick); else L.running = false;
   },
@@ -1196,7 +1207,7 @@ function portraitSVG(who) {
   const body = A
     ? `<path class="fl" d="M100,234 C80,238 56,246 42,262 L28,300 L212,300 L198,262 C184,246 160,238 140,234 C132,246 108,246 100,234 Z" fill="url(#${u}cl)"/>`
     : `<path class="fl" d="M100,232 C80,238 56,246 42,262 L28,300 L212,300 L198,262 C184,246 160,238 140,232 L129,252 L120,240 L111,252 Z" fill="url(#${u}cl)"/>`;
-  const neck = `<path class="fl" d="M104,190 C104,212 102,224 98,234 C108,247 132,247 142,234 C138,224 136,212 136,190 Z" fill="url(#${u}sk)"/><path class="fl" d="M104,192 C112,206 128,206 136,192 L136,214 C126,218 114,218 104,214 Z" fill="url(#${u}nk)"/>`;
+  const neck = `<path class="fl" d="M104,190 C104,212 102,224 98,234 C108,247 132,247 142,234 C138,224 136,212 136,190 Z" fill="#18130f"/><path class="fl" d="M104,190 C104,212 102,224 98,234 C108,247 132,247 142,234 C138,224 136,212 136,190 Z" fill="url(#${u}sk)"/><path class="fl" d="M104,192 C112,206 128,206 136,192 L136,214 C126,218 114,218 104,214 Z" fill="url(#${u}nk)"/>`;
   const hairBack = A ? `<path class="fl" d="M66,146 C66,186 80,220 98,236 L142,236 C160,220 174,186 174,146 Z" fill="url(#${u}hr)"/><path class="ln" style="opacity:.3" stroke-width="1.2" d="M171,160 C170,190 160,216 146,232"/>` : '';
   const hair = A
     ? `<path class="fl" d="M63,150 C52,92 76,40 120,38 C164,40 188,92 177,150 L172,131 C168,98 150,80 123,73 L119,73 C92,80 72,98 68,131 Z" fill="url(#${u}hr)"/>`
@@ -1216,6 +1227,7 @@ function portraitSVG(who) {
     </g>`; };
   const m = mouthD(0, 0, 0.25);
   const face = `
+    <path class="fl" d="${faceShape}" fill="#1a1511"/>
     <path class="fl" d="${faceShape}" fill="url(#${u}sk)"/>
     <path class="fl" d="M70,146 C78,176 98,196 120,200 C104,194 88,178 82,150 Z" fill="#000" fill-opacity=".12"/>
     <path class="ln" stroke-width="1.6" style="opacity:.7" d="M68,128 C70,150 78,172 96,188"/>
@@ -1261,6 +1273,7 @@ class Teacher {
     this.p = { gx: new Spring(0, 0.28), gy: new Spring(0, 0.28), tilt: new Spring(0, 0.9), lean: new Spring(0, 0.8), sc: new Spring(1, 0.8), brow: new Spring(0, 0.4), smile: new Spring(0.25, 0.6), mo: new Spring(0, 0.09), mw: new Spring(0, 0.12) };
     this.blinkT = 1.5 + Math.random() * 2; this.blink = 0; this.sacT = 0.8; this.nodT = 1.2; this.t = Math.random() * 10; this.amp = 0; this.speech = null;
     ALL_TP.add(this); this._off = Loop.add((dt) => this.frame(dt));
+    this.ro = new ResizeObserver(() => this.fit()); this.ro.observe(host);
   }
   render(who) {
     this.who = who;
@@ -1272,6 +1285,13 @@ class Teacher {
     const q = (s) => this.host.querySelector(s);
     this.svg = q('svg'); this.head = q('.head'); this.brows = q('.brows'); this.irises = $$('.iris', this.host); this.eyes = $$('.eye', this.host);
     this.mFill = q('.m-fill'); this.mIn = q('.m-in'); this.mUp = q('.m-up'); this.mLo = q('.m-lo');
+    this.fit();
+  }
+  fit() {
+    const r = this.host.getBoundingClientRect(); if (!r.width) return;
+    const tiny = r.width < 84, wide = r.width / r.height > 0.95;
+    this.svg.setAttribute('viewBox', tiny ? '44 34 152 182' : '0 0 240 300');
+    this.svg.setAttribute('preserveAspectRatio', wide ? 'xMidYMax meet' : 'xMidYMin slice');
   }
   setState(s) {
     this.state = s; this.host.dataset.state = s;
@@ -1320,9 +1340,9 @@ class Teacher {
       if (S.t >= S.T) { this.speech = null; P.mo.t = 0; P.mw.t = 0; S.onProgress && S.onProgress(1); S.res(); }
     } else { P.mo.t = this.state === 'thinking' ? 0 : 0; P.mw.t = this.state === 'thinking' ? 0.15 : 0; this.amp = lerp(this.amp, 0, 0.2); }
     /* life: blink, micro-saccades, nods */
-    this.blinkT -= dt; if (this.blinkT <= 0) { this.blink = 0.16; this.blinkT = 2.4 + Math.random() * 3.2; }
+    if (!RM) this.blinkT -= dt; if (this.blinkT <= 0) { this.blink = 0.16; this.blinkT = 2.4 + Math.random() * 3.2; }
     let bs = 1; if (this.blink > 0) { this.blink -= dt; const k = 1 - Math.abs(this.blink - 0.08) / 0.08; bs = 1 - 0.88 * clamp(k, 0, 1); }
-    this.sacT -= dt;
+    if (!RM) this.sacT -= dt;
     if (this.sacT <= 0) { this.sacT = 0.6 + Math.random() * 1.6;
       if (this.state === 'idle' || this.state === 'speaking') { P.gx.t = (Math.random() - 0.5) * 2.2; P.gy.t = (Math.random() - 0.5) * 1.2; }
     }
@@ -1378,11 +1398,11 @@ class AtomTree {
     this._off = Loop.add((dt) => this.frame(dt));
     if (this.o.interactive) svg.addEventListener('pointerdown', (e) => { const g = e.target.closest('.node'); if (g) this.tap(+g.dataset.id); });
   }
-  resize() { const r = this.svg.getBoundingClientRect(); if (r.width < 10) return; this.W = r.width; this.H = r.height; this.svg.setAttribute('viewBox', `0 0 ${this.W} ${this.H}`); this.layout(); this.trayBg(); this.trayLayout(); }
+  resize() { const r = this.svg.getBoundingClientRect(); if (r.width < 10) return; this.W = r.width; this.H = r.height; this.k = clamp(Math.min(this.W / 400, (this.H - (this.o.top + this.o.bottom)) / 300), 1, 1.55); this.svg.setAttribute('viewBox', `0 0 ${this.W} ${this.H}`); this.layout(); this.trayBg(); this.trayLayout(); }
   trayBg() {
     if (!this.o.tray) return; const W = this.W, H = this.H, w = Math.min(W - 32, 420), x = (W - w) / 2, y = H - 58;
     this.gTrayBg.innerHTML = `<rect x="${x}" y="${y}" width="${w}" height="44" rx="14" fill="rgba(0,0,0,.28)" stroke="rgba(255,255,255,.07)"/><path d="M${x + 14},${y + 0.5} H${x + w - 14}" stroke="rgba(0,0,0,.6)"/><path d="M${x + 14},${y + 43.5} H${x + w - 14}" stroke="rgba(255,255,255,.06)"/>` +
-      (this.tray.length ? '' : `<text x="${W / 2}" y="${y + 27}" text-anchor="middle" font-size="14" fill="rgba(242,239,233,.42)" font-family="Inter">Atoms you find land here</text>`);
+      (this.tray.length ? '' : `<text x="${W / 2}" y="${y + 27}" text-anchor="middle" font-size="14" fill="rgba(242,239,233,.6)" font-family="Inter">Atoms you find land here</text>`);
   }
   trayAdd(k) {
     const g = mk('g', {}, this.gTray);
@@ -1441,8 +1461,9 @@ class AtomTree {
   layout(snap = false) {
     if (!this.root) return;
     const L = this.leaves(), D = Math.max(1, this.depth()), W = this.W, H = this.H, o = this.o;
-    const gap = Math.min(o.maxGap, (W - 40) / Math.max(1, L.length));
-    const row = Math.min(o.rowMax, (H - o.top - o.bottom) / D);
+    const k = this.k || 1;
+    const gap = Math.min(o.maxGap * k, (W - 40) / Math.max(1, L.length));
+    const row = Math.min(o.rowMax * k, (H - o.top - o.bottom) / D);
     const pos = new Map();
     L.forEach((lf, i) => pos.set(lf.id, i * gap));
     const place = (nd, d) => {
@@ -1464,10 +1485,10 @@ class AtomTree {
       nd.x.step(dt); nd.y.step(dt); nd.s.step(dt); nd.dx.step(dt);
       if (nd.op < 1) nd.op = Math.min(1, nd.op + dt * 5);
       const lift = nd.id === this.sel ? -2 : 0;
-      nd.g.setAttribute('transform', `translate(${(nd.x.x + nd.dx.x).toFixed(2)} ${(nd.y.x + lift).toFixed(2)}) scale(${nd.s.x.toFixed(3)})`);
+      nd.g.setAttribute('transform', `translate(${(nd.x.x + nd.dx.x).toFixed(2)} ${(nd.y.x + lift).toFixed(2)}) scale(${(nd.s.x * (this.k || 1)).toFixed(3)})`);
       if (nd.op < 1) nd.g.style.opacity = nd.op; else if (nd.g.style.opacity) nd.g.style.opacity = '';
       if (nd.bond) {
-        const p = nd.parent, px = p.x.x + p.dx.x, py = p.y.x + 22, cx = nd.x.x + nd.dx.x, cy = nd.y.x - (nd.atom ? 21 : 22);
+        const K = this.k || 1, p = nd.parent, px = p.x.x + p.dx.x, py = p.y.x + 22 * K, cx = nd.x.x + nd.dx.x, cy = nd.y.x - (nd.atom ? 21 : 22) * K;
         const my = (py + cy) / 2;
         nd.bond.setAttribute('d', `M${px.toFixed(1)},${py.toFixed(1)} C${px.toFixed(1)},${my.toFixed(1)} ${cx.toFixed(1)},${my.toFixed(1)} ${cx.toFixed(1)},${cy.toFixed(1)}`);
       }
@@ -1584,6 +1605,7 @@ const say = (tch, el, line, o = {}) => {
   return p.then(() => { spans.forEach((s) => s.classList.add('on')); if (o.cues) o.cues.forEach((c) => { if (!c.done) { c.done = true; c.fn(); } }); });
 };
 const ai = (who) => (who === 'arjun' ? 'Arjun' : 'Asha');
+const pron = () => (PREF.teacher === 'arjun' ? 'he' : 'she');
 
 /* ───────── 1 · HELLO ───────── */
 const HELLO = {
@@ -1641,22 +1663,23 @@ function applyTeacher() {
 /* ───────── 2 · HOME ───────── */
 const NOTE = { hi: 'Kal tumne 36 ke do alag tree banaye the. Aaj dekhenge dono same kyun nikle.', dv: 'कल तुमने 36 के दो अलग ट्री बनाए थे। आज देखेंगे दोनों same क्यों निकले।', en: "Yesterday you built two different trees for 36. Today we'll see why both came out the same." };
 function drawTwinTrees(svg) {
-  // 36 → 4 × 9 → 2 2 3 3   |   36 → 6 × 6 → 2 3 2 3   — leaves drop into one tray
-  const L = '#F3D9A6', I = 'rgba(242,239,233,.85)', H = 'rgba(242,239,233,.28)';
+  // 36 → 4 × 9 → 2 2 3 3   |   36 → 6 × 6 → 2 3 2 3   — both trees land on the same atoms
+  svg.setAttribute('viewBox', '0 0 300 172');
+  const L = '#F3D9A6', I = 'rgba(242,239,233,.9)', H = 'rgba(242,239,233,.28)';
   const node = (x, y, n, atom) => atom
-    ? `<g transform="translate(${x} ${y})"><circle r="11" fill="url(#gAtom)" stroke="${L}" stroke-width="1.2"/><text y="4.5" text-anchor="middle" font-size="13" font-weight="600" fill="${L}" font-family="Inter">${n}</text></g>`
-    : `<g transform="translate(${x} ${y})"><rect x="-15" y="-11" width="30" height="22" rx="6.5" fill="url(#gBlk)" stroke="rgba(255,255,255,.14)"/><text y="4.5" text-anchor="middle" font-size="13" font-weight="600" fill="${I}" font-family="Inter">${n}</text></g>`;
+    ? `<g transform="translate(${x} ${y})"><circle r="12.5" fill="url(#gAtom)" stroke="${L}" stroke-width="1.2"/><text y="5.2" text-anchor="middle" font-size="15" font-weight="600" fill="${L}" font-family="Inter">${n}</text></g>`
+    : `<g transform="translate(${x} ${y})"><rect x="-17" y="-12.5" width="34" height="25" rx="7" fill="url(#gBlk)" stroke="rgba(255,255,255,.14)"/><text y="5.2" text-anchor="middle" font-size="15" font-weight="600" fill="${I}" font-family="Inter">${n}</text></g>`;
   const bond = (x1, y1, x2, y2) => `<path class="tw-b" d="M${x1},${y1} C${x1},${(y1 + y2) / 2} ${x2},${(y1 + y2) / 2} ${x2},${y2}" stroke="${H}" stroke-width="1.2" fill="none"/>`;
   const tree = (ox, a, b, la, lb) => `
-    ${bond(ox, 31, ox - 28, 52)}${bond(ox, 31, ox + 28, 52)}
-    ${bond(ox - 28, 63, ox - 42, 86)}${bond(ox - 28, 63, ox - 14, 86)}${bond(ox + 28, 63, ox + 14, 86)}${bond(ox + 28, 63, ox + 42, 86)}
-    ${node(ox, 20, 36)}${node(ox - 28, 52, a)}${node(ox + 28, 52, b)}
-    ${node(ox - 42, 97, la[0], 1)}${node(ox - 14, 97, la[1], 1)}${node(ox + 14, 97, lb[0], 1)}${node(ox + 42, 97, lb[1], 1)}`;
-  svg.innerHTML = `${tree(80, 4, 9, [2, 2], [3, 3])}${tree(220, 6, 6, [2, 3], [2, 3])}
-    <path d="M30,122 H130 M170,122 H270" stroke="${H}" stroke-dasharray="2 4"/>
-    <text x="150" y="102" text-anchor="middle" font-size="16" fill="${H}" font-family="Inter">=</text>
-    <text x="80" y="142" text-anchor="middle" font-size="12" fill="rgba(242,239,233,.5)" font-family="Geist Mono">2 · 2 · 3 · 3</text>
-    <text x="220" y="142" text-anchor="middle" font-size="12" fill="rgba(242,239,233,.5)" font-family="Geist Mono">2 · 2 · 3 · 3</text>`;
+    ${bond(ox, 34, ox - 30, 58)}${bond(ox, 34, ox + 30, 58)}
+    ${bond(ox - 30, 71, ox - 45, 96)}${bond(ox - 30, 71, ox - 15, 96)}${bond(ox + 30, 71, ox + 15, 96)}${bond(ox + 30, 71, ox + 45, 96)}
+    ${node(ox, 22, 36)}${node(ox - 30, 58, a)}${node(ox + 30, 58, b)}
+    ${node(ox - 45, 108, la[0], 1)}${node(ox - 15, 108, la[1], 1)}${node(ox + 15, 108, lb[0], 1)}${node(ox + 45, 108, lb[1], 1)}`;
+  svg.innerHTML = `${tree(78, 4, 9, [2, 2], [3, 3])}${tree(222, 6, 6, [2, 3], [2, 3])}
+    <path d="M26,134 H130 M170,134 H274" stroke="${H}" stroke-dasharray="2 4"/>
+    <text x="150" y="114" text-anchor="middle" font-size="18" fill="${H}" font-family="Inter">=</text>
+    <text x="78" y="157" text-anchor="middle" font-size="15" fill="rgba(242,239,233,.6)" font-family="Geist Mono">2·2·3·3</text>
+    <text x="222" y="157" text-anchor="middle" font-size="15" fill="rgba(242,239,233,.6)" font-family="Geist Mono">2·2·3·3</text>`;
   if (!RM) {
     $$('.tw-b', svg).forEach((p, i) => { const l = p.getTotalLength(); p.animate([{ strokeDasharray: `${l} ${l}`, strokeDashoffset: l }, { strokeDasharray: `${l} ${l}`, strokeDashoffset: 0 }], { duration: 600, delay: 150 + i * 60, easing: 'cubic-bezier(.2,.8,.2,1)', fill: 'backwards' }); });
     $$('g', svg).forEach((g, i) => g.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 400, delay: 100 + i * 45, fill: 'backwards' }));
@@ -1724,7 +1747,7 @@ async function lessonScript() {
   const chk = () => { if (run !== L.run) throw 'cancel'; };
   try {
     B.clear(); $('#bd-strip').classList.remove('on'); $('#qcard').classList.remove('on'); $('#toplay').classList.remove('on'); $('#ls-log').innerHTML = '';
-    lsDock('wait', `${ai(PREF.teacher)} is speaking`, 'Speak any time, she pauses for you');
+    lsDock('wait', `${ai(PREF.teacher)} is speaking`, `Speak any time, ${pron()} pauses for you`);
     $('#ls-cap').innerHTML = '';
     await sleep(RM ? 0 : 450); chk();
     await lsLine(LS.l0, { cues: [{ at: 0.45, fn: () => { B.reset(60); stripFrom(B, $('#bd-strip')); $('#bd-strip').classList.add('on'); } }] });
@@ -1740,13 +1763,13 @@ async function lessonScript() {
       if (ans == null || isNaN(ans)) { await lsLine(LS.nan); continue; }
       const t30 = B.leaves().find((l) => l.n === 30);
       if (t30) B.ghost(t30, `2 × ${ans} = ${2 * ans}`, 2600);
-      T.lesson.setState('speaking'); lsDock('wait', `${ai(PREF.teacher)} is speaking`, 'Speak any time, she pauses for you');
+      T.lesson.setState('speaking'); lsDock('wait', `${ai(PREF.teacher)} is speaking`, `Speak any time, ${pron()} pauses for you`);
       await lsLine(LS.wrong(ans)); chk();
       $('#q-txt').innerHTML = `30 = 2 × <span class="blank">?</span>`;
     }
     // correct: the child's number becomes part of the tree
     const t30 = B.leaves().find((l) => l.n === 30); t30 && t30.g.classList.remove('selected');
-    lsDock('wait', `${ai(PREF.teacher)} is speaking`, 'Speak any time, she pauses for you');
+    lsDock('wait', `${ai(PREF.teacher)} is speaking`, `Speak any time, ${pron()} pauses for you`);
     await lsLine(LS.c1, { cues: [{ at: 0.05, fn: () => { const r = B.split(2, t30, { quiet: true }); stripFrom(B, $('#bd-strip')); if (r.B) { const g = mk('rect', { x: -27, y: -27, width: 54, height: 54, rx: 15, fill: 'none', stroke: '#FF6B2C', 'stroke-width': 2 }, r.B.g); g.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 2200, delay: 500, fill: 'forwards' }); } } }] });
     $('#qcard').classList.remove('on');
     await sleep(120); chk();
@@ -1792,10 +1815,10 @@ function markVerdict(n) {
 }
 function startListening() {
   if (L.mode !== 'turn' || !L.answer) {
-    if (L.mode === 'wait') { $('#rd-sub').textContent = 'She pauses as soon as you speak'; anim($('#rd-sub'), [{ opacity: 0.3 }, { opacity: 1 }], 'snappy'); }
+    if (L.mode === 'wait') { $('#rd-sub').textContent = `${pron()[0].toUpperCase() + pron().slice(1)} pauses as soon as you speak`; anim($('#rd-sub'), [{ opacity: 0.3 }, { opacity: 1 }], 'snappy'); }
     return;
   }
-  T.lesson.setState('listening'); lsDock('listen', 'Listening…', 'Hands-free · she waits till you finish');
+  T.lesson.setState('listening'); lsDock('listen', 'Listening…', `Hands-free · ${pron()} waits till you finish`);
   vib(10);
   const t0 = performance.now(); const run = L.run;
   const env = (t) => { // a spoken "pandrah": three syllable-ish bursts
@@ -1952,10 +1975,10 @@ function buildDial() {
       if (st === 's') h += `<circle cx="${x}" cy="${y}" r="8.5" fill="rgba(243,217,166,.12)"/><circle cx="${x}" cy="${y}" r="5.2" fill="#F3D9A6"/>`;
       else if (st === 'g') h += `<circle cx="${x}" cy="${y}" r="4.8" fill="none" stroke="#F3D9A6" stroke-width="1.8"/>`;
       else if (st === 'w') h += `<circle cx="${x}" cy="${y}" r="4.8" fill="none" stroke="#ABA8A2" stroke-width="1.6"/><path d="M${x},${y - 4.8} A4.8,4.8 0 0 0 ${x},${y + 4.8} Z" fill="#ABA8A2" transform="rotate(${a} ${x} ${y})"/>`;
-      else h += `<circle cx="${x}" cy="${y}" r="3.8" fill="none" stroke="rgba(242,239,233,.32)" stroke-width="1.3" stroke-dasharray="2 2.2"/>`;
+      else h += `<circle cx="${x}" cy="${y}" r="3.8" fill="none" stroke="rgba(242,239,233,.46)" stroke-width="1.3" stroke-dasharray="2 2.2"/>`;
     });
     const lr = 138, lx = c + lr * Math.sin(a0 * Math.PI / 180), ly = c - lr * Math.cos(a0 * Math.PI / 180);
-    h += `<g class="dl" data-i="${i}" transform="translate(${lx} ${ly})" style="cursor:pointer"><circle r="16" fill="transparent"/><text y="5" text-anchor="middle" font-family="Geist Mono" font-size="14" font-weight="500" fill="#ABA8A2">${String(i + 1).padStart(2, '0')}</text></g>`;
+    h += `<g class="dl" data-i="${i}" transform="translate(${lx} ${ly})" style="cursor:pointer"><circle r="23" fill="transparent"/><text y="5" text-anchor="middle" font-family="Geist Mono" font-size="15.5" font-weight="500" fill="#ABA8A2">${String(i + 1).padStart(2, '0')}</text></g>`;
     if (i === SCHOOL_AT) h += `<path transform="rotate(${a0} ${c} ${c})" d="M${c - 5},${c - 80} L${c + 5},${c - 80} L${c},${c - 89} Z" fill="#A3ACFF"/>`;
   });
   h += `</g>`;
@@ -2051,6 +2074,7 @@ function init() {
   $('#ls-replay').onclick = () => { Snd.tick(); lessonScript(); };
   $$('[data-rl]').forEach((b) => b.onclick = () => { $$('[data-rl]').forEach((x) => x.setAttribute('aria-pressed', String(x === b))); const h = $('#phead'); h.textContent = PHEAD[b.dataset.rl]; h.classList.toggle('hi', b.dataset.rl === 'hi'); h.lang = b.dataset.rl === 'hi' ? 'hi' : 'en'; anim(h, [{ opacity: 0 }, { opacity: 1 }], 'smooth'); });
   window.addEventListener('resize', () => { L.board && L.board.resize(); G.tree && G.tree.resize(); });
+  window.addEventListener('hashchange', () => { const h = (location.hash || '').slice(1); if (SCREENS.some((x) => x.id === h) && h !== CUR) go(h); });
   const start = (location.hash || '').slice(1);
   go(SCREENS.some((s) => s.id === start) ? start : 'hello', { instant: true });
 }
