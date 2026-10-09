@@ -15,10 +15,11 @@ import { mixedUnitComparison, withoutMixedUnits } from "../director/units.js";
 import { screenContradiction, stripStrayParts } from "../director/modules.js";
 import { isBare, repeatsEarlier, tidy, leadWithoutQuestion, sentences } from "../conversation/guards.js";
 import { p5Flag } from "../conversation/flags.js";
-import { leadSlotWanted, leadSlotNote, cleanLead, leadOk, composeTurn, LEAD_MAX_WORDS } from "../conversation/compose.js";
+import { leadSlotWanted, leadSlotNote, cleanLead, leadOk, composeTurn, requestNote, turnNote, LEAD_MAX_WORDS, LEAD_MIN_FIRST, LEAD_MAX_FIRST } from "../conversation/compose.js";
 import { fallbackLead } from "../conversation/fallback-lead.js";
 
 /** p5-interaction: problems a gutted teaching turn's one retry may still carry, because code repairs them (never truth). */
+const HELP_ASKS = new Set(["another", "clarify", "slower", "example", "story", "frustration", "easier"]);
 const SOFT_FIX = new Set(["long", "twoq", "wrap", "script", "register", "stage", "cantshow"]);
 /** Text-mode hard ceiling for the reply guard (the compiled rule asks for TURN_WORDS). */
 export const REPLY_MAX_WORDS = { "6-9": 30, "10-15": 40 };
@@ -118,8 +119,14 @@ export function checkInProblems(t, { kind = "stop", active = null, lang = "hingl
     || (String(text).match(/[^.!?।]*[?？]/g) ?? []).some((q) => /\d/.test(q)) || HOLD_WORDS.test(text);
   if (asksLesson) out.push("hold");
   if (!STOP_OFFER.test(text)) out.push("nostop");
+  // round 3 (conversation; local battery base-head-1, "end the lesson"): "Okay, Meher. We'll stop the lesson here." named
+  // the stop and offered nothing else, and the child's "yes" then got "Lesson ended … <a question>". A stop check-in is a
+  // CHOICE: going on (or a break) is offered as well. (The relational check-in "rel" only has to say stopping is fine.)
+  if (kind === "stop" && p5Flag("R3CONV") && !GO_ON_OFFER.test(text)) out.push("nochoice");
   return out;
 }
+/** The child's options include going on or a short break (Roman Hinglish / English / Devanagari). */
+const GO_ON_OFFER = /(?<![\p{L}])(?:continue|keep\s+going|carry\s+on|go\s+on|aage|chalte\s+rah|jaari|padhte\s+rah|karte\s+rah|break|pause|aaram|thoda\s+ruk)|आगे|जारी|ब्रेक/iu;
 /**
  * The fixed safeguarding line (both helplines) in the child's language mode and address form: W2-I's vetted opening
  * (server/relational/openings.js, identical to the client's src/lesson/safetyStrings.ts) and then one check-in question.
@@ -223,13 +230,16 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
   // A diagnostic's options are content read aloud, so they do not count against the turn length.
   const max = REPLY_MAX_WORDS[state.ctx.ageBand] + (item?.diagnostic ? words(item.options.map((o) => o.text).join(" ")) : 0);
   const guardable = item && state.hintLevel < 4 && state.pendingWhy !== item.id;
-  const mustPose = guardable && state.hintLevel === 0 && POSING_MOVES.has(state.lastMove.kind);
+  const posingTurn = guardable && state.hintLevel === 0 && POSING_MOVES.has(state.lastMove.kind);
   // p5-interaction: a thinking-aloud wait hands back by letting them go on, never by a question (the "thinkq" guard below)
   const thinkingWait = p5Flag("GUARDS") && state.lastMove?.request === "thinking";
   // round 2 safety floor: a check-in hands back by the choices it offers (the chips wait), never by a lesson question
   const checkin = state.lastMove?.checkin ?? null;
   const activeItem = checkin && state.activeItemId ? findItem(state, kit, state.activeItemId) : null;
-  const mustHandBack = !CLOSING_MOVES.has(state.lastMove.kind) && !thinkingWait && !checkin;
+  // round 3: a granted break hands back nothing (breakYes: "no question now"); before this the hand-back check made the
+  // rewrite add a lesson question to "brb" / "can we pause for a bit?" (local battery base-head-1: 3 of 3 breaks rewritten)
+  const restBreak = p5Flag("R3CONV") && state.lastMove?.kind === "break" && state.lastMove?.request === "break";
+  const mustHandBack = !CLOSING_MOVES.has(state.lastMove.kind) && !thinkingWait && !checkin && !restBreak;
   const whyProbe = !!item && state.pendingWhy === item.id;
   // A comparison across kinds of quantity (45,000 fans vs 4,500 km) in the teacher's OWN words; the kit's posed
   // question is verified content and is not judged here.
@@ -248,7 +258,13 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
   // (owner-3: the lesson goes on after it); it is still caught, but its repair is the check-in's own (below), never
   // stripWrap — which cut the stop option out and left "the lesson goes on" (adversarial B2)
   const wrapping = !CLOSING_MOVES.has(kindNow);
-  const praiseOf = (t) => praiseProblem(t, verdict);
+  // round 3: a turn whose move answers a request that is not an answer ("thoda break chahiye", "can we play a game") has no
+  // answer to praise: "Bilkul, aap break lijiye" agrees to the request (base-head-1: caught as praise, rewritten, then
+  // shipped flat). Only an UNVERIFIED reading is relaxed; a graded wrong answer keeps every praise check.
+  const NOT_ANSWERS = new Set(["break", "stop", "identity", "uptake", "decline", "park", "detour", "adult", "language", "change_topic", "boredom", "back",
+    "visual", "story", "example", "another", "slower", "repeat", "clarify", "answer_q", "adapt", "adopt", "harder", "easier", "skip", "know", "frustration"]);
+  const wordsVerdict = p5Flag("R3CONV") && verdict === "unverified" && NOT_ANSWERS.has(String(state.lastMove?.request ?? "")) ? "ungraded" : verdict;
+  const praiseOf = (t) => praiseProblem(t, wordsVerdict);
   // p5-interaction guards (conversation/guards.js): her earlier lines of this lesson (the repeat guard reads the last six)
   const G = p5Flag("GUARDS");
   const earlier = G ? history.filter((t) => t.who === "teacher").slice(-6).map((t) => t.text) : [];
@@ -256,6 +272,23 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
   // a re-pose ends on the card's form of it (UiDirectives.ask.text, ≤ 120 characters: the question sentence itself)
   const rePose = !!item && state.pinItem === item.id && (state.pinRun ?? 0) > 1;
   const askEnd = item ? (G && pinned && rePose ? pinned : promptFor(item, lang)) : null;
+  // Round 3 (conversation stream; kill switch TAXILA_P5_R3CONV=off): the question was posed on the last turn (a re-pose),
+  // so a turn that ends on the card's form of it has posed it; the "drift" check (half the full prompt's content words)
+  // asks only for a FIRST pose. Before this, a re-pose at rung 0 (a request answered, a question of theirs, small talk)
+  // that ended on the card form tripped drift on every turn (the lead slot itself ends on the card form): base-head-1 had
+  // drift on 26 of 90 turns, and the rewrite or the drift repair dropped what the draft had said to the child
+  // ("pehle mera sawaal": the rainbow answer cut, insistence "engages_brief" no).
+  const R3 = G && p5Flag("R3CONV");
+  // round 3: the help requests whose turn must carry a line of her own before the card question (never only the question)
+  const helpAsk = R3 && HELP_ASKS.has(String(state.lastMove?.request ?? ""));
+  const mustPose = posingTurn && !(R3 && pinned && rePose);
+  const firstPose = R3 && !!pinned && !rePose && posingTurn;
+  // round 3 (conversation; smoke on the round-3 tree): confirming a RIGHT answer names the parts of the question they just
+  // answered ("Haan — Flag A mein 4 equal sections hain") while the screen already shows the next idea (thirds): the parts
+  // check read that as naming parts the screen does not show, and the repair cut the confirmation (8 of 94 turns, then
+  // "noconfirm" on what shipped). The answered item's own question and key are verified content: their parts may be named.
+  const answered = R3 && verdict === "correct" && state.itemsDone?.length ? findItem(state, kit, state.itemsDone.at(-1)) : null;
+  const partsLines = answered ? [promptFor(answered, lang), String(answered.answer ?? "")] : undefined;
   // round 2 (conversation): a lead-slot turn's length is its OWN words (the card question after them is verified content,
   // like a diagnostic's options): within the lead budget it is not "long"
   const slotState = { on: false };
@@ -272,7 +305,7 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
     // W2-B #1: the line names parts the mounted module does not show (she said quarters over fifths). Her OWN words only:
     // the kit's posed question is verified content (W2-E: the replay showed the predicate flagging a verified question
     // that names halves/quarters/eighths beside a 1/2-only predict screen, which cost a rewrite and her lead-in).
-    screenContradiction(own(t), module) && "parts",
+    screenContradiction(own(t), module, partsLines) && "parts",
     registerBroken(t, address) && "register",
     leaksStage(t) && "stage",
     saysCantShow(t) && "cantshow",
@@ -280,14 +313,19 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
     mixedUnitComparison(own(t)) && "units",
     mustPose && !posesItem(t, item, lang) && "drift",
     whyProbe && !asksWhy(t) && "nowhy",
-    mustHandBack && !handsBack(t) && "flat",
+    // round 3: a turn that ends on the pinned kit question has handed the floor back, whatever its verb ("…sabse bade
+    // tukde se sabse chhote tak lagao." has no "?" and no listed verb: every pose of it was "flat" and rewritten)
+    mustHandBack && !handsBack(t) && !(R3 && pinned && parityOf(t).endsOnAsk) && "flat",
     !scriptOk(t, lang) && "script",
     words(t) > max && !slotLength(t) && "long",
     pinned && !parityOf(t).endsOnAsk && "ask",
     mustHandBack && parityOf(t).questions > 1 && "twoq",
     wrapping && wrapsUp(t) && "wrap",
     // p5-interaction: the reply is only the question again (owner-2 R3, 9 / 90), or a line she already said (R4, 8 / 90)
-    G && pinned && isBare(t, promptFor(item, lang), pinned, rePose ? undefined : 1) && "bare",
+    // round 3: a welcome back is short by nature ("Wapas aa gaye, Riya!"): two own words are a response there
+    // round 3 (owner-2 on both trees: "samajh nahi aaya" on a faded step got only the step's question, R3 + R7.same_again): a
+    // turn answering a request for help carries a real line of its own even on a first pose
+    G && pinned && isBare(t, promptFor(item, lang), pinned, helpAsk ? undefined : !rePose ? 1 : R3 && state.lastMove?.request === "back" ? 2 : undefined) && "bare",
     G && repeatsEarlier(t, earlier) && "same",
     // a mid-thought gets no question (conversation-v2 thinking_aloud 1/8: "new_question"); a right answer is confirmed
     // before anything else (answer_correct 4/8: a covert probe with no uptake)
@@ -301,7 +339,7 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
     let out = f.includes("wrap") ? stripWrap(t) : t;
     if (pinned) out = endOnAsk(out, askEnd);
     else if (f.includes("drift")) out = repairDrift(out, item, lang);
-    else if (f.includes("twoq")) out = lastQuestionOnly(out);
+    else if (f.includes("twoq")) out = lastQuestionOnly(out, { keepContent: R3 });
     return out;
   };
   const SHAPE = new Set(["drift", "flat", "ask", "twoq", "wrap"]);
@@ -325,18 +363,29 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
   // question again, is written as two parts: the model writes only what comes before the question, code adds the question
   // byte for byte (conversation/compose.js). A lead that comes back unusable falls through to the one-call path.
   const slot = G && p5Flag("LEADSLOT") && !!item && leadSlotWanted({ request: state.lastMove?.request ?? null, rePose, pinned, diagnostic: !!item?.diagnostic,
-    whyProbe, closing: CLOSING_MOVES.has(kindNow) });
-  const leadMax = LEAD_MAX_WORDS[state.ctx.ageBand] ?? 30;
+    whyProbe, closing: CLOSING_MOVES.has(kindNow), firstPose: firstPose && !checkin });
+  // round 3: a first pose with no request is a bridge into a new question (shorter lead, a right answer confirmed first)
+  const bridge = firstPose && !state.lastMove?.request;
+  const shortLead = bridge || (R3 && state.lastMove?.request === "back");
+  const leadMax = (bridge ? LEAD_MAX_FIRST : LEAD_MAX_WORDS)[state.ctx.ageBand] ?? 30;
   const leadCall = async (why = null, draft = null) => {
-    const extra = [...(draft ? [{ role: "assistant", content: draft }] : []), { role: "system", content: leadSlotNote({ lead: state.lastMove?.lead ?? null, why, ageBand: state.ctx.ageBand }) }];
+    const extra = [...(draft ? [{ role: "assistant", content: draft }] : []), { role: "system", content: leadSlotNote({ lead: state.lastMove?.lead ?? null, why, ageBand: state.ctx.ageBand,
+      first: bridge, confirm: R3 && verdict === "correct" && !checkin, noAnswer: R3 && bridge && (wordsVerdict === "unverified" || wordsVerdict === "attempt") }) }];
     const raw = await ask([...messages, ...extra]);
     const lead = cleanLead(raw, askEnd, leadMax);
-    return leadOk(lead, [item?.answer, ...(item?.acceptable ?? [])]) ? composeTurn(lead, askEnd) : null;
+    return leadOk(lead, [item?.answer, ...(item?.acceptable ?? [])], shortLead ? { min: LEAD_MIN_FIRST } : undefined) ? composeTurn(lead, askEnd) : null;
   };
+  // round 3: a one-call turn gets its own shape LAST (compose.js turnNote): a request's note first when the move answers one
+  // with no card question, then the turn shape (end on the card question; or hand the floor back, no goodbye). Not on a
+  // check-in, a granted break, a thinking-aloud wait, a why-probe or a closing move (each has its own shape).
+  const reqNote = R3 && !pinned && !CLOSING_MOVES.has(kindNow) && !checkin && state.lastMove?.lead ? requestNote(state.lastMove.lead) : null;
+  const shapeNote = R3 && !CLOSING_MOVES.has(kindNow) && !checkin && !restBreak && !thinkingWait && !whyProbe && !item?.diagnostic && mustHandBack
+    ? turnNote({ ask: pinned ? askEnd : null, maxWords: TURN_WORDS[state.ctx.ageBand] ?? 25 }) : null;
+  const lastNotes = [reqNote, shapeNote].filter(Boolean).join(" ");
   try {
     reply = slot ? (await leadCall()) : null;
     if (reply) { guardSlot.used = true; slotState.on = true; }
-    reply ??= await ask(messages);
+    reply ??= await ask(lastNotes ? [...messages, { role: "system", content: lastNotes }] : messages);
   } catch (e) {
     if (isContentFilter(e)) { console.warn("[lesson] reply blocked by the content filter"); return blocked(); }
     console.warn("[lesson] reply unavailable, falling back:", e.message);
@@ -371,11 +420,15 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
       found.includes("long") && `it is too long — at most ${TURN_WORDS[state.ctx.ageBand]} words`,
       found.includes("units") && "it asks which is bigger between two different kinds of quantity — compare like with like (two counts, or two lengths in one unit)",
       found.includes("floor") && `it breaks the safety floor — ${floorOf(reply).map((k) => FLOOR_FIX[k]).filter(Boolean).join("; ")}`,
-      found.includes("praise") && "it agrees with or praises their answer, but their answer was not marked right — no agreement or praise word for it; name what is sensible in it, then the next step",
+      // round 3: on a turn with no answer to judge (a filler, an unverified reply) "start from what they actually did" made the
+      // rewrite echo the filler ("Tumne bas “haan” kaha", 4 of ~500 turns on the paired battery): there it says go straight on
+      found.includes("praise") && (R3 && (wordsVerdict === "unverified" || wordsVerdict === "attempt")
+        ? "it praises or agrees as if they answered, but there is no answer of theirs to judge this turn — no praise or agreement word; go straight on with the move, without commenting on what they said"
+        : `it agrees with or praises their answer, but their answer was not marked right — no agreement or praise word for it; ${R3 ? "start from what they actually did" : "name what is sensible in it"}, then the next step`),
       found.includes("deny") && "it says their answer is wrong, but it was right — confirm it plainly",
       found.includes("corrects") && `it implies their answer was wrong or that the answer is something else, but their answer ${JSON.stringify(String(right.key))} was right — confirm it plainly and do not name any other answer as the result`,
       found.includes("screen") && "it tells them to tap or pick something on the screen, but nothing is on the screen to tap this turn — ask them to say it",
-      found.includes("parts") && `it names parts the screen does not show — ${screenContradiction(own(reply), module)?.onScreen ?? ""}`,
+      found.includes("parts") && `it names parts the screen does not show — ${screenContradiction(own(reply), module, partsLines)?.onScreen ?? ""}`,
       found.includes("cantshow") && "it says you cannot show or draw — never say that; the board draws for you: talk about the idea itself",
       found.includes("stage") && "it reads out a field name, markup or a text picture (like 'Whiteboard:', brackets or rows of symbols like ●●●) — plain spoken words only; the board draws pictures, never your words",
       found.includes("register") && (address === "aap" ? "it uses tum forms — address the child with aap forms only (aap, aapka; verbs ending -iye)" : "it uses aap — address the child with tum forms (tum, tumhara)"),
@@ -383,13 +436,14 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
       found.includes("twoq") && !found.includes("ask") && "it asks more than one question — keep only one question, at the end",
       found.includes("wrap") && (checkin ? "it already says goodbye, but they have not chosen yet — offer stopping as one of the choices (stop for today), not as a goodbye"
         : "it says goodbye or that the lesson is over, but the lesson goes on — no goodbye words"),
-      found.includes("bare") && (rePose ? "it is only the question again — first answer what they just said, or give the nudge or the step, in one short line of your own; then the question"
+      found.includes("bare") && (rePose || helpAsk ? "it is only the question again — first answer what they just said, or give the nudge or the step, in one short line of your own; then the question"
         : "it is only the question — say a short bridge of your own first (a few words to what they said), then the question"),
       found.includes("same") && "it repeats what you already said earlier, almost word for word — say something new (a different nudge, example or way in); then the question",
       found.includes("thinkq") && "they are in the middle of a thought — ask nothing at all; only a few words that let them go on and finish it",
       found.includes("noconfirm") && "their answer was right — open by confirming it in a few words, naming what they got right, before anything else",
       found.includes("hold") && "they asked to stop: it asks a lesson question or holds them for one more — this turn asks nothing about the lesson; only offer the choices",
       found.includes("nostop") && (checkin === "rel" ? "it must say plainly that stopping now is fine" : "it leaves out stopping — name all three choices: keep going, a short break, or stop for today"),
+      found.includes("nochoice") && !found.includes("nostop") && "it only names stopping — they have not chosen yet: name all three choices, keep going, a short break, or stop for today",
     ].filter(Boolean).join("; and ");
     try {
       reply = await ask([...messages, { role: "assistant", content: reply }, { role: "system", content: checkin
@@ -402,7 +456,7 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
       console.warn("[lesson] rewrite unavailable, guarding the draft:", e.message); // the draft's problems stand
     }
     guard.afterRewrite = found;
-    if (checkin && (found.includes("floor") || found.includes("hold") || found.includes("nostop") || found.includes("wrap"))) {
+    if (checkin && (found.includes("floor") || found.includes("hold") || found.includes("nostop") || found.includes("wrap") || found.includes("nochoice"))) {
       // a check-in that still asks a lesson question, holds them, or drops the stop option is never sent: the fixed line
       reply = fallbackReply(state, null);
       guard.replaced = true;
@@ -445,7 +499,7 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
       if (found.includes("corrects")) { reply = keepOr(stripCorrection(reply, right)); guard.replaced = true; }
       if (found.includes("screen")) { reply = keepOr(stripScreenRefs(reply)); guard.replaced = true; }
       // W2-B fixer: a rewrite that still names part counts the screen does not show loses those sentences
-      if (found.includes("parts")) { reply = keepOr(stripStrayParts(reply, module, undefined, { keep: item ? promptFor(item, lang) : "" })); guard.replaced = true; }
+      if (found.includes("parts")) { reply = keepOr(stripStrayParts(reply, module, partsLines, { keep: item ? promptFor(item, lang) : "" })); guard.replaced = true; }
       if (found.includes("register") && address === "aap") { reply = toAap(reply); guard.repaired = true; }
       if (found.includes("stage")) { reply = stripStage(reply) || fallbackReply(state, item); guard.replaced = true; }
       if (found.includes("cantshow")) { reply = keepOr(stripCantShow(reply)); guard.replaced = true; }
@@ -502,7 +556,11 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
     // round 2 (conversation): a turn still only the question, or a line she already said, after every repair above: one
     // lead-slot call (the model writes only the response to what they said; code adds the question). Used only when the
     // joined turn has no problem the old one did not have; never after a floor or leak catch (a truth repair stands).
-    if (p5Flag("LEADSLOT") && item && pinned && !whyProbe && !item.diagnostic && !CLOSING_MOVES.has(kindNow) && !guard.caught.some((c) => c === "floor" || c === "leak")) {
+    // round 3: a leak caught on the first draft no longer bars this repair: the leak repair left only the question (owner-2
+    // R3 "bare question after a wrong answer": a kit hint whose numbers equal the key, cut, then nothing to say), and the new
+    // lead is checked against the key (leadOk) and the joined turn may carry no problem the repaired one did not, a leak
+    // included. A floor catch still bars it (rj-conv-lead-repair-after-floor).
+    if (p5Flag("LEADSLOT") && item && pinned && !whyProbe && !item.diagnostic && !CLOSING_MOVES.has(kindNow) && !guard.caught.some((c) => c === "floor" || (c === "leak" && !R3))) {
       const left = problems(reply);
       if (left.includes("bare") || left.includes("same")) {
         try {
@@ -513,9 +571,23 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
             const was = new Set(left), prevOn = slotState.on;
             slotState.on = true;
             const now = problems(again);
-            if (!now.includes("bare") && !now.includes("same") && now.every((p) => was.has(p))) { reply = again; guard.leadRepair = true; } else slotState.on = prevOn;
+            if (!now.includes("bare") && !now.includes("same") && !now.includes("leak") && now.every((p) => was.has(p))) { reply = again; guard.leadRepair = true; } else slotState.on = prevOn;
           }
         } catch (e) { if (isContentFilter(e)) return blocked(); }
+      }
+    }
+    // round 3: a re-pose STILL only the question after every model repair gets the fixed code lead (conversation/
+    // fallback-lead.js: the kit hint's statements when safe and not said yet, else a generic nudge she has not said this
+    // lesson), never the bare question: owner-2 R3 on prod 4 of 90 turns. Code lines, never prompt text (nothing to recite).
+    if (R3 && item && pinned && (rePose || helpAsk) && !whyProbe && !item.diagnostic && !CLOSING_MOVES.has(kindNow) && !checkin && !guard.caught.includes("floor")
+      && problems(reply).includes("bare")) {
+      const fixedLead = fallbackLead({ request: state.lastMove?.request ?? null, hint: hintStatements(item, state.lastMove?.hintLevel), rePose: true, lang, avoid: earlier });
+      if (fixedLead) {
+        const joined = composeTurn(address === "aap" && lang !== "english" ? toAap(fixedLead) : fixedLead, askEnd);
+        const was = new Set(problems(reply)), prevOn = slotState.on;
+        slotState.on = true;
+        const now = problems(joined);
+        if (!now.includes("bare") && now.every((p) => was.has(p))) { reply = joined; guard.codeLead = true; } else slotState.on = prevOn;
       }
     }
     // the cut marks the repairs leave (an orphan quote, an empty fragment) and a lead sentence that re-poses the question
@@ -554,7 +626,10 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
 export function hintStatements(item, hintLevel) {
   const h = stripRungLabel(String(item?.hints?.[(hintLevel ?? 1) - 1] ?? "")).replace(/\s+/g, " ").trim();
   if (!h || revealsAnswer(h, item) || hintShapeWords(h)) return "";
-  return sentences(h).map((x) => x.trim()).filter((x) => x && !/[?？]/.test(x)).join(" ").trim();
+  // round 3: a kit hint with no closing stop ran into the question ("…as places they live What are microbes…?", base-head-1)
+  const out = sentences(h).map((x) => x.trim()).filter((x) => x && !/[?？]/.test(x)).map((x) => (/[.!।…]$/.test(x) ? x : `${x}.`)).join(" ").trim();
+  // it opens her turn: a capital first letter ("look at the step just before…" came out lower-case)
+  return out ? out[0].toUpperCase() + out.slice(1) : "";
 }
 
 export function keepLastLeadQuestion(reply, ask) {
@@ -575,9 +650,15 @@ export function tidyAround(reply, ask) {
 }
 
 /** p5-interaction: does a reply to a RIGHT answer confirm it in its first two sentences (agreement / praise of the answer)? */
+// round 3 (conversation; base-head-1): "Kabir, haan, 1 player bach jaata hai" and "Aarav, aapne … bilkul sahi groups se
+// banaya" were caught as NOT confirming (the name before "haan"; "sahi" not right before a listed verb) and rewritten
+// (~1-2 s each). A confirmation word in a statement among the first two sentences counts; a negated one never does. This is
+// a quality check on a turn after a RIGHT answer (no truth guard is loosened: praise / deny keep their own predicates).
+const CONFIRM_WORD = /(?<![\p{L}])(?:bilkul|sahi|correct(?:ly)?|right|haan|haa+n?|yes|yep|exactly|ekdam|sha+ba+sh|well\s+done|perfect|great|badhiya|zabardast|theek\s+(?:kaha|bataya|socha|pakda))(?![\p{L}])(?!\s+(?:nahi|nahin|not|hai\s+kya))|सही|बिल्कुल|हाँ|शाबाश/iu;
 function confirmsFirst(t) {
   const head = sentences(t).slice(0, 2).join(" ");
-  return praiseProblem(head, "not_yet") === "praise";
+  if (praiseProblem(head, "not_yet") === "praise") return true;
+  return p5Flag("R3CONV") && sentences(t).slice(0, 2).some((x) => !/[?？]/.test(x) && CONFIRM_WORD.test(x));
 }
 
 /** Imperatives to write / type → the spoken form (her own words only; the pinned question at the end is kept). Exported for tests. */

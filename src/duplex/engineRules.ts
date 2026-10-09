@@ -94,6 +94,9 @@ export function estimate(tick: EngineTick): Estimate {
   const ac = tick.estimates.acoustic;
   const acFresh = !!ac && tick.t - ac.atMs <= ACOUSTIC_FRESH_MS;
   const acousticVouches = acFresh && (ac as { pComplete: number }).pComplete >= 0.8;
+  // voicesig round 3 (src/voicesig/holdCue.ts): a fresh acoustic estimate that asks to keep the floor (the child stopped
+  // on a filled pause the STT may not spell) is the acoustic twin of the lexical fillerTail: same weight in zH, never both
+  const acousticHold = acFresh && ((ac as { pHoldWanted?: number }).pHoldWanted ?? 0) >= 0.6;
   const unseen = tr.unseenVoicedMs > HORIZON_MS;
   if (unseen) reasons.push("lexical_horizon_unseen");
   // the semantic estimate: weight 0 once stale (another text), decaying over 1.5 s; open contexts only
@@ -135,7 +138,7 @@ export function estimate(tick: EngineTick): Estimate {
   const sentenceOnly = exchange === "open_explanation" && semW === 0 && !m.idk && !m.questionComplete && !m.repeatRequest && !m.yieldTag;
   if (sentenceOnly) { const cap = logit(EXPLAIN_SENTENCE_CAP); if (zC > cap) { zC = cap; reasons.push("x_explain_cap"); } }
   const zH = row.bH + 4.0 * (m.holdRequest ? 1 : 0) + 2.0 * (m.repairOpen ? 1 : 0)
-    + 1.5 * Math.max(m.fillerTail ? 1 : 0, m.openTail ? 1 : 0, m.projection ? 1 : 0, m.wordSearch ? 1 : 0)
+    + 1.5 * Math.max(m.fillerTail ? 1 : 0, m.openTail ? 1 : 0, m.projection ? 1 : 0, m.wordSearch ? 1 : 0, acousticHold ? 1 : 0)
     + 1.0 * (tick.screen.busy ? 1 : 0) + 1.0 * (c.voicing ? 1 : 0)
     - 1.5 * (m.yieldTag ? 1 : 0) - 2.0 * (m.idk ? 1 : 0) - 1.0 * (m.questionComplete ? 1 : 0) - 1.0 * (f === "complete" ? 1 : 0)
     - row.wHSil * silTerm;

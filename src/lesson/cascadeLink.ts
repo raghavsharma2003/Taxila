@@ -28,6 +28,11 @@ import { MicVad } from "./vad.ts";
 import { FragmentMerger, PREDICTIVE_SILENCE_MS, predictiveEnabled, resumeCeilingMs, turnContext, type TurnFinal } from "./turnModel.ts";
 // Round 2 latency: the stable partial transcript goes to POST /api/lesson/turn-prefetch the moment the child is quiet
 import { TurnPrefetcher, prefetchEnabled } from "../latency/prefetch.ts";
+// Round 3 (relational-human): the played acknowledgement (she says the child's answer back while she thinks) and the turn
+// path's duplex end-of-turn hook (src/latency/duplexTurn.ts: the engine's eager end of turn → the prefetch)
+import { AckClient, ackEnabled, HOLD_MAX_MS, REPLY_GAP_MS, type AckClip } from "../latency/ack.ts";
+import { registerLatencyTarget } from "../latency/duplexTurn.ts";
+import { puppetBus } from "../face-puppet/bus.ts";
 // ship5 p1-duplex: the hands-free duplex engine (src/duplex/cascadeDuplex.ts). Off unless the caller passes `duplex`.
 import type { CascadeDuplex, CascadeDuplexOptions, CascadeDuplexState } from "../duplex/cascadeDuplex.ts";
 import type { DuplexMode } from "../duplex/flags.ts";
@@ -75,6 +80,12 @@ export interface CascadeLinkOptions {
    */
   prefetch?: boolean;
   /**
+   * Round 3 (relational-human, src/latency/ack.ts): ask POST /api/lesson/turn-ack for the acknowledgement once the child's
+   * words are known, and play it (the child's own answer said back) before the reply. Default: ackEnabled() (ON; kill
+   * switch ?ack=0 or VITE_TURN_ACK=0; the server's TAXILA_ACK=off answers 204 and nothing plays).
+   */
+  ack?: boolean;
+  /**
    * ship5 p1-duplex: the hands-free duplex engine decides the child's floor (no talk button; a final is not a turn).
    * A mode or a resolver (src/duplex/flags.ts resolveDuplexMode: device override, server kill switch, build default).
    * Absent or "off" = today's path byte for byte. Any failure falls back to today's path (onDuplex reports it).
@@ -94,6 +105,8 @@ export interface CascadeTiming {
   finalAt?: number;
   replyAt?: number;
   firstAudioAt?: number;
+  /** Round 3: the acknowledgement's first sample (when one played): the child's first sound from her. */
+  ackAt?: number;
 }
 
 const CHANNEL_OPEN_TIMEOUT_MS = 10_000;
@@ -339,6 +352,12 @@ export class CascadeLink implements TeacherLink {
   private micVad: MicVad | null = null;
   private readonly prefetcher: TurnPrefetcher | null;
   private player: PcmStreamPlayer | null = null;
+  /** Round 3: the acknowledgement (null = off) and its own player, chained INTO the reply player's output (same level tap
+   *  for the face, same ducking), so the reply's play() never cuts a clip that is sounding. */
+  private readonly ack: AckClient | null;
+  private ackPlayer: PcmStreamPlayer | null = null;
+  private ackNow: { playback: StreamPlayback; sounding: boolean; ended: Promise<void> } | null = null;
+  private unregisterLatency: (() => void) | null = null;
   private pc: RTCPeerConnection | null = null;
   private dc: RTCDataChannel | null = null;
   private audioInput: Json = {};
@@ -382,7 +401,10 @@ export class CascadeLink implements TeacherLink {
     this.onTransport = opts.onTransport;
     this.ctx = opts.audioContext ?? null;
     this.merger = opts.predictive ?? predictiveEnabled() ? new FragmentMerger() : null;
-    this.prefetcher = opts.prefetch ?? prefetchEnabled() ? new TurnPrefetcher({ lessonId: opts.lessonId }) : null;
+    this.ack = opts.ack ?? ackEnabled() ? new AckClient({ lessonId: opts.lessonId, onClip: (c) => this.playAck(c) }) : null;
+    this.prefetcher = opts.prefetch ?? prefetchEnabled()
+      ? new TurnPrefetcher({ lessonId: opts.lessonId, onSend: (b) => this.ack?.request(b.text) }) : null;
+    this.unregisterLatency = registerLatencyTarget({ lessonId: opts.lessonId, prefetcher: this.prefetcher, ack: this.ack, duplexLive: () => this.duplexDeciding });
     this.onDuplex = opts.onDuplex;
     this.duplexFace = opts.duplexFace;
     this.duplexOptions = opts.duplexOptions;
@@ -470,6 +492,10 @@ export class CascadeLink implements TeacherLink {
       return;
     }
     this.turn.replyAt = Date.now();
+    // round 3: no acknowledgement may START from now on for this turn (one that is sounding finishes first: ackGate); a
+    // safeguarding reply (the helplines are in it, by the floor) stops a sounding one at once: nothing of hers precedes care
+    this.ack?.replyStarting();
+    if (/(?<!\d)(?:1098|14416)(?!\d)/.test(text)) this.stopAck();
     this.events.emit({ type: "response_start", responseId: id, at: Date.now() });
     // The caption appears at once; speech follows as the first sentence streams in.
     this.events.emit({ type: "teacher_delta", responseId: id, delta: text });
@@ -480,7 +506,11 @@ export class CascadeLink implements TeacherLink {
       return;
     }
     void this.ctx?.resume().catch(() => {});
-    const playback = this.player.play((signal, sink) => this.speech({ lessonId: this.lessonId, seq }, signal, sink), { req: { lessonId: this.lessonId, seq } });
+    // round 3 integration: the speech request goes out synchronously, exactly as before, when no acknowledgement is sounding
+    // (tests/voice-cascade.test.mjs pins it); only a sounding clip makes the reply's audio wait for it (ackGate)
+    const playback = this.player.play((signal, sink) => (this.ackNow
+      ? this.ackGate().then(() => this.speech({ lessonId: this.lessonId, seq }, signal, sink))
+      : this.speech({ lessonId: this.lessonId, seq }, signal, sink)), { req: { lessonId: this.lessonId, seq } });
     const cur: CurrentReply = { id, text, playback, playing: false, paused: null };
     this.current = cur;
     playback.started.then(
@@ -510,7 +540,53 @@ export class CascadeLink implements TeacherLink {
   }
 
   interrupt(): void {
+    this.stopAck();
     this.stopReply("cancelled", true);
+  }
+
+  // ───────────── round 3: the acknowledgement (src/latency/ack.ts) ─────────────
+
+  /** Play a clip the AckClient released (it already checked the words, the age and the turn). Never while a reply is out. */
+  private playAck(clip: AckClip): void {
+    if (this.closed || !this.ctx || !this.player || this.current || this.talking || this.ackNow) return;
+    if (!this.ackPlayer) this.ackPlayer = new PcmStreamPlayer(this.ctx, this.player.output);
+    void this.ctx.resume().catch(() => {});
+    const bytes = clip.pcm;
+    const playback = this.ackPlayer.play(async () => new ReadableStream<Uint8Array>({ start(c) { c.enqueue(bytes); c.close(); } }));
+    let done!: () => void;
+    const ended = new Promise<void>((r) => { done = r; });
+    const now = { playback, sounding: false, ended };
+    this.ackNow = now;
+    playback.started.then((at) => {
+      if (this.ackNow !== now) return;
+      now.sounding = true;
+      this.turn.ackAt = at;
+      this.ack?.played(clip, at);
+      // the face keeps its thinking face while she says it (src/face-puppet/knowledge.ts K2)
+      puppetBus.emit({ kind: "ack", phase: "start", at: typeof performance !== "undefined" ? performance.now() : Date.now() });
+    }, () => {});
+    const finish = () => {
+      this.ack?.ended(Date.now());
+      if (now.sounding) puppetBus.emit({ kind: "ack", phase: "end", at: typeof performance !== "undefined" ? performance.now() : Date.now() });
+      if (this.ackNow === now) this.ackNow = null;
+      done();
+    };
+    void playback.ended.then(finish, finish);
+  }
+
+  /** Stop a sounding clip now (the child spoke over it, the lesson closed, an interrupt). */
+  private stopAck(): void {
+    const a = this.ackNow;
+    if (!a) return;
+    this.ackNow = null;
+    try { a.playback.stop(); } catch { /* already gone */ }
+  }
+
+  /** The reply's audio waits for a sounding clip to end (+ a breath), never longer than HOLD_MAX_MS. */
+  private ackGate(): Promise<void> {
+    const a = this.ackNow;
+    if (!a) return Promise.resolve();
+    return Promise.race([a.ended, new Promise<void>((r) => setTimeout(r, HOLD_MAX_MS))]).then(() => new Promise<void>((r) => setTimeout(r, REPLY_GAP_MS)));
   }
 
   setPushToTalk(on: boolean): void {
@@ -573,6 +649,9 @@ export class CascadeLink implements TeacherLink {
     const held = this.merger?.drain();
     if (held) this.deliverChild(held);
     this.closed = true;
+    this.stopAck();
+    this.unregisterLatency?.();
+    this.unregisterLatency = null;
     this.duplex?.close();
     this.duplex = null;
     this.clearMergeTimer();
@@ -625,6 +704,12 @@ export class CascadeLink implements TeacherLink {
   // ───────────── child side ─────────────
 
   private onChildEvent(e: LinkEvent): void {
+    // Round 3: an STT final that is only her echo of the acknowledgement (speaker → mic, missed by the AEC) is not a
+    // child turn; the child speaking again stops a clip and refuses any pending one
+    if (this.ack) {
+      if (e.type === "child_final" && !e.typed && this.ack.isEchoNow(e.text)) { this.events.emit({ type: "child_silent" }); return; }
+      if (e.type === "child_speech_start") { this.stopAck(); this.ack.onSpeech(); }
+    }
     // Round 2 latency: the prefetcher reads the partials and the item's end (it never changes what the turn sends)
     if (this.prefetcher) {
       if (e.type === "child_partial") this.prefetcher.onPartial(e.itemId, e.text);
@@ -673,6 +758,8 @@ export class CascadeLink implements TeacherLink {
       if (this.current?.paused && !this.duplexDeciding) this.armPauseTimer(FINAL_WAIT_MS);
     }
     if (e.type === "child_final" || e.type === "child_silent") this.turn.finalAt = Date.now();
+    // Round 3: the words the turn is sent with (after the merger: a held fragment is not a finished answer)
+    if (e.type === "child_final" && !e.typed && e.text) this.ack?.onFinal(e.text);
     if ((e.type === "child_final" && !e.typed) || e.type === "child_silent") {
       const cur = this.current;
       if (cur?.paused) {
@@ -724,6 +811,8 @@ export class CascadeLink implements TeacherLink {
       if (edge === "offset") this.prefetcher.onQuiet();
       else if (edge === "onset") this.prefetcher.onSpeech();
     }
+    // Round 3: sustained voice over her echo is the child going on: the clip stops (an onset alone may be her own echo)
+    if (edge === "sustain" && this.ackNow?.sounding) { this.stopAck(); this.ack?.onSpeech(); }
     if (edge === "onset" && this.recorder) this.recorder.heard = true;
     const cur = this.current;
     if (!cur?.playing || this.pushToTalk || edge === "offset" || this.duplexDeciding) return;
@@ -827,7 +916,7 @@ export class CascadeLink implements TeacherLink {
       this.timings.push({ ...t });
       if (this.timings.length > 20) this.timings.shift();
       const d = (a?: number, b?: number) => (a && b ? `${b - a}ms` : "?");
-      console.debug(`cascade turn: endpoint→final ${d(t.speechEndAt, t.finalAt)}, final→reply ${d(t.finalAt, t.replyAt)}, reply→audio ${d(t.replyAt, t.firstAudioAt)}, total ${d(t.speechEndAt, t.firstAudioAt)}`);
+      console.debug(`cascade turn: endpoint→final ${d(t.speechEndAt, t.finalAt)}, final→reply ${d(t.finalAt, t.replyAt)}, reply→audio ${d(t.replyAt, t.firstAudioAt)}, total ${d(t.speechEndAt, t.firstAudioAt)}${t.ackAt ? `, ack ${d(t.speechEndAt, t.ackAt)}` : ""}`);
     }
     this.turn = {};
   }
@@ -966,7 +1055,7 @@ export class CascadeLink implements TeacherLink {
     return {
       lessonId: this.lessonId,
       audio: () => (this.mic && this.ctx && !this.closed ? { ctx: this.ctx, stream: this.mic, herOutput: this.player?.output ?? null } : null),
-      herSounding: () => !!this.current?.playing && !this.current.paused,
+      herSounding: () => (!!this.current?.playing && !this.current.paused) || !!this.ackNow?.sounding,
       duck: (level) => this.player?.duck(level),
       pause: () => {
         const cur = this.current;
@@ -983,6 +1072,8 @@ export class CascadeLink implements TeacherLink {
         if (e.type === "child_final") {
           const { duplex, ...rest } = e;
           this.turn.finalAt = Date.now();
+          // round 3: the engine's commit IS the child's final (the ack was asked on the same words at its SPEAK)
+          if (rest.text) this.ack?.onFinal(rest.text);
           this.events.emit({ ...rest, typed: false, duplex });
         } else {
           this.events.emit(e);

@@ -332,6 +332,9 @@ export function useDesk(runtime: LessonRuntime, bridge: UiBridge | null, ctx: De
   useEffect(() => setPadOpen(false), [ui.ask?.text, ui.answerForm]);
   const padWanted = numberItem && (young || voiceDown || padOpen);
   const serverTray = ui.tray && ui.tray !== "none" ? ui.tray : null;
+  // round 3 forge (patch 07): a Studio slot the stage reported as ended-empty does not hold the tray (an empty white box
+  // under her line was the commonest broken view of the round 3 acceptance runs); a new slot id holds it again
+  const [studioGone, setStudioGone] = useState<string | null>(null);
   // Young answer a number item on the NumberPad, every time (flows G3: the pad never showed in a class-2 text lesson);
   // Older and voice-down children get it unless a live activity holds the tray. Choices take the tray over a module.
   const trayKind: TrayModel["kind"] | null = numberItem && young ? "pad"
@@ -340,7 +343,7 @@ export function useDesk(runtime: LessonRuntime, bridge: UiBridge | null, ctx: De
         : padWanted ? "pad"
           : chips.length ? "tiles"
             // W2 seam: a studio tray only when the turn carries its slot (never an empty stage)
-            : serverTray && serverTray !== "module" && (serverTray !== "studio" || ui.studioSlot) ? serverTray
+            : serverTray && serverTray !== "module" && (serverTray !== "studio" || (ui.studioSlot && ui.studioSlot.slotId !== studioGone)) ? serverTray
               : wb && (phase === "teach" || phase === "practice") ? "board" : null;
   // Geometry is decided at a phase boundary; within a phase it only ever grows Face → Work (legacy: content that
   // the Director did not announce with ui.tray), never back, so nothing reflows mid-item.
@@ -591,10 +594,12 @@ export function useDesk(runtime: LessonRuntime, bridge: UiBridge | null, ctx: De
   // The Keyboard layout only when an on-screen keyboard really covers the Desk (visualViewport), never from focus
   // alone: a laptop, a hardware keyboard or a text-mode lesson with the field focused keeps the full layout.
   const keyboardUp = typingFocus && !young && size.w < 600 && (size.keyboardInset ?? 0) > 0;
+  // round 3 play mode: a play piece in the Studio slot gets the Desk (docs/design/round3/play/patches/04)
+  const playMode = trayKind === "studio" && (ui.studioSlot?.artifact?.kind as string | undefined) === "play";
   const layout: DeskLayout = solveDesk({
     width: size.w, height: keyboardUp ? size.h - (size.keyboardInset ?? 0) : size.h, family: ctx.family, geometry: effectiveGeometry,
     keyboard: keyboardUp, fontScale: size.fontScale,
-    captionsOn: ctx.captionsAlways || ctx.band !== "b1", strip: stripH, cardNeed: size.cardNeed, stripNeed: size.stripNeed, trayNeed: size.trayNeed,
+    captionsOn: ctx.captionsAlways || ctx.band !== "b1", strip: stripH, cardNeed: playMode ? 0 : size.cardNeed, stripNeed: size.stripNeed, trayNeed: size.trayNeed, play: playMode,
   });
 
   // ───────── thinking beats ─────────
@@ -623,7 +628,7 @@ export function useDesk(runtime: LessonRuntime, bridge: UiBridge | null, ctx: De
         ? { kind: "tiles", tiles: [], overlay: "help_menu" }
         : null;
   const geometryOut = tray && (trayOverlay || tray.overlay) ? "work" : effectiveGeometry;
-  const finalLayout = geometryOut === effectiveGeometry ? layout : solveDesk({ width: size.w, height: size.h, family: ctx.family, geometry: geometryOut, fontScale: size.fontScale, captionsOn: ctx.captionsAlways || ctx.band !== "b1", strip: stripH, cardNeed: size.cardNeed, stripNeed: size.stripNeed, trayNeed: size.trayNeed });
+  const finalLayout = geometryOut === effectiveGeometry ? layout : solveDesk({ width: size.w, height: size.h, family: ctx.family, geometry: geometryOut, fontScale: size.fontScale, captionsOn: ctx.captionsAlways || ctx.band !== "b1", strip: stripH, cardNeed: playMode ? 0 : size.cardNeed, stripNeed: size.stripNeed, trayNeed: size.trayNeed, play: playMode });
 
   // A "tap_in_tray" item whose activity failed (or never mounted) carries on by tiles or by words: Type comes back.
   const formNow = ui.answerForm === "tap_in_tray" && trayKind !== "module" ? (chips.length ? "choice" : "words") : ui.answerForm;
@@ -837,6 +842,10 @@ export function useDesk(runtime: LessonRuntime, bridge: UiBridge | null, ctx: De
     },
     finish: () => nav.finished(),
     moduleEvent: (ev) => {
+      // round 3 forge (patch 07): the Studio stage's "slot ended empty" (WorkTray studioToLesson) gives the tray back; it is
+      // a Desk event, never sent to the lesson
+      const se = ev as { type?: string; slotId?: unknown };
+      if (se?.type === "studio_empty") { if (typeof se.slotId === "string") setStudioGone(se.slotId); return; }
       const e = ev as Parameters<LessonRuntime["moduleEvent"]>[0];
       if (e.type === "answer") floorCtl.commit(); // a module answer is a commit: the receipt
       if (e.type === "error") setModuleFailed(true);

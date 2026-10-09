@@ -30,6 +30,8 @@
 //   adult        "hi this is his father…", "main iski mummy hoon…"            → answer the grown-up briefly, hand back
 //   thinking     also an unfinished non-numeric thought ending on a connective ("hmm so it can't be that because wait")
 
+import { p5Flag } from "./flags.js";
+
 const T = (s) => String(s ?? "").toLowerCase().normalize("NFKC").replace(/[’`]/g, "'").replace(/\s+/g, " ").trim();
 const words = (t) => t.split(/\s+/).filter(Boolean).length;
 
@@ -72,6 +74,58 @@ export function fragmentLike(t) {
   return (stutter || filler) && content && DANGLING.test(w.at(-1));
 }
 
+/** Round 3: the whole turn is "I'm back" in the forms the battery's break follow-ups use ("aa gaya, chalo", "back, let's go",
+ *  "आ गया"): the welcome-back move, never a re-pose with a generic "no problem" lead (smoke on the round-3 tree). */
+// round 3 (conversation; battery skip_item 2/5 after, 1/5 HEAD: "ye wala skip karo", "isko chhodo dusra do", "next question
+// please" had no code reading, so the classifier's stop flag turned a skip into the stop check-in "you want to stop"): a skip
+// with a demonstrative ("ye wala", "is question ko"), a "give me the next one" tail, or a polite word. A bare "chhodo" stays
+// giving up (GIVE_UP), "dusra wala" alone stays an answer to a two-way choice, "skip the explanation" stays KNOW.
+const SK_DEM = String.raw`(?:(?:ye|yeh|is|iss|isko|isse|ise|this|that|wo|woh|usko)(?:\s+(?:wala|wali|waala|waali|one|question|sawaal|sawal))?|(?:is|iss|us)\s+(?:question|sawaal|sawal)\s+ko)`;
+const SK_NEXT = String.raw`(?:agla|agli|dusra|doosra|dusri|doosri|next|another|koi\s+aur|ek\s+aur)`;
+const SK_GIVE = String.raw`(?:do|dijiye|dena|de\s+do|please|plz|karo|chalo|pe\s+chalo|par\s+chalo|pucho|poocho|puchiye)`;
+const SK_TAILQ = String.raw`(?:[\s,]+${SK_NEXT}(?:\s+(?:wala|wali|waala|one|question|sawaal|sawal))?(?:\s+${SK_GIVE})?)`;
+const SK_VERB = String.raw`(?:skip(?:\s+(?:karo|kar\s+do|kardo|karte\s+hain|kar\s+dete\s+hain|kar\s+sakte\s+hain|kijiye|it|this(?:\s+one)?))?|chhodo|chodo|chhod\s+do|chod\s+do|chhod\s+dete\s+hain|chhod\s+ke|chod\s+ke|chhodke|chodke|rehne\s+do)`;
+const SK_LEAD = String.raw`(?:(?:can\s+we|can\s+i|let'?s|please|plz|didi|ma'?am|ok|okay|achha)[\s,]+)?`;
+const SK_END = String.raw`(?:[\s,]+(?:please|plz|na|yaar|ji))?[\s.!?]*`;
+const SKIP_R3 = new RegExp(String.raw`^${SK_LEAD}(?:${SK_DEM}\s+${SK_VERB}|${SK_VERB}\s+${SK_DEM}|skip(?:\s+(?:karo|kar\s+do|it|this(?:\s+one)?))?)${SK_TAILQ}?${SK_END}$`
+  + String.raw`|^${SK_LEAD}${SK_NEXT}\s+(?:(?:question|sawaal|sawal|q)(?:\s+${SK_GIVE})?|(?:wala|wali)\s+${SK_GIVE}|${SK_GIVE})${SK_END}$|^${SK_LEAD}next\s+one${SK_END}$|^pass${SK_END}$`, "i");
+const BACK_WHOLE = /^(?:(?:ok|okay|haan|ha|achha|accha|didi)[\s,]+)?(?:aa\s*(?:gaya|gayi|gya|gyi)|आ\s*गय[ाी]|(?:i'?m\s+)?back)(?:[\s,!.]+(?:chalo|chaliye|let'?s\s+go|lets\s+go|ready|didi|now|हूँ|चलो))*[\s!.]*$/i;
+/** Round 3: words that ask HER to do something (show, draw, explain, tell): a turn with one is a request, not a mid-thought. */
+const ASKS_HER = /\b(?:dikhao|dikhaiye|dikha\s+do|dikha\s+dijiye|samjhao|samjhaiye|banao|banaiye|sunao|sunaiye|batao|bataiye|draw|show|explain|tell)\b/i;
+/** Round 3: an easier ask in the forms the battery's two-needs lines use ("kya thoda easy kar sakte ho?", "aasan karo"). */
+const EASIER_TOO = /\b(?:(?:thoda|zara|bit)\s+)?(?:easy|aasan|asaan|simple)\s+(?:kar|karo|karke|kijiye|bana|banao)\b|\bmake\s+it\s+(?:easier|simpler)\b/i;
+const SLOWER_TOO = /\b(?:slowly|slower|dheere|dheere\s+dheere|aaram\s+se)\b/i;
+const TIRED_TOO = /\b(?:thak\s+(?:gaya|gayi|gaye)|thaka\s+hua|tired|thakaan)\b/i;
+/**
+ * Round 3 (conversation; battery multi_intent "two needs in one breath", 0-1 of 8 in round 2): the SECOND need of a turn whose
+ * first need the Director acts on, read in code from the turn's own clauses ("boring hai, game khelein?", "slowly and in
+ * hindi please", "thak gaya hoon, kya thoda easy kar sakte ho?"). Only the needs a move can honour in its words: going
+ * slower, an easier step, empathy for boredom or for finding it hard, saying it more simply. PURE. → up to two types, or null.
+ */
+export function alsoReading(text, primary = null) {
+  const t = T(text);
+  if (!t || words(t) > 16 || /\d/.test(t)) return null;
+  const clauses = t.split(/\s*(?:[,;?!]|\band\b|\baur\b|\balso\b|\bphir\b|\bbut\b|\blekin\b|\bpar\b)\s*/).filter((c) => c && words(c) >= 1);
+  const found = new Set();
+  for (const c of clauses.length > 1 ? clauses : []) {
+    const r = readIntent(c)?.type;
+    if (r) found.add(r === "confused" || r === "clarify" ? "simpler" : r);
+  }
+  if (SLOWER_TOO.test(t)) found.add("slower");
+  if (EASIER.test(t) || EASIER_TOO.test(t)) found.add("easier");
+  if (TIRED_TOO.test(t)) found.add("frustration");
+  const p = primary === "confused" || primary === "clarify" || primary === "another" ? "simpler" : primary;
+  const out = ["frustration", "boredom", "easier", "slower", "simpler"].filter((x) => found.has(x) && x !== p).slice(0, 2);
+  return out.length ? out : null;
+}
+/** Round 3: a question to HER about what she does ("PUBG khelte ho?", "Free Fire khelte ho?", "tumne woh movie dekhi?"):
+ *  small talk she answers honestly now (owner-2 OFFTOPIC "PUBG khelte ho?"; R7.defer: deferring it is ignoring it, F11). */
+// (round 3, owner-2 on the patched local tree: a SPOKEN "pubg khelte ho" has no "?" and was deferred, R7.defer: the "you do
+// X?" forms take an optional "?" and a trailing "kya" / "na"; "tumne … dekha" keeps its "?", since "tumne galat dekha" is
+// not small talk)
+const SMALL_TALK_DO = /^(?:kya\s+)?(?:(?:aap|tum|tu)\s+)?[\p{L} ]{1,24}?\s+(?:khelte|khelti|dekhte|dekhti|sunte|sunti|khaate|khate|khaati|padhte|padhti)\s+(?:ho|h)(?:\s+(?:kya|na|didi))?\s*\?*$|^(?:kya\s+)?aap\s+[\p{L} ]{1,24}?\s+(?:khelte|khelti|dekhte|dekhti|sunte|sunti|khaate|khate|padhte|padhti)\s+(?:hain|hai)(?:\s+(?:kya|na))?\s*\?*$|^(?:aapne|tumne)\s+[\p{L} ]{1,24}?\s+(?:dekhi|dekha|khela|khele|suna|suni|padhi|padha)\s*\?+$|^do\s+you\s+(?:play|watch|like\s+playing)\s+[\p{L} ]{1,24}\?*$/iu;
+/** Giving up on the work said beside a confusion ("…, chhodo", "…, i give up on this question", "rehne do"). */
+const GIVE_UP = /(?:^|[\s,.!])(?:chhodo|chhod\s+do|chodo|chod\s+do|rehne\s+do|rahne\s+do|jane\s+do|jaane\s+do|forget\s+it|i\s+quit|give\s+up|gave\s+up)(?:$|[\s,.!?])|छोड़ो|रहने\s+दो/i;
 /** Words of an attempt (a number), or more words than a request carries: never read as one of these. */
 const attemptLike = (t) => /\d/.test(t);
 
@@ -97,15 +151,19 @@ export function readIntent(text) {
   // or finish it) serves a child who was also thinking
   if (fragmentLike(t)) return hit("unclear");
   if (BREAK.test(t)) return hit("break");
-  if (BACK.test(t)) return hit("back");
-  if (CONFUSED.test(t)) return hit("confused");
+  if (BACK.test(t) || (p5Flag("R3CONV") && BACK_WHOLE.test(t))) return hit("back");
+  // round 3 (conversation; battery frustration "kuch samajh nahi aa raha, chhodo", "this is too confusing, i give up on this
+  // question" read as confused → another way, and the judges failed empathy and the smaller step): not following it AND
+  // giving up on it is frustration (the empathy line, then a smaller first step), never only a new explanation
+  if (CONFUSED.test(t)) return hit(p5Flag("R3CONV") && (FRUSTRATION.test(t) || GIVE_UP.test(t)) ? "frustration" : "confused");
   if (CLARIFY.test(t)) return hit("clarify");
   if (THINKING.test(t) && !GO_ON.test(t)) return hit("thinking");
   // an unfinished thought: four or more words, no number, ending on a connective or a trailing "…"/"wait" (never a question)
   if (n >= 4 && !/[?？]/.test(t) && THINK_TRAIL.test(t) && !GO_ON.test(t)) return hit("thinking");
   // ... or a turn that opens on a hold marker and goes on reasoning ("रुको, सोच रहा हूँ... पहले गिनना पड़ेगा")
-  if (n >= 3 && !/[?？]/.test(t) && THINK_START.test(t) && !GO_ON.test(t)) return hit("thinking");
-  if (SKIP.test(t)) return hit("skip");
+  // round 3: "ruko, pehle diagram dikhao phir question" is a request after a hold word, never a thought in progress
+  if (n >= 3 && !/[?？]/.test(t) && THINK_START.test(t) && !GO_ON.test(t) && !(p5Flag("R3CONV") && ASKS_HER.test(t))) return hit("thinking");
+  if (SKIP.test(t) || (p5Flag("R3CONV") && SKIP_R3.test(t))) return hit("skip");
   if (KNOW.test(t)) return hit("know");
   if (HARDER.test(t)) return hit("harder");
   if (EASIER.test(t)) return hit("easier");
@@ -114,7 +172,7 @@ export function readIntent(text) {
   if (REPEAT.test(t)) return hit("repeat");
   if (ASK_INVITE.test(t)) return hit("ask_invite");
   if (IDENTITY.test(t)) return hit("identity");
-  if (SMALL_TALK.test(t)) return hit("small_talk");
+  if (SMALL_TALK.test(t) || (p5Flag("R3CONV") && SMALL_TALK_DO.test(t))) return hit("small_talk");
   return null;
 }
 

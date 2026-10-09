@@ -95,11 +95,18 @@ export function normalize(p: Record<string, unknown>, hit = 48): GeoConfig {
     mode = "measure";
     shape = parseShape(`rect:${nums[0]}x${nums[1]}`, w, h)!;
   }
-  const areaT = typeof p.area === "number" ? clampInt(p.area, 1, w * h, 6) : mode === "build" && typeof p.perimeter !== "number" ? (nums[0] && nums[0] <= w * h ? nums[0] : 6) : null;
+  // round 3 forge (taxila.dev 2026-10-09, c6-maths-ch06-t01 Perimeter): { numbers: [3, 50, 30], ask: "perimeter" } built
+  // "Shade a shape with area = 3" under "length 50 aur breadth 30, expression batao" — an area task invented from the item's
+  // first number in a perimeter lesson. A perimeter ask never defaults to an area target.
+  const perimAsk = p.ask === "perimeter";
+  const areaT = typeof p.area === "number" ? clampInt(p.area, 1, w * h, 6) : mode === "build" && typeof p.perimeter !== "number" && !perimAsk ? (nums[0] && nums[0] <= w * h ? nums[0] : 6) : null;
   const perimT = typeof p.perimeter === "number" ? clampInt(p.perimeter, 4, 2 * (w * h) + 2, 12) : null;
   let error: string | null = null;
   if (mode === "build" && areaT !== null && perimT !== null && !buildable(w, h, areaT, perimT)) error = `no shape on a ${w}×${h} grid has area ${areaT} and perimeter ${perimT}`;
   if ((mode === "measure" || mode === "contrast") && shape.size === 0) error = `${mode} needs a shape`;
+  // a build with nothing to build (a perimeter ask whose numbers are not a grid task): the engine reports an error and the
+  // tray takes it off (WorkTray T7); the item goes on by voice instead of a task the lesson did not ask
+  if (mode === "build" && areaT === null && perimT === null) error = "build needs an area or a perimeter target";
   if (shape.size && !connected(shape)) error = "shape must be one connected piece";
   return {
     mode,

@@ -14,6 +14,8 @@ import { Glyph } from "../../ui/icons/state.tsx";
 import { Board } from "./Board.tsx";
 import { StudioStage } from "../../studio/StudioStage.tsx";
 import type { StudioStageEvent } from "../../studio/renderers.ts";
+// round 3 play (docs/design/round3/play/patches/04): a play piece's signed tokens → module events (src/play/lessonBridge.ts)
+import { playToLesson } from "../../play/lessonBridge.ts";
 import type { DeskActions, TrayModel } from "./model.ts";
 
 export function WorkTray({ tray, floor, young, modules, lang, ageBand, actions, onModuleFailed }:
@@ -30,7 +32,7 @@ export function WorkTray({ tray, floor, young, modules, lang, ageBand, actions, 
           <ModuleTray modules={modules} lang={lang} ageBand={ageBand} onEvent={actions.moduleEvent} onFailed={onModuleFailed} />
         ) : tray.kind === "studio" && tray.studio ? (
           // W2 seam: the Studio stage (W2-H) reserves a fixed, aspect-fitted box in the tray for every Studio piece.
-          <StudioStage slot={tray.studio} young={young} lang={lang} onEvent={(e) => studioToLesson(e, tray.studio?.intentId, actions.moduleEvent)} />
+          <StudioStage slot={tray.studio} young={young} lang={lang} onEvent={(e) => { studioToLesson(e, tray.studio?.intentId, actions.moduleEvent); playToLesson(e, tray.studio?.intentId, actions.moduleEvent); }} />
         ) : tray.kind === "board" && tray.board ? (
           <Board board={tray.board} young={young} />
         ) : tray.kind === "tiles" && tray.tiles?.length ? (
@@ -55,6 +57,8 @@ export function WorkTray({ tray, floor, young, modules, lang, ageBand, actions, 
  * Nothing here carries a `correct` the server would read.
  */
 export function studioToLesson(e: StudioStageEvent, intentId: string | undefined, send: (ev: unknown) => void) {
+  // round 3 forge (patch 07): the slot ended with nothing to show → the Desk gives the tray back (useDesk moduleEvent)
+  if (e.type === "empty") { send({ type: "studio_empty", slotId: e.slotId }); return; }
   if (e.type !== "graded" || !intentId || e.alreadyClosed) return;
   const base = { moduleId: intentId, engine: "studio", at: Date.now() };
   if (e.complete) send({ ...base, type: "goal_met", name: "finished" } satisfies ModuleEvent);

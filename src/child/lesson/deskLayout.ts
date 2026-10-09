@@ -35,6 +35,9 @@ export interface DeskInput {
   stripNeed?: number;
   /** The tray's measured content height (the NumberPad at full target size), dp: Work only. */
   trayNeed?: number;
+  /** round 3 play mode (docs/design/round3/play/DESIGN.md §7): a play piece is in the tray. Its goal rail replaces the
+   *  question card (card 0) and the caption line folds into the speech row, so the game gets the Desk (Work only). */
+  play?: boolean;
 }
 
 export interface PhoneZones {
@@ -142,6 +145,9 @@ function solvePhone(i: DeskInput, fs: number): DeskLayout {
   }
   // Content: the card holds what it holds (never clipped).
   z.card = Math.max(z.card, need(i.cardNeed));
+  // Play mode: the game's goal rail is the card; her speech row keeps its minimum (face + caption line); the tray
+  // (elastic) takes the rest.
+  if (i.play && geometry === "work") { z.card = 0; z.caption = 0; z.teacher = Math.min(z.teacher, FACE_MIN[family] + 8); }
   // Elastic zone takes the remainder (positive or negative).
   const elastic: keyof PhoneZones = geometry === "work" ? "tray" : "teacher";
   z[elastic] += h - sum(z);
@@ -198,12 +204,12 @@ function solveWide(i: DeskInput, fs: number): DeskLayout {
   let right: WideZones["right"];
   let overflow = false;
   if (geometry === "work") {
-    const card = Math.max(Math.round(128 * fs), need(i.cardNeed));
+    const card = i.play ? 0 : Math.max(Math.round(128 * fs), need(i.cardNeed));
     const dock = Math.round(128 + 44 * (fs - 1));
     const strip = stripOf(i);
     const tray = H - card - 16 - 16 - strip - dock - 16;
     overflow = tray < Math.max(TRAY_MIN[i.family], need(i.trayNeed));
-    right = { padTop: 0, card, gapA: 16, tray: Math.max(0, tray), gapB: 16, strip, dock, pad: 16 };
+    right = { padTop: 0, card, gapA: i.play ? 0 : 16, tray: Math.max(0, tray + (i.play ? 16 : 0)), gapB: 16, strip, dock, pad: 16 };
   } else {
     const card = Math.max(Math.round(240 * fs), need(i.cardNeed));
     const dock = Math.round(144 + 44 * (fs - 1));

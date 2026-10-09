@@ -4,5 +4,8 @@ import { createRoot } from "react-dom/client";
 import { FrameApp } from "./bootstrap.tsx";
 import "./frame.css";
 import "./kit/kit.css";
+import { installFit } from "./fit.ts";
 
 createRoot(document.getElementById("root")!).render(<FrameApp />);
+// round 3 forge: the engine is scaled to fit its frame (never cut off; fit.ts)
+installFit();

@@ -10,6 +10,9 @@
 //   TAXILA_CONV2=off|shadow|on    the UNDERSTAND note (a model reads what the child means; code decides). shadow: the
 //                                 note is computed and traced but never changes the move. Default on.
 //   TAXILA_P5_RECHECK=off         module answers: the value re-check and the "say it in words" reaction (V1-01r)
+//   TAXILA_P5_R3CONV=off          round 3 conversation (2026-10-09): the first pose as a lead-slot turn, no drift check on a
+//                                 re-pose that ends on the card's form, the lead repair after a leak, the fixed code lead
+//                                 instead of a bare re-pose (brain/say.js); off = round 2's reply path exactly
 //
 // Every switch defaults to ON. "off", "0", "false" (any case) turn one off.
 const OFF = /^(off|0|false|no)$/i;

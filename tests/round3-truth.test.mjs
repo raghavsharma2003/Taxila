@@ -1,0 +1,190 @@
+// round3 truth (docs/design/round3/truth): the behaviour patches 01-04 change, each pinned to the production failure it
+// removes. Pure (no network: the classifier's model call is answered by a stubbed fetch; no database).
+//   01 director/classify.js  a reply that is only a number, not the key's value, is a wrong answer decided in code even
+//      when the model abstains (prod w1c-reteach 7/13: grok-4-1-fast read the scripted "999" as off-topic, the hint ladder
+//      never moved, the re-teach trigger never accrued, 0 reteach_attempts rows)
+//   02 director/state.js     the kit's misconception re-teach and the P21 change of approach are logged decisions
+//   04 director/say.js       praise on an UNGRADED re-ask is caught however many words sit between "aapne" and "sahi"
+//      (owner-1 on taxila.dev 2026-10-09, c5-maths-ch07-t02-i06)
+import { describe, test, beforeEach, afterEach } from "node:test";
+import assert from "node:assert/strict";
+import { initLessonState, step, RETEACH_COOLDOWN } from "../server/director/state.js";
+import { classify, classifyFast, targetFor } from "../server/director/classify.js";
+import { praiseProblem, stripPraise } from "../server/director/say.js";
+import { getKit } from "../server/content/index.js";
+import { armsFromKit } from "../server/comprehension/reteach.js";
+import { kit, CTX, cls } from "./fixtures/kit.mjs";
+
+const answer = (json) => async () => new Response(JSON.stringify({ choices: [{ finish_reason: "stop", message: { content: JSON.stringify(json) } }] }), { status: 200, headers: { "content-type": "application/json" } });
+const ABSTAIN = { match: "unclear", reason: "none", confidence: 0.9, off_topic: true, distress: false, asks_for_answer: false, wants_to_stop: false };
+
+describe("round3 truth: 01 the bare wrong number is graded in code", () => {
+  let realFetch, env;
+  beforeEach(() => {
+    realFetch = globalThis.fetch; env = { ...process.env };
+    process.env.AZURE_OPENAI_ENDPOINT = "https://example.test/openai/v1"; process.env.AZURE_OPENAI_API_KEY = "test-key";
+    process.env.TAXILA_CLASSIFY_FALLBACK = "0"; process.env.TAXILA_CLASSIFY_HEDGE_MS = "0";
+  });
+  afterEach(() => { globalThis.fetch = realFetch; for (const k of Object.keys(process.env)) if (!(k in env)) delete process.env[k]; Object.assign(process.env, env); });
+
+  const itemTarget = async (id) => {
+    const K = await getKit("c5-maths-ch02-t01", { generate: false });
+    const item = K.items.find((i) => i.id === id);
+    return { item, target: targetFor({ phase: "practice", hintLevel: 0 }, K, item) };
+  };
+  const run = (t, text) => classify({ target: t.target, childText: text, heard: t.item.prompt_en, asrConfidence: 0.95, typed: true, classLevel: 5, trace: [] });
+
+  test("'999' for the key 1/4: the model's abstention becomes incorrect (code), not no evidence", async () => {
+    const t = await itemTarget("c5-maths-ch02-t01-i02");
+    assert.equal(classifyFast({ target: t.target, childText: "999", heard: "", typed: true, classLevel: 5, trace: [] }).bareWrongNumber, true);
+    globalThis.fetch = answer(ABSTAIN);
+    const r = await run(t, "999");
+    assert.equal(r.outcome, "incorrect");
+    assert.equal(r.overridden, "bare_wrong_number");
+    assert.equal(r.flags.offTopic, false, "a bare number to a number question is an answer attempt, not off-topic");
+  });
+
+  test("the model may still name the misconception a bare wrong number shows (only an abstention is overridden)", async () => {
+    const t = await itemTarget("c5-maths-ch02-t01-i02");
+    const tag = t.target.misconceptions[0]?.tag;
+    globalThis.fetch = answer({ ...ABSTAIN, match: tag, off_topic: false });
+    const r = await run(t, "1/3");
+    assert.equal(r.outcome, "misconception");
+  });
+
+  test("bare means digits only (ASCII or Devanagari): the right value in either script is credited by value, never floored", () => {
+    const t = { mode: "item", item: { id: "x", prompt_en: "How long is it?", kind: "practice" }, key: "25 m", also: [], ideas: [], misconceptions: [], open: false };
+    const f = (text) => classifyFast({ target: t, childText: text, heard: "", typed: true, classLevel: 5, trace: [] });
+    assert.equal(f("३५").bareWrongNumber, true);
+    assert.equal(f("२५").result?.outcome, "correct");
+    assert.equal(f("25").result?.outcome, "correct");
+    assert.notEqual(f("chaar").bareWrongNumber, true, "a number WORD stays with the model");
+  });
+
+  test("a sentence with one number is not bare: an abstention on it stays no evidence", async () => {
+    const t = await itemTarget("c5-maths-ch02-t01-i02");
+    globalThis.fetch = answer(ABSTAIN);
+    assert.equal((await run(t, "the line has 4 gaps")).outcome, "no_evidence");
+  });
+
+  test("a classifier outage: a bare wrong number is still graded incorrect by code; anything else is no evidence", async () => {
+    const t = await itemTarget("c5-maths-ch02-t01-i02");
+    globalThis.fetch = async () => new Response("{}", { status: 500 });
+    const r = await run(t, "999");
+    assert.deepEqual([r.outcome, r.source], ["incorrect", "number"]);
+    assert.equal((await run(t, "the line has 4 gaps")).outcome, "no_evidence");
+  });
+
+  test("TAXILA_NUMBER_FLOOR=off restores HEAD", async () => {
+    process.env.TAXILA_NUMBER_FLOOR = "off";
+    const t = await itemTarget("c5-maths-ch02-t01-i02");
+    globalThis.fetch = answer(ABSTAIN);
+    assert.equal((await run(t, "999")).outcome, "no_evidence");
+  });
+});
+
+describe("round3 truth: 02 every Director re-teach is a logged decision", () => {
+  const K = kit();
+  const M = K.misconceptions[0];
+  const comp = Object.fromEntries(K.skills.map((s) => [s.id, { belief: { skillId: s.id, pL: 0.3, U: 0.2, T: 0.2, misconception: { mStar: 0, mId: null, verified: false } } }]));
+  /** Drive a lesson whose child shows misconception M on every item it is asked; stop at the first re-teach. */
+  function untilReteach(seed, env = {}) {
+    const saved = { ...process.env }; Object.assign(process.env, env);
+    try {
+      let r = step(initLessonState({ topicId: K.topicId, kit: K, ctx: { ...CTX, reteach: { attempts: [], prereqs: {} } }, seed, now: 0, comp }), { event: "start", kit: K, now: 0, comp });
+      for (let i = 0; i < 40 && !r.end; i++) {
+        const prev = r.state;
+        const c = prev.activeItemId ? cls("misconception", { misconceptionId: M.id }) : cls("no_evidence");
+        r = step(prev, { event: "turn", kit: K, cls: c, now: (prev.turn + 1) * 20_000, comp });
+        if (r.move?.kind === "reteach") return r;
+      }
+      return r;
+    } finally { for (const k of Object.keys(process.env)) if (!(k in saved)) delete process.env[k]; Object.assign(process.env, saved); }
+  }
+
+  test("the kit's remediation for a misconception the answer showed writes a row: misconception_seen, kit_primary, its arm", () => {
+    let seen = 0;
+    for (let seed = 1; seed <= 8; seed++) {
+      const r = untilReteach(seed);
+      if (r.move?.kind !== "reteach") continue;
+      seen++;
+      const s = r.state, d = s.lastReteach, k = r.move.skillId ?? d?.skillId;
+      assert.ok(d && d.turn === s.turn, `seed ${seed}: the re-teach turn carries its decision (lastReteach on this turn)`);
+      assert.deepEqual([d.trigger, d.chosenBy, d.misId, d.move], ["misconception_seen", "kit_primary", M.id, "reteach"]);
+      assert.equal(d.armId, armsFromKit(M).find((a) => a.primary).id);
+      assert.ok(s.armsUsed.includes(d.armId), "the kit arm is used this lesson");
+      assert.equal(s.lastArmBySkill[k], d.armId, "and in flight on the skill");
+      assert.equal(s.reteachCool[k], RETEACH_COOLDOWN, "the re-check follows it");
+    }
+    assert.ok(seen >= 4, `the fixture child reached the kit re-teach (${seen}/8)`);
+  });
+
+  test("a struggling child: no arm repeats on a skill, and the change of approach never fires inside a running re-check", async () => {
+    // local patched run 2026-10-09 (w1c-reteach 12/13): gen:story → gen:worked → gen:worked on one skill, the P21 fallback
+    // re-teaching the worked example on the turn after the engine's own worked-example re-teach
+    const KK = await getKit("c5-maths-ch02-t01", { generate: false });
+    const prereqs = Object.fromEntries(KK.skills.map((s) => [s.id, [{ skillId: "c4-maths-ch05-t01-s1", pL: 0.3, seen: false }]]));
+    const ctx = { ...CTX, ageBand: "10-15", lang: "english", reteach: { attempts: [], prereqs } };
+    const cmp = Object.fromEntries(KK.skills.map((s) => [s.id, { belief: { skillId: s.id, pL: 0.2, U: 0.2, T: 0.2, misconception: { mStar: 0, mId: null, verified: false } } }]));
+    let decisions = 0;
+    for (let seed = 1; seed <= 16; seed++) {
+      let r = step(initLessonState({ topicId: KK.topicId, kit: KK, ctx, seed, now: 0, comp: cmp }), { event: "start", kit: KK, now: 0, comp: cmp });
+      const bySkill = {};
+      for (let i = 0; i < 45 && !r.end; i++) {
+        const prev = r.state;
+        r = step(prev, { event: "turn", kit: KK, cls: cls(prev.activeItemId ? "incorrect" : "no_evidence"), now: (prev.turn + 1) * 20_000, comp: cmp });
+        const d = r.state.lastReteach;
+        if (!d || d.turn !== r.state.turn || !d.armId || !["reteach", "recap"].includes(d.move)) continue;
+        decisions++;
+        (bySkill[d.skillId] ??= []).push(d.armId);
+        if (d.source === "change_approach") assert.equal(prev.reteachCool?.[d.skillId] ?? 0, 0, `seed ${seed}: the change of approach fired inside a running re-check`);
+      }
+      for (const [k, arms] of Object.entries(bySkill)) assert.equal(new Set(arms).size, arms.length, `seed ${seed} ${k}: an arm repeated (${arms.join(" → ")})`);
+    }
+    assert.ok(decisions > 0);
+  });
+
+  test("the P21 change of approach waits for the re-check of the engine's arm in flight, and never repeats its arm", () => {
+    // the exact local state: the engine just re-taught with the worked example (cooldown 2), the child's record is a wheel-spin
+    let r = step(initLessonState({ topicId: K.topicId, kit: K, ctx: { ...CTX, reteach: { attempts: [], prereqs: {} } }, seed: 3, now: 0, comp }), { event: "start", kit: K, now: 0, comp });
+    const plain = (st) => K.items.find((x) => x.id === st.activeItemId && ["practice", "retrieval", "near_transfer"].includes(x.kind));
+    for (let i = 0; i < 30 && !plain(r.state); i++) r = step(r.state, { event: "turn", kit: K, cls: cls(r.state.activeItemId ? "correct" : "no_evidence"), now: (r.state.turn + 1) * 20_000, comp });
+    assert.ok(plain(r.state), "fixture: a practice item is on the card");
+    const k = plain(r.state).skillId;
+    const spinning = (st) => ({ ...st, history: { ...st.history, [k]: Array(10).fill("incorrect") }, changedApproach: [], hintLevel: 0 });
+    const inFlight = { ...spinning(r.state), armsUsed: ["gen:worked"], lastArmBySkill: { [k]: "gen:worked" }, reteachCool: { [k]: 2 } };
+    const next = step(inFlight, { event: "turn", kit: K, cls: cls("incorrect"), now: (r.state.turn + 1) * 20_000, comp });
+    assert.notEqual(next.move.kind, "reteach", "inside the re-check of gen:worked: a hint, not the same worked example again");
+    const used = { ...spinning(r.state), armsUsed: ["gen:worked"], lastArmBySkill: { [k]: "gen:worked" }, reteachCool: { [k]: 0 } };
+    const next2 = step(used, { event: "turn", kit: K, cls: cls("incorrect"), now: (r.state.turn + 1) * 20_000, comp: {} });
+    assert.ok(!(next2.move.kind === "reteach" && next2.state.lastReteach?.armId === "gen:worked" && next2.state.lastReteach.turn === next2.state.turn), "gen:worked is never chosen twice");
+    const fresh = step({ ...spinning(r.state), armsUsed: [], reteachCool: {} }, { event: "turn", kit: K, cls: cls("incorrect"), now: (r.state.turn + 1) * 20_000, comp: {} });
+    assert.equal(fresh.move.kind, "reteach", "with no arm in flight the change of approach still happens");
+    assert.equal(fresh.state.lastReteach?.source, "change_approach");
+  });
+
+  test("TAXILA_RETEACH_LOG=off: the same re-teach happens and writes nothing (HEAD)", () => {
+    const r = untilReteach(1, { TAXILA_RETEACH_LOG: "off" });
+    assert.equal(r.move?.kind, "reteach");
+    assert.equal(r.state.lastReteach, null);
+    assert.deepEqual(r.state.armsUsed, []);
+  });
+});
+
+describe("round3 truth: 04 no praise before a verdict", () => {
+  const LINE = "Aapne Pattern A ka niyam sahi pehchaana: har baar number ko 2 se multiply karna, yani double karna. Pattern A: 2, 4, 8, 16. Pattern B: 2, 4, 6, 8. Dono 2, 4 se shuru. Dono ka niyam kya hai, aur aage kya aayega?";
+  test("owner-1 2026-10-09: the ungraded re-ask's praise is caught and stripped; the question stays", () => {
+    assert.equal(praiseProblem(LINE, "unverified"), "praise");
+    assert.equal(praiseProblem(LINE, "not_yet"), "praise");
+    const out = stripPraise(LINE);
+    assert.doesNotMatch(out, /sahi pehchaana/);
+    assert.match(out, /Dono ka niyam kya hai, aur aage kya aayega\?$/);
+  });
+  test("a GRADED partial may still name the part that is right (specific feedback); whole-answer praise is still caught", () => {
+    assert.equal(praiseProblem(LINE, "partial"), null);
+    assert.equal(praiseProblem("Bilkul sahi! Ab B ka niyam batao?", "partial"), "praise");
+  });
+  test("warmth about effort is never a verdict", () => {
+    assert.equal(praiseProblem("Achhi koshish! Ek baar aur socho, 4 gaps hain.", "not_yet"), null);
+  });
+});

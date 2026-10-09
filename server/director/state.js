@@ -29,7 +29,7 @@ import { frustrationLoop, initialAffect, nextAffect, wheelSpinning } from "../le
 import {
   newProbeSession, openSession, recordTurn, nextProbe, markAsked, fits, bandOf, shapeById, testWeight,
   reteachTrigger, reteachPlan, armsFromKit, newPersonaState, personaStep, personaKnobs, turnSignals,
-  reteachSessionInputs, noteReteach,
+  reteachSessionInputs, noteReteach, directorReteachDecision, bookDirectorReteach, reteachLogOn, directorMayReteach,
 } from "../comprehension/index.js";
 import { skillSess } from "../comprehension/budget.js";
 import { equityProfile, lessonGuidance, teachPlanFor, fadeItem, fadedContent, workedLeadContent, fadeBoard, startedFirstStep, FADE_PREFIX, clip } from "./fading.js";
@@ -39,6 +39,7 @@ import { directorProposal } from "./proposal.js";
 import { p5Flag } from "../conversation/flags.js";
 import { unsafeChildPhrase } from "../conversation/screen.js";
 import { parkEntry, pushLater, recentParked, dueParked, serveLater } from "../conversation/policy.js";
+import { alsoReading } from "../conversation/lexicon.js";
 
 /**
  * Probe shapes the live lane can pose AND grade today: the why-class shapes (probe.why, R-EXP against the kit's key
@@ -372,9 +373,11 @@ function leavePractice(s, kit) {
 function poseNext(s, input, prefix, preferred) {
   const { kit } = input;
   // CONVERSATION-V2 §5: a question parked "after this question" comes back now that the item on the table resolved
-  if (p5Flag("STEER") && s.later?.length && s.activeItemId) {
+  // round 3 (conversation; tests/prod/round3-conversation C): after a right answer the why-probe path reaches here with no
+  // active item, so "right after this question" was kept only at the wrap; the question that just resolved is the last move's
+  if (p5Flag("STEER") && s.later?.length && (s.activeItemId || (p5Flag("R3CONV") && s.lastMove?.itemId))) {
     const due = dueParked(s.later, "item_resolved");
-    if (due) { s.later = serveLater(s.later, due.id, s.turn); prefix = join(prefix, SH.returnParked({ topic: due.topic })); }
+    if (due) { s.later = serveLater(s.later, due.id, s.turn); prefix = join(prefix, SH.returnParked({ topic: due.topic, share: !!due.share })); }
   }
   s.activeItemId = undefined; s.hintLevel = 0; s.pendingWhy = undefined;
   if (leavePractice(s, kit)) return s.practiceSet ? practiceDone(s, prefix) : enterTeachback(s, prefix);
@@ -429,10 +432,26 @@ function practice(s, input, item) {
 function trap(s, kit, item, misconceptionId) {
   const m = kit.misconceptions.find((x) => x.id === misconceptionId);
   if (m) s.flagged[m.id] = (s.flagged[m.id] ?? 0) + 1;
-  if (!m || s.retaught.includes(m.id)) return null;
+  if (!m || s.retaught.includes(m.id) || !directorMayReteach(s, "kit", item.skillId, m)) return null;
   s.retaught.push(m.id); s.activeItemId = undefined;
+  logReteach(s, "kit", item.skillId, m);
   return plan("reteach", SH.reteach({ ...m.remediation, again: false }), { skillId: item.skillId, representation: m.remediation.representation });
 }
+
+/**
+ * round3 truth (prod w1c-reteach 7/13, reteach_attempts 0 rows): a re-teach the Director takes on its own path (the kit's
+ * remediation for a misconception the answer showed; the P21 change of approach) is a logged decision exactly like
+ * engineReteach's: a reteach_attempts row (brain/turn.js, via lastReteach), resolved at the next start, its arm never
+ * chosen again this lesson, a re-check cooldown after it (comprehension/reteach.js bookDirectorReteach). And the rules the
+ * engine's own arms obey hold for these too (directorMayReteach): never the same arm twice in a lesson, and the change of
+ * approach never inside a running re-check. TAXILA_RETEACH_LOG=off restores HEAD.
+ */
+function logReteach(s, kind, skillId, mis) {
+  if (!reteachLogOn()) return;
+  bookDirectorReteach(s, directorReteachDecision({ kind, skillId, mis, chosenBy: kind === "change_approach" ? CHANGE_APPROACH.chosenBy : null }), RETEACH_COOLDOWN);
+}
+/** The change of approach is the Director's own fixed rule (reteach_attempts.chosen_by 'rule': migration 023 allows it). */
+const CHANGE_APPROACH = Object.freeze({ chosenBy: "rule" });
 
 /** V1.4 pace bookkeeping for one graded answer on a practice item (never a warm-up check, a faded step or a diagnostic). */
 export const PACE = Object.freeze({ fastP: 0.85, settleP: 0.9, settleRun: 2, parkTries: 7 });
@@ -506,14 +525,16 @@ function afterMiss(s, input, item) {
   const m = cls?.outcome === "misconception" ? (item.misconceptions ?? kit.misconceptions).find((x) => x.id === cls.misconceptionId) : null;
   if (m) s.flagged[m.id] = (s.flagged[m.id] ?? 0) + 1;
   // P21: no 3-in-a-row in ~10 opportunities — a different approach, not more of the same.
-  if (wheelSpinning(s.history[item.skillId]) && !s.changedApproach.includes(item.skillId)) {
+  if (wheelSpinning(s.history[item.skillId]) && !s.changedApproach.includes(item.skillId) && directorMayReteach(s, "change_approach", item.skillId)) {
     s.changedApproach.push(item.skillId);
     s.hintLevel = Math.min(3, s.hintLevel + 1);
     const we = kit.workedExample;
+    logReteach(s, "change_approach", item.skillId, null);
     return plan("reteach", SH.changeApproach(), { item, content: we ? workedContent(we, 1, 1) : [] });
   }
-  if (m?.remediation && !s.retaught.includes(m.id)) {
+  if (m?.remediation && !s.retaught.includes(m.id) && directorMayReteach(s, "kit", item.skillId, m)) {
     s.retaught.push(m.id);
+    logReteach(s, "kit", item.skillId, m);
     // round2 truth: an options item is never re-asked after its re-teach (elimination; see engineReteach): retired, and
     // the re-check is a fresh item on the skill
     if ((item.options?.length ?? 0) >= 2) {
@@ -857,7 +878,8 @@ function p5RequestMove(s, input, item, req, labels) {
     }
     case "boredom": return plan("repair", SH.boredOffer(), { chips: waysChips(labels), request: "boredom" });
     case "frustration": {
-      if (!item) return teachAgainPlan(s, kit, "another");
+      // round 3: no question on the table: the re-explanation still opens with the empathy line (it had none)
+      if (!item) { const t = teachAgainPlan(s, kit, "another"); return p5Flag("R3CONV") ? { ...t, shape: join(SH.frustrationTeach(), t.shape), request: "frustration" } : t; }
       const p = decideAs(s, input, item, "stuck");
       return { ...p, shape: join(SH.frustrationFirst(), p.shape), request: "frustration" };
     }
@@ -868,7 +890,18 @@ function p5RequestMove(s, input, item, req, labels) {
     case "hold_checkin": return plan("repair", SH.holdCheckin(), { request: "hold_checkin" });
     case "ask_invite": return plan("repair", SH.inviteQuestion(), { request: "ask_invite" });
     case "identity": return withLead(SH.disclose());
-    case "uptake": return withLead(SH.uptake({ kind: req.kind }));
+    case "uptake": {
+      // round 3 (conversation): a share from their life is noticed now AND kept: a real later slot (s.later), so the promise
+      // to come back to it is kept (served when the question resolves, or before the wrap). The topic is the child's words
+      // as the note lifted them: screened in code like any parked topic (round 2 safety floor B3).
+      if (p5Flag("R3CONV") && req.kind === "personal_share" && req.topic && !unsafeChildPhrase(req.topic)) {
+        const e = { ...parkEntry({ topic: req.topic, learning: false, turn: s.turn, itemOnTable: !!item }), share: true };
+        const before = (s.later ?? []).length;
+        s.later = pushLater(s.later ?? [], e);
+        if (s.later.length > before) return withLead(SH.uptakeShare({ topic: e.topic, promise: e.promise }));
+      }
+      return withLead(SH.uptake({ kind: req.kind }));
+    }
     case "decline": return withLead(SH.declineOob());
     case "answer_q": return withLead(SH.answerTheirQuestion());
     case "adapt": case "adopt":
@@ -887,6 +920,11 @@ function p5RequestMove(s, input, item, req, labels) {
     case "park": {
       // round 2 safety floor (adversarial B3): a parked topic is promised back later ("we'll come back to X"): screened too
       if (unsafeChildPhrase(req.topic)) return withLead(SH.declineOob());
+      // round 3 (conversation; smoke on the round-3 tree): a push again on what was JUST parked ("nahi pehle batao na
+      // please", which the note read as diversion again) got a second "after this question" — the flat second refusal the
+      // insistence rubric fails. The same topic parked within DETOUR_WITHIN turns is a push: a short real engagement now.
+      const again = p5Flag("R3CONV") ? recentParked(s.later ?? [], s.turn, req.topic) : null;
+      if (again && !again.share) { s.later = serveLater(s.later, again.id, s.turn); return withLead(SH.detourTo({ topic: again.topic })); }
       const e = parkEntry({ topic: req.topic, learning: req.learning, turn: s.turn, itemOnTable: !!item });
       s.later = pushLater(s.later ?? [], e);
       return withLead(SH.parkIt({ topic: e.topic, promise: e.promise }));
@@ -932,7 +970,7 @@ function enterTeachback(s, prefix) {
   // CONVERSATION-V2 §5: every open parked question is offered before the wrap
   if (p5Flag("STEER") && s.later?.length) {
     const due = dueParked(s.later, "before_wrap");
-    if (due) { s.later = serveLater(s.later, due.id, s.turn); prefix = join(prefix, SH.returnParked({ topic: due.topic })); }
+    if (due) { s.later = serveLater(s.later, due.id, s.turn); prefix = join(prefix, SH.returnParked({ topic: due.topic, share: !!due.share })); }
   }
   s.phase = "teachback"; s.teachbackAsked = true; s.activeItemId = undefined; s.hintLevel = 0;
   // The lesson's teach-back IS shape C01 (announced protégé teach-back): its answer is a probe turn in the budget.
@@ -1090,10 +1128,14 @@ function moduleReaction(s, input, item) {
  * safeguarding hold. The plan's `lead` (an uptake of what the child just said) is kept. Evidence is unchanged: this turn's
  * answer was graded before step(); the item left gets none after it.
  */
+const RE_PRESENT = new Set(["repeat", "slower", "another", "clarify", "example", "story", "language"]);
 function capPlan(s, input, p) {
   // ship5 fixer (experience B1): the child's own ask to SEE it is honoured, never capped away (the cap turned "picture
   // dikhao" into the next practice question, 2/2 in the request probe); their next answer turn caps as before
-  if (s.safeguard || !p.item || p.capped || p.request === "visual") return p;
+  // round 3 (conversation; battery repeat-03, explain_differently-04, clarify-07: "can you repeat the question?" was capped into
+  // "leave it for later; then the next question", the request unanswered): an ask to have THIS question again, in another
+  // form, is honoured the same way; their next answer turn caps as before
+  if (s.safeguard || !p.item || p.capped || p.request === "visual" || (p5Flag("R3CONV") && RE_PRESENT.has(p.request))) return p;
   const kit = input.kit;
   const item = findItem(s, kit, p.item.id) ?? p.item;
   const pins = s.pendingWhy !== item.id && !["safeguard", "wrap", "break", "teachback"].includes(p.kind);
@@ -1191,10 +1233,26 @@ export function step(prev, input) {
   const item = p.item ? (findItem(s, input.kit, p.item.id) ?? p.item) : null;
   // Notes on the real move only: a voice branch (branchesFor, input.branch) is rendered into the appended-last
   // section, whose budget the kit load gate measured without them (compile.js checkFits).
+  // round 3 (conversation): the move right after a stop check-in that the child did not answer with a stop (s.lastMove is
+  // still the check-in here) carries on as normal; a chosen "keep going" already says so (resume's prefix)
+  const goOn = p5Flag("R3CONV") && !input.branch && s.lastMove?.checkin === "stop" && !p.checkin && !["wrap", "break", "safeguard"].includes(p.kind)
+    && !/keep going/.test(String(p.shape ?? ""));
+  // round 3 (conversation): the second need of a two-needs turn, honoured in the same move's words (lexicon.js alsoReading)
+  const also = p5Flag("R3CONV") && !input.branch && input.event === "turn" && !NO_VERDICT_MOVES.has(p.kind)
+    && !["correct", "incorrect", "partial", "misconception"].includes(input.cls?.outcome)
+    ? alsoReading(input.text ?? "", input.cls?.request?.type ?? p.request ?? null) : null;
   const notes = input.branch ? [] : [gradedItem && !NO_VERDICT_MOVES.has(p.kind) ? SH.VERDICT_NOTE[verdictKey(input.cls)] : null, registerNote(s.ctx.address),
     // p5-interaction: the UNDERSTAND note's alongside readings on a graded answer (hedge, check, insist; a parked question)
     ...(p5Flag("STEER") && !NO_VERDICT_MOVES.has(p.kind) ? [...(input.cls?.mods ?? []).map((m) => SH.MOD_NOTE[m]), input.cls?.alsoPark ? SH.parkAlso({ topic: input.cls.alsoPark.topic }) : null] : [])];
-  const move = { kind: p.kind, shape: join(p.shape, ...notes) };
+  // round 3: the extra notes (after a check-in, a second need) ride only while the shape keeps room under the MOVE section's
+  // cap (compile.js SECTION_CAPS.move 260 tokens ≈ 910 characters with its two header lines): the shape is not droppable, and
+  // an over-cap MOVE section is a BudgetError → a 500 on a live turn (ship5 integration, w2c-personalisation). Optional
+  // notes are dropped first, never the move.
+  let shape = join(p.shape, ...notes);
+  for (const extra of input.branch ? [] : [goOn ? SH.afterCheckin() : null, ...(also ?? []).map((x) => SH.ALSO_NOTE[x])]) {
+    if (extra && join(shape, extra).length <= SHAPE_ROOM) shape = join(shape, extra);
+  }
+  const move = { kind: p.kind, shape };
   // round 2 (conversation): how the child asked to be taught ("step by step", "picture first") rides on every later move
   // (compile.js renders it, droppable): before this, s.prefs was written and never read, so a method request lasted one turn
   if (p5Flag("STEER") && s.prefs?.length && !["safeguard", "wrap"].includes(p.kind)) move.prefs = s.prefs.slice(-2);
@@ -1239,6 +1297,9 @@ export function step(prev, input) {
   return { state: s, move, moduleCommands, ui, end: s.phase === "done", proposal, ...describe(s, input.kit) };
 }
 
+/** Round 3: the most characters a move shape may grow to by OPTIONAL notes (the MOVE section cap is 260 tokens at 3.5
+ *  characters per token, less its two header lines and a margin for the address-register note on a voice lane). */
+const SHAPE_ROOM = 760;
 /** Moves that carry no verdict note: care, goodbye and a break are never about the answer. */
 const NO_VERDICT_MOVES = new Set(["safeguard", "wrap", "break"]);
 /** classification → VERDICT_NOTE key (null: correct, which the confirm shapes already state). */

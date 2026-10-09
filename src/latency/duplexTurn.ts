@@ -45,8 +45,10 @@ export function latencyDuplexSink(c: HostCommand): void {
     if (!t || !t.duplexLive()) { if (c.to === "think" || (c.to === "voice" && c.op === "speak")) duplexTurnStats.ignored++; return; }
     if (c.to === "think" && c.op === "prepare") {
       duplexTurnStats.prepares++;
-      // the eager end of turn: a draft starts (pComplete projected ≥ 0.5) on these words
-      if (c.hint.draft === "start" && c.text?.trim() && t.prefetcher?.sendNow("duplex", c.text)) duplexTurnStats.prefetched++;
+      // the eager end of turn: round 3 duplex's measured `eager` start (covered words of a finished-looking turn: 354/399
+      // real D4 turn ends, 280 ms before the commit, 0.07 cancelled starts per turn; docs/design/round3/duplex/APPLY.md §4)
+      // when the engine sends it, else the projected-pComplete draft start (round 2)
+      if ((c.hint.eager ?? c.hint.draft) === "start" && c.text?.trim() && t.prefetcher?.sendNow("duplex", c.text)) duplexTurnStats.prefetched++;
       return;
     }
     if (c.to === "voice" && c.op === "speak") {

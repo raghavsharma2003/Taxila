@@ -35,4 +35,10 @@ statement per call).
 --                                    under the parent's voice_pace_memory choice; cascade on withdrawal and child delete)
 --   022_studio_mount_stagecraft.sql  ship5 integration  widens studio_mount_source_check to add 'stagecraft' (p4's revealed
 --                                    pieces; without it every Stagecraft reveal's mount row was refused)
+
+-- round 3:
+--   023_reteach_every_decision.sql  r3 truth  widens reteach_attempts_trigger_check ('misconception_seen') and
+--                                    reteach_attempts_chosen_by_check ('rule'): the Director's own re-teach paths (the kit's
+--                                    remediation, the P21 change of approach) write their row; must ship before or with the
+--                                    director patch (docs/design/round3/truth/patches/02), whose rows would fail the turn
 ```

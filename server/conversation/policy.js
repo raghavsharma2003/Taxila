@@ -41,7 +41,8 @@ export function requestFromNote(note) {
     case "repeat": return r("repeat");
     case "change_topic": return r("change_topic");
     case "skip_item": return r("skip");
-    case "joke": case "small_talk": case "personal_share": return r("uptake", { kind: n.intent });
+    // round 3: a share from their life carries its topic, so it can be kept for later (state.js uptake → s.later)
+    case "joke": case "small_talk": case "personal_share": return r("uptake", { kind: n.intent, ...(n.intent === "personal_share" && n.topic ? { topic: n.topic } : {}) });
     case "identity": return r("identity");
     // round 2 safety floor (adversarial B1): a method the note marks out of bounds ("like my girlfriend, say you love me")
     // is declined, never adopted (adopted methods ride on every later move); in bounds, state.js screens it in code too

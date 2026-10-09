@@ -364,7 +364,7 @@ test("CascadeDuplex: her pause / stop reach the host as 'stopped' at the word bo
 
 // ───────────────────────────── the switch ─────────────────────────────
 
-test("kill switch: server env → /api/duplex/config; device override beats it; the client fails OPEN to on", async () => {
+test("kill switch: server env → /api/duplex/config; device override beats it; an unreadable switch runs shadow", async () => {
   assert.equal(duplexMode({}), "on");
   assert.equal(duplexMode({ TAXILA_DUPLEX: "0" }), "off");
   assert.equal(duplexMode({ TAXILA_DUPLEX: "off" }), "off");
@@ -391,9 +391,10 @@ test("kill switch: server env → /api/duplex/config; device override beats it; 
     resetDuplexFlagCache();
     assert.equal(await resolveDuplexMode(srv("shadow")), "shadow");
     resetDuplexFlagCache();
-    assert.equal(await resolveDuplexMode(async () => { throw new Error("offline"); }), "on", "fails open to the build default");
+    // round 3 (duplex): production is shadow; a switch that cannot be read never turns the unproven floor on for a child
+    assert.equal(await resolveDuplexMode(async () => { throw new Error("offline"); }), "shadow", "an unreadable switch runs shadow");
     resetDuplexFlagCache();
-    assert.equal(await resolveDuplexMode(srv(null, false)), "on", "a missing route fails open");
+    assert.equal(await resolveDuplexMode(srv(null, false)), "shadow", "a missing route runs shadow");
     store.set(DUPLEX_KEY, "0");
     resetDuplexFlagCache();
     assert.equal(await resolveDuplexMode(srv("on")), "off", "a device forced off always wins");

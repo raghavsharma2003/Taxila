@@ -136,10 +136,10 @@ test("confused / clarify / repeat / back / skip / easier / harder / know on a qu
 test("boredom and frustration: something changes now (ways in / a smaller step), never an end and never a helpline", () => {
   const r = toPractice();
   const b = turn(r, said(r, "boring yaar"));
-  assert.match(b.move.shape, /bored: no guilt/);
+  assert.match(b.move.shape, /bored: no guilt|they are bored: first say back/);
   assert.equal(ended(b), false);
   const f = turn(r, said(r, "mujhse nahi hoga"));
-  assert.match(f.move.shape, /this one is hard work and that is okay/);
+  assert.match(f.move.shape, /this one is hard work and that is okay|empathy about how tough THIS question is/);
   assert.notEqual(f.move.kind, "safeguard");
 });
 

@@ -460,7 +460,11 @@ export const handsBack = (text) => /[?？]|_{2,}|\b(batao|bataao|bolo|socho|try|
   || /\b(?!chahiye\b)[a-z]{2,}iye\b|इए(?![\p{L}\p{M}])/iu.test(String(text));
 
 /** Does a why-probe turn actually ask for the reason (how / why, in Hindi or English)? */
-export const asksWhy = (text) => /\b(kaise|kaisay|kyun|kyon|kyu|kyoon|why|how|reason|wajah|vajah)\b|कैसे|क्यों/i.test(String(text));
+// round 3 (conversation; local battery base-head-1): "Tumne kaunsa rule use karke decide kiya?" asks for the method but has
+// none of the words, so the turn was rewritten (nowhy) and the rewrite dropped the confirmation. The method / rule / "what
+// did you think" forms count too.
+export const asksWhy = (text) => /\b(kaise|kaisay|kyun|kyon|kyu|kyoon|why|how|reason|wajah|vajah)\b|कैसे|क्यों/i.test(String(text))
+  || /\b(?:kaun\s*sa|kaunsa|kis)\s+(?:rule|niyam|tarika|tareeka|tarah|tareeke|step|clue|cheez|baat)\b|\bkya\s+socha\b|\bsoch\s+kya\b|\bwhat\s+(?:made|told|helped)\s+you\b|\bwhich\s+(?:rule|clue|step)\b|\byour\s+thinking\b|\bexplain\b|\bsamjha(?:o|iye|ao|aiye)\b/i.test(String(text));
 
 // ── answer-leak predicate ──
 const CUT = "\u0000";

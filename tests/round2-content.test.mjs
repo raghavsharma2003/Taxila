@@ -128,7 +128,8 @@ describe("board-first preselect", () => {
     BF.preselect(a2, { kit });
     const bad = { ...a2, line: { ...a2.line, text: BAD } };
     assert.equal(BF.takePreselected(bad, gateCtxFor(bad, { kit })), null);
-    assert.equal(BF.pickState(bad), "rejected:W8.counts_match_line");
+    // round 3 forge (wb-gate@3): the contradicting line also names parts the board does not draw (W10)
+    assert.match(BF.pickState(bad), /^rejected:W8\.counts_match_line(,W10\.screen_claims_drawn)?$/);
     assert.equal(BF.takePreselected(good, gateCtxFor(good, { kit })), null, "a pick is used once");
   });
   it("W9 is checked as if her line said no number: the 3 x 5 board waits for a line that says 3 and 5", () => {

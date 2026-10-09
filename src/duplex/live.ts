@@ -23,7 +23,7 @@
  * failure to the child. Content-blind telemetry only (numbers and codes; never the child's words).
  * Erasable TypeScript; pure apart from the injected port and timers (tests drive it in Node with a fake clock).
  */
-import type { EngineContext, AnswerForm, ExchangeContext, FloorPhase, HerAct, Ms, ReasonCode } from "./engine.ts";
+import type { EngineContext, AnswerForm, ExchangeContext, FloorPhase, HerAct, Ms, ReasonCode, AcousticEstimate } from "./engine.ts";
 import type { Floor } from "../lesson/floor.ts";
 import { EngineHost, NEUTRAL_CONTEXT, type HostCommand, type HostSttEvent, type ShadowRow } from "./host.ts";
 import type { SttEvent } from "../../server/duplex/fanin.js";
@@ -378,6 +378,15 @@ export class DuplexLive {
       if (this.her) this.host.herEvent({ kind: "level", t, db: herOutDb === null ? null : herOutDb + this.echo.db });
       this.host.frame(t, rms, f0);
     });
+  }
+
+  /**
+   * An acoustic model's estimate for the host's next tick (voicesig round 3: the thinking-pause cue, published on
+   * src/voicesig/holdBus.ts; stamped, and stale after ACOUSTIC_FRESH_MS like any acoustic estimate).
+   */
+  estimate(e: { acoustic?: AcousticEstimate }, t: number): void {
+    if (!this.live) return;
+    this.guard(() => this.host.estimate(e, t));
   }
 
   /** One realtime transcription event (the link's data channel). Errors are the link's to read (isQuotaError → degrade). */

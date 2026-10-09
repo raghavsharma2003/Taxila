@@ -454,7 +454,11 @@ export class Governor {
     const m = tick.markers;
     // pHoldWanted as the engine judged it last tick (the governed decision), or the lexical hold signals directly
     const ph = this.lastGovernedPH ?? 0;
-    return ph >= BACKSTOP_HOLD_PH || m.fillerTail || m.openTail || m.projection || m.wordSearch || m.repairOpen;
+    // voicesig round 3: a fresh acoustic hold (the thinking-pause cue) stretches the backstop exactly as a lexical
+    // fillerTail does; it lapses on its own ACOUSTIC_FRESH_MS after the cue stops publishing
+    const ac = tick.estimates.acoustic;
+    const acousticHold = !!ac && tick.t - ac.atMs <= ACOUSTIC_FRESH_MS && (ac.pHoldWanted ?? 0) >= BACKSTOP_HOLD_PH;
+    return ph >= BACKSTOP_HOLD_PH || m.fillerTail || m.openTail || m.projection || m.wordSearch || m.repairOpen || acousticHold;
   }
 
   private lastGovernedPH: number | null = null;

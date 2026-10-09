@@ -1,0 +1,42 @@
+// The engine fits its frame (round 3, stream forge; docs/design/round3/forge/audit). Measured on taxila.dev (2026-10-09):
+// the number-line engine with its keypad was 507 px tall in a 355 px tray on a 360 x 800 phone, so the keys "7 8 9" were cut
+// off at the bottom with no way to reach them; the geoboard ran past the right edge. An engine lays itself out for a
+// comfortable size; when the frame is smaller, the whole engine is scaled down to fit (never below FLOOR, so 18 px body
+// text stays ≥ 13.5 px and 48 px keys ≥ 36 px), and only when even that does not fit does the frame scroll — a part of
+// the activity is never unreachable. Scaling is a transform on #root (layout, hit testing and the engine's own sizes stay
+// as they were); it re-fits on every resize and every change of the engine's DOM.
+export const FLOOR = 0.75;
+
+export function installFit(root: HTMLElement | null = document.getElementById("root")): () => void {
+  if (!root || typeof window === "undefined") return () => {};
+  let raf = 0;
+  const fit = () => {
+    raf = 0;
+    root.style.transform = "";
+    root.style.width = "";
+    const body = document.body;
+    const cs = getComputedStyle(body);
+    const padY = parseFloat(cs.paddingTop) + parseFloat(cs.paddingBottom);
+    const padX = parseFloat(cs.paddingLeft) + parseFloat(cs.paddingRight);
+    const needH = root.scrollHeight, needW = root.scrollWidth;
+    const haveH = window.innerHeight - padY, haveW = window.innerWidth - padX;
+    if (needH <= 0 || needW <= 0) return;
+    const k = Math.min(1, haveH / needH, haveW / needW);
+    if (k >= 0.999) { body.style.overflow = ""; return; }
+    const z = Math.max(FLOOR, Math.floor(k * 1000) / 1000);
+    root.style.transformOrigin = "top center";
+    root.style.transform = `scale(${z})`;
+    // the scaled engine's box is smaller than its layout box: the document must not scroll for the difference
+    body.style.overflow = z > k ? "auto" : "hidden";
+    root.dataset.fit = String(z);
+  };
+  const schedule = () => { if (!raf) raf = requestAnimationFrame(fit); };
+  const ro = typeof ResizeObserver !== "undefined" ? new ResizeObserver(schedule) : null;
+  ro?.observe(document.documentElement);
+  ro?.observe(root);
+  const mo = typeof MutationObserver !== "undefined" ? new MutationObserver(schedule) : null;
+  mo?.observe(root, { childList: true, subtree: true, attributes: false, characterData: false });
+  window.addEventListener("resize", schedule);
+  schedule();
+  return () => { ro?.disconnect(); mo?.disconnect(); window.removeEventListener("resize", schedule); if (raf) cancelAnimationFrame(raf); };
+}

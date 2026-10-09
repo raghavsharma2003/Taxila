@@ -17,7 +17,7 @@
 // order the cached fold applied them and a replay of kt_evidence reproduces kt_skill_state byte for byte.
 // There is deliberately no id tiebreak: ids are opaque strings ("e10" < "e9"), not an order.
 import { formOf, fsrsGrade, isDelayedMiss, isDelayedSuccess, isGenerativePass, isUnaidedCorrect, ITEM_CLASSES, outcomeName, recentValue, EMISSIONS } from "./outcomes.js";
-import { dropReason, logEvidence, logit, sigmoid, spend, teachStep, temper, tEff, transition } from "./bktr.js";
+import { dropReason, logEvidence, logit, sigmoid, sourceOf, spend, teachStep, temper, tEff, transition } from "./bktr.js";
 import { nextReviewAt, retrievability, review } from "./fsrs.js";
 import { addObs, currentTheta, defaultItemMeta, initialBase, newEpoch, openEpoch, strandOfSkill, subjectOfSkill, subjectOfStrand, thetaObs } from "./ability.js";
 import { priorFromTheta } from "./priors.js";
@@ -258,6 +258,10 @@ function reviewAt(sk) {
 function advanceDisplay(sk, ev, sess, ss, isTarget, novel = true) {
   const produce = formOf(ev) === "produce";
   const clean = !ev.assisted && !ev.preAttemptHelp && !ev.gamingWindowKt && !ev.controllerEasy;
+  // round 3 play (docs/design/round3/play/DESIGN.md §8, in-game-success-as-mastery): a game act moves pL at the game
+  // weight but is never the delayed check, never spends it, and never sets "unaided": only a bare item outside the game
+  // can make a skill learned or secure (DragonBox 3.5 h: no paper gain; Nuraydin 2022: trained task only)
+  const game = sourceOf(ev) === "game";
   ss.attempted = true;
   if (rank(sk.display) < rank("practising")) sk.display = "practising";
 
@@ -279,7 +283,7 @@ function advanceDisplay(sk, ev, sess, ss, isTarget, novel = true) {
   // session start to session start (no intra-session clock, §13.1): decision learner-delayed-check-session-clock.
   // V1.3: the check is >= 2 learning days after the anchor and on an item this skill was never answered on (a repeat is a
   // recall of that item, not proof the skill holds in a new form: it neither counts nor spends the check)
-  const due = CHECK_CLASSES.has(ev.cls) && rank(sk.display) >= rank("learned_today") && !ss.checkDone && !ss.taught
+  const due = !game && CHECK_CLASSES.has(ev.cls) && rank(sk.display) >= rank("learned_today") && !ss.checkDone && !ss.taught
     && sk.anchorAt && sk.anchorSession !== sess.sessionId && checkDayOk(sk.anchorAt, sess.startAt) && novel;
   // A recognition item (a tap on shown options) at the check's moment SPENDS the check without counting:
   // the options cue the answer, so a produce attempt after it is no longer an unprompted retrieval.
@@ -312,7 +316,7 @@ function advanceDisplay(sk, ev, sess, ss, isTarget, novel = true) {
     }                        // anything else (an error-spot caught but not fixed, NA): not a check at all
   }
 
-  if (produce && clean && isUnaidedCorrect(ev.cls, ev.outcome)) { sk.aDay = sess.day; sk.flags.unaided = true; }
+  if (produce && clean && !game && isUnaidedCorrect(ev.cls, ev.outcome)) { sk.aDay = sess.day; sk.flags.unaided = true; }
   if (produce && clean && isGenerativePass(ev.cls, ev.outcome)) { sk.bDay = sess.day; sk.flags.generative = true; }
   if (rank(sk.display) <= rank("practising") && sk.aDay === sess.day && sk.bDay === sess.day && sk.pL >= LEARNED_P
     && sk.recent.filter((r) => r === 1).length >= 2) {

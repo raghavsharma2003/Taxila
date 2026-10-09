@@ -172,7 +172,14 @@ test("barge-in: a sustained child voice over her yields (resumable); a short bur
   const text = "तो देखो, जब हम pizza को चार बराबर हिस्सों में काटते हैं, तो हर हिस्सा एक चौथाई होता है।";
   r.host.herEvent({ kind: "start", t: r.t, utteranceId: "u1", text, act: "explaining", handsOver: false, msPerChar: 70 });
   r.quiet(1000);
-  r.voice(700); // sustained
+  const onset = r.t;
+  r.voice(700);
+  // round 3 (duplex): the hush meets the child at once (her voice inaudible within ~150 ms); while hushed, the PAUSE waits for
+  // the words or OVERLAP.hushedSustainMs of voice (real AMI continuers voiced 330-1,000 ms and the 600 ms sustain paused her)
+  const hush = r.of("voice", "duck").find((c) => c.level <= OVERLAP.hushLevel);
+  assert.ok(hush && hush.t - onset <= 200, `hushed ${hush ? hush.t - onset : "never"} ms after the onset`);
+  assert.equal(r.of("voice", "yield").length, 0, "not yet paused at 700 ms while hushed");
+  r.voice(OVERLAP.hushedSustainMs - 700 + 100); // sustained
   const y = r.of("voice", "yield");
   assert.equal(y.length, 1);
   assert.equal(y[0].reason, "barge_in");

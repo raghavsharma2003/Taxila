@@ -33,6 +33,16 @@ const PRAISE_ANY = new RegExp([
   `(?:aapne|tumne|you)\\s+(?:\\p{L}+\\s+){0,3}?(?:bilkul\\s+|ekdam\\s+)?(?:sahi|correct(?:ly)?|right)\\s+(?:likha|likhi|likhe|chuna|chuni|joda|jodi|pehchana|pehchaana|wrote|picked|chose|matched)`,
 ].join("|"), "iu");
 /**
+ * round3 truth (owner-1 on taxila.dev 2026-10-09, c5-maths-ch07-t02-i06, an UNGRADED re-ask: "Aapne Pattern A ka niyam sahi
+ * pehchaana: …"): the F5 form allowed at most 3 words between "aapne" and "sahi", so a 4-word object slipped through and
+ * the turn praised an answer nothing had graded. PRAISE_ANY_WIDE allows up to 8 words (and a few more verb forms) and is
+ * used for every verdict except a GRADED partial, where naming the part that is right is the honest, specific feedback
+ * (the narrow PRAISE_ANY still applies there, as before).
+ */
+const PRAISE_ANY_WIDE = new RegExp([PRAISE_ANY.source,
+  `(?:aapne|tumne|you)\\s+(?:[\\p{L}\\p{N}'’]+[\\s,:]+){0,8}?(?:bilkul\\s+|ekdam\\s+)?(?:sahi|correct(?:ly)?|right)\\s+(?:kaha|bataya|socha|pakda|nikala|got|said|found|likha|likhi|likhe|chuna|chuni|joda|jodi|pehchana|pehchaana|pehchani|pehchaani|pehchane|pehchaane|identified|spotted|wrote|picked|chose|matched)(?![\\p{L}])`,
+].join("|"), "iu");
+/**
  * A "you made a mistake" statement anywhere in a turn after a RIGHT answer (F2, evals/owner-truth: "yahan galti hui",
  * "step toot gaya" after a correct pick). Negations ("galti nahi", "no mistake") are not denials.
  */
@@ -88,9 +98,9 @@ export function praiseProblem(text, verdict) {
   if (!t || verdict === "ungraded") return null;
   if (verdict === "correct") return DENY_OPEN.test(t) || DENY_ANY.test(t) ? "contradicts" : null;
   // F5: a turn with nothing graded may still not tell an attempt it is right ("aapne sahi likha" on an ungraded reply)
-  if (verdict === "attempt") return PRAISE_ANY.test(t) ? "praise" : null;
+  if (verdict === "attempt") return PRAISE_ANY_WIDE.test(t) ? "praise" : null;
   // partial: "nearly" is honest; "bilkul / sahi" is not.
-  if (PRAISE_OPEN.test(t) || PRAISE_ANY.test(t) || PRAISE_EMOJI.test(t)) return "praise";
+  if (PRAISE_OPEN.test(t) || (verdict === "partial" ? PRAISE_ANY : PRAISE_ANY_WIDE).test(t) || PRAISE_EMOJI.test(t)) return "praise";
   if (verdict === "not_yet" && AGREE_OPEN.test(t)) return "praise";
   return null;
 }
@@ -100,7 +110,7 @@ const OPENER = /^\s*(?:[\p{L}]+\s*[,—-]\s*)?(?:bilkul(?:\s+sahi)?|sahi(?:\s+ha
 /** The turn with its praise / agreement removed: sentences that praise the answer, and a praising opener on a question. */
 export function stripPraise(text) {
   const sentences = String(text ?? "").match(/[^.!?।]+[.!?।]*\s*/g) ?? [];
-  const praising = (x) => { const y = withoutEffortPraise(x).trim(); return PRAISE_ANY.test(y) || PRAISE_OPEN.test(y) || AGREE_OPEN.test(y); };
+  const praising = (x) => { const y = withoutEffortPraise(x).trim(); return PRAISE_ANY_WIDE.test(y) || PRAISE_OPEN.test(y) || AGREE_OPEN.test(y); };
   let out = sentences.filter((x) => /[?？]/.test(x) || !praising(x)).join("").replace(new RegExp(PRAISE_EMOJI.source, "gu"), "").trim();
   for (let i = 0; i < 3 && OPENER.test(out); i++) out = out.replace(OPENER, "");
   return out ? out[0].toUpperCase() + out.slice(1) : "";
@@ -271,14 +281,23 @@ export function joinAsk(lead, askFull) {
 }
 
 /** Keep only the LAST question of a turn with no pinned item (one question per turn). */
-export function lastQuestionOnly(reply) {
+export function lastQuestionOnly(reply, { keepContent = false } = {}) {
   const ss = sentencesOf(reply);
-  const lastQ = ss.map(isQuestion).lastIndexOf(true);
-  return ss.filter((x, i) => !isQuestion(x) || i === lastQ).join(" ").trim();
+  const qs = ss.map(isQuestion);
+  let keep = qs.lastIndexOf(true);
+  // round 3 (conversation; battery boredom-02, boredom-05: "…chalo tareeka badlein: game, picture, ya quick challenge? Kaunsa
+  // chunogi?" was cut to "Kaunsa chunogi?", the offer gone): when the last question is a short tag after a question that
+  // carries the turn, the tag goes and the carrying question stays
+  if (keepContent && keep > 0) {
+    const prev = qs.lastIndexOf(true, keep - 1);
+    const n = (x) => x.split(/\s+/).filter(Boolean).length;
+    if (prev >= 0 && n(ss[keep]) <= 4 && n(ss[prev]) >= 2 * n(ss[keep])) keep = prev;
+  }
+  return ss.filter((x, i) => !qs[i] || i === keep).join(" ").trim();
 }
 
 // ── wrap language only on a wrap move (personalisation 13: "Aaj ke liye bas itna." in a probe turn, mid-lesson) ──
-const WRAP_WORDS = /\b(?:aaj\s+ke\s+liye\s+(?:bas\s+)?(?:itna|itni|yahin|ye(?:h)?\s+hi)|aaj\s+(?:ka\s+)?(?:lesson|class|session)\s+(?:khatam|khatm|poora|pura|yahin)|that'?s\s+(?:all|it)\s+for\s+today|see\s+you\s+(?:next\s+time|tomorrow|soon|later)|(?:phir|kal|jaldi)\s+milte\s+hain|good\s*bye|bye[\s-]*bye|alvida|we(?:'re|\s+are)\s+done\s+for\s+today|let'?s\s+stop\s+(?:here|for\s+today)|(?:we'?ll|we\s+will|let'?s)\s+stop\s+(?:here|now)|yahin\s+(?:rok|ruk|stop|khatam|band)\s*(?:te|dete|kar\s*te|karte|lete|jaate)?\s*(?:hain|hai)|lesson\s+(?:yahin\s+)?(?:khatam|khatm)\s+(?:karte|kar\s+dete)\s+hain|yahin\s+(?:rok|rokte|roke|stop|khatam|khatm|band)\b(?:\s+(?:dete|karte|kar\s+dete|kar\s+lete)\s+hain)?|(?:lesson|class|padhai)\s+(?:yahin\s+)?(?:rok|band|stop)\s+(?:dete|karte|kar\s+dete)\s+(?:hain|hai)|apna\s+(?:khayal|khyal|dhyan)\s+rakh(?:iye|na|o))\b|आज\s+के\s+लिए\s+(?:बस\s+)?इतना|फिर\s+मिलते\s+हैं/iu;
+const WRAP_WORDS = /\b(?:aaj\s+ke\s+liye\s+(?:bas\s+)?(?:itna|itni|yahin|ye(?:h)?\s+hi)|aaj\s+(?:ka\s+)?(?:lesson|class|session)\s+(?:khatam|khatm|poora|pura|yahin)|that'?s\s+(?:all|it)\s+for\s+today|see\s+you\s+(?:next\s+time|tomorrow|soon|later)|(?:phir|kal|jaldi)\s+milte\s+hain|good\s*bye|bye[\s-]*bye|alvida|we(?:'re|\s+are)\s+done\s+for\s+today|let'?s\s+stop\s+(?:here|for\s+today)|(?:we'?ll|we\s+will|let'?s)\s+stop\s+(?:here|now)|(?:we['’]?ll|we\s+will|let['’]?s)\s+(?:stop|end)\s+(?:here|now|(?:the\s+|our\s+|today['’]?s\s+)?(?:lesson|class)(?:\s+(?:here|now|for\s+today))?)|lesson\s+ended|yahin\s+(?:rok|ruk|stop|khatam|band)\s*(?:te|dete|kar\s*te|karte|lete|jaate)?\s*(?:hain|hai)|lesson\s+(?:yahin\s+)?(?:khatam|khatm)\s+(?:karte|kar\s+dete)\s+hain|yahin\s+(?:rok|rokte|roke|stop|khatam|khatm|band)\b(?:\s+(?:dete|karte|kar\s+dete|kar\s+lete)\s+hain)?|(?:lesson|class|padhai)\s+(?:yahin\s+)?(?:rok|band|stop)\s+(?:dete|karte|kar\s+dete)\s+(?:hain|hai)|apna\s+(?:khayal|khyal|dhyan)\s+rakh(?:iye|na|o))\b|आज\s+के\s+लिए\s+(?:बस\s+)?इतना|फिर\s+मिलते\s+हैं/iu;
 /** Does a line close the lesson (a goodbye, "that's all for today")? Only a wrap move may say that. */
 export const wrapsUp = (text) => WRAP_WORDS.test(String(text ?? ""));
 /** The line without its closing sentences. */

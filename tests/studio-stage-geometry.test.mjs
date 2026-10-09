@@ -7,6 +7,7 @@
 import { test, before, after } from "node:test";
 import assert from "node:assert/strict";
 import { existsSync, readdirSync } from "fs";
+import { boardFrame } from "../src/studio/boardView.ts";
 
 const ROOT = new URL("..", import.meta.url).pathname;
 const browsersDir = process.env.PLAYWRIGHT_BROWSERS_PATH;
@@ -78,7 +79,9 @@ test("the Studio stage box sits inside the Work tray, keeps its aspect, and noth
       if (!tray || !box) { fails.push(`${tag}: no tray/box`); continue; }
       if (box.w < 100 || box.h < 75) fails.push(`${tag}: box too small ${box.w}x${box.h}`);
       if (box.x < tray.x - 0.5 || box.y < tray.y - 0.5 || box.x + box.w > tray.x + tray.w + 0.5 || box.y + box.h > tray.y + tray.h + 0.5) fails.push(`${tag}: box outside tray ${JSON.stringify(m)}`);
-      if (Math.abs(box.w / box.h - board.w / board.h) > 2 / Math.min(box.w, box.h)) fails.push(`${tag}: aspect ${box.w}x${box.h}`);
+      // round 3 forge: the stage frames the board's drawn content (src/studio/boardView.ts): the box keeps the FRAME's aspect
+      const fr = boardFrame(script(board.w, board.h));
+      if (Math.abs(box.w / box.h - fr.w / fr.h) > 2 / Math.min(box.w, box.h)) fails.push(`${tag}: aspect ${box.w}x${box.h}`);
       if (m.trayScroll && (m.trayScroll.sh > m.trayScroll.ch + 1 || m.trayScroll.sw > m.trayScroll.cw + 1)) fails.push(`${tag}: tray scrolls ${JSON.stringify(m.trayScroll)}`);
       if (m.page.sw > m.page.iw + 1) fails.push(`${tag}: horizontal page scroll ${m.page.sw} > ${m.page.iw}`);
     } finally { await page.close(); }

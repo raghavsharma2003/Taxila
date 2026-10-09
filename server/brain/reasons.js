@@ -68,6 +68,12 @@ export const FAMILIES = Object.freeze({
   vs: ["fluentRecall", "workingAloud", "fragileCorrect", "heldBelief", "effortfulGuess", "rapidGuess", "searching", "absent", "none", "disagree", "no_kv"],
   vs_gate: ["live", "killed", "mode_shadow", "not_measured_on_children", "precision_below_bar", "too_few_firings", "ladder_l0", "adapter_shadow"],
   vs_act: ["followUpProbe", "gentlerHint", "slowerPace"],
+  // round 3 voicesig (shadow log of what she WOULD have done): the tie-breaker a shadow state would have handed the
+  // Director (vs_would), whether the counterfactual plan with it changed her move (vs_diff; not_run = no plan was run),
+  // and the device's thinking-pause cue calling at least one pause of this turn a pause to think (vs_hold). Trace only.
+  vs_would: ["followUpProbe", "gentlerHint", "slowerPace"],
+  vs_diff: ["same", "changed", "not_run"],
+  vs_hold: ["fired"],
   // p5-interaction: the request a turn was read as (classify / readings / the UNDERSTAND note), the note itself
   // (conv2.note.<intent> acted on, conv2.shadow.<intent> recorded only, conv2.no_note), the 3-turn card cap, and a module
   // answer the server could not re-check. Without these the trace dropped them (knownReasons) — acceptance 2026-10-05.

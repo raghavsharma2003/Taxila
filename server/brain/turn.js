@@ -9,11 +9,14 @@ import { need, bad, forbidden, notFound, unauthorized, HttpError } from "../http
 import { sessionTokenHash } from "../auth.js";
 import { turnVoice } from "../voice/features.js";
 import { voicesigSeam } from "../voicesig/lesson.js";
+import { knownReasons } from "./reasons.js";
 import { getTopic } from "../content/index.js";
 import { gamingDiscount, nextAffect } from "../learner/affect.js";
 import { skillStateStmt, evidenceStmt, misconceptionFlagStmt, misconceptionResolveStmt } from "../learner/model.js";
 import { canWrite } from "../learner/mode.js";
 import { ledgerStmts } from "../learner/writer.js";
+// round 3 play (docs/design/round3/play/patches/03): the play server's signed grade and seam rows
+import { nextSeen, playKtEvents, verifySeam } from "../play/evidence.js";
 import { LIVE_FOLD_CTX, answerEvents, closeEvents, endEvents, compactBelief, skillsMapFor, snapshotFromKt, legacySkillState, loadLive, commitLive, evictLive } from "../learner/live.js";
 import { newLearnerState, fuseEvidence, beliefFor, noteOutcome, auditRow, weaveEnqueue } from "../comprehension/index.js";
 import { facetStmts, probeLogStmt, reteachStmt, gradeAuditStmt, weaveEnqueueStmt } from "../comprehension/store.js";
@@ -41,10 +44,14 @@ import { expressiveSeam } from "../voice/expressive/seam.js";
 import { fallbackReply, floorContentOf, safeguardLine, scrubbed, textReply } from "./say.js";
 import { arbitrate } from "./kernel.js";
 import { proposalsOf, turnStudioOf, whiteboardAskOf, whiteboardIntentOf, RUNG_ENGINE } from "./propose.js";
+import { INTERACTIVE_ASKS } from "../forge3/compose.js";
+
+/** round 3 forge: the child asked to play / see it move and an engine (not the template rung) is in the tray: keep it. */
+const keepEngineFor = (r, next) => INTERACTIVE_ASKS.has(String(r?.move?.visual ?? "")) && r?.ui?.tray === "module" && !!next?.module && next.module.engine !== RUNG_ENGINE;
 import { relationalEffects } from "./relational-adapter.js";
 import { withSafetyOpening } from "../relational/openings.js";
 import { signalsOf } from "../relational/signals.js";
-import { relationalViolations, repairSelfGender, safetyPreface, stripSafetyPreface } from "../director/safety.js";
+import { relationalViolations, relationalHits, repairSelfGender, safetyPreface, stripSafetyPreface } from "../director/safety.js";
 import { characterForState } from "../compiler/characters/index.js";
 import { nextBeat, uiBeatOf } from "./beat.js";
 import { momentOf } from "./moment.js";
@@ -57,6 +64,9 @@ import { applyNote, withAnswerMods } from "../conversation/policy.js";
 import { conv2Mode, p5Flag } from "../conversation/flags.js";
 // Round 2, stream latency: the perceive stage as one function the turn PREFETCH shares (adopted on identical inputs only)
 import { perceive, fingerprint as prefetchFingerprint, adoptPrefetch, adoptMissOf } from "../latency/perceive.js";
+// Round 3, stream relational-human: the perception bus (server/latency/bus.js): the acknowledgement route waits on THIS
+// classify — the turn's own, or the adopted prefetch's — and never makes a model call of its own
+import { publishPerception } from "../latency/bus.js";
 import { childTurnRow, clientInstructions, debugFor, floorIncidentStmt, incidentStmt, kitFor, laneOf, runTurnTx, stageTurns, turnInsertStmt, turnLane, withAsk, withSeamUi, withStudioSlot } from "./rows.js";
 
 /**
@@ -101,10 +111,35 @@ const valueOf = (d) => {
   return v == null || typeof v === "object" ? "" : ` ${String(v).replace(/[^\p{L}\p{N} /.,-]/gu, "").slice(0, 24)}`.trimEnd();
 };
 export function activitySummary(events, dropped) {
-  const milestones = events.filter((e) => ["goal_met", "stuck", "answer"].includes(e?.type)).map((e) =>
+  const ms = events.filter((e) => ["goal_met", "stuck", "answer"].includes(e?.type));
+  const milestones = ms.map((e) =>
     e.type === "answer" ? `answer${valueOf(e.data)}` : `${e.type} ${String(e.name ?? "").slice(0, 40)}`.trim());
-  const other = events.length - milestones.length + dropped;
-  return [...milestones, ...(other ? [`${other} other event${other === 1 ? "" : "s"}`] : [])].join("; ");
+  // round 3 play: a seam's PLAY facts row (set by the turn from a VERIFIED token only, never from the device: playEventsOf)
+  const plays = events.filter((e) => typeof e?.playRow === "string" && e.playRow);
+  const play = plays.map((e) => `play ${e.playRow.slice(0, 200)}`);
+  const other = events.filter((e) => !ms.includes(e) && !plays.includes(e)).length + dropped;
+  return [...milestones, ...play, ...(other ? [`${other} other event${other === 1 ? "" : "s"}`] : [])].join("; ");
+}
+
+/**
+ * round 3 play: the tokens on play module events (engine "play"). Each seam token that verifies for THIS child and lesson
+ * becomes the event's playRow (key=value pairs only); evidence tokens are returned for planTurn to verify and fold. Every
+ * other field a play event carries is dropped, and a playRow the device sent is deleted first. Mutates the events (they
+ * are this turn's own parsed body). Exported for tests.
+ */
+export function playEventsOf(moduleEvents, { childId, lessonId }) {
+  const tokens = [];
+  for (const e of moduleEvents) {
+    if (!e || typeof e !== "object") continue;
+    delete e.playRow;
+    if (e.engine !== "play") continue;
+    const d = e.data && typeof e.data === "object" ? e.data : {};
+    if (typeof d.ev === "string") tokens.push(d.ev);
+    const seam = typeof d.seam === "string" ? verifySeam(d.seam, { childId, lessonId }) : null;
+    if (seam) e.playRow = `${seam.kind} ${seam.row}`.trim();
+    delete e.data;
+  }
+  return tokens.slice(0, 8);
 }
 
 /**
@@ -226,6 +261,7 @@ export async function lessonTurn(req, body) {
   // lesson is still voice-lane (a text reply for it was never heard, yet was stored as a teacher turn).
   const { textLane, typed } = turnLane(state.mode, body);
   const moduleEvents = Array.isArray(body.moduleEvents) ? body.moduleEvents : [];
+  const playTokens = playEventsOf(moduleEvents, { childId: child.id, lessonId: lesson.id });
   const dropped = Number.isInteger(body.droppedEvents) && body.droppedEvents > 0 ? body.droppedEvents : 0;
   // contracts.ts TurnRequest: the child acted in an activity and said nothing. Never graded as a reply —
   // it was once stored as "[no speech]", classified unclear, and walked the lesson plan.
@@ -347,7 +383,7 @@ export async function lessonTurn(req, body) {
       item: activeItem ?? null, line: { text: "" } })), false);
   }
   // A resume turn plans as a module-only turn with no events: the Director holds (the last move and UI stand).
-  const planCtx = { kit, child, lesson, activeItem, moduleOnly: moduleOnly || laneResume, moduleEvents, chipId: body.chipId, answer: help ? "" : answer, leaked, live: liveP, carried,
+  const planCtx = { kit, child, lesson, activeItem, moduleOnly: moduleOnly || laneResume, moduleEvents, playTokens, chipId: body.chipId, answer: help ? "" : answer, leaked, live: liveP, carried,
     childText, typed, asrConfidence: body.asrConfidence, bargeIn: !!body.teacherInterrupted, ...(studioView ? { studio: studioView } : {}),
     ...(moduleUnverified ? { moduleUnverified: true } : {}) };
   // A module-only turn or a help request stored no child row, so the whole recent transcript is history.
@@ -379,6 +415,11 @@ export async function lessonTurn(req, body) {
   const P = pre ?? perceive(PERCEIVE_DEPS, { classified, clsArgs, state, target, planCtx, said, historyOf, textLane, late, help, childText, noteArgs });
   const { now, fast, specs, noteP, noteT0, c2 } = P;
   if (pre) mark("prefetch_adopted");
+  // round 3 (relational-human): a spoken child answer on a text lane: the ack route may hear it back once THIS classify (and
+  // its model distress read) is in; the duplex floor's sticky partial-safety bit rides along (it only ever refuses an ack)
+  if (classified && textLane && !late && !help && !moduleOnly && !laneResume && !body.chipId && !typed && childText) {
+    publishPerception(lesson.id, { text: childText, clsP: P.clsP, source: "turn", turn: (state.turn ?? 0) + 1, pendingSafety: !!body.duplex?.safetyPending, specs: P.specs });
+  }
   let cls;
   try { cls = classified ? await P.clsP : null; } finally { clsDone(); }
   if (pre) trace.push(...pre.prefetch.trace.map((t) => ({ ...t, prefetched: true })));
@@ -443,19 +484,33 @@ export async function lessonTurn(req, body) {
     childText: moduleOnly || help ? "" : childText, cls: cls ? { outcome: cls.outcome, flags: cls.flags } : null, move: r.move.kind,
     lane: state.mode === "text" || state.mode === "cascade" ? state.mode : "voice", safety: r.move.kind === "safeguard" || !!incident,
     // W2-I: a verdict reversed on re-check against the key (W1-C held-verdict settle / grade_audit) is the teacher-owned slip
-    verdictReversed: !!cls?.flags?.verdictReversed }), null);
+    verdictReversed: !!cls?.flags?.verdictReversed,
+    // round 3 (relational-human): the skill on the table, so a callback to last time can be about THIS skill (deixis)
+    skillId: (r.move.itemId ? findItem(next, kit, r.move.itemId)?.skillId : null) ?? r.move.skillId ?? null }), null);
   // ── The kernel (BR1/BR5; TEACHER-BRAIN TB1, §10): every component's proposals, one arbitration by authority and budget.
   // Today's proposers: the Director (its move; a safeguard is the safety floor), the relational directive (split into its
   // ranks by relational-adapter.js), Studio's turn view, the whiteboard ask on an explanation beat, the vibe knobs.
   const lane = laneOf(state.mode);
+  // round 3 forge (server/forge3/live.js via studioSeam.composeAsk): a game / animation / simulation ask with no engine to
+  // keep is answered by a PLAY piece (the play stream's solver-checked level for the skill or topic, its art rotated, its
+  // board twin attached) when the play coverage admits it; then no whiteboard is requested for the ask and this turn's
+  // slotFor shows the piece. A miss (null) leaves the turn exactly as before. Pure code, ≤ 350 ms learner read, no model.
+  const playAsk = !late && !moduleOnly && !keepEngineFor(r, next) && INTERACTIVE_ASKS.has(String(r.move?.visual ?? "")) && typeof studioSeam.composeAsk === "function"
+    ? await seamSafe("studio.composeAsk", () => studioSeam.composeAsk(lesson.id, { visual: String(r.move.visual), skillId: next.lastMove?.skillId ?? r.move?.skillId ?? null,
+      topicId: lesson.topic_id ?? null, child, tray: r.ui?.tray ?? null }), null)
+    : null;
   const kernelRun = () => {
     const beat = nextBeat(prev.beat, r.move, next);
     // the Director's only new thing on screen is its template whiteboard rung (W2-B): the live board replaces it (owner
     // priority 6), the rung stays the fallback when Studio declines
     // ship5 fixer (experience B1): on the child's visual request the Director's tray holds its "show" of the item; the
     // board the child asked for replaces it exactly as it replaces the template rung (one thing in the tray)
-    const rungMounted = r.ui?.tray === "module" && (next.module?.engine === RUNG_ENGINE || (!!r.move?.visual && !!next.module));
-    const wb = whiteboardAskOf({ beat, lane, late, strained: frustrationLoop(next.affect ?? initialAffect()), move: r.move, studioView: late ? null : studioView, rungMounted, requested: !!r.move?.visual });
+    // round 3 forge (server/forge3/compose.js): a game / animation / simulation ask is answered by something the child can
+    // DO. An engine already in the tray IS that (taxila.dev 2026-10-09: 2/2 such asks unmounted the engine for a static
+    // board), so it stays and no board replaces it; a picture / diagram ask still gets the board.
+    const keepEngine = keepEngineFor(r, next);
+    const rungMounted = r.ui?.tray === "module" && (next.module?.engine === RUNG_ENGINE || (!!r.move?.visual && !!next.module && !keepEngine));
+    const wb = whiteboardAskOf({ beat, lane, late, strained: frustrationLoop(next.affect ?? initialAffect()), move: r.move, studioView: late ? null : studioView, rungMounted, requested: !!r.move?.visual && !keepEngine && !playAsk });
     const t1 = performance.now();
     const proposals = proposalsOf({ r, relational, studioView: late ? null : studioView, whiteboard: wb.proposals, vibe: next.vibe });
     const arb = arbitrate(proposals);
@@ -474,7 +529,9 @@ export async function lessonTurn(req, body) {
       flags: { ...(cls?.flags ?? fast?.flags ?? {}), distress: true, distressKind: cls?.flags?.distressKind ?? "relational_floor" } }
       : needRelease ? { ...(cls ?? { outcome: "no_evidence", confidence: 1, source: "relational" }), relRelease: true, flags: { ...(cls?.flags ?? fast?.flags ?? {}), wantsToStop: true } }
         : cls;
-    const rel = { turn: next.turn, ...(relFx.overlay ? { overlay: relFx.overlay } : {}), ...(relFx.callbackId ? { callbackId: relFx.callbackId } : {}),
+    // round 3 (relational-human): the accepted callback travels with its closed fragment, so the compile can render it
+    const callback = relFx.callbackId ? seamSafe("relational.callbackOf", () => relationalSeam.callbackOf(lesson.id, relFx.callbackId), null) : null;
+    const rel = { turn: next.turn, ...(relFx.overlay ? { overlay: relFx.overlay } : {}), ...(relFx.callbackId ? { callbackId: relFx.callbackId, ...(callback ? { callback } : {}) } : {}),
       ...(relFx.noticeId ? { noticeId: relFx.noticeId } : {}) };
     plan = await planTurn(state, relCls, { ...planCtx, now, rel });
     ({ evidence, writes, skillChanges, incident, r, instructions, skipped } = plan);
@@ -539,11 +596,11 @@ export async function lessonTurn(req, body) {
         // ship5 p4-content: the Director's tray holds only its template explain rung (W2-B): a Stagecraft piece may take it
         rungTray: r.ui?.tray === "module" && next.module?.engine === RUNG_ENGINE,
         // ship5 fixer: the child asked to see it (requests.js visual): a piece they asked for may take the Director's show
-        visualRequest: !!r.move?.visual }) : null), null);
+        visualRequest: !!r.move?.visual && !keepEngineFor(r, next) }) : null), null);
   // ship5 p4-content: a Stagecraft piece took the tray from the Director's template rung (the same rule as the live board
   // below: the rung is the floor, a real piece replaces it): its mount / param commands go, a rung already on screen is
   // unmounted, and its facts row leaves the move's content, so her line names only what the child sees.
-  if (!late && studioSlot?.artifact?.kind === "stagecraft" && next.module && (next.module.engine === RUNG_ENGINE || (r.move?.visual && r.ui?.tray === "module"))) {
+  if (!late && ["stagecraft", "play"].includes(studioSlot?.artifact?.kind) && next.module && (next.module.engine === RUNG_ENGINE || (r.move?.visual && r.ui?.tray === "module"))) {
     const id = next.module.id;
     const mountedNow = r.moduleCommands.some((c) => c.op === "mount" && c.moduleId === id);
     r = { ...r, moduleCommands: [...r.moduleCommands.filter((c) => c.moduleId !== id || c.op === "unmount"), ...(mountedNow ? [] : [{ op: "unmount", moduleId: id }])] };
@@ -640,14 +697,22 @@ export async function lessonTurn(req, body) {
     // teacher hoon" from a male sheet is swapped before it is stored or spoken; deterministic, one word).
     const selfGender = characterForState(next)?.pronouns?.subject === "he" ? "m" : "f";
     teacherReply = repairSelfGender(teacherReply, selfGender);
-    const relFloor = relationalViolations(teacherReply, { content: floorContentOf(next.lastMove?.itemId ? findItem(next, kit, next.lastMove.itemId) : null),
+    // round 3 (relational-human): a past-reference she can back (the callback this turn carried, or this lesson's own words:
+    // server/relational/memory.js claimProblem) is no memory_claim; one she cannot back is, whatever the regexes saw; a
+    // promise to remember always is
+    const relHitsNow = relationalHits(teacherReply, { content: floorContentOf(next.lastMove?.itemId ? findItem(next, kit, next.lastMove.itemId) : null),
       gender: selfGender });
+    const memUnbacked = seamSafe("relational.claimCheck", () => relationalSeam.claimCheck(lesson.id, teacherReply, { turn: next.turn }), null);
+    const relFloor = [...new Set([...relHitsNow.filter((h) => h.family !== "memory_claim" || h.rule === "memory_claim.promise" || memUnbacked).map((h) => h.family),
+      ...(memUnbacked ? ["memory_claim"] : [])])];
     if (relFloor.length) next.correction = [...new Set([...(next.correction ?? []), ...relFloor])];
     const replyItem = next.lastMove?.itemId ? findItem(next, kit, next.lastMove.itemId) : null;
     const replySpoils = spoiledBy(teacherReply, next, kit, replyItem);
     if (replySpoils) next.spoiled = [...(next.spoiled ?? []), replySpoils];
     const [row] = stageTurns(next, [{ speaker: "teacher", text: teacherReply,
       meta: { move: r.move.kind, ...(guard.caught.length ? { guard: guard.caught } : {}), ...(replySpoils ? { spoils: replySpoils } : {}),
+        // round 3: the callback this line carried (an id from the record; the parent's memory page lists when each was used)
+        ...(relFx.callbackId && next.rel?.callbackId === relFx.callbackId ? { callback: relFx.callbackId } : {}),
         ...(replyFloor.length ? { floor: replyFloor } : {}) } }]);
     staged.push(row);
     teacherReplySeq = row.seq;
@@ -763,7 +828,7 @@ export async function lessonTurn(req, body) {
   // from a safety turn (a disclosure's timing is never part of the child's usual pace), and the codes go to the trace only.
   const vsSafety = r.move.kind === "safeguard" || !!incident;
   if (vsTurn && !late) next.vsb = vsSafety ? state.vsb : vsTurn.vsb;
-  const vsReasons = vsTurn && !vsSafety && !late ? vsTurn.reasons ?? [] : [];
+  const vsReasons = vsTurn && !vsSafety && !late ? [...(vsTurn.reasons ?? []), ...(vsTurn.shadowReasons ?? [])] : [];
   // The dedupe record lands in the same transaction as the turn: a resend of this turnSeq replays outCore.
   if (turnSeq != null) {
     next.acks = [...(prev.acks ?? []).filter((a) => a.turnSeq !== turnSeq), { turnSeq, ...(edited ? { edited: true } : {}) }].slice(-ACKS_MAX);
@@ -834,6 +899,27 @@ export async function lessonTurn(req, body) {
     throw new HttpError(409, ended && !late ? "lesson has ended" : "another turn for this lesson landed first; retry");
   }
   mark("stored");
+  // round 3 voicesig (server/voicesig/lesson.js shadowDiff): what she WOULD have done. AFTER the commit and never awaited
+  // by the reply on a hosted server (speed is never traded away); only when this spoken turn's voice read is shadow AND
+  // would hand the Director a tie-breaker: the same pure plan again (planTurn clones the state; its staged writes are
+  // dropped, as the speculative plan's are) with those tie-breakers, compared on move kinds and a hash of the move's
+  // shape (never words); the trace row then gains vs_diff.*. Local debug awaits it (debug.vs.shadow). Never on a safety
+  // or late turn, nor after a re-plan (relational overlay: its inputs differ, so a diff would not be voice's);
+  // TAXILA_VOICESIG_COUNTERFACTUAL=0 switches it off.
+  const vsShadowP = vsTurn && !vsSafety && !late && !kernel.replanned && Object.keys(vsTurn.would ?? {}).length && process.env.TAXILA_VOICESIG_COUNTERFACTUAL !== "0"
+    ? (async () => {
+      const tCf = performance.now();
+      const cfVoice = { signals: { ...(planCtx.voice?.signals ?? {}), ...vsTurn.would }, z: planCtx.voice?.z ?? {} };
+      const cf = await seamSafe("voicesig.counterfactual", () => planTurn(state, cls, { ...planCtx, voice: cfVoice, now }), null);
+      const d = { ...voicesigSeam.shadowDiff(vsTurn, plan, cf), ms: Math.round((performance.now() - tCf) * 10) / 10 };
+      const codes = knownReasons(d.codes);
+      if (traceOk && codes.length) {
+        await q("update brain_trace set reasons = reasons || $3::text[] where lesson_id = $1 and turn = $2", [lesson.id, next.turn, codes])
+          .catch((e) => console.warn("[voicesig] shadow codes not stored:", e?.message));
+      }
+      return d;
+    })().catch(() => null)
+    : null;
   // Seam (W2-H): the committed turn revealed / retired a Studio piece (mount row, SSE status); after commit, never awaited.
   if (turnStudio) seamSafe("studio.onReveal", () => studioSeam.onReveal({ lessonId: lesson.id, childId: child.id, turn: next.turn, studio: turnStudio }), null);
   // The online fold is the cache only if our inserts got the next seqs (no interleaved writer); else replay next turn.
@@ -849,6 +935,7 @@ export async function lessonTurn(req, body) {
   console.info(`[lesson] turn ${lesson.id} #${next.turn} ${r.move.kind}${r.hold ? " (hold)" : ""}${late ? " (late)" : ""} cls=${cls ? `${cls.outcome}/${cls.source}` : "module"}${speculation ? ` spec=${speculation.hit ? "hit" : "miss"}/${speculation.tried}` : ""} ${ms}ms`);
   /** @type {import("../../shared/contracts").TurnResponse} */
   const out = { ...(late ? {} : clientInstructions(state.mode, instructions)), ...outCore };
+  const vsShadow = vsShadowP && debugFor(req) ? await vsShadowP : null;
   if (debugFor(req)) {
     const item = r.item;
     out.debug = {
@@ -865,7 +952,8 @@ export async function lessonTurn(req, body) {
       stage: { accepted: kernel.arb.accepted.map((p) => p.kind), rejected: kernel.arb.rejected.map((x) => `${x.p.kind}:${x.why}`), wb: kernel.wb?.declined ?? null, studioPropose: studioView?.propose ?? null,
         point: stagecraftPoint ? { want: stagecraftPoint.want?.family ?? null, request: stagecraftPoint.request?.kind ?? null } : null, slot: studioSlot?.artifact?.kind ?? null, tray: r.ui?.tray ?? null },
       ...(voice ? { voice: { reliable: voice.reliable, signals: voice.signals, z: voice.z } } : {}),
-      ...(vsTurn?.trace && !vsSafety ? { vs: { ...vsTurn.trace, read: vsTurn.read, hints: vsTurn.hints, reasons: vsReasons } } : {}),
+      ...(vsTurn?.trace && !vsSafety ? { vs: { ...vsTurn.trace, read: vsTurn.read, hints: vsTurn.hints, reasons: [...vsReasons, ...(vsShadow?.codes ?? [])],
+        ...(vsShadow?.record ? { shadow: { ...vsShadow.record, ms: vsShadow.ms } } : {}) } } : {}),
     };
   }
   return out;
@@ -941,14 +1029,17 @@ export async function planTurn(base, cls, c) {
   // 1. what last turn held back (a why / teach-back whose blind verdict was graded off the path), then this answer
   const carried = c.carried ?? [];
   const a = answerEvents(ev0);
-  let fused = fuseEvidence(before, [...carried.map((x) => x.event), ...a.events], LIVE_FOLD_CTX);
+  // round 3 play: the play server's own grades (verified tokens; one item episode per level; via "game"; once per lesson)
+  const pe = c.playTokens?.length ? playKtEvents({ tokens: c.playTokens, childId: child.id, lessonId: lesson.id, startedAt: lesson.started_at, now, childSeq,
+    seen: state.playSeen ?? [], topicType: kit.topicType, kitVerified: kit.verified !== false, skillOk: (id) => kit.skills.some((sk) => sk.id === id) }) : { events: [], levelIds: [] };
+  let fused = fuseEvidence(before, [...carried.map((x) => x.event), ...a.events, ...pe.events], LIVE_FOLD_CTX);
   // mandatory probe triggers from each graded event (§3.2), against the belief AFTER it
-  for (const e of [...carried.map((x) => x.event), ...a.events]) {
+  for (const e of [...carried.map((x) => x.event), ...a.events, ...pe.events]) {
     const k = e.target ?? e.skillIds[0];
     state.probeSess = noteOutcome(state.probeSess, e, compactBelief(beliefFor(k, { ...fused, now })));
   }
   const touched = () => [...new Set([...kit.skills.map((sk) => sk.id), ...Object.keys(state.skills),
-    ...[...carried.map((x) => x.event), ...a.events].flatMap((e) => e.skillIds)])];
+    ...[...carried.map((x) => x.event), ...a.events, ...pe.events].flatMap((e) => e.skillIds)])];
   state.comp = skillsMapFor(fused, kit, touched(), now);
   for (const id of Object.keys(fused.ledger.skills)) if (state.skills[id] || touched().includes(id)) state.skills[id] = snapshotFromKt(fused.ledger.skills[id], now);
   for (const ev of evidence) state.history[ev.skillId] = [...(state.history[ev.skillId] ?? []), ev.outcome].slice(-10);
@@ -978,7 +1069,8 @@ export async function planTurn(base, cls, c) {
   const b2 = closeEvents({ ...ev0, next, hold: !!r.hold }, a);
   const after = b2.events.length ? fuseEvidence(fused, b2.events, LIVE_FOLD_CTX) : fused;
   next.kt = { ...(next.kt ?? {}), ep: b2.ep, deferred: a.deferred.map((e) => ({ event: e, grade: gradeRequestFor(e, { kit, activeItem, state, childText: c.childText }) })) };
-  const events = [...carried.map((x) => x.event), ...a.events, ...b2.events];
+  const events = [...carried.map((x) => x.event), ...a.events, ...pe.events, ...b2.events];
+  if (pe.levelIds.length) next.playSeen = nextSeen(state.playSeen, pe.levelIds);
   if (b2.events.length) {
     next.comp = skillsMapFor(after, kit, touched(), now);
     for (const e of b2.events) for (const id of e.skillIds) if (after.ledger.skills[id]) next.skills[id] = snapshotFromKt(after.ledger.skills[id], now);

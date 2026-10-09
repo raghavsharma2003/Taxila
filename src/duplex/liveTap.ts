@@ -42,8 +42,16 @@ export async function startLiveTap(o: LiveTapOptions): Promise<() => void> {
   };
   // DuplexLive.frame takes linear RMS (the host's ChildAudioTracker unit); its own 100 ms timer runs from live.start()
   const off = fe.onFrame((f) => o.live.frame(f.t, Math.pow(10, f.rmsDb / 20), f.f0, herDb()));
+  // voicesig round 3: the thinking-pause cue (a filled pause just before the silence) reaches the engine as an acoustic
+  // estimate on the same epoch clock; numbers only, and absent when the detector or the cue is switched off
+  let offHold: () => void = () => {};
+  try {
+    const { onThinkingPause } = await import("../voicesig/holdBus.ts");
+    offHold = onThinkingPause((e) => o.live.estimate({ acoustic: e }, e.atMs));
+  } catch { /* no cue: the engine decides on its own evidence */ }
   return () => {
     off();
+    offHold();
     release();
     try { if (analyser && o.herOutput) o.herOutput.disconnect(analyser); } catch { /* already gone */ }
   };

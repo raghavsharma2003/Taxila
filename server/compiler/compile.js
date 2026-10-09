@@ -188,6 +188,10 @@ function moveParts(move, voiced, rel) {
       // compile threw a BudgetError → POST /api/lesson/turn 500 on a live turn (w2c-personalisation, w1c-three-day). The
       // move's own shape is what the turn must do; the rapport note is the one part that can go.
       ...(shape ? [{ text: `- relational note (a note, not words to say): ${shape}`, drop: 10 }] : []),
+      // round 3 (relational-human, server/relational/memory.js): ONE callback from the record the kernel accepted. An interest
+      // the parent chose is the SETTING of an example (here, in the move); a memory about the child leads the turn (last section)
+      ...(rel?.callback?.fragment && !rel.callback.lead && move.kind !== "safeguard" && move.kind !== "wrap"
+        ? [{ text: `- callback (once; the setting of this example, not an announcement): ${String(rel.callback.fragment).slice(0, 140)}`, drop: 10 }] : []),
       // round 2 (conversation): how they asked to be taught, kept on every turn (droppable like the rapport note)
       ...(move.prefs?.length ? [{ text: `- how they asked you to teach (keep doing it): ${move.prefs.map((x) => String(x).replace(/[^\p{L}\p{N} ,'-]/gu, " ").trim().slice(0, 40)).join("; ")}`, drop: 9 }] : []),
     ];
@@ -274,7 +278,15 @@ function lastParts({ lessonState: s, move, item, branches, ageBand, language, pr
     shape = `at most ${n} words. One idea. End by handing the floor back — one question or a try-this — then stop.`;
   }
   if (fix.length) check = `your last turn broke the floor — first ${fix.join("; ")}; then ${check}`;
+  // round 3 (relational-human): a memory about THIS child from the record (last lesson's learning, a win), said FIRST in a
+  // few words of her own. Here, not mid-brief: position is mechanism (memory-2day 2026-10-09: in the MOVE section the
+  // opener callback was voiced 0/3, and 0/3 again as a bare "FIRST" note under a hook shape that also says how to open). A note, never a line;
+  // droppable; never on a safeguard, a wrap or a floor fix.
+  const cb = s.rel?.callback;
+  const lead = cb?.lead && cb.fragment && move.kind !== "safeguard" && move.kind !== "wrap" && !fix.length
+    ? [{ text: `OPEN THIS TURN WITH what you remember of them, in a few words of your own, before the move (true, from your record; a note, not words to say): ${String(cb.fragment).slice(0, 140)}`, drop: 10 }] : [];
   return [
+    ...lead,
     { text: `ONE MORE CHECK: ${check}`, drop: null },
     { text: `${TURN_SHAPE_PREFIX} (last and most important): ${shape}`, drop: null },
   ];

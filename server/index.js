@@ -28,6 +28,11 @@ import { duplexShadowRoutes as duplexShadow } from "./duplex/shadowLog.js";
 import { routes as voicesig } from "./voicesig/routes.js";
 // Round 2 latency: POST /api/lesson/turn-prefetch (the device's stable partial starts the turn's perceive stage). One line.
 import { routes as latency } from "./latency/routes.js";
+// Round 3 relational-human: GET / DELETE /api/parent/memory (what the teacher remembers, for the parent). One line.
+import { routes as relational } from "./relational/routes.js";
+// round 3 play: /api/play/* (the game families' sessions, raw-act re-grading, the world). One-line seam; the routes live in
+// server/play (docs/design/round3/play/GRAMMAR.md §6). No model call on any play route.
+import { routes as play } from "./play/routes.js";
 
-register({ ...lesson, ...tts, ...parent, ...modules, ...voice, ...tutor, ...forge, ...child, ...testClock, ...studio, ...voicesig, ...duplex, ...duplexShadow, ...face, ...latency, ...lane });
+register({ ...lesson, ...tts, ...parent, ...modules, ...voice, ...tutor, ...forge, ...child, ...testClock, ...studio, ...voicesig, ...duplex, ...duplexShadow, ...face, ...relational, ...latency, ...play, ...lane });
 export { handle, register };

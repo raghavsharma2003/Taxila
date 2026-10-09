@@ -3,6 +3,8 @@
 // so nothing here is a quotable sentence, a greeting, or a praise phrase. Kit CONTENT (item prompts,
 // worked examples, remediation representations) is interpolated; it is meant to be posed.
 
+import { p5Flag } from "../conversation/flags.js";
+
 const RUNG = ["pump", "hint", "prompt", "assertion"];
 const join = (...parts) => parts.filter(Boolean).join("; ");
 
@@ -247,7 +249,12 @@ export const takeBreak = () => join(
 // round 2 safety floor (2026-10-07, experience review): the "something else" clause was recited on 7/26 check-ins where the
 // child had not asked (change_topic has its own move); and a check-in that asks a lesson question is a hold (NEVER
 // MANIPULATE), so the shape says so — brain/say.js enforces it in code (checkInProblems).
-export const stopCheck = () => "they said they want to stop: acknowledge it warmly in one short line, no guilt and no pressure; offer the three choices on the chips (keep going, a short break, or stop for today) and wait; no lesson question this turn";
+// round 3 (conversation; smoke on the round-3 tree): "Theek hai, Zoya. Keep going, short break, ya stop?" offered the choices
+// but a judge read no acknowledgement (end_request "acknowledges" failed on J2 6 of 12); the line now says back what they
+// asked, in their words, before the choices
+export const stopCheck = () => (p5Flag("R3CONV")
+  ? "they said they want to stop: first say back in a few warm words, in their words, that they want to stop, no guilt and no pressure; then offer the three choices on the chips (keep going, a short break, or stop for today) and wait; no lesson question this turn"
+  : "they said they want to stop: acknowledge it warmly in one short line, no guilt and no pressure; offer the three choices on the chips (keep going, a short break, or stop for today) and wait; no lesson question this turn");
 /** A goodbye right after distress (RELATIONAL-OS I-7): one gentle check before they go; never a hold. */
 export const relCheckIn = () => "they are leaving after something hard: one gentle check that they are okay and that a grown-up is near; stopping is fine; the chips let them stop now";
 export const stretch = () => "a 30-second stretch: stand, stretch, say ready when back";
@@ -287,7 +294,13 @@ export const wrap = ({ prefix, nextTitle, stopping }) => stopping
  * answer). The correct case needs none: CONFIRM / retrievalNext already confirm it.
  */
 export const VERDICT_NOTE = {
-  not_yet: "their answer was not right: no agreement or praise word for it; name what is sensible in it, then the step",
+  // round 3 (conversation): "name what is sensible in it" was recited as the word itself ("B chunna sensible tha", "Minecraft
+  // ka bada ghar alag baat hai; aapne usse yaad dilaya, sensible": 5 of 599 battery replies, round 2 run C) — the
+  // recited-prompt law. Now a shape with no quotable adjective: start from what they did (uptake), then the step.
+  get not_yet() {
+    return p5Flag("R3CONV") ? "their answer was not right: no agreement or praise word for it; start from what they actually did, in their terms, then the step"
+      : "their answer was not right: no agreement or praise word for it; name what is sensible in it, then the step";
+  },
   partial: "their answer was partly right: name the right part, no full agreement",
   unverified: "no verdict on their reply: neither praise nor 'wrong'",
 };
@@ -324,7 +337,8 @@ export const welcomeBack = () => "they are back after a moment away: welcome the
 export const levelHarder = () => "they asked for a harder one: take them at their word, a short warm line; the harder question";
 export const levelEasier = () => "they asked for an easier one: a short warm line, no fuss; the easier question";
 export const boredOffer = () => join(
-  "they are bored: no guilt; change something NOW",
+  // round 3: say back what they said (it is boring) before the change: "acknowledges" failed on J2 for "game, picture or challenge?"
+  p5Flag("R3CONV") ? "they are bored: first say back in a few words, in their words, that this part is boring for them, no guilt; then change something NOW" : "they are bored: no guilt; change something NOW",
   "offer a different way into today's idea: a game, a picture or a quick challenge, shown on screen as choices; ask which",
   "no lesson question this turn",
 );
@@ -336,17 +350,38 @@ export const disclose = () => "they asked what you are: plainly an AI teacher, i
 export const uptake = ({ kind }) => (kind === "joke" ? "they joked: one playful line back of your own, not a stock laugh; then back to the work"
   : kind === "personal_share" ? "they shared something from their life: name what they shared in their words and react to it warmly and specifically in one line, no question about it; then back to the work"
     : "a friendly question about you: one honest line as an AI (no body, home, food or favourite things of your own); then back to the work");
-export const declineOob = () => join(
+// round 3 (conversation): the battery's out_of_bounds "reengages" failed on 8 of 12 (round 2 run C): the decline came, the
+// hook did not, and a "why not" line read as a lecture ("kisi ko hurt karna theek nahi"). Chirpy Cardinal (Alexa Prize,
+// Chi et al. 2020) measured the re-offence rate per strategy: avoid + the child's name + a prompt into something new 0.346,
+// empathetic 0.461, a counter-argument 0.567, asking why 0.638. So: no reason given, their name, and the hook carries it.
+export const declineOob = () => (p5Flag("R3CONV") ? join(
+  "that is not something for our lesson: a warm, short no in a few words, with their name — no reason why, no shame, no lecture, no promise of it later, never any part of it",
+  "then a hook into today's work: one surprising true fact about today's idea, or a few words that make the question a small challenge for them (a statement, not a question)",
+) : join(
   "that is not something for our lesson: a clear, warm, short no — no shame, no lecture, no promise of it later, never any part of it",
   "then one genuinely interesting hook from today's idea (a surprising fact or a quick challenge) that pulls them back, and the work",
-);
+));
+// round 3 (conversation): "kindly name that it is a different thing from today's work" came back as the same sentence in
+// every park ("Yeh aaj ke maths se alag baat hai", local battery base-head-1, 4 of 4 parks): the recited-prompt law. The
+// park itself (the promise) says it is for later; the clause is gone.
 export const parkIt = ({ topic, promise }) => join(
-  `they brought up ${clean(topic) || "something else"}: notice it warmly in their words, and kindly name that it is a different thing from today's work`,
+  p5Flag("R3CONV") ? `they brought up ${clean(topic) || "something else"}: notice it warmly and specifically, in their words`
+    : `they brought up ${clean(topic) || "something else"}: notice it warmly in their words, and kindly name that it is a different thing from today's work`,
   promise === "after_question" ? "promise to come back to it right after this question" : "promise to come back to it at the end",
   "no answer to it now; then back to the work",
 );
 export const detourTo = ({ topic }) => `they asked again about ${clean(topic) || "it"}: engage for real in at most two sentences, then back to the work`;
-export const returnParked = ({ topic }) => `before the next thing: come back to what they asked earlier (${clean(topic) || "their question"}) — at most two sentences, or a guided question`;
+export const returnParked = ({ topic, share = false }) => (share
+  // round 3: a share from their life kept for later (uptakeShare) comes back as what they TOLD you, not a question to answer
+  ? `before the next thing: come back to what they told you earlier (${clean(topic) || "it"}) in one warm line, no question about it`
+  : `before the next thing: come back to what they asked earlier (${clean(topic) || "their question"}) — at most two sentences, or a guided question`);
+/** Round 3: a share from their life ("mere paas naya cycle aaya hai") noticed now AND kept: the promise is a real later slot
+ *  (s.later, served when the question resolves or before the wrap), so it is never a promise she does not keep. */
+export const uptakeShare = ({ topic, promise }) => join(
+  `they shared something from their life (${clean(topic) || "it"}): react to it warmly and specifically in one line, in their words, never naming a feeling of theirs`,
+  promise === "after_question" ? "say you will come back to it right after this question" : "say you will come back to it before the lesson ends",
+  "no question about it now; then back to the work",
+);
 export const answerTheirQuestion = () => "they asked a real question about today's idea: answer it in at most two sentences, correctly and simply, without giving the key; then the question";
 export const adaptTo = ({ method }) => `they said how they want it${clean(method, 80) ? ` (${clean(method, 80)})` : ""}: do it that way from now on, or say kindly why not and do the nearest thing`;
 export const adultVoice = () => "a grown-up is speaking: greet them briefly and respectfully; say what you will do about what they asked (go over it again, go slower, more practice, keep it short) and do it now; then hand back to the child by name";
@@ -368,7 +403,18 @@ export const MOD_NOTE = {
   check: "they asked whether it is right: say plainly whether it is",
   insist: "they hold to their answer: take it seriously and give them a way to test it (substitute, count, a counter-example); never a flat no again",
 };
+/** Round 3: the second need of a two-needs turn (conversation/lexicon.js alsoReading), honoured in the same turn's words. */
+export const ALSO_NOTE = {
+  frustration: "they also find it hard or are tired: one short line of empathy about the work first (never about them)",
+  boredom: "they also said it is boring: acknowledge it in a few words, no guilt",
+  easier: "they also asked for it easier: make the step smaller and simpler",
+  slower: "they also asked you to go slower: short simple sentences, one small step",
+  simpler: "they also did not follow: say it more simply",
+};
 export const parkAlso = ({ topic }) => `they also asked about ${clean(topic) || "something else"}: one line that you will come back to it after this`;
+/** Round 3: the turn after a stop check-in that was not a stop ("haan", an answer): the lesson simply goes on. Local
+ *  battery base-head-1: "yes" after the check-in got "Lesson ended, Meher. You may close the book now. <a question>". */
+export const afterCheckin = () => "after the check-in they did not ask to stop: carry on as normal, warmly; no talk of resting, breaks or ending";
 
 // ── p5-interaction, second pass (conversation-v2 battery on a local server, 2026-10-05: the judges failed requests whose shape
 // came FIRST and the pose after it — the model posed the question and dropped the request). The request is the first part of
@@ -399,4 +445,10 @@ export const languageAskedP5 = ({ lang }) => join(
   "first say what the question asks, simply, in it; then the question in it",
 );
 /** Frustration on a question: the empathy line FIRST (about the work), then the smaller step. */
-export const frustrationFirst = () => "first: one short line that this one is hard work and that is okay (about the work, never about them, no ability words); then a smaller first step on the same question";
+// round 3 (conversation): "one short line that this one is hard work and that is okay" was said back word for word ("is
+// question mein hard work hai, aur yeh okay hai", base-head-1): the recited-prompt law. A shape: what the line does.
+/** Round 3: frustration with no question on the table (teaching): the empathy line first, then the SAME idea smaller. */
+export const frustrationTeach = () => "first, in your own words, a short line of empathy about how tough this part is and that getting stuck on it is normal (about the work, never about them, no ability words); then the same idea again in a smaller, simpler step";
+export const frustrationFirst = () => (p5Flag("R3CONV")
+  ? "first, in your own words, a short line of empathy about how tough THIS question is and that getting stuck on it is normal (about the work, never about them, no ability words); then a smaller first step on the same question"
+  : "first: one short line that this one is hard work and that is okay (about the work, never about them, no ability words); then a smaller first step on the same question");

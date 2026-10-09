@@ -149,9 +149,24 @@ test("every chosen_by selectReteach can write is allowed by the reteach_attempts
   const files = readdirSync(dir).filter((f) => f.endsWith(".sql")).sort();
   const last = files.map((f) => readFileSync(new URL(f, dir), "utf8")).filter((t) => /chosen_by\s+(text not null\s+)?check|chosen_by_check/i.test(t)).at(-1);
   const allowed = new Set([...last.slice(last.search(/check \(chosen_by in|chosen_by\s+text not null check \(chosen_by in/i)).matchAll(/'([a-z_]+)'/g)].map((m) => m[1]));
-  const src = readFileSync(new URL("../server/comprehension/reteach.js", import.meta.url), "utf8");
+  // round3 truth: the Director's own re-teach decisions (director/state.js logReteach) write rows too, so both files are read
+  const src = ["../server/comprehension/reteach.js", "../server/director/state.js"].map((f) => readFileSync(new URL(f, import.meta.url), "utf8")).join("\n");
   const chosen = new Set([...src.matchAll(/chosenBy:\s*"([a-z_]+)"/g), ...src.matchAll(/chosenBy = "([a-z_]+)"/g)].map((m) => m[1]));
   chosen.add("recap");
   for (const c of chosen) assert.ok(allowed.has(c), `chosen_by '${c}' is not allowed by the check (${[...allowed].join(", ")})`);
   assert.ok(allowed.has("child_history"));
+  assert.ok(chosen.has("rule"), "fixture: the change of approach's chooser is read");
+});
+
+// round3 truth: the same for the trigger column (007 limited it; a Director decision writes 'misconception_seen', 023)
+test("every trigger a re-teach decision can write is allowed by the reteach_attempts check (023)", async () => {
+  const { readdirSync, readFileSync } = await import("node:fs");
+  const dir = new URL("../db/migrations/", import.meta.url);
+  const files = readdirSync(dir).filter((f) => f.endsWith(".sql")).sort();
+  const last = files.map((f) => readFileSync(new URL(f, dir), "utf8")).filter((t) => /trigger\s+text not null check|trigger_check/i.test(t)).at(-1);
+  const allowed = new Set([...last.slice(last.search(/check \(trigger in|trigger\s+text not null check \(trigger in/i)).matchAll(/'([a-z_0-9]+)'/g)].map((m) => m[1]));
+  const src = ["../server/comprehension/reteach.js", "../server/director/state.js"].map((f) => readFileSync(new URL(f, import.meta.url), "utf8")).join("\n");
+  const triggers = new Set([...src.matchAll(/trigger:\s*"([a-z_0-9]+)"/g), ...src.matchAll(/return "([a-z_0-9]+)";/g)].map((m) => m[1]).filter((t) => /_/.test(t)));
+  for (const t of triggers) assert.ok(allowed.has(t), `trigger '${t}' is not allowed by the check (${[...allowed].join(", ")})`);
+  assert.ok(triggers.has("misconception_seen") && triggers.has("two_fails_post_rung3"));
 });
