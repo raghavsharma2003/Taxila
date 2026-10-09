@@ -161,7 +161,7 @@ svg{display:block}
 .cap .w{display:inline-block;opacity:0;transform:translateY(3px);transition:opacity .22s var(--e-out),transform .3s var(--e-out);white-space:pre}
 .cap .w.on{opacity:1;transform:none}
 .cap .w.hl{color:var(--her)}
-.cap.deva-on{font-family:var(--f-deva);line-height:30px}
+.cap.deva-on,.deva-on{font-family:var(--f-deva);line-height:30px}
 .brandmark{display:flex;align-items:center;gap:8px;font-weight:600;letter-spacing:-.01em;padding-left:6px;color:var(--ink)}
 .kid{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;font-weight:600;font-size:16px;margin-left:4px;
   background:linear-gradient(160deg,#3a3d45,#202227);box-shadow:inset 0 1px 0 rgba(255,255,255,.12),0 0 0 1px rgba(255,255,255,.06);color:var(--ink)}
@@ -188,10 +188,12 @@ svg{display:block}
 .hello{flex:1;min-height:0;position:relative;display:flex;flex-direction:column}
 .hello-a{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0 20px 24px;gap:22px}
 .tp.hero{width:min(74cqw,300px,46cqh);aspect-ratio:4/5;border-radius:36px;flex:none}
-.hello-cap{width:100%;max-width:420px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:10px}
+.hello-cap{width:100%;max-width:340px;display:flex;flex-direction:column;align-items:flex-start;text-align:left;gap:10px}
 .hello-name{display:flex;align-items:baseline;gap:12px}
 .hello-name .serif-name{font-size:40px;line-height:40px}
-.cap-l{font-size:19px;line-height:28px;min-height:84px;max-width:340px}
+.cap-l{font-size:19px;line-height:28px;min-height:84px;max-width:340px;display:flex;flex-direction:column;gap:6px}
+.cap-l>span{display:block}
+.cap-l>span+span{color:var(--ink-2)}
 .hello-next{opacity:0;transform:translateY(8px);pointer-events:none;transition:opacity .4s var(--e-out),transform .5s var(--e-out)}
 .hello-next.show{opacity:1;transform:none;pointer-events:auto}
 .hello-b{flex:1;display:flex;flex-direction:column;padding:4px 16px 16px;gap:16px;min-height:0;overflow-y:auto;scrollbar-width:none}
@@ -490,7 +492,7 @@ details.how[open] summary svg{transform:rotate(-90deg)}
   .tp.hero{width:min(380px,40cqw);height:auto}
   .hello-cap{align-items:flex-start;text-align:left;max-width:440px}
   .hello-name .serif-name{font-size:56px;line-height:56px}
-  .cap-l{font-size:24px;line-height:34px;max-width:440px;min-height:136px}
+  .cap-l{font-size:24px;line-height:34px;max-width:440px;min-height:180px}
   .hello-b{max-width:860px;width:100%;margin:0 auto;padding:8px 32px 32px;gap:20px}
   .pick-row{gap:20px}
   .pick{display:grid;grid-template-columns:200px 1fr;gap:16px;padding:8px}
@@ -518,7 +520,7 @@ details.how[open] summary svg{transform:rotate(-90deg)}
   .ls-board{grid-area:board}
   .hide-s{display:inline}
   .ls-presence{grid-area:pres;flex-direction:column;gap:14px}
-  .ls-tp{width:100%;height:auto;aspect-ratio:5/4;border-radius:28px}
+  .ls-tp{width:100%;height:clamp(170px,38cqh,330px);border-radius:28px}
   #ls-cap{font-size:20px;line-height:30px;min-height:90px;max-height:90px}
   .transcript{grid-area:log;display:flex;flex-direction:column;justify-content:flex-end;gap:8px;overflow:hidden;min-height:0;
     -webkit-mask-image:linear-gradient(180deg,transparent,#000 40%);mask-image:linear-gradient(180deg,transparent,#000 40%)}
@@ -559,9 +561,6 @@ details.how[open] summary svg{transform:rotate(-90deg)}
   .phead{font-size:46px;line-height:50px}
   .phead.hi{font-size:36px;line-height:54px}
   .ptwo{grid-template-columns:1fr 1fr}
-}
-@container app (min-width: 900px) and (max-height: 720px){
-  .ls-tp{aspect-ratio:16/11}
 }
 @container app (max-height: 700px){
   .ls-tp{width:80px;height:96px}
@@ -632,7 +631,7 @@ details.how[open] summary svg{transform:rotate(-90deg)}
         <div class="tp hero" id="hello-tp" data-who="asha"></div>
         <div class="hello-cap">
           <div class="hello-name"><span class="serif-name">Asha</span><span class="aitag">AI TEACHER</span></div>
-          <p class="cap cap-l" id="hello-cap" aria-live="polite"></p>
+          <p class="cap cap-l" id="hello-cap" aria-live="polite"><span id="hello-c1"></span><span id="hello-c2"></span></p>
           <button class="btn btn-ghost hello-next" id="hello-next">Meet both teachers <svg><use href="#i-chev"/></svg></button>
         </div>
       </div>
@@ -1623,13 +1622,13 @@ Hooks.hello = {
     if (!T.hero) T.hero = new Teacher($('#hello-tp'), 'asha');
     vtName($('#hello-tp'), 'tp');
     T.hero.setState('idle');
-    $('#hello-cap').innerHTML = '';
+    $('#hello-c1').innerHTML = ''; $('#hello-c2').innerHTML = '';
     (async () => {
       await T.hero.drawIn(2100); if (run !== helloRun) return;
-      await say(T.hero, $('#hello-cap'), HELLO.h1); if (run !== helloRun) return;
+      await say(T.hero, $('#hello-c1'), HELLO.h1); if (run !== helloRun) return;
       $('#hello-next').classList.add('show');
       await sleep(350); if (run !== helloRun) return;
-      await say(T.hero, $('#hello-cap'), HELLO.h2); if (run !== helloRun) return;
+      await say(T.hero, $('#hello-c2'), HELLO.h2); if (run !== helloRun) return;
       T.hero.setState('idle');
     })();
   },

@@ -1144,7 +1144,7 @@ class TreeView {
     return anim(p, [{ strokeDashoffset: len }, { strokeDashoffset: 0 }], { duration: 150, easing: "ease-in", fill: "forwards" }).finished.then(() => svg.remove());
   }
   squash(id, delay = 0) { const b = this.els.get(id); if (!b) return; anim(b.querySelector(".face"), [{ transform: "scale(1.2,.8)" }, { transform: "scale(.9,1.1)" }, { transform: "scale(1,1)" }], { duration: 340, delay, easing: "ease-out" }); }
-  wobble(id) { const b = this.els.get(id); if (!b) return; anim(b, [{ translate: "0 0" }, { translate: "-6px 0" }, { translate: "5px 0" }, { translate: "-3px 0" }, { translate: "0 0" }], { duration: 420, easing: "ease-out" }); }
+  wobble(id) { const b = this.els.get(id); if (!b) return; anim(b, [{ translate: "0 0" }, { translate: "-6px 0" }, { translate: "5px 0" }, { translate: "-3px 0" }, { translate: "0 0" }], { duration: 600, easing: "ease-out" }); }
   shock(id, color) {
     const p = this.P.get(id); if (!p || RM) return; const r = document.createElement("div"); r.className = "shock"; const s = this.s;
     Object.assign(r.style, { left: p.x - s / 2 + "px", top: p.y - s / 2 + "px", width: s + "px", height: s + "px", borderColor: color || "var(--genda)" });
@@ -1393,11 +1393,11 @@ async function speak(line, run, opt = {}) {
   return run === L.run;
 }
 async function childSays(text, run) {
-  const cap = $("#cap"); cap.classList.add("child"); cap.lang = langAttr(); tState("listening"); L.childSpeaking = true;
+  const cap = $("#cap"); cap.classList.add("child"); cap.lang = langAttr(); tState("listening"); L.childSpeaking = true; cap.setAttribute("aria-live", "off");
   cap.innerHTML = `<span class="heard">HEARD · KABIR</span>`;
   const ws = text.split(" ");
-  for (const w of ws) { if (run !== L.run) { L.childSpeaking = false; return false; } cap.insertAdjacentHTML("beforeend", `<span class="w done">${esc(w)}</span> `); await sleep(L.instant || RM ? 0 : 160 + w.length * 45); }
-  L.childSpeaking = false; if (L.instant || RM) return true;
+  for (const w of ws) { if (run !== L.run) { L.childSpeaking = false; cap.setAttribute("aria-live", "polite"); return false; } cap.insertAdjacentHTML("beforeend", `<span class="w done">${esc(w)}</span> `); await sleep(L.instant || RM ? 0 : 160 + w.length * 45); }
+  L.childSpeaking = false; cap.setAttribute("aria-live", "polite"); if (L.instant || RM) return true;
   await sleep(380); tState("thinking"); await sleep(760);
   return run === L.run;
 }

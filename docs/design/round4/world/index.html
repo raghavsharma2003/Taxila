@@ -135,7 +135,7 @@ svg { display: block; }
 .screen.cam-back-in { animation: camBackIn var(--t-cam) var(--e-cam) both; }
 .screen.cam-back-out { visibility: visible; z-index: 1; animation: camBackOut var(--t-cam) var(--e-cam) both; }
 @keyframes camIn { from { opacity: 0; transform: scale(.94); filter: brightness(.6); } to { opacity: 1; transform: none; filter: none; } }
-@keyframes camOut { from { opacity: 1; transform: none; } to { opacity: 0; transform: scale(1.14); } }
+@keyframes camOut { from { opacity: 1; transform: none; } to { opacity: 0; transform: scale(1.6); } }
 @keyframes camBackIn { from { opacity: 0; transform: scale(1.1); } to { opacity: 1; transform: none; } }
 @keyframes camBackOut { from { opacity: 1; transform: none; } to { opacity: 0; transform: scale(.92); filter: brightness(.5); } }
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
@@ -233,13 +233,13 @@ svg { display: block; }
 
 .pick-head { margin-top: 44px; color: #2C1A33; text-align: center; }
 .pick-head h2 { margin: 6px 0 0; font: 700 27px/1.1 var(--f-display); }
-.pick-head .eyebrow { color: rgba(44,26,51,.7); }
+.pick-head .eyebrow { color: #33213A; }
 .niches { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 22px auto 0; width: 100%; max-width: 380px; }
 .niche { position: relative; text-align: center; color: #2C1A33; transition: transform 420ms var(--e-out), opacity 420ms; }
 .niche .win { position: relative; width: 100%; aspect-ratio: 3 / 3.9; filter: drop-shadow(0 18px 26px rgba(60,30,50,.35)); }
 .niche .win .jharokha { position: absolute; inset: 0; }
 .niche .nm { margin-top: 10px; font: 700 22px/1 var(--f-display); }
-.niche .meta { margin-top: 4px; font: 500 14px/1.35 var(--f-ui); color: #4A3650; }
+.niche .meta { margin-top: 4px; font: 500 14px/1.35 var(--f-ui); color: #2F1E36; }
 .niche .tag { display: inline-block; margin-top: 6px; padding: 2px 8px; font: 700 14px/20px var(--f-ui); letter-spacing: .06em; color: #F7F0E6; background: #3B2340; }
 .niche.sel .win { filter: drop-shadow(0 0 28px rgba(255,190,90,.75)) drop-shadow(0 18px 26px rgba(60,30,50,.35)); }
 .niche.dim { opacity: .62; transform: scale(.96); }
@@ -624,6 +624,33 @@ i.op { font-family: var(--f-ui); font-style: normal; font-weight: 600; color: va
 .board .bh span + span { font: 500 14px var(--f-ui); color: rgba(244,231,201,.6); }
 .board svg.tree { top: 44px; height: calc(100% - 56px); }
 .typerow.on ~ .hint, .mid:has(.typerow.on) .hint { display: none; }
+
+.mp-sheet::after { background: linear-gradient(180deg, rgba(255,226,180,.08), transparent 30%), rgba(24,21,48,.975); }
+.here-tag { white-space: nowrap; flex: none; }
+.mp-sheet .ch > div { min-width: 0; }
+@container tx (max-width: 899px) { .mp-sheet { max-height: 64%; } }
+
+/* Devanagari: never letter-space or upper-case it (it breaks conjuncts); give matras room */
+[lang="hi"] .eyebrow, [lang="hi"] .lbl, [lang="hi"] .pcard .lbl { letter-spacing: 0; text-transform: none; }
+[lang="hi"] .pr-kid h1 { font-size: 27px; line-height: 1.34; }
+[lang="hi"] .pcard h2 { line-height: 1.36; }
+[lang="hi"] p, [lang="hi"] .ev-row { line-height: 1.7; }
+@container tx (min-width: 900px) { [lang="hi"] .pr-kid h1 { font-size: 36px; } }
+@container tx (min-width: 900px) {
+  .h-step[data-step="b"] { display: grid; grid-template-columns: minmax(0, 560px) 400px; grid-template-rows: auto auto auto 1fr; grid-template-areas: "niches head" "niches hear" "niches cap" "niches cta";
+    column-gap: 56px; justify-content: center; align-content: center; }
+  .h-step[data-step="b"][hidden] { display: none; }
+  .h-step[data-step="b"] .pick-head { grid-area: head; text-align: left; margin: 0 0 8px; align-self: end; }
+  .h-step[data-step="b"] .niches { grid-area: niches; margin: 0; max-width: 560px; align-self: center; }
+  .h-step[data-step="b"] .hear { grid-area: hear; margin: 18px 0 0; max-width: none; }
+  .h-step[data-step="b"] .capbox { grid-area: cap; margin: 12px 0 0; max-width: none; }
+  .h-step[data-step="b"] .pick-cta { grid-area: cta; margin: 14px 0 0; max-width: none; align-self: start; }
+  .niche .win { max-width: 250px; margin: 0 auto; }
+}
+
+.gm-stage { will-change: transform; }
+#mSky svg { will-change: transform; }
+.gm-bg svg, .home-scene .scene svg, #s-hello .scene svg, .ls-bg svg { contain: strict; }
 
 </style>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -1079,18 +1106,21 @@ function go(id, o = {}) {
   if (!next.built) { next.build(); next.built = true; }
   const fwd = o.back ? false : !prev || ORDER.indexOf(id) >= ORDER.indexOf(CUR);
   GEN++;
+  const box = $("#tx").getBoundingClientRect();
+  const org = o.from ? `${Math.round(o.from.x - box.left)}px ${Math.round(o.from.y - box.top)}px` : "50% 50%";
   if (prev) {
     prev.leave && prev.leave();
-    const pe = prev.el; pe.classList.remove("on", "cam-in", "cam-back-in"); pe.classList.add(fwd ? "cam-out" : "cam-back-out");
+    const pe = prev.el; pe.style.transformOrigin = org; pe.classList.remove("on", "cam-in", "cam-back-in"); pe.classList.add(fwd ? "cam-out" : "cam-back-out");
     setTimeout(() => pe.classList.remove("cam-out", "cam-back-out"), 800);
   }
-  const ne = next.el; ne.classList.remove("cam-out", "cam-back-out"); ne.classList.add("on", fwd ? "cam-in" : "cam-back-in");
+  const ne = next.el; ne.style.transformOrigin = org; ne.classList.remove("cam-out", "cam-back-out"); ne.classList.add("on", fwd ? "cam-in" : "cam-back-in");
   setTimeout(() => ne.classList.remove("cam-in", "cam-back-in"), 800);
   CUR = id;
   next.enter && next.enter(o);
   $$(".db-tab").forEach((b) => b.setAttribute("aria-current", String(b.dataset.s === id)));
   try { history.replaceState(null, "", "#" + id + (document.getElementById("shell").classList.contains("phone") ? "&phone" : "")); } catch {}
 }
+const centerOf = (el) => { if (!el) return null; const r = el.getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2 }; };
 function placeName(el, kicker, title) {
   const p = el.querySelector(".placename"); if (!p) return;
   p.innerHTML = `<div class="pn-k">${kicker}</div><div class="pn-t">${title}</div>`;
@@ -1473,7 +1503,7 @@ Screens.hello = {
         requestAnimationFrame(tick); };
       requestAnimationFrame(tick);
     };
-    $("#hGo").onclick = () => { Face.stopClip(); go("home"); };
+    $("#hGo").onclick = () => { Face.stopClip(); go("home", { from: centerOf($('.niche[data-t="asha"] .win', el)) }); };
     this.unpar = parallax(el);
   },
   enter() {
@@ -1554,9 +1584,9 @@ Screens.home = {
     const showIdea = (id) => { const c = CH5.find((x) => x.id === id); cap.innerHTML = `<b style="color:${c.now ? "var(--lamp)" : "var(--ink)"};font-weight:600">${c.now ? "Today · " : ""}${c.t}</b> · ${GLYPH_STATES[c.s]}`; };
     $$(".idea-b", el).forEach((b) => (b.onclick = () => { Sfx.tock(); showIdea(b.dataset.id); }));
     showIdea("t04");
-    $("#kBegin").onclick = () => { Sfx.ensure(); go("lesson"); };
-    $("#kPractice").onclick = () => { Sfx.ensure(); go("game"); };
-    $("#kWorld").onclick = () => go("map");
+    $("#kBegin").onclick = () => { Sfx.ensure(); go("lesson", { from: centerOf($(".asha-win", this.el)) }); };
+    $("#kPractice").onclick = () => { Sfx.ensure(); go("game", { from: centerOf($("#kPractice")) }); };
+    $("#kWorld").onclick = () => go("map", { from: centerOf($("#kWorld")) });
     $("#kGrown").onclick = () => go("parent");
     $("#kParked").onclick = () => this.speak("Haan, yaad hai. Aaj ka lesson khatam hote hi isi sawaal se shuru karenge.");
     this.unpar = parallax($(".home-scene", el));
@@ -1790,7 +1820,7 @@ Screens.lesson = {
       const row = html(`<div class="after" style="display:flex;gap:8px;width:100%"><button class="btn lamp" style="flex:1.4">${ICON.play}<span>Break 72</span></button><button class="btn ghost" style="flex:1">See your valley</button></div>`);
       $("#lDock", this.el).insertBefore(row, $("#lDock .mid", this.el));
       $("#lDock .mid", this.el).style.display = "none";
-      row.children[0].onclick = () => go("game"); row.children[1].onclick = () => go("map");
+      row.children[0].onclick = () => go("game", { from: centerOf($(".board", this.el)) }); row.children[1].onclick = () => go("map");
       row.animate([{ opacity: 0, transform: "translateY(10px)" }, { opacity: 1, transform: "none" }], { duration: 420, easing: "cubic-bezier(.22,.8,.2,1)" });
     } else {
       $("#lQk", this.el).textContent = "Let’s look again";
@@ -2008,7 +2038,7 @@ Screens.game = {
     L.forEach((n, i) => (n.tx = 10 + (i + 0.5) * colW));
     const up = (n) => { if (n.kids.length) { n.kids.forEach(up); n.tx = (n.kids[0].tx + n.kids[n.kids.length - 1].tx) / 2; } n.ty = top + n.depth * rowH; };
     up(this.nodes[0]);
-    this.nodes.forEach((n) => { n.el.style.width = n.el.style.height = this.bs + "px"; n.el.style.margin = `${-this.bs / 2}px 0 0 ${-this.bs / 2}px`; n.el.style.fontSize = Math.round(this.bs * 0.38) + "px"; if (snap) { n.x = n.tx; n.y = n.ty; } });
+    this.nodes.forEach((n) => { if (n._bs !== this.bs) { n._bs = this.bs; n.el.style.width = n.el.style.height = this.bs + "px"; n.el.style.margin = `${-this.bs / 2}px 0 0 ${-this.bs / 2}px`; n.el.style.fontSize = Math.round(this.bs * 0.38) + "px"; } if (snap) { n.x = n.tx; n.y = n.ty; } });
     this.render();
   },
   select(n) {
@@ -2144,12 +2174,22 @@ Screens.game = {
     if (moving || this.parts.length) this.raf = requestAnimationFrame((t) => this.step(t)); else this.raf = 0;
   },
   render() {
-    for (const n of this.nodes) { const t = `translate(${n.x.toFixed(1)}px, ${n.y.toFixed(1)}px)`; n.el.style.transform = t; n.el.style.setProperty("--pos", t); }
-    let s = "";
-    for (const n of this.nodes) for (const k of n.kids) {
-      s += `<path d="M${n.x.toFixed(1)},${(n.y + this.bs * 0.4).toFixed(1)} C${n.x.toFixed(1)},${((n.y + k.y) / 2).toFixed(1)} ${k.x.toFixed(1)},${((n.y + k.y) / 2).toFixed(1)} ${k.x.toFixed(1)},${(k.y - this.bs * 0.45).toFixed(1)}" stroke="rgba(255,200,120,.28)" stroke-width="7" fill="none" stroke-linecap="round"/><path d="M${n.x.toFixed(1)},${(n.y + this.bs * 0.4).toFixed(1)} C${n.x.toFixed(1)},${((n.y + k.y) / 2).toFixed(1)} ${k.x.toFixed(1)},${((n.y + k.y) / 2).toFixed(1)} ${k.x.toFixed(1)},${(k.y - this.bs * 0.45).toFixed(1)}" stroke="#E9B15C" stroke-width="2.4" fill="none" stroke-linecap="round"/>`;
+    for (const n of this.nodes) { const t = `translate(${n.x.toFixed(1)}px, ${n.y.toFixed(1)}px)`; if (n._t !== t) { n.el.style.transform = t; n.el.style.setProperty("--pos", t); n._t = t; } }
+    // bonds: persistent paths, only their d changes per frame (no innerHTML churn)
+    const want = [];
+    for (const n of this.nodes) for (const k of n.kids) want.push([n, k]);
+    while (this.bonds.childNodes.length < want.length * 2) {
+      const glow = document.createElementNS("http://www.w3.org/2000/svg", "path"); glow.setAttribute("stroke", "rgba(255,200,120,.28)"); glow.setAttribute("stroke-width", "7"); glow.setAttribute("fill", "none"); glow.setAttribute("stroke-linecap", "round");
+      const line = document.createElementNS("http://www.w3.org/2000/svg", "path"); line.setAttribute("stroke", "#E9B15C"); line.setAttribute("stroke-width", "2.4"); line.setAttribute("fill", "none"); line.setAttribute("stroke-linecap", "round");
+      this.bonds.append(glow, line);
     }
-    this.bonds.innerHTML = s;
+    while (this.bonds.childNodes.length > want.length * 2) this.bonds.lastChild.remove();
+    want.forEach(([n, k], i) => {
+      const my = ((n.y + k.y) / 2).toFixed(1);
+      const d = `M${n.x.toFixed(1)},${(n.y + this.bs * 0.4).toFixed(1)} C${n.x.toFixed(1)},${my} ${k.x.toFixed(1)},${my} ${k.x.toFixed(1)},${(k.y - this.bs * 0.45).toFixed(1)}`;
+      const a = this.bonds.childNodes[i * 2], b = this.bonds.childNodes[i * 2 + 1];
+      if (a.getAttribute("d") !== d) { a.setAttribute("d", d); b.setAttribute("d", d); }
+    });
   },
 };
 
@@ -2210,6 +2250,7 @@ Screens.map = {
   mode(m) {
     $("#mMapB", this.el).setAttribute("aria-pressed", String(m === "map")); $("#mListB", this.el).setAttribute("aria-pressed", String(m === "list"));
     $("#mList", this.el).classList.toggle("on", m === "list");
+    $("#mSheet", this.el).classList.remove("open");
     if (m === "list") this.renderList();
   },
   layout() {
@@ -2331,7 +2372,8 @@ Screens.map = {
     const c = this.C.find((x) => x.n === n); if (!c) return;
     const vw = this.view.clientWidth, vh = this.view.clientHeight;
     const sheetW = this.wide ? 440 : 0;
-    const tx = -((this.wide ? c.X : 0) - this.bounds.x0) + (vw - sheetW) / 2, ty = -(c.Y - this.bounds.y0) + vh * (this.wide ? 0.5 : 0.42);
+    const open = $("#mSheet", this.el).classList.contains("open");
+    const tx = -((this.wide ? c.X : 0) - this.bounds.x0) + (vw - (open ? sheetW : 0)) / 2, ty = -(c.Y - this.bounds.y0) + vh * (this.wide ? 0.5 : open ? 0.24 : 0.42);
     if (anim && !RM) { const fx = this.pan.x, fy = this.pan.y, t0 = performance.now(); const f = (now) => { const k = Math.min(1, (now - t0) / 700), e = 1 - Math.pow(1 - k, 3); this.pan.x = lerp(fx, tx, e); this.pan.y = lerp(fy, ty, e); this.apply(); if (k < 1) requestAnimationFrame(f); }; requestAnimationFrame(f); }
     else { this.pan.x = tx; this.pan.y = ty; this.apply(); }
   },
@@ -2374,7 +2416,7 @@ Screens.map = {
         return `<div class="topic">${stateGlyph(s)}<div><b>${t.t}</b><div class="st s${s}">${STATE_WORD[s]}${n === 5 && i === 3 && Progress.litToday ? " · today" : ""}</div><div class="ev">${ev}</div></div></div>`; }).join("")}
       ${ext.length ? `<div class="topic" style="grid-template-columns:1fr"><div class="ev"><b style="display:inline;font-size:15px">Builds on</b> · ${[...new Set(ext)].slice(0, 4).join(" · ")}</div></div>` : ""}
       ${n === 5 ? `<button class="btn lamp block" id="mGo" style="margin-top:10px">${ICON.play}<span>Continue: prime factorisation</span></button>` : `<button class="btn ghost block" id="mGo" style="margin-top:10px">Visit with Asha</button>`}`;
-    sh.classList.add("open"); sh.scrollTop = 0;
+    sh.classList.add("open"); sh.scrollTop = 0; if (this.wide) this.center(n, true);
     $("#mClose", inn).onclick = () => { sh.classList.remove("open"); $("#mThreads", this.svg).innerHTML = ""; };
     $("#mGo", inn).onclick = () => go(n === 5 ? "lesson" : "home", { back: n !== 5 });
     this.threads(n);
