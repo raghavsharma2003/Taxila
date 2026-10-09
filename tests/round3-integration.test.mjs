@@ -1,9 +1,12 @@
-// Round 3 integration (2026-10-09): the two changes the integrator made beyond the streams' patches.
+// Round 3 integration (2026-10-09): the changes the integrator made beyond the streams' patches.
 //   1. server/index.js: relational-human 05 (GET/DELETE /api/parent/memory) and play 01 (/api/play/*) both edit the one
 //      register line; the hand merge keeps both route tables and `...lane` LAST (play 01 as written appended `...play`
 //      after it, which tests/w2d-voice-lanes.test.mjs fails: the realtime seam's lane route is pinned as the last spread).
 //   2. src/latency/duplexTurn.ts: the duplex end-of-turn prefetch keys on the engine's measured `eager` start when the engine
 //      sends one (docs/design/round3/duplex/APPLY.md §4), else round 2's projected-pComplete `draft` start.
+//   3. src/lesson/cascadeLink.ts: the reply's speech request goes out synchronously when no acknowledgement is sounding
+//      (tests/voice-cascade.test.mjs pins it); server/brain/say.js checkInProblems: a stop check-in carries none of the
+//      owner-3 goodbye words (the R3 say-back "in their words" echoed "lesson khatam").
 import { describe, test, beforeEach } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
@@ -11,6 +14,7 @@ import { TurnPrefetcher } from "../src/latency/prefetch.ts";
 import { registerLatencyTarget, latencyDuplexSink, __resetDuplexTurn } from "../src/latency/duplexTurn.ts";
 import { routes as play } from "../server/play/routes.js";
 import { routes as relational } from "../server/relational/routes.js";
+import { checkInProblems } from "../server/brain/say.js";
 
 describe("round 3 integration: server/index.js registers both round-3 route tables", () => {
   const src = readFileSync(new URL("../server/index.js", import.meta.url), "utf8");
@@ -57,5 +61,22 @@ describe("round 3 integration: the duplex end-of-turn prefetch keys on the engin
     const sent = target();
     latencyDuplexSink(prepare("aath", { draft: "start" }));
     assert.deepEqual(sent, ["aath"]);
+  });
+});
+
+describe("round 3 integration: a stop check-in carries none of the owner's goodbye words (owner-3 F9)", () => {
+  test("the R3 say-back 'aap lesson khatam karna chahte hain' is caught as a goodbye on the check-in", () => {
+    assert.ok(checkInProblems("Theek hai Aarav, aap lesson khatam karna chahte hain—keep going, short break, ya stop for today chuniye.", { kind: "stop" }).includes("wrap"));
+    assert.ok(checkInProblems("Okay Meher, see you! Keep going, a short break, or stop for today?", { kind: "stop" }).includes("wrap"));
+  });
+  test("an honest check-in without goodbye words passes, and both fixed check-in lines pass", () => {
+    for (const t of ["Aap rukna chahte hain—bilkul theek. Aap keep going, short break, ya aaj ke liye stop chun sakte hain?",
+      "That's okay. We can keep going, take a short break, or stop for today. You choose.",
+      "Theek hai, koi baat nahi. Hum aage chal sakte hain, thoda break le sakte hain, ya aaj ke liye stop kar sakte hain. Tum batao."]) {
+      assert.deepEqual(checkInProblems(t, { kind: "stop" }), [], t);
+    }
+  });
+  test("the relational check-in is unchanged (only the stop check-in reads these words)", () => {
+    assert.ok(!checkInProblems("Rukna bilkul theek hai, lesson khatam karna ho to bhi theek. Kya tum abhi theek ho?", { kind: "rel" }).includes("wrap"));
   });
 });

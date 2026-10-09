@@ -123,8 +123,15 @@ export function checkInProblems(t, { kind = "stop", active = null, lang = "hingl
   // the stop and offered nothing else, and the child's "yes" then got "Lesson ended … <a question>". A stop check-in is a
   // CHOICE: going on (or a break) is offered as well. (The relational check-in "rel" only has to say stopping is fine.)
   if (kind === "stop" && p5Flag("R3CONV") && !GO_ON_OFFER.test(text)) out.push("nochoice");
+  // round 3 integration (owner-3 on the integrated local tree, 2026-10-09, 2 of 10 stop phrases): the R3 say-back "in their
+  // words" turned "lesson khatam" into "Theek hai Aarav, aap lesson khatam karna chahte hain—keep going, …": goodbye words
+  // on a turn that goes on (F9 mixed signal; owner-3 RX.wrapWords). A stop check-in carries none of the owner's goodbye
+  // words; the check-in's own rewrite ("offer stopping as one of the choices, not as a goodbye"), then the fixed line, apply.
+  if (kind === "stop" && p5Flag("R3CONV") && CHECKIN_GOODBYE.test(text)) out.push("wrap");
   return out;
 }
+/** The owner-3 acceptance's goodbye words (tests/prod/_owner.mjs RX.wrapWords), read on a stop check-in only. */
+const CHECKIN_GOODBYE = /\b(?:aaj ke liye (?:bas )?(?:itna|yahin)|lesson (?:yahin )?(?:khatam|khatm)|phir milenge|phir milte hain|goodbye|bye[\s-]*bye|see you|that'?s all for today|let'?s stop (?:here|for today)|yahin rok(?:te| dete) hain)\b/i;
 /** The child's options include going on or a short break (Roman Hinglish / English / Devanagari). */
 const GO_ON_OFFER = /(?<![\p{L}])(?:continue|keep\s+going|carry\s+on|go\s+on|aage|chalte\s+rah|jaari|padhte\s+rah|karte\s+rah|break|pause|aaram|thoda\s+ruk)|आगे|जारी|ब्रेक/iu;
 /**
