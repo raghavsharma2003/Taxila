@@ -59,14 +59,15 @@ try {
   let found = { card: false, cue: false };
   const seen = new Set();
   const queue = [...main];
-  while (queue.length && seen.size < 40 && !(found.card && found.cue)) {
+  while (queue.length && seen.size < 150 && !(found.card && found.cue)) {
     const u = queue.shift();
     if (seen.has(u)) continue;
     seen.add(u);
     const js = await (await fetch(new URL(u, BASE + "/").href)).text().catch(() => "");
     if (/filler-gru\/2/.test(js)) found.card = true;
     if (/vs-hold\/1/.test(js)) found.cue = true;
-    for (const m of js.matchAll(/["'`(/]((?:\/)?assets\/[\w.-]+\.js)["'`)]/g)) if (!seen.has(m[1])) queue.push(m[1].startsWith("/") ? m[1] : "/" + m[1]);
+    // Vite chunk references: "/assets/x-HASH.js", "assets/x-HASH.js" or "./x-HASH.js" (relative to /assets/)
+    for (const m of js.matchAll(/["'`](?:\.?\/)?(?:assets\/)?([\w.-]+-[\w-]{6,}\.js)["'`]/g)) { const u2 = "/assets/" + m[1]; if (!seen.has(u2)) queue.push(u2); }
   }
   ok(found.card, `bundle: the client carries the round-3 detector card filler-gru/2 (${seen.size} chunks read) [needs this round's build]`);
   ok(found.cue, "bundle: the client carries the thinking-pause cue (vs-hold/1) [needs this round's build]");

@@ -286,7 +286,14 @@ function patta(a: SceneArgs): void {
   for (let k = 1; k <= 3; k++) { const vx = cx - L + (k * L * 2) / 4.2; P.stroke(c, [[vx, cy], [vx + L * 0.2, cy - L * 0.24]], { role: "ink3", width: 1, alpha: 0.7 }); P.stroke(c, [[vx, cy], [vx + L * 0.2, cy + L * 0.24]], { role: "ink3", width: 1, alpha: 0.7 }); }
   P.stroke(c, [[cx - L, cy], [cx - L - 10, cy + 6]], { role: "q4", width: 2 });
   if (setup.light === "covered") P.fillPath(c, (g) => rrect(g, cx - L * 0.5, cy - L * 0.62, L * 0.9, L * 1.24, 2), "black", { alpha: tested ? 0.35 : 0.95, outline: "ink3", width: 1 });
-  if (setup.co2 === "none") jar(a, x + 6, y + 6, w - 12, h - 10, true);
+  if (setup.co2 === "none") {
+    // "no CO2" is a closed jar WITH something that takes the CO2 out (the NCERT set-up: a dish of KOH under the bell jar);
+    // a bare jar still holds CO2 (a model judge caught the bare jar, 2026-10-09)
+    jar(a, x + 6, y + 6, w - 12, h - 10, true);
+    const dw = Math.min(44, w - 30), dx = x + w / 2 - dw / 2, dy = y + h - 20;
+    P.body(c, dx, dy, dw, 8, { role: "q3", r: 4 });
+    P.text(c, "KOH", x + w / 2, dy - 10, { size: 14, weight: 700, font: "mono", role: "ink2" });
+  }
   if (setup.light !== "covered") sun(a, x + 22, y + (setup.co2 === "none" ? 30 : 14), 6);
 }
 

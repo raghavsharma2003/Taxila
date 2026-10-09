@@ -51,8 +51,10 @@ export function pickReaction(bank: ReactionBank, moments: Moment[], o: { lang: L
     const start = hash32(`${o.seed}:${m.kind}:${o.hist.count}`) % shapes.length;
     for (let k = 0; k < shapes.length; k++) {
       const i = (start + k) % shapes.length;
-      const text = fill(shapes[i], facts);
-      if (!text) continue;
+      const filled = fill(shapes[i], facts);
+      if (!filled) continue;
+      // a line that opens with a filled-in word ("sau mein sirf 0 hain") still starts like a sentence
+      const text = /^[a-z]/.test(filled) ? filled[0].toUpperCase() + filled.slice(1) : filled;
       const id = `${m.kind}.${o.lang}.${i}`;
       if (o.hist.used.has(text)) continue;
       if (reactionProblems(text, { hidden: o.hidden }).length) continue;

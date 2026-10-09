@@ -53,6 +53,7 @@ export const COPY = {
   "line.goal.round": L("{v} ko line par rakho", "Put {v} on the line", "{v} को रेखा पर रखो"),
   "line.goal.round2": L("Kaunsa {t} zyada paas hai?", "Which {t} is nearer?", "कौन-सा {t} ज़्यादा पास है?"),
   "line.half": L("beech", "halfway", "बीच"),
+  "line.leftSmaller": L("baayein wala chhota", "further left is smaller", "बाईं ओर वाला छोटा"),
   "line.u10": L("das", "ten", "दस"),
   "line.u100": L("sau", "hundred", "सौ"),
   "line.u1000": L("hazaar", "thousand", "हज़ार"),

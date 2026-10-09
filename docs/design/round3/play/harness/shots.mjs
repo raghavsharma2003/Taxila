@@ -94,7 +94,8 @@ async function shotOne(browser, m, vp, art, { mistake = false } = {}) {
       if (mode === "strips-add") return { id: "refused:pour-unlike-pieces", acts: [{ kind: "pour", from: 0, to: 2 }] };
       return null;
     }, m.id);
-    if (plan) { malId = plan.id; for (const a of plan.acts) { await page.evaluate((x) => window.__play.dispatch(x), a); await page.waitForTimeout(380); } }
+    // the last act is the mistake: it waits past the teacher's 4 s line gap so the line on screen is her answer to IT
+    if (plan) { malId = plan.id; for (const [k, a] of plan.acts.entries()) { if (k === plan.acts.length - 1 && k > 0) await page.waitForTimeout(4300); await page.evaluate((x) => window.__play.dispatch(x), a); await page.waitForTimeout(380); } }
   } else if (m.custom === "miss") {
     await page.evaluate(() => { const v = window.__play.level.params.values[0]; window.__play.dispatch({ kind: "place", which: 0, x: v.num / v.den + 0.18 }); window.__play.dispatch({ kind: "commit" }); });
   } else if (m.steps) {

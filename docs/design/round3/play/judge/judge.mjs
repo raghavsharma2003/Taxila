@@ -10,7 +10,7 @@
 // Two "before" variants: "tray" (the engine at the 181 × 113 tray box production gave it) and "full" (the same engine given
 // the play world's own 360 × 576 box, shots/before-*-p360-full.png): the second separates the box from the engine.
 // The judges are never told what made a screen. Results: judge/results-<date>.json (raw answers + code verdicts).
-import { readFileSync, writeFileSync, existsSync } from "node:fs";
+import { readFileSync, writeFileSync, existsSync, readdirSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -80,7 +80,8 @@ if (PART.includes("a")) {
   const tasks = [];
   MODES.forEach((m, mi) => {
     const files = [["p360", ARTS[mi % 4]], ["p412", ARTS[(mi + 1) % 4]], ["l1366", ARTS[(mi + 2) % 4]]].map(([vp, art]) => join(SHOTS, "all", `${m}-${vp}-${art}.jpg`));
-    if (MISTAKES) files.push(join(SHOTS, "mistake", `mistake-${m}-p412-${ARTS[(mi + 1) % 4]}.jpg`));
+    // the mistake screen's art follows the harness's own mode order, so it is found by name, not recomputed
+    if (MISTAKES) { const f = existsSync(join(SHOTS, "mistake")) ? readdirSync(join(SHOTS, "mistake")).find((x) => x.startsWith(`mistake-${m}-p412-`) && x.endsWith(".jpg")) : null; files.push(join(SHOTS, "mistake", f ?? `mistake-${m}-missing.jpg`)); }
     if (!files.every(existsSync)) { console.log("skip (missing shots)", m); return; }
     for (const judge of JUDGES) tasks.push(async () => {
       const r = await call(judge, [{ type: "text", text: PROMPT_A }, { type: "text", text: "Screen 1 (phone 360 x 800):" }, img(files[0]), { type: "text", text: "Screen 2 (phone 412 x 915):" }, img(files[1]), { type: "text", text: "Screen 3 (laptop 1366 x 768):" }, img(files[2]),

@@ -122,7 +122,7 @@ What the failures were, read against the screens:
   `rj-r3p-gap-label-exact`). Misread: brain took the live "x + 1 < 11" readout of a tipped scale for the level's goal.
 - **B2**: brain read the "Socho =" readout pill as a 30 px button (readouts restyled as plain text).
 - **D2 1.9 / 2.5**: neither judge could see a wrong move on mid-play stills and both said "cannot tell"; pass 2 adds a
-  mistake-state screen (`r3p-judge-stills-need-mistake-state`). Building those screens exposed two more real defects:
+  mistake-state screen (`r3p-judge-stills-need-a-mistake`). Building those screens exposed two more real defects:
   family-wide reaction lines said in the wrong mode (`rj-r3p-unconditioned-reaction-shapes`) and an English place name in
   a Hinglish line; both fixed before pass 2.
 - Laptop: "a narrow sidebar with a large empty middle, the question far from its controls" (brain on 14 of 16 games, grok

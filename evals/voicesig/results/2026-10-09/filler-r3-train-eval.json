@@ -1,0 +1,404 @@
+{
+ "date": "2026-10-09",
+ "harness": "evals/voicesig/r3/train_r3.py (runs_eval / word_table imported from evals/voicesig/train/train_filler.py)",
+ "data": {
+  "train": {
+   "channels": 160,
+   "speakers": 84,
+   "hours": 32.69,
+   "fillerFrames": 250197,
+   "wordFrames": 2895663,
+   "fillerWords": 7869,
+   "otherWords": 154654
+  },
+  "val": {
+   "channels": 24,
+   "speakers": 24,
+   "hours": 6.7,
+   "fillerFrames": 46335,
+   "wordFrames": 593652,
+   "fillerWords": 1428,
+   "otherWords": 30509
+  },
+  "test": {
+   "channels": 32,
+   "speakers": 32,
+   "hours": 7.23,
+   "fillerFrames": 52568,
+   "wordFrames": 704786,
+   "fillerWords": 1685,
+   "otherWords": 36972
+  }
+ },
+ "fleursNegTrain": {
+  "chunks": 16,
+  "speechMin": 116.8
+ },
+ "target": 0.82,
+ "seed": 1234,
+ "candidates": {
+  "base": {
+   "name": "shipped filler-gru/1-bi32",
+   "val": {
+    "opAtTarget": {
+     "thr": 0.53,
+     "minFrames": 15,
+     "precision": 0.8226,
+     "recall": 0.5834,
+     "runs": 795,
+     "fillerWords": 1097
+    },
+    "f1Best": {
+     "thr": 0.44,
+     "minFrames": 10,
+     "precision": 0.7341,
+     "recall": 0.6383,
+     "runs": 1132,
+     "fillerWords": 1280
+    }
+   },
+   "test": {
+    "wordAuroc": {
+     "est": 0.9421,
+     "lo": 0.9294,
+     "hi": 0.9546,
+     "clusters": 32,
+     "n": 38657
+    },
+    "atTarget": {
+     "thr": 0.53,
+     "minFrames": 15,
+     "event": {
+      "precision": 0.8183,
+      "recall": 0.5226,
+      "runs": 831,
+      "fillerWords": 1263
+     },
+     "eventCi": {
+      "precision": 0.8183,
+      "ci95Clustered": [
+       0.7615,
+       0.8652
+      ],
+      "wilson95": [
+       0.7906,
+       0.843
+      ],
+      "runs": 831,
+      "speakers": 32
+     },
+     "eventIndianL1": {
+      "precision": 0.787,
+      "recall": 0.4377,
+      "runs": 169,
+      "fillerWords": 297
+     },
+     "fleursFalseAlarms": {
+      "hi_in.dev15": {
+       "speechMin": 10.8,
+       "falseRunsPerSpeechMin": 1.854,
+       "runs": 20
+      },
+      "en_us.dev15": {
+       "speechMin": 4.2,
+       "falseRunsPerSpeechMin": 2.642,
+       "runs": 11
+      },
+      "hi_in.devall": {
+       "speechMin": 29.7,
+       "falseRunsPerSpeechMin": 2.051,
+       "runs": 61
+      },
+      "en_us.devall": {
+       "speechMin": 17.8,
+       "falseRunsPerSpeechMin": 2.018,
+       "runs": 36
+      }
+     },
+     "negHoldout": {
+      "speechMin": 13.7,
+      "falseRunsPerSpeechMin": 1.241,
+      "runs": 17
+     }
+    },
+    "atF1": {
+     "thr": 0.44,
+     "minFrames": 10,
+     "event": {
+      "precision": 0.7526,
+      "recall": 0.6012,
+      "runs": 1241,
+      "fillerWords": 1522
+     },
+     "eventCi": {
+      "precision": 0.7526,
+      "ci95Clustered": [
+       0.694,
+       0.8036
+      ],
+      "wilson95": [
+       0.7279,
+       0.7758
+      ],
+      "runs": 1241,
+      "speakers": 32
+     },
+     "eventIndianL1": {
+      "precision": 0.7368,
+      "recall": 0.4937,
+      "runs": 266,
+      "fillerWords": 397
+     },
+     "fleursFalseAlarms": {
+      "hi_in.dev15": {
+       "speechMin": 10.8,
+       "falseRunsPerSpeechMin": 3.801,
+       "runs": 41
+      },
+      "en_us.dev15": {
+       "speechMin": 4.2,
+       "falseRunsPerSpeechMin": 3.363,
+       "runs": 14
+      },
+      "hi_in.devall": {
+       "speechMin": 29.7,
+       "falseRunsPerSpeechMin": 4.202,
+       "runs": 125
+      },
+      "en_us.devall": {
+       "speechMin": 17.8,
+       "falseRunsPerSpeechMin": 3.924,
+       "runs": 70
+      }
+     },
+     "negHoldout": {
+      "speechMin": 13.7,
+      "falseRunsPerSpeechMin": 2.554,
+      "runs": 35
+     }
+    },
+    "shippedOp": {
+     "thr": 0.44,
+     "minFrames": 10,
+     "event": {
+      "precision": 0.7526,
+      "recall": 0.6012,
+      "runs": 1241,
+      "fillerWords": 1522
+     },
+     "eventCi": {
+      "precision": 0.7526,
+      "ci95Clustered": [
+       0.694,
+       0.8036
+      ],
+      "wilson95": [
+       0.7279,
+       0.7758
+      ],
+      "runs": 1241,
+      "speakers": 32
+     },
+     "fleursFalseAlarms": {
+      "hi_in.dev15": {
+       "speechMin": 10.8,
+       "falseRunsPerSpeechMin": 3.801,
+       "runs": 41
+      },
+      "en_us.dev15": {
+       "speechMin": 4.2,
+       "falseRunsPerSpeechMin": 3.363,
+       "runs": 14
+      },
+      "hi_in.devall": {
+       "speechMin": 29.7,
+       "falseRunsPerSpeechMin": 4.202,
+       "runs": 125
+      },
+      "en_us.devall": {
+       "speechMin": 17.8,
+       "falseRunsPerSpeechMin": 3.924,
+       "runs": 70
+      }
+     }
+    }
+   },
+   "reusedFrom": "baseline.json"
+  },
+  "bi32-ft-neg": {
+   "name": "bi32-ft-neg",
+   "val": {
+    "opAtTarget": {
+     "thr": 0.55,
+     "minFrames": 15,
+     "precision": 0.8218,
+     "recall": 0.6007,
+     "runs": 825,
+     "fillerWords": 1097
+    },
+    "f1Best": {
+     "thr": 0.46,
+     "minFrames": 10,
+     "precision": 0.7145,
+     "recall": 0.7039,
+     "runs": 1289,
+     "fillerWords": 1280
+    }
+   },
+   "test": {
+    "wordAuroc": {
+     "est": 0.954,
+     "lo": 0.9426,
+     "hi": 0.9641,
+     "clusters": 32,
+     "n": 38657
+    },
+    "atTarget": {
+     "thr": 0.55,
+     "minFrames": 15,
+     "event": {
+      "precision": 0.8424,
+      "recall": 0.5059,
+      "runs": 774,
+      "fillerWords": 1263
+     },
+     "eventCi": {
+      "precision": 0.8424,
+      "ci95Clustered": [
+       0.7948,
+       0.885
+      ],
+      "wilson95": [
+       0.815,
+       0.8663
+      ],
+      "runs": 774,
+      "speakers": 32
+     },
+     "eventIndianL1": {
+      "precision": 0.7988,
+      "recall": 0.4411,
+      "runs": 164,
+      "fillerWords": 297
+     },
+     "fleursFalseAlarms": {
+      "hi_in.dev15": {
+       "speechMin": 10.8,
+       "falseRunsPerSpeechMin": 0.185,
+       "runs": 2
+      },
+      "en_us.dev15": {
+       "speechMin": 4.2,
+       "falseRunsPerSpeechMin": 0.24,
+       "runs": 1
+      },
+      "hi_in.devall": {
+       "speechMin": 29.7,
+       "falseRunsPerSpeechMin": 0.168,
+       "runs": 5
+      },
+      "en_us.devall": {
+       "speechMin": 17.8,
+       "falseRunsPerSpeechMin": 0.448,
+       "runs": 8
+      }
+     },
+     "negHoldout": {
+      "speechMin": 13.7,
+      "falseRunsPerSpeechMin": 0.073,
+      "runs": 1
+     }
+    },
+    "atF1": {
+     "thr": 0.46,
+     "minFrames": 10,
+     "event": {
+      "precision": 0.7577,
+      "recall": 0.6124,
+      "runs": 1271,
+      "fillerWords": 1522
+     },
+     "eventCi": {
+      "precision": 0.7577,
+      "ci95Clustered": [
+       0.7032,
+       0.8058
+      ],
+      "wilson95": [
+       0.7334,
+       0.7804
+      ],
+      "runs": 1271,
+      "speakers": 32
+     },
+     "eventIndianL1": {
+      "precision": 0.7101,
+      "recall": 0.539,
+      "runs": 307,
+      "fillerWords": 397
+     },
+     "fleursFalseAlarms": {
+      "hi_in.dev15": {
+       "speechMin": 10.8,
+       "falseRunsPerSpeechMin": 0.464,
+       "runs": 5
+      },
+      "en_us.dev15": {
+       "speechMin": 4.2,
+       "falseRunsPerSpeechMin": 0.721,
+       "runs": 3
+      },
+      "hi_in.devall": {
+       "speechMin": 29.7,
+       "falseRunsPerSpeechMin": 0.605,
+       "runs": 18
+      },
+      "en_us.devall": {
+       "speechMin": 17.8,
+       "falseRunsPerSpeechMin": 1.401,
+       "runs": 25
+      }
+     },
+     "negHoldout": {
+      "speechMin": 13.7,
+      "falseRunsPerSpeechMin": 0.584,
+      "runs": 8
+     }
+    }
+   },
+   "params": 10817,
+   "valWordAurocBest": 0.9778,
+   "history": [
+    {
+     "epoch": 0,
+     "loss": 0.2196,
+     "valWordAuroc": 0.9778,
+     "s": 329.3
+    },
+    {
+     "epoch": 1,
+     "loss": 0.2064,
+     "valWordAuroc": 0.9778,
+     "s": 165.0
+    },
+    {
+     "epoch": 2,
+     "loss": 0.2043,
+     "valWordAuroc": 0.9777,
+     "s": 113.5
+    }
+   ],
+   "export": {
+    "path": "/tmp/claude-0/-home-user/ecee9fc1-62f9-5f67-a47d-69ca79d9981a/scratchpad/r3-voicesig/models/bi32-ft-neg.onnx",
+    "bytes": 45496,
+    "maxAbsDiffTorchVsOrt": 2.682209014892578e-07
+   },
+   "platt": [
+    1.1629097919436138,
+    -0.8359360055726903
+   ]
+  }
+ },
+ "chosen": "bi32-ft-neg",
+ "selectionRule": "max VAL recall at VAL precision >= target (min 50 runs); test read only for the report"
+}

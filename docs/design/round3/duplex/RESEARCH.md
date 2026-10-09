@@ -71,12 +71,16 @@ reproduces the shipped engine exactly (MAI 19/147 cut-offs, gap p50 911 ms; D4 1
    So no Azure model can shorten the wait on open speech in time today, and stage A's own projected pComplete is flat
    (AUC 0.49-0.50) at the moment the words cover the audio.
 5. **The best class-and-wait policy on TRAIN** (even ids, both lanes, <= 3 % cut-offs) holds 1,600 ms on a hold shape,
-   1,200 ms while a number is being read out, 900 ms after a complete question to her, 1,100 ms otherwise. On TEST (odd ids,
-   never used to choose) it cuts **4/70 = 5.7 %** on both lanes (shipped: MAI 10.0 %, D4 7.1 %), gap p50 ~1.02 s (+100 ms)
-   and p90 1.46-1.51 s (shipped 2.38 s). Prosody modifiers bought nothing on TRAIN at a 3 % budget.
-6. **The eager end of turn fires at 84 % (MAI) / 88 % (D4) of real turn ends**, at 540 / 820 ms of silence, i.e. 560 / 280 ms
-   before the 1,100 ms commit, with 0.38 / 0.09 wasted starts per turn (ESTIMATE of the latency it buys: the head start, since
-   the turn's model work (~2.5 s p50, round-2 latency) is the critical path).
+   1,200 ms while a number is being read out, 900 ms after a complete question to her, 1,100 ms otherwise. Built into the
+   engine and replayed (the simulator's prediction held to the turn on MAI, one extra cut on D4): TEST (odd ids, never used to
+   choose) **4/70 = 5.7 % on both lanes** (shipped: MAI 10.0 %, D4 7.1 %); ALL MAI 19 → 6/147, D4 12 → 7/147; gap p50
+   +~100 ms (910 → 1,011 / 923 → 1,019) and p90 −0.6-0.8 s (2,278 → 1,480 / 2,060 → 1,511). A fresh LIVE run on D4 (2026-10-09,
+   a slower STT day): 4/147 = 2.7 % vs 6/147 for the round-2 engine on the same events. Prosody modifiers bought nothing on TRAIN.
+6. **The eager end of turn fires on the exact committed words at 354/399 (D4) and 336/399 (MAI) real turn ends**, 280 / 560 ms
+   before the commit (p50), with 0.07 / 0.36 cancelled starts per turn (ESTIMATE of the latency it buys: about the lead, since
+   the turn's model work, ~2.5 s p50 in round-2 latency, is the critical path).
+7. **The AMI overlap diagnosis** (§4.3): the session-wide hush give-up and the revoke-on-any-onset were the two largest causes
+   of real barge-ins not stopping and real continuers stopping her.
 
 ## 4. The design chosen, and why
 
@@ -121,6 +125,17 @@ kept); this round makes the three hard decisions word-aware and measured on real
   0.47 on our child TTS (round 1).
 - **Prosody modifiers on the complete class**: no gain on TRAIN at a 3 % budget.
 - **Unclosed plain words as a hold**: on D4 they are 9 ends vs 3 pauses.
+- **A complete question to her answered at 0 ms** (round 2): 6 of 20 real pauses after "…ठीक है?" / "…ना?" were cut (MAI);
+  900 ms cuts 1/20.
+- **The hush giving up for the whole lesson after 4 wordless bursts**: 13/22 real barge-ins (2 meetings) never hushed.
+- **Revoking her reply on any sound in its first 1.5 s**: 26/195 real continuers stopped her and dropped the reply.
+- **The hands-free switch failing OPEN to "on"** while production is shadow: on a loaded local production server the page's
+  config read did not answer within 1.5 s and the lesson went live without the server's answer (patch 02).
+- **A device-side silence ruler as the cut-off baseline**: the round-2 "silence-900 = 4.8 %" is the annotation's ruler; the
+  device's own silence-900 cuts 12.9 % of the same pauses. Both are now reported.
+- **Not built, named as the next step**: a target-speaker (personal VAD) model enrolled on the child's first committed turns
+  for TV / sibling rejection (needs a licence-clean on-device speaker embedding; pitch / level attribution alone was rejected
+  in rounds 1-2), and a better on-device VAD (the ~200 ms ruler error).
 
 Sources: [LiveKit EoT v1 / eot-bench](https://livekit.com/blog/solving-end-of-turn-detection) ·
 [LiveKit v0.4.1](https://livekit.com/blog/improved-end-of-turn-model-cuts-voice-ai-interruptions-39) ·

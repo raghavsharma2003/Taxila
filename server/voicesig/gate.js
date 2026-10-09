@@ -49,12 +49,19 @@ export const EVIDENCE = Object.freeze({
 });
 
 /**
- * The one component measured on real speech: the filled-pause detector the device head runs (models/voicesig/filler-gru.json).
- * ADULT speech (AMI headsets, 32 held-out speakers), not children; it feeds the F3 term, it is not a knowledge state.
+ * The components measured on real speech (ADULT, not children): the filled-pause detector the device head runs
+ * (models/voicesig/filler-gru-r3.json) and the thinking-pause cue duplex reads (src/voicesig/holdCue.ts). They feed the F3
+ * term and floor timing; neither is a knowledge state, and neither can open the gate.
  */
 export const COMPONENTS = Object.freeze({
-  fillerDetector: { population: "adult", precision: 0.753, recall: 0.601, n: 1241, method: "AMI held-out speakers, event level at thr 0.44", at: "2026-10-04",
-    narrowband: { precision: 0.31, recall: 0.15, note: "bt / speakerphone routes: the detector's lead is ignored (adapter NARROWBAND_MIC)" } },
+  fillerDetector: { population: "adult", ver: "filler-gru/2-bi32-ft-neg", precision: 0.842, precisionCi95: [0.795, 0.885], recall: 0.43, n: 774,
+    method: "AMI held-out speakers (the 2026-10-04 test set: 32 speakers, 8 Indian-L1 series), event level at thr 0.55 / >= 300 ms, operating point chosen on val (P >= 0.82); CI speaker-clustered; recall over all 1,522 fillers >= 200 ms (round 3)",
+    at: "2026-10-09", hindiReadFalseRunsPerSpeechMin: 0.17,
+    previous: { ver: "filler-gru/1-bi32", precision: 0.753, recall: 0.601, n: 1241, hindiReadFalseRunsPerSpeechMin: 4.2, at: "2026-10-04" },
+    narrowband: { precision: 0.31, recall: 0.15, note: "bt / speakerphone routes (measured on filler-gru/1): the detector's lead is ignored (adapter NARROWBAND_MIC)" } },
+  holdCue: { population: "adult", ver: "vs-hold/1", precision: 1, precisionCi95: [0.741, 1], recall: 0.016, n: 11,
+    method: "LiveKit EOT-Bench Hindi (CC BY 4.0), 400 adult turns, 674 holds / 400 ends: P(the speaker went on | the cue fired), round-3 detector at the card point; recall = share of holds it fired on",
+    at: "2026-10-09", note: "rare and precise on adult task calls; through the duplex replay it prevented none of the measured cut-offs (they are not filler-final): shadow" },
 });
 
 /** Why a state is not live, as a closed code (status page + trace). null = the gate is open. */

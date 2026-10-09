@@ -20,6 +20,7 @@ export const makeLineView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
   let drag: { which: number; x: number } | null = null;
   const shownX: (number | null)[] = p.values.map(() => null);   // displayed pod positions (line units), springing to the mark
   let landAt = -1, solvedAt = -1, looks = 0, truthAt = -1, truthFor: boolean[] = p.values.map(() => false);
+  let orderLookAt = -1;   // compare: a wrong "which is smaller" draws the line's own answer (further left is smaller)
   const span = p.hi - p.lo;
 
   const st = () => ctl.state;
@@ -49,6 +50,7 @@ export const makeLineView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
     }
     for (const m of ms) {
       if (m.kind === "misconception_consequence" || m.kind === "law_refused" || m.kind === "near_miss") { looks = now + 1.4; setTimeout(() => api.sfx("look"), 200); }
+      if (cmpGoal && last?.kind === "order" && (m.kind === "misconception_consequence" || (m.kind === "law_refused" && m.facts.why === "look_again"))) orderLookAt = now;
       if (m.kind === "progress" && m.facts.landed === "both") setTimeout(() => api.sfx("good", 1), 220);
       if (m.kind === "solved") { solvedAt = now; setTimeout(() => { api.sfx("good"); }, 200); api.fx.flash(api.P.color("good"), 0.06); const mx = st().marks[0] ?? 0; api.fx.burst(toPx(mx), ly - 40, { n: 14, color: api.P.color("good"), speed: 110, life: 0.6, size: 3, kind: "spark" }); }
     }
@@ -155,6 +157,17 @@ export const makeLineView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
     const P = api.P, now = api.t, s = st();
     drawLine(c);
     api.target("line", x0 - 20, ly - 60, x1 - x0 + 40, 120);
+    // after a wrong order: an arrow under the line from the right-hand pod to the left-hand one, "smaller" at its head
+    if (cmpGoal && orderLookAt >= 0 && s.marks.every((m) => m !== null)) {
+      const k = clamp((now - orderLookAt) / 0.5, 0, 1), xs = (s.marks as number[]).map((m) => toPx(m)), xl = Math.min(...xs), xr = Math.max(...xs), ay = ly + 56;
+      if (xr - xl > 24) {
+        const xh = xr - (xr - xl) * ease.out(k);
+        P.stroke(c, [[xr, ay], [xh, ay]], { role: "look", width: 3 });
+        P.stroke(c, [[xh + 10, ay - 7], [xh, ay], [xh + 10, ay + 7]], { role: "look", width: 3 });
+        if (k >= 1) P.text(c, say(lang, "line.leftSmaller"), clamp(xl, 40, W - 40), ay + 22, { size: 15, weight: 700, role: "look" });
+        if (k < 1) api.invalidate();
+      }
+    }
     // the truth flags (after a commit) and the exact gaps
     if (truthAt >= 0) p.values.forEach((v, i) => {
       if (!truthFor[i]) return;

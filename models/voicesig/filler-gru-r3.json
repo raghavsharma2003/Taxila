@@ -1,0 +1,102 @@
+{
+ "name": "filler-gru-r3",
+ "ver": "filler-gru/2-bi32-ft-neg",
+ "task": "filled-pause (um/uh/er, Hindi aa/umm) per-frame detection on the product front-end",
+ "input": "x [1, T, 22] float32 (src/voicesig/frontend/gruInput.ts, vsgru-in/1)",
+ "output": "p [1, T] per-frame P(filled pause)",
+ "threshold": 0.55,
+ "minRunMs": 300,
+ "operatingPoint": "max VAL recall at VAL precision >= 0.82 (pre-registered), chosen on val only; test read once",
+ "platt": [
+  1.1629097919436138,
+  -0.8359360055726903
+ ],
+ "trainingData": "AMI Meeting Corpus individual headsets (University of Edinburgh et al.), CC BY 4.0: 84 speakers / 32.7 h (warm start from filler-gru/1, itself AMI CC BY 4.0); FLEURS hi_in + en_us TRAIN read speech (Google), CC BY 4.0, as non-filler negatives. Commercial use permitted with attribution.",
+ "notCovered": [
+  "child speech (no licence-clean child corpus marks fillers; HiACC fire rates only, evaluation only)",
+  "Hindi or Hinglish spontaneous fillers as POSITIVES (Hindi appears only as read-speech negatives)",
+  "phone microphones / AGC-processed capture",
+  "bt / speakerphone routes (narrowband: unusable, the head and the hold cue ignore them)"
+ ],
+ "metrics": {
+  "population": "ADULT",
+  "test": {
+   "set": "AMI 8 Indian-L1 series, 32 held-out speakers (the 2026-10-04 harness)",
+   "event": {
+    "precision": 0.8424,
+    "recall": 0.5059,
+    "runs": 774,
+    "fillerWords": 1263
+   },
+   "eventCi": {
+    "precision": 0.8424,
+    "ci95Clustered": [
+     0.7948,
+     0.885
+    ],
+    "wilson95": [
+     0.815,
+     0.8663
+    ],
+    "runs": 774,
+    "speakers": 32
+   },
+   "eventIndianL1": {
+    "precision": 0.7988,
+    "recall": 0.4411,
+    "runs": 164,
+    "fillerWords": 297
+   },
+   "wordAuroc": {
+    "est": 0.954,
+    "lo": 0.9426,
+    "hi": 0.9641,
+    "clusters": 32,
+    "n": 38657
+   }
+  },
+  "fleursFalseAlarms": {
+   "hi_in.dev15": {
+    "speechMin": 10.8,
+    "falseRunsPerSpeechMin": 0.185,
+    "runs": 2
+   },
+   "en_us.dev15": {
+    "speechMin": 4.2,
+    "falseRunsPerSpeechMin": 0.24,
+    "runs": 1
+   },
+   "hi_in.devall": {
+    "speechMin": 29.7,
+    "falseRunsPerSpeechMin": 0.168,
+    "runs": 5
+   },
+   "en_us.devall": {
+    "speechMin": 17.8,
+    "falseRunsPerSpeechMin": 0.448,
+    "runs": 8
+   }
+  },
+  "val": {
+   "thr": 0.55,
+   "minFrames": 15,
+   "precision": 0.8218,
+   "recall": 0.6007,
+   "runs": 825,
+   "fillerWords": 1097
+  }
+ },
+ "holdCue": {
+  "pComplete": 0.259,
+  "tailGapMs": 120,
+  "readAfterMs": 120,
+  "minFillerMs": 300,
+  "measured": "LiveKit EOT-Bench Hindi (CC BY 4.0, 400 ADULT turns): P(hold | fired) 1 (Wilson 95% [0.741, 1]), fired 11, at turn ends 0/400; pComplete = 1 - the lower bound",
+  "at": "2026-10-09"
+ },
+ "date": "2026-10-09",
+ "params": 10817,
+ "bytes": 45496,
+ "results": "evals/voicesig/results/2026-10-09/filler-r3-train-eval.json",
+ "attribution": "Contains information from the AMI Meeting Corpus (University of Edinburgh, IDIAP, TNO et al.), licensed CC BY 4.0, and from FLEURS (Google), licensed CC BY 4.0."
+}

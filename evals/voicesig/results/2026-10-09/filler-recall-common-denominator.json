@@ -1,0 +1,10 @@
+{
+ "what": "Event recall over the SAME denominator for every operating point: the 1,522 test filler words >= 200 ms (the 2026-10-04 harness). runs_eval's own recall counts only fillers >= the operating point's minimum run, so its recall at a 300 ms point (1,263 fillers) is not comparable with the shipped 200 ms point.",
+ "set": "AMI test, 8 Indian-L1 series, 32 held-out ADULT speakers",
+ "date": "2026-10-09",
+ "rows": [
+  {"model": "filler-gru/1 (shipped)", "thr": 0.44, "minRunMs": 200, "hit": 915, "fillers": 1522, "recall": 0.6012},
+  {"model": "filler-gru/1 (shipped)", "thr": 0.53, "minRunMs": 300, "hit": 681, "fillers": 1522, "recall": 0.4474},
+  {"model": "filler-gru/2-bi32-ft-neg (round 3)", "thr": 0.55, "minRunMs": 300, "hit": 655, "fillers": 1522, "recall": 0.4304}
+ ]
+}

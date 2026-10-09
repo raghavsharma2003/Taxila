@@ -37,13 +37,13 @@ export const LABS: Record<string, LabDef> = {
     title: t("Sprout lab", "Ankur lab", "अंकुर लैब"), noun: t("tray", "tray", "ट्रे"),
     factors: [
       { id: "water", label: t("Water", "Paani", "पानी"), levels: [{ id: "dry", label: t("dry", "sookha", "सूखा"), icon: "dry" }, { id: "damp", label: t("damp", "geela", "गीला"), icon: "damp" }, { id: "under", label: t("under water", "paani mein doobe", "पानी में डूबे"), icon: "under" }] },
-      { id: "air", label: t("Air", "Hawa", "हवा"), levels: [{ id: "open", label: t("open", "khula", "खुला"), icon: "open" }, { id: "sealed", label: t("sealed jar", "band dabba", "बंद डिब्बा"), icon: "sealed" }] },
+      { id: "air", label: t("Air", "Hawa", "हवा"), levels: [{ id: "open", label: t("open", "khula", "खुला"), icon: "open" }, { id: "sealed", label: t("air pumped out", "hawa nikaali", "हवा निकाली"), icon: "sealed" }] },
       { id: "warm", label: t("Warmth", "Garmi", "गर्मी"), levels: [{ id: "room", label: t("room", "kamra", "कमरा"), icon: "room" }, { id: "fridge", label: t("fridge", "fridge", "फ्रिज"), icon: "fridge" }] },
       { id: "light", label: t("Light", "Roshni", "रोशनी"), levels: [{ id: "window", label: t("window", "khidki", "खिड़की"), icon: "sun" }, { id: "dark", label: t("cupboard", "almari", "अलमारी"), icon: "dark" }] },
       { id: "base", label: t("Bed", "Bistar", "बिस्तर"), levels: [{ id: "cotton", label: t("cotton", "rui", "रुई"), icon: "cotton" }, { id: "soil", label: t("soil", "mitti", "मिट्टी"), icon: "soil" }] },
     ],
     outcome: { id: "sprouts", label: t("Sprouted (of 10)", "Ankur (10 mein se)", "अंकुर (10 में से)"), unit: t("seeds", "beej", "बीज"), kind: "count", max: 10, better: "more", runLabel: t("3 days", "3 din", "3 दिन") },
-    model: { kind: "product", base: 10, mult: { water: { dry: 0, damp: 1, under: 0.2 }, air: { open: 1, sealed: 0.1 }, warm: { room: 1, fridge: 0.1 }, light: { window: 1, dark: 1 }, base: { cotton: 1, soil: 1 } } },
+    model: { kind: "product", base: 10, mult: { water: { dry: 0, damp: 1, under: 0.2 }, air: { open: 1, sealed: 0 }, warm: { room: 1, fridge: 0.1 }, light: { window: 1, dark: 1 }, base: { cotton: 1, soil: 1 } } },
     beliefs: [
       { mal: "needs-soil-light", mult: { light: { dark: 0 }, base: { cotton: 0 } } },
       { mal: "more-water-better", mult: { water: { under: 1.2 } } },
