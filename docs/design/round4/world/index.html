@@ -652,6 +652,10 @@ i.op { font-family: var(--f-ui); font-style: normal; font-weight: 600; color: va
 #mSky svg { will-change: transform; }
 .gm-bg svg, .home-scene .scene svg, #s-hello .scene svg, .ls-bg svg { contain: strict; }
 
+.h-title h1 .lt { display: inline-block; animation: letterUp 900ms var(--e-out) both; }
+@keyframes letterUp { from { opacity: 0; transform: translateY(18px); filter: blur(3px); } to { opacity: 1; transform: none; filter: none; } }
+@media (prefers-reduced-motion: reduce) { .h-title h1 .lt { animation: none; } }
+
 </style>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#120F24">
@@ -1436,7 +1440,7 @@ Screens.hello = {
           <div class="brandmark" style="color:#FBEBDD">${BRAND}<span>TAXILA</span></div>
           <div class="h-title">
             <div class="eyebrow" style="color:rgba(251,235,221,.78)">Your AI teacher · Classes 4 to 9</div>
-            <h1 style="color:#FFF4E6">Taxila</h1>
+            <h1 style="color:#FFF4E6" aria-label="Taxila">${"Taxila".split("").map((c, i) => `<span class="lt" style="animation-delay:${300 + i * 70}ms">${c}</span>`).join("")}</h1>
             <p style="color:#F1DCD2">A teacher who talks with you, in Hinglish, Hindi or English. And a world that lights up as you understand it.</p>
             <button class="btn lamp" id="hMeet">Meet your teacher</button>
             <div class="h-foot" style="color:rgba(251,235,221,.72)">Set up by your grown-up. Nothing here can go wrong.</div>
@@ -1511,6 +1515,7 @@ Screens.hello = {
     gate.getAnimations().forEach((a) => a.cancel()); gate.style.opacity = "";
     stepA.getAnimations().forEach((a) => a.cancel());
     stepA.hidden = false; stepB.hidden = true;
+    $$(".lt", el).forEach((l) => { l.style.animation = "none"; void l.offsetWidth; l.style.animation = ""; });
     $("#hVeilA", el).classList.add("on"); $("#hVeilB", el).classList.remove("on");
     settleLayers(el);
   },
@@ -1609,7 +1614,7 @@ Screens.home = {
   },
   enter() {
     requestAnimationFrame(() => { this.place(); Face.attach($(".asha-win", this.el), [170, 50, 690]); });
-    placeName(this.el, "Riya’s terrace", "Dusk");
+    placeName(this.el, "Riya · Class 6", "The Terrace");
     settleLayers($(".home-scene", this.el));
     setTimeout(() => { if (CUR === "home") this.speak("Kal tumne common factors pakke kiye. Aaj ek number ko uske primes tak todenge."); }, 1200);
   },
@@ -2303,6 +2308,26 @@ Screens.map = {
     }
     return `<g data-k="${key}">${g}</g>`;
   },
+  signature(n, cx, cy, zt, h) {
+    const P = (a, b, c) => this.P(a, b, c), s = this.s, T = "#7E82C4", L = "#5A5E9E", R = "#2E3168";
+    const ex = cx + h - 0.55, ey = cy + h - 0.55;   // the front corner of the mesa top
+    if (n === 2) { // Samrat Yantra: the great sundial's gnomon, a right-triangle wall
+      const a = P(ex - 0.15, ey - 0.9, zt), b = P(ex - 0.15, ey + 0.35, zt), c = P(ex - 0.15, ey - 0.9, zt + 1.5), a2 = P(ex + 0.1, ey - 0.9, zt), b2 = P(ex + 0.1, ey + 0.35, zt), c2 = P(ex + 0.1, ey - 0.9, zt + 1.5);
+      return `<path d="M${a[0]},${a[1]} L${b[0]},${b[1]} L${c[0]},${c[1]} Z" fill="${L}"/><path d="M${b[0]},${b[1]} L${b2[0]},${b2[1]} L${c2[0]},${c2[1]} L${c[0]},${c[1]} Z" fill="${T}"/><path d="M${c[0]},${c[1]} L${b[0]},${b[1]}" stroke="#B9BDF2" stroke-width="1" opacity=".7"/>`;
+    }
+    if (n === 4) { let g = ""; [0.5, 0.95, 0.7, 1.25].forEach((hh, i) => (g += this.box(ex - 0.95 + i * 0.32, ey - 0.15, zt, 0.22, 0.22, hh, T, L, R))); return g; } // data: columns like bars
+    if (n === 7) { // the chariot wheel (Konark): a standing disc with spokes
+      const c0 = P(ex - 0.3, ey, zt + 0.62), r = 0.6 * s; let d = `<ellipse cx="${c0[0]}" cy="${c0[1]}" rx="${r * 0.62}" ry="${r}" fill="none" stroke="${T}" stroke-width="3"/>`;
+      for (let k = 0; k < 8; k++) { const t = (k / 8) * Math.PI * 2; d += `<path d="M${c0[0]},${c0[1]} L${c0[0] + Math.cos(t) * r * 0.62},${c0[1] + Math.sin(t) * r}" stroke="${L}" stroke-width="1.4"/>`; }
+      return d + `<circle cx="${c0[0]}" cy="${c0[1]}" r="3" fill="${T}"/>`;
+    }
+    if (n === 10) { // a stepwell cut below the terrace: the other side of zero
+      let g = ""; for (let k = 0; k < 4; k++) { const w = 1.3 - k * 0.28, x0 = ex - 0.6 - w / 2, y0 = ey - 0.6 - w / 2; g += this.poly([P(x0, y0, zt - k * 0.12), P(x0 + w, y0, zt - k * 0.12), P(x0 + w, y0 + w, zt - k * 0.12), P(x0, y0 + w, zt - k * 0.12)], k % 2 ? "#2A2C5E" : "#363A74"); } return g;
+    }
+    if (n === 9) { let g = ""; for (const dx of [-0.75, 0.15]) g += this.box(ex + dx - 0.2, ey - 0.2, zt, 0.4, 0.4, 0.7, T, L, R); return g; } // symmetry: twin towers
+    if (n === 8) { const c0 = P(ex - 0.5, ey - 0.5, zt); return `<ellipse cx="${c0[0]}" cy="${c0[1]}" rx="${0.8 * s * 1.22}" ry="${0.8 * s * 0.7}" fill="none" stroke="${T}" stroke-width="1.6"/><path d="M${c0[0]},${c0[1]} L${c0[0] + 0.8 * s * 1.0},${c0[1] - 0.35 * s}" stroke="${T}" stroke-width="1.6"/>`; } // constructions: a circle drawn with a compass
+    return "";
+  },
   render() {
     this.layout();
     const s = this.s, P = (a, b, c) => this.P(a, b, c), h = 1.7;
@@ -2346,13 +2371,14 @@ Screens.map = {
       const tops = ch.topics.map((t, i) => ({ t, i, p: at[t.id] })).sort((a, b) => a.p[0] + a.p[1] - (b.p[0] + b.p[1]));
       tops.forEach(({ i, p }) => { const st = stateOf(ch.n, i); if (st < 3) return; const c = P(p[0], p[1], zt); g += `<ellipse cx="${c[0]}" cy="${c[1]}" rx="${(st === 4 ? 1.5 : 1.15) * s * 1.22}" ry="${(st === 4 ? 1.5 : 1.15) * s * 0.7}" fill="url(#mPool)"/>`; });
       tops.forEach(({ t, i, p }) => (g += this.pavilion(p[0], p[1], zt, stateOf(ch.n, i), `${ch.n}-${t.id}`)));
+      g += this.signature(ch.n, cx, cy, zt, h);
       // label and the hit area
       const top = P(cx - h, cy - h, zt), L = P(cx - h, cy + h, zt), R = P(cx + h, cy - h, zt), B = P(cx + h, cy + h, zt);
       const lit = ch.topics.filter((_, i) => stateOf(ch.n, i) >= 3).length;
       const anc = this.wide ? "middle" : ch.X > 0 ? "end" : "start", lx = this.wide ? top[0] : top[0] + (ch.X > 0 ? 64 : -64);
       g += `<text x="${lx}" y="${top[1] - 24}" text-anchor="${anc}" font-family="Eczar, Georgia, serif" font-weight="700" font-size="16" fill="#F7F0E6" stroke="#0B0D27" stroke-width="4" paint-order="stroke" letter-spacing=".02em">${ch.n} · ${ch.t}</text>`;
       if (ch.n === 5) { const pole = P(cx + h - 0.15, cy - h + 0.15, zt); g += `<path d="M${pole[0]},${pole[1]} L${pole[0]},${pole[1] - 2.4 * s}" stroke="#E9C27A" stroke-width="2"/><path d="M${pole[0]},${pole[1] - 2.4 * s} l${0.9 * s},${0.3 * s} l${-0.9 * s},${0.3 * s} z" fill="#FFC24D"/>
-        <g transform="translate(${pole[0] - 136} ${pole[1] - 1.6 * s})"><rect x="0" y="-13" width="128" height="24" fill="#FFC24D"/><path d="M128,-6 l6,5 l-6,5z" fill="#FFC24D"/><text x="8" y="4" font-family="Mukta, sans-serif" font-weight="700" font-size="14" fill="#2A1607">Your class is here</text></g>`; }
+        <g transform="translate(${this.wide ? pole[0] + 0.9 * s + 10 : pole[0] - 136} ${this.wide ? pole[1] - 2.1 * s : pole[1] - 1.6 * s})"><rect x="0" y="-13" width="128" height="24" fill="#FFC24D"/>${this.wide ? "" : '<path d="M128,-6 l6,5 l-6,5z" fill="#FFC24D"/>'}<text x="8" y="4" font-family="Mukta, sans-serif" font-weight="700" font-size="14" fill="#2A1607">Your class is here</text></g>`; }
       const hit = [P(cx - h, cy - h, zt + 2), R, P(cx + h, cy + h, zb + 4), P(cx - h, cy + h, zb + 4), L];
       w += `<g class="mesa" data-ch="${ch.n}">${g}<path class="hit" d="M${[top, R, B, P(cx + h, cy + h, zt - 3), P(cx - h, cy + h, zt - 3), L].map((p) => p[0].toFixed(1) + "," + p[1].toFixed(1)).join(" L")} Z" transform="translate(0 -14)" fill="transparent" role="button" tabindex="0" aria-label="Chapter ${ch.n}, ${ch.t}: ${lit} of ${ch.topics.length} ideas lit"/></g>`;
       const mb = P(cx, cy, zt - 6.2);

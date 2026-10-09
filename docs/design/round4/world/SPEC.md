@@ -264,15 +264,25 @@ round 3's four unrelated looks (kagaz, chalk, blueprint, raat).
 cross-fades. After that the face drops to 30 fps, then to the still (the same face). Last, the scenes swap to a flat
 two-stop gradient of the same hour. The game, the board and every signal keep working at every rung.
 
-**Measured: a proxy, not a phone** (`shots/perf.json`, `shots/perf.log`, 2026-10-09). Method: headless Chromium 1194
-(Playwright 1.63), **software WebGL (SwiftShader)**, CDP CPU throttle 1× and 4×, 360 × 800 at DPR 2, rAF intervals
-while each screen does its heaviest work: the face talking with the board drawing, two game splits, and a map drag.
-Three runs per cell. The per-run numbers are in `perf.log`. The lesson held a 16.7 ms median frame in every run. The
-game and the map had median frames of 16.7-36 ms, with p95 spikes of 33-183 ms on the split and drag moments. Software
-rasterising at DPR 2 is the likely cause, and a phone GPU composites those layers in hardware, **but that is a guess
-until the device run**. Two fixes cut the spikes during this work: bonds updated in place instead of rebuilt (game),
-and a promoted sky layer (map p95 at 4×: 166 → 67 ms, n = 1 each). **The test that settles it:** this file on a
-Mali-G52-class phone (for example a Redmi or Realme at Rs 10k), 20 fps p95 as the floor for the map and the game.
+**Measured: a proxy, not a phone** (`shots/perf.json`, 2026-10-09). Method: headless Chromium 1194
+(Playwright 1.63), **software WebGL (SwiftShader)**, CDP CPU throttle 1× and 4×, 360 × 800 at DPR 2. Frame intervals
+were taken from rAF during: the lesson (face talking, board drawing, 3 s), the game (two splits, 2.5 s) and the map
+(a 40-step drag, 2.5 s). n = 3 runs per throttle. The container was shared with other running jobs, so the spread is
+wide.
+
+| screen | median frame (ms), 1× / 4× | p95 frame (ms), 1× / 4× |
+|---|---|---|
+| lesson | 16.7-16.7 / 16.7-33.3 | 16.8-66.7 / 33.3-50 |
+| game | 16.7-33.4 / 16.7-33.3 | 16.8-166.7 / 99.9-133.3 |
+| map pan | 16.7-116.6 / 16.7-16.8 | 133.3-566.7 / 50-266.7 |
+
+What this says: the lesson (with the live face) holds frame. The game spikes on the split moment. **The map pan is
+the weakest screen.** Its world layer is ≈ 1180 × 3800 device px at DPR 2, which software compositing handles badly.
+A phone GPU composites it in hardware, **but that is unproven until the device run**. Mitigations, ready if the device
+says so: cap the map layer at DPR 1.5; or rasterise the valley once to bitmap tiles and pan those. Two fixes made during
+this work: bonds are updated in place instead of rebuilt (game), and the sky is a promoted layer (map). **The test
+that settles it:** this file on a Mali-G52-class phone (a Rs 10k Redmi or Realme), with a 20 fps p95 floor for the map
+and the game.
 
 ---
 
