@@ -14,7 +14,7 @@ import { scanSafety } from "../../server/director/safety.js";
 const argv = process.argv.slice(2);
 const set = argv.includes("--set") ? argv[argv.indexOf("--set") + 1] : "heldout";
 const verbose = argv.includes("--verbose");
-const rows = set === "dev" ? (await import("./dev-openings.mjs")).DEV_OPENINGS : (await import("./openings.mjs")).OPENINGS;
+const rows = set === "dev" ? (await import("./dev-openings.mjs")).DEV_OPENINGS : set === "heldout2" ? (await import("./heldout2-openings.mjs")).OPENINGS2 : (await import("./openings.mjs")).OPENINGS;
 
 // --model: every child turn also goes through the production classify() (DEPLOY_CLASSIFY, the model's distress read and the
 // content filter's fail-closed path), as the live route does during the intake (target mode "none"); its distress flag is

@@ -125,3 +125,9 @@ test("round B: a game / video / picture request never announces that nothing is 
     assert.match(n.move.must ?? "", re, text);
   }
 });
+
+test("game kills / headshots / hacks are declined in code at any length (never left to the note); a grown-up opening a long turn is a grown-up", () => {
+  for (const t of ["how do i get more kills in PUBG fast", "free fire mein headshot kaise maarte hain", "bgmi hack kaise download kare"]) assert.equal(readIntent(t)?.type, "oob", t);
+  for (const t of ["how to win in free fire", "minecraft mein ghar kaise banate hain", "the kills in the jungle are made by tigers"]) assert.notEqual(readIntent(t)?.type, "oob", t);
+  assert.equal(readIntent("this is her mom, she has a test on this tomorrow, focus on practice please")?.type, "adult");
+});

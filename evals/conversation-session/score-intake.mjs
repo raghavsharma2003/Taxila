@@ -12,7 +12,7 @@ import { matchTopic } from "../../server/lesson/purpose.js";
 const argv = process.argv.slice(2);
 const set = argv.includes("--set") ? argv[argv.indexOf("--set") + 1] : "dev";
 const verbose = argv.includes("--verbose");
-const rows = set === "heldout" ? (await import("./heldout-intake.mjs")).HELDOUT : (await import("./dev-intake.mjs")).DEV;
+const rows = set === "heldout" ? (await import("./heldout-intake.mjs")).HELDOUT : set === "heldout2" ? (await import("./heldout2-intake.mjs")).HELDOUT2 : (await import("./dev-intake.mjs")).DEV;
 
 const inGold = (id, gold) => !!id && gold.some((g) => g && id.startsWith(g));
 const nullOk = (gold) => gold.includes(null);

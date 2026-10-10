@@ -63,7 +63,7 @@ export const ALIASES = Object.freeze([
   { rx: /\b(?:physical\s+(?:and|aur)\s+chemical|chemical\s+changes?|physical\s+changes?)\b/i, adds: "physical chemical changes" },
   { rx: /\b(?:habitat|living\s+things|non[\s-]*living|sajeev|nirjeev)\b/i, adds: "living characteristics habitats" },
   { rx: /\b(?:germination|life\s+cycles?|ankuran)\b/i, adds: "germination life cycles" },
-  { rx: /\b(?:float(?:ing)?|sink(?:ing)?|tairna|doobna)\b/i, adds: "floating sinking" },
+  { rx: /\b(?:float(?:ing|s)?|sink(?:ing|s)?|tairna|tairti|tairta|doobna|doobti|doobta)\b|तैर|डूब/i, adds: "floating sinking" },
   { rx: /\b(?:nouns?|sangya)\b|संज्ञा/i, adds: "nouns noun" },
   { rx: /\b(?:verbs?|kriya)\b|क्रिया/i, adds: "verbs verb" },
   { rx: /\b(?:adjectives?|visheshan)\b|विशेषण/i, adds: "adjectives adjective" },
@@ -109,7 +109,36 @@ export const ALIASES = Object.freeze([
   { rx: /\b(?:birbal|khichdi)\b|बीरबल|खिचड़ी/i, ids: ["c3-hindi-ch06"] },
 ]);
 
-let INDEX = null;
+let INDEX = null, VOCAB = null;
+/** Every Latin title / chapter word of the syllabus (stemmed), for the misspelling step. */
+function vocab() {
+  if (VOCAB) return VOCAB;
+  VOCAB = new Set();
+  for (const bySubject of index().values()) for (const list of bySubject.values()) for (const tp of list) for (const w of [...tp.title, ...tp.chapter]) if (/^[a-z]{4,}$/.test(w)) VOCAB.add(w);
+  return VOCAB;
+}
+/** Edit distance with a cap (early exit). */
+function within(a, b, max) {
+  if (Math.abs(a.length - b.length) > max) return false;
+  let prev = Array.from({ length: b.length + 1 }, (_, j) => j);
+  for (let i = 1; i <= a.length; i++) {
+    const cur = [i];
+    let best = cur[0];
+    for (let j = 1; j <= b.length; j++) { cur[j] = Math.min(prev[j] + 1, cur[j - 1] + 1, prev[j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1)); best = Math.min(best, cur[j]); }
+    if (best > max) return false;
+    prev = cur;
+  }
+  return prev[b.length] <= max;
+}
+/** The one syllabus word within reach of a misspelt word (none when two or more are equally near: never a guess). */
+function nearestVocab(w) {
+  for (const max of w.length >= 7 ? [1, 2] : [1]) {
+    const hits = [...vocab()].filter((v) => v[0] === w[0] || max === 1 ? within(w, v, max) : false);
+    if (hits.length === 1) return hits[0];
+    if (hits.length > 1) return null;
+  }
+  return null;
+}
 const setOf = (s) => new Set(tokens(s).filter((x) => x.length >= 3));
 /** class → subject → [{ id, chapterId, chapterNumber, title, chapter, body }] (built once). */
 function index() {
@@ -148,6 +177,16 @@ export function subjectInClass(subject, cl) {
 export function queryOf(text) {
   const words = contentWords(text).filter((w) => !ACTIVITY_WORDS.has(w));
   const q = conceptTokens(words.join(" "));
+  // Devanagari words meet Devanagari titles as they are (purpose.js conceptTokens keeps only the ones it has a synonym for):
+  // "हार की जीत", "तीन मछलियाँ", "नीम"
+  for (const w of words) if (/[\u0900-\u097F]/.test(w) && w.length >= 2) q.add(w.normalize("NFC"));
+  // a misspelt school word ("simetry", "divison", "devide") meets the syllabus word one or two letters away (never a word the
+  // syllabus already has; ≥ 5 letters; 2 edits only from 7 letters)
+  for (const w of [...q]) {
+    if (!/^[a-z]{5,}$/.test(w) || vocab().has(w)) continue;
+    const near = nearestVocab(w);
+    if (near) q.add(near);
+  }
   const ids = [];
   for (const a of ALIASES) {
     if (!a.rx.test(String(text ?? ""))) continue;

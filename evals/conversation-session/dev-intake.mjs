@@ -42,4 +42,18 @@ export const DEV = [
   { id: "d26", cls: 6, text: "sst mein latitude longitude padhaya", kind: "taught", gold: ["c6-sst-ch01"] },
   { id: "d27", cls: 7, text: "heat transfer conduction convection kiya aaj", kind: "taught", gold: ["c7-science-ch07"] },
   { id: "d28", cls: 5, text: "multiples aur factors samajh nahi aaye", kind: "not_understood", gold: ["c5-maths-ch13"] },
+  // round 2 of the intake (after held-out set 1 was scored): the failure CLASSES it showed, with new lines written here
+  { id: "d29", cls: 6, text: "आज हिंदी में हार की जीत पढ़ी", kind: "taught", gold: ["c6-hindi-ch04"] },
+  { id: "d30", cls: 5, text: "simetry wale shapes banaye aaj", kind: "taught", gold: ["c5-maths-ch10"] },
+  { id: "d31", cls: 6, text: "maths wale sir nahi aaye, science mein magnets padhe", kind: "taught", gold: ["c6-science-ch04"] },
+  { id: "d32", cls: 7, text: "we just got our unit test papers back", kind: "nothing", gold: [null] },
+  { id: "d33", cls: 4, text: "idk didi", kind: "unknown", gold: [null] },
+  { id: "d34", cls: 8, text: "आज सिर्फ़ पीटी थी और खेल का पीरियड", kind: "nothing", gold: [null] },
+  { id: "d35", cls: 5, text: "आज मेरी दादी गाँव से आईं", kind: "share", gold: [null] },
+  { id: "d36", cls: 6, text: "factors aur multiples mein confuse ho gaya", kind: "not_understood", gold: ["c6-maths-ch05"] },
+  { id: "d37", cls: 7, text: "samjh nhi aaya acid wala", kind: "not_understood", gold: ["c7-science-ch02"] },
+  { id: "d38", cls: 8, text: "maths test tmrw on squares", kind: "test", gold: ["c8-maths-ch01"] },
+  { id: "d39", cls: 4, text: "आज ईवीएस में कौन सी चीज़ें तैरती हैं वो पढ़ा", kind: "taught", gold: ["c4-evs-ch07"] },
+  { id: "d40", cls: 6, text: "pata nai maam", kind: "unknown", gold: [null] },
+  { id: "d41", cls: 7, text: "devide wale sawal homework mein", kind: "homework", gold: ["c7-maths-ch10", "c7-maths-ch08", "c7-maths-ch12"] },
 ];

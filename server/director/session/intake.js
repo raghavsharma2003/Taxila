@@ -31,6 +31,12 @@ export function subjectOf(text) {
   for (const [s, rx] of SUBJECT_RX) if (rx.test(t)) return s;
   return null;
 }
+/** Every subject the words name, in the order they are said. PURE. */
+export function subjectsOf(text) {
+  const t = T(text);
+  return SUBJECT_RX.map(([s, rx]) => { const m = new RegExp(rx.source, rx.flags.replace("g", "")).exec(t); return m ? { s, at: m.index } : null; })
+    .filter(Boolean).sort((a, b) => a.at - b.at).map((x) => x.s);
+}
 
 // ── activity words: never a topic (TUTOR-MODEL §2.3 point 1) ──
 export const ACTIVITY_WORDS = new Set(("copy copies check checked checking checkd test tests exam exams paper papers homework hw homwork " +
@@ -40,25 +46,25 @@ export const ACTIVITY_WORDS = new Set(("copy copies check checked checking check
 
 // ── shapes ──
 const TEST_WORD = /\b(?:test|tests|exam|exams|paper|pariksha|parikshaa|quiz|unit\s+test|class\s+test|periodic|half[\s-]*yearly|mid[\s-]*term|weekly\s+test|viva|oral)\b|परीक्षा|टेस्ट|इम्तिहान/i;
-const FUTURE = /\b(?:kal|tomorrow|parso|next\s+(?:week|day|monday|tuesday|wednesday|thursday|friday|saturday)|(?:on\s+)?(?:monday|tuesday|wednesday|thursday|friday|saturday)|is\s+(?:hafte|week)|this\s+week|agle\s+(?:hafte|week|din)|coming|aane\s+wala|aane\s+wali|hone\s+wala|hone\s+wali|hoga|hogi|hai\s+kal|soon|jaldi)\b|कल|परसों|अगले|आने\s+वाल|होगा|होगी/i;
+const FUTURE = /\b(?:kal|kl|tomorrow|tmrw|tmr|tmrow|tomoro|tomorow|tommorow|parso|next\s+(?:week|day|monday|tuesday|wednesday|thursday|friday|saturday)|(?:on\s+)?(?:monday|tuesday|wednesday|thursday|friday|saturday)|is\s+(?:hafte|week)|this\s+week|agle\s+(?:hafte|week|din)|coming|aane\s+wala|aane\s+wali|hone\s+wala|hone\s+wali|hoga|hogi|hai\s+kal|soon|jaldi)\b|कल|परसों|अगले|आने\s+वाल|होगा|होगी/i;
 // a test that already happened today: "bas test tha", "test hua", "test diya", "test ki copy mili", "result aaya"
-const PAST_TEST = /\b(?:test|exam|paper|quiz)\s+(?:tha|thi|the|hua|hui|ho\s+gaya|ho\s+gayi|diya|diye|de\s+diya|liya|was|happened|got\s+over|over)\b|\b(?:had|wrote|gave)\s+(?:a|an|the|my)?\s*(?:test|exam|paper|quiz)\b|\b(?:test|exam|paper)\s+(?:ki|ka|ke)\s+(?:copy|copies|result|marks)\b|\b(?:result|marks)\s+(?:aaya|aaye|mila|mile|came)\b|टेस्ट\s+(?:था|हुआ|दिया)|परीक्षा\s+(?:थी|हुई)/i;
+const PAST_TEST = /\b(?:test|exam|unit\s+test|paper|papers|copies|copy|answer\s+sheets?)\s+(?:papers?\s+|copies\s+|sheets?\s+)?(?:back|wapas|waapas)\b|\bgot\s+(?:our|my|the)?\s*(?:\S+\s+){0,3}(?:papers?|copies|copy|results?|marks|sheets?)\s+back\b|\b(?:test|exam|paper|quiz)\s+(?:tha|thi|the|hua|hui|ho\s+gaya|ho\s+gayi|diya|diye|de\s+diya|liya|was|happened|got\s+over|over)\b|\b(?:had|wrote|gave)\s+(?:a|an|the|my)?\s*(?:test|exam|paper|quiz)\b|\b(?:test|exam|paper)\s+(?:ki|ka|ke)\s+(?:copy|copies|result|marks)\b|\b(?:result|marks)\s+(?:aaya|aaye|mila|mile|came)\b|टेस्ट\s+(?:था|हुआ|दिया)|परीक्षा\s+(?:थी|हुई)/i;
 const PRESENT_TEST = /\b(?:test|exam|paper|quiz|pariksha)\s+(?:hai|h|he|hain|is|aa\s+raha|aa\s+rahi|coming)\b|\b(?:test|exam)\s+ki\s+(?:taiyari|tayari|preparation)\b|\bprepare\s+for\b|टेस्ट\s+है|परीक्षा\s+है/i;
 const HW_WORD = /\b(?:home\s*work|homwork|hw|h\.w|grih\s*karya|griha\s*karya|assignment|project|worksheet)\b|होमवर्क|गृहकार्य|गृह\s*कार्य/i;
 const HW_NONE = /\b(?:home\s*work|hw)\s+(?:nahi|nahin|nhi)\s+(?:mila|diya|hai)\b|\bno\s+(?:home\s*work|hw)\b|\b(?:home\s*work|hw)\s+(?:check|checked|ho\s+gaya|done|finished|kar\s+liya|complete)\b|होमवर्क\s+नहीं/i;
-const CONFUSED = /\b(?:(?:kuch\s+(?:bhi\s+)?)?samajh?\s*(?:me|mein|mai)?\s*(?:nahi|nahin|nhi|na)\s*(?:aaya|aya|aaye|aaya|aa\s+raha|aa\s+rha|aa\s+rahe|aayi|aaraha)|(?:nahi|nahin|nhi)\s+samjh?(?:a|i|e)\b|samjh?(?:a|i)\s+(?:nahi|nahin|nhi)|i\s+(?:don'?t|do\s+not|didn'?t|did\s+not)\s+(?:get|understand)|(?:did\s+not|didn'?t|couldn'?t|could\s+not)\s+(?:get|understand)|i'?m\s+(?:confused|lost)|(?:not|wasn'?t|isn'?t)\s+clear|confusing|confused|samajh\s+(?:se\s+)?bahar)\b|समझ\s*(?:में)?\s*नहीं|नहीं\s*समझ/i;
+const CONFUSED = /\b(?:(?:kuch\s+(?:bhi\s+)?)?samajh?\s*(?:me|mein|mai)?\s*(?:nahi|nahin|nhi|na)\s*(?:aaya|aya|aaye|aaya|aa\s+raha|aa\s+rha|aa\s+rahe|aayi|aaraha)|(?:nahi|nahin|nhi)\s+samjh?(?:a|i|e)\b|samjh?(?:a|i)\s+(?:nahi|nahin|nhi)|i\s+(?:don'?t|do\s+not|didn'?t|did\s+not)\s+(?:get|understand)|(?:did\s+not|didn'?t|couldn'?t|could\s+not)\s+(?:get|understand)|i'?m\s+(?:confused|lost)|(?:not|wasn'?t|isn'?t)\s+clear|confusing|confused|samajh\s+(?:se\s+)?bahar|confuse\s+(?:ho\s+)?(?:gaya|gayi|gya|gyi|hai|hoon|hu)|samjh\s*(?:me|mein)?\s*(?:nahi|nhi|nahin)\s*(?:aaya|aya|aaye|aa\s+raha|aayi))\b|समझ\s*(?:में)?\s*(?:नहीं|नही)|(?:नहीं|नही)\s*समझ/i;
 // a wish to learn something of their own: "mujhe X ke baare mein jaanna hai", "X sikhao", "I want to learn X", "teach me X"
 const WANT = /\b(?:jaan(?:na|ni)\s+(?:hai|h|chahta|chahti)|seekh?(?:na|ni)\s+(?:hai|h|chahta|chahti)|sikh(?:na|ni)\s+(?:hai|h|chahta|chahti)|padhna\s+(?:chahta|chahti)|sikhao|sikhaiye|sikha\s+do|samjhao|samjhaiye|batao|bataiye|(?:i\s+)?(?:want|wanna|would\s+like)\s+to\s+(?:learn|know|study|understand)|teach\s+me|tell\s+me\s+about|can\s+(?:you|we)\s+(?:teach|learn|study|do)|i'?m\s+curious|curious\s+about|how\s+do(?:es)?\s+\w+)\b|जानना\s+है|सीखना\s+है|सिखाओ|बताओ|समझाओ/i;
 const ABOUT = /\b(?:ke|ki)\s+(?:baare|bare)\s+(?:mein|me|main)\b|\babout\b|के\s+बारे\s+में/i;
-const NOTHING = /\b(?:kuch\s+(?:bhi\s+)?(?:nahi|nahin|nhi|na)\s+(?:padhaya|padaya|padhaye|padha|sikhaya|hua|hui|kiya|khaas|special|naya|new)|kuch\s+(?:khaas|khas|special|naya)\s+(?:nahi|nahin|nhi)|nothing(?:\s+(?:much|special|new|happened|taught))?|not\s+much|no\s+(?:class|classes|school|teaching|period)|(?:school|class)\s+(?:band|bandh|off|closed)|chhutti|chutti|holiday|vacation|free\s+period|games?\s+period|pt\s+(?:period|tha|thi|hua)|sports?\s+day|annual\s+day|function\s+(?:tha|thi|hua)|teacher\s+(?:nahi|nahin|nhi)\s+(?:aaye|aayi|aaya|aai|aa(?:e|i))|(?:ma'?am|sir|maam|madam)\s+(?:nahi|nahin|nhi)\s+(?:aaye|aayi|aaya|aai|aa(?:e|i)|thi|the|tha)|(?:copy|copies|notebook|homework)\s+(?:check|checking)|check\s+(?:ki|kiya|kiye|hui|hua)\s+(?:copy|copies)|only\s+revision|bas\s+revision|revision\s+(?:hi|hua|kiya|karaya)|didn'?t\s+(?:teach|learn|do)\s+anything|did\s+not\s+(?:teach|learn|do)\s+anything)\b|कुछ\s+(?:भी\s+)?नहीं\s+(?:पढ़ाया|हुआ|सिखाया)|छुट्टी/i;
-const UNKNOWN = /^(?:(?:hmm+|umm+|uh+|haan|ha|ji|didi|ma'?am|ok)[\s,.]*)*(?:pata\s+nahi|pata\s+nahin|pta\s+(?:nahi|nhi)|maloom\s+nahi|yaad\s+(?:nahi|nahin|nhi)(?:\s+(?:hai|aa\s+raha|aaraha))?|kuch\s+yaad\s+(?:nahi|nahin|nhi)|bhool\s+(?:gaya|gayi|gya|gyi)|i\s+(?:don'?t|do\s+not)\s+(?:know|remember)|(?:i\s+)?forgot|(?:i\s+)?can'?t\s+remember|no\s+idea|not\s+sure|hmm+|umm+|पता\s+नहीं|याद\s+नहीं|भूल\s+गय[ाी])(?:[\s,.!?]+(?:didi|ma'?am|yaar|hai|h|kya|padhaya|hua|tha|thi))*[\s.!?]*$/i;
+const NOTHING = /\b(?:kuch\s+(?:bhi\s+)?(?:nahi|nahin|nhi|na)\s+(?:padhaya|padaya|padhaye|padha|sikhaya|hua|hui|kiya|khaas|special|naya|new)|kuch\s+(?:khaas|khas|special|naya)\s+(?:nahi|nahin|nhi)|nothing(?:\s+(?:much|special|new|happened|taught))?|not\s+much|no\s+(?:class|classes|school|teaching|period)|(?:school|class)\s+(?:band|bandh|off|closed)|chhutti|chutti|holiday|vacation|free\s+period|games?\s+period|pt\s+(?:period|tha|thi|hua)|sports?\s+day|annual\s+day|function\s+(?:tha|thi|hua)|teacher\s+(?:nahi|nahin|nhi)\s+(?:aaye|aayi|aaya|aai|aa(?:e|i))|(?:ma'?am|sir|maam|madam)\s+(?:nahi|nahin|nhi)\s+(?:aaye|aayi|aaya|aai|aa(?:e|i)|thi|the|tha)|(?:copy|copies|notebook|homework)\s+(?:check|checking)|check\s+(?:ki|kiya|kiye|hui|hua)\s+(?:copy|copies)|only\s+revision|bas\s+revision|revision\s+(?:hi|hua|kiya|karaya)|didn'?t\s+(?:teach|learn|do)\s+anything|did\s+not\s+(?:teach|learn|do)\s+anything)\b|कुछ\s+(?:भी\s+)?(?:नहीं|नही)\s+(?:पढ़ाया|हुआ|सिखाया)|छुट्टी|पीटी|खेल\s+(?:का|के)\s+पीरियड|गेम्स?\s+पीरियड|फ़?ंक्शन\s+की\s+(?:तैयारी|प्रैक्टिस)/i;
+const UNKNOWN = /^(?:(?:hmm+|umm+|uh+|haan|ha|ji|didi|ma'?am|ok)[\s,.]*)*(?:idk|dunno|pata\s+(?:nahi|nahin|nai|nhi)|pta\s+(?:nahi|nhi|nai)|(?:nahi|nai|nhi)\s+pata|maloom\s+nahi|yaad\s+(?:nahi|nahin|nhi)(?:\s+(?:hai|aa\s+raha|aaraha))?|kuch\s+yaad\s+(?:nahi|nahin|nhi)|bhool\s+(?:gaya|gayi|gya|gyi)|i\s+(?:don'?t|do\s+not)\s+(?:know|remember)|(?:i\s+)?forgot|(?:i\s+)?can'?t\s+remember|no\s+idea|not\s+sure|hmm+|umm+|पता\s+नहीं|याद\s+नहीं|भूल\s+गय[ाी])(?:[\s,.!?]+(?:didi|ma'?am|maam|mam|yaar|hai|h|kya|padhaya|hua|tha|thi))*[\s.!?]*$/i;
 // a life event: what they did or what happened to them, not school learning
-const SHARE = /\b(?:birthday|bday|janamdin|janmdin|jeet(?:a|e|i)|jeet\s+(?:gaye|gaya|gayi)|won|haar(?:a|e|i)|haar\s+(?:gaye|gaya|gayi)|lost\s+(?:the|a|our)?\s*(?:match|game)|match|cricket|football|kabaddi|khel(?:a|e)\b|played|gir(?:a|i|e)\s*(?:gaya|gayi|gaye)?|fell|chot|lagi|injured|dost|friend|friends|party|picnic|trip|ghoomne|ghumne|shaadi|wedding|naya\s+(?:pet|kutta|puppy|cycle|phone)|puppy|kitten|billi|kutta|gift|present|mummy|papa|mumma|didi\s+ne|bhaiya|nani|dadi|nana|dada|ghar\s+pe|movie\s+dekhi|cartoon|prize|medal|award|dance|competition|race)\b|जन्मदिन|जीत|दोस्त|मैच|गिर\s*गय/i;
+const SHARE = /\b(?:birthday|bday|janamdin|janmdin|jeet(?:a|e|i)|jeet\s+(?:gaye|gaya|gayi)|won|haar(?:a|e|i)|haar\s+(?:gaye|gaya|gayi)|lost\s+(?:the|a|our)?\s*(?:match|game)|match|cricket|football|kabaddi|khel(?:a|e)\b|played|gir(?:a|i|e)\s*(?:gaya|gayi|gaye)?|fell|chot|lagi|injured|dost|friend|friends|party|picnic|trip|ghoomne|ghumne|shaadi|wedding|naya\s+(?:pet|kutta|puppy|cycle|phone)|puppy|kitten|billi|kutta|gift|present|mummy|papa|mumma|didi\s+ne|bhaiya|nani|dadi|nana|dada|ghar\s+pe|movie\s+dekhi|cartoon|prize|medal|award|dance|competition|race)\b|जन्मदिन|जीत|दोस्त|मैच|गिर\s*गय|(?:दादी|दादा|नानी|नाना|मम्मी|पापा|मौसी|बुआ|चाचा)(?:\s+जी)?\s+(?:\S+\s+){0,3}(?:आए|आईं|आई|आये|गए|गईं)|गाँव|पार्टी|शादी|घूमने/i;
 // a learning verb: something was taught, studied, read, started
 const TAUGHT = /\b(?:padhaya|padhaaya|padaya|padhaye|padhayi|padhai\s+(?:hui|ki)|padha|padhe|padhi|padhte|sikhaya|sikhaye|sikhayi|seekha|sikha|seekhe|sikhe|karaya|karwaya|samjhaya|samjhaye|bataya|bataye|shuru\s+(?:kiya|hua|hui|kiye)|start(?:ed)?|began|begin|taught|teach|learnt|learned|learning|studied|study|did|done|read|chapter|lesson|topic|explained|discussed|covered)\b|पढ़ाया|पढ़ाए|पढ़ा|पढ़ी|सिखाया|सीखा|शुरू|समझाया|बताया/i;
 const TODAY = /\b(?:aaj|today|abhi)\b|आज/i;
 const THIS_WEEK = /\b(?:is\s+(?:hafte|week)|this\s+week|agle\s+(?:hafte|week)|next\s+week|parso|(?:on\s+)?(?:monday|tuesday|wednesday|thursday|friday|saturday))\b|परसों|अगले\s+हफ्ते/i;
-const TOMORROW_KAL = /\b(?:tomorrow|kal)\b|कल/i;
+const TOMORROW_KAL = /\b(?:tomorrow|kal|kl|tmrw|tmr|tmrow|tomoro|tomorow|tommorow)\b|कल/i;
 const PAST_KAL = /\bkal\s+(?:\S+\s+){0,3}(?:tha|thi|the|hua|hui|kiya|padhaya|diya)\b|\byesterday\b|कल\s+(?:\S+\s+){0,3}(?:था|थी|हुआ)/i;
 
 function whenOf(t) {
@@ -78,6 +84,17 @@ const STOP = new Set(("a an the is are was were be to of in on at for and or but
   "taught learnt learned studied read did done began begin explained discussed covered new naya nayi got have has had been being " +
   "baare bare about want jaanna seekhna sikhna sikhao batao samjhao learn know tell teach").split(" "));
 
+/** The subject of the clause that says what was learnt ("maths wale sir nahi aaye, science mein magnets padhe" → science);
+ *  else the first subject named. PURE. */
+function clauseSubject(t) {
+  const all = subjectsOf(t);
+  if (all.length <= 1) return all[0] ?? null;
+  const clauses = t.split(/\s*(?:[,;.!?]|\btoh?\b|\bto\b|\bbut\b|\blekin\b|\bpar\b|\bphir\b|\baur\b|\band\b)\s*/).filter(Boolean);
+  for (const c of clauses) if (TAUGHT.test(c) && !NOTHING.test(c)) { const s = subjectsOf(c)[0]; if (s) return s; }
+  for (const c of clauses) if (!NOTHING.test(c) && !/\b(?:absent|nahi\s+aa)/.test(c)) { const s = subjectsOf(c)[0]; if (s) return s; }
+  return all[0];
+}
+
 /** Content words: lower-case tokens (Latin + Devanagari) that are not stop words, activity words or subject names. */
 export function contentWords(text) {
   const raw = T(text).match(/[\p{L}\p{M}]+(?:'[\p{L}]+)?|\d+(?:[./]\d+)?/gu) ?? [];
@@ -92,7 +109,7 @@ export function contentWords(text) {
  */
 export function intakeParse(text) {
   const t = T(text);
-  const frame = (kind, extra = {}) => ({ kind, subject: subjectOf(t), when: whenOf(t), words: contentWords(t), also: [], src: "code", ...extra });
+  const frame = (kind, extra = {}) => ({ kind, subject: clauseSubject(t), when: whenOf(t), words: contentWords(t), also: [], src: "code", ...extra });
   if (!t) return frame("unknown");
   // the frozen floor decides first: a harm word pre-empts every reading (TUTOR-MODEL §2.2 last branch)
   if (scanSafety(text).distress) return frame("safety", { words: [] });
@@ -115,7 +132,8 @@ export function intakeParse(text) {
   if ((WANT.test(t) && (ABOUT.test(t) || words.length > 0) && !TAUGHT.test(t.replace(WANT, " "))) || (ABOUT.test(t) && words.length > 0 && !TAUGHT.test(t))) {
     return frame("want");
   }
-  if (NOTHING.test(t) || (TEST_WORD.test(t) && PAST_TEST.test(t) && words.length === 0) || (PAST_TEST.test(t) && !TAUGHT.test(t))) return frame("nothing");
+  const taughtContent = TAUGHT.test(t.replace(NOTHING, " ")) && contentWords(t.replace(NOTHING, " ")).length > 0;
+  if ((NOTHING.test(t) && !taughtContent) || (TEST_WORD.test(t) && PAST_TEST.test(t) && words.length === 0) || (PAST_TEST.test(t) && !TAUGHT.test(t))) return frame("nothing");
   if (UNKNOWN.test(t) || (wc(t) <= 3 && words.length === 0 && !subjectOf(t))) return frame("unknown");
   const taught = TAUGHT.test(t);
   const share = SHARE.test(t);
