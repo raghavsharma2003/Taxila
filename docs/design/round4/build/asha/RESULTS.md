@@ -421,6 +421,29 @@ listening hold.
 **Real phone:** not profiled. There is no Android device on this cloud container, so there was no CDP trace on one.
 Every number here is headless Chromium with software rendering.
 
+### The 5-step set-up cut and the #15 fixes (journey audit #12, #15; owner-approved via main, 2026-10-10)
+
+Patches 09-14 (`patches/APPLY.md`), with the before/after record in `docs/design/round4/build/journey/FIXES.md`.
+
+- **The cut** (patch 14): class + board + language · promises + 2-s hold · account · consent · the child's name + PIN +
+  "Give the phone to {child}". Defaults replace the other questions (Casual to class 5 / Respectful from 6, school
+  language = the chosen language, minutes by class, 06:30-21:30). In Hello she picks what she likes when the parent chose
+  none, and "Say hi to Asha" is the mic check (Skip always). The AI-disclosure card and the honesty promise are word for
+  word unchanged and still come first (`tests/r4-asha-setup-cut.test.mjs`). Migration **028** moves the hours column
+  defaults; applied to this stream's TEST branch only.
+- **Measured** (scripted, production build + TEST branch, headless Chromium, fixed waits, so the time is relative; n=2
+  per arm, `tests/prod/r4-asha-setup-journey.mjs`, `journey/setup-journey.json`):
+
+  | | steps | taps | fields | first sound, 360 | first sound, 1366 |
+  |---|---|---|---|---|---|
+  | before (9-step) | 9 | 28 | 4 | 26.1 / 25.3 s | 26.2 / 25.2 s |
+  | after (5-step) | 5 | 22 | 4 | 20.1 / 20.6 s | 20.3 / 20.3 s |
+
+  Her Hello gains two cards after her first sound (interests when none were chosen; say hi). The scripted walk through
+  them lands on `/c/:id/lesson/new` at both sizes, with Skip and with the fake microphone heard; no page errors.
+- **Harness note:** step 5's one submit (child, controls, PIN) takes ~1.7 s on the TEST branch; the first version of
+  the harness re-read the path too early and timed out. It now waits for the hand-over. Not a product fault.
+
 ## Not met / open
 
 - Part C waits on the pack.
