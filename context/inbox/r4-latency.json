@@ -1,0 +1,80 @@
+{
+  "nodes": [
+    {
+      "id": "ms-r4lat-baseline-2026-10-10",
+      "kind": "measurement",
+      "title": "r4 latency baseline of record: end of child speech -> her reply audible p50 5,183 / p90 6,712 ms (n = 58 turns; evals/relational-human/first-sound.mjs, 3 parallel lessons x 20, local in-process server, production routing incl. STT taxila-live-transcribe, server prefetch OFF, own Neon branch, synthetic child speech, US container, 2026-10-10). Within 15 % of 6,070 (timeline, fixed 750 ms fake ASR). 0/58 <= 900 ms. Stage p50: final transcript 1,599; server 2,689 (classify 848, note wait 1,429, reply 2,629, stored 2,689); response -> first PCM 785.",
+      "at": "2026-10-10"
+    },
+    {
+      "id": "ms-r4lat-l1-arms-2026-10-10",
+      "kind": "measurement",
+      "title": "r4 latency L1 arms, same harness and n (52-59 turns each, first-sound, prod routing, 2026-10-10, US container): prefetch on 4,630 / 6,580; + edgeTrim tail fix 4,164 / 5,354; + speculative Studio row 4,454 / 5,795; + EXACT speculation 4,413 / 5,788 (spec hits 36/52 vs 17/54); debounce 100 ms 4,185 / 5,915 (not kept). Run-to-run spread about +-250 ms (rewrites 11-21 per run). Bar p50 <= 3,000 / p90 <= 4,500 NOT met; 900 ms NOT met (0 of 400+ turns).",
+      "at": "2026-10-10"
+    },
+    {
+      "id": "ms-r4lat-edgetrim-hold-2026-10-10",
+      "kind": "measurement",
+      "title": "edgeTrim's tail rule held back the last 800 ms of ALL audio of part 0, so the first PCM byte waited ~250-350 ms past DragonHD's own first byte. Fixed (hold only the trailing quiet run): response -> first PCM p50 784 -> 408 ms (n = 59 -> 56, first-sound, 2026-10-10); warm-socket DragonHD first byte from the same host 413 ms SIN / 449 ms centralindia (n = 10 each, evals/latency/dhd-ttfb-region.mjs).",
+      "at": "2026-10-10"
+    },
+    {
+      "id": "ms-r4lat-preload-stt-2026-10-10",
+      "kind": "measurement",
+      "title": "The r4-timeline preload omitted production's TAXILA_STT_MODEL=taxila-live-transcribe; on gpt-4o-transcribe the deltas arrive with the final, so the device prefetch fired on 0/37 turns. With live-transcribe the joined deltas are complete at p50 ~850 ms after speech end and equal the final on 110/110 turns (synthetic adult-like child voice), final at ~1,550 ms (2026-10-10).",
+      "at": "2026-10-10"
+    },
+    {
+      "id": "ms-r4lat-l3-early-distress-2026-10-10",
+      "kind": "measurement",
+      "title": "L3 early distress read (predicate + distressCheck-shaped model call), evals/latency/l3-early-distress.mjs, 265 labelled distress lines + 100 plain hard negatives (evals/safety-robust, DEV data the predicate was tuned on), US container, 2026-10-10: grok-4-1-fast model read p50 480 / p90 585 ms, 0/365 within 300 ms; taxila-fast 1,154 / 1,473. Recall predicate-or-model 265/265 (not held out); false positives on plain negatives 3/100 (grok).",
+      "at": "2026-10-10"
+    },
+    {
+      "id": "dec-r4lat-edgetrim-quiet-tail",
+      "kind": "decision",
+      "title": "edgeTrim holds back only the quiet run after the last loud frame (<= MAX_TAIL_MS), never loud audio; same trim lengths (tests/r4-latency-edgetrim.test.mjs). Reverse if: a listener panel hears clipped sentence ends or a pop at part boundaries more often than on the old rule.",
+      "at": "2026-10-10"
+    },
+    {
+      "id": "dec-r4lat-spec-studio-row",
+      "kind": "decision",
+      "title": "Speculative plans carry the Studio row of the piece already on screen (turn.js specPlan + studioSeam.peekFactsRow, read only, patch 02), the same row the real turn adds after its kernel; TAXILA_SPEC_STUDIO_ROW=off restores the old plan. Reverse if: a speculative reply is ever adopted with a row the real turn did not add (key parity test fails) or peekFactsRow is shown to mutate Studio state.",
+      "at": "2026-10-10"
+    },
+    {
+      "id": "dec-r4lat-exact-spec-flag",
+      "kind": "decision",
+      "title": "EXACT speculation (perceive.js rule 5, TAXILA_EXACT_SPEC, ships OFF): on the prefetch, the reply for the turn's own plan starts once classify (and on a non-answer the note) is in; adopted only by the exact reply key; never on a distress read or a content-filter block. Switch on when: the main session confirms 0 hot-lane 429s from it at prod load. Reverse if: adopted replies differ from what the turn would have written (key parity) or quota 429s rise.",
+      "at": "2026-10-10"
+    },
+    {
+      "id": "dec-r4lat-first-sentence-shadow",
+      "kind": "decision",
+      "title": "TTS first sentence ships as SHADOW only (TAXILA_TTS_FIRST_SENTENCE=shadow): s1 locks only when it fails no per-sentence guard, asks nothing, names no screen/UI part, and s1 + the pinned kit question passes every whole-turn guard; never on closing, safety, check-in, forget-after-safety, why, thinking, break or diagnostic turns. A live mode (s1 audible before the rest is guarded and before the commit) needs a main-session decision: s1 of a turn that then fails to commit (409) would have been heard. Reverse if: shadow shows the lock breaking guard parity, or the main session accepts the 409 edge and the client path is built.",
+      "at": "2026-10-10"
+    },
+    {
+      "id": "rj-r4lat-debounce-100",
+      "kind": "rejection",
+      "title": "Tried: device prefetch debounce 100 ms instead of 250 (first-sound, n = 58, 2026-10-10). Broke nothing, but the prefetch fired only 210 ms sooner while sending 2.4 prefetches per turn (more model calls) and adoption fell to 47/58; reply audible 4,185 / 5,915 ms, within run-to-run noise of 250 ms. Kept 250 ms.",
+      "at": "2026-10-10"
+    },
+    {
+      "id": "open-r4lat-3000-floor",
+      "kind": "open",
+      "title": "Reply audible p50 <= 3,000 is not reachable on this harness under today's rules: final transcript ~1,550 ms (900 ms VAD silence) + note (taxila-gpt6 ~1,370) or reply (taxila-fast ~1,300) + commit 50 + DragonHD 400 + 110 lead ~ 3,000 on a CLEAN speculation hit; misses and rewrites (25-35 % of turns) put the p50 at ~4,200-4,450. Needs one of: faster note and reply models (<= ~700 ms), fewer guard rewrites, a live first-sentence path, or committing on the stable partial (L3, owner + safety decision).",
+      "at": "2026-10-10"
+    }
+  ],
+  "edges": [
+    { "src": "ms-r4lat-baseline-2026-10-10", "rel": "measured_by", "dst": "ms-r3rv-silence-after-answer-2026-10-10" },
+    { "src": "dec-r4lat-edgetrim-quiet-tail", "rel": "measured_by", "dst": "ms-r4lat-edgetrim-hold-2026-10-10" },
+    { "src": "dec-r4lat-exact-spec-flag", "rel": "measured_by", "dst": "ms-r4lat-l1-arms-2026-10-10" },
+    { "src": "dec-r4lat-spec-studio-row", "rel": "measured_by", "dst": "ms-r4lat-l1-arms-2026-10-10" },
+    { "src": "rj-r3rh-token-ack-before-distress", "rel": "constrains", "dst": "dec-r4lat-first-sentence-shadow" },
+    { "src": "rj-r3rh-token-ack-before-distress", "rel": "constrains", "dst": "dec-r4lat-exact-spec-flag" },
+    { "src": "open-r4lat-3000-floor", "rel": "caused_by", "dst": "ms-r4lat-l1-arms-2026-10-10" },
+    { "src": "ms-r4lat-l3-early-distress-2026-10-10", "rel": "part_of", "dst": "open-r4lat-3000-floor" }
+  ]
+}
