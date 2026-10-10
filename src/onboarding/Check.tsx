@@ -13,12 +13,8 @@ import { readStore, writeStore } from "../app/storage.ts";
 
 type Mic = "idle" | "listening" | "ok" | "none";
 
-/** PURE. RMS of a byte time-domain frame (128 = silence) → 0..1. */
-export function levelOf(buf: Uint8Array): number {
-  let s = 0;
-  for (const v of buf) { const x = (v - 128) / 128; s += x * x; }
-  return Math.sqrt(s / Math.max(1, buf.length));
-}
+import { levelOf } from "../child/sayHi.ts";
+export { levelOf };
 
 function beep(): void {
   try {
@@ -31,7 +27,7 @@ function beep(): void {
     g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.6);
     o.connect(g).connect(ctx.destination);
     o.start(); o.stop(ctx.currentTime + 0.65);
-    o.onended = () => void ctx.close();
+    o.onended = () => void ctx.close().catch(() => {});
   } catch { /* no audio on this device: the grown-up still sees the button */ }
 }
 
@@ -57,7 +53,17 @@ export function CheckStep() {
       ctx.createMediaStreamSource(stream).connect(an);
       const buf = new Uint8Array(an.fftSize);
       let peak = 0, raf = 0;
-      const end = () => { cancelAnimationFrame(raf); stream.getTracks().forEach((t) => t.stop()); void ctx.close(); };
+      // round 4 journey audit #15: end() runs when the test finishes AND again from Continue / unmount (stop.current);
+      // a second ctx.close() rejected ("Cannot close a closed AudioContext"), an unhandled page error. Once only.
+      let ended = false;
+      const end = () => {
+        if (ended) return;
+        ended = true;
+        cancelAnimationFrame(raf);
+        stream.getTracks().forEach((t) => t.stop());
+        if (ctx.state !== "closed") void ctx.close().catch(() => {});
+        stop.current = () => {};
+      };
       stop.current = end;
       const t0 = performance.now();
       const tick = () => {

@@ -6,13 +6,16 @@
 //   2 The AI card: states/ai-teacher-card + "I'm a computer teacher, not a person." + "Your grown-ups can see what we
 //     learn." + Got it (always a labelled button).
 //   3 Pick your picture: 6 of the 24 avatar discs, "More pictures", "That's me". This is the Who tile from now on.
-//   4 Confirm what you like: the parent's picks preselected; That's right · Change. (Skipped when the parent chose none.)
+//   4 Confirm what you like: the parent's picks preselected; That's right · Change. When the parent chose none (the
+//     5-step set-up no longer asks, round 4 audit #12) she picks them herself: the Change card, up to 3.
+//   5 Say hi to {T}: the set-up's microphone check, now hers. A tap listens on this device for up to 6 s (nothing is
+//     recorded or sent); heard → "{T} heard you!" and on; no mic → this device starts in tap-and-type. Skip is always there.
 //   There is no teacher card: ONE teacher, Asha, for every child (dc-r4-single-teacher-asha). The pick-a-teacher card
 //   and the name-your-teacher card are gone (round 4); a name a child gave her before is still honoured everywhere
 //   (the server sends it), and the naming code stays in src/child/teacher for the owner's one-line restore.
 // Then STRAIGHT into lesson 1: no second start gate (the Desk carries none). Every label is English; what she says
 // is in the family's language.
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Teacher } from "../../ui/teacher/Teacher.tsx";
 import { useTeacher } from "../../ui/teacher/useTeacher.ts";
@@ -23,10 +26,11 @@ import { INTERESTS, interestIds } from "../interests.ts";
 import { t } from "../copy.ts";
 import { AVATARS, Avatar, avatarName, Icon, Picto } from "../pictos.tsx";
 import { helloClip, useVoiceClip } from "../voice.ts";
+import { listenOnce } from "../sayHi.ts";
 
 const label = (id: string) => id.charAt(0).toUpperCase() + id.slice(1);
 
-type Card = "greet" | "ai" | "picture" | "likes" | "change";
+type Card = "greet" | "ai" | "picture" | "likes" | "change" | "hi";
 
 function InterestTile({ id, on, toggle }: { id: string; on: boolean; toggle?: () => void }) {
   const body = (
@@ -53,6 +57,9 @@ export function Hello() {
   const [avatar, setAvatar] = useState<string | null>(child.avatar ?? null);
   const [page, setPage] = useState(0);
   const [likes, setLikes] = useState<string[]>(parentPicks);
+  const [hi, setHi] = useState<"idle" | "listening" | "heard" | "none">("idle");
+  const stopHi = useRef<() => void>(() => {});
+  useEffect(() => () => stopHi.current(), []);
   // The hand-over tap is the audio unlock (flows G14; V2 §3.3): when this page was reached by a tap (the SPA carries
   // user activation), her greeting plays at once, with no second "Tap to hear {T}" gate. A cold load keeps the button.
   const [autoTried, setAutoTried] = useState(false);
@@ -86,8 +93,21 @@ export function Hello() {
     }
     nav(`/c/${cid}/lesson/new`, { replace: true });
   };
-  const afterLikes = (picks: string[]) => { setLikes(picks); void finish(picks); };
-  const afterPicture = () => (parentPicks.length ? setCard("likes") : void finish());
+  const afterLikes = (picks: string[]) => { setLikes(picks); setCard("hi"); };
+  const afterPicture = () => setCard(parentPicks.length ? "likes" : "change");
+  const sayHi = () => {
+    setHi("listening");
+    const l = listenOnce(6000);
+    stopHi.current = l.stop;
+    void l.done.then((r) => {
+      if (r === "stopped") return;
+      setHi(r);
+      // no working mic: this device's lessons start in tap-and-type (she can turn talking on in Me)
+      if (r === "none") setPrefs({ quiet: true });
+      if (r === "heard") setTimeout(() => void finish(), 900);
+    });
+  };
+  const skipHi = () => { stopHi.current(); void finish(); };
 
   const pageAvatars = AVATARS.slice((page * 6) % AVATARS.length, ((page * 6) % AVATARS.length) + 6);
   const framing = young ? t("storyStart") : t("olderStart");
@@ -137,7 +157,6 @@ export function Hello() {
             </button>
             <button type="button" className="cs-btn cs-btn--primary" disabled={!avatar} onClick={afterPicture} data-testid="hello-thatsme">{t("thatsMe")}</button>
           </div>
-          {!parentPicks.length && <p className="hello-framing">{framing}</p>}
         </>
       );
       break;
@@ -150,7 +169,6 @@ export function Hello() {
             <button type="button" className="cs-btn cs-btn--secondary" onClick={() => setCard("change")}><Picto id="picto/pencil" size={32} /> <span>{t("change")}</span></button>
             <button type="button" className="cs-btn cs-btn--primary" onClick={() => afterLikes(parentPicks)} data-testid="hello-right">{t("thatsRight")}</button>
           </div>
-          <p className="hello-framing">{framing}</p>
         </>
       );
       break;
@@ -165,6 +183,23 @@ export function Hello() {
             ))}
           </div>
           <button type="button" className="cs-btn cs-btn--primary hello-go" onClick={() => afterLikes(likes)} data-testid="hello-done">{t("done")}</button>
+        </>
+      );
+      break;
+    case "hi":
+      body = (
+        <>
+          <h2 tabIndex={-1} className="hello-q">{hi === "heard" ? t("sayHiHeard", { T: rec.name }) : hi === "listening" ? t("sayHiListening", { T: rec.name }) : t("sayHiQ", { T: rec.name })}</h2>
+          {hi === "none" && <p className="hello-line2" role="status">{t("sayHiNone")}</p>}
+          <div className="hello-row">
+            <button type="button" className="cs-btn cs-btn--secondary" onClick={skipHi} data-testid="hello-skip">{hi === "none" ? t("helloNext") : t("skip")}</button>
+            {hi !== "none" && (
+              <button type="button" className="cs-btn cs-btn--primary" onClick={sayHi} disabled={hi !== "idle"} data-testid="hello-sayhi">
+                <Icon name="mic" /> <span>{t("sayHiStart")}</span>
+              </button>
+            )}
+          </div>
+          <p className="hello-framing">{framing}</p>
         </>
       );
       break;

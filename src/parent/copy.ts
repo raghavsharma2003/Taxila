@@ -105,3 +105,7 @@ export function parentError(e: unknown): string {
 }
 /** True when the failure is about the password field (attach it there, not at the bottom of the form). */
 export const isPasswordError = (e: unknown) => e instanceof ApiError && ((e.body ?? {}) as { code?: string; field?: string }).code === "password_wrong";
+
+/** A home tip without its "At home:" lead (the card is titled "Try at home"), starting with a capital: round 4 journey
+ *  audit #15 ("ask Riya …" read as a fragment). */
+export const atHomeText = (t: string): string => { const s = t.replace(/^At home:\s*/, ""); return s.charAt(0).toUpperCase() + s.slice(1); };

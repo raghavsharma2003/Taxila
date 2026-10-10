@@ -12,7 +12,7 @@ import { StepFrame } from "./Layout.tsx";
 import { clearDraft, useDraft } from "./draft.ts";
 
 interface Controls { dailyMinutes: number; hoursStart: string; hoursEnd: string }
-const defaultsFor = (cl: number): Controls => ({ dailyMinutes: cl <= 2 ? 20 : cl <= 5 ? 30 : 45, hoursStart: "06:30", hoursEnd: "21:30" });
+export const defaultsFor = (cl: number): Controls => ({ dailyMinutes: cl <= 2 ? 20 : cl <= 5 ? 30 : 45, hoursStart: "06:30", hoursEnd: "21:30" });
 
 export function MinutesStepper({ value, onChange, min = 10, max = 120 }: { value: number; onChange: (n: number) => void; min?: number; max?: number }) {
   return (

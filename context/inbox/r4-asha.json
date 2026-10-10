@@ -47,6 +47,18 @@
       "kind": "open",
       "title": "No client sends purpose 'session' (base src/child/lesson/answers.ts purposeOf; stream K's Start too), so TAXILA_SESSION_FIRST's 'aaj school mein kya hua' start (which works at the API and adapts to the child's school topic) is unreachable. Owner of the fix: stream K (Kaksha Start) + 4A.",
       "at": "2026-10-10"
+    },
+    {
+      "id": "dc-r4a-five-step-setup",
+      "kind": "decision",
+      "title": "Set-up is 5 steps (owner-approved via main 2026-10-10): class+board+language, promises+2-s hold, account, consent, child name+PIN+\"Give the phone to {child}\". Defaults replace the rest (Casual to class 5 / Respectful from 6; school language = chosen language; minutes by class; 06:30-21:30, migration 028). The child picks interests in Hello when the parent chose none; Hello \"Say hi\" is the mic check (Skip). The AI-disclosure card and honesty promise unchanged and first. Reversal: a parent study shows the defaults are wrong for most families, or the PIN-on-step-5 load causes drop-off.",
+      "at": "2026-10-10"
+    },
+    {
+      "id": "ms-r4a-setup-cut-2026-10-10",
+      "kind": "measurement",
+      "title": "Set-up before/after (scripted parent, production build + stream TEST branch, headless Chromium, fixed waits so time is relative, n=2 per arm): steps 9->5, taps 28->22, fields 4->4, ms to her first sound 26082/25254->20115/20636 at 360x800 and 26202/25246->20285/20254 at 1366x768. Hello gains two child cards after the first sound.",
+      "at": "2026-10-10"
     }
   ],
   "edges": [
@@ -89,6 +101,11 @@
       "src": "open-r4a-session-first-no-client",
       "rel": "measured_by",
       "dst": "ms-r4a-journey-audit-2026-10-10"
+    },
+    {
+      "src": "dc-r4a-five-step-setup",
+      "rel": "measured_by",
+      "dst": "ms-r4a-setup-cut-2026-10-10"
     }
   ]
 }

@@ -1,0 +1,47 @@
+diff --git a/src/parent/Home.tsx b/src/parent/Home.tsx
+index 6ff51410..d8e2a050 100644
+--- a/src/parent/Home.tsx
++++ b/src/parent/Home.tsx
+@@ -16,7 +16,7 @@ import { teacherRecord } from "../ui/teacher/useTeacher.ts";
+ import { bandForClass } from "../app/band.ts";
+ import { isRelock, parentApi, speakUrl, type Claim, type Overview, type SyllabusOut } from "./api.ts";
+ import { gateHeadline } from "./claims.ts";
+-import { dayWord, fmtClock, fmtDayLong, HOME, parentError } from "./copy.ts";
++import { atHomeText, dayWord, fmtClock, fmtDayLong, HOME, parentError } from "./copy.ts";
+ import { EvidenceSheet } from "./EvidenceSheet.tsx";
+ import { ReportEvidenceSheet } from "./Report.tsx";
+ import { useGate } from "./Gate.tsx";
+@@ -99,7 +99,7 @@ function TryAtHome({ d, cid, onHow }: { d: NonNullable<Overview["tryAtHome"]>; c
+           {d.pictures.map((p) => <li key={p}><Art id={p} className="pa-pic" alt={p.split("/")[1].replace(/-/g, " ")} fallback={<span />} /></li>)}
+         </ul>
+       )}
+-      <p className="pa-try-text">{d.text.replace(/^At home:\s*/, "")}</p>
++      <p className="pa-try-text">{atHomeText(d.text)}</p>
+       {d.claimId && (
+         <button type="button" className="pa-how pa-textbtn" onClick={() => onHow(d.claimId!)}>How do we know? <Icon name="chevron" size={18} /></button>
+       )}
+diff --git a/src/parent/copy.ts b/src/parent/copy.ts
+index 6d4dc66a..ab1c60e5 100644
+--- a/src/parent/copy.ts
++++ b/src/parent/copy.ts
+@@ -105,3 +105,7 @@ export function parentError(e: unknown): string {
+ }
+ /** True when the failure is about the password field (attach it there, not at the bottom of the form). */
+ export const isPasswordError = (e: unknown) => e instanceof ApiError && ((e.body ?? {}) as { code?: string; field?: string }).code === "password_wrong";
++
++/** A home tip without its "At home:" lead (the card is titled "Try at home"), starting with a capital: round 4 journey
++ *  audit #15 ("ask Riya …" read as a fragment). */
++export const atHomeText = (t: string): string => { const s = t.replace(/^At home:\s*/, ""); return s.charAt(0).toUpperCase() + s.slice(1); };
+diff --git a/src/parent/parent.css b/src/parent/parent.css
+index 2eb90307..7c985bd8 100644
+--- a/src/parent/parent.css
++++ b/src/parent/parent.css
+@@ -56,7 +56,7 @@ html:has(.pa[data-tabs="off"]) { scroll-padding-top: 64px; }
+ .pa-tabs { position: fixed; inset: auto 0 0 0; z-index: 20; display: grid; grid-template-columns: repeat(4, 1fr); min-height: 64px;
+   padding-bottom: env(safe-area-inset-bottom); background: var(--surface); border-top: 1px solid var(--tray); }
+ .pa-tab { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; min-height: 64px; color: var(--ink-2);
+-  text-decoration: none; font-size: 0.8125rem; font-weight: 600; }
++  text-decoration: none; font-size: 0.875rem; font-weight: 600; }  /* 14 px: the floor (journey audit #15; was 13) */
+ .pa-tab.is-active { color: var(--nib); }
+ .pa-tab.is-active span { text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 4px; }
+ .pa-main { min-width: 0; }

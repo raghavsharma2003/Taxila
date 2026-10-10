@@ -10,11 +10,20 @@ import { Brand } from "../app/Shell.tsx";
 import { useSurface } from "../app/band.ts";
 import { Scene } from "../child/art.tsx";
 
-/** The parent's first run, in order (§3.2): class first, so the parent meets the ACTUAL teacher (audit #4). */
-export const STEPS = ["class", "meet", "promises", "phone", "consent", "child", "controls", "check", "handover"] as const;
-/** Adding a second child: class → meet → about → controls → hand over (§3.2 "recounts"). */
-export const ADD_STEPS = ["class", "meet", "child", "controls", "handover"] as const;
-export type Step = (typeof STEPS)[number];
+/** Every set-up screen (some are off the first run since round 4's cut, but stay reachable by URL). */
+export type Step = "class" | "meet" | "promises" | "phone" | "consent" | "child" | "controls" | "check" | "handover";
+/**
+ * The parent's first run, in order (§3.2; round 4 journey audit #12, the main session's cut, 2026-10-10): FIVE steps
+ * before the child hears her. Class + board + the language she speaks (was class, then "Meet"); the promises and their
+ * 2-s hold; the account; consent; the child's name + the parent PIN, whose button hands the phone over. Deferred to
+ * defaults the parent changes in the Parent corner: how she speaks (Casual to class 5, Respectful 6-9), the school's
+ * language (the chosen one), daily time and hours (by class; 06:30-21:30). Moved into the child's Hello: the interests
+ * (the child picks them) and the sound / mic check ("say hi", with Skip). The AI disclosure is unchanged: the first
+ * promise row here and Hello's AI card.
+ */
+export const STEPS: readonly Step[] = ["class", "promises", "phone", "consent", "child"];
+/** Adding a second child (behind the parent PIN): class → name, then the hand-over. */
+export const ADD_STEPS: readonly Step[] = ["class", "child"];
 
 export function StepFrame({ step, title, why, children, back = true, footer, docTitle }:
   { step: Step | null; title: ReactNode; why?: ReactNode; children: ReactNode; back?: boolean; footer?: ReactNode; docTitle?: string }) {

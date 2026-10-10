@@ -1,0 +1,15 @@
+diff --git a/src/child/child.css b/src/child/child.css
+index 34ad2d55..2389caaf 100644
+--- a/src/child/child.css
++++ b/src/child/child.css
+@@ -369,7 +369,9 @@
+ .hello { background: var(--paper); }
+ .hello-main { display: flex; flex-direction: column; gap: var(--space-3); min-height: 100dvh; max-width: 560px; margin: 0 auto; padding: var(--space-3) var(--space-4) var(--space-4); }
+ .hello-face { height: clamp(200px, 42dvh, 360px); flex: none; }
+-.hello-main[data-compact] .hello-face { height: 168px; }
++/* round 4 journey audit #15: the compact face is a centred square, so the cards after the greeting show her whole face
++   (a 168-tall strip the full width showed only her hair and forehead) */
++.hello-main[data-compact] .hello-face { height: 168px; width: 168px; align-self: center; }
+ .hello-card { display: flex; flex-direction: column; align-items: center; gap: var(--space-3); text-align: center; }
+ .hello-card :is(h1, h2) { outline: none; }
+ .hello-name { font-size: var(--t-display); font-weight: 700; }

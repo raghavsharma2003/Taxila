@@ -1,0 +1,32 @@
+diff --git a/src/onboarding/Check.tsx b/src/onboarding/Check.tsx
+index 24e95a33..75b7a0fe 100644
+--- a/src/onboarding/Check.tsx
++++ b/src/onboarding/Check.tsx
+@@ -31,7 +31,7 @@ function beep(): void {
+     g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.6);
+     o.connect(g).connect(ctx.destination);
+     o.start(); o.stop(ctx.currentTime + 0.65);
+-    o.onended = () => void ctx.close();
++    o.onended = () => void ctx.close().catch(() => {});
+   } catch { /* no audio on this device: the grown-up still sees the button */ }
+ }
+ 
+@@ -57,7 +57,17 @@ export function CheckStep() {
+       ctx.createMediaStreamSource(stream).connect(an);
+       const buf = new Uint8Array(an.fftSize);
+       let peak = 0, raf = 0;
+-      const end = () => { cancelAnimationFrame(raf); stream.getTracks().forEach((t) => t.stop()); void ctx.close(); };
++      // round 4 journey audit #15: end() runs when the test finishes AND again from Continue / unmount (stop.current);
++      // a second ctx.close() rejected ("Cannot close a closed AudioContext"), an unhandled page error. Once only.
++      let ended = false;
++      const end = () => {
++        if (ended) return;
++        ended = true;
++        cancelAnimationFrame(raf);
++        stream.getTracks().forEach((t) => t.stop());
++        if (ctx.state !== "closed") void ctx.close().catch(() => {});
++        stop.current = () => {};
++      };
+       stop.current = end;
+       const t0 = performance.now();
+       const tick = () => {

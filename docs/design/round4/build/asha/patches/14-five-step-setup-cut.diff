@@ -1,0 +1,583 @@
+diff --git a/db/migrations/028_child_controls_hours_default.sql b/db/migrations/028_child_controls_hours_default.sql
+new file mode 100644
+index 00000000..1e925e0a
+--- /dev/null
++++ b/db/migrations/028_child_controls_hours_default.sql
+@@ -0,0 +1,6 @@
++-- 028: the default lesson hours are 06:30-21:30 IST (round 4 journey audit #11, owner-approved 2026-10-10; was
++-- 07:00-20:30, which refused Indian homework time after 20:30). The app writes the hours explicitly on every
++-- controls save; this keeps a row inserted without them on the same default. Existing rows are not changed: a
++-- parent's saved hours are theirs.
++alter table child_controls alter column hours_start set default '06:30';
++alter table child_controls alter column hours_end set default '21:30';
+diff --git a/src/child/copy.ts b/src/child/copy.ts
+index 2514c861..4660bb6c 100644
+--- a/src/child/copy.ts
++++ b/src/child/copy.ts
+@@ -142,6 +142,13 @@ const S = {
+   change: "Change",
+   done: "Done",
+   helloNext: "Next",
++  // Hello's "say hi" (round 4: the set-up's microphone check, now hers; nothing is recorded)
++  sayHiQ: "Say hi to {T}",
++  sayHiListening: "{T} is listening",
++  sayHiHeard: "{T} heard you",
++  sayHiNone: "That's OK. You can tap and type too.",
++  sayHiStart: "Say hi",
++  skip: "Skip",
+   storyStart: "Let's start the first lesson.",
+   olderStart: "Let's find what you already know. Nobody sees a score.",
+ } as const;
+diff --git a/src/child/sayHi.ts b/src/child/sayHi.ts
+new file mode 100644
+index 00000000..4c2d6861
+--- /dev/null
++++ b/src/child/sayHi.ts
+@@ -0,0 +1,56 @@
++// Round 4 journey audit #12 (the 5-step cut): the microphone check moved from the parent's set-up (step 8) into
++// Hello as "Say hi to {T}". Nothing is recorded or sent: the level is read on this device for at most `ms` and the
++// stream and its AudioContext are closed exactly once (the #15 page error was a second close()).
++
++/** PURE. RMS of a byte time-domain frame (128 = silence) → 0..1. */
++export function levelOf(buf: Uint8Array): number {
++  let s = 0;
++  for (const v of buf) { const x = (v - 128) / 128; s += x * x; }
++  return Math.sqrt(s / Math.max(1, buf.length));
++}
++
++/** A level over this is a voice (the set-up check's threshold, unchanged). */
++export const HEARD_LEVEL = 0.04;
++
++/**
++ * Listen once. Resolves "heard" at the first frame over HEARD_LEVEL, "none" after `ms` of quiet or when there is no
++ * microphone / it is refused. `stop()` ends it early (resolves "stopped"); safe to call any number of times.
++ */
++export function listenOnce(ms = 6000, onLevel?: (l: number) => void): { done: Promise<"heard" | "none" | "stopped">; stop: () => void } {
++  let stopEarly = () => {};
++  let stopped = false;
++  const done = new Promise<"heard" | "none" | "stopped">((resolve) => {
++    stopEarly = () => { stopped = true; resolve("stopped"); };
++    (async () => {
++      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
++      if (stopped) { stream.getTracks().forEach((t) => t.stop()); return; }
++      const ctx = new AudioContext();
++      const an = ctx.createAnalyser();
++      an.fftSize = 1024;
++      ctx.createMediaStreamSource(stream).connect(an);
++      const buf = new Uint8Array(an.fftSize);
++      let raf = 0, ended = false;
++      const end = (r: "heard" | "none" | "stopped") => {
++        if (ended) return;
++        ended = true;
++        cancelAnimationFrame(raf);
++        stream.getTracks().forEach((t) => t.stop());
++        if (ctx.state !== "closed") void ctx.close().catch(() => {});
++        resolve(r);
++      };
++      stopEarly = () => { stopped = true; end("stopped"); };
++      const t0 = performance.now();
++      const tick = () => {
++        if (stopped) return end("stopped");
++        an.getByteTimeDomainData(buf);
++        const l = levelOf(buf);
++        onLevel?.(l);
++        if (l > HEARD_LEVEL) return end("heard");
++        if (performance.now() - t0 > ms) return end("none");
++        raf = requestAnimationFrame(tick);
++      };
++      raf = requestAnimationFrame(tick);
++    })().catch(() => resolve("none"));
++  });
++  return { done, stop: () => stopEarly() };
++}
+diff --git a/src/child/screens/Hello.tsx b/src/child/screens/Hello.tsx
+index 97867f6b..88cbb792 100644
+--- a/src/child/screens/Hello.tsx
++++ b/src/child/screens/Hello.tsx
+@@ -6,13 +6,16 @@
+ //   2 The AI card: states/ai-teacher-card + "I'm a computer teacher, not a person." + "Your grown-ups can see what we
+ //     learn." + Got it (always a labelled button).
+ //   3 Pick your picture: 6 of the 24 avatar discs, "More pictures", "That's me". This is the Who tile from now on.
+-//   4 Confirm what you like: the parent's picks preselected; That's right · Change. (Skipped when the parent chose none.)
++//   4 Confirm what you like: the parent's picks preselected; That's right · Change. When the parent chose none (the
++//     5-step set-up no longer asks, round 4 audit #12) she picks them herself: the Change card, up to 3.
++//   5 Say hi to {T}: the set-up's microphone check, now hers. A tap listens on this device for up to 6 s (nothing is
++//     recorded or sent); heard → "{T} heard you!" and on; no mic → this device starts in tap-and-type. Skip is always there.
+ //   There is no teacher card: ONE teacher, Asha, for every child (dc-r4-single-teacher-asha). The pick-a-teacher card
+ //   and the name-your-teacher card are gone (round 4); a name a child gave her before is still honoured everywhere
+ //   (the server sends it), and the naming code stays in src/child/teacher for the owner's one-line restore.
+ // Then STRAIGHT into lesson 1: no second start gate (the Desk carries none). Every label is English; what she says
+ // is in the family's language.
+-import { useEffect, useMemo, useState } from "react";
++import { useEffect, useMemo, useRef, useState } from "react";
+ import { useNavigate } from "react-router-dom";
+ import { Teacher } from "../../ui/teacher/Teacher.tsx";
+ import { useTeacher } from "../../ui/teacher/useTeacher.ts";
+@@ -23,10 +26,11 @@ import { INTERESTS, interestIds } from "../interests.ts";
+ import { t } from "../copy.ts";
+ import { AVATARS, Avatar, avatarName, Icon, Picto } from "../pictos.tsx";
+ import { helloClip, useVoiceClip } from "../voice.ts";
++import { listenOnce } from "../sayHi.ts";
+ 
+ const label = (id: string) => id.charAt(0).toUpperCase() + id.slice(1);
+ 
+-type Card = "greet" | "ai" | "picture" | "likes" | "change";
++type Card = "greet" | "ai" | "picture" | "likes" | "change" | "hi";
+ 
+ function InterestTile({ id, on, toggle }: { id: string; on: boolean; toggle?: () => void }) {
+   const body = (
+@@ -53,6 +57,9 @@ export function Hello() {
+   const [avatar, setAvatar] = useState<string | null>(child.avatar ?? null);
+   const [page, setPage] = useState(0);
+   const [likes, setLikes] = useState<string[]>(parentPicks);
++  const [hi, setHi] = useState<"idle" | "listening" | "heard" | "none">("idle");
++  const stopHi = useRef<() => void>(() => {});
++  useEffect(() => () => stopHi.current(), []);
+   // The hand-over tap is the audio unlock (flows G14; V2 §3.3): when this page was reached by a tap (the SPA carries
+   // user activation), her greeting plays at once, with no second "Tap to hear {T}" gate. A cold load keeps the button.
+   const [autoTried, setAutoTried] = useState(false);
+@@ -83,8 +90,21 @@ export function Hello() {
+     }
+     nav(`/c/${cid}/lesson/new`, { replace: true });
+   };
+-  const afterLikes = (picks: string[]) => { setLikes(picks); void finish(picks); };
+-  const afterPicture = () => (parentPicks.length ? setCard("likes") : void finish());
++  const afterLikes = (picks: string[]) => { setLikes(picks); setCard("hi"); };
++  const afterPicture = () => setCard(parentPicks.length ? "likes" : "change");
++  const sayHi = () => {
++    setHi("listening");
++    const l = listenOnce(6000);
++    stopHi.current = l.stop;
++    void l.done.then((r) => {
++      if (r === "stopped") return;
++      setHi(r);
++      // no working mic: this device's lessons start in tap-and-type (she can turn talking on in Me)
++      if (r === "none") setPrefs({ quiet: true });
++      if (r === "heard") setTimeout(() => void finish(), 900);
++    });
++  };
++  const skipHi = () => { stopHi.current(); void finish(); };
+ 
+   const pageAvatars = AVATARS.slice((page * 6) % AVATARS.length, ((page * 6) % AVATARS.length) + 6);
+   const framing = young ? t("storyStart") : t("olderStart");
+@@ -134,7 +154,6 @@ export function Hello() {
+             </button>
+             <button type="button" className="cs-btn cs-btn--primary" disabled={!avatar} onClick={afterPicture} data-testid="hello-thatsme">{t("thatsMe")}</button>
+           </div>
+-          {!parentPicks.length && <p className="hello-framing">{framing}</p>}
+         </>
+       );
+       break;
+@@ -147,7 +166,6 @@ export function Hello() {
+             <button type="button" className="cs-btn cs-btn--secondary" onClick={() => setCard("change")}><Picto id="picto/pencil" size={32} /> <span>{t("change")}</span></button>
+             <button type="button" className="cs-btn cs-btn--primary" onClick={() => afterLikes(parentPicks)} data-testid="hello-right">{t("thatsRight")}</button>
+           </div>
+-          <p className="hello-framing">{framing}</p>
+         </>
+       );
+       break;
+@@ -165,6 +183,23 @@ export function Hello() {
+         </>
+       );
+       break;
++    case "hi":
++      body = (
++        <>
++          <h2 tabIndex={-1} className="hello-q">{hi === "heard" ? t("sayHiHeard", { T: rec.name }) : hi === "listening" ? t("sayHiListening", { T: rec.name }) : t("sayHiQ", { T: rec.name })}</h2>
++          {hi === "none" && <p className="hello-line2" role="status">{t("sayHiNone")}</p>}
++          <div className="hello-row">
++            <button type="button" className="cs-btn cs-btn--secondary" onClick={skipHi} data-testid="hello-skip">{hi === "none" ? t("helloNext") : t("skip")}</button>
++            {hi !== "none" && (
++              <button type="button" className="cs-btn cs-btn--primary" onClick={sayHi} disabled={hi !== "idle"} data-testid="hello-sayhi">
++                <Icon name="mic" /> <span>{t("sayHiStart")}</span>
++              </button>
++            )}
++          </div>
++          <p className="hello-framing">{framing}</p>
++        </>
++      );
++      break;
+   }
+ 
+   return (
+diff --git a/src/onboarding/Check.tsx b/src/onboarding/Check.tsx
+index 75b7a0fe..c0cfbd2e 100644
+--- a/src/onboarding/Check.tsx
++++ b/src/onboarding/Check.tsx
+@@ -13,12 +13,8 @@ import { readStore, writeStore } from "../app/storage.ts";
+ 
+ type Mic = "idle" | "listening" | "ok" | "none";
+ 
+-/** PURE. RMS of a byte time-domain frame (128 = silence) → 0..1. */
+-export function levelOf(buf: Uint8Array): number {
+-  let s = 0;
+-  for (const v of buf) { const x = (v - 128) / 128; s += x * x; }
+-  return Math.sqrt(s / Math.max(1, buf.length));
+-}
++import { levelOf } from "../child/sayHi.ts";
++export { levelOf };
+ 
+ function beep(): void {
+   try {
+diff --git a/src/onboarding/ChildProfile.tsx b/src/onboarding/ChildProfile.tsx
+index 9ff644d9..5ad35f47 100644
+--- a/src/onboarding/ChildProfile.tsx
++++ b/src/onboarding/ChildProfile.tsx
+@@ -1,22 +1,29 @@
+-// Step 6 "About {child}" (PRODUCT-DESIGN-V2 §3.2, §6.2): the first name; how {T} should speak to them (Casual /
+-// Respectful: Respectful from class 5 up, nothing preselected below that); what they like (the 12 interest pictures,
+-// up to 3: the same set Hello shows the child, so the parent's picks are the ones the child confirms, audit #7);
+-// "Captions always on". The class and board were chosen in step 1 and the language in step 2 (asked once, audit #24).
+-// Creates via POST /api/children; the controls row (address, comfort, captions, report channel) is written once at
+-// the PIN step from the draft. `?add=1` is the second-child path, behind the parent gate (GateIfPin).
+-import { useState, type FormEvent } from "react";
++// Step 5, the last (round 4 journey audit #12, the 5-step cut; was steps 6-9 "About", controls, check, hand-over):
++// the child's first name, the parent PIN (first child only), and "Give the phone to {child}". Everything else
++// starts from a default the parent can change in the Parent corner: how {T} speaks (Casual to class 5, Respectful
++// from 6), the school language (the language chosen in step 1; a mix counts as English), the daily time by class,
++// the hours 06:30-21:30. What the child likes is picked by the child in Hello; the sound check is Hello's "say hi".
++// One submit writes the child (POST/PATCH /api/children), the controls, then the PIN LAST, which leaves the corner
++// locked for the hand-over (outside a fresh sign-in the first PIN needs the password and so goes first). "Later"
++// goes to the Parent corner; it never skips Hello or the AI disclosure (the child home sends her to Hello first).
++// `?add=1` is the second-child path, behind the parent gate (GateIfPin): the PIN exists, the pad is not shown.
++import { useEffect, useState, type FormEvent } from "react";
+ import { Link, Navigate, useNavigate, useSearchParams } from "react-router-dom";
+-import { Button, Chip, ErrorNote, Field, Icon, TileGroup } from "../ui/index.ts";
++import { Button, ErrorNote, Field, Icon, PinPad } from "../ui/index.ts";
+ import { defaultTutorFor } from "../../shared/tutors.js";
+ import { teacherRecord } from "../ui/teacher/useTeacher.ts";
+-import { Spot } from "../child/art.tsx";
+-import { INTERESTS } from "../child/interests.ts";
+-import { ApiError, errText, postJson, refreshMe, request } from "../app/api.ts";
++import { ApiError, errText, getJson, lockBeacon, postJson, refreshMe, request } from "../app/api.ts";
+ import { useGate } from "../parent/Gate.tsx";
+ import { isGateError } from "../parent/api.ts";
+ import { StepFrame } from "./Layout.tsx";
+-import { useDraft } from "./draft.ts";
++import { clearDraft, useDraft } from "./draft.ts";
++import { defaultsFor } from "./Setup.tsx";
+ 
++/** The defaults the cut no longer asks for (owner-approved 2026-10-10). */
++export const childDefaults = (classLevel: number, languagePref: string) => ({
++  address: classLevel <= 5 ? "tum" as const : "aap" as const,
++  schoolMedium: languagePref === "hindi" ? "hindi" : "english",
++});
+ 
+ export function ChildStep() {
+   const nav = useNavigate();
+@@ -28,94 +35,111 @@ export function ChildStep() {
+   const setC = (patch: Partial<NonNullable<typeof d.child>>) => set((cur) => ({ child: { ...(cur.child ?? {}), ...patch } }));
+   const [busy, setBusy] = useState(false);
+   const [err, setErr] = useState<string | null>(null);
++  const [hasPin, setHasPin] = useState<boolean | null>(null);
++  const [needPw, setNeedPw] = useState(false);
++  const [password, setPassword] = useState("");
++  const [pin1, setPin1] = useState<string | null>(null);
++  const [pinOk, setPinOk] = useState(false);
++  const [resetKey, setResetKey] = useState(0);
+   const cl = c.classLevel;
+-  // Respectful from class 5 up; nothing preselected below that (§3.2 step 6)
+-  const address = c.address ?? (cl && cl >= 5 ? "aap" : undefined);
+-  const ready = !!c.firstName?.trim() && !!cl && !!address;
+   const rec = teacherRecord(defaultTutorFor({ class_level: cl ?? 5 }), (cl ?? 5) <= 4 ? "b2" : "b3");
+-  const name = c.firstName?.trim() || "your child";
++  const first = c.firstName?.trim() ?? "";
+ 
+-  const submit = async (e: FormEvent) => {
+-    e.preventDefault();
+-    if (!ready) return;
++  useEffect(() => {
++    getJson<{ hasPin: boolean; firstSetNeedsPassword?: boolean }>("/api/parent/pin").then((g) => {
++      setHasPin(g.hasPin);
++      setNeedPw(!g.hasPin && !!g.firstSetNeedsPassword);
++    }, (e) => {
++      if (e instanceof ApiError && e.status === 401) return nav("/start/phone?next=/start/child");
++      setErr(errText(e));
++    });
++  }, [nav]);
++
++  const onPin = (p: string) => {
++    if (!pin1) { setPin1(p); setResetKey((k) => k + 1); return; }
++    if (p !== pin1) { setErr("The PINs don't match. Try again."); setPin1(null); setResetKey((k) => k + 1); return; }
++    setErr(null);
++    setPinOk(true);
++  };
++  const resetPinUi = () => { setPin1(null); setPinOk(false); setResetKey((k) => k + 1); };
++  const needPin = hasPin === false && (!pinOk || (needPw && !password));
++  const ready = !!first && !!cl && hasPin !== null && !needPin;
++
++  const submit = (e: FormEvent) => { e.preventDefault(); void save(false); };
++  const save = async (later: boolean) => {
++    if (!ready || !cl) return;
+     setBusy(true);
+     setErr(null);
++    const languagePref = c.languagePref ?? (d.lang === "hi" ? "hindi" : d.lang === "en" ? "english" : "hinglish");
++    const def = childDefaults(cl, languagePref);
++    let pinSaved = !!hasPin;
++    let stage: "child" | "pin" | "controls" = "child";
+     try {
+-      const body = {
+-        firstName: c.firstName!.trim(), classLevel: cl, board: c.board ?? "cbse", schoolMedium: c.schoolMedium ?? "english",
+-        languagePref: c.languagePref ?? (d.lang === "hi" ? "hindi" : d.lang === "en" ? "english" : "hinglish"), interests: c.interests ?? [],
+-      };
++      const body = { firstName: first, classLevel: cl, board: c.board ?? "cbse", schoolMedium: c.schoolMedium ?? def.schoolMedium, languagePref, interests: c.interests ?? [] };
+       // Coming back to this step edits the profile made a moment ago instead of creating a second one.
+       // Only a "not your child" refusal (deleted since) falls back to creating; a gate refusal must not make a twin.
+       let child: { id: string } | null = null;
+       if (d.childId) {
+-        child = await request<{ child: { id: string } }>("PATCH", "/api/children", { childId: d.childId, ...body }).then((r) => r.child, (e) => {
+-          if (isGateError(e) || !(e instanceof ApiError && (e.status === 403 || e.status === 404))) throw e;
++        child = await request<{ child: { id: string } }>("PATCH", "/api/children", { childId: d.childId, ...body }).then((r) => r.child, (e2) => {
++          if (isGateError(e2) || !(e2 instanceof ApiError && (e2.status === 403 || e2.status === 404))) throw e2;
+           return null;
+         });
+       }
+       if (!child) child = (await postJson<{ child: { id: string } }>("/api/children", body)).child;
+-      // P6's address / comfort / captions choices stay in the draft and are written with P7's controls (one
+-      // write, after the gate), so they cannot be silently lost here.
+-      set({ childId: child.id, child: { ...c, address } });
++      set({ childId: child.id });
++      if (!pinSaved && pin1 && needPw) { stage = "pin"; await postJson("/api/parent/pin", { pin: pin1, password }); pinSaved = true; setHasPin(true); }
++      stage = "controls";
++      await postJson("/api/parent/controls", {
++        childId: child.id, ...defaultsFor(cl), address: c.address ?? def.address, comfortMode: !!c.comfort, captionsAlways: !!c.hardToHear,
++        reportChannel: d.reportChannel ?? "whatsapp",
++      });
++      if (!pinSaved && pin1) { stage = "pin"; await postJson("/api/parent/pin", { pin: pin1 }); pinSaved = true; setHasPin(true); }
+       await refreshMe();
+-      nav(`/start/controls${adding ? "?add=1" : ""}`);
++      // the hand-over: the tap is her audio unlock; the corner is locked behind her. "Later": the Parent corner.
++      lockBeacon();
++      clearDraft();
++      nav(later ? "/parent" : `/c/${child.id}/hello`);
+     } catch (e2) {
+       if (e2 instanceof ApiError && e2.status === 401) return nav("/start/phone?next=/start/child");
+-      if (isGateError(e2)) { relock(); return; }
++      if (isGateError(e2)) { if (pinSaved) setErr("The Parent corner locked. Enter the PIN to continue."); relock(); return; }
++      if (e2 instanceof ApiError && (e2.body as { gate?: string } | null)?.gate === "password") setNeedPw(true);
+       setErr(errText(e2));
++      if (stage === "pin") resetPinUi();
+     } finally {
+       setBusy(false);
++      setPassword("");
+     }
+   };
+ 
+-  const toggleInterest = (x: string) => {
+-    const cur = new Set(c.interests ?? []);
+-    if (cur.has(x)) cur.delete(x); else if (cur.size < 3) cur.add(x);
+-    setC({ interests: [...cur] });
+-  };
+-
+   if (!cl) return <Navigate to={`/start/class${adding ? "?add=1" : ""}`} replace />;
+-  const label = (id: string) => id.charAt(0).toUpperCase() + id.slice(1);
++  const go = first ? `Give the phone to ${first}` : "Give the phone to your child";
++  const why = !first ? "Add a name to continue" : hasPin === null ? "One moment" : "Set the PIN to continue";
+   return (
+-    <StepFrame step="child" title={c.firstName?.trim() ? `About ${c.firstName.trim()}` : "About your child"} docTitle="About your child"
+-      why={`${rec.name} uses this to talk to ${name} the right way.`}>
++    <StepFrame step="child" title={adding ? "Who is this for?" : "Your child's name"} docTitle="Your child"
++      why={`${rec.name} will call them by this name.`}>
+       <form className="stack" onSubmit={submit} noValidate>
+         <p className="row t-meta">Class {cl}{c.board ? ` · ${c.board === "other-state" ? "Other board" : c.board.toUpperCase()}` : ""}
+           <Link to={`/start/class${adding ? "?add=1" : ""}`} className="block-link" style={{ marginLeft: "auto" }}>Change</Link></p>
+         <Field label="Child's first name" hint="Just the name they are called at home is fine." autoComplete="off" maxLength={40}
+           value={c.firstName ?? ""} onChange={(e) => setC({ firstName: e.target.value })} required />
+-        <fieldset className="fs"><legend className="label">How should {rec.name} speak to {name}?</legend>
+-          <TileGroup label="How to speak" columns={2} value={address ?? null} onChange={(v) => setC({ address: v as "tum" | "aap" })}
+-            options={[{ value: "tum", label: "Casual" }, { value: "aap", label: "Respectful" }]} />
+-        </fieldset>
+-        <fieldset className="fs"><legend className="label">School teaches in</legend>
+-          <TileGroup label="School medium" columns={3} value={c.schoolMedium ?? null} onChange={(v) => setC({ schoolMedium: v })}
+-            options={[{ value: "english", label: "English" }, { value: "hindi", label: "Hindi" }, { value: "other", label: "Other" }]} />
+-        </fieldset>
+-        <fieldset className="fs"><legend className="label">What does {name} like? Pick up to 3. <span className="muted">(optional)</span></legend>
+-          <div className="onb-likes">
+-            {INTERESTS.map((x) => {
+-              const on = (c.interests ?? []).map((v) => v.toLowerCase()).includes(x);
+-              return (
+-                <button key={x} type="button" className="onb-like" aria-pressed={on} onClick={() => toggleInterest(label(x))}>
+-                  <Spot id={`interests/${x}`} size={56} fallback={<span className="onb-like-fb" />} />
+-                  <span>{label(x)}</span>
+-                </button>
+-              );
+-            })}
+-          </div>
+-        </fieldset>
+-        <fieldset className="fs"><legend className="label">Anything that helps <span className="muted">(optional)</span></legend>
+-          <div className="stack-sm">
+-            <Chip selected={!!c.hardToHear} onClick={() => setC({ hardToHear: !c.hardToHear })}>Captions always on</Chip>
+-            <Chip selected={!!c.comfort} onClick={() => setC({ comfort: !c.comfort })}>Larger text and a calmer screen</Chip>
+-          </div>
+-        </fieldset>
++        {hasPin === false && (
++          <section className="card card-flat stack-sm" aria-label="Parent PIN">
++            <h2 className="t-h3 row" style={{ fontFamily: "var(--font-text)" }}><Icon name="lock" /> Parent PIN</h2>
++            <p className="muted">The Parent corner opens only with this PIN. Choose 4 digits your child does not know. Not your phone's unlock code.</p>
++            {pinOk ? <p className="row"><Icon name="tick" /> <strong>PIN set</strong>
++              <Button variant="quiet" small onClick={resetPinUi}>Change</Button></p>
++              : <PinPad label={pin1 ? "Enter the same PIN again" : "Choose a PIN"} onComplete={onPin} resetKey={resetKey} okLabel={pin1 ? "OK" : "Next"} />}
++            {!pinOk && <p className="t-note" aria-live="polite">{pin1 ? "Enter the same PIN again." : "Then press Next."}</p>}
++            {needPw && pinOk && <Field label="Your account password" hint="Needed because this sign-in is not new. It is checked once and not stored here."
++              type="password" autoComplete="off" value={password} onChange={(e) => setPassword(e.target.value)} />}
++          </section>
++        )}
++        <p className="t-note">{`${rec.name} starts with ${cl <= 2 ? 20 : cl <= 5 ? 30 : 45} minutes a day, 06:30 to 21:30. Change it any time in the Parent corner.`}</p>
+         <ErrorNote>{err}</ErrorNote>
+         <div className="onb-go">
+-          {!ready && <span className="t-note" id="child-why">{!c.firstName?.trim() ? "Add a name to continue" : "Choose how to speak to continue"}</span>}
+-          <Button type="submit" block disabled={!ready || busy} aria-describedby={ready ? undefined : "child-why"} icon={<Icon name="chevron" />}>{busy ? "Saving" : "Continue"}</Button>
++          {!ready && <span className="t-note" id="child-why">{why}</span>}
++          <Button type="submit" block disabled={!ready || busy} aria-describedby={ready ? undefined : "child-why"} icon={<Icon name="chevron" />}>{busy ? "Saving" : go}</Button>
++          <Button variant="quiet" disabled={!ready || busy} onClick={() => void save(true)}>Later</Button>
+         </div>
+       </form>
+     </StepFrame>
+diff --git a/src/onboarding/Layout.tsx b/src/onboarding/Layout.tsx
+index 890c8e5f..30f08eb7 100644
+--- a/src/onboarding/Layout.tsx
++++ b/src/onboarding/Layout.tsx
+@@ -10,11 +10,20 @@ import { Brand } from "../app/Shell.tsx";
+ import { useSurface } from "../app/band.ts";
+ import { Scene } from "../child/art.tsx";
+ 
+-/** The parent's first run, in order (§3.2): class first, so the parent meets the ACTUAL teacher (audit #4). */
+-export const STEPS = ["class", "meet", "promises", "phone", "consent", "child", "controls", "check", "handover"] as const;
+-/** Adding a second child: class → meet → about → controls → hand over (§3.2 "recounts"). */
+-export const ADD_STEPS = ["class", "meet", "child", "controls", "handover"] as const;
+-export type Step = (typeof STEPS)[number];
++/** Every set-up screen (some are off the first run since round 4's cut, but stay reachable by URL). */
++export type Step = "class" | "meet" | "promises" | "phone" | "consent" | "child" | "controls" | "check" | "handover";
++/**
++ * The parent's first run, in order (§3.2; round 4 journey audit #12, the main session's cut, 2026-10-10): FIVE steps
++ * before the child hears her. Class + board + the language she speaks (was class, then "Meet"); the promises and their
++ * 2-s hold; the account; consent; the child's name + the parent PIN, whose button hands the phone over. Deferred to
++ * defaults the parent changes in the Parent corner: how she speaks (Casual to class 5, Respectful 6-9), the school's
++ * language (the chosen one), daily time and hours (by class; 06:30-21:30). Moved into the child's Hello: the interests
++ * (the child picks them) and the sound / mic check ("say hi", with Skip). The AI disclosure is unchanged: the first
++ * promise row here and Hello's AI card.
++ */
++export const STEPS: readonly Step[] = ["class", "promises", "phone", "consent", "child"];
++/** Adding a second child (behind the parent PIN): class → name, then the hand-over. */
++export const ADD_STEPS: readonly Step[] = ["class", "child"];
+ 
+ export function StepFrame({ step, title, why, children, back = true, footer, docTitle }:
+   { step: Step | null; title: ReactNode; why?: ReactNode; children: ReactNode; back?: boolean; footer?: ReactNode; docTitle?: string }) {
+diff --git a/src/onboarding/Setup.tsx b/src/onboarding/Setup.tsx
+index 6bed44e8..e89b0b5b 100644
+--- a/src/onboarding/Setup.tsx
++++ b/src/onboarding/Setup.tsx
+@@ -12,7 +12,7 @@ import { StepFrame } from "./Layout.tsx";
+ import { clearDraft, useDraft } from "./draft.ts";
+ 
+ interface Controls { dailyMinutes: number; hoursStart: string; hoursEnd: string }
+-const defaultsFor = (cl: number): Controls => ({ dailyMinutes: cl <= 2 ? 20 : cl <= 5 ? 30 : 45, hoursStart: "06:30", hoursEnd: "21:30" });
++export const defaultsFor = (cl: number): Controls => ({ dailyMinutes: cl <= 2 ? 20 : cl <= 5 ? 30 : 45, hoursStart: "06:30", hoursEnd: "21:30" });
+ 
+ export function MinutesStepper({ value, onChange, min = 10, max = 120 }: { value: number; onChange: (n: number) => void; min?: number; max?: number }) {
+   return (
+diff --git a/src/onboarding/index.tsx b/src/onboarding/index.tsx
+index 53ac2ba9..59b3e689 100644
+--- a/src/onboarding/index.tsx
++++ b/src/onboarding/index.tsx
+@@ -12,7 +12,6 @@ import { ChildStep } from "./ChildProfile.tsx";
+ import { GateIfPin } from "../parent/Gate.tsx";
+ import { ControlsStep, HandoverStep, StudentStep, SummaryStep, VerifyStep } from "./Setup.tsx";
+ import { ClassStep } from "./steps/Class.tsx";
+-import { MeetStep } from "./steps/Meet.tsx";
+ import { CheckStep } from "./Check.tsx";
+ import { ForgotStep, ResetStep } from "./Forgot.tsx";
+ import "../styles/onboarding.css";
+@@ -30,8 +29,9 @@ export default function Onboarding() {
+       <Route index element={<Navigate to="class" replace />} />
+       <Route path="class" element={<ClassStep />} />
+       <Route path="lang" element={<Moved to="/start/class" />} />
+-      <Route path="meet" element={<MeetStep />} />
+-      <Route path="taste" element={<Moved to="/start/meet" />} />
++      {/* round 4 journey audit #12: the language moved into step 1; an old link to "Meet" lands on the class step */}
++      <Route path="meet" element={<Moved to="/start/class" />} />
++      <Route path="taste" element={<Moved to="/start/class" />} />
+       <Route path="promises" element={<PromisesStep />} />
+       <Route path="trust" element={<Moved to="/start/promises" />} />
+       <Route path="phone" element={<AccountStep />} />
+diff --git a/src/onboarding/steps/Class.tsx b/src/onboarding/steps/Class.tsx
+index 43ce6cb0..45e432bb 100644
+--- a/src/onboarding/steps/Class.tsx
++++ b/src/onboarding/steps/Class.tsx
+@@ -1,10 +1,13 @@
+-// Step 1 "Which class is your child in?" (PRODUCT-DESIGN-V2 §3.2, §6.2). Asked FIRST, so step 2 introduces the
+-// teacher the child will actually get (`eligibleTutors(class)`; audit #4: the parent met Asha, the Class 5 child got
+-// Arjun). Nine class tiles (3 × 3) and a board choice. While Continue is disabled its reason sits beside it.
++// Step 1 "Which class is your child in?" (PRODUCT-DESIGN-V2 §3.2, §6.2). Nine class tiles (3 × 3), a board choice, and
++// (round 4 journey audit #12, the 5-step cut: was step 2 "Meet") the language Asha speaks, each with its ▶ sample in her
++// own voice. While Continue is disabled its reason sits beside it.
+ import { Link, useNavigate, useSearchParams } from "react-router-dom";
++import { defaultTutorFor } from "../../../shared/tutors.js";
+ import { Button, TileGroup } from "../../ui/index.ts";
++import { teacherRecord } from "../../ui/teacher/useTeacher.ts";
+ import { nextStep, StepFrame } from "../Layout.tsx";
+-import { useDraft } from "../draft.ts";
++import { setLangPref, useDraft } from "../draft.ts";
++import { LangTile, LANGS, type Speak } from "./Meet.tsx";
+ 
+ const BOARDS = [{ value: "cbse", label: "CBSE" }, { value: "rbse", label: "RBSE" }, { value: "other-state", label: "Other" }];
+ 
+@@ -15,12 +18,19 @@ export function ClassStep() {
+   const [d, set] = useDraft();
+   const c = d.child ?? {};
+   const setC = (patch: Partial<NonNullable<typeof d.child>>) => set((cur) => ({ child: { ...(cur.child ?? {}), ...patch } }));
+-  const ready = !!c.classLevel && !!c.board;
++  const speak = (c.languagePref as Speak | undefined) ?? (d.lang === "hi" ? "hindi" : d.lang === "en" ? "english" : undefined);
++  const pick = (l: (typeof LANGS)[number]) => {
++    set((cur) => ({ lang: l.ui, child: { ...(cur.child ?? {}), languagePref: l.id } }));
++    setLangPref(l.ui);
++  };
++  const rec = teacherRecord(defaultTutorFor({ class_level: c.classLevel ?? 5 }), (c.classLevel ?? 5) <= 4 ? "b2" : "b3");
++  const ready = !!c.classLevel && !!c.board && !!speak;
++  const why = !c.classLevel || !c.board ? "Choose a class and a board" : `Choose how ${rec.name} speaks`;
+   return (
+     <StepFrame step="class" back={adding} title={adding ? "Add a child: which class are they in?" : "Which class is your child in?"} docTitle="Class and board"
+       footer={
+         <div className="onb-go">
+-          {!ready && <span className="t-note" id="class-why">Choose a class and a board</span>}
++          {!ready && <span className="t-note" id="class-why">{why}</span>}
+           <Button block disabled={!ready} aria-describedby={ready ? undefined : "class-why"} onClick={() => nav(nextStep("class", adding))}>Continue</Button>
+         </div>
+       }>
+@@ -31,6 +41,12 @@ export function ClassStep() {
+       <fieldset className="fs"><legend className="label">Board</legend>
+         <TileGroup label="Board" columns={3} value={c.board ?? null} onChange={(v) => setC({ board: v })} options={BOARDS} />
+       </fieldset>
++      <fieldset className="fs">
++        <legend className="label">{`${rec.name} will speak in`}</legend>
++        <div role="radiogroup" aria-label="Language" className="stack-sm">
++          {LANGS.map((l) => <LangTile key={l.id} l={l} teacherId={rec.id} selected={speak === l.id} onPick={() => pick(l)} />)}
++        </div>
++      </fieldset>
+       {!adding && <Link to="/start/student" className="t-meta block-link">I am a student</Link>}
+     </StepFrame>
+   );
+diff --git a/src/onboarding/steps/Meet.tsx b/src/onboarding/steps/Meet.tsx
+index 50b5762f..7a88428d 100644
+--- a/src/onboarding/steps/Meet.tsx
++++ b/src/onboarding/steps/Meet.tsx
+@@ -16,8 +16,8 @@ import { helloClip } from "../../child/voice.ts";
+ import { nextStep, StepFrame } from "../Layout.tsx";
+ import { setLangPref, useDraft } from "../draft.ts";
+ 
+-type Speak = "english" | "hindi" | "hinglish";
+-const LANGS: { id: Speak; ui: Lang; label: string }[] = [
++export type Speak = "english" | "hindi" | "hinglish";
++export const LANGS: { id: Speak; ui: Lang; label: string }[] = [
+   { id: "english", ui: "en", label: "English" },
+   { id: "hindi", ui: "hi", label: "Hindi" },
+   { id: "hinglish", ui: "hinglish", label: "Hindi and English mix" },
+@@ -40,7 +40,7 @@ function local(classLevel: number): Offer {
+ 
+ const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
+ 
+-function LangTile({ l, teacherId, selected, onPick }: { l: (typeof LANGS)[number]; teacherId: string; selected: boolean; onPick: () => void }) {
++export function LangTile({ l, teacherId, selected, onPick }: { l: (typeof LANGS)[number]; teacherId: string; selected: boolean; onPick: () => void }) {
+   const src = helloClip(teacherId, l.id);
+   const { playing, toggle } = useClip(src ?? "");
+   return (

@@ -12,7 +12,6 @@ import { ChildStep } from "./ChildProfile.tsx";
 import { GateIfPin } from "../parent/Gate.tsx";
 import { ControlsStep, HandoverStep, StudentStep, SummaryStep, VerifyStep } from "./Setup.tsx";
 import { ClassStep } from "./steps/Class.tsx";
-import { MeetStep } from "./steps/Meet.tsx";
 import { CheckStep } from "./Check.tsx";
 import { ForgotStep, ResetStep } from "./Forgot.tsx";
 import "../styles/onboarding.css";
@@ -30,8 +29,9 @@ export default function Onboarding() {
       <Route index element={<Navigate to="class" replace />} />
       <Route path="class" element={<ClassStep />} />
       <Route path="lang" element={<Moved to="/start/class" />} />
-      <Route path="meet" element={<MeetStep />} />
-      <Route path="taste" element={<Moved to="/start/meet" />} />
+      {/* round 4 journey audit #12: the language moved into step 1; an old link to "Meet" lands on the class step */}
+      <Route path="meet" element={<Moved to="/start/class" />} />
+      <Route path="taste" element={<Moved to="/start/class" />} />
       <Route path="promises" element={<PromisesStep />} />
       <Route path="trust" element={<Moved to="/start/promises" />} />
       <Route path="phone" element={<AccountStep />} />

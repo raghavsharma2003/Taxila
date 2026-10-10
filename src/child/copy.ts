@@ -142,6 +142,13 @@ const S = {
   change: "Change",
   done: "Done",
   helloNext: "Next",
+  // Hello's "say hi" (round 4: the set-up's microphone check, now hers; nothing is recorded)
+  sayHiQ: "Say hi to {T}",
+  sayHiListening: "{T} is listening",
+  sayHiHeard: "{T} heard you",
+  sayHiNone: "That's OK. You can tap and type too.",
+  sayHiStart: "Say hi",
+  skip: "Skip",
   storyStart: "Let's start the first lesson.",
   olderStart: "Let's find what you already know. Nobody sees a score.",
 } as const;
