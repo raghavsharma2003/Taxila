@@ -58,14 +58,16 @@
 
 .st-frame { position: relative; overflow: hidden; }
 
-/* ── the skeletons: plain, precise, grown-up (ages 9-15; no cartoon). Colour is never the only carrier. ── */
+/* ── the skeletons: plain, precise, grown-up (ages 9-15; no cartoon). Colour is never the only carrier. ──
+   round 4 content: every word is ≥ 18 design units, so the 360 x 320 design reaches 16 px (the classes 1-5 floor) in the
+   360 phone's tray box (scale 0.9; server/forge3/certs/skeleton.json measures it). Before: 12-16 units = 10.8-14.4 px. */
 .sk { display: block; font-family: var(--font-ui, system-ui, sans-serif); user-select: none; -webkit-user-select: none; }
 .sk text { fill: var(--ink); }
-.sk .sk-title { font-size: 16px; font-weight: 600; }
+.sk .sk-title { font-size: 18px; font-weight: 600; }
 .sk .sk-big { font-size: 30px; font-weight: 700; fill: var(--nib); }
-.sk .sk-small { font-size: 12px; fill: var(--ink-2); }
-.sk .sk-label { font-size: 14px; font-weight: 600; }
-.sk .sk-fb { font-size: 14px; font-weight: 600; }
+.sk .sk-small { font-size: 18px; fill: var(--ink-2); }
+.sk .sk-label { font-size: 18px; font-weight: 600; }
+.sk .sk-fb { font-size: 18px; font-weight: 600; }
 .sk .sk-fb.is-wrong { fill: var(--ink-2); }
 .sk .sk-axis { stroke: var(--ink); stroke-width: 2; fill: none; }
 .sk .sk-tick { stroke: var(--ink); stroke-width: 2; }
@@ -74,7 +76,7 @@
 .sk .sk-part.is-on { fill: var(--nib); }
 .sk .sk-part:focus-visible, .sk [role="button"]:focus-visible { outline: none; stroke: var(--nib); stroke-width: 3; }
 .sk .sk-btn rect { fill: var(--nib); }
-.sk .sk-btn text { fill: var(--on-nib); font-size: 15px; font-weight: 600; }
+.sk .sk-btn text { fill: var(--on-nib); font-size: 18px; font-weight: 600; }
 .sk .sk-btn.is-on rect { fill: var(--ink); }
 .sk .sk-btn.is-off { opacity: .45; }
 .sk .sk-btn { cursor: pointer; }
