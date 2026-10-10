@@ -295,7 +295,7 @@ export class Puppet2DRig {
     this.g = geom;
     if (geom.yawKeys && opts.sil !== 0) silhouetteKey(geom.yawKeys, opts.sil ?? 1);
     this.M = mouths;
-    this.R = new Renderer(canvas, { clear: opts.clear || [251.4 / 255, 229.4 / 255, 188.6 / 255], preserve: !!opts.preserve });
+    this.R = new Renderer(canvas, { clear: opts.clear || geom.clear || [251.4 / 255, 229.4 / 255, 188.6 / 255], preserve: !!opts.preserve });
     this.R.dpr = opts.dpr || Math.min(2, window.devicePixelRatio || 1);
     this.R.face = { nose: F.noseShade, mk: F.mouth.k, tint: F.shade.tint };   // lamp1: per-face shader constants
     this.reduced = !!opts.reducedMotion;
@@ -309,7 +309,7 @@ export class Puppet2DRig {
     this.yawMax = opts.yawMax ?? 20;
     this.featOn = opts.feat !== 0;   // r8: the interior-feature rotation (featDx)
     this.life = new Life({ reduced: this.reduced });
-    this.view = opts.view || [140, 20, 744]; // x0, y0, width of the rest-space window shown
+    this.view = opts.view || (geom.views && geom.views.medium) || [140, 20, 744];   // lamp1: the pack's own framings // x0, y0, width of the rest-space window shown
     this.tex = {};
     for (const [n, im] of Object.entries(imgs)) this.tex[n] = this.R.texture(im, n !== "interior");
     this.solver = new LipSolver();
@@ -972,7 +972,8 @@ export class Puppet2DRig {
     if (!s) return;
     this.faceCoef();
     R.begin();
-    R.setCam(this.view[0], this.view[1], this.view[2]);
+    if (this.view.length >= 4) { const cw = R.canvas.width, ch = R.canvas.height, v = this.view, sc = Math.min(cw / v[2], ch / v[3]), w = cw / sc, h = ch / sc; R.setCam(v[0] + (v[2] - w) / 2, v[1] + (v[3] - h) / 2, w); }
+    else R.setCam(this.view[0], this.view[1], this.view[2]);
     const SF = F.shade.face, SH = F.shade.hair, sd0 = s.yaw >= 0 ? "R" : "L";
     const shadeFace = [s.yaw >= 0 ? 1 : -1, SF[sd0][0], SF[sd0][1], SF.amt * Math.abs(s.yaw) / 20];
     const shadeHair = [shadeFace[0], SH[sd0][0], SH[sd0][1], SH.amt * Math.abs(s.yaw) / 20];

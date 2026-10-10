@@ -147,6 +147,12 @@ rig = rep(rig, [
     ("    const teethH = 10 + 5 * p.tuck + 4.5 * p.sq;", "    const teethH = (10 + 5 * p.tuck + 4.5 * p.sq) * F.mouth.k;"),
     ("    const ext = 2 + 9 * p.tuck;   // = LipShell.update's strip extension below the lower inner edge",
      "    const ext = (2 + 9 * p.tuck) * F.mouth.k;   // = LipShell.update's strip extension below the lower inner edge"),
+    ("this.R = new Renderer(canvas, { clear: opts.clear || [251.4 / 255, 229.4 / 255, 188.6 / 255]", "this.R = new Renderer(canvas, { clear: opts.clear || geom.clear || [251.4 / 255, 229.4 / 255, 188.6 / 255]"),
+    ("    this.view = opts.view || [140, 20, 744];", "    this.view = opts.view || (geom.views && geom.views.medium) || [140, 20, 744];   // lamp1: the pack's own framings"),
+    # lamp1: a 4-element view [x0, y0, w, h] is a REGION fitted inside the canvas (contain, centred), so a wide window
+    # (the child Home, 325 x 190) never crops her chin and a tall one never shows the empty rest space under the hem
+    ("    R.setCam(this.view[0], this.view[1], this.view[2]);",
+     "    if (this.view.length >= 4) { const cw = R.canvas.width, ch = R.canvas.height, v = this.view, sc = Math.min(cw / v[2], ch / v[3]), w = cw / sc, h = ch / sc; R.setCam(v[0] + (v[2] - w) / 2, v[1] + (v[3] - h) / 2, w); }\n    else R.setCam(this.view[0], this.view[1], this.view[2]);"),
     ("    this.R.dpr = opts.dpr || Math.min(2, window.devicePixelRatio || 1);",
      "    this.R.dpr = opts.dpr || Math.min(2, window.devicePixelRatio || 1);\n    this.R.face = { nose: F.noseShade, mk: F.mouth.k, tint: F.shade.tint };   // lamp1: per-face shader constants"),
 ], "rig.js")
