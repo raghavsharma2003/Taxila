@@ -12,7 +12,7 @@
 import { readJson, send, HttpError } from "../http.js";
 import { requireChild } from "../auth.js";
 import { signSession, verifySession } from "./session.js";
-import { artFor, coverage, currentLevel, entryByKey, entryFor, levelsFor, seedOf } from "./levels.js";
+import { artFor, coverage, currentLevel, entryByKey, entryFor, nextBody } from "./levels.js";
 import { startSession } from "./start.js";
 import { gradeActs, lessonEvidence } from "./grade.js";
 import { reactionFor } from "./react.js";
@@ -25,11 +25,12 @@ const dbq = async (...a) => (await import("../db.js")).q(...a);
 
 function sessionOut(s) { return signSession(s); }
 function doorsFor(s, entry, lang) {
-  const nextBody = { ...s, n: (s.n ?? 0) + 1, seed: seedOf(s.childId, s.key, (s.n ?? 0) + 1), door: "garam", harder: false };
-  const r = levelsFor(nextBody, entry);
-  if (!r) return [];
   const hint = (d) => (lang === "en" ? (d === "garam" ? "one more like this" : "a bit harder") : lang === "hi" ? (d === "garam" ? "इसी तरह का एक और" : "थोड़ा मुश्किल") : d === "garam" ? "isi tarah ka ek aur" : "thoda mushkil");
-  return [{ door: "garam", level: r.garam, hint: hint("garam") }, ...(r.teekha ? [{ door: "teekha", level: r.teekha, hint: hint("teekha") }] : [])];
+  const garam = currentLevel(nextBody(s, entry, "garam"), entry);
+  if (!garam) return [];
+  const t = nextBody(s, entry, "teekha"), teekha = currentLevel(t, entry);
+  // a teekha that is the same level as garam is no choice (the fade could not go up): one door
+  return [{ door: "garam", level: garam, hint: hint("garam") }, ...(teekha && teekha.levelId !== garam.levelId ? [{ door: "teekha", level: { ...teekha, door: "teekha" }, hint: hint("teekha") }] : [])];
 }
 function seamOf(grade, level, moments, impasse) {
   if (impasse) return { kind: "impasse", facts: grade?.facts ?? {} };
@@ -103,12 +104,12 @@ export const routes = {
     const entry = entryByKey(s.key);
     if (!entry) throw bad("stale_session");
     const door = b.door === "teekha" ? "teekha" : "garam";
-    const n = (s.n ?? 0) + 1;
-    const next = { ...s, n, seed: seedOf(s.childId, s.key, n), door, harder: false };
+    const next = nextBody(s, entry, door);
+    delete next.up;
     const level = currentLevel(next, entry);
     if (!level) return send(res, 409, { error: "no_level" });
     const art = artFor(next, entry);
-    next.lastArt = art.art; next.recent = [...(s.recent ?? []), level.levelId].slice(-6);
+    next.lastArt = art.art;
     send(res, 200, { sessionId: sessionOut(next), level, art, bank: [] });
   },
 

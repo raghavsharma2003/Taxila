@@ -61,7 +61,7 @@ export function pickLevels<P, S, A extends PlayActBody>(logic: FamilyLogic<P, S,
   const score = (s: (typeof scored)[number], band: number) => s.base - 2.2 * Math.abs(s.p - band);
   const finish = (s: (typeof scored)[number], sc: number, door?: "garam" | "teekha"): PlayLevel<P> => {
     const ms = (typeof performance !== "undefined" ? performance.now() : Date.now()) - t0;
-    return { ...s.c.level, ...(door ? { door } : {}), proof: { ...s.proof, pFirstTry: +s.p.toFixed(3), score: +sc.toFixed(3), genMs: +ms.toFixed(2) } };
+    return { ...s.c.level, sig: s.c.signature, ...(door ? { door } : {}), proof: { ...s.proof, pFirstTry: +s.p.toFixed(3), score: +sc.toFixed(3), genMs: +ms.toFixed(2) } };
   };
   const byG = [...scored].sort((a, b) => score(b, BAND.garam) - score(a, BAND.garam) || (a.c.signature < b.c.signature ? -1 : 1));
   const g = byG[0];

@@ -50,11 +50,30 @@ export function levelsFor(s, entry) {
   if (!logic) return null;
   return pickLevels(logic, genRequest(s, entry));
 }
-/** The level a session body points at (its door decides garam / teekha). */
+/** The level a session body points at (its door decides garam / teekha; a teekha body with no harder candidate at its
+ *  fade was already moved one fade up by nextBody, so this never silently serves an easier level behind a "harder" door). */
 export function currentLevel(s, entry) {
   const r = levelsFor(s, entry);
   if (!r) return null;
   return s.door === "teekha" && r.teekha ? r.teekha : r.garam;
+}
+/**
+ * The session body of the level behind a door (round 4 G1). ONE rule for the door preview (doorsFor) and /api/play/next,
+ * so the level a door shows is the level the child gets:
+ *   - novelty: the level just played joins `recent` BEFORE the next level is generated (the token then regenerates that
+ *     same level from the same body); the picker compares signatures (`level.sig`);
+ *   - "teekha" with no harder candidate at this fade moves one fade up (less scaffold) instead of offering nothing.
+ */
+export function nextBody(s, entry, door) {
+  const n = (s.n ?? 0) + 1;
+  const played = currentLevel(s, entry);
+  const recent = [...(s.recent ?? []), played?.sig ?? played?.levelId].filter(Boolean).slice(-6);
+  const body = { ...s, n, seed: seedOf(s.childId, s.key, n), door, harder: false, recent };
+  if (door === "teekha") {
+    const r = levelsFor(body, entry);
+    if (r && !r.teekha && (body.fade ?? 1) < 3) return { ...body, fade: (body.fade ?? 1) + 1, door: "garam", up: true };
+  }
+  return body;
 }
 export function artFor(s, entry) {
   return pickArt({ family: entry.family, subject: entry.subject === "maths" ? "maths" : "science", topicId: entry.topicId, classLevel: s.classLevel, topicArts: entry.arts, childArt: s.childArt ?? null, lastArt: s.lastArt ?? null });

@@ -40,7 +40,7 @@ export async function startSession(child, o = {}, q = undefined) {
   const level = currentLevel(s, entry);
   if (!level) return null;
   const art = artFor(s, entry);
-  s.lastArt = art.art; s.recent = [level.levelId];
+  s.lastArt = art.art;
   return { sessionId: signSession(s), level, art, entry, session: s };
 }
 /** forge's name for it (FOR-PLAY.md §2.3). */

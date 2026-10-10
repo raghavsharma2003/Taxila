@@ -101,6 +101,8 @@ export interface PlayLevel<P = unknown> {
   context: string;
   seed: number;
   proof: LevelProof;
+  /** the generator's level signature (what novelty compares; the session keeps the recent ones) */
+  sig?: string;
 }
 
 // ───────────────────────────── acts (the only input that can change game state) ─────────────────────────────
