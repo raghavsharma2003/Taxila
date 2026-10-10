@@ -18776,6 +18776,20 @@
    "at": "2026-10-10",
    "title": "Merge order after the owner's directive: stream 2 fix + safety release 6, then G1, then Kaksha K0-K3 (ui.kaksha on for the owner's account), then 4A's batch (conversation quality, session-first owner cohort), then G2, 4B, 3, and 5b (avatar) last; avatar work on hold; stream 5 reassigned to an end-to-end journey audit",
    "source": "inbox/r4-main-1900.json"
+  },
+  {
+   "id": "owner-modern-futurist-vibe-20261010",
+   "kind": "constraint",
+   "at": "2026-10-10",
+   "title": "Owner 2026-10-10: 'Don't go too Indian; be modern, futuristic, engaging and cool, the vibe Gen Alpha likes' (look and feel of the app, worlds and games)",
+   "source": "inbox/r4-main-1915.json"
+  },
+  {
+   "id": "dc-r4-futurist-reskin",
+   "kind": "decision",
+   "at": "2026-10-10",
+   "title": "Look-and-feel re-skin before Kaksha merges: global modern English UI names (no Meri Kaksha, Basti, Ganit/Vigyan/Bhasha), the Indian-town settlement becomes a futuristic base or colony, saffron accent replaced by a neon or electric sci-fi system, new English names for Antariksh and Khand, Gen-Alpha engagement patterns (skins, emotes, juicy feedback) with no coins, streaks, leaderboards or loot boxes; lesson language stays the child's",
+   "source": "inbox/r4-main-1915.json"
   }
  ],
  "edges": [
@@ -30338,6 +30352,16 @@
    "src": "owner-core-over-avatar-20261010",
    "rel": "constrains",
    "dst": "dc-r4-merge-order-core-first"
+  },
+  {
+   "src": "owner-modern-futurist-vibe-20261010",
+   "rel": "constrains",
+   "dst": "dc-r4-futurist-reskin"
+  },
+  {
+   "src": "dc-r4-futurist-reskin",
+   "rel": "part_of",
+   "dst": "dc-r4-app-kaksha"
   }
  ]
 }
