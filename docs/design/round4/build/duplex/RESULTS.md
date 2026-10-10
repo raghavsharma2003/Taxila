@@ -115,7 +115,10 @@ device, once the engine has yielded or committed, her audio has stopped. `evals/
 failures whose onset fell while the governor's phase was NOT her floor: **16 of the 35 remaining continuer failures and
 13 of the 20 late barge-ins** (BEFORE: 18 of 41 and 13 of 27). These still count in the official rows above. On a device
 those 16 continuers were not "over her" at all, but the rig cannot say what would have happened instead, so no corrected
-rate is claimed.
+rate is claimed. A DIAGNOSTIC (not the criterion) counts only the events that started while her line was actually
+sounding by the engine's own phase. Continuers kept: BEFORE 103/126 = 81.7 %, AFTER 112/131 = 85.5 %. Barge-ins stopped
+within 200 ms: 17/31 → 25/32. The set depends on each engine's own phase, so the two arms are not over identical events.
+Even counted this way R3 stays under 90 %.
 
 ## 7. The hands-free mid-sentence report (main session, 2026-10-10)
 
