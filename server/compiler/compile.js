@@ -19,6 +19,7 @@
 //     (`lessonState.moveVoiced`), and the appended-last check is the BRANCH for the reply now being
 //     answered — derived from step() itself (director/state.js branchesFor), with the safety escape first,
 //     because the safeguard move only reaches the instructions one turn later.
+import { playCheck } from "../director/play-verbs.js";
 import { SHAPES as REL_SHAPES } from "../relational/policy.js";
 import { floorText, FLOOR_HEADING } from "./floor.js";
 import { gatesFor, assertMinorGates } from "./gates.js";
@@ -287,6 +288,10 @@ function lastParts({ lessonState: s, move, item, branches, ageBand, language, pr
     }
     shape = `at most ${n} words. One idea. End by handing the floor back — one question or a try-this — then stop.`;
   }
+  // round 4 (G2 Khand finding): a play piece is up (brain/turn.js state.playOn with its family and mode; patch request 04):
+  // the card is folded away, and any task words come from the piece's mode, never the card question's verb
+  const pc = move.kind !== "safeguard" && move.kind !== "wrap" && s.playOn?.mode ? playCheck(s.playOn, language) : null;
+  if (pc) check = pc;
   if (fix.length) check = `your last turn broke the floor — first ${fix.join("; ")}; then ${check}`;
   // round 3 (relational-human): a memory about THIS child from the record (last lesson's learning, a win), said FIRST in a
   // few words of her own. Here, not mid-brief: position is mechanism (memory-2day 2026-10-09: in the MOVE section the
