@@ -18,10 +18,11 @@ import { playApi } from "./client.ts";
 
 import { MIN_BOX, PLAY_HEARD } from "./core/box.ts";
 import { playLangOf } from "./lessonLang.ts";
+import type { DressedSpec } from "./engines/core3d/api.ts";
 
 export default function PlayStudioRenderer(props: ArtifactRendererProps) {
   const art = (props.artifact as unknown as PlayArtifact).play;
-  const [state, setState] = useState<{ sid: string; level: PlayLevel; art: ArtId } | null>(null);
+  const [state, setState] = useState<{ sid: string; level: PlayLevel; art: ArtId; dress: DressedSpec | null } | null>(null);
   const [heard, setHeard] = useState<{ id: number; text: string } | null>(null);
   const small = props.px.w < MIN_BOX.w || props.px.h < MIN_BOX.h;
   useEffect(() => {
@@ -29,7 +30,7 @@ export default function PlayStudioRenderer(props: ArtifactRendererProps) {
     const ac = new AbortController();
     playApi.level({ sessionId: art.sessionId }, ac.signal).then((r) => {
       if (!r) { props.onEvent({ type: "error", reason: "unavailable", message: "play level" }); return; }
-      setState({ sid: r.sessionId, level: r.level, art: r.art.art });
+      setState({ sid: r.sessionId, level: r.level, art: r.art.art, dress: r.dress ?? null });
       props.onEvent({ type: "ready" });
     });
     return () => ac.abort();
@@ -47,7 +48,7 @@ export default function PlayStudioRenderer(props: ArtifactRendererProps) {
   const lang = playLangOf(props.lang);
   return (
     <div style={{ width: props.px.w, height: props.px.h, position: "relative" }} data-testid="play-studio">
-      <PlaySession sessionId={state.sid} level={state.level} art={state.art} lang={lang} classLevel={props.young ? 4 : 6} reducedMotion={props.reducedMotion} embedded heard={heard}
+      <PlaySession sessionId={state.sid} level={state.level} art={state.art} dress={state.dress} lang={lang} classLevel={props.young ? 4 : 6} reducedMotion={props.reducedMotion} embedded heard={heard}
         onActivity={(name, data) => props.onEvent({ type: "interaction", name, data })}
         onToken={(kind, token, seamKind) => props.onEvent({ type: "interaction", name: kind === "evidence" ? "play_evidence" : "play_seam", data: { token, ...(seamKind ? { seam: seamKind } : {}) } })}
         onLevelEnd={(r) => { props.onEvent({ type: "interaction", name: "play_level_end", data: { verdict: r.grade?.verdict ?? null, levelId: r.levelId } }); props.onEvent({ type: "done" }); }}

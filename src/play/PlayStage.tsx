@@ -149,7 +149,7 @@ export function PlayStage(props: PlayStageProps) {
       const deps: EngineDeps = { level, ctl, lang, spec, changed };
       if (stage3d && stage3d.engine.relevel) { try { stage3d.core.progress.set("level", level.levelId, { level: "start" }); stage3d.engine.relevel(deps); viewRef.current = stage3d.engine; if (props.debug) exposeDebug(stage3d, ctl, logic); changed(); onEvent.current?.({ type: "ready" }); return; } catch { /* remount below */ } }
       stageRef.current?.dispose(); stageRef.current = null; viewRef.current = null;
-      const h = render.mount(host, render.mod.create, deps, { tier: render.tier === "3d-lite" ? "3d-lite" : "3d", young, reducedMotion: props.reducedMotion, sound: props.sound, musicAllowed: spec.musicAllowed && musicRef.current === "on", seed: level.seed,
+      const h = render.mount(host, render.mod.create, deps, { tier: render.tier === "3d-lite" ? "3d-lite" : "3d", young, reducedMotion: props.reducedMotion, sound: props.sound, musicAllowed: musicRef.current === "on", seed: level.seed,
         onFail: (why) => { onEvent.current?.({ type: "fail3d", why }); setRender({ kind: "2d", why }); } });
       if (h) {
         stageRef.current = h; viewRef.current = h.engine;

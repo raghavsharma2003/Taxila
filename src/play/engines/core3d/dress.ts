@@ -7,11 +7,12 @@ import { DRESS_ENUMS, ENGINE_THEMES, type Dress, type EngineId } from "./api.ts"
 
 const h32 = (s: string) => { let h = 2166136261; for (const ch of s) { h ^= ch.charCodeAt(0); h = Math.imul(h, 16777619); } return h >>> 0; };
 
-export function baseDress(o: { engine: EngineId; key: string; lastTheme?: string | null; lang: Lang; firstLevel?: boolean }): Dress {
+export function baseDress(o: { engine: EngineId; key: string; n?: number; lastTheme?: string | null; lang: Lang; firstLevel?: boolean }): Dress {
   const themes = ENGINE_THEMES[o.engine];
-  const start = h32(o.key) % themes.length;
+  // with a level counter the theme rotates through the pack (never the same twice running); without one, a key hash
+  const start = (h32(o.key) + (o.n ?? 0)) % themes.length;
   let theme = themes[start];
   if (theme === o.lastTheme) theme = themes[(start + 1) % themes.length];
-  const wrapper = DRESS_ENUMS.wrapper[h32(`${o.key}:w`) % DRESS_ENUMS.wrapper.length];
+  const wrapper = DRESS_ENUMS.wrapper[(h32(`${o.key}:w`) + (o.n ?? 0)) % DRESS_ENUMS.wrapper.length];
   return { theme, wrapper, music: "calm", pace: "steady", teacherMove: o.firstLevel ? "ghost-first" : "notice", lang: o.lang };
 }

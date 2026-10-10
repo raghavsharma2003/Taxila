@@ -144,7 +144,7 @@ export function create(core: Core3D, depsIn: EngineDeps): EngineView {
     L.look.set({ hidden: true });
     hideGates();
     core.progress.set("cur", 0, { level: "start" });
-    core.audio.music(spec.dress.music);
+    core.audio.music(spec.musicMood);
     L.hint.set({ text: say(lang, "ant.drag"), lang: tl(), hidden: false });
     if (boxW > 1) layout({ w: boxW, h: boxH });
     syncFromState();
@@ -487,7 +487,7 @@ export function create(core: Core3D, depsIn: EngineDeps): EngineView {
   }
   function redress(s: DressedSpec): boolean {
     if (ctl.acts.length || phase !== "aim") return false;
-    spec = s; lang = s.dress.lang; applyTheme(); wrapper = s.dress.wrapper as Wrapper; makeTargets(); core.audio.music(s.dress.music);
+    spec = s; lang = s.dress.lang; applyTheme(); wrapper = s.dress.wrapper as Wrapper; makeTargets(); core.audio.music(s.musicMood);
     L.hint.set({ text: say(lang, "ant.drag"), lang: tl() }); changed();
     if (s.dress.teacherMove === "ghost-first") demo();
     return true;

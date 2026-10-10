@@ -42,6 +42,7 @@ export function genRequest(s, entry) {
     family: entry.family, mode: entry.mode, topicId: entry.topicId, skillId: s.skillId ?? entry.skillId, classLevel: s.classLevel, fade: s.fade,
     goal: entry.goal, mis: s.mis ?? {}, misMap: entry.misMap, grammar: entry.grammar, recent: s.recent ?? [], seed: s.seed, harder: !!s.harder,
     ...(typeof s.pL === "number" ? { pL: s.pL } : {}),
+    ...(s.focus ? { focus: s.focus } : {}),
   };
 }
 /** → { garam, teekha, ms, considered, served } or null. */
@@ -68,7 +69,10 @@ export function nextBody(s, entry, door) {
   const n = (s.n ?? 0) + 1;
   const played = currentLevel(s, entry);
   const recent = [...(s.recent ?? []), played?.sig ?? played?.levelId].filter(Boolean).slice(-6);
-  const body = { ...s, n, seed: seedOf(s.childId, s.key, n), door, harder: false, recent };
+  // the misconception the level just played confirmed (set by /api/play/act at its end) becomes the next level's focus
+  const focus = s.nextFocus ?? s.focus ?? null;
+  const body = { ...s, n, seed: seedOf(s.childId, s.key, n), door, harder: false, recent, ...(focus ? { focus } : {}) };
+  delete body.nextFocus;
   if (door === "teekha") {
     const r = levelsFor(body, entry);
     if (r && !r.teekha && (body.fade ?? 1) < 3) return { ...body, fade: (body.fade ?? 1) + 1, door: "garam", up: true };

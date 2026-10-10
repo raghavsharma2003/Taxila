@@ -244,6 +244,8 @@ export interface GenRequest {
   harder?: boolean;
   /** P(the child does the target skill unaided now), from the learner model; absent = the class default */
   pL?: number;
+  /** the kit misconception the lesson just saw (`misconception_seen`): the picker prefers a level that discriminates it */
+  focus?: string;
 }
 /** A generated level before the picker scores it. `difficulty` 0..1 is the family's own estimate (size, steps, form). */
 export interface Candidate<P = unknown> { level: PlayLevel<P>; signature: string; difficulty: number }
@@ -387,6 +389,8 @@ export interface PlayStartResponse {
   bank: Reaction[];
   /** the family's world map for this child (DESIGN.md §6) */
   world: PlayWorldFamily | null;
+  /** round 4: the base dress when a real-game engine renders this level (the model's delta comes from /api/play/dress) */
+  dress?: import("../src/play/engines/core3d/api.ts").DressedSpec | null;
 }
 /** POST /api/play/act: the acts since the last post (the server replays ALL acts of the level each time). */
 export interface PlayActRequest { sessionId: string; levelId: string; acts: PlayActEnvelope[]; final?: boolean; impasse?: boolean }
@@ -414,7 +418,9 @@ export interface PlayActResponse {
 }
 /** POST /api/play/next */
 export interface PlayNextRequest { sessionId: string; door: Door }
-export interface PlayNextResponse { sessionId: string; level: PlayLevel; art: ArtPick; bank: Reaction[] }
+export interface PlayNextResponse { sessionId: string; level: PlayLevel; art: ArtPick; bank: Reaction[]; dress?: import("../src/play/engines/core3d/api.ts").DressedSpec | null }
+/** POST /api/play/dress { sessionId } → the validated dress for the current level (base when late / invalid / off) */
+export interface PlayDressResponse { dress: import("../src/play/engines/core3d/api.ts").DressedSpec; source: "model" | "base"; ms: number }
 /** GET /api/play/world?childId= */
 export interface PlayWorldResponse { classLevel: number; families: PlayWorldFamily[] }
 

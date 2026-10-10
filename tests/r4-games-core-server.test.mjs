@@ -1,0 +1,116 @@
+// Round 4 G1, the server half of the Game Director:
+//   - the dress: ONE taxila-fast call, enums only, validated field by field, 1.9 s deadline, base dress otherwise; the model
+//     sees closed tags and never the child's name or words; rules the model cannot override;
+//   - focusMal: the misconception the lesson just saw (kt_evidence / reteach_attempts) becomes the level's target, and a
+//     level's own confirmed misconception becomes the next level's;
+//   - doors: the level a door shows is the level /next serves; novelty works; a harder door exists (fade up) when the fade
+//     has no harder candidate.
+import test from "node:test";
+import assert from "node:assert/strict";
+import { dressSpecFor, baseSpec, interestTags, verbFor, DRESS_DEADLINE_MS } from "../server/play/dress.js";
+import { entryFor, entryKey, currentLevel, nextBody, seedOf, genRequest } from "../server/play/levels.js";
+import { learnerInputs, startSession } from "../server/play/start.js";
+import { LOGIC } from "../src/play/families/index.ts";
+
+const entry = entryFor({ skillId: "c5-maths-ch02-t01-s2" });
+const sess = (over = {}) => ({ childId: "c1", key: entryKey(entry), skillId: "c5-maths-ch02-t01-s2", classLevel: 6, fade: 1, lang: "hinglish", mis: {}, n: 0, seed: seedOf("c1", entryKey(entry), 0), door: "garam", recent: [], ...over });
+const child = { id: "c1", first_name: "Meher", interests: ["Meher loves cricket and rockets"], class_level: 6 };
+const fakeChat = (json, ms = 5, capture = null) => async (dep, messages, opts) => { if (capture) capture.push({ dep, messages, opts }); await new Promise((r) => setTimeout(r, ms)); return { json }; };
+const ENV = { DEPLOY_FAST: "taxila-fast" };
+
+test("dress: a valid model delta is worn (enums only); the base dress is a full dress", async () => {
+  const s = sess(), level = currentLevel(s, entry);
+  const b = baseSpec(s, level, child);
+  assert.ok(b && b.engine === "antariksh");
+  for (const k of ["theme", "wrapper", "music", "pace", "teacherMove", "lang"]) assert.ok(b.spec.dress[k], k);
+  const r = await dressSpecFor({ s, level, child }, { chat: fakeChat({ theme: "hara-toofan", wrapper: "comet-catch", music: "drive", pace: "steady", teacherMove: "notice", lang: "hinglish" }), env: ENV });
+  assert.equal(r.source, "model");
+  assert.equal(r.spec.dress.theme, "hara-toofan"); assert.equal(r.spec.dress.wrapper, "comet-catch"); assert.equal(r.spec.from.theme, "model");
+});
+
+test("dress: a non-enum value is DROPPED (never repaired); the rest of the delta stands", async () => {
+  const s = sess(), level = currentLevel(s, entry);
+  const r = await dressSpecFor({ s, level, child }, { chat: fakeChat({ theme: "Neela-Nebula ", wrapper: "dragon-hunt", music: "calm", pace: "steady", teacherMove: "notice", lang: "hinglish", say: "Shabash!" }), env: ENV });
+  assert.equal(r.source, "model");
+  const base = baseSpec(s, level, child).spec;
+  assert.equal(r.spec.dress.theme, base.dress.theme); assert.equal(r.spec.from.theme, "base");
+  assert.equal(r.spec.dress.wrapper, base.dress.wrapper); assert.equal(r.spec.from.wrapper, "base");
+  assert.ok(!JSON.stringify(r.spec).includes("Shabash"));
+});
+
+test("dress: later than 1.9 s, an error, a 429 or the off switch = the base dress", async () => {
+  const s = sess(), level = currentLevel(s, entry), base = baseSpec(s, level, child).spec;
+  const t0 = Date.now();
+  const late = await dressSpecFor({ s, level, child }, { chat: fakeChat({ theme: "laal-grah", wrapper: "comet-catch", music: "off", pace: "steady", teacherMove: "notice", lang: "hinglish" }, 2600), env: ENV });
+  const took = Date.now() - t0;
+  assert.equal(late.source, "base"); assert.deepEqual(late.spec, base);
+  assert.ok(took >= DRESS_DEADLINE_MS - 50 && took < DRESS_DEADLINE_MS + 400, `returned at ${took} ms`);
+  const e429 = await dressSpecFor({ s, level, child }, { chat: async () => { const e = new Error("quota"); e.status = 429; throw e; }, env: ENV });
+  assert.equal(e429.source, "base");
+  const off = await dressSpecFor({ s, level, child }, { chat: async () => { throw new Error("must not be called"); }, env: { ...ENV, TAXILA_PLAY_DRESS: "off" } });
+  assert.equal(off.source, "base"); assert.equal(off.why, "off");
+});
+
+test("dress: rules no model can override (language, brisk only when secure, music off for classes 4-5, the parent's verb)", async () => {
+  const delta = { theme: "laal-grah", wrapper: "mine-sweep", music: "drive", pace: "brisk", teacherMove: "notice", lang: "en" };
+  const s5 = sess({ classLevel: 5 }), level = currentLevel(s5, entry);
+  const r = await dressSpecFor({ s: s5, level, child }, { chat: fakeChat(delta), env: ENV });
+  assert.equal(r.spec.dress.lang, "hinglish"); assert.equal(r.spec.dress.pace, "steady"); assert.equal(r.spec.dress.music, "off"); assert.equal(r.spec.musicMood, "drive");
+  const sec = await dressSpecFor({ s: sess({ secure: true }), level, child }, { chat: fakeChat(delta), env: ENV });
+  assert.equal(sec.spec.dress.pace, "brisk");
+  assert.equal(verbFor({}, { TAXILA_PLAY_VERB: "scan" }), "scan"); assert.equal(verbFor({ play_verb: "fire" }, { TAXILA_PLAY_VERB: "scan" }), "fire"); assert.equal(verbFor({}, {}), "fire");
+});
+
+test("dress: the model sees closed tags and telegraphic state, never the child's name or words", async () => {
+  const cap = [];
+  const s = sess(), level = currentLevel(s, entry);
+  await dressSpecFor({ s, level, child }, { chat: fakeChat({ theme: "laal-grah", wrapper: "mine-sweep", music: "calm", pace: "steady", teacherMove: "notice", lang: "hinglish" }, 5, cap), env: ENV });
+  assert.equal(cap.length, 1);
+  const all = JSON.stringify(cap[0].messages);
+  assert.ok(!/Meher|loves|rockets/.test(all), all);
+  assert.deepEqual(JSON.parse(cap[0].messages[1].content).interest_tags, ["cricket", "space"]);
+  assert.equal(cap[0].dep, "taxila-fast"); assert.equal(cap[0].opts.retries, 0); assert.ok(cap[0].opts.timeoutMs <= DRESS_DEADLINE_MS);
+  assert.equal(cap[0].opts.schema.additionalProperties, false);
+  for (const p of Object.values(cap[0].opts.schema.properties)) assert.ok(Array.isArray(p.enum) && p.enum.length);
+  // the rule that must fire is the last line of the system shape (position is mechanism)
+  assert.match(cap[0].messages[0].content.split("\n").at(-1), /^NEVER/);
+  assert.deepEqual(interestTags(["Lego robots", "IPL"]), ["cricket", "science"]);
+});
+
+test("focusMal: the misconception the lesson just saw (kt_evidence, else reteach_attempts) is the next level's target", async () => {
+  const q = async (sql, params) => {
+    if (/from kt_evidence/.test(sql)) return params[1] === "L1" ? [{ misconception_id: "c5-maths-ch02-t01-m-whole-number-bias" }] : [];
+    if (/from reteach_attempts/.test(sql)) return params[1] === "L2" ? [{ misconception_id: "c5-maths-ch02-t01-m-all-less-than-one" }] : [];
+    if (/from kt_skill_state/.test(sql)) return [{ p_l: 0.8, display: "mastered" }];
+    return [];
+  };
+  const a = await learnerInputs("c1", entry, q, "L1");
+  assert.equal(a.focus, "c5-maths-ch02-t01-m-whole-number-bias"); assert.equal(a.secure, true);
+  assert.equal((await learnerInputs("c1", entry, q, "L2")).focus, "c5-maths-ch02-t01-m-all-less-than-one");
+  assert.equal((await learnerInputs("c1", entry, q, null)).focus, null);
+  // the served level is built to show that belief whenever a level can
+  for (const focus of Object.values(entry.misMap)) {
+    const r = await startSession({ id: "c1", class_level: 5 }, { skillId: "c5-maths-ch02-t01-s2", lessonId: "Lx" }, async (sql) => (/from kt_evidence/.test(sql) ? [{ misconception_id: focus }] : []));
+    assert.ok(r.level.proof.discriminates.includes(focus), `${focus}: level ${r.level.levelId} discriminates ${r.level.proof.discriminates}`);
+    assert.equal(genRequest(r.session, entry).focus, focus);
+  }
+});
+
+test("doors: the door preview IS the level /next serves; novelty moves off the level just played; teekha exists", () => {
+  const logic = LOGIC["nishana/place"];
+  let s = sess();
+  const seen = [];
+  for (let i = 0; i < 5; i++) {
+    const cur = currentLevel(s, entry); seen.push(cur.sig);
+    const g = nextBody(s, entry, "garam"), t = nextBody(s, entry, "teekha");
+    const gl = currentLevel(g, entry), tl = currentLevel(t, entry);
+    assert.notEqual(gl.sig, cur.sig, `level ${i}: the garam door repeats the level just played (${cur.sig})`);
+    assert.ok(tl && (tl.levelId !== gl.levelId || tl.fade !== gl.fade), `level ${i}: no distinct teekha`);
+    assert.ok(tl.fade > gl.fade || tl.proof.pFirstTry <= gl.proof.pFirstTry, "teekha is not harder");
+    // regenerating the door's body gives the same level (the token rebuilds it)
+    assert.equal(currentLevel(JSON.parse(JSON.stringify(g)), entry).levelId, gl.levelId);
+    s = g;
+    assert.ok(logic.validate(gl));
+  }
+  assert.ok(new Set(seen).size >= 3, `novelty: ${seen.join(" ")}`);
+});

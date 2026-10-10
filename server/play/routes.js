@@ -9,6 +9,8 @@
 //   POST /api/play/level   { sessionId } → session, level, art           (the Studio renderer's mount)
 //   GET  /api/play/world?childId= → { classLevel, families }
 //   GET  /api/play/admit?skillId= → { play: boolean, family, mode }   (the Director's admission check)
+//   POST /api/play/dress   { sessionId } → { dress, source, ms }  (round 4: the ONE model call on the play path; enums only,
+//                          validated field by field, 1.9 s deadline, base dress otherwise; server/play/dress.js)
 import { readJson, send, HttpError } from "../http.js";
 import { requireChild } from "../auth.js";
 import { signSession, verifySession } from "./session.js";
@@ -19,6 +21,7 @@ import { reactionFor } from "./react.js";
 import { mapStateFrom, worldFamily, FAMILIES } from "./world.js";
 import { signEvidence, signSeam } from "./evidence.js";
 import { playFactsRow } from "../../shared/play.ts";
+import { baseSpec, dressSpecFor } from "./dress.js";
 
 const bad = (msg) => new HttpError(400, msg);
 const dbq = async (...a) => (await import("../db.js")).q(...a);
@@ -30,7 +33,7 @@ function doorsFor(s, entry, lang) {
   if (!garam) return [];
   const t = nextBody(s, entry, "teekha"), teekha = currentLevel(t, entry);
   // a teekha that is the same level as garam is no choice (the fade could not go up): one door
-  return [{ door: "garam", level: garam, hint: hint("garam") }, ...(teekha && teekha.levelId !== garam.levelId ? [{ door: "teekha", level: { ...teekha, door: "teekha" }, hint: hint("teekha") }] : [])];
+  return [{ door: "garam", level: garam, hint: hint("garam") }, ...(teekha && (teekha.levelId !== garam.levelId || teekha.fade !== garam.fade) ? [{ door: "teekha", level: { ...teekha, door: "teekha" }, hint: hint("teekha") }] : [])];
 }
 function seamOf(grade, level, moments, impasse) {
   if (impasse) return { kind: "impasse", facts: grade?.facts ?? {} };
@@ -53,7 +56,7 @@ export const routes = {
     let mapState = () => ({ shape: "not_started", recheck: false });
     try { const { loadTruth, MAP_SHAPE } = await import("../reports/truth.js"); mapState = mapStateFrom(await loadTruth(child), MAP_SHAPE); } catch { /* ahead */ }
     const world = worldFamily({ family: r.entry.family, classLevel: r.session.classLevel, mapState, hereTopic: r.entry.topicId });
-    send(res, 200, { sessionId: r.sessionId, level: r.level, art: r.art, bank: [], world });
+    send(res, 200, { sessionId: r.sessionId, level: r.level, art: r.art, bank: [], world, dress: baseSpec(r.session, r.level, child)?.spec ?? null });
   },
 
   /** the level a session token points at (the Studio renderer mounts a PlayArtifact from its sessionId) */
@@ -61,12 +64,12 @@ export const routes = {
     const b = body && typeof body === "object" ? body : await readJson(req);   // the router already read the body
     const s = verifySession(b?.sessionId);
     if (!s) throw bad("bad_session");
-    await requireChild(req, s.childId);
+    const { child } = await requireChild(req, s.childId);
     const entry = entryByKey(s.key);
     if (!entry) throw bad("stale_session");
     const level = currentLevel(s, entry);
     if (!level) return send(res, 409, { error: "no_level" });
-    send(res, 200, { sessionId: b.sessionId, level, art: artFor(s, entry) });
+    send(res, 200, { sessionId: b.sessionId, level, art: artFor(s, entry), dress: baseSpec(s, level, child)?.spec ?? null });
   },
 
   "POST /api/play/act": async (req, res, body) => {
@@ -91,8 +94,11 @@ export const routes = {
     const evidenceToken = ended && s.lessonId && rows.length ? signEvidence({ childId: s.childId, lessonId: s.lessonId, levelId: level.levelId, rows }) : undefined;
     const seam = seamOf(g.grade, level, fresh, !!b.impasse);
     const seamToken = seam && s.lessonId ? signSeam({ childId: s.childId, lessonId: s.lessonId, kind: seam.kind, row: playFactsRow({ game: `${level.family}/${level.mode}`, ...seam.facts }) }) : undefined;
-    const out = { levelId: level.levelId, moments: fresh, reaction, ...(seamToken ? { seamToken } : {}), ...(ended ? { grade: g.grade, doors: doorsFor(s, entry, s.lang), evidence: rows, ...(evidenceToken ? { evidenceToken } : {}) } : {}),
-      seam, sessionId: sessionOut({ ...s, hist: history }) };
+    // the belief this level's first decision showed is the next level's focus (the current level's inputs never change)
+    const seen = ended ? rows.find((r) => r.misconceptionId)?.misconceptionId ?? null : null;
+    const s2 = { ...s, hist: history, ...(seen ? { nextFocus: seen } : {}) };
+    const out = { levelId: level.levelId, moments: fresh, reaction, ...(seamToken ? { seamToken } : {}), ...(ended ? { grade: g.grade, doors: doorsFor(s2, entry, s.lang), evidence: rows, ...(evidenceToken ? { evidenceToken } : {}) } : {}),
+      seam, sessionId: sessionOut(s2) };
     send(res, 200, out);
   },
 
@@ -100,7 +106,7 @@ export const routes = {
     const b = body && typeof body === "object" ? body : await readJson(req);   // the router already read the body
     const s = verifySession(b?.sessionId);
     if (!s) throw bad("bad_session");
-    await requireChild(req, s.childId);
+    const { child } = await requireChild(req, s.childId);
     const entry = entryByKey(s.key);
     if (!entry) throw bad("stale_session");
     const door = b.door === "teekha" ? "teekha" : "garam";
@@ -110,7 +116,21 @@ export const routes = {
     if (!level) return send(res, 409, { error: "no_level" });
     const art = artFor(next, entry);
     next.lastArt = art.art;
-    send(res, 200, { sessionId: sessionOut(next), level, art, bank: [] });
+    send(res, 200, { sessionId: sessionOut(next), level, art, bank: [], dress: baseSpec(next, level, child)?.spec ?? null });
+  },
+
+  "POST /api/play/dress": async (req, res, body) => {
+    const b = body && typeof body === "object" ? body : await readJson(req);   // the router already read the body
+    const s = verifySession(b?.sessionId);
+    if (!s) throw bad("bad_session");
+    const { child } = await requireChild(req, s.childId);
+    const entry = entryByKey(s.key);
+    if (!entry) throw bad("stale_session");
+    const level = currentLevel(s, entry);
+    if (!level) return send(res, 409, { error: "no_level" });
+    const r = await dressSpecFor({ s, level, child, topicTitle: entry.title, childMusicOn: b.music === "on" });
+    if (!r) return send(res, 404, { error: "no_engine" });
+    send(res, 200, { dress: r.spec, source: r.source, ms: r.ms });
   },
 
   "GET /api/play/world": async (req, res) => {
