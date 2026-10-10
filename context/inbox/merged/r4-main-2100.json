@@ -1,0 +1,73 @@
+{
+  "nodes": [
+    {
+      "id": "dc-r4-owner-wrapup-directive",
+      "kind": "decision",
+      "at": "2026-10-10",
+      "title": "Owner directive 20:12 UTC: no new features; close everything built, deploy it live for the owner to test, then discuss direction ('you are not in the best possible direction'); 20:18 UTC: the UI/UX and product design is built fully and deployed too ('beautiful UI UX which engages Gen Alphas')"
+    },
+    {
+      "id": "ms-r4-rel7-live",
+      "kind": "measurement",
+      "at": "2026-10-10",
+      "title": "Release 7 (35d6167 = stream 2 e7edc829 + safety release 6) live as taxila-web--s35d6167-p02m: gate 2,752/0/3; packaged tree owner-5 14/14, round2-content 34/39, boards 4/5; canary 4/4; taxila.dev owner-5 12/14 (was 11/14), round2-content 35/39, boards 5/5; w2i-safety 39/39 local TEST"
+    },
+    {
+      "id": "ms-r4-rel8-gate-packaged",
+      "kind": "measurement",
+      "at": "2026-10-10",
+      "title": "Release 8 (8448c98 = G1 cb078473 + K-P3/K-P4 + Kaksha 723e6cf + 4A 4beed72 + patch 15 + patch-13 fail-safe): gate 2,854/0/3; packaged tree owner-5 14/14, round2-content 33/39, boards 5/5; w2i-safety 39/39 alone (38/39 when run in parallel with other batteries: the leftover-account count 112 → 117 is confounded by them)"
+    },
+    {
+      "id": "ms-r4-session-first-e2e",
+      "kind": "measurement",
+      "at": "2026-10-10",
+      "title": "Session-first end to end (4A, owner-2 --session, 6 personas x 14 turns, seeds 7/1010/2027, judge on, prod routing, cohort test guardian): intake opened 18/18; J-flag turns 30 vs 40 plain, any-defect turns 32 vs 40; but first practice at child turn 7 vs 4, answers graded 28 vs 50, re-teach without a question 17 vs 6, and 2 R2.fallback + 1 R3.bare_question lines (plain 0)"
+    },
+    {
+      "id": "ms-r4-latency-local-final",
+      "kind": "measurement",
+      "at": "2026-10-10",
+      "title": "Stream 3 final local numbers (US container, prod routing, Neon HTTP): reply audible p50 4,175 vs base 4,261 ms (n.s.); reply TTS stage 388 vs 633 ms (edgeTrim); start to first sound 5,074 vs 5,401 ms (n.s.); page-clock start to first audio is bimodal (half ~2.7-3.4 s, half ~6.0-6.7 s, a ~3.5 s hold between tts headers and the first sample); prewarmDhdWs never runs at lesson start"
+    },
+    {
+      "id": "dc-r4-look-volt",
+      "kind": "decision",
+      "at": "2026-10-10",
+      "title": "The futurist look for the child app is Volt for both families (young 'toy plastic', older carbon HUD), chosen by main from K's pick sheet against the owner's 'cool, engaging, what Gen Alpha likes'; Holo stays behind ?look=holo for comparison; owner cohort only (ui.kaksha) until the owner has tested"
+    },
+    {
+      "id": "fn-r4-w2i-harness-targets",
+      "kind": "finding",
+      "at": "2026-10-10",
+      "title": "tests/prod/w2i-safety.mjs ignores --base (it reads TAXILA_BASE, which .env.local points at production) and queries the database named by DATABASE_URL; it skipped itself on the remote target this time, but a local run must set both to the TEST branch (scratchpad testdbrun.mjs does it in memory)"
+    }
+  ],
+  "edges": [
+    {
+      "src": "ms-r4-rel8-gate-packaged",
+      "rel": "part_of",
+      "dst": "dc-r4-release-sequence-r7-r9"
+    },
+    {
+      "src": "ms-r4-rel7-live",
+      "rel": "part_of",
+      "dst": "dc-r4-release-sequence-r7-r9"
+    },
+    {
+      "src": "dc-r4-release-sequence-r7-r9",
+      "rel": "constrains",
+      "dst": "dc-r4-owner-wrapup-directive"
+    },
+    {
+      "src": "dc-r4-look-volt",
+      "rel": "caused_by",
+      "dst": "dc-r4-owner-wrapup-directive"
+    }
+  ],
+  "md": {
+    "decisions": "- `dc-r4-owner-wrapup-directive` (2026-10-10): two owner messages, 20:12 and 20:18 UTC. Everything already built ships (R7 stream 2 + safety 6; R8 G1 + Kaksha + 4A + session-first cohort; R9 G2 + 4B + stream 3 + 5b with lamp2 cohort + patch 09; R10 the full UI/UX: K's Volt look on every child screen, stream 2's tray skin and UX fixes, stream 5's 5-step set-up and small UI). All new feature work started in the evening (item arena, MEASURE, grading fixes, Studio RC3-5, latency prod run, continuer classifier) is stopped and kept local, unpushed, for after the owner's review. Owner-only features ship behind owner cohorts (TAXILA_UI_KAKSHA, TAXILA_SESSION_FIRST_FOR, TAXILA_FACE_LOOK_FOR = sha256 of the owner's guardian email). Reverse if: the owner's review sets a different direction (that is the point of it).\n- `dc-r4-look-volt` (2026-10-10): K's pick sheet (docs/design/round4/build/kaksha/futurist/pick-360.webp on claude/r4-app-design 59be5d5b): Holo (glass, iridescent edge, rounded) vs Volt (carbon HUD, lime CTA, `//` labels; young: mint toy plastic with hard offset shadows). K recommended young Volt + older Holo; main chose Volt for both, so one identity, the most game-like read for Gen Alpha, with Volt-older's lime kept to CTAs and the secure moment so a lesson stays calm. Holo is kept behind a per-device ?look=holo switch so the owner can compare live. Reverse if: the owner prefers Holo or the mix (a one-line map in look.ts).",
+    "measurements": "- `ms-r4-rel7-live` (2026-10-10, 20:05 UTC): release 7 int/r4-rel7 35d6167 = ef0adc7 (safety release 6 on 0c90ebb) + base 4f92408 + stream 2 e7edc829. Gate (deploy-azure --gate --dry-run): npm test 2,755 tests, 2,752 pass, 0 fail, 3 skipped (one process, 1,454 s); prompt budget worst 1,645 / 2,600. Packaged tree (git archive minus docs/evals/tests/art + the gate's dist, local production server, prod-routing.env, Neon TEST): /api/studio/health ok missing []; owner-5 14/14; round2-content 34/39; r4-content-boards 4/5 (one unfilled slot pointed at). Tray gate refusals on that server were specific: 39 Studio v2 pieces refused at p360 as board twins only (scene-explainer 26, slice-at 6, ...). Deploy: canary w0-smoke 4/4, live taxila-web--s35d6167-p02m (previous s0c90ebb-9emo deactivated, sc439bd7-k0kh kept). taxila.dev: w0 4/4, owner-5 12/14 (both failures one c7 fraction-rectangle whiteboard slot refused while her line pointed at it, audit #9), round2-content 35/39, boards 5/5. w2i-safety 39/39 on a local server of the same file set on the TEST branch.\n- `ms-r4-rel8-gate-packaged` (2026-10-10, 20:43-21:05 UTC): release 8 int/r4-rel8 8448c98. Gate: 2,857 tests, 2,854 pass, 0 fail, 3 skipped; prompt budget PASS. No safety file or migration changed. Packaged tree as above: owner-5 14/14, round2-content 33/39 (the c7 whiteboard slot again; M item-bound mounts missing on c6-maths-ch07-t01 and c4-maths-ch05-t01; request→piece p90 3,362 ms on n=2), boards 5/5. w2i-safety 38/39 when run in parallel with the three content batteries (FAIL leftover @taxila.test guardians 112 → 117: the other batteries' accounts were still live), 39/39 run alone (112 → 112).\n- `ms-r4-session-first-e2e` (2026-10-10): 4A, claude/r4-conversation 2c1925d. owner-2-no-confusion.mjs --session with the cohort set to a test guardian, local server on 4beed727 + patch 15, prod routing, judge on, one lane, seeds 7 / 1010 / 2027, 6 personas x 14 turns; plain arm = the 7fd936d1 batch on the same seeds. Session arm: intake_confirm first move 18/18; turns with a J flag 30 vs 40; J after a bare ack 17 vs 18; turns with any defect 32 vs 40; code defects 2 R2.fallback + 1 R3.bare_question vs 0; first practice question at child turn 7 (median) vs 4; questions posed 57 vs 78; answers graded 28 vs 50; re-teach turns with no question 17 vs 6; checks 8/12, 10/12, 9/12 per seed (all fail zero-confused, as plain). J is a strong signal, not ground truth; n = 3 seeds; no child.\n- `ms-r4-latency-local-final` (2026-10-10): stream 3, claude/r4-latency 7f50319 (code = 5febe088). Interleaved first-sound A/B, 5 rounds x 3 lessons per arm (15 starts, ~75 turns): reply audible p50/p90 branch 4,175 / 5,019 vs base 4,261 / 5,272 ms (delta p50 -86 ms, CI [-407, +356]); reply TTS stage p50 388 vs 633 ms; start to first sound 5,074 vs 5,401 ms (delta -327, CI [-937, +1,014]); start call p50 ~3.7-4.0 s (opening model ~1.5 s, the rest DB/CPU on the Neon HTTP driver). Page clock, 20 starts: start call p50/p90 2,436 / 2,927 ms; start request to first audio 5,950 / 6,675 ms, bimodal (10/20 at ~2.7-3.4 s, 10/20 at ~6.0-6.7 s with ~3.5 s between the tts-stream headers and the first sample; not split server vs client). The opening's TTS first byte p50 1.4-1.75 s vs ~0.4-0.6 s for replies: prewarmDhdWs runs only from the turn prefetch. US container, not production.",
+    "rejected": ""
+  }
+}
