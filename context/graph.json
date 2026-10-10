@@ -18587,6 +18587,62 @@
    "at": "2026-10-10",
    "title": "The example, story and another requests also carry a last-section must-note (a concrete example from their life / a tiny story / a different one), because on the fast lane the lead note alone gave only the card question (owner-4, example spoken, local prod build). Reverse if: owner-4 shows the note recited, or no gain over 2 runs",
    "source": "inbox/r4-conversation.json"
+  },
+  {
+   "id": "ms-r4-4a-prod-deploy",
+   "kind": "measurement",
+   "title": "2026-10-10 14:55 UTC stream 4A (conversation + session-first, TAXILA_SESSION_FIRST default off) live on taxila.dev as taxila-web--s38431ab-ianv; gate 2672 pass / 0 fail / 3 skipped; migration 025 applied on production; canary w0-smoke 4/4; prod battery: owner-2 12/12 (6 sessions x 14 turns, judge), owner-4 17/17 (steering acted on within the next turn 16/16), round3-conversation 26/26, w2i-safety 39/39 on a local production server of 38431ab on the Neon TEST branch (the remote run skips the disclosure arm by design: a disclosure on production opens a real incident)",
+   "at": "2026-10-10",
+   "source": "inbox/r4-main-1500.json"
+  },
+  {
+   "id": "rj-r4-safety11-v1-frames-too-wide",
+   "kind": "rejection",
+   "title": "Patch 11 v1 (generic-bully frames, Haar ki Jeet mask) passed a 378,317-string both-arms corpus diff with 0 new fires but swallowed 7 disclosures found by adversarial near-misses: a corpus diff cannot see a new set-aside silencing a disclosure no corpus string carries",
+   "at": "2026-10-10",
+   "source": "inbox/r4-main-1500.json"
+  },
+  {
+   "id": "dc-r4-safety-setaside-needs-near-misses",
+   "kind": "decision",
+   "title": "Every new safety set-aside frame (guard frame, raw mask) ships with >= 3 adversarial near-miss disclosures per frame in its review set, inside the frame's surface pattern, that must still fire",
+   "at": "2026-10-10",
+   "source": "inbox/r4-main-1500.json"
+  },
+  {
+   "id": "dc-r4-patch10-realtime-filter-approved",
+   "kind": "decision",
+   "title": "Patch 10 approved (32abc178): realtime content-filter block gets one fresh reply, a second block fails closed (helplines on screen at once, lane switch, server safeguard opening is the first audible line; refused switch sends a signal turn); 10b: a start with no or unknown mode runs on cascade",
+   "at": "2026-10-10",
+   "source": "inbox/r4-main-1500.json"
+  },
+  {
+   "id": "dc-r4-x3-held-aec-funded",
+   "kind": "decision",
+   "title": "X3 speaker matching NOT funded (conflicts with the owner's 'never voiceprints / speaker ID'); the AEC reference for duplex R6 IS funded (no biometrics, no spend)",
+   "at": "2026-10-10",
+   "source": "inbox/r4-main-1500.json"
+  },
+  {
+   "id": "open-r4-x3-owner-decision",
+   "kind": "open",
+   "title": "Owner decision: may ephemeral, on-device, never-stored speaker matching (first-utterance reference, only ever ignores a non-child voice) be allowed, narrowing voice-features-longitudinal? Until then duplex R5 stays unmet",
+   "at": "2026-10-10",
+   "source": "inbox/r4-main-1500.json"
+  },
+  {
+   "id": "dc-r4lat-reply-bar-held",
+   "kind": "decision",
+   "title": "Reply-audible bar p50 <= 3,000 ms held, not lowered, though NOT met (4,238 n=117; 4,477 page clock n=48); next measured levers: guard-rewrite causes (true vs false rewrites) and L3 commit-on-stable-partial in shadow with a mandatory final re-scan; the puppet's turn-POST delay goes to stream 5",
+   "at": "2026-10-10",
+   "source": "inbox/r4-main-1500.json"
+  },
+  {
+   "id": "fn-r4-stray-session-message",
+   "kind": "finding",
+   "title": "Main session sent a stray 'placeholder' send_message to stream 2 by mistake (14:29 UTC); corrected at once with an ignore-it follow-up; no instruction or data carried",
+   "at": "2026-10-10",
+   "source": "inbox/r4-main-1500.json"
   }
  ],
  "edges": [
@@ -30074,6 +30130,21 @@
    "src": "r4c-dc-must-note-last",
    "rel": "measured_by",
    "dst": "r4c-ms-battery-arm2-2026-10-10"
+  },
+  {
+   "src": "dc-r4-safety-setaside-needs-near-misses",
+   "rel": "caused_by",
+   "dst": "rj-r4-safety11-v1-frames-too-wide"
+  },
+  {
+   "src": "voice-features-longitudinal",
+   "rel": "constrains",
+   "dst": "dc-r4-x3-held-aec-funded"
+  },
+  {
+   "src": "open-r4-x3-owner-decision",
+   "rel": "part_of",
+   "dst": "dc-r4-x3-held-aec-funded"
   }
  ]
 }
