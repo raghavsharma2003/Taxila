@@ -154,7 +154,7 @@ rig = rep(rig, [
     ("    R.setCam(this.view[0], this.view[1], this.view[2]);",
      "    if (this.view.length >= 4) { const cw = R.canvas.width, ch = R.canvas.height, v = this.view, sc = Math.min(cw / v[2], ch / v[3]), w = cw / sc, h = ch / sc; R.setCam(v[0] + (v[2] - w) / 2, v[1] + (v[3] - h) / 2, w); }\n    else R.setCam(this.view[0], this.view[1], this.view[2]);"),
     ("    this.R.dpr = opts.dpr || Math.min(2, window.devicePixelRatio || 1);",
-     "    this.R.dpr = opts.dpr || Math.min(2, window.devicePixelRatio || 1);\n    this.R.face = { nose: F.noseShade, mk: F.mouth.k, tint: F.shade.tint };   // lamp1: per-face shader constants"),
+     "    this.R.dpr = opts.dpr || Math.min(2, window.devicePixelRatio || 1);\n    this.R.face = { nose: F.noseShade, mk: F.mouth.k, tint: F.shade.tint, tongue: F.mouth.tongueMul || [1, 1, 1], teeth: F.mouth.teethMul || [1, 1, 1] };   // lamp1: per-face shader constants"),
     # lamp1: the procedural lid shadow is F.eye.shade = [at rest, once the lid has moved >= 4 px]. A front whose sclera
     # carries its own painted lid shadow (lamp1) takes [0, 0.3]: the rest frame is the painting, and the shadow rides a
     # lowered lid; c-front ([0.4, 0.4]) is unchanged. F.eye.round = the opening's rounded-end length (c-front 6 px).
@@ -230,10 +230,17 @@ gl = rep(gl, [
     ("smoothstep(0.0, max(6.0, 0.42 * gap), dt)", "smoothstep(0.0, max(6.0 * uMK, 0.42 * gap), dt)"),
     ("    float soft = uTongue.y > 0.3 ? 1.0 : 3.0;", "    float soft = uTongue.y > 0.3 ? 1.0 : 3.0 * uMK;"),
     ("smoothstep(30.0, 70.0, gap)", "smoothstep(30.0 * uMK, 70.0 * uMK, gap)", 2),
-    ("    this.cam = [0, 0, 1, 0];\n", "    this.cam = [0, 0, 1, 0];\n    this.face = { nose: [532, 528, 508, 1], mk: 1, tint: [0, 0, 0] };   // lamp1: set by the rig from geom.face\n"),
+    ("    this.cam = [0, 0, 1, 0];\n", "    this.cam = [0, 0, 1, 0];\n    this.face = { nose: [532, 528, 508, 1], mk: 1, tint: [0, 0, 0], tongue: [1, 1, 1], teeth: [1, 1, 1] };   // lamp1: set by the rig from geom.face\n"),
     ("    gl.uniform2fv(P.u.uNose, nose || [0, 0]);", "    gl.uniform2fv(P.u.uNose, nose || [0, 0]);\n    gl.uniform4fv(P.u.uNoseG, this.face.nose);\n    gl.uniform3fv(P.u.uShadeTint, this.face.tint);"),
     ("    gl.uniform1f(P.u.uEdgeAA, edgeAA);", "    gl.uniform1f(P.u.uEdgeAA, edgeAA);\n    gl.uniform3fv(P.u.uShadeTint, this.face.tint);"),
-    ("    gl.uniform1f(P.u.uExt, ext);", "    gl.uniform1f(P.u.uExt, ext);\n    gl.uniform1f(P.u.uMK, this.face.mk);"),
+    ("    gl.uniform1f(P.u.uExt, ext);", "    gl.uniform1f(P.u.uExt, ext);\n    gl.uniform1f(P.u.uMK, this.face.mk);\n    gl.uniform3fv(P.u.uTongueMul, this.face.tongue);\n    gl.uniform3fv(P.u.uTeethMul, this.face.teeth);"),
+    # lamp1: per-face tongue / teeth colour multipliers (c-front 1, 1, 1): the flat palette wants a muted rose-brown tongue
+    # (c-front's saturated pink read cartoonish on it) and ivory teeth (blind C1: "a flat white block")
+    ("uniform float uMK;     // lamp1: mouth scale (the cavity's px constants were tuned on c-front's mouth)",
+     "uniform float uMK;     // lamp1: mouth scale (the cavity's px constants were tuned on c-front's mouth)\nuniform vec3 uTongueMul; uniform vec3 uTeethMul;   // lamp1: per-face interior colour"),
+    ("    col = mix(col, t, cov);\n  }\n  // ---- lower teeth", "    col = mix(col, t * uTongueMul, cov);\n  }\n  // ---- lower teeth"),
+    ("    col = mix(col, lt, cov);\n  }", "    col = mix(col, lt * uTeethMul, cov);\n  }"),
+    ("    col = mix(col, ut, cov);\n  }", "    col = mix(col, ut * uTeethMul, cov);\n  }"),
 ], "gl.js")
 open(f"{OUT}/gl.js", "w").write(HDR + gl)
 

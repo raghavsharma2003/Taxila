@@ -297,7 +297,7 @@ export class Puppet2DRig {
     this.M = mouths;
     this.R = new Renderer(canvas, { clear: opts.clear || geom.clear || [251.4 / 255, 229.4 / 255, 188.6 / 255], preserve: !!opts.preserve });
     this.R.dpr = opts.dpr || Math.min(2, window.devicePixelRatio || 1);
-    this.R.face = { nose: F.noseShade, mk: F.mouth.k, tint: F.shade.tint };   // lamp1: per-face shader constants
+    this.R.face = { nose: F.noseShade, mk: F.mouth.k, tint: F.shade.tint, tongue: F.mouth.tongueMul || [1, 1, 1], teeth: F.mouth.teethMul || [1, 1, 1] };   // lamp1: per-face shader constants
     this.reduced = !!opts.reducedMotion;
     // r5 (judge r4 fix 1, interim): product yaw is clamped to +-10 and drawn by the shared field only (no painted plate:
     // the plate's near-cheek seam and mouth-corner crease were the uncanny full-size frames). ?turn=plates restores the

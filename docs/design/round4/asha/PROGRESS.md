@@ -52,6 +52,18 @@ blind-outfit.mjs, lineup-outfit.mjs, tally-outfit.py = judges; slots.py, build_o
   after: iris circles refit (old centres were 6 px low), catchlights re-centred, painted lid shadow kept (procedural
   shade only once the lid moves), the face overscan no longer painted over the ears / bun, and every pixel within 4 px
   of the flat cream unmixed against it (outlines and pale rims kept). Was 0.9454 before this pass.
-- Next: views for today's slots, demo.html, clips, fps, blind judges.
+- Slots (measured on the app's own shots, docs/design/round4/audit/shots, 1x CSS px): lesson desk window 325x316 (360),
+  375x405 (412), 440x440 (1366); play/work speech row circle 80; child home 319x172 / 319x240 / 279x312; onboarding meet
+  220x222; summary ~78x100. Views are 4-element regions fitted contain-centred (medium [110,25,830,875], close [160,40,730,730]).
+- demo: `art/character/puppet2d/lamp1/demo.html` (836 KB, self-contained; built by `build-demo.mjs` from `demo/page.html`,
+  bundle via `demo/rolldown.config.mjs` = the product after integrate/02). Capture: `capture.mjs <vp> [--q calm=1]`
+  (virtual 60 Hz clock, 30 fps frames, ffmpeg H.264 + the TTS line) -> `docs/design/round4/asha/clips/asha-<vp>.mp4`.
+- Measured on the 15 s scene (log analysis `scratch py/analyse_log.py`): bilabials sealed 9/9 WITH the text rule
+  (`demo/bilabial.js`, prepared as integrate/06), 5/9 from Azure's visemes alone; blinks 46/min while speaking (production
+  behaviour.ts, unchanged: flag); listening nods at 10.75 / 11.77 s; safety calm: smile 0 while speaking, no nods.
+- Blind C1 (n = 5: 3 gpt-5.6-sol + 2 Kimi K2.6; desk 375x405 at 412): same person 5/5, childish 0/5, moving photo 1/5,
+  UNCANNY 4/5 (gate <= 1/5), premium 2,3,2,2,3. Causes named: the thinking glance ([21,20] gaze: "eyes roll up"),
+  the listening tilt + nod ("proportions drift"), the 16 deg turn ("face slides over skull", neck shadow), flat white
+  teeth / pink tongue. Polish 1: per-face preset overrides (glance [15,11], tilt -6), 13 deg turn, tongue / teeth tint.
 
 ## Stage D: not started

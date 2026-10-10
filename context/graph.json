@@ -18223,6 +18223,13 @@
    "title": "2026-10-10 main session, delegated, on the games research's owner questions (docs/research/round4/games/FEASIBILITY.md §6): O-G1 dressed 3D worlds are allowed for 3D engines, scenery never on a learning object, learning objects drawn on top in reserved hues with labels on backing pills, and the child pilot carries a plain-vs-dressed arm (seductive details g -0.33); O-G2 an adaptive music bed is allowed, hard-ducked to 0 within ~120 ms whenever she speaks, OFF by default for classes 4-5 (the child can turn it on), music:off stays in the dress enum; O-G4 the 'daago / fire' verb is used at non-living targets only (mines, asteroids, drones; nothing alive destroyed), with a parent switch to 'scan' wording. Wave 2 runs three sessions: G1 games core + Antariksh, G2 Khand voxel world, U1 gamified app directions for the owner to pick (docs/design/round4/BUILD-PLAN-V2.md). Reverse if: the owner overrides, the pilot's dressed arm learns less on delayed bare items (O-G1), or parents object to the verb (O-G4).",
    "at": "2026-10-10",
    "source": "inbox/r4-games-o-g.json"
+  },
+  {
+   "id": "rj-sandbox-nss-proxy-ca-stale",
+   "kind": "rejection",
+   "title": "2026-10-10 the prod battery's browser files run against taxila.dev from this long-lived container (round3-forge, the owner-5 real-client check) failed with net::ERR_CERT_AUTHORITY_INVALID on every page.goto. round3-forge reported 18/48 in 14 s, a harness failure that looked like a product result. Cause: Playwright's Chromium trusts the NSS store at $HOME/.pki/nssdb, and that store did not hold the agent proxy's CURRENT CA (it was set up on 2026-10-02). Node, curl and fetch were fine because they read /root/.ccr/ca-bundle.crt. Fix: never disable verification; add the proxy CA to NSS (apt-get install libnss3-tools; certutil -A -d sql:$HOME/.pki/nssdb -t 'C,,' -n ccr-agent-proxy-current -i /root/.ccr/agent-proxy-ca.crt), then confirm with one page.goto to https://taxila.dev before a browser battery. Rule: a browser prod file that fails in under 30 s on page.goto is a harness failure and is re-run, never reported as a product number.",
+   "at": "2026-10-10",
+   "source": "inbox/r4-nss-proxy-ca.json"
   }
  ],
  "edges": [

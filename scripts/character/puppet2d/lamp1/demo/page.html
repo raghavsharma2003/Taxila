@@ -69,7 +69,7 @@ figcaption.meta { margin-top: 6px; font-size: 12px; color: var(--ink-2); text-al
       <label class="tog"><input type="checkbox" id="reduced"> Reduced motion</label>
     </div>
     <div class="timeline" aria-hidden="true"><i style="width:10%;background:#C9CED8"></i><i style="width:52%;background:#26304A"></i><i style="width:15.3%;background:#3E8E7E"></i><i style="width:9.3%;background:#B98A2E"></i><i style="width:13.4%;background:#C2593F"></i><b class="head" id="head"></b></div>
-    <div class="legend"><span style="--c:#C9CED8">0-1.5 s idle</span><span style="--c:#26304A">1.5-9.3 s her Hinglish line</span><span style="--c:#3E8E7E">9.6-11.9 s listening, nods</span><span style="--c:#B98A2E">11.9-13.3 s thinking glance</span><span style="--c:#C2593F">13.3-15 s warm smile, then a turn</span></div>
+    <div class="legend"><span style="--c:#C9CED8">0-1.5 s idle</span><span style="--c:#26304A">1.5-9.3 s her Hinglish line</span><span style="--c:#3E8E7E">9.6-11.9 s listening, nods</span><span style="--c:#B98A2E">11.9-13.3 s thinking</span><span style="--c:#C2593F">13.3-15 s warm smile, then a turn</span></div>
     <p class="status" id="status" aria-live="polite">Loading...</p>
   </header>
   <section class="stage" id="stage" aria-label="Asha in the app's slots"></section>
@@ -133,7 +133,8 @@ window.WAV = "/*WAV*/";
   // the child answering: two short phrases (a syllable-rate envelope), the Listener nods at each phrase-final pause
   const childAt = (st) => { const ph = (a, b) => st > a && st < b ? 0.32 + 0.16 * Math.sin((st - a) * 2 * Math.PI * 4.2) ** 2 : 0; return Math.max(ph(9.75, 10.55), ph(10.85, 11.55)); };
   const ease = (x) => x <= 0 ? 0 : x >= 1 ? 1 : x * x * (3 - 2 * x);
-  const turnAt = (st) => 16 * ease((st - TURN_AT) / 0.55) * (1 - ease((st - 14.55) / 0.55));
+  // the turn: 13 degrees (the brief's 12-20 range; blind C1 read 16 as "the face slides over the skull" 2/5)
+  const turnAt = (st) => 13 * ease((st - TURN_AT) / 0.55) * (1 - ease((st - 14.55) / 0.55));
   const win = new Float32Array(2048);
   const tapAt = (st) => {
     const pos = Math.round((st - SPEAK_AT) * SR);
@@ -187,7 +188,6 @@ window.WAV = "/*WAV*/";
   function tick(nowMs) {
     const st = (nowMs - sc.t0) / 1000;
     if (!sc.pushed && st >= SPEAK_AT - 0.2) { driver.visemes.push(1, sc.playAt, Q.get("bilabial") === "0" ? VIS : T.addBilabials(VIS, WORDS), WORDS, nowMs, window.LINE.text); sc.pushed = true; }
-    if (!sc.looked && st >= THINK_AT + 0.15) { driver.lookAt(12, 9, 1.2, "demo: thinking glance"); sc.looked = true; }
     // the warm smile a beat after the floor moves to your_turn (the floor change releases whatever expression is up)
     if (!sc.warmed && st >= WARM_AT + 0.15) { driver.evalEmote("warm", nowMs, undefined, 1.6, 1); sc.warmed = true; }
     driver.evalHead = [0, turnAt(st), 0];

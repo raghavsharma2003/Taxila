@@ -37,8 +37,14 @@ FACE = {
     "eye": {"shade": [0.0, 0.3], "round": 3},
     # her thinking glance: eyes up and aside, the pursed mouth, brows LEVEL (owner direction, Stage B think frame); the
     # c-front preset's one-brow arch + low brow read skeptical on the grown-up front
-    "presets": {"thinking": {"bs": {"browOuterUpLeft": 0.0, "browDownRight": 0.0, "browInnerUp": 0.14, "eyeSquintRight": 0.08, "mouthFrownLeft": 0.05, "mouthFrownRight": 0.03, "mouthPucker": 0.3}}},
-    "mouth": {"lineX0": ml["x0"], "lineStep": ml["step"], "line": ml["y"], "cx": 525, "hwL": 73, "hwR": 75, "tU": 17, "tL": 26, "cy": 605, "jaw": [606, 664, 135], "k": 1.12},
+    # blind C1 (n = 5): the c-front glance [21, 20] read "eyes roll upward, misaligned" 4/5 on her front, and the listening
+    # tilt (roll -11) + nod drifted the proportions 3/5: smaller glance and tilt; listening brows less high
+    "presets": {"thinking": {"bs": {"browOuterUpLeft": 0.0, "browDownRight": 0.0, "browInnerUp": 0.14, "eyeSquintRight": 0.08, "mouthFrownLeft": 0.05, "mouthFrownRight": 0.03, "mouthPucker": 0.3},
+                             "gaze": [15, 11], "head": [-3, -5, 5]},
+                "listening": {"bs": {"browInnerUp": 0.3, "browOuterUpLeft": 0.2, "browOuterUpRight": 0.2}, "head": [4, 3, -6]}},
+    "mouth": {"lineX0": ml["x0"], "lineStep": ml["step"], "line": ml["y"], "cx": 525, "hwL": 73, "hwR": 75, "tU": 17, "tL": 26, "cy": 605, "jaw": [606, 664, 135], "k": 1.12,
+              # blind C1: the tongue read pink (c-front's saturated mix on a muted palette), the teeth a flat white block
+              "tongueMul": [0.84, 0.76, 0.64], "teethMul": [0.93, 0.91, 0.86]},
 }
 g["face"] = FACE
 g["clear"] = [246 / 255, 209 / 255, 152 / 255]   # her own cream: the layers keep the art's pale outline gaps, cut against it
