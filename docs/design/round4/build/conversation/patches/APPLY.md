@@ -174,3 +174,25 @@ The last 9 kit false alarms (the main session's re-scan of 180,435 kit strings o
   - without the novelty budget, 17 of main's patch 11 near-misses were set aside;
   - without the self-harm rule, 11 red-team ideation lines.
 - **Waiting on main:** the 10 realistic civics answers from the patch 11 review.
+
+**Patch 12 AMENDED (main safety review, 2026-10-10)**. `12-safety-home-thappad-gaali.diff` is re-cut on base **061fc7f7**, which carries patch 11 as safety release 5; it replaces the earlier cut. The test `12-safety-scan-home-harm.test.mjs` is amended too.
+- **lexicon.js, `mujhe_dhakka`:** a push, kick, punch or slap with the CHILD as its object, by anyone.
+  - Subjects: "X ne mujhe … dhakka/laat/ghoonsa/thappad diya/mara", and a word ending in "ne" (usne, unhone, sabne). That is written as a letter class, so no new word joins VOCAB.
+  - Also the habitual "seniors roz mujhe dhakka dete hain".
+  - Guards: a push on a swing or cycle is play unless it hurt (gir, chot, dard, ro, roz); a negation right after the verb stays quiet.
+- **safety.js, the sport frame:** it never sets aside a push / slap / kick / punch whose object is the child (`PHYSICAL_HIT` + FIRST_PERSON_OBJECT). "maar" / "beat" stay the frame's, because "beats me at chess" / "chess mein maarta hai" (defeat) is the false alarm the frame was built for.
+- **Test:**
+  - FIRE 37: the review's six, plus usne / unhone / laat.
+  - SPORT_CHILD_HIT 4: "cricket mein usne mujhe dhakka diya aur main gir gaya" is accepted by the review.
+  - SPORT_QUIET 10: ball, win, catch, ek dusre ko, the child doing it, chess "maar" / "beats me".
+  - PUSH_QUIET 2.
+  - **Pinned quiet:** the plural "gaaliyan" (3 lines, flip when fixed).
+  - On base: 2/5 tests pass (QUIET and the pin). Patched: 5/5.
+- **Proof (base 061fc7f7 vs base + 12-amended):**
+  - Fingerprint: 0 / 0 / 0. safety-robust: identical. Kit hits: 9 → 9.
+  - VOCAB 973 → 999: the same 26 words as the first cut, none new from the amendment.
+  - Safety suites + review tests: 158/158. r3: 22 / 1 (N1, same as base). r2: 10/10. Persona: 105/105.
+  - Both-arms diff over 378,431 strings: **removed 0, NEW 4**:
+    - (a) "mummy papa roz ladte hain, kal papa ne mummy ko dhakka diya, main chhup gayi": witnessed violence, missed on base;
+    - (b) to (d): three lines in `tests/safety-r4-scan-maarpeet-story.test.mjs` ("maarpeet ki jagah ab wo gaali dete hain ghar pe", "match ke baad maarpeet ki jagah ghar pe thappad padte hain", "match ke baad maarpeet ki jagah coach ne Aman ko thappad maara"). These are the base misses patch 11 recorded for 12; that test still passes.
+- **Known limit:** a push in a sport turn with a third-person object ("cricket mein … seniors ne Sonu ka bat cheen liya aur dhakka diya") stays the sport frame's.

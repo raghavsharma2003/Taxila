@@ -1,5 +1,5 @@
 diff --git a/server/director/safety.js b/server/director/safety.js
-index 3b5d8f1a..ee4a7a1e 100644
+index 3b5d8f1a..30bfa341 100644
 --- a/server/director/safety.js
 +++ b/server/director/safety.js
 @@ -203,8 +203,10 @@ const FAMILIES = {
@@ -15,11 +15,33 @@ index 3b5d8f1a..ee4a7a1e 100644
  /** Sports and games as the SETTING of a hit / beat / die line ("beats me at chess", "chess mein maarte", "in the game"). */
  const SPORT_WORDS = "games?|chess|ludo|carrom|cricket|match|matches|race|kabaddi|badminton|football|pillow\\s*fight|free\\s*fire|pubg|bgmi|minecraft|roblox|levels?|video\\s*games?|khel";
  const SPORT_SETTING = new RegExp(`(?<![\\p{L}\\p{M}])(?:(?:in|at|during)\\s+(?:every\\s+|the\\s+|a\\s+|this\\s+)?(?:${SPORT_WORDS})|(?:${SPORT_WORDS})\\s+(?:mein|me|main|mai)|respawn\\w*|headshot)(?![\\p{L}\\p{M}])`, "iu");
+@@ -227,6 +229,8 @@ const REPORTED = /(?<![\p{L}\p{M}])(?:kaha|kehta|kehti|kehte|bola|boli|said|says
+ const PRAISE_TOUCH = /(?<![\p{L}\p{M}])(?:shabash|shabaash|well\s+done|good\s+job|bukhaar|bukhar|fever|temperature|aashirwad|ashirwad|blessing|high\s*five)(?![\p{L}\p{M}])/iu;
+ const TOUCH_WORD = /(?<![\p{L}\p{M}])(?:chhua|chua|chhuaa|chhoo\w*|chhu\w*|touch\w*|छुआ|छू\w*)(?![\p{L}\p{M}])/iu;
+ 
++/** A push, slap, kick or punch (never "maar" / "beat", which also mean "defeat" in a game). Patch request 12, amended. */
++const PHYSICAL_HIT = /(?<![\p{L}\p{M}])(?:dhakk[aeo]|dhaka|thappad|thapad|thappar|laat|lath|ghoons[aeo]|ghus[aeo]|push(?:ed|es|ing)?|shov(?:e|ed|es|ing)|slap(?:s|ped|ping)?|kick(?:s|ed|ing)?|punch(?:es|ed|ing)?|धक्क[ाे]|थप्पड़|थप्पड|लात|घूँस[ाे]|घूंस[ाे])(?![\p{L}\p{M}])/iu;
+ const FIRST_PERSON_OBJECT = /(?<![\p{L}\p{M}])(?:mujhe|mujhko|mereko|me|i)(?![\p{L}\p{M}])/iu;
+ /** The clause of `t` around [a, b): from the last clause mark before a to the first after b. */
+ function clauseOf(t, a, b) {
+@@ -246,7 +250,11 @@ export function guardFrameOf(kind, t, span, clause) {
+   if (!(kind === "abuse" && FIRST_PERSON_OBJECT.test(span)) && STORY.test(clause) && REPORTED.test(clause)) return "story";
+   if (kind === "abuse") {
+     // a sport / pest OBJECT explains the hit only when the child is not the one hit and it is not the instrument ("ball se")
+-    if (SPORT_SETTING.test(clause) || (SPORT_OBJECT.test(span) && !childHit)) return "sports";
++    // round 4 (patch request 12, amended on the main safety review): a sport SETTING never explains a push, slap, kick or punch
++    // whose object is the child ("cricket mein seniors ne mujhe dhakka diya aur maara"). "maar" / "beat" stay the frame's: "beats
++    // me at chess" / "chess mein maarta hai" (defeat) is the false alarm the frame was built for.
++    const physChild = kind === "abuse" && FIRST_PERSON_OBJECT.test(span) && PHYSICAL_HIT.test(span);
++    if ((SPORT_SETTING.test(clause) && !physChild) || (SPORT_OBJECT.test(span) && !childHit)) return "sports";
+     if (PEST.test(clause) && !childHit) return "pest";
+     if (THING_SUBJECT.test(clause)) return "idiom";
+     if (TOUCH_WORD.test(span) && PRAISE_TOUCH.test(clause)) return "praise_touch";
 diff --git a/server/safety/lexicon.js b/server/safety/lexicon.js
-index 873e4782..02c94201 100644
+index 873e4782..89cdc759 100644
 --- a/server/safety/lexicon.js
 +++ b/server/safety/lexicon.js
-@@ -39,6 +39,13 @@ const words = (list) => new RegExp(`(?<![a-z])(?:${[...new Set(list.split(/\s+/)
+@@ -39,6 +39,17 @@ const words = (list) => new RegExp(`(?<![a-z])(?:${[...new Set(list.split(/\s+/)
  const LESSON = words(`desh sainik sipahi shahid soldier soldiers freedom bhagat azadi kahani story movie film cartoon game games level pubg minecraft fortnite
    roblox ludo chess carrom match race kabaddi cricket ball goal joke haha lol machhar makkhi cockroach insect plant plants paudha paudhe swimming pool`);
  const SURPRISE = words("surprise birthday janamdin gift gifts tohfa party present");
@@ -28,12 +50,16 @@ index 873e4782..02c94201 100644
 +const STORY = new RegExp(`${words("kahani kahaniyan story stories movie film cartoon serial natak kavita chapter villain").source}|(?<![a-z])khani (?:mein|men|me|ka|ki|ke)(?![a-z])`);
 +/** The child as the one hit or sworn at: a story or the child doing it never explains that away (patch request 12). */
 +const CHILD_IN = new RegExp(`(?<![a-z])${I_O}(?![a-z])`);
++/** A push as play (patch request 12, amended): a swing, a cycle being learnt. */
++const PLAY_PUSH = words("jhula jhule jhoola jhoole swing cycle saikil");
++/** ... unless it hurt: a fall, an injury, crying, or every day. */
++const HURT = words("gir gira giri gaya_gir chot dard ro rona royi roya roj rozana khoon blood hurt fell");
 +/** A pushed THING, not a child (patch request 12): "Ramu ne gaadi ko dhakka diya" is a force lesson. */
 +const PUSHED_THING = words("gaadi gadi car cart thela trolley table kursi chair box dibba darwaza darvaja door deewar wall patthar stone ball almari cupboard force bal");
  const ACCIDENT = words("galti mistake by_mistake accidentally accident ghadi watch sabzi vegetables paper kagaz apple seb fruit nakhun nails");
  
  /**
-@@ -145,6 +152,18 @@ const SHAPES = [
+@@ -145,6 +156,25 @@ const SHAPES = [
      // round 4 (4A patch request 11): the reversed order, "maarpeet hoti hai ghar pe" (only words the shape already has)
      + `|(?:marpit|mar pit|marpitai|pitai) (?:karte|karti|karta|hoti|kiya|ki)(?: hai| hain)? ghar (?:pe|par|men|mein|me)`, (m, full) => LESSON.test(full)],
    ["abuse", "actor_ne_mujhe_gap_verb", `(?:${ACTOR})(?: ji)? ne ${I_O}${g(3)} (?:mara|pita|chua|jalaya|jala diya|jala dia|thapad|lat|ghusa|dhaka|nocha|dabaya|band kar diya)`, (m, full) => LESSON.test(full)],
@@ -48,6 +74,13 @@ index 873e4782..02c94201 100644
 +    (m, full) => !CHILD_IN.test(m) && (STORY.test(full) || /(?<![a-z])(?:maine|mene|hamne|humne)(?![a-z])/.test(full))],
 +  ["abuse", "adult_ne_child_ko_maara", `(?:${ACTOR}|${NONPARENT}|coach|seniors|senior|bullies|bully)(?: ji)? ne${g(2)} (?:ko|ka|ki|ke)${g(4)} (?:thappad|dhakka|laat|ghoonsa|belt|danda) (?:mara|mari|diya|de diya|lagaya|lagai)`,
 +    (m, full) => STORY.test(full) || PUSHED_THING.test(full)],
++  // amended on the main safety review: a push (or a kick, punch, slap) with the CHILD as its object, by anyone ("seniors ne mujhe dhakka diya", "ek ladke ne
++  // mujhe seedhiyon se dhakka diya", "usne mujhe dhakka diya", "सीनियर्स ने मुझे धक्का दिया"), and the habitual "seniors roz mujhe
++  // dhakka dete hain". The English forms already fire. Any subject: "X ne" or a word ending in "ne" (usne, unhone, sabne),
++  // written as a letter class so no new word joins the vocabulary. A push on a swing or a cycle is play unless it hurt.
++  ["abuse", "mujhe_dhakka", `[a-z]{0,6}ne ${I_O}${g(3)} (?:dhakka|laat|ghoonsa|thappad) (?:diya|de diya|dete|deta|deti|mara|mari|marte|marta)(?! nahi| nahin| nai)`
++    + `|(?:${ACTOR}|${NONPARENT}|seniors|senior|ladke|ladka|bache|bullies|bully|sab|log|koi)${g(2)} ${I_O}${g(2)} (?:dhakka|laat|ghoonsa|thappad) (?:dete|deta|deti|marte|marta)(?! nahi| nahin| nai)`,
++    (m, full) => PLAY_PUSH.test(full) && !HURT.test(full)],
 +  ["abuse", "they_abuse_me", `(?:${ACTOR_EN}|people|everyone|kids|seniors|bullies) (?:abuse|abuses|abused|swear at|swears at|curse at|curses at) me`, (m, full) => STORY.test(full)],
    ["abuse", "actor_burns_me", `(?:${ACTOR_EN}) (?:burns|burned|burnt|chokes|choked|loks|loked|pinches|pinched|bites|ties|tied|throws|threw|pushes|pushed|slaps|slaped|kiks|kiked) me`, (m, full) => LESSON.test(full)],
    ["abuse", "kapde_utarne", `(?:${NONPARENT})(?: ji)?${g(4)} kapde (?:utar|utarne|utarte|utarta|utarti|utarvate|utarvata|utarvaye|utaro|kholne|kholte|kholta|kholo|utarvane)|(?:makes|made|asks|asked|tels|told|vants|vanted|forces|forced) me (?:to )?(?:take of|remove|undres)|undres(?:ed|ing)? me`],
