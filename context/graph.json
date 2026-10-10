@@ -18713,6 +18713,34 @@
    "at": "2026-10-10",
    "title": "The plural 'gaaliyan' stays quiet on the code floor: adding it as a lexicon literal made the STT garble 'goliyan' (pills) unreadable (34 recall draws lost); the model distress read is the only catch",
    "source": "inbox/r4-main-1630.json"
+  },
+  {
+   "id": "dc-r4c-one-tray-gate",
+   "kind": "decision",
+   "title": "Round 4 content: ONE certificate gate (server/forge3/tray-gate.js) decides every pixel in the Desk's tray at the device's viewport class, before reveal: Studio slot / snapshot / stream boards, Stagecraft reveal, Director module mount (incl. explainer@1 and G1 fills), whiteboard (board-first, kept, board-sync, template fallback), play. The Desk reports its work-tray box (POST /api/studio/viewport, src/child/lesson/trayBox.ts from the same solveDesk); class = the box's width class against the box contract; unknown = the 360 phone. Never judged = not shown (round 3 allowed never-judged play arts and library pieces). tests/r4-content-tray-gate.test.mjs scans server/ and shared/ for every producer of a tray artifact or mount and fails on an unregistered one; 2 mutations (board gate off, play gate off) both caught. Reverse if: a measured device class mismatch (the reported box classifies wrong on a real phone), or the gate refuses > 10% of reveals that a human judge on the device finds legible.",
+   "at": "2026-10-10",
+   "source": "inbox/r4-content.json"
+  },
+  {
+   "id": "dc-r4c-studio-v2-off-child-path",
+   "kind": "decision",
+   "title": "Studio v2 (the 1000 x 625 HUD worlds behind every Stagecraft library game and scene explainer) is off the child path: a piece is served only when certified AS ITSELF at all three sizes. The round 3 certificate passed 295 games and 342 explainers at the 360 phone only because the stage showed their BOARD TWIN there (38-unit labels in a 324 px box = 12.3 px < 14). Measured on the catalogue (385 class 4-7 topics, pure code, 2026-10-10): games ok 368 -> 0, explainers ok 369 -> 0 (all qa_broken). Reverse if: a Studio v2 world is relaid for the phone tray and passes the forge3 checks as itself at 360 x 800, 412 x 915 and 1366 x 768.",
+   "at": "2026-10-10",
+   "source": "inbox/r4-content.json"
+  },
+  {
+   "id": "ms-r4c-box-contract-2026-10-10",
+   "kind": "measurement",
+   "title": "Stage box contract (n = 12 boxes, /dev/desk work-studio and work-play fixtures, Vite dev, headless Chromium 141, 2026-10-10): Older tray 328x404 / 380x519 / 752x408 at 360x800 / 412x915 / 1366x768 (equal to round 3's live taxila.dev measurement), Young tray 328x380 / 380x495 / 752x408; play mode Older 328x532 / 380x647 / 752x552, Young 328x484 / 380x599 / 752x552. docs/design/round4/build/box-contract.json; tests/prod/r4-content-box-contract.mjs --check.",
+   "at": "2026-10-10",
+   "source": "inbox/r4-content.json"
+  },
+  {
+   "id": "rj-r4c-frame-fit-floor-075",
+   "kind": "rejection",
+   "title": "Tried (round 3 forge, src/modules/frame/fit.ts): scaling an engine that does not fit its frame down to a fixed floor of 0.75. Broke (certify-tray.js --modules, n = 2 samples per (engine, mode, band), contract boxes, 2026-10-10): 18 px words became 13.5 px and 54 px keys 40 px, so 0 of 15 engines passed at the 360 phone tray. Replaced by a floor per engine: the scale never takes the smallest word below the band's floor (14 / 16 px) nor a target below 44 px; past that the frame scrolls vertically. Plus svgText.ts: SVG words grown back to the floor at the SVG's real width, crowded sibling labels thinned (map-label rule).",
+   "at": "2026-10-10",
+   "source": "inbox/r4-content.json"
   }
  ],
  "edges": [
@@ -30245,6 +30273,21 @@
    "src": "ms-r4-4a-owner2-3seeds",
    "rel": "caused_by",
    "dst": "fn-r4-local-routing-differs-from-prod"
+  },
+  {
+   "src": "dc-r4c-studio-v2-off-child-path",
+   "rel": "part_of",
+   "dst": "dc-r4c-one-tray-gate"
+  },
+  {
+   "src": "dc-r4c-one-tray-gate",
+   "rel": "measured_by",
+   "dst": "ms-r4c-box-contract-2026-10-10"
+  },
+  {
+   "src": "rj-r4c-frame-fit-floor-075",
+   "rel": "part_of",
+   "dst": "dc-r4c-one-tray-gate"
   }
  ]
 }
