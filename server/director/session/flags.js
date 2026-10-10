@@ -11,6 +11,8 @@
 //   TAXILA_SF_NOTEBOOK_CAMERA    "copy dikhao" by camera (cost-blocked today); voice-only intake when off
 //   TAXILA_SF_PARENT_INTAKE_C12  classes 1-2: the parent-set timetable and pointer lead the intake (picture chips)
 
+import { createHash } from "node:crypto";
+
 const env = (k) => (typeof process !== "undefined" ? process.env?.[k] : undefined);
 const on = (k) => /^(?:1|on|true|yes)$/i.test(String(env(k) ?? "").trim());
 
@@ -20,6 +22,26 @@ export function sessionFirstMode() {
   return v === "on" || v === "1" || v === "true" ? "on" : v === "shadow" ? "shadow" : "off";
 }
 export const sessionFirstOn = () => sessionFirstMode() === "on";
+
+/**
+ * round 4 (the owner first, main session 2026-10-10): TAXILA_SESSION_FIRST_FOR = comma-separated guardian accounts, each a
+ * lower-case email OR the sha256 hex of one (the TAXILA_DUPLEX_LIVE_FOR form). For a guardian in it, the plain Start is a
+ * session-first start whatever TAXILA_SESSION_FIRST says; every other account is exactly as before. PURE over env.
+ */
+const sha256 = (v) => createHash("sha256").update(v).digest("hex");
+export function sessionCohort(e = typeof process !== "undefined" ? process.env : {}) {
+  const out = new Set();
+  for (const raw of String(e?.TAXILA_SESSION_FIRST_FOR ?? "").split(",")) {
+    const v = raw.trim().toLowerCase();
+    if (v) out.add(/^[0-9a-f]{64}$/.test(v) ? v : sha256(v));
+  }
+  return out;
+}
+/** Is this guardian (a row with `email`) in the session-first cohort? */
+export function inSessionCohort(guardian, cohort = sessionCohort()) {
+  const e = String(guardian?.email ?? "").trim().toLowerCase();
+  return !!e && cohort.size > 0 && cohort.has(sha256(e));
+}
 
 /** The owner-decision switches (TUTOR-MODEL §9), all default off. */
 export function sessionSwitches() {

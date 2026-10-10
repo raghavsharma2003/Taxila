@@ -1,7 +1,7 @@
 // Run the five OWNER TEST 2026-10-04 experience acceptance tests (owner items 1-5), one child process each, in order,
 // against one base URL; every other flag is passed through (--seed, --judge model, --no-browser, --lanes, …).
 //   NODE_USE_ENV_PROXY=1 node tests/prod/_owner-all.mjs [--base https://taxila.dev] [--only 3] [...]
-// All five write their transcripts into ONE results dir (evals/owner-truth/results/acceptance-<stamp>/). Exit 1 if any
+// All five write their transcripts into ONE results dir (evals/owner-truth/results/acceptance-<stamp>-p<pid>/). Exit 1 if any
 // test fails. Each test deletes its own @taxila.test account in a finally. (Underscore name: run.mjs's w<wave>-*.mjs
 // pattern never picks these up, and node --test never matches them.)
 import { readdirSync } from "fs";
@@ -14,7 +14,7 @@ const argv = process.argv.slice(2);
 const only = (() => { const i = argv.indexOf("--only"); return i >= 0 ? argv[i + 1] : null; })();
 const pass = argv.filter((a, i) => a !== "--only" && argv[i - 1] !== "--only");
 const stamp = new Date().toISOString().replace(/[:.]/g, "-").slice(0, 19);
-if (!pass.includes("--out")) pass.push("--out", join(DIR, "..", "..", "evals", "owner-truth", "results", `acceptance-${stamp}`));
+if (!pass.includes("--out")) pass.push("--out", join(DIR, "..", "..", "evals", "owner-truth", "results", `acceptance-${stamp}-p${process.pid}`));
 const files = readdirSync(DIR).filter((f) => /^owner-\d-[\w-]+\.mjs$/.test(f) && (!only || f.startsWith(`owner-${only}-`))).sort();
 const outcome = [];
 for (const f of files) {

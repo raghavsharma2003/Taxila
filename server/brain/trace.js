@@ -64,6 +64,15 @@ export function comprehensionReasons({ cls, classified, help = false, uiVerdict 
     out.push(`cls_source.${src}`);
   } else out.push("cls.none", `cls_source.${help ? "help" : classified ? "none" : "module"}`);
   out.push(`verdict.${uiVerdict ?? "ungraded"}`);
+  // round 4 (patch 13, SHADOW): what the item-context set-aside would have done with a predicate hit (classify.js)
+  const sa = cls?.setAsideWould;
+  if (sa && typeof sa.why === "string") {
+    out.push(sa.aside ? "safety_setaside_would.item_context" : `safety_setaside_not.${sa.why}`);
+    if (["item_context", "novel", "rest_fires"].includes(sa.why)) {
+      const n = Number(sa.novel) || 0, m = Number(sa.masked) || 0;
+      out.push(`setaside_novel.${n > 2 ? "over" : `n${n}`}`, `setaside_masked.${m >= 5 ? "n5plus" : `n${m}`}`);
+    }
+  }
   if (guard) {
     for (const k of ["replaced", "rewritten", "repaired"]) if (guard[k]) out.push(`guard.${k}`);
     for (const c of guard.caught ?? []) out.push(`guard.${c}`);

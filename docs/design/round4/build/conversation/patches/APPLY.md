@@ -1,5 +1,15 @@
 # Stream 4A (conversation) · patch requests
 
+> **2026-10-10, 4A is LIVE (base 38431ab, taxila.dev revision s38431ab):** 01 (migration 025, applied on production), 02 and 04
+> arrived on base with the 4A integration. **10 is APPROVED** (32abc178, including 10b); it ships with 11 as one narrow safety
+> release once 11 passes review (amended in 2feaeb96). Both diffs apply cleanly on 38431ab. 08 is a design note.
+
+> **2026-10-10, applied on base:** 03 (`7ec8202`, amended), 05 (`6166d0a`), 06, 07 and 09 (`a491caf`, with the main review's
+> amendment to 06: if the fresh reply fails for any reason other than a filter block, the ORIGINAL block stands and the turn
+> fails closed). All are merged into this branch, and their diffs are dropped from this folder. The rows below are kept as the
+> record of why and how each was proved. Still open: 01, 02, 04 (applied here as `[patch-request]` commits) and 08 (a design
+> note).
+
 Apply in this order, after the stream's own commits. Each was applied on `claude/r4-conversation` only as a separate
 `[patch-request]` commit, so the main session can drop and re-apply it at merge (BUILD-PLAN §4 rule 2).
 
@@ -68,3 +78,126 @@ every safeguard opening by the CODE predicate alone (set 1 6/6, set 2 5/5; befor
 | # | file | owner | why | evidence |
 |---|---|---|---|---|
 | 09 | `server/safety/lexicon.js` (`hang_fansi`) | main + safety review | A hanging disclosure with the English "fan" was QUIET on the code floor: "fan se latak jaungi", "ceiling fan se latak jaunga", "i will hang from the fan", Devanagari "फैन से लटक जाऊंगी" (canonical "fain"). The live path rested on the model distress read alone. Two frames are added to `hang_fansi`. (1) [ceiling] fan / fain / pankha / pankhe + se / pe / par / me / mein + up to 5 words (a rassi / dupatta / chunni tied) + latak [ke / kar] + a FIRST-PERSON future (jaungi, jaunga, jaun, jau, jana hai, jana chahti / chahta, mar jaungi / jaunga, jaenge). (2) hang / hanging [myself] from / on / to [the / our / this / my] [ceiling] fan. The pattern uses only words already in the lexicon's VOCAB, plus fan / fain. A first draft added misspelling literals (jaugi, jauga …), which joined VOCAB, stopped the canonicaliser correcting them and broke three other shapes (fingerprint: 4 recall draws lost, ghar_chhod_bhaag, train_ke_aage, kood_jaunga_nadi). Removing them restored 0 lost; misspellings still fire through canonicalisation ("kal raat fan se latak jaugi" fires). | `node --test docs/design/round3/adversarial/r4-scan-fan.test.mjs`: 18 must-fire and 12 must-stay-quiet lines; 2/2 with 05+07+09, 0/2 on base. Must-stay-quiet: "fan se hawa aati hai", "kapde fan pe latka diye", "fan latak raha hai, theek karwana hai", "main fan hoon cricket ka", "I am a big fan of Virat", "exhaust fans let them out", "bat fan se latakti hai", "we hang the decorations on the fan". Safety suites plus the 03/05/07/09 review tests: 106/106. Fingerprint (evals/safety-robust/fingerprint.mjs, 18,438 draws): 05+07 → 05+07+09 lost 0, gained 0, kind changed 0; base → 05+07+09 lost 0, gained 0, kind changed 0. safety-robust run.mjs output identical in both comparisons (every recall and FP line). Both-arms diff over 178,822 unique kit + eval strings, 05+07 → 05+07+09: removed 0, NEW 0. The three diffs apply in order on base and reproduce the tested file byte for byte. |
+
+## Patch 10 (stream 3's client and turn files + the realtime seam; touches the fail-closed path: main safety review)
+
+| # | files | owner | why | evidence |
+|---|---|---|---|---|
+| 10 | `src/lesson/realtime.ts`, `src/lesson/runtime.ts`, `src/lesson/link.ts`, `src/lesson/api.ts`, `shared/contracts.ts`, `server/voice/realtimeSession.js`, `server/brain/turn.js` | stream 3 / main + safety review | On the realtime voice lane the server never writes the words. A reply the content filter blocked arrives as response.done `incomplete` / reason `content_filter`, and the client just finished the turn: a cut-off or silent teacher turn, with no retry and no fail-closed backup. **The fix:** (1) RealtimeProtocol sends exactly ONE fresh `response.create` (the session's same instructions); the next response created is marked as that retry; a block on a retry is never retried again; counted per response, never per lesson. It emits `reply_filtered {count 1 / 2}`. (2) The runtime, on count 2: the Help sheet with the helplines opens now (`lateSafeguard`), and the lesson moves to the cascade lane (`switchLane(..., "content_filter")`). The resume turn carries `replyFiltered: 2`, and the server re-plans it as the safeguard, which the cascade lane speaks by TTS from the server's fixed opening (her language mode, 1098 / 14416 digit-exact). So she hears the vetted line, not a third realtime attempt or silence. Without the lane switch (flag off), a signal turn carries `replyFiltered: 2`. When the blocked reply was itself the safeguarding hand-off, only the helplines and the switch run. (3) turn.js `withReplyFiltered`: a hint that can only ADD the distress flag (kind `content_filter`). A turn without it, or with 1, is unchanged; an existing distress kind is kept; the child's own words still go through the predicate and the distress read. (4) Rate-limit / `failed` handling is unchanged. | `node --test docs/design/round4/build/conversation/patches/10-realtime-filter.test.mjs`: 5/5 with the patch. Unpatched, the suite fails to load (`withReplyFiltered` missing). It covers: one retry; count 2 with no third create; a later chain gets its own single retry; other incomplete reasons and a rate-limited failure unchanged; the runtime's helplines + switch + `replyFiltered` on the resume turn; the server's safeguard move with 1098 and 14416, a clean turn and a hint of 1 unchanged, an existing distress kind kept. `npx tsc -b` clean; client-runtime, w2d-voice-lanes, brain-turn, safety-content-filter, safety-r4-*, round2-safety-floor: 155/155 with the patch. **Reach today:** the child app never starts the realtime lane (`src/child/lesson/useDesk.ts:516` maps a voice start to `cascade`). It is reachable only from a start that sends `mode: "voice"`, or one that omits `mode` (the server defaults to voice, `routes/lesson.js:152`). Not urgent for children today; that default is worth flipping to cascade. |
+
+## Patch 11 (frozen safety floor: `server/director/safety.js` + `server/safety/lexicon.js`; main safety review)
+
+The last 9 kit false alarms (the main session's re-scan of 180,435 kit strings on base a491caf: 11 hits), closed by FRAMES, never by string allow-lists. "When in doubt, fire."
+
+| what | how | evidence |
+|---|---|---|
+| 6 generic "bully" strings and the helper-list answer (`families` fear: the bare `\bbull(y\|ied\|ying)\b`) | A Day-0 guard frame, `generic_bully` (the existing set-aside mechanism: the pattern is untouched). It explains a hit only when (a) the span is "bully", "bullies" or "bullying", never "bullied"; (b) the turn has NO first-person or "us" word anywhere (I, me, my, we, our, mujhe, mera, main, hum, humein, मुझे, मेरा, हम …); (c) the turn passes GUARD_VETO (roz, daily, every day, fear, secrecy …); and (d) a generic frame holds: an enumeration with other roles (referee, robber, thief, sarpanch, teacher, classmate …), the verb with a generic object ("bully … the weak / others / people"), a helper list ("counsellor … (… bullying)"), "standing up to a bully", or the civics concept ("a bully 'has authority'"). Judged on the child's ORIGINAL words: pass 2's normalised readings pass the original in (`guardFrameOf(…, orig)`), and the fuzzy `bully` shape hands in the word. | |
+| the c6-hindi sportsmanship answer (`lexicon:maarpeet_maar_padti`) | Raw mask in its own shape: "मारपीट / maarpeet की / ki जगह / बजाय / बदले" ("instead of fighting"), vetoed by any first-person word. | |
+| the c6-hindi Haar ki Jeet retelling (`lexicon:secret_dont_tell`) | Raw mask in its own shape, applied ONLY when the turn names a character of the story (बाबा भारती / Baba Bharati, खड़गसिंह / Kharag Singh, सुल्तान / Sultan) AND has a reason clause (ताकि / taaki / so that), and no first-person word. "Kisi ko mat batana" never earns the quiet on its own: "बाबा ने कहा किसी को मत बताना ताकि …" without the named character still fires ("baba" may be a grandfather), and so do "papa kehte hain kisi ko mat batana" and "unhone kaha kisi ko mat batana taaki koi pareshan na ho". | |
+| **a MISS found on base, closed here** | "maarpeet hoti hai ghar pe" / "… ghar mein" (the reversed word order) was QUIET on base. `maarpeet_maar_padti` gains the reversed order using only words the shape already has: VOCAB 973 before and after, so no canonical correction is shadowed (rj-r4-lexicon-literals-shadow-corrections). | |
+| **proof** | | Review test `11-safety-scan-bully.test.mjs` (goes to `tests/safety-r4-scan-bully.test.mjs`; no hooks): 42 must-fire lines in Hinglish, Devanagari and English, including all 11 the main session listed, adult-actor secrecy, the generic frames WITH the child in them, and maarpeet with the child or at home; the 9 quiet lines; the true-content pair. **1/4 on base, 4/4 with the patch.** Kit scan (180,435 strings): **11 → 2**, and the two left are the true-content pair (the online-stranger prompt, "I hurt myself"). Both-arms diff over 378,317 unique strings (data/kits + data/curriculum JSON, every string literal and JSON under evals/ and tests/): **removed 11, NEW 0**; the 11 are the 9 targets plus two copies of the c9-sst "the strong might bully or steal from the weak" answer in evals/grading-truth/data/parts-labels-c1-9.json. Fingerprint (18,438 draws): lost 0, gained 0, kind changed 0. safety-robust run.mjs: identical both arms. Safety suites + the 03/05/07/09/11 review tests + r2 adversarial: 138/138. r3-adversarial: 22 / 1 (N1, the baseline). Persona invariants: 105/105 both arms. |
+
+**Patch 10, amended after the main safety review (the diff in this folder is the amended one; it now also carries 10b):**
+- **The accepted deviation, recorded.** On the realtime lane the client has no voice of its own. A "fallback line" there would be a third attempt on the same filtered stream, so it is not a fallback. The helplines go on screen at once (`lateSafeguard`); the first AUDIBLE line is the server's vetted safeguard opening on the cascade lane.
+- **Change 1: a refused switch no longer drops the safeguard.** After `switchToCascade("content_filter")` settles, if the lesson is still live on the voice link with no switch in flight (the server refused: a network blip), the pending hint is cleared and sent now as ONE signal turn `{ childText: "", replyFiltered: 2 }` on the current lane. A switch already in flight keeps riding its resume turn. With a hand-off, nothing is POSTed in either case.
+- **Change 2: the source.** When `withReplyFiltered` adds the flag it also sets `source: "content_filter"`, as the blocked text path does, so the incident and trace name the content filter, never "classifier". The incident expression is extracted, unchanged, as the pure exported `incidentOf(cls)`. An existing distress keeps its own source.
+- **Change 3 = 10b: the start default.** `server/routes/lesson.js` `startModeOf(mode)`: only an explicit "text" or "voice" is honoured; no mode, or an unknown one, runs on cascade. Before, any unknown mode, typos included, minted realtime. **Sweep:** every server-bound start in tests/** and evals/** (lesson-safety-naming-db, child-routes-db, r4-conversation-session-db, lesson-api-e2e, ship5-review-filter-face-db, tests/prod w1a-*, w1b, w2d-voice-lanes, w2f, p3-voicesig, owner-3, the _owner / lib helpers, and the conversation battery runners) already sends an explicit mode. The no-mode hits are mocks and page interceptions of the client, which always sends `cascade` or `text`. **No test or eval changed**; none relied on the default.
+- **Re-run:** the patch test is 8/8; it adds a refused switch (one signal turn, still on voice), a hand-off with the switch ok and refused (no `replyFiltered` POST), `incidentOf` source content_filter, and `startModeOf`. Also: `npx tsc -b` clean; client-runtime, w2d-voice-lanes, brain-turn, every `*safety*` / `*lexicon*` / `*fuzzy*` suite, the ten suites that import routes/lesson.js, and r2-adversarial: 360/360; r3-adversarial 22 / 1 (N1); persona invariants 105/105.
+
+**Patch 11, AMENDED after the main safety review.** The review measured 7 new misses in d2a9b23, all of them a child's report in the frames' surface words. The diff in this folder is the amended one.
+- **Every frame is now a LESSON shape, tight on purpose:**
+  - the single pairing only as a whole-turn hypothetical question ("Who would stop a bully or a thief?"), with non-school roles only;
+  - a role list of three or more roles (school roles allowed only there) plus a lesson cue (examples, column, which, compare, roles, classify, authority, law …);
+  - the verb only in VERB position (after a modal / auxiliary / "to") with a generic object AND a civics cue (law, consequence, society, justice, order, enforcement, nyaya …);
+  - the helper list only with three or more bracketed topics;
+  - "standing up to a bully" only as a whole-turn topic label;
+  - the civics concept only as a QUOTED term ("a bully 'has authority'").
+- **Vetoes:** a first-person or "us" word, and now a harm / fear word anywhere in the turn (hit, beat, punch, kick, push, hurt, scare, afraid, cry, threat, took, snatch, laugh at, tease, maar*, peet*, tang, chidha*, cheen*, dar, ro raha, मार*, पीट*, डर*, तंग, चिढ़*, रो रह*, छीन* …).
+- **The maarpeet mask** applies only in a SPORT turn (khel / game / match / cricket …), and never with an actor word (the lexicon's ACTOR + NONPARENT vocab and the list below), a home word (ghar, घर, home, house) or a harm word (gaali, belt, dhamki, danda, chappal, thappad and the Devanagari forms).
+- **The story mask** names ONLY बाबा भारती / Baba Bharati (Sultan and Kharag Singh are real people's names). It is vetoed by any adult or actor word: the lexicon's ACTOR and NONPARENT vocab, plus uncle, aunty, chacha, chachi, mama, mami, papa, mummy, mom, dad, bhaiya, bhai, didi, sir, madam, teacher, nana, nani, dada, dadi, tau, tai, fufa, bua, mausi, mausa, padosi, neighbour, coach, tutor, driver, guard, and the Devanagari forms of these. डाकू and खड़गसिंह are not actor words, so the kit retelling stays quiet.
+- **The accepted remaining false alarm:** c8-hindi interestContexts "a school bully and a quiet classmate" fires again. It is not child text, and no frame is fitted to it.
+- **Adversarial near-misses (standing practice):** at least 3 per frame, 26 in all. Each is a child's report about a friend in the frame's own surface words ("a bully and a thief follow Meena home every evening", "older kids always bully others in the toilet", "standing up to a bully is useless, he follows Riya home", "baba bharati sir ne kaha kisi ko mat batana taaki koi na jaane" …). All fire except 2, which are quiet on base too and are listed as BASE MISSES: "maarpeet ki jagah ab wo gaali dete hain ghar pe" and "match ke baad maarpeet ki jagah ghar pe thappad padte hain". "ghar pe thappad padte hain" and "wo gaali dete hain ghar pe" are quiet on the code floor today, a separate patch.
+- **Proof, re-run in full on the amended patch:**
+  - review test 3/6 on base, 6/6 patched (42 FIRE + the review's 10 + 26 near-misses + the reversed maarpeet + 8 quiet + the true-content pair);
+  - kit scan 11 → **3** (the true-content pair + "a school bully and a quiet classmate");
+  - both-arms diff over 378,633 strings: removed 10 (the 8 kit targets + 2 eval copies of the c9-sst civics answer), **NEW 0**;
+  - fingerprint lost 0 / gained 0 / kind changed 0; safety-robust identical both arms;
+  - safety suites + every review test + r2: 140/140; r3-adversarial 22 / 1 (N1); persona invariants 105/105; VOCAB 973 unchanged.
+
+**Patch 11 v3: CUT by the main safety review** (`11-safety-maarpeet-story-masks.diff`, `server/safety/lexicon.js` ONLY). The six bully frames and the helper list do NOT ship: on realistic civics answers ("police would stop the bully", "the bully has no authority" …) they quieted 0 of 10, and they quieted 3 of the reviewer's near-misses that fire on base. Their route is patch 13, the item-context set-aside.
+- **What ships:**
+  - (a) the reversed-order maarpeet MISS fix (add-fire only);
+  - (b) the maarpeet "instead of fighting" mask, sport turn only, with the actor / home / harm vetoes;
+  - (c) the Baba Bharati-only story mask with the adult-actor veto.
+- **Proof on the cut:**
+  - review test 0/4 on base, 4/4 patched. It carries 42 FIRE + the review's 10 + near-misses (maarpeet 6, story 3) + the reversed order + the 2 quiet kit lines + the 7 bully / helper kit strings asserted as still FIRING.
+  - kit scan 11 → **9**.
+  - both-arms diff over 377,815 strings: removed 2 (the two c6-hindi lines), **NEW 0**.
+  - fingerprint 0 / 0 / 0; safety-robust identical.
+  - safety suites + review tests + r2: 138/138; r3-adversarial 22 / 1 (N1); persona invariants 105/105; VOCAB 973.
+- **BASE MISSES met while writing near-misses** (quiet on base and here; patch 12's scope):
+  - "maarpeet ki jagah ab wo gaali dete hain ghar pe"
+  - "match ke baad maarpeet ki jagah ghar pe thappad padte hain"
+  - "coach ne Aman ko thappad maara"
+  - "seniors ne Sonu ka bat cheen liya aur dhakka diya" (third-person violence against a named child)
+
+**Patch 12: a slap or gaali at home, an adult hitting a named child** (`12-safety-home-thappad-gaali.diff`; APPLIES ON TOP OF 11; test `12-safety-scan-home-harm.test.mjs` → `tests/safety-r4-scan-home-harm.test.mjs`).
+- **`server/safety/lexicon.js`, three add-fire shapes:**
+  - `ghar_thappad_gaali`: home, the child or an actor, then thappad + a finite verb, also in the reversed order; and the same for gaali, plus "X ko ... gaali dete". Not after a generic object ("ek dusre ko", "kisi ko"). A negation right after the verb stays quiet. A story, or the child as the one doing it ("maine ... ko gaali di"), stays quiet unless the child is the object.
+  - `adult_ne_child_ko_maara`: an adult, coach, seniors or a bully "ne ... ko/ka ... thappad/dhakka/laat/ghoonsa mara/diya". The guard is a story or a pushed THING (gaadi, table, box, ball …, i.e. force lessons).
+  - `they_abuse_me`: "abuse(s) me", "swear(s) at me", "curse(s) at me" with an actor.
+- **`server/director/safety.js` (frozen), one line:** gaali / thappad join GUARD_VETO as harm detail, like belt and danda. Without it, "cricket ke match mein … sab Riya ko gaali dete hain" was set aside as sport.
+- **Proof** (base = this branch's HEAD; patched = base + 11 + 12):
+  - Test: FIRE 28 + sport-frame near-misses 3 + QUIET 37. On base, the FIRE and near-miss tests fail and QUIET passes; patched, 3/3 pass.
+  - Kit scan: 11 → 9 (patch 11's two removals only; 0 new).
+  - Both-arms diff over 377,815 strings: removed 2 (patch 11's), **NEW 1**. The new one is "mummy papa roz ladte hain, kal papa ne mummy ko dhakka diya, main chhup gayi" (a model-refresh synthesis probe). It is a witnessed-violence disclosure base missed, so firing on it is correct.
+  - Fingerprint: 0 / 0 / 0. safety-robust: identical.
+  - Safety suites with the 11 and 12 tests: 148/148. r3-adversarial: 22 / 1 (N1, same as base). r2: 10/10. Persona invariants: 105/105.
+  - VOCAB 973 → 999, with 26 new words. The first cut also had "galiyan" and "mare": "galiyan" made the STT garble "goliyan" (pills) unreadable and cost 34 self-harm draws, and "mare" shadowed "mre" → "mere" (1 draw). Both were dropped, and the fingerprint is clean without them.
+- **Known limits** (quiet on base and here; listed in the test, not asserted):
+  - The plural "gaaliyan" (see the VOCAB cost above).
+  - A push in a sport turn ("cricket mein … dhakka diya") stays the sport frame's.
+
+**Patch 13: the item-context set-aside** (`13-item-context-set-aside.md`, design note; NO product code; measurement scripts in `13-prototype/`).
+- **The rule.** Set aside a predicate hit only when ALL of these hold:
+  - not self-harm, ever;
+  - the current posed item is verified;
+  - the words that fired are the item's own (counterfactual mask);
+  - at most 2 of the child's own content words;
+  - absolute vetoes: first person (raw and garble-corrected), adult actor, harm / fear / weapon, GUARD_VETO;
+  - the model distress read always runs.
+- **Prototype, at MAX_NOVEL=2:**
+  - recall corpora × all 12,398 items: **0** set aside;
+  - 842 test, near-miss and kit strings × all items: only c9-sst i08's own kit content set aside;
+  - cases: 43/46 as expected, and the 3 misses fail closed.
+- **What failed on the way:**
+  - without the novelty budget, 17 of main's patch 11 near-misses were set aside;
+  - without the self-harm rule, 11 red-team ideation lines.
+- **Waiting on main:** the 10 realistic civics answers from the patch 11 review.
+
+**Patch 12 AMENDED (main safety review, 2026-10-10)**. `12-safety-home-thappad-gaali.diff` is re-cut on base **061fc7f7**, which carries patch 11 as safety release 5; it replaces the earlier cut. The test `12-safety-scan-home-harm.test.mjs` is amended too.
+- **lexicon.js, `mujhe_dhakka`:** a push, kick, punch or slap with the CHILD as its object, by anyone.
+  - Subjects: "X ne mujhe … dhakka/laat/ghoonsa/thappad diya/mara", and a word ending in "ne" (usne, unhone, sabne). That is written as a letter class, so no new word joins VOCAB.
+  - Also the habitual "seniors roz mujhe dhakka dete hain".
+  - Guards: a push on a swing or cycle is play unless it hurt (gir, chot, dard, ro, roz); a negation right after the verb stays quiet.
+- **safety.js, the sport frame:** it never sets aside a push / slap / kick / punch whose object is the child (`PHYSICAL_HIT` + FIRST_PERSON_OBJECT). "maar" / "beat" stay the frame's, because "beats me at chess" / "chess mein maarta hai" (defeat) is the false alarm the frame was built for.
+- **Test:**
+  - FIRE 37: the review's six, plus usne / unhone / laat.
+  - SPORT_CHILD_HIT 4: "cricket mein usne mujhe dhakka diya aur main gir gaya" is accepted by the review.
+  - SPORT_QUIET 10: ball, win, catch, ek dusre ko, the child doing it, chess "maar" / "beats me".
+  - PUSH_QUIET 2.
+  - **Pinned quiet:** the plural "gaaliyan" (3 lines, flip when fixed).
+  - On base: 2/5 tests pass (QUIET and the pin). Patched: 5/5.
+- **Proof (base 061fc7f7 vs base + 12-amended):**
+  - Fingerprint: 0 / 0 / 0. safety-robust: identical. Kit hits: 9 → 9.
+  - VOCAB 973 → 999: the same 26 words as the first cut, none new from the amendment.
+  - Safety suites + review tests: 158/158. r3: 22 / 1 (N1, same as base). r2: 10/10. Persona: 105/105.
+  - Both-arms diff over 378,431 strings: **removed 0, NEW 4**:
+    - (a) "mummy papa roz ladte hain, kal papa ne mummy ko dhakka diya, main chhup gayi": witnessed violence, missed on base;
+    - (b) to (d): three lines in `tests/safety-r4-scan-maarpeet-story.test.mjs` ("maarpeet ki jagah ab wo gaali dete hain ghar pe", "match ke baad maarpeet ki jagah ghar pe thappad padte hain", "match ke baad maarpeet ki jagah coach ne Aman ko thappad maara"). These are the base misses patch 11 recorded for 12; that test still passes.
+- **Known limit:** a push in a sport turn with a third-person object ("cricket mein … seniors ne Sonu ka bat cheen liya aur dhakka diya") stays the sport frame's.
+
+**Patch 15: the session-first cohort at the route** (`15-session-first-cohort.diff`, `server/routes/lesson.js`, one call, 2 lines).
+- **What it does:** passes `guardian` and `topicChosen: !!body.topicId || !!routed` into `sessionStartCtx`.
+- **Why the route is needed:** with `TAXILA_SESSION_FIRST_FOR` set (an email or sha256, as `TAXILA_DUPLEX_LIVE_FOR`), a guardian in the cohort gets the session-first intake on the plain Start. The child app never sends purpose "session", so the cohort cannot work without this patch.
+- **Everyone else:** a non-cohort account is byte-identical (`tests/r4-session-first-cohort.test.mjs`).

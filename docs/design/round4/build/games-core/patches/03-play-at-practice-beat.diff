@@ -1,0 +1,85 @@
+diff --git a/server/forge3/live.js b/server/forge3/live.js
+index 183a44d0..57f0ca77 100644
+--- a/server/forge3/live.js
++++ b/server/forge3/live.js
+@@ -79,7 +79,7 @@ function twinOfLevel(logic, level) {
+ 
+ /**
+  * The live piece for an interactive ask, or null.
+- * @param {{ ask: string, lessonId: string, child: { id: string, class_level?: number, language_pref?: string },
++ * @param {{ ask?: string, need?: string, lessonId: string, child: { id: string, class_level?: number, language_pref?: string },
+  *   skillId?: string|null, topicId?: string|null, vp?: string|null, moduleInTray?: boolean, safety?: boolean,
+  *   lesson?: { shown?: object[], lastArt?: string|null }, childArt?: string|null }} m
+  * @param {{ q?: Function, coverage?: any, certs?: any, playCerts?: any, now?: () => number }} [deps]
+@@ -89,7 +89,8 @@ export async function buildLive(m, deps = {}) {
+   const t0 = Date.now();
+   if (!m?.child?.id || m.safety) return null;
+   const { classLevel } = topicParts(m.topicId);
+-  const plan = compose({ ask: m.ask, skillId: m.skillId ?? null, topicId: m.topicId ?? null, vp: m.vp ?? null, moduleInTray: !!m.moduleInTray,
++  // round 4 G1 (games-core patch 03): a lesson NEED (the practice beat) composes like an interactive ask
++  const plan = compose({ ask: m.ask, ...(m.need ? { need: m.need } : {}), skillId: m.skillId ?? null, topicId: m.topicId ?? null, vp: m.vp ?? null, moduleInTray: !!m.moduleInTray,
+     lesson: m.lesson ?? null, childArt: m.childArt ?? null, classLevel: m.child.class_level ?? classLevel ?? 6 },
+     { ...(deps.coverage !== undefined ? { coverage: deps.coverage } : {}), ...(deps.certs ? { certs: deps.certs } : {}), ...(deps.playCerts !== undefined ? { playCerts: deps.playCerts } : {}) });
+   // the first PLAY rung of the ladder: a library game ranked above it (variety: the same family twice in a row) is
+diff --git a/server/studio/seam.js b/server/studio/seam.js
+index 303cae99..da0d0950 100644
+--- a/server/studio/seam.js
++++ b/server/studio/seam.js
+@@ -401,6 +401,21 @@ async function mountLibrary(L, piece, lib, a) {
+ 
+ // ───────────────────────────── the seam ─────────────────────────────
+ 
++/**
++ * round 4 G1 (games-core patch 03): the skills a practice-beat game may practise, in the order to try them: the skill of the
++ * current practice move first, then the plan's other skills in plan order up to it (never one the lesson has not yet
++ * taught: a skill after the practice skill in the plan), each only when play admits it (`has`, levels.js hasPlay).
++ * Without a known practice skill: the plan's skills in plan order.
++ */
++export function playSkillsFor(practiceSkill, planSkills, has) {
++  const plan = (planSkills ?? []).filter((x) => typeof x === "string");
++  const at = practiceSkill ? plan.indexOf(practiceSkill) : -1;
++  const taught = practiceSkill ? (at >= 0 ? plan.slice(0, at) : []) : plan;
++  const out = [];
++  for (const sk of [...(practiceSkill ? [practiceSkill] : []), ...taught]) if (!out.includes(sk) && has(sk)) out.push(sk);
++  return out;
++}
++
+ export const studioSeam = {
+   /**
+    * Lesson-start prefetch (W2 rule for intents): the plan's skills, the kit's diagnostic misconceptions for them and this
+@@ -438,6 +453,26 @@ export const studioSeam = {
+         piece.facts = factsOf(archetype(c.archetype), c.params);
+         L.pieces.set(piece.intentId, piece);
+       }
++      // round 4 G1 (games-core patch 03): the PRACTICE beat offers a real game when play admits the practice skill (a code-
++      // built, solver-proven level through the same forge3 path a "game khelna hai" ask takes; no model call). It takes the
++      // practice slot from the library piece; on a miss (no play for the skill, a refused certificate) the library piece
++      // stays. Revealed only at the practice_set beat (beatsFor: a game), never mid-explanation.
++      const practice = [...L.pieces.values()].find((p) => p.need === "practice");
++      if (process.env.FORGE3_PLAY !== "0" && L.child?.id && L.studioControl !== "off") {
++        const { hasPlay } = await import("../play/levels.js").catch(() => ({ hasPlay: () => false }));
++        for (const playSkill of playSkillsFor(practice?.skillId ?? null, ctx.skillIds ?? [], hasPlay).slice(0, 3)) {
++          const r = await buildLive({ need: "practice", lessonId: ctx.lessonId, child: L.child, skillId: playSkill, topicId: L.topicId, lesson: L.forge3 ?? null }, { q: deps.q ?? undefined }).catch(() => null);
++          if (r?.artifact?.kind !== "play") continue;
++          L.forge3 = r.lesson;
++          const intentId = `${ctx.lessonId}:play:practice`;
++          // an OFFER the child can decline: "not_this" on it (hostFeedback) brings the library practice piece back
++          L.pieces.set(intentId, { intentId, slotId: `${intentId}:slot`, kind: "game", archetype: `play:${r.artifact.play.family}/${r.artifact.play.mode}`, source: "play",
++            artifact: r.artifact, facts: r.facts, skillId: r.artifact.play.skillId, need: "practice", neededAtMs: NEEDED_AT.practice, requested: false,
++            state: "ready", retired: false, createdAt: Date.now(), composeMs: r.ms, ...(practice ? { declineTo: practice } : {}) });
++          if (practice) L.pieces.delete(practice.intentId);
++          break;
++        }
++      }
+       // pieces run in parallel: each is background work (model calls on the background quota lane)
+       await Promise.all([...L.pieces.values()].filter((p) => p.state === "planning" && p.kind !== "whiteboard").map((p) => runPiece(L, p).catch(() => { p.source = "skeleton"; p.state = "fallback_ready"; })));
+     })().catch((e) => console.warn("[studio] prefetch failed:", e?.message));
+@@ -979,6 +1014,8 @@ export async function hostFeedback({ lessonId, intentId, action }) {
+     return { ok: true };
+   }
+   if (action === "not_this") {
++    // round 4 G1 (games-core patch 03): a declined practice-beat game gives the practice slot back to the library piece
++    if (p.declineTo && !L.pieces.has(p.declineTo.intentId)) L.pieces.set(p.declineTo.intentId, p.declineTo);
+     L.excluded.add(p.archetype);
+     retirePiece(L, intentId, "not_this");
+     for (const q of L.pieces.values()) if (q.archetype === p.archetype && q.state !== "retired") q.retired = true;

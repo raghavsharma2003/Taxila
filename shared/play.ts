@@ -19,7 +19,9 @@
 
 export const PLAY_VERSION = "play@1" as const;
 /** The four flagship families of round 3. The grammar is open: a new family adds its id here and registers its logic. */
-export const FAMILIES = ["todo-jodo", "taraazu", "nishana", "kyun-lab"] as const;
+export const FAMILIES = ["todo-jodo", "taraazu", "nishana", "kyun-lab",
+  "kon",          // round 4 G1: angles as an amount of turning (E1 Antariksh angles)
+] as const;
 export type FamilyId = (typeof FAMILIES)[number];
 /** Family sub-worlds. A mode is one representation with its own law inside a family. */
 export const MODES = {
@@ -27,6 +29,7 @@ export const MODES = {
   taraazu: ["equation", "equality"],
   nishana: ["place", "compare"],
   "kyun-lab": ["fair-test"],
+  kon: ["turn", "set"],
 } as const satisfies Record<FamilyId, readonly string[]>;
 export type ModeOf<F extends FamilyId> = (typeof MODES)[F][number];
 export type PlayMode = (typeof MODES)[FamilyId][number];
@@ -101,6 +104,8 @@ export interface PlayLevel<P = unknown> {
   context: string;
   seed: number;
   proof: LevelProof;
+  /** the generator's level signature (what novelty compares; the session keeps the recent ones) */
+  sig?: string;
 }
 
 // ───────────────────────────── acts (the only input that can change game state) ─────────────────────────────
@@ -155,7 +160,12 @@ export type LabAct =
   | { kind: "run" }
   | { kind: "conclude"; factor: string }                // the factor that made the difference, or "cant_tell"
   | { kind: "undo" };
-export type PlayActBody = AtomsAct | StripsAct | BundlesAct | BalanceAct | LineAct | LabAct;
+// Kon (round 4 G1, angles)
+export type KonAct =
+  | { kind: "turn"; deg: number }                       // point the arm at heading `deg` (degrees, 0 = right, anticlockwise +)
+  | { kind: "commit" }
+  | { kind: "undo" };
+export type PlayActBody = AtomsAct | StripsAct | BundlesAct | BalanceAct | LineAct | LabAct | KonAct;
 
 /** Field names that look like a verdict claim. Stripped from every act before replay (rj-ot-frame-claim-as-grade). */
 export const CLAIM_KEYS = Object.freeze(["correct", "verdict", "right", "isCorrect", "score", "pass", "solved", "grade"]);
@@ -242,6 +252,8 @@ export interface GenRequest {
   harder?: boolean;
   /** P(the child does the target skill unaided now), from the learner model; absent = the class default */
   pL?: number;
+  /** the kit misconception the lesson just saw (`misconception_seen`): the picker prefers a level that discriminates it */
+  focus?: string;
 }
 /** A generated level before the picker scores it. `difficulty` 0..1 is the family's own estimate (size, steps, form). */
 export interface Candidate<P = unknown> { level: PlayLevel<P>; signature: string; difficulty: number }
@@ -302,6 +314,7 @@ export const FAMILY_ARTS: Record<FamilyId, readonly ArtId[]> = {
   taraazu: ["kagaz", "chalk", "blueprint", "raat"],
   nishana: ["blueprint", "kagaz", "chalk", "raat"],
   "kyun-lab": ["kagaz", "blueprint", "raat", "chalk"],
+  kon: ["blueprint", "raat", "kagaz", "chalk"],
 };
 export interface ArtPickInput {
   family: FamilyId; subject: Subject; topicId: string; classLevel: number;
@@ -385,9 +398,13 @@ export interface PlayStartResponse {
   bank: Reaction[];
   /** the family's world map for this child (DESIGN.md §6) */
   world: PlayWorldFamily | null;
+  /** round 4: the base dress when a real-game engine renders this level (the model's delta comes from /api/play/dress) */
+  dress?: import("../src/play/engines/core3d/api.ts").DressedSpec | null;
 }
 /** POST /api/play/act: the acts since the last post (the server replays ALL acts of the level each time). */
-export interface PlayActRequest { sessionId: string; levelId: string; acts: PlayActEnvelope[]; final?: boolean; impasse?: boolean }
+export interface PlayActRequest { sessionId: string; levelId: string; acts: PlayActEnvelope[]; final?: boolean; impasse?: boolean;
+  /** round 4: the real-game engine on the child's screen, if any (chooses which authored words describe it; never graded) */
+  engine?: string | null }
 export interface PlayActResponse {
   levelId: string;
   moments: Moment[];
@@ -412,7 +429,9 @@ export interface PlayActResponse {
 }
 /** POST /api/play/next */
 export interface PlayNextRequest { sessionId: string; door: Door }
-export interface PlayNextResponse { sessionId: string; level: PlayLevel; art: ArtPick; bank: Reaction[] }
+export interface PlayNextResponse { sessionId: string; level: PlayLevel; art: ArtPick; bank: Reaction[]; dress?: import("../src/play/engines/core3d/api.ts").DressedSpec | null }
+/** POST /api/play/dress { sessionId } → the validated dress for the current level (base when late / invalid / off) */
+export interface PlayDressResponse { dress: import("../src/play/engines/core3d/api.ts").DressedSpec; source: "model" | "base"; ms: number }
 /** GET /api/play/world?childId= */
 export interface PlayWorldResponse { classLevel: number; families: PlayWorldFamily[] }
 
