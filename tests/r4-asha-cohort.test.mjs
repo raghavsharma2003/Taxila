@@ -90,18 +90,20 @@ test("lamp2: the owner cohort's look; every other account (and a URL) gets r8, t
   assert.deepEqual(await lamp2(asOwner, "tx_session=abc", lamp2Env({ TAXILA_FACE_LOOK_FOR: "" })), base, "no cohort configured: r8");
   assert.equal(faceLookOf({ TAXILA_FACE_LOOK: "lamp2" }), "r8", "the global look can never be lamp2 (cohort-only)");
   // a non-cohort browser asking for lamp2 by URL (and with it stored from an older build) still paints r8
+  const page = (q, stored = {}) => { store.clear(); for (const [k, v] of Object.entries(stored)) store.set(k, v); search = q; F.resetPuppetServerFlag(); L.resetLookForTests(); };
+  const says = (body) => async () => ({ ok: true, status: 200, json: async () => body });
   for (const q of ["?look=lamp2", "?look=lamp2&heldlook=1"]) {
-    store.clear(); search = q; F.resetPuppetServerFlag(); L.resetLookForTests();
+    page(q);
     assert.equal(L.faceLookNow(), null, `${q}: ignored`);
-    store.set(L.LOOK_DEVICE_KEY, "lamp2");
-    store.set(L.LOOK_SERVER_KEY, "lamp2");
+    page(q, { [L.LOOK_DEVICE_KEY]: "lamp2", [L.LOOK_SERVER_KEY]: "lamp2" });
     assert.equal(L.faceLookNow(), null, `${q}: a stored lamp2 is ignored`);
-    assert.equal(await L.faceLook(async () => ({ ok: true, status: 200, json: async () => base })), "r8", `${q}: the server says r8`);
-    assert.equal(await L.faceLook(async () => ({ ok: true, status: 200, json: async () => ({ ...base, look: "lamp2" }) })), "r8", `${q}: lamp2 without the cohort mark`);
+    assert.equal(await L.faceLook(says(base)), "r8", `${q}: the server says r8`);
+    page(q);
+    assert.equal(await L.faceLook(says({ ...base, look: "lamp2" })), "r8", `${q}: lamp2 without the cohort mark`);
   }
   // the owner's browser: the server's cohort answer paints lamp2 on this page and is not remembered for the next
-  store.clear(); search = ""; F.resetPuppetServerFlag(); L.resetLookForTests();
-  assert.equal(await L.faceLook(async () => ({ ok: true, status: 200, json: async () => ({ ...base, look: "lamp2", cohort: "owner" }) })), "lamp2");
+  page("");
+  assert.equal(await L.faceLook(says({ ...base, look: "lamp2", cohort: "owner" })), "lamp2");
   assert.equal(L.faceLookNow(), "lamp2", "the rest of the page");
   assert.equal(store.get(L.LOOK_SERVER_KEY), undefined, "never remembered");
 });
