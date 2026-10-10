@@ -80,15 +80,26 @@ The full certification (8 samples per engine cell, 10 per skeleton cell) is runn
 
 ### 2.4 (2) Studio v2 off the child path
 The round 3 certificate passed 295 library games and 342 explainers at the 360 phone only because the stage showed their
-BOARD TWIN there (a 1000-unit world's 38-unit labels in a 324 px box = 12.3 px). The gate and the catalogue now require the
-piece itself at all three sizes (`studioV2PlayableAt`): catalogue games ok 368 → 0, explainers 369 → 0 (pure code over the
-385 class 4-7 topics, 2026-10-10). A Studio v2 world comes back only when it is relaid for the phone and certified as itself.
+BOARD TWIN there (a 1000-unit world's 38-unit labels in a 324 px box = 12.3 px). The tray gate now requires the piece
+itself at all three sizes (`studioV2Certified` / `studioV2PlayableAt`): of the 737 catalogue pieces, 0 qualify (pure code
+over the 385 class 4-7 topics, 2026-10-10), so the Stagecraft bridge keeps the W2 view and counts the refusal
+(`host.gateRefusals`; `tests/stagecraft.test.mjs` "seam bridge"). The catalogue itself still LISTS by round 3's rule (key
+verification and coverage read it; `ship5-review-stagecraft-key` stays green): listing is not showing. A Studio v2 world
+comes back only when it is relaid for the phone and certified as itself.
 
 ### 2.5 (3, 6) Boards that match her line; slots that never fill
 - `server/stagecraft/claims-board.js`: when no other board passes against her line, the board that draws exactly her line's
   own screen claims ("5 barabar parts; 3 shaded", "3 equal groups, with 5 dots in each", "har group mein 4") from the code
   templates, re-gated with the full gate (W0-W13), result hidden when her line asks for it. The three base-run failing lines
   now get a passing, legible board (`tests/r4-content-claims-board.test.mjs`).
+- More claims her line makes, each from a measured failed slot on a local production run of this branch (2026-10-10): a
+  grid ("5 columns aur 3 rows", or "15 equal parts, unmein 6 marked": `shade-grid@1`, a new code-only template; the grid is
+  one claim for W10, where before "3 rows mein" read as 3 equal parts and "3 rows mein hai: total 15" as 3 groups of 15),
+  and a flow she lists over the screen ("Flow mein dekhiye: Observe, Ask, Predict, Test, phir Conclude. Pehla step kya
+  hai?": `flow@1`, the step she asks for written "?"; W12 treats a "?" box as revealing nothing). Her line naming shaded
+  cells without a count draws nothing (a grid with none shaded would contradict her).
+- A board refused ONLY for writing the answer to her question (W9) keeps its picture with that answer written "?" and is
+  re-gated in full (`maskReveals`, up to 3 passes); 4 of 6 refused boards on the first branch run were W9-only.
 - `tests/prod/r4-content-boards.mjs`: the ≥ 50-board battery (meaning W10-W13 and gate W0-W9 re-checked independently
   against her line, legibility at the reported 360 box, unfilled slots she pointed at).
 
