@@ -18454,6 +18454,195 @@
    "at": "2026-10-10",
    "title": "2026-10-10 root cause (stream 4A, tests/prod/r4-conversation-sg-repro.mjs, 1 of 58 fresh lessons): the false safeguard on 'explain it differently' (stream 5 owner-4, Zoya class 5) was the Azure content filter blocking the model's REPLY completion (HTTP 200, finish_reason content_filter); turn.js failed closed and re-planned the turn as a disclosure, so the child got the helplines although the predicate, the model distress read (0/480 false reads) and the UNDERSTAND note (0/96) were all clean. The [lesson] turn line printed the original cls, hiding the cause. Fix proposed as patch 06 (say.js: one fresh reply on a completion block before failing closed; a prompt block still fails closed at once), under main safety review.",
    "source": "inbox/r4-safety05.json"
+  },
+  {
+   "id": "dc-r4-safety06-07-09-shipped",
+   "kind": "decision",
+   "at": "2026-10-10",
+   "title": "2026-10-10 main session safety review of 4A's patch requests 06, 07 and 09 (claude/r4-conversation @346ad92), applied together with 05 as one narrow safety release. 06 (server/brain/say.js textReply): an Azure content-filter block on the reply COMPLETION (HTTP 200, the filter judged the model's own words) gets ONE fresh reply before the turn fails closed; a PROMPT block (HTTP 400, the child's words) still fails closed at once; a second completion block fails closed. Main review amendment: if the fresh reply fails for any other reason (timeout, 5xx) the ORIGINAL block stands and the turn fails closed (as sent, it fell to the neutral fallback line). Root cause it closes: 'explain it differently' got the safeguard and helplines in 1 of 58 lessons although the child's words were clean on every path. 07 (lexicon RAW_MASKS): five canonical collisions are masked on the raw text in their own shape only (exhaust/ceiling fans vs fansi, lining vs jeene ka matlab nahi, living things vs reason to live, cutting a crop vs kalai cut, a bulb/lamp/diya 'apne aap jal jaata' vs khud ko khatam). 09 (hang_fansi): a hanging disclosure with the English 'fan' ('fan se latak jaungi', 'ceiling fan se latak jaunga', 'i will hang from the ceiling fan', Devanagari 'फैन से लटक') now fires on the code floor; before, only the model distress read caught it. Families stay guarded; nothing removed or narrowed. Reverse if: a real disclosure is hidden by a 07 mask (narrow the mask), or a completion-block retry is shown to replace a reply that should have safeguarded (then fail closed on the first block again).",
+   "source": "inbox/r4-safety-rel4.json"
+  },
+  {
+   "id": "ms-r4-safety06-07-09-review-numbers",
+   "kind": "measurement",
+   "at": "2026-10-10",
+   "title": "2026-10-10 review of 06+07+09 on top of base 6166d0a (05 already on base), CPU, deterministic. Review tests: reply-filter retry 4/4 (incl. the main review's completion-block-then-timeout case), masks 10/10, fan 2/2 (18 must-fire, 12 must-stay-quiet), succeed 2/2, disclosures 3/3. Main probe of fan phrasings: 20/20 correct. Every 6+ char string under data/kits, data/curriculum, evals, tests: firing 850 to 844, the 6 removed are exactly 07's targets (bulb 'apne aap jal', exhaust fans answer, bajra crop cut, two 'lining up' hints, 'living things'), 0 new. fingerprint.mjs 18,438 draws: lost 0, gained 0, kind changed 0. safety-robust run.mjs identical on both arms. Safety, never-rules, lexicon, fuzzy and say suites 130/130; adversarial 22/23 both arms (pre-existing non-blocking); persona invariants 105/105.",
+   "source": "inbox/r4-safety-rel4.json"
+  },
+  {
+   "id": "rj-r4-root-hooks-in-one-process-test-runner",
+   "kind": "rejection",
+   "at": "2026-10-10",
+   "title": "2026-10-10 tried: making a timing test deterministic with TOP-LEVEL test.before(() => { performance.now = () => VNOW }) / test.after(restore) (voice-player-clock, 439b8ae7). Broke: npm test is ONE process (tests/index.js imports every *.test.mjs into a single node:test run), so top-level hooks attach to the ROOT test and the virtual clock stayed installed for every later test until the process ended. On the frozen clock the forge turn path's flavour budget was exactly 500 ms and generator.js (< 500) made an inline model call, failing forge-g1-serve 'cold fill at 2 s' intermittently (an import-vs-run race moved by load). Reproduced 3/3 with a runner mimicking tests/index.js; 'node --test fileA fileB' hides it (separate processes). Fix: hooks and tests inside a describe; prove through a tests/index.js-shaped runner with a probe that the real clock is back. 20 files still use top-level hooks (benign today) and stay a known hazard.",
+   "source": "inbox/r4-safety-rel4.json"
+  },
+  {
+   "id": "rj-r4-lexicon-literals-shadow-corrections",
+   "kind": "rejection",
+   "at": "2026-10-10",
+   "title": "2026-10-10 (stream 4A, patch 09 first draft) tried: adding misspelling literals (jaugi, jauga, jaaungi) to a lexicon shape. Broke: the lexicon builds its correction VOCAB from shape literals, so the misspellings became vocabulary words and the canonicaliser stopped correcting 'jaugi' to 'jaungi'; three OTHER shapes lost recall (fingerprint lost 4 draws on ghar_chhod_bhaag, train_ke_aage, kood_jaunga_nadi). Rule: new shape literals use only words already in VOCAB (misspellings fire through canonicalisation), and any lexicon change runs the fingerprint both arms.",
+   "source": "inbox/r4-safety-rel4.json"
+  },
+  {
+   "id": "fn-r4-g1-test-url-echo-incident",
+   "kind": "finding",
+   "at": "2026-10-10",
+   "title": "2026-10-10 12:36 UTC incident (G1 session): sourcing .env.local through bash (an '&' in the URL) echoed G1's own Neon TEST branch connection string into a local task output file in its container. Deleted along with two local env copies; never committed, pushed or sent; no prod and no child data. The session's own harness transcript still holds it (not editable), so the credential is retired when the test branch is deleted at the end of round 4. G1 gates now read env in node (util.parseEnv) and pass only test URLs to npm test.",
+   "source": "inbox/r4-safety-rel4.json"
+  },
+  {
+   "id": "ms-r4-safety-rel4-prod-deploy",
+   "kind": "measurement",
+   "at": "2026-10-10",
+   "title": "2026-10-10 13:47 UTC safety release a491caf live on taxila.dev as taxila-web--sa491caf-2gx1 (patches 05, 06, 07, 09 + deterministic clock-test scoping + forge flavourPick <= 500). Gate stamp from deploy-azure --gate --dry-run on the exact commit (tsc, vite, npm test 2,632 pass / 0 fail / 3 skipped, prompt budget PASS), then pushed and deployed from the stamp; every migration applied; canary w0-smoke 4/4 at 0% traffic; then 100%. w2i-safety on https://taxila.dev 1/1 (the disclosure arm is skipped on a remote target by design). Previous revision taxila-web--s9920f21-e9c2 keeps label previous (rollback = one traffic PATCH). The worker (still b371f4e) imports safety.js via voicesig and is redeployed after 16:00 UTC.",
+   "source": "inbox/r4-main-1350.json"
+  },
+  {
+   "id": "r4c-ms-battery-base-2026-10-10",
+   "kind": "measurement",
+   "title": "CONVERSATION-V2 battery on the round-4 base 522dca6e (n = 354 scored, local prod-mode server, seed 7, concurrency 3, J1 gpt-6-sol + J2 gpt-6-luna, no human adjudication, 2026-10-10): strict 245/354 (69.2%), J1 75.1%, lenient 79.7%, kappa 0.875; families strict A 59.4, B 76.5, C 68.1, D 70.8, E 71.9, F 88.2, G 68.2. Weakest: skip_ahead 1/7, personal_share 1/5, frustration 2/8, slower 2/6, answer_hedged 2/6. The brief's 56.3% is an older tree with the same judges; round 3 used J2 mistral (57.8%). Load: 64 note timeouts, 24 HTTP 429 (shared quota)",
+   "at": "2026-10-10",
+   "source": "inbox/r4-conversation.json"
+  },
+  {
+   "id": "r4c-ms-heldout-base-2026-10-10",
+   "kind": "measurement",
+   "title": "Round-2 held-out conversation cases on the round-4 base (n = 76 scored, same harness and judges, local, 2026-10-10): strict 53/76 (69.7%), J1 76.3%, lenient 86.8%",
+   "at": "2026-10-10",
+   "source": "inbox/r4-conversation.json"
+  },
+  {
+   "id": "r4c-dc-must-note-last",
+   "kind": "decision",
+   "title": "A child request's must-do (a smaller step on frustration, no teaching on I-know-this, re-say in pieces on slower, a warm reaction to a share, a go-on with no yes-word on a mid-thought) is a short NOTE in the compile's LAST section (THIS TURN FIRST, droppable, shed before any budget throw); kill switch TAXILA_P5_R4CONV. Cause read in the base battery: the shape sat in the MOVE section and lost to the last section's same-question-again check. Reverse if: the battery after shows no gain on those intents over 2 runs, or the note is recited in replies",
+   "at": "2026-10-10",
+   "source": "inbox/r4-conversation.json"
+  },
+  {
+   "id": "r4c-dc-grade-final-words",
+   "kind": "decision",
+   "title": "An exact key / acceptable / option inside a hedge (shayad X? pakka nahi pata) or after the last spoken self-correction (... no sorry X) is graded in code as that answer; anything else still goes to the model. Reverse if: a held-out or grading-truth case shows a false credit from either path",
+   "at": "2026-10-10",
+   "source": "inbox/r4-conversation.json"
+  },
+  {
+   "id": "r4c-dc-session-first-server",
+   "kind": "decision",
+   "title": "Session-first teacher, server side, behind TAXILA_SESSION_FIRST (default off): an INTAKE beat (<= 3 child turns, <= 90 s, no stage) reads a closed frame in code, maps it onto a closed candidate set (class + subject + pointer +-2; one class below only when the own class has nothing; activity words never score; a reviewed alias layer), confirms with a graded kit probe or a two-way which-one below p 0.6, decides in a fixed code order (safety > child request > test tomorrow > homework > school today > due reviews > level path), and opens SEGMENTS that re-point the same lesson at one verified kit each; the day plan is a private prior (two notes, never a menu). The owner decisions of TUTOR-MODEL 9 are switches (TAXILA_SF_*, off). Reverse if: intake accuracy falls below today's router on a new blind held-out set, or a child-facing run reads the intake as an interrogation",
+   "at": "2026-10-10",
+   "source": "inbox/r4-conversation.json"
+  },
+  {
+   "id": "r4c-ms-intake-heldout-2026-10-10",
+   "kind": "measurement",
+   "title": "Session-first intake on 74 held-out school-day utterances (written blind by a helper that never read server/; classes 3-8; Hinglish 37 / Hindi 15 / English 22; deterministic, no model; scored once, 2026-10-10): right 65/74 (wrong 3, missed 6) vs today's lexical router matchTopic 56/74 (wrong 4, missed 14); frame kind 64/74. Failure classes: Devanagari lesson names, misspellings, test-copies-back read as taught",
+   "at": "2026-10-10",
+   "source": "inbox/r4-conversation.json"
+  },
+  {
+   "id": "r4c-ms-openings-heldout-2026-10-10",
+   "kind": "measurement",
+   "title": "Session-opening battery, 49 held-out scripted openings (classes 3-8; deterministic code path + the production classify distress read per child turn; real kits; scored once, 2026-10-10): purpose+topic right 36/49 vs today's start (the plan's topic) 4/49; safeguard 6/6 with 0 false safeguards; child turns to the first teaching beat p50 1, p90 2, max 2 (n = 43). Code predicate alone: safeguard 4/6",
+   "at": "2026-10-10",
+   "source": "inbox/r4-conversation.json"
+  },
+  {
+   "id": "r4c-open-floor-peer-actor",
+   "kind": "open",
+   "title": "The frozen safety predicate misses a peer actor (ek bade ladke ne mujhe maara) and a Devanagari bullying line with four words between the pronoun and the verb; the live path catches both only through the classifier's model distress read (3/3 each). Patch request 03 (stream 4A) closes the code gap: 0 new hits on 118,491 kit strings and on the battery's utterances. Needs the main session's safety review",
+   "at": "2026-10-10",
+   "source": "inbox/r4-conversation.json"
+  },
+  {
+   "id": "r4c-rj-unknown-probe-is-not-a-fail",
+   "kind": "rejection",
+   "title": "Tried: a foundation (back-chain) segment when the intake's confirm probe got no answer (pata nahi) on a topic whose prerequisite was unseen. Broke: a class-6 child who said pata nahi right after class was sent to a class-5 topic (every new child has unseen prerequisites). Now only a WRONG answer on the probe, or a weak prerequisite, means school is ahead of the child",
+   "at": "2026-10-10",
+   "source": "inbox/r4-conversation.json"
+  },
+  {
+   "id": "r4c-ms-battery-arm2-2026-10-10",
+   "kind": "measurement",
+   "at": "2026-10-10",
+   "title": "CONVERSATION-V2 battery, round-4 arm 2 (rounds A+B, 73f59027) vs base 522dca6e run side by side (local prod-mode servers, seed 7, concurrency 2 each, J1 gpt-6-sol + J2 gpt-6-luna, no human adjudication, n = 354 each): strict 69.5% vs 66.9% (lost/gained 37/46, McNemar 0.77, not significant), J1 75.7% vs 73.7%; family C 62.8 to 71.7 strict, G 72.7 to 59.1 (n = 22). Arm 1 (round A only) 68.3 vs 69.1 (null). Run-to-run noise about 3 points",
+   "source": "inbox/r4-conversation.json"
+  },
+  {
+   "id": "r4c-ms-acceptance-9e371d34-2026-10-10",
+   "kind": "measurement",
+   "at": "2026-10-10",
+   "title": "Acceptance harnesses on a local production build of 9e371d34 vs base 522dca6e with the same seed (simulated children; owner-2 J codes from a model judge; no human read): w2i-safety 39/39; owner-2 9/12 (14 defects) vs base 7/12 (19); owner-3 48/48; owner-4 15/17 vs base 17/17 (the miss: example request on the fast lane, fixed after); round3-conversation 25/27 (C share not returned, fixed after; 1 leftover-guardian artifact of two runs sharing a DB branch); round3-relational-human 23/24, the same no_perception echo miss on base",
+   "source": "inbox/r4-conversation.json"
+  },
+  {
+   "id": "r4c-dc-share-read-in-code",
+   "kind": "decision",
+   "at": "2026-10-10",
+   "title": "A HAPPY life event the child tells about themselves (first-person possessive + event noun, or we-went / we-won; at most 14 words; no question mark; no sad or hurt word) is read in code (lexicon.shareOf) as the same personal_share uptake the UNDERSTAND note gives, so it is parked in s.later and brought back. Cause: the share was read only by the note, which timed out under shared-quota load, and nothing was parked (round3-conversation C, probe move.request absent 3/3). The model distress read still runs on these turns. Kill switch TAXILA_P5_R4CONV. Reverse if: a disclosure is ever read as a share, or kit answers beyond the 2 of 50,802 the answer-echo guard already handles start matching",
+   "source": "inbox/r4-conversation.json"
+  },
+  {
+   "id": "r4c-dc-request-must-notes-example",
+   "kind": "decision",
+   "at": "2026-10-10",
+   "title": "The example, story and another requests also carry a last-section must-note (a concrete example from their life / a tiny story / a different one), because on the fast lane the lead note alone gave only the card question (owner-4, example spoken, local prod build). Reverse if: owner-4 shows the note recited, or no gain over 2 runs",
+   "source": "inbox/r4-conversation.json"
+  },
+  {
+   "id": "ms-r4-4a-prod-deploy",
+   "kind": "measurement",
+   "title": "2026-10-10 14:55 UTC stream 4A (conversation + session-first, TAXILA_SESSION_FIRST default off) live on taxila.dev as taxila-web--s38431ab-ianv; gate 2672 pass / 0 fail / 3 skipped; migration 025 applied on production; canary w0-smoke 4/4; prod battery: owner-2 12/12 (6 sessions x 14 turns, judge), owner-4 17/17 (steering acted on within the next turn 16/16), round3-conversation 26/26, w2i-safety 39/39 on a local production server of 38431ab on the Neon TEST branch (the remote run skips the disclosure arm by design: a disclosure on production opens a real incident)",
+   "at": "2026-10-10",
+   "source": "inbox/r4-main-1500.json"
+  },
+  {
+   "id": "rj-r4-safety11-v1-frames-too-wide",
+   "kind": "rejection",
+   "title": "Patch 11 v1 (generic-bully frames, Haar ki Jeet mask) passed a 378,317-string both-arms corpus diff with 0 new fires but swallowed 7 disclosures found by adversarial near-misses: a corpus diff cannot see a new set-aside silencing a disclosure no corpus string carries",
+   "at": "2026-10-10",
+   "source": "inbox/r4-main-1500.json"
+  },
+  {
+   "id": "dc-r4-safety-setaside-needs-near-misses",
+   "kind": "decision",
+   "title": "Every new safety set-aside frame (guard frame, raw mask) ships with >= 3 adversarial near-miss disclosures per frame in its review set, inside the frame's surface pattern, that must still fire",
+   "at": "2026-10-10",
+   "source": "inbox/r4-main-1500.json"
+  },
+  {
+   "id": "dc-r4-patch10-realtime-filter-approved",
+   "kind": "decision",
+   "title": "Patch 10 approved (32abc178): realtime content-filter block gets one fresh reply, a second block fails closed (helplines on screen at once, lane switch, server safeguard opening is the first audible line; refused switch sends a signal turn); 10b: a start with no or unknown mode runs on cascade",
+   "at": "2026-10-10",
+   "source": "inbox/r4-main-1500.json"
+  },
+  {
+   "id": "dc-r4-x3-held-aec-funded",
+   "kind": "decision",
+   "title": "X3 speaker matching NOT funded (conflicts with the owner's 'never voiceprints / speaker ID'); the AEC reference for duplex R6 IS funded (no biometrics, no spend)",
+   "at": "2026-10-10",
+   "source": "inbox/r4-main-1500.json"
+  },
+  {
+   "id": "open-r4-x3-owner-decision",
+   "kind": "open",
+   "title": "Owner decision: may ephemeral, on-device, never-stored speaker matching (first-utterance reference, only ever ignores a non-child voice) be allowed, narrowing voice-features-longitudinal? Until then duplex R5 stays unmet",
+   "at": "2026-10-10",
+   "source": "inbox/r4-main-1500.json"
+  },
+  {
+   "id": "dc-r4lat-reply-bar-held",
+   "kind": "decision",
+   "title": "Reply-audible bar p50 <= 3,000 ms held, not lowered, though NOT met (4,238 n=117; 4,477 page clock n=48); next measured levers: guard-rewrite causes (true vs false rewrites) and L3 commit-on-stable-partial in shadow with a mandatory final re-scan; the puppet's turn-POST delay goes to stream 5",
+   "at": "2026-10-10",
+   "source": "inbox/r4-main-1500.json"
+  },
+  {
+   "id": "fn-r4-stray-session-message",
+   "kind": "finding",
+   "title": "Main session sent a stray 'placeholder' send_message to stream 2 by mistake (14:29 UTC); corrected at once with an ignore-it follow-up; no instruction or data carried",
+   "at": "2026-10-10",
+   "source": "inbox/r4-main-1500.json"
   }
  ],
  "edges": [
@@ -29861,6 +30050,101 @@
    "src": "dc-r4-safety05-succeed-not-suicide",
    "rel": "part_of",
    "dst": "dc-r4-safety03-peer-actor-shipped"
+  },
+  {
+   "src": "dc-r4-safety06-07-09-shipped",
+   "rel": "measured_by",
+   "dst": "ms-r4-safety06-07-09-review-numbers"
+  },
+  {
+   "src": "dc-r4-safety06-07-09-shipped",
+   "rel": "part_of",
+   "dst": "dc-r4-safety05-succeed-not-suicide"
+  },
+  {
+   "src": "dc-r4-safety06-07-09-shipped",
+   "rel": "caused_by",
+   "dst": "rj-r4-content-filter-completion-safeguard"
+  },
+  {
+   "src": "ms-r4-safety-rel4-prod-deploy",
+   "rel": "part_of",
+   "dst": "dc-r4-safety06-07-09-shipped"
+  },
+  {
+   "src": "r4c-dc-must-note-last",
+   "rel": "measured_by",
+   "dst": "r4c-ms-battery-base-2026-10-10"
+  },
+  {
+   "src": "r4c-dc-grade-final-words",
+   "rel": "measured_by",
+   "dst": "r4c-ms-battery-base-2026-10-10"
+  },
+  {
+   "src": "r4c-dc-session-first-server",
+   "rel": "measured_by",
+   "dst": "r4c-ms-intake-heldout-2026-10-10"
+  },
+  {
+   "src": "r4c-dc-session-first-server",
+   "rel": "measured_by",
+   "dst": "r4c-ms-openings-heldout-2026-10-10"
+  },
+  {
+   "src": "r4c-dc-session-first-server",
+   "rel": "part_of",
+   "dst": "dc-r4-owner-vision-superhuman-tutor"
+  },
+  {
+   "src": "r4c-dc-session-first-server",
+   "rel": "inherits",
+   "dst": "r4t-tutor-model"
+  },
+  {
+   "src": "r4c-open-floor-peer-actor",
+   "rel": "caused_by",
+   "dst": "r4c-ms-openings-heldout-2026-10-10"
+  },
+  {
+   "src": "r4c-rj-unknown-probe-is-not-a-fail",
+   "rel": "constrains",
+   "dst": "r4c-dc-session-first-server"
+  },
+  {
+   "src": "r4c-dc-share-read-in-code",
+   "rel": "measured_by",
+   "dst": "r4c-ms-acceptance-9e371d34-2026-10-10"
+  },
+  {
+   "src": "r4c-dc-request-must-notes-example",
+   "rel": "measured_by",
+   "dst": "r4c-ms-acceptance-9e371d34-2026-10-10"
+  },
+  {
+   "src": "r4c-dc-request-must-notes-example",
+   "rel": "part_of",
+   "dst": "r4c-dc-must-note-last"
+  },
+  {
+   "src": "r4c-dc-must-note-last",
+   "rel": "measured_by",
+   "dst": "r4c-ms-battery-arm2-2026-10-10"
+  },
+  {
+   "src": "dc-r4-safety-setaside-needs-near-misses",
+   "rel": "caused_by",
+   "dst": "rj-r4-safety11-v1-frames-too-wide"
+  },
+  {
+   "src": "voice-features-longitudinal",
+   "rel": "constrains",
+   "dst": "dc-r4-x3-held-aec-funded"
+  },
+  {
+   "src": "open-r4-x3-owner-decision",
+   "rel": "part_of",
+   "dst": "dc-r4-x3-held-aec-funded"
   }
  ]
 }

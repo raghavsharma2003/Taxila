@@ -1,0 +1,4800 @@
+{
+ "slot": 30,
+ "topic": "c6-science-ch01-t01",
+ "cls": 6,
+ "lang": "hindi",
+ "lane": "text",
+ "lessons": [
+  {
+   "lessonId": "01385b4d-0610-42ee-b577-c8081ad87746",
+   "why": "start",
+   "at": "2026-10-10T10:06:43.137Z",
+   "teacher": "Arjun"
+  }
+ ],
+ "turns": [
+  {
+   "who": "teacher",
+   "kind": "opening",
+   "lessonId": "01385b4d-0610-42ee-b577-c8081ad87746",
+   "teacherReply": "Namaste Anaya, main Arjun, aapka AI teacher hoon. Aaj dekhenge scientists kaise find out karte hain. Aapko dance mein kya pasand hai?",
+   "ui": {
+    "status": "your_turn",
+    "phase": "warmup",
+    "handover": "answer",
+    "answerForm": "words",
+    "tray": "none",
+    "shortTitle": "How scientists find out",
+    "beat": {
+     "beatId": "b1-arrive",
+     "type": "arrive",
+     "index": 1
+    },
+    "ask": {
+     "text": "Aapko dance mein kya pasand hai?"
+    }
+   }
+  },
+  {
+   "who": "child",
+   "tag": "greet",
+   "lessonId": "01385b4d-0610-42ee-b577-c8081ad87746",
+   "childText": "हाँ, तैयार हूँ",
+   "ms": 1468,
+   "error": null,
+   "teacherReply": "Kitchen mein doodh aur dahi rakhe hain: aap prediction kijiye, garam jagah ya thandi jagah mein doodh jaldi dahi banega—aur kyun?",
+   "move": {
+    "kind": "hook",
+    "shape": "open with one concrete everyday situation — kit contexts: kitchen, curd and milk, balcony plants; ask what they think will happen or which they would pick — a prediction, no right answer yet; any bigger/more comparison: two quantities of one kind, in one unit — a count against a count, a distance against a distance; never across kinds; mention once: at the end they will teach this to Bittu (a pretend new student who missed this class); address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu",
+    "format": "F4"
+   },
+   "ui": {
+    "status": "your_turn",
+    "phase": "teach",
+    "handover": "answer",
+    "answerForm": "words",
+    "tray": "none",
+    "shortTitle": "How scientists find out",
+    "beat": {
+     "beatId": "b2-hook",
+     "type": "hook",
+     "index": 2
+    },
+    "ask": {
+     "text": "Kitchen mein doodh aur dahi rakhe hain: aap prediction kijiye, garam jagah ya thandi jagah mein doodh jaldi dahi…"
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false
+    },
+    "verdict": "attempt",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 719,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "teach",
+    "ms": 1464,
+    "item": null,
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 45
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 46
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 646
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 698
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1367
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1417
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1419
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1420
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1232
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 1421
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 1464
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "probe:question_on_topic-05",
+   "lessonId": "01385b4d-0610-42ee-b577-c8081ad87746",
+   "childText": "kya har question test kar sakte hain?",
+   "ms": 2972,
+   "error": null,
+   "teacherReply": "Nahi, har question test nahi hota; testable question mein cheezein observe aur measure ki ja sakti hain. Aap ek testable question banaiye: beej ko paani dene se growth badhegi?",
+   "move": {
+    "kind": "explain",
+    "shape": "they asked a real question about today's idea: answer it in at most two sentences, correctly and simply, without giving the key; then the question; one idea only: Turn an observation into a question that can be checked by testing; objects first, then the symbol; point at the screen only at what the on-screen row lists; never a drawing made of characters; end with one small question that makes them USE the idea — never 'samjha?'; address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu",
+    "skillId": "c6-science-ch01-t01-s1",
+    "format": "F1",
+    "request": "answer_q",
+    "lead": "they asked a real question about today's idea: answer it in at most two sentences, correctly and simply, without giving the key; then the question"
+   },
+   "ui": {
+    "status": "your_turn",
+    "phase": "teach",
+    "handover": "answer",
+    "answerForm": "words",
+    "tray": "studio",
+    "shortTitle": "How scientists find out",
+    "beat": {
+     "beatId": "b3-explain",
+     "type": "explain",
+     "index": 3
+    },
+    "ask": {
+     "text": "Aap ek testable question banaiye: beej ko paani dene se growth badhegi?"
+    },
+    "studioSlot": {
+     "slotId": "01385b4d-0610-42ee-b577-c8081ad87746:wb:2:slot",
+     "intentId": "01385b4d-0610-42ee-b577-c8081ad87746:wb:2",
+     "state": "revealed",
+     "artifact": {
+      "kind": "whiteboard",
+      "stage": {
+       "w": 400,
+       "h": 300
+      },
+      "script": {
+       "v": 1,
+       "scriptId": "01385b4d-0610-42ee-b577-c8081ad87746:wb:2",
+       "line": {
+        "lessonId": "01385b4d-0610-42ee-b577-c8081ad87746",
+        "teacherReplySeq": 5
+       },
+       "anchor": "line_audio_start",
+       "board": {
+        "w": 400,
+        "h": 300,
+        "ground": "grid"
+       },
+       "mode": "fresh",
+       "durationMs": 14685,
+       "ops": [
+        {
+         "id": "b0",
+         "op": "rect",
+         "startMs": 146,
+         "endMs": 912,
+         "weight": 2,
+         "at": [
+          25,
+          30
+         ],
+         "w": 160,
+         "h": 58,
+         "round": 10
+        },
+        {
+         "id": "t0",
+         "op": "text",
+         "startMs": 985,
+         "endMs": 1897,
+         "at": [
+          105,
+          61
+         ],
+         "text": "Observe",
+         "size": "m"
+        },
+        {
+         "id": "o1",
+         "op": "arrow",
+         "startMs": 2189,
+         "endMs": 3010,
+         "ink": "accent",
+         "from": [
+          105,
+          91
+         ],
+         "to": [
+          105,
+          133
+         ]
+        },
+        {
+         "id": "b1",
+         "op": "rect",
+         "startMs": 3156,
+         "endMs": 3922,
+         "weight": 2,
+         "at": [
+          25,
+          136
+         ],
+         "w": 160,
+         "h": 58,
+         "round": 10
+        },
+        {
+         "id": "t1",
+         "op": "text",
+         "startMs": 3995,
+         "endMs": 4542,
+         "at": [
+          105,
+          155
+         ],
+         "text": "Ask a testable",
+         "size": "s"
+        },
+        {
+         "id": "o2",
+         "op": "text",
+         "startMs": 4542,
+         "endMs": 5090,
+         "at": [
+          105,
+          179
+         ],
+         "text": "question",
+         "size": "s"
+        },
+        {
+         "id": "o3",
+         "op": "arrow",
+         "startMs": 5382,
+         "endMs": 6202,
+         "ink": "accent",
+         "from": [
+          105,
+          197
+         ],
+         "to": [
+          105,
+          239
+         ]
+        },
+        {
+         "id": "b2",
+         "op": "rect",
+         "startMs": 6348,
+         "endMs": 7115,
+         "weight": 2,
+         "at": [
+          25,
+          242
+         ],
+         "w": 160,
+         "h": 58,
+         "round": 10
+        },
+        {
+         "id": "t2",
+         "op": "text",
+         "startMs": 7188,
+         "endMs": 7735,
+         "at": [
+          105,
+          261
+         ],
+         "text": "Predict with",
+         "size": "s"
+        },
+        {
+         "id": "o4",
+         "op": "text",
+         "startMs": 7735,
+         "endMs": 8282,
+         "at": [
+          105,
+          285
+         ],
+         "text": "a reason",
+         "size": "s"
+        },
+        {
+         "id": "o5",
+         "op": "arrow",
+         "startMs": 8574,
+         "endMs": 9395,
+         "ink": "accent",
+         "from": [
+          188,
+          271
+         ],
+         "to": [
+          212,
+          59
+         ],
+         "bend": 0.2
+        },
+        {
+         "id": "b3",
+         "op": "rect",
+         "startMs": 9541,
+         "endMs": 10307,
+         "weight": 2,
+         "at": [
+          215,
+          30
+         ],
+         "w": 160,
+         "h": 58,
+         "round": 10
+        },
+        {
+         "id": "t3",
+         "op": "text",
+         "startMs": 10380,
+         "endMs": 11292,
+         "at": [
+          295,
+          61
+         ],
+         "text": "Test fairly",
+         "size": "s"
+        },
+        {
+         "id": "o6",
+         "op": "arrow",
+         "startMs": 11584,
+         "endMs": 12405,
+         "ink": "accent",
+         "from": [
+          295,
+          91
+         ],
+         "to": [
+          295,
+          133
+         ]
+        },
+        {
+         "id": "b4",
+         "op": "rect",
+         "startMs": 12551,
+         "endMs": 13317,
+         "weight": 2,
+         "at": [
+          215,
+          136
+         ],
+         "w": 160,
+         "h": 58,
+         "round": 10
+        },
+        {
+         "id": "t4",
+         "op": "text",
+         "startMs": 13390,
+         "endMs": 13937,
+         "at": [
+          295,
+          155
+         ],
+         "text": "Observe and",
+         "size": "s"
+        },
+        {
+         "id": "o7",
+         "op": "text",
+         "startMs": 13937,
+         "endMs": 14485,
+         "at": [
+          295,
+          179
+         ],
+         "text": "conclude",
+         "size": "s"
+        }
+       ],
+       "facts": {
+        "kind": "diagram",
+        "archetype": "whiteboard",
+        "onScreen": {
+         "labels": "Observe | Ask a testable | question | Pr"
+        }
+       }
+      }
+     }
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false
+    },
+    "verdict": "ungraded",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "question_on_topic",
+     "waitedMs": 756,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "teach",
+    "ms": 2969,
+    "item": null,
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 43
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 43
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 698
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 749
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1455
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1505
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1508
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1508
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1364
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 2901
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 2969
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "filler",
+   "lessonId": "01385b4d-0610-42ee-b577-c8081ad87746",
+   "childText": "अच्छा",
+   "ms": 2273,
+   "error": null,
+   "teacherReply": "Ab dahi wale example mein prediction dijiye: warm place mein curd jaldi set hoga—iska reason kya ho sakta hai?",
+   "move": {
+    "kind": "worked_example",
+    "shape": "worked example, part 1 of 2: say one step, then ask them for the next step; their thinking, your pace; no new idea; address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu",
+    "skillId": "c6-science-ch01-t01-s1",
+    "format": "F2"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "math",
+     "value": "Does curd set faster in a warm place?"
+    },
+    "phase": "teach",
+    "handover": "answer",
+    "answerForm": "words",
+    "tray": "studio",
+    "shortTitle": "How scientists find out",
+    "beat": {
+     "beatId": "b4-worked_example",
+     "type": "worked_example",
+     "index": 4
+    },
+    "ask": {
+     "text": "Ab dahi wale example mein prediction dijiye: warm place mein curd jaldi set hoga—iska reason kya ho sakta hai?"
+    },
+    "studioSlot": {
+     "slotId": "01385b4d-0610-42ee-b577-c8081ad87746:wb:3:slot",
+     "intentId": "01385b4d-0610-42ee-b577-c8081ad87746:wb:3",
+     "state": "revealed",
+     "artifact": {
+      "kind": "whiteboard",
+      "stage": {
+       "w": 400,
+       "h": 300
+      },
+      "script": {
+       "v": 1,
+       "scriptId": "01385b4d-0610-42ee-b577-c8081ad87746:wb:3",
+       "line": {
+        "lessonId": "01385b4d-0610-42ee-b577-c8081ad87746",
+        "teacherReplySeq": 7
+       },
+       "anchor": "line_audio_start",
+       "board": {
+        "w": 400,
+        "h": 300,
+        "ground": "grid"
+       },
+       "mode": "fresh",
+       "durationMs": 9207,
+       "ops": [
+        {
+         "id": "b0",
+         "op": "rect",
+         "startMs": 91,
+         "endMs": 567,
+         "weight": 2,
+         "at": [
+          25,
+          30
+         ],
+         "w": 160,
+         "h": 58,
+         "round": 10
+        },
+        {
+         "id": "t0",
+         "op": "text",
+         "startMs": 612,
+         "endMs": 1180,
+         "at": [
+          105,
+          61
+         ],
+         "text": "Observe",
+         "size": "m"
+        },
+        {
+         "id": "o1",
+         "op": "arrow",
+         "startMs": 1362,
+         "endMs": 1872,
+         "ink": "accent",
+         "from": [
+          105,
+          91
+         ],
+         "to": [
+          105,
+          133
+         ]
+        },
+        {
+         "id": "b1",
+         "op": "rect",
+         "startMs": 1963,
+         "endMs": 2439,
+         "weight": 2,
+         "at": [
+          25,
+          136
+         ],
+         "w": 160,
+         "h": 58,
+         "round": 10
+        },
+        {
+         "id": "t1",
+         "op": "text",
+         "startMs": 2484,
+         "endMs": 2825,
+         "at": [
+          105,
+          155
+         ],
+         "text": "Ask a testable",
+         "size": "s"
+        },
+        {
+         "id": "o2",
+         "op": "text",
+         "startMs": 2825,
+         "endMs": 3165,
+         "at": [
+          105,
+          179
+         ],
+         "text": "question",
+         "size": "s"
+        },
+        {
+         "id": "o3",
+         "op": "arrow",
+         "startMs": 3347,
+         "endMs": 3857,
+         "ink": "accent",
+         "from": [
+          105,
+          197
+         ],
+         "to": [
+          105,
+          239
+         ]
+        },
+        {
+         "id": "b2",
+         "op": "rect",
+         "startMs": 3948,
+         "endMs": 4424,
+         "weight": 2,
+         "at": [
+          25,
+          242
+         ],
+         "w": 160,
+         "h": 58,
+         "round": 10
+        },
+        {
+         "id": "t2",
+         "op": "text",
+         "startMs": 4470,
+         "endMs": 4810,
+         "at": [
+          105,
+          261
+         ],
+         "text": "Predict with",
+         "size": "s"
+        },
+        {
+         "id": "o4",
+         "op": "text",
+         "startMs": 4810,
+         "endMs": 5150,
+         "at": [
+          105,
+          285
+         ],
+         "text": "a reason",
+         "size": "s"
+        },
+        {
+         "id": "o5",
+         "op": "arrow",
+         "startMs": 5331,
+         "endMs": 5842,
+         "ink": "accent",
+         "from": [
+          188,
+          271
+         ],
+         "to": [
+          212,
+          59
+         ],
+         "bend": 0.2
+        },
+        {
+         "id": "b3",
+         "op": "rect",
+         "startMs": 5933,
+         "endMs": 6409,
+         "weight": 2,
+         "at": [
+          215,
+          30
+         ],
+         "w": 160,
+         "h": 58,
+         "round": 10
+        },
+        {
+         "id": "t3",
+         "op": "text",
+         "startMs": 6455,
+         "endMs": 7023,
+         "at": [
+          295,
+          61
+         ],
+         "text": "Test fairly",
+         "size": "s"
+        },
+        {
+         "id": "o6",
+         "op": "arrow",
+         "startMs": 7204,
+         "endMs": 7714,
+         "ink": "accent",
+         "from": [
+          295,
+          91
+         ],
+         "to": [
+          295,
+          133
+         ]
+        },
+        {
+         "id": "b4",
+         "op": "rect",
+         "startMs": 7805,
+         "endMs": 8281,
+         "weight": 2,
+         "at": [
+          215,
+          136
+         ],
+         "w": 160,
+         "h": 58,
+         "round": 10
+        },
+        {
+         "id": "t4",
+         "op": "text",
+         "startMs": 8327,
+         "endMs": 8667,
+         "at": [
+          295,
+          155
+         ],
+         "text": "Observe and",
+         "size": "s"
+        },
+        {
+         "id": "o7",
+         "op": "text",
+         "startMs": 8667,
+         "endMs": 9007,
+         "at": [
+          295,
+          179
+         ],
+         "text": "conclude",
+         "size": "s"
+        }
+       ],
+       "facts": {
+        "kind": "diagram",
+        "archetype": "whiteboard",
+        "onScreen": {
+         "labels": "Observe | Ask a testable | question | Pr"
+        }
+       }
+      }
+     }
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false
+    },
+    "verdict": "ungraded",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 505,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "teach",
+    "ms": 2269,
+    "item": null,
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 57
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 58
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 699
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 764
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1206
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1269
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1274
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1274
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 893
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 2201
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 2269
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "probe:boredom-07",
+   "lessonId": "01385b4d-0610-42ee-b577-c8081ad87746",
+   "childText": "kitna padhna hai abhi aur 😴",
+   "ms": 2744,
+   "error": null,
+   "teacherReply": "Aapko yeh part boring lag raha hai—chaliye tareeka badlein: 1 game, 2 picture, 3 quick challenge. Aap kya chunenge?",
+   "move": {
+    "kind": "repair",
+    "shape": "they are bored: first say back in a few words, in their words, that this part is boring for them, no guilt; then change something NOW; offer a different way into today's idea: a game, a picture or a quick challenge, shown on screen as choices; ask which; no lesson question this turn; address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu",
+    "request": "boredom"
+   },
+   "ui": {
+    "status": "your_turn",
+    "chips": [
+     {
+      "id": "req:visual",
+      "label": "Show me a picture"
+     },
+     {
+      "id": "req:story",
+      "label": "Tell it as a story"
+     },
+     {
+      "id": "req:game",
+      "label": "Play a game"
+     },
+     {
+      "id": "stop:continue",
+      "label": "Back to the lesson"
+     }
+    ],
+    "phase": "teach",
+    "handover": "choice",
+    "answerForm": "choice",
+    "tray": "tiles",
+    "shortTitle": "How scientists find out",
+    "beat": {
+     "beatId": "b4-worked_example",
+     "type": "worked_example",
+     "index": 4
+    },
+    "ask": {
+     "text": "Aap kya chunenge?"
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false
+    },
+    "verdict": "ungraded",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "boredom",
+     "waitedMs": 722,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "teach",
+    "ms": 2742,
+    "item": null,
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 60
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 61
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 728
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 796
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1451
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1518
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1522
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1522
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1167
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 2694
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 2742
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "filler",
+   "lessonId": "01385b4d-0610-42ee-b577-c8081ad87746",
+   "childText": "समझ गया",
+   "ms": 1487,
+   "error": null,
+   "teacherReply": "Theek hai, Anaya. Ab hum ek nayi science situation ko observe karke us par sochenge. Khaali jagah bhariye: Predict with a reason: the warm bowl will set first because ___",
+   "move": {
+    "kind": "practice",
+    "shape": "the earlier steps in LESSON NOW, said briefly as done; then the step with the gap is theirs: pose it as written; wait; never fill the gap for them; address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu",
+    "itemId": "fade:2",
+    "skillId": "c6-science-ch01-t01-s1",
+    "hintLevel": 0,
+    "probe": "P15",
+    "format": "F2"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "math",
+     "value": "Does curd set faster in a warm place? · Predict with a reason: the warm bowl will set first because ___"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "Khaali jagah bhariye: Predict with a reason: the warm bowl will set first because ___",
+     "itemId": "fade:2"
+    },
+    "answerForm": "words",
+    "tray": "none",
+    "shortTitle": "How scientists find out",
+    "beat": {
+     "beatId": "b5-practice_set",
+     "type": "practice_set",
+     "index": 5
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false,
+     "leadSlot": true
+    },
+    "verdict": "ungraded",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 502,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 1484,
+    "item": "fade:2",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 39
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 40
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 872
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 920
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1376
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1422
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1426
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1427
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1011
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 1428
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 1484
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "advance",
+   "lessonId": "01385b4d-0610-42ee-b577-c8081ad87746",
+   "childText": "अच्छा",
+   "ms": 2813,
+   "error": null,
+   "teacherReply": "Anaya, reason mein sochiye: warmth kisi process ki speed ko affect kar sakti hai. Bas apna explanation ek chhote phrase mein likhiye. Khaali jagah bhariye: Predict with a reason: the warm bowl will set first because ___",
+   "move": {
+    "kind": "hint",
+    "shape": "their typed reply did not answer the question: no verdict, never ask them to repeat or say it again; one small nudge toward what the question asks; then the same question again, as written; no verdict on their reply: neither praise nor 'wrong'; address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu",
+    "itemId": "fade:2",
+    "skillId": "c6-science-ch01-t01-s1",
+    "hintLevel": 0
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "text",
+     "value": "Khaali jagah bhariye: Predict with a reason: the warm bow…"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "Khaali jagah bhariye: Predict with a reason: the warm bowl will set first because ___",
+     "itemId": "fade:2"
+    },
+    "answerForm": "words",
+    "tray": "studio",
+    "shortTitle": "How scientists find out",
+    "beat": {
+     "beatId": "b5-practice_set",
+     "type": "practice_set",
+     "index": 5
+    },
+    "studioSlot": {
+     "slotId": "01385b4d-0610-42ee-b577-c8081ad87746:c1:slot",
+     "intentId": "01385b4d-0610-42ee-b577-c8081ad87746:c1",
+     "state": "revealed",
+     "artifact": {
+      "kind": "stagecraft",
+      "stage": {
+       "w": 1000,
+       "h": 625
+      },
+      "stagecraft": {
+       "rung": "engine_default",
+       "archetype": "fair-test@1",
+       "spec": {
+        "archetype": "fair-test@1",
+        "skills": [
+         "c6-science-ch01-t01"
+        ],
+        "lang": "en",
+        "strings": {
+         "round": "Round",
+         "run": "RUN",
+         "day": "day",
+         "predict": "Tap every setup that will show it",
+         "design": "Make it a fair test",
+         "conclude": "Which factor matters?",
+         "notMatter": "Which factor does NOT matter?",
+         "fair": "FAIR TEST",
+         "unfair": "NOT FAIR",
+         "runDone": "Lab closed",
+         "correct": "right calls",
+         "drip": "Hold to add drops; stop when it turns",
+         "drops": "drops",
+         "neutral": "NEUTRAL",
+         "hint": "change only one thing"
+        },
+        "title": "How does curd set?",
+        "model": "curd",
+        "rounds": [
+         {
+          "mode": "predict",
+          "title": "Before the test",
+          "sub": "which bowls will set?",
+          "setups": [
+           {
+            "starter": "yes",
+            "temp": "warm"
+           },
+           {
+            "starter": "yes",
+            "temp": "cold"
+           },
+           {
+            "starter": "no",
+            "temp": "warm"
+           },
+           {
+            "starter": "no",
+            "temp": "cold"
+           }
+          ],
+          "src": "c6-science-ch01-t01-i02"
+         },
+         {
+          "mode": "design",
+          "title": "Make it fair",
+          "sub": "change only the temperature",
+          "vary": "temp",
+          "start": [
+           {
+            "starter": "yes",
+            "temp": "warm"
+           },
+           {
+            "starter": "yes",
+            "temp": "cold"
+           }
+          ],
+          "targets": "c6-science-ch01-t01-m1"
+         }
+        ]
+       },
+       "boardTwin": {
+        "scriptRef": "board:c6-science-ch01-t01-s1|practice|-|-",
+        "values": {
+         "title": "Fair Test Lab",
+         "need": "practice"
+        },
+        "board": {
+         "title": "Fair Test Lab",
+         "lines": [
+          "test",
+          "curd",
+          "faster",
+          "science"
+         ],
+         "figure": {
+          "kind": "none"
+         }
+        }
+       },
+       "board": null,
+       "cue": {
+        "clauseIdx": 0,
+        "preRollMs": 400,
+        "crossFadeMs": 420
+       },
+       "buildSha": null,
+       "blobUrl": null
+      }
+     }
+    }
+   },
+   "moduleCommands": [],
+   "studio": {
+    "reveal": "01385b4d-0610-42ee-b577-c8081ad87746:c1"
+   },
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false,
+     "leadSlot": true
+    },
+    "verdict": "unverified",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 584,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 2809,
+    "item": "fade:2",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 40
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 40
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 752
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 810
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1342
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1394
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1397
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1398
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1350
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 2762
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 2808
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "advance",
+   "lessonId": "01385b4d-0610-42ee-b577-c8081ad87746",
+   "childText": "अच्छा",
+   "ms": 4487,
+   "error": null,
+   "teacherReply": "Theek hai, Anaya. Aap warmth ke effect par apna chhota reason sochiye; phir card par prediction complete kijiye. Khaali jagah bhariye: Predict with a reason: the warm bowl will set first because ___",
+   "move": {
+    "kind": "hint",
+    "shape": "no verdict on their reply; the choices are now on screen; the same question again, as written; tell them they can pick one of the choices on screen; do not read the choices with any lean toward one; no verdict on their reply: neither praise nor 'wrong'; address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu",
+    "itemId": "fade:2",
+    "skillId": "c6-science-ch01-t01-s1",
+    "hintLevel": 0
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "text",
+     "value": "Khaali jagah bhariye: Predict with a reason: the warm bow…"
+    },
+    "chips": [
+     {
+      "id": "pick:0",
+      "label": "B"
+     },
+     {
+      "id": "pick:1",
+      "label": "Making a prediction."
+     },
+     {
+      "id": "pick:2",
+      "label": "curd bacteria work faster in warmth"
+     }
+    ],
+    "phase": "practice",
+    "handover": "choice",
+    "ask": {
+     "text": "Khaali jagah bhariye: Predict with a reason: the warm bowl will set first because ___",
+     "itemId": "fade:2"
+    },
+    "answerForm": "choice",
+    "tray": "tiles",
+    "shortTitle": "How scientists find out",
+    "beat": {
+     "beatId": "b5-practice_set",
+     "type": "practice_set",
+     "index": 5
+    },
+    "teacherAffect": {
+     "display": "gentle_concern",
+     "intensity": 1
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [
+      "twoq"
+     ],
+     "rewritten": true,
+     "replaced": false,
+     "firstDraft": "Aap apna reason chhote phrase mein likhiye—warmth se curd ke andar ka process kaise badal sakta hai? Khaali jagah bhariye: Predict with a reason: the warm bowl will set first because ___",
+     "afterRewrite": [
+      "twoq",
+      "bare"
+     ],
+     "repaired": true,
+     "leadRepair": true
+    },
+    "verdict": "unverified",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 400,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 4483,
+    "item": "fade:2",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 59
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 59
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 680
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 747
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1082
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1148
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1151
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1151
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1199
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1356
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 728
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1026
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 4440
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 4483
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "advance",
+   "lessonId": "01385b4d-0610-42ee-b577-c8081ad87746",
+   "childText": "ठीक है",
+   "ms": 3173,
+   "error": null,
+   "teacherReply": "Ab isi prediction ko phone battery wale example par apply kijiye: Screen brightness ka asar test karne ke liye kaunsa sawaal behtar hai: A) Kaunsa phone brand best hai? Class notice karti hai ki phone batteries alag speed se khatam hoti hain. Screen brightness ka asar test karne ke liye kaunsa sawaal behtar hai: A) Kaunsa phone brand best hai? B) Kya ek hi phone ki brightness badhane se battery jaldi khatam hoti hai?",
+   "move": {
+    "kind": "probe",
+    "shape": "leave this one for later, no verdict and no answer given; the next question; pose the question as written, in their language; then wait; same idea, new situation; let them carry it over; no verdict on their reply: neither praise nor 'wrong'; address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu",
+    "itemId": "c6-science-ch01-t01-rl-h1",
+    "skillId": "c6-science-ch01-t01-s1",
+    "hintLevel": 0,
+    "probe": "P3"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "text",
+     "value": "Class notice karti hai ki phone batteries alag speed se k…"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "B) Kya ek hi phone ki brightness badhane se battery jaldi khatam hoti hai?",
+     "itemId": "c6-science-ch01-t01-rl-h1"
+    },
+    "answerForm": "words",
+    "tray": "studio",
+    "shortTitle": "How scientists find out",
+    "beat": {
+     "beatId": "b6-probe",
+     "type": "probe",
+     "index": 6
+    },
+    "studioSlot": {
+     "slotId": "01385b4d-0610-42ee-b577-c8081ad87746:c1:slot",
+     "intentId": "01385b4d-0610-42ee-b577-c8081ad87746:c1",
+     "state": "revealed",
+     "artifact": {
+      "kind": "stagecraft",
+      "stage": {
+       "w": 1000,
+       "h": 625
+      },
+      "stagecraft": {
+       "rung": "engine_default",
+       "archetype": "fair-test@1",
+       "spec": {
+        "archetype": "fair-test@1",
+        "skills": [
+         "c6-science-ch01-t01"
+        ],
+        "lang": "en",
+        "strings": {
+         "round": "Round",
+         "run": "RUN",
+         "day": "day",
+         "predict": "Tap every setup that will show it",
+         "design": "Make it a fair test",
+         "conclude": "Which factor matters?",
+         "notMatter": "Which factor does NOT matter?",
+         "fair": "FAIR TEST",
+         "unfair": "NOT FAIR",
+         "runDone": "Lab closed",
+         "correct": "right calls",
+         "drip": "Hold to add drops; stop when it turns",
+         "drops": "drops",
+         "neutral": "NEUTRAL",
+         "hint": "change only one thing"
+        },
+        "title": "How does curd set?",
+        "model": "curd",
+        "rounds": [
+         {
+          "mode": "predict",
+          "title": "Before the test",
+          "sub": "which bowls will set?",
+          "setups": [
+           {
+            "starter": "yes",
+            "temp": "warm"
+           },
+           {
+            "starter": "yes",
+            "temp": "cold"
+           },
+           {
+            "starter": "no",
+            "temp": "warm"
+           },
+           {
+            "starter": "no",
+            "temp": "cold"
+           }
+          ],
+          "src": "c6-science-ch01-t01-i02"
+         },
+         {
+          "mode": "design",
+          "title": "Make it fair",
+          "sub": "change only the temperature",
+          "vary": "temp",
+          "start": [
+           {
+            "starter": "yes",
+            "temp": "warm"
+           },
+           {
+            "starter": "yes",
+            "temp": "cold"
+           }
+          ],
+          "targets": "c6-science-ch01-t01-m1"
+         }
+        ]
+       },
+       "boardTwin": {
+        "scriptRef": "board:c6-science-ch01-t01-s1|practice|-|-",
+        "values": {
+         "title": "Fair Test Lab",
+         "need": "practice"
+        },
+        "board": {
+         "title": "Fair Test Lab",
+         "lines": [
+          "test",
+          "curd",
+          "faster",
+          "science"
+         ],
+         "figure": {
+          "kind": "none"
+         }
+        }
+       },
+       "board": null,
+       "cue": {
+        "clauseIdx": 0,
+        "preRollMs": 400,
+        "crossFadeMs": 420
+       },
+       "buildSha": null,
+       "blobUrl": null
+      }
+     }
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [
+      "twoq"
+     ],
+     "rewritten": true,
+     "replaced": false,
+     "firstDraft": "Chaliye, ab isi prediction ko ek naye example par apply karke apni reasoning check kijiye. Class notice karti hai ki phone batteries alag speed se khatam hoti hain. Screen brightness ka asar test karne ke liye kaunsa sawaal behtar hai: A) Kaunsa phone brand best hai? B) Kya ek hi phone ki brightness badhane se battery jaldi khatam hoti hai?",
+     "leadSlot": true,
+     "afterRewrite": [
+      "long",
+      "twoq"
+     ],
+     "repaired": true,
+     "final": [
+      "twoq"
+     ]
+    },
+    "verdict": "unverified",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 106,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 3168,
+    "item": "c6-science-ch01-t01-rl-h1",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 58
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 59
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 864
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 932
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 972
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1038
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1041
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1042
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1112
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 958
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 3124
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 3168
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "probe:diversion-03",
+   "lessonId": "01385b4d-0610-42ee-b577-c8081ad87746",
+   "childText": "kal India ka match hai, dekhoge?",
+   "ms": 2624,
+   "error": null,
+   "teacherReply": "Haan, Anaya, aapne kal India ke match ki baat yaad dilayi—match wali excitement samajh aa rahi hai. Is sawaal ke baad us par zaroor lautenge. B) Kya ek hi phone ki brightness badhane se battery jaldi khatam hoti hai?",
+   "move": {
+    "kind": "probe",
+    "shape": "two parts — first: they brought up India's cricket match tomorrow: notice it warmly and specifically, in their words; promise to come back to it right after this question; no answer to it now; then back to the work; second: the question on the card, as written, in their language; then wait; no verdict on their reply: neither praise nor 'wrong'; address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu",
+    "itemId": "c6-science-ch01-t01-rl-h1",
+    "skillId": "c6-science-ch01-t01-s1",
+    "hintLevel": 0,
+    "probe": "P3",
+    "request": "park",
+    "lead": "they brought up India's cricket match tomorrow: notice it warmly and specifically, in their words; promise to come back to it right after this question; no answer to it now; then back to the work"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "text",
+     "value": "Class notice karti hai ki phone batteries alag speed se k…"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "B) Kya ek hi phone ki brightness badhane se battery jaldi khatam hoti hai?",
+     "itemId": "c6-science-ch01-t01-rl-h1"
+    },
+    "answerForm": "words",
+    "tray": "studio",
+    "shortTitle": "How scientists find out",
+    "beat": {
+     "beatId": "b6-probe",
+     "type": "probe",
+     "index": 6
+    },
+    "studioSlot": {
+     "slotId": "01385b4d-0610-42ee-b577-c8081ad87746:c1:slot",
+     "intentId": "01385b4d-0610-42ee-b577-c8081ad87746:c1",
+     "state": "revealed",
+     "artifact": {
+      "kind": "stagecraft",
+      "stage": {
+       "w": 1000,
+       "h": 625
+      },
+      "stagecraft": {
+       "rung": "engine_default",
+       "archetype": "fair-test@1",
+       "spec": {
+        "archetype": "fair-test@1",
+        "skills": [
+         "c6-science-ch01-t01"
+        ],
+        "lang": "en",
+        "strings": {
+         "round": "Round",
+         "run": "RUN",
+         "day": "day",
+         "predict": "Tap every setup that will show it",
+         "design": "Make it a fair test",
+         "conclude": "Which factor matters?",
+         "notMatter": "Which factor does NOT matter?",
+         "fair": "FAIR TEST",
+         "unfair": "NOT FAIR",
+         "runDone": "Lab closed",
+         "correct": "right calls",
+         "drip": "Hold to add drops; stop when it turns",
+         "drops": "drops",
+         "neutral": "NEUTRAL",
+         "hint": "change only one thing"
+        },
+        "title": "How does curd set?",
+        "model": "curd",
+        "rounds": [
+         {
+          "mode": "predict",
+          "title": "Before the test",
+          "sub": "which bowls will set?",
+          "setups": [
+           {
+            "starter": "yes",
+            "temp": "warm"
+           },
+           {
+            "starter": "yes",
+            "temp": "cold"
+           },
+           {
+            "starter": "no",
+            "temp": "warm"
+           },
+           {
+            "starter": "no",
+            "temp": "cold"
+           }
+          ],
+          "src": "c6-science-ch01-t01-i02"
+         },
+         {
+          "mode": "design",
+          "title": "Make it fair",
+          "sub": "change only the temperature",
+          "vary": "temp",
+          "start": [
+           {
+            "starter": "yes",
+            "temp": "warm"
+           },
+           {
+            "starter": "yes",
+            "temp": "cold"
+           }
+          ],
+          "targets": "c6-science-ch01-t01-m1"
+         }
+        ]
+       },
+       "boardTwin": {
+        "scriptRef": "board:c6-science-ch01-t01-s1|practice|-|-",
+        "values": {
+         "title": "Fair Test Lab",
+         "need": "practice"
+        },
+        "board": {
+         "title": "Fair Test Lab",
+         "lines": [
+          "test",
+          "curd",
+          "faster",
+          "science"
+         ],
+         "figure": {
+          "kind": "none"
+         }
+        }
+       },
+       "board": null,
+       "cue": {
+        "clauseIdx": 0,
+        "preRollMs": 400,
+        "crossFadeMs": 420
+       },
+       "buildSha": null,
+       "blobUrl": null
+      }
+     }
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false,
+     "leadSlot": true
+    },
+    "verdict": "ungraded",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "diversion",
+     "waitedMs": 657,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 2622,
+    "item": "c6-science-ch01-t01-rl-h1",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 64
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 64
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 673
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 748
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1332
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1405
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1409
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1409
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1149
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 2567
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 2622
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "recovery",
+   "lessonId": "01385b4d-0610-42ee-b577-c8081ad87746",
+   "childText": "B",
+   "ms": 1218,
+   "error": null,
+   "teacherReply": "Bilkul, Anaya—B testable question hai, kyunki ek phone mein brightness badal kar battery time observe karenge. Ab prediction reason ke saath boliye.",
+   "move": {
+    "kind": "explain",
+    "shape": "confirm specifically: name the exact thing they got right, no ability words; before the next thing: come back to what they asked earlier (India's cricket match tomorrow) — at most two sentences, or a guided question; one idea only: Make a prediction with a reason before testing; objects first, then the symbol; point at the screen only at what the on-screen row lists; never a drawing made of characters; end with one small question that makes them USE the idea — never 'samjha?'; address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu",
+    "skillId": "c6-science-ch01-t01-s2",
+    "format": "F1"
+   },
+   "ui": {
+    "status": "your_turn",
+    "phase": "practice",
+    "handover": "answer",
+    "answerForm": "words",
+    "tray": "module",
+    "shortTitle": "How scientists find out",
+    "verdict": "correct",
+    "beat": {
+     "beatId": "b7-explain",
+     "type": "explain",
+     "index": 7
+    },
+    "ask": {
+     "text": "Ab prediction reason ke saath boliye."
+    }
+   },
+   "moduleCommands": [
+    {
+     "op": "mount",
+     "moduleId": "m10",
+     "engine": "explainer@1",
+     "params": {
+      "script": {
+       "v": 1,
+       "scriptId": "ex-2dhb9y",
+       "line": {
+        "lessonId": "01385b4d-0610-42ee-b577-c8081ad87746"
+       },
+       "anchor": "line_audio_start",
+       "board": {
+        "w": 400,
+        "h": 300,
+        "ground": "chalk"
+       },
+       "mode": "fresh",
+       "durationMs": 8340,
+       "ops": [
+        {
+         "id": "b0",
+         "op": "rect",
+         "startMs": 80,
+         "endMs": 500,
+         "weight": 2,
+         "at": [
+          25,
+          30
+         ],
+         "w": 160,
+         "h": 58,
+         "round": 10
+        },
+        {
+         "id": "t0",
+         "op": "text",
+         "startMs": 540,
+         "endMs": 1040,
+         "at": [
+          105,
+          61
+         ],
+         "text": "Observe",
+         "size": "m"
+        },
+        {
+         "id": "o1",
+         "op": "arrow",
+         "startMs": 1200,
+         "endMs": 1650,
+         "ink": "accent",
+         "from": [
+          105,
+          91
+         ],
+         "to": [
+          105,
+          133
+         ]
+        },
+        {
+         "id": "b1",
+         "op": "rect",
+         "startMs": 1730,
+         "endMs": 2150,
+         "weight": 2,
+         "at": [
+          25,
+          136
+         ],
+         "w": 160,
+         "h": 58,
+         "round": 10
+        },
+        {
+         "id": "t1",
+         "op": "text",
+         "startMs": 2190,
+         "endMs": 2490,
+         "at": [
+          105,
+          155
+         ],
+         "text": "Ask a testable",
+         "size": "s"
+        },
+        {
+         "id": "o2",
+         "op": "text",
+         "startMs": 2490,
+         "endMs": 2790,
+         "at": [
+          105,
+          179
+         ],
+         "text": "question",
+         "size": "s"
+        },
+        {
+         "id": "o3",
+         "op": "arrow",
+         "startMs": 2950,
+         "endMs": 3400,
+         "ink": "accent",
+         "from": [
+          105,
+          197
+         ],
+         "to": [
+          105,
+          239
+         ]
+        },
+        {
+         "id": "b2",
+         "op": "rect",
+         "startMs": 3480,
+         "endMs": 3900,
+         "weight": 2,
+         "at": [
+          25,
+          242
+         ],
+         "w": 160,
+         "h": 58,
+         "round": 10
+        },
+        {
+         "id": "t2",
+         "op": "text",
+         "startMs": 3940,
+         "endMs": 4240,
+         "at": [
+          105,
+          261
+         ],
+         "text": "Predict with",
+         "size": "s"
+        },
+        {
+         "id": "o4",
+         "op": "text",
+         "startMs": 4240,
+         "endMs": 4540,
+         "at": [
+          105,
+          285
+         ],
+         "text": "a reason",
+         "size": "s"
+        },
+        {
+         "id": "o5",
+         "op": "arrow",
+         "startMs": 4700,
+         "endMs": 5150,
+         "ink": "accent",
+         "from": [
+          188,
+          271
+         ],
+         "to": [
+          212,
+          59
+         ],
+         "bend": 0.2
+        },
+        {
+         "id": "b3",
+         "op": "rect",
+         "startMs": 5230,
+         "endMs": 5650,
+         "weight": 2,
+         "at": [
+          215,
+          30
+         ],
+         "w": 160,
+         "h": 58,
+         "round": 10
+        },
+        {
+         "id": "t3",
+         "op": "text",
+         "startMs": 5690,
+         "endMs": 6190,
+         "at": [
+          295,
+          61
+         ],
+         "text": "Test fairly",
+         "size": "s"
+        },
+        {
+         "id": "o6",
+         "op": "arrow",
+         "startMs": 6350,
+         "endMs": 6800,
+         "ink": "accent",
+         "from": [
+          295,
+          91
+         ],
+         "to": [
+          295,
+          133
+         ]
+        },
+        {
+         "id": "b4",
+         "op": "rect",
+         "startMs": 6880,
+         "endMs": 7300,
+         "weight": 2,
+         "at": [
+          215,
+          136
+         ],
+         "w": 160,
+         "h": 58,
+         "round": 10
+        },
+        {
+         "id": "t4",
+         "op": "text",
+         "startMs": 7340,
+         "endMs": 7640,
+         "at": [
+          295,
+          155
+         ],
+         "text": "Observe and",
+         "size": "s"
+        },
+        {
+         "id": "o7",
+         "op": "text",
+         "startMs": 7640,
+         "endMs": 7940,
+         "at": [
+          295,
+          179
+         ],
+         "text": "conclude",
+         "size": "s"
+        }
+       ],
+       "facts": {
+        "kind": "diagram",
+        "archetype": "flow@1",
+        "onScreen": {
+         "steps": 5,
+         "step1": "Observe",
+         "step2": "Ask a testable question",
+         "step3": "Predict with a reason",
+         "step4": "Test fairly",
+         "step5": "Observe and conclude"
+        }
+       }
+      },
+      "template": "flow@1",
+      "mode": "play"
+     }
+    }
+   ],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false
+    },
+    "verdict": "correct",
+    "cls": {
+     "outcome": "correct",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": false,
+     "intent": null,
+     "waitedMs": 1,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 1216,
+    "item": null,
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 45
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 46
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 777
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 834
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 835
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 839
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 839
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 940
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 1049
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 1216
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "advance",
+   "lessonId": "01385b4d-0610-42ee-b577-c8081ad87746",
+   "childText": "अच्छा",
+   "ms": 2388,
+   "error": null,
+   "teacherReply": "Theek hai, Anaya. Ab prediction mein apna expected result aur uska reason ek saath likhiye. Do ek jaisi geeli sports jerseys ek saath latkaayi gayi hain—ek fan ke neeche, doosri bina hawa wali jagah. Chalti hawa ke baare mein jo jaante ho, usse predict kariye: kaunsi pehle sookhegi, fan wali ya bina hawa wali?",
+   "move": {
+    "kind": "probe",
+    "shape": "pose the question as written, in their language; then wait; ask for their prediction before anything is shown or explained; address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu",
+    "itemId": "c6-science-ch01-t01-rl-o2",
+    "skillId": "c6-science-ch01-t01-s2",
+    "hintLevel": 0,
+    "probe": "P5"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "text",
+     "value": "Do ek jaisi geeli sports jerseys ek saath latkaayi gayi h…"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "Chalti hawa ke baare mein jo jaante ho, usse predict kariye: kaunsi pehle sookhegi, fan wali ya bina hawa wali?",
+     "itemId": "c6-science-ch01-t01-rl-o2"
+    },
+    "answerForm": "words",
+    "tray": "studio",
+    "shortTitle": "How scientists find out",
+    "beat": {
+     "beatId": "b8-probe",
+     "type": "probe",
+     "index": 8
+    },
+    "studioSlot": {
+     "slotId": "01385b4d-0610-42ee-b577-c8081ad87746:c1:slot",
+     "intentId": "01385b4d-0610-42ee-b577-c8081ad87746:c1",
+     "state": "revealed",
+     "artifact": {
+      "kind": "stagecraft",
+      "stage": {
+       "w": 1000,
+       "h": 625
+      },
+      "stagecraft": {
+       "rung": "engine_default",
+       "archetype": "fair-test@1",
+       "spec": {
+        "archetype": "fair-test@1",
+        "skills": [
+         "c6-science-ch01-t01"
+        ],
+        "lang": "en",
+        "strings": {
+         "round": "Round",
+         "run": "RUN",
+         "day": "day",
+         "predict": "Tap every setup that will show it",
+         "design": "Make it a fair test",
+         "conclude": "Which factor matters?",
+         "notMatter": "Which factor does NOT matter?",
+         "fair": "FAIR TEST",
+         "unfair": "NOT FAIR",
+         "runDone": "Lab closed",
+         "correct": "right calls",
+         "drip": "Hold to add drops; stop when it turns",
+         "drops": "drops",
+         "neutral": "NEUTRAL",
+         "hint": "change only one thing"
+        },
+        "title": "How does curd set?",
+        "model": "curd",
+        "rounds": [
+         {
+          "mode": "predict",
+          "title": "Before the test",
+          "sub": "which bowls will set?",
+          "setups": [
+           {
+            "starter": "yes",
+            "temp": "warm"
+           },
+           {
+            "starter": "yes",
+            "temp": "cold"
+           },
+           {
+            "starter": "no",
+            "temp": "warm"
+           },
+           {
+            "starter": "no",
+            "temp": "cold"
+           }
+          ],
+          "src": "c6-science-ch01-t01-i02"
+         },
+         {
+          "mode": "design",
+          "title": "Make it fair",
+          "sub": "change only the temperature",
+          "vary": "temp",
+          "start": [
+           {
+            "starter": "yes",
+            "temp": "warm"
+           },
+           {
+            "starter": "yes",
+            "temp": "cold"
+           }
+          ],
+          "targets": "c6-science-ch01-t01-m1"
+         }
+        ]
+       },
+       "boardTwin": {
+        "scriptRef": "board:c6-science-ch01-t01-s1|practice|-|-",
+        "values": {
+         "title": "Fair Test Lab",
+         "need": "practice"
+        },
+        "board": {
+         "title": "Fair Test Lab",
+         "lines": [
+          "test",
+          "curd",
+          "faster",
+          "science"
+         ],
+         "figure": {
+          "kind": "none"
+         }
+        }
+       },
+       "board": null,
+       "cue": {
+        "clauseIdx": 0,
+        "preRollMs": 400,
+        "crossFadeMs": 420
+       },
+       "buildSha": null,
+       "blobUrl": null
+      }
+     }
+    }
+   },
+   "moduleCommands": [
+    {
+     "op": "unmount",
+     "moduleId": "m10"
+    }
+   ],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false,
+     "leadSlot": true
+    },
+    "verdict": "ungraded",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 477,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 2384,
+    "item": "c6-science-ch01-t01-rl-o2",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 39
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 40
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 671
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 718
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1148
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1195
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1198
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1199
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1124
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 2333
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 2384
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "probe:example-07",
+   "lessonId": "01385b4d-0610-42ee-b577-c8081ad87746",
+   "childText": "koi example se samjhao na",
+   "ms": 3205,
+   "error": null,
+   "teacherReply": "Example: ek towel khidki ke paas, doosra kone mein—hawa wale ke pehle sookhne ka prediction kijiye. Chalti hawa ke baare mein jo jaante ho, usse predict kariye: kaunsi pehle sookhegi, fan wali ya bina hawa wali?",
+   "move": {
+    "kind": "reteach",
+    "shape": "they asked for an example: start by saying it is an example, then one concrete everyday case of the same idea with DIFFERENT numbers from the question, so it never states its answer; the key stays unsaid; then the same question again, as written; no verdict on their reply: neither praise nor 'wrong'; address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu",
+    "itemId": "c6-science-ch01-t01-rl-o2",
+    "skillId": "c6-science-ch01-t01-s2",
+    "hintLevel": 1,
+    "request": "example"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "text",
+     "value": "Do ek jaisi geeli sports jerseys ek saath latkaayi gayi h…"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "Chalti hawa ke baare mein jo jaante ho, usse predict kariye: kaunsi pehle sookhegi, fan wali ya bina hawa wali?",
+     "itemId": "c6-science-ch01-t01-rl-o2"
+    },
+    "answerForm": "words",
+    "tray": "module",
+    "shortTitle": "How scientists find out",
+    "beat": {
+     "beatId": "b9-explain",
+     "type": "explain",
+     "index": 9
+    }
+   },
+   "moduleCommands": [
+    {
+     "op": "mount",
+     "moduleId": "m12",
+     "engine": "explainer@1",
+     "params": {
+      "script": {
+       "v": 1,
+       "scriptId": "ex-2dhb9y",
+       "line": {
+        "lessonId": "01385b4d-0610-42ee-b577-c8081ad87746"
+       },
+       "anchor": "line_audio_start",
+       "board": {
+        "w": 400,
+        "h": 300,
+        "ground": "chalk"
+       },
+       "mode": "fresh",
+       "durationMs": 8340,
+       "ops": [
+        {
+         "id": "b0",
+         "op": "rect",
+         "startMs": 80,
+         "endMs": 500,
+         "weight": 2,
+         "at": [
+          25,
+          30
+         ],
+         "w": 160,
+         "h": 58,
+         "round": 10
+        },
+        {
+         "id": "t0",
+         "op": "text",
+         "startMs": 540,
+         "endMs": 1040,
+         "at": [
+          105,
+          61
+         ],
+         "text": "Observe",
+         "size": "m"
+        },
+        {
+         "id": "o1",
+         "op": "arrow",
+         "startMs": 1200,
+         "endMs": 1650,
+         "ink": "accent",
+         "from": [
+          105,
+          91
+         ],
+         "to": [
+          105,
+          133
+         ]
+        },
+        {
+         "id": "b1",
+         "op": "rect",
+         "startMs": 1730,
+         "endMs": 2150,
+         "weight": 2,
+         "at": [
+          25,
+          136
+         ],
+         "w": 160,
+         "h": 58,
+         "round": 10
+        },
+        {
+         "id": "t1",
+         "op": "text",
+         "startMs": 2190,
+         "endMs": 2490,
+         "at": [
+          105,
+          155
+         ],
+         "text": "Ask a testable",
+         "size": "s"
+        },
+        {
+         "id": "o2",
+         "op": "text",
+         "startMs": 2490,
+         "endMs": 2790,
+         "at": [
+          105,
+          179
+         ],
+         "text": "question",
+         "size": "s"
+        },
+        {
+         "id": "o3",
+         "op": "arrow",
+         "startMs": 2950,
+         "endMs": 3400,
+         "ink": "accent",
+         "from": [
+          105,
+          197
+         ],
+         "to": [
+          105,
+          239
+         ]
+        },
+        {
+         "id": "b2",
+         "op": "rect",
+         "startMs": 3480,
+         "endMs": 3900,
+         "weight": 2,
+         "at": [
+          25,
+          242
+         ],
+         "w": 160,
+         "h": 58,
+         "round": 10
+        },
+        {
+         "id": "t2",
+         "op": "text",
+         "startMs": 3940,
+         "endMs": 4240,
+         "at": [
+          105,
+          261
+         ],
+         "text": "Predict with",
+         "size": "s"
+        },
+        {
+         "id": "o4",
+         "op": "text",
+         "startMs": 4240,
+         "endMs": 4540,
+         "at": [
+          105,
+          285
+         ],
+         "text": "a reason",
+         "size": "s"
+        },
+        {
+         "id": "o5",
+         "op": "arrow",
+         "startMs": 4700,
+         "endMs": 5150,
+         "ink": "accent",
+         "from": [
+          188,
+          271
+         ],
+         "to": [
+          212,
+          59
+         ],
+         "bend": 0.2
+        },
+        {
+         "id": "b3",
+         "op": "rect",
+         "startMs": 5230,
+         "endMs": 5650,
+         "weight": 2,
+         "at": [
+          215,
+          30
+         ],
+         "w": 160,
+         "h": 58,
+         "round": 10
+        },
+        {
+         "id": "t3",
+         "op": "text",
+         "startMs": 5690,
+         "endMs": 6190,
+         "at": [
+          295,
+          61
+         ],
+         "text": "Test fairly",
+         "size": "s"
+        },
+        {
+         "id": "o6",
+         "op": "arrow",
+         "startMs": 6350,
+         "endMs": 6800,
+         "ink": "accent",
+         "from": [
+          295,
+          91
+         ],
+         "to": [
+          295,
+          133
+         ]
+        },
+        {
+         "id": "b4",
+         "op": "rect",
+         "startMs": 6880,
+         "endMs": 7300,
+         "weight": 2,
+         "at": [
+          215,
+          136
+         ],
+         "w": 160,
+         "h": 58,
+         "round": 10
+        },
+        {
+         "id": "t4",
+         "op": "text",
+         "startMs": 7340,
+         "endMs": 7640,
+         "at": [
+          295,
+          155
+         ],
+         "text": "Observe and",
+         "size": "s"
+        },
+        {
+         "id": "o7",
+         "op": "text",
+         "startMs": 7640,
+         "endMs": 7940,
+         "at": [
+          295,
+          179
+         ],
+         "text": "conclude",
+         "size": "s"
+        }
+       ],
+       "facts": {
+        "kind": "diagram",
+        "archetype": "flow@1",
+        "onScreen": {
+         "steps": 5,
+         "step1": "Observe",
+         "step2": "Ask a testable question",
+         "step3": "Predict with a reason",
+         "step4": "Test fairly",
+         "step5": "Observe and conclude"
+        }
+       }
+      },
+      "template": "flow@1",
+      "mode": "play"
+     }
+    }
+   ],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [
+      "long"
+     ],
+     "rewritten": true,
+     "replaced": false,
+     "firstDraft": "Example: do geele towels mein ek khuli khidki ke paas aur doosra kamre ke kone mein—hawa wala jaldi sookhne ka prediction kijiye. Chalti hawa ke baare mein jo jaante ho, usse predict kariye: kaunsi pehle sookhegi, fan wali ya bina hawa wali?",
+     "afterRewrite": [
+      "ask"
+     ],
+     "repaired": true
+    },
+    "verdict": "unverified",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "request"
+    },
+    "note": null,
+    "hintLevel": 1,
+    "phase": "practice",
+    "ms": 3202,
+    "item": "c6-science-ch01-t01-rl-o2",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 68
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 69
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 452
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 526
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 536
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 536
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1365
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1235
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 3150
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 3202
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "recovery",
+   "lessonId": "01385b4d-0610-42ee-b577-c8081ad87746",
+   "childText": "fan",
+   "ms": 1205,
+   "error": null,
+   "teacherReply": "Sahi, Anaya— aapne fan wali jersey chuni. Ab reason batayiye: chalti hawa drying ko kaise badalti hai?",
+   "move": {
+    "kind": "explain",
+    "shape": "confirm specifically: name the exact thing they got right, no ability words; one idea only: Describe the cycle of finding out: observe, question, predict, test, conclude, ask again; objects first, then the symbol; point at the screen only at what the on-screen row lists; never a drawing made of characters; end with one small question that makes them USE the idea — never 'samjha?'; address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu",
+    "skillId": "c6-science-ch01-t01-s3",
+    "format": "F1"
+   },
+   "ui": {
+    "status": "your_turn",
+    "phase": "practice",
+    "handover": "answer",
+    "answerForm": "words",
+    "tray": "module",
+    "shortTitle": "How scientists find out",
+    "verdict": "correct",
+    "withHelp": true,
+    "beat": {
+     "beatId": "b9-explain",
+     "type": "explain",
+     "index": 9
+    },
+    "ask": {
+     "text": "Ab reason batayiye: chalti hawa drying ko kaise badalti hai?"
+    }
+   },
+   "moduleCommands": [
+    {
+     "op": "set_param",
+     "moduleId": "m12",
+     "name": "script",
+     "value": {
+      "v": 1,
+      "scriptId": "ex-2dhb9y",
+      "line": {
+       "lessonId": "01385b4d-0610-42ee-b577-c8081ad87746"
+      },
+      "anchor": "line_audio_start",
+      "board": {
+       "w": 400,
+       "h": 300,
+       "ground": "chalk"
+      },
+      "mode": "fresh",
+      "durationMs": 8340,
+      "ops": [
+       {
+        "id": "b0",
+        "op": "rect",
+        "startMs": 80,
+        "endMs": 500,
+        "weight": 2,
+        "at": [
+         25,
+         30
+        ],
+        "w": 160,
+        "h": 58,
+        "round": 10
+       },
+       {
+        "id": "t0",
+        "op": "text",
+        "startMs": 540,
+        "endMs": 1040,
+        "at": [
+         105,
+         61
+        ],
+        "text": "Observe",
+        "size": "m"
+       },
+       {
+        "id": "o1",
+        "op": "arrow",
+        "startMs": 1200,
+        "endMs": 1650,
+        "ink": "accent",
+        "from": [
+         105,
+         91
+        ],
+        "to": [
+         105,
+         133
+        ]
+       },
+       {
+        "id": "b1",
+        "op": "rect",
+        "startMs": 1730,
+        "endMs": 2150,
+        "weight": 2,
+        "at": [
+         25,
+         136
+        ],
+        "w": 160,
+        "h": 58,
+        "round": 10
+       },
+       {
+        "id": "t1",
+        "op": "text",
+        "startMs": 2190,
+        "endMs": 2490,
+        "at": [
+         105,
+         155
+        ],
+        "text": "Ask a testable",
+        "size": "s"
+       },
+       {
+        "id": "o2",
+        "op": "text",
+        "startMs": 2490,
+        "endMs": 2790,
+        "at": [
+         105,
+         179
+        ],
+        "text": "question",
+        "size": "s"
+       },
+       {
+        "id": "o3",
+        "op": "arrow",
+        "startMs": 2950,
+        "endMs": 3400,
+        "ink": "accent",
+        "from": [
+         105,
+         197
+        ],
+        "to": [
+         105,
+         239
+        ]
+       },
+       {
+        "id": "b2",
+        "op": "rect",
+        "startMs": 3480,
+        "endMs": 3900,
+        "weight": 2,
+        "at": [
+         25,
+         242
+        ],
+        "w": 160,
+        "h": 58,
+        "round": 10
+       },
+       {
+        "id": "t2",
+        "op": "text",
+        "startMs": 3940,
+        "endMs": 4240,
+        "at": [
+         105,
+         261
+        ],
+        "text": "Predict with",
+        "size": "s"
+       },
+       {
+        "id": "o4",
+        "op": "text",
+        "startMs": 4240,
+        "endMs": 4540,
+        "at": [
+         105,
+         285
+        ],
+        "text": "a reason",
+        "size": "s"
+       },
+       {
+        "id": "o5",
+        "op": "arrow",
+        "startMs": 4700,
+        "endMs": 5150,
+        "ink": "accent",
+        "from": [
+         188,
+         271
+        ],
+        "to": [
+         212,
+         59
+        ],
+        "bend": 0.2
+       },
+       {
+        "id": "b3",
+        "op": "rect",
+        "startMs": 5230,
+        "endMs": 5650,
+        "weight": 2,
+        "at": [
+         215,
+         30
+        ],
+        "w": 160,
+        "h": 58,
+        "round": 10
+       },
+       {
+        "id": "t3",
+        "op": "text",
+        "startMs": 5690,
+        "endMs": 6190,
+        "at": [
+         295,
+         61
+        ],
+        "text": "Test fairly",
+        "size": "s"
+       },
+       {
+        "id": "o6",
+        "op": "arrow",
+        "startMs": 6350,
+        "endMs": 6800,
+        "ink": "accent",
+        "from": [
+         295,
+         91
+        ],
+        "to": [
+         295,
+         133
+        ]
+       },
+       {
+        "id": "b4",
+        "op": "rect",
+        "startMs": 6880,
+        "endMs": 7300,
+        "weight": 2,
+        "at": [
+         215,
+         136
+        ],
+        "w": 160,
+        "h": 58,
+        "round": 10
+       },
+       {
+        "id": "t4",
+        "op": "text",
+        "startMs": 7340,
+        "endMs": 7640,
+        "at": [
+         295,
+         155
+        ],
+        "text": "Observe and",
+        "size": "s"
+       },
+       {
+        "id": "o7",
+        "op": "text",
+        "startMs": 7640,
+        "endMs": 7940,
+        "at": [
+         295,
+         179
+        ],
+        "text": "conclude",
+        "size": "s"
+       }
+      ],
+      "facts": {
+       "kind": "diagram",
+       "archetype": "flow@1",
+       "onScreen": {
+        "steps": 5,
+        "step1": "Observe",
+        "step2": "Ask a testable question",
+        "step3": "Predict with a reason",
+        "step4": "Test fairly",
+        "step5": "Observe and conclude"
+       }
+      }
+     }
+    }
+   ],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false
+    },
+    "verdict": "correct",
+    "cls": {
+     "outcome": "correct",
+     "source": "exact"
+    },
+    "note": null,
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 1202,
+    "item": null,
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 57
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 58
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 63
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 121
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 121
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1014
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 1141
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 1202
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "advance",
+   "lessonId": "01385b4d-0610-42ee-b577-c8081ad87746",
+   "childText": "अच्छा",
+   "ms": 1726,
+   "error": null,
+   "teacherReply": "Anaya, ab ek chhota reason likhiye: fan ki hawa kapde ke paas ki nami ko hataati hai, isliye drying tez hoti hai. Riya jaanna chahti hai ki kya garam jagah pe dahi jaldi jamta hai. Pata karne ka sabse 'scientist wala' tareeka kaunsa hai?",
+   "move": {
+    "kind": "probe",
+    "shape": "pose the question as written, in their language; then wait; read its choices plainly; no lean in your voice toward any of them; address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu",
+    "itemId": "diag:c6-science-ch01-t01-m1",
+    "skillId": "c6-science-ch01-t01-s3",
+    "hintLevel": 0,
+    "probe": "P7"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "text",
+     "value": "Riya jaanna chahti hai ki kya garam jagah pe dahi jaldi j…"
+    },
+    "chips": [
+     {
+      "id": "opt:0",
+      "label": "Set up two same bowls, one warm, one coo"
+     },
+     {
+      "id": "opt:1",
+      "label": "Ask one friend and simply believe whatev"
+     },
+     {
+      "id": "opt:2",
+      "label": "Read the answer in a book and simply mem"
+     }
+    ],
+    "phase": "practice",
+    "handover": "choice",
+    "ask": {
+     "text": "Pata karne ka sabse 'scientist wala' tareeka kaunsa hai?",
+     "itemId": "diag:c6-science-ch01-t01-m1"
+    },
+    "answerForm": "choice",
+    "tray": "tiles",
+    "shortTitle": "How scientists find out",
+    "beat": {
+     "beatId": "b10-probe",
+     "type": "probe",
+     "index": 10
+    }
+   },
+   "moduleCommands": [
+    {
+     "op": "unmount",
+     "moduleId": "m12"
+    },
+    {
+     "op": "mount",
+     "moduleId": "g1-36dec843",
+     "engine": "scene@1",
+     "params": {
+      "scene": {
+       "dsl": "scene@1",
+       "meta": {
+        "band": "B3",
+        "lang": "hi",
+        "title": {
+         "en": "Backstage puzzle",
+         "hi": "मंच के पीछे की पहेली",
+         "hi_latn": "Backstage paheli"
+        },
+        "template": "choice-card@1",
+        "topic_ids": [
+         "c6-science-ch01-t01"
+        ],
+        "objective_ids": [
+         "c6-science-ch01-t01-s3"
+        ]
+       },
+       "vars": [
+        {
+         "id": "pick",
+         "tl": "child's pick",
+         "init": "none",
+         "type": "enum",
+         "options": [
+          "none",
+          "o1",
+          "o2",
+          "o3"
+         ]
+        }
+       ],
+       "goals": [],
+       "nodes": [
+        {
+         "w": 760,
+         "x": 420,
+         "y": 89,
+         "id": "title",
+         "kind": "text",
+         "size": "title",
+         "text": {
+          "en": "Backstage puzzle",
+          "hi": "मंच के पीछे की पहेली",
+          "hi_latn": "Backstage paheli"
+         },
+         "align": "middle"
+        },
+        {
+         "h": 110,
+         "w": 110,
+         "x": 900,
+         "y": 75,
+         "id": "decor",
+         "lib": "sky.star",
+         "kind": "sprite",
+         "role": "context"
+        },
+        {
+         "x": 500,
+         "y": 946.3333333333333,
+         "id": "ch",
+         "var": "pick",
+         "kind": "choice",
+         "commit": true,
+         "layout": "column",
+         "options": [
+          {
+           "id": "o1",
+           "misc": "MC.C6_SCIENCE_CH01_T01_M1",
+           "label": {
+            "en": "Read the answer in a book and simply memorise it",
+            "hi": "Read the answer in a book and simply memorise it",
+            "hi_latn": "Read the answer in a book and simply memorise it"
+           }
+          },
+          {
+           "id": "o2",
+           "misc": "MC.C6_SCIENCE_CH01_T01_M1",
+           "label": {
+            "en": "Ask one friend and simply believe whatever they tell her",
+            "hi": "Ask one friend and simply believe whatever they tell her",
+            "hi_latn": "Ask one friend and simply believe whatever they tell her"
+           }
+          },
+          {
+           "id": "o3",
+           "label": {
+            "en": "Set up two same bowls, one warm, one cool, and compare",
+            "hi": "Set up two same bowls, one warm, one cool, and compare",
+            "hi_latn": "Set up two same bowls, one warm, one cool, and compare"
+           }
+          }
+         ]
+        }
+       ],
+       "probe": {
+        "id": "p_pick",
+        "ask": {
+         "en": "Backstage puzzle",
+         "hi": "मंच के पीछे की पहेली",
+         "hi_latn": "Backstage paheli"
+        },
+        "kind": "diagnose",
+        "traps": [
+         {
+          "misc": "MC.C6_SCIENCE_CH01_T01_M1",
+          "when": "pick == 'o1'"
+         },
+         {
+          "misc": "MC.C6_SCIENCE_CH01_T01_M1",
+          "when": "pick == 'o2'"
+         }
+        ],
+        "commit": {
+         "via": "choice",
+         "node": "ch"
+        },
+        "correct": "pick == 'o3'"
+       },
+       "stage": {
+        "bg": "bg",
+        "aspect": "3:4"
+       },
+       "derive": [],
+       "feedback": "on_commit",
+       "timelines": []
+      }
+     },
+     "goal": "g1:diag:c6-science-ch01-t01-m1"
+    }
+   ],
+   "studio": {
+    "retire": "01385b4d-0610-42ee-b577-c8081ad87746:c1"
+   },
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [
+      "drift",
+      "ask"
+     ],
+     "rewritten": false,
+     "replaced": false,
+     "firstDraft": "Anaya, ab ek chhota reason likhiye: fan ki hawa kapde ke paas ki nami ko hataati hai, isliye drying tez hoti hai.",
+     "repaired": true
+    },
+    "verdict": "ungraded",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 943,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 1722,
+    "item": "diag:c6-science-ch01-t01-m1",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 60
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 61
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 656
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 723
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1600
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1666
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1669
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1671
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1274
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 1672
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 1722
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "probe:thinking_aloud-03",
+   "lessonId": "01385b4d-0610-42ee-b577-c8081ad87746",
+   "childText": "hmm agar equal parts hain toh ek part matlab...",
+   "ms": 1828,
+   "error": null,
+   "teacherReply": "Anaya, aapka idea “equal parts” ka hai—test mein dono bowls same rakhiye, sirf temperature badaliye. Pata karne ka sabse 'scientist wala' tareeka kaunsa hai?",
+   "move": {
+    "kind": "hint",
+    "shape": "their typed reply did not answer the question: no verdict, never ask them to repeat or say it again; one small nudge toward what the question asks; then the same question again, as written; no verdict on their reply: neither praise nor 'wrong'; address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu",
+    "itemId": "diag:c6-science-ch01-t01-m1",
+    "skillId": "c6-science-ch01-t01-s3",
+    "hintLevel": 0
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "text",
+     "value": "Riya jaanna chahti hai ki kya garam jagah pe dahi jaldi j…"
+    },
+    "chips": [
+     {
+      "id": "opt:0",
+      "label": "Set up two same bowls, one warm, one coo"
+     },
+     {
+      "id": "opt:1",
+      "label": "Ask one friend and simply believe whatev"
+     },
+     {
+      "id": "opt:2",
+      "label": "Read the answer in a book and simply mem"
+     }
+    ],
+    "phase": "practice",
+    "handover": "choice",
+    "ask": {
+     "text": "Pata karne ka sabse 'scientist wala' tareeka kaunsa hai?",
+     "itemId": "diag:c6-science-ch01-t01-m1"
+    },
+    "answerForm": "choice",
+    "tray": "tiles",
+    "shortTitle": "How scientists find out",
+    "beat": {
+     "beatId": "b10-probe",
+     "type": "probe",
+     "index": 10
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [
+      "ask"
+     ],
+     "rewritten": false,
+     "replaced": false,
+     "firstDraft": "Anaya, aapka idea “equal parts” ka hai—test mein dono bowls same rakhiye, sirf temperature badaliye. Sabse scientist wala tareeka kaunsa hai?",
+     "repaired": true
+    },
+    "verdict": "unverified",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "request"
+    },
+    "note": null,
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 1821,
+    "item": "diag:c6-science-ch01-t01-m1",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 38
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 38
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 516
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 565
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 569
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 570
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1186
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 1770
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 1821
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "recovery",
+   "lessonId": "01385b4d-0610-42ee-b577-c8081ad87746",
+   "childText": "Set up two same bowls, one warm, one cool, and compare",
+   "ms": 3270,
+   "error": null,
+   "teacherReply": "Bilkul, Anaya—same bowls rakhkar sirf temperature badalna fair test hai. School match ke baad Aarav notice karta hai ki kuch cricket balls zyada oonchi uchhalti hain. Kaunsa sawaal test kar sakta hai: A) Kaunsi ball sabse achchhi dikhti hai? B) Ball concrete par grass se zyada oonchi uchhalti hai kya?",
+   "move": {
+    "kind": "probe",
+    "shape": "acknowledge their reason specifically — the method; pose the question as written, in their language; then wait; two cases side by side; ask which one fits and what is different; address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu",
+    "itemId": "c6-science-ch01-t01-rl-o1",
+    "skillId": "c6-science-ch01-t01-s1",
+    "hintLevel": 0,
+    "probe": "P8"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "text",
+     "value": "School match ke baad Aarav notice karta hai ki kuch crick…"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "B) Ball concrete par grass se zyada oonchi uchhalti hai kya?",
+     "itemId": "c6-science-ch01-t01-rl-o1"
+    },
+    "answerForm": "words",
+    "tray": "none",
+    "shortTitle": "How scientists find out",
+    "verdict": "correct",
+    "beat": {
+     "beatId": "b10-probe",
+     "type": "probe",
+     "index": 10
+    }
+   },
+   "moduleCommands": [
+    {
+     "op": "unmount",
+     "moduleId": "g1-36dec843"
+    }
+   ],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [
+      "twoq"
+     ],
+     "rewritten": true,
+     "replaced": false,
+     "firstDraft": "Bilkul, Anaya— aapne same bowls rakhkar sirf temperature change karke fair test banaya. School match ke baad Aarav notice karta hai ki kuch cricket balls zyada oonchi uchhalti hain. Kaunsa sawaal test kar sakta hai: A) Kaunsi ball sabse achchhi dikhti hai? B) Ball concrete par grass se zyada oonchi uchhalti hai kya?",
+     "leadSlot": true,
+     "afterRewrite": [
+      "ask",
+      "twoq"
+     ],
+     "repaired": true,
+     "final": [
+      "twoq"
+     ]
+    },
+    "verdict": "correct",
+    "cls": {
+     "outcome": "correct",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": false,
+     "intent": null,
+     "waitedMs": 1,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 3267,
+    "item": "c6-science-ch01-t01-rl-o1",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 58
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 59
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 749
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 818
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 819
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 824
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 824
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1176
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1350
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1023
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 3212
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 3267
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "probe:curiosity_offlesson-05",
+   "lessonId": "01385b4d-0610-42ee-b577-c8081ad87746",
+   "childText": "rainbow kaise banta hai?",
+   "ms": 2860,
+   "error": null,
+   "teacherReply": "Anaya, aapne poocha rainbow kaise banta hai—yeh achchha observation wala sawaal hai. Iska answer main is question ke turant baad dunga. B) Ball concrete par grass se zyada oonchi uchhalti hai kya?",
+   "move": {
+    "kind": "probe",
+    "shape": "two parts — first: they brought up how rainbows form: notice it warmly and specifically, in their words; promise to come back to it right after this question; no answer to it now; then back to the work; second: the question on the card, as written, in their language; then wait; no verdict on their reply: neither praise nor 'wrong'; address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu",
+    "itemId": "c6-science-ch01-t01-rl-o1",
+    "skillId": "c6-science-ch01-t01-s1",
+    "hintLevel": 0,
+    "probe": "P8",
+    "request": "park",
+    "lead": "they brought up how rainbows form: notice it warmly and specifically, in their words; promise to come back to it right after this question; no answer to it now; then back to the work"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "text",
+     "value": "School match ke baad Aarav notice karta hai ki kuch crick…"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "B) Ball concrete par grass se zyada oonchi uchhalti hai kya?",
+     "itemId": "c6-science-ch01-t01-rl-o1"
+    },
+    "answerForm": "words",
+    "tray": "none",
+    "shortTitle": "How scientists find out",
+    "beat": {
+     "beatId": "b10-probe",
+     "type": "probe",
+     "index": 10
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false,
+     "leadSlot": true
+    },
+    "verdict": "ungraded",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "curiosity_offlesson",
+     "waitedMs": 580,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 2855,
+    "item": "c6-science-ch01-t01-rl-o1",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 58
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 59
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 1034
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 1106
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1617
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1686
+     },
+     {
+      "k": "@settled",
+      "dep": null,
+      "st": null,
+      "ms": 1687
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1691
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1691
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1097
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 2800
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 2855
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "recovery",
+   "lessonId": "01385b4d-0610-42ee-b577-c8081ad87746",
+   "childText": "B",
+   "ms": 2046,
+   "error": null,
+   "teacherReply": "B chunne ka aapka reason kya tha—ise test karke kaise pata chalega ki ball concrete par zyada uchhalti hai?",
+   "move": {
+    "kind": "probe",
+    "shape": "confirm in two or three words only — the reason is theirs to give, so do not explain it; covert shape: protege naive but-why; Bittu, who does not know it, asks why; about THIS question; one open question; wait; a real question, never a check on them; address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu",
+    "itemId": "c6-science-ch01-t01-rl-o1",
+    "skillId": "c6-science-ch01-t01-s1",
+    "hintLevel": 0,
+    "probe": "P2"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "text",
+     "value": "School match ke baad Aarav notice karta hai ki kuch crick…"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "answerForm": "words",
+    "tray": "none",
+    "shortTitle": "How scientists find out",
+    "verdict": "correct",
+    "beat": {
+     "beatId": "b10-probe",
+     "type": "probe",
+     "index": 10
+    },
+    "ask": {
+     "text": "B chunne ka aapka reason kya tha—ise test karke kaise pata chalega ki ball concrete par zyada uchhalti hai?"
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [
+      "nowhy"
+     ],
+     "rewritten": true,
+     "replaced": false,
+     "firstDraft": "Sahi—B testable question hai, kyunki bounce ki height measure karke compare kar sakte hain. Rainbow par aapka agla sawaal kya hai?",
+     "afterRewrite": [
+      "noconfirm"
+     ],
+     "final": [
+      "noconfirm"
+     ]
+    },
+    "verdict": "correct",
+    "cls": {
+     "outcome": "correct",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": false,
+     "intent": null,
+     "waitedMs": 1,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 2043,
+    "item": "c6-science-ch01-t01-rl-o1",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 116
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 116
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 860
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 989
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 990
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 993
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 994
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1525
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 890
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 899
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 1992
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 2043
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "advance",
+   "lessonId": "01385b4d-0610-42ee-b577-c8081ad87746",
+   "childText": "ठीक है",
+   "ms": 2821,
+   "error": null,
+   "teacherReply": "Aapne rukne ka signal diya hai. Ab naye card par agla step dhyaan se dekhiye. Science mein pata lagana tab shuru hota hai jab aap pehli baar kuch notice karte hain. Noticing se shuru karke in steps ko sahi order mein lagaiye aur ek circle mein draw kariye: test, predict, sawaal poochhiye, conclude, observe (kuch notice kariye).",
+   "move": {
+    "kind": "probe",
+    "shape": "give the reason yourself in one plain line (their answer was right); before the next thing: come back to what they asked earlier (how rainbows form) — at most two sentences, or a guided question; pose the question as written, in their language; then wait; ask them to show or say it another way (story, picture, number line); address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu",
+    "itemId": "c6-science-ch01-t01-i09",
+    "skillId": "c6-science-ch01-t01-s3",
+    "hintLevel": 0,
+    "probe": "P14"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "text",
+     "value": "Science mein pata lagana tab shuru hota hai jab aap pehli…"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "Science mein pata lagana tab shuru hota hai jab aap pehli baar kuch notice karte hain. Noticing se shuru karke in…",
+     "itemId": "c6-science-ch01-t01-i09"
+    },
+    "answerForm": "words",
+    "tray": "none",
+    "shortTitle": "How scientists find out",
+    "beat": {
+     "beatId": "b10-probe",
+     "type": "probe",
+     "index": 10
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false,
+     "leadSlot": true
+    },
+    "verdict": "unverified",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 622,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 2815,
+    "item": "c6-science-ch01-t01-i09",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 58
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 59
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 842
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 909
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1465
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1530
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1533
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1534
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1217
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 2760
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 2815
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "probe:end_request-11",
+   "lessonId": "01385b4d-0610-42ee-b577-c8081ad87746",
+   "childText": "lesson band karo",
+   "ms": 3102,
+   "error": null,
+   "teacherReply": "Theek hai, Anaya—hum continue kar sakte hain, chhota break le sakte hain, ya aaj ke liye stop kar sakte hain. Aap kya choose karengi?",
+   "move": {
+    "kind": "break",
+    "shape": "they said they want to stop: first say back in a few warm words, in their words, that they want to stop, no guilt and no pressure; then offer the three choices in your own words and their language (carry on, a short break, or stop for today), they are also on the screen, and wait; no lesson question this turn; address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu",
+    "checkin": "stop"
+   },
+   "ui": {
+    "status": "your_turn",
+    "chips": [
+     {
+      "id": "stop:continue",
+      "label": "Keep going"
+     },
+     {
+      "id": "break:rest",
+      "label": "Short break"
+     },
+     {
+      "id": "stop:end",
+      "label": "Stop for today"
+     }
+    ],
+    "phase": "practice",
+    "handover": "choice",
+    "answerForm": "choice",
+    "tray": "tiles",
+    "shortTitle": "How scientists find out",
+    "beat": {
+     "beatId": "b11-break",
+     "type": "break",
+     "index": 11
+    },
+    "ask": {
+     "text": "Aap kya choose karengi?"
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [
+      "wrap"
+     ],
+     "rewritten": true,
+     "replaced": false,
+     "firstDraft": "Theek hai, Anaya—lesson band karte hain. Aap chahein to continue, short break, ya aaj ke liye stop choose kar sakti hain.",
+     "afterRewrite": []
+    },
+    "verdict": "unverified",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": null,
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 3099,
+    "item": null,
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 72
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 72
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 1040
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 1122
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1129
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1130
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1110
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1785
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 3040
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 3099
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "follow:end_request-11",
+   "lessonId": "01385b4d-0610-42ee-b577-c8081ad87746",
+   "childText": "हाँ",
+   "ms": 1544,
+   "error": null,
+   "teacherReply": "Theek hai, Anaya. Aapne aaj observation se shuru karne wali science thinking par kaam kiya. Science mein pata lagana tab shuru hota hai jab aap pehli baar kuch notice karte hain. Noticing se shuru karke in…",
+   "move": {
+    "kind": "probe",
+    "shape": "back to the question, fresh; pose the question as written, in their language; then wait; ask them to show or say it another way (story, picture, number line); no verdict on their reply: neither praise nor 'wrong'; address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu; after the check-in they did not ask to stop: carry on as normal, warmly; no talk of resting, breaks or ending",
+    "itemId": "c6-science-ch01-t01-i09",
+    "skillId": "c6-science-ch01-t01-s3",
+    "hintLevel": 0,
+    "probe": "P14"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "text",
+     "value": "Science mein pata lagana tab shuru hota hai jab aap pehli…"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "Science mein pata lagana tab shuru hota hai jab aap pehli baar kuch notice karte hain. Noticing se shuru karke in…",
+     "itemId": "c6-science-ch01-t01-i09"
+    },
+    "answerForm": "words",
+    "tray": "none",
+    "shortTitle": "How scientists find out",
+    "beat": {
+     "beatId": "b12-probe",
+     "type": "probe",
+     "index": 12
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [
+      "wrap"
+     ],
+     "rewritten": false,
+     "replaced": false,
+     "firstDraft": "Theek hai, Anaya. Lesson yahin band karte hain. Aapne aaj observation se shuru karne wali science thinking par kaam kiya. Science mein pata lagana tab shuru hota hai jab aap pehli baar kuch notice karte hain. Noticing se shuru karke in…",
+     "leadSlot": true,
+     "repaired": true
+    },
+    "verdict": "unverified",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 443,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 1539,
+    "item": "c6-science-ch01-t01-i09",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 69
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 69
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 853
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 931
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1299
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1374
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1378
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1378
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1354
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 1494
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 1539
+     }
+    ]
+   }
+  }
+ ]
+}
