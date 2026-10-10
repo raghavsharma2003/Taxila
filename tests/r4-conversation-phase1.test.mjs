@@ -153,6 +153,8 @@ test("a share told during teaching is brought back later in the lesson, as a las
   }
   assert.ok(back, "the share came back with a must-note");
   assert.match(back.move.must, /^first, come back to what they told you earlier/);
+  // a first pose is written by the lead slot, whose last note carries move.lead: the return rides there too
+  assert.match(back.move.lead ?? "", /^first, come back to what they told you earlier/);
   assert.ok(back.state.later.find((e) => e.share).servedAt != null);
 });
 

@@ -4,6 +4,10 @@
 //   NODE_USE_ENV_PROXY=1 TAXILA_BASE=http://127.0.0.1:<port> node tests/prod/r4-conversation-share-probe.mjs [--n 3]
 import { withTestAccount, done } from "./lib.mjs";
 import { PERSONAS, freshChild, openLesson } from "./_owner.mjs";
+// --state: also read the lesson's stored Director state after each turn (LOCAL only, own DB branch): the parked entries and
+// the move's must-note (the turn route's debug read carries no move)
+const STATE = process.argv.includes("--state");
+const { one } = STATE ? await import("../../server/db.js") : { one: null };
 
 const argv = process.argv.slice(2);
 const N = argv.includes("--n") ? Number(argv[argv.indexOf("--n") + 1]) : 3;
@@ -17,13 +21,20 @@ await withTestAccount(async ({ api }) => {
     try {
       await L.turn("haan ready hoon", { kind: "greet" });
       for (let i = 0; i < 8 && !kitAsk(L.last); i++) await L.turn("haan, aage", { kind: "filler" });
-      const show = (tag, r) => console.log(`${tag} ${r?.move?.kind} req=${r?.debug?.move?.request ?? "-"} must=${JSON.stringify(r?.debug?.move?.must ?? null)}\n    ${String(r?.teacherReply ?? "").slice(0, 220)}`);
+      const show = async (tag, r) => {
+        let extra = "";
+        if (STATE) {
+          const row = await one("select state->'lastMove' as m, state->'later' as later, state->'turn' as turn from lesson where id = $1", [L.lessonId]);
+          extra = ` req=${row?.m?.request ?? "-"} must=${JSON.stringify(row?.m?.must ?? null)} later=${JSON.stringify((row?.later ?? []).map((e) => ({ t: e.topic, at: e.at, share: !!e.share, promise: e.promise, served: e.servedAt ?? null })))}`;
+        }
+        console.log(`${tag} ${r?.move?.kind}${extra}\n    ${String(r?.teacherReply ?? "").slice(0, 220)}`);
+      };
       const s = await L.turn("meri cousin ki shaadi hai next week", { kind: "offtopic" });
-      console.log(`--- run ${k + 1}`); show("share", s.r);
+      console.log(`--- run ${k + 1}`); await show("share", s.r);
       for (let i = 0; i < 8; i++) {
         const item = L.item(L.last);
         const row = await L.turn(item ? String(item.answer).slice(0, 60) : "achha", { kind: item ? "answer" : "filler" });
-        show(`t${i + 1}${BACK.test(String(row.r?.teacherReply ?? "")) ? " BACK" : ""}`, row.r);
+        await show(`t${i + 1}${BACK.test(String(row.r?.teacherReply ?? "")) ? " BACK" : ""}`, row.r);
         if (BACK.test(String(row.r?.teacherReply ?? ""))) break;
       }
     } finally { await L.end(); }

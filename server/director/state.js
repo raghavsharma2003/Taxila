@@ -1422,10 +1422,12 @@ export function step(prev, input) {
   }
   const move = { kind: p.kind, shape };
   // round 4 (conversation): the request's must-do (and a second need's) as a last-section note (compile.js lastParts)
+  let backLead = null;
   if (!input.branch && p5Flag("R4CONV") && input.event === "turn" && !["safeguard", "wrap"].includes(p.kind)) {
     const key = p.request === "uptake" ? input.cls?.request?.kind ?? null : p.request === "visual" ? `visual_${p.visual ?? "diagram"}` : p.request;
     // a parked question or share served this turn comes back FIRST (it lost to the move in the middle of the shape)
     const back = s.servedNow ? SH.returnParked({ topic: s.servedNow.topic, share: s.servedNow.share }).replace(/^before the next thing: /, "first, ") : null;
+    backLead = back;
     const parked = input.cls?.alsoPark?.topic ? SH.parkAlso({ topic: input.cls.alsoPark.topic }) : null;
     // a share kept for later this turn: the note carries the promise (never only "react warmly")
     const kept = key === "personal_share" ? (s.later ?? []).find((e) => e.share && e.at === s.turn && !e.servedAt) : null;
@@ -1461,6 +1463,10 @@ export function step(prev, input) {
   if (p.intake) { move.intake = true; if (p.ask) move.ask = String(p.ask).slice(0, 300); if (p.segment) move.segment = p.segment; }
   // round 2 (conversation): the request's own note, for the lead slot's last instruction (brain/say.js)
   if (p.lead && p5Flag("STEER")) move.lead = String(p.lead).slice(0, 400);
+  // ... and a served return rides on the lead too: a first pose is written by the LEAD SLOT (brain/say.js leadSlotNote), whose
+  // last note carries move.lead, not the compile's last section (merged-tree round3-conversation C: the share was served with
+  // its must-note on a first pose, and the bridge went straight to the new question)
+  if (backLead && p5Flag("STEER")) move.lead = [backLead, move.lead].filter(Boolean).join("; ").slice(0, 400);
   if (p.visual) {
     move.visual = p.visual;
     // what is on the stage decides the words: point at it, or (nothing mounted) show it with things they know — never a
