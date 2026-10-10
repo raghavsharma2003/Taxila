@@ -1,0 +1,21 @@
+diff --git a/src/child/ChildShell.tsx b/src/child/ChildShell.tsx
+index b551a1eb..589e09d2 100644
+--- a/src/child/ChildShell.tsx
++++ b/src/child/ChildShell.tsx
+@@ -13,6 +13,7 @@ import { TeacherNameProvider } from "../ui/teacher/useTeacher.ts";
+ // round 3 fix (experience B9): the hands-free switch is asked once the child is signed in, long before a lesson starts
+ import { prefetchDuplexConfig } from "../duplex/flags.ts";
+ import "./child.css";
++import { kakshaShellAttrs } from "../ui-v3/kaksha/shell-theme.ts";
+ 
+ export interface ChildCtx {
+   cid: string;
+@@ -112,6 +113,8 @@ export function ChildShell({ children }: { children?: ReactNode }) {
+     "data-theme": theme,
+     "data-comfort": prefs.largeText ? "large" : undefined,
+     lang: "en",
++    // r4 Kaksha (K-P14): the Kaksha look on every child screen, only for the ui.kaksha cohort (nothing otherwise)
++    ...kakshaShellAttrs(ctx ? me : null, ctx?.family),
+   };
+ 
+   if (!ctx) {

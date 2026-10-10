@@ -1,0 +1,16 @@
+diff --git a/src/child/lesson/LessonScreen.tsx b/src/child/lesson/LessonScreen.tsx
+index e599fe38..e6c5010e 100644
+--- a/src/child/lesson/LessonScreen.tsx
++++ b/src/child/lesson/LessonScreen.tsx
+@@ -94,8 +94,9 @@ export function LessonScreen({ variant, topicId, firstText }: LessonScreenProps)
+     finished: () => {
+       if (state.lessonId) saveArtefact(cid, { lessonId: state.lessonId, topic: state.topic?.title ?? "", chips: m.summary?.cards.map((c) => c.answer) ?? [], at: Date.now() });
+       if (variant === "lesson") markLessonDone(cid, state.lessonId, bs.ended);
+-      // A sibling profile on this device → the picker; else the home.
+-      navigate(me.children.length >= 2 ? "/who" : `/c/${cid}`);
++      // A sibling profile on this device → the picker; else the home. Kaksha (K-P2 rev 2, audit B06): Finish returns to the
++      // child's own Home (her world is there); switching child stays one tap away on Home.
++      navigate(me.children.length >= 2 && !kakshaEnabled((me as { ui?: { kaksha?: boolean } }).ui?.kaksha) ? "/who" : `/c/${cid}`);
+     },
+     // round 3 fix (experience B8): the child chose to switch: the lesson they asked for starts now
+     start: (id: string) => {

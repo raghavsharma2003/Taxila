@@ -2,7 +2,7 @@
 // fixture models (src/child/lesson/dev/DeskDev.tsx fixtureModel), plus the Debrief with fixture maps. For shots and the
 // rendered lint (tests/prod/r4-kaksha-desk-shots.mjs). No server, no child.
 //   ?class=4|6|7  &fixture=<DeskDev fixture>|summary|summary-secure|summary-tried|summary-ending|intake-ask|intake-which|intake-mapped|intake-plan
-//   &face=plate|live  &motion=reduced
+//   &face=plate|live  &motion=reduced  &title=<the lesson's short title> (≤ 24 chars from the server)
 //   ?live=1&skin=kaksha|none  the REAL lesson runtime (LessonRuntime, outbox, floor) on the Desk dev page's scripted Director
 //                             and clock link, instrumented for the K1 client-latency check (tests/prod/r4-kaksha-latency-client.mjs)
 import { useCallback, useState } from "react";
@@ -67,6 +67,7 @@ function App() {
   const m = fixtureModel(base, band, size, face, reduced);
   if (fixture.startsWith("intake")) Object.assign(m, intakeFixture(fixture));
   m.childName = family === "young" ? "Riya" : "Kabir";
+  if (q.get("title")) m.shortTitle = q.get("title")!;
   if (m.summary) {
     m.caption = { text: family === "young" ? "Shabaash, Riya. Aaj tumne aadha pehchaana. Kal phir milte hain." : "Achha kaam, Kabir. Kal do minute mein dekhenge ki quarters wala idea yaad hai.", speaking: false, mode: "phrase", lang: "hi-Latn" };
     if (fixture === "summary-ending") m.summary = { ...m.summary, ending: true };

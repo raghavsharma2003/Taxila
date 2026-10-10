@@ -27,6 +27,8 @@ import { t } from "../copy.ts";
 import { AVATARS, Avatar, avatarName, Icon, Picto } from "../pictos.tsx";
 import { helloClip, useVoiceClip } from "../voice.ts";
 import { listenOnce } from "../sayHi.ts";
+import { kakshaEnabled } from "../../ui-v3/kaksha/flag.ts";
+import { kt } from "../../ui-v3/kaksha/copy.ts";
 
 const label = (id: string) => id.charAt(0).toUpperCase() + id.slice(1);
 
@@ -47,7 +49,7 @@ function InterestTile({ id, on, toggle }: { id: string; on: boolean; toggle?: ()
 }
 
 export function Hello() {
-  const { cid, child, band, family, lang, setPrefs, reducedMotion, refresh } = useChild();
+  const { cid, child, band, family, lang, setPrefs, reducedMotion, refresh, me } = useChild();
   const nav = useNavigate();
   const young = family === "young";
   const rec = useTeacher(child.teacher_id, band);
@@ -110,7 +112,9 @@ export function Hello() {
   const skipHi = () => { stopHi.current(); void finish(); };
 
   const pageAvatars = AVATARS.slice((page * 6) % AVATARS.length, ((page * 6) % AVATARS.length) + 6);
-  const framing = young ? t("storyStart") : t("olderStart");
+  // Kaksha (K-P13, audit B02): the older line promises only what happens next (a short chat, then she teaches); "find
+  // what you already know" promised an assessment that never comes. Flag off: today's line, unchanged.
+  const framing = young ? t("storyStart") : kakshaEnabled((me as { ui?: { kaksha?: boolean } }).ui?.kaksha) ? kt("helloOlder") : t("olderStart");
 
   let body;
   switch (card) {

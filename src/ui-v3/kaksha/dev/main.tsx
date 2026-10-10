@@ -1,10 +1,13 @@
 // Kaksha dev page (never shipped): renders the presentational views with fixture data for shots and the rendered lint.
 //   ?screen=home|world|hangar  &theme=night|dawn  &state=start|done|capped|resting|loading  &world=empty|some  &when=yesterday
+//   &look=holo|volt   a futurist look (look.ts; dev only): the Hangar adds the proposed emote items and a fuller loadout
 import { createRoot } from "react-dom/client";
 import { KakshaRoot } from "../Shell.tsx";
 import { HangarView, HomeView, WorldView } from "../views.tsx";
 import { world, type Catalog, type WorldSkill } from "../world.ts";
 import catalogJson from "../../../../data/kaksha/catalog.json";
+import { futurist as futuristOn } from "../look.ts";
+import type { HangarItem } from "../world.ts";
 
 const q = new URLSearchParams(location.search);
 const screen = q.get("screen") ?? "home";
@@ -31,10 +34,20 @@ const before = new Set(SKILLS.filter((s) => s.state === "secure" && s.skillId !=
 const today = world(skills, CAT, empty ? undefined : before);
 const yesterday = empty ? null : world(skills.map((k) => (k.state === "secure" && !before.has(k.skillId) ? { ...k, state: "got_it" as const } : k)), CAT);
 
+// the futurist direction's proposed emotes (earned like every item: by a secure idea; never bought, never random)
+const futurist = futuristOn();
+const EMOTES: HangarItem[] = [
+  { id: "emote-rocket", kind: "emote", label: "Rocket", hue: "plasma", opensWith: "Any idea about forces", open: true, isNew: true, by: "Magnets and their poles" },
+  { id: "emote-wave", kind: "emote", label: "Wave", hue: "her", opensWith: "Any idea about a story", open: true, isNew: false, by: "Summarising a story" },
+  { id: "emote-star", kind: "emote", label: "Star", hue: "secure", opensWith: "Patterns in numbers", open: false, isNew: false, by: null },
+];
+const items = futurist ? [...today.items, ...EMOTES] : today.items;
+const equipped: Record<string, string> = futurist ? { trail: "trail-green", hull: "hull-thirds", emote: "emote-rocket" } : { trail: "trail-green" };
+
 const teacher = { id: "asha", name: "Asha", band: family === "young" ? "b2" : "b3", form: (q.get("face") === "plate" ? "plate" : "live") as "live" | "plate" };
 const el =
   screen === "world" ? <WorldView childName="Riya" world={q.get("when") === "yesterday" && yesterday ? yesterday : today} yesterday={yesterday} hidden={q.get("hidden") === "1"} reducedMotion={reduced} backTo="?screen=home" hangarTo="?screen=hangar" />
-  : screen === "hangar" ? <HangarView items={today.items} equipped={{ trail: "trail-green" }} onEquip={() => {}} reducedMotion={reduced} backTo="?screen=world" />
+  : screen === "hangar" ? <HangarView items={items} equipped={equipped} onEquip={() => {}} reducedMotion={reduced} backTo="?screen=world" />
   : <HomeView childName="Riya" family={family} reducedMotion={reduced} state={(q.get("state") as "start") ?? "start"} greeting="evening" teacher={teacher}
       startTo="?screen=world" worldTo="?screen=world" parentTo="?screen=home" opensAt="5:00 pm" />;
 

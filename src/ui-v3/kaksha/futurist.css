@@ -1,0 +1,182 @@
+/* Kaksha futurist looks (owner directive 2026-10-10: "don't go too Indian; modern, futuristic, engaging and cool, the
+   vibe Gen Alpha likes"). The direction pass: docs/design/round4/build/kaksha/futurist/. Two options, each with an
+   older (dark) and a young (bright) palette, on the SAME screens and components:
+     data-klook="holo"  glass panels with an iridescent edge, rounded, cyan → violet → pink; bright: lilac daylight.
+     data-klook="volt"  carbon HUD, electric lime, sharp chamfers and corner brackets; bright: "toy plastic" outlines.
+   Tokens only (tokens.css carries every value; tests/r4-kaksha-lint.test.mjs K-MIRROR-LOOKS, K-CONTRAST-LOOKS).
+   Floors held: text ≥ 14 px, targets ≥ 44 px, contrast ≥ 5:1 by token pair, reduced motion stills everything
+   (kaksha.css's rule applies to every look). Motion is juicy but short: springs on press, a breathing glow on the ONE
+   move, a burst when something is earned; nothing loops on a screen the child is reading except that one glow. */
+
+/* ---------------------------------------------------------------- shared by both futurist looks */
+.kx[data-klook] {
+  --k-spring: cubic-bezier(.34, 1.8, .5, 1);
+  --k-ship-hull: var(--k-ink); --k-ship-trail: var(--k-move);
+}
+.kx[data-klook] .kx-cta { transition: transform .38s var(--k-spring), box-shadow .3s, filter .2s; animation: kx-breathe 2.6s ease-in-out infinite; }
+.kx[data-klook] .kx-cta:active { transform: scale(.93); transition-duration: .07s; }
+.kx[data-klook] :is(.kx-dockbtn, .kx-station, .kx-tile, .kx-ghost, .kx-ib, .kx-seg button) { transition: transform .32s var(--k-spring), box-shadow .25s, border-color .25s, background-color .25s; }
+.kx[data-klook] :is(.kx-dockbtn, .kx-station, .kx-tile, .kx-ghost, .kx-ib):active { transform: scale(.95); transition-duration: .07s; }
+@keyframes kx-breathe { 50% { box-shadow: var(--k-cta-glow-hi); } }
+.kx[data-klook] .kx-cta { box-shadow: var(--k-cta-glow); }
+.kx[data-klook] .kx-new { animation: kx-pop .6s var(--k-spring) both .2s; }
+@keyframes kx-pop { from { transform: scale(.4); opacity: 0; } }
+
+.kx-shell { margin-left: auto; font: 600 15px/1 var(--k-mono); letter-spacing: .14em; text-transform: uppercase; color: var(--k-ink-3); }
+
+/* base drawing (Base.tsx): regolith, survey grid, glow lights, the parked ship */
+.kx-m-reg-t { fill: var(--k-rock-1); } .kx-m-reg-l { fill: var(--k-rock-2); } .kx-m-reg-r { fill: color-mix(in srgb, var(--k-rock-2) 80%, var(--k-void)); }
+.kx-survey { fill: none; stroke: var(--k-line-2); stroke-width: .6; opacity: .55; }
+.kx-geo { fill: none; stroke: color-mix(in srgb, var(--k-ink) 55%, transparent); stroke-width: .8; }
+.kx-glow { fill: color-mix(in srgb, var(--k-ter-t) 30%, transparent); }
+.kx-padring { fill: none; stroke: var(--k-ter-t); stroke-width: 1.6; stroke-dasharray: 4 3; }
+.kx-ship-hull { fill: var(--k-ship-hull); } .kx-ship-trail { fill: var(--k-ship-trail); } .kx-ship-fin { fill: var(--k-ship-trail); }
+.kx-ship-port { fill: var(--k-move); }
+.kx[data-klook] .kx-rise { animation: kx-build-f 1.1s var(--k-spring) both .25s; }
+@keyframes kx-build-f { 0% { transform: scale(.2, 0); opacity: 0; } 35% { opacity: 1; } }
+
+/* Hangar loadout (both looks): the ship as equipped, and its slots */
+.kx-loadout { position: relative; display: grid; grid-template-columns: 132px 1fr; gap: 14px; align-items: center; margin-top: 10px; padding: 14px; border: 1px solid var(--k-line-2); background: var(--k-panel); }
+.kx-loadout svg { width: 132px; height: 110px; }
+.kx-slots { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+@media (max-width: 560px) {
+  .kx-loadout { grid-template-columns: 1fr; justify-items: center; }
+  .kx-loadout svg { width: 104px; height: 86px; }
+  .kx-slots { width: 100%; }
+}
+.kx-slot { min-height: 48px; padding: 6px 10px; display: grid; align-content: center; gap: 2px; border: 1px dashed var(--k-line-2); }
+.kx-slot b { font: 600 15px/1.15 var(--k-sans); }
+.kx-slot span { font: 500 14px/1.1 var(--k-mono); color: var(--k-ink-3); text-transform: uppercase; letter-spacing: .06em; }
+.kx-slot.is-on { border-style: solid; border-color: var(--k-move); }
+.kx-emote { font-size: 30px; line-height: 1; }
+
+/* Debrief: the earned moment (only when the ledger says a skill crossed to secure: never a count, never a score) */
+.kx-earn { position: relative; overflow: hidden; display: grid; gap: 6px; justify-items: center; text-align: center; padding: 22px 16px 18px; margin: 4px 0 2px; border: 1.5px solid var(--k-secure);
+  background: radial-gradient(80% 120% at 50% 0%, color-mix(in srgb, var(--k-secure) 26%, transparent), transparent 70%), var(--k-panel-solid); }
+.kx-earn-tag { margin: 0; font: 700 15px/1 var(--k-mono); letter-spacing: .22em; text-transform: uppercase; color: var(--k-secure); }
+.kx-earn-note { margin: 2px 0 0; font-size: 15px; color: var(--k-ink-2); }
+.kx-earn-title { margin: 0; font: 700 26px/1.1 var(--k-sans); color: var(--k-ink); }
+.kx-earn-sub { margin: 0; font-size: 16px; color: var(--k-ink-2); }
+.kx-earn-burst { position: absolute; left: 50%; top: 34px; width: 0; height: 0; pointer-events: none; }
+.kx-earn-burst i { position: absolute; width: 7px; height: 7px; border-radius: 50%; background: var(--c, var(--k-secure)); opacity: 0;
+  animation: kx-spark .9s cubic-bezier(.2, .8, .3, 1) both .25s; transform: rotate(var(--a)) translateY(0); }
+@keyframes kx-spark { 0% { opacity: 1; transform: rotate(var(--a)) translateY(0) scale(1); } 100% { opacity: 0; transform: rotate(var(--a)) translateY(-86px) scale(.4); } }
+.kx-earn-badge { width: 64px; height: 64px; display: grid; place-items: center; animation: kx-pop .7s var(--k-spring) both .1s; }
+.kx-earn-badge svg { width: 64px; height: 64px; }
+.kx[data-motion="reduced"] .kx-earn-burst { display: none; }
+@media (prefers-reduced-motion: reduce) { .kx .kx-earn-burst { display: none; } }
+
+/* ---------------------------------------------------------------- HOLO */
+.kx[data-klook="holo"] {
+  --k-cut: 0px; --k-rad: 20px;
+  --k-holo: linear-gradient(115deg, var(--k-move), var(--k-look) 48%, var(--k-her));
+  --k-cta-glow: 0 10px 30px -10px color-mix(in srgb, var(--k-move) 70%, transparent);
+  --k-cta-glow-hi: 0 12px 44px -6px color-mix(in srgb, var(--k-move-deep) 80%, transparent);
+  --k-ship-hull: var(--k-mar-t); --k-ship-trail: var(--k-her);
+}
+.kx[data-klook="holo"] .kx-cut { clip-path: none; border-radius: var(--k-rad); }
+.kx[data-klook="holo"] :is(.kx-dockbtn, .kx-station, .kx-tile, .kx-ghost, .kx-ib, .kx-loadout) {
+  border: 1.5px solid transparent;
+  background: linear-gradient(var(--k-panel-solid), var(--k-panel-solid)) padding-box,
+    linear-gradient(115deg, color-mix(in srgb, var(--k-move) 75%, transparent), color-mix(in srgb, var(--k-look) 55%, transparent) 50%, color-mix(in srgb, var(--k-her) 70%, transparent)) border-box;
+}
+.kx[data-klook="holo"] .kx-earn { border-radius: 24px; box-shadow: 0 0 0 4px color-mix(in srgb, var(--k-secure) 18%, transparent), 0 16px 50px -20px var(--k-secure); }
+.kx[data-klook="holo"] :is(.kx-seg, .kx-sheet, .kx-loadout) { border-radius: var(--k-rad); }
+.kx[data-klook="holo"] .kx-seg { overflow: hidden; border-radius: 999px; }
+.kx[data-klook="holo"] .kx-seg button[aria-checked="true"] { background: var(--k-holo); color: var(--k-on-move); border-radius: 999px; }
+.kx[data-klook="holo"] .kx-cta { border-radius: 999px; background: linear-gradient(100deg, var(--k-move), var(--k-move-deep)); letter-spacing: .01em; }
+.kx[data-klook="holo"] .kx-cta-sweep { display: none; }
+.kx[data-klook="holo"] .kx-comms { border-radius: 28px; border: 0; box-shadow: 0 0 0 2px color-mix(in srgb, var(--k-look) 65%, transparent), 0 18px 60px -18px color-mix(in srgb, var(--k-her) 60%, transparent); }
+.kx[data-klook="holo"] .kx-comms-rim { border-radius: 28px; box-shadow: inset 0 0 0 1.5px var(--k-her); opacity: .5; }
+.kx[data-klook="holo"] .kx-tick { display: none; }
+.kx[data-klook="holo"] :is(.kx-who b, .kx-ai) { border-radius: 10px; }
+.kx[data-klook="holo"] .kx-mark i { border-color: transparent; background: var(--k-holo); }
+.kx[data-klook="holo"] .kx-mark i::after { background: var(--k-ink); }
+.kx[data-klook="holo"] .kx-h1::after { content: ""; display: block; width: 72px; height: 5px; margin-top: 12px; border-radius: 4px; background: var(--k-holo); }
+.kx[data-klook="holo"] .kx-home-copy .kx-h1::after { margin-left: auto; margin-right: auto; }
+.kx[data-klook="holo"] :is(.kx-orbit, .kx-settle) { border-radius: 26px; border: 1.5px solid var(--k-line-2); }
+.kx[data-klook="holo"] .kx-station i, .kx[data-klook="holo"] .kx-legend i { transform: none; border-radius: 50%; box-shadow: 0 0 10px var(--c); }
+.kx[data-klook="holo"] .kx-new { border-radius: 999px; background: var(--k-secure); }
+.kx[data-klook="holo"][data-ktheme="night"] .kx-screen {
+  background: radial-gradient(55% 40% at 92% 4%, color-mix(in srgb, var(--k-her) 26%, transparent), transparent 70%),
+    radial-gradient(60% 45% at 0% 100%, color-mix(in srgb, var(--k-move) 20%, transparent), transparent 70%),
+    radial-gradient(120% 80% at 70% 10%, var(--k-bar) 0, var(--k-void) 62%);
+}
+.kx[data-klook="holo"][data-ktheme="dawn"] .kx-screen {
+  background: radial-gradient(50% 32% at 95% 6%, color-mix(in srgb, var(--k-her) 20%, transparent), transparent 72%),
+    radial-gradient(60% 40% at 0% 96%, color-mix(in srgb, var(--k-move) 18%, transparent), transparent 72%),
+    radial-gradient(40% 25% at 30% 20%, color-mix(in srgb, var(--k-r-science) 14%, transparent), transparent 70%),
+    linear-gradient(180deg, var(--k-bar) 0, var(--k-void) 58%);
+}
+.kx[data-klook="holo"][data-ktheme="dawn"] :is(.kx-dockbtn, .kx-station, .kx-tile, .kx-ghost, .kx-ib, .kx-loadout) { box-shadow: 0 8px 24px -14px color-mix(in srgb, var(--k-move) 55%, transparent); }
+
+/* ---------------------------------------------------------------- VOLT */
+.kx[data-klook="volt"] {
+  --k-cut: 14px;
+  --k-cta-glow: 0 0 0 1px var(--k-move), 0 0 24px -6px color-mix(in srgb, var(--k-move) 70%, transparent);
+  --k-cta-glow-hi: 0 0 0 1px var(--k-move), 0 0 40px 0 color-mix(in srgb, var(--k-move) 70%, transparent);
+  --k-ship-hull: var(--k-sand-t); --k-ship-trail: var(--k-move);
+}
+.kx[data-klook="volt"] .kx-cta { text-transform: uppercase; letter-spacing: .1em; font-weight: 700; }
+.kx[data-klook="volt"] .kx-cta::after { content: "»"; font: 700 22px/1 var(--k-mono); margin-left: 2px; }
+.kx[data-klook="volt"] :is(.kx-h1, .kx-h2) { letter-spacing: -.035em; text-transform: none; }
+.kx[data-klook="volt"] .kx-label::before { content: "// "; color: var(--k-move); }
+.kx[data-klook="volt"][data-ktheme="dawn"] .kx-label::before { color: var(--k-ion); }
+.kx[data-klook="volt"] :is(.kx-dockbtn, .kx-station, .kx-tile, .kx-ghost) { border-color: var(--k-line-2); }
+.kx[data-klook="volt"] :is(.kx-dockbtn, .kx-station, .kx-tile, .kx-ghost):hover { box-shadow: inset 3px 0 0 var(--k-move); }
+.kx[data-klook="volt"] .kx-seg button[aria-checked="true"] { background: var(--k-move); color: var(--k-on-move); }
+.kx[data-klook="volt"] .kx-station i, .kx[data-klook="volt"] .kx-legend i { box-shadow: 0 0 8px var(--c); }
+.kx[data-klook="volt"] .kx-comms { box-shadow: 0 0 0 1px var(--k-line-2); }
+.kx[data-klook="volt"] .kx-tick { border-color: var(--k-move); width: 20px; height: 20px; }
+.kx[data-klook="volt"] .kx-mark i { border-color: var(--k-move); border-radius: 3px; transform: rotate(45deg); }
+.kx[data-klook="volt"][data-ktheme="night"] .kx-screen {
+  background:
+    linear-gradient(180deg, transparent 0, transparent 62%, color-mix(in srgb, var(--k-move) 7%, transparent) 100%),
+    repeating-linear-gradient(0deg, color-mix(in srgb, var(--k-ink) 5%, transparent) 0 1px, transparent 1px 44px),
+    repeating-linear-gradient(90deg, color-mix(in srgb, var(--k-ink) 5%, transparent) 0 1px, transparent 1px 44px),
+    radial-gradient(90% 60% at 80% 0%, var(--k-bar) 0, var(--k-void) 70%);
+}
+/* older: lime is the move only (the main session's pick, 2026-10-10: "lime on CTAs and the Now-secure moment only; the
+   Desk's ground quiet"). Every other accent is ion or ultraviolet. */
+.kx[data-klook="volt"][data-ktheme="night"] { --k-ship-trail: var(--k-her); }
+.kx[data-klook="volt"][data-ktheme="night"] :focus-visible { outline-color: var(--k-ion); }
+.kx[data-klook="volt"][data-ktheme="night"] .kx-mark i { border-color: var(--k-ion); }
+.kx[data-klook="volt"][data-ktheme="night"] .kx-seg button[aria-checked="true"] { background: var(--k-ink); color: var(--k-void); }
+.kx[data-klook="volt"][data-ktheme="night"] .kx-label::before { color: var(--k-ink-3); }
+.kx[data-klook="volt"][data-ktheme="night"] .kx-tick { border-color: var(--k-line-2); }
+.kx[data-klook="volt"][data-ktheme="night"] :is(.kx-dockbtn, .kx-station, .kx-tile, .kx-ghost):hover { box-shadow: inset 3px 0 0 var(--k-ion); }
+.kx[data-klook="volt"][data-ktheme="night"] .kx-slot.is-on { border-color: var(--k-ion); }
+.kx-lesson[data-klook="volt"][data-ktheme="night"] .dk[data-skin="kaksha"] :is(.kx-in-br) { border-color: var(--k-ion); }
+.kx-lesson[data-klook="volt"][data-ktheme="night"] .dk[data-skin="kaksha"] .kx-in-dot { border-color: var(--k-ion); }
+.kx-lesson[data-klook="volt"][data-ktheme="night"] .dk[data-skin="kaksha"] .dk-chalk--answer { color: var(--k-ink); }
+.kx-lesson[data-klook="volt"][data-ktheme="night"] .dk[data-skin="kaksha"] [data-zone="card"] > .dk-card { box-shadow: inset 3px 0 0 var(--k-ion); }
+
+/* young: "toy plastic" — rounded, a thick ink outline, a hard offset shadow, a lime pop under the one move */
+.kx[data-klook="volt"][data-ktheme="dawn"] { --k-cut: 0px; --k-rad: 18px;
+  --k-cta-glow: 5px 5px 0 0 var(--k-ter-t), 5px 5px 0 2.5px var(--k-ink); --k-cta-glow-hi: 7px 7px 0 0 var(--k-ter-t), 7px 7px 0 2.5px var(--k-ink); }
+.kx[data-klook="volt"][data-ktheme="dawn"] .kx-cut { clip-path: none; border-radius: var(--k-rad); }
+.kx[data-klook="volt"][data-ktheme="dawn"] :is(.kx-dockbtn, .kx-station, .kx-tile, .kx-ghost, .kx-ib, .kx-loadout, .kx-earn, .kx-seg, .kx-orbit, .kx-settle) {
+  border: 2.5px solid var(--k-ink); border-radius: var(--k-rad); background-color: var(--k-panel-solid); box-shadow: 4px 4px 0 0 var(--k-ink); }
+.kx[data-klook="volt"][data-ktheme="dawn"] .kx-seg { overflow: hidden; }
+.kx[data-klook="volt"][data-ktheme="dawn"] :is(.kx-dockbtn, .kx-station, .kx-tile, .kx-ghost, .kx-ib):active { box-shadow: 1px 1px 0 0 var(--k-ink); transform: translate(3px, 3px); }
+.kx[data-klook="volt"][data-ktheme="dawn"] .kx-cta { border: 2.5px solid var(--k-ink); border-radius: var(--k-rad); background: var(--k-move); }
+.kx[data-klook="volt"][data-ktheme="dawn"] .kx-cta:active { transform: translate(4px, 4px); box-shadow: 1px 1px 0 0 var(--k-ink); }
+.kx[data-klook="volt"][data-ktheme="dawn"] .kx-comms { border: 2.5px solid var(--k-ink); border-radius: 26px; box-shadow: 6px 6px 0 0 var(--k-ink); }
+.kx[data-klook="volt"][data-ktheme="dawn"] .kx-comms-rim { border-radius: 24px; }
+.kx[data-klook="volt"][data-ktheme="dawn"] .kx-tick { display: none; }
+.kx[data-klook="volt"][data-ktheme="dawn"] :is(.kx-who b, .kx-ai, .kx-new) { border-radius: 10px; }
+.kx[data-klook="volt"][data-ktheme="dawn"] .kx-screen {
+  background: radial-gradient(color-mix(in srgb, var(--k-ion) 16%, transparent) 1.6px, transparent 2.2px) 0 0 / 22px 22px,
+    linear-gradient(180deg, var(--k-bar) 0, var(--k-void) 60%);
+}
+.kx[data-klook="volt"][data-ktheme="dawn"] .kx-label::before { content: "★ "; }
+
+/* young (bright) worlds: the orbit and the base sit in a tinted sky, not on white, so the white hulls and glass read */
+.kx[data-klook][data-ktheme="dawn"] :is(.kx-orbit, .kx-settle) {
+  background-image: radial-gradient(70% 55% at 50% 60%, color-mix(in srgb, var(--k-deep) 70%, transparent), transparent 75%),
+    linear-gradient(170deg, color-mix(in srgb, var(--k-ion) 26%, var(--k-deep)) 0, color-mix(in srgb, var(--k-r-science) 20%, var(--k-deep)) 100%);
+}
+
+/* ---------------------------------------------------------------- the lesson (Desk skin + Debrief) follows the look */
+.kx-lesson[data-klook="holo"] .dk[data-skin="kaksha"] :is(.dk-card, .dk-teacher, .dk-window) { border-radius: 22px; }
+.kx-lesson[data-klook="volt"][data-ktheme="dawn"] .dk[data-skin="kaksha"] .dk-card { border: 2.5px solid var(--k-ink); border-radius: 18px; box-shadow: 4px 4px 0 0 var(--k-ink); }

@@ -65,7 +65,7 @@ test("Debrief keeps the Summary's hooks and the safety floor ('AI teacher' by he
   assert.match(s, /<b>\{m\.teacher\.name\}<\/b><span className="kx-ai">\{kt\("aiTeacher"\)\}<\/span>/);
   assert.match(s, /showName=\{false\}/, "the small face does not repeat the name; the header prints it with AI teacher");
   assert.match(s, /disabled=\{s\.ending\}/, "Finish waits while the lesson is being saved, as the Summary does");
-  assert.match(s, /\/\[\?？\]\\s\*\["'”’\)\]\*\$\/\.test\(last\) \? "" : last/, "a question is never shown as her closing line");
+  assert.match(s, /const closing = closingLine\(m\.caption\.text, m\.ask\?\.text\);/, "a question or open prompt is never shown as her closing line (tests/r4-kaksha-audit.test.mjs B05)");
 });
 
 test("Skin CSS: tokens only, scoped to the Kaksha frame/skin, hides nothing, keeps the lamp on the dock", () => {

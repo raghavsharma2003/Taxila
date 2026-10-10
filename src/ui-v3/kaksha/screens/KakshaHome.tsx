@@ -17,7 +17,7 @@ export function greetingFor(d = new Date()): HomeViewProps["greeting"] {
 }
 
 export function KakshaHome() {
-  const { cid, child, band, family, prefs, reducedMotion } = useChild();
+  const { cid, child, band, family, prefs, reducedMotion, me } = useChild();
   const { plan } = usePlan(cid);
   const nav = useNavigate();
   const rec = useTeacher(child.teacher_id, band);
@@ -26,13 +26,15 @@ export function KakshaHome() {
   const face = artTierD() ? { form: "plate" as const, tier: "D" as const } : faceFormOf(prefs.face);
   const state: HomeViewProps["state"] =
     plan.source === "loading" ? "loading" : plan.state === "capped" ? "capped" : plan.state === "resting" ? "resting" : plan.state === "done" ? "done" : "start";
-  const startTo = `/c/${cid}/lesson/new${plan.topic ? `?topic=${encodeURIComponent(plan.topic.id)}` : ""}`;
+  // Start sends NO topic (main 2026-10-10, audit #1): "Just start. Asha takes it from there." means the server decides,
+  // and for the session-first cohort a plain start is the school-first intake (4A). The plan only decides the CTA state.
+  const startTo = `/c/${cid}/lesson/new`;
   return (
     <KakshaRoot family={family} reducedMotion={reducedMotion} screen="home">
       <div data-plan-state={plan.source === "loading" ? "loading" : plan.state} data-plan-source={plan.source}>
         <HomeView childName={child.first_name} family={family} reducedMotion={reducedMotion} state={state} greeting={greetingFor()}
           teacher={{ id: child.teacher_id, name: rec.name, band, form: face.form, tier: face.tier }}
-          startTo={startTo} worldTo={`/c/${cid}/map`} parentTo="/parent" opensAt={plan.opensAt} go={(to) => nav(to)} />
+          startTo={startTo} worldTo={`/c/${cid}/map`} parentTo="/parent" whoTo={me.children.length >= 2 ? "/who" : null} opensAt={plan.opensAt} go={(to) => nav(to)} />
       </div>
     </KakshaRoot>
   );
