@@ -69,6 +69,8 @@ export interface PlayStageProps {
   dress?: DressedSpec | null;
   /** the parent's wording switch (O-G4) */
   verb?: "fire" | "scan";
+  /** the certification harness reads WebGL pixels (keeps the drawing buffer; costs a little on a phone, so never for a child) */
+  preserveDrawing?: boolean;
 }
 
 export function PlayStage(props: PlayStageProps) {
@@ -152,7 +154,7 @@ export function PlayStage(props: PlayStageProps) {
       const deps: EngineDeps = { level, ctl, lang, spec, changed };
       if (stage3d && stage3d.engine.relevel) { try { stage3d.core.progress.set("level", level.levelId, { level: "start" }); stage3d.engine.relevel(deps); viewRef.current = stage3d.engine; if (props.debug) exposeDebug(stage3d, ctl, logic); changed(); onEvent.current?.({ type: "ready", engine: entry?.id ?? null }); return; } catch { /* remount below */ } }
       stageRef.current?.dispose(); stageRef.current = null; viewRef.current = null;
-      const h = render.mount(host, render.mod.create, deps, { tier: render.tier === "3d-lite" ? "3d-lite" : "3d", young, reducedMotion: props.reducedMotion, sound: props.sound, musicAllowed: musicRef.current === "on", seed: level.seed,
+      const h = render.mount(host, render.mod.create, deps, { tier: render.tier === "3d-lite" ? "3d-lite" : "3d", young, reducedMotion: props.reducedMotion, sound: props.sound, musicAllowed: musicRef.current === "on", preserveDrawing: !!props.preserveDrawing, seed: level.seed,
         onFail: (why) => { onEvent.current?.({ type: "fail3d", why }); setRender({ kind: "2d", why }); } });
       if (h) {
         stageRef.current = h; viewRef.current = h.engine;
@@ -277,7 +279,7 @@ export function PlayStage(props: PlayStageProps) {
         {render.kind === "wait" && <div className="c3-warp" aria-hidden="true" />}
         {render.kind === "3d" && spec && spec.musicMood !== "off" && (
           <button type="button" className="c3-music" data-testid="play-music" aria-pressed={music === "on"} aria-label={word(lang, music === "on" ? "music.off" : "music.on")}
-            onClick={() => { const next = music === "on" ? "off" : "on"; setMusic(next); setMusicPref(next); const st = stageRef.current; if (st && "core" in st) { const b = (st as Stage3DHandle).bus; b.musicAllowed = next === "on"; b.unlock(); b.music(next === "on" ? spec.musicMood : "off"); } }}>{music === "on" ? "♪" : "♪̸"}</button>
+            onClick={() => { const next = music === "on" ? "off" : "on"; setMusic(next); setMusicPref(next); const st = stageRef.current; if (st && "core" in st) { const b = (st as Stage3DHandle).bus; b.musicAllowed = next === "on"; b.unlock(); b.music(next === "on" ? spec.musicMood : "off"); } }}>♪</button>
         )}
       </div>
       <div className="pl-rail">

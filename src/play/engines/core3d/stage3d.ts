@@ -29,6 +29,8 @@ export interface Stage3DOpts {
   sound?: boolean;
   musicAllowed?: boolean;
   onFail?(why: string): void;
+  /** keep the drawing buffer so a harness can read pixels (certification only) */
+  preserveDrawing?: boolean;
   /** a seed for cosmetics (stars, rocks): the level seed, so a screenshot is reproducible */
   seed?: number;
 }
@@ -53,7 +55,7 @@ export function mountStage3D(host: HTMLElement, create: Create, deps: EngineDeps
   host.appendChild(canvas);
   let renderer: THREE.WebGLRenderer;
   try {
-    renderer = new THREE.WebGLRenderer({ canvas, antialias: false, alpha: false, powerPreference: "high-performance", preserveDrawingBuffer: false });
+    renderer = new THREE.WebGLRenderer({ canvas, antialias: false, alpha: false, powerPreference: "high-performance", preserveDrawingBuffer: !!opts.preserveDrawing });
   } catch {
     canvas.remove();
     return null;

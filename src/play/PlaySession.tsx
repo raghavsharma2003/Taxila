@@ -31,6 +31,8 @@ export interface PlaySessionProps {
   dress?: DressedSpec | null;
   /** renderer override (the harness): "3d" lets a software GPU through */
   engine?: "auto" | "2d" | "3d";
+  /** the certification harness reads canvas pixels: keep the WebGL drawing buffer (never set for a child) */
+  preserveDrawing?: boolean;
 }
 
 export function PlaySession(p: PlaySessionProps) {
@@ -92,5 +94,5 @@ export function PlaySession(p: PlaySessionProps) {
   }, [p]);
 
   return <PlayStage level={level} art={art} lang={p.lang} classLevel={p.classLevel} caption={caption} face={p.face} teacherName={p.teacherName}
-    doors={doors} onDoor={onDoor} world={p.world ?? null} onEvent={onEvent} reducedMotion={p.reducedMotion} heard={p.heard} embedded={p.embedded} dress={dress} engine={p.engine} verb={dress?.verb} />;
+    doors={doors} onDoor={onDoor} world={p.world ?? null} onEvent={onEvent} reducedMotion={p.reducedMotion} heard={p.heard} embedded={p.embedded} dress={dress} engine={p.engine} verb={dress?.verb} preserveDrawing={p.preserveDrawing} />;
 }

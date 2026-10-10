@@ -55,9 +55,14 @@ export const routes = {
     // the world is drawn from the child's own ledger (the same truth the Garden/Sky map reads); a failed read draws every
     // station "ahead" rather than inventing a state (and never blocks the game)
     let mapState = () => ({ shape: "not_started", recheck: false });
-    try { const { loadTruth, MAP_SHAPE } = await import("../reports/truth.js"); mapState = mapStateFrom(await loadTruth(child), MAP_SHAPE); } catch { /* ahead */ }
+    // the world's ledger read and the parent's verb read run together
+    const [truth, vChild] = await Promise.all([
+      import("../reports/truth.js").then(async (m) => ({ m, t: await m.loadTruth(child) })).catch(() => null),
+      withVerb(child, dbq),
+    ]);
+    if (truth) try { mapState = mapStateFrom(truth.t, truth.m.MAP_SHAPE); } catch { /* ahead */ }
     const world = worldFamily({ family: r.entry.family, classLevel: r.session.classLevel, mapState, hereTopic: r.entry.topicId });
-    send(res, 200, { sessionId: r.sessionId, level: r.level, art: r.art, bank: [], world, dress: baseSpec(r.session, r.level, await withVerb(child, dbq))?.spec ?? null });
+    send(res, 200, { sessionId: r.sessionId, level: r.level, art: r.art, bank: [], world, dress: baseSpec(r.session, r.level, vChild)?.spec ?? null });
   },
 
   /** the level a session token points at (the Studio renderer mounts a PlayArtifact from its sessionId) */

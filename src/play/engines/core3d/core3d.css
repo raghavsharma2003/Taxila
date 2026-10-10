@@ -2,7 +2,7 @@
    learning label is legible over any scenery. Floors are applied in labels.ts (numerals 18, Devanagari 16, text 14/16).
    Colours come from the engine's theme (core.labelColors → --c3-*) and from play.css (--pl-*): no literal here. */
 .c3-canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; touch-action: none; cursor: ew-resize; }
-.c3-labels { position: absolute; inset: 0; pointer-events: none; overflow: hidden; contain: layout style; }
+.c3-labels { position: absolute; z-index: 1; inset: 0; pointer-events: none; overflow: hidden; contain: layout style; }
 .c3-label { position: absolute; left: 0; top: 0; will-change: transform; white-space: nowrap; line-height: 1.15; padding: 2px 8px; border-radius: 10px;
   background: var(--c3-pill); color: var(--c3-ink); font-family: "Geist Mono", ui-monospace, monospace; font-weight: 700; font-variant-numeric: tabular-nums; }
 .c3-label[data-kind="text"] { font-family: "Atkinson Hyperlegible Next", "Mukta", system-ui, sans-serif; }
@@ -15,4 +15,5 @@
 .c3-frac { display: inline-flex; flex-direction: column; align-items: center; line-height: 1.02; vertical-align: middle; }
 .c3-frac > span + span { border-top: 2px solid currentColor; padding-top: 1px; min-width: 1.1em; text-align: center; }
 .c3-warp { position: absolute; inset: 0; background: radial-gradient(circle at 50% 55%, var(--pl-bg2) 0%, var(--pl-bg) 70%); }
-.c3-music { position: absolute; right: 8px; top: 8px; min-width: 44px; min-height: 44px; border-radius: 22px; border: 1px solid var(--pl-line); background: var(--pl-btn); color: var(--pl-btn-ink); font-size: 18px; cursor: pointer; }
+.c3-music[aria-pressed="false"] { opacity: 0.55; }
+.c3-music { position: absolute; z-index: 2; right: 8px; top: 8px; min-width: 44px; min-height: 44px; border-radius: 22px; border: 1px solid var(--pl-line); background: var(--pl-btn); color: var(--pl-btn-ink); font-size: 18px; cursor: pointer; }

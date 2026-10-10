@@ -21,6 +21,15 @@ import { playLangOf } from "./lessonLang.ts";
 import type { DressedSpec } from "./engines/core3d/api.ts";
 import { prefetchEngine } from "./engines/registry.ts";
 
+/** The certification harness (server/forge3/play-cert.js) sets this on its own page to judge a chosen renderer and theme;
+ *  nothing in the app sets it. Absent = the device decides (the tier), as for every child. */
+interface CertForce { render: "2d" | "3d"; theme?: string; wrapper?: string }
+const certForce = (): CertForce | null => {
+  if (typeof window === "undefined") return null;
+  const f = (window as unknown as { __taxilaPlayRender?: CertForce }).__taxilaPlayRender;
+  return f && (f.render === "2d" || f.render === "3d") ? f : null;
+};
+
 export default function PlayStudioRenderer(props: ArtifactRendererProps) {
   const art = (props.artifact as unknown as PlayArtifact).play;
   const [state, setState] = useState<{ sid: string; level: PlayLevel; art: ArtId; dress: DressedSpec | null } | null>(null);
@@ -49,9 +58,11 @@ export default function PlayStudioRenderer(props: ArtifactRendererProps) {
   if (small || !state) return null;
   // round 3 integration: the Desk passes the lesson language as the product names it ("english" / "hindi" / "hinglish")
   const lang = playLangOf(props.lang);
+  const force = certForce();
+  const forcedDress = force?.render === "3d" && force.theme && state.dress ? { ...state.dress, dress: { ...state.dress.dress, theme: force.theme, ...(force.wrapper ? { wrapper: force.wrapper as DressedSpec["dress"]["wrapper"] } : {}) } } : null;
   return (
     <div style={{ width: props.px.w, height: props.px.h, position: "relative" }} data-testid="play-studio">
-      <PlaySession sessionId={state.sid} level={state.level} art={state.art} dress={state.dress} lang={lang} classLevel={props.young ? 4 : 6} reducedMotion={props.reducedMotion} embedded heard={heard}
+      <PlaySession sessionId={state.sid} level={state.level} art={state.art} dress={forcedDress ?? state.dress} engine={force?.render} preserveDrawing={!!force} lang={lang} classLevel={props.young ? 4 : 6} reducedMotion={props.reducedMotion} embedded heard={heard}
         onActivity={(name, data) => props.onEvent({ type: "interaction", name, data })}
         onToken={(kind, token, seamKind) => props.onEvent({ type: "interaction", name: kind === "evidence" ? "play_evidence" : "play_seam", data: { token, ...(seamKind ? { seam: seamKind } : {}) } })}
         onLevelEnd={(r) => { props.onEvent({ type: "interaction", name: "play_level_end", data: { verdict: r.grade?.verdict ?? null, levelId: r.levelId } }); props.onEvent({ type: "done" }); }}

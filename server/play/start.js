@@ -19,26 +19,20 @@ export const fadeOf = (f) => ([1, 2, 3].includes(Number(f)) ? Number(f) : 1);
 export async function learnerInputs(childId, entry, q, lessonId = null) {
   const out = { mis: {}, pL: undefined, secure: false, focus: null };
   if (!q) return out;
-  try {
-    const ids = Object.values(entry.misMap);
-    if (ids.length) for (const r of await q("select misconception_id, logit from kt_misconception where child_id = $1 and misconception_id = any($2::text[]) and resolved_at is null", [childId, ids])) out.mis[r.misconception_id] = +(1 / (1 + Math.exp(-Number(r.logit)))).toFixed(3);
-  } catch { /* default priors */ }
-  try {
-    const [r] = await q("select p_l, display from kt_skill_state where child_id = $1 and skill_id = $2", [childId, entry.skillId]);
-    if (r && Number.isFinite(Number(r.p_l))) out.pL = +Number(r.p_l).toFixed(3);
-    out.secure = r?.display === "mastered" || r?.display === "durable";
-  } catch { /* class default */ }
   const ids = Object.values(entry.misMap ?? {});
-  if (lessonId && ids.length) {
-    try {
-      const [e] = await q("select misconception_id from kt_evidence where child_id = $1 and session_id = $2 and misconception_id = any($3::text[]) order by seq desc limit 1", [childId, String(lessonId), ids]);
-      if (e?.misconception_id) out.focus = e.misconception_id;
-      else {
-        const [t] = await q("select misconception_id from reteach_attempts where child_id = $1 and session_id = $2 and trigger in ('misconception_seen', 'misconception_confirmed') and misconception_id = any($3::text[]) order by at desc limit 1", [childId, String(lessonId), ids]);
-        if (t?.misconception_id) out.focus = t.misconception_id;
-      }
-    } catch { /* no focus */ }
-  }
+  // independent reads, in parallel (each one's failure is its own default; the start path waits for the slowest only)
+  const none = Promise.resolve([]);
+  const [mis, skill, ev, rt] = await Promise.all([
+    ids.length ? q("select misconception_id, logit from kt_misconception where child_id = $1 and misconception_id = any($2::text[]) and resolved_at is null", [childId, ids]).catch(() => []) : none,
+    q("select p_l, display from kt_skill_state where child_id = $1 and skill_id = $2", [childId, entry.skillId]).catch(() => []),
+    lessonId && ids.length ? q("select misconception_id from kt_evidence where child_id = $1 and session_id = $2 and misconception_id = any($3::text[]) order by seq desc limit 1", [childId, String(lessonId), ids]).catch(() => []) : none,
+    lessonId && ids.length ? q("select misconception_id from reteach_attempts where child_id = $1 and session_id = $2 and trigger in ('misconception_seen', 'misconception_confirmed') and misconception_id = any($3::text[]) order by at desc limit 1", [childId, String(lessonId), ids]).catch(() => []) : none,
+  ]);
+  for (const r of mis ?? []) out.mis[r.misconception_id] = +(1 / (1 + Math.exp(-Number(r.logit)))).toFixed(3);
+  const r = (skill ?? [])[0];
+  if (r && Number.isFinite(Number(r.p_l))) out.pL = +Number(r.p_l).toFixed(3);
+  out.secure = r?.display === "mastered" || r?.display === "durable";
+  out.focus = (ev ?? [])[0]?.misconception_id ?? (rt ?? [])[0]?.misconception_id ?? null;
   return out;
 }
 
