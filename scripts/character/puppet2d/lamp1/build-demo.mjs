@@ -5,7 +5,9 @@
 import fs from "node:fs";
 import { execFileSync } from "node:child_process";
 const HERE = "/home/user/Taxila/scripts/character/puppet2d/lamp1";
-const PACKDIR = "/home/user/Taxila/art/character/puppet2d/lamp1";
+// PACKDIR / OUT_HTML env: the same page over another pack (the r8 calibration run: PACKDIR=public/face-puppet/r8)
+const PACKDIR = process.env.PACKDIR || "/home/user/Taxila/art/character/puppet2d/lamp1";
+const OUT_HTML = process.env.OUT_HTML || `${PACKDIR}/demo.html`;
 const SCR = "/tmp/claude-0/-home-user/ecee9fc1-62f9-5f67-a47d-69ca79d9981a/scratchpad/r4-asha";
 // demo/rolldown.config.mjs: src/face-puppet's own ./runtime imports (driver.ts: Expressions, Listener; safety.ts) resolve to
 // the lamp1 runtime, i.e. the bundle is the product after integrate/02
@@ -23,5 +25,6 @@ put("/*BUNDLE*/", bundle.replace(/<\/script/gi, "<\\/script"));
 put("/*PACK*/", JSON.stringify({ geom, imgs }));
 put("/*LINE*/", JSON.stringify(line));
 put("/*WAV*/", wav);
-fs.writeFileSync(`${PACKDIR}/demo.html`, page);
-console.log("demo.html", (page.length / 1024).toFixed(0), "KB");
+if (process.env.PACKDIR) page = page.replace("<body>", '<body class="r8">');
+fs.writeFileSync(OUT_HTML, page);
+console.log(OUT_HTML, (page.length / 1024).toFixed(0), "KB");
