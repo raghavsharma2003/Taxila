@@ -1,0 +1,32 @@
+{
+  "nodes": [
+    {
+      "id": "ms-r4-gate-timeout",
+      "kind": "measurement",
+      "at": "2026-10-10",
+      "title": "Release 9 gate killed twice by infra/gate.mjs 1,500 s per-command cap: one-process npm test ran 3,026 tests (3,023 pass, 0 fail, 3 skipped) in 1,520 s; cap raised to 3,600 s"
+    },
+    {
+      "id": "dc-r4-fold-look-into-r9",
+      "kind": "decision",
+      "at": "2026-10-10",
+      "title": "K's Volt look (355b8c82) folded into release 9 instead of a separate release 10, because the gate had to re-run anyway after the timeout fix; the look is behind ui.kaksha (owner cohort) with parity 72/72 measured by K"
+    }
+  ],
+  "edges": [
+    {
+      "src": "dc-r4-fold-look-into-r9",
+      "rel": "caused_by",
+      "dst": "ms-r4-gate-timeout"
+    },
+    {
+      "src": "dc-r4-fold-look-into-r9",
+      "rel": "part_of",
+      "dst": "dc-r4-owner-wrapup-directive"
+    }
+  ],
+  "md": {
+    "measurements": "- `ms-r4-gate-timeout` (2026-10-10, 22:10 and 22:37 UTC): deploy-azure --gate --dry-run on int/r4-rel9 01d72f3 failed twice with \"npm test exited SIGTERM\". The stamp recorded npm test signal SIGTERM at s=1500; the TAP summary in the second log shows tests 3,026, pass 3,023, fail 0, skipped 3, duration_ms 1,520,598. infra/gate.mjs ran each gate command under spawnSync timeout 1,500,000 ms. Raised to 3,600,000 ms (e0bfd9b). Release 8 had fit (2,857 tests).",
+    "decisions": "- `dc-r4-fold-look-into-r9` (2026-10-10): with release 9 needing a new gate run after the timeout fix, K's Volt look head 355b8c82 (merged base 8448c98; the whole child app themed under ui.kaksha, Holo behind ?look=holo, the audit B rows; 120 real pages 0 findings, parity 72/72) was merged into int/r4-rel9 and gated with it, saving a 25-minute gate cycle before the owner tests. Reverse if: the release 9 battery shows a non-cohort change attributable to the look (roll back and split)."
+  }
+}

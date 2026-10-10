@@ -19885,6 +19885,45 @@
    "at": "2026-10-10",
    "title": "tests/prod/w2i-safety.mjs ignores --base (it reads TAXILA_BASE, which .env.local points at production) and queries the database named by DATABASE_URL; it skipped itself on the remote target this time, but a local run must set both to the TEST branch (scratchpad testdbrun.mjs does it in memory)",
    "source": "inbox/r4-main-2100.json"
+  },
+  {
+   "id": "r4k-audit-b-fixes",
+   "kind": "component",
+   "title": "Kaksha fixes for stream 5 journey audit B rows (2026-10-10): top-bar topic sans and wraps (B04-04, was mono-clipped); Debrief closing line drops open prompts: question, fill-in blank, or the card question (B05, closingLine); Kaksha Finish goes Home with Not {name}? for 2-child accounts (B06, K-P2 rev 2); Kaksha Hello copy says what happens next (B02, K-P13); Kaksha Start sends no topicId (#1). Card ellipsis is server askText (say.js), reported to main/4A. Flag off unchanged",
+   "date": "2026-10-10",
+   "source": "inbox/r4-kaksha.json"
+  },
+  {
+   "id": "r4k-futurist-direction",
+   "kind": "measurement",
+   "title": "Kaksha futurist direction pass (owner directive 2026-10-10, modern/futuristic/Gen Alpha): two looks on the REAL screens, A Holo (glass + iridescent edge; young lilac daylight) and B Volt (carbon HUD + electric lime; young toy-plastic outlines), each older+young; the settlement redrawn as a futurist base (solar array, maglev rail, radar dish, power core, hab pods, landing pad, geo dome, turbine, observatory, biodome, comms tower; each still shows its idea; rules unchanged); Debrief earned moment only on a real secure crossing; Hangar loadout + proposed emotes; names shortlist (world Zenith/Lumen/Apogee, shell Flight Deck/Skyport/Launch Bay). 0 findings over 72 pages; all four palettes >= 5:1 on every Kaksha text pair. main picked Volt for both families (Holo the ?look= alternate)",
+   "n": 72,
+   "method": "tests/prod/r4-kaksha-futurist-shots.mjs: Playwright Chromium on the Kaksha dev pages (real views; real Desk + Debrief with fixture models), 3 looks x 2 families x 6 screens x 360x800/1366x768; U1 in-page lint + AI-1/HELP-1/TRUTH-1/EARN-1/BASE-1/BASE-2; tests/r4-kaksha-lint.test.mjs K-MIRROR-LOOKS, K-CONTRAST-LOOKS",
+   "date": "2026-10-10",
+   "source": "inbox/r4-kaksha.json"
+  },
+  {
+   "id": "r4k-look-full",
+   "kind": "measurement",
+   "title": "Kaksha look across the whole child app for the ui.kaksha cohort (Volt default, ?look=holo|volt per-device switch): Kaksha screens directly, every other child screen (hello, ask, notebook, me, teacher, lesson) through ChildShell data-klook/ktheme (K-P14) and a var()-only v2->k token map; painted room scenes hidden under the look; Volt older lime only on CTAs/lamp/secure moment. 120 real pages 0 findings incl. a 180-char question wrap check; parity 72/72 (non-cohort = base DOM on 16 pages)",
+   "n": 120,
+   "method": "tests/prod/r4-kaksha-screens.mjs: local production build, a cohort account with class 3 and class 7 children, 9 pages x volt|holo x 360/412/1366, U1 in-page lint + LOOK-1 + AI-1; tests/prod/r4-kaksha-parity.mjs vs base 0c90ebb",
+   "date": "2026-10-10",
+   "source": "inbox/r4-kaksha.json"
+  },
+  {
+   "id": "ms-r4-gate-timeout",
+   "kind": "measurement",
+   "at": "2026-10-10",
+   "title": "Release 9 gate killed twice by infra/gate.mjs 1,500 s per-command cap: one-process npm test ran 3,026 tests (3,023 pass, 0 fail, 3 skipped) in 1,520 s; cap raised to 3,600 s",
+   "source": "inbox/r4-main-2330.json"
+  },
+  {
+   "id": "dc-r4-fold-look-into-r9",
+   "kind": "decision",
+   "at": "2026-10-10",
+   "title": "K's Volt look (355b8c82) folded into release 9 instead of a separate release 10, because the gate had to re-run anyway after the timeout fix; the look is behind ui.kaksha (owner cohort) with parity 72/72 measured by K",
+   "source": "inbox/r4-main-2330.json"
   }
  ],
  "edges": [
@@ -32012,6 +32051,31 @@
    "src": "rj-r4dx-short-turn-misheard-continuer",
    "rel": "caused_by",
    "dst": "ms-r4dx-ami-overlap-2026-10-10"
+  },
+  {
+   "src": "r4k-audit-b-fixes",
+   "rel": "part_of",
+   "dst": "r4k-k3-built"
+  },
+  {
+   "src": "r4k-futurist-direction",
+   "rel": "part_of",
+   "dst": "r4k-k3-built"
+  },
+  {
+   "src": "r4k-look-full",
+   "rel": "part_of",
+   "dst": "r4k-k3-built"
+  },
+  {
+   "src": "dc-r4-fold-look-into-r9",
+   "rel": "caused_by",
+   "dst": "ms-r4-gate-timeout"
+  },
+  {
+   "src": "dc-r4-fold-look-into-r9",
+   "rel": "part_of",
+   "dst": "dc-r4-owner-wrapup-directive"
   }
  ]
 }
