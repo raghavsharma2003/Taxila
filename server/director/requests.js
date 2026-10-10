@@ -118,7 +118,9 @@ export function requestOf(text) {
   // Leaving now beats everything (NEVER MANIPULATE): never read as a stop to check in on, nor a break.
   if (GOODBYE.test(t) && !SHORT_BREAK.test(t)) return { type: "goodbye", whole };
   if (SHORT_BREAK.test(t) && /\b(?:jaana|jana|jau|jaun|go|break|peena|pina|drink|chahiye)\b/.test(t) && !attemptLike(t)) return { type: "break", whole };
-  if (BREAK.test(t)) return { type: "break", whole };
+  // round 4 (battery multi_intent-08 "thak gaya hoon, kya thoda easy kar sakte ho?" got a break): tired AND an easier ask is
+  // the easier ask (conversation/lexicon.js reads it; the tiredness rides along as the second need), never a break
+  if (BREAK.test(t) && !/\b(?:easy|aasan|asaan|simple)\s+(?:kar|karo|karke|kijiye|bana|banao)\b|\bmake\s+it\s+(?:easier|simpler)\b/.test(t)) return { type: "break", whole };
   if (CHANGE_TOPIC.test(t)) return { type: "change_topic", whole };
   // round 3 fix (experience B8): a named subject to study instead (before the stop words it may carry: "yeh nahi padhna")
   const switchTo = !attemptLike(t) ? switchSubjectOf(t) : null;

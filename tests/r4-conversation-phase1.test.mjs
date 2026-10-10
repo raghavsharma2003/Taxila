@@ -147,3 +147,12 @@ test("a share told during teaching is brought back later in the lesson, as a las
   assert.match(back.move.must, /^first, come back to what they told you earlier/);
   assert.ok(back.state.later.find((e) => e.share).servedAt != null);
 });
+
+test("tired AND an easier ask is the easier ask with empathy, never a break; a parked side question rides last", () => {
+  assert.notEqual(requestOf("thak gaya hoon, kya thoda easy kar sakte ho?")?.type, "break");
+  assert.equal(readIntent("thak gaya hoon, kya thoda easy kar sakte ho?")?.type, "easier");
+  assert.equal(requestOf("thak gaya hoon break chahiye")?.type, "break");
+  const r = toPractice();
+  const n = turn(r, cls("incorrect"), { text: "yes also why is the sky blue" });
+  assert.match(n.move.must ?? "", /sky/);
+});

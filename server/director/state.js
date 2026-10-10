@@ -1426,7 +1426,8 @@ export function step(prev, input) {
     const key = p.request === "uptake" ? input.cls?.request?.kind ?? null : p.request === "visual" ? `visual_${p.visual ?? "diagram"}` : p.request;
     // a parked question or share served this turn comes back FIRST (it lost to the move in the middle of the shape)
     const back = s.servedNow ? SH.returnParked({ topic: s.servedNow.topic, share: s.servedNow.share }).replace(/^before the next thing: /, "first, ") : null;
-    const must = [back, SH.MUST_NOTE[key], ...(also ?? []).filter((x) => x !== key).map((x) => SH.ALSO_NOTE[x])].filter(Boolean);
+    const parked = input.cls?.alsoPark?.topic ? SH.parkAlso({ topic: input.cls.alsoPark.topic }) : null;
+    const must = [back, SH.MUST_NOTE[key], parked, ...(also ?? []).filter((x) => x !== key).map((x) => SH.ALSO_NOTE[x])].filter(Boolean);
     if (must.length) move.must = must.join("; ").slice(0, 300);
   }
   // round 2 (conversation): how the child asked to be taught ("step by step", "picture first") rides on every later move

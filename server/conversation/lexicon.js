@@ -226,7 +226,7 @@ export function readIntent(text) {
   if (SKIP.test(t) || (p5Flag("R3CONV") && SKIP_R3.test(t))) return hit("skip");
   if (KNOW.test(t) || (p5Flag("R4CONV") && KNOW_R4.test(t))) return hit("know");
   if (HARDER.test(t)) return hit("harder");
-  if (EASIER.test(t)) return hit("easier");
+  if (EASIER.test(t) || (p5Flag("R4CONV") && EASIER_TOO.test(t))) return hit("easier");
   if (FRUSTRATION.test(t)) return hit("frustration");
   if (BOREDOM.test(t)) return hit("boredom");
   if (REPEAT.test(t)) return hit("repeat");
