@@ -7,9 +7,12 @@ import { createHash } from "node:crypto";
 import { existsSync, readFileSync, statSync } from "node:fs";
 
 const store = new Map();
-globalThis.localStorage = { getItem: (k) => (store.has(k) ? store.get(k) : null), setItem: (k, v) => store.set(k, String(v)), removeItem: (k) => store.delete(k) };
+// defined, not assigned: where the runtime already has a localStorage / location (Node's Web Storage), an assignment
+// is silently ignored and the test would read the real, shared store
+const stub = (name, value) => Object.defineProperty(globalThis, name, { value, configurable: true, writable: true });
+stub("localStorage", { getItem: (k) => (store.has(k) ? store.get(k) : null), setItem: (k, v) => store.set(k, String(v)), removeItem: (k) => store.delete(k) });
 let search = "";
-globalThis.location = { get search() { return search; } };
+stub("location", { get search() { return search; } });
 const { faceConfigFor, faceLookOf, cohortLookOf, COHORT_FACE_LOOKS, routes } = await import("../server/face-puppet/config.js");
 const A = await import("../src/face-puppet/assets.ts");
 const F = await import("../src/face-puppet/flag.ts");
