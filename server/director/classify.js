@@ -472,9 +472,15 @@ export function classifyFast({ target, childText, asrConfidence, typed, chipId, 
     // rides on the result for the trace codes only (brain/trace.js comprehensionReasons). Never on a chip or module answer.
     const mode = itemSetAsideMode();
     if (mode === "off" || chipId || moduleAnswer) return done("no_evidence", "predicate");
-    const posed = target.mode === "item" && !askedOther(heard, target.item, lang);
-    const w = itemSetAside({ text, item: target.mode === "item" ? target.item : null, posed });
-    return done("no_evidence", "predicate", { setAsideWould: { mode, aside: w.aside, why: w.why, novel: w.novel, masked: w.masked } });
+    // main safety review (2026-10-10): the shadow can never break or change the floor's result. Any error in it (a broken
+    // item, a heard line the leak check cannot read) returns the plain predicate result, with no annotation.
+    try {
+      const posed = target.mode === "item" && !askedOther(heard, target.item, lang);
+      const w = itemSetAside({ text, item: target.mode === "item" ? target.item : null, posed });
+      return done("no_evidence", "predicate", { setAsideWould: { mode, aside: w.aside, why: w.why, novel: w.novel, masked: w.masked } });
+    } catch {
+      return done("no_evidence", "predicate");
+    }
   }
   // The child's own request in words (director/requests.js; OWNER TEST 2026-10-04 items 3-5): never evidence. A steering
   // request that is the whole turn is decided here (no model call); a stop or goodbye still goes to the model for its
