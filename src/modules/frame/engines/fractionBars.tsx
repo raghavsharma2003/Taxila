@@ -193,6 +193,20 @@ function Bar({ index, d, row, cfg, hl, seq, ghost, showLabel, selected, isAnswer
   const compare = cfg.mode === "compare";
   const editable = !compare && !cfg.locked[index];
   const partW = W / d;
+  // round 4 content (certs/modules.json): a part is a tap target only when it renders ≥ 44 px wide; a 9-part bar on a
+  // phone tray gives 30 px parts, so there the − / + steppers (44 px) are the way to shade
+  const svgRef = useRef<SVGSVGElement | null>(null);
+  const [partPx, setPartPx] = useState<number>(Infinity);
+  useEffect(() => {
+    const el = svgRef.current;
+    if (!el) return;
+    const m = () => setPartPx((el.getBoundingClientRect().width || W) / d);
+    m();
+    const ro = typeof ResizeObserver !== "undefined" ? new ResizeObserver(m) : null;
+    ro?.observe(el);
+    return () => ro?.disconnect();
+  }, [d]);
+  const tappable = editable && partPx >= 44;
   const key = (k: number) => (e: KeyboardEvent) => {
     if (e.key === "Enter" || e.key === " ") {
       e.preventDefault();
@@ -225,7 +239,7 @@ function Bar({ index, d, row, cfg, hl, seq, ghost, showLabel, selected, isAnswer
 
   const svg = (
     // Children of role="img" are presentational: tappable parts need a group for screen readers to reach them.
-    <svg className="fb-svg" viewBox={`0 0 ${W} ${H}`} role={editable ? "group" : "img"} aria-label={`${n} of ${d} parts shaded`}>
+    <svg ref={svgRef} className="fb-svg" viewBox={`0 0 ${W} ${H}`} role={editable ? "group" : "img"} aria-label={`${n} of ${d} parts shaded`}>
       {row.map((on, k) => {
         const partHl = hl === `bar:${index}:part:${k}`;
         return (
@@ -237,8 +251,8 @@ function Bar({ index, d, row, cfg, hl, seq, ghost, showLabel, selected, isAnswer
             width={partW - GAP}
             height={H - 2 * GAP}
             rx={5}
-            className={cls("fb-part", on && "is-on", partHl && "is-highlight", ghost !== null && k < ghost && "is-ghost", editable && "is-editable")}
-            {...(editable && {
+            className={cls("fb-part", on && "is-on", partHl && "is-highlight", ghost !== null && k < ghost && "is-ghost", tappable && "is-editable")}
+            {...(tappable && {
               role: "button",
               tabIndex: 0,
               "aria-pressed": on,

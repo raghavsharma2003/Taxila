@@ -16,7 +16,7 @@ describe("round3 forge: screen claims", () => {
     assert.deepEqual(screenClaims("Kabir, screen par roti ke 5 equal parts hain; 3 shaded hain").parts, [5]);
     assert.deepEqual(screenClaims("Meher, look at the screen: 3 equal groups, each holding 5 dots.").groups, [{ n: 3, each: 5 }]);
     assert.deepEqual(screenClaims("On the board, 2 equal boxes. What would one box be if there were 3 equal parts?").parts, [2]);
-    assert.deepEqual(screenClaims("5 equal parts mein baanto"), { parts: [], gaps: [], groups: [] }, "no screen word: not a claim about the drawing");
+    assert.deepEqual(screenClaims("5 equal parts mein baanto"), { parts: [], gaps: [], groups: [], grids: [] }, "no screen word: not a claim about the drawing");
   });
   it("counts what a script draws: equal families, number-line gaps from ticks, groups and what they hold", () => {
     const ops = [{ id: "l", op: "line", from: [40, 150], to: [360, 150] },

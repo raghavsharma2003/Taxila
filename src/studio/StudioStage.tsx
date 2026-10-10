@@ -20,7 +20,7 @@
 // The child's controls: "Show me again" (replay / reset; a signal, not a help rung) and "Not this one" (retire; that
 // archetype is not offered to this child for a week), behind one small corner button.
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from "react";
-import { STAGE_DEFAULT, type StudioArtifact, type StudioSlot } from "../../shared/studio.ts";
+import { STAGE_DEFAULT, type BeatCard, type StudioArtifact, type StudioSlot } from "../../shared/studio.ts";
 import { fitStage, validStage, type StageFit } from "./fit.ts";
 import { rendererFor, type StudioStageEvent } from "./renderers.ts";
 import { StageMomentContext, type StageMoment } from "./stageContext.ts";
@@ -58,6 +58,8 @@ export const DEVICE_MIN_LABEL_PX = 14, DEVICE_MIN_TARGET_PX = 44;
  * width; the band uses tray height the 16:10 box left empty (S2.uses_tray was 45% at 412 px).
  */
 export const RAIL_PX = 112, RAIL_PX_YOUNG = 124;
+/** round 4 content: the beat card header (one row of 14 px chips; 16 px for classes 1-5, shared/play.ts FLOORS). */
+export const CARD_HEAD_PX = 34, CARD_HEAD_PX_YOUNG = 38;
 const SV2 = { world: 1000, label: 38, target: 130 };
 /** Upscale cap: a 400-unit piece on a wide desktop tray stays a picture, not a poster. */
 const MAX_SCALE = 3;
@@ -178,7 +180,11 @@ export function StudioStage({ slot: given, young, lang, onEvent }: { slot: Studi
     const script = twinScript(twinBoardOf(given0), `${slot.slotId}:twin`);
     return script ? ({ kind: "whiteboard", stage: { w: script.board.w, h: script.board.h }, script } as StudioArtifact) : null;
   }, [given0, twinFor, slot.slotId]);
-  const { ref, avail } = useStageArea();
+  const { ref, avail: area } = useStageArea();
+  // round 4 content, the beat-by-beat board: a card header above a board that carries one (its height comes off the box)
+  const card = ((given0?.kind === "whiteboard" ? (given0 as Extract<StudioArtifact, { kind: "whiteboard" }>).script : null) as { card?: BeatCard } | null)?.card ?? null;
+  const headPx = card ? (young ? CARD_HEAD_PX_YOUNG : CARD_HEAD_PX) : 0;
+  const avail = useMemo(() => (area && headPx ? { w: area.w, h: Math.max(1, area.h - headPx) } : area), [area, headPx]);
   useEffect(() => {
     if (!twinFor || !avail) return;
     const at = twinArea.current;
@@ -190,10 +196,15 @@ export function StudioStage({ slot: given, young, lang, onEvent }: { slot: Studi
   // words keep their size, so the smallest word reaches the 14 px floor where a clean layout exists. Decided once per
   // artifact (a resize refits the box, never re-lays the drawing out mid-animation); continue boards reuse their fresh
   // board's transform so they still line up with it.
-  const fitted = useRef<{ src: StudioArtifact; out: StudioArtifact } | null>(null);
+  // round 4 content: ...unless the box itself changed by more than 8 % since the layout was decided. In a live lesson the
+  // first measurement often lands while the Desk is still moving into its Work geometry (a smaller tray for a frame or
+  // two): the layout chosen for that transient box stuck, and a board the tray gate passed at 15.5 px rendered at 11.5 px
+  // (round3-forge on a local production build, game-perimeter at 360, 2026-10-10).
+  const fitted = useRef<{ src: StudioArtifact; out: StudioArtifact; area: { w: number; h: number } } | null>(null);
   const artifact: StudioArtifact | undefined = useMemo(() => {
     if (!shown0 || shown0.kind !== "whiteboard" || !avail) return shown0;
-    if (fitted.current?.src === shown0) return fitted.current.out;
+    const same = (a: { w: number; h: number }) => Math.abs(a.w - avail.w) <= a.w * 0.08 && Math.abs(a.h - avail.h) <= a.h * 0.08;
+    if (fitted.current?.src === shown0 && (shown0.script.mode === "continue" || same(fitted.current.area))) return fitted.current.out;
     const sc = shown0.script;
     let out: StudioArtifact = shown0;
     try {
@@ -208,7 +219,7 @@ export function StudioStage({ slot: given, young, lang, onEvent }: { slot: Studi
         if (r.t) out = { ...shown0, stage: { w: r.t.w, h: r.t.h }, script: r.script };
       }
     } catch { out = shown0; }
-    fitted.current = { src: shown0, out };
+    fitted.current = { src: shown0, out, area: { w: avail.w, h: avail.h } };
     return out;
   }, [shown0, avail, young]);
   // a board is drawn only once its layout for this box is decided (no first frame at the wrong size)
@@ -311,8 +322,17 @@ export function StudioStage({ slot: given, young, lang, onEvent }: { slot: Studi
   return (
     <div ref={ref} className={`st-stage${reducedMotion ? " is-still" : ""}`} data-testid="studio-stage" data-state={state} data-phase={phase} data-kind={artifact?.kind}
       data-legible={twin ? "twin" : undefined} data-framed={frame?.framed ? "1" : undefined} data-young={young ? "1" : undefined}>
+      {card && fit && (
+        <div className="st-cardhead" data-testid="beat-card" data-kind={card.kind} style={{ left: fit.x, top: fit.y + 2, width: fit.w, height: headPx - 6 }}>
+          <span className="st-chip-kind">{tw2h(`card.${card.kind}` as "card.picture")}</span>
+          <span className="st-beat" aria-label={tw2h("card.beat", { n: card.n })}>
+            {Array.from({ length: Math.min(card.n, 8) }, (_, i) => <i key={i} className={i < card.n - 1 ? "is-done" : "is-now"} aria-hidden="true" />)}
+          </span>
+          {card.checkpointAhead && <span className="st-chip-check">{tw2h("card.checkpoint")}</span>}
+        </div>
+      )}
       <div className={`st-box st-${phase}`} data-testid="studio-box" data-rail={railPx > 0 ? "1" : undefined}
-        style={fit ? { width: fit.w, height: fit.h, left: fit.x, top: fit.y, ...(railPx > 0 ? { ["--rail" as string]: `${railPx}px` } : {}) } : { visibility: "hidden" }}>
+        style={fit ? { width: fit.w, height: fit.h, left: fit.x, top: fit.y + headPx, ...(railPx > 0 ? { ["--rail" as string]: `${railPx}px` } : {}) } : { visibility: "hidden" }}>
         <StageMomentContext.Provider value={moment}>
           <div className="st-art">{body}</div>
         </StageMomentContext.Provider>

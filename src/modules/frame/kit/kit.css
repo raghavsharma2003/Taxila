@@ -71,15 +71,16 @@ button.col-set { cursor: pointer; }
 button.col-cell { cursor: pointer; }
 
 /* place-value@1 */
+/* round 4 content: every word in the place-value and data-graph engines ≥ 16 px (the ages 6-9 floor; certs/modules.json) */
 .pv-cols { display: flex; gap: 6px; justify-content: center; flex-wrap: wrap; }
 .pv-col { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 6px 4px; border: 2px solid var(--fx-line); border-radius: var(--fx-radius); min-width: 92px; flex: 1 1 92px; max-width: 150px; }
-.pv-col-name { font-size: 14px; font-weight: 650; color: var(--fx-ink-soft); text-align: center; }
+.pv-col-name { font-size: 16px; font-weight: 650; color: var(--fx-ink-soft); text-align: center; }
 .pv-glyphs { display: flex; flex-wrap: wrap; gap: 3px; justify-content: center; min-height: 52px; align-content: flex-start; max-width: 120px; }
 .pv-glyph { display: inline-block; background: var(--fx-fill); border: 1.5px solid var(--fx-ink); }
 .pv-g0 { width: 12px; height: 12px; }
 .pv-g1 { width: 8px; height: 40px; background-image: repeating-linear-gradient(0deg, transparent 0 3px, var(--fx-ink) 3px 4px); }
 .pv-g2 { width: 40px; height: 40px; background-image: repeating-linear-gradient(0deg, transparent 0 3px, var(--fx-ink) 3px 4px), repeating-linear-gradient(90deg, transparent 0 3px, var(--fx-ink) 3px 4px); }
-.pv-disk { width: 30px; height: 30px; border-radius: 50%; font-size: 10px; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+.pv-disk { width: 44px; height: 44px; border-radius: 50%; font-size: 16px; font-weight: 700; display: flex; align-items: center; justify-content: center; }
 .pv-badge { font-size: 18px; font-weight: 700; }
 .pv-number { text-align: center; font-size: 30px; font-weight: 800; letter-spacing: 1px; font-variant-numeric: tabular-nums; }
 .pv-digit { font-size: 30px; font-weight: 800; min-width: 40px; text-align: center; }
@@ -121,20 +122,22 @@ button.fr-shape { cursor: pointer; }
 
 /* data-graphs@1 */
 .dg-barwrap { padding-top: 22px; }
-.dg-plot { position: relative; height: 160px; margin-left: 36px; border-left: 2px solid var(--fx-ink); border-bottom: 3px solid var(--fx-ink); }
+.dg-plot { position: relative; height: 200px; margin-left: 44px; border-left: 2px solid var(--fx-ink); border-bottom: 3px solid var(--fx-ink); }
 .dg-grid { position: absolute; left: 0; right: 0; height: 0; border-top: 1px dashed rgba(0,0,0,.28); }
-.dg-axis { position: absolute; left: -36px; width: 30px; transform: translateY(-50%); text-align: right; font-size: 12px; color: var(--fx-ink-soft); }
+.dg-axis { position: absolute; left: -44px; width: 38px; transform: translateY(-50%); text-align: right; font-size: 16px; line-height: 1; color: var(--fx-ink-soft); }
 .dg-bars { position: absolute; inset: 0; display: flex; align-items: flex-end; gap: 8px; justify-content: center; padding: 0 4px; }
 .dg-barcol { display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 4px; flex: 1 1 0; max-width: 88px; height: 100%; }
 .dg-bar { width: 100%; background: var(--fx-fill); border: 2px solid var(--fx-ink); border-bottom: 0; }
-.dg-cats { display: flex; gap: 8px; justify-content: center; margin-left: 36px; padding: 4px 4px 0; }
+.dg-cats { display: flex; gap: 8px; justify-content: center; margin-left: 44px; padding: 4px 4px 0; }
 .dg-cats .dg-cat { flex: 1 1 0; max-width: 88px; }
-.dg-cat { font-size: 14px; text-align: center; word-break: break-word; }
+.dg-cat { font-size: 16px; text-align: center; word-break: break-word; }
 .dg-val { font-size: 16px; font-weight: 700; }
 .dg-picto { display: flex; flex-direction: column; gap: 6px; }
 .dg-prow { display: flex; align-items: center; gap: 8px; }
 .dg-prow .dg-cat { min-width: 80px; text-align: right; }
 .dg-icon { font-size: 22px; line-height: 1; }
+/* round 4 content: a long icon row wraps inside the frame (25 icons ran past a 328 px tray) */
+.dg-icons { display: flex; flex-wrap: wrap; gap: 2px; min-width: 0; flex: 1 1 auto; }
 .dg-icon.is-half { clip-path: inset(0 50% 0 0); }
 .dg-key { text-align: center; font-size: 16px; color: var(--fx-ink-soft); }
 .dg-tally { font-family: ui-monospace, monospace; letter-spacing: 2px; font-size: 20px; }
@@ -154,6 +157,9 @@ button.pt-slot { cursor: pointer; border-style: dashed; }
 .ms-major { stroke: var(--fx-ink); stroke-width: 2; }
 .ms-minor { stroke: var(--fx-ink); stroke-width: 1; }
 .ms-body { fill: var(--fx-empty); stroke: var(--fx-ink); stroke-width: 2; }
+/* round 4 content: the jug's outline is a path drawn OVER the water; CSS fill beats its fill="none" attribute, so every
+   "how much water is in the jug?" showed an empty jug (certs/modules.json shots, 2026-10-10) */
+path.ms-body { fill: none; }
 .ms-object { fill: var(--fx-fill); stroke: var(--fx-ink); stroke-width: 2; }
 .ms-liquid { fill: var(--fx-accent); opacity: 0.55; }
 .ms-mercury { fill: #c0392b; }

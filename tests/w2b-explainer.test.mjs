@@ -71,7 +71,7 @@ describe("shared/whiteboard.js", () => {
 describe("explainer templates (rungs 4-5)", () => {
   test("every template expands to a strict-valid, lint-clean script with facts", () => {
     const calls = {
-      "fraction-parts@1": { whole: "bar", parts: 5, shade: 2 }, "combine-count@1": { a: 7, b: 5, op: "add" }, "number-line-hop@1": { start: 3, hops: [4, -2] },
+      "fraction-parts@1": { whole: "bar", parts: 5, shade: 2 }, "fraction-of@1": { a: 1, b: 2, c: 1, d: 2 }, "combine-count@1": { a: 7, b: 5, op: "add" }, "number-line-hop@1": { start: 3, hops: [4, -2] },
       "column-op@1": { a: 4587, b: 2675, op: "add" }, "place-value@1": { value: 345678 }, "equal-groups@1": { groups: 4, each: 6 },
       "flow@1": { steps: ["bees", "pollination", "seeds", "oil", "farmer's income"] }, "cycle@1": { stages: ["evaporation", "condensation", "rain"] },
       "compare@1": { left: { title: "shrubs", items: ["woody stems"] }, right: { title: "trees", items: ["one thick trunk"] } },
