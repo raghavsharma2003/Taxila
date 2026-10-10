@@ -2,7 +2,8 @@
 
 Prepared 2026-10-10 by the Asha round-4 agent. Nothing here has been applied to the repo. The patches were cut with
 `git diff --no-index --binary` from scratch copies of `src/ server/ shared/ tests/ public/face-puppet evals/face-puppet`
-taken from the working tree; at 09:2x UTC those directories were byte-identical to HEAD `4bc655d`.
+taken from the working tree; at 09:2x UTC those directories were byte-identical to HEAD `4bc655d`. Re-checked against
+HEAD `36dade7` at ~09:45 UTC: every patch still passes `git apply --check` (each on its own against the current tree).
 
 ## Read this first: what to apply
 
