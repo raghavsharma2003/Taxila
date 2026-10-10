@@ -122,10 +122,9 @@ export function SitePage({ children, title }: { children: ReactNode; title: stri
   );
 }
 
-/** The teachers a child can actually pick today: the live looks of shared/tutors.js, the same catalogue the picker
- *  offers (eligibleTutors drops drafts). The site never shows a face the product does not render (audit #4: one
- *  stable teacher). When the in-house rig replaces these looks in the picker and the lesson (task 16), it replaces
- *  them here through the same catalogue. */
+/** The teacher a child actually meets: the live looks of shared/tutors.js (round 4: Asha alone; Arjun and Uma are
+ *  parked, dc-r4-single-teacher-asha). The site never shows a face the product does not render (audit #4: one
+ *  stable teacher). */
 export const SITE_TUTORS: TutorCharacter[] = TUTORS.filter((t) => t.status === "live");
 
 /** A teacher's face as the picker draws its portrait: the code-drawn plate from the look (Plate2D `still`, the
