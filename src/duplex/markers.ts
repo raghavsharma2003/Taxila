@@ -26,6 +26,12 @@ export function unreadableTail(text: string): boolean {
   return toks.some((w) => /\p{L}/u.test(w) && OTHER_SCRIPT.test(w.replace(/[^\p{L}\p{M}]/gu, "")));
 }
 const LATIN = /[a-z]/i;
+/**
+ * Round 4: a dictation noun anywhere in the turn (something is being read out: a number, an address, an id) and one at the
+ * very end (the read-out itself is still to come: "मेरा मोबाइल नंबर" …). No bare English "no" (a child's "no, 5").
+ */
+export const DICTATION_NOUN = /(?:^|\s)(?:नंबर|नम्बर|number|पता|address|एड्रेस|ऐड्रेस|पिन|pin|pincode|पिनकोड|ईमेल|email|e-mail|मेल|mail|आईडी|id|मोबाइल|mobile|फ़ोन|फोन|phone|खाता|account|अकाउंट|कोड|code|फ्लैट|flat|मकान|house|गली|सेक्टर|sector|ब्लॉक|block)(?=[\s,।.]|$)/iu;
+const DICTATION_TAIL = /^(?:नंबर|नम्बर|number|पता|address|एड्रेस|पिन|pin|कोड|code|आईडी|id|फ्लैट|flat|सेक्टर|sector|ब्लॉक|block|मकान)$/iu;
 
 const FORM_ANSWER: Record<string, string> = {
   integer: "number", decimal: "number", fraction: "number", number_unit: "number", choice: "choice", yes_no: "yesno",
@@ -115,10 +121,14 @@ export class MarkerTracker {
       : /[,،]["'”’)]*$/u.test(tr) ? "comma"
       : /[-–—]$/u.test(tr) ? "broken"
       : this.punctuates ? "unclosed" : null;
-    const enumerating = endShape !== "terminal" && valuesIn(tr).filter((v: { at: number }) => v.at >= toks.length - 4).length >= 2;
+    const tailValues = valuesIn(tr).filter((v: { at: number }) => v.at >= toks.length - 4).length;
+    const enumerating = endShape !== "terminal" && tailValues >= 2;
+    // round 4: a read-out (the noun, or a number after it, at an unclosed tail): its groups pause long
+    const dictating = endShape !== "terminal" && endShape !== null && DICTATION_NOUN.test(t) && (DICTATION_TAIL.test(toks.at(-1) ?? "") || tailValues >= 1);
     const markers: LexicalMarkers = {
       endShape,
       enumerating,
+      dictating,
       cue,
       lexP: formValue ? Math.max(n.lex.p, 0.95) : closedByQuestion ? Math.max(n.lex.p, 0.85) : n.lex.p,
       form: form.state,

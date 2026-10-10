@@ -26,7 +26,7 @@ import {
 } from "./config.ts";
 import { classifyOverlap } from "./overlap.ts";
 
-export const STAGE_A: EngineId = { id: "rules-a", stage: "A", version: "2026-10-09.r3" };
+export const STAGE_A: EngineId = { id: "rules-a", stage: "A", version: "2026-10-10.r4" };
 const CONTRACT: EngineContractVersion = "cce/2026-10-04";
 
 const sig = (z: number): number => 1 / (1 + Math.exp(-z));
@@ -196,6 +196,14 @@ export function newMemory(): RulesMemory {
  * WAIT, and only a hold shape buys a long one.
  */
 export function pauseClass(tick: EngineTick): PauseClass {
+  const c = pauseClassR3(tick);
+  // round 4: a read-out ("मोबाइल नंबर है सात सौ …", "टेबल नंबर …") waits longest, whatever shape its tail has; a finished
+  // question to her and "pata nahi" keep theirs (evals/duplex-r4/eot-sweep-r4.mjs scores exactly this order)
+  if (c !== "idk" && c !== "question" && tick.markers.dictating) return "dictation";
+  return c;
+}
+
+function pauseClassR3(tick: EngineTick): PauseClass {
   const m = tick.markers;
   if (m.holdRequest || m.openTail || m.fillerTail || m.projection || m.wordSearch || m.repairOpen) return "hold";
   if (m.endShape === "comma" || m.endShape === "broken") return "hold";
@@ -259,7 +267,7 @@ export function prepare(tick: EngineTick, est: Estimate, mem: RulesMemory, suppo
   const eagerOk = childFloor && !c.voicing && !!tr.text && tr.unseenVoicedMs <= HORIZON_MS && !tick.safety.distress && sil >= PREPARE.probeSilenceMs
     && est.exchange !== "closed_answer";
   const pc = eagerOk ? pauseClass(tick) : null;
-  if (pc !== null && pc !== "hold" && pc !== "enumerating") {
+  if (pc !== null && pc !== "hold" && pc !== "enumerating" && pc !== "dictation") {
     eager = mem.eagerHash === tr.textHash ? "keep" : "start";
     mem.eagerHash = tr.textHash;
   } else if (mem.eagerHash !== null) {
@@ -275,7 +283,11 @@ export function prepare(tick: EngineTick, est: Estimate, mem: RulesMemory, suppo
       if (!mem.buildKeys.has(k)) { mem.buildKeys.add(k); buildIntent = k; }
     }
   }
-  return { draft, warmTts, sttProbe, textHash: tr.textHash, buildIntent, eager };
+  // round 4: when the R1-qualified decision lands if the child stays quiet (the class wait from the last offset)
+  const eagerLive = eager === "start" || eager === "keep";
+  const eagerClass = eagerLive && pc !== null ? pc : null;
+  const eagerDecideAt = eagerClass !== null && c.lastOffsetAt !== null ? c.lastOffsetAt + PAUSE_WAIT[eagerClass] : null;
+  return { draft, warmTts, sttProbe, textHash: tr.textHash, buildIntent, eager, eagerDecideAt, eagerClass };
 }
 
 /** The policy: one proposal per tick given the estimate. The governor disposes. */
@@ -387,7 +399,7 @@ export function extraWait(tick: EngineTick, est: Estimate): number {
 
 /** A yes/no answer longer than this many words is an elaboration (exchangeOf). */
 export const YES_NO_MAX_WORDS = 3;
-const wordCount = (t: string): number => String(t ?? "").split(/\s+/).filter((w) => /[\p{L}\p{N}]/u.test(w)).length;
+export const wordCount = (t: string): number => String(t ?? "").split(/\s+/).filter((w) => /[\p{L}\p{N}]/u.test(w)).length;
 
 /**
  * The verdict clock's anchor: the LATER of the last value's end and the child's last voiced frame. Anchoring on the value

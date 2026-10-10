@@ -1,0 +1,218 @@
+{
+  "nodes": [
+    {
+      "id": "dc-r4dx-dictation-pause-class",
+      "kind": "decision",
+      "title": "duplex r4: a read-out (a dictation noun in the turn, the noun or a number at an unclosed tail) is its own pause class waiting PAUSE_WAIT.dictation 2,400 ms, chosen on eot-bench TRAIN (even ids) as the least wait with the fewest TRAIN cut-offs on both real lanes. Reverse if: the pilot's child turns show read-outs are rare and the +1.2 s on turns that END on a read-out costs more than the cut-offs it prevents, or a measured end-of-number cue (e.g. a complete 10-digit phone number) replaces it.",
+      "at": "2026-10-10"
+    },
+    {
+      "id": "ms-r4dx-r1-cutoffs-2026-10-10",
+      "kind": "measurement",
+      "title": "duplex r4 R1 thinking-pause cut-offs (>= 500 ms holds, eot-bench Hindi real adult speech, real recorded STT events replayed; n = 147 holds, 400 turns; 2026-10-10): MAI 6 -> 3/147 (2.0 %, CI 0.7-5.8), D4 7 -> 4/147 (2.7 %, CI 1.1-6.8); silence-900 on the same holds 7/147; TEST alone 3/70 = 4.3 % on both lanes; no hold went 0 -> 1. Cost: 21/400 MAI and 10/400 D4 turn ends decided ~1.2 s later; gap p50 unchanged (1,012 / 1,019 ms)",
+      "at": "2026-10-10"
+    },
+    {
+      "id": "dc-r4dx-hush-after-released-duck",
+      "kind": "decision",
+      "title": "duplex r4: the hush is tried for the live burst over her even when its reflex duck was released at onset (an inherited 'not the child' pitch attribution), keeping every attribution / echo gate (OVERLAP.hushAfterRelease). Reverse if: room voices start being hushed more often in real lessons (shadow telemetry roomHushed) than continuers kept rise.",
+      "at": "2026-10-10"
+    },
+    {
+      "id": "dc-r4dx-hush-giveup-60s",
+      "kind": "decision",
+      "title": "duplex r4: a hush give-up (4 unconfirmed echo-like hushes) lasts 60 s, then re-arms with a fresh count (was: the rest of the lesson). AMI TRAIN sweep 15 / 30 / 60 s identical; 60 s taken as the most conservative. Reverse if: a device with poor AEC shows audible pumping (repeated dips) in the owner cohort.",
+      "at": "2026-10-10"
+    },
+    {
+      "id": "dc-r4dx-sustain-counts-nonecho",
+      "kind": "decision",
+      "title": "duplex r4: the overlap sustain and G11's 1 s forced yield count only voiced frames >= 3 dB over her output level (OVERLAP.sustainCountsNonEcho): bleed of her own voice after a short 'yes' no longer extends the burst into a yield. Reverse if: on a device a real child barge-in at her output level is paused later than before (shadow yieldLatency).",
+      "at": "2026-10-10"
+    },
+    {
+      "id": "ms-r4dx-ami-overlap-2026-10-10",
+      "kind": "measurement",
+      "title": "duplex r4 AMI overlap (real adult speech, 4 meetings, 48 pairs, real recorded STT events, open-loop replay; 2026-10-10) BEFORE -> AFTER: continuers kept 154 -> 160/195 (82.1 %), barge-ins stopped <= 200 ms 24 -> 31/51 (60.8 %, R4 met), room false yields 32 -> 33/239 (one worse), bleed self-yields 101 -> 96/730; TEST meetings (ES2005b, IS1004b): 76 -> 76/92, 11 -> 14/29, 19 -> 21/138, 23 -> 19/309. 16 of 35 remaining continuer failures and 13 of 20 late barge-ins began while the phase was not her floor (her audio already stopped on a device: open-loop rig)",
+      "at": "2026-10-10"
+    },
+    {
+      "id": "ms-r4dx-midsentence-harness-2026-10-10",
+      "kind": "measurement",
+      "title": "duplex r4 hands-free mid-sentence pauses, local production build via tests/prod/r4-timeline (owner-cohort TEST child, synthetic child-like TTS clip, fake ASR fixed 750 ms; 2026-10-10): with the original fake transcriber 6/6 turns sent truncated on a 450 ms-pause clip; with patch 01 (a client commit opens a new item, as gpt-live-transcribe does: 205/206 recorded commits) 0/18 truncated across 450 / 700 / 1,000 ms pauses (36 pauses). Engine decision p50 1.4-1.7 s after speech end; decision -> turn POST p50 0.28-0.35 s, ~1.1 s on 5/18 (src/lesson, not the engine)",
+      "at": "2026-10-10"
+    },
+    {
+      "id": "rj-r4dx-lexical-turn-echo-gate",
+      "kind": "rejection",
+      "title": "duplex r4 tried: words that read as a turn do not yield while the CURRENT mic frame sits within 3 dB of her estimated echo level (output + learned coupling), meant for her own words leaking back on AMI. Broke: ship5-fix-duplex-revoke B3 (a real e2e case): a barge-in's words land after its burst has ended, when the mic hears only her echo, so the child's words were read as echo and the revoke never fired. (It bought bleed self-yields 77 -> 56/421 on AMI TRAIN.) The gate must judge the BURST that carried the words, not the frame at arrival",
+      "at": "2026-10-10"
+    },
+    {
+      "id": "rj-r4dx-hushed-sustain-longer",
+      "kind": "rejection",
+      "title": "duplex r4 tried: OVERLAP.hushedSustainMs 1,300 / 1,600 (was 1,000) to keep talking through longer continuers. Broke nothing but changed nothing (AMI TRAIN identical): G11's 1 s forced yield is the binding rule; the fix that worked is counting only voice above her echo level",
+      "at": "2026-10-10"
+    },
+    {
+      "id": "rj-r4dx-fake-asr-drops-after-commit",
+      "kind": "rejection",
+      "title": "harness (tests/prod/r4-timeline driver.mjs) fake transcriber: a client commit mid-utterance finalised the item and never transcribed the rest, so every hands-free mid-sentence pause read as a truncated turn (stream 3's '4/6 committed mid-utterance' on 2026-10-10). Replaced by patch 01 (docs/design/round4/build/duplex/patches)",
+      "at": "2026-10-10"
+    },
+    {
+      "id": "open-r4dx-r5-r6-target-speaker",
+      "kind": "open",
+      "title": "duplex R5 (room false yields 13.8 %) and R6 (bleed self-yields 13.2 %) still fail: both need to know WHO is speaking (a target-speaker / personal-VAD model enrolled on the child's own voice) or a measured echo path (the AEC reference), not more acoustic rules",
+      "at": "2026-10-10"
+    },
+    {
+      "id": "dc-r4dx-closed-elaboration-backstop",
+      "kind": "decision",
+      "title": "duplex r4: a closed answer longer than a short answer (> 3 words) gets at least the free exchange class wait (PAUSE_WAIT) as its silence backstop, not max(700 ms, hold p50) (config CLOSED_ELABORATION). Reverse if: the pilot shows children's multi-word closed answers are complete at the first pause and the extra wait (~+375 ms on closed phrase answers; SIMULATED TaxilaFDB TEST missed > 2 s +1.5 points) costs more than the cut-offs it prevents.",
+      "at": "2026-10-10"
+    },
+    {
+      "id": "ms-r4dx-realstt-midpause-2026-10-10",
+      "kind": "measurement",
+      "title": "duplex r4 mid-sentence pauses on the REAL transcriber (production gpt-live-transcribe socket D4, engine in the loop, probes live; SYNTHETIC child-like TTS clips, 450 / 700 / 1,000 ms between phrases; 4 Director contexts x 6; n = 72; US sandbox; 2026-10-10): truncated turns 2/72 -> 0/72 (both BEFORE cuts: 1,000 ms pauses in closed contexts, the 700 ms closed backstop); every commit carried the whole sentence across 3 items",
+      "at": "2026-10-10"
+    },
+    {
+      "id": "ms-r4dx-fdb-2026-10-10",
+      "kind": "measurement",
+      "title": "duplex r4 SIMULATED TaxilaFDB (child-like TTS, 3 lanes; train / dev / test; 2026-10-10) BEFORE -> AFTER: thinking cut-offs unchanged (TEST 2.7 / 2.7 / 3.4 %), stopped <= 200 ms unchanged (105/108), continuers kept unchanged, safety detection unchanged (84/84 D4, FAST; MAI_HOME 83/84 pre-existing); paused within 1 s of a barge-in down (TEST D4 22 -> 8 %: hushAfterRelease, she is hushed first); missed > 2 s TEST +1.3-1.5 points (CLOSED_ELABORATION), TRAIN unchanged",
+      "at": "2026-10-10"
+    },
+    {
+      "id": "open-r4dx-x3-owner-decision",
+      "kind": "open",
+      "title": "duplex X3 (speaker matching for R5): NOT funded (main session 2026-10-10). Owner decision needed: whether ephemeral, on-device, never-stored speaker matching that can only make her ignore a non-child voice is allowed under voice-features-longitudinal (\"Never: voiceprints / speaker ID\"). Until then R5 stays unmet for duplex on; no AMI measurement is run. Note: docs/design/round4/build/duplex/X3-DECISION.md",
+      "at": "2026-10-10"
+    },
+    {
+      "id": "dc-r4dx-aec-reference-funded",
+      "kind": "decision",
+      "title": "duplex R6: build an echo reference measured from her own output (correlation of the mic with her playback) in src/duplex, any link seam as a patch request; bar R6 self-yields <= 2 % on the same AMI rig (13.2 % baseline) with R1-R4 and stop / repair / safeguard yields held; an ambiguous correlation yields to the child (main session 2026-10-10, no spend, no biometrics). Reverse if: the reference correlation cannot reach <= 2 % without hurting R1-R4; then accept R6 as unmet and gate duplex on on shadow telemetry from real lessons.",
+      "at": "2026-10-10"
+    },
+    {
+      "id": "rj-r4dx-envelope-echo-reference",
+      "kind": "rejection",
+      "title": "duplex r4 tried (funded AEC-reference work, R6): an envelope echo reference (mic dB envelope tracks her output envelope over 0.5 s + 0.2 s at the best lag <= 60 ms, and no louder than her predicted echo). Broke / no gain on AMI TRAIN: replacing the level rule 84 -> 79/103 continuers and 77 -> 80/421 bleed self-yields; only adding echo explanations to it: identical to without (frame AUC 0.82; with the child-wins-a-doubt rule too few echo frames qualify)",
+      "at": "2026-10-10"
+    },
+    {
+      "id": "rj-r4dx-burst-lexical-gate",
+      "kind": "rejection",
+      "title": "duplex r4 tried: a turn's words yield only from a burst that voiced >= N ms above her echo level (N 100-400). AMI TRAIN looked strong (N 200: room 12 -> 7/101, bleed 77 -> 45/421, continuers 84 -> 85/103) but at N 200 and 300 the real interruption \"s 'scuse me for one sec\" (ES2004b) was never hushed and never yielded: the talker sat at her echo level. R4 cannot see it (a hush counts as a stop); the per-barge-in check can. Rejected: a lost real interruption outweighs the false-yield gain",
+      "at": "2026-10-10"
+    },
+    {
+      "id": "ms-r4dx-ami-aec-2026-10-10",
+      "kind": "measurement",
+      "title": "duplex r4 a linear echo canceller (NLMS, her own audio as reference, 128-2,048 taps) on AMI real speech removes only 4-6 dB of her voice from another participant's headset (IS1008b pair A/B, 300 s; 4.6 dB at 128 taps, 6.3 dB at 1,024; 2026-10-10): AMI cross-talk is not loudspeaker echo, so AMI R6 cannot stand in for a phone with AEC. SIMULATED phone-like echo (TaxilaFDB, 3 lanes): echo self-triggers 0/240 TEST (Wilson upper ~1.6 %), 0/120 TRAIN, before and after",
+      "at": "2026-10-10"
+    },
+    {
+      "id": "rj-r4dx-short-turn-misheard-continuer",
+      "kind": "rejection",
+      "title": "duplex r4 R3 trial: a short ended (or echo-level) burst whose own words are 1-2 tokens with no listening token, no '?', no 'no' and no call to her is a misheard continuer. AMI TRAIN: continuers 84 -> 82/103 (1 token) and 81/103 (2 tokens), room 12 -> 9/101, bleed 77 -> 72 / 60/421. It fixed none of the targeted misheard continuers ('sure' -> 'As much', 'yeah' -> 'could') and two other continuers ('mm', 'oh yeah') failed through knock-on state changes. Rejected: R3 is the target and a turn got worse",
+      "at": "2026-10-10"
+    },
+    {
+      "id": "ms-r4dx-ami-closed-loop-2026-10-10",
+      "kind": "measurement",
+      "title": "duplex r4 closed-loop AMI rig (evals/duplex-r4/ami-closed.mjs; real adult AMI speech + recorded real STT, not children; 2026-10-10): --open reproduces the round-3 rig on TRAIN (84/103, 17/22, 12/101; bleed 76/420 vs 77/421). Aligned closed loop, 4 meetings, before -> after: continuers 41/45 -> 40/44, barge-ins <= 200 ms 5/8 -> 5/8, room 3/102 -> 3/101, bleed 24/367 -> 21/364; no event worse event-by-event. The open-loop revokes disappear, but 2,188 of 3,207 lines are skipped (a recorded child never yields), so the sample is starved and biased: not evidence for R3/R4. Needs a child that reacts (live test, Gate S, or a simulator)",
+      "at": "2026-10-10"
+    },
+    {
+      "id": "dc-r4dx-continuer-classifier-option-a",
+      "kind": "decision",
+      "title": "duplex r4 (main session, 2026-10-10): build the audio continuer classifier, option A (small CRNN < 1 MB int8, AMI non-eval + Smart Turn data CC BY 4.0, no child audio), AFTER 4B's integration lands; behind a flag, default off, on only after the owner's hands-free test. Merge preconditions: the adversarial p_continuer = 1.0 test (stop / repair / safeguard timing identical), on-device latency on the reference proxy, R3 before/after on TRAIN and TEST. Ceiling with a perfect classifier: AMI TRAIN 84 -> 92/103 (89 %), so R3 >= 90 % stays unmet even then. Reversal: if the adversarial test cannot be made identical, or R4/R5/R6 or any barge-in gets worse, do not ship. SUPERSEDED 2026-10-10 (owner via main session): no new features; built work ships for the owner to test live; the classifier is NOT started. Reopen only on a new owner decision",
+      "at": "2026-10-10"
+    }
+  ],
+  "edges": [
+    {
+      "src": "ms-r4dx-r1-cutoffs-2026-10-10",
+      "rel": "measured_by",
+      "dst": "dc-r4dx-dictation-pause-class"
+    },
+    {
+      "src": "dc-r4dx-dictation-pause-class",
+      "rel": "part_of",
+      "dst": "dc-r4-owner-vision-superhuman-tutor"
+    },
+    {
+      "src": "ms-r4dx-ami-overlap-2026-10-10",
+      "rel": "measured_by",
+      "dst": "dc-r4dx-hush-after-released-duck"
+    },
+    {
+      "src": "ms-r4dx-ami-overlap-2026-10-10",
+      "rel": "measured_by",
+      "dst": "dc-r4dx-sustain-counts-nonecho"
+    },
+    {
+      "src": "rj-r4dx-lexical-turn-echo-gate",
+      "rel": "blocks",
+      "dst": "open-r4dx-r5-r6-target-speaker"
+    },
+    {
+      "src": "rj-r4dx-fake-asr-drops-after-commit",
+      "rel": "caused_by",
+      "dst": "ms-r4dx-midsentence-harness-2026-10-10"
+    },
+    {
+      "src": "ms-r4dx-realstt-midpause-2026-10-10",
+      "rel": "measured_by",
+      "dst": "dc-r4dx-closed-elaboration-backstop"
+    },
+    {
+      "src": "ms-r4dx-fdb-2026-10-10",
+      "rel": "measured_by",
+      "dst": "dc-r4dx-hush-after-released-duck"
+    },
+    {
+      "src": "open-r4dx-x3-owner-decision",
+      "rel": "blocks",
+      "dst": "open-r4dx-r5-r6-target-speaker"
+    },
+    {
+      "src": "voice-features-longitudinal",
+      "rel": "constrains",
+      "dst": "open-r4dx-x3-owner-decision"
+    },
+    {
+      "src": "dc-r4dx-aec-reference-funded",
+      "rel": "part_of",
+      "dst": "open-r4dx-r5-r6-target-speaker"
+    },
+    {
+      "src": "rj-r4dx-envelope-echo-reference",
+      "rel": "part_of",
+      "dst": "dc-r4dx-aec-reference-funded"
+    },
+    {
+      "src": "ms-r4dx-ami-aec-2026-10-10",
+      "rel": "measured_by",
+      "dst": "dc-r4dx-aec-reference-funded"
+    },
+    {
+      "src": "rj-r4dx-short-turn-misheard-continuer",
+      "rel": "rejected_for",
+      "dst": "ms-r4dx-ami-overlap-2026-10-10"
+    },
+    {
+      "src": "ms-r4dx-ami-closed-loop-2026-10-10",
+      "rel": "measured_by",
+      "dst": "ms-r4dx-ami-overlap-2026-10-10"
+    },
+    {
+      "src": "dc-r4dx-continuer-classifier-option-a",
+      "rel": "part_of",
+      "dst": "ms-r4dx-ami-overlap-2026-10-10"
+    }
+  ]
+}

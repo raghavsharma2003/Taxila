@@ -1,0 +1,594 @@
+{
+ "id": "duplex-r3-r4-ami-train-hushrel",
+ "date": "2026-10-10",
+ "rec": "ami-raw-D4",
+ "meetings": [
+  "ES2004b",
+  "IS1008b"
+ ],
+ "seconds": 542,
+ "set": null,
+ "engineHash": {
+  "config": "ced5ee3fc4",
+  "rules": "d8d354b38d",
+  "overlap": "8387f0722e",
+  "host": "c280deac64",
+  "governor": "2bf9c541b8"
+ },
+ "label": "REAL RECORDED ADULT SPEECH (AMI, CC BY 4.0, English incl. Indian-L1 adults; evaluation only) + REAL STT events (production gpt-live-transcribe socket, recorded live in round 2), replayed open loop per her = Y through the current engine. Not children, not Hindi.",
+ "pairs": 24,
+ "continuer_keepTalking": {
+  "k": 79,
+  "n": 103,
+  "rate": 0.767,
+  "ci95": [
+   0.677,
+   0.838
+  ]
+ },
+ "continuer_hushed": {
+  "k": 45,
+  "n": 103,
+  "rate": 0.437,
+  "ci95": [
+   0.345,
+   0.533
+  ]
+ },
+ "continuer_failure_reasons": [
+  [
+   "yield:barge_in",
+   14
+  ],
+  [
+   "yield:revoke",
+   9
+  ],
+  [
+   "yield:repair_request",
+   1
+  ]
+ ],
+ "bargeIn_stop": {
+  "n": 22,
+  "stopped": 18,
+  "p50": 160,
+  "p90": 530,
+  "within200": 15,
+  "within200rate": {
+   "k": 15,
+   "n": 22,
+   "rate": 0.682,
+   "ci95": [
+    0.473,
+    0.836
+   ]
+  }
+ },
+ "bargeIn_yield": {
+  "n": 22,
+  "yielded": 11,
+  "p50": 1010,
+  "p90": 2330,
+  "within1000": 5
+ },
+ "roomTalk_falseYield": {
+  "k": 12,
+  "n": 101,
+  "rate": 0.119,
+  "ci95": [
+   0.069,
+   0.196
+  ]
+ },
+ "roomTalk_hushed": {
+  "k": 19,
+  "n": 101,
+  "rate": 0.188,
+  "ci95": [
+   0.124,
+   0.275
+  ]
+ },
+ "roomTalk_yield_reasons": [
+  [
+   "yield:barge_in",
+   10
+  ],
+  [
+   "yield:revoke",
+   2
+  ]
+ ],
+ "echo_selfYield": {
+  "k": 78,
+  "n": 421,
+  "rate": 0.185,
+  "ci95": [
+   0.151,
+   0.225
+  ]
+ },
+ "echo_yield_reasons": [
+  [
+   "yield:barge_in|sustained_voice",
+   28
+  ],
+  [
+   "yield:barge_in|",
+   25
+  ],
+  [
+   "yield:barge_in|open_tail",
+   7
+  ],
+  [
+   "yield:barge_in|prosody_continue",
+   4
+  ],
+  [
+   "yield:barge_in|silence_long_for_child",
+   4
+  ],
+  [
+   "yield:barge_in|lexical_horizon_unseen",
+   4
+  ],
+  [
+   "yield:barge_in|silence_short_for_child",
+   3
+  ],
+  [
+   "yield:barge_in|prosody_final",
+   2
+  ],
+  [
+   "yield:revoke|repaired",
+   1
+  ]
+ ],
+ "detail": {
+  "cont": [
+   {
+    "ok": false,
+    "hushed": true,
+    "words": "sure",
+    "ms": 400,
+    "why": "yield:barge_in|lexical_horizon_unseen+child_voicing",
+    "m": "ES2004b",
+    "X": "B",
+    "Y": "D"
+   },
+   {
+    "ok": false,
+    "hushed": true,
+    "words": "yeah",
+    "ms": 310,
+    "why": "yield:barge_in|lexical_horizon_unseen+child_voicing",
+    "m": "ES2004b",
+    "X": "B",
+    "Y": "D"
+   },
+   {
+    "ok": false,
+    "hushed": false,
+    "words": "yeah",
+    "ms": 330,
+    "why": "yield:barge_in|sustained_voice+onset_mid_clause+lexical_horizon_unseen+child_voicing",
+    "m": "ES2004b",
+    "X": "C",
+    "Y": "A"
+   },
+   {
+    "ok": false,
+    "hushed": true,
+    "words": "yeah",
+    "ms": 570,
+    "why": "yield:barge_in|sustained_voice+onset_mid_clause+onset_pitch_raised+lexical_horizon_unseen",
+    "m": "ES2004b",
+    "X": "C",
+    "Y": "A"
+   },
+   {
+    "ok": false,
+    "hushed": false,
+    "words": "yeah",
+    "ms": 350,
+    "why": "yield:revoke|repaired+child_voicing",
+    "m": "ES2004b",
+    "X": "C",
+    "Y": "B"
+   },
+   {
+    "ok": false,
+    "hushed": true,
+    "words": "yeah yeah",
+    "ms": 1170,
+    "why": "yield:barge_in|sustained_voice+onset_mid_clause+onset_pitch_raised+lexical_horizon_unseen",
+    "m": "ES2004b",
+    "X": "C",
+    "Y": "B"
+   },
+   {
+    "ok": false,
+    "hushed": false,
+    "words": "yeah",
+    "ms": 770,
+    "why": "yield:revoke|repaired+child_voicing",
+    "m": "ES2004b",
+    "X": "C",
+    "Y": "B"
+   },
+   {
+    "ok": false,
+    "hushed": false,
+    "words": "yeah",
+    "ms": 750,
+    "why": "yield:barge_in|sustained_voice+onset_mid_clause+lexical_horizon_unseen+child_voicing",
+    "m": "ES2004b",
+    "X": "C",
+    "Y": "B"
+   },
+   {
+    "ok": false,
+    "hushed": false,
+    "words": "mm-hmm",
+    "ms": 490,
+    "why": "yield:revoke|repaired+open_tail+child_voicing",
+    "m": "ES2004b",
+    "X": "C",
+    "Y": "B"
+   },
+   {
+    "ok": false,
+    "hushed": false,
+    "words": "yeah",
+    "ms": 280,
+    "why": "yield:barge_in|sustained_voice+onset_mid_clause+lexical_horizon_unseen+child_voicing",
+    "m": "ES2004b",
+    "X": "C",
+    "Y": "D"
+   },
+   {
+    "ok": false,
+    "hushed": false,
+    "words": "alright okay",
+    "ms": 1030,
+    "why": "yield:revoke|repaired+lexical_horizon_unseen+child_voicing",
+    "m": "ES2004b",
+    "X": "C",
+    "Y": "D"
+   },
+   {
+    "ok": false,
+    "hushed": false,
+    "words": "yeah",
+    "ms": 630,
+    "why": "yield:barge_in|sustained_voice+onset_mid_clause+lexical_horizon_unseen+child_voicing",
+    "m": "ES2004b",
+    "X": "C",
+    "Y": "D"
+   },
+   {
+    "ok": false,
+    "hushed": false,
+    "words": "yes",
+    "ms": 1010,
+    "why": "yield:barge_in|sustained_voice+onset_mid_clause+onset_pitch_raised+lexical_horizon_unseen",
+    "m": "ES2004b",
+    "X": "D",
+    "Y": "B"
+   },
+   {
+    "ok": false,
+    "hushed": false,
+    "words": "mm-hmm",
+    "ms": 380,
+    "why": "yield:revoke|repaired+child_voicing",
+    "m": "ES2004b",
+    "X": "D",
+    "Y": "B"
+   },
+   {
+    "ok": false,
+    "hushed": false,
+    "words": "right",
+    "ms": 390,
+    "why": "yield:barge_in|sustained_voice+onset_mid_clause+onset_pitch_raised+lexical_horizon_unseen",
+    "m": "ES2004b",
+    "X": "D",
+    "Y": "B"
+   },
+   {
+    "ok": false,
+    "hushed": false,
+    "words": "okay",
+    "ms": 390,
+    "why": "yield:revoke|repaired+child_voicing",
+    "m": "ES2004b",
+    "X": "D",
+    "Y": "C"
+   },
+   {
+    "ok": false,
+    "hushed": false,
+    "words": "mm",
+    "ms": 720,
+    "why": "yield:barge_in|sustained_voice+onset_mid_clause+lexical_horizon_unseen+child_voicing",
+    "m": "ES2004b",
+    "X": "D",
+    "Y": "C"
+   },
+   {
+    "ok": false,
+    "hushed": false,
+    "words": "mm-hmm",
+    "ms": 520,
+    "why": "yield:revoke|repaired+yield_tag+child_voicing",
+    "m": "ES2004b",
+    "X": "D",
+    "Y": "C"
+   },
+   {
+    "ok": false,
+    "hushed": false,
+    "words": "oh yeah",
+    "ms": 720,
+    "why": "yield:barge_in|sustained_voice+onset_mid_clause+lexical_horizon_unseen+child_voicing",
+    "m": "ES2004b",
+    "X": "D",
+    "Y": "C"
+   },
+   {
+    "ok": false,
+    "hushed": true,
+    "words": "mm-hmm",
+    "ms": 280,
+    "why": "yield:repair_request|onset_mid_clause+x_rising_burst+prosody_continue+lexical_horizon_unseen",
+    "m": "IS1008b",
+    "X": "A",
+    "Y": "B"
+   },
+   {
+    "ok": false,
+    "hushed": true,
+    "words": "yep",
+    "ms": 540,
+    "why": "yield:barge_in|sustained_voice+onset_mid_clause+lexical_horizon_unseen+child_voicing",
+    "m": "IS1008b",
+    "X": "A",
+    "Y": "D"
+   },
+   {
+    "ok": false,
+    "hushed": true,
+    "words": "hmm",
+    "ms": 130,
+    "why": "yield:barge_in|lexical_horizon_unseen+silence_long_for_child",
+    "m": "IS1008b",
+    "X": "C",
+    "Y": "B"
+   },
+   {
+    "ok": false,
+    "hushed": false,
+    "words": "yeah",
+    "ms": 300,
+    "why": "yield:revoke|repaired+lexical_horizon_unseen+child_voicing",
+    "m": "IS1008b",
+    "X": "C",
+    "Y": "D"
+   },
+   {
+    "ok": false,
+    "hushed": false,
+    "words": "mm",
+    "ms": 180,
+    "why": "yield:revoke|repaired+projection+child_voicing",
+    "m": "IS1008b",
+    "X": "D",
+    "Y": "A"
+   }
+  ],
+  "barge": [
+   {
+    "hush": 180,
+    "yield": null,
+    "early": false,
+    "words": "can you look into the company",
+    "m": "ES2004b",
+    "X": "B",
+    "Y": "A"
+   },
+   {
+    "hush": 170,
+    "yield": null,
+    "early": false,
+    "words": "well we need to think about",
+    "m": "ES2004b",
+    "X": "B",
+    "Y": "A"
+   },
+   {
+    "hush": 180,
+    "yield": null,
+    "early": false,
+    "words": "yeah um so you it's like",
+    "m": "ES2004b",
+    "X": "B",
+    "Y": "C"
+   },
+   {
+    "hush": 100,
+    "yield": null,
+    "early": false,
+    "words": "we are we're talking about um",
+    "m": "ES2004b",
+    "X": "B",
+    "Y": "D"
+   },
+   {
+    "hush": 170,
+    "yield": 1140,
+    "early": false,
+    "words": "yeah yeah that's what was just",
+    "m": "ES2004b",
+    "X": "C",
+    "Y": "B"
+   },
+   {
+    "hush": 160,
+    "yield": 2330,
+    "early": false,
+    "words": "no well no 'cause you wouldn't",
+    "m": "ES2004b",
+    "X": "C",
+    "Y": "B"
+   },
+   {
+    "hush": null,
+    "yield": null,
+    "early": false,
+    "words": "yeah and if yeah if you",
+    "m": "ES2004b",
+    "X": "C",
+    "Y": "B"
+   },
+   {
+    "hush": 140,
+    "yield": null,
+    "early": false,
+    "words": "mm-hmm so can we not programme",
+    "m": "ES2004b",
+    "X": "D",
+    "Y": "B"
+   },
+   {
+    "hush": 150,
+    "yield": null,
+    "early": false,
+    "words": "mm i'm just thinking of budgetary",
+    "m": "ES2004b",
+    "X": "D",
+    "Y": "B"
+   },
+   {
+    "hush": null,
+    "yield": 1010,
+    "early": false,
+    "words": "right so when they press for",
+    "m": "ES2004b",
+    "X": "D",
+    "Y": "B"
+   },
+   {
+    "hush": null,
+    "yield": null,
+    "early": false,
+    "words": "mm and the rechargeable batteries was",
+    "m": "ES2004b",
+    "X": "D",
+    "Y": "B"
+   },
+   {
+    "hush": null,
+    "yield": null,
+    "early": false,
+    "words": "mm-hmm that's not at the moment",
+    "m": "ES2004b",
+    "X": "D",
+    "Y": "B"
+   },
+   {
+    "hush": null,
+    "yield": 1560,
+    "early": false,
+    "words": "maybe you can uh add it",
+    "m": "IS1008b",
+    "X": "A",
+    "Y": "B"
+   },
+   {
+    "hush": null,
+    "yield": 0,
+    "early": true,
+    "words": "yeah the the i'm sorry because",
+    "m": "IS1008b",
+    "X": "A",
+    "Y": "B"
+   },
+   {
+    "hush": 140,
+    "yield": 470,
+    "early": false,
+    "words": "okay thank you christine for uh",
+    "m": "IS1008b",
+    "X": "A",
+    "Y": "D"
+   },
+   {
+    "hush": null,
+    "yield": 100,
+    "early": false,
+    "words": "good idea good idea i'll i'll",
+    "m": "IS1008b",
+    "X": "B",
+    "Y": "A"
+   },
+   {
+    "hush": 160,
+    "yield": 1830,
+    "early": false,
+    "words": "it'd be hard to inflate something",
+    "m": "IS1008b",
+    "X": "B",
+    "Y": "A"
+   },
+   {
+    "hush": 180,
+    "yield": null,
+    "early": false,
+    "words": "so uh you know but that's",
+    "m": "IS1008b",
+    "X": "B",
+    "Y": "C"
+   },
+   {
+    "hush": null,
+    "yield": 0,
+    "early": true,
+    "words": "and that's logical and normal 'cause",
+    "m": "IS1008b",
+    "X": "B",
+    "Y": "C"
+   },
+   {
+    "hush": null,
+    "yield": null,
+    "early": false,
+    "words": "it seems also like with the",
+    "m": "IS1008b",
+    "X": "C",
+    "Y": "B"
+   },
+   {
+    "hush": 170,
+    "yield": 2440,
+    "early": false,
+    "words": "oh that's definitely a very important",
+    "m": "IS1008b",
+    "X": "C",
+    "Y": "B"
+   },
+   {
+    "hush": null,
+    "yield": 530,
+    "early": false,
+    "words": "s 'scuse me for one sec",
+    "m": "IS1008b",
+    "X": "C",
+    "Y": "D"
+   }
+  ]
+ }
+}

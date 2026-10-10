@@ -102,7 +102,19 @@ export const OPEN_TURN_WAIT = { prosodyFinal: 1100 as Ms, neutral: 1100 as Ms, p
  * fastest setting with <= 3 % cut-offs on both lanes; reported on TEST. Supersedes OPEN_TURN_WAIT (kept for older imports).
  * Real adult speech, not children: the pilot refits it. Mutable so the sweep can set it.
  */
-export const PAUSE_WAIT: Record<"hold" | "enumerating" | "question" | "idk" | "complete", Ms> = { hold: 1600, enumerating: 1200, question: 900, idk: 0, complete: 1100 };
+/*
+ * Round 4 (duplex, 2026-10-10): + `dictation` (markers.ts `dictating`: a number / address / id being read out, its tail the
+ * noun or a number, not closed). Real eot-bench Hindi, both real STT lanes: 6 of the 13 thinking pauses round 3 still cut
+ * (MAI + D4) were read-outs ("टेबल नंबर [1.5 s] है", "मोबाइल नंबर है सात सौ [1.2 s] सिक्स…", "7 0 090 2 0 6 8 1 [2.2 s] मेरा
+ * ईमेल"). 2,400 ms is the least wait with the fewest TRAIN cut-offs on both lanes (evals/duplex-r4/eot-sweep-r4.mjs; MAI 2 → 0,
+ * D4 3 → 1 of 77); TEST is reported (RESULTS.md). The turn-end gap p50 does not move (few turns END on a read-out).
+ */
+export const PAUSE_WAIT: Record<"hold" | "dictation" | "enumerating" | "question" | "idk" | "complete", Ms> = { hold: 1600, dictation: 2400, enumerating: 1200, question: 900, idk: 0, complete: 1100 };
+/**
+ * Round 4 (duplex, 2026-10-10): a closed answer longer than a short answer (more than YES_NO_MAX_WORDS words) gets at least
+ * the free exchange's class wait (PAUSE_WAIT) as its silence backstop (governor.ts backstopMs). Mutable for ablation.
+ */
+export const CLOSED_ELABORATION = { on: true };
 /** A hesitant first value (pausesThisTurn >= 1 or a filler before it) waits for this much silence too (§2.5.1; M-B1 21/21). */
 export const HESITANT_VALUE_SILENCE_MS: Ms = 300;
 /** word / phrase forms: complete only with prosodic finality or this much silence (§2.5.1). */
@@ -231,6 +243,29 @@ export const OVERLAP = {
    * within 200 ms 11 → 13/22, room false yields 12 → 13/101, bleed self-yields 79 → 78/421; TaxilaFDB TEST (simulated) unchanged.
    */
   acousticYieldNeedsNonEcho: true,
+  /**
+   * Round 4 (duplex, AMI real speech + real STT, 2026-10-10): a burst too short to carry its own pitch inherits the last
+   * attribution (`attributionCarryMs`); when that was "not the child" its reflex duck was released at the onset, and the host
+   * then never tried the hush for that burst (the hush ran only while ducked). Once the burst's own pitch said "the child"
+   * it was paused at the bare 600 ms sustain with no hush in front: "yeah" (330-1,010 ms) paused her, and barge-ins sounded
+   * under her full voice. On: the hush is tried for the live burst whatever happened to its reflex duck.
+   */
+  hushAfterRelease: true,
+  /**
+   * Round 4: how long a hush give-up lasts before the hush re-arms with a fresh count (0 = the rest of the lesson, round 3).
+   * On real AMI meetings the echo-like give-up still fired within minutes and then held for the whole session: later
+   * continuers met the bare 600 ms sustain with no hush ("OFF" in evals/duplex-r4/ami-trace.mjs). [E, AMI TRAIN sweep]
+   */
+  hushGiveUpForMs: 60000 as Ms,
+  /**
+   * Round 4: the sustain (`sustainedMs`, `hushedSustainMs`) and G11's forced yield (`forceYieldMs`) count only the burst's
+   * voiced time clearly above her echo level (OverlapFeatures.nonEchoMs, frames >= `nonEchoDb` over her output). On AMI a
+   * 660 ms "yes" was followed by her own voice bleeding into the headset ~25 dB under her level, the device VAD kept
+   * "voicing", and the forced yield fired at 1 s on a continuer. A real interruption sits above her level throughout and
+   * counts in full; acoustic yields already need a non-echo frame at the moment of decision (`acousticYieldNeedsNonEcho`).
+   */
+  sustainCountsNonEcho: true,
+  nonEchoDb: 3,
 };
 
 /**

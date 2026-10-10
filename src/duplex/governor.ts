@@ -32,9 +32,9 @@ import type {
 } from "./engine.ts";
 import {
   BACKSTOP_HOLD_PH, BACKSTOP_HOLD_STRETCH, CONTEXT, CUT_IN, FALLBACK, HOLD, HORIZON_ACOUSTIC_P, HORIZON_MS, OVERLAP, PAUSE_WAIT, RATE,
-  REVOCABLE_MS, SAFETY, VERDICT, ACOUSTIC_FRESH_MS, FIRST_TEXT_P90, TURN_PACE,
+  REVOCABLE_MS, SAFETY, VERDICT, ACOUSTIC_FRESH_MS, FIRST_TEXT_P90, TURN_PACE, CLOSED_ELABORATION,
 } from "./config.ts";
-import { exchangeOf, holdProfile, pauseClass, verdictAnchor } from "./engineRules.ts";
+import { exchangeOf, holdProfile, pauseClass, verdictAnchor, wordCount, YES_NO_MAX_WORDS } from "./engineRules.ts";
 import { overlapKind } from "./turnPolicy.ts";
 
 export type GovernorEvent =
@@ -335,7 +335,9 @@ export class Governor {
     if (HER_FLOOR.has(this.phase) && d.action === "KEEP_TALKING" && tick.overlap) {
       const o = tick.overlap;
       const target = o.targetSpeaker === null || o.targetSpeaker >= 0.5;
-      if (target && o.echoLikelihood < (OVERLAP.acousticYieldNeedsNonEcho ? 0.5 : 0.7) && c.voicing && c.voicedRunMs >= OVERLAP.forceYieldMs) {
+      // round 4 (OVERLAP.sustainCountsNonEcho): the forced-yield clock counts only voice clearly above her echo level
+      const forceMs = OVERLAP.sustainCountsNonEcho && o.nonEchoMs !== undefined ? Math.min(c.voicedRunMs, o.nonEchoMs) : c.voicedRunMs;
+      if (target && o.echoLikelihood < (OVERLAP.acousticYieldNeedsNonEcho ? 0.5 : 0.7) && c.voicing && forceMs >= OVERLAP.forceYieldMs) {
         veto("YIELD", "sustained_voice", { action: "YIELD", reason: "barge_in", atWordBoundary: true, resumable: true });
       } else if (o.lexicalKind === "stop" || o.lexicalKind === "repair" || (target && (o.lexicalKind === "answer" || o.lexicalKind === "turn"))) {
         // p1-duplex (2026-10-05): words from a burst far below the child's own level (the TV, the room) are not the child's
@@ -437,7 +439,12 @@ export class Governor {
     // shape bought nothing), floored by the child's own within-turn pace
     if (ex === "free" || ex === "question_to_her" || ex === "chit_chat") return Math.max(PAUSE_WAIT[pauseClass(tick)], this.paceMs());
     const { p50, p90 } = holdProfile(tick);
-    const base = CONTEXT[ex].backstopMs(p50, p90, tick.markers.values.length > 0);
+    let base = CONTEXT[ex].backstopMs(p50, p90, tick.markers.values.length > 0);
+    // round 4 (OVERLAP-independent, config CLOSED_ELABORATION): a closed answer that runs past a short answer ("मुझे लगता है
+    // डब्बे। मैं चार कॉर्नर। …") is an elaboration: its silence backstop is at least the free exchange's word-aware class wait,
+    // not the 700 ms a bare "62" gets (real transcriber, 1,000 ms mid-sentence pauses: 2 of 12 closed-context sentences were
+    // cut there on the backstop). The engine's own turn end on a complete short answer is not touched.
+    if (ex === "closed_answer" && CLOSED_ELABORATION.on && wordCount(tick.transcript.text) > YES_NO_MAX_WORDS) base = Math.max(base, PAUSE_WAIT[pauseClass(tick)]);
     const b = base * (this.stretch(tick) ? BACKSTOP_HOLD_STRETCH : 1);
     // within-turn pace: a child who already paused this long and went on is given at least PACE_K x that pause again
     // (critique 2026-10-04: with every pause x1.6, the absolute 2.5-3.5 s wait-time-II backstop cut 11-12% of
