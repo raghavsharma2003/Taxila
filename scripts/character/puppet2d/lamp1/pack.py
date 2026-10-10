@@ -26,7 +26,7 @@ FACE = {
     "pins": [[-2000, -2000], [-2000, -2000]], "pinS": 30,
     "cheeks": {"L": [445, 562], "R": [607, 562], "s": 42}, "wink": {"L": [425, 510], "R": [626, 510], "s": 48},
     "jawBroad": {"y": [606, 672], "s": 180}, "narrow": {"ax": [40, 170], "y": 660, "s": 70},
-    "body": {"cx": 525, "hem": 1024, "sh": [165, 280], "shY": [800, 880, 990, 1024], "bw": [880, 1024], "rollY": [800, 870], "neckY": [815, 735], "neckW": [150, 200]},
+    "body": {"cx": 525, "hem": 1024, "sh": [165, 280], "shY": [800, 880, 990, 1024], "bw": [880, 1024], "rollY": [800, 870], "neckY": [880, 770], "neckW": [150, 200]},
     "anchor": [525, 290, 120], "bunZ": -45, "lockBun": {"R": None},
     # the turn's far-side shadow is a flat violet plane (Prakash: shadows are violet, never grey)
     "shade": {"face": {"L": [325, 525], "R": [525, 725], "amt": 0.16}, "hair": {"L": [235, 650], "R": [400, 815], "amt": 0.1}, "tint": [0.30, 0.16, 0.46]},
@@ -39,12 +39,14 @@ FACE = {
     # c-front preset's one-brow arch + low brow read skeptical on the grown-up front
     # blind C1 (n = 5): the c-front glance [21, 20] read "eyes roll upward, misaligned" 4/5 on her front, and the listening
     # tilt (roll -11) + nod drifted the proportions 3/5: smaller glance and tilt; listening brows less high
+    # C2 (n = 5) still read the glance as "irises roll upward" 4/5 and the listening nod as "proportions shift": the glance
+    # is now mostly ASIDE (pitch 4), and the listening pose barely pitches (the nod spring adds its own)
     "presets": {"thinking": {"bs": {"browOuterUpLeft": 0.0, "browDownRight": 0.0, "browInnerUp": 0.14, "eyeSquintRight": 0.08, "mouthFrownLeft": 0.05, "mouthFrownRight": 0.03, "mouthPucker": 0.3},
-                             "gaze": [15, 11], "head": [-3, -5, 5]},
-                "listening": {"bs": {"browInnerUp": 0.3, "browOuterUpLeft": 0.2, "browOuterUpRight": 0.2}, "head": [4, 3, -6]}},
+                             "gaze": [15, 4], "head": [-2, -4, 4]},
+                "listening": {"bs": {"browInnerUp": 0.3, "browOuterUpLeft": 0.2, "browOuterUpRight": 0.2}, "head": [1, 3, -5]}},
     "mouth": {"lineX0": ml["x0"], "lineStep": ml["step"], "line": ml["y"], "cx": 525, "hwL": 73, "hwR": 75, "tU": 17, "tL": 26, "cy": 605, "jaw": [606, 664, 135], "k": 1.12,
               # blind C1: the tongue read pink (c-front's saturated mix on a muted palette), the teeth a flat white block
-              "tongueMul": [0.84, 0.76, 0.64], "teethMul": [0.93, 0.91, 0.86]},
+              "tongueMul": [0.84, 0.76, 0.64], "teethMul": [0.87, 0.83, 0.76]},
 }
 g["face"] = FACE
 g["clear"] = [246 / 255, 209 / 255, 152 / 255]   # her own cream: the layers keep the art's pale outline gaps, cut against it
