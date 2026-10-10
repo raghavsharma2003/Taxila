@@ -1,7 +1,7 @@
 # lamp2 into the app: patch-request for stream 5's look switch
 
-Status: **lamp2 is a HELD look.** It failed its blind gates (RESULTS.md: uncanny 2/10 pooled on the final build,
-premium 2.8 vs r8 3.2-3.6). The patch only keys it, the way lamp1 is keyed: never painted from `?look=` or
+Status: **lamp2 is a HELD look.** It failed its blind gates (RESULTS.md): v3 passes uncanny (1, 1, 0 /5) but premium
+stays 2.6-2.8 against r8's 3.0-3.4 in the same runs. The patch only keys it, the way lamp1 is keyed: never painted from `?look=` or
 `TAXILA_FACE_LOOK`, dev trials only with `&heldlook=1`. Nothing changes for any child. r8 stays the default.
 
 `01-look-lamp2-held.patch` (made against `origin/claude/r4-asha` at 6a7dbdde, stream 5's branch):

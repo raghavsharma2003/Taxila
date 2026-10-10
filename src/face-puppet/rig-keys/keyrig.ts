@@ -62,7 +62,7 @@ export class KeyRig {
   eyesShown: Swap<EyeKey> = { a: "open", b: "open", k: 1 };
   mouthShown: Swap<MouthKey> = { a: "rest", b: "rest", k: 1 };
   browsShown: Swap<BrowKey> = { a: "neutral", b: "neutral", k: 1 };
-  pose: Pose = { rot: 0, sway: 0, nod: 0, breath: 0, lean: 0 };
+  pose: Pose = { rot: 0, sway: 0, nod: 0, breath: 0, lean: 0, drift: 0 };
   /** The safety turn (calm_steady): the host sets it from PuppetDriver.inSafety every frame. The closed mouth is then
    *  the calm neutral key and the brows stay neutral; speech keys are unchanged (none of them smiles). */
   calm = false;
@@ -150,7 +150,7 @@ export class KeyRig {
     const speaking = this.mouthKeys.last !== "rest" && this.mouthKeys.last !== "calm" && this.mouthKeys.last !== "smile";
     this.eyesShown = this.eyeKeys.step(tMs, { gaze, speaking, reduced: this.reduced });
     this.browsShown = this.browKeys.step(tMs, bs, calm, this.eyesShown.b === "lookUp");
-    this.pose = this.motion.step(tMs, head, lean, breath, this.reduced || this.life.reduced);
+    this.pose = this.motion.step(tMs, head, lean, breath, this.reduced || this.life.reduced, gaze);
     const m = this.mouthShown;
     this.mouth.name = m.k >= 0.5 ? m.b : m.a;
     this.mouth.p.g = this.mouth.name === "mbp" ? 0 : this.mouthKeys.openness(tMs) * 10;
@@ -171,8 +171,9 @@ export class KeyRig {
     const [ox0, oy0] = this.origin;
     const lean = 1 + 0.006 * p.lean;
     const cx = g.pivot[0], hem = g.hem;
+    // v3 K3: the body carries 40% of a nod (K2: a head-only nod read as "the face and jaw stretch" over a still neck)
     const fig = (extraY = 0) => {
-      ctx.setTransform(s, 0, 0, s, (-ox0 + p.sway) * s, (-oy0) * s);
+      ctx.setTransform(s, 0, 0, s, (-ox0 + p.sway + p.drift) * s, (-oy0 + 0.4 * p.nod + 0.3 * p.drift) * s);
       ctx.translate(cx, hem); ctx.scale(lean, lean); ctx.translate(-cx, -hem + extraY);
     };
     // body: breathing is a vertical scale about the hem (the shoulders rise a fraction of a pixel)
@@ -183,7 +184,7 @@ export class KeyRig {
     if (B) { ctx.drawImage(B.c, B.ox / s, B.oy / s, B.c.width / s, B.c.height / s); draws++; }
     // head: rides the breath at the neck, nods a few px, rolls about the neck pivot
     const neckRise = (hem - g.pivot[1]) * p.breath * MOTION.breathScale;
-    fig(-neckRise + p.nod);
+    fig(-neckRise + 0.6 * p.nod);
     ctx.translate(g.pivot[0], g.pivot[1]); ctx.rotate((p.rot * Math.PI) / 180); ctx.translate(-g.pivot[0], -g.pivot[1]);
     const hx = g.rects.head[0], hy = g.rects.head[1];
     const blit = (name: string, alpha = 1) => {

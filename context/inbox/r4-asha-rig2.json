@@ -3,7 +3,7 @@
   {
    "id": "rj-r4-lamp2-painted-keys-premium",
    "kind": "rejection",
-   "title": "lamp2 (painted mouth/eye/brow keys swapped, rigid head motion only) failed the blind gates after 3 polish rounds: final build uncanny 2/10 pooled (bar <= 1/5), premium 2.8 vs r8 3.2-3.6 in the same runs; same person 5/5, childish 0/5; kill rule applied, held",
+   "title": "lamp2 (painted mouth/eye/brow keys swapped, rigid head motion only) failed premium in every blind run over two passes: v3 (one mouth model sheet, breathing/translation life) passed uncanny 1, 1, 0 /5 but premium 2.6-2.8 vs r8 3.0-3.4 in the same runs; v2 uncanny 2/10 pooled; same person 5/5, childish 0/5; time box spent, held",
    "at": "2026-10-10"
   },
   {
@@ -45,7 +45,19 @@
   {
    "id": "op-r4-asha-mouth-model-sheet",
    "kind": "open",
-   "title": "The remaining lamp2 complaints are mouth interiors differing key to key and limited motion: try painting all mouths as ONE image (a model sheet sharing teeth) or artist-drawn mouths, and painted 3/4 head keys cut-swapped; re-judge with r8 in the same run",
+   "title": "After v3 the premium gap is head motion: image-model 3-degree turn keys are different paintings (~40 px head move, redrawn features), so the next method is artist-drawn turn keys on one model sheet (cut-swapped on a blink) or a 2.5D/3D head in the option-4 look, not another polish of the key rig",
+   "at": "2026-10-10"
+  },
+  {
+   "id": "ms-r4-lamp2-v3-judges-2026-10-10",
+   "kind": "measurement",
+   "title": "lamp2 v3 blind judges K1-K3, n=5 each (3 gpt-5.6-sol + 2 Kimi K2.6), lamp1 prompt, r8 in the same run: uncanny 1, 1, 0 /5; premium 2.6, 2.8, 2.8 vs r8 3.4, 3.0, 3.2; moving photo 1, 3, 3 /5; same person 5/5, childish 0/5",
+   "at": "2026-10-10"
+  },
+  {
+   "id": "rj-r4-image-model-turn-keys",
+   "kind": "rejection",
+   "title": "Painted 3-degree head-turn keys from gpt-image-2 edits of the front: the repaint moves and rescales the head ~40 px and redraws the features (two bindis in a 50% mix), so no swap or dissolve can hide it; the flat-vector arm by automatic flattening (mean-shift + k-means) read blotchy and cheaper, not built",
    "at": "2026-10-10"
   }
  ],
@@ -99,10 +111,25 @@
    "src": "op-r4-asha-mouth-model-sheet",
    "rel": "caused_by",
    "dst": "rj-r4-lamp2-painted-keys-premium"
+  },
+  {
+   "src": "rj-r4-lamp2-painted-keys-premium",
+   "rel": "measured_by",
+   "dst": "ms-r4-lamp2-v3-judges-2026-10-10"
+  },
+  {
+   "src": "rj-r4-image-model-turn-keys",
+   "rel": "constrains",
+   "dst": "cp-r4-lamp2-keyrig"
+  },
+  {
+   "src": "op-r4-asha-mouth-model-sheet",
+   "rel": "caused_by",
+   "dst": "rj-r4-image-model-turn-keys"
   }
  ],
  "md": {
-  "rejected": "## rj-r4-lamp2-painted-keys-premium\n**Tried (2026-10-10, round 4 rig2, docs/design/round4/asha/rig2/):** the grown-up Asha (option 4, cardigan + print kurta) as PAINTED KEYS instead of lamp1's mesh warp: 10 mouths, 5 eye keys and 2 brow keys, each an Azure gpt-image-2 edit of the approved rig-b front, registered and composited only inside its region (SSIM outside 1.0); swapped with 45 ms crossfades by a Canvas 2D KeyRig the unchanged PuppetDriver drives; rigid head motion only (roll <= 1.2 deg). **Broke:** blind judges (lamp1's prompt, 3 gpt-5.6-sol + 2 Kimi K2.6, r8 in every run): uncanny 3, 2, 0, 2 /5 over J1-J4, the final build 2/10 pooled (identical images 0/5 then 2/5); premium 2.4-2.8 vs r8 3.0-3.6 in the same runs. Named: mouth interiors differ key to key (each mouth repainted from scratch), a still head, the thinking glance; more rigid motion (P3) brought 'proportions swim' back. Passed: same person 5/5, childish 0/5, rest SSIM 0.989, pack 133 KB, 60 fps at 4x on the 80 px row (headless), bilabials 132/132 on the 24-line battery (lamp2 text rule), calm safety face, lip-sync median +15 ms. Kill rule applied after 3 polish rounds; lamp2 is a HELD look, r8 stays live. **Reverse if:** a painted-key build passes uncanny <= 1/5 AND premium >= r8's same-run score in two consecutive rounds of the same panel (lead: one mouth model sheet sharing teeth, op-r4-asha-mouth-model-sheet).\n",
-  "measurements": "- `ms-r4-lamp2-judges-2026-10-10` (2026-10-10): lamp2 blind judges, lamp1 judge-live.mjs prompt verbatim, desk window 375x405 at 412, 8 moments + 6 consecutive 15 fps frames, n = 5 per run (3 gpt-5.6-sol reasoning medium + 2 Kimi K2.6), r8 calibration in the same run: J1 uncanny 3/5 premium 2.6 (r8 1/5, 3.4); J2 2/5, 2.8 (r8 0/5, 3.0); J3 0/5, 2.6 (r8 0/5, 3.6); J4 2/5, 2.4 (r8 0/5, 3.4); J3b (J3's identical images) 2/5, 2.8 (r8 0/5, 3.4); Jfinal 2/5, 2.8 (r8 1/5, 3.2). Same person 5/5 and childish 0/5 in all. Model judges, advisory. docs/design/round4/asha/rig2/evidence/judge-*.json.\n- `ms-r4-lamp2-bilabial-battery-2026-10-10` (2026-10-10): offline, the stored 24-line Diya battery (evals/face-puppet/out/diya), VisemeScheduler timing + resolveVisemes + weightsAt into the lamp2 MouthKeys at 60 fps; a bilabial word is sealed when the mbp key is up at >= 0.9 within [word - 80 ms, word end]: 132/132 with scripts/character/puppet2d/lamp2/bilabial2.js, 121/132 with lamp1's rule, 82/132 Azure alone. evidence/battery-24.json.\n- `ms-r4-lamp2-lipsync-offset-2026-10-10` (2026-10-10): E3 estimator (evals/face-puppet/lipsync-offset.mjs), 21 lines: drawn key openness minus the wav2vec2 forced-alignment track, same audio: no lead +55 ms median (38% within 50); KEY_LEAD_MS 20 / 35 / 50: +30 / +15 / 0 ms, 57% within 50 each; the continuous viseme jaw on the same path +10 ms, 95%. evidence/battery-24.json.\n- `ms-r4-lamp2-rig-cost-2026-10-10` (2026-10-10): KeyRig, headless Chromium (Canvas 2D), CDP CPU throttle, real-time scene: 80 px speech row (160x160 canvas, dpr 2) 60.0 fps at 1x and 4x; desk 375x405 (750x810) 60.0 at 1x, 49.3 at 4x. Pack 133.0 KB (19 WebP + geom), poster 21.8 KB. Rest SSIM 0.9893 on the head crop; every key SSIM outside its region 1.0000. Not a phone. evidence/fps-*.json, rest-ssim.json, keys.json.\n"
+  "rejected": "## rj-r4-lamp2-painted-keys-premium\n**Tried (2026-10-10, round 4 rig2, docs/design/round4/asha/rig2/):** the grown-up Asha (option 4, cardigan + print kurta) as PAINTED KEYS instead of lamp1's mesh warp: 10 mouths, 5 eye keys and 2 brow keys, each an Azure gpt-image-2 edit of the approved rig-b front, registered and composited only inside its region (SSIM outside 1.0); swapped with 45 ms crossfades by a Canvas 2D KeyRig the unchanged PuppetDriver drives; rigid head motion only (roll <= 1.2 deg). **Broke:** blind judges (lamp1's prompt, 3 gpt-5.6-sol + 2 Kimi K2.6, r8 in every run): uncanny 3, 2, 0, 2 /5 over J1-J4, the final build 2/10 pooled (identical images 0/5 then 2/5); premium 2.4-2.8 vs r8 3.0-3.6 in the same runs. Named: mouth interiors differ key to key (each mouth repainted from scratch), a still head, the thinking glance; more rigid motion (P3) brought 'proportions swim' back. Passed: same person 5/5, childish 0/5, rest SSIM 0.989, pack 133 KB, 60 fps at 4x on the 80 px row (headless), bilabials 132/132 on the 24-line battery (lamp2 text rule), calm safety face, lip-sync median +15 ms. Kill rule applied after 3 polish rounds; lamp2 is a HELD look, r8 stays live. **v3 (same day):** all open mouths repainted from one master key, a breathing / translation life layer: uncanny 1, 1, 0 /5 (inside the bar), premium 2.6, 2.8, 2.8 vs r8 3.4, 3.0, 3.2 in the same runs: still fails premium. **Reverse if:** a painted-key build passes uncanny <= 1/5 AND premium >= r8's same-run score in two consecutive rounds of the same panel (lead: one mouth model sheet sharing teeth, op-r4-asha-mouth-model-sheet).\n\n## rj-r4-image-model-turn-keys\n**Tried (2026-10-10, lamp2 v3):** two head-turn keys (prompted 'about 3 degrees') as gpt-image-2 edits of the approved front, to give the head motion without bending the painting. **Broke:** registered on the shoulders, the head moved and rescaled ~40 px and its features were redrawn (a 50% mix shows two bindis and doubled brows), so neither a cut nor a dissolve can hide the change (docs/design/round4/asha/rig2/evidence/v3-turnkeys-dissolve.webp). Also tried: the option-4 front flattened automatically into a 'flat vector' base (mean-shift + Lab k-means, 16 / 28 colours): blotchy posterised planes, cheaper than the painting (evidence/armD-flat-probe.webp); not built. **Reverse if:** an image model holds identity and framing to < 3 px on a 3-degree turn edit, or the turn keys are artist-drawn on one model sheet.\n",
+  "measurements": "- `ms-r4-lamp2-judges-2026-10-10` (2026-10-10): lamp2 blind judges, lamp1 judge-live.mjs prompt verbatim, desk window 375x405 at 412, 8 moments + 6 consecutive 15 fps frames, n = 5 per run (3 gpt-5.6-sol reasoning medium + 2 Kimi K2.6), r8 calibration in the same run: J1 uncanny 3/5 premium 2.6 (r8 1/5, 3.4); J2 2/5, 2.8 (r8 0/5, 3.0); J3 0/5, 2.6 (r8 0/5, 3.6); J4 2/5, 2.4 (r8 0/5, 3.4); J3b (J3's identical images) 2/5, 2.8 (r8 0/5, 3.4); Jfinal 2/5, 2.8 (r8 1/5, 3.2). Same person 5/5 and childish 0/5 in all. Model judges, advisory. docs/design/round4/asha/rig2/evidence/judge-*.json.\n- `ms-r4-lamp2-bilabial-battery-2026-10-10` (2026-10-10): offline, the stored 24-line Diya battery (evals/face-puppet/out/diya), VisemeScheduler timing + resolveVisemes + weightsAt into the lamp2 MouthKeys at 60 fps; a bilabial word is sealed when the mbp key is up at >= 0.9 within [word - 80 ms, word end]: 132/132 with scripts/character/puppet2d/lamp2/bilabial2.js, 121/132 with lamp1's rule, 82/132 Azure alone. evidence/battery-24.json.\n- `ms-r4-lamp2-lipsync-offset-2026-10-10` (2026-10-10): E3 estimator (evals/face-puppet/lipsync-offset.mjs), 21 lines: drawn key openness minus the wav2vec2 forced-alignment track, same audio: no lead +55 ms median (38% within 50); KEY_LEAD_MS 20 / 35 / 50: +30 / +15 / 0 ms, 57% within 50 each; the continuous viseme jaw on the same path +10 ms, 95%. evidence/battery-24.json.\n- `ms-r4-lamp2-rig-cost-2026-10-10` (2026-10-10): KeyRig, headless Chromium (Canvas 2D), CDP CPU throttle, real-time scene: 80 px speech row (160x160 canvas, dpr 2) 60.0 fps at 1x and 4x; desk 375x405 (750x810) 60.0 at 1x, 49.3 at 4x. Pack 133.0 KB (19 WebP + geom), poster 21.8 KB. Rest SSIM 0.9893 on the head crop; every key SSIM outside its region 1.0000. Not a phone. evidence/fps-*.json, rest-ssim.json, keys.json.\n- `ms-r4-lamp2-v3-judges-2026-10-10` (2026-10-10): lamp2 v3 (all open mouths painted from the aa master key; breathing 0.005; head translation nod/sway 3.5 px shared 40% with the body; glance lean; +-0.8 px drift; roll cap 1.2 deg; 30 ms crossfade), same harness and panel, r8 in the same run: K1 uncanny 1/5 premium 2.6 (r8 0/5, 3.4); K2 1/5, 2.8 (r8 1/5, 3.0); K3 0/5, 2.8 (r8 1/5, 3.2); moving photo 1, 3, 3 /5. Lip-sync on the 24-line battery: median +5 ms, 67% of lines within +-50 ms (+-150 ms lag search: 76%); bilabials 132/132. docs/design/round4/asha/rig2/evidence/judge-K*.json, battery-24.json.\n"
  }
 }

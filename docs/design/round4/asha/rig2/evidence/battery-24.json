@@ -1,42 +1,48 @@
 {
  "date": "2026-10-10",
- "method": "The 24-line Diya battery (evals/face-puppet/lines.mjs; stored synthesis evals/face-puppet/out/diya/NN.json + .pcm +\n.ctc.json), offline, no Azure spend: the PRODUCT mouth path (VisemeScheduler timing: Azure offsets - EVENT_LEAD_MS,\nvisemes.ts resolveVisemes + weightsAt) feeding the lamp2 MouthKeys at 60 fps: Azure's visemes alone, + lamp1's bilabial\ntext rule (lamp1/demo/bilabial.js), + the lamp2 extension (bilabial2.js; the offset is scored on this arm).\n  bilabials  every word with a b / m / p sound (Roman b, bh, p not before h, m; Devanagari प ब भ म; Azure's own\n             viseme 21 inside the word counts it too): SEALED when the painted mbp key is up at >= 0.9 at some frame\n             inside [word start - 80 ms, word end] (audio time).\n  offset     the lipsync-offset.mjs E3 estimator: best Pearson lag (5 ms grid, +-300 ms) of the drawn openness\n             (KEY_OPENNESS through the crossfades) against the audio's log-energy envelope, minus the same lag of the\n             wav2vec2 forced-alignment track of the same audio (the judged clips' timing). + = the mouth is later.\n             The continuous viseme jaw the r8 rig draws is scored the same way for reference.\n  node scripts/character/puppet2d/lamp2/battery.mjs <out.json>",
+ "method": "The 24-line Diya battery (evals/face-puppet/lines.mjs; stored synthesis evals/face-puppet/out/diya/NN.json + .pcm +\n.ctc.json), offline, no Azure spend: the PRODUCT mouth path (VisemeScheduler timing: Azure offsets - EVENT_LEAD_MS,\nvisemes.ts resolveVisemes + weightsAt) feeding the lamp2 MouthKeys at 60 fps: Azure's visemes alone, + lamp1's bilabial\ntext rule (lamp1/demo/bilabial.js), + the lamp2 extension (bilabial2.js; the offset is scored on this arm).\n  bilabials  every word with a b / m / p sound (Roman b, bh, p not before h, m; Devanagari प ब भ म; Azure's own\n             viseme 21 inside the word counts it too): SEALED when the painted mbp key is up at >= 0.9 at some frame\n             inside [word start - 80 ms, word end] (audio time).\n  offset     the lipsync-offset.mjs E3 estimator: best Pearson lag (5 ms grid, +-300 ms) of the drawn openness\n             (KEY_OPENNESS through the crossfades) against the audio's log-energy envelope, minus the same lag of the\n             wav2vec2 forced-alignment track of the same audio (the judged clips' timing). + = the mouth is later.\n             The continuous viseme jaw the r8 rig draws is scored the same way for reference.\n  node scripts/character/puppet2d/lamp2/battery.mjs <out.json>\neval sweeps: TIMING='{\"holdMs\":50}' etc. (schedule.ts MouthTiming)\nOPEN=<interior.json>: score the MEASURED drawn opening of each key instead of schedule.ts KEY_OPENNESS",
  "lines": [
   {
    "line": "00",
    "text": "Chalo, aaj hum fractions dekhenge. Ek pizza ko barabar hisso",
-   "keysMinusCtcMs": 75,
-   "continuousJawMinusCtcMs": 0
+   "keysMinusCtcMs": 25,
+   "continuousJawMinusCtcMs": -35,
+   "keysMinusCtcMs150": 25
   },
   {
    "line": "01",
    "text": "Bahut badhiya socha tumne. Ab batao, teen chauthai bada hai ",
-   "keysMinusCtcMs": 75,
-   "continuousJawMinusCtcMs": 0
+   "keysMinusCtcMs": 30,
+   "continuousJawMinusCtcMs": -35,
+   "keysMinusCtcMs150": 30
   },
   {
    "line": "02",
    "text": "Photosynthesis mein paudhe dhoop, paani aur carbon dioxide s",
-   "keysMinusCtcMs": 20,
-   "continuousJawMinusCtcMs": -5
+   "keysMinusCtcMs": -15,
+   "continuousJawMinusCtcMs": -40,
+   "keysMinusCtcMs150": -15
   },
   {
    "line": "03",
    "text": "Let's think about it together. If the bottle holds two litre",
-   "keysMinusCtcMs": 30,
-   "continuousJawMinusCtcMs": 10
+   "keysMinusCtcMs": -10,
+   "continuousJawMinusCtcMs": -25,
+   "keysMinusCtcMs150": -10
   },
   {
    "line": "04",
    "text": "Mujhe lagta hai tum sahi raste par ho. Bas ek baar phir se g",
-   "keysMinusCtcMs": 115,
-   "continuousJawMinusCtcMs": 10
+   "keysMinusCtcMs": 70,
+   "continuousJawMinusCtcMs": -30,
+   "keysMinusCtcMs150": 70
   },
   {
    "line": "05",
    "text": "Paanch baar chaar, matlab chaar ko paanch baar jodna. Bees a",
-   "keysMinusCtcMs": 85,
-   "continuousJawMinusCtcMs": 30
+   "keysMinusCtcMs": 40,
+   "continuousJawMinusCtcMs": -5,
+   "keysMinusCtcMs150": 40
   },
   {
    "line": "06",
@@ -45,26 +51,30 @@
   {
    "line": "07",
    "text": "Ruko, ek second. Pehle yeh dekho ki triangle ke teeno kone m",
-   "keysMinusCtcMs": -20,
-   "continuousJawMinusCtcMs": 15
+   "keysMinusCtcMs": -65,
+   "continuousJawMinusCtcMs": -20,
+   "keysMinusCtcMs150": -65
   },
   {
    "line": "08",
    "text": "Mumbai se Pune ki doori lagbhag ek sau pachaas kilometre hai",
-   "keysMinusCtcMs": 70,
-   "continuousJawMinusCtcMs": 15
+   "keysMinusCtcMs": 25,
+   "continuousJawMinusCtcMs": -20,
+   "keysMinusCtcMs150": 25
   },
   {
    "line": "09",
    "text": "Good question! Magnets attract iron, but they do not attract",
-   "keysMinusCtcMs": 40,
-   "continuousJawMinusCtcMs": 10
+   "keysMinusCtcMs": -5,
+   "continuousJawMinusCtcMs": -25,
+   "keysMinusCtcMs150": -5
   },
   {
    "line": "10",
    "text": "Thoda dhyaan se padho: tota daal par baitha tha, aur thodi d",
-   "keysMinusCtcMs": 55,
-   "continuousJawMinusCtcMs": 10
+   "keysMinusCtcMs": 10,
+   "continuousJawMinusCtcMs": -25,
+   "keysMinusCtcMs150": 10
   },
   {
    "line": "11",
@@ -73,32 +83,37 @@
   {
    "line": "12",
    "text": "Vriksh ki jadein mitti ko pakad ke rakhti hain, isliye baadh",
-   "keysMinusCtcMs": -205,
-   "continuousJawMinusCtcMs": 20
+   "keysMinusCtcMs": -250,
+   "continuousJawMinusCtcMs": -15,
+   "keysMinusCtcMs150": 100
   },
   {
    "line": "13",
    "text": "When you multiply by ten, every digit moves one place to the",
-   "keysMinusCtcMs": 90,
-   "continuousJawMinusCtcMs": 30
+   "keysMinusCtcMs": 40,
+   "continuousJawMinusCtcMs": -5,
+   "keysMinusCtcMs150": 40
   },
   {
    "line": "14",
    "text": "Shabash! Tumne khud se pattern dhoondh liya. Ab agla number ",
-   "keysMinusCtcMs": -35,
-   "continuousJawMinusCtcMs": -10
+   "keysMinusCtcMs": -45,
+   "continuousJawMinusCtcMs": -45,
+   "keysMinusCtcMs150": -45
   },
   {
    "line": "15",
    "text": "Agar hum paani ko garam karein, toh woh bhaap ban jaata hai.",
-   "keysMinusCtcMs": 25,
-   "continuousJawMinusCtcMs": 30
+   "keysMinusCtcMs": -15,
+   "continuousJawMinusCtcMs": -5,
+   "keysMinusCtcMs150": -15
   },
   {
    "line": "16",
    "text": "Your answer is close. Let's check the units once more, metre",
-   "keysMinusCtcMs": 140,
-   "continuousJawMinusCtcMs": 0
+   "keysMinusCtcMs": 85,
+   "continuousJawMinusCtcMs": -40,
+   "keysMinusCtcMs150": 85
   },
   {
    "line": "17",
@@ -108,46 +123,51 @@
    "line": "18",
    "text": "Lambai guna chaudai, yahi area ka formula hai. Ab tum yeh re",
    "keysMinusCtcMs": 235,
-   "continuousJawMinusCtcMs": -15
+   "continuousJawMinusCtcMs": -45,
+   "keysMinusCtcMs150": 5
   },
   {
    "line": "19",
    "text": "Prithvi apni dhuri par ghoomti hai, isi se din aur raat hote",
-   "keysMinusCtcMs": 55,
-   "continuousJawMinusCtcMs": 230
+   "keysMinusCtcMs": 5,
+   "continuousJawMinusCtcMs": 230,
+   "keysMinusCtcMs150": 5
   },
   {
    "line": "20",
    "text": "Hmm, interesting. Tumne yeh kaise socha? Mujhe apna tareeka ",
    "keysMinusCtcMs": 235,
-   "continuousJawMinusCtcMs": 10
+   "continuousJawMinusCtcMs": -20,
+   "keysMinusCtcMs150": 40
   },
   {
    "line": "21",
    "text": "The heart pumps blood through the body, and the lungs give i",
-   "keysMinusCtcMs": 20,
-   "continuousJawMinusCtcMs": -20
+   "keysMinusCtcMs": -25,
+   "continuousJawMinusCtcMs": -55,
+   "keysMinusCtcMs150": -25
   },
   {
    "line": "22",
    "text": "Zero se chhoti sankhya ko negative number kehte hain, jaise ",
-   "keysMinusCtcMs": -275,
-   "continuousJawMinusCtcMs": 50
+   "keysMinusCtcMs": -320,
+   "continuousJawMinusCtcMs": 10,
+   "keysMinusCtcMs150": 70
   },
   {
    "line": "23",
    "text": "Chalo, ek chhota sa break lete hain, phir hum wapas fraction",
-   "keysMinusCtcMs": 35,
-   "continuousJawMinusCtcMs": -25
+   "keysMinusCtcMs": -15,
+   "continuousJawMinusCtcMs": -60,
+   "keysMinusCtcMs150": -15
   }
  ],
  "bilabialWords": {
   "withLamp2Rule": "132/132",
   "missedWithLamp2Rule": [],
-  "withLamp1Rule": "121/132",
-  "azureVisemesOnly": "82/132",
+  "withLamp1Rule": "123/132",
+  "azureVisemesOnly": "81/132",
   "missedWithLamp1Rule": [
-   "01:Ab",
    "02:dhoop",
    "02:carbon",
    "03:about",
@@ -156,7 +176,6 @@
    "11:खुशबू",
    "14:Shabash",
    "14:Ab",
-   "15:hum",
    "15:vaashpikaran"
   ],
   "missedAzureOnly": [
@@ -183,6 +202,7 @@
    "05:baar",
    "05:Bees",
    "06:बारे",
+   "06:बात",
    "07:Pehle",
    "07:banate",
    "08:lagbhag",
@@ -193,6 +213,7 @@
    "10:baad",
    "11:बाद",
    "11:खुशबू",
+   "12:mitti",
    "12:pakad",
    "12:mitti",
    "12:kam",
@@ -201,7 +222,6 @@
    "13:by",
    "14:Shabash",
    "14:Ab",
-   "15:hum",
    "15:ban",
    "15:vaashpikaran",
    "19:Prithvi",
@@ -215,21 +235,30 @@
  "offset": {
   "keys": {
    "n": 21,
-   "median": 55,
-   "q25": 20,
-   "q75": 85,
-   "min": -275,
+   "median": 5,
+   "q25": -15,
+   "q75": 40,
+   "min": -320,
    "max": 235,
-   "within50": 0.38
+   "within50": 0.67
+  },
+  "keysLag150": {
+   "n": 21,
+   "median": 10,
+   "q25": -15,
+   "q75": 40,
+   "min": -65,
+   "max": 100,
+   "within50": 0.76
   },
   "continuousVisemeJaw": {
    "n": 21,
-   "median": 10,
-   "q25": 0,
-   "q75": 20,
-   "min": -25,
+   "median": -25,
+   "q25": -40,
+   "q75": -15,
+   "min": -60,
    "max": 230,
-   "within50": 0.95
+   "within50": 0.86
   },
   "bar": "-125 <= offset <= +45 ms (decisions.md E-P8, ITU-R BT.1359); p2-face product path measured median -5 ms, 89% within +-50 ms (measurements p2f-lipsync-product-2026-10-05)"
  }

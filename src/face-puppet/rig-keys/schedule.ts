@@ -13,8 +13,8 @@ export type MouthKey = "rest" | "calm" | "smile" | "mbp" | "aa" | "eh" | "ee" | 
 export type EyeKey = "open" | "half" | "closed" | "lookL" | "lookR" | "lookUp";
 export type BrowKey = "neutral" | "raised" | "concern";
 
-/** The mouth swap crossfade (ms), under the brief's 60-90 ms cap. J1 (60 ms): 2 of 6 consecutive 15 fps frames landed mid-dissolve and the judges read the double teeth as "swimming"; P1 takes 45 ms. */
-export const FADE_MS = 45;
+/** The mouth swap crossfade (ms), under the brief's 60-90 ms cap. J1 (60 ms): 2 of 6 consecutive 15 fps frames landed mid-dissolve and the judges read the double teeth as "swimming"; P1 took 45 ms; v3 30 ms (battery.mjs sweep: 67% of lines within +-50 ms vs 57% at 45 ms, seals 132/132). */
+export const FADE_MS = 30;
 /** The shortest a mouth drawing stays up (ms) before the next replaces it: ~2 frames at 24 fps (anime "on twos"). */
 export const HOLD_MS = 70;
 /** A seal may give way sooner: the next sound's mouth must not be late. */
@@ -68,8 +68,18 @@ export interface MouthInput {
   calm?: boolean;
 }
 
+export interface MouthTiming { fadeMs?: number; holdMs?: number; sealHoldMs?: number }
+
 export class MouthKeys {
-  private f = new Fader<MouthKey>("rest", FADE_MS);
+  private f: Fader<MouthKey>;
+  private fadeMs: number;
+  private holdMs: number;
+  private sealHoldMs: number;
+  /** Timing overrides are for the evals (battery.mjs sweeps); the rig uses the defaults. */
+  constructor(t: MouthTiming = {}) {
+    this.fadeMs = t.fadeMs ?? FADE_MS; this.holdMs = t.holdMs ?? HOLD_MS; this.sealHoldMs = t.sealHoldMs ?? SEAL_HOLD_MS;
+    this.f = new Fader<MouthKey>("rest", this.fadeMs);
+  }
   /** Every key change, for the evals (tMs, key). */
   log: Array<[number, MouthKey]> | null = null;
   last: MouthKey = "rest";
@@ -101,10 +111,10 @@ export class MouthKeys {
     const shown = this.f.b;
     if (want !== shown) {
       const held = tMs - this.f.shownAt;
-      const need = want === "mbp" ? 0 : shown === "mbp" ? SEAL_HOLD_MS : HOLD_MS;
+      const need = want === "mbp" ? 0 : shown === "mbp" ? this.sealHoldMs : this.holdMs;
       // a smile / calm / rest change is an expression, not speech: a slower dissolve
       const expr = (want === "smile" || shown === "smile") && !(want in SPEECH) && !(shown in SPEECH);
-      if (held >= need) { this.f.go(want, tMs, expr ? 180 : FADE_MS); this.log?.push([tMs, want]); }
+      if (held >= need) { this.f.go(want, tMs, expr ? 180 : this.fadeMs); this.log?.push([tMs, want]); }
     }
     this.last = this.f.cur(tMs);
     return this.f.read(tMs);
@@ -167,7 +177,8 @@ export class EyeKeys {
     const [yaw, pitch] = [inp.gaze[0] ?? 0, inp.gaze[1] ?? 0];
     let g: EyeKey = this.gazeKey;
     const inUp = pitch >= 7, inR = yaw >= 9, inL = yaw <= -9;
-    if (g === "open") g = inUp ? "lookUp" : inR ? "lookR" : inL ? "lookL" : "open";
+    // v3 K2: a side glance wins over the upward one (every round's judges read the up-glance as "misaligned pupils")
+    if (g === "open") g = inR ? "lookR" : inL ? "lookL" : inUp ? "lookUp" : "open";
     else if (g === "lookUp" && pitch < 4) g = yaw >= 9 ? "lookR" : yaw <= -9 ? "lookL" : "open";
     else if (g === "lookR" && yaw < 5) g = inUp ? "lookUp" : inL ? "lookL" : "open";
     else if (g === "lookL" && yaw > -5) g = inUp ? "lookUp" : inR ? "lookR" : "open";
@@ -223,24 +234,31 @@ export class BrowKeys {
 // P2 (J2: the head sat on the +-2 deg clamp in listening and thinking, and the judges read the tilted painting as
 // "features sliding over the collar"): half the roll, a lower cap, slower easing. P3 tried more (roll cap 1.5, a sway
 // toward each glance, brow flashes at phrase onsets) and J4 read it as "proportions swim" (uncanny 2/5): reverted.
-export const MOTION = { rotMaxDeg: 1.2, swayMaxPx: 3, nodMaxPx: 2.2, breathScale: 0.0022 } as const;
+// v3 (J3-Jfinal "static"; painted turn keys could not register, evidence/v3-turnkeys-dissolve.webp): life from the body
+// instead: the breath lifts the shoulders ~0.6 native px and the head rides it (0.0022 -> 0.005).
+// v3 K2 (K1 Kimi 2/2: "add natural head and neck movement"): more TRANSLATION (nod, sway), which moves the painting
+// without resampling it the way a roll does; the roll cap stays 1.2.
+export const MOTION = { rotMaxDeg: 1.2, swayMaxPx: 3.5, nodMaxPx: 3.5, breathScale: 0.005 } as const;
 
-export interface Pose { rot: number; sway: number; nod: number; breath: number; lean: number }
+export interface Pose { rot: number; sway: number; nod: number; breath: number; lean: number; drift: number }
 
 export class HeadMotion {
-  private p: Pose = { rot: 0, sway: 0, nod: 0, breath: 0, lean: 0 };
+  private p: Pose = { rot: 0, sway: 0, nod: 0, breath: 0, lean: 0, drift: 0 };
   private lastMs = -1;
-  step(tMs: number, head: number[], lean: number, breath: number, reduced = false): Pose {
+  /** `gaze` (v3 K3): the figure leans a little toward a glance (eye-head coordination, rigid). */
+  step(tMs: number, head: number[], lean: number, breath: number, reduced = false, gaze: number[] = [0, 0]): Pose {
     const dt = this.lastMs < 0 ? 16 : clamp(tMs - this.lastMs, 0, 250);
     this.lastMs = tMs;
     const m = reduced ? 0.3 : 1;
     const [pitch, yaw, roll] = [head[0] ?? 0, head[1] ?? 0, head[2] ?? 0];
     const want: Pose = {
-      rot: clamp((roll * 0.3 + yaw * 0.04) * m, -MOTION.rotMaxDeg, MOTION.rotMaxDeg),
-      sway: clamp(yaw * 0.3 * m, -MOTION.swayMaxPx, MOTION.swayMaxPx),
-      nod: clamp(pitch * 0.35 * m, -MOTION.nodMaxPx, MOTION.nodMaxPx),
+      rot: clamp((roll * 0.3 + yaw * 0.04 + clamp(gaze[0] ?? 0, -20, 20) * 0.015) * m, -MOTION.rotMaxDeg, MOTION.rotMaxDeg),
+      sway: clamp((yaw * 0.45 + clamp(gaze[0] ?? 0, -20, 20) * 0.06) * m, -MOTION.swayMaxPx, MOTION.swayMaxPx),
+      nod: clamp(pitch * 0.5 * m, -MOTION.nodMaxPx, MOTION.nodMaxPx),
       breath: clamp(breath, -1, 1),
       lean: clamp(Math.tanh(lean / 0.7) * m, -1, 1),
+      // v3 K3: a very slow whole-figure drift (two incommensurate sines, +-0.8 native px): a person is never pinned
+      drift: 0.8 * m * (0.6 * Math.sin(tMs / 1000 * 2 * Math.PI * 0.07) + 0.4 * Math.sin(tMs / 1000 * 2 * Math.PI * 0.113 + 1.3)),
     };
     const a = 1 - Math.exp(-dt / 110);
     for (const k of Object.keys(want) as Array<keyof Pose>) this.p[k] += (want[k] - this.p[k]) * (k === "breath" ? 1 : a);

@@ -26,7 +26,9 @@ def ell(cx, cy, rx, ry_top, ry_bot):
 # region masks (rig space). Feather = px of inward soft edge.
 REGIONS = {
     # lips, the corners' creases and the chin pad; above the chin contour (y ~720) and below the nose base (y ~550)
-    "mouth": (lambda: ell(527, 612, 118, 50, 74), 14),
+    # v3 K2: lips only (K1: "facial shading shifts around the mouth": every repaint shades the cheeks and chin pad a
+    # little differently, so the skin round the lips is now always the front's)
+    "mouth": (lambda: ell(527, 613, 112, 44, 64), 12),
     # both eyes with lids, lashes, the lid crease and the lower-lid shadow; under the brows
     "eyes": (lambda: ell(421, 413, 76, 32, 40) | ell(627, 413, 76, 32, 40), 9),
     # both brows with the skin round them, down to just above the lid crease
@@ -127,11 +129,13 @@ def build(key, path, front):
 # The chosen take of every key (review notes in RESULTS.md): raw/<key>-t<n>.png, or a Stage B edit of rig-b.
 # eh / oh t3 were painted FROM the aa composite and ltd t3 FROM the ee composite (P1: one set of teeth per family).
 # P3's aa t4 (a fuller interior) and its eh / oh t4 are on file and NOT used: J4 regressed ("teeth a flat block").
+# v3 (one mouth model sheet): ee, ltd, fv, oo t5 painted FROM the aa t1 composite too, so all seven open mouths share
+# aa's teeth; lookUp t5 (both irises move the same, measured < 1 px apart).
 STAGEB = "/home/user/Taxila/docs/design/round4/asha/images"
-SOURCES = {"mbp": "t1", "aa": "t1", "eh": "t3", "ee": "t2", "oh": "t3", "oo": "t2", "fv": "t1", "ltd": "t3", "smile": "t1",
-           "calm": "t1", "lookL": "t1", "lookR": "t1", "lookUp": "t2", "raised": "t1", "concern": "t2",
+SOURCES = {"mbp": "t1", "aa": "t1", "eh": "t3", "ee": "t5", "oh": "t3", "oo": "t5", "fv": "t5", "ltd": "t5", "smile": "t1",
+           "calm": "t1", "lookL": "t1", "lookR": "t1", "lookUp": "t5", "raised": "t1", "concern": "t2",
            "closed": f"{STAGEB}/x-blink.webp", "half": f"{STAGEB}/x-mid.webp"}
-ORDER = ["aa", "ee", "mbp", "fv", "smile", "calm", "lookL", "lookR", "lookUp", "raised", "concern", "closed", "half", "eh", "oh", "ltd"]
+ORDER = ["aa", "ee", "oo", "mbp", "fv", "smile", "calm", "lookL", "lookR", "lookUp", "raised", "concern", "closed", "half", "eh", "oh", "ltd"]
 
 if __name__ == "__main__":
     if sys.argv[1:] == ["--all"]:

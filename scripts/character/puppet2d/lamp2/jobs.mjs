@@ -39,6 +39,28 @@ size and angle, the same hair, earrings, bindi, clothes, background, style, colo
 re-centre or re-light anything. Change only her eyes: both eyes glance slightly up and to the viewer's right, as when
 thinking, and both irises move by exactly the same small amount in the same direction, so the two eyes stay parallel and
 look at the same point. Her eyelids, eyebrows and mouth stay exactly the same.`; }
+// v3 (main session after Jfinal, 2026-10-10): (a) ONE mouth model sheet: every speech mouth painted FROM the aa master
+// key so all share its teeth, tongue and shadow; (c) a thinking glance with both eyes converging on one point;
+// (b) two barely-there head-turn keys, to test a turn as a key swap instead of a mesh roll.
+export const V3 = {
+  ee: FAMILY("aa", "close it to a narrow gap as when saying 'ee', the lips a touch wider than at rest, only the edge of the same upper teeth showing"),
+  ltd: FAMILY("aa", "close it to a small opening as when saying 'l' or 't', the same upper teeth showing and the tip of the tongue just touching behind them"),
+  fv: FAMILY("aa", "as when saying 'f' or 'v': the lower lip tucked lightly up under the same upper front teeth, which rest on it"),
+  oo: FAMILY("aa", "round the lips gently around a small soft opening as when saying 'oo' in 'food', the edge of the same upper teeth just visible; relaxed, not pursed"),
+  lookUp: `Edit this illustration of a woman. Keep the picture exactly as it is: the same person, face, head position, size and
+angle, hair, earrings, bindi, clothes, background, style, colours and lighting. Do not move, zoom, crop, re-centre or
+re-light anything. Change only her eyes: she glances up and to the viewer's right as when thinking. Both eyes look at
+the SAME point: both irises move the same distance up and the same distance to the viewer's right, each iris stays fully
+round and the same size as now, partly under the upper lid. Her eyelids, eyebrows and mouth stay exactly the same.`,
+  turnL: `Edit this illustration of a woman. Keep the picture exactly as it is: the same person, face, hair, earrings, bindi,
+clothes, background, style, colours, lighting and framing; the shoulders and clothes do not move at all. Change only the
+pose of her head: turn it very slightly, about 3 degrees, towards the viewer's left, a barely visible turn, the face,
+hair and ears turning with it naturally and the eyes still looking at the viewer.`,
+  turnR: `Edit this illustration of a woman. Keep the picture exactly as it is: the same person, face, hair, earrings, bindi,
+clothes, background, style, colours, lighting and framing; the shoulders and clothes do not move at all. Change only the
+pose of her head: turn it very slightly, about 3 degrees, towards the viewer's right, a barely visible turn, the face,
+hair and ears turning with it naturally and the eyes still looking at the viewer.`,
+};
 export const JOBS = {
   // mouth set (Diya's visemes collapsed: RESEARCH.md §4)
   mbp: MOUTH("lips closed and pressed gently together, as in the middle of saying 'm' or 'b': a little flatter and thinner than at rest, corners relaxed, no smile"),
@@ -68,6 +90,7 @@ const list = which === "all" ? Object.keys(JOBS) : which.split(",");
 // --from <key>: start from that key's composite (rs/k-<key>.png) with the P1 family prompt; --p1: the P1 prompt from the front
 const from = process.argv.includes("--from") ? process.argv[process.argv.indexOf("--from") + 1] : null;
 const p1 = process.argv.includes("--p1") || !!from;
+const v3 = process.argv.includes("--v3");
 fs.mkdirSync(`${S}/raw`, { recursive: true });
 const q = [...list];
 const worker = async () => {
@@ -77,7 +100,7 @@ const worker = async () => {
     if (fs.existsSync(out)) { console.log("skip", k); continue; }
     try {
       const src = from ? `${S}/rs/k-${from}.png` : `${S}/rs/front.png`;
-      const buf = await edit({ tag: `lamp2-${k}-t${tryN}`, stage: p1 ? "keys-P1" : "keys", prompt: p1 ? P1[k] : JOBS[k], images: [{ file: src, name: "front.png" }], quality: "high", size: "1024x1024", fidelity: "high" });
+      const buf = await edit({ tag: `lamp2-${k}-t${tryN}`, stage: v3 ? "keys-v3" : p1 ? "keys-P1" : "keys", prompt: v3 ? V3[k] : p1 ? P1[k] : JOBS[k], images: [{ file: src, name: "front.png" }], quality: "high", size: "1024x1024", fidelity: "high" });
       fs.writeFileSync(out, buf);
     } catch (e) { console.log("FAIL", k, String(e.message).slice(0, 200)); }
   }

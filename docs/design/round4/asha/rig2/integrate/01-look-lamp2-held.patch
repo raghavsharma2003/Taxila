@@ -7,7 +7,7 @@ index 956d3f15..81182ef7 100644
  export const FACE_LOOKS = Object.freeze(["r8"]);
  /** Looks keyed in src/face-puppet/assets.ts but held (never served): the client keeps the same list (HELD_LOOKS). */
 -export const HELD_FACE_LOOKS = Object.freeze(["lamp1"]);
-+// lamp2 (round 4 rig2, painted keys) is held too: blind uncanny 2/10 pooled and premium 2.8 vs r8 3.2-3.6 (asha/rig2/RESULTS.md)
++// lamp2 (round 4 rig2, painted keys) is held too: blind premium 2.6-2.8 vs r8 3.0-3.4 in the same runs (asha/rig2/RESULTS.md)
 +export const HELD_FACE_LOOKS = Object.freeze(["lamp1", "lamp2"]);
  
  /** TAXILA_FACE_LOOK, or the default pack (PUPPET_REV) for an unset, unknown or held value. */
@@ -23,8 +23,8 @@ index 3133aee9..4b80db7c 100644
 -//           joins as a new look.
 +//           joins as a new look;
 +//   lamp2 — the same grown-up Asha as painted KEYS (round 4 rig2: mouths, eyes and brows swapped, never warped; Canvas 2D
-+//           KeyRig in ./rig-keys). HELD (2026-10-10): blind uncanny 3, 2, 0, 2 / 5 over its rounds (final build 2 / 10
-+//           pooled), premium 2.6-2.8 against r8's 3.0-3.6 in the same runs (docs/design/round4/asha/rig2/RESULTS.md).
++//           KeyRig in ./rig-keys). HELD (2026-10-10): blind uncanny passes in v3 (1, 1, 0 / 5) but premium 2.6-2.8 stays
++//           below r8's 3.0-3.4 in the same runs (docs/design/round4/asha/rig2/RESULTS.md).
  // Each pack is WebP layers + geometry, served from /face-puppet/<look>/ (public/), fetched lazily after mount. Which look
  // a page shows is decided in ./look.ts (?look= on the device, else the server's TAXILA_FACE_LOOK).
 -export type PuppetLook = "r8" | "lamp1";

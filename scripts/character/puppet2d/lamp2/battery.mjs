@@ -21,6 +21,11 @@ import { LINES } from "../../../../evals/face-puppet/lines.mjs";
 const DIR = new URL("../../../../evals/face-puppet/out/diya/", import.meta.url).pathname;
 const HOP = 5, WIN = 10, SR = 24000, FRAME = 1000 / 60;
 const KEY_LEAD = process.env.KEY_LEAD ? Number(process.env.KEY_LEAD) : KEY_LEAD_MS;
+// eval sweeps: TIMING='{"holdMs":50}' etc. (schedule.ts MouthTiming)
+const TIMING = process.env.TIMING ? JSON.parse(process.env.TIMING) : {};
+// OPEN=<interior.json>: score the MEASURED drawn opening of each key instead of schedule.ts KEY_OPENNESS
+const OPEN = process.env.OPEN ? JSON.parse(fs.readFileSync(process.env.OPEN, "utf8")).openness : null;
+const openOf = (k) => (OPEN ? (OPEN[k] ?? 0) : KEY_OPENNESS[k]);
 const q = (a, p) => { const s = [...a].sort((x, y) => x - y); return s[Math.min(s.length - 1, Math.floor(p * s.length))]; };
 function envelope(pcm) {
   const s = new Int16Array(pcm.buffer, pcm.byteOffset, pcm.length >> 1), hop = (SR * HOP) / 1000, win = (SR * WIN) / 1000, out = [];
@@ -38,7 +43,7 @@ function pearson(a, b, lag) {
   const cov = sab / n - (sa / n) * (sb / n), va = saa / n - (sa / n) ** 2, vb = sbb / n - (sb / n) ** 2;
   return cov / Math.sqrt(va * vb + 1e-12);
 }
-const bestLag = (env, tr) => { let best = -2, L = 0; for (let lag = -60; lag <= 60; lag++) { const r = pearson(env, tr, lag); if (r > best) { best = r; L = lag; } } return L * HOP; };
+const bestLag = (env, tr, R = 60) => { let best = -2, L = 0; for (let lag = -R; lag <= R; lag++) { const r = pearson(env, tr, lag); if (r > best) { best = r; L = lag; } } return L * HOP; };
 const BIL_ROMAN = /(^|[^p])(?:b|m|p(?!h))/;
 const BIL_DEV = /[पबभम]/u;
 const isBilabialWord = (t) => { const w = t.normalize("NFC"); return /[ऀ-ॿ]/u.test(w) ? BIL_DEV.test(w) : BIL_ROMAN.test(w.toLowerCase().replace(/[^a-z]/g, "")); };
@@ -46,7 +51,7 @@ const isBilabialWord = (t) => { const w = t.normalize("NFC"); return /[ऀ-ॿ]/
 /** Simulate the product mouth: returns per-frame [audioMs, swap] and the drawn openness on the 5 ms grid. */
 function simulate(vis, words, text, n) {
   const track = resolveVisemes(vis, words, text);
-  const mk = new MouthKeys(), w = {}, frames = [];
+  const mk = new MouthKeys(TIMING), w = {}, frames = [];
   const open = new Float64Array(n), jaw = new Float64Array(n);
   const end = n * HOP;
   for (let t = -200; t < end; t += FRAME) {
@@ -54,7 +59,7 @@ function simulate(vis, words, text, n) {
     weightsAt(track, ms, w, 0);
     const sw = mk.step(t + 1000, { bs: w });
     frames.push([t, sw]);
-    const o = mk.openness(t + 1000), j = (w.jawOpen ?? 0) / 0.62;
+    const sw2 = sw, o = openOf(sw2.a) * (1 - sw2.k) + openOf(sw2.b) * sw2.k, j = (w.jawOpen ?? 0) / 0.62;
     const i0 = Math.max(0, Math.floor(t / HOP)), i1 = Math.min(n, Math.floor((t + FRAME) / HOP));
     for (let i = i0; i < i1; i++) { open[i] = o; jaw[i] = j; }
   }
@@ -63,6 +68,7 @@ function simulate(vis, words, text, n) {
 const sealed = (frames, a, b) => frames.some(([t, s]) => t >= a && t <= b && ((s.b === "mbp" && s.k >= 0.9) || (s.a === "mbp" && s.b === "mbp")));
 
 const out = { date: new Date().toISOString().slice(0, 10), method: fs.readFileSync(new URL(import.meta.url)).toString().split("\n").filter((l) => l.startsWith("//")).map((l) => l.slice(3)).join("\n"), lines: [] };
+const paired150 = [];
 const words = { rule2: [0, 0], rule: [0, 0], azure: [0, 0] }, missed = { rule2: [], rule: [], azure: [] }, paired = [], pairedJaw = [];
 for (let k = 0; k < LINES.length; k++) {
   const f = String(k).padStart(2, "0");
@@ -85,6 +91,10 @@ for (let k = 0; k < LINES.length; k++) {
         row.keysMinusCtcMs = bestLag(env, sim.open) - ctcLag;
         row.continuousJawMinusCtcMs = bestLag(env, sim.jaw) - ctcLag;
         paired.push(row.keysMinusCtcMs); pairedJaw.push(row.continuousJawMinusCtcMs);
+        // the same estimator with the lag search limited to +-150 ms (half a syllable): a stepped key mouth can lock onto the
+        // NEIGHBOURING syllable at +-250-320 ms in the +-300 ms search; reported beside it, never instead of it
+        const ctc150 = bestLag(env, stepTrack(JSON.parse(fs.readFileSync(cf, "utf8")).visemes, n), 30);
+        row.keysMinusCtcMs150 = bestLag(env, sim.open, 30) - ctc150; paired150.push(row.keysMinusCtcMs150);
       }
     }
   }
@@ -92,6 +102,6 @@ for (let k = 0; k < LINES.length; k++) {
 }
 const dist = (a) => ({ n: a.length, median: q(a, 0.5), q25: q(a, 0.25), q75: q(a, 0.75), min: Math.min(...a), max: Math.max(...a), within50: +(a.filter((x) => Math.abs(x) <= 50).length / a.length).toFixed(2) });
 out.bilabialWords = { withLamp2Rule: `${words.rule2[0]}/${words.rule2[1]}`, missedWithLamp2Rule: missed.rule2, withLamp1Rule: `${words.rule[0]}/${words.rule[1]}`, azureVisemesOnly: `${words.azure[0]}/${words.azure[1]}`, missedWithLamp1Rule: missed.rule, missedAzureOnly: missed.azure };
-out.offset = { keys: dist(paired), continuousVisemeJaw: dist(pairedJaw), bar: "-125 <= offset <= +45 ms (decisions.md E-P8, ITU-R BT.1359); p2-face product path measured median -5 ms, 89% within +-50 ms (measurements p2f-lipsync-product-2026-10-05)" };
+out.offset = { keys: dist(paired), keysLag150: dist(paired150), continuousVisemeJaw: dist(pairedJaw), bar: "-125 <= offset <= +45 ms (decisions.md E-P8, ITU-R BT.1359); p2-face product path measured median -5 ms, 89% within +-50 ms (measurements p2f-lipsync-product-2026-10-05)" };
 fs.writeFileSync(process.argv[2], JSON.stringify(out, null, 1));
 console.log(JSON.stringify({ bilabialWords: out.bilabialWords, offset: out.offset }, null, 1));
