@@ -7,20 +7,18 @@
 // /api/* with page.route. The name route's mock runs the REAL server predicate (server/compiler/characters/naming.js),
 // so what the child sees on a refusal is what production would answer. At 360x640 and 1280x800, light and dark
 // (Young is light-only):
-//   N-HELLO   Hello ends in the naming step for every child (after the AI card): suggestions Asha / Arjun / Uma, a typed
-//             name; a refused name (romance, own name, public figure, bad shape) gets one gentle sentence and the
-//             suggestions, never the name echoed; the AI line stays on the step; a good name is POSTed and the lesson opens
-//   N-TEACHER Your teacher shows the name in use and "Change name"; a rename is saved and announced
-//   N-ID      the child's name for the teacher is on the home label ("{T} · AI teacher") and the Your-teacher card
+//   Round 4 (ONE teacher, dc-r4-single-teacher-asha): the naming card is parked, so this battery now proves its absence
+//   and that a stored name is still honoured:
+//   N-HELLO   Hello: the AI card, then lesson 1; no teacher card and no naming card, nothing POSTed
+//   N-TEACHER Your teacher shows her under the stored name, with nothing to rename or choose
+//   N-ID      the stored name is on the home label ("{T} · AI teacher") and the Your-teacher card
 //   N-PIN     the lesson shows the name PINNED at its start (the start response), not a rename made since; the AI label
 //             goes with it; the hint line (ui.hint) shows on the card with its rung dots
-//   N-PARENT  the parent row shows the name, the AI note, Change and Reset; Change opens the same naming step (the real
-//             predicate refuses, a good name POSTs { name, source: "parent" }); Reset POSTs { name: null, source: "parent" }
-//   N-KEEP    first run: "Keep {T}" with no custom name writes nothing, so a failing name route (5xx, 011 not yet applied)
-//             never strands the child; with a custom name the button reads "Go back to {own}" (it resets)
+//   N-PARENT  the parent row shows the name, the AI note and Reset (no Change); Reset POSTs { name: null, source: "parent" };
+//             a name given to a parked look is not listed as hers
 //   N-REAL    against the REAL routes (a second serve.mjs on the Neon TEST branch, CONDUCTOR_TEST_DATABASE_URL; skipped
-//             and reported when unset): Your teacher → Change name → a refused name gets the server's 422, a good one is
-//             stored with its history row and comes back from /api/me; the parent's Change stores source 'parent'
+//             and reported when unset): a pre-round-4 row (Arjun + a name given to him) reaches the client as Asha under her
+//             own name; a name given to her is honoured; the parent's Reset stores source 'parent'
 //   plus the shared audits on every frame: English chrome, accessible names, targets ≥ 48 (64 Young), no empty
 //   container > 48 px, no horizontal scroll, no lamp outside the lesson dock.
 import http from "http";
@@ -63,7 +61,7 @@ console.log(`app: ${BASE} (built ${dist})`);
 // ───────────── fixtures ─────────────
 const KIDS = {
   riya: { id: "c-riya", first_name: "Riya", class_level: 3, board: "cbse", language_pref: "hinglish", teacher_id: "asha", teacher_name: null, avatar: "red-panda", interests: ["Cricket"] },
-  kabir: { id: "c-kabir", first_name: "Kabir", class_level: 6, board: "cbse", language_pref: "english", teacher_id: "arjun", teacher_name: null, avatar: "rocket", interests: ["Football"] },
+  kabir: { id: "c-kabir", first_name: "Kabir", class_level: 6, board: "cbse", language_pref: "english", teacher_id: "asha", teacher_name: null, avatar: "rocket", interests: ["Football"] },
 };
 const OWN = { asha: "Asha", arjun: "Arjun", uma: "Uma" };
 const card = (id, name) => ({ id, name: name || OWN[id], characterName: OWN[id], addressedAs: name || OWN[id], role: "AI teacher",
@@ -212,96 +210,47 @@ const shot = (page, name) => page.screenshot({ path: path.join(SHOTS, `${name}.p
 const cardOf = (page) => page.locator("[data-testid=hello]").getAttribute("data-card");
 
 try {
-  // ═════════ N-HELLO: Older (two teachers → pick → name) and Young (one teacher → name) ═════════
+  // ═════════ N-HELLO: ONE teacher (round 4): no teacher card and no naming card; the AI card, then lesson 1 ═════════
   for (const who of ["kabir", "riya"]) {
     const young = who === "riya";
-    const b = young ? "b1" : "b3";
     for (const v of VIEWS) for (const theme of young ? ["light"] : ["light", "dark"]) {
       const kid = structuredClone(KIDS[who]);
       const tag = `hello ${who} ${v.w} ${theme}`;
-      const { ctx, page, st } = await open({ kid, tutors: young ? 1 : 2 }, `/c/${kid.id}/hello`, { ...v, theme });
+      const { ctx, page, st } = await open({ kid, tutors: 1 }, `/c/${kid.id}/hello`, { ...v, theme });
       await page.waitForSelector("[data-testid=hello]", { timeout: 10_000 }).catch(() => {});
-      const next = page.locator(young ? "[data-testid=hello-hear]" : "[data-testid=hello-next]");
-      await next.click().catch(() => {});
+      check(`N-HELLO the teacher is Asha ${tag}`, (await page.locator("[data-teacher-id]").first().getAttribute("data-teacher-id").catch(() => null)) === "asha");
+      await page.locator(young ? "[data-testid=hello-hear]" : "[data-testid=hello-next]").click().catch(() => {});
       if (young) await page.locator("text=Next").first().click({ timeout: 2500 }).catch(() => {});
       await page.waitForFunction(() => document.querySelector("[data-testid=hello]")?.getAttribute("data-card") === "ai", null, { timeout: 8000 }).catch(() => {});
-      check(`N-HELLO the AI card comes before naming ${tag}`, (await cardOf(page)) === "ai");
+      check(`N-HELLO the AI card ${tag}`, (await cardOf(page)) === "ai");
       await page.locator("[data-testid=hello-gotit]").click();
       await page.locator(".avatar-grid--hello .avatar-btn").nth(1).click();
       await page.locator("[data-testid=hello-thatsme]").click();
       await page.waitForTimeout(250);
       if ((await cardOf(page)) === "likes") await page.locator("[data-testid=hello-right]").click();
-      await page.waitForTimeout(250);
-      if (!young) {
-        check(`N-HELLO two teachers: the pick comes first ${tag}`, (await cardOf(page)) === "teacher");
-        await page.locator("[data-testid=choose-asha]").click();
-        await page.locator("[data-testid=confirm-teacher]").click();
-        await page.waitForTimeout(500);
-      }
-      check(`N-HELLO the naming step ${tag}`, (await cardOf(page)) === "name", await cardOf(page));
-      const namer = page.locator("[data-testid=teacher-namer]");
-      const sugg = await namer.locator(".tn-name").allInnerTexts();
-      check(`N-HELLO suggestions Asha / Arjun / Uma, the look's own first ${tag}`, sugg.join(",") === (young ? "Asha,Arjun,Uma" : "Asha,Arjun,Uma"), sugg.join(","));
-      check(`N-HELLO the AI line stays on the step ${tag}`, /your teacher is an AI/.test(await namer.innerText()));
-      check(`N-HELLO "Use this name" waits for a name ${tag}`, await page.locator("[data-testid=name-use]").isDisabled());
-      report(`${tag} name`, await audit(page, { young }));
-      await shot(page, `hello__6-name__${b}__${v.w}__${theme}`);
-      // refusals: romance, own name, a public figure, a bad shape (the shape one answers before any request)
-      for (const [typed, reason] of [["Jaanu", "not_allowed"], [kid.first_name, "own_name"], ["Virat Kohli", "public_figure"]]) {
-        await page.locator("[data-testid=name-input]").fill(typed);
-        await page.locator("[data-testid=name-use]").click();
-        await page.waitForSelector("[data-testid=name-retry]", { timeout: 4000 }).catch(() => {});
-        const retry = page.locator("[data-testid=name-retry]");
-        const said = await retry.innerText().catch(() => "");
-        check(`N-HELLO refusal "${reason}" is a gentle retry ${tag}`, (await retry.getAttribute("data-reason").catch(() => null)) === reason && said.length > 10 && !said.includes(typed), said);
-        check(`N-HELLO the field keeps what they typed ${tag} ${reason}`, (await page.locator("[data-testid=name-input]").inputValue()) === typed);
-      }
-      await shot(page, `hello__6-name-retry__${b}__${v.w}__${theme}`);
-      report(`${tag} retry`, await audit(page, { young }));
-      await page.locator("[data-testid=name-input]").fill("Asha2");
-      check(`N-HELLO a bad shape is caught as they type ${tag}`, (await page.locator("[data-testid=name-use]").isDisabled()) && (await page.locator("[data-testid=name-input]").getAttribute("aria-invalid")) === "true");
-      await page.locator("[data-testid=name-input]").fill("");
-      await page.locator("[data-testid=name-Uma]").click();
-      check(`N-HELLO a tapped suggestion is selected ${tag}`, (await page.locator("[data-testid=name-Uma]").getAttribute("aria-pressed")) === "true");
-      const posts = st.names.length;
-      await page.locator("[data-testid=name-use]").click();
       await page.waitForURL(/\/lesson\/new/, { timeout: 6000 }).catch(() => {});
-      check(`N-HELLO the name is saved and lesson 1 opens ${tag}`, st.names.length === posts + 1 && st.names.at(-1).name === "Uma" && /\/lesson\/new/.test(page.url()), `${JSON.stringify(st.names.at(-1))} ${page.url()}`);
-      if (!young) check(`N-HELLO the pick was saved before the name ${tag}`, st.chooses.join(",") === "asha");
+      check(`N-HELLO no teacher or naming card: lesson 1 opens ${tag}`, /\/lesson\/new/.test(page.url()) && st.names.length === 0 && st.chooses.length === 0, page.url());
       await ctx.close();
     }
   }
 
-  // ═════════ N-TEACHER + N-ID: Your teacher with the child's name; rename; the home label ═════════
+  // ═════════ N-TEACHER + N-ID: a name the child gave her before is honoured; nothing to rename or choose ═════════
   for (const v of VIEWS) for (const theme of ["light", "dark"]) {
     const kid = { ...structuredClone(KIDS.kabir), teacher_name: "Rohan" };
     const tag = `teacher ${v.w} ${theme}`;
     let { ctx, page } = await open({ kid, tutors: 1 }, `/c/${kid.id}`, { ...v, theme, storage: { hello: true } });
     await page.waitForSelector("[data-teacher-id]", { timeout: 10_000 }).catch(() => {});
     const label = await page.locator("[data-ai-label]").first().innerText().catch(() => "");
-    check(`N-ID home label carries the child's name and "AI teacher" ${tag}`, /^Rohan · AI teacher$/.test(label.trim()), label);
+    check(`N-ID home label carries the stored name and "AI teacher" ${tag}`, /^Rohan · AI teacher$/.test(label.trim()), label);
     report(`${tag} home`, await audit(page, { young: false }));
     await shot(page, `home__named-teacher__b3__${v.w}__${theme}`);
     await ctx.close();
     ({ ctx, page } = await open({ kid, tutors: 1 }, `/c/${kid.id}/teacher`, { ...v, theme, storage: { hello: true } }));
-    await page.waitForSelector("[data-testid=teacher-name-row]", { timeout: 10_000 }).catch(() => {});
-    check(`N-TEACHER the name in use ${tag}`, /Your teacher's name: Rohan/.test(await page.locator("[data-testid=teacher-name-row]").innerText().catch(() => "")));
+    await page.waitForSelector(".tc-one", { timeout: 10_000 }).catch(() => {});
     check(`N-ID Your-teacher card name ${tag}`, (await page.locator(".tc-one .tc-name").innerText().catch(() => "")) === "Rohan");
+    check(`N-TEACHER nothing to rename or choose ${tag}`, (await page.locator("[data-testid=name-change], [data-testid=teacher-namer], [data-testid^=choose-]").count()) === 0);
     report(`${tag} card`, await audit(page, { young: false }));
     await shot(page, `teacher__named__b3__${v.w}__${theme}`);
-    await page.locator("[data-testid=name-change]").click();
-    await page.waitForSelector("[data-testid=teacher-namer]", { timeout: 4000 }).catch(() => {});
-    check(`N-TEACHER the step opens with the current name ${tag}`, (await page.locator("[data-testid=name-input]").inputValue()) === "Rohan");
-    check(`N-KEEP with a custom name the secondary button says what it does ("Go back to Arjun") ${tag}`,
-      (await page.locator("[data-testid=name-keep]").innerText().catch(() => "")).trim() === "Go back to Arjun");
-    await page.locator("[data-testid=name-input]").fill("miss tara");
-    report(`${tag} rename`, await audit(page, { young: false }));
-    await shot(page, `teacher__rename__b3__${v.w}__${theme}`);
-    await page.locator("[data-testid=name-use]").click();
-    await page.waitForSelector("[data-testid=name-saved]", { timeout: 5000 }).catch(() => {});
-    check(`N-TEACHER the rename is saved and announced ${tag}`, /now called Miss Tara/.test(await page.locator("[data-testid=name-saved]").innerText().catch(() => "")));
-    await page.waitForTimeout(600);
-    check(`N-ID the new name is on the card after the save ${tag}`, (await page.locator(".tc-one .tc-name").innerText().catch(() => "")) === "Miss Tara");
     await ctx.close();
   }
 
@@ -329,65 +278,29 @@ try {
     await ctx.close();
   }
 
-  // ═════════ N-PARENT: the parent row (rendered where the parent corner mounts it) ═════════
+  // ═════════ N-PARENT: the parent row shows the name in use and resets it; no new names (round 4) ═════════
   for (const v of VIEWS) for (const theme of ["light", "dark"]) {
     const kid = { ...structuredClone(KIDS.kabir), teacher_name: "Rohan" };
     const tag = `parent ${v.w} ${theme}`;
-    const { ctx, page, st } = await open({ kid, tutors: 1, history: [{ name: "Rohan", characterId: "arjun", source: "child", at: "2026-10-03T08:00:00Z" }, { name: "Miss Tara", characterId: "arjun", source: "child", at: "2026-10-02T08:00:00Z" }] },
+    // a name given to a parked look (Arjun) before round 4 is never listed as one of hers
+    const { ctx, page, st } = await open({ kid, tutors: 1, history: [{ name: "Rohan", characterId: "asha", source: "child", at: "2026-10-03T08:00:00Z" }, { name: "Miss Tara", characterId: "asha", source: "child", at: "2026-10-02T08:00:00Z" }, { name: "Ravi", characterId: "arjun", source: "child", at: "2026-09-30T08:00:00Z" }] },
       `/parent/controls?c=${kid.id}`, { ...v, theme });
     const row = page.locator("[data-testid=parent-teacher-name]");
     const mounted = await row.waitFor({ timeout: 8000 }).then(() => true, () => false);
-    check(`N-PARENT the row is mounted in Controls ${tag}`, mounted, mounted ? "" : "not mounted (parent-corner owner: <ParentTeacherName childId childName />)");
+    check(`N-PARENT the row is mounted in Controls ${tag}`, mounted);
     if (mounted) {
       const t = await row.innerText();
       check(`N-PARENT shows the name and the AI note ${tag}`, /Kabir calls the teacher Rohan/.test(t) && /talking to an AI/.test(t), t.slice(0, 160));
-      check(`N-PARENT earlier names exclude the one in use ${tag}`, (await row.locator(".ptn-history li").allInnerTexts()).join(",") === "Miss Tara");
+      check(`N-PARENT earlier names: hers only, without the one in use ${tag}`, (await row.locator(".ptn-history li").allInnerTexts()).join(",") === "Miss Tara");
+      check(`N-PARENT no Change (no new names) ${tag}`, (await page.locator("[data-testid=parent-teacher-name-change], [data-testid=teacher-namer]").count()) === 0);
       await row.scrollIntoViewIfNeeded().catch(() => {});
+      report(`${tag} row`, await audit(page, { young: false }));
       await shot(page, `parent__teacher-name__adult__${v.w}__${theme}`);
-      // Change: the same naming step, as the parent (the real predicate decides)
-      await page.locator("[data-testid=parent-teacher-name-change]").click();
-      const namer = row.locator("[data-testid=teacher-namer]");
-      const opened = await namer.waitFor({ timeout: 4000 }).then(() => true, () => false);
-      check(`N-PARENT Change opens the naming step with a parent title ${tag}`, opened && /Choose a name for the teacher/.test(await namer.innerText()));
-      await row.locator("[data-testid=name-input]").fill("Mybaby");
-      await row.locator("[data-testid=name-use]").click();
-      await row.locator("[data-testid=name-retry]").waitFor({ timeout: 4000 }).catch(() => {});
-      check(`N-PARENT a refused name gets the gentle retry, not echoed ${tag}`, (await row.locator("[data-testid=name-retry]").getAttribute("data-reason").catch(() => null)) === "not_allowed"
-        && !(await row.locator("[data-testid=name-retry]").innerText()).includes("Mybaby"));
-      await row.locator("[data-testid=name-input]").fill("Meenu");
-      report(`${tag} change`, await audit(page, { young: false }));
-      await namer.scrollIntoViewIfNeeded().catch(() => {});
-      await shot(page, `parent__teacher-name-change__adult__${v.w}__${theme}`);
-      await row.locator("[data-testid=name-use]").click();
-      await page.waitForTimeout(500);
-      check(`N-PARENT Change sends { name, source: parent } ${tag}`, st.names.at(-1)?.name === "Meenu" && st.names.at(-1)?.source === "parent", JSON.stringify(st.names.at(-1)));
-      check(`N-PARENT the row shows the new name ${tag}`, /Kabir calls the teacher Meenu/.test(await row.innerText()) && /from the next lesson/.test(await row.innerText()));
       await page.locator("[data-testid=parent-teacher-name-reset]").click();
       await page.waitForTimeout(500);
       check(`N-PARENT Reset sends { name: null, source: parent } ${tag}`, st.names.at(-1)?.name === null && st.names.at(-1)?.source === "parent", JSON.stringify(st.names.at(-1)));
-      check(`N-PARENT after Reset the look's own name ${tag}`, /uses the teacher's own name, Arjun/.test(await row.innerText()));
+      check(`N-PARENT after Reset her own name ${tag}`, /calls the teacher by her own name|uses the teacher's own name, Asha/.test(await row.innerText()));
     }
-    await ctx.close();
-  }
-  // ═════════ N-KEEP: first run, a failing name route, Keep {T} still gets the child to lesson 1 ═════════
-  for (const [v, theme] of [[VIEWS[0], "light"], [VIEWS[1], "dark"]]) {
-    const kid = structuredClone(KIDS.kabir);
-    const tag = `keep ${v.w} ${theme}`;
-    const { ctx, page, st } = await open({ kid, tutors: 1, nameFails: true }, `/c/${kid.id}/hello`, { ...v, theme });
-    await page.waitForSelector("[data-testid=hello]", { timeout: 10_000 }).catch(() => {});
-    await page.locator("[data-testid=hello-next]").click().catch(() => {});
-    await page.waitForFunction(() => document.querySelector("[data-testid=hello]")?.getAttribute("data-card") === "ai", null, { timeout: 8000 }).catch(() => {});
-    await page.locator("[data-testid=hello-gotit]").click().catch(() => {});
-    await page.locator(".avatar-grid--hello .avatar-btn").nth(1).click().catch(() => {});
-    await page.locator("[data-testid=hello-thatsme]").click().catch(() => {});
-    await page.waitForTimeout(250);
-    if ((await cardOf(page)) === "likes") await page.locator("[data-testid=hello-right]").click();
-    await page.waitForTimeout(250);
-    check(`N-KEEP the naming step ${tag}`, (await cardOf(page)) === "name", await cardOf(page));
-    check(`N-KEEP the button reads "Keep Arjun" ${tag}`, (await page.locator("[data-testid=name-keep]").innerText().catch(() => "")).trim() === "Keep Arjun");
-    await page.locator("[data-testid=name-keep]").click();
-    await page.waitForURL(/\/lesson\/new/, { timeout: 6000 }).catch(() => {});
-    check(`N-KEEP Keep writes nothing and lesson 1 opens though the route fails ${tag}`, st.names.length === 0 && /\/lesson\/new/.test(page.url()), `${st.names.length} POST(s) ${page.url()}`);
     await ctx.close();
   }
 
@@ -430,55 +343,45 @@ async function realRun() {
     await q("insert into auth_session (token_hash, guardian_id, expires_at, parent_unlocked_until) values ($1, $2, now() + interval '1 day', now() + interval '30 minutes')", [createHash("sha256").update(token).digest("hex"), guardian]);
     const { hashSecret } = await import("../server/routes/parent.js");
     await q("insert into guardian_pin (guardian_id, pin_hash) values ($1, $2)", [guardian, await hashSecret("2580")]);
-    const kid = (await one("insert into child (guardian_id, first_name, class_level, language_pref, teacher_id) values ($1, 'Kabir', 6, 'english', 'arjun') returning id", [guardian])).id;
+    // a row from before round 4: class 6, the old default Arjun, and a name the child gave HIM
+    const kid = (await one("insert into child (guardian_id, first_name, class_level, language_pref, teacher_id, teacher_name) values ($1, 'Kabir', 6, 'english', 'arjun', 'Ravi') returning id", [guardian])).id;
     for (const p of ["core_tutoring", "memory", "learning_profile"]) await q("insert into consent (guardian_id, child_id, purpose, version, granted, method) values ($1, null, $2, 't', true, 't')", [guardian, p]);
     for (const [v, theme] of [[VIEWS[0], "light"], [VIEWS[1], "dark"]]) {
       const tag = `real ${v.w} ${theme}`;
+      if (theme === "dark") await q("update child set teacher_id = 'asha', teacher_name = 'Meenu' where id = $1", [kid]); // a name given to HER
+      const want = theme === "dark" ? "Meenu" : "Asha";
       const ctx = await browser.newContext({ viewport: { width: v.w, height: v.h }, deviceScaleFactor: v.w < 720 ? 2 : 1, hasTouch: v.w < 720, isMobile: v.w < 720, colorScheme: theme, serviceWorkers: "block" });
       await ctx.addCookies([{ name: "tx_session", value: token, url: REAL }]);
       const page = await ctx.newPage();
       page.on("pageerror", (e) => errors.push(`real: ${e.message}`));
       await page.addInitScript(([cid, p]) => { localStorage.setItem(`taxila.child.${cid}.prefs`, JSON.stringify(p)); }, [kid, { hello: true, theme }]);
       await page.goto(`${REAL}/c/${kid}/teacher`, { waitUntil: "domcontentloaded" });
-      await page.waitForSelector("[data-testid=name-change]", { timeout: 15_000 }).catch(() => {});
-      await page.locator("[data-testid=name-change]").click().catch(() => {});
-      await page.waitForSelector("[data-testid=teacher-namer]", { timeout: 6000 }).catch(() => {});
-      const bad = v.w < 720 ? "Not An Ai" : "Mybaby";
-      await page.locator("[data-testid=name-input]").fill(bad);
-      await page.locator("[data-testid=name-use]").click();
-      await page.waitForSelector("[data-testid=name-retry]", { timeout: 8000 }).catch(() => {});
-      check(`N-REAL the server's 422 is the gentle retry (${bad}) ${tag}`, (await page.locator("[data-testid=name-retry]").getAttribute("data-reason").catch(() => null)) === "not_allowed");
-      const good = v.w < 720 ? "Meenu" : "Rao Sir";
-      await page.locator("[data-testid=name-input]").fill(good.toLowerCase());
-      await shot(page, `real__teacher-rename__b3__${v.w}__${theme}`);
-      await page.locator("[data-testid=name-use]").click();
-      await page.waitForSelector("[data-testid=name-saved]", { timeout: 8000 }).catch(() => {});
-      const row = await one("select teacher_name from child where id = $1", [kid]);
-      const hist = await one("select name, source, character_id from teacher_name_history where child_id = $1 order by at desc limit 1", [kid]);
-      check(`N-REAL stored with its history row ${tag}`, row?.teacher_name === good && hist?.name === good && hist?.source === "child" && hist?.character_id === "arjun", JSON.stringify({ row, hist }));
+      await page.waitForSelector(".tc-one", { timeout: 15_000 }).catch(() => {});
       const me = await page.evaluate(async () => (await fetch("/api/me")).json());
-      check(`N-REAL /api/me returns the name ${tag}`, me.children?.find((c) => c.id === kid)?.teacher_name === good);
-      check(`N-REAL the card shows the name ${tag}`, (await page.locator(".tc-one .tc-name").innerText().catch(() => "")) === good);
+      const row = me.children?.find((c) => c.id === kid);
+      check(`N-REAL /api/me sends the served teacher, Asha, and only a name given to her ${tag}`, row?.teacher_id === "asha" && (row?.teacher_name ?? "Asha") === want, JSON.stringify({ id: row?.teacher_id, name: row?.teacher_name }));
+      check(`N-REAL the card is Asha under ${want} ${tag}`, (await page.locator(".tc-one .tc-name").innerText().catch(() => "")) === want
+        && (await page.locator(".tc-one").getAttribute("data-teacher-id").catch(() => null)) === "asha");
+      check(`N-REAL nothing to rename or choose ${tag}`, (await page.locator("[data-testid=name-change], [data-testid^=choose-]").count()) === 0);
       report(`${tag} teacher`, await audit(page, { young: false }));
-      // the parent row (behind the real gate, unlocked for this session), Change as the parent
-      await page.goto(`${REAL}/parent/controls?c=${kid}`, { waitUntil: "domcontentloaded" });
-      // the client gate asks for the PIN on a fresh page: typed on its pad, checked by the real POST /api/parent/unlock
-      if (await page.getByText("Enter your parent PIN").waitFor({ timeout: 8000 }).then(() => true, () => false)) {
-        for (const d of "2580") await page.getByRole("button", { name: d, exact: true }).click();
-        await page.getByRole("button", { name: "OK", exact: true }).click().catch(() => {});
-      }
-      const prow = page.locator("[data-testid=parent-teacher-name]");
-      const mounted = await prow.locator("[data-testid=parent-teacher-name-line]").waitFor({ timeout: 15_000 }).then(() => true, () => false);
-      check(`N-REAL the parent row reads the real GET ${tag}`, mounted && new RegExp(`calls the teacher ${good}`).test(await prow.innerText().catch(() => "")), mounted ? "" : `${(await page.locator("body").innerText().catch(() => "")).slice(0, 300)} ${page.url()}`);
-      if (mounted) {
-        await prow.locator("[data-testid=parent-teacher-name-change]").click();
-        await prow.locator("[data-testid=name-input]").fill("Tara");
-        await prow.locator("[data-testid=name-use]").click();
-        await page.waitForTimeout(1500);
-        const h2 = await one("select name, source from teacher_name_history where child_id = $1 order by at desc limit 1", [kid]);
-        check(`N-REAL the parent's Change is stored as source 'parent' ${tag}`, h2?.name === "Tara" && h2?.source === "parent", JSON.stringify(h2));
-        await prow.scrollIntoViewIfNeeded().catch(() => {});
-        await shot(page, `real__parent-change__adult__${v.w}__${theme}`);
+      await shot(page, `real__teacher__b3__${v.w}__${theme}`);
+      if (theme === "dark") {
+        // the parent row (behind the real gate), Reset as the parent
+        await page.goto(`${REAL}/parent/controls?c=${kid}`, { waitUntil: "domcontentloaded" });
+        if (await page.getByText("Enter your parent PIN").waitFor({ timeout: 8000 }).then(() => true, () => false)) {
+          for (const d of "2580") await page.getByRole("button", { name: d, exact: true }).click();
+          await page.getByRole("button", { name: "OK", exact: true }).click().catch(() => {});
+        }
+        const prow = page.locator("[data-testid=parent-teacher-name]");
+        const mounted = await prow.locator("[data-testid=parent-teacher-name-line]").waitFor({ timeout: 15_000 }).then(() => true, () => false);
+        check(`N-REAL the parent row reads the real GET ${tag}`, mounted && /calls the teacher Meenu/.test(await prow.innerText().catch(() => "")));
+        if (mounted) {
+          await prow.locator("[data-testid=parent-teacher-name-reset]").click();
+          await page.waitForTimeout(1500);
+          const h2 = await one("select name, source, character_id from teacher_name_history where child_id = $1 order by at desc limit 1", [kid]);
+          check(`N-REAL the parent's Reset is stored as source 'parent' on Asha ${tag}`, h2?.name === null && h2?.source === "parent" && h2?.character_id === "asha", JSON.stringify(h2));
+          await shot(page, `real__parent-reset__adult__${v.w}__${theme}`);
+        }
       }
       await ctx.close();
     }

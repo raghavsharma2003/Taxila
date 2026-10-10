@@ -1,0 +1,78 @@
+{
+  "nodes": [
+    {
+      "id": "dc-r4a-single-teacher-flag",
+      "kind": "decision",
+      "title": "Stream 5 Part A (2026-10-10): ONE teacher behind TAXILA_SINGLE_TEACHER (default on; off/0/false = rollback to Asha 1-4 / Arjun 5-9, read every call). teacherFor serves Asha for every class 1-9 whatever child.teacher_id stores; open lessons keep their pinned teacher (teacherForLesson); no migration. Arjun and Uma are status 'parked' in shared/tutors.js; GET /api/tutors offers [asha] (mode single); POST /api/tutors/choose refuses anyone else (403); account.js (patch 02) sends the SERVED teacher id to the client and writes only a teacher who serves the class. A stored custom name is honoured only on the look it was given to (a class 5-9 child who named Arjun meets Asha under her own name). Every teacher choice is gone from the UI (Hello teacher + naming cards, the Your-teacher picker, onboarding 'two teachers', TutorPicker/TeacherRoute deleted, parent 'Change name'); the naming code stays for a one-line restore. Reverse if: the owner asks for a second teacher or for the naming card back.",
+      "at": "2026-10-10"
+    },
+    {
+      "id": "dc-r4a-asha-band-sheet",
+      "kind": "decision",
+      "title": "Asha's persona sheet covers classes 1-9 as two register bands (server/compiler/characters/asha.js bands; sheetFor(c, class) picks one): classes 1-4 byte-identical to before; classes 5-9 = Arjun's measured competence notes VERBATIM re-registered as a 'didi-tutor' (v3), with the teach-back protégé 'Bittu, a pretend new student who missed this class' (never a baby elephant). Notes and shapes only. Address stays 'Asha didi' for every class (owner decision 3 open). Reverse if: the class 5-9 talk-share gate (director-sim --class 6, same harness and n against Arjun on the base) shows a > 10% median drop, or a real-child or owner review reads her class 5-9 register as cold.",
+      "at": "2026-10-10"
+    },
+    {
+      "id": "dc-r4a-look-switch",
+      "kind": "decision",
+      "title": "Stream 5 Part B (2026-10-10): PuppetLook 'r8' | 'lamp1' keyed in src/face-puppet/assets.ts (base, clear colour, views, posters; lamp1's from its geom.json); GET /api/face/config reports look = TAXILA_FACE_LOOK (unset/unknown = r8); the device override is ?look=r8|lamp1|default (persisted); one config request carries the kill switch and the look; nothing paints until the look is known, so no face swap. Under lamp1 every Asha fallback (pre-reveal failure, a failed page, the server kill switch, the device off, the landing portrait) is her lamp1 still, never Plate2D. r8 stays the default; lamp1 becomes the default only on the owner's yes. Reverse if: the owner rejects lamp1 after his phone look.",
+      "at": "2026-10-10"
+    },
+    {
+      "id": "ms-r4a-talk-share-c6-2026-10-10",
+      "kind": "measurement",
+      "title": "Talk share, class 6 persona change (director-sim --class 6 --topic c6-maths-ch07-t04, LLM-played child (SIMULATION, not a child), in-process API on the stream's own Neon branch, 14 turns, concurrency <= 3, 2026-10-10): base Arjun median 0.160 (n = 9); Asha 5-9 band v1 (her young warmth/humour/pace notes) 0.138 (n = 6, -16%, fails the 10% gate); v2 (Arjun's notes + 'never babyish' + 'ask more than tell') 0.145 (n = 9, -9.4%); v3 (Arjun's notes verbatim, 'didi-tutor') 0.163 (n = 6, +1.6%), shipped. Teacher words per lesson equal across arms (389-398); the difference is the child's words. Class 4 (sheet unchanged, n = 3 each): base 0.163, branch 0.163. The committed talk-baseline.json (0.238, 2026-10-05) is failed by the untouched base too (0.163): stale.",
+      "at": "2026-10-10"
+    },
+    {
+      "id": "rj-r4a-asha-band-v1-warm-notes",
+      "kind": "rejection",
+      "title": "Tried: Asha's class 5-9 band = Arjun's competence notes PLUS her young-band warmth line ('steady, calm, never gushing'), her situational humour, 'words of their class, no baby talk' pacing. Broke: the simulated class 6 child talked less (median child talk share 0.138 vs Arjun 0.163, n = 6 each, simulation; teacher words per lesson equal, 390 vs 399; child words 67 vs 76): a 16% drop, over the 10% talk gate. Replaced by v2 (closer to Arjun's measured notes + 'ask more than tell').",
+      "at": "2026-10-10"
+    },
+    {
+      "id": "ms-r4a-base-npm-test-2026-10-10",
+      "kind": "measurement",
+      "title": "Untouched base 8e438f04 npm test in the stream-5 container (n = 1 run, 2026-10-10): 2,575 tests, 2,505 pass, 64 fail, 6 skipped. All 64 are Chromium-iframe tests (60 engines-browser scenarios + 4 tray/explainer frame tests): the container's Chromium is build 1194 while playwright 1.63 expects 1243 (linked, not downloaded), and its CSP console message wording differs from the harness's dev-noise filter. Environmental, identical on the branch: not a regression signal either way. Branch (n = 1 run, same container): 2,593 tests, 2,527 pass, 60 fail (the same 60 engines-browser scenarios), 6 skipped; 0 failures not on the base.",
+      "at": "2026-10-10"
+    },
+    {
+      "id": "rj-r4a-asha-band-v2-never-babyish",
+      "kind": "rejection",
+      "title": "Tried: Asha's class 5-9 band = Arjun's notes plus 'never babyish' in the register line, 'ask more than tell' in teaching, 'no nicknames or endearments'. Broke: simulated class 6 child talk share median 0.145 vs Arjun 0.160 (n = 9 each, director-sim, simulation), a 9.4% drop, just inside the 10% gate, while Arjun's notes verbatim under Asha's name (v3) gave 0.163. The additions cost talk; v3 shipped.",
+      "at": "2026-10-10"
+    }
+  ],
+  "edges": [
+    {
+      "src": "dc-r4a-single-teacher-flag",
+      "rel": "part_of",
+      "dst": "dc-r4-single-teacher-asha"
+    },
+    {
+      "src": "dc-r4a-asha-band-sheet",
+      "rel": "part_of",
+      "dst": "dc-r4-single-teacher-asha"
+    },
+    {
+      "src": "dc-r4a-asha-band-sheet",
+      "rel": "measured_by",
+      "dst": "ms-r4a-talk-share-c6-2026-10-10"
+    },
+    {
+      "src": "rj-r4a-asha-band-v1-warm-notes",
+      "rel": "measured_by",
+      "dst": "ms-r4a-talk-share-c6-2026-10-10"
+    },
+    {
+      "src": "dc-r4a-look-switch",
+      "rel": "part_of",
+      "dst": "dc-r4-face-lamplight-flat"
+    },
+    {
+      "src": "rj-r4a-asha-band-v2-never-babyish",
+      "rel": "measured_by",
+      "dst": "ms-r4a-talk-share-c6-2026-10-10"
+    }
+  ]
+}
