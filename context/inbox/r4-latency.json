@@ -107,6 +107,30 @@
    "kind": "open",
    "title": "For 4B (page clock, owner duplex cohort, 2026-10-10, synthesised clip, n = 6 + 8): with natural ~410-465 ms mid-sentence pauses the duplex engine committed mid-utterance on 4/6 turns and sent truncated words ('Mujhe lagta hai dabbe'); with a continuous clip the words were whole but the turn POST trailed the final by 6-1,450 ms (p50 ~800) and only 2/8 turns prefetched; reply audible ~4.9 s. Correctness first (children pause mid-sentence), then latency.",
    "at": "2026-10-10"
+  },
+  {
+   "id": "ms-r4lat-note-bakeoff-2026-10-10",
+   "kind": "measurement",
+   "title": "UNDERSTAND-note bake-off, Azure Direct arms never measured before (evals/latency/note-bakeoff.mjs, the 355-case battery of record, policy-move scoring, US container, concurrency 4, 2026-10-10): gpt-6-sol (control) 330/355, distress 9/10, p50/p90 1,542/1,870 ms; gpt-6.1-sol 333/355, 2,101/2,780; gpt-6-astra 335/355, 2,364/3,485; deepseek-v4-flash 163/355 (172 errors), 0/10 distress; kimi-2.6 unusable (353 errors). None faster at gpt-6-sol accuracy; the note stays.",
+   "at": "2026-10-10"
+  },
+  {
+   "id": "rj-r4lat-reply-luna",
+   "kind": "rejection",
+   "title": "Tried: reply lane on taxila-gpt6-luna instead of taxila-fast (first-sound, AFTER config, interleaved runs, n = 120 vs 113, 2026-10-10). Reply audible p50 3,789 vs 4,006 ms: -217 [95% CI -580, +101], p90 -108 [-836, +660]; rewritten turns 29/120 vs 25/113 (the hoped-for fewer rewrites did not show); script guard 9 vs 3. Luna is also the whiteboard planner deployment (w2f-luna-reserved-for-whiteboard). Kept taxila-fast. Revisit if a luna-class model shows a CI-excluding-zero gain at n >= 100 with no guard increase.",
+   "at": "2026-10-10"
+  },
+  {
+   "id": "ms-r4lat-test-shared-process-2026-10-10",
+   "kind": "measurement",
+   "title": "Root cause of the full-suite-only test failures (p4-content-seam host-graded event, p2-face-player re-anchor cuts): tests/index.js runs every *.test.mjs in ONE node:test process, so module state is shared and a root-level before()/after() holds for the whole run (an import-time/root _setDeps replaced another file seam fakes; two root performance.now pins froze each other). Not load. Five files in one process: 2 fails before, 0 after (3/3). Fix 031724d3: install and restore per test body. Rule: never stub shared module state or globals at import time or in a root hook.",
+   "at": "2026-10-10"
+  },
+  {
+   "id": "dec-r4lat-distress-attribution",
+   "kind": "decision",
+   "title": "Every turn that sets distress records which stage set it (classify_model, predicate, content_filter, understand_note, duplex_pending, relational_floor; episode_open / unattributed for a safeguard move with none) on the [lesson] turn log line and in debug.distress, codes only; a kind that is not a code is reported as other (server/brain/turn.js distressOf, tests/r4-latency-distress-source.test.mjs). Reverse if: never; extend the code list when a new stage can set distress.",
+   "at": "2026-10-10"
   }
  ],
  "edges": [
@@ -179,6 +203,21 @@
    "src": "open-r4lat-duplex-midutterance-commit",
    "rel": "blocks",
    "dst": "open-r4lat-3000-floor"
+  },
+  {
+   "src": "rj-r4lat-reply-luna",
+   "rel": "measured_by",
+   "dst": "ms-r4lat-after-2026-10-10"
+  },
+  {
+   "src": "open-r4lat-3000-floor",
+   "rel": "measured_by",
+   "dst": "ms-r4lat-note-bakeoff-2026-10-10"
+  },
+  {
+   "src": "open-r4lat-3000-floor",
+   "rel": "measured_by",
+   "dst": "rj-r4lat-reply-luna"
   }
  ]
 }

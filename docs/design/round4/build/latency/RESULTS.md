@@ -293,7 +293,19 @@ No Azure Direct model is faster than gpt-6-sol at its accuracy. The note stays.
 **Reply model**: the 2026-10-04 text-lane refresh (model-judged, so labelled so) already ranks the faster models below today's
 taxila-fast on the production prompt (grok-4-20 −0.33, mistral −0.29, ds4f −0.08 with 22/36 guard fires) and gpt-6-luna
 above it (+0.53 [0.11, 1.00]) at +226 ms first token but FEWER guard fires (12/36 vs 16/36): fewer rewrites could make it
-faster end to end. That arm is measured on this harness below (in progress).
+faster end to end. Measured on this harness (2026-10-10, merged tree 620a0a0e, AFTER config: prefetch on, EXACT on,
+ACK 1000; 3 lessons × 20 turns per run, luna and control runs INTERLEAVED a-c-b-d; `runs/reply-{luna-a,luna-b,control-c,control-d}.json`):
+
+| reply model | n | reply audible p50 / p90 | director p50 | rewritten turns | guard fires (script / ask / drift) | speculation hit | calls / turn |
+|---|---|---|---|---|---|---|---|
+| taxila-fast (today, control) | 113 | 4,006 / 5,691 ms | 2,019 | 25/113 (22%) | 3 / 16 / 5 | 81/113 | 2.3 |
+| taxila-gpt6-luna | 120 | 3,789 / 5,583 ms | 1,696 | 29/120 (24%) | 9 / 18 / 5 | 94/120 | 2.2 |
+| difference (bootstrap 95% CI) | | p50 −217 [−580, +101]; p90 −108 [−836, +660] | −323 [−651, +13] | | | | |
+
+**Not adopted.** The p50 gain is not distinguishable from zero at this n, luna does NOT rewrite less here (the reason
+the arm was worth measuring), and its script guard fires 3× as often (9 vs 3). It is also the whiteboard planner's
+reserved deployment (w2f-luna-reserved-for-whiteboard): the reply lane there would put ~2 calls per turn on the
+whiteboard's quota. No reply model on Azure Direct closes the 3,000 ms gap; the floor analysis above stands.
 
 ## Gates (this branch, 2026-10-10)
 
