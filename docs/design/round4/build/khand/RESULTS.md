@@ -98,9 +98,13 @@ sides=3x3`. The row now says `area=9 perimeter=12 rect=3 by 3`, and the re-run r
   family, so whatever that rule does applies to Khand. Not fixable from this stream's files; reported to main.
 - **Cold load**: the child can play the 2D twin within 2.2 s even at 1.2 Mbps. The 3D world itself arrives at 4.4-4.6 s
   on that link, and the twin carries the level until then.
+- **Young band (classes 1-4, voice + tiles + NumberPad, never typed words): no Khand act needs typing.** Building is
+  touch (tap, drag a layer). The two numbers a level asks for (the array count, the next square / cube number) use Khand's
+  own on-screen digit keypad: buttons `k0`-`k9` / `Del` / `Say N`, which the closed voice grammar also presses. The
+  turned-array prediction is two buttons. No text field exists in the engine or the 2D twin.
 - **Class 4 typed lane**: class-4 children got no typed input on the practice page (voice-first). The browser asks
   therefore ran with class-5 children on the class-4 topics. The main session confirmed this as the right workaround and
-  routed the missing typed input to stream 2. Voice asks for class 4 are untested here.
+  confirmed with stream 2 that the Young family has no typed input by design (src/child/band.ts B1/B2). Voice asks for class 4 are untested here.
 - **Her words around the game** come from the Director, not Khand. In the views run she said "top view chuniye"
   ("choose") while the task is to build. Routed to 4A by the main session.
 - **Art**: the blocks and sky are drawn in code (no Azure image generation used). The owner has not judged the look.
