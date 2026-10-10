@@ -1,5 +1,11 @@
 # Stream 4A (conversation) · patch requests
 
+> **2026-10-10, applied on base:** 03 (`7ec8202`, amended), 05 (`6166d0a`), 06, 07 and 09 (`a491caf`, with the main review's
+> amendment to 06: if the fresh reply fails for any reason other than a filter block, the ORIGINAL block stands and the turn
+> fails closed). All are merged into this branch, and their diffs are dropped from this folder. The rows below are kept as the
+> record of why and how each was proved. Still open: 01, 02, 04 (applied here as `[patch-request]` commits) and 08 (a design
+> note).
+
 Apply in this order, after the stream's own commits. Each was applied on `claude/r4-conversation` only as a separate
 `[patch-request]` commit, so the main session can drop and re-apply it at merge (BUILD-PLAN §4 rule 2).
 
