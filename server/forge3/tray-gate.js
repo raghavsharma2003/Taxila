@@ -41,7 +41,12 @@ import { boardFrame } from "../../src/studio/boardView.ts";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.join(here, "..", "..");
-export const CONTRACT_FILE = path.join(ROOT, "docs", "design", "round4", "build", "box-contract.json");
+// The runtime copy lives with the certificates (server/ is in the production image; docs/ is NOT: .dockerignore). The
+// docs copy (docs/design/round4/build/box-contract.json) is the brief's artifact; the harness writes both and
+// tests/r4-content-packaged.test.mjs keeps them identical. Measured: with the contract read from docs/, production
+// (taxila.dev, 0c90ebb, 2026-10-10) refused every board "no box for this class" and every Studio slot failed.
+export const CONTRACT_FILE = path.join(here, "certs", "box-contract.json");
+export const CONTRACT_DOC_FILE = path.join(ROOT, "docs", "design", "round4", "build", "box-contract.json");
 export const SKELETON_CERT_FILE = path.join(here, "certs", "skeleton.json");
 export const MODULE_CERT_FILE = path.join(here, "certs", "modules.json");
 export const VP_CLASSES = Object.freeze(["p360", "p412", "l1366"]);
@@ -53,7 +58,16 @@ const FIT_FLOOR = { young: 16, older: 14 };
 const readJson = (f, d) => { try { return JSON.parse(fs.readFileSync(f, "utf8")); } catch { return d; } };
 let contractMemo = null, skeletonMemo, moduleMemo;
 /** The stage box contract (stream 2 owns it: grow, never shrink). */
-export function boxContract() { return (contractMemo ??= readJson(CONTRACT_FILE, { boxes: {} })); }
+export function boxContract() {
+  if (contractMemo) return contractMemo;
+  contractMemo = readJson(CONTRACT_FILE, null);
+  // never silent: without the contract every tray board is refused (the gate cannot size a box)
+  if (!contractMemo?.boxes || !Object.keys(contractMemo.boxes).length) {
+    console.error(`[tray-gate] box contract missing or empty at ${CONTRACT_FILE}: every board will be refused`);
+    contractMemo = { boxes: {} };
+  }
+  return contractMemo;
+}
 export function skeletonCertificates() { if (skeletonMemo === undefined) skeletonMemo = readJson(SKELETON_CERT_FILE, null); return skeletonMemo; }
 export function moduleCertificates() { if (moduleMemo === undefined) moduleMemo = readJson(MODULE_CERT_FILE, null); return moduleMemo; }
 /** Test seams. */
