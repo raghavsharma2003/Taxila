@@ -624,20 +624,9 @@ export async function lessonTurn(req, body) {
   // and the instructions are recompiled only when the row changed.
   if (!late) {
     const studioRow = studioSlot ? seamSafe("studio.factsRowForSlot", () => (typeof studioSeam.factsRowForSlot === "function" ? studioSeam.factsRowForSlot(lesson.id, studioSlot) : null), null) : null;
-    const before = Array.isArray(next.lastContent) ? next.lastContent : [];
-    const kept = before.filter((l) => !isStudioRow(l) && !isBoardFirstRow(l));
     // the board-first row only when no other piece takes the tray this turn (one thing on screen)
     const boardRow = wbFirstRow && !(studioSlot?.artifact && studioSlot.artifact.kind !== "whiteboard") ? wbFirstRow : null;
-    const content = [...kept, ...(studioRow ? [studioRow] : []), ...(boardRow ? [boardRow] : [])];
-    if (content.length !== before.length || content.some((l, i) => l !== before[i])) {
-      next.lastContent = content;
-      try { instructions = instructionsFor(next, kit); } catch (e) {
-        // the row does not fit the budget: the turn goes on without it (and the reply guard strips any screen pointer)
-        next.lastContent = kept;
-        try { instructions = instructionsFor(next, kit); } catch { next.lastContent = before; }
-        console.warn(`[studio] facts row left out of the compile: ${String(e?.message ?? e).slice(0, 80)}`);
-      }
-    }
+    instructions = withFactsRows(next, kit, instructions, { studioRow, boardRow });
   }
   // round 3 fix (experience B2 / B3): a game / moving ask this turn could not answer with a play piece: her move says what is
   // really on the screen (the engine kept, or nothing that moves), never "game mode on" over a number pad
@@ -1208,12 +1197,50 @@ export const specFanout = () => {
   return Number.isFinite(n) ? Math.max(0, Math.min(4, Math.floor(n))) : 3;
 };
 
+/**
+ * The turn's facts rows on the move's content: last turn's Studio and board-first rows out, this turn's in (the slot the
+ * turn shows, the board chosen first), and the instructions recompiled only when the content changed. A row that does not
+ * fit the budget is left out (the reply guard strips any screen pointer). Mutates next.lastContent; returns the
+ * instructions. ONE function for the real turn and the speculative plans (r4-latency), so their reply keys can match.
+ */
+export function withFactsRows(next, kit, instructions, { studioRow = null, boardRow = null } = {}) {
+  const before = Array.isArray(next.lastContent) ? next.lastContent : [];
+  const kept = before.filter((l) => !isStudioRow(l) && !isBoardFirstRow(l));
+  const content = [...kept, ...(studioRow ? [studioRow] : []), ...(boardRow ? [boardRow] : [])];
+  if (content.length === before.length && content.every((l, i) => l === before[i])) return instructions;
+  next.lastContent = content;
+  try { return instructionsFor(next, kit); } catch (e) {
+    next.lastContent = kept;
+    let out = instructions;
+    try { out = instructionsFor(next, kit); } catch { next.lastContent = before; }
+    console.warn(`[studio] facts row left out of the compile: ${String(e?.message ?? e).slice(0, 80)}`);
+    return out;
+  }
+}
+
+/**
+ * r4-latency: a speculative plan as the real turn will see it when the screen does not change this turn: the Studio row
+ * of the piece already on screen (studioSeam.peekFactsRow, read only) goes on its content exactly as the turn's slotFor +
+ * factsRowForSlot would put it (first-sound 2026-10-10, prefetch on: 10 of 38 speculation misses differed ONLY by that
+ * row; 9 more only by the board-first row, which needs the kernel). A turn that reveals, retires or takes the tray
+ * computes another row, and its key simply misses (as before).
+ * TAXILA_SPEC_STUDIO_ROW=off restores the old speculative plan.
+ */
+export async function specPlan(state, cls, ctx) {
+  const plan = await planTurn(state, cls, ctx);
+  if (process.env.TAXILA_SPEC_STUDIO_ROW === "off" || plan.r.hold || !ctx?.lesson?.id || typeof studioSeam.peekFactsRow !== "function") return plan;
+  let studioRow = null;
+  try { studioRow = studioSeam.peekFactsRow(ctx.lesson.id, { tray: plan.r.ui?.tray ?? null }); } catch { return plan; }
+  const instructions = withFactsRows(plan.r.state, ctx.kit, plan.instructions, { studioRow });
+  return instructions === plan.instructions ? plan : { ...plan, instructions };
+}
+
 export function speculate(state, target, flags, planCtx, { said, historyOf }, { outcomes: only, source = "speculative" } = {}) {
   const outcomes = (only ?? SPEC_OUTCOMES[target.mode] ?? []).slice(0, specFanout());
   return outcomes.map((outcome) => {
     const trace = [];
     const cls = { outcome, confidence: 1, source, flags: { ...flags } };
-    const p = planTurn(state, cls, { ...planCtx, now: planCtx.now ?? Date.now() }).then((plan) => {
+    const p = specPlan(state, cls, { ...planCtx, now: planCtx.now ?? Date.now() }).then((plan) => {
       if (plan.r.hold) return null;
       const next = plan.r.state;
       const history = historyOf(next);
@@ -1309,7 +1336,7 @@ export async function missReason(specs, key) {
 }
 
 /** What perceive() (server/latency/perceive.js) calls: the turn's own functions, so the prefetch runs the turn's code. */
-const PERCEIVE_DEPS = { classifyFast, classify, understand, speculate, planTurn, replyKey, textReply, conv2Mode };
+const PERCEIVE_DEPS = { classifyFast, classify, understand, speculate, planTurn: specPlan, replyKey, textReply, conv2Mode };
 /** round 3 fix (adversarial B2): is a play piece up? The Studio slot showed one last turn (state.playOn, set below), or the
  *  last move answered the child's game ask (the piece is coming up on this turn's screen). */
 export const playIsUp = (state) => !!state?.playOn || state?.lastMove?.visual === "game";
