@@ -18027,6 +18027,202 @@
    "title": "2026-10-10 main session, delegated, on the tutor-model research's owner questions (docs/research/round4/tutor/TUTOR-MODEL.md §6): (1) H3 'which representation moves this child' is persisted per child under the existing learning_profile consent grant (it is academic record; the parent can switch learning_profile off and H3 falls back to population priors), superseding the population-only reading of LM9 for this dimension; (2) life callbacks ship in the narrow form: only what the child offered, at most 5 items, 30-day expiry, deletable by child and parent, under the existing memory consent, never a feeling claim; (3) the 'explore' tier for safe topics outside the syllabus graph is built behind a flag (blind-solved keys only grade), the refusal list is reviewed by the main session and shown to the owner before the flag goes on; (4) the child's home becomes Start-only (the owner's own words: 'just start the session'); the topic is shown to the parent; (5) intake is voice/typed only in v1, no notebook camera (cost Rs 20-47 a page vs a Rs 1 target); (6) classes 1-2: the child answers the intake, a parent may help, she never requires a parent; (7) a study of real tuition teachers is recommended to the owner, not commissioned (no spend without approval). Every one is a runtime switch. Reverse if: the owner overrides any item, or counsel advises against (1) or (2).",
    "at": "2026-10-10",
    "source": "inbox/r4-main-decisions-vision.json"
+  },
+  {
+   "id": "r4g-ms-lib-sizes-2026-10-10",
+   "kind": "measurement",
+   "title": "Game library sizes (n = 1 build each; jsDelivr minified builds or a rolldown tree-shaken bundle, node zlib gzip-9 / brotli-11; 2026-10-10; docs/research/round4/games/FEASIBILITY.md §2), brotli KB: three.js 0.180.0 game set (40 exports, tree-shaken) 99, all exports 138; Babylon.js 9.30.0 full UMD 1,270; PlayCanvas engine 2.23.2 499; Phaser 4.2.1 276; PixiJS 8.22.0 185; Rapier3D compat 0.21.0 (wasm inlined) 1,168; Rapier2D 923; cannon-es 0.20.0 29; matter-js 0.20.0 22; planck 1.5.0 44; Tone.js 15.1.22 65; Howler 2.2.4 8. All MIT or Apache-2.0; no runtime fees. three is already a repo devDependency (src/avatar/three), so a three engine adds no package.",
+   "at": "2026-10-10",
+   "source": "inbox/r4-research-games.json"
+  },
+  {
+   "id": "r4g-ms-antariksh-proxy-fps-2026-10-10",
+   "kind": "measurement",
+   "title": "Antariksh Nishana prototype on the PROXY (headless Chromium 1243, SwiftShader software GL, shared 4-core x86, 360 x 800, scripted bot play, CDP CPU throttle; 2026-10-10; docs/research/round4/games/proto/results/fps.json, rerun.json, sweep.json): 25-29 draw calls, 3,258-4,638 triangles, 4 textures, JS heap 5.6-7.7 MB. Our JS 3.4-3.5 ms per frame p50 at 4x throttle (0.8 ms at 1x). fps at DPR 1.5, 4x: 29.9 / 29.9 / 29.9 (n = 3 x 12 s, load <= 2.4); DPR 2: 20.0 x 3; unthrottled DPR 1.5: 30.0; governor stepped DPR 1.5 -> 1.25 -> 1.0 and held 59.9. The proxy is bound by SwiftShader raster in the GPU process (about 190-210% CPU), which CDP does not throttle. DPR sweep under contention (load 8.3-9.5): 0.5 -> 59.9, 0.75 -> 30, 1.0 -> 29.9, 1.5 -> 15, 2.0 -> 12. NOT a phone number; the real-device run stays owner-dependent (O-R4).",
+   "at": "2026-10-10",
+   "source": "inbox/r4-research-games.json"
+  },
+  {
+   "id": "r4g-ms-antariksh-load-2026-10-10",
+   "kind": "measurement",
+   "title": "Antariksh cold load to first frame (n = 3 per profile; CDP network emulation, cache disabled, brotli from a local server, 4x CPU throttle, 360 x 800; host contended at load ~6 by another session; 2026-10-10; proto/results/load.json): 10 Mbps / 60 ms 813 ms median (753-1,274); 3 Mbps / 150 ms 1,384 (1,353-1,413); 1.2 Mbps / 300 ms 2,528 (2,509-2,586). 193 KB transferred: three.js CDN files (not tree-shaken) 144 KB br, game code 21 KB br, Latin font 21 KB; the Devanagari font (100 KB) loads only for Hindi. The network profiles are assumptions, not Jio/Airtel measurements.",
+   "at": "2026-10-10",
+   "source": "inbox/r4-research-games.json"
+  },
+  {
+   "id": "r4g-ms-law-latency-replay-2026-10-10",
+   "kind": "measurement",
+   "title": "Antariksh law and director (node 22, 2026-10-10, proto/test-law.mjs): level generation 0.07 ms p50 / 0.81 ms p95 over n = 1,520 feasible levels (3 kit skills of c5-maths-ch02-t01 x 3 fades x 4 foci x 40 seeds x 2 boxes); compose incl. dress validation 0.65-0.75 ms p50 / 0.88-1.52 ms p95 (n = 200 x 3 runs); 11,288 checks pass, 0 fail (solvable by its own solver, shortcut-free, focus belief discriminated by >= 2.5 tolerances, tolerance >= 8 px at the device box, every mal-rule shot graded to its kit misconception id, 5 junk-act patterns ignored). Server-replay property: 16/16 browser levels from 8 runs re-graded identically in node, 5 of them graded to a kit misconception.",
+   "at": "2026-10-10",
+   "source": "inbox/r4-research-games.json"
+  },
+  {
+   "id": "r4g-ms-dress-probe-2026-10-10",
+   "kind": "measurement",
+   "title": "Can an Azure model write the game's spec delta? (n = 12 sequential calls, 4 lesson contexts x 3; taxila-fast-bg, strict json_schema of 6 closed enums (proto/specs/dress.schema.json), effort none, US sandbox -> eastus2; 2026-10-10; proto/measure/dress-probe.mjs -> results/dress-probe.json): p50 1,133 ms / p90 1,442 / max 1,759; 12/12 schema-valid after the game's own cleanDress(); 40 output tokens p50; language followed the lesson 12/12; music 'off' for the anxious child 3/3; 'ghost-first' for the first-time child 3/3. The model never sees or writes a number, position, key or child-facing sentence.",
+   "at": "2026-10-10",
+   "source": "inbox/r4-research-games.json"
+  },
+  {
+   "id": "r4g-ms-voxel-bench-2026-10-10",
+   "kind": "measurement",
+   "title": "Voxel build-world micro-benchmark (proto/voxel/index.html; three.js 0.180.0; naive face-culled meshing, one draw per 16 x 24 x 16 chunk; 360 x 800, DPR 1.5; host contended at load ~7; n = 1 run x 10 s per row; 2026-10-10; results/voxel.json): 6 x 6 chunks = 106,831 voxels, 25.8k triangles in 19 draws (frustum-culled of 36), mesh 7.7 ms p50 / 33.4 p95 per chunk at 4x (3.4 / 12.5 unthrottled); a re-mesh after an edit every 250 ms 8.2 ms p50 / 19.1 ms p95 at 4x (n = 34); heap 10 -> 22.6 MB under edits (a new geometry per re-mesh); proxy fps 20 at 4x, 30 at 1x (SwiftShader-bound).",
+   "at": "2026-10-10",
+   "source": "inbox/r4-research-games.json"
+  },
+  {
+   "id": "r4g-phone-gpu-tiers",
+   "kind": "finding",
+   "title": "Budget-phone GPUs (Notebookcheck aggregate GFXBench, read 2026-10-10): PowerVR GE8320 (Helio G35 floor) Manhattan 3.1 offscreen 6.7 fps avg, T-Rex ~20; Mali-G52 MC2 (Helio G81/G85) Manhattan 14.3 avg, T-Rex 42.5 median; Adreno 613 (Snapdragon 4 Gen 2 class) Manhattan 19, T-Rex 54; Mali-G57 MC2 (Dimensity 6300, Helio G99) Manhattan 23.8 avg, 3DMark Wild Life 1,212 median. Mid-2026 Rs 10k phones use these (Redmi A4 5G, Narzo N65 / C63, Moto G06 Power): about 2-3.5x the floor GPU. WebGL 2 reaches 97.13% globally (caniuse). URLs: https://www.notebookcheck.net/ARM-Mali-G57-MP2-GPU-Benchmarks-and-Specs.537758.0.html https://www.notebookcheck.net/PowerVR-GE8320-Graphics-Card-Benchmarks-and-Specs.372646.0.html https://www.notebookcheck.it/ARM-Mali-G52-MP2.576309.0.html https://notebookcheck.it/Qualcomm-Adreno-613.856589.0.html https://caniuse.com/webgl2",
+   "at": "2026-10-10",
+   "source": "inbox/r4-research-games.json"
+  },
+  {
+   "id": "r4g-no-3d-or-music-model-direct-azure",
+   "kind": "finding",
+   "title": "Microsoft Learn 'Foundry Models sold by Azure' (updated 2026-10-08, read 2026-10-10) lists image models (gpt-image-1/1.5/2/2.5, FLUX.2-pro/flex, FLUX.1-Kontext-pro, FLUX-1.1-pro, MAI-Image-2.5/2.6), Sora-2 and codex models, and NO text-to-3D or music-generation model. Under the Azure-only rule, game music must be procedural or commissioned. 3D meshes need self-hosted open weights on Azure compute: TRELLIS.2 is MIT and takes ~3 s at 512^3 on an H100 (https://huggingface.co/microsoft/TRELLIS.2-4B). That is an owner decision, and offline only. https://learn.microsoft.com/en-us/azure/foundry/foundry-models/concepts/models-sold-directly-by-azure",
+   "at": "2026-10-10",
+   "source": "inbox/r4-research-games.json"
+  },
+  {
+   "id": "r4g-intrinsic-evidence",
+   "kind": "finding",
+   "title": "Intrinsic-integration evidence for engine x skill maps (read 2026-10-10). Habgood & Ainsworth 2011, JLS 20(2): Zombie Division with the maths in the core mechanic gave more learning in fixed time (n = 58) and 7x free-choice play (n = 16), https://shura.shu.ac.uk/3556/. Kiili, Moeller & Ninaus 2018 (n = 95 4th graders, 5 x 30 min): a number-line game raised rational-number knowledge via magnitude estimation and ordering; in-game performance predicted the post-test, https://researchportal.tuni.fi/en/publications/evaluating-the-effectiveness-of-a-game-based-rational-number-trai/. Refraction pilot (n = 35, 7 weeks) gained on fractions. Prodigy FTC complaint (2021, 22 groups): up to 4x more ads than maths questions at home, https://fairplayforkids.org/feb-19-2021-advocates-to-ftc-prodigy-math-game-preys-on-kids-and-families/. Seductive details g = -0.33 (Sundararajan & Adesope 2020), https://news.wsu.edu/2020/03/19/seductive-details-inhibit-learning/.",
+   "at": "2026-10-10",
+   "source": "inbox/r4-research-games.json"
+  },
+  {
+   "id": "r4g-owner-music-bed",
+   "kind": "finding",
+   "title": "OWNER DECISION NEEDED (O-G2, not decided here): may a game play a music bed? G12 forbids music under the teacher and src/play/core/sound.ts says 'never music'; music is a standard real-game polish marker. The prototype's procedural bed hard-ducks to 0 in ~120 ms whenever she speaks, and 'off' is an enum the model picked for the anxious child 3/3. Proposal: allowed outside her voice, off by default for classes 4-5. docs/research/round4/games/FEASIBILITY.md §6.",
+   "at": "2026-10-10",
+   "source": "inbox/r4-research-games.json"
+  },
+  {
+   "id": "r4g-owner-scenery-budget",
+   "kind": "finding",
+   "title": "OWNER DECISION NEEDED (O-G1, not decided here): relax G12's '<= 6 non-semantic sprites' for 3D worlds? A real-game world needs scenery (asteroids, planets, sky). Seductive details cost g = -0.33. The prototype keeps scenery off the learning objects and draws learning objects on top, but only a pilot arm (plain vs dressed world, same delayed bare items) can show the cost. docs/research/round4/games/FEASIBILITY.md §6.",
+   "at": "2026-10-10",
+   "source": "inbox/r4-research-games.json"
+  },
+  {
+   "id": "r4g-owner-shoot-verb",
+   "kind": "finding",
+   "title": "OWNER DECISION NEEDED (O-G4, not decided here): is a 'shoot / daago' verb acceptable for classes 4-5, or should the space engine read 'scan / tag / beam'? The targets are faceless mines and nothing alive is destroyed. The change is words and SFX only. docs/research/round4/games/FEASIBILITY.md §6, §8.",
+   "at": "2026-10-10",
+   "source": "inbox/r4-research-games.json"
+  },
+  {
+   "id": "r4g-engines-are-views-over-family-laws",
+   "kind": "decision",
+   "title": "PROPOSED (research, docs/research/round4/games/FEASIBILITY.md §0, §3, §4): 'Minecraft / space-fighter level' games are built as a library of deep 3D engines that are VIEWS over the round-3 family laws. Antariksh renders Nishana and angles; Khand (voxel) renders Nazariya and Todo-Jodo arrays; Daud renders Chalao rates; Kila renders Niyam periodicity; Chadhai renders integers; Yantra renders Kyun-Lab and optics; Nagar renders Karkhana. The laws, solvers, mal-rules, shortcut proofs, server replay, signed evidence and admission-by-skill are reused unchanged; a skill is added as law grammar, not engine code. Why: round 3 already proved the truth path (P-O1..O4); the owner's complaint is about look and feel; an engine per genre would otherwise duplicate truth. Reverse if: engineer-days per topic inside an engine are >= a fresh engine's, or a family law cannot express a genre's core verb without a quiz-style commit (C5 fails).",
+   "at": "2026-10-10",
+   "source": "inbox/r4-research-games.json"
+  },
+  {
+   "id": "r4g-threejs-3d-renderer",
+   "kind": "decision",
+   "title": "PROPOSED: three.js (MIT, already a repo devDependency at 0.180.0) is the 3D renderer for game engines, with our own small kits: DOM labels over WebGL, layout at the real box, a DPR governor that only steps down, procedural WebAudio, and cannon-es / matter only in the engine whose skill is rigid-body physics. No Babylon, PlayCanvas, Phaser, Pixi or Rapier. Why: 99 KB brotli tree-shaken vs 499-1,270 KB for the alternatives; no new dependency; the prototype ran at 25 draws / 3.3k triangles / 6-8 MB heap with 3.4 ms of JS per frame at 4x. Reverse if: a real-phone run (G35 / G81 / D6300) shows three's draw path, not fill, as the bottleneck, or an engine needs an editor-driven pipeline that three cannot support at < 2x the agent-days.",
+   "at": "2026-10-10",
+   "source": "inbox/r4-research-games.json"
+  },
+  {
+   "id": "r4g-live-is-level-plus-dress",
+   "kind": "decision",
+   "title": "PROPOSED: 'built on the go' = (1) the LEVEL, built live by the family law in code (0.07 ms p50), solver-proven and shortcut-free, deterministic from (skill, focus misconception, fade, seed, box) so the server can rebuild it; plus (2) the DRESS, a closed-enum delta (theme, wrapper, music, pace, teacher move, language) written by taxila-fast-bg in 1.1 s p50 / 1.4 s p90, validated field by field, with the base dress if late or invalid. Engines, art packs, sounds and shaders are pre-built and reviewed. Free LLM game code (36.7-54.2 s p50, review required), world models (Genie 3, Muse) and generated pixels or meshes are offline library lanes at most. The ongoing conversation steers the game through the classified misconception, which becomes the next level's focus. Reverse if: a free generator reaches p90 <= 3 s with 0 truth defects on n >= 100 child-facing builds under the forge gate.",
+   "at": "2026-10-10",
+   "source": "inbox/r4-research-games.json"
+  },
+  {
+   "id": "r4g-world-waits-fast-only-secure",
+   "kind": "decision",
+   "title": "PROPOSED (applies dc-r4-gamification-b to real-time genres): a game's world moves in real time (flight, scenery, physics), but every decision on a skill not marked secure is untimed: nothing approaches, expires or is lost while the child thinks. A fast mode (pace brisk, drifting targets) is admissible only on ledger-secure skills. Lives that gate learning, fail screens and carried scores are out. A miss leaves its consequence visible and costs nothing. Why: rj-timed-help-lockout; maths-anxiety evidence behind G10; option B's 'fast action only on secure skills'. Reverse if: the owner revises option B, or a pilot shows the untimed mode reads as 'not a real game' to children (rated below the timed mode) with no anxiety signal and no learning cost.",
+   "at": "2026-10-10",
+   "source": "inbox/r4-research-games.json"
+  },
+  {
+   "id": "r4g-first-shot-only-evidence",
+   "kind": "decision",
+   "title": "PROPOSED: in decloak or reveal mechanics, only the FIRST commit on each item is evidence. Later commits after the reveal clear the item but carry no grade, and time is never a grade input. Why: the reveal shows the answer, so a re-fire is not a measurement; it also closes the 'fire anywhere to reveal' gaming path. The prototype's grader does this, and 16/16 browser levels replayed identically. Reverse if: a family needs multi-attempt evidence, e.g. a planned second attempt with feedback, measured as its own item episode.",
+   "at": "2026-10-10",
+   "source": "inbox/r4-research-games.json"
+  },
+  {
+   "id": "r4g-learning-objects-drawn-on-top",
+   "kind": "decision",
+   "title": "PROPOSED: in 3D engines the learning objects (the line, ticks, targets, reticle, gap) render with depthTest off, in reserved hues, above all scenery. All words are DOM over the canvas on backing pills (text >= 16 px, Devanagari >= 16, numerals >= 18), and dynamic labels never share the tick-label row. Scenery stays off the learning corridor, and the camera puts the horizon well above the line so far objects never converge onto it. Why: seductive details; in the prototype's first frame the line sat on the vanishing point and far asteroids converged onto it. Reverse if: blind raters (two judge families + owner) score the 'on top' look as flat or broken versus depth-sorted, with no legibility loss in the alternative.",
+   "at": "2026-10-10",
+   "source": "inbox/r4-research-games.json"
+  },
+  {
+   "id": "r4g-round4-antariksh-first",
+   "kind": "decision",
+   "title": "PROPOSED scope: one parallel cloud session (3-4 days) builds the shared 3D play core plus E1 Antariksh over the EXISTING Nishana law (src/play/families/nishana/line.logic.ts, 18 admitted skills / 12 topics) at 360 / 412 / 1366, through the server grade and signed evidence into the ledger, with the dress delta and base-dress fallback. Khand (voxel) only as an uncertified slice; E3-E7 later. Estimates [E]: core 3-4 agent-days, E1 2-3, Khand 5-7, others 3-8 each. Why: Nishana's law, mal-rules and coverage exist; the prototype shows the visual bar at 25 draws. Reverse if: the owner prefers Khand first, or the real-phone run fails the 30 fps floor on G35-class phones after the governor.",
+   "at": "2026-10-10",
+   "source": "inbox/r4-research-games.json"
+  },
+  {
+   "id": "r4g-engine-logic-lint",
+   "kind": "decision",
+   "title": "PROPOSED: every game engine passes a logic-level NEVER MANIPULATE lint, static plus runtime. No persisted counters outside the G5 whitelist (artefacts, capability statements). No wall-clock read in the progress path. No timer that can end or penalise a level on a non-secure skill. No RNG after a level is generated. Every state change is traced to a child act or the law. Why: r4p-economy-ban-copy-only (the ban is enforced on copy only; a timer, lock or points total in game logic passes every test today). Reverse if: never by removal; only by a stronger enforcement mechanism.",
+   "at": "2026-10-10",
+   "source": "inbox/r4-research-games.json"
+  },
+  {
+   "id": "r4g-rj-world-models-live",
+   "kind": "rejection",
+   "title": "Rejected for live curriculum games (desk review, 2026-10-10): world models. Genie 3 runs 720p / 24 fps, consistent for a few minutes with ~1 minute of visual memory, with legible text only when prompted; it is a research preview and not on Azure. Muse / WHAM-1.6B runs 300 x 180 at ~10 fps, as Azure Foundry Labs research. What breaks: pixels cannot carry an exact fraction or an answer key (generated-media-carries-facts), and neither is a Direct-from-Azure production model. https://deepmind.google/discover/blog/genie-3-a-new-frontier-for-world-models/ https://www.microsoft.com/en-us/research/blog/introducing-muse",
+   "at": "2026-10-10",
+   "source": "inbox/r4-research-games.json"
+  },
+  {
+   "id": "r4g-rj-free-codegen-live-games",
+   "kind": "rejection",
+   "title": "Re-confirmed rejection (2026-10-10): Rosebud / Astrocade / Lovable-style free code generation as the in-lesson game path. In-repo builds took 36.7-54.2 s p50 plus a 4.8-11.6 s gate, and Forge G2 ~$0.20 and 166-223 s per build. Human review is required before a child (forge-live-codegen-race). Astrocade's own path is 'minutes'. No product does live in-lesson game generation (r4p-no-live-game-generation-in-session). The pattern that transfers is engine + parameters, composed live.",
+   "at": "2026-10-10",
+   "source": "inbox/r4-research-games.json"
+  },
+  {
+   "id": "r4g-rj-noa-engine",
+   "kind": "rejection",
+   "title": "Rejected as Khand's base (desk review + package read, 2026-10-10): noa-engine 0.33.0 (MIT; bloxd.io and Minecraft Classic are listed users). It peers on @babylonjs/core ^6.1 (a second 3D stack, 1,270 KB br for the full Babylon UMD) and was last pushed 2023-07. A three.js chunk mesher in ~100 lines already meshes a 6 x 6-chunk world (r4g-ms-voxel-bench-2026-10-10).",
+   "at": "2026-10-10",
+   "source": "inbox/r4-research-games.json"
+  },
+  {
+   "id": "r4g-rj-second-3d-stack",
+   "kind": "rejection",
+   "title": "Rejected (2026-10-10): adding Babylon.js (1,270 KB br full UMD), PlayCanvas engine (499 KB br) or Phaser 4 (276 KB br, 2D) beside the three.js already in the repo. They cost 5-13x three's tree-shaken 99 KB and add a second renderer, scene model and update cycle to certify. Their phone evidence is vendor-only (PlayCanvas 2016) or forum anecdotes (Android DPR / shadow slowdowns).",
+   "at": "2026-10-10",
+   "source": "inbox/r4-research-games.json"
+  },
+  {
+   "id": "r4g-rj-shoot-the-answer",
+   "kind": "rejection",
+   "title": "Rejected by design (2026-10-10; the Math Blaster pattern): space-shooter levels where the child shoots the target labelled with the right answer (times tables, 'which fraction is bigger'). That is a pick from a list in costume: it fails C5 and B3, and a misconception does not change where the child aims. Instead: the target is cloaked at the value's true position and the aim itself is the estimate (Antariksh).",
+   "at": "2026-10-10",
+   "source": "inbox/r4-research-games.json"
+  },
+  {
+   "id": "r4g-rj-gap-label-in-tick-row",
+   "kind": "rejection",
+   "title": "Tried (prototype, 2026-10-10): drawing the 'lagbhag' gap label between the shot and the truth at 1.15 units under the line. What broke: in the Hindi run (4/3 shot squeezed under 1, the all-less-than-one belief) 'लगभग 1/2' sat on top of the tick label '1' (shots/06, first run). Fix: dynamic labels go below the tick-label row (1.75 units) on a backing pill. A passing asteroid also lowered the label's contrast before the pill. Rule: no dynamic label may share the tick-label row.",
+   "at": "2026-10-10",
+   "source": "inbox/r4-research-games.json"
+  },
+  {
+   "id": "r4g-rj-unpaired-proxy-fps",
+   "kind": "rejection",
+   "title": "Tried (2026-10-10): reading single proxy fps runs on the shared host as code-path costs. What broke: the misconception-bot run read 12 fps (p95 167 ms) against 30 for the baseline and looked like a regression in the miss path. Re-run back to back with a baseline under the same contention (another session's browser at 237-285% CPU), both read 15 fps: it was contention. Rule: compare proxy fps only in pairs under the same load, and record the load average per row (now in measure/run.mjs).",
+   "at": "2026-10-10",
+   "source": "inbox/r4-research-games.json"
+  },
+  {
+   "id": "dc-r4-games-o-g",
+   "kind": "decision",
+   "title": "2026-10-10 main session, delegated, on the games research's owner questions (docs/research/round4/games/FEASIBILITY.md §6): O-G1 dressed 3D worlds are allowed for 3D engines, scenery never on a learning object, learning objects drawn on top in reserved hues with labels on backing pills, and the child pilot carries a plain-vs-dressed arm (seductive details g -0.33); O-G2 an adaptive music bed is allowed, hard-ducked to 0 within ~120 ms whenever she speaks, OFF by default for classes 4-5 (the child can turn it on), music:off stays in the dress enum; O-G4 the 'daago / fire' verb is used at non-living targets only (mines, asteroids, drones; nothing alive destroyed), with a parent switch to 'scan' wording. Wave 2 runs three sessions: G1 games core + Antariksh, G2 Khand voxel world, U1 gamified app directions for the owner to pick (docs/design/round4/BUILD-PLAN-V2.md). Reverse if: the owner overrides, the pilot's dressed arm learns less on delayed bare items (O-G1), or parents object to the verb (O-G4).",
+   "at": "2026-10-10",
+   "source": "inbox/r4-games-o-g.json"
   }
  ],
  "edges": [
@@ -29089,6 +29285,186 @@
    "src": "dc-r4-tutor-model-switches",
    "rel": "constrains",
    "dst": "r4t-learner-how-state"
+  },
+  {
+   "src": "r4g-engines-are-views-over-family-laws",
+   "rel": "part_of",
+   "dst": "dc-r4-owner-vision-superhuman-tutor"
+  },
+  {
+   "src": "r4g-engines-are-views-over-family-laws",
+   "rel": "caused_by",
+   "dst": "r3g-eight-deep-families"
+  },
+  {
+   "src": "r4g-intrinsic-evidence",
+   "rel": "constrains",
+   "dst": "r4g-engines-are-views-over-family-laws"
+  },
+  {
+   "src": "r4g-rj-shoot-the-answer",
+   "rel": "constrains",
+   "dst": "r4g-engines-are-views-over-family-laws"
+  },
+  {
+   "src": "r4g-threejs-3d-renderer",
+   "rel": "measured_by",
+   "dst": "r4g-ms-lib-sizes-2026-10-10"
+  },
+  {
+   "src": "r4g-threejs-3d-renderer",
+   "rel": "measured_by",
+   "dst": "r4g-ms-antariksh-proxy-fps-2026-10-10"
+  },
+  {
+   "src": "r4g-threejs-3d-renderer",
+   "rel": "measured_by",
+   "dst": "r4g-ms-antariksh-load-2026-10-10"
+  },
+  {
+   "src": "r4g-phone-gpu-tiers",
+   "rel": "constrains",
+   "dst": "r4g-threejs-3d-renderer"
+  },
+  {
+   "src": "r4g-rj-second-3d-stack",
+   "rel": "measured_by",
+   "dst": "r4g-ms-lib-sizes-2026-10-10"
+  },
+  {
+   "src": "r4g-rj-noa-engine",
+   "rel": "measured_by",
+   "dst": "r4g-ms-voxel-bench-2026-10-10"
+  },
+  {
+   "src": "r4g-live-is-level-plus-dress",
+   "rel": "measured_by",
+   "dst": "r4g-ms-law-latency-replay-2026-10-10"
+  },
+  {
+   "src": "r4g-live-is-level-plus-dress",
+   "rel": "measured_by",
+   "dst": "r4g-ms-dress-probe-2026-10-10"
+  },
+  {
+   "src": "dec-r3-model-writes-delta-not-spec",
+   "rel": "constrains",
+   "dst": "r4g-live-is-level-plus-dress"
+  },
+  {
+   "src": "forge-live-codegen-race",
+   "rel": "constrains",
+   "dst": "r4g-live-is-level-plus-dress"
+  },
+  {
+   "src": "r4g-rj-free-codegen-live-games",
+   "rel": "constrains",
+   "dst": "r4g-live-is-level-plus-dress"
+  },
+  {
+   "src": "r4g-rj-world-models-live",
+   "rel": "constrains",
+   "dst": "r4g-live-is-level-plus-dress"
+  },
+  {
+   "src": "r4g-rj-world-models-live",
+   "rel": "caused_by",
+   "dst": "generated-media-carries-facts"
+  },
+  {
+   "src": "r4g-no-3d-or-music-model-direct-azure",
+   "rel": "constrains",
+   "dst": "r4g-live-is-level-plus-dress"
+  },
+  {
+   "src": "dc-r4-gamification-b",
+   "rel": "constrains",
+   "dst": "r4g-world-waits-fast-only-secure"
+  },
+  {
+   "src": "design-v3-no-streaks-mastery",
+   "rel": "constrains",
+   "dst": "r4g-world-waits-fast-only-secure"
+  },
+  {
+   "src": "rj-timed-help-lockout",
+   "rel": "constrains",
+   "dst": "r4g-world-waits-fast-only-secure"
+  },
+  {
+   "src": "in-game-success-as-mastery",
+   "rel": "constrains",
+   "dst": "r4g-first-shot-only-evidence"
+  },
+  {
+   "src": "r4g-first-shot-only-evidence",
+   "rel": "measured_by",
+   "dst": "r4g-ms-law-latency-replay-2026-10-10"
+  },
+  {
+   "src": "r4g-learning-objects-drawn-on-top",
+   "rel": "part_of",
+   "dst": "r4g-engines-are-views-over-family-laws"
+  },
+  {
+   "src": "r4g-rj-gap-label-in-tick-row",
+   "rel": "constrains",
+   "dst": "r4g-learning-objects-drawn-on-top"
+  },
+  {
+   "src": "r4g-owner-scenery-budget",
+   "rel": "constrains",
+   "dst": "r4g-learning-objects-drawn-on-top"
+  },
+  {
+   "src": "r4g-engine-logic-lint",
+   "rel": "caused_by",
+   "dst": "r4p-economy-ban-copy-only"
+  },
+  {
+   "src": "r4g-engine-logic-lint",
+   "rel": "part_of",
+   "dst": "r4g-engines-are-views-over-family-laws"
+  },
+  {
+   "src": "r4g-round4-antariksh-first",
+   "rel": "part_of",
+   "dst": "dc-r4-owner-vision-superhuman-tutor"
+  },
+  {
+   "src": "r4g-round4-antariksh-first",
+   "rel": "measured_by",
+   "dst": "r4g-ms-antariksh-proxy-fps-2026-10-10"
+  },
+  {
+   "src": "r4g-round4-antariksh-first",
+   "rel": "measured_by",
+   "dst": "r4g-ms-voxel-bench-2026-10-10"
+  },
+  {
+   "src": "r4g-owner-music-bed",
+   "rel": "constrains",
+   "dst": "r4g-round4-antariksh-first"
+  },
+  {
+   "src": "r4g-owner-shoot-verb",
+   "rel": "constrains",
+   "dst": "r4g-round4-antariksh-first"
+  },
+  {
+   "src": "r4g-rj-unpaired-proxy-fps",
+   "rel": "measured_by",
+   "dst": "r4g-ms-antariksh-proxy-fps-2026-10-10"
+  },
+  {
+   "src": "dc-r4-games-o-g",
+   "rel": "part_of",
+   "dst": "dc-r4-owner-vision-superhuman-tutor"
+  },
+  {
+   "src": "dc-r4-games-o-g",
+   "rel": "constrains",
+   "dst": "dc-r4-gamification-b"
   }
  ]
 }
