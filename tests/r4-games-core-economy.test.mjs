@@ -42,8 +42,13 @@ test("economy lint 1 · no persisted counters: web storage only in core3d/host.t
 });
 
 test("economy lint 2 · no wall clock in progress code (only the stage's frame timing and perf read-out may read it)", () => {
-  const bad = hits([...ENGINES, ...LAWS], /\b(Date\.now|new Date\b|performance\.now)/, (f) => f === "src/play/engines/core3d/stage3d.ts");
+  // an engine lane's dev stage shim (src/play/engines/<engine>/shim/**: G2 Khand's injected-clock harness, deleted when the
+  // engine is ported onto core3d) stands in for the stage and may read the clock; the shipped engine never imports a shim
+  const shim = (f) => /^src\/play\/engines\/[^/]+\/shim\//.test(f);
+  const bad = hits([...ENGINES, ...LAWS], /\b(Date\.now|new Date\b|performance\.now)/, (f) => f === "src/play/engines/core3d/stage3d.ts" || shim(f));
   assert.deepEqual(bad, []);
+  const imports = hits(ENGINES.filter((f) => !shim(rel(f))), /from\s+["'][^"']*\/shim\//);
+  assert.deepEqual(imports, [], "a shipped engine module imports a dev shim");
 });
 
 test("economy lint 3 · no timer that can end or penalise a level: no setTimeout / setInterval in engines but the audio sequencer", () => {

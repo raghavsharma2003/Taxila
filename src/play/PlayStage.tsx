@@ -16,7 +16,7 @@ import type { ControlSpec, FamilyView, Readout } from "./core/viewkit.ts";
 import { ART } from "./core/styles.ts";
 import { sound } from "./core/sound.ts";
 import { say } from "./copy.ts";
-import { word } from "./engines/words.ts";
+import { word, type WordKey } from "./engines/words.ts";
 import { parseVoice, pressesFor, type VoiceIntent } from "./core/voice.ts";
 import { PlayMap } from "./world/PlayMap.tsx";
 import { engineFor } from "./engines/registry.ts";
@@ -310,14 +310,17 @@ export function PlayStage(props: PlayStageProps) {
   );
 }
 
-export function familyTitle(f: PlayLevel["family"], lang: Lang): string {
-  if (f === "kon") return word(lang, "kon.title");
-  const t: Record<Exclude<PlayLevel["family"], "kon">, [string, string, string]> = {
+/** The family's title: the round-3 four from this table; any later family (kon, G2's nazariya, …) from its
+ *  `<family>.title` word in data/play/engine-words.json, so a new family adds a word, not an edit here. */
+export function familyTitle(f: PlayLevel["family"] | string, lang: Lang): string {
+  const t: Record<string, [string, string, string]> = {
     "todo-jodo": ["Todo-Jodo", "Split & Merge", "तोड़ो-जोड़ो"],
     taraazu: ["Taraazu", "Balance", "तराज़ू"],
     nishana: ["Nishana", "On the Line", "निशाना"],
     "kyun-lab": ["Kyun-Lab", "Why Lab", "क्यों-लैब"],
   };
-  const [hg, en, hi] = t[f];
+  const row = t[f];
+  if (!row) return word(lang, `${f}.title` as WordKey) || f;
+  const [hg, en, hi] = row;
   return lang === "en" ? en : lang === "hi" ? hi : hg;
 }

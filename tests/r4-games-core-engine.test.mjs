@@ -59,7 +59,18 @@ const PLAY = `(async () => {
     for (const type of ["pointerdown", "pointerup"]) canvas.dispatchEvent(new PointerEvent(type, { pointerId: 9, clientX: r.left + x, clientY: r.top + r.height * 0.6, bubbles: true, isPrimary: true, pointerType: "touch" }));
     await wait(80);
   };
-  window.__fire = async (value) => { await window.__tapAt(value); P.press("commit"); await wait(1900); };
+  // wait on the game's own state, not a fixed time (a slower CI runner is still decloaking after 1.9 s): the commit control is
+  // pressable, the press lands as a commit act, then the shot settles
+  const commits = () => P.acts().filter((a) => a.act.kind === "commit").length;
+  const ready = () => (P.controls() ?? []).some((c) => c.id === "commit" && !c.disabled);
+  window.__fire = async (value) => {
+    for (let k = 0; k < 120 && !ready(); k++) await wait(50);
+    await window.__tapAt(value);
+    for (let k = 0; k < 120 && !ready(); k++) await wait(50);
+    const n = commits();
+    for (let k = 0; k < 40 && commits() === n; k++) { P.press("commit"); for (let j = 0; j < 5 && commits() === n; j++) await wait(50); }
+    await wait(1900);
+  };
 })()`;
 
 describe("Antariksh engine in the browser (round 4 G1)", { skip: SKIP }, () => {
