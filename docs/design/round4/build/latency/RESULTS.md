@@ -16,9 +16,9 @@ over WebSocket from this host. "Audible" = first PCM byte + 60 ms player lead + 
 | step 0 baseline reproduced | done: 5,183 / 6,712 ms (n = 58) on PRODUCTION STT, within 15 % of 6,070 |
 | per-stage turn trace | done: `evals/latency/stages.mjs` over first-sound rows (server marks + model calls) |
 | dock "Thinking… N s" counter | patch request 01 (stream 2's file), applied on this branch as a `[patch-request]` commit |
-| L1 levers | built and measured: reply audible p50 5,183 → ~4,150-4,450 (see the table; run-to-run spread ±250 ms) |
-| reply bar p50 ≤ 3,000 / p90 ≤ 4,500 | **NOT met** (best arm 4,164 / 5,354). Why, and what would meet it: "The floor" below |
-| L2 echo instant | `TAXILA_ACK_AT_MS=1000` holds the ack-leak bars (n = 48 graded); 850 leaks. Echo p50 ≤ 1,500 **NOT met** (floor below) |
+| L1 levers | built and measured. **After, n = 117: reply audible p50 4,238 / p90 5,718 ms** (from 5,183 / 6,712: −945 / −994) |
+| reply bar p50 ≤ 3,000 / p90 ≤ 4,500 | **NOT met** (4,238 / 5,718 at n = 117). Why, and what would meet it: "The floor" below |
+| L2 echo instant | `TAXILA_ACK_AT_MS=1000` holds the ack-leak bars (n = 48 graded); 850 leaks. Echo audible p50 2,971 → **2,285 ms** (n = 17 played); ≤ 1,500 **NOT met** (floor below) |
 | L3 shadow | early distress read measured (below); echo-at-900 counterfactual below |
 | 900 ms (V4.3) | **NOT met** (0 of 400+ measured turns ≤ 900 ms) |
 
@@ -75,6 +75,73 @@ transcribes the cascade with **gpt-live-transcribe** (`scripts/deploy-azure.mjs`
 with the final (~25 ms before it), so the device prefetch never fired (0/37 turns, arm `l1-config-pf-np-ta`). The preload
 now sets `TAXILA_STT_MODEL=taxila-live-transcribe`; the baseline of record is the re-run on it (5,183 / 6,712 ms, n = 58):
 its final lands later (1,599 vs 1,390 ms) but the deltas are complete at ~850 ms, which is what the prefetch needs.
+
+## Before / after, the stage table (same harness, same script; after = every lever and recommended flag on)
+
+**After** (`runs/after-a.json` + `runs/after-b.json`, 2026-10-10, n = 117 turns, `TAXILA_TURN_PREFETCH=on TAXILA_EXACT_SPEC=on
+TAXILA_ACK_AT_MS=1000 TAXILA_TTS_FIRST_SENTENCE=shadow`, the edgeTrim fix and the speculative Studio row; this stream's
+battery only, 3 parallel lessons, 0 × 429):
+
+| stage | n | p50 | p90 | min | max |
+|---|---|---|---|---|---|
+| end of speech → server VAD stop | 117 | 1073 | 1120 | 851 | 1645 |
+| → final transcript | 117 | 1569 | 1658 | 1376 | 3283 |
+| → turn POST | 117 | 1569 | 1658 | 1377 | 3284 |
+| server @prefetch_adopted | 114 | 59 | 72 | 42 | 223 |
+| server @classified | 117 | 407 | 725 | 43 | 1690 |
+| server @noted | 109 | 1138 | 1667 | 67 | 2030 |
+| server @planned | 117 | 1096 | 1615 | 86 | 2032 |
+| server @replied | 117 | 2081 | 3606 | 115 | 5282 |
+| server @stored | 117 | 2140 | 3693 | 188 | 5366 |
+| server total | 117 | 2140 | 3693 | 188 | 5366 |
+| turn round trip (client) | 117 | 2143 | 3695 | 191 | 5370 |
+| → turn response | 117 | 3788 | 5245 | 2305 | 6976 |
+| response → first PCM byte | 117 | 393 | 449 | 26 | 1370 |
+| TTS prewarm age at tts-stream | 117 | 61 | 89 | 48 | 165 |
+| → first PCM byte | 117 | 4125 | 5608 | 2610 | 7398 |
+| → reply audible (+60 lead +50 nominal out) | 117 | 4238 | 5718 | 2720 | 7508 |
+| → echo audible (played only) | 17 | 2285 | 2494 | 2045 | 3393 |
+| → first sound (echo or reply) | 117 | 4160 | 5718 | 2045 | 7508 |
+| SHADOW reply audible, s1 early | 117 | 4235 | 5718 | 2669 | 7508 |
+| SHADOW gain on locked turns | 53 | 57 | 84 | 47 | 145 |
+| first sound, graded answers | 24 | 2426 | 4772 | 2045 | 5718 |
+| first sound, non-answers | 93 | 4339 | 5955 | 2720 | 7508 |
+| model grok-4-1-fast-non-reasoning (prefetch) | 109 | 809 | 1061 | 403 | 2113 |
+| model grok-4-1-fast-non-reasoning | 3 | 764 | 1322 | 549 | 1322 |
+| model taxila-fast (speculative) | 113 | 1237 | 1502 | 793 | 1650 |
+| model taxila-fast | 43 | 1210 | 1630 | 869 | 2775 |
+| model taxila-gpt6 (prefetch) | 2 | 1610 | 1610 | 1507 | 1610 |
+| model taxila-gpt6 | 3 | 1669 | 1966 | 1337 | 1966 |
+{"turns":117,"speculation":"85/117 hit","prefetchAdopted":"114/117","rewrites":34,"echoPlayed":"17/24 graded","earlyLocked":"53/117 locked, 52 kept s1","earlyWhy":{"no_pinned_question":26,"turn_kind":22,"s1_script":2,"s1_screen":7,"s1_leak":1,"min_same":2,"min_long":2,"s1_praise":1,"min_bare":1},"under900":"0/117 reply ≤ 900 ms"}
+
+**Before** (`runs/baseline-live-prefetch-off.json`, n = 58, prefetch off, base tree):
+
+| stage | n | p50 | p90 | min | max |
+|---|---|---|---|---|---|
+| end of speech → server VAD stop | 58 | 1084 | 1107 | 1038 | 3355 |
+| → final transcript | 58 | 1599 | 1661 | 1520 | 4029 |
+| → turn POST | 58 | 1599 | 1662 | 1520 | 4030 |
+| server @classified | 58 | 848 | 1104 | 60 | 1384 |
+| server @noted | 54 | 1429 | 1925 | 695 | 2248 |
+| server @planned | 58 | 1430 | 1923 | 107 | 2251 |
+| server @replied | 58 | 2629 | 4081 | 1162 | 4802 |
+| server @stored | 58 | 2689 | 4155 | 1219 | 4856 |
+| server total | 58 | 2689 | 4155 | 1219 | 4856 |
+| turn round trip (client) | 58 | 2699 | 4162 | 1224 | 4860 |
+| → turn response | 58 | 4317 | 5837 | 2886 | 8039 |
+| response → first PCM byte | 58 | 785 | 847 | 71 | 1654 |
+| TTS prewarm age at tts-stream | 58 | 60 | 78 | 51 | 97 |
+| → first PCM byte | 58 | 5073 | 6602 | 3301 | 8909 |
+| → reply audible (+60 lead +50 nominal out) | 58 | 5183 | 6712 | 3411 | 9019 |
+| → echo audible (played only) | 10 | 2971 | 3122 | 2910 | 3182 |
+| → first sound (echo or reply) | 58 | 5134 | 6302 | 2910 | 9019 |
+| first sound, graded answers | 13 | 2995 | 4221 | 2910 | 4737 |
+| first sound, non-answers | 45 | 5271 | 6994 | 3411 | 9019 |
+| model grok-4-1-fast-non-reasoning | 54 | 771 | 960 | 621 | 1309 |
+| model taxila-fast (speculative) | 28 | 1192 | 1454 | 790 | 1512 |
+| model taxila-fast | 51 | 1280 | 1582 | 918 | 2042 |
+| model taxila-gpt6 | 53 | 1361 | 1859 | 1089 | 2403 |
+{"turns":58,"speculation":"17/54 hit","prefetchAdopted":"0/58","rewrites":15,"echoPlayed":"10/13 graded","under900":"0/58 reply ≤ 900 ms"}
 
 ## L1 — levers, each measured on the same harness (first-sound, 3 lessons × 20 turns, ack on, 2026-10-10)
 
@@ -186,11 +253,24 @@ transcript (4B's word-aware EOT) and a sub-300 ms distress read; neither exists 
 | lint-ui | 353 findings = the baseline (0 new) |
 | adversarial (`docs/design/round3/adversarial`) | 22/23: all 13 blocking pass; N1 (non-blocking, owner decision) fails as before |
 | persona invariants | 70/70 |
-| w2i-safety, verify-release | not yet run (next) |
+| w2i-safety (local production build, every flag above on) | **39/39** |
+| verify-release (static gates; npm test run separately) | 9/10: typecheck, prompt-budget, kit-budget, persona-invariants, never-rules, pii, spoken, context, web-build pass; lint-ui exits 1 on its 353-finding baseline (none in this stream's files, 0 new) |
+| engines-browser on the BASE tree (worktree of `claude/blissful-mayer-icwe2j`) | 0/60 in this container too (frame load timeout): the 60 npm-test fails are the container's, not this branch's |
 
 Container note: Playwright here expects `chromium_headless_shell-1243`; only 1194 is installed. A container-local shim
 (`/opt/pw-browsers/chromium_headless_shell-1243/...` → the 1194 headless shell) makes the browser tests run; nothing in
 the repo depends on it.
+
+## TTS first sentence: measured in shadow, live mode NOT built (rejected on its numbers)
+
+The lock (`server/brain/say.js lockFirstSentence`, `TAXILA_TTS_FIRST_SENTENCE=shadow`) ran on all 117 after-turns: s1 locked on
+53/117 (the final reply kept s1 on 52/53), but 44 of the 53 were speculation hits whose reply was already final when the turn
+picked it, and only **2 of the 34 rewrite turns** could lock (15 were closing / check-in / why / thinking turns, 9 teaching
+turns with no pinned question, the rest failed a per-sentence guard on s1). Estimated gain of speaking s1 at the lock: **p50
+57 ms** on locked turns, reply audible p50 4,238 → 4,235. A live mode would need the client to play audio before the turn
+response and would let a child hear s1 of a turn that then fails to commit (409). Not worth it at these numbers: the shadow
+stays as the instrument (it re-measures if the guards or the rewrite rate change). Locking more of the rewrite turns would
+mean locking s1 on closing or safety-adjacent turns, which this stream will not do.
 
 ## Owner / main-session decisions needed
 
@@ -200,8 +280,6 @@ the repo depends on it.
 3. **Client turn-audio fold default on** (`src/lesson/ttsStream.ts turnAudioEnabled`): saves one India ↔ eastus2 round
    trip per reply on prod (not measurable locally). Two other streams' browser tests stub `/api/lesson/turn` and fail with
    it on, so it needs either those fixtures updated or `VITE_TURN_AUDIO=1` at build.
-4. **TTS first sentence live**: shadow is built; the live mode would let the child hear s1 before the rest is guarded and
-   BEFORE the turn commits. A commit that then fails (409: a concurrent turn, the lesson ended) means s1 of a turn that is
-   not stored was heard. Needs a yes/no before the client path is built.
+4. **TTS first sentence live**: measured in shadow and NOT recommended (−57 ms p50, 2/34 rewrite turns lockable).
 5. **The 3,000 ms reply bar** is out of reach without a faster UNDERSTAND note / reply model (4A / model routing) or fewer
    guard rewrites (4A), see "The floor". The 900 ms bar needs L3 (decision 1 in BUILD-PLAN §5).
