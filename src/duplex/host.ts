@@ -166,6 +166,8 @@ export class EngineHost {
   /** Hushes that ended as "nothing" (no words, a continuer-length burst): too many → hush off for the session (echo). */
   private hushUnconfirmed = 0;
   private hushOff = false;
+  /** Round 4: when the hush gave up (OVERLAP.hushGiveUpForMs re-arms it after that long). */
+  private hushOffAt: Ms | null = null;
   /** Round 3: the current hush's burst sat within OVERLAP.echoNearDb of her echo (only those count toward the give-up). */
   private hushNearEcho = false;
   /** Round 3: the overlap onset whose quiet already sent a micro-commit probe (one per burst). */
@@ -220,7 +222,10 @@ export class EngineHost {
       if (!this.flags.shadow) this.o.emit({ to: "voice", op: "unduck", t });
       this.unhush(true);
       this.ducked = false;
-    } else if (this.ducked && this.her.speaking && this.audio.voicing) {
+    } else if ((this.ducked || (OVERLAP.hushAfterRelease && this.overlapOnset !== null)) && this.her.speaking && this.audio.voicing) {
+      // round 4 (OVERLAP.hushAfterRelease): also a burst whose reflex duck was released at its onset (an attribution
+      // inherited from the previous burst read it as the room): once its own pitch says it may be the child, the hush still
+      // meets it (maybeHush keeps every attribution / echo gate)
       this.maybeHush(t);
     }
     // round 3: a burst over her went quiet → commit the transcription buffer now, so its words (continuer or barge-in) arrive
@@ -235,6 +240,8 @@ export class EngineHost {
 
   /** The hush: see `hushAt`. Only for a burst that is plausibly the child (not her echo, not quiet background speech). */
   private maybeHush(t: Ms): void {
+    // round 4: a give-up lasts OVERLAP.hushGiveUpForMs, then the hush re-arms with a fresh count (0 = for the whole lesson)
+    if (this.hushOff && OVERLAP.hushGiveUpForMs > 0 && this.hushOffAt !== null && t - this.hushOffAt >= OVERLAP.hushGiveUpForMs) { this.hushOff = false; this.hushOffAt = null; this.hushUnconfirmed = 0; }
     if (this.hushAt !== null || this.hushOff || this.overlapOnset === null || OVERLAP.hushMs <= 0) return;
     if (t - this.overlapOnset < OVERLAP.hushMs) return;
     const ph = this.governor.phase;
@@ -242,6 +249,7 @@ export class EngineHost {
     const o = this.overlapFeatures(t, true, this.fanin.view(t, (from) => this.audio.voicedAfter(from)));
     if (!o || o.echoLikelihood >= 0.5 || (o.targetSpeaker !== null && o.targetSpeaker < 0.5)) return;
     this.hushAt = t;
+    this.ducked = true; // round 4: a hush after a released duck is released the same way (duckReleaseMs of quiet)
     this.hushNearEcho = o.levelOverEchoDb === null || o.levelOverEchoDb < OVERLAP.echoNearDb;
     if (!this.flags.shadow) this.o.emit({ to: "voice", op: "duck", t, level: OVERLAP.hushLevel });
     this.o.emit({ to: "log", row: { t, cause: "voice_onset", phase: ph, action: "HUSH", proposed: "-", detail: null, reasons: ["short_burst"], pComplete: 0, pHoldWanted: 0, engine: this.engine.id.id, turnSeq: this.governor.turnSeq } });
@@ -256,8 +264,8 @@ export class EngineHost {
     const empty = !this.fanin.view(this.t).text;
     if (OVERLAP.hushGiveUpEchoOnly) {
       if (!nothing || !empty) this.hushUnconfirmed = 0;
-      else if (this.hushNearEcho && ++this.hushUnconfirmed >= OVERLAP.hushGiveUp) this.hushOff = true;
-    } else if (nothing && empty && ++this.hushUnconfirmed >= OVERLAP.hushGiveUp) this.hushOff = true;
+      else if (this.hushNearEcho && ++this.hushUnconfirmed >= OVERLAP.hushGiveUp) { this.hushOff = true; this.hushOffAt = this.t; }
+    } else if (nothing && empty && ++this.hushUnconfirmed >= OVERLAP.hushGiveUp) { this.hushOff = true; this.hushOffAt = this.t; }
   }
 
   /** The child's speech level from earlier in the lesson (dBFS); the host also learns it from the child's own turns. */

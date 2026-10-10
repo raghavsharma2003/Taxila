@@ -238,6 +238,20 @@ export const OVERLAP = {
    * within 200 ms 11 → 13/22, room false yields 12 → 13/101, bleed self-yields 79 → 78/421; TaxilaFDB TEST (simulated) unchanged.
    */
   acousticYieldNeedsNonEcho: true,
+  /**
+   * Round 4 (duplex, AMI real speech + real STT, 2026-10-10): a burst too short to carry its own pitch inherits the last
+   * attribution (`attributionCarryMs`); when that was "not the child" its reflex duck was released at the onset, and the host
+   * then never tried the hush for that burst (the hush ran only while ducked). Once the burst's own pitch said "the child"
+   * it was paused at the bare 600 ms sustain with no hush in front: "yeah" (330-1,010 ms) paused her, and barge-ins sounded
+   * under her full voice. On: the hush is tried for the live burst whatever happened to its reflex duck.
+   */
+  hushAfterRelease: true,
+  /**
+   * Round 4: how long a hush give-up lasts before the hush re-arms with a fresh count (0 = the rest of the lesson, round 3).
+   * On real AMI meetings the echo-like give-up still fired within minutes and then held for the whole session: later
+   * continuers met the bare 600 ms sustain with no hush ("OFF" in evals/duplex-r4/ami-trace.mjs). [E, AMI TRAIN sweep]
+   */
+  hushGiveUpForMs: 60000 as Ms,
 };
 
 /**
