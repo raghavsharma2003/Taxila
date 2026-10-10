@@ -21,7 +21,7 @@ beforeEach(() => {
   parentGateCalls = 0;
   liveRow = null;
   child = { id: CID, class_level: 8, teacher_id: "arjun", tutor_chosen_at: null };
-  chooseRow = { id: CID, teacher_id: "arjun", tutor_chosen_at: "2026-10-03T00:00:00Z", from_id: "arjun" };
+  chooseRow = { id: CID, teacher_id: "asha", tutor_chosen_at: "2026-10-03T00:00:00Z", from_id: "arjun" };
   deps.requireChild = async (_req, id) => {
     calls.push(["auth", id]);
     if (id !== CID) throw Object.assign(new Error("forbidden"), { status: 403 });
@@ -62,37 +62,48 @@ test("GET: auth on the child id; current may be null; live comes from the open-l
 });
 
 test("POST: the pick is one statement (live check + update + log) with from_id = the previous teacher", async () => {
-  const r = await choose({ childId: CID, tutorId: "arjun", source: "child", shown: ["arjun", "nobody"], msToChoose: 1234.4 });
+  const r = await choose({ childId: CID, tutorId: "asha", source: "child", shown: ["asha", "nobody"], msToChoose: 1234.4 });
   assert.equal(r.statusCode, 200);
   const sql = calls.filter((c) => c[0] === "sql" && c[1] === CHOOSE_SQL);
   assert.equal(sql.length, 1, "exactly one write statement");
   assert.match(CHOOSE_SQL, /with live as[\s\S]*update child[\s\S]*not exists \(select 1 from live\)[\s\S]*insert into tutor_switch[\s\S]*from upd/);
   assert.match(CHOOSE_SQL, /old\.teacher_id as from_id/, "from_id is the previous teacher, unconditionally");
-  assert.deepEqual(sql[0][2], [CID, "arjun", 1, "child", ["arjun"], 1234]);
+  assert.deepEqual(sql[0][2], [CID, "asha", 1, "child", ["asha"], 1234]);
   assert.equal(parentGateCalls, 0);
 });
 
 test("POST: the statement returning no row (a lesson opened in between) is a 409, not a silent success", async () => {
   chooseRow = null;
-  await assert.rejects(choose({ childId: CID, tutorId: "arjun" }), (e) => e.status === 409);
+  await assert.rejects(choose({ childId: CID, tutorId: "asha" }), (e) => e.status === 409);
 });
 
-test("POST: an open lesson → 409 before any write; a draft or out-of-class tutor → 403", async () => {
+test("POST: an open lesson → 409 before any write; a parked tutor (anyone but Asha) → 403, under any offer mode", async () => {
   liveRow = { x: 1 };
-  await assert.rejects(choose({ childId: CID, tutorId: "arjun" }), (e) => e.status === 409);
+  await assert.rejects(choose({ childId: CID, tutorId: "asha" }), (e) => e.status === 409);
   assert.ok(!calls.some((c) => c[1] === CHOOSE_SQL));
   liveRow = null;
-  await assert.rejects(choose({ childId: CID, tutorId: "uma" }), (e) => e.status === 403);
-  await assert.rejects(choose({ childId: CID, tutorId: "asha" }), (e) => e.status === 403);
+  for (const offer of [undefined, "wide"]) {
+    if (offer) process.env.TAXILA_TUTOR_OFFER = offer;
+    await assert.rejects(choose({ childId: CID, tutorId: "uma" }), (e) => e.status === 403);
+    await assert.rejects(choose({ childId: CID, tutorId: "arjun" }), (e) => e.status === 403);
+  }
+  assert.ok(!calls.some((c) => c[1] === CHOOSE_SQL), "nothing written");
+});
+
+test("GET: the offer is [asha] for every class, mode single (no picker)", async () => {
+  for (let cls = 1; cls <= 9; cls++) {
+    child = { id: CID, class_level: cls, teacher_id: cls > 4 ? "arjun" : null, tutor_chosen_at: null };
+    const r = await list(CID);
+    assert.deepEqual([r.body.tutors, r.body.mode, r.body.name], [["asha"], "single", "Asha"], `class ${cls}`);
+  }
 });
 
 test("POST B1: a switch goes through the Parent-corner gate; a parent-set non-default teacher counts as chosen", async () => {
-  process.env.TAXILA_TUTOR_OFFER = "wide";
   child = { id: CID, class_level: 2, teacher_id: "asha", tutor_chosen_at: null };
-  // first pick over the class default: free
-  assert.equal((await choose({ childId: CID, tutorId: "arjun" })).statusCode, 200);
+  // a pick of the class default: free
+  assert.equal((await choose({ childId: CID, tutorId: "asha" })).statusCode, 200);
   assert.equal(parentGateCalls, 0);
-  // the parent had set arjun at onboarding (teacher_id ≠ class default): the child's first pick is a switch
+  // the parent had set arjun at onboarding before round 4 (teacher_id ≠ class default): moving to Asha is a switch
   child = { id: CID, class_level: 2, teacher_id: "arjun", tutor_chosen_at: null };
   assert.equal(effectivelyChosen(child), true);
   calls = [];
@@ -105,36 +116,38 @@ test("POST B1: a switch goes through the Parent-corner gate; a parent-set non-de
   assert.equal(parentGateCalls, 1);
 });
 
-test("teacherFor bounds a saved pick by the sheet's classes (or wide); class change / wide-off revert to the default", () => {
+test("teacherFor: Asha for every class and saved row (single teacher); the rollback bounds a saved pick by the sheet's classes", () => {
   const warn = console.warn;
   console.warn = () => {};
   try {
-    // sheet mode: the persona sheet's own classes
+    for (const offer of [undefined, "wide"]) {
+      if (offer) process.env.TAXILA_TUTOR_OFFER = offer;
+      for (const [cls, saved] of [[1, "arjun"], [8, "asha"], [3, "asha"], [3, null], [7, "arjun"], [9, null]]) {
+        assert.equal(teacherFor({ id: "a", class_level: cls, teacher_id: saved }).id, "asha", `class ${cls} saved ${saved} (${offer ?? "sheet"})`);
+      }
+      delete process.env.TAXILA_TUTOR_OFFER;
+    }
+    // TAXILA_SINGLE_TEACHER=off: the sheets' own classes again (Asha's now 1-9; Arjun's 5-9)
+    process.env.TAXILA_SINGLE_TEACHER = "off";
     assert.equal(teacherFor({ id: "a", class_level: 1, teacher_id: "arjun" }).id, "asha", "Arjun's sheet is classes 5-9");
-    assert.equal(teacherFor({ id: "a", class_level: 8, teacher_id: "asha" }).id, "arjun", "Asha's sheet is classes 1-4");
-    assert.equal(teacherFor({ id: "a", class_level: 3, teacher_id: "asha" }).id, "asha");
+    assert.equal(teacherFor({ id: "a", class_level: 8, teacher_id: "asha" }).id, "asha", "Asha's sheet is classes 1-9");
+    assert.equal(teacherFor({ id: "a", class_level: 8, teacher_id: null }).id, "arjun", "the old class default");
     assert.equal(teacherFor({ id: "a", class_level: 3, teacher_id: null }).id, "asha");
-    // wide: AVATAR §5.1 ranges, consistent with what the picker offered
-    process.env.TAXILA_TUTOR_OFFER = "wide";
-    assert.equal(teacherFor({ id: "a", class_level: 6, teacher_id: "asha" }).id, "asha");
-    assert.equal(teacherFor({ id: "a", class_level: 1, teacher_id: "arjun" }).id, "arjun");
-    assert.equal(teacherFor({ id: "a", class_level: 7, teacher_id: "asha" }).id, "arjun", "outside Asha's wide range");
-    delete process.env.TAXILA_TUTOR_OFFER;
-    // wide switched off: the same saved row now serves the sheet range
-    assert.equal(teacherFor({ id: "a", class_level: 6, teacher_id: "asha" }).id, "arjun");
   } finally {
+    delete process.env.TAXILA_SINGLE_TEACHER;
     console.warn = warn;
   }
   // the manifest's sheet-mode offer ranges ARE the sheets' classes (one source of truth for register)
   assert.deepEqual(TUTORS.find((t) => t.id === "asha").fit.offerClasses, asha.classes);
   assert.deepEqual(TUTORS.find((t) => t.id === "arjun").fit.offerClasses, arjun.classes);
+  assert.equal(servesClass("arjun", 8), false, "parked: never served while the single teacher is on");
   assert.equal(servesClass("uma", 8), false, "no sheet, never served");
 });
 
 test("teacherForLesson: the lesson's pinned teacher wins over the child's current pick", () => {
   const kid = { id: "a", class_level: 3, teacher_id: "asha" };
   assert.equal(teacherForLesson({ ...kid, teacher_id: "arjun" }, "asha").id, "asha");
-  assert.equal(teacherForLesson({ ...kid, teacher_id: "asha" }, "arjun").voice, teacherFor({ id: "b", class_level: 7 }).voice);
+  assert.equal(teacherForLesson({ ...kid, teacher_id: "asha" }, "arjun").voice, arjun.voice, "a lesson pinned to Arjun keeps his voice");
   assert.equal(teacherForLesson(kid, null).id, "asha", "a lesson without a pin falls back to teacherFor");
   assert.equal(teacherForLesson(kid, "zed").id, "asha");
 });

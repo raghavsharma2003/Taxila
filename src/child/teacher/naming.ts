@@ -59,7 +59,7 @@ export const NAME_COPY = {
   parentTitle: "Teacher's name",
   parentLine: "{C} calls the teacher {T}.",
   parentOwn: "{C} uses the teacher's own name, {T}.",
-  parentNote: "{C} can give the teacher a name. Whatever the name, the teacher still tells {C} they are talking to an AI.",
+  parentNote: "Whatever the name, the teacher still tells {C} they are talking to an AI.",
   parentReset: "Reset to {T}",
   parentChange: "Change name",
   parentChooseTitle: "Choose a name for the teacher",
