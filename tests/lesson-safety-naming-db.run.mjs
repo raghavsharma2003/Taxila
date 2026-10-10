@@ -20,7 +20,9 @@ const fromEnvFile = (name) => (existsSync(envFile) ? (readFileSync(envFile, "utf
 const hostOf = (u) => { try { return new URL(u).hostname.replace(/-pooler\./, "."); } catch { return ""; } };
 const TEST = process.env.CONDUCTOR_TEST_DATABASE_URL || fromEnvFile("CONDUCTOR_TEST_DATABASE_URL");
 const PROD = process.env.DATABASE_URL || fromEnvFile("DATABASE_URL");
-const SKIP = !TEST ? "CONDUCTOR_TEST_DATABASE_URL not set" : PROD && hostOf(TEST) === hostOf(PROD) ? "CONDUCTOR_TEST_DATABASE_URL is the PRODUCTION endpoint: refusing" : false;
+// a stream session's .env.local points DATABASE_URL at its own test branch too (TAXILA_DB=test): equality is then not prod
+const TEST_ENV = (process.env.TAXILA_DB || fromEnvFile("TAXILA_DB")) === "test";
+const SKIP = !TEST ? "CONDUCTOR_TEST_DATABASE_URL not set" : !TEST_ENV && PROD && hostOf(TEST) === hostOf(PROD) ? "CONDUCTOR_TEST_DATABASE_URL is the PRODUCTION endpoint: refusing" : false;
 const RUN = randomUUID().slice(0, 8);
 
 describe("lesson safety + teacher naming (test branch)", { skip: SKIP, concurrency: false, timeout: 240_000 }, () => {
@@ -226,6 +228,24 @@ describe("lesson safety + teacher naming (test branch)", { skip: SKIP, concurren
     await q("update child set teacher_name = 'Meenu' where id = $1", [kid]);
     me = await call("/api/me");
     assert.equal(me.body.children.find((c) => c.id === kid).teacher_name, "Meenu");
+  });
+
+  test("ONE teacher: every class 1-9 child's next lesson is Asha, in her band's register, in Diya's voice, whatever the row stored", async () => {
+    const { dhdVoiceFor } = await import("../server/voice/voices.js");
+    for (let cls = 1; cls <= 9; cls++) {
+      // rows as they exist today: classes 5-9 stored the old default Arjun
+      const cid = (await one("insert into child (guardian_id, first_name, class_level, language_pref, teacher_id) values ($1, 'Mira', $2, 'hinglish', $3) returning id",
+        [guardian, cls, cls > 4 ? "arjun" : "asha"])).id;
+      const r = await call("/api/lesson/start", { method: "POST", body: { childId: cid, mode: "voice", purpose: "practice" } });
+      assert.equal(r.status, 201, `class ${cls}: ${JSON.stringify(r.body).slice(0, 300)}`);
+      assert.deepEqual([r.body.teacher.id, r.body.teacher.name, r.body.teacher.pronouns.subject, r.body.teacher.role], ["asha", "Asha", "she", "AI teacher"], `class ${cls}`);
+      assert.equal(dhdVoiceFor(r.body.teacher.id, {}).dhd, "en-IN-Diya:DragonHDLatestNeural", `class ${cls}: Diya's voice`);
+      assert.match(r.body.instructions, /WHO YOU ARE: Asha — the child calls you Asha didi\n/);
+      assert.match(r.body.instructions, cls <= 4 ? /young Indian children; a kind didi-teacher register/ : /classes 5-9; a sharp, kind didi-tutor register/, `class ${cls}: the band's register`);
+      const st = (await one("select state from lesson where id = $1", [r.body.lessonId])).state;
+      assert.deepEqual([st.ctx.teacherId, st.ctx.protege?.name], ["asha", cls <= 4 ? "Golu" : "Bittu"], `class ${cls}: pinned teacher and the band's protégé`);
+      await q("update lesson set ended_at = now() where id = $1", [r.body.lessonId]);
+    }
   });
 
   test("PATCH /api/children teacherId: only a teacher who serves the class (Asha); moving a pre-round-4 Arjun row to Asha resets the name with a 'switch' row", async () => {
