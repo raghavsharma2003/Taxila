@@ -153,7 +153,8 @@ export class KhandScene {
     this.terrain = new PooledMesh(this.blockMat);
     this.scene.background = new Color(this.sky.horizon);
     const dome = new Mesh(new SphereGeometry(180, 24, 12), skyMaterial(this.sky));
-    dome.renderOrder = -10; this.scene.add(dome);
+    // the sky draws AFTER the opaque world (depth-tested): pixels the world covers are never shaded twice
+    dome.renderOrder = 5; this.scene.add(dome);
     this.scene.add(this.root);
     this.root.add(this.terrain.mesh, this.build.mesh);
     this.overlay.renderOrder = 10;
@@ -208,7 +209,7 @@ export class KhandScene {
     const gv = g.getAttribute("position").count, guv = new Float32Array(gv * 2);
     for (let i = 0; i < gv; i++) { guv[i * 2] = g.getAttribute("position").getX(i); guv[i * 2 + 1] = g.getAttribute("position").getZ(i); }
     g.setAttribute("uvb", new BufferAttribute(guv, 2)); g.setAttribute("tile", new BufferAttribute(new Float32Array(gv).fill(this.theme === "barf" ? 15 : 0), 1)); g.setAttribute("shade", new BufferAttribute(new Float32Array(gv).fill(0.92), 1));
-    const gm = new Mesh(g, this.blockMat); gm.position.set(p.w / 2, -0.001, p.d / 2); this.root.add(gm);
+    const gm = new Mesh(g, this.blockMat); gm.position.set(p.w / 2, -0.001, p.d / 2); gm.renderOrder = 4; this.root.add(gm);
     // frame the plot
     const span = Math.max(p.w, p.d, p.hmax * 1.4);
     this.rig.center.set(0, Math.min(p.hmax, 3) * 0.35, 0);

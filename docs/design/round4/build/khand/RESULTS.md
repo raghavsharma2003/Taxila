@@ -38,7 +38,7 @@ c5-maths-ch10-t02, c6-maths-ch09-t01 (mirror).
 | C6 | words: 0 verdict words, 0 unrevealed keys, 0 floor violations | **met**: every shape × language passes the play guard and the lesson floor. Every `{?why=}` names a refusal the law makes and every `{?mal=}` a mal-rule it implements. The key was never spoken on any mal path; K6 found 0 bad lines on the live server | `tests/r4-khand-server.test.mjs`; loop K6 |
 | C7 | signed evidence folds `via: "game"`; a forged token folds nothing | **met**: one `kt_evidence` row via game; the same tokens again and a forged token fold nothing | loop P8 (local prod, own Neon branch) |
 | C8 | no reward economy | **met by construction**; G1's economy lint has not yet run on this tree (it is on G1's branch) | code review; `tests/play-style-lint.test.mjs` |
-| C9 | reachable in a lesson when asked and at a practice beat, through the server grade into the ledger | **asked: met** ("game khelna hai" on perimeter and arrays, "can we play a game?" on views: the play slot is `nazariya/<mode>` and the block world is on the stage). **Practice beat: not measured** (see §4) | loop A1 / P8, 139/139 checks (local prod, 2026-10-10) |
+| C9 | reachable in a lesson when asked and at a practice beat, through the server grade into the ledger | **asked: met** ("game khelna hai" on perimeter and arrays, "can we play a game?" on views: the play slot is `nazariya/<mode>` and the block world is on the stage). **Practice beat: not met**: 0 of 3 practice lessons put the block world on the stage unasked (perimeter, area, square numbers; 4, 4 and 9 typed turns; only whiteboards appeared) | loop A1 / P8, 139/139 checks; `tests/prod/r4-khand-beat.mjs` (local prod, n = 3, 2026-10-10) |
 | C10 | ≥ 50 fps median at 4× throttle (proxy) | **met at 360 only**: 54-55 fps at 360, **40-47 at 412, 16-18 at 1366** (see §3) | `r4-khand-shots.mjs --fps` |
 
 ## 3. Numbers (proxy unless said)
@@ -51,6 +51,8 @@ would otherwise get the 2D twin), DPR 1 (the contract's floor for tier 3d), load
 | 360 × 447 | 54.4 | 54.2 | 55.0 | 1.3-4.1 / 3.5-7.3 ms | 5-11 / 7-9k |
 | 412 × 567 | 46.8 | 40.3 | 41.8 | 1.4-4.0 / 3.7-7.1 ms | same |
 | 1006 × 768 | 15.7 | 15.8 | 17.6 | 1.4-4.3 / 4.0-8.5 ms | same |
+
+Drawing the sky after the opaque world (depth-tested) changed it to 56.4 / 47.9 / 17.5 for views: within the noise.
 
 Reading: frame rate falls with pixels (161k → 233k → 773k), while our JS stays at 1-4 ms. The bound is SwiftShader's
 software fill in the GPU process, which the CPU throttle does not touch (FEASIBILITY §5.3 saw the same). That is ~9
@@ -79,9 +81,10 @@ sides=3x3`. The row now says `area=9 perimeter=12 rect=3 by 3`, and the re-run r
 
 - **C10 at 412 and 1366 on the proxy** (above). There is nothing left to govern at the contract floor (DPR 1). Fixing it
   needs either a real GPU (the phone run, O-R4), or a lower DPR floor for tier 3d: G1's contract, owner/G1 decision.
-- **C9 "at a practice beat"**: not measured. The browser loop measured the asked path only. Whether the Director offers
-  the game unprompted is the Director's rule (stream 2 / 4A); Khand is admitted to coverage, so that rule applies to it
-  as to every family.
+- **C9 "at a practice beat"**: 0/3 practice lessons offered the game unasked (`results/beat-local.json`). Two of the
+  three lessons stopped taking typed input after 4 turns; the third ran 9 turns. Whether the Director offers a game
+  unprompted is the Director's and the compose ladder's rule (streams 4A / 2). Khand is admitted in coverage like every
+  family, so whatever that rule does applies to Khand. Not fixable from this stream's files; reported to main.
 - **Cold load at 1.2 Mbps**: 4.4 s against a 3 s bar (dev page).
 - **Class 4 typed lane**: class-4 children got no typed input in the practice page (voice-first), so the browser ask ran
   with class-5 children on the class-4 topics. Voice asks for class 4 are untested here.
