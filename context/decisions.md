@@ -5618,3 +5618,11 @@ text predicate (`rj-sr-raw-recall-98-target`).
 
 <!-- merged from inbox/r4-main-1135.json -->
 - `dc-r4-migration-027-play-verb` (2026-10-10): Round-4 migration numbers are allotted centrally: 024 board_page (stream 2), 025 child_school_chapter (4A), 026 play_build (G2), 027 child_controls.play_verb (G1 patch 02; /api/parent/controls by main at G1's merge). All additive. Reverse if a stream needs a destructive migration (owner approval + TEST rehearsal first).
+
+
+<!-- merged from inbox/r4-safety05.json -->
+- `dc-r4-safety05-succeed-not-suicide` (2026-10-10): Patch 05 (4A @a3d5704) after main safety review: lexicon suicide_spellings counts a hit only if it survives with the succeed family masked out of the raw text ('succeed' canonicalises to 'sukide', like 'sucide'). Closes a live false safeguard on kit answers such as 'she found her own way and succeeded' (24 kit strings). Every real spelling still fires, with or without a succeed word beside it. Review test in npm test (tests/safety-r4-scan-succeed.test.mjs). Reverse if a real disclosure is hidden by the mask (narrow the mask, never drop the shape).
+
+
+<!-- merged from inbox/r4-safety-rel4.json -->
+- `dc-r4-safety06-07-09-shipped` (2026-10-10): 4A patches 06, 07, 09 after main safety review, shipped with 05 as one narrow release. 06: a content-filter block on the reply COMPLETION gets one fresh reply before failing closed (prompt blocks and repeat blocks still fail closed; main amendment: a non-filter failure on the retry keeps the original block, so it fails closed). Closes the 'explain it differently' false safeguard (1/58 lessons). 07: five lexicon canonical collisions masked on raw text in their own shape only. 09: hanging disclosures with English 'fan' fire on the code floor (before, only the model read caught them). Nothing removed or narrowed. Reverse if a 07 mask hides a real disclosure, or the retry replaces a reply that should have safeguarded.
