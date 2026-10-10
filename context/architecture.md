@@ -275,3 +275,7 @@ Proposed seams (patches in `evals/safety-robust/patches/`):
 
 ## Merged inbox entries (write-up from the entry text)
 - `op-r4a-db-suites-skip-in-stream-sessions` (2026-10-10): In every round-4 stream session, scripts/r4-session-env.mjs writes DATABASE_URL = the stream's own test branch, so the Neon-backed suites' guard ('the test URL is the production endpoint') makes child-routes-db, conductor-db, lesson-safety-naming-db, reports-db and ship5-review-filter-face-db SKIP inside npm test (reported as passed-with-skip). Run them with a decoy DATABASE_URL, or teach their guards TAXILA_DB=test (stream 5 did for its own lesson-safety-naming-db and tutor-db-e2e).
+
+
+## Merged inbox entries (write-up from the entry text)
+- `rj-r4-content-filter-completion-safeguard` (2026-10-10): 2026-10-10 root cause (stream 4A, tests/prod/r4-conversation-sg-repro.mjs, 1 of 58 fresh lessons): the false safeguard on 'explain it differently' (stream 5 owner-4, Zoya class 5) was the Azure content filter blocking the model's REPLY completion (HTTP 200, finish_reason content_filter); turn.js failed closed and re-planned the turn as a disclosure, so the child got the helplines although the predicate, the model distress read (0/480 false reads) and the UNDERSTAND note (0/96) were all clean. The [lesson] turn line printed the original cls, hiding the cause. Fix proposed as patch 06 (say.js: one fresh reply on a completion block before failing closed; a prompt block still fails closed at once), under main safety review.

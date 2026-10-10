@@ -3657,3 +3657,7 @@ and repeated duplex partials. Relational AT-U8 (p99 ≤ 3 ms per turn; it calls 
 
 <!-- merged from inbox/r4-main-1135.json -->
 - `ms-r4-safety03-prod-deploy` (2026-10-10): Narrow safety release 7ec8202 live as taxila-web--s7ec8202-cdah (deploy-azure --gate): npm test 2,591/0/3 skipped, prompt budget 1,645/2,600, migrations applied, canary w0-smoke 4/4, then 100%; w2i-safety on taxila.dev 1/1 (disclosure arm skipped on remote by design). Rollback = one traffic PATCH to taxila-web--sb371f4e-p6pe.
+
+
+<!-- merged from inbox/r4-safety05.json -->
+- `ms-r4-safety05-review-numbers` (2026-10-10): Patch 05 vs base 9920f21: probe 7 false alarms removed, 10/10 disclosures fire; 337,886 strings: 885 → 850 firing, 35 removed (all succeed), 0 new; fingerprint 18,438 draws unchanged; safety-robust identical; safety suites 114/114; adversarial 22/23 both arms; persona 105/105; full gate 2,616/0/3 skipped, budget PASS.
