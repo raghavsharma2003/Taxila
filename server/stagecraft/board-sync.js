@@ -122,8 +122,50 @@ export function regate(script, ask, ctx) {
   const raw = { ...script, scriptId: ask?.intent?.intentId ?? script.scriptId, line: { lessonId: ask?.line?.lessonId ?? "", ...(ask?.line?.teacherReplySeq != null ? { teacherReplySeq: ask.line.teacherReplySeq } : {}) },
     anchor: "line_audio_start", mode: ask?.mode === "continue" ? "continue" : "fresh" };
   delete raw.facts;
-  const g = gateWhiteboard(raw, ctx);
+  let g = gateWhiteboard(raw, ctx);
+  // round 4 content: a board refused ONLY because it writes the answer to her question (W9) keeps its picture with that
+  // answer written as "?" (the question stays open), re-gated in full. Measured: 4 of 6 boards refused on a local
+  // production round3-forge run were W9-only refusals, each leaving the slot empty (2026-10-10).
+  for (let k = 0; k < 3 && !g.pass; k++) {
+    const failing = g.checks.filter((c) => !c.pass);
+    if (!failing.length || failing.some((c) => c.id !== "W9.no_reveal")) break;
+    const masked = maskReveals(g.script ?? raw, failing[0].detail ?? []);
+    if (!masked) break;
+    g = gateWhiteboard({ ...masked, facts: undefined }, ctx);
+  }
   return g.pass ? { ok: true, script: { ...g.script, facts: g.facts }, gate: g } : { ok: false, script: null, gate: g };
+}
+
+/**
+ * The script with every W9 reveal written as "?": "o7: 12 = answer 12" → that op's token; "o3: marks 3/4 on o2" → the
+ * marker dropped; "word: scale" → the word replaced. null when nothing could be masked.
+ */
+export function maskReveals(script, reveals) {
+  if (!script?.ops?.length || !Array.isArray(reveals) || !reveals.length) return null;
+  const esc = (w) => String(w).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  let ops = script.ops.map((o) => ({ ...o }));
+  let changed = false;
+  for (const r of reveals.map(String)) {
+    const word = r.match(/^word: (.+)$/);
+    if (word) {
+      const src = `(^|[^\\p{L}\\p{M}])${esc(word[1])}($|[^\\p{L}\\p{M}])`;
+      for (const o of ops) if ((o.op === "text" || o.op === "label") && new RegExp(src, "iu").test(String(o.text))) { o.text = String(o.text).replace(new RegExp(src, "giu"), "$1?$2"); changed = true; }
+      continue;
+    }
+    const mark = r.match(/^([^:]+): marks /);
+    if (mark) { const before = ops.length; ops = ops.filter((o) => o.id !== mark[1]); changed ||= ops.length < before; continue; }
+    const tok = r.match(/^([^:]+): (\S+) = answer /);
+    if (!tok) continue;
+    const o = ops.find((x) => x.id === tok[1]);
+    if (!o) continue;
+    const src = `(^|[^\\d/.])${esc(tok[2])}($|[^\\d/.])`;
+    if ((o.op === "text" || o.op === "label") && new RegExp(src).test(String(o.text))) { o.text = String(o.text).replace(new RegExp(src, "g"), "$1?$2"); changed = true; }
+    else if (o.op === "numwork" && Array.isArray(o.rows)) {
+      o.rows = o.rows.map((row) => row.map((c) => (String(c) === tok[2] || new RegExp(src).test(String(c)) ? "?" : c)));
+      changed = true;
+    }
+  }
+  return changed ? { ...script, ops } : null;
 }
 
 /** The speculative board for this ask, if it landed and passes against her real line. */

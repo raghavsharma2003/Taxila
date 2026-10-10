@@ -33,3 +33,19 @@ describe("r4 content: the claims board", () => {
     if (/kitne|how many/i.test(line)) assert.ok(!r.script.ops.some((o) => o.op === "numwork" && JSON.stringify(o.rows).includes('"12"')), "no total drawn for a question");
   });
 });
+
+describe("r4 content: a board refused only for writing the answer keeps its picture with '?'", async () => {
+  const { regate, retime, maskReveals } = await import("../server/stagecraft/board-sync.js");
+  const { expand } = await import("../server/forge/explainer/templates.js");
+  it("masks the revealing number and passes the full gate; anything else still refuses", () => {
+    const a = ask("Board par dekho: 3 groups, har group mein 4 laddoo. Kitne laddoo hain?");
+    const ctx = { ...gateCtxFor(a, {}), withhold: { values: ["12"], words: [], phrases: [] } };
+    const x = expand({ template: "equal-groups@1", groups: 3, each: 4 });
+    const script = retime(x.script, x.script.durationMs, ctx.speechMs);
+    assert.ok(JSON.stringify(script.ops).includes('"12"'), "the template writes the total");
+    const r = regate(script, a, ctx);
+    assert.ok(r.ok, JSON.stringify(r.gate?.checks?.filter((c) => !c.pass)));
+    assert.deepEqual(r.script.ops.find((o) => o.id === "eq").rows[0], ["3", "×", "4", "=", "?"]);
+    assert.equal(maskReveals({ ops: [{ id: "x", op: "line", from: [0, 0], to: [1, 1] }] }, ["x: 5 = answer 5"]), null, "nothing to mask → no change");
+  });
+});

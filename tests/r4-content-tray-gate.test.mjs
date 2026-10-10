@@ -131,7 +131,9 @@ describe("r4 content tray gate · B: each kind's rule", () => {
     const certs = { topics: { "c6-x": { game: { serveByViewport: { p360: false, p412: true, l1366: true } }, explainer: { serveByViewport: PASS } } } };
     const sc = (rung) => ({ kind: "stagecraft", stagecraft: { rung, archetype: "rule" } });
     assert.equal(certifyForTray(sc("engine_default"), { vp: "p412", topicId: "c6-x", certs, factsKind: "game" }).ok, false, "fails at p360 → off everywhere");
-    assert.equal(certifyForTray(sc("engine_default"), { vp: "p412", topicId: "c6-x", certs, factsKind: "animation" }).ok, true);
+    // certified at all three sizes, but a 1000-unit world at the phone tray is its board twin, not the piece: refused today
+    const anim = certifyForTray(sc("engine_default"), { vp: "p412", topicId: "c6-x", certs, factsKind: "animation" });
+    assert.equal(anim.ok, false); assert.match(anim.why, /board twin/);
     assert.equal(certifyForTray(sc("engine_default"), { vp: "p412", topicId: "c6-y", certs }).ok, false, "no certificate = not shown");
     assert.equal(certifyForTray(sc("generated_spec"), { vp: "p360", topicId: "c6-x", certs }).ok, false);
     assert.equal(certifyForTray(sc("generated_spec"), { vp: "p360", topicId: "c6-x", certs, verdict: { byViewport: PASS } }).ok, true);
