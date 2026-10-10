@@ -49,6 +49,8 @@ describe("r4 content: the production image's file set", () => {
     const r = node(dir, `
       const g = await import("./server/forge3/tray-gate.js");
       const bs = await import("./server/stagecraft/board-sync.js");
+      const h = g.trayGateHealth();
+      if (!h.ok) throw new Error("tray gate not ready: " + h.missing.join(", "));
       const box = g.contractBox("p360");
       if (!box) throw new Error("no contract box for p360");
       const text = "Screen par 5 barabar parts dekhiye; 3 shaded hain. Shaded hisse ka fraction kya hoga?";
@@ -69,7 +71,8 @@ describe("r4 content: the production image's file set", () => {
     assert.doesNotMatch(`${r.stderr}`, /MISSING|ERR_MODULE_NOT_FOUND|Cannot find module/, `${r.stderr}`.slice(0, 1500));
   });
   it("the runtime contract and the brief's docs copy are the same bytes", async () => {
-    const { CONTRACT_FILE, CONTRACT_DOC_FILE } = await import("../server/forge3/tray-gate.js");
-    assert.equal(fs.readFileSync(CONTRACT_FILE, "utf8"), fs.readFileSync(CONTRACT_DOC_FILE, "utf8"));
+    const { CONTRACT_FILE } = await import("../server/forge3/tray-gate.js");
+    const doc = path.join(ROOT, "docs", "design", "round4", "build", "box-contract.json");
+    assert.equal(fs.readFileSync(CONTRACT_FILE, "utf8"), fs.readFileSync(doc, "utf8"));
   });
 });

@@ -46,7 +46,6 @@ const ROOT = path.join(here, "..", "..");
 // tests/r4-content-packaged.test.mjs keeps them identical. Measured: with the contract read from docs/, production
 // (taxila.dev, 0c90ebb, 2026-10-10) refused every board "no box for this class" and every Studio slot failed.
 export const CONTRACT_FILE = path.join(here, "certs", "box-contract.json");
-export const CONTRACT_DOC_FILE = path.join(ROOT, "docs", "design", "round4", "build", "box-contract.json");
 export const SKELETON_CERT_FILE = path.join(here, "certs", "skeleton.json");
 export const MODULE_CERT_FILE = path.join(here, "certs", "modules.json");
 export const VP_CLASSES = Object.freeze(["p360", "p412", "l1366"]);
@@ -70,6 +69,22 @@ export function boxContract() {
 }
 export function skeletonCertificates() { if (skeletonMemo === undefined) skeletonMemo = readJson(SKELETON_CERT_FILE, null); return skeletonMemo; }
 export function moduleCertificates() { if (moduleMemo === undefined) moduleMemo = readJson(MODULE_CERT_FILE, null); return moduleMemo; }
+/**
+ * Can the gate certify anything in THIS deployment? Every file it reads must be present and non-empty: the box contract
+ * (the tray boxes for both Desks at all three sizes) and the certificate tables. → { ok, missing: string[] }.
+ * Logged once at load when not ok; GET /api/studio/health reports it (a deploy canary reads it before traffic).
+ */
+export function trayGateHealth() {
+  const missing = [];
+  const c = boxContract();
+  for (const band of ["b3", "b2"]) for (const vp of VP_CLASSES) if (!c.boxes?.[band]?.tray?.[vp]?.box) missing.push(`box-contract ${band} tray ${vp}`);
+  if (!skeletonCertificates()) missing.push("certs/skeleton.json");
+  if (!moduleCertificates()) missing.push("certs/modules.json");
+  if (!certificates()) missing.push("certs/catalogue.json");
+  if (!playCertificates()) missing.push("certs/play.json");
+  return { ok: missing.length === 0, missing };
+}
+
 /** Test seams. */
 export const _setSkeletonCertificates = (t) => { skeletonMemo = t; };
 export const _setModuleCertificates = (t) => { moduleMemo = t; };
@@ -271,3 +286,6 @@ export const TRAY_PATHS = Object.freeze([
   { id: "play", gate: "server/forge3/live.js", calls: ["certifyForTray"], covers: "buildLive → composeAsk → slotFor (also gated in studio-slot)" },
   { id: "forge-g2-made-for", gate: null, calls: [], covers: "NO tray path: g2/serve.js mountFor has no live caller and `g2:*` ids are not ENGINES (modules.js mountable refuses them); the Made for you shelf lists studio_mount rows and mounts nothing" },
 ]);
+
+// never silent (the 0c90ebb rollback): a deployment that cannot certify says so at load, once
+try { const h = trayGateHealth(); if (!h.ok) console.error(`[tray-gate] NOT READY: missing ${h.missing.join(", ")}: every tray piece will be refused`); } catch (e) { console.error(`[tray-gate] health check failed: ${String(e?.message ?? e).slice(0, 120)}`); }
