@@ -3657,3 +3657,32 @@ and repeated duplex partials. Relational AT-U8 (p99 ≤ 3 ms per turn; it calls 
 
 <!-- merged from inbox/r4-main-1135.json -->
 - `ms-r4-safety03-prod-deploy` (2026-10-10): Narrow safety release 7ec8202 live as taxila-web--s7ec8202-cdah (deploy-azure --gate): npm test 2,591/0/3 skipped, prompt budget 1,645/2,600, migrations applied, canary w0-smoke 4/4, then 100%; w2i-safety on taxila.dev 1/1 (disclosure arm skipped on remote by design). Rollback = one traffic PATCH to taxila-web--sb371f4e-p6pe.
+
+
+<!-- merged from inbox/r4-safety05.json -->
+- `ms-r4-safety05-review-numbers` (2026-10-10): Patch 05 vs base 9920f21: probe 7 false alarms removed, 10/10 disclosures fire; 337,886 strings: 885 → 850 firing, 35 removed (all succeed), 0 new; fingerprint 18,438 draws unchanged; safety-robust identical; safety suites 114/114; adversarial 22/23 both arms; persona 105/105; full gate 2,616/0/3 skipped, budget PASS.
+
+
+<!-- merged from inbox/r4-safety-rel4.json -->
+- `ms-r4-safety06-07-09-review-numbers` (2026-10-10): 06+07+09 on base 6166d0a: review tests 4/4, 10/10, 2/2 (+05 2/2, 03 3/3); fan probe 20/20; strings firing 850 to 844 (exactly the 6 targets), 0 new; fingerprint 18,438 draws unchanged; safety-robust identical; safety+say suites 130/130; adversarial 22/23 both arms; persona 105/105.
+
+
+<!-- merged from inbox/r4-main-1350.json -->
+- `ms-r4-safety-rel4-prod-deploy` (2026-10-10): Safety release a491caf (patches 05/06/07/09 + test scoping + forge <= 500) live as taxila-web--sa491caf-2gx1: gate 2,632/0/3 skipped, budget PASS, migrations applied, canary w0-smoke 4/4, then 100%; w2i-safety remote 1/1 (disclosure arm skipped by design). Rollback = one traffic PATCH to taxila-web--s9920f21-e9c2. Worker redeploy after 16:00 UTC.
+
+
+## Merged inbox entries (write-up from the entry text)
+- `r4c-ms-battery-base-2026-10-10` (2026-10-10): CONVERSATION-V2 battery on the round-4 base 522dca6e (n = 354 scored, local prod-mode server, seed 7, concurrency 3, J1 gpt-6-sol + J2 gpt-6-luna, no human adjudication, 2026-10-10): strict 245/354 (69.2%), J1 75.1%, lenient 79.7%, kappa 0.875; families strict A 59.4, B 76.5, C 68.1, D 70.8, E 71.9, F 88.2, G 68.2. Weakest: skip_ahead 1/7, personal_share 1/5, frustration 2/8, slower 2/6, answer_hedged 2/6. The brief's 56.3% is an older tree with the same judges; round 3 used J2 mistral (57.8%). Load: 64 note timeouts, 24 HTTP 429 (shared quota)
+- `r4c-ms-heldout-base-2026-10-10` (2026-10-10): Round-2 held-out conversation cases on the round-4 base (n = 76 scored, same harness and judges, local, 2026-10-10): strict 53/76 (69.7%), J1 76.3%, lenient 86.8%
+- `r4c-ms-intake-heldout-2026-10-10` (2026-10-10): Session-first intake on 74 held-out school-day utterances (written blind by a helper that never read server/; classes 3-8; Hinglish 37 / Hindi 15 / English 22; deterministic, no model; scored once, 2026-10-10): right 65/74 (wrong 3, missed 6) vs today's lexical router matchTopic 56/74 (wrong 4, missed 14); frame kind 64/74. Failure classes: Devanagari lesson names, misspellings, test-copies-back read as taught
+- `r4c-ms-openings-heldout-2026-10-10` (2026-10-10): Session-opening battery, 49 held-out scripted openings (classes 3-8; deterministic code path + the production classify distress read per child turn; real kits; scored once, 2026-10-10): purpose+topic right 36/49 vs today's start (the plan's topic) 4/49; safeguard 6/6 with 0 false safeguards; child turns to the first teaching beat p50 1, p90 2, max 2 (n = 43). Code predicate alone: safeguard 4/6
+- `r4c-ms-battery-arm2-2026-10-10` (2026-10-10): CONVERSATION-V2 battery, round-4 arm 2 (rounds A+B, 73f59027) vs base 522dca6e run side by side (local prod-mode servers, seed 7, concurrency 2 each, J1 gpt-6-sol + J2 gpt-6-luna, no human adjudication, n = 354 each): strict 69.5% vs 66.9% (lost/gained 37/46, McNemar 0.77, not significant), J1 75.7% vs 73.7%; family C 62.8 to 71.7 strict, G 72.7 to 59.1 (n = 22). Arm 1 (round A only) 68.3 vs 69.1 (null). Run-to-run noise about 3 points
+- `r4c-ms-acceptance-9e371d34-2026-10-10` (2026-10-10): Acceptance harnesses on a local production build of 9e371d34 vs base 522dca6e with the same seed (simulated children; owner-2 J codes from a model judge; no human read): w2i-safety 39/39; owner-2 9/12 (14 defects) vs base 7/12 (19); owner-3 48/48; owner-4 15/17 vs base 17/17 (the miss: example request on the fast lane, fixed after); round3-conversation 25/27 (C share not returned, fixed after; 1 leftover-guardian artifact of two runs sharing a DB branch); round3-relational-human 23/24, the same no_perception echo miss on base
+
+
+<!-- merged from inbox/r4-main-1500.json -->
+- `ms-r4-4a-prod-deploy` (2026-10-10, 14:55 UTC): stream 4A integration (int/r4-4a: base a0d8bb7 + merge 5f67171 + migration 025 ef2a50b + context 38431ab) live as taxila-web--s38431ab-ianv. Gate on HEAD 38431ab: npm test 2,672 pass / 0 fail / 3 skipped (one process), prompt budget PASS, migrations check green after 025 was applied to production (the first gate run failed only on that check). Canary w0-smoke 4/4, then 100%; previous a491caf kept for rollback (`deploy-azure.mjs --rollback`). Prod battery on taxila.dev: owner-2 12/12 (6 sessions x 14 turns, judge), owner-4 17/17 (steering acted on within the next turn 16/16), round3-conversation 26/26, w2i-safety 39/39 on a local production server of 38431ab on the Neon TEST branch (the remote run skips the disclosure arm by design: a disclosure on production opens a real incident). Migration 025 also applied to the TEST branch (ep-winter-tooth). TAXILA_SESSION_FIRST stays default off; kill switch TAXILA_P5_R4CONV=off.
+
+
+<!-- merged from inbox/r4-main-1515.json -->
+- `ms-r4-4a-owner2-3seeds` (2026-10-10, 15:05-15:15 UTC): tests/prod/owner-2-no-confusion.mjs against taxila.dev (38431ab), 6 sessions x 14 turns per run, the harness's configured judge. Seed 144562: 12/12, 0 defects / 90 turns. Seed 7: 10/12, 1 defect. Seed 1010: 10/12, 1 defect. Total 2 / 270 judged turns, both R5.loop in s5-zoya-typed-c5-evs-ch01-t01 (turn 7, child "ek min... haan bolo"; the fill-blank "Moving air and ___ make evaporation go faster" posed 4 turns running). Caveat: the seed-7 and seed-1010 runs started in the same second and share the results dir acceptance-2026-10-10T15-06-42, so its owner-2.json holds the seed-1010 run only; the seed-7 log shows the same code on the same session. 4A's local merged-tree run reported 8/12 (23 defects on 17 turns); not yet reconciled (seeds, judge, routing asked).
