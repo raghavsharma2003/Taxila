@@ -1,0 +1,86 @@
+{
+ "nodes": [
+  {
+   "id": "r4k-nazariya-law-block-plot",
+   "kind": "component",
+   "title": "Nazariya law as one height-map block plot under five Khand modes (views, array, floor, powers, mirror): generators, solvers, shortcut search, kit mal-rules, board twin; src/play/families/nazariya (r4-khand, 2026-10-10)",
+   "at": "2026-10-10"
+  },
+  {
+   "id": "r4k-dec-heightmap-gravity",
+   "kind": "decision",
+   "title": "Khand builds are height maps (a block rests on the ground or a block; a side-face tap drops onto that column). Every claimed topic is a height-map task and the law, views and fence stay exact. Reversal: a claimed topic needs overhangs or holes (e.g. nets, hollow solids) — then the law moves to a voxel set and the projections to per-cell ray tests",
+   "at": "2026-10-10"
+  },
+  {
+   "id": "r4k-ms-law-truth-battery",
+   "kind": "measurement",
+   "title": "Nazariya truth battery: 0 wrong grades over >= 5,000 acts per mode (5 modes, ~25,000 acts; random + mal-rule + solver acts) against an independent oracle; generator p95 <= 50 ms; tampered plots, claim fields and cross-level replays refused (tests/r4-khand-law.test.mjs, node, 2026-10-10)",
+   "at": "2026-10-10"
+  },
+  {
+   "id": "r4k-ms-greedy-mesher",
+   "kind": "measurement",
+   "title": "Greedy mesher with corner AO covers exactly the naive faces on 300 random builds; quads naive→greedy: 4x4x4 cube 80→9, 6x4 floor 44→5, 9x9 pit 165→9 (tests/r4-khand-mesher.test.mjs, node, 2026-10-10)",
+   "at": "2026-10-10"
+  },
+  {
+   "id": "r4k-dec-mesher-in-worker",
+   "kind": "decision",
+   "title": "Khand meshes in a Web Worker (buffers transferred, pooled GPU buffers, latest request wins) with the same pure mesher on the main thread only when no worker can start. Reversal: a device where the worker round trip exceeds one frame of a main-thread mesh for lesson-sized plots",
+   "at": "2026-10-10"
+  },
+  {
+   "id": "r4k-dec-coverage-11-topics",
+   "kind": "decision",
+   "title": "Khand claims 11 class 4-6 maths topics (views c4-ch02-t01; arrays c4-ch09-t01; area/perimeter c5-ch11-t01/t02/t03, c6-ch06-t01/t02; square and cube numbers c6-ch01-t01; mirror c4-ch11-t02, c5-ch10-t02, c6-ch09-t01) over 15 rules, every mal-rule mapped to a verified kit misconception. Reversal: a topic's certificate fails on the integrated tree",
+   "at": "2026-10-10"
+  },
+  {
+   "id": "r4k-dec-code-drawn-atlas",
+   "kind": "decision",
+   "title": "Khand block textures and sky are drawn in code (a 64x64 pixel atlas, a gradient dome, voxel hills and trees), not Azure-generated images: zero bytes, no text to review, deterministic. Reversal: the owner calls the look basic; then generate text-free skyboxes with DEPLOY_IMAGE (WebP < 300 KB, reviewed)",
+   "at": "2026-10-10"
+  },
+  {
+   "id": "r4k-dec-build-artefact-server-replay",
+   "kind": "decision",
+   "title": "A child's Khand build is saved (play_build, migration number placeholder 024) only from the server's own replay of a solved level; heights only, no counter; GET /api/play/builds lists them. Reversal: the owner wants unsolved free builds kept too",
+   "at": "2026-10-10"
+  },
+  {
+   "id": "r4k-open-core-api-port",
+   "kind": "open",
+   "title": "Port Khand from its thin three.js adapter (src/play/engines/khand + patch 04 engine mount) onto G1's CORE-API once main merges G1",
+   "at": "2026-10-10"
+  },
+  {
+   "id": "r4k-open-real-phone",
+   "kind": "open",
+   "title": "Khand frame rate and touch are measured only on headless SwiftShader at 4x CPU throttle; a real ₹10k phone run is owner-dependent (O-R4)",
+   "at": "2026-10-10"
+  }
+ ],
+ "edges": [
+  {
+   "src": "r4k-nazariya-law-block-plot",
+   "rel": "measured_by",
+   "dst": "r4k-ms-law-truth-battery"
+  },
+  {
+   "src": "r4k-dec-mesher-in-worker",
+   "rel": "measured_by",
+   "dst": "r4k-ms-greedy-mesher"
+  },
+  {
+   "src": "r4k-dec-heightmap-gravity",
+   "rel": "part_of",
+   "dst": "r4k-nazariya-law-block-plot"
+  },
+  {
+   "src": "r4k-dec-coverage-11-topics",
+   "rel": "part_of",
+   "dst": "r4k-nazariya-law-block-plot"
+  }
+ ]
+}

@@ -91,6 +91,8 @@ export function mountKhand(host: HTMLElement, deps: EngineDeps): EngineMount {
   const sy = Math.max(...p.base, p.hmax) + 1;
   scene.setPlot({ w: p.w, d: p.d, hmax: p.hmax, sy }, level.seed);
   if (mode === "views" || mode === "mirror") scene.rig.tPitch = scene.rig.pitch = 0.5;
+  // "same view": structure A stands beside the plot; frame both
+  if (mode === "views" && (p as unknown as ViewsParams).goal === "same") { scene.rig.center.x -= (p.w + 1.6) / 2; scene.rig.tDist = scene.rig.dist = scene.rig.dist * 1.45; }
 
   // ── the child's block colours (cosmetic; the law counts heights only)
   const childMat = new Map<string, number>();
@@ -367,6 +369,7 @@ export function mountKhand(host: HTMLElement, deps: EngineDeps): EngineMount {
       dirty = false;
       const t0 = performance.now();
       scene.render();
+      if (!drawn && typeof performance !== "undefined" && performance.mark) performance.mark("khand-first-frame");
       if (labelsDirty || busy || drag || pinch) { placeLabels(); labelsDirty = false; }
       drawMs.push(performance.now() - t0); drawn++;
       audit.frame++;
@@ -410,12 +413,10 @@ export function mountKhand(host: HTMLElement, deps: EngineDeps): EngineMount {
         const a = p as unknown as ArrayParams, f = pitCells(a, a.pit).filter((i) => s.h[i] >= 1).length;
         if (fade < 3) out.push({ k: "Filled", v: `${f}`, role: "q1" });
         if (pad || s.named !== null) out.push({ k: "Number", v: pad ? String(num) : String(s.named), role: "you" });
-        if (a.goal === "turn" && s.predicted !== null) out.push({ k: "You said", v: s.predicted ? "same" : "different", role: "q2" });
       } else if (mode === "powers") {
         if (pad || s.named !== null) out.push({ k: "Number", v: pad ? String(num) : String(s.named), role: "you" });
         if (fade === 1 || s.done) out.push({ k: "Built", v: String(built(p, s.h)), role: "q1" });
       } else out.push({ k: "Blocks", v: String(built(p, s.h)), role: "q1" });
-      if (mode === "mirror" && glowAfterCheck.length) out.push({ k: "Look again", v: String(glowAfterCheck.length), role: "look" });
       return out;
     },
     controls(): ControlSpec[] {
@@ -502,10 +503,13 @@ export function mountKhand(host: HTMLElement, deps: EngineDeps): EngineMount {
     },
   };
   // the harness and the engine's own tests read these (never the app)
-  (stage as unknown as { khand: unknown }).khand = {
-    scene, mesher, setTool, setSnap, act, info: () => ({ ...scene.info, worker: mesher.usingWorker, mesh: mesher.timings }),
+  const khandApi = {
+    scene, mesher, setTool, setSnap, act, audit, perf, info: () => ({ ...scene.info, dpr, worker: mesher.usingWorker, mesh: mesher.timings }),
     continuous: (on: boolean) => { continuousOn = on; },
   };
+  (stage as unknown as { khand: unknown }).khand = khandApi;
+  // the play dev harness (window.__play present) also gets the engine's own hooks
+  if (typeof window !== "undefined" && (window as unknown as { __play?: unknown }).__play) (window as unknown as { __khand: unknown }).__khand = khandApi;
   let continuousOn = false;
   const baseInvalidate = invalidate;
   void baseInvalidate;
