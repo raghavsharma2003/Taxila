@@ -105,7 +105,8 @@ What changed (each found with `evals/duplex-r4/ami-trace.mjs` on TRAIN, kept onl
    "voicing", and the forced yield fired at 1 s. TRAIN: continuers 82 → 84.
 
 Tried and rejected (context/inbox/r4-duplex.json): a lexical-turn echo gate (bleed 77 → 56/421 on TRAIN, but it swallowed
-a real barge-in's words in the ship5 B3 rig, because her "echo level" is her OUTPUT level, not a measured echo); a longer
+a real barge-in's words in the ship5 B3 rig: it judged the words by the CURRENT mic frame, and a barge-in's words land
+after its burst has ended, when the mic hears only her echo); a longer
 hushed sustain (1,300 / 1,600 ms: no change at all, G11 binds).
 
 **R5 got one worse** (TEST 19 → 21/138 room false yields). It is inside the noise, but it is a regression and it is reported.
@@ -194,7 +195,9 @@ Both rows ask "who is speaking?", and the engine cannot answer that today:
 - **R5 (room false yields 13.8 %):** another adult's voice over her is told from the child only by pitch (≥ 5 semitones
   below the child's own median) and by level. On AMI the "other voices" are adults at the same table, often in the
   child's pitch range.
-- **R6 (bleed self-yields 13.2 %):** her "echo level" is her OUTPUT level, not a measured echo path. On the AMI headset rig
+- **R6 (bleed self-yields 13.2 %):** her echo level is ESTIMATED from her output level plus a learned coupling (the 30th
+  percentile of mic − output while she speaks, `live.ts EchoCoupling`), a level estimate, not a waveform-correlated echo
+  path. On the AMI headset rig
   her own voice reaches the mic at -10 to -22 dB, harsher than a phone with AEC. That is also why the lexical echo gate
   had to be rejected (§6).
 

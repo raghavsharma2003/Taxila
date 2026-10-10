@@ -77,9 +77,10 @@ FireRedChat's pVAD (Apache-2.0). Both run on the device with `onnxruntime-web`, 
 
 ## The alternative if we do not fund it
 
-- **R6:** the AEC reference. Measure her echo from her own PCM (reference correlation) instead of assuming her output
-  level. No biometrics. A seam patch in `src/lesson/cascadeLink.ts` (stream 3), ~3-5 build days. It also unblocks the
-  lexical echo gate rejected this round (bleed 77 → 56/421 on AMI TRAIN, but unsafe without a measured echo).
+- **R6:** the AEC reference. Measure her echo from her own PCM (reference correlation) instead of today's level estimate (her output
+  level plus a learned coupling). No biometrics. A seam patch in `src/lesson/cascadeLink.ts` (stream 3), ~3-5 build days. It also unblocks the
+  lexical echo gate rejected this round (bleed 77 → 56/421 on AMI TRAIN, but it read the mic frame at the words' arrival;
+  a burst-level version is being tried in RESULTS.md).
 - **R5:** a text "not addressed to the teacher" class ("mummy, paani do", the TV) on the words, plus today's pitch
   rule. No biometrics, but slow: words arrive 0.3-2 s after the sound.
 - **Or accept** R5 / R6 as unmet for "on" and let shadow telemetry from real lessons decide whether a phone even

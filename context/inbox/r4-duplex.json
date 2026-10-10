@@ -45,7 +45,7 @@
     {
       "id": "rj-r4dx-lexical-turn-echo-gate",
       "kind": "rejection",
-      "title": "duplex r4 tried: words that read as a turn while the mic sits within 3 dB of her output level do not yield (meant for her own words leaking back on AMI). Broke: ship5-fix-duplex-revoke B3 (a real e2e case): a child talking at -24 dBFS over her -22 dB output reads as 'echo-like', so the barge-in's words were swallowed and the revoke never fired. Her 'echo level' is her output level, not a measured echo. (It bought bleed self-yields 77 -> 56/421 on AMI TRAIN.) Needs a measured echo path (AEC reference) or a target-speaker model first",
+      "title": "duplex r4 tried: words that read as a turn do not yield while the CURRENT mic frame sits within 3 dB of her estimated echo level (output + learned coupling), meant for her own words leaking back on AMI. Broke: ship5-fix-duplex-revoke B3 (a real e2e case): a barge-in's words land after its burst has ended, when the mic hears only her echo, so the child's words were read as echo and the revoke never fired. (It bought bleed self-yields 77 -> 56/421 on AMI TRAIN.) The gate must judge the BURST that carried the words, not the frame at arrival",
       "at": "2026-10-10"
     },
     {

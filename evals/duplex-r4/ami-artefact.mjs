@@ -12,6 +12,8 @@ import { loadEnv, ROOT, runSession } from "../duplex-real/lib.mjs";
 const argv = process.argv.slice(2);
 const opt = (f, d) => { const i = argv.indexOf(f); return i >= 0 ? argv[i + 1] : d; };
 loadEnv();
+// --set OVERLAP.x=v,... : an eval-only config override (same form as evals/duplex-r3/ami-overlap.mjs)
+if (opt("--set", null)) { const cfg = await import(ROOT + "src/duplex/config.ts"); for (const kv of opt("--set").split(",")) { const [k, v] = kv.split("="); const [o, key] = k.split("."); cfg[o][key] = v === "true" ? true : v === "false" ? false : Number(v); } }
 const { DuplexLive } = await import(ROOT + "src/duplex/live.ts");
 const LISTEN = new Set(["yeah", "yes", "yep", "yup", "mm-hmm", "mm", "hmm", "mhm", "uh-huh", "okay", "ok", "right", "sure", "alright", "oh", "uh", "huh", "ah", "mmm", "hm"]);
 const dec = (w) => w.replace(/&#39;/g, "'").replace(/&amp;/g, "&").replace(/&quot;/g, '"');
@@ -20,7 +22,7 @@ function spurts(words, maxGap) { const out = []; for (const [s, e, w] of words) 
 const anyTalk = (words, a, b) => words.some(([s, e]) => s < b && e > a);
 const herLines = (M, Y) => spurts(M.chans[Y].words.map(([s, e, w]) => [s, e, dec(w)]), 700).filter((s) => s.end - s.start >= 600).map((s) => ({ start: s.start, end: s.end, text: s.words.map((w) => w[2]).join(" "), outDb: M.chans[Y].db }));
 const HER = new Set(["her_turn", "overlap"]);
-const out = { cont: { n: 0, fail: 0, nOffFloor: 0, failOffFloor: 0 }, barge: { n: 0, late: 0, nOffFloor: 0, lateOffFloor: 0 } };
+const out = { cont: { n: 0, fail: 0, nOffFloor: 0, failOffFloor: 0 }, barge: { n: 0, late: 0, nOffFloor: 0, lateOffFloor: 0 }, bargeList: [] };
 const dir = argv[0];
 for (const m of opt("--meetings", "ES2004b").split(",")) {
   const M = JSON.parse(fs.readFileSync(path.join(dir, `${m}.json`), "utf8"));
@@ -52,6 +54,7 @@ for (const m of opt("--meetings", "ES2004b").split(",")) {
             const h = duckOf(b.start - 1000, b.start + 2000), yl = yieldsIn(b.start - 1000, b.start + 2500)[0];
             const stop = Math.min(h ? Math.max(0, h[0] + 20 - b.start) : Infinity, yl ? Math.max(0, yl[0] + 50 - b.start) : Infinity);
             if (stop > 200) { out.barge.late++; if (offFloor) out.barge.lateOffFloor++; }
+            out.bargeList.push({ m, X, Y, at: b.start, offFloor, hush: h ? Math.max(0, h[0] + 20 - b.start) : null, yield: yl ? Math.max(0, yl[0] + 50 - b.start) : null, words: toks.slice(0, 6).join(" ") });
           }
         }
       }
