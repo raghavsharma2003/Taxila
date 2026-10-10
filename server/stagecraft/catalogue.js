@@ -15,7 +15,8 @@
 //     applied: "blood", "die", "kill" are curriculum words in kit content, and the blind check reads suitability);
 //   - every whiteboard beat passes the strict script shape and the stage lint (shared/whiteboard.js);
 //   - (round 3 forge) the game and the explainer passed the visual QA at one judged size at least
-//     (server/forge3/certs/catalogue.json from server/forge3/certify.js; never judged = allowed and the device decides).
+//     (server/forge3/certs/catalogue.json from server/forge3/certify.js). (round 4 content) Listing is not showing: the
+//     tray gate decides at reveal, and it requires the piece itself at all three sizes (brief item 2).
 //
 // Pure reads, once per process (cached); no model call, no network, no child data. The lesson uses an entry through the
 // Stagecraft instant rung (builders.js engineDefault): correct-by-construction, ≈ 0 ms, graded by the host (gradeAny).
@@ -26,7 +27,10 @@ import { normalizeScript, lintScript } from "../../shared/whiteboard.js";
 import { SEVERE, PII } from "../forge/g2/safety.js";
 import { servable } from "../forge3/certify.js";
 
-/** round 3 forge: a piece the visual QA found broken at EVERY judged size is not served (FORGE3_QA_CERTS=0: ignore). */
+/** round 3 forge: a piece the visual QA found broken at EVERY judged size is not listed (FORGE3_QA_CERTS=0: ignore).
+ *  round 4 content: the catalogue LISTS what exists (key verification, coverage reads it); whether a piece may reach a
+ *  child is the tray gate's decision at reveal (server/forge3/tray-gate.js: Studio v2 only when certified as itself at
+ *  all three sizes, which no library piece is today). */
 const qaServable = (topicId, piece) => process.env.FORGE3_QA_CERTS === "0" || servable(topicId, piece);
 
 const DIR = new URL("../../data/studio-catalogue/topics/", import.meta.url);

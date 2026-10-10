@@ -59,7 +59,8 @@ function Tally({ n }: { n: number }) {
   );
 }
 
-const PLOT_H = 160;
+// round 4 content: 200 px (kit.css .dg-plot) so 16 px axis labels at a gridline every step never overlap (certs/modules.json)
+const PLOT_H = 200;
 
 function Graph({ c, values, showValues, hlOf }: { c: DGConfig; values: number[]; showValues: boolean; hlOf: ReturnType<typeof useHl> }) {
   if (c.view === "table" || c.view === "tally") {
@@ -89,7 +90,7 @@ function Graph({ c, values, showValues, hlOf }: { c: DGConfig; values: number[];
           return (
             <div key={h.key} className={cls("dg-prow", h.cls)} data-cat={i}>
               <span className="dg-cat">{cat.label}</span>
-              <span role="img" aria-label={`${Math.floor(icons)}${icons % 1 !== 0 ? " and a half" : ""} ${c.icon}`}>
+              <span className="dg-icons" role="img" aria-label={`${Math.floor(icons)}${icons % 1 !== 0 ? " and a half" : ""} ${c.icon}`}>
                 {Array.from({ length: Math.floor(icons) }, (_, k) => <span key={k} className="dg-icon">{iconOf(c.icon)}</span>)}
                 {icons % 1 !== 0 && <span className="dg-icon is-half">{iconOf(c.icon)}</span>}
               </span>

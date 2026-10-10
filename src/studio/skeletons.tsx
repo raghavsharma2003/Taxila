@@ -50,9 +50,20 @@ function Btn({ x, y, w, h, label, onTap, on = false, disabled = false, testid }:
     <g className={`sk-btn${on ? " is-on" : ""}${disabled ? " is-off" : ""}`} role="button" tabIndex={disabled ? -1 : 0} aria-disabled={disabled || undefined}
       onClick={disabled ? undefined : onTap} onKeyDown={disabled ? undefined : key} data-target-btn="1" data-testid={testid}>
       <rect x={x} y={y} width={w} height={h} rx={12} />
-      <text x={x + w / 2} y={y + h / 2} dominantBaseline="central" textAnchor="middle">{label}</text>
+      <text x={x + w / 2} y={y + h / 2} dominantBaseline="central" textAnchor="middle">{fitLabel(label, w, x + w / 2, y + h / 2)}</text>
     </g>
   );
+}
+
+/** round 4 content: a label too wide for its button at the 18-unit floor (measured on CI fonts: "Carbon dioxide" in a third-
+ *  width button ran past the stage box) goes on two lines at the space nearest its middle, never smaller. Width is
+ *  estimated wide (0.62 em per character at 18 units) so it holds on every font a phone may substitute. */
+function fitLabel(label: ReactNode, w: number, cx: number, cy: number): ReactNode {
+  if (typeof label !== "string" || label.length * 0.62 * 18 <= w - 12 || !label.includes(" ")) return label;
+  const mid = label.length / 2;
+  let at = -1;
+  for (let i = 0; i < label.length; i++) if (label[i] === " " && (at < 0 || Math.abs(i - mid) < Math.abs(at - mid))) at = i;
+  return <><tspan x={cx} y={cy - 10}>{label.slice(0, at)}</tspan><tspan x={cx} y={cy + 10}>{label.slice(at + 1)}</tspan></>;
 }
 
 function Feedback({ fb, s, done, y = 304 }: { fb: "right" | "wrong" | null; s: S; done: boolean; y?: number }) {

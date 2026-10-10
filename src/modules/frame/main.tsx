@@ -5,7 +5,10 @@ import { FrameApp } from "./bootstrap.tsx";
 import "./frame.css";
 import "./kit/kit.css";
 import { installFit } from "./fit.ts";
+import { installSvgFloor } from "./svgText.ts";
 
 createRoot(document.getElementById("root")!).render(<FrameApp />);
 // round 3 forge: the engine is scaled to fit its frame (never cut off; fit.ts)
 installFit();
+// round 4 content: SVG words keep the band's floor at the SVG's real size (svgText.ts); crowded labels are thinned
+installSvgFloor();

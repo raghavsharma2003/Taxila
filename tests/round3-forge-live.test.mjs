@@ -15,6 +15,10 @@ const firstBeat = (id) => {
   const beats = t.whiteboard?.beats ?? [];
   return (beats.find((x) => x.ok && x.script) ?? beats[0])?.script ?? null;
 };
+// round 4 content: a never-judged play art is refused by the tray gate (server/forge3/tray-gate.js); these tests are about
+// the wiring, so every (family, mode, art) passes here
+const PASS3 = { p360: true, p412: true, l1366: true };
+const ALL_PASS = { pieces: new Proxy({}, { get: () => new Proxy({}, { get: () => ({ byViewport: PASS3, serveByViewport: PASS3 }) }) }) };
 const P360 = { w: 324, h: 400 }, P412 = { w: 364, h: 503 }, L1366 = { w: 736, h: 392 };
 const designOf = (s) => { const f = boardFrame(s); return f.framed ? { w: f.w, h: f.h } : s.board; };
 const overlaps = (s) => lintScript(s).filter((i) => i.check === "text_overlap").length;
@@ -85,7 +89,7 @@ describe("round3 forge: the live play piece (buildLive)", () => {
   });
   const child = (cl) => ({ id: "kid-r3f", class_level: cl, language_pref: "hinglish" });
   it("a game ask on an admitted topic is a play@1 piece: a signed session, a solver-checked level, its board twin and on-screen facts", async () => {
-    const r = await buildLive({ ask: "game", lessonId: "L1", child: child(4), skillId: "c4-maths-ch05-t01-s1", topicId: "c4-maths-ch05-t01" }, { q: null, playCerts: null });
+    const r = await buildLive({ ask: "game", lessonId: "L1", child: child(4), skillId: "c4-maths-ch05-t01-s1", topicId: "c4-maths-ch05-t01" }, { q: null, playCerts: ALL_PASS });
     assert.ok(r, "a piece");
     assert.equal(r.artifact.kind, "play");
     assert.equal(r.artifact.play.family, "todo-jodo");
@@ -98,7 +102,7 @@ describe("round3 forge: the live play piece (buildLive)", () => {
     assert.ok(r.ms < 3000);
   });
   it("no piece: a topic without play coverage, an excluded topic, a picture ask, a safeguarding moment", async () => {
-    const m = (o) => buildLive({ ask: "game", lessonId: "L1", child: child(6), skillId: null, topicId: "c6-maths-ch06-t01", ...o }, { q: null, playCerts: null });
+    const m = (o) => buildLive({ ask: "game", lessonId: "L1", child: child(6), skillId: null, topicId: "c6-maths-ch06-t01", ...o }, { q: null, playCerts: ALL_PASS });
     assert.equal(await m({}), null);
     assert.equal(await m({ topicId: "c7-science-ch06-t01", child: child(7) }), null, "adolescence topics are never gamified");
     assert.equal(await m({ topicId: "c4-maths-ch05-t01", ask: "picture" }), null);
@@ -106,7 +110,7 @@ describe("round3 forge: the live play piece (buildLive)", () => {
   });
   it("the visual-QA certificate decides the art: a failed art is swapped for one that passed; none passed → no piece", async () => {
     const base = { ask: "simulation", lessonId: "L2", child: child(7), skillId: null, topicId: "c7-science-ch01-t01" };
-    const first = await buildLive(base, { q: null, playCerts: null });
+    const first = await buildLive(base, { q: null, playCerts: ALL_PASS });
     assert.ok(first);
     const picked = first.artifact.play.art;
     const cell = (ok) => ({ byViewport: { p360: ok, p412: ok, l1366: ok } });
@@ -140,7 +144,7 @@ describe("round3 forge: the play piece reaches the Studio slot (seam)", () => {
     _setDeps({ q: null });
     // the seam's wiring is under test here, not the certificate file's current verdicts
     ({ _setPlayCertificates: setCerts } = await import("../server/forge3/compose.js"));
-    setCerts(null);
+    setCerts(ALL_PASS);
   });
   after(() => { _reset(); setCerts(undefined); });
   const kid = { id: "kid-seam", first_name: "Aarav", class_level: 4, language_pref: "hinglish" };

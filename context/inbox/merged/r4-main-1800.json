@@ -1,0 +1,39 @@
+{
+  "nodes": [
+    {
+      "id": "ms-r4-stream2-deploy-rollback",
+      "kind": "measurement",
+      "at": "2026-10-10",
+      "title": "Stream 2 (live content) 0c90ebb deployed 17:36 UTC (gate 2,736/0/3, canary 4/4) and ROLLED BACK 17:53 UTC to c439bd7: on taxila.dev every Studio slot failed (owner-5 2/14, round2-content 15/38, round3-forge 43/49, boards 4/5); control owner-5 alone on c439bd7 after the rollback 13/13"
+    },
+    {
+      "id": "rj-r4-gate-tests-checkout-not-image",
+      "kind": "rejection",
+      "at": "2026-10-10",
+      "title": "The release checks tested the full checkout, not the image: server/forge3/tray-gate.js read its box contract from docs/ (excluded by .dockerignore) and silently fell back to no boxes, so every tray artifact was refused in production while the gate, local batteries and the text-only canary all passed"
+    },
+    {
+      "id": "dc-r4-content-release-checks",
+      "kind": "decision",
+      "at": "2026-10-10",
+      "title": "A content release is proven on the image's file set before deploy (a server started from a git archive without docs/evals/tests), its post-deploy battery includes a Studio request, and serving code may not read runtime data from docs/, evals/ or tests/ (guard test); required runtime data fails loud, never falls back silently"
+    }
+  ],
+  "edges": [
+    {
+      "src": "rj-r4-gate-tests-checkout-not-image",
+      "rel": "caused_by",
+      "dst": "ms-r4-stream2-deploy-rollback"
+    },
+    {
+      "src": "dc-r4-content-release-checks",
+      "rel": "caused_by",
+      "dst": "rj-r4-gate-tests-checkout-not-image"
+    }
+  ],
+  "md": {
+    "measurements": "- `ms-r4-stream2-deploy-rollback` (2026-10-10, 17:36-17:58 UTC): int/r4-content (base 36e1357 + stream 2 62a6ac19 + context, head 0c90ebb; migration 024 applied on prod and TEST) passed the gate (npm test 2,736 / 0 / 3, budget PASS, migrations green) and the canary w0-smoke 4/4, then served 100% as taxila-web--s0c90ebb-9emo. Post-deploy battery on taxila.dev (four harnesses in parallel): owner-5 2/14 (12 x V1.slot_not_real, \"a Studio slot was opened but never became an artifact: slot failed\", every kind and lane), round2-content 15/38 (every R request slot:failed), round3-forge 43/49, r4-content-boards 4/5. Rolled back at 17:53 UTC with `deploy-azure.mjs --rollback` (17.5 s) to taxila-web--sc439bd7-k0kh. Control: owner-5 alone on c439bd7 right after (--no-browser) 13/13, so quota pressure from the parallel runs is ruled out. Before the deploy, production owner-5 was 11/14 (status page).",
+    "decisions": "- `dc-r4-content-release-checks` (2026-10-10): three checks are added for any release that touches content serving: (1) before deploy, run owner-5, round2-content and r4-content-boards against a local production server started from a `git archive` of the head with docs/, evals/ and tests/ removed (the runtime image's file set) on tests/prod/prod-routing.env; (2) the post-deploy battery always includes at least one Studio request (owner-5 or round2-content), not only the text-lane canary; (3) a guard test fails when serving-path code reads runtime data from docs/, evals/ or tests/, and required runtime data (contracts, certificates) fails loud at boot instead of falling back to an empty default. Reverse if: the image build itself runs the content battery (a containerised gate), which makes (1) redundant.",
+    "rejected": "- `rj-r4-gate-tests-checkout-not-image` (2026-10-10): every check before the stream 2 deploy ran on the full git checkout: the gate's npm test, stream 2's own side-by-side batteries (local serve.mjs from the working tree) and the canary (a 2-turn text lesson that never asks for a visual). server/forge3/tray-gate.js:44 reads CONTRACT_FILE = docs/design/round4/build/box-contract.json, .dockerignore excludes docs/, and readJson() falls back to { boxes: {} }, so contractBox() returns null for every viewport class and the gate refuses every tray artifact. What broke: the image's file set was never exercised, and a required data file failed silently. Fixed by dc-r4-content-release-checks; stream 2 moves the contract into a packaged path."
+  }
+}
