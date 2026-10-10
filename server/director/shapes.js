@@ -35,6 +35,21 @@ export const hook = ({ interest, contexts, protege }) => join(
   `mention once: at the end they will teach this to ${protege.name} (${protege.what})`,
 );
 
+/**
+ * round 3 fix (experience B7): the clauses a composed move shape may lose when it would not fit the MOVE section, least
+ * important first (state.js fitShape). Before this a share uptake in front of an interest hook in the aap register was 263
+ * tokens against the cap of 260 and compile threw: a 500 and "Your answer didn't send" on the c7 opener, 2 of 2. Each is a
+ * clause this file emits whose job a code guard also does (the kit contexts are examples only; the protégé line comes back
+ * at the teach-back; the comparison rule is say.js mixedUnitComparison; the child's own words are in the transcript).
+ */
+export const OPTIONAL_CLAUSES = Object.freeze([
+  / — kit contexts: [^;]*/,
+  /; mention once: at the end they will teach this to [^;]*/,
+  /; any bigger\/more comparison: two quantities of one kind, in one unit — a count against a count, a distance against a distance; never across kinds/,
+  /(?<=they shared something from their life) \([^()]*\)(?=:)/,
+  /(?<=they brought up) [^:;]{30,}(?=:)/,
+]);
+
 export const explain = ({ skillTitle, prefix, interest }) => join(
   prefix,
   `one idea only: ${skillTitle}`,
@@ -202,13 +217,13 @@ export const helpExplain = ({ how, example = false, story = false }) => join(
 // owner-truth patch 07's own stopCheck is not added: W2-I's stopCheck (below) is the one check-in shape (reconciled 2026-10-05).
 export const changeTopic = () => join(
   "they want to talk about something else: say yes warmly — the lesson can wait a moment",
-  "ask what they would like to talk about, in a few words; the chips can bring them back to the lesson",
+  "ask what they would like to talk about, in a few words; a button on the screen brings them back to the lesson",
   "no lesson question this turn",
 );
 /** The one side-chat turn after change_topic: their topic, for real. */
 export const sideChat = () => join(
   "talk with them about what they just brought up, for real: two or three warm lines, a question back about it",
-  "then offer to go back to the lesson whenever they like (the chips); no lesson question this turn",
+  "then offer to go back to the lesson whenever they like (a button on the screen); no lesson question this turn",
 );
 /** "Cricket ke baare mein baat karo": their interest, now, as the way into the same idea. `subject`: letters only, ≤ 30. */
 export const topicAsked = ({ subject, teaching = false }) => join(
@@ -253,10 +268,10 @@ export const takeBreak = () => join(
 // but a judge read no acknowledgement (end_request "acknowledges" failed on J2 6 of 12); the line now says back what they
 // asked, in their words, before the choices
 export const stopCheck = () => (p5Flag("R3CONV")
-  ? "they said they want to stop: first say back in a few warm words, in their words, that they want to stop, no guilt and no pressure; then offer the three choices on the chips (keep going, a short break, or stop for today) and wait; no lesson question this turn"
-  : "they said they want to stop: acknowledge it warmly in one short line, no guilt and no pressure; offer the three choices on the chips (keep going, a short break, or stop for today) and wait; no lesson question this turn");
+  ? "they said they want to stop: first say back in a few warm words, in their words, that they want to stop, no guilt and no pressure; then offer the three choices in your own words and their language (carry on, a short break, or stop for today), they are also on the screen, and wait; no lesson question this turn"
+  : "they said they want to stop: acknowledge it warmly in one short line, no guilt and no pressure; offer the three choices in your own words and their language (carry on, a short break, or stop for today), they are also on the screen, and wait; no lesson question this turn");
 /** A goodbye right after distress (RELATIONAL-OS I-7): one gentle check before they go; never a hold. */
-export const relCheckIn = () => "they are leaving after something hard: one gentle check that they are okay and that a grown-up is near; stopping is fine; the chips let them stop now";
+export const relCheckIn = () => "they are leaving after something hard: one gentle check that they are okay and that a grown-up is near; stopping is fine; a button on the screen lets them stop now";
 export const stretch = () => "a 30-second stretch: stand, stretch, say ready when back";
 
 export const safeguard = () => join(
@@ -345,6 +360,8 @@ export const boredOffer = () => join(
 export const frustrationStep = () => "it is the work that is hard, never them (one line, no ability words); then a smaller first step on the same question";
 export const inviteQuestion = () => "they want to ask you something: a warm go-ahead of two to four words so they ask it; no verdict, no question of your own, never ask them to write it";
 export const holdCheckin = () => "they asked you to wait and then went quiet for a while: one warm check-in of a few words — they can take their time, or you can carry on; no verdict, no answer, no new question about the work";
+// round 3 fix (adversarial B2): a voice / typed command the play piece on screen acted on ("1/3", "teen se todo", "ho gaya")
+export const playActWait = () => "they just made a move in the game on screen by voice: the game itself answers it; at most a few words that keep them playing; no verdict, no hint, no question about anything else";
 export const waitThinking = () => "they are thinking aloud: no verdict and no answer; a two-to-four word go-on so they finish the thought; never a new question or the question again";
 export const disclose = () => "they asked what you are: plainly an AI teacher, in one line (no body, home, food or family); then back to the work";
 export const uptake = ({ kind }) => (kind === "joke" ? "they joked: one playful line back of your own, not a stock laugh; then back to the work"

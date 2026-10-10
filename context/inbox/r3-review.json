@@ -1,0 +1,129 @@
+{
+ "nodes": [
+  {
+   "id": "ms-r3rv-silence-after-answer-2026-10-10",
+   "kind": "measurement",
+   "at": "2026-10-10",
+   "title": "Silence after the child's answer, end to end (end of child speech -> first audible sound of her reply on the page clock), LOCAL production build of the integrated tree bbf4c18 (node server/serve.mjs + worker, NODE_ENV=production), Neon TEST, prod model routing, real Azure models + DragonHD; adult-scripted children; synthetic mic playing a recorded child clip, transcription faked with a fixed 750 ms commit->final; NOT taxila.dev, NOT a child. Evidence docs/design/round3/review-shots/review-evidence.json + PNGs. Hands-free owner path (duplex live, server_vad session): n = 21 turns, p50 5,727 / p90 7,166 ms, min 4,002, max 8,373; commit 311 ms p50, final 1,066, turn POST 1,612 (final->POST ~0.55 s), turn 2,942 p50 / 4,155 p90, TTS request 4,840. Tap-to-talk, child taps Done ~0.7 s: n = 21, p50 6,254 / p90 7,364. Tap-to-talk auto-end: n = 1, commit at 3,883 ms, sound at 10,981. 0 of 43 turns <= 900 ms (VALUES V4.3 bar p50 <= 900). The echo ack played 1/43 (exact one-word key 'neither', at 3,024 ms); 0 turn-ack requests in 21 tap-to-talk turns. Prefetch-on arm (server TAXILA_TURN_PREFETCH=on, hands-free) n = 4: 4,441-5,506 ms, prefetch sent on 1/4 turns. Same order as prod's measured 5,991 / 6,780 (ms-r3rh-first-sound-prod-before-2026-10-09): no improvement visible. Dates 2026-10-09/10."
+  },
+  {
+   "id": "ms-r3rv-requests-honoured-2026-10-10",
+   "kind": "measurement",
+   "at": "2026-10-10",
+   "title": "Child requests honoured in live lessons, LOCAL production build of the integrated tree bbf4c18 (node server/serve.mjs + worker, NODE_ENV=production), Neon TEST, prod model routing, real Azure models + DragonHD; adult-scripted children; synthetic mic playing a recorded child clip, transcription faked with a fixed 750 ms commit->final; NOT taxila.dev, NOT a child. Evidence docs/design/round3/review-shots/review-evidence.json + PNGs, 2026-10-09/10. 'game khelna hai' / 'can we play a game': 3/6 got a play piece (class 6: 3/3 - Plot, Todiye-Jodiye x2; class 4: 0/3 - one reply said 'game mode on' over a number pad, two ignored with move=reteach). Animation asks: 0/2 (one got the Patta-lab play piece instead, one re-showed the old 3/5 board). 'picture bana ke samjhao': 1/1 got a board, but a generic English flowchart 'Change to grams -> Compare weights -> Find the heavier weight' while she said '2 bade boxes, har box 1000 g; saath 50 g'. Topic steer 'yeh nahi padhna, photosynthesis padhna hai': 0/1 (stop check-in with no switch option). Class 4 saw no play piece in 2 lessons."
+  },
+  {
+   "id": "ms-r3rv-screen-words-2026-10-10",
+   "kind": "measurement",
+   "at": "2026-10-10",
+   "title": "Her words vs the screen, LOCAL production build of the integrated tree bbf4c18 (node server/serve.mjs + worker, NODE_ENV=production), Neon TEST, prod model routing, real Azure models + DragonHD; adult-scripted children; synthetic mic playing a recorded child clip, transcription faked with a fixed 750 ms commit->final; NOT taxila.dev, NOT a child. Evidence docs/design/round3/review-shots/review-evidence.json + PNGs: 17 of 75 replies point at the screen ('screen par dekho', 'on-screen', 'point to'). 1 pointed at an empty screen (c6 English 'Point to the screen's shape...': server mounted geoboard@1, nothing rendered at +0 and +8 s); 3 described something other than what was shown ('game mode on' + number pad; '2 bade boxes 1000 g + 50 g' + a generic flowchart; 'Let's play Plot: trace each shape's outside boundary' + an area-staking timed game); >= 5 named controls or labels that do not exist ('start test dabaiye' - the button is 'Chalao · iodine daalo'; 'patta A se B ko drag kijiye'; 'bar1/bar2' for bars labelled A/B x3). 2026-10-09/10."
+  },
+  {
+   "id": "ms-r3rv-truth-errors-2026-10-10",
+   "kind": "measurement",
+   "at": "2026-10-10",
+   "title": "False or unfair things said to the child, LOCAL production build of the integrated tree bbf4c18 (node server/serve.mjs + worker, NODE_ENV=production), Neon TEST, prod model routing, real Azure models + DragonHD; adult-scripted children; synthetic mic playing a recorded child clip, transcription faked with a fixed 750 ms commit->final; NOT taxila.dev, NOT a child. Evidence docs/design/round3/review-shots/review-evidence.json + PNGs, ~75 replies, 2026-10-09/10: (1) c7 photosynthesis opener 'jaise cricket mein bat sunlight se energy leta hai'; (2) c6 Hindi '1 by 4 ko 3 se multiply karne par 3 by 12 milta hai' (1/4 x 3 = 3/4); (3) c4 'Haan, 2000 g abhi do kilo ka hissa hai' accepting 2000 for '2000 + 50 = ___?' and moving on; (4) c7 'Bilkul - 3/5 roti ka ek hissa samajhiye' after 'ek chauthai bachega' (a non sequitur praised). Not credited: c6 day 2 'neither, both are 56' on c6-maths-ch06-t01-rl-h2 -> cls no_evidence/model twice ('I didn't catch that clearly' / 'write the perimeters separately'); bare 'neither' -> correct/exact. Day 1 'I think neither, both are same' was credited."
+  },
+  {
+   "id": "ms-r3rv-budget-500-2026-10-10",
+   "kind": "measurement",
+   "at": "2026-10-10",
+   "title": "500 on a live child turn, LOCAL production build of the integrated tree bbf4c18 (node server/serve.mjs + worker, NODE_ENV=production), Neon TEST, prod model routing, real Azure models + DragonHD; adult-scripted children; synthetic mic playing a recorded child clip, transcription faked with a fixed 750 ms commit->final; NOT taxila.dev, NOT a child. Evidence docs/design/round3/review-shots/review-evidence.json + PNGs: class 7 Hinglish, first lesson c7-maths-ch08-t01, hook 'Aapko cricket mein batting pasand hai ya bowling?', child 'batting, main opener hoon apni colony team mein' -> BudgetError at server/compiler/compile.js:349 (a section over its cap) via instructions.js:24/44 < brain/turn.js:1059 -> 500 'internal error', the Desk shows 'Your answer didn't send. Send again'. 2/2 in that lesson; 'batting' alone then worked; 0/1 in a fresh lesson whose opener differed. The hook move has no itemId, so instructionsAfter's skip-item rescue cannot apply. 2026-10-10."
+  },
+  {
+   "id": "ms-r3rv-owner-handsfree-2026-10-10",
+   "kind": "measurement",
+   "at": "2026-10-10",
+   "title": "Owner cohort hands-free switch, LOCAL production build of the integrated tree bbf4c18 (node server/serve.mjs + worker, NODE_ENV=production), Neon TEST, prod model routing, real Azure models + DragonHD; adult-scripted children; synthetic mic playing a recorded child clip, transcription faked with a fixed 750 ms commit->final; NOT taxila.dev, NOT a child. Evidence docs/design/round3/review-shots/review-evidence.json + PNGs: 1 of 3 owner-account lesson starts ran tap-to-talk because GET /api/duplex/config was aborted at the 3,000 ms client timeout (it overlapped hello -> first lesson start, 3.1 s); the other starts answered in 116 ms and 1,715 ms. That lesson's tap-to-talk auto-end then committed 3.9 s after the child stopped (reply sound 11.0 s). Standalone the route answers in ~0.5 s. Production latency to Neon differs from this sandbox: the rate on prod is unknown. 2026-10-10."
+  },
+  {
+   "id": "ms-r3rv-nextday-2026-10-10",
+   "kind": "measurement",
+   "at": "2026-10-10",
+   "title": "Come back the next day (test clock +1 day, owner account, memory + learning_profile consent on), LOCAL production build of the integrated tree bbf4c18 (node server/serve.mjs + worker, NODE_ENV=production), Neon TEST, prod model routing, real Azure models + DragonHD; adult-scripted children; synthetic mic playing a recorded child clip, transcription faked with a fixed 750 ms commit->final; NOT taxila.dev, NOT a child. Evidence docs/design/round3/review-shots/review-evidence.json + PNGs: opener referred to the previous lesson 0/2 (c6: 'Hi Meher, I'm Arjun, your AI teacher. Today we'll explore perimeter, like outlining a painting' - the day-1 words; c4: same grams opener formula). Day-1 items came back verbatim, not in a new form: c6 'Rani runs 3 rounds around 50 m by 30 m' and the rangoli-vs-mat item; c4 '1 kg 300 g -> grams' asked a 4th time (3 times on day 1). When the child brought up yesterday ('kal humne 1300 gram kiya tha') she parked it: 'yaad hain - end mein wapas aayenge'. Same-day re-asks of interests: 'What do you enjoy painting?' twice, football twice within 2 minutes. 12/12 openers were an interest hook; 6/75 replies parked something 'for the end'. Contrast ms-r3rh-memory-2day-2026-10-09 (opener callback 3/3 on c4 ch01 text lane)."
+  },
+  {
+   "id": "ms-r3rv-rubric-2026-10-10",
+   "kind": "measurement",
+   "at": "2026-10-10",
+   "title": "Gamification rubric (reviewer judgment from these sessions, 0-5; competitors scored from their public product design, not measured here): concept-true mechanic - DragonBox 5, Brilliant 4, Prodigy 1, Duolingo 1, Taxila best piece 4 (Patta lab: NCERT KOH/CO2 fair test predict->run->explain; Todiye-Jodiye: cut/join bars, 1/4 = 2/8), Taxila as met 2; shows up when asked - competitors 5, Taxila 2 (3/6, class 4 0/3); teacher in the loop - Taxila 2 (hints after every tap, out of sync, one contradicting the goal); craft at 360/412/1366 - competitors 4-5, Taxila 3 (play pieces fit with text >= 14 px; tiles overflow at 360; generic boards); variety - Taxila 2 (3 mechanics, one dark panel style); ethics - Duolingo 1, Prodigy 1, Brilliant 4, DragonBox 5, Taxila 5; truth of what is said/shown - Taxila 2. Not yet revolutionary: the best piece is Brilliant-class, but a child mostly meets frame widgets, number pads and generic boards."
+  },
+  {
+   "id": "dec-r3rv-silence-metric-end-to-end",
+   "kind": "decision",
+   "at": "2026-10-10",
+   "title": "Report 'silence after an answer' as end of the child's speech -> first audible sound of HER REPLY (and separately the echo), on the page clock, split by talk mode (hands-free / tap-to-talk with Done / auto-end), never as turn ms: turn ms (p50 2.9 s) hides ~1.1 s commit+ASR, ~0.55 s final->POST and ~1.2 s TTS start. Reverse if a device-side audio-out probe on a real phone differs from the page-clock number by > 300 ms."
+  },
+  {
+   "id": "open-r3rv-young-help-covers-activity",
+   "kind": "open",
+   "at": "2026-10-10",
+   "title": "Classes 1-4 (bands b1/b2, tapOptionsS 15): after 15 s of 'your turn' the Young help menu ('Hear it again / Show me choices / Show me how') replaces the tray body for module and studio trays (src/child/lesson/useDesk.ts:621 excludes only pad and tiles). Seen: the Rang bharo activity and the picture board she had just drawn vanished, leaving three chips over an empty area (c4-06, c4-09-laptop). By the same rule a play piece (studio tray) would be covered. Pre-existing on prod 145996f."
+  },
+  {
+   "id": "open-r3rv-measure-engine-for-mass",
+   "kind": "open",
+   "at": "2026-10-10",
+   "title": "c4-maths-ch08-t01 (Grams and kilograms): measure@1 is mounted with params {topicId, numbers:[1,300,1250]} and no tool/unit, so the child sees a centimetre ruler 'Yeh kitna lamba hai? Lambai (cm)' under '1 kilogram mein kitne grams?' (2/2 mounts); its tick labels fail the forge QA's own Q1.legible at 360."
+  },
+  {
+   "id": "open-r3rv-interest-hook-template",
+   "kind": "open",
+   "at": "2026-10-10",
+   "title": "The opener and hook are one template filled with the parent-chosen interest: '<topic> jaise <interest>; <interest> mein kya pasand hai?' in 12/12 lessons, producing nonsense or falsehood ('cricket team mein barabar runs baantna', 'cricket cake', 'football ke equal portions', 'innings ka 2/3 ... boundary practice', 'bat sunlight se energy leta hai'). Law: sentence-shaped prompt text gets recited."
+  },
+  {
+   "id": "rj-r3rv-shot-loop-skips-own-view",
+   "kind": "rejection",
+   "at": "2026-10-10",
+   "title": "Review harness: a screenshot loop over [360, 412, 1366] that resizes only when the view differs from the session's own view took the laptop session's 1366 shot at 412 (the previous size). Broke: c7-02-roti-board-laptop1366.png was a phone layout until re-shot. Fix: always set the viewport for every shot, or put the session's own view first."
+  }
+ ],
+ "edges": [
+  {
+   "src": "ms-r3rv-silence-after-answer-2026-10-10",
+   "rel": "measured_by",
+   "dst": "ms-r3rh-first-sound-prod-before-2026-10-09"
+  },
+  {
+   "src": "dec-r3rv-silence-metric-end-to-end",
+   "rel": "constrains",
+   "dst": "ms-r3rv-silence-after-answer-2026-10-10"
+  },
+  {
+   "src": "open-r3i-screen-pointer-without-board",
+   "rel": "measured_by",
+   "dst": "ms-r3rv-screen-words-2026-10-10"
+  },
+  {
+   "src": "open-r3i-keep-engine-mismatch",
+   "rel": "measured_by",
+   "dst": "ms-r3rv-requests-honoured-2026-10-10"
+  },
+  {
+   "src": "ms-r3rv-nextday-2026-10-10",
+   "rel": "measured_by",
+   "dst": "ms-r3rh-memory-2day-2026-10-09"
+  },
+  {
+   "src": "open-r3rv-interest-hook-template",
+   "rel": "caused_by",
+   "dst": "ms-r3rv-truth-errors-2026-10-10"
+  },
+  {
+   "src": "open-r3rv-measure-engine-for-mass",
+   "rel": "caused_by",
+   "dst": "ms-r3rv-screen-words-2026-10-10"
+  },
+  {
+   "src": "ms-r3rv-rubric-2026-10-10",
+   "rel": "measured_by",
+   "dst": "ms-r3rv-requests-honoured-2026-10-10"
+  }
+ ],
+ "md": {
+  "measurements": "## Round 3 end-to-end experience review (2026-10-10; inbox context/inbox/r3-review.json; docs/design/round3/review-shots/)\n- `ms-r3rv-silence-after-answer-2026-10-10` (2026-10-10): Silence after the child's answer, end to end (end of child speech -> first audible sound of her reply on the page clock), LOCAL production build of the integrated tree bbf4c18 (node server/serve.mjs + worker, NODE_ENV=production), Neon TEST, prod model routing, real Azure models + DragonHD; adult-scripted children; synthetic mic playing a recorded child clip, transcription faked with a fixed 750 ms commit->final; NOT taxila.dev, NOT a child. Evidence docs/design/round3/review-shots/review-evidence.json + PNGs. Hands-free owner path (duplex live, server_vad session): n = 21 turns, p50 5,727 / p90 7,166 ms, min 4,002, max 8,373; commit 311 ms p50, final 1,066, turn POST 1,612 (final->POST ~0.55 s), turn 2,942 p50 / 4,155 p90, TTS request 4,840. Tap-to-talk, child taps Done ~0.7 s: n = 21, p50 6,254 / p90 7,364. Tap-to-talk auto-end: n = 1, commit at 3,883 ms, sound at 10,981. 0 of 43 turns <= 900 ms (VALUES V4.3 bar p50 <= 900). The echo ack played 1/43 (exact one-word key 'neither', at 3,024 ms); 0 turn-ack requests in 21 tap-to-talk turns. Prefetch-on arm (server TAXILA_TURN_PREFETCH=on, hands-free) n = 4: 4,441-5,506 ms, prefetch sent on 1/4 turns. Same order as prod's measured 5,991 / 6,780 (ms-r3rh-first-sound-prod-before-2026-10-09): no improvement visible. Dates 2026-10-09/10.\n- `ms-r3rv-requests-honoured-2026-10-10` (2026-10-10): Child requests honoured in live lessons, LOCAL production build of the integrated tree bbf4c18 (node server/serve.mjs + worker, NODE_ENV=production), Neon TEST, prod model routing, real Azure models + DragonHD; adult-scripted children; synthetic mic playing a recorded child clip, transcription faked with a fixed 750 ms commit->final; NOT taxila.dev, NOT a child. Evidence docs/design/round3/review-shots/review-evidence.json + PNGs, 2026-10-09/10. 'game khelna hai' / 'can we play a game': 3/6 got a play piece (class 6: 3/3 - Plot, Todiye-Jodiye x2; class 4: 0/3 - one reply said 'game mode on' over a number pad, two ignored with move=reteach). Animation asks: 0/2 (one got the Patta-lab play piece instead, one re-showed the old 3/5 board). 'picture bana ke samjhao': 1/1 got a board, but a generic English flowchart 'Change to grams -> Compare weights -> Find the heavier weight' while she said '2 bade boxes, har box 1000 g; saath 50 g'. Topic steer 'yeh nahi padhna, photosynthesis padhna hai': 0/1 (stop check-in with no switch option). Class 4 saw no play piece in 2 lessons.\n- `ms-r3rv-screen-words-2026-10-10` (2026-10-10): Her words vs the screen, LOCAL production build of the integrated tree bbf4c18 (node server/serve.mjs + worker, NODE_ENV=production), Neon TEST, prod model routing, real Azure models + DragonHD; adult-scripted children; synthetic mic playing a recorded child clip, transcription faked with a fixed 750 ms commit->final; NOT taxila.dev, NOT a child. Evidence docs/design/round3/review-shots/review-evidence.json + PNGs: 17 of 75 replies point at the screen ('screen par dekho', 'on-screen', 'point to'). 1 pointed at an empty screen (c6 English 'Point to the screen's shape...': server mounted geoboard@1, nothing rendered at +0 and +8 s); 3 described something other than what was shown ('game mode on' + number pad; '2 bade boxes 1000 g + 50 g' + a generic flowchart; 'Let's play Plot: trace each shape's outside boundary' + an area-staking timed game); >= 5 named controls or labels that do not exist ('start test dabaiye' - the button is 'Chalao · iodine daalo'; 'patta A se B ko drag kijiye'; 'bar1/bar2' for bars labelled A/B x3). 2026-10-09/10.\n- `ms-r3rv-truth-errors-2026-10-10` (2026-10-10): False or unfair things said to the child, LOCAL production build of the integrated tree bbf4c18 (node server/serve.mjs + worker, NODE_ENV=production), Neon TEST, prod model routing, real Azure models + DragonHD; adult-scripted children; synthetic mic playing a recorded child clip, transcription faked with a fixed 750 ms commit->final; NOT taxila.dev, NOT a child. Evidence docs/design/round3/review-shots/review-evidence.json + PNGs, ~75 replies, 2026-10-09/10: (1) c7 photosynthesis opener 'jaise cricket mein bat sunlight se energy leta hai'; (2) c6 Hindi '1 by 4 ko 3 se multiply karne par 3 by 12 milta hai' (1/4 x 3 = 3/4); (3) c4 'Haan, 2000 g abhi do kilo ka hissa hai' accepting 2000 for '2000 + 50 = ___?' and moving on; (4) c7 'Bilkul - 3/5 roti ka ek hissa samajhiye' after 'ek chauthai bachega' (a non sequitur praised). Not credited: c6 day 2 'neither, both are 56' on c6-maths-ch06-t01-rl-h2 -> cls no_evidence/model twice ('I didn't catch that clearly' / 'write the perimeters separately'); bare 'neither' -> correct/exact. Day 1 'I think neither, both are same' was credited.\n- `ms-r3rv-budget-500-2026-10-10` (2026-10-10): 500 on a live child turn, LOCAL production build of the integrated tree bbf4c18 (node server/serve.mjs + worker, NODE_ENV=production), Neon TEST, prod model routing, real Azure models + DragonHD; adult-scripted children; synthetic mic playing a recorded child clip, transcription faked with a fixed 750 ms commit->final; NOT taxila.dev, NOT a child. Evidence docs/design/round3/review-shots/review-evidence.json + PNGs: class 7 Hinglish, first lesson c7-maths-ch08-t01, hook 'Aapko cricket mein batting pasand hai ya bowling?', child 'batting, main opener hoon apni colony team mein' -> BudgetError at server/compiler/compile.js:349 (a section over its cap) via instructions.js:24/44 < brain/turn.js:1059 -> 500 'internal error', the Desk shows 'Your answer didn't send. Send again'. 2/2 in that lesson; 'batting' alone then worked; 0/1 in a fresh lesson whose opener differed. The hook move has no itemId, so instructionsAfter's skip-item rescue cannot apply. 2026-10-10.\n- `ms-r3rv-owner-handsfree-2026-10-10` (2026-10-10): Owner cohort hands-free switch, LOCAL production build of the integrated tree bbf4c18 (node server/serve.mjs + worker, NODE_ENV=production), Neon TEST, prod model routing, real Azure models + DragonHD; adult-scripted children; synthetic mic playing a recorded child clip, transcription faked with a fixed 750 ms commit->final; NOT taxila.dev, NOT a child. Evidence docs/design/round3/review-shots/review-evidence.json + PNGs: 1 of 3 owner-account lesson starts ran tap-to-talk because GET /api/duplex/config was aborted at the 3,000 ms client timeout (it overlapped hello -> first lesson start, 3.1 s); the other starts answered in 116 ms and 1,715 ms. That lesson's tap-to-talk auto-end then committed 3.9 s after the child stopped (reply sound 11.0 s). Standalone the route answers in ~0.5 s. Production latency to Neon differs from this sandbox: the rate on prod is unknown. 2026-10-10.\n- `ms-r3rv-nextday-2026-10-10` (2026-10-10): Come back the next day (test clock +1 day, owner account, memory + learning_profile consent on), LOCAL production build of the integrated tree bbf4c18 (node server/serve.mjs + worker, NODE_ENV=production), Neon TEST, prod model routing, real Azure models + DragonHD; adult-scripted children; synthetic mic playing a recorded child clip, transcription faked with a fixed 750 ms commit->final; NOT taxila.dev, NOT a child. Evidence docs/design/round3/review-shots/review-evidence.json + PNGs: opener referred to the previous lesson 0/2 (c6: 'Hi Meher, I'm Arjun, your AI teacher. Today we'll explore perimeter, like outlining a painting' - the day-1 words; c4: same grams opener formula). Day-1 items came back verbatim, not in a new form: c6 'Rani runs 3 rounds around 50 m by 30 m' and the rangoli-vs-mat item; c4 '1 kg 300 g -> grams' asked a 4th time (3 times on day 1). When the child brought up yesterday ('kal humne 1300 gram kiya tha') she parked it: 'yaad hain - end mein wapas aayenge'. Same-day re-asks of interests: 'What do you enjoy painting?' twice, football twice within 2 minutes. 12/12 openers were an interest hook; 6/75 replies parked something 'for the end'. Contrast ms-r3rh-memory-2day-2026-10-09 (opener callback 3/3 on c4 ch01 text lane).\n- `ms-r3rv-rubric-2026-10-10` (2026-10-10): Gamification rubric (reviewer judgment from these sessions, 0-5; competitors scored from their public product design, not measured here): concept-true mechanic - DragonBox 5, Brilliant 4, Prodigy 1, Duolingo 1, Taxila best piece 4 (Patta lab: NCERT KOH/CO2 fair test predict->run->explain; Todiye-Jodiye: cut/join bars, 1/4 = 2/8), Taxila as met 2; shows up when asked - competitors 5, Taxila 2 (3/6, class 4 0/3); teacher in the loop - Taxila 2 (hints after every tap, out of sync, one contradicting the goal); craft at 360/412/1366 - competitors 4-5, Taxila 3 (play pieces fit with text >= 14 px; tiles overflow at 360; generic boards); variety - Taxila 2 (3 mechanics, one dark panel style); ethics - Duolingo 1, Prodigy 1, Brilliant 4, DragonBox 5, Taxila 5; truth of what is said/shown - Taxila 2. Not yet revolutionary: the best piece is Brilliant-class, but a child mostly meets frame widgets, number pads and generic boards.",
+  "decisions": "## Round 3 end-to-end experience review (2026-10-10)\n- `dec-r3rv-silence-metric-end-to-end` (2026-10-10): Report 'silence after an answer' as end of the child's speech -> first audible sound of HER REPLY (and separately the echo), on the page clock, split by talk mode (hands-free / tap-to-talk with Done / auto-end), never as turn ms: turn ms (p50 2.9 s) hides ~1.1 s commit+ASR, ~0.55 s final->POST and ~1.2 s TTS start. Reverse if a device-side audio-out probe on a real phone differs from the page-clock number by > 300 ms.\n- `open-r3rv-young-help-covers-activity` (2026-10-10): Classes 1-4 (bands b1/b2, tapOptionsS 15): after 15 s of 'your turn' the Young help menu ('Hear it again / Show me choices / Show me how') replaces the tray body for module and studio trays (src/child/lesson/useDesk.ts:621 excludes only pad and tiles). Seen: the Rang bharo activity and the picture board she had just drawn vanished, leaving three chips over an empty area (c4-06, c4-09-laptop). By the same rule a play piece (studio tray) would be covered. Pre-existing on prod 145996f.\n- `open-r3rv-measure-engine-for-mass` (2026-10-10): c4-maths-ch08-t01 (Grams and kilograms): measure@1 is mounted with params {topicId, numbers:[1,300,1250]} and no tool/unit, so the child sees a centimetre ruler 'Yeh kitna lamba hai? Lambai (cm)' under '1 kilogram mein kitne grams?' (2/2 mounts); its tick labels fail the forge QA's own Q1.legible at 360.\n- `open-r3rv-interest-hook-template` (2026-10-10): The opener and hook are one template filled with the parent-chosen interest: '<topic> jaise <interest>; <interest> mein kya pasand hai?' in 12/12 lessons, producing nonsense or falsehood ('cricket team mein barabar runs baantna', 'cricket cake', 'football ke equal portions', 'innings ka 2/3 ... boundary practice', 'bat sunlight se energy leta hai'). Law: sentence-shaped prompt text gets recited.",
+  "rejected": "## Round 3 end-to-end experience review (2026-10-10)\n- `rj-r3rv-shot-loop-skips-own-view` (2026-10-10): Review harness: a screenshot loop over [360, 412, 1366] that resizes only when the view differs from the session's own view took the laptop session's 1366 shot at 412 (the previous size). Broke: c7-02-roti-board-laptop1366.png was a phone layout until re-shot. Fix: always set the viewport for every shot, or put the session's own view first."
+ }
+}

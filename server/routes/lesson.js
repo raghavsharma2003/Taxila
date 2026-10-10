@@ -516,7 +516,8 @@ async function end(req, res, body) {
     summary = json.summary;
     // Ability-label fence on what a parent reads: a sentence with a label is dropped, never rewritten.
     parentNote = json.parentNote.split(/(?<=[.!?।])\s+/).filter((s) => !hasAbilityLabel(s)).join(" ");
-    memories = memoryOk ? json.memories : [];
+    // round 3 fix (adversarial N2): no memory is kept from a lesson that had a safeguarding turn (state.safeguardedAt)
+    memories = memoryOk && state.safeguardedAt == null && !state.safeguard ? json.memories : [];
   } catch (e) {
     console.warn("[lesson] end summary unavailable:", e.message);
     summary = `Practised ${facts.topic}. ${(facts.skills || []).map((s) => `${s.skill}: ${s.unaidedCorrect}/${s.attempts} on their own`).join("; ")}`;

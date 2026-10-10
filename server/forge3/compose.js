@@ -83,6 +83,8 @@ export function admitPlay(skillId, topicId, cov = playCoverage()) {
   if (topicId && cov.excluded?.[topicId]) return null;
   const s = skillId ? cov.skills?.[skillId] : null;
   if (s && s.family && s.mode) return s;
+  // round 3 fix (adversarial B1): a lesson that names its skill gets only that skill's game, never the topic's other one
+  if (skillId) return null;
   const e = topicId && Array.isArray(cov.entries) ? cov.entries.find((x) => x.topicId === topicId && x.family && x.mode) : null;
   return e ? { topicId: e.topicId, family: e.family, mode: e.mode, goal: e.goal ?? null, grammar: e.grammar ?? {}, misMap: e.misMap ?? {}, arts: e.arts, contexts: e.contexts ?? [], via: "topic" } : null;
 }

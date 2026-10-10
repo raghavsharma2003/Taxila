@@ -88,6 +88,76 @@ export const RULES = [
   R("c7-science-ch11-t02", "kyun-lab", "fair-test", "predict", { "shadow-same-size": "m3" }, { labs: ["parchhai"] }),
 ];
 
+/**
+ * round 3 fix (adversarial B1, 2026-10-10): the kit skills each rule's ACT exercises, by suffix ("s2" = <topicId>-s2), keyed
+ * `${topicId}|${goal}`. Before this every entry carried ALL of its topic's skills and took the first as its own, so a solved
+ * 1096 − 710 subtraction level was credited to "Add 3- and 4-digit numbers with regrouping" and an addition lesson's
+ * "game khelna hai" served the subtraction game: topic admission again (rj-r3g-topic-tag-admission), against GRAMMAR.md
+ * §1 "admit by skill". Authored like RULES (a person decided the mechanic IS that skill's idea, reading the kit's skill
+ * titles beside the family's level generator); the builder checks every id exists. [] = the act exercises none of the
+ * topic's skills: the rule is kept for the record and never admitted (c4-maths-ch05-t02: shading a strip is not
+ * converting half a kilogram to grams). The first listed skill is the entry's own (its evidence when no lesson skill).
+ */
+export const ACTS = {
+  "c6-maths-ch05-t02|atoms": ["s1"],                    // split into prime atoms = decide prime / composite by its factors
+  "c6-maths-ch05-t04|atoms": ["s2", "s1"],              // a product of primes, by splitting (a factor tree)
+  "c6-maths-ch05-t04|two-trees": ["s3"],                // the same atoms from any tree
+  "c7-maths-ch11-t01|hcf": ["s2"],                      // HCF by prime factorisation (not "list the factors")
+  "c7-maths-ch11-t02|lcm": ["s2"],                      // LCM by prime factorisation (not "list the multiples")
+  "c6-maths-ch05-t01|lcm": ["s3"],                      // the first common multiple
+  "c6-maths-ch05-t01|hcf": ["s2"],                      // common factors of two numbers
+  "c6-maths-ch05-t03|hcf": ["s1", "s2"],                // only common factor 1; co-primes need not be primes (8 and 15)
+  "c4-maths-ch05-t01|make": ["s1"],                     // equal parts, name halves / thirds / quarters
+  "c4-maths-ch05-t01|unit": ["s3"],                     // compare unit fractions of the same whole
+  "c4-maths-ch05-t02|make": [],                         // fractions of a kg / litre / metre: a strip act converts nothing
+  "c5-maths-ch02-t02|compare": ["s1", "s3"],            // generated pairs never share a denominator (s2 is not exercised)
+  "c5-maths-ch02-t03|equal": ["s1", "s2", "s3"],        // cut every part into k = multiply top and bottom by k; check equal
+  "c6-maths-ch07-t01|make": ["s1"],
+  "c6-maths-ch07-t01|unit": ["s2"],
+  "c6-maths-ch07-t03|equal": ["s1", "s2"],              // not s3 (lowest terms)
+  "c6-maths-ch07-t04|compare": ["s2", "s1"],            // different denominators, cut to a common unit to compare
+  "c6-maths-ch07-t05|add": ["s2", "s1"],                // not s3 (mixed fractions)
+  "c4-maths-ch07-t01|subtract": ["s2"],                 // subtraction with borrowing only (never s1: addition)
+  "c5-maths-ch04-t01|subtract": ["s2"],
+  "c4-maths-ch10-t01|fill": ["s2"],                     // a + b = _ + c is compensation / the same-difference trick
+  "c7-maths-ch04-t01|solve": ["s1"],                    // the bag is the letter: an unknown number to find
+  "c7-maths-ch15-t01|solve": ["s3"],                    // trying a value until it balances; never s1 (phrases to expressions)
+  "c7-maths-ch15-t02|solve": ["s1", "s2", "s3"],        // one-step, two-step (2 bags), x on both sides
+  "c4-maths-ch04-t02|compare": ["s1", "s3"],            // two numbers, placed on the line
+  "c4-maths-ch10-t02|compare": ["s3"],                  // compare large counts; never s1 (read a data table)
+  "c5-maths-ch01-t01|compare": ["s3"],
+  "c5-maths-ch02-t01|place": ["s1", "s2", "s3"],        // unit, non-unit, greater than 1 (range 0-2)
+  "c6-maths-ch07-t02|place": ["s1"],
+  "c6-maths-ch10-t01|place": ["s3"],                    // 0 as the reference point, negatives to its left
+  "c6-maths-ch10-t02|place": ["s1"],
+  "c6-maths-ch10-t02|compare": ["s2"],
+  "c7-maths-ch03-t02|place": ["s1"],
+  "c7-maths-ch03-t03|compare": ["s2"],
+  "c7-maths-ch03-t03|place": ["s1"],
+  "c7-maths-ch03-t01|place": ["s1", "s2"],
+  "c4-maths-ch04-t03|round": ["s2"],                    // nearest 100 and 1000 (the grammar's "to")
+  "c5-maths-ch01-t02|round": ["s1"],
+  "c4-evs-ch07-t01|predict": ["s1", "s2"],              // predict and test float / sink; what it is made of matters
+  "c6-science-ch06-t01|predict": ["s2"],                // the float / sink half of s2
+  "c6-science-ch04-t01|predict": ["s1", "s3", "s2"],
+  "c7-science-ch03-t03|predict": ["s1", "s2", "s4"],    // the tester; conductors / insulators; water conducts
+  "c7-science-ch07-t01|predict": ["s2", "s3", "s1", "s4"], // wool traps air; steel conducts heat in; metal-is-colder
+  "c7-science-ch10-t01|predict": ["s2", "s3", "s1"],    // light, chlorophyll, CO2; the iodine (starch) test
+  "c7-science-ch10-t01|fair": ["s3", "s2"],
+  "c5-evs-ch03-t01|predict": ["s2"],                    // warm and moist food spoils fastest
+  "c5-evs-ch03-t01|fair": ["s2"],
+  "c6-science-ch01-t02|golu": ["s3", "s2"],             // one change at a time; never s1 (record a table)
+  "c6-science-ch01-t02|fair": ["s2", "s3"],
+  "c6-science-ch08-t03|predict": ["s1", "s2"],
+  "c6-science-ch10-t02|predict": ["s1", "s3"],
+  "c6-science-ch10-t02|fair": ["s2", "s1"],
+  "c7-science-ch01-t01|golu": ["s3"],
+  "c7-science-ch04-t02|predict": ["s2", "s3"],          // air AND water; paint as prevention (the coat factor)
+  "c7-science-ch07-t03|predict": ["s2", "s3"],
+  "c7-science-ch08-t01|predict": ["s3", "s2"],          // length / mass / swing vs period; timing 10 swings
+  "c7-science-ch11-t02|predict": ["s2"],
+};
+
 /** Topics deliberately NOT given a game, with the reason (a game would trivialise or mis-frame them). */
 export const EXCLUDED = [
   { prefix: "c7-science-ch06", why: "adolescence and reproductive health: taught in dialogue with care, never gamified" },
@@ -108,7 +178,7 @@ function load() {
 
 export function build() {
   const { kits, cur } = load();
-  const problems = [], entries = [];
+  const problems = [], entries = [], notAdmitted = [];
   for (const r of RULES) {
     const key = `${r.family}/${r.mode}`, logic = LOGIC[key], kit = kits.get(r.topicId), c = cur.get(r.topicId);
     if (!logic) { problems.push(`${r.topicId}: no logic ${key}`); continue; }
@@ -123,9 +193,15 @@ export function build() {
       misMap[mal] = id;
     }
     if (r.family === "kyun-lab") for (const lab of r.grammar.labs ?? []) if (!LABS[lab]?.topicIds.includes(r.topicId)) problems.push(`${r.topicId}: lab ${lab} is not written for this topic`);
-    const skillIds = kit.skills.map((s) => s.id);
+    // round 3 fix (adversarial B1): only the skills the act exercises (ACTS), never every skill of the topic
+    const acts = ACTS[`${r.topicId}|${r.goal}`];
+    if (!Array.isArray(acts)) { problems.push(`${r.topicId}|${r.goal}: no ACTS entry (which kit skills does the act exercise?)`); continue; }
+    const skillIds = acts.map((sfx) => `${r.topicId}-${sfx}`);
+    const unknown = skillIds.filter((id) => !kit.skills.some((sk) => sk.id === id));
+    if (unknown.length) { problems.push(`${r.topicId}: ACTS names skills the kit does not have: ${unknown.join(", ")}`); continue; }
+    if (!skillIds.length) { notAdmitted.push({ topicId: r.topicId, family: r.family, mode: r.mode, goal: r.goal, why: "the act exercises none of the topic's kit skills (ACTS [])" }); continue; }
     entries.push({ topicId: r.topicId, title: c.title, classLevel: c.classLevel, subject: c.subject, family: r.family, mode: r.mode, goal: r.goal,
-      skillId: r.skill ?? skillIds[0], skillIds, grammar: r.grammar, misMap, ...(r.arts ? { arts: r.arts } : {}) });
+      skillId: skillIds[0], skillIds, grammar: r.grammar, misMap, ...(r.arts ? { arts: r.arts } : {}) });
   }
   const inScope = [...cur.values()].filter((t) => /-(maths|science|evs)-/.test(t.id));
   const covered = new Set(entries.map((e) => e.topicId));
@@ -143,9 +219,10 @@ export function build() {
   // GRAMMAR.md §10: `skills` (skill id → its admitted game; the topic's FIRST rule wins) and `excluded` (topic id → why)
   const excluded = Object.fromEntries(inScope.filter((t) => EXCLUDED.some((e) => t.id.startsWith(e.prefix))).map((t) => [t.id, EXCLUDED.find((e) => t.id.startsWith(e.prefix)).why]));
   const skills = {};
-  for (const e of entries) for (const sk of e.skillIds) if (!skills[sk]) skills[sk] = { topicId: e.topicId, family: e.family, mode: e.mode, goal: e.goal, grammar: e.grammar, misMap: e.misMap, ...(e.arts ? { arts: e.arts } : {}), contexts: [], why: `RULES ${e.topicId} ${e.family}/${e.mode}/${e.goal}` };
+  for (const e of entries) for (const sk of e.skillIds) if (!skills[sk]) skills[sk] = { topicId: e.topicId, family: e.family, mode: e.mode, goal: e.goal, grammar: e.grammar, misMap: e.misMap, ...(e.arts ? { arts: e.arts } : {}), contexts: [], why: `RULES ${e.topicId} ${e.family}/${e.mode}/${e.goal} · ACTS` };
   counts.skillsAdmitted = Object.keys(skills).length;
-  return { problems, file: { v: 1, note: "built by server/play/tools/build-coverage.mjs from RULES; do not edit by hand", counts, skills, excluded, entries } };
+  counts.rulesNotAdmitted = notAdmitted.length;
+  return { problems, file: { v: 1, note: "built by server/play/tools/build-coverage.mjs from RULES + ACTS; do not edit by hand", counts, skills, excluded, entries, notAdmitted } };
 }
 
 if (import.meta.url === `file://${process.argv[1]}`) {

@@ -71,6 +71,9 @@ export function requestFromReading(reading) {
 
 const GRADED = new Set(["correct", "incorrect", "partial", "misconception"]);
 const ROUTE_AWAY = new Set(["thinking_aloud"]);
+/** Note intents that read the turn as out of bounds; and the flow requests a note never replaces. */
+const OOB_NOTE = new Set(["out_of_bounds", "insistence_oob"]);
+const FLOW = new Set(["stop", "goodbye", "continue", "hold_checkin"]);
 /** Things a graded answer can carry alongside (CONVERSATION-V2 §3.2: graded AND parked; a hedge; a check). */
 const ALONGSIDE = { answer_hedged: "hedged", check_my_work: "check", insist_wrong: "insist" };
 
@@ -89,6 +92,13 @@ export function applyNote(cls, note, { mode = "on" } = {}) {
   // the floor: OR-ed in, never subtracted
   if (note.distress && !out.flags.distress) { out.flags.distress = true; out.flags.distressKind ??= "model_note"; }
   if (out.flags.distress) return out;
+  // round 3 fix (adversarial B4): a decline is monotone. When the note reads the turn as out of bounds and the bytes decided a
+  // request that is neither the flow (stop / goodbye: the floor's own path) nor already a decline, the decline wins: a phrase
+  // the code lexicon misses ("kya aap blue film dekhte ho" was small talk) is never served because the bytes read it first.
+  // It only ever turns a request INTO a decline (the safe direction); it never grades and never ends a lesson.
+  if (cls.request && !cls.help && OOB_NOTE.has(note.intent) && !FLOW.has(cls.request.type) && cls.request.type !== "decline") {
+    return { ...out, request: { type: "decline", whole: true, src: "note", over: cls.request.type } };
+  }
   if (cls.request || cls.help) return out;                 // the bytes already decided what the child asked for
   if (GRADED.has(cls.outcome)) {
     // a mid-thought the classifier graded as wrong: no verdict on an unfinished attempt (it is never made "correct")

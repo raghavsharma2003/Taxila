@@ -20,7 +20,21 @@ import { fallbackLead } from "../conversation/fallback-lead.js";
 
 /** p5-interaction: problems a gutted teaching turn's one retry may still carry, because code repairs them (never truth). */
 const HELP_ASKS = new Set(["another", "clarify", "slower", "example", "story", "frustration", "easier"]);
-const SOFT_FIX = new Set(["long", "twoq", "wrap", "script", "register", "stage", "cantshow"]);
+const SOFT_FIX = new Set(["long", "twoq", "wrap", "script", "register", "stage", "cantshow", "uiword"]);
+// round 3 fix (experience B10 / B2): her words never name a screen part by its internal name. The review heard "Chips mein
+// chuno: keep going, short break, ya stop for today" (c4-10) and "bar1 ke 4 parts", "bar2 ko … kijiye" over strips labelled
+// A and B (3 times): the child sees buttons and strips A / B, never "chips" or "bar1". PURE.
+const UI_WORD = /(?<![\p{L}\p{N}])(?:chips?\s+(?:mein|me|par|pe|se|on|in|from)\b|(?:the|on|from|in)\s+(?:the\s+)?chips\b|chips\s+(?:chuno|chuniye|choose|pick|tap|dabao|dabaiye|select)\b|bar\s?[1-9](?![\p{L}\p{N}]))/iu;
+export const namesUiPart = (t) => UI_WORD.test(String(t ?? ""));
+/** The code repair: "chips mein / on the chips" → the screen; "bar1 / bar2" → A / B (the strips' own labels). */
+export function plainUiWords(t, lang = "hinglish") {
+  const scr = lang === "english" ? "on the screen" : "screen par";
+  return String(t ?? "")
+    .replace(/(?<![\p{L}\p{N}])bar\s?([1-9])(?![\p{L}\p{N}])/giu, (_, d) => "ABCDEFGHI"[Number(d) - 1] ?? d)
+    .replace(/(?<![\p{L}\p{N}])(?:(?:the|on|from|in)\s+(?:the\s+)?chips|chips?\s+(?:mein|me|par|pe|se|on|in|from))\b/giu, scr)
+    .replace(/(?<![\p{L}\p{N}])chips(?=\s+(?:chuno|chuniye|choose|pick|tap|dabao|dabaiye|select)\b)/giu, scr)
+    .replace(/\s{2,}/g, " ").trim();
+}
 /** Text-mode hard ceiling for the reply guard (the compiled rule asks for TURN_WORDS). */
 export const REPLY_MAX_WORDS = { "6-9": 30, "10-15": 40 };
 
@@ -94,12 +108,14 @@ export const FALLBACK = {
     safeguardCheck: `Are you okay right now? If anything is worrying you, tell a grown-up you trust, or call ${HELPLINE_LINE}.`,
     other: "Sorry, I lost my words for a second. Can you say that again?",
     checkinStop: "That's okay. We can keep going, take a short break, or stop for today. You choose.",
-    checkinRel: "That's okay, stopping is completely fine. Are you okay right now, and is a grown-up nearby?" },
+    checkinRel: "That's okay, stopping is completely fine. Are you okay right now, and is a grown-up nearby?",
+    forgetSafety: "That is not something to forget, because your safety matters. You did the right thing by telling. Please tell a grown-up you trust, so they can help." },
   hinglish: { wrap: "Aaj ke liye itna hi. Phir milte hain!", safeguard: `Tumne jo bataya, woh zaroori hai. Kisi bade ko batao jis par bharosa ho, ya ${HELPLINE_LINE_HI} pe call karo. Kya tum abhi theek ho?`,
     safeguardCheck: `Kya tum abhi theek ho? Agar koi baat pareshan kar rahi hai, toh kisi bade ko batao jis par bharosa ho, ya ${HELPLINE_LINE_HI} pe call karo.`,
     other: "Ek second, meri baat atak gayi. Kya tum phir se bata sakte ho?",
     checkinStop: "Theek hai, koi baat nahi. Hum aage chal sakte hain, thoda break le sakte hain, ya aaj ke liye stop kar sakte hain. Tum batao.",
-    checkinRel: "Theek hai, rukna bilkul theek hai. Kya tum abhi theek ho, aur koi bada paas hai?" },
+    checkinRel: "Theek hai, rukna bilkul theek hai. Kya tum abhi theek ho, aur koi bada paas hai?",
+    forgetSafety: "Isse bhoolna theek nahi hoga, kyunki tumhari safety zaroori hai. Tumne batakar bilkul sahi kiya. Kisi bade ko zaroor batao jis par tumhe bharosa ho, taaki woh tumhari madad kar sakein." },
 };
 // round 2 safety floor (adversarial B2, 2026-10-07): a stop check-in is an OFFER to stop, never a teaching turn. Before
 // this it was guarded as one: her honest "aaj ke liye yahin rok dete hain" tripped the goodbye check ("wrap"), the rewrite
@@ -107,6 +123,11 @@ export const FALLBACK = {
 // who said "bas, aaj ke liye itna hi" heard "ab isi jagah se continue karte hain — 1 kg mein kitne grams…?" (w2flow-walk
 // pass 2; reproduced without a model). A check-in now must name the stop option and must not ask a lesson question or
 // hold them for "one more"; what cannot be rewritten clean is the fixed check-in line below, never the lesson's question.
+// round 3 fix (adversarial B5): on a forget request after a disclosure (relational overlay forget_after_safety) her line never
+// promises to forget it or keep it secret (the incident row and the hand-off stand, so the promise would be false). PURE.
+const FORGET_PROMISE = /(?<![\p{L}])(?:i(?:'ll| will| can| am going to)? (?:forget|not remember|keep (?:it|this|that|your secret)(?: a)? secret)|i won'?t (?:remember|keep|tell|say)|(?:it'?s|it is|this is|that'?s|that is) (?:our|a|just our) secret|(?:our|a) little secret|forgotten|between (?:us|you and me)|nobody will know|no one will know|bhool (?:jaung[ia]|jaunga|jaungi|jaati|jaata|gayi|gaya|chuk[ia]|chuke|di|diya|dungi|dunga)|bhula (?:dungi|dunga|diya|di|deti|deta)|yaad nahi\s+rakh(?:ungi|unga|ti|ta|enge|oongi)|nahi\s+rakh(?:ungi|unga|oongi|enge)|kisi ko (?:nahi|nahin|na) bata(?:ungi|unga|oongi|yenge|enge|aungi|aunga)|(?:raaz|raz|secret) (?:rakh(?:ungi|unga|enge|te|ti)?|rahega|rahegi|hai)|hamara (?:raaz|secret)|mita (?:diya|di|dungi|dunga|deti|deta)|भूल (?:जाऊँगी|जाऊंगी|जाऊँगा|जाऊंगा|गई|गया)|याद नहीं रखूँगी|याद नहीं रखूंगी|किसी को नहीं बताऊँगी|किसी को नहीं बताऊंगी|राज़|राज)(?![\p{L}])/iu;
+export const promisesForget = (t) => FORGET_PROMISE.test(String(t ?? ""));
+
 /** The child's options include stopping (Roman Hinglish / English / Devanagari). */
 const STOP_OFFER = /(?<![\p{L}])(?:rok|rukna|ruk|ruke|rukte|rukenge|stop|stopping|bas|band|khatam|khatm|chhutti|for today|aaj ke liye|end (?:here|now|for today))|रोक|रुक|बस|बंद|ख़?त्म|आज के लिए/iu;
 /** "One more / a last / first a small check" — holding a child who asked to stop (NEVER MANIPULATE). */
@@ -246,6 +267,8 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
   // round 3: a granted break hands back nothing (breakYes: "no question now"); before this the hand-back check made the
   // rewrite add a lesson question to "brb" / "can we pause for a bit?" (local battery base-head-1: 3 of 3 breaks rewritten)
   const restBreak = p5Flag("R3CONV") && state.lastMove?.kind === "break" && state.lastMove?.request === "break";
+  // round 3 fix (adversarial B5): this turn answers a forget request after a disclosure (state.rel: the accepted overlay)
+  const forgetSafety = state.rel?.overlay?.shapeId === "forget_after_safety";
   const mustHandBack = !CLOSING_MOVES.has(state.lastMove.kind) && !thinkingWait && !checkin && !restBreak;
   const whyProbe = !!item && state.pendingWhy === item.id;
   // A comparison across kinds of quantity (45,000 fans vs 4,500 km) in the teacher's OWN words; the kit's posed
@@ -305,6 +328,7 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
   const right = verdict === "correct" && state.lastRight?.wrong?.length ? { ...state.lastRight, nextPrompt: item ? promptFor(item, lang) : ahead ? promptFor(ahead, lang) : "" } : null;
   const problems = (t) => [
     floorOf(t).length && "floor",
+    forgetSafety && promisesForget(t) && "forget",
     praiseOf(t) === "praise" && "praise",
     praiseOf(t) === "contradicts" && "deny",
     right && correctsRight(t, right) && "corrects",
@@ -315,6 +339,7 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
     screenContradiction(own(t), module, partsLines) && "parts",
     registerBroken(t, address) && "register",
     leaksStage(t) && "stage",
+    namesUiPart(own(t)) && "uiword",
     saysCantShow(t) && "cantshow",
     (guardable && revealsAnswer(t, item) || ahead && revealsAnswer(t, ahead)) && "leak",
     mixedUnitComparison(own(t)) && "units",
@@ -427,6 +452,7 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
       found.includes("long") && `it is too long — at most ${TURN_WORDS[state.ctx.ageBand]} words`,
       found.includes("units") && "it asks which is bigger between two different kinds of quantity — compare like with like (two counts, or two lengths in one unit)",
       found.includes("floor") && `it breaks the safety floor — ${floorOf(reply).map((k) => FLOOR_FIX[k]).filter(Boolean).join("; ")}`,
+      found.includes("forget") && "it promises to forget or keep secret what they told you about being unsafe — never promise that; say kindly that telling was right and that a grown-up they trust should know so they can help",
       // round 3: on a turn with no answer to judge (a filler, an unverified reply) "start from what they actually did" made the
       // rewrite echo the filler ("Tumne bas “haan” kaha", 4 of ~500 turns on the paired battery): there it says go straight on
       found.includes("praise") && (R3 && (wordsVerdict === "unverified" || wordsVerdict === "attempt")
@@ -438,6 +464,7 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
       found.includes("parts") && `it names parts the screen does not show — ${screenContradiction(own(reply), module, partsLines)?.onScreen ?? ""}`,
       found.includes("cantshow") && "it says you cannot show or draw — never say that; the board draws for you: talk about the idea itself",
       found.includes("stage") && "it reads out a field name, markup or a text picture (like 'Whiteboard:', brackets or rows of symbols like ●●●) — plain spoken words only; the board draws pictures, never your words",
+      found.includes("uiword") && "it names a screen part by an internal name (chips, bar1) — say what the child sees: the buttons on the screen, strip A or B",
       found.includes("register") && (address === "aap" ? "it uses tum forms — address the child with aap forms only (aap, aapka; verbs ending -iye)" : "it uses aap — address the child with tum forms (tum, tumhara)"),
       found.includes("ask") && !found.includes("drift") && `it must end by asking exactly this question, and ask nothing else: "${askEnd}"`,
       found.includes("twoq") && !found.includes("ask") && "it asks more than one question — keep only one question, at the end",
@@ -466,6 +493,11 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
     if (checkin && (found.includes("floor") || found.includes("hold") || found.includes("nostop") || found.includes("wrap") || found.includes("nochoice"))) {
       // a check-in that still asks a lesson question, holds them, or drops the stop option is never sent: the fixed line
       reply = fallbackReply(state, null);
+      guard.replaced = true;
+    } else if (found.includes("forget")) {
+      // round 3 fix (adversarial B5): a promise to forget a disclosure is never sent: the fixed honest line
+      const line = FALLBACK[lang === "english" ? "english" : "hinglish"].forgetSafety;
+      reply = address === "aap" && lang !== "english" ? toAap(line) : line;
       guard.replaced = true;
     } else if (found.includes("floor")) {
       // A teacher line that still breaks the floor is never sent: the fixed line for the move (or the question).
@@ -509,6 +541,7 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
       if (found.includes("parts")) { reply = keepOr(stripStrayParts(reply, module, partsLines, { keep: item ? promptFor(item, lang) : "" })); guard.replaced = true; }
       if (found.includes("register") && address === "aap") { reply = toAap(reply); guard.repaired = true; }
       if (found.includes("stage")) { reply = stripStage(reply) || fallbackReply(state, item); guard.replaced = true; }
+      if (found.includes("uiword")) { reply = plainUiWords(reply, lang); guard.repaired = true; }
       if (found.includes("cantshow")) { reply = keepOr(stripCantShow(reply)); guard.replaced = true; }
       if (found.includes("long")) reply = trimToWords(reply, max);
       // Last: the turn's shape (goodbye words out, the pinned question at the end, one question), in code.
@@ -547,6 +580,7 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
           if (soft.includes("script")) a = a.replace(OFF_SCRIPT[lang] ?? OFF_SCRIPT.english, "").replace(/\s{2,}/g, " ").trim();
           if (soft.includes("register") && address === "aap") a = toAap(a);
           if (soft.includes("stage")) a = stripStage(a) || a;
+          if (soft.includes("uiword")) a = plainUiWords(a, lang);
           if (soft.includes("cantshow")) a = stripCantShow(a) || a;
           if (words(a) > max) a = trimToWords(a, max);
           if (words(a) >= GUTTED_MIN && !problems(a).filter((p) => !SOFT_FIX.has(p)).length) { reply = a; guard.regutted = true; }

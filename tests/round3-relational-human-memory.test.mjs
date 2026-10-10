@@ -177,8 +177,9 @@ describe("the seam: callbackOf, claimCheck, and the forget delete at lesson end"
     relationalSeam.decide({ ...base, turn: 1, childText: "jo maine bataya woh bhool jao" });
     const unprobed = relationalSeam.onLessonEnd(child, { lessonId: LESSON, childId: child.id, endedBy: "client", turns: 4 });
     assert.equal(unprobed.length, 1);
-    assert.match(unprobed[0].text, /^delete from memory where child_id = \$1 and source_turn in \(select id from turn where lesson_id = \$2\)/);
-    assert.deepEqual(unprobed[0].params, [child.id, LESSON]);
+    // round 3 fix (adversarial B3): plus the memory rows she had in hand (none here: no memory consent in this snapshot)
+    assert.match(unprobed[0].text, /^delete from memory where child_id = \$1 and \(source_turn in \(select id from turn where lesson_id = \$2\) or id = any\(\$3::bigint\[\]\)\)/);
+    assert.deepEqual(unprobed[0].params, [child.id, LESSON, []]);
     __relTest.setTablesReady(true);
     __relTest.stash(child.id, snapshot);
     relationalSeam.decide({ ...base, turn: 1, childText: "jo maine bataya woh bhool jao" });

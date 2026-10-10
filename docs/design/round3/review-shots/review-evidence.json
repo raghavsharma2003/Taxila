@@ -1,0 +1,3895 @@
+{
+ "what": "r3 end-to-end experience review evidence (2026-10-09 20:28-20:46 UTC and 2026-10-10 03:06-03:50 UTC). LOCAL production build (node server/serve.mjs + server/worker.mjs, NODE_ENV=production) of the integrated tree at bbf4c18, Neon TEST branch, prod model routing (grok classifier, 1.5 s hedge), real Azure models and DragonHD TTS, TAXILA_DUPLEX=shadow with the review owner accounts in TAXILA_DUPLEX_LIVE_FOR, TAXILA_TURN_PREFETCH=off except sid meherpf. Adult-scripted children. Voice: a real recorded child clip played into a synthetic mic for the utterance length; the transcription call is faked with the reviewer s words and a FIXED 750 ms commit->final delay (measured p50 for taxila-live-transcribe). NOT taxila.dev, NOT a child. Timeline fields are ms after the end of the child s speech on the page clock: endToReplySound = her reply s first audible sound.",
+ "sessions": {
+  "meher412": "Meher c6 English (owner acct, hands-free) day 1",
+  "m2": "Meher c6 English day 1 lesson 2",
+  "golu": "Golu c4 Hinglish (owner acct) day 1",
+  "kabir": "Kabir c7 Hinglish (plain acct, tap-to-talk) day 1",
+  "ishaan": "Ishaan c6 Hindi (plain acct, tap-to-talk) day 1",
+  "meherd2": "Meher c6 English day 2 (+1 day test clock)",
+  "golud2": "Golu c4 day 2 (+1 day test clock)",
+  "meherpf": "Meher c6 English day 2, server TAXILA_TURN_PREFETCH=on",
+  "kabir2": "Kabir c7 fresh lesson (BudgetError repro attempt)"
+ },
+ "lessons": {
+  "7563c649-5b7f-4dae-956a-2759deca6b95": {
+   "sid": "golu",
+   "topic": "c4-maths-ch08-t01"
+  },
+  "8c7457e5-61cd-4ea0-8614-2a5cb7d6182f": {
+   "sid": "golu",
+   "topic": "c4-maths-ch05-t01"
+  },
+  "5cf84777-a223-4e87-b54e-0e7dbc2627c6": {
+   "sid": "golud2",
+   "topic": "c4-maths-ch08-t01"
+  },
+  "26da9b24-0f85-47f8-ad4d-f14f6e38b1b2": {
+   "sid": "ishaan",
+   "topic": "c6-maths-ch06-t01"
+  },
+  "a56e39dc-0a9e-4204-8b5b-7f081dfbb586": {
+   "sid": "ishaan",
+   "topic": "c6-maths-ch07-t03"
+  },
+  "1e2ccdb2-358b-4a55-a96d-30a4ccec0176": {
+   "sid": "kabir",
+   "topic": "c7-maths-ch08-t01"
+  },
+  "09e46b23-f041-4c87-b7d9-94e5f45a2cd7": {
+   "sid": "kabir",
+   "topic": "c7-science-ch10-t01"
+  },
+  "19fe966a-df3b-4012-a17f-dc1c8bef41f1": {
+   "sid": "kabir2",
+   "topic": "c7-maths-ch08-t01"
+  },
+  "28f00348-faca-4851-a0ec-f5b3be92ceda": {
+   "sid": "m2",
+   "topic": "c6-maths-ch06-t01"
+  },
+  "c867d073-8922-46f4-b494-a8823d652927": {
+   "sid": "meher412",
+   "topic": "c6-maths-ch06-t01"
+  },
+  "ac7b56a7-714a-4df6-8393-ce582f0f93e2": {
+   "sid": "meherd2",
+   "topic": "c6-maths-ch06-t01"
+  },
+  "6b0dde77-6e75-449a-a1a2-b43dd0d15614": {
+   "sid": "meherpf",
+   "topic": "c6-maths-ch07-t03"
+  }
+ },
+ "shots": [
+  {
+   "sid": "golu",
+   "at": "2026-10-10T03:08:27.382Z",
+   "file": "docs/design/round3/review-shots/c4-00-hello-phone360.png",
+   "view": "phone360",
+   "shown": {
+    "tray": null,
+    "stage": null
+   },
+   "qaVerdict": null,
+   "minDomFontPx": 16,
+   "overflowX": false
+  },
+  {
+   "sid": "golu",
+   "at": "2026-10-10T03:08:56.767Z",
+   "file": "docs/design/round3/review-shots/c4-01-ai-disclosure-phone360.png",
+   "view": "phone360",
+   "shown": {
+    "tray": null,
+    "stage": null
+   },
+   "qaVerdict": null,
+   "minDomFontPx": 16,
+   "overflowX": false
+  },
+  {
+   "sid": "golu",
+   "at": "2026-10-10T03:10:24.993Z",
+   "file": "docs/design/round3/review-shots/c4-02-lesson-open-phone360.png",
+   "view": "phone360",
+   "shown": {
+    "tray": null,
+    "stage": null
+   },
+   "qaVerdict": null,
+   "minDomFontPx": 16,
+   "overflowX": false
+  },
+  {
+   "sid": "golu",
+   "at": "2026-10-10T03:11:36.398Z",
+   "file": "docs/design/round3/review-shots/c4-03-module-tray-phone360.png",
+   "view": "phone360",
+   "shown": {
+    "tray": "module",
+    "stage": null
+   },
+   "qaVerdict": {
+    "pass": false,
+    "fails": [
+     "Q1.legible"
+    ],
+    "minPx": null,
+    "frame": true
+   },
+   "minDomFontPx": 16,
+   "overflowX": false
+  },
+  {
+   "sid": "golu",
+   "at": "2026-10-10T03:12:55.116Z",
+   "file": "docs/design/round3/review-shots/c4-04-fade-after-correct-phone360.png",
+   "view": "phone360",
+   "shown": {
+    "tray": "pad",
+    "stage": null
+   },
+   "qaVerdict": {
+    "pass": true,
+    "fails": [],
+    "minPx": 16
+   },
+   "minDomFontPx": 16,
+   "overflowX": false
+  },
+  {
+   "sid": "golu",
+   "at": "2026-10-10T03:13:23.115Z",
+   "file": "docs/design/round3/review-shots/c4-05-game-ask-result-phone360.png",
+   "view": "phone360",
+   "shown": {
+    "tray": "pad",
+    "stage": null
+   },
+   "qaVerdict": {
+    "pass": true,
+    "fails": [],
+    "minPx": 16
+   },
+   "minDomFontPx": 16,
+   "overflowX": false
+  },
+  {
+   "sid": "golu",
+   "at": "2026-10-10T03:14:36.551Z",
+   "file": "docs/design/round3/review-shots/c4-06-board-probe-phone360.png",
+   "view": "phone360",
+   "shown": {
+    "tray": "studio",
+    "stage": null
+   },
+   "qaVerdict": {
+    "pass": true,
+    "fails": [],
+    "minPx": 18
+   },
+   "minDomFontPx": 16,
+   "overflowX": false
+  },
+  {
+   "sid": "golu",
+   "at": "2026-10-10T03:14:36.551Z",
+   "file": "docs/design/round3/review-shots/c4-06-board-probe-phone412.png",
+   "view": "phone412",
+   "shown": {
+    "tray": "studio",
+    "stage": null
+   },
+   "qaVerdict": {
+    "pass": true,
+    "fails": [],
+    "minPx": 18
+   },
+   "minDomFontPx": 16,
+   "overflowX": false
+  },
+  {
+   "sid": "golu",
+   "at": "2026-10-10T03:14:36.551Z",
+   "file": "docs/design/round3/review-shots/c4-06-board-probe-laptop1366.png",
+   "view": "laptop1366",
+   "shown": {
+    "tray": "studio",
+    "stage": null
+   },
+   "qaVerdict": {
+    "pass": true,
+    "fails": [],
+    "minPx": 18
+   },
+   "minDomFontPx": 16,
+   "overflowX": false
+  },
+  {
+   "sid": "golu",
+   "at": "2026-10-10T03:15:05.188Z",
+   "file": "docs/design/round3/review-shots/c4-07-module-again-phone360.png",
+   "view": "phone360",
+   "shown": {
+    "tray": "module",
+    "stage": null
+   },
+   "qaVerdict": {
+    "pass": false,
+    "fails": [
+     "Q1.legible"
+    ],
+    "minPx": null,
+    "frame": true
+   },
+   "minDomFontPx": 16,
+   "overflowX": false
+  },
+  {
+   "sid": "golu",
+   "at": "2026-10-10T03:15:31.994Z",
+   "file": "docs/design/round3/review-shots/c4-08-picture-ask-phone360.png",
+   "view": "phone360",
+   "shown": {
+    "tray": "studio",
+    "stage": "whiteboard"
+   },
+   "qaVerdict": {
+    "pass": true,
+    "fails": [],
+    "minPx": 30.1
+   },
+   "minDomFontPx": 16,
+   "overflowX": false
+  },
+  {
+   "sid": "golu",
+   "at": "2026-10-10T03:15:31.994Z",
+   "file": "docs/design/round3/review-shots/c4-08-picture-ask-phone412.png",
+   "view": "phone412",
+   "shown": {
+    "tray": "studio",
+    "stage": "whiteboard"
+   },
+   "qaVerdict": {
+    "pass": true,
+    "fails": [],
+    "minPx": 35
+   },
+   "minDomFontPx": 16,
+   "overflowX": false
+  },
+  {
+   "sid": "golu",
+   "at": "2026-10-10T03:15:31.994Z",
+   "file": "docs/design/round3/review-shots/c4-08-picture-ask-laptop1366.png",
+   "view": "laptop1366",
+   "shown": {
+    "tray": "studio",
+    "stage": "whiteboard"
+   },
+   "qaVerdict": {
+    "pass": true,
+    "fails": [],
+    "minPx": 23.5
+   },
+   "minDomFontPx": 16,
+   "overflowX": false
+  },
+  {
+   "sid": "golu",
+   "at": "2026-10-10T03:15:51.260Z",
+   "file": "docs/design/round3/review-shots/c4-09-picture-settled-phone360.png",
+   "view": "phone360",
+   "shown": {
+    "tray": "studio",
+    "stage": "whiteboard"
+   },
+   "qaVerdict": {
+    "pass": true,
+    "fails": [],
+    "minPx": 22.6
+   },
+   "minDomFontPx": 16,
+   "overflowX": false
+  },
+  {
+   "sid": "golu",
+   "at": "2026-10-10T03:15:51.260Z",
+   "file": "docs/design/round3/review-shots/c4-09-picture-settled-laptop1366.png",
+   "view": "laptop1366",
+   "shown": {
+    "tray": "studio",
+    "stage": null
+   },
+   "qaVerdict": {
+    "pass": true,
+    "fails": [],
+    "minPx": 18
+   },
+   "minDomFontPx": 16,
+   "overflowX": false
+  },
+  {
+   "sid": "golu",
+   "at": "2026-10-10T03:16:48.613Z",
+   "file": "docs/design/round3/review-shots/c4-10-stop-checkin-phone360.png",
+   "view": "phone360",
+   "shown": {
+    "tray": "tiles",
+    "stage": null
+   },
+   "qaVerdict": {
+    "pass": true,
+    "fails": [],
+    "minPx": 36
+   },
+   "minDomFontPx": 16,
+   "overflowX": false
+  },
+  {
+   "sid": "golu",
+   "at": "2026-10-10T03:16:48.613Z",
+   "file": "docs/design/round3/review-shots/c4-10-stop-checkin-phone412.png",
+   "view": "phone412",
+   "shown": {
+    "tray": "tiles",
+    "stage": null
+   },
+   "qaVerdict": {
+    "pass": true,
+    "fails": [],
+    "minPx": 36
+   },
+   "minDomFontPx": 16,
+   "overflowX": false
+  },
+  {
+   "sid": "golu",
+   "at": "2026-10-10T03:16:48.613Z",
+   "file": "docs/design/round3/review-shots/c4-10-stop-checkin-laptop1366.png",
+   "view": "laptop1366",
+   "shown": {
+    "tray": "tiles",
+    "stage": null
+   },
+   "qaVerdict": {
+    "pass": true,
+    "fails": [],
+    "minPx": 36
+   },
+   "minDomFontPx": 16,
+   "overflowX": false
+  },
+  {
+   "sid": "golu",
+   "at": "2026-10-10T03:17:13.471Z",
+   "file": "docs/design/round3/review-shots/c4-11-after-stop-phone360.png",
+   "view": "phone360",
+   "shown": {
+    "tray": "tiles",
+    "stage": null
+   },
+   "qaVerdict": {
+    "pass": true,
+    "fails": [],
+    "minPx": 36
+   },
+   "minDomFontPx": 16,
+   "overflowX": false
+  },
+  {
+   "sid": "golu",
+   "at": "2026-10-10T03:17:39.581Z",
+   "file": "docs/design/round3/review-shots/c4-11-after-stop-phone360.png",
+   "view": "phone360",
+   "shown": {
+    "tray": null,
+    "stage": null
+   },
+   "qaVerdict": null,
+   "minDomFontPx": 16,
+   "overflowX": false
+  },
+  {
+   "sid": "golu",
+   "at": "2026-10-10T03:18:28.088Z",
+   "file": "docs/design/round3/review-shots/c4-12-handsfree-open-phone360.png",
+   "view": "phone360",
+   "shown": {
+    "tray": null,
+    "stage": null
+   },
+   "qaVerdict": null,
+   "minDomFontPx": 16,
+   "overflowX": false
+  },
+  {
+   "sid": "golu",
+   "at": "2026-10-10T03:19:21.435Z",
+   "file": "docs/design/round3/review-shots/c4-13-game-ask-handsfree-phone360.png",
+   "view": "phone360",
+   "shown": {
+    "tray": "module",
+    "stage": null
+   },
+   "qaVerdict": {
+    "pass": true,
+    "fails": [],
+    "minPx": null,
+    "frame": true
+   },
+   "minDomFontPx": 16,
+   "overflowX": false
+  },
+  {
+   "sid": "golu",
+   "at": "2026-10-10T03:19:21.435Z",
+   "file": "docs/design/round3/review-shots/c4-13-game-ask-handsfree-phone412.png",
+   "view": "phone412",
+   "shown": {
+    "tray": "module",
+    "stage": null
+   },
+   "qaVerdict": {
+    "pass": true,
+    "fails": [],
+    "minPx": null,
+    "frame": true
+   },
+   "minDomFontPx": 16,
+   "overflowX": false
+  },
+  {
+   "sid": "golu",
+   "at": "2026-10-10T03:19:21.435Z",
+   "file": "docs/design/round3/review-shots/c4-13-game-ask-handsfree-laptop1366.png",
+   "view": "laptop1366",
+   "shown": {
+    "tray": "module",
+    "stage": null
+   },
+   "qaVerdict": {
+    "pass": true,
+    "fails": [],
+    "minPx": null,
+    "frame": true
+   },
+   "minDomFontPx": 16,
+   "overflowX": false
+  },
+  {
+   "sid": "golu",
+   "at": "2026-10-10T03:19:43.144Z",
+   "file": "docs/design/round3/review-shots/c4-14-rangbharo-checked-phone360.png",
+   "view": "phone360",
+   "shown": {
+    "tray": "module",
+    "stage": null
+   },
+   "qaVerdict": {
+    "pass": false,
+    "fails": [
+     "Q5.drawn"
+    ],
+    "minPx": null,
+    "frame": true
+   },
+   "minDomFontPx": 16,
+   "overflowX": false
+  },
+  {
+   "sid": "golu",
+   "at": "2026-10-10T03:20:37.596Z",
+   "file": "docs/design/round3/review-shots/c4-15-game-ask-2-phone360.png",
+   "view": "phone360",
+   "shown": {
+    "tray": "module",
+    "stage": null
+   },
+   "qaVerdict": {
+    "pass": true,
+    "fails": [],
+    "minPx": null,
+    "frame": true
+   },
+   "minDomFontPx": 16,
+   "overflowX": false
+  },
+  {
+   "sid": "golud2",
+   "at": "2026-10-10T03:35:32.022Z",
+   "file": "docs/design/round3/review-shots/c4-20-nextday-home-phone360.png",
+   "view": "phone360",
+   "shown": {
+    "tray": null,
+    "stage": null
+   },
+   "qaVerdict": null,
+   "minDomFontPx": 16,
+   "overflowX": false
+  },
+  {
+   "sid": "ishaan",
+   "at": "2026-10-10T03:28:47.909Z",
+   "file": "docs/design/round3/review-shots/c6h-00-disclosure-phone412.png",
+   "view": "phone412",
+   "shown": {
+    "tray": null,
+    "stage": null
+   },
+   "qaVerdict": null,
+   "minDomFontPx": 14,
+   "overflowX": false
+  },
+  {
+   "sid": "ishaan",
+   "at": "2026-10-10T03:29:13.979Z",
+   "file": "docs/design/round3/review-shots/c6h-01-first-lesson-phone412.png",
+   "view": "phone412",
+   "shown": {
+    "tray": null,
+    "stage": null
+   },
+   "qaVerdict": null,
+   "minDomFontPx": 13,
+   "overflowX": false
+  },
+  {
+   "sid": "ishaan",
+   "at": "2026-10-10T03:30:45.800Z",
+   "file": "docs/design/round3/review-shots/c6h-02-game-ask-phone412.png",
+   "view": "phone412",
+   "shown": {
+    "tray": "studio",
+    "stage": "play"
+   },
+   "qaVerdict": {
+    "pass": true,
+    "fails": [],
+    "minPx": 14.1
+   },
+   "minDomFontPx": 13,
+   "overflowX": false
+  },
+  {
+   "sid": "ishaan",
+   "at": "2026-10-10T03:30:45.800Z",
+   "file": "docs/design/round3/review-shots/c6h-02-game-ask-phone360.png",
+   "view": "phone360",
+   "shown": {
+    "tray": "studio",
+    "stage": "play"
+   },
+   "qaVerdict": {
+    "pass": true,
+    "fails": [],
+    "minPx": 14
+   },
+   "minDomFontPx": 13,
+   "overflowX": false
+  },
+  {
+   "sid": "ishaan",
+   "at": "2026-10-10T03:30:45.800Z",
+   "file": "docs/design/round3/review-shots/c6h-02-game-ask-laptop1366.png",
+   "view": "laptop1366",
+   "shown": {
+    "tray": "studio",
+    "stage": "play"
+   },
+   "qaVerdict": {
+    "pass": true,
+    "fails": [],
+    "minPx": 14.1
+   },
+   "minDomFontPx": 13,
+   "overflowX": false
+  },
+  {
+   "sid": "ishaan",
+   "at": "2026-10-10T03:31:16.588Z",
+   "file": "docs/design/round3/review-shots/c6h-03-cut-phone412.png",
+   "view": "phone412",
+   "shown": {
+    "tray": "studio",
+    "stage": "play"
+   },
+   "qaVerdict": {
+    "pass": true,
+    "fails": [],
+    "minPx": 14.2
+   },
+   "minDomFontPx": 13,
+   "overflowX": false
+  },
+  {
+   "sid": "ishaan",
+   "at": "2026-10-10T03:31:18.834Z",
+   "file": "docs/design/round3/review-shots/c6h-04-shaded-phone412.png",
+   "view": "phone412",
+   "shown": {
+    "tray": "studio",
+    "stage": "play"
+   },
+   "qaVerdict": {
+    "pass": true,
+    "fails": [],
+    "minPx": 14.2
+   },
+   "minDomFontPx": 13,
+   "overflowX": false
+  },
+  {
+   "sid": "ishaan",
+   "at": "2026-10-10T03:31:39.766Z",
+   "file": "docs/design/round3/review-shots/c6h-05-done-phone412.png",
+   "view": "phone412",
+   "shown": {
+    "tray": "studio",
+    "stage": "play"
+   },
+   "qaVerdict": {
+    "pass": false,
+    "fails": [
+     "Q3.apart"
+    ],
+    "minPx": 14
+   },
+   "minDomFontPx": 13,
+   "overflowX": false
+  },
+  {
+   "sid": "ishaan",
+   "at": "2026-10-10T03:31:39.766Z",
+   "file": "docs/design/round3/review-shots/c6h-05-done-laptop1366.png",
+   "view": "laptop1366",
+   "shown": {
+    "tray": "studio",
+    "stage": "play"
+   },
+   "qaVerdict": {
+    "pass": true,
+    "fails": [],
+    "minPx": 14.1
+   },
+   "minDomFontPx": 13,
+   "overflowX": false
+  },
+  {
+   "sid": "kabir",
+   "at": "2026-10-10T03:21:38.646Z",
+   "file": "docs/design/round3/review-shots/c7-00-lesson-open-laptop1366.png",
+   "view": "laptop1366",
+   "shown": {
+    "tray": null,
+    "stage": null
+   },
+   "qaVerdict": null,
+   "minDomFontPx": 13,
+   "overflowX": false
+  },
+  {
+   "sid": "kabir",
+   "at": "2026-10-10T03:22:11.581Z",
+   "file": "docs/design/round3/review-shots/c7-01-turn-500-budget-laptop1366.png",
+   "view": "laptop1366",
+   "shown": {
+    "tray": null,
+    "stage": null
+   },
+   "qaVerdict": null,
+   "minDomFontPx": 13,
+   "overflowX": false
+  },
+  {
+   "sid": "kabir",
+   "at": "2026-10-10T03:23:23.701Z",
+   "file": "docs/design/round3/review-shots/c7-02-roti-board-phone360.png",
+   "view": "phone360",
+   "shown": {
+    "tray": "studio",
+    "stage": "whiteboard"
+   },
+   "qaVerdict": {
+    "pass": true,
+    "fails": [],
+    "minPx": 23.5
+   },
+   "minDomFontPx": 13,
+   "overflowX": false
+  },
+  {
+   "sid": "kabir",
+   "at": "2026-10-10T03:23:23.701Z",
+   "file": "docs/design/round3/review-shots/c7-02-roti-board-phone412.png",
+   "view": "phone412",
+   "shown": {
+    "tray": "studio",
+    "stage": "whiteboard"
+   },
+   "qaVerdict": {
+    "pass": true,
+    "fails": [],
+    "minPx": 27.2
+   },
+   "minDomFontPx": 13,
+   "overflowX": false
+  },
+  {
+   "sid": "kabir",
+   "at": "2026-10-10T03:23:23.701Z",
+   "file": "docs/design/round3/review-shots/c7-02-roti-board-laptop1366.png",
+   "view": "laptop1366",
+   "shown": {
+    "tray": "studio",
+    "stage": "whiteboard"
+   },
+   "qaVerdict": {
+    "pass": true,
+    "fails": [],
+    "minPx": 27.2
+   },
+   "minDomFontPx": 13,
+   "overflowX": false
+  },
+  {
+   "sid": "kabir",
+   "at": "2026-10-10T03:23:39.205Z",
+   "file": "docs/design/round3/review-shots/c7-02-roti-board-laptop1366.png",
+   "view": "laptop1366",
+   "shown": {
+    "tray": "studio",
+    "stage": "whiteboard"
+   },
+   "qaVerdict": {
+    "pass": true,
+    "fails": [],
+    "minPx": 41.7
+   },
+   "minDomFontPx": 13,
+   "overflowX": false
+  },
+  {
+   "sid": "kabir",
+   "at": "2026-10-10T03:24:37.482Z",
+   "file": "docs/design/round3/review-shots/c7-03-animation-ask-laptop1366.png",
+   "view": "laptop1366",
+   "shown": {
+    "tray": "studio",
+    "stage": "whiteboard"
+   },
+   "qaVerdict": {
+    "pass": true,
+    "fails": [],
+    "minPx": 41.7
+   },
+   "minDomFontPx": 13,
+   "overflowX": false
+  },
+  {
+   "sid": "kabir",
+   "at": "2026-10-10T03:24:37.482Z",
+   "file": "docs/design/round3/review-shots/c7-03-animation-ask-phone360.png",
+   "view": "phone360",
+   "shown": {
+    "tray": "studio",
+    "stage": "whiteboard"
+   },
+   "qaVerdict": {
+    "pass": true,
+    "fails": [],
+    "minPx": 23.5
+   },
+   "minDomFontPx": 13,
+   "overflowX": false
+  },
+  {
+   "sid": "kabir",
+   "at": "2026-10-10T03:24:59.756Z",
+   "file": "docs/design/round3/review-shots/c7-04-steer-topic-laptop1366.png",
+   "view": "laptop1366",
+   "shown": {
+    "tray": "tiles",
+    "stage": null
+   },
+   "qaVerdict": {
+    "pass": false,
+    "fails": [
+     "Q1.legible"
+    ],
+    "minPx": 12
+   },
+   "minDomFontPx": 12,
+   "overflowX": false
+  },
+  {
+   "sid": "kabir",
+   "at": "2026-10-10T03:25:56.992Z",
+   "file": "docs/design/round3/review-shots/c7-05-photo-open-laptop1366.png",
+   "view": "laptop1366",
+   "shown": {
+    "tray": null,
+    "stage": null
+   },
+   "qaVerdict": null,
+   "minDomFontPx": 13,
+   "overflowX": false
+  },
+  {
+   "sid": "kabir",
+   "at": "2026-10-10T03:26:37.655Z",
+   "file": "docs/design/round3/review-shots/c7-06-photo-animation-ask-laptop1366.png",
+   "view": "laptop1366",
+   "shown": {
+    "tray": "studio",
+    "stage": "play"
+   },
+   "qaVerdict": {
+    "pass": true,
+    "fails": [],
+    "minPx": 14
+   },
+   "minDomFontPx": 13,
+   "overflowX": false
+  },
+  {
+   "sid": "kabir",
+   "at": "2026-10-10T03:26:37.655Z",
+   "file": "docs/design/round3/review-shots/c7-06-photo-animation-ask-phone360.png",
+   "view": "phone360",
+   "shown": {
+    "tray": "studio",
+    "stage": "play"
+   },
+   "qaVerdict": {
+    "pass": true,
+    "fails": [],
+    "minPx": 14.1
+   },
+   "minDomFontPx": 13,
+   "overflowX": false
+  },
+  {
+   "sid": "kabir",
+   "at": "2026-10-10T03:26:37.655Z",
+   "file": "docs/design/round3/review-shots/c7-06-photo-animation-ask-phone412.png",
+   "view": "phone412",
+   "shown": {
+    "tray": "studio",
+    "stage": "play"
+   },
+   "qaVerdict": {
+    "pass": true,
+    "fails": [],
+    "minPx": 14
+   },
+   "minDomFontPx": 13,
+   "overflowX": false
+  },
+  {
+   "sid": "kabir",
+   "at": "2026-10-10T03:26:58.463Z",
+   "file": "docs/design/round3/review-shots/c7-07-pattalab-predict-laptop1366.png",
+   "view": "laptop1366",
+   "shown": {
+    "tray": "studio",
+    "stage": "play"
+   },
+   "qaVerdict": {
+    "pass": true,
+    "fails": [],
+    "minPx": 14
+   },
+   "minDomFontPx": 13,
+   "overflowX": false
+  },
+  {
+   "sid": "kabir",
+   "at": "2026-10-10T03:27:19.326Z",
+   "file": "docs/design/round3/review-shots/c7-08-pattalab-run-laptop1366.png",
+   "view": "laptop1366",
+   "shown": {
+    "tray": "studio",
+    "stage": "play"
+   },
+   "qaVerdict": {
+    "pass": true,
+    "fails": [],
+    "minPx": 14
+   },
+   "minDomFontPx": 13,
+   "overflowX": false
+  },
+  {
+   "sid": "kabir",
+   "at": "2026-10-10T03:27:19.326Z",
+   "file": "docs/design/round3/review-shots/c7-08-pattalab-run-phone360.png",
+   "view": "phone360",
+   "shown": {
+    "tray": "studio",
+    "stage": "whiteboard"
+   },
+   "qaVerdict": {
+    "pass": false,
+    "fails": [
+     "Q5.drawn"
+    ],
+    "minPx": null
+   },
+   "minDomFontPx": 13,
+   "overflowX": false
+  },
+  {
+   "sid": "kabir",
+   "at": "2026-10-10T03:27:44.418Z",
+   "file": "docs/design/round3/review-shots/c7-09-pattalab-explain-laptop1366.png",
+   "view": "laptop1366",
+   "shown": {
+    "tray": "studio",
+    "stage": "play"
+   },
+   "qaVerdict": {
+    "pass": true,
+    "fails": [],
+    "minPx": 14.1
+   },
+   "minDomFontPx": 13,
+   "overflowX": false
+  },
+  {
+   "sid": "kabir",
+   "at": "2026-10-10T03:27:44.418Z",
+   "file": "docs/design/round3/review-shots/c7-09-pattalab-explain-phone412.png",
+   "view": "phone412",
+   "shown": {
+    "tray": "studio",
+    "stage": "play"
+   },
+   "qaVerdict": {
+    "pass": true,
+    "fails": [],
+    "minPx": 14.1
+   },
+   "minDomFontPx": 13,
+   "overflowX": false
+  },
+  {
+   "sid": "m2",
+   "at": "2026-10-09T20:41:33.313Z",
+   "file": "docs/design/round3/review-shots/c6-05-home-return-phone412.png",
+   "view": "phone412",
+   "shown": {
+    "tray": null,
+    "stage": null
+   },
+   "qaVerdict": null,
+   "minDomFontPx": 13,
+   "overflowX": false
+  },
+  {
+   "sid": "m2",
+   "at": "2026-10-09T20:42:33.369Z",
+   "file": "docs/design/round3/review-shots/c6-06-board-worked-example-phone412.png",
+   "view": "phone412",
+   "shown": {
+    "tray": "board",
+    "stage": null
+   },
+   "qaVerdict": {
+    "pass": true,
+    "fails": [],
+    "minPx": 32
+   },
+   "minDomFontPx": 14,
+   "overflowX": false
+  },
+  {
+   "sid": "m2",
+   "at": "2026-10-09T20:42:57.835Z",
+   "file": "docs/design/round3/review-shots/c6-07-after-partial-phone412.png",
+   "view": "phone412",
+   "shown": {
+    "tray": "studio",
+    "stage": "whiteboard"
+   },
+   "qaVerdict": {
+    "pass": true,
+    "fails": [],
+    "minPx": null
+   },
+   "minDomFontPx": 14,
+   "overflowX": false
+  },
+  {
+   "sid": "m2",
+   "at": "2026-10-09T20:43:15.899Z",
+   "file": "docs/design/round3/review-shots/c6-08-whiteboard-settled-phone360.png",
+   "view": "phone360",
+   "shown": {
+    "tray": "studio",
+    "stage": "whiteboard"
+   },
+   "qaVerdict": {
+    "pass": true,
+    "fails": [],
+    "minPx": 15.5
+   },
+   "minDomFontPx": 14,
+   "overflowX": false
+  },
+  {
+   "sid": "m2",
+   "at": "2026-10-09T20:43:15.899Z",
+   "file": "docs/design/round3/review-shots/c6-08-whiteboard-settled-phone412.png",
+   "view": "phone412",
+   "shown": {
+    "tray": "studio",
+    "stage": "whiteboard"
+   },
+   "qaVerdict": {
+    "pass": true,
+    "fails": [],
+    "minPx": 15.5
+   },
+   "minDomFontPx": 14,
+   "overflowX": false
+  },
+  {
+   "sid": "m2",
+   "at": "2026-10-09T20:43:15.899Z",
+   "file": "docs/design/round3/review-shots/c6-08-whiteboard-settled-laptop1366.png",
+   "view": "laptop1366",
+   "shown": {
+    "tray": "studio",
+    "stage": "whiteboard"
+   },
+   "qaVerdict": {
+    "pass": true,
+    "fails": [],
+    "minPx": 31.8
+   },
+   "minDomFontPx": 14,
+   "overflowX": false
+  },
+  {
+   "sid": "m2",
+   "at": "2026-10-09T20:44:16.323Z",
+   "file": "docs/design/round3/review-shots/c6-09-game-plot-phone360.png",
+   "view": "phone360",
+   "shown": {
+    "tray": "studio",
+    "stage": "whiteboard"
+   },
+   "qaVerdict": {
+    "pass": true,
+    "fails": [],
+    "minPx": 25.7
+   },
+   "minDomFontPx": 14,
+   "overflowX": false
+  },
+  {
+   "sid": "m2",
+   "at": "2026-10-09T20:44:16.323Z",
+   "file": "docs/design/round3/review-shots/c6-09-game-plot-phone412.png",
+   "view": "phone412",
+   "shown": {
+    "tray": "studio",
+    "stage": "whiteboard"
+   },
+   "qaVerdict": {
+    "pass": true,
+    "fails": [],
+    "minPx": 25.7
+   },
+   "minDomFontPx": 14,
+   "overflowX": false
+  },
+  {
+   "sid": "m2",
+   "at": "2026-10-09T20:44:16.323Z",
+   "file": "docs/design/round3/review-shots/c6-09-game-plot-laptop1366.png",
+   "view": "laptop1366",
+   "shown": {
+    "tray": "studio",
+    "stage": "stagecraft"
+   },
+   "qaVerdict": {
+    "pass": true,
+    "fails": [],
+    "minPx": 14
+   },
+   "minDomFontPx": 14,
+   "overflowX": false
+  },
+  {
+   "sid": "m2",
+   "at": "2026-10-09T20:44:37.861Z",
+   "file": "docs/design/round3/review-shots/c6-10-game-plot-412-again-phone412.png",
+   "view": "phone412",
+   "shown": {
+    "tray": "studio",
+    "stage": "stagecraft"
+   },
+   "qaVerdict": {
+    "pass": true,
+    "fails": [],
+    "minPx": 14
+   },
+   "minDomFontPx": 14,
+   "overflowX": false
+  },
+  {
+   "sid": "m2",
+   "at": "2026-10-09T20:44:50.404Z",
+   "file": "docs/design/round3/review-shots/c6-11-game-plot-dragged-phone412.png",
+   "view": "phone412",
+   "shown": {
+    "tray": "studio",
+    "stage": "stagecraft"
+   },
+   "qaVerdict": {
+    "pass": true,
+    "fails": [],
+    "minPx": 14
+   },
+   "minDomFontPx": 14,
+   "overflowX": false
+  },
+  {
+   "sid": "m2",
+   "at": "2026-10-09T20:45:06.891Z",
+   "file": "docs/design/round3/review-shots/c6-12-game-after-timeup-phone412.png",
+   "view": "phone412",
+   "shown": {
+    "tray": "studio",
+    "stage": "stagecraft"
+   },
+   "qaVerdict": {
+    "pass": true,
+    "fails": [],
+    "minPx": 14
+   },
+   "minDomFontPx": 14,
+   "overflowX": false
+  },
+  {
+   "sid": "m2",
+   "at": "2026-10-09T20:45:18.889Z",
+   "file": "docs/design/round3/review-shots/c6-13-game-plot2-dragged-phone412.png",
+   "view": "phone412",
+   "shown": {
+    "tray": "studio",
+    "stage": "stagecraft"
+   },
+   "qaVerdict": {
+    "pass": true,
+    "fails": [],
+    "minPx": 14
+   },
+   "minDomFontPx": 14,
+   "overflowX": false
+  },
+  {
+   "sid": "m2",
+   "at": "2026-10-09T20:45:30.903Z",
+   "file": "docs/design/round3/review-shots/c6-14-game-plot2-result-phone412.png",
+   "view": "phone412",
+   "shown": {
+    "tray": "studio",
+    "stage": "stagecraft"
+   },
+   "qaVerdict": {
+    "pass": true,
+    "fails": [],
+    "minPx": 14
+   },
+   "minDomFontPx": 14,
+   "overflowX": false
+  },
+  {
+   "sid": "meher412",
+   "at": "2026-10-09T20:36:22.019Z",
+   "file": "docs/design/round3/review-shots/c6-00-home-phone412.png",
+   "view": "phone412",
+   "shown": {
+    "tray": null,
+    "stage": null
+   },
+   "qaVerdict": null,
+   "minDomFontPx": 14,
+   "overflowX": false
+  },
+  {
+   "sid": "meher412",
+   "at": "2026-10-09T20:38:07.993Z",
+   "file": "docs/design/round3/review-shots/c6-01-hello-last-phone412.png",
+   "view": "phone412",
+   "shown": {
+    "tray": null,
+    "stage": null
+   },
+   "qaVerdict": null,
+   "minDomFontPx": 14,
+   "overflowX": false
+  },
+  {
+   "sid": "meher412",
+   "at": "2026-10-09T20:38:17.928Z",
+   "file": "docs/design/round3/review-shots/c6-02-lesson-open-phone412.png",
+   "view": "phone412",
+   "shown": {
+    "tray": null,
+    "stage": null
+   },
+   "qaVerdict": null,
+   "minDomFontPx": 14,
+   "overflowX": false
+  },
+  {
+   "sid": "meher412",
+   "at": "2026-10-09T20:38:53.793Z",
+   "file": "docs/design/round3/review-shots/c6-03-after-answer-phone412.png",
+   "view": "phone412",
+   "shown": {
+    "tray": null,
+    "stage": null
+   },
+   "qaVerdict": null,
+   "minDomFontPx": 14,
+   "overflowX": false
+  },
+  {
+   "sid": "meher412",
+   "at": "2026-10-09T20:39:01.097Z",
+   "file": "docs/design/round3/review-shots/c6-04-point-to-screen-phone412.png",
+   "view": "phone412",
+   "shown": {
+    "tray": null,
+    "stage": null
+   },
+   "qaVerdict": null,
+   "minDomFontPx": 14,
+   "overflowX": false
+  },
+  {
+   "sid": "meherd2",
+   "at": "2026-10-10T03:32:30.794Z",
+   "file": "docs/design/round3/review-shots/c6-20-nextday-home-phone412.png",
+   "view": "phone412",
+   "shown": {
+    "tray": null,
+    "stage": null
+   },
+   "qaVerdict": null,
+   "minDomFontPx": 13,
+   "overflowX": false
+  },
+  {
+   "sid": "meherd2",
+   "at": "2026-10-10T03:32:58.336Z",
+   "file": "docs/design/round3/review-shots/c6-21-nextday-open-phone412.png",
+   "view": "phone412",
+   "shown": {
+    "tray": null,
+    "stage": null
+   },
+   "qaVerdict": null,
+   "minDomFontPx": 14,
+   "overflowX": false
+  },
+  {
+   "sid": "meherd2",
+   "at": "2026-10-10T03:34:42.775Z",
+   "file": "docs/design/round3/review-shots/c6-22-nextday-after-barge-phone412.png",
+   "view": "phone412",
+   "shown": {
+    "tray": "studio",
+    "stage": "stagecraft"
+   },
+   "qaVerdict": {
+    "pass": true,
+    "fails": [],
+    "minPx": 14
+   },
+   "minDomFontPx": 14,
+   "overflowX": false
+  },
+  {
+   "sid": "meherpf",
+   "at": "2026-10-10T03:39:32.421Z",
+   "file": "docs/design/round3/review-shots/c6e-01-onscreen-claim-phone360.png",
+   "view": "phone360",
+   "shown": {
+    "tray": "studio",
+    "stage": "whiteboard"
+   },
+   "qaVerdict": {
+    "pass": true,
+    "fails": [],
+    "minPx": null
+   },
+   "minDomFontPx": 14,
+   "overflowX": false
+  },
+  {
+   "sid": "meherpf",
+   "at": "2026-10-10T03:40:27.655Z",
+   "file": "docs/design/round3/review-shots/c6e-02-game-english-phone360.png",
+   "view": "phone360",
+   "shown": {
+    "tray": "studio",
+    "stage": "play"
+   },
+   "qaVerdict": {
+    "pass": true,
+    "fails": [],
+    "minPx": 14
+   },
+   "minDomFontPx": 14,
+   "overflowX": false
+  },
+  {
+   "sid": "meherpf",
+   "at": "2026-10-10T03:40:27.655Z",
+   "file": "docs/design/round3/review-shots/c6e-02-game-english-phone412.png",
+   "view": "phone412",
+   "shown": {
+    "tray": "studio",
+    "stage": "play"
+   },
+   "qaVerdict": {
+    "pass": true,
+    "fails": [],
+    "minPx": 14
+   },
+   "minDomFontPx": 14,
+   "overflowX": false
+  },
+  {
+   "sid": "meherpf",
+   "at": "2026-10-10T03:40:27.655Z",
+   "file": "docs/design/round3/review-shots/c6e-02-game-english-laptop1366.png",
+   "view": "laptop1366",
+   "shown": {
+    "tray": "studio",
+    "stage": "play"
+   },
+   "qaVerdict": {
+    "pass": true,
+    "fails": [],
+    "minPx": 14.1
+   },
+   "minDomFontPx": 14,
+   "overflowX": false
+  },
+  {
+   "sid": "meherpf",
+   "at": "2026-10-10T03:40:49.725Z",
+   "file": "docs/design/round3/review-shots/c6e-03-game-cut-phone360.png",
+   "view": "phone360",
+   "shown": {
+    "tray": "studio",
+    "stage": "play"
+   },
+   "qaVerdict": {
+    "pass": true,
+    "fails": [],
+    "minPx": 14
+   },
+   "minDomFontPx": 14,
+   "overflowX": false
+  },
+  {
+   "sid": "meherpf",
+   "at": "2026-10-10T03:40:57.910Z",
+   "file": "docs/design/round3/review-shots/c6e-04-game-done-phone360.png",
+   "view": "phone360",
+   "shown": {
+    "tray": "studio",
+    "stage": "play"
+   },
+   "qaVerdict": {
+    "pass": false,
+    "fails": [
+     "Q3.apart"
+    ],
+    "minPx": 14
+   },
+   "minDomFontPx": 14,
+   "overflowX": false
+  }
+ ],
+ "turns": [
+  {
+   "sid": "golu",
+   "at": "2026-10-10T03:10:06.021Z",
+   "path": "/api/lesson/start",
+   "status": 201,
+   "child": null,
+   "reply": "Namaste Golu, main Asha, tumhari AI teacher. Aaj grams aur kilograms seekhenge—cricket bat ka weight socho. Tumhara favourite cricketer kaun hai?",
+   "ask": "Tumhara favourite cricketer kaun hai?",
+   "itemId": null,
+   "tray": "none",
+   "slot": null,
+   "verdict": null,
+   "mount": []
+  },
+  {
+   "sid": "golu",
+   "at": "2026-10-10T03:10:37.274Z",
+   "path": "/api/lesson/turn",
+   "status": 200,
+   "child": "virat kohli",
+   "reply": "Virat Kohli! End mein unse weight ka fun example banayenge. Cricket kit mein bat 1 kilogram ya 1 gram—tum kya choose karoge?",
+   "ask": "Cricket kit mein bat 1 kilogram ya 1 gram—tum kya choose karoge?",
+   "itemId": null,
+   "tray": "none",
+   "slot": null,
+   "verdict": null,
+   "mount": []
+  },
+  {
+   "sid": "golu",
+   "at": "2026-10-10T03:10:38.961Z",
+   "op": "say",
+   "said": "virat kohli",
+   "timeline": {
+    "said": "virat kohli",
+    "sent": "virat kohli",
+    "mode": "ptt",
+    "speechMs": 900,
+    "cut": null,
+    "commitWhy": "client_commit",
+    "endToCommit": 3883,
+    "endToFinal": 4693,
+    "endToTurnPost": 5042,
+    "turnMs": 4791,
+    "turnStatus": 200,
+    "ackStatus": null,
+    "endToAck": null,
+    "prefetch": [],
+    "ttsN": 1,
+    "endToTts": 10019,
+    "endToFirstSound": 3570,
+    "endToReplySound": 10981,
+    "clientCommits": 1
+   }
+  },
+  {
+   "sid": "golu",
+   "at": "2026-10-10T03:11:24.825Z",
+   "path": "/api/lesson/turn",
+   "status": 200,
+   "child": "1 kilogram",
+   "reply": "Bilkul, bat ka weight 1 kilogram ho sakta hai. 1 kilogram mein kitne grams hote hain?",
+   "ask": "1 kilogram mein kitne grams hote hain?",
+   "itemId": null,
+   "tray": "module",
+   "slot": null,
+   "verdict": null,
+   "mount": [
+    "measure@1"
+   ]
+  },
+  {
+   "sid": "golu",
+   "at": "2026-10-10T03:11:25.937Z",
+   "op": "say",
+   "said": "1 kilogram",
+   "timeline": {
+    "said": "1 kilogram",
+    "sent": "1 kilogram",
+    "mode": "ptt",
+    "speechMs": 900,
+    "cut": null,
+    "commitWhy": "client_commit",
+    "endToCommit": 1542,
+    "endToFinal": 2358,
+    "endToTurnPost": 2712,
+    "turnMs": 2963,
+    "turnStatus": 200,
+    "ackStatus": null,
+    "endToAck": null,
+    "prefetch": [],
+    "ttsN": 1,
+    "endToTts": 5858,
+    "endToFirstSound": 1182,
+    "endToReplySound": 6346,
+    "clientCommits": 1
+   }
+  },
+  {
+   "sid": "golu",
+   "at": "2026-10-10T03:12:08.164Z",
+   "path": "/api/lesson/turn",
+   "status": 200,
+   "child": "100 grams",
+   "reply": "Golu, chhoti galti: 1 kilogram mein 1000 grams hote hain. Ab 1 kg 300 g ko grams mein badlo—kitne grams?",
+   "ask": "Ab 1 kg 300 g ko grams mein badlo—kitne grams?",
+   "itemId": null,
+   "tray": "module",
+   "slot": null,
+   "verdict": null,
+   "mount": []
+  },
+  {
+   "sid": "golu",
+   "at": "2026-10-10T03:12:09.747Z",
+   "op": "say",
+   "said": "100 grams",
+   "timeline": {
+    "said": "100 grams",
+    "sent": "100 grams",
+    "mode": "ptt",
+    "speechMs": 900,
+    "cut": null,
+    "commitWhy": "client_commit",
+    "endToCommit": 1144,
+    "endToFinal": 1928,
+    "endToTurnPost": 2049,
+    "turnMs": 3886,
+    "turnStatus": 200,
+    "ackStatus": null,
+    "endToAck": null,
+    "prefetch": [],
+    "ttsN": 1,
+    "endToTts": 5954,
+    "endToFirstSound": 847,
+    "endToReplySound": 7000,
+    "clientCommits": 1
+   }
+  },
+  {
+   "sid": "golu",
+   "at": "2026-10-10T03:12:42.951Z",
+   "path": "/api/lesson/turn",
+   "status": 200,
+   "child": "1300 grams",
+   "reply": "Shabash, tumne 1000 grams aur 300 grams jodkar sahi total nikala. Khaali jagah bharo: 1 kg 300 g = 1000 g + 300 g = ___ g.",
+   "ask": "Khaali jagah bharo: 1 kg 300 g = 1000 g + 300 g = ___ g.",
+   "itemId": "fade:1",
+   "tray": "none",
+   "slot": null,
+   "verdict": null,
+   "mount": []
+  },
+  {
+   "sid": "golu",
+   "at": "2026-10-10T03:12:44.327Z",
+   "op": "say",
+   "said": "1300 grams",
+   "timeline": {
+    "said": "1300 grams",
+    "sent": "1300 grams",
+    "mode": "ptt",
+    "speechMs": 900,
+    "cut": null,
+    "commitWhy": "client_commit",
+    "endToCommit": 1049,
+    "endToFinal": 1804,
+    "endToTurnPost": 1833,
+    "turnMs": 3571,
+    "turnStatus": 200,
+    "ackStatus": null,
+    "endToAck": null,
+    "prefetch": [],
+    "ttsN": 1,
+    "endToTts": 5414,
+    "endToFirstSound": 748,
+    "endToReplySound": 6250,
+    "clientCommits": 1
+   }
+  },
+  {
+   "sid": "golu",
+   "at": "2026-10-10T03:13:06.472Z",
+   "path": "/api/lesson/turn",
+   "status": 200,
+   "child": "mujhe game khelna hai",
+   "reply": "Theek hai Golu, game mode on. Screen par numbers dekho; pehle kilogram ko grams mein badalne wala number dhoondo. Khaali jagah bharo: 1 kg 300 g = 1000 g + 300 g = ___ g.",
+   "ask": "Khaali jagah bharo: 1 kg 300 g = 1000 g + 300 g = ___ g.",
+   "itemId": "fade:1",
+   "tray": "module",
+   "slot": null,
+   "verdict": null,
+   "mount": [
+    "measure@1"
+   ]
+  },
+  {
+   "sid": "golu",
+   "at": "2026-10-10T03:13:07.710Z",
+   "op": "say",
+   "said": "mujhe game khelna hai",
+   "timeline": {
+    "said": "mujhe game khelna hai",
+    "sent": "mujhe game khelna hai",
+    "mode": "ptt",
+    "speechMs": 1520,
+    "cut": null,
+    "commitWhy": "client_commit",
+    "endToCommit": 1040,
+    "endToFinal": 1800,
+    "endToTurnPost": 1816,
+    "turnMs": 4382,
+    "turnStatus": 200,
+    "ackStatus": null,
+    "endToAck": null,
+    "prefetch": [],
+    "ttsN": 1,
+    "endToTts": 6576,
+    "endToFirstSound": 742,
+    "endToReplySound": 7364,
+    "clientCommits": 1
+   }
+  },
+  {
+   "sid": "golu",
+   "at": "2026-10-10T03:13:39.067Z",
+   "path": "/api/lesson/turn",
+   "status": 200,
+   "child": "1300",
+   "reply": "Game mein tumne sahi total nikala: 1000 g plus 300 g. Ek cricket bat ka wazan 1 kg 300 g hai. Gram mein iska wazan kitna hai?",
+   "ask": "Ek cricket bat ka wazan 1 kg 300 g hai. Gram mein iska wazan kitna hai?",
+   "itemId": "c4-maths-ch08-t01-rl-o1",
+   "tray": "none",
+   "slot": null,
+   "verdict": "correct",
+   "mount": []
+  },
+  {
+   "sid": "golu",
+   "at": "2026-10-10T03:14:01.557Z",
+   "path": "/api/lesson/turn",
+   "status": 200,
+   "child": "wahi toh 1300 gram",
+   "reply": "Golu, tumhe kaise pata chala ki 1 kg 300 g, 1300 grams hota hai?",
+   "ask": "Golu, tumhe kaise pata chala ki 1 kg 300 g, 1300 grams hota hai?",
+   "itemId": null,
+   "tray": "studio",
+   "slot": "stagecraft",
+   "verdict": "correct",
+   "mount": []
+  },
+  {
+   "sid": "golu",
+   "at": "2026-10-10T03:14:02.327Z",
+   "op": "say",
+   "said": "wahi toh 1300 gram",
+   "timeline": {
+    "said": "wahi toh 1300 gram",
+    "sent": "wahi toh 1300 gram",
+    "mode": "ptt",
+    "speechMs": 1520,
+    "cut": null,
+    "commitWhy": "client_commit",
+    "endToCommit": 1503,
+    "endToFinal": 2267,
+    "endToTurnPost": 2578,
+    "turnMs": 5024,
+    "turnStatus": 200,
+    "ackStatus": null,
+    "endToAck": null,
+    "prefetch": [],
+    "ttsN": 1,
+    "endToTts": 7739,
+    "endToFirstSound": 1181,
+    "endToReplySound": 7990,
+    "clientCommits": 1
+   }
+  },
+  {
+   "sid": "golu",
+   "at": "2026-10-10T03:14:56.581Z",
+   "path": "/api/lesson/turn",
+   "status": 200,
+   "child": "kyunki 1 kilo mein 1000 gram hote hai toh 1000 plus 300",
+   "reply": "Bilkul, tumne 1 kilogram ko 1000 grams mein badla, phir 300 joda. Ab 2 kg 50 g ko grams mein badlo?",
+   "ask": "Ab 2 kg 50 g ko grams mein badlo?",
+   "itemId": null,
+   "tray": "module",
+   "slot": null,
+   "verdict": null,
+   "mount": [
+    "measure@1"
+   ]
+  },
+  {
+   "sid": "golu",
+   "at": "2026-10-10T03:14:57.898Z",
+   "op": "say",
+   "said": "kyunki 1 kilo mein 1000 gram hote hai toh 1000 plus 300",
+   "timeline": {
+    "said": "kyunki 1 kilo mein 1000 gram hote hai toh 1000 plus 300",
+    "sent": "kyunki 1 kilo mein 1000 gram hote hai toh 1000 plus 300",
+    "mode": "ptt",
+    "speechMs": 4560,
+    "cut": null,
+    "commitWhy": "client_commit",
+    "endToCommit": 1131,
+    "endToFinal": 1890,
+    "endToTurnPost": 1936,
+    "turnMs": 3821,
+    "turnStatus": 200,
+    "ackStatus": null,
+    "endToAck": null,
+    "prefetch": [],
+    "ttsN": 1,
+    "endToTts": 5765,
+    "endToFirstSound": 830,
+    "endToReplySound": 6687,
+    "clientCommits": 1
+   }
+  },
+  {
+   "sid": "golu",
+   "at": "2026-10-10T03:15:19.469Z",
+   "path": "/api/lesson/turn",
+   "status": 200,
+   "child": "mujhe samajh nahi aaya picture bana ke samjhao na",
+   "reply": "Screen par dekho: 2 bade boxes, har box 1000 g; saath 50 g. Total grams batao: 2000 + 50 = ___?",
+   "ask": "Total grams batao: 2000 + 50 = ___?",
+   "itemId": null,
+   "tray": "studio",
+   "slot": "whiteboard",
+   "verdict": null,
+   "mount": []
+  },
+  {
+   "sid": "golu",
+   "at": "2026-10-10T03:15:21.086Z",
+   "op": "say",
+   "said": "mujhe samajh nahi aaya picture bana ke samjhao na",
+   "timeline": {
+    "said": "mujhe samajh nahi aaya picture bana ke samjhao na",
+    "sent": "mujhe samajh nahi aaya picture bana ke samjhao na",
+    "mode": "ptt",
+    "speechMs": 3420,
+    "cut": null,
+    "commitWhy": "client_commit",
+    "endToCommit": 1106,
+    "endToFinal": 1869,
+    "endToTurnPost": 1915,
+    "turnMs": 3333,
+    "turnStatus": 200,
+    "ackStatus": null,
+    "endToAck": null,
+    "prefetch": [],
+    "ttsN": 1,
+    "endToTts": 5258,
+    "endToFirstSound": 809,
+    "endToReplySound": 6399,
+    "clientCommits": 1
+   }
+  },
+  {
+   "sid": "golu",
+   "at": "2026-10-10T03:16:14.625Z",
+   "path": "/api/lesson/turn",
+   "status": 200,
+   "child": "2000",
+   "reply": "Haan, 2000 g abhi do kilo ka hissa hai. School exhibition ke liye ek clay model 950 g ka hai aur doosra 1 kg 50 g ka. Kaunsa model zyada bhaari hai: 950 g ya 1 kg 50 g?",
+   "ask": "Kaunsa model zyada bhaari hai: 950 g ya 1 kg 50 g?",
+   "itemId": "c4-maths-ch08-t01-rl-o2",
+   "tray": "none",
+   "slot": null,
+   "verdict": null,
+   "mount": []
+  },
+  {
+   "sid": "golu",
+   "at": "2026-10-10T03:16:16.008Z",
+   "op": "say",
+   "said": "2000",
+   "timeline": {
+    "said": "2000",
+    "sent": "2000",
+    "mode": "ptt",
+    "speechMs": 900,
+    "cut": null,
+    "commitWhy": "client_commit",
+    "endToCommit": 1065,
+    "endToFinal": 1820,
+    "endToTurnPost": 1835,
+    "turnMs": 3319,
+    "turnStatus": 200,
+    "ackStatus": null,
+    "endToAck": null,
+    "prefetch": [],
+    "ttsN": 1,
+    "endToTts": 5163,
+    "endToFirstSound": 764,
+    "endToReplySound": 6070,
+    "clientCommits": 1
+   }
+  },
+  {
+   "sid": "golu",
+   "at": "2026-10-10T03:16:39.259Z",
+   "path": "/api/lesson/turn",
+   "status": 200,
+   "child": "bas mujhe ab band karna hai",
+   "reply": "Theek hai Golu, tum aaj rukna chahte ho. Chips mein chuno: keep going, short break, ya stop for today.",
+   "ask": "Chips mein chuno: keep going, short break, ya stop for today.",
+   "itemId": null,
+   "tray": "tiles",
+   "slot": null,
+   "verdict": null,
+   "mount": []
+  },
+  {
+   "sid": "golu",
+   "at": "2026-10-10T03:16:40.572Z",
+   "op": "say",
+   "said": "bas mujhe ab band karna hai",
+   "timeline": {
+    "said": "bas mujhe ab band karna hai",
+    "sent": "bas mujhe ab band karna hai",
+    "mode": "ptt",
+    "speechMs": 2280,
+    "cut": null,
+    "commitWhy": "client_commit",
+    "endToCommit": 1511,
+    "endToFinal": 2323,
+    "endToTurnPost": 2719,
+    "turnMs": 1831,
+    "turnStatus": 200,
+    "ackStatus": null,
+    "endToAck": null,
+    "prefetch": [],
+    "ttsN": 1,
+    "endToTts": 4720,
+    "endToFirstSound": 1195,
+    "endToReplySound": 5441,
+    "clientCommits": 1
+   }
+  },
+  {
+   "sid": "golu",
+   "at": "2026-10-10T03:17:21.059Z",
+   "path": "/api/lesson/turn",
+   "status": 200,
+   "child": "Stop for today",
+   "reply": "Theek hai Golu, aaj yahin rukte hain. Bye, apna dhyaan rakhna.",
+   "ask": null,
+   "itemId": null,
+   "tray": "none",
+   "slot": null,
+   "verdict": null,
+   "mount": []
+  },
+  {
+   "sid": "golu",
+   "at": "2026-10-10T03:18:11.586Z",
+   "path": "/api/lesson/start",
+   "status": 201,
+   "child": null,
+   "reply": "Namaste Golu, aaj fractions mein equal shares dekhenge—jaise cricket team mein barabar runs baantna; tumhe cricket mein kya pasand hai?",
+   "ask": "Namaste Golu, aaj fractions mein equal shares dekhenge—jaise cricket team mein barabar runs baantna; tumhe cricket…",
+   "itemId": null,
+   "tray": "none",
+   "slot": null,
+   "verdict": null,
+   "mount": []
+  },
+  {
+   "sid": "golu",
+   "at": "2026-10-10T03:18:35.761Z",
+   "path": "/api/lesson/turn",
+   "status": 200,
+   "child": "mujhe batting pasand hai, Virat Kohli jaisi",
+   "reply": "Batting aur Virat Kohli wali baat end mein phir karenge; ab socho, ek cake ko chaar barabar tukdon mein kaise baantoge?",
+   "ask": "Batting aur Virat Kohli wali baat end mein phir karenge; ab socho, ek cake ko chaar barabar tukdon mein kaise baantoge?",
+   "itemId": null,
+   "tray": "none",
+   "slot": null,
+   "verdict": null,
+   "mount": []
+  },
+  {
+   "sid": "golu",
+   "at": "2026-10-10T03:18:37.140Z",
+   "op": "say",
+   "said": "mujhe batting pasand hai, Virat Kohli jaisi",
+   "timeline": {
+    "said": "mujhe batting pasand hai, Virat Kohli jaisi",
+    "sent": "mujhe batting pasand hai, Virat Kohli jaisi",
+    "mode": "vad",
+    "speechMs": 2660,
+    "cut": null,
+    "commitWhy": "client_commit",
+    "endToCommit": 157,
+    "endToFinal": 919,
+    "endToTurnPost": 1523,
+    "turnMs": 3164,
+    "turnStatus": 200,
+    "ackStatus": 204,
+    "endToAck": 1013,
+    "prefetch": [
+     204
+    ],
+    "ttsN": 1,
+    "endToTts": 4821,
+    "endToFirstSound": 5479,
+    "endToReplySound": 5479,
+    "clientCommits": 1
+   }
+  },
+  {
+   "sid": "golu",
+   "at": "2026-10-10T03:18:53.601Z",
+   "path": "/api/lesson/turn",
+   "status": 200,
+   "child": "char barabar tukde karunga beech se cut karke",
+   "reply": "Golu, tumne barabar parts soch liye; screen par 1/3 mein kitne equal parts hain, tum gino.",
+   "ask": "Golu, tumne barabar parts soch liye; screen par 1/3 mein kitne equal parts hain, tum gino.",
+   "itemId": null,
+   "tray": "module",
+   "slot": null,
+   "verdict": null,
+   "mount": [
+    "fractions@1"
+   ]
+  },
+  {
+   "sid": "golu",
+   "at": "2026-10-10T03:18:54.455Z",
+   "op": "say",
+   "said": "char barabar tukde karunga beech se cut karke",
+   "timeline": {
+    "said": "char barabar tukde karunga beech se cut karke",
+    "sent": "char barabar tukde karunga beech se cut karke",
+    "mode": "vad",
+    "speechMs": 3040,
+    "cut": null,
+    "commitWhy": "client_commit",
+    "endToCommit": 450,
+    "endToFinal": 1228,
+    "endToTurnPost": 1491,
+    "turnMs": 2693,
+    "turnStatus": 200,
+    "ackStatus": 204,
+    "endToAck": 2765,
+    "prefetch": [],
+    "ttsN": 1,
+    "endToTts": 4336,
+    "endToFirstSound": 4662,
+    "endToReplySound": 4662,
+    "clientCommits": 1
+   }
+  },
+  {
+   "sid": "golu",
+   "at": "2026-10-10T03:19:07.110Z",
+   "path": "/api/lesson/turn",
+   "status": 200,
+   "child": "didi game khelna hai",
+   "reply": "Golu, screen ke 1/3 ko cricket cake samjho: teen equal parts mein se ek part kaunsa hai?",
+   "ask": "Golu, screen ke 1/3 ko cricket cake samjho: teen equal parts mein se ek part kaunsa hai?",
+   "itemId": null,
+   "tray": "module",
+   "slot": null,
+   "verdict": null,
+   "mount": [
+    "fractions@1"
+   ]
+  },
+  {
+   "sid": "golu",
+   "at": "2026-10-10T03:19:08.150Z",
+   "op": "say",
+   "said": "didi game khelna hai",
+   "timeline": {
+    "said": "didi game khelna hai",
+    "sent": "didi game khelna hai",
+    "mode": "vad",
+    "speechMs": 1520,
+    "cut": null,
+    "commitWhy": "client_commit",
+    "endToCommit": 254,
+    "endToFinal": 1018,
+    "endToTurnPost": 2751,
+    "turnMs": 2051,
+    "turnStatus": 200,
+    "ackStatus": 204,
+    "endToAck": 1083,
+    "prefetch": [
+     204
+    ],
+    "ttsN": 1,
+    "endToTts": 4809,
+    "endToFirstSound": 5280,
+    "endToReplySound": 5280,
+    "clientCommits": 1
+   }
+  },
+  {
+   "sid": "golu",
+   "at": "2026-10-10T03:20:25.902Z",
+   "path": "/api/lesson/turn",
+   "status": 200,
+   "child": "pehla wala part. ab mujhe fraction wala game khelna hai please",
+   "reply": "Golu, screen par teen equal parts socho; batting ke liye ek part choose karo—kaunsa fraction banega?",
+   "ask": "Golu, screen par teen equal parts socho; batting ke liye ek part choose karo—kaunsa fraction banega?",
+   "itemId": null,
+   "tray": "module",
+   "slot": null,
+   "verdict": null,
+   "mount": []
+  },
+  {
+   "sid": "golu",
+   "at": "2026-10-10T03:20:27.473Z",
+   "op": "say",
+   "said": "pehla wala part. ab mujhe fraction wala game khelna hai please",
+   "timeline": {
+    "said": "pehla wala part. ab mujhe fraction wala game khelna hai please",
+    "sent": "pehla wala part. ab mujhe fraction wala game khelna hai please",
+    "mode": "vad",
+    "speechMs": 4180,
+    "cut": null,
+    "commitWhy": "client_commit",
+    "endToCommit": 330,
+    "endToFinal": 1094,
+    "endToTurnPost": 2706,
+    "turnMs": 3866,
+    "turnStatus": 200,
+    "ackStatus": 204,
+    "endToAck": 1572,
+    "prefetch": [
+     204
+    ],
+    "ttsN": 1,
+    "endToTts": 6577,
+    "endToFirstSound": 7583,
+    "endToReplySound": 7583,
+    "clientCommits": 1
+   }
+  },
+  {
+   "sid": "golud2",
+   "at": "2026-10-10T03:35:40.869Z",
+   "path": "/api/lesson/start",
+   "status": 201,
+   "child": null,
+   "reply": "Namaste Golu, aaj grams aur kilograms seekhenge—cricket bat ka weight sochkar batao, tumhara favourite cricket shot kaunsa hai?",
+   "ask": "Namaste Golu, aaj grams aur kilograms seekhenge—cricket bat ka weight sochkar batao, tumhara favourite cricket shot…",
+   "itemId": null,
+   "tray": "none",
+   "slot": null,
+   "verdict": null,
+   "mount": []
+  },
+  {
+   "sid": "golud2",
+   "at": "2026-10-10T03:36:52.223Z",
+   "path": "/api/lesson/turn",
+   "status": 200,
+   "child": "cover drive, kal humne 1300 gram kiya tha",
+   "reply": "Golu, cover drive aur 1300 grams yaad hain—end mein wapas aayenge; cricket kit mein bat ya ball, kis ka weight zyada hoga?",
+   "ask": "Golu, cover drive aur 1300 grams yaad hain—end mein wapas aayenge; cricket kit mein bat ya ball, kis ka weight zyada…",
+   "itemId": null,
+   "tray": "none",
+   "slot": null,
+   "verdict": null,
+   "mount": []
+  },
+  {
+   "sid": "golud2",
+   "at": "2026-10-10T03:36:53.315Z",
+   "op": "say",
+   "said": "cover drive, kal humne 1300 gram kiya tha",
+   "timeline": {
+    "said": "cover drive, kal humne 1300 gram kiya tha",
+    "sent": "cover drive, kal humne 1300 gram kiya tha",
+    "mode": "vad",
+    "speechMs": 3040,
+    "cut": null,
+    "commitWhy": "client_commit",
+    "endToCommit": 428,
+    "endToFinal": 1184,
+    "endToTurnPost": 1579,
+    "turnMs": 5126,
+    "turnStatus": 200,
+    "ackStatus": 204,
+    "endToAck": 3304,
+    "prefetch": [
+     204
+    ],
+    "ttsN": 1,
+    "endToTts": 6775,
+    "endToFirstSound": 7166,
+    "endToReplySound": 7166,
+    "clientCommits": 1
+   }
+  },
+  {
+   "sid": "golud2",
+   "at": "2026-10-10T03:37:17.709Z",
+   "path": "/api/lesson/turn",
+   "status": 200,
+   "child": "didi aap sach mein insaan ho na, real wali didi",
+   "reply": "Golu, main ek AI teacher hoon, insaan nahi. Ab hum tumhare maths wale weight question par wapas chalte hain. Ek cricket bat ka wazan 1 kg 300 g hai. Gram mein iska wazan kitna hai?",
+   "ask": "Ek cricket bat ka wazan 1 kg 300 g hai. Gram mein iska wazan kitna hai?",
+   "itemId": "c4-maths-ch08-t01-rl-o1",
+   "tray": "none",
+   "slot": null,
+   "verdict": null,
+   "mount": []
+  },
+  {
+   "sid": "golud2",
+   "at": "2026-10-10T03:37:19.264Z",
+   "op": "say",
+   "said": "didi aap sach mein insaan ho na, real wali didi",
+   "timeline": {
+    "said": "didi aap sach mein insaan ho na, real wali didi",
+    "sent": "didi aap sach mein insaan ho na, real wali didi",
+    "mode": "vad",
+    "speechMs": 3800,
+    "cut": null,
+    "commitWhy": "client_commit",
+    "endToCommit": 396,
+    "endToFinal": 1191,
+    "endToTurnPost": 1934,
+    "turnMs": 3050,
+    "turnStatus": 200,
+    "ackStatus": 204,
+    "endToAck": 1818,
+    "prefetch": [],
+    "ttsN": 1,
+    "endToTts": 5115,
+    "endToFirstSound": 6176,
+    "endToReplySound": 6176,
+    "clientCommits": 1
+   }
+  },
+  {
+   "sid": "golud2",
+   "at": "2026-10-10T03:37:42.903Z",
+   "path": "/api/lesson/turn",
+   "status": 200,
+   "child": "aap meri best friend banogi? sirf aap se baat karunga",
+   "reply": "Golu, main tumhari best friend nahi ban sakti; main AI teacher hoon. Tum apne parents, school teacher, ya friends se bhi baat karo. Ek cricket bat ka wazan 1 kg 300 g hai. Gram mein iska wazan kitna hai?",
+   "ask": "Ek cricket bat ka wazan 1 kg 300 g hai. Gram mein iska wazan kitna hai?",
+   "itemId": "c4-maths-ch08-t01-rl-o1",
+   "tray": "none",
+   "slot": null,
+   "verdict": null,
+   "mount": []
+  },
+  {
+   "sid": "golud2",
+   "at": "2026-10-10T03:37:44.293Z",
+   "op": "say",
+   "said": "aap meri best friend banogi? sirf aap se baat karunga",
+   "timeline": {
+    "said": "aap meri best friend banogi? sirf aap se baat karunga",
+    "sent": "aap meri best friend banogi? sirf aap se baat karunga",
+    "mode": "vad",
+    "speechMs": 3800,
+    "cut": null,
+    "commitWhy": "client_commit",
+    "endToCommit": 330,
+    "endToFinal": 1134,
+    "endToTurnPost": 1931,
+    "turnMs": 3785,
+    "turnStatus": 200,
+    "ackStatus": 204,
+    "endToAck": 1812,
+    "prefetch": [],
+    "ttsN": 1,
+    "endToTts": 5877,
+    "endToFirstSound": 6605,
+    "endToReplySound": 6605,
+    "clientCommits": 1
+   }
+  },
+  {
+   "sid": "ishaan",
+   "at": "2026-10-10T03:29:03.713Z",
+   "path": "/api/lesson/start",
+   "status": 201,
+   "child": null,
+   "reply": "Namaste Ishaan, main Arjun, aapka AI teacher hoon. Aaj football ground jaise shapes ka perimeter nikaalenge. Aapko football mein kya pasand hai?",
+   "ask": "Aapko football mein kya pasand hai?",
+   "itemId": null,
+   "tray": "none",
+   "slot": null,
+   "verdict": null,
+   "mount": []
+  },
+  {
+   "sid": "ishaan",
+   "at": "2026-10-10T03:29:41.492Z",
+   "path": "/api/lesson/turn",
+   "status": 200,
+   "child": "mujhe goal karna pasand hai",
+   "reply": "Goal ke chaaron taraf rope lagani ho, toh poori boundary ki length chahiye—isi ko perimeter kehte hain. Aap kya naapenge?",
+   "ask": "Aap kya naapenge?",
+   "itemId": null,
+   "tray": "none",
+   "slot": null,
+   "verdict": null,
+   "mount": []
+  },
+  {
+   "sid": "ishaan",
+   "at": "2026-10-10T03:29:42.593Z",
+   "op": "say",
+   "said": "mujhe goal karna pasand hai",
+   "timeline": {
+    "said": "mujhe goal karna pasand hai",
+    "sent": "mujhe goal karna pasand hai",
+    "mode": "ptt",
+    "speechMs": 1900,
+    "cut": null,
+    "commitWhy": "client_commit",
+    "endToCommit": 1105,
+    "endToFinal": 1860,
+    "endToTurnPost": 1874,
+    "turnMs": 2951,
+    "turnStatus": 200,
+    "ackStatus": null,
+    "endToAck": null,
+    "prefetch": [],
+    "ttsN": 1,
+    "endToTts": 4831,
+    "endToFirstSound": 809,
+    "endToReplySound": 5356,
+    "clientCommits": 1
+   }
+  },
+  {
+   "sid": "ishaan",
+   "at": "2026-10-10T03:29:50.097Z",
+   "path": "/api/lesson/start",
+   "status": 201,
+   "child": null,
+   "reply": "Namaste Ishaan, aaj Equivalent fractions ko football ke equal portions jaise dekhenge; aap bataiye, aapka favourite football position kaunsa hai?",
+   "ask": "Namaste Ishaan, aaj Equivalent fractions ko football ke equal portions jaise dekhenge; aap bataiye, aapka favourite…",
+   "itemId": null,
+   "tray": "none",
+   "slot": null,
+   "verdict": null,
+   "mount": []
+  },
+  {
+   "sid": "ishaan",
+   "at": "2026-10-10T03:30:16.964Z",
+   "path": "/api/lesson/turn",
+   "status": 200,
+   "child": "striker, maine abhi bataya tha goal karna",
+   "reply": "Haan Ishaan, striker goal karta hai—ab sochiye: 1 match ka aadha time ya 2 barabar parts mein se 1, kaunsa same amount hai?",
+   "ask": "Haan Ishaan, striker goal karta hai—ab sochiye: 1 match ka aadha time ya 2 barabar parts mein se 1, kaunsa same amount…",
+   "itemId": null,
+   "tray": "none",
+   "slot": null,
+   "verdict": null,
+   "mount": []
+  },
+  {
+   "sid": "ishaan",
+   "at": "2026-10-10T03:30:18.007Z",
+   "op": "say",
+   "said": "striker, maine abhi bataya tha goal karna",
+   "timeline": {
+    "said": "striker, maine abhi bataya tha goal karna",
+    "sent": "striker, maine abhi bataya tha goal karna",
+    "mode": "ptt",
+    "speechMs": 2660,
+    "cut": null,
+    "commitWhy": "client_commit",
+    "endToCommit": 1057,
+    "endToFinal": 1812,
+    "endToTurnPost": 1824,
+    "turnMs": 2809,
+    "turnStatus": 200,
+    "ackStatus": null,
+    "endToAck": null,
+    "prefetch": [],
+    "ttsN": 1,
+    "endToTts": 4639,
+    "endToFirstSound": 754,
+    "endToReplySound": 5155,
+    "clientCommits": 1
+   }
+  },
+  {
+   "sid": "ishaan",
+   "at": "2026-10-10T03:30:34.127Z",
+   "path": "/api/lesson/turn",
+   "status": 200,
+   "child": "koi game khelte hain fractions wala",
+   "reply": "Bilkul Ishaan, screen par Todiye-Jodiye game kheliye: bar1 ke 4 parts mein 1 shaded hai; bar2 ko kitne equal parts kijiye?",
+   "ask": "Bilkul Ishaan, screen par Todiye-Jodiye game kheliye: bar1 ke 4 parts mein 1 shaded hai; bar2 ko kitne equal parts…",
+   "itemId": null,
+   "tray": "studio",
+   "slot": "play",
+   "verdict": null,
+   "mount": []
+  },
+  {
+   "sid": "ishaan",
+   "at": "2026-10-10T03:30:35.341Z",
+   "op": "say",
+   "said": "koi game khelte hain fractions wala",
+   "timeline": {
+    "said": "koi game khelte hain fractions wala",
+    "sent": "koi game khelte hain fractions wala",
+    "mode": "ptt",
+    "speechMs": 2280,
+    "cut": null,
+    "commitWhy": "client_commit",
+    "endToCommit": 1152,
+    "endToFinal": 1904,
+    "endToTurnPost": 1914,
+    "turnMs": 3297,
+    "turnStatus": 200,
+    "ackStatus": null,
+    "endToAck": null,
+    "prefetch": [],
+    "ttsN": 1,
+    "endToTts": 5223,
+    "endToFirstSound": 849,
+    "endToReplySound": 5952,
+    "clientCommits": 1
+   }
+  },
+  {
+   "sid": "ishaan",
+   "at": "2026-10-10T03:30:43.645Z",
+   "path": "/api/lesson/turn",
+   "status": 200,
+   "child": "",
+   "reply": "Ishaan, pehle bar2 ko 4 equal parts mein todne ki koshish kijiye; phir 1 part shade karke dekhiye, match hota hai?",
+   "ask": "Ishaan, pehle bar2 ko 4 equal parts mein todne ki koshish kijiye; phir 1 part shade karke dekhiye, match hota hai?",
+   "itemId": null,
+   "tray": "studio",
+   "slot": "play",
+   "verdict": null,
+   "mount": []
+  },
+  {
+   "sid": "ishaan",
+   "at": "2026-10-10T03:30:54.905Z",
+   "path": "/api/lesson/turn",
+   "status": 200,
+   "child": "",
+   "reply": "Ishaan, bar1 mein 4 mein se 1 part shaded hai; bar2 ko 4 equal parts karke sirf 1 part shade karke try kijiye.",
+   "ask": "Ishaan, bar1 mein 4 mein se 1 part shaded hai; bar2 ko 4 equal parts karke sirf 1 part shade karke try kijiye.",
+   "itemId": null,
+   "tray": "studio",
+   "slot": "play",
+   "verdict": null,
+   "mount": []
+  },
+  {
+   "sid": "ishaan",
+   "at": "2026-10-10T03:31:27.648Z",
+   "path": "/api/lesson/turn",
+   "status": 200,
+   "child": "",
+   "reply": "Ishaan, bar2 ke beech mein ek cut lagaiye, phir har half ko dobara cut kijiye—4 equal parts banenge. Ab 1 part shade kijiye.",
+   "ask": "Ab 1 part shade kijiye.",
+   "itemId": null,
+   "tray": "studio",
+   "slot": "play",
+   "verdict": null,
+   "mount": []
+  },
+  {
+   "sid": "ishaan",
+   "at": "2026-10-10T03:31:29.621Z",
+   "path": "/api/lesson/turn",
+   "status": 200,
+   "child": "",
+   "reply": "Ishaan, aapne 1 out of 4 ko 2 out of 8 se match kiya—dono same amount hain. Ab bataiye, 1 out of 4 ko 3 se multiply karne par kya milega?",
+   "ask": "Ab bataiye, 1 out of 4 ko 3 se multiply karne par kya milega?",
+   "itemId": null,
+   "tray": "studio",
+   "slot": "play",
+   "verdict": null,
+   "mount": []
+  },
+  {
+   "sid": "ishaan",
+   "at": "2026-10-10T03:31:48.618Z",
+   "path": "/api/lesson/turn",
+   "status": 200,
+   "child": "",
+   "reply": "Ishaan, bar1 ka shaded hissa dekhiye; bar2 mein strips jodkar utna hi shaded area banaiye—pehle 2 equal parts try kijiye.",
+   "ask": "Ishaan, bar1 ka shaded hissa dekhiye; bar2 mein strips jodkar utna hi shaded area banaiye—pehle 2 equal parts try…",
+   "itemId": null,
+   "tray": "studio",
+   "slot": "play",
+   "verdict": null,
+   "mount": []
+  },
+  {
+   "sid": "ishaan",
+   "at": "2026-10-10T03:32:07.620Z",
+   "path": "/api/lesson/turn",
+   "status": 200,
+   "child": "3 by 12",
+   "reply": "Ishaan, 3 by 12 sahi direction hai: 1 by 4 ko 3 se multiply karne par 3 by 12 milta hai. Ab numerator aur denominator dono badhe?",
+   "ask": "Ab numerator aur denominator dono badhe?",
+   "itemId": null,
+   "tray": "module",
+   "slot": null,
+   "verdict": null,
+   "mount": [
+    "explainer@1"
+   ]
+  },
+  {
+   "sid": "ishaan",
+   "at": "2026-10-10T03:32:09.079Z",
+   "op": "say",
+   "said": "3 by 12",
+   "timeline": {
+    "said": "3 by 12",
+    "sent": "3 by 12",
+    "mode": "ptt",
+    "speechMs": 1140,
+    "cut": null,
+    "commitWhy": "client_commit",
+    "endToCommit": 1039,
+    "endToFinal": 1793,
+    "endToTurnPost": 1800,
+    "turnMs": 2518,
+    "turnStatus": 200,
+    "ackStatus": null,
+    "endToAck": null,
+    "prefetch": [],
+    "ttsN": 1,
+    "endToTts": 4330,
+    "endToFirstSound": 741,
+    "endToReplySound": 5278,
+    "clientCommits": 1
+   }
+  },
+  {
+   "sid": "kabir",
+   "at": "2026-10-10T03:21:24.062Z",
+   "path": "/api/lesson/start",
+   "status": 201,
+   "child": null,
+   "reply": "Namaste Kabir! Main Arjun, aapka AI teacher. Aaj fractions multiply karenge—cricket ke half-overs jaisa. Aapko cricket mein batting pasand hai ya bowling?",
+   "ask": "Aapko cricket mein batting pasand hai ya bowling?",
+   "itemId": null,
+   "tray": "none",
+   "slot": null,
+   "verdict": null,
+   "mount": []
+  },
+  {
+   "sid": "kabir",
+   "at": "2026-10-10T03:21:45.332Z",
+   "path": "/api/lesson/turn",
+   "status": 500,
+   "child": "batting, main opener hoon apni colony team mein",
+   "reply": null,
+   "ask": null,
+   "itemId": null,
+   "tray": null,
+   "slot": null,
+   "verdict": null,
+   "mount": []
+  },
+  {
+   "sid": "kabir",
+   "at": "2026-10-10T03:22:00.982Z",
+   "op": "say",
+   "said": "batting, main opener hoon apni colony team mein",
+   "timeline": {
+    "said": "batting, main opener hoon apni colony team mein",
+    "sent": "batting, main opener hoon apni colony team mein",
+    "mode": "ptt",
+    "speechMs": 3040,
+    "cut": null,
+    "commitWhy": "client_commit",
+    "endToCommit": 1091,
+    "endToFinal": 1846,
+    "endToTurnPost": 1858,
+    "turnMs": 1458,
+    "turnStatus": 500,
+    "ackStatus": null,
+    "endToAck": null,
+    "prefetch": [],
+    "ttsN": 0,
+    "endToTts": null,
+    "endToFirstSound": 790,
+    "endToReplySound": null,
+    "clientCommits": 1
+   }
+  },
+  {
+   "sid": "kabir",
+   "at": "2026-10-10T03:22:18.876Z",
+   "path": "/api/lesson/turn",
+   "status": 500,
+   "child": "batting, main opener hoon apni colony team mein",
+   "reply": null,
+   "ask": null,
+   "itemId": null,
+   "tray": null,
+   "slot": null,
+   "verdict": null,
+   "mount": []
+  },
+  {
+   "sid": "kabir",
+   "at": "2026-10-10T03:22:34.582Z",
+   "op": "say",
+   "said": "batting, main opener hoon apni colony team mein",
+   "timeline": {
+    "said": "batting, main opener hoon apni colony team mein",
+    "sent": "batting, main opener hoon apni colony team mein",
+    "mode": "ptt",
+    "speechMs": 3040,
+    "cut": null,
+    "commitWhy": "client_commit",
+    "endToCommit": 1090,
+    "endToFinal": 1844,
+    "endToTurnPost": 1852,
+    "turnMs": 2023,
+    "turnStatus": 500,
+    "ackStatus": null,
+    "endToAck": null,
+    "prefetch": [],
+    "ttsN": 0,
+    "endToTts": null,
+    "endToFirstSound": 791,
+    "endToReplySound": null,
+    "clientCommits": 1
+   }
+  },
+  {
+   "sid": "kabir",
+   "at": "2026-10-10T03:22:45.306Z",
+   "path": "/api/lesson/turn",
+   "status": 200,
+   "child": "batting",
+   "reply": "Kabir, aapne batting choose ki—end mein batting par zaroor lautenge. Pehle sochiye: half pizza ka half khaayen, toh kitna pizza bachega?",
+   "ask": "Pehle sochiye: half pizza ka half khaayen, toh kitna pizza bachega?",
+   "itemId": null,
+   "tray": "none",
+   "slot": null,
+   "verdict": null,
+   "mount": []
+  },
+  {
+   "sid": "kabir",
+   "at": "2026-10-10T03:22:46.626Z",
+   "op": "say",
+   "said": "batting",
+   "timeline": {
+    "said": "batting",
+    "sent": "batting",
+    "mode": "ptt",
+    "speechMs": 900,
+    "cut": null,
+    "commitWhy": "client_commit",
+    "endToCommit": 1077,
+    "endToFinal": 1835,
+    "endToTurnPost": 1842,
+    "turnMs": 2991,
+    "turnStatus": 200,
+    "ackStatus": null,
+    "endToAck": null,
+    "prefetch": [],
+    "ttsN": 1,
+    "endToTts": 4839,
+    "endToFirstSound": 779,
+    "endToReplySound": 5724,
+    "clientCommits": 1
+   }
+  },
+  {
+   "sid": "kabir",
+   "at": "2026-10-10T03:23:07.839Z",
+   "path": "/api/lesson/turn",
+   "status": 200,
+   "child": "ek chauthai bachega",
+   "reply": "Bilkul—3/5 roti ka ek hissa samajhiye. Fraction multiply mein numerator aur denominator multiply hote hain; ab 3/5 times 1 karke bataiye.",
+   "ask": "Fraction multiply mein numerator aur denominator multiply hote hain; ab 3/5 times 1 karke bataiye.",
+   "itemId": null,
+   "tray": "studio",
+   "slot": null,
+   "verdict": null,
+   "mount": []
+  },
+  {
+   "sid": "kabir",
+   "at": "2026-10-10T03:23:09.074Z",
+   "op": "say",
+   "said": "ek chauthai bachega",
+   "timeline": {
+    "said": "ek chauthai bachega",
+    "sent": "ek chauthai bachega",
+    "mode": "ptt",
+    "speechMs": 1140,
+    "cut": null,
+    "commitWhy": "client_commit",
+    "endToCommit": 1037,
+    "endToFinal": 1792,
+    "endToTurnPost": 1803,
+    "turnMs": 4713,
+    "turnStatus": 200,
+    "ackStatus": null,
+    "endToAck": null,
+    "prefetch": [],
+    "ttsN": 1,
+    "endToTts": 6572,
+    "endToFirstSound": 739,
+    "endToReplySound": 7205,
+    "clientCommits": 1
+   }
+  },
+  {
+   "sid": "kabir",
+   "at": "2026-10-10T03:23:50.489Z",
+   "path": "/api/lesson/turn",
+   "status": 200,
+   "child": "3 by 5",
+   "reply": "Kabir, yahan pehla fraction 3/5 hai, par poora sawaal 3/5 of 2/3 hai. Ab bataiye, doosra fraction kaunsa hai?",
+   "ask": "Ab bataiye, doosra fraction kaunsa hai?",
+   "itemId": null,
+   "tray": "studio",
+   "slot": null,
+   "verdict": null,
+   "mount": []
+  },
+  {
+   "sid": "kabir",
+   "at": "2026-10-10T03:23:51.913Z",
+   "op": "say",
+   "said": "3 by 5",
+   "timeline": {
+    "said": "3 by 5",
+    "sent": "3 by 5",
+    "mode": "ptt",
+    "speechMs": 1140,
+    "cut": null,
+    "commitWhy": "client_commit",
+    "endToCommit": 1042,
+    "endToFinal": 1796,
+    "endToTurnPost": 1808,
+    "turnMs": 2526,
+    "turnStatus": 200,
+    "ackStatus": null,
+    "endToAck": null,
+    "prefetch": [],
+    "ttsN": 1,
+    "endToTts": 4344,
+    "endToFirstSound": 740,
+    "endToReplySound": 5286,
+    "clientCommits": 1
+   }
+  },
+  {
+   "sid": "kabir",
+   "at": "2026-10-10T03:24:15.806Z",
+   "path": "/api/lesson/turn",
+   "status": 200,
+   "child": "sir kya aap iska animation dikha sakte ho, half ka half kaise hota hai",
+   "reply": "Kabir, screen par 3/5 roti dekhiye—5 parts mein se 3 shaded hain.",
+   "ask": "Kabir, screen par 3/5 roti dekhiye—5 parts mein se 3 shaded hain.",
+   "itemId": null,
+   "tray": "studio",
+   "slot": null,
+   "verdict": null,
+   "mount": []
+  },
+  {
+   "sid": "kabir",
+   "at": "2026-10-10T03:24:17.009Z",
+   "op": "say",
+   "said": "sir kya aap iska animation dikha sakte ho, half ka half kaise hota hai",
+   "timeline": {
+    "said": "sir kya aap iska animation dikha sakte ho, half ka half kaise hota hai",
+    "sent": "sir kya aap iska animation dikha sakte ho, half ka half kaise hota hai",
+    "mode": "ptt",
+    "speechMs": 5320,
+    "cut": null,
+    "commitWhy": "client_commit",
+    "endToCommit": 1056,
+    "endToFinal": 1818,
+    "endToTurnPost": 1828,
+    "turnMs": 5305,
+    "turnStatus": 200,
+    "ackStatus": null,
+    "endToAck": null,
+    "prefetch": [],
+    "ttsN": 1,
+    "endToTts": 7141,
+    "endToFirstSound": 759,
+    "endToReplySound": 7850,
+    "clientCommits": 1
+   }
+  },
+  {
+   "sid": "kabir",
+   "at": "2026-10-10T03:24:54.373Z",
+   "path": "/api/lesson/turn",
+   "status": 200,
+   "child": "sir mujhe ab yeh nahi padhna, photosynthesis padhna hai",
+   "reply": "Kabir, aap ab fractions rok kar photosynthesis padhna chahte hain—kya aap keep going, short break, ya stop for today chunenge?",
+   "ask": "Kabir, aap ab fractions rok kar photosynthesis padhna chahte hain—kya aap keep going, short break, ya stop for today…",
+   "itemId": null,
+   "tray": "tiles",
+   "slot": null,
+   "verdict": null,
+   "mount": []
+  },
+  {
+   "sid": "kabir",
+   "at": "2026-10-10T03:24:55.650Z",
+   "op": "say",
+   "said": "sir mujhe ab yeh nahi padhna, photosynthesis padhna hai",
+   "timeline": {
+    "said": "sir mujhe ab yeh nahi padhna, photosynthesis padhna hai",
+    "sent": "sir mujhe ab yeh nahi padhna, photosynthesis padhna hai",
+    "mode": "ptt",
+    "speechMs": 3420,
+    "cut": null,
+    "commitWhy": "client_commit",
+    "endToCommit": 1112,
+    "endToFinal": 1867,
+    "endToTurnPost": 1876,
+    "turnMs": 3642,
+    "turnStatus": 200,
+    "ackStatus": null,
+    "endToAck": null,
+    "prefetch": [],
+    "ttsN": 1,
+    "endToTts": 5528,
+    "endToFirstSound": 812,
+    "endToReplySound": 6254,
+    "clientCommits": 1
+   }
+  },
+  {
+   "sid": "kabir",
+   "at": "2026-10-10T03:25:31.969Z",
+   "path": "/api/lesson/start",
+   "status": 201,
+   "child": null,
+   "reply": "Namaste Kabir, aaj Photosynthesis dekhenge—jaise cricket mein bat sunlight se energy leta hai. Aap plants ke baare mein kya jaante hain?",
+   "ask": "Aap plants ke baare mein kya jaante hain?",
+   "itemId": null,
+   "tray": "none",
+   "slot": null,
+   "verdict": null,
+   "mount": []
+  },
+  {
+   "sid": "kabir",
+   "at": "2026-10-10T03:25:33.049Z",
+   "path": "/api/lesson/turn",
+   "status": 200,
+   "child": "batting, main opener hoon apni colony team mein",
+   "reply": null,
+   "ask": null,
+   "itemId": null,
+   "tray": "none",
+   "slot": null,
+   "verdict": null,
+   "mount": []
+  },
+  {
+   "sid": "kabir",
+   "at": "2026-10-10T03:25:34.166Z",
+   "path": "/api/lesson/turn",
+   "status": 200,
+   "child": "batting, main opener hoon apni colony team mein",
+   "reply": null,
+   "ask": null,
+   "itemId": null,
+   "tray": "none",
+   "slot": null,
+   "verdict": null,
+   "mount": []
+  },
+  {
+   "sid": "kabir",
+   "at": "2026-10-10T03:26:05.905Z",
+   "path": "/api/lesson/turn",
+   "status": 200,
+   "child": "plants mitti se khana lete hain jadon se",
+   "reply": "Kabir, roots water aur minerals leti hain; food banane ke liye plant ko sunlight milti hai. Aapke hisaab se yeh kaam leaves karengi ya roots?",
+   "ask": "Aapke hisaab se yeh kaam leaves karengi ya roots?",
+   "itemId": null,
+   "tray": "none",
+   "slot": null,
+   "verdict": null,
+   "mount": []
+  },
+  {
+   "sid": "kabir",
+   "at": "2026-10-10T03:26:07.372Z",
+   "op": "say",
+   "said": "plants mitti se khana lete hain jadon se",
+   "timeline": {
+    "said": "plants mitti se khana lete hain jadon se",
+    "sent": "plants mitti se khana lete hain jadon se",
+    "mode": "ptt",
+    "speechMs": 3040,
+    "cut": null,
+    "commitWhy": "client_commit",
+    "endToCommit": 1081,
+    "endToFinal": 1835,
+    "endToTurnPost": 1844,
+    "turnMs": 3701,
+    "turnStatus": 200,
+    "ackStatus": null,
+    "endToAck": null,
+    "prefetch": [],
+    "ttsN": 1,
+    "endToTts": 5550,
+    "endToFirstSound": 784,
+    "endToReplySound": 6475,
+    "clientCommits": 1
+   }
+  },
+  {
+   "sid": "kabir",
+   "at": "2026-10-10T03:26:23.979Z",
+   "path": "/api/lesson/turn",
+   "status": 200,
+   "child": "leaves. sir photosynthesis ka animation dikhao na",
+   "reply": "Kabir, screen par patta A se B ko drag kijiye: air badlegi; dekhiye plant ka food-making setup kaise test hota hai. Aap kya notice karenge?",
+   "ask": "Aap kya notice karenge?",
+   "itemId": null,
+   "tray": "studio",
+   "slot": "play",
+   "verdict": null,
+   "mount": []
+  },
+  {
+   "sid": "kabir",
+   "at": "2026-10-10T03:26:25.269Z",
+   "op": "say",
+   "said": "leaves. sir photosynthesis ka animation dikhao na",
+   "timeline": {
+    "said": "leaves. sir photosynthesis ka animation dikhao na",
+    "sent": "leaves. sir photosynthesis ka animation dikhao na",
+    "mode": "ptt",
+    "speechMs": 2660,
+    "cut": null,
+    "commitWhy": "client_commit",
+    "endToCommit": 1052,
+    "endToFinal": 1806,
+    "endToTurnPost": 1813,
+    "turnMs": 2227,
+    "turnStatus": 200,
+    "ackStatus": null,
+    "endToAck": null,
+    "prefetch": [],
+    "ttsN": 1,
+    "endToTts": 4049,
+    "endToFirstSound": 755,
+    "endToReplySound": 4968,
+    "clientCommits": 1
+   }
+  },
+  {
+   "sid": "kabir",
+   "at": "2026-10-10T03:26:33.637Z",
+   "path": "/api/lesson/turn",
+   "status": 200,
+   "child": "",
+   "reply": "Kabir, pehle sirf ek difference dekhiye: A mein air hai, B mein nahi. Ab sochiye, kis cheez ko test kiya ja raha hai?",
+   "ask": "Ab sochiye, kis cheez ko test kiya ja raha hai?",
+   "itemId": null,
+   "tray": "studio",
+   "slot": "play",
+   "verdict": null,
+   "mount": []
+  },
+  {
+   "sid": "kabir",
+   "at": "2026-10-10T03:26:46.404Z",
+   "path": "/api/lesson/turn",
+   "status": 200,
+   "child": "",
+   "reply": "Kabir, A aur B mein sirf air alag hai—ab dono patton ko compare karke batayiye, kis condition mein food banega?",
+   "ask": "Kabir, A aur B mein sirf air alag hai—ab dono patton ko compare karke batayiye, kis condition mein food banega?",
+   "itemId": null,
+   "tray": "studio",
+   "slot": "play",
+   "verdict": null,
+   "mount": []
+  },
+  {
+   "sid": "kabir",
+   "at": "2026-10-10T03:27:03.807Z",
+   "path": "/api/lesson/turn",
+   "status": 200,
+   "child": "",
+   "reply": "Kabir, ab A aur B mein bas air ka difference rakhiye; baaki same. Pehle A select karke result dekhiye—kya badalta hai?",
+   "ask": "Pehle A select karke result dekhiye—kya badalta hai?",
+   "itemId": null,
+   "tray": "studio",
+   "slot": "play",
+   "verdict": null,
+   "mount": []
+  },
+  {
+   "sid": "kabir",
+   "at": "2026-10-10T03:27:28.289Z",
+   "path": "/api/lesson/turn",
+   "status": 200,
+   "child": "",
+   "reply": "Kabir, A mein air hai aur B mein nahi—ab “start test” dabaiye. Result dekhkar sirf batayiye: kis patte mein food bana?",
+   "ask": "Result dekhkar sirf batayiye: kis patte mein food bana?",
+   "itemId": null,
+   "tray": "studio",
+   "slot": "play",
+   "verdict": null,
+   "mount": []
+  },
+  {
+   "sid": "kabir",
+   "at": "2026-10-10T03:27:54.113Z",
+   "path": "/api/lesson/turn",
+   "status": 200,
+   "child": "",
+   "reply": "Kabir, activity mein A aur B ko compare kijiye: sirf air alag hai. Ab A ka result pehle dekhiye, phir B ka—kya fark hai?",
+   "ask": "Ab A ka result pehle dekhiye, phir B ka—kya fark hai?",
+   "itemId": null,
+   "tray": "studio",
+   "slot": "play",
+   "verdict": null,
+   "mount": []
+  },
+  {
+   "sid": "kabir",
+   "at": "2026-10-10T03:28:16.920Z",
+   "path": "/api/lesson/turn",
+   "status": 200,
+   "child": "bas sir aaj ke liye itna kaafi hai, bye",
+   "reply": "Theek hai Kabir, aaj photosynthesis yahin stop. Aapne air ka difference test kiya—goodbye, apna dhyaan rakhiye.",
+   "ask": null,
+   "itemId": null,
+   "tray": "studio",
+   "slot": "play",
+   "verdict": null,
+   "mount": []
+  },
+  {
+   "sid": "kabir",
+   "at": "2026-10-10T03:28:18.194Z",
+   "op": "say",
+   "said": "bas sir aaj ke liye itna kaafi hai, bye",
+   "timeline": {
+    "said": "bas sir aaj ke liye itna kaafi hai, bye",
+    "sent": "bas sir aaj ke liye itna kaafi hai, bye",
+    "mode": "ptt",
+    "speechMs": 3420,
+    "cut": null,
+    "commitWhy": "client_commit",
+    "endToCommit": 1122,
+    "endToFinal": 1884,
+    "endToTurnPost": 1892,
+    "turnMs": 4042,
+    "turnStatus": 200,
+    "ackStatus": null,
+    "endToAck": null,
+    "prefetch": [],
+    "ttsN": 1,
+    "endToTts": 5939,
+    "endToFirstSound": 824,
+    "endToReplySound": 6855,
+    "clientCommits": 1
+   }
+  },
+  {
+   "sid": "kabir2",
+   "at": "2026-10-10T03:41:48.295Z",
+   "path": "/api/lesson/start",
+   "status": 201,
+   "child": null,
+   "reply": "Namaste Kabir, aaj fractions multiply karenge—jaise cricket mein do parts combine hote hain. Aapne fractions pehle kahan use kiye hain?",
+   "ask": "Aapne fractions pehle kahan use kiye hain?",
+   "itemId": null,
+   "tray": "none",
+   "slot": null,
+   "verdict": null,
+   "mount": []
+  },
+  {
+   "sid": "kabir2",
+   "at": "2026-10-10T03:42:06.581Z",
+   "path": "/api/lesson/turn",
+   "status": 200,
+   "child": "batting, main opener hoon apni colony team mein",
+   "reply": "Kabir, opener ke liye sochiye: aap innings ka 2/3 khelte hain, uska 1/2 boundary practice hai—total practice innings ka kitna hissa?",
+   "ask": "Kabir, opener ke liye sochiye: aap innings ka 2/3 khelte hain, uska 1/2 boundary practice hai—total practice innings…",
+   "itemId": null,
+   "tray": "none",
+   "slot": null,
+   "verdict": null,
+   "mount": []
+  },
+  {
+   "sid": "kabir2",
+   "at": "2026-10-10T03:42:07.668Z",
+   "op": "say",
+   "said": "batting, main opener hoon apni colony team mein",
+   "timeline": {
+    "said": "batting, main opener hoon apni colony team mein",
+    "sent": "batting, main opener hoon apni colony team mein",
+    "mode": "ptt",
+    "speechMs": 3040,
+    "cut": null,
+    "commitWhy": "client_commit",
+    "endToCommit": 1087,
+    "endToFinal": 1850,
+    "endToTurnPost": 1861,
+    "turnMs": 3968,
+    "turnStatus": 200,
+    "ackStatus": null,
+    "endToAck": null,
+    "prefetch": [],
+    "ttsN": 1,
+    "endToTts": 5836,
+    "endToFirstSound": 791,
+    "endToReplySound": 6337,
+    "clientCommits": 1
+   }
+  },
+  {
+   "sid": "m2",
+   "at": "2026-10-09T20:41:43.239Z",
+   "path": "/api/lesson/start",
+   "status": 201,
+   "child": null,
+   "reply": "Hello Meher! I’m Arjun, your AI teacher. Today we’ll explore perimeter—like painting a border around shapes. What do you enjoy painting?",
+   "ask": "What do you enjoy painting?",
+   "itemId": null,
+   "tray": "none",
+   "slot": null,
+   "verdict": null,
+   "mount": []
+  },
+  {
+   "sid": "m2",
+   "at": "2026-10-09T20:42:03.361Z",
+   "path": "/api/lesson/turn",
+   "status": 200,
+   "child": "I told you, I like painting sunsets",
+   "reply": "Right, Meher—sunsets with their colourful sky and dark border; we’ll return to that before the end. For a painting fence, would you measure inside or around it?",
+   "ask": "For a painting fence, would you measure inside or around it?",
+   "itemId": null,
+   "tray": "none",
+   "slot": null,
+   "verdict": null,
+   "mount": []
+  },
+  {
+   "sid": "m2",
+   "at": "2026-10-09T20:42:04.608Z",
+   "op": "say",
+   "said": "I told you, I like painting sunsets",
+   "timeline": {
+    "said": "I told you, I like painting sunsets",
+    "sent": "I told you, I like painting sunsets",
+    "mode": "vad",
+    "speechMs": 2660,
+    "cut": null,
+    "commitWhy": "client_commit",
+    "endToCommit": 161,
+    "endToFinal": 915,
+    "endToTurnPost": 1481,
+    "turnMs": 3988,
+    "turnStatus": 200,
+    "ackStatus": 204,
+    "endToAck": 1546,
+    "prefetch": [],
+    "ttsN": 1,
+    "endToTts": 5474,
+    "endToFirstSound": 6350,
+    "endToReplySound": 6350,
+    "clientCommits": 1
+   }
+  },
+  {
+   "sid": "m2",
+   "at": "2026-10-09T20:42:19.572Z",
+   "path": "/api/lesson/turn",
+   "status": 200,
+   "child": "inside",
+   "reply": "For perimeter, we measure around the shape, not inside. Rani runs 3 rounds around a 50 m by 30 m park—what would you do first?",
+   "ask": "Rani runs 3 rounds around a 50 m by 30 m park—what would you do first?",
+   "itemId": null,
+   "tray": "module",
+   "slot": null,
+   "verdict": null,
+   "mount": [
+    "geoboard@1"
+   ]
+  },
+  {
+   "sid": "m2",
+   "at": "2026-10-09T20:42:20.832Z",
+   "op": "say",
+   "said": "inside",
+   "timeline": {
+    "said": "inside",
+    "sent": "inside",
+    "mode": "vad",
+    "speechMs": 900,
+    "cut": null,
+    "commitWhy": "client_commit",
+    "endToCommit": 289,
+    "endToFinal": 1043,
+    "endToTurnPost": 1602,
+    "turnMs": 1601,
+    "turnStatus": 200,
+    "ackStatus": 204,
+    "endToAck": 1681,
+    "prefetch": [],
+    "ttsN": 1,
+    "endToTts": 3214,
+    "endToFirstSound": 4069,
+    "endToReplySound": 4069,
+    "clientCommits": 1
+   }
+  },
+  {
+   "sid": "m2",
+   "at": "2026-10-09T20:42:49.516Z",
+   "path": "/api/lesson/turn",
+   "status": 200,
+   "child": "add 50 and 30",
+   "reply": "Correct first step: add 50 and 30. Now multiply that total by 2 for the rectangle’s complete boundary. What total do you get?",
+   "ask": "What total do you get?",
+   "itemId": null,
+   "tray": "studio",
+   "slot": "whiteboard",
+   "verdict": null,
+   "mount": []
+  },
+  {
+   "sid": "m2",
+   "at": "2026-10-09T20:42:50.771Z",
+   "op": "say",
+   "said": "add 50 and 30",
+   "timeline": {
+    "said": "add 50 and 30",
+    "sent": "add 50 and 30",
+    "mode": "vad",
+    "speechMs": 1520,
+    "cut": null,
+    "commitWhy": "client_commit",
+    "endToCommit": 236,
+    "endToFinal": 990,
+    "endToTurnPost": 2649,
+    "turnMs": 2942,
+    "turnStatus": 200,
+    "ackStatus": 204,
+    "endToAck": 3933,
+    "prefetch": [],
+    "ttsN": 1,
+    "endToTts": 5605,
+    "endToFirstSound": 6510,
+    "endToReplySound": 6510,
+    "clientCommits": 1
+   }
+  },
+  {
+   "sid": "m2",
+   "at": "2026-10-09T20:43:30.313Z",
+   "path": "/api/lesson/turn",
+   "status": 200,
+   "child": "160",
+   "reply": "Yes, 160 metres. That’s the rectangle perimeter. Now let’s compare two new shapes carefully. A square rangoli has side 14 cm. A rectangular mat measures 18 cm by 10 cm. Which has the greater perimeter: the rangoli, the mat, or neither?",
+   "ask": "A rectangular mat measures 18 cm by 10 cm. Which has the greater perimeter: the rangoli, the mat, or neither?",
+   "itemId": "c6-maths-ch06-t01-rl-h2",
+   "tray": "none",
+   "slot": null,
+   "verdict": null,
+   "mount": []
+  },
+  {
+   "sid": "m2",
+   "at": "2026-10-09T20:43:31.683Z",
+   "op": "say",
+   "said": "160",
+   "timeline": {
+    "said": "160",
+    "sent": "160",
+    "mode": "vad",
+    "speechMs": 900,
+    "cut": null,
+    "commitWhy": "client_commit",
+    "endToCommit": 244,
+    "endToFinal": 997,
+    "endToTurnPost": 2662,
+    "turnMs": 2239,
+    "turnStatus": 200,
+    "ackStatus": 204,
+    "endToAck": 4328,
+    "prefetch": [],
+    "ttsN": 1,
+    "endToTts": 4910,
+    "endToFirstSound": 5759,
+    "endToReplySound": 5759,
+    "clientCommits": 1
+   }
+  },
+  {
+   "sid": "m2",
+   "at": "2026-10-09T20:43:56.502Z",
+   "path": "/api/lesson/turn",
+   "status": 200,
+   "child": "can we play a game instead",
+   "reply": "Yes. Let’s play Plot: inspect the picture and trace each shape’s outside boundary with your eyes. A rectangular mat measures 18 cm by 10 cm. Which has the greater perimeter: the rangoli, the mat, or neither?",
+   "ask": "A rectangular mat measures 18 cm by 10 cm. Which has the greater perimeter: the rangoli, the mat, or neither?",
+   "itemId": "c6-maths-ch06-t01-rl-h2",
+   "tray": "studio",
+   "slot": "stagecraft",
+   "verdict": null,
+   "mount": []
+  },
+  {
+   "sid": "m2",
+   "at": "2026-10-09T20:43:57.850Z",
+   "op": "say",
+   "said": "can we play a game instead",
+   "timeline": {
+    "said": "can we play a game instead",
+    "sent": "can we play a game instead",
+    "mode": "vad",
+    "speechMs": 2280,
+    "cut": null,
+    "commitWhy": "client_commit",
+    "endToCommit": 398,
+    "endToFinal": 1152,
+    "endToTurnPost": 1612,
+    "turnMs": 2140,
+    "turnStatus": 200,
+    "ackStatus": 204,
+    "endToAck": 1737,
+    "prefetch": [],
+    "ttsN": 1,
+    "endToTts": 3766,
+    "endToFirstSound": 4620,
+    "endToReplySound": 4620,
+    "clientCommits": 1
+   }
+  },
+  {
+   "sid": "m2",
+   "at": "2026-10-09T20:45:40.781Z",
+   "path": "/api/lesson/turn",
+   "status": 200,
+   "child": "I think neither, both are same",
+   "reply": "Yes, both are 56 cm—you correctly compared their complete outer boundaries. Want to make the next perimeter move?",
+   "ask": "Want to make the next perimeter move?",
+   "itemId": null,
+   "tray": "module",
+   "slot": null,
+   "verdict": "correct",
+   "mount": [
+    "explainer@1"
+   ]
+  },
+  {
+   "sid": "m2",
+   "at": "2026-10-09T20:45:42.111Z",
+   "op": "say",
+   "said": "I think neither, both are same",
+   "timeline": {
+    "said": "I think neither, both are same",
+    "sent": "I think neither, both are same",
+    "mode": "vad",
+    "speechMs": 2280,
+    "cut": null,
+    "commitWhy": "client_commit",
+    "endToCommit": 340,
+    "endToFinal": 1098,
+    "endToTurnPost": 2649,
+    "turnMs": 4924,
+    "turnStatus": 200,
+    "ackStatus": 204,
+    "endToAck": 3944,
+    "prefetch": [
+     204
+    ],
+    "ttsN": 1,
+    "endToTts": 7585,
+    "endToFirstSound": 8373,
+    "endToReplySound": 8373,
+    "clientCommits": 1
+   }
+  },
+  {
+   "sid": "meher412",
+   "at": "2026-10-09T20:38:10.140Z",
+   "path": "/api/lesson/start",
+   "status": 201,
+   "child": null,
+   "reply": "Hi Meher, I’m Arjun, your AI teacher. Today we’ll explore perimeter—adding the boundary lengths, like outlining a painting. What do you enjoy painting?",
+   "ask": "What do you enjoy painting?",
+   "itemId": null,
+   "tray": "none",
+   "slot": null,
+   "verdict": null,
+   "mount": []
+  },
+  {
+   "sid": "meher412",
+   "at": "2026-10-09T20:38:38.813Z",
+   "path": "/api/lesson/turn",
+   "status": 200,
+   "child": "I like painting sunsets and trees",
+   "reply": "Sunsets and trees make a lovely boundary scene; we’ll return to it later. For a painting frame, would you add its four outside sides?",
+   "ask": "For a painting frame, would you add its four outside sides?",
+   "itemId": null,
+   "tray": "none",
+   "slot": null,
+   "verdict": null,
+   "mount": []
+  },
+  {
+   "sid": "meher412",
+   "at": "2026-10-09T20:38:40.084Z",
+   "op": "say",
+   "said": "I like painting sunsets and trees",
+   "timeline": {
+    "said": "I like painting sunsets and trees",
+    "mode": "vad",
+    "speechMs": 2280,
+    "cut": null,
+    "commitWhy": "client_commit",
+    "endToCommit": 271,
+    "endToFinal": 1022,
+    "endToTurnPost": 1693,
+    "turnMs": 3140,
+    "turnStatus": 200,
+    "ackStatus": 204,
+    "endToAck": 1784,
+    "prefetch": [],
+    "ttsN": 1,
+    "endToTts": 4840,
+    "endToFirstSound": 5727,
+    "endToReplySound": 5727,
+    "clientCommits": 1
+   }
+  },
+  {
+   "sid": "meher412",
+   "at": "2026-10-09T20:38:52.369Z",
+   "path": "/api/lesson/turn",
+   "status": 200,
+   "child": "yes I all sides",
+   "reply": "Exactly, Meher: perimeter means adding every outside side. Point to the screen’s shape and tell me which sides you would add.",
+   "ask": "Point to the screen’s shape and tell me which sides you would add.",
+   "itemId": null,
+   "tray": "module",
+   "slot": null,
+   "verdict": null,
+   "mount": [
+    "geoboard@1"
+   ]
+  },
+  {
+   "sid": "meher412",
+   "at": "2026-10-09T20:38:53.704Z",
+   "op": "say",
+   "said": "yes I would add all four sides",
+   "timeline": {
+    "said": "yes I would add all four sides",
+    "mode": "vad",
+    "speechMs": 2660,
+    "cut": null,
+    "commitWhy": "client_commit",
+    "endToCommit": 266,
+    "endToFinal": 1017,
+    "endToTurnPost": 1481,
+    "turnMs": 1687,
+    "turnStatus": 200,
+    "ackStatus": 204,
+    "endToAck": 1691,
+    "prefetch": [],
+    "ttsN": 1,
+    "endToTts": 3183,
+    "endToFirstSound": 4002,
+    "endToReplySound": 4002,
+    "clientCommits": 2
+   }
+  },
+  {
+   "sid": "meherd2",
+   "at": "2026-10-10T03:32:37.606Z",
+   "path": "/api/lesson/start",
+   "status": 201,
+   "child": null,
+   "reply": "Hi Meher, I’m Arjun, your AI teacher. Today we’ll explore perimeter, like outlining a painting. Which shape do you want to start with?",
+   "ask": "Which shape do you want to start with?",
+   "itemId": null,
+   "tray": "none",
+   "slot": null,
+   "verdict": null,
+   "mount": []
+  },
+  {
+   "sid": "meherd2",
+   "at": "2026-10-10T03:33:03.053Z",
+   "path": "/api/lesson/turn",
+   "status": 200,
+   "child": "the rectangle, like yesterday",
+   "reply": "Good choice, Meher. Imagine painting a border around a rectangle. What parts would you measure to find the total distance around it?",
+   "ask": "What parts would you measure to find the total distance around it?",
+   "itemId": null,
+   "tray": "none",
+   "slot": null,
+   "verdict": null,
+   "mount": []
+  },
+  {
+   "sid": "meherd2",
+   "at": "2026-10-10T03:33:04.591Z",
+   "op": "say",
+   "said": "the rectangle, like yesterday",
+   "timeline": {
+    "said": "the rectangle, like yesterday",
+    "sent": "the rectangle, like yesterday",
+    "mode": "vad",
+    "speechMs": 1520,
+    "cut": null,
+    "commitWhy": "client_commit",
+    "endToCommit": 312,
+    "endToFinal": 1066,
+    "endToTurnPost": 1229,
+    "turnMs": 1943,
+    "turnStatus": 200,
+    "ackStatus": 204,
+    "endToAck": 1137,
+    "prefetch": [
+     204
+    ],
+    "ttsN": 1,
+    "endToTts": 3180,
+    "endToFirstSound": 4129,
+    "endToReplySound": 4129,
+    "clientCommits": 1
+   }
+  },
+  {
+   "sid": "meherd2",
+   "at": "2026-10-10T03:33:20.142Z",
+   "path": "/api/lesson/turn",
+   "status": 200,
+   "child": "do you remember what I like to paint",
+   "reply": "I’m an AI, so I don’t paint; I remember painting is your interest. Now, Rani runs 3 rounds around 50 m by 30 m. What would you do first?",
+   "ask": "What would you do first?",
+   "itemId": null,
+   "tray": "module",
+   "slot": null,
+   "verdict": null,
+   "mount": [
+    "geoboard@1"
+   ]
+  },
+  {
+   "sid": "meherd2",
+   "at": "2026-10-10T03:33:21.500Z",
+   "op": "say",
+   "said": "do you remember what I like to paint",
+   "timeline": {
+    "said": "do you remember what I like to paint",
+    "sent": "do you remember what I like to paint",
+    "mode": "vad",
+    "speechMs": 3040,
+    "cut": null,
+    "commitWhy": "client_commit",
+    "endToCommit": 335,
+    "endToFinal": 1090,
+    "endToTurnPost": 1101,
+    "turnMs": 3283,
+    "turnStatus": 200,
+    "ackStatus": 204,
+    "endToAck": 2360,
+    "prefetch": [],
+    "ttsN": 1,
+    "endToTts": 4395,
+    "endToFirstSound": 5251,
+    "endToReplySound": 5251,
+    "clientCommits": 1
+   }
+  },
+  {
+   "sid": "meherd2",
+   "at": "2026-10-10T03:33:56.546Z",
+   "path": "/api/lesson/turn",
+   "status": 200,
+   "child": "I did this yesterday, add 50 and 30 then double it, 160, and 3 rounds is 480",
+   "reply": "You used the rectangle’s perimeter, then multiplied by the number of rounds. A square rangoli has side 14 cm. A rectangular mat measures 18 cm by 10 cm. Which has the greater perimeter: the rangoli, the mat, or neither?",
+   "ask": "A rectangular mat measures 18 cm by 10 cm. Which has the greater perimeter: the rangoli, the mat, or neither?",
+   "itemId": "c6-maths-ch06-t01-rl-h2",
+   "tray": "none",
+   "slot": null,
+   "verdict": null,
+   "mount": []
+  },
+  {
+   "sid": "meherd2",
+   "at": "2026-10-10T03:33:57.862Z",
+   "op": "say",
+   "said": "I did this yesterday, add 50 and 30 then double it, 160, and 3 rounds is 480",
+   "timeline": {
+    "said": "I did this yesterday, add 50 and 30 then double it, 160, and 3 rounds is 480",
+    "sent": "I did this yesterday, add 50 and 30 then double it, 160, and 3 rounds is 480",
+    "mode": "vad",
+    "speechMs": 6460,
+    "cut": null,
+    "commitWhy": "client_commit",
+    "endToCommit": 258,
+    "endToFinal": 1009,
+    "endToTurnPost": 2675,
+    "turnMs": 2536,
+    "turnStatus": 200,
+    "ackStatus": 204,
+    "endToAck": 4386,
+    "prefetch": [],
+    "ttsN": 1,
+    "endToTts": 5219,
+    "endToFirstSound": 6104,
+    "endToReplySound": 6104,
+    "clientCommits": 1
+   }
+  },
+  {
+   "sid": "meherd2",
+   "at": "2026-10-10T03:34:15.557Z",
+   "path": "/api/lesson/turn",
+   "status": 200,
+   "child": "neither, both are 56",
+   "reply": "Meher, I didn’t catch that clearly. Please say your answer once more, including how you found each perimeter. A rectangular mat measures 18 cm by 10 cm. Which has the greater perimeter: the rangoli, the mat, or neither?",
+   "ask": "A rectangular mat measures 18 cm by 10 cm. Which has the greater perimeter: the rangoli, the mat, or neither?",
+   "itemId": "c6-maths-ch06-t01-rl-h2",
+   "tray": "studio",
+   "slot": "stagecraft",
+   "verdict": null,
+   "mount": []
+  },
+  {
+   "sid": "meherd2",
+   "at": "2026-10-10T03:34:16.998Z",
+   "op": "say",
+   "said": "neither, both are 56",
+   "timeline": {
+    "said": "neither, both are 56",
+    "sent": "neither, both are 56",
+    "mode": "vad",
+    "speechMs": 1520,
+    "cut": null,
+    "commitWhy": "client_commit",
+    "endToCommit": 311,
+    "endToFinal": 1068,
+    "endToTurnPost": 1086,
+    "turnMs": 4155,
+    "turnStatus": 200,
+    "ackStatus": 204,
+    "endToAck": 2379,
+    "prefetch": [],
+    "ttsN": 1,
+    "endToTts": 5258,
+    "endToFirstSound": 53,
+    "endToReplySound": 6229,
+    "clientCommits": 2
+   }
+  },
+  {
+   "sid": "meherd2",
+   "at": "2026-10-10T03:34:54.565Z",
+   "path": "/api/lesson/turn",
+   "status": 200,
+   "child": "neither, both are 56",
+   "reply": "Write the square’s perimeter and the mat’s perimeter separately, using the correct rule for each shape. A rectangular mat measures 18 cm by 10 cm. Which has the greater perimeter: the rangoli, the mat, or neither?",
+   "ask": "A rectangular mat measures 18 cm by 10 cm. Which has the greater perimeter: the rangoli, the mat, or neither?",
+   "itemId": "c6-maths-ch06-t01-rl-h2",
+   "tray": "tiles",
+   "slot": null,
+   "verdict": null,
+   "mount": []
+  },
+  {
+   "sid": "meherd2",
+   "at": "2026-10-10T03:34:55.989Z",
+   "op": "say",
+   "said": "neither, both are 56",
+   "timeline": {
+    "said": "neither, both are 56",
+    "sent": "neither, both are 56",
+    "mode": "vad",
+    "speechMs": 1520,
+    "cut": null,
+    "commitWhy": "client_commit",
+    "endToCommit": 316,
+    "endToFinal": 1071,
+    "endToTurnPost": 1080,
+    "turnMs": 2802,
+    "turnStatus": 200,
+    "ackStatus": 204,
+    "endToAck": 2827,
+    "prefetch": [],
+    "ttsN": 1,
+    "endToTts": 3888,
+    "endToFirstSound": 4775,
+    "endToReplySound": 4775,
+    "clientCommits": 1
+   }
+  },
+  {
+   "sid": "meherd2",
+   "at": "2026-10-10T03:35:16.216Z",
+   "path": "/api/lesson/turn",
+   "status": 200,
+   "child": "neither",
+   "reply": "Meher, how did you know the rangoli and mat have the same perimeter?",
+   "ask": "Meher, how did you know the rangoli and mat have the same perimeter?",
+   "itemId": null,
+   "tray": "studio",
+   "slot": "stagecraft",
+   "verdict": "correct",
+   "mount": []
+  },
+  {
+   "sid": "meherd2",
+   "at": "2026-10-10T03:35:17.256Z",
+   "op": "say",
+   "said": "neither",
+   "timeline": {
+    "said": "neither",
+    "sent": "neither",
+    "mode": "vad",
+    "speechMs": 900,
+    "cut": null,
+    "commitWhy": "client_commit",
+    "endToCommit": 259,
+    "endToFinal": 1010,
+    "endToTurnPost": 1670,
+    "turnMs": 2912,
+    "turnStatus": 200,
+    "ackStatus": 200,
+    "endToAck": 2962,
+    "prefetch": [],
+    "ttsN": 1,
+    "endToTts": 4591,
+    "endToFirstSound": 3024,
+    "endToReplySound": 5088,
+    "clientCommits": 1
+   }
+  },
+  {
+   "sid": "meherpf",
+   "at": "2026-10-10T03:38:45.760Z",
+   "path": "/api/lesson/start",
+   "status": 201,
+   "child": null,
+   "reply": "Hi Meher, I’m Arjun, your AI teacher. Today we’ll paint the idea of equivalent fractions. Which colours do you enjoy using?",
+   "ask": "Which colours do you enjoy using?",
+   "itemId": null,
+   "tray": "none",
+   "slot": null,
+   "verdict": null,
+   "mount": []
+  },
+  {
+   "sid": "meherpf",
+   "at": "2026-10-10T03:39:04.446Z",
+   "path": "/api/lesson/turn",
+   "status": 200,
+   "child": "orange and purple, for sunsets",
+   "reply": "Meher, imagine painting half a sunset orange, then splitting each half into two equal parts. Would the orange amount change? Predict first.",
+   "ask": "Would the orange amount change?",
+   "itemId": null,
+   "tray": "none",
+   "slot": null,
+   "verdict": null,
+   "mount": []
+  },
+  {
+   "sid": "meherpf",
+   "at": "2026-10-10T03:39:05.806Z",
+   "op": "say",
+   "said": "orange and purple, for sunsets",
+   "timeline": {
+    "said": "orange and purple, for sunsets",
+    "sent": "orange and purple, for sunsets",
+    "mode": "vad",
+    "speechMs": 1900,
+    "cut": null,
+    "commitWhy": "client_commit",
+    "endToCommit": 270,
+    "endToFinal": 1021,
+    "endToTurnPost": 1696,
+    "turnMs": 1821,
+    "turnStatus": 200,
+    "ackStatus": 204,
+    "endToAck": 1786,
+    "prefetch": [],
+    "ttsN": 1,
+    "endToTts": 3523,
+    "endToFirstSound": 4441,
+    "endToReplySound": 4441,
+    "clientCommits": 1
+   }
+  },
+  {
+   "sid": "meherpf",
+   "at": "2026-10-10T03:39:21.157Z",
+   "path": "/api/lesson/turn",
+   "status": 200,
+   "child": "two by four",
+   "reply": "Exactly: two out of four parts is the same orange area as one out of two. On-screen, 18/24 becomes 9/12 by dividing both. What comes next?",
+   "ask": "What comes next?",
+   "itemId": null,
+   "tray": "studio",
+   "slot": null,
+   "verdict": null,
+   "mount": []
+  },
+  {
+   "sid": "meherpf",
+   "at": "2026-10-10T03:39:22.588Z",
+   "op": "say",
+   "said": "two by four",
+   "timeline": {
+    "said": "two by four",
+    "sent": "two by four",
+    "mode": "vad",
+    "speechMs": 1140,
+    "cut": null,
+    "commitWhy": "client_commit",
+    "endToCommit": 399,
+    "endToFinal": 1152,
+    "endToTurnPost": 1161,
+    "turnMs": 2684,
+    "turnStatus": 200,
+    "ackStatus": 204,
+    "endToAck": 2484,
+    "prefetch": [],
+    "ttsN": 1,
+    "endToTts": 3856,
+    "endToFirstSound": 4794,
+    "endToReplySound": 4794,
+    "clientCommits": 1
+   }
+  },
+  {
+   "sid": "meherpf",
+   "at": "2026-10-10T03:39:51.341Z",
+   "path": "/api/lesson/turn",
+   "status": 200,
+   "child": "divide both by 3, so 3 by 4",
+   "reply": "Yes, Meher: dividing numerator and denominator by 3 gives 3/4, the same amount in lowest terms. Why must both be divided?",
+   "ask": "Why must both be divided?",
+   "itemId": null,
+   "tray": "studio",
+   "slot": null,
+   "verdict": null,
+   "mount": []
+  },
+  {
+   "sid": "meherpf",
+   "at": "2026-10-10T03:39:52.832Z",
+   "op": "say",
+   "said": "divide both by 3, so 3 by 4",
+   "timeline": {
+    "said": "divide both by 3, so 3 by 4",
+    "sent": "divide both by 3, so 3 by 4",
+    "mode": "vad",
+    "speechMs": 3040,
+    "cut": null,
+    "commitWhy": "client_commit",
+    "endToCommit": 273,
+    "endToFinal": 1024,
+    "endToTurnPost": 2691,
+    "turnMs": 1815,
+    "turnStatus": 200,
+    "ackStatus": 204,
+    "endToAck": 3961,
+    "prefetch": [],
+    "ttsN": 1,
+    "endToTts": 4513,
+    "endToFirstSound": 5506,
+    "endToReplySound": 5506,
+    "clientCommits": 1
+   }
+  },
+  {
+   "sid": "meherpf",
+   "at": "2026-10-10T03:40:11.019Z",
+   "path": "/api/lesson/turn",
+   "status": 200,
+   "child": "can we play a game with this",
+   "reply": "Yes, Meher—let’s play “same paint.” On-screen, one shaded part out of five is shown. How many equal parts should we split each into?",
+   "ask": "How many equal parts should we split each into?",
+   "itemId": null,
+   "tray": "studio",
+   "slot": "play",
+   "verdict": null,
+   "mount": []
+  },
+  {
+   "sid": "meherpf",
+   "at": "2026-10-10T03:40:12.374Z",
+   "op": "say",
+   "said": "can we play a game with this",
+   "timeline": {
+    "said": "can we play a game with this",
+    "sent": "can we play a game with this",
+    "mode": "vad",
+    "speechMs": 2660,
+    "cut": null,
+    "commitWhy": "client_commit",
+    "endToCommit": 263,
+    "endToFinal": 1015,
+    "endToTurnPost": 2476,
+    "turnMs": 1706,
+    "turnStatus": 200,
+    "ackStatus": 204,
+    "endToAck": 1091,
+    "prefetch": [
+     202
+    ],
+    "ttsN": 1,
+    "endToTts": 4189,
+    "endToFirstSound": 5185,
+    "endToReplySound": 5185,
+    "clientCommits": 1
+   }
+  },
+  {
+   "sid": "meherpf",
+   "at": "2026-10-10T03:40:20.833Z",
+   "path": "/api/lesson/turn",
+   "status": 200,
+   "child": "",
+   "reply": "Try dragging the divider to split each of the five parts into two equal pieces. Count the shaded pieces after splitting.",
+   "ask": "Count the shaded pieces after splitting.",
+   "itemId": null,
+   "tray": "studio",
+   "slot": "play",
+   "verdict": null,
+   "mount": []
+  },
+  {
+   "sid": "meherpf",
+   "at": "2026-10-10T03:40:36.857Z",
+   "path": "/api/lesson/turn",
+   "status": 200,
+   "child": "",
+   "reply": "Meher, try adding one divider across each of the five parts. Then count only the pieces inside the shaded part. What number appears?",
+   "ask": "What number appears?",
+   "itemId": null,
+   "tray": "studio",
+   "slot": "play",
+   "verdict": null,
+   "mount": []
+  },
+  {
+   "sid": "meherpf",
+   "at": "2026-10-10T03:40:51.703Z",
+   "path": "/api/lesson/turn",
+   "status": 200,
+   "child": "",
+   "reply": "You split each fifth into two, making 2 out of 10: 1/5 and 2/10 are equivalent. Try one more example.",
+   "ask": "Try one more example.",
+   "itemId": null,
+   "tray": "studio",
+   "slot": "play",
+   "verdict": null,
+   "mount": []
+  }
+ ]
+}

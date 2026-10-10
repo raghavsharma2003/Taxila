@@ -126,6 +126,8 @@
 .dk-tray { position: relative; height: 100%; background: var(--tray); border-radius: var(--radius-card); overflow: hidden; }
 .dk-tray--module { background: var(--dusk); }
 .dk-tray-body { position: absolute; inset: 0; display: flex; align-items: stretch; justify-content: stretch; }
+/* round 3 fix (experience B5): Help over a work surface is a layer; the work underneath stays mounted */
+.dk-tray-layer { position: absolute; inset: 0; display: flex; align-items: stretch; justify-content: stretch; background: var(--tray); z-index: 2; }
 .dk-tray[data-showing="1"] { outline: 1px solid var(--chalk); outline-offset: -1px; }
 .dk-watch { position: absolute; top: var(--space-2); right: var(--space-2); display: inline-flex; align-items: center; gap: 4px; padding: 4px var(--space-3);
   border-radius: var(--radius-pill); background: var(--surface); border: 1px solid var(--line); font-weight: 700; font-size: var(--t-meta); }
@@ -140,7 +142,12 @@
   transition: transform var(--m-press) var(--ease-standard); }
 .dk[data-family="older"] .dk-tile { font-size: var(--t-label); border-width: 1px; }
 .dk-tile:active { transform: scale(var(--press-scale)); }
-.dk-tile-key { position: absolute; top: 4px; left: 8px; font-size: 12px; color: var(--ink-2); font-weight: 600; }
+/* round 3 fix (open problem 4 / experience B10): the number badge is text too: never under the 14 px floor */
+.dk-tile-key { position: absolute; top: 4px; left: 8px; font-size: max(14px, var(--t-meta)); color: var(--ink-2); font-weight: 600; }
+/* round 3 fix (experience B10): a WORD tile (the stop check-in's "Keep going / Short break / Stop for today") is set at the
+   label size, wrapping inside the tile; the numeral size (40 px on class 1-4) spilled out of three 90 px tiles at 360 */
+.dk-tile[data-words] { font-size: var(--t-state); font-variant-numeric: normal; line-height: 1.15; text-align: center; overflow-wrap: anywhere; hyphens: auto; }
+.dk-tile[data-words] .dk-tile-label { max-width: 100%; }
 
 .dk-pad { flex: none; align-self: flex-start; width: 100%; display: flex; flex-direction: column; gap: 6px; padding: 6px var(--space-3) var(--space-2); }
 .dk-pad-value { min-height: 36px; line-height: 36px; background: var(--surface); border-radius: var(--radius-sm); font-size: var(--t-numeral); font-weight: 700; text-align: center; font-variant-numeric: tabular-nums; }

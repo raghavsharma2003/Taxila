@@ -1043,7 +1043,9 @@ async function madeForList(req, res) {
 export const CONSENT_SPEECH = {
   core_tutoring: "Lessons. She teaches your child live and keeps their answers, so you can see what they learned. Needed to use Taxila.",
   learning_profile: "Remember learning across days. So the next lesson starts from where your child is, and she checks again on a later day. Choose: yes, remember. Or: only this session.",
-  memory: "Remember what your child says they like. Cricket, cooking, a pet's name. She uses it in examples. You can see and delete each one. Choose no, or yes.",
+  // round 3 fix (adversarial N8): the copy names what round 3 uses this consent for (a good moment from an earlier lesson may
+  // open the next one); KEEP IN STEP with src/parent/Pages.tsx CHOICES.memory and src/onboarding/Consent.tsx
+  memory: "Remember what your child says they like. Cricket, cooking, a pet's name. She uses it in examples, and a good moment from an earlier lesson may open the next one. You can see and delete each one. Choose no, or yes.",
   voice_pace_memory: "Remember your child's usual answering pace. Only numbers about how long your child usually takes to start an answer are kept, on Taxila's own database, never recordings or words. We are still testing what these numbers can tell the teacher, and for now they change nothing in lessons. Choose: yes, remember. Or: only this lesson. Turning it off deletes them.",
   research: "Research. We do not use your child's data for research now. If that changes, we will ask you here first.",
   reports: "Where reports go. One short weekly report with what your child can now do and one thing to try at home. Choose WhatsApp, or only in the app.",

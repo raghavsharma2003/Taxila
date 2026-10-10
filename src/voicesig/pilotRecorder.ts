@@ -1,14 +1,15 @@
 // The CONSENTED real-child pilot's recorder (docs/design/round3/voicesig/PILOT-PROTOCOL.md). The ONLY code in Taxila that
 // keeps a child's audio, and only like this:
-//   - it starts only on a device where the study coordinator typed a pilot code into the URL (?vspilot=P07-S1), after the
-//     parent signed the V3 form for that code; there is no default, no server switch that turns it on, no account flag;
+//   - it starts only on the page load the study coordinator opened with a pilot code in the URL (?vspilot=P07-S1), after the
+//     parent signed the V3 form for that code; there is no default, no server switch that turns it on, no account flag, and
+//     (round 3 fix, adversarial N4) nothing persists it: a later lesson on the device records nothing;
 //   - it records exactly what the product's front-end analyses (the shared tap's processed P track, 16 kHz mono, after the
 //     worklet's decimation), so pilot features recomputed offline equal the features the lesson computed;
 //   - nothing is uploaded: at the lesson's end the WAV and a numbers-only sidecar (chunk clock, per-turn kv, the hold cue's
 //     counters) are offered as two downloads ON THE DEVICE; the coordinator moves them to the study's private Azure
 //     Storage container (India) by hand, as the protocol says, and deletes them from the device;
 //   - a visible "study recording" badge is on screen the whole time (the child's assent covers being recorded; they must
-//     be able to see that it is happening), and ?vspilot=0 ends it for the device;
+//     be able to see that it is happening); closing or reloading the page ends it;
 //   - a hard cap (MAX_MINUTES) stops recording; a failure anywhere stops recording and never touches the lesson.
 // "No audio leaves the device" stays true for every lesson that is not a consented pilot session.
 import type { KnowledgeVoice } from "./types.ts";
@@ -19,15 +20,31 @@ export const PILOT_CODE_RE = /^P\d{2,3}-S[1-3]$/;
 export const MAX_MINUTES = 45;
 const RATE = 16_000;
 
-/** The device's pilot code, or null. ?vspilot=<code> sets it, ?vspilot=0 clears it; localStorage keeps it for the session. */
-export function pilotCode(loc: { search: string } | undefined = typeof location !== "undefined" ? location : undefined,
+/**
+ * The URL this page was LOADED with (the navigation entry), not wherever the router is now: the coordinator's link
+ * (?vspilot=P07-S1) is the page load of that one session, and in-app navigation keeps it for exactly that page load.
+ */
+function bootLocation(): { search: string } | undefined {
+  try {
+    const nav = typeof performance !== "undefined" ? (performance.getEntriesByType("navigation")[0] as PerformanceNavigationTiming | undefined) : undefined;
+    if (nav?.name) return { search: new URL(nav.name).search };
+  } catch { /* fall through */ }
+  return typeof location !== "undefined" ? location : undefined;
+}
+
+/**
+ * The device's pilot code for THIS page load, or null. Round 3 fix (adversarial N4): the code is never persisted. It used
+ * to live in localStorage with no expiry, so a missed "?vspilot=0" at the end of the coordinator's day meant every later
+ * lesson on the family's device was recorded and offered as a WAV, a safeguarding session included. Now only the link the
+ * coordinator opens for the session carries it; a reload or a later lesson opened any other way records nothing. A code
+ * left in storage by the earlier build is removed on sight.
+ */
+export function pilotCode(loc: { search: string } | undefined = bootLocation(),
   store: Pick<Storage, "getItem" | "setItem" | "removeItem"> | undefined = typeof localStorage !== "undefined" ? localStorage : undefined): string | null {
   try {
+    try { store?.removeItem(PILOT_KEY); } catch { /* storage blocked */ }
     const v = loc ? new URLSearchParams(loc.search).get("vspilot") : null;
-    if (v === "0") store?.removeItem(PILOT_KEY);
-    else if (v && PILOT_CODE_RE.test(v)) store?.setItem(PILOT_KEY, v);
-    const c = store?.getItem(PILOT_KEY) ?? null;
-    return c && PILOT_CODE_RE.test(c) ? c : null;
+    return v && PILOT_CODE_RE.test(v) ? v : null;
   } catch {
     return null;
   }

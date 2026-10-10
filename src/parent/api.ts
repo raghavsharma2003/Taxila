@@ -105,8 +105,24 @@ export const isRelock = (e: unknown) => isGateError(e) && (e.body as { gate?: st
 /** Read-aloud (PX10): server-composed speech of a parent card; the client never sends the text. */
 export const speakUrl = (o: Record<string, string>) => `/api/parent/speak?${new URLSearchParams(o).toString()}`;
 
+/** Round 3 fix (adversarial B3b): what the teacher remembers (server/relational/routes.js GET /api/parent/memory). */
+export interface ParentMemory {
+  keeps: string;
+  consents: { learning_profile: boolean; memory: boolean };
+  /** memory rows as stored (written by the teacher AI at a lesson's end from the child's own words) */
+  remembered: { id: string; kind: string; text: string; at: string; topic: string | null }[];
+  /** what she may bring back from the last lesson's learning (closed parent copy) */
+  fromLastLesson: { id: string; text: string }[];
+  interests: string[];
+  used: { callback: string; what: string; at: string; topic: string | null }[];
+  forgotten: { at: string }[];
+}
+
 const qs = (o: Record<string, string>) => new URLSearchParams(o).toString();
 export const parentApi = {
+  memory: (childId: string) => getJson<ParentMemory>(`/api/parent/memory?${qs({ childId })}`),
+  /** id "all" deletes every memory row of the child */
+  deleteMemory: (childId: string, id: string) => request<{ deleted: number }>("DELETE", "/api/parent/memory", { childId, id }),
   pin: () => getJson<GateState>("/api/parent/pin"),
   setPin: (pin: string, password?: string) => postJson<GateState>("/api/parent/pin", { pin, password }),
   resetPin: (pin: string, password: string) => postJson<GateState>("/api/parent/pin/reset", { pin, password }),

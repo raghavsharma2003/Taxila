@@ -624,7 +624,8 @@ const fallbackShape = (engine, v) =>
 export function planEngine({ kit, item, lang, mode = "show", representation, topicMap, ageBand } = {}) {
   const picked = pickEngine(kit, representation, topicMap);
   if (!picked) return null;
-  const { engine, preset } = picked;
+  const { engine } = picked;
+  let { preset } = picked;
   const prompt = String(item?.prompt_en ?? kit?.workedExample?.problem ?? "");
   const ctx = { topicId: kit?.topicId, skillId: item?.skillId ?? null, lang, ...(representation ? { representation } : {}) };
   const predict = mode === "predict";
@@ -667,11 +668,30 @@ export function planEngine({ kit, item, lang, mode = "show", representation, top
   const values = extractValues(prompt);
   const maths = !SCIENCE.has(engine);
   if (maths && !(CONSUMES[engine]?.(values, preset) ?? false)) return null;
+  // round 3 fix (experience B4): measure@1 shows a ruler (cm), a jug (mL) or a thermometer (°C). An unbound mount used to
+  // carry no tool, so "1 kilogram mein kitne grams?" showed a centimetre ruler ("Yeh kitna lamba hai? Lambai (cm)", c4-03,
+  // c4-07, 2 of 2): the tool comes from the item's own units, and a quantity no tool measures (mass) mounts nothing.
+  const measureTool = engine === "measure@1" ? measureToolFor(`${prompt} ${item?.answer ?? ""}`, representation) : null;
+  if (engine === "measure@1" && !measureTool) return null;
+  if (measureTool) preset = { ...preset, tool: measureTool };
   // The Director's "show" / "predict" is NOT an engine mode (live-content audit 10: number-line@1 got mode "show",
   // which the frame then "adjusted"). Every engine's normalize treats an absent mode exactly as show / predict (the
   // generic path), predict travels as `predict: true`, so an unbound plan sends no mode unless a preset names one.
   const params = validModes(engine, { ...ctx, ...(maths ? fallbackShape(engine, values) : {}), ...preset, ...(predict && { predict: true }) });
   return { engine, params, goal: undefined, bindItem: false, itemId: null, key: null, why: item ? "no item adapter matched: unbound activity from the item's values" : "no item: unbound activity", ...base };
+}
+
+/**
+ * round 3 fix (experience B4): the measure@1 tool an item's own words name, or null when none fits (grams / kilograms: the
+ * engine has no scale). Mass wins over a stray "l" or "m": a kg item is never shown on a jug or a ruler.
+ */
+export function measureToolFor(text, representation = "") {
+  const t = `${String(text ?? "")} ${String(representation ?? "")}`.toLowerCase();
+  if (/(?<![\p{L}])(?:kg|g|gm|gms|gram|grams|gramme|kilogram|kilograms|kilo|kilos|weigh\w*|wazan|vazan|mass|tola)(?![\p{L}])/u.test(t)) return null;
+  if (/(?<![\p{L}])(?:ml|millilit(?:re|er)s?|lit(?:re|er)s?|l|jug|pour|capacity)(?![\p{L}])/u.test(t)) return "jug";
+  if (/°\s*c|(?<![\p{L}])(?:degrees?|celsius|temperature|thermometer|taapmaan|tapman)(?![\p{L}])/u.test(t)) return "thermometer";
+  if (/(?<![\p{L}])(?:cm|mm|centimet(?:re|er)s?|millimet(?:re|er)s?|ruler|scale|length|long|lamba|lambai)(?![\p{L}])/u.test(t)) return "ruler";
+  return null;
 }
 
 /** Params with `mode` only when it is one of the engine's own modes (ENGINES[engine].modes); an invalid one is dropped. */

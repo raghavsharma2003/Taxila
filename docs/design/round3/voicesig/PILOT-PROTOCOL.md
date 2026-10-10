@@ -147,7 +147,10 @@ Why 32: §6.4.
 3. The coordinator starts the lesson from the session script (§5) and stays in the background.
 4. At the end, the phone offers two downloads: `taxila-pilot-P07-S1-<time>.wav` (16 kHz mono) and the `.json` sidecar
    (numbers: clock, the device's per-turn kv, her audible spans). Keep both.
-5. Open `?vspilot=0` once at the end of the day so the device stops recording.
+5. Open `?vspilot=0` once at the end of the day so the device stops recording. (Round 3 fix, adversarial N4: the code is no
+   longer kept on the device at all; only the page the coordinator opened with the link records, and a reload or a later
+   lesson opened any other way records nothing. Re-open the link if the page is reloaded mid-session. This step is kept
+   as a habit; it no longer carries the safety.)
 6. Upload the two files to the study's private Azure Storage container (India region), e.g.
    `az storage blob upload --account-name <study account> --container-name voicesig-pilot --name P07/S1/<file> --file <file> --auth-mode login`
    (the container is private; access by Entra ID login, no public URL, no SAS longer than 7 days); then delete the files

@@ -23,7 +23,11 @@ export function setCoverage(c) { COVERAGE = c; }
  */
 export function entryFor({ skillId = null, topicId = null, family = null, goal = null } = {}, cov = coverage()) {
   const ok = (e) => (!family || e.family === family) && (!goal || e.goal === goal);
-  if (skillId) { const e = cov.entries.find((x) => ok(x) && x.skillIds.includes(skillId)); if (e) return e; }
+  // round 3 fix (adversarial B1): admission is by SKILL. A lesson that names its skill gets only a game whose act exercises
+  // that skill (coverage ACTS), never the topic's other game: "game khelna hai" in an addition lesson served the
+  // subtraction game and its evidence. Only a turn with no skill known (a hook) falls back to the topic, and that game's
+  // evidence is on its own skill (startSession: entry.skillId).
+  if (skillId) return cov.entries.find((x) => ok(x) && x.skillIds.includes(skillId)) ?? null;
   if (topicId) { const e = cov.entries.find((x) => ok(x) && x.topicId === topicId); if (e) return e; }
   return null;
 }

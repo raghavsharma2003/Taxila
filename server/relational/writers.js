@@ -151,10 +151,15 @@ export function relNoteStmt(child, n) {
  * (GET / DELETE /api/parent/memory). Deleting needs no layer: less data is always allowed, in every mode.
  * @param {any} child @param {string} lessonId
  */
-export function memoryForgetStmt(child, lessonId) {
+export function memoryForgetStmt(child, lessonId, heldIds = []) {
   const c = childOf(child);
   if (!UUID.test(String(lessonId ?? ""))) throw new Error("relational writer: lessonId required");
-  return stmt("session", `delete from memory where child_id = $1 and source_turn in (select id from turn where lesson_id = $2) returning id`, [c.id, lessonId], "any");
+  // round 3 fix (adversarial B3): plus the rows she HAD in hand this lesson (the opener's callback, the brief's memory lines:
+  // the same three newest rows), named by id: an earlier lesson's memory she called back and was asked to forget used to
+  // survive and could open the next lesson again. Ids are integers or nothing (never text into SQL).
+  const ids = [...new Set((heldIds ?? []).map(String).filter((x) => /^\d{1,18}$/.test(x)))];
+  return stmt("session", `delete from memory where child_id = $1 and (source_turn in (select id from turn where lesson_id = $2) or id = any($3::bigint[])) returning id`,
+    [c.id, lessonId, ids], "any");
 }
 
 const OVERLAY_KEYS = ["warmth", "permanence", "secret", "night", "goodbyeDistress", "loneliness"];

@@ -16,6 +16,7 @@
 // either; tier C (life events, jokes, people) is never built.
 //
 // Everything here is PURE (no clock, no I/O): the seam (seam.js) loads the rows once per lesson at start.
+import { unsafeChildPhrase } from "../conversation/screen.js";
 //   callbackCandidates(rec)            → CallbackCandidate[]  (closed fragments: notes, never lines she could say)
 //   pickCallback(cands, ctx)           → the ONE callback this turn may carry, or null (≤ 1 per lesson, gated)
 //   memoryClaims(reply) / claimProblem → the post-hoc claim check (F9): a past-reference she has no record for
@@ -30,6 +31,12 @@ export const OPEN_TURNS = 3;
 const SAYABLE = /["“”'‘’]|\b(?:i|me|my|you|your|tum|tumhe|tumhara|aap|aapka|main|mera|mujhe)\b/i;
 
 const clip = (s, n = 60) => String(s ?? "").replace(/\s+/g, " ").trim().slice(0, n);
+// round 3 fix (adversarial N2): a memory row is model-written text from the child's words, and a callback renders it LAST in
+// her instructions ("OPEN THIS TURN WITH what you remember of them"). Round 2's law applies (model-lifted child words never
+// enter her instructions unscreened: conversation/screen.js unsafeChildPhrase), plus what a cheerful opener must never
+// carry: fear, hurt, sadness, illness, a person in their life ("is scared of an uncle at home" passed before this).
+const NOT_AN_OPENER = /(?<![\p{L}])(?:scared|afraid|fear|frighten\w*|darr?|darta|darti|darte|dar lagta|hurt\w*|hit|hits|beat\w*|maar\w*|pita\w*|cry\w*|cried|ro(?:ta|ti|te|ya|yi)|sad|dukhi|udaas|udas|lonely|alone|akel[ai]|bully|bullied|teased|mazaak|mocked|sick|ill|illness|hospital|beemar|bimar|died|dead|death|mar gaya|mar gayi|fight\w*|ladai|jhagda|secret|raaz|uncle|aunty|auntie|stranger|neighbou?r|padosi|marry|shaadi|love|pyaar|crush|best friend|forever)(?![\p{L}])/iu;
+const openerSafe = (t) => !unsafeChildPhrase(t) && !NOT_AN_OPENER.test(String(t ?? ""));
 const words = (s) => String(s ?? "").toLowerCase().normalize("NFC").split(/[^\p{L}\p{M}\p{N}]+/u).filter((w) => w.length >= 3);
 
 /**
@@ -57,7 +64,7 @@ export function callbackCandidates(rec) {
   if (rec?.allow?.memory) {
     for (const m of rec.memories ?? []) {
       const t = clip(m.text, 90);
-      if (t) add({ id: `W:mem:${m.id}`, kind: "W", tags: ["open"], fragment: `from an earlier lesson · ${t}`, cite: cite(m.lessonId) });
+      if (t && openerSafe(m.text)) add({ id: `W:mem:${m.id}`, kind: "W", tags: ["open"], fragment: `from an earlier lesson · ${t}`, cite: cite(m.lessonId) });
     }
     for (const i of (rec.interests ?? []).slice(0, 3)) {
       const t = clip(i, 30);

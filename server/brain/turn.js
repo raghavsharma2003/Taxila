@@ -67,6 +67,8 @@ import { perceive, fingerprint as prefetchFingerprint, adoptPrefetch, adoptMissO
 // Round 3, stream relational-human: the perception bus (server/latency/bus.js): the acknowledgement route waits on THIS
 // classify — the turn's own, or the adopted prefetch's — and never makes a model call of its own
 import { publishPerception } from "../latency/bus.js";
+// round 3 fix (adversarial B2): the play piece's own closed voice grammar (pure, no DOM)
+import { parseVoice } from "../../src/play/core/voice.ts";
 import { childTurnRow, clientInstructions, debugFor, floorIncidentStmt, incidentStmt, kitFor, laneOf, runTurnTx, stageTurns, turnInsertStmt, turnLane, withAsk, withSeamUi, withStudioSlot } from "./rows.js";
 
 /**
@@ -495,10 +497,15 @@ export async function lessonTurn(req, body) {
   // keep is answered by a PLAY piece (the play stream's solver-checked level for the skill or topic, its art rotated, its
   // board twin attached) when the play coverage admits it; then no whiteboard is requested for the ask and this turn's
   // slotFor shows the piece. A miss (null) leaves the turn exactly as before. Pure code, ≤ 350 ms learner read, no model.
-  const playAsk = !late && !moduleOnly && !keepEngineFor(r, next) && INTERACTIVE_ASKS.has(String(r.move?.visual ?? "")) && typeof studioSeam.composeAsk === "function"
+  // round 3 fix (experience B3 / integrator open problem 2): a play piece admitted for the skill comes FIRST, before the
+  // engine in the tray: "keep the engine" (forge patch 03) was meant to stop an engine being swapped for a STATIC board, but
+  // it also stopped every class-4 game ask that arrived while the item's own engine was up (0 of 3 game asks got a game; the
+  // tray kept "Rang bharo" while she described another game). The engine is still kept when no play piece is admitted.
+  const playAsk = !late && !moduleOnly && INTERACTIVE_ASKS.has(String(r.move?.visual ?? "")) && typeof studioSeam.composeAsk === "function"
     ? await seamSafe("studio.composeAsk", () => studioSeam.composeAsk(lesson.id, { visual: String(r.move.visual), skillId: next.lastMove?.skillId ?? r.move?.skillId ?? null,
       topicId: lesson.topic_id ?? null, child, tray: r.ui?.tray ?? null }), null)
     : null;
+  const keepEngineNow = !playAsk && keepEngineFor(r, next);
   const kernelRun = () => {
     const beat = nextBeat(prev.beat, r.move, next);
     // the Director's only new thing on screen is its template whiteboard rung (W2-B): the live board replaces it (owner
@@ -508,7 +515,7 @@ export async function lessonTurn(req, body) {
     // round 3 forge (server/forge3/compose.js): a game / animation / simulation ask is answered by something the child can
     // DO. An engine already in the tray IS that (taxila.dev 2026-10-09: 2/2 such asks unmounted the engine for a static
     // board), so it stays and no board replaces it; a picture / diagram ask still gets the board.
-    const keepEngine = keepEngineFor(r, next);
+    const keepEngine = keepEngineNow;
     const rungMounted = r.ui?.tray === "module" && (next.module?.engine === RUNG_ENGINE || (!!r.move?.visual && !!next.module && !keepEngine));
     const wb = whiteboardAskOf({ beat, lane, late, strained: frustrationLoop(next.affect ?? initialAffect()), move: r.move, studioView: late ? null : studioView, rungMounted, requested: !!r.move?.visual && !keepEngine && !playAsk });
     const t1 = performance.now();
@@ -532,7 +539,9 @@ export async function lessonTurn(req, body) {
     // round 3 (relational-human): the accepted callback travels with its closed fragment, so the compile can render it
     const callback = relFx.callbackId ? seamSafe("relational.callbackOf", () => relationalSeam.callbackOf(lesson.id, relFx.callbackId), null) : null;
     const rel = { turn: next.turn, ...(relFx.overlay ? { overlay: relFx.overlay } : {}), ...(relFx.callbackId ? { callbackId: relFx.callbackId, ...(callback ? { callback } : {}) } : {}),
-      ...(relFx.noticeId ? { noticeId: relFx.noticeId } : {}) };
+      ...(relFx.noticeId ? { noticeId: relFx.noticeId } : {}),
+      // round 3 fix (adversarial B3): the child asked her to forget: planTurn drops the brief's memory lines from here on
+      ...(relational?.reasons?.includes("mem.forget_ask") ? { forget: true } : {}) };
     plan = await planTurn(state, relCls, { ...planCtx, now, rel });
     ({ evidence, writes, skillChanges, incident, r, instructions, skipped } = plan);
     next = r.state;
@@ -596,7 +605,7 @@ export async function lessonTurn(req, body) {
         // ship5 p4-content: the Director's tray holds only its template explain rung (W2-B): a Stagecraft piece may take it
         rungTray: r.ui?.tray === "module" && next.module?.engine === RUNG_ENGINE,
         // ship5 fixer: the child asked to see it (requests.js visual): a piece they asked for may take the Director's show
-        visualRequest: !!r.move?.visual && !keepEngineFor(r, next) }) : null), null);
+        visualRequest: !!r.move?.visual && !keepEngineNow }) : null), null);
   // ship5 p4-content: a Stagecraft piece took the tray from the Director's template rung (the same rule as the live board
   // below: the rung is the floor, a real piece replaces it): its mount / param commands go, a rung already on screen is
   // unmounted, and its facts row leaves the move's content, so her line names only what the child sees.
@@ -796,6 +805,9 @@ export async function lessonTurn(req, body) {
   }
 
   if (!moment) moment = momentNow();
+  // round 3 fix (adversarial B2): whether a play piece is on screen after this turn (planTurn's playIsUp reads it next turn:
+  // a game command is then the game's act, never an answer to the folded card)
+  if (!late) { if (studioSlot?.artifact?.kind === "play") next.playOn = { turn: next.turn }; else if (next.playOn) delete next.playOn; }
   // Studio's actions for this turn, as the kernel accepted them (a reveal on the teacher's cue; never on a safeguarding or
   // closing turn, never a second new thing on screen) and as Studio's slot shows them (a held reveal is not revealed).
   const turnStudio = turnStudioNow();
@@ -1009,6 +1021,15 @@ export function noteDid(next, { cls, target, activeItem, kit, childText, tapped,
 export async function planTurn(base, cls, c) {
   const state = structuredClone(base);
   const { kit, child, lesson, activeItem, moduleOnly } = c;
+  // round 3 fix (adversarial B2): a command the play piece on screen acts on ("1/3", "3", "teen se todo", "ho gaya"; the
+  // closed voice grammar src/play/core/voice.ts, the same parser the piece runs) is the GAME's act, never an answer to the
+  // card question the Desk folds away in play mode: no grade (an exact "1/3" was credited and the lesson moved on mid-game;
+  // a bare "3" was a wrong answer in code and a hint on a card the child cannot see). Distress, a request the bytes read, a
+  // chip or an engine's machine answer are never touched.
+  if (cls && !moduleOnly && !c.chipId && c.childText && playIsUp(state) && !cls.flags?.distress && !cls.request && !cls.help
+    && !["module", "chip", "predicate"].includes(cls.source) && parseVoice(String(c.childText)) !== null) {
+    cls = { ...cls, outcome: "no_evidence", confidence: 1, source: "play_act", request: { type: "play_act", whole: true } };
+  }
   const affectNow = moduleOnly ? state.affect
     : nextAffect(state.affect, { read: cls?.flags ?? {}, outcome: cls?.outcome, itemId: state.activeItemId, answer: c.answer });
   const discount = gamingDiscount(affectNow);
@@ -1048,6 +1069,9 @@ export async function planTurn(base, cls, c) {
   // reads (state.rel: the overlay shape id, a callback or notice id; ids only, session state). Absent = unchanged.
   if (c.rel) state.rel = c.rel;
   else if (state.rel) delete state.rel;
+  // round 3 fix (adversarial B3): after "please forget that" the memory lines she had in hand leave her instructions for
+  // the rest of the lesson (the rows themselves are deleted in the lesson end's transaction: relational/seam.js)
+  if (c.rel?.forget && state.brief?.memoryCallbacks?.length) state.brief = { ...state.brief, memoryCallbacks: [] };
   // 2. the Director step on beliefs that include this answer (voice: capped tie-breakers only, CE8)
   const stepIn = { kit, cls: cls ?? undefined, chipId: c.chipId, answer: c.answer, now, comp: state.comp, voice: c.voice?.signals, voiceZ: c.voice?.z,
     text: c.childText, bargeIn: c.bargeIn, typed: !!c.typed, ...(c.moduleUnverified ? { unverified: true } : {}) };
@@ -1273,6 +1297,9 @@ export async function missReason(specs, key) {
 
 /** What perceive() (server/latency/perceive.js) calls: the turn's own functions, so the prefetch runs the turn's code. */
 const PERCEIVE_DEPS = { classifyFast, classify, understand, speculate, planTurn, replyKey, textReply, conv2Mode };
+/** round 3 fix (adversarial B2): is a play piece up? The Studio slot showed one last turn (state.playOn, set below), or the
+ *  last move answered the child's game ask (the piece is coming up on this turn's screen). */
+export const playIsUp = (state) => !!state?.playOn || state?.lastMove?.visual === "game";
 
 /** CONVERSATION-V2 §4.4: the longest a non-answer turn waits on the UNDERSTAND note from its start (gpt-6-sol p90 2174 ms). */
 export const NOTE_WAIT_MS = Number(process.env.TAXILA_NOTE_WAIT_MS ?? 2200);

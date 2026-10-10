@@ -375,9 +375,12 @@ function generate(req: GenRequest): Candidate<StripsParams>[] {
 
 function facts(level: PlayLevel<StripsParams>, s: StripsState): Facts {
   const f: Facts = { goal: level.params.goal };
-  s.bars.forEach((b, i) => { f[`bar${i + 1}`] = level.fade >= 2 ? barStr(b) : `${b.d} parts, ${b.shaded.length} shaded`; });
+  // round 3 fix (experience B2): the strips are named as the screen names them (A, B, C: strips.view NAMES); "bar1 / bar2"
+  // reached her line and she named controls the child cannot see ("bar1 ke 4 parts…", 3 times in one review lesson)
+  const NAMES = ["A", "B", "C"];
+  s.bars.forEach((b, i) => { f[NAMES[i] ?? `strip${i + 1}`] = level.fade >= 2 ? barStr(b) : `${b.d} parts, ${b.shaded.length} shaded`; });
   if (level.params.target && level.fade >= 2) f.target = `${level.params.target[0]}/${level.params.target[1]}`;
-  if (s.predicted !== null) f.predicted = s.predicted === -1 ? "same" : `bar${s.predicted + 1}`;
+  if (s.predicted !== null) f.predicted = s.predicted === -1 ? "same" : (NAMES[s.predicted] ?? `strip${s.predicted + 1}`);
   if (s.done) f.done = "yes";
   return f;
 }

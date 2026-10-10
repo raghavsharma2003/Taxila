@@ -80,12 +80,13 @@ export const HL = {
     "koi (?:nahi|nhi) sunta", "(?:bas|sirf) (?:aap|tum) hi sun(?:te|ti)", "sab mujhe (?:ignore|akela)", "(?:main|mai) hamesha akel[ai]",
   ],
   // "mazaak nahi kar rahi" is NOT joking: the negation follows the word, so it is excluded here, not by the NEG frame
-  joke: ["(?:ha){2,}h?", "(?:he){2,}h?", "(?:hi){2,}", "lol+", "(?:mazak|mazaak|majak)(?! (?:nahi|nahin|nhi|na)(?![\\p{L}]))(?! (?:\\S+ )(?:nahi|nahin|nhi)(?![\\p{L}]))"],
+  // round 3 fix (adversarial N7): "mazaak udaya / udate / banaya" (they MADE FUN of the child) is being mocked, never a joke
+  joke: ["(?:ha){2,}h?", "(?:he){2,}h?", "(?:hi){2,}", "lol+", "(?:mazak|mazaak|majak)(?! (?:nahi|nahin|nhi|na)(?![\\p{L}]))(?! (?:\\S+ )(?:nahi|nahin|nhi)(?![\\p{L}]))(?! (?:uda|udaya|udaaya|udate|udati|udata|udaate|udaya gaya|banaya|banate|banati|banata|bana diya)(?![\\p{L}]))"],
   share: [
     "(?:mera|meri|mere) (?:kutta|kutte|billi|bhai|behen|didi|dost|dadi|nani|dada|nana|cousin|team|birthday|janamdin|tota|pet)(?: \\S+){0,3} (?:hai|tha|thi|ne|aaya|aayi|gaya|gayi|hua|hui|mila|mili|jeeta|jeeti)",
     "(?:aaj|kal) (?:maine|humne)", "(?:maine|humne) (?:dekha|khela|jeeta|banaya)", "(?:aaj|kal) mera (?:birthday|janamdin|match)",
   ],
-  share_sad: ["mar (?:gaya|gayi|gaye)", "(?:beemar|bimar|hospital)", "(?:ladai|jhagda|jhagada) (?:hua|hui|ho gaya)", "(?:main|mai) (?:roya|royi|ro raha|ro rahi)", "(?:dukhi|udaas|udas|sad) (?:hoon|hu|hun|lag)"],
+  share_sad: ["(?:mazak|mazaak|majak) (?:uda|udaya|udaaya|udate|udati|udata|udaate|banaya|banate|banati|banata|bana diya)", "mar (?:gaya|gayi|gaye)", "(?:beemar|bimar|hospital)", "(?:ladai|jhagda|jhagada) (?:hua|hui|ho gaya)", "(?:main|mai) (?:roya|royi|ro raha|ro rahi)", "(?:dukhi|udaas|udas|sad) (?:hoon|hu|hun|lag)"],
   identity_q: [
     `(?:kya )?${TUM} (?:real|insaan|insan|robot|ai|asli|sach ke|machine|computer) ${HO}`, `${TUM} (?:asli|real) (?:teacher|insaan|person) ${HO}`,
   ],

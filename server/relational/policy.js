@@ -51,6 +51,10 @@ export const SHAPES = Object.freeze({
   memory_keeps_nothing: "they asked what she remembers about them: honest; she keeps nothing between lessons, only today; no promise; then the work",
   memory_keeps_allowed: "they asked what she remembers about them: honest and short; she keeps only what their grown-up allowed, and their grown-up can see it; no promise of forever; then the work",
   forget_ok: "they asked her not to keep what they said: agree plainly that she will not keep it, no fuss, no question about why; then the work",
+  // round 3 fix (adversarial B5): a forget request AFTER a disclosure in this lesson. The incident row and the safeguarding
+  // hand-off stand, so a promise to forget it would be false, and keeping a hurt child's secret is the one promise
+  // safeguarding practice never makes. Same register as secret_grownup: honest, calm, no blame, no pressure.
+  forget_after_safety: "they asked her to forget something after telling her about being hurt or unsafe: no promise to forget it or keep it secret; telling was right and brave, never their fault; a trusted grown-up should know so they can help; calm, no questions, no pressure; then gently on",
 });
 
 /** The overlay each signal maps to (F2/F4 first). */
@@ -118,7 +122,9 @@ export function decide(snapshot, session, signals, ctx) {
   // ── F1 identity: the floor answers identity first (VT §1.4 P5); the parent sees that it was asked.
   if (k.has("identity_q")) { note("identity_asked", {}); reasons.push("f1.identity_q"); }
   if (k.has("forget_ask")) {
-    // round 3: honoured, not only noted: this lesson's memories are not kept (seam.js onLessonEnd), the parent sees it
+    // round 3: honoured, not only noted: this lesson's memories are not kept (seam.js onLessonEnd), the parent sees it.
+    // round 3 fix (adversarial B3): and every memory row she had in hand this lesson (the callback she opened with, the
+    // brief's memory lines) goes too, so "she will not keep it" is true whatever "that" was (seam.js onLessonEnd).
     note("memory_forgotten", {}); reasons.push("mem.forget_ask");
     next.forgetAsked = true;
   }
@@ -173,7 +179,11 @@ export function decide(snapshot, session, signals, ctx) {
   }
   if (k.has("loneliness")) { overlay("POINT_OUT", "point_out_person"); note("boundary_warmth", { move: "point_out" }); display("share_sad"); reasons.push("boundary.loneliness"); }
   // round 3: the truth about her memory, AFTER every F2/F4 boundary (a secret or contact ask in the same turn wins the overlay)
-  if (k.has("forget_ask")) overlay("WARM_BOUNDARY", "forget_ok");
+  // round 3 fix (adversarial B5): after a disclosure in this lesson (session.distressAt: the safeguard turn, whatever the
+  // Director's episode says two calm turns later) the agreement is never given: forget_after_safety instead
+  // (or when the last lesson ended in safeguarding: "jo maine kal bataya woh bhool jao" can be about that disclosure)
+  const safetyBefore = session.distressAt != null || snapshot?.lastEnd === "safeguard";
+  if (k.has("forget_ask")) { overlay("WARM_BOUNDARY", safetyBefore ? "forget_after_safety" : "forget_ok"); if (safetyBefore) reasons.push("mem.forget_after_safety"); }
   else if (k.has("memory_q")) { overlay("WARM_BOUNDARY", snapshot?.keeps && SHAPES[snapshot.keeps] ? snapshot.keeps : "memory_keeps_allowed"); reasons.push("mem.memory_q"); }
 
   // ── Teacher-owned repair (RO-11): ownership only from the key or the verifier, never from the child's insistence.
@@ -210,7 +220,11 @@ export function decide(snapshot, session, signals, ctx) {
 
   // ── Round 3: ONE callback from the record (memory.js pickCallback: ≤ 1 per lesson, never the first meeting, never on a
   // boundary / repair / release / safety turn or while the dependency overlay has callbacks off; deixis or the opener)
-  const blocked = !!d.floor || (d.moveOverlay && ["WARM_BOUNDARY", "POINT_OUT", "OWN_SLIP", "AFFIRM_RECHECK", "RELEASE", "CHECK_IN"].includes(d.moveOverlay.kind));
+  // round 3 fix (adversarial B3): after the child asked her to forget, nothing from the record is brought back this lesson
+  // round 3 fix (adversarial N6): nor beside a sad share (the happy memory led the turn after "mera dog kal mar gaya"), nor
+  // in the lesson after one that ended in safeguarding (N2: snapshot.lastEnd was read by nothing)
+  const blocked = !!d.floor || !!next.forgetAsked || k.has("share_sad") || snapshot?.lastEnd === "safeguard"
+    || (d.moveOverlay && ["WARM_BOUNDARY", "POINT_OUT", "OWN_SLIP", "AFFIRM_RECHECK", "RELEASE", "CHECK_IN"].includes(d.moveOverlay.kind));
   const cb = pickCallback(snapshot?.callbacks ?? [], { turn, move: ctx.move, skillId: ctx.skillId ?? null, sessions: Number(snapshot?.sessions ?? 0),
     used: session.callbackUsed ?? null, blocked, callbacksOff: !!next.overlayMoves?.callbacksOff, withdrawn: withdrawing(session, ctx.words ?? 0, ctx.outcome ?? null) });
   if (cb) { d.callbackId = cb.id; next.callbackUsed = cb.id; reasons.push("rapport.callback"); }

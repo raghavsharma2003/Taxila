@@ -21,12 +21,13 @@ import type { DeskActions, TrayModel } from "./model.ts";
 export function WorkTray({ tray, floor, young, modules, lang, ageBand, actions, onModuleFailed }:
   { tray: TrayModel; floor: Floor; young: boolean; modules?: ModuleCommandSource; lang: string; ageBand: string; actions: DeskActions; onModuleFailed?: () => void }) {
   const showing = floor === "showing";
+  const layered = tray.kind === "module" || tray.kind === "studio" || tray.kind === "board";
   return (
     <section className={`dk-tray dk-tray--${tray.kind}`} data-kind={tray.kind} data-showing={showing ? "1" : undefined} aria-label={t(tray.kind === "board" ? "tray.board" : tray.kind === "tiles" ? "tray.choices" : "tray.activity")} data-testid="tray">
-      <div className="dk-tray-body" inert={showing ? true : undefined}>
-        {tray.overlay === "help_menu" ? (
+      <div className="dk-tray-body" inert={showing || (layered && tray.overlay) ? true : undefined}>
+        {tray.overlay === "help_menu" && !layered ? (
           <HelpMenu young={young} onPick={actions.helpMenuPick} />
-        ) : tray.overlay === "no_mic" ? (
+        ) : tray.overlay === "no_mic" && !layered ? (
           <NoMicCard young={young} onDismiss={actions.dismissNoMic} />
         ) : tray.kind === "module" && modules ? (
           <ModuleTray modules={modules} lang={lang} ageBand={ageBand} onEvent={actions.moduleEvent} onFailed={onModuleFailed} />
@@ -41,6 +42,13 @@ export function WorkTray({ tray, floor, young, modules, lang, ageBand, actions, 
           <NumberPad young={young} onSend={actions.padSend} />
         ) : null}
       </div>
+      {/* round 3 fix (experience B5): on a work surface the help menu / no-mic card is a layer OVER the work, which stays
+          mounted underneath (an engine's or a play piece's state is never lost to a Help tap) */}
+      {layered && tray.overlay && (
+        <div className="dk-tray-layer" data-testid="tray-layer">
+          {tray.overlay === "help_menu" ? <HelpMenu young={young} onPick={actions.helpMenuPick} /> : <NoMicCard young={young} onDismiss={actions.dismissNoMic} />}
+        </div>
+      )}
       {showing && (
         <span className="dk-watch" data-testid="watch-badge"><Glyph name="showing" size={20} />{t("tray.watch")}</span>
       )}
@@ -88,12 +96,15 @@ function ModuleTray({ modules, lang, ageBand, onEvent, onFailed }: { modules: Mo
 
 /** ChoiceTiles (§6.3.4): 2-4; Young tiles are picture-led, 112 dp (B1) / 96 dp (B2). They take the touch; the
  *  lamp stays on the dock, whose mode line points up at them (design-v2-rejected-moving-ring). */
+/** round 3 fix (experience B10): a label that is words, not a numeral / short answer ("Keep going", "Stop for today"). */
+export const isWordLabel = (label: string) => /\s/.test(String(label ?? "").trim()) || String(label ?? "").trim().length > 5;
+
 export function ChoiceTiles({ tiles, young, onPick, disabled }: { tiles: { id: string; label: string }[]; young: boolean; onPick: (c: { id: string; label: string }) => void; disabled?: boolean }) {
   const shown = tiles.slice(0, 4);
   return (
     <div className="dk-tiles" role="group" aria-label={t("tray.choices")} data-n={shown.length} data-testid="choices">
       {shown.map((c, k) => (
-        <button key={c.id} type="button" className="dk-tile" onClick={() => onPick(c)} disabled={disabled} data-key={k + 1}>
+        <button key={c.id} type="button" className="dk-tile" onClick={() => onPick(c)} disabled={disabled} data-key={k + 1} data-words={isWordLabel(c.label) ? "" : undefined}>
           <span className="dk-tile-label" data-speech="">{c.label}</span>
           {!young && <span className="dk-tile-key" aria-hidden="true">{k + 1}</span>}
         </button>

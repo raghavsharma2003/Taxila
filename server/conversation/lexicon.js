@@ -55,6 +55,37 @@ const ADULT = /\b(?:(?:hi|hello|namaste)[\s,]+)?(?:this\s+is\s+(?:his|her|their)
 const THINK_TRAIL = /(?:\b(?:because|so|then|but|wait|toh|phir|fir|aur|lekin|kyunki|kyuki|matlab|ruko)|\.{3}|…)\s*$/i;
 const OOB = /\b(?:(?:ghost|horror|bhoot|bhootni|bhootiya|bhutiya|darawni|darawna|darauni|daravni|darwani|scary|creepy|spooky)(?:\s+\S+){0,2}?\s+(?:story|stories|kahani|kahaniyan|kahaniya|movie|movies|film|films|picture|show|series|web\s*series|video|videos|game)|horror\s+(?:movie|film|story)|gaali|gali\s+(?:do|batao|sikhao)|bad\s+words?|(?:swear|curse)\s+words?|girl\s*friend|boy\s*friend|(?:kiss|sex)|how\s+to\s+(?:hack|kill|make\s+a\s+bomb|steal)|hack\s+(?:karna|karo|kaise|sikhao)|(?:mera|my)\s+(?:homework|essay|assignment)\s+(?:kar|likh|do|write)|(?:homework|essay|assignment)\s+(?:kar|likh)\s*(?:do|dijiye|ke\s+do|kar\s+do)|do\s+my\s+(?:homework|essay)|write\s+my\s+(?:essay|homework)|(?:pubg|bgmi|free\s*fire)\s+(?:kill|killing)\s+(?:tips|trick)|(?:bomb|gun|pistol)\s+(?:banana|kaise|banao|kaise\s+banate)|prank\b[^?]{0,40}\b(?:ro\s+de|rula|rone|hurt|chot|cry)|(?:aapko|tumhe|tumko|your)\s+(?:kaunsi|kaun\s*si|which|favou?rite)\s+(?:political\s+)?party(?:\s+(?:pasand|achhi|best))?)\b/i;
 
+// round 3 fix (adversarial B4, 2026-10-10): sexual content asked OF HER ("do you watch porn", "kya aap blue film dekhte ho",
+// "tum nangi video dekhti ho?", "sexy video dikhao"). OOB held only "sex", so round 3's wider small-talk reading
+// (SMALL_TALK_DO "… dekhte ho?") answered these as a friendly question about her, and requests.js read "video" as an
+// animation ask (a live-built game). Read in code, at ANY length (a long turn that carries it is still declined), before
+// every other reading. A disclosure that names the same words ("uncle ne mujhe nangi video dikhayi") never gets here: the
+// safety predicate (scanSafety) decides it first, as a safeguard. Lesson words that hold the letters stay lesson words:
+// "naked eye", "Nanga Parbat", "ganda paani", "sexual / asexual reproduction", "sex ratio / hormones / chromosomes", an
+// "adult frog" (only an adult / dirty / blue / gande + a media noun is read). Same exclusions as safety.js's sent-me form.
+// A bare "sex" stays an OOB decline on a short whole turn, as before (OOB; a class 8 "sex ratio kya hai" question is a known
+// false decline there, kept: open) and is not read here at any length (class 8 SST answers say "sex ratio", "grounds of sex").
+const SX_B = "(?<![\\p{L}\\p{M}\\p{N}])", SX_E = "(?![\\p{L}\\p{M}\\p{N}])";
+const SX_MEDIA = "(?:film|films|filmein|movie|movies|picture|pictures|pic|pics|photo|photos|foto|fotos|video|videos|vidyo|vdo|clip|clips|tasveer|tasvir|tasveerein|site|sites|website|websites|content)";
+// talk words only after adult / dirty / gande ("gandi baatein"); never the singular "gandi baat" (Hinglish for "a naughty
+// thing": "yeh gandi baat hai") and never after "blue"
+const SX_TALK = "(?:baatein|baaten|chat|chats|message|messages|msg|kahani|kahaniyan|story|stories|jokes?)";
+const SX_PERSON = "(?:girl|girls|boy|boys|woman|women|man|men|people|body|bodies|ladki|ladkiyan|ladkiyon|ladka|ladke|aurat|aurtein|aurton|log|logon|insaan|badan|sharir)";
+const SEXUAL = new RegExp(`${SX_B}(?:${[
+  // a bare "sex" is NOT read here: class 8-9 kits say it ("sex ratio", "sex hormones", "on grounds of sex", in answers a
+  // child gives); a short whole turn with it stays an OOB decline as before (OOB above), and "sex video" is read below
+  "porn\\w*", "p0rn\\w*", "xxx", "sexy", "sexi", `(?:sex|s3x|seks)\\s+(?:${SX_MEDIA}|${SX_TALK})`,
+  "nude", "nudes", "nudity", "ashleel", "ashlil",
+  // "nangi / nanga / nange / naked" is also BARE in lesson words ("nangi dhalaan", "nange pair", "nangi aankhon se", "nange
+  // taar", "naked eye", "naked flame": kit answers say them), so only beside a media or a person noun
+  `(?:nangi|nange|nanga(?!\\s+parbat)|naked(?!\\s+eyes?))\\s+(?:\\S+\\s+)?(?:${SX_MEDIA}|${SX_PERSON})`,
+  `(?:blue|18\\s*\\+|18\\s+plus|x\\s*rated)\\s+${SX_MEDIA}(?!\\s+of\\b)`,
+  `(?:adult|dirty|gande|gandi|ganda)\\s+(?:${SX_MEDIA}|${SX_TALK})`,
+  "(?:नंगी|नंगे|नंगा)\\s+(?:\\S+\\s+)?(?:वीडियो|फ़?िल्म|फोटो|तस्वीर|तस्वीरें|लड़की|लड़कियाँ|लड़का|औरत|लोग)", "पोर्न", "सेक्स\\s+(?:वीडियो|फ़?िल्म|फोटो|तस्वीर|कहानी|बातें)", "सेक्सी", "अश्लील", "ब्लू\\s+फ़?िल्म", "गंद[ीेा]\\s+(?:वीडियो|फ़?िल्म|फोटो|तस्वीर|बातें)",
+].join("|")})${SX_E}`, "iu");
+/** PURE. Does the turn ask her about (or for) sexual content? Any length, any script. */
+export const sexualAsk = (text) => SEXUAL.test(T(text));
+
 // round 2 (conversation): a garbled or broken-off turn (an ASR fragment, a false start): a stutter or a filler AND it stops on
 // a word that cannot end a thought (an article, a postposition, a filler). Not a verdict on anything: she did not catch
 // all of it. General shape only (no battery phrase is listed): a disfluency + a dangling end, 3-9 words, no question mark.
@@ -89,7 +120,10 @@ const SK_LEAD = String.raw`(?:(?:can\s+we|can\s+i|let'?s|please|plz|didi|ma'?am|
 const SK_END = String.raw`(?:[\s,]+(?:please|plz|na|yaar|ji))?[\s.!?]*`;
 const SKIP_R3 = new RegExp(String.raw`^${SK_LEAD}(?:${SK_DEM}\s+${SK_VERB}|${SK_VERB}\s+${SK_DEM}|skip(?:\s+(?:karo|kar\s+do|it|this(?:\s+one)?))?)${SK_TAILQ}?${SK_END}$`
   + String.raw`|^${SK_LEAD}${SK_NEXT}\s+(?:(?:question|sawaal|sawal|q)(?:\s+${SK_GIVE})?|(?:wala|wali)\s+${SK_GIVE}|${SK_GIVE})${SK_END}$|^${SK_LEAD}next\s+one${SK_END}$|^pass${SK_END}$`, "i");
-const BACK_WHOLE = /^(?:(?:ok|okay|haan|ha|achha|accha|didi)[\s,]+)?(?:aa\s*(?:gaya|gayi|gya|gyi)|आ\s*गय[ाी]|(?:i'?m\s+)?back)(?:[\s,!.]+(?:chalo|chaliye|let'?s\s+go|lets\s+go|ready|didi|now|हूँ|चलो))*[\s!.]*$/i;
+// round 3 fix (adversarial N5): "haan aa gaya" / "achha aa gaya" / "ok aa gaya" is the commonest Hinglish "yes, I got it" after
+// "Samajh aaya?": a yes-word in front of a bare "aa gaya" is never a welcome-back (only "didi, aa gaya", "aa gaya, chalo",
+// "I'm back" are)
+const BACK_WHOLE = /^(?:didi[\s,]+)?(?:aa\s*(?:gaya|gayi|gya|gyi)|आ\s*गय[ाी]|(?:i'?m\s+)?back)(?:[\s,!.]+(?:chalo|chaliye|let'?s\s+go|lets\s+go|ready|didi|now|हूँ|चलो))*[\s!.]*$|^(?:ok|okay|haan|ha|achha|accha)[\s,]+(?:(?:i'?m\s+)?back)(?:[\s,!.]+(?:chalo|chaliye|let'?s\s+go|lets\s+go|ready|didi|now))*[\s!.]*$/i;
 /** Round 3: words that ask HER to do something (show, draw, explain, tell): a turn with one is a request, not a mid-thought. */
 const ASKS_HER = /\b(?:dikhao|dikhaiye|dikha\s+do|dikha\s+dijiye|samjhao|samjhaiye|banao|banaiye|sunao|sunaiye|batao|bataiye|draw|show|explain|tell)\b/i;
 /** Round 3: an easier ask in the forms the battery's two-needs lines use ("kya thoda easy kar sakte ho?", "aasan karo"). */
@@ -141,8 +175,10 @@ export function readIntent(text) {
   const t = T(text);
   if (!t) return null;
   const n = words(t);
-  if (n > 14) return null;
   const hit = (type) => ({ type, whole: true, src: "p5" });
+  // round 3 fix (adversarial B4): sexual content first, at any length (never small talk, never a visual ask, never parked)
+  if (SEXUAL.test(t)) return hit("oob");
+  if (n > 14) return null;
   // out of bounds first: never parked, never served (a number in it does not make it an answer: "PUBG mein 10 kill tips")
   if (OOB.test(t) && n <= 12) return hit("oob");
   if (ADULT.test(t)) return hit("adult");

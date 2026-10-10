@@ -214,14 +214,18 @@ describe("round3 voicesig: the shipped evidence stays honest", () => {
 describe("round3 voicesig: the consented pilot's recorder (src/voicesig/pilotRecorder.ts)", async () => {
   const { pilotCode, PilotRecorder, PILOT_KEY, MAX_MINUTES } = await import("../src/voicesig/pilotRecorder.ts");
   const store = () => { const m = new Map(); return { getItem: (k) => m.get(k) ?? null, setItem: (k, v) => m.set(k, v), removeItem: (k) => m.delete(k), m }; };
-  test("only a coordinator's code starts it; anything else is ignored; ?vspilot=0 ends it", () => {
+  test("only a coordinator's code starts it; anything else is ignored; nothing persists it (round 3 fix, adversarial N4)", () => {
     const s = store();
     assert.equal(pilotCode({ search: "" }, s), null, "no default");
     assert.equal(pilotCode({ search: "?vspilot=1" }, s), null);
     assert.equal(pilotCode({ search: "?vspilot=hello" }, s), null);
     assert.equal(pilotCode({ search: "?vspilot=P07-S1" }, s), "P07-S1");
-    assert.equal(pilotCode({ search: "" }, s), "P07-S1", "kept for the session on this device");
+    // a later lesson on the same device, opened without the link, records nothing (it used to be kept in localStorage)
+    assert.equal(pilotCode({ search: "" }, s), null, "never kept on the device");
     assert.equal(pilotCode({ search: "?vspilot=0" }, s), null);
+    // a code an earlier build left in storage is removed on sight, and never used
+    s.setItem(PILOT_KEY, "P07-S1");
+    assert.equal(pilotCode({ search: "" }, s), null);
     assert.equal(s.m.has(PILOT_KEY), false);
   });
   test("records the P chunks as 16-bit 16 kHz WAV with a numbers-only sidecar (clock segments, her spans, kv)", () => {

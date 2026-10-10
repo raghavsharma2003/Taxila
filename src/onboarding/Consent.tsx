@@ -109,7 +109,7 @@ export function ConsentStep() {
           options={[{ value: "yes", label: "Yes, remember" }, { value: "no", label: "Only this session" }]} />
         {across === false && <p className="t-note">Each lesson starts fresh. The Garden or Sky map and the Notebook stay hidden.</p>}
       </Row>
-      <Row speak="memory" title="Remember what your child says they like" body="Cricket, cooking, a pet's name, used in examples. You can see and delete each one.">
+      <Row speak="memory" title="Remember what your child says they like" body="Cricket, cooking, a pet's name, used in examples; a good moment from an earlier lesson may open the next one. You can see and delete each one.">
         <TileGroup label="Remember what your child likes" columns={2} value={typeof d.likes === "boolean" ? (d.likes ? "yes" : "no") : null} onChange={(v) => set({ likes: v === "yes" })}
           options={[{ value: "no", label: "No" }, { value: "yes", label: "Yes" }]} />
         {d.likes === false && <p className="t-note">Your child's interests won't be used in examples.</p>}

@@ -12,7 +12,7 @@ import { partsOf } from "../content/parts.js";
 import { corroborate } from "../grading/corroborate.js";
 import { plainNumberKey, numberPhrases, selfCorrected, unitsAfterNumbers, tailAgrees, signConflict, bareOfDecisive } from "../grading/spoken-number.js";
 import { requestOf, FLOW_REQUESTS } from "./requests.js";
-import { readIntent } from "../conversation/lexicon.js";
+import { readIntent, sexualAsk } from "../conversation/lexicon.js";
 import { requestFromReading } from "../conversation/policy.js";
 import { p5Flag } from "../conversation/flags.js";
 
@@ -453,9 +453,13 @@ export function classifyFast({ target, childText, asrConfidence, typed, chipId, 
   // "phir se bolo", "mummy bula rahi thi, haan", "skip", "boring", "mujhse nahi hoga", "ruko soch raha hoon", "tum robot
   // ho?", "aapko kaunsa cricketer pasand hai?", "ghost story sunao"). Whole-turn and request-shaped only (lexicon.js). An
   // out-of-bounds ask outranks a request word inside it ("ghost story sunao" is never a story request).
-  const reading = !chipId && !moduleAnswer && p5Flag("STEER") ? readIntent(text) : null;
+  // round 3 fix (adversarial B4): a sexual-content ask is declined in code whatever the p5 flag says (the floor never rides
+  // on a feature flag) and is never undone as the item's own answer words
+  const sexual = !chipId && !moduleAnswer && sexualAsk(text);
+  const reading = sexual ? { type: "oob", whole: true, src: "p5" } : !chipId && !moduleAnswer && p5Flag("STEER") ? readIntent(text) : null;
   let request = reading?.type === "oob" || reading?.type === "adult" ? requestFromReading(reading) : !chipId && !moduleAnswer ? requestOf(text) : null;
   if (!request && reading) request = requestFromReading(reading);
+  if (sexual) { flags.wantsToStop = false; return done("no_evidence", "request", { request }); }
   // Day-0 gates review (2026-10-05): a request word that is the ITEM's own answer content is an answer, never a request.
   // 244 of 44,103 kit answers / acceptables / options read as a whole request ("Good night, Mummy!" → goodbye ended the
   // lesson on the right answer; "stop", "kahani", "khelna", "dheere", "hindi", "for example a samosa" were never graded).

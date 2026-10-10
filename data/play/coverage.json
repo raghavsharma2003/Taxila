@@ -1,16 +1,16 @@
 {
  "v": 1,
- "note": "built by server/play/tools/build-coverage.mjs from RULES; do not edit by hand",
+ "note": "built by server/play/tools/build-coverage.mjs from RULES + ACTS; do not edit by hand",
  "counts": {
   "topicsInScope": 250,
-  "topicsCovered": 47,
-  "entries": 57,
+  "topicsCovered": 46,
+  "entries": 56,
   "withMisconceptionMap": 40,
   "mappedMisconceptions": 71,
   "bySubject": {
    "maths": {
     "inScope": 141,
-    "covered": 32
+    "covered": 31
    },
    "science": {
     "inScope": 69,
@@ -24,7 +24,7 @@
   "byClass": {
    "4": {
     "inScope": 50,
-    "covered": 8
+    "covered": 7
    },
    "5": {
     "inScope": 52,
@@ -40,12 +40,13 @@
    }
   },
   "byFamily": {
-   "todo-jodo": 16,
+   "todo-jodo": 15,
    "taraazu": 4,
    "nishana": 12,
    "kyun-lab": 15
   },
-  "skillsAdmitted": 146
+  "skillsAdmitted": 83,
+  "rulesNotAdmitted": 1
  },
  "skills": {
   "c6-maths-ch05-t02-s1": {
@@ -60,48 +61,7 @@
     "include-one": "c6-maths-ch05-t02-m-one-prime"
    },
    "contexts": [],
-   "why": "RULES c6-maths-ch05-t02 todo-jodo/atoms/atoms"
-  },
-  "c6-maths-ch05-t02-s2": {
-   "topicId": "c6-maths-ch05-t02",
-   "family": "todo-jodo",
-   "mode": "atoms",
-   "goal": "atoms",
-   "grammar": {
-    "hi": 120
-   },
-   "misMap": {
-    "include-one": "c6-maths-ch05-t02-m-one-prime"
-   },
-   "contexts": [],
-   "why": "RULES c6-maths-ch05-t02 todo-jodo/atoms/atoms"
-  },
-  "c6-maths-ch05-t02-s3": {
-   "topicId": "c6-maths-ch05-t02",
-   "family": "todo-jodo",
-   "mode": "atoms",
-   "goal": "atoms",
-   "grammar": {
-    "hi": 120
-   },
-   "misMap": {
-    "include-one": "c6-maths-ch05-t02-m-one-prime"
-   },
-   "contexts": [],
-   "why": "RULES c6-maths-ch05-t02 todo-jodo/atoms/atoms"
-  },
-  "c6-maths-ch05-t04-s1": {
-   "topicId": "c6-maths-ch05-t04",
-   "family": "todo-jodo",
-   "mode": "atoms",
-   "goal": "atoms",
-   "grammar": {},
-   "misMap": {
-    "stop-composite": "c6-maths-ch05-t04-m-stop-composite",
-    "include-one": "c6-maths-ch05-t04-m-include-one"
-   },
-   "contexts": [],
-   "why": "RULES c6-maths-ch05-t04 todo-jodo/atoms/atoms"
+   "why": "RULES c6-maths-ch05-t02 todo-jodo/atoms/atoms · ACTS"
   },
   "c6-maths-ch05-t04-s2": {
    "topicId": "c6-maths-ch05-t04",
@@ -114,9 +74,9 @@
     "include-one": "c6-maths-ch05-t04-m-include-one"
    },
    "contexts": [],
-   "why": "RULES c6-maths-ch05-t04 todo-jodo/atoms/atoms"
+   "why": "RULES c6-maths-ch05-t04 todo-jodo/atoms/atoms · ACTS"
   },
-  "c6-maths-ch05-t04-s3": {
+  "c6-maths-ch05-t04-s1": {
    "topicId": "c6-maths-ch05-t04",
    "family": "todo-jodo",
    "mode": "atoms",
@@ -127,20 +87,21 @@
     "include-one": "c6-maths-ch05-t04-m-include-one"
    },
    "contexts": [],
-   "why": "RULES c6-maths-ch05-t04 todo-jodo/atoms/atoms"
+   "why": "RULES c6-maths-ch05-t04 todo-jodo/atoms/atoms · ACTS"
   },
-  "c7-maths-ch11-t01-s1": {
-   "topicId": "c7-maths-ch11-t01",
+  "c6-maths-ch05-t04-s3": {
+   "topicId": "c6-maths-ch05-t04",
    "family": "todo-jodo",
    "mode": "atoms",
-   "goal": "hcf",
+   "goal": "two-trees",
    "grammar": {},
    "misMap": {
-    "hcf-lowest": "c7-maths-ch11-t01-m-lowest",
-    "hcf-all-primes": "c7-maths-ch11-t01-m-all-primes"
+    "different-trees": "c6-maths-ch05-t04-m-different-trees",
+    "stop-composite": "c6-maths-ch05-t04-m-stop-composite",
+    "include-one": "c6-maths-ch05-t04-m-include-one"
    },
    "contexts": [],
-   "why": "RULES c7-maths-ch11-t01 todo-jodo/atoms/hcf"
+   "why": "RULES c6-maths-ch05-t04 todo-jodo/atoms/two-trees · ACTS"
   },
   "c7-maths-ch11-t01-s2": {
    "topicId": "c7-maths-ch11-t01",
@@ -153,32 +114,7 @@
     "hcf-all-primes": "c7-maths-ch11-t01-m-all-primes"
    },
    "contexts": [],
-   "why": "RULES c7-maths-ch11-t01 todo-jodo/atoms/hcf"
-  },
-  "c7-maths-ch11-t01-s3": {
-   "topicId": "c7-maths-ch11-t01",
-   "family": "todo-jodo",
-   "mode": "atoms",
-   "goal": "hcf",
-   "grammar": {},
-   "misMap": {
-    "hcf-lowest": "c7-maths-ch11-t01-m-lowest",
-    "hcf-all-primes": "c7-maths-ch11-t01-m-all-primes"
-   },
-   "contexts": [],
-   "why": "RULES c7-maths-ch11-t01 todo-jodo/atoms/hcf"
-  },
-  "c7-maths-ch11-t02-s1": {
-   "topicId": "c7-maths-ch11-t02",
-   "family": "todo-jodo",
-   "mode": "atoms",
-   "goal": "lcm",
-   "grammar": {},
-   "misMap": {
-    "lcm-product": "c7-maths-ch11-t02-m-product-always"
-   },
-   "contexts": [],
-   "why": "RULES c7-maths-ch11-t02 todo-jodo/atoms/lcm"
+   "why": "RULES c7-maths-ch11-t01 todo-jodo/atoms/hcf · ACTS"
   },
   "c7-maths-ch11-t02-s2": {
    "topicId": "c7-maths-ch11-t02",
@@ -190,47 +126,7 @@
     "lcm-product": "c7-maths-ch11-t02-m-product-always"
    },
    "contexts": [],
-   "why": "RULES c7-maths-ch11-t02 todo-jodo/atoms/lcm"
-  },
-  "c7-maths-ch11-t02-s3": {
-   "topicId": "c7-maths-ch11-t02",
-   "family": "todo-jodo",
-   "mode": "atoms",
-   "goal": "lcm",
-   "grammar": {},
-   "misMap": {
-    "lcm-product": "c7-maths-ch11-t02-m-product-always"
-   },
-   "contexts": [],
-   "why": "RULES c7-maths-ch11-t02 todo-jodo/atoms/lcm"
-  },
-  "c6-maths-ch05-t01-s1": {
-   "topicId": "c6-maths-ch05-t01",
-   "family": "todo-jodo",
-   "mode": "atoms",
-   "goal": "lcm",
-   "grammar": {
-    "hi": 120
-   },
-   "misMap": {
-    "lcm-product": "c6-maths-ch05-t01-m-common-product"
-   },
-   "contexts": [],
-   "why": "RULES c6-maths-ch05-t01 todo-jodo/atoms/lcm"
-  },
-  "c6-maths-ch05-t01-s2": {
-   "topicId": "c6-maths-ch05-t01",
-   "family": "todo-jodo",
-   "mode": "atoms",
-   "goal": "lcm",
-   "grammar": {
-    "hi": 120
-   },
-   "misMap": {
-    "lcm-product": "c6-maths-ch05-t01-m-common-product"
-   },
-   "contexts": [],
-   "why": "RULES c6-maths-ch05-t01 todo-jodo/atoms/lcm"
+   "why": "RULES c7-maths-ch11-t02 todo-jodo/atoms/lcm · ACTS"
   },
   "c6-maths-ch05-t01-s3": {
    "topicId": "c6-maths-ch05-t01",
@@ -244,7 +140,19 @@
     "lcm-product": "c6-maths-ch05-t01-m-common-product"
    },
    "contexts": [],
-   "why": "RULES c6-maths-ch05-t01 todo-jodo/atoms/lcm"
+   "why": "RULES c6-maths-ch05-t01 todo-jodo/atoms/lcm · ACTS"
+  },
+  "c6-maths-ch05-t01-s2": {
+   "topicId": "c6-maths-ch05-t01",
+   "family": "todo-jodo",
+   "mode": "atoms",
+   "goal": "hcf",
+   "grammar": {
+    "hi": 120
+   },
+   "misMap": {},
+   "contexts": [],
+   "why": "RULES c6-maths-ch05-t01 todo-jodo/atoms/hcf · ACTS"
   },
   "c6-maths-ch05-t03-s1": {
    "topicId": "c6-maths-ch05-t03",
@@ -257,7 +165,7 @@
    },
    "misMap": {},
    "contexts": [],
-   "why": "RULES c6-maths-ch05-t03 todo-jodo/atoms/hcf"
+   "why": "RULES c6-maths-ch05-t03 todo-jodo/atoms/hcf · ACTS"
   },
   "c6-maths-ch05-t03-s2": {
    "topicId": "c6-maths-ch05-t03",
@@ -270,20 +178,7 @@
    },
    "misMap": {},
    "contexts": [],
-   "why": "RULES c6-maths-ch05-t03 todo-jodo/atoms/hcf"
-  },
-  "c6-maths-ch05-t03-s3": {
-   "topicId": "c6-maths-ch05-t03",
-   "family": "todo-jodo",
-   "mode": "atoms",
-   "goal": "hcf",
-   "grammar": {
-    "hi": 120,
-    "coprime": true
-   },
-   "misMap": {},
-   "contexts": [],
-   "why": "RULES c6-maths-ch05-t03 todo-jodo/atoms/hcf"
+   "why": "RULES c6-maths-ch05-t03 todo-jodo/atoms/hcf · ACTS"
   },
   "c4-maths-ch05-t01-s1": {
    "topicId": "c4-maths-ch05-t01",
@@ -307,37 +202,13 @@
     "chalk"
    ],
    "contexts": [],
-   "why": "RULES c4-maths-ch05-t01 todo-jodo/strips/make"
-  },
-  "c4-maths-ch05-t01-s2": {
-   "topicId": "c4-maths-ch05-t01",
-   "family": "todo-jodo",
-   "mode": "strips",
-   "goal": "make",
-   "grammar": {
-    "dens": [
-     2,
-     3,
-     4,
-     6,
-     8
-    ]
-   },
-   "misMap": {
-    "part-part": "c4-maths-ch05-t01-m-part-part"
-   },
-   "arts": [
-    "kagaz",
-    "chalk"
-   ],
-   "contexts": [],
-   "why": "RULES c4-maths-ch05-t01 todo-jodo/strips/make"
+   "why": "RULES c4-maths-ch05-t01 todo-jodo/strips/make · ACTS"
   },
   "c4-maths-ch05-t01-s3": {
    "topicId": "c4-maths-ch05-t01",
    "family": "todo-jodo",
    "mode": "strips",
-   "goal": "make",
+   "goal": "unit",
    "grammar": {
     "dens": [
      2,
@@ -348,74 +219,14 @@
     ]
    },
    "misMap": {
-    "part-part": "c4-maths-ch05-t01-m-part-part"
+    "bigger-denominator": "c4-maths-ch05-t01-m-bigger-denominator-bigger"
    },
    "arts": [
     "kagaz",
     "chalk"
    ],
    "contexts": [],
-   "why": "RULES c4-maths-ch05-t01 todo-jodo/strips/make"
-  },
-  "c4-maths-ch05-t02-s1": {
-   "topicId": "c4-maths-ch05-t02",
-   "family": "todo-jodo",
-   "mode": "strips",
-   "goal": "make",
-   "grammar": {
-    "dens": [
-     2,
-     4,
-     8
-    ]
-   },
-   "misMap": {},
-   "arts": [
-    "kagaz",
-    "chalk"
-   ],
-   "contexts": [],
-   "why": "RULES c4-maths-ch05-t02 todo-jodo/strips/make"
-  },
-  "c4-maths-ch05-t02-s2": {
-   "topicId": "c4-maths-ch05-t02",
-   "family": "todo-jodo",
-   "mode": "strips",
-   "goal": "make",
-   "grammar": {
-    "dens": [
-     2,
-     4,
-     8
-    ]
-   },
-   "misMap": {},
-   "arts": [
-    "kagaz",
-    "chalk"
-   ],
-   "contexts": [],
-   "why": "RULES c4-maths-ch05-t02 todo-jodo/strips/make"
-  },
-  "c4-maths-ch05-t02-s3": {
-   "topicId": "c4-maths-ch05-t02",
-   "family": "todo-jodo",
-   "mode": "strips",
-   "goal": "make",
-   "grammar": {
-    "dens": [
-     2,
-     4,
-     8
-    ]
-   },
-   "misMap": {},
-   "arts": [
-    "kagaz",
-    "chalk"
-   ],
-   "contexts": [],
-   "why": "RULES c4-maths-ch05-t02 todo-jodo/strips/make"
+   "why": "RULES c4-maths-ch05-t01 todo-jodo/strips/unit · ACTS"
   },
   "c5-maths-ch02-t02-s1": {
    "topicId": "c5-maths-ch02-t02",
@@ -429,21 +240,7 @@
     "gap": "c5-maths-ch02-t02-m-gap-thinking"
    },
    "contexts": [],
-   "why": "RULES c5-maths-ch02-t02 todo-jodo/strips/compare"
-  },
-  "c5-maths-ch02-t02-s2": {
-   "topicId": "c5-maths-ch02-t02",
-   "family": "todo-jodo",
-   "mode": "strips",
-   "goal": "compare",
-   "grammar": {},
-   "misMap": {
-    "bigger-denominator": "c5-maths-ch02-t02-m-bigger-denominator",
-    "only-num-den": "c5-maths-ch02-t02-m-tops-only",
-    "gap": "c5-maths-ch02-t02-m-gap-thinking"
-   },
-   "contexts": [],
-   "why": "RULES c5-maths-ch02-t02 todo-jodo/strips/compare"
+   "why": "RULES c5-maths-ch02-t02 todo-jodo/strips/compare · ACTS"
   },
   "c5-maths-ch02-t02-s3": {
    "topicId": "c5-maths-ch02-t02",
@@ -457,7 +254,7 @@
     "gap": "c5-maths-ch02-t02-m-gap-thinking"
    },
    "contexts": [],
-   "why": "RULES c5-maths-ch02-t02 todo-jodo/strips/compare"
+   "why": "RULES c5-maths-ch02-t02 todo-jodo/strips/compare · ACTS"
   },
   "c5-maths-ch02-t03-s1": {
    "topicId": "c5-maths-ch02-t03",
@@ -471,7 +268,7 @@
     "one-side": "c5-maths-ch02-t03-m-one-part-only"
    },
    "contexts": [],
-   "why": "RULES c5-maths-ch02-t03 todo-jodo/strips/equal"
+   "why": "RULES c5-maths-ch02-t03 todo-jodo/strips/equal · ACTS"
   },
   "c5-maths-ch02-t03-s2": {
    "topicId": "c5-maths-ch02-t03",
@@ -485,7 +282,7 @@
     "one-side": "c5-maths-ch02-t03-m-one-part-only"
    },
    "contexts": [],
-   "why": "RULES c5-maths-ch02-t03 todo-jodo/strips/equal"
+   "why": "RULES c5-maths-ch02-t03 todo-jodo/strips/equal · ACTS"
   },
   "c5-maths-ch02-t03-s3": {
    "topicId": "c5-maths-ch02-t03",
@@ -499,7 +296,7 @@
     "one-side": "c5-maths-ch02-t03-m-one-part-only"
    },
    "contexts": [],
-   "why": "RULES c5-maths-ch02-t03 todo-jodo/strips/equal"
+   "why": "RULES c5-maths-ch02-t03 todo-jodo/strips/equal · ACTS"
   },
   "c6-maths-ch07-t01-s1": {
    "topicId": "c6-maths-ch07-t01",
@@ -509,27 +306,19 @@
    "grammar": {},
    "misMap": {},
    "contexts": [],
-   "why": "RULES c6-maths-ch07-t01 todo-jodo/strips/make"
+   "why": "RULES c6-maths-ch07-t01 todo-jodo/strips/make · ACTS"
   },
   "c6-maths-ch07-t01-s2": {
    "topicId": "c6-maths-ch07-t01",
    "family": "todo-jodo",
    "mode": "strips",
-   "goal": "make",
+   "goal": "unit",
    "grammar": {},
-   "misMap": {},
+   "misMap": {
+    "bigger-denominator": "c6-maths-ch07-t01-m-bigger-denominator"
+   },
    "contexts": [],
-   "why": "RULES c6-maths-ch07-t01 todo-jodo/strips/make"
-  },
-  "c6-maths-ch07-t01-s3": {
-   "topicId": "c6-maths-ch07-t01",
-   "family": "todo-jodo",
-   "mode": "strips",
-   "goal": "make",
-   "grammar": {},
-   "misMap": {},
-   "contexts": [],
-   "why": "RULES c6-maths-ch07-t01 todo-jodo/strips/make"
+   "why": "RULES c6-maths-ch07-t01 todo-jodo/strips/unit · ACTS"
   },
   "c6-maths-ch07-t03-s1": {
    "topicId": "c6-maths-ch07-t03",
@@ -542,7 +331,7 @@
     "one-side": "c6-maths-ch07-t03-m-one-side"
    },
    "contexts": [],
-   "why": "RULES c6-maths-ch07-t03 todo-jodo/strips/equal"
+   "why": "RULES c6-maths-ch07-t03 todo-jodo/strips/equal · ACTS"
   },
   "c6-maths-ch07-t03-s2": {
    "topicId": "c6-maths-ch07-t03",
@@ -555,34 +344,7 @@
     "one-side": "c6-maths-ch07-t03-m-one-side"
    },
    "contexts": [],
-   "why": "RULES c6-maths-ch07-t03 todo-jodo/strips/equal"
-  },
-  "c6-maths-ch07-t03-s3": {
-   "topicId": "c6-maths-ch07-t03",
-   "family": "todo-jodo",
-   "mode": "strips",
-   "goal": "equal",
-   "grammar": {},
-   "misMap": {
-    "add-same": "c6-maths-ch07-t03-m-add-same",
-    "one-side": "c6-maths-ch07-t03-m-one-side"
-   },
-   "contexts": [],
-   "why": "RULES c6-maths-ch07-t03 todo-jodo/strips/equal"
-  },
-  "c6-maths-ch07-t04-s1": {
-   "topicId": "c6-maths-ch07-t04",
-   "family": "todo-jodo",
-   "mode": "strips",
-   "goal": "compare",
-   "grammar": {},
-   "misMap": {
-    "only-num-den": "c6-maths-ch07-t04-m-only-num-den",
-    "gap": "c6-maths-ch07-t04-m-gap",
-    "bigger-denominator": "c6-maths-ch07-t04-m-bigger-den-bigger"
-   },
-   "contexts": [],
-   "why": "RULES c6-maths-ch07-t04 todo-jodo/strips/compare"
+   "why": "RULES c6-maths-ch07-t03 todo-jodo/strips/equal · ACTS"
   },
   "c6-maths-ch07-t04-s2": {
    "topicId": "c6-maths-ch07-t04",
@@ -596,9 +358,9 @@
     "bigger-denominator": "c6-maths-ch07-t04-m-bigger-den-bigger"
    },
    "contexts": [],
-   "why": "RULES c6-maths-ch07-t04 todo-jodo/strips/compare"
+   "why": "RULES c6-maths-ch07-t04 todo-jodo/strips/compare · ACTS"
   },
-  "c6-maths-ch07-t04-s3": {
+  "c6-maths-ch07-t04-s1": {
    "topicId": "c6-maths-ch07-t04",
    "family": "todo-jodo",
    "mode": "strips",
@@ -610,20 +372,7 @@
     "bigger-denominator": "c6-maths-ch07-t04-m-bigger-den-bigger"
    },
    "contexts": [],
-   "why": "RULES c6-maths-ch07-t04 todo-jodo/strips/compare"
-  },
-  "c6-maths-ch07-t05-s1": {
-   "topicId": "c6-maths-ch07-t05",
-   "family": "todo-jodo",
-   "mode": "strips",
-   "goal": "add",
-   "grammar": {},
-   "misMap": {
-    "add-across": "c6-maths-ch07-t05-m-add-across",
-    "change-only-den": "c6-maths-ch07-t05-m-change-only-den"
-   },
-   "contexts": [],
-   "why": "RULES c6-maths-ch07-t05 todo-jodo/strips/add"
+   "why": "RULES c6-maths-ch07-t04 todo-jodo/strips/compare · ACTS"
   },
   "c6-maths-ch07-t05-s2": {
    "topicId": "c6-maths-ch07-t05",
@@ -636,9 +385,9 @@
     "change-only-den": "c6-maths-ch07-t05-m-change-only-den"
    },
    "contexts": [],
-   "why": "RULES c6-maths-ch07-t05 todo-jodo/strips/add"
+   "why": "RULES c6-maths-ch07-t05 todo-jodo/strips/add · ACTS"
   },
-  "c6-maths-ch07-t05-s3": {
+  "c6-maths-ch07-t05-s1": {
    "topicId": "c6-maths-ch07-t05",
    "family": "todo-jodo",
    "mode": "strips",
@@ -649,27 +398,7 @@
     "change-only-den": "c6-maths-ch07-t05-m-change-only-den"
    },
    "contexts": [],
-   "why": "RULES c6-maths-ch07-t05 todo-jodo/strips/add"
-  },
-  "c4-maths-ch07-t01-s1": {
-   "topicId": "c4-maths-ch07-t01",
-   "family": "todo-jodo",
-   "mode": "bundles",
-   "goal": "subtract",
-   "grammar": {
-    "places": 4
-   },
-   "misMap": {
-    "smaller-from-larger": "c4-maths-ch07-t01-m-smaller-from-larger",
-    "zero-regroup": "c4-maths-ch07-t01-m-borrow-across-zero"
-   },
-   "arts": [
-    "kagaz",
-    "chalk",
-    "blueprint"
-   ],
-   "contexts": [],
-   "why": "RULES c4-maths-ch07-t01 todo-jodo/bundles/subtract"
+   "why": "RULES c6-maths-ch07-t05 todo-jodo/strips/add · ACTS"
   },
   "c4-maths-ch07-t01-s2": {
    "topicId": "c4-maths-ch07-t01",
@@ -689,42 +418,7 @@
     "blueprint"
    ],
    "contexts": [],
-   "why": "RULES c4-maths-ch07-t01 todo-jodo/bundles/subtract"
-  },
-  "c4-maths-ch07-t01-s3": {
-   "topicId": "c4-maths-ch07-t01",
-   "family": "todo-jodo",
-   "mode": "bundles",
-   "goal": "subtract",
-   "grammar": {
-    "places": 4
-   },
-   "misMap": {
-    "smaller-from-larger": "c4-maths-ch07-t01-m-smaller-from-larger",
-    "zero-regroup": "c4-maths-ch07-t01-m-borrow-across-zero"
-   },
-   "arts": [
-    "kagaz",
-    "chalk",
-    "blueprint"
-   ],
-   "contexts": [],
-   "why": "RULES c4-maths-ch07-t01 todo-jodo/bundles/subtract"
-  },
-  "c5-maths-ch04-t01-s1": {
-   "topicId": "c5-maths-ch04-t01",
-   "family": "todo-jodo",
-   "mode": "bundles",
-   "goal": "subtract",
-   "grammar": {
-    "places": 5
-   },
-   "misMap": {
-    "smaller-from-larger": "c5-maths-ch04-t01-m-smaller-from-larger",
-    "zero-regroup": "c5-maths-ch04-t01-m-zero-regroup"
-   },
-   "contexts": [],
-   "why": "RULES c5-maths-ch04-t01 todo-jodo/bundles/subtract"
+   "why": "RULES c4-maths-ch07-t01 todo-jodo/bundles/subtract · ACTS"
   },
   "c5-maths-ch04-t01-s2": {
    "topicId": "c5-maths-ch04-t01",
@@ -739,38 +433,7 @@
     "zero-regroup": "c5-maths-ch04-t01-m-zero-regroup"
    },
    "contexts": [],
-   "why": "RULES c5-maths-ch04-t01 todo-jodo/bundles/subtract"
-  },
-  "c5-maths-ch04-t01-s3": {
-   "topicId": "c5-maths-ch04-t01",
-   "family": "todo-jodo",
-   "mode": "bundles",
-   "goal": "subtract",
-   "grammar": {
-    "places": 5
-   },
-   "misMap": {
-    "smaller-from-larger": "c5-maths-ch04-t01-m-smaller-from-larger",
-    "zero-regroup": "c5-maths-ch04-t01-m-zero-regroup"
-   },
-   "contexts": [],
-   "why": "RULES c5-maths-ch04-t01 todo-jodo/bundles/subtract"
-  },
-  "c4-maths-ch10-t01-s1": {
-   "topicId": "c4-maths-ch10-t01",
-   "family": "taraazu",
-   "mode": "equality",
-   "goal": "fill",
-   "grammar": {},
-   "misMap": {
-    "answer-next": "c4-maths-ch10-t01-m-equals-operational"
-   },
-   "arts": [
-    "kagaz",
-    "chalk"
-   ],
-   "contexts": [],
-   "why": "RULES c4-maths-ch10-t01 taraazu/equality/fill"
+   "why": "RULES c5-maths-ch04-t01 todo-jodo/bundles/subtract · ACTS"
   },
   "c4-maths-ch10-t01-s2": {
    "topicId": "c4-maths-ch10-t01",
@@ -786,23 +449,7 @@
     "chalk"
    ],
    "contexts": [],
-   "why": "RULES c4-maths-ch10-t01 taraazu/equality/fill"
-  },
-  "c4-maths-ch10-t01-s3": {
-   "topicId": "c4-maths-ch10-t01",
-   "family": "taraazu",
-   "mode": "equality",
-   "goal": "fill",
-   "grammar": {},
-   "misMap": {
-    "answer-next": "c4-maths-ch10-t01-m-equals-operational"
-   },
-   "arts": [
-    "kagaz",
-    "chalk"
-   ],
-   "contexts": [],
-   "why": "RULES c4-maths-ch10-t01 taraazu/equality/fill"
+   "why": "RULES c4-maths-ch10-t01 taraazu/equality/fill · ACTS"
   },
   "c7-maths-ch04-t01-s1": {
    "topicId": "c7-maths-ch04-t01",
@@ -815,59 +462,7 @@
    },
    "misMap": {},
    "contexts": [],
-   "why": "RULES c7-maths-ch04-t01 taraazu/equation/solve"
-  },
-  "c7-maths-ch04-t01-s2": {
-   "topicId": "c7-maths-ch04-t01",
-   "family": "taraazu",
-   "mode": "equation",
-   "goal": "solve",
-   "grammar": {
-    "maxX": 9,
-    "maxBags": 2
-   },
-   "misMap": {},
-   "contexts": [],
-   "why": "RULES c7-maths-ch04-t01 taraazu/equation/solve"
-  },
-  "c7-maths-ch04-t01-s3": {
-   "topicId": "c7-maths-ch04-t01",
-   "family": "taraazu",
-   "mode": "equation",
-   "goal": "solve",
-   "grammar": {
-    "maxX": 9,
-    "maxBags": 2
-   },
-   "misMap": {},
-   "contexts": [],
-   "why": "RULES c7-maths-ch04-t01 taraazu/equation/solve"
-  },
-  "c7-maths-ch15-t01-s1": {
-   "topicId": "c7-maths-ch15-t01",
-   "family": "taraazu",
-   "mode": "equation",
-   "goal": "solve",
-   "grammar": {
-    "maxX": 9,
-    "maxBags": 2
-   },
-   "misMap": {},
-   "contexts": [],
-   "why": "RULES c7-maths-ch15-t01 taraazu/equation/solve"
-  },
-  "c7-maths-ch15-t01-s2": {
-   "topicId": "c7-maths-ch15-t01",
-   "family": "taraazu",
-   "mode": "equation",
-   "goal": "solve",
-   "grammar": {
-    "maxX": 9,
-    "maxBags": 2
-   },
-   "misMap": {},
-   "contexts": [],
-   "why": "RULES c7-maths-ch15-t01 taraazu/equation/solve"
+   "why": "RULES c7-maths-ch04-t01 taraazu/equation/solve · ACTS"
   },
   "c7-maths-ch15-t01-s3": {
    "topicId": "c7-maths-ch15-t01",
@@ -880,7 +475,7 @@
    },
    "misMap": {},
    "contexts": [],
-   "why": "RULES c7-maths-ch15-t01 taraazu/equation/solve"
+   "why": "RULES c7-maths-ch15-t01 taraazu/equation/solve · ACTS"
   },
   "c7-maths-ch15-t02-s1": {
    "topicId": "c7-maths-ch15-t02",
@@ -893,7 +488,7 @@
     "one-side": "c7-maths-ch15-t02-m-one-side"
    },
    "contexts": [],
-   "why": "RULES c7-maths-ch15-t02 taraazu/equation/solve"
+   "why": "RULES c7-maths-ch15-t02 taraazu/equation/solve · ACTS"
   },
   "c7-maths-ch15-t02-s2": {
    "topicId": "c7-maths-ch15-t02",
@@ -906,7 +501,7 @@
     "one-side": "c7-maths-ch15-t02-m-one-side"
    },
    "contexts": [],
-   "why": "RULES c7-maths-ch15-t02 taraazu/equation/solve"
+   "why": "RULES c7-maths-ch15-t02 taraazu/equation/solve · ACTS"
   },
   "c7-maths-ch15-t02-s3": {
    "topicId": "c7-maths-ch15-t02",
@@ -919,7 +514,7 @@
     "one-side": "c7-maths-ch15-t02-m-one-side"
    },
    "contexts": [],
-   "why": "RULES c7-maths-ch15-t02 taraazu/equation/solve"
+   "why": "RULES c7-maths-ch15-t02 taraazu/equation/solve · ACTS"
   },
   "c4-maths-ch04-t02-s1": {
    "topicId": "c4-maths-ch04-t02",
@@ -939,27 +534,7 @@
    },
    "misMap": {},
    "contexts": [],
-   "why": "RULES c4-maths-ch04-t02 nishana/compare/compare"
-  },
-  "c4-maths-ch04-t02-s2": {
-   "topicId": "c4-maths-ch04-t02",
-   "family": "nishana",
-   "mode": "compare",
-   "goal": "compare",
-   "grammar": {
-    "forms": [
-     "whole"
-    ],
-    "ranges": [
-     [
-      0,
-      10000
-     ]
-    ]
-   },
-   "misMap": {},
-   "contexts": [],
-   "why": "RULES c4-maths-ch04-t02 nishana/compare/compare"
+   "why": "RULES c4-maths-ch04-t02 nishana/compare/compare · ACTS"
   },
   "c4-maths-ch04-t02-s3": {
    "topicId": "c4-maths-ch04-t02",
@@ -979,59 +554,7 @@
    },
    "misMap": {},
    "contexts": [],
-   "why": "RULES c4-maths-ch04-t02 nishana/compare/compare"
-  },
-  "c4-maths-ch10-t02-s1": {
-   "topicId": "c4-maths-ch10-t02",
-   "family": "nishana",
-   "mode": "compare",
-   "goal": "compare",
-   "grammar": {
-    "forms": [
-     "whole"
-    ],
-    "ranges": [
-     [
-      0,
-      1000
-     ],
-     [
-      0,
-      10000
-     ]
-    ]
-   },
-   "misMap": {
-    "first-digit-compare": "c4-maths-ch10-t02-m-first-digit-compare"
-   },
-   "contexts": [],
-   "why": "RULES c4-maths-ch10-t02 nishana/compare/compare"
-  },
-  "c4-maths-ch10-t02-s2": {
-   "topicId": "c4-maths-ch10-t02",
-   "family": "nishana",
-   "mode": "compare",
-   "goal": "compare",
-   "grammar": {
-    "forms": [
-     "whole"
-    ],
-    "ranges": [
-     [
-      0,
-      1000
-     ],
-     [
-      0,
-      10000
-     ]
-    ]
-   },
-   "misMap": {
-    "first-digit-compare": "c4-maths-ch10-t02-m-first-digit-compare"
-   },
-   "contexts": [],
-   "why": "RULES c4-maths-ch10-t02 nishana/compare/compare"
+   "why": "RULES c4-maths-ch04-t02 nishana/compare/compare · ACTS"
   },
   "c4-maths-ch10-t02-s3": {
    "topicId": "c4-maths-ch10-t02",
@@ -1057,51 +580,7 @@
     "first-digit-compare": "c4-maths-ch10-t02-m-first-digit-compare"
    },
    "contexts": [],
-   "why": "RULES c4-maths-ch10-t02 nishana/compare/compare"
-  },
-  "c5-maths-ch01-t01-s1": {
-   "topicId": "c5-maths-ch01-t01",
-   "family": "nishana",
-   "mode": "compare",
-   "goal": "compare",
-   "grammar": {
-    "forms": [
-     "whole"
-    ],
-    "ranges": [
-     [
-      0,
-      100000
-     ]
-    ]
-   },
-   "misMap": {
-    "first-digit-compare": "c5-maths-ch01-t01-m-first-digit-compare"
-   },
-   "contexts": [],
-   "why": "RULES c5-maths-ch01-t01 nishana/compare/compare"
-  },
-  "c5-maths-ch01-t01-s2": {
-   "topicId": "c5-maths-ch01-t01",
-   "family": "nishana",
-   "mode": "compare",
-   "goal": "compare",
-   "grammar": {
-    "forms": [
-     "whole"
-    ],
-    "ranges": [
-     [
-      0,
-      100000
-     ]
-    ]
-   },
-   "misMap": {
-    "first-digit-compare": "c5-maths-ch01-t01-m-first-digit-compare"
-   },
-   "contexts": [],
-   "why": "RULES c5-maths-ch01-t01 nishana/compare/compare"
+   "why": "RULES c4-maths-ch10-t02 nishana/compare/compare · ACTS"
   },
   "c5-maths-ch01-t01-s3": {
    "topicId": "c5-maths-ch01-t01",
@@ -1123,7 +602,7 @@
     "first-digit-compare": "c5-maths-ch01-t01-m-first-digit-compare"
    },
    "contexts": [],
-   "why": "RULES c5-maths-ch01-t01 nishana/compare/compare"
+   "why": "RULES c5-maths-ch01-t01 nishana/compare/compare · ACTS"
   },
   "c5-maths-ch02-t01-s1": {
    "topicId": "c5-maths-ch02-t01",
@@ -1151,7 +630,7 @@
     "all-less-than-one": "c5-maths-ch02-t01-m-all-less-than-one"
    },
    "contexts": [],
-   "why": "RULES c5-maths-ch02-t01 nishana/place/place"
+   "why": "RULES c5-maths-ch02-t01 nishana/place/place · ACTS"
   },
   "c5-maths-ch02-t01-s2": {
    "topicId": "c5-maths-ch02-t01",
@@ -1179,7 +658,7 @@
     "all-less-than-one": "c5-maths-ch02-t01-m-all-less-than-one"
    },
    "contexts": [],
-   "why": "RULES c5-maths-ch02-t01 nishana/place/place"
+   "why": "RULES c5-maths-ch02-t01 nishana/place/place · ACTS"
   },
   "c5-maths-ch02-t01-s3": {
    "topicId": "c5-maths-ch02-t01",
@@ -1207,7 +686,7 @@
     "all-less-than-one": "c5-maths-ch02-t01-m-all-less-than-one"
    },
    "contexts": [],
-   "why": "RULES c5-maths-ch02-t01 nishana/place/place"
+   "why": "RULES c5-maths-ch02-t01 nishana/place/place · ACTS"
   },
   "c6-maths-ch07-t02-s1": {
    "topicId": "c6-maths-ch07-t02",
@@ -1225,75 +704,7 @@
     "count-marks": "c6-maths-ch07-t02-m-count-marks"
    },
    "contexts": [],
-   "why": "RULES c6-maths-ch07-t02 nishana/place/place"
-  },
-  "c6-maths-ch07-t02-s2": {
-   "topicId": "c6-maths-ch07-t02",
-   "family": "nishana",
-   "mode": "place",
-   "goal": "place",
-   "grammar": {
-    "forms": [
-     "fraction",
-     "mixed"
-    ]
-   },
-   "misMap": {
-    "all-less-than-one": "c6-maths-ch07-t02-m-less-than-one",
-    "count-marks": "c6-maths-ch07-t02-m-count-marks"
-   },
-   "contexts": [],
-   "why": "RULES c6-maths-ch07-t02 nishana/place/place"
-  },
-  "c6-maths-ch07-t02-s3": {
-   "topicId": "c6-maths-ch07-t02",
-   "family": "nishana",
-   "mode": "place",
-   "goal": "place",
-   "grammar": {
-    "forms": [
-     "fraction",
-     "mixed"
-    ]
-   },
-   "misMap": {
-    "all-less-than-one": "c6-maths-ch07-t02-m-less-than-one",
-    "count-marks": "c6-maths-ch07-t02-m-count-marks"
-   },
-   "contexts": [],
-   "why": "RULES c6-maths-ch07-t02 nishana/place/place"
-  },
-  "c6-maths-ch10-t01-s1": {
-   "topicId": "c6-maths-ch10-t01",
-   "family": "nishana",
-   "mode": "place",
-   "goal": "place",
-   "grammar": {
-    "forms": [
-     "integer"
-    ]
-   },
-   "misMap": {
-    "sign-ignored": "c6-maths-ch10-t01-m-sign-direction"
-   },
-   "contexts": [],
-   "why": "RULES c6-maths-ch10-t01 nishana/place/place"
-  },
-  "c6-maths-ch10-t01-s2": {
-   "topicId": "c6-maths-ch10-t01",
-   "family": "nishana",
-   "mode": "place",
-   "goal": "place",
-   "grammar": {
-    "forms": [
-     "integer"
-    ]
-   },
-   "misMap": {
-    "sign-ignored": "c6-maths-ch10-t01-m-sign-direction"
-   },
-   "contexts": [],
-   "why": "RULES c6-maths-ch10-t01 nishana/place/place"
+   "why": "RULES c6-maths-ch07-t02 nishana/place/place · ACTS"
   },
   "c6-maths-ch10-t01-s3": {
    "topicId": "c6-maths-ch10-t01",
@@ -1309,7 +720,7 @@
     "sign-ignored": "c6-maths-ch10-t01-m-sign-direction"
    },
    "contexts": [],
-   "why": "RULES c6-maths-ch10-t01 nishana/place/place"
+   "why": "RULES c6-maths-ch10-t01 nishana/place/place · ACTS"
   },
   "c6-maths-ch10-t02-s1": {
    "topicId": "c6-maths-ch10-t02",
@@ -1325,39 +736,23 @@
     "neg-order-line": "c6-maths-ch10-t02-m-neg-order-line"
    },
    "contexts": [],
-   "why": "RULES c6-maths-ch10-t02 nishana/place/place"
+   "why": "RULES c6-maths-ch10-t02 nishana/place/place · ACTS"
   },
   "c6-maths-ch10-t02-s2": {
    "topicId": "c6-maths-ch10-t02",
    "family": "nishana",
-   "mode": "place",
-   "goal": "place",
+   "mode": "compare",
+   "goal": "compare",
    "grammar": {
     "forms": [
      "integer"
     ]
    },
    "misMap": {
-    "neg-order-line": "c6-maths-ch10-t02-m-neg-order-line"
+    "neg-magnitude": "c6-maths-ch10-t02-m-neg-magnitude"
    },
    "contexts": [],
-   "why": "RULES c6-maths-ch10-t02 nishana/place/place"
-  },
-  "c6-maths-ch10-t02-s3": {
-   "topicId": "c6-maths-ch10-t02",
-   "family": "nishana",
-   "mode": "place",
-   "goal": "place",
-   "grammar": {
-    "forms": [
-     "integer"
-    ]
-   },
-   "misMap": {
-    "neg-order-line": "c6-maths-ch10-t02-m-neg-order-line"
-   },
-   "contexts": [],
-   "why": "RULES c6-maths-ch10-t02 nishana/place/place"
+   "why": "RULES c6-maths-ch10-t02 nishana/compare/compare · ACTS"
   },
   "c7-maths-ch03-t02-s1": {
    "topicId": "c7-maths-ch03-t02",
@@ -1372,55 +767,7 @@
    },
    "misMap": {},
    "contexts": [],
-   "why": "RULES c7-maths-ch03-t02 nishana/place/place"
-  },
-  "c7-maths-ch03-t02-s2": {
-   "topicId": "c7-maths-ch03-t02",
-   "family": "nishana",
-   "mode": "place",
-   "goal": "place",
-   "grammar": {
-    "forms": [
-     "decimal"
-    ],
-    "decimals": 2
-   },
-   "misMap": {},
-   "contexts": [],
-   "why": "RULES c7-maths-ch03-t02 nishana/place/place"
-  },
-  "c7-maths-ch03-t02-s3": {
-   "topicId": "c7-maths-ch03-t02",
-   "family": "nishana",
-   "mode": "place",
-   "goal": "place",
-   "grammar": {
-    "forms": [
-     "decimal"
-    ],
-    "decimals": 2
-   },
-   "misMap": {},
-   "contexts": [],
-   "why": "RULES c7-maths-ch03-t02 nishana/place/place"
-  },
-  "c7-maths-ch03-t03-s1": {
-   "topicId": "c7-maths-ch03-t03",
-   "family": "nishana",
-   "mode": "compare",
-   "goal": "compare",
-   "grammar": {
-    "forms": [
-     "decimal"
-    ],
-    "decimals": 3
-   },
-   "misMap": {
-    "longer-bigger": "c7-maths-ch03-t03-m-longer-bigger",
-    "shorter-bigger": "c7-maths-ch03-t03-m-shorter-bigger"
-   },
-   "contexts": [],
-   "why": "RULES c7-maths-ch03-t03 nishana/compare/compare"
+   "why": "RULES c7-maths-ch03-t02 nishana/place/place · ACTS"
   },
   "c7-maths-ch03-t03-s2": {
    "topicId": "c7-maths-ch03-t03",
@@ -1438,25 +785,22 @@
     "shorter-bigger": "c7-maths-ch03-t03-m-shorter-bigger"
    },
    "contexts": [],
-   "why": "RULES c7-maths-ch03-t03 nishana/compare/compare"
+   "why": "RULES c7-maths-ch03-t03 nishana/compare/compare · ACTS"
   },
-  "c7-maths-ch03-t03-s3": {
+  "c7-maths-ch03-t03-s1": {
    "topicId": "c7-maths-ch03-t03",
    "family": "nishana",
-   "mode": "compare",
-   "goal": "compare",
+   "mode": "place",
+   "goal": "place",
    "grammar": {
     "forms": [
      "decimal"
     ],
-    "decimals": 3
+    "decimals": 2
    },
-   "misMap": {
-    "longer-bigger": "c7-maths-ch03-t03-m-longer-bigger",
-    "shorter-bigger": "c7-maths-ch03-t03-m-shorter-bigger"
-   },
+   "misMap": {},
    "contexts": [],
-   "why": "RULES c7-maths-ch03-t03 nishana/compare/compare"
+   "why": "RULES c7-maths-ch03-t03 nishana/place/place · ACTS"
   },
   "c7-maths-ch03-t01-s1": {
    "topicId": "c7-maths-ch03-t01",
@@ -1479,7 +823,7 @@
     "decimal-place": "c7-maths-ch03-t01-m-same-digit"
    },
    "contexts": [],
-   "why": "RULES c7-maths-ch03-t01 nishana/place/place"
+   "why": "RULES c7-maths-ch03-t01 nishana/place/place · ACTS"
   },
   "c7-maths-ch03-t01-s2": {
    "topicId": "c7-maths-ch03-t01",
@@ -1502,49 +846,7 @@
     "decimal-place": "c7-maths-ch03-t01-m-same-digit"
    },
    "contexts": [],
-   "why": "RULES c7-maths-ch03-t01 nishana/place/place"
-  },
-  "c7-maths-ch03-t01-s3": {
-   "topicId": "c7-maths-ch03-t01",
-   "family": "nishana",
-   "mode": "place",
-   "goal": "place",
-   "grammar": {
-    "forms": [
-     "decimal"
-    ],
-    "decimals": 2,
-    "ranges": [
-     [
-      0,
-      1
-     ]
-    ]
-   },
-   "misMap": {
-    "decimal-place": "c7-maths-ch03-t01-m-same-digit"
-   },
-   "contexts": [],
-   "why": "RULES c7-maths-ch03-t01 nishana/place/place"
-  },
-  "c4-maths-ch04-t03-s1": {
-   "topicId": "c4-maths-ch04-t03",
-   "family": "nishana",
-   "mode": "place",
-   "goal": "round",
-   "grammar": {
-    "to": [
-     100,
-     1000
-    ]
-   },
-   "misMap": {
-    "round-truncate": "c4-maths-ch04-t03-m-truncate",
-    "round-chain": "c4-maths-ch04-t03-m-chain-rounding",
-    "round-last-digit": "c4-maths-ch04-t03-m-wrong-digit"
-   },
-   "contexts": [],
-   "why": "RULES c4-maths-ch04-t03 nishana/place/round"
+   "why": "RULES c7-maths-ch03-t01 nishana/place/place · ACTS"
   },
   "c4-maths-ch04-t03-s2": {
    "topicId": "c4-maths-ch04-t03",
@@ -1563,26 +865,7 @@
     "round-last-digit": "c4-maths-ch04-t03-m-wrong-digit"
    },
    "contexts": [],
-   "why": "RULES c4-maths-ch04-t03 nishana/place/round"
-  },
-  "c4-maths-ch04-t03-s3": {
-   "topicId": "c4-maths-ch04-t03",
-   "family": "nishana",
-   "mode": "place",
-   "goal": "round",
-   "grammar": {
-    "to": [
-     100,
-     1000
-    ]
-   },
-   "misMap": {
-    "round-truncate": "c4-maths-ch04-t03-m-truncate",
-    "round-chain": "c4-maths-ch04-t03-m-chain-rounding",
-    "round-last-digit": "c4-maths-ch04-t03-m-wrong-digit"
-   },
-   "contexts": [],
-   "why": "RULES c4-maths-ch04-t03 nishana/place/round"
+   "why": "RULES c4-maths-ch04-t03 nishana/place/round · ACTS"
   },
   "c5-maths-ch01-t02-s1": {
    "topicId": "c5-maths-ch01-t02",
@@ -1601,45 +884,7 @@
     "round-chain": "c5-maths-ch01-t02-m-chain-round"
    },
    "contexts": [],
-   "why": "RULES c5-maths-ch01-t02 nishana/place/round"
-  },
-  "c5-maths-ch01-t02-s2": {
-   "topicId": "c5-maths-ch01-t02",
-   "family": "nishana",
-   "mode": "place",
-   "goal": "round",
-   "grammar": {
-    "to": [
-     1000,
-     10000
-    ],
-    "maxV": 99999
-   },
-   "misMap": {
-    "round-truncate": "c5-maths-ch01-t02-m-truncate",
-    "round-chain": "c5-maths-ch01-t02-m-chain-round"
-   },
-   "contexts": [],
-   "why": "RULES c5-maths-ch01-t02 nishana/place/round"
-  },
-  "c5-maths-ch01-t02-s3": {
-   "topicId": "c5-maths-ch01-t02",
-   "family": "nishana",
-   "mode": "place",
-   "goal": "round",
-   "grammar": {
-    "to": [
-     1000,
-     10000
-    ],
-    "maxV": 99999
-   },
-   "misMap": {
-    "round-truncate": "c5-maths-ch01-t02-m-truncate",
-    "round-chain": "c5-maths-ch01-t02-m-chain-round"
-   },
-   "contexts": [],
-   "why": "RULES c5-maths-ch01-t02 nishana/place/round"
+   "why": "RULES c5-maths-ch01-t02 nishana/place/round · ACTS"
   },
   "c4-evs-ch07-t01-s1": {
    "topicId": "c4-evs-ch07-t01",
@@ -1660,7 +905,7 @@
     "blueprint"
    ],
    "contexts": [],
-   "why": "RULES c4-evs-ch07-t01 kyun-lab/fair-test/predict"
+   "why": "RULES c4-evs-ch07-t01 kyun-lab/fair-test/predict · ACTS"
   },
   "c4-evs-ch07-t01-s2": {
    "topicId": "c4-evs-ch07-t01",
@@ -1681,65 +926,7 @@
     "blueprint"
    ],
    "contexts": [],
-   "why": "RULES c4-evs-ch07-t01 kyun-lab/fair-test/predict"
-  },
-  "c4-evs-ch07-t01-s3": {
-   "topicId": "c4-evs-ch07-t01",
-   "family": "kyun-lab",
-   "mode": "fair-test",
-   "goal": "predict",
-   "grammar": {
-    "labs": [
-     "tairna"
-    ]
-   },
-   "misMap": {
-    "sinker-never-floats": "c4-evs-ch07-t01-m3",
-    "heavy-sinks": "c4-evs-ch07-t01-m1"
-   },
-   "arts": [
-    "kagaz",
-    "blueprint"
-   ],
-   "contexts": [],
-   "why": "RULES c4-evs-ch07-t01 kyun-lab/fair-test/predict"
-  },
-  "c4-evs-ch07-t01-s4": {
-   "topicId": "c4-evs-ch07-t01",
-   "family": "kyun-lab",
-   "mode": "fair-test",
-   "goal": "predict",
-   "grammar": {
-    "labs": [
-     "tairna"
-    ]
-   },
-   "misMap": {
-    "sinker-never-floats": "c4-evs-ch07-t01-m3",
-    "heavy-sinks": "c4-evs-ch07-t01-m1"
-   },
-   "arts": [
-    "kagaz",
-    "blueprint"
-   ],
-   "contexts": [],
-   "why": "RULES c4-evs-ch07-t01 kyun-lab/fair-test/predict"
-  },
-  "c6-science-ch06-t01-s1": {
-   "topicId": "c6-science-ch06-t01",
-   "family": "kyun-lab",
-   "mode": "fair-test",
-   "goal": "predict",
-   "grammar": {
-    "labs": [
-     "tairna"
-    ]
-   },
-   "misMap": {
-    "heavy-sinks": "c6-science-ch06-t01-m2"
-   },
-   "contexts": [],
-   "why": "RULES c6-science-ch06-t01 kyun-lab/fair-test/predict"
+   "why": "RULES c4-evs-ch07-t01 kyun-lab/fair-test/predict · ACTS"
   },
   "c6-science-ch06-t01-s2": {
    "topicId": "c6-science-ch06-t01",
@@ -1755,23 +942,7 @@
     "heavy-sinks": "c6-science-ch06-t01-m2"
    },
    "contexts": [],
-   "why": "RULES c6-science-ch06-t01 kyun-lab/fair-test/predict"
-  },
-  "c6-science-ch06-t01-s3": {
-   "topicId": "c6-science-ch06-t01",
-   "family": "kyun-lab",
-   "mode": "fair-test",
-   "goal": "predict",
-   "grammar": {
-    "labs": [
-     "tairna"
-    ]
-   },
-   "misMap": {
-    "heavy-sinks": "c6-science-ch06-t01-m2"
-   },
-   "contexts": [],
-   "why": "RULES c6-science-ch06-t01 kyun-lab/fair-test/predict"
+   "why": "RULES c6-science-ch06-t01 kyun-lab/fair-test/predict · ACTS"
   },
   "c6-science-ch04-t01-s1": {
    "topicId": "c6-science-ch04-t01",
@@ -1788,24 +959,7 @@
     "magnet-needs-touch": "c6-science-ch04-t01-m2"
    },
    "contexts": [],
-   "why": "RULES c6-science-ch04-t01 kyun-lab/fair-test/predict"
-  },
-  "c6-science-ch04-t01-s2": {
-   "topicId": "c6-science-ch04-t01",
-   "family": "kyun-lab",
-   "mode": "fair-test",
-   "goal": "predict",
-   "grammar": {
-    "labs": [
-     "chumbak"
-    ]
-   },
-   "misMap": {
-    "all-metals-magnetic": "c6-science-ch04-t01-m1",
-    "magnet-needs-touch": "c6-science-ch04-t01-m2"
-   },
-   "contexts": [],
-   "why": "RULES c6-science-ch04-t01 kyun-lab/fair-test/predict"
+   "why": "RULES c6-science-ch04-t01 kyun-lab/fair-test/predict · ACTS"
   },
   "c6-science-ch04-t01-s3": {
    "topicId": "c6-science-ch04-t01",
@@ -1822,7 +976,24 @@
     "magnet-needs-touch": "c6-science-ch04-t01-m2"
    },
    "contexts": [],
-   "why": "RULES c6-science-ch04-t01 kyun-lab/fair-test/predict"
+   "why": "RULES c6-science-ch04-t01 kyun-lab/fair-test/predict · ACTS"
+  },
+  "c6-science-ch04-t01-s2": {
+   "topicId": "c6-science-ch04-t01",
+   "family": "kyun-lab",
+   "mode": "fair-test",
+   "goal": "predict",
+   "grammar": {
+    "labs": [
+     "chumbak"
+    ]
+   },
+   "misMap": {
+    "all-metals-magnetic": "c6-science-ch04-t01-m1",
+    "magnet-needs-touch": "c6-science-ch04-t01-m2"
+   },
+   "contexts": [],
+   "why": "RULES c6-science-ch04-t01 kyun-lab/fair-test/predict · ACTS"
   },
   "c7-science-ch03-t03-s1": {
    "topicId": "c7-science-ch03-t03",
@@ -1839,7 +1010,7 @@
     "only-metals-conduct": "c7-science-ch03-t03-m3"
    },
    "contexts": [],
-   "why": "RULES c7-science-ch03-t03 kyun-lab/fair-test/predict"
+   "why": "RULES c7-science-ch03-t03 kyun-lab/fair-test/predict · ACTS"
   },
   "c7-science-ch03-t03-s2": {
    "topicId": "c7-science-ch03-t03",
@@ -1856,24 +1027,7 @@
     "only-metals-conduct": "c7-science-ch03-t03-m3"
    },
    "contexts": [],
-   "why": "RULES c7-science-ch03-t03 kyun-lab/fair-test/predict"
-  },
-  "c7-science-ch03-t03-s3": {
-   "topicId": "c7-science-ch03-t03",
-   "family": "kyun-lab",
-   "mode": "fair-test",
-   "goal": "predict",
-   "grammar": {
-    "labs": [
-     "bijli"
-    ]
-   },
-   "misMap": {
-    "water-never-conducts": "c7-science-ch03-t03-m1",
-    "only-metals-conduct": "c7-science-ch03-t03-m3"
-   },
-   "contexts": [],
-   "why": "RULES c7-science-ch03-t03 kyun-lab/fair-test/predict"
+   "why": "RULES c7-science-ch03-t03 kyun-lab/fair-test/predict · ACTS"
   },
   "c7-science-ch03-t03-s4": {
    "topicId": "c7-science-ch03-t03",
@@ -1890,24 +1044,7 @@
     "only-metals-conduct": "c7-science-ch03-t03-m3"
    },
    "contexts": [],
-   "why": "RULES c7-science-ch03-t03 kyun-lab/fair-test/predict"
-  },
-  "c7-science-ch07-t01-s1": {
-   "topicId": "c7-science-ch07-t01",
-   "family": "kyun-lab",
-   "mode": "fair-test",
-   "goal": "predict",
-   "grammar": {
-    "labs": [
-     "barf"
-    ]
-   },
-   "misMap": {
-    "wool-makes-heat": "c7-science-ch07-t01-m1",
-    "metal-is-colder": "c7-science-ch07-t01-m2"
-   },
-   "contexts": [],
-   "why": "RULES c7-science-ch07-t01 kyun-lab/fair-test/predict"
+   "why": "RULES c7-science-ch03-t03 kyun-lab/fair-test/predict · ACTS"
   },
   "c7-science-ch07-t01-s2": {
    "topicId": "c7-science-ch07-t01",
@@ -1924,7 +1061,7 @@
     "metal-is-colder": "c7-science-ch07-t01-m2"
    },
    "contexts": [],
-   "why": "RULES c7-science-ch07-t01 kyun-lab/fair-test/predict"
+   "why": "RULES c7-science-ch07-t01 kyun-lab/fair-test/predict · ACTS"
   },
   "c7-science-ch07-t01-s3": {
    "topicId": "c7-science-ch07-t01",
@@ -1941,7 +1078,24 @@
     "metal-is-colder": "c7-science-ch07-t01-m2"
    },
    "contexts": [],
-   "why": "RULES c7-science-ch07-t01 kyun-lab/fair-test/predict"
+   "why": "RULES c7-science-ch07-t01 kyun-lab/fair-test/predict · ACTS"
+  },
+  "c7-science-ch07-t01-s1": {
+   "topicId": "c7-science-ch07-t01",
+   "family": "kyun-lab",
+   "mode": "fair-test",
+   "goal": "predict",
+   "grammar": {
+    "labs": [
+     "barf"
+    ]
+   },
+   "misMap": {
+    "wool-makes-heat": "c7-science-ch07-t01-m1",
+    "metal-is-colder": "c7-science-ch07-t01-m2"
+   },
+   "contexts": [],
+   "why": "RULES c7-science-ch07-t01 kyun-lab/fair-test/predict · ACTS"
   },
   "c7-science-ch07-t01-s4": {
    "topicId": "c7-science-ch07-t01",
@@ -1958,24 +1112,7 @@
     "metal-is-colder": "c7-science-ch07-t01-m2"
    },
    "contexts": [],
-   "why": "RULES c7-science-ch07-t01 kyun-lab/fair-test/predict"
-  },
-  "c7-science-ch10-t01-s1": {
-   "topicId": "c7-science-ch10-t01",
-   "family": "kyun-lab",
-   "mode": "fair-test",
-   "goal": "predict",
-   "grammar": {
-    "labs": [
-     "patta"
-    ]
-   },
-   "misMap": {
-    "food-from-soil": "c7-science-ch10-t01-m1",
-    "light-only": "c7-science-ch10-t01-m3"
-   },
-   "contexts": [],
-   "why": "RULES c7-science-ch10-t01 kyun-lab/fair-test/predict"
+   "why": "RULES c7-science-ch07-t01 kyun-lab/fair-test/predict · ACTS"
   },
   "c7-science-ch10-t01-s2": {
    "topicId": "c7-science-ch10-t01",
@@ -1992,7 +1129,7 @@
     "light-only": "c7-science-ch10-t01-m3"
    },
    "contexts": [],
-   "why": "RULES c7-science-ch10-t01 kyun-lab/fair-test/predict"
+   "why": "RULES c7-science-ch10-t01 kyun-lab/fair-test/predict · ACTS"
   },
   "c7-science-ch10-t01-s3": {
    "topicId": "c7-science-ch10-t01",
@@ -2009,9 +1146,9 @@
     "light-only": "c7-science-ch10-t01-m3"
    },
    "contexts": [],
-   "why": "RULES c7-science-ch10-t01 kyun-lab/fair-test/predict"
+   "why": "RULES c7-science-ch10-t01 kyun-lab/fair-test/predict · ACTS"
   },
-  "c7-science-ch10-t01-s4": {
+  "c7-science-ch10-t01-s1": {
    "topicId": "c7-science-ch10-t01",
    "family": "kyun-lab",
    "mode": "fair-test",
@@ -2026,27 +1163,7 @@
     "light-only": "c7-science-ch10-t01-m3"
    },
    "contexts": [],
-   "why": "RULES c7-science-ch10-t01 kyun-lab/fair-test/predict"
-  },
-  "c5-evs-ch03-t01-s1": {
-   "topicId": "c5-evs-ch03-t01",
-   "family": "kyun-lab",
-   "mode": "fair-test",
-   "goal": "predict",
-   "grammar": {
-    "labs": [
-     "phaphoond"
-    ]
-   },
-   "misMap": {
-    "only-age-spoils": "c5-evs-ch03-t01-m1"
-   },
-   "arts": [
-    "kagaz",
-    "chalk"
-   ],
-   "contexts": [],
-   "why": "RULES c5-evs-ch03-t01 kyun-lab/fair-test/predict"
+   "why": "RULES c7-science-ch10-t01 kyun-lab/fair-test/predict · ACTS"
   },
   "c5-evs-ch03-t01-s2": {
    "topicId": "c5-evs-ch03-t01",
@@ -2066,59 +1183,7 @@
     "chalk"
    ],
    "contexts": [],
-   "why": "RULES c5-evs-ch03-t01 kyun-lab/fair-test/predict"
-  },
-  "c5-evs-ch03-t01-s3": {
-   "topicId": "c5-evs-ch03-t01",
-   "family": "kyun-lab",
-   "mode": "fair-test",
-   "goal": "predict",
-   "grammar": {
-    "labs": [
-     "phaphoond"
-    ]
-   },
-   "misMap": {
-    "only-age-spoils": "c5-evs-ch03-t01-m1"
-   },
-   "arts": [
-    "kagaz",
-    "chalk"
-   ],
-   "contexts": [],
-   "why": "RULES c5-evs-ch03-t01 kyun-lab/fair-test/predict"
-  },
-  "c6-science-ch01-t02-s1": {
-   "topicId": "c6-science-ch01-t02",
-   "family": "kyun-lab",
-   "mode": "fair-test",
-   "goal": "golu",
-   "grammar": {
-    "labs": [
-     "sukhao"
-    ]
-   },
-   "misMap": {
-    "many-at-once": "c6-science-ch01-t02-m1"
-   },
-   "contexts": [],
-   "why": "RULES c6-science-ch01-t02 kyun-lab/fair-test/golu"
-  },
-  "c6-science-ch01-t02-s2": {
-   "topicId": "c6-science-ch01-t02",
-   "family": "kyun-lab",
-   "mode": "fair-test",
-   "goal": "golu",
-   "grammar": {
-    "labs": [
-     "sukhao"
-    ]
-   },
-   "misMap": {
-    "many-at-once": "c6-science-ch01-t02-m1"
-   },
-   "contexts": [],
-   "why": "RULES c6-science-ch01-t02 kyun-lab/fair-test/golu"
+   "why": "RULES c5-evs-ch03-t01 kyun-lab/fair-test/predict · ACTS"
   },
   "c6-science-ch01-t02-s3": {
    "topicId": "c6-science-ch01-t02",
@@ -2134,7 +1199,23 @@
     "many-at-once": "c6-science-ch01-t02-m1"
    },
    "contexts": [],
-   "why": "RULES c6-science-ch01-t02 kyun-lab/fair-test/golu"
+   "why": "RULES c6-science-ch01-t02 kyun-lab/fair-test/golu · ACTS"
+  },
+  "c6-science-ch01-t02-s2": {
+   "topicId": "c6-science-ch01-t02",
+   "family": "kyun-lab",
+   "mode": "fair-test",
+   "goal": "golu",
+   "grammar": {
+    "labs": [
+     "sukhao"
+    ]
+   },
+   "misMap": {
+    "many-at-once": "c6-science-ch01-t02-m1"
+   },
+   "contexts": [],
+   "why": "RULES c6-science-ch01-t02 kyun-lab/fair-test/golu · ACTS"
   },
   "c6-science-ch08-t03-s1": {
    "topicId": "c6-science-ch08-t03",
@@ -2150,7 +1231,7 @@
     "only-temperature": "c6-science-ch08-t03-m2"
    },
    "contexts": [],
-   "why": "RULES c6-science-ch08-t03 kyun-lab/fair-test/predict"
+   "why": "RULES c6-science-ch08-t03 kyun-lab/fair-test/predict · ACTS"
   },
   "c6-science-ch08-t03-s2": {
    "topicId": "c6-science-ch08-t03",
@@ -2166,23 +1247,7 @@
     "only-temperature": "c6-science-ch08-t03-m2"
    },
    "contexts": [],
-   "why": "RULES c6-science-ch08-t03 kyun-lab/fair-test/predict"
-  },
-  "c6-science-ch08-t03-s3": {
-   "topicId": "c6-science-ch08-t03",
-   "family": "kyun-lab",
-   "mode": "fair-test",
-   "goal": "predict",
-   "grammar": {
-    "labs": [
-     "sukhao"
-    ]
-   },
-   "misMap": {
-    "only-temperature": "c6-science-ch08-t03-m2"
-   },
-   "contexts": [],
-   "why": "RULES c6-science-ch08-t03 kyun-lab/fair-test/predict"
+   "why": "RULES c6-science-ch08-t03 kyun-lab/fair-test/predict · ACTS"
   },
   "c6-science-ch10-t02-s1": {
    "topicId": "c6-science-ch10-t02",
@@ -2200,25 +1265,7 @@
     "warmth-irrelevant": "c6-science-ch10-t02-m3"
    },
    "contexts": [],
-   "why": "RULES c6-science-ch10-t02 kyun-lab/fair-test/predict"
-  },
-  "c6-science-ch10-t02-s2": {
-   "topicId": "c6-science-ch10-t02",
-   "family": "kyun-lab",
-   "mode": "fair-test",
-   "goal": "predict",
-   "grammar": {
-    "labs": [
-     "ankur"
-    ]
-   },
-   "misMap": {
-    "needs-soil-light": "c6-science-ch10-t02-m1",
-    "more-water-better": "c6-science-ch10-t02-m2",
-    "warmth-irrelevant": "c6-science-ch10-t02-m3"
-   },
-   "contexts": [],
-   "why": "RULES c6-science-ch10-t02 kyun-lab/fair-test/predict"
+   "why": "RULES c6-science-ch10-t02 kyun-lab/fair-test/predict · ACTS"
   },
   "c6-science-ch10-t02-s3": {
    "topicId": "c6-science-ch10-t02",
@@ -2236,35 +1283,21 @@
     "warmth-irrelevant": "c6-science-ch10-t02-m3"
    },
    "contexts": [],
-   "why": "RULES c6-science-ch10-t02 kyun-lab/fair-test/predict"
+   "why": "RULES c6-science-ch10-t02 kyun-lab/fair-test/predict · ACTS"
   },
-  "c7-science-ch01-t01-s1": {
-   "topicId": "c7-science-ch01-t01",
+  "c6-science-ch10-t02-s2": {
+   "topicId": "c6-science-ch10-t02",
    "family": "kyun-lab",
    "mode": "fair-test",
-   "goal": "golu",
+   "goal": "fair",
    "grammar": {
     "labs": [
-     "sukhao"
+     "ankur"
     ]
    },
    "misMap": {},
    "contexts": [],
-   "why": "RULES c7-science-ch01-t01 kyun-lab/fair-test/golu"
-  },
-  "c7-science-ch01-t01-s2": {
-   "topicId": "c7-science-ch01-t01",
-   "family": "kyun-lab",
-   "mode": "fair-test",
-   "goal": "golu",
-   "grammar": {
-    "labs": [
-     "sukhao"
-    ]
-   },
-   "misMap": {},
-   "contexts": [],
-   "why": "RULES c7-science-ch01-t01 kyun-lab/fair-test/golu"
+   "why": "RULES c6-science-ch10-t02 kyun-lab/fair-test/fair · ACTS"
   },
   "c7-science-ch01-t01-s3": {
    "topicId": "c7-science-ch01-t01",
@@ -2278,23 +1311,7 @@
    },
    "misMap": {},
    "contexts": [],
-   "why": "RULES c7-science-ch01-t01 kyun-lab/fair-test/golu"
-  },
-  "c7-science-ch04-t02-s1": {
-   "topicId": "c7-science-ch04-t02",
-   "family": "kyun-lab",
-   "mode": "fair-test",
-   "goal": "predict",
-   "grammar": {
-    "labs": [
-     "jang"
-    ]
-   },
-   "misMap": {
-    "one-of-air-water": "c7-science-ch04-t02-m2"
-   },
-   "contexts": [],
-   "why": "RULES c7-science-ch04-t02 kyun-lab/fair-test/predict"
+   "why": "RULES c7-science-ch01-t01 kyun-lab/fair-test/golu · ACTS"
   },
   "c7-science-ch04-t02-s2": {
    "topicId": "c7-science-ch04-t02",
@@ -2310,7 +1327,7 @@
     "one-of-air-water": "c7-science-ch04-t02-m2"
    },
    "contexts": [],
-   "why": "RULES c7-science-ch04-t02 kyun-lab/fair-test/predict"
+   "why": "RULES c7-science-ch04-t02 kyun-lab/fair-test/predict · ACTS"
   },
   "c7-science-ch04-t02-s3": {
    "topicId": "c7-science-ch04-t02",
@@ -2326,39 +1343,7 @@
     "one-of-air-water": "c7-science-ch04-t02-m2"
    },
    "contexts": [],
-   "why": "RULES c7-science-ch04-t02 kyun-lab/fair-test/predict"
-  },
-  "c7-science-ch04-t02-s4": {
-   "topicId": "c7-science-ch04-t02",
-   "family": "kyun-lab",
-   "mode": "fair-test",
-   "goal": "predict",
-   "grammar": {
-    "labs": [
-     "jang"
-    ]
-   },
-   "misMap": {
-    "one-of-air-water": "c7-science-ch04-t02-m2"
-   },
-   "contexts": [],
-   "why": "RULES c7-science-ch04-t02 kyun-lab/fair-test/predict"
-  },
-  "c7-science-ch07-t03-s1": {
-   "topicId": "c7-science-ch07-t03",
-   "family": "kyun-lab",
-   "mode": "fair-test",
-   "goal": "predict",
-   "grammar": {
-    "labs": [
-     "rang"
-    ]
-   },
-   "misMap": {
-    "black-attracts-heat": "c7-science-ch07-t03-m2"
-   },
-   "contexts": [],
-   "why": "RULES c7-science-ch07-t03 kyun-lab/fair-test/predict"
+   "why": "RULES c7-science-ch04-t02 kyun-lab/fair-test/predict · ACTS"
   },
   "c7-science-ch07-t03-s2": {
    "topicId": "c7-science-ch07-t03",
@@ -2374,7 +1359,7 @@
     "black-attracts-heat": "c7-science-ch07-t03-m2"
    },
    "contexts": [],
-   "why": "RULES c7-science-ch07-t03 kyun-lab/fair-test/predict"
+   "why": "RULES c7-science-ch07-t03 kyun-lab/fair-test/predict · ACTS"
   },
   "c7-science-ch07-t03-s3": {
    "topicId": "c7-science-ch07-t03",
@@ -2390,41 +1375,7 @@
     "black-attracts-heat": "c7-science-ch07-t03-m2"
    },
    "contexts": [],
-   "why": "RULES c7-science-ch07-t03 kyun-lab/fair-test/predict"
-  },
-  "c7-science-ch08-t01-s1": {
-   "topicId": "c7-science-ch08-t01",
-   "family": "kyun-lab",
-   "mode": "fair-test",
-   "goal": "predict",
-   "grammar": {
-    "labs": [
-     "jhoola"
-    ]
-   },
-   "misMap": {
-    "heavy-faster": "c7-science-ch08-t01-m1",
-    "pull-changes-period": "c7-science-ch08-t01-m2"
-   },
-   "contexts": [],
-   "why": "RULES c7-science-ch08-t01 kyun-lab/fair-test/predict"
-  },
-  "c7-science-ch08-t01-s2": {
-   "topicId": "c7-science-ch08-t01",
-   "family": "kyun-lab",
-   "mode": "fair-test",
-   "goal": "predict",
-   "grammar": {
-    "labs": [
-     "jhoola"
-    ]
-   },
-   "misMap": {
-    "heavy-faster": "c7-science-ch08-t01-m1",
-    "pull-changes-period": "c7-science-ch08-t01-m2"
-   },
-   "contexts": [],
-   "why": "RULES c7-science-ch08-t01 kyun-lab/fair-test/predict"
+   "why": "RULES c7-science-ch07-t03 kyun-lab/fair-test/predict · ACTS"
   },
   "c7-science-ch08-t01-s3": {
    "topicId": "c7-science-ch08-t01",
@@ -2441,23 +1392,24 @@
     "pull-changes-period": "c7-science-ch08-t01-m2"
    },
    "contexts": [],
-   "why": "RULES c7-science-ch08-t01 kyun-lab/fair-test/predict"
+   "why": "RULES c7-science-ch08-t01 kyun-lab/fair-test/predict · ACTS"
   },
-  "c7-science-ch11-t02-s1": {
-   "topicId": "c7-science-ch11-t02",
+  "c7-science-ch08-t01-s2": {
+   "topicId": "c7-science-ch08-t01",
    "family": "kyun-lab",
    "mode": "fair-test",
    "goal": "predict",
    "grammar": {
     "labs": [
-     "parchhai"
+     "jhoola"
     ]
    },
    "misMap": {
-    "shadow-same-size": "c7-science-ch11-t02-m3"
+    "heavy-faster": "c7-science-ch08-t01-m1",
+    "pull-changes-period": "c7-science-ch08-t01-m2"
    },
    "contexts": [],
-   "why": "RULES c7-science-ch11-t02 kyun-lab/fair-test/predict"
+   "why": "RULES c7-science-ch08-t01 kyun-lab/fair-test/predict · ACTS"
   },
   "c7-science-ch11-t02-s2": {
    "topicId": "c7-science-ch11-t02",
@@ -2473,23 +1425,7 @@
     "shadow-same-size": "c7-science-ch11-t02-m3"
    },
    "contexts": [],
-   "why": "RULES c7-science-ch11-t02 kyun-lab/fair-test/predict"
-  },
-  "c7-science-ch11-t02-s3": {
-   "topicId": "c7-science-ch11-t02",
-   "family": "kyun-lab",
-   "mode": "fair-test",
-   "goal": "predict",
-   "grammar": {
-    "labs": [
-     "parchhai"
-    ]
-   },
-   "misMap": {
-    "shadow-same-size": "c7-science-ch11-t02-m3"
-   },
-   "contexts": [],
-   "why": "RULES c7-science-ch11-t02 kyun-lab/fair-test/predict"
+   "why": "RULES c7-science-ch11-t02 kyun-lab/fair-test/predict · ACTS"
   }
  },
  "excluded": {
@@ -2508,9 +1444,7 @@
    "goal": "atoms",
    "skillId": "c6-maths-ch05-t02-s1",
    "skillIds": [
-    "c6-maths-ch05-t02-s1",
-    "c6-maths-ch05-t02-s2",
-    "c6-maths-ch05-t02-s3"
+    "c6-maths-ch05-t02-s1"
    ],
    "grammar": {
     "hi": 120
@@ -2527,11 +1461,10 @@
    "family": "todo-jodo",
    "mode": "atoms",
    "goal": "atoms",
-   "skillId": "c6-maths-ch05-t04-s1",
+   "skillId": "c6-maths-ch05-t04-s2",
    "skillIds": [
-    "c6-maths-ch05-t04-s1",
     "c6-maths-ch05-t04-s2",
-    "c6-maths-ch05-t04-s3"
+    "c6-maths-ch05-t04-s1"
    ],
    "grammar": {},
    "misMap": {
@@ -2547,10 +1480,8 @@
    "family": "todo-jodo",
    "mode": "atoms",
    "goal": "two-trees",
-   "skillId": "c6-maths-ch05-t04-s1",
+   "skillId": "c6-maths-ch05-t04-s3",
    "skillIds": [
-    "c6-maths-ch05-t04-s1",
-    "c6-maths-ch05-t04-s2",
     "c6-maths-ch05-t04-s3"
    ],
    "grammar": {},
@@ -2568,11 +1499,9 @@
    "family": "todo-jodo",
    "mode": "atoms",
    "goal": "hcf",
-   "skillId": "c7-maths-ch11-t01-s1",
+   "skillId": "c7-maths-ch11-t01-s2",
    "skillIds": [
-    "c7-maths-ch11-t01-s1",
-    "c7-maths-ch11-t01-s2",
-    "c7-maths-ch11-t01-s3"
+    "c7-maths-ch11-t01-s2"
    ],
    "grammar": {},
    "misMap": {
@@ -2588,11 +1517,9 @@
    "family": "todo-jodo",
    "mode": "atoms",
    "goal": "lcm",
-   "skillId": "c7-maths-ch11-t02-s1",
+   "skillId": "c7-maths-ch11-t02-s2",
    "skillIds": [
-    "c7-maths-ch11-t02-s1",
-    "c7-maths-ch11-t02-s2",
-    "c7-maths-ch11-t02-s3"
+    "c7-maths-ch11-t02-s2"
    ],
    "grammar": {},
    "misMap": {
@@ -2607,10 +1534,8 @@
    "family": "todo-jodo",
    "mode": "atoms",
    "goal": "lcm",
-   "skillId": "c6-maths-ch05-t01-s1",
+   "skillId": "c6-maths-ch05-t01-s3",
    "skillIds": [
-    "c6-maths-ch05-t01-s1",
-    "c6-maths-ch05-t01-s2",
     "c6-maths-ch05-t01-s3"
    ],
    "grammar": {
@@ -2628,11 +1553,9 @@
    "family": "todo-jodo",
    "mode": "atoms",
    "goal": "hcf",
-   "skillId": "c6-maths-ch05-t01-s1",
+   "skillId": "c6-maths-ch05-t01-s2",
    "skillIds": [
-    "c6-maths-ch05-t01-s1",
-    "c6-maths-ch05-t01-s2",
-    "c6-maths-ch05-t01-s3"
+    "c6-maths-ch05-t01-s2"
    ],
    "grammar": {
     "hi": 120
@@ -2650,8 +1573,7 @@
    "skillId": "c6-maths-ch05-t03-s1",
    "skillIds": [
     "c6-maths-ch05-t03-s1",
-    "c6-maths-ch05-t03-s2",
-    "c6-maths-ch05-t03-s3"
+    "c6-maths-ch05-t03-s2"
    ],
    "grammar": {
     "hi": 120,
@@ -2669,9 +1591,7 @@
    "goal": "make",
    "skillId": "c4-maths-ch05-t01-s1",
    "skillIds": [
-    "c4-maths-ch05-t01-s1",
-    "c4-maths-ch05-t01-s2",
-    "c4-maths-ch05-t01-s3"
+    "c4-maths-ch05-t01-s1"
    ],
    "grammar": {
     "dens": [
@@ -2698,10 +1618,8 @@
    "family": "todo-jodo",
    "mode": "strips",
    "goal": "unit",
-   "skillId": "c4-maths-ch05-t01-s1",
+   "skillId": "c4-maths-ch05-t01-s3",
    "skillIds": [
-    "c4-maths-ch05-t01-s1",
-    "c4-maths-ch05-t01-s2",
     "c4-maths-ch05-t01-s3"
    ],
    "grammar": {
@@ -2722,33 +1640,6 @@
    ]
   },
   {
-   "topicId": "c4-maths-ch05-t02",
-   "title": "Fractions in measurement",
-   "classLevel": 4,
-   "subject": "maths",
-   "family": "todo-jodo",
-   "mode": "strips",
-   "goal": "make",
-   "skillId": "c4-maths-ch05-t02-s1",
-   "skillIds": [
-    "c4-maths-ch05-t02-s1",
-    "c4-maths-ch05-t02-s2",
-    "c4-maths-ch05-t02-s3"
-   ],
-   "grammar": {
-    "dens": [
-     2,
-     4,
-     8
-    ]
-   },
-   "misMap": {},
-   "arts": [
-    "kagaz",
-    "chalk"
-   ]
-  },
-  {
    "topicId": "c5-maths-ch02-t02",
    "title": "Comparing fractions",
    "classLevel": 5,
@@ -2759,7 +1650,6 @@
    "skillId": "c5-maths-ch02-t02-s1",
    "skillIds": [
     "c5-maths-ch02-t02-s1",
-    "c5-maths-ch02-t02-s2",
     "c5-maths-ch02-t02-s3"
    ],
    "grammar": {},
@@ -2800,9 +1690,7 @@
    "goal": "make",
    "skillId": "c6-maths-ch07-t01-s1",
    "skillIds": [
-    "c6-maths-ch07-t01-s1",
-    "c6-maths-ch07-t01-s2",
-    "c6-maths-ch07-t01-s3"
+    "c6-maths-ch07-t01-s1"
    ],
    "grammar": {},
    "misMap": {}
@@ -2815,11 +1703,9 @@
    "family": "todo-jodo",
    "mode": "strips",
    "goal": "unit",
-   "skillId": "c6-maths-ch07-t01-s1",
+   "skillId": "c6-maths-ch07-t01-s2",
    "skillIds": [
-    "c6-maths-ch07-t01-s1",
-    "c6-maths-ch07-t01-s2",
-    "c6-maths-ch07-t01-s3"
+    "c6-maths-ch07-t01-s2"
    ],
    "grammar": {},
    "misMap": {
@@ -2837,8 +1723,7 @@
    "skillId": "c6-maths-ch07-t03-s1",
    "skillIds": [
     "c6-maths-ch07-t03-s1",
-    "c6-maths-ch07-t03-s2",
-    "c6-maths-ch07-t03-s3"
+    "c6-maths-ch07-t03-s2"
    ],
    "grammar": {},
    "misMap": {
@@ -2854,11 +1739,10 @@
    "family": "todo-jodo",
    "mode": "strips",
    "goal": "compare",
-   "skillId": "c6-maths-ch07-t04-s1",
+   "skillId": "c6-maths-ch07-t04-s2",
    "skillIds": [
-    "c6-maths-ch07-t04-s1",
     "c6-maths-ch07-t04-s2",
-    "c6-maths-ch07-t04-s3"
+    "c6-maths-ch07-t04-s1"
    ],
    "grammar": {},
    "misMap": {
@@ -2875,11 +1759,10 @@
    "family": "todo-jodo",
    "mode": "strips",
    "goal": "add",
-   "skillId": "c6-maths-ch07-t05-s1",
+   "skillId": "c6-maths-ch07-t05-s2",
    "skillIds": [
-    "c6-maths-ch07-t05-s1",
     "c6-maths-ch07-t05-s2",
-    "c6-maths-ch07-t05-s3"
+    "c6-maths-ch07-t05-s1"
    ],
    "grammar": {},
    "misMap": {
@@ -2895,11 +1778,9 @@
    "family": "todo-jodo",
    "mode": "bundles",
    "goal": "subtract",
-   "skillId": "c4-maths-ch07-t01-s1",
+   "skillId": "c4-maths-ch07-t01-s2",
    "skillIds": [
-    "c4-maths-ch07-t01-s1",
-    "c4-maths-ch07-t01-s2",
-    "c4-maths-ch07-t01-s3"
+    "c4-maths-ch07-t01-s2"
    ],
    "grammar": {
     "places": 4
@@ -2922,11 +1803,9 @@
    "family": "todo-jodo",
    "mode": "bundles",
    "goal": "subtract",
-   "skillId": "c5-maths-ch04-t01-s1",
+   "skillId": "c5-maths-ch04-t01-s2",
    "skillIds": [
-    "c5-maths-ch04-t01-s1",
-    "c5-maths-ch04-t01-s2",
-    "c5-maths-ch04-t01-s3"
+    "c5-maths-ch04-t01-s2"
    ],
    "grammar": {
     "places": 5
@@ -2944,11 +1823,9 @@
    "family": "taraazu",
    "mode": "equality",
    "goal": "fill",
-   "skillId": "c4-maths-ch10-t01-s1",
+   "skillId": "c4-maths-ch10-t01-s2",
    "skillIds": [
-    "c4-maths-ch10-t01-s1",
-    "c4-maths-ch10-t01-s2",
-    "c4-maths-ch10-t01-s3"
+    "c4-maths-ch10-t01-s2"
    ],
    "grammar": {},
    "misMap": {
@@ -2969,9 +1846,7 @@
    "goal": "solve",
    "skillId": "c7-maths-ch04-t01-s1",
    "skillIds": [
-    "c7-maths-ch04-t01-s1",
-    "c7-maths-ch04-t01-s2",
-    "c7-maths-ch04-t01-s3"
+    "c7-maths-ch04-t01-s1"
    ],
    "grammar": {
     "maxX": 9,
@@ -2987,10 +1862,8 @@
    "family": "taraazu",
    "mode": "equation",
    "goal": "solve",
-   "skillId": "c7-maths-ch15-t01-s1",
+   "skillId": "c7-maths-ch15-t01-s3",
    "skillIds": [
-    "c7-maths-ch15-t01-s1",
-    "c7-maths-ch15-t01-s2",
     "c7-maths-ch15-t01-s3"
    ],
    "grammar": {
@@ -3030,7 +1903,6 @@
    "skillId": "c4-maths-ch04-t02-s1",
    "skillIds": [
     "c4-maths-ch04-t02-s1",
-    "c4-maths-ch04-t02-s2",
     "c4-maths-ch04-t02-s3"
    ],
    "grammar": {
@@ -3054,10 +1926,8 @@
    "family": "nishana",
    "mode": "compare",
    "goal": "compare",
-   "skillId": "c4-maths-ch10-t02-s1",
+   "skillId": "c4-maths-ch10-t02-s3",
    "skillIds": [
-    "c4-maths-ch10-t02-s1",
-    "c4-maths-ch10-t02-s2",
     "c4-maths-ch10-t02-s3"
    ],
    "grammar": {
@@ -3087,10 +1957,8 @@
    "family": "nishana",
    "mode": "compare",
    "goal": "compare",
-   "skillId": "c5-maths-ch01-t01-s1",
+   "skillId": "c5-maths-ch01-t01-s3",
    "skillIds": [
-    "c5-maths-ch01-t01-s1",
-    "c5-maths-ch01-t01-s2",
     "c5-maths-ch01-t01-s3"
    ],
    "grammar": {
@@ -3153,9 +2021,7 @@
    "goal": "place",
    "skillId": "c6-maths-ch07-t02-s1",
    "skillIds": [
-    "c6-maths-ch07-t02-s1",
-    "c6-maths-ch07-t02-s2",
-    "c6-maths-ch07-t02-s3"
+    "c6-maths-ch07-t02-s1"
    ],
    "grammar": {
     "forms": [
@@ -3176,10 +2042,8 @@
    "family": "nishana",
    "mode": "place",
    "goal": "place",
-   "skillId": "c6-maths-ch10-t01-s1",
+   "skillId": "c6-maths-ch10-t01-s3",
    "skillIds": [
-    "c6-maths-ch10-t01-s1",
-    "c6-maths-ch10-t01-s2",
     "c6-maths-ch10-t01-s3"
    ],
    "grammar": {
@@ -3201,9 +2065,7 @@
    "goal": "place",
    "skillId": "c6-maths-ch10-t02-s1",
    "skillIds": [
-    "c6-maths-ch10-t02-s1",
-    "c6-maths-ch10-t02-s2",
-    "c6-maths-ch10-t02-s3"
+    "c6-maths-ch10-t02-s1"
    ],
    "grammar": {
     "forms": [
@@ -3222,11 +2084,9 @@
    "family": "nishana",
    "mode": "compare",
    "goal": "compare",
-   "skillId": "c6-maths-ch10-t02-s1",
+   "skillId": "c6-maths-ch10-t02-s2",
    "skillIds": [
-    "c6-maths-ch10-t02-s1",
-    "c6-maths-ch10-t02-s2",
-    "c6-maths-ch10-t02-s3"
+    "c6-maths-ch10-t02-s2"
    ],
    "grammar": {
     "forms": [
@@ -3247,9 +2107,7 @@
    "goal": "place",
    "skillId": "c7-maths-ch03-t02-s1",
    "skillIds": [
-    "c7-maths-ch03-t02-s1",
-    "c7-maths-ch03-t02-s2",
-    "c7-maths-ch03-t02-s3"
+    "c7-maths-ch03-t02-s1"
    ],
    "grammar": {
     "forms": [
@@ -3267,11 +2125,9 @@
    "family": "nishana",
    "mode": "compare",
    "goal": "compare",
-   "skillId": "c7-maths-ch03-t03-s1",
+   "skillId": "c7-maths-ch03-t03-s2",
    "skillIds": [
-    "c7-maths-ch03-t03-s1",
-    "c7-maths-ch03-t03-s2",
-    "c7-maths-ch03-t03-s3"
+    "c7-maths-ch03-t03-s2"
    ],
    "grammar": {
     "forms": [
@@ -3294,9 +2150,7 @@
    "goal": "place",
    "skillId": "c7-maths-ch03-t03-s1",
    "skillIds": [
-    "c7-maths-ch03-t03-s1",
-    "c7-maths-ch03-t03-s2",
-    "c7-maths-ch03-t03-s3"
+    "c7-maths-ch03-t03-s1"
    ],
    "grammar": {
     "forms": [
@@ -3317,8 +2171,7 @@
    "skillId": "c7-maths-ch03-t01-s1",
    "skillIds": [
     "c7-maths-ch03-t01-s1",
-    "c7-maths-ch03-t01-s2",
-    "c7-maths-ch03-t01-s3"
+    "c7-maths-ch03-t01-s2"
    ],
    "grammar": {
     "forms": [
@@ -3344,11 +2197,9 @@
    "family": "nishana",
    "mode": "place",
    "goal": "round",
-   "skillId": "c4-maths-ch04-t03-s1",
+   "skillId": "c4-maths-ch04-t03-s2",
    "skillIds": [
-    "c4-maths-ch04-t03-s1",
-    "c4-maths-ch04-t03-s2",
-    "c4-maths-ch04-t03-s3"
+    "c4-maths-ch04-t03-s2"
    ],
    "grammar": {
     "to": [
@@ -3372,9 +2223,7 @@
    "goal": "round",
    "skillId": "c5-maths-ch01-t02-s1",
    "skillIds": [
-    "c5-maths-ch01-t02-s1",
-    "c5-maths-ch01-t02-s2",
-    "c5-maths-ch01-t02-s3"
+    "c5-maths-ch01-t02-s1"
    ],
    "grammar": {
     "to": [
@@ -3399,9 +2248,7 @@
    "skillId": "c4-evs-ch07-t01-s1",
    "skillIds": [
     "c4-evs-ch07-t01-s1",
-    "c4-evs-ch07-t01-s2",
-    "c4-evs-ch07-t01-s3",
-    "c4-evs-ch07-t01-s4"
+    "c4-evs-ch07-t01-s2"
    ],
    "grammar": {
     "labs": [
@@ -3425,11 +2272,9 @@
    "family": "kyun-lab",
    "mode": "fair-test",
    "goal": "predict",
-   "skillId": "c6-science-ch06-t01-s1",
+   "skillId": "c6-science-ch06-t01-s2",
    "skillIds": [
-    "c6-science-ch06-t01-s1",
-    "c6-science-ch06-t01-s2",
-    "c6-science-ch06-t01-s3"
+    "c6-science-ch06-t01-s2"
    ],
    "grammar": {
     "labs": [
@@ -3451,8 +2296,8 @@
    "skillId": "c6-science-ch04-t01-s1",
    "skillIds": [
     "c6-science-ch04-t01-s1",
-    "c6-science-ch04-t01-s2",
-    "c6-science-ch04-t01-s3"
+    "c6-science-ch04-t01-s3",
+    "c6-science-ch04-t01-s2"
    ],
    "grammar": {
     "labs": [
@@ -3476,7 +2321,6 @@
    "skillIds": [
     "c7-science-ch03-t03-s1",
     "c7-science-ch03-t03-s2",
-    "c7-science-ch03-t03-s3",
     "c7-science-ch03-t03-s4"
    ],
    "grammar": {
@@ -3497,11 +2341,11 @@
    "family": "kyun-lab",
    "mode": "fair-test",
    "goal": "predict",
-   "skillId": "c7-science-ch07-t01-s1",
+   "skillId": "c7-science-ch07-t01-s2",
    "skillIds": [
-    "c7-science-ch07-t01-s1",
     "c7-science-ch07-t01-s2",
     "c7-science-ch07-t01-s3",
+    "c7-science-ch07-t01-s1",
     "c7-science-ch07-t01-s4"
    ],
    "grammar": {
@@ -3522,12 +2366,11 @@
    "family": "kyun-lab",
    "mode": "fair-test",
    "goal": "predict",
-   "skillId": "c7-science-ch10-t01-s1",
+   "skillId": "c7-science-ch10-t01-s2",
    "skillIds": [
-    "c7-science-ch10-t01-s1",
     "c7-science-ch10-t01-s2",
     "c7-science-ch10-t01-s3",
-    "c7-science-ch10-t01-s4"
+    "c7-science-ch10-t01-s1"
    ],
    "grammar": {
     "labs": [
@@ -3547,12 +2390,10 @@
    "family": "kyun-lab",
    "mode": "fair-test",
    "goal": "fair",
-   "skillId": "c7-science-ch10-t01-s1",
+   "skillId": "c7-science-ch10-t01-s3",
    "skillIds": [
-    "c7-science-ch10-t01-s1",
-    "c7-science-ch10-t01-s2",
     "c7-science-ch10-t01-s3",
-    "c7-science-ch10-t01-s4"
+    "c7-science-ch10-t01-s2"
    ],
    "grammar": {
     "labs": [
@@ -3569,11 +2410,9 @@
    "family": "kyun-lab",
    "mode": "fair-test",
    "goal": "predict",
-   "skillId": "c5-evs-ch03-t01-s1",
+   "skillId": "c5-evs-ch03-t01-s2",
    "skillIds": [
-    "c5-evs-ch03-t01-s1",
-    "c5-evs-ch03-t01-s2",
-    "c5-evs-ch03-t01-s3"
+    "c5-evs-ch03-t01-s2"
    ],
    "grammar": {
     "labs": [
@@ -3596,11 +2435,9 @@
    "family": "kyun-lab",
    "mode": "fair-test",
    "goal": "fair",
-   "skillId": "c5-evs-ch03-t01-s1",
+   "skillId": "c5-evs-ch03-t01-s2",
    "skillIds": [
-    "c5-evs-ch03-t01-s1",
-    "c5-evs-ch03-t01-s2",
-    "c5-evs-ch03-t01-s3"
+    "c5-evs-ch03-t01-s2"
    ],
    "grammar": {
     "labs": [
@@ -3621,11 +2458,10 @@
    "family": "kyun-lab",
    "mode": "fair-test",
    "goal": "golu",
-   "skillId": "c6-science-ch01-t02-s1",
+   "skillId": "c6-science-ch01-t02-s3",
    "skillIds": [
-    "c6-science-ch01-t02-s1",
-    "c6-science-ch01-t02-s2",
-    "c6-science-ch01-t02-s3"
+    "c6-science-ch01-t02-s3",
+    "c6-science-ch01-t02-s2"
    ],
    "grammar": {
     "labs": [
@@ -3644,9 +2480,8 @@
    "family": "kyun-lab",
    "mode": "fair-test",
    "goal": "fair",
-   "skillId": "c6-science-ch01-t02-s1",
+   "skillId": "c6-science-ch01-t02-s2",
    "skillIds": [
-    "c6-science-ch01-t02-s1",
     "c6-science-ch01-t02-s2",
     "c6-science-ch01-t02-s3"
    ],
@@ -3668,8 +2503,7 @@
    "skillId": "c6-science-ch08-t03-s1",
    "skillIds": [
     "c6-science-ch08-t03-s1",
-    "c6-science-ch08-t03-s2",
-    "c6-science-ch08-t03-s3"
+    "c6-science-ch08-t03-s2"
    ],
    "grammar": {
     "labs": [
@@ -3691,7 +2525,6 @@
    "skillId": "c6-science-ch10-t02-s1",
    "skillIds": [
     "c6-science-ch10-t02-s1",
-    "c6-science-ch10-t02-s2",
     "c6-science-ch10-t02-s3"
    ],
    "grammar": {
@@ -3713,11 +2546,10 @@
    "family": "kyun-lab",
    "mode": "fair-test",
    "goal": "fair",
-   "skillId": "c6-science-ch10-t02-s1",
+   "skillId": "c6-science-ch10-t02-s2",
    "skillIds": [
-    "c6-science-ch10-t02-s1",
     "c6-science-ch10-t02-s2",
-    "c6-science-ch10-t02-s3"
+    "c6-science-ch10-t02-s1"
    ],
    "grammar": {
     "labs": [
@@ -3734,10 +2566,8 @@
    "family": "kyun-lab",
    "mode": "fair-test",
    "goal": "golu",
-   "skillId": "c7-science-ch01-t01-s1",
+   "skillId": "c7-science-ch01-t01-s3",
    "skillIds": [
-    "c7-science-ch01-t01-s1",
-    "c7-science-ch01-t01-s2",
     "c7-science-ch01-t01-s3"
    ],
    "grammar": {
@@ -3755,12 +2585,10 @@
    "family": "kyun-lab",
    "mode": "fair-test",
    "goal": "predict",
-   "skillId": "c7-science-ch04-t02-s1",
+   "skillId": "c7-science-ch04-t02-s2",
    "skillIds": [
-    "c7-science-ch04-t02-s1",
     "c7-science-ch04-t02-s2",
-    "c7-science-ch04-t02-s3",
-    "c7-science-ch04-t02-s4"
+    "c7-science-ch04-t02-s3"
    ],
    "grammar": {
     "labs": [
@@ -3779,9 +2607,8 @@
    "family": "kyun-lab",
    "mode": "fair-test",
    "goal": "predict",
-   "skillId": "c7-science-ch07-t03-s1",
+   "skillId": "c7-science-ch07-t03-s2",
    "skillIds": [
-    "c7-science-ch07-t03-s1",
     "c7-science-ch07-t03-s2",
     "c7-science-ch07-t03-s3"
    ],
@@ -3802,11 +2629,10 @@
    "family": "kyun-lab",
    "mode": "fair-test",
    "goal": "predict",
-   "skillId": "c7-science-ch08-t01-s1",
+   "skillId": "c7-science-ch08-t01-s3",
    "skillIds": [
-    "c7-science-ch08-t01-s1",
-    "c7-science-ch08-t01-s2",
-    "c7-science-ch08-t01-s3"
+    "c7-science-ch08-t01-s3",
+    "c7-science-ch08-t01-s2"
    ],
    "grammar": {
     "labs": [
@@ -3826,11 +2652,9 @@
    "family": "kyun-lab",
    "mode": "fair-test",
    "goal": "predict",
-   "skillId": "c7-science-ch11-t02-s1",
+   "skillId": "c7-science-ch11-t02-s2",
    "skillIds": [
-    "c7-science-ch11-t02-s1",
-    "c7-science-ch11-t02-s2",
-    "c7-science-ch11-t02-s3"
+    "c7-science-ch11-t02-s2"
    ],
    "grammar": {
     "labs": [
@@ -3840,6 +2664,15 @@
    "misMap": {
     "shadow-same-size": "c7-science-ch11-t02-m3"
    }
+  }
+ ],
+ "notAdmitted": [
+  {
+   "topicId": "c4-maths-ch05-t02",
+   "family": "todo-jodo",
+   "mode": "strips",
+   "goal": "make",
+   "why": "the act exercises none of the topic's kit skills (ACTS [])"
   }
  ]
 }

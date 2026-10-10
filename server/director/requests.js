@@ -30,6 +30,7 @@
 // 2026-10-04T18-30-08) and the owner tests (tests/prod/owner-3/4/5-*.mjs); the unit test is tests/requests.test.mjs.
 
 import { stopKind } from "../relational/signals.js";
+import { sexualAsk } from "../conversation/lexicon.js";
 
 const T = (s) => String(s ?? "").toLowerCase().normalize("NFKC").replace(/[’`]/g, "'").replace(/\s+/g, " ").trim();
 /** Strip the leading politeness and fillers a child wraps a request in ("ok", "please", "didi", "ma'am"). */
@@ -81,6 +82,9 @@ const wordCount = (t) => t.split(/\s+/).filter(Boolean).length;
 export function requestOf(text) {
   const raw = T(text);
   if (!raw) return null;
+  // round 3 fix (adversarial B4): a sexual-content ask is never one of these requests ("nangi video dekhti ho?" was a
+  // visual / animation ask, and in round 3 a live-built game); classify.js declines it in code
+  if (sexualAsk(raw)) return null;
   const t = core(raw) || raw;
   const n = wordCount(t);
   const whole = !attemptLike(t) && n <= 12;

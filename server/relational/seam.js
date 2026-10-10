@@ -266,7 +266,9 @@ export const relationalSeam = {
     // the same transaction). Independent of the relational tables' probe and the mode: deleting is always allowed.
     let forget = [];
     if (entry?.session?.forgetAsked && child?.id && child.legal_mode != null) {
-      try { forget = [memoryForgetStmt(child, end.lessonId)]; } catch (e) { console.warn("[relational] forget request not applied:", e?.message); }
+      // round 3 fix (adversarial B3): every memory row she had in hand this lesson (snapshot callbacks W:mem:<id>)
+      const held = (entry.snapshot?.callbacks ?? []).filter((c) => String(c.id).startsWith("W:mem:")).map((c) => String(c.id).slice("W:mem:".length));
+      try { forget = [memoryForgetStmt(child, end.lessonId, held)]; } catch (e) { console.warn("[relational] forget request not applied:", e?.message); }
     }
     if (!child?.id || child.legal_mode == null || tablesReady !== true) return forget;
     if (legalModeOf(child.legal_mode) === "M0") return forget;

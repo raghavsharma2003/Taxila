@@ -17,7 +17,7 @@
 // The route classifies, updates the learner model, then calls step with the updated skill snapshot.
 // branchesFor() runs step() on a synthetic right and wrong reply: the voice lane's "if right / if not"
 // lines are the director's own next moves, never a second guess at them.
-import { stopKind } from "../relational/signals.js";
+import { stopKind, signalsOf } from "../relational/signals.js";
 import * as SH from "./shapes.js";
 import { readFileSync } from "fs";
 import { buildPracticeQueue, findItem, isomorphicFor, probeFor, promptFor, optionsSpoken, selectNext, anchorOf, whyKey, PROBE_WEIGHT, revealsAnswer, choicesFor, stripRungLabel } from "./items.js";
@@ -825,7 +825,7 @@ const waysChips = (labels) => [{ id: "req:visual", label: "Show me a picture" },
   { id: "req:game", label: "Play a game" }, { id: "stop:continue", label: labels.back }];
 /** The request types p5-interaction adds (conversation/lexicon.js readings and the UNDERSTAND note, via policy.js). */
 export const P5_REQUESTS = new Set(["clarify", "repeat", "back", "skip", "know", "harder", "easier", "boredom", "frustration", "thinking", "identity",
-  "uptake", "decline", "answer_q", "adapt", "adopt", "adult", "park", "detour", "stop", "hold_checkin", "ask_invite", "unclear"]);
+  "uptake", "decline", "answer_q", "adapt", "adopt", "adult", "park", "detour", "stop", "hold_checkin", "ask_invite", "unclear", "play_act"]);
 
 /** A teach-phase re-explanation of the idea being taught now (the teach step does not advance). */
 function teachAgainPlan(s, kit, how) {
@@ -889,12 +889,18 @@ function p5RequestMove(s, input, item, req, labels) {
     // one warm check-in, no verdict, the item stays the active one (V5.2)
     case "hold_checkin": return plan("repair", SH.holdCheckin(), { request: "hold_checkin" });
     case "ask_invite": return plan("repair", SH.inviteQuestion(), { request: "ask_invite" });
+    // round 3 fix (adversarial B2): a game command while the play piece is up is the game's act: no verdict on the folded
+    // card, no rung spent, nothing pinned, the item stays the active one (like a mid-thought)
+    case "play_act": return plan("repair", SH.playActWait(), { request: "play_act" });
     case "identity": return withLead(SH.disclose());
     case "uptake": {
       // round 3 (conversation): a share from their life is noticed now AND kept: a real later slot (s.later), so the promise
       // to come back to it is kept (served when the question resolves, or before the wrap). The topic is the child's words
       // as the note lifted them: screened in code like any parked topic (round 2 safety floor B3).
-      if (p5Flag("R3CONV") && req.kind === "personal_share" && req.topic && !unsafeChildPhrase(req.topic)) {
+      // round 3 fix (adversarial N3): never a SAD share ("mera dog kal mar gaya" was promised back and returned after the next
+      // right answer): it gets the one gentle line now (the relational overlay share_uptake_gentle) and is not brought back
+      const sad = [input.text, req.topic].some((t) => t && signalsOf(String(t), { harm: false }).some((x) => x.kind === "share_sad"));
+      if (p5Flag("R3CONV") && req.kind === "personal_share" && req.topic && !unsafeChildPhrase(req.topic) && !sad) {
         const e = { ...parkEntry({ topic: req.topic, learning: false, turn: s.turn, itemOnTable: !!item }), share: true };
         const before = (s.later ?? []).length;
         s.later = pushLater(s.later ?? [], e);
@@ -1005,7 +1011,7 @@ function decide(s, input, item) {
   // 1. Safety before anything else — the predicate or the classifier, either one.
   // `kind`: what raised it (the predicate's family, or model / content_filter / relational_floor) — only the wording of a
   // fallback line reads it (brain/say.js fallbackReply, F10); the hold itself is the same for every trigger.
-  if (flags.distress) { s.safeguard = { calm: 0, asked: false, kind: flags.distressKind ?? null }; return plan("safeguard", SH.safeguard(), { whiteboard: HELPLINES }); }
+  if (flags.distress) { s.safeguard = { calm: 0, asked: false, kind: flags.distressKind ?? null }; s.safeguardedAt ??= s.turn; return plan("safeguard", SH.safeguard(), { whiteboard: HELPLINES }); }
   if (s.safeguard) {
     // RELATIONAL-OS I-7 / AT-B6 (AT-B1 first run: 9/10 goodbyes right after a disclosure ended at once): a goodbye during
     // the safeguard gets ONE check-in before release when the relational policy asks for it; the stop chip always ends it
@@ -1248,7 +1254,8 @@ export function step(prev, input) {
   // cap (compile.js SECTION_CAPS.move 260 tokens ≈ 910 characters with its two header lines): the shape is not droppable, and
   // an over-cap MOVE section is a BudgetError → a 500 on a live turn (ship5 integration, w2c-personalisation). Optional
   // notes are dropped first, never the move.
-  let shape = join(p.shape, ...notes);
+  // round 3 fix (experience B7): the composed shape itself is fitted first, by dropping the clauses shapes.js marks optional
+  let shape = fitShape(join(p.shape, ...notes));
   for (const extra of input.branch ? [] : [goOn ? SH.afterCheckin() : null, ...(also ?? []).map((x) => SH.ALSO_NOTE[x])]) {
     if (extra && join(shape, extra).length <= SHAPE_ROOM) shape = join(shape, extra);
   }
@@ -1300,6 +1307,12 @@ export function step(prev, input) {
 /** Round 3: the most characters a move shape may grow to by OPTIONAL notes (the MOVE section cap is 260 tokens at 3.5
  *  characters per token, less its two header lines and a margin for the address-register note on a voice lane). */
 const SHAPE_ROOM = 760;
+/** round 3 fix (experience B7): drop shapes.js OPTIONAL_CLAUSES, least important first, until the shape fits SHAPE_ROOM. */
+export function fitShape(shape, room = SHAPE_ROOM) {
+  let out = String(shape ?? "");
+  for (const re of SH.OPTIONAL_CLAUSES) { if (out.length <= room) break; out = out.replace(re, ""); }
+  return out;
+}
 /** Moves that carry no verdict note: care, goodbye and a break are never about the answer. */
 const NO_VERDICT_MOVES = new Set(["safeguard", "wrap", "break"]);
 /** classification → VERDICT_NOTE key (null: correct, which the confirm shapes already state). */

@@ -9,7 +9,7 @@ import { teacherRecord } from "../ui/teacher/useTeacher.ts";
 import { loadMe, postJson, refreshMe, type ChildRow, type Me } from "../app/api.ts";
 import { bandForClass } from "../app/band.ts";
 import { Helplines } from "../app/Shell.tsx";
-import { isRelock, parentApi } from "./api.ts";
+import { isRelock, parentApi, type ParentMemory } from "./api.ts";
 import { BOARD_NAME, isPasswordError, parentError } from "./copy.ts";
 import { PasswordAgain } from "./fields.tsx";
 import { useGate } from "./Gate.tsx";
@@ -113,7 +113,7 @@ const CHOICES: { purpose: Purpose; title: string; yes: string; no: string; effec
     effectYes: "The next lesson starts from where your child is, and a skill is checked again on a later day.",
     effectNo: () => "Each lesson starts fresh. The Garden or Sky map and the Notebook stay hidden." },
   { purpose: "memory", title: "Remember what your child likes", yes: "Yes", no: "No",
-    effectYes: "Interests your child mentions (cricket, a pet's name) are used in examples.",
+    effectYes: "Interests your child mentions (cricket, a pet's name) are used in examples, and a good moment from an earlier lesson may open the next one. You can see and delete each memory below.",
     effectNo: (t) => `${t} won't use your child's interests in examples.` },
   // ship5 p3-voicesig. KEEP IN STEP with server/routes/parent.js CONSENT_SPEECH.voice_pace_memory (the spoken version).
   { purpose: "voice_pace_memory", title: "Remember your child's usual answering pace", yes: "Yes, remember", no: "Only this lesson",
@@ -172,6 +172,64 @@ function Choice({ c, me, childId, teacherName, onSaved }: { c: (typeof CHOICES)[
         </div>
       )}
     </li>
+  );
+}
+
+/**
+ * Round 3 fix (adversarial B3b): what the teacher remembers about this child, and a Delete on each memory (the memory
+ * consent's own promise: "You can see and delete each one"; a child's "please forget that" deletes this lesson's rows and
+ * the ones she had in hand, the rest are here). The rows are shown as stored, labelled as the teacher AI's own note.
+ */
+function Memories({ child, teacherName }: { child: ChildRow; teacherName: string }) {
+  const { relock } = useGate();
+  const [m, setM] = useState<ParentMemory | null>(null);
+  const [err, setErr] = useState<string | null>(null);
+  const [busy, setBusy] = useState<string | null>(null);
+  const [done, setDone] = useState<string | null>(null);
+  const load = () => parentApi.memory(child.id).then((x) => { setM(x); setErr(null); }, (e) => { if (isRelock(e)) relock(); else setErr(parentError(e)); });
+  useEffect(() => { setM(null); setDone(null); void load(); }, [child.id]);
+  const del = async (id: string) => {
+    setBusy(id); setErr(null);
+    try {
+      const r = await parentApi.deleteMemory(child.id, id);
+      setDone(r.deleted === 1 ? "1 memory deleted." : `${r.deleted} memories deleted.`);
+      await load();
+    } catch (e) {
+      if (isRelock(e)) { relock(); return; }
+      setErr(parentError(e));
+    } finally { setBusy(null); }
+  };
+  const day = (at: string) => new Date(at).toLocaleDateString("en-IN", { day: "numeric", month: "short" });
+  return (
+    <section className="pa-card" aria-labelledby="pa-mem-h" id="memory">
+      <h2 id="pa-mem-h" className="pa-h2">What {teacherName} remembers about {child.first_name}</h2>
+      {!m && !err && <p className="pa-meta">Loading…</p>}
+      {m && <p>{m.keeps}</p>}
+      {m && (m.remembered.length ? (
+        <>
+          <p className="pa-meta">Each memory is a short note the teacher AI wrote at the end of a lesson, from what {child.first_name} said. It is shown exactly as it is kept.</p>
+          <ul className="pa-list pa-stack-sm" data-memory-list>
+            {m.remembered.map((r) => (
+              <li key={r.id} className="pa-row" data-memory-id={r.id}>
+                <span>{r.text}</span>
+                <span className="pa-meta">{r.topic ? `${r.topic} · ` : ""}{day(r.at)}</span>
+                <Button small variant="quiet" onClick={() => del(r.id)} disabled={busy !== null}>{busy === r.id ? "Deleting" : "Delete"}</Button>
+              </li>
+            ))}
+          </ul>
+          {m.remembered.length > 1 && <Button small variant="secondary" onClick={() => del("all")} disabled={busy !== null}>{busy === "all" ? "Deleting" : "Delete all memories"}</Button>}
+        </>
+      ) : <p className="pa-meta">Nothing about {child.first_name} is kept as a memory right now.</p>)}
+      {m && m.fromLastLesson.length > 0 && (
+        <>
+          <p className="pa-meta">From the last lesson's learning, she may bring back one of these:</p>
+          <ul className="pa-list">{m.fromLastLesson.map((x) => <li key={x.id}>{x.text}</li>)}</ul>
+        </>
+      )}
+      {m && m.forgotten.length > 0 && <p className="pa-meta">{child.first_name} asked her to forget something {m.forgotten.length === 1 ? "once" : `${m.forgotten.length} times`}; what she had from that lesson was deleted.</p>}
+      {done && <p className="pa-row" role="status"><Icon name="tick" size={20} /> {done}</p>}
+      {err && <p className="pa-form-err" role="alert">{err}</p>}
+    </section>
   );
 }
 
@@ -299,6 +357,7 @@ export function Data() {
             {CHOICES.map((c) => <Choice key={c.purpose} c={c} me={me} childId={current?.id ?? null} teacherName={teacherName} onSaved={() => setN((x) => x + 1)} />)}
           </ul>
         </section>
+        {current && <Memories child={current} teacherName={teacherName} />}
         <Download />
         {current && (
           <section className="pa-card" aria-labelledby="pa-delchild-h" id="delete-child">

@@ -617,8 +617,11 @@ export function useDesk(runtime: LessonRuntime, bridge: UiBridge | null, ctx: De
         } : undefined,
         // W2 seam (W2-H fills it): the Studio slot the StudioStage renders inside the tray.
         studio: trayKind === "studio" ? ui.studioSlot : undefined,
-        // The timed Young help menu never covers an answer surface (the pad, the choices): Help opens it there on demand.
-        overlay: trayOverlay ?? (young && yt.tapOptions && floor === "your_turn" && trayKind !== "pad" && trayKind !== "tiles" ? "help_menu" : null),
+        // The timed Young help menu never covers anything in the tray. Round 3 fix (experience B5): it used to exempt only the
+        // pad and the tiles, so 15 s into "your turn" the module, the Studio piece (a play piece too) or the picture board she
+        // had just drawn vanished under three chips (c4-06, c4-09). Every tray kind is something the child works on or looks
+        // at: the Help button (showHelp, after tapOptionsS) opens the menu on demand, as it always did on the pad and tiles.
+        overlay: trayOverlay ?? null,
       }
     : trayOverlay
       ? { kind: "tiles", tiles: [], overlay: trayOverlay }
