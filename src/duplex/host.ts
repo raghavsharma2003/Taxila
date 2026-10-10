@@ -41,7 +41,7 @@ import { faceCue, phasePose, shippedFloor, type FaceCue } from "./face.ts";
 import { packFeatures } from "./features.ts";
 import { tokens, valuesOf } from "./numerals.ts";
 import { hasListeningToken, overlapKind } from "./turnPolicy.ts";
-import { OVERLAP, PREPARE, WT1_DEFAULT } from "./config.ts";
+import { AUDIO, OVERLAP, PREPARE, WT1_DEFAULT } from "./config.ts";
 
 export type HostCommand =
   | { to: "voice"; op: "speak"; t: Ms; reason: SpeakReason; firstSound: FirstSound; verdictNotBefore: Ms | null; text: string; textHash: string; uptake: string | null; turnSeq: number }
@@ -166,6 +166,8 @@ export class EngineHost {
   /** Hushes that ended as "nothing" (no words, a continuer-length burst): too many → hush off for the session (echo). */
   private hushUnconfirmed = 0;
   private hushOff = false;
+  /** Round 4: voiced ms of the current burst over her clearly above her echo level. */
+  private overlapNonEchoMs = 0;
   /** Round 4: when the hush gave up (OVERLAP.hushGiveUpForMs re-arms it after that long). */
   private hushOffAt: Ms | null = null;
   /** Round 3: the current hush's burst sat within OVERLAP.echoNearDb of her echo (only those count toward the give-up). */
@@ -203,6 +205,11 @@ export class EngineHost {
   frame(t: Ms, rms: number, f0: number | null): void {
     this.t = t;
     const r = this.audio.push(t, rms, f0);
+    // round 4: the burst's voiced time clearly above her echo level (OverlapFeatures.nonEchoMs)
+    if (this.audio.voicing && this.her.speaking && r.edge !== "onset") {
+      const lvl = this.audio.levelOverEchoDb();
+      if (lvl === null || lvl >= OVERLAP.nonEchoDb) this.overlapNonEchoMs += AUDIO.frameMs;
+    }
     if (r.edge === "onset") {
       const audible = this.her.speaking;
       if (audible) {
@@ -210,6 +217,9 @@ export class EngineHost {
         if (!this.ducked && !this.flags.shadow) this.o.emit({ to: "voice", op: "duck", t, level: OVERLAP.duckLevel });
         this.ducked = true;
         this.overlapOnset = r.edgeAt;
+        // the onset is back-dated by the VAD; the frames between it and now count as the onset frame reads
+        const lvl0 = this.audio.levelOverEchoDb();
+        this.overlapNonEchoMs = lvl0 === null || lvl0 >= OVERLAP.nonEchoDb ? Math.max(0, t - (r.edgeAt ?? t)) + AUDIO.frameMs : 0;
         this.overlapEchoBase = this.fanin.echoRemoved;
         this.overlapTextBase = this.fanin.view(t).text;
       }
@@ -533,6 +543,7 @@ export class EngineHost {
       lexicalKind: kind,
       herAskedYesNo: askedYesNo,
       hushed: this.hushAt !== null,
+      nonEchoMs: this.overlapNonEchoMs,
     };
   }
 

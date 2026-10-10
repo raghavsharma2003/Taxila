@@ -335,7 +335,9 @@ export class Governor {
     if (HER_FLOOR.has(this.phase) && d.action === "KEEP_TALKING" && tick.overlap) {
       const o = tick.overlap;
       const target = o.targetSpeaker === null || o.targetSpeaker >= 0.5;
-      if (target && o.echoLikelihood < (OVERLAP.acousticYieldNeedsNonEcho ? 0.5 : 0.7) && c.voicing && c.voicedRunMs >= OVERLAP.forceYieldMs) {
+      // round 4 (OVERLAP.sustainCountsNonEcho): the forced-yield clock counts only voice clearly above her echo level
+      const forceMs = OVERLAP.sustainCountsNonEcho && o.nonEchoMs !== undefined ? Math.min(c.voicedRunMs, o.nonEchoMs) : c.voicedRunMs;
+      if (target && o.echoLikelihood < (OVERLAP.acousticYieldNeedsNonEcho ? 0.5 : 0.7) && c.voicing && forceMs >= OVERLAP.forceYieldMs) {
         veto("YIELD", "sustained_voice", { action: "YIELD", reason: "barge_in", atWordBoundary: true, resumable: true });
       } else if (o.lexicalKind === "stop" || o.lexicalKind === "repair" || (target && (o.lexicalKind === "answer" || o.lexicalKind === "turn"))) {
         // p1-duplex (2026-10-05): words from a burst far below the child's own level (the TV, the room) are not the child's

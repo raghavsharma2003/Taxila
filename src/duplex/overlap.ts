@@ -71,7 +71,9 @@ export function classifyOverlap(f: OverlapFeatures, s: { voicing: boolean; f0Slo
   const raised = f.onsetF0Rel !== null && f.onsetF0Rel >= 0.7;
   const ended = !s.voicing;
   let z = -0.5;
-  if (s.voicing && f.durMs >= OVERLAP.sustainedMs) { z += 2.5; codes.push("sustained_voice"); }
+  // round 4 (OVERLAP.sustainCountsNonEcho): the sustain clock counts only voice clearly above her echo level
+  const sustMs = OVERLAP.sustainCountsNonEcho && f.nonEchoMs !== undefined ? Math.min(f.durMs, f.nonEchoMs) : f.durMs;
+  if (s.voicing && sustMs >= OVERLAP.sustainedMs) { z += 2.5; codes.push("sustained_voice"); }
   else if (s.voicing && f.durMs >= 250) z += OVERLAP.earlyVoicedZ;
   if (f.atHerBoundary) { z -= 0.8; codes.push("onset_at_her_boundary"); } else { z += 0.6; codes.push("onset_mid_clause"); }
   if (raised) { z += 1.2; codes.push("onset_pitch_raised"); }
@@ -86,7 +88,7 @@ export function classifyOverlap(f: OverlapFeatures, s: { voicing: boolean; f0Slo
   // her voice down at ~120 ms, so waiting for the burst to end or sustain costs no audible overlap. Her yes/no question is
   // the exception: a "haan" there is the answer, and she takes it at once.
   const sustainNeeded = f.hushed ? Math.max(OVERLAP.sustainedMs, OVERLAP.hushedSustainMs) : OVERLAP.sustainedMs;
-  if (pB >= OVERLAP.yieldP && s.voicing && f.durMs < sustainNeeded && !f.herAskedYesNo && OVERLAP.waitForSustain) {
+  if (pB >= OVERLAP.yieldP && s.voicing && sustMs < sustainNeeded && !f.herAskedYesNo && OVERLAP.waitForSustain) {
     codes.push("short_burst");
     return out(null, pB, false, false, null, "too_short");
   }

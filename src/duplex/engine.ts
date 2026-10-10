@@ -416,6 +416,12 @@ export interface OverlapFeatures {
   herAskedYesNo: boolean;
   /** Round 3: her voice is already hushed under this burst (she is inaudible; the decision may wait for the words). Optional. */
   hushed?: boolean;
+  /**
+   * Round 4: how much of this burst so far was voiced CLEARLY ABOVE her own echo level (>= OVERLAP.nonEchoDb over her
+   * output, or her level unknown). Bleed of her own voice that keeps the device's VAD "voicing" after a short "yeah" does not
+   * count. The sustain and forced-yield clocks read this (OVERLAP.sustainCountsNonEcho). Optional.
+   */
+  nonEchoMs?: number;
 }
 export type OverlapClass = "continuer" | "barge_in" | "side_talk" | "background_speech" | "noise" | "echo";
 

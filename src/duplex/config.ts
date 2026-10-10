@@ -252,6 +252,15 @@ export const OVERLAP = {
    * continuers met the bare 600 ms sustain with no hush ("OFF" in evals/duplex-r4/ami-trace.mjs). [E, AMI TRAIN sweep]
    */
   hushGiveUpForMs: 60000 as Ms,
+  /**
+   * Round 4: the sustain (`sustainedMs`, `hushedSustainMs`) and G11's forced yield (`forceYieldMs`) count only the burst's
+   * voiced time clearly above her echo level (OverlapFeatures.nonEchoMs, frames >= `nonEchoDb` over her output). On AMI a
+   * 660 ms "yes" was followed by her own voice bleeding into the headset ~25 dB under her level, the device VAD kept
+   * "voicing", and the forced yield fired at 1 s on a continuer. A real interruption sits above her level throughout and
+   * counts in full; acoustic yields already need a non-echo frame at the moment of decision (`acousticYieldNeedsNonEcho`).
+   */
+  sustainCountsNonEcho: true,
+  nonEchoDb: 3,
 };
 
 /**
