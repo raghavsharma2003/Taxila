@@ -196,10 +196,15 @@ export function StudioStage({ slot: given, young, lang, onEvent }: { slot: Studi
   // words keep their size, so the smallest word reaches the 14 px floor where a clean layout exists. Decided once per
   // artifact (a resize refits the box, never re-lays the drawing out mid-animation); continue boards reuse their fresh
   // board's transform so they still line up with it.
-  const fitted = useRef<{ src: StudioArtifact; out: StudioArtifact } | null>(null);
+  // round 4 content: ...unless the box itself changed by more than 8 % since the layout was decided. In a live lesson the
+  // first measurement often lands while the Desk is still moving into its Work geometry (a smaller tray for a frame or
+  // two): the layout chosen for that transient box stuck, and a board the tray gate passed at 15.5 px rendered at 11.5 px
+  // (round3-forge on a local production build, game-perimeter at 360, 2026-10-10).
+  const fitted = useRef<{ src: StudioArtifact; out: StudioArtifact; area: { w: number; h: number } } | null>(null);
   const artifact: StudioArtifact | undefined = useMemo(() => {
     if (!shown0 || shown0.kind !== "whiteboard" || !avail) return shown0;
-    if (fitted.current?.src === shown0) return fitted.current.out;
+    const same = (a: { w: number; h: number }) => Math.abs(a.w - avail.w) <= a.w * 0.08 && Math.abs(a.h - avail.h) <= a.h * 0.08;
+    if (fitted.current?.src === shown0 && (shown0.script.mode === "continue" || same(fitted.current.area))) return fitted.current.out;
     const sc = shown0.script;
     let out: StudioArtifact = shown0;
     try {
@@ -214,7 +219,7 @@ export function StudioStage({ slot: given, young, lang, onEvent }: { slot: Studi
         if (r.t) out = { ...shown0, stage: { w: r.t.w, h: r.t.h }, script: r.script };
       }
     } catch { out = shown0; }
-    fitted.current = { src: shown0, out };
+    fitted.current = { src: shown0, out, area: { w: avail.w, h: avail.h } };
     return out;
   }, [shown0, avail, young]);
   // a board is drawn only once its layout for this box is decided (no first frame at the wrong size)

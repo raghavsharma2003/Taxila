@@ -111,13 +111,43 @@ export async function moduleSamples(per = 8) {
       }
     }
   }
+  // Forge G1 lesson fills (scene@1 and the engines G1 builds for an item no engine binds): the fill's own mount command,
+  // as modules.js mounts it, from requestFill offline (no flavour model, no cache, no blob) over every kit's items
+  if (process.env.CERT_G1 !== "0") {
+    const saved = { FORGE_FLAVOUR: process.env.FORGE_FLAVOUR, FORGE_DB_CACHE: process.env.FORGE_DB_CACHE, FORGE_BLOB: process.env.FORGE_BLOB };
+    Object.assign(process.env, { FORGE_FLAVOUR: "off", FORGE_DB_CACHE: "off", FORGE_BLOB: "off" });
+    try {
+      const { requestFill } = await import("../forge/index.js");
+      for (const kit of kitTopics()) {
+        const cl = classOf(kit.topicId);
+        const band = cl <= 4 ? "young" : "older";
+        const learner = { child: { firstName: "Asha", classLevel: cl, languagePref: "hinglish", interests: [] }, recentWrong: [], activeMisconceptions: [], pKnown: {} };
+        for (const item of (kit.items ?? []).slice(0, 6)) {
+          let x = null;
+          try { x = await requestFill({ kit, item, move: "practice", learner, needByMs: 10_000, noGapRow: true }); } catch { x = null; }
+          const c = x?.status === "ready" ? x.command : null;
+          if (!c?.engine || !ENGINES[c.engine]) continue;
+          const m = String(c.params?.mode ?? "*");
+          const key = `${c.engine}|${m}|${band}`;
+          const list = by.get(key) ?? [];
+          if (!list.some((y) => hash(y.params) === hash(c.params))) list.push({ topicId: kit.topicId, params: c.params, goal: c.goal ?? null, ageBand: cl <= 4 ? "6-9" : "10-15", template: x.template ?? null });
+          by.set(key, list);
+        }
+      }
+    } finally { for (const [k, v] of Object.entries(saved)) { if (v === undefined) delete process.env[k]; else process.env[k] = v; } }
+  }
   // the open tasks modules.js interactiveDefault mounts for an interactive ask (they must be certified like the rest)
   for (const band of ["young", "older"]) for (const params of [{ mode: "build", ask: "perimeter", perimeter: 12 }, { mode: "build", ask: "area", area: 6 }]) {
     const key = `geoboard@1|build|${band}`;
     by.set(key, [...(by.get(key) ?? []), { topicId: "default", params: { ...params, lang: "hinglish" }, goal: null, ageBand: band === "young" ? "6-9" : "10-15" }]);
   }
   const out = [];
-  for (const [key, list] of by) {
+  for (const [key, list0] of by) {
+    // round-robin across templates (a G1 scene list holds several), so the spread covers each one
+    const groups = new Map();
+    for (const x of list0) groups.set(x.template ?? "-", [...(groups.get(x.template ?? "-") ?? []), x]);
+    const list = [];
+    for (let i = 0; list.length < list0.length; i++) for (const g of groups.values()) if (g[i]) list.push(g[i]);
     const [engine, mode, band] = key.split("|");
     for (const s of spread(list, per)) out.push({ engine, mode, band, ...s });
   }

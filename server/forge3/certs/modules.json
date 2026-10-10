@@ -1,14 +1,14 @@
 {
  "v": 1,
  "qa": "forge3-qa@2",
- "at": "2026-10-10T09:31:32.987Z",
+ "at": "2026-10-10T09:38:05.740Z",
  "viewports": [
   "p360",
   "p412",
   "l1366"
  ],
  "boxes": "docs/design/round4/build/box-contract.json tray boxes (b3 older, b2 young)",
- "source": "shared/engine-catalog.js planEngine over every kit item (show, predict), lang hinglish; plus modules.js interactiveDefault tasks",
+ "source": "shared/engine-catalog.js planEngine over every kit item (show, predict), lang hinglish; plus modules.js interactiveDefault tasks; Forge G1 lesson fills (requestFill offline) for scene@1",
  "engines": {
   "collections@1": {
    "modes": {
@@ -865,6 +865,40 @@
      }
     },
     "compare": {
+     "older": {
+      "byViewport": {
+       "p360": true,
+       "p412": true,
+       "l1366": true
+      },
+      "serveByViewport": {
+       "p360": true,
+       "p412": true,
+       "l1366": true
+      },
+      "n": 8,
+      "fails": []
+     }
+    }
+   }
+  },
+  "scene@1": {
+   "modes": {
+    "*": {
+     "young": {
+      "byViewport": {
+       "p360": true,
+       "p412": true,
+       "l1366": true
+      },
+      "serveByViewport": {
+       "p360": true,
+       "p412": true,
+       "l1366": true
+      },
+      "n": 8,
+      "fails": []
+     },
      "older": {
       "byViewport": {
        "p360": true,
@@ -18713,6 +18747,2322 @@
      "serve": true,
      "fails": [],
      "minPx": 15.2,
+     "detail": [],
+     "err": null
+    }
+   ]
+  },
+  {
+   "engine": "scene@1",
+   "mode": "*",
+   "band": "young",
+   "topicId": "c1-english-ch04-t01",
+   "params": {
+    "scene": {
+     "dsl": "scene@1",
+     "meta": {
+      "band": "B1",
+      "lang": "hi-Latn+en",
+      "title": {
+       "en": "Your turn to try",
+       "hi": "अब तुम्हारी बारी",
+       "hi_latn": "Ab tumhari baari"
+      },
+      "objective_ids": [
+       "c1-english-ch04-t01-s2"
+      ],
+      "topic_ids": [
+       "c1-english-ch04-t01"
+      ],
+      "template": "sequence-steps@1"
+     },
+     "stage": {
+      "aspect": "3:4",
+      "bg": "bg"
+     },
+     "vars": [],
+     "derive": [],
+     "nodes": [
+      {
+       "kind": "order",
+       "id": "steps",
+       "x": 500,
+       "y": 526.6666666666667,
+       "items": [
+        {
+         "id": "s_b",
+         "label": {
+          "en": "the man walks with his basket",
+          "hi": "the man walks with his basket",
+          "hi_latn": "the man walks with his basket"
+         }
+        },
+        {
+         "id": "s_d",
+         "label": {
+          "en": "the man sleeps under the tree",
+          "hi": "the man sleeps under the tree",
+          "hi_latn": "the man sleeps under the tree"
+         }
+        },
+        {
+         "id": "s_c",
+         "label": {
+          "en": "the monkeys take the caps",
+          "hi": "the monkeys take the caps",
+          "hi_latn": "the monkeys take the caps"
+         }
+        },
+        {
+         "id": "s_a",
+         "label": {
+          "en": "the man throws his cap down",
+          "hi": "the man throws his cap down",
+          "hi_latn": "the man throws his cap down"
+         }
+        }
+       ],
+       "orient": "column",
+       "start": [
+        "s_c",
+        "s_a",
+        "s_b",
+        "s_d"
+       ],
+       "tl": "step order"
+      },
+      {
+       "kind": "button",
+       "id": "check",
+       "x": 500,
+       "y": 1206.3333333333333,
+       "label": {
+        "en": "Check",
+        "hi": "जाँचो",
+        "hi_latn": "Check karo"
+       },
+       "act": "check"
+      }
+     ],
+     "timelines": [],
+     "goals": [],
+     "probe": {
+      "id": "p_seq",
+      "kind": "sequence",
+      "ask": {
+       "en": "Your turn to try",
+       "hi": "अब तुम्हारी बारी",
+       "hi_latn": "Ab tumhari baari"
+      },
+      "commit": {
+       "via": "check",
+       "node": "check"
+      },
+      "correct": "order(steps) == 's_b,s_d,s_c,s_a'",
+      "traps": []
+     },
+     "feedback": "on_commit"
+    }
+   },
+   "views": [
+    {
+     "vp": "p360",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 17.8,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "p412",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 23.2,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "l1366",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 32,
+     "detail": [],
+     "err": null
+    }
+   ]
+  },
+  {
+   "engine": "scene@1",
+   "mode": "*",
+   "band": "young",
+   "topicId": "c2-english-ch02-t01",
+   "params": {
+    "scene": {
+     "dsl": "scene@1",
+     "meta": {
+      "band": "B1",
+      "lang": "hi-Latn+en",
+      "title": {
+       "en": "Your turn to try",
+       "hi": "अब तुम्हारी बारी",
+       "hi_latn": "Ab tumhari baari"
+      },
+      "objective_ids": [
+       "c2-english-ch02-t01-s2"
+      ],
+      "topic_ids": [
+       "c2-english-ch02-t01"
+      ],
+      "template": "sequence-steps@1"
+     },
+     "stage": {
+      "aspect": "3:4",
+      "bg": "bg"
+     },
+     "vars": [],
+     "derive": [],
+     "nodes": [
+      {
+       "kind": "order",
+       "id": "steps",
+       "x": 500,
+       "y": 393.3333333333333,
+       "items": [
+        {
+         "id": "s_w1",
+         "label": {
+          "en": "She",
+          "hi": "She",
+          "hi_latn": "She"
+         }
+        },
+        {
+         "id": "s_w2",
+         "label": {
+          "en": "is",
+          "hi": "is",
+          "hi_latn": "is"
+         }
+        },
+        {
+         "id": "s_w3",
+         "label": {
+          "en": "swinging",
+          "hi": "swinging",
+          "hi_latn": "swinging"
+         }
+        }
+       ],
+       "orient": "column",
+       "start": [
+        "s_w1",
+        "s_w3",
+        "s_w2"
+       ],
+       "tl": "step order"
+      },
+      {
+       "kind": "button",
+       "id": "check",
+       "x": 500,
+       "y": 1206.3333333333333,
+       "label": {
+        "en": "Check",
+        "hi": "जाँचो",
+        "hi_latn": "Check karo"
+       },
+       "act": "check"
+      }
+     ],
+     "timelines": [],
+     "goals": [],
+     "probe": {
+      "id": "p_seq",
+      "kind": "sequence",
+      "ask": {
+       "en": "Your turn to try",
+       "hi": "अब तुम्हारी बारी",
+       "hi_latn": "Ab tumhari baari"
+      },
+      "commit": {
+       "via": "check",
+       "node": "check"
+      },
+      "correct": "order(steps) == 's_w1,s_w2,s_w3'",
+      "traps": []
+     },
+     "feedback": "on_commit"
+    }
+   },
+   "views": [
+    {
+     "vp": "p360",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 17.8,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "p412",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 23.2,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "l1366",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 32,
+     "detail": [],
+     "err": null
+    }
+   ]
+  },
+  {
+   "engine": "scene@1",
+   "mode": "*",
+   "band": "young",
+   "topicId": "c1-hindi-ch18-t01",
+   "params": {
+    "scene": {
+     "dsl": "scene@1",
+     "meta": {
+      "band": "B1",
+      "lang": "hi-Latn+en",
+      "title": {
+       "en": "Your turn to try",
+       "hi": "अब तुम्हारी बारी",
+       "hi_latn": "Ab tumhari baari"
+      },
+      "objective_ids": [
+       "c1-hindi-ch18-t01-s3"
+      ],
+      "topic_ids": [
+       "c1-hindi-ch18-t01"
+      ],
+      "template": "choice-card@1"
+     },
+     "stage": {
+      "aspect": "3:4",
+      "bg": "bg"
+     },
+     "vars": [
+      {
+       "id": "pick",
+       "type": "enum",
+       "init": "none",
+       "options": [
+        "none",
+        "o1",
+        "o2"
+       ],
+       "tl": "child's pick"
+      }
+     ],
+     "derive": [],
+     "nodes": [
+      {
+       "kind": "text",
+       "id": "title",
+       "x": 420,
+       "y": 146,
+       "text": {
+        "en": "Your turn to try",
+        "hi": "अब तुम्हारी बारी",
+        "hi_latn": "Ab tumhari baari"
+       },
+       "size": "title",
+       "w": 760,
+       "align": "middle"
+      },
+      {
+       "kind": "sprite",
+       "id": "decor",
+       "x": 900,
+       "y": 75,
+       "lib": "obj.book",
+       "w": 110,
+       "h": 110,
+       "role": "context"
+      },
+      {
+       "kind": "choice",
+       "id": "ch",
+       "x": 500,
+       "y": 893,
+       "var": "pick",
+       "options": [
+        {
+         "id": "o1",
+         "label": {
+          "en": "kitne pyaare hain",
+          "hi": "kitne pyaare hain",
+          "hi_latn": "kitne pyaare hain"
+         }
+        },
+        {
+         "id": "o2",
+         "label": {
+          "en": "kitni pyaari hai",
+          "hi": "kitni pyaari hai",
+          "hi_latn": "kitni pyaari hai"
+         },
+         "misc": "MC.C1_HINDI_CH18_T01_MC_AGREEMENT"
+        }
+       ],
+       "layout": "column",
+       "commit": true
+      }
+     ],
+     "timelines": [],
+     "goals": [],
+     "probe": {
+      "id": "p_pick",
+      "kind": "diagnose",
+      "ask": {
+       "en": "For phool (many flowers), which fits: 'kitne pyaare hain' or 'kitni pyaari hai'?",
+       "hi": "बहुत सारे फूलों के लिए कौन-सा ठीक है — 'कितने प्यारे हैं' या 'कितनी प्यारी है'?",
+       "hi_latn": "बहुत सारे फूलों के लिए कौन-सा ठीक है — 'कितने प्यारे हैं' या 'कितनी प्यारी है'?"
+      },
+      "commit": {
+       "via": "choice",
+       "node": "ch"
+      },
+      "correct": "pick == 'o1'",
+      "traps": [
+       {
+        "when": "pick == 'o2'",
+        "misc": "MC.C1_HINDI_CH18_T01_MC_AGREEMENT"
+       }
+      ]
+     },
+     "feedback": "on_commit"
+    }
+   },
+   "views": [
+    {
+     "vp": "p360",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 17.8,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "p412",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 23.2,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "l1366",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 32,
+     "detail": [],
+     "err": null
+    }
+   ]
+  },
+  {
+   "engine": "scene@1",
+   "mode": "*",
+   "band": "young",
+   "topicId": "c2-english-ch10-t01",
+   "params": {
+    "scene": {
+     "dsl": "scene@1",
+     "meta": {
+      "band": "B1",
+      "lang": "hi-Latn+en",
+      "title": {
+       "en": "Your turn to try",
+       "hi": "अब तुम्हारी बारी",
+       "hi_latn": "Ab tumhari baari"
+      },
+      "objective_ids": [
+       "c2-english-ch10-t01-s4"
+      ],
+      "topic_ids": [
+       "c2-english-ch10-t01"
+      ],
+      "template": "choice-card@1"
+     },
+     "stage": {
+      "aspect": "3:4",
+      "bg": "bg"
+     },
+     "vars": [
+      {
+       "id": "pick",
+       "type": "enum",
+       "init": "none",
+       "options": [
+        "none",
+        "o1",
+        "o2"
+       ],
+       "tl": "child's pick"
+      }
+     ],
+     "derive": [],
+     "nodes": [
+      {
+       "kind": "text",
+       "id": "title",
+       "x": 420,
+       "y": 146,
+       "text": {
+        "en": "Your turn to try",
+        "hi": "अब तुम्हारी बारी",
+        "hi_latn": "Ab tumhari baari"
+       },
+       "size": "title",
+       "w": 760,
+       "align": "middle"
+      },
+      {
+       "kind": "sprite",
+       "id": "decor",
+       "x": 900,
+       "y": 75,
+       "lib": "obj.book",
+       "w": 110,
+       "h": 110,
+       "role": "context"
+      },
+      {
+       "kind": "choice",
+       "id": "ch",
+       "x": 500,
+       "y": 893,
+       "var": "pick",
+       "options": [
+        {
+         "id": "o1",
+         "label": {
+          "en": "A peacock is bigger than a crow.",
+          "hi": "A peacock is bigger than a crow.",
+          "hi_latn": "A peacock is bigger than a crow."
+         }
+        },
+        {
+         "id": "o2",
+         "label": {
+          "en": "A peacock is more bigger than a crow.",
+          "hi": "A peacock is more bigger than a crow.",
+          "hi_latn": "A peacock is more bigger than a crow."
+         },
+         "misc": "MC.C2_ENGLISH_CH10_T01_M_DOUBLE_COMPARATIVE"
+        }
+       ],
+       "layout": "column",
+       "commit": true
+      }
+     ],
+     "timelines": [],
+     "goals": [],
+     "probe": {
+      "id": "p_pick",
+      "kind": "diagnose",
+      "ask": {
+       "en": "Your turn to try",
+       "hi": "अब तुम्हारी बारी",
+       "hi_latn": "Ab tumhari baari"
+      },
+      "commit": {
+       "via": "choice",
+       "node": "ch"
+      },
+      "correct": "pick == 'o1'",
+      "traps": [
+       {
+        "when": "pick == 'o2'",
+        "misc": "MC.C2_ENGLISH_CH10_T01_M_DOUBLE_COMPARATIVE"
+       }
+      ]
+     },
+     "feedback": "on_commit"
+    }
+   },
+   "views": [
+    {
+     "vp": "p360",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 17.8,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "p412",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 23.2,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "l1366",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 32,
+     "detail": [],
+     "err": null
+    }
+   ]
+  },
+  {
+   "engine": "scene@1",
+   "mode": "*",
+   "band": "young",
+   "topicId": "c3-english-ch09-t01",
+   "params": {
+    "scene": {
+     "dsl": "scene@1",
+     "meta": {
+      "band": "B2",
+      "lang": "hi-Latn+en",
+      "title": {
+       "en": "Your turn to try",
+       "hi": "अब तुम्हारी बारी",
+       "hi_latn": "Ab tumhari baari"
+      },
+      "objective_ids": [
+       "c3-english-ch09-t01-s4"
+      ],
+      "topic_ids": [
+       "c3-english-ch09-t01"
+      ],
+      "template": "sequence-steps@1"
+     },
+     "stage": {
+      "aspect": "3:4",
+      "bg": "bg"
+     },
+     "vars": [],
+     "derive": [],
+     "nodes": [
+      {
+       "kind": "order",
+       "id": "steps",
+       "x": 500,
+       "y": 526.6666666666667,
+       "items": [
+        {
+         "id": "s_w1",
+         "label": {
+          "en": "Arjun",
+          "hi": "Arjun",
+          "hi_latn": "Arjun"
+         }
+        },
+        {
+         "id": "s_w2",
+         "label": {
+          "en": "forgot",
+          "hi": "forgot",
+          "hi_latn": "forgot"
+         }
+        },
+        {
+         "id": "s_w3",
+         "label": {
+          "en": "his",
+          "hi": "his",
+          "hi_latn": "his"
+         }
+        },
+        {
+         "id": "s_w4",
+         "label": {
+          "en": "tiffin",
+          "hi": "tiffin",
+          "hi_latn": "tiffin"
+         }
+        }
+       ],
+       "orient": "column",
+       "start": [
+        "s_w3",
+        "s_w4",
+        "s_w2",
+        "s_w1"
+       ],
+       "tl": "step order"
+      },
+      {
+       "kind": "button",
+       "id": "check",
+       "x": 500,
+       "y": 1206.3333333333333,
+       "label": {
+        "en": "Check",
+        "hi": "जाँचो",
+        "hi_latn": "Check karo"
+       },
+       "act": "check"
+      }
+     ],
+     "timelines": [],
+     "goals": [],
+     "probe": {
+      "id": "p_seq",
+      "kind": "sequence",
+      "ask": {
+       "en": "Your turn to try",
+       "hi": "अब तुम्हारी बारी",
+       "hi_latn": "Ab tumhari baari"
+      },
+      "commit": {
+       "via": "check",
+       "node": "check"
+      },
+      "correct": "order(steps) == 's_w1,s_w2,s_w3,s_w4'",
+      "traps": []
+     },
+     "feedback": "on_commit"
+    }
+   },
+   "views": [
+    {
+     "vp": "p360",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 16,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "p412",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 20.9,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "l1366",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 28.8,
+     "detail": [],
+     "err": null
+    }
+   ]
+  },
+  {
+   "engine": "scene@1",
+   "mode": "*",
+   "band": "young",
+   "topicId": "c4-english-ch06-t01",
+   "params": {
+    "scene": {
+     "dsl": "scene@1",
+     "meta": {
+      "band": "B2",
+      "lang": "hi-Latn+en",
+      "title": {
+       "en": "Your turn to try",
+       "hi": "अब तुम्हारी बारी",
+       "hi_latn": "Ab tumhari baari"
+      },
+      "objective_ids": [
+       "c4-english-ch06-t01-s1"
+      ],
+      "topic_ids": [
+       "c4-english-ch06-t01"
+      ],
+      "template": "sequence-steps@1"
+     },
+     "stage": {
+      "aspect": "3:4",
+      "bg": "bg"
+     },
+     "vars": [],
+     "derive": [],
+     "nodes": [
+      {
+       "kind": "order",
+       "id": "steps",
+       "x": 500,
+       "y": 393.3333333333333,
+       "items": [
+        {
+         "id": "s_b",
+         "label": {
+          "en": "He hurt his eye",
+          "hi": "He hurt his eye",
+          "hi_latn": "He hurt his eye"
+         }
+        },
+        {
+         "id": "s_c",
+         "label": {
+          "en": "He went to a school in Paris",
+          "hi": "He went to a school in Paris",
+          "hi_latn": "He went to a school in Paris"
+         }
+        },
+        {
+         "id": "s_a",
+         "label": {
+          "en": "He made a six-dot system",
+          "hi": "He made a six-dot system",
+          "hi_latn": "He made a six-dot system"
+         }
+        }
+       ],
+       "orient": "column",
+       "start": [
+        "s_b",
+        "s_a",
+        "s_c"
+       ],
+       "tl": "step order"
+      },
+      {
+       "kind": "button",
+       "id": "check",
+       "x": 500,
+       "y": 1206.3333333333333,
+       "label": {
+        "en": "Check",
+        "hi": "जाँचो",
+        "hi_latn": "Check karo"
+       },
+       "act": "check"
+      }
+     ],
+     "timelines": [],
+     "goals": [],
+     "probe": {
+      "id": "p_seq",
+      "kind": "sequence",
+      "ask": {
+       "en": "Your turn to try",
+       "hi": "अब तुम्हारी बारी",
+       "hi_latn": "Ab tumhari baari"
+      },
+      "commit": {
+       "via": "check",
+       "node": "check"
+      },
+      "correct": "order(steps) == 's_b,s_c,s_a'",
+      "traps": []
+     },
+     "feedback": "on_commit"
+    }
+   },
+   "views": [
+    {
+     "vp": "p360",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 16,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "p412",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 20.9,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "l1366",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 28.8,
+     "detail": [],
+     "err": null
+    }
+   ]
+  },
+  {
+   "engine": "scene@1",
+   "mode": "*",
+   "band": "young",
+   "topicId": "c3-english-ch11-t01",
+   "params": {
+    "scene": {
+     "dsl": "scene@1",
+     "meta": {
+      "band": "B2",
+      "lang": "hi-Latn+en",
+      "title": {
+       "en": "Your turn to try",
+       "hi": "अब तुम्हारी बारी",
+       "hi_latn": "Ab tumhari baari"
+      },
+      "objective_ids": [
+       "c3-english-ch11-t01-s4"
+      ],
+      "topic_ids": [
+       "c3-english-ch11-t01"
+      ],
+      "template": "choice-card@1"
+     },
+     "stage": {
+      "aspect": "3:4",
+      "bg": "bg"
+     },
+     "vars": [
+      {
+       "id": "pick",
+       "type": "enum",
+       "init": "none",
+       "options": [
+        "none",
+        "o1",
+        "o2"
+       ],
+       "tl": "child's pick"
+      }
+     ],
+     "derive": [],
+     "nodes": [
+      {
+       "kind": "text",
+       "id": "title",
+       "x": 420,
+       "y": 137,
+       "text": {
+        "en": "Your turn to try",
+        "hi": "अब तुम्हारी बारी",
+        "hi_latn": "Ab tumhari baari"
+       },
+       "size": "title",
+       "w": 760,
+       "align": "middle"
+      },
+      {
+       "kind": "sprite",
+       "id": "decor",
+       "x": 900,
+       "y": 75,
+       "lib": "obj.book",
+       "w": 110,
+       "h": 110,
+       "role": "context"
+      },
+      {
+       "kind": "text",
+       "id": "question",
+       "x": 500,
+       "y": 419,
+       "text": {
+        "en": "Which is right: 'There are many stars.' or 'There are much stars.'?",
+        "hi": "Kaunsa sahi hai: 'many stars' ya 'much stars'?",
+        "hi_latn": "Kaunsa sahi hai: 'many stars' ya 'much stars'?"
+       },
+       "size": "caption",
+       "w": 900,
+       "align": "middle"
+      },
+      {
+       "kind": "choice",
+       "id": "ch",
+       "x": 500,
+       "y": 946.3333333333333,
+       "var": "pick",
+       "options": [
+        {
+         "id": "o1",
+         "label": {
+          "en": "There are much stars.",
+          "hi": "There are much stars.",
+          "hi_latn": "There are much stars."
+         },
+         "misc": "MC.C3_ENGLISH_CH11_T01_M_MUCH_MANY"
+        },
+        {
+         "id": "o2",
+         "label": {
+          "en": "There are many stars.",
+          "hi": "There are many stars.",
+          "hi_latn": "There are many stars."
+         }
+        }
+       ],
+       "layout": "column",
+       "commit": true
+      }
+     ],
+     "timelines": [],
+     "goals": [],
+     "probe": {
+      "id": "p_pick",
+      "kind": "diagnose",
+      "ask": {
+       "en": "Which is right: 'There are many stars.' or 'There are much stars.'?",
+       "hi": "Kaunsa sahi hai: 'many stars' ya 'much stars'?",
+       "hi_latn": "Kaunsa sahi hai: 'many stars' ya 'much stars'?"
+      },
+      "commit": {
+       "via": "choice",
+       "node": "ch"
+      },
+      "correct": "pick == 'o2'",
+      "traps": [
+       {
+        "when": "pick == 'o1'",
+        "misc": "MC.C3_ENGLISH_CH11_T01_M_MUCH_MANY"
+       }
+      ]
+     },
+     "feedback": "on_commit"
+    }
+   },
+   "views": [
+    {
+     "vp": "p360",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 16,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "p412",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 20.9,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "l1366",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 28.8,
+     "detail": [],
+     "err": null
+    }
+   ]
+  },
+  {
+   "engine": "scene@1",
+   "mode": "*",
+   "band": "young",
+   "topicId": "c4-english-ch05-t01",
+   "params": {
+    "scene": {
+     "dsl": "scene@1",
+     "meta": {
+      "band": "B2",
+      "lang": "hi-Latn+en",
+      "title": {
+       "en": "Your turn to try",
+       "hi": "अब तुम्हारी बारी",
+       "hi_latn": "Ab tumhari baari"
+      },
+      "objective_ids": [
+       "c4-english-ch05-t01-s2"
+      ],
+      "topic_ids": [
+       "c4-english-ch05-t01"
+      ],
+      "template": "choice-card@1"
+     },
+     "stage": {
+      "aspect": "3:4",
+      "bg": "bg"
+     },
+     "vars": [
+      {
+       "id": "pick",
+       "type": "enum",
+       "init": "none",
+       "options": [
+        "none",
+        "o1",
+        "o2"
+       ],
+       "tl": "child's pick"
+      }
+     ],
+     "derive": [],
+     "nodes": [
+      {
+       "kind": "text",
+       "id": "title",
+       "x": 420,
+       "y": 137,
+       "text": {
+        "en": "Your turn to try",
+        "hi": "अब तुम्हारी बारी",
+        "hi_latn": "Ab tumhari baari"
+       },
+       "size": "title",
+       "w": 760,
+       "align": "middle"
+      },
+      {
+       "kind": "sprite",
+       "id": "decor",
+       "x": 900,
+       "y": 75,
+       "lib": "obj.book",
+       "w": 110,
+       "h": 110,
+       "role": "context"
+      },
+      {
+       "kind": "choice",
+       "id": "ch",
+       "x": 500,
+       "y": 946.3333333333333,
+       "var": "pick",
+       "options": [
+        {
+         "id": "o1",
+         "label": {
+          "en": "wise",
+          "hi": "wise",
+          "hi_latn": "wise"
+         }
+        },
+        {
+         "id": "o2",
+         "label": {
+          "en": "lazy",
+          "hi": "lazy",
+          "hi_latn": "lazy"
+         }
+        }
+       ],
+       "layout": "column",
+       "commit": true
+      }
+     ],
+     "timelines": [],
+     "goals": [],
+     "probe": {
+      "id": "p_pick",
+      "kind": "diagnose",
+      "ask": {
+       "en": "Your turn to try",
+       "hi": "अब तुम्हारी बारी",
+       "hi_latn": "Ab tumhari baari"
+      },
+      "commit": {
+       "via": "choice",
+       "node": "ch"
+      },
+      "correct": "pick == 'o1'",
+      "traps": []
+     },
+     "feedback": "on_commit"
+    }
+   },
+   "views": [
+    {
+     "vp": "p360",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 16,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "p412",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 20.9,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "l1366",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 28.8,
+     "detail": [],
+     "err": null
+    }
+   ]
+  },
+  {
+   "engine": "scene@1",
+   "mode": "*",
+   "band": "older",
+   "topicId": "c5-english-ch02-t01",
+   "params": {
+    "scene": {
+     "dsl": "scene@1",
+     "meta": {
+      "band": "B3",
+      "lang": "hi-Latn+en",
+      "title": {
+       "en": "Your turn to try",
+       "hi": "अब तुम्हारी बारी",
+       "hi_latn": "Ab tumhari baari"
+      },
+      "objective_ids": [
+       "c5-english-ch02-t01-s1"
+      ],
+      "topic_ids": [
+       "c5-english-ch02-t01"
+      ],
+      "template": "sequence-steps@1"
+     },
+     "stage": {
+      "aspect": "3:4",
+      "bg": "bg"
+     },
+     "vars": [],
+     "derive": [],
+     "nodes": [
+      {
+       "kind": "order",
+       "id": "steps",
+       "x": 500,
+       "y": 380,
+       "items": [
+        {
+         "id": "s_c",
+         "label": {
+          "en": "Dadaji went to buy jalebis",
+          "hi": "Dadaji went to buy jalebis",
+          "hi_latn": "Dadaji went to buy jalebis"
+         }
+        },
+        {
+         "id": "s_b",
+         "label": {
+          "en": "Chintu pressed the button",
+          "hi": "Chintu pressed the button",
+          "hi_latn": "Chintu pressed the button"
+         }
+        },
+        {
+         "id": "s_d",
+         "label": {
+          "en": "The scooter rolled down the slope",
+          "hi": "The scooter rolled down the slope",
+          "hi_latn": "The scooter rolled down the slope"
+         }
+        },
+        {
+         "id": "s_a",
+         "label": {
+          "en": "The scooter stopped in a pile of hay",
+          "hi": "The scooter stopped in a pile of hay",
+          "hi_latn": "The scooter stopped in a pile of hay"
+         }
+        }
+       ],
+       "orient": "column",
+       "start": [
+        "s_c",
+        "s_d",
+        "s_b",
+        "s_a"
+       ],
+       "tl": "step order"
+      },
+      {
+       "kind": "button",
+       "id": "check",
+       "x": 500,
+       "y": 1233,
+       "label": {
+        "en": "Check",
+        "hi": "जाँचो",
+        "hi_latn": "Check karo"
+       },
+       "act": "check"
+      }
+     ],
+     "timelines": [],
+     "goals": [],
+     "probe": {
+      "id": "p_seq",
+      "kind": "sequence",
+      "ask": {
+       "en": "Your turn to try",
+       "hi": "अब तुम्हारी बारी",
+       "hi_latn": "Ab tumhari baari"
+      },
+      "commit": {
+       "via": "check",
+       "node": "check"
+      },
+      "correct": "order(steps) == 's_c,s_b,s_d,s_a'",
+      "traps": []
+     },
+     "feedback": "on_commit"
+    }
+   },
+   "views": [
+    {
+     "vp": "p360",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 15.2,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "p412",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 18.6,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "l1366",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 25.6,
+     "detail": [],
+     "err": null
+    }
+   ]
+  },
+  {
+   "engine": "scene@1",
+   "mode": "*",
+   "band": "older",
+   "topicId": "c5-english-ch04-t01",
+   "params": {
+    "scene": {
+     "dsl": "scene@1",
+     "meta": {
+      "band": "B3",
+      "lang": "hi-Latn+en",
+      "title": {
+       "en": "Your turn to try",
+       "hi": "अब तुम्हारी बारी",
+       "hi_latn": "Ab tumhari baari"
+      },
+      "objective_ids": [
+       "c5-english-ch04-t01-s1"
+      ],
+      "topic_ids": [
+       "c5-english-ch04-t01"
+      ],
+      "template": "sequence-steps@1"
+     },
+     "stage": {
+      "aspect": "3:4",
+      "bg": "bg"
+     },
+     "vars": [],
+     "derive": [],
+     "nodes": [
+      {
+       "kind": "order",
+       "id": "steps",
+       "x": 500,
+       "y": 380,
+       "items": [
+        {
+         "id": "s_c",
+         "label": {
+          "en": "The parrot asked the trader to give a message",
+          "hi": "The parrot asked the trader to give a message",
+          "hi_latn": "The parrot asked the trader to give a message"
+         }
+        },
+        {
+         "id": "s_b",
+         "label": {
+          "en": "The forest parrot fell and lay still",
+          "hi": "The forest parrot fell and lay still",
+          "hi_latn": "The forest parrot fell and lay still"
+         }
+        },
+        {
+         "id": "s_d",
+         "label": {
+          "en": "The caged parrot fell and lay still",
+          "hi": "The caged parrot fell and lay still",
+          "hi_latn": "The caged parrot fell and lay still"
+         }
+        },
+        {
+         "id": "s_a",
+         "label": {
+          "en": "The trader opened the cage",
+          "hi": "The trader opened the cage",
+          "hi_latn": "The trader opened the cage"
+         }
+        }
+       ],
+       "orient": "column",
+       "start": [
+        "s_d",
+        "s_c",
+        "s_a",
+        "s_b"
+       ],
+       "tl": "step order"
+      },
+      {
+       "kind": "button",
+       "id": "check",
+       "x": 500,
+       "y": 1233,
+       "label": {
+        "en": "Check",
+        "hi": "जाँचो",
+        "hi_latn": "Check karo"
+       },
+       "act": "check"
+      }
+     ],
+     "timelines": [],
+     "goals": [],
+     "probe": {
+      "id": "p_seq",
+      "kind": "sequence",
+      "ask": {
+       "en": "Your turn to try",
+       "hi": "अब तुम्हारी बारी",
+       "hi_latn": "Ab tumhari baari"
+      },
+      "commit": {
+       "via": "check",
+       "node": "check"
+      },
+      "correct": "order(steps) == 's_c,s_b,s_d,s_a'",
+      "traps": []
+     },
+     "feedback": "on_commit"
+    }
+   },
+   "views": [
+    {
+     "vp": "p360",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 15.2,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "p412",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 18.6,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "l1366",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 25.6,
+     "detail": [],
+     "err": null
+    }
+   ]
+  },
+  {
+   "engine": "scene@1",
+   "mode": "*",
+   "band": "older",
+   "topicId": "c5-english-ch07-t01",
+   "params": {
+    "scene": {
+     "dsl": "scene@1",
+     "meta": {
+      "band": "B3",
+      "lang": "hi-Latn+en",
+      "title": {
+       "en": "Your turn to try",
+       "hi": "अब तुम्हारी बारी",
+       "hi_latn": "Ab tumhari baari"
+      },
+      "objective_ids": [
+       "c5-english-ch07-t01-s3"
+      ],
+      "topic_ids": [
+       "c5-english-ch07-t01"
+      ],
+      "template": "sequence-steps@1"
+     },
+     "stage": {
+      "aspect": "3:4",
+      "bg": "bg"
+     },
+     "vars": [],
+     "derive": [],
+     "nodes": [
+      {
+       "kind": "order",
+       "id": "steps",
+       "x": 500,
+       "y": 380,
+       "items": [
+        {
+         "id": "s_b",
+         "label": {
+          "en": "Place the gilli on the ground",
+          "hi": "Place the gilli on the ground",
+          "hi_latn": "Place the gilli on the ground"
+         }
+        },
+        {
+         "id": "s_c",
+         "label": {
+          "en": "Tap one end so it jumps up",
+          "hi": "Tap one end so it jumps up",
+          "hi_latn": "Tap one end so it jumps up"
+         }
+        },
+        {
+         "id": "s_a",
+         "label": {
+          "en": "Hit the gilli far with the danda",
+          "hi": "Hit the gilli far with the danda",
+          "hi_latn": "Hit the gilli far with the danda"
+         }
+        },
+        {
+         "id": "s_d",
+         "label": {
+          "en": "Measure the distance with the danda",
+          "hi": "Measure the distance with the danda",
+          "hi_latn": "Measure the distance with the danda"
+         }
+        }
+       ],
+       "orient": "column",
+       "start": [
+        "s_b",
+        "s_d",
+        "s_c",
+        "s_a"
+       ],
+       "tl": "step order"
+      },
+      {
+       "kind": "button",
+       "id": "check",
+       "x": 500,
+       "y": 1233,
+       "label": {
+        "en": "Check",
+        "hi": "जाँचो",
+        "hi_latn": "Check karo"
+       },
+       "act": "check"
+      }
+     ],
+     "timelines": [],
+     "goals": [],
+     "probe": {
+      "id": "p_seq",
+      "kind": "sequence",
+      "ask": {
+       "en": "Your turn to try",
+       "hi": "अब तुम्हारी बारी",
+       "hi_latn": "Ab tumhari baari"
+      },
+      "commit": {
+       "via": "check",
+       "node": "check"
+      },
+      "correct": "order(steps) == 's_b,s_c,s_a,s_d'",
+      "traps": []
+     },
+     "feedback": "on_commit"
+    }
+   },
+   "views": [
+    {
+     "vp": "p360",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 15.2,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "p412",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 18.6,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "l1366",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 25.6,
+     "detail": [],
+     "err": null
+    }
+   ]
+  },
+  {
+   "engine": "scene@1",
+   "mode": "*",
+   "band": "older",
+   "topicId": "c6-english-ch01-t01",
+   "params": {
+    "scene": {
+     "dsl": "scene@1",
+     "meta": {
+      "band": "B3",
+      "lang": "hi-Latn+en",
+      "title": {
+       "en": "Your turn to try",
+       "hi": "अब तुम्हारी बारी",
+       "hi_latn": "Ab tumhari baari"
+      },
+      "objective_ids": [
+       "c6-english-ch01-t01-s1"
+      ],
+      "topic_ids": [
+       "c6-english-ch01-t01"
+      ],
+      "template": "sequence-steps@1"
+     },
+     "stage": {
+      "aspect": "3:4",
+      "bg": "bg"
+     },
+     "vars": [],
+     "derive": [],
+     "nodes": [
+      {
+       "kind": "order",
+       "id": "steps",
+       "x": 500,
+       "y": 380,
+       "items": [
+        {
+         "id": "s_b",
+         "label": {
+          "en": "The sage asked for five litres of dew",
+          "hi": "The sage asked for five litres of dew",
+          "hi_latn": "The sage asked for five litres of dew"
+         }
+        },
+        {
+         "id": "s_d",
+         "label": {
+          "en": "Rama Natha planted rows of banana plants",
+          "hi": "Rama Natha planted rows of banana plants",
+          "hi_latn": "Rama Natha planted rows of banana plants"
+         }
+        },
+        {
+         "id": "s_a",
+         "label": {
+          "en": "Nothing happened to the copper vessel",
+          "hi": "Nothing happened to the copper vessel",
+          "hi_latn": "Nothing happened to the copper vessel"
+         }
+        },
+        {
+         "id": "s_c",
+         "label": {
+          "en": "Madhumati opened a box of gold coins",
+          "hi": "Madhumati opened a box of gold coins",
+          "hi_latn": "Madhumati opened a box of gold coins"
+         }
+        }
+       ],
+       "orient": "column",
+       "start": [
+        "s_a",
+        "s_b",
+        "s_c",
+        "s_d"
+       ],
+       "tl": "step order"
+      },
+      {
+       "kind": "button",
+       "id": "check",
+       "x": 500,
+       "y": 1233,
+       "label": {
+        "en": "Check",
+        "hi": "जाँचो",
+        "hi_latn": "Check karo"
+       },
+       "act": "check"
+      }
+     ],
+     "timelines": [],
+     "goals": [],
+     "probe": {
+      "id": "p_seq",
+      "kind": "sequence",
+      "ask": {
+       "en": "Your turn to try",
+       "hi": "अब तुम्हारी बारी",
+       "hi_latn": "Ab tumhari baari"
+      },
+      "commit": {
+       "via": "check",
+       "node": "check"
+      },
+      "correct": "order(steps) == 's_b,s_d,s_a,s_c'",
+      "traps": []
+     },
+     "feedback": "on_commit"
+    }
+   },
+   "views": [
+    {
+     "vp": "p360",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 15.2,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "p412",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 18.6,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "l1366",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 25.6,
+     "detail": [],
+     "err": null
+    }
+   ]
+  },
+  {
+   "engine": "scene@1",
+   "mode": "*",
+   "band": "older",
+   "topicId": "c7-english-ch06-t01",
+   "params": {
+    "scene": {
+     "dsl": "scene@1",
+     "meta": {
+      "band": "B4",
+      "lang": "hi-Latn+en",
+      "title": {
+       "en": "Your turn to try",
+       "hi": "अब तुम्हारी बारी",
+       "hi_latn": "Ab tumhari baari"
+      },
+      "objective_ids": [
+       "c7-english-ch06-t01-s2"
+      ],
+      "topic_ids": [
+       "c7-english-ch06-t01"
+      ],
+      "template": "choice-card@1"
+     },
+     "stage": {
+      "aspect": "3:4",
+      "bg": "bg"
+     },
+     "vars": [
+      {
+       "id": "pick",
+       "type": "enum",
+       "init": "none",
+       "options": [
+        "none",
+        "o1",
+        "o2"
+       ],
+       "tl": "child's pick"
+      }
+     ],
+     "derive": [],
+     "nodes": [
+      {
+       "kind": "text",
+       "id": "title",
+       "x": 420,
+       "y": 84,
+       "text": {
+        "en": "Your turn to try",
+        "hi": "अब तुम्हारी बारी",
+        "hi_latn": "Ab tumhari baari"
+       },
+       "size": "title",
+       "w": 760,
+       "align": "middle"
+      },
+      {
+       "kind": "sprite",
+       "id": "decor",
+       "x": 900,
+       "y": 75,
+       "lib": "obj.book",
+       "w": 110,
+       "h": 110,
+       "role": "context"
+      },
+      {
+       "kind": "choice",
+       "id": "ch",
+       "x": 500,
+       "y": 1066.3333333333333,
+       "var": "pick",
+       "options": [
+        {
+         "id": "o1",
+         "label": {
+          "en": "Would you like some tea?",
+          "hi": "Would you like some tea?",
+          "hi_latn": "Would you like some tea?"
+         }
+        },
+        {
+         "id": "o2",
+         "label": {
+          "en": "Do you want tea?",
+          "hi": "Do you want tea?",
+          "hi_latn": "Do you want tea?"
+         },
+         "misc": "MC.C7_ENGLISH_CH06_T01_M_DIRECT_COMMAND"
+        }
+       ],
+       "layout": "column",
+       "commit": true
+      }
+     ],
+     "timelines": [],
+     "goals": [],
+     "probe": {
+      "id": "p_pick",
+      "kind": "diagnose",
+      "ask": {
+       "en": "Your turn to try",
+       "hi": "अब तुम्हारी बारी",
+       "hi_latn": "Ab tumhari baari"
+      },
+      "commit": {
+       "via": "choice",
+       "node": "ch"
+      },
+      "correct": "pick == 'o1'",
+      "traps": [
+       {
+        "when": "pick == 'o2'",
+        "misc": "MC.C7_ENGLISH_CH06_T01_M_DIRECT_COMMAND"
+       }
+      ]
+     },
+     "feedback": "on_commit"
+    }
+   },
+   "views": [
+    {
+     "vp": "p360",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 14.2,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "p412",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 17.4,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "l1366",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 24,
+     "detail": [],
+     "err": null
+    }
+   ]
+  },
+  {
+   "engine": "scene@1",
+   "mode": "*",
+   "band": "older",
+   "topicId": "c7-english-ch13-t01",
+   "params": {
+    "scene": {
+     "dsl": "scene@1",
+     "meta": {
+      "band": "B4",
+      "lang": "hi-Latn+en",
+      "title": {
+       "en": "Your turn to try",
+       "hi": "अब तुम्हारी बारी",
+       "hi_latn": "Ab tumhari baari"
+      },
+      "objective_ids": [
+       "c7-english-ch13-t01-s2"
+      ],
+      "topic_ids": [
+       "c7-english-ch13-t01"
+      ],
+      "template": "choice-card@1"
+     },
+     "stage": {
+      "aspect": "3:4",
+      "bg": "bg"
+     },
+     "vars": [
+      {
+       "id": "pick",
+       "type": "enum",
+       "init": "none",
+       "options": [
+        "none",
+        "o1",
+        "o2"
+       ],
+       "tl": "child's pick"
+      }
+     ],
+     "derive": [],
+     "nodes": [
+      {
+       "kind": "text",
+       "id": "title",
+       "x": 420,
+       "y": 84,
+       "text": {
+        "en": "Your turn to try",
+        "hi": "अब तुम्हारी बारी",
+        "hi_latn": "Ab tumhari baari"
+       },
+       "size": "title",
+       "w": 760,
+       "align": "middle"
+      },
+      {
+       "kind": "sprite",
+       "id": "decor",
+       "x": 900,
+       "y": 75,
+       "lib": "obj.book",
+       "w": 110,
+       "h": 110,
+       "role": "context"
+      },
+      {
+       "kind": "choice",
+       "id": "ch",
+       "x": 500,
+       "y": 1066.3333333333333,
+       "var": "pick",
+       "options": [
+        {
+         "id": "o1",
+         "label": {
+          "en": "Priya asked Grandpa if he had been a soldier",
+          "hi": "Priya asked Grandpa if he had been a soldier",
+          "hi_latn": "Priya asked Grandpa if he had been a soldier"
+         }
+        },
+        {
+         "id": "o2",
+         "label": {
+          "en": "Priya asked Grandpa was he a soldier",
+          "hi": "Priya asked Grandpa was he a soldier",
+          "hi_latn": "Priya asked Grandpa was he a soldier"
+         },
+         "misc": "MC.C7_ENGLISH_CH13_T01_M_REPORTED_QUESTION_ORDER"
+        }
+       ],
+       "layout": "column",
+       "commit": true
+      }
+     ],
+     "timelines": [],
+     "goals": [],
+     "probe": {
+      "id": "p_pick",
+      "kind": "diagnose",
+      "ask": {
+       "en": "Your turn to try",
+       "hi": "अब तुम्हारी बारी",
+       "hi_latn": "Ab tumhari baari"
+      },
+      "commit": {
+       "via": "choice",
+       "node": "ch"
+      },
+      "correct": "pick == 'o1'",
+      "traps": [
+       {
+        "when": "pick == 'o2'",
+        "misc": "MC.C7_ENGLISH_CH13_T01_M_REPORTED_QUESTION_ORDER"
+       }
+      ]
+     },
+     "feedback": "on_commit"
+    }
+   },
+   "views": [
+    {
+     "vp": "p360",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 14.2,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "p412",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 17.4,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "l1366",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 24,
+     "detail": [],
+     "err": null
+    }
+   ]
+  },
+  {
+   "engine": "scene@1",
+   "mode": "*",
+   "band": "older",
+   "topicId": "c7-english-ch12-t01",
+   "params": {
+    "scene": {
+     "dsl": "scene@1",
+     "meta": {
+      "band": "B4",
+      "lang": "hi-Latn+en",
+      "title": {
+       "en": "Your turn to try",
+       "hi": "अब तुम्हारी बारी",
+       "hi_latn": "Ab tumhari baari"
+      },
+      "objective_ids": [
+       "c7-english-ch12-t01-s1"
+      ],
+      "topic_ids": [
+       "c7-english-ch12-t01"
+      ],
+      "template": "sequence-steps@1"
+     },
+     "stage": {
+      "aspect": "3:4",
+      "bg": "bg"
+     },
+     "vars": [],
+     "derive": [],
+     "nodes": [
+      {
+       "kind": "order",
+       "id": "steps",
+       "x": 500,
+       "y": 380,
+       "items": [
+        {
+         "id": "s_c",
+         "label": {
+          "en": "She played volleyball",
+          "hi": "She played volleyball",
+          "hi_latn": "She played volleyball"
+         }
+        },
+        {
+         "id": "s_b",
+         "label": {
+          "en": "Robbers pushed her off a train",
+          "hi": "Robbers pushed her off a train",
+          "hi_latn": "Robbers pushed her off a train"
+         }
+        },
+        {
+         "id": "s_d",
+         "label": {
+          "en": "In hospital, she decided to climb Everest",
+          "hi": "In hospital, she decided to climb Everest",
+          "hi_latn": "In hospital, she decided to climb Everest"
+         }
+        },
+        {
+         "id": "s_a",
+         "label": {
+          "en": "She reached the top of Everest",
+          "hi": "She reached the top of Everest",
+          "hi_latn": "She reached the top of Everest"
+         }
+        }
+       ],
+       "orient": "column",
+       "start": [
+        "s_a",
+        "s_d",
+        "s_c",
+        "s_b"
+       ],
+       "tl": "step order"
+      },
+      {
+       "kind": "button",
+       "id": "check",
+       "x": 500,
+       "y": 1233,
+       "label": {
+        "en": "Check",
+        "hi": "जाँचो",
+        "hi_latn": "Check karo"
+       },
+       "act": "check"
+      }
+     ],
+     "timelines": [],
+     "goals": [],
+     "probe": {
+      "id": "p_seq",
+      "kind": "sequence",
+      "ask": {
+       "en": "Your turn to try",
+       "hi": "अब तुम्हारी बारी",
+       "hi_latn": "Ab tumhari baari"
+      },
+      "commit": {
+       "via": "check",
+       "node": "check"
+      },
+      "correct": "order(steps) == 's_c,s_b,s_d,s_a'",
+      "traps": []
+     },
+     "feedback": "on_commit"
+    }
+   },
+   "views": [
+    {
+     "vp": "p360",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 14.2,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "p412",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 17.4,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "l1366",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 24,
+     "detail": [],
+     "err": null
+    }
+   ]
+  },
+  {
+   "engine": "scene@1",
+   "mode": "*",
+   "band": "older",
+   "topicId": "c9-english-ch10-t01",
+   "params": {
+    "scene": {
+     "dsl": "scene@1",
+     "meta": {
+      "band": "B4",
+      "lang": "hi-Latn+en",
+      "title": {
+       "en": "Your turn to try",
+       "hi": "अब तुम्हारी बारी",
+       "hi_latn": "Ab tumhari baari"
+      },
+      "objective_ids": [
+       "c9-english-ch10-t01-s1"
+      ],
+      "topic_ids": [
+       "c9-english-ch10-t01"
+      ],
+      "template": "sequence-steps@1"
+     },
+     "stage": {
+      "aspect": "3:4",
+      "bg": "bg"
+     },
+     "vars": [],
+     "derive": [],
+     "nodes": [
+      {
+       "kind": "order",
+       "id": "steps",
+       "x": 500,
+       "y": 380,
+       "items": [
+        {
+         "id": "s_b",
+         "label": {
+          "en": "the whistle blew",
+          "hi": "the whistle blew",
+          "hi_latn": "the whistle blew"
+         }
+        },
+        {
+         "id": "s_c",
+         "label": {
+          "en": "the smallest runner stumbled",
+          "hi": "the smallest runner stumbled",
+          "hi_latn": "the smallest runner stumbled"
+         }
+        },
+        {
+         "id": "s_a",
+         "label": {
+          "en": "all the runners turned back",
+          "hi": "all the runners turned back",
+          "hi_latn": "all the runners turned back"
+         }
+        },
+        {
+         "id": "s_d",
+         "label": {
+          "en": "they crossed the line together",
+          "hi": "they crossed the line together",
+          "hi_latn": "they crossed the line together"
+         }
+        }
+       ],
+       "orient": "column",
+       "start": [
+        "s_d",
+        "s_a",
+        "s_b",
+        "s_c"
+       ],
+       "tl": "step order"
+      },
+      {
+       "kind": "button",
+       "id": "check",
+       "x": 500,
+       "y": 1233,
+       "label": {
+        "en": "Check",
+        "hi": "जाँचो",
+        "hi_latn": "Check karo"
+       },
+       "act": "check"
+      }
+     ],
+     "timelines": [],
+     "goals": [],
+     "probe": {
+      "id": "p_seq",
+      "kind": "sequence",
+      "ask": {
+       "en": "Your turn to try",
+       "hi": "अब तुम्हारी बारी",
+       "hi_latn": "Ab tumhari baari"
+      },
+      "commit": {
+       "via": "check",
+       "node": "check"
+      },
+      "correct": "order(steps) == 's_b,s_c,s_a,s_d'",
+      "traps": []
+     },
+     "feedback": "on_commit"
+    }
+   },
+   "views": [
+    {
+     "vp": "p360",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 14.2,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "p412",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 17.4,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "l1366",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 24,
      "detail": [],
      "err": null
     }

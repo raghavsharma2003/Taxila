@@ -140,6 +140,15 @@ await withTestAccount(async ({ api }) => {
         const slotKinds = net.filter((n) => n.at >= tAsk && n.slot?.artifact).map((n) => n.slot.artifact.kind);
         rec.slotKinds = [...new Set(slotKinds)];
         rec.doable = kindAfter.tray === "module" || ["stagecraft", "play", "frame"].includes(kindAfter.stage ?? "") || rec.slotKinds.some((k) => ["stagecraft", "play", "frame"].includes(k));
+        // round 4 content, brief item 4 (reported beside R2, never instead of it): an animation / simulation ask may also end
+        // in "the whiteboard player drawing on her clause": a board that DRAWS over her line (≥ 3 timed ops spread over
+        // ≥ 1.5 s). A game ask never counts a board.
+        const animatedBoard = net.filter((n) => n.at >= tAsk && n.slot?.artifact?.kind === "whiteboard").some((n) => {
+          const ops = n.slot.artifact.script?.ops ?? [];
+          const starts = ops.map((o) => Number(o.startMs) || 0);
+          return ops.length >= 3 && Math.max(...starts) - Math.min(...starts) >= 1500;
+        });
+        rec.doableBrief = rec.doable || (!/game/.test(c.id) && animatedBoard);
         // timings: the ask's turn response; a slot carrying a piece or a board
         const askTurn = net.find((n) => n.turn && n.at >= tAsk);
         const firstArt = net.find((n) => n.at >= tAsk && n.slot?.artifact);
@@ -204,6 +213,7 @@ await withTestAccount(async ({ api }) => {
       ok(!rec.error && rec.real, `R1 ${c.id} (${c.topic}) "${c.ask}": something real on the stage${rec.error ? ` — ${rec.error}` : ""}`);
       if (c.interactive) {
         ok(!!rec.doable, `R2 ${c.id}: a game / animation / simulation ask ends with something to DO (slot ${rec.slotKinds?.join("+") || "-"}; after: tray ${rec.after?.tray ?? "-"}, stage ${rec.after?.stage ?? "-"}; before: tray ${rec.trayBefore ?? "-"})`);
+        if (!rec.doable) warn(`R2-brief ${c.id}: ${rec.doableBrief ? "ends in a board drawing over her line (item 4 accepts it for an animation / simulation ask)" : "no piece and no animated board"}`);
         const pl = rec.views.filter((v) => v.playable).map((v) => v.vp);
         const msg = `R2b ${c.id}: playable on the device at ${pl.length}/${rec.views.length} sizes (${pl.join(", ") || "none"}; elsewhere its board twin or a board)`;
         if (pl.length === rec.views.length) ok(true, msg); else warn(msg);
@@ -227,6 +237,7 @@ if (boardLate.length) ok(p90b <= 1500, `T2 board lateness after her audio starts
 const views = results.flatMap((r) => r.views);
 const summary = { base: BASE, at: new Date().toISOString(), cases: results.length, real: results.filter((r) => r.real).length,
   interactive: results.filter((r) => r.interactive).length, doable: results.filter((r) => r.interactive && r.doable).length,
+  doableBrief: results.filter((r) => r.interactive && r.doableBrief).length,
   playableViews: results.filter((r) => r.interactive).flatMap((r) => r.views).filter((v) => v.playable).length, interactiveViews: results.filter((r) => r.interactive).flatMap((r) => r.views).length,
   slotKinds: Object.fromEntries(results.map((r) => [r.case, r.slotKinds ?? []])),
   boards: boards.length, nonsenseBoards: boards.filter((b) => b.problems.length).length, views: views.length, brokenViews: views.filter((v) => !v.pass).length,
