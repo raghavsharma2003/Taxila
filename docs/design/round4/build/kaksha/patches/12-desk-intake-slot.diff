@@ -1,0 +1,113 @@
+diff --git a/src/child/lesson/Desk.tsx b/src/child/lesson/Desk.tsx
+index 999d7fe1..7352e752 100644
+--- a/src/child/lesson/Desk.tsx
++++ b/src/child/lesson/Desk.tsx
+@@ -83,10 +83,12 @@ export interface DeskProps {
+   skin?: string;
+   /** r4 K-P2: the lesson-end screen in place of the Summary (the Kaksha Debrief). Absent: today's Summary. */
+   renderSummary?: (p: { m: DeskModel; meters: TapSource[]; onFinish: () => void }) => ReactNode;
++  /** r4 K-P12: the skin's intake card (m.intake), drawn at the top of the Question card. Absent: nothing (today). */
++  renderIntake?: (m: DeskModel) => ReactNode;
+ }
+ 
+ /** r4 K-P2: what a skin passes the Desk (LessonScreen hands it to the skin's frame, which calls back with it). */
+-export type DeskSkin = Pick<DeskProps, "skin" | "renderSummary">;
++export type DeskSkin = Pick<DeskProps, "skin" | "renderSummary" | "renderIntake">;
+ 
+ /** The tray's content (absolutely positioned in .dk-tray-body) plus the tray zone's padding. */
+ function trayNeedOf(el: Element | null): number {
+@@ -96,7 +98,7 @@ function trayNeedOf(el: Element | null): number {
+   return Math.ceil((el as HTMLElement).offsetHeight + (zs ? parseFloat(zs.paddingTop) + parseFloat(zs.paddingBottom) : 0));
+ }
+ 
+-export function Desk({ m, a, media, dockRef, live, onSize, notMeWindow, phaseLine = true, supportCode, theme, skin, renderSummary }: DeskProps) {
++export function Desk({ m, a, media, dockRef, live, onSize, notMeWindow, phaseLine = true, supportCode, theme, skin, renderSummary, renderIntake }: DeskProps) {
+   const root = useRef<HTMLDivElement>(null);
+   const measureRef = useRef<() => void>(() => {});
+   const ro = useRef<ResizeObserver | null>(null);
+@@ -198,7 +200,8 @@ export function Desk({ m, a, media, dockRef, live, onSize, notMeWindow, phaseLin
+   const topBar = <TopBar m={m} a={a} notMeWindow={!!(notMeWindow ?? m.notMeWindow)} phaseLine={phaseLine} wide={L.kind === "wide"} />;
+   // round 3 play mode (docs/design/round3/play/patches/04): the game's own goal rail is the card while a play piece is up
+   const playMode = m.tray?.kind === "studio" && (m.tray.studio?.artifact?.kind as string | undefined) === "play";
+-  const card = playMode ? null : <QuestionCard ask={m.ask} answer={m.answer} young={young} onHear={a.hearQuestion} onFix={a.fixAnswer} goal={m.ask ? null : m.shortTitle ? t("card.goal", { topic: m.shortTitle }) : null} />;
++  const card = playMode ? null : <QuestionCard ask={m.ask} answer={m.answer} young={young} onHear={a.hearQuestion} onFix={a.fixAnswer} goal={m.ask ? null : m.shortTitle ? t("card.goal", { topic: m.shortTitle }) : null}
++    lead={m.intake && renderIntake ? renderIntake(m) : null} />;
+   // The answer surfaces (tiles, the NumberPad, the Help menu over them) are AnswerTray's; the activity and the board
+   // stay WorkTray's (W1-B). BUILD-PLAN W1-A items 3 and 11.
+   const answerTray = m.tray && (m.tray.kind === "tiles" || m.tray.kind === "pad" || !!m.tray.overlay);
+diff --git a/src/child/lesson/QuestionCard.tsx b/src/child/lesson/QuestionCard.tsx
+index 2ab88079..678ce38f 100644
+--- a/src/child/lesson/QuestionCard.tsx
++++ b/src/child/lesson/QuestionCard.tsx
+@@ -3,20 +3,24 @@
+ // her follow-ups add lines UNDER the ask; they never replace it. "Hear the question" replays the ask.
+ // The card is sized to what it holds: the Desk measures `.dk-card-body` (data-measure="card") and the layout grows
+ // the card zone to fit, so the answer chip, its marks and the verdict or hint line are never clipped.
++import type { ReactNode } from "react";
+ import { t } from "../../ui/copy.ts";
+ import { Glyph } from "../../ui/icons/state.tsx";
+ import { Art } from "../../ui/Art.tsx";
+ import { AnswerChip } from "./AnswerChip.tsx";
+ import type { AnswerChip as Chip, Ask } from "./model.ts";
+ 
+-export function QuestionCard({ ask, answer, young, onHear, onFix, goal }:
+-  { ask: Ask | null; answer: Chip | null; young: boolean; onHear: () => void; onFix?: () => void; goal?: string | null }) {
+-  if (!ask && !answer && !goal) return <section className="dk-card dk-card--empty" aria-hidden="true" />;
++export function QuestionCard({ ask, answer, young, onHear, onFix, goal, lead }:
++  { ask: Ask | null; answer: Chip | null; young: boolean; onHear: () => void; onFix?: () => void; goal?: string | null;
++    /** r4 K-P12: a skin's line at the top of the card (the intake's mapped topic / plan), inside the measured body */
++    lead?: ReactNode }) {
++  if (!ask && !answer && !goal && !lead) return <section className="dk-card dk-card--empty" aria-hidden="true" />;
+   const verdictLine = answer?.verdict === "not_yet" ? t("card.not_yet") : answer?.verdict === "partial" ? t("card.partly") : null;
+   return (
+     <section className="dk-card" aria-label={ask ? "The question" : "Today"} data-testid="question-card" data-ask-source={ask?.source}>
+       <div className="dk-card-body" data-measure="card">
+-      <div className="dk-card-ask">
++      {lead}
++      {(ask || goal || !lead) && <div className="dk-card-ask">
+         {ask?.picture && <Art id={ask.picture} className="dk-card-picture" />}
+         {ask ? (
+           <p className="dk-ask" data-speech="" lang={ask.lang} data-testid="ask">
+@@ -33,7 +37,7 @@ export function QuestionCard({ ask, answer, young, onHear, onFix, goal }:
+             {!young && <span className="dk-hear-word dk-hear-long" aria-hidden="true">{t("card.hear")}</span>}
+           </button>
+         )}
+-      </div>
++      </div>}
+       {ask?.lines.map((l, i) => (
+         <p key={i} className={`dk-line dk-line--${l.kind}`} data-speech="">
+           {l.kind === "hint" && <Glyph name="lightbulb" size={18} />}
+diff --git a/src/child/lesson/model.ts b/src/child/lesson/model.ts
+index 29a406e7..0f159b05 100644
+--- a/src/child/lesson/model.ts
++++ b/src/child/lesson/model.ts
+@@ -8,6 +8,7 @@ import type { StripId } from "../../lesson/trouble.ts";
+ import type { Band, Family } from "../band.ts";
+ import type { DeskLayout } from "./deskLayout.ts";
+ import type { StudioSlot } from "../../../shared/studio.ts";
++import type { UiDirectives } from "../../../shared/contracts.ts";
+ 
+ export type AnswerForm = "words" | "number" | "choice" | "draw" | "read_aloud" | "tap_in_tray";
+ export type TrayKind = "module" | "board" | "tiles" | "pad" | "studio";
+@@ -121,6 +122,8 @@ export interface DeskModel {
+   padComma?: boolean;
+   /** Quick practice: item n of `of` (≤ 5); `done` = "That's the set" (W2-A; ui.practice from W2-C, else counted here). */
+   practice?: { n: number; of: number; done: boolean } | null;
++  /** r4 K-P12: the session-first intake as the server built it (ui.intake, K-P11): phase, the mapped topic, the plan. */
++  intake?: UiDirectives["intake"] | null;
+   /** The lesson variant (practice: the Summary reads "That's the set"). */
+   variant?: "lesson" | "practice" | "doubt";
+ }
+diff --git a/src/child/lesson/useDesk.ts b/src/child/lesson/useDesk.ts
+index 0c642787..1cff4f81 100644
+--- a/src/child/lesson/useDesk.ts
++++ b/src/child/lesson/useDesk.ts
+@@ -690,6 +690,8 @@ export function useDesk(runtime: LessonRuntime, bridge: UiBridge | null, ctx: De
+     // Ask is titled by the child's question, not the topic it was filed under (flows G11)
+     shortTitle: ctx.variant === "doubt" && ctx.firstText ? questionShortTitle(ctx.firstText) : shortTitle || shortTitleOf(ui, state.topic),
+     practice,
++    // r4 K-P12: the intake card's data (server ui.intake), as sent; null outside the intake
++    intake: (state.ui as { intake?: DeskModel["intake"] } | null)?.intake ?? null,
+     variant: ctx.variant,
+     lastOne: young && phase === "wrap",
+     thinkingSeconds: null,

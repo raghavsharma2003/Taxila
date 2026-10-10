@@ -83,10 +83,12 @@ export interface DeskProps {
   skin?: string;
   /** r4 K-P2: the lesson-end screen in place of the Summary (the Kaksha Debrief). Absent: today's Summary. */
   renderSummary?: (p: { m: DeskModel; meters: TapSource[]; onFinish: () => void }) => ReactNode;
+  /** r4 K-P12: the skin's intake card (m.intake), drawn at the top of the Question card. Absent: nothing (today). */
+  renderIntake?: (m: DeskModel) => ReactNode;
 }
 
 /** r4 K-P2: what a skin passes the Desk (LessonScreen hands it to the skin's frame, which calls back with it). */
-export type DeskSkin = Pick<DeskProps, "skin" | "renderSummary">;
+export type DeskSkin = Pick<DeskProps, "skin" | "renderSummary" | "renderIntake">;
 
 /** The tray's content (absolutely positioned in .dk-tray-body) plus the tray zone's padding. */
 function trayNeedOf(el: Element | null): number {
@@ -96,7 +98,7 @@ function trayNeedOf(el: Element | null): number {
   return Math.ceil((el as HTMLElement).offsetHeight + (zs ? parseFloat(zs.paddingTop) + parseFloat(zs.paddingBottom) : 0));
 }
 
-export function Desk({ m, a, media, dockRef, live, onSize, notMeWindow, phaseLine = true, supportCode, theme, skin, renderSummary }: DeskProps) {
+export function Desk({ m, a, media, dockRef, live, onSize, notMeWindow, phaseLine = true, supportCode, theme, skin, renderSummary, renderIntake }: DeskProps) {
   const root = useRef<HTMLDivElement>(null);
   const measureRef = useRef<() => void>(() => {});
   const ro = useRef<ResizeObserver | null>(null);
@@ -198,7 +200,8 @@ export function Desk({ m, a, media, dockRef, live, onSize, notMeWindow, phaseLin
   const topBar = <TopBar m={m} a={a} notMeWindow={!!(notMeWindow ?? m.notMeWindow)} phaseLine={phaseLine} wide={L.kind === "wide"} />;
   // round 3 play mode (docs/design/round3/play/patches/04): the game's own goal rail is the card while a play piece is up
   const playMode = m.tray?.kind === "studio" && (m.tray.studio?.artifact?.kind as string | undefined) === "play";
-  const card = playMode ? null : <QuestionCard ask={m.ask} answer={m.answer} young={young} onHear={a.hearQuestion} onFix={a.fixAnswer} goal={m.ask ? null : m.shortTitle ? t("card.goal", { topic: m.shortTitle }) : null} />;
+  const card = playMode ? null : <QuestionCard ask={m.ask} answer={m.answer} young={young} onHear={a.hearQuestion} onFix={a.fixAnswer} goal={m.ask ? null : m.shortTitle ? t("card.goal", { topic: m.shortTitle }) : null}
+    lead={m.intake && renderIntake ? renderIntake(m) : null} />;
   // The answer surfaces (tiles, the NumberPad, the Help menu over them) are AnswerTray's; the activity and the board
   // stay WorkTray's (W1-B). BUILD-PLAN W1-A items 3 and 11.
   const answerTray = m.tray && (m.tray.kind === "tiles" || m.tray.kind === "pad" || !!m.tray.overlay);
