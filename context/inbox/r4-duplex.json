@@ -113,6 +113,12 @@
       "kind": "measurement",
       "title": "duplex r4 a linear echo canceller (NLMS, her own audio as reference, 128-2,048 taps) on AMI real speech removes only 4-6 dB of her voice from another participant's headset (IS1008b pair A/B, 300 s; 4.6 dB at 128 taps, 6.3 dB at 1,024; 2026-10-10): AMI cross-talk is not loudspeaker echo, so AMI R6 cannot stand in for a phone with AEC. SIMULATED phone-like echo (TaxilaFDB, 3 lanes): echo self-triggers 0/240 TEST (Wilson upper ~1.6 %), 0/120 TRAIN, before and after",
       "at": "2026-10-10"
+    },
+    {
+      "id": "rj-r4dx-short-turn-misheard-continuer",
+      "kind": "rejection",
+      "title": "duplex r4 R3 trial: a short ended (or echo-level) burst whose own words are 1-2 tokens with no listening token, no '?', no 'no' and no call to her is a misheard continuer. AMI TRAIN: continuers 84 -> 82/103 (1 token) and 81/103 (2 tokens), room 12 -> 9/101, bleed 77 -> 72 / 60/421. It fixed none of the targeted misheard continuers ('sure' -> 'As much', 'yeah' -> 'could') and two other continuers ('mm', 'oh yeah') failed through knock-on state changes. Rejected: R3 is the target and a turn got worse",
+      "at": "2026-10-10"
     }
   ],
   "edges": [
@@ -180,6 +186,11 @@
       "src": "ms-r4dx-ami-aec-2026-10-10",
       "rel": "measured_by",
       "dst": "dc-r4dx-aec-reference-funded"
+    },
+    {
+      "src": "rj-r4dx-short-turn-misheard-continuer",
+      "rel": "rejected_for",
+      "dst": "ms-r4dx-ami-overlap-2026-10-10"
     }
   ]
 }

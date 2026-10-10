@@ -305,3 +305,31 @@ R1-R4 and the stop / repair / safeguard yields held, and an ambiguous case yield
 **Result against the funded bar: R6 ≤ 2 % is NOT met on the AMI rig, and the reversal condition holds.** Per the
 decision: accept R6 as unmet on AMI, and gate duplex "on" on shadow telemetry (and a reference-phone run). R1-R4 and
 every stop / repair / safeguard yield are untouched: the engine source is exactly as before this attempt.
+
+## 15. R3 after §6: where the remaining continuer failures are (AMI TRAIN, 2026-10-10)
+
+`evals/duplex-r4/ami-trace.mjs --kind cont` (now takes `--set`) on ES2004b + IS1008b, the shipped engine. 19 of 103
+continuers still stop or pause her:
+
+| what stopped her | n | on her floor? |
+|---|---|---|
+| revoke of a reply just committed (`yield:revoke`, 10-230 ms after onset): she was not talking over the child | 8 | no: open-loop rig artefact |
+| sustained voice (the device VAD voiced 0.5-1.0 s over a transcribed 280-1,010 ms "yeah"; in the traced case 25-36 dB above her echo throughout) | 6 | yes |
+| the STT misheard the continuer as a turn ("sure" → "As much", "yeah" → "could") | 2 | yes |
+| her own words leaked back as the burst's words ("So, or maybe, you") | 1 | yes |
+| a rising "mm-hmm" read as a repair request; a hushed pause | 2 | yes |
+
+- **The sustained-voice six are not fixable by rule.** The microphone carries up to a second of voice well above her echo
+  level. Holding on through that is exactly what a child's real interruption needs to stop, so G11's 1 s forced yield
+  stays.
+- **Tried and rejected: the misheard-continuer rule.** A short ended burst whose own words are 1-2 tokens with no
+  listening token is a continuer, with exclusions for "?", "no" and a call to her ("ma'am", "didi").
+  - Continuers got WORSE: 84 → 82/103 at 1 token and 81/103 at 2.
+  - It fixed none of the targeted misheard pairs ("As much" is still a turn at the moment it arrives).
+  - Two other continuers ("mm", "oh yeah") failed through knock-on hush-state changes.
+  - Room false yields 12 → 9/101 and bleed 77 → 72 / 60/421 improved, but R3 is the target and a turn got worse.
+    Rejected (`context/inbox/r4-duplex.json`).
+
+**R3 stays at 160/195 = 82.1 % (TRAIN 84/103, TEST 76/92).** The rule-based levers on this rig are spent. What is left needs
+either a closed-loop rig (the 8 revokes) or better words faster (a children's STT, or a continuer classifier on the audio
+itself), and it needs children's speech to judge.

@@ -1,7 +1,7 @@
 // duplex r4 diagnostics: the engine's timeline around every FAILED continuer and every barge-in not stopped within 200 ms,
 // on the AMI real-speech replay (CC BY 4.0, evaluation only; the same pairs, events and scoring as evals/duplex-r3/ami-overlap.mjs).
 // Prints phases, ducks, pauses and the governed actions (with reasons and overlap features) from 1.5 s before to 1 s after.
-//   node evals/duplex-r4/ami-trace.mjs <frames_dir> --meetings ES2004b [--rec ami-raw-D4] [--kind cont|barge|both]
+//   node evals/duplex-r4/ami-trace.mjs <frames_dir> --meetings ES2004b [--rec ami-raw-D4] [--kind cont|barge|both] [--set OVERLAP.x=v,...]
 import fs from "node:fs";
 import path from "node:path";
 import zlib from "node:zlib";
@@ -10,6 +10,8 @@ import { loadEnv, ROOT, runSession } from "../duplex-real/lib.mjs";
 const argv = process.argv.slice(2);
 const opt = (f, d) => { const i = argv.indexOf(f); return i >= 0 ? argv[i + 1] : d; };
 loadEnv();
+// --set OVERLAP.x=v,... : an eval-only config override (same form as evals/duplex-r3/ami-overlap.mjs)
+if (opt("--set", null)) { const cfg = await import(ROOT + "src/duplex/config.ts"); for (const kv of opt("--set").split(",")) { const [k, v] = kv.split("="); const [o, key] = k.split("."); cfg[o][key] = v === "true" ? true : v === "false" ? false : Number(v); } }
 const { DuplexLive } = await import(ROOT + "src/duplex/live.ts");
 const { EngineHost } = await import(ROOT + "src/duplex/host.ts");
 // tap the overlap features the host computes (no behaviour change)
