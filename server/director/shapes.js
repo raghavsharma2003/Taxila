@@ -505,7 +505,8 @@ export const MUST_NOTE = Object.freeze({
   joke: "one playful line back of your own; then straight into the work, with no words about going back or later",
   // owner-4 (local acceptance on 9e371d34, 2026-10-10): "example do" on the fast lane got only the card question; the lead
   // note alone did not carry it
-  example: "first one concrete example from their life (things at home, school, cricket, food), worked through in a line or two; only then the question",
+  // merged-tree owner-4: an unlabelled example ("ghar mein do same cups mein seeds rakhiye ...") did not read as one
+  example: "first one concrete example from their life (home, school, cricket, food), named as an example (for example / jaise), in a line or two; only then the question",
   story: "first a tiny story of two or three sentences with a child in it, about this idea; only then the question",
   another: "a different example or question from the last one, never the same one again",
 });
