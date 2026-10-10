@@ -4,6 +4,8 @@
 //   2. the server's TAXILA_FACE_LOOK, from GET /api/face/config (server/face-puppet/config.js), remembered on this device
 //      so the next page paints the right face at once;
 //   3. DEFAULT_LOOK (r8).
+// A HELD look (assets.ts HELD_LOOKS: lamp1) is never painted from either source; a dev build (or VITE_DEV_ROUTES=1)
+// admits one with &heldlook=1 next to ?look= (the shot battery's trial of a pack that has not passed its gate).
 // A page never swaps a look it has already painted: faceLookNow() is what the first frame uses; when it is null (first
 // visit, no device choice) the face host shows only the backdrop until the server answers (≤ 1.5 s, fail-open → r8).
 import { DEFAULT_LOOK, isPuppetLook, type PuppetLook } from "./assets.ts";
@@ -12,15 +14,25 @@ import { faceServerConfig, faceServerKnown } from "./flag.ts";
 export const LOOK_DEVICE_KEY = "tx.face.look";
 export const LOOK_SERVER_KEY = "tx.face.look.server";
 
+const DEV_OK = (() => {
+  try {
+    return !!import.meta.env?.DEV || import.meta.env?.VITE_DEV_ROUTES === "1";
+  } catch {
+    return false;
+  }
+})();
 let urlApplied = false;
+let heldTrial = false;
 function applyUrl(): void {
   if (urlApplied) return;
   urlApplied = true;
   try {
     if (typeof location === "undefined") return;
-    const v = new URLSearchParams(location.search).get("look");
+    const q = new URLSearchParams(location.search);
+    heldTrial = DEV_OK && q.get("heldlook") === "1";
+    const v = q.get("look");
     if (v === "default") setDeviceLook(null);
-    else if (isPuppetLook(v)) setDeviceLook(v);
+    else if (isPuppetLook(v, { held: heldTrial })) setDeviceLook(v);
   } catch {
     /* no URL / storage */
   }
@@ -29,7 +41,7 @@ function applyUrl(): void {
 const read = (k: string): PuppetLook | null => {
   try {
     const v = typeof localStorage !== "undefined" ? localStorage.getItem(k) : null;
-    return isPuppetLook(v) ? v : null;
+    return isPuppetLook(v, { held: heldTrial && k === LOOK_DEVICE_KEY }) ? v : null;
   } catch {
     return null;
   }
@@ -81,4 +93,5 @@ export async function faceLook(fetchImpl?: typeof fetch): Promise<PuppetLook> {
 /** Tests only. */
 export function resetLookForTests(): void {
   urlApplied = false;
+  heldTrial = false;
 }

@@ -1,14 +1,21 @@
 // Where the shipped puppets live, per LOOK (round 4 stream 5, the look switch). A look is one judged puppet pack:
 //   r8    — the style-C chibi Asha (JUDGE-r8 4.1/5; the owner's ship bar is 4.0); the default until the owner says go;
 //   lamp1 — the grown-up Asha, face option 4 "Lamplight flat", cardigan + block-print kurta (dc-r4-face-lamplight-flat,
-//           dc-r4-outfit-cardigan-print-kurta), copied from art/character/puppet2d/lamp1/ by stream 5.
+//           dc-r4-outfit-cardigan-print-kurta). HELD (2026-10-10): its live puppet failed the blind uncanny gate (4, 5, 3,
+//           4 / 5 against <= 1; r8 0 / 5; rj-r4-lamp1-mesh-warp-uncanny), so no page may paint it: neither ?look= nor
+//           TAXILA_FACE_LOOK selects a held look (dev builds can still trial it with &heldlook=1). A passing rig (lamp2)
+//           joins as a new look.
 // Each pack is WebP layers + geometry, served from /face-puppet/<look>/ (public/), fetched lazily after mount. Which look
 // a page shows is decided in ./look.ts (?look= on the device, else the server's TAXILA_FACE_LOOK).
 export type PuppetLook = "r8" | "lamp1";
 export const PUPPET_LOOKS: readonly PuppetLook[] = ["r8", "lamp1"];
 /** The deploy default while the server has not said otherwise. Making lamp1 the default needs the owner's yes. */
 export const DEFAULT_LOOK: PuppetLook = "r8";
-export const isPuppetLook = (v: unknown): v is PuppetLook => typeof v === "string" && (PUPPET_LOOKS as readonly string[]).includes(v);
+/** Looks keyed here but never painted (see lamp1 above). The server keeps the same list (server/face-puppet/config.js). */
+export const HELD_LOOKS: readonly PuppetLook[] = ["lamp1"];
+/** A look a page may paint: keyed and not held; `{ held: true }` (dev trials only) also admits a held one. */
+export const isPuppetLook = (v: unknown, { held = false }: { held?: boolean } = {}): v is PuppetLook =>
+  typeof v === "string" && (PUPPET_LOOKS as readonly string[]).includes(v) && (held || !(HELD_LOOKS as readonly string[]).includes(v));
 
 type View = readonly [number, number, number];
 export interface LookPack {

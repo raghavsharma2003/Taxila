@@ -6,15 +6,19 @@
 //                             viseme frames, and the puppet lip-syncs from the audio tap (the judged live path).
 // The build-time VITE_FACE_PUPPET2D=0 and the per-device ?puppet=0 remain. No auth: the answer holds no child data.
 // The LOOK (round 4 stream 5): TAXILA_FACE_LOOK = r8 (default) | lamp1 picks the puppet pack every client paints
-// (src/face-puppet/look.ts; a device's ?look= wins). An unknown value is the default, never an error. lamp1 becomes the
-// default only on the owner's yes (BUILD-PLAN §5 release flags): r8, then lamp1 for the owner cohort, then everyone.
+// (src/face-puppet/look.ts; a device's ?look= wins). An unknown or HELD value is the default, never an error. lamp1 is
+// HELD (2026-10-10: its live puppet failed the blind uncanny gate), so TAXILA_FACE_LOOK=lamp1 serves r8; a look that
+// passes its gate is added to FACE_LOOKS and becomes the default only on the owner's yes (BUILD-PLAN §5).
 // Seam: server/index.js registers `routes` (patch docs/design/ship5/p2-face/patches/03-server-face-config.diff).
 import { send } from "../http.js";
 import { PUPPET_REV } from "./rev.js";
 
-export const FACE_LOOKS = Object.freeze(["r8", "lamp1"]);
+/** Looks a client may be told to paint. */
+export const FACE_LOOKS = Object.freeze(["r8"]);
+/** Looks keyed in src/face-puppet/assets.ts but held (never served): the client keeps the same list (HELD_LOOKS). */
+export const HELD_FACE_LOOKS = Object.freeze(["lamp1"]);
 
-/** TAXILA_FACE_LOOK, or the default pack (PUPPET_REV) for an unset or unknown value. */
+/** TAXILA_FACE_LOOK, or the default pack (PUPPET_REV) for an unset, unknown or held value. */
 export const faceLookOf = (env = process.env) => {
   const v = String(env.TAXILA_FACE_LOOK ?? "").trim().toLowerCase();
   return FACE_LOOKS.includes(v) ? v : PUPPET_REV;

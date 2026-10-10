@@ -2,6 +2,8 @@
 // dev routes on (the /dev/desk lesson fixtures), every /api/* mocked in the page (no server, no model, no database):
 //
 //   PLAYWRIGHT_BROWSERS_PATH=/opt/pw-browsers node tests/prod/r4-asha-shots.mjs [--look r8|lamp1] [--dist <dir>] [--shots <dir>]
+// (a held look, lamp1, is trialled with ?look=lamp1&heldlook=1, which only this dev-routes build honours; it needs the
+// pack copied into public/face-puppet/lamp1/ first)
 //
 // Surfaces × 360x800, 412x915, 1366x768 × young (class 3) / older (class 6):
 //   lesson Face layout (speaking, your_turn), Work layout (work-speaking, the play/board slot), Summary, Trouble (T1),
@@ -139,7 +141,11 @@ async function open(url, { w, h, kid = null, storage = {}, wait = 1600 }) {
   return { ctx, page };
 }
 
-async function surface(name, url, opts, act) {
+// a held look (assets.ts HELD_LOOKS) is admitted only as a dev trial: ?look=<look>&heldlook=1 on every page
+const HELD = ["lamp1"].includes(LOOK);
+const trial = (url) => (HELD ? `${url}${url.includes("?") ? "&" : "?"}look=${LOOK}&heldlook=1` : url);
+async function surface(name, url0, opts, act) {
+  const url = trial(url0);
   for (const v of VIEWS) {
     const tag = `${name} ${v.w}x${v.h}`;
     const errs = pageErrors.length;
