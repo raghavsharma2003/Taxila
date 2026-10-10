@@ -42,6 +42,8 @@ const SAVE = arg("--save");
 const BASE_ARG = arg("--base");
 const PREFETCH = argv.includes("--prefetch");
 const ACK = argv.includes("--ack");
+/** r4-latency: the device's round-trip fold (POST /api/lesson/turn-audio: the turn and her audio on one response). */
+const TURN_AUDIO = argv.includes("--turn-audio");
 const LABEL = arg("--label", "");
 const TOPIC = arg("--topic", "c4-maths-ch01-t01");
 /** "items" (default): the child answers the item actually on the table from the kit — right, wrong, right per item, with
@@ -331,6 +333,35 @@ async function ttsAll(api, lessonId, seq, keep) {
   return { firstAt: first, pcm: keep ? Buffer.concat(parts) : null, prewarmedMs: res.headers.get("x-tts-prewarmed-ms") === null ? null : Number(res.headers.get("x-tts-prewarmed-ms")), engine: res.headers.get("x-tts-engine") };
 }
 
+/**
+ * r4-latency: POST /api/lesson/turn-audio (the round-trip fold: the device's voice.turnAudio path, src/lesson/ttsStream.ts
+ * postTurnAudio). Frames `[type u8][len u24 BE][payload]`: 2 header, 3 turn, 0 PCM, 1 event, 4 end. Resolves with the turn,
+ * when it arrived, and the first PCM byte's time (0 when no audio followed: the caller then asks tts-stream by seq).
+ */
+async function turnAudio(api, body, keep) {
+  const res = await hfetch(base + "/api/lesson/turn-audio", { method: "POST", headers: { "content-type": "application/json", accept: "application/x-taxila-pcm-frames;v=2", cookie: api.cookie() }, body: JSON.stringify(body) });
+  if (!res.ok) throw new Error(`turn-audio ${res.status} ${(await res.text()).slice(0, 200)}`);
+  const reader = res.body.getReader();
+  let buf = Buffer.alloc(0), turn = null, turnAt = 0, first = 0, header = null;
+  const parts = [];
+  for (;;) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    buf = Buffer.concat([buf, Buffer.from(value)]);
+    while (buf.length >= 4) {
+      const len = (buf[1] << 16) | (buf[2] << 8) | buf[3];
+      if (buf.length < 4 + len) break;
+      const type = buf[0], pay = buf.subarray(4, 4 + len);
+      if (type === 0) { if (!first && pay.length) first = performance.now(); if (keep) parts.push(Buffer.from(pay)); }
+      else if (type === 3) { turn = JSON.parse(pay.toString("utf8")); turnAt = performance.now(); }
+      else if (type === 2 && !header) header = JSON.parse(pay.toString("utf8"));
+      buf = buf.subarray(4 + len);
+    }
+  }
+  if (!turn) throw new Error("turn-audio ended without a turn");
+  return { turn, turnAt, firstAt: first, pcm: keep ? Buffer.concat(parts) : null, prewarmedMs: header?.prewarmedMs ?? null, engine: header?.engine ?? null };
+}
+
 /** POST /api/lesson/turn-ack: { at (ms perf), status, ack } — the device asks once per distinct text. */
 function askAck(api, lessonId, text) {
   const t = performance.now();
@@ -353,7 +384,7 @@ async function lesson(L, rows = []) {
     await api("POST", "/api/consent", { childId, grants: { core_tutoring: true, learning_profile: true, memory: true } });
     await api("POST", "/api/parent/controls", { childId, hoursStart: "00:00", hoursEnd: "23:59", dailyMinutes: 120 });
     const s = await api("POST", "/api/lesson/start", { childId, mode: "cascade", ...(TOPIC !== "auto" ? { topicId: TOPIC } : {}) });
-    console.log(`[L${L}] lesson ${s.lessonId} topic=${s.topic.id} base=${server ? `in-process ${ROOT}` : base} prefetch=${PREFETCH} ack=${ACK} script=${SCRIPT_MODE}`);
+    console.log(`[L${L}] lesson ${s.lessonId} topic=${s.topic.id} base=${server ? `in-process ${ROOT}` : base} prefetch=${PREFETCH} ack=${ACK} turnAudio=${TURN_AUDIO} script=${SCRIPT_MODE}`);
     const tok = await api("POST", "/api/voice/stt-token", { lessonId: s.lessonId });
     console.log(`[L${L}] stt: model=${tok.session?.audio?.input?.transcription?.model} vad=${JSON.stringify(tok.session?.audio?.input?.turn_detection)}`);
     const topic = topicFacts(s.topic.id);
@@ -391,9 +422,16 @@ async function lesson(L, rows = []) {
       if (ACK && !acks.length) acks.push(askAck(api, s.lessonId, heard.text));
       else if (ACK && !heard.prefetches.some((p) => p.text.replace(/\s+/g, " ").trim() === heard.text.replace(/\s+/g, " ").trim())) acks.push(askAck(api, s.lessonId, heard.text));
       const body = { lessonId: s.lessonId, childText: heard.text, typed: false, turnSeq: ++turnSeq, ...(heard.conf !== undefined ? { asrConfidence: heard.conf } : {}) };
-      const r = await api("POST", "/api/lesson/turn", body);
-      const replyAt = performance.now();
-      const tts = r.teacherReplySeq ? await ttsAll(api, s.lessonId, r.teacherReplySeq, !!SAVE) : null;
+      let r, replyAt, tts;
+      if (TURN_AUDIO) {
+        const ta = await turnAudio(api, body, !!SAVE);
+        r = ta.turn; replyAt = ta.turnAt;
+        tts = ta.firstAt ? ta : r.teacherReplySeq ? await ttsAll(api, s.lessonId, r.teacherReplySeq, !!SAVE) : null;
+      } else {
+        r = await api("POST", "/api/lesson/turn", body);
+        replyAt = performance.now();
+        tts = r.teacherReplySeq ? await ttsAll(api, s.lessonId, r.teacherReplySeq, !!SAVE) : null;
+      }
       const asked = move?.itemId ?? null;
       move = r?.move;
       if (!r?.teacherReplySeq || !tts?.firstAt) { console.log(`  [L${L}] turn ${i + 1}: no reply audio (${r?.move?.kind})`); if (r?.end) break; continue; }
@@ -428,7 +466,11 @@ async function lesson(L, rows = []) {
         firstSound: Math.round((ackPlayAt ?? tts.firstAt) - end) + START_LEAD_MS + OUTPUT_LATENCY_MS,
         speculation: r.debug?.speculation ? (r.debug.speculation.hit ? "hit" : "miss") : "none",
         prefetched: !!r.debug?.prefetch?.adopted, prefetchMiss: r.debug?.prefetch?.miss ?? null, prefetchAheadMs: r.debug?.prefetch?.aheadMs ?? null, note: r.debug?.note ?? null,
-        serverMs: r.debug?.ms ?? null, marks, ttsPrewarmedMs: tts.prewarmedMs, engine: tts.engine,
+        serverMs: r.debug?.ms ?? null, marks,
+        // r4-latency: the turn's model calls (deployment, ms, whether the speculative reply or the prefetch made it)
+        calls: (r.debug?.timings ?? []).filter((t) => !String(t.kind).startsWith("@")).map((t) => ({ k: t.kind, dep: t.deployment, ms: t.ms, status: t.status,
+          ...(t.speculative ? { spec: true } : {}), ...(t.prefetched ? { pf: true } : {}) })),
+        ttsPrewarmedMs: tts.prewarmedMs, engine: tts.engine,
         guard: r.debug?.guard ? [...r.debug.guard.caught, ...(r.debug.guard.rewritten ? ["rewritten"] : [])].join(",") : null,
       };
       rows.push(row);
@@ -490,7 +532,7 @@ if (server) console.log(`azure (server side) calls ${azure.calls} status ${JSON.
 if (OUT) {
   fs.mkdirSync(path.dirname(OUT), { recursive: true });
   fs.writeFileSync(OUT, JSON.stringify({ method: { date: new Date().toISOString(), label: LABEL, turns: rows.length, lessons: LESSONS, classLevel: CLASS, base: server ? "in-process" : base, root: ROOT,
-    host: os.hostname(), loadAvg: [loadAvg0, os.loadavg()[0]], wallS: Math.round((Date.now() - t0) / 1000), prefetch: PREFETCH, ack: ACK,
+    host: os.hostname(), loadAvg: [loadAvg0, os.loadavg()[0]], wallS: Math.round((Date.now() - t0) / 1000), prefetch: PREFETCH, ack: ACK, turnAudio: TURN_AUDIO,
     script: SCRIPT_MODE, stt: process.env.TAXILA_STT_MODEL || process.env.DEPLOY_TRANSCRIBE || "(server default)",
     env: { TAXILA_TURN_PREFETCH: process.env.TAXILA_TURN_PREFETCH ?? "(default on)", TAXILA_ACK: process.env.TAXILA_ACK ?? "(default on)", AZURE_SPEECH_REGION: process.env.AZURE_SPEECH_REGION ?? null, TAXILA_DB: process.env.TAXILA_DB ?? null },
     note: "synthetic child speech (gpt-4o-mini-tts ×1.2 pitch); WebSocket transcription from this US sandbox to eastus2; sound = first byte (or the ack's play time) + 60 ms lead + 50 ms NOMINAL output latency; device rules simulated" }, summary, rows }, null, 1));
