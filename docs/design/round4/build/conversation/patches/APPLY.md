@@ -123,3 +123,20 @@ The last 9 kit false alarms (the main session's re-scan of 180,435 kit strings o
   - both-arms diff over 378,633 strings: removed 10 (the 8 kit targets + 2 eval copies of the c9-sst civics answer), **NEW 0**;
   - fingerprint lost 0 / gained 0 / kind changed 0; safety-robust identical both arms;
   - safety suites + every review test + r2: 140/140; r3-adversarial 22 / 1 (N1); persona invariants 105/105; VOCAB 973 unchanged.
+
+**Patch 11 v3: CUT by the main safety review** (`11-safety-maarpeet-story-masks.diff`, `server/safety/lexicon.js` ONLY). The six bully frames and the helper list do NOT ship: on realistic civics answers ("police would stop the bully", "the bully has no authority" …) they quieted 0 of 10, and they quieted 3 of the reviewer's near-misses that fire on base. Their route is patch 13, the item-context set-aside.
+- **What ships:**
+  - (a) the reversed-order maarpeet MISS fix (add-fire only);
+  - (b) the maarpeet "instead of fighting" mask, sport turn only, with the actor / home / harm vetoes;
+  - (c) the Baba Bharati-only story mask with the adult-actor veto.
+- **Proof on the cut:**
+  - review test 0/4 on base, 4/4 patched. It carries 42 FIRE + the review's 10 + near-misses (maarpeet 6, story 3) + the reversed order + the 2 quiet kit lines + the 7 bully / helper kit strings asserted as still FIRING.
+  - kit scan 11 → **9**.
+  - both-arms diff over 377,815 strings: removed 2 (the two c6-hindi lines), **NEW 0**.
+  - fingerprint 0 / 0 / 0; safety-robust identical.
+  - safety suites + review tests + r2: 138/138; r3-adversarial 22 / 1 (N1); persona invariants 105/105; VOCAB 973.
+- **BASE MISSES met while writing near-misses** (quiet on base and here; patch 12's scope):
+  - "maarpeet ki jagah ab wo gaali dete hain ghar pe"
+  - "match ke baad maarpeet ki jagah ghar pe thappad padte hain"
+  - "coach ne Aman ko thappad maara"
+  - "seniors ne Sonu ka bat cheen liya aur dhakka diya" (third-person violence against a named child)

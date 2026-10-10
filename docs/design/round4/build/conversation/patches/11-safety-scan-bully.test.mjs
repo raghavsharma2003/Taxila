@@ -1,7 +1,8 @@
-// Patch request 11, AMENDED after the main safety review (server/director/safety.js + server/safety/lexicon.js): the kit
-// false alarms closed by tight LESSON-shape frames; every frame has adversarial near-misses (a child's report about a friend
-// in the same surface words) that must fire. Goes to tests/safety-r4-scan-bully.test.mjs when applied. FAILS on base
-// a491caf (the quiet half), passes with the patch. No hooks (npm test is one process).
+// Patch request 11 v3 (server/safety/lexicon.js ONLY; main safety review cut, 2026-10-10): the bully frames do NOT ship
+// (they quieted 0 of 10 realistic civics answers and 3 near-misses that fire on base). What ships: (a) the reversed-order
+// maarpeet MISS fix (add-fire only), (b) the maarpeet "instead of fighting" mask in a sport turn only (actor / home / harm
+// vetoes), (c) the Baba Bharati-only story mask with the adult-actor veto. Goes to tests/safety-r4-scan-bully.test.mjs.
+// FAILS on base a491caf/38431ab (the quiet pair and the reversed order), passes with the patch. No hooks.
 import { describe, test } from "node:test";
 import assert from "node:assert/strict";
 import { scanSafety } from "../server/director/safety.js";
@@ -26,7 +27,7 @@ const FIRE = [
   // maarpeet with the child or at home
   "ghar pe maarpeet hoti hai", "papa mummy maarpeet karte hain", "मेरे घर में मारपीट होती है", "maarpeet ki jagah mujhe maarte hain",
 ];
-const QUIET_ALL = [
+const QUIET_V1 = [
   "a school bully and a quiet classmate", "standing up to a bully in class", "Says a bully 'has authority' in class",
   "Give the child examples — a bully, a referee, a robber, a teacher, an elected sarpanch — and ask which column, then why",
   "Disorder could grow: the strong might bully or steal from the weak without consequence — a situation like matsya nyaya — showing why legitimate, just enforcement of law is needed.",
@@ -36,7 +37,7 @@ const QUIET_ALL = [
   "बाबा भारती और प्यारा घोड़ा सुल्तान; डाकू खड़गसिंह की नज़र; अपाहिज बनकर धोखे से घोड़ा छीना; बाबा ने कहा किसी को मत बताना ताकि लोग ग़रीबों पर विश्वास न छोड़ें; मन बदला और घोड़ा लौटा दिया",
 ];
 
-const NEAR = {
+const NEAR_ALL = {
   pair_nonschool: ["a bully and a thief follow Meena home every evening", "the bully or the thief, who will stop them, they wait outside the gate", "a bully and a robber came to Raju's house at night", "the bully and the police uncle both shout at Aman"],
   role_list: ["a bully, a monitor and a captain gang up on the new boy", "the bully, the captain and the monitor lock Sonu in the bathroom", "a bully, a teacher, a principal, nobody helps Ria"],
   verb_generic: ["older kids always bully others in the toilet", "they will bully anyone who is new", "seniors often bully smaller kids at the bus stop"],
@@ -50,36 +51,38 @@ const REVIEW_FIRE = ["there is a bully in class who hits others", "the bully in 
   "a bully and his classmates laugh at a boy", "he is standing up to a bully who hits him", "who would stop a bully? he hits Riya",
   "Sultan uncle ne kaha kisi ko mat batana taaki mummy naraz na ho", "Kharak Singh ne kaha kisi ko mat batana taaki koi na jaane", "baba bharati uncle ne kaha kisi ko mat batana taaki koi na jaane"];
 
-// quiet with the patch: the 8 kit lines that stay closed (c8-hindi "a school bully and a quiet classmate" is the ONE accepted
-// remaining false alarm: an interestContexts string, not child text; no frame is fitted to it)
-const QUIET = QUIET_ALL.filter((t) => t !== "a school bully and a quiet classmate");
-// pre-existing code-floor MISSES found while writing the near-misses: quiet on base AND with the patch (out of scope here,
-// reported for a separate patch; kept out of FIRE so this file tests patch 11 only)
-const BASE_MISSES = ["maarpeet ki jagah ab wo gaali dete hain ghar pe", "match ke baad maarpeet ki jagah ghar pe thappad padte hain"];
+// the cut keeps two quiet kit lines; the bully / helper-list kit strings keep firing (the item-context set-aside, patch 13,
+// is the route for those)
+const QUIET = [
+  "क्योंकि उन्होंने गुस्से में मारपीट की जगह अच्छा खेलकर जवाब दिया — खेल की चोट का जवाब खेल से; यही सच्ची खेल-भावना है",
+  "बाबा भारती और प्यारा घोड़ा सुल्तान; डाकू खड़गसिंह की नज़र; अपाहिज बनकर धोखे से घोड़ा छीना; बाबा ने कहा किसी को मत बताना ताकि लोग ग़रीबों पर विश्वास न छोड़ें; मन बदला और घोड़ा लौटा दिया",
+];
+const STILL_FIRING_KIT = QUIET_V1.filter((t) => !QUIET.includes(t));
+// pre-existing code-floor misses (quiet on base AND here): patch 12's
+const BASE_MISSES = ["maarpeet ki jagah ab wo gaali dete hain ghar pe", "match ke baad maarpeet ki jagah ghar pe thappad padte hain",
+  "match ke baad maarpeet ki jagah coach ne Aman ko thappad maara", "cricket mein maarpeet ki jagah seniors ne Sonu ka bat cheen liya aur dhakka diya"];
+const NEAR = {
+  maarpeet_jagah: [...NEAR_ALL.maarpeet_jagah, "khel mein maarpeet ki jagah wo log Riya ko dhamki dete hain", "game mein maarpeet ki jagah ab bhaiya ghar pe maarte hain",
+    "match ke baad maarpeet ki jagah coach ne Aman ko thappad maara", "cricket mein maarpeet ki jagah seniors ne Sonu ka bat cheen liya aur dhakka diya"],
+  story: NEAR_ALL.story,
+};
 
-describe("patch 11 (amended): lesson-shape frames, adversarial near-misses fire", () => {
-  test("every disclosure still fires (bullying of the child, adult-actor secrecy, maarpeet at home)", () => {
-    for (const t of FIRE) assert.equal(scanSafety(t).distress, true, `missed: ${t}`);
+describe("patch 11 v3: the maarpeet and story masks, the reversed-order maarpeet", () => {
+  test("every disclosure fires (42 + the review's ten)", () => {
+    for (const t of [...FIRE, ...REVIEW_FIRE]) assert.equal(scanSafety(t).distress, true, `missed: ${t}`);
   });
-  test("the main review's ten lines fire", () => {
-    for (const t of REVIEW_FIRE) assert.equal(scanSafety(t).distress, true, `missed: ${t}`);
-  });
-  test("adversarial near-misses of EVERY frame fire (>= 3 per frame)", () => {
+  test("adversarial near-misses of the two masks fire (>= 3 each)", () => {
     for (const [frame, lines] of Object.entries(NEAR)) {
       const own = lines.filter((t) => !BASE_MISSES.includes(t));
-      assert.ok(own.length >= 3 || frame === "maarpeet_jagah", frame);
+      assert.ok(own.length >= 3, frame);
       for (const t of own) assert.equal(scanSafety(t).distress, true, `${frame} near-miss quiet: ${t}`);
     }
   });
-  test("the reversed order fires (a miss on base): maarpeet hoti hai ghar pe / ghar mein", () => {
+  test("the reversed order fires (a miss on base)", () => {
     for (const t of ["maarpeet hoti hai ghar pe", "maarpeet hoti hai ghar mein"]) assert.equal(scanSafety(t).distress, true, t);
   });
-  test("the 8 kit lines are quiet; the accepted one still fires", () => {
+  test("the two kit lines are quiet; the bully / helper-list kit strings still fire", () => {
     for (const t of QUIET) assert.equal(scanSafety(t).distress, false, `false safeguard: ${t}`);
-    assert.equal(scanSafety("a school bully and a quiet classmate").distress, true);
-  });
-  test("the true-content pair keeps firing", () => {
-    assert.equal(scanSafety("Someone you met online says, 'Let's be best friends! Send me your photos and your school's name.' Using the story's idea of a true friend, is this a true friend? What should you do?").distress, true);
-    assert.equal(scanSafety("A mirror card: 'myself' only works when the action bounces back to me (I hurt myself, I made it myself); a subject card 'I am...' is used to introduce").distress, true);
+    for (const t of STILL_FIRING_KIT) assert.equal(scanSafety(t).distress, true, `should still fire (not in this cut): ${t}`);
   });
 });
