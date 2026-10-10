@@ -96,6 +96,12 @@ export const KX = {
   malFirstDigit: K("comparing more than the first digit", "sirf pehla digit nahi", "सिर्फ़ पहला अंक नहीं"),
   malSpacing: K("equal spacing on the line", "line par barabar doori", "रेखा पर बराबर दूरी"),
   malRound: K("which way a number rounds", "round kis taraf", "किस ओर पूर्णांक"),
+  // K3 · intake (BUILD-SPEC §3.2): the card names what the server mapped (ui.intake), in the syllabus's own words
+  intakeToday: K("Today at school", "Aaj school mein", "आज स्कूल में"),
+  intakeWhich: K("Which one was it?", "Kaunsa tha?", "कौन-सा था?"),
+  intakeFromSchool: K("From school", "School se joda", "स्कूल से जोड़ा"),
+  intakePlan: K("Today's plan", "Aaj ka plan", "आज की योजना"),
+  intakePlanSteps: K("{n} parts today", "Aaj {n} hisse", "आज {n} हिस्से"),
   ringMaths: K("Maths", "Ganit", "गणित"), ringScience: K("Science", "Vigyan", "विज्ञान"), ringEvs: K("EVS", "EVS", "पर्यावरण"),
   ringEnglish: K("English", "English", "अंग्रेज़ी"), ringHindi: K("Hindi", "Hindi", "हिंदी"), ringSocial: K("Social", "Social", "सामाजिक"),
 } as const;

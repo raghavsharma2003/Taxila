@@ -1,7 +1,8 @@
 // Kaksha Desk dev page (never shipped): the REAL Desk (stream 2) under the Kaksha frame and skin, fed the Desk's own
 // fixture models (src/child/lesson/dev/DeskDev.tsx fixtureModel), plus the Debrief with fixture maps. For shots and the
 // rendered lint (tests/prod/r4-kaksha-desk-shots.mjs). No server, no child.
-//   ?class=4|6|7  &fixture=<DeskDev fixture>|summary|summary-secure|summary-tried|summary-ending  &face=plate|live  &motion=reduced
+//   ?class=4|6|7  &fixture=<DeskDev fixture>|summary|summary-secure|summary-tried|summary-ending|intake-ask|intake-which|intake-mapped|intake-plan
+//   &face=plate|live  &motion=reduced
 //   ?live=1&skin=kaksha|none  the REAL lesson runtime (LessonRuntime, outbox, floor) on the Desk dev page's scripted Director
 //                             and clock link, instrumented for the K1 client-latency check (tests/prod/r4-kaksha-latency-client.mjs)
 import { useCallback, useState } from "react";
@@ -17,6 +18,8 @@ import { ageBandOf, bandForClass, familyOf } from "../../../child/band.ts";
 import KakshaLesson, { type LoadMap } from "../lesson/KakshaLesson.tsx";
 import type { MapLike } from "../lesson/debrief.ts";
 import type { WorldSkill } from "../world.ts";
+import c4maths from "../../../../data/curriculum/c4-maths.json";
+import c6maths from "../../../../data/curriculum/c6-maths.json";
 
 const q = new URLSearchParams(location.search);
 const cls = Number(q.get("class") ?? 6);
@@ -35,6 +38,21 @@ const SKILLS: WorldSkill[] = [
   { skillId: `c${cls}-science-ch04-t01-s1`, title: "Magnets and their poles", subject: "science", state: "practising" },
 ];
 const AFTER: WorldSkill[] = SKILLS.map((k) => (k.skillId.endsWith("ch07-t03-s1") ? { ...k, state: "secure" as const } : k));
+// ui.intake as K-P11 builds it: the title and the trail are the syllabus file's own words (data/curriculum)
+function intakeFixture(name: string): Partial<typeof fixtureModelOut> {
+  const book = (cls <= 4 ? c4maths : c6maths) as { class: number; chapters: Array<{ id: string; title: string; topics: Array<{ id: string; title: string }> }> };
+  const ch = book.chapters.find((c) => c.topics.length > 0)!;
+  const t = cls <= 4 ? ch.topics[0] : book.chapters.find((c) => c.id.endsWith("ch07"))!.topics[0];
+  const chapter = book.chapters.find((c) => c.topics.some((x) => x.id === t.id))!;
+  const mapped = { topicId: t.id, title: t.title, trail: [`Class ${book.class}`, "Maths", chapter.title] };
+  const ask = (text: string) => ({ text, source: "server" as const, lines: [] });
+  if (name === "intake-ask") return { intake: { phase: "ask" }, ask: ask(family === "young" ? "What happened at school today?" : "Aaj school mein kya hua?") };
+  if (name === "intake-which") return { intake: { phase: "which" }, ask: ask("Which one was it?") };
+  if (name === "intake-mapped") return { intake: { phase: "mapped", mapped }, ask: ask(family === "young" ? "Which one is half?" : "Are two quarters the same as one half?") };
+  // at the agenda the lesson's short title is the decided topic's (ui.shortTitle follows the new segment)
+  return { intake: { phase: "plan", mapped, plan: { segments: [{ purpose: "school_reteach" }, { purpose: "practice" }] } }, ask: null, shortTitle: t.title.slice(0, 24) };
+}
+const fixtureModelOut = fixtureModel("your_turn", band, { w: 360, h: 800, fontScale: 1 }, "plate", false);
 let reads = 0;
 const loadMap: LoadMap = async (): Promise<MapLike | null> => {
   reads++;
@@ -45,8 +63,9 @@ const loadMap: LoadMap = async (): Promise<MapLike | null> => {
 function App() {
   const [size, setSize] = useState<DeskSize>({ w: innerWidth, h: innerHeight, fontScale: 1 });
   const onSize = useCallback((s: DeskSize) => setSize((p) => (sameSize(p, s) ? p : s)), []);
-  const base = fixture.startsWith("summary") ? (fixture === "summary-tried" ? "summary-tried" : "summary") : fixture;
+  const base = fixture.startsWith("summary") ? (fixture === "summary-tried" ? "summary-tried" : "summary") : fixture.startsWith("intake") ? "your_turn" : fixture;
   const m = fixtureModel(base, band, size, face, reduced);
+  if (fixture.startsWith("intake")) Object.assign(m, intakeFixture(fixture));
   m.childName = family === "young" ? "Riya" : "Kabir";
   if (m.summary) {
     m.caption = { text: family === "young" ? "Shabaash, Riya. Aaj tumne aadha pehchaana. Kal phir milte hain." : "Achha kaam, Kabir. Kal do minute mein dekhenge ki quarters wala idea yaad hai.", speaking: false, mode: "phrase", lang: "hi-Latn" };

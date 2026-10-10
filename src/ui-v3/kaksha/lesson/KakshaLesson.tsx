@@ -26,6 +26,7 @@ import { readEquipped } from "../memory.ts";
 import { world, type Catalog } from "../world.ts";
 import "../play/play.kaksha.css";
 import { Debrief } from "./Debrief.tsx";
+import { IntakeCard } from "./IntakeCard.tsx";
 import type { MapLike } from "./debrief.ts";
 
 export type LoadMap = (cid: string) => Promise<MapLike | null>;
@@ -57,9 +58,10 @@ export default function KakshaLesson({ cid, family, reducedMotion, children, loa
     (p: { m: DeskModel; meters: TapSource[]; onFinish: () => void }) => <Debrief {...p} before={before} loadAfter={() => loadMap(cid)} />,
     [before, loadMap, cid],
   );
+  const renderIntake = useCallback((m: DeskModel) => (m.intake ? <IntakeCard intake={m.intake} /> : null), []);
   return (
     <div className="v3 kx kx-lesson" data-ktheme={kakshaThemeFor(family)} data-motion={reducedMotion ? "reduced" : undefined} data-kscreen="lesson">
-      <PlayBriefingContext.Provider value={briefing}>{children({ skin: "kaksha", renderSummary })}</PlayBriefingContext.Provider>
+      <PlayBriefingContext.Provider value={briefing}>{children({ skin: "kaksha", renderSummary, renderIntake })}</PlayBriefingContext.Provider>
     </div>
   );
 }

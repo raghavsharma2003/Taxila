@@ -20,8 +20,8 @@ const OUT = path.join(ROOT, "docs/design/round4/build/kaksha/shots-k1");
 const PORT = 5198;
 const BASE = `http://localhost:${PORT}/src/ui-v3/kaksha/dev/desk.html`;
 const CLASSES = [4, 6, 7];
-const FIXTURES = ["speaking", "your_turn", "work-tiles", "board-not_yet", "work-pad", "pause", "summary", "summary-secure", "summary-tried"];
-const LESSON = new Set(["speaking", "your_turn", "work-tiles", "board-not_yet", "work-pad"]);
+const FIXTURES = ["speaking", "your_turn", "work-tiles", "board-not_yet", "work-pad", "pause", "summary", "summary-secure", "summary-tried", "intake-ask", "intake-mapped", "intake-plan"];
+const LESSON = new Set(["speaking", "your_turn", "work-tiles", "board-not_yet", "work-pad", "intake-ask", "intake-mapped", "intake-plan"]);
 const VIEWS = [[360, 800], [412, 915], [1366, 768]];
 const SHOT_VIEWS = new Set(["360x800", "1366x768"]);
 
@@ -42,6 +42,16 @@ function checks(fx) {
     if (lamps.some((l) => !l.closest('[data-zone="dock"]'))) out.push("LAMP-1 lamp off the dock");
     if (fx.name === "your_turn" && lamps.length !== 1) out.push(`LAMP-1 your_turn lamps=${lamps.length}`);
     if (fx.name === "speaking" && lamps.length) out.push("LAMP-1 lamp while she speaks");
+  }
+  // INTAKE-1 (K3): the card shows the server's mapping inside the Question card, adds no control, and the dots match the plan
+  if (fx.name.startsWith("intake")) {
+    const card = document.querySelector('[data-testid="question-card"] [data-testid="intake"]');
+    if (!card || !vis(card)) out.push("INTAKE-1 no intake card in the Question card");
+    else {
+      if (card.querySelector("button, a, input")) out.push("INTAKE-1 the card carries a control");
+      if (fx.name !== "intake-ask" && !/Class \d/.test(card.querySelector(".kx-in-trail")?.textContent ?? "")) out.push("INTAKE-1 no trail");
+      if (fx.name === "intake-plan" && card.querySelectorAll(".kx-in-dot").length !== 2) out.push("INTAKE-1 plan dots ≠ planned parts");
+    }
   }
   if (fx.name === "pause") {
     for (const id of ["call-1098", "call-14416"]) if (!vis(document.querySelector(`[data-testid="${id}"]`))) out.push(`HELP-2 ${id} not on screen`);

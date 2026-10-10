@@ -65,6 +65,18 @@
    "kind": "measurement",
    "title": "K2 launch -> engine first painted frame (production build, CPU x4, SwiftShader, 360x800 DPR 2 = G35-class proxy, not a phone; n=12 per arm interleaved, 2026-10-10): with the Briefing p50 1,229 / p90 1,341 ms; the engine alone (level -> first frame, no Briefing) p50 1,200 / p90 1,345 ms. The spec's 1,200 ms bar is not met, set by the engine's own mount; the Briefing adds nothing measurable. Dev-server (unbundled) runs read ~1,440 ms and are not representative.",
    "at": "2026-10-10"
+  },
+  {
+   "id": "r4k-truth-11-4",
+   "kind": "measurement",
+   "title": "Kaksha §11.4 truth (tests/prod/r4-kaksha-truth.mjs, local production build with prod routing on the stream's Neon TEST branch, test clock, scripted text child from data/kits class 5 maths; 10 accounts x 2 evaluated sessions = 20, 2026-10-10): the Debrief's Now secure (nowSecure over GET /api/child/map before/after) equals the ledger diff (loadTruth -> MAP_SHAPE read from the DB) in 20/20 sessions; 0 false secure, 0 missed, 0 unreadable; 8 sessions with a real crossing (12 skills), each caused in that lesson by a scored right row >= 20 h after the skill's first scored row. No +1-day session crossed (certification came at +2 days). 90/90 checks.",
+   "at": "2026-10-10"
+  },
+  {
+   "id": "r4k-k3-built",
+   "kind": "component",
+   "title": "Stream K slice K3 (claude/r4-app-design): the session-first intake on the Kaksha Desk. Patch requests K-P11 (server/director/state.js intakeUi -> ui.intake {phase ask|which|mapped|plan, mapped {topicId,title,trail} from getTopic ONLY, plan {segments:[{purpose}]}}; pure, no DB read, prompt unchanged; to 4A for owner review) and K-P12 (stream 2's Desk: DeskModel.intake, QuestionCard lead slot inside the measured body, Desk renderIntake; inert without a skin). Client: IntakeCard at the top of the Question card, no controls, never the child's words. Tests: r4-kaksha-intake 6/6 on 4A's fixtures; 4A session tests 19/19; rendered lint 0 over 108 pages incl. intake states.",
+   "at": "2026-10-10"
   }
  ],
  "edges": [
@@ -122,6 +134,16 @@
    "src": "r4k-k2-frame",
    "rel": "measures",
    "dst": "r4k-k2-built"
+  },
+  {
+   "src": "r4k-truth-11-4",
+   "rel": "measures",
+   "dst": "r4k-k1-built"
+  },
+  {
+   "src": "r4k-k3-built",
+   "rel": "part_of",
+   "dst": "dc-r4-app-kaksha"
   }
  ]
 }

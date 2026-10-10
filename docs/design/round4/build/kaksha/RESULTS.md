@@ -7,6 +7,75 @@
 **Honesty:** no child has used any of this. Every performance number below is a **G35-class proxy**: headless
 Chromium with CPU ×4 throttling at 360 × 800, DPR 2. None was measured on a phone (K-O3 is open).
 
+## K3: the intake on the Desk (flag `ui.kaksha`, owner cohort only; needs K-P11 and K-P12)
+
+**Gap found on base:** 4A's session-first intake reached the client only as her words and the answer chips. There was no
+structured state the screen could truthfully show. Three pieces close it (ownership agreed with main 2026-10-10):
+
+| piece | what |
+|---|---|
+| K-P11 (server, 4A review) `11-intake-ui.diff` | Covered below. |
+| K-P12 (stream 2's Desk) `12-desk-intake-slot.diff` | `DeskModel.intake` is `ui.intake` as sent. The Question card takes an optional `lead` at the top of its measured body, and the Desk takes an optional `renderIntake`. With the flag off, nothing renders. |
+| K3 client `src/ui-v3/kaksha/lesson/IntakeCard.tsx` | Covered below. |
+
+**K-P11:** `ui.intake = { phase, mapped?, plan? }`, built by a pure `intakeUi()` in `server/director/state.js` from the intake beat's state.
+- **phase:** ask, which, mapped (the confirm probe) or plan (the agenda).
+- **mapped:** the title and the trail class · subject · chapter come from **the syllabus graph only** (`getTopic`).
+- **plan:** the opened segment's purpose plus its queued `then`. No titles.
+- No DB read on the turn path, and nothing in the prompt.
+
+**K3 client:** drawn at the top of the Question card.
+- **ask:** a quiet "Today at school".
+- **which:** "Which one was it?"
+- **mapped:** a target frame with the trail and the title; the confirm question sits under it as the card's ask.
+- **plan:** one dot per planned part.
+- It carries no control: the chips stay in the tray, and the mic and lamp stay on the dock. It never prints the child's words.
+
+**Numbers (2026-10-10, base `0c90ebb`):**
+
+| check | result |
+|---|---|
+| `tests/r4-kaksha-intake.test.mjs` (K-P11 on 4A's `sessionLesson` fixtures + K3 client) | **6 / 6**: covered below |
+| `tests/r4-conversation-session.test.mjs` (4A's own) | 19 / 19, unchanged |
+| `scripts/check-prompt-budget.mjs` | PASS |
+| rendered lint, `tests/prod/r4-kaksha-desk-shots.mjs` (now 12 states incl. intake-ask / mapped / plan) | **0 findings over 108 pages**, INTAKE-1 included (the card is inside the Question card, has no control, shows the trail, and its dots equal the planned parts) |
+| both patches apply on `0c90ebb` | K-P11 alone; K-P12 after K-P2 |
+
+What `r4-kaksha-intake.test.mjs` checks:
+- the phase sequence: ask, then mapped at the confirm, then plan;
+- that `mapped` equals `getTopic` field by field and appears verbatim in `data/curriculum/*.json`;
+- that the child's words never appear in the card;
+- that there is no `ui.intake` outside a session;
+- that the instructions are unchanged;
+- that the client card carries no control and, without a skin, renders today's card.
+
+**Not done in K3:**
+- **The duplex "listening" meter** inside the intake card. The Desk's dock already shows the listening state from the floor, and 4B's duplex state isn't exposed to the Desk model. The card adds nothing there.
+- **The 3-node arc** (Samjho · Tum karo · Khelo) needs a server field for the session's stages. The dots show the planned **segments**, which is what the server holds.
+- **The intake shots are fixture-driven** (the dev page). A live session-first lesson needs K-P11 applied on the server.
+
+## §11.4 Truth: the Debrief's "Now secure" equals the ledger diff (2026-10-10)
+
+**Result: 90 / 90 checks passed. Over 20 scripted sessions: 0 false "secure", 0 missed, 0 unreadable map reads.** 8 sessions
+had a real crossing to secure, 12 skills in total; the other 12 sessions claimed nothing, and the ledger agreed.
+
+**Method** (`tests/prod/r4-kaksha-truth.mjs`, `truth-k.json`):
+- **Setup:** a local production build (production's model routing, `tests/prod/prod-routing.env`) on this stream's Neon TEST branch, with the test clock moving learning days. The child is `w1c`'s scripted text child, answering from `data/kits` (class 5 maths). There are 10 accounts with 2 evaluated sessions each.
+- **Day 0:** learn topic A, with reasons and the protégé taught.
+- **+1 day:** a lesson on topic B whose opener is A's delayed check. Half the accounts answer A's items right and half answer them wrong.
+- **+2 days:** a review of A, answered right.
+- **The claim:** the Debrief's own `nowSecure(map at lesson start, map after the lesson)`, read through `GET /api/child/map` as the client reads it.
+- **The ledger:** `loadTruth` → `MAP_SHAPE` read **directly from the database** before and after the lesson, not through the map route.
+- **The checks:**
+  - T1: claim equals ledger;
+  - T2: no false "secure";
+  - T3: every claimed skill was **caused in that lesson**, by a scored right engine row at least 20 h (`DELAY_MS`) after the skill's first scored row.
+
+**What it showed, honestly:**
+- No +1-day session crossed to secure, even when A's delayed check was answered right. The crossings came at +2 days, consistent with the ledger needing a check two learning days out to certify (w1c-three-day documents the same rule). So the Debrief shows "Now secure" mostly on the second return, never on the first success.
+- Several claimed skills belonged to topic B, learned at +1 and certified at +2. T3 confirms each was caused in that lesson.
+- This is a **scripted text child on a local build**, not a child and not production.
+
 ## K2: the Briefing and the Hangar colours on Antariksh (flag `ui.kaksha`, owner cohort only)
 
 **Built against G1's `claude/r4-games-core` (`78b7a86b`) as a read-only reference.** G1 merges after stream 2. Every
