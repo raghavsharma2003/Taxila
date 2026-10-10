@@ -7,6 +7,88 @@
 **Honesty:** no child has used any of this. Every performance number below is a **G35-class proxy**: headless
 Chromium with CPU ×4 throttling at 360 × 800, DPR 2. None was measured on a phone (K-O3 is open).
 
+## K1: the Desk skin and the Debrief (flag `ui.kaksha`, owner cohort only)
+
+**Built:**
+
+| piece | where | what it does |
+|---|---|---|
+| K-P2 (patch request, stream 2's files) | `src/child/lesson/Desk.tsx`, `LessonScreen.tsx`; diff `patches/02-desk-skin-debrief.diff` | The Desk takes an optional `skin` (written as `data-skin`), puts `data-zone` on its zones, and takes an optional `renderSummary`. LessonScreen mounts the lazy `KakshaLesson` frame only when `ui.kaksha` is on AND the server marks the account in the cohort (K-P10). **Flag off: the Desk renders with no skin and the Summary, unchanged, and no Kaksha code loads.** |
+| frame | `src/ui-v3/kaksha/lesson/KakshaLesson.tsx` | `.v3.kx` themed by band family. Reads the child's map **once** at lesson start: the "before" half of the Debrief diff. No per-turn work, no timer, no rAF. |
+| skin | `src/ui-v3/kaksha/lesson/desk.kaksha.css` | CSS only. Re-points the Desk's own tokens at the Kaksha palette and dresses the zones: chamfered glass panels, the comms frame on the lit warm ground with corner ticks and a kesar rim while she speaks, a mission board with a 32 px grid, the phase line as a segment bar, Space Grotesk. The lamp stays on the Answer dock alone, now plasma (its tokens are re-pointed on `.dk-dock` only, so L-LAMP passes). A wrong answer is look-again violet. Changes no zone size, layout row, element or behaviour. |
+| Debrief | `src/ui-v3/kaksha/lesson/{Debrief.tsx,debrief.ts}` | Covered below. |
+| dev page | `src/ui-v3/kaksha/dev/desk.{html,tsx}` | Covered below. Never shipped. |
+
+**The Debrief:**
+- **What you did:** the Summary's own cards, with a mint tick when the verified-key classifier said so.
+- **Now secure:** the ledger read through `/api/child/map`, before vs now. A skill counts only if it was not secure at the start and is secure now.
+  - A failed, empty or private read claims nothing; unknown is never shown as "none".
+  - The empty-read guard exists because `getChildMap` answers a failed read with an empty map, which would have made every secure skill look new.
+- **Opened:** the structure and the Hangar item, from the World's own function.
+- **Her closing line:** her last caption, shown only when it is a statement. A lesson the child ended early stops on her open question; the live shots caught this and it is fixed.
+- **Kept from the Summary:** Finish (disabled while the lesson is still saving) and the Young "Show your parents?" view. All the Summary's test ids are kept.
+- **No points, score or minutes.** Her name always carries "AI teacher".
+
+**The dev page:** the real Desk fed `DeskDev`'s fixture models, plus `?live=1`. The live mode runs the real LessonRuntime on the scripted Director, with the skin on or off, for the client-latency check.
+
+**Numbers (2026-10-10, merged tree with base `38431ab`):**
+
+| check | result | method |
+|---|---|---|
+| `tests/r4-kaksha-desk.test.mjs` | **7 / 7** | Covered below. |
+| rendered lint + safety, `tests/prod/r4-kaksha-desk-shots.mjs` | **0 findings over 81 pages** (9 states × class 4 / 6 / 7 × 360 / 412 / 1366; 1,434 text elements) | Same in-page lint as K0. Plus HELP-1 (Pause visible, enabled, ≥ 44 px and on screen in every lesson state), HELP-2 (the Pause sheet prints 1098 and 14416 on screen with no scroll), AI-1, LAMP-1 (lamp on the dock only, only at YOUR TURN), SKIN-1, TRUTH-1. The first run found real defects; each was fixed, then 0 (covered below). |
+| `node scripts/lint-ui.mjs` | **353** (baseline) | The first draft was 354: the lamp tokens were re-pointed on the Desk root. They are now set on `.dk-dock` itself. |
+| `npm test` (merged tree, base `39c88fe`, migration 025 applied to this stream's branch DB) | 2,684 tests: **2,618 pass, 60 fail, 6 skipped** | All 60 failures are `engines-browser.test.mjs`, the known container-only vite HMR vs frame CSP failure (K0 section) |
+| `npx tsc -b`, `npx vite build` | pass | The `KakshaLesson` chunk is **2.1 KB JS + 2.6 KB CSS gzip**, lazy, and loads only with the flag on. |
+| live-lesson check, through the r4-timeline driver | classes 4, 6 and 7, owner cohort, real models | The skin and Debrief render on a real lesson: `data-skin="kaksha"`, the Debrief with "AI teacher", and no "Now secure" for a child with nothing newly secure. |
+
+What `r4-kaksha-desk.test.mjs` checks:
+- the Now-secure truth, including a 300-map property test (0 false "secure");
+- unknown-is-not-none;
+- no clock, randomness, loop or network call in the frame or the Debrief;
+- the Summary's test ids are kept and "AI teacher" is printed;
+- the skin CSS uses tokens only, is scoped to the skin, hides nothing, keeps the lamp on the dock only, and has no font under 14 px;
+- the K-P2 wiring, including the flag-off path.
+
+What the first rendered run found, each fixed before the 0:
+- the Send key at 1.06 : 1 contrast, because a skin rule outranked it;
+- a 13 px word inside the mic disc (the Desk's own size; the skin sets 14 px);
+- a hit-area measure that ignored the Desk's `::after` 48 dp extension on "Wait" (the harness now counts it);
+- the dock's mode line truncated in mono on class 4 (now Space Grotesk);
+- secondary buttons chamfered so their borders broke (now plain).
+
+**Shots:**
+- `shots-k1/c<class>-<state>__<viewport>.webp`: the real Desk with fixture models, at 360 × 800 and 1366 × 768. The states are speaking, your turn, tiles, look-again board, pad, Pause, Debrief, Debrief with a newly secure skill, and tried-only.
+- `shots-k1-live/`: a live lesson, Pause and the Debrief for class 4, 6 and 7 on phone and laptop, from the local production build.
+
+**Latency: the Desk adds no measurable latency to the turn.** Two measurements:
+
+1. **Live models (as asked).** The r4-timeline driver ran a local production build on real Azure models and this stream's Neon TEST branch, with the fixed 750 ms fake ASR and a synthetic child clip (not a child). **Turn prefetch was OFF** (`TAXILA_TURN_PREFETCH=off`, the r4-timeline preload's default; production runs it ON), and model routing came from that preload rather than `tests/prod/prod-routing.env`, which landed later. Arms were interleaved by round, n = 12 turns each, `docs/design/round4/build/kaksha/latency-k1.json`:
+
+| arm | end of speech → POST leaves, p50 / p90 ms | POST duration p50 / p90 | end → her reply's sound p50 / p90 |
+|---|---|---|---|
+| Kaksha, puppet | 1,988 / 4,061 | 2,535 / 3,482 | 4,974 / 8,295 |
+| classic, puppet | 2,000 / 3,944 | 2,311 / 2,669 | 4,909 / 6,920 |
+| Kaksha, still face | 2,185 / 3,868 | 1,991 / 2,714 | 5,012 / 6,652 |
+| classic, still face | 1,374 / 3,618 | 2,451 / 3,897 | 4,424 / 8,089 |
+
+   **This run cannot resolve a skin effect.** End → POST is bimodal in every arm: the POST leaves 10-35 ms after the final transcript, or is held 1-5 s. The hold is the turn-taking deciding, and it follows the conversation (the same turn index lands in the same range in every arm), not the skin. The lessons diverge in content, so n = 12 per arm gives intervals wider than any plausible skin effect. The 811 ms gap in the still-face medians is that spread: the classic-still arm happened to land 6 of its 12 turns on the immediate path. The POST's own duration is server time, which the skin cannot touch.
+
+2. **Deterministic client check (what the skin could actually cost).** The real LessonRuntime ran on the Desk dev page's scripted Director, so every arm sees the same lesson. Timed on the page clock: the child's answer sent → the turn call leaves the client, and the answer lands → the next frame is painted. Setup: 360 × 800, DPR 2, CPU ×4 throttled, SwiftShader (a **G35-class proxy, not a phone**). Arms were interleaved, n = 30 each, paired by turn position, `latency-k1-client.json`:
+
+| comparison | send → turn call: Kaksha − classic | answer → painted: Kaksha − classic |
+|---|---|---|
+| still face | **+1.4 ms** mean, 95% CI ± 12.6 (p50 128 vs 122 ms) | +17.7 ± 26.5 ms |
+| puppet | **+13 ms** mean, 95% CI ± 47 (p50 530 vs 430 ms; p90 1,104 vs 1,097) | −4.6 ± 24.0 ms |
+
+   Every interval includes 0. On this proxy the skin's effect on the turn is under about 15 ms with the still face and under about 60 ms with the puppet. The puppet arms are noisy because the live face competes for the throttled main thread. **No real-phone number yet (K-O3).**
+
+**Not done in K1, and why:**
+- **The caption's current word in kesar** (§3.3). It needs word timings from the runtime's reveal (`stagecraft/reveal.ts`, not K's), so the phrase-level caption stays as today.
+- **The checkpoint chip and the beat segment bar.** They need stream 2's `checkpoint` card kind and beat plan in the Desk model. Neither is on base or in `shared/contracts.ts`. The phase line is styled as the segment bar in the meantime.
+- **The "Tomorrow" re-check line and the session minutes.** Neither is in `DeskModel.summary`. They need a plan / summary field, which would be a patch request when wanted.
+- **"Now secure" is the v1 client diff.** K-P5 (`secure_since` on `/api/child/map`, main) would make it a server fact. §11.4 (20 scripted sessions with real delayed checks) is not run yet; it needs a TEST-branch clock harness.
+
 ## K0: built (flag `ui.kaksha`, default OFF)
 
 | piece | where | what it does |
