@@ -818,7 +818,9 @@ export async function lessonTurn(req, body) {
   if (!moment) moment = momentNow();
   // round 3 fix (adversarial B2): whether a play piece is on screen after this turn (planTurn's playIsUp reads it next turn:
   // a game command is then the game's act, never an answer to the folded card)
-  if (!late) { if (studioSlot?.artifact?.kind === "play") next.playOn = { turn: next.turn }; else if (next.playOn) delete next.playOn; }
+  // round 4 (4A patch request 04, G2 Khand finding): with the piece's family and mode, so her words take the mode's verb
+  // (director/play-verbs.js, compile.js lastParts), never the folded card question's
+  if (!late) { if (studioSlot?.artifact?.kind === "play") next.playOn = { turn: next.turn, family: studioSlot.artifact.play?.family ?? null, mode: studioSlot.artifact.play?.mode ?? null }; else if (next.playOn) delete next.playOn; }
   // Studio's actions for this turn, as the kernel accepted them (a reveal on the teacher's cue; never on a safeguarding or
   // closing turn, never a second new thing on screen) and as Studio's slot shows them (a held reveal is not revealed).
   const turnStudio = turnStudioNow();
