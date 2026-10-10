@@ -196,6 +196,8 @@ export class Outbox {
   private readonly deadlineMs: number;
   /** The highest turnSeq handed out per lesson (seeded from the store by reserve()). */
   private seqs = new Map<string, number>();
+  /** Lessons whose turnSeq was seeded from the store on this page (reserve() reads the store once per lesson). */
+  private seeded = new Set<string>();
   private active = new Map<string, Active>();
 
   constructor(d: OutboxDeps) {
@@ -221,7 +223,10 @@ export class Outbox {
   /** The next turnSeq for a lesson: above anything this outbox handed out AND anything held in the store, so a
    *  reloaded page (a new Outbox, seq back at 0) never overwrites a held record of the same lesson. */
   async reserve(lessonId: string): Promise<number> {
-    const stored = await this.store.list(lessonId).catch(() => [] as OutboxRecord[]);
+    // r4-latency: the store is read once per lesson per page (the seed), not on every turn. Every record written after
+    // it went through this outbox, so seqs already covers it. Each IndexedDB round trip before the turn's fetch waits
+    // behind the page's frame work (measured: 56-123 ms long tasks back to back with the puppet on).
+    const stored = this.seeded.has(lessonId) ? [] : await this.store.list(lessonId).then((r) => (this.seeded.add(lessonId), r), () => [] as OutboxRecord[]);
     const top = Math.max(this.seqs.get(lessonId) ?? 0, ...stored.map((r) => r.turnSeq));
     const n = top + 1;
     this.seqs.set(lessonId, n);
@@ -323,7 +328,10 @@ export class Outbox {
       while (i <= this.schedule.length) {
         rec.attempts++;
         rec.status = "inflight";
-        await this.store.put(rec).catch(() => {});
+        // r4-latency: the record is already durable (written "queued" in send()); this status write goes out WITH the
+        // request instead of before it (one IndexedDB round trip less before the fetch), and is awaited before the
+        // record is deleted, so a late status write can never bring an acknowledged turn back.
+        const marked = this.store.put(rec).catch(() => {});
         this.events.emit({ type: "attempt", rec });
         flag.why = null;
         const c = (ctrl = new AbortController());
@@ -336,11 +344,13 @@ export class Outbox {
             sendFn(rec.req, c.signal).then(resolve, reject);
           });
           this.timers.clearTimeout(deadline);
+          await marked;
           await this.store.delete(rec.key).catch(() => {});
           this.events.emit({ type: "acked", rec, retried: rec.attempts > 1 || manual || !!rec.req.retried });
           return res;
         } catch (err) {
           this.timers.clearTimeout(deadline);
+          await marked; // the status writes below land after it, in order
           lastErr = err;
           // From now on this is a resend of the same turn.
           rec.req = { ...rec.req, turnSeq: rec.turnSeq, retried: true };

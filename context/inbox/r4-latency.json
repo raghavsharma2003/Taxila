@@ -105,7 +105,7 @@
   {
    "id": "open-r4lat-duplex-midutterance-commit",
    "kind": "open",
-   "title": "For 4B (page clock, owner duplex cohort, 2026-10-10, synthesised clip, n = 6 + 8): with natural ~410-465 ms mid-sentence pauses the duplex engine committed mid-utterance on 4/6 turns and sent truncated words ('Mujhe lagta hai dabbe'); with a continuous clip the words were whole but the turn POST trailed the final by 6-1,450 ms (p50 ~800) and only 2/8 turns prefetched; reply audible ~4.9 s. Correctness first (children pause mid-sentence), then latency.",
+   "title": "WITHDRAWN (harness fault, traced by stream 4B): the hands-free mid-utterance commits and truncated words seen on the r4-timeline page clock came from the FAKE transcriber, whose finish() finalised the item at the engine 150 ms micro-commit probe. The real gpt-live-transcribe opens a new item after a client commit (205/206 recorded). With 4B patch 01 to driver.mjs, 0/18 turns were truncated. Re-measure hands-free once base carries the patch.",
    "at": "2026-10-10"
   },
   {
@@ -142,6 +142,12 @@
    "id": "open-r4lat-puppet-delays-turn-post",
    "kind": "open",
    "title": "The puppet face delays the tap-to-talk turn POST by ~200-500 ms after the final transcript in headless Chromium (n = 12 vs 12, puppet on/off). Owner: stream 5 (src/face-puppet). Next: profile on a real low-end phone; if it holds, send the turn before the frame work (or yield).",
+   "at": "2026-10-10"
+  },
+  {
+   "id": "dec-r4lat-outbox-fewer-roundtrips",
+   "kind": "decision",
+   "title": "Before a turn fetch the outbox makes one IndexedDB round trip, not three. reserve() reads the store once per lesson per page (a failed read is retried); the inflight status write goes out with the request and is awaited before the delete. The durable queued write still precedes the send. Measured with the puppet on (tap-to-talk page clock, headless, long-task observer): final to POST p50/p90 477/792 ms (n = 12) to 61/154 ms (n = 24). Reverse if: a reader of the stored inflight status appears, or a lost/duplicated turn is traced to it.",
    "at": "2026-10-10"
   }
  ],
@@ -240,6 +246,11 @@
    "src": "ms-r4lat-ptt-page-clock-n48-2026-10-10",
    "rel": "measured_by",
    "dst": "ms-r4lat-ptt-page-clock-2026-10-10"
+  },
+  {
+   "src": "dec-r4lat-outbox-fewer-roundtrips",
+   "rel": "measured_by",
+   "dst": "ms-r4lat-ptt-page-clock-n48-2026-10-10"
   }
  ]
 }

@@ -231,6 +231,24 @@ puppet's work keeps the page's main thread busy, and the turn POST waits behind 
 read-only here. Reported to the main session: profile the puppet's frame work on a real low-end phone. If it holds there,
 the client should send the turn before painting (or yield the frame).
 
+**Root cause of that gap, and the fix (stream 4B's ask: "decision → turn POST ~1.1 s on 5/18 turns").** It is not
+`teacherSettled`: on the cascade link every teacher turn emits `teacher_done` at once, so that wait resolves at once. A
+`PerformanceObserver('longtask')` in the page shows the puppet's frames as back-to-back main-thread blocks of 56-123 ms. On
+5/12 turns they cover 92-94% of the final → POST window. Between the final and the fetch the outbox made THREE awaited
+IndexedDB round trips: the seed read in `reserve()` (every turn), the durable "queued" write, and an "inflight" status write.
+Each one waits behind a frame. Fix (`src/lesson/outbox.ts`, `tests/r4-latency-outbox-seed.test.mjs`):
+- `reserve()` reads the store once per lesson per page (a failed read is retried);
+- the "inflight" status write goes out with the request and is awaited before the delete;
+- the durable write before the send is unchanged: no answer is lost.
+
+| puppet on, tap-to-talk, same 12 lines | n | final → POST p50 / p90 | turns with frame blocks: p50 | quiet turns: p50 |
+|---|---|---|---|---|
+| before (merged tree 2e9be93f) | 12 | 477 / 792 ms | 714 (n = 5) | 233 (n = 7) |
+| after | 24 | **61 / 154 ms** | 154 (n = 6) | 54 (n = 18) |
+
+The puppet's frame cost itself remains stream 5's (open-r4lat-puppet-delays-turn-post): it still delays everything else the page
+does. `runs/ptt-longtask-{before,after}.jsonl`.
+
 Two client bugs, both fixed in `src/lesson/cascadeLink.ts` (tests/r4-latency-ptt-prefetch.test.mjs fails on the old link):
 - the prefetcher's "child stopped" signal came only from the energy VAD, which tap-to-talk does not use, so tap-to-talk never
   prefetched. gpt-live-transcribe does stream the words during push-to-talk speech (`evals/latency/ptt-deltas.mjs`, real
@@ -238,7 +256,11 @@ Two client bugs, both fixed in `src/lesson/cascadeLink.ts` (tests/r4-latency-ptt
 - `talkStart` emitted `child_speech_start` straight to the runtime, so the AckClient never reopened its turn after her reply
   and refused to ask: the echo was never requested on tap-to-talk (0/24 here; round 3 saw 0 in 21).
 
-**Hands-free (duplex cohort)**, owner account, class 4, n = 8 + 6, for stream 4B (read-only to this stream):
+**Hands-free (duplex cohort)**, owner account, class 4, n = 8 + 6, for stream 4B (read-only to this stream).
+**MEASURED ON A FAULTY FAKE; do not use these numbers.** 4B traced the mid-utterance commits and truncated words below to the
+harness's fake transcriber. Its `finish()` finalised the item at the engine's 150 ms micro-commit probe, whereas the real
+gpt-live-transcribe opens a new item after a client commit (205/206 in the recorded events). With 4B's patch 01 to
+`driver.mjs`, 0/18 turns were truncated. Hands-free gets re-measured here only once base carries that patch.
 - with a clip that has natural ~410-465 ms pauses at commas (6 turns), the engine committed MID-UTTERANCE on 4/6 turns (commit
   0.2-2.8 s before the child finished) and sent truncated words ("Mujhe lagta hai dabbe", "Achha, aur corner woh", "Mujhe nahi
   pata, ek"); her reply then came 4.7-12.1 s after the child stopped. Children pause mid-sentence; this is a correctness issue,
