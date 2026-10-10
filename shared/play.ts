@@ -19,7 +19,9 @@
 
 export const PLAY_VERSION = "play@1" as const;
 /** The four flagship families of round 3. The grammar is open: a new family adds its id here and registers its logic. */
-export const FAMILIES = ["todo-jodo", "taraazu", "nishana", "kyun-lab"] as const;
+export const FAMILIES = ["todo-jodo", "taraazu", "nishana", "kyun-lab",
+  "nazariya",   // r4-khand: block world (views, arrays, area/perimeter, squares/cubes, mirror)
+] as const;
 export type FamilyId = (typeof FAMILIES)[number];
 /** Family sub-worlds. A mode is one representation with its own law inside a family. */
 export const MODES = {
@@ -27,6 +29,7 @@ export const MODES = {
   taraazu: ["equation", "equality"],
   nishana: ["place", "compare"],
   "kyun-lab": ["fair-test"],
+  nazariya: ["views", "array", "floor", "powers", "mirror"],   // r4-khand
 } as const satisfies Record<FamilyId, readonly string[]>;
 export type ModeOf<F extends FamilyId> = (typeof MODES)[F][number];
 export type PlayMode = (typeof MODES)[FamilyId][number];
