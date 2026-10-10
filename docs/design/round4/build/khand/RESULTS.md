@@ -182,3 +182,30 @@ fixed by patches 08 and 09 and the memo, and re-run green.
 1. ~~Tier 3d's DPR floor~~: decided by the main session; it stays 1.0, and C10 waits on the phone run.
 2. Whether unsolved free builds should also be kept in the gallery (today, only solved levels).
 3. A real-phone run (O-R4) for C10.
+
+## 6. Look and feel: the owner's directive (2026-10-10), decided by the main session
+
+"Don't go too Indian. Be modern, futuristic, engaging and cool: the Gen Alpha vibe."
+
+**Name for children: Stackverse.** This is provisional: the owner confirms it, and a proper trademark search follows
+before any public marketing ("Voxa" was dropped because existing software products already use it). Code ids stay
+`khand` / `nazariya`.
+
+**The visual pass, approved and done after integration:**
+1. The child-facing title becomes Stackverse.
+2. Themes mitti / barf / jungle become Neon Grid / Cryo / Biodome. The ids live in G1's ENGINE_THEMES, so this is
+   coordinated with G1.
+3. Blocks Brick / Sandstone / Wood / Jade become Neon / Glass / Chrome / Holo, still in the code-drawn atlas.
+4. Grass hills and trees become floating panel islands with crystal spires on a dark grid ground.
+5. The sky becomes a synthwave or aurora dome with stars.
+6. The wooden fence becomes a laser fence, and floor panels light up as they are laid.
+7. The arrays pit and the powers bay become a charging bay and an assembly pad.
+8. The Hinglish and Hindi "khet" in the "side" lines becomes a neutral "plot" or "zone".
+9. Feedback: a snappy place click with an edge flash, a glow-particle shatter on break, and a light sweep on solve.
+   Music stays off for classes 4-5.
+
+**Budgets the pass must keep:**
+- 0 wrong grades (the law is untouched).
+- The 2D twin playable in ≤ 2.2 s at 1.2 Mbps.
+- ≤ 11 draws and < 10k triangles.
+- Emissive edges baked into the shader, with no real lights.
