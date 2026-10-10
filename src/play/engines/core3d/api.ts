@@ -127,6 +127,8 @@ export interface LabelSpec {
   role?: "ink" | "you" | "good" | "look" | "q1" | "q2";
   frac?: boolean;
   hidden?: boolean;
+  /** clamp the label horizontally into the box (its text stays whole; it may sit a little off its anchor at an edge) */
+  keepInBox?: boolean;
 }
 export interface LabelHandle { set(patch: Partial<Omit<LabelSpec, "id">>): void; remove(): void }
 

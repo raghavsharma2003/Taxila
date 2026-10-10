@@ -289,7 +289,7 @@ export function create(core: Core3D, depsIn: EngineDeps): EngineView {
       const col = gateMode === "doors" ? (doorList[i]?.door === "teekha" ? T.teekha : T.garam) : i === 0 ? T.garam : T.teekha;
       (g.tor.material as THREE.MeshBasicMaterial).color.setHex(col); (g.disc.material as THREE.MeshBasicMaterial).color.setHex(col);
       const text = gateMode === "order" ? p.values[i].text : gateMode === "round" ? H.fmtWhole(i === 0 ? p.lo : p.hi) : say(lang, doorList[i].door === "garam" ? "door.garam" : "door.teekha");
-      L.gate[i].set({ text, hidden: false, kind: gateMode === "doors" ? "text" : "numeral", lang: gateMode === "doors" ? tl() : "en", role: gateMode === "doors" ? (doorList[i].door === "teekha" ? "q2" : "q1") : "ink", at: wpt(us[i], gateMode === "order" ? 2.05 : 1.95), align: "bottom", frac: gateMode === "order" && p.values[i].form === "fraction" });
+      L.gate[i].set({ text, hidden: false, keepInBox: true, kind: gateMode === "doors" ? "text" : "numeral", lang: gateMode === "doors" ? tl() : "en", role: gateMode === "doors" ? (doorList[i].door === "teekha" ? "q2" : "q1") : "ink", at: wpt(us[i], gateMode === "order" ? 2.05 : 1.95), align: "bottom", frac: gateMode === "order" && p.values[i].form === "fraction" });
     });
     if (us.length) { setPhase(gateMode === "doors" ? "doors" : "gates"); core.audio.sfx("gate"); }
   }

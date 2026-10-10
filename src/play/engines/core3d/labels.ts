@@ -70,7 +70,9 @@ export class LabelLayer {
       if (!L.on) { L.el.style.display = ""; L.on = true; L.dirty = true; }
       if (L.dirty) { L.w = L.el.offsetWidth; L.h = L.el.offsetHeight; L.dirty = false; }
       const ax = s.align === "top" ? 0 : s.align === "bottom" ? 1 : 0.5;
-      const x = Math.round(p.x + (s.dx ?? 0) - L.w / 2), y = Math.round(p.y + (s.dy ?? 0) - L.h * ax);
+      let x = Math.round(p.x + (s.dx ?? 0) - L.w / 2);
+      const y = Math.round(p.y + (s.dy ?? 0) - L.h * ax);
+      if (s.keepInBox) x = Math.max(2, Math.min(box.w - L.w - 2, x));
       if (x !== L.x || y !== L.y) { L.el.style.transform = `translate(${x}px, ${y}px)`; L.x = x; L.y = y; }
       texts.push({ s: s.text, px: L.px, x, y, w: L.w, align: "left" });
       if (x < 0 || y < 0 || x + L.w > box.w + 0.5 || y + L.h > box.h + 0.5) clipped++;
