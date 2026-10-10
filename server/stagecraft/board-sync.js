@@ -195,7 +195,12 @@ export function takeSpec(ask, ctx) {
 }
 
 /** The code board (the kit's own explain rung), re-timed to her line and gated against it, or null. */
-export function codeBoard(ask, { kit, lessonId, band = "B3" } = {}, ctx) {
+export function codeBoard(ask0, { kit, lessonId, band = "B3" } = {}, ctx0) {
+  // round 4 content: every code rung is a whole picture: drawn FRESH (it replaces the board), never laid over the previous
+  // board's ops. Measured (owner-5, local production build, 2026-10-10): a flow claims board her "continue" line needed was
+  // refused for overlapping the old board's words, and the slot failed while she pointed at the screen.
+  const ask = ask0?.mode === "continue" ? { ...ask0, mode: "fresh" } : ask0;
+  const ctx = ctx0?.prior?.length ? { ...ctx0, prior: [] } : ctx0;
   try {
     // 0. round 4 content: her line states what is on the screen ("5 barabar parts; 3 shaded", "3 groups, 5 in each"): the
     //    board that draws exactly those claims (claims-board.js), gated against her line like every other board

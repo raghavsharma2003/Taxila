@@ -48,6 +48,25 @@ describe("r4 content: the claims board", () => {
   });
 });
 
+describe("r4 content: claims boards on the owner-5 lines of this branch's local production run (2026-10-10)", () => {
+  it("a fraction of a fraction on a grid ('3/5 wale hisson mein 2 rows mark') is the area model, its count hidden", () => {
+    const line = "Screen par rectangle dekhiye: 5 columns aur 3 rows hain; 3/5 wale hisson mein 2 rows mark hain. Marked chhote parts kitne dikh rahe hain?";
+    const r = board(line);
+    assert.ok(r?.ok, "a board is drawn");
+    assert.equal(r.template, "fraction-of@1");
+    assert.deepEqual(claimsNotDrawn(line, r.script.ops), []);
+    assert.ok(!JSON.stringify(r.script.ops).includes('"6"'), "the 6 she asks for is not written");
+  });
+  it("a code board for her CONTINUE line is drawn fresh (it replaces the board; the old words are not under it)", () => {
+    const line = "Ishaan, screen par animation move nahi hogi; flow dekhiye: Observe, Ask, Predict, Test, phir Conclude. Ismein pehla step kya hai?";
+    const a = { ...ask(line), mode: "continue" };
+    const prior = [{ id: "p1", op: "text", at: [200, 150], text: "Observation se question", size: "m" }, { id: "p2", op: "text", at: [105, 60], text: "Predict karo", size: "m" }];
+    const r = codeBoard(a, { lessonId: "L" }, gateCtxFor(a, { prior }));
+    assert.ok(r?.ok, "drawn");
+    assert.equal(r.script.mode, "fresh");
+  });
+});
+
 describe("r4 content: a board refused only for writing the answer keeps its picture with '?'", async () => {
   const { regate, retime, maskReveals } = await import("../server/stagecraft/board-sync.js");
   const { expand } = await import("../server/forge/explainer/templates.js");

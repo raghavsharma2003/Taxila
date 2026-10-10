@@ -119,6 +119,18 @@ export function drawnCounts(ops) {
   return { families, lines, groups };
 }
 
+/** A rectangle cut into rows x cols by full-span lines (the area model draws its grid this way). */
+function gridCut(ops, rows, cols) {
+  const lines = ops.filter((o) => o.op === "line" && Array.isArray(o.from) && Array.isArray(o.to));
+  return ops.some((r) => {
+    if (r.op !== "rect" || !Array.isArray(r.at) || !(r.w > 0 && r.h > 0)) return false;
+    const [x, y] = r.at;
+    const v = lines.filter((l) => Math.abs(l.from[0] - l.to[0]) < 1 && l.from[0] > x + 2 && l.from[0] < x + r.w - 2 && Math.abs(Math.min(l.from[1], l.to[1]) - y) < 3 && Math.abs(Math.max(l.from[1], l.to[1]) - (y + r.h)) < 3);
+    const h = lines.filter((l) => Math.abs(l.from[1] - l.to[1]) < 1 && l.from[1] > y + 2 && l.from[1] < y + r.h - 2 && Math.abs(Math.min(l.from[0], l.to[0]) - x) < 3 && Math.abs(Math.max(l.from[0], l.to[0]) - (x + r.w)) < 3);
+    return new Set(v.map((l) => Math.round(l.from[0]))).size === cols - 1 && new Set(h.map((l) => Math.round(l.from[1]))).size === rows - 1;
+  });
+}
+
 /** W10: every count her line claims is on the screen is drawn. → string[] problems ([] = pass) */
 export function claimsNotDrawn(line, ops) {
   const claims = screenClaims(line);
@@ -128,7 +140,7 @@ export function claimsNotDrawn(line, ops) {
   const famHas = (n) => d.families.some((f) => f.n === n && f.kind !== "ellipse" && f.kind !== "ring") || d.lines.some((l) => l.gaps === n);
   for (const n of claims.parts) if (!famHas(n) && d.groups.filter((x) => x.held > 0).length !== n) out.push(`${n} equal parts said, none drawn`);
   // a grid: rows x cols equal cells drawn (one family of that many equal boxes)
-  for (const g of claims.grids) if (!d.families.some((f) => f.kind === "rect" && f.n === g.rows * g.cols)) out.push(`${g.cols} columns x ${g.rows} rows said, no ${g.rows * g.cols} equal cells drawn`);
+  for (const g of claims.grids) if (!d.families.some((f) => f.kind === "rect" && f.n === g.rows * g.cols) && !gridCut(ops, g.rows, g.cols)) out.push(`${g.cols} columns x ${g.rows} rows said, no ${g.rows * g.cols} equal cells drawn`);
   for (const n of claims.gaps) if (!d.lines.some((l) => l.gaps === n) && !d.families.some((f) => f.n === n && (f.kind === "rect" || f.kind === "sector"))) out.push(`${n} gaps said, the line shows ${d.lines.map((l) => l.gaps).join("/") || "no ticks"}`);
   for (const g of claims.groups) {
     const filled = d.groups.filter((x) => x.held > 0);

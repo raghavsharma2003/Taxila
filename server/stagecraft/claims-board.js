@@ -59,7 +59,15 @@ export function claimsCalls(line) {
   for (const g of c.groups) if (g.each != null && g.n >= 2 && g.n <= 6 && g.each >= 1 && g.each <= 8) out.push({ template: "equal-groups@1", groups: g.n, each: g.each, hideResult: asks });
   // a grid ("5 columns aur 3 rows"; or more than 12 equal parts, laid out as the squarest grid): its cells, the shaded
   // count her line gives. Her line naming shaded / marked cells WITHOUT a count draws nothing (the board would show none).
-  const namesShade = /\b(shaded|coloured|colored|rangeen|marked)\b/i.test(String(line ?? ""));
+  const namesShade = /\b(shaded|coloured|colored|rangeen|marked|mark)\b/i.test(String(line ?? ""));
+  // the area model of a fraction of a fraction ("5 columns aur 3 rows; 3/5 wale hisson mein 2 rows mark"): c/d of the
+  // columns, a of the b rows inside them (fraction-of@1), the count hidden when she asks for it
+  for (const g of c.grids) {
+    const fr = String(line ?? "").match(new RegExp(`\\b(\\d+)\\s*/\\s*${g.cols}\\b`));
+    const rowsM = String(line ?? "").toLowerCase().match(new RegExp(`\\b${W}\\s+rows?\\s+(?:mark|marked|shaded|rangeen|coloured|colored)`));
+    const cn = fr ? Number(fr[1]) : null, an = rowsM ? num(rowsM[1]) : null;
+    if (cn >= 1 && cn <= g.cols && an >= 1 && an <= g.rows && g.rows <= 6 && g.cols <= 6) out.push({ template: "fraction-of@1", a: an, b: g.rows, c: cn, d: g.cols, hideResult: asks });
+  }
   const grids = c.grids.map((g) => ({ ...g, labels: true }));
   for (const n of c.parts) if (n > 12 && n <= 60) { let r = Math.floor(Math.sqrt(n)); while (r > 1 && n % r) r--; if (r > 1) grids.push({ rows: r, cols: n / r, labels: false }); }
   for (const g of grids) {
