@@ -2,7 +2,9 @@
 // label anchoring and the no-hint style signature. Ported from the probe gate (evals/live-studio/qa.mjs) and made
 // archetype-generic.
 
-export const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+// the timer captured at module load: a test may mock timers after import, and the gate's waits must still elapse
+const realSetTimeout = globalThis.setTimeout.bind(globalThis);
+export const sleep = (ms) => new Promise((r) => realSetTimeout(r, ms));
 
 /** Visible boxes of every element matching `sel`, with their data-* attributes. */
 export async function boxes(page, sel) {

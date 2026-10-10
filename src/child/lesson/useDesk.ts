@@ -690,6 +690,8 @@ export function useDesk(runtime: LessonRuntime, bridge: UiBridge | null, ctx: De
     // Ask is titled by the child's question, not the topic it was filed under (flows G11)
     shortTitle: ctx.variant === "doubt" && ctx.firstText ? questionShortTitle(ctx.firstText) : shortTitle || shortTitleOf(ui, state.topic),
     practice,
+    // r4 K-P12: the intake card's data (server ui.intake), as sent; null outside the intake
+    intake: (state.ui as { intake?: DeskModel["intake"] } | null)?.intake ?? null,
     variant: ctx.variant,
     lastOne: young && phase === "wrap",
     thinkingSeconds: null,

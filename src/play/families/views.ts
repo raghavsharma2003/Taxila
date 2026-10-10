@@ -7,6 +7,7 @@ import { makeBundlesView } from "./todo-jodo/bundles.view.ts";
 import { makeBalanceView } from "./taraazu/balance.view.ts";
 import { makeLineView } from "./nishana/line.view.ts";
 import { makeLabView } from "./kyun-lab/lab.view.ts";
+import { makeKonView } from "./kon/kon.view.ts";
 import { makePlotView } from "./nazariya/plot.view.ts";   // r4-khand: the 2D board twin of the Khand engine
 import { mountStage3D, KHAND_ENTRY, type Stage3DOpts, type Stage3DMount } from "../engines/khand/index.ts";
 
@@ -19,6 +20,8 @@ export const VIEWS: Record<string, MakeView> = {
   "nishana/place": makeLineView,
   "nishana/compare": makeLineView,
   "kyun-lab/fair-test": makeLabView,
+  "kon/turn": makeKonView,
+  "kon/set": makeKonView,
   "nazariya/views": makePlotView,
   "nazariya/array": makePlotView,
   "nazariya/floor": makePlotView,

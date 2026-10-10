@@ -1,0 +1,50 @@
+{
+  "nodes": [
+    {
+      "id": "ms-r4-owner2-prod-judge-on",
+      "kind": "measurement",
+      "at": "2026-10-10",
+      "title": "owner-2 on taxila.dev (c439bd7) WITH --judge model: seed 7 17 defects on 16 of 90 turns (J.confused 10, J.ignores_child 3, R5.loop 3, R3.bare_question 1); seed 1010 13 on 13 (J.confused 11, R5.loop 1, R6.gutted 1); matches 4A's local runs on prod routing (19, 18)"
+    },
+    {
+      "id": "rj-r4-owner2-prod-without-judge",
+      "kind": "rejection",
+      "at": "2026-10-10",
+      "title": "Main session's owner-2 production runs at 3 seeds ('2 defects / 270 turns', ms-r4-4a-owner2-3seeds) were run WITHOUT --judge model, so the J checks were off and the number was the code rubric only; compared against judge-on local runs it manufactured a 10x local-vs-prod gap"
+    },
+    {
+      "id": "rj-r4-owner2-gap-is-routing",
+      "kind": "rejection",
+      "at": "2026-10-10",
+      "title": "Hypothesis that local batteries differ from production because of model routing: 4A's local base with tests/prod/prod-routing.env still showed 19 / 18 defects, the same as production once production was judged the same way; the env difference is real but explains nothing measured"
+    },
+    {
+      "id": "open-r4-conversation-confusion-15pct",
+      "kind": "open",
+      "at": "2026-10-10",
+      "title": "About 15% of teacher turns on production are judged confusing (owner-2, judge on, 2 seeds): a jump to a new question after a bare acknowledgement, a re-posed blank after 'nahi samjha', a right answer not acknowledged; 4A to classify causes, calibrate the judge on human-reviewed transcripts, and fix the top cause"
+    }
+  ],
+  "edges": [
+    {
+      "src": "rj-r4-owner2-prod-without-judge",
+      "rel": "supersedes",
+      "dst": "ms-r4-4a-owner2-3seeds"
+    },
+    {
+      "src": "rj-r4-owner2-gap-is-routing",
+      "rel": "supersedes",
+      "dst": "fn-r4-local-routing-differs-from-prod"
+    },
+    {
+      "src": "open-r4-conversation-confusion-15pct",
+      "rel": "measured_by",
+      "dst": "ms-r4-owner2-prod-judge-on"
+    }
+  ],
+  "md": {
+    "measurements": "- `ms-r4-owner2-prod-judge-on` (2026-10-10, 17:05-17:20 UTC): tests/prod/owner-2-no-confusion.mjs --base https://taxila.dev --judge model, 6 sessions x 14 turns, production c439bd7. Seed 7: 8/12 checks, 17 defects on 16 of 90 judged turns (J.confused x10, J.ignores_child x3, R5.loop x3, R3.bare_question x1). Seed 1010: 8/12, 13 on 13 (J.confused x11, R5.loop x1, R6.gutted x1). Evidence: evals/owner-truth/results/acceptance-2026-10-10T17-05-18 and ...T17-05-21. 4A's local runs of the same seeds on tests/prod/prod-routing.env: 19 and 18. The code-scored part varies run to run on the same seed (seed 7 without the judge earlier: 1 code defect; with it: 4).",
+    "decisions": "",
+    "rejected": "- `rj-r4-owner2-prod-without-judge` (2026-10-10): the main session ran owner-2 on production three times without `--judge model` (the harness header says \", model judge on\" only when it is on) and reported \"2 defects in 270 turns\", then compared it with 4A's judge-on local runs (8/12, 23 defects) and announced a local-vs-production gap. What broke: J was off, so J could not fail; the comparison was not like for like. With the judge on, production shows 17 and 13 defects at seeds 7 and 1010. Lesson: before comparing two battery numbers, diff the flags and the harness header line, not only the target.\n- `rj-r4-owner2-gap-is-routing` (2026-10-10): the follow-up explanation, that local servers ran a different classifier from production, was tested by 4A with tests/prod/prod-routing.env and failed (19 / 18 defects locally). 4A's earlier runs already carried DEPLOY_CLASSIFY. The routing snapshot stays useful for like-for-like local runs, but no measured gap is attributed to it. The caused_by edge ms-r4-4a-owner2-3seeds -> fn-r4-local-routing-differs-from-prod is superseded."
+  }
+}

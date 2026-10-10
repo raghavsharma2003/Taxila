@@ -39,6 +39,17 @@ const words = (list) => new RegExp(`(?<![a-z])(?:${[...new Set(list.split(/\s+/)
 const LESSON = words(`desh sainik sipahi shahid soldier soldiers freedom bhagat azadi kahani story movie film cartoon game games level pubg minecraft fortnite
   roblox ludo chess carrom match race kabaddi cricket ball goal joke haha lol machhar makkhi cockroach insect plant plants paudha paudhe swimming pool`);
 const SURPRISE = words("surprise birthday janamdin gift gifts tohfa party present");
+/** Words that make a turn a story or a show (patch request 12): a slap or a gaali in a retold story is the story's. */
+// ("kahani" is read "khani" by the garble rule when the turn has no other story word: "kahani mein ... thappad padte the")
+const STORY = new RegExp(`${words("kahani kahaniyan story stories movie film cartoon serial natak kavita chapter villain").source}|(?<![a-z])khani (?:mein|men|me|ka|ki|ke)(?![a-z])`);
+/** The child as the one hit or sworn at: a story or the child doing it never explains that away (patch request 12). */
+const CHILD_IN = new RegExp(`(?<![a-z])${I_O}(?![a-z])`);
+/** A push as play (patch request 12, amended): a swing, a cycle being learnt. */
+const PLAY_PUSH = words("jhula jhule jhoola jhoole swing cycle saikil");
+/** ... unless it hurt: a fall, an injury, crying, or every day. */
+const HURT = words("gir gira giri gaya_gir chot dard ro rona royi roya roj rozana khoon blood hurt fell");
+/** A pushed THING, not a child (patch request 12): "Ramu ne gaadi ko dhakka diya" is a force lesson. */
+const PUSHED_THING = words("gaadi gadi car cart thela trolley table kursi chair box dibba darwaza darvaja door deewar wall patthar stone ball almari cupboard force bal");
 const ACCIDENT = words("galti mistake by_mistake accidentally accident ghadi watch sabzi vegetables paper kagaz apple seb fruit nakhun nails");
 
 /**
@@ -145,6 +156,25 @@ const SHAPES = [
     // round 4 (4A patch request 11): the reversed order, "maarpeet hoti hai ghar pe" (only words the shape already has)
     + `|(?:marpit|mar pit|marpitai|pitai) (?:karte|karti|karta|hoti|kiya|ki)(?: hai| hain)? ghar (?:pe|par|men|mein|me)`, (m, full) => LESSON.test(full)],
   ["abuse", "actor_ne_mujhe_gap_verb", `(?:${ACTOR})(?: ji)? ne ${I_O}${g(3)} (?:mara|pita|chua|jalaya|jala diya|jala dia|thapad|lat|ghusa|dhaka|nocha|dabaya|band kar diya)`, (m, full) => LESSON.test(full)],
+  // round 4 (stream 4A, patch request 12): a slap or a stream of gaali at home, or an adult or older children hitting a NAMED
+  // child, all passed silently ("ghar pe thappad padte hain", "wo gaali dete hain ghar pe", "sab Riya ko roz gaali dete hain",
+  // "coach ne Aman ko thappad maara"). Finite verbs only, so advice and rules stay quiet ("gaali dena buri baat hai",
+  // "teacher ne kaha gaali mat do"); a negation right after the verb, a story, or the child as the one doing it, stay quiet.
+  ["abuse", "ghar_thappad_gaali", `(?:${I_O}|ghar (?:pe|par|men|mein|me)|(?:${ACTOR})(?: ji)?)${g(3)} thappad (?:padte|padti|padta|pade|padi|pada|marte|marti|marta|mara|mari|lagate|lagata|lagati|lagaya)(?! nahi| nahin| nai)`
+    + `|thappad (?:padte|padti|padta|marte|marti|marta)(?: hai| hain)?${g(1)} ghar (?:pe|par|men|mein|me)`
+    + `|(?:${I_O}|ghar (?:pe|par|men|mein|me)|(?:${ACTOR})(?: ji)?|(?<!(?:ek dusre|kisi|dusron|dusro|apas me|apas mein) )ko)${g(3)} gaali (?:dete|deti|deta|di|diya|de rahe|de raha|de rahi|bakte|bakta|bakti)(?! nahi| nahin| nai)`
+    + `|gaali (?:dete|deti|deta|bakte|bakta|bakti)(?: hai| hain)?${g(1)} ghar (?:pe|par|men|mein|me)`,
+    (m, full) => !CHILD_IN.test(m) && (STORY.test(full) || /(?<![a-z])(?:maine|mene|hamne|humne)(?![a-z])/.test(full))],
+  ["abuse", "adult_ne_child_ko_maara", `(?:${ACTOR}|${NONPARENT}|coach|seniors|senior|bullies|bully)(?: ji)? ne${g(2)} (?:ko|ka|ki|ke)${g(4)} (?:thappad|dhakka|laat|ghoonsa|belt|danda) (?:mara|mari|diya|de diya|lagaya|lagai)`,
+    (m, full) => STORY.test(full) || PUSHED_THING.test(full)],
+  // amended on the main safety review: a push (or a kick, punch, slap) with the CHILD as its object, by anyone ("seniors ne mujhe dhakka diya", "ek ladke ne
+  // mujhe seedhiyon se dhakka diya", "usne mujhe dhakka diya", "सीनियर्स ने मुझे धक्का दिया"), and the habitual "seniors roz mujhe
+  // dhakka dete hain". The English forms already fire. Any subject: "X ne" or a word ending in "ne" (usne, unhone, sabne),
+  // written as a letter class so no new word joins the vocabulary. A push on a swing or a cycle is play unless it hurt.
+  ["abuse", "mujhe_dhakka", `[a-z]{0,6}ne ${I_O}${g(3)} (?:dhakka|laat|ghoonsa|thappad) (?:diya|de diya|dete|deta|deti|mara|mari|marte|marta)(?! nahi| nahin| nai)`
+    + `|(?:${ACTOR}|${NONPARENT}|seniors|senior|ladke|ladka|bache|bullies|bully|sab|log|koi)${g(2)} ${I_O}${g(2)} (?:dhakka|laat|ghoonsa|thappad) (?:dete|deta|deti|marte|marta)(?! nahi| nahin| nai)`,
+    (m, full) => PLAY_PUSH.test(full) && !HURT.test(full)],
+  ["abuse", "they_abuse_me", `(?:${ACTOR_EN}|people|everyone|kids|seniors|bullies) (?:abuse|abuses|abused|swear at|swears at|curse at|curses at) me`, (m, full) => STORY.test(full)],
   ["abuse", "actor_burns_me", `(?:${ACTOR_EN}) (?:burns|burned|burnt|chokes|choked|loks|loked|pinches|pinched|bites|ties|tied|throws|threw|pushes|pushed|slaps|slaped|kiks|kiked) me`, (m, full) => LESSON.test(full)],
   ["abuse", "kapde_utarne", `(?:${NONPARENT})(?: ji)?${g(4)} kapde (?:utar|utarne|utarte|utarta|utarti|utarvate|utarvata|utarvaye|utaro|kholne|kholte|kholta|kholo|utarvane)|(?:makes|made|asks|asked|tels|told|vants|vanted|forces|forced) me (?:to )?(?:take of|remove|undres)|undres(?:ed|ing)? me`],
   ["abuse", "ajeeb_tarah_chhoote", `(?:ajib|gandi|gande|ganda|galat|bure|buri|aisi|vaisi)(?: tarah| tareke| tarike| jagah| jagha)(?: se| pe| par)? (?:chute|chuta|chuti|chua|chune|chuna|touch|tach|hath lagate|hath lagata|hath lagaya|hath lagati)|(?:private|praivet) (?:part|parts|jagah)(?: pe| par| ko)? (?:chute|chua|touch|tach|hath)|(?:touches|touched|touching) (?:me )?(?:in |on )?(?:mi|my) (?:private|privates|chest|bum|but)`],

@@ -12,6 +12,9 @@ import { pickLevels } from "../core/pick.ts";
 import { newHistory, pickReaction, type ReactionBank } from "../core/react.ts";
 import { PlayStage, type PlayDoor } from "../PlayStage.tsx";
 import bankJson from "../../../data/play/reactions.json";
+import antJson from "../../../data/play/reactions/antariksh.json";
+import { dressFor, validateDelta } from "../engines/core3d/api.ts";
+import { baseDress } from "../engines/core3d/dress.ts";
 import nazariyaBank from "../../../data/play/reactions/nazariya.json";
 
 const q = new URLSearchParams(location.search);
@@ -26,10 +29,16 @@ const goal = q.get("goal") ?? undefined;
 const grammar = JSON.parse(q.get("grammar") ?? "{}") as Record<string, unknown>;
 const topicId = q.get("topic") ?? `dev-${family}-${mode}`;
 const skillId = q.get("skill") ?? `${topicId}-s1`;
-const bank = { ...(bankJson as unknown as ReactionBank), family: { ...((bankJson as unknown as ReactionBank).family ?? {}), nazariya: (nazariyaBank as unknown as { family: { nazariya: unknown } }).family.nazariya } } as unknown as ReactionBank;
+const bank = { ...(bankJson as unknown as ReactionBank), engine: (antJson as unknown as ReactionBank).engine, family: { ...((bankJson as unknown as ReactionBank).family ?? {}), nazariya: (nazariyaBank as unknown as { family: { nazariya: unknown } }).family.nazariya } } as unknown as ReactionBank;
 const demo = q.get("demo") === "1";
 const reduced = q.get("reduced") === "1";
 const harder = q.get("harder") === "1";
+const engine = (q.get("engine") ?? "auto") as "auto" | "2d" | "3d";
+const verb = (q.get("verb") === "scan" ? "scan" : "fire") as "fire" | "scan";
+// a dress from the query (validated field by field exactly as the server validates a model's delta)
+const devDelta = validateDelta("antariksh", Object.fromEntries(["theme", "wrapper", "music", "pace", "teacherMove"].filter((k) => q.get(k)).map((k) => [k, q.get(k)])));
+const devSecure = q.get("secure") === "1";
+const devSound = q.get("sound") === "1";   // harness: the music duck check needs an unmuted bus
 
 function makeLevel(seed: number, door?: "garam" | "teekha"): { garam: PlayLevel; teekha: PlayLevel | null } | null {
   const logic = logicFor(family, mode); if (!logic) return null;
@@ -57,24 +66,26 @@ function App() {
   const hist = useRef(newHistory());
   const t0 = useRef(performance.now());
   const [solved, setSolved] = useState(false);
+  const engineOnScreen = useRef<string | null>(null);
   const art = useMemo(() => artParam ?? pickArt({ family, subject: family === "kyun-lab" ? "science" : "maths", topicId, classLevel }).art, []);
   useEffect(() => { setSolved(false); }, [levels]);
+  const dress = useMemo(() => dressFor({ engine: "antariksh", base: baseDress({ engine: "antariksh", key: levels?.garam.levelId ?? "none", lang, firstLevel: demo }), delta: devDelta, classLevel, secure: devSecure, childMusicOn: false, lessonLang: lang, verb }), [levels]);
   if (!levels) return <p style={{ color: "#fff" }}>no level</p>;
   const level = levels.garam;
   const next = makeLevel(seed + 101);
   const doors: PlayDoor[] = next ? [{ door: "garam", level: next.garam, hint: "" }, ...(next.teekha ? [{ door: "teekha" as const, level: next.teekha, hint: "" }] : [])] : [];
   const onMoments = (ms: Moment[]) => {
-    const r = pickReaction(bank, ms, { lang, family, mode: level.mode, goal: level.goal, seed: level.levelId, hist: hist.current, nowS: (performance.now() - t0.current) / 1000 });
+    const r = pickReaction(bank, ms, { lang, family, mode: level.mode, goal: level.goal, engine: engineOnScreen.current, seed: level.levelId, hist: hist.current, nowS: (performance.now() - t0.current) / 1000 });
     if (r) setCaption(r.text);
   };
   (window as unknown as { __playLevel: PlayLevel; __playNext: unknown }).__playLevel = level;
   return (
     <div style={{ position: "fixed", inset: 0 }}>
-      <PlayStage level={level} art={art} lang={lang} classLevel={classLevel} caption={caption} teacherName="Ira" debug demo={demo} reducedMotion={reduced} sound={false}
+      <PlayStage level={level} art={art} lang={lang} classLevel={classLevel} caption={caption} teacherName="Ira" debug demo={demo} reducedMotion={reduced} sound={devSound} engine={engine} verb={verb} dress={dress}
         doors={solved ? doors.map((d) => ({ ...d, hint: d.door === "garam" ? (lang === "en" ? "one more like this" : "isi tarah ka ek aur") : (lang === "en" ? "a bit harder" : "thoda mushkil") })) : null}
         onDoor={(d) => { setDoor(d.door); setSeed((s) => s + 101); setCaption(null); }}
         world={WORLD}
-        onEvent={(e) => { if (e.type === "moments" && e.moments) onMoments(e.moments); if (e.type === "solved") setSolved(true); if (e.type === "impasse") onMoments([{ kind: "impasse", seq: 0, facts: {} }]); }} />
+        onEvent={(e) => { if (e.type === "ready") engineOnScreen.current = e.engine ?? null; if (e.type === "fail3d") engineOnScreen.current = null; if (e.type === "moments" && e.moments) onMoments(e.moments); if (e.type === "solved") setSolved(true); if (e.type === "impasse") onMoments([{ kind: "impasse", seq: 0, facts: {} }]); }} />
     </div>
   );
 }

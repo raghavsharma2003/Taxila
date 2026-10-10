@@ -1,0 +1,51 @@
+diff --git a/db/migrations/027_r4g_play_verb.sql b/db/migrations/027_r4g_play_verb.sql
+new file mode 100644
+index 00000000..058b7604
+--- /dev/null
++++ b/db/migrations/027_r4g_play_verb.sql
+@@ -0,0 +1,6 @@
++-- round 4 G1 (games-core patch 02; owner decision O-G4, dc-r4-games-o-g): the parent's switch for the game verb at
++-- non-living targets: "fire" (daago, the default) or "scan" (words and sound only; nothing in the game changes but the
++-- button label and the effect sound). Additive; no row changes. Number 027 assigned by the main session.
++alter table child_controls add column if not exists play_verb text not null default 'fire';
++alter table child_controls drop constraint if exists child_controls_play_verb_check;
++alter table child_controls add constraint child_controls_play_verb_check check (play_verb in ('fire', 'scan'));
+diff --git a/server/routes/parent.js b/server/routes/parent.js
+index 24619df2..b90ab320 100644
+--- a/server/routes/parent.js
++++ b/server/routes/parent.js
+@@ -488,7 +488,8 @@ const controlsOut = (row, child) => row ? {
+   dailyMinutes: row.daily_minutes, hoursStart: row.hours_start, hoursEnd: row.hours_end, captionsAlways: row.captions_always,
+   comfortMode: row.comfort_mode, address: row.address, reportChannel: row.report_channel, saved: true,
+   textOnly: !!row.text_only, homeworkToday: !!row.homework_until && new Date(row.homework_until) > new Date(),
+-} : { ...defaultControls(child.class_level), saved: false, textOnly: false, homeworkToday: false };
++  playVerb: row.play_verb === "scan" ? "scan" : "fire",
++} : { ...defaultControls(child.class_level), saved: false, textOnly: false, homeworkToday: false, playVerb: "fire" };
+ 
+ const HHMM = /^([01]\d|2[0-3]):[0-5]\d$/;
+ /** Validate a partial controls body against the current values → the full row to store. */
+@@ -515,6 +516,11 @@ export function mergeControls(current, body) {
+     if (!["whatsapp", "app"].includes(body.reportChannel)) throw bad("report channel must be whatsapp or app");
+     out.reportChannel = body.reportChannel;
+   }
++  // round 4 G1 (O-G4): the game's verb at non-living targets, "fire" (daago) or "scan"; words and sound only
++  if (body.playVerb !== undefined) {
++    if (!["fire", "scan"].includes(body.playVerb)) throw bad("play verb must be fire or scan");
++    out.playVerb = body.playVerb;
++  }
+   return out;
+ }
+ 
+@@ -556,6 +562,12 @@ async function setControls(req, res, body) {
+       throw e;
+     }) ?? saved;
+   }
++  if (body.playVerb !== undefined) {
++    saved2 = await one("update child_controls set play_verb = $2 where child_id = $1 returning *", [child.id, c.playVerb]).catch((e) => {
++      if (e?.code === "42703") throw new HttpError(503, "this setting is not available yet");
++      throw e;
++    }) ?? saved2;
++  }
+   await q("insert into audit(guardian_id, action, detail) values ($1, 'controls', $2)", [g.id, { childId: child.id }]);
+   send(res, 200, { controls: controlsOut(saved2, child) });
+ }

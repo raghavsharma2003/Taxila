@@ -41,7 +41,11 @@ import { boardFrame } from "../../src/studio/boardView.ts";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.join(here, "..", "..");
-export const CONTRACT_FILE = path.join(ROOT, "docs", "design", "round4", "build", "box-contract.json");
+// The runtime copy lives with the certificates (server/ is in the production image; docs/ is NOT: .dockerignore). The
+// docs copy (docs/design/round4/build/box-contract.json) is the brief's artifact; the harness writes both and
+// tests/r4-content-packaged.test.mjs keeps them identical. Measured: with the contract read from docs/, production
+// (taxila.dev, 0c90ebb, 2026-10-10) refused every board "no box for this class" and every Studio slot failed.
+export const CONTRACT_FILE = path.join(here, "certs", "box-contract.json");
 export const SKELETON_CERT_FILE = path.join(here, "certs", "skeleton.json");
 export const MODULE_CERT_FILE = path.join(here, "certs", "modules.json");
 export const VP_CLASSES = Object.freeze(["p360", "p412", "l1366"]);
@@ -53,9 +57,34 @@ const FIT_FLOOR = { young: 16, older: 14 };
 const readJson = (f, d) => { try { return JSON.parse(fs.readFileSync(f, "utf8")); } catch { return d; } };
 let contractMemo = null, skeletonMemo, moduleMemo;
 /** The stage box contract (stream 2 owns it: grow, never shrink). */
-export function boxContract() { return (contractMemo ??= readJson(CONTRACT_FILE, { boxes: {} })); }
+export function boxContract() {
+  if (contractMemo) return contractMemo;
+  contractMemo = readJson(CONTRACT_FILE, null);
+  // never silent: without the contract every tray board is refused (the gate cannot size a box)
+  if (!contractMemo?.boxes || !Object.keys(contractMemo.boxes).length) {
+    console.error(`[tray-gate] box contract missing or empty at ${CONTRACT_FILE}: every board will be refused`);
+    contractMemo = { boxes: {} };
+  }
+  return contractMemo;
+}
 export function skeletonCertificates() { if (skeletonMemo === undefined) skeletonMemo = readJson(SKELETON_CERT_FILE, null); return skeletonMemo; }
 export function moduleCertificates() { if (moduleMemo === undefined) moduleMemo = readJson(MODULE_CERT_FILE, null); return moduleMemo; }
+/**
+ * Can the gate certify anything in THIS deployment? Every file it reads must be present and non-empty: the box contract
+ * (the tray boxes for both Desks at all three sizes) and the certificate tables. → { ok, missing: string[] }.
+ * Logged once at load when not ok; GET /api/studio/health reports it (a deploy canary reads it before traffic).
+ */
+export function trayGateHealth() {
+  const missing = [];
+  const c = boxContract();
+  for (const band of ["b3", "b2"]) for (const vp of VP_CLASSES) if (!c.boxes?.[band]?.tray?.[vp]?.box) missing.push(`box-contract ${band} tray ${vp}`);
+  if (!skeletonCertificates()) missing.push("certs/skeleton.json");
+  if (!moduleCertificates()) missing.push("certs/modules.json");
+  if (!certificates()) missing.push("certs/catalogue.json");
+  if (!playCertificates()) missing.push("certs/play.json");
+  return { ok: missing.length === 0, missing };
+}
+
 /** Test seams. */
 export const _setSkeletonCertificates = (t) => { skeletonMemo = t; };
 export const _setModuleCertificates = (t) => { moduleMemo = t; };
@@ -257,3 +286,6 @@ export const TRAY_PATHS = Object.freeze([
   { id: "play", gate: "server/forge3/live.js", calls: ["certifyForTray"], covers: "buildLive → composeAsk → slotFor (also gated in studio-slot)" },
   { id: "forge-g2-made-for", gate: null, calls: [], covers: "NO tray path: g2/serve.js mountFor has no live caller and `g2:*` ids are not ENGINES (modules.js mountable refuses them); the Made for you shelf lists studio_mount rows and mounts nothing" },
 ]);
+
+// never silent (the 0c90ebb rollback): a deployment that cannot certify says so at load, once
+try { const h = trayGateHealth(); if (!h.ok) console.error(`[tray-gate] NOT READY: missing ${h.missing.join(", ")}: every tray piece will be refused`); } catch (e) { console.error(`[tray-gate] health check failed: ${String(e?.message ?? e).slice(0, 120)}`); }

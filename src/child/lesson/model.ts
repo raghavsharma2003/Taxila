@@ -8,6 +8,7 @@ import type { StripId } from "../../lesson/trouble.ts";
 import type { Band, Family } from "../band.ts";
 import type { DeskLayout } from "./deskLayout.ts";
 import type { StudioSlot } from "../../../shared/studio.ts";
+import type { UiDirectives } from "../../../shared/contracts.ts";
 
 export type AnswerForm = "words" | "number" | "choice" | "draw" | "read_aloud" | "tap_in_tray";
 export type TrayKind = "module" | "board" | "tiles" | "pad" | "studio";
@@ -121,6 +122,8 @@ export interface DeskModel {
   padComma?: boolean;
   /** Quick practice: item n of `of` (≤ 5); `done` = "That's the set" (W2-A; ui.practice from W2-C, else counted here). */
   practice?: { n: number; of: number; done: boolean } | null;
+  /** r4 K-P12: the session-first intake as the server built it (ui.intake, K-P11): phase, the mapped topic, the plan. */
+  intake?: UiDirectives["intake"] | null;
   /** The lesson variant (practice: the Summary reads "That's the set"). */
   variant?: "lesson" | "practice" | "doubt";
 }

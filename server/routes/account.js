@@ -7,6 +7,7 @@ import { requireParentIfPinSet, checkAccountPassword, verifySecret, hashSecret, 
 import { SINGLE_TEACHER_ID, servesClass, singleTeacher, teacherFor } from "../compiler/characters/index.js";
 import { onConsentChange } from "../conductor/hooks.js";
 import { voicesigSeam } from "../voicesig/lesson.js";
+import { uiFlagsFor } from "../ui/kaksha-cohort.js";
 
 export const CONSENT_VERSION = "2026-10-02.v1";
 // core_tutoring is required to use the product; the others are separately optional and revocable.
@@ -210,7 +211,8 @@ export async function meData(g) {
   const children = rows.map(clientChild);
   const consents = await q(
     "select distinct on (child_id, purpose) child_id, purpose, granted, version, created_at from consent where guardian_id = $1 order by child_id, purpose, created_at desc", [g.id]);
-  return { guardian: g, children, consents };
+  // r4 Kaksha (K-P10): the owner-test cohort for the ui.kaksha flag; false for everyone not on TAXILA_UI_KAKSHA.
+  return { guardian: g, children, consents, ui: uiFlagsFor(g) };
 }
 
 /** body: { childId?: uuid|null, grants: { [purpose]: boolean } } */

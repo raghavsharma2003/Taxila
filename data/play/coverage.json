@@ -3,14 +3,14 @@
  "note": "built by server/play/tools/build-coverage.mjs from RULES + ACTS; do not edit by hand",
  "counts": {
   "topicsInScope": 250,
-  "topicsCovered": 57,
-  "entries": 72,
-  "withMisconceptionMap": 51,
-  "mappedMisconceptions": 89,
+  "topicsCovered": 59,
+  "entries": 74,
+  "withMisconceptionMap": 53,
+  "mappedMisconceptions": 92,
   "bySubject": {
    "maths": {
     "inScope": 141,
-    "covered": 42
+    "covered": 44
    },
    "science": {
     "inScope": 69,
@@ -28,11 +28,11 @@
    },
    "5": {
     "inScope": 52,
-    "covered": 11
+    "covered": 12
    },
    "6": {
     "inScope": 69,
-    "covered": 20
+    "covered": 21
    },
    "7": {
     "inScope": 79,
@@ -44,9 +44,10 @@
    "taraazu": 4,
    "nishana": 12,
    "kyun-lab": 15,
+   "kon": 2,
    "nazariya": 11
   },
-  "skillsAdmitted": 105,
+  "skillsAdmitted": 109,
   "rulesNotAdmitted": 1
  },
  "skills": {
@@ -1427,6 +1428,74 @@
    },
    "contexts": [],
    "why": "RULES c7-science-ch11-t02 kyun-lab/fair-test/predict · ACTS"
+  },
+  "c5-maths-ch03-t01-s1": {
+   "topicId": "c5-maths-ch03-t01",
+   "family": "kon",
+   "mode": "turn",
+   "goal": "turn",
+   "grammar": {
+    "q": [
+     1,
+     2,
+     3
+    ],
+    "tol": 12
+   },
+   "misMap": {
+    "cw-confuse": "c5-maths-ch03-t01-m-cw-confuse",
+    "half-is-quarter": "c5-maths-ch03-t01-m-half-is-quarter"
+   },
+   "contexts": [],
+   "why": "RULES c5-maths-ch03-t01 kon/turn/turn · ACTS"
+  },
+  "c5-maths-ch03-t01-s2": {
+   "topicId": "c5-maths-ch03-t01",
+   "family": "kon",
+   "mode": "turn",
+   "goal": "turn",
+   "grammar": {
+    "q": [
+     1,
+     2,
+     3
+    ],
+    "tol": 12
+   },
+   "misMap": {
+    "cw-confuse": "c5-maths-ch03-t01-m-cw-confuse",
+    "half-is-quarter": "c5-maths-ch03-t01-m-half-is-quarter"
+   },
+   "contexts": [],
+   "why": "RULES c5-maths-ch03-t01 kon/turn/turn · ACTS"
+  },
+  "c6-maths-ch02-t03-s3": {
+   "topicId": "c6-maths-ch02-t03",
+   "family": "kon",
+   "mode": "set",
+   "goal": "set",
+   "grammar": {
+    "tol": 3
+   },
+   "misMap": {
+    "wrong-scale": "c6-maths-ch02-t03-m-wrong-scale"
+   },
+   "contexts": [],
+   "why": "RULES c6-maths-ch02-t03 kon/set/set · ACTS"
+  },
+  "c6-maths-ch02-t03-s2": {
+   "topicId": "c6-maths-ch02-t03",
+   "family": "kon",
+   "mode": "set",
+   "goal": "set",
+   "grammar": {
+    "tol": 3
+   },
+   "misMap": {
+    "wrong-scale": "c6-maths-ch02-t03-m-wrong-scale"
+   },
+   "contexts": [],
+   "why": "RULES c6-maths-ch02-t03 kon/set/set · ACTS"
   },
   "c4-maths-ch02-t01-s2": {
    "topicId": "c4-maths-ch02-t01",
@@ -3048,6 +3117,52 @@
    },
    "misMap": {
     "shadow-same-size": "c7-science-ch11-t02-m3"
+   }
+  },
+  {
+   "topicId": "c5-maths-ch03-t01",
+   "title": "Angles as amount of turning",
+   "classLevel": 5,
+   "subject": "maths",
+   "family": "kon",
+   "mode": "turn",
+   "goal": "turn",
+   "skillId": "c5-maths-ch03-t01-s1",
+   "skillIds": [
+    "c5-maths-ch03-t01-s1",
+    "c5-maths-ch03-t01-s2"
+   ],
+   "grammar": {
+    "q": [
+     1,
+     2,
+     3
+    ],
+    "tol": 12
+   },
+   "misMap": {
+    "cw-confuse": "c5-maths-ch03-t01-m-cw-confuse",
+    "half-is-quarter": "c5-maths-ch03-t01-m-half-is-quarter"
+   }
+  },
+  {
+   "topicId": "c6-maths-ch02-t03",
+   "title": "Measuring and drawing angles",
+   "classLevel": 6,
+   "subject": "maths",
+   "family": "kon",
+   "mode": "set",
+   "goal": "set",
+   "skillId": "c6-maths-ch02-t03-s3",
+   "skillIds": [
+    "c6-maths-ch02-t03-s3",
+    "c6-maths-ch02-t03-s2"
+   ],
+   "grammar": {
+    "tol": 3
+   },
+   "misMap": {
+    "wrong-scale": "c6-maths-ch02-t03-m-wrong-scale"
    }
   },
   {

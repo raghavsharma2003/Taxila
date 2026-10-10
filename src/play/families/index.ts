@@ -6,6 +6,7 @@ import { bundlesLogic } from "./todo-jodo/bundles.logic.ts";
 import { balanceLogic } from "./taraazu/balance.logic.ts";
 import { lineLogic } from "./nishana/line.logic.ts";
 import { labLogic } from "./kyun-lab/lab.logic.ts";
+import { konLogic } from "./kon/kon.logic.ts";
 import { viewsLogic, arrayLogic, floorLogic, powersLogic, mirrorLogic } from "./nazariya/index.ts";   // r4-khand
 
 type AnyLogic = FamilyLogic<unknown, unknown, PlayActBody>;
@@ -19,6 +20,8 @@ export const LOGIC: Record<string, AnyLogic> = {
   "nishana/place": asAny(lineLogic),
   "nishana/compare": asAny(lineLogic),
   "kyun-lab/fair-test": asAny(labLogic),
+  "kon/turn": asAny(konLogic),
+  "kon/set": asAny(konLogic),
   // r4-khand: Nazariya, drawn by the Khand block world
   "nazariya/views": asAny(viewsLogic),
   "nazariya/array": asAny(arrayLogic),

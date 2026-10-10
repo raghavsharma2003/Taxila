@@ -16,6 +16,7 @@
 //   POST /api/studio/wb-timing                 {lessonId, lateMs, source} → the whiteboard's sync telemetry (W2-F fixer)
 //   GET  /api/studio/made-for?childId=         the Made for you shelf / the parent's "Made for {child}" feed (W2-A renders)
 //   GET  /api/studio/notebook?childId=         round 4 content: the child's lessons that drew boards, newest first (any device)
+//   GET  /api/studio/health                    round 4 content: 200 when the tray gate has its contract and certificates, else 503
 //   GET  /api/studio/notebook/pages?lessonId=  every board of one lesson, in the order it was drawn (replay)
 //   POST /api/studio/made-for/hide             {childId, id} → hides a shelf card (evidence rows untouched)
 import { HttpError, bad, send } from "../http.js";
@@ -26,6 +27,7 @@ import { getBuild } from "../studio/store.js";
 import { archetype } from "../studio/archetypes/index.js";
 import { hasConsent } from "../auth.js";
 import { getTopic } from "../content/curriculum.js";
+import { trayGateHealth } from "../forge3/tray-gate.js";
 
 const UUID = /^[0-9a-f-]{36}$/i;
 const INTENT = /^[\w:.-]{1,160}$/;
@@ -124,6 +126,12 @@ async function viewportRoute(req, res, body) {
   send(res, 200, { vp: v?.vp ?? "p360", tight: !!v?.tight });
 }
 
+/** round 4 content: can this deployment certify tray pieces? (the files the tray gate reads are present). No child data. */
+async function health(_req, res) {
+  const h = trayGateHealth();
+  send(res, h.ok ? 200 : 503, h);
+}
+
 /** The whiteboard's sync telemetry: how late a script reached the board relative to her line's audio (numbers only). */
 async function wbTimingRoute(req, res, body) {
   await lessonFor(req, body?.lessonId);
@@ -206,5 +214,6 @@ export const routes = {
   "GET /api/studio/notebook": notebook,
   "GET /api/studio/notebook/pages": notebookPages,
   "GET /api/studio/made-for": madeFor,
+  "GET /api/studio/health": health,
   "POST /api/studio/made-for/hide": hide,
 };

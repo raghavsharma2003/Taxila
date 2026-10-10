@@ -1,0 +1,1 @@
+Fonts here are SIL Open Font License 1.1: Space Grotesk, JetBrains Mono, Anek Devanagari, Instrument Serif, Tiro Devanagari Hindi (Google Fonts), Bricolage Grotesque, Geist Mono (copied from src/ui-v3/fonts). Prototypes inline subsets.

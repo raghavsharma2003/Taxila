@@ -3,20 +3,24 @@
 // her follow-ups add lines UNDER the ask; they never replace it. "Hear the question" replays the ask.
 // The card is sized to what it holds: the Desk measures `.dk-card-body` (data-measure="card") and the layout grows
 // the card zone to fit, so the answer chip, its marks and the verdict or hint line are never clipped.
+import type { ReactNode } from "react";
 import { t } from "../../ui/copy.ts";
 import { Glyph } from "../../ui/icons/state.tsx";
 import { Art } from "../../ui/Art.tsx";
 import { AnswerChip } from "./AnswerChip.tsx";
 import type { AnswerChip as Chip, Ask } from "./model.ts";
 
-export function QuestionCard({ ask, answer, young, onHear, onFix, goal }:
-  { ask: Ask | null; answer: Chip | null; young: boolean; onHear: () => void; onFix?: () => void; goal?: string | null }) {
-  if (!ask && !answer && !goal) return <section className="dk-card dk-card--empty" aria-hidden="true" />;
+export function QuestionCard({ ask, answer, young, onHear, onFix, goal, lead }:
+  { ask: Ask | null; answer: Chip | null; young: boolean; onHear: () => void; onFix?: () => void; goal?: string | null;
+    /** r4 K-P12: a skin's line at the top of the card (the intake's mapped topic / plan), inside the measured body */
+    lead?: ReactNode }) {
+  if (!ask && !answer && !goal && !lead) return <section className="dk-card dk-card--empty" aria-hidden="true" />;
   const verdictLine = answer?.verdict === "not_yet" ? t("card.not_yet") : answer?.verdict === "partial" ? t("card.partly") : null;
   return (
     <section className="dk-card" aria-label={ask ? "The question" : "Today"} data-testid="question-card" data-ask-source={ask?.source}>
       <div className="dk-card-body" data-measure="card">
-      <div className="dk-card-ask">
+      {lead}
+      {(ask || goal || !lead) && <div className="dk-card-ask">
         {ask?.picture && <Art id={ask.picture} className="dk-card-picture" />}
         {ask ? (
           <p className="dk-ask" data-speech="" lang={ask.lang} data-testid="ask">
@@ -33,7 +37,7 @@ export function QuestionCard({ ask, answer, young, onHear, onFix, goal }:
             {!young && <span className="dk-hear-word dk-hear-long" aria-hidden="true">{t("card.hear")}</span>}
           </button>
         )}
-      </div>
+      </div>}
       {ask?.lines.map((l, i) => (
         <p key={i} className={`dk-line dk-line--${l.kind}`} data-speech="">
           {l.kind === "hint" && <Glyph name="lightbulb" size={18} />}

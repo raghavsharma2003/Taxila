@@ -1,0 +1,29 @@
+{
+  "_doc": "Kaksha world catalogue (docs/design/round4/app/BUILD-SPEC.md §4). A STRUCTURE rises in the settlement and an ITEM opens in the Hangar only when a skill whose title or topic matches its pattern is `secure` in GET /api/child/map. Patterns are case-insensitive regexes over `${subject} ${chapter} ${title} ${label}`. First matching structure rule wins; a skill matching no rule raises the subject's default structure. Items: an item opens when ANY secure skill matches; it is never bought, never random and never taken away. Labels are English chrome (G-EN-1).",
+  "version": 1,
+  "structures": [
+    { "kind": "stepwell", "label": "Stepwell", "why": "Equal steps for equal parts", "match": "equivalent|equal (share|part)|fraction.*(equal|same)" },
+    { "kind": "bridge", "label": "Bridge", "why": "Equal spans along a line", "match": "number line|integer|negative|decimal" },
+    { "kind": "jantar", "label": "Jantar", "why": "A ramp set at a measured angle", "match": "angle|degree|protractor|triangle" },
+    { "kind": "minaret", "label": "Minaret", "why": "Built of parts that cannot be split", "match": "prime|factor" },
+    { "kind": "bazaar", "label": "Bazaar", "why": "Rows that repeat", "match": "multiple|times table|multiplication|pattern|sequence" },
+    { "kind": "courtyard", "label": "Courtyard", "why": "Space you can measure", "match": "area|perimeter|square|rectangle|volume|measure" },
+    { "kind": "pavilion", "label": "Pavilion", "why": "A shape held true", "match": "fraction|shape|symmetry|geometry|circle" },
+    { "kind": "windmill", "label": "Windmill", "why": "A force that turns", "match": "magnet|force|motion|energy|electric|circuit" },
+    { "kind": "sundial", "label": "Sundial", "why": "Light and shadow keep time", "match": "light|shadow|reflection|sun|time" },
+    { "kind": "farm", "label": "Fields", "why": "What living things need", "match": "food|plant|crop|living|animal|body|health|water" },
+    { "kind": "library", "label": "Library", "why": "An idea kept in words", "match": "story|poem|read|summar|letter|grammar|noun|verb|tense|word" }
+  ],
+  "defaults": { "maths": "pavilion", "science": "windmill", "evs": "farm", "english": "library", "hindi": "library", "social": "library", "sst": "library" },
+  "items": [
+    { "id": "hull-thirds", "kind": "hull", "label": "Thirds hull", "hue": "plasma", "opensWith": "Any idea about fractions", "match": "fraction" },
+    { "id": "trail-green", "kind": "trail", "label": "Green jet trail", "hue": "secure", "opensWith": "Equivalent fractions", "match": "equivalent" },
+    { "id": "board-nebula", "kind": "board", "label": "Blue nebula board", "hue": "ion", "opensWith": "Numbers on a line", "match": "number line|integer|decimal" },
+    { "id": "wings-compare", "kind": "hull", "label": "Compare wings", "hue": "her", "opensWith": "Comparing fractions", "match": "compar|order|greater|smaller" },
+    { "id": "thrusters-angle", "kind": "trail", "label": "Angle thrusters", "hue": "english", "opensWith": "Measuring angles", "match": "angle|degree" },
+    { "id": "visor-prime", "kind": "board", "label": "Prime visor", "hue": "hindi", "opensWith": "Primes and factors", "match": "prime|factor" },
+    { "id": "rim-light", "kind": "rim", "label": "Lamplight frame", "hue": "her", "opensWith": "Light and shadow", "match": "light|shadow" },
+    { "id": "trail-magnet", "kind": "trail", "label": "Field-line trail", "hue": "science", "opensWith": "Magnets", "match": "magnet" },
+    { "id": "board-library", "kind": "board", "label": "Ink board", "hue": "english", "opensWith": "Any idea about a story or poem", "match": "story|poem|summar" }
+  ]
+}

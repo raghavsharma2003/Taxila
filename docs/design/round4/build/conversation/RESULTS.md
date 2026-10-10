@@ -311,6 +311,77 @@ the one miss left is a Studio slot that failed to build, not this stream's code)
 browser tests; the 61st, `p3-voicesig-client` "never delay the turn", is a timing test that failed while lessons ran in
 parallel and passes 3/3 alone (a file this stream never touched). Prompt budget PASS, lint 353.
 
+### 5c. After the safety release: merged `02478cab` (base `a0d8bb7f` = 05/06/07/09 applied) against that base, side by side
+
+Same harnesses and seeds, both lanes in parallel (`acceptance/merged-02478cab/`, `acceptance/base-a0d8bb7f/`, run log beside them).
+
+| harness | merged 02478cab | base a0d8bb7f |
+|---|---|---|
+| w2i-safety | 38/39 | 38/39 (both: the shared-DB leftover-guardian artifact; every safety check passes) |
+| owner-1 | 3/4: 1 wrong grade of 66 typed | 3/4: 1 of 61 |
+| owner-2 | **8/12: 23 defects on 17 turns** (J.confused ×12, J.ignores ×7, R3.bare ×3, R5.loop ×1) | 7/12: 25 defects on 20 turns (J.confused ×13, J.ignores ×6, R3.bare ×3, R7.defer ×2, R6.gutted ×1) |
+| owner-3 | 48/48 | 48/48 |
+| owner-4 | 17/17 | 17/17 |
+| owner-5 | 9/13 | 9/13 (both: Studio whiteboard slots that never built, plus one "you draw it" on an animation ask) |
+| round3-conversation | **27/27** | 26/28 (B: R7.defer; C: the share never came back) |
+| round3-relational-human | 22/24 | 22/24 (both: the artifact and the pre-existing no_perception echo) |
+
+**No harness is worse than base. round3-conversation and owner-2 are better.**
+
+### 5d. owner-2 with the model judge: production reconciled, patch 14, and the confusion fixes (2026-10-10)
+
+One lane, `--env-file=.env.local --env-file=tests/prod/prod-routing.env`, NODE_ENV=production, `--sessions 6 --turns 14 --judge model`.
+Simulated children, one model judge, no human read.
+
+**Local vs production.** Base 061fc7f7 locally: **19 / 18** turns with a defect at seeds 7 / 1010. Production c439bd7 (the main
+session, the same flags): **17 / 13**. The earlier "1 / 1" for production came from a run without `--judge model`.
+- The local harness is sound.
+- Routing was not the cause either: both of my launch scripts already carried DEPLOY_CLASSIFY and the hedge.
+- Outputs: `acceptance/owner2-routing-base-061fc7f7/`.
+
+**The judge (calibration, `confusion-causes.md` §1).** On 394 human-reviewed production turns it flags 21% as confusing.
+- Against the reviewer's item-2 list it has 16% precision and 52% recall. That list was not built as a "confusing" label set.
+- A non-human read of 16 judge-only flags found about 13 genuinely confusing.
+- A human pass over the disagreements is still needed.
+
+**Patch 14 and the confusion fixes, 3 seeds × 90 turns = 270 turns per arm:**
+
+| arm | turns with a defect | J turns (confused / ignores) | J turns after a bare "haan / ok" | R5.loop |
+|---|---|---|---|---|
+| before (790a5808) | 42 | 40 | 19 | **2** |
+| patch 14 only | 43 | 40 | 19 | **0** |
+| patch 14 + confusion fixes (4e19dd26) | 42 | 40 | 17 | **0** |
+
+**Read:**
+- Patch 14 removes the stall loop (R5.loop 2 → 0) and costs nothing measurable.
+- The confusion fixes did **not** move the judge's count at n = 3 seeds: 40 → 40, and 19 → 17 after a bare acknowledgement, which is within seed variance (seed 1010 alone went 13 → 16).
+- A direct `planTurn` probe shows the cause-A must-note reaches the compiled instructions ("THIS TURN FIRST … only said okay …").
+- So what remains is the reply model plus the kit's teach plan: the next teach step is itself a new example (halves → thirds), and a note to "close the question first" does not change the step it introduces.
+- The next lever is a Director change, proposed and not built:
+  - on a bare acknowledgement to a teaching question, the next turn closes that question (answer + one line linking to the idea) WITHOUT advancing the teach step;
+  - the step advances on the following turn;
+  - it costs one turn per such acknowledgement and must be measured the same way.
+- Cause D (the protégé with the child's name) is fixed and tested.
+
+### 5e. The batch (7fd936d1): patch 14 + D + 13-shadow + the leak fix; lever 5 measured off vs on
+
+Same method as 5d: one lane, prod routing, judge on, 3 seeds × 14 child turns × 6 sessions. Pace comes from
+`evals/conversation-r4/owner2-pace.mjs`.
+
+| arm | turns with a defect | J turns | J after a bare ack | first practice question (median child turn) | questions posed | answers graded | re-teach turns with no question |
+|---|---|---|---|---|---|---|---|
+| batch, TAXILA_ACK_CLOSE off (the default) | 40 | 40 | 18 | 4 | 78 | 50 | 6 |
+| batch, TAXILA_ACK_CLOSE **on** | 37 | 36 | **22** | **8** | **59** | **36** | **52** |
+
+**Lever 5 fails the bar:**
+- J after a bare acknowledgement did not drop (18 → 22).
+- The lesson is about half as fast: each teach step costs a held turn whenever the simulated child says "haan", which it often does.
+- It stays **off** (the default) and is recorded as a rejection in the context inbox.
+
+The batch with the lever off matches the earlier arms: 40 J turns, R5.loop 0.
+
+**The judge:** J.confused is a strong signal, not ground truth. Its precision against the reviewer's list is a lower bound of 16%; an agent's (non-human) read put about 13 of 16 judge-only flags as genuine. A human pass on 40 flags is on the owner's list.
+
 ## 6. Owner and main-session decisions needed
 
 1. **Patch 03 (safety floor):** a safety review, then apply.

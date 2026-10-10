@@ -1,0 +1,287 @@
+diff --git a/src/play/PlaySession.tsx b/src/play/PlaySession.tsx
+index 14d85b9c..5ab6ac58 100644
+--- a/src/play/PlaySession.tsx
++++ b/src/play/PlaySession.tsx
+@@ -1,8 +1,9 @@
+ // A server-backed play session around PlayStage: posts every act (the server replays ALL acts and grades them), shows her
+ // micro-line at a play turn-point, offers the server's two doors after a level, and reports level ends upward (the lesson
+ // forwards the seam and the server's evidence rows; GRAMMAR.md §6). The local controller never waits on the network.
+-import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
+-import type { ArtId, Lang, PlayActEnvelope, PlayActResponse, PlayLevel, PlayWorldFamily } from "../../shared/play.ts";
++import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
++import type { ArtId, Lang, PlayActEnvelope, PlayActResponse, PlayDressResponse, PlayLevel, PlayWorldFamily } from "../../shared/play.ts";
++import type { PlayCosmetics } from "./briefing.ts";
+ import { PlayStage, type PlayDoor, type PlayEvent } from "./PlayStage.tsx";
+ import { playApi } from "./client.ts";
+ import type { DressedSpec } from "./engines/core3d/api.ts";
+@@ -29,6 +30,10 @@ export interface PlaySessionProps {
+   embedded?: boolean;
+   /** the base dress the level response carried (a real-game engine renders this level) */
+   dress?: DressedSpec | null;
++  /** r4 K-P3: the model-dress reply already requested (a Briefing fetched it while it was up): used instead of a second fetch */
++  dressReply?: Promise<PlayDressResponse | null> | null;
++  /** r4 K-P4: the child's Hangar colours for the engine (colour only; laws, levels, acts and grades never read them) */
++  cosmetics?: PlayCosmetics | null;
+   /** renderer override (the harness): "3d" lets a software GPU through */
+   engine?: "auto" | "2d" | "3d";
+   /** the certification harness reads canvas pixels: keep the WebGL drawing buffer (never set for a child) */
+@@ -47,8 +52,8 @@ export function PlaySession(p: PlaySessionProps) {
+   useEffect(() => {
+     if (!p.dress) return;
+     const ac = new AbortController();
+-    playApi.dress({ sessionId: p.sessionId, music: musicPref() ?? undefined }, ac.signal).then((r) => {
+-      if (!r || r.source !== "model") return;
++    (p.dressReply ?? playApi.dress({ sessionId: p.sessionId, music: musicPref() ?? undefined }, ac.signal)).then((r) => {
++      if (ac.signal.aborted || !r || r.source !== "model") return;
+       if (r.dress.from.wrapper === "model") carry.current = r.dress.dress.wrapper;
+       setDress(r.dress);
+     });
+@@ -93,6 +98,8 @@ export function PlaySession(p: PlaySessionProps) {
+     if (r.dress) setDress(carry.current ? { ...r.dress, dress: { ...r.dress.dress, wrapper: carry.current }, from: { ...r.dress.from, wrapper: "model" } } : r.dress);
+   }, [p]);
+ 
++  // r4 K-P4: the Hangar colours ride on the dress the engine wears (one object per dress, so no spurious redress)
++  const worn = useMemo(() => (dress && p.cosmetics ? { ...dress, cosmetics: p.cosmetics } : dress), [dress, p.cosmetics]);
+   return <PlayStage level={level} art={art} lang={p.lang} classLevel={p.classLevel} caption={caption} face={p.face} teacherName={p.teacherName}
+-    doors={doors} onDoor={onDoor} world={p.world ?? null} onEvent={onEvent} reducedMotion={p.reducedMotion} heard={p.heard} embedded={p.embedded} dress={dress} engine={p.engine} verb={dress?.verb} preserveDrawing={p.preserveDrawing} />;
++    doors={doors} onDoor={onDoor} world={p.world ?? null} onEvent={onEvent} reducedMotion={p.reducedMotion} heard={p.heard} embedded={p.embedded} dress={worn} engine={p.engine} verb={dress?.verb} preserveDrawing={p.preserveDrawing} />;
+ }
+diff --git a/src/play/PlayStudioRenderer.tsx b/src/play/PlayStudioRenderer.tsx
+index e12baa11..9a6c6ffa 100644
+--- a/src/play/PlayStudioRenderer.tsx
++++ b/src/play/PlayStudioRenderer.tsx
+@@ -10,8 +10,8 @@
+ // into module events (goal_met at a level end, stuck at an impasse or a misconception) and the lesson turn verifies them.
+ // Committed child utterances arrive as a window event (PLAY_HEARD) the lesson runtime dispatches: the closed voice grammar
+ // maps commands to presses.
+-import { useEffect, useState } from "react";
+-import type { ArtId, PlayArtifact, PlayLevel } from "../../shared/play.ts";
++import { useEffect, useMemo, useState } from "react";
++import type { ArtId, PlayArtifact, PlayDressResponse, PlayLevel } from "../../shared/play.ts";
+ import type { ArtifactRendererProps } from "../studio/renderers.ts";
+ import { PlaySession } from "./PlaySession.tsx";
+ import { playApi } from "./client.ts";
+@@ -19,7 +19,10 @@ import { playApi } from "./client.ts";
+ import { MIN_BOX, PLAY_HEARD } from "./core/box.ts";
+ import { playLangOf } from "./lessonLang.ts";
+ import type { DressedSpec } from "./engines/core3d/api.ts";
+-import { prefetchEngine } from "./engines/registry.ts";
++import { engineFor, prefetchEngine } from "./engines/registry.ts";
++import { detectTier, tierFacts } from "./engines/core3d/tier.ts";
++import { musicPref } from "./engines/core3d/host.ts";
++import { usePlayBriefing } from "./briefing.ts";
+ 
+ /** The certification harness (server/forge3/play-cert.js) sets this on its own page to judge a chosen renderer and theme;
+  *  nothing in the app sets it. Absent = the device decides (the tier), as for every child. */
+@@ -35,6 +38,13 @@ export default function PlayStudioRenderer(props: ArtifactRendererProps) {
+   const [state, setState] = useState<{ sid: string; level: PlayLevel; art: ArtId; dress: DressedSpec | null; render2d: boolean } | null>(null);
+   const [heard, setHeard] = useState<{ id: number; text: string } | null>(null);
+   const small = props.px.w < MIN_BOX.w || props.px.h < MIN_BOX.h;
++  // r4 K-P3: a shell's Briefing in front of a real-game engine (src/play/briefing.ts). The model's dress is fetched while
++  // the card is up and handed to PlaySession (no second fetch at mount), so the look the card names is the look that plays.
++  const briefing = usePlayBriefing();
++  const [phase, setPhase] = useState<"brief" | "warp" | "play">(briefing ? "brief" : "play");
++  // the device's play tier, probed once (tierFacts makes and drops a WebGL context)
++  const tierIs2d = useMemo(() => (briefing ? detectTier(tierFacts()).tier === "2d" : false), [briefing]);
++  const [pre, setPre] = useState<{ reply: Promise<PlayDressResponse | null>; model: DressedSpec | null; final: boolean } | null>(null);
+   useEffect(() => {
+     if (small) { props.onEvent({ type: "error", reason: "runtime", message: "layout" }); return; }
+     const ac = new AbortController();
+@@ -44,6 +54,11 @@ export default function PlayStudioRenderer(props: ArtifactRendererProps) {
+       if (!r) { props.onEvent({ type: "error", reason: "unavailable", message: "play level" }); return; }
+       // the server's 3D kill switch (TAXILA_PLAY_3D=off) sends render: "2d": the round-3 view plays, no engine is loaded
+       setState({ sid: r.sessionId, level: r.level, art: r.art.art, dress: r.dress ?? null, render2d: r.render === "2d" });
++      if (briefing && r.dress && r.render !== "2d") {
++        const reply = playApi.dress({ sessionId: r.sessionId, music: musicPref() ?? undefined }, ac.signal).catch(() => null);
++        setPre({ reply, model: null, final: false });
++        void reply.then((d) => { if (!ac.signal.aborted) setPre({ reply, model: d && d.source === "model" ? d.dress : null, final: true }); });
++      }
+       props.onEvent({ type: "ready" });
+     });
+     return () => ac.abort();
+@@ -60,14 +75,24 @@ export default function PlayStudioRenderer(props: ArtifactRendererProps) {
+   // round 3 integration: the Desk passes the lesson language as the product names it ("english" / "hindi" / "hinglish")
+   const lang = playLangOf(props.lang);
+   const force = certForce();
++  // a Briefing names an engine only when that engine will really mount: not under the server's 2D switch, not on a 2D-tier
++  // device (the board twin plays there), and only for a (family, mode) an engine renders
++  const tier2d = force?.render !== "3d" && tierIs2d;
++  const engineId = !briefing || state.render2d || tier2d || !state.dress ? null : (engineFor(state.level.family, state.level.mode, state.level.goal)?.id ?? null);
++  const briefed = !!briefing && engineId !== null && phase !== "play";
+   const forcedDress = force?.render === "3d" && force.theme && state.dress ? { ...state.dress, dress: { ...state.dress.dress, theme: force.theme, ...(force.wrapper ? { wrapper: force.wrapper as DressedSpec["dress"]["wrapper"] } : {}) } } : null;
++  const shownDress = pre?.model ?? state.dress;
+   return (
+     <div style={{ width: props.px.w, height: props.px.h, position: "relative" }} data-testid="play-studio">
+-      <PlaySession sessionId={state.sid} level={state.level} art={state.art} dress={forcedDress ?? state.dress} engine={force?.render ?? (state.render2d ? "2d" : undefined)} preserveDrawing={!!force} lang={lang} classLevel={props.young ? 4 : 6} reducedMotion={props.reducedMotion} embedded heard={heard}
++      {briefed && briefing.render({
++        level: state.level, engine: engineId, dress: shownDress, dressFinal: !!pre?.final, young: !!props.young, reducedMotion: !!props.reducedMotion,
++        px: props.px, launched: phase === "warp", launch: () => setPhase("warp"), done: () => setPhase("play"),
++      })}
++      {(!briefed || phase === "warp") && <PlaySession sessionId={state.sid} level={state.level} art={state.art} dress={forcedDress ?? state.dress} dressReply={pre?.reply} cosmetics={briefing?.cosmetics ?? null} engine={force?.render ?? (state.render2d ? "2d" : undefined)} preserveDrawing={!!force} lang={lang} classLevel={props.young ? 4 : 6} reducedMotion={props.reducedMotion} embedded heard={heard}
+         onActivity={(name, data) => props.onEvent({ type: "interaction", name, data })}
+         onToken={(kind, token, seamKind) => props.onEvent({ type: "interaction", name: kind === "evidence" ? "play_evidence" : "play_seam", data: { token, ...(seamKind ? { seam: seamKind } : {}) } })}
+         onLevelEnd={(r) => { props.onEvent({ type: "interaction", name: "play_level_end", data: { verdict: r.grade?.verdict ?? null, levelId: r.levelId } }); props.onEvent({ type: "done" }); }}
+-        onFail={(why) => props.onEvent({ type: "error", reason: "runtime", message: why })} />
++        onFail={(why) => props.onEvent({ type: "error", reason: "runtime", message: why })} />}
+     </div>
+   );
+ }
+diff --git a/src/play/briefing.ts b/src/play/briefing.ts
+new file mode 100644
+index 00000000..90644338
+--- /dev/null
++++ b/src/play/briefing.ts
+@@ -0,0 +1,46 @@
++// The play Briefing seam (round 4, patch K-P3 from stream K; BUILD-SPEC §3.4). A shell may put a card in front of a
++// real-game engine: PlayStudioRenderer renders it in the play box once the level has arrived, and mounts the engine only
++// when the card calls launch(). The card stays over the box (the warp) until it calls done(). With no provider, play is
++// exactly as before. The card reads what the level and the dress already carry; it never changes them, never sees an
++// act, and never touches grading.
++// Cosmetics: the child's Hangar choice (a hull and a trail colour) handed to the engine on the dress. Colour only: laws,
++// levels, acts and grades never read it, and no model or server ever writes it.
++import { createContext, useContext, type ReactNode } from "react";
++import type { PlayLevel } from "../../shared/play.ts";
++
++/** 0xRRGGBB numbers; absent = the engine's own colours. */
++export interface PlayCosmetics { hull?: number | null; trail?: number | null }
++
++/** The fields of the engine's DressedSpec a Briefing may read (structural, so the seam needs no engine import). */
++export interface BriefDress {
++  dress: { theme: string; wrapper: string; pace: string; music: string };
++  secure: boolean;
++  verb: "fire" | "scan";
++}
++
++export interface BriefingInput {
++  level: PlayLevel;
++  /** the engine that will render this level (a real-game engine only: no Briefing fronts the 2D view) */
++  engine: string;
++  /** the dress the engine will wear: the model's dress once it has answered, else the base dress */
++  dress: BriefDress | null;
++  /** the dress will not change any more (the model answered, or will not): a Briefing names the look only then */
++  dressFinal: boolean;
++  young: boolean;
++  reducedMotion: boolean;
++  px: { w: number; h: number };
++  /** the engine has been asked to mount (the card is now over a loading engine: the warp) */
++  launched: boolean;
++  /** mount the engine now */
++  launch(): void;
++  /** take the card away */
++  done(): void;
++}
++
++export interface PlayBriefing {
++  render(p: BriefingInput): ReactNode;
++  cosmetics?: PlayCosmetics | null;
++}
++
++export const PlayBriefingContext = createContext<PlayBriefing | null>(null);
++export const usePlayBriefing = (): PlayBriefing | null => useContext(PlayBriefingContext);
+diff --git a/src/ui-v3/kaksha/dev/briefing.html b/src/ui-v3/kaksha/dev/briefing.html
+new file mode 100644
+index 00000000..6f85c7e4
+--- /dev/null
++++ b/src/ui-v3/kaksha/dev/briefing.html
+@@ -0,0 +1,15 @@
++<!doctype html>
++<html lang="en">
++  <head>
++    <meta charset="utf-8" />
++    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
++    <title>Kaksha Briefing dev page</title>
++    <style>html, body { margin: 0; background: #05060a; }</style>
++  </head>
++  <body>
++    <!-- Dev-only (never shipped): the REAL PlayStudioRenderer (G1, with K-P3/K-P4) behind the Kaksha Briefing, at a play
++         box size, with the play API answered in the page. Used by tests/prod/r4-kaksha-briefing.mjs. -->
++    <div id="root"></div>
++    <script type="module" src="./briefing.tsx"></script>
++  </body>
++</html>
+diff --git a/src/ui-v3/kaksha/dev/briefing.tsx b/src/ui-v3/kaksha/dev/briefing.tsx
+new file mode 100644
+index 00000000..ca78bed8
+--- /dev/null
++++ b/src/ui-v3/kaksha/dev/briefing.tsx
+@@ -0,0 +1,80 @@
++// Kaksha Briefing dev page (never shipped; needs G1's engines and patches K-P3 / K-P4). The REAL PlayStudioRenderer
++// renders a play artifact at a play-box size inside the Kaksha frame; the play API is answered in the page with a level
++// the real generator builds here (as G1's dev harness does) and the base / a "model" dress. window.__k2 records the
++// launch and the engine's first painted frame for the launch → first-frame bar (BUILD-SPEC K-P3: ≤ 1.2 s on the proxy).
++//   ?class=4|6|7 &w=&h= (box px) &modelMs=600 (the model dress answers after this; -1 = never) &cos=1 (hull + trail)
++//   &force3d=1 (let a software GPU through, as the cert harness does) &motion=reduced
++import { createRoot } from "react-dom/client";
++import "../../../styles/fonts.css";
++import type { GenRequest, PlayArtifact, PlayLevel } from "../../../../shared/play.ts";
++import { logicFor } from "../../../play/families/index.ts";
++import { pickLevels } from "../../../play/core/pick.ts";
++import { dressFor } from "../../../play/engines/core3d/api.ts";
++import { baseDress } from "../../../play/engines/core3d/dress.ts";
++import PlayStudioRenderer from "../../../play/PlayStudioRenderer.tsx";
++import { PlayBriefingContext } from "../../../play/briefing.ts";
++import { Briefing } from "../play/Briefing.tsx";
++import { cosmeticsFor } from "../play/cosmetics.ts";
++import { bandForClass, familyOf } from "../../../child/band.ts";
++import { kakshaThemeFor } from "../tokens.ts";
++import "../../tokens.css";
++import "../tokens.css";
++import "../kaksha.css";
++import "../play/play.kaksha.css";
++
++const q = new URLSearchParams(location.search);
++const cls = Number(q.get("class") ?? 6);
++const family = familyOf(bandForClass(cls));
++const W = Number(q.get("w") ?? 328), H = Number(q.get("h") ?? 460);
++const modelMs = Number(q.get("modelMs") ?? 600);
++const reduced = q.get("motion") === "reduced";
++if (q.get("force3d") === "1") (window as unknown as { __taxilaPlayRender: unknown }).__taxilaPlayRender = { render: "3d" };
++
++const logic = logicFor("nishana", "place")!;
++const req: GenRequest = { family: "nishana", mode: "place", topicId: `c${cls}-maths-ch07-t02`, skillId: `c${cls}-maths-ch07-t02-s1`, classLevel: cls, fade: 1,
++  goal: undefined, mis: {}, misMap: Object.fromEntries(logic.malRules.map((m) => [m, `dev:${m}`])), grammar: { forms: ["fraction"], dens: [3, 4] }, recent: [], seed: 7, harder: false };
++const level = pickLevels(logic, req)!.garam as PlayLevel;
++const lang = cls <= 4 ? "hinglish" : "en";
++const base = dressFor({ engine: "antariksh", base: baseDress({ engine: "antariksh", key: level.levelId, lang, firstLevel: false }), delta: null, classLevel: cls, secure: false, childMusicOn: false, lessonLang: lang, verb: "fire" });
++const model = { ...base, dress: { ...base.dress, theme: "laal-grah", wrapper: "beacon-rescue" as const }, from: { ...base.from, theme: "model" as const, wrapper: "model" as const } };
++const probe: { launchAt: number | null; frameAt: number | null } = ((window as unknown as { __k2: { launchAt: number | null; frameAt: number | null } }).__k2 = { launchAt: null, frameAt: null });
++
++const of = window.fetch.bind(window);
++window.fetch = async (input: RequestInfo | URL, init?: RequestInit) => {
++  const url = typeof input === "string" ? input : input instanceof URL ? input.href : input.url;
++  const json = (b: unknown) => new Response(JSON.stringify(b), { status: 200, headers: { "content-type": "application/json" } });
++  if (url.includes("/api/play/level")) { if (q.get("brief") === "0") probe.launchAt = performance.now(); return json({ sessionId: "dev-s1", level, art: { art: "kagaz", reason: "rotation" }, dress: base }); }
++  if (url.includes("/api/play/dress")) {
++    if (modelMs < 0) return new Promise(() => {});
++    await new Promise((r) => setTimeout(r, modelMs));
++    return json({ dress: model, source: "model", ms: modelMs });
++  }
++  if (url.includes("/api/play/act")) { try { ((window as unknown as { __k2acts: unknown[] }).__k2acts ??= []).push(JSON.parse(String(init?.body ?? "null"))); } catch { /* not json */ } return json({ sessionId: "dev-s1" }); }
++  if (url.includes("/api/play/")) return json({ ok: true });
++  return of(input, init);
++};
++
++// the engine's first painted frame after launch: a canvas appears in the box, then two frames
++new MutationObserver(() => {
++  if (probe.launchAt === null || probe.frameAt !== null) return;
++  const cv = document.querySelector('[data-testid="play-studio"] canvas:not(.kx-warp)');
++  if (cv) requestAnimationFrame(() => requestAnimationFrame(() => { if (probe.frameAt === null) probe.frameAt = performance.now(); }));
++}).observe(document.body, { subtree: true, childList: true });
++
++const items = [{ id: "hull-thirds", kind: "hull", hue: "plasma", open: true }, { id: "trail-green", kind: "trail", hue: "secure", open: true }];
++const cosmetics = q.get("cos") === "1" ? cosmeticsFor({ hull: "hull-thirds", trail: "trail-green" }, items) : null;
++const art: PlayArtifact = { kind: "play", play: { sessionId: "dev-s1", family: "nishana", mode: "place", skillId: req.skillId, topicId: req.topicId, art: "kagaz", levelId: level.levelId } };
++
++function App() {
++  return (
++    <div className="v3 kx kx-lesson" data-ktheme={kakshaThemeFor(family)} data-motion={reduced ? "reduced" : undefined} style={{ minHeight: "100vh", padding: 16 }}>
++      <PlayBriefingContext.Provider value={q.get("brief") === "0" ? null : { render: (p) => <Briefing {...p} launch={() => { probe.launchAt = performance.now(); p.launch(); }} />, cosmetics }}>
++        <div style={{ width: W, height: H, margin: "0 auto", position: "relative", outline: "1px solid var(--k-line-2)" }}>
++          <PlayStudioRenderer artifact={art as never} px={{ w: W, h: H }} design={{ w: W, h: H } as never} reducedMotion={reduced} young={family === "young"} lang={lang}
++            onEvent={(e) => { (window as unknown as { __k2ev: unknown[] }).__k2ev ??= []; ((window as unknown as { __k2ev: unknown[] }).__k2ev).push(e); }} />
++        </div>
++      </PlayBriefingContext.Provider>
++    </div>
++  );
++}
++createRoot(document.getElementById("root")!).render(<App />);

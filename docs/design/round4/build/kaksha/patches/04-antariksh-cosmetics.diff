@@ -1,0 +1,60 @@
+diff --git a/src/play/engines/antariksh/index.ts b/src/play/engines/antariksh/index.ts
+index 847b5473..a8ab3bee 100644
+--- a/src/play/engines/antariksh/index.ts
++++ b/src/play/engines/antariksh/index.ts
+@@ -136,6 +136,7 @@ export function create(core: Core3D, depsIn: EngineDeps): EngineView {
+     W.theme(T, level.seed);
+     core.labelColors(T.labels);
+     for (const g of W.gates) { (g.tor.material as THREE.MeshBasicMaterial).color.setHex(T.garam); (g.disc.material as THREE.MeshBasicMaterial).color.setHex(T.garam); }
++    W.cosmetics(spec.cosmetics); // r4 K-P4: colour only
+   }
+ 
+   function startLevel(): void {
+@@ -433,7 +434,7 @@ export function create(core: Core3D, depsIn: EngineDeps): EngineView {
+     W.ship.position.set(shipX, SHIP_Y + (core.reduced ? 0 : Math.sin(core.t * 2.1) * 0.05), SHIP_Z);
+     W.ship.rotation.set(0.06, 0, THREE.MathUtils.clamp(-shipVX * 0.18, -0.7, 0.7));
+     W.flame.scale.set(1, 1, 0.8 + core.cosmeticRandom() * 0.4 + warpK * 2.5);
+-    if (!core.reduced && Math.round(core.t * 60) % 2 === 0) W.burst(tmpV.set(shipX, W.ship.position.y, SHIP_Z + 1.0), 1, T.glow, 0.25, 0.35);
++    if (!core.reduced && Math.round(core.t * 60) % 2 === 0) W.burst(tmpV.set(shipX, W.ship.position.y, SHIP_Z + 1.0), 1, spec.cosmetics?.trail ?? T.glow, 0.25, 0.35); // r4 K-P4: the exhaust wears the trail colour
+     W.reticle.position.x = uToX(uVis);
+     W.reticle.visible = phase === "aim" || phase === "flight" || phase === "gates" || phase === "doors";
+     if (!core.reduced) W.reticle.rotation.z += dt * 1.5;
+diff --git a/src/play/engines/antariksh/world.ts b/src/play/engines/antariksh/world.ts
+index 0ff9d5d5..03a4f7f5 100644
+--- a/src/play/engines/antariksh/world.ts
++++ b/src/play/engines/antariksh/world.ts
+@@ -202,6 +202,11 @@ export function buildWorld(scene: THREE.Scene, rnd: () => number) {
+     (planet.material as THREE.MeshLambertMaterial).color.setHex(T.planet); (ring.material as THREE.MeshBasicMaterial).color.setHex(T.ring); rockMat.color.setHex(T.rock);
+     barMat.color.setHex(T.line); (glow.material as THREE.MeshBasicMaterial).color.setHex(T.glow); (curtain.material as THREE.MeshBasicMaterial).color.setHex(T.line);
+   }
+-  return { ship, flame, lineGroup, bar, glow, ticks, pylonL, pylonR, half, curtain, reticle, bolt, shock, marks, gapBars, gates, makeTarget, burst, stepParticles, stream, theme, liveParticles: () => liveParts, tmpM, tmpQ, tmpV, tmpS };
++  /** r4 K-P4: the child's Hangar colours on the craft only (never a learning object, never VOLT); null = the craft's own */
++  function cosmetics(c: { hull?: number | null; trail?: number | null } | null | undefined): void {
++    hullMat.color.setHex(c?.hull ?? 0xdfe4f2);
++    (flame.material as THREE.MeshBasicMaterial).color.setHex(c?.trail ?? 0x8fd8ff);
++  }
++  return { ship, flame, cosmetics, lineGroup, bar, glow, ticks, pylonL, pylonR, half, curtain, reticle, bolt, shock, marks, gapBars, gates, makeTarget, burst, stepParticles, stream, theme, liveParticles: () => liveParts, tmpM, tmpQ, tmpV, tmpS };
+ }
+ export type World = ReturnType<typeof buildWorld>;
+diff --git a/src/play/engines/core3d/api.ts b/src/play/engines/core3d/api.ts
+index bbc9db28..5c4580d8 100644
+--- a/src/play/engines/core3d/api.ts
++++ b/src/play/engines/core3d/api.ts
+@@ -17,6 +17,7 @@ import type { FamilyId, Lang, Moment, PlayMode } from "../../../../shared/play.t
+ import type { PlayController } from "../../core/controller.ts";
+ import type { ControlSpec, Readout } from "../../core/viewkit.ts";
+ import type { PerfSummary, PointerKind } from "../../core/stage.ts";
++import type { PlayCosmetics } from "../../briefing.ts";
+ 
+ export const CORE3D_VERSION = "core3d@1" as const;
+ 
+@@ -97,6 +98,9 @@ export interface DressedSpec {
+   musicAllowed: boolean;
+   /** the bed the dress chose before the class rule (what plays if the child turns music on); "off" = no toggle */
+   musicMood: "calm" | "drive" | "off";
++  /** r4 K-P4: the child's Hangar colours (hull, trail) as 0xRRGGBB. CLIENT-ONLY: set from the child's own equip, never by
++   *  a model or the server. Colour only: laws, levels, acts and grades never read it; an engine may tint its own craft. */
++  cosmetics?: PlayCosmetics | null;
+ }
+ 
+ // ───────────────────────────── what the core gives an engine ─────────────────────────────
