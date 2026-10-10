@@ -283,7 +283,11 @@ export function prepare(tick: EngineTick, est: Estimate, mem: RulesMemory, suppo
       if (!mem.buildKeys.has(k)) { mem.buildKeys.add(k); buildIntent = k; }
     }
   }
-  return { draft, warmTts, sttProbe, textHash: tr.textHash, buildIntent, eager };
+  // round 4: when the R1-qualified decision lands if the child stays quiet (the class wait from the last offset)
+  const eagerLive = eager === "start" || eager === "keep";
+  const eagerClass = eagerLive && pc !== null ? pc : null;
+  const eagerDecideAt = eagerClass !== null && c.lastOffsetAt !== null ? c.lastOffsetAt + PAUSE_WAIT[eagerClass] : null;
+  return { draft, warmTts, sttProbe, textHash: tr.textHash, buildIntent, eager, eagerDecideAt, eagerClass };
 }
 
 /** The policy: one proposal per tick given the estimate. The governor disposes. */

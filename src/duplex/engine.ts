@@ -514,6 +514,15 @@ export interface PrepareHint {
    * onset) or the words now read as a hold: drop that work. The floor decision itself is unchanged by it. Optional.
    */
   eager?: "none" | "start" | "keep" | "cancel";
+  /**
+   * Round 4 (duplex, for stream 3's early first sound): when the eager start is live, the session time at which the
+   * R1-QUALIFIED floor decision lands if the child stays silent: the child's last offset + the class wait the engine and the
+   * governor apply (PAUSE_WAIT[class]; real adult Hindi, both real STT lanes: 3/147 and 4/147 thinking pauses cut). Anything
+   * audible before it is NOT R1-qualified (it would cut the pauses the wait protects). null when no eager start is live.
+   */
+  eagerDecideAt?: Ms | null;
+  /** Round 4: the pause class behind the eager start (complete / question / idk), or null. */
+  eagerClass?: PauseClass | null;
 }
 
 export interface EngineId {
