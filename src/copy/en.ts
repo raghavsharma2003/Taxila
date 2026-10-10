@@ -213,3 +213,19 @@ export type W2HKey = keyof typeof W2H;
 export function tw2h(key: W2HKey, vars: Record<string, string | number> = {}): string {
   return W2H[key].replace(/\{(\w+)\}/g, (m, k: string) => (vars[k] === undefined ? m : String(vars[k])));
 }
+
+// round 4 content: the notebook's board pages (src/child/screens/Notebook.tsx). English chrome (G-EN-1).
+export const NB = {
+  "boards": "{n} boards",
+  "board1": "1 board",
+  "replay": "Replay",
+  "close": "Close",
+  "continue": "Continue this lesson",
+  "prev": "Previous board",
+  "next": "Next board",
+  "of": "Board {i} of {n}",
+} as const;
+export type NBKey = keyof typeof NB;
+export function tnb(key: NBKey, vars: Record<string, string | number> = {}): string {
+  return NB[key].replace(/\{(\w+)\}/g, (m, k: string) => (vars[k] === undefined ? m : String(vars[k])));
+}

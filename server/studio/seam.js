@@ -800,6 +800,7 @@ export const studioSeam = {
       p.facts = r.script.facts ?? null;
       p.state = "revealed"; p.revealedAt = Date.now(); p.revealedTurn = L.turn; p.boardSource = r.source ?? "line"; p.syncMs = r.syncMs ?? null;
       L.wbPrev = r.script;
+      writeBoardPage(L, p, r.script, ask);
       console.info(`[studio] whiteboard drawn source=${p.boardSource} sync=${p.syncMs ?? "?"}ms spec=${r.specState ?? "-"}`);
       push(L, { t: "script", intentId, script: r.script });
       push(L, { t: "status", status: { state: "revealed", intentId, buildSha: "whiteboard", facts: p.facts ?? { kind: "whiteboard", archetype: "whiteboard", onScreen: {} } } });
@@ -978,6 +979,21 @@ function signatureOf(p, value) {
 }
 
 /** One studio_mount row per revealed piece (the Made for you feed, the parent's "Made for {child}", the spend caps). */
+/**
+ * round 4 content, the notebook: the board as drawn, per lesson in order (board_page, a lesson-keyed table: migration 024,
+ * provisional number). A later board on the same slot (the planned board replacing a kept one) replaces the row. Fire and
+ * forget; a missing table (not yet migrated) is logged once and never breaks a lesson.
+ */
+let boardPageWarned = false;
+function writeBoardPage(L, p, script, ask) {
+  if (!L?.childId || !/^[0-9a-f-]{36}$/i.test(String(L.lessonId))) return;
+  const seq = (p.boardSeq ??= (L.boardSeq = (L.boardSeq ?? 0) + 1));
+  dbq(`insert into board_page (lesson_id, intent_id, seq, topic_id, skill_id, beat, script) values ($1, $2, $3, $4, $5, $6, $7)
+         on conflict (lesson_id, intent_id) do update set script = excluded.script`,
+    [L.lessonId, p.intentId, seq, L.topicId ?? null, ask?.intent?.skillId ?? null, ask?.intent?.beat ?? null, JSON.stringify(script)])
+    .catch((e) => { if (!boardPageWarned) { boardPageWarned = true; console.warn("[studio] board page not written:", String(e?.message ?? e).slice(0, 120)); } });
+}
+
 function writeMount(L, p, childId) {
   if (!childId) return Promise.resolve();
   const row = { facts: p.facts ?? {}, artifact: slotOf(p, "revealed").artifact ?? null, need: p.need ?? null, ...(p.spent && p.source !== "live" ? { shownAs: p.source } : {}) };

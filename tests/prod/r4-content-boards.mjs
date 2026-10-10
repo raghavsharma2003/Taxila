@@ -37,7 +37,7 @@ const q = (xs, p) => { const s = [...xs].sort((a, b) => a - b); return s.length 
 const meaningOf = (line, ops) => [...claimsNotDrawn(line, ops).map((x) => `W10 ${x}`), ...placeholderBoard(ops).map((x) => `W11 ${x}`),
   ...nextStepRevealed(line, ops).map((x) => `W12 ${x}`), ...fractionsDisagree(line, ops).map((x) => `W13 ${x}`)];
 
-const boards = [], unfilled = [], late = [], errors = [];
+const boards = [], unfilled = [], late = [], errors = [], notebook = [];
 const seen = new Set();
 async function slotNow(api, lessonId, intentId) {
   try { const r = await api("GET", `/api/studio/slot?lessonId=${lessonId}&intentId=${encodeURIComponent(intentId)}`); return r?.slot ?? null; } catch { return null; }
@@ -83,12 +83,24 @@ async function lessonFor(topicId) {
             const g = gateWhiteboard(n.ok ? n.script : sc, { reply: line, kit: kit ?? undefined, speechMs: speechMsOf(r.teacherReply ?? ""), banned: [name], withhold: withheldValues(kit, { line }) });
             const gateFails = g.checks.filter((c) => !c.pass).map((c) => c.id);
             const leg = boardAt(sc, box, { young });
-            boards.push({ topicId, scriptId: sc.scriptId, ground: sc.board?.ground ?? null, line: line.slice(0, 220), meaning, gateFails, legible: leg.ok, minPx: leg.minPx, ms });
+            boards.push({ lessonId: L.lessonId, topicId, scriptId: sc.scriptId, ground: sc.board?.ground ?? null, line: line.slice(0, 220), meaning, gateFails, legible: leg.ok, minPx: leg.minPx, ms });
           }
         }
         if (r?.end) break;
       }
     } finally { await L.end(); }
+    // the notebook (round 4 content): this lesson's boards, saved per lesson on the server, listed for the child (any
+    // device) and replayed in the order they were drawn
+    const mine = boards.filter((b) => b.lessonId === L.lessonId).map((b) => b.scriptId);
+    try {
+      const nb = await api("GET", `/api/studio/notebook?childId=${child.id}`);
+      const pages = await api("GET", `/api/studio/notebook/pages?lessonId=${L.lessonId}`);
+      const listed = (nb.pages ?? []).find((p) => p.lessonId === L.lessonId);
+      const ids = (pages.boards ?? []).map((b) => b.script?.scriptId);
+      const seqs = (pages.boards ?? []).map((b) => b.seq);
+      notebook.push({ lessonId: L.lessonId, drawn: mine.length, listed: listed?.boards ?? 0, pages: ids.length, ordered: seqs.every((x, i) => i === 0 || x > seqs[i - 1]),
+        everyDrawnSaved: mine.every((id) => ids.includes(id)) });
+    } catch (e) { notebook.push({ lessonId: L.lessonId, error: String(e.message).slice(0, 120) }); }
   }, { tag: "r4cb" });
 }
 
@@ -103,9 +115,11 @@ ok(illegible.length === 0, `boards illegible at the reported 360 phone box: ${il
 const pointed = unfilled.filter((u) => u.pointsAt);
 ok(pointed.length === 0, `board slots that never filled while her line pointed at the screen: ${pointed.length} (unfilled total ${unfilled.length})`);
 if (late.length) warn(`board arrival after her reply (slot polls, 400 ms grain): p50 ${q(late, 0.5)} ms, p90 ${q(late, 0.9)} ms (n = ${late.length}; boards in the response itself count 0 and are not in n)`);
+const nbBad = notebook.filter((n) => n.error || (n.drawn > 0 && (!n.everyDrawnSaved || !n.ordered || n.listed !== n.pages)));
+ok(nbBad.length === 0, `notebook: every lesson's boards saved, listed and replayable in order (${notebook.length - nbBad.length}/${notebook.length} lessons${nbBad.length ? `; e.g. ${JSON.stringify(nbBad[0])}` : ""})`);
 if (errors.length) warn(`errors: ${errors.length}: ${errors.slice(0, 3).map((e) => `${e.topicId}: ${e.error}`).join(" | ")}`);
 const summary = { base: BASE, at: new Date().toISOString(), boards: boards.length, contradictions: contra.length, illegible: illegible.length, unfilled: unfilled.length, unfilledPointed: pointed.length,
   grounds: [...new Set(boards.map((b) => b.ground))], late: { n: late.length, p50: q(late, 0.5), p90: q(late, 0.9) }, errors: errors.length };
-writeFileSync(join(OUT, "r4-content-boards.json"), JSON.stringify({ summary, boards, unfilled, errors }, null, 1));
+writeFileSync(join(OUT, "r4-content-boards.json"), JSON.stringify({ summary, boards, unfilled, errors, notebook }, null, 1));
 console.log("summary", JSON.stringify(summary));
 done();
