@@ -62,7 +62,7 @@ async function launchBrowser() {
 }
 
 const results = [];
-const pieceMs = [], boardLate = [];
+const pieceMs = [], boardLate = [], pieceDom = [];
 await withTestAccount(async ({ api }) => {
   const browser = await launchBrowser();
   try {
@@ -72,6 +72,18 @@ await withTestAccount(async ({ api }) => {
       const ctx = await browser.newContext({ viewport: { width: 360, height: 800 }, deviceScaleFactor: 2, hasTouch: true });
       // text drawn on canvases (play pieces, Studio v2 engines) is measured like DOM text (measure.js canvasTextProbe)
       await ctx.addInitScript(canvasTextProbe);
+      // round 4 content: T1 from what the PAGE shows (a piece can now arrive on the Studio stream before the turn's
+      // response): the first time after the ask that a piece the child can act on is in the tray (a Studio piece other than
+      // a board, or an engine frame); window.__askAt is set by the harness when it presses Enter
+      await ctx.addInitScript(() => {
+        const look = () => {
+          if (!window.__askAt || window.__pieceAt) return;
+          const st = document.querySelector('[data-testid="studio-stage"]');
+          const k = st?.getAttribute("data-kind");
+          if ((k && k !== "whiteboard" && st.getAttribute("data-legible") !== "twin") || document.querySelector(".dk-module iframe")) window.__pieceAt = performance.now();
+        };
+        new MutationObserver(look).observe(document, { subtree: true, childList: true, attributes: true, attributeFilter: ["data-kind"] });
+      });
       const cookie = api.cookie();
       if (cookie) { const i = cookie.indexOf("="); await ctx.addCookies([{ name: cookie.slice(0, i), value: cookie.slice(i + 1), url: BASE }]); }
       const page = await ctx.newPage();
@@ -98,6 +110,7 @@ await withTestAccount(async ({ api }) => {
           await page.waitForFunction(() => !document.querySelector('[data-testid="child-input"]')?.disabled, null, { timeout: 45_000 }).catch(() => {});
           await input.fill(text);
           const t0 = Date.now();
+          await page.evaluate(() => { window.__askAt = performance.now(); window.__pieceAt = 0; }).catch(() => {});
           await input.press("Enter");
           await page.waitForTimeout(2500);
           return t0;
@@ -117,6 +130,7 @@ await withTestAccount(async ({ api }) => {
           if (!real) await page.waitForTimeout(1500);
         }
         rec.real = real;
+        rec.pieceDomMs = await page.evaluate(() => (window.__pieceAt ? Math.round(window.__pieceAt - window.__askAt) : null)).catch(() => null);
         rec.trayBefore = trayBefore;
         await page.waitForTimeout(6000);
         const kindAfter = await page.evaluate(() => ({ tray: document.querySelector('[data-testid="tray"]')?.getAttribute("data-kind") ?? null, stage: document.querySelector('[data-testid="studio-stage"]')?.getAttribute("data-kind") ?? null }));
@@ -185,6 +199,7 @@ await withTestAccount(async ({ api }) => {
       } finally {
         await ctx.close().catch(() => {});
       }
+      if (rec.pieceDomMs != null) pieceDom.push(rec.pieceDomMs);
       const nonsense = rec.boards.filter((b) => b.problems.length).length;
       ok(!rec.error && rec.real, `R1 ${c.id} (${c.topic}) "${c.ask}": something real on the stage${rec.error ? ` — ${rec.error}` : ""}`);
       if (c.interactive) {
@@ -205,6 +220,7 @@ const grounds = new Set(boards.map((b) => b.ground).filter(Boolean));
 if (boards.length >= 4) ok(grounds.size >= 2, `R5 variety: ${grounds.size} distinct board grounds over ${boards.length} boards (${[...grounds].join(", ")})`);
 else warn(`R5 variety: only ${boards.length} boards drawn`);
 const p90p = q(pieceMs, 0.9), p90b = q(boardLate, 0.9);
+if (pieceDom.length) ok(q(pieceDom, 0.9) <= 3000, `T1dom request → piece in the tray (what the page shows) p50 ${q(pieceDom, 0.5)} ms, p90 ${q(pieceDom, 0.9)} ms ≤ 3000 (n = ${pieceDom.length})`);
 if (pieceMs.length) ok(p90p <= 3000, `T1 request → piece p50 ${q(pieceMs, 0.5)} ms, p90 ${p90p} ms ≤ 3000 (n = ${pieceMs.length}; API time from this machine)`);
 else warn("T1: no piece timings (no Stagecraft / play piece or mount after an ask)");
 if (boardLate.length) ok(p90b <= 1500, `T2 board lateness after her audio starts p50 ${q(boardLate, 0.5)} ms, p90 ${p90b} ms ≤ 1500 (n = ${boardLate.length})`);
@@ -215,7 +231,7 @@ const summary = { base: BASE, at: new Date().toISOString(), cases: results.lengt
   slotKinds: Object.fromEntries(results.map((r) => [r.case, r.slotKinds ?? []])),
   boards: boards.length, nonsenseBoards: boards.filter((b) => b.problems.length).length, views: views.length, brokenViews: views.filter((v) => !v.pass).length,
   emptyHanded: views.filter((v) => v.none).length,
-  grounds: [...grounds], pieceMs: { n: pieceMs.length, p50: q(pieceMs, 0.5), p90: p90p }, boardLate: { n: boardLate.length, p50: q(boardLate, 0.5), p90: p90b } };
+  grounds: [...grounds], pieceMs: { n: pieceMs.length, p50: q(pieceMs, 0.5), p90: p90p }, pieceDomMs: { n: pieceDom.length, p50: q(pieceDom, 0.5), p90: q(pieceDom, 0.9) }, boardLate: { n: boardLate.length, p50: q(boardLate, 0.5), p90: p90b } };
 writeFileSync(join(OUT, "round3-forge.json"), JSON.stringify({ summary, results }, null, 1));
 console.log("summary", JSON.stringify(summary));
 done();

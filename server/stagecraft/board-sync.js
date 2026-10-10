@@ -24,6 +24,7 @@ import { explainerFor } from "../forge/explainer/lesson.js";
 import { catalogueEntry } from "./catalogue.js";
 import { fitLegible } from "./board-legible.js";
 import { takePreselected } from "./board-first.js";
+import { claimsBoard } from "./claims-board.js";
 
 // 1900 ms after the ask: her audio starts ~700 ms after the reply (text lane prewarm), so even a code board shown at the
 // deadline is ≤ ~1.2 s late (the bar is 1.5 s p90), while the speculative board (started ~1.5 s earlier, at the kernel)
@@ -154,6 +155,10 @@ export function takeSpec(ask, ctx) {
 /** The code board (the kit's own explain rung), re-timed to her line and gated against it, or null. */
 export function codeBoard(ask, { kit, lessonId, band = "B3" } = {}, ctx) {
   try {
+    // 0. round 4 content: her line states what is on the screen ("5 barabar parts; 3 shaded", "3 groups, 5 in each"): the
+    //    board that draws exactly those claims (claims-board.js), gated against her line like every other board
+    const claims = claimsBoard(ask, ctx, { band, lessonId, retime, regate, withSectors, board: WB_BOARD });
+    if (claims) return claims;
     if (!kit) return null;
     // 1. the kit's explain rung (code pick from her line's own values, else the item / worked example; library; terms)
     const item = ask?.kit?.item?.id ? (kit.items ?? []).find((i) => i.id === ask.kit.item.id) ?? null : null;
