@@ -28,7 +28,8 @@ async function addChild(api, acct, c) {
 if (cmd === "make") {
   const st = Date.now();
   const defs = {
-    owner: { email: "r3review-owner2@taxila.test", kids: [
+    // RV_OWNER_EMAIL: a fresh owner (its address must be in the server's TAXILA_DUPLEX_LIVE_FOR for the hands-free path)
+    owner: { email: process.env.RV_OWNER_EMAIL || "r3review-owner2@taxila.test", kids: [
       { key: "golu", firstName: "Golu", classLevel: 4, languagePref: "hinglish", interests: ["cartoons", "cricket"] },
       { key: "meher", firstName: "Meher", classLevel: 6, languagePref: "english", interests: ["painting"] },
     ] },
