@@ -131,3 +131,19 @@ test("game kills / headshots / hacks are declined in code at any length (never l
   for (const t of ["how to win in free fire", "minecraft mein ghar kaise banate hain", "the kills in the jungle are made by tigers"]) assert.notEqual(readIntent(t)?.type, "oob", t);
   assert.equal(readIntent("this is her mom, she has a test on this tomorrow, focus on practice please")?.type, "adult");
 });
+
+test("a share told during teaching is brought back later in the lesson, as a last-section note (round3-conversation C on prod)", () => {
+  let r = step(fresh(), { event: "start", kit: K, now: 0 });
+  r = turn(r, NE);
+  const share = { outcome: "no_evidence", confidence: 1, source: "model", flags: NE.flags, request: { type: "uptake", kind: "personal_share", topic: "cousin ki shaadi next week", whole: true } };
+  r = turn(r, share, { text: "meri cousin ki shaadi next week hai" });
+  assert.ok((r.state.later ?? []).some((e) => e.share && !e.servedAt), JSON.stringify(r.state.later));
+  let back = null;
+  for (let i = 0; i < 14 && !back; i++) {
+    r = turn(r, r.move.itemId ? cls("correct") : NE, { text: "ok" });
+    if (/shaadi/.test(r.move.must ?? "")) back = r;
+  }
+  assert.ok(back, "the share came back with a must-note");
+  assert.match(back.move.must, /^first, come back to what they told you earlier/);
+  assert.ok(back.state.later.find((e) => e.share).servedAt != null);
+});

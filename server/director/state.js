@@ -464,8 +464,11 @@ function poseNext(s, input, prefix, preferred) {
   // round 3 (conversation; tests/prod/round3-conversation C): after a right answer the why-probe path reaches here with no
   // active item, so "right after this question" was kept only at the wrap; the question that just resolved is the last move's
   if (p5Flag("STEER") && s.later?.length && (s.activeItemId || (p5Flag("R3CONV") && s.lastMove?.itemId))) {
-    const due = dueParked(s.later, "item_resolved");
-    if (due) { s.later = serveLater(s.later, due.id, s.turn); prefix = join(prefix, SH.returnParked({ topic: due.topic, share: !!due.share })); }
+    // round 4 (round3-conversation C on prod: a cousin's wedding shared mid-teaching was promised "before the lesson ends"
+    // and never came back): an open share is also brought back at an item boundary four or more turns after it was told
+    const due = dueParked(s.later, "item_resolved")
+      ?? (p5Flag("R4CONV") ? (s.later ?? []).find((p) => !p.servedAt && p.share && s.turn - (p.at ?? s.turn) >= 4) ?? null : null);
+    if (due) { s.later = serveLater(s.later, due.id, s.turn); prefix = join(prefix, SH.returnParked({ topic: due.topic, share: !!due.share })); s.servedNow = { topic: due.topic, share: !!due.share }; }
   }
   s.activeItemId = undefined; s.hintLevel = 0; s.pendingWhy = undefined;
   if (leavePractice(s, kit)) return s.practiceSet ? practiceDone(s, prefix) : enterTeachback(s, prefix);
@@ -1108,7 +1111,7 @@ function enterTeachback(s, prefix) {
   // CONVERSATION-V2 §5: every open parked question is offered before the wrap
   if (p5Flag("STEER") && s.later?.length) {
     const due = dueParked(s.later, "before_wrap");
-    if (due) { s.later = serveLater(s.later, due.id, s.turn); prefix = join(prefix, SH.returnParked({ topic: due.topic, share: !!due.share })); }
+    if (due) { s.later = serveLater(s.later, due.id, s.turn); prefix = join(prefix, SH.returnParked({ topic: due.topic, share: !!due.share })); s.servedNow = { topic: due.topic, share: !!due.share }; }
   }
   s.phase = "teachback"; s.teachbackAsked = true; s.activeItemId = undefined; s.hintLevel = 0;
   // The lesson's teach-back IS shape C01 (announced protégé teach-back): its answer is a probe turn in the budget.
@@ -1129,6 +1132,12 @@ function teachback(s, input) {
 
 function toWrap(s, { prefix, stopping = false }) {
   if (stopping && !["wrap", "done"].includes(s.phase)) s.stoppedEarly = true;   // child.js countsAsDone (owner-truth item 3)
+  // round 4: a wrap the lesson reaches by itself (time, the plan) keeps the promise to come back to what they shared or asked;
+  // never on a child's stop or goodbye (letting them go is quick: NEVER MANIPULATE)
+  if (!stopping && p5Flag("R4CONV") && s.later?.length) {
+    const due = dueParked(s.later, "before_wrap");
+    if (due) { s.later = serveLater(s.later, due.id, s.turn); prefix = join(prefix, SH.returnParked({ topic: due.topic, share: !!due.share })); s.servedNow = { topic: due.topic, share: !!due.share }; }
+  }
   s.stopAsked = undefined; s.sidebar = undefined;
   s.phase = "done"; s.activeItemId = undefined; s.pendingWhy = undefined; s.hintLevel = 0;
   return plan("wrap", SH.wrap({ prefix, nextTitle: s.ctx.nextTitle, stopping }), stopping ? { stopping: true } : {});
@@ -1415,7 +1424,9 @@ export function step(prev, input) {
   // round 4 (conversation): the request's must-do (and a second need's) as a last-section note (compile.js lastParts)
   if (!input.branch && p5Flag("R4CONV") && input.event === "turn" && !["safeguard", "wrap"].includes(p.kind)) {
     const key = p.request === "uptake" ? input.cls?.request?.kind ?? null : p.request === "visual" ? `visual_${p.visual ?? "diagram"}` : p.request;
-    const must = [SH.MUST_NOTE[key], ...(also ?? []).filter((x) => x !== key).map((x) => SH.ALSO_NOTE[x])].filter(Boolean);
+    // a parked question or share served this turn comes back FIRST (it lost to the move in the middle of the shape)
+    const back = s.servedNow ? SH.returnParked({ topic: s.servedNow.topic, share: s.servedNow.share }).replace(/^before the next thing: /, "first, ") : null;
+    const must = [back, SH.MUST_NOTE[key], ...(also ?? []).filter((x) => x !== key).map((x) => SH.ALSO_NOTE[x])].filter(Boolean);
     if (must.length) move.must = must.join("; ").slice(0, 300);
   }
   // round 2 (conversation): how the child asked to be taught ("step by step", "picture first") rides on every later move
@@ -1441,6 +1452,7 @@ export function step(prev, input) {
   // words as an offer to stop, never as a teaching turn that "goes on" (adversarial B2)
   if (p.checkin) move.checkin = p.checkin;
   // round 4 (session-first): the intake's move (no stage build) and, for the confirm probe, the kit question it poses
+  delete s.servedNow;
   if (p.intake) { move.intake = true; if (p.ask) move.ask = String(p.ask).slice(0, 300); if (p.segment) move.segment = p.segment; }
   // round 2 (conversation): the request's own note, for the lead slot's last instruction (brain/say.js)
   if (p.lead && p5Flag("STEER")) move.lead = String(p.lead).slice(0, 400);
