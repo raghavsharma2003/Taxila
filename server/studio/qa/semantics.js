@@ -120,6 +120,19 @@ export function drawnCounts(ops) {
 }
 
 /** A rectangle cut into rows x cols by full-span lines (the area model draws its grid this way). */
+/** The rows x cols of every rectangle on the board cut by full-span lines (the area model's grid). */
+function gridDims(ops) {
+  const lines = ops.filter((o) => o.op === "line" && Array.isArray(o.from) && Array.isArray(o.to));
+  const out = [];
+  for (const r of ops) {
+    if (r.op !== "rect" || !Array.isArray(r.at) || !(r.w > 0 && r.h > 0)) continue;
+    const [x, y] = r.at;
+    const v = new Set(lines.filter((l) => Math.abs(l.from[0] - l.to[0]) < 1 && l.from[0] > x + 2 && l.from[0] < x + r.w - 2 && Math.abs(Math.min(l.from[1], l.to[1]) - y) < 3 && Math.abs(Math.max(l.from[1], l.to[1]) - (y + r.h)) < 3).map((l) => Math.round(l.from[0]))).size;
+    const h = new Set(lines.filter((l) => Math.abs(l.from[1] - l.to[1]) < 1 && l.from[1] > y + 2 && l.from[1] < y + r.h - 2 && Math.abs(Math.min(l.from[0], l.to[0]) - x) < 3 && Math.abs(Math.max(l.from[0], l.to[0]) - (x + r.w)) < 3).map((l) => Math.round(l.from[1]))).size;
+    if (v || h) out.push({ rows: h + 1, cols: v + 1 });
+  }
+  return out;
+}
 function gridCut(ops, rows, cols) {
   const lines = ops.filter((o) => o.op === "line" && Array.isArray(o.from) && Array.isArray(o.to));
   return ops.some((r) => {
@@ -137,7 +150,12 @@ export function claimsNotDrawn(line, ops) {
   if (!claims.parts.length && !claims.gaps.length && !claims.groups.length && !claims.grids.length) return [];
   const d = drawnCounts(ops);
   const out = [];
-  const famHas = (n) => d.families.some((f) => f.n === n && f.kind !== "ellipse" && f.kind !== "ring") || d.lines.some((l) => l.gaps === n);
+  // round 4 content: a rectangle cut into a grid shows its rows, its columns and its cells as equal parts
+  const grids = gridDims(ops);
+  const famHas = (n) => d.families.some((f) => f.n === n && f.kind !== "ellipse" && f.kind !== "ring") || d.lines.some((l) => l.gaps === n)
+    || grids.some((g) => g.rows === n || g.cols === n || g.rows * g.cols === n)
+    // "har group mein 4 boxes": equal groups that each hold n show n parts per group
+    || (d.groups.filter((x) => x.held > 0).length >= 2 && d.groups.filter((x) => x.held > 0).every((x) => x.held === n));
   for (const n of claims.parts) if (!famHas(n) && d.groups.filter((x) => x.held > 0).length !== n) out.push(`${n} equal parts said, none drawn`);
   // a grid: rows x cols equal cells drawn (one family of that many equal boxes)
   for (const g of claims.grids) if (!d.families.some((f) => f.kind === "rect" && f.n === g.rows * g.cols) && !gridCut(ops, g.rows, g.cols)) out.push(`${g.cols} columns x ${g.rows} rows said, no ${g.rows * g.cols} equal cells drawn`);

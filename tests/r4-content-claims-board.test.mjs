@@ -8,6 +8,7 @@ import { codeBoard, gateCtxFor } from "../server/stagecraft/board-sync.js";
 import { claimsCalls, shadedIn } from "../server/stagecraft/claims-board.js";
 import { claimsNotDrawn, screenClaims } from "../server/studio/qa/semantics.js";
 import { certifyForTray } from "../server/forge3/tray-gate.js";
+import { expand } from "../server/forge/explainer/templates.js";
 
 const ask = (text) => ({ intent: { intentId: "L:wb:1", lessonId: "L", kind: "whiteboard" }, line: { lessonId: "L", text }, kit: null, mode: "fresh" });
 const board = (text) => { const a = ask(text); return codeBoard(a, { lessonId: "L" }, gateCtxFor(a, {})); };
@@ -72,6 +73,15 @@ describe("r4 content: claims boards on the owner-5 lines of this branch's local 
     assert.ok(grid?.ok); assert.equal(grid.script.ops.filter((o) => o.op === "rect" && o.fill === "accent").length, 6);
     assert.ok(!grid.script.ops.some((o) => o.op === "numwork"), "she asks the child to write the fraction: it is not written");
     for (const r of [taken, grid]) assert.ok(certifyForTray({ kind: "whiteboard", script: r.script }, { vp: "p360" }).ok, "legible at the 360 phone");
+  });
+  it("merged-tree battery lines: '3/5 hissa, phir uska 2/3' is the area model; '3 groups mein, har group mein 4'", () => {
+    const fof = board("Screen par rectangle ka 3/5 hissa liya, phir uska 2/3: 15 boxes mein 6 marked, yani 2/3 × 3/5 = 6/15. Aap simplify karke batayiye.");
+    assert.ok(fof?.ok); assert.equal(fof.template, "fraction-of@1");
+    const grp = board("Board par 12 equal boxes hain, 3 groups mein. Har group mein 4 boxes dikh rahe hain. Ab 2 groups giniye.");
+    assert.ok(grp?.ok); assert.equal(grp.template, "equal-groups@1");
+    // a sub-region count ("3/5 wale hissa mein 9 boxes") is not loosened into W10: that line still draws nothing from claims
+    const sub = "Screen par dekhiye: poora rectangle 15 equal boxes hai; 3/5 wale hissa mein 9 boxes, unka 2/3 yani 6 marked boxes. 6/15 ko simplify kijiye.";
+    assert.ok(claimsNotDrawn(sub, expand({ template: "fraction-of@1", a: 2, b: 3, c: 3, d: 5 }).script.ops).length > 0);
   });
   it("a code board for her CONTINUE line is drawn fresh (it replaces the board; the old words are not under it)", () => {
     const line = "Ishaan, screen par animation move nahi hogi; flow dekhiye: Observe, Ask, Predict, Test, phir Conclude. Ismein pehla step kya hai?";

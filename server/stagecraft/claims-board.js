@@ -62,11 +62,23 @@ export function claimsCalls(line) {
   // "3 equal groups, with 5 dots in each" / "5 each" / "har group mein 5": the each-count after the group word
   const eachM = String(line ?? "").toLowerCase().match(new RegExp(`\\b${W}\\s+(?:[a-z]+\\s+)?(?:in\\s+each|each|har\\s+(?:group|ek)\\s+mein)\\b`));
   const eachN = eachM ? num(eachM[1]) : null;
-  for (const g of c.groups) if (g.each == null && eachN) g.each = eachN;
+  // "3 groups mein. Har group mein 4 boxes": the each-count after the group word
+  const eachAfter = String(line ?? "").toLowerCase().match(new RegExp(`\\bhar\\s+(?:group|ek|samooh)\\s+mein\\s+${W}\\b`));
+  const eachA = eachAfter ? num(eachAfter[1]) : null;
+  const groupsM = String(line ?? "").toLowerCase().match(new RegExp(`\\b${W}\\s+(?:equal\\s+|barabar\\s+)?groups?\\b`));
+  if (eachA && groupsM && !c.groups.length) c.groups.push({ n: num(groupsM[1]), each: null });
+  for (const g of c.groups) if (g.each == null && (eachN || eachA)) g.each = eachN ?? eachA;
   for (const g of c.groups) if (g.each != null && g.n >= 2 && g.n <= 6 && g.each >= 1 && g.each <= 8) out.push({ template: "equal-groups@1", groups: g.n, each: g.each, hideResult: asks });
   // a grid ("5 columns aur 3 rows"; or more than 12 equal parts, laid out as the squarest grid): its cells, the shaded
   // count her line gives. Her line naming shaded / marked cells WITHOUT a count draws nothing (the board would show none).
   const namesShade = /\b(shaded|shade|coloured|colored|rangeen|marked|mark)\b/i.test(String(line ?? "")) && !shadeOrder(line);
+  // the area model said as "the rectangle's 3/5, then its 2/3" ("3/5 hissa liya, phir uska 2/3", "3/5 wale hissa mein …,
+  // unka 2/3"): a/b of c/d, the result hidden when she asks for it
+  const fofM = String(line ?? "").toLowerCase().match(/\b(\d)\s*\/\s*(\d)\b[^.?!;]{0,40}?\b(?:uska|unka|iska|inka|of\s+that|of\s+it)\s+(\d)\s*\/\s*(\d)\b/);
+  if (fofM) {
+    const [c0, d0, a0, b0] = fofM.slice(1, 5).map(Number);
+    if (d0 >= 2 && d0 <= 6 && c0 >= 1 && c0 <= d0 && b0 >= 2 && b0 <= 6 && a0 >= 1 && a0 <= b0) out.push({ template: "fraction-of@1", a: a0, b: b0, c: c0, d: d0, hideResult: asks });
+  }
   // the area model of a fraction of a fraction ("5 columns aur 3 rows; 3/5 wale hisson mein 2 rows mark"): c/d of the
   // columns, a of the b rows inside them (fraction-of@1), the count hidden when she asks for it
   for (const g of c.grids) {
