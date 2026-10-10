@@ -35,6 +35,7 @@ import { seamSafe } from "../seam-safe.js";
 import { studioSeam } from "../studio/seam.js";
 import { relationalSeam } from "../relational/seam.js";
 import { purposeSeam } from "../lesson/purpose.js";
+import { sessionStartCtx, schoolPointerStmts } from "../director/session/start.js";
 import { voicesigSeam } from "../voicesig/lesson.js";
 import { realtimeSeam } from "../voice/realtimeSession.js";
 import { fallbackReply, safeguardLine, scrubbed, textReply, words } from "../brain/say.js";
@@ -84,7 +85,9 @@ export { forgeSeam };
 
 // ───────────────────────────── POST /api/lesson/start ─────────────────────────────
 
-const START_PURPOSES = new Set(["lesson", "practice", "doubt"]);
+// round 4 (stream 4A): "session" is the session-first start (no topic chosen by the child; the intake decides). It is
+// served only when TAXILA_SESSION_FIRST=on (director/session/start.js); otherwise it starts exactly like "lesson".
+const START_PURPOSES = new Set(["lesson", "practice", "doubt", "session"]);
 /**
  * PURE. Why a lesson cannot start in this plan state (null: it can). safety_hold, capped and resting refuse everything; done
  * refuses a lesson ("never one more") but lets Practice and Ask through (§6.3.3 done row: "Practise something").
@@ -146,7 +149,9 @@ async function start(req, res, body) {
     voicesigSeam.startRows({ q, hasConsent, guardianId: guardian.id, childId: child.id }),
   ]);
   if (!core) throw forbidden("core_tutoring consent is required before a lesson");
-  const mode = body.mode === "text" || body.mode === "cascade" ? body.mode : "voice";
+  // round 4 (4A patch request 10b, main safety review): a start with no mode (or an unknown one) lands on the CASCADE lane,
+  // the lane with the strongest floor (the server writes every reply); the realtime lane needs an explicit mode: "voice"
+  const mode = startModeOf(body.mode);
   const purpose = START_PURPOSES.has(body.purpose) ? body.purpose : "lesson";
   // Seam (W2-A, server/lesson/purpose.js): an Ask start with no topic is routed by the child's first words; null (and any
   // unknown topic id) leaves the topic resolved exactly as before.
@@ -211,6 +216,10 @@ async function start(req, res, body) {
   const askRaw = purpose === "doubt" && typeof body.firstText === "string" ? body.firstText.trim() : "";
   const askSafety = askRaw ? scanSafety(askRaw.slice(0, 500)) : { distress: false, kind: null };
   const askText = askRaw && !askSafety.distress ? askRaw.slice(0, 200) : "";
+  // round 4 (stream 4A, session-first): the intake's inputs (the day plan as her private prior, due reviews, the school
+  // pointer); null unless TAXILA_SESSION_FIRST=on and purpose "session" (then today's start, unchanged)
+  const sessionFirst = sessionStartCtx({ purpose, child, plan: dayPlan.plan ?? null, levelPathTopic: topic.id, ledger, now,
+  });
   const state0 = initLessonState({
     topicId: topic.id, kit, skills, history, stuck, warmupItems, activeMisconceptionIds, now,
     seed: Math.floor(Math.random() * 2 ** 32),
@@ -230,6 +239,7 @@ async function start(req, res, body) {
       // the purpose and, for an Ask, the child's own question (W2-C #7: the Director answers it first, no greeting)
       purpose,
       ...(askText ? { askText } : {}),
+      ...(sessionFirst ? { session: sessionFirst } : {}),
       // the bond stage RELATIONAL-OS pinned for this lesson (W2-I snapshot), for the turn's Moment (W2-E TB6)
       ...(bond?.stage ? { bondStage: bond.stage } : {}),
     },
@@ -468,7 +478,10 @@ async function end(req, res, body) {
   const trace = [];
   const { lesson, guardian, child } = await loadLessonFor(req, need(body, "lessonId").lessonId);
   const teacher = teacherForLesson(child, lesson.state?.ctx?.teacherId, lesson.state?.ctx?.teacherName);
-  const topicRow = getTopic(lesson.topic_id);
+  // round 4 (session-first): a session's segments re-point the state at another topic inside this lesson; the summary,
+  // the kit and the row's topic are the last segment's (director/session/segments.js)
+  const topicId = lesson.state?.session && lesson.state?.topicId ? lesson.state.topicId : lesson.topic_id;
+  const topicRow = getTopic(topicId);
   // "Next time" on the end summary is the ONE next-topic answer read NOW (after this lesson's evidence), the same the
   // home, Progress and the parent read (reports/truth.js nextTopicForPlan), never the sequence-next pinned at the start
   const did = async (st) => withPlanNext(lessonSummary(st, { topic: topicRow, teacher }), child);
@@ -491,9 +504,13 @@ async function end(req, res, body) {
     q("select id, seq, speaker, text from turn where lesson_id = $1 order by seq", [lesson.id]),
     q("select skill_id, item_id, probe, outcome, misconception_id, hints_used from evidence where lesson_id = $1 order by at", [lesson.id]),
     hasConsent(guardian.id, child.id, "memory"), hasConsent(guardian.id, child.id, "learning_profile"),
-    state.kitHash ? pinnedKit(lesson.topic_id, state.kitHash) : getKit(lesson.topic_id, { generate: false }),
+    state.kitHash ? pinnedKit(topicId, state.kitHash) : getKit(topicId, { generate: false }),
+    ...(topicId !== lesson.topic_id ? [q("update lesson set topic_id = $2 where id = $1", [lesson.id, topicId]).catch(() => null)] : []),
+    // the school position the intake confirmed (a school_continue / school_reteach segment): child.school_chapter, which
+    // content/next-topic.js schoolStartIndex already reads (migration patch 01 adds the column; never the start's error)
+    ...schoolPointerStmts(child, state).map((st) => q(st.text, st.params).catch(() => null)),
   ]);
-  const facts = kit ? lessonFacts(state, evidence, kit) : { topic: getTopic(lesson.topic_id)?.title, skills: [] };
+  const facts = kit ? lessonFacts(state, evidence, kit) : { topic: getTopic(topicId)?.title, skills: [] };
   const childTurns = turns.filter((t) => t.speaker === "child" && !t.text.startsWith("["));
   // W2-C #5: child talk share and the conversation mix (a monitor; never evidence, never shown to anyone as a score)
   try {
@@ -552,7 +569,7 @@ async function end(req, res, body) {
   }
   // Seam (W1-D): the Conductor's lesson-end event lands with the lesson's record, after the caller's own writes (the
   // row-count check and the result indexes below read only `writes`).
-  const hookStmts = onLessonEnd({ child, lessonId: lesson.id, topicId: lesson.topic_id, endedBy: endedByPageHide(req, body) ? "pagehide" : "client",
+  const hookStmts = onLessonEnd({ child, lessonId: lesson.id, topicId, endedBy: endedByPageHide(req, body) ? "pagehide" : "client",
     turns: state.turn ?? 0, startedAt: lesson.started_at ?? null, now: Date.now() });
   // Seam (W2-I, server/relational/seam.js): the bond's lesson-end rows (rel_state, rel_event, relational_note), appended
   // after the lesson's own writes and BEFORE the Conductor's (its ingest locks child_seq last). [] until W2-I fills it.
@@ -591,3 +608,9 @@ export const routes = {
 
 /** Internals for tests (the turn's planning and speculation, which need no database or model). */
 export const __test = { safeguardLine, planTurn, replyKey, speculate, specFanout, textReply, noteDid, withAsk, uiVerdictOf, fallbackReply, scrubbed };
+
+/** Round 4 (4A patch request 10b): the lane a start runs on. Only an explicit "text" or "voice" is honoured; no mode, or an
+ *  unknown one, is the cascade lane (the strongest floor: the server writes every reply). PURE; exported for tests. */
+export function startModeOf(mode) {
+  return mode === "text" || mode === "voice" ? mode : "cascade";
+}

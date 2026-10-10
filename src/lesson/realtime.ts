@@ -157,6 +157,13 @@ export class RealtimeProtocol {
   private pendingCreate = false;
   private createTimer: unknown = null;
   private createRetries = 0;
+  /**
+   * Round 4 (4A patch request 10): a reply the content filter blocked gets ONE fresh response.create (the session's same
+   * instructions). The next response created is marked as that retry; a block on a retry is never retried again (count 2:
+   * the runtime fails closed). Per response, never per lesson, so no chain of retries can form across turns.
+   */
+  private filterRetryNext = false;
+  private filterRetries = new Set<string>();
   private readonly send: (event: Json) => void;
   private readonly emit: (event: LinkEvent) => void;
   private readonly keep: number;
@@ -247,6 +254,8 @@ export class RealtimeProtocol {
     this.cancelling = null;
     this.pendingCreate = false;
     this.createRetries = 0;
+    this.filterRetryNext = false;
+    this.filterRetries.clear();
     this.clearCreateTimer();
   }
 
@@ -310,6 +319,7 @@ export class RealtimeProtocol {
         if (!id) return;
         this.activeResponse = id;
         this.lastResponse = id;
+        if (this.filterRetryNext) { this.filterRetryNext = false; this.filterRetries.add(id); }
         this.responses.set(id, { deltas: "", parts: [] });
         this.emit({ type: "response_start", responseId: id, at: this.now() });
         return;
@@ -413,12 +423,20 @@ export class RealtimeProtocol {
         this.emit({ type: "error", message: str(err.message) || "the teacher could not answer", fatal: false });
       }
     }
+    // a reply the content filter blocked: one fresh reply, then (a block on that one too) the runtime fails closed
+    const filtered = status === "incomplete" && str(obj(response.status_details).reason) === "content_filter";
+    const wasRetry = this.filterRetries.delete(id);
     this.responses.delete(id);
     this.interrupted.delete(id);
     if (this.activeResponse === id) this.activeResponse = null;
     if (this.cancelling === id) this.cancelling = null;
     this.emit({ type: "response_done", responseId: id, status });
+    if (filtered) this.emit({ type: "reply_filtered", responseId: id, count: wasRetry ? 2 : 1 });
     this.prune();
+    if (filtered && !wasRetry && !this.pendingCreate) {
+      this.filterRetryNext = true;
+      this.requestResponse();
+    }
     if (this.pendingCreate && !this.cancelling) this.flushCreate();
   }
 

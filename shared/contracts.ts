@@ -191,6 +191,13 @@ export interface TurnRequest {
    */
   laneResume?: boolean;
   /**
+   * Round 4 (4A patch request 10): the realtime lane's reply was blocked by the content filter twice in a row (the reply and
+   * its one fresh retry). A hint that can only ADD safety: the server re-plans the turn as the safeguard, as it does for a
+   * blocked text reply; it never suppresses anything, and the child's own words still go through the predicate and the model
+   * distress read.
+   */
+  replyFiltered?: number;
+  /**
    * The duplex engine's turn summary (docs/research/duplex/INTEGRATION.md §2; server/duplex/slice.js turnSummary). Hashes
    * and flags only, never words. `safetyPending`: the predicate tripped on a PARTIAL of this turn (sticky): the server
    * safeguards even if `childText` now reads clean (OR semantics; safety-robust 2026-10-05).

@@ -198,6 +198,8 @@ interface ChildInput {
   childText: string;
   /** The first turn after a realtime → cascade switch (TurnRequest.laneResume), with the realtime turn last heard. */
   laneResume?: { heard: { text: string; interrupted: boolean } | null };
+  /** Round 4 (4A patch request 10): the realtime reply was blocked by the content filter twice (TurnRequest.replyFiltered). */
+  replyFiltered?: number;
   startedAt?: number;
   asrConfidence?: number;
   chipId?: string;
@@ -260,6 +262,8 @@ export class LessonRuntime {
   private laneSwitching = false;
   /** The last applied turn was a safeguarding hand-off the realtime lane was asked to voice (speakNow interrupt). */
   private safeguardPending = false;
+  /** Round 4 (4A patch request 10): a twice-filtered realtime reply waiting to ride on the next turn (the resume turn). */
+  private replyFilteredPending = 0;
   /** When the realtime lane last refused a response for quota (the first refusal is retried once). */
   private rateLimitedAt: number | null = null;
 
@@ -618,6 +622,9 @@ export class LessonRuntime {
         }
         return;
       }
+      case "reply_filtered":
+        if (e.count >= 2) this.onReplyFiltered();
+        return;
       case "error":
         if (this.link?.mode === "voice" && laneSwitchEnabled() && this.api.switchLane) {
           if (e.code === RATE_LIMITED) {
@@ -743,12 +750,14 @@ export class LessonRuntime {
       // The resume turn after a realtime → cascade switch: the realtime turn last heard rides once (the server stores
       // and checks it although the lesson is now cascade), and no child row is stored.
       req.laneResume = true;
+      if (this.replyFilteredPending) { req.replyFiltered = this.replyFilteredPending; this.replyFilteredPending = 0; }
       const heard = input.laneResume.heard;
       if (heard?.text) {
         req.teacherText = heard.text;
         req.teacherInterrupted = heard.interrupted;
       }
     } else if (input) {
+      if (input.replyFiltered) req.replyFiltered = input.replyFiltered;
       if (input.asrConfidence !== undefined) req.asrConfidence = input.asrConfidence;
       const teacher = this.teacherTurns.take(input.startedAt);
       if (teacher && this.state.mode === "voice") {
@@ -847,6 +856,39 @@ export class LessonRuntime {
     this.setReadAloudTarget(ui.readAloud ?? null);
     // The face reads only teacherAffect / studioSlot / cues / whiteboard (faceUiOf): never the verdict (AT-U12).
     for (const cue of this.face.program(faceUiOf(ui), this.faceTurn)) faceCues.emit(cue);
+  }
+
+  /**
+   * Round 4 (4A patch request 10): the realtime model's reply was blocked by the content filter, and so was its one fresh
+   * retry (RealtimeProtocol counts per response; it never retries a retry). Fail CLOSED, as the server does for a blocked
+   * text reply (brain/say.js, turn.js):
+   *   1. the helplines are on screen now (the Help sheet, lateSafeguard: the vetted fixed content, whatever comes next);
+   *   2. the lesson moves to the cascade lane, where the server writes and TTS speaks the reply: the resume turn carries
+   *      replyFiltered: 2 and the server re-plans it as the safeguard (the fixed opening in her language mode, the helplines
+   *      digit-exact), so she HEARS the vetted line instead of a third realtime attempt or silence;
+   *   3. without the lane switch (flag off, or no lane API): a signal turn with replyFiltered: 2 on this lane.
+   * When the blocked reply was itself the safeguarding hand-off, only step 1 and the switch run: the server already safeguarded.
+   */
+  private onReplyFiltered(): void {
+    if (this.state.phase !== "live") return;
+    this.store.set({ lateSafeguard: Date.now() });
+    const handOff = this.safeguardPending;
+    if (this.link?.mode === "voice" && laneSwitchEnabled() && this.api.switchLane) {
+      if (!handOff) this.replyFilteredPending = 2;
+      const gen = this.generation;
+      void this.switchToCascade("content_filter").then(() => {
+        if (gen !== this.generation || this.state.phase !== "live") return;
+        // main safety review: a switch the server REFUSED (a network blip) leaves the lesson on the realtime link, and the
+        // pending hint rides only a resume turn: it would never reach the server. Still on the voice link with no switch in
+        // flight → send it now on this lane (step 3). A switch already in flight keeps riding that switch's resume turn.
+        if (this.link?.mode === "voice" && !this.laneSwitching && this.replyFilteredPending) {
+          this.replyFilteredPending = 0;
+          this.queueTurn({ childText: "", replyFiltered: 2 });
+        }
+      });
+      return;
+    }
+    if (!handOff) this.queueTurn({ childText: "", replyFiltered: 2 });
   }
 
   // ───────────── lane switch (W2-D #1) ─────────────

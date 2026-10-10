@@ -39,7 +39,10 @@ export type LinkEvent =
   /** The child cut the teacher off (barge-in, push-to-talk press, or typing over her). */
   | { type: "teacher_interrupted"; responseId?: string }
   | { type: "response_done"; responseId: string; status: ResponseStatus }
-  | { type: "error"; message: string; fatal: boolean; code?: string };
+  | { type: "error"; message: string; fatal: boolean; code?: string }
+  /** The realtime model's reply was blocked by the content filter (response.done "incomplete", reason content_filter).
+   *  count 1: the protocol asked for ONE fresh reply; count 2: that fresh reply was blocked too (the runtime fails closed). */
+  | { type: "reply_filtered"; responseId: string; count: 1 | 2 };
 
 export interface LinkLevels {
   /** The child's microphone (voice mode only; stays 0 in text mode). */

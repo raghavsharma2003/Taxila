@@ -460,6 +460,10 @@ export async function lessonTurn(req, body) {
     cls = { ...cls, flags: { ...cls.flags, distress: true, distressKind: cls.flags?.distressKind ?? (typeof pendingSafety.kind === "string" ? pendingSafety.kind : "duplex_partial") } };
     distressSrc.push("duplex_pending");
   }
+  // round 4 (4A patch request 10): the realtime lane's reply was blocked by the content filter twice (TurnRequest.replyFiltered).
+  // OR-ed in like safetyPending: a hint that can only ADD safety (the turn is re-planned as the safeguard, as a blocked text
+  // reply is); it never subtracts, and the child's words above already went through the predicate and the distress read.
+  cls = withReplyFiltered(cls, body, fast);
   // ... and a model distress read on the committed turn (classify's model flag or distressCheck, which now runs on every
   // committed child turn with words) reaches the duplex floor as a model note, so a reply speculated on the partials is
   // cancelled there as well (PartialSafety.modelNote was never called before this).
@@ -816,7 +820,9 @@ export async function lessonTurn(req, body) {
   if (!moment) moment = momentNow();
   // round 3 fix (adversarial B2): whether a play piece is on screen after this turn (planTurn's playIsUp reads it next turn:
   // a game command is then the game's act, never an answer to the folded card)
-  if (!late) { if (studioSlot?.artifact?.kind === "play") next.playOn = { turn: next.turn }; else if (next.playOn) delete next.playOn; }
+  // round 4 (4A patch request 04, G2 Khand finding): with the piece's family and mode, so her words take the mode's verb
+  // (director/play-verbs.js, compile.js lastParts), never the folded card question's
+  if (!late) { if (studioSlot?.artifact?.kind === "play") next.playOn = { turn: next.turn, family: studioSlot.artifact.play?.family ?? null, mode: studioSlot.artifact.play?.mode ?? null }; else if (next.playOn) delete next.playOn; }
   // Studio's actions for this turn, as the kernel accepted them (a reveal on the teacher's cue; never on a safeguarding or
   // closing turn, never a second new thing on screen) and as Studio's slot shows them (a held reveal is not revealed).
   const turnStudio = turnStudioNow();
@@ -1170,8 +1176,7 @@ export async function planTurn(base, cls, c) {
     // A belief voiced outside a keyed item counts on the misconception ledger, never as graded evidence.
     if (cls?.voiced) writes.push(misconceptionFlagStmt(child.id, cls.voiced, child));
   }
-  const incident = cls?.flags.distress
-    ? { source: cls.source === "predicate" ? "predicate" : cls.source === "content_filter" ? "content_filter" : "classifier", family: cls.flags.distressKind } : null;
+  const incident = incidentOf(cls);
   if (incident) writes.push(incidentStmt(child.id, lesson.id, childSeq, incident));
   return { evidence, events, writes, skillChanges, incident, r, instructions, skipped, learner: { before: live, after } };
 }
@@ -1383,3 +1388,22 @@ export function earlierExchanges(recent = [], n = 2) {
 
 /** The duplex floor's sticky partial-safety state on the request (never trusted to subtract). */
 const pendingSafetyOf = (body) => !!body?.duplex?.safetyPending;
+
+/**
+ * PURE. Round 4 (4A patch request 10): TurnRequest.replyFiltered >= 2 (the realtime reply and its one fresh retry were both
+ * blocked by the content filter) as a distress flag on the turn, exactly like the blocked text reply's path. It can only ADD:
+ * an already-distressed turn keeps its kind, a turn without the hint (or with 1) is returned unchanged, and a turn with no
+ * classification (the lane-resume turn) gets a no-evidence one carrying the flag.
+ */
+export function withReplyFiltered(cls, body, fast = null) {
+  if (!(Number(body?.replyFiltered) >= 2) || cls?.flags?.distress) return cls;
+  // the source is the content filter's, as on the blocked text reply's path: the incident and the trace say so (incidentOf)
+  return { ...(cls ?? { outcome: "no_evidence", confidence: 1 }), source: "content_filter",
+    flags: { ...(cls?.flags ?? fast?.flags ?? {}), distress: true, distressKind: cls?.flags?.distressKind ?? "content_filter" } };
+}
+
+/** PURE. The safeguarding incident a classified turn opens (its source and family), or null. Exported for tests. */
+export function incidentOf(cls) {
+  return cls?.flags?.distress
+    ? { source: cls.source === "predicate" ? "predicate" : cls.source === "content_filter" ? "content_filter" : "classifier", family: cls.flags.distressKind } : null;
+}

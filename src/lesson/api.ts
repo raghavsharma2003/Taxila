@@ -62,7 +62,7 @@ export interface LessonApi {
 }
 
 /** Why a lesson left the realtime lane (server/voice/realtimeSession.js SWITCH_REASONS). */
-export type LaneSwitchReason = "rate_limit" | "mint_refused" | "unavailable";
+export type LaneSwitchReason = "rate_limit" | "mint_refused" | "unavailable" | "content_filter";
 
 export const httpLessonApi: LessonApi = {
   start: (req) => postJson("/api/lesson/start", req),

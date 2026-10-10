@@ -1,0 +1,55 @@
+(node:7626) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+PASS "lesson khatam" (typed, then confirm): a warm check-in, not an end — "Theek hai Aarav, aap lesson rokna chahte hain—continue, short break, ya aaj ke liye stop?" chips [Keep going | Short break | Stop for today]
+PASS "lesson khatam" (typed, then confirm): the explicit confirmation ends the lesson that turn (chip "Stop for today") — end:true move wrap
+PASS "lesson khatam" (typed, then confirm): the goodbye after the confirmation asks no question (NEVER MANIPULATE) — "Theek hai Aarav, aaj ke liye yahin stop. Aapne fractions ko number line se jodka"
+PASS "lesson khatam" (typed, then confirm): the goodbye passes the floor (no hook, no guilt)
+PASS after a child-confirmed stop, the same child can start a lesson again the same day (no 409)
+PASS "end the lesson" (spoken, then continue): a warm check-in, not an end — "Okay, Meher—you want to end the lesson. You can continue, take a short break, or stop for " chips [Keep going | Short break | Stop for today]
+PASS "end the lesson" (spoken, then continue): "continue" keeps the lesson going (move worked_example)
+PASS "end the lesson" (spoken, then continue): the lesson is back on track after "continue" (move practice)
+PASS "I'm done" (typed, then break): a warm check-in, not an end — "Aap rukna chahti hain—bilkul theek. Aap continue kar sakti hain, short break le sakti hain" chips [Keep going | Short break | Stop for today]
+PASS "I'm done" (typed, then break): "break" keeps the lesson going (move break)
+PASS "I'm done" (typed, then break): the break is a break (move break: "Bilkul Zoya, short break lijiye. Lesson yahin rukega; wapas aakar hum ")
+PASS "I'm done" (typed, then break): the lesson is back on track after "break" (move worked_example)
+PASS "bas" (spoken, then confirm): a warm check-in, not an end — "Kabir, aap rukna chahte hain—bilkul theek. Aap continue karenge, chhota break lenge, ya aa" chips [Keep going | Short break | Stop for today]
+PASS "bas" (spoken, then confirm): the explicit confirmation ends the lesson that turn (chip "Stop for today") — end:true move wrap
+PASS "bas" (spoken, then confirm): the goodbye after the confirmation asks no question (NEVER MANIPULATE) — "Theek hai Kabir, aaj ke liye yahin stop. Aapne fraction ka area model dekha—good"
+PASS "bas" (spoken, then confirm): the goodbye passes the floor (no hook, no guilt)
+PASS "lesson is over" (typed, then continue): a warm check-in, not an end — "Theek hai Aarav, aap lesson rokna chahte hain. Aap continue karenge, short break lenge, ya" chips [Keep going | Short break | Stop for today]
+PASS "lesson is over" (typed, then continue): "continue" keeps the lesson going (move worked_example)
+PASS "lesson is over" (typed, then continue): the lesson is back on track after "continue" (move practice)
+PASS "ab band karo" (spoken, then break): a warm check-in, not an end — "You want to stop now, Meher—no problem. Choose: carry on, take a short break, or stop for " chips [Keep going | Short break | Stop for today]
+PASS "ab band karo" (spoken, then break): "break" keeps the lesson going (move break)
+PASS "ab band karo" (spoken, then break): the break is a break (move break: "Theek hai Meher, short break le lo. Lesson yahin ruka hai; wapas aakar")
+PASS "ab band karo" (spoken, then break): the lesson is back on track after "break" (move worked_example)
+PASS "mujhe lesson khatam karna hai" (typed, then confirm): a warm check-in, not an end — "Aap lesson rokna chahti hain—koi pressure nahi. Aap carry on, short break, ya stop for tod" chips [Keep going | Short break | Stop for today]
+PASS "mujhe lesson khatam karna hai" (typed, then confirm): the explicit confirmation ends the lesson that turn (chip "Stop for today") — end:true move wrap
+PASS "mujhe lesson khatam karna hai" (typed, then confirm): the goodbye after the confirmation asks no question (NEVER MANIPULATE) — "Theek hai, Zoya. Aaj ka lesson yahin stop karte hain. Aapka din shaant aur achha"
+PASS "mujhe lesson khatam karna hai" (typed, then confirm): the goodbye passes the floor (no hook, no guilt)
+PASS "I want to stop" (spoken, then continue): a warm check-in, not an end — "Theek hai Kabir, aap aaj rukna chahte hain—koi pressure nahi. Aap continue karenge, short " chips [Keep going | Short break | Stop for today]
+PASS "I want to stop" (spoken, then continue): "continue" keeps the lesson going (move probe)
+PASS "I want to stop" (spoken, then continue): the lesson is back on track after "continue" (move probe)
+PASS "bas, aaj ke liye itna hi" (typed, then break): a warm check-in, not an end — "Theek hai Aarav, aap aaj ke liye stop karna chahte hain—carry on, short break, ya stop for" chips [Keep going | Short break | Stop for today]
+PASS "bas, aaj ke liye itna hi" (typed, then break): "break" keeps the lesson going (move break)
+PASS "bas, aaj ke liye itna hi" (typed, then break): the break is a break (move break: "Theek hai Aarav, short break lijiye. Wapas aakar hum 0 se 1 ke beech e")
+PASS "bas, aaj ke liye itna hi" (typed, then break): the lesson is back on track after "break" (move worked_example)
+PASS "अब बस करते हैं" (spoken, then confirm): a warm check-in, not an end — "Theek hai, Meher—tum ab rukna chahti ho. Carry on, short break, ya aaj ke liye stop?" chips [Keep going | Short break | Stop for today]
+PASS "अब बस करते हैं" (spoken, then confirm): the explicit confirmation ends the lesson that turn (chip "Stop for today") — end:true move wrap
+PASS "अब बस करते हैं" (spoken, then confirm): the goodbye after the confirmation asks no question (NEVER MANIPULATE) — "Theek hai, Meher. Aaj ke liye yahin stop karte hain. Bye, take care!"
+PASS "अब बस करते हैं" (spoken, then confirm): the goodbye passes the floor (no hook, no guilt)
+PASS goodbye "bye! mujhe jaana hai": the lesson ends that turn (end:true, move wrap) — a goodbye is never held
+PASS goodbye "bye! mujhe jaana hai": one warm close with no question — "Bye Golu, aaj tumne equal shares wali baat par dhyaan diya. Apna khayal rakhna."
+PASS goodbye "bye! mujhe jaana hai": no hook, no guilt (floor)
+PASS goodbye "ok bye, I have to go now": the lesson ends that turn (end:true, move wrap) — a goodbye is never held
+PASS goodbye "ok bye, I have to go now": one warm close with no question — "Okay Meher, bye! Take care, and good work noticing how equal shares make smaller pieces."
+PASS goodbye "ok bye, I have to go now": no hook, no guilt (floor)
+PASS Pause → End: /api/lesson/end ends the lesson at once (200)
+PASS Pause → End: a turn after the end is refused (409)
+PASS parent's lesson hours (20:00-21:00 IST) refuse a start: 409 outside today's lesson hours
+cleanup: account deleted
+
+stop phrases with a proper check-in: 10/10  → docs/design/round4/build/conversation/acceptance/merged-head/owner-3/owner-3.json
+PASS every child stop phrase got ONE warm check-in, not an end: 10/10
+
+48/48 checks passed (http://localhost:8098)
