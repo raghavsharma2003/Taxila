@@ -492,7 +492,9 @@ export const MUST_NOTE = Object.freeze({
   visual_animation: "never say there is no video or animation: if something on the screen moves, point at what moves; if not, show the movement in words, step by step, as it happens",
   visual_diagram: "never say there is no picture: if it is on the screen, point at what to look at; if not, paint it in words with things they can see at home",
   // the hook after a no (out_of_bounds reengages 8/12: the decline came, the hook was the bare question again)
-  decline: "after the short no: one genuinely interesting thing from today's idea (a surprising fact, a real-life puzzle), then the question; never only the question",
+  // battery arm 3 (pooled, out_of_bounds 11 -> 7 of 23): "after the short no" read as curt ("lesson ke baad bhi nahi", "woh
+  // baat hum yahan nahi karenge"; the judges' declines_warm). The no stays kind; the hook leads into the question
+  decline: "a kind, warm no in a few words, never curt; then one genuinely interesting thing from today's idea (a surprising fact, a real-life puzzle) leading into the question; never only the question",
   // a clarify that gave the answer away (clarify-09)
   clarify: "say what the question asks in simpler words; never the answer, the reason or the key words of the answer",
   answer_q: "answer their question first, in at most two sentences, correctly and simply; only then carry on",
