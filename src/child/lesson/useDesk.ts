@@ -21,6 +21,8 @@ import { t } from "../../ui/copy.ts";
 import { tw } from "../../copy/en.ts";
 import { getJson } from "../../lesson/api.ts";
 import { enginesForTopic, prewarmWhenIdle } from "../../modules/prewarm.ts";
+import { openStudioWire, studioApi, useEarlySlot } from "../../studio/useStudio.ts";
+import { workTrayBox } from "./trayBox.ts";
 import { fractionQuestion, helpAskedKey } from "./answers.ts";
 import { prepareEarcons, setEarcons } from "../../ui/sound/earcons.ts";
 import { setHapticsEnabled } from "../../ui/haptics.ts";
@@ -117,7 +119,16 @@ export function useDesk(runtime: LessonRuntime, bridge: UiBridge | null, ctx: De
   const bs = useSyncExternalStore(bridge?.store.subscribe ?? noopSub, bridge?.store.get ?? nullGet, bridge?.store.get ?? nullGet);
   const young = ctx.family === "young";
   const tokens = BAND_TOKENS[ctx.band];
-  const ui = state.ui as typeof state.ui & UiV2;
+  const uiTurn = state.ui as typeof state.ui & UiV2;
+  // round 4 content (request → piece ≤ 3 s): a certified piece the server composed for the child's own ask arrives on the
+  // Studio stream before her reply; it holds the tray until the NEXT turn's ui lands (which carries the same slot, or not:
+  // then the server has retracted it). Never a piece the gate did not pass (server/forge3/tray-gate.js).
+  const early = useEarlySlot(state.lessonId ?? null);
+  const uiAtEarly = useRef<{ at: number; ui: unknown } | null>(null);
+  if (early && uiAtEarly.current?.at !== early.at) uiAtEarly.current = { at: early.at, ui: uiTurn };
+  const earlyLive = !!early && uiAtEarly.current?.ui === uiTurn && uiTurn.studioSlot?.intentId !== early.slot.intentId;
+  const ui = (earlyLive ? { ...uiTurn, tray: "studio", studioSlot: early!.slot } : uiTurn) as typeof uiTurn;
+  useEffect(() => { openStudioWire(state.lessonId ?? null); }, [state.lessonId]);
   const withHelpNow = !!ui.withHelp;
 
   // ───────── the floor and its signals ─────────
@@ -611,6 +622,20 @@ export function useDesk(runtime: LessonRuntime, bridge: UiBridge | null, ctx: De
 
   // ───────── thinking beats ─────────
   const beats = commitAt !== null && (floor === "thinking" || floor === "heard") ? beatsAt(now - commitAt, { older: false }) : null;
+
+  // round 4 content: tell the server the Work tray box this device gives a piece, once per lesson and again when it changes
+  // by more than a few px (a rotation, a resized window): the certificate gate (server/forge3/tray-gate.js) judges every
+  // piece at this size before it can reach the tray
+  const reportedBox = useRef<string>("");
+  const trayBoxNow = workTrayBox({ w: size.w, h: size.h, fontScale: size.fontScale, cardNeed: size.cardNeed }, ctx.family, { captionsOn: ctx.captionsAlways || ctx.band !== "b1" });
+  const lessonIdNow = state.lessonId;
+  useEffect(() => {
+    if (!lessonIdNow || !trayBoxNow || keyboardUp) return;
+    const key = `${lessonIdNow}|${Math.round(trayBoxNow.w / 8)}|${Math.round(trayBoxNow.h / 8)}`;
+    if (key === reportedBox.current) return;
+    const t = setTimeout(() => { reportedBox.current = key; void studioApi.viewport(lessonIdNow, trayBoxNow, young); }, 150);
+    return () => clearTimeout(t);
+  }, [lessonIdNow, trayBoxNow?.w, trayBoxNow?.h, young, keyboardUp]);
 
   // ───────── the tray model ─────────
   const tray: TrayModel | null = trayKind

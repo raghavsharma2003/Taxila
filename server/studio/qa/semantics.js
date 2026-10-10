@@ -39,7 +39,7 @@ const GROUP_WORDS = "groups?|baskets?|plates?|bags?|rows?|sets?|tokri|toliyan|sa
 const ITEM_WORDS = "dots?|items?|objects?|balls?|counters?|beads?|stars?|circles?|sweets?|laddoos?|apples?|mangoes|things|cheezein";
 
 /**
- * The counts her line claims are on the screen. → { parts: number[], gaps: number[], groups: {n, each}[] }
+ * The counts her line claims are on the screen. → { parts: number[], gaps: number[], groups: {n, each}[], grids: {rows, cols}[] }
  * Only explicit "N equal parts / N gaps / N groups each with M" claims: a fraction written in her line (2/5) is a number,
  * not a claim about the picture.
  */
@@ -47,10 +47,19 @@ const ITEM_WORDS = "dots?|items?|objects?|balls?|counters?|beads?|stars?|circles
 const SUPPOSE = /\b(if|agar|would|could|suppose|imagine|maan(?:o|\s+lo|\s+lijiye|\s+lete)|socho|sochiye|jab|when)\b/i;
 export function screenClaims(line) {
   const full = String(line ?? "").toLowerCase();
-  const out = { parts: [], gaps: [], groups: [] };
+  const out = { parts: [], gaps: [], groups: [], grids: [] };
   if (!POINTS_AT_SCREEN.test(full)) return out;
   // only the clauses that state what is there (a supposing clause is a question about a picture that is not drawn)
-  const s = full.split(/(?<=[.;?!])\s+|\s+[—–-]\s+/).filter((c) => !SUPPOSE.test(c)).join(" . ");
+  let s = full.split(/(?<=[.;?!])\s+|\s+[—–-]\s+/).filter((c) => !SUPPOSE.test(c)).join(" . ");
+  // round 4 content: "5 columns aur 3 rows" is ONE claim, a 3 x 5 grid of 15 cells (before: "3 rows mein" read as 3 equal
+  // parts and "3 rows mein hai: total 15" as 3 groups of 15). Both counts are taken out of the clause once read.
+  const colM = s.match(new RegExp(`\\b${NUM_RE}\\s+(?:equal\\s+|barabar\\s+)?columns?\\b`, "iu"));
+  const rowM = s.match(new RegExp(`\\b${NUM_RE}\\s+(?:equal\\s+|barabar\\s+)?rows?\\b`, "iu"));
+  if (colM && rowM) {
+    const cols = toNum(colM[1]), rows = toNum(rowM[1]);
+    if (cols >= 1 && rows >= 1 && cols * rows >= 2 && cols * rows <= 60) out.grids.push({ rows, cols });
+    s = s.replace(colM[0], " grid ").replace(rowM[0], " grid ");
+  }
   const add = (arr, n) => { if (Number.isFinite(n) && n >= 2 && n <= 24 && !arr.includes(n)) arr.push(n); };
   // "3 equal groups, each holding 5 dots" / "3 groups of 5" / "teen group, har group mein 5"
   for (const m of s.matchAll(new RegExp(`\\b${NUM_RE}\\s+(?:equal\\s+|barabar\\s+|same\\s+)?(?:${GROUP_WORDS})\\b[^.?!;]{0,40}?(?:\\beach\\b|\\bhar\\b|\\bof\\b|\\bmein\\b)[^.?!;\\d]{0,24}?${NUM_RE}\\b(?:\\s*(?:${ITEM_WORDS}))?`, "giu"))) {
@@ -110,14 +119,46 @@ export function drawnCounts(ops) {
   return { families, lines, groups };
 }
 
+/** A rectangle cut into rows x cols by full-span lines (the area model draws its grid this way). */
+/** The rows x cols of every rectangle on the board cut by full-span lines (the area model's grid). */
+function gridDims(ops) {
+  const lines = ops.filter((o) => o.op === "line" && Array.isArray(o.from) && Array.isArray(o.to));
+  const out = [];
+  for (const r of ops) {
+    if (r.op !== "rect" || !Array.isArray(r.at) || !(r.w > 0 && r.h > 0)) continue;
+    const [x, y] = r.at;
+    const v = new Set(lines.filter((l) => Math.abs(l.from[0] - l.to[0]) < 1 && l.from[0] > x + 2 && l.from[0] < x + r.w - 2 && Math.abs(Math.min(l.from[1], l.to[1]) - y) < 3 && Math.abs(Math.max(l.from[1], l.to[1]) - (y + r.h)) < 3).map((l) => Math.round(l.from[0]))).size;
+    const h = new Set(lines.filter((l) => Math.abs(l.from[1] - l.to[1]) < 1 && l.from[1] > y + 2 && l.from[1] < y + r.h - 2 && Math.abs(Math.min(l.from[0], l.to[0]) - x) < 3 && Math.abs(Math.max(l.from[0], l.to[0]) - (x + r.w)) < 3).map((l) => Math.round(l.from[1]))).size;
+    if (v || h) out.push({ rows: h + 1, cols: v + 1 });
+  }
+  return out;
+}
+function gridCut(ops, rows, cols) {
+  const lines = ops.filter((o) => o.op === "line" && Array.isArray(o.from) && Array.isArray(o.to));
+  return ops.some((r) => {
+    if (r.op !== "rect" || !Array.isArray(r.at) || !(r.w > 0 && r.h > 0)) return false;
+    const [x, y] = r.at;
+    const v = lines.filter((l) => Math.abs(l.from[0] - l.to[0]) < 1 && l.from[0] > x + 2 && l.from[0] < x + r.w - 2 && Math.abs(Math.min(l.from[1], l.to[1]) - y) < 3 && Math.abs(Math.max(l.from[1], l.to[1]) - (y + r.h)) < 3);
+    const h = lines.filter((l) => Math.abs(l.from[1] - l.to[1]) < 1 && l.from[1] > y + 2 && l.from[1] < y + r.h - 2 && Math.abs(Math.min(l.from[0], l.to[0]) - x) < 3 && Math.abs(Math.max(l.from[0], l.to[0]) - (x + r.w)) < 3);
+    return new Set(v.map((l) => Math.round(l.from[0]))).size === cols - 1 && new Set(h.map((l) => Math.round(l.from[1]))).size === rows - 1;
+  });
+}
+
 /** W10: every count her line claims is on the screen is drawn. → string[] problems ([] = pass) */
 export function claimsNotDrawn(line, ops) {
   const claims = screenClaims(line);
-  if (!claims.parts.length && !claims.gaps.length && !claims.groups.length) return [];
+  if (!claims.parts.length && !claims.gaps.length && !claims.groups.length && !claims.grids.length) return [];
   const d = drawnCounts(ops);
   const out = [];
-  const famHas = (n) => d.families.some((f) => f.n === n && f.kind !== "ellipse" && f.kind !== "ring") || d.lines.some((l) => l.gaps === n);
+  // round 4 content: a rectangle cut into a grid shows its rows, its columns and its cells as equal parts
+  const grids = gridDims(ops);
+  const famHas = (n) => d.families.some((f) => f.n === n && f.kind !== "ellipse" && f.kind !== "ring") || d.lines.some((l) => l.gaps === n)
+    || grids.some((g) => g.rows === n || g.cols === n || g.rows * g.cols === n)
+    // "har group mein 4 boxes": equal groups that each hold n show n parts per group
+    || (d.groups.filter((x) => x.held > 0).length >= 2 && d.groups.filter((x) => x.held > 0).every((x) => x.held === n));
   for (const n of claims.parts) if (!famHas(n) && d.groups.filter((x) => x.held > 0).length !== n) out.push(`${n} equal parts said, none drawn`);
+  // a grid: rows x cols equal cells drawn (one family of that many equal boxes)
+  for (const g of claims.grids) if (!d.families.some((f) => f.kind === "rect" && f.n === g.rows * g.cols) && !gridCut(ops, g.rows, g.cols)) out.push(`${g.cols} columns x ${g.rows} rows said, no ${g.rows * g.cols} equal cells drawn`);
   for (const n of claims.gaps) if (!d.lines.some((l) => l.gaps === n) && !d.families.some((f) => f.n === n && (f.kind === "rect" || f.kind === "sector"))) out.push(`${n} gaps said, the line shows ${d.lines.map((l) => l.gaps).join("/") || "no ticks"}`);
   for (const g of claims.groups) {
     const filled = d.groups.filter((x) => x.held > 0);
@@ -181,12 +222,13 @@ export function nextStepRevealed(line, ops) {
   if (firstAsk && edges.length >= 2) {
     const tos = new Set(edges.map((e) => norm(e.to)));
     const heads = [...new Set(edges.map((e) => e.from).filter((f) => !tos.has(norm(f))))];
-    if (heads.length === 1) out.push(`asks for the first step, board draws the chain from "${heads[0]}"`);
+    // a head written "?" (the board keeps the question open) reveals nothing
+    if (heads.length === 1 && norm(heads[0])) out.push(`asks for the first step, board draws the chain from "${heads[0]}"`);
   }
   for (const x of asks) {
     const k = norm(x);
     if (!k) continue;
-    for (const e of edges) if (norm(e.from) === k || (norm(e.from).includes(k) && k.length >= 4)) out.push(`asks what follows "${x.trim()}", board draws ${e.from} → ${e.to}`);
+    for (const e of edges) if (norm(e.to) && (norm(e.from) === k || (norm(e.from).includes(k) && k.length >= 4))) out.push(`asks what follows "${x.trim()}", board draws ${e.from} → ${e.to}`);
   }
   return [...new Set(out)];
 }

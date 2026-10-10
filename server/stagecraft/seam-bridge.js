@@ -14,6 +14,8 @@ import { _lesson } from "../studio/seam.js";
 import { restIsDue } from "./policy.js";
 import { REST_CFG } from "./adapters.js";
 import { createStageGradeSession } from "./grade.js";
+// round 4 content: the ONE certificate gate (Studio v2 is off the child path unless certified at all three sizes)
+import { certifyForTray, viewportOf } from "../forge3/tray-gate.js";
 
 // `var` + function declarations (hoisted): kernel-point.js registers its hooks at load, and with the seam ⇄ bridge import
 // cycle (patch 03) it may run before this module's body has evaluated; a `let`/`const` binding would be in its TDZ then.
@@ -53,8 +55,13 @@ export function augmentView(lessonId, view, point) {
  * retires a piece that has been up long enough; a "board" outcome adds no piece: the Wave 2 whiteboard (drawn on her
  * line) is the board, and a Stagecraft piece proposed here would decline it (propose.js reveal_ready).
  */
-function merge(lessonId, host, view, point, outcome) {
+function merge(lessonId, host, view0, point, outcome) {
   const L = _lesson(lessonId);
+  // round 4: after the child declined a game this lesson, no game is proposed again at a practice beat (the beat is
+  // Stagecraft's / the boards'), whether or not Stagecraft reveals now
+  const practice = isPracticeBeat(point.current?.beat ?? point.beat);
+  const w2Play = isPlayPiece(view0?.propose?.reveal ? L?.pieces.get(view0.propose.reveal) : null);
+  const view = practice && w2Play && L?.playDeclined ? { ...view0, propose: undefined } : view0;
   const want = point.want ?? null;
   const out = { statuses: view?.statuses ?? [], onScreen: view?.onScreen ?? null, ...(view?.outcome ? { outcome: view.outcome } : {}), ...(view?.suggest ? { suggest: view.suggest } : {}) };
   const on = L?.onScreen ? L.pieces.get(L.onScreen) : null;
@@ -75,11 +82,30 @@ function merge(lessonId, host, view, point, outcome) {
     return out;
   };
   if (!outcome || outcome.act !== "reveal" || !L) return keepW2();
+  // round 4 (owner's vision via the main session, 2026-10-10: games built on the go, the skill as the mechanic): at a
+  // PRACTICE beat an admitted play piece for the skill being practised wins over a Stagecraft reveal. It is an offer the
+  // child can decline (NEVER MANIPULATE): after one decline in this lesson the practice beat is Stagecraft's / the
+  // boards' again. Measured (G2, claude/r4-khand, local production, n = 3 lessons): Stagecraft's reveal took every
+  // practice beat (turns 5-11), so the play proposal was never shown.
+  if (practice && w2Play && !L.playDeclined) {
+    host.playWins = (host.playWins ?? 0) + 1;
+    return keepW2();
+  }
   // a Wave 2 piece the child is on stays unless the child asked for something else or is stuck on it (board reteach)
   if (onPiece && onPiece.source !== "stagecraft" && !exempt) return keepW2();
   const id = outcome.candidateId;
   const c = host.state.candidates.find((x) => x.id === id) ?? null;
   const facts = { kind: outcome.facts.kind, archetype: stageArchetypeTag(outcome.facts.archetype), onScreen: { ...(outcome.facts.onScreen ?? {}) } };
+  // round 4 content: certified at the device's class (and at all three sizes) BEFORE it is proposed, or the W2 view stands
+  const sc0 = { rung: outcome.rung, archetype: c?.archetype ?? outcome.facts.archetype, spec: c?.payload?.spec ?? null, boardTwin: c?.boardTwin ?? null };
+  const vpNow = viewportOf(lessonId);
+  const cert = certifyForTray({ kind: "stagecraft", stagecraft: sc0 }, { vp: vpNow.vp, box: vpNow.box, young: vpNow.known ? vpNow.young : (L.child?.class_level ?? 6) <= 4,
+    topicId: L.topicId ?? point.current?.topicId ?? null, factsKind: facts.kind, verdict: c?.verdict ?? null });
+  if (!cert.ok) {
+    host.gateRefusals = (host.gateRefusals ?? 0) + 1;
+    console.info(`[stagecraft] tray gate refused ${outcome.rung} ${sc0.archetype ?? "-"} at ${cert.vp}: ${String(cert.why).slice(0, 100)}`);
+    return keepW2();
+  }
   // a seam piece for it, so slotFor / factsRowForSlot / onReveal run their existing paths (one piece, one door)
   L.pieces.set(id, { intentId: id, slotId: `${id}:slot`, kind: facts.kind === "whiteboard" ? "diagram" : facts.kind, archetype: c?.archetype ?? outcome.facts.archetype, params: {}, skillId: point.current.skillId,
     misconceptionId: point.current.misconceptionId ?? null, need: want?.need ?? "explain", neededAtMs: 0, intent: null, personal: outcome.rung === "generated_spec",
@@ -90,6 +116,10 @@ function merge(lessonId, host, view, point, outcome) {
   out.revealing = facts;
   return out;
 }
+
+const isPracticeBeat = (beat) => beat === "practice" || beat === "practice_set";
+/** A play piece (server/forge3/live.js through seam.composeAsk, or a W2 proposal of a play family). */
+export const isPlayPiece = (p) => !!p && (p.source === "play" || String(p.archetype ?? "").startsWith("play:"));
 
 /** A Stagecraft piece's facts archetype on the reply's facts row: tagged, so it never collides with a module engine id
  *  (shared/engine-catalog.js has a water-cycle@1 too) and seam.js isStudioRow can tell it is Studio's own row. */

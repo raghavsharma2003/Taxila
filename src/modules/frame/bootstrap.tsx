@@ -196,6 +196,8 @@ function LiveFrame() {
     sentIssues.current = issues;
   }, [resolved, api]);
 
+  // round 4 content: the band's text floor for the frame fit (fit.ts never shrinks words below it)
+  if (init?.ageBand && typeof document !== "undefined") document.documentElement.dataset.ageBand = init.ageBand;
   if (!init || loaded.status === "waiting" || loaded.status === "loading") return <div className="frame-wait" aria-busy="true" />;
   if (loaded.status === "missing") return <ComingSoon lang={init.lang} />;
   const Engine = loaded.engine.Component;

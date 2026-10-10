@@ -149,7 +149,9 @@ async function start(req, res, body) {
     voicesigSeam.startRows({ q, hasConsent, guardianId: guardian.id, childId: child.id }),
   ]);
   if (!core) throw forbidden("core_tutoring consent is required before a lesson");
-  const mode = body.mode === "text" || body.mode === "cascade" ? body.mode : "voice";
+  // round 4 (4A patch request 10b, main safety review): a start with no mode (or an unknown one) lands on the CASCADE lane,
+  // the lane with the strongest floor (the server writes every reply); the realtime lane needs an explicit mode: "voice"
+  const mode = startModeOf(body.mode);
   const purpose = START_PURPOSES.has(body.purpose) ? body.purpose : "lesson";
   // Seam (W2-A, server/lesson/purpose.js): an Ask start with no topic is routed by the child's first words; null (and any
   // unknown topic id) leaves the topic resolved exactly as before.
@@ -606,3 +608,9 @@ export const routes = {
 
 /** Internals for tests (the turn's planning and speculation, which need no database or model). */
 export const __test = { safeguardLine, planTurn, replyKey, speculate, specFanout, textReply, noteDid, withAsk, uiVerdictOf, fallbackReply, scrubbed };
+
+/** Round 4 (4A patch request 10b): the lane a start runs on. Only an explicit "text" or "voice" is honoured; no mode, or an
+ *  unknown one, is the cascade lane (the strongest floor: the server writes every reply). PURE; exported for tests. */
+export function startModeOf(mode) {
+  return mode === "text" || mode === "voice" ? mode : "cascade";
+}

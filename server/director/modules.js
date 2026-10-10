@@ -26,6 +26,9 @@ import { recheckEngineAnswer } from "./recheck.js";
 import { p5Flag } from "../conversation/flags.js";
 import { explainerFor, wantExplainer } from "../forge/explainer/lesson.js";
 import { leaksOpenItem } from "../forge/explainer/guard.js";
+// round 4 content: the ONE certificate gate (server/forge3/tray-gate.js): an engine is mounted only when it is certified at
+// the device's viewport class (the Desk reports its tray box: POST /api/studio/viewport)
+import { certifyModule, viewportOf } from "../forge3/tray-gate.js";
 
 const TOPIC_MAP = JSON.parse(readFileSync(new URL("../../shared/engine-topic-map.json", import.meta.url), "utf8"));
 
@@ -50,6 +53,25 @@ const bandOf4 = (band) => (/^B[1-4]$/.test(String(band)) ? band : "B3");
 /** "B1".."B4" (director/state.js bandOf) or the ctx age band → the engines' age band. */
 const ageBandOf = (band, s) => s?.ctx?.ageBand ?? (band === "B1" || band === "B2" ? "6-9" : "10-15");
 
+/** The device's class for the gate: the lesson's reported tray box (unknown = the 360 phone), its band. */
+function trayCtx(s) {
+  const v = viewportOf(s?.ctx?.sessionId ?? null);
+  const young = v.known ? v.young : String(s?.ctx?.ageBand ?? "") === "6-9";
+  return { vp: v.vp, box: v.box, young };
+}
+/** Telemetry: mounts the gate refused (engine, mode and reason only). */
+const refusedMounts = [];
+export const mountRefusals = () => refusedMounts.slice();
+/** Is this engine plan certified at the device's class? (one place: every mount below goes through it) */
+export function certifiedMount(s, plan) {
+  const r = certifyModule(plan, trayCtx(s));
+  if (!r.ok) {
+    refusedMounts.push({ at: Date.now(), engine: plan?.engine ?? null, mode: plan?.params?.mode ?? null, vp: r.vp, why: String(r.why).slice(0, 120) });
+    if (refusedMounts.length > 500) refusedMounts.shift();
+  }
+  return r.ok;
+}
+
 /** A plan the frame can mount: a registered engine this lesson has not seen fail, with a valid mode. */
 function mountable(s, plan) {
   if (!plan || !ENGINES[plan.engine] || (s.failedEngines ?? []).includes(plan.engine)) return null;
@@ -57,7 +79,32 @@ function mountable(s, plan) {
   // round 3 fix (experience B2): never mount a config the frame's own normalize() refuses (it would leave the tray while
   // her line points at it): the board / explanation path answers instead
   if (engineConfigError(plan.engine, params)) return null;
+  // round 4 content: uncertified at this device's size → not mounted (the board / explanation / voice answer instead)
+  if (!certifiedMount(s, { ...plan, params })) return null;
   return { ...plan, params };
+}
+
+/**
+ * round 4 content (brief item 4): the child asked for a game / animation / simulation, the topic has an engine, but the
+ * item's own config is one the engine refuses (measured: 9 of 22 c6-maths-ch06-t01 "Perimeter" plans, "build needs an area
+ * or a perimeter target" / "measure needs a shape"), so the ask fell to a still board. A canonical, open task for the
+ * topic's engine instead (unbound: graded nothing; the engine checks the shape itself), only from the topic's own words.
+ */
+const INTERACTIVE_VISUALS = new Set(["game", "animation", "simulation"]);
+function interactiveDefault(s, kit, lang, ageBand) {
+  const engine = TOPIC_MAP[kit?.topicId];
+  if (!engine || !ENGINES[engine]) return null;
+  const words = [kit?.title, ...(kit?.skills ?? []).map((k) => k.title ?? k.name ?? "")].join(" ").toLowerCase();
+  let params = null;
+  if (engine === "geoboard@1") params = /perimeter|boundary|fence|border|around/.test(words) ? { mode: "build", ask: "perimeter", perimeter: 12 }
+    : /area|square units|cover/.test(words) ? { mode: "build", ask: "area", area: 6 } : null;
+  // a number to build in the place-value chart, as long as the topic's own numbers (its words name the digit count)
+  else if (engine === "place-value@1") {
+    const places = /6-digit|lakh/.test(words) && !/5-/.test(words) ? 6 : /5-|5 digit|ten thousand|thousands/.test(words) ? 5 : /4-|4 digit|thousand/.test(words) ? 4 : 3;
+    params = { mode: "build", a: [0, 0, 0, 345, 4506, 45236, 345216][places], places };
+  }
+  if (!params) return null;
+  return mountable(s, { engine, params: { ...params, topicId: kit.topicId, lang }, goal: undefined, bindItem: false, itemId: null, predict: false, ageBand });
 }
 
 /** A bound plan shown on a teaching move: the same activity, answers graded nothing. */
@@ -106,12 +153,15 @@ function planModuleInner(s, { kit, item, move, lang, band, representation }) {
     const plan = mountable(s, unbind(planEngine({ kit, item: source, lang, mode: "show", representation, topicMap: TOPIC_MAP, ageBand })));
     // an engine show whose visible values state the open item's key (a number line ending on it) is skipped too
     if (plan && !(open && leaksOpenItem({ facts: moduleFacts({ id: "probe", engine: plan.engine, params: plan.params }), ops: [] }, open))) return apply(plan);
+    // round 4 content: an interactive ask gets the topic engine's open task before the board rung
+    const free = INTERACTIVE_VISUALS.has(String(move.visual ?? "")) ? interactiveDefault(s, kit, lang, ageBand) : null;
+    if (free && !(open && leaksOpenItem({ facts: moduleFacts({ id: "probe", engine: free.engine, params: free.params }), ops: [] }, open))) return apply(free);
     // rungs 4-5: the board explanation / diagram (code pick from the same text, the topic library, the lesson's fill)
     // never-an-answer (W2-B fixer, blocker 1): the item the child is still answering is OPEN; the board drawn for it
     // shows the method with "?" for the result, or a parallel example, and never that item's key (explainer/guard.js)
     const ex = ENGINES["explainer@1"] && !(s.failedEngines ?? []).includes("explainer@1")
       ? explainerFor({ lessonId: s.ctx?.sessionId, kit, item: source, openItem: open, band: bandOf4(band), representation, interest: s.ctx?.interests?.[0] }) : null;
-    if (ex) return apply({ engine: "explainer@1", params: ex.params, goal: undefined, bindItem: false, itemId: null, predict: false });
+    if (ex && certifiedMount(s, { engine: "explainer@1", params: ex.params })) return apply({ engine: "explainer@1", params: ex.params, goal: undefined, bindItem: false, itemId: null, predict: false });
     // nothing to show: a module that belongs to another item goes; an unbound show stays up through the teach steps
     if (cur?.itemId && item && cur.itemId !== item.id) close();
     return cmds;
@@ -127,7 +177,7 @@ function planModuleInner(s, { kit, item, move, lang, band, representation }) {
     // 2. the lesson's G1 fill for this item
     if (cur?.g1 && cur.g1.itemId === item.id) return cmds;                 // already on screen
     const fill = peekLessonFill(s.ctx?.sessionId, item.id);
-    if (fill && ENGINES[fill.command.engine] && !(s.failedEngines ?? []).includes(fill.command.engine)) {
+    if (fill && ENGINES[fill.command.engine] && !(s.failedEngines ?? []).includes(fill.command.engine) && certifiedMount(s, { engine: fill.command.engine, params: fill.command.params })) {
       close();
       cmds.push(fill.command);
       s.module = { id: fill.command.moduleId, engine: fill.command.engine, params: fill.command.params, goal: fill.command.goal ?? null,
