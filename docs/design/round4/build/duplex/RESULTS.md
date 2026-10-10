@@ -24,10 +24,10 @@ meetings round 3 ablated on), TEST = ES2005b + IS1004b. Every parameter this rou
 | R1b | in-speech commits <= 1 % (MAI) | 4/400 | 4/400 | yes (unchanged) |
 | R2 | decision gap p50 <= 350 ms, India lane | 1,011 ms | 1,012 ms | no (see §4) |
 | R2b | undecided within 5 s <= 2 % | 1/400 | 1/400 | yes |
-| R3 | keeps talking through continuers >= 90 % (AMI) | 154/195 = 79.0 % | _pending TEST re-score_ | |
-| R4 | stops within 200 ms on >= 50 % of real barge-ins | 24/51 = 47.1 % | _pending_ | |
-| R5 | false yields to other voices <= 10 % | 32/239 = 13.4 % | _pending_ | |
-| R6 | self-yields on her own bleed <= 2 % | 101/730 = 13.8 % | _pending_ | |
+| R3 | keeps talking through continuers >= 90 % (AMI) | 154/195 = 79.0 % [72.7-84.1] | **160/195 = 82.1 %** [76.1-86.8] | no |
+| R4 | stops within 200 ms on >= 50 % of real barge-ins | 24/51 = 47.1 % | **31/51 = 60.8 %** (stopped at all 36; p50 among stopped 150 ms) | **yes** |
+| R5 | false yields to other voices <= 10 % | 32/239 = 13.4 % [9.6-18.3] | 33/239 = 13.8 % [10.0-18.8] (one worse) | no |
+| R6 | self-yields on her own bleed <= 2 % | 101/730 = 13.8 % [11.5-16.5] | 96/730 = 13.2 % [10.9-15.8] | no |
 | R7 | safety floor never weaker | green | green (§5) | yes |
 
 ## 2. R1 in detail (eot-bench Hindi, TRAIN vs TEST)
@@ -75,4 +75,65 @@ more thinking pauses on TRAIN.
 No safety file touched. The partial-safety predicate still reads every word. The eager start never fires under distress
 (unit test). The overlap changes only change WHEN her audio is hushed or paused, never the safeguard's timing (G1 / G2).
 
-_(Overlap sections, gates and owner decisions follow as they are measured.)_
+## 6. Overlap (AMI), TRAIN vs TEST
+
+`evals/duplex-r3/ami-overlap.mjs` (unchanged runner and scorer), `results/r4-ami-base.json` (BEFORE, on a frozen
+`git archive` of the base) and `results/r4-ami-after.json`. Split scorer: `evals/duplex-r4/ami-split.mjs`.
+
+| split | R3 continuers kept | R4 barge-ins stopped <= 200 ms | R5 room false yields | R6 bleed self-yields |
+|---|---|---|---|---|
+| TRAIN (ES2004b, IS1008b) BEFORE | 78/103 = 75.7 % | 13/22 | 13/101 = 12.9 % | 78/421 = 18.5 % |
+| TRAIN AFTER | 84/103 = 81.6 % | 17/22 | 12/101 = 11.9 % | 77/421 = 18.3 % |
+| **TEST (ES2005b, IS1004b) BEFORE** | 76/92 = 82.6 % | 11/29 | 19/138 = 13.8 % | 23/309 = 7.4 % |
+| **TEST AFTER** | **76/92 = 82.6 %** | **14/29** | **21/138 = 15.2 %** | **19/309 = 6.1 %** |
+| ALL BEFORE | 154/195 = 79.0 % | 24/51 = 47.1 % | 32/239 = 13.4 % | 101/730 = 13.8 % |
+| ALL AFTER | 160/195 = 82.1 % | 31/51 = 60.8 % | 33/239 = 13.8 % | 96/730 = 13.2 % |
+
+What changed (each found with `evals/duplex-r4/ami-trace.mjs` on TRAIN, kept only if TRAIN improved):
+1. **The hush meets a burst whose reflex duck was released at onset** (`OVERLAP.hushAfterRelease`). A burst too short to
+   carry its own pitch inherits the last attribution; when that was "not the child" (another voice in the room), her
+   reflex duck was released at the onset and the host never tried the hush for that burst again. Once its own pitch said
+   "the child", a plain "yeah" met the bare 600 ms sustain and paused her, and real barge-ins sounded under her full voice.
+   TRAIN: continuers 78 → 79, barge-ins 13 → 15.
+2. **A hush give-up lasts 60 s, not the lesson** (`OVERLAP.hushGiveUpForMs`). The echo-like give-up still fired within
+   minutes on real meetings and then held for the whole session. TRAIN: continuers 79 → 82, barge-ins 15 → 17. 15 / 30 /
+   60 s were identical on TRAIN; 60 s is the most conservative.
+3. **The sustain and the 1 s forced yield count only voice above her echo level** (`OVERLAP.sustainCountsNonEcho`,
+   `nonEchoDb` 3). After a 660 ms "yes" her own voice bled into the headset ~25 dB under her level, the device VAD kept
+   "voicing", and the forced yield fired at 1 s. TRAIN: continuers 82 → 84.
+
+Tried and rejected (context/inbox/r4-duplex.json): a lexical-turn echo gate (bleed 77 → 56/421 on TRAIN, but it swallowed
+a real barge-in's words in the ship5 B3 rig, because her "echo level" is her OUTPUT level, not a measured echo); a longer
+hushed sustain (1,300 / 1,600 ms: no change at all, G11 binds).
+
+**R5 got one worse** (TEST 19 → 21/138 room false yields). It is inside the noise, but it is a regression and it is reported.
+
+**The open-loop rig.** Her line is another participant's real speech, played to its end whatever the engine does. On a
+device, once the engine has yielded or committed, her audio has stopped. `evals/duplex-r4/ami-artefact.mjs` labels the
+failures whose onset fell while the governor's phase was NOT her floor: **16 of the 35 remaining continuer failures and
+13 of the 20 late barge-ins** (BEFORE: 18 of 41 and 13 of 27). These still count in the official rows above. On a device
+those 16 continuers were not "over her" at all, but the rig cannot say what would have happened instead, so no corrected
+rate is claimed.
+
+## 7. The hands-free mid-sentence report (main session, 2026-10-10)
+
+Stream 3's page-clock run reported the engine committing mid-utterance on 4/6 hands-free turns ("Mujhe lagta hai dabbe").
+Reproduced on a local production build (`tests/prod/r4-timeline`, owner-cohort TEST child, class 4; a SYNTHETIC child-like
+TTS clip with exactly 450 / 700 / 1,000 ms between phrases, `evals/duplex-r4/synth-midpause.mjs`; fake ASR with a fixed
+750 ms commit → final; not a child):
+
+| fake transcriber | clip (mid-sentence pauses) | turns | sent truncated | engine decision after speech end p50 | decision → turn POST p50 / p90 |
+|---|---|---|---|---|---|
+| original `driver.mjs` | 450 ms × 2 | 6 | **6/6** | (words never complete) | – |
+| patch 01 | 450 ms × 2 | 6 | **0/6** | 1,404 ms | 375 / 1,200 ms |
+| patch 01 | 700 ms × 2 | 6 | **0/6** | 1,436 ms | 347 / 861 ms |
+| patch 01 | 1,000 ms × 2 | 6 | **0/6** | 1,722 ms | 283 / 1,099 ms |
+
+- **The cause was the harness.** The engine's micro-commit probe (an `input_audio_buffer.commit` at a 150 ms pause, by
+  design, to fetch words sooner) made the fake finalise the item with the words so far and never transcribe the rest. The
+  real gpt-live-transcribe opens a new item for the audio after a commit: 205 of 206 commits in the recorded round-2 D4
+  events. The same engine sends every turn whole once the fake does that (patch 01, a request to the main session).
+- **What stays real:** speech end → turn POST is p50 ~2.1-2.5 s on this harness. The engine decides at p50 1.4-1.7 s
+  (half on the class wait, half on the silence backstop; this fake transcript carries no punctuation, which the real lanes
+  do, so it reads fewer clauses as finished than production would). The decision → POST step (p50 ~0.3 s, ~1.1 s on 5 of
+  18 turns) is after the commit, in `src/lesson` (stream 3), not in the engine.
