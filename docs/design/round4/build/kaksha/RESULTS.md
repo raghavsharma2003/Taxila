@@ -60,3 +60,19 @@ resting), World (today, yesterday, empty, settlement) and Hangar.
   - tokens are a scoped layer rather than a retune of v3 Night/Day, so the unrouted v3 screens and their tests stay
     intact;
   - one `catalog.json` instead of two files.
+
+## `npm test` on this tree (2026-10-10, local container, this stream's TEST branch)
+
+**Result:** 2,589 tests. **2,523 pass, 60 fail, 6 skipped.**
+
+**All 60 failures are in one file,** `tests/engines-browser.test.mjs`. Each is the same error: the vite HMR websocket
+is refused by the sandboxed frame's CSP (`connect-src 'none'`).
+
+**They are environmental, not this change:**
+- The same file fails **60 / 60 on the pre-K0 commit `34b1526a`** in this container.
+- CI `gates` on the remote head without K0 (`adb399cc`) is **green**.
+- The container's Playwright 1.63 expects `chromium_headless_shell-1243`, but the image ships 1194. I symlinked 1194
+  into place so the browser tests can run at all; that leaves this one older-shell difference.
+- K0 touches no frame, engine or vite-config file.
+
+**Other checks:** `npx tsc -b` and `npx vite build` pass, and `check-prompt-budget` reports PASS.
