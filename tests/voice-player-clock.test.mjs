@@ -3,7 +3,7 @@
 // performance.now() clock, and each clause onset is emitted when its sample is scheduled, with playAt = when it sounds:
 // the start lead, an underrun gap and a pause/resume all included. A fake AudioContext whose clock is performance.now(),
 // itself virtual (below).
-import test from "node:test";
+import test, { describe } from "node:test";
 import assert from "node:assert/strict";
 import { PcmStreamPlayer, onTtsEvent, START_LEAD_S, PCM_RATE } from "../src/lesson/ttsStream.ts";
 import { awaitLineAnchor } from "../src/modules/whiteboard/clock.ts";
@@ -31,6 +31,7 @@ async function advance(ms) {
   await flush();
 }
 const sleep = advance;
+describe("player clock on a virtual performance.now (hooks scoped to this file: npm test is ONE process)", () => {
 const realNow = Object.getOwnPropertyDescriptor(performance, "now");
 test.before(() => { performance.now = () => VNOW; });
 test.after(() => { if (realNow) Object.defineProperty(performance, "now", realNow); else delete performance.now; timers.clear(); });
@@ -129,4 +130,5 @@ test("player clock: no req → anchor still marked (any line), clause events not
     assert.equal(events.length, 0);
     ctl.close();
   } finally { off(); player.stop(); }
+});
 });
