@@ -5,6 +5,8 @@ import type { FamilyId, PlayMode } from "../../../shared/play.ts";
 import type { EngineEntry } from "./core3d/api.ts";
 
 export const ENGINE_ENTRIES: EngineEntry[] = [
+  // E1 Antariksh · the Nishana law (place, compare, round) as aim → fire → decloak, and fly-into-gate commits (G1)
+  { id: "antariksh", renders: [{ family: "nishana", mode: "place" }, { family: "nishana", mode: "compare" }], load: () => import("./antariksh/index.ts") },
 ];
 
 export function engineFor(family: FamilyId, mode: PlayMode, goal?: string): EngineEntry | null {
