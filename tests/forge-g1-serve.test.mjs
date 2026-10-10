@@ -12,8 +12,8 @@ process.env.FORGE_BLOB = "off";
 process.env.AZURE_OPENAI_ENDPOINT ||= "https://example.invalid/openai/v1";
 process.env.AZURE_OPENAI_API_KEY ||= "x";
 
-const { requestFill, prefetchLessonFills, primeLearner, practiceOrder, flushUpgrades, fillKey, TURN_NEED_BY_MS, _learnerMemoClear } = await import("../server/forge/index.js");
-const { _memClear, getFill, upgrades, dbConfigured } = await import("../server/forge/cache.js");
+const { requestFill, prefetchLessonFills, primeLearner, practiceOrder, flushUpgrades, fillKey, TURN_NEED_BY_MS, _learnerMemoClear, learnerFor } = await import("../server/forge/index.js");
+const { _memClear, getFill, upgrades } = await import("../server/forge/cache.js");
 const { childNameClash, gateFill } = await import("../server/forge/gate.js");
 const { gradeEvent } = await import("../server/forge/grade.js");
 const { plan, liveRenderers, G1_RENDERERS } = await import("../server/forge/planner.js");
@@ -86,9 +86,10 @@ describe("per-lesson learner snapshot", () => {
     const viaMemo = await requestFill({ kit, itemId: "c6-maths-ch07-t05-i01", move: "practice", childId: "child-1" });
     assert.equal(viaMemo.fillKey, explicit.fillKey);
     assert.equal(viaMemo.cached, "memory");
-    // Deterministic, not a wall-clock bound (a ≤ 5 ms check had a 6 ms scheduler tail under load): with no database the
-    // only way the no-learner call carries L's interests (the fill-key equality above) is the primed memory snapshot.
-    assert.equal(dbConfigured(), false, "no database in this test, so the fill-key equality proves the memo served the learner");
+    // Deterministic, not a wall-clock bound (a <= 5 ms check had a 6 ms scheduler tail under load) and not "no database"
+    // (the deploy gate runs with DATABASE_URL set): the primed snapshot is served as the SAME object, which no database
+    // read or empty fallback can produce.
+    assert.strictEqual(await learnerFor("child-1", kit.topicId), L, "the primed memory snapshot served the learner");
   });
 });
 
