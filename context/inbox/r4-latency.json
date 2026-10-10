@@ -89,6 +89,24 @@
    "kind": "decision",
    "title": "Recommend TAXILA_ACK_AT_MS=1000 (code default stays 1200 until the main session switches it): holds the ack-leak bars at n = 48 graded (gap -0.09, AUC 0.58); -200 ms on every echo. Reverse / re-tune if: the classify deployment, its hedge or prod load changes (re-run ack-leak), or gap > 0.15 / AUC > 0.65 at n >= 40 graded.",
    "at": "2026-10-10"
+  },
+  {
+   "id": "ms-r4lat-ptt-page-clock-2026-10-10",
+   "kind": "measurement",
+   "title": "Tap-to-talk page clock (tests/prod/r4-timeline on a local production build, prod routing, fake 750 ms commit->final, synthesised child clip, Done at +700 ms, class 7, n = 12 per arm, 2026-10-10): reply audible p50 5,005 (prefetch 0/12, turn-ack 0/12) -> 4,392 (Done tap sends the prefetch) -> 3,452 ms (the press also reopens the echo's turn: turn-ack 12/12, 2 echoes on graded answers). Indicative (small n). gpt-live-transcribe in push-to-talk streams the words before the commit 8/8 (last delta +711, final +1,286 ms, evals/latency/ptt-deltas.mjs).",
+   "at": "2026-10-10"
+  },
+  {
+   "id": "dec-r4lat-ptt-prefetch-and-echo",
+   "kind": "decision",
+   "title": "On tap-to-talk the Done tap sends the turn prefetch (cascadeLink.talkEnd -> TurnPrefetcher.onQuiet, WebRTC transport only) and the press reopens the echo's turn (talkStart -> AckClient.onSpeech), as hands-free already did. Every echo rule stays server-side. Reverse if: tap-to-talk prefetches are adopted on < 50 % of turns on prod (wasted model calls) or the echo is heard on a non-graded or safety turn.",
+   "at": "2026-10-10"
+  },
+  {
+   "id": "open-r4lat-duplex-midutterance-commit",
+   "kind": "open",
+   "title": "For 4B (page clock, owner duplex cohort, 2026-10-10, synthesised clip, n = 6 + 8): with natural ~410-465 ms mid-sentence pauses the duplex engine committed mid-utterance on 4/6 turns and sent truncated words ('Mujhe lagta hai dabbe'); with a continuous clip the words were whole but the turn POST trailed the final by 6-1,450 ms (p50 ~800) and only 2/8 turns prefetched; reply audible ~4.9 s. Correctness first (children pause mid-sentence), then latency.",
+   "at": "2026-10-10"
   }
  ],
  "edges": [
@@ -151,6 +169,16 @@
    "src": "dec-r4lat-ack-at-1000",
    "rel": "inherits",
    "dst": "dec-r3rh-ack-fixed-instant"
+  },
+  {
+   "src": "dec-r4lat-ptt-prefetch-and-echo",
+   "rel": "measured_by",
+   "dst": "ms-r4lat-ptt-page-clock-2026-10-10"
+  },
+  {
+   "src": "open-r4lat-duplex-midutterance-commit",
+   "rel": "blocks",
+   "dst": "open-r4lat-3000-floor"
   }
  ]
 }

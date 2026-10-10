@@ -16,7 +16,7 @@ over WebSocket from this host. "Audible" = first PCM byte + 60 ms player lead + 
 | step 0 baseline reproduced | done: 5,183 / 6,712 ms (n = 58) on PRODUCTION STT, within 15 % of 6,070 |
 | per-stage turn trace | done: `evals/latency/stages.mjs` over first-sound rows (server marks + model calls) |
 | dock "Thinking… N s" counter | patch request 01 (stream 2's file), applied on this branch as a `[patch-request]` commit |
-| L1 levers | built and measured. **After, n = 117: reply audible p50 4,238 / p90 5,718 ms** (from 5,183 / 6,712: −945 / −994) |
+| L1 levers | built and measured. **After, n = 117: reply audible p50 4,238 / p90 5,718 ms** (from 5,183 / 6,712: −945 / −994). Tap-to-talk page clock (n = 12): 5,005 → 3,452 after two client bug fixes |
 | reply bar p50 ≤ 3,000 / p90 ≤ 4,500 | **NOT met** (4,238 / 5,718 at n = 117). Why, and what would meet it: "The floor" below |
 | L2 echo instant | `TAXILA_ACK_AT_MS=1000` holds the ack-leak bars (n = 48 graded); 850 leaks. Echo audible p50 2,971 → **2,285 ms** (n = 17 played); ≤ 1,500 **NOT met** (floor below) |
 | L3 shadow | early distress read measured (below); echo-at-900 counterfactual below |
@@ -202,6 +202,37 @@ prefetch (~1,100) + max(note ~1,370, reply ~1,300) + commit 50 + TTS 400 + 110 �
 rewrites put the p50 at ~4,200-4,450. Meeting 3,000 / 4,500 needs at least one of: a faster note and reply model (≤ ~700 ms
 each), fewer rewrites, TTS-first-sentence released live on rewrite turns (shadow-built, below), or committing the turn on
 the stable partial (L3).
+
+## Page clock: the timeline harness on a local production build (tests/prod/r4-timeline, 2026-10-10)
+
+The browser path the first-sound harness does not model. Local production build (`server/serve.mjs`, `NODE_ENV=production`,
+the r4-timeline preload = prod routing), every "after" flag on, Playwright phone 360 × 800, fake transcription call with a
+FIXED 750 ms commit → final (driver.mjs), a synthesised child clip (gpt-4o-mini-tts ×1.2; not a child). Small n: indicative.
+
+**Tap-to-talk** (the default path for every child outside the duplex cohort), plain account, class 7, the child taps Done
+0.7 s after speaking, same 12 lines each:
+
+| build | n | reply audible p50 (page clock) | prefetch sent | turn-ack asked | echo granted |
+|---|---|---|---|---|---|
+| branch before the client fixes | 12 | 5,005 | 0/12 | 0/12 | 0 |
+| + Done tap → prefetch (`cascadeLink.talkEnd`) | 12 | 4,392 | 12/12 | 0/12 | 0 |
+| + press opens the echo's turn (`cascadeLink.talkStart`) | 12 | **3,452** | 12/12 | 12/12 | 2 (both graded, decided ~2.1 s) |
+
+Two client bugs, both fixed in `src/lesson/cascadeLink.ts` (tests/r4-latency-ptt-prefetch.test.mjs fails on the old link):
+- the prefetcher's "child stopped" signal came only from the energy VAD, which tap-to-talk does not use, so tap-to-talk never
+  prefetched. gpt-live-transcribe does stream the words during push-to-talk speech (`evals/latency/ptt-deltas.mjs`, real
+  Azure, n = 8: deltas before the commit 8/8, last delta p50 +711 ms after speech end, final +1,286, deltas = final 8/8);
+- `talkStart` emitted `child_speech_start` straight to the runtime, so the AckClient never reopened its turn after her reply
+  and refused to ask: the echo was never requested on tap-to-talk (0/24 here; round 3 saw 0 in 21).
+
+**Hands-free (duplex cohort)**, owner account, class 4, n = 8 + 6, for stream 4B (read-only to this stream):
+- with a clip that has natural ~410-465 ms pauses at commas (6 turns), the engine committed MID-UTTERANCE on 4/6 turns (commit
+  0.2-2.8 s before the child finished) and sent truncated words ("Mujhe lagta hai dabbe", "Achha, aur corner woh", "Mujhe nahi
+  pata, ek"); her reply then came 4.7-12.1 s after the child stopped. Children pause mid-sentence; this is a correctness issue,
+  not only latency;
+- with a continuous clip (no pause ≥ 150 ms, 8 turns) the words were whole and the engine committed +250-530 ms after speech end,
+  but the turn POST trailed the final transcript by 6-1,450 ms (p50 ~800), only 2/8 turns prefetched, and reply audible p50
+  was ~4.9 s. Both belong to 4B's engine (`src/duplex/**`); reported to the main session, not changed here.
 
 ## L2 — the echo's fixed instant (`evals/relational-human/ack-leak.mjs`, 70 answers per arm, 9 topics, seed 11, prefetch on, prod routing, US container, 2026-10-10; the gate run overlapped these arms, which loads right and wrong equally)
 
