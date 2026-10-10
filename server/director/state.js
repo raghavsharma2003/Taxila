@@ -192,21 +192,23 @@ export function protegeNotChild(ctx) {
 }
 
 /**
- * round 4 (owner-2 with the model judge, production c439bd7 and local, 2026-10-10: the top cause of J.confused, about 10 of 30
- * flagged turns): the teacher's last TEACHING turn asked a question (a prediction, "where is ice found?"), the child only
- * acknowledged ("haan", "ok", "hmm", "अच्छा"), and the next teaching step opened a new example as if nothing had been asked
- * ("abruptly switches from steam to a wet uniform"). The move then carries a must-note: close that question in one line,
- * then link it to this step. Only on a moving-on teaching move with no request; a card item's re-ask is the unclear path.
+ * round 4 (owner-2 with the model judge, production c439bd7 and local, 2026-10-10; lever 5, the main session's decision): the
+ * top cause of J.confused (12 of 30 judged turns) is a teaching question answered only with "haan" / "ok" / "hmm", after which
+ * the next teach step opens a NEW example as if nothing had been asked. A must-note asking the reply to close the question
+ * moved nothing (J 40 -> 40 of 270; rejected, context inbox), because the step itself is the new example. With
+ * TAXILA_ACK_CLOSE=on (default off) the step is HELD for one turn: she closes her own question (its answer, plainly, and one
+ * line linking it to the idea), and the next turn advances. Once per teach step: a second bare okay on the same step moves on,
+ * so the lesson never stalls on acknowledgements.
  */
-const ACK_MOVES = new Set(["hook", "explain", "worked_example", "reteach", "probe", "practice", "hint"]);
-function ackCloseOf(s, input, p) {
-  if (p.request || input.cls?.outcome !== "no_evidence" || input.cls?.request || !bareAck(input.text ?? "")) return null;
-  // the same card question again after a bare okay (the judge: "repeats the previous question without new guidance")
-  if (s.lastMove?.itemId && p.item?.id === s.lastMove.itemId && ACK_MOVES.has(p.kind)) return SH.ACK_CARD;
-  if (!TEACH_KINDS.has(s.lastMove?.kind) || s.lastMove?.itemId || !ACK_MOVES.has(p.kind)) return null;
+export const ackCloseOn = (env = process.env) => String(env.TAXILA_ACK_CLOSE ?? "off").trim().toLowerCase() === "on";
+function ackHold(s, input) {
+  if (!ackCloseOn() || input.event !== "turn" || input.cls?.outcome !== "no_evidence" || input.cls?.request || input.cls?.help) return null;
+  if (!bareAck(input.text ?? "") || !TEACH_KINDS.has(s.lastMove?.kind) || s.lastMove?.itemId || s.ackHeldAt === s.teachIdx) return null;
   const last = (s.recent ?? []).findLast((t) => t.who === "teacher")?.text ?? "";
   const asked = (String(last).match(/[^.!?।]*[?？]/g) ?? []).at(-1)?.trim();
-  return asked && asked.length >= 8 ? SH.ackClose({ asked }) : null;
+  if (!asked || asked.length < 8) return null;
+  s.ackHeldAt = s.teachIdx;
+  return plan("reteach", SH.ackCloseMove({ asked }), { skillId: currentSkillId(s, input.kit, null), content: s.lastContent ?? [], ackClose: true });
 }
 
 /** Round 4 (session-first): the session object and the intake beat's state for a session start (ctx.session). */
@@ -1294,7 +1296,7 @@ function decide(s, input, item) {
   }
   switch (s.phase) {
     case "warmup": return warmup(s, input, item);
-    case "teach": return teach(s, input);
+    case "teach": return ackHold(s, input) ?? teach(s, input);
     case "practice": return practice(s, input, item);
     case "teachback": return teachback(s, input);
     default: return toWrap(s, {});
@@ -1482,9 +1484,7 @@ export function step(prev, input) {
     const parked = input.cls?.alsoPark?.topic ? SH.parkAlso({ topic: input.cls.alsoPark.topic }) : null;
     // a share kept for later this turn: the note carries the promise (never only "react warmly")
     const kept = key === "personal_share" ? (s.later ?? []).find((e) => e.share && e.at === s.turn && !e.servedAt) : null;
-    // the owner-2 judge's top cause of J.confused: a teaching question answered only with "haan" / "ok" was never closed
-    const ack = ackCloseOf(s, input, p);
-    const must = [back, kept ? SH.mustShareKept({ promise: kept.promise }) : SH.MUST_NOTE[key], ack, parked, ...(also ?? []).filter((x) => x !== key).map((x) => SH.ALSO_NOTE[x])].filter(Boolean);
+    const must = [back, kept ? SH.mustShareKept({ promise: kept.promise }) : SH.MUST_NOTE[key], parked, ...(also ?? []).filter((x) => x !== key).map((x) => SH.ALSO_NOTE[x])].filter(Boolean);
     if (must.length) move.must = must.join("; ").slice(0, 300);
   }
   // round 2 (conversation): how the child asked to be taught ("step by step", "picture first") rides on every later move

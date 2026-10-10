@@ -66,33 +66,37 @@ test("the teach-back protégé never shares the child's first name (owner-2: Gol
   assert.notEqual(s.ctx.protege.name.toLowerCase(), "bittu");
 });
 
-test("a teaching question answered only with 'haan' / 'ok' is closed before the next step (owner-2 judge's top cause of J.confused)", async () => {
+test("bareAck: a bare acknowledgement, never content (lever 5's trigger)", async () => {
   const { bareAck } = await import("../server/conversation/lexicon.js");
   for (const t of ["haan", "ok", "hmm", "achha", "theek hai, aage", "हाँ", "अच्छा", "lol theek hai", "haha ok bhai"]) assert.equal(bareAck(t), true, t);
   for (const t of ["haan ready hoon", "liquid", "haan, evaporation", "pata nahi", "samajh nahi aaya", "ok 4", "ek min... haan bolo"]) assert.equal(bareAck(t), false, t);
-  const s0 = initLessonState({ topicId: EVS.topicId, kit: EVS, ctx: { ...CTX, lang: "hinglish", classLevel: 5, ageBand: "10-15" }, seed: 7, now: 0 });
-  let r = step(s0, { event: "start", kit: EVS, now: 0 });
-  r = turn(r, NE, "haan ready hoon");   // → the hook
-  assert.equal(r.move.kind, "hook");
-  const asked = "Aapke hisaab se woh bhaap thandi hokar kis form mein badlegi?";
-  const withAsk = (rr) => ({ ...rr, state: { ...rr.state, recent: [...(rr.state.recent ?? []), { who: "teacher", text: `Kitchen mein garam chai se bhaap uthti hai. ${asked}` }] } });
-  const acked = turn(withAsk(r), NE, "ok");
-  assert.ok(String(acked.move.must ?? "").includes("only said okay"), `must: ${acked.move.must}`);
-  assert.ok(String(acked.move.must).includes("bhaap thandi"), "the asked question is named (the teacher's own words)");
-  // content, not an acknowledgement: no note
-  const answered = turn(withAsk(r), NE, "paani ban jayegi");
-  assert.ok(!String(answered.move.must ?? "").includes("only said okay"));
-  // no question asked: no note
-  const noQ = turn({ ...r, state: { ...r.state, recent: [{ who: "teacher", text: "Kitchen mein garam chai se bhaap uthti hai." }] } }, NE, "ok");
-  assert.ok(!String(noQ.move.must ?? "").includes("only said okay"));
 });
 
-test("the same card re-asked after a bare okay carries a new handle, never the same words (owner-2 judge, cause B)", () => {
-  let r = toPractice();
-  const item = r.move.itemId;
-  r = turn(r, NE, "haan");
-  assert.equal(r.move.itemId, item, "the same card");
-  assert.ok(String(r.move.must ?? "").includes("new concrete handle"), `must: ${r.move.must}`);
-  const a = turn(toPractice(), NE, "4/5");
-  assert.ok(!String(a.move.must ?? "").includes("new concrete handle"), "an attempt is not a bare okay");
+test("lever 5 (TAXILA_ACK_CLOSE): off by default; on, a bare okay to a teaching question holds the step ONCE, then it advances", async () => {
+  const { ackCloseOn } = await import("../server/director/state.js");
+  assert.equal(ackCloseOn({}), false, "default off");
+  const was = process.env.TAXILA_ACK_CLOSE;
+  try {
+    const s0 = initLessonState({ topicId: EVS.topicId, kit: EVS, ctx: { ...CTX, lang: "hinglish", classLevel: 5, ageBand: "10-15" }, seed: 7, now: 0 });
+    let r = step(s0, { event: "start", kit: EVS, now: 0 });
+    r = turn(r, NE, "haan ready hoon");
+    assert.equal(r.move.kind, "hook");
+    const withAsk = (rr, q) => ({ ...rr, state: { ...rr.state, recent: [...(rr.state.recent ?? []), { who: "teacher", text: q }] } });
+    const hookQ = "Kitchen mein garam chai se bhaap uthti hai. Aapke hisaab se woh bhaap thandi hokar kis form mein badlegi?";
+    delete process.env.TAXILA_ACK_CLOSE;
+    const off = turn(withAsk(r, hookQ), NE, "ok");
+    assert.notEqual(off.move.kind, "reteach", "off: the next teach step as before");
+    process.env.TAXILA_ACK_CLOSE = "on";
+    const held = turn(withAsk(r, hookQ), NE, "ok");
+    assert.equal(held.move.kind, "reteach", "on: held");
+    assert.equal(held.state.teachIdx, r.state.teachIdx, "the teach step did not advance");
+    assert.ok(String(held.move.shape).includes("bhaap thandi"), "her own question is named");
+    // a second bare okay on the same step moves on (never a stall)
+    const next = turn(withAsk(held, "Toh bhaap thandi hokar paani ban jaati hai. Samajh aaya?"), NE, "haan");
+    assert.equal(next.move.kind, off.move.kind, "advances exactly as the off path did");
+    // content, not an okay: no hold
+    assert.notEqual(turn(withAsk(r, hookQ), NE, "paani ban jayegi").move.kind, "reteach");
+  } finally {
+    if (was === undefined) delete process.env.TAXILA_ACK_CLOSE; else process.env.TAXILA_ACK_CLOSE = was;
+  }
 });
