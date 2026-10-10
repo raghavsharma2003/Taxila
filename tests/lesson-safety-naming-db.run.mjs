@@ -228,19 +228,30 @@ describe("lesson safety + teacher naming (test branch)", { skip: SKIP, concurren
     assert.equal(me.body.children.find((c) => c.id === kid).teacher_name, "Meenu");
   });
 
-  test("PATCH /api/children teacherId: a parent's switch resets the name with a 'switch' history row, like the picker's", async () => {
+  test("PATCH /api/children teacherId: only a teacher who serves the class (Asha); moving a pre-round-4 Arjun row to Asha resets the name with a 'switch' row", async () => {
     const n = (await one("select count(*)::int as n from teacher_name_history where child_id = $1", [kid])).n;
     let r = await call("/api/children", { method: "PATCH", body: { childId: kid, languagePref: "hinglish" } });
     assert.equal(r.status, 200, JSON.stringify(r.body));
     assert.equal(r.body.child.teacher_name, "Meenu", "no switch, no reset");
-    r = await call("/api/children", { method: "PATCH", body: { childId: kid, teacherId: "arjun" } });
+    // ONE teacher (dc-r4-single-teacher-asha): a parked look is never written, by any path
+    for (const id of ["arjun", "uma", "nobody"]) {
+      r = await call("/api/children", { method: "PATCH", body: { childId: kid, teacherId: id } });
+      assert.equal(r.status, 400, `${id}: ${JSON.stringify(r.body)}`);
+    }
+    assert.deepEqual(Object.values(await one("select teacher_id, teacher_name from child where id = $1", [kid])), ["asha", "Meenu"], "nothing written");
+    // a row from before round 4 that stored Arjun (and a name given to him): /api/me sends the served teacher, Asha, under her own name
+    await q("update child set teacher_id = 'arjun', teacher_name = 'Ravi' where id = $1", [kid]);
+    const me = await call("/api/me");
+    const row = me.body.children.find((c) => c.id === kid);
+    assert.deepEqual([row.teacher_id, row.teacher_name], ["asha", null], "the client gets the teacher who speaks, never a parked id");
+    r = await call("/api/children", { method: "PATCH", body: { childId: kid, teacherId: "asha" } });
     assert.equal(r.status, 200, JSON.stringify(r.body));
-    assert.deepEqual([r.body.child.teacher_id, r.body.child.teacher_name], ["arjun", null]);
+    assert.deepEqual([r.body.child.teacher_id, r.body.child.teacher_name], ["asha", null]);
     const h = await q("select name, source, character_id from teacher_name_history where child_id = $1 order by at desc", [kid]);
     assert.equal(h.length, n + 1);
-    assert.deepEqual([h[0].name, h[0].source, h[0].character_id], [null, "switch", "arjun"]);
+    assert.deepEqual([h[0].name, h[0].source, h[0].character_id], [null, "switch", "asha"]);
     await call("/api/children", { method: "PATCH", body: { childId: kid, teacherId: "asha" } });
-    assert.equal((await q("select 1 from teacher_name_history where child_id = $1", [kid])).length, n + 1, "no name to reset: no history row");
+    assert.equal((await q("select 1 from teacher_name_history where child_id = $1", [kid])).length, n + 1, "no switch: no history row");
   });
 
   test("POST /api/tutors/name is rate limited per child (a script cannot walk the denylist)", async () => {
