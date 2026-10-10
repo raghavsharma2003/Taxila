@@ -63,6 +63,19 @@ export interface PuppetStageOptions {
 /** A drawn-frame gap above this is a visible freeze (5+ frames at 30 fps), reported as a `stall` event. */
 export const STALL_MS = 180;
 
+/**
+ * Turn first (open-r4lat-puppet-delays-turn-post): when the child's turn is committed, the face draws nothing for this
+ * long, so the turn POST is never queued behind a frame. The runtime sends that turn after a chain of macrotasks (the
+ * outbox's IndexedDB reserve + write, then fetch), and each one waits for the task holding the main thread; on a
+ * software-GL page a puppet frame is a 50-170 ms task (tests/prod/r4-asha-taskwait.mjs). Measured: the chain takes
+ * ~10 ms on a free thread. The face is in its thinking hold then (breath, drift), so one held frame of this length is
+ * not seen; she never holds while speaking.
+ */
+export const TURN_HOLD_MS = 300;
+/** The page events that mean "the child's turn is being sent now": the runtime's child_final (src/lesson/runtime.ts
+ *  dispatches `taxila:play-heard` synchronously, just before it queues the turn) and a dedicated one for any sender. */
+export const TURN_EVENTS = ["taxila:play-heard", "taxila:turn-sending"] as const;
+
 /** At most one RUNNING stage per page: the newest started. Measured (ship5 p2-face): the safeguarding TroubleScreen
  *  mounted a second live puppet over the lesson tile (two WebGL loops on a budget phone). The others hold their last
  *  frame (suspended) and the most recent of them resumes when the foreground stage is disposed. */
@@ -89,6 +102,10 @@ export class PuppetStage {
   private curFps = 60;
   private strikes = 0;
   private lastDraw = 0;
+  /** No frame is drawn before this (performance.now ms): the turn-first hold (TURN_HOLD_MS). */
+  private holdUntil = 0;
+  /** How many turn holds this stage has taken (the ?facerig read-out and the evals). */
+  turnHolds = 0;
   private lastNow = 0;
   private work: number[] = [];
   private rigMs: number[] = [];
@@ -185,6 +202,18 @@ export class PuppetStage {
       else if (e.kind === "ack") this.driver.ack(e.phase, now);
     }));
     this.offs.push(faceCues.on((cue: FaceCue) => this.onCue(cue)));
+    if (typeof window !== "undefined") {
+      const onTurn = () => this.holdForTurn();
+      for (const t of TURN_EVENTS) window.addEventListener(t, onTurn);
+      this.offs.push(() => { for (const t of TURN_EVENTS) window.removeEventListener(t, onTurn); });
+    }
+  }
+
+  /** The child's turn is being sent: draw nothing for TURN_HOLD_MS (never while she speaks). Public for the evals. */
+  holdForTurn(now = performance.now()): void {
+    if (this.status === "speaking") return;
+    this.holdUntil = now + TURN_HOLD_MS;
+    this.turnHolds++;
   }
 
   private onCue(cue: FaceCue): void {
@@ -258,6 +287,9 @@ export class PuppetStage {
   tick(now: number, force = false): void {
     const rig = this.rig;
     if (!rig || this.disposed) return;
+    // turn first: the child's turn is on its way to the server; the main thread is its until then
+    if (!force && now < this.holdUntil && this.status !== "speaking") return;
+    if (this.holdUntil) { this.holdUntil = 0; this.lastNow = 0; } // a held gap is not a stall
     // adaptive rate (low CPU): 60 fps while she speaks or the face is changing (a state change, an expression ramp, a nod,
     // a look); 30 fps in the slow holds (listening, thinking, idle: breath, drift and blinks, whose shaper already runs on
     // 30 Hz steps). The governor's cap, when it has stepped down, wins.
