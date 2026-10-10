@@ -13,12 +13,8 @@ import { readStore, writeStore } from "../app/storage.ts";
 
 type Mic = "idle" | "listening" | "ok" | "none";
 
-/** PURE. RMS of a byte time-domain frame (128 = silence) → 0..1. */
-export function levelOf(buf: Uint8Array): number {
-  let s = 0;
-  for (const v of buf) { const x = (v - 128) / 128; s += x * x; }
-  return Math.sqrt(s / Math.max(1, buf.length));
-}
+import { levelOf } from "../child/sayHi.ts";
+export { levelOf };
 
 function beep(): void {
   try {

@@ -16,8 +16,8 @@ import { helloClip } from "../../child/voice.ts";
 import { nextStep, StepFrame } from "../Layout.tsx";
 import { setLangPref, useDraft } from "../draft.ts";
 
-type Speak = "english" | "hindi" | "hinglish";
-const LANGS: { id: Speak; ui: Lang; label: string }[] = [
+export type Speak = "english" | "hindi" | "hinglish";
+export const LANGS: { id: Speak; ui: Lang; label: string }[] = [
   { id: "english", ui: "en", label: "English" },
   { id: "hindi", ui: "hi", label: "Hindi" },
   { id: "hinglish", ui: "hinglish", label: "Hindi and English mix" },
@@ -40,7 +40,7 @@ function local(classLevel: number): Offer {
 
 const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 
-function LangTile({ l, teacherId, selected, onPick }: { l: (typeof LANGS)[number]; teacherId: string; selected: boolean; onPick: () => void }) {
+export function LangTile({ l, teacherId, selected, onPick }: { l: (typeof LANGS)[number]; teacherId: string; selected: boolean; onPick: () => void }) {
   const src = helloClip(teacherId, l.id);
   const { playing, toggle } = useClip(src ?? "");
   return (
