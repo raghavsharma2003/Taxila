@@ -96,7 +96,7 @@ async function open(browser, vp, q, extra = {}) {
   const twin = /[?&]tier=2d\b/.test(`&${q}`);
   await page.goto(`${BASE}?family=nazariya&lang=${extra.lang ?? "hinglish"}&${twin ? "" : "tier=3d&"}${q}`);
   if (twin) await page.waitForSelector("[data-testid=play-controls] button", { timeout: 60000 });
-  else await page.waitForFunction(() => window.__khand && window.__khand.info().draws > 0, null, { timeout: 60000 });
+  else await page.waitForFunction(() => window.__khand && window.__khand.info().draws > 0 && window.__play?.mode3d?.(), null, { timeout: 60000 });
   await page.waitForTimeout(600);
   return { ctx, page, errors };
 }
@@ -170,10 +170,11 @@ if (flag("load")) {
     let bytes = 0; cdp.on("Network.loadingFinished", (e) => { bytes += e.encodedDataLength; });
     const t0 = Date.now();
     await page.goto(`${BASE}?family=nazariya&tier=3d&mode=views&goal=build3&class=4&fade=1&seed=3`);
-    await page.waitForFunction(() => performance.getEntriesByName("khand-first-frame").length > 0, null, { timeout: 120000 });
-    const ff = await page.evaluate(() => performance.getEntriesByName("khand-first-frame")[0].startTime);
-    results.load.push({ profile: pr.id, run, firstFrameMs: Math.round(ff), wallMs: Date.now() - t0, kb: Math.round(bytes / 1024) });
-    console.log(`load ${pr.id} #${run}: first world frame ${Math.round(ff)} ms, ${Math.round(bytes / 1024)} KB`);
+    // the 2D twin paints first and is playable (its controls are on screen); the 3D world takes over when it has streamed in
+    await page.waitForFunction(() => performance.getEntriesByName("khand-3d-playable").length > 0, null, { timeout: 120000 });
+    const m = await page.evaluate(() => { const at = (n) => Math.round(performance.getEntriesByName(n)[0]?.startTime ?? -1); return { twin: at("khand-twin-first-frame"), first3d: at("khand-first-frame"), play3d: at("khand-3d-playable") }; });
+    results.load.push({ profile: pr.id, run, twinPlayableMs: m.twin, threeDFirstFrameMs: m.first3d, threeDPlayableMs: m.play3d, wallMs: Date.now() - t0, kb: Math.round(bytes / 1024) });
+    console.log(`load ${pr.id} #${run}: 2D twin playable ${m.twin} ms; 3D first frame ${m.first3d} ms, 3D playable ${m.play3d} ms; ${Math.round(bytes / 1024)} KB`);
     await ctx.close();
   }
 }

@@ -21,8 +21,12 @@ export interface Stage3DOpts {
   dpr?: number;
   /** the tier override ("3d" lets SwiftShader through for the proxy); null = detect */
   force?: PlayTier | null;
+  /** mount behind the 2D twin, invisible and untouchable, until the host calls reveal() */
+  hidden?: boolean;
+  /** the first 3D frame has rendered (the host may now swap to it at a turn-point) */
+  onReady?(): void;
 }
-export interface Stage3DMount { view: FamilyView; stage: StageHandle; tier: PlayTier }
+export interface Stage3DMount { view: FamilyView; stage: StageHandle; tier: PlayTier; reveal?(): void; /** the engine could not mount (the host keeps or shows the 2D view) */ failed?: boolean }
 
 const SFX: Record<Sfx, SoundEvent> = { aim: "tick", fire: "drop", scan: "tick", reveal: "open", hit: "land", miss: "refuse", near: "tilt", gate: "open", warp: "slide", select: "select", undo: "slide", land: "land", good: "good", look: "look" };
 
@@ -33,7 +37,7 @@ export function mountStage3D(host: HTMLElement, entry: EngineEntry, o: Stage3DOp
   const tier = tierPick.tier;
   const reduced = o.reducedMotion ?? (typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion: reduce)").matches);
   if (o.sound === false) sound.setMuted(true);
-  const failStub = (why: string): Stage3DMount => { o.onFail?.(why); return { view: stubView(), stage: stubStage(audit), tier }; };
+  const failStub = (why: string): Stage3DMount => { o.onFail?.(why); return { view: stubView(), stage: stubStage(audit), tier, failed: true }; };
   if (tier === "2d") return failStub(`tier_2d:${tierPick.why}`);
 
   const budget = { ...TIER_BUDGET[tier] };
@@ -46,6 +50,7 @@ export function mountStage3D(host: HTMLElement, entry: EngineEntry, o: Stage3DOp
   layer.className = "kh-labels";
   layer.style.cssText = "position:absolute;inset:0;pointer-events:none;overflow:hidden";
   host.appendChild(layer);
+  if (o.hidden) { canvas.style.visibility = "hidden"; layer.style.visibility = "hidden"; }
   // three.js and the engine load together, on demand: a 2D game never downloads them
   let T: Three | null = null, renderer: WebGLRenderer | null = null, scene: Scene | null = null, camera: Camera | null = null;
   let dpr = Math.min(o.dpr ?? Math.min(typeof window !== "undefined" ? window.devicePixelRatio || 1 : 1, budget.dprCap), budget.dprCap);
@@ -215,7 +220,7 @@ export function mountStage3D(host: HTMLElement, entry: EngineEntry, o: Stage3DOp
       renderer.render(scene, camera);
       placeLabels();
       drawn++; audit.frame++;
-      if (!firstMarked && performance.mark) { performance.mark("khand-first-frame"); firstMarked = true; }
+      if (!firstMarked) { firstMarked = true; if (performance.mark) performance.mark("khand-first-frame"); o.onReady?.(); }
     } catch (e) {
       const nowE = performance.now(); errs = errs.filter((x) => nowE - x < 1000); errs.push(nowE);
       console.warn("[khand] frame error", String((e as Error)?.message ?? e).slice(0, 160));
@@ -260,7 +265,11 @@ export function mountStage3D(host: HTMLElement, entry: EngineEntry, o: Stage3DOp
       renderer?.dispose(); canvas.remove(); layer.remove();
     },
   };
-  return { view, stage, tier };
+  const reveal = () => {
+    canvas.style.visibility = ""; layer.style.visibility = ""; dirty = true;
+    if (performance.mark) performance.mark("khand-3d-playable");
+  };
+  return { view, stage, tier, ...(o.hidden ? { reveal } : {}) };
 }
 
 function stubView(): FamilyView { return { layout() {}, update() {}, draw() {}, pointer() {}, goal: () => "", readouts: () => [], controls: () => [], react() {} }; }

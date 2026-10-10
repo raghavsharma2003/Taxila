@@ -40,8 +40,10 @@ export const makePlotView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
   };
   if (padWanted()) pad = true;
 
+  let painted = false;
   function draw(c: CanvasRenderingContext2D): void {
     const P = api.P, s = st();
+    if (!painted) { painted = true; if (typeof performance !== "undefined" && performance.mark) performance.mark("khand-twin-first-frame"); }
     api.target("plot", ox, oy, cell * p.w, cell * p.d);
     for (let z = 0; z < p.d; z++) for (let x = 0; x < p.w; x++) {
       const i = z * p.w + x, h = s.h[i], X = ox + x * cell, Y = oy + z * cell;

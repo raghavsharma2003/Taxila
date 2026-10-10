@@ -17,7 +17,8 @@ production build.
 | **2D board twin** (same controller, same control ids) for tier 2d / context loss / frame errors | `src/play/families/nazariya/plot.view.ts` | done |
 | **Coverage rules**: 15 rules over 11 class 4-6 maths topics, every mal-rule mapped to a verified kit misconception (checked by build-coverage). Exports `family` for G1's S0.3 loader | `server/play/tools/rules/nazariya.mjs` | done |
 | **Reaction bank**: conditioned shapes in en / hinglish / hi; no verdict words; the key is never said | `data/play/reactions/nazariya.json` | done |
-| **Builds persist** as artefacts: `play_build`, written only from the server's own replay of a solved level; heights only; `GET /api/play/builds` | patch 06 (+08) | done on my DB |
+| **Builds persist** as artefacts: `play_build` (migration 026), written only from the server's own replay of a solved level; heights only; `GET /api/play/builds` | patch 06 (+08) | done on my DB |
+| **Twin first, 3D streams in**: the 2D twin paints and is playable at once. The 3D world takes over at a turn-point with the same controller, and the 2D view comes back on any 3D failure | patch 04 (PlayStage), `shim/stage3d.ts` (`hidden`, `onReady`, `reveal`) | done |
 | No music in Khand (O-G2); nothing alive destroyed ("Break" removes blocks); no points, streaks, lives, timers, random drops or persisted counters (G1's economy lint rules: no clock or RNG in progress code; cosmetics only) | | by construction |
 
 Coverage moves from 47 to 57 topics in `data/play/coverage.json` (maths 32 → 42).
@@ -39,7 +40,7 @@ c5-maths-ch10-t02, c6-maths-ch09-t01 (mirror).
 | C7 | signed evidence folds `via: "game"`; a forged token folds nothing | **met**: one `kt_evidence` row via game; the same tokens again and a forged token fold nothing | loop P8 (local prod, own Neon branch) |
 | C8 | no reward economy | **met by construction**; G1's economy lint has not yet run on this tree (it is on G1's branch) | code review; `tests/play-style-lint.test.mjs` |
 | C9 | reachable in a lesson when asked and at a practice beat, through the server grade into the ledger | **asked: met** ("game khelna hai" on perimeter and arrays, "can we play a game?" on views: the play slot is `nazariya/<mode>` and the block world is on the stage). **Practice beat: not met**: 0 of 3 practice lessons put the block world on the stage unasked (perimeter, area, square numbers; 4, 4 and 9 typed turns; only whiteboards appeared) | loop A1 / P8, 139/139 checks; `tests/prod/r4-khand-beat.mjs` (local prod, n = 3, 2026-10-10) |
-| C10 | ≥ 50 fps median at 4× throttle (proxy) | **met at 360 only**: 54-55 fps at 360, **40-47 at 412, 16-18 at 1366** (see §3) | `r4-khand-shots.mjs --fps` |
+| C10 | ≥ 50 fps median at 4× throttle | **not measured on device.** The SwiftShader proxy numbers (54-56 / 40-48 / 16-18 fps at 360 / 412 / 1366) are kept as a proxy only and never count as met. The main session decided (as delegate) that the tier-3d DPR floor stays 1.0; the real-phone run (O-R4, a ₹10k Android) decides C10 | `r4-khand-shots.mjs --fps` (proxy) |
 
 ## 3. Numbers (proxy unless said)
 
@@ -66,9 +67,17 @@ run. The mesh runs **in the worker**: 0.1-0.2 ms p50 / 0.2-2.0 ms p95. The main 
 **Greedy meshing** (node, exact): 4×4×4 cube 80 → 9 quads; 6×4 floor 44 → 5; 9×9 pit with paving 165 → 9. It covers
 exactly the naive faces on 300 random builds.
 
-**Cold load to the first world frame** (the dev page, which carries every play family; brotli; cache off; 4× CPU; n = 3 per
-profile): 10 Mbps / 60 ms **1.5-1.6 s** (one cold 3.7 s); 3 Mbps / 150 ms **2.3-2.5 s**; 1.2 Mbps / 300 ms **4.4-4.5 s**;
-350-384 KB. In the app bundle the engine is its own 36 KB (14 KB gz) chunk and three.js stays tree-shaken
+**Cold load: twin first.** The 2D twin of the same level paints at once and is playable. The 3D world streams in behind
+it and takes over at a turn-point with the same controller; acts made on the twin carry over. Dev page carrying every
+play family, brotli, cache off, 4× CPU, n = 3 per profile, 384 KB, 2026-10-10:
+
+| link | 2D twin playable | 3D playable |
+|---|---|---|
+| 10 Mbps / 60 ms | **0.88 s** (one cold run 2.3 s) | 1.6-1.8 s (cold 4.1 s) |
+| 3 Mbps / 150 ms | **1.3 s** | 2.4-2.6 s |
+| 1.2 Mbps / 300 ms | **2.1-2.2 s** | 4.4-4.6 s |
+
+Before twin-first (3D only): the first world frame took 1.5 / 2.4 / 4.4 s, with nothing playable before it. In the app bundle the engine is its own 36 KB (14 KB gz) chunk and three.js stays tree-shaken
 (217 + 318 KB as before), loaded only when a Khand level mounts.
 
 **API latency** (local prod, this sandbox): start p90 295 ms, act p90 149 ms (n = 15 / 94).
@@ -79,17 +88,21 @@ sides=3x3`. The row now says `area=9 perimeter=12 rect=3 by 3`, and the re-run r
 
 ## 4. Not met, and why
 
-- **C10 at 412 and 1366 on the proxy** (above). There is nothing left to govern at the contract floor (DPR 1). Fixing it
-  needs either a real GPU (the phone run, O-R4), or a lower DPR floor for tier 3d: G1's contract, owner/G1 decision.
+- **C10 is not measured on a device.** The SwiftShader numbers are a proxy only (CPU rasterising). The main session
+  decided the tier-3d DPR floor stays 1.0. The phone run (O-R4) decides it. Proposed to G1, not built here: a frame-time
+  governor behind a default-off flag that lowers the render scale only when measured p95 frame time on the real device
+  is over budget.
 - **C9 "at a practice beat"**: 0/3 practice lessons offered the game unasked (`results/beat-local.json`). Two of the
   three lessons stopped taking typed input after 4 turns; the third ran 9 turns. Whether the Director offers a game
   unprompted is the Director's and the compose ladder's rule (streams 4A / 2). Khand is admitted in coverage like every
   family, so whatever that rule does applies to Khand. Not fixable from this stream's files; reported to main.
-- **Cold load at 1.2 Mbps**: 4.4 s against a 3 s bar (dev page).
-- **Class 4 typed lane**: class-4 children got no typed input in the practice page (voice-first), so the browser ask ran
-  with class-5 children on the class-4 topics. Voice asks for class 4 are untested here.
+- **Cold load**: the child can play the 2D twin within 2.2 s even at 1.2 Mbps. The 3D world itself arrives at 4.4-4.6 s
+  on that link, and the twin carries the level until then.
+- **Class 4 typed lane**: class-4 children got no typed input on the practice page (voice-first). The browser asks
+  therefore ran with class-5 children on the class-4 topics. The main session confirmed this as the right workaround and
+  routed the missing typed input to stream 2. Voice asks for class 4 are untested here.
 - **Her words around the game** come from the Director, not Khand. In the views run she said "top view chuniye"
-  ("choose") while the task is to build. That is outside this stream's files; reported to main.
+  ("choose") while the task is to build. Routed to 4A by the main session.
 - **Art**: the blocks and sky are drawn in code (no Azure image generation used). The owner has not judged the look.
 - **Not built**: faces / edges / corners (c4-maths-ch01-t01, ◐ in FEASIBILITY), tilings (c7-maths-ch14-t02),
   directions on a block map (c5-maths-ch05-t01), turn symmetry (c5-ch10-t01, c6-ch09-t02) and congruence (c7-ch09) need
@@ -99,7 +112,7 @@ sides=3x3`. The row now says `area=9 perimeter=12 rect=3 by 3`, and the re-run r
 ## 5. Patch requests
 
 `patches/01`-`09`, with `APPLY.md` (why, and the test that proves each). Two need main's attention:
-- **06**: the migration number (`024` is a placeholder).
+- **06**: the migration is `026_r4khand_play_build.sql` (number allotted by main; idempotent, additive only).
 - **04**: drop it once G1's core3d lands, then add `KHAND_ENTRY` to `src/play/engines/registry.ts` and delete `shim/`.
 
 ## 6. Gates (local, own Neon branch, 2026-10-10)
@@ -115,6 +128,6 @@ fixed by patches 08 and 09 and the memo, and re-run green.
 
 ## 7. Owner decisions needed
 
-1. Tier 3d's DPR floor (G1's `TIER_BUDGET`: 1.0): may Khand go to 0.75 on weak GPUs? Pixelated blocks survive it.
+1. ~~Tier 3d's DPR floor~~: decided by the main session; it stays 1.0, and C10 waits on the phone run.
 2. Whether unsolved free builds should also be kept in the gallery (today, only solved levels).
 3. A real-phone run (O-R4) for C10.
