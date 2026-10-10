@@ -3,28 +3,29 @@
 // the floor checks on each, then runs the in-run negative controls: deliberately broken prompts that each check
 // must reject. Exit 1 on any failed check or any control that passed. Run by scripts/verify-release.mjs.
 //   node evals/persona-invariants.mjs
-import { CHARACTERS } from "../server/compiler/characters/index.js";
+import { SHEETS } from "../server/compiler/characters/index.js";
 import { buildLanes, FLOOR_CHECKS, negativeControls } from "./persona-invariants.data.mjs";
 
 let pass = 0, fail = 0;
 const failures = [];
-const characters = Object.values(CHARACTERS);
+// every sheet compile() can be given: each band of each registered character (Asha 1-4 and 5-9; Arjun, parked)
+const characters = SHEETS;
 if (!characters.length) { console.log("FAIL  no registered characters"); process.exit(1); }
 
 for (const c of characters) {
   const lanes = buildLanes(c);
-  console.log(`\n── ${c.id}: ${lanes.length} compiled lanes × ${FLOOR_CHECKS.length} floor checks ──`);
+  console.log(`\n── ${c.sheetBand ?? c.id}: ${lanes.length} compiled lanes × ${FLOOR_CHECKS.length} floor checks ──`);
   for (const [name, check] of FLOOR_CHECKS) {
     const bad = lanes.map((l) => [l, check(l)]).filter(([, r]) => r !== true);
-    if (bad.length) { fail++; failures.push(`${c.id}: ${name}`); console.log(`FAIL  ${name}  ${bad.length}/${lanes.length}: ${bad[0][0].id}: ${bad[0][1]}`); }
+    if (bad.length) { fail++; failures.push(`${c.sheetBand ?? c.id}: ${name}`); console.log(`FAIL  ${name}  ${bad.length}/${lanes.length}: ${bad[0][0].id}: ${bad[0][1]}`); }
     else { pass++; console.log(`PASS  ${name}  (${lanes.length}/${lanes.length})`); }
   }
-  console.log(`\n── ${c.id}: negative controls (each must FAIL its check) ──`);
+  console.log(`\n── ${c.sheetBand ?? c.id}: negative controls (each must FAIL its check) ──`);
   for (const good of [lanes.find((l) => l.lane === "text" && l.move === "practice"), lanes.find((l) => l.lane === "voice" && l.move === "practice")]) {
     for (const [name, broken] of negativeControls(good)) {
       const check = FLOOR_CHECKS.find(([n]) => n === name)?.[1];
       const r = check ? check(broken) : true;
-      if (r === true) { fail++; failures.push(`${c.id}: control ${name} (${good.lane}) passed`); console.log(`FAIL  control passed: ${name} (${good.lane})`); }
+      if (r === true) { fail++; failures.push(`${c.sheetBand ?? c.id}: control ${name} (${good.lane}) passed`); console.log(`FAIL  control passed: ${name} (${good.lane})`); }
       else { pass++; console.log(`PASS  control rejected: ${name} (${good.lane}) → ${String(r).slice(0, 80)}`); }
     }
   }

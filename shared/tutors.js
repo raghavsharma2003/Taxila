@@ -23,9 +23,9 @@ export const TUTORS = [
       hindi: "चित्रों के साथ, कदम-कदम पर",
       hinglish: "pictures ke saath, step by step",
     },
-    // offer: the persona sheet's own range (asha.js classes [1, 4]); wide: AVATAR §5.1 once the band layer
-    // carries register (TAXILA_TUTOR_OFFER=wide).
-    fit: { offerClasses: [1, 4], wideOfferClasses: [1, 6], serveClasses: [1, 7] },
+    // The ONE teacher (dc-r4-single-teacher-asha): her sheet carries a register per class band (asha.js bands), so
+    // she is offered and served for every class 1-9.
+    fit: { offerClasses: [1, 9], wideOfferClasses: [1, 9], serveClasses: [1, 9] },
     look: {
       rev: 1, presentedGender: "F", apparentAge: 24, mst: 6, signatureColor: "#3E7C74",
       skin: "#C99366", skinShade: "#B07E55", hair: "#2A1C14", hairStyle: "ponytail", glasses: "none",
@@ -38,7 +38,10 @@ export const TUTORS = [
   {
     id: "arjun",
     lookId: "slate",
-    status: "live",
+    // Parked (dc-r4-single-teacher-asha, owner 2026-10-10: "only 1 teacher"): never offered, never shown, never the
+    // default. His persona sheet stays in server/compiler/characters/arjun.js for lessons pinned to him before the
+    // change and for the TAXILA_SINGLE_TEACHER=off rollback. Reverse only when the owner says so.
+    status: "parked",
     displayName: { roman: "Arjun", deva: "अर्जुन" },
     roleChips: ["bhaiya"],
     styleChip: { english: "guess, then check", hindi: "पहले अंदाज़ा, फिर जाँच", hinglish: "guess, phir check" },
@@ -60,9 +63,9 @@ export const TUTORS = [
   {
     id: "uma",
     lookId: "plum",
-    // No persona sheet (server/compiler/characters/uma.js) and no voice probed yet (VOICE-TEACHER §6: "needs a
-    // low-register arm"): shown only in dev previews until both exist. A character + voice + face are one unit.
-    status: "draft",
+    // Parked with Arjun (dc-r4-single-teacher-asha). She never had a persona sheet or a probed voice either; a
+    // character + voice + face are one unit.
+    status: "parked",
     displayName: { roman: "Uma", deva: "उमा" },
     roleChips: ["maam"],
     styleChip: { english: "calm and clear", hindi: "शांत और साफ़", hinglish: "calm aur clear" },
@@ -163,8 +166,14 @@ export function eligibleTutors(child, { catalogue = TUTORS, hasSheet = () => tru
   return { mode: "picker", band, tutors: pickCovering(seededShuffle(el, seedOf(child.id)), max) };
 }
 
-/** The class default when nothing was chosen (matches server teacherFor's rule). */
-export const defaultTutorFor = (child) => (Number(child.class_level) <= 4 ? "asha" : "arjun");
+/** The one teacher (dc-r4-single-teacher-asha). */
+export const SINGLE_TEACHER_ID = "asha";
+
+/**
+ * The class default when nothing was chosen (matches server teacherFor's rule): Asha for every class. `single: false`
+ * is the server's TAXILA_SINGLE_TEACHER=off rollback (Asha 1-4, Arjun 5-9); a client never passes it.
+ */
+export const defaultTutorFor = (child, { single = true } = {}) => (single || Number(child.class_level) <= 4 ? SINGLE_TEACHER_ID : "arjun");
 
 // ───────────── the child names the teacher (decision child-names-teacher) ─────────────
 // The SHAPE half of the name predicate, shared so the picker can answer instantly; the server's
@@ -176,7 +185,11 @@ export const defaultTutorFor = (child) => (Number(child.class_level) <= 4 ? "ash
 /** 2-16 characters: Latin letters, with at most two single spaces or hyphens between letters. */
 export const TEACHER_NAME = Object.freeze({ min: 2, max: 16, re: /^[A-Za-z]+(?:[ -][A-Za-z]+){0,2}$/ });
 
-/** The names the picker offers (owner: "Asha, Arjun and Uma are suggestions"). Never a default the child must keep. */
+/**
+ * The names the picker offers (owner: "Asha, Arjun and Uma are suggestions"). Never a default the child must keep.
+ * Round 4: the naming card is parked (no surface mounts it); the list is kept as it was for the owner's restore, and the
+ * client drops a name that presents differently from the look (src/child/teacher/naming.ts fitNames).
+ */
 export const NAME_SUGGESTIONS = Object.freeze(["Asha", "Arjun", "Uma"]);
 
 /** Typed text → the name as it would be stored: trimmed, inner whitespace collapsed, each word capitalised. */

@@ -1,0 +1,941 @@
+diff --git a/src/face-puppet/runtime/rig.js b/src/face-puppet/runtime/rig.js
+index c164bc09c02a6842b0fe80214b21f214f675533f..87eff203ab914fccd235228bc50ff4811d3160ae 100644
+--- a/src/face-puppet/runtime/rig.js
++++ b/src/face-puppet/runtime/rig.js
+@@ -1,5 +1,7 @@
+-// SYNCED from scripts/character/puppet2d/polish-r8/runtime/rig.js (puppet polish r8, judged) by evals/face-puppet/sync-runtime.mjs; sha256 69e01c0c9321de51.
++// SYNCED from scripts/character/puppet2d/lamp1/runtime/rig.js (round 4 lamp1: renders the r8 pack pixel-identical, docs/design/round4/asha/evidence/r8-parity.json) by evals/face-puppet/sync-runtime.mjs; sha256 d1f9fd4c996dbff0.
+ // Do not edit here: change the polish round, re-judge, re-sync.
++// lamp1 (round 4, Asha option 4): derived from the r8 runtime by scripts/character/puppet2d/lamp1/make-runtime.py;
++// every c-front pixel constant now reads F (face.js), whose defaults are those values (an r8 pack renders unchanged).
+ // Puppet2DRig, arm P (PLAN §3-§7): painted layers cut from c-front, deformed on the CPU, drawn by gl.js.
+ // Implements the HeadRig signature minus `root`: apply(bs, head[p,y,r], gaze[yaw,pitch], lean, breath), dispose(),
+ // stats(). ARKit "Left" is HER left = screen right, so the screen-left eye (L) reads the *Right keys.
+@@ -12,6 +14,7 @@
+ import { Renderer } from "./gl.js";
+ import { LipSolver, LipShell, jawProfile, lineY as lineYAt, MOUTH } from "./lips.js";
+ import { Life } from "./life.js";
++import { F, setFace, onFace } from "./face.js";
+ 
+ const clamp = (x, a, b) => (x < a ? a : x > b ? b : x);
+ const clamp01 = (x) => clamp(x, 0, 1);
+@@ -29,14 +32,14 @@ const DBG_TINT = { hairback: [0, 0, 1, 0.6], bun: [1, 0, 0, 0.6], body: [0, 0.7,
+ // field's curvature: a broad skull paraboloid (smooth to 0 at the hair silhouette, so the outline stays put) plus a
+ // tighter face bump, so the far eye/cheek compress and the near ones widen (|dz/dx| < 1.6 everywhere: no fold
+ // up to ±30°). Only the bun takes an extra negative depth (it is behind the skull), with painted fills under it.
+-const PX = { cx: 512, cy: 420, rx: 322, ry: 392, A: 205, fcx: 530, fcy: 500, fsx: 128, fsy: 160, B: 95, gain: 1.0, pivot: [530, 728] };
++// lamp1: the proxy is F.px (geom.face.px), c-front's values by default
+ function zHead(x, y) {
+-  const u = (x - PX.cx) / PX.rx, v = (y - PX.cy) / PX.ry;
++  const PX = F.px, u = (x - PX.cx) / PX.rx, v = (y - PX.cy) / PX.ry;
+   const q = Math.max(0, 1 - u * u - v * v);
+   let z = PX.A * q * q;
+   z += PX.B * Math.exp(-((x - PX.fcx) ** 2) / (2 * PX.fsx * PX.fsx) - ((y - PX.fcy) ** 2) / (2 * PX.fsy * PX.fsy));
+-  z += 26 * Math.exp(-((x - 530) ** 2 + (y - 532) ** 2) / (2 * 24 * 24));                       // nose
+-  for (const cx of [452, 608]) z += 8 * Math.exp(-((x - cx) ** 2 + (y - 585) ** 2) / (2 * 45 * 45)); // cheeks
++  { const N = F.noseZ; z += N.a * Math.exp(-((x - N.x) ** 2 + (y - N.y) ** 2) / (2 * N.s * N.s)); }   // nose
++  { const C = F.cheekZ; for (const cx of C.xs) z += C.a * Math.exp(-((x - cx) ** 2 + (y - C.y) ** 2) / (2 * C.s * C.s)); } // cheeks
+   return z;
+ }
+ 
+@@ -56,21 +59,21 @@ function zHead(x, y) {
+ // y 520-640, so the far eye met the outline and the far lock crossed it; the far cheek now keeps a band beyond the eye
+ export const SIL = { far: -8, near: 14, chin: 16, w: 0.4, sideKeep: 1 };
+ // r7: the brows' outer ends (rest), where the temple hairline meets them (hairline pin)
+-const PIN_AT = [[364, 384], [684, 368]];
++// lamp1: the pins are F.pins
+ const SIDE_LAYERS = new Set(["hair", "lockbed", "lockL", "lockR", "ears", "hairback"]);
+ /** The silhouette term alone at rest (x, y) for turn side sg (+1 = features move screen-right), px at the key angle. */
+ export function silDx(x, y, sg) {
+-  const u = (x - 530) / 208, au = Math.abs(u);
+-  const yb = smooth(320, 430, y) * (1 - smooth(690, 790, y));         // temple to jaw (the neck and collar stay)
++  const u = (x - F.mid) / F.hw, au = Math.abs(u), S = F.sil;
++  const yb = smooth(S.y[0], S.y[1], y) * (1 - smooth(S.y[2], S.y[3], y));         // temple to jaw (the neck and collar stay)
+   const far = u * sg > 0;
+   // asymmetric band: wide outside the outline, tighter inside it (the far eye narrows, it is not shoved)
+   const band = Math.exp(-(((au - 1) / (au < 1 ? 0.3 : SIL.w)) ** 2));
+   // far side: the outline comes IN (toward the features); near side: it goes OUT. Both are -sg.
+-  let dx = -sg * (far ? SIL.far : SIL.near) * band * yb;
++  let dx = -sg * (far ? SIL.far : SIL.near) * F.k * band * yb;
+   // the far ear tucks BEHIND the cheek (travels more than the outline), the hair shell beyond it less (parallax)
+   if (far && au > 1) dx *= 1 + (smooth(1.0, 1.12, au) * (0.3 + 0.0)) - smooth(1.3, 1.55, au) * 0.8;
+   // the chin and jaw swing toward the turn (the head rotates about the neck: the jaw point leads)
+-  dx += sg * SIL.chin * smooth(560, 690, y) * (1 - smooth(720, 800, y)) * Math.exp(-((u / 0.75) ** 2));
++  dx += sg * SIL.chin * F.k * smooth(S.chin[0], S.chin[1], y) * (1 - smooth(S.chin[2], S.chin[3], y)) * Math.exp(-((u / S.chinW) ** 2));
+   return dx;
+ }
+ /** r8 (judge r7 fix 4, METHOD CHANGE, turn): ROTATE THE INTERIOR FEATURES, not only the silhouette. The fitted field and
+@@ -85,23 +88,25 @@ export function silDx(x, y, sg) {
+  *  Fitted against keys/yawR30-0 and yawL30-0 normalised into c-front's frame (fitturn.py), like silDx; ?feat=0 = off. */
+ export const FEAT = { nose: 16, wing: 4, bindi: 9, mouth: 8 };   // r8 i2: 12/3/7/6 read too timid beside the keys
+ export function featDx(x, y, sg) {
+-  if (y < 320 || y > 700 || x < 400 || x > 660) return 0;
++  const G = F.feat, bx = G.box;
++  if (y < bx[1] || y > bx[3] || x < bx[0] || x > bx[2]) return 0;
+   let dx = 0;
+-  const nx = x - 533;
+-  if (y > 470 && y < 600) {
+-    dx += FEAT.nose * Math.exp(-((nx / 27) ** 2) - (((y - 540) / 24) ** 2));
+-    dx -= FEAT.wing * Math.exp(-(((nx - sg * 23) / 11) ** 2) - (((y - 552) / 13) ** 2));
++  const nx = x - G.nose[0];
++  if (y > G.noseY[0] && y < G.noseY[1]) {
++    dx += FEAT.nose * Math.exp(-((nx / G.nose[2]) ** 2) - (((y - G.nose[1]) / G.nose[3]) ** 2));
++    dx -= FEAT.wing * Math.exp(-(((nx - sg * G.wing[0]) / G.wing[2]) ** 2) - (((y - G.wing[1]) / G.wing[3]) ** 2));
+   }
+-  if (y < 400) dx += FEAT.bindi * Math.exp(-(((x - 526) / 20) ** 2) - (((y - 354) / 18) ** 2));
+-  if (y > 560) dx += FEAT.mouth * Math.exp(-(((x - 530) / 40) ** 2)) * smooth(560, 585, y) * (1 - smooth(650, 700, y));
+-  return sg * dx;
++  if (y < G.bindiY) dx += FEAT.bindi * Math.exp(-(((x - G.bindi[0]) / G.bindi[2]) ** 2) - (((y - G.bindi[1]) / G.bindi[3]) ** 2));
++  if (y > G.mouthY[0]) dx += FEAT.mouth * Math.exp(-(((x - G.mouth[0]) / G.mouth[1]) ** 2)) * smooth(G.mouthY[0], G.mouthY[1], y) * (1 - smooth(G.mouthY[2], G.mouthY[3], y));
++  return sg * dx * F.k;
+ }
+ // r8 (fps): featDx as a 4 px bilinear table per side (built at load, rebuilt if FEAT changes); projectTo runs for every
+ // vertex of every layer, and the direct form (up to 5 exp) doubled the unthrottled work p95 (2.4 -> 4.7 ms)
+ const FD = { s: 4, x0: 400, y0: 320, nx: 66, ny: 96, key: "", T: null };
+ function featTable() {
+-  const key = JSON.stringify(FEAT);
++  const key = JSON.stringify(FEAT) + JSON.stringify(F.feat) + F.k;
+   if (FD.key === key) return FD.T;
++  { const bx = F.feat.box; FD.x0 = bx[0]; FD.y0 = bx[1]; FD.nx = Math.round((bx[2] - bx[0]) / FD.s) + 1; FD.ny = Math.round((bx[3] - bx[1]) / FD.s) + 1; }
+   FD.key = key; FD.T = [1, -1].map((sg) => { const T = new Float32Array(FD.nx * FD.ny); for (let j = 0; j < FD.ny; j++) for (let i = 0; i < FD.nx; i++) T[j * FD.nx + i] = featDx(FD.x0 + i * FD.s, FD.y0 + j * FD.s, sg); return T; });
+   return FD.T;
+ }
+@@ -170,7 +175,9 @@ function adaptiveGrid(rect, coarse, fine, needFine) {
+ // r5 (fps): zHead (four exp per call) as an 8 px bilinear table; z only enters through the pitch term (z * sin(pitch),
+ // |pitch| <= 12 deg), so the table's sub-pixel error never shows. Hot loops (eyes, mouth interior, neck) use zFast.
+ const ZS = 8, ZN = 1024 / ZS + 1, ZLUT = new Float32Array(ZN * ZN);
+-for (let j = 0; j < ZN; j++) for (let i = 0; i < ZN; i++) ZLUT[j * ZN + i] = zHead(i * ZS, j * ZS);
++const buildZ = () => { for (let j = 0; j < ZN; j++) for (let i = 0; i < ZN; i++) ZLUT[j * ZN + i] = zHead(i * ZS, j * ZS); };
++buildZ();
++onFace(buildZ);   // lamp1: the depth table follows the face's proxy
+ function zFast(x, y) {
+   const gx = clamp(x / ZS, 0, ZN - 1.001), gy = clamp(y / ZS, 0, ZN - 1.001), i = gx | 0, j = gy | 0, u = gx - i, v = gy - j, k = j * ZN + i;
+   return (ZLUT[k] * (1 - u) + ZLUT[k + 1] * u) * (1 - v) + (ZLUT[k + ZN] * (1 - u) + ZLUT[k + ZN + 1] * u) * v;
+@@ -181,14 +188,15 @@ function zFast(x, y) {
+ // the whole mandible swings down, so the jaw corners follow the chin and the lower face stays a U, not a V). NARROW: a
+ // signed band over the lower cheeks and the jaw outline that draws in as the jaw drops (the cheeks thin over the open jaw).
+ export function narrowW(x, y) {
+-  const ax = Math.abs(x - 530);
+-  return Math.sign(x - 530) * smooth(40, 170, ax) * Math.exp(-(((y - 650) / 70) ** 2));
++  const ax = Math.abs(x - F.mid), N = F.narrow;
++  return Math.sign(x - F.mid) * smooth(N.ax[0], N.ax[1], ax) * Math.exp(-(((y - N.y) / N.s) ** 2));
+ }
+ function faceW(x, y) {
+-  return [Math.exp(-((x - 455) ** 2 + (y - 585) ** 2) / (2 * 42 * 42)), Math.exp(-((x - 605) ** 2 + (y - 585) ** 2) / (2 * 42 * 42)),
+-    Math.exp(-((x - 430) ** 2 + (y - 545) ** 2) / (2 * 48 * 48)), Math.exp(-((x - 632) ** 2 + (y - 545) ** 2) / (2 * 48 * 48)),
+-    jawProfile(x, y), Math.sign(x - 530),
+-    Math.max(0, smooth(606, 668, y) * Math.exp(-(((x - 530) / 180) ** 2)) - jawProfile(x, y)), narrowW(x, y)];
++  const C = F.cheeks, Wk = F.wink, J = F.jawBroad;
++  return [Math.exp(-((x - C.L[0]) ** 2 + (y - C.L[1]) ** 2) / (2 * C.s * C.s)), Math.exp(-((x - C.R[0]) ** 2 + (y - C.R[1]) ** 2) / (2 * C.s * C.s)),
++    Math.exp(-((x - Wk.L[0]) ** 2 + (y - Wk.L[1]) ** 2) / (2 * Wk.s * Wk.s)), Math.exp(-((x - Wk.R[0]) ** 2 + (y - Wk.R[1]) ** 2) / (2 * Wk.s * Wk.s)),
++    jawProfile(x, y), Math.sign(x - F.mid),
++    Math.max(0, smooth(J.y[0], J.y[1], y) * Math.exp(-(((x - F.mid) / J.s) ** 2)) - jawProfile(x, y)), narrowW(x, y)];
+ }
+ const FWN = 8;
+ function faceWArr(rest, n) {
+@@ -285,11 +293,13 @@ export class Puppet2DRig {
+   }
+ 
+   constructor(canvas, geom, mouths, imgs, opts) {
++    setFace(geom.face);   // lamp1: this pack's face constants (none = c-front, r8)
+     this.g = geom;
+     if (geom.yawKeys && opts.sil !== 0) silhouetteKey(geom.yawKeys, opts.sil ?? 1);
+     this.M = mouths;
+-    this.R = new Renderer(canvas, { clear: opts.clear || [251.4 / 255, 229.4 / 255, 188.6 / 255], preserve: !!opts.preserve });
++    this.R = new Renderer(canvas, { clear: opts.clear || geom.clear || [251.4 / 255, 229.4 / 255, 188.6 / 255], preserve: !!opts.preserve });
+     this.R.dpr = opts.dpr || Math.min(2, window.devicePixelRatio || 1);
++    this.R.face = { nose: F.noseShade, mk: F.mouth.k, tint: F.shade.tint, tongue: F.mouth.tongueMul || [1, 1, 1], teeth: F.mouth.teethMul || [1, 1, 1] };   // lamp1: per-face shader constants
+     this.reduced = !!opts.reducedMotion;
+     // r5 (judge r4 fix 1, interim): product yaw is clamped to +-10 and drawn by the shared field only (no painted plate:
+     // the plate's near-cheek seam and mouth-corner crease were the uncanny full-size frames). ?turn=plates restores the
+@@ -301,7 +311,7 @@ export class Puppet2DRig {
+     this.yawMax = opts.yawMax ?? 20;
+     this.featOn = opts.feat !== 0;   // r8: the interior-feature rotation (featDx)
+     this.life = new Life({ reduced: this.reduced });
+-    this.view = opts.view || [140, 20, 744]; // x0, y0, width of the rest-space window shown
++    this.view = opts.view || (geom.views && geom.views.medium) || [140, 20, 744];   // lamp1: the pack's own framings // x0, y0, width of the rest-space window shown
+     this.tex = {};
+     for (const [n, im] of Object.entries(imgs)) this.tex[n] = this.R.texture(im, n !== "interior");
+     this.solver = new LipSolver();
+@@ -318,7 +328,7 @@ export class Puppet2DRig {
+       const mesh = this.R.mesh(P, { aPos: { data: pos, size: 2, dynamic: true }, aUv: { data: gr.uv, size: 2 } }, gr.idx);
+       this.layers[name] = { name, rect, rest: gr.rest, z, pos, mesh, kind, n: gr.n, FW: kind === "face" ? faceWArr(gr.rest, gr.n) : null };
+       if (SIL.sideKeep < 1 && SIDE_LAYERS.has(name) && geom.yawKeys && geom.yawKeys._sil) {
+-        const g0 = geom.yawKeys._sil, mkK = (sg) => Float32Array.from({ length: gr.n }, (_, i) => { const x = gr.rest[i * 2], y = gr.rest[i * 2 + 1]; return (x - 530) * sg > 0 ? -(1 - SIL.sideKeep) * g0 * silDx(x, y, sg) : 0; });
++        const g0 = geom.yawKeys._sil, mkK = (sg) => Float32Array.from({ length: gr.n }, (_, i) => { const x = gr.rest[i * 2], y = gr.rest[i * 2 + 1]; return (x - F.mid) * sg > 0 ? -(1 - SIL.sideKeep) * g0 * silDx(x, y, sg) : 0; });
+         this.layers[name].silK = [mkK(1), mkK(-1)];
+       }
+       if (kind === "brow") {   // r5 (fps): the ribbon terms depend on x only: one evaluation per grid column
+@@ -343,10 +353,10 @@ export class Puppet2DRig {
+     mk("lockL", 6, "lock");
+     mk("lockR", 6, "lock");
+     // r2: no per-layer depth offsets except the bun, which sits behind the skull (its hidden part is painted)
+-    { const L = this.layers.bun; for (let i = 0; i < L.n; i++) L.z[i] = L.z[i] - 45; }
++    { const L = this.layers.bun; for (let i = 0; i < L.n; i++) L.z[i] = L.z[i] + F.bunZ; }
+     // the right lock hangs over the knot: its lower part takes the knot's depth, so lock and knot never slide over
+     // each other on a turn (their shared dark-on-dark contour is unknown in c-front; any slide uncovered a jagged cut)
+-    { const L = this.layers.lockR; for (let i = 0; i < L.n; i++) L.z[i] -= 45 * smooth(585, 650, L.rest[i * 2 + 1]); }
++    for (const [sd, b] of Object.entries(F.lockBun || {})) { if (!b) continue; const L = this.layers["lock" + sd]; for (let i = 0; i < L.n; i++) L.z[i] += F.bunZ * smooth(b[0], b[1], L.rest[i * 2 + 1]); }
+     // locks: anchor (top) and length for the pendulum weight
+     for (const s of ["L", "R"]) {
+       const L = this.layers["lock" + s];
+@@ -446,7 +456,7 @@ export class Puppet2DRig {
+         const lashY = (x) => { const ml = geom.lidKeys[s].midLash; const c = clamp(Math.round(x - E.xa), 0, ml.y.length - 1); return ml.y[c]; };
+         for (let i = 0; i < gr.n; i++) {
+           const x = gr.rest[i * 2], y = gr.rest[i * 2 + 1], ux = (x - xc) / hw;
+-          const ly = kk === "mid" ? lashY(x) : rect[3] - 22, top = rect[1] + 6, v = clamp01((y - top) / Math.max(8, ly - top));
++          const ly = kk === "mid" ? lashY(x) : rect[3] - 22 * F.ke, top = rect[1] + 6, v = clamp01((y - top) / Math.max(8, ly - top));
+           const hi = Math.exp(-((ux / 0.5) ** 2)) * Math.exp(-(((v - 0.38) / 0.24) ** 2));
+           const roll = Math.exp(-(((v - 0.86) / 0.12) ** 2)) * Math.exp(-((ux / 0.9) ** 2));
+           const side = smooth(0.55, 1.0, Math.abs(ux)) * (1 - smooth(0.9, 1.05, v));
+@@ -522,7 +532,7 @@ export class Puppet2DRig {
+       // a faint four-point flare
+       x.globalCompositeOperation = "lighter"; x.fillStyle = "rgba(255,250,230,0.35)"; x.fillRect(15, 2, 2, 28); x.fillRect(2, 15, 28, 2);
+       this.glintTex = this.R.texture(c, false);
+-      this.glints = [[315, 565], [748, 541]].map(([gx, gy]) => {
++      this.glints = F.glints.map(([gx, gy]) => {
+         const pos = new Float32Array(8), uv = new Float32Array([0, 0, 1, 0, 0, 1, 1, 1]);
+         return { gx, gy, pos, mesh: this.R.mesh(P, { aPos: { data: pos, size: 2, dynamic: true }, aUv: { data: uv, size: 2 } }, new Uint16Array([0, 1, 2, 1, 3, 2])) };
+       }); }
+@@ -538,10 +548,10 @@ export class Puppet2DRig {
+     for (const G of this.glints) {
+       const ox = clamp(g[0] * 5, -3.5, 3.5), oy = clamp(g[1] * 5, -3.5, 3.5);
+       const c = this.project(G.gx + ox, G.gy + oy, zFast(G.gx, G.gy));
+-      const r = 4.2 + 2.4 * m;
++      const r = (4.2 + 2.4 * m) * F.ke;
+       G.pos.set([c[0] - r, c[1] - r, c[0] + r, c[1] - r, c[0] - r, c[1] + r, c[0] + r, c[1] + r]);
+       this.R.update(G.mesh, "aPos", G.pos);
+-      this.R.drawPaint(G.mesh, this.glintTex, [0, 0, 1, 1], 0.22 + 0.1 * tw + 0.6 * m);
++      this.R.drawPaint(G.mesh, this.glintTex, [0, 0, 1, 1], (0.22 + 0.1 * tw + 0.6 * m) * F.glintA);
+     }
+   }
+ 
+@@ -564,14 +574,14 @@ export class Puppet2DRig {
+     const k = (n) => bs[n] ?? 0;
+     const yaw = softYaw(clamp(head[1], -20, 20), this.yawMax), pitch = clamp(head[0], -10, 12), roll = clamp(head[2], -12, 12);
+     const st = {
+-      sy: Math.sin(yaw * D2R) * PX.gain, cy: Math.cos(yaw * D2R),
+-      sp: Math.sin(pitch * D2R) * PX.gain, cp: Math.cos(pitch * D2R),
++      sy: Math.sin(yaw * D2R) * F.px.gain, cy: Math.cos(yaw * D2R),
++      sp: Math.sin(pitch * D2R) * F.px.gain, cp: Math.cos(pitch * D2R),
+       sr: Math.sin(-roll * D2R), cr: Math.cos(-roll * D2R),
+       yaw, pitch, roll,
+       // r8 (judge r7 fix 5, feature-scale lock): the lean's head scale is capped at +-1% (r7: 1 + 0.03 * lean grew the head
+       // 3.75% on concern B's 1.25 lean, and every feature with it: sol's 'eye and brow scale drift between cells'); the lean
+       // still reads through the 7 px drop and the shoulders
+-      bob: -breath * 1.4, leanS: 1 + 0.01 * Math.tanh(lean / 0.7), leanY: 7 * lean, lean,
++      bob: -breath * 1.4 * F.k, leanS: 1 + 0.01 * Math.tanh(lean / 0.7), leanY: 7 * lean * F.k, lean,
+     };
+     // yaw keyform: side + weight (an ease-in so small drifts stay subtle and the key is reached at +-keyDeg)
+     if (this.g.yawKeys) {
+@@ -602,7 +612,7 @@ export class Puppet2DRig {
+     // r6 (judge r5 fix 5, concern): mentalis. An expression lip press (not an m/b/p closure) pushes the chin skin up ~3 px,
+     // the 'pressed, holding it in' chin of a worried or thinking face; it rides the jaw term, so face, lip shell and
+     // interior all move together
+-    { const ep = clamp01((k("mouthPressLeft") + k("mouthPressRight")) / 2 * 2.2); this.solver.ment = 3.2 * ep * (1 - clamp01(sp.g / 6)); }
++    { const ep = clamp01((k("mouthPressLeft") + k("mouthPressRight")) / 2 * 2.2); this.solver.ment = 3.2 * F.k * ep * (1 - clamp01(sp.g / 6)); }
+     this.mouth = { name: "shell", row: sp.g > 3 ? "open" : "closed", jawGain: 1, p: sp };
+     // ---- lids: screen-left eye (L) is her right eye (ARKit *Right)
+     const side = { L: "Right", R: "Left" };
+@@ -637,7 +647,7 @@ export class Puppet2DRig {
+         // r4: delight's eyes SMILE: the cheek pushes the lower lid up harder (judge r3: 'delight without an eye squint')
+         const rise = (q * 0.36 + c * 0.32 + sm * 0.07 + blinkSq) * H * Math.pow(hump, 1.4);
+         let bot = B - rise + w * 0.09 * H * hump;
+-        const follow = (lookDown * 0.14 - lookUp * 0.02) * H * hump;
++        const follow = (lookDown * 0.14 - lookUp * F.eye.upLid) * H * hump;
+         const closed = T + 0.72 * (B - T) - Math.min(rise, 0.25 * H);   // the lids meet ~70% down (Memoji)
+         let top = T + follow - w * 0.32 * H * hump - (this.happy || 0) * 0.07 * H * hump * hump;   // r4: surprise shows sclera ABOVE the iris (0.2 -> 0.32); r6: happy arch
+         // blink: the upper lid travels to the meeting line, the lower lid rises the last part (eased: fast close)
+@@ -658,7 +668,7 @@ export class Puppet2DRig {
+       E.blink = b;
+     }
+     // ---- secondary motion: anchor = the head proxy's projection of a point, its acceleration drives the springs
+-    const anchor = this.project(530, 300, 120);
++    const anchor = this.project(F.anchor[0], F.anchor[1], F.anchor[2]);
+     if (this.prevAnchor) {
+       const vx = (anchor[0] - this.prevAnchor[0]) / Math.max(dt, 1e-3), vy = (anchor[1] - this.prevAnchor[1]) / Math.max(dt, 1e-3);
+       const ax = (vx - this.prevVel.L[0]) / Math.max(dt, 1e-3), ay = (vy - this.prevVel.L[1]) / Math.max(dt, 1e-3);
+@@ -745,15 +755,15 @@ export class Puppet2DRig {
+       X += f * ((a[0] * (1 - u) + b[0] * u) * (1 - v) + (c[0] * (1 - u) + d[0] * u) * v);
+       Y += f * ((a[1] * (1 - u) + b[1] * u) * (1 - v) + (c[1] * (1 - u) + d[1] * u) * v);
+     }
+-    const dy = Y - PX.cy;
+-    Y = PX.cy + dy * s.cp + z * s.sp;
++    const P = F.px, dy = Y - P.cy;
++    Y = P.cy + dy * s.cp + z * s.sp;
+     // roll about the neck pivot
+-    const px = X - PX.pivot[0], py = Y - PX.pivot[1];
+-    X = PX.pivot[0] + px * s.cr - py * s.sr;
+-    Y = PX.pivot[1] + px * s.sr + py * s.cr;
++    const pv = P.pivot, px = X - pv[0], py = Y - pv[1];
++    X = pv[0] + px * s.cr - py * s.sr;
++    Y = pv[1] + px * s.sr + py * s.cr;
+     // breath bob (head follows the chest 60%) and lean (scale about the pivot, down)
+-    X = PX.pivot[0] + (X - PX.pivot[0]) * s.leanS;
+-    Y = PX.pivot[1] + (Y - PX.pivot[1]) * s.leanS + s.bob * 0.6 + s.leanY;
++    X = pv[0] + (X - pv[0]) * s.leanS;
++    Y = pv[1] + (Y - pv[1]) * s.leanS + s.bob * 0.6 + s.leanY;
+     out[0] = X; out[1] = Y;
+     return out;
+   }
+@@ -766,7 +776,7 @@ export class Puppet2DRig {
+     if (!sol) return 0;
+     const j = clamp01(sol.lowerDrop() / 34), sm = clamp01((this.expr.smile - 0.2) / 0.6);
+     // r7 (judge r6): surprise drops the jaw without the cheek ride-up (it ballooned the lower face around the O)
+-    return j * (2.2 + 3.6 * sm) * (1 - 0.85 * (sol.surprised || 0));
++    return j * (2.2 + 3.6 * sm) * F.k * (1 - 0.85 * (sol.surprised || 0));
+   }
+   faceOffset(x, y, noJaw = false) {
+     const { smile, cheek } = this.expr;
+@@ -774,14 +784,15 @@ export class Puppet2DRig {
+     const ol = this.openLift();
+     // cheeks lift and widen a touch on a smile
+     const ES = this.exprSide;
+-    for (const [cx, sd] of [[455, "L"], [605, "R"]]) {
+-      const f = Math.exp(-((x - cx) ** 2 + (y - 585) ** 2) / (2 * 42 * 42));
++    const CK = F.cheeks, WK = F.wink;
++    for (const [cx, cyk, sd] of [[CK.L[0], CK.L[1], "L"], [CK.R[0], CK.R[1], "R"]]) {
++      const f = Math.exp(-((x - cx) ** 2 + (y - cyk) ** 2) / (2 * CK.s * CK.s));
+       const sm = ES ? ES[sd].smile : smile, ch = ES ? ES[sd].cheek : cheek;
+-      dy -= (sm * 4.5 + ch * 5.5 + ol) * f;   // r4: a stronger cheek push on delight
+-      dx += Math.sign(x - 530) * sm * 1.5 * f;
++      dy -= ((sm * 4.5 + ch * 5.5) * F.k + ol) * f;   // r4: a stronger cheek push on delight
++      dx += Math.sign(x - F.mid) * sm * 1.5 * F.k * f;
+       // r5: the winking side's cheek apple rides up under the closed eye
+       const wk = this.wink ? this.wink[sd] : 0;
+-      if (wk > 0) dy -= wk * 9 * Math.exp(-((x - (sd === "L" ? 430 : 632)) ** 2 + (y - 545) ** 2) / (2 * 48 * 48));
++      if (wk > 0) { const wc = WK[sd]; dy -= wk * 9 * F.k * Math.exp(-((x - wc[0]) ** 2 + (y - wc[1]) ** 2) / (2 * WK.s * WK.s)); }
+     }
+     // r4: the jaw carries lower lip, skin and chin together (lips.js jaw()), so the skin between them never crushes
+     if (!noJaw && this.solver) dy += this.solver.jaw() * jawProfile(x, y);
+@@ -796,7 +807,7 @@ export class Puppet2DRig {
+     const sol = this.solver;
+     if (!sol) return [0, 0];
+     const o = clamp01((sol.lowerDrop() - 8) / 38), sur = sol.surprised || 0, sm = clamp01((this.expr.smile - 0.2) / 0.5);
+-    const narrow = 4.5 * o * (0.4 + 0.6 * sur) * (1 - 0.75 * sm);
++    const narrow = 4.5 * F.k * o * (0.4 + 0.6 * sur) * (1 - 0.75 * sm);
+     const broad = 0.45 * sol.jaw() * sur;
+     return [broad, narrow];
+   }
+@@ -806,7 +817,8 @@ export class Puppet2DRig {
+     const ES = this.exprSide, { smile, cheek } = this.expr, wk = this.wink || { L: 0, R: 0 };
+     const sL = ES ? ES.L.smile : smile, sR = ES ? ES.R.smile : smile, cL = ES ? ES.L.cheek : cheek, cR = ES ? ES.R.cheek : cheek;
+     const ol = this.openLift(), js = this.jawShape();
+-    return (this._fc = [sL * 4.5 + cL * 5.5 + ol, sR * 4.5 + cR * 5.5 + ol, sL * 1.5, sR * 1.5, wk.L * 9, wk.R * 9, this.solver ? this.solver.jaw() : 0, js[0], js[1]]);
++    const K = F.k;
++    return (this._fc = [(sL * 4.5 + cL * 5.5) * K + ol, (sR * 4.5 + cR * 5.5) * K + ol, sL * 1.5 * K, sR * 1.5 * K, wk.L * 9 * K, wk.R * 9 * K, this.solver ? this.solver.jaw() : 0, js[0], js[1]]);
+   }
+   faceOffW(W, i, noJaw, out) {
+     const c = this._fc, o = i * FWN;
+@@ -824,22 +836,23 @@ export class Puppet2DRig {
+       for (let i = 0; i < n; i++) {
+         const x = rest[i * 2], y = rest[i * 2 + 1];
+         // breath: scale y about the hem, shoulders rise; the neck top follows the head 35%
+-        let Y = 1024 + (y - 1024) * (1 + 0.004 * s.bob / -1.4);
++        const BD = F.body;
++        let Y = BD.hem + (y - BD.hem) * (1 + 0.004 * s.bob / (-1.4 * F.k));
+         let X = x;
+         // r5 (judge r4, secondary life): the shoulders rise on the in-breath (they lag the chest a little: life.breathS)
+-        const sh = smooth(95, 200, Math.abs(x - 527)) * (1 - smooth(860, 1010, y)) * smooth(700, 790, y);
+-        if (sh > 0) { Y -= 2.4 * this.life.breathS * sh; X += Math.sign(x - 527) * 0.5 * this.life.breathS * sh; }
++        const sh = smooth(BD.sh[0], BD.sh[1], Math.abs(x - BD.cx)) * (1 - smooth(BD.shY[2], BD.shY[3], y)) * smooth(BD.shY[0], BD.shY[1], y);
++        if (sh > 0) { Y -= 2.4 * F.k * this.life.breathS * sh; X += Math.sign(x - BD.cx) * 0.5 * F.k * this.life.breathS * sh; }
+         // r7 (judge r6 fix 5, the acting layer): the upper body carries the head's lean and roll. A lean in (concern,
+         // listening) brings the shoulders down and a touch wider (toward the camera), a lean back (surprise) lifts them;
+         // a head roll tilts the shoulder line ~20% the same way (the body leads, the head follows). The hem stays put.
+-        { const bw = 1 - smooth(800, 1010, y);
++        { const bw = 1 - smooth(BD.bw[0], BD.bw[1], y);
+           if (bw > 0 && (s.lean !== 0 || s.roll !== 0)) {
+-            Y += (s.leanY * 0.5 + (x - 527) * Math.sin(-s.roll * D2R) * 0.2 * smooth(700, 780, y)) * bw;
+-            X += (x - 527) * 0.012 * s.lean * bw;
++            Y += (s.leanY * 0.5 + (x - BD.cx) * Math.sin(-s.roll * D2R) * 0.2 * smooth(BD.rollY[0], BD.rollY[1], y)) * bw;
++            X += (x - BD.cx) * 0.012 * s.lean * bw;
+           } }
+         // r3: the neck column carries the head transform fully up to the jaw (the keyform field already decays to 0 at
+         // the collar), so the chin and the neck under it move as one; uniform across the neck's width (no shear)
+-        const neck = smooth(772, 700, y) * (1 - smooth(110, 160, Math.abs(x - 527)));
++        const neck = smooth(BD.neckY[0], BD.neckY[1], y + (BD.neckV || 0) * Math.max(0, Math.abs(x - BD.cx) - (BD.neckV0 || 0))) * (1 - smooth(BD.neckW[0], BD.neckW[1], Math.abs(x - BD.cx)));
+         if (neck > 0) {
+           const [hx, hy] = this.project(x, y, zFast(x, y));
+           X += (hx - x) * neck;
+@@ -858,9 +871,9 @@ export class Puppet2DRig {
+     if (L.name === "hair" && this.browCh) {
+       if (!L.pinW) {
+         L.pinW = new Float32Array(n * 2);
+-        for (let i = 0; i < n; i++) { const x = rest[i * 2], y = rest[i * 2 + 1]; for (let k = 0; k < 2; k++) { const [ax, ay] = PIN_AT[k]; L.pinW[i * 2 + k] = Math.exp(-((x - ax) ** 2 + (y - ay) ** 2) / (2 * 72 * 72)); } }
++        for (let i = 0; i < n; i++) { const x = rest[i * 2], y = rest[i * 2 + 1]; for (let k = 0; k < 2; k++) { const [ax, ay] = F.pins[k]; L.pinW[i * 2 + k] = Math.exp(-((x - ax) ** 2 + (y - ay) ** 2) / (2 * F.pinS * F.pinS)); } }
+       }
+-      const a = this.browOffset("L", PIN_AT[0][0], PIN_AT[0][1]), b = this.browOffset("R", PIN_AT[1][0], PIN_AT[1][1]);
++      const a = this.browOffset("L", F.pins[0][0], F.pins[0][1]), b = this.browOffset("R", F.pins[1][0], F.pins[1][1]);
+       pin = [0.9 * a[0], 0.9 * Math.min(0, a[1]), 0.9 * b[0], 0.9 * Math.min(0, b[1])];
+     }
+     const fo = this._fo || (this._fo = [0, 0]);
+@@ -914,7 +927,8 @@ export class Puppet2DRig {
+     // r4 (judge r3 fix 4): ~35% more range: surprise / concern read as 'mild' at thumbnail size
+     // r5: + the stressed-syllable brow flick (life.js), a few px, inner end a touch more
+     const fl = this.life ? this.life.flick : 0;
+-    return { lift: 14 * wide + 12 * outer + 5 * inner + 4.2 * fl, inner: 53 * inner + 3 * fl, arch: 38 * outer, knit: 21 * down };
++    const kb = F.kb;
++    return { lift: (14 * wide + 12 * outer + 5 * inner + 4.2 * fl) * kb, inner: (53 * inner + 3 * fl) * kb, arch: 38 * outer * kb, knit: 21 * down * kb };
+   }
+ 
+   browOffset(s, x, y) {
+@@ -928,7 +942,7 @@ export class Puppet2DRig {
+     const dyAt = (xx) => {
+       const ui = s === "L" ? clamp01((x1 - xx) / (x1 - x0)) : clamp01((xx - x0) / (x1 - x0));
+       const peak = Math.exp(-(((ui - 0.62) / 0.3) ** 2));
+-      return 5.0 * Math.max(this.blinkDip || 0, smooth(0.3, 0.6, this.lidShared || 0) * (this.bsh && this.bsh.active ? 1 : 0.8)) - c.lift - c.inner * Math.pow(1 - ui, 1.3) - c.arch * (0.35 + 0.65 * peak) * Math.pow(ui, 0.5) + c.knit * (1 - 0.6 * ui);
++      return 5.0 * F.kb * Math.max(this.blinkDip || 0, smooth(0.3, 0.6, this.lidShared || 0) * (this.bsh && this.bsh.active ? 1 : 0.8)) - c.lift - c.inner * Math.pow(1 - ui, 1.3) - c.arch * (0.35 + 0.65 * peak) * Math.pow(ui, 0.5) + c.knit * (1 - 0.6 * ui);
+     };
+     const dy = dyAt(x);
+     const th = Math.atan((dyAt(x + 3) - dyAt(x - 3)) / 6);
+@@ -941,7 +955,7 @@ export class Puppet2DRig {
+   /** r5 (fps): browOffset's column terms (centreline dy, slope, rest centreline y, knit shift) once per grid column. */
+   browColumns(L) {
+     const s = L.name.slice(4), b = this.g.brows[s], x0 = b.x[0], x1 = b.x[1], c = this.browCh[s], cl = b.cl;
+-    const dipA = 5.0 * Math.max(this.blinkDip || 0, smooth(0.3, 0.6, this.lidShared || 0) * (this.bsh && this.bsh.active ? 1 : 0.8));
++    const dipA = 5.0 * F.kb * Math.max(this.blinkDip || 0, smooth(0.3, 0.6, this.lidShared || 0) * (this.bsh && this.bsh.active ? 1 : 0.8));
+     const dyAt = (xx) => {
+       const ui = s === "L" ? clamp01((x1 - xx) / (x1 - x0)) : clamp01((xx - x0) / (x1 - x0));
+       const peak = Math.exp(-(((ui - 0.62) / 0.3) ** 2));
+@@ -960,9 +974,11 @@ export class Puppet2DRig {
+     if (!s) return;
+     this.faceCoef();
+     R.begin();
+-    R.setCam(this.view[0], this.view[1], this.view[2]);
+-    const shadeFace = [s.yaw >= 0 ? 1 : -1, s.yaw >= 0 ? 530 : 330, s.yaw >= 0 ? 730 : 530, 0.16 * Math.abs(s.yaw) / 20];
+-    const shadeHair = [shadeFace[0], s.yaw >= 0 ? 400 : 200, s.yaw >= 0 ? 820 : 660, 0.1 * Math.abs(s.yaw) / 20];
++    if (this.view.length >= 4) { const cw = R.canvas.width, ch = R.canvas.height, v = this.view, sc = Math.min(cw / v[2], ch / v[3]), w = cw / sc, h = ch / sc; R.setCam(v[0] + (v[2] - w) / 2, v[1] + (v[3] - h) / 2, w); }
++    else R.setCam(this.view[0], this.view[1], this.view[2]);
++    const SF = F.shade.face, SH = F.shade.hair, sd0 = s.yaw >= 0 ? "R" : "L";
++    const shadeFace = [s.yaw >= 0 ? 1 : -1, SF[sd0][0], SF[sd0][1], SF.amt * Math.abs(s.yaw) / 20];
++    const shadeHair = [shadeFace[0], SH[sd0][0], SH[sd0][1], SH.amt * Math.abs(s.yaw) / 20];
+     const dbg = this.debug;
+     const PF = this.prof, now = () => performance.now();
+     const draw = (n, shade) => {
+@@ -1018,7 +1034,7 @@ export class Puppet2DRig {
+       let top = E.top[ii], bot = E.bot[ii];
+       // r2: round the opening's ends (the hand-read corners were blunt: a vertical white edge at 2x and on turns)
+       const dEnd = Math.min(x - E.xa, E.xb - x);
+-      if (dEnd < 6) { const f = Math.sqrt(Math.max(0, 1 - (1 - dEnd / 6) ** 2)), mid = (top + bot) / 2; top = mid + (top - mid) * f; bot = mid + (bot - mid) * f; }
++      if (dEnd < F.eye.round) { const f = Math.sqrt(Math.max(0, 1 - (1 - dEnd / F.eye.round) ** 2)), mid = (top + bot) / 2; top = mid + (top - mid) * f; bot = mid + (bot - mid) * f; }
+       const ys = [top - 2.1, top - 0.1, Math.max(top - 0.1, bot - 0.6), Math.max(top - 0.1, bot + 1.4)];
+       for (let j = 0; j < 4; j++) {
+         const y = bot <= top + 0.05 ? top : ys[j];
+@@ -1043,14 +1059,14 @@ export class Puppet2DRig {
+     const g0 = this.gaze || [0, 0], ms = this.life.sacc;   // r5: + fixational micro-saccades (life.js)
+     const gz = [g0[0] + ms[0], g0[1] + ms[1] - (bd > 0 ? 6 * bd : 0)];
+     // r2: the upward range was too timid to read as "looking up" (c-thinking parks the iris under the upper lid)
+-    const ox = (gz[0] / 25) * 18, oy = -(gz[1] / 20) * 12 + (gz[1] < 0 ? -gz[1] / 25 * 2 : 0);
++    const ox = (gz[0] / 25) * 18 * F.ke, oy = (-(gz[1] / 20) * 12 * (gz[1] > 0 ? F.eye.upK : 1) + (gz[1] < 0 ? -gz[1] / 25 * 2 : 0)) * F.ke;
+     const fx = Math.cos((gz[0] + 0.2 * s.yaw) * D2R * 1.2);
+     const [icx, icy] = e.iris;
+     // r2: a lowering lid pushes the catchlight down with it (it stays visible on the iris until the eye is nearly
+     // shut): a half-lidded eye with no catchlight read as a dead gaze to both blind judges
+     const [ccx, ccy, cr] = e.catch;
+     const lidAt = interp(E.xa, E.top, ccx), push = Math.max(0, lidAt + cr + 1.5 - (ccy + oy * 0.45));
+-    const catchY = oy * 0.45 + Math.min(push, 14), catchA = clamp01((0.92 - E.blink) / 0.2) * (1 - (this.g.lidKeys ? clamp01((E.blink - 0.6) / 0.1) : 0));
++    const catchY = oy * 0.45 + Math.min(push, 14 * F.ke), catchA = clamp01((0.92 - E.blink) / 0.2) * (1 - (this.g.lidKeys ? clamp01((E.blink - 0.6) / 0.1) : 0));
+     const irisScr = fixX(this.project(icx + ox, icy + oy, zEye(icx + ox, icy + oy)));
+     const pa = this.project(icx - 12, icy, zEye(icx - 12, icy)), pb = this.project(icx + 12, icy, zEye(icx + 12, icy));
+     const wx = Math.hypot(pb[0] - pa[0], pb[1] - pa[1]) / 24;
+@@ -1064,7 +1080,7 @@ export class Puppet2DRig {
+       iris: { tex: this.tex["iris" + sd], rect: this.g.rects["iris" + sd] },
+       catch: { tex: this.tex["catch" + sd], rect: this.g.rects["catch" + sd] },
+       irisC: [icx, icy], irisScr, irisK, irisScale: [irisSX, E.blink > 0.85 ? 0.95 : 1],
+-      catchScr, catchC: [ccx, ccy], catchA, lidShade: 0.4, topY: interp(E.xa, E.top, icx),
++      catchScr, catchC: [ccx, ccy], catchA, lidShade: F.eye.shade[0] + (F.eye.shade[1] - F.eye.shade[0]) * clamp01(Math.abs(interp(E.xa, E.top, icx) - interp(E.xa, e.top, icx)) / 4), topY: interp(E.xa, E.top, icx),
+     });
+     // lower lid band
+     for (let i = 0; i < E.BC; i++)
+@@ -1121,16 +1137,16 @@ export class Puppet2DRig {
+             // r6: the mid lid's lash bows DOWN over the eyeball (+3.5 px at the centre, 0 at the corners): r5's key was a
+             // near-straight lash (judge: 'flat lids')
+             const lx0 = E.e.lashX[0], lx1 = E.e.lashX[1], xc = (lx0 + lx1) / 2, hw = (lx1 - lx0) / 2;
+-            const r2 = Math.min(1, ((x - xc) / hw) ** 2), wy = smooth(M.rect[1], M.rect[1] + 60, M.rest[q * 2 + 1]);
+-            y += 3.5 * (1 - r2) * wy;
++            const r2 = Math.min(1, ((x - xc) / hw) ** 2), wy = smooth(M.rect[1], M.rect[1] + 60 * F.ke, M.rest[q * 2 + 1]);
++            y += 3.5 * F.ke * (1 - r2) * wy;
+           }
+           if (wk > 0) {
+             // a parabola about the lash centre: the middle rises, both ends (wing included) drop, so the painted U sag
+             // (~22 px) inverts into an arch without lifting the key off the skin under it
+             const lx0 = E.e.lashX[0], lx1 = E.e.lashX[1], xc = (lx0 + lx1) / 2, hw = (lx1 - lx0) / 2;
+             const r2 = Math.min(1.25, ((x - xc) / hw) ** 2);
+-            const wy = 0.2 + 0.8 * smooth(M.rect[1], M.rect[1] + 70, M.rest[q * 2 + 1]);
+-            y += wk * (-15 + 36 * r2) * wy;
++            const wy = 0.2 + 0.8 * smooth(M.rect[1], M.rect[1] + 70 * F.ke, M.rest[q * 2 + 1]);
++            y += wk * (-15 + 36 * r2) * F.ke * wy;
+           }
+           const p = fixX(this.projectTo(x, y, M.z[q], this._tmp || (this._tmp = [0, 0])));
+           M.pos[q * 2] = p[0];
+@@ -1196,8 +1212,8 @@ export class Puppet2DRig {
+     R.update(this.innerMesh, "aDT", I.dt);
+     R.update(this.innerMesh, "aGap", I.gap);
+     const p = sol.p;
+-    const teethH = 10 + 5 * p.tuck + 4.5 * p.sq;   // r5: f/v shows the incisors' full length, their tips on the lower lip; r6: ch's two rows meet
+-    const ext = 2 + 9 * p.tuck;   // = LipShell.update's strip extension below the lower inner edge
++    const teethH = (10 + 5 * p.tuck + 4.5 * p.sq) * F.mouth.k;   // r5: f/v shows the incisors' full length, their tips on the lower lip; r6: ch's two rows meet
++    const ext = (2 + 9 * p.tuck) * F.mouth.k;   // = LipShell.update's strip extension below the lower inner edge
+     if (p.g > 0.05 && !(this.debug && this.debug.noInner)) R.drawInner(this.innerMesh, this.tex.interior, [p.T, p.TL, teethH, sol.joy || 0], [p.th, p.tip, p.curl, p.dim], 1 - 0.5 * shade[3], 0, ext);
+     for (const n of ["L", "U"]) {
+       const sh = shell.sheets[n];
+diff --git a/src/face-puppet/runtime/gl.js b/src/face-puppet/runtime/gl.js
+index e80e1b9132bc084495a787ef3960cef4f9cd7bf3..2ddeea2feef954346bd9a95e6175a3a88fcc9cec 100644
+--- a/src/face-puppet/runtime/gl.js
++++ b/src/face-puppet/runtime/gl.js
+@@ -1,5 +1,7 @@
+-// SYNCED from scripts/character/puppet2d/polish-r8/runtime/gl.js (puppet polish r8, judged) by evals/face-puppet/sync-runtime.mjs; sha256 c317108a842a61c4.
++// SYNCED from scripts/character/puppet2d/lamp1/runtime/gl.js (round 4 lamp1: renders the r8 pack pixel-identical, docs/design/round4/asha/evidence/r8-parity.json) by evals/face-puppet/sync-runtime.mjs; sha256 603c9441ab44fa6c.
+ // Do not edit here: change the polish round, re-judge, re-sync.
++// lamp1 (round 4, Asha option 4): derived from the r8 runtime by scripts/character/puppet2d/lamp1/make-runtime.py;
++// every c-front pixel constant now reads F (face.js), whose defaults are those values (an r8 pack renders unchanged).
+ // Minimal WebGL2 renderer for the painted puppet (PLAN §2): textured triangle meshes with premultiplied alpha, one
+ // draw per layer, CPU-deformed vertices uploaded with bufferSubData. Two programs: `paint` (texture x alpha x shade)
+ // and `eye` (sclera + gaze-moved iris + view-space catchlight composited in one pass inside the lid opening strip,
+@@ -21,19 +23,22 @@ uniform sampler2D uTex; uniform float uAlpha; uniform vec4 uShade; // shade: dir
+ uniform vec4 uRect; // texture rect in rest space (x0,y0,w,h) for shading position
+ uniform vec4 uTint; // debug: rgb, amount
+ uniform vec2 uNose; // r6: turn side (+1 / -1), amount 0..1 (face layer only)
++uniform vec4 uNoseG; // lamp1: nose centre x, far-plane y, near-plane y, scale (c-front 532, 528, 508, 1)
++uniform vec3 uShadeTint; // lamp1: the turn shadow's colour cast (0 = plain darkening, r8)
+ out vec4 o;
+ void main(){
+   vec4 c = texture(uTex, vUv);
+   float x = uRect.x + vUv.x * uRect.z;
+   float s = clamp((x - uShade.y) / (uShade.z - uShade.y), 0.0, 1.0);
+   s = uShade.x > 0.0 ? s : 1.0 - s;
+-  c.rgb *= 1.0 - uShade.w * s * s;
++  c.rgb *= vec3(1.0) - uShade.w * s * s * (vec3(1.0) - uShadeTint);
+   if (uNose.y > 0.0) {
+     // r6 (judge r5 fix 4, turn): the nose's side planes. On a turn the far flank of the bridge falls into shadow and the
+     // near flank catches light (the painted three-quarter keys); rest-space texel position, so it rides with the nose
+     float y = uRect.y + vUv.y * uRect.w;
+-    float far = exp(-pow((x - 532.0 - uNose.x * 15.0) / 7.0, 2.0) - pow((y - 528.0) / 17.0, 2.0));
+-    float nr = exp(-pow((x - 532.0 + uNose.x * 9.0) / 5.5, 2.0) - pow((y - 508.0) / 22.0, 2.0));
++    float nk = uNoseG.w;
++    float far = exp(-pow((x - uNoseG.x - uNose.x * 15.0 * nk) / (7.0 * nk), 2.0) - pow((y - uNoseG.y) / (17.0 * nk), 2.0));
++    float nr = exp(-pow((x - uNoseG.x + uNose.x * 9.0 * nk) / (5.5 * nk), 2.0) - pow((y - uNoseG.z) / (22.0 * nk), 2.0));
+     c.rgb *= 1.0 - 0.11 * uNose.y * far + 0.06 * uNose.y * nr;
+   }
+   c.rgb = mix(c.rgb, uTint.rgb * c.a, uTint.a);
+@@ -95,14 +100,14 @@ void main(){
+ const FS_LIP = `#version 300 es
+ precision mediump float;
+ in vec2 vUv; in float vA; in float vL; in float vT; in float vE;
+-uniform sampler2D uTex; uniform vec4 uShade; uniform vec4 uRect; uniform float uEdgeAA;
++uniform sampler2D uTex; uniform vec4 uShade; uniform vec4 uRect; uniform float uEdgeAA; uniform vec3 uShadeTint;
+ out vec4 o;
+ void main(){
+   vec4 c = texture(uTex, vUv);
+   float x = uRect.x + vUv.x * uRect.z;
+   float s = clamp((x - uShade.y) / (uShade.z - uShade.y), 0.0, 1.0);
+   s = uShade.x > 0.0 ? s : 1.0 - s;
+-  c.rgb *= (1.0 - uShade.w * s * s) * vL;
++  c.rgb *= (vec3(1.0) - uShade.w * s * s * (vec3(1.0) - uShadeTint)) * vL;
+   // r6: an open lower lip is a saturated, lit volume (c-happy / c-talking), not the closed lip's pale band
+   c.rgb *= mix(vec3(1.0), vec3(1.03, 0.88, 0.86), vT);
+   // r6: the lip sheets' inner edge (row 0) is their polygon boundary; where the lips barely part it stays opaque and,
+@@ -131,6 +136,8 @@ uniform vec4 uTongue;  // body height share, tip, curl, -
+ uniform float uShadeK;
+ uniform float uOver;   // r5: 1 = the f/v overlay pass: only the upper teeth tips, drawn OVER the tucked lower lip
+ uniform float uExt;    // r6: how far the strip reaches below the lower inner edge (px)
++uniform float uMK;     // lamp1: mouth scale (the cavity's px constants were tuned on c-front's mouth)
++uniform vec3 uTongueMul; uniform vec3 uTeethMul;   // lamp1: per-face interior colour
+ out vec4 o;
+ vec3 rowc(float row, float u){ vec4 c = texture(uTex, vec2(u, (row + 0.5) / 64.0)); return c.rgb / max(c.a, 0.001); }
+ // r4 (judge r3 fix 2): the teeth's free edge is the PAINTED contour's smooth fit (rows 12.9 - 2.7u^2 - 0.3u^4 of the
+@@ -166,7 +173,7 @@ void main(){
+   col *= 1.0 - 0.35 * pow(a, 3.0);
+   // r6 (judge r5 fix 2): inner occlusion. The cavity is deepest right under the upper lip and at the corners and lifts
+   // toward the tongue (the refs' warm-brown gradient), instead of one flat red fill inside a hard cut-out
+-  float occT = 1.0 - smoothstep(0.0, max(6.0, 0.42 * gap), dt);
++  float occT = 1.0 - smoothstep(0.0, max(6.0 * uMK, 0.42 * gap), dt);
+   col *= 1.0 - 0.34 * occT * occT - 0.18 * smoothstep(0.55, 0.98, a);
+   col *= 0.94 + 0.10 * smoothstep(0.25, 0.9, dt / gap);
+   // ---- tongue: body mound on the floor; tip = a rounded LOBE that rises to the upper teeth (t d n l); curl = the
+@@ -177,7 +184,7 @@ void main(){
+   // stands alone against a dark cavity on both sides and reads as a tongue tip, not as a second lower lip
+   // r6: the resting tongue is a rounded MOUND in the middle of the floor (c-talking), dark cavity on both sides; r5's
+   // full-width band at the lip's own width read as a second, translucent lower lip (judge r5, zoom-surprise)
+-  float mound = min(gap * uTongue.x * 0.9, 4.5 + 0.075 * gap) * pow(max(0.0, 1.0 - pow(vS / 0.58, 2.0)), 0.55) * (1.0 - 0.85 * clamp(uTongue.y * 1.4, 0.0, 1.0));
++  float mound = min(gap * uTongue.x * 0.9, 4.5 * uMK + 0.075 * gap) * pow(max(0.0, 1.0 - pow(vS / 0.58, 2.0)), 0.55) * (1.0 - 0.85 * clamp(uTongue.y * 1.4, 0.0, 1.0));
+   float lw = 0.38;                                                // lobe half-width (s units)
+   float lob = max(0.0, 1.0 - pow(vS / lw, 2.0));
+   // r4b: a soft DOME (wider at the base), not a flat-sided tombstone
+@@ -187,7 +194,7 @@ void main(){
+   if (h > 0.4) {
+     // r6: the mound's edge is a soft ~3 px rolloff (it was a 1 px vector edge with a dark contact line); the lobe keeps
+     // a crisper edge so the tongue tip still reads at 1x
+-    float soft = uTongue.y > 0.3 ? 1.0 : 3.0;
++    float soft = uTongue.y > 0.3 ? 1.0 : 3.0 * uMK;
+     float cov = smoothstep(-0.5 * soft, 0.5 * soft + px, h - db);
+     bool isTip = tipH >= max(mound, curl) - 0.01 && uTongue.y > 0.05;
+     // r4b: the lobe samples the strip near its centre (the strip's column texture showed as vertical stripes on it)
+@@ -197,9 +204,9 @@ void main(){
+     // r6: a soft pink mound lit from above (c-talking), no dark rim along its crest
+     t = mix(t, vec3(0.84, 0.47, 0.47), 0.5);
+     t *= mix(0.97, 1.07, smoothstep(0.0, 0.8 * max(h, 0.5), h - db));
+-    t *= mix(1.0, 0.8, smoothstep(30.0, 70.0, gap));   // a tall opening (surprise): the tongue lies low, in shadow
++    t *= mix(1.0, 0.8, smoothstep(30.0 * uMK, 70.0 * uMK, gap));   // a tall opening (surprise): the tongue lies low, in shadow
+     // r8: ... and stays WARM in that shadow (the pink x 0.8 read lilac-grey at the bottom of the surprise O at full size)
+-    t = mix(t, t * vec3(1.1, 0.92, 0.8), smoothstep(30.0, 70.0, gap));
++    t = mix(t, t * vec3(1.1, 0.92, 0.8), smoothstep(30.0 * uMK, 70.0 * uMK, gap));
+     if (isTip) {
+       // r5: a saturated pink lobe, lighter than the cavity and redder than the orange lip
+       t = mix(t, vec3(0.80, 0.40, 0.44), 0.55);
+@@ -214,7 +221,7 @@ void main(){
+     }
+     // a contact shadow just outside the tongue's edge keeps it legible against the cavity at 1x
+     col *= 1.0 - (0.08 + 0.45 * uTongue.y) * clamp(1.0 - abs(h - db) / 3.5, 0.0, 1.0) * (1.0 - cov);
+-    col = mix(col, t, cov);
++    col = mix(col, t * uTongueMul, cov);
+   }
+   // ---- lower teeth (bottom-anchored on the lower lip), then upper teeth (hang from the upper lip, slide up as they hide)
+   float lwT = 0.52, uwT = 0.76;
+@@ -228,7 +235,7 @@ void main(){
+     float cov = clamp((hL - db) / px + 0.5, 0.0, 1.0) * (1.0 - smoothstep(lwT - 0.12 - 0.1 * joyT, lwT, a)) * gapT;
+     float row = 31.0 - clamp(db * rp, 0.0, contourRows(vS / lwT) - 2.5);
+     vec3 lt = rowc(row, ul) * dimT * (1.0 - 0.3 * pow(a / lwT, 2.0)) * vec3(1.12, 1.09, 1.04) * mix(vec3(1.0), vec3(0.8, 0.7, 0.64), uTongue.w);   // r5: the lower row read grey beside the upper one
+-    col = mix(col, lt, cov);
++    col = mix(col, lt * uTeethMul, cov);
+   }
+   if (a < uwT && uTeeth.x > 0.01) {
+     float uu = clamp((vS / uwT) * 0.5 + 0.5, 0.0, 1.0);
+@@ -239,7 +246,7 @@ void main(){
+     vec3 ut = rowc(row, uu) * 1.08 * dimT * (1.0 - 0.3 * pow(a / uwT, 2.0) - 0.06 * joyT * pow(a / uwT, 2.0)) * mix(vec3(1.0), vec3(0.88, 0.78, 0.72), uTongue.w);   // r6: dim (ch funnel shadow, warm)
+     // the free edge catches a whisper of shadow (painted teeth have it), inside the coverage ramp only
+     ut *= 1.0 - 0.08 * clamp(1.0 - (hU - dt) / 1.6, 0.0, 1.0);
+-    col = mix(col, ut, cov);
++    col = mix(col, ut * uTeethMul, cov);
+   }
+   // the upper lip's shadow on whatever sits right under it; r6: a soft 2 px rim on BOTH inner edges (the lips roll in),
+   // so the cavity never reads as a crisp cut-out against the lip
+@@ -294,6 +301,7 @@ export class Renderer {
+     gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+     gl.disable(gl.DEPTH_TEST);
+     this.cam = [0, 0, 1, 0];
++    this.face = { nose: [532, 528, 508, 1], mk: 1, tint: [0, 0, 0], tongue: [1, 1, 1], teeth: [1, 1, 1] };   // lamp1: set by the rig from geom.face
+     this.draws = 0;
+     this.tris = 0;
+   }
+@@ -367,6 +375,8 @@ export class Renderer {
+     const gl = this.gl, P = this.paint;
+     gl.useProgram(P.p);
+     gl.uniform2fv(P.u.uNose, nose || [0, 0]);
++    gl.uniform4fv(P.u.uNoseG, this.face.nose);
++    gl.uniform3fv(P.u.uShadeTint, this.face.tint);
+     gl.uniform4fv(P.u.uTint, tint || [0, 0, 0, 0]);
+     gl.uniform2f(P.u.uView, this.canvas.width, this.canvas.height);
+     gl.uniform4fv(P.u.uCam, this.cam);
+@@ -386,6 +396,7 @@ export class Renderer {
+     const gl = this.gl, P = this.lip;
+     gl.useProgram(P.p);
+     gl.uniform1f(P.u.uEdgeAA, edgeAA);
++    gl.uniform3fv(P.u.uShadeTint, this.face.tint);
+     gl.uniform2f(P.u.uView, this.canvas.width, this.canvas.height);
+     gl.uniform4fv(P.u.uCam, this.cam);
+     gl.uniform4fv(P.u.uShade, shade);
+@@ -403,6 +414,9 @@ export class Renderer {
+     const gl = this.gl, P = this.inner;
+     gl.useProgram(P.p);
+     gl.uniform1f(P.u.uExt, ext);
++    gl.uniform1f(P.u.uMK, this.face.mk);
++    gl.uniform3fv(P.u.uTongueMul, this.face.tongue);
++    gl.uniform3fv(P.u.uTeethMul, this.face.teeth);
+     gl.uniform1f(P.u.uOver, over);
+     gl.uniform2f(P.u.uView, this.canvas.width, this.canvas.height);
+     gl.uniform4fv(P.u.uCam, this.cam);
+diff --git a/src/face-puppet/runtime/lips.js b/src/face-puppet/runtime/lips.js
+index 4ec443150cad5444aa9db03536fc31179dc95332..1188093c4ee2990741c6e411b23d4b7ea597e674 100644
+--- a/src/face-puppet/runtime/lips.js
++++ b/src/face-puppet/runtime/lips.js
+@@ -1,5 +1,7 @@
+-// SYNCED from scripts/character/puppet2d/polish-r8/runtime/lips.js (puppet polish r8, judged) by evals/face-puppet/sync-runtime.mjs; sha256 ba21b3d601ca1684.
++// SYNCED from scripts/character/puppet2d/lamp1/runtime/lips.js (round 4 lamp1: renders the r8 pack pixel-identical, docs/design/round4/asha/evidence/r8-parity.json) by evals/face-puppet/sync-runtime.mjs; sha256 22c25b3966815e33.
+ // Do not edit here: change the polish round, re-judge, re-sync.
++// lamp1 (round 4, Asha option 4): derived from the r8 runtime by scripts/character/puppet2d/lamp1/make-runtime.py;
++// every c-front pixel constant now reads F (face.js), whose defaults are those values (an r8 pack renders unchanged).
+ // r4 METHOD CHANGE (judge r3 fix 1): the viseme parameter space is re-derived so the mouth's SHAPE varies independently
+ // of the smile. r3 drove one smile-curved slit whose opening grew a few px ("smiling while mumbling"); r4 keeps r3's
+ // single warped lip shell (two sheets of c-front's own lips, nothing swaps) but every viseme now owns:
+@@ -17,27 +19,28 @@
+ // Contour model (c-front px): the lip line L(x) (traced: darkest pixel per column), upper outer contour L - tU(s), lower
+ // L + tL(s); s = signed distance from the mouth centre in half-widths (|s| = 1 at the lip ends 466 / 596).
+ 
++import { F, faceVersion } from "./face.js";
+ const clamp = (x, a, b) => (x < a ? a : x > b ? b : x);
+ const clamp01 = (x) => clamp(x, 0, 1);
+ const sstep = (a, b, x) => { const t = clamp01((x - a) / (b - a)); return t * t * (3 - 2 * t); };
+ 
+ // traced lip line, x 448..612 step 4 (darkest pixel per column, c-front)
+-const LINE_X0 = 448;
+-const LINE = [585, 584, 584, 587, 589, 592, 594, 596, 597, 599, 600, 601, 602, 603, 604, 604, 605, 605, 606, 606, 606, 606, 606, 605, 605, 604, 603, 602, 601, 600, 598, 597, 596, 594, 592, 589, 587, 584, 580, 576, 576, 575];
++// lamp1: the traced lip line is F.mouth.line (lineX0, lineStep); c-front's by default
+ // r4: half-widths 64/66 -> 69/71: the opening now runs nearly to the commissures (454 / 606 in c-front), as a real
+ // mouth does; at 64/66 every open shape stopped 12 px short and the talking mouth read small (blind r3 c2)
+-export const MOUTH = { cx: 530, hwL: 69, hwR: 71, tU: 13.5, tL: 21, cy: 606 };
++export const MOUTH = new Proxy({}, { get: (_, k) => F.mouth[k] });   // lamp1: F.mouth (c-front: cx 530, hwL 69, hwR 71, tU 13.5, tL 21, cy 606)
+ export function lineY(x) {
+-  const f = (x - LINE_X0) / 4;
++  const M = F.mouth, LINE = M.line, f = (x - M.lineX0) / M.lineStep;
+   if (f <= 0) return LINE[0];
+   if (f >= LINE.length - 1) return LINE[LINE.length - 1];
+   const i = Math.floor(f), t = f - i;
+   return LINE[i] * (1 - t) + LINE[i + 1] * t;
+ }
+-const LC = lineY(MOUTH.cx + 4);   // the line's lowest (centre) point
+-const sOf = (x) => (x - MOUTH.cx) / (x < MOUTH.cx ? MOUTH.hwL : MOUTH.hwR);
+-const tUof = (a) => (a >= 1 ? 0 : MOUTH.tU * Math.pow(1 - a * a, 0.55));
+-const tLof = (a) => (a >= 1 ? 0 : MOUTH.tL * Math.pow(Math.max(0, 1 - Math.pow(a, 2.2)), 0.75));
++let _lcv = -1, _lc = 0;
++const LCf = () => { if (_lcv !== faceVersion()) { _lcv = faceVersion(); _lc = lineY(F.mouth.cx + 4); } return _lc; };   // the line's lowest (centre) point
++const sOf = (x) => { const M = F.mouth; return (x - M.cx) / (x < M.cx ? M.hwL : M.hwR); };
++const tUof = (a) => (a >= 1 ? 0 : F.mouth.tU * Math.pow(1 - a * a, 0.55));
++const tLof = (a) => (a >= 1 ? 0 : F.mouth.tL * Math.pow(Math.max(0, 1 - Math.pow(a, 2.2)), 0.75));
+ 
+ // ---- viseme targets (shapes, measured against the refs mouth-*.webp and c-talking; px at 1024)
+ // r5 (judge r4, visemes pass 2): three new per-viseme parameters
+@@ -193,7 +196,7 @@ export class LipSolver {
+     for (const s of ["L", "R"]) {
+       // r5: the talking smile bias: while a viseme holds, the corners relax toward a neutral 0.3 by its smile retention
+       const se0 = lift(smile[s]) * (1 - 0.5 * rc), se = 0.3 + (se0 - 0.3) * (se0 > 0.3 ? p.sm : 1);   // capped smile
+-      const hw = s === "L" ? MOUTH.hwL : MOUTH.hwR;
++      const hw = (s === "L" ? F.mouth.hwL : F.mouth.hwR) / F.mouth.k;   // lamp1: c-front units
+       const wid = hw * (p.W - 1) + (se - 0.45) * 13 * (1 - 0.6 * rc) - (this.pressSide ? this.pressSide[s] : 0) * 5;
+       const ps = this.pressSide ? this.pressSide[s] : 0;
+       const dy = -(se - 0.45) * 19 * (1 - 0.6 * rc) * (1 - 0.7 * this.surprised) + frown[s] * 12.5 + p.press * 1.5 + p.tuck * 2.5 + p.pout * 1.5 - ps * 1.2;   // r5: f/v and ch corners sit down a touch (no smile)   // r4: frown 9 -> 12.5 (concern)
+@@ -218,13 +221,14 @@ export class LipSolver {
+   /** r4: the jaw carries the lower lip, the skin under it and the chin together (r3's chin followed at 0.62 and the
+    *  skin between lip and chin crushed on a big aa). */
+   jaw() {
+-    return 0.86 * this.lowerDrop() - (this.ment || 0);
++    return F.mouth.k * 0.86 * this.lowerDrop() - (this.ment || 0);   // lamp1: face px
+   }
+ }
+ 
+ /** Jaw profile on the face (rest space): 0 above the lip line, 1 over the chin, fading toward the cheeks. */
+ export function jawProfile(x, y) {
+-  return sstep(606, 660, y) * Math.exp(-(((x - 530) / 128) ** 2));
++  const J = F.mouth.jaw;
++  return sstep(J[0], J[1], y) * Math.exp(-(((x - F.mouth.cx) / J[2]) ** 2));
+ }
+ 
+ /** Mesh builder + per-frame deformation of the shell (rest-space displacement, before the head projection). */
+@@ -237,8 +241,9 @@ export class LipShell {
+     this.cols = cols;
+     // rows by distance from the lip line: dense at the lip, sparse toward the ellipse edge. Row 1 (0.9 px) is the
+     // inner-edge AA row: when the lips part, row 0 goes transparent and the edge is an exact 0.9 px ramp.
+-    const dU = [0, 1.5, 3.2, 6, 9, 12, 15, 19, 24, 30, 37, 45, 55];   // r6: AA row 0.9 -> 1.5 px (a soft rim)
+-    const dL = [0, 1.5, 3.2, 6, 10, 14, 18, 22, 27, 33, 40, 48, 57, 67, 78, 90];
++    const mk = F.mouth.k;   // lamp1: rows scale with the mouth (the AA rows stay 1.5 / 3.2 px)
++    const dU = [0, 1.5, 3.2, 6, 9, 12, 15, 19, 24, 30, 37, 45, 55].map((d, i) => (i < 3 ? d : d * mk));   // r6: AA row 0.9 -> 1.5 px (a soft rim)
++    const dL = [0, 1.5, 3.2, 6, 10, 14, 18, 22, 27, 33, 40, 48, 57, 67, 78, 90].map((d, i) => (i < 3 ? d : d * mk));
+     this.sheets = {};
+     for (const [name, ds, sign, ylim] of [["U", dU, -1, y0], ["L", dL, 1, y1]]) {
+       const C = cols.length, R = ds.length;
+@@ -283,20 +288,21 @@ export class LipShell {
+     const s = sOf(x), a = Math.abs(s), S = s < 0 ? sol.side.L : sol.side.R;
+     const am = Math.min(1, a);
+     // horizontal: the contour scales about the centre (corner travel S.wid); the crease beyond the lip end rides along
+-    let dx = (a <= 1 ? s : Math.sign(s)) * S.wid + sol.shift;
++    const mk = F.mouth.k;
++    let dx = ((a <= 1 ? s : Math.sign(s)) * S.wid + sol.shift) * mk;
+     // vertical: the corner lift is carried by the outer part of the line
+-    let dy = S.dy * Math.pow(am, 1.8);
++    let dy = S.dy * Math.pow(am, 1.8) * mk;
+     // curvature: rounded shapes flatten c-front's smile curve toward the centre height (an "o", not a V)
+     // r4b: concern / a frown flattens c-front's smile CURVE too (its lip line rises 25 px at the corners, so pulling the
+     // corners down alone still left a smile: blind r4a 3/3 "a closed smile contradicts the concern")
+     const flatE = Math.max(p.flat, 0.95 * (sol.worry || 0), 0.55 * (sol.unsmile || 0), 0.9 * (sol.pursed || 0));
+-    dy += flatE * 0.9 * (LC - lineY(x)) * (1 - sstep(1.05, 1.45, a));   // r4: zero inside the shell's opaque skin
++    dy += flatE * 0.9 * (LCf() - lineY(x)) * (1 - sstep(1.05, 1.45, a));   // r4: zero inside the shell's opaque skin
+     // the side the mouth slid to tucks up (c-thinking)
+-    dy -= (sol.sideTilt || 0) * s * 3 * am;
++    dy -= (sol.sideTilt || 0) * s * 3 * am * mk;
+     // r6 (judge r5 fix 5, thinking): a mouth pushed to one side BUNCHES on that side (its half compresses toward the
+     // middle, ~6 px at the corner) and the far half stretches a little, instead of the whole mouth translating
+     const tl = sol.sideTilt || 0;
+-    if (tl !== 0) dx -= tl * (s * Math.sign(tl) > 0 ? 6 * Math.min(1, Math.abs(s)) : -2 * Math.min(1, Math.abs(s)));
++    if (tl !== 0) dx -= tl * (s * Math.sign(tl) > 0 ? 6 * Math.min(1, Math.abs(s)) : -2 * Math.min(1, Math.abs(s))) * mk;
+     // opening profile: an ellipse when rounded, squarer when spread; zero at the corners
+     // r4: a rounded opening ends INSIDE the lip corners (|s| = e < 1), so the lips wrap the ends with real thickness;
+     // an ellipse running to the lipless corner showed a hard dark end cap
+@@ -310,9 +316,9 @@ export class LipShell {
+     const kexp = 2 + (2.6 * (1 - p.round) + 5 * p.sq) * (1 - 0.75 * far);
+     const pw = 0.9 - 0.3 * p.round - 0.45 * p.sq;
+     const prof = ae < 1 ? Math.pow(Math.max(0, 1 - Math.pow(ae, kexp)), pw) : 0;
+-    const g = p.g * prof;
++    const g = p.g * prof * mk;   // lamp1: face px
+     if (sign < 0) dy -= g * p.up;
+-    else dy += g * (1 - p.up) - p.tuck * 6 * prof;
++    else dy += g * (1 - p.up) - p.tuck * 6 * prof * mk;
+     return [dx, dy, g];
+   }
+ 
+@@ -326,33 +332,34 @@ export class LipShell {
+         FADE: new Float32Array(n), IN: new Uint8Array(n), FR: new Float32Array(n), CRW: new Float32Array(n), LS: new Uint8Array(n),
+         LPR: new Float32Array(n), LBU: new Float32Array(n), LTK: new Float32Array(n), LRD: new Float32Array(n), J0: new Float32Array(n),
+         VOL: new Float32Array(n), ROLL: new Float32Array(n), CRN: new Float32Array(n), LIP: new Float32Array(n) };
++      const mk = F.mouth.k;   // lamp1: the c-front-tuned falloffs read d in c-front units (dn)
+       for (let q = 0; q < n; q++) {
+-        const x = sh.rest[q * 2], y = sh.rest[q * 2 + 1], d = sh.d[q];
++        const x = sh.rest[q * 2], y = sh.rest[q * 2 + 1], d = sh.d[q], dn = d / mk;
+         const s = sOf(x), a = Math.abs(s), t = sign < 0 ? tUof(a) : tLof(a);
+         const ins = a < 1 ? 1 - a * a : 0;
+         K.A[q] = a; K.T[q] = t; K.JP[q] = sign > 0 ? jawProfile(x, y) : 0;
+         K.IN[q] = d <= t + 1e-3 ? 1 : 0;
+         K.FR[q] = t > 0 ? d / t : 0;
+-        const reach = sign < 0 ? 38 : 40;
++        const reach = (sign < 0 ? 38 : 40) * mk;
+         K.FALL[q] = 1 - sstep(t, t + reach, d);
+-        const g1 = Math.exp(-(((d - t - 4) / 5) ** 2));
+-        K.BUL[q] = 2.2 * g1 * ins;
++        const g1 = Math.exp(-((((d - t) / mk - 4) / 5) ** 2));
++        K.BUL[q] = 2.2 * mk * g1 * ins;
+         K.FADE[q] = a > 1.1 ? 1 - sstep(1.1, 1.45, a) : 1;
+         K.J0[q] = a > 1.1 && d > t ? 1 : 0;
+-        K.CRW[q] = a > 0.9 && d < 20 ? sstep(0.9, 1.08, a) * (1 - sstep(8, 20, d)) : 0;
++        K.CRW[q] = a > 0.9 && dn < 20 ? sstep(0.9, 1.08, a) * (1 - sstep(8, 20, dn)) : 0;
+         K.LS[q] = s < 0 ? 0 : 1;
+-        K.LPR[q] = Math.exp(-((d / 2.2) ** 2)) * ins;
++        K.LPR[q] = Math.exp(-((dn / 2.2) ** 2)) * ins;
+         K.LBU[q] = g1 * ins;
+-        K.LTK[q] = sign > 0 ? Math.exp(-((d / 7) ** 2)) * ins : 0;   // r5: a wider rolled-in shadow (f/v)
++        K.LTK[q] = sign > 0 ? Math.exp(-((dn / 7) ** 2)) * ins : 0;   // r5: a wider rolled-in shadow (f/v)
+         K.LRD[q] = (d < t ? Math.sin(Math.PI * d / Math.max(1, t)) : 0) * ins;
+         // r6 (judge r5 fix 2): the open mouth's lip volume. VOL: a lit crown across the lip (peak ~45% of its thickness,
+         // lower lip), ROLL: the inner edge rolling in (darker over the first ~5 px), CRN: a short cheek crease beyond each
+         // corner (curving outward as it runs down, both sheets), LIP: lip texels (tint weight)
+         const fr = t > 0 ? d / t : 1;
+         K.VOL[q] = sign > 0 && d < t ? Math.exp(-(((fr - 0.45) / 0.24) ** 2)) * Math.pow(ins, 0.4) : 0;
+-        K.ROLL[q] = d < t + 1 ? Math.exp(-((d / 3.2) ** 2)) * Math.min(1, ins * 3) : 0;
+-        const sc = 1.04 + 0.0035 * d * (sign > 0 ? 1 : 0.6);
+-        K.CRN[q] = Math.exp(-(((a - sc) / 0.045) ** 2)) * Math.exp(-((d / (sign > 0 ? 11 : 6)) ** 2));
++        K.ROLL[q] = d < t + 1 ? Math.exp(-((dn / 3.2) ** 2)) * Math.min(1, ins * 3) : 0;
++        const sc = 1.04 + 0.0035 * dn * (sign > 0 ? 1 : 0.6);
++        K.CRN[q] = Math.exp(-(((a - sc) / 0.045) ** 2)) * Math.exp(-((dn / (sign > 0 ? 11 : 6)) ** 2));
+         K.LIP[q] = sign > 0 ? (d < t ? Math.pow(ins, 0.3) * (1 - 0.6 * Math.max(0, fr - 0.7) / 0.3) : 0) : 0;
+       }
+       sh.K = K;
+@@ -421,7 +428,7 @@ export class LipShell {
+         // r4: once the lips part, the inner-edge rows sample the lip's own colour ~2.5 px in, not c-front's dark lip
+         // line (it showed as a grey rim on the parted lower lip)
+         if (j <= 2) {
+-          const sh2 = clamp01(gp / 3) * (sign > 0 ? 4.0 : 1.6) * (j === 2 ? 0.4 : 1);
++          const sh2 = clamp01(gp / 3) * (sign > 0 ? 4.0 : 1.6) * F.mouth.k * (j === 2 ? 0.4 : 1);
+           sh.uv[q * 2 + 1] = sh.uv0[q * 2 + 1] + sign * sh2 / (this.rect[3] - this.rect[1]);
+         }
+         // r4b: near-closed lips OVERLAP by up to 0.8 px (the upper sheet, drawn last, rides over the lower one)
+@@ -437,7 +444,7 @@ export class LipShell {
+       const top = L + uy, bot = L + ly, gap = Math.max(0, bot - top);
+       I.pos[i * 4] = x + ux; I.pos[i * 4 + 1] = top - 2;
+       // r5: the strip reaches 2 + 9*tuck px under the lower inner edge (room for the f/v teeth-over-lip pass)
+-      const ext = 2 + 9 * sol.p.tuck;
++      const ext = (2 + 9 * sol.p.tuck) * F.mouth.k;
+       I.pos[i * 4 + 2] = x + lx; I.pos[i * 4 + 3] = bot + ext;
+       I.dt[i * 2] = -2; I.dt[i * 2 + 1] = gap + ext;
+       I.gap[i * 2] = I.gap[i * 2 + 1] = gap;
+diff --git a/src/face-puppet/runtime/life.js b/src/face-puppet/runtime/life.js
+index cab90c7a99d1a6518ccad5dd453ee44d389d5ba1..186005da8d22b886407a4ecfd27da9cd257b24f2 100644
+--- a/src/face-puppet/runtime/life.js
++++ b/src/face-puppet/runtime/life.js
+@@ -1,5 +1,7 @@
+-// SYNCED from scripts/character/puppet2d/polish-r8/runtime/life.js (puppet polish r8, judged) by evals/face-puppet/sync-runtime.mjs; sha256 93f7fa0981ddd943.
++// SYNCED from scripts/character/puppet2d/lamp1/runtime/life.js (round 4 lamp1: renders the r8 pack pixel-identical, docs/design/round4/asha/evidence/r8-parity.json) by evals/face-puppet/sync-runtime.mjs; sha256 fbc12d968ff9361a.
+ // Do not edit here: change the polish round, re-judge, re-sync.
++// lamp1 (round 4, Asha option 4): derived from the r8 runtime by scripts/character/puppet2d/lamp1/make-runtime.py;
++// this file is unchanged from r8.
+ // r5 secondary life for the painted puppet (judge r4: "idle and listening life is fine but not delightful"). Rig-side
+ // embellishment only: it reads the same HeadRig inputs (ARKit bs, gaze, head, breath) and adds motion the contract does
+ // not carry, so the Director, behaviour.ts and lip.ts stay unchanged.
+diff --git a/src/face-puppet/runtime/expr.js b/src/face-puppet/runtime/expr.js
+index f0bf3a596095d1cc0f0e49e688c746da79fa1c1b..39aeb7c1eb569a5134ca6d84c5fea610721bb3fb 100644
+--- a/src/face-puppet/runtime/expr.js
++++ b/src/face-puppet/runtime/expr.js
+@@ -1,5 +1,7 @@
+-// SYNCED from scripts/character/puppet2d/polish-r8/runtime/expr.js (puppet polish r8, judged) by evals/face-puppet/sync-runtime.mjs; sha256 31999a9af1ab9692.
++// SYNCED from scripts/character/puppet2d/lamp1/runtime/expr.js (round 4 lamp1: renders the r8 pack pixel-identical, docs/design/round4/asha/evidence/r8-parity.json) by evals/face-puppet/sync-runtime.mjs; sha256 ef28ef0544b5cbb9.
+ // Do not edit here: change the polish round, re-judge, re-sync.
++// lamp1 (round 4, Asha option 4): derived from the r8 runtime by scripts/character/puppet2d/lamp1/make-runtime.py;
++// every expression preset may be overridden per face (F.presets, none for c-front: an r8 pack renders unchanged).
+ // r2 expression emitters for the painted puppet, as COMPOSITOR PRESETS (judge r1 item 6): behaviour.ts is unchanged
+ // (its Emotion union is the main loop's call); the Director calls Expressions.emote(name) and the layer mixes its
+ // envelope into behaviour's ARKit frame BEFORE the Compositor, so the HeadRig contract (ARKit + visemes + tongue +
+@@ -9,6 +11,7 @@
+ // eyeSquint/eyeWide/eyeBlink (lowered lids), mouth via smile/press/frown/mouthLeft (aside), plus head and gaze offsets.
+ // "Left" = her left = screen right. Values < 0 suppress that key (scale behaviour's own value toward 0).
+ // Head: [pitch + = chin down, yaw + = her left, roll + = top toward screen left]. Gaze: [yaw + = screen right, pitch + = up].
++import { F } from "./face.js";
+ export const EXPRESSIONS = {
+   // c-thinking: head rolled, one brow arched high, the other low; eyes up and away; small pressed mouth slid aside
+   thinking: {
+@@ -188,6 +191,10 @@ export class Expressions {
+   }
+   /** r6: the take for this emote: random among the emotion's variants, never the previous one (variant = force one). */
+   pick(name, variant) {
++    const r = this.pick0(name, variant), O = F.presets && F.presets[name];
++    return O ? { P: { ...r.P, ...O, bs: { ...r.P.bs, ...(O.bs || {}) } }, i: r.i } : r;
++  }
++  pick0(name, variant) {
+     const V = VARIANTS[name];
+     if (!V) return { P: EXPRESSIONS[name], i: 0 };
+     const W = WEIGHTS[name];
+diff --git a/src/face-puppet/runtime/face.js b/src/face-puppet/runtime/face.js
+new file mode 100644
+index 0000000000000000000000000000000000000000..c5c49e84035b1e76ab096d5cf15a5aeb9ae45421
+--- /dev/null
++++ b/src/face-puppet/runtime/face.js
+@@ -0,0 +1,52 @@
++// SYNCED from scripts/character/puppet2d/lamp1/runtime/face.js (round 4 lamp1: renders the r8 pack pixel-identical, docs/design/round4/asha/evidence/r8-parity.json) by evals/face-puppet/sync-runtime.mjs; sha256 24f400e793ab894a.
++// Do not edit here: change the polish round, re-judge, re-sync.
++// lamp1 (round 4): the per-face constants of the painted-puppet runtime. r8's rig.js, lips.js and gl.js held c-front's
++// pixel positions inline (RIG-NOTES §3.1); they now read them from F. The defaults below ARE those inline values, so a pack
++// whose geom.json has no "face" block (r8) renders exactly as before. geom.face overrides any key (one face per page:
++// this is module state, set by the rig constructor).
++//   k  = face scale of skin-motion magnitudes (cheek lift, jaw shape, shoulder breath), c-front = 1
++//   ke = eye scale (gaze travel, lid bow, wink arch), kb = brow scale (brow channel ranges), mouth.k = mouth scale
++export const CFRONT = {
++  px: { cx: 512, cy: 420, rx: 322, ry: 392, A: 205, fcx: 530, fcy: 500, fsx: 128, fsy: 160, B: 95, gain: 1.0, pivot: [530, 728] },
++  noseZ: { x: 530, y: 532, s: 24, a: 26 },
++  cheekZ: { xs: [452, 608], y: 585, s: 45, a: 8 },
++  mid: 530,
++  hw: 208,
++  sil: { y: [320, 430, 690, 790], chin: [560, 690, 720, 800], chinW: 0.75 },
++  feat: { box: [400, 320, 660, 700], nose: [533, 540, 27, 24], noseY: [470, 600], wing: [23, 552, 11, 13], bindi: [526, 354, 20, 18], bindiY: 400, mouth: [530, 40], mouthY: [560, 585, 650, 700] },
++  pins: [[364, 384], [684, 368]], pinS: 72,
++  cheeks: { L: [455, 585], R: [605, 585], s: 42 },
++  wink: { L: [430, 545], R: [632, 545], s: 48 },
++  jawBroad: { y: [606, 668], s: 180 },
++  narrow: { ax: [40, 170], y: 650, s: 70 },
++  body: { cx: 527, hem: 1024, sh: [95, 200], shY: [700, 790, 860, 1010], bw: [800, 1010], rollY: [700, 780], neckY: [772, 700], neckW: [110, 160] },
++  anchor: [530, 300, 120],
++  bunZ: -45,
++  lockBun: { R: [585, 650] },
++  shade: { face: { L: [330, 530], R: [530, 730], amt: 0.16 }, hair: { L: [200, 660], R: [400, 820], amt: 0.1 }, tint: [0, 0, 0] },
++  noseShade: [532, 528, 508, 1],
++  glints: [[315, 565], [748, 541]], glintA: 1,
++  k: 1, ke: 1, kb: 1,
++  eye: { shade: [0.4, 0.4], round: 6, upK: 1, upLid: 0.02 },
++  presets: {},
++  mouth: { lineX0: 448, lineStep: 4, line: [585, 584, 584, 587, 589, 592, 594, 596, 597, 599, 600, 601, 602, 603, 604, 604, 605, 605, 606, 606, 606, 606, 606, 605, 605, 604, 603, 602, 601, 600, 598, 597, 596, 594, 592, 589, 587, 584, 580, 576, 576, 575],
++    cx: 530, hwL: 69, hwR: 71, tU: 13.5, tL: 21, cy: 606, jaw: [606, 660, 128], k: 1 },
++};
++const clone = (o) => JSON.parse(JSON.stringify(o));
++export const F = clone(CFRONT);
++const hooks = [];
++export const onFace = (fn) => { hooks.push(fn); };
++let ver = 0;
++export const faceVersion = () => ver;
++/** Reset F to c-front and apply a geom.face block (shallow per top-level key, one level deeper for objects). */
++export function setFace(face) {
++  const d = clone(CFRONT);
++  for (const k of Object.keys(F)) delete F[k];
++  Object.assign(F, d);
++  if (face) for (const [k, v] of Object.entries(face)) {
++    if (v && typeof v === "object" && !Array.isArray(v) && F[k] && typeof F[k] === "object" && !Array.isArray(F[k])) F[k] = { ...F[k], ...clone(v) };
++    else F[k] = clone(v);
++  }
++  ver++;
++  for (const fn of hooks) fn(F);
++}

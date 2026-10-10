@@ -4,7 +4,7 @@
 **Status:** plan only. Nothing here is built, measured on a child or deployed.
 
 > **2026-10-10, later the same day: partly superseded.** The owner set a new direction
-> (`dc-r4-owner-vision-superhuman-tutor`, `context/inbox/r4-owner-vision-2026-10-10.json`). It asks for:
+> (`dc-r4-owner-vision-superhuman-tutor`, `context/inbox/merged/r4-owner-vision-2026-10-10.json`). It asks for:
 > - a session-first "tuition teacher" flow, with no modules;
 > - a fully gamified app UI;
 > - games at real-game quality (the owner's bar: Minecraft or space-fighter), built live from the lesson;

@@ -126,15 +126,6 @@ const S = {
   off: "off",
   // your teacher (§6.3.9)
   teacherOne: "{T} is your teacher.",
-  teacherPickTitle: "Who would you like as your teacher?",
-  teacherChoose: "Choose {T}",
-  teacherChooseForMe: "Choose for me",
-  teacherConfirm: "{T} will teach your next lesson. {T} will know what you've learned.",
-  teacherYes: "Yes, choose {T}",
-  teacherKeep: "Keep my teacher",
-  teacherBetween: "You can change your teacher after this lesson.",
-  teacherAskGrownup: "Ask a grown-up to change your teacher.",
-  teacherCurrent: "Your teacher now",
   // Hello (§3.3, §6.3.2)
   tapToHear: "Tap to hear {T}",
   hearAgain: "Hear again",

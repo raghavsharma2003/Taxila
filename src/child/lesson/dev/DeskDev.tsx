@@ -137,7 +137,7 @@ function LiveDesk({ band, theme, reduced, size, onSize, sp }: { band: Band; them
     retrySchedule: sp.get("retry") === "fast" ? [200, 400, 800] : undefined,
   }));
   const { runtime } = useLesson(deps);
-  const rec = teacherRecord(young ? "asha" : "arjun", band);
+  const rec = teacherRecord("asha", band); // ONE teacher for every band (dc-r4-single-teacher-asha)
   const { m, a, dockRef, live } = useDesk(runtime, null, {
     cid: "dev-child", band, family: familyOf(band), teacherId: rec.id, teacherName: rec.name, childName: young ? "Riya" : "Kabir",
     lessonLang: "hinglish", captionsAlways: false, sounds: true, haptics: true, reducedMotion: reduced, timing: 1, variant: "lesson",

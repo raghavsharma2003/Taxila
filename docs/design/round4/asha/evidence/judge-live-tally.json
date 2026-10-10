@@ -1,0 +1,192 @@
+{
+ "date": "2026-10-10",
+ "method": "blind 3-image questionnaire (judge-live.mjs): image 1 the approved graded rig front, image 2 eight moments of the 15 s scene at the lesson-desk window (375 x 405 CSS px, 412 x 915), image 3 six consecutive frames at 15 fps while she speaks; n = 5 per round (3 gpt-5.6-sol medium reasoning + 2 Kimi K2.6), two model families; gates: childish <= 1/5, uncanny or moving-photo <= 1/5, same person >= 4/5",
+ "rounds": {
+  "C1": {
+   "n": 5,
+   "same_person": 5,
+   "childish": 0,
+   "uncanny": 4,
+   "moving_photo": 1,
+   "premium": [
+    3,
+    2,
+    2,
+    2,
+    3
+   ],
+   "premium_mean": 2.4,
+   "ages": [
+    "22-30",
+    "25-35",
+    "22-30",
+    "25-35",
+    "20-30"
+   ],
+   "fixes": [
+    "Stabilize facial geometry and eye gaze across frames to prevent identity drift and uncanny eye movement.",
+    "Stabilize the facial landmarks and identity across frames, especially the eyes, jaw, and mouth during head movement.",
+    "Stabilize the facial landmarks and eye gaze across frames to eliminate identity drift and unnatural eye motion.",
+    "Replace single-image warping with a stabilized multi-layer face rig using locked anchor points.",
+    "Add depth, proper shading, and anatomical detail inside the open mouth (throat, tongue, separated teeth, gums) during speech"
+   ],
+   "gates": {
+    "same_person>=4/5": true,
+    "childish<=1/5": true,
+    "uncanny<=1/5": false,
+    "moving_photo<=1/5": true
+   }
+  },
+  "C2": {
+   "n": 5,
+   "same_person": 5,
+   "childish": 0,
+   "uncanny": 5,
+   "moving_photo": 1,
+   "premium": [
+    3,
+    3,
+    3,
+    2,
+    2
+   ],
+   "premium_mean": 2.6,
+   "ages": [
+    "25-35",
+    "24-32",
+    "24-32",
+    "25-35",
+    "25-35"
+   ],
+   "fixes": [
+    "Improve eye rigging so both irises track together naturally during gaze changes.",
+    "Stabilize facial landmarks and proportions\u2014especially the eyes\u2014across frames to prevent identity drift and warping.",
+    "Stabilize the facial landmarks and proportions across frames, especially the eyes, jaw, and mouth.",
+    "Stabilize facial geometry to prevent sliding/warping",
+    "Paint every open-mouth frame with a consistent, anatomically readable mouth interior including teeth, tongue, and gum shading instead of a collapsing dark smear"
+   ],
+   "gates": {
+    "same_person>=4/5": true,
+    "childish<=1/5": true,
+    "uncanny<=1/5": false,
+    "moving_photo<=1/5": true
+   }
+  },
+  "C3": {
+   "n": 5,
+   "same_person": 5,
+   "childish": 0,
+   "uncanny": 3,
+   "moving_photo": 1,
+   "premium": [
+    3,
+    2,
+    3,
+    3,
+    2
+   ],
+   "premium_mean": 2.6,
+   "ages": [
+    "25-35",
+    "24-32",
+    "25-35",
+    "25-35",
+    "25-35"
+   ],
+   "fixes": [
+    "Stabilize the facial landmarks\u2014especially the eyes and mouth\u2014so they remain anatomically aligned through speech and head turns.",
+    "Use a stable rig or stronger temporal consistency to lock the eyes and facial geometry across frames.",
+    "Stabilize the mouth, teeth, and facial landmarks across consecutive frames.",
+    "Add proper teeth, tongue and mouth-cavity depth to all open-mouth frames",
+    "Stabilize facial proportions and mouth details across frames"
+   ],
+   "gates": {
+    "same_person>=4/5": true,
+    "childish<=1/5": true,
+    "uncanny<=1/5": false,
+    "moving_photo<=1/5": true
+   }
+  },
+  "C4": {
+   "n": 5,
+   "same_person": 5,
+   "childish": 0,
+   "uncanny": 4,
+   "moving_photo": 0,
+   "premium": [
+    3,
+    3,
+    3,
+    2,
+    2
+   ],
+   "premium_mean": 2.6,
+   "ages": [
+    "mid-20s to early 30s",
+    "22-30",
+    "24-32",
+    "20-30",
+    "25-35"
+   ],
+   "fixes": [
+    "Stabilize the facial landmarks so the eyes, mouth, and nose remain consistently anchored during expressions and head turns.",
+    "Stabilize facial landmarks across frames, especially the eyes and mouth, to eliminate drifting and abrupt shape changes.",
+    "Use a stable facial rig to keep the eyes, lips, teeth, and facial proportions consistent across frames.",
+    "Stabilize head shape and facial feature placement across frames.",
+    "Give open mouths proper interior depth, teeth, and tongue instead of flat cutouts"
+   ],
+   "gates": {
+    "same_person>=4/5": true,
+    "childish<=1/5": true,
+    "uncanny<=1/5": false,
+    "moving_photo<=1/5": true
+   }
+  },
+  "R8cal": {
+   "what": "the SHIPPED r8 puppet (concept C), same page, same scene, same slot, same prompt; ref = its rest poster",
+   "n": 5,
+   "same_person": 5,
+   "childish": 0,
+   "uncanny": 0,
+   "moving_photo": 0,
+   "premium": [
+    4,
+    4,
+    4,
+    3,
+    3
+   ],
+   "premium_mean": 3.6,
+   "ages": [
+    "20-30 years",
+    "20-30",
+    "20-30 years",
+    "20-30",
+    "20-30"
+   ]
+  },
+  "D1noturn": {
+   "what": "lamp1 C4 build, frame 8 (the eval-only 13 deg turn) swapped for a speaking frame at 7.4 s",
+   "n": 5,
+   "same_person": 5,
+   "childish": 0,
+   "uncanny": 5,
+   "moving_photo": 3,
+   "premium": [
+    2,
+    3,
+    3,
+    2,
+    2
+   ],
+   "premium_mean": 2.4,
+   "ages": [
+    "24-32 years old",
+    "25-35",
+    "mid-20s to early 30s",
+    "25-30",
+    "25-35"
+   ]
+  }
+ }
+}

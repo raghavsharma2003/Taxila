@@ -66,12 +66,12 @@ console.log(`app: ${BASE} (built ${dist})`);
 // ───────────────────────────── fixtures ─────────────────────────────
 const CHILDREN = {
   riya: { id: "c-riya", first_name: "Riya", class_level: 3, board: "cbse", language_pref: "hinglish", teacher_id: "asha", avatar: "red-panda", interests: ["Cricket", "Space", "Animals"] },
-  kabir: { id: "c-kabir", first_name: "Kabir", class_level: 6, board: "cbse", language_pref: "english", teacher_id: "arjun", avatar: "rocket", interests: ["Football"] },
+  kabir: { id: "c-kabir", first_name: "Kabir", class_level: 6, board: "cbse", language_pref: "english", teacher_id: "asha", avatar: "rocket", interests: ["Football"] },
   neha: { id: "c-neha", first_name: "Neha", class_level: 2, board: "cbse", language_pref: "hindi", teacher_id: "asha", avatar: null, interests: ["Animals", "Drawing"] },
-  dev: { id: "c-dev", first_name: "Dev", class_level: 7, board: "cbse", language_pref: "hinglish", teacher_id: "arjun", avatar: null, interests: ["Space", "Trains"] },
+  dev: { id: "c-dev", first_name: "Dev", class_level: 7, board: "cbse", language_pref: "hinglish", teacher_id: "asha", avatar: null, interests: ["Space", "Trains"] },
 };
-const TEACHER = (id) => ({ id, name: id === "asha" ? "Asha" : id === "arjun" ? "Arjun" : "Uma", addressedAs: id, role: "AI teacher",
-  pronouns: id === "arjun" ? { subject: "he", object: "him", possessive: "his" } : { subject: "she", object: "her", possessive: "her" }, voice: "x", lookRev: 1, signatureColor: null });
+const TEACHER = (id) => ({ id, name: "Asha", addressedAs: "Asha didi", role: "AI teacher",
+  pronouns: { subject: "she", object: "her", possessive: "her" }, voice: "x", lookRev: 1, signatureColor: null });
 const curriculum = (cls, subject) => JSON.parse(fs.readFileSync(path.join(ROOT, `data/curriculum/c${cls}-${subject}.json`), "utf8"));
 
 /** A ChildMapResponse built from the real syllabus: chapter 1 sealed, chapter 2 mixed, chapter 3 is "here". */
@@ -133,15 +133,13 @@ async function mockApi(page, fx) {
     }
     if (p === "/api/child/map") return json(200, mapFor(child, fx.map ?? "mid"));
     if (p === "/api/tutors" && req.method() === "GET") {
-      const two = fx.tutors === 2;
-      return json(200, { current: child.teacher_id, chosen: !!fx.chosen, mode: two ? "picker" : "single", band: "b3", tutors: two ? ["arjun", "asha"] : [child.teacher_id], live: !!fx.live });
+      return json(200, { current: child.teacher_id, chosen: !!fx.chosen, mode: "single", band: "b3", tutors: ["asha"], live: !!fx.live });
     }
     if (p === "/api/tutors/choose") return json(200, { ok: true });
     if (p === "/api/lesson/summary") return json(200, { lessonId: url.searchParams.get("lessonId"), ended: true, did: { ...DID, title: `Lesson ${url.searchParams.get("lessonId")}` } });
     if (p === "/api/child/teacher") {
       const cl = Number(url.searchParams.get("classLevel"));
-      const id = cl <= 4 ? "asha" : "arjun";
-      return json(200, { teacher: TEACHER(id), eligible: [TEACHER(id)] });
+      return json(200, { teacher: TEACHER("asha"), eligible: [TEACHER("asha")] }); // one teacher for every class
     }
     if (p === "/api/children" && req.method() === "PATCH") return json(200, { child });
     if (p === "/api/parent/pin") return json(200, { hasPin: false });
@@ -672,21 +670,16 @@ for (const who of ["riya", "kabir"]) {
         await shot(page, `me__default__${b}__${v.w}__${theme}`);
         await ctx.close();
       }
-      for (const n of [1, 2]) {
-        const { ctx, page } = await open({ children: [child], plan: "start", tutors: n, storage: helloDone(child.id) }, `/c/${child.id}/teacher`, { ...v, theme });
-        await page.waitForSelector(n === 2 ? ".tc-grid" : ".tc-one", { timeout: 8000 }).catch(() => {});
-        const tag = `teacher ${who} ${n} ${v.w} ${theme}`;
+      {
+        // ONE teacher (dc-r4-single-teacher-asha): her card only, nothing to choose, for every child
+        const { ctx, page } = await open({ children: [child], plan: "start", tutors: 1, storage: helloDone(child.id) }, `/c/${child.id}/teacher`, { ...v, theme });
+        await page.waitForSelector(".tc-one", { timeout: 8000 }).catch(() => {});
+        const tag = `teacher ${who} ${v.w} ${theme}`;
         const ids = await page.locator("[data-teacher-id]").evaluateAll((els) => [...new Set(els.map((e) => e.getAttribute("data-teacher-id")))]);
-        check(`V-ID-1 your teacher ${tag}`, n === 1 ? ids.length === 1 && ids[0] === child.teacher_id : ids.includes("arjun") && ids.includes("asha"), ids.join(","));
-        check(`no fake choice ${tag}`, n === 1 ? (await page.locator("[data-testid^=choose-]").count()) === 0 : true);
+        check(`V-ID-1 your teacher ${tag}`, ids.length === 1 && ids[0] === "asha", ids.join(","));
+        check(`no choice ${tag}`, (await page.locator("[data-testid^=choose-], [data-testid=name-change], .tc-grid").count()) === 0);
         report(tag, await audit(page, { young }));
-        await shot(page, `teacher__${n}-eligible__${b}__${v.w}__${theme}`);
-        if (n === 2) {
-          await page.locator("[data-testid=choose-asha], [data-testid=choose-arjun]").first().click().catch(() => {});
-          await page.waitForTimeout(400);
-          check(`teacher confirm sheet ${tag}`, /will teach your next lesson/.test(await page.locator(".tc-confirm").innerText().catch(() => "")));
-          await shot(page, `teacher__confirm__${b}__${v.w}__${theme}`);
-        }
+        await shot(page, `teacher__one__${b}__${v.w}__${theme}`);
         await ctx.close();
       }
     }
@@ -722,11 +715,12 @@ for (const who of ["neha", "dev"]) {
     const card = async () => page.locator("[data-testid=hello]").getAttribute("data-card");
     check(`hello card 1 names her ${tag}`, (await page.locator(".hello-name").innerText()).length > 1);
     check(`V-ID-1 hello ${tag}`, (await page.locator("[data-teacher-id]").first().getAttribute("data-teacher-id")) === child.teacher_id);
-    check(`hello card 1 audio ${tag}`, young ? (await page.locator("[data-testid=hello-hear]").innerText()).startsWith("Tap to hear") : (await page.locator("[data-testid=hello-next]").count()) === 1);
+    // Asha's greeting clip exists in every family language: every child gets "Tap to hear" (one teacher, round 4)
+    check(`hello card 1 audio ${tag}`, (await page.locator("[data-testid=hello-hear]").innerText()).startsWith("Tap to hear"));
     report(`${tag} c1`, await audit(page, { young }));
     await shot(page, `hello__1-greeting__${b}__${v.w}__light`);
-    await page.locator(young ? "[data-testid=hello-hear]" : "[data-testid=hello-next]").click();
-    if (young) await page.locator("text=Next").first().click({ timeout: 2500 }).catch(() => {});
+    await page.locator("[data-testid=hello-hear]").click();
+    await page.locator("text=Next").first().click({ timeout: 2500 }).catch(() => {});
     await page.waitForFunction(() => document.querySelector("[data-testid=hello]")?.getAttribute("data-card") === "ai", null, { timeout: 8000 }).catch(() => {});
     check(`hello card 2 AI disclosure ${tag}`, (await card()) === "ai" && /computer teacher, not a person/.test(await page.locator(".hello-card").innerText()));
     report(`${tag} c2`, await audit(page, { young }));
@@ -742,13 +736,10 @@ for (const who of ["neha", "dev"]) {
     check(`hello card 4 parent's picks ${tag}`, (await card()) === "likes" && (await page.locator(".itile[data-on]").count()) === child.interests.length);
     report(`${tag} c4`, await audit(page, { young }));
     await shot(page, `hello__4-likes__${b}__${v.w}__light`);
-    if (!young) {
-      await page.locator("[data-testid=hello-right]").click();
-      await page.waitForTimeout(200);
-      check(`hello card 5 teacher (2 eligible) ${tag}`, (await card()) === "teacher" && (await page.locator(".tc-tile").count()) === 2);
-      report(`${tag} c5`, await audit(page, { young }));
-      await shot(page, `hello__5-teacher__${b}__${v.w}__light`);
-    }
+    // ONE teacher (round 4): no teacher card and no naming card; "That's right" goes straight into lesson 1
+    await page.locator("[data-testid=hello-right]").click();
+    await page.waitForURL(/\/lesson\/new/, { timeout: 5000 }).catch(() => {});
+    check(`hello: no teacher or naming card, straight into lesson 1 ${tag}`, /\/lesson\/new/.test(page.url()), page.url());
     await ctx.close();
   }
 }
@@ -770,8 +761,8 @@ for (const v of VIEWS) {
   const st = await page.evaluate(() => ({ y: window.scrollY, focus: document.activeElement?.tagName, title: document.title, h1: document.querySelector("h1")?.textContent,
     teacher: document.querySelector("[data-teacher-id]")?.getAttribute("data-teacher-id") }));
   check(`V-ONB meet opens at scroll 0 with focus on h1 ${tag}`, st.y === 0 && st.focus === "H1", JSON.stringify(st));
-  check(`V-ONB meet shows the class's teacher (class 6 → Arjun) ${tag}`, st.teacher === "arjun" && /Arjun/.test(st.h1 ?? ""), `${st.teacher} "${st.h1}"`);
-  check(`V-ONB page title follows the step ${tag}`, /Arjun/.test(st.title), st.title);
+  check(`V-ONB meet shows the class's teacher (class 6 → Asha, the one teacher) ${tag}`, st.teacher === "asha" && /Asha/.test(st.h1 ?? ""), `${st.teacher} "${st.h1}"`);
+  check(`V-ONB page title follows the step ${tag}`, /Asha/.test(st.title), st.title);
   const langs = await page.locator("[role=radiogroup][aria-label=Language] [role=radio]").allInnerTexts();
   check(`V-ONB English language tiles ${tag}`, langs.join("|") === "English|Hindi|Hindi and English mix", langs.join("|"));
   report(`${tag} meet`, await audit(page, { young: false }));
@@ -783,8 +774,8 @@ for (const v of VIEWS) {
   await page.waitForTimeout(400);
   const st2 = await page.evaluate(() => ({ y: window.scrollY, focus: document.activeElement?.tagName, h1: document.querySelector("h1")?.textContent }));
   check(`V-ONB promises before the account, at scroll 0 ${tag}`, page.url().endsWith("/start/promises") && st2.y === 0 && st2.focus === "H1", JSON.stringify(st2));
-  check(`V-ONB promises name the teacher ${tag}`, /Arjun is an AI and says so/.test(await page.locator("main").innerText()));
-  check(`V-ONB promise pronoun agrees (he tells … he's) ${tag}`, /He tells your child he's a computer teacher/.test(await page.locator("main").innerText()));
+  check(`V-ONB promises name the teacher ${tag}`, /Asha is an AI and says so/.test(await page.locator("main").innerText()));
+  check(`V-ONB promise pronoun agrees (she tells … she's) ${tag}`, /She tells your child she's a computer teacher/.test(await page.locator("main").innerText()));
   report(`${tag} promises`, await audit(page, { young: false }));
   await shot(page, `onboarding__3-promises__adult__${v.w}__light`);
   await ctx.close();

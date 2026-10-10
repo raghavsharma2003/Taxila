@@ -1,0 +1,161 @@
+{
+ "method": "blind 3-image questionnaire (ref still, 8 moments, 6 consecutive frames); prompt verbatim",
+ "prompt": "Three images.\nImage 1: a character design, a single approved illustration.\nImage 2: eight numbered frames (1-8, reading order) taken from a 15-second animation of a character, rendered live in a small app window.\nImage 3: six numbered consecutive frames (1-6, reading order, 1/15 s apart) from the same animation.\nJudge strictly, from what is drawn. Answer every item.\n1. same_person: is the animated character (images 2 and 3) the same person as image 1, drawn in the same style? true/false.\n2. childish: does the animated character read as childish (a child, or a toddler-cartoon look) rather than an adult? true/false.\n3. uncanny: is anything uncanny (dead or misaligned eyes, rubbery or melting mouth, warped features, a face that seems to slide over the head)? true/false.\n4. moving_photo: does the animation read like a photograph or a still painting being warped (\"a moving photo\", a deepfake), rather than a drawn character that is animated? true/false.\n5. premium: how premium and production-quality is the animation, 1-5 (5 = top-tier studio quality, 3 = acceptable, 1 = broken or cheap).\n6. defects: list visible rendering defects with image and frame number (seams or cut lines, smears, texture swimming, a pop or jump between consecutive frames, broken teeth or mouth interior, eye errors, hair or jewellery breaking up). Empty string if none.\n7. reads_as: for each frame of image 2, what the character is doing, in 2-6 words.\n8. apparent_age: an age range for the character in image 2.\n9. one_fix: the single change that would most improve the animation.\nReply JSON only: {\"same_person\":bool,\"childish\":bool,\"uncanny\":bool,\"moving_photo\":bool,\"premium\":n,\"defects\":\"\",\"reads_as\":{\"1\":\"\",\"2\":\"\",\"3\":\"\",\"4\":\"\",\"5\":\"\",\"6\":\"\",\"7\":\"\",\"8\":\"\"},\"apparent_age\":\"\",\"one_fix\":\"\"}",
+ "inputs": {
+  "ref": "/tmp/claude-0/-home-user/ecee9fc1-62f9-5f67-a47d-69ca79d9981a/scratchpad/r4-asha/judge/ref-front-g.png",
+  "moments": "/tmp/claude-0/-home-user/ecee9fc1-62f9-5f67-a47d-69ca79d9981a/scratchpad/r4-asha/judge/moments-c4-412-desk.png",
+  "seq": "/tmp/claude-0/-home-user/ecee9fc1-62f9-5f67-a47d-69ca79d9981a/scratchpad/r4-asha/judge/seq-c4-412-desk.png"
+ },
+ "runs": [
+  {
+   "model": "taxila-brain",
+   "rep": 2,
+   "date": "2026-10-10T09:16:00.535Z",
+   "answer": {
+    "same_person": true,
+    "childish": false,
+    "uncanny": true,
+    "moving_photo": false,
+    "premium": 3,
+    "defects": "Image 2 frame 6: eyes/gaze appear slightly misaligned and facial proportions drift. Image 2 frame 8: facial features shift sideways as if sliding over a largely frontal, fixed head and hairstyle. Image 3 frames 3-6: mouth contour and teeth geometry fluctuate slightly between consecutive frames.",
+    "reads_as": {
+     "1": "looking forward calmly",
+     "2": "holding a neutral expression",
+     "3": "speaking with mouth open",
+     "4": "continuing to speak",
+     "5": "speaking with concern",
+     "6": "looking worried and pensive",
+     "7": "smiling gently",
+     "8": "turning aside with smile"
+    },
+    "apparent_age": "mid-20s to early 30s",
+    "one_fix": "Stabilize the facial landmarks so the eyes, mouth, and nose remain consistently anchored during expressions and head turns."
+   },
+   "usage": {
+    "completion_tokens": 717,
+    "completion_tokens_details": {
+     "accepted_prediction_tokens": 0,
+     "audio_tokens": 0,
+     "reasoning_tokens": 512,
+     "rejected_prediction_tokens": 0
+    },
+    "latency_checkpoint": {
+     "engine_tbt_ms": 11,
+     "engine_ttft_ms": 1063,
+     "engine_ttlt_ms": 9156,
+     "pre_inference_ms": 404,
+     "service_tbt_ms": 11,
+     "service_ttft_ms": 1824,
+     "service_ttlt_ms": 9912,
+     "user_visible_ttft_ms": 1420
+    },
+    "prompt_tokens": 2914,
+    "prompt_tokens_details": {
+     "audio_tokens": 0,
+     "cached_tokens": 0
+    },
+    "total_tokens": 3631
+   }
+  },
+  {
+   "model": "taxila-brain",
+   "rep": 0,
+   "date": "2026-10-10T09:16:00.965Z",
+   "answer": {
+    "same_person": true,
+    "childish": false,
+    "uncanny": true,
+    "moving_photo": false,
+    "premium": 3,
+    "defects": "Image 2 frame 5: eyes are slightly misaligned. Image 2 frame 6: uneven upward gaze and facial features subtly warp. Image 2 frame 8: facial landmarks shift during the head turn. Image 3 frames 2-4: mouth opening pops rapidly, with teeth and lip contours changing abruptly. Image 3 frames 3-6: mouth interior and surrounding shading swim slightly.",
+    "reads_as": {
+     "1": "looking forward neutrally",
+     "2": "holding a serious expression",
+     "3": "speaking with mouth open",
+     "4": "continuing to speak",
+     "5": "speaking with concern",
+     "6": "looking upward worriedly",
+     "7": "giving a slight smile",
+     "8": "turning right and smiling"
+    },
+    "apparent_age": "22-30",
+    "one_fix": "Stabilize facial landmarks across frames, especially the eyes and mouth, to eliminate drifting and abrupt shape changes."
+   },
+   "usage": {
+    "completion_tokens": 731,
+    "completion_tokens_details": {
+     "accepted_prediction_tokens": 0,
+     "audio_tokens": 0,
+     "reasoning_tokens": 512,
+     "rejected_prediction_tokens": 0
+    },
+    "latency_checkpoint": {
+     "engine_tbt_ms": 11,
+     "engine_ttft_ms": 1203,
+     "engine_ttlt_ms": 9551,
+     "pre_inference_ms": 569,
+     "service_tbt_ms": 11,
+     "service_ttft_ms": 2201,
+     "service_ttlt_ms": 10542,
+     "user_visible_ttft_ms": 1631
+    },
+    "prompt_tokens": 2914,
+    "prompt_tokens_details": {
+     "audio_tokens": 0,
+     "cached_tokens": 0
+    },
+    "total_tokens": 3645
+   }
+  },
+  {
+   "model": "taxila-brain",
+   "rep": 1,
+   "date": "2026-10-10T09:16:01.072Z",
+   "answer": {
+    "same_person": true,
+    "childish": false,
+    "uncanny": true,
+    "moving_photo": false,
+    "premium": 3,
+    "defects": "Image 2 frame 6: eyes/gaze are misaligned and facial proportions drift. Image 2 frames 3-6: mouth and teeth change shape inconsistently. Image 3 frames 3-6: teeth band, mouth interior, and lip contours flicker and deform between consecutive frames.",
+    "reads_as": {
+     "1": "looking forward neutrally",
+     "2": "holding a serious expression",
+     "3": "beginning to speak",
+     "4": "speaking with mouth open",
+     "5": "speaking with slight concern",
+     "6": "looking upward worriedly",
+     "7": "smiling gently",
+     "8": "turning and glancing sideways"
+    },
+    "apparent_age": "24-32",
+    "one_fix": "Use a stable facial rig to keep the eyes, lips, teeth, and facial proportions consistent across frames."
+   },
+   "usage": {
+    "completion_tokens": 709,
+    "completion_tokens_details": {
+     "accepted_prediction_tokens": 0,
+     "audio_tokens": 0,
+     "reasoning_tokens": 512,
+     "rejected_prediction_tokens": 0
+    },
+    "latency_checkpoint": {
+     "engine_tbt_ms": 12,
+     "engine_ttft_ms": 1215,
+     "engine_ttlt_ms": 9480,
+     "pre_inference_ms": 524,
+     "service_tbt_ms": 12,
+     "service_ttft_ms": 2172,
+     "service_ttlt_ms": 10434,
+     "user_visible_ttft_ms": 1648
+    },
+    "prompt_tokens": 2914,
+    "prompt_tokens_details": {
+     "audio_tokens": 0,
+     "cached_tokens": 0
+    },
+    "total_tokens": 3623
+   }
+  }
+ ]
+}
