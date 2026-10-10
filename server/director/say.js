@@ -10,6 +10,8 @@
 //   ask         the written question for the Question card (UiDirectives.ask), taken from what was actually said
 //               when the turn has no kit item.
 
+import { sentences as splitSentences } from "../conversation/guards.js";
+
 const S = "[^\\p{L}\\p{N}]";
 const lead = (alts) => new RegExp(`(?:^|[.!?।]\\s*|—\\s*|,\\s*(?=(?:bilkul|sahi|correct|exactly|perfect|shabaa?sh)))(?:${alts})(?=${S}|$)`, "iu");
 
@@ -161,30 +163,50 @@ export function stripScreenRefs(text) {
 
 // ── the Question card ──
 export const ASK_MAX = 120;
+/** A question that cannot be shortened (no sentence or clause to drop) is shown whole up to this, never cut. */
+export const ASK_HARD = 180;
+const QMARK = /[?？]/;
+const words = (x) => x.split(/\s+/).filter(Boolean).length;
+/** The trailing parts of `parts` (joined with `sep`) that fit in ASK_MAX, or "". */
+const tailThatFits = (parts, sep) => {
+  let out = "";
+  for (let i = parts.length - 1; i >= 0; i--) {
+    const next = out ? `${parts[i]}${sep}${out}` : parts[i];
+    if (next.length > ASK_MAX) break;
+    out = next;
+  }
+  return out;
+};
 
 /**
- * A question for the card, ≤ ASK_MAX characters: the whole text when it fits; else its last sentences that fit and
- * contain the question; else a word-boundary cut with an ellipsis. Never invented: always the text's own words.
+ * A question for the card: the whole text when it fits ASK_MAX; else its last sentences that fit and contain the
+ * question; else the question sentence itself when it fits; else that sentence's last clauses that fit (after a ";",
+ * ":", dash or ", "); else the whole question sentence up to ASK_HARD. Never invented: always the text's own words,
+ * whole words, and a decimal point is never a sentence end ("0.5" stays "0.5"). round 4 (K's audit B04-04 and stream 5's
+ * journey audit #10: cards ending "…kis chhote fraction mein…" and "0.5 mein 5" shown as "5 mein 5"): the old last
+ * resort cut the FRONT of a long sentence at ASK_MAX and dropped the question at its end. Only a single clause longer
+ * than ASK_HARD is still shortened, from the front, so the question words stay.
  */
 export function askText(text) {
   const t = String(text ?? "").replace(/\s+/g, " ").trim();
   if (t.length <= ASK_MAX) return t;
-  const sentences = t.match(/[^.!?।]+[.!?।]*\s*/g) ?? [t];
-  let out = "";
-  for (let i = sentences.length - 1; i >= 0; i--) {
-    const next = (sentences[i] + out).trim();
-    if (next.length > ASK_MAX) break;
-    out = sentences[i] + out;
-  }
-  out = out.trim();
-  if (out && /[?？]/.test(out)) return out;
-  const cut = t.slice(0, ASK_MAX - 1);
-  return `${cut.slice(0, Math.max(cut.lastIndexOf(" "), 60)).trim()}…`;
+  const parts = splitSentences(t).map((x) => x.trim()).filter(Boolean);
+  const out = tailThatFits(parts, " ");
+  if (out && QMARK.test(out)) return out;
+  const q = [...parts].reverse().find((x) => QMARK.test(x)) ?? parts.at(-1) ?? t;
+  if (q.length <= ASK_MAX) return q;
+  // a clause ends after a word's ";", ":" or "," or at a dash; never inside a number list ("1, 2, 3") or a ratio ("2 : 3")
+  const clauses = q.split(/(?<=[;—–])\s+|(?<=\p{L}[:,])\s+|\s+(?=[—–]\s)/u).map((x) => x.trim()).filter(Boolean);
+  const tail = clauses.length > 1 ? tailThatFits(clauses, " ") : "";
+  if (tail && words(tail) >= 3) return tail;
+  if (q.length <= ASK_HARD) return q;
+  const end = q.slice(-(ASK_MAX - 1));
+  return `…${end.slice(end.indexOf(" ") + 1)}`;
 }
 
 /** The question a teacher turn hands back (its last sentence with a "?", else its last sentence), for the card. */
 export function askFromReply(reply) {
-  const sentences = (String(reply ?? "").replace(/\s+/g, " ").match(/[^.!?।]+[.!?।]*/g) ?? []).map((s) => s.trim()).filter(Boolean);
+  const sentences = splitSentences(String(reply ?? "").replace(/\s+/g, " ")).map((s) => s.trim()).filter(Boolean);
   const q = [...sentences].reverse().find((s) => /[?？]/.test(s)) ?? sentences.at(-1);
   return q ? askText(q) : null;
 }
