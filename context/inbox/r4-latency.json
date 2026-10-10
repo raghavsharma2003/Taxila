@@ -167,6 +167,12 @@
    "kind": "measurement",
    "title": "L3 shadow, prod config, n = 117 turns (107 with a prefetched partial), synthetic child speech, gpt-live-transcribe, 2026-10-10. The LAST partial equals the final on 107/107, arriving p50 1,086 ms after speech end vs final 1,551 (lead p50 477 / p90 640). The FIRST partial equals the final on only 26/107: 81/107 (76%) were truncated mid-utterance, 20 of them missing the answer token. No negation flips; the partial is always a prefix. Distress in the final: 0/117, so the distress-only-in-final window is 0 of 0, unmeasured. Expected L3 p50 gain at most ~480 ms, and only with an end-of-turn signal that marks the last partial. The final must be re-scanned (scanSafety + classify) in any design.",
    "at": "2026-10-10"
+  },
+  {
+   "id": "open-r4lat-l3-commit-on-partial",
+   "kind": "open",
+   "title": "L3 (commit the turn on the stable partial) is NOT built (main session, 2026-10-10). The last stable partial equals the final 107/107 and leads it by p50 477 / p90 640 ms. The FIRST partial is truncated on 76% of turns (81/107), 20 of them missing the answer token. Distress present only in the final: 0 of 0 (unmeasured). Revisit only with 4B end-of-turn signal marking the last partial, and with the mandatory re-scan of the FINAL transcript (scanSafety + classify) that withdraws the committed reply before it is audible.",
+   "at": "2026-10-10"
   }
  ],
  "edges": [
@@ -284,6 +290,11 @@
    "src": "open-r4lat-3000-floor",
    "rel": "measured_by",
    "dst": "ms-r4lat-prod-config-2026-10-10"
+  },
+  {
+   "src": "open-r4lat-l3-commit-on-partial",
+   "rel": "measured_by",
+   "dst": "ms-r4lat-l3-partial-vs-final-2026-10-10"
   }
  ]
 }
