@@ -34,8 +34,12 @@ async function sleep(ms) {
   await flush();
 }
 const realNow = Object.getOwnPropertyDescriptor(performance, "now");
-test.before(() => { performance.now = () => VNOW; });
-test.after(() => { if (realNow) Object.defineProperty(performance, "now", realNow); else delete performance.now; timers.clear(); });
+// Per test, not test.before/after: npm test runs EVERY test file in one process (tests/index.js), where a root-level hook
+// holds for the whole run, so the virtual clock leaked into (or was replaced by) other files' clocks.
+const onVirtualClock = (fn) => async (t) => {
+  performance.now = () => VNOW;
+  try { return await fn(t); } finally { if (realNow) Object.defineProperty(performance, "now", realNow); else delete performance.now; timers.clear(); }
+};
 class FakeAudioContext {
   constructor() { this.t0 = performance.now(); this.sources = []; this.destination = { connect() {}, disconnect() {} }; }
   get currentTime() { return (performance.now() - this.t0) / 1000; }
@@ -57,7 +61,7 @@ class FakeAudioContext {
 const pcmBytes = (seconds) => new Uint8Array(Math.round(seconds * PCM_RATE) * 2).fill(1);
 const perfOf = (ctx, t) => ctx.t0 + t * 1000;
 
-test("player → puppet: viseme batches on the player clock, re-anchored on underrun and resume, cut on stop", { skip: SKIP }, async () => {
+test("player → puppet: viseme batches on the player clock, re-anchored on underrun and resume, cut on stop", { skip: SKIP }, onVirtualClock(async () => {
   const ctx = new FakeAudioContext();
   const player = new PcmStreamPlayer(ctx, ctx.destination);
   const ev = [];
@@ -94,7 +98,7 @@ test("player → puppet: viseme batches on the player clock, re-anchored on unde
     pb.stop();
     assert.equal(ev.at(-1).kind, "cut", "stop closes the mouth");
   } finally { off(); player.stop(); }
-});
+}));
 
 // Measured on the product path before the fix (evals/p2-face/out/lipsync-product-base-raw.json): one part's batches came
 // out with playAt up to 8 ms apart, because the anchor's ctx -> performance conversion was redone per batch against a
@@ -104,7 +108,7 @@ class SteppedAudioContext extends FakeAudioContext {
   get currentTime() { return Math.floor((performance.now() - this.t0) / 20) * 0.02; }
 }
 
-test("player → puppet: every batch of one part on one anchor carries the SAME playAt on a stepping audio clock", { skip: SKIP }, async () => {
+test("player → puppet: every batch of one part on one anchor carries the SAME playAt on a stepping audio clock", { skip: SKIP }, onVirtualClock(async () => {
   const ctx = new SteppedAudioContext();
   const player = new PcmStreamPlayer(ctx, ctx.destination);
   const ev = [];
@@ -125,4 +129,4 @@ test("player → puppet: every batch of one part on one anchor carries the SAME 
     assert.equal(Math.max(...p0) - Math.min(...p0), 0, `one anchor, one playAt: ${p0.map((x) => x.toFixed(2)).join(", ")}`);
     assert.ok(!ev.some((e) => e.kind === "cut"), "no re-anchor happened");
   } finally { off(); player.stop(); }
-});
+}));

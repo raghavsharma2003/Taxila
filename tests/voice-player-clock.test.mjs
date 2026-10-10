@@ -32,8 +32,12 @@ async function advance(ms) {
 }
 const sleep = advance;
 const realNow = Object.getOwnPropertyDescriptor(performance, "now");
-test.before(() => { performance.now = () => VNOW; });
-test.after(() => { if (realNow) Object.defineProperty(performance, "now", realNow); else delete performance.now; timers.clear(); });
+// Per test, not test.before/after: npm test runs EVERY test file in one process (tests/index.js), where a root-level hook
+// holds for the whole run, so the virtual clock leaked into (or was replaced by) other files' clocks.
+const onVirtualClock = (fn) => async (t) => {
+  performance.now = () => VNOW;
+  try { return await fn(t); } finally { if (realNow) Object.defineProperty(performance, "now", realNow); else delete performance.now; timers.clear(); }
+};
 class FakeAudioContext {
   constructor() { this.t0 = performance.now(); this.sources = []; this.destination = { connect() {}, disconnect() {} }; }
   get currentTime() { return (performance.now() - this.t0) / 1000; }
@@ -55,7 +59,7 @@ class FakeAudioContext {
 const pcmBytes = (seconds) => new Uint8Array(Math.round(seconds * PCM_RATE) * 2).fill(1);
 const perfOf = (ctx, t) => ctx.t0 + t * 1000;
 
-test("player clock: line anchor at the first sample; clause onsets at their scheduled playback time across an underrun", async () => {
+test("player clock: line anchor at the first sample; clause onsets at their scheduled playback time across an underrun", onVirtualClock(async () => {
   const ctx = new FakeAudioContext();
   const player = new PcmStreamPlayer(ctx, ctx.destination);
   const events = [];
@@ -109,9 +113,9 @@ test("player clock: line anchor at the first sample; clause onsets at their sche
     ctl.close();
     pb.stop();
   } finally { off(); player.stop(); }
-});
+}));
 
-test("player clock: no req → anchor still marked (any line), clause events not emitted by the player", async () => {
+test("player clock: no req → anchor still marked (any line), clause events not emitted by the player", onVirtualClock(async () => {
   const ctx = new FakeAudioContext();
   const player = new PcmStreamPlayer(ctx, ctx.destination);
   const events = [];
@@ -129,4 +133,4 @@ test("player clock: no req → anchor still marked (any line), clause events not
     assert.equal(events.length, 0);
     ctl.close();
   } finally { off(); player.stop(); }
-});
+}));

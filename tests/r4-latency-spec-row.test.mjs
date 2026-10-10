@@ -18,7 +18,17 @@ const T = "c6-maths-ch05-t02";
 const kit = (() => { try { return kitFromFile(getTopic(T)); } catch { return null; } })();
 const catalog = productionCatalog();
 const instantOnly = () => ({ instant: createBuilders().instant, generatedSpec: async () => ({ ok: false }), image: async () => ({ ok: false }), liveCodegen: async () => ({ ok: false }), library: async () => ({ ok: false }) });
-_setDeps({ writeEvidence: async () => ({ written: true }), q: async () => [], gateAvailable: () => false });
+// npm test imports EVERY test file into one process (tests/index.js), so module state (the seam's deps) is shared, and
+// a root-level hook holds for the whole run. A _setDeps at import time (and then in a root before()) here replaced
+// tests/p4-content-seam.test.mjs's evidence writer, so its "graded by the HOST" saw no event. The fakes go in for each
+// of THIS file's tests only, and the deps they replaced are put back after it.
+const FAKES = { writeEvidence: async () => ({ written: true }), q: async () => [], gateAvailable: () => false };
+const withFakes = (fn) => async (t) => {
+  const live = _setDeps({});
+  const saved = Object.fromEntries(Object.keys(FAKES).map((k) => [k, live[k]]));
+  _setDeps(FAKES);
+  try { return await fn(t); } finally { _setDeps(saved); }
+};
 
 function lesson(id) {
   bridge.attach(id, new StagecraftHost({ lessonId: id, mode: "on", catalog, builders: instantOnly() }));
@@ -40,7 +50,7 @@ async function onScreen(id) {
 }
 const snapshot = (L) => JSON.stringify({ shown: L.shown, onScreen: L.onScreen, states: [...L.pieces.values()].map((p) => [p.intentId, p.state, p.heldTurn ?? null]) });
 
-test("peekFactsRow = the row the next turn's slotFor + factsRowForSlot give when the screen does not change", { skip: !kit && "kit missing" }, async () => {
+test("peekFactsRow = the row the next turn's slotFor + factsRowForSlot give when the screen does not change", { skip: !kit && "kit missing" }, withFakes(async () => {
   const id = "r4l-peek-1";
   const { L, piece } = await onScreen(id);
   assert.equal(L.onScreen, piece.intentId);
@@ -52,9 +62,9 @@ test("peekFactsRow = the row the next turn's slotFor + factsRowForSlot give when
   studioSeam.statusFacts(id, { beat: "explain" });
   const slot = studioSeam.slotFor(id, null, { beat: "explain", tray: null });
   assert.equal(studioSeam.factsRowForSlot(id, slot), peek);
-});
+}));
 
-test("peekFactsRow follows the host's outcome, and gives nothing when the Director takes the tray or after a safety turn", { skip: !kit && "kit missing" }, async () => {
+test("peekFactsRow follows the host's outcome, and gives nothing when the Director takes the tray or after a safety turn", { skip: !kit && "kit missing" }, withFakes(async () => {
   const id = "r4l-peek-2";
   const { L, piece } = await onScreen(id);
   const t = piece.stagecraft.spec.task;
@@ -68,7 +78,7 @@ test("peekFactsRow follows the host's outcome, and gives nothing when the Direct
   studioSeam.slotFor(id, null, { safety: true });
   assert.equal(studioSeam.peekFactsRow(id, { tray: null }), null);
   assert.equal(studioSeam.peekFactsRow("no-such-lesson"), null);
-});
+}));
 
 test("withFactsRows: content that does not change keeps the instructions as they are (no recompile)", () => {
   const same = { lastContent: ["fact one"] };
