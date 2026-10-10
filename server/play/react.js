@@ -2,7 +2,7 @@
 // on top of the play guard (shared/play.ts reactionProblems) the lesson's own never-rules floor over the TEACHER's words
 // (server/director/safety.js floorViolations) and a scanSafety pass. A line that trips anything is skipped, never edited.
 // The hidden values (the level's key: the answer the child has not produced yet) may never be spoken.
-import { readFileSync } from "node:fs";
+import { readFileSync, readdirSync, existsSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import { pickReaction, newHistory } from "../../src/play/core/react.ts";
@@ -11,7 +11,26 @@ import { gcd, lcm } from "../../src/play/core/rat.ts";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "../..");
 let BANK = null;
-export function bank() { BANK ??= JSON.parse(readFileSync(join(ROOT, "data/play/reactions.json"), "utf8")); return BANK; }
+/**
+ * data/play/reactions.json plus every data/play/reactions/<name>.json (S0.3: one file per family or engine, so lanes add
+ * lines without editing a shared file). A split file holds `{ family: { <id>: … } }` and / or `{ engine: { <id>: … } }`;
+ * an id may not be defined twice (a merge never silently overwrites another lane's lines).
+ */
+export function bank() {
+  if (BANK) return BANK;
+  const b = JSON.parse(readFileSync(join(ROOT, "data/play/reactions.json"), "utf8"));
+  b.family ??= {}; b.engine ??= {};
+  const dir = join(ROOT, "data/play/reactions");
+  if (existsSync(dir)) for (const f of readdirSync(dir).filter((x) => x.endsWith(".json")).sort()) {
+    const part = JSON.parse(readFileSync(join(dir, f), "utf8"));
+    for (const key of ["family", "engine"]) for (const [id, lines] of Object.entries(part[key] ?? {})) {
+      if (b[key][id]) throw new Error(`data/play/reactions/${f}: ${key} ${id} is already defined`);
+      b[key][id] = lines;
+    }
+  }
+  BANK = b;
+  return BANK;
+}
 
 /** Values a line must not say aloud before the child produces them (per family; the server knows the key). */
 export function hiddenOf(level) {
@@ -35,12 +54,12 @@ export function floorOk(text) {
 
 /**
  * @param {import("../../shared/play.ts").Moment[]} moments
- * @param {{ lang: string, level: any, solved?: boolean, history?: { used: string[], lastAt: number, count: number }, nowS: number }} o
+ * @param {{ lang: string, level: any, solved?: boolean, engine?: string|null, history?: { used: string[], lastAt: number, count: number }, nowS: number }} o
  * @returns {{ reaction: any, history: { used: string[], lastAt: number, count: number } }}
  */
 export function reactionFor(moments, o) {
   const h = newHistory();
   if (o.history) { for (const u of o.history.used ?? []) h.used.add(u); h.lastAt = o.history.lastAt ?? -1e9; h.count = o.history.count ?? 0; }
-  const reaction = pickReaction(bank(), moments, { lang: o.lang, family: o.level.family, mode: o.level.mode, goal: o.level.goal, seed: o.level.levelId, hist: h, nowS: o.nowS, hidden: o.solved ? [] : hiddenOf(o.level), extraCheck: floorOk });
+  const reaction = pickReaction(bank(), moments, { lang: o.lang, family: o.level.family, mode: o.level.mode, goal: o.level.goal, engine: o.engine ?? null, seed: o.level.levelId, hist: h, nowS: o.nowS, hidden: o.solved ? [] : hiddenOf(o.level), extraCheck: floorOk });
   return { reaction, history: { used: [...h.used].slice(-40), lastAt: h.lastAt, count: h.count } };
 }

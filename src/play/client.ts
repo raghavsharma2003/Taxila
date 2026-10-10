@@ -12,7 +12,7 @@ async function post<T>(path: string, body: unknown, signal?: AbortSignal): Promi
 }
 export const playApi = {
   start: (b: PlayStartRequest, signal?: AbortSignal) => post<PlayStartResponse>("/api/play/start", b, signal),
-  act: (b: { sessionId: string; levelId: string; acts: PlayActEnvelope[]; final?: boolean; impasse?: boolean }, signal?: AbortSignal) => post<PlayActResponse>("/api/play/act", b, signal),
+  act: (b: { sessionId: string; levelId: string; acts: PlayActEnvelope[]; final?: boolean; impasse?: boolean; engine?: string | null }, signal?: AbortSignal) => post<PlayActResponse>("/api/play/act", b, signal),
   next: (b: { sessionId: string; door: Door }, signal?: AbortSignal) => post<PlayNextResponse>("/api/play/next", b, signal),
   level: (b: { sessionId: string }, signal?: AbortSignal) => post<{ sessionId: string; level: PlayLevel; art: ArtPick; dress?: DressedSpec | null }>("/api/play/level", b, signal),
   /** the model's dress for the current level (enums only, validated, ≤ 1.9 s on the server; base otherwise) */

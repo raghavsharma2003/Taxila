@@ -100,6 +100,7 @@ async function driveTo(page, state) {
     // aim set through a synthetic tap at the value's projected x
     const tapAt = async (value) => {
       const st = P.stage3d; if (!st) return false;
+      for (let k = 0; k < 60 && ![...document.querySelectorAll(".c3-label[data-id=tick0]")].some((e) => e.style.display !== "none"); k++) await wait(50);
       const core = st.core, LW = null; void LW;
       const canvas = document.querySelector(".c3-canvas"), r = canvas.getBoundingClientRect();
       const u = (value - p.lo) / (p.hi - p.lo);
@@ -120,15 +121,16 @@ async function driveTo(page, state) {
       const mal = P.mal().find((m) => { const a = P.malActs(m); return a && a.length; });
       const acts = mal ? P.malActs(mal) : null;
       const place = acts ? acts.filter((a) => a.kind === "place") : values.map((v, i) => ({ kind: "place", which: i, x: Math.min(p.hi, v + (p.hi - p.lo) * 0.18) }));
-      for (const a of place) { await tapAt(a.x); await press("commit"); await wait(900); }
-      await wait(1600);
+      for (const a of place) { await tapAt(a.x); await press("commit"); await wait(1900); }
+      await wait(300);
       return { ok: true, mal: mal ?? null };
     }
-    for (let i = 0; i < values.length; i++) { await tapAt(values[i]); await press("commit"); await wait(900); }
-    await wait(1600);
+    for (let i = 0; i < values.length; i++) { await tapAt(values[i]); await press("commit"); await wait(1900); }
+    await wait(300);
     if (state === "gates") return { ok: true };
+    // compare / round: fly into the right gate (steer onto it with a tap, then commit), as the child does
     const order = solve.find((a) => a.kind === "order" || a.kind === "round");
-    if (order) { const id = order.kind === "order" ? `order-${order.first}` : `round-${order.to}`; await press(id); await wait(1200); }
+    if (order) { const target = order.kind === "round" ? order.to : values[order.first]; await tapAt(target); await press("commit"); await wait(1200); }
     return { ok: true };
   }, state);
 }

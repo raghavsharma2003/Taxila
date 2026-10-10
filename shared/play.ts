@@ -393,7 +393,9 @@ export interface PlayStartResponse {
   dress?: import("../src/play/engines/core3d/api.ts").DressedSpec | null;
 }
 /** POST /api/play/act: the acts since the last post (the server replays ALL acts of the level each time). */
-export interface PlayActRequest { sessionId: string; levelId: string; acts: PlayActEnvelope[]; final?: boolean; impasse?: boolean }
+export interface PlayActRequest { sessionId: string; levelId: string; acts: PlayActEnvelope[]; final?: boolean; impasse?: boolean;
+  /** round 4: the real-game engine on the child's screen, if any (chooses which authored words describe it; never graded) */
+  engine?: string | null }
 export interface PlayActResponse {
   levelId: string;
   moments: Moment[];

@@ -114,3 +114,41 @@ test("doors: the door preview IS the level /next serves; novelty moves off the l
   }
   assert.ok(new Set(seen).size >= 3, `novelty: ${seen.join(" ")}`);
 });
+
+// C6 for Antariksh's words: every engine line passes the play guard and the lesson's never-rules floor, names only real
+// conditions, never says the fire / scan verb (the parent's switch changes the button and the sound only), and is said
+// only when the child sees the engine
+import { readFileSync } from "node:fs";
+import { reactionProblems } from "../shared/play.ts";
+import { bank, floorOk, reactionFor } from "../server/play/react.js";
+import { newHistory, pickReaction } from "../src/play/core/react.ts";
+
+test("C6 · Antariksh lines: guarded, floor-clean, real conditions, no verb, ≤ 80 chars, every language", () => {
+  const eng = JSON.parse(readFileSync(new URL("../data/play/reactions/antariksh.json", import.meta.url), "utf8")).engine.antariksh;
+  const known = { goal: new Set(["place", "compare", "round"]), why: new Set(["landed_off", "look_again"]), landed: new Set(["yes", "both"]) };
+  let n = 0;
+  for (const [moment, langs] of Object.entries(eng)) {
+    assert.deepEqual(Object.keys(langs).sort(), ["en", "hi", "hinglish"], moment);
+    for (const shapes of Object.values(langs)) for (const sh of shapes) {
+      const c = /^\{\?(\w+)=([^}]*)\}/.exec(sh);
+      assert.ok(c, `${moment}: every engine shape is conditioned (${sh})`);
+      for (const w of c[2].split("|")) assert.ok(known[c[1]]?.has(w), `${moment}: ${c[1]}=${w}`);
+      const filled = sh.replace(/^\{\?[^}]*\}/, "").replace(/\{value\}/g, "2/3").replace(/\{gap\}/g, "1/6").replace(/\{gap_about\}/g, "1/6");
+      assert.deepEqual(reactionProblems(filled), [], `${moment}: ${filled}`);
+      assert.ok(floorOk(filled), `floor: ${filled}`);
+      assert.doesNotMatch(filled, /\b(daago|fire|scan|shoot|maar|blast|destroy|kill)\b|दागो|स्कैन/i, filled);
+      n++;
+    }
+  }
+  assert.ok(n >= 30, `${n} shapes`);
+});
+
+test("C6 · engine lines replace the family's 2D words only when the device reports an engine that renders the level", () => {
+  const level = { family: "nishana", mode: "place", goal: "place", levelId: "line-x-1", params: {} };
+  const ms = [{ kind: "misconception_consequence", seq: 1, facts: { value: "2/3", at: "0.5", truth: "0.67", gap_about: "1/6" }, misconceptionId: "count-marks" }];
+  const pick = (engine) => { const out = new Set(); for (let i = 0; i < 12; i++) { const r = pickReaction(bank(), ms, { lang: "hinglish", family: "nishana", mode: "place", goal: "place", engine, seed: `s${i}`, hist: newHistory(), nowS: 100 }); if (r) out.add(r.text); } return [...out]; };
+  const with3d = pick("antariksh"), with2d = pick(null);
+  assert.ok(with3d.length && with3d.every((t) => !/jhanda/i.test(t)), JSON.stringify(with3d));
+  assert.ok(with2d.some((t) => /jhanda|rehta/i.test(t)), JSON.stringify(with2d));
+  assert.ok(reactionFor(ms, { lang: "hinglish", level, engine: "antariksh", nowS: 100 }).reaction);
+});

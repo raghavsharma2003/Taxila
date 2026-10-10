@@ -229,7 +229,8 @@ export function create(core: Core3D, depsIn: EngineDeps): EngineView {
         const a = uToX(valToU(mk)), b = uToX(tu);
         gb.position.set((a + b) / 2, -0.34 - i * 0.16, 0); gb.scale.x = Math.max(0.02, Math.abs(b - a)); gm.opacity = 0.9; gm.color.setHex(0xffd27a);
         const gi = H.gapInfo(v, mk);
-        L.gap[i].set({ text: say(lang, gi.exact ? "line.gap" : "line.gapAbout", { g: gi.g }), lang: tl(), hidden: false, at: wpt((valToU(mk) + tu) / 2, -0.62 - i * 0.42) });
+        // below the tick-label band, a fixed pixel step per value (labels never share a band)
+        L.gap[i].set({ text: say(lang, gi.exact ? "line.gap" : "line.gapAbout", { g: gi.g }), lang: tl(), hidden: false, at: wpt((valToU(mk) + tu) / 2, -0.32), dy: 34 + i * 32 });
       }
     });
     if (anyHit) {
@@ -258,6 +259,8 @@ export function create(core: Core3D, depsIn: EngineDeps): EngineView {
   }
   function placeGates(): void {
     const us = gateUs();
+    // the gates carry the values themselves: the truth labels step aside (no two labels in one place)
+    if (us.length) for (const l of L.truth) l.set({ hidden: true });
     W.gates.forEach((g, i) => {
       const on = i < us.length;
       g.g.visible = on;
@@ -295,8 +298,8 @@ export function create(core: Core3D, depsIn: EngineDeps): EngineView {
       hideGates(); gateMode = null; L.look.set({ hidden: true }); setPhase("done");
     } else if (ms.some((m) => m.kind === "misconception_consequence" || m.kind === "law_refused")) {
       core.audio.sfx("look"); lookAt = core.t;
-      if (gateMode === "order") L.look.set({ text: say(lang, "line.leftSmaller"), lang: tl(), hidden: false, at: wpt(0.5, -0.95) });
-      if (gateMode === "round") L.look.set({ text: say(lang, "line.half"), lang: tl(), hidden: false, at: wpt(0.5, -0.95) });
+      if (gateMode === "order") L.look.set({ text: say(lang, "line.leftSmaller"), lang: tl(), hidden: false, at: wpt(0.5, -0.32), dy: 34 });
+      if (gateMode === "round") L.look.set({ text: say(lang, "line.half"), lang: tl(), hidden: false, at: wpt(0.5, -0.32), dy: 34 });
     }
     syncFromState();
   }
@@ -423,7 +426,8 @@ export function create(core: Core3D, depsIn: EngineDeps): EngineView {
     camera.position.copy(CAM); camera.lookAt(LOOK);
 
     // the aim readout rides the reticle: the value being looked for, never the answer
-    const showAim = phase === "aim" && !st().done;
+    // the aim readout steps aside while a decloaked target's own label is up (the rail still names the value)
+    const showAim = phase === "aim" && !st().done && !p.values.some((_, i) => revealed[i] && !cleared[i]);
     const v = p.values[Math.min(cur, p.values.length - 1)];
     L.aim.set({ text: showAim ? v.text : "", hidden: !showAim, at: wpt(uVis, 1.45), frac: v.form === "fraction" });
   }

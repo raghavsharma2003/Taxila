@@ -55,6 +55,7 @@ export function PlaySession(p: PlaySessionProps) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   const acts = useRef<PlayActEnvelope[]>([]);
+  const engineOn = useRef<string | null>(null);
   const sidRef = useRef(sid); sidRef.current = sid;
   const chain = useRef(Promise.resolve());
 
@@ -63,7 +64,7 @@ export function PlaySession(p: PlaySessionProps) {
   const post = useCallback((extra: { final?: boolean; impasse?: boolean } = {}) => {
     const lv = level, snapshot = [...acts.current];
     chain.current = chain.current.then(async () => {
-      const r = await playApi.act({ sessionId: sidRef.current, levelId: lv.levelId, acts: snapshot, ...extra });
+      const r = await playApi.act({ sessionId: sidRef.current, levelId: lv.levelId, acts: snapshot, engine: engineOn.current, ...extra });
       if (!r) return;
       if (r.sessionId) setSid(r.sessionId);
       if (r.reaction?.text) setCaption(r.reaction.text);
@@ -77,6 +78,8 @@ export function PlaySession(p: PlaySessionProps) {
 
   const onEvent = useCallback((e: PlayEvent) => {
     if (e.type === "act" && e.env) { acts.current.push(e.env); p.onActivity?.("play_act", { kind: (e.env.act as { kind: string }).kind }); post(); }
+    else if (e.type === "ready") engineOn.current = e.engine ?? null;
+    else if (e.type === "fail3d") engineOn.current = null;
     else if (e.type === "impasse") post({ impasse: true });
     else if (e.type === "fail") p.onFail?.(e.why ?? "fail");
   }, [post, p]);

@@ -22,6 +22,7 @@ import { mapStateFrom, worldFamily, FAMILIES } from "./world.js";
 import { signEvidence, signSeam } from "./evidence.js";
 import { playFactsRow } from "../../shared/play.ts";
 import { baseSpec, dressSpecFor } from "./dress.js";
+import { engineFor } from "../../src/play/engines/registry.ts";
 
 const bad = (msg) => new HttpError(400, msg);
 const dbq = async (...a) => (await import("../db.js")).q(...a);
@@ -87,7 +88,10 @@ export const routes = {
     const lastSeq = Math.max(0, ...g.moments.map((m) => m.seq));
     const fresh = g.moments.filter((m) => m.seq === lastSeq);
     if (b.impasse) fresh.push({ kind: "impasse", seq: lastSeq, facts: {} });
-    const { reaction, history } = reactionFor(fresh, { lang: s.lang, level, solved: g.solved, history: s.hist ?? undefined, nowS: (Date.now() / 1000) });
+    // the engine the child SEES (the device says; it is honoured only if that engine renders this level, and it only picks
+    // which authored words describe the screen: it never touches the grade)
+    const seenEngine = typeof b.engine === "string" && engineFor(level.family, level.mode, level.goal)?.id === b.engine ? b.engine : null;
+    const { reaction, history } = reactionFor(fresh, { lang: s.lang, level, solved: g.solved, engine: seenEngine, history: s.hist ?? undefined, nowS: (Date.now() / 1000) });
     const ended = !!g.grade;
     const rows = ended ? lessonEvidence(g.grade, level) : [];
     // inside a lesson: the server's own rows, signed for this child and lesson (the turn folds only a verified token)

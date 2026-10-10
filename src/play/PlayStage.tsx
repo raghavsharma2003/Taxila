@@ -30,6 +30,8 @@ export interface PlayEvent {
   type: "act" | "moments" | "solved" | "impasse" | "fail" | "fail3d" | "ready" | "voice";
   /** voice: the parsed intent and whether a control carried it out (false = it stays a plain turn) */
   voice?: { text: string; intent: VoiceIntent | null; pressed: string[] | null };
+  /** ready: the real-game engine on screen (null = the 2D view) */
+  engine?: string | null;
   env?: PlayActEnvelope; moments?: Moment[]; refused?: string; acts?: PlayActEnvelope[]; why?: string;
 }
 export interface PlayDoor { door: Door; level: PlayLevel; hint: string }
@@ -147,14 +149,14 @@ export function PlayStage(props: PlayStageProps) {
     const spec = specRef.current;
     if (render.kind === "3d" && render.mod && render.mount && spec) {
       const deps: EngineDeps = { level, ctl, lang, spec, changed };
-      if (stage3d && stage3d.engine.relevel) { try { stage3d.core.progress.set("level", level.levelId, { level: "start" }); stage3d.engine.relevel(deps); viewRef.current = stage3d.engine; if (props.debug) exposeDebug(stage3d, ctl, logic); changed(); onEvent.current?.({ type: "ready" }); return; } catch { /* remount below */ } }
+      if (stage3d && stage3d.engine.relevel) { try { stage3d.core.progress.set("level", level.levelId, { level: "start" }); stage3d.engine.relevel(deps); viewRef.current = stage3d.engine; if (props.debug) exposeDebug(stage3d, ctl, logic); changed(); onEvent.current?.({ type: "ready", engine: entry?.id ?? null }); return; } catch { /* remount below */ } }
       stageRef.current?.dispose(); stageRef.current = null; viewRef.current = null;
       const h = render.mount(host, render.mod.create, deps, { tier: render.tier === "3d-lite" ? "3d-lite" : "3d", young, reducedMotion: props.reducedMotion, sound: props.sound, musicAllowed: musicRef.current === "on", seed: level.seed,
         onFail: (why) => { onEvent.current?.({ type: "fail3d", why }); setRender({ kind: "2d", why }); } });
       if (h) {
         stageRef.current = h; viewRef.current = h.engine;
         if (props.debug) exposeDebug(h, ctl, logic);
-        changed(); onEvent.current?.({ type: "ready" });
+        changed(); onEvent.current?.({ type: "ready", engine: entry?.id ?? null });
         if (props.demo || spec.dress.teacherMove === "ghost-first") setTimeout(() => (viewRef.current as EngineView | null)?.demo?.(), 900);
         return;
       }
@@ -170,7 +172,7 @@ export function PlayStage(props: PlayStageProps) {
       { art, young, reducedMotion: props.reducedMotion, sound: props.sound, onFail: (why) => onEvent.current?.({ type: "fail", why }) });
     stageRef.current = stage; viewRef.current = view;
     changed();
-    onEvent.current?.({ type: "ready" });
+    onEvent.current?.({ type: "ready", engine: null });
     if (props.demo && view) setTimeout(() => (view as FamilyView | null)?.demo?.(), 700);
     if (props.debug) exposeDebug(stage, ctl, logic);
     // a new level (or art direction, or renderer) is a new world (a 3D engine with relevel keeps its world)
