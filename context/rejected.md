@@ -2436,3 +2436,8 @@ words are left to read.
 
 ## Merged inbox entries (write-up from the entry text)
 - `r4u-rj-headless-video-capture` (2026-10-10): Tried: Playwright headless recordVideo of each prototype's journey as motion evidence (2026-10-10). Broke: about 30 s of the 60 s clip recorded black while the page was live and screenshots were fine, and View Transitions stalled under capture; clips removed rather than shipped misleading. Use the live prototype or a screenshot-sequence capture instead.
+
+
+## Merged inbox entries (write-up from the entry text)
+- `rj-r4a-asha-band-v1-warm-notes` (2026-10-10): Tried: Asha's class 5-9 band = Arjun's competence notes PLUS her young-band warmth line ('steady, calm, never gushing'), her situational humour, 'words of their class, no baby talk' pacing. Broke: the simulated class 6 child talked less (median child talk share 0.138 vs Arjun 0.163, n = 6 each, simulation; teacher words per lesson equal, 390 vs 399; child words 67 vs 76): a 16% drop, over the 10% talk gate. Replaced by v2 (closer to Arjun's measured notes + 'ask more than tell').
+- `rj-r4a-asha-band-v2-never-babyish` (2026-10-10): Tried: Asha's class 5-9 band = Arjun's notes plus 'never babyish' in the register line, 'ask more than tell' in teaching, 'no nicknames or endearments'. Broke: simulated class 6 child talk share median 0.145 vs Arjun 0.160 (n = 9 each, director-sim, simulation), a 9.4% drop, just inside the 10% gate, while Arjun's notes verbatim under Asha's name (v3) gave 0.163. The additions cost talk; v3 shipped.
