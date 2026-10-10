@@ -92,3 +92,6 @@
 .pl-root[data-embedded] .pl-top, .pl-root[data-embedded] .pl-teacher { display: none; }
 .pl-root[data-embedded][data-layout="wide"] { grid-template-columns: minmax(0, 1fr) 300px; grid-template-rows: minmax(0, 1fr) auto; grid-template-areas: "world rail" "world controls"; }
 .pl-root[data-embedded][data-layout="wide"] .pl-doors { right: 300px; }
+/* r4-khand patch 07: the class 4-5 text floor (16 px) on the host chrome, and numerals at 18 px for every band */
+.pl-root[data-young] .pl-title, .pl-root[data-young] .pl-tag, .pl-root[data-young] .pl-readout i, .pl-root[data-young] .pl-btn--ghost, .pl-root[data-young] .pl-door span { font-size: 16px; }
+.pl-readout b { font-size: 18px; }

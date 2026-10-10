@@ -7,7 +7,7 @@ import { makeBundlesView } from "./todo-jodo/bundles.view.ts";
 import { makeBalanceView } from "./taraazu/balance.view.ts";
 import { makeLineView } from "./nishana/line.view.ts";
 import { makeLabView } from "./kyun-lab/lab.view.ts";
-import { mountKhand, type EngineDeps, type EngineMount } from "../engines/khand/index.ts";
+import { mountKhandLazy, type EngineDeps, type EngineMount } from "../engines/khand/index.ts";
 
 export const VIEWS: Record<string, MakeView> = {
   "todo-jodo/atoms": makeAtomsView,
@@ -25,10 +25,10 @@ export function viewFor(family: FamilyId, mode: PlayMode): MakeView | null { ret
  *  FamilyView the host reads (goal, readouts, controls, react) and a StageHandle-shaped handle (audit, perf, dispose). */
 export type MountEngine = (host: HTMLElement, deps: EngineDeps) => EngineMount;
 export const ENGINES: Record<string, MountEngine> = {
-  "nazariya/views": mountKhand,
-  "nazariya/array": mountKhand,
-  "nazariya/floor": mountKhand,
-  "nazariya/powers": mountKhand,
-  "nazariya/mirror": mountKhand,
+  "nazariya/views": mountKhandLazy,
+  "nazariya/array": mountKhandLazy,
+  "nazariya/floor": mountKhandLazy,
+  "nazariya/powers": mountKhandLazy,
+  "nazariya/mirror": mountKhandLazy,
 };
 export function engineFor(family: FamilyId, mode: PlayMode): MountEngine | null { return ENGINES[`${family}/${mode}`] ?? null; }
