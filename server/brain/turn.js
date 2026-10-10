@@ -653,7 +653,7 @@ export async function lessonTurn(req, body) {
   if (textLane && (!r.hold || revoice) && !late) {
     const key = replyKey(next, kit, r, instructions, said, historyOf(next));
     const hit = await pickSpeculation(specs, key);
-    speculation = specs.length ? { tried: specs.length, hit: !!hit, ...(hit ? {} : { differs: await missReason(specs, key) }) } : undefined;
+    speculation = specs.length ? { tried: specs.length, hit: !!hit, ...(hit?.exact ? { exact: true } : {}), ...(hit ? {} : { differs: await missReason(specs, key) }) } : undefined;
     if (hit) trace.push(...hit.trace.map((t) => ({ ...t, speculative: true })));
     let filtered, filteredSafeguard = false;
     ({ reply: teacherReply, guard, filtered, floor: replyFloor = [] } = hit
@@ -1268,7 +1268,7 @@ export async function pickSpeculation(specs, key) {
     const s = await p.catch(() => null);
     if (s?.key !== key) continue;
     const result = await s.result.catch(() => null);
-    return result && !result.guard.caught.includes("unavailable") && !result.filtered ? { trace: s.trace, result } : null;
+    return result && !result.guard.caught.includes("unavailable") && !result.filtered ? { trace: s.trace, result, ...(s.exact ? { exact: true } : {}) } : null;
   }
   return null;
 }

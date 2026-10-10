@@ -7,16 +7,17 @@
 // The same gates as the turn, in the same order (loadTurnContext: auth, the child's guardian, core_tutoring consent): with
 // consent withdrawn the words never reach a model. An ended lesson, a typed lane, an empty text, or a rate-limited lesson
 // is a 204 and nothing runs. Always fire-and-forget for the client: any failure is a 204, never an error the child sees.
-import { loadTurnContext, planTurn, replyKey, speculate, carriedFrom, earlierExchanges } from "../brain/turn.js";
+import { loadTurnContext, specPlan, replyKey, speculate, carriedFrom, earlierExchanges, NOTE_WAIT_MS } from "../brain/turn.js";
 import { textReply, scrubbed } from "../brain/say.js";
 import { kitFor, stageTurns, childTurnRow, turnLane } from "../brain/rows.js";
 import { classify, classifyFast, targetFor } from "../director/classify.js";
 import { noteModuleEvents, moduleAnswerOf } from "../director/modules.js";
 import { findItem, promptFor, norm as normAnswer } from "../director/items.js";
 import { understand } from "../conversation/understand.js";
-import { conv2Mode } from "../conversation/flags.js";
+import { conv2Mode, p5Flag } from "../conversation/flags.js";
+import { applyNote, withAnswerMods } from "../conversation/policy.js";
 import { loadLive } from "../learner/live.js";
-import { perceive, fingerprint, putPrefetch, allowPrefetch } from "./perceive.js";
+import { perceive, fingerprint, putPrefetch, allowPrefetch, exactSpecOn } from "./perceive.js";
 import { ackOf, ackPlanOf, answerTokenOf, ackPhraseOf, ACK_FLOOR_MS, ACK_AT_MS } from "./ack.js";
 import { scanSafety } from "../director/safety.js";
 // round 3 (relational-human): the perception bus (the turn and the prefetch say "classify is running on these words") and
@@ -35,7 +36,10 @@ export const ACK_WAIT_MS = 3000;
 /** TAXILA_TURN_PREFETCH=off turns the route into a no-op (204). Default on. */
 export const prefetchOn = (env = process.env) => !/^(off|0|false|no)$/i.test(String(env.TAXILA_TURN_PREFETCH ?? ""));
 
-export const PERCEIVE_DEPS = Object.freeze({ classifyFast, classify, understand, speculate, planTurn, replyKey, textReply, conv2Mode });
+// r4-latency: specPlan (the speculative plan with the Studio row the real turn adds) and the turn's own classify transforms
+// (the note, the answer's own words), so an EXACT reply started here has the key the turn will compute (perceive.js rule 5)
+export const PERCEIVE_DEPS = Object.freeze({ classifyFast, classify, understand, speculate, planTurn: specPlan, replyKey, textReply, conv2Mode,
+  applyNote, withAnswerMods, steerOn: () => p5Flag("STEER"), noteWaitMs: NOTE_WAIT_MS });
 
 const none = (res, why) => { res.statusCode = 204; res.setHeader("x-prefetch", why); res.setHeader("cache-control", "no-store"); res.end(); };
 
@@ -80,7 +84,7 @@ async function turnPrefetch(req, res, body) {
   const live = loadLive(child);
   live.catch(() => {});
   x.planCtx.live = live;
-  const P = perceive(PERCEIVE_DEPS, { ...x, classified: true, textLane, late: false, help: null, childText: text });
+  const P = perceive(PERCEIVE_DEPS, { ...x, classified: true, textLane, late: false, help: null, childText: text, exact: exactSpecOn() });
   putPrefetch(lesson.id, { fp: fingerprint({ lessonId: lesson.id, state: lesson.state, clsArgs: x.clsArgs, bargeIn }), P, trace, text: text.length });
   // round 3: the ack route waits on THIS classify (no model call of its own)
   publishPerception(lesson.id, { text, clsP: P.clsP, source: "prefetch", turn: (lesson.state?.turn ?? 0) + 1, specs: P.specs });

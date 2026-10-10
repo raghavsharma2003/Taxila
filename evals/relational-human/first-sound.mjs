@@ -464,7 +464,7 @@ async function lesson(L, rows = []) {
         ackClipMs: usable?.ack?.ms ?? null,
         replySound: Math.round(replySoundAt - end) + START_LEAD_MS + OUTPUT_LATENCY_MS,
         firstSound: Math.round((ackPlayAt ?? tts.firstAt) - end) + START_LEAD_MS + OUTPUT_LATENCY_MS,
-        speculation: r.debug?.speculation ? (r.debug.speculation.hit ? "hit" : "miss") : "none", specDiffers: r.debug?.speculation?.differs ?? null,
+        speculation: r.debug?.speculation ? (r.debug.speculation.hit ? "hit" : "miss") : "none", specDiffers: r.debug?.speculation?.differs ?? null, specExact: !!r.debug?.speculation?.exact,
         prefetched: !!r.debug?.prefetch?.adopted, prefetchMiss: r.debug?.prefetch?.miss ?? null, prefetchAheadMs: r.debug?.prefetch?.aheadMs ?? null, note: r.debug?.note ?? null,
         serverMs: r.debug?.ms ?? null, marks,
         // r4-latency: the turn's model calls (deployment, ms, whether the speculative reply or the prefetch made it)
