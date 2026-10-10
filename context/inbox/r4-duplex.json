@@ -83,6 +83,18 @@
       "kind": "measurement",
       "title": "duplex r4 SIMULATED TaxilaFDB (child-like TTS, 3 lanes; train / dev / test; 2026-10-10) BEFORE -> AFTER: thinking cut-offs unchanged (TEST 2.7 / 2.7 / 3.4 %), stopped <= 200 ms unchanged (105/108), continuers kept unchanged, safety detection unchanged (84/84 D4, FAST; MAI_HOME 83/84 pre-existing); paused within 1 s of a barge-in down (TEST D4 22 -> 8 %: hushAfterRelease, she is hushed first); missed > 2 s TEST +1.3-1.5 points (CLOSED_ELABORATION), TRAIN unchanged",
       "at": "2026-10-10"
+    },
+    {
+      "id": "open-r4dx-x3-owner-decision",
+      "kind": "open",
+      "title": "duplex X3 (speaker matching for R5): NOT funded (main session 2026-10-10). Owner decision needed: whether ephemeral, on-device, never-stored speaker matching that can only make her ignore a non-child voice is allowed under voice-features-longitudinal (\"Never: voiceprints / speaker ID\"). Until then R5 stays unmet for duplex on; no AMI measurement is run. Note: docs/design/round4/build/duplex/X3-DECISION.md",
+      "at": "2026-10-10"
+    },
+    {
+      "id": "dc-r4dx-aec-reference-funded",
+      "kind": "decision",
+      "title": "duplex R6: build an echo reference measured from her own output (correlation of the mic with her playback) in src/duplex, any link seam as a patch request; bar R6 self-yields <= 2 % on the same AMI rig (13.2 % baseline) with R1-R4 and stop / repair / safeguard yields held; an ambiguous correlation yields to the child (main session 2026-10-10, no spend, no biometrics). Reverse if: the reference correlation cannot reach <= 2 % without hurting R1-R4; then accept R6 as unmet and gate duplex on on shadow telemetry from real lessons.",
+      "at": "2026-10-10"
     }
   ],
   "edges": [
@@ -125,6 +137,21 @@
       "src": "ms-r4dx-fdb-2026-10-10",
       "rel": "measured_by",
       "dst": "dc-r4dx-hush-after-released-duck"
+    },
+    {
+      "src": "open-r4dx-x3-owner-decision",
+      "rel": "blocks",
+      "dst": "open-r4dx-r5-r6-target-speaker"
+    },
+    {
+      "src": "voice-features-longitudinal",
+      "rel": "constrains",
+      "dst": "open-r4dx-x3-owner-decision"
+    },
+    {
+      "src": "dc-r4dx-aec-reference-funded",
+      "rel": "part_of",
+      "dst": "open-r4dx-r5-r6-target-speaker"
     }
   ]
 }
