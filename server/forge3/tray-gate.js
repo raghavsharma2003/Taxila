@@ -59,6 +59,9 @@ export function moduleCertificates() { if (moduleMemo === undefined) moduleMemo 
 /** Test seams. */
 export const _setSkeletonCertificates = (t) => { skeletonMemo = t; };
 export const _setModuleCertificates = (t) => { moduleMemo = t; };
+/** Tests only: certify Studio v2 pieces as if relaid and judged at all three sizes (the merge mechanics behind the gate). */
+let studioV2Test = false;
+export const _certifyStudioV2ForTests = (on) => { studioV2Test = !!on; };
 
 /** The contract box for a class: the tray (or the play-mode world box), Older or Young Desk. */
 export function contractBox(vp, { young = false, play = false } = {}) {
@@ -177,6 +180,7 @@ export function certifyForTray(artifact, ctx = {}) {
         const piece = ctx.piece ?? (["animation", "explainer", "diagram"].includes(String(ctx.factsKind ?? "")) ? "explainer" : "game");
         const row = (ctx.certs ?? certificates())?.topics?.[ctx.topicId]?.[piece];
         if (!row) return out(false, "catalogue", `no certificate for ${ctx.topicId} ${piece}`);
+        if (studioV2Test) return out(true, "catalogue", "tests: Studio v2 certified");
         const twinAt = VP_CLASSES.filter((v) => !studioV2PlayableAt(v, { young }));
         if (twinAt.length) return out(false, "catalogue", `Studio v2 ${piece} is only its board twin at ${twinAt.join(",")} (a 1000-unit world in that box): not the game at all three sizes`);
         if (!allThree(row)) return out(false, "catalogue", `Studio v2 ${piece} not certified at all three sizes (${VP_CLASSES.filter((v) => !serveAt(row, v)).join(",")} fail)`);
