@@ -15,9 +15,11 @@ import { sanitizeActs } from "../shared/play.ts";
 const CASES = [
   { mode: "views", goals: ["build3", "same"], grammars: [{}, { views: ["top"] }, { views: ["front"] }] },
   { mode: "array", goals: ["fill", "turn"], grammars: [{}] },
-  { mode: "floor", goals: ["area", "perimeter", "max", "min"], grammars: [{}] },
+  { mode: "floor", goals: ["area", "perimeter", "max", "min", "side"], grammars: [{}] },
   { mode: "powers", goals: ["square", "cube"], grammars: [{}] },
   { mode: "mirror", goals: ["complete"], grammars: [{ axes: ["x"] }, { axes: ["z"] }] },
+  // the inverse (the missing side from the fence) gets its own battery, not a fifth of the floor one
+  { mode: "floor", label: "floor/side", goals: ["side"], grammars: [{}, { plot: [12, 9] }] },
 ];
 const reqOf = (logic, mode, goal, seed, fade, grammar, classLevel = 5) => ({
   family: "nazariya", mode, topicId: "c0-test", skillId: "c0-test-s1", classLevel, fade, goal, mis: {},
@@ -80,6 +82,8 @@ const ORACLE = {
   floor(level, s) {
     const p = level.params, f = fence(p, s.h), r = rectOf(p, s.h);
     if (p.goal === "area") return f.area === p.n && oneShape(p, s.h);
+    // side: the other side is the b whose a × b fence is n (searched, not the law's n / 2 − a); the named number decides
+    if (p.goal === "side") { let b = null; for (let k = 1; k <= p.d; k++) if (2 * p.a + 2 * k === p.n) b = k; return b !== null && s.named === b; }
     if (!r || r.hgt !== 1) return false;
     if (p.goal === "perimeter") return f.per === p.n;
     const all = []; for (let a = 1; a <= p.w; a++) for (let b = 1; b <= p.d; b++) all.push([a, b]);
@@ -111,8 +115,9 @@ function randomAct(level, s, rnd) {
   if (u < 0.56) return { kind: "layer", x0: rx(), z0: rz(), x1: rx(), z1: rz() };
   if (u < 0.62) return { kind: "clear", x0: rx(), z0: rz(), x1: rx(), z1: rz() };
   if (u < 0.74) {
-    const key = level.mode === "array" ? p.r * p.c : level.mode === "powers" ? (p.goal === "square" ? (p.k + 1) ** 2 : (p.k + 1) ** 3) : 10;
-    const opts = [key, key + 1, key - 1, Math.floor(rnd() * 80), level.mode === "array" ? p.r + p.c : 2 * (p.k ?? 1)];
+    const side = level.mode === "floor" && p.goal === "side";
+    const key = level.mode === "array" ? p.r * p.c : level.mode === "powers" ? (p.goal === "square" ? (p.k + 1) ** 2 : (p.k + 1) ** 3) : side ? (p.n - 2 * p.a) / 2 : 10;
+    const opts = [key, key + 1, key - 1, Math.floor(rnd() * 80), level.mode === "array" ? p.r + p.c : 2 * (p.k ?? 1), ...(side ? [p.n - p.a, p.n - 2 * p.a, p.n / p.a, p.n / 2, p.a] : [])];
     return { kind: "name", n: opts[Math.floor(rnd() * opts.length)] };
   }
   if (u < 0.8) return { kind: "predict", same: rnd() < 0.5 };
@@ -123,7 +128,7 @@ function randomAct(level, s, rnd) {
 
 describe("r4-khand nazariya: levels are proven", () => {
   for (const c of CASES) {
-    it(`${c.mode}: solvable, solver clean, shortcut-free, each mapped mal-rule shows its own signature; generator p95 ≤ 50 ms`, () => {
+    it(`${c.label ?? c.mode}: solvable, solver clean, shortcut-free, each mapped mal-rule shows its own signature; generator p95 ≤ 50 ms`, () => {
       const logic = LOGIC[`nazariya/${c.mode}`], ms = [];
       const lv = levelsOf(c, 36);
       assert.ok(lv.length >= 24, `only ${lv.length} levels`);
@@ -156,7 +161,7 @@ describe("r4-khand nazariya: levels are proven", () => {
 
 describe("r4-khand nazariya: randomised truth battery (0 wrong grades over ≥ 2,000 acts per mode)", () => {
   for (const c of CASES) {
-    it(`${c.mode}: goal met ⇔ the oracle; grade verdict = the oracle's end state; first evidence right ⇔ the oracle at that act`, () => {
+    it(`${c.label ?? c.mode}: goal met ⇔ the oracle; grade verdict = the oracle's end state; first evidence right ⇔ the oracle at that act`, () => {
       const logic = LOGIC[`nazariya/${c.mode}`], rnd = mulberry32(4242);
       let acts = 0, wrong = 0, graded = 0, levelsN = 0; const tally = { solved: 0, incorrect: 0, partial: 0, mis: 0 };
       const lv = levelsOf(c, 60);
@@ -195,7 +200,7 @@ describe("r4-khand nazariya: randomised truth battery (0 wrong grades over ≥ 2
           if (firstDecision.kind === "solved" !== firstDecision.okNow) wrong++;
         }
       }
-      if (process.env.KHAND_TALLY) console.log(c.mode, acts, graded, JSON.stringify(tally));
+      if (process.env.KHAND_TALLY) console.log(c.label ?? c.mode, acts, graded, JSON.stringify(tally));
       // the battery must exercise every branch: solves, wrong commits, near misses where the mode has them, misconceptions
       assert.ok(tally.solved >= 20 && tally.incorrect >= 20 && tally.mis >= 10, JSON.stringify(tally));
       assert.ok(acts >= 2000, `only ${acts} acts`);

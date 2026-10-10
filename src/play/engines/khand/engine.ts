@@ -184,11 +184,13 @@ export function create(core: Core3D, deps: EngineDeps): EngineView {
   let tool: Tool = mode === "array" && goal === "fill" && fade === 3 ? "look" : "build";
   let num = 0;
   let pad = false;
+  const side = mode === "floor" && goal === "side";
   const padWanted = (): boolean => {
     const s = ctl.state as NzState;
     if (s.done) return false;
     if (mode === "array" && goal === "fill") { if (fade === 3) return true; const a = p as unknown as ArrayParams; return pitCells(a, a.pit).every((i) => s.h[i] >= 1); }
-    if (mode === "powers") return fade >= 2 && s.named === null;
+    // powers, and a "side" floor at fade >= 2: the number comes before any building
+    if (mode === "powers" || side) return fade >= 2 && s.named === null;
     return false;
   };
   function act(a: NazariyaAct): { moments: Moment[]; refused?: string } {
@@ -320,7 +322,10 @@ export function create(core: Core3D, deps: EngineDeps): EngineView {
     goal: (): string => goalOf(level, lang),
     readouts(): Readout[] {
       const s = ctl.state as NzState, out: Readout[] = [];
-      if (mode === "floor") {
+      if (side) {
+        const ap = areaPerimeter(p, s.h);
+        out.push({ k: "Fence", v: fade === 1 || reveal || s.done ? String(ap.perimeter) : "?", role: "q4" }, { k: "Side", v: pad ? String(num) : s.named !== null ? String(s.named) : "?", role: "you" });
+      } else if (mode === "floor") {
         const ap = areaPerimeter(p, s.h);
         if (fade === 1 || reveal || s.done) { out.push({ k: "Floor", v: String(ap.area), role: "q1" }, { k: "Fence", v: String(ap.perimeter), role: "q4" }); }
         else out.push({ k: "Floor", v: "?", role: "q1" }, { k: "Fence", v: "?", role: "q4" });
@@ -341,7 +346,7 @@ export function create(core: Core3D, deps: EngineDeps): EngineView {
         for (let k = 1; k <= 9; k++) c.push({ id: `k${k}`, label: String(k), kind: "pad", group: k <= 5 ? "pad1" : "pad2", onPress: () => { num = Math.min(9999, num * 10 + k); deps.changed(); } });
         c.push({ id: "k0", label: "0", kind: "pad", group: "pad2", onPress: () => { num = Math.min(9999, num * 10); deps.changed(); } });
         c.push({ id: "kdel", label: "Del", kind: "pad", group: "pad1", aria: "Delete a digit", onPress: () => { num = Math.floor(num / 10); deps.changed(); } });
-        const canClose = !(mode === "array" && fade === 3);
+        const canClose = !(mode === "array" && fade === 3) && !(side && fade >= 2 && s.named === null);
         if (canClose) c.push({ id: "close", label: "Build", kind: "secondary", group: "go", onPress: () => { pad = false; deps.changed(); } });
         c.push({ id: "name", label: `Say ${num}`, kind: "primary", you: true, group: "go", onPress: () => { const r = act({ kind: "name", n: num }); if (!r.refused) { num = 0; pad = false; } deps.changed(); } });
         return c;
@@ -359,7 +364,10 @@ export function create(core: Core3D, deps: EngineDeps): EngineView {
       }
       c.push({ id: "undo", label: "Undo", kind: "secondary", group: "go", onPress: () => act({ kind: "undo" }) });
       if (mode === "array" && goal === "fill") c.push({ id: "say", label: "Say how many", kind: "primary", you: true, group: "go", onPress: () => { pad = true; deps.changed(); } });
-      else if (mode === "array" && goal === "turn") c.push({ id: "done", label: "Done", kind: "primary", you: s.predicted !== null, group: "go", onPress: () => act({ kind: "check" }) });
+      else if (side) {
+        c.push({ id: "done", label: "Check", kind: "secondary", group: "go", onPress: () => act({ kind: "check" }) });
+        c.push({ id: "say", label: s.named === null ? "Say the side" : "Say again", kind: "primary", you: true, group: "go", onPress: () => { pad = true; deps.changed(); } });
+      } else if (mode === "array" && goal === "turn") c.push({ id: "done", label: "Done", kind: "primary", you: s.predicted !== null, group: "go", onPress: () => act({ kind: "check" }) });
       else {
         if (mode === "powers") c.push({ id: "say", label: s.named === null ? "Say how many" : "Say again", kind: "secondary", group: "go", onPress: () => { pad = true; deps.changed(); } });
         c.push({ id: "done", label: "Check", kind: "primary", you: true, group: "go", onPress: () => act({ kind: "check" }) });
@@ -384,7 +392,8 @@ export function create(core: Core3D, deps: EngineDeps): EngineView {
         if (!reduced) { scene.pulse(cells, true); scene.rig.tYaw += 0.5; }
         sfx("good"); overlays(); return;
       }
-      const checked = ms.some((m) => m.kind === "misconception_consequence" || m.kind === "near_miss") || refused === "mismatch";
+      // a "side" number lays its own field: its fence is shown whatever it was
+      const checked = ms.some((m) => m.kind === "misconception_consequence" || m.kind === "near_miss") || refused === "mismatch" || (side && refused === "wrong_count");
       if (checked) {
         reveal = true;
         if (mode === "mirror") {

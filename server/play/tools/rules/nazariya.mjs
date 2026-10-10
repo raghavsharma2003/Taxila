@@ -19,6 +19,8 @@ export const RULES = [
   R("c5-maths-ch11-t02", N, "floor", "perimeter", { "l-plus-b": "once-only", "area-for-perimeter": "area-for-perimeter", "border-squares": "count-border-squares" }, {}, ["kagaz", "chalk"]),
   R("c5-maths-ch11-t03", N, "floor", "min", { "same-area-perimeter": "same-area-same-perimeter" }, {}, ["kagaz", "chalk"]),
   R("c6-maths-ch06-t01", N, "floor", "perimeter", { "l-plus-b": "l-plus-b", "area-for-perimeter": "area-perimeter" }, { plot: [12, 9] }),
+  // the inverse: the fence and one side are given, the child says the other side (each belief says its own number)
+  R("c6-maths-ch06-t01", N, "floor", "side", { "l-plus-b": "l-plus-b", "area-for-perimeter": "area-perimeter", "missing-side": "missing-sides" }, { plot: [12, 9] }),
   R("c6-maths-ch06-t02", N, "floor", "area", { "area-perimeter": "add-for-area" }, { plot: [12, 9] }),
   R("c6-maths-ch06-t02", N, "floor", "max", { "same-perimeter-area": "same-perimeter-area" }, { plot: [12, 9] }),
   // square and cube numbers: say the next term, then build it
@@ -39,6 +41,7 @@ export const ACTS = {
   "c5-maths-ch11-t02|perimeter": ["s1", "s2"],   // the fence round all the sides; 2 × (l + b)
   "c5-maths-ch11-t03|min": ["s2", "s3"],         // same area, different fences
   "c6-maths-ch06-t01|perimeter": ["s2", "s1"],
+  "c6-maths-ch06-t01|side": ["s3"],               // a side from the perimeter (2 × (l + b) worked backwards)
   "c6-maths-ch06-t02|area": ["s1"],
   "c6-maths-ch06-t02|max": ["s3"],               // same fence, different floor
   "c6-maths-ch01-t01|square": ["s2"],            // extend the square numbers

@@ -33,10 +33,12 @@ export const makePlotView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
   }
   const cellAt = (x: number, y: number) => { const cx = Math.floor((x - ox) / cell), cz = Math.floor((y - oy) / cell); return cx >= 0 && cz >= 0 && cx < p.w && cz < p.d ? { x: cx, z: cz } : null; };
   const act = (a: NazariyaAct) => { ctl.dispatch(a as PlayActBody as never); deps.changed(); };
+  const side = mode === "floor" && goal === "side";
   const padWanted = () => {
     const s = st(); if (s.done) return false;
     if (mode === "array" && goal === "fill") { const a = p as unknown as ArrayParams; return fade === 3 || pitCells(a, a.pit).every((i) => s.h[i] >= 1); }
-    return mode === "powers" && fade >= 2 && s.named === null;
+    // powers, and a "side" floor at fade >= 2: the number comes before any building
+    return (mode === "powers" || side) && fade >= 2 && s.named === null;
   };
   if (padWanted()) pad = true;
 
@@ -96,7 +98,8 @@ export const makePlotView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
     goal: () => goalOf(level, lang),
     readouts(): Readout[] {
       const s = st(), out: Readout[] = [];
-      if (mode === "floor") { const ap = areaPerimeter(p, s.h), show = fade === 1 || reveal || s.done; out.push({ k: "Floor", v: show ? String(ap.area) : "?", role: "q1" }, { k: "Fence", v: show ? String(ap.perimeter) : "?", role: "q4" }); }
+      if (side) { const ap = areaPerimeter(p, s.h), show = fade === 1 || reveal || s.done; out.push({ k: "Fence", v: show ? String(ap.perimeter) : "?", role: "q4" }, { k: "Side", v: pad ? String(num) : s.named !== null ? String(s.named) : "?", role: "you" }); }
+      else if (mode === "floor") { const ap = areaPerimeter(p, s.h), show = fade === 1 || reveal || s.done; out.push({ k: "Floor", v: show ? String(ap.area) : "?", role: "q1" }, { k: "Fence", v: show ? String(ap.perimeter) : "?", role: "q4" }); }
       else if (mode === "array" || mode === "powers") { if (pad || s.named !== null) out.push({ k: "Number", v: pad ? String(num) : String(s.named), role: "you" }); if (mode === "powers") out.push({ k: "Next", v: `${(p as unknown as PowersParams).s}×${(p as unknown as PowersParams).s}${(p as unknown as PowersParams).goal === "cube" ? `×${(p as unknown as PowersParams).s}` : ""}`, role: "q3" }); }
       else out.push({ k: "Blocks", v: String(built(p, s.h)), role: "q1" });
       return out;
@@ -108,7 +111,7 @@ export const makePlotView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
         for (let k = 1; k <= 9; k++) c.push({ id: `k${k}`, label: String(k), kind: "pad", group: k <= 5 ? "pad1" : "pad2", onPress: () => { num = Math.min(9999, num * 10 + k); deps.changed(); } });
         c.push({ id: "k0", label: "0", kind: "pad", group: "pad2", onPress: () => { num = Math.min(9999, num * 10); deps.changed(); } });
         c.push({ id: "kdel", label: "Del", kind: "pad", group: "pad1", aria: "Delete a digit", onPress: () => { num = Math.floor(num / 10); deps.changed(); } });
-        if (!(mode === "array" && fade === 3)) c.push({ id: "close", label: "Build", kind: "secondary", group: "go", onPress: () => { pad = false; deps.changed(); } });
+        if (!(mode === "array" && fade === 3) && !(side && fade >= 2 && s.named === null)) c.push({ id: "close", label: "Build", kind: "secondary", group: "go", onPress: () => { pad = false; deps.changed(); } });
         c.push({ id: "name", label: `Say ${num}`, kind: "primary", you: true, group: "go", onPress: () => { const r = ctl.dispatch({ kind: "name", n: num } as never); if (!r.refused) { num = 0; pad = false; } deps.changed(); } });
         return c;
       }
@@ -120,6 +123,10 @@ export const makePlotView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
       }
       c.push({ id: "undo", label: "Undo", kind: "secondary", group: "go", onPress: () => act({ kind: "undo" }) });
       if (mode === "array" && goal === "fill") c.push({ id: "say", label: "Say how many", kind: "primary", you: true, group: "go", onPress: () => { pad = true; deps.changed(); } });
+      else if (side) {
+        c.push({ id: "done", label: "Check", kind: "secondary", group: "go", onPress: () => act({ kind: "check" }) });
+        c.push({ id: "say", label: s.named === null ? "Say the side" : "Say again", kind: "primary", you: true, group: "go", onPress: () => { pad = true; deps.changed(); } });
+      }
       else {
         if (mode === "powers") c.push({ id: "say", label: s.named === null ? "Say how many" : "Say again", kind: "secondary", group: "go", onPress: () => { pad = true; deps.changed(); } });
         c.push({ id: "done", label: mode === "array" ? "Done" : "Check", kind: "primary", you: true, group: "go", onPress: () => act({ kind: "check" }) });
@@ -130,7 +137,7 @@ export const makePlotView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
       const kinds = new Set(ms.map((m) => m.kind)), s = st();
       if (ms.some((m) => m.kind === "progress") || refused === undefined && !kinds.size) { reveal = false; glow = []; }
       if (kinds.has("solved")) { reveal = true; glow = []; api.sfx("good"); }
-      else if (kinds.has("misconception_consequence") || kinds.has("near_miss") || refused === "mismatch") {
+      else if (kinds.has("misconception_consequence") || kinds.has("near_miss") || refused === "mismatch" || (side && refused === "wrong_count")) {
         reveal = true;
         if (mode === "mirror") glow = mirrorMismatch(p as unknown as MirrorParams, s.h).map((v, i) => (v ? i : -1)).filter((i) => i >= 0);
         api.sfx("look");

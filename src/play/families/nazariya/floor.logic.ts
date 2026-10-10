@@ -5,17 +5,36 @@
 //   perimeter — lay a rectangular floor whose fence is exactly n long.
 //   max       — the fence is n long: lay the rectangle with the MOST floor.
 //   min       — n tiles of floor: lay the rectangle that needs the LEAST fence.
+//   side      — the fence is n long and one side is a: say the other side (b = n / 2 − a, the inverse). The world lays the
+//               a × said field and fences it, so a wrong number shows its own fence. At fade ≥ 2 nothing is built first.
 // Mal-rules (the rectangle a belief builds): area-for-perimeter (area = n when the fence was asked) · area-perimeter (fence
 // = n when the area was asked) · l-plus-b (length + breadth once = n) · border-squares (the squares touching the edge = n)
 // · same-perimeter-area (any rectangle with that fence, as if all held the same floor) · same-area-perimeter (any
-// rectangle of that floor, as if all needed the same fence).
+// rectangle of that floor, as if all needed the same fence) · side: l-plus-b says n − a (P = l + b), area-for-perimeter
+// says n ÷ a (P = l × b), missing-side says n − 2a (one side of the four left out).
 import type { Candidate, Facts, GenRequest, NazariyaAct, PlayLevel } from "../../../../shared/play.ts";
 import { mulberry32 } from "../../core/rng.ts";
 import { boxActs, built, commit, connected, lvl, makeLogic, mom, plotOf, solidBox, zeros, type Applied, type NzState, type Plot } from "./grid.ts";
 
-export type FloorGoal = "area" | "perimeter" | "max" | "min";
-export interface FloorParams extends Plot { goal: FloorGoal; n: number }
-export const FLOOR_MAL = ["area-for-perimeter", "area-perimeter", "l-plus-b", "border-squares", "same-perimeter-area", "same-area-perimeter"] as const;
+export type FloorGoal = "area" | "perimeter" | "max" | "min" | "side";
+/** `a`: the given side (along x) of a "side" level; absent on the other goals */
+export interface FloorParams extends Plot { goal: FloorGoal; n: number; a?: number }
+export const FLOOR_MAL = ["area-for-perimeter", "area-perimeter", "l-plus-b", "border-squares", "same-perimeter-area", "same-area-perimeter", "missing-side"] as const;
+const SIDE_MAL = ["l-plus-b", "area-for-perimeter", "missing-side"] as const;
+
+/** side: the missing side of the a-long rectangle whose fence is n */
+export const sideKey = (p: { n: number; a?: number }): number => p.n / 2 - (p.a ?? 0);
+/** side: the number each belief says (null when it is not a whole number) */
+export function sideMal(p: { n: number; a?: number }, mal: string): number | null {
+  const a = p.a ?? 0;
+  const v = mal === "l-plus-b" ? p.n - a : mal === "area-for-perimeter" ? p.n / a : mal === "missing-side" ? p.n - 2 * a : null;
+  return v !== null && Number.isInteger(v) && v >= 0 ? v : null;
+}
+/** side: the beliefs this level tells apart (a whole number, not the key, not shared with another belief) */
+function sideMalsApart(p: { n: number; a?: number }): string[] {
+  const key = sideKey(p), vals = SIDE_MAL.map((m) => sideMal(p, m));
+  return SIDE_MAL.filter((_, i) => vals[i] !== null && vals[i] !== key && vals.filter((v) => v === vals[i]).length === 1);
+}
 
 /** Floor tiles and the fence round them (unit edges between a tile and a non-tile), for any shape. */
 export function areaPerimeter(p: { w: number; d: number }, h: readonly number[]): { area: number; perimeter: number } {
@@ -82,9 +101,16 @@ function malOf(level: PlayLevel<FloorParams>, a: number, b: number): string | nu
 function validate(raw: unknown): FloorParams | null {
   const r = raw as Partial<FloorParams> | null, plot = plotOf(raw);
   if (!r || !plot || plot.hmax !== 1 || plot.lock.some((v) => v) || plot.base.some((v) => v)) return null;
-  if (r.goal !== "area" && r.goal !== "perimeter" && r.goal !== "max" && r.goal !== "min") return null;
+  if (r.goal !== "area" && r.goal !== "perimeter" && r.goal !== "max" && r.goal !== "min" && r.goal !== "side") return null;
   const n = Number(r.n);
   if (!Number.isInteger(n) || n < 2 || n > plot.w * plot.d * 2) return null;
+  if (r.goal === "side") {
+    // the given side fits along x, the missing side is a whole number that fits along z, and it is not a square (n / 4)
+    const a = Number(r.a), p: FloorParams = { ...plot, goal: "side", n, a }, b = sideKey(p);
+    if (!Number.isInteger(a) || a < 1 || a > plot.w || n % 2 || !Number.isInteger(b) || b < 1 || b > plot.d || b === a) return null;
+    return p;
+  }
+  if (r.a !== undefined) return null;
   const p: FloorParams = { ...plot, goal: r.goal, n };
   if (p.goal === "area" && n > plot.w * plot.d) return null;
   if (p.goal === "perimeter" && !rects(p).some(([a, b]) => 2 * (a + b) === n)) return null;
@@ -94,6 +120,12 @@ function validate(raw: unknown): FloorParams | null {
 
 function check(level: PlayLevel<FloorParams>, s: NzState, seq: number): Applied {
   const p = level.params, ap = areaPerimeter(p, s.h), box = solidBox(p, s.h), bumped = { ...s, acts: s.acts + 1 };
+  if (built(p, s.h) === 0) return { state: bumped, moments: [mom("law_refused", seq, { why: "build_first" })], refused: "build_first" };
+  // side: a check only reads the field (never decisive): the number she says is the answer
+  if (p.goal === "side") {
+    const fits = !!box && (box.a === p.a || box.b === p.a) && ap.perimeter === p.n;
+    return { state: bumped, moments: [mom("law_refused", seq, { area: ap.area, perimeter: ap.perimeter, why: fits ? "say_the_side" : box ? "fence_length" : "rectangle" })], refused: "say_first" };
+  }
   // facts the Director reads as key=value: say exactly what each number is (a model read "floor=9 fence=12 sides=3x3" as
   // "3 sides of 3, perimeter 9" in the C9 run, 2026-10-10)
   const facts: Facts = { area: ap.area, perimeter: ap.perimeter };
@@ -126,9 +158,30 @@ function check(level: PlayLevel<FloorParams>, s: NzState, seq: number): Applied 
   return miss("law_refused", "less_fence");
 }
 
+/** side: the named number. The world lays the a × n field (when it fits) so its fence is seen; the key solves. */
+function name(level: PlayLevel<FloorParams>, s: NzState, n: number, seq: number): Applied {
+  const p = level.params, bumped = { ...s, acts: s.acts + 1 };
+  if (p.goal !== "side") return { state: bumped, moments: [], refused: "no_name_here" };
+  const a = p.a!, key = sideKey(p), h = zeros(p.w * p.d);
+  if (n >= 1 && n <= p.d) for (let z = 0; z < n; z++) for (let x = 0; x < a; x++) h[z * p.w + x] = 1;
+  const laid = n >= 1 && n <= p.d ? h : s.h;
+  if (n === key) return { state: commit(s, { ...s, h: laid, named: n, done: true }), moments: [mom("solved", seq, { said: n, length: a, perimeter: p.n, rect: `${a} by ${n}` })] };
+  const next = commit(s, { ...s, h: laid, named: n }), shown: Facts = { said: n, length: a, fence_if: 2 * (a + n) };
+  const apart = sideMalsApart(p).filter((m) => m in level.mal);
+  const mal = apart.find((m) => sideMal(p, m) === n);
+  if (mal) return { state: next, moments: [mom("misconception_consequence", seq, shown, mal)], refused: "wrong_count" };
+  return { state: next, moments: [mom(Math.abs(n - key) === 1 ? "near_miss" : "law_refused", seq, { ...shown, why: "fence_length" })], refused: "wrong_count" };
+}
+/** side: at fade ≥ 2 the side is said before anything is laid (the live fence would read it off) */
+function gate(level: PlayLevel<FloorParams>, s: NzState, act: NazariyaAct): string | null {
+  const build = act.kind === "place" || act.kind === "remove" || act.kind === "layer" || act.kind === "clear";
+  return build && level.params.goal === "side" && level.fade >= 2 && s.named === null ? "say_side_first" : null;
+}
+
 const rectActs = (a: number, b: number): NazariyaAct[] => [...boxActs({ x0: 0, z0: 0, a, b, hgt: 1 }), { kind: "check" }];
 /** One solution: a rectangle when one fits (area: the squarest a × b = n, else n tiles in rows). */
 export function solutionRect(p: FloorParams): [number, number] | null {
+  if (p.goal === "side") return [p.a!, sideKey(p)];
   const R = rects(p), sq = (u: [number, number]) => Math.abs(u[0] - u[1]);
   const bst = best(p);
   const pool = p.goal === "area" ? R.filter(([a, b]) => a * b === p.n) : p.goal === "perimeter" ? R.filter(([a, b]) => 2 * (a + b) === p.n)
@@ -136,7 +189,9 @@ export function solutionRect(p: FloorParams): [number, number] | null {
   return pool.sort((u, v) => sq(u) - sq(v) || u[0] - v[0])[0] ?? null;
 }
 function solve(level: PlayLevel<FloorParams>): NazariyaAct[] | null {
-  const p = level.params, r = solutionRect(p);
+  const p = level.params;
+  if (p.goal === "side") return [{ kind: "name", n: sideKey(p) }];
+  const r = solutionRect(p);
   if (r) return rectActs(r[0], r[1]);
   if (p.goal !== "area") return null;
   // rows of w, then the rest in the next row (one piece)
@@ -148,6 +203,12 @@ function solve(level: PlayLevel<FloorParams>): NazariyaAct[] | null {
 /** Shapes a child could lay without the idea: the whole plot, one long row, a square of side n / 4. */
 function shortcut(level: PlayLevel<FloorParams>): NazariyaAct[] | null {
   const p = level.params;
+  // side, without the idea: the given side again, half the fence (not taking the side away), a quarter of it (a square),
+  // the plot's own sides, the fence itself. Not one may be the key.
+  if (p.goal === "side") {
+    for (const n of [p.a!, p.n / 2, p.n / 4, p.w, p.d, p.n]) if (Number.isInteger(n) && n === sideKey(p)) return [{ kind: "name", n }];
+    return null;
+  }
   const tries: [number, number][] = [[p.w, p.d], [Math.min(p.w, p.n), 1], [Math.max(1, Math.round(p.n / 4)), Math.max(1, Math.round(p.n / 4))]];
   if (p.goal === "max" || p.goal === "min") tries.push([1, Math.min(p.d, p.n)]);
   for (const [a, b] of tries) {
@@ -164,6 +225,7 @@ function shortcut(level: PlayLevel<FloorParams>): NazariyaAct[] | null {
   return null;
 }
 function malActs(level: PlayLevel<FloorParams>, mal: string): NazariyaAct[] | null {
+  if (level.params.goal === "side") { const n = sideMalsApart(level.params).includes(mal) ? sideMal(level.params, mal) : null; return n === null ? null : [{ kind: "name", n }]; }
   const r = malRect(level.params, mal);
   return r ? rectActs(r[0], r[1]) : null;
 }
@@ -174,6 +236,16 @@ function generate(req: GenRequest): Candidate<FloorParams>[] {
   const rnd = mulberry32(req.seed), out: Candidate<FloorParams>[] = [];
   const [w, d] = g.plot ?? (req.classLevel <= 5 ? [10, 8] : [12, 9]);
   const plot: Plot = { w, d, hmax: 1, base: zeros(w * d), lock: zeros(w * d) };
+  if (goal === "side") {
+    // every a × b that fits, not a square, whose three beliefs each say their own number (none of them the key)
+    for (let a = 2; a <= w; a++) for (let b = 2; b <= d; b++) {
+      if (a === b || rnd() > 0.7) continue;
+      const params: FloorParams = { ...plot, goal, n: 2 * (a + b), a };
+      if (sideMalsApart(params).length !== SIDE_MAL.length) continue;
+      out.push({ signature: `side:${params.n}:${a}`, difficulty: Math.min(1, 0.3 + params.n / 60), level: lvl(req, "floor", goal, params, `side-${params.n}-${a}`) });
+    }
+    return out;
+  }
   const lo = g.lo ?? (goal === "area" ? 6 : goal === "perimeter" ? 8 : goal === "max" ? 10 : 8);
   const hi = g.hi ?? (goal === "area" ? (req.classLevel <= 5 ? 24 : 36) : goal === "perimeter" ? 26 : goal === "max" ? 28 : 36);
   for (let n = lo; n <= hi; n++) {
@@ -189,6 +261,7 @@ function generate(req: GenRequest): Candidate<FloorParams>[] {
 
 function facts(level: PlayLevel<FloorParams>, s: NzState): Facts {
   const p = level.params, ap = areaPerimeter(p, s.h), f: Facts = { goal: p.goal, [p.goal === "area" || p.goal === "min" ? "area_asked" : "perimeter_asked"]: p.n };
+  if (p.goal === "side") { f.length = p.a!; if (s.named !== null) f.said = s.named; }
   // the live counts are on screen at fade 1 only; later fades show them after a check
   if (level.fade === 1 || s.checks > 0 || s.done) { f.area = ap.area; f.perimeter = ap.perimeter; }
   const box = solidBox(p, s.h);
@@ -198,9 +271,10 @@ function facts(level: PlayLevel<FloorParams>, s: NzState): Facts {
 }
 function board(level: PlayLevel<FloorParams>, s: NzState) {
   const p = level.params, ap = areaPerimeter(p, s.h);
-  const ask = p.goal === "area" ? `floor = ${p.n}` : p.goal === "perimeter" ? `fence = ${p.n}` : p.goal === "max" ? `fence = ${p.n}, most floor` : `floor = ${p.n}, least fence`;
+  const ask = p.goal === "area" ? `floor = ${p.n}` : p.goal === "perimeter" ? `fence = ${p.n}` : p.goal === "max" ? `fence = ${p.n}, most floor` : p.goal === "side" ? `fence = ${p.n}, one side = ${p.a}` : `floor = ${p.n}, least fence`;
+  if (p.goal === "side") return { title: "Floor and fence", lines: [ask, `other side: ${s.named ?? "?"}`, `yours: floor ${ap.area}, fence ${ap.perimeter}`] };
   return { title: "Floor and fence", lines: [ask, `yours: floor ${ap.area}, fence ${ap.perimeter}`] };
 }
 
-export const floorLogic = makeLogic<FloorParams>({ mode: "floor", malRules: FLOOR_MAL, validate, check, solve, shortcut, malActs, generate, facts, board });
-export const floorHelpers = { areaPerimeter, best, malRect, solutionRect, built };
+export const floorLogic = makeLogic<FloorParams>({ mode: "floor", malRules: FLOOR_MAL, validate, check, name, gate, solve, shortcut, malActs, generate, facts, board });
+export const floorHelpers = { areaPerimeter, best, malRect, solutionRect, built, sideKey, sideMal };

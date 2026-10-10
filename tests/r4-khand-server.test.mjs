@@ -68,10 +68,10 @@ describe("r4-khand reactions", () => {
   const fam = bank().family?.nazariya;
   it("the loader merges data/play/reactions/nazariya.json into the bank", () => { assert.ok(fam?.law_refused?.en?.length >= 10); });
   it("every shape in every language passes the play guard and the lesson's never-rules floor, filled", () => {
-    const SAMPLE = { off: 2, top_off: 1, front_off: 1, side_off: 0, rows: 6, cols: 8, said: 14, blocks: 12, area: 9, perimeter: 12, side: 4, hmax: 3, view: "front", goal: "cube", act: "layer" };
+    const SAMPLE = { off: 2, top_off: 1, front_off: 1, side_off: 0, rows: 6, cols: 8, said: 14, blocks: 12, area: 9, perimeter: 12, side: 4, hmax: 3, view: "front", goal: "cube", act: "layer", length: 5, fence_if: 38 };
     let n = 0;
     for (const [moment, langs] of Object.entries(fam)) for (const [lang, shapes] of Object.entries(langs)) for (const sh of shapes) {
-      const text = fill(sh, { ...SAMPLE, why: /\{\?why=([^}|]*)/.exec(sh)?.[1] ?? "", mal: /\{\?mal=([^}|]*)/.exec(sh)?.[1] ?? "", mode: /\{\?mode=([^}|]*)/.exec(sh)?.[1] ?? "", off: /\{\?off=([^}|]*)/.exec(sh)?.[1] ?? 2 });
+      const text = fill(sh, { ...SAMPLE, why: /\{\?why=([^}|]*)/.exec(sh)?.[1] ?? "", mal: /\{\?mal=([^}|]*)/.exec(sh)?.[1] ?? "", mode: /\{\?mode=([^}|]*)/.exec(sh)?.[1] ?? "", goal: /\{\?goal=([^}|]*)/.exec(sh)?.[1] ?? SAMPLE.goal, off: /\{\?off=([^}|]*)/.exec(sh)?.[1] ?? 2 });
       assert.ok(text, `${moment}/${lang}: ${sh}`);
       assert.deepEqual(reactionProblems(text), [], `${moment}/${lang}: ${text}`);
       assert.equal(floorOk(text), true, `${moment}/${lang}: ${text}`);
@@ -98,7 +98,7 @@ describe("r4-khand reactions", () => {
   it("the key is never spoken before the child makes it (array count, next square / cube, best field)", () => {
     for (const e of NZ()) for (const fade of [1, 2, 3]) {
       const level = levelsFor(sessionOf(e, { fade }), e).garam, hidden = hiddenOf(level), logic = LOGIC[`nazariya/${e.mode}`];
-      if (e.mode === "array" || e.mode === "powers") assert.ok(hidden.length, `${e.topicId} hides nothing`);
+      if (e.mode === "array" || e.mode === "powers" || e.goal === "side") assert.ok(hidden.length, `${e.topicId} hides nothing`);
       // every moment a wrong path produces, through her picker: no line holds the key
       for (const mal of Object.keys(level.mal)) {
         const acts = logic.malActs(level, mal); if (!acts) continue;

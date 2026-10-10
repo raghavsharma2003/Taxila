@@ -14,7 +14,7 @@ export function goalOf(level: PlayLevel, lang: Lang): string {
   const sp = level.params as Record<string, unknown>, mode = level.mode, goal = level.goal, fade = level.fade;
   if (mode === "views") return say(lang, sp.goal === "same" ? "views.same" : "views.build3", { view: viewWord(lang, String(sp.view ?? "front")) });
   if (mode === "array") return say(lang, goal === "turn" ? "array.turn" : fade === 3 ? "array.fill3" : "array.fill");
-  if (mode === "floor") return say(lang, `floor.${goal}`, { n: Number(sp.n) });
+  if (mode === "floor") return say(lang, `floor.${goal}`, { n: Number(sp.n), a: Number(sp.a ?? 0) });
   if (mode === "powers") { const pw = sp as unknown as PowersParams; return say(lang, `powers.${pw.goal}`, { terms: Array.from({ length: pw.k }, (_, i) => termOf(pw.goal, i + 1)).join(", ") }); }
   if (mode === "mirror") return say(lang, sp.axis === "z" ? "mirror.z" : "mirror.x");
   return "";

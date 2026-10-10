@@ -40,7 +40,9 @@
      "{?why=less_fence}Utne hi farsh ke liye kam baad?",
      "{?why=not_the_next}Agla wala kitna bada hoga?",
      "{?why=not_solid}Beech mein jagah khaali hai.",
-     "{?why=not_a_reflection}Shishe mein dekho, kahan alag hai."
+     "{?why=not_a_reflection}Shishe mein dekho, kahan alag hai.",
+     "{?why=say_side_first}Pehle doosri side bolo.",
+     "{?why=say_the_side}Yeh khet fit hai. Doosri side kitni lambi hai?"
     ],
     "en": [
      "{?why=locked}That part is already built.",
@@ -64,7 +66,9 @@
      "{?why=less_fence}Could the same floor need less fence?",
      "{?why=not_the_next}How big is the next one?",
      "{?why=not_solid}There's a gap inside.",
-     "{?why=not_a_reflection}Look in the glass: where is it different?"
+     "{?why=not_a_reflection}Look in the glass: where is it different?",
+     "{?why=say_side_first}First say the other side.",
+     "{?why=say_the_side}This field fits. How long is the other side?"
     ],
     "hi": [
      "{?why=locked}यह हिस्सा पहले से बना है।",
@@ -88,7 +92,9 @@
      "{?why=less_fence}उतने ही फ़र्श के लिए कम बाड़?",
      "{?why=not_the_next}अगला वाला कितना बड़ा होगा?",
      "{?why=not_solid}बीच में जगह खाली है।",
-     "{?why=not_a_reflection}शीशे में देखो, कहाँ अलग है।"
+     "{?why=not_a_reflection}शीशे में देखो, कहाँ अलग है।",
+     "{?why=say_side_first}पहले दूसरी साइड बोलो।",
+     "{?why=say_the_side}यह खेत ठीक बैठता है। दूसरी साइड कितनी लंबी है?"
     ]
    },
    "misconception_consequence": {
@@ -110,7 +116,10 @@
      "{?mal=copy-no-flip}Shishe mein paas wala paas, door wala door.",
      "{?mal=distance-off}Har khambe ki doori shishe se gino.",
      "{?mal=wrong-direction}Shisha sirf aar-paar ulta karta hai.",
-     "{?mal=wrong-axis}Shisha kahan hai? Usi ke aar-paar dekho."
+     "{?mal=wrong-axis}Shisha kahan hai? Usi ke aar-paar dekho.",
+     "{?mal=missing-side}{length} by {said} ke khet ki baad {fence_if} hogi. Chaaron sides gino.",
+     "{?mal=area-for-perimeter}{length} guna {said} toh farsh hai. Iski baad {fence_if} hai.",
+     "{?mal=l-plus-b}{length} aur {said} sirf aadha chakkar hain: woh baad {fence_if} hai."
     ],
     "en": [
      "{?mal=top-flat}From the top it matches. Now look from the front.",
@@ -130,7 +139,10 @@
      "{?mal=copy-no-flip}In the glass, near stays near and far stays far.",
      "{?mal=distance-off}Count each pillar's distance from the glass.",
      "{?mal=wrong-direction}The glass flips across, not top to bottom.",
-     "{?mal=wrong-axis}Where is the glass? Look across it."
+     "{?mal=wrong-axis}Where is the glass? Look across it.",
+     "{?mal=missing-side}A {length} by {said} field takes {fence_if} of fence. Count all four sides.",
+     "{?mal=area-for-perimeter}{length} times {said} is the floor. Its fence is {fence_if}.",
+     "{?mal=l-plus-b}{length} and {said} go only half way round: that fence is {fence_if}."
     ],
     "hi": [
      "{?mal=top-flat}ऊपर से मिलता है। अब सामने से देखो।",
@@ -150,7 +162,10 @@
      "{?mal=copy-no-flip}शीशे में पास वाला पास, दूर वाला दूर।",
      "{?mal=distance-off}हर खंभे की दूरी शीशे से गिनो।",
      "{?mal=wrong-direction}शीशा सिर्फ़ आर-पार उलटा करता है।",
-     "{?mal=wrong-axis}शीशा कहाँ है? उसी के आर-पार देखो।"
+     "{?mal=wrong-axis}शीशा कहाँ है? उसी के आर-पार देखो।",
+     "{?mal=missing-side}{length} × {said} के खेत की बाड़ {fence_if} होगी। चारों साइड गिनो।",
+     "{?mal=area-for-perimeter}{length} गुणा {said} तो फ़र्श है। इसकी बाड़ {fence_if} है।",
+     "{?mal=l-plus-b}{length} और {said} सिर्फ़ आधा चक्कर हैं: वह बाड़ {fence_if} है।"
     ]
    },
    "near_miss": {
@@ -179,21 +194,24 @@
      "{?mode=array}{rows} lines, har ek mein {cols}: {blocks}.",
      "{?mode=powers}Bhuja {side}: {blocks} blocks.",
      "{?mode=floor}Farsh {area}, baad {perimeter}.",
-     "{?mode=mirror}Shishe mein poora."
+     "{?mode=mirror}Shishe mein poora.",
+     "{?goal=side}{length} by {said}: baad {perimeter}."
     ],
     "en": [
      "{?mode=views}The same from all three sides.",
      "{?mode=array}{rows} rows of {cols}: {blocks}.",
      "{?mode=powers}Side {side}: {blocks} blocks.",
      "{?mode=floor}Floor {area}, fence {perimeter}.",
-     "{?mode=mirror}Whole in the glass."
+     "{?mode=mirror}Whole in the glass.",
+     "{?goal=side}{length} by {said}: the fence is {perimeter}."
     ],
     "hi": [
      "{?mode=views}तीनों तरफ़ से वही।",
      "{?mode=array}{rows} पंक्तियाँ, हर एक में {cols}: {blocks}।",
      "{?mode=powers}भुजा {side}: {blocks} ब्लॉक।",
      "{?mode=floor}फ़र्श {area}, बाड़ {perimeter}।",
-     "{?mode=mirror}शीशे में पूरा।"
+     "{?mode=mirror}शीशे में पूरा।",
+     "{?goal=side}{length} × {said}: बाड़ {perimeter}।"
     ]
    }
   }

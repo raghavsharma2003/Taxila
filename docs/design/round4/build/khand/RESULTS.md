@@ -15,7 +15,7 @@ production build.
 | **Khand engine** as a core3d@1 engine (`create(core, deps) → EngineView`). Greedy chunk mesher with corner AO in a Web Worker (main-thread fallback), pooled GPU buffers, code-drawn block atlas, voxel terrain with themes (mitti / barf / jungle). Orbit, true orthographic front / side / top views, first-person walk with a stick. Tap to build or break, drag to lay or clear a layer, pinch zoom. Projection walls (views), glass (mirror), live fence (floor), DOM labels, a keypad for counts | `src/play/engines/khand/` | done |
 | **Thin core3d adapter** until G1 merges: G1's `api.ts` and `tier.ts` verbatim, plus a minimal Core3D host (`shim/stage3d.ts`): real-box canvas, ratchet governor, labels with audit, progress store, audio bus, context loss, tier. Also Khand's registry line. three.js and the engine load on demand (tree-shaken) | `src/play/engines/khand/shim/` | done; **the port is a delete** |
 | **2D board twin** (same controller, same control ids) for tier 2d / context loss / frame errors | `src/play/families/nazariya/plot.view.ts` | done |
-| **Coverage rules**: 15 rules over 11 class 4-6 maths topics, every mal-rule mapped to a verified kit misconception (checked by build-coverage). Exports `family` for G1's S0.3 loader | `server/play/tools/rules/nazariya.mjs` | done |
+| **Coverage rules**: 16 rules over 11 class 4-6 maths topics (16th: the floor "side" goal for c6-maths-ch06-t01-s3, added 2026-10-10 on the main session's go), every mal-rule mapped to a verified kit misconception (checked by build-coverage). Exports `family` for G1's S0.3 loader | `server/play/tools/rules/nazariya.mjs` | done |
 | **Reaction bank**: conditioned shapes in en / hinglish / hi; no verdict words; the key is never said | `data/play/reactions/nazariya.json` | done |
 | **Builds persist** as artefacts: `play_build` (migration 026), written only from the server's own replay of a solved level; heights only; `GET /api/play/builds` | patch 06 (+08) | done on my DB |
 | **Twin first, 3D streams in**: the 2D twin paints and is playable at once. The 3D world takes over at a turn-point with the same controller, and the 2D view comes back on any 3D failure | patch 04 (PlayStage), `shim/stage3d.ts` (`hidden`, `onReady`, `reveal`) | done |
@@ -31,11 +31,11 @@ c5-maths-ch10-t02, c6-maths-ch09-t01 (mirror).
 
 | # | check | result | instrument (n, method, date) |
 |---|---|---|---|
-| C1 | admitted by a skill | **met**: 15 entries, every ACTS skill exists in its kit; `entryFor(skill)` lands on a Nazariya entry that exercises it | `build-coverage --check`; `tests/r4-khand-server.test.mjs` (node, 2026-10-10) |
+| C1 | admitted by a skill | **met**: 16 entries, every ACTS skill exists in its kit; `entryFor(skill)` lands on a Nazariya entry that exercises it | `build-coverage --check`; `tests/r4-khand-server.test.mjs` (node, 2026-10-10) |
 | C2 | law, solver, shortcut-free; generator p95 ≤ 50 ms | **met**: every generated level is solvable and shortcut-free, and the solver's acts grade solved and clean. Generator p95 ≤ 12 ms per mode (n = 60 requests per mode, single node process; it was 53.7 ms under the full parallel suite before the floor-best memo) | `tests/r4-khand-law.test.mjs`; `tests/play-server.test.mjs` (every entry × fade) |
-| C3 | 0 wrong grades over ≥ 2,000 random acts per mode; forged, tampered and replayed acts refused | **met**: **0 wrong grades over ≥ 5,000 acts per mode** (≈ 25,000 acts, 2,400+ graded logs: solves, mal-rules, near misses, junk) against an oracle written without the law. Claim fields, tampered plots and cross-level replays are refused. On the server, an edited session → 400 and a foreign level id → 409 for all 15 entries | `tests/r4-khand-law.test.mjs`; `tests/prod/r4-khand-loop.mjs` K3/K4 (local prod, 2026-10-10) |
+| C3 | 0 wrong grades over ≥ 2,000 random acts per mode; forged, tampered and replayed acts refused | **met**: **0 wrong grades over ≥ 5,000 acts per mode**, plus a battery of its own for the floor "side" goal (5,002 acts, 1,207 graded logs, 0 wrong; its oracle searches 2 × (a + b) = n rather than using the law's n / 2 − a) (≈ 30,000 acts in all, 2,400+ graded logs: solves, mal-rules, near misses, junk) against an oracle written without the law. Claim fields, tampered plots and cross-level replays are refused. On the server, an edited session → 400 and a foreign level id → 409 for all 15 entries | `tests/r4-khand-law.test.mjs`; `tests/prod/r4-khand-loop.mjs` K3/K4 (local prod, 2026-10-10) |
 | C4 | fit at 360 × 800, 412 × 915, 1366 × 768: text ≥ 14 / 16 px, numerals ≥ 18, targets ≥ 44, 0 overflow, 0 clipped | **met on the proxy**: **104 shots, 0 failures**. 13 mode/goal cases × 3 sizes, engine and 2D twin, plus mistake and solved states at 360, rotating the four art directions. In the real lesson Desk: 9/9 views pass (three asks × three sizes) | `tests/prod/r4-khand-shots.mjs --shots`; `r4-khand-loop.mjs` A1 (headless, 2026-10-10) |
-| C5 | ≥ 80% of graded acts are manipulations | **met by design** (not separately counted): every goal is built (place / layer / break); the only non-spatial commits are a count (array, powers), a same/different prediction (turned array) and the check | the law's act grammar |
+| C5 | ≥ 80% of graded acts are manipulations | **met by design** (not separately counted): every goal is built (place / layer / break); the only non-spatial commits are a count (array, powers, and the floor "side" answer, which lays its own field so its fence is seen), a same/different prediction (turned array) and the check | the law's act grammar |
 | C6 | words: 0 verdict words, 0 unrevealed keys, 0 floor violations | **met**: every shape × language passes the play guard and the lesson floor. Every `{?why=}` names a refusal the law makes and every `{?mal=}` a mal-rule it implements. The key was never spoken on any mal path; K6 found 0 bad lines on the live server | `tests/r4-khand-server.test.mjs`; loop K6 |
 | C7 | signed evidence folds `via: "game"`; a forged token folds nothing | **met**: one `kt_evidence` row via game; the same tokens again and a forged token fold nothing | loop P8 (local prod, own Neon branch) |
 | C8 | no reward economy | **met by construction**. G1's economy lint (`tests/r4-games-core-economy.test.mjs`) on the trial merge: lints 1 and 3 pass. Lint 2 (no wall clock) flagged Khand's re-mesh timing, which is now removed: a shipped Khand reads no clock. The only lines it still flags are in `shim/stage3d.ts`, the copy of G1's own allow-listed stage, which the port deletes | code review; `tests/play-style-lint.test.mjs` |
@@ -125,8 +125,18 @@ sides=3x3`. The row now says `area=9 perimeter=12 rect=3 by 3`, and the re-run r
   Why G1's own C9b passes: it is API-only. It may not attach a Stagecraft host, or it may meet a beat without a
   question. That is G1's to confirm; I have not run it on a Khand topic. The fixes are outside Khand's files: in
   `seam-bridge.js` `merge()` (Stagecraft), let a `need: "practice"` play piece at `practice_set` count as exempt, or
-  have Stagecraft offer it. Optionally, patch 03 could pick any admitted plan skill, not just the last one. Inside
-  Khand, admitting `-s3` (a floor goal "find the missing side from the perimeter") is possible law work, not done.
+  have Stagecraft offer it. Optionally, patch 03 could pick any admitted plan skill, not just the last one.
+  **Decided by the main session (2026-10-10):** stream 2 makes an admitted play piece win over the Stagecraft reveal at
+  the practice beat (a declinable offer; after one decline in a lesson, Stagecraft again); G1's patch 03 picks the
+  CURRENT practice move's skill, then other taught plan skills; and Khand admits `-s3` (done, below). C9 is re-run on
+  the lesson route (n ≥ 6) once both land.
+
+  `-s3` is now admitted: the floor goal **side** ("fence n, one side a: the other side?"). The child names the missing
+  side; the world lays that a × named field and fences it, so a wrong number shows its own fence. Exact inverse
+  b = n / 2 − a. Mal-rules from the kit: P = l + b says n − a (`m-l-plus-b`), P = l × b says n ÷ a
+  (`m-area-perimeter`), one side left out says n − 2a (`m-missing-sides`). Levels are generated only where all three
+  say different numbers and none is the key. At fade ≥ 2 the side is said before anything is laid. Shots: 16 more (two
+  levels × three sizes, engine and twin, mistake and solved at 360), 0 floor failures (`results/run-shots-side.json`).
 - **"Two lessons stopped taking typed input after 4 turns": not a bug. It was my harness.** Repro (base run, 2026-10-10):
   at turn 5 of c6-maths-ch06-t01 and c5-maths-ch11-t01 the practice item was numeric ("Khaali jagah bhariye: 3 × 160 =
   __ m"). The dock correctly swapped the text field for the NumberPad (`number-pad` and `pad-send` visible,

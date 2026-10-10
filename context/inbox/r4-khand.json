@@ -33,7 +33,7 @@
   {
    "id": "r4k-dec-coverage-11-topics",
    "kind": "decision",
-   "title": "Khand claims 11 class 4-6 maths topics (views c4-ch02-t01; arrays c4-ch09-t01; area/perimeter c5-ch11-t01/t02/t03, c6-ch06-t01/t02; square and cube numbers c6-ch01-t01; mirror c4-ch11-t02, c5-ch10-t02, c6-ch09-t01) over 15 rules, every mal-rule mapped to a verified kit misconception. Reversal: a topic's certificate fails on the integrated tree",
+   "title": "Khand claims 11 class 4-6 maths topics (views c4-ch02-t01; arrays c4-ch09-t01; area/perimeter c5-ch11-t01/t02/t03, c6-ch06-t01/t02; square and cube numbers c6-ch01-t01; mirror c4-ch11-t02, c5-ch10-t02, c6-ch09-t01) over 16 rules (the 16th, 2026-10-10: floor goal \"side\" for c6-maths-ch06-t01-s3, the missing side from the perimeter), every mal-rule mapped to a verified kit misconception. Reversal: a topic's certificate fails on the integrated tree",
    "at": "2026-10-10"
   },
   {
@@ -113,6 +113,12 @@
    "kind": "rejection",
    "title": "Measuring C9's practice beat on /practice/<topic>: that route starts purpose 'practice' (Quick Practice), where studioSeam.prefetch adds no Studio piece by design, so no beat rule can ever fire there (3 runs, 2026-10-10). Measure on the lesson route",
    "at": "2026-10-10"
+  },
+  {
+   "id": "r4k-ms-floor-side-battery",
+   "kind": "measurement",
+   "title": "Floor goal 'side' (missing side from a fence, b = n/2 − a): 0 wrong grades over 5,002 acts / 1,207 graded logs (651 solved, 587 incorrect, 479 kit misconceptions caught: n − a, n ÷ a, n − 2a) against an oracle that searches 2(a + b) = n; 2,400/2,400 generated levels solve clean and shortcut-free, generator p95 0.7 ms; 16 shots at 360/412/1366, 0 floor failures (tests/r4-khand-law.test.mjs, r4-khand-shots.mjs, 2026-10-10)",
+   "at": "2026-10-10"
   }
  ],
  "edges": [
@@ -155,6 +161,11 @@
    "src": "r4k-rej-beat-on-quick-practice",
    "rel": "part_of",
    "dst": "r4k-open-practice-beat"
+  },
+  {
+   "src": "r4k-dec-coverage-11-topics",
+   "rel": "measured_by",
+   "dst": "r4k-ms-floor-side-battery"
   }
  ]
 }

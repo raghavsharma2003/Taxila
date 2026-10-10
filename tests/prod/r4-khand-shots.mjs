@@ -53,6 +53,8 @@ const MODES = [
   { id: "floor-perimeter", q: "mode=floor&goal=perimeter&class=5&fade=2&seed=3" },
   { id: "floor-max", q: "mode=floor&goal=max&class=6&fade=2&seed=4" },
   { id: "floor-min", q: "mode=floor&goal=min&class=5&fade=1&seed=4" },
+  { id: "floor-side", q: "mode=floor&goal=side&class=6&fade=1&seed=3&grammar=%7B%22plot%22%3A%5B12%2C9%5D%7D" },
+  { id: "floor-side-f2", q: "mode=floor&goal=side&class=6&fade=2&seed=5&grammar=%7B%22plot%22%3A%5B12%2C9%5D%7D" },
   { id: "powers-square", q: "mode=powers&goal=square&class=6&fade=2&seed=3" },
   { id: "powers-cube", q: "mode=powers&goal=cube&class=6&fade=1&seed=3" },
   { id: "mirror-x", q: "mode=mirror&goal=complete&class=4&fade=1&seed=3&grammar=%7B%22axes%22%3A%5B%22x%22%5D%7D" },

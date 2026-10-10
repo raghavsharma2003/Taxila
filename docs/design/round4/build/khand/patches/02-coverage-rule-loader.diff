@@ -1,5 +1,5 @@
 diff --git a/data/play/coverage.json b/data/play/coverage.json
-index d34adb95..25498203 100644
+index d34adb95..bcd34190 100644
 --- a/data/play/coverage.json
 +++ b/data/play/coverage.json
 @@ -3,14 +3,14 @@
@@ -11,9 +11,9 @@ index d34adb95..25498203 100644
 -  "withMisconceptionMap": 40,
 -  "mappedMisconceptions": 71,
 +  "topicsCovered": 57,
-+  "entries": 71,
++  "entries": 72,
 +  "withMisconceptionMap": 51,
-+  "mappedMisconceptions": 88,
++  "mappedMisconceptions": 89,
    "bySubject": {
     "maths": {
      "inScope": 141,
@@ -50,11 +50,11 @@ index d34adb95..25498203 100644
 +   "nazariya": 11
    },
 -  "skillsAdmitted": 83,
-+  "skillsAdmitted": 104,
++  "skillsAdmitted": 105,
    "rulesNotAdmitted": 1
   },
   "skills": {
-@@ -1426,6 +1427,371 @@
+@@ -1426,6 +1427,390 @@
     },
     "contexts": [],
     "why": "RULES c7-science-ch11-t02 kyun-lab/fair-test/predict · ACTS"
@@ -257,6 +257,25 @@ index d34adb95..25498203 100644
 +   "contexts": [],
 +   "why": "RULES c6-maths-ch06-t01 nazariya/floor/perimeter · ACTS"
 +  },
++  "c6-maths-ch06-t01-s3": {
++   "topicId": "c6-maths-ch06-t01",
++   "family": "nazariya",
++   "mode": "floor",
++   "goal": "side",
++   "grammar": {
++    "plot": [
++     12,
++     9
++    ]
++   },
++   "misMap": {
++    "l-plus-b": "c6-maths-ch06-t01-m-l-plus-b",
++    "area-for-perimeter": "c6-maths-ch06-t01-m-area-perimeter",
++    "missing-side": "c6-maths-ch06-t01-m-missing-sides"
++   },
++   "contexts": [],
++   "why": "RULES c6-maths-ch06-t01 nazariya/floor/side · ACTS"
++  },
 +  "c6-maths-ch06-t02-s1": {
 +   "topicId": "c6-maths-ch06-t02",
 +   "family": "nazariya",
@@ -426,7 +445,7 @@ index d34adb95..25498203 100644
    }
   },
   "excluded": {
-@@ -2664,6 +3030,345 @@
+@@ -2664,6 +3049,369 @@
     "misMap": {
      "shadow-same-size": "c7-science-ch11-t02-m3"
     }
@@ -612,6 +631,30 @@ index d34adb95..25498203 100644
 +   "misMap": {
 +    "l-plus-b": "c6-maths-ch06-t01-m-l-plus-b",
 +    "area-for-perimeter": "c6-maths-ch06-t01-m-area-perimeter"
++   }
++  },
++  {
++   "topicId": "c6-maths-ch06-t01",
++   "title": "Perimeter of rectangles, squares and polygons",
++   "classLevel": 6,
++   "subject": "maths",
++   "family": "nazariya",
++   "mode": "floor",
++   "goal": "side",
++   "skillId": "c6-maths-ch06-t01-s3",
++   "skillIds": [
++    "c6-maths-ch06-t01-s3"
++   ],
++   "grammar": {
++    "plot": [
++     12,
++     9
++    ]
++   },
++   "misMap": {
++    "l-plus-b": "c6-maths-ch06-t01-m-l-plus-b",
++    "area-for-perimeter": "c6-maths-ch06-t01-m-area-perimeter",
++    "missing-side": "c6-maths-ch06-t01-m-missing-sides"
 +   }
 +  },
 +  {
