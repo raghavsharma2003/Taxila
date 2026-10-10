@@ -6,7 +6,7 @@ import type { AudioBus, Sfx } from "./api.ts";
 
 const SFX_GAIN = 0.5, MUS_GAIN = 0.16, DUCK_SFX = 0.35;
 /** time constant for the hard duck: setTargetAtTime reaches < 5% in 3τ = 120 ms */
-export const DUCK_TAU_S = 0.04;
+export const DUCK_TAU_S = 0.03;
 const CH: Record<"calm" | "drive", number[][]> = { calm: [[57, 64, 69], [53, 60, 65], [55, 62, 67], [52, 59, 64]], drive: [[57, 60, 64], [55, 59, 62], [53, 57, 60], [52, 55, 59]] };
 const midi = (m: number) => 440 * Math.pow(2, (m - 69) / 12);
 
@@ -125,7 +125,7 @@ export class Bus implements AudioBus {
   private applyDuck(): void {
     const ac = this.ac; if (!ac || !this.musG || !this.sfxG) return;
     const musicOn = this.mood !== "off";
-    // her voice owns the air: music to 0 fast (τ 40 ms ⇒ < 5% at 120 ms); back slowly after she stops
+    // her voice owns the air: music to 0 fast (τ 30 ms ⇒ e^-4 ≈ 2% at 120 ms, margin for the speaking signal's own latency; measured 5.1% at τ 40 ms); back slowly after she stops
     this.musG.gain.setTargetAtTime(this.speaking || !musicOn ? 0 : MUS_GAIN, ac.currentTime, this.speaking ? DUCK_TAU_S : 0.4);
     this.sfxG.gain.setTargetAtTime(this.speaking ? SFX_GAIN * DUCK_SFX : SFX_GAIN, ac.currentTime, 0.05);
   }

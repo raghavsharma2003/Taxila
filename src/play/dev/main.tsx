@@ -37,6 +37,7 @@ const verb = (q.get("verb") === "scan" ? "scan" : "fire") as "fire" | "scan";
 // a dress from the query (validated field by field exactly as the server validates a model's delta)
 const devDelta = validateDelta("antariksh", Object.fromEntries(["theme", "wrapper", "music", "pace", "teacherMove"].filter((k) => q.get(k)).map((k) => [k, q.get(k)])));
 const devSecure = q.get("secure") === "1";
+const devSound = q.get("sound") === "1";   // harness: the music duck check needs an unmuted bus
 
 function makeLevel(seed: number, door?: "garam" | "teekha"): { garam: PlayLevel; teekha: PlayLevel | null } | null {
   const logic = logicFor(family, mode); if (!logic) return null;
@@ -79,7 +80,7 @@ function App() {
   (window as unknown as { __playLevel: PlayLevel; __playNext: unknown }).__playLevel = level;
   return (
     <div style={{ position: "fixed", inset: 0 }}>
-      <PlayStage level={level} art={art} lang={lang} classLevel={classLevel} caption={caption} teacherName="Ira" debug demo={demo} reducedMotion={reduced} sound={false} engine={engine} verb={verb} dress={dress}
+      <PlayStage level={level} art={art} lang={lang} classLevel={classLevel} caption={caption} teacherName="Ira" debug demo={demo} reducedMotion={reduced} sound={devSound} engine={engine} verb={verb} dress={dress}
         doors={solved ? doors.map((d) => ({ ...d, hint: d.door === "garam" ? (lang === "en" ? "one more like this" : "isi tarah ka ek aur") : (lang === "en" ? "a bit harder" : "thoda mushkil") })) : null}
         onDoor={(d) => { setDoor(d.door); setSeed((s) => s + 101); setCaption(null); }}
         world={WORLD}

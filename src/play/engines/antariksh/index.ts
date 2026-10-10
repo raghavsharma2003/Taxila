@@ -237,7 +237,7 @@ export function create(core: Core3D, depsIn: EngineDeps): EngineView {
         gb.position.set((a + b) / 2, -0.34 - i * 0.16, 0); gb.scale.x = Math.max(0.02, Math.abs(b - a)); gm.opacity = 0.9; gm.color.setHex(0xffd27a);
         const gi = H.gapInfo(v, mk);
         // below the tick-label band, a fixed pixel step per value (labels never share a band)
-        L.gap[i].set({ text: say(lang, gi.exact ? "line.gap" : "line.gapAbout", { g: gi.g }), lang: tl(), hidden: false, at: wpt((valToU(mk) + tu) / 2, -0.32), dy: 34 + i * 32 });
+        L.gap[i].set({ text: say(lang, gi.exact ? "line.gap" : "line.gapAbout", { g: gi.g }), lang: tl(), hidden: false, keepInBox: true, at: wpt((valToU(mk) + tu) / 2, -0.32), dy: 34 + i * 32 });
       }
     });
     if (anyHit) {

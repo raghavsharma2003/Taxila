@@ -233,7 +233,7 @@ async function checks(base) {
     res.contextLoss = await page.evaluate((before) => ({ render: document.querySelector("[data-render]").getAttribute("data-render"), actsBefore: before, actsAfter: window.__play.acts().length, canvas2d: !!document.querySelector(".pl-canvas"), blank: !document.querySelector(".pl-canvas") && !document.querySelector(".c3-canvas") }), before);
     await ctx.close(); }
   // voice duck: music gain under her voice reaches < 5% of the bed within 120 ms
-  { const { ctx, page } = await open(browser, base, VIEWPORTS[0], qs(s, { cls: 7 }));
+  { const { ctx, page } = await open(browser, base, VIEWPORTS[0], qs(s, { cls: 7 }) + "&sound=1");
     await page.click("[data-testid=play-world]", { position: { x: 30, y: 30 } }).catch(() => {});
     res.duck = await page.evaluate(async () => {
       const P = window.__play, st = P.stage3d; st.bus.musicAllowed = true; st.bus.unlock(); st.bus.music("calm");
