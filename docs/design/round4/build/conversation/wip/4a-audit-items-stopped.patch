@@ -1,0 +1,473 @@
+From cdf08d26898beac4fda7c39cdcbb23d35b394385 Mon Sep 17 00:00:00 2001
+From: Claude <noreply@anthropic.com>
+Date: Sat, 10 Oct 2026 23:45:14 +0000
+Subject: [PATCH] WIP (stopped by the owner 2026-10-10, preservation only): 4A
+ audit items (b)-(e), not for merge
+
+Grading truth (equationTail, ordering quantitySequence, numeric_mismatch_partial; posed-question
+non-answers never praised), the break move as a choice (tired offer + chips), continuity
+(beforeOf: the greet opens from last time), patch-13 shadow try/catch. Targeted tests pass; the
+full gate was not run on this combination. Based on claude/r4-conversation 7565adf1.
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01XvJxJ5Qd12UtBy6pTypxzy
+---
+ server/director/classify.js     | 62 ++++++++++++++++++++---
+ server/director/say.js          |  8 ++-
+ server/director/shapes.js       |  8 ++-
+ server/director/state.js        | 25 ++++++++--
+ tests/r4-continuity.test.mjs    | 38 ++++++++++++++
+ tests/r4-grading-truth.test.mjs | 87 +++++++++++++++++++++++++++++++++
+ tests/r4-item-setaside.test.mjs | 14 ++++++
+ tests/r4-tired-break.test.mjs   | 54 ++++++++++++++++++++
+ 8 files changed, 284 insertions(+), 12 deletions(-)
+ create mode 100644 tests/r4-continuity.test.mjs
+ create mode 100644 tests/r4-grading-truth.test.mjs
+ create mode 100644 tests/r4-tired-break.test.mjs
+
+diff --git a/server/director/classify.js b/server/director/classify.js
+index e7bf8025..f9451c12 100644
+--- a/server/director/classify.js
++++ b/server/director/classify.js
+@@ -105,7 +105,10 @@ export function targetFor(s, kit, item) {
+     return { mode: "teachback", expectations, misconceptions: misList(kit.misconceptions) };
+   }
+   // No keyed item: nothing is graded, but a known wrong belief voiced here is still a sign worth a verifying probe.
+-  if (!item || s.hintLevel >= 4) return { mode: "none", misconceptions: misList(kit.misconceptions) };
++  // round 4 (journey audit A22-03; owner-2 session seed 7 s3 t13: "haan" → "Bilkul, Golu … tumne 1/4 likha"): `posed` when
++  // her last turn handed the floor back for an answer — her own question, nothing keyed to check the reply against
++  if (!item || s.hintLevel >= 4) return { mode: "none", misconceptions: misList(kit.misconceptions),
++    ...(["answer", "choice"].includes(s.lastUi?.handover) ? { posed: true } : {}) };
+   const mis = misList(item.misconceptions ?? kit.misconceptions, item.targetsMisconception);
+   const own = item.expectations ?? kit.expectations;
+   const ideas = own.length ? own : [whyKey(kit, item.skillId)].filter(Boolean);
+@@ -146,6 +149,38 @@ export function correctedTail(text) {
+   return tail && tail.split(/\s+/).length <= 8 ? (hedgeCore(tail) ?? tail) : null;
+ }
+ 
++// round 4 (stream 5's journey audit #3, B04-05: Kabir's "2/3 × 3/4 = 6/12" was left ungraded and the question asked again):
++// an answer said WITH its working ends on the result; the words after the last "=" / "equals" / "barabar" are the answer
++/** PURE. The result after the last equals sign or word ("2/3 × 3/4 = 6/12" → "6/12"), or null. */
++export function equationTail(text) {
++  const t = String(text ?? "");
++  const m = [...t.matchAll(/=|(?:^|\s)(?:equals|is\s+equal\s+to|barabar(?:\s+hai)?|baraabar(?:\s+hai)?)(?=\s)/gi)].at(-1);
++  if (!m) return null;
++  const tail = t.slice(m.index + m[0].length).replace(/^[\s:]+/, "").replace(/[\s.!?]+$/, "").trim();
++  return tail && tail.split(/\s+/).length <= 4 ? (hedgeCore(tail) ?? tail) : null;
++}
++
++// round 4 (journey audit #3, A25: "Halke se bhaari ke kram mein lagao: 1 kg 200 g, 900 g, 1100 g" answered right in speech —
++// "900 gram, 1100 gram, 1 kg 200 gram" — went to the model, was left ungraded and the same question came three times): an
++// ORDERING item is graded in code by the sequence of its quantities, kg and g on one scale. Correct only: a different
++// sequence still goes to the model, which reads what the child meant.
++const ORDER_ASK = /\b(?:order|arrange|ascending|descending|lightest|heaviest|smallest|largest|shortest|longest|least|greatest)\b|kram|chhote\s+se\s+bade|bade\s+se\s+chhote|halke\s+se\s+bhaari|bhaari\s+se\s+halke/i;
++/** PURE. The quantities of a line in order, kg/kilo → g and "1 kg 200 g" as one (1200); null when fewer than 3, or with a fraction or a negative. */
++export function quantitySequence(text) {
++  // fractions and negatives are left to the exact match and the model (this reads whole quantities only)
++  if (/\d\s*\/\s*\d|[-−]\s*\d/.test(String(text ?? ""))) return null;
++  const t = String(text ?? "").toLowerCase().replace(/(\d),(?=\d{3}\b)/g, "$1")
++    .replace(/\b(?:kilograms?|kilos?|kgs)\b/g, "kg").replace(/\b(?:grams?|gms?|grammes?)\b/g, "g");
++  const qs = [];
++  for (const m of t.matchAll(/(\d+(?:\.\d+)?)\s*(kg|g)?(?![\d\/])/g)) qs.push({ v: Number(m[1]) * (m[2] === "kg" ? 1000 : 1), unit: m[2] ?? null, at: m.index, end: m.index + m[0].length });
++  const out = [];
++  for (let i = 0; i < qs.length; i++) {
++    const q = qs[i], n = qs[i + 1];
++    if (q.unit === "kg" && n?.unit === "g" && /^[\s,]*(?:and|aur|\+)?\s*$/.test(t.slice(q.end, n.at))) { out.push(q.v + n.v); i++; } else out.push(q.v);
++  }
++  return out.length >= 3 ? out : null;
++}
++
+ /** Map an option ("key" | "mN" | "other_wrong" …) to an outcome. */
+ function fromMatch(match, target) {
+   if (match === "key") return { outcome: "correct" };
+@@ -470,11 +505,16 @@ export function classifyFast({ target, childText, asrConfidence, typed, chipId,
+   if (safety.distress) {
+     // round 4 (patch 13, SHADOW): would the item-context set-aside have set this hit aside? The floor is unchanged; the answer
+     // rides on the result for the trace codes only (brain/trace.js comprehensionReasons). Never on a chip or module answer.
+-    const mode = itemSetAsideMode();
+-    if (mode === "off" || chipId || moduleAnswer) return done("no_evidence", "predicate");
+-    const posed = target.mode === "item" && !askedOther(heard, target.item, lang);
+-    const w = itemSetAside({ text, item: target.mode === "item" ? target.item : null, posed });
+-    return done("no_evidence", "predicate", { setAsideWould: { mode, aside: w.aside, why: w.why, novel: w.novel, masked: w.masked } });
++    // main safety review: any throw in the shadow computation returns the plain predicate result (the floor's own turns)
++    try {
++      const mode = itemSetAsideMode();
++      if (mode === "off" || chipId || moduleAnswer) return done("no_evidence", "predicate");
++      const posed = target.mode === "item" && !askedOther(heard, target.item, lang);
++      const w = itemSetAside({ text, item: target.mode === "item" ? target.item : null, posed });
++      return done("no_evidence", "predicate", { setAsideWould: { mode, aside: w.aside, why: w.why, novel: w.novel, masked: w.masked } });
++    } catch {
++      return done("no_evidence", "predicate");
++    }
+   }
+   // The child's own request in words (director/requests.js; OWNER TEST 2026-10-04 items 3-5): never evidence. A steering
+   // request that is the whole turn is decided here (no model call); a stop or goodbye still goes to the model for its
+@@ -543,7 +583,7 @@ export function classifyFast({ target, childText, asrConfidence, typed, chipId,
+     // she re-asked a right answer) and (b) after a spoken self-correction ("… no sorry segment": the last answer counts, and
+     // the model read the whole line as no answer). Exact only: anything else still goes to the model.
+     if (p5Flag("R4CONV")) {
+-      for (const [cand, src] of [[hedgeCore(text), "exact_hedged"], [correctedTail(text), "exact_final"]]) {
++      for (const [cand, src] of [[hedgeCore(text), "exact_hedged"], [correctedTail(text), "exact_final"], [equationTail(text), "exact_result"]]) {
+         if (!cand || norm(cand) === t) continue;
+         // the doubt words ("pakka nahi pata") are not a don't-know when an answer came with them
+         if (src === "exact_hedged") flags.dontKnow = false;
+@@ -555,6 +595,11 @@ export function classifyFast({ target, childText, asrConfidence, typed, chipId,
+         const o = target.options?.find((x) => norm(x.text) === c);
+         if (o) { const m = fromMatch(optionTag(o, target), target); return done(m.outcome, src, m); }
+       }
++      // an ordering answered with the same quantities in the key's order (units spoken differently) is the key
++      if (ORDER_ASK.test(`${target.item?.prompt_en ?? ""} ${target.item?.prompt_hi ?? ""}`)) {
++        const want = quantitySequence(target.key), got = quantitySequence(text);
++        if (want && got && want.length === got.length && want.every((v, i) => Math.abs(v - got[i]) < 1e-9)) return done("correct", "exact_order");
++      }
+     }
+   }
+   // V1.1: a key that IS a number is graded by value in code (evals/grading-truth: the model credited "-180" for 180°,
+@@ -679,6 +724,9 @@ async function classifyModel(args, target, text, flags, trace, done, fast = {})
+     const { modelFlags, ...label } = parseClassification(json, target);
+     // a number that is not the key's value is never the key, whatever the model read (V1.1)
+     if (fast.numericMismatch && label.outcome === "correct") { label.outcome = "incorrect"; label.overridden = "numeric_mismatch"; }
++    // round 4 (journey audit #4, A24-03: "2000 g" for "2 kg 50 g in grams" was accepted as partial and praised): a key that
++    // is ONE number has no parts, so a different number is never partial credit
++    if (fast.numericMismatch && label.outcome === "partial" && plainNumberKey(target.key) != null) { label.outcome = "incorrect"; label.overridden = "numeric_mismatch_partial"; }
+     // review v1: the right number in a different unit ("5 dm" for "5 cm") is never the full key either
+     if (fast.unitMismatch && label.outcome === "correct") { label.outcome = "incorrect"; label.overridden = "unit_mismatch"; }
+     // review v1: "21" for "21 June" names the number but not what it is: partial, never the full key
+diff --git a/server/director/say.js b/server/director/say.js
+index 43fd9c6f..3e5c4d89 100644
+--- a/server/director/say.js
++++ b/server/director/say.js
+@@ -62,7 +62,13 @@ const DENY_OPEN = lead(["galat", "wrong", "not\\s+quite", "not\\s+right", "incor
+ export function verdictFor(cls, target, { moduleOnly = false, childText = "" } = {}) {
+   if (!cls || !target || moduleOnly) return "ungraded";
+   // no keyed item, but the child wrote an answer-shaped reply (F5): "attempt" — no "you got it right" for it
+-  if (target.mode === "none") return childText && !childAsks(childText) && !cls.request && String(childText).trim().split(/\s+/).length >= 3 ? "attempt" : "ungraded";
++  if (target.mode === "none") {
++    if (!childText || childAsks(childText) || cls.request) return "ungraded";
++    // her own question was on the floor and nothing checked the reply ("haan", "pata nahi", an unkeyed "1/4"): no
++    // praise or agreement opener for it either (A22-03: "Bilkul," then the next sum)
++    if (target.posed) return "unverified";
++    return String(childText).trim().split(/\s+/).length >= 3 ? "attempt" : "ungraded";
++  }
+   if (cls.outcome === "correct") return "correct";
+   if (cls.outcome === "partial") return "partial";
+   if (cls.outcome === "incorrect" || cls.outcome === "misconception") return "not_yet";
+diff --git a/server/director/shapes.js b/server/director/shapes.js
+index 2b10867b..ca847f18 100644
+--- a/server/director/shapes.js
++++ b/server/director/shapes.js
+@@ -14,14 +14,17 @@ const join = (...parts) => parts.filter(Boolean).join("; ");
+  * teacher only through the brief row that sheds first under the prompt budget (compile.js drop 3), and the greeting
+  * then asked about a topic of its own (audit #7).
+  */
+-export const greet = ({ firstName, teacherName, firstMeeting, renamed, hasCallback, warmup, topicTitle, interest }) => join(
++export const greet = ({ firstName, teacherName, firstMeeting, renamed, hasCallback, warmup, topicTitle, interest, before }) => join(
+   `greet ${firstName} by name, warm and unhurried`,
+   firstMeeting && `first meeting: name yourself — ${teacherName}, their AI teacher`,
+   // the child gave the teacher a new name (decision child-names-teacher): she answers to it, and the disclosure is
+   // said again under it — the name never changes what she is
+   !firstMeeting && renamed && `new name from the child: answer to ${teacherName}; say once you are still their AI teacher`,
+   hasCallback && "at most one callback from the child brief, only if it fits",
++  // round 4 (journey audit #5): a topic they worked on before opens from last time, never as new
++  before && `they worked on this before (${before.titles.join("; ")}; ${before.right} of ${before.answered} answers right): one line on what they did last time; today goes on from there; never ask whether they have learnt it, never present it as new`,
+   warmup ? "then pose the warm-up question (LESSON NOW) — a quick look back at something learned before"
++    : before ? `then one easy question about them${interest ? `, or about their interest (${interest})` : ""}`
+     : `one line on today's topic (${topicTitle})${interest ? `, tied to their interest (${interest}) if it fits` : ""}; then one easy question about them`,
+ );
+ 
+@@ -371,6 +374,9 @@ export const clarifyQuestion = () => join(
+   "then the same question again",
+ );
+ export const breakYes = () => "they asked for a short break: agree warmly; the lesson waits right here for them; one line for when they are back; no question now";
++// round 4 (journey audit #6: "Bas, ab main thak gayi" → "Theek hai, Riya." and the floor handed back with nothing to answer):
++// tired is a real choice, on the buttons — a short rest, or stopping for today with what they did; the lesson asks nothing
++export const tiredOffer = () => "they are tired: say plainly that is fine after this much work; the buttons offer a short rest or stopping for today, they choose; no lesson question now";
+ export const repeatShort = () => "they did not catch it: the last point again, shorter and slower; nothing new";
+ export const welcomeBack = () => "they are back after a moment away: welcome them back in two or three words, no goodbye and no fuss; carry on";
+ export const levelHarder = () => "they asked for a harder one: take them at their word, a short warm line; the harder question";
+diff --git a/server/director/state.js b/server/director/state.js
+index 8696e3b6..c6c0001b 100644
+--- a/server/director/state.js
++++ b/server/director/state.js
+@@ -150,6 +150,8 @@ export function initLessonState({ topicId, kit, skills = {}, history = {}, stuck
+     retaught: [], changedApproach: [], flagged: {}, misCorrect: {},
+     nextItemId: undefined, verify: undefined, tries: 0, unclear: 0, practiced: 0, easier: false,
+     skills: snaps, history,
++    // round 4 (journey audit #5): what the child did on this topic before today, for the opening (greet) — never evidence
++    ...(p5Flag("R4CONV") && beforeOf(kit, history) ? { before: beforeOf(kit, history) } : {}),
+     // Items this lesson that reached the assertion or were left after don't-knows, per skill (noteStuck): a routing
+     // signal the NEXT lesson's guidance reads (lesson.js loadRecentStuck), never KT evidence.
+     stuck: {}, stuckIds: [],
+@@ -363,7 +365,7 @@ function warmup(s, input, item) {
+   if (input.event === "start") {
+     const first = s.warmup[0];
+     if (first) activate(s, first);
+-    return plan("greet", SH.greet({ ...s.ctx, warmup: !!first, interest: interestFor(input.kit, s.ctx.interests, 0) }), first ? { item: first, probe: "P10" } : {});
++    return plan("greet", SH.greet({ ...s.ctx, warmup: !!first, interest: interestFor(input.kit, s.ctx.interests, 0), before: s.before ?? null }), first ? { item: first, probe: "P10" } : {});
+   }
+   if (!item) { s.phase = "teach"; return teach(s, input); }
+   const v = verdict(input.cls);
+@@ -897,6 +899,19 @@ function resume(s, input, item, prefix) {
+   return toWrap(s, {});
+ }
+ 
++/**
++ * round 4 (stream 5's journey audit #5: day 2 opened "aaj hum grams aur kilograms se weight compare karenge" as if new, and
++ * Kaksha day 2 asked "Aapne fractions multiply kiye hain?" after a fractions lesson): this kit's skills the child already
++ * has outcomes on from earlier lessons (the history the start reads), up to two, with how many of those answers were
++ * right. null when the topic is new to them. PURE.
++ */
++export function beforeOf(kit, history) {
++  const seen = (kit?.skills ?? []).filter((sk) => (history?.[sk.id] ?? []).length);
++  if (!seen.length) return null;
++  const all = seen.flatMap((sk) => history[sk.id]);
++  return { titles: seen.slice(0, 2).map((sk) => sk.title), right: all.filter((o) => o === "correct").length, answered: all.length };
++}
++const TIRED = /\b(?:thak|thaka|thaki|thakaan|tired|neend)\b|थक/i;
+ /** The skill the lesson is on now (for a teaching move with no item on the table). */
+ const currentSkillId = (s, kit, item) => item?.skillId ?? s.lastMove?.skillId ?? s.introduced?.at(-1) ?? kit.skills[0]?.id;
+ 
+@@ -907,7 +922,11 @@ const currentSkillId = (s, kit, item) => item?.skillId ?? s.lastMove?.skillId ??
+ function requestMove(s, input, item, req, labels) {
+   const kit = input.kit;
+   switch (req.type) {
+-    case "break": return plan("break", p5Flag("STEER") ? SH.breakYes() : SH.stretch(), { request: "break" });
++    case "break":
++      // round 4 (journey audit #6): the break is a choice on the buttons, never a bare "Theek hai" with the floor handed back
++      if (p5Flag("R4CONV")) return plan("break", TIRED.test(String(input.text ?? "")) ? SH.tiredOffer() : SH.breakYes(),
++        { request: "break", chips: [{ id: "break:rest", label: labels.rest }, { id: "stop:continue", label: labels.go }, { id: "stop:end", label: labels.stop }] });
++      return plan("break", p5Flag("STEER") ? SH.breakYes() : SH.stretch(), { request: "break" });
+     case "change_topic":
+       // owner rule (2026-10-05; w2i-release, OWNER-RESET #7): "can we talk about something else" is STEERING, never a break
+       // or a wrap: a warm yes and a different way into today's idea (CONVERSATION-V2 §3.2 offer_choice)
+@@ -1280,7 +1299,7 @@ function decide(s, input, item) {
+   // 2b. A help request (a client action): acts on the question on the table; never evidence, never a stop.
+   if (cls?.help && ["warmup", "teach", "practice", "teachback"].includes(s.phase)) return helpMove(s, input, item, cls.help);
+   // 3. Choices offered by a break.
+-  if (chipId === "break:rest") return plan("break", SH.stretch());
++  if (chipId === "break:rest") return plan("break", SH.stretch(), p5Flag("R4CONV") ? { chips: [{ id: "stop:continue", label: labels.back }] } : {});
+   if (chipId === "break:easier" && s.phase === "practice") {
+     if (s.activeItemId) { noteStuck(s, item); s.skipped.push(s.activeItemId); }
+     s.easier = true;
+diff --git a/tests/r4-continuity.test.mjs b/tests/r4-continuity.test.mjs
+new file mode 100644
+index 00000000..13866125
+--- /dev/null
++++ b/tests/r4-continuity.test.mjs
+@@ -0,0 +1,38 @@
++// round 4 (stream 4A; stream 5's journey audit #5, 2026-10-10): day 2 opened "aaj hum grams aur kilograms se weight compare
++// karenge…" as if new, and Kaksha day 2 asked "Aapne fractions multiply kiye hain?" after a fractions lesson. A topic the
++// child has outcomes on from earlier lessons opens from last time; a new topic opens as before. Pure.
++import { test } from "node:test";
++import assert from "node:assert/strict";
++import { initLessonState, step, beforeOf } from "../server/director/state.js";
++import { kit, CTX } from "./fixtures/kit.mjs";
++
++const K = kit();
++const start = (history, env = {}) => {
++  const was = process.env.TAXILA_P5_R4CONV;
++  try {
++    if (env.off) process.env.TAXILA_P5_R4CONV = "off"; else delete process.env.TAXILA_P5_R4CONV;
++    return step(initLessonState({ topicId: K.topicId, kit: K, ctx: CTX, seed: 11, now: 0, history }), { event: "start", kit: K, now: 0 });
++  } finally { if (was == null) delete process.env.TAXILA_P5_R4CONV; else process.env.TAXILA_P5_R4CONV = was; }
++};
++
++test("A-05: yesterday's topic opens from yesterday, never 'have you learnt this?'", () => {
++  const sk = K.skills[0];
++  const yesterday = { [sk.id]: ["incorrect", "correct", "correct"] };
++  assert.deepEqual(beforeOf(K, yesterday), { titles: [sk.title], right: 2, answered: 3 });
++  const r = start(yesterday);
++  assert.equal(r.move.kind, "greet");
++  assert.match(r.move.shape, /worked on this before/);
++  assert.ok(r.move.shape.includes(sk.title));
++  assert.match(r.move.shape, /never ask whether they have learnt it, never present it as new/);
++  assert.doesNotMatch(r.move.shape, /one line on today's topic/);
++});
++
++test("a new topic, and R4CONV off: the opening is as before", () => {
++  assert.equal(beforeOf(K, {}), null);
++  const fresh = start({});
++  assert.doesNotMatch(fresh.move.shape, /worked on this before/);
++  assert.equal(fresh.state.before, undefined);
++  const off = start({ [K.skills[0].id]: ["correct"] }, { off: true });
++  assert.doesNotMatch(off.move.shape, /worked on this before/);
++  assert.equal(off.state.before, undefined);
++});
+diff --git a/tests/r4-grading-truth.test.mjs b/tests/r4-grading-truth.test.mjs
+new file mode 100644
+index 00000000..27d3677e
+--- /dev/null
++++ b/tests/r4-grading-truth.test.mjs
+@@ -0,0 +1,87 @@
++// round 4 (stream 4A; stream 5's journey audit #3 and #4, 2026-10-10): grading against the verified key. The child lines
++// are the audit's (A25: a correct order left ungraded and asked 3 times; B04-05: Kabir's "2/3 × 3/4 = 6/12" left ungraded;
++// A24-03: "2000 g" for "2 kg 50 g in grams" accepted as partial). A model never grades: each is decided in code, or a
++// model label the key contradicts is overridden. Pure (the classifier's model call is a stubbed fetch; no database).
++import { describe, test, beforeEach, afterEach } from "node:test";
++import assert from "node:assert/strict";
++import { classify, classifyFast, targetFor, equationTail, quantitySequence } from "../server/director/classify.js";
++import { askFromReply, askText, verdictFor, praiseProblem } from "../server/director/say.js";
++import { kitFromFile } from "../server/content/kits.js";
++import { getTopic } from "../server/content/curriculum.js";
++
++const answer = (json) => async () => new Response(JSON.stringify({ choices: [{ finish_reason: "stop", message: { content: JSON.stringify(json) } }] }), { status: 200, headers: { "content-type": "application/json" } });
++const itemTarget = (topic, id) => {
++  const K = kitFromFile(getTopic(topic)); const item = K.items.find((i) => i.id === id);
++  return { item, target: targetFor({ phase: "practice", hintLevel: 0 }, K, item) };
++};
++const fast = (t, text) => classifyFast({ target: t.target, childText: text, heard: t.item.prompt_hi, asrConfidence: 0.95, typed: false, lang: "hinglish" });
++
++describe("grading truth (journey audit #3, #4)", () => {
++  let realFetch, env;
++  beforeEach(() => {
++    realFetch = globalThis.fetch; env = { ...process.env };
++    process.env.AZURE_OPENAI_ENDPOINT = "https://example.test/openai/v1"; process.env.AZURE_OPENAI_API_KEY = "test-key";
++    process.env.TAXILA_CLASSIFY_FALLBACK = "0"; process.env.TAXILA_CLASSIFY_HEDGE_MS = "0";
++  });
++  afterEach(() => { globalThis.fetch = realFetch; for (const k of Object.keys(process.env)) if (!(k in env)) delete process.env[k]; Object.assign(process.env, env); });
++
++  test("B04-05: the equation's result is the answer ('2/3 × 3/4 = 6/12' for 'half of the field')", () => {
++    const t = itemTarget("c7-maths-ch08-t01", "c7-maths-ch08-t01-i11");
++    assert.equal(equationTail("2/3 × 3/4 = 6/12 hai"), "6/12");
++    for (const said of ["2/3 × 3/4 = 6/12", "2/3 × 3/4 = 6/12 hai"]) {
++      const r = fast(t, said);
++      assert.equal(r.result?.outcome, "correct", said);
++      assert.equal(r.result?.source, "exact_result", said);
++    }
++    assert.equal(fast(t, "2/3 × 3/4 = 5/12").result?.outcome === "correct", false, "a wrong result is never the key");
++  });
++
++  test("A25: the right order is graded in code; a wrong order still goes to the model", () => {
++    const t = itemTarget("c4-maths-ch08-t01", "c4-maths-ch08-t01-i11");
++    assert.deepEqual(quantitySequence("900 gram, 1100 gram, 1 kg 200 gram"), [900, 1100, 1200]);
++    const r = fast(t, "900 gram, 1100 gram, 1 kg 200 gram");
++    assert.equal(r.result?.outcome, "correct");
++    assert.equal(r.result?.source, "exact_order");
++    assert.equal(fast(t, "1100 gram, 900 gram, 1 kg 200 gram").result, null, "a wrong order is not decided as correct");
++    assert.equal(quantitySequence("1/2, 3/4, 5/6"), null, "fractions are not read as an order of quantities");
++  });
++
++  test("A24-03: '2000 g' for '2 kg 50 g in grams' (key 2,050 g) is never partial", async () => {
++    const t = itemTarget("c5-maths-ch08-t01", "c5-maths-ch08-t01-i03");
++    assert.equal(fast(t, "2000 g").numericMismatch, true, "a different number than the key");
++    const target = { ...t.target, open: true };   // even where a parts row offers partial
++    globalThis.fetch = answer({ match: "partial", reason: "kg part converted", confidence: 0.8, off_topic: false, distress: false, asks_for_answer: false, wants_to_stop: false });
++    const r = await classify({ target, childText: "2000 g", heard: t.item.prompt_hi, asrConfidence: 0.95, typed: false, classLevel: 5, trace: [] });
++    assert.equal(r.outcome, "incorrect");
++    assert.equal(r.overridden, "numeric_mismatch_partial");
++    const right = fast(t, "2050 g");
++    assert.equal(right.result?.outcome, "correct");
++  });
++});
++
++// journey audit #10a: the card's question is the turn's own words, a decimal point is not a sentence end
++test("A-10a: '0.5 mein 5 kis place par hai?' keeps its '0.' on the card", () => {
++  assert.equal(askFromReply("Achha. 0.5 mein 5 kis place par hai?"), "0.5 mein 5 kis place par hai?");
++  const long = "Bahut accha socha tumne, ab ek naya sawaal dekhte hain jo decimals ke baare mein hai aur place value samjhata hai. 0.25 mein 2 kis place par hai?";
++  assert.equal(askText(long), "0.25 mein 2 kis place par hai?");
++  assert.equal(askFromReply("Dekho. 2.5 cm lambi line hai. Isme kitne mm?"), "Isme kitne mm?", "sentences still split at a real full stop");
++});
++
++// journey audit A22-03 (praise for a non-answer) and its live twin (owner-2 session-start seed 7, s3 t13): her own
++// question on the floor, the child says "haan", the turn opens "Bilkul, Golu …". Nothing checked the reply: no praise.
++test("A22-03: a non-answer to her own question is never praised", () => {
++  const K = kitFromFile(getTopic("c4-maths-ch05-t01"));
++  const posed = targetFor({ phase: "teach", hintLevel: 0, lastUi: { handover: "answer" } }, K, null);
++  assert.equal(posed.mode, "none"); assert.equal(posed.posed, true);
++  for (const said of ["haan", "pata nahi", "1/4"]) {
++    const v = verdictFor({ outcome: "no_evidence" }, posed, { childText: said });
++    assert.equal(v, "unverified", said);
++    assert.equal(praiseProblem("Bilkul, Golu. Equal parts pehchaan kar tumne 1/4 likha. Music club ke paas 9 drumsticks hain.", v), "praise", said);
++    assert.equal(praiseProblem("Bilkul, ab 1 kg 300 g ko grams mein badlo: 1000 g plus 300 g kitne?", v), "praise", said);
++  }
++  assert.equal(verdictFor({ outcome: "no_evidence" }, posed, { childText: "kya ye roz hota hai?" }), "ungraded", "her question back is not an answer");
++  assert.equal(verdictFor({ outcome: "no_evidence", request: "repeat" }, posed, { childText: "phir se bolo" }), "ungraded", "a request is not an answer");
++  const told = targetFor({ phase: "teach", hintLevel: 0, lastUi: { handover: "none" } }, K, null);
++  assert.equal(told.posed, undefined, "a teaching turn that asked nothing: as before");
++  assert.equal(verdictFor({ outcome: "no_evidence" }, told, { childText: "haan" }), "ungraded");
++});
+diff --git a/tests/r4-item-setaside.test.mjs b/tests/r4-item-setaside.test.mjs
+index d241bf68..8365390b 100644
+--- a/tests/r4-item-setaside.test.mjs
++++ b/tests/r4-item-setaside.test.mjs
+@@ -116,3 +116,17 @@ describe("patch 13 (shadow): the item-context set-aside", () => {
+     assert.equal(itemSetAsideMode({ TAXILA_ITEM_SETASIDE: "ON" }), "on");
+   });
+ });
++
++test("patch 13 shadow: a throw in the shadow computation returns the plain predicate result (main safety review)", () => {
++  const was = process.env.TAXILA_ITEM_SETASIDE;
++  try {
++    process.env.TAXILA_ITEM_SETASIDE = "shadow";
++    const bad = { mode: "item", item: new Proxy({}, { get() { throw new Error("boom"); } }), key: "x", also: [] };
++    const r = classifyFast({ target: bad, childText: "the strong bully the weak", typed: true, heard: "?", lang: "english" });
++    assert.equal(r.result.source, "predicate");
++    assert.equal(r.result.flags.distress, true, "the floor still fires");
++    assert.equal(r.result.setAsideWould, undefined);
++  } finally {
++    if (was === undefined) delete process.env.TAXILA_ITEM_SETASIDE; else process.env.TAXILA_ITEM_SETASIDE = was;
++  }
++});
+diff --git a/tests/r4-tired-break.test.mjs b/tests/r4-tired-break.test.mjs
+new file mode 100644
+index 00000000..3f53d15f
+--- /dev/null
++++ b/tests/r4-tired-break.test.mjs
+@@ -0,0 +1,54 @@
++// round 4 (stream 4A; stream 5's journey audit #6, 2026-10-10): "Bas, ab main thak gayi" got "Theek hai, Riya." and the
++// floor handed back with nothing to answer (the Desk said YOUR TURN). A break is a choice on the buttons: a short rest,
++// keep going, or stop for today; a rest then waits on "Back to the lesson". Behind R4CONV (TAXILA_P5_R4CONV=off is as before). Pure.
++import { test } from "node:test";
++import assert from "node:assert/strict";
++import { initLessonState, step } from "../server/director/state.js";
++import { findItem } from "../server/director/items.js";
++import { classifyFast, targetFor } from "../server/director/classify.js";
++import { kit, CTX, cls } from "./fixtures/kit.mjs";
++
++const K = kit();
++const fresh = () => initLessonState({ topicId: K.topicId, kit: K, ctx: CTX, seed: 11, now: 0 });
++const turn = (r, c, extra = {}) => step(r.state, { event: "turn", kit: K, cls: c, now: (r.state.turn + 1) * 20_000, ...extra });
++const NE = cls("no_evidence");
++const said = (r, text) => {
++  const fast = classifyFast({ target: targetFor(r.state, K, findItem(r.state, K, r.state.activeItemId)), childText: text, typed: true });
++  return fast.result ?? { outcome: "no_evidence", confidence: 1, source: "model", flags: fast.flags, request: fast.request };
++};
++const withFlag = (v, fn) => { const k = "TAXILA_P5_R4CONV", was = process.env[k]; try { if (v == null) delete process.env[k]; else process.env[k] = v; return fn(); } finally { if (was == null) delete process.env[k]; else process.env[k] = was; } };
++function toPractice() {
++  let r = step(fresh(), { event: "start", kit: K, now: 0 });
++  while (r.state.phase !== "practice" || !r.move.itemId || r.move.itemId.startsWith("fade:")) r = turn(r, NE);
++  return r;
++}
++
++test("A-06: 'Bas, ab main thak gayi' is a choice — rest, keep going or stop for today — never the floor with nothing on it", () => withFlag(undefined, () => {
++  const r = toPractice();
++  const LINE = "Bas, ab main thak gayi";
++  const t = turn(r, said(r, LINE), { text: LINE });
++  assert.equal(t.move.kind, "break");
++  assert.match(t.move.shape, /tired/);
++  assert.deepEqual(t.ui.chips.map((c) => c.id), ["break:rest", "stop:continue", "stop:end"]);
++  assert.equal(t.ui.handover, "choice", "the Desk shows the choice, not YOUR TURN");
++  // a rest waits on "Back to the lesson"; that chip goes straight back in
++  const rest = turn(t, NE, { chipId: "break:rest" });
++  assert.equal(rest.move.kind, "break");
++  assert.deepEqual(rest.ui.chips.map((c) => c.id), ["stop:continue"]);
++  const back = turn(rest, NE, { chipId: "stop:continue" });
++  assert.notEqual(back.move.kind, "break");
++  // stop for today wraps
++  const stop = turn(t, NE, { chipId: "stop:end" });
++  assert.ok(stop.move.kind === "wrap" || stop.state.phase === "done", "stop for today is a wrap");
++  // a plain break ask gets the same choice with the plain shape
++  const b = turn(r, said(r, "break chahiye"), { text: "break chahiye" });
++  assert.match(b.move.shape, /short break/);
++  assert.equal(b.ui.handover, "choice");
++}));
++
++test("R4CONV off: the break is as before", () => withFlag("off", () => {
++  const r = toPractice();
++  const t = turn(r, said(r, "Bas, ab main thak gayi"), { text: "Bas, ab main thak gayi" });
++  assert.equal(t.move.kind, "break");
++  assert.equal(t.ui.chips, undefined);
++}));
+-- 
+2.43.0
+
