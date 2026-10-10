@@ -94,24 +94,47 @@ export function PlayStage(props: PlayStageProps) {
     ctlRef.current = ctl;
     const onFail = (why: string) => onEvent.current?.({ type: "fail", why });
     const mount2d = () => mountStage(host, (api) => { view = make!(api, { level, ctl, lang, changed }); return view; }, { art, young, reducedMotion: props.reducedMotion, sound: props.sound, onFail });
-    // a 3D engine (r4-khand, core3d@1) mounts its own WebGL world; when it cannot run (tier 2d, a lost context, frame
-    // errors) the 2D view of the same mode takes over WITH THE SAME CONTROLLER: the level, its state and every act survive
+    // a 3D engine (r4-khand, core3d@1): the 2D view of the same mode paints FIRST and is playable at once; the 3D world
+    // streams in behind it and takes over at a turn-point WITH THE SAME CONTROLLER (the level, its state and every act
+    // survive). When the engine cannot run (tier 2d, a lost context, frame errors) the 2D view stays or comes back.
     let stage: StageHandle;
-    let swapped = false;
+    let live3d = false, gone = false, back2d = false;
     const to2d = (why: string) => {
-      if (swapped || !make) { onFail(why); return; }
-      swapped = true;
-      const old = stage; queueMicrotask(() => { old?.dispose(); stage = mount2d(); stageRef.current = stage; viewRef.current = view; changed(); });
+      if (back2d || !make) { onFail(why); return; }
+      back2d = true;
+      const old = stage; queueMicrotask(() => { if (gone) return; old?.dispose(); stage = mount2d(); stageRef.current = stage; viewRef.current = view; changed(); });
     };
-    stage = engine ? (() => { const m = engine(host, { level, ctl, lang, changed, art, young, classLevel: props.classLevel, reducedMotion: props.reducedMotion, sound: props.sound, onFail: to2d }); view = m.view; return m.stage; })()
-      : mount2d();
+    if (engine && make) {
+      stage = mount2d();
+      let m: ReturnType<typeof engine> | null = null;
+      m = engine(host, { level, ctl, lang, changed, art, young, classLevel: props.classLevel, reducedMotion: props.reducedMotion, sound: props.sound, hidden: true,
+        onReady: () => {
+          const swap = () => {
+            if (gone || live3d || back2d) return;
+            if (!ctl.atTurnPoint()) { setTimeout(swap, 250); return; }
+            if (!m) return;
+            live3d = true;
+            const old = stage; stage = m.stage; view = m.view; old.dispose(); m.reveal?.();
+            stageRef.current = stage; viewRef.current = view;
+            try { view?.react([], undefined); } catch { /* the world resyncs on the next act */ }
+            changed();
+          };
+          swap();
+        },
+        onFail: (why) => { if (live3d) to2d(why); else queueMicrotask(() => m?.stage.dispose()); } });
+      // the engine could not mount (tier 2d, no WebGL): the 2D view simply stays
+      if (m.failed) m.stage.dispose();
+    } else if (engine) {
+      const m = engine(host, { level, ctl, lang, changed, art, young, classLevel: props.classLevel, reducedMotion: props.reducedMotion, sound: props.sound, onFail });
+      stage = m.stage; view = m.view;
+    } else stage = mount2d();
     stageRef.current = stage; viewRef.current = view;
     changed();
     onEvent.current?.({ type: "ready" });
     if (props.demo && view) setTimeout(() => (view as FamilyView | null)?.demo?.(), 700);
     if (props.debug && typeof window !== "undefined") {
       (window as unknown as { __play: unknown }).__play = {
-        level, audit: stage.audit, perf: (r?: boolean) => stage.perf(r), invalidate: () => stage.invalidate(),
+        level, get audit() { return stage.audit; }, perf: (r?: boolean) => stage.perf(r), invalidate: () => stage.invalidate(), mode3d: () => live3d,
         dispatch: (a: unknown) => ctl.dispatch(a as never), state: () => ctl.state, solve: () => logic.solve(level), facts: () => ctl.facts(),
         controls: () => viewRef.current?.controls().map((c) => ({ id: c.id, label: c.label, disabled: !!c.disabled })),
         press: (id: string) => { const c = viewRef.current?.controls().find((x) => x.id === id); c?.onPress(); return !!c; },
@@ -122,7 +145,7 @@ export function PlayStage(props: PlayStageProps) {
         mal: () => logic.malRules.slice(), malActs: (id: string) => logic.malActs(level, id),
       };
     }
-    return () => { stageRef.current?.dispose(); stage.dispose(); ctl.dispose(); stageRef.current = null; viewRef.current = null; ctlRef.current = null; };
+    return () => { gone = true; stageRef.current?.dispose(); stage.dispose(); ctl.dispose(); stageRef.current = null; viewRef.current = null; ctlRef.current = null; };
     // a new level (or art direction) is a new world
   }, [level, art, lang, young, props.reducedMotion, props.sound, props.debug, props.demo, changed]);
 
