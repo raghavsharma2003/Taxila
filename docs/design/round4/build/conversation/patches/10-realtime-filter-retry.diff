@@ -1,0 +1,225 @@
+diff --git a/server/brain/turn.js b/server/brain/turn.js
+index cbe82ed1..67b646dc 100644
+--- a/server/brain/turn.js
++++ b/server/brain/turn.js
+@@ -453,6 +453,10 @@ export async function lessonTurn(req, body) {
+   if (cls && pendingSafety && !cls.flags?.distress) {
+     cls = { ...cls, flags: { ...cls.flags, distress: true, distressKind: cls.flags?.distressKind ?? (typeof pendingSafety.kind === "string" ? pendingSafety.kind : "duplex_partial") } };
+   }
++  // round 4 (4A patch request 10): the realtime lane's reply was blocked by the content filter twice (TurnRequest.replyFiltered).
++  // OR-ed in like safetyPending: a hint that can only ADD safety (the turn is re-planned as the safeguard, as a blocked text
++  // reply is); it never subtracts, and the child's words above already went through the predicate and the distress read.
++  cls = withReplyFiltered(cls, body, fast);
+   // ... and a model distress read on the committed turn (classify's model flag or distressCheck, which now runs on every
+   // committed child turn with words) reaches the duplex floor as a model note, so a reply speculated on the partials is
+   // cancelled there as well (PartialSafety.modelNote was never called before this).
+@@ -1333,3 +1337,15 @@ export function earlierExchanges(recent = [], n = 2) {
+ 
+ /** The duplex floor's sticky partial-safety state on the request (never trusted to subtract). */
+ const pendingSafetyOf = (body) => !!body?.duplex?.safetyPending;
++
++/**
++ * PURE. Round 4 (4A patch request 10): TurnRequest.replyFiltered >= 2 (the realtime reply and its one fresh retry were both
++ * blocked by the content filter) as a distress flag on the turn, exactly like the blocked text reply's path. It can only ADD:
++ * an already-distressed turn keeps its kind, a turn without the hint (or with 1) is returned unchanged, and a turn with no
++ * classification (the lane-resume turn) gets a no-evidence one carrying the flag.
++ */
++export function withReplyFiltered(cls, body, fast = null) {
++  if (!(Number(body?.replyFiltered) >= 2) || cls?.flags?.distress) return cls;
++  return { ...(cls ?? { outcome: "no_evidence", confidence: 1, source: "content_filter" }),
++    flags: { ...(cls?.flags ?? fast?.flags ?? {}), distress: true, distressKind: cls?.flags?.distressKind ?? "content_filter" } };
++}
+diff --git a/server/voice/realtimeSession.js b/server/voice/realtimeSession.js
+index 53dea108..b25557c4 100644
+--- a/server/voice/realtimeSession.js
++++ b/server/voice/realtimeSession.js
+@@ -99,7 +99,8 @@ export const realtimeSeam = {
+ // ───────────── POST /api/lesson/lane ─────────────
+ 
+ /** Why the client may move a lesson off the realtime lane. */
+-const SWITCH_REASONS = new Set(["rate_limit", "mint_refused", "unavailable"]);
++// "content_filter": the realtime reply and its one retry were blocked (4A patch request 10; the resume turn carries replyFiltered)
++const SWITCH_REASONS = new Set(["rate_limit", "mint_refused", "unavailable", "content_filter"]);
+ 
+ /**
+  * Move a live realtime lesson to the cascade lane, mid-sitting. Idempotent: a lesson already on cascade answers 200
+diff --git a/shared/contracts.ts b/shared/contracts.ts
+index a4a03369..8701a7eb 100644
+--- a/shared/contracts.ts
++++ b/shared/contracts.ts
+@@ -190,6 +190,13 @@ export interface TurnRequest {
+    * planned for the child's last answer was never voiced, the cascade voices it on this turn.
+    */
+   laneResume?: boolean;
++  /**
++   * Round 4 (4A patch request 10): the realtime lane's reply was blocked by the content filter twice in a row (the reply and
++   * its one fresh retry). A hint that can only ADD safety: the server re-plans the turn as the safeguard, as it does for a
++   * blocked text reply; it never suppresses anything, and the child's own words still go through the predicate and the model
++   * distress read.
++   */
++  replyFiltered?: number;
+   /**
+    * The duplex engine's turn summary (docs/research/duplex/INTEGRATION.md §2; server/duplex/slice.js turnSummary). Hashes
+    * and flags only, never words. `safetyPending`: the predicate tripped on a PARTIAL of this turn (sticky): the server
+diff --git a/src/lesson/api.ts b/src/lesson/api.ts
+index bf30b53c..e115a92a 100644
+--- a/src/lesson/api.ts
++++ b/src/lesson/api.ts
+@@ -62,7 +62,7 @@ export interface LessonApi {
+ }
+ 
+ /** Why a lesson left the realtime lane (server/voice/realtimeSession.js SWITCH_REASONS). */
+-export type LaneSwitchReason = "rate_limit" | "mint_refused" | "unavailable";
++export type LaneSwitchReason = "rate_limit" | "mint_refused" | "unavailable" | "content_filter";
+ 
+ export const httpLessonApi: LessonApi = {
+   start: (req) => postJson("/api/lesson/start", req),
+diff --git a/src/lesson/link.ts b/src/lesson/link.ts
+index 9bc7e483..eb2ac06b 100644
+--- a/src/lesson/link.ts
++++ b/src/lesson/link.ts
+@@ -39,7 +39,10 @@ export type LinkEvent =
+   /** The child cut the teacher off (barge-in, push-to-talk press, or typing over her). */
+   | { type: "teacher_interrupted"; responseId?: string }
+   | { type: "response_done"; responseId: string; status: ResponseStatus }
+-  | { type: "error"; message: string; fatal: boolean; code?: string };
++  | { type: "error"; message: string; fatal: boolean; code?: string }
++  /** The realtime model's reply was blocked by the content filter (response.done "incomplete", reason content_filter).
++   *  count 1: the protocol asked for ONE fresh reply; count 2: that fresh reply was blocked too (the runtime fails closed). */
++  | { type: "reply_filtered"; responseId: string; count: 1 | 2 };
+ 
+ export interface LinkLevels {
+   /** The child's microphone (voice mode only; stays 0 in text mode). */
+diff --git a/src/lesson/realtime.ts b/src/lesson/realtime.ts
+index 3a7d1499..17444b8c 100644
+--- a/src/lesson/realtime.ts
++++ b/src/lesson/realtime.ts
+@@ -157,6 +157,13 @@ export class RealtimeProtocol {
+   private pendingCreate = false;
+   private createTimer: unknown = null;
+   private createRetries = 0;
++  /**
++   * Round 4 (4A patch request 10): a reply the content filter blocked gets ONE fresh response.create (the session's same
++   * instructions). The next response created is marked as that retry; a block on a retry is never retried again (count 2:
++   * the runtime fails closed). Per response, never per lesson, so no chain of retries can form across turns.
++   */
++  private filterRetryNext = false;
++  private filterRetries = new Set<string>();
+   private readonly send: (event: Json) => void;
+   private readonly emit: (event: LinkEvent) => void;
+   private readonly keep: number;
+@@ -247,6 +254,8 @@ export class RealtimeProtocol {
+     this.cancelling = null;
+     this.pendingCreate = false;
+     this.createRetries = 0;
++    this.filterRetryNext = false;
++    this.filterRetries.clear();
+     this.clearCreateTimer();
+   }
+ 
+@@ -310,6 +319,7 @@ export class RealtimeProtocol {
+         if (!id) return;
+         this.activeResponse = id;
+         this.lastResponse = id;
++        if (this.filterRetryNext) { this.filterRetryNext = false; this.filterRetries.add(id); }
+         this.responses.set(id, { deltas: "", parts: [] });
+         this.emit({ type: "response_start", responseId: id, at: this.now() });
+         return;
+@@ -413,12 +423,20 @@ export class RealtimeProtocol {
+         this.emit({ type: "error", message: str(err.message) || "the teacher could not answer", fatal: false });
+       }
+     }
++    // a reply the content filter blocked: one fresh reply, then (a block on that one too) the runtime fails closed
++    const filtered = status === "incomplete" && str(obj(response.status_details).reason) === "content_filter";
++    const wasRetry = this.filterRetries.delete(id);
+     this.responses.delete(id);
+     this.interrupted.delete(id);
+     if (this.activeResponse === id) this.activeResponse = null;
+     if (this.cancelling === id) this.cancelling = null;
+     this.emit({ type: "response_done", responseId: id, status });
++    if (filtered) this.emit({ type: "reply_filtered", responseId: id, count: wasRetry ? 2 : 1 });
+     this.prune();
++    if (filtered && !wasRetry && !this.pendingCreate) {
++      this.filterRetryNext = true;
++      this.requestResponse();
++    }
+     if (this.pendingCreate && !this.cancelling) this.flushCreate();
+   }
+ 
+diff --git a/src/lesson/runtime.ts b/src/lesson/runtime.ts
+index cb75fa1c..5ec2784e 100644
+--- a/src/lesson/runtime.ts
++++ b/src/lesson/runtime.ts
+@@ -198,6 +198,8 @@ interface ChildInput {
+   childText: string;
+   /** The first turn after a realtime → cascade switch (TurnRequest.laneResume), with the realtime turn last heard. */
+   laneResume?: { heard: { text: string; interrupted: boolean } | null };
++  /** Round 4 (4A patch request 10): the realtime reply was blocked by the content filter twice (TurnRequest.replyFiltered). */
++  replyFiltered?: number;
+   startedAt?: number;
+   asrConfidence?: number;
+   chipId?: string;
+@@ -260,6 +262,8 @@ export class LessonRuntime {
+   private laneSwitching = false;
+   /** The last applied turn was a safeguarding hand-off the realtime lane was asked to voice (speakNow interrupt). */
+   private safeguardPending = false;
++  /** Round 4 (4A patch request 10): a twice-filtered realtime reply waiting to ride on the next turn (the resume turn). */
++  private replyFilteredPending = 0;
+   /** When the realtime lane last refused a response for quota (the first refusal is retried once). */
+   private rateLimitedAt: number | null = null;
+ 
+@@ -618,6 +622,9 @@ export class LessonRuntime {
+         }
+         return;
+       }
++      case "reply_filtered":
++        if (e.count >= 2) this.onReplyFiltered();
++        return;
+       case "error":
+         if (this.link?.mode === "voice" && laneSwitchEnabled() && this.api.switchLane) {
+           if (e.code === RATE_LIMITED) {
+@@ -743,12 +750,14 @@ export class LessonRuntime {
+       // The resume turn after a realtime → cascade switch: the realtime turn last heard rides once (the server stores
+       // and checks it although the lesson is now cascade), and no child row is stored.
+       req.laneResume = true;
++      if (this.replyFilteredPending) { req.replyFiltered = this.replyFilteredPending; this.replyFilteredPending = 0; }
+       const heard = input.laneResume.heard;
+       if (heard?.text) {
+         req.teacherText = heard.text;
+         req.teacherInterrupted = heard.interrupted;
+       }
+     } else if (input) {
++      if (input.replyFiltered) req.replyFiltered = input.replyFiltered;
+       if (input.asrConfidence !== undefined) req.asrConfidence = input.asrConfidence;
+       const teacher = this.teacherTurns.take(input.startedAt);
+       if (teacher && this.state.mode === "voice") {
+@@ -847,6 +856,29 @@ export class LessonRuntime {
+     for (const cue of this.face.program(faceUiOf(ui), this.faceTurn)) faceCues.emit(cue);
+   }
+ 
++  /**
++   * Round 4 (4A patch request 10): the realtime model's reply was blocked by the content filter, and so was its one fresh
++   * retry (RealtimeProtocol counts per response; it never retries a retry). Fail CLOSED, as the server does for a blocked
++   * text reply (brain/say.js, turn.js):
++   *   1. the helplines are on screen now (the Help sheet, lateSafeguard: the vetted fixed content, whatever comes next);
++   *   2. the lesson moves to the cascade lane, where the server writes and TTS speaks the reply: the resume turn carries
++   *      replyFiltered: 2 and the server re-plans it as the safeguard (the fixed opening in her language mode, the helplines
++   *      digit-exact), so she HEARS the vetted line instead of a third realtime attempt or silence;
++   *   3. without the lane switch (flag off, or no lane API): a signal turn with replyFiltered: 2 on this lane.
++   * When the blocked reply was itself the safeguarding hand-off, only step 1 and the switch run: the server already safeguarded.
++   */
++  private onReplyFiltered(): void {
++    if (this.state.phase !== "live") return;
++    this.store.set({ lateSafeguard: Date.now() });
++    const handOff = this.safeguardPending;
++    if (this.link?.mode === "voice" && laneSwitchEnabled() && this.api.switchLane) {
++      if (!handOff) this.replyFilteredPending = 2;
++      void this.switchToCascade("content_filter");
++      return;
++    }
++    if (!handOff) this.queueTurn({ childText: "", replyFiltered: 2 });
++  }
++
+   // ───────────── lane switch (W2-D #1) ─────────────
+ 
+   /**
