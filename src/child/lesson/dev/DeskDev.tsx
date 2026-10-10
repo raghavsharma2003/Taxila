@@ -28,6 +28,9 @@ export const FIXTURES = [
   "pause", "end", "hint", "help-menu", "help", "grownup", "no-mic", "locked",
   "correct", "not_yet", "partial", "hint-line", "with-help", "board-correct", "board-not_yet",
   "summary", "summary-tried", "keyboard", "thinking-4s",
+  // round 4 content (docs/design/round4/build/box-contract.json): the box the Desk gives a Studio piece (work-studio) and a
+  // play piece in play mode (work-play); the slot carries no artifact, so the stage paints its calm ground in the box
+  "work-studio", "work-play",
 ] as const;
 export type FixtureName = (typeof FIXTURES)[number];
 
@@ -43,6 +46,7 @@ export function fixtureModel(name: string, band: Band, size: DeskSize, faceForm:
   const family = familyOf(band);
   const young = family === "young";
   const rec = teacherRecord(null, band);
+  const play = name === "work-play";
   const work = name.startsWith("work-") || ["work-tiles", "board-correct", "board-not_yet", "help-menu", "no-mic", "T7"].includes(name);
   const floorOf = (n: string): Floor => {
     const f = n.replace(/^work-/, "");
@@ -72,12 +76,13 @@ export function fixtureModel(name: string, band: Band, size: DeskSize, faceForm:
   let tray: TrayModel | null = null;
   if (name === "work-pad" || name === "work-pad-help") tray = { kind: "pad", overlay: name === "work-pad-help" ? "help_menu" : null };
   else if (name === "work-tiles" || name === "help-menu" || name === "no-mic") tray = { kind: "tiles", tiles, overlay: name === "help-menu" ? "help_menu" : name === "no-mic" ? "no_mic" : null };
+  else if (name === "work-studio" || play) tray = { kind: "studio", studio: { slotId: `dev:${name}:slot`, intentId: `dev:${name}`, state: "revealed" } as TrayModel["studio"], overlay: null };
   else if (work || name.startsWith("board-")) tray = { kind: "board", board: { lines: [{ text: "1/2 = 2/4", kind: "math" }], chalked: answered ? (young ? "1/2" : "two") : null, mark: verdict === "correct" ? "tick" : verdict === "not_yet" ? "underline" : null } };
   const geometry = tray ? "work" : "face";
   const keyboard = name === "keyboard";
   const strip = (["T1", "T2", "T3", "T4", "T5", "T6", "T8", "T9", "RC", "PTT"] as const).includes(name as StripId & string) ? (name as StripId) : null;
   const stripH = strip && isStrip(strip) ? stripHeight(strip, { noPack: true, young, width: Math.min(size.w, 600) - 32 }) : 0;
-  const layout = solveDesk({ width: size.w, height: size.h, family, geometry, keyboard: keyboard && !young, fontScale: size.fontScale, captionsOn: band !== "b1", strip: stripH, cardNeed: size.cardNeed, stripNeed: size.stripNeed, trayNeed: size.trayNeed });
+  const layout = solveDesk({ width: size.w, height: size.h, family, geometry, keyboard: keyboard && !young, fontScale: size.fontScale, captionsOn: band !== "b1", strip: stripH, cardNeed: play ? 0 : size.cardNeed, stripNeed: size.stripNeed, trayNeed: size.trayNeed, play });
   const sheet: Sheet = name === "pause" ? "pause" : name === "end" ? "end" : name === "hint" ? "hint" : name === "help" ? "help" : name === "grownup" ? "grownup" : null;
   const caption = young ? "Do barabar tukde gino. Kaunsa aadha hai?" : "Board dekho: 1/2 barabar 2/4. Toh ek half mein kitne quarters hote hain?";
   return {
