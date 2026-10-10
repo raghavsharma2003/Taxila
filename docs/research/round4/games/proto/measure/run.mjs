@@ -105,6 +105,16 @@ if (MODE === "rerun") {
   for (const [label, o] of pairs) { await fpsRun(`rerun baseline (before ${label}) dpr1.5 x4`, { ms: 8000 }); await fpsRun(`rerun ${label} x4`, { ...o, ms: 8000 }); }
   writeFileSync(join(OUT, "rerun.json"), JSON.stringify(results, null, 1));
 }
+if (MODE === "replay") {
+  // act logs from the misconception bot on every skill x belief pair the law can show, for test-law.mjs's server-replay check
+  const all = [];
+  for (const q of ["skill=s1&mis=whole-number-bias&fade=1", "skill=s2&mis=count-marks&fade=2", "skill=s3&mis=all-less-than-one&fade=2", "skill=s1&mis=count-marks&fade=2", "skill=s3&mis=all-less-than-one&fade=3"]) {
+    const { levels } = await fpsRun(`replay capture ${q}`, { query: `bot=mis&dpr=0.75&${q}`, throttle: 1, warm: 500, ms: 14000 });
+    all.push(...levels.filter((l) => l.shown.every(Boolean)));
+  }
+  writeFileSync(join(OUT, "replay-acts-mis.json"), JSON.stringify({ levels: all }));
+  console.log("replay levels", all.length, "graded with a misconception", all.filter((l) => l.shown.some((s) => s[1])).length);
+}
 if (MODE === "sweep") {
   // what bounds the proxy: if fps rises as DPR (fill) falls while JS work stays flat, the proxy is SwiftShader fill-bound
   for (const d of [0.5, 0.75, 1, 1.5, 2]) await fpsRun(`sweep dpr${d} x4`, { query: `bot=1&dpr=${d}`, ms: 8000 });

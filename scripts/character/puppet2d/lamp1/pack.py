@@ -35,6 +35,9 @@ FACE = {
     "k": 0.94, "ke": 1.0, "kb": 1.0,
     # her sclera carries the painted lid shadow: no procedural shade at rest, 0.3 once the lid moves; her corners are pointed
     "eye": {"shade": [0.0, 0.3], "round": 3},
+    # her thinking glance: eyes up and aside, the pursed mouth, brows LEVEL (owner direction, Stage B think frame); the
+    # c-front preset's one-brow arch + low brow read skeptical on the grown-up front
+    "presets": {"thinking": {"bs": {"browOuterUpLeft": 0.0, "browDownRight": 0.0, "browInnerUp": 0.14, "eyeSquintRight": 0.08, "mouthFrownLeft": 0.2, "mouthFrownRight": 0.12}}},
     "mouth": {"lineX0": ml["x0"], "lineStep": ml["step"], "line": ml["y"], "cx": 525, "hwL": 73, "hwR": 75, "tU": 17, "tL": 26, "cy": 605, "jaw": [606, 664, 135], "k": 1.12},
 }
 g["face"] = FACE

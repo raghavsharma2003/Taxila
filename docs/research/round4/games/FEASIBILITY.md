@@ -19,16 +19,23 @@ and its GPU is not a Mali, Adreno or PowerVR. §5.3 explains what the proxy can 
 1. **The graphics bar is reachable on our stack.** A three.js 3D space-flight slice where aiming *is* placing a
    fraction on the number line runs with **25 draw calls, about 3,300 triangles, 4 textures and a 6-8 MB JS heap** [M].
    three.js is already in the repo (0.180.0, used by `src/avatar/three`), so it needs no new dependency. Tree-shaken to
-   what a game imports, it is **99 KB brotli** [M]. The cold load at 4x CPU throttle is ⟨LOAD10⟩ ms on a 10 Mbps / 60 ms
-   link and ⟨LOAD3⟩ ms on 3 Mbps / 150 ms [M, emulated]. The frame-rate proxy cannot judge the GPU: SwiftShader limits it
-   to 30 fps at DPR 1.5 whether or not the CPU is throttled. Our own JS takes 3.4-4.2 ms of a 16.7 ms frame at 4x
-   throttle [M]. The game's frame-time governor stepped DPR from 1.5 to 1.0 and reached **59.9 fps** median on the same
-   proxy [M]. The real-phone number is still owner-dependent (O-R4). The scene is roughly 100x lighter than GFXBench
-   T-Rex, which budget Mali-G52 MC2 phones run at a median 42.5 fps offscreen at 1080p [S]; that comparison is an
-   estimate, not a measurement.
+   what a game imports, it is **99 KB brotli** [M]. Cold load to the first frame at 4x CPU throttle [M, emulated]:
+   - **813 ms** on 10 Mbps / 60 ms;
+   - **1,384 ms** on 3 Mbps / 150 ms;
+   - **2,528 ms** on 1.2 Mbps / 300 ms.
+
+   The frame-rate proxy cannot judge a phone GPU. SwiftShader rasterizes on the CPU, which caps the proxy at 30 fps at
+   DPR 1.5 whether or not the CPU is throttled. Our own JS takes 3.4-4.2 ms of a 16.7 ms frame at 4x throttle [M]. The
+   game's frame-time governor stepped DPR from 1.5 to 1.0 and reached **59.9 fps** median on the same proxy [M]. The
+   real-phone number stays owner-dependent (O-R4).
+
+   The scene is far lighter than GFXBench T-Rex (about a quarter of its 1080p pixels and 3.3k triangles), which
+   Mali-G52 MC2 phones run at a 42.5 fps median offscreen [S]. That supports ≥ 60 fps on a ₹10k phone, but as an
+   estimate [E], not a measurement.
 2. **"Minecraft level" means a bounded build world, not an infinite one.** A 6 x 6-chunk voxel world (96 x 96 x 24) with
-   naive face-culled meshing gives ⟨VOXT⟩ triangles in 36 draw calls. It meshes in ⟨VOXMESH⟩ ms per chunk p50 and
-   re-meshes in ⟨VOXREMESH⟩ ms p95 after an edit at 4x throttle [M]. That is enough for a build world sized to a lesson. It
+   naive face-culled meshing holds 106,831 voxels. It draws 25.8k triangles in 19 draw calls (36 chunks, frustum-culled),
+   meshes a chunk in 7.7 ms p50 and re-meshes after an edit in 8.2 ms p50 / 19.1 ms p95 at 4x throttle, on a contended
+   host [M]. Re-meshing belongs in a worker with greedy meshing before it ships. That is enough for a build world sized to a lesson. It
    is not an endless procedural continent, which is not needed (§1.3).
 3. **"Built on the go" splits three ways, by what can be verified in time.** The table is §3.1.
    - **Built offline, reviewed once:** the **engine**, its feel and its art packs. That is every pixel, sound and shader.
@@ -139,8 +146,8 @@ must be about 1/20th of Manhattan. WebGL 2 reaches 97.13% of global users (caniu
 | JS heap | ≤ 160 MB | ≤ 120 MB | **5.6-7.7 MB** | [R] tier C ≤ 120 MB |
 | JS work per frame | ≤ 6 ms | ≤ 8 ms at 30 fps | **3.4-4.2 ms at 4x throttle** | world draw ≤ 8 ms (`live-tech.md` §4.5) [R] |
 | first-load JS (engine + game) | ≤ 250 KB br | same | 99 KB three + ~16 KB game [M] | §2 |
-| first playable frame, 4G | ≤ 3 s | ≤ 4 s | ⟨LOAD10⟩ / ⟨LOAD3⟩ ms [M, emulated] | instant-game guidance: start < 5 s, < 3 s preferred [S via Defold] |
-| initial download | ≤ 5 MB with art | ≤ 3 MB | ⟨TRANSFER⟩ KB | Poki-style 5-8 MB [S, third-party] |
+| first playable frame, 4G | ≤ 3 s | ≤ 4 s | 813 / 1,384 ms [M, emulated] | instant-game guidance: start < 5 s, < 3 s preferred [S via Defold] |
+| initial download | ≤ 5 MB with art | ≤ 3 MB | 193 KB (three.js not tree-shaken; ≈ 150 KB with the tree-shaken build) KB | Poki-style 5-8 MB [S, third-party] |
 
 **The network.** Ookla's median Indian mobile download was 131.77 Mbps in August 2025 [S]. That figure blends in 5G.
 4G medians were far lower (13.30 Mbps in Ookla's January 2023 5G-vs-4G comparison [S]). Opensignal's 2026 India
@@ -276,7 +283,7 @@ call.
 ### 3.3 The evidence path (unchanged from round 3)
 
 `law.js` is pure and runs in both the browser and node. The prototype's harness saved the browser's act log, and
-`test-law.mjs` re-graded every level in node: **⟨REPLAY⟩** levels re-graded identically [M]. That is the property the
+`test-law.mjs` re-graded every level in node: **16/16** levels re-graded identically [M]. That is the property the
 server replay needs. In production:
 1. the device posts raw acts to `POST /api/play/act`;
 2. the server rebuilds the level from its parameters and replays the acts through the same law (`server/play/grade.js`);
@@ -487,14 +494,34 @@ Evidence for that level, as produced in the smoke run:
 
 ### 5.2 Measured (all proxy; `results/*.json`)
 
-⟨MEASURED_TABLE⟩
+| measure | value | n · method | load avg (4 cores) |
+|---|---|---|---|
+| level generation (law) | **0.07 ms p50 / 0.81 ms p95** | n = 1,520 feasible levels (3 skills × 3 fades × 4 foci × 40 seeds × 2 boxes), node 22 | — |
+| compose incl. dress validation (director) | 0.65-0.75 ms p50 / 0.88-1.52 ms p95 | n = 200 per run, 3 runs, node | — |
+| law checks (solvable, shortcut-free, focus discriminated, ≥ 8 px tolerance, mal-rule → kit id, junk acts ignored, evidence rows) | **11,288 pass / 0 fail** | `test-law.mjs` | — |
+| server-replay agreement | **16/16** browser levels re-graded identically in node, 5 of them graded to a kit misconception | act logs from 8 browser runs (`results/replay-acts*.json`) | — |
+| dress delta written by an Azure model | **p50 1,133 / p90 1,442 / max 1,759 ms**, 12/12 schema-valid, 40 output tokens; language followed 12/12; music `off` for the anxious child 3/3; `ghost-first` for the first-time child 3/3 | n = 12, `taxila-fast-bg`, strict json_schema, effort none, US sandbox → eastus2, `measure/dress-probe.mjs` | — |
+| draw calls / triangles / textures | 25-29 / 3,258-4,638 / 4 | `renderer.info`, every run | — |
+| JS heap | 5.6-7.7 MB | CDP `Performance.getMetrics` | — |
+| our JS per frame (simulation, particles, labels, render submission) | **3.4-3.5 ms p50 at 4x CPU throttle**; 0.8 ms unthrottled | 3 runs × 12 s | ≤ 2.4 (own browser only) |
+| fps, 360 × 800, DPR 1.5, 4x throttle | **29.9 / 29.9 / 29.9** (p95 frame 50 ms) | 3 runs × 12 s, bot play | ≤ 2.4 |
+| fps, DPR 2, 4x | 20.0 / 20.0 / 20.0 (p95 67-83 ms); JS 4.0-4.2 ms | 3 runs × 12 s | ≤ 3.5 |
+| fps, governor on (DSF 2, starts at DPR 1.5) | stepped **1.5 → 1.25 → 1.0**, then **59.9** median | 1 run × 12 s | ~4 |
+| fps, DPR 1.5, unthrottled | 30.0 (JS 0.8 ms) | 1 run × 12 s | ~4 |
+| DPR sweep (4x) | 0.5: **59.9** · 0.75: 30.0 · 1.0: 29.9 · 1.5: 15.0 · 2.0: 12.0; unthrottled 0.5: 59.9 (p95 16.8 ms) · 1.5: 20.0; 6x at 1.5: 12.0 (JS 8.8 ms) | 8 s each | 8.3-9.5 (contended) |
+| paired re-runs (baseline, then the configuration) | baseline 15 / mistake path 15 · baseline 15 / 412 × 915 12 · baseline 15 / 1366 × 768 at DPR 1 15 | 8 s each | 5.7-8.1 (contended) |
+| cold load to first frame, 4x CPU, cache off, brotli | 10 Mbps / 60 ms: **813 ms** (753-1,274) · 3 Mbps / 150 ms: **1,384 ms** (1,353-1,413) · 1.2 Mbps / 300 ms: **2,528 ms** (2,509-2,586) | 3 runs per profile, CDP network emulation, local server | ~6 (contended) |
+| bytes for a cold load | **193 KB**: three.js as the CDN files (not tree-shaken) 144 KB br, game code 21 KB br, Latin font 21 KB (Devanagari 100 KB only when Hindi is used) | resource timing | — |
+| legibility | min text **16 px**, min Devanagari **16 px**, tick numerals 20 px, fire button 328 × 60 px, no horizontal overflow | DOM audit, 8 screens at 360 / 412 / 1366 | — |
+
+Screens (JPEG, 54-141 KB each): `shots/01-aim-360`, `02-mistake-countmarks-360` (the shot at 2/4, the mine at 2/3, "lagbhag 1/6", her count-the-parts line), `03-hit-360`, `04-doors-360` (warp gates as the door choice, laal-grah theme), `05-warp-360`, `06-hindi-mistake-360` (Devanagari caption and labels, the all-less-than-one shot squeezed under 1), `07-phone-412`, `08-laptop-1366`, `09-voxel-360`. Video: `shots/play-360.webm` (1.9 MB, 13 s, misconception bot, unthrottled; recording itself costs frames).
 
 ### 5.3 How to read these numbers (honesty)
 
 - **The frame-rate proxy measures SwiftShader, not our game.** During the runs Chromium's GPU process used 188-209% CPU
   doing software rasterization. CDP's CPU throttle slows the renderer's main thread, not that process. So the
   unthrottled reference gives the same 30 fps as the 4x-throttled run at DPR 1.5. The DPR sweep shows fps rising as
-  pixels fall (⟨SWEEP⟩). On a phone the GPU rasterizes. 25 draws, ~3.3k triangles and ~3-4 full-screen layers at
+  pixels fall (DPR 0.5 gives 59.9 fps, DPR 1.5 gives 15 and DPR 2 gives 12 under the same contention, while our JS stays at 2.3-5.6 ms). On a phone the GPU rasterizes. 25 draws, ~3.3k triangles and ~3-4 full-screen layers at
   540 × 882 are about 1/100th of a T-Rex frame. **Estimate [E]: ≥ 60 fps on a Mali-G52 MC2 at DPR 1.5, and ≥ 30 on
   the GE8320 floor.** Only a USB run on a real phone can confirm it (O-R4, M-LE-2).
 - **What the proxy does say:**
@@ -504,7 +531,7 @@ Evidence for that level, as produced in the smoke run:
   - the governor works: it stepped DPR 1.5 → 1.25 → 1.0 when p95 frame time exceeded 24 ms and held 59.9 fps.
 - **Contention.** Another session's production test (`tests/prod/owner-1-grading.mjs`, with its own browser) started
   at 07:59 UTC. The rows marked with a load average above 4 ran during it. They were re-run when the machine was quieter
-  (⟨RERUN⟩).
+  (paired with a baseline under the same contention: the mistake path ran at 15 fps against a 15 fps baseline, so the first run's 12 fps was contention, not the code path).
 - **What this prototype does not prove:**
   - fun;
   - learning;
@@ -525,7 +552,16 @@ Evidence for that level, as produced in the smoke run:
 meshing (one merged BufferGeometry and one draw call per chunk, vertex-coloured Lambert), an orbiting camera at
 360 × 800 and DPR 1.5. It optionally re-meshes the touched chunk every 250 ms, as a building child would.
 
-⟨VOXEL_TABLE⟩
+| configuration (360 × 800, DPR 1.5) | voxels | triangles drawn | draws (of chunks) | mesh per chunk p50 / p95 | re-mesh after an edit p50 / p95 | fps (proxy) | heap |
+|---|---|---|---|---|---|---|---|
+| 6 × 6 chunks, 4x throttle | 106,831 | 25,824 | 19 of 36 (frustum) | 7.7 / 33.4 ms | — | 20 | 10.0 MB |
+| 6 × 6 + an edit every 250 ms, 4x | 106,878 | 25,952 | 19 of 36 | 7.7 / 31.7 ms | **8.2 / 19.1 ms** (n = 34) | 20 | 22.6 MB |
+| 4 × 4 chunks, 4x | 53,407 | 16,488 | 11 of 16 | 7.2 / 41.7 ms | — | 20 | 9.4 MB |
+| 6 × 6, unthrottled | 106,831 | 25,824 | 19 of 36 | 3.4 / 12.5 ms | — | 30 | 12.6 MB |
+
+All four rows ran while another session's browser was loading the host (load average ~7), so the fps column is doubly
+pessimistic. The first run of this bench drew holes: a signed XOR in the value-noise hash gave negative heights. That is
+fixed (unsigned), and these rows are from the fixed build.
 
 Reading: a bounded build world sized to a lesson (6 × 6 chunks or fewer) meshes and re-meshes well inside a frame on
 the proxy's throttled main thread. Greedy meshing would cut triangles by roughly 3-10x if the floor phone needs it
@@ -569,7 +605,7 @@ the proxy's throttled main thread. Greedy meshing would cut triangles by roughly
 
 **Labels.**
 - Hinglish (`lang="hi-Latn"`), English and Hindi (`lang="hi"`, Mukta from `public/fonts`).
-- Devanagari is never under 16 px: the smallest Devanagari text in the Hindi run was ⟨HIPX⟩ px [M].
+- Devanagari is never under 16 px: the smallest Devanagari text in the Hindi run was 16 px [M].
 - Numerals ≥ 18 px (tick labels 20 px) and international digits (PD-G14).
 
 ---

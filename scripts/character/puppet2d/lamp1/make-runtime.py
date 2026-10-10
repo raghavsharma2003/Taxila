@@ -237,8 +237,18 @@ gl = rep(gl, [
 ], "gl.js")
 open(f"{OUT}/gl.js", "w").write(HDR + gl)
 
-for f in ("life.js", "expr.js"):
-    open(f"{OUT}/{f}", "w").write(HDR.replace("every c-front pixel constant now reads F (face.js), whose defaults are those values (an r8 pack renders unchanged).", "this file is unchanged from r8.") + body(f))
+open(f"{OUT}/life.js", "w").write(HDR.replace("every c-front pixel constant now reads F (face.js), whose defaults are those values (an r8 pack renders unchanged).", "this file is unchanged from r8.") + body("life.js"))
+
+# ---------------------------------------------------------------------------------------------------------------- expr.js
+# lamp1: a face may override a preset's keys (geom.face.presets[name], merged over every take; c-front has none). Asha's
+# thinking keeps the eyes up-and-aside and the pursed mouth but holds the brows LEVEL (owner direction for her Stage B
+# think frame): c-front's one-brow arch reads skeptical on the grown-up front
+expr = body("expr.js")
+expr = rep(expr, [
+    ("export const EXPRESSIONS = {", 'import { F } from "./face.js";\nexport const EXPRESSIONS = {'),
+    ("  pick(name, variant) {\n", "  pick(name, variant) {\n    const r = this.pick0(name, variant), O = F.presets && F.presets[name];\n    return O ? { P: { ...r.P, ...O, bs: { ...r.P.bs, ...(O.bs || {}) } }, i: r.i } : r;\n  }\n  pick0(name, variant) {\n"),
+], "expr.js")
+open(f"{OUT}/expr.js", "w").write(HDR.replace("every c-front pixel constant now reads F (face.js), whose defaults are those values (an r8 pack renders unchanged).", "every expression preset may be overridden per face (F.presets, none for c-front: an r8 pack renders unchanged).") + expr)
 shutil.copy(f"{HERE}/runtime-src/face.js", f"{OUT}/face.js")
 for f in ("rig.d.ts", "expr.d.ts"):
     shutil.copy(f"{SRC}/{f}", f"{OUT}/{f}")

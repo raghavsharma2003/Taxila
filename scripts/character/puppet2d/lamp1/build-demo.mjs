@@ -7,7 +7,9 @@ import { execFileSync } from "node:child_process";
 const HERE = "/home/user/Taxila/scripts/character/puppet2d/lamp1";
 const PACKDIR = "/home/user/Taxila/art/character/puppet2d/lamp1";
 const SCR = "/tmp/claude-0/-home-user/ecee9fc1-62f9-5f67-a47d-69ca79d9981a/scratchpad/r4-asha";
-execFileSync("/home/user/Taxila/node_modules/.bin/rolldown", [`${HERE}/demo/entry.js`, "--format", "iife", "--name", "TxPuppet", "--platform", "browser", "--minify", "--file", `${SCR}/demo-build/puppet.js`], { cwd: "/home/user/Taxila", stdio: "inherit" });
+// demo/rolldown.config.mjs: src/face-puppet's own ./runtime imports (driver.ts: Expressions, Listener; safety.ts) resolve to
+// the lamp1 runtime, i.e. the bundle is the product after integrate/02
+execFileSync("/home/user/Taxila/node_modules/.bin/rolldown", ["-c", `${HERE}/demo/rolldown.config.mjs`], { cwd: "/home/user/Taxila", stdio: "inherit", env: { ...process.env, OUT_FILE: `${SCR}/demo-build/puppet.js` } });
 const bundle = fs.readFileSync(`${SCR}/demo-build/puppet.js`, "utf8");
 const geom = JSON.parse(fs.readFileSync(`${PACKDIR}/geom.json`, "utf8"));
 const imgs = {};

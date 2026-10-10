@@ -188,7 +188,8 @@ window.WAV = "/*WAV*/";
     const st = (nowMs - sc.t0) / 1000;
     if (!sc.pushed && st >= SPEAK_AT - 0.2) { driver.visemes.push(1, sc.playAt, Q.get("bilabial") === "0" ? VIS : T.addBilabials(VIS, WORDS), WORDS, nowMs, window.LINE.text); sc.pushed = true; }
     if (!sc.looked && st >= THINK_AT + 0.15) { driver.lookAt(12, 9, 1.2, "demo: thinking glance"); sc.looked = true; }
-    if (!sc.warmed && st >= WARM_AT) { driver.evalEmote("warm", nowMs, undefined, 1.7, 1); sc.warmed = true; }
+    // the warm smile a beat after the floor moves to your_turn (the floor change releases whatever expression is up)
+    if (!sc.warmed && st >= WARM_AT + 0.15) { driver.evalEmote("warm", nowMs, undefined, 1.6, 1); sc.warmed = true; }
     driver.evalHead = [0, turnAt(st), 0];
     const tap = tapAt((nowMs - sc.playAt) / 1000 + SPEAK_AT);
     const f = driver.frame({ nowMs, tap, status: statusAt(st), childLevel: childAt(st) }, fan);
@@ -241,7 +242,8 @@ window.WAV = "/*WAV*/";
   window.cap = {
     ready: null,
     start() { buildSlots(); this.now = 100000; startScene(this.now, this.now + SPEAK_AT * 1000); this.st = 0; tick(this.now); },
-    step(toSt) { while (this.st < toSt - 1e-6) { this.st = Math.min(toSt, +(this.st + 1 / 60).toFixed(6)); tick(100000 + this.st * 1000); } return this.st; },
+    // gl.finish() per step: SwiftShader queues GL work, and hundreds of queued frames stall the next screenshot
+    step(toSt) { while (this.st < toSt - 1e-6) { this.st = Math.min(toSt, +(this.st + 1 / 60).toFixed(6)); tick(100000 + this.st * 1000); } for (const r of rigs) r.R.gl.finish(); return this.st; },
     log() { return LOG; },
     rigs() { return rigs.map((r) => r.slot); },
     // fps: real-time loop for `secs`, rAF timestamps, the scene playing from `from`
