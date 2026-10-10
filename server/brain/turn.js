@@ -69,6 +69,8 @@ import { perceive, fingerprint as prefetchFingerprint, adoptPrefetch, adoptMissO
 import { publishPerception } from "../latency/bus.js";
 // round 3 fix (adversarial B2): the play piece's own closed voice grammar (pure, no DOM)
 import { parseVoice } from "../../src/play/core/voice.ts";
+// round 3 fix (experience B2 / B3): the visual ask's clause made true about the screen
+import { askTruth } from "../director/shapes.js";
 import { childTurnRow, clientInstructions, debugFor, floorIncidentStmt, incidentStmt, kitFor, laneOf, runTurnTx, stageTurns, turnInsertStmt, turnLane, withAsk, withSeamUi, withStudioSlot } from "./rows.js";
 
 /**
@@ -637,6 +639,15 @@ export async function lessonTurn(req, body) {
       }
     }
   }
+  // round 3 fix (experience B2 / B3): a game / moving ask this turn could not answer with a play piece: her move says what is
+  // really on the screen (the engine kept, or nothing that moves), never "game mode on" over a number pad
+  if (!late && INTERACTIVE_ASKS.has(String(r.move?.visual ?? "")) && studioSlot?.artifact?.kind !== "play" && next.lastMove?.shape) {
+    const fixed = askTruth(next.lastMove.shape, String(r.move.visual), keepEngineNow ? "engine" : "none");
+    if (fixed !== next.lastMove.shape) {
+      next.lastMove = { ...next.lastMove, shape: fixed };
+      try { instructions = instructionsFor(next, kit); } catch (e) { console.warn(`[studio] visual-ask truth left out of the compile: ${String(e?.message ?? e).slice(0, 80)}`); }
+    }
+  }
   // Studio's actions for this turn as they reach the child: the kernel's accepted ones, minus a reveal Studio's slotFor held
   // (the tray is the Director's this turn, or the beat moved on). A reveal with no slot would mark a piece revealed, write
   // its studio_mount row and count in "Made for {child}" while the child never saw it (W2-E fixer, blocker).
@@ -830,6 +841,8 @@ export async function lessonTurn(req, body) {
       ui: withStudioSlot(withSeamUi(withAsk(r.ui, teacherReply, { ...uiVerdictOf(cls, target, state), ...(kernel.beat ? { beat: uiBeatOf(kernel.beat) } : {}) }), relational,
         { safety: r.move.kind === "safeguard" || !!incident }), studioSlot),
       ...(teacherReply ? { teacherReply, teacherReplySeq } : {}), ...(speakNow ? { speakNow } : {}), ...(r.end ? { end: true } : {}),
+      // round 3 fix (experience B8): the child chose "Start <topic>": the client starts that lesson when this one closes
+      ...(r.end && next.switchTo ? { switchTo: String(next.switchTo) } : {}),
       // W2 seams: what Studio does on this turn (W2-H proposes through statusFacts; W2-E's kernel arbitrates from BR1) and the
       // turn's Moment (W2-E). Both absent until filled.
       ...(turnStudio ? { studio: turnStudio } : {}), moment,

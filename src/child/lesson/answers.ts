@@ -32,6 +32,10 @@ export const helpAskedKey = (chipId: string | undefined): W1AKey | null => {
 };
 
 /** A small whole number as dots on a Young picture tile: null when the label is not one. */
+/** round 3 fix (experience B10): a label that is words, not a numeral / short answer ("Keep going", "Stop for today"):
+ *  its tile is set at the label size (desk.css .dk-tile[data-words]), never the 36-40 px numeral size. */
+export const isWordLabel = (label: string) => /\s/.test(String(label ?? "").trim()) || String(label ?? "").trim().length > 5;
+
 export function dotsFor(label: string): number | null {
   const n = /^\s*(\d{1,2})\s*$/.exec(label);
   if (!n) return null;

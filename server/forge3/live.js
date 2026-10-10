@@ -46,6 +46,28 @@ function factsOfLevel(logic, level) {
   }
   return on;
 }
+/**
+ * round 3 fix (experience B2): the words the child SEES on the piece's main control, in the lesson's language, so her line
+ * names the real button ("start test dabaiye" was said over a button labelled "Chalao · iodine daalo", "drag kijiye" over
+ * a tap game). Only what the view itself prints (src/play/copy.ts, the lab's own runLabel); {} when unknown.
+ */
+async function screenWordsOf(level, langPref) {
+  try {
+    const lang = langPref === "english" || langPref === "en" ? "en" : langPref === "hindi" || langPref === "hi" ? "hi" : "hinglish";
+    const { say } = await import("../../src/play/copy.ts");
+    if (level.family === "kyun-lab") {
+      const { LABS } = await import("../../src/play/families/kyun-lab/labs.ts");
+      const run = LABS[level.params?.lab]?.outcome?.runLabel?.[lang];
+      return run ? { button: `${say(lang, "lab.run")} · ${run}`.slice(0, 40) } : {};
+    }
+    // the strips are labelled A, B (C) on screen; a compare / unit level's choice buttons as strips.view prints them
+    if (level.family === "todo-jodo" && level.mode === "strips") {
+      const more = lang === "en" ? "more" : "zyada";
+      return ["compare", "unit"].includes(level.params?.goal) ? { strips: "A · B", buttons: `A ${more} · ${say(lang, "strips.same")} · B ${more}`.slice(0, 40) } : { strips: "A · B" };
+    }
+    return {};
+  } catch { return {}; }
+}
 /** The board twin: the family's board() over the level's first state; the shape src/studio/twinBoard.ts draws. */
 function twinOfLevel(logic, level) {
   try {
@@ -114,7 +136,7 @@ export async function buildLive(m, deps = {}) {
     play: { sessionId: s.sessionId, family: s.level.family, mode: s.level.mode, skillId: s.level.skillId, topicId: s.level.topicId, art, levelId: s.level.levelId },
     ...(boardTwin ? { boardTwin } : {}),
   };
-  const facts = { kind: "game", archetype: "play@1", onScreen: { game: `${s.level.family}/${s.level.mode}`, ...factsOfLevel(logic, s.level) } };
+  const facts = { kind: "game", archetype: "play@1", onScreen: { game: `${s.level.family}/${s.level.mode}`, ...factsOfLevel(logic, s.level), ...(await screenWordsOf(s.level, m.child.language_pref)) } };
   // (level and artPick stay on the server: the client fetches the level by its session; the QA harness judges it)
   return { rung: { ...rung, art }, artifact, facts, boardTwin, level: s.level, artPick: s.art ?? null, lesson: noteShown(m.lesson ?? {}, { ...rung, art }), why: plan.why, ms: Date.now() - t0 };
 }

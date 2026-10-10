@@ -92,6 +92,11 @@ export function LessonScreen({ variant, topicId, firstText }: LessonScreenProps)
       // A sibling profile on this device → the picker; else the home.
       navigate(me.children.length >= 2 ? "/who" : `/c/${cid}`);
     },
+    // round 3 fix (experience B8): the child chose to switch: the lesson they asked for starts now
+    start: (id: string) => {
+      if (state.lessonId) saveArtefact(cid, { lessonId: state.lessonId, topic: state.topic?.title ?? "", chips: m.summary?.cards.map((c) => c.answer) ?? [], at: Date.now() });
+      navigate(`/c/${cid}/lesson/new?topic=${encodeURIComponent(id)}`, { replace: true });
+    },
   }, size);
 
   // Laptop keys (§6.3.4; never while a text field has focus): Esc opens Pause on every band (§6.4.1); Space

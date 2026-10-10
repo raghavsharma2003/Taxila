@@ -68,6 +68,26 @@ const GAME = /\b(?:game|khel|activity)\s*(?:khelna|khelte|khelo|khel\s+sakte|cha
 // only the model classifier's flag sometimes made it one (2 of 5 forge acceptance runs read it as a plain worked example)
 const ANIMATION = /\b(?:animation|animate|video|cartoon|simulation|simulate|simulator)\s*(?:dikhao|dikhaiye|chahiye|please|banao|show|karo|kijiye)?\b|\bshow\s+(?:me\s+)?(?:an?\s+)?(?:animation|video|simulation)\b/i;
 
+// round 3 fix (experience B8): "sir mujhe ab yeh nahi padhna, photosynthesis padhna hai" (I don't want this, I want to study
+// photosynthesis) got the STOP check-in (keep going / break / stop), with no way to the thing they asked for. A named
+// subject to study instead is a SWITCH request, read before the stop words: the Director offers that topic (when the
+// child's class has it) or says where to find it, never a stop question. No subject named ("yeh nahi padhna") stays a stop.
+const SW_NOT = String.raw`(?:(?:mujhe|muje|hume|humein|main|mai)\s+)?(?:ab\s+)?(?:yeh|ye|is(?:e|ko)?|this|aaj\s+yeh)\s+(?:wala\s+)?(?:nahi|nahin|nhi|not|na)\s+(?:padhna|padhni|seekhna|sikhna|karna|krna|do|study|learn)(?:\s+(?:hai|h|chahta|chahti|want))?`;
+const SW_WANT = String.raw`(?:(?:mujhe|muje|hume|humein|main|mai)\s+)?([\p{L}][\p{L} ]{2,30}?)\s+(?:padhna|padhni|seekhna|sikhna|samajhna)\s+(?:hai|h|chahta\s+(?:hoon|hu|hun)|chahti\s+(?:hoon|hu|hun)|chahiye)`;
+const SWITCH_HL = new RegExp(String.raw`^(?:${SW_NOT}[\s,;.]+(?:balki\s+|bas\s+)?)?${SW_WANT}[\s.!?]*$`, "iu");
+const SWITCH_EN = /^(?:(?:no|nah|not this)[\s,]+)?(?:can\s+we|could\s+we|let'?s|i\s+want\s+to|i'?d\s+like\s+to|i\s+wanna)\s+(?:do|learn|study|start)\s+([\p{L}][\p{L} ]{2,30}?)(?:\s+instead|\s+now|\s+please)*[\s.!?]*$/iu;
+const SW_STOPWORDS = /^(?:yeh|ye|is|isko|ise|this|it|that|aur|more|kuch|abhi|aage|nahi|lesson|class|padhai|maths|math|science|homework|game|games|ek|do|mujhe|muje|hume|humein|main|mai|ab|aaj|bhi|wala|wali|dusra|doosra)$/i;
+/** PURE. The subject a child asks to study INSTEAD, or null. */
+export function switchSubjectOf(text) {
+  const t = core(T(text)) || T(text);
+  const m = t.match(SWITCH_HL) ?? t.match(SWITCH_EN);
+  const subject = (m?.[1] ?? "").replace(/^(?:the|a|an|ab|aaj)\s+/i, "").trim();
+  if (!subject || SW_STOPWORDS.test(subject) || subject.split(/\s+/).every((w) => SW_STOPWORDS.test(w))) return null;
+  // a way of doing today's work is not another subject ("can we do a simulation", "let's do a quiz", "game karna hai")
+  if (/(?<![\p{L}])(?:simulation|simulations|animation|animations|video|videos|game|games|khel|picture|pictures|diagram|drawing|activity|quiz|test|break|story|kahani|example|examples|practice|revision|homework|question|questions|sawaal|sawal|something|anything|kuch)(?![\p{L}])/iu.test(subject)) return null;
+  return subject.slice(0, 30);
+}
+
 /** Words of an attempt: a number, or more words than a request carries. An attempt is graded; its request is ignored. */
 const attemptLike = (t) => /\d/.test(t) || /\b\d+\s*\/\s*\d+\b/.test(t);
 const wordCount = (t) => t.split(/\s+/).filter(Boolean).length;
@@ -95,6 +115,9 @@ export function requestOf(text) {
   if (SHORT_BREAK.test(t) && /\b(?:jaana|jana|jau|jaun|go|break|peena|pina|drink|chahiye)\b/.test(t) && !attemptLike(t)) return { type: "break", whole };
   if (BREAK.test(t)) return { type: "break", whole };
   if (CHANGE_TOPIC.test(t)) return { type: "change_topic", whole };
+  // round 3 fix (experience B8): a named subject to study instead (before the stop words it may carry: "yeh nahi padhna")
+  const switchTo = !attemptLike(t) ? switchSubjectOf(t) : null;
+  if (switchTo) return { type: "switch", subject: switchTo, whole };
   // round 2 safety floor: the relational lexicon's anchored end_request reading too (en / hl / Devanagari; safety.js
   // wantsToStop reads the same), so "bas, aaj ke liye itna hi" is a stop in code with no model (stop-drill 4/8 → 8/8)
   if (STOP.test(t) || stopKind(text) === "end_request") return { type: "stop", whole };

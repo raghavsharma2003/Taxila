@@ -64,3 +64,28 @@ export function topicIdByPrefix(id) {
   }
   return best;
 }
+
+/**
+ * round 3 fix (experience B8): the topic of the child's class that a child's own words name ("photosynthesis padhna hai"),
+ * or null. Word match on the topic title, then the chapter title (words of 4+ letters, case-insensitive), in the subjects'
+ * teaching order. PURE over the loaded syllabus.
+ * @returns {Topic | null}
+ */
+export function findTopic(query, classLevel) {
+  const words = String(query ?? "").toLowerCase().normalize("NFC").split(/[^\p{L}\p{N}]+/u).filter((w) => w.length >= 4);
+  if (!words.length) return null;
+  // round 3 fix: each word must START a word of the title ("fraction" → "Fractions"), never sit inside one ("time" was found
+  // in "Centimetres and metres", and a child asking for time would have been offered the length lesson)
+  const res = words.map((w) => new RegExp(`(?<![\\p{L}\\p{N}])${w.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}`, "u"));
+  const has = (text) => { const t = String(text ?? "").toLowerCase(); return res.every((re) => re.test(t)); };
+  const cls = Number(classLevel);
+  for (const field of ["title", "chapter"]) {
+    for (const subject of SUBJECT_ORDER) {
+      for (const id of topicSequence(cls, subject)) {
+        const t = getTopic(id);
+        if (t && has(field === "title" ? t.title : t.chapter?.title)) return t;
+      }
+    }
+  }
+  return null;
+}

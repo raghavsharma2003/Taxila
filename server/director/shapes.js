@@ -243,6 +243,29 @@ export const showVisual = ({ kind = "diagram" } = {}) => join(
   "the key stays unsaid; then one small question about what they see",
 );
 export const VISUAL_ON_STAGE = "it is on the screen now: point them at it in your first words and say what to look at";
+// round 3 fix (experience B2 / B3): the game / moving ask's first clause, made true once the turn knows what is on the screen
+// (brain/turn.js after the play compose and the Studio slot): "game mode on. Screen par numbers dekho" was said over a
+// number pad, "drag kijiye" over a tap game, "start test dabaiye" over a button labelled otherwise.
+const GAME_CLAUSE = "they want to play: the activity is the way in now";
+const MOVING_CLAUSE = "they asked to see it moving: name the movement in your first words — what on the screen they can move, drag or tap, and what changes as they do (never a video you do not have)";
+const ASK_TRUTH = {
+  game: {
+    engine: "they asked for a game: no game is ready for this yet, say so honestly in a few words; the activity already on the screen is how to try it now (never call it a game)",
+    none: "they asked for a game: no game is ready for this yet, say so honestly in a few words; then try it together in words, with everyday things",
+  },
+  moving: {
+    engine: "they asked to see it moving: the activity on the screen is the thing to try; name only what it really shows (never a control it does not have, never a video)",
+    none: "they asked to see it moving: nothing moves on the screen this turn, say so in a few words; then show it in words with everyday things (never ask them to drag or tap)",
+  },
+};
+/** PURE. The visual ask's first clause for what the turn really put on the screen ("engine" kept, or "none" / a picture). */
+export function askTruth(shape, visual, onScreen) {
+  const k = onScreen === "engine" ? "engine" : "none";
+  const s = String(shape ?? "");
+  if (visual === "game") return s.replace(GAME_CLAUSE, ASK_TRUTH.game[k]);
+  if (visual === "animation" || visual === "simulation") return s.replace(MOVING_CLAUSE, ASK_TRUTH.moving[k]);
+  return s;
+}
 export const VISUAL_NOT_YET = "nothing is on the screen this turn: show it in words with everyday things they can picture; never a drawing made of characters, never that you cannot draw, never ask them to draw it";
 
 
@@ -410,6 +433,18 @@ export const offerWays = () => join(
   "offer a different way into today's idea: a picture, a story or a game, shown on screen as choices, or a quick change of question; ask which",
   "no lesson question this turn",
 );
+/** round 3 fix (experience B8): "yeh nahi padhna, X padhna hai": a real topic of their class, offered (never a stop question). */
+export const switchOffer = ({ title }) => join(
+  `they want to study ${clean(title) || "another topic"} instead: say yes warmly, in your own words; it is a real topic of their class`,
+  "they can start it now with the button on the screen, or carry on with today's work if they like; no guilt either way, no lesson question this turn",
+);
+/** The subject they named is not a topic of their class (or not found): honest, and the choices. */
+export const switchElsewhere = ({ subject }) => join(
+  `they want to study ${clean(subject) || "something else"} instead: say kindly that it is not in their class's lessons here, in a few words`,
+  "offer to carry on with today's work in a new way, or to stop for today; no guilt, no lesson question this turn",
+);
+/** They chose to start the other topic: a warm close of this lesson, the next one starts at once. */
+export const switchGo = ({ title }) => `they chose to start ${clean(title) || "the other topic"} now: one short warm line that you are starting it; no question, no hook`;
 /** The card cap: the question has been on the table long enough. */
 export const assertAndMove = () => "that question has been on the table long enough: give its answer plainly with one line of why (in LESSON NOW), no verdict on them; then the next question";
 export const leaveForLater = () => "that question has been on the table long enough: leave it for later, no verdict and no answer; then the next question";

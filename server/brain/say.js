@@ -10,6 +10,8 @@ import { findItem, promptFor, revealsAnswer, posesItem, handsBack, asksWhy, stri
 import { TURN_WORDS, FLOOR_FIX } from "../compiler/compile.js";
 import { HELPLINES } from "../compiler/floor.js";
 import { registerBroken, toAap } from "../director/register.js";
+// round 3 fix (experience B6): arithmetic she states, and her own closed sums, checked in code
+import { arithmeticSlip, selfPosedVerdict } from "./arith.js";
 import { praiseProblem, stripPraise, screenProblem, stripScreenRefs, leaksStage, stripStage, saysCantShow, stripCantShow, askParity, endOnAsk, joinAsk, lastQuestionOnly, wrapsUp, stripWrap, correctsRight, stripCorrection } from "../director/say.js";
 import { mixedUnitComparison, withoutMixedUnits } from "../director/units.js";
 import { screenContradiction, stripStrayParts } from "../director/modules.js";
@@ -294,7 +296,11 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
   const NOT_ANSWERS = new Set(["break", "stop", "identity", "uptake", "decline", "park", "detour", "adult", "language", "change_topic", "boredom", "back",
     "visual", "story", "example", "another", "slower", "repeat", "clarify", "answer_q", "adapt", "adopt", "harder", "easier", "skip", "know", "frustration"]);
   const wordsVerdict = p5Flag("R3CONV") && verdict === "unverified" && NOT_ANSWERS.has(String(state.lastMove?.request ?? "")) ? "ungraded" : verdict;
-  const praiseOf = (t) => praiseProblem(t, wordsVerdict);
+  // round 3 fix (experience B6): her OWN closed sum ("2000 + 50 = ___?") answered with a bare number is checked in code for
+  // her words ("Haan, 2000 g…" to a wrong 2000): never evidence, only what her line may agree with
+  const lastAsked = !item ? history.filter((x) => x.who === "teacher").at(-1)?.text ?? null : null;
+  const selfV = lastAsked ? selfPosedVerdict(lastAsked, childText) : null;
+  const praiseOf = (t) => praiseProblem(t, selfV === "incorrect" ? "not_yet" : selfV === "correct" ? "correct" : wordsVerdict);
   // p5-interaction guards (conversation/guards.js): her earlier lines of this lesson (the repeat guard reads the last six)
   const G = p5Flag("GUARDS");
   const earlier = G ? history.filter((t) => t.who === "teacher").slice(-6).map((t) => t.text) : [];
@@ -343,6 +349,8 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
     saysCantShow(t) && "cantshow",
     (guardable && revealsAnswer(t, item) || ahead && revealsAnswer(t, ahead)) && "leak",
     mixedUnitComparison(own(t)) && "units",
+    // round 3 fix (experience B6): an arithmetic result she states that is false ("1 by 4 ko 3 se multiply karne par 3 by 12")
+    !!arithmeticSlip(own(t)) && "math",
     mustPose && !posesItem(t, item, lang) && "drift",
     whyProbe && !asksWhy(t) && "nowhy",
     // round 3: a turn that ends on the pinned kit question has handed the floor back, whatever its verb ("…sabse bade
@@ -451,6 +459,7 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
       found.includes("script") && (lang === "hindi" ? "write it in Roman or Devanagari only" : "write it in Roman script only — no Devanagari or any other script"),
       found.includes("long") && `it is too long — at most ${TURN_WORDS[state.ctx.ageBand]} words`,
       found.includes("units") && "it asks which is bigger between two different kinds of quantity — compare like with like (two counts, or two lengths in one unit)",
+      found.includes("math") && (() => { const x = arithmeticSlip(own(reply)); return x ? `it states a result that is not true (${x.claim}: the true value is ${x.value}) — say it correctly, or leave the sum out` : null; })(),
       found.includes("floor") && `it breaks the safety floor — ${floorOf(reply).map((k) => FLOOR_FIX[k]).filter(Boolean).join("; ")}`,
       found.includes("forget") && "it promises to forget or keep secret what they told you about being unsafe — never promise that; say kindly that telling was right and that a grown-up they trust should know so they can help",
       // round 3: on a turn with no answer to judge (a filler, an unverified reply) "start from what they actually did" made the
@@ -534,6 +543,8 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
       // that hands the floor back is left, the item's question (or the move's fixed line) is the turn.
       const keepOr = (t) => (t && handsBack(t) ? t : item && !CLOSING_MOVES.has(kindNow) && state.pendingWhy !== item.id
         ? joinAsk(t ?? "", askEnd) : t || fallbackReply(state, item));
+      // a false sum that survived the rewrite: its sentence goes (the rest of the turn stands, or the question / fixed line)
+      if (found.includes("math")) { reply = keepOr(sentences(reply).filter((x) => !arithmeticSlip(own(x))).join(" ").trim()); guard.replaced = true; }
       if (found.includes("praise")) { reply = keepOr(stripPraise(reply)); guard.replaced = true; }
       if (found.includes("corrects")) { reply = keepOr(stripCorrection(reply, right)); guard.replaced = true; }
       if (found.includes("screen")) { reply = keepOr(stripScreenRefs(reply)); guard.replaced = true; }

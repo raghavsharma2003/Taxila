@@ -78,6 +78,12 @@ const WEAK = { do: 2, das: 10, bees: 20, tees: 30, saath: 60 };
 const has = (vals, v) => vals.some((u) => Math.abs(u - v) < 1e-9);
 const sideOf = (ws, group) => ({ a: group[0].some((w) => ws.has(w)), b: group[1].some((w) => ws.has(w)) });
 
+/** round 3 fix (experience B6): the kit's assertion rung (the 4th and last hint: the answer with one reason), or null. */
+export function assertionOf(target) {
+  const h = target?.item?.hints;
+  return Array.isArray(h) && h.length >= 4 && typeof h[h.length - 1] === "string" ? h[h.length - 1] : null;
+}
+
 /** The complete forms of the item's answer the label can be checked against. */
 export function completeForms(target) {
   const lab = target?.alsoLabel ?? {};
@@ -171,7 +177,7 @@ export function partsVerdict(target, text, allowedNums) {
   const parts = Array.isArray(target?.parts) && target.parts.length >= 2 ? target.parts.map(String) : null;
   if (!parts) return null;
   const prompt = `${target.item?.prompt_en ?? ""} ${target.item?.prompt_hi ?? ""}`;
-  const allowed = allowedNums ?? [target.key, ...(target.also ?? []), target.item?.prompt_en, target.item?.prompt_hi].flatMap((s) => [...(nums(s) ?? []), ...rawNums(s)]);
+  const allowed = allowedNums ?? [target.key, ...(target.also ?? []), target.item?.prompt_en, target.item?.prompt_hi, assertionOf(target)].flatMap((s) => [...(nums(s) ?? []), ...rawNums(s)]);
   const got = parts.map((p, i) => supports(p, text, allowed, null, prompt, parts.filter((_, j) => j !== i).flatMap((q) => [...(nums(q) ?? []), ...rawNums(q)])).ok);
   return got.every(Boolean) ? "all" : got.some(Boolean) ? "some" : "none";
 }
@@ -188,7 +194,11 @@ export function corroborate({ target, text, result }) {
   if (!["correct", "incorrect", "misconception", "partial"].includes(o)) return result;
   const forms = completeForms(target);
   if (!forms.length) return result;
-  const allowed = [target.key, ...(target.also ?? []), ...(target.options ?? []).map((x) => x?.text), target.item?.prompt_en, target.item?.prompt_hi]
+  // round 3 fix (experience B6): + the numbers of the kit's own assertion rung (the last hint states the answer with its
+  // reason: "Neither; both perimeters are 56 cm."). "neither, both are 56" was a FOREIGN number, so a right answer with the
+  // right working earned no evidence twice ("I didn't catch that clearly", then "write it separately") while a bare
+  // "neither" was credited. Only the assertion rung: an earlier rung may name a wrong option to compare.
+  const allowed = [target.key, ...(target.also ?? []), ...(target.options ?? []).map((x) => x?.text), target.item?.prompt_en, target.item?.prompt_hi, assertionOf(target)]
     .flatMap((s) => [...(nums(s) ?? []), ...rawNums(s)]);
   const reads = forms.map((f) => supports(f, text, allowed, forms, `${target.item?.prompt_en ?? ""} ${target.item?.prompt_hi ?? ""}`));
   if (o === "correct") {

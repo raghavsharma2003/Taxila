@@ -244,6 +244,8 @@ export interface TurnResponse {
    */
   speakNow?: "interrupt" | "when_free";
   end?: boolean;
+  /** round 3 fix (experience B8): the child chose "Start <topic>" on a switch offer: the client starts that lesson next. */
+  switchTo?: string;
   /**
    * Pace knobs from the vibe persona (COMPREHENSION-ENGINE.md §6.4): session config for the voice runtime, never
    * prompt text. waitNudgeSec: silence before a gentle nudge; endpointSilenceMs: end-of-speech silence.

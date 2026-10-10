@@ -23,7 +23,7 @@ import { readFileSync } from "fs";
 import { buildPracticeQueue, findItem, isomorphicFor, probeFor, promptFor, optionsSpoken, selectNext, anchorOf, whyKey, PROBE_WEIGHT, revealsAnswer, choicesFor, stripRungLabel } from "./items.js";
 import { registerNote } from "./register.js";
 import { askText } from "./say.js";
-import { getTopic } from "../content/curriculum.js";
+import { getTopic, findTopic } from "../content/curriculum.js";
 import { planModule } from "./modules.js";
 import { frustrationLoop, initialAffect, nextAffect, wheelSpinning } from "../learner/affect.js";
 import {
@@ -241,7 +241,7 @@ function warmup(s, input, item) {
   if (input.event === "start") {
     const first = s.warmup[0];
     if (first) activate(s, first);
-    return plan("greet", SH.greet({ ...s.ctx, warmup: !!first, interest: s.ctx.interests?.[0] }), first ? { item: first, probe: "P10" } : {});
+    return plan("greet", SH.greet({ ...s.ctx, warmup: !!first, interest: interestFor(input.kit, s.ctx.interests, 0) }), first ? { item: first, probe: "P10" } : {});
   }
   if (!item) { s.phase = "teach"; return teach(s, input); }
   const v = verdict(input.cls);
@@ -315,7 +315,7 @@ function teach(s, input, prefix) {
     }
     if (stepName === "hook") {
       s.teachIdx += 1;
-      return plan("hook", join(prefix, SH.hook({ interest: s.ctx.interests?.[0], contexts: kit.interestContexts, protege: s.ctx.protege })), { format: "F4" });
+      return plan("hook", join(prefix, SH.hook({ interest: interestFor(kit, s.ctx.interests, 0), contexts: kit.interestContexts, protege: s.ctx.protege })), { format: "F4" });
     }
     if (stepName === "explain") {
       s.teachIdx += 1;
@@ -323,7 +323,7 @@ function teach(s, input, prefix) {
       if (!s.introduced.includes(sk.id)) s.introduced.push(sk.id);
       // No whiteboard: the skill title is syllabus objective text, never something to put in front of a child
       // (G-OBJ-1; audit #6, the "Read and write 5- and 6-digit numbers…" ledge chip).
-      return plan("explain", SH.explain({ skillTitle: sk.title, prefix, interest: s.ctx.interests?.[1] ?? s.ctx.interests?.[0] }), { skillId: sk.id, format: kit.formats.primary });
+      return plan("explain", SH.explain({ skillTitle: sk.title, prefix, interest: interestFor(kit, s.ctx.interests, 1) }), { skillId: sk.id, format: kit.formats.primary });
     }
     // worked_example — spread over at most LIMITS.workedParts turns, one step handed to the child each time. With a
     // faded step planned next, ONE part: the first steps before the gap (the faded step is the second part), so the gap's
@@ -392,7 +392,7 @@ function poseNext(s, input, prefix, preferred) {
   if (!s.introduced.includes(item.skillId)) {
     s.introduced.push(item.skillId); s.nextItemId = item.id;
     const sk = kit.skills.find((x) => x.id === item.skillId);
-    return plan("explain", SH.explain({ skillTitle: sk?.title ?? "", prefix, interest: s.ctx.interests?.[1] ?? s.ctx.interests?.[0] }), { skillId: item.skillId, format: kit.formats.primary });
+    return plan("explain", SH.explain({ skillTitle: sk?.title ?? "", prefix, interest: interestFor(kit, s.ctx.interests, 1) }), { skillId: item.skillId, format: kit.formats.primary });
   }
   activate(s, item);
   const attemptFirst = !s.novice && s.practiced === 0;
@@ -789,6 +789,18 @@ function requestMove(s, input, item, req, labels) {
       if (p5Flag("STEER")) return plan("repair", SH.offerWays(), { chips: waysChips(labels), request: "change_topic" });
       s.sidebar = { asked: s.turn };
       return plan("break", SH.changeTopic(), { chips: [{ id: "stop:continue", label: labels.back }, { id: "break:rest", label: labels.rest }, { id: "stop:end", label: labels.stop }], request: "change_topic" });
+    // round 3 fix (experience B8): a named subject to study INSTEAD: that topic of their class is offered (a button starts
+    // it: switch:<topicId>), else an honest "not here" with the choices. Never the stop check-in, never a lesson question.
+    case "switch": {
+      const subject = String(req.subject ?? "").replace(/[^\p{L}\p{N} ]/gu, "").trim().slice(0, 30);
+      if (!subject) return null;
+      if (unsafeChildPhrase(subject)) return item ? plan(moveKindFor(item), SH.leadThenPose({ item, lead: SH.declineOob() }), { item, probe: probeFor(item), chips: optionChips(item), request: "decline" })
+        : plan("repair", SH.declineOob(), { request: "decline" });
+      const hit = findTopic(subject, s.ctx?.classLevel);
+      if (hit && hit.id === s.topicId) return resume(s, input, item, "they asked for the topic you are already on: say so warmly in a few words, then carry on");
+      if (hit) return plan("break", SH.switchOffer({ title: hit.title }), { chips: [{ id: `switch:${hit.id}`, label: `Start ${hit.title}`.slice(0, 40) }, { id: "stop:continue", label: labels.back }], request: "switch" });
+      return plan("break", SH.switchElsewhere({ subject }), { chips: [{ id: "stop:continue", label: labels.back }, { id: "stop:end", label: labels.stop }], request: "switch" });
+    }
     case "topic": {
       const subject = String(req.subject ?? "").replace(/[^\p{L}\p{N} ]/gu, "").trim().slice(0, 30);
       if (!subject) return null;
@@ -1046,6 +1058,11 @@ function decide(s, input, item) {
   // (I-7: a goodbye right after distress) is the same one check-in, never a hold. NEVER MANIPULATE holds: one check-in,
   // never a second, no guilt, and the stop chip ends it at once. Pause → End and the parent's controls never reach here.
   if (chipId === "stop:end") return toWrap(s, { stopping: true });
+  // round 3 fix (experience B8): "Start <topic>" from a switch offer: this lesson closes warmly, the client starts that one
+  if (typeof chipId === "string" && chipId.startsWith("switch:")) {
+    const t = getTopic(chipId.slice("switch:".length));
+    if (t && t.classLevel === Number(s.ctx?.classLevel ?? t.classLevel)) { s.switchTo = t.id; const w = toWrap(s, { stopping: true }); return { ...w, shape: SH.switchGo({ title: t.title }), switchTo: t.id }; }
+  }
   if (flags.wantsToStop || s.rel?.overlay?.kind === "CHECK_IN") {
     const checkIn = s.rel?.overlay?.kind === "CHECK_IN";
     if (!checkIn && (cls?.relRelease || cls?.source === "relational" || stopKind(input.text) === "leaving" || cls?.request?.type === "goodbye" || (s.stopAsked != null && s.turn - s.stopAsked <= 2))) return toWrap(s, { stopping: true });
@@ -1307,6 +1324,31 @@ export function step(prev, input) {
 /** Round 3: the most characters a move shape may grow to by OPTIONAL notes (the MOVE section cap is 260 tokens at 3.5
  *  characters per token, less its two header lines and a margin for the address-register note on a voice lane). */
 const SHAPE_ROOM = 760;
+// round 3 fix (experience B6 / non-blocking 1): the child's interest frames an example only where the KIT says the idea
+// really lives (kit.interestContexts, authored per topic). Every opener was forced through it: "Photosynthesis… jaise
+// cricket mein bat sunlight se energy leta hai", "cricket cake", "football ke equal portions". A broad interest maps to
+// the words a context uses for it; no match = the kit's own contexts frame it (the hook already lists them).
+const INTEREST_WORDS = {
+  cricket: ["cricket", "sport", "sports", "match", "team", "ground", "bat", "ball"], football: ["football", "sport", "sports", "match", "team", "ground", "goal"],
+  cooking: ["cooking", "kitchen", "recipe", "recipes", "roti", "food", "sweets"], kitchen: ["kitchen", "cooking", "recipe", "food"],
+  drawing: ["drawing", "art", "colour", "colours", "rangoli", "painting"], painting: ["painting", "art", "colour", "colours", "rangoli", "drawing"], art: ["art", "drawing", "painting", "rangoli", "colour"],
+  animals: ["animal", "animals", "pets", "zoo", "farm", "birds"], pets: ["pet", "pets", "animal", "animals"], music: ["music", "song", "songs", "drum", "instrument"],
+  games: ["game", "games"], gaming: ["game", "games"], dance: ["dance", "music"], gardening: ["garden", "plants", "farming"], plants: ["garden", "plants", "farming"],
+  space: ["space", "planet", "planets", "stars", "rocket", "missions"], cars: ["car", "cars", "road", "travel"], trains: ["train", "trains", "railway", "travel"],
+};
+export function interestFor(kit, interests, i = 0) {
+  const list = (interests ?? []).filter(Boolean);
+  const pick = list[i] ?? list[0];
+  const contexts = (kit?.interestContexts ?? []).map((c) => String(c).toLowerCase());
+  if (!pick) return undefined;
+  if (!contexts.length) return pick;                       // a kit with no authored contexts: as before
+  const fits = (x) => {
+    const w = String(x).toLowerCase().trim();
+    const words = INTEREST_WORDS[w] ?? [w];
+    return contexts.some((c) => words.some((k) => new RegExp(`(?<![\\p{L}])${k.replace(/[^\p{L}\p{N} ]/gu, "")}`, "u").test(c)));
+  };
+  return fits(pick) ? pick : list.find(fits);
+}
 /** round 3 fix (experience B7): drop shapes.js OPTIONAL_CLAUSES, least important first, until the shape fits SHAPE_ROOM. */
 export function fitShape(shape, room = SHAPE_ROOM) {
   let out = String(shape ?? "");

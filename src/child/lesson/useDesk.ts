@@ -73,6 +73,8 @@ export interface DeskNav {
   signIn(): void;
   parent(): void;
   finished(): void;
+  /** round 3 fix (experience B8): start a lesson on this topic (the child chose "Start <topic>" on a switch offer). */
+  start?(topicId: string): void;
 }
 
 /** Child requests the Hint sheet sends: the CHILD's words to the Director, in the lesson language (not chrome). */
@@ -505,6 +507,11 @@ export function useDesk(runtime: LessonRuntime, bridge: UiBridge | null, ctx: De
   // ───────── starting: no second start gate ─────────
   const [gate, setGate] = useState<null | "starting" | "locked">(null);
   const startedOnce = useRef(false);
+  // round 3 fix (experience B8): the topic the child chose to switch to; once this lesson has ended, it starts
+  const switchTo = useRef<string | null>(null);
+  useEffect(() => {
+    if (state.phase === "ended" && switchTo.current && nav.start) { const id = switchTo.current; switchTo.current = null; nav.start(id); }
+  }, [state.phase]);
   const start = useCallback(async (mode?: LessonMode) => {
     const m: StartMode = (mode ?? (ctx.textOnly ? "text" : "voice")) === "voice" ? "cascade" : "text";
     prepareEarcons(); // inside the tap when there is one: the earcon context is unlocked by the same gesture
@@ -713,6 +720,8 @@ export function useDesk(runtime: LessonRuntime, bridge: UiBridge | null, ctx: De
     },
     pickTile: (c) => {
       bridge?.stopReplay();
+      // round 3 fix (experience B8): "Start <topic>" from a switch offer: this lesson closes, that one starts next
+      if (typeof c.id === "string" && c.id.startsWith("switch:")) switchTo.current = c.id.slice("switch:".length);
       runtime.tapChip(c);
     },
     padSend: (v) => {

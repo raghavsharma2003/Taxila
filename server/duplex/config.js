@@ -41,8 +41,9 @@ export function inCohort(guardian, cohort) {
   return !!e && cohort.has(sha256(e));
 }
 
-/** How long the cohort lookup may take before the global mode answers (the client itself gives the route 1.5 s). */
-export const COHORT_LOOKUP_MS = 600;
+/** How long the cohort lookup may take. round 3 fix (experience B9): 600 → 2,500 ms, and a lookup that runs out of time
+ *  answers { retry: true } beside the global mode (the client asks again) instead of a silent "shadow" for the owner. */
+export const COHORT_LOOKUP_MS = 2500;
 
 /**
  * The mode for this request. `lookup(req)` resolves the signed-in guardian or throws (server/auth.js requireGuardian);
@@ -60,7 +61,11 @@ export async function modeFor(req, { env = process.env, lookup = null, timeoutMs
     let timer;
     const g = await Promise.race([find(req), new Promise((_, rej) => { timer = setTimeout(() => rej(new Error("slow")), timeoutMs); })]).finally(() => clearTimeout(timer));
     if (inCohort(g, cohort)) return { duplex: "on", cohort: "owner" };
-  } catch { /* not signed in, expired, slow or the database is away: the global mode */ }
+  } catch (e) {
+    // not signed in, expired or the database is away: the global mode. Too slow to tell: the global mode AND retry (the
+    // client asks once more; never a cohort by accident, never a silent shadow for the owner because Neon was slow)
+    if (e?.message === "slow") return { duplex: mode, retry: true };
+  }
   return { duplex: mode };
 }
 

@@ -10,6 +10,8 @@ import { bandForClass, effectiveBand, familyOf, type Band, type Family } from ".
 import { t, type Lang } from "./copy.ts";
 import { usePrefs, type ChildPrefs } from "./prefs.ts";
 import { TeacherNameProvider } from "../ui/teacher/useTeacher.ts";
+// round 3 fix (experience B9): the hands-free switch is asked once the child is signed in, long before a lesson starts
+import { prefetchDuplexConfig } from "../duplex/flags.ts";
 import "./child.css";
 
 export interface ChildCtx {
@@ -81,6 +83,7 @@ export function ChildShell({ children }: { children?: ReactNode }) {
     getMe()
       .then((m) => {
         if (!live) return;
+        prefetchDuplexConfig();
         setMe(m);
         setState(m.children.some((c) => c.id === cid) ? "ok" : "missing");
       })

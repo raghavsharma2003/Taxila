@@ -40,7 +40,8 @@ describe("round3 duplex owner-test cohort", () => {
     assert.deepEqual(await modeFor(withCookie, { env, lookup: async () => { throw new Error("401"); } }), { duplex: "shadow" });
     const t0 = Date.now();
     const slow = await modeFor(withCookie, { env, lookup: () => new Promise((r) => setTimeout(() => r({ email: OWNER }), 400)), timeoutMs: 50 });
-    assert.deepEqual(slow, { duplex: "shadow" });
+    // round 3 fix (experience B9): too slow to tell is the global mode AND a retry, never a silent final "shadow"
+    assert.deepEqual(slow, { duplex: "shadow", retry: true });
     assert.ok(Date.now() - t0 < 350, "the timeout bounds the route");
   });
 

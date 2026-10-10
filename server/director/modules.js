@@ -19,6 +19,7 @@
 // over every kit); an engine the client reported failing in this lesson is never mounted again (noteModuleEvents).
 import { readFileSync } from "node:fs";
 import { ENGINES, planEngine, moduleCommands, validModes } from "../../shared/engine-catalog.js";
+import { engineConfigError } from "./engine-check.js";
 import { peekLessonFill, wantLessonFill } from "../forge/lesson-fills.js";
 import { gradeEvent } from "../forge/grade.js";
 import { recheckEngineAnswer } from "./recheck.js";
@@ -52,7 +53,11 @@ const ageBandOf = (band, s) => s?.ctx?.ageBand ?? (band === "B1" || band === "B2
 /** A plan the frame can mount: a registered engine this lesson has not seen fail, with a valid mode. */
 function mountable(s, plan) {
   if (!plan || !ENGINES[plan.engine] || (s.failedEngines ?? []).includes(plan.engine)) return null;
-  return { ...plan, params: validModes(plan.engine, plan.params) };
+  const params = validModes(plan.engine, plan.params);
+  // round 3 fix (experience B2): never mount a config the frame's own normalize() refuses (it would leave the tray while
+  // her line points at it): the board / explanation path answers instead
+  if (engineConfigError(plan.engine, params)) return null;
+  return { ...plan, params };
 }
 
 /** A bound plan shown on a teaching move: the same activity, answers graded nothing. */

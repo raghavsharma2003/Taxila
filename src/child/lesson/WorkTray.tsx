@@ -17,6 +17,7 @@ import type { StudioStageEvent } from "../../studio/renderers.ts";
 // round 3 play (docs/design/round3/play/patches/04): a play piece's signed tokens → module events (src/play/lessonBridge.ts)
 import { playToLesson } from "../../play/lessonBridge.ts";
 import type { DeskActions, TrayModel } from "./model.ts";
+import { isWordLabel } from "./answers.ts";
 
 export function WorkTray({ tray, floor, young, modules, lang, ageBand, actions, onModuleFailed }:
   { tray: TrayModel; floor: Floor; young: boolean; modules?: ModuleCommandSource; lang: string; ageBand: string; actions: DeskActions; onModuleFailed?: () => void }) {
@@ -96,8 +97,6 @@ function ModuleTray({ modules, lang, ageBand, onEvent, onFailed }: { modules: Mo
 
 /** ChoiceTiles (§6.3.4): 2-4; Young tiles are picture-led, 112 dp (B1) / 96 dp (B2). They take the touch; the
  *  lamp stays on the dock, whose mode line points up at them (design-v2-rejected-moving-ring). */
-/** round 3 fix (experience B10): a label that is words, not a numeral / short answer ("Keep going", "Stop for today"). */
-export const isWordLabel = (label: string) => /\s/.test(String(label ?? "").trim()) || String(label ?? "").trim().length > 5;
 
 export function ChoiceTiles({ tiles, young, onPick, disabled }: { tiles: { id: string; label: string }[]; young: boolean; onPick: (c: { id: string; label: string }) => void; disabled?: boolean }) {
   const shown = tiles.slice(0, 4);

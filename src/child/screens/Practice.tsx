@@ -3,16 +3,18 @@
 //   /c/:cid/practice      Quick practice (§3.6): no greeting or intro; the Desk's Work layout from the first frame.
 // A safety hold this device has seen sends a typed URL or a stale tab home before any start; the server refuses a start
 // during a hold anyway (lesson.js startRefusal → the Refused screen's hold card).
-import { Navigate, useParams } from "react-router-dom";
+import { Navigate, useLocation, useParams } from "react-router-dom";
 import { useChild } from "../ChildShell.tsx";
 import { LessonScreen } from "../lesson/LessonScreen.tsx";
 import { cachedHold } from "../plan.ts";
 
 export function LessonRoute() {
   const { lid } = useParams();
+  const { search } = useLocation();
   const { cid } = useChild();
   if (cachedHold(cid)) return <Navigate to={`/c/${cid}`} replace />;
-  return <LessonScreen variant="lesson" key={lid} />;
+  // round 3 fix (experience B8): a switch to another topic is the same route with a new ?topic=: a new lesson, so a new key
+  return <LessonScreen variant="lesson" key={`${lid}${search}`} />;
 }
 
 export function PracticeRoute() {

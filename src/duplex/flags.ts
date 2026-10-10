@@ -18,7 +18,13 @@ export const DUPLEX_KEY = "tx.flag.duplex";
 // round 3: 1,500 → 3,000 ms. An unreadable switch now runs shadow, so the owner cohort must not lose to a slow answer: under
 // load the route's answer (with the cohort's guardian lookup) took > 1.5 s on a local production server while a lesson
 // started (2026-10-09). The engine only starts once the transcription call is up, so the longer wait is never on screen.
-const CONFIG_TIMEOUT_MS = 3000;
+// round 3 fix (experience B9): 3,000 → 8,000 ms, two tries, an unknown answer never cached, and the page asks early (the
+// child shell prefetches it). 1 of 3 owner lesson starts ran tap-to-talk with no sign of why: the request went out beside
+// the lesson start, hit the 3 s abort, and the null was cached for the page. The wait costs nothing on screen: the engine
+// starts only once the transcription call is up, and a lesson that began on tap-to-talk switches to hands-free when the
+// answer lands (cascadeLink startDuplex → setPushToTalk(false)).
+const CONFIG_TIMEOUT_MS = 8000;
+const CONFIG_TRIES = 2;
 
 const norm = (v: unknown): DuplexMode | null => (v === "1" || v === "on" ? "on" : v === "0" || v === "off" ? "off" : v === "shadow" ? "shadow" : null);
 
@@ -56,26 +62,45 @@ export function buildDuplex(): DuplexMode {
 }
 
 let serverMode: Promise<DuplexMode | null> | null = null;
-/** The server's runtime kill switch (one request per page). null = unknown (missing route, timeout, error): fail open. */
+/** One ask: a definite mode, null for a definite unknown value, or undefined to try again (error, timeout, "retry"). */
+async function askOnce(fetcher: typeof fetch): Promise<DuplexMode | null | undefined> {
+  try {
+    const ctl = typeof AbortController !== "undefined" ? new AbortController() : null;
+    const timer = setTimeout(() => ctl?.abort(), CONFIG_TIMEOUT_MS);
+    try {
+      const res = await fetcher("/api/duplex/config", { signal: ctl?.signal, credentials: "same-origin" });
+      if (!res.ok) return undefined;
+      const j = (await res.json()) as { duplex?: unknown; retry?: unknown };
+      // the server could not finish the cohort lookup in time: it says so instead of a silent "shadow"
+      if (j?.retry === true) return undefined;
+      return norm(j?.duplex);
+    } finally {
+      clearTimeout(timer);
+    }
+  } catch {
+    return undefined;
+  }
+}
+/**
+ * The server's runtime kill switch (one answer per page). null = unknown (missing route, timeout, error) after CONFIG_TRIES
+ * asks: the lesson runs shadow. An unknown is never cached: the next lesson on the page asks again.
+ */
 export function serverDuplex(fetcher: typeof fetch = fetch): Promise<DuplexMode | null> {
   if (serverMode) return serverMode;
-  serverMode = (async () => {
-    try {
-      const ctl = typeof AbortController !== "undefined" ? new AbortController() : null;
-      const timer = setTimeout(() => ctl?.abort(), CONFIG_TIMEOUT_MS);
-      try {
-        const res = await fetcher("/api/duplex/config", { signal: ctl?.signal, credentials: "same-origin" });
-        if (!res.ok) return null;
-        const j = (await res.json()) as { duplex?: unknown };
-        return norm(j?.duplex);
-      } finally {
-        clearTimeout(timer);
-      }
-    } catch {
-      return null;
+  const p = (async () => {
+    for (let i = 0; i < CONFIG_TRIES; i++) {
+      const v = await askOnce(fetcher);
+      if (v !== undefined) return v;
     }
+    return null;
   })();
-  return serverMode;
+  serverMode = p;
+  void p.then((v) => { if (v === null && serverMode === p) serverMode = null; });
+  return p;
+}
+/** Ask the server early (the child shell, before any lesson starts), so a lesson start never waits on it. */
+export function prefetchDuplexConfig(): void {
+  try { if (typeof fetch !== "undefined") void serverDuplex(); } catch { /* never on a child screen's path */ }
 }
 
 /** The mode for a lesson starting now. */

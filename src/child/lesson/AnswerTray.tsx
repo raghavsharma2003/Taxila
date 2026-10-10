@@ -13,7 +13,7 @@ import { Art } from "../../ui/Art.tsx";
 import { t } from "../../ui/copy.ts";
 import { Glyph } from "../../ui/icons/state.tsx";
 import type { DeskActions, TrayModel } from "./model.ts";
-import { dotsFor } from "./answers.ts";
+import { dotsFor, isWordLabel } from "./answers.ts";
 
 export function AnswerTray({ tray, floor, young, actions, slash, comma }:
   { tray: TrayModel; floor: Floor; young: boolean; actions: DeskActions; slash?: boolean; comma?: boolean }) {
@@ -54,7 +54,7 @@ export function PictureTiles({ tiles, young, onPick, disabled }:
       {shown.map((c, k) => {
         const dots = young ? dotsFor(c.label) : null;
         return (
-          <button key={c.id} type="button" className="dk-tile" onClick={() => onPick(c)} disabled={disabled} data-key={k + 1} data-choice={c.id} aria-label={c.label}>
+          <button key={c.id} type="button" className="dk-tile" onClick={() => onPick(c)} disabled={disabled} data-key={k + 1} data-choice={c.id} aria-label={c.label} data-words={isWordLabel(c.label) ? "" : undefined}>
             <span className="dk-tile-label" data-speech="">{c.label}</span>
             {dots !== null && (
               <span className="dk-tile-dots" aria-hidden="true">{Array.from({ length: dots }, (_, i) => <i key={i} />)}</span>
