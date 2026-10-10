@@ -1,5 +1,6 @@
 // V4 runner (Playwright Chromium + the harness): posters, in-app lip-sync timing, fps under CPU throttle.
-//   node evals/face-puppet/run.mjs poster            → public/face-puppet/<rev>/rest-{medium,close}.webp
+//   node evals/face-puppet/run.mjs poster [--look r8|lamp1] → public/face-puppet/<look>/rest-{medium,close}.webp
+//                                                     (views from the pack's own geom.json `views`, else r8's)
 //   node evals/face-puppet/run.mjs lipsync           → out/lipsync-inapp.json (24 lines, realtime, real AudioContext)
 //   node evals/face-puppet/run.mjs fps [rate]        → out/fps-<rate>x.json (CPU throttle via CDP, SwiftShader GL)
 // Needs: node evals/face-puppet/build-harness.mjs first.
@@ -21,13 +22,16 @@ const pct = (a, q) => { const s = [...a].sort((x, y) => x - y); return s[Math.mi
 
 try {
   if (cmd === "poster") {
-    const rev = JSON.parse(fs.readFileSync("public/face-puppet/r8/manifest.json", "utf8")).rev;
+    const look = process.argv.includes("--look") ? process.argv[process.argv.indexOf("--look") + 1] : "r8";
+    if (!["r8", "lamp1"].includes(look)) throw new Error(`--look ${look}: r8 | lamp1`);
+    const rev = JSON.parse(fs.readFileSync(`public/face-puppet/${look}/manifest.json`, "utf8")).rev;
+    const views = JSON.parse(fs.readFileSync(`public/face-puppet/${look}/geom.json`, "utf8")).views ?? { medium: [60, 8, 904], close: [140, 70, 744] };
     for (const framing of ["medium", "close"]) {
       // render at rest (a neutral warm idle, no blink) and screenshot the canvas; tall enough to reach the art's bottom
       const page = await browser.newPage({ viewport: { width: 1200, height: 1400 } });
-      const view = framing === "medium" ? [60, 8, 904] : [140, 70, 744];
+      const view = views[framing];
       const W = 904, H = Math.round(((1024 - view[1]) / view[2]) * W);
-      await page.goto(`${base}?mode=capture&px=${W}`);
+      await page.goto(`${base}?mode=capture&px=${W}&look=${look}`);
       await wait(page, "window.H && (window.H.ready || window.H.error)");
       const err = await page.evaluate("window.H.error"); if (err) throw new Error(err);
       await page.evaluate(([w, h, fr]) => { const host = document.getElementById("host"); host.style.height = h + "px"; host.style.width = w + "px"; if (fr === "close") window.H.stage.rig_view = 1; }, [W, H, framing]);

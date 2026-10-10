@@ -1,0 +1,28 @@
+diff --git a/src/child/lesson/dev/DeskDev.tsx b/src/child/lesson/dev/DeskDev.tsx
+index ba5c3940..49d73979 100644
+--- a/src/child/lesson/dev/DeskDev.tsx
++++ b/src/child/lesson/dev/DeskDev.tsx
+@@ -137,7 +137,7 @@ function LiveDesk({ band, theme, reduced, size, onSize, sp }: { band: Band; them
+     retrySchedule: sp.get("retry") === "fast" ? [200, 400, 800] : undefined,
+   }));
+   const { runtime } = useLesson(deps);
+-  const rec = teacherRecord(young ? "asha" : "arjun", band);
++  const rec = teacherRecord("asha", band); // ONE teacher for every band (dc-r4-single-teacher-asha)
+   const { m, a, dockRef, live } = useDesk(runtime, null, {
+     cid: "dev-child", band, family: familyOf(band), teacherId: rec.id, teacherName: rec.name, childName: young ? "Riya" : "Kabir",
+     lessonLang: "hinglish", captionsAlways: false, sounds: true, haptics: true, reducedMotion: reduced, timing: 1, variant: "lesson",
+diff --git a/src/child/lesson/dev/script.ts b/src/child/lesson/dev/script.ts
+index ff88fb93..eeb8866f 100644
+--- a/src/child/lesson/dev/script.ts
++++ b/src/child/lesson/dev/script.ts
+@@ -73,8 +73,8 @@ export function scriptedApi(o: ScriptOptions): LessonApi & { calls: TurnRequest[
+       if (o.startFail) throw new ApiError(o.startFail, o.startFail === 401 ? "not signed in" : "server error", null);
+       return {
+         lessonId: "dev-lesson", topic: { id: "dev-fractions", title: o.young ? "Halves" : "Fractions: halves and quarters", chapter: "Fractions" },
+-        teacher: { id: o.young ? "asha" : "arjun", name: o.young ? "Asha" : "Arjun", voice: "dev", addressedAs: o.young ? "Asha didi" : "Arjun bhaiya", role: "AI teacher",
+-          pronouns: o.young ? { subject: "she", object: "her", possessive: "her" } : { subject: "he", object: "him", possessive: "his" }, lookRev: 1, signatureColor: null },
++        teacher: { id: "asha", name: "Asha", voice: "dev", addressedAs: "Asha didi", role: "AI teacher",
++          pronouns: { subject: "she", object: "her", possessive: "her" }, lookRev: 1, signatureColor: null },
+         moduleCommands: [], ui: s.opening.ui,
+         teacherOpening: s.opening.reply, teacherOpeningSeq: 1,
+       };

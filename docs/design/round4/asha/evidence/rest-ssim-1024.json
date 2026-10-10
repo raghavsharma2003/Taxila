@@ -1,0 +1,12 @@
+{
+ "date": "2026-10-10",
+ "method": "Rest-pose gate (PLAN \u00a70.2, r8: SSIM >= 0.97 on the head crop): the live rig's rest frame (harness.mjs, every weight 0,\n1:1, view [0, 0, 1024]) against the graded rig front, with the front's own cream replaced by the canvas clear colour\n(the backdrop is a clear colour, not a layer). SSIM as r8 (gaussian sigma 1.5, on the channel mean), head crop\nx 220-830, y 40-760 in rig space; also per-region means (eyes, mouth, hair edge) so a failure points at a layer.\n    python3 -I restssim.py <render.png> [out.json]",
+ "head": 0.9734,
+ "eyes": 0.9548,
+ "mouth": 0.9807,
+ "hair_top": 0.9739,
+ "chin_neck": 0.9812,
+ "size": 1024,
+ "mean_abs_diff_head_255": 2.01,
+ "gate_head_ge_0.97": true
+}

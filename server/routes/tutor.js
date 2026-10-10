@@ -1,5 +1,9 @@
 // /api/tutors — who may teach this child, and the child's own pick (AVATAR.md §7, tutor-selection-ux §5).
 //
+// ONE teacher (dc-r4-single-teacher-asha, TAXILA_SINGLE_TEACHER default on): the offer is [asha] for every class
+// (Arjun and Uma are parked in shared/tutors.js), mode "single", and a pick of anyone else is refused (403). No client
+// surface offers a choice any more; the route stays so a stale client gets a clean answer, and for the rollback.
+//
 //   GET  /api/tutors?childId=…   → { current, chosen, mode, band, tutors: [id…] (shuffled per child, no default), live }
 //   POST /api/tutors/choose      body { childId, tutorId, source: "child" | "child_random", shown?: [id…], msToChoose? }
 //   POST /api/tutors/name        body { childId, name: string | null, source?: "child" | "parent" }   (child-names-teacher)
@@ -24,7 +28,7 @@ import { one as dbOne, q as dbQ } from "../db.js";
 import { bad, need, send, HttpError } from "../http.js";
 import { requireChild as authRequireChild } from "../auth.js";
 import { requireParentIfPinSet as parentGate } from "./parent.js";
-import { CHARACTERS, offerMode as charactersOfferMode, teacherCard, teacherFor } from "../compiler/characters/index.js";
+import { CHARACTERS, SINGLE_TEACHER_ID, offerMode as charactersOfferMode, singleTeacher, teacherCard, teacherFor } from "../compiler/characters/index.js";
 import { checkTeacherName, effectiveTeacherName } from "../compiler/characters/naming.js";
 import { CATALOGUE_REV, bandOfClass, defaultTutorFor, eligibleTutors, teacherNameSuggestions, tutorById } from "../../shared/tutors.js";
 
@@ -45,7 +49,7 @@ export function eligibilityFor(child) {
 }
 
 /** A first pick counts as a switch when a parent already set a non-default teacher (onboarding or PATCH). */
-export const effectivelyChosen = (child) => !!child.tutor_chosen_at || (!!child.teacher_id && child.teacher_id !== defaultTutorFor(child));
+export const effectivelyChosen = (child) => !!child.tutor_chosen_at || (!!child.teacher_id && child.teacher_id !== defaultTutorFor(child, { single: singleTeacher() }));
 
 /**
  * The pure decision for a pick. → { ok: true, needsParent, switching } or { ok: false, status, error }.
@@ -54,6 +58,7 @@ export const effectivelyChosen = (child) => !!child.tutor_chosen_at || (!!child.
 export function decideChoice({ child, tutorId, source, live, eligibility, chosenBefore }) {
   if (!SOURCES.includes(source)) return { ok: false, status: 400, error: "unknown source" };
   if (!tutorById(tutorId)) return { ok: false, status: 400, error: "unknown tutor" };
+  if (singleTeacher() && tutorId !== SINGLE_TEACHER_ID) return { ok: false, status: 403, error: "tutor not offered for this child" };
   if (live) return { ok: false, status: 409, error: "a lesson is live; change teacher between lessons" };
   if (!eligibility.tutors.some((t) => t.id === tutorId)) return { ok: false, status: 403, error: "tutor not offered for this child" };
   const switching = chosenBefore && child.teacher_id !== tutorId;
@@ -127,7 +132,7 @@ const NAME_SOURCES = ["child", "parent"];
  * the character's own is stored as null (no rename). No open-lesson check: the lesson pins its name at start
  * (state.ctx.teacherName), so a rename always lands on the NEXT lesson and never changes an open one.
  */
-export const NAME_SQL = `with upd as (update child set teacher_name = $2::text, teacher_name_at = now() where id = $1 returning id, teacher_id, teacher_name),
+export const NAME_SQL = `with upd as (update child set teacher_name = $2::text, teacher_name_at = now(), teacher_id = coalesce($4::text, teacher_id) where id = $1 returning id, teacher_id, teacher_name),
   hist as (insert into teacher_name_history(child_id, name, character_id, source) select id, $2::text, teacher_id, $3::text from upd returning id)
   select upd.id, upd.teacher_id, upd.teacher_name from upd`;
 
@@ -174,9 +179,11 @@ async function setName(req, res, body) {
   if (source === "parent") await deps.requireParentIfPinSet(req);
   const d = decideName({ child, name: body.name ?? null, source });
   if (!d.ok) throw new HttpError(d.status, d.error, d.reason ? { reason: d.reason, suggestions: d.suggestions } : undefined);
-  const row = await deps.one(NAME_SQL, [child.id, d.stored, source]);
+  // Single teacher: the name is given to Asha, so the row says so (a class 5-9 row may still hold the old default
+  // "arjun"; teacherFor honours a name only on the look it was given to). Otherwise the saved look is kept.
+  const row = await deps.one(NAME_SQL, [child.id, d.stored, source, singleTeacher() ? SINGLE_TEACHER_ID : null]);
   if (!row) throw new HttpError(404, "child not found");
-  const teacher = teacherFor({ ...child, teacher_name: row.teacher_name });
+  const teacher = teacherFor({ ...child, teacher_id: row.teacher_id, teacher_name: row.teacher_name });
   send(res, 200, { name: teacher.name, characterName: teacher.characterName, custom: !!row.teacher_name, teacher: teacherCard(teacher) });
 }
 

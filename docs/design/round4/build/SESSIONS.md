@@ -3,15 +3,15 @@
 Main session: `session_0135KCpT8GA8E1uzNPiw2Hw3` (integration, merges, migrations, deploys, context graph).
 Each stream session runs in its own cloud container on its own branch, cut from `claude/blissful-mayer-icwe2j`.
 
-## Wave 1 (launched after round 3 went live, 2026-10-10)
+## Wave 1 (launched 08:04-08:09 UTC 2026-10-10, right after round 3 went live; base 8e438f0 / ceaf942 / 522dca6)
 
-| stream | branch | Neon TEST branch (own compute) | brief |
-|---|---|---|---|
-| 2 live content | `claude/r4-content` | `test-r4-content` (br-restless-bonus-b73okq6v) | BUILD-PLAN §7 Brief 2 + v2 note below |
-| 3 latency | `claude/r4-latency` | `test-r4-latency` (br-aged-moon-b7zul173) | Brief 3 |
-| 4A conversation | `claude/r4-conversation` | `test-r4-conversation` (br-wandering-star-b7sldvat) | Brief 4A + v2 note below |
-| 4B duplex | `claude/r4-duplex` | `test-r4-duplex` (br-broad-glade-b7m5wv6a) | Brief 4B |
-| 5 Asha | `claude/r4-asha` | `test-r4-asha` (br-round-bonus-b7t7hyi2) | Brief 5 |
+| stream | branch | Neon TEST branch (own compute) | brief | session |
+|---|---|---|---|---|
+| 2 live content | `claude/r4-content` | `test-r4-content` (br-restless-bonus-b73okq6v) | BUILD-PLAN §7 Brief 2 + v2 note below | session_01LJoMKWmmgGVu7ZtogXAAq5 |
+| 3 latency | `claude/r4-latency` | `test-r4-latency` (br-aged-moon-b7zul173) | Brief 3 | session_01DQV1RuwHDvZdoVJ8PpbsyJ |
+| 4A conversation + session-first | `claude/r4-conversation` | `test-r4-conversation` (br-wandering-star-b7sldvat) | Brief 4A + v2 note below (phase 2: session-first server path) | session_01XvJxJ5Qd12UtBy6pTypxzy |
+| 4B duplex | `claude/r4-duplex` | `test-r4-duplex` (br-broad-glade-b7m5wv6a) | Brief 4B | session_01VFKukNpa5pM3LkqX4fPJam |
+| 5 Asha | `claude/r4-asha` | `test-r4-asha` (br-round-bonus-b7t7hyi2) | Brief 5 | session_01Lf4yL8fEizFCiGs8P2uRxF |
 
 Held for wave 2 (re-planned around the owner's 2026-10-10 vision, `dc-r4-owner-vision-superhuman-tutor`):
 games (lanes 1A-1D become real-game engines built live from the lesson), the gamified app UI/UX, the
@@ -39,3 +39,27 @@ rotate the shared Azure model and speech keys.
   what the child wants to learn, maps that to the syllabus, then teaches, continues and revises like a tuition
   teacher. The design is still being researched (`docs/research/round4/tutor/TUTOR-MODEL.md`), and the main session
   will send it. Until then, work the battery, weakest families first.
+
+## Wave 2 (launched 08:34-08:35 UTC 2026-10-10; base 0e4bb7b; plan docs/design/round4/BUILD-PLAN-V2.md)
+
+| stream | branch | Neon TEST branch (own compute) | session |
+|---|---|---|---|
+| G1 games core + Antariksh | `claude/r4-games-core` | `test-r4-games` (br-plain-mountain-b73g6jms) | session_01YEt7ysvaB8ujW1FBv7Gj2v |
+| G2 Khand voxel world | `claude/r4-khand` | `test-r4-khand` (br-solitary-dream-b7vxsn0x) | session_01DB3TSEKLjYe5fdvcbZK3TE |
+| U1 gamified app directions | `claude/r4-app-design` | `test-r4-appdesign` (br-steep-salad-b7pui4hh) | session_01UTiatddezKEzf62yL8aMux |
+
+Key sets: the lesson stack plus `DEPLOY_IMAGE` and `AZURE_IMAGE_*` (text-free art packs only) for all three.
+
+## Wave 2b (09:50 UTC 2026-10-10)
+
+| stream | branch | Neon TEST branch | session |
+|---|---|---|---|
+| Asha rig v2 (painted keys swapped, no mesh warp; after rj-r4-lamp1-mesh-warp-uncanny) | `claude/r4-asha-rig2` | `test-r4-asharig` (br-delicate-dawn-b7hy0k8b) | session_01CFBcnqMYa97thSCvAZPV1j |
+
+## Wave 3 (10:20 UTC 2026-10-10)
+
+| stream | branch | Neon TEST branch | session |
+|---|---|---|---|
+| K Kaksha app shell (U1 continues; BUILD-SPEC.md slices K0-K4; K-O answers in dc-r4-kaksha-k-o-answers) | `claude/r4-app-design` | `test-r4-appdesign` (br-steep-salad-b7pui4hh) | session_01UTiatddezKEzf62yL8aMux |
+
+Merge order: 5a → 2 → G1 → G2 → 4A → 4B → 3 → 5b → K (K slices land behind `ui.kaksha`, default off, as their seams merge).
