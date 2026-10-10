@@ -13,7 +13,35 @@ const APPLIED = /visemes\?\(f: TtsVisemeFrame\)/.test(fs.readFileSync(new URL(".
 const SKIP = APPLIED ? false : "patch 02 (src/lesson/ttsStream.ts viseme sink) not applied yet";
 const { PcmStreamPlayer, PCM_RATE } = APPLIED ? await import("../src/lesson/ttsStream.ts") : { PCM_RATE: 24000 };
 
-const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+// r4-latency (2026-10-10): the clock is VIRTUAL, as in voice-player-clock.test.mjs. performance.now() (the player's clock
+// and the fake AudioContext's) reads VNOW, the fake sources end on a virtual timer queue, and sleep(ms) advances virtual
+// time. Real sleeps let a loaded CI runner move the deltas ("re-anchor cuts" failed on CI 2026-10-10, run 38050190655).
+let VNOW = 1000;
+const timers = new Set(); // { at, fn }
+const flush = () => new Promise((r) => setImmediate(r));
+async function sleep(ms) {
+  const end = VNOW + ms;
+  await flush();
+  for (;;) {
+    const due = [...timers].filter((t) => t.at <= end).sort((a, b) => a.at - b.at)[0];
+    if (!due) break;
+    timers.delete(due);
+    VNOW = Math.max(VNOW, due.at);
+    due.fn();
+    await flush();
+  }
+  VNOW = end;
+  await flush();
+}
+// Per test, not test.before/after: npm test runs EVERY test file in one process (tests/index.js), where a root-level hook
+// holds for the whole run, so the virtual clock leaked into (or was replaced by) other files' clocks.
+// The clock being replaced is read when the test STARTS, not at import: this file can be imported while another file's
+// test has its own virtual clock installed, and keeping that one as "real" would freeze performance.now for good.
+const onVirtualClock = (fn) => async (t) => {
+  const prev = Object.getOwnPropertyDescriptor(performance, "now");
+  performance.now = () => VNOW;
+  try { return await fn(t); } finally { if (prev) Object.defineProperty(performance, "now", prev); else delete performance.now; timers.clear(); }
+};
 class FakeAudioContext {
   constructor() { this.t0 = performance.now(); this.sources = []; this.destination = { connect() {}, disconnect() {} }; }
   get currentTime() { return (performance.now() - this.t0) / 1000; }
@@ -22,8 +50,12 @@ class FakeAudioContext {
   createBufferSource() {
     const ctx = this;
     const s = { connect() {}, disconnect() {} };
-    s.start = (at) => { s.startedAt = at; s.timer = setTimeout(() => { s.onended?.(); }, Math.max(0, (at - ctx.currentTime) * 1000) + s.buffer.duration * 1000); };
-    s.stop = () => { clearTimeout(s.timer); s.stopped = true; };
+    s.start = (at) => {
+      s.startedAt = at;
+      s.timer = { at: VNOW + Math.max(0, (at - ctx.currentTime) * 1000) + s.buffer.duration * 1000, fn: () => s.onended?.() };
+      timers.add(s.timer);
+    };
+    s.stop = () => { timers.delete(s.timer); s.stopped = true; };
     this.sources.push(s);
     return s;
   }
@@ -31,7 +63,7 @@ class FakeAudioContext {
 const pcmBytes = (seconds) => new Uint8Array(Math.round(seconds * PCM_RATE) * 2).fill(1);
 const perfOf = (ctx, t) => ctx.t0 + t * 1000;
 
-test("player → puppet: viseme batches on the player clock, re-anchored on underrun and resume, cut on stop", { skip: SKIP }, async () => {
+test("player → puppet: viseme batches on the player clock, re-anchored on underrun and resume, cut on stop", { skip: SKIP }, onVirtualClock(async () => {
   const ctx = new FakeAudioContext();
   const player = new PcmStreamPlayer(ctx, ctx.destination);
   const ev = [];
@@ -68,7 +100,7 @@ test("player → puppet: viseme batches on the player clock, re-anchored on unde
     pb.stop();
     assert.equal(ev.at(-1).kind, "cut", "stop closes the mouth");
   } finally { off(); player.stop(); }
-});
+}));
 
 // Measured on the product path before the fix (evals/p2-face/out/lipsync-product-base-raw.json): one part's batches came
 // out with playAt up to 8 ms apart, because the anchor's ctx -> performance conversion was redone per batch against a
@@ -78,7 +110,7 @@ class SteppedAudioContext extends FakeAudioContext {
   get currentTime() { return Math.floor((performance.now() - this.t0) / 20) * 0.02; }
 }
 
-test("player → puppet: every batch of one part on one anchor carries the SAME playAt on a stepping audio clock", { skip: SKIP }, async () => {
+test("player → puppet: every batch of one part on one anchor carries the SAME playAt on a stepping audio clock", { skip: SKIP }, onVirtualClock(async () => {
   const ctx = new SteppedAudioContext();
   const player = new PcmStreamPlayer(ctx, ctx.destination);
   const ev = [];
@@ -99,4 +131,4 @@ test("player → puppet: every batch of one part on one anchor carries the SAME 
     assert.equal(Math.max(...p0) - Math.min(...p0), 0, `one anchor, one playAt: ${p0.map((x) => x.toFixed(2)).join(", ")}`);
     assert.ok(!ev.some((e) => e.kind === "cut"), "no re-anchor happened");
   } finally { off(); player.stop(); }
-});
+}));

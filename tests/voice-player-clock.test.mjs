@@ -3,7 +3,7 @@
 // performance.now() clock, and each clause onset is emitted when its sample is scheduled, with playAt = when it sounds:
 // the start lead, an underrun gap and a pause/resume all included. A fake AudioContext whose clock is performance.now(),
 // itself virtual (below).
-import test, { describe } from "node:test";
+import test from "node:test";
 import assert from "node:assert/strict";
 import { PcmStreamPlayer, onTtsEvent, START_LEAD_S, PCM_RATE } from "../src/lesson/ttsStream.ts";
 import { awaitLineAnchor } from "../src/modules/whiteboard/clock.ts";
@@ -31,10 +31,15 @@ async function advance(ms) {
   await flush();
 }
 const sleep = advance;
-describe("player clock on a virtual performance.now (hooks scoped to this file: npm test is ONE process)", () => {
-const realNow = Object.getOwnPropertyDescriptor(performance, "now");
-test.before(() => { performance.now = () => VNOW; });
-test.after(() => { if (realNow) Object.defineProperty(performance, "now", realNow); else delete performance.now; timers.clear(); });
+// Per test, not test.before/after: npm test runs EVERY test file in one process (tests/index.js), where a root-level hook
+// holds for the whole run, so the virtual clock leaked into (or was replaced by) other files' clocks.
+// The clock being replaced is read when the test STARTS, not at import: this file can be imported while another file's
+// test has its own virtual clock installed, and keeping that one as "real" would freeze performance.now for good.
+const onVirtualClock = (fn) => async (t) => {
+  const prev = Object.getOwnPropertyDescriptor(performance, "now");
+  performance.now = () => VNOW;
+  try { return await fn(t); } finally { if (prev) Object.defineProperty(performance, "now", prev); else delete performance.now; timers.clear(); }
+};
 class FakeAudioContext {
   constructor() { this.t0 = performance.now(); this.sources = []; this.destination = { connect() {}, disconnect() {} }; }
   get currentTime() { return (performance.now() - this.t0) / 1000; }
@@ -56,7 +61,7 @@ class FakeAudioContext {
 const pcmBytes = (seconds) => new Uint8Array(Math.round(seconds * PCM_RATE) * 2).fill(1);
 const perfOf = (ctx, t) => ctx.t0 + t * 1000;
 
-test("player clock: line anchor at the first sample; clause onsets at their scheduled playback time across an underrun", async () => {
+test("player clock: line anchor at the first sample; clause onsets at their scheduled playback time across an underrun", onVirtualClock(async () => {
   const ctx = new FakeAudioContext();
   const player = new PcmStreamPlayer(ctx, ctx.destination);
   const events = [];
@@ -110,9 +115,9 @@ test("player clock: line anchor at the first sample; clause onsets at their sche
     ctl.close();
     pb.stop();
   } finally { off(); player.stop(); }
-});
+}));
 
-test("player clock: no req → anchor still marked (any line), clause events not emitted by the player", async () => {
+test("player clock: no req → anchor still marked (any line), clause events not emitted by the player", onVirtualClock(async () => {
   const ctx = new FakeAudioContext();
   const player = new PcmStreamPlayer(ctx, ctx.destination);
   const events = [];
@@ -130,5 +135,4 @@ test("player clock: no req → anchor still marked (any line), clause events not
     assert.equal(events.length, 0);
     ctl.close();
   } finally { off(); player.stop(); }
-});
-});
+}));
