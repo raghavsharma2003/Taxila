@@ -24,7 +24,7 @@ const TEXTS = [
   "Do kilo aur paanch sau gram matlab dhai kilo",
   "Main soch raha hoon ki aata zyada bhaari hai",
 ];
-const drv = spawn(process.execPath, [path.join(ROOT, "tests/prod/r4-timeline/driver.mjs")], { env: { ...process.env, RV_SPEECH: clip }, stdio: ["ignore", "pipe", "pipe"] });
+const drv = spawn(process.execPath, [path.join(ROOT, opt("--driver", "tests/prod/r4-timeline/driver.mjs"))], { env: { ...process.env, RV_SPEECH: clip }, stdio: ["ignore", "pipe", "pipe"] });
 await new Promise((res, rej) => { drv.stdout.on("data", (d) => { if (/driver on/.test(String(d))) res(); }); drv.on("exit", (c) => rej(new Error("driver exit " + c))); setTimeout(() => rej(new Error("driver timeout")), 60000); });
 const rv = async (cmd) => { const r = await fetch("http://127.0.0.1:5199/", { method: "POST", body: JSON.stringify(cmd) }); return r.json(); };
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
