@@ -129,7 +129,7 @@
     {
       "id": "dc-r4dx-continuer-classifier-option-a",
       "kind": "decision",
-      "title": "duplex r4 (main session, 2026-10-10): build the audio continuer classifier, option A (small CRNN < 1 MB int8, AMI non-eval + Smart Turn data CC BY 4.0, no child audio), AFTER 4B's integration lands; behind a flag, default off, on only after the owner's hands-free test. Merge preconditions: the adversarial p_continuer = 1.0 test (stop / repair / safeguard timing identical), on-device latency on the reference proxy, R3 before/after on TRAIN and TEST. Ceiling with a perfect classifier: AMI TRAIN 84 -> 92/103 (89 %), so R3 >= 90 % stays unmet even then. Reversal: if the adversarial test cannot be made identical, or R4/R5/R6 or any barge-in gets worse, do not ship",
+      "title": "duplex r4 (main session, 2026-10-10): build the audio continuer classifier, option A (small CRNN < 1 MB int8, AMI non-eval + Smart Turn data CC BY 4.0, no child audio), AFTER 4B's integration lands; behind a flag, default off, on only after the owner's hands-free test. Merge preconditions: the adversarial p_continuer = 1.0 test (stop / repair / safeguard timing identical), on-device latency on the reference proxy, R3 before/after on TRAIN and TEST. Ceiling with a perfect classifier: AMI TRAIN 84 -> 92/103 (89 %), so R3 >= 90 % stays unmet even then. Reversal: if the adversarial test cannot be made identical, or R4/R5/R6 or any barge-in gets worse, do not ship. SUPERSEDED 2026-10-10 (owner via main session): no new features; built work ships for the owner to test live; the classifier is NOT started. Reopen only on a new owner decision",
       "at": "2026-10-10"
     }
   ],

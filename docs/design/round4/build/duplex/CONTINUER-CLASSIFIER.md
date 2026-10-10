@@ -7,7 +7,9 @@ interruption by its sound, before the words arrive. Constraints:
 - a child's stop, repair or safeguard must never be classified away. This must hold **by construction**, not by a
   threshold.
 
-**Status: option A APPROVED by the main session (2026-10-10), to be built after stream 4B's integration lands.** It
+**Status: NOT STARTED.** The owner decided (via the main session, 2026-10-10): no new features; built work ships for the
+owner to test live. This note is kept for a future decision. Earlier the same day: option A was approved, to be built
+after stream 4B's integration lands. It
 ships behind a flag, default off, and goes on only after the owner's hands-free test.
 
 Merge preconditions:
