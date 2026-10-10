@@ -92,10 +92,29 @@ sides=3x3`. The row now says `area=9 perimeter=12 rect=3 by 3`, and the re-run r
   decided the tier-3d DPR floor stays 1.0. The phone run (O-R4) decides it. Proposed to G1, not built here: a frame-time
   governor behind a default-off flag that lowers the render scale only when measured p95 frame time on the real device
   is over budget.
-- **C9 "at a practice beat"**: 0/3 practice lessons offered the game unasked (`results/beat-local.json`). Two of the
-  three lessons stopped taking typed input after 4 turns; the third ran 9 turns. Whether the Director offers a game
-  unprompted is the Director's and the compose ladder's rule (streams 4A / 2). Khand is admitted in coverage like every
-  family, so whatever that rule does applies to Khand. Not fixable from this stream's files; reported to main.
+- **C9 "at a practice beat": 0/3, with and without stream 2's Director patch.** n = 3 practice lessons, 11 turns each,
+  typed lane plus the NumberPad on numeric items, local prod, 2026-10-10:
+
+  | run | lessons that offered the game unasked |
+  |---|---|
+  | base | **0/3** (`results/beat-local-base.json`) |
+  | with stream 2's `if (p.visual) move.visual = p.visual;` before `planModule` (applied locally only, never committed) | **0/3** (`results/beat-local-patched.json`) |
+
+  The moves were hook → explain → worked_example → practice → hint / probe / practice (no visual ask among them).
+
+  Root cause in code: a play piece is composed only by `studioSeam.composeAsk` (`server/studio/seam.js`), which returns
+  null unless the turn's visual is one of `INTERACTIVE_ASKS`, i.e. the child asked to play or see it move.
+  `server/brain/turn.js` calls it only for such an ask. **No rule anywhere offers a play piece at a practice beat.** The
+  `move.visual` patch fixes the module default for asks, a different path. The fix is a new rule, not Khand's: at a
+  practice move on a skill the play coverage admits (`hasPlay(skillId)`), compose the play piece as for an ask. It would
+  sit in the turn kernel (`server/brain/turn.js`, stream 3) and the studio seam (`server/studio/seam.js`, stream 2), with
+  the Director (4A) deciding when. Khand is admitted like every family, so it gets that rule when it lands.
+- **"Two lessons stopped taking typed input after 4 turns": not a bug. It was my harness.** Repro (base run, 2026-10-10):
+  at turn 5 of c6-maths-ch06-t01 and c5-maths-ch11-t01 the practice item was numeric ("Khaali jagah bhariye: 3 × 160 =
+  __ m"). The dock correctly swapped the text field for the NumberPad (`number-pad` and `pad-send` visible,
+  `child-input` absent, dock `data-floor="your_turn"`). Every `/api/lesson/turn` returned 200 with a normal move, and
+  the page had no console errors. My harness only knew `child-input`, so it gave up. Taught to answer on the NumberPad,
+  all three lessons ran 11 turns (2 NumberPad answers each in two of them). No owner file to fix.
 - **Cold load**: the child can play the 2D twin within 2.2 s even at 1.2 Mbps. The 3D world itself arrives at 4.4-4.6 s
   on that link, and the twin carries the level until then.
 - **Young band (classes 1-4, voice + tiles + NumberPad, never typed words): no Khand act needs typing.** Building is
