@@ -91,6 +91,10 @@ for (const line of readFileSync(ROOT + ".env.local", "utf8").split("\n")) {
 const arg = (name, dflt) => { const i = process.argv.indexOf(`--${name}`); return i > 0 ? process.argv[i + 1] : dflt; };
 const TURNS = Number(arg("turns", 14));
 const TOPIC = arg("topic", "c4-maths-ch05-t01");
+// --class N (default 4): the simulated child's class (and age, class + 5). Round 4: the single teacher's class 5-9
+// register is measured with e.g. --class 6 --topic c6-maths-ch07-t04 (BUILD-PLAN §3.5 talk gate).
+const CLASS = Math.max(1, Math.min(9, Number(arg("class", 4)) || 4));
+const AGE = CLASS + 5;
 const KEEP = process.argv.includes("--keep");
 
 // Never the main database (review 2026-10-05: an in-process run leaked a guardian into it): the server this run talks to
@@ -125,13 +129,13 @@ async function api(method, path, body) {
 
 // ── the simulated child ──
 const PERSONA = [
-  "You are role-playing Riya, a shy 9-year-old girl in class 4 in Jaipur, on a live tutoring call with her AI teacher Asha didi.",
+  `You are role-playing Riya, a shy ${AGE}-year-old girl in class ${CLASS} in Jaipur, on a live tutoring call with her AI teacher${CLASS <= 4 ? " Asha didi" : ""}.`,
   "Reply ONLY with what Riya says next: one short line of speech, no actions, no quotes.",
-  "How Riya talks: Hinglish in Roman script, usually 2-10 words, a little shy. About one reply in five is 'pata nahi', 'hmm' or 'nahi pata didi', especially when a question feels hard.",
+  `How Riya talks: Hinglish in Roman script, usually 2-10 words, a little shy. About one reply in five is 'pata nahi', 'hmm' or ${CLASS <= 4 ? "'nahi pata didi'" : "'nahi pata'"}, especially when a question feels hard.`,
   "What Riya believes about fractions: a fraction with a BIGGER bottom number is BIGGER — 1/3 is bigger than 1/2, 1/8 is bigger than 1/4 — 'kyunki 3 bada hai 2 se'.",
   "The first two times she is asked to compare two fractions (or asked why one is bigger), she picks the one with the bigger bottom number and gives that reason — even if the teacher hints. Only after the teacher has shown it with same-size rotis, bars or pictures at least twice does she slowly start to doubt it.",
   "She does know that 1/2 means one of two equal pieces, and can name simple fractions like 1/2 or 1/4 of a roti.",
-  "She answers exactly what the teacher just asked. She is 9: never an expert, never long explanations.",
+  `She answers exactly what the teacher just asked. She is ${AGE}: never an expert, never long explanations.`,
   "Never say you are an AI or that this is a simulation.",
 ].join("\n");
 
@@ -195,7 +199,7 @@ const SIM_EMAIL = `sim+${stamp}@taxila.test`, SIM_PW = `sim-${stamp}-pw`;
 try {
   await api("POST", "/api/auth/signup", { email: SIM_EMAIL, password: SIM_PW, name: "Sim Guardian", isGuardianAdult: true });
   signedUp = true;
-  ({ child } = await api("POST", "/api/children", { firstName: "Riya", classLevel: 4, languagePref: "hinglish", interests: ["cricket", "drawing"] }));
+  ({ child } = await api("POST", "/api/children", { firstName: "Riya", classLevel: CLASS, languagePref: "hinglish", interests: ["cricket", "drawing"] }));
   await api("POST", "/api/consent", { childId: child.id, grants: { core_tutoring: true, learning_profile: true, memory: true } });
   // the whole day open, so a run after 20:30 IST is not refused by the default lesson hours (409)
   await api("POST", "/api/parent/controls", { childId: child.id, hoursStart: "00:00", hoursEnd: "23:59", dailyMinutes: 120 });
@@ -263,7 +267,7 @@ try {
     const { writeFileSync, existsSync } = await import("fs");
     const prev = existsSync(saveFile) ? JSON.parse(readFileSync(saveFile, "utf8")) : { childTalkShare: [], runs: [] };
     prev.childTalkShare = [...(prev.childTalkShare ?? []), talk.childTalkShare];
-    prev.runs = [...(prev.runs ?? []), { at: new Date().toISOString(), topic: TOPIC, turns: history.length, childTalkShare: talk.childTalkShare,
+    prev.runs = [...(prev.runs ?? []), { at: new Date().toISOString(), topic: TOPIC, class: CLASS, turns: history.length, childTalkShare: talk.childTalkShare,
       childWords: talk.childWords, teacherWords: talk.teacherWords, failures: failures.length }];
     writeFileSync(saveFile, JSON.stringify(prev, null, 2) + "\n");
     console.log(`talk: appended to ${saveFile} (n = ${prev.childTalkShare.length})`);

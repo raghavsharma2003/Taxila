@@ -73,8 +73,8 @@ export function scriptedApi(o: ScriptOptions): LessonApi & { calls: TurnRequest[
       if (o.startFail) throw new ApiError(o.startFail, o.startFail === 401 ? "not signed in" : "server error", null);
       return {
         lessonId: "dev-lesson", topic: { id: "dev-fractions", title: o.young ? "Halves" : "Fractions: halves and quarters", chapter: "Fractions" },
-        teacher: { id: o.young ? "asha" : "arjun", name: o.young ? "Asha" : "Arjun", voice: "dev", addressedAs: o.young ? "Asha didi" : "Arjun bhaiya", role: "AI teacher",
-          pronouns: o.young ? { subject: "she", object: "her", possessive: "her" } : { subject: "he", object: "him", possessive: "his" }, lookRev: 1, signatureColor: null },
+        teacher: { id: "asha", name: "Asha", voice: "dev", addressedAs: "Asha didi", role: "AI teacher",
+          pronouns: { subject: "she", object: "her", possessive: "her" }, lookRev: 1, signatureColor: null },
         moduleCommands: [], ui: s.opening.ui,
         teacherOpening: s.opening.reply, teacherOpeningSeq: 1,
       };

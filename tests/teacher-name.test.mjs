@@ -140,15 +140,16 @@ test("a renamed teacher re-introduces herself under the new name as an AI teache
 });
 
 test("the name route decides in code: refusal is a 422 with a reason and suggestions; the look's own name stores null", () => {
+  // a class 6 row that still says "arjun" (the old class default): the teacher is Asha now (single teacher), so her name is the own name
   const child = { id: "c1", class_level: 6, teacher_id: "arjun", first_name: "Kabir" };
   assert.deepEqual(decideName({ child, name: "Rohan", source: "child" }), { ok: true, stored: "Rohan" });
-  assert.deepEqual(decideName({ child, name: "arjun", source: "child" }), { ok: true, stored: null }, "the look's own name is no rename");
+  assert.deepEqual(decideName({ child, name: "asha", source: "child" }), { ok: true, stored: null }, "the look's own name is no rename");
   assert.deepEqual(decideName({ child, name: null, source: "parent" }), { ok: true, stored: null });
   const no = decideName({ child, name: "Kabir", source: "child" });
   assert.equal(no.ok, false);
   assert.equal(no.status, 422);
   assert.equal(no.reason, "own_name");
-  assert.ok(no.suggestions.includes("Arjun"));
+  assert.ok(no.suggestions.includes("Asha"));
   assert.equal(decideName({ child, name: "x".repeat(65), source: "child" }).status, 400);
   assert.equal(decideName({ child, name: "Rohan", source: "admin" }).status, 400);
   // one statement each: the child row and its history row land together; a switch resets the name (history 'switch')

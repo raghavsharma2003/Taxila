@@ -1,0 +1,11 @@
+{
+  "nodes": [
+    {
+      "id": "rj-sandbox-nss-proxy-ca-stale",
+      "kind": "rejection",
+      "title": "2026-10-10 the prod battery's browser files run against taxila.dev from this long-lived container (round3-forge, the owner-5 real-client check) failed with net::ERR_CERT_AUTHORITY_INVALID on every page.goto. round3-forge reported 18/48 in 14 s, a harness failure that looked like a product result. Cause: Playwright's Chromium trusts the NSS store at $HOME/.pki/nssdb, and that store did not hold the agent proxy's CURRENT CA (it was set up on 2026-10-02). Node, curl and fetch were fine because they read /root/.ccr/ca-bundle.crt. Fix: never disable verification; add the proxy CA to NSS (apt-get install libnss3-tools; certutil -A -d sql:$HOME/.pki/nssdb -t 'C,,' -n ccr-agent-proxy-current -i /root/.ccr/agent-proxy-ca.crt), then confirm with one page.goto to https://taxila.dev before a browser battery. Rule: a browser prod file that fails in under 30 s on page.goto is a harness failure and is re-run, never reported as a product number.",
+      "at": "2026-10-10"
+    }
+  ],
+  "edges": []
+}

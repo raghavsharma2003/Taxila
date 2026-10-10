@@ -6,14 +6,19 @@
 //   - after reveal, a failure keeps the poster (the same face, still) rather than swapping to a different face mid-lesson
 //     (TutorFace's rule: no fallback ever changes the face). A page that saw a failure starts later mounts on the
 //     fallback directly (failedThisPage), so a remount does not re-download against her TTS audio.
+//   - the lamp1 look (round 4, the grown-up Asha): EVERY fallback is her lamp1 still, before or after reveal, never
+//     TutorFace's Plate2D vector, so no path ever shows the old face (BUILD-PLAN §3.5 Part B).
+// The look (./look.ts) is fixed per mount: the device's ?look=, else the server's TAXILA_FACE_LOOK. Until it is known
+// (a first visit) the host paints only the backdrop; it never paints one look and then swaps to another.
 // The AI disclosure ("<name>, AI teacher") is on the host on every path, never on the GPU.
 import { useEffect, useMemo, useRef, useState } from "react";
 import { TutorFace, faceTutor } from "../avatar/TutorFace.tsx";
 import { p as copy } from "../avatar/picker/copy.ts";
 import type { Emotion, FloorStatus } from "../avatar/behaviour.ts";
 import type { TapSource } from "../avatar/tap.ts";
-import { puppetPoster } from "./assets.ts";
+import { DEFAULT_LOOK, lookBackground, puppetPoster, type PuppetLook } from "./assets.ts";
 import { puppetForcedOn, puppetServerAllows } from "./flag.ts";
+import { faceLook, faceLookNow } from "./look.ts";
 import { puppetBus } from "./bus.ts";
 import "./latch.ts"; // the page's safety latch listens from the first face mount, before the stage chunk loads
 import type { PuppetStage, PuppetStageEvent } from "./stage.ts";
@@ -78,20 +83,34 @@ function adopt(key: string): PuppetStage | null {
   return s;
 }
 
-/** The tutors the puppet IS: concept C is Asha (look "teal", Diya's voice). Any other tutor keeps their own face.
- *  Arjun (ship5 p2-face decision, 2026-10-05): no puppet art exists for him, and the style-C rig is one painted woman's
- *  layer stack (bun, locks, bindi, kurta; no glasses layer), judged over 8 polish rounds; a male variant "from the same
- *  rig" is new art to that bar, not a reskin. So Arjun keeps TutorFace (his 3D head / plate), and no lesson ever swaps
- *  faces. Consequence, stated plainly: class 5-9 children default to Arjun (shared/tutors.js defaultTutorFor), so they
- *  see the puppet only if they pick Asha. */
+/** The tutors the puppet IS: Asha (Diya's voice), the one teacher for every class since round 4
+ *  (dc-r4-single-teacher-asha). Arjun is parked and has no puppet art: a lesson pinned to him before round 4 keeps
+ *  TutorFace (his 3D head / plate) until it ends, so no lesson ever swaps faces. */
 export const PUPPET_TUTORS: ReadonlySet<string> = new Set(["asha"]);
+
+/** A look whose every fallback is its own still (never TutorFace): the grown-up Asha. */
+export const holdsOwnStill = (look: PuppetLook | null): boolean => look === "lamp1";
 
 export function PuppetFace(p: PuppetFaceProps) {
   const tutor = faceTutor(p.tutorId, p.band);
   const label = `${tutor.displayName.roman}, ${copy("aiTeacher", p.lang ?? "english")}`;
   const host = useRef<HTMLDivElement>(null);
   const stage = useRef<PuppetStage | null>(null);
-  const [phase, setPhase] = useState<"poster" | "live" | "fallback" | "held">(failedThisPage ? "fallback" : "poster");
+  const [look, setLook] = useState<PuppetLook | null>(() => faceLookNow());
+  const [phase, setPhase] = useState<"poster" | "live" | "fallback" | "held">(() => (failedThisPage ? (holdsOwnStill(faceLookNow()) ? "held" : "fallback") : "poster"));
+  useEffect(() => {
+    if (look) return;
+    let alive = true;
+    faceLook().then((l) => {
+      if (!alive) return;
+      setLook(l);
+      if (failedThisPage && holdsOwnStill(l)) setPhase("held");
+    });
+    return () => {
+      alive = false;
+    };
+  }, [look]);
+  const stageOff = phase === "fallback" || phase === "held";
   const live = useRef({ status: p.status, mic: p.mic, reducedMotion: !!p.reducedMotion });
   live.current = { status: p.status, mic: p.mic, reducedMotion: !!p.reducedMotion };
   const onEvent = useRef(p.onEvent);
@@ -101,12 +120,12 @@ export function PuppetFace(p: PuppetFaceProps) {
   const sources = useMemo(() => p.teacher, [srcKey]); // the key IS the dependency
 
   useEffect(() => {
-    if (p.still || phase === "fallback" || !host.current) return;
+    if (p.still || stageOff || !host.current || !look) return;
     let cancelled = false;
     let micTimer = 0;
     let failed = false;
     const el = host.current;
-    const parkKey = `${tutor.id}|${p.band}|${srcKey}`;
+    const parkKey = `${tutor.id}|${look}|${p.band}|${srcKey}`;
     const fail = (reason: string) => {
       if (cancelled) return;
       failed = true;
@@ -114,7 +133,7 @@ export function PuppetFace(p: PuppetFaceProps) {
       onEvent.current?.({ type: "fallback", reason });
       stage.current?.dispose();
       stage.current = null;
-      setPhase(revealed.current ? "held" : "fallback");
+      setPhase(revealed.current || holdsOwnStill(look) ? "held" : "fallback");
     };
     const handler = (e: PuppetStageEvent) => {
       onEvent.current?.(e);
@@ -148,7 +167,7 @@ export function PuppetFace(p: PuppetFaceProps) {
         if (cancelled) return;
         if (!allowed && !puppetForcedOn()) { fail("off: server kill switch (TAXILA_FACE_PUPPET2D=0)"); return; }
         const s = new PuppetStage(el, {
-          band: p.band, sources, framing: p.framing ?? "medium", reducedMotion: live.current.reducedMotion,
+          look, band: p.band, sources, framing: p.framing ?? "medium", reducedMotion: live.current.reducedMotion,
           seed: [...tutor.id].reduce((a, c) => a + c.charCodeAt(0), 0),
           onEvent: handler,
         });
@@ -164,7 +183,7 @@ export function PuppetFace(p: PuppetFaceProps) {
       .catch((err: unknown) => fail(`puppet failed: ${String(err).slice(0, 160)}`));
     return cleanup;
     // rebuilt only when the person, the framing or the meters change; status and motion flow through set()
-  }, [p.still, tutor.id, p.framing, sources, phase === "fallback"]);
+  }, [p.still, tutor.id, p.framing, sources, stageOff, look]);
 
   useEffect(() => {
     stage.current?.set({ status: p.status, reducedMotion: !!p.reducedMotion, gentle: !!p.gentle });
@@ -174,7 +193,7 @@ export function PuppetFace(p: PuppetFaceProps) {
     if (p.affect) stage.current?.driver.affect(p.affect, 1, performance.now());
   }, [p.affect]);
 
-  if (phase === "fallback" && !p.still) {
+  if (phase === "fallback" && !p.still && !holdsOwnStill(look)) {
     return (
       <TutorFace tutorId={p.tutorId} band={p.band} status={p.status} teacher={p.teacher} mic={p.mic} reducedMotion={p.reducedMotion}
         gentle={p.gentle} affect={p.affect ?? null} framing={p.framing} lang={p.lang} className={p.className} />
@@ -182,9 +201,10 @@ export function PuppetFace(p: PuppetFaceProps) {
   }
   return (
     <div ref={host} className={`fp-host ${p.className ?? ""}`} data-face="puppet2d" data-phase={p.still ? "still" : phase} data-tutor={tutor.id}
-      role="img" aria-label={label} style={{ position: "relative", overflow: "hidden", width: "100%", height: "100%", background: "rgb(251,229,189)" }}>
-      <img src={puppetPoster(p.framing ?? "medium")} alt="" aria-hidden="true" draggable={false} decoding="async"
-        style={{ position: "absolute", left: 0, top: 0, width: "100%", height: "auto", display: "block" }} />
+      data-look={look ?? "pending"} role="img" aria-label={label}
+      style={{ position: "relative", overflow: "hidden", width: "100%", height: "100%", background: lookBackground(look ?? DEFAULT_LOOK) }}>
+      {look && <img src={puppetPoster(p.framing ?? "medium", look)} alt="" aria-hidden="true" draggable={false} decoding="async"
+        style={{ position: "absolute", left: 0, top: 0, width: "100%", height: "auto", display: "block" }} />}
     </div>
   );
 }

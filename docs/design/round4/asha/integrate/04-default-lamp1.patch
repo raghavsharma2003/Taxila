@@ -1,0 +1,63 @@
+diff --git a/src/face-puppet/look.ts b/src/face-puppet/look.ts
+index bccd3c01c3d5d017e427c567304f7ed7103a60fe..eb1cd613c67a748717973149e322b3bd9af99bf0 100644
+--- a/src/face-puppet/look.ts
++++ b/src/face-puppet/look.ts
+@@ -12,8 +12,8 @@
+ // lesson never changes face.
+ export type PuppetLookId = "r8" | "lamp1";
+ export const LOOK_IDS: readonly PuppetLookId[] = ["r8", "lamp1"];
+-/** The deploy default. integrate/04-default-lamp1.patch flips it to "lamp1" once the switch has been checked in the app. */
+-export const DEFAULT_LOOK: PuppetLookId = "r8";
++/** The deploy default: lamp1, the grown-up Asha (round 4). ?look=r8 on a device brings concept C back. */
++export const DEFAULT_LOOK: PuppetLookId = "lamp1";
+ export const LOOK_FLAG_KEY = "tx.flag.face.look";
+ 
+ const isLook = (v: unknown): v is PuppetLookId => typeof v === "string" && (LOOK_IDS as readonly string[]).includes(v);
+diff --git a/server/face-puppet/rev.js b/server/face-puppet/rev.js
+index 754a57344722487a751aedcd767b27a473cd333e..73a472e1ed966f6ae684da7b3f9e1de3df7ad11e 100644
+--- a/server/face-puppet/rev.js
++++ b/server/face-puppet/rev.js
+@@ -1,3 +1,3 @@
+ // The shipped puppet pack revision (mirrors src/face-puppet/assets.ts PUPPET_REV; tests/p2-face-server.test.mjs checks
+ // the two agree and that public/face-puppet/<rev>/ exists).
+-export const PUPPET_REV = "r8";
++export const PUPPET_REV = "lamp1";
+diff --git a/tests/p2-face-server.test.mjs b/tests/p2-face-server.test.mjs
+index d380be6c0d4bf3e9761b8ccf8121e766a2c102ee..0c5f96105d0182ca31e969a64fc4bf7a2e69d31c 100644
+--- a/tests/p2-face-server.test.mjs
++++ b/tests/p2-face-server.test.mjs
+@@ -8,7 +8,7 @@ import assert from "node:assert/strict";
+ import fs from "node:fs";
+ import { faceConfig, routes } from "../server/face-puppet/config.js";
+ import { PUPPET_REV as SERVER_REV } from "../server/face-puppet/rev.js";
+-import { PUPPET_REV as CLIENT_REV } from "../src/face-puppet/assets.ts";
++import { PUPPET_REV as CLIENT_REV, LOOKS } from "../src/face-puppet/assets.ts";
+ 
+ const read = (p) => fs.readFileSync(new URL(p, import.meta.url), "utf8");
+ 
+@@ -39,7 +39,8 @@ test("GET /api/face/config answers the switches, short-cached, with no child dat
+ test("the pack revision agrees (server, client) and the pack is in public/", () => {
+   assert.equal(SERVER_REV, CLIENT_REV);
+   const dir = new URL(`../public/face-puppet/${CLIENT_REV}/`, import.meta.url);
+-  for (const f of ["geom.json", "face.webp", "rest-medium.webp", "rest-close.webp"]) assert.ok(fs.existsSync(new URL(f, dir)), `${f} shipped`);
++  const posters = [...new Set(["medium", "close"].map((f) => LOOKS[CLIENT_REV].poster(f).split("/").pop()))];
++  for (const f of ["geom.json", "face.webp", ...posters]) assert.ok(fs.existsSync(new URL(f, dir)), `${f} shipped`);
+ });
+ 
+ const P01 = /onLead/.test(read("../server/voice/expressive/pauses.js")) && /staticMarks/.test(read("../server/voice/speech.js"));
+diff --git a/evals/face-puppet/bundle-size.mjs b/evals/face-puppet/bundle-size.mjs
+index 62ffcf0975d6f64f42dee109656e018a4373750d..2240f9725bfa259c400d700da0b336706e724be6 100644
+--- a/evals/face-puppet/bundle-size.mjs
++++ b/evals/face-puppet/bundle-size.mjs
+@@ -15,7 +15,9 @@ for (const [k, ext] of [["own", (id) => !id.includes("src/face-puppet") && !id.s
+   const files = fs.readdirSync(out, { recursive: true }).filter((f) => f.endsWith(".js"));
+   res[k] = Object.fromEntries(files.map((f) => { const b = fs.readFileSync(path.join(out, f)); return [f, { raw: b.length, gz: zlib.gzipSync(b, { level: 9 }).length }]; }));
+ }
+-const pack = JSON.parse(fs.readFileSync("public/face-puppet/r8/manifest.json", "utf8"));
+-res.pack = { bytes: pack.packBytes, files: Object.keys(pack.pack).length, posters: ["medium", "close"].map((f) => fs.statSync(`public/face-puppet/r8/rest-${f}.webp`).size) };
++const { PUPPET_REV } = await import("../../server/face-puppet/rev.js");
++const pack = JSON.parse(fs.readFileSync(`public/face-puppet/${PUPPET_REV}/manifest.json`, "utf8"));
++const posterFiles = fs.readdirSync(`public/face-puppet/${PUPPET_REV}/`).filter((f) => /^rest(-\w+)?\.webp$/.test(f));
++res.pack = { rev: PUPPET_REV, bytes: pack.packBytes, files: Object.keys(pack.pack).length, posters: posterFiles.map((f) => fs.statSync(`public/face-puppet/${PUPPET_REV}/${f}`).size) };
+ fs.writeFileSync("evals/face-puppet/out/bundle-size.json", JSON.stringify(res, null, 1));
+ console.log(JSON.stringify(res, null, 1));

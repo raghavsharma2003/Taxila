@@ -1,5 +1,5 @@
 // lamp1 (round 4, Asha option 4): derived from the r8 runtime by scripts/character/puppet2d/lamp1/make-runtime.py;
-// this file is unchanged from r8.
+// every expression preset may be overridden per face (F.presets, none for c-front: an r8 pack renders unchanged).
 // r2 expression emitters for the painted puppet, as COMPOSITOR PRESETS (judge r1 item 6): behaviour.ts is unchanged
 // (its Emotion union is the main loop's call); the Director calls Expressions.emote(name) and the layer mixes its
 // envelope into behaviour's ARKit frame BEFORE the Compositor, so the HeadRig contract (ARKit + visemes + tongue +
@@ -9,6 +9,7 @@
 // eyeSquint/eyeWide/eyeBlink (lowered lids), mouth via smile/press/frown/mouthLeft (aside), plus head and gaze offsets.
 // "Left" = her left = screen right. Values < 0 suppress that key (scale behaviour's own value toward 0).
 // Head: [pitch + = chin down, yaw + = her left, roll + = top toward screen left]. Gaze: [yaw + = screen right, pitch + = up].
+import { F } from "./face.js";
 export const EXPRESSIONS = {
   // c-thinking: head rolled, one brow arched high, the other low; eyes up and away; small pressed mouth slid aside
   thinking: {
@@ -188,6 +189,10 @@ export class Expressions {
   }
   /** r6: the take for this emote: random among the emotion's variants, never the previous one (variant = force one). */
   pick(name, variant) {
+    const r = this.pick0(name, variant), O = F.presets && F.presets[name];
+    return O ? { P: { ...r.P, ...O, bs: { ...r.P.bs, ...(O.bs || {}) } }, i: r.i } : r;
+  }
+  pick0(name, variant) {
     const V = VARIANTS[name];
     if (!V) return { P: EXPRESSIONS[name], i: 0 };
     const W = WEIGHTS[name];

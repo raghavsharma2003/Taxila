@@ -1,0 +1,64 @@
+<!doctype html>
+<!-- Voxel micro-benchmark (FEASIBILITY.md §5.4): can a Minecraft-style build world mesh and draw on our stack at the floor?
+     Not a game. ?view=6 (chunks per side) ?h=24 (column height) ?dpr=1.5 ?edits=1 (re-mesh a chunk every 250 ms, as a
+     child placing blocks would). Same pinned three@0.180.0 as the space prototype. -->
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Voxel bench</title>
+<style>html,body{margin:0;height:100%;background:#9cc8ff}canvas{display:block;width:100%;height:100%}#o{position:fixed;left:8px;top:8px;font:14px/1.3 ui-monospace,monospace;color:#0b1020;background:#fffc;padding:4px 6px;border-radius:6px;white-space:pre}</style>
+<script type="importmap">{ "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.min.js" } }</script>
+</head><body><canvas id="c"></canvas><div id="o"></div>
+<script type="module">
+import * as THREE from "three";
+const Q = new URLSearchParams(location.search), VIEW = +(Q.get("view") ?? 6), CH = 16, HGT = +(Q.get("h") ?? 24), DPR = +(Q.get("dpr") ?? 1.5), EDITS = Q.has("edits");
+const renderer = new THREE.WebGLRenderer({ canvas: c, antialias: false }); renderer.setPixelRatio(DPR);
+const scene = new THREE.Scene(); scene.background = new THREE.Color(0x9cc8ff); scene.fog = new THREE.Fog(0x9cc8ff, 40, VIEW * CH * 0.9);
+const cam = new THREE.PerspectiveCamera(65, 1, 0.1, 500); scene.add(new THREE.HemisphereLight(0xffffff, 0x445566, 2.2));
+const mat = new THREE.MeshLambertMaterial({ vertexColors: true });
+// value-noise terrain, deterministic
+const hash = (x, z) => { let h = (Math.imul(x, 374761393) + Math.imul(z, 668265263)) >>> 0; h = Math.imul(h ^ (h >>> 13), 1274126177) >>> 0; return ((h ^ (h >>> 16)) >>> 0) / 4294967296; };   // unsigned: a signed XOR made negative heights (holes) in the first run
+const smooth = (x, z, s) => { const xi = Math.floor(x / s), zi = Math.floor(z / s), fx = x / s - xi, fz = z / s - zi, u = fx * fx * (3 - 2 * fx), v = fz * fz * (3 - 2 * fz);
+  const a = hash(xi, zi), b = hash(xi + 1, zi), c2 = hash(xi, zi + 1), d = hash(xi + 1, zi + 1); return a + (b - a) * u + (c2 - a) * v + (a - b - c2 + d) * u * v; };
+const W = VIEW * CH, vox = new Uint8Array(W * W * HGT), idx = (x, y, z) => (y * W + z) * W + x;
+for (let x = 0; x < W; x++) for (let z = 0; z < W; z++) { const h = Math.floor(4 + smooth(x, z, 24) * (HGT - 8) * 0.8 + smooth(x, z, 6) * 3);
+  for (let y = 0; y < h; y++) vox[idx(x, y, z)] = y === h - 1 ? 1 : y > h - 4 ? 2 : 3; }
+const get = (x, y, z) => (x < 0 || z < 0 || x >= W || z >= W || y < 0 || y >= HGT ? 0 : vox[idx(x, y, z)]);
+const COL = [null, [0.36, 0.72, 0.29], [0.55, 0.38, 0.22], [0.5, 0.5, 0.55], [0.95, 0.75, 0.2]];
+const FACES = [[1, 0, 0, 0.8], [-1, 0, 0, 0.8], [0, 1, 0, 1.0], [0, -1, 0, 0.5], [0, 0, 1, 0.9], [0, 0, -1, 0.7]];
+// naive culled meshing per chunk (only faces against air): what a first engine would do before greedy meshing
+function meshChunk(cx, cz) {
+  const pos = [], col = [], ind = []; let v = 0;
+  for (let x = cx * CH; x < cx * CH + CH; x++) for (let z = cz * CH; z < cz * CH + CH; z++) for (let y = 0; y < HGT; y++) {
+    const b = get(x, y, z); if (!b) continue;
+    for (const [dx, dy, dz, sh] of FACES) { if (get(x + dx, y + dy, z + dz)) continue;
+      const ax = dx ? [0, 1, 0] : [1, 0, 0], bx = dz ? [0, 1, 0] : dy ? [0, 0, 1] : [0, 0, 1];
+      const ox = x + (dx > 0 ? 1 : 0), oy = y + (dy > 0 ? 1 : 0), oz = z + (dz > 0 ? 1 : 0);
+      const q = [[0, 0], [1, 0], [1, 1], [0, 1]];
+      for (const [i, j] of q) pos.push(ox + ax[0] * i + bx[0] * j, oy + ax[1] * i + bx[1] * j, oz + ax[2] * i + bx[2] * j);
+      const cc = COL[b]; for (let k = 0; k < 4; k++) col.push(cc[0] * sh, cc[1] * sh, cc[2] * sh);
+      const nx = ax[1] * bx[2] - ax[2] * bx[1], ny = ax[2] * bx[0] - ax[0] * bx[2], nz = ax[0] * bx[1] - ax[1] * bx[0];
+      if (nx * dx + ny * dy + nz * dz > 0) ind.push(v, v + 1, v + 2, v, v + 2, v + 3); else ind.push(v, v + 2, v + 1, v, v + 3, v + 2);
+      v += 4; } }
+  const g = new THREE.BufferGeometry(); g.setAttribute("position", new THREE.Float32BufferAttribute(pos, 3)); g.setAttribute("color", new THREE.Float32BufferAttribute(col, 3)); g.setIndex(ind); g.computeVertexNormals();
+  return g;
+}
+const meshMs = [], chunks = new Map();
+for (let cx = 0; cx < VIEW; cx++) for (let cz = 0; cz < VIEW; cz++) { const t = performance.now(); const m = new THREE.Mesh(meshChunk(cx, cz), mat); meshMs.push(performance.now() - t); scene.add(m); chunks.set(cx + "," + cz, m); }
+const remeshMs = [];
+function edit() { // a child places a block on a random column top, then the chunk re-meshes (the expensive part of building)
+  const x = Math.floor(Math.random() * W), z = Math.floor(Math.random() * W); let y = HGT - 2; while (y > 0 && !get(x, y, z)) y--; if (y + 1 < HGT) vox[idx(x, y + 1, z)] = 4;
+  const key = Math.floor(x / CH) + "," + Math.floor(z / CH), m = chunks.get(key); const t = performance.now(); const g = meshChunk(Math.floor(x / CH), Math.floor(z / CH)); m.geometry.dispose(); m.geometry = g; remeshMs.push(performance.now() - t);
+}
+const frames = []; let last = performance.now(), t0 = last, lastEdit = 0;
+function resize() { renderer.setSize(innerWidth, innerHeight, false); cam.aspect = innerWidth / innerHeight; cam.updateProjectionMatrix(); } addEventListener("resize", resize); resize();
+function frame(now) { frames.push(now - last); last = now; const t = (now - t0) / 1000, r = W * 0.35;
+  cam.position.set(W / 2 + Math.cos(t * 0.15) * r, HGT + 10, W / 2 + Math.sin(t * 0.15) * r); cam.lookAt(W / 2, HGT * 0.4, W / 2);
+  if (EDITS && now - lastEdit > 250) { lastEdit = now; edit(); }
+  renderer.render(scene, cam); requestAnimationFrame(frame); }
+requestAnimationFrame(frame);
+const q = (a, p) => { const s = a.slice().sort((x, y) => x - y); return s[Math.min(s.length - 1, Math.floor(p * s.length))] ?? 0; };
+window.__vox = (reset) => { const f = frames.slice(); if (reset) frames.length = 0, remeshMs.length = 0;
+  return { chunks: chunks.size, chunkDims: [CH, HGT, CH], voxels: vox.reduce((s, x) => s + (x ? 1 : 0), 0), triangles: renderer.info.render.triangles, calls: renderer.info.render.calls,
+    meshMsP50: +q(meshMs, 0.5).toFixed(2), meshMsP95: +q(meshMs, 0.95).toFixed(2), meshMsTotal: +meshMs.reduce((a, b) => a + b, 0).toFixed(0), remeshP50: +q(remeshMs, 0.5).toFixed(2), remeshP95: +q(remeshMs, 0.95).toFixed(2), remeshN: remeshMs.length,
+    fpsMedian: +(1000 / q(f, 0.5)).toFixed(1), frameP95: +q(f, 0.95).toFixed(2), n: f.length, heapMB: performance.memory ? +(performance.memory.usedJSHeapSize / 1048576).toFixed(1) : null, dpr: DPR }; };
+setInterval(() => { o.textContent = JSON.stringify(window.__vox()).replace(/,/g, "\n"); }, 1000);
+</script></body></html>
