@@ -301,7 +301,8 @@ faster end to end. That arm is measured on this harness below (in progress).
 |---|---|
 | `npx tsc -b` | pass |
 | `npx vite build` | pass |
-| `npm test` | 2,593 tests: 2,526 pass, 61 fail, 6 skipped (22 min, own Neon branch). 60 fails = `tests/engines-browser.test.mjs`: the frame's CSP refuses Vite's HMR websocket (`connect-src 'none'`), a console error in this container (the base tree check is below); 1 = `p4-content-seam` "host-graded kt_evidence event", passes 3/3 alone and with this stream's tests (a fire-and-forget write checked under full-suite load) |
+| `npm test` | merged with base 9920f21: 2,563 pass, 60 fail. The 60 = `tests/engines-browser.test.mjs`: the frame's CSP refuses Vite's HMR websocket (`connect-src 'none'`), a console error in this container (the base tree check is below). 0 other fails |
+| full-suite-only fails, root-caused (031724d3) | `tests/index.js` runs EVERY test file in ONE process, so module state is shared and a root-level `before()`/`after()` holds for the whole run. `r4-latency-spec-row` put seam fakes in at import time (then in a root `before()`), replacing `p4-content-seam`'s evidence writer ("host-graded kt_evidence event" never seen); `voice-player-clock` and `p2-face-player` each pinned `performance.now` to their own virtual clock in a root `before()`, and the later one froze the other ("re-anchor cuts"). Not load. Reproduced deterministically: the five files in one process fail 2 before, 0 after (3/3). Each test body now installs and restores its fakes / clock |
 | check-prompt-budget | PASS |
 | lint-ui | 353 findings = the baseline (0 new) |
 | adversarial (`docs/design/round3/adversarial`) | 22/23: all 13 blocking pass; N1 (non-blocking, owner decision) fails as before |
