@@ -31,6 +31,8 @@ export class VisemeScheduler {
   /** Word batches that arrived before any viseme of their part (merged when the visemes come). */
   private orphanWords = new Map<string, WordEvent[]>();
   lead = EVENT_LEAD_MS;
+  /** The extended bilabial rule (visemes.ts addBilabialsExtended): set by the stage for a key-rig look (lamp2) only. */
+  extendedBilabials = false;
   /** Events received / parts dropped as stale (for the stage stats). */
   received = 0;
   stale = 0;
@@ -55,7 +57,7 @@ export class VisemeScheduler {
     const dv = rawV.filter((v, i) => i === 0 || v.ms !== rawV[i - 1].ms || v.id !== rawV[i - 1].id);
     const dw = rawW.filter((w, i) => i === 0 || w.ms !== rawW[i - 1].ms);
     const at = same ? same.playAt : playAt;
-    const track = resolveVisemes(dv, dw, text ?? same?.text);
+    const track = resolveVisemes(dv, dw, text ?? same?.text, { extendedBilabials: this.extendedBilabials });
     const end = at + track[track.length - 1].ms + 200;
     if (end < nowMs) { this.stale++; return; } // the part already finished sounding (a late event): never replay it
     this.received++;

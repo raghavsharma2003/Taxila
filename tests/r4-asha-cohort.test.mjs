@@ -116,7 +116,7 @@ test("lamp2: the key rig runs on the stage (no WebGL needed), calm in a safety t
   const stage = readFileSync(new URL("../src/face-puppet/stage.ts", import.meta.url), "utf8");
   assert.match(stage, /if \(rig instanceof KeyRig\) rig\.calm = this\.driver\.inSafety;/, "the safety turn's calm face, every frame");
   assert.match(stage, /if \(pack\.rig !== "keys" && typeof WebGL2RenderingContext === "undefined"\) throw/);
-  assert.match(stage, /if \(lookPack\(o\.look\)\.rig === "keys"\) this\.driver\.visemes\.lead \+= KEY_LEAD_MS;/);
+  assert.match(stage, /if \(lookPack\(o\.look\)\.rig === "keys"\) \{ this\.driver\.visemes\.lead \+= KEY_LEAD_MS; this\.driver\.visemes\.extendedBilabials = true; \}/);
   const face = readFileSync(new URL("../src/face-puppet/PuppetFace.tsx", import.meta.url), "utf8");
   assert.match(face, /holdsOwnStill = \(look: PuppetLook \| null\): boolean => look === "lamp1" \|\| look === "lamp2";/);
   for (const f of ["rest-medium", "rest-close", "body", "head"]) assert.ok(existsSync(new URL(`../public/face-puppet/lamp2/${f}.webp`, import.meta.url)), f);
