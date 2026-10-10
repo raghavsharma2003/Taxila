@@ -8,7 +8,7 @@
 // count ("3 shaded", "5 mein se 3", "unmein 6 marked") become a template call (server/forge/explainer/templates.js:
 // fraction-parts@1, equal-groups@1, shade-grid@1 for "5 columns aur 3 rows" or more than 12 parts); the result is hidden when her line asks for it. The caller re-gates the board against her line with the
 // full gate (W0-W13), so a claims board that would reveal an answer or contradict her is never drawn. Pure, no model.
-import { screenClaims } from "../studio/qa/semantics.js";
+import { screenClaims, POINTS_AT_SCREEN } from "../studio/qa/semantics.js";
 import { expand } from "../forge/explainer/templates.js";
 
 const NUM = { one: 1, two: 2, three: 3, four: 4, five: 5, six: 6, seven: 7, eight: 8, nine: 9, ten: 10, eleven: 11, twelve: 12,
@@ -25,6 +25,26 @@ export function shadedIn(line, parts) {
   if (!m) return null;
   const n = num(m[1]);
   return Number.isInteger(n) && n >= 0 && n <= parts ? n : null;
+}
+
+/**
+ * The steps her line lists over the screen ("flow dekhiye: Observe, Ask, Predict, Test, phir Conclude"), 3-6 short names
+ * in her order, the one she asks for written "?" (the first step, or the step after X): or null.
+ */
+export function flowIn(line) {
+  const t = String(line ?? "");
+  if (!POINTS_AT_SCREEN.test(t)) return null;
+  const m = t.match(/\b(?:flow|flow\s*chart|steps?|chain|cycle|kram|sequence|order)\b[^:.?!]{0,30}:\s*([^.?!]+)/i);
+  if (!m) return null;
+  const steps = m[1].split(/\s*(?:,|;|→|->|\bphir\b|\baur\s+phir\b|\band\s+then\b|\bthen\b|\band\b|\baur\b)\s*/i).map((x) => x.trim()).filter(Boolean);
+  if (steps.length < 3 || steps.length > 6 || !steps.every((x) => x.split(/\s+/).length <= 3 && x.length <= 20)) return null;
+  const after = t.match(/["“']?([\p{L}][\p{L}\s-]{1,40}?)["”']?\s+(?:ke\s+baad|ke\s+bad)\b[^?]{0,60}\?/iu)?.[1]
+    ?? t.match(/\b(?:what|which)\s+(?:step\s+)?(?:comes|is|happens)\s+(?:next\s+)?after\s+["“']?([\p{L}][\p{L}\s-]{1,40}?)["”']?\s*\?/iu)?.[1];
+  const first = /\b(?:sabse\s+pehle|pehla\s+step|pahla\s+step|first\s+step)\b[^?]{0,60}\?/iu.test(t);
+  const out = [...steps];
+  if (first) out[0] = "?";
+  if (after) { const i = steps.findIndex((x) => x.toLowerCase() === after.trim().toLowerCase()); if (i >= 0 && i + 1 < steps.length) out[i + 1] = "?"; }
+  return out;
 }
 
 /** Template calls that draw her line's screen claims (most specific first), or []. */
@@ -47,6 +67,8 @@ export function claimsCalls(line) {
     if (namesShade && shade == null) continue;
     out.push({ template: "shade-grid@1", rows: g.rows, cols: g.cols, shade: shade ?? 0, labels: g.labels, hideResult: asks });
   }
+  const flowSteps = flowIn(line);
+  if (flowSteps) out.push({ template: "flow@1", steps: flowSteps });
   for (const n of c.parts) if (n >= 2 && n <= 12) {
     const shade = shadedIn(line, n);
     const food = /roti|chapati|pizza|cake|pie/i.test(String(line ?? ""));

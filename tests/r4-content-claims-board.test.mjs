@@ -32,6 +32,9 @@ describe("r4 content: the claims board", () => {
     // the grid lines (local production run of this branch, 2026-10-10: slots failed while she pointed at the rectangle)
     "Aarav, rectangle ko 5 columns aur 3 rows mein dekhiye; 6 shaded boxes count karke bataiye: total boxes kitne hain?",
     "Screen par rectangle dekhiye: 15 equal parts, unmein 6 marked. Marked fraction ko simplest form mein kaise likhenge?",
+    // owner-5 on this branch (2026-10-10): a flow she lists over the screen, the step she asks for kept open
+    "Ishaan, is screen par animation nahi chalegi. Flow mein dekhiye: Observe, Ask, Predict, Test, phir Conclude. Pehla step kya hai?",
+    "Board par steps dekho: Observe, Predict, Test. Predict ke baad kya aata hai?",
   ]) it(`a board that draws her claims passes the gate and is legible at 360: "${line.slice(0, 48)}…"`, () => {
     const r = board(line);
     assert.ok(r?.ok, "a board is drawn");
@@ -39,6 +42,8 @@ describe("r4 content: the claims board", () => {
     assert.ok(certifyForTray({ kind: "whiteboard", script: r.script }, { vp: "p360" }).ok);
     // a question in her line is never answered on the board (W9 inside the gate; the result is "?")
     if (/kitne|how many/i.test(line)) assert.ok(!r.script.ops.some((o) => o.op === "numwork" && JSON.stringify(o.rows).includes('"12"')), "no total drawn for a question");
+    if (/Pehla step/.test(line)) assert.ok(!r.script.ops.some((o) => o.op === "text" && o.text === "Observe"), "the first step she asks for is '?'");
+    if (/ke baad/.test(line)) assert.ok(!r.script.ops.some((o) => o.op === "text" && o.text === "Test"), "the step after Predict is '?'");
     if (/columns|15 equal/.test(line)) assert.equal(r.script.ops.filter((o) => o.op === "rect" && o.fill === "accent").length, 6, "her 6 shaded cells");
   });
 });

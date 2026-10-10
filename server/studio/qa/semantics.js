@@ -192,12 +192,13 @@ export function nextStepRevealed(line, ops) {
   if (firstAsk && edges.length >= 2) {
     const tos = new Set(edges.map((e) => norm(e.to)));
     const heads = [...new Set(edges.map((e) => e.from).filter((f) => !tos.has(norm(f))))];
-    if (heads.length === 1) out.push(`asks for the first step, board draws the chain from "${heads[0]}"`);
+    // a head written "?" (the board keeps the question open) reveals nothing
+    if (heads.length === 1 && norm(heads[0])) out.push(`asks for the first step, board draws the chain from "${heads[0]}"`);
   }
   for (const x of asks) {
     const k = norm(x);
     if (!k) continue;
-    for (const e of edges) if (norm(e.from) === k || (norm(e.from).includes(k) && k.length >= 4)) out.push(`asks what follows "${x.trim()}", board draws ${e.from} → ${e.to}`);
+    for (const e of edges) if (norm(e.to) && (norm(e.from) === k || (norm(e.from).includes(k) && k.length >= 4))) out.push(`asks what follows "${x.trim()}", board draws ${e.from} → ${e.to}`);
   }
   return [...new Set(out)];
 }
