@@ -3,15 +3,15 @@
 Main session: `session_0135KCpT8GA8E1uzNPiw2Hw3` (integration, merges, migrations, deploys, context graph).
 Each stream session runs in its own cloud container on its own branch, cut from `claude/blissful-mayer-icwe2j`.
 
-## Wave 1 (launched after round 3 went live, 2026-10-10)
+## Wave 1 (launched 08:04-08:09 UTC 2026-10-10, right after round 3 went live; base 8e438f0 / ceaf942 / 522dca6)
 
-| stream | branch | Neon TEST branch (own compute) | brief |
-|---|---|---|---|
-| 2 live content | `claude/r4-content` | `test-r4-content` (br-restless-bonus-b73okq6v) | BUILD-PLAN §7 Brief 2 + v2 note below |
-| 3 latency | `claude/r4-latency` | `test-r4-latency` (br-aged-moon-b7zul173) | Brief 3 |
-| 4A conversation | `claude/r4-conversation` | `test-r4-conversation` (br-wandering-star-b7sldvat) | Brief 4A + v2 note below |
-| 4B duplex | `claude/r4-duplex` | `test-r4-duplex` (br-broad-glade-b7m5wv6a) | Brief 4B |
-| 5 Asha | `claude/r4-asha` | `test-r4-asha` (br-round-bonus-b7t7hyi2) | Brief 5 |
+| stream | branch | Neon TEST branch (own compute) | brief | session |
+|---|---|---|---|---|
+| 2 live content | `claude/r4-content` | `test-r4-content` (br-restless-bonus-b73okq6v) | BUILD-PLAN §7 Brief 2 + v2 note below | session_01LJoMKWmmgGVu7ZtogXAAq5 |
+| 3 latency | `claude/r4-latency` | `test-r4-latency` (br-aged-moon-b7zul173) | Brief 3 | session_01DQV1RuwHDvZdoVJ8PpbsyJ |
+| 4A conversation + session-first | `claude/r4-conversation` | `test-r4-conversation` (br-wandering-star-b7sldvat) | Brief 4A + v2 note below (phase 2: session-first server path) | session_01XvJxJ5Qd12UtBy6pTypxzy |
+| 4B duplex | `claude/r4-duplex` | `test-r4-duplex` (br-broad-glade-b7m5wv6a) | Brief 4B | session_01VFKukNpa5pM3LkqX4fPJam |
+| 5 Asha | `claude/r4-asha` | `test-r4-asha` (br-round-bonus-b7t7hyi2) | Brief 5 | session_01Lf4yL8fEizFCiGs8P2uRxF |
 
 Held for wave 2 (re-planned around the owner's 2026-10-10 vision, `dc-r4-owner-vision-superhuman-tutor`):
 games (lanes 1A-1D become real-game engines built live from the lesson), the gamified app UI/UX, the

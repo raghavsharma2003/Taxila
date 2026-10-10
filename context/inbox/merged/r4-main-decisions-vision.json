@@ -1,0 +1,21 @@
+{
+  "nodes": [
+    {
+      "id": "dc-r4-gamification-b",
+      "kind": "decision",
+      "title": "2026-10-10 main session, as the owner's delegated decision maker (\"you are the decision maker in all these thing\"), on the owner's \"fully gamified\" vs the NEVER MANIPULATE floor (docs/research/round4/products/TEARDOWN.md, gamification evidence): option B. Real games where the skill is the core mechanic, a world that changes as the child's understanding grows, avatar/look choice, personal collections opened ONLY by skills the child has secured (never bought, never random, never lost), co-op goals with no individual tallies, fast action only on skills already secure, in-run scores inside a game allowed (they end with the run). Still banned: currency or points that carry across sessions, streaks, leagues/leaderboards, energy/lives that gate learning, random reward drops, countdown pressure on new skills, and anything that punishes absence. The ban gets an enforcing test over game LOGIC, not only copy (tests/play-style-lint.test.mjs checks copy only today). Success is judged on retention of learning and choosing to play, never on daily-active numbers. Reverse if: the owner picks C or D after seeing the gamified directions, or a child test shows the world reads as babyish without an economy.",
+      "at": "2026-10-10"
+    },
+    {
+      "id": "dc-r4-tutor-model-switches",
+      "kind": "decision",
+      "title": "2026-10-10 main session, delegated, on the tutor-model research's owner questions (docs/research/round4/tutor/TUTOR-MODEL.md §6): (1) H3 'which representation moves this child' is persisted per child under the existing learning_profile consent grant (it is academic record; the parent can switch learning_profile off and H3 falls back to population priors), superseding the population-only reading of LM9 for this dimension; (2) life callbacks ship in the narrow form: only what the child offered, at most 5 items, 30-day expiry, deletable by child and parent, under the existing memory consent, never a feeling claim; (3) the 'explore' tier for safe topics outside the syllabus graph is built behind a flag (blind-solved keys only grade), the refusal list is reviewed by the main session and shown to the owner before the flag goes on; (4) the child's home becomes Start-only (the owner's own words: 'just start the session'); the topic is shown to the parent; (5) intake is voice/typed only in v1, no notebook camera (cost Rs 20-47 a page vs a Rs 1 target); (6) classes 1-2: the child answers the intake, a parent may help, she never requires a parent; (7) a study of real tuition teachers is recommended to the owner, not commissioned (no spend without approval). Every one is a runtime switch. Reverse if: the owner overrides any item, or counsel advises against (1) or (2).",
+      "at": "2026-10-10"
+    }
+  ],
+  "edges": [
+    { "src": "dc-r4-gamification-b", "rel": "part_of", "dst": "dc-r4-owner-vision-superhuman-tutor" },
+    { "src": "dc-r4-tutor-model-switches", "rel": "part_of", "dst": "dc-r4-owner-vision-superhuman-tutor" },
+    { "src": "dc-r4-tutor-model-switches", "rel": "constrains", "dst": "r4t-learner-how-state" }
+  ]
+}
