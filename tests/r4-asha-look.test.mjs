@@ -7,12 +7,13 @@ import assert from "node:assert/strict";
 import { existsSync, readFileSync } from "node:fs";
 
 const store = new Map();
-// defined, not assigned: where the runtime already has a localStorage / location (Node's Web Storage), an assignment
-// is silently ignored and the test would read the real, shared store
+// this file's page globals, (re)installed by every reset: another test file run in the same process installs its own
 const stub = (name, value) => Object.defineProperty(globalThis, name, { value, configurable: true, writable: true });
-stub("localStorage", { getItem: (k) => (store.has(k) ? store.get(k) : null), setItem: (k, v) => store.set(k, String(v)), removeItem: (k) => store.delete(k) });
+const storage = { getItem: (k) => (store.has(k) ? store.get(k) : null), setItem: (k, v) => store.set(k, String(v)), removeItem: (k) => store.delete(k) };
 let search = "";
-stub("location", { get search() { return search; } });
+const where = { get search() { return search; } };
+const ownGlobals = () => { stub("localStorage", storage); stub("location", where); };
+ownGlobals();
 const A = await import("../src/face-puppet/assets.ts");
 const F = await import("../src/face-puppet/flag.ts");
 const L = await import("../src/face-puppet/look.ts");
@@ -21,7 +22,7 @@ const { PUPPET_REV: SERVER_REV } = await import("../server/face-puppet/rev.js");
 
 const ROOT = new URL("..", import.meta.url);
 const answer = (body) => async () => ({ ok: true, status: 200, json: async () => body });
-const fresh = (q = "") => { store.clear(); search = q; F.resetPuppetServerFlag(); L.resetLookForTests(); };
+const fresh = (q = "") => { ownGlobals(); store.clear(); search = q; F.resetPuppetServerFlag(); L.resetLookForTests(); };
 
 test("assets: one pack per look, keyed (base, clear colour, views, posters); r8 stays the default and its old names hold", () => {
   assert.deepEqual([...A.PUPPET_LOOKS], ["r8", "lamp1", "lamp2"]);

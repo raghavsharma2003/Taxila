@@ -7,12 +7,13 @@ import { createHash } from "node:crypto";
 import { existsSync, readFileSync, statSync } from "node:fs";
 
 const store = new Map();
-// defined, not assigned: where the runtime already has a localStorage / location (Node's Web Storage), an assignment
-// is silently ignored and the test would read the real, shared store
+// this file's page globals, (re)installed by every reset: another test file run in the same process installs its own
 const stub = (name, value) => Object.defineProperty(globalThis, name, { value, configurable: true, writable: true });
-stub("localStorage", { getItem: (k) => (store.has(k) ? store.get(k) : null), setItem: (k, v) => store.set(k, String(v)), removeItem: (k) => store.delete(k) });
+const storage = { getItem: (k) => (store.has(k) ? store.get(k) : null), setItem: (k, v) => store.set(k, String(v)), removeItem: (k) => store.delete(k) };
 let search = "";
-stub("location", { get search() { return search; } });
+const where = { get search() { return search; } };
+const ownGlobals = () => { stub("localStorage", storage); stub("location", where); };
+ownGlobals();
 const { faceConfigFor, faceLookOf, cohortLookOf, COHORT_FACE_LOOKS, routes } = await import("../server/face-puppet/config.js");
 const A = await import("../src/face-puppet/assets.ts");
 const F = await import("../src/face-puppet/flag.ts");
@@ -65,7 +66,7 @@ test("route: an answer that depends on the cookie is private and uncached; other
 test("client: a cohort-only look is never taken from ?look=; a cohort answer is not remembered; a cohort never un-holds lamp1", async () => {
   assert.deepEqual([...A.COHORT_LOOKS], [...COHORT_FACE_LOOKS], "client and server key the same cohort-only looks");
   const answer = (body) => async () => ({ ok: true, status: 200, json: async () => body });
-  const fresh = (q = "") => { store.clear(); search = q; F.resetPuppetServerFlag(); L.resetLookForTests(); };
+  const fresh = (q = "") => { ownGlobals(); store.clear(); search = q; F.resetPuppetServerFlag(); L.resetLookForTests(); };
   fresh();
   assert.equal(await L.faceLook(answer({ puppet2d: true, look: "r8", cohort: "owner" })), "r8");
   assert.equal(store.get(L.LOOK_SERVER_KEY), undefined, "a cohort answer is not remembered for the next page");
@@ -93,7 +94,7 @@ test("lamp2: the owner cohort's look; every other account (and a URL) gets r8, t
   assert.deepEqual(await lamp2(asOwner, "tx_session=abc", lamp2Env({ TAXILA_FACE_LOOK_FOR: "" })), base, "no cohort configured: r8");
   assert.equal(faceLookOf({ TAXILA_FACE_LOOK: "lamp2" }), "r8", "the global look can never be lamp2 (cohort-only)");
   // a non-cohort browser asking for lamp2 by URL (and with it stored from an older build) still paints r8
-  const page = (q, stored = {}) => { store.clear(); for (const [k, v] of Object.entries(stored)) store.set(k, v); search = q; F.resetPuppetServerFlag(); L.resetLookForTests(); };
+  const page = (q, stored = {}) => { ownGlobals(); store.clear(); for (const [k, v] of Object.entries(stored)) store.set(k, v); search = q; F.resetPuppetServerFlag(); L.resetLookForTests(); };
   const says = (body) => async () => ({ ok: true, status: 200, json: async () => body });
   for (const q of ["?look=lamp2", "?look=lamp2&heldlook=1"]) {
     page(q);
