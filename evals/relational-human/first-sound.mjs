@@ -472,6 +472,11 @@ async function lesson(L, rows = []) {
           ...(t.speculative ? { spec: true } : {}), ...(t.prefetched ? { pf: true } : {}) })),
         ttsPrewarmedMs: tts.prewarmedMs, engine: tts.engine,
         guard: r.debug?.guard ? [...r.debug.guard.caught, ...(r.debug.guard.rewritten ? ["rewritten"] : [])].join(",") : null,
+        // r4-latency (main-session ask a/b): the draft a guard caught, what was still caught after the rewrite, and the
+        // prefetched (stable partial) texts in order, to judge rewrites and compare the partial with the final transcript
+        guardDetail: r.debug?.guard?.caught?.length ? { firstDraft: r.debug.guard.firstDraft ?? null, afterRewrite: r.debug.guard.afterRewrite ?? null,
+          rewritten: !!r.debug.guard.rewritten, replaced: !!r.debug.guard.replaced, repaired: !!r.debug.guard.repaired } : null,
+        partials: heard.prefetches.map((p) => ({ text: p.text, atAfterEnd: Math.round(p.at - end) })),
       };
       rows.push(row);
       if (SAVE) {

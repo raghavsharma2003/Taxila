@@ -147,7 +147,7 @@
   {
    "id": "dec-r4lat-outbox-fewer-roundtrips",
    "kind": "decision",
-   "title": "Before a turn fetch the outbox makes one IndexedDB round trip, not three. reserve() reads the store once per lesson per page (a failed read is retried); the inflight status write goes out with the request and is awaited before the delete. The durable queued write still precedes the send. Measured with the puppet on (tap-to-talk page clock, headless, long-task observer): final to POST p50/p90 477/792 ms (n = 12) to 61/154 ms (n = 24). Reverse if: a reader of the stored inflight status appears, or a lost/duplicated turn is traced to it.",
+   "title": "A new turn turnSeq is CLAIMED in one IndexedDB readwrite transaction: the lesson high-water mark row is read, the next turnSeq chosen, and the mark and the answer written together. Held records are read only when no mark exists. The inflight status write goes out with the request and is awaited before the delete. The durable write still precedes the send. Multi-tab safe: IndexedDB runs overlapping readwrite transactions one at a time, across pages. Real Chromium, two pages, 2 x 25 turns, all distinct; the reserve-then-put control collides. The late-disclosure flush test passes. Final to POST with the puppet on (headless, long-task observer): 477/792 ms (n = 12) to 88/317 ms (n = 24). The rejected per-page seed (1b5cfdcd) gave 61/154 but could share a turnSeq across tabs, which the server would replay as another turn reply. Reverse if: a turn is lost or replayed across pages, or a reader of the stored inflight status appears.",
    "at": "2026-10-10"
   }
  ],

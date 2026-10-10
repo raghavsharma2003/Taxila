@@ -236,15 +236,31 @@ the client should send the turn before painting (or yield the frame).
 `PerformanceObserver('longtask')` in the page shows the puppet's frames as back-to-back main-thread blocks of 56-123 ms. On
 5/12 turns they cover 92-94% of the final → POST window. Between the final and the fetch the outbox made THREE awaited
 IndexedDB round trips: the seed read in `reserve()` (every turn), the durable "queued" write, and an "inflight" status write.
-Each one waits behind a frame. Fix (`src/lesson/outbox.ts`, `tests/r4-latency-outbox-seed.test.mjs`):
-- `reserve()` reads the store once per lesson per page (a failed read is retried);
-- the "inflight" status write goes out with the request and is awaited before the delete;
+Each one waits behind a frame. Fix (`src/lesson/outbox.ts`):
+- a new turn's turnSeq is CLAIMED. One IndexedDB readwrite transaction reads the lesson's high-water mark row, picks the
+  next turnSeq and writes the mark and the answer together. The held records are read only when a lesson has no mark yet;
+- the "inflight" status write goes out with the request. It is awaited before the delete and before the failure path's
+  writes, so an acknowledged record never comes back;
 - the durable write before the send is unchanged: no answer is lost.
+
+The first version (1b5cfdcd) seeded turnSeq once per page. The main session caught that two pages on one lesson could then
+share a turnSeq. The server dedupes on (lessonId, turnSeq) (`replayFor`), so the second page's words would get the first
+turn's reply and never be read; a disclosure among them would be dropped. The old per-turn read did not prevent this
+either: acknowledged records are deleted, so the other page cannot see them. The claim does prevent it, because IndexedDB
+runs overlapping readwrite transactions one at a time, across pages. Tests:
+- `tests/r4-latency-outbox-tabs.test.mjs`: real Chromium, two pages, one IndexedDB, 2 × 25 interleaved turns, all distinct.
+  Negative control: the reserve-then-put path on the same pages collides. Held answers with no mark are claimed above.
+- `tests/r4-latency-outbox-seed.test.mjs`: one store step before the fetch; reload safety; two Outboxes on one store.
+- `tests/r4-latency-outbox-late.test.mjs`: the late-disclosure path end to end. A typed disclosure is held when the page
+  dies, the next load flushes it under the same turnSeq (retried), the server (real `scanSafety` / `acceptsLate` /
+  `replayFor`) safeguards it, and `lateSafeguard` is raised. A non-disclosure control raises nothing. It passes on the
+  old outbox and the new one.
 
 | puppet on, tap-to-talk, same 12 lines | n | final → POST p50 / p90 | turns with frame blocks: p50 | quiet turns: p50 |
 |---|---|---|---|---|
 | before (merged tree 2e9be93f) | 12 | 477 / 792 ms | 714 (n = 5) | 233 (n = 7) |
-| after | 24 | **61 / 154 ms** | 154 (n = 6) | 54 (n = 18) |
+| per-page seed, 1b5cfdcd (NOT multi-tab safe; replaced) | 24 | 61 / 154 ms | 154 (n = 6) | 54 (n = 18) |
+| **claim (one transaction, multi-tab safe)** | 24 | **88 / 317 ms** | 254 (n = 8) | 78 (n = 16) |
 
 The puppet's frame cost itself remains stream 5's (open-r4lat-puppet-delays-turn-post): it still delays everything else the page
 does. `runs/ptt-longtask-{before,after}.jsonl`.

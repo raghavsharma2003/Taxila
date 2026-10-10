@@ -43,8 +43,22 @@ export interface OutboxStore {
   list(lessonId: string): Promise<OutboxRecord[]>;
   /** Every record of every lesson (the cross-lesson flush after sign-in or a reload). */
   all(): Promise<OutboxRecord[]>;
+  /**
+   * Write a NEW record under the lesson's next turnSeq, chosen and stored in ONE atomic step: above `floor`, above every
+   * record held for the lesson and above the lesson's durable high-water mark (which survives acknowledged records being
+   * deleted). Two pages on one lesson can never get the same turnSeq (the server would replay the first turn's response
+   * to the second and never read its words). Resolves with the turnSeq. Optional: a store without it takes reserve() + put().
+   */
+  claim?(r: OutboxRecord, floor: number): Promise<number>;
   readonly durable: boolean;
 }
+
+/** The lesson's turnSeq high-water mark row (never listed: it has no lessonId, so it is not in the lesson index). */
+interface SeqRow { key: string; seqFor: string; top: number }
+const seqKey = (lessonId: string) => `seq:${lessonId}`;
+const isRecord = (r: OutboxRecord | SeqRow): r is OutboxRecord => typeof (r as OutboxRecord).lessonId === "string";
+/** The record as claimed under turnSeq n (the wire request carries it: the server's dedupe key). */
+const underSeq = (r: OutboxRecord, n: number): OutboxRecord => ({ ...r, key: `${r.lessonId}:${n}`, turnSeq: n, req: { ...r.req, turnSeq: n } });
 
 export type OutboxEvent =
   | { type: "written"; rec: OutboxRecord }
@@ -89,11 +103,20 @@ export class AttemptTimeout extends Error {
 export class MemoryOutboxStore implements OutboxStore {
   readonly durable: boolean;
   private rows = new Map<string, OutboxRecord>();
+  private tops = new Map<string, number>();
   constructor(durable = false) {
     this.durable = durable;
   }
   async put(r: OutboxRecord) {
     this.rows.set(r.key, structuredClone(r));
+  }
+  async claim(r: OutboxRecord, floor: number) {
+    // synchronous from read to write: atomic for every Outbox sharing this store
+    const held = [...this.rows.values()].filter((x) => x.lessonId === r.lessonId).map((x) => x.turnSeq);
+    const n = Math.max(floor, this.tops.get(r.lessonId) ?? 0, ...held) + 1;
+    this.tops.set(r.lessonId, n);
+    this.rows.set(`${r.lessonId}:${n}`, structuredClone(underSeq(r, n)));
+    return n;
   }
   async delete(key: string) {
     this.rows.delete(key);
@@ -137,6 +160,32 @@ export class IdbOutboxStore implements OutboxStore {
   async put(r: OutboxRecord) {
     await this.tx("readwrite", (os) => os.put(r));
   }
+  /** One readwrite transaction: IndexedDB runs overlapping readwrite transactions one at a time, across tabs too. */
+  async claim(r: OutboxRecord, floor: number): Promise<number> {
+    const db = await this.db;
+    return new Promise<number>((resolve, reject) => {
+      const t = db.transaction(OS, "readwrite");
+      const os = t.objectStore(OS);
+      let n = 0;
+      const write = (above: number) => {
+        n = above + 1;
+        os.put({ key: seqKey(r.lessonId), seqFor: r.lessonId, top: n } satisfies SeqRow);
+        os.put(underSeq(r, n));
+      };
+      // Every claim moves the mark, so it is above every record claimed since; the held records are read only when the
+      // lesson has no mark yet (records written before marks existed). One read on the hot path, inside the transaction.
+      const top = os.get(seqKey(r.lessonId));
+      top.onsuccess = () => {
+        const mark = (top.result as SeqRow | undefined)?.top;
+        if (mark !== undefined) return write(Math.max(floor, mark));
+        const held = os.index("lesson").getAll(r.lessonId);
+        held.onsuccess = () => write(Math.max(floor, ...(held.result as OutboxRecord[]).map((x) => x.turnSeq)));
+      };
+      t.oncomplete = () => resolve(n);
+      t.onerror = () => reject(t.error);
+      t.onabort = () => reject(t.error);
+    });
+  }
   async delete(key: string) {
     await this.tx("readwrite", (os) => os.delete(key));
   }
@@ -145,7 +194,7 @@ export class IdbOutboxStore implements OutboxStore {
     return rows.sort((a, b) => a.turnSeq - b.turnSeq);
   }
   async all() {
-    const rows = await this.tx<OutboxRecord[]>("readonly", (os) => os.getAll());
+    const rows = (await this.tx<(OutboxRecord | SeqRow)[]>("readonly", (os) => os.getAll())).filter(isRecord);
     return rows.sort((a, b) => a.at - b.at || a.turnSeq - b.turnSeq);
   }
   /** Probe: open succeeds (a private window or blocked storage rejects). */
@@ -196,8 +245,6 @@ export class Outbox {
   private readonly deadlineMs: number;
   /** The highest turnSeq handed out per lesson (seeded from the store by reserve()). */
   private seqs = new Map<string, number>();
-  /** Lessons whose turnSeq was seeded from the store on this page (reserve() reads the store once per lesson). */
-  private seeded = new Set<string>();
   private active = new Map<string, Active>();
 
   constructor(d: OutboxDeps) {
@@ -223,10 +270,7 @@ export class Outbox {
   /** The next turnSeq for a lesson: above anything this outbox handed out AND anything held in the store, so a
    *  reloaded page (a new Outbox, seq back at 0) never overwrites a held record of the same lesson. */
   async reserve(lessonId: string): Promise<number> {
-    // r4-latency: the store is read once per lesson per page (the seed), not on every turn. Every record written after
-    // it went through this outbox, so seqs already covers it. Each IndexedDB round trip before the turn's fetch waits
-    // behind the page's frame work (measured: 56-123 ms long tasks back to back with the puppet on).
-    const stored = this.seeded.has(lessonId) ? [] : await this.store.list(lessonId).then((r) => (this.seeded.add(lessonId), r), () => [] as OutboxRecord[]);
+    const stored = await this.store.list(lessonId).catch(() => [] as OutboxRecord[]);
     const top = Math.max(this.seqs.get(lessonId) ?? 0, ...stored.map((r) => r.turnSeq));
     const n = top + 1;
     this.seqs.set(lessonId, n);
@@ -237,21 +281,30 @@ export class Outbox {
    * Write, then send with the automatic retry schedule. Resolves with the server's answer (the record is gone);
    * rejects with OutboxHeld when the turn could not be delivered (the record stays, status "failed").
    */
-  async send<R>(req: TurnRequest, sendFn: SendFn<R>, opts: { turnSeq?: number; retried?: boolean } = {}): Promise<R> {
-    const turnSeq = opts.turnSeq ?? (await this.reserve(req.lessonId));
-    if (turnSeq > (this.seqs.get(req.lessonId) ?? 0)) this.seqs.set(req.lessonId, turnSeq);
-    const rec: OutboxRecord = {
-      key: `${req.lessonId}:${turnSeq}`, lessonId: req.lessonId, turnSeq,
+  async send<R>(req: TurnRequest, sendFn: SendFn<R>, opts: { turnSeq?: number; retried?: boolean; onSeq?: (turnSeq: number) => void } = {}): Promise<R> {
+    const base: OutboxRecord = {
+      key: "", lessonId: req.lessonId, turnSeq: 0,
       // Every attempt carries turnSeq (the server's dedupe key); a resend adds retried: true.
-      req: { ...req, turnSeq, ...(opts.retried ? { retried: true } : {}) }, at: this.now(), attempts: 0, status: "queued",
+      req: { ...req, ...(opts.retried ? { retried: true } : {}) }, at: this.now(), attempts: 0, status: "queued",
     };
-    // The write comes FIRST: a crash, a reload or a dead network after this line cannot lose the answer.
-    try {
+    // The write comes FIRST: a crash, a reload or a dead network after this line cannot lose the answer. A new turn
+    // (no turnSeq given) is claimed: its turnSeq is chosen and the record written in one atomic store step, so two pages
+    // on one lesson never share a turnSeq, with one store round trip before the request.
+    const write = async (): Promise<OutboxRecord> => {
+      if (opts.turnSeq === undefined && this.store.claim) return underSeq(base, await this.store.claim(base, this.seqs.get(req.lessonId) ?? 0));
+      const rec = underSeq(base, opts.turnSeq ?? (await this.reserve(req.lessonId)));
       await this.store.put(rec);
+      return rec;
+    };
+    let rec: OutboxRecord;
+    try {
+      rec = await write();
     } catch {
       await this.useStore(new MemoryOutboxStore(false));
-      await this.store.put(rec);
+      rec = await write();
     }
+    if (rec.turnSeq > (this.seqs.get(req.lessonId) ?? 0)) this.seqs.set(req.lessonId, rec.turnSeq);
+    opts.onSeq?.(rec.turnSeq);
     this.events.emit({ type: "written", rec });
     return this.deliver(rec, sendFn);
   }

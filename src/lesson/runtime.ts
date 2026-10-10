@@ -771,9 +771,11 @@ export class LessonRuntime {
       await this.outboxReady;
       if (input) {
         // A child turn goes through the outbox: written before it is sent, retried, held, never lost.
-        const turnSeq = await this.outbox.reserve(lessonId);
-        this.store.set((s) => ({ held: [...s.held, turnSeq] }));
-        res = await this.outbox.send(req, (r, signal) => this.api.turn(r, signal), { turnSeq });
+        // Its turnSeq is claimed with the write (one atomic store step: two pages on one lesson never share one).
+        let turnSeq = 0;
+        res = await this.outbox.send(req, (r, signal) => this.api.turn(r, signal), {
+          onSeq: (n) => { turnSeq = n; this.store.set((s) => ({ held: [...s.held, n] })); },
+        });
         this.store.set((s) => ({ held: s.held.filter((x) => x !== turnSeq) }));
         // ship5 fixer (B3): a revoke's merged edit arrived after the revoked turn landed: only its new words go next
         const rest = this.revokeRest;
