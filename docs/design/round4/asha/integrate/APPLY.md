@@ -40,9 +40,10 @@ fresh copy give exactly the tree that was tested; 05, 05b and 06 also apply alon
 p2-face-server (7), p2-face-flag (4), p2-face-player (2), p2-face-bilabial (3), avatar-face (27),
 round3-relational-human-face (7), avatar-tutors (8), avatar-tutor-routes (4), teacher-name (11), gates (6),
 lesson-truth (23), w2a-experience (28), ui-v2-b2 (13), voice-expressive-plan (8), ui-v2-copy (5), round3-fix (77).
-w2c-director has 1 failure both before and after the patches (24/1 on the untouched copy too). NOT run here: the full
-`npm test` in the real repo, `kit-budget` (did not finish inside 300 s on the copy, before or after), browser e2e scripts,
-DB runs, and the prod acceptance script.
+kit-budget (3/3: every queued item and diagnostic compiles on both lanes, every language and age band, now with Asha's
+class 5-9 register in place of Arjun's sheet; about 12 minutes). w2c-director has 1 failure both before and after the
+patches (24/1 on the untouched copy too). NOT run here: the full `npm test` in the real repo, browser e2e scripts, DB
+runs, and the prod acceptance script.
 
 Instead of applying 02 + 03 you can regenerate them: after 01, `node evals/face-puppet/sync-runtime.mjs lamp1` writes the
 same `src/face-puppet/runtime/*.js` and `public/face-puppet/lamp1/*` (it needs `scripts/character/puppet2d/lamp1/runtime/`
