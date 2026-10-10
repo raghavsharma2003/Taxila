@@ -1,7 +1,9 @@
 # duplex (round 4, stream 4B) · RESULTS
 
-**Status (2026-10-10, in progress):** R1 met on both lanes on the same recorded events; overlap work under way on AMI
-TRAIN. Nothing deployed. Production stays `TAXILA_DUPLEX=shadow` + the owner cohort.
+**Status (2026-10-10):** 5 of 9 criteria met (R1 on both lanes, R1b, R2b, R4, R7), up from 3. R2, R3, R5 and R6 still
+fail (§12). The hands-free "cut off mid-sentence" report was a harness artefact. The one real case found on the real
+transcriber (1,000 ms pauses in closed answers, 2/72) is fixed (0/72). Nothing deployed. Production stays
+`TAXILA_DUPLEX=shadow` + the owner cohort.
 
 **What every number here is:** REAL RECORDED ADULT SPEECH replayed through the engine, deterministically, from the real
 STT socket events recorded live in round 2 (eot-bench Hindi, LiveKit, CC BY 4.0; AMI Meeting Corpus, CC BY 4.0, English
@@ -182,3 +184,82 @@ exactly the BEFORE row): the hush now meets those bursts, so the pause waits for
 already inaudible (-26 dB). The child-facing number (her audio down within 200 ms) is equal or better. Round 3 made the
 same trade (the hush stands in for the pause). On TEST, "missed" rises only because of `CLOSED_ELABORATION`
 (off → exactly BEFORE). The safety rows do not move; MAI_HOME's 1 undetected of 84 is in the BEFORE run too.
+
+## 9. R5 and R6: what they would take (not faked)
+
+Both rows ask "who is speaking?", and the engine cannot answer that today:
+- **R5 (room false yields 13.8 %):** another adult's voice over her is told from the child only by pitch (≥ 5 semitones
+  below the child's own median) and by level. On AMI the "other voices" are adults at the same table, often in the
+  child's pitch range.
+- **R6 (bleed self-yields 13.2 %):** her "echo level" is her OUTPUT level, not a measured echo path. On the AMI headset rig
+  her own voice reaches the mic at -10 to -22 dB, harsher than a phone with AEC. That is also why the lexical echo gate
+  had to be rejected (§6).
+
+What would do it, and what it costs:
+1. **A target-speaker gate (personal VAD, X3 in `docs/research/duplex/ARCHITECTURE.md`).** The child's voice is enrolled
+   once (a short "apna naam bolo" sample at onboarding). A small on-device speaker-embedding model (ECAPA-class) scores each
+   overlap onset against it, and the score feeds `OverlapFeatures.targetSpeaker`, which the classifier, the hush and G11
+   already read. The published reference is FireRedChat's pVAD: false barge-ins down to 10.2 % (MODELS-PAPERS.md).
+   It needs:
+   - an Azure-hosted or on-device model: no third-party API. The voicesig stream's ONNX runtime path
+     (`src/voicesig/ort.ts`) can host it;
+   - an enrolment step (a stream 2 / onboarding patch, plus consent copy);
+   - a children's evaluation set (sibling / TV / own voice), which does not exist;
+   - research-sized work, not a rule change.
+2. **The AEC reference for R6.** Read the device echo canceller's residual (or run our own reference-correlated echo
+   estimate over her PCM, which the player already has) instead of her output level. Then "is this her echo?" is measured,
+   and the lexical-turn gate rejected in §6 becomes safe. This is a client audio change in the link (stream 3's file):
+   a seam patch.
+3. Until then, both rows are reported as they are. A phone with AEC leaks far less than the AMI headset rig, so R6 on
+   AMI over-states the device. Only shadow telemetry from real lessons can say how much.
+
+## 10. Where the engine's time goes (the trail, the engine half)
+
+Real transcriber (§7.1), speech end → the engine's commit, p50:
+- **Closed answers:** 0.8-1.3 s.
+- **Her open question / an explanation:** ~2.5 s. This is wait time II for teach-backs (`CONTEXT.open_explanation`,
+  2.5-3.5 s; TaxilaFDB had 49/440 mid-explanation pauses of 2.2-2.8 s cut at 2-3 s).
+- **Free exchange:** 1.0 s (E1, eot-bench, R2 row).
+
+The open-question wait is the largest single engine delay a child feels. Shortening it needs proof on CHILD explanation
+pauses, which only the pilot has. On adult speech the free exchange's 1,100 ms class wait already cuts 2-3 % of thinking
+pauses, and children pause longer. **It is not changed this round.** The eager start (§3) already lets the turn's model
+work begin on the covered words before the commit; `eagerDecideAt` tells stream 3 when the commit will land.
+
+## 11. Gates (this branch, merged with base 6166d0a, 2026-10-10)
+
+| gate | result |
+|---|---|
+| `npx tsc -b`, `npx vite build` | pass |
+| `npm test` (own Neon branch) | 2,548 / 2,613 pass. The 60 failures are all `tests/engines-browser.test.mjs`: this container's Chromium 141 words a CSP refusal differently from the test's dev-noise filter (needs Chromium 1243, which cannot be installed here). Nothing in this diff is loaded by that suite. CI on GitHub (`gates`) runs that suite green. |
+| duplex unit and replay suites | 152 / 152 |
+| `scripts/check-prompt-budget.mjs` | PASS |
+| `scripts/lint-ui.mjs --json` | 353 (baseline 353), 0 duplex findings |
+| `tests/prod/round3-duplex.mjs`, local production build, `TAXILA_DUPLEX=shadow` + `TAXILA_DUPLEX_LIVE_FOR` = a fresh TEST account | **15/15** (the harness has 15 checks, not 18). Config, everyone-shadow, the owner cohort "on", the owner browser arm end to end (no talk button, the engine commits spoken turns hands-free), everyone-browser shadow, slow switch stays shadow, shadow telemetry, and the bundle carries engine `2026-10-10.r4` |
+| `tests/prod/p1-duplex-acceptance.mjs`, local production build | with production's flags (`shadow`): 10/16; the 6 FAILs are its ship5-era premise that duplex is ON for everyone (a fresh non-cohort account correctly stays on today's path). With `TAXILA_DUPLEX=on` on the local build only: **16/16**. With `P1_SAFETY=1`: the safety-pending seam passes (a clean final carrying `duplex.safetyPending` gets the safeguarding move with Childline 1098 and Tele-MANAS 14416); its 1 FAIL is the expected cleanup refusal (`erase_review` on my own Neon branch) |
+| cohort path (local production build, `TAXILA_DUPLEX=shadow` + `TAXILA_DUPLEX_LIVE_FOR`) | owner TEST account → `{ duplex: "on", cohort: "owner" }`, a plain account → `{ duplex: "shadow" }`; hands-free lesson live for the owner child (§7) |
+
+## 12. What still blocks "on" for everyone
+
+Met on the same recorded events: **R1 (both lanes), R1b, R2b, R4, R7: 5 of the 9 criteria** (round 3: 3 of 9).
+
+Not met:
+- **R2 (decision gap p50 ≤ 350 ms on the India lane).** A closed-answer bar measured on open adult speech from the US;
+  it needs the India lane measured from India and a children's closed-answer set.
+- **R3 (continuers kept ≥ 90 %): 82.1 %.** Of the 35 failures left, 16 started while, on a device, her audio had already
+  stopped (open-loop rig); the rest are sustained bursts and her own words leaking back.
+- **R5 and R6.** They need a target-speaker model and the AEC reference (§9).
+
+And, as in round 3: nothing here is a child, and Gate S (prod shadow telemetry from real lessons) has no data until voice
+lessons are run. **Recommendation: stay `TAXILA_DUPLEX=shadow` with the owner cohort.** The owner's hands-free test is
+the next real evidence.
+
+## 13. Owner decisions needed
+
+1. **The extra patience is accepted** (main session, 2026-10-10). It costs:
+   - read-outs: +1.2 s on turns that end on a number or address;
+   - closed answers longer than 3 words: about +375 ms.
+
+   Confirm it stays if the owner's own hands-free test finds it slow.
+2. **Whether to fund the target-speaker gate (X3).** It is the only path to R5 and R6. It needs an enrolment step with
+   consent, an on-device model, and a children's sibling / TV evaluation set.
