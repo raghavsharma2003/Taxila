@@ -33,6 +33,15 @@ add("→ reply audible (+60 lead +50 nominal out)", rows.map((r) => r.replySound
 add("→ echo audible (played only)", rows.map((r) => r.ackSoundAfterEnd));
 add("→ first sound (echo or reply)", rows.map((r) => r.firstSound));
 const graded = (r) => /^(correct|incorrect|partial|misconception)\//.test(r.cls ?? "");
+// r4-latency TTS first sentence (SHADOW): a locked s1 would start speaking at the lock instead of after the rest of the guard,
+// the rewrite and the commit. Estimate: the reply's audible time minus (final reply − lock) minus (stored − replied). The
+// early part's own synthesis is taken as equal to the prewarm's (same engine, warm socket). Unlocked turns are unchanged.
+// A speculation hit's reply was written (and locked) before the turn picked it: there only the commit is saved.
+const earlyGain = (r) => (!r.early?.locked ? 0 : Math.max(0, (r.speculation === "hit" ? 0 : r.early.finalMs - r.early.lockedMs) + ((r.marks?.stored ?? 0) - (r.marks?.replied ?? 0))));
+if (rows.some((r) => r.early)) {
+  add("SHADOW reply audible, s1 early", rows.map((r) => r.replySound - earlyGain(r)));
+  add("SHADOW gain on locked turns", rows.filter((r) => r.early?.locked).map(earlyGain));
+}
 add("first sound, graded answers", rows.filter(graded).map((r) => r.firstSound));
 add("first sound, non-answers", rows.filter((r) => !graded(r)).map((r) => r.firstSound));
 // model calls by deployment (durations)
@@ -49,6 +58,8 @@ const counts = {
   prefetchAdopted: `${rows.filter((r) => r.prefetched).length}/${rows.length}`,
   rewrites: rows.filter((r) => /rewrit|replaced/.test(r.guard ?? "")).length,
   echoPlayed: `${rows.filter((r) => r.ackPlayed).length}/${rows.filter(graded).length} graded`,
+  earlyLocked: rows.some((r) => r.early) ? `${rows.filter((r) => r.early?.locked).length}/${rows.filter((r) => r.early).length} locked, ${rows.filter((r) => r.early?.locked && r.early.kept).length} kept s1` : undefined,
+  earlyWhy: rows.some((r) => r.early) ? rows.filter((r) => r.early && !r.early.locked).reduce((m, r) => ({ ...m, [r.early.why]: (m[r.early.why] ?? 0) + 1 }), {}) : undefined,
   under900: `${rows.filter((r) => r.replySound <= 900).length}/${rows.length} reply ≤ 900 ms`,
 };
 if (MD) {

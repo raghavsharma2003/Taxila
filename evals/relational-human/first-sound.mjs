@@ -49,7 +49,7 @@ const TOPIC = arg("--topic", "c4-maths-ch01-t01");
 /** "items" (default): the child answers the item actually on the table from the kit — right, wrong, right per item, with
  *  a "pata nahi" every fifth turn — so graded answers are a realistic share; "round2": the round-2 harness's fixed lines. */
 const SCRIPT_MODE = arg("--script", "items");
-const LOCAL_OFFSET_MS = 400, DEBOUNCE_MS = 250, MAX_PER_ITEM = 3;
+const LOCAL_OFFSET_MS = 400, DEBOUNCE_MS = Number(arg("--debounce", 250)), MAX_PER_ITEM = 3; // r4-latency: --debounce (device DEBOUNCE_MS arm)
 const ACK_MAX_AGE_MS = 3500, ACK_REPLY_GAP_MS = 180, ACK_HOLD_MAX_MS = 1800;
 
 const E = process.env.AZURE_OPENAI_ENDPOINT.replace(/\/+$/, "");
@@ -464,7 +464,7 @@ async function lesson(L, rows = []) {
         ackClipMs: usable?.ack?.ms ?? null,
         replySound: Math.round(replySoundAt - end) + START_LEAD_MS + OUTPUT_LATENCY_MS,
         firstSound: Math.round((ackPlayAt ?? tts.firstAt) - end) + START_LEAD_MS + OUTPUT_LATENCY_MS,
-        speculation: r.debug?.speculation ? (r.debug.speculation.hit ? "hit" : "miss") : "none", specDiffers: r.debug?.speculation?.differs ?? null, specExact: !!r.debug?.speculation?.exact,
+        speculation: r.debug?.speculation ? (r.debug.speculation.hit ? "hit" : "miss") : "none", specDiffers: r.debug?.speculation?.differs ?? null, specExact: !!r.debug?.speculation?.exact, early: r.debug?.guard?.early ?? null,
         prefetched: !!r.debug?.prefetch?.adopted, prefetchMiss: r.debug?.prefetch?.miss ?? null, prefetchAheadMs: r.debug?.prefetch?.aheadMs ?? null, note: r.debug?.note ?? null,
         serverMs: r.debug?.ms ?? null, marks,
         // r4-latency: the turn's model calls (deployment, ms, whether the speculative reply or the prefetch made it)
@@ -532,7 +532,7 @@ if (server) console.log(`azure (server side) calls ${azure.calls} status ${JSON.
 if (OUT) {
   fs.mkdirSync(path.dirname(OUT), { recursive: true });
   fs.writeFileSync(OUT, JSON.stringify({ method: { date: new Date().toISOString(), label: LABEL, turns: rows.length, lessons: LESSONS, classLevel: CLASS, base: server ? "in-process" : base, root: ROOT,
-    host: os.hostname(), loadAvg: [loadAvg0, os.loadavg()[0]], wallS: Math.round((Date.now() - t0) / 1000), prefetch: PREFETCH, ack: ACK, turnAudio: TURN_AUDIO,
+    host: os.hostname(), loadAvg: [loadAvg0, os.loadavg()[0]], wallS: Math.round((Date.now() - t0) / 1000), prefetch: PREFETCH, ack: ACK, turnAudio: TURN_AUDIO, debounceMs: DEBOUNCE_MS,
     script: SCRIPT_MODE, stt: process.env.TAXILA_STT_MODEL || process.env.DEPLOY_TRANSCRIBE || "(server default)",
     env: { TAXILA_TURN_PREFETCH: process.env.TAXILA_TURN_PREFETCH ?? "(default on)", TAXILA_ACK: process.env.TAXILA_ACK ?? "(default on)", AZURE_SPEECH_REGION: process.env.AZURE_SPEECH_REGION ?? null, TAXILA_DB: process.env.TAXILA_DB ?? null },
     note: "synthetic child speech (gpt-4o-mini-tts ×1.2 pitch); WebSocket transcription from this US sandbox to eastus2; sound = first byte (or the ack's play time) + 60 ms lead + 50 ms NOMINAL output latency; device rules simulated" }, summary, rows }, null, 1));
