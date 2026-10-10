@@ -9,14 +9,14 @@ other sessions) or from pure code. **No child has used any of this.** Each numbe
 | item | state |
 |---|---|
 | Day 0: box contract | **done** (`docs/design/round4/build/box-contract.json`, measured) |
-| (1) one certificate gate | **built + tested** (in-process); batteries on a local production build pending |
-| (2) Studio v2 off the child path | **done in code** (0 of 737 library pieces certified as themselves at all three sizes) |
-| (3) her line matches the board, ≥ 50 boards | harness written (`tests/prod/r4-content-boards.mjs`); claims board built; run pending |
-| (4) interactive asks end in something to DO; "half ka half" | `fraction-of@1` built; play/engine coverage gaps named below |
-| (5) request → piece ≤ 3 s p90, n ≥ 20 | early piece on the Studio stream built; harness written (`tests/prod/r4-content-speed.mjs`); run pending |
-| (6) owner-5 slots that never became an artifact | claims board built (her line's own screen claims drawn and gated); run pending |
-| (7) V3.3 at scale | not started |
-| beat-by-beat board, notebook | not started (after 1-7) |
+| (1) one certificate gate | **done**: every producer gated, test fails on an ungated one; 0 uncertified mounts reachable |
+| (2) Studio v2 off the child path | **done** (0 of 737 library pieces certified as themselves at all three sizes; the bridge keeps the W2 view) |
+| (3) her line matches the board, ≥ 50 boards | **met on the battery**: 51 boards, 0 contradictions, 0 illegible at 360 (§3) |
+| (4) interactive asks end in something to DO | **partly**: R2 1/6 → 3/6 strict, 5/6 counting a board drawn on her clause for animation / simulation; game-sst has no engine or play (§3) |
+| (5) request → piece ≤ 3 s p90, n ≥ 20 | **not met**: p90 5.5 s (n = 22); engine pieces ride the turn response (§3) |
+| (6) owner-5 slots that never became an artifact | **met**: owner-5 14/14 |
+| (7) V3.3 at scale | simulation 93.0% right-artifact-ready, 0 stale or wrong reveals, 0 visible failures (n = 200 lessons, SIMULATION) |
+| beat-by-beat board, notebook | built behind `TAXILA_BEAT_BOARD` (off); notebook saved per lesson (patch 01), replayable; plan card waits on 4A's session plan |
 
 ## 1. Baseline (the untouched base `522dca6e`, re-run first)
 
@@ -122,8 +122,34 @@ Type row opens `inputMode="numeric"` for them). Classes 5-9 (B3, B4) get the Typ
 setting (`effectiveBand`) makes a class-4 child Older, with typing. A harness that needs typed asks on a class-4 topic uses
 a class-5 child or that setting. Unchanged on this branch.
 
-## 3. Not met yet, and why
-To be filled from the batteries on the local production build of this branch.
+## 3. Measured on this branch (local production build), before → after, and what is still short
+Local production build of `f728cf4a` (`server/serve.mjs` + worker, `NODE_ENV=production`, own Neon branch, same env as the
+baseline), headless Chromium, adult-scripted children, 2026-10-10 10:50-11:15 UTC, load average 0.4-0.9 (4 cores; Azure
+models shared with production and other sessions). The two commits after it (`19202e6b`…`722d8d55`) fix the last board
+lines below in code and tests; the batteries were not re-run on them.
+
+| harness | base `522dca6e` | this branch |
+|---|---|---|
+| round3-forge R1 something real on stage | 10/12 | 12/12 |
+| R2 interactive ask ends in something to DO | 1/6 (taxila.dev: 1/6) | 3/6 strict; 5/6 with a board drawn on her clause for the animation / simulation asks (brief item 4) |
+| R3 boards with a meaning failure | 0 / 16 | 0 / 17 |
+| R4 views passing the forge3 verdict | 34/36 | 35/36 (animation p360 Q1.legible) |
+| owner-5-visual | 11/14 (2 slots never an artifact) | **14/14** |
+| r4-content-boards (≥ 50) | not run | 51 boards, **0 contradictions, 0 illegible at 360**, notebook 9/9 lessons; 2 slots unfilled while she pointed (both lines now draw in tests, `722d8d55`) |
+| round2-content | not run on base here | 38/39 (R 12/12 requests on stage; the miss: M "an item-bound mount in c6-maths-ch07-t01": only 2 of its 19 items bind an engine, 0 gate refusals in process) |
+| request → piece (r4-content-speed, 360 phone, typed) | not run | p50 1.7 s, **p90 5.5 s** (n = 22: 5 play topics, 17 engine topics; 2 with no piece) |
+
+Still short, and why:
+- **(5) speed.** An engine piece arrives in the turn response, so its time is the turn's (3.0 / 4.7 / 5.5 s tails); 7 of
+  the 22 asks found an engine already up from an earlier turn (≈ 15 ms; the harness now reports those apart). The early
+  piece on the Studio stream (`{t:"slot", early}`) covers Studio pieces only. Closing it needs the engine's open task sent
+  before the reply is written (a Director / Desk path outside this stream's files: a proposal for the main session).
+- **(4) game asks on topics with no engine and no play level** (game-sst c6-sst-ch01, science): they end on a board drawn
+  on her clause; logged by the main session as open-r4-science-sst-engines. 2 of the 5 play topics gave no piece (play is
+  admitted only for the lesson's CURRENT skill, round 3 adversarial B1; stream 1's).
+- The plan card and "of N" beat progress wait on stream 4A's session plan.
+- A test account from the boards battery could not be deleted: the product's safeguarding guard holds it (my Neon branch
+  only; recorded by the harness).
 
 ## 4. Owner decisions needed
 None yet.
