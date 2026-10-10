@@ -35,14 +35,16 @@ and its GPU is not a Mali, Adreno or PowerVR. §5.3 explains what the proxy can 
 2. **"Minecraft level" means a bounded build world, not an infinite one.** A 6 x 6-chunk voxel world (96 x 96 x 24) with
    naive face-culled meshing holds 106,831 voxels. It draws 25.8k triangles in 19 draw calls (36 chunks, frustum-culled),
    meshes a chunk in 7.7 ms p50 and re-meshes after an edit in 8.2 ms p50 / 19.1 ms p95 at 4x throttle, on a contended
-   host [M]. Re-meshing belongs in a worker with greedy meshing before it ships. That is enough for a build world sized to a lesson. It
-   is not an endless procedural continent, which is not needed (§1.3).
+   host [M]. Re-meshing belongs in a worker with greedy meshing before it ships. That is enough for a build world sized
+   to a lesson. It is not an endless procedural continent, which is not needed (§1.3).
 3. **"Built on the go" splits three ways, by what can be verified in time.** The table is §3.1.
    - **Built offline, reviewed once:** the **engine**, its feel and its art packs. That is every pixel, sound and shader.
    - **Live, in code:** the **level**, built in **0.07 ms p50 / 0.8 ms p95** [M, n = 1,520 levels], solver-proven and
      shortcut-free. Code computes every number and every grade. No model ever grades.
    - **Live, from a model:** the **dress**. It is a closed-enum delta (theme, story wrapper, music mood, pace, teacher
-     move), 50-80 tokens from `taxila-fast`, **1.3-1.9 s p90** [R `dec-r3-model-writes-delta-not-spec`].
+     move, language). `taxila-fast-bg` wrote this prototype's delta from a lesson context in **p50 1,133 ms / p90
+     1,442 ms**, 12/12 schema-valid at 40 tokens [M, n = 12]. Round 3's richer delta took 1.3-1.9 s p90
+     [R `dec-r3-model-writes-delta-not-spec`].
 
    If the delta is late or invalid, the base dress plays. Everything a 2025-26 "AI game generator" does freely takes
    tens of seconds to minutes and is unverified:
@@ -77,7 +79,7 @@ and its GPU is not a Mali, Adreno or PowerVR. §5.3 explains what the proxy can 
    The ban is enforced on copy only today (`r4p-economy-ban-copy-only`). Engines therefore need a logic-level lint
    (§6).
 6. **What round 4 can honestly ship:** one cloud session (3-4 days) can productionise **one engine (Antariksh) over the
-   existing Nishana law** for its 16 admitted skills, at three viewports, with the evidence path. A second engine
+   existing Nishana law** for its 18 admitted skills (12 topics, `data/play/coverage.json`), at three viewports, with the evidence path. A second engine
    (Khand, voxel) can reach a playable state but not certification (§7). The other five are later. The learning claim is
    unproven until a child pilot (mechanics.md §12).
 
@@ -126,7 +128,7 @@ a "game" from an "interactive", written as checks:
 
 ### 1.2 What the device budget is
 
-**The phones.** The repo's design floor is the Helio G35 (8x A53, PowerVR GE8320, 4 GB, `le-floor-helio-g35`
+**The phones.** The repo's design floor is the Helio G35 (8x A53, PowerVR GE8320, 4 GB; `docs/research/design/low-end-offline.md` tier C
 [R]). Today's ₹10k phones (mid-2026 listings [S]) are a step up. Examples: the Redmi A4 5G (Snapdragon 4s Gen 2,
 Adreno 613); the realme Narzo N65 / C63 5G (Dimensity 6300, Mali-G57 MC2); the Moto G06 Power (Helio G81, Mali-G52 MC2).
 
@@ -152,9 +154,9 @@ must be about 1/20th of Manhattan. WebGL 2 reaches 97.13% of global users (caniu
 | GPU textures | ≤ 96 MB | ≤ 64 MB | ~0.6 MB of textures + ~7.6 MB of framebuffers [E: 540 × 882 × (4 + 4) B × 2] | [R] tier C ≤ 64 MB |
 | JS heap | ≤ 160 MB | ≤ 120 MB | **5.6-7.7 MB** | [R] tier C ≤ 120 MB |
 | JS work per frame | ≤ 6 ms | ≤ 8 ms at 30 fps | **3.4-4.2 ms at 4x throttle** | world draw ≤ 8 ms (`live-tech.md` §4.5) [R] |
-| first-load JS (engine + game) | ≤ 250 KB br | same | 99 KB three + ~16 KB game [M] | §2 |
-| first playable frame, 4G | ≤ 3 s | ≤ 4 s | 813 / 1,384 ms [M, emulated] | instant-game guidance: start < 5 s, < 3 s preferred [S via Defold] |
-| initial download | ≤ 5 MB with art | ≤ 3 MB | 193 KB (three.js not tree-shaken; ≈ 150 KB with the tree-shaken build) KB | Poki-style 5-8 MB [S, third-party] |
+| first-load JS (engine + game) | ≤ 250 KB br | same | 99 KB three (tree-shaken) + 21 KB game code [M] | §2 |
+| first playable frame, 4G | ≤ 3 s | ≤ 4 s | 813 / 1,384 ms (2,528 at 1.2 Mbps) [M, emulated, contended host] | instant-game guidance: start < 5 s, < 3 s preferred [S via Defold] |
+| initial download | ≤ 5 MB with art | ≤ 3 MB | 193 KB (three.js not tree-shaken; ≈ 150 KB with the tree-shaken build) | Poki-style 5-8 MB [S, third-party] |
 
 **The network.** Ookla's median Indian mobile download was 131.77 Mbps in August 2025 [S]. That figure blends in 5G.
 4G medians were far lower (13.30 Mbps in Ookla's January 2023 5G-vs-4G comparison [S]). Opensignal's 2026 India
@@ -221,7 +223,7 @@ layer is a few hundred lines per engine, as the prototype shows.
 
 | artefact | how | latency | truth-safe? | live? |
 |---|---|---|---|---|
-| level numbers, positions, keys | the family law in code (`law.generate`) | **0.07 ms p50, 0.81 ms p95** [M, n = 1,520 levels, node]; compose incl. dress validation 0.66 / 1.19 ms [M, n = 200] | yes: solver-proven, shortcut-checked, discriminating | **yes, per level, on device or server** |
+| level numbers, positions, keys | the family law in code (`law.generate`) | **0.07 ms p50, 0.81 ms p95** [M, n = 1,520 levels, node]; compose incl. dress validation 0.65-0.75 / 0.88-1.52 ms [M, n = 200 × 3 runs] | yes: solver-proven, shortcut-checked, discriminating | **yes, per level, on device or server** |
 | dress (theme, wrapper, music, pace, teacher move, language) | `taxila-fast-bg` strict-schema enums, effort none | **this prototype's schema: p50 1,133 / p90 1,442 / max 1,759 ms, 12/12 valid, 40 output tokens** [M, n = 12, US → eastus2]; round 3's richer delta p50 1.3-1.5 s / p90 1.5-1.9 s, ~$0.0002 [R `ms-r3-live-delta-probe-2026-10-09`, n = 24 + 12] | yes: enums only; a model string is never shown | **yes, per segment**; the base dress if late |
 | teacher's in-play lines | authored bank, filled by code; DragonHD pre-synthesis | first byte 228 ms [R] | yes: conditioned, guarded (`r3p-reaction-shape-conditions`) | yes |
 | a full game spec (a model writing params) | Studio v2 catalogue | 6.2 s p50 / 11.9 s p90; 19% needed a fix pass [R `ms-r3-catalogue-spec-latency-2026-10-09`] | no: needs validators | no (library lane) |
@@ -235,6 +237,12 @@ layer is a few hundred lines per engine, as the prototype shows.
 (company-reported 1M+ games [S]). Astrocade uses a multi-agent pipeline (art, sound, mechanics, UI) that produces a
 playable game "in minutes", with 20M users claimed and a $56M raise in May 2026 [S]. Both optimise the "make *a* game
 from a sentence" path. Neither verifies the game's truth, proves levels, models a learner or hits a 3 s window.
+
+The round-4 product teardown reached the same conclusion independently. No product generates real games live inside a
+child's lesson. The closest is TutorFlow Games, a teacher-side beta from August 2026: one sentence, then a plan, then
+browser game code, then an automated play test before delivery, taking "a few minutes"
+(`r4p-no-live-game-generation-in-session` [R]). Its play-before-ship gate is worth copying per composed instance.
+Here that gate is the device's offscreen self-check plus the bot-played certification of every engine × skill pair.
 
 What transfers:
 1. **The engine + parameters pattern.** A trusted runtime with a declarative spec is A2UI's "catalogue of trusted
@@ -284,8 +292,12 @@ What transfers:
 - **Which wrapper and theme**: the child's interests through the enums.
 - **The teacher's move**: noticing, or a ghost demonstration first.
 
-The prototype does all five live. The dress is from the URL in the prototype; in production it comes from the delta
-call.
+The prototype does belief, fade and dress live. Band moves only through the child's door choice; the ledger's band
+estimate is not wired. The ghost demonstration is in the enum, and the model chose it 3/3 for a first-time child, but
+the engine does not perform it yet. In the prototype the dress comes from the URL; the probe in
+§5.2 shows `taxila-fast-bg` writing the same dress from a lesson context. The round-4 tutor research's measured
+`LearnerHow` state (`r4t-learner-how-state`: H3 representation responsiveness, H8 interest hooks) is the right source
+for the "which wrapper / which representation" inputs once it is written.
 
 ### 3.3 The evidence path (unchanged from round 3)
 
@@ -359,9 +371,9 @@ thrust.**
 |---|---|---|
 | c5-maths-ch02-t01 Fractions on the number line | aim the cannon at the cloaked mine at 2/3; it decloaks at the truth (**the prototype**) | ✓ |
 | c6-maths-ch07-t02 Fractions on the line and mixed fractions | mines at 7/4 and 2 1/3 on 0-3; `all-less-than-one` shows as a shot squeezed under 1 | ✓ |
-| c7-maths-ch03-t03 Locating and comparing decimals | aim at 0.35 vs 0.305 on 0-1 (the `decimal-place` mal-rule lands at 0.035) | ✓ |
-| c6-maths-ch10-t02 Integers on the number line | line −10 to 10; the `neg-order-line` belief aims −7 at the far left | ✓ |
-| c4-maths-ch04-t03 / c5-maths-ch01-t02 Nearest hundred/thousand | place 3,449 on 3,000-4,000, then fly into the nearer landmark gate (a spatial commit, not a button) | ✓ |
+| c7-maths-ch03-t01 / t03 Tenths and hundredths; locating and comparing decimals | aim at 0.05 and 0.35 on 0-1: the `decimal-place` belief puts 0.05 at 0.5; where 0.305 and 0.35 land shows `longer-bigger` | ✓ |
+| c6-maths-ch10-t02 Integers on the number line | line −10 to 10: the `neg-order-line` belief (negatives written left to right from the far end) puts −7 at −4 | ✓ |
+| c4-maths-ch04-t03 / c5-maths-ch01-t02 Nearest hundred/thousand | place 3,449 on 3,000-4,000, then fly into the nearer landmark gate (a spatial commit, not a button); the `round-chain` belief flies to 4,000 | ✓ |
 | c5-maths-ch03-t01 Angles as amount of turning | rotate the ship by ¼ / ½ / ¾ turn to face a beacon; the beam shows the turn swept | ✓ |
 | c6-maths-ch02-t03 Measuring and drawing angles | set the cannon to 55° to reach a target; protractor ticks fade by stage | ✓ |
 | c7-maths-ch05-t03 Transversals: corresponding / alternate angles | bank the beam off two parallel rails; predict the exit angle | ◐ (needs a careful level grammar) |
@@ -468,14 +480,16 @@ version as the repo).
 | `audio.js` | procedural SFX, engine hum, the music bed that hard-ducks under her voice |
 | `specs/` | `dress.schema.json` (the strict schema a model fills) and three example deltas |
 | `test-law.mjs` | node checks; replays a browser act log |
-| `measure/run.mjs` | the Playwright harness (fps / sweep / load / shots / video / voxel) |
+| `measure/run.mjs` | the Playwright harness (fps / rerun / sweep / load / shots / video / voxel / replay) |
+| `measure/dress-probe.mjs` | the Azure delta probe: `taxila-fast-bg` writes the dress from a lesson context |
 | `voxel/index.html` | the voxel micro-benchmark (§5.4) |
 | `shots/`, `results/` | screenshots (JPEG), one webm, the raw JSON |
 
 **Run:** serve the repo root (e.g. `npx vite` from `/home/user/Taxila`, or any static server), then open
 `/docs/research/round4/games/proto/index.html?skill=s2&mis=count-marks&fade=2`. To measure:
 `PLAYWRIGHT_BROWSERS_PATH=/opt/pw-browsers node docs/research/round4/games/proto/measure/run.mjs all`. To check the law:
-`node docs/research/round4/games/proto/test-law.mjs [results/replay-acts.json]`.
+`node docs/research/round4/games/proto/test-law.mjs [results/replay-acts-mis.json]`. The model probe (costs about
+$0.001): `node --env-file=.env.local docs/research/round4/games/proto/measure/dress-probe.mjs 12`.
 
 ### 5.1 What the child does
 
@@ -528,9 +542,11 @@ Screens (JPEG, 54-141 KB each): `shots/01-aim-360`, `02-mistake-countmarks-360` 
 - **The frame-rate proxy measures SwiftShader, not our game.** During the runs Chromium's GPU process used 188-209% CPU
   doing software rasterization. CDP's CPU throttle slows the renderer's main thread, not that process. So the
   unthrottled reference gives the same 30 fps as the 4x-throttled run at DPR 1.5. The DPR sweep shows fps rising as
-  pixels fall (DPR 0.5 gives 59.9 fps, DPR 1.5 gives 15 and DPR 2 gives 12 under the same contention, while our JS stays at 2.3-5.6 ms). On a phone the GPU rasterizes. 25 draws, ~3.3k triangles and ~3-4 full-screen layers at
-  540 × 882 are about 1/100th of a T-Rex frame. **Estimate [E]: ≥ 60 fps on a Mali-G52 MC2 at DPR 1.5, and ≥ 30 on
-  the GE8320 floor.** Only a USB run on a real phone can confirm it (O-R4, M-LE-2).
+  pixels fall (DPR 0.5 gives 59.9 fps, DPR 1.5 gives 15 and DPR 2 gives 12 under the same contention, while our JS
+  stays at 2.3-5.6 ms). On a phone the GPU rasterizes. The frame is 25 draws, ~3.3k triangles and ~3-4 full-screen
+  layers at 540 × 882: about a quarter of T-Rex's 1080p pixels and far less geometry (T-Rex's triangle count was not
+  verified here). **Estimate [E]: ≥ 60 fps on a Mali-G52 MC2 at DPR 1.5, and ≥ 30 on the GE8320 floor.** Only a USB
+  run on a real phone can confirm it (O-R4, M-LE-2).
 - **What the proxy does say:**
   - our JS (simulation, particles, label projection, render submission) costs **3.4-4.2 ms per frame at 4x
     throttle**;
@@ -578,30 +594,55 @@ the proxy's throttled main thread. Greedy meshing would cut triangles by roughly
 
 ## 6. NEVER MANIPULATE and the safety floor in real-game genres
 
-**Where the rule lives:**
-- `design-v3-no-streaks-mastery`: no streaks, points, XP, levels or leaderboards on child screens. In-game HUD
-  numbers are allowed only inside a running game and never totalled.
-- The binding wrapper rules G1-G14 (`docs/research/content/game-mechanics.md` §2): G4 no currency, points or unlocks;
-  G6 no lives or game over; G7 opponents are the environment; G10 timers; G12 asset budget and no music under the
-  teacher.
-- `rj-world-locked-places`, `rj-world-collection-counter`, `rj-world-real-clock-ambient`, `rj-timed-help-lockout`,
-  BUILD-PLAN C8 (no points, coins, streaks, timers or locks).
-- The inherited NEVER MANIPULATE four-question audit (`docs/harvest/json/ai2bharat-core.json`): is anything taken away
-  on absence; any nag or shame; any rank; is the reward inspectable work.
+**Where the rule comes from.** `r4p-economy-ban-copy-only` traces the lineage:
+1. the Meera persona's NEVER MANIPULATE;
+2. the gurukul safety-floor-teacher fear-and-obligation test;
+3. `motivation-without-rewards.md` (`mw-no-reward-economy`, `mw-no-time-grids`; neither id is in `graph.json`);
+4. `design-v3-no-streaks-mastery` (2026-10-04; it allows in-run HUD numbers);
+5. `r3p-world-ledger-view` and live-tech §0.8;
+6. BUILD-PLAN C8 ("no points, coins, streaks, timers or locks").
 
-| real-game feature | rule | compliant variant (in the prototype?) | owner decision |
+Alongside these stand the binding wrapper rules G1-G14 (`docs/research/content/game-mechanics.md` §2: G4 currency,
+G6 lives, G7 opponents, G10 timers, G12 assets and music) and the rejections `rj-world-locked-places`,
+`rj-world-collection-counter` and `rj-timed-help-lockout`.
+
+**Current reading.** On 2026-10-10 the main session, as the owner's delegated decision maker, chose **option B**
+(`dc-r4-gamification-b`). Allowed:
+- real games where the skill is the mechanic;
+- a world that changes as understanding grows;
+- personal collections opened **only by secured skills**;
+- co-op goals with no individual tallies;
+- **fast action only on secure skills**;
+- in-run scores that end with the run.
+
+Still banned: carried currency or points, streaks, leagues, energy or lives that gate learning, random drops,
+countdown pressure on new skills, and anything that punishes absence. The table applies that reading to real-game
+genres.
+
+| real-game feature | status under option B | compliant variant (in the prototype?) | owner decision |
 |---|---|---|---|
-| score / points / combo totals | G4, design-v3 | none shown; consequence and her notice are the reward (yes) | none |
-| health, lives, game over | G6 | a miss leaves the mine visible with the gap drawn; re-try free (yes) | none |
-| countdowns / time pressure | G10, `rj-timed-help-lockout` | **the world waits**: flight is real time, decisions are untimed (yes). A count-up personal best only under G10's conditions | O-G3 only if the owner wants any timed mode (B2-B4, opt-in) |
-| enemies | G7, G12 (no faces) | mines, rocks and drones without faces; no creatures are destroyed (yes) | **O-G4**: is a "shoot / daago" verb acceptable for class 4-5, or should it read "scan / tag / beam"? |
-| music | G12 "no music under the teacher"; `sound.ts` "never music" | adaptive bed, off for classes 4-5 by default, hard-ducks to 0 in ~120 ms whenever she speaks (yes) | **O-G2**: allow a music bed at all? |
-| dense environment art | G12 "≤ 6 non-semantic sprites"; seductive details g −0.33 | scenery only off the learning objects; learning objects drawn on top (`depthTest: false`) and in reserved hues (yes) | **O-G1**: relax G12's sprite budget for 3D worlds, with a seductive-details check in the pilot (same delayed-transfer outcome, plain vs dressed world) |
-| unlocks / level select gates | G4, `rj-world-locked-places` | all sectors open; doors are a choice of next level, never a lock (yes) | none |
-| loot, collectibles, cosmetics | G4 | none (yes) | none |
-| persistence | G5 | only the child's own builds (Khand) and capability statements | none |
-| multiplayer, leaderboards, chat | G7, safety floor | none | none |
-| daily returns, streaks | design-v3, the audit | none | none |
+| score / points | in-run only, never carried or totalled | none shown; the consequence and her notice are the reward (yes). An in-run "clean hits" count is allowed but adds nothing here | none |
+| health, lives, game over | banned where they gate learning (G6) | a miss leaves the mine visible with the gap drawn; re-try free; no fail screen (yes) | none |
+| countdowns / time pressure | banned on new skills | **the world waits**: flight is real time, decisions are untimed (yes). A *fast mode* (mines drift in, `pace: brisk`) is admissible only when the ledger marks the skill secure (not built) | none (decided by option B) |
+| enemies | environment only, no faces (G7, G12) | mines, rocks and drones; nothing alive is destroyed (yes) | **O-G4**: is a "shoot / daago" verb acceptable for classes 4-5, or should it read "scan / tag / beam" (words and SFX only)? |
+| music | G12 "no music under the teacher"; `sound.ts` "never music" | adaptive bed, hard-ducks to 0 in ~120 ms whenever she speaks; `music: off` in the enum, which the model chose for the anxious child 3/3 (yes) | **O-G2**: allow a music bed at all, and is it off by default for classes 4-5? |
+| dense environment art | G12 "≤ 6 non-semantic sprites"; seductive details g −0.33 | scenery kept off the learning objects; learning objects always drawn on top (`depthTest: false`) in reserved hues; labels on backing pills (yes) | **O-G1**: relax G12's sprite budget for 3D worlds, with a seductive-details arm in the pilot (plain vs dressed world, same delayed bare items) |
+| unlocks / level-select gates | banned (`rj-world-locked-places`) | every sector open; the doors choose the next level and never lock one (yes) | none |
+| collections / cosmetics | allowed only when opened by a secured skill | not in the prototype; a ship livery per secured skill would qualify, never bought, never random, never lost | none |
+| persistence | the child's own builds and capability statements (G5) | Khand builds persist as artefacts shown to the parent | none |
+| multiplayer, leaderboards, chat | banned (G7, safety floor) | none | none |
+| daily returns, streaks | banned | none | none |
+
+**A logic-level lint for engines** (the gap `r4p-economy-ban-copy-only` names). Every engine module must pass a
+static and runtime check:
+- no persisted counters except the G5 whitelist;
+- no wall-clock reads in the progress path (G1, G3);
+- no timer that can end or penalise a level on a skill not marked secure;
+- no RNG after a level is generated;
+- every state change traced to a child act or the law.
+
+The prototype passes by construction: `law.js` has no clock or RNG after generation, and `grade()` ignores `t`.
+Nothing in it enforces the rule, though, and the production lint does not exist yet.
 
 **The child-safety floor is unchanged.**
 - The stop check-in and the real goodbye work mid-level (play-duplex keeps safety pre-emption).
@@ -614,6 +655,11 @@ the proxy's throttled main thread. Greedy meshing would cut triangles by roughly
 - Hinglish (`lang="hi-Latn"`), English and Hindi (`lang="hi"`, Mukta from `public/fonts`).
 - Devanagari is never under 16 px: the smallest Devanagari text in the Hindi run was 16 px [M].
 - Numerals ≥ 18 px (tick labels 20 px) and international digits (PD-G14).
+
+**What children play.** `r4p-india-kids-games-data-gap`: there is no published data on what Indian 9-14-year-olds play
+or call babyish. Ormax 2021 (urban kids) lists Ludo King, Subway Surfers and Free Fire among their most-trusted media
+brands. A runner (Daud) and a shooter (Antariksh) are therefore genres such children know, but Taxila must ask its own
+children.
 
 ---
 
@@ -632,7 +678,7 @@ The table assumes the family laws already exist.
 | work item | agent-days [E] | depends on |
 |---|---|---|
 | **Shared 3D play core**: the three.js stage inside `src/play` (canvas at the real box, DOM labels over WebGL, layout solve, frame governor, context-loss → board twin, tier detection, reduced motion), procedural audio + music bed, engine chunk prefetch, the dress schema + validation in the Director, cert harness at 3 viewports | 3-4 | none |
-| **E1 Antariksh** over Nishana (`line.logic.ts` as the law, not the prototype's): place / compare / round as aim, fly-into-gate and decloak; 16 admitted skills; reaction-bank lines per moment; art: 3 themes | 2-3 | core |
+| **E1 Antariksh** over Nishana (`line.logic.ts` as the law, not the prototype's): place / compare / round as aim, fly-into-gate and decloak; 18 admitted skills / 12 topics; reaction-bank lines per moment; art: 3 themes | 2-3 | core |
 | E1 angles (turn / set angle): a new small law + solver + mal-rules (turn direction, protractor scale) | 2 | E1 |
 | **E2 Khand** voxel: chunk mesher (greedy), build / remove / walk controls on touch, view-projection law (views), arrays, area / perimeter, symmetry; artefact persistence | 5-7 | core, Nazariya law (1B lane) |
 | E3 Daud racer (rate setting, trail) | 3-4 | core, Chalao rate law |
@@ -681,7 +727,7 @@ In `context/inbox/r4-research-games.json` (the main loop merges): the measured s
 the voxel bench, law latency and replay agreement; the decisions (engines as views over family laws; three.js as the
 3D renderer; live = level + dress only; the world waits; the music bed duck); the rejections (world models and free
 codegen as live games; noa-engine; Babylon or PlayCanvas UMD as a second stack; shoot-the-answer); and the owner
-decisions O-G1 to O-G4.
+decisions O-G1, O-G2 and O-G4 (O-G3, a timed mode, is settled by option B: fast action on secure skills only).
 
 ## 10. Sources
 

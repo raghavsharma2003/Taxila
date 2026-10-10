@@ -25,11 +25,13 @@ await pg.evaluate(() => window.cap.start());
 const stage = await pg.$("#stage");
 const box = await stage.boundingBox();
 await pg.setViewportSize({ width: W, height: Math.ceil(box.y + box.height + 12) });
+const box2 = await stage.boundingBox();
 const t0 = Date.now();
 const times = stills ? stills.split(",").map(Number) : Array.from({ length: Math.round(secs * fps) + 1 }, (_, i) => i / fps);
 for (let i = 0; i < times.length; i++) {
   for (let cur = await pg.evaluate(() => window.cap.st); cur < times[i] - 1e-6; ) cur = await pg.evaluate((t) => window.cap.step(t), Math.min(times[i], cur + 0.5));
-  await stage.screenshot({ path: path.join(OUT, stills ? `s-${times[i].toFixed(2)}.png` : `f${String(i).padStart(4, "0")}.png`) });
+  // page.screenshot with a clip: no element "stable" wait (it needs two idle rAFs, which a long SwiftShader step can starve)
+  await pg.screenshot({ path: path.join(OUT, stills ? `s-${times[i].toFixed(2)}.png` : `f${String(i).padStart(4, "0")}.png`), clip: box2, timeout: 120000 });
   if (i % 60 === 0) process.stdout.write(`${i}/${times.length} ${((Date.now() - t0) / 1000).toFixed(0)}s\n`);
 }
 const log = await pg.evaluate(() => window.cap.log());
