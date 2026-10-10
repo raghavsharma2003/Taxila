@@ -27,7 +27,7 @@ export const BAND = {
 /** Routine defaults when the parent has set none [U]. Bedtime per band above. */
 export const ROUTINE_DEFAULT = { tz: "Asia/Kolkata", wakeTime: "06:30", schoolStart: "08:00", schoolEnd: "14:00", recoveryMin: 60 };
 /** Parent-controls defaults, mirroring server/routes/parent.js defaultControls (§6.9). */
-export const LIMITS_DEFAULT = (classLevel) => ({ dailyMinutes: classLevel <= 2 ? 20 : classLevel <= 5 ? 30 : 45, allowedFrom: "07:00", allowedTo: "20:30", restDays: [] });
+export const LIMITS_DEFAULT = (classLevel) => ({ dailyMinutes: classLevel <= 2 ? 20 : classLevel <= 5 ? 30 : 45, allowedFrom: "06:30", allowedTo: "21:30", restDays: [] });
 
 /**
  * Voice budget placeholder (D-PRICE is an owner decision, §10.5). M0 is ≤ 30 owner-supervised children, so

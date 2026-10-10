@@ -60,7 +60,8 @@ export const lessonMinutes = (classLevel, capRemaining) => Math.max(5, Math.min(
 /**
  * PURE. The home's one state, in precedence order (STUDENT-FLOW §4.2): the Conductor's safety hold (no lesson, the
  * Help sheet) → an open lesson to continue → today's cap reached → a lesson already done today → outside the allowed
- * hours → the parent's "Homework help today" → a school test window → never had a lesson → today's lesson.
+ * hours (never for a child with no lesson yet: the first lesson after set-up) → the parent's "Homework help today" → a
+ * school test window → never had a lesson → today's lesson.
  * The state never depends on how long ago the last lesson was (F7: the home after 1 day and after 30 is the same).
  * @param {{ resumable: boolean, usedMin: number, capMin: number, doneToday: boolean, now: string, from: string, to: string, anyLesson: boolean,
  *   openNow?: boolean, safetyHold?: boolean, homework?: boolean, testWindow?: boolean }} a
@@ -70,7 +71,9 @@ export function homeStateOf({ resumable, usedMin, capMin, doneToday, now, from, 
   if (safetyHold) return "safety_hold";
   // openNow: the parent's "Open now for 1 hour" (child_controls.open_until, W1-A) opens the HOURS only; the cap and
   // "done for today" still hold.
-  const inHours = openNow || (now >= from && now < to);
+  // round 4 (journey audit #11, main session 2026-10-10): a child's FIRST lesson always opens, whatever the hours: the
+  // parent has just finished set-up and handed the phone over (one session; from the second lesson the hours hold)
+  const inHours = openNow || !anyLesson || (now >= from && now < to);
   if (resumable && inHours) return "resume";
   if (usedMin >= capMin) return "capped";
   if (doneToday) return "done";

@@ -32,7 +32,11 @@ export function PromisesStep() {
   ];
   return (
     <StepFrame step="promises" title="Our promises, before you sign up"
-      footer={<HoldButton block typedWord="parent" showHint onConfirm={() => nav("/start/phone")}>Hold to continue</HoldButton>}>
+      footer={<div className="onb-go">
+        <HoldButton block typedWord="parent" showHint onConfirm={() => nav("/start/phone")}>Hold to continue</HoldButton>
+        {/* round 4 journey audit #12: the full text sits under the gate, so the gate is above the 360 x 800 fold */}
+        <Link to="/trust" className="block-link">Full text</Link>
+      </div>}>
       <ul className="promise-list">
         {rows.map((p) => (
           <li key={p.art} className="row promise-li">
@@ -41,7 +45,6 @@ export function PromisesStep() {
           </li>
         ))}
       </ul>
-      <Link to="/trust" className="block-link">Full text</Link>
     </StepFrame>
   );
 }
