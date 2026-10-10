@@ -13,7 +13,29 @@ const APPLIED = /visemes\?\(f: TtsVisemeFrame\)/.test(fs.readFileSync(new URL(".
 const SKIP = APPLIED ? false : "patch 02 (src/lesson/ttsStream.ts viseme sink) not applied yet";
 const { PcmStreamPlayer, PCM_RATE } = APPLIED ? await import("../src/lesson/ttsStream.ts") : { PCM_RATE: 24000 };
 
-const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+// r4-latency (2026-10-10): the clock is VIRTUAL, as in voice-player-clock.test.mjs. performance.now() (the player's clock
+// and the fake AudioContext's) reads VNOW, the fake sources end on a virtual timer queue, and sleep(ms) advances virtual
+// time. Real sleeps let a loaded CI runner move the deltas ("re-anchor cuts" failed on CI 2026-10-10, run 38050190655).
+let VNOW = 1000;
+const timers = new Set(); // { at, fn }
+const flush = () => new Promise((r) => setImmediate(r));
+async function sleep(ms) {
+  const end = VNOW + ms;
+  await flush();
+  for (;;) {
+    const due = [...timers].filter((t) => t.at <= end).sort((a, b) => a.at - b.at)[0];
+    if (!due) break;
+    timers.delete(due);
+    VNOW = Math.max(VNOW, due.at);
+    due.fn();
+    await flush();
+  }
+  VNOW = end;
+  await flush();
+}
+const realNow = Object.getOwnPropertyDescriptor(performance, "now");
+test.before(() => { performance.now = () => VNOW; });
+test.after(() => { if (realNow) Object.defineProperty(performance, "now", realNow); else delete performance.now; timers.clear(); });
 class FakeAudioContext {
   constructor() { this.t0 = performance.now(); this.sources = []; this.destination = { connect() {}, disconnect() {} }; }
   get currentTime() { return (performance.now() - this.t0) / 1000; }
@@ -22,8 +44,12 @@ class FakeAudioContext {
   createBufferSource() {
     const ctx = this;
     const s = { connect() {}, disconnect() {} };
-    s.start = (at) => { s.startedAt = at; s.timer = setTimeout(() => { s.onended?.(); }, Math.max(0, (at - ctx.currentTime) * 1000) + s.buffer.duration * 1000); };
-    s.stop = () => { clearTimeout(s.timer); s.stopped = true; };
+    s.start = (at) => {
+      s.startedAt = at;
+      s.timer = { at: VNOW + Math.max(0, (at - ctx.currentTime) * 1000) + s.buffer.duration * 1000, fn: () => s.onended?.() };
+      timers.add(s.timer);
+    };
+    s.stop = () => { timers.delete(s.timer); s.stopped = true; };
     this.sources.push(s);
     return s;
   }
