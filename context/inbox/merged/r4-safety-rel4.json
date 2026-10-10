@@ -1,0 +1,44 @@
+{
+  "nodes": [
+    {
+      "id": "dc-r4-safety06-07-09-shipped",
+      "kind": "decision",
+      "at": "2026-10-10",
+      "title": "2026-10-10 main session safety review of 4A's patch requests 06, 07 and 09 (claude/r4-conversation @346ad92), applied together with 05 as one narrow safety release. 06 (server/brain/say.js textReply): an Azure content-filter block on the reply COMPLETION (HTTP 200, the filter judged the model's own words) gets ONE fresh reply before the turn fails closed; a PROMPT block (HTTP 400, the child's words) still fails closed at once; a second completion block fails closed. Main review amendment: if the fresh reply fails for any other reason (timeout, 5xx) the ORIGINAL block stands and the turn fails closed (as sent, it fell to the neutral fallback line). Root cause it closes: 'explain it differently' got the safeguard and helplines in 1 of 58 lessons although the child's words were clean on every path. 07 (lexicon RAW_MASKS): five canonical collisions are masked on the raw text in their own shape only (exhaust/ceiling fans vs fansi, lining vs jeene ka matlab nahi, living things vs reason to live, cutting a crop vs kalai cut, a bulb/lamp/diya 'apne aap jal jaata' vs khud ko khatam). 09 (hang_fansi): a hanging disclosure with the English 'fan' ('fan se latak jaungi', 'ceiling fan se latak jaunga', 'i will hang from the ceiling fan', Devanagari 'फैन से लटक') now fires on the code floor; before, only the model distress read caught it. Families stay guarded; nothing removed or narrowed. Reverse if: a real disclosure is hidden by a 07 mask (narrow the mask), or a completion-block retry is shown to replace a reply that should have safeguarded (then fail closed on the first block again)."
+    },
+    {
+      "id": "ms-r4-safety06-07-09-review-numbers",
+      "kind": "measurement",
+      "at": "2026-10-10",
+      "title": "2026-10-10 review of 06+07+09 on top of base 6166d0a (05 already on base), CPU, deterministic. Review tests: reply-filter retry 4/4 (incl. the main review's completion-block-then-timeout case), masks 10/10, fan 2/2 (18 must-fire, 12 must-stay-quiet), succeed 2/2, disclosures 3/3. Main probe of fan phrasings: 20/20 correct. Every 6+ char string under data/kits, data/curriculum, evals, tests: firing 850 to 844, the 6 removed are exactly 07's targets (bulb 'apne aap jal', exhaust fans answer, bajra crop cut, two 'lining up' hints, 'living things'), 0 new. fingerprint.mjs 18,438 draws: lost 0, gained 0, kind changed 0. safety-robust run.mjs identical on both arms. Safety, never-rules, lexicon, fuzzy and say suites 130/130; adversarial 22/23 both arms (pre-existing non-blocking); persona invariants 105/105."
+    },
+    {
+      "id": "rj-r4-root-hooks-in-one-process-test-runner",
+      "kind": "rejection",
+      "at": "2026-10-10",
+      "title": "2026-10-10 tried: making a timing test deterministic with TOP-LEVEL test.before(() => { performance.now = () => VNOW }) / test.after(restore) (voice-player-clock, 439b8ae7). Broke: npm test is ONE process (tests/index.js imports every *.test.mjs into a single node:test run), so top-level hooks attach to the ROOT test and the virtual clock stayed installed for every later test until the process ended. On the frozen clock the forge turn path's flavour budget was exactly 500 ms and generator.js (< 500) made an inline model call, failing forge-g1-serve 'cold fill at 2 s' intermittently (an import-vs-run race moved by load). Reproduced 3/3 with a runner mimicking tests/index.js; 'node --test fileA fileB' hides it (separate processes). Fix: hooks and tests inside a describe; prove through a tests/index.js-shaped runner with a probe that the real clock is back. 20 files still use top-level hooks (benign today) and stay a known hazard."
+    },
+    {
+      "id": "rj-r4-lexicon-literals-shadow-corrections",
+      "kind": "rejection",
+      "at": "2026-10-10",
+      "title": "2026-10-10 (stream 4A, patch 09 first draft) tried: adding misspelling literals (jaugi, jauga, jaaungi) to a lexicon shape. Broke: the lexicon builds its correction VOCAB from shape literals, so the misspellings became vocabulary words and the canonicaliser stopped correcting 'jaugi' to 'jaungi'; three OTHER shapes lost recall (fingerprint lost 4 draws on ghar_chhod_bhaag, train_ke_aage, kood_jaunga_nadi). Rule: new shape literals use only words already in VOCAB (misspellings fire through canonicalisation), and any lexicon change runs the fingerprint both arms."
+    },
+    {
+      "id": "fn-r4-g1-test-url-echo-incident",
+      "kind": "finding",
+      "at": "2026-10-10",
+      "title": "2026-10-10 12:36 UTC incident (G1 session): sourcing .env.local through bash (an '&' in the URL) echoed G1's own Neon TEST branch connection string into a local task output file in its container. Deleted along with two local env copies; never committed, pushed or sent; no prod and no child data. The session's own harness transcript still holds it (not editable), so the credential is retired when the test branch is deleted at the end of round 4. G1 gates now read env in node (util.parseEnv) and pass only test URLs to npm test."
+    }
+  ],
+  "edges": [
+    { "src": "dc-r4-safety06-07-09-shipped", "rel": "measured_by", "dst": "ms-r4-safety06-07-09-review-numbers" },
+    { "src": "dc-r4-safety06-07-09-shipped", "rel": "part_of", "dst": "dc-r4-safety05-succeed-not-suicide" },
+    { "src": "dc-r4-safety06-07-09-shipped", "rel": "caused_by", "dst": "rj-r4-content-filter-completion-safeguard" }
+  ],
+  "md": {
+    "decisions": "- `dc-r4-safety06-07-09-shipped` (2026-10-10): 4A patches 06, 07, 09 after main safety review, shipped with 05 as one narrow release. 06: a content-filter block on the reply COMPLETION gets one fresh reply before failing closed (prompt blocks and repeat blocks still fail closed; main amendment: a non-filter failure on the retry keeps the original block, so it fails closed). Closes the 'explain it differently' false safeguard (1/58 lessons). 07: five lexicon canonical collisions masked on raw text in their own shape only. 09: hanging disclosures with English 'fan' fire on the code floor (before, only the model read caught them). Nothing removed or narrowed. Reverse if a 07 mask hides a real disclosure, or the retry replaces a reply that should have safeguarded.",
+    "measurements": "- `ms-r4-safety06-07-09-review-numbers` (2026-10-10): 06+07+09 on base 6166d0a: review tests 4/4, 10/10, 2/2 (+05 2/2, 03 3/3); fan probe 20/20; strings firing 850 to 844 (exactly the 6 targets), 0 new; fingerprint 18,438 draws unchanged; safety-robust identical; safety+say suites 130/130; adversarial 22/23 both arms; persona 105/105.",
+    "rejected": "- `rj-r4-root-hooks-in-one-process-test-runner` (2026-10-10): top-level test.before/after in a test file attach to the ROOT test because npm test is one process (tests/index.js); a virtual performance.now stayed installed for every later test and broke forge-g1-serve intermittently. Put hooks inside a describe; prove through a tests/index.js-shaped runner.\n- `rj-r4-lexicon-literals-shadow-corrections` (2026-10-10): misspelling literals added to a lexicon shape became VOCAB words and stopped the canonicaliser correcting them, costing three other shapes recall (fingerprint lost 4). Use only existing VOCAB words; always run the fingerprint both arms."
+  }
+}
