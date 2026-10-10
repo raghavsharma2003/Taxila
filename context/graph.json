@@ -18741,6 +18741,41 @@
    "title": "Tried (round 3 forge, src/modules/frame/fit.ts): scaling an engine that does not fit its frame down to a fixed floor of 0.75. Broke (certify-tray.js --modules, n = 2 samples per (engine, mode, band), contract boxes, 2026-10-10): 18 px words became 13.5 px and 54 px keys 40 px, so 0 of 15 engines passed at the 360 phone tray. Replaced by a floor per engine: the scale never takes the smallest word below the band's floor (14 / 16 px) nor a target below 44 px; past that the frame scrolls vertically. Plus svgText.ts: SVG words grown back to the floor at the SVG's real width, crowded sibling labels thinned (map-label rule).",
    "at": "2026-10-10",
    "source": "inbox/r4-content.json"
+  },
+  {
+   "id": "ms-r4-stream2-deploy-rollback",
+   "kind": "measurement",
+   "at": "2026-10-10",
+   "title": "Stream 2 (live content) 0c90ebb deployed 17:36 UTC (gate 2,736/0/3, canary 4/4) and ROLLED BACK 17:53 UTC to c439bd7: on taxila.dev every Studio slot failed (owner-5 2/14, round2-content 15/38, round3-forge 43/49, boards 4/5); control owner-5 alone on c439bd7 after the rollback 13/13",
+   "source": "inbox/r4-main-1800.json"
+  },
+  {
+   "id": "rj-r4-gate-tests-checkout-not-image",
+   "kind": "rejection",
+   "at": "2026-10-10",
+   "title": "The release checks tested the full checkout, not the image: server/forge3/tray-gate.js read its box contract from docs/ (excluded by .dockerignore) and silently fell back to no boxes, so every tray artifact was refused in production while the gate, local batteries and the text-only canary all passed",
+   "source": "inbox/r4-main-1800.json"
+  },
+  {
+   "id": "dc-r4-content-release-checks",
+   "kind": "decision",
+   "at": "2026-10-10",
+   "title": "A content release is proven on the image's file set before deploy (a server started from a git archive without docs/evals/tests), its post-deploy battery includes a Studio request, and serving code may not read runtime data from docs/, evals/ or tests/ (guard test); required runtime data fails loud, never falls back silently",
+   "source": "inbox/r4-main-1800.json"
+  },
+  {
+   "id": "owner-core-over-avatar-20261010",
+   "kind": "constraint",
+   "at": "2026-10-10",
+   "title": "Owner 2026-10-10 ~19:00 UTC: the avatar (grown-up Asha) is an add-on to build later; the main product is the tutor described earlier (gamified app, games and content built on the go, understanding detection, a human-like tutor with a bond, 'just start the session, she asks what happened at school today and handles everything'); focus there; asked where product design, UI/UX, user flow and journey stand",
+   "source": "inbox/r4-main-1900.json"
+  },
+  {
+   "id": "dc-r4-merge-order-core-first",
+   "kind": "decision",
+   "at": "2026-10-10",
+   "title": "Merge order after the owner's directive: stream 2 fix + safety release 6, then G1, then Kaksha K0-K3 (ui.kaksha on for the owner's account), then 4A's batch (conversation quality, session-first owner cohort), then G2, 4B, 3, and 5b (avatar) last; avatar work on hold; stream 5 reassigned to an end-to-end journey audit",
+   "source": "inbox/r4-main-1900.json"
   }
  ],
  "edges": [
@@ -30288,6 +30323,21 @@
    "src": "rj-r4c-frame-fit-floor-075",
    "rel": "part_of",
    "dst": "dc-r4c-one-tray-gate"
+  },
+  {
+   "src": "rj-r4-gate-tests-checkout-not-image",
+   "rel": "caused_by",
+   "dst": "ms-r4-stream2-deploy-rollback"
+  },
+  {
+   "src": "dc-r4-content-release-checks",
+   "rel": "caused_by",
+   "dst": "rj-r4-gate-tests-checkout-not-image"
+  },
+  {
+   "src": "owner-core-over-avatar-20261010",
+   "rel": "constrains",
+   "dst": "dc-r4-merge-order-core-first"
   }
  ]
 }
