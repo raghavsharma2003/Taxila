@@ -1,10 +1,10 @@
-diff --git a/db/migrations/024_r4khand_play_build.sql b/db/migrations/024_r4khand_play_build.sql
+diff --git a/db/migrations/026_r4khand_play_build.sql b/db/migrations/026_r4khand_play_build.sql
 new file mode 100644
-index 00000000..eed21d68
+index 00000000..b7c595f2
 --- /dev/null
-+++ b/db/migrations/024_r4khand_play_build.sql
++++ b/db/migrations/026_r4khand_play_build.sql
 @@ -0,0 +1,21 @@
-+-- r4-khand (BUILD-PLAN-V2 §3 G2; the number is a placeholder: the main session allots it at merge).
++-- r4-khand (BUILD-PLAN-V2 §3 G2; number 026 allotted by the main session: 024 board_page, 025 child_school_chapter).
 +-- play_build: the child's own Khand builds, kept as artefacts (game-mechanics G5: a child's build, shown to the parent).
 +-- Written ONLY by the server from its own replay of the child's acts on a solved level (server/play/builds.js); the device
 +-- never sends a build. Heights only (the law's state); no counter, no score, nothing that unlocks or decays.
@@ -27,11 +27,11 @@ index 00000000..eed21d68
 +create index if not exists play_build_child on play_build (child_id, created_at desc);
 diff --git a/server/play/builds.js b/server/play/builds.js
 new file mode 100644
-index 00000000..effba9d3
+index 00000000..507da9a6
 --- /dev/null
 +++ b/server/play/builds.js
 @@ -0,0 +1,32 @@
-+// r4-khand: the child's Khand builds as artefacts (db/migrations/024_r4khand_play_build.sql). The server saves a build only
++// r4-khand: the child's Khand builds as artefacts (db/migrations/026_r4khand_play_build.sql). The server saves a build only
 +// from ITS OWN replay of the child's raw acts on a level it regenerated, and only when its own grade says solved; the device
 +// never sends a build. One row per (child, level): a replayed post saves nothing new. Reading is the child's own (and the
 +// parent's, through the same requireChild guard). No counts are kept or shown: a gallery, not a tally.

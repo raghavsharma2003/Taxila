@@ -1,4 +1,4 @@
-// r4-khand: the child's Khand builds as artefacts (db/migrations/024_r4khand_play_build.sql). The server saves a build only
+// r4-khand: the child's Khand builds as artefacts (db/migrations/026_r4khand_play_build.sql). The server saves a build only
 // from ITS OWN replay of the child's raw acts on a level it regenerated, and only when its own grade says solved; the device
 // never sends a build. One row per (child, level): a replayed post saves nothing new. Reading is the child's own (and the
 // parent's, through the same requireChild guard). No counts are kept or shown: a gallery, not a tally.

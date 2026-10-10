@@ -1,4 +1,4 @@
--- r4-khand (BUILD-PLAN-V2 §3 G2; the number is a placeholder: the main session allots it at merge).
+-- r4-khand (BUILD-PLAN-V2 §3 G2; number 026 allotted by the main session: 024 board_page, 025 child_school_chapter).
 -- play_build: the child's own Khand builds, kept as artefacts (game-mechanics G5: a child's build, shown to the parent).
 -- Written ONLY by the server from its own replay of the child's acts on a solved level (server/play/builds.js); the device
 -- never sends a build. Heights only (the law's state); no counter, no score, nothing that unlocks or decays.
