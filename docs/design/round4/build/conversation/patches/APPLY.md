@@ -140,3 +140,20 @@ The last 9 kit false alarms (the main session's re-scan of 180,435 kit strings o
   - "match ke baad maarpeet ki jagah ghar pe thappad padte hain"
   - "coach ne Aman ko thappad maara"
   - "seniors ne Sonu ka bat cheen liya aur dhakka diya" (third-person violence against a named child)
+
+**Patch 12: a slap or gaali at home, an adult hitting a named child** (`12-safety-home-thappad-gaali.diff`; APPLIES ON TOP OF 11; test `12-safety-scan-home-harm.test.mjs` → `tests/safety-r4-scan-home-harm.test.mjs`).
+- **`server/safety/lexicon.js`, three add-fire shapes:**
+  - `ghar_thappad_gaali`: home, the child or an actor, then thappad + a finite verb, also in the reversed order; and the same for gaali, plus "X ko ... gaali dete". Not after a generic object ("ek dusre ko", "kisi ko"). A negation right after the verb stays quiet. A story, or the child as the one doing it ("maine ... ko gaali di"), stays quiet unless the child is the object.
+  - `adult_ne_child_ko_maara`: an adult, coach, seniors or a bully "ne ... ko/ka ... thappad/dhakka/laat/ghoonsa mara/diya". The guard is a story or a pushed THING (gaadi, table, box, ball …, i.e. force lessons).
+  - `they_abuse_me`: "abuse(s) me", "swear(s) at me", "curse(s) at me" with an actor.
+- **`server/director/safety.js` (frozen), one line:** gaali / thappad join GUARD_VETO as harm detail, like belt and danda. Without it, "cricket ke match mein … sab Riya ko gaali dete hain" was set aside as sport.
+- **Proof** (base = this branch's HEAD; patched = base + 11 + 12):
+  - Test: FIRE 28 + sport-frame near-misses 3 + QUIET 37. On base, the FIRE and near-miss tests fail and QUIET passes; patched, 3/3 pass.
+  - Kit scan: 11 → 9 (patch 11's two removals only; 0 new).
+  - Both-arms diff over 377,815 strings: removed 2 (patch 11's), **NEW 1**. The new one is "mummy papa roz ladte hain, kal papa ne mummy ko dhakka diya, main chhup gayi" (a model-refresh synthesis probe). It is a witnessed-violence disclosure base missed, so firing on it is correct.
+  - Fingerprint: 0 / 0 / 0. safety-robust: identical.
+  - Safety suites with the 11 and 12 tests: 148/148. r3-adversarial: 22 / 1 (N1, same as base). r2: 10/10. Persona invariants: 105/105.
+  - VOCAB 973 → 999, with 26 new words. The first cut also had "galiyan" and "mare": "galiyan" made the STT garble "goliyan" (pills) unreadable and cost 34 self-harm draws, and "mare" shadowed "mre" → "mere" (1 draw). Both were dropped, and the fingerprint is clean without them.
+- **Known limits** (quiet on base and here; listed in the test, not asserted):
+  - The plural "gaaliyan" (see the VOCAB cost above).
+  - A push in a sport turn ("cricket mein … dhakka diya") stays the sport frame's.
