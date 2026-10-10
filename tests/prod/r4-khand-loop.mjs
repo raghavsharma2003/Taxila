@@ -18,6 +18,8 @@
 //               (a play slot of family nazariya, a WebGL canvas, a goal line) — then the world is measured at 360 / 412 / 1366
 //   B1 beat     the same lesson, answering on: does the Director offer the game at a practice beat by itself? (reported)
 //
+//   server: NODE_ENV=production PORT=8787 node --env-file=.env.local --env-file=tests/prod/prod-routing.env server/serve.mjs
+//   (production's model routing; without it the classifier differs from production)
 //   NODE_USE_ENV_PROXY=1 TAXILA_BASE=http://127.0.0.1:8787 node tests/prod/r4-khand-loop.mjs [--no-browser] [--out DIR]
 import { mkdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";

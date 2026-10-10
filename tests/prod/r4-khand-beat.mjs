@@ -3,6 +3,8 @@
 // lane, the child answering ordinarily (never asking for a game). Does the lesson put the block world on the stage by itself within N turns? Reported per topic with
 // the turn it appeared and every slot kind seen; a real child client against a local production build (model calls).
 //
+//   server: NODE_ENV=production PORT=8787 node --env-file=.env.local --env-file=tests/prod/prod-routing.env server/serve.mjs
+//   (production's model routing; without it the classifier differs from production)
 //   NODE_USE_ENV_PROXY=1 TAXILA_BASE=http://127.0.0.1:8787 node tests/prod/r4-khand-beat.mjs [--turns 8]
 import { mkdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
