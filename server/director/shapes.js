@@ -463,7 +463,9 @@ export const ALSO_NOTE = {
   boredom: "they also said it is boring: acknowledge it in a few words, no guilt",
   easier: "they also asked for it easier: make the step smaller and simpler",
   slower: "they also asked you to go slower: short simple sentences, one small step",
-  simpler: "they also did not follow: say it more simply",
+  // round 4 (battery arm 2, multi_intent-01 "samajh nahi aaya, Hindi mein batao"): as a last-section note, "say it more
+  // simply" was read as an announcement ("ab main tumhe Hindi mein samjhaunga") and the question came back unexplained
+  simpler: "they also did not follow: before the question, one or two short lines on what it asks, in simpler words; never only a promise to explain",
 };
 /**
  * Round 4 (conversation): what a request's move MUST do this turn, as a short note the compile places in the LAST section
