@@ -107,7 +107,48 @@ Families, strict (base → arm 1): A 59.4 → 56.3, B 76.5 → 76.5, C 68.1 → 
   - With the UNDERSTAND note timed out under load, "how do i get more kills in PUBG fast" got PUBG kill tips.
   - The base declined only because its note answered in time.
   - Now read in code (`OOB_GAME`).
-- **Next measurement:** arm 2 = rounds A + B + those fixes, run SIDE BY SIDE with a second base sample (concurrency 2 each, 4 lessons in parallel), so the comparison is paired in time.
+
+**Arm 2 = rounds A + B** (a snapshot of `73f59027`) **against base 2**: a second sample of the untouched base, run SIDE BY SIDE (concurrency 2 each, 4 lessons in parallel, the same shared quota). Results: `r4-compare-base2-arm2.json`.
+
+| score | base 2 | arm 2 | lost / gained | McNemar |
+|---|---|---|---|---|
+| strict | 237/354 (66.9%) | **246/354 (69.5%)** | 37 / 46 | 0.77 |
+| J1 | 261/354 (73.7%) | 268/354 (75.7%) | 35 / 42 | 0.47 |
+| lenient | 284/354 (80.2%) | 284/354 (80.2%) | 32 / 32 | 0.02 |
+
+| family (n) | base 2 strict | arm 2 strict | base 2 J1 | arm 2 J1 |
+|---|---|---|---|---|
+| A work (64) | 53.1 | 59.4 | 64.1 | 64.1 |
+| B questions (34) | 79.4 | 73.5 | 82.4 | 79.4 |
+| C steering (113) | 62.8 | **71.7** | 71.7 | **81.4** |
+| D attention (72) | 69.4 | 68.1 | 75.0 | 68.1 |
+| E energy (32) | 75.0 | 75.0 | 75.0 | 81.3 |
+| F session (17) | 88.2 | 94.1 | 88.2 | 94.1 |
+| G low-signal (22) | 72.7 | 59.1 | 81.8 | 77.3 |
+
+**Pooled over all runs** (n = 354 each):
+- base, two samples: 69.2% and 66.9%, so about **68.0%** strict;
+- round A alone: 68.3%;
+- rounds A + B: **69.5%**.
+
+**Reading:**
+- The steering family (C) moved together on strict (+8.9) and J1 (+9.7) in the paired run. These intents moved the same way in both arms:
+  - skip_ahead 1 → 6/7;
+  - thinking_aloud 2-3 → 5/8;
+  - slower 2-3 → 4-5/6;
+  - self_correction 2-3 → 4/6.
+- **Overall the gain is small and NOT significant.** The bar (85% strict, every family ≥ 75%) is far away.
+- Most remaining failures are the reply model's wording on the same code path: a must-note present and not followed. Examples from multi_intent-02 and adult_voice-03 are kept in the scored files.
+- G fell on n = 22. Every G failure was read:
+  - two had a code cause, now fixed after arm 2 (`9e371d34`): "thak gaya hoon, kya thoda easy kar sakte ho?" read as a break, and a parked side question with no last-section note;
+  - the rest are wording.
+
+**After arm 2 (not yet battery-measured):**
+- the share fix: a family wedding was screened as romance and never returned (production round3-conversation C);
+- the small-talk / identity / joke must-notes (production owner-2 R7.defer);
+- the play-mode verbs;
+- tired + easier;
+- the parked-question must-note.
 
 ## 3. Phase 2: the session-first server path (behind `TAXILA_SESSION_FIRST`, default off)
 
@@ -152,6 +193,23 @@ Families, strict (base → arm 1): A 59.4 → 56.3, B 76.5 → 76.5, C 68.1 → 
 | dev openings (8) | 1/8 | 8/8 (tuned on) |
 | **held-out openings (49, written blind), code only** | **4/49** | **34/49**; safeguard 4/6 |
 | **held-out openings, code + production classify distress read** | **4/49** | **36/49**; purpose 39/49; **safeguard 6/6, false safeguards 0**; turns p50 1 / p90 2 / max 2 |
+| intake set 1, RE-scored after intake round 2 (**seen**: the failure classes of set 1 guided round 2; not an honest held-out number any more) | 56/74 | 70/74 (wrong 2, missed 2) |
+| **held-out intake set 2 (75, written blind after round 2; scored once)** | **46/75** (wrong 5, missed 24) | **63/75** (wrong 7, missed 5); frame kind 67/75 |
+| **held-out openings set 2 (33), code + production distress read** | **3/33** | **23/33**; purpose 27/33; **safeguard 5/5, false 0** (code predicate alone 2/5 → patch 03); turns p50 1 / max 2 |
+
+**Not met / honest notes on phase 2.**
+- On set 2 the intake makes MORE wrong silent picks than today's router (7 vs 5), even though it gets more right overall. A wrong silent pick is worse than a miss. The confirm probe catches some of them (a "nahi, woh nahi tha" asks which one), but this is not measured on children.
+- Weak spots on set 2:
+  - child_request openings 1/4: a "want" read as taught or homework;
+  - homework with no mapped topic 1/4;
+  - Hindi openings 2/7.
+- Fixing these needs a NEW blind set to measure honestly.
+- Not built in this stream:
+  - the end-of-session revise slice (TUTOR-MODEL §2.5);
+  - the SchoolMirror source table (the intake writes only `child.school_chapter`, patches 01-02);
+  - the homework ladder;
+  - the explore-tier subject-to-outline step;
+  - the client (Start-only home, chips; see APPLY.md).
 
 Held-out intake by language and kind: see `node evals/conversation-session/score-intake.mjs --set heldout --verbose`. Held-out failure classes, kept for a relaunch with a NEW blind set (fixing them here would tune on held-out):
 - Devanagari lesson names (तीन मछलियाँ, नीम वाला पाठ, मीरा के पद);
