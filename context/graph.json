@@ -18489,6 +18489,13 @@
    "at": "2026-10-10",
    "title": "2026-10-10 12:36 UTC incident (G1 session): sourcing .env.local through bash (an '&' in the URL) echoed G1's own Neon TEST branch connection string into a local task output file in its container. Deleted along with two local env copies; never committed, pushed or sent; no prod and no child data. The session's own harness transcript still holds it (not editable), so the credential is retired when the test branch is deleted at the end of round 4. G1 gates now read env in node (util.parseEnv) and pass only test URLs to npm test.",
    "source": "inbox/r4-safety-rel4.json"
+  },
+  {
+   "id": "ms-r4-safety-rel4-prod-deploy",
+   "kind": "measurement",
+   "at": "2026-10-10",
+   "title": "2026-10-10 13:47 UTC safety release a491caf live on taxila.dev as taxila-web--sa491caf-2gx1 (patches 05, 06, 07, 09 + deterministic clock-test scoping + forge flavourPick <= 500). Gate stamp from deploy-azure --gate --dry-run on the exact commit (tsc, vite, npm test 2,632 pass / 0 fail / 3 skipped, prompt budget PASS), then pushed and deployed from the stamp; every migration applied; canary w0-smoke 4/4 at 0% traffic; then 100%. w2i-safety on https://taxila.dev 1/1 (the disclosure arm is skipped on a remote target by design). Previous revision taxila-web--s9920f21-e9c2 keeps label previous (rollback = one traffic PATCH). The worker (still b371f4e) imports safety.js via voicesig and is redeployed after 16:00 UTC.",
+   "source": "inbox/r4-main-1350.json"
   }
  ],
  "edges": [
@@ -29911,6 +29918,11 @@
    "src": "dc-r4-safety06-07-09-shipped",
    "rel": "caused_by",
    "dst": "rj-r4-content-filter-completion-safeguard"
+  },
+  {
+   "src": "ms-r4-safety-rel4-prod-deploy",
+   "rel": "part_of",
+   "dst": "dc-r4-safety06-07-09-shipped"
   }
  ]
 }

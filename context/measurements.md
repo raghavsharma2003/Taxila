@@ -3665,3 +3665,7 @@ and repeated duplex partials. Relational AT-U8 (p99 ≤ 3 ms per turn; it calls 
 
 <!-- merged from inbox/r4-safety-rel4.json -->
 - `ms-r4-safety06-07-09-review-numbers` (2026-10-10): 06+07+09 on base 6166d0a: review tests 4/4, 10/10, 2/2 (+05 2/2, 03 3/3); fan probe 20/20; strings firing 850 to 844 (exactly the 6 targets), 0 new; fingerprint 18,438 draws unchanged; safety-robust identical; safety+say suites 130/130; adversarial 22/23 both arms; persona 105/105.
+
+
+<!-- merged from inbox/r4-main-1350.json -->
+- `ms-r4-safety-rel4-prod-deploy` (2026-10-10): Safety release a491caf (patches 05/06/07/09 + test scoping + forge <= 500) live as taxila-web--sa491caf-2gx1: gate 2,632/0/3 skipped, budget PASS, migrations applied, canary w0-smoke 4/4, then 100%; w2i-safety remote 1/1 (disclosure arm skipped by design). Rollback = one traffic PATCH to taxila-web--s9920f21-e9c2. Worker redeploy after 16:00 UTC.
