@@ -18244,6 +18244,13 @@
    "title": "2026-10-10 the grown-up Asha live puppet (lamp1: layers cut from the approved option-4 front, membrane fills, lip shell, lid keys, a turn field from painted three-quarter keys, driven by the unchanged PuppetDriver) failed its blind 'uncanny' gate. Over four rounds of n = 5 judges from two model families (3x gpt-5.6-sol, 2x Kimi K2.6), uncanny scored 4, 5, 3, 4 of 5 against a bar of <= 1/5, with premium about 2.5. It passed everything else: same person 5/5 every round, childish 0/5, rest SSIM 0.973, pack 157 KB, 57 fps at 4x throttle on the 80 px slot (headless SwiftShader), safety calm face. Calibration: the shipped r8 cartoon puppet through the same page, slot and prompt scored uncanny 0/5, premium 3.6. Removing the 13-degree turn made it worse (5/5). The judges named 'proportions swim' and a mouth interior that 'changes between consecutive frames'. Cause: bending ONE semi-realistic painting reads as uncanny; the same method suits the flat cartoon style. The kill rule fired after three polish rounds (docs/design/round4/asha/STAGE-C.md). Decision (main session, delegated): r8 stays the live face; no mixed faces; a new rig method is commissioned, painted mouth/eye/brow KEYS swapped with short crossfades and only small rigid motion, judged by the same blind gate with r8 calibration. Kept from lamp1: the option-4 stills and outfit, the bilabial text rule (b/m/p close 9/9 vs 5/9 from visemes alone), the calm safety face. Reverse if: a mesh-warp variant passes uncanny <= 1/5 on the same panel.",
    "at": "2026-10-10",
    "source": "inbox/r4-asha-lamp1-uncanny.json"
+  },
+  {
+   "id": "dc-r4-khand-dpr-floor-device-decides",
+   "kind": "decision",
+   "at": "2026-10-10",
+   "title": "2026-10-10 main session, delegated, on G2 Khand's C10 frame-rate result (claude/r4-khand @f0bad197, docs/design/round4/build/khand/RESULTS.md): headless SwiftShader measured 54-55 fps at 360 px, 40-47 at 412, 16-18 at 1366, fill-bound at the tier-3d DPR floor 1.0. Decision: the floor stays at 1.0 and nothing is blurred or downscaled on SwiftShader evidence, because SwiftShader rasterises on the CPU and its fill rate does not predict a phone GPU (Mali/Adreno) or a laptop iGPU. C10 is reported as 'not measured on device' (SwiftShader kept as a proxy only), never as met. A frame-time governor that lowers render scale only on measured over-budget p95 on the real device may be proposed to G1 (G1 owns tier-3d), flag default off. Reverse if: the real-phone run (owner item, a ~Rs 10k Android) shows Khand under 30 fps at DPR 1.0 in the lesson slot, in which case the governor ships on by default for that tier.",
+   "source": "inbox/r4-main-1010b.json"
   }
  ],
  "edges": [
@@ -29491,6 +29498,16 @@
    "src": "rj-r4-lamp1-mesh-warp-uncanny",
    "rel": "constrains",
    "dst": "dc-r4-face-lamplight-flat"
+  },
+  {
+   "src": "dc-r4-khand-dpr-floor-device-decides",
+   "rel": "part_of",
+   "dst": "dc-r4-games-o-g"
+  },
+  {
+   "src": "dc-r4-khand-dpr-floor-device-decides",
+   "rel": "inherits",
+   "dst": "r4g-threejs-3d-renderer"
   }
  ]
 }
