@@ -4,9 +4,11 @@
 //     their data-zone attributes. Layout, behaviour, the floor, the lamp rule and every sheet (Pause with 1098 / 14416,
 //     Help, the safeguarding hand-off) are the Desk's own and do not change.
 //   - `renderSummary`: the Debrief in place of the Summary when the lesson ends.
-// It also reads the child's map once when the lesson opens: the "before" half of the Debrief's "Now secure" diff.
+// It also reads the child's map once when the lesson opens: the "before" half of the Debrief's "Now secure" diff, and
+// the open Hangar items the child's equipped hull and trail may tint the play engine with (K2, seam K-P3 / K-P4).
+//   - PlayBriefingContext (src/play/briefing.ts): the Briefing card in front of a real-game engine, plus the cosmetics.
 // Nothing here touches the turn path: no fetch per turn, no timer, no rAF (the latency driver measures this, RESULTS.md).
-import { useCallback, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
 import type { TapSource } from "../../../avatar/tap.ts";
 import type { DeskModel } from "../../../child/lesson/model.ts";
 import type { DeskSkin } from "../../../child/lesson/Desk.tsx";
@@ -16,6 +18,13 @@ import "../tokens.css";
 import "../kaksha.css";
 import "./desk.kaksha.css";
 import { kakshaThemeFor } from "../tokens.ts";
+import catalogJson from "../../../../data/kaksha/catalog.json";
+import { PlayBriefingContext, type PlayBriefing, type PlayCosmetics } from "../../../play/briefing.ts";
+import { Briefing } from "../play/Briefing.tsx";
+import { cosmeticsFor } from "../play/cosmetics.ts";
+import { readEquipped } from "../memory.ts";
+import { world, type Catalog } from "../world.ts";
+import "../play/play.kaksha.css";
 import { Debrief } from "./Debrief.tsx";
 import type { MapLike } from "./debrief.ts";
 
@@ -37,13 +46,20 @@ export interface KakshaLessonProps {
 export default function KakshaLesson({ cid, family, reducedMotion, children, loadMap = loadChildMap }: KakshaLessonProps) {
   // once, at lesson start: never re-read during the lesson
   const [before] = useState(() => loadMap(cid));
+  const [cosmetics, setCosmetics] = useState<PlayCosmetics | null>(null);
+  useEffect(() => {
+    let live = true;
+    void before.then((m) => { if (live && m && !m.hidden) setCosmetics(cosmeticsFor(readEquipped(cid), world(m.skills, catalogJson as unknown as Catalog).items)); }, () => {});
+    return () => { live = false; };
+  }, [before, cid]);
+  const briefing = useMemo<PlayBriefing>(() => ({ render: (p) => <Briefing {...p} />, cosmetics }), [cosmetics]);
   const renderSummary = useCallback(
     (p: { m: DeskModel; meters: TapSource[]; onFinish: () => void }) => <Debrief {...p} before={before} loadAfter={() => loadMap(cid)} />,
     [before, loadMap, cid],
   );
   return (
     <div className="v3 kx kx-lesson" data-ktheme={kakshaThemeFor(family)} data-motion={reducedMotion ? "reduced" : undefined} data-kscreen="lesson">
-      {children({ skin: "kaksha", renderSummary })}
+      <PlayBriefingContext.Provider value={briefing}>{children({ skin: "kaksha", renderSummary })}</PlayBriefingContext.Provider>
     </div>
   );
 }

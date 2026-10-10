@@ -7,6 +7,65 @@
 **Honesty:** no child has used any of this. Every performance number below is a **G35-class proxy**: headless
 Chromium with CPU ×4 throttling at 360 × 800, DPR 2. None was measured on a phone (K-O3 is open).
 
+## K2: the Briefing and the Hangar colours on Antariksh (flag `ui.kaksha`, owner cohort only)
+
+**Built against G1's `claude/r4-games-core` (`78b7a86b`) as a read-only reference.** G1 merges after stream 2. Every
+change to G1's files is a patch request: K-P3 and K-P4, see `patches/APPLY.md`.
+
+| piece | where | what it does |
+|---|---|---|
+| seam (K-P3) | `src/play/briefing.ts` (on this branch) + `03-play-briefing-seam.diff` (G1's renderer and session) | Covered below. |
+| Briefing | `src/ui-v3/kaksha/play/{Briefing.tsx,recipe.ts,play.kaksha.css}` | Covered below. |
+| Hangar colours (K-P4) | `src/ui-v3/kaksha/play/cosmetics.ts` + `04-antariksh-cosmetics.diff` | The equipped hull and trail become two colours on the dress, from the Kaksha palette. An item counts only if it is **open now** (a matching secure skill), so a stale device choice never shows. Antariksh tints its craft: hull, flame and exhaust puffs. Colour only: replayed acts are byte-identical with and without. |
+| frame | `src/ui-v3/kaksha/lesson/KakshaLesson.tsx` | Provides the Briefing and the colours (from the map it already reads once at lesson start). |
+| play HUD | no pip; see "Not done in K2" below | |
+
+**The seam (K-P3):**
+- An optional card in front of a real-game engine.
+- It shows only when the engine will really mount: not on a 2D-tier device, not under the server's 2D switch, and only for a law an engine renders.
+- The model's dress is fetched **while the card is up** and handed to `PlaySession`, so there is no second fetch, and the look the card names is the look that plays.
+
+**The Briefing:**
+- **Title:** the engine (Antariksh), then the story wrapper and mode in mono ("Beacon rescue · number line").
+- **Recipe lines** (`recipe.ts`), each read from the level or the dress and mapped to fixed words in `copy.ts`. Missing data drops the line rather than being guessed. The lines:
+  - "Built from today's lesson";
+  - "Checks: …", the level's own mal-rules in plain words, never "your mistake";
+  - the line params ("Fractions in 3 parts, on a line from 0 to 2");
+  - "Look: red planet · pace: steady", shown **only once the model's dress has answered**.
+- **Launch:** hold to launch is a 650 ms fill, and releasing drains it. Enter or Space launches at once. The warp is 950 ms of streaks with a flash, drawn as one path per frame at DPR 1, then the card goes. Reduced motion: a press launches, with a 200 ms fade.
+
+**Numbers (2026-10-10):**
+
+| check | result | method |
+|---|---|---|
+| `tests/r4-kaksha-play.test.mjs` | **7 / 7** | Covered below. |
+| `tests/prod/r4-kaksha-briefing.mjs` (on G1 + K-P3/K-P4, a **production build** of the dev page) | **0 findings over 6 pages** (class 4 / 6 / 7 × phone box 328 × 460 and laptop box 736 × 460); HOLD-1, KEY-1, TRUTH-1, WARP-1 pass | The real `PlayStudioRenderer` and Antariksh, with the play API answered in the page (a level from the real generator, the base dress, then a "model" dress after 600 ms). SwiftShader, 3D forced as G1's cert harness does. |
+| REPLAY-1 | **byte-identical** acts with the Hangar colours off and on | Same presses (steer right ×3, Fire); 2 posts, 3 acts. |
+| FRAME-1, launch → the engine's first painted frame | Briefing **1,229 / 1,341 ms** p50 / p90 vs **the engine alone 1,200 / 1,345 ms** (n = 12 each, interleaved) | CPU ×4, SwiftShader, 360 × 800 DPR 2: a **G35-class proxy, not a phone**. "The engine alone" means level → first frame with no Briefing. |
+| `npx tsc -b`; `npx vite build`; `lint-ui` | pass; pass; **353** (baseline) | The lazy `KakshaLesson` chunk with the Briefing is **4.5 KB JS + 3.1 KB CSS gzip** (K1 alone: 2.1 + 2.6). |
+
+What `r4-kaksha-play.test.mjs` checks:
+- every recipe line comes from data, and unknown mal-rules are dropped;
+- no look line before the dress is final;
+- only open Hangar items tint the engine;
+- the Briefing has no clock race, score or lock words;
+- the K-P3 diff gates on a real engine mount, fetches the dress once, and never touches acts, tokens or grades;
+- the K-P4 diff only sets colours and touches no law, generator or server file.
+
+**Shots:** `shots-k2/c<class>-{briefing,briefing-hold,warp,engine}__{phone,laptop}.webp`: the card, the hold fill, the warp, and the engine wearing the model's dress with the equipped hull and trail.
+
+**The spec's 1,200 ms bar is not met, and the Briefing is not the reason.** On this proxy the engine alone takes 1,200 ms at p50 and 1,345 ms at p90 from the level to its first frame. The Briefing adds nothing measurable on top (+29 ms p50, −4 ms p90, inside the run's spread). The warp hides the mount, and the reduced-motion path was the fastest in an earlier run (1,191 ms p50).
+
+Earlier measurements on the dev server's unbundled modules read about 1,440 ms. That is why the bar is measured on a production build.
+
+The real fix is G1's: the engine could compile its stage while the card is up (for example a `prewarm()` that builds the three.js renderer and compiles the materials offscreen). I'm proposing it to main, not doing it, because it is G1's code.
+
+**Not done in K2, and why:**
+- **The in-play HUD pip** (§3.4). In the Desk, play is embedded and her SpeechRow (face plus caption) already sits above the play box, so a pip inside the box would be a second face on screen (§5 rule 1, one face at a time). The pip belongs to a full-screen play mode, which the product doesn't have today.
+- **A "next tile" (Khand) on the Briefing.** The spec allows it only when the plan already holds it, and no plan field carries it yet.
+- **Khand.** G2's engine isn't on G1's branch, so the Briefing's Khand words are written and tested in `recipe.ts`, but no Khand shot exists.
+- **The "board" and "rim" Hangar items** don't reach a surface yet. The hull and trail do.
+
 ## K1: the Desk skin and the Debrief (flag `ui.kaksha`, owner cohort only)
 
 **Built:**

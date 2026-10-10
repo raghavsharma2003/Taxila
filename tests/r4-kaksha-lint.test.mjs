@@ -77,7 +77,8 @@ test("K-NOLOCK / K-NOCOUNT / K-ECON over the Kaksha code and copy", () => {
     const s = strip(read(f)).replace(/\bpoints=\{/g, "");
     if (/\b(padlock|lock(ed)?(-icon)?|locks)\b|🔒|🔐/i.test(s.replace(/\bblock\b|clock|unlock(ed)?|ResizeObserver/gi, ""))) hits.push(`${rel(f)}: lock`);
     if (!f.endsWith(".css") && /\$\{[^}]+\}\s*(of|\/)\s*\$\{[^}]+\}|["'`>][^"'`<]*\b\d+\s*(of|\/)\s*\d+\b|%\s*(done|complete)/i.test(s)) hits.push(`${rel(f)}: count`);
-    if (/\b(points?|coins?|gems?|xp|streaks?|level[- ]?up|leaderboards?|leagues?|ranks?|ranked|trophy|reward)\b/i.test(s)) hits.push(`${rel(f)}: economy word`);
+    // "decimal point" is maths, not a currency (the K2 Briefing names what a level checks)
+    if (/\b(points?|coins?|gems?|xp|streaks?|level[- ]?up|leaderboards?|leagues?|ranks?|ranked|trophy|reward)\b/i.test(s.replace(/\bdecimal points?\b/gi, ""))) hits.push(`${rel(f)}: economy word`);
   }
   const cat = read(path.join(ROOT, "data/kaksha/catalog.json"));
   if (/\b(price|cost|coins?|gems?|points?|xp|chance|rarity|random)\b/i.test(cat.replace(/"_doc"[^\n]*/, ""))) hits.push("catalog.json: economy field");

@@ -47,6 +47,24 @@
    "kind": "measurement",
    "title": "K1 client turn latency, deterministic (real LessonRuntime on the Desk dev page's scripted Director; 360x800 DPR 2, CPU x4, SwiftShader = G35-class proxy, not a phone; n=30 per arm, paired by turn position, 2026-10-10): Kaksha minus classic, send -> turn call: still face +1.4 ms (95% CI +/-12.6; p50 128 vs 122 ms), puppet +13 ms (+/-47; p50 530 vs 430, p90 1,104 vs 1,097); answer -> painted: still +17.7 +/-26.5 ms, puppet -4.6 +/-24.0 ms. Every interval includes 0: no measurable added latency.",
    "at": "2026-10-10"
+  },
+  {
+   "id": "r4k-k2-built",
+   "kind": "component",
+   "title": "Stream K slice K2 (claude/r4-app-design; behind ui.kaksha + cohort; built against G1 claude/r4-games-core 78b7a86b read-only): the Kaksha Briefing in front of a real-game engine (recipe lines read only from the level and the dress; the look named only once the model's dress has answered; hold-to-launch 650 ms, Enter launches, warp ~950 ms, reduced motion 200 ms fade) and the Hangar hull/trail colours on Antariksh (only open items; colour only). Patch requests to G1: K-P3 (src/play/briefing.ts seam; PlayStudioRenderer shows the card only when an engine will really mount, fetches the model dress during the card and hands it to PlaySession), K-P4 (DressedSpec.cosmetics client-only; Antariksh tints hull, flame, exhaust). No HUD pip in the embedded Desk (one face at a time).",
+   "at": "2026-10-10"
+  },
+  {
+   "id": "r4k-k2-rendered",
+   "kind": "measurement",
+   "title": "K2 rendered checks (tests/prod/r4-kaksha-briefing.mjs on G1 + K-P3/K-P4, production build of the dev page, Playwright Chromium SwiftShader with 3D forced, class 4/6/7 x phone 328x460 and laptop 736x460 boxes, 2026-10-10): 0 text < 14 px, 0 targets < 44 px, 0 contrast fails, 0 overflow over 6 pages; a 300 ms press does not launch, a 700 ms hold and Enter do; the look line absent before the model dress and naming the model's theme after; the card gone after the warp; acts posted with and without the Hangar colours byte-identical (2 posts, 3 acts).",
+   "at": "2026-10-10"
+  },
+  {
+   "id": "r4k-k2-frame",
+   "kind": "measurement",
+   "title": "K2 launch -> engine first painted frame (production build, CPU x4, SwiftShader, 360x800 DPR 2 = G35-class proxy, not a phone; n=12 per arm interleaved, 2026-10-10): with the Briefing p50 1,229 / p90 1,341 ms; the engine alone (level -> first frame, no Briefing) p50 1,200 / p90 1,345 ms. The spec's 1,200 ms bar is not met, set by the engine's own mount; the Briefing adds nothing measurable. Dev-server (unbundled) runs read ~1,440 ms and are not representative.",
+   "at": "2026-10-10"
   }
  ],
  "edges": [
@@ -89,6 +107,21 @@
    "src": "r4k-k1-built",
    "rel": "part_of",
    "dst": "dc-r4-app-kaksha"
+  },
+  {
+   "src": "r4k-k2-built",
+   "rel": "part_of",
+   "dst": "dc-r4-app-kaksha"
+  },
+  {
+   "src": "r4k-k2-rendered",
+   "rel": "measures",
+   "dst": "r4k-k2-built"
+  },
+  {
+   "src": "r4k-k2-frame",
+   "rel": "measures",
+   "dst": "r4k-k2-built"
   }
  ]
 }
