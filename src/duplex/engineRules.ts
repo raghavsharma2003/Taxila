@@ -399,7 +399,7 @@ export function extraWait(tick: EngineTick, est: Estimate): number {
 
 /** A yes/no answer longer than this many words is an elaboration (exchangeOf). */
 export const YES_NO_MAX_WORDS = 3;
-const wordCount = (t: string): number => String(t ?? "").split(/\s+/).filter((w) => /[\p{L}\p{N}]/u.test(w)).length;
+export const wordCount = (t: string): number => String(t ?? "").split(/\s+/).filter((w) => /[\p{L}\p{N}]/u.test(w)).length;
 
 /**
  * The verdict clock's anchor: the LATER of the last value's end and the child's last voiced frame. Anchoring on the value

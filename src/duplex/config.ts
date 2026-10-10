@@ -110,6 +110,11 @@ export const OPEN_TURN_WAIT = { prosodyFinal: 1100 as Ms, neutral: 1100 as Ms, p
  * D4 3 → 1 of 77); TEST is reported (RESULTS.md). The turn-end gap p50 does not move (few turns END on a read-out).
  */
 export const PAUSE_WAIT: Record<"hold" | "dictation" | "enumerating" | "question" | "idk" | "complete", Ms> = { hold: 1600, dictation: 2400, enumerating: 1200, question: 900, idk: 0, complete: 1100 };
+/**
+ * Round 4 (duplex, 2026-10-10): a closed answer longer than a short answer (more than YES_NO_MAX_WORDS words) gets at least
+ * the free exchange's class wait (PAUSE_WAIT) as its silence backstop (governor.ts backstopMs). Mutable for ablation.
+ */
+export const CLOSED_ELABORATION = { on: true };
 /** A hesitant first value (pausesThisTurn >= 1 or a filler before it) waits for this much silence too (§2.5.1; M-B1 21/21). */
 export const HESITANT_VALUE_SILENCE_MS: Ms = 300;
 /** word / phrase forms: complete only with prosodic finality or this much silence (§2.5.1). */
