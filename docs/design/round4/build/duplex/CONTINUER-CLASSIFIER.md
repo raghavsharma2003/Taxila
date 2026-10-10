@@ -7,7 +7,16 @@ interruption by its sound, before the words arrive. Constraints:
 - a child's stop, repair or safeguard must never be classified away. This must hold **by construction**, not by a
   threshold.
 
-**Status: design only. Nothing is built, and no child audio is collected or used.** Children's speech is on the owner's
+**Status: option A APPROVED by the main session (2026-10-10), to be built after stream 4B's integration lands.** It
+ships behind a flag, default off, and goes on only after the owner's hands-free test.
+
+Merge preconditions:
+- the adversarial test in §3;
+- the on-device latency on the reference proxy;
+- R3 before and after on TRAIN and TEST.
+
+**Recorded ceiling:** 89 % on AMI TRAIN with a perfect classifier, so R3 ≥ 90 % stays unmet even then. Nothing is
+built yet, and no child audio is collected or used. Children's speech is on the owner's
 list with the five-second child test.
 
 ## 1. What it would fix (and what it cannot)
