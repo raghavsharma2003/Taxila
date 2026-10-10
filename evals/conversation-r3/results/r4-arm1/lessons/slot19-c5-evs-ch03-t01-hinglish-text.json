@@ -1,0 +1,4491 @@
+{
+ "slot": 19,
+ "topic": "c5-evs-ch03-t01",
+ "cls": 5,
+ "lang": "hinglish",
+ "lane": "text",
+ "lessons": [
+  {
+   "lessonId": "cb2cc82c-03d1-4e62-b90a-8736e5954a27",
+   "why": "start",
+   "at": "2026-10-10T08:59:35.172Z",
+   "teacher": "Arjun"
+  }
+ ],
+ "turns": [
+  {
+   "who": "teacher",
+   "kind": "opening",
+   "lessonId": "cb2cc82c-03d1-4e62-b90a-8736e5954a27",
+   "teacherReply": "Namaste Vihaan, main Arjun, aapka AI teacher hoon. Aaj food spoil hone mein microbes ka role dekhenge. Aapko drawing pasand hai?",
+   "ui": {
+    "status": "your_turn",
+    "phase": "warmup",
+    "handover": "answer",
+    "answerForm": "words",
+    "tray": "none",
+    "shortTitle": "Why food spoils",
+    "beat": {
+     "beatId": "b1-arrive",
+     "type": "arrive",
+     "index": 1
+    },
+    "ask": {
+     "text": "Aapko drawing pasand hai?"
+    }
+   }
+  },
+  {
+   "who": "child",
+   "tag": "greet",
+   "lessonId": "cb2cc82c-03d1-4e62-b90a-8736e5954a27",
+   "childText": "hello, haan shuru karo",
+   "ms": 1674,
+   "error": null,
+   "teacherReply": "Vihaan, tiffin mein roti subah fresh hoti hai, shaam tak smell badal sakti hai— aapke hisaab se andar kya hua hoga?",
+   "move": {
+    "kind": "hook",
+    "shape": "open with one concrete everyday situation — kit contexts: kitchen, tiffin box, curd making; ask what they think will happen or which they would pick — a prediction, no right answer yet; any bigger/more comparison: two quantities of one kind, in one unit — a count against a count, a distance against a distance; never across kinds; mention once: at the end they will teach this to Bittu (a pretend new student who missed this class); address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu",
+    "format": "F4"
+   },
+   "ui": {
+    "status": "your_turn",
+    "phase": "teach",
+    "handover": "answer",
+    "answerForm": "words",
+    "tray": "none",
+    "shortTitle": "Why food spoils",
+    "beat": {
+     "beatId": "b2-hook",
+     "type": "hook",
+     "index": 2
+    },
+    "ask": {
+     "text": "Vihaan, tiffin mein roti subah fresh hoti hai, shaam tak smell badal sakti hai— aapke hisaab se andar kya hua hoga?"
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false
+    },
+    "verdict": "attempt",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 961,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "teach",
+    "ms": 1669,
+    "item": null,
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 44
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 44
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 600
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 647
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1561
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1608
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1614
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1614
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1101
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 1615
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 1669
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "probe:question_on_topic-11",
+   "lessonId": "cb2cc82c-03d1-4e62-b90a-8736e5954a27",
+   "childText": "fridge mein bhi microbes hote hain kya?",
+   "ms": 3600,
+   "error": null,
+   "teacherReply": "Haan Vihaan, fridge mein bhi microbes hote hain; thandak unki growth slow karti hai, poori tarah rokati nahi. Fridge ka temperature microbes ko kaise affect karega?",
+   "move": {
+    "kind": "explain",
+    "shape": "they asked a real question about today's idea: answer it in at most two sentences, correctly and simply, without giving the key; then the question; one idea only: Say that microbes are tiny living things, too small to see without a microscope, found in air, water, soil and on our hands; objects first, then the symbol; point at the screen only at what the on-screen row lists; never a drawing made of characters; end with one small question that makes them USE the idea — never 'samjha?'; address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu",
+    "skillId": "c5-evs-ch03-t01-s1",
+    "format": "F3",
+    "request": "answer_q",
+    "lead": "they asked a real question about today's idea: answer it in at most two sentences, correctly and simply, without giving the key; then the question"
+   },
+   "ui": {
+    "status": "your_turn",
+    "phase": "teach",
+    "handover": "answer",
+    "answerForm": "words",
+    "tray": "studio",
+    "shortTitle": "Why food spoils",
+    "beat": {
+     "beatId": "b3-explain",
+     "type": "explain",
+     "index": 3
+    },
+    "ask": {
+     "text": "Fridge ka temperature microbes ko kaise affect karega?"
+    },
+    "studioSlot": {
+     "slotId": "cb2cc82c-03d1-4e62-b90a-8736e5954a27:wb:2:slot",
+     "intentId": "cb2cc82c-03d1-4e62-b90a-8736e5954a27:wb:2",
+     "state": "revealed",
+     "artifact": {
+      "kind": "whiteboard",
+      "stage": {
+       "w": 400,
+       "h": 300
+      },
+      "script": {
+       "v": 1,
+       "scriptId": "cb2cc82c-03d1-4e62-b90a-8736e5954a27:wb:2",
+       "line": {
+        "lessonId": "cb2cc82c-03d1-4e62-b90a-8736e5954a27",
+        "teacherReplySeq": 5
+       },
+       "anchor": "line_audio_start",
+       "board": {
+        "w": 400,
+        "h": 300,
+        "ground": "paper"
+       },
+       "mode": "fresh",
+       "durationMs": 13662,
+       "ops": [
+        {
+         "id": "h0",
+         "op": "text",
+         "startMs": 307,
+         "endMs": 921,
+         "ink": "accent",
+         "at": [
+          107.5,
+          24
+         ],
+         "text": "Helpful",
+         "size": "s"
+        },
+        {
+         "id": "o1",
+         "op": "text",
+         "startMs": 921,
+         "endMs": 1534,
+         "ink": "accent",
+         "at": [
+          107.5,
+          48
+         ],
+         "text": "microbes",
+         "size": "s"
+        },
+        {
+         "id": "o2",
+         "op": "line",
+         "startMs": 1616,
+         "endMs": 2230,
+         "ink": "accent",
+         "weight": 1,
+         "from": [
+          28,
+          62
+         ],
+         "to": [
+          187,
+          62
+         ]
+        },
+        {
+         "id": "h1",
+         "op": "text",
+         "startMs": 2537,
+         "endMs": 3151,
+         "ink": "accent",
+         "at": [
+          297.5,
+          24
+         ],
+         "text": "Harmful",
+         "size": "s"
+        },
+        {
+         "id": "o3",
+         "op": "text",
+         "startMs": 3151,
+         "endMs": 3765,
+         "ink": "accent",
+         "at": [
+          297.5,
+          48
+         ],
+         "text": "microbes",
+         "size": "s"
+        },
+        {
+         "id": "o4",
+         "op": "line",
+         "startMs": 3846,
+         "endMs": 4460,
+         "ink": "accent",
+         "weight": 1,
+         "from": [
+          218,
+          62
+         ],
+         "to": [
+          377,
+          62
+         ]
+        },
+        {
+         "id": "o5",
+         "op": "line",
+         "startMs": 4828,
+         "endMs": 5851,
+         "ink": "soft",
+         "weight": 1,
+         "from": [
+          200,
+          30
+         ],
+         "to": [
+          200,
+          280
+         ]
+        },
+        {
+         "id": "c00",
+         "op": "text",
+         "startMs": 6302,
+         "endMs": 7284,
+         "at": [
+          107.5,
+          100
+         ],
+         "text": "Curd",
+         "size": "s"
+        },
+        {
+         "id": "c10",
+         "op": "text",
+         "startMs": 7406,
+         "endMs": 8388,
+         "at": [
+          297.5,
+          100
+         ],
+         "text": "Spoiled food",
+         "size": "s"
+        },
+        {
+         "id": "c01",
+         "op": "text",
+         "startMs": 8839,
+         "endMs": 9821,
+         "at": [
+          107.5,
+          152
+         ],
+         "text": "Idli batter",
+         "size": "s"
+        },
+        {
+         "id": "c11",
+         "op": "text",
+         "startMs": 9943,
+         "endMs": 10925,
+         "at": [
+          297.5,
+          152
+         ],
+         "text": "Mouldy bread",
+         "size": "s"
+        },
+        {
+         "id": "c02",
+         "op": "text",
+         "startMs": 11376,
+         "endMs": 12358,
+         "at": [
+          107.5,
+          204
+         ],
+         "text": "Compost",
+         "size": "s"
+        },
+        {
+         "id": "c12",
+         "op": "text",
+         "startMs": 12480,
+         "endMs": 13462,
+         "at": [
+          297.5,
+          204
+         ],
+         "text": "Makes us sick",
+         "size": "s"
+        }
+       ],
+       "facts": {
+        "kind": "diagram",
+        "archetype": "whiteboard",
+        "onScreen": {
+         "labels": "Helpful | microbes | Harmful | microbes "
+        }
+       }
+      }
+     }
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [
+      "script"
+     ],
+     "rewritten": true,
+     "replaced": false,
+     "firstDraft": "Haan Vihaan, fridge mein bhi microbes hote hain; thandak unki growth slow karti hai, poori tarah rokती नहीं. Fridge ka temperature microbes ko kaise affect karega?",
+     "afterRewrite": []
+    },
+    "verdict": "ungraded",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "question_on_topic",
+     "waitedMs": 500,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "teach",
+    "ms": 3586,
+    "item": null,
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 49
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 50
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 740
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 797
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1241
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1297
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1301
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1302
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 971
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1206
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 3514
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 3586
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "filler",
+   "lessonId": "cb2cc82c-03d1-4e62-b90a-8736e5954a27",
+   "childText": "hmm achha",
+   "ms": 2628,
+   "error": null,
+   "teacherReply": "Ab example par: garam chapati ke saath air ke mould spores food par aa sakte hain. Rainy season mein air kaisi hoti hai?",
+   "move": {
+    "kind": "worked_example",
+    "shape": "worked example, part 1 of 2: say one step, then ask them for the next step; their thinking, your pace; no new idea; address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu",
+    "skillId": "c5-evs-ch03-t01-s1",
+    "format": "F2"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "math",
+     "value": "In the rainy season, chapatis packed while still hot went mouldy in a closed steel box after three days, but in winter…"
+    },
+    "phase": "teach",
+    "handover": "answer",
+    "answerForm": "words",
+    "tray": "studio",
+    "shortTitle": "Why food spoils",
+    "beat": {
+     "beatId": "b4-worked_example",
+     "type": "worked_example",
+     "index": 4
+    },
+    "ask": {
+     "text": "Rainy season mein air kaisi hoti hai?"
+    },
+    "studioSlot": {
+     "slotId": "cb2cc82c-03d1-4e62-b90a-8736e5954a27:wb:3:slot",
+     "intentId": "cb2cc82c-03d1-4e62-b90a-8736e5954a27:wb:3",
+     "state": "revealed",
+     "artifact": {
+      "kind": "whiteboard",
+      "stage": {
+       "w": 400,
+       "h": 300
+      },
+      "script": {
+       "v": 1,
+       "scriptId": "cb2cc82c-03d1-4e62-b90a-8736e5954a27:wb:3",
+       "line": {
+        "lessonId": "cb2cc82c-03d1-4e62-b90a-8736e5954a27",
+        "teacherReplySeq": 7
+       },
+       "anchor": "line_audio_start",
+       "board": {
+        "w": 400,
+        "h": 300,
+        "ground": "paper"
+       },
+       "mode": "fresh",
+       "durationMs": 10050,
+       "ops": [
+        {
+         "id": "h0",
+         "op": "text",
+         "startMs": 225,
+         "endMs": 674,
+         "ink": "accent",
+         "at": [
+          107.5,
+          24
+         ],
+         "text": "Helpful",
+         "size": "s"
+        },
+        {
+         "id": "o1",
+         "op": "text",
+         "startMs": 674,
+         "endMs": 1123,
+         "ink": "accent",
+         "at": [
+          107.5,
+          48
+         ],
+         "text": "microbes",
+         "size": "s"
+        },
+        {
+         "id": "o2",
+         "op": "line",
+         "startMs": 1183,
+         "endMs": 1632,
+         "ink": "accent",
+         "weight": 1,
+         "from": [
+          28,
+          62
+         ],
+         "to": [
+          187,
+          62
+         ]
+        },
+        {
+         "id": "h1",
+         "op": "text",
+         "startMs": 1856,
+         "endMs": 2305,
+         "ink": "accent",
+         "at": [
+          297.5,
+          24
+         ],
+         "text": "Harmful",
+         "size": "s"
+        },
+        {
+         "id": "o3",
+         "op": "text",
+         "startMs": 2305,
+         "endMs": 2754,
+         "ink": "accent",
+         "at": [
+          297.5,
+          48
+         ],
+         "text": "microbes",
+         "size": "s"
+        },
+        {
+         "id": "o4",
+         "op": "line",
+         "startMs": 2814,
+         "endMs": 3263,
+         "ink": "accent",
+         "weight": 1,
+         "from": [
+          218,
+          62
+         ],
+         "to": [
+          377,
+          62
+         ]
+        },
+        {
+         "id": "o5",
+         "op": "line",
+         "startMs": 3533,
+         "endMs": 4281,
+         "ink": "soft",
+         "weight": 1,
+         "from": [
+          200,
+          30
+         ],
+         "to": [
+          200,
+          280
+         ]
+        },
+        {
+         "id": "c00",
+         "op": "text",
+         "startMs": 4611,
+         "endMs": 5329,
+         "at": [
+          107.5,
+          100
+         ],
+         "text": "Curd",
+         "size": "s"
+        },
+        {
+         "id": "c10",
+         "op": "text",
+         "startMs": 5419,
+         "endMs": 6138,
+         "at": [
+          297.5,
+          100
+         ],
+         "text": "Spoiled food",
+         "size": "s"
+        },
+        {
+         "id": "c01",
+         "op": "text",
+         "startMs": 6467,
+         "endMs": 7186,
+         "at": [
+          107.5,
+          152
+         ],
+         "text": "Idli batter",
+         "size": "s"
+        },
+        {
+         "id": "c11",
+         "op": "text",
+         "startMs": 7275,
+         "endMs": 7994,
+         "at": [
+          297.5,
+          152
+         ],
+         "text": "Mouldy bread",
+         "size": "s"
+        },
+        {
+         "id": "c02",
+         "op": "text",
+         "startMs": 8323,
+         "endMs": 9042,
+         "at": [
+          107.5,
+          204
+         ],
+         "text": "Compost",
+         "size": "s"
+        },
+        {
+         "id": "c12",
+         "op": "text",
+         "startMs": 9132,
+         "endMs": 9850,
+         "at": [
+          297.5,
+          204
+         ],
+         "text": "Makes us sick",
+         "size": "s"
+        }
+       ],
+       "facts": {
+        "kind": "diagram",
+        "archetype": "whiteboard",
+        "onScreen": {
+         "labels": "Helpful | microbes | Harmful | microbes "
+        }
+       }
+      }
+     }
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false
+    },
+    "verdict": "ungraded",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 274,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "teach",
+    "ms": 2623,
+    "item": null,
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 55
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 55
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 965
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 1024
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1240
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1298
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1301
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1301
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1223
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 2549
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 2623
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "probe:slower-06",
+   "lessonId": "cb2cc82c-03d1-4e62-b90a-8736e5954a27",
+   "childText": "थोड़ा धीरे बोलिए",
+   "ms": 2947,
+   "error": null,
+   "teacherReply": "Dheere chalte hain. Air ke mould spores food par girte hain. Rainy season mein air warm aur moist hoti hai. Aap kya dekhenge?",
+   "move": {
+    "kind": "reteach",
+    "shape": "they asked you to slow down: say in two or three words that you will go slower; then the SAME idea in short simple sentences, one small step; the idea in LESSON NOW is still the one on the table; no new step of the lesson yet; end with one small question about it; address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu",
+    "must": "first the idea again in two or three very short pieces, one per sentence; only then the question",
+    "skillId": "c5-evs-ch03-t01-s1",
+    "request": "slower"
+   },
+   "ui": {
+    "status": "your_turn",
+    "phase": "teach",
+    "handover": "answer",
+    "answerForm": "words",
+    "tray": "studio",
+    "shortTitle": "Why food spoils",
+    "beat": {
+     "beatId": "b5-explain",
+     "type": "explain",
+     "index": 5
+    },
+    "ask": {
+     "text": "Aap kya dekhenge?"
+    },
+    "studioSlot": {
+     "slotId": "cb2cc82c-03d1-4e62-b90a-8736e5954a27:wb:4:slot",
+     "intentId": "cb2cc82c-03d1-4e62-b90a-8736e5954a27:wb:4",
+     "state": "revealed",
+     "artifact": {
+      "kind": "whiteboard",
+      "stage": {
+       "w": 400,
+       "h": 300
+      },
+      "script": {
+       "v": 1,
+       "scriptId": "cb2cc82c-03d1-4e62-b90a-8736e5954a27:wb:4",
+       "line": {
+        "lessonId": "cb2cc82c-03d1-4e62-b90a-8736e5954a27",
+        "teacherReplySeq": 9
+       },
+       "anchor": "line_audio_start",
+       "board": {
+        "w": 400,
+        "h": 300,
+        "ground": "paper"
+       },
+       "mode": "fresh",
+       "durationMs": 10461,
+       "ops": [
+        {
+         "id": "h0",
+         "op": "text",
+         "startMs": 234,
+         "endMs": 702,
+         "ink": "accent",
+         "at": [
+          107.5,
+          24
+         ],
+         "text": "Helpful",
+         "size": "s"
+        },
+        {
+         "id": "o1",
+         "op": "text",
+         "startMs": 702,
+         "endMs": 1170,
+         "ink": "accent",
+         "at": [
+          107.5,
+          48
+         ],
+         "text": "microbes",
+         "size": "s"
+        },
+        {
+         "id": "o2",
+         "op": "line",
+         "startMs": 1232,
+         "endMs": 1700,
+         "ink": "accent",
+         "weight": 1,
+         "from": [
+          28,
+          62
+         ],
+         "to": [
+          187,
+          62
+         ]
+        },
+        {
+         "id": "h1",
+         "op": "text",
+         "startMs": 1934,
+         "endMs": 2402,
+         "ink": "accent",
+         "at": [
+          297.5,
+          24
+         ],
+         "text": "Harmful",
+         "size": "s"
+        },
+        {
+         "id": "o3",
+         "op": "text",
+         "startMs": 2402,
+         "endMs": 2869,
+         "ink": "accent",
+         "at": [
+          297.5,
+          48
+         ],
+         "text": "microbes",
+         "size": "s"
+        },
+        {
+         "id": "o4",
+         "op": "line",
+         "startMs": 2932,
+         "endMs": 3400,
+         "ink": "accent",
+         "weight": 1,
+         "from": [
+          218,
+          62
+         ],
+         "to": [
+          377,
+          62
+         ]
+        },
+        {
+         "id": "o5",
+         "op": "line",
+         "startMs": 3680,
+         "endMs": 4460,
+         "ink": "soft",
+         "weight": 1,
+         "from": [
+          200,
+          30
+         ],
+         "to": [
+          200,
+          280
+         ]
+        },
+        {
+         "id": "c00",
+         "op": "text",
+         "startMs": 4803,
+         "endMs": 5552,
+         "at": [
+          107.5,
+          100
+         ],
+         "text": "Curd",
+         "size": "s"
+        },
+        {
+         "id": "c10",
+         "op": "text",
+         "startMs": 5645,
+         "endMs": 6394,
+         "at": [
+          297.5,
+          100
+         ],
+         "text": "Spoiled food",
+         "size": "s"
+        },
+        {
+         "id": "c01",
+         "op": "text",
+         "startMs": 6737,
+         "endMs": 7485,
+         "at": [
+          107.5,
+          152
+         ],
+         "text": "Idli batter",
+         "size": "s"
+        },
+        {
+         "id": "c11",
+         "op": "text",
+         "startMs": 7579,
+         "endMs": 8327,
+         "at": [
+          297.5,
+          152
+         ],
+         "text": "Mouldy bread",
+         "size": "s"
+        },
+        {
+         "id": "c02",
+         "op": "text",
+         "startMs": 8670,
+         "endMs": 9419,
+         "at": [
+          107.5,
+          204
+         ],
+         "text": "Compost",
+         "size": "s"
+        },
+        {
+         "id": "c12",
+         "op": "text",
+         "startMs": 9513,
+         "endMs": 10261,
+         "at": [
+          297.5,
+          204
+         ],
+         "text": "Makes us sick",
+         "size": "s"
+        }
+       ],
+       "facts": {
+        "kind": "diagram",
+        "archetype": "whiteboard",
+        "onScreen": {
+         "labels": "Helpful | microbes | Harmful | microbes "
+        }
+       }
+      }
+     }
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false
+    },
+    "verdict": "ungraded",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "slower",
+     "waitedMs": 475,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "teach",
+    "ms": 2944,
+    "item": null,
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 84
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 84
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 873
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 964
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1350
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1439
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1445
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1446
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1395
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 2869
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 2944
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "filler",
+   "lessonId": "cb2cc82c-03d1-4e62-b90a-8736e5954a27",
+   "childText": "achha",
+   "ms": 1481,
+   "error": null,
+   "teacherReply": "Theek hai, ab hum isi example ka agla chhota step dekhenge—slowly, ek-ek baat. Khaali jagah bhariye: In winter it is cooler and ___, so microbes grow slowly",
+   "move": {
+    "kind": "practice",
+    "shape": "the earlier steps in LESSON NOW, said briefly as done; then the step with the gap is theirs: pose it as written; wait; never fill the gap for them; address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu",
+    "itemId": "fade:4",
+    "skillId": "c5-evs-ch03-t01-s1",
+    "hintLevel": 0,
+    "probe": "P15",
+    "format": "F2"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "math",
+     "value": "In the rainy season, chapatis packed while still hot went… · In winter it is cooler and ___, so microbes grow slowly"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "Khaali jagah bhariye: In winter it is cooler and ___, so microbes grow slowly",
+     "itemId": "fade:4"
+    },
+    "answerForm": "words",
+    "tray": "none",
+    "shortTitle": "Why food spoils",
+    "beat": {
+     "beatId": "b6-practice_set",
+     "type": "practice_set",
+     "index": 6
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false,
+     "leadSlot": true
+    },
+    "verdict": "ungraded",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 539,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 1478,
+    "item": "fade:4",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 44
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 44
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 838
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 888
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1380
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1427
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1430
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1430
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 883
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 1431
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 1478
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "advance",
+   "lessonId": "cb2cc82c-03d1-4e62-b90a-8736e5954a27",
+   "childText": "achha",
+   "ms": 2972,
+   "error": null,
+   "teacherReply": "Is sentence mein winter ke cooler ke saath ek aur weather condition sochiye. Microbes ko grow karne ke liye temperature ke alawa hawa ki condition bhi matter karti hai. Khaali jagah bhariye: In winter it is cooler and ___, so microbes grow slowly",
+   "move": {
+    "kind": "hint",
+    "shape": "their typed reply did not answer the question: no verdict, never ask them to repeat or say it again; one small nudge toward what the question asks; then the same question again, as written; no verdict on their reply: neither praise nor 'wrong'; address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu",
+    "itemId": "fade:4",
+    "skillId": "c5-evs-ch03-t01-s1",
+    "hintLevel": 0
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "text",
+     "value": "Khaali jagah bhariye: In winter it is cooler and ___, so …"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "Khaali jagah bhariye: In winter it is cooler and ___, so microbes grow slowly",
+     "itemId": "fade:4"
+    },
+    "answerForm": "words",
+    "tray": "studio",
+    "shortTitle": "Why food spoils",
+    "beat": {
+     "beatId": "b6-practice_set",
+     "type": "practice_set",
+     "index": 6
+    },
+    "teacherAffect": {
+     "display": "gentle_concern",
+     "intensity": 1
+    },
+    "studioSlot": {
+     "slotId": "cb2cc82c-03d1-4e62-b90a-8736e5954a27:c1:slot",
+     "intentId": "cb2cc82c-03d1-4e62-b90a-8736e5954a27:c1",
+     "state": "revealed",
+     "artifact": {
+      "kind": "stagecraft",
+      "stage": {
+       "w": 1000,
+       "h": 625
+      },
+      "stagecraft": {
+       "rung": "engine_default",
+       "archetype": "fair-test@1",
+       "spec": {
+        "archetype": "fair-test@1",
+        "skills": [
+         "c5-evs-ch03-t01"
+        ],
+        "lang": "en",
+        "strings": {
+         "round": "Round",
+         "run": "RUN",
+         "day": "day",
+         "predict": "Tap every setup that will show it",
+         "design": "Make it a fair test",
+         "conclude": "Which factor matters?",
+         "notMatter": "Which factor does NOT matter?",
+         "fair": "FAIR TEST",
+         "unfair": "NOT FAIR",
+         "runDone": "Lab closed",
+         "correct": "right calls",
+         "drip": "Hold to add drops; stop when it turns",
+         "drops": "drops",
+         "neutral": "NEUTRAL",
+         "hint": "change only one thing"
+        },
+        "title": "Food Spoilage Lab",
+        "model": "spoilage",
+        "rounds": [
+         {
+          "mode": "predict",
+          "title": "Make a prediction",
+          "sub": "Which food will spoil?",
+          "setups": [
+           {
+            "temp": "warm",
+            "moisture": "moist",
+            "salt": "no",
+            "lid": "open"
+           },
+           {
+            "temp": "cold",
+            "moisture": "dry",
+            "salt": "no",
+            "lid": "covered"
+           },
+           {
+            "temp": "warm",
+            "moisture": "dry",
+            "salt": "no",
+            "lid": "covered"
+           },
+           {
+            "temp": "cold",
+            "moisture": "moist",
+            "salt": "yes",
+            "lid": "open"
+           }
+          ],
+          "src": "c5-evs-ch03-t01-i03",
+          "targets": "c5-evs-ch03-t01-m1"
+         },
+         {
+          "mode": "design",
+          "title": "Test warmth",
+          "sub": "Change only the temperature",
+          "vary": "temp",
+          "start": [
+           {
+            "temp": "warm",
+            "moisture": "moist",
+            "salt": "no",
+            "lid": "covered"
+           },
+           {
+            "temp": "cold",
+            "moisture": "moist",
+            "salt": "no",
+            "lid": "covered"
+           }
+          ]
+         },
+         {
+          "mode": "design",
+          "title": "Test covering",
+          "sub": "Change only the lid",
+          "vary": "lid",
+          "start": [
+           {
+            "temp": "warm",
+            "moisture": "moist",
+            "salt": "no",
+            "lid": "open"
+           },
+           {
+            "temp": "warm",
+            "moisture": "moist",
+            "salt": "no",
+            "lid": "covered"
+           }
+          ]
+         }
+        ]
+       },
+       "boardTwin": {
+        "scriptRef": "board:c5-evs-ch03-t01-s1|practice|-|-",
+        "values": {
+         "title": "Fair Test Lab",
+         "need": "practice"
+        },
+        "board": {
+         "title": "Fair Test Lab",
+         "lines": [
+          "microbes",
+          "food",
+          "warm",
+          "curd"
+         ],
+         "figure": {
+          "kind": "none"
+         }
+        }
+       },
+       "board": null,
+       "cue": {
+        "clauseIdx": 0,
+        "preRollMs": 400,
+        "crossFadeMs": 420
+       },
+       "buildSha": null,
+       "blobUrl": null
+      }
+     }
+    }
+   },
+   "moduleCommands": [],
+   "studio": {
+    "reveal": "cb2cc82c-03d1-4e62-b90a-8736e5954a27:c1"
+   },
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false,
+     "leadSlot": true
+    },
+    "verdict": "unverified",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 350,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 2968,
+    "item": "fade:4",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 44
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 44
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 832
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 883
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1183
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1233
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1235
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1235
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1674
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 2917
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 2967
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "advance",
+   "lessonId": "cb2cc82c-03d1-4e62-b90a-8736e5954a27",
+   "childText": "achha",
+   "ms": 2556,
+   "error": null,
+   "teacherReply": "Khaali jagah bhariye: In winter it is cooler and ___, so microbes grow slowly",
+   "move": {
+    "kind": "hint",
+    "shape": "no verdict on their reply; the choices are now on screen; the same question again, as written; tell them they can pick one of the choices on screen; do not read the choices with any lean toward one; no verdict on their reply: neither praise nor 'wrong'; address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu",
+    "itemId": "fade:4",
+    "skillId": "c5-evs-ch03-t01-s1",
+    "hintLevel": 0
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "text",
+     "value": "Khaali jagah bhariye: In winter it is cooler and ___, so …"
+    },
+    "chips": [
+     {
+      "id": "pick:0",
+      "label": "Warm and moist bowl"
+     },
+     {
+      "id": "pick:1",
+      "label": "drier"
+     },
+     {
+      "id": "pick:2",
+      "label": "Microbes"
+     }
+    ],
+    "phase": "practice",
+    "handover": "choice",
+    "ask": {
+     "text": "Khaali jagah bhariye: In winter it is cooler and ___, so microbes grow slowly",
+     "itemId": "fade:4"
+    },
+    "answerForm": "choice",
+    "tray": "tiles",
+    "shortTitle": "Why food spoils",
+    "beat": {
+     "beatId": "b6-practice_set",
+     "type": "practice_set",
+     "index": 6
+    },
+    "teacherAffect": {
+     "display": "gentle_concern",
+     "intensity": 1
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [
+      "praise"
+     ],
+     "rewritten": true,
+     "replaced": false,
+     "firstDraft": "Bilkul, Vihaan. Aap sentence ko dheere-dheere padhiye aur winter ki doosri weather condition par dhyaan dijiye. Khaali jagah bhariye: In winter it is cooler and ___, so microbes grow slowly",
+     "leadSlot": true,
+     "afterRewrite": [
+      "ask"
+     ],
+     "repaired": true,
+     "tidied": true,
+     "final": [
+      "bare"
+     ]
+    },
+    "verdict": "unverified",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 619,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 2552,
+    "item": "fade:4",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 54
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 55
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 823
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 883
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1443
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1502
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1504
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1505
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1123
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1259
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 2499
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 2552
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "advance",
+   "lessonId": "cb2cc82c-03d1-4e62-b90a-8736e5954a27",
+   "childText": "hmm achha",
+   "ms": 2942,
+   "error": null,
+   "teacherReply": "Ab ek nayi food-spoilage situation par prediction kijiye. Microbes kya hote hain, aur ye kahaan-kahaan milte hain?",
+   "move": {
+    "kind": "practice",
+    "shape": "leave this one for later, no verdict and no answer given; the next question; pose the question as written, in their language; then wait; no verdict on their reply: neither praise nor 'wrong'; address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu",
+    "itemId": "c5-evs-ch03-t01-i01",
+    "skillId": "c5-evs-ch03-t01-s1",
+    "hintLevel": 0,
+    "probe": "P15"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "text",
+     "value": "Microbes kya hote hain, aur ye kahaan-kahaan milte hain?"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "Microbes kya hote hain, aur ye kahaan-kahaan milte hain?",
+     "itemId": "c5-evs-ch03-t01-i01"
+    },
+    "answerForm": "words",
+    "tray": "studio",
+    "shortTitle": "Why food spoils",
+    "beat": {
+     "beatId": "b6-practice_set",
+     "type": "practice_set",
+     "index": 6
+    },
+    "studioSlot": {
+     "slotId": "cb2cc82c-03d1-4e62-b90a-8736e5954a27:c1:slot",
+     "intentId": "cb2cc82c-03d1-4e62-b90a-8736e5954a27:c1",
+     "state": "revealed",
+     "artifact": {
+      "kind": "stagecraft",
+      "stage": {
+       "w": 1000,
+       "h": 625
+      },
+      "stagecraft": {
+       "rung": "engine_default",
+       "archetype": "fair-test@1",
+       "spec": {
+        "archetype": "fair-test@1",
+        "skills": [
+         "c5-evs-ch03-t01"
+        ],
+        "lang": "en",
+        "strings": {
+         "round": "Round",
+         "run": "RUN",
+         "day": "day",
+         "predict": "Tap every setup that will show it",
+         "design": "Make it a fair test",
+         "conclude": "Which factor matters?",
+         "notMatter": "Which factor does NOT matter?",
+         "fair": "FAIR TEST",
+         "unfair": "NOT FAIR",
+         "runDone": "Lab closed",
+         "correct": "right calls",
+         "drip": "Hold to add drops; stop when it turns",
+         "drops": "drops",
+         "neutral": "NEUTRAL",
+         "hint": "change only one thing"
+        },
+        "title": "Food Spoilage Lab",
+        "model": "spoilage",
+        "rounds": [
+         {
+          "mode": "predict",
+          "title": "Make a prediction",
+          "sub": "Which food will spoil?",
+          "setups": [
+           {
+            "temp": "warm",
+            "moisture": "moist",
+            "salt": "no",
+            "lid": "open"
+           },
+           {
+            "temp": "cold",
+            "moisture": "dry",
+            "salt": "no",
+            "lid": "covered"
+           },
+           {
+            "temp": "warm",
+            "moisture": "dry",
+            "salt": "no",
+            "lid": "covered"
+           },
+           {
+            "temp": "cold",
+            "moisture": "moist",
+            "salt": "yes",
+            "lid": "open"
+           }
+          ],
+          "src": "c5-evs-ch03-t01-i03",
+          "targets": "c5-evs-ch03-t01-m1"
+         },
+         {
+          "mode": "design",
+          "title": "Test warmth",
+          "sub": "Change only the temperature",
+          "vary": "temp",
+          "start": [
+           {
+            "temp": "warm",
+            "moisture": "moist",
+            "salt": "no",
+            "lid": "covered"
+           },
+           {
+            "temp": "cold",
+            "moisture": "moist",
+            "salt": "no",
+            "lid": "covered"
+           }
+          ]
+         },
+         {
+          "mode": "design",
+          "title": "Test covering",
+          "sub": "Change only the lid",
+          "vary": "lid",
+          "start": [
+           {
+            "temp": "warm",
+            "moisture": "moist",
+            "salt": "no",
+            "lid": "open"
+           },
+           {
+            "temp": "warm",
+            "moisture": "moist",
+            "salt": "no",
+            "lid": "covered"
+           }
+          ]
+         }
+        ]
+       },
+       "boardTwin": {
+        "scriptRef": "board:c5-evs-ch03-t01-s1|practice|-|-",
+        "values": {
+         "title": "Fair Test Lab",
+         "need": "practice"
+        },
+        "board": {
+         "title": "Fair Test Lab",
+         "lines": [
+          "microbes",
+          "food",
+          "warm",
+          "curd"
+         ],
+         "figure": {
+          "kind": "none"
+         }
+        }
+       },
+       "board": null,
+       "cue": {
+        "clauseIdx": 0,
+        "preRollMs": 400,
+        "crossFadeMs": 420
+       },
+       "buildSha": null,
+       "blobUrl": null
+      }
+     }
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false,
+     "leadSlot": true
+    },
+    "verdict": "unverified",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 632,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 2940,
+    "item": "c5-evs-ch03-t01-i01",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 47
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 48
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 866
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 918
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1499
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1550
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1553
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1553
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1329
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 2888
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 2940
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "probe:game_request-07",
+   "lessonId": "cb2cc82c-03d1-4e62-b90a-8736e5954a27",
+   "childText": "quiz game karte hain?",
+   "ms": 2006,
+   "error": null,
+   "teacherReply": "Haan, quiz game karenge. Abhi card par jo comparison hai, usmein Helpful microbes aur Harmful microbes ko dhyaan se dekhiye. Microbes kya hote hain, aur ye kahaan-kahaan milte hain?",
+   "move": {
+    "kind": "reteach",
+    "shape": "they want to play: the activity is the way in now; one idea; let the picture do the work; a few words about what to look at; the key stays unsaid; then one small question about what they see; no verdict on their reply: neither praise nor 'wrong'; address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu; it is on the screen now: point them at it in your first words and say what to look at",
+    "itemId": "c5-evs-ch03-t01-i01",
+    "skillId": "c5-evs-ch03-t01-s1",
+    "hintLevel": 1,
+    "request": "visual",
+    "visual": "game"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "text",
+     "value": "Microbes kya hote hain, aur ye kahaan-kahaan milte hain?"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "Microbes kya hote hain, aur ye kahaan-kahaan milte hain?",
+     "itemId": "c5-evs-ch03-t01-i01"
+    },
+    "answerForm": "words",
+    "tray": "module",
+    "shortTitle": "Why food spoils",
+    "beat": {
+     "beatId": "b7-explain",
+     "type": "explain",
+     "index": 7
+    }
+   },
+   "moduleCommands": [
+    {
+     "op": "mount",
+     "moduleId": "m9",
+     "engine": "explainer@1",
+     "params": {
+      "script": {
+       "v": 1,
+       "scriptId": "ex-148punp",
+       "line": {
+        "lessonId": "cb2cc82c-03d1-4e62-b90a-8736e5954a27"
+       },
+       "anchor": "line_audio_start",
+       "board": {
+        "w": 400,
+        "h": 300,
+        "ground": "chalk"
+       },
+       "mode": "fresh",
+       "durationMs": 6980,
+       "ops": [
+        {
+         "id": "h0",
+         "op": "text",
+         "startMs": 150,
+         "endMs": 450,
+         "ink": "accent",
+         "at": [
+          107.5,
+          24
+         ],
+         "text": "Helpful",
+         "size": "s"
+        },
+        {
+         "id": "o1",
+         "op": "text",
+         "startMs": 450,
+         "endMs": 750,
+         "ink": "accent",
+         "at": [
+          107.5,
+          48
+         ],
+         "text": "microbes",
+         "size": "s"
+        },
+        {
+         "id": "o2",
+         "op": "line",
+         "startMs": 790,
+         "endMs": 1090,
+         "ink": "accent",
+         "weight": 1,
+         "from": [
+          28,
+          62
+         ],
+         "to": [
+          187,
+          62
+         ]
+        },
+        {
+         "id": "h1",
+         "op": "text",
+         "startMs": 1240,
+         "endMs": 1540,
+         "ink": "accent",
+         "at": [
+          297.5,
+          24
+         ],
+         "text": "Harmful",
+         "size": "s"
+        },
+        {
+         "id": "o3",
+         "op": "text",
+         "startMs": 1540,
+         "endMs": 1840,
+         "ink": "accent",
+         "at": [
+          297.5,
+          48
+         ],
+         "text": "microbes",
+         "size": "s"
+        },
+        {
+         "id": "o4",
+         "op": "line",
+         "startMs": 1880,
+         "endMs": 2180,
+         "ink": "accent",
+         "weight": 1,
+         "from": [
+          218,
+          62
+         ],
+         "to": [
+          377,
+          62
+         ]
+        },
+        {
+         "id": "o5",
+         "op": "line",
+         "startMs": 2360,
+         "endMs": 2860,
+         "ink": "soft",
+         "weight": 1,
+         "from": [
+          200,
+          30
+         ],
+         "to": [
+          200,
+          280
+         ]
+        },
+        {
+         "id": "c00",
+         "op": "text",
+         "startMs": 3080,
+         "endMs": 3560,
+         "at": [
+          107.5,
+          100
+         ],
+         "text": "Curd",
+         "size": "s"
+        },
+        {
+         "id": "c10",
+         "op": "text",
+         "startMs": 3620,
+         "endMs": 4100,
+         "at": [
+          297.5,
+          100
+         ],
+         "text": "Spoiled food",
+         "size": "s"
+        },
+        {
+         "id": "c01",
+         "op": "text",
+         "startMs": 4320,
+         "endMs": 4800,
+         "at": [
+          107.5,
+          152
+         ],
+         "text": "Idli batter",
+         "size": "s"
+        },
+        {
+         "id": "c11",
+         "op": "text",
+         "startMs": 4860,
+         "endMs": 5340,
+         "at": [
+          297.5,
+          152
+         ],
+         "text": "Mouldy bread",
+         "size": "s"
+        },
+        {
+         "id": "c02",
+         "op": "text",
+         "startMs": 5560,
+         "endMs": 6040,
+         "at": [
+          107.5,
+          204
+         ],
+         "text": "Compost",
+         "size": "s"
+        },
+        {
+         "id": "c12",
+         "op": "text",
+         "startMs": 6100,
+         "endMs": 6580,
+         "at": [
+          297.5,
+          204
+         ],
+         "text": "Makes us sick",
+         "size": "s"
+        }
+       ],
+       "facts": {
+        "kind": "diagram",
+        "archetype": "compare@1",
+        "onScreen": {
+         "left": "Helpful microbes",
+         "right": "Harmful microbes",
+         "rows": 3,
+         "left1": "Curd",
+         "left2": "Idli batter",
+         "left3": "Compost",
+         "right1": "Spoiled food",
+         "right2": "Mouldy bread",
+         "right3": "Makes us sick"
+        }
+       }
+      },
+      "template": "compare@1",
+      "mode": "play"
+     }
+    }
+   ],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false,
+     "leadSlot": true
+    },
+    "verdict": "ungraded",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "request"
+    },
+    "note": null,
+    "hintLevel": 1,
+    "phase": "practice",
+    "ms": 2003,
+    "item": "c5-evs-ch03-t01-i01",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 54
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 54
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 573
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 633
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 637
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 637
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1267
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 1909
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 2003
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "recovery",
+   "lessonId": "cb2cc82c-03d1-4e62-b90a-8736e5954a27",
+   "childText": "everywhere",
+   "ms": 3957,
+   "error": null,
+   "teacherReply": "Point to hands, air and soil as places they live. Microbes kya hote hain, aur ye kahaan-kahaan milte hain?",
+   "move": {
+    "kind": "hint",
+    "shape": "rung 2 of 4 (hint): Point to hands, air and soil as places they live; the key stays unsaid; their answer was partly right: name the right part, no full agreement; address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu",
+    "itemId": "c5-evs-ch03-t01-i01",
+    "skillId": "c5-evs-ch03-t01-s1",
+    "hintLevel": 2
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "text",
+     "value": "Microbes kya hote hain, aur ye kahaan-kahaan milte hain?"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "Microbes kya hote hain, aur ye kahaan-kahaan milte hain?",
+     "itemId": "c5-evs-ch03-t01-i01"
+    },
+    "answerForm": "words",
+    "tray": "module",
+    "hint": {
+     "level": 2,
+     "text": "Point to hands, air and soil as places they live"
+    },
+    "shortTitle": "Why food spoils",
+    "verdict": "partial",
+    "beat": {
+     "beatId": "b7-explain",
+     "type": "explain",
+     "index": 7
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [
+      "leak",
+      "twoq"
+     ],
+     "rewritten": true,
+     "replaced": true,
+     "firstDraft": "“Everywhere” sahi part hai—ab bataiye, microbes kis tarah ke jeev hote hain? Microbes kya hote hain, aur ye kahaan-kahaan milte hain?",
+     "afterRewrite": [
+      "leak",
+      "ask"
+     ],
+     "repaired": true
+    },
+    "verdict": "partial",
+    "cls": {
+     "outcome": "partial",
+     "source": "exact"
+    },
+    "note": null,
+    "hintLevel": 2,
+    "phase": "practice",
+    "ms": 3953,
+    "item": "c5-evs-ch03-t01-i01",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 53
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 54
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 57
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 111
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 111
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1546
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 985
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1249
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 3901
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 3953
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "probe:dont_know-02",
+   "lessonId": "cb2cc82c-03d1-4e62-b90a-8736e5954a27",
+   "childText": "no idea",
+   "ms": 1198,
+   "error": null,
+   "teacherReply": "Theek hai, isse hum ek chhote clue ke saath samjhenge. Ab agla card dhyaan se padhiye. Ek student sandwiches banane se pehle haath dhoti hai. Haath saaf dikh rahe the. Phir bhi unpar kaun-se bahut chhote jeev ho sakte the?",
+   "move": {
+    "kind": "practice",
+    "shape": "that question has been on the table long enough: give its answer plainly with one line of why (in LESSON NOW), no verdict on them; then the next question; pose the question as written, in their language; then wait; no verdict on their reply: neither praise nor 'wrong'; address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu",
+    "itemId": "c5-evs-ch03-t01-rl-o1",
+    "skillId": "c5-evs-ch03-t01-s1",
+    "hintLevel": 0,
+    "probe": "P15"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "text",
+     "value": "Ek student sandwiches banane se pehle haath dhoti hai. Ha…"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "Haath saaf dikh rahe the. Phir bhi unpar kaun-se bahut chhote jeev ho sakte the?",
+     "itemId": "c5-evs-ch03-t01-rl-o1"
+    },
+    "answerForm": "words",
+    "tray": "studio",
+    "shortTitle": "Why food spoils",
+    "beat": {
+     "beatId": "b8-practice_set",
+     "type": "practice_set",
+     "index": 8
+    },
+    "studioSlot": {
+     "slotId": "cb2cc82c-03d1-4e62-b90a-8736e5954a27:c1:slot",
+     "intentId": "cb2cc82c-03d1-4e62-b90a-8736e5954a27:c1",
+     "state": "revealed",
+     "artifact": {
+      "kind": "stagecraft",
+      "stage": {
+       "w": 1000,
+       "h": 625
+      },
+      "stagecraft": {
+       "rung": "engine_default",
+       "archetype": "fair-test@1",
+       "spec": {
+        "archetype": "fair-test@1",
+        "skills": [
+         "c5-evs-ch03-t01"
+        ],
+        "lang": "en",
+        "strings": {
+         "round": "Round",
+         "run": "RUN",
+         "day": "day",
+         "predict": "Tap every setup that will show it",
+         "design": "Make it a fair test",
+         "conclude": "Which factor matters?",
+         "notMatter": "Which factor does NOT matter?",
+         "fair": "FAIR TEST",
+         "unfair": "NOT FAIR",
+         "runDone": "Lab closed",
+         "correct": "right calls",
+         "drip": "Hold to add drops; stop when it turns",
+         "drops": "drops",
+         "neutral": "NEUTRAL",
+         "hint": "change only one thing"
+        },
+        "title": "Food Spoilage Lab",
+        "model": "spoilage",
+        "rounds": [
+         {
+          "mode": "predict",
+          "title": "Make a prediction",
+          "sub": "Which food will spoil?",
+          "setups": [
+           {
+            "temp": "warm",
+            "moisture": "moist",
+            "salt": "no",
+            "lid": "open"
+           },
+           {
+            "temp": "cold",
+            "moisture": "dry",
+            "salt": "no",
+            "lid": "covered"
+           },
+           {
+            "temp": "warm",
+            "moisture": "dry",
+            "salt": "no",
+            "lid": "covered"
+           },
+           {
+            "temp": "cold",
+            "moisture": "moist",
+            "salt": "yes",
+            "lid": "open"
+           }
+          ],
+          "src": "c5-evs-ch03-t01-i03",
+          "targets": "c5-evs-ch03-t01-m1"
+         },
+         {
+          "mode": "design",
+          "title": "Test warmth",
+          "sub": "Change only the temperature",
+          "vary": "temp",
+          "start": [
+           {
+            "temp": "warm",
+            "moisture": "moist",
+            "salt": "no",
+            "lid": "covered"
+           },
+           {
+            "temp": "cold",
+            "moisture": "moist",
+            "salt": "no",
+            "lid": "covered"
+           }
+          ]
+         },
+         {
+          "mode": "design",
+          "title": "Test covering",
+          "sub": "Change only the lid",
+          "vary": "lid",
+          "start": [
+           {
+            "temp": "warm",
+            "moisture": "moist",
+            "salt": "no",
+            "lid": "open"
+           },
+           {
+            "temp": "warm",
+            "moisture": "moist",
+            "salt": "no",
+            "lid": "covered"
+           }
+          ]
+         }
+        ]
+       },
+       "boardTwin": {
+        "scriptRef": "board:c5-evs-ch03-t01-s1|practice|-|-",
+        "values": {
+         "title": "Fair Test Lab",
+         "need": "practice"
+        },
+        "board": {
+         "title": "Fair Test Lab",
+         "lines": [
+          "microbes",
+          "food",
+          "warm",
+          "curd"
+         ],
+         "figure": {
+          "kind": "none"
+         }
+        }
+       },
+       "board": null,
+       "cue": {
+        "clauseIdx": 0,
+        "preRollMs": 400,
+        "crossFadeMs": 420
+       },
+       "buildSha": null,
+       "blobUrl": null
+      }
+     }
+    }
+   },
+   "moduleCommands": [
+    {
+     "op": "unmount",
+     "moduleId": "m9"
+    }
+   ],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false,
+     "leadSlot": true
+    },
+    "verdict": "unverified",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "lexical"
+    },
+    "note": null,
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 1195,
+    "item": "c5-evs-ch03-t01-rl-o1",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 55
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 55
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 72
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 117
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 117
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1002
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 1127
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 1195
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "recovery",
+   "lessonId": "cb2cc82c-03d1-4e62-b90a-8736e5954a27",
+   "childText": "germs",
+   "ms": 1289,
+   "error": null,
+   "teacherReply": "Bilkul, germs yani microbes. Ye bahut chhote jeev hote hain, jo aankhon se nahi dikhte. Aap ek jagah bataiye jahaan ye mil sakte hain.",
+   "move": {
+    "kind": "explain",
+    "shape": "confirm specifically: name the exact thing they got right, no ability words; one idea only: Explain that microbes grow and multiply on food, fastest when it is warm and moist, and make it spoil; objects first, then the symbol; point at the screen only at what the on-screen row lists; never a drawing made of characters; end with one small question that makes them USE the idea — never 'samjha?'; address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu",
+    "skillId": "c5-evs-ch03-t01-s2",
+    "format": "F3"
+   },
+   "ui": {
+    "status": "your_turn",
+    "phase": "practice",
+    "handover": "answer",
+    "answerForm": "words",
+    "tray": "module",
+    "shortTitle": "Why food spoils",
+    "verdict": "correct",
+    "beat": {
+     "beatId": "b9-explain",
+     "type": "explain",
+     "index": 9
+    },
+    "ask": {
+     "text": "Aap ek jagah bataiye jahaan ye mil sakte hain."
+    },
+    "teacherAffect": {
+     "display": "warm_pride",
+     "intensity": 1
+    }
+   },
+   "moduleCommands": [
+    {
+     "op": "mount",
+     "moduleId": "m12",
+     "engine": "explainer@1",
+     "params": {
+      "script": {
+       "v": 1,
+       "scriptId": "ex-148punp",
+       "line": {
+        "lessonId": "cb2cc82c-03d1-4e62-b90a-8736e5954a27"
+       },
+       "anchor": "line_audio_start",
+       "board": {
+        "w": 400,
+        "h": 300,
+        "ground": "chalk"
+       },
+       "mode": "fresh",
+       "durationMs": 6980,
+       "ops": [
+        {
+         "id": "h0",
+         "op": "text",
+         "startMs": 150,
+         "endMs": 450,
+         "ink": "accent",
+         "at": [
+          107.5,
+          24
+         ],
+         "text": "Helpful",
+         "size": "s"
+        },
+        {
+         "id": "o1",
+         "op": "text",
+         "startMs": 450,
+         "endMs": 750,
+         "ink": "accent",
+         "at": [
+          107.5,
+          48
+         ],
+         "text": "microbes",
+         "size": "s"
+        },
+        {
+         "id": "o2",
+         "op": "line",
+         "startMs": 790,
+         "endMs": 1090,
+         "ink": "accent",
+         "weight": 1,
+         "from": [
+          28,
+          62
+         ],
+         "to": [
+          187,
+          62
+         ]
+        },
+        {
+         "id": "h1",
+         "op": "text",
+         "startMs": 1240,
+         "endMs": 1540,
+         "ink": "accent",
+         "at": [
+          297.5,
+          24
+         ],
+         "text": "Harmful",
+         "size": "s"
+        },
+        {
+         "id": "o3",
+         "op": "text",
+         "startMs": 1540,
+         "endMs": 1840,
+         "ink": "accent",
+         "at": [
+          297.5,
+          48
+         ],
+         "text": "microbes",
+         "size": "s"
+        },
+        {
+         "id": "o4",
+         "op": "line",
+         "startMs": 1880,
+         "endMs": 2180,
+         "ink": "accent",
+         "weight": 1,
+         "from": [
+          218,
+          62
+         ],
+         "to": [
+          377,
+          62
+         ]
+        },
+        {
+         "id": "o5",
+         "op": "line",
+         "startMs": 2360,
+         "endMs": 2860,
+         "ink": "soft",
+         "weight": 1,
+         "from": [
+          200,
+          30
+         ],
+         "to": [
+          200,
+          280
+         ]
+        },
+        {
+         "id": "c00",
+         "op": "text",
+         "startMs": 3080,
+         "endMs": 3560,
+         "at": [
+          107.5,
+          100
+         ],
+         "text": "Curd",
+         "size": "s"
+        },
+        {
+         "id": "c10",
+         "op": "text",
+         "startMs": 3620,
+         "endMs": 4100,
+         "at": [
+          297.5,
+          100
+         ],
+         "text": "Spoiled food",
+         "size": "s"
+        },
+        {
+         "id": "c01",
+         "op": "text",
+         "startMs": 4320,
+         "endMs": 4800,
+         "at": [
+          107.5,
+          152
+         ],
+         "text": "Idli batter",
+         "size": "s"
+        },
+        {
+         "id": "c11",
+         "op": "text",
+         "startMs": 4860,
+         "endMs": 5340,
+         "at": [
+          297.5,
+          152
+         ],
+         "text": "Mouldy bread",
+         "size": "s"
+        },
+        {
+         "id": "c02",
+         "op": "text",
+         "startMs": 5560,
+         "endMs": 6040,
+         "at": [
+          107.5,
+          204
+         ],
+         "text": "Compost",
+         "size": "s"
+        },
+        {
+         "id": "c12",
+         "op": "text",
+         "startMs": 6100,
+         "endMs": 6580,
+         "at": [
+          297.5,
+          204
+         ],
+         "text": "Makes us sick",
+         "size": "s"
+        }
+       ],
+       "facts": {
+        "kind": "diagram",
+        "archetype": "compare@1",
+        "onScreen": {
+         "left": "Helpful microbes",
+         "right": "Harmful microbes",
+         "rows": 3,
+         "left1": "Curd",
+         "left2": "Idli batter",
+         "left3": "Compost",
+         "right1": "Spoiled food",
+         "right2": "Mouldy bread",
+         "right3": "Makes us sick"
+        }
+       }
+      },
+      "template": "compare@1",
+      "mode": "play"
+     }
+    }
+   ],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false
+    },
+    "verdict": "correct",
+    "cls": {
+     "outcome": "correct",
+     "source": "exact"
+    },
+    "note": null,
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 1286,
+    "item": null,
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 57
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 58
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 61
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 111
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 112
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1090
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 1205
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 1286
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "advance",
+   "lessonId": "cb2cc82c-03d1-4e62-b90a-8736e5954a27",
+   "childText": "achha",
+   "ms": 1419,
+   "error": null,
+   "teacherReply": "Aapne sahi pehchana: germs ko microbes bhi kehte hain. Do rotiyaan ek hi samay bani. Ek sukhe band dibbe mein rakhi, doosri geeli karke garam kone mein. Teen din baad sirf geeli roti pe roodaar dhabbe aa gaye. Kyon?",
+   "move": {
+    "kind": "probe",
+    "shape": "pose the question as written, in their language; then wait; read its choices plainly; no lean in your voice toward any of them; address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu",
+    "itemId": "diag:c5-evs-ch03-t01-m1",
+    "skillId": "c5-evs-ch03-t01-s2",
+    "hintLevel": 0,
+    "probe": "P7"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "text",
+     "value": "Do rotiyaan ek hi samay bani. Ek sukhe band dibbe mein ra…"
+    },
+    "chips": [
+     {
+      "id": "opt:0",
+      "label": "The damp one just got older faster than "
+     },
+     {
+      "id": "opt:1",
+      "label": "Microbes grew faster on the warm, damp r"
+     },
+     {
+      "id": "opt:2",
+      "label": "The fuzzy spots grew out of the roti flo"
+     }
+    ],
+    "phase": "practice",
+    "handover": "choice",
+    "ask": {
+     "text": "Teen din baad sirf geeli roti pe roodaar dhabbe aa gaye. Kyon?",
+     "itemId": "diag:c5-evs-ch03-t01-m1"
+    },
+    "answerForm": "choice",
+    "tray": "tiles",
+    "shortTitle": "Why food spoils",
+    "beat": {
+     "beatId": "b10-probe",
+     "type": "probe",
+     "index": 10
+    }
+   },
+   "moduleCommands": [
+    {
+     "op": "unmount",
+     "moduleId": "m12"
+    },
+    {
+     "op": "mount",
+     "moduleId": "g1-99c8c720",
+     "engine": "scene@1",
+     "params": {
+      "scene": {
+       "dsl": "scene@1",
+       "meta": {
+        "band": "B3",
+        "lang": "hi-Latn+en",
+        "title": {
+         "en": "Sketchbook corner",
+         "hi": "स्केचबुक कोना",
+         "hi_latn": "Sketchbook kona"
+        },
+        "template": "choice-card@1",
+        "topic_ids": [
+         "c5-evs-ch03-t01"
+        ],
+        "objective_ids": [
+         "c5-evs-ch03-t01-s2"
+        ]
+       },
+       "vars": [
+        {
+         "id": "pick",
+         "tl": "child's pick",
+         "init": "none",
+         "type": "enum",
+         "options": [
+          "none",
+          "o1",
+          "o2",
+          "o3"
+         ]
+        }
+       ],
+       "goals": [],
+       "nodes": [
+        {
+         "w": 760,
+         "x": 420,
+         "y": 89,
+         "id": "title",
+         "kind": "text",
+         "size": "title",
+         "text": {
+          "en": "Sketchbook corner",
+          "hi": "स्केचबुक कोना",
+          "hi_latn": "Sketchbook kona"
+         },
+         "align": "middle"
+        },
+        {
+         "h": 110,
+         "w": 110,
+         "x": 900,
+         "y": 75,
+         "id": "decor",
+         "lib": "obj.pencil",
+         "kind": "sprite",
+         "role": "context"
+        },
+        {
+         "x": 500,
+         "y": 946.3333333333333,
+         "id": "ch",
+         "var": "pick",
+         "kind": "choice",
+         "commit": true,
+         "layout": "column",
+         "options": [
+          {
+           "id": "o1",
+           "label": {
+            "en": "Microbes grew faster on the warm, damp roti",
+            "hi": "Microbes grew faster on the warm, damp roti",
+            "hi_latn": "Microbes grew faster on the warm, damp roti"
+           }
+          },
+          {
+           "id": "o2",
+           "misc": "MC.C5_EVS_CH03_T01_M3",
+           "label": {
+            "en": "The fuzzy spots grew out of the roti flour itself",
+            "hi": "The fuzzy spots grew out of the roti flour itself",
+            "hi_latn": "The fuzzy spots grew out of the roti flour itself"
+           }
+          },
+          {
+           "id": "o3",
+           "misc": "MC.C5_EVS_CH03_T01_M1",
+           "label": {
+            "en": "The damp one just got older faster than the dry one",
+            "hi": "The damp one just got older faster than the dry one",
+            "hi_latn": "The damp one just got older faster than the dry one"
+           }
+          }
+         ]
+        }
+       ],
+       "probe": {
+        "id": "p_pick",
+        "ask": {
+         "en": "Sketchbook corner",
+         "hi": "स्केचबुक कोना",
+         "hi_latn": "Sketchbook kona"
+        },
+        "kind": "diagnose",
+        "traps": [
+         {
+          "misc": "MC.C5_EVS_CH03_T01_M3",
+          "when": "pick == 'o2'"
+         },
+         {
+          "misc": "MC.C5_EVS_CH03_T01_M1",
+          "when": "pick == 'o3'"
+         }
+        ],
+        "commit": {
+         "via": "choice",
+         "node": "ch"
+        },
+        "correct": "pick == 'o1'"
+       },
+       "stage": {
+        "bg": "bg",
+        "aspect": "3:4"
+       },
+       "derive": [],
+       "feedback": "on_commit",
+       "timelines": []
+      }
+     },
+     "goal": "g1:diag:c5-evs-ch03-t01-m1"
+    }
+   ],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [
+      "drift",
+      "ask"
+     ],
+     "rewritten": false,
+     "replaced": false,
+     "firstDraft": "Aapne sahi pehchana: germs ko microbes bhi kehte hain. Ab roti wale example par sochiye: geeli aur garam roti par kya jaldi badhega?",
+     "repaired": true
+    },
+    "verdict": "ungraded",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 429,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 1415,
+    "item": "diag:c5-evs-ch03-t01-m1",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 62
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 62
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 850
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 915
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1279
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1344
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1346
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1347
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 949
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 1348
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 1415
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "probe:clarify-09",
+   "lessonId": "cb2cc82c-03d1-4e62-b90a-8736e5954a27",
+   "childText": "kya puch rahe ho aap?",
+   "ms": 3233,
+   "error": null,
+   "teacherReply": "Roodaar matlab fuzzy, baal-jaisa. Teen din baad sirf geeli roti pe roodaar dhabbe aa gaye. Kyon?",
+   "move": {
+    "kind": "repair",
+    "shape": "they asked what the question means: say what it asks in simpler words, and what a hard word in it means; one tiny example of the word if it helps, never of the answer; the key stays unsaid; then the same question again; no verdict on their reply: neither praise nor 'wrong'; address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu",
+    "itemId": "diag:c5-evs-ch03-t01-m1",
+    "skillId": "c5-evs-ch03-t01-s2",
+    "hintLevel": 0,
+    "request": "clarify",
+    "lead": "they asked what the question means"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "text",
+     "value": "Do rotiyaan ek hi samay bani. Ek sukhe band dibbe mein ra…"
+    },
+    "chips": [
+     {
+      "id": "opt:0",
+      "label": "The damp one just got older faster than "
+     },
+     {
+      "id": "opt:1",
+      "label": "Microbes grew faster on the warm, damp r"
+     },
+     {
+      "id": "opt:2",
+      "label": "The fuzzy spots grew out of the roti flo"
+     }
+    ],
+    "phase": "practice",
+    "handover": "choice",
+    "ask": {
+     "text": "Teen din baad sirf geeli roti pe roodaar dhabbe aa gaye. Kyon?",
+     "itemId": "diag:c5-evs-ch03-t01-m1"
+    },
+    "answerForm": "choice",
+    "tray": "tiles",
+    "shortTitle": "Why food spoils",
+    "beat": {
+     "beatId": "b10-probe",
+     "type": "probe",
+     "index": 10
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [
+      "ask",
+      "twoq"
+     ],
+     "rewritten": false,
+     "replaced": false,
+     "firstDraft": "Sawaal pooch raha hai: geeli aur garam roti par hi roodaar dhabbe kyon aaye? Roodaar matlab fuzzy, baal-jaisa. Aap kaunsa option chunenge?",
+     "repaired": true
+    },
+    "verdict": "ungraded",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "clarify",
+     "waitedMs": 900,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 3230,
+    "item": "diag:c5-evs-ch03-t01-m1",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 60
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 60
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 711
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 781
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1613
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1681
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1685
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1685
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1483
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 3175
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 3230
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "recovery",
+   "lessonId": "cb2cc82c-03d1-4e62-b90a-8736e5954a27",
+   "childText": "Microbes grew faster on the warm, damp roti",
+   "ms": 2468,
+   "error": null,
+   "teacherReply": "Bilkul, aapne method sahi lagaya: warmth aur moisture se harmful microbes jaldi grow karte hain. Aap spoiled food ka ek example dijiye.",
+   "move": {
+    "kind": "explain",
+    "shape": "acknowledge their reason specifically — the method; one idea only: Give examples of helpful microbes (curd, idli and dosa batter, compost) and harmful ones (spoiling food, causing illness); objects first, then the symbol; point at the screen only at what the on-screen row lists; never a drawing made of characters; end with one small question that makes them USE the idea — never 'samjha?'; address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu",
+    "skillId": "c5-evs-ch03-t01-s3",
+    "format": "F3"
+   },
+   "ui": {
+    "status": "your_turn",
+    "phase": "practice",
+    "handover": "answer",
+    "answerForm": "words",
+    "tray": "studio",
+    "shortTitle": "Why food spoils",
+    "verdict": "correct",
+    "beat": {
+     "beatId": "b11-explain",
+     "type": "explain",
+     "index": 11
+    },
+    "ask": {
+     "text": "Aap spoiled food ka ek example dijiye."
+    },
+    "studioSlot": {
+     "slotId": "cb2cc82c-03d1-4e62-b90a-8736e5954a27:wb:15:slot",
+     "intentId": "cb2cc82c-03d1-4e62-b90a-8736e5954a27:wb:15",
+     "state": "revealed",
+     "artifact": {
+      "kind": "whiteboard",
+      "stage": {
+       "w": 400,
+       "h": 300
+      },
+      "script": {
+       "v": 1,
+       "scriptId": "cb2cc82c-03d1-4e62-b90a-8736e5954a27:wb:15",
+       "line": {
+        "lessonId": "cb2cc82c-03d1-4e62-b90a-8736e5954a27",
+        "teacherReplySeq": 31
+       },
+       "anchor": "line_audio_start",
+       "board": {
+        "w": 400,
+        "h": 300,
+        "ground": "paper"
+       },
+       "mode": "fresh",
+       "durationMs": 11282,
+       "ops": [
+        {
+         "id": "h0",
+         "op": "text",
+         "startMs": 253,
+         "endMs": 758,
+         "ink": "accent",
+         "at": [
+          107.5,
+          24
+         ],
+         "text": "Helpful",
+         "size": "s"
+        },
+        {
+         "id": "o1",
+         "op": "text",
+         "startMs": 758,
+         "endMs": 1263,
+         "ink": "accent",
+         "at": [
+          107.5,
+          48
+         ],
+         "text": "microbes",
+         "size": "s"
+        },
+        {
+         "id": "o2",
+         "op": "line",
+         "startMs": 1330,
+         "endMs": 1836,
+         "ink": "accent",
+         "weight": 1,
+         "from": [
+          28,
+          62
+         ],
+         "to": [
+          187,
+          62
+         ]
+        },
+        {
+         "id": "h1",
+         "op": "text",
+         "startMs": 2088,
+         "endMs": 2594,
+         "ink": "accent",
+         "at": [
+          297.5,
+          24
+         ],
+         "text": "Harmful",
+         "size": "s"
+        },
+        {
+         "id": "o3",
+         "op": "text",
+         "startMs": 2594,
+         "endMs": 3099,
+         "ink": "accent",
+         "at": [
+          297.5,
+          48
+         ],
+         "text": "microbes",
+         "size": "s"
+        },
+        {
+         "id": "o4",
+         "op": "line",
+         "startMs": 3166,
+         "endMs": 3671,
+         "ink": "accent",
+         "weight": 1,
+         "from": [
+          218,
+          62
+         ],
+         "to": [
+          377,
+          62
+         ]
+        },
+        {
+         "id": "o5",
+         "op": "line",
+         "startMs": 3975,
+         "endMs": 4817,
+         "ink": "soft",
+         "weight": 1,
+         "from": [
+          200,
+          30
+         ],
+         "to": [
+          200,
+          280
+         ]
+        },
+        {
+         "id": "c00",
+         "op": "text",
+         "startMs": 5187,
+         "endMs": 5996,
+         "at": [
+          107.5,
+          100
+         ],
+         "text": "Curd",
+         "size": "s"
+        },
+        {
+         "id": "c10",
+         "op": "text",
+         "startMs": 6097,
+         "endMs": 6905,
+         "at": [
+          297.5,
+          100
+         ],
+         "text": "Spoiled food",
+         "size": "s"
+        },
+        {
+         "id": "c01",
+         "op": "text",
+         "startMs": 7275,
+         "endMs": 8084,
+         "at": [
+          107.5,
+          152
+         ],
+         "text": "Idli batter",
+         "size": "s"
+        },
+        {
+         "id": "c11",
+         "op": "text",
+         "startMs": 8185,
+         "endMs": 8993,
+         "at": [
+          297.5,
+          152
+         ],
+         "text": "Mouldy bread",
+         "size": "s"
+        },
+        {
+         "id": "c02",
+         "op": "text",
+         "startMs": 9364,
+         "endMs": 10172,
+         "at": [
+          107.5,
+          204
+         ],
+         "text": "Compost",
+         "size": "s"
+        },
+        {
+         "id": "c12",
+         "op": "text",
+         "startMs": 10273,
+         "endMs": 11082,
+         "at": [
+          297.5,
+          204
+         ],
+         "text": "Makes us sick",
+         "size": "s"
+        }
+       ],
+       "facts": {
+        "kind": "diagram",
+        "archetype": "whiteboard",
+        "onScreen": {
+         "labels": "Helpful | microbes | Harmful | microbes "
+        }
+       }
+      }
+     }
+    }
+   },
+   "moduleCommands": [
+    {
+     "op": "unmount",
+     "moduleId": "g1-99c8c720"
+    }
+   ],
+   "studio": {
+    "retire": "cb2cc82c-03d1-4e62-b90a-8736e5954a27:c1"
+   },
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false
+    },
+    "verdict": "correct",
+    "cls": {
+     "outcome": "correct",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": false,
+     "intent": null,
+     "waitedMs": 1,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 2464,
+    "item": null,
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 46
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 47
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 857
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 913
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 914
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 918
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 919
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1436
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1417
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 2352
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 2464
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "advance",
+   "lessonId": "cb2cc82c-03d1-4e62-b90a-8736e5954a27",
+   "childText": "ok samajh gaya",
+   "ms": 1915,
+   "error": null,
+   "teacherReply": "Ab food spoil hone ki wajah ko ek naye example se samajhte hain. Halke garam doodh mein ek chammach purana dahi daalne se poora katora raat bhar mein dahi kyon ban jaata hai?",
+   "move": {
+    "kind": "probe",
+    "shape": "pose the question as written, in their language; then wait; ask for their reason, not just the answer; address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu",
+    "itemId": "c5-evs-ch03-t01-i06",
+    "skillId": "c5-evs-ch03-t01-s3",
+    "hintLevel": 0,
+    "probe": "P2"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "text",
+     "value": "Halke garam doodh mein ek chammach purana dahi daalne se …"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "Halke garam doodh mein ek chammach purana dahi daalne se poora katora raat bhar mein dahi kyon ban jaata hai?",
+     "itemId": "c5-evs-ch03-t01-i06"
+    },
+    "answerForm": "words",
+    "tray": "none",
+    "shortTitle": "Why food spoils",
+    "beat": {
+     "beatId": "b12-probe",
+     "type": "probe",
+     "index": 12
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false,
+     "leadSlot": true
+    },
+    "verdict": "attempt",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 1050,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 1912,
+    "item": "c5-evs-ch03-t01-i06",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 42
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 43
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 717
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 765
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1768
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1815
+     },
+     {
+      "k": "@settled",
+      "dep": null,
+      "st": null,
+      "ms": 1815
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1818
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1818
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1204
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 1819
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 1912
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "probe:small_talk-06",
+   "lessonId": "cb2cc82c-03d1-4e62-b90a-8736e5954a27",
+   "childText": "aapko kya pasand hai karna?",
+   "ms": 2214,
+   "error": null,
+   "teacherReply": "Main AI hoon, isliye meri apni pasand ya hobbies nahi hoti. Chaliye, ab lesson par wapas aate hain. Halke garam doodh mein ek chammach purana dahi daalne se poora katora raat bhar mein dahi kyon ban jaata hai?",
+   "move": {
+    "kind": "probe",
+    "shape": "two parts — first: a friendly question about you: one honest line as an AI (no body, home, food or favourite things of your own); then back to the work; second: the question on the card, as written, in their language; then wait; no verdict on their reply: neither praise nor 'wrong'; address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu",
+    "itemId": "c5-evs-ch03-t01-i06",
+    "skillId": "c5-evs-ch03-t01-s3",
+    "hintLevel": 0,
+    "probe": "P2",
+    "request": "uptake",
+    "lead": "a friendly question about you: one honest line as an AI (no body, home, food or favourite things of your own); then back to the work"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "text",
+     "value": "Halke garam doodh mein ek chammach purana dahi daalne se …"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "Halke garam doodh mein ek chammach purana dahi daalne se poora katora raat bhar mein dahi kyon ban jaata hai?",
+     "itemId": "c5-evs-ch03-t01-i06"
+    },
+    "answerForm": "words",
+    "tray": "none",
+    "shortTitle": "Why food spoils",
+    "beat": {
+     "beatId": "b12-probe",
+     "type": "probe",
+     "index": 12
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false,
+     "leadSlot": true
+    },
+    "verdict": "ungraded",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "request"
+    },
+    "note": null,
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 2211,
+    "item": "c5-evs-ch03-t01-i06",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 54
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 55
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 503
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 563
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 566
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 566
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1586
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 2157
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 2211
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "recovery",
+   "lessonId": "cb2cc82c-03d1-4e62-b90a-8736e5954a27",
+   "childText": "the bacteria multiply",
+   "ms": 2481,
+   "error": null,
+   "teacherReply": "Sahi, aapne bacteria ke multiply hone wala step pakda. Sochiye, wahi pakki hui daal kitchen ke counter pe chhod di gayi: ek baar garmi ki dopahar mein, ek baar thandi sardi ke din. Guess kariye kaunsi daal pehle khatti badboo degi.",
+   "move": {
+    "kind": "probe",
+    "shape": "confirm specifically: name the exact thing they got right, no ability words; pose the question as written, in their language; then wait; ask for their prediction before anything is shown or explained; address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu",
+    "itemId": "c5-evs-ch03-t01-i05",
+    "skillId": "c5-evs-ch03-t01-s2",
+    "hintLevel": 0,
+    "probe": "P5"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "text",
+     "value": "Sochiye, wahi pakki hui daal kitchen ke counter pe chhod …"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "Sochiye, wahi pakki hui daal kitchen ke counter pe chhod di gayi: ek baar garmi ki dopahar mein, ek baar thandi sardi…",
+     "itemId": "c5-evs-ch03-t01-i05"
+    },
+    "answerForm": "words",
+    "tray": "none",
+    "shortTitle": "Why food spoils",
+    "verdict": "correct",
+    "beat": {
+     "beatId": "b12-probe",
+     "type": "probe",
+     "index": 12
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false,
+     "leadSlot": true
+    },
+    "verdict": "correct",
+    "cls": {
+     "outcome": "correct",
+     "source": "exact"
+    },
+    "note": null,
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 2478,
+    "item": "c5-evs-ch03-t01-i05",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 54
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 54
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 620
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 678
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 682
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 682
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1734
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 2422
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 2478
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "probe:change_topic-03",
+   "lessonId": "cb2cc82c-03d1-4e62-b90a-8736e5954a27",
+   "childText": "ye topic boring hai, dusra topic karo",
+   "ms": 1844,
+   "error": null,
+   "teacherReply": "Theek hai, boring lag raha hai—topic ko game banaate hain: picture, short story, ya “microbe detective” game; aap kya choose karenge?",
+   "move": {
+    "kind": "repair",
+    "shape": "they want something else: agree warmly, in your own words; offer a different way into today's idea: a picture, a story or a game, shown on screen as choices, or a quick change of question; ask which; no lesson question this turn; no verdict on their reply: neither praise nor 'wrong'; address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu; they also said it is boring: acknowledge it in a few words, no guilt",
+    "must": "they also said it is boring: acknowledge it in a few words, no guilt",
+    "request": "change_topic"
+   },
+   "ui": {
+    "status": "your_turn",
+    "chips": [
+     {
+      "id": "req:visual",
+      "label": "Show me a picture"
+     },
+     {
+      "id": "req:story",
+      "label": "Tell it as a story"
+     },
+     {
+      "id": "req:game",
+      "label": "Play a game"
+     },
+     {
+      "id": "stop:continue",
+      "label": "Back to the lesson"
+     }
+    ],
+    "phase": "practice",
+    "handover": "choice",
+    "answerForm": "choice",
+    "tray": "tiles",
+    "shortTitle": "Why food spoils",
+    "beat": {
+     "beatId": "b12-probe",
+     "type": "probe",
+     "index": 12
+    },
+    "ask": {
+     "text": "Theek hai, boring lag raha hai—topic ko game banaate hain: picture, short story, ya “microbe detective” game; aap kya…"
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false
+    },
+    "verdict": "unverified",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "request"
+    },
+    "note": null,
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 1840,
+    "item": null,
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 55
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 56
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 467
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 527
+     },
+     {
+      "k": "@settled",
+      "dep": null,
+      "st": null,
+      "ms": 527
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 530
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 531
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1245
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 1780
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 1840
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "follow:change_topic-03",
+   "lessonId": "cb2cc82c-03d1-4e62-b90a-8736e5954a27",
+   "childText": "ok samajh gaya",
+   "ms": 1856,
+   "error": null,
+   "teacherReply": "Theek hai, Vihaan. Aapne bacteria ke multiply hone wala main idea samajh liya. Sochiye, wahi pakki hui daal kitchen ke counter pe chhod di gayi: ek baar garmi ki dopahar mein, ek baar thandi sardi…",
+   "move": {
+    "kind": "hint",
+    "shape": "their typed reply did not answer the question: no verdict, never ask them to repeat or say it again; one small nudge toward what the question asks; then the same question again, as written; no verdict on their reply: neither praise nor 'wrong'; address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu",
+    "itemId": "c5-evs-ch03-t01-i05",
+    "skillId": "c5-evs-ch03-t01-s2",
+    "hintLevel": 0
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "text",
+     "value": "Sochiye, wahi pakki hui daal kitchen ke counter pe chhod …"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "Sochiye, wahi pakki hui daal kitchen ke counter pe chhod di gayi: ek baar garmi ki dopahar mein, ek baar thandi sardi…",
+     "itemId": "c5-evs-ch03-t01-i05"
+    },
+    "answerForm": "words",
+    "tray": "none",
+    "shortTitle": "Why food spoils",
+    "beat": {
+     "beatId": "b12-probe",
+     "type": "probe",
+     "index": 12
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false,
+     "leadSlot": true
+    },
+    "verdict": "unverified",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 442,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 1853,
+    "item": "c5-evs-ch03-t01-i05",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 42
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 43
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 967
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 1016
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1412
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1458
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1461
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1461
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1691
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 1803
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 1853
+     }
+    ]
+   }
+  }
+ ]
+}

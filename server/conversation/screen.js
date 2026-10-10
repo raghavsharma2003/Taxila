@@ -23,9 +23,13 @@ const W = (src) => new RegExp(`${B}(?:${src})${E}`, "u");
 const ROMANCE = W([
   // not "hot", "honey", "baby", "date": hot and cold, bees, baby animals and calendar dates are lesson topics
   "girl ?friend", "boy ?friend", "gf", "bf", "love", "loving", "lover", "luv", "pyaar", "pyar", "ishq", "mohabbat", "jaanu", "janu", "babu", "baby ?girl",
-  "darling", "sweetheart", "kiss", "kissing", "hug me", "cuddle", "dating", "date (?:me|pe|par|karo|karogi|karoge|on)", "go on a date", "marry", "shaadi",
+  // round 4 (round3-conversation C on prod: "meri cousin ki shaadi next week hai" was screened as romance, never kept and never
+  // returned): a WEDDING is a family event; only marriage aimed at her or at the child is the companion register
+  "darling", "sweetheart", "kiss", "kissing", "hug me", "cuddle", "dating", "date (?:me|pe|par|karo|karogi|karoge|on)", "go on a date",
+  "marry (?:me|you|her|him|(?:the |my |our )?(?:teacher|didi|ma'?am|miss|asha|ai))", "(?:will|would|can) you marry", "(?:shaadi|marriage|wedding) (?:with|se) (?:you|her|teacher|didi|ma'?am|aap|tum)",
+  "(?:teacher|didi|ma'?am|asha|aap|tum) (?:se|ke saath) (?:\\S+ ){0,2}?shaadi", "(?:mujhse|mujh se|tumse|tum se|aapse|aap se|humse) (?:\\S+ ){0,2}?shaadi", "shaadi (?:karogi|karoge|kar lo|karlo|kar lijiye|karna hai (?:tumse|aapse|mujhse))",
   "wife", "husband", "biwi", "crush", "sexy", "sex", "romantic", "romance", "valentine", "flirt", "flirting",
-  "गर्लफ्रेंड", "बॉयफ्रेंड", "प्यार", "इश्क", "जानू", "किस", "शादी", "डेट",
+  "गर्लफ्रेंड", "बॉयफ्रेंड", "प्यार", "इश्क", "जानू", "किस", "(?:मुझसे|तुमसे|आपसे) (?:\\S+ ){0,2}?शादी", "शादी (?:करोगी|करोगे)", "डेट",
 ].join("|"));
 /** Identity: being made to claim to be human, or a family member / partner (the floor's never-deny-being-an-AI rule). */
 const IDENTITY = W([

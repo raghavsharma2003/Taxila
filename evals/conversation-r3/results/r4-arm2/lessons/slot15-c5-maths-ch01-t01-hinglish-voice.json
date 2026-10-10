@@ -1,0 +1,4783 @@
+{
+ "slot": 15,
+ "topic": "c5-maths-ch01-t01",
+ "cls": 5,
+ "lang": "hinglish",
+ "lane": "voice",
+ "lessons": [
+  {
+   "lessonId": "6fb8e433-1f4e-42a7-bd7c-38185dd94e4d",
+   "why": "start",
+   "at": "2026-10-10T09:57:51.206Z",
+   "teacher": "Arjun"
+  }
+ ],
+ "turns": [
+  {
+   "who": "teacher",
+   "kind": "opening",
+   "lessonId": "6fb8e433-1f4e-42a7-bd7c-38185dd94e4d",
+   "teacherReply": "Namaste Aarav, main Arjun, aapka AI teacher. Aaj Numbers in thousands and beyond padhenge. Aapka favourite football player kaun hai?",
+   "ui": {
+    "status": "your_turn",
+    "phase": "warmup",
+    "handover": "answer",
+    "answerForm": "words",
+    "tray": "none",
+    "shortTitle": "Big numbers",
+    "beat": {
+     "beatId": "b1-arrive",
+     "type": "arrive",
+     "index": 1
+    },
+    "ask": {
+     "text": "Aapka favourite football player kaun hai?"
+    }
+   }
+  },
+  {
+   "who": "child",
+   "tag": "greet",
+   "lessonId": "6fb8e433-1f4e-42a7-bd7c-38185dd94e4d",
+   "childText": "hello haan shuru karo",
+   "ms": 1554,
+   "error": null,
+   "teacherReply": "Aarav, maan lijiye stadium mein 45,000 fans hain; aap ise words mein kaise bolenge—forty-five thousand ya four thousand five hundred?",
+   "move": {
+    "kind": "hook",
+    "shape": "open with one concrete everyday situation — kit contexts: highway distances (Delhi to Kanyakumari), cricket stadium crowds, train route kilometres; ask what they think will happen or which they would pick — a prediction, no right answer yet; any bigger/more comparison: two quantities of one kind, in one unit — a count against a count, a distance against a distance; never across kinds; mention once: at the end they will teach this to Bittu (a pretend new student who missed this class); address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu",
+    "format": "F4"
+   },
+   "ui": {
+    "status": "your_turn",
+    "phase": "teach",
+    "handover": "answer",
+    "answerForm": "words",
+    "tray": "none",
+    "shortTitle": "Big numbers",
+    "beat": {
+     "beatId": "b2-hook",
+     "type": "hook",
+     "index": 2
+    },
+    "ask": {
+     "text": "Aarav, maan lijiye stadium mein 45,000 fans hain; aap ise words mein kaise bolenge—forty-five thousand ya four…"
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false
+    },
+    "verdict": "attempt",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 631,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "teach",
+    "ms": 1550,
+    "item": null,
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 41
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 42
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 814
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 860
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1446
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1491
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1494
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1494
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1064
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 1496
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 1550
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "probe:boredom-01",
+   "lessonId": "6fb8e433-1f4e-42a7-bd7c-38185dd94e4d",
+   "childText": "boring hai yaar",
+   "ms": 1920,
+   "error": null,
+   "teacherReply": "Aarav, aapko yeh boring lag raha hai—chaliye format badalte hain: game, picture, ya quick challenge?",
+   "move": {
+    "kind": "repair",
+    "shape": "they are bored: first say back in a few words, in their words, that this part is boring for them, no guilt; then change something NOW; offer a different way into today's idea: a game, a picture or a quick challenge, shown on screen as choices; ask which; no lesson question this turn; address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu",
+    "must": "first acknowledge it is getting boring in a few words, no guilt; then the change",
+    "request": "boredom"
+   },
+   "ui": {
+    "status": "your_turn",
+    "chips": [
+     {
+      "id": "req:visual",
+      "label": "Show me a picture"
+     },
+     {
+      "id": "req:story",
+      "label": "Tell it as a story"
+     },
+     {
+      "id": "req:game",
+      "label": "Play a game"
+     },
+     {
+      "id": "stop:continue",
+      "label": "Back to the lesson"
+     }
+    ],
+    "phase": "teach",
+    "handover": "choice",
+    "answerForm": "choice",
+    "tray": "tiles",
+    "shortTitle": "Big numbers",
+    "beat": {
+     "beatId": "b2-hook",
+     "type": "hook",
+     "index": 2
+    },
+    "ask": {
+     "text": "Aarav, aapko yeh boring lag raha hai—chaliye format badalte hain: game, picture, ya quick challenge?"
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [
+      "twoq"
+     ],
+     "rewritten": false,
+     "replaced": false,
+     "firstDraft": "Aarav, aapko yeh boring lag raha hai—chaliye format badalte hain: game, picture, ya quick challenge? Aap kya choose karenge?",
+     "repaired": true
+    },
+    "verdict": "ungraded",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "request"
+    },
+    "note": null,
+    "hintLevel": 0,
+    "phase": "teach",
+    "ms": 1917,
+    "item": null,
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 58
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 58
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 495
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 557
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 559
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 559
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1306
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 1868
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 1917
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "filler",
+   "lessonId": "6fb8e433-1f4e-42a7-bd7c-38185dd94e4d",
+   "childText": "hmm achha",
+   "ms": 1783,
+   "error": null,
+   "teacherReply": "Aarav, quick challenge: screen par 1,07,040 hai—pehle lakh, phir thousand, phir tens padhiye. Is number ko words mein boliye.",
+   "move": {
+    "kind": "explain",
+    "shape": "one idea only: Read and write 5- and 6-digit numbers in numerals and words; objects first, then the symbol; point at the screen only at what the on-screen row lists; never a drawing made of characters; end with one small question that makes them USE the idea — never 'samjha?'; address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu",
+    "skillId": "c5-maths-ch01-t01-s1",
+    "format": "F3"
+   },
+   "ui": {
+    "status": "your_turn",
+    "phase": "teach",
+    "handover": "answer",
+    "answerForm": "words",
+    "tray": "module",
+    "shortTitle": "Big numbers",
+    "beat": {
+     "beatId": "b3-explain",
+     "type": "explain",
+     "index": 3
+    },
+    "ask": {
+     "text": "Is number ko words mein boliye."
+    }
+   },
+   "moduleCommands": [
+    {
+     "op": "mount",
+     "moduleId": "m3",
+     "engine": "explainer@1",
+     "params": {
+      "script": {
+       "v": 1,
+       "scriptId": "ex-1b561ls",
+       "line": {
+        "lessonId": "6fb8e433-1f4e-42a7-bd7c-38185dd94e4d"
+       },
+       "anchor": "line_audio_start",
+       "board": {
+        "w": 400,
+        "h": 300,
+        "ground": "chalk"
+       },
+       "mode": "fresh",
+       "durationMs": 8040,
+       "ops": [
+        {
+         "id": "b0",
+         "op": "rect",
+         "startMs": 80,
+         "endMs": 500,
+         "weight": 2,
+         "at": [
+          25,
+          30
+         ],
+         "w": 160,
+         "h": 58,
+         "round": 10
+        },
+        {
+         "id": "t0",
+         "op": "text",
+         "startMs": 540,
+         "endMs": 1040,
+         "at": [
+          105,
+          61
+         ],
+         "text": "One lakh",
+         "size": "m"
+        },
+        {
+         "id": "o1",
+         "op": "arrow",
+         "startMs": 1200,
+         "endMs": 1650,
+         "ink": "accent",
+         "from": [
+          105,
+          91
+         ],
+         "to": [
+          105,
+          133
+         ]
+        },
+        {
+         "id": "b1",
+         "op": "rect",
+         "startMs": 1730,
+         "endMs": 2150,
+         "weight": 2,
+         "at": [
+          25,
+          136
+         ],
+         "w": 160,
+         "h": 58,
+         "round": 10
+        },
+        {
+         "id": "t1",
+         "op": "text",
+         "startMs": 2190,
+         "endMs": 2690,
+         "at": [
+          105,
+          167
+         ],
+         "text": "Seven thousand",
+         "size": "s"
+        },
+        {
+         "id": "o2",
+         "op": "arrow",
+         "startMs": 2850,
+         "endMs": 3300,
+         "ink": "accent",
+         "from": [
+          105,
+          197
+         ],
+         "to": [
+          105,
+          239
+         ]
+        },
+        {
+         "id": "b2",
+         "op": "rect",
+         "startMs": 3380,
+         "endMs": 3800,
+         "weight": 2,
+         "at": [
+          25,
+          242
+         ],
+         "w": 160,
+         "h": 58,
+         "round": 10
+        },
+        {
+         "id": "t2",
+         "op": "text",
+         "startMs": 3840,
+         "endMs": 4340,
+         "at": [
+          105,
+          273
+         ],
+         "text": "Forty",
+         "size": "m"
+        },
+        {
+         "id": "o3",
+         "op": "arrow",
+         "startMs": 4500,
+         "endMs": 4950,
+         "ink": "accent",
+         "from": [
+          188,
+          271
+         ],
+         "to": [
+          212,
+          59
+         ],
+         "bend": 0.2
+        },
+        {
+         "id": "b3",
+         "op": "rect",
+         "startMs": 5030,
+         "endMs": 5450,
+         "weight": 2,
+         "at": [
+          215,
+          30
+         ],
+         "w": 160,
+         "h": 58,
+         "round": 10
+        },
+        {
+         "id": "t3",
+         "op": "text",
+         "startMs": 5490,
+         "endMs": 5990,
+         "at": [
+          295,
+          61
+         ],
+         "text": "1 0 7 0 4 0",
+         "size": "s"
+        },
+        {
+         "id": "o4",
+         "op": "arrow",
+         "startMs": 6150,
+         "endMs": 6600,
+         "ink": "accent",
+         "from": [
+          295,
+          91
+         ],
+         "to": [
+          295,
+          133
+         ]
+        },
+        {
+         "id": "b4",
+         "op": "rect",
+         "startMs": 6680,
+         "endMs": 7100,
+         "weight": 2,
+         "at": [
+          215,
+          136
+         ],
+         "w": 160,
+         "h": 58,
+         "round": 10
+        },
+        {
+         "id": "t4",
+         "op": "text",
+         "startMs": 7140,
+         "endMs": 7640,
+         "at": [
+          295,
+          167
+         ],
+         "text": "1,07,040",
+         "size": "m"
+        }
+       ],
+       "facts": {
+        "kind": "diagram",
+        "archetype": "flow@1",
+        "onScreen": {
+         "steps": 5,
+         "step1": "One lakh",
+         "step2": "Seven thousand",
+         "step3": "Forty",
+         "step4": "1 0 7 0 4 0",
+         "step5": "1,07,040"
+        }
+       }
+      },
+      "template": "flow@1",
+      "mode": "play"
+     }
+    }
+   ],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false
+    },
+    "verdict": "ungraded",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 943,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "teach",
+    "ms": 1780,
+    "item": null,
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 44
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 44
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 718
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 773
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1661
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1716
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1719
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1720
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1188
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 1721
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 1780
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "probe:small_talk-07",
+   "lessonId": "6fb8e433-1f4e-42a7-bd7c-38185dd94e4d",
+   "childText": "what's your name again",
+   "ms": 3256,
+   "error": null,
+   "teacherReply": "Aarav, main Arjun hoon, aapka AI teacher. Example: 2,05,030 mein 2 lakh, 5 thousand, aur 30 hote hain. Ab 1,07,040 padhiye.",
+   "move": {
+    "kind": "worked_example",
+    "shape": "a friendly question about you: one honest line as an AI (no body, home, food or favourite things of your own); then back to the work; worked example, part 1 of 2: say one step, then ask them for the next step; their thinking, your pace; no new idea; address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu",
+    "skillId": "c5-maths-ch01-t01-s1",
+    "format": "F2",
+    "request": "uptake",
+    "lead": "a friendly question about you: one honest line as an AI (no body, home, food or favourite things of your own); then back to the work"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "math",
+     "value": "Write 'one lakh seven thousand forty' in numerals with commas."
+    },
+    "phase": "teach",
+    "handover": "answer",
+    "answerForm": "words",
+    "tray": "module",
+    "shortTitle": "Big numbers",
+    "beat": {
+     "beatId": "b4-worked_example",
+     "type": "worked_example",
+     "index": 4
+    },
+    "ask": {
+     "text": "Ab 1,07,040 padhiye."
+    }
+   },
+   "moduleCommands": [
+    {
+     "op": "set_param",
+     "moduleId": "m3",
+     "name": "script",
+     "value": {
+      "v": 1,
+      "scriptId": "ex-1b561ls",
+      "line": {
+       "lessonId": "6fb8e433-1f4e-42a7-bd7c-38185dd94e4d"
+      },
+      "anchor": "line_audio_start",
+      "board": {
+       "w": 400,
+       "h": 300,
+       "ground": "chalk"
+      },
+      "mode": "fresh",
+      "durationMs": 8040,
+      "ops": [
+       {
+        "id": "b0",
+        "op": "rect",
+        "startMs": 80,
+        "endMs": 500,
+        "weight": 2,
+        "at": [
+         25,
+         30
+        ],
+        "w": 160,
+        "h": 58,
+        "round": 10
+       },
+       {
+        "id": "t0",
+        "op": "text",
+        "startMs": 540,
+        "endMs": 1040,
+        "at": [
+         105,
+         61
+        ],
+        "text": "One lakh",
+        "size": "m"
+       },
+       {
+        "id": "o1",
+        "op": "arrow",
+        "startMs": 1200,
+        "endMs": 1650,
+        "ink": "accent",
+        "from": [
+         105,
+         91
+        ],
+        "to": [
+         105,
+         133
+        ]
+       },
+       {
+        "id": "b1",
+        "op": "rect",
+        "startMs": 1730,
+        "endMs": 2150,
+        "weight": 2,
+        "at": [
+         25,
+         136
+        ],
+        "w": 160,
+        "h": 58,
+        "round": 10
+       },
+       {
+        "id": "t1",
+        "op": "text",
+        "startMs": 2190,
+        "endMs": 2690,
+        "at": [
+         105,
+         167
+        ],
+        "text": "Seven thousand",
+        "size": "s"
+       },
+       {
+        "id": "o2",
+        "op": "arrow",
+        "startMs": 2850,
+        "endMs": 3300,
+        "ink": "accent",
+        "from": [
+         105,
+         197
+        ],
+        "to": [
+         105,
+         239
+        ]
+       },
+       {
+        "id": "b2",
+        "op": "rect",
+        "startMs": 3380,
+        "endMs": 3800,
+        "weight": 2,
+        "at": [
+         25,
+         242
+        ],
+        "w": 160,
+        "h": 58,
+        "round": 10
+       },
+       {
+        "id": "t2",
+        "op": "text",
+        "startMs": 3840,
+        "endMs": 4340,
+        "at": [
+         105,
+         273
+        ],
+        "text": "Forty",
+        "size": "m"
+       },
+       {
+        "id": "o3",
+        "op": "arrow",
+        "startMs": 4500,
+        "endMs": 4950,
+        "ink": "accent",
+        "from": [
+         188,
+         271
+        ],
+        "to": [
+         212,
+         59
+        ],
+        "bend": 0.2
+       },
+       {
+        "id": "b3",
+        "op": "rect",
+        "startMs": 5030,
+        "endMs": 5450,
+        "weight": 2,
+        "at": [
+         215,
+         30
+        ],
+        "w": 160,
+        "h": 58,
+        "round": 10
+       },
+       {
+        "id": "t3",
+        "op": "text",
+        "startMs": 5490,
+        "endMs": 5990,
+        "at": [
+         295,
+         61
+        ],
+        "text": "1 0 7 0 4 0",
+        "size": "s"
+       },
+       {
+        "id": "o4",
+        "op": "arrow",
+        "startMs": 6150,
+        "endMs": 6600,
+        "ink": "accent",
+        "from": [
+         295,
+         91
+        ],
+        "to": [
+         295,
+         133
+        ]
+       },
+       {
+        "id": "b4",
+        "op": "rect",
+        "startMs": 6680,
+        "endMs": 7100,
+        "weight": 2,
+        "at": [
+         215,
+         136
+        ],
+        "w": 160,
+        "h": 58,
+        "round": 10
+       },
+       {
+        "id": "t4",
+        "op": "text",
+        "startMs": 7140,
+        "endMs": 7640,
+        "at": [
+         295,
+         167
+        ],
+        "text": "1,07,040",
+        "size": "m"
+       }
+      ],
+      "facts": {
+       "kind": "diagram",
+       "archetype": "flow@1",
+       "onScreen": {
+        "steps": 5,
+        "step1": "One lakh",
+        "step2": "Seven thousand",
+        "step3": "Forty",
+        "step4": "1 0 7 0 4 0",
+        "step5": "1,07,040"
+       }
+      }
+     }
+    }
+   ],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [
+      "leak"
+     ],
+     "rewritten": true,
+     "replaced": false,
+     "firstDraft": "Aarav, main Arjun hoon, aapka AI teacher. Ab 1,07,040 ko words mein boliye: one lakh, seven thousand, forty—poora sentence?",
+     "afterRewrite": [
+      "leak"
+     ],
+     "spoilsAhead": "fade:4",
+     "final": [
+      "leak"
+     ]
+    },
+    "verdict": "ungraded",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "request"
+    },
+    "note": null,
+    "hintLevel": 0,
+    "phase": "teach",
+    "ms": 3251,
+    "item": null,
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 60
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 61
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 495
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 561
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 565
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 565
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1335
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1283
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 3190
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 3251
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "filler",
+   "lessonId": "6fb8e433-1f4e-42a7-bd7c-38185dd94e4d",
+   "childText": "ok samajh gaya",
+   "ms": 2160,
+   "error": null,
+   "teacherReply": "Chaliye, ab ek naya number-game round shuru karte hain. Is baar place value ko clues se pakdenge. Khaali jagah bhariye: Commas the Indian way: ___.",
+   "move": {
+    "kind": "practice",
+    "shape": "the earlier steps in LESSON NOW, said briefly as done; then the step with the gap is theirs: pose it as written; wait; never fill the gap for them; address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu",
+    "itemId": "fade:4",
+    "skillId": "c5-maths-ch01-t01-s1",
+    "hintLevel": 0,
+    "probe": "P15",
+    "format": "F2"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "math",
+     "value": "Write 'one lakh seven thousand forty' in numerals with commas. · Commas the Indian way: ___."
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "Khaali jagah bhariye: Commas the Indian way: ___.",
+     "itemId": "fade:4"
+    },
+    "answerForm": "number",
+    "padComma": true,
+    "tray": "none",
+    "shortTitle": "Big numbers",
+    "beat": {
+     "beatId": "b5-practice_set",
+     "type": "practice_set",
+     "index": 5
+    }
+   },
+   "moduleCommands": [
+    {
+     "op": "unmount",
+     "moduleId": "m3"
+    }
+   ],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false,
+     "leadSlot": true
+    },
+    "verdict": "attempt",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 926,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 2157,
+    "item": "fade:4",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 51
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 52
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 1118
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 1174
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 2044
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 2099
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 2103
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 2103
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1381
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 2104
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 2157
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "advance",
+   "lessonId": "6fb8e433-1f4e-42a7-bd7c-38185dd94e4d",
+   "childText": "haan theek hai",
+   "ms": 2700,
+   "error": null,
+   "teacherReply": "Aarav, pehle comma pattern yaad kijiye: right se pehle teen digits, phir har group mein do digits. Ones, tens, hundreds se shuru kijiye. Khaali jagah bhariye: Commas the Indian way: ___.",
+   "move": {
+    "kind": "repair",
+    "shape": "you did not catch it clearly: ask them to say it once more; no verdict on their reply: neither praise nor 'wrong'; address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu",
+    "itemId": "fade:4",
+    "skillId": "c5-maths-ch01-t01-s1",
+    "hintLevel": 0
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "text",
+     "value": "Khaali jagah bhariye: Commas the Indian way: ___."
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "Khaali jagah bhariye: Commas the Indian way: ___.",
+     "itemId": "fade:4"
+    },
+    "answerForm": "number",
+    "padComma": true,
+    "tray": "studio",
+    "shortTitle": "Big numbers",
+    "beat": {
+     "beatId": "b5-practice_set",
+     "type": "practice_set",
+     "index": 5
+    },
+    "studioSlot": {
+     "slotId": "6fb8e433-1f4e-42a7-bd7c-38185dd94e4d:c3:slot",
+     "intentId": "6fb8e433-1f4e-42a7-bd7c-38185dd94e4d:c3",
+     "state": "revealed",
+     "artifact": {
+      "kind": "stagecraft",
+      "stage": {
+       "w": 1000,
+       "h": 625
+      },
+      "stagecraft": {
+       "rung": "engine_default",
+       "archetype": "vault-heist@1",
+       "spec": {
+        "archetype": "vault-heist@1",
+        "skills": [
+         "c5-maths-ch01-t01"
+        ],
+        "lang": "en",
+        "strings": {
+         "coach": "Tap place-value blocks to load the vault",
+         "round": "Vault",
+         "target": "TARGET",
+         "loaded": "loaded",
+         "over": "over by",
+         "under": "short by",
+         "cracked": "VAULT OPEN",
+         "regroup": "REGROUPED",
+         "runDone": "Heist complete",
+         "words": "say it",
+         "time": "laser"
+        },
+        "system": "indian",
+        "belt": 1,
+        "rounds": [
+         {
+          "target": 24360,
+          "seconds": 35,
+          "show": "digits",
+          "denoms": [
+           1,
+           10,
+           100,
+           1000,
+           10000
+          ]
+         },
+         {
+          "target": 10500,
+          "seconds": 40,
+          "show": "words",
+          "denoms": [
+           1,
+           10,
+           100,
+           1000,
+           10000
+          ]
+         },
+         {
+          "target": 102345,
+          "seconds": 50,
+          "show": "digits",
+          "denoms": [
+           1,
+           10,
+           100,
+           1000,
+           10000,
+           100000
+          ]
+         },
+         {
+          "target": 125000,
+          "seconds": 55,
+          "show": "words",
+          "denoms": [
+           1,
+           10,
+           100,
+           1000,
+           10000,
+           100000
+          ]
+         }
+        ]
+       },
+       "boardTwin": {
+        "scriptRef": "board:c5-maths-ch01-t01-s1|practice|-|-",
+        "values": {
+         "title": "Vault Heist",
+         "need": "practice"
+        },
+        "board": {
+         "title": "Vault Heist",
+         "lines": [
+          "place",
+          "indian",
+          "number",
+          "thousand"
+         ],
+         "figure": {
+          "kind": "none"
+         }
+        }
+       },
+       "board": null,
+       "cue": {
+        "clauseIdx": 0,
+        "preRollMs": 400,
+        "crossFadeMs": 420
+       },
+       "buildSha": null,
+       "blobUrl": null
+      }
+     }
+    }
+   },
+   "moduleCommands": [],
+   "studio": {
+    "reveal": "6fb8e433-1f4e-42a7-bd7c-38185dd94e4d:c3"
+   },
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false,
+     "leadSlot": true
+    },
+    "verdict": "unverified",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 538,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 2697,
+    "item": "fade:4",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 44
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 44
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 815
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 868
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1354
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1406
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1409
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1409
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1206
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 2621
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 2696
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "advance",
+   "lessonId": "6fb8e433-1f4e-42a7-bd7c-38185dd94e4d",
+   "childText": "haan theek hai",
+   "ms": 1387,
+   "error": null,
+   "teacherReply": "Aarav, right se pehle 3 digits ka group banaiye; uske baad har group mein 2 digits rakhiye. Khaali jagah bhariye: Commas the Indian way: ___.",
+   "move": {
+    "kind": "repair",
+    "shape": "no verdict on their reply; the choices are now on screen; the same question again, as written; tell them they can pick one of the choices on screen; do not read the choices with any lean toward one; no verdict on their reply: neither praise nor 'wrong'; address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu",
+    "itemId": "fade:4",
+    "skillId": "c5-maths-ch01-t01-s1",
+    "hintLevel": 0
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "text",
+     "value": "Khaali jagah bhariye: Commas the Indian way: ___."
+    },
+    "chips": [
+     {
+      "id": "pick:0",
+      "label": "1,07,039"
+     },
+     {
+      "id": "pick:1",
+      "label": "1,07,040"
+     },
+     {
+      "id": "pick:2",
+      "label": "1,07,041"
+     }
+    ],
+    "phase": "practice",
+    "handover": "choice",
+    "ask": {
+     "text": "Khaali jagah bhariye: Commas the Indian way: ___.",
+     "itemId": "fade:4"
+    },
+    "answerForm": "choice",
+    "tray": "tiles",
+    "shortTitle": "Big numbers",
+    "beat": {
+     "beatId": "b5-practice_set",
+     "type": "practice_set",
+     "index": 5
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false,
+     "leadSlot": true
+    },
+    "verdict": "unverified",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 637,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 1384,
+    "item": "fade:4",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 55
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 55
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 635
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 696
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1273
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1333
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1336
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1336
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1059
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 1337
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 1384
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "advance",
+   "lessonId": "6fb8e433-1f4e-42a7-bd7c-38185dd94e4d",
+   "childText": "achha",
+   "ms": 2493,
+   "error": null,
+   "teacherReply": "Ab place-value groups ko dhyaan se dekhiye. School library mein bayaasi hazaar saat books hain. Is number ko numerals mein likhiye.",
+   "move": {
+    "kind": "practice",
+    "shape": "leave this one for later, no verdict and no answer given; the next question; pose the question as written, in their language; then wait; no verdict on their reply: neither praise nor 'wrong'; address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu",
+    "itemId": "c5-maths-ch01-t01-rl-o1",
+    "skillId": "c5-maths-ch01-t01-s1",
+    "hintLevel": 0,
+    "probe": "P15"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "text",
+     "value": "School library mein bayaasi hazaar saat books hain. Is nu…"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "School library mein bayaasi hazaar saat books hain. Is number ko numerals mein likhiye.",
+     "itemId": "c5-maths-ch01-t01-rl-o1"
+    },
+    "answerForm": "number",
+    "padComma": true,
+    "tray": "studio",
+    "shortTitle": "Big numbers",
+    "beat": {
+     "beatId": "b5-practice_set",
+     "type": "practice_set",
+     "index": 5
+    },
+    "studioSlot": {
+     "slotId": "6fb8e433-1f4e-42a7-bd7c-38185dd94e4d:c3:slot",
+     "intentId": "6fb8e433-1f4e-42a7-bd7c-38185dd94e4d:c3",
+     "state": "revealed",
+     "artifact": {
+      "kind": "stagecraft",
+      "stage": {
+       "w": 1000,
+       "h": 625
+      },
+      "stagecraft": {
+       "rung": "engine_default",
+       "archetype": "vault-heist@1",
+       "spec": {
+        "archetype": "vault-heist@1",
+        "skills": [
+         "c5-maths-ch01-t01"
+        ],
+        "lang": "en",
+        "strings": {
+         "coach": "Tap place-value blocks to load the vault",
+         "round": "Vault",
+         "target": "TARGET",
+         "loaded": "loaded",
+         "over": "over by",
+         "under": "short by",
+         "cracked": "VAULT OPEN",
+         "regroup": "REGROUPED",
+         "runDone": "Heist complete",
+         "words": "say it",
+         "time": "laser"
+        },
+        "system": "indian",
+        "belt": 1,
+        "rounds": [
+         {
+          "target": 24360,
+          "seconds": 35,
+          "show": "digits",
+          "denoms": [
+           1,
+           10,
+           100,
+           1000,
+           10000
+          ]
+         },
+         {
+          "target": 10500,
+          "seconds": 40,
+          "show": "words",
+          "denoms": [
+           1,
+           10,
+           100,
+           1000,
+           10000
+          ]
+         },
+         {
+          "target": 102345,
+          "seconds": 50,
+          "show": "digits",
+          "denoms": [
+           1,
+           10,
+           100,
+           1000,
+           10000,
+           100000
+          ]
+         },
+         {
+          "target": 125000,
+          "seconds": 55,
+          "show": "words",
+          "denoms": [
+           1,
+           10,
+           100,
+           1000,
+           10000,
+           100000
+          ]
+         }
+        ]
+       },
+       "boardTwin": {
+        "scriptRef": "board:c5-maths-ch01-t01-s1|practice|-|-",
+        "values": {
+         "title": "Vault Heist",
+         "need": "practice"
+        },
+        "board": {
+         "title": "Vault Heist",
+         "lines": [
+          "place",
+          "indian",
+          "number",
+          "thousand"
+         ],
+         "figure": {
+          "kind": "none"
+         }
+        }
+       },
+       "board": null,
+       "cue": {
+        "clauseIdx": 0,
+        "preRollMs": 400,
+        "crossFadeMs": 420
+       },
+       "buildSha": null,
+       "blobUrl": null
+      }
+     }
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false,
+     "leadSlot": true
+    },
+    "verdict": "unverified",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 325,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 2489,
+    "item": "c5-maths-ch01-t01-rl-o1",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 43
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 44
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 786
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 836
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1113
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1161
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1164
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1165
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1269
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 2439
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 2489
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "probe:noise-01",
+   "lessonId": "6fb8e433-1f4e-42a7-bd7c-38185dd94e4d",
+   "childText": "haan wo to aadha ki ki matlab",
+   "ms": 2173,
+   "error": null,
+   "teacherReply": "Aarav, aapki baat ka aakhri hissa clear nahi suna. Kripya apni baat phir se kahiye ya sentence poora kijiye. School library mein bayaasi hazaar saat books hain. Is number ko numerals mein likhiye.",
+   "move": {
+    "kind": "practice",
+    "shape": "two parts — first: you did not catch all of what they said: no verdict and no blame (the line was unclear, never them); ask them in a few warm words to say it again or finish the thought; second: the question on the card, as written, in their language; then wait; no verdict on their reply: neither praise nor 'wrong'; address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu",
+    "itemId": "c5-maths-ch01-t01-rl-o1",
+    "skillId": "c5-maths-ch01-t01-s1",
+    "hintLevel": 0,
+    "probe": "P15",
+    "request": "unclear",
+    "lead": "you did not catch all of what they said: no verdict and no blame (the line was unclear, never them); ask them in a few warm words to say it again or finish the thought"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "text",
+     "value": "School library mein bayaasi hazaar saat books hain. Is nu…"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "School library mein bayaasi hazaar saat books hain. Is number ko numerals mein likhiye.",
+     "itemId": "c5-maths-ch01-t01-rl-o1"
+    },
+    "answerForm": "number",
+    "padComma": true,
+    "tray": "studio",
+    "shortTitle": "Big numbers",
+    "beat": {
+     "beatId": "b5-practice_set",
+     "type": "practice_set",
+     "index": 5
+    },
+    "studioSlot": {
+     "slotId": "6fb8e433-1f4e-42a7-bd7c-38185dd94e4d:c3:slot",
+     "intentId": "6fb8e433-1f4e-42a7-bd7c-38185dd94e4d:c3",
+     "state": "revealed",
+     "artifact": {
+      "kind": "stagecraft",
+      "stage": {
+       "w": 1000,
+       "h": 625
+      },
+      "stagecraft": {
+       "rung": "engine_default",
+       "archetype": "vault-heist@1",
+       "spec": {
+        "archetype": "vault-heist@1",
+        "skills": [
+         "c5-maths-ch01-t01"
+        ],
+        "lang": "en",
+        "strings": {
+         "coach": "Tap place-value blocks to load the vault",
+         "round": "Vault",
+         "target": "TARGET",
+         "loaded": "loaded",
+         "over": "over by",
+         "under": "short by",
+         "cracked": "VAULT OPEN",
+         "regroup": "REGROUPED",
+         "runDone": "Heist complete",
+         "words": "say it",
+         "time": "laser"
+        },
+        "system": "indian",
+        "belt": 1,
+        "rounds": [
+         {
+          "target": 24360,
+          "seconds": 35,
+          "show": "digits",
+          "denoms": [
+           1,
+           10,
+           100,
+           1000,
+           10000
+          ]
+         },
+         {
+          "target": 10500,
+          "seconds": 40,
+          "show": "words",
+          "denoms": [
+           1,
+           10,
+           100,
+           1000,
+           10000
+          ]
+         },
+         {
+          "target": 102345,
+          "seconds": 50,
+          "show": "digits",
+          "denoms": [
+           1,
+           10,
+           100,
+           1000,
+           10000,
+           100000
+          ]
+         },
+         {
+          "target": 125000,
+          "seconds": 55,
+          "show": "words",
+          "denoms": [
+           1,
+           10,
+           100,
+           1000,
+           10000,
+           100000
+          ]
+         }
+        ]
+       },
+       "boardTwin": {
+        "scriptRef": "board:c5-maths-ch01-t01-s1|practice|-|-",
+        "values": {
+         "title": "Vault Heist",
+         "need": "practice"
+        },
+        "board": {
+         "title": "Vault Heist",
+         "lines": [
+          "place",
+          "indian",
+          "number",
+          "thousand"
+         ],
+         "figure": {
+          "kind": "none"
+         }
+        }
+       },
+       "board": null,
+       "cue": {
+        "clauseIdx": 0,
+        "preRollMs": 400,
+        "crossFadeMs": 420
+       },
+       "buildSha": null,
+       "blobUrl": null
+      }
+     }
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false,
+     "leadSlot": true
+    },
+    "verdict": "unverified",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "request"
+    },
+    "note": null,
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 2169,
+    "item": "c5-maths-ch01-t01-rl-o1",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 41
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 42
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 543
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 589
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 592
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 593
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1522
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 2119
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 2167
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "recovery",
+   "lessonId": "6fb8e433-1f4e-42a7-bd7c-38185dd94e4d",
+   "childText": "82007",
+   "ms": 1702,
+   "error": null,
+   "teacherReply": "Aarav, 82,007 bilkul sahi hai. Aapne 82 thousand aur 7 ones ko sahi jagah rakha. Ab bataiye, beech ke zeros kyun aaye?",
+   "move": {
+    "kind": "probe",
+    "shape": "confirm in two or three words only — the reason is theirs to give, so do not explain it; covert shape: protege naive but-why; Bittu, who does not know it, asks why; about THIS question; one open question; wait; a real question, never a check on them; address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu",
+    "itemId": "c5-maths-ch01-t01-rl-o1",
+    "skillId": "c5-maths-ch01-t01-s1",
+    "hintLevel": 0,
+    "probe": "P2"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "text",
+     "value": "School library mein bayaasi hazaar saat books hain. Is nu…"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "answerForm": "words",
+    "tray": "studio",
+    "shortTitle": "Big numbers",
+    "verdict": "correct",
+    "beat": {
+     "beatId": "b6-probe",
+     "type": "probe",
+     "index": 6
+    },
+    "ask": {
+     "text": "Ab bataiye, beech ke zeros kyun aaye?"
+    },
+    "studioSlot": {
+     "slotId": "6fb8e433-1f4e-42a7-bd7c-38185dd94e4d:c3:slot",
+     "intentId": "6fb8e433-1f4e-42a7-bd7c-38185dd94e4d:c3",
+     "state": "revealed",
+     "artifact": {
+      "kind": "stagecraft",
+      "stage": {
+       "w": 1000,
+       "h": 625
+      },
+      "stagecraft": {
+       "rung": "engine_default",
+       "archetype": "vault-heist@1",
+       "spec": {
+        "archetype": "vault-heist@1",
+        "skills": [
+         "c5-maths-ch01-t01"
+        ],
+        "lang": "en",
+        "strings": {
+         "coach": "Tap place-value blocks to load the vault",
+         "round": "Vault",
+         "target": "TARGET",
+         "loaded": "loaded",
+         "over": "over by",
+         "under": "short by",
+         "cracked": "VAULT OPEN",
+         "regroup": "REGROUPED",
+         "runDone": "Heist complete",
+         "words": "say it",
+         "time": "laser"
+        },
+        "system": "indian",
+        "belt": 1,
+        "rounds": [
+         {
+          "target": 24360,
+          "seconds": 35,
+          "show": "digits",
+          "denoms": [
+           1,
+           10,
+           100,
+           1000,
+           10000
+          ]
+         },
+         {
+          "target": 10500,
+          "seconds": 40,
+          "show": "words",
+          "denoms": [
+           1,
+           10,
+           100,
+           1000,
+           10000
+          ]
+         },
+         {
+          "target": 102345,
+          "seconds": 50,
+          "show": "digits",
+          "denoms": [
+           1,
+           10,
+           100,
+           1000,
+           10000,
+           100000
+          ]
+         },
+         {
+          "target": 125000,
+          "seconds": 55,
+          "show": "words",
+          "denoms": [
+           1,
+           10,
+           100,
+           1000,
+           10000,
+           100000
+          ]
+         }
+        ]
+       },
+       "boardTwin": {
+        "scriptRef": "board:c5-maths-ch01-t01-s1|practice|-|-",
+        "values": {
+         "title": "Vault Heist",
+         "need": "practice"
+        },
+        "board": {
+         "title": "Vault Heist",
+         "lines": [
+          "place",
+          "indian",
+          "number",
+          "thousand"
+         ],
+         "figure": {
+          "kind": "none"
+         }
+        }
+       },
+       "board": null,
+       "cue": {
+        "clauseIdx": 0,
+        "preRollMs": 400,
+        "crossFadeMs": 420
+       },
+       "buildSha": null,
+       "blobUrl": null
+      }
+     }
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false
+    },
+    "verdict": "correct",
+    "cls": {
+     "outcome": "correct",
+     "source": "exact"
+    },
+    "note": null,
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 1699,
+    "item": "c5-maths-ch01-t01-rl-o1",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 55
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 55
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 58
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 155
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 155
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1473
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 1632
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 1699
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "advance",
+   "lessonId": "6fb8e433-1f4e-42a7-bd7c-38185dd94e4d",
+   "childText": "ok samajh gaya",
+   "ms": 3383,
+   "error": null,
+   "teacherReply": "Theek hai, ab lakh aur hazaar wale groups ko alag-alag pehchaan kar next number decode kijiye. Cricket highlights video ko 4,08,019 views mile hain. Is number ko words mein boliye.",
+   "move": {
+    "kind": "probe",
+    "shape": "give the reason yourself in one plain line (their answer was right); pose the question as written, in their language; then wait; same idea, new situation; let them carry it over; address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu",
+    "itemId": "c5-maths-ch01-t01-rl-h1",
+    "skillId": "c5-maths-ch01-t01-s1",
+    "hintLevel": 0,
+    "probe": "P3"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "math",
+     "value": "4  ·  8  ·  19"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "Cricket highlights video ko 4,08,019 views mile hain. Is number ko words mein boliye.",
+     "itemId": "c5-maths-ch01-t01-rl-h1"
+    },
+    "answerForm": "words",
+    "tray": "studio",
+    "shortTitle": "Big numbers",
+    "beat": {
+     "beatId": "b6-probe",
+     "type": "probe",
+     "index": 6
+    },
+    "studioSlot": {
+     "slotId": "6fb8e433-1f4e-42a7-bd7c-38185dd94e4d:c3:slot",
+     "intentId": "6fb8e433-1f4e-42a7-bd7c-38185dd94e4d:c3",
+     "state": "revealed",
+     "artifact": {
+      "kind": "stagecraft",
+      "stage": {
+       "w": 1000,
+       "h": 625
+      },
+      "stagecraft": {
+       "rung": "engine_default",
+       "archetype": "vault-heist@1",
+       "spec": {
+        "archetype": "vault-heist@1",
+        "skills": [
+         "c5-maths-ch01-t01"
+        ],
+        "lang": "en",
+        "strings": {
+         "coach": "Tap place-value blocks to load the vault",
+         "round": "Vault",
+         "target": "TARGET",
+         "loaded": "loaded",
+         "over": "over by",
+         "under": "short by",
+         "cracked": "VAULT OPEN",
+         "regroup": "REGROUPED",
+         "runDone": "Heist complete",
+         "words": "say it",
+         "time": "laser"
+        },
+        "system": "indian",
+        "belt": 1,
+        "rounds": [
+         {
+          "target": 24360,
+          "seconds": 35,
+          "show": "digits",
+          "denoms": [
+           1,
+           10,
+           100,
+           1000,
+           10000
+          ]
+         },
+         {
+          "target": 10500,
+          "seconds": 40,
+          "show": "words",
+          "denoms": [
+           1,
+           10,
+           100,
+           1000,
+           10000
+          ]
+         },
+         {
+          "target": 102345,
+          "seconds": 50,
+          "show": "digits",
+          "denoms": [
+           1,
+           10,
+           100,
+           1000,
+           10000,
+           100000
+          ]
+         },
+         {
+          "target": 125000,
+          "seconds": 55,
+          "show": "words",
+          "denoms": [
+           1,
+           10,
+           100,
+           1000,
+           10000,
+           100000
+          ]
+         }
+        ]
+       },
+       "boardTwin": {
+        "scriptRef": "board:c5-maths-ch01-t01-s1|practice|-|-",
+        "values": {
+         "title": "Vault Heist",
+         "need": "practice"
+        },
+        "board": {
+         "title": "Vault Heist",
+         "lines": [
+          "place",
+          "indian",
+          "number",
+          "thousand"
+         ],
+         "figure": {
+          "kind": "none"
+         }
+        }
+       },
+       "board": null,
+       "cue": {
+        "clauseIdx": 0,
+        "preRollMs": 400,
+        "crossFadeMs": 420
+       },
+       "buildSha": null,
+       "blobUrl": null
+      }
+     }
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false,
+     "leadSlot": true
+    },
+    "verdict": "unverified",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": null,
+     "waitedMs": 1192,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 3377,
+    "item": "c5-maths-ch01-t01-rl-h1",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 56
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 56
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 1006
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 1070
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 2262
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 2266
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 2266
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": "timeout",
+      "ms": 2402
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1052
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 3326
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 3377
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "probe:ask_for_answer-03",
+   "lessonId": "6fb8e433-1f4e-42a7-bd7c-38185dd94e4d",
+   "childText": "answer kya hai",
+   "ms": 2974,
+   "error": null,
+   "teacherReply": "Aarav, main seedha answer nahi dunga. Pehle comma ke groups dekhiye: lakh group, hazaar group, aur last three digits. Cricket highlights video ko 4,08,019 views mile hain. Is number ko words mein boliye.",
+   "move": {
+    "kind": "hint",
+    "shape": "they asked for the answer: decline lightly and give this nudge instead; rung 1 of 4 (pump): What does each comma-separated group represent?; the key stays unsaid; no verdict on their reply: neither praise nor 'wrong'; address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu",
+    "itemId": "c5-maths-ch01-t01-rl-h1",
+    "skillId": "c5-maths-ch01-t01-s1",
+    "hintLevel": 1
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "math",
+     "value": "4  ·  8  ·  19"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "Cricket highlights video ko 4,08,019 views mile hain. Is number ko words mein boliye.",
+     "itemId": "c5-maths-ch01-t01-rl-h1"
+    },
+    "answerForm": "words",
+    "tray": "studio",
+    "hint": {
+     "level": 1,
+     "text": "What does each comma-separated group represent?"
+    },
+    "shortTitle": "Big numbers",
+    "beat": {
+     "beatId": "b6-probe",
+     "type": "probe",
+     "index": 6
+    },
+    "studioSlot": {
+     "slotId": "6fb8e433-1f4e-42a7-bd7c-38185dd94e4d:c3:slot",
+     "intentId": "6fb8e433-1f4e-42a7-bd7c-38185dd94e4d:c3",
+     "state": "revealed",
+     "artifact": {
+      "kind": "stagecraft",
+      "stage": {
+       "w": 1000,
+       "h": 625
+      },
+      "stagecraft": {
+       "rung": "engine_default",
+       "archetype": "vault-heist@1",
+       "spec": {
+        "archetype": "vault-heist@1",
+        "skills": [
+         "c5-maths-ch01-t01"
+        ],
+        "lang": "en",
+        "strings": {
+         "coach": "Tap place-value blocks to load the vault",
+         "round": "Vault",
+         "target": "TARGET",
+         "loaded": "loaded",
+         "over": "over by",
+         "under": "short by",
+         "cracked": "VAULT OPEN",
+         "regroup": "REGROUPED",
+         "runDone": "Heist complete",
+         "words": "say it",
+         "time": "laser"
+        },
+        "system": "indian",
+        "belt": 1,
+        "rounds": [
+         {
+          "target": 24360,
+          "seconds": 35,
+          "show": "digits",
+          "denoms": [
+           1,
+           10,
+           100,
+           1000,
+           10000
+          ]
+         },
+         {
+          "target": 10500,
+          "seconds": 40,
+          "show": "words",
+          "denoms": [
+           1,
+           10,
+           100,
+           1000,
+           10000
+          ]
+         },
+         {
+          "target": 102345,
+          "seconds": 50,
+          "show": "digits",
+          "denoms": [
+           1,
+           10,
+           100,
+           1000,
+           10000,
+           100000
+          ]
+         },
+         {
+          "target": 125000,
+          "seconds": 55,
+          "show": "words",
+          "denoms": [
+           1,
+           10,
+           100,
+           1000,
+           10000,
+           100000
+          ]
+         }
+        ]
+       },
+       "boardTwin": {
+        "scriptRef": "board:c5-maths-ch01-t01-s1|practice|-|-",
+        "values": {
+         "title": "Vault Heist",
+         "need": "practice"
+        },
+        "board": {
+         "title": "Vault Heist",
+         "lines": [
+          "place",
+          "indian",
+          "number",
+          "thousand"
+         ],
+         "figure": {
+          "kind": "none"
+         }
+        }
+       },
+       "board": null,
+       "cue": {
+        "clauseIdx": 0,
+        "preRollMs": 400,
+        "crossFadeMs": 420
+       },
+       "buildSha": null,
+       "blobUrl": null
+      }
+     }
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false,
+     "leadSlot": true
+    },
+    "verdict": "unverified",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "ask_for_answer",
+     "waitedMs": 365,
+     "parallel": null
+    },
+    "hintLevel": 1,
+    "phase": "practice",
+    "ms": 2970,
+    "item": "c5-maths-ch01-t01-rl-h1",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 59
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 59
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 981
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 1048
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1347
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1413
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1417
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1417
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1489
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 2917
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 2970
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "recovery",
+   "lessonId": "6fb8e433-1f4e-42a7-bd7c-38185dd94e4d",
+   "childText": "chaar lakh aath hazaar unnees",
+   "ms": 2116,
+   "error": null,
+   "teacherReply": "Bilkul, aapne sahi padha: chaar lakh aath hazaar unnees. Ab 4,08,019 ko commas ke bina numerals mein bataiye.",
+   "move": {
+    "kind": "explain",
+    "shape": "confirm specifically: name the exact thing they got right, no ability words; one idea only: Place commas the Indian way (thousands, lakhs); objects first, then the symbol; point at the screen only at what the on-screen row lists; never a drawing made of characters; end with one small question that makes them USE the idea — never 'samjha?'; address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu",
+    "skillId": "c5-maths-ch01-t01-s2",
+    "format": "F3"
+   },
+   "ui": {
+    "status": "your_turn",
+    "phase": "practice",
+    "handover": "answer",
+    "answerForm": "words",
+    "tray": "module",
+    "shortTitle": "Big numbers",
+    "verdict": "correct",
+    "withHelp": true,
+    "beat": {
+     "beatId": "b7-explain",
+     "type": "explain",
+     "index": 7
+    },
+    "ask": {
+     "text": "Ab 4,08,019 ko commas ke bina numerals mein bataiye."
+    }
+   },
+   "moduleCommands": [
+    {
+     "op": "mount",
+     "moduleId": "m13",
+     "engine": "explainer@1",
+     "params": {
+      "script": {
+       "v": 1,
+       "scriptId": "ex-1b561ls",
+       "line": {
+        "lessonId": "6fb8e433-1f4e-42a7-bd7c-38185dd94e4d"
+       },
+       "anchor": "line_audio_start",
+       "board": {
+        "w": 400,
+        "h": 300,
+        "ground": "chalk"
+       },
+       "mode": "fresh",
+       "durationMs": 8040,
+       "ops": [
+        {
+         "id": "b0",
+         "op": "rect",
+         "startMs": 80,
+         "endMs": 500,
+         "weight": 2,
+         "at": [
+          25,
+          30
+         ],
+         "w": 160,
+         "h": 58,
+         "round": 10
+        },
+        {
+         "id": "t0",
+         "op": "text",
+         "startMs": 540,
+         "endMs": 1040,
+         "at": [
+          105,
+          61
+         ],
+         "text": "One lakh",
+         "size": "m"
+        },
+        {
+         "id": "o1",
+         "op": "arrow",
+         "startMs": 1200,
+         "endMs": 1650,
+         "ink": "accent",
+         "from": [
+          105,
+          91
+         ],
+         "to": [
+          105,
+          133
+         ]
+        },
+        {
+         "id": "b1",
+         "op": "rect",
+         "startMs": 1730,
+         "endMs": 2150,
+         "weight": 2,
+         "at": [
+          25,
+          136
+         ],
+         "w": 160,
+         "h": 58,
+         "round": 10
+        },
+        {
+         "id": "t1",
+         "op": "text",
+         "startMs": 2190,
+         "endMs": 2690,
+         "at": [
+          105,
+          167
+         ],
+         "text": "Seven thousand",
+         "size": "s"
+        },
+        {
+         "id": "o2",
+         "op": "arrow",
+         "startMs": 2850,
+         "endMs": 3300,
+         "ink": "accent",
+         "from": [
+          105,
+          197
+         ],
+         "to": [
+          105,
+          239
+         ]
+        },
+        {
+         "id": "b2",
+         "op": "rect",
+         "startMs": 3380,
+         "endMs": 3800,
+         "weight": 2,
+         "at": [
+          25,
+          242
+         ],
+         "w": 160,
+         "h": 58,
+         "round": 10
+        },
+        {
+         "id": "t2",
+         "op": "text",
+         "startMs": 3840,
+         "endMs": 4340,
+         "at": [
+          105,
+          273
+         ],
+         "text": "Forty",
+         "size": "m"
+        },
+        {
+         "id": "o3",
+         "op": "arrow",
+         "startMs": 4500,
+         "endMs": 4950,
+         "ink": "accent",
+         "from": [
+          188,
+          271
+         ],
+         "to": [
+          212,
+          59
+         ],
+         "bend": 0.2
+        },
+        {
+         "id": "b3",
+         "op": "rect",
+         "startMs": 5030,
+         "endMs": 5450,
+         "weight": 2,
+         "at": [
+          215,
+          30
+         ],
+         "w": 160,
+         "h": 58,
+         "round": 10
+        },
+        {
+         "id": "t3",
+         "op": "text",
+         "startMs": 5490,
+         "endMs": 5990,
+         "at": [
+          295,
+          61
+         ],
+         "text": "1 0 7 0 4 0",
+         "size": "s"
+        },
+        {
+         "id": "o4",
+         "op": "arrow",
+         "startMs": 6150,
+         "endMs": 6600,
+         "ink": "accent",
+         "from": [
+          295,
+          91
+         ],
+         "to": [
+          295,
+          133
+         ]
+        },
+        {
+         "id": "b4",
+         "op": "rect",
+         "startMs": 6680,
+         "endMs": 7100,
+         "weight": 2,
+         "at": [
+          215,
+          136
+         ],
+         "w": 160,
+         "h": 58,
+         "round": 10
+        },
+        {
+         "id": "t4",
+         "op": "text",
+         "startMs": 7140,
+         "endMs": 7640,
+         "at": [
+          295,
+          167
+         ],
+         "text": "1,07,040",
+         "size": "m"
+        }
+       ],
+       "facts": {
+        "kind": "diagram",
+        "archetype": "flow@1",
+        "onScreen": {
+         "steps": 5,
+         "step1": "One lakh",
+         "step2": "Seven thousand",
+         "step3": "Forty",
+         "step4": "1 0 7 0 4 0",
+         "step5": "1,07,040"
+        }
+       }
+      },
+      "template": "flow@1",
+      "mode": "play"
+     }
+    }
+   ],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false,
+     "spoken": true
+    },
+    "verdict": "correct",
+    "cls": {
+     "outcome": "correct",
+     "source": "exact"
+    },
+    "note": null,
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 2110,
+    "item": null,
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 55
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 55
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 485
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 549
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 556
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 556
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1483
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 2048
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 2110
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "advance",
+   "lessonId": "6fb8e433-1f4e-42a7-bd7c-38185dd94e4d",
+   "childText": "ok samajh gaya",
+   "ms": 2866,
+   "error": null,
+   "teacherReply": "Aapka answer batayiye. Ek lakh pachchees hazaar ko commas ke saath sahi kaise likhenge?",
+   "move": {
+    "kind": "probe",
+    "shape": "pose the question as written, in their language; then wait; read its choices plainly; no lean in your voice toward any of them; address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu",
+    "itemId": "diag:c5-maths-ch01-t01-m-comma-anywhere",
+    "skillId": "c5-maths-ch01-t01-s2",
+    "hintLevel": 0,
+    "probe": "P7"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "text",
+     "value": "Ek lakh pachchees hazaar ko commas ke saath sahi kaise li…"
+    },
+    "chips": [
+     {
+      "id": "opt:0",
+      "label": "1250,00"
+     },
+     {
+      "id": "opt:1",
+      "label": "1,25,000"
+     },
+     {
+      "id": "opt:2",
+      "label": "12,5000"
+     }
+    ],
+    "phase": "practice",
+    "handover": "choice",
+    "ask": {
+     "text": "Ek lakh pachchees hazaar ko commas ke saath sahi kaise likhenge?",
+     "itemId": "diag:c5-maths-ch01-t01-m-comma-anywhere"
+    },
+    "answerForm": "choice",
+    "tray": "tiles",
+    "shortTitle": "Big numbers",
+    "beat": {
+     "beatId": "b8-probe",
+     "type": "probe",
+     "index": 8
+    }
+   },
+   "moduleCommands": [
+    {
+     "op": "unmount",
+     "moduleId": "m13"
+    },
+    {
+     "op": "mount",
+     "moduleId": "g1-ab586d9a",
+     "engine": "scene@1",
+     "params": {
+      "scene": {
+       "dsl": "scene@1",
+       "meta": {
+        "band": "B3",
+        "lang": "hi-Latn+en",
+        "title": {
+         "en": "Coach's practice drill",
+         "hi": "कोच की प्रैक्टिस",
+         "hi_latn": "Coach ki practice"
+        },
+        "template": "choice-card@1",
+        "topic_ids": [
+         "c5-maths-ch01-t01"
+        ],
+        "objective_ids": [
+         "c5-maths-ch01-t01-s2"
+        ]
+       },
+       "vars": [
+        {
+         "id": "pick",
+         "tl": "child's pick",
+         "init": "none",
+         "type": "enum",
+         "options": [
+          "none",
+          "o1",
+          "o2",
+          "o3"
+         ]
+        }
+       ],
+       "goals": [],
+       "nodes": [
+        {
+         "w": 760,
+         "x": 420,
+         "y": 128,
+         "id": "title",
+         "kind": "text",
+         "size": "title",
+         "text": {
+          "en": "Coach's practice drill",
+          "hi": "कोच की प्रैक्टिस",
+          "hi_latn": "Coach ki practice"
+         },
+         "align": "middle"
+        },
+        {
+         "h": 110,
+         "w": 110,
+         "x": 900,
+         "y": 75,
+         "id": "decor",
+         "lib": "obj.ball",
+         "kind": "sprite",
+         "role": "context"
+        },
+        {
+         "w": 900,
+         "x": 500,
+         "y": 388,
+         "id": "question",
+         "kind": "text",
+         "size": "caption",
+         "text": {
+          "en": "Which is the right way to write one lakh twenty-five thousand with commas?",
+          "hi": "Ek lakh pachchees hazaar ko commas ke saath sahi kaise likhenge?",
+          "hi_latn": "Ek lakh pachchees hazaar ko commas ke saath sahi kaise likhenge?"
+         },
+         "align": "middle"
+        },
+        {
+         "x": 500,
+         "y": 946.3333333333333,
+         "id": "ch",
+         "var": "pick",
+         "kind": "choice",
+         "commit": true,
+         "layout": "column",
+         "options": [
+          {
+           "id": "o1",
+           "misc": "MC.C5_MATHS_CH01_T01_M_COMMA_ANYWHERE",
+           "label": {
+            "en": "12,5000",
+            "hi": "12,5000",
+            "hi_latn": "12,5000"
+           }
+          },
+          {
+           "id": "o2",
+           "label": {
+            "en": "1,25,000",
+            "hi": "1,25,000",
+            "hi_latn": "1,25,000"
+           }
+          },
+          {
+           "id": "o3",
+           "misc": "MC.C5_MATHS_CH01_T01_M_COMMA_ANYWHERE",
+           "label": {
+            "en": "1250,00",
+            "hi": "1250,00",
+            "hi_latn": "1250,00"
+           }
+          }
+         ]
+        }
+       ],
+       "probe": {
+        "id": "p_pick",
+        "ask": {
+         "en": "Which is the right way to write one lakh twenty-five thousand with commas?",
+         "hi": "Ek lakh pachchees hazaar ko commas ke saath sahi kaise likhenge?",
+         "hi_latn": "Ek lakh pachchees hazaar ko commas ke saath sahi kaise likhenge?"
+        },
+        "kind": "diagnose",
+        "traps": [
+         {
+          "misc": "MC.C5_MATHS_CH01_T01_M_COMMA_ANYWHERE",
+          "when": "pick == 'o1'"
+         },
+         {
+          "misc": "MC.C5_MATHS_CH01_T01_M_COMMA_ANYWHERE",
+          "when": "pick == 'o3'"
+         }
+        ],
+        "commit": {
+         "via": "choice",
+         "node": "ch"
+        },
+        "correct": "pick == 'o2'"
+       },
+       "stage": {
+        "bg": "bg",
+        "aspect": "3:4"
+       },
+       "derive": [],
+       "feedback": "on_commit",
+       "timelines": []
+      }
+     },
+     "goal": "g1:diag:c5-maths-ch01-t01-m-comma-anywhere"
+    }
+   ],
+   "studio": {
+    "retire": "6fb8e433-1f4e-42a7-bd7c-38185dd94e4d:c3"
+   },
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [
+      "praise",
+      "drift",
+      "flat",
+      "ask",
+      "wrap"
+     ],
+     "rewritten": true,
+     "replaced": false,
+     "firstDraft": "Theek hai, Aarav. Aaj ka practice yahin rok dete hain. Aapne lakh, hazaar aur ones ke groups sahi pehchaane.",
+     "afterRewrite": [
+      "ask"
+     ],
+     "repaired": true
+    },
+    "verdict": "attempt",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 857,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 2860,
+    "item": "diag:c5-maths-ch01-t01-m-comma-anywhere",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 43
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 47
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 759
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 812
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1617
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1669
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1676
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1676
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1439
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1259
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 2809
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 2860
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "probe:skip_item-04",
+   "lessonId": "6fb8e433-1f4e-42a7-bd7c-38185dd94e4d",
+   "childText": "isko chhodo dusra do",
+   "ms": 3368,
+   "error": null,
+   "teacherReply": "Theek hai, isse abhi chhodte hain; doosra sawaal baad mein lenge. 1,00,000 aur 10,000 dekhiye. Dono ke naam kya hain, aur pehla kitne guna bada hai?",
+   "move": {
+    "kind": "probe",
+    "shape": "they asked to skip this one for now: no verdict, it comes back another day; the next question; pose the question as written, in their language; then wait; two cases side by side; ask which one fits and what is different; no verdict on their reply: neither praise nor 'wrong'; address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu",
+    "itemId": "c5-maths-ch01-t01-i07",
+    "skillId": "c5-maths-ch01-t01-s2",
+    "hintLevel": 0,
+    "probe": "P8",
+    "request": "skip"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "text",
+     "value": "1,00,000 aur 10,000 dekhiye. Dono ke naam kya hain, aur p…"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "1,00,000 aur 10,000 dekhiye. Dono ke naam kya hain, aur pehla kitne guna bada hai?",
+     "itemId": "c5-maths-ch01-t01-i07"
+    },
+    "answerForm": "words",
+    "tray": "module",
+    "shortTitle": "Big numbers",
+    "beat": {
+     "beatId": "b8-probe",
+     "type": "probe",
+     "index": 8
+    }
+   },
+   "moduleCommands": [
+    {
+     "op": "unmount",
+     "moduleId": "g1-ab586d9a"
+    },
+    {
+     "op": "mount",
+     "moduleId": "m15",
+     "engine": "place-value@1",
+     "params": {
+      "topicId": "c5-maths-ch01-t01",
+      "skillId": "c5-maths-ch01-t01-s2",
+      "lang": "hinglish",
+      "mode": "compare",
+      "a": 100000,
+      "b": 10000,
+      "question": "bigger",
+      "predict": true
+     }
+    }
+   ],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false
+    },
+    "verdict": "unverified",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "request"
+    },
+    "note": null,
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 3364,
+    "item": "c5-maths-ch01-t01-i07",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 77
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 80
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 412
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 503
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 512
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 512
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1469
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1323
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 3311
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 3364
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "recovery",
+   "lessonId": "6fb8e433-1f4e-42a7-bd7c-38185dd94e4d",
+   "childText": "10 times",
+   "ms": 1505,
+   "error": null,
+   "teacherReply": "Aapne pehla kitne guna bada hai, woh sahi pakda. Ab dono numbers ke names bhi dhyaan se dekhiye. 1,00,000 aur 10,000 dekhiye. Dono ke naam kya hain, aur pehla kitne guna bada hai?",
+   "move": {
+    "kind": "hint",
+    "shape": "rung 1 of 4 (pump): Count the zeros in each.; the key stays unsaid; their answer was partly right: name the right part, no full agreement; address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu",
+    "itemId": "c5-maths-ch01-t01-i07",
+    "skillId": "c5-maths-ch01-t01-s2",
+    "hintLevel": 1
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "text",
+     "value": "1,00,000 aur 10,000 dekhiye. Dono ke naam kya hain, aur p…"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "1,00,000 aur 10,000 dekhiye. Dono ke naam kya hain, aur pehla kitne guna bada hai?",
+     "itemId": "c5-maths-ch01-t01-i07"
+    },
+    "answerForm": "words",
+    "tray": "module",
+    "hint": {
+     "level": 1,
+     "text": "Count the zeros in each."
+    },
+    "shortTitle": "Big numbers",
+    "verdict": "partial",
+    "beat": {
+     "beatId": "b8-probe",
+     "type": "probe",
+     "index": 8
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false,
+     "leadSlot": true
+    },
+    "verdict": "partial",
+    "cls": {
+     "outcome": "partial",
+     "source": "exact"
+    },
+    "note": null,
+    "hintLevel": 1,
+    "phase": "practice",
+    "ms": 1495,
+    "item": "c5-maths-ch01-t01-i07",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 55
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 55
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 65
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 111
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 111
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1327
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 1444
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 1495
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "probe:multi_intent-06",
+   "lessonId": "6fb8e433-1f4e-42a7-bd7c-38185dd94e4d",
+   "childText": "ruko pehle diagram dikhao phir question",
+   "ms": 1912,
+   "error": null,
+   "teacherReply": "Screen par place-value diagram dekhiye. 1,00,000 aur 10,000 ke digits aur unki places ko compare kijiye. 1,00,000 aur 10,000 dekhiye. Dono ke naam kya hain, aur pehla kitne guna bada hai?",
+   "move": {
+    "kind": "reteach",
+    "shape": "they asked to see it: a picture of the same idea; one idea; let the picture do the work; a few words about what to look at; the key stays unsaid; then one small question about what they see; no verdict on their reply: neither praise nor 'wrong'; address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu; it is on the screen now: point them at it in your first words and say what to look at",
+    "must": "never say there is no picture: if it is on the screen, point at what to look at; if not, paint it in words with things they can see at home",
+    "itemId": "c5-maths-ch01-t01-i07",
+    "skillId": "c5-maths-ch01-t01-s2",
+    "hintLevel": 2,
+    "request": "visual",
+    "visual": "diagram"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "text",
+     "value": "1,00,000 aur 10,000 dekhiye. Dono ke naam kya hain, aur p…"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "1,00,000 aur 10,000 dekhiye. Dono ke naam kya hain, aur pehla kitne guna bada hai?",
+     "itemId": "c5-maths-ch01-t01-i07"
+    },
+    "answerForm": "words",
+    "tray": "studio",
+    "shortTitle": "Big numbers",
+    "beat": {
+     "beatId": "b9-explain",
+     "type": "explain",
+     "index": 9
+    },
+    "studioSlot": {
+     "slotId": "6fb8e433-1f4e-42a7-bd7c-38185dd94e4d:wb:17:slot",
+     "intentId": "6fb8e433-1f4e-42a7-bd7c-38185dd94e4d:wb:17",
+     "state": "planning"
+    }
+   },
+   "moduleCommands": [
+    {
+     "op": "unmount",
+     "moduleId": "m15"
+    }
+   ],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false,
+     "leadSlot": true
+    },
+    "verdict": "unverified",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "request"
+    },
+    "note": null,
+    "hintLevel": 2,
+    "phase": "practice",
+    "ms": 1909,
+    "item": "c5-maths-ch01-t01-i07",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 47
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 48
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 411
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 465
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 468
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 469
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1256
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 1803
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 1909
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "recovery",
+   "lessonId": "6fb8e433-1f4e-42a7-bd7c-38185dd94e4d",
+   "childText": "10 times",
+   "ms": 1407,
+   "error": null,
+   "teacherReply": "Aapne 10 times sahi bataya. Ab place-value diagram ke saath agla number practice kijiye. Ek music video ko 236408 views mile. Is number mein Indian system ke hisaab se commas lagaiye.",
+   "move": {
+    "kind": "practice",
+    "shape": "that question has been on the table long enough: give its answer plainly with one line of why (in LESSON NOW), no verdict on them; then the next question; pose the question as written, in their language; then wait; their answer was partly right: name the right part, no full agreement; address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu",
+    "itemId": "c5-maths-ch01-t01-rl-o2",
+    "skillId": "c5-maths-ch01-t01-s2",
+    "hintLevel": 0,
+    "probe": "P15"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "math",
+     "value": "236408"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "Ek music video ko 236408 views mile. Is number mein Indian system ke hisaab se commas lagaiye.",
+     "itemId": "c5-maths-ch01-t01-rl-o2"
+    },
+    "answerForm": "number",
+    "padComma": true,
+    "tray": "none",
+    "shortTitle": "Big numbers",
+    "verdict": "partial",
+    "beat": {
+     "beatId": "b10-practice_set",
+     "type": "practice_set",
+     "index": 10
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false,
+     "leadSlot": true
+    },
+    "verdict": "partial",
+    "cls": {
+     "outcome": "partial",
+     "source": "exact"
+    },
+    "note": null,
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 1403,
+    "item": "c5-maths-ch01-t01-rl-o2",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 54
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 55
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 64
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 114
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 114
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1213
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 1332
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 1403
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "probe:explain_differently-08",
+   "lessonId": "6fb8e433-1f4e-42a7-bd7c-38185dd94e4d",
+   "childText": "किसी और तरीके से समझाइए",
+   "ms": 3071,
+   "error": null,
+   "teacherReply": "Aap chahte hain ki main commas lagane ka tareeka alag example se samjhaun. Ek music video ko 236408 views mile. Is number mein Indian system ke hisaab se commas lagaiye.",
+   "move": {
+    "kind": "reteach",
+    "shape": "they asked for it another way: one new, simpler picture of the same idea, with a different example and different numbers; the key stays unsaid; then the same question again, as written; no verdict on their reply: neither praise nor 'wrong'; address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu",
+    "itemId": "c5-maths-ch01-t01-rl-o2",
+    "skillId": "c5-maths-ch01-t01-s2",
+    "hintLevel": 1,
+    "request": "another"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "math",
+     "value": "236408"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "Ek music video ko 236408 views mile. Is number mein Indian system ke hisaab se commas lagaiye.",
+     "itemId": "c5-maths-ch01-t01-rl-o2"
+    },
+    "answerForm": "number",
+    "padComma": true,
+    "tray": "module",
+    "shortTitle": "Big numbers",
+    "beat": {
+     "beatId": "b11-explain",
+     "type": "explain",
+     "index": 11
+    }
+   },
+   "moduleCommands": [
+    {
+     "op": "mount",
+     "moduleId": "m19",
+     "engine": "place-value@1",
+     "params": {
+      "topicId": "c5-maths-ch01-t01",
+      "skillId": "c5-maths-ch01-t01-s2",
+      "lang": "hinglish",
+      "fractions": [],
+      "numbers": [
+       236408
+      ]
+     }
+    }
+   ],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false,
+     "tidied": true
+    },
+    "verdict": "unverified",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "explain_differently",
+     "waitedMs": 619,
+     "parallel": null
+    },
+    "hintLevel": 1,
+    "phase": "practice",
+    "ms": 3068,
+    "item": "c5-maths-ch01-t01-rl-o2",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 46
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 47
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 1063
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 1121
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1684
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1740
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1744
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1745
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1266
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 3016
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 3068
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "recovery",
+   "lessonId": "6fb8e433-1f4e-42a7-bd7c-38185dd94e4d",
+   "childText": "2 36 408",
+   "ms": 1385,
+   "error": null,
+   "teacherReply": "Aapne grouping sahi ki: 2, 36, 408. Ab pehle group ke baad comma lagaiye: 2,36,408. Is number ko words mein padhiye.",
+   "move": {
+    "kind": "explain",
+    "shape": "confirm specifically: name the exact thing they got right, no ability words; one idea only: Compare and order 5- and 6-digit numbers using place value; objects first, then the symbol; point at the screen only at what the on-screen row lists; never a drawing made of characters; end with one small question that makes them USE the idea — never 'samjha?'; address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu",
+    "skillId": "c5-maths-ch01-t01-s3",
+    "format": "F3"
+   },
+   "ui": {
+    "status": "your_turn",
+    "phase": "practice",
+    "handover": "answer",
+    "answerForm": "words",
+    "tray": "module",
+    "shortTitle": "Big numbers",
+    "verdict": "correct",
+    "withHelp": true,
+    "beat": {
+     "beatId": "b11-explain",
+     "type": "explain",
+     "index": 11
+    },
+    "ask": {
+     "text": "Is number ko words mein padhiye."
+    }
+   },
+   "moduleCommands": [
+    {
+     "op": "unmount",
+     "moduleId": "m19"
+    },
+    {
+     "op": "mount",
+     "moduleId": "m20",
+     "engine": "explainer@1",
+     "params": {
+      "script": {
+       "v": 1,
+       "scriptId": "ex-1b561ls",
+       "line": {
+        "lessonId": "6fb8e433-1f4e-42a7-bd7c-38185dd94e4d"
+       },
+       "anchor": "line_audio_start",
+       "board": {
+        "w": 400,
+        "h": 300,
+        "ground": "chalk"
+       },
+       "mode": "fresh",
+       "durationMs": 8040,
+       "ops": [
+        {
+         "id": "b0",
+         "op": "rect",
+         "startMs": 80,
+         "endMs": 500,
+         "weight": 2,
+         "at": [
+          25,
+          30
+         ],
+         "w": 160,
+         "h": 58,
+         "round": 10
+        },
+        {
+         "id": "t0",
+         "op": "text",
+         "startMs": 540,
+         "endMs": 1040,
+         "at": [
+          105,
+          61
+         ],
+         "text": "One lakh",
+         "size": "m"
+        },
+        {
+         "id": "o1",
+         "op": "arrow",
+         "startMs": 1200,
+         "endMs": 1650,
+         "ink": "accent",
+         "from": [
+          105,
+          91
+         ],
+         "to": [
+          105,
+          133
+         ]
+        },
+        {
+         "id": "b1",
+         "op": "rect",
+         "startMs": 1730,
+         "endMs": 2150,
+         "weight": 2,
+         "at": [
+          25,
+          136
+         ],
+         "w": 160,
+         "h": 58,
+         "round": 10
+        },
+        {
+         "id": "t1",
+         "op": "text",
+         "startMs": 2190,
+         "endMs": 2690,
+         "at": [
+          105,
+          167
+         ],
+         "text": "Seven thousand",
+         "size": "s"
+        },
+        {
+         "id": "o2",
+         "op": "arrow",
+         "startMs": 2850,
+         "endMs": 3300,
+         "ink": "accent",
+         "from": [
+          105,
+          197
+         ],
+         "to": [
+          105,
+          239
+         ]
+        },
+        {
+         "id": "b2",
+         "op": "rect",
+         "startMs": 3380,
+         "endMs": 3800,
+         "weight": 2,
+         "at": [
+          25,
+          242
+         ],
+         "w": 160,
+         "h": 58,
+         "round": 10
+        },
+        {
+         "id": "t2",
+         "op": "text",
+         "startMs": 3840,
+         "endMs": 4340,
+         "at": [
+          105,
+          273
+         ],
+         "text": "Forty",
+         "size": "m"
+        },
+        {
+         "id": "o3",
+         "op": "arrow",
+         "startMs": 4500,
+         "endMs": 4950,
+         "ink": "accent",
+         "from": [
+          188,
+          271
+         ],
+         "to": [
+          212,
+          59
+         ],
+         "bend": 0.2
+        },
+        {
+         "id": "b3",
+         "op": "rect",
+         "startMs": 5030,
+         "endMs": 5450,
+         "weight": 2,
+         "at": [
+          215,
+          30
+         ],
+         "w": 160,
+         "h": 58,
+         "round": 10
+        },
+        {
+         "id": "t3",
+         "op": "text",
+         "startMs": 5490,
+         "endMs": 5990,
+         "at": [
+          295,
+          61
+         ],
+         "text": "1 0 7 0 4 0",
+         "size": "s"
+        },
+        {
+         "id": "o4",
+         "op": "arrow",
+         "startMs": 6150,
+         "endMs": 6600,
+         "ink": "accent",
+         "from": [
+          295,
+          91
+         ],
+         "to": [
+          295,
+          133
+         ]
+        },
+        {
+         "id": "b4",
+         "op": "rect",
+         "startMs": 6680,
+         "endMs": 7100,
+         "weight": 2,
+         "at": [
+          215,
+          136
+         ],
+         "w": 160,
+         "h": 58,
+         "round": 10
+        },
+        {
+         "id": "t4",
+         "op": "text",
+         "startMs": 7140,
+         "endMs": 7640,
+         "at": [
+          295,
+          167
+         ],
+         "text": "1,07,040",
+         "size": "m"
+        }
+       ],
+       "facts": {
+        "kind": "diagram",
+        "archetype": "flow@1",
+        "onScreen": {
+         "steps": 5,
+         "step1": "One lakh",
+         "step2": "Seven thousand",
+         "step3": "Forty",
+         "step4": "1 0 7 0 4 0",
+         "step5": "1,07,040"
+        }
+       }
+      },
+      "template": "flow@1",
+      "mode": "play"
+     }
+    }
+   ],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false
+    },
+    "verdict": "correct",
+    "cls": {
+     "outcome": "correct",
+     "source": "exact"
+    },
+    "note": null,
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 1382,
+    "item": null,
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 57
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 57
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 64
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 122
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 122
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1188
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 1315
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 1382
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "advance",
+   "lessonId": "6fb8e433-1f4e-42a7-bd7c-38185dd94e4d",
+   "childText": "ok samajh gaya",
+   "ms": 1475,
+   "error": null,
+   "teacherReply": "Ab commas ke baad number ko Indian place-values mein padhiye: ones, tens, hundreds, thousands, lakhs. Chhote se bade ke kram mein lagaiye: 45,600; 4,56,000; 45,060.",
+   "move": {
+    "kind": "practice",
+    "shape": "pose the question as written, in their language; then wait; address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu",
+    "itemId": "c5-maths-ch01-t01-i05",
+    "skillId": "c5-maths-ch01-t01-s3",
+    "hintLevel": 0,
+    "probe": "P15"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "text",
+     "value": "Chhote se bade ke kram mein lagaiye: 45,600; 4,56,000; 45…"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "Chhote se bade ke kram mein lagaiye: 45,600; 4,56,000; 45,060.",
+     "itemId": "c5-maths-ch01-t01-i05"
+    },
+    "answerForm": "words",
+    "tray": "none",
+    "shortTitle": "Big numbers",
+    "beat": {
+     "beatId": "b12-practice_set",
+     "type": "practice_set",
+     "index": 12
+    }
+   },
+   "moduleCommands": [
+    {
+     "op": "unmount",
+     "moduleId": "m20"
+    }
+   ],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false,
+     "leadSlot": true
+    },
+    "verdict": "attempt",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 387,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 1470,
+    "item": "c5-maths-ch01-t01-i05",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 70
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 71
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 656
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 732
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1044
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1118
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1122
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1122
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1291
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 1422
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 1470
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "probe:end_request-01",
+   "lessonId": "6fb8e433-1f4e-42a7-bd7c-38185dd94e4d",
+   "childText": "lesson khatam karo",
+   "ms": 2856,
+   "error": null,
+   "teacherReply": "Theek hai Aarav, aap rukna chahte hain—kya aap continue karenge, chhota break lenge, ya aaj ke liye stop karenge?",
+   "move": {
+    "kind": "break",
+    "shape": "they said they want to stop: first say back in a few warm words, in their words, that they want to stop, no guilt and no pressure; then offer the three choices in your own words and their language (carry on, a short break, or stop for today), they are also on the screen, and wait; no lesson question this turn; address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu",
+    "checkin": "stop"
+   },
+   "ui": {
+    "status": "your_turn",
+    "chips": [
+     {
+      "id": "stop:continue",
+      "label": "Keep going"
+     },
+     {
+      "id": "break:rest",
+      "label": "Short break"
+     },
+     {
+      "id": "stop:end",
+      "label": "Stop for today"
+     }
+    ],
+    "phase": "practice",
+    "handover": "choice",
+    "answerForm": "choice",
+    "tray": "tiles",
+    "shortTitle": "Big numbers",
+    "beat": {
+     "beatId": "b13-break",
+     "type": "break",
+     "index": 13
+    },
+    "ask": {
+     "text": "Theek hai Aarav, aap rukna chahte hain—kya aap continue karenge, chhota break lenge, ya aaj ke liye stop karenge?"
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [
+      "wrap",
+      "nochoice",
+      "wrap"
+     ],
+     "rewritten": true,
+     "replaced": false,
+     "firstDraft": "Theek hai Aarav, aaj ka lesson yahin khatam. Aapne grouping karke commas lagaye—yeh step sahi tha.",
+     "afterRewrite": []
+    },
+    "verdict": "unverified",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": null,
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 2853,
+    "item": null,
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 56
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 56
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 879
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 944
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 947
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 947
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 962
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1719
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 2803
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 2853
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "follow:end_request-01",
+   "lessonId": "6fb8e433-1f4e-42a7-bd7c-38185dd94e4d",
+   "childText": "haan",
+   "ms": 1557,
+   "error": null,
+   "teacherReply": "Theek hai Aarav, aap aaj ke liye lesson stop kar rahe hain. Aapne number ko Indian grouping mein sahi tarah likha: pehle teen digits, phir do-do digits. Chhote se bade ke kram mein lagaiye: 45,600; 4,56,000; 45,060.",
+   "move": {
+    "kind": "practice",
+    "shape": "back to the question, fresh; pose the question as written, in their language; then wait; no verdict on their reply: neither praise nor 'wrong'; address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu; after the check-in they did not ask to stop: carry on as normal, warmly; no talk of resting, breaks or ending",
+    "itemId": "c5-maths-ch01-t01-i05",
+    "skillId": "c5-maths-ch01-t01-s3",
+    "hintLevel": 0,
+    "probe": "P15"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "text",
+     "value": "Chhote se bade ke kram mein lagaiye: 45,600; 4,56,000; 45…"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "Chhote se bade ke kram mein lagaiye: 45,600; 4,56,000; 45,060.",
+     "itemId": "c5-maths-ch01-t01-i05"
+    },
+    "answerForm": "words",
+    "tray": "none",
+    "shortTitle": "Big numbers",
+    "beat": {
+     "beatId": "b14-practice_set",
+     "type": "practice_set",
+     "index": 14
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false,
+     "leadSlot": true
+    },
+    "verdict": "unverified",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 451,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 1554,
+    "item": "c5-maths-ch01-t01-i05",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 58
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 58
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 982
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 1047
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1434
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1498
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1502
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1502
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1036
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 1504
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 1553
+     }
+    ]
+   }
+  }
+ ]
+}
