@@ -11,7 +11,7 @@ import type { PointerKind } from "../../core/stage.ts";
 import type { ControlSpec, Readout } from "../../core/viewkit.ts";
 import { ART } from "../../core/styles.ts";
 import type { Scene, WebGLRenderer } from "three";
-import type { Core3D, EngineDeps, EngineView, LabelHandle, Sfx } from "./shim/api.ts";
+import type { Core3D, EngineDeps, EngineView, LabelHandle, Sfx } from "../core3d/api.ts";
 import type { NzState, Plot } from "../../families/nazariya/grid.ts";
 import { frontView, sideView, topView, built } from "../../families/nazariya/grid.ts";
 import { viewOf, type ViewsParams } from "../../families/nazariya/views.logic.ts";
