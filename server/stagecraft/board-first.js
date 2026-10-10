@@ -25,6 +25,7 @@ import { explainerFor } from "../forge/explainer/lesson.js";
 import { catalogueEntry } from "./catalogue.js";
 import { fitLegible } from "./board-legible.js";
 import { scriptFacts } from "../../shared/whiteboard.js";
+import { preferPicture } from "./beat-card.js";
 
 /** = server/studio/seam.js STUDIO_ROW_PREFIX (not imported: seam.js imports this file; tests/round2-content.test.mjs pins equality). */
 export const STUDIO_ROW_PREFIX = "on screen now (values to use when you point at the screen; never what is hidden): ";
@@ -93,7 +94,7 @@ function candidates(ask, kit, lessonId, band, predicted) {
  * @param {any} ask whiteboardIntentOf(...) with an empty line
  * @param {{ kit?: any, redact?: string[], now?: number }} o
  */
-export function preselect(ask, { kit, redact = [], now = Date.now(), certify = null } = {}) {
+export function preselect(ask, { kit, redact = [], now = Date.now(), certify = null, pictureFirst = false } = {}) {
   try {
     if (!boardFirstOn() || !kit) return null;
     const id = String(ask?.intent?.intentId ?? "");
@@ -109,7 +110,9 @@ export function preselect(ask, { kit, redact = [], now = Date.now(), certify = n
     // 2026-10-06: 19/27 refusals were W9 when the predicted line's numbers freed a key her real line never said)
     const ctx = { ...gateCtxFor(a2, { kit, redact }), withhold: gateCtxFor({ ...ask, line: { ...(ask.line ?? {}), text: "" } }, { kit, redact }).withhold };
     const band = ctx.band ?? "B3";
-    for (const c of candidates(a2, kit, ask?.line?.lessonId ?? ask?.intent?.lessonId, band, predicted)) {
+    // round 4 content (beat board): a skill's first board opens on a picture when one passes
+    const cands = candidates(a2, kit, ask?.line?.lessonId ?? ask?.intent?.lessonId, band, predicted);
+    for (const c of pictureFirst ? preferPicture(cands) : cands) {
       const s = withSectors(retime(c.script, Math.max(800, Number(c.script.durationMs) || 0), ctx.speechMs), ctx.reply);
       // round 4 content: a board the child's device cannot show legibly (server/forge3/tray-gate.js) is never preselected:
       // her line is written from this board's facts row, so it must be one that will reach the stage

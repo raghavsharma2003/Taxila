@@ -41,6 +41,7 @@ import { INTERACTIVE_ASKS } from "../forge3/compose.js";
 // device's viewport class (the Desk reports its tray box: POST /api/studio/viewport)
 import { certifyForTray, viewportOf, setViewport } from "../forge3/tray-gate.js";
 import { topicParts } from "../forge3/art.js";
+import { beatBoardOn, cardFor, firstBoardOfSkill } from "../stagecraft/beat-card.js";
 
 /** Bounds (LIVE-STUDIO §3.1, §3.8; STUDENT-FLOW §5.3). */
 export const STUDIO_LIMITS = Object.freeze({
@@ -792,6 +793,9 @@ export const studioSeam = {
       // round 4 content: the ONE gate before the board reaches the stage (the device's box, the client's own fit)
       const g = certifyForTray({ kind: "whiteboard", script: r.script }, gateCtx(L, p));
       if (!g.ok) { noteRefusal(L, p, g, `board:${r.source ?? "line"}`); return false; }
+      // round 4 content, the beat-by-beat board (flag): the card this beat's board is (once per slot)
+      if (beatBoardOn() && !p.card) { p.card = cardFor(L, ask, r.script, { template: r.template ?? null }); }
+      if (p.card) r.script = { ...r.script, card: p.card };
       p.artifact = { kind: "whiteboard", stage: { w: r.script.board.w, h: r.script.board.h }, script: r.script };
       p.facts = r.script.facts ?? null;
       p.state = "revealed"; p.revealedAt = Date.now(); p.revealedTurn = L.turn; p.boardSource = r.source ?? "line"; p.syncMs = r.syncMs ?? null;
@@ -888,7 +892,7 @@ export const studioSeam = {
       if (on && VISIBLE.has(on.state) && on.kind !== "whiteboard" && !on.grade?.complete && !(ask.replaces && ask.replaces === on.intentId)) return null;
       if (L.pieces.has(String(ask.intent.intentId))) return null;
       return boardFirst.preselect(ask, { kit: L.kit ?? undefined, redact: L.redact ?? [],
-        certify: (script) => certifyForTray({ kind: "whiteboard", script }, gateCtx(L)).ok })?.row ?? null;
+        certify: (script) => certifyForTray({ kind: "whiteboard", script }, gateCtx(L)).ok, pictureFirst: beatBoardOn() && firstBoardOfSkill(L, ask) })?.row ?? null;
     } catch { return null; }
   },
 

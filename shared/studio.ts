@@ -179,7 +179,11 @@ export interface WhiteboardScript {
   ops: WbOp[];
   /** The values on the board, for the teacher's facts row (the Brain reads the screen as values). */
   facts?: StudioFacts;
+  /** round 4 content, the beat-by-beat board (TAXILA_BEAT_BOARD; server/stagecraft/beat-card.js): the card this beat's
+   *  board is, its beat number in the lesson, and whether a check follows it. Absent with the flag off. */
+  card?: BeatCard;
 }
+export interface BeatCard { kind: "picture" | "formula" | "steps" | "example" | "takeaway"; n: number; checkpointAhead: boolean }
 /** Bounds the renderer and the gate enforce (documented here so W2-B/F/H agree; enforced in code by the owners). */
 export const WHITEBOARD_LIMITS = Object.freeze({ maxOps: 120, maxPointsPerStroke: 240, maxTextChars: 24, maxDurationMs: 60_000, minBoard: 100, maxBoard: 2000 });
 

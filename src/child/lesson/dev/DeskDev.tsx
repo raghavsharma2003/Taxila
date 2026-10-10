@@ -31,10 +31,26 @@ export const FIXTURES = [
   // round 4 content (docs/design/round4/build/box-contract.json): the box the Desk gives a Studio piece (work-studio) and a
   // play piece in play mode (work-play); the slot carries no artifact, so the stage paints its calm ground in the box
   "work-studio", "work-play",
+  // round 4 content (beat board): a carded board in the tray while she speaks (360 x 800 must keep her caption visible)
+  "work-beat",
 ] as const;
 export type FixtureName = (typeof FIXTURES)[number];
 
 const noop = () => {};
+/** The "half ka half" board (server fraction-of@1, a/b = c/d = 1/2) with its beat card, as the server sends it (dev only). */
+const BEAT_SCRIPT = {
+  v: 1, scriptId: "dev-beat", line: { lessonId: "dev" }, anchor: "line_audio_start", board: { w: 400, h: 300, ground: "chalk" }, mode: "fresh", durationMs: 1200,
+  card: { kind: "picture", n: 2, checkpointAhead: false },
+  ops: [
+    { id: "w", op: "rect", at: [60, 46], w: 280, h: 168, weight: 2, startMs: 0, endMs: 300 },
+    { id: "c", op: "line", from: [200, 46], to: [200, 214], weight: 1, startMs: 300, endMs: 400 },
+    { id: "s", op: "rect", at: [63, 49], w: 134, h: 162, fill: "soft", ink: "accent", weight: 1, startMs: 400, endMs: 600 },
+    { id: "r", op: "line", from: [60, 130], to: [340, 130], weight: 1, ink: "soft", startMs: 600, endMs: 700 },
+    { id: "m", op: "rect", at: [65, 51], w: 130, h: 74, fill: "accent", ink: "mark", weight: 1, startMs: 700, endMs: 900 },
+    { id: "t", op: "text", at: [130, 30], text: "1/2", size: "m", ink: "accent", startMs: 900, endMs: 1000 },
+    { id: "e", op: "numwork", at: [40, 262], layout: "equation", rows: [["1/2", "×", "1/2", "=", "1/4"]], weight: 2, startMs: 1000, endMs: 1200 },
+  ],
+} as const;
 const ACTIONS: DeskActions = {
   start: noop, tapToHear: noop, talk: noop, send: noop, pickTile: noop, padSend: noop, hearQuestion: noop, hearAgain: noop, openHint: noop,
   hintPick: noop, helpMenuPick: noop, openHelpMenu: noop, wait: noop, setTyping: noop, setTypingFocus: noop, toggleCaptions: noop, pause: noop,
@@ -49,6 +65,7 @@ export function fixtureModel(name: string, band: Band, size: DeskSize, faceForm:
   const play = name === "work-play";
   const work = name.startsWith("work-") || ["work-tiles", "board-correct", "board-not_yet", "help-menu", "no-mic", "T7"].includes(name);
   const floorOf = (n: string): Floor => {
+    if (n === "work-beat") return "speaking"; // a board beat draws while she speaks
     const f = n.replace(/^work-/, "");
     if (["idle", "speaking", "showing", "yielding", "your_turn", "listening", "heard", "thinking"].includes(f)) return f as Floor;
     if (f === "tiles" || f === "help-menu" || f === "no-mic" || f === "pad" || f === "pad-help") return "your_turn";
@@ -76,6 +93,7 @@ export function fixtureModel(name: string, band: Band, size: DeskSize, faceForm:
   let tray: TrayModel | null = null;
   if (name === "work-pad" || name === "work-pad-help") tray = { kind: "pad", overlay: name === "work-pad-help" ? "help_menu" : null };
   else if (name === "work-tiles" || name === "help-menu" || name === "no-mic") tray = { kind: "tiles", tiles, overlay: name === "help-menu" ? "help_menu" : name === "no-mic" ? "no_mic" : null };
+  else if (name === "work-beat") tray = { kind: "studio", studio: { slotId: "dev:beat:slot", intentId: "dev:beat", state: "revealed", artifact: { kind: "whiteboard", stage: { w: 400, h: 300 }, script: BEAT_SCRIPT } } as unknown as TrayModel["studio"], overlay: null };
   else if (name === "work-studio" || play) tray = { kind: "studio", studio: { slotId: `dev:${name}:slot`, intentId: `dev:${name}`, state: "revealed" } as TrayModel["studio"], overlay: null };
   else if (work || name.startsWith("board-")) tray = { kind: "board", board: { lines: [{ text: "1/2 = 2/4", kind: "math" }], chalked: answered ? (young ? "1/2" : "two") : null, mark: verdict === "correct" ? "tick" : verdict === "not_yet" ? "underline" : null } };
   const geometry = tray ? "work" : "face";

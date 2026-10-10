@@ -133,3 +133,15 @@
 .st-box[data-rail] .sv2-hud .box { padding: .5em .7em !important; }
 /* the interim board (drawn before the engine paints) keeps the world's 16:10 at the bottom, not stretched over the band */
 .st-box[data-rail] .st-art canvas[aria-hidden="true"] { top: auto !important; bottom: 0 !important; height: auto !important; aspect-ratio: 16 / 10; }
+
+/* round 4 content, the beat-by-beat board (TAXILA_BEAT_BOARD): one header row above the board: the card's kind, the beats
+   so far (dots: done, now), and "Checkpoint ahead" before a check. 14 px words (16 px for classes 1-5), never over the board. */
+.st-cardhead { position: absolute; display: flex; align-items: center; gap: 8px; overflow: hidden;
+  font: 600 14px/1 var(--font-ui, system-ui, sans-serif); color: var(--ink); }
+.st-stage[data-young] .st-cardhead { font-size: 16px; }
+.st-chip-kind { padding: 6px 10px; border-radius: 999px; background: var(--surface); border: 1px solid var(--line); white-space: nowrap; }
+.st-chip-check { margin-left: auto; padding: 6px 10px; border-radius: 999px; border: 1px dashed var(--ink-2); color: var(--ink-2); white-space: nowrap; }
+.st-beat { display: inline-flex; gap: 4px; align-items: center; }
+.st-beat i { width: 8px; height: 8px; border-radius: 50%; background: var(--line); }
+.st-beat i.is-done { background: var(--ink-2); }
+.st-beat i.is-now { background: var(--nib); width: 10px; height: 10px; }

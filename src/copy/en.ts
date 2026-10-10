@@ -197,6 +197,14 @@ export const W2H = {
   "less": "Less",
   "moreBtn": "More",
   "symbol": "1 symbol = {n}",
+  // round 4 content, the beat-by-beat board (TAXILA_BEAT_BOARD): the card kind chip, the beat progress, the check chip
+  "card.picture": "Picture",
+  "card.formula": "Formula",
+  "card.steps": "Steps",
+  "card.example": "Example",
+  "card.takeaway": "Takeaway",
+  "card.beat": "Board {n}",
+  "card.checkpoint": "Checkpoint ahead",
 } as const;
 
 export type W2HKey = keyof typeof W2H;
