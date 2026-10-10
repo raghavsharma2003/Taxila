@@ -115,6 +115,13 @@ A certified piece composed for the child's own interactive ask goes to her stage
 `{t:"retract"}` follows). Kill switch `TAXILA_EARLY_PIECE=0`. `round3-forge` now also times the piece from what the page
 shows (T1dom); `tests/prod/r4-content-speed.mjs` runs ≥ 20 asks.
 
+### 2.8 Which classes get typed input (asked by the main session for G2, 2026-10-10)
+By design, not a gap: classes 1-4 are the Young family (`src/child/band.ts`: B1 classes 1-2, B2 classes 3-4); Young never
+type words (`src/child/lesson/useDesk.ts`, PRODUCT-DESIGN §6.3.4): they answer by voice, tiles and the NumberPad (the
+Type row opens `inputMode="numeric"` for them). Classes 5-9 (B3, B4) get the Type row. A parent's "move up one band"
+setting (`effectiveBand`) makes a class-4 child Older, with typing. A harness that needs typed asks on a class-4 topic uses
+a class-5 child or that setting. Unchanged on this branch.
+
 ## 3. Not met yet, and why
 To be filled from the batteries on the local production build of this branch.
 
