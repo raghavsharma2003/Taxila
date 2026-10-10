@@ -39,7 +39,7 @@ import { directorProposal } from "./proposal.js";
 import { p5Flag } from "../conversation/flags.js";
 import { unsafeChildPhrase } from "../conversation/screen.js";
 import { parkEntry, pushLater, recentParked, dueParked, serveLater } from "../conversation/policy.js";
-import { alsoReading, alsoQuestion, questionShaped } from "../conversation/lexicon.js";
+import { alsoReading, alsoQuestion, questionShaped, bareAck } from "../conversation/lexicon.js";
 import { intakeStart, intakeStep } from "./session/beat.js";
 import { newSession, openSegment } from "./session/segments.js";
 import { priorNotes } from "./session/prior.js";
@@ -107,7 +107,8 @@ export const snapshotSkill = (st) => ({
  *   protege: { name: string, what: string }, ageBand: "6-9"|"10-15", lang: string, interests: string[],
  *   firstMeeting: boolean, hasCallback: boolean, topicTitle: string, nextTitle?: string }, seed: number, now?: number }} a
  */
-export function initLessonState({ topicId, kit, skills = {}, history = {}, stuck = {}, warmupItems = [], activeMisconceptionIds = [], ctx, seed, now = Date.now(), openers = [], comp }) {
+export function initLessonState({ topicId, kit, skills = {}, history = {}, stuck = {}, warmupItems = [], activeMisconceptionIds = [], ctx: ctx0, seed, now = Date.now(), openers = [], comp }) {
+  const ctx = protegeNotChild(ctx0);
   const classLevel = ctx.classLevel ?? (ctx.ageBand === "6-9" ? 3 : 6);
   const band = bandOf(classLevel);
   const snaps = Object.fromEntries(Object.entries(skills).map(([id, st]) => [id, snapshotSkill(st)]));
@@ -175,6 +176,39 @@ export function initLessonState({ topicId, kit, skills = {}, history = {}, stuck
     // started a session with no topic chosen by the child (ctx.session); absent on every other start
     ...(ctx.session && !practiceSet && !asking ? sessionFields(ctx, classLevel, now) : {}),
   };
+}
+
+/**
+ * round 4 (owner-2 judge, local and production 2026-10-10): the young band's teach-back protégé is "Golu", and a child named
+ * Golu heard "at the end tum Golu ko sikhaoge" (J.confused: "implying Golu will teach himself"). A protégé never shares the
+ * child's first name: the next name of a short list that is not the child's. PURE.
+ */
+const PROTEGE_NAMES = ["Golu", "Bittu", "Chintu", "Pinku", "Munna"];
+export function protegeNotChild(ctx) {
+  const p = ctx?.protege, me = String(ctx?.firstName ?? "").trim().toLowerCase();
+  if (!p?.name || !me || String(p.name).trim().toLowerCase() !== me) return ctx;
+  const name = PROTEGE_NAMES.find((n) => n.toLowerCase() !== me);
+  return { ...ctx, protege: { ...p, name } };
+}
+
+/**
+ * round 4 (owner-2 with the model judge, production c439bd7 and local, 2026-10-10; lever 5, the main session's decision): the
+ * top cause of J.confused (12 of 30 judged turns) is a teaching question answered only with "haan" / "ok" / "hmm", after which
+ * the next teach step opens a NEW example as if nothing had been asked. A must-note asking the reply to close the question
+ * moved nothing (J 40 -> 40 of 270; rejected, context inbox), because the step itself is the new example. With
+ * TAXILA_ACK_CLOSE=on (default off) the step is HELD for one turn: she closes her own question (its answer, plainly, and one
+ * line linking it to the idea), and the next turn advances. Once per teach step: a second bare okay on the same step moves on,
+ * so the lesson never stalls on acknowledgements.
+ */
+export const ackCloseOn = (env = process.env) => String(env.TAXILA_ACK_CLOSE ?? "off").trim().toLowerCase() === "on";
+function ackHold(s, input) {
+  if (!ackCloseOn() || input.event !== "turn" || input.cls?.outcome !== "no_evidence" || input.cls?.request || input.cls?.help) return null;
+  if (!bareAck(input.text ?? "") || !TEACH_KINDS.has(s.lastMove?.kind) || s.lastMove?.itemId || s.ackHeldAt === s.teachIdx) return null;
+  const last = (s.recent ?? []).findLast((t) => t.who === "teacher")?.text ?? "";
+  const asked = (String(last).match(/[^.!?।]*[?？]/g) ?? []).at(-1)?.trim();
+  if (!asked || asked.length < 8) return null;
+  s.ackHeldAt = s.teachIdx;
+  return plan("reteach", SH.ackCloseMove({ asked }), { skillId: currentSkillId(s, input.kit, null), content: s.lastContent ?? [], ackClose: true });
 }
 
 /** Round 4 (session-first): the session object and the intake beat's state for a session start (ctx.session). */
@@ -985,7 +1019,7 @@ function p5RequestMove(s, input, item, req, labels) {
       const kind = ["hook", "explain", "worked_example", "reteach"].includes(s.lastMove?.kind) ? s.lastMove.kind : "reteach";
       return plan(kind, join(SH.repeatShort(), s.lastMove?.shape), { skillId: currentSkillId(s, kit, item), content: s.lastContent ?? [], request: "repeat" });
     }
-    case "back": return withLead(SH.welcomeBack());
+    case "back": return item && p5Flag("R4CONV") && s.pinItem === item.id && (s.pinRun ?? 0) >= 2 ? backOnHeldCard(s, input, item) : withLead(SH.welcomeBack());
     case "skip": return item ? { ...leaveItem(s, input, item, SH.SKIP_ITEM), request: "skip" } : helpMove(s, input, item, "skip");
     case "know": {
       // round 4 (conversation; battery skip_ahead 1/7): "ye mujhe aata hai, aage chalo" got the SAME question back, or one
@@ -1089,6 +1123,22 @@ function p5RequestMove(s, input, item, req, labels) {
     }
     default: return null;
   }
+}
+
+/**
+ * round 4 (patch 14; owner-2 prod-like R5.loop at seeds 7 and 1010, s5-zoya c5-evs): back from a pause ("mummy bula rahi
+ * thi, haan", "ek min... haan bolo") to a card already held two turns re-posed the SAME card, word for word, a 3rd and 4th
+ * time. A child who has not answered it twice needs a smaller step, not the same one: the choices on screen (no rung spent,
+ * as the unclear ladder does), else one hint rung. Still no evidence. The card cap resolves the question on the next turn
+ * if it is still not answered.
+ */
+function backOnHeldCard(s, input, item) {
+  const lead = SH.welcomeBack();
+  const shown = !!(s.lastUi?.chips?.length && s.lastMove?.itemId === item.id);
+  const chips = shown ? undefined : offerChoices(s, input.kit, item);
+  if (chips) return plan(input.typed ? "hint" : "repair", join(lead, SH.offerChoices()), { item, chips, lead, request: "back" });
+  const p = decideAs(s, input, item, "stuck");
+  return { ...p, shape: join(lead, p.shape), lead, request: "back" };
 }
 
 /** Run the phase's own path as if the child had said they were stuck (a hint request): a rung, never evidence. */
@@ -1246,7 +1296,7 @@ function decide(s, input, item) {
   }
   switch (s.phase) {
     case "warmup": return warmup(s, input, item);
-    case "teach": return teach(s, input);
+    case "teach": return ackHold(s, input) ?? teach(s, input);
     case "practice": return practice(s, input, item);
     case "teachback": return teachback(s, input);
     default: return toWrap(s, {});
@@ -1287,7 +1337,10 @@ function capPlan(s, input, p) {
   // round 3 (conversation; battery repeat-03, explain_differently-04, clarify-07: "can you repeat the question?" was capped into
   // "leave it for later; then the next question", the request unanswered): an ask to have THIS question again, in another
   // form, is honoured the same way; their next answer turn caps as before
-  if (s.safeguard || !p.item || p.capped || p.request === "visual" || (p5Flag("R3CONV") && RE_PRESENT.has(p.request))) return p;
+  // round 4 (patch 14; owner-2 R5.loop): the exemption is for the child's OWN words read in code; the UNDERSTAND note's guess
+  // ("ek min... haan bolo" read as "slower") never holds a card past the cap
+  const noteGuess = p5Flag("R4CONV") && input.cls?.request?.src === "note";
+  if (s.safeguard || !p.item || p.capped || p.request === "visual" || (p5Flag("R3CONV") && RE_PRESENT.has(p.request) && !noteGuess)) return p;
   const kit = input.kit;
   const item = findItem(s, kit, p.item.id) ?? p.item;
   const pins = s.pendingWhy !== item.id && !["safeguard", "wrap", "break", "teachback"].includes(p.kind);

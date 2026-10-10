@@ -572,7 +572,8 @@ export function revealsAnswer(text, item) {
     return item.diagnostic ? cutOptionSpan(ws, item) : ws;
   };
   const all = strip(text);
-  const sentences = String(text).split(/(?<=[.!?।])\s+/).filter((x) => !/[?？]\s*$/.test(x)).map(strip);
+  const rawSentences = String(text).split(/(?<=[.!?।])\s+/).filter((x) => !/[?？]\s*$/.test(x));
+  const sentences = rawSentences.map(strip);
   for (const form of forms) {
     if (indexOfRun(all, form) < 0) continue;
     if (!containsTerm(named, form.join(" "))) return true;
@@ -581,6 +582,47 @@ export function revealsAnswer(text, item) {
       if (at >= 0 && ws.slice(Math.max(0, at - 3), at + form.length + 4).some((w) => VERDICT.has(w))) return true;
     }
   }
+  // round 4 (r4-latency's blind rewrite review, 2026-10-10): two give-aways this missed. (a) A key that names its counted
+  // parts ("5 faces: 1 square and 4 triangles"): "pyramid mein chaar triangles aur ek square hota hai … kitne faces?" states
+  // every part's count before asking for the total. (b) A key the question itself names as an option ("face, edge ya
+  // corner?"): "tumne corner kaha, cube ka woh point jahan teen edges milti hain" pairs the key with the question's own
+  // description, which is the answer said as a definition (only a verdict word next to it counted before).
+  const parts = keyParts(item);
+  if (parts.length >= 2 && sentences.some((ws) => parts.every((p) => statesCount(ws, p)))) return true;
+  const describing = describingWords(item, forms);
+  if (describing.size >= 3) {
+    // a key of a letter or a filler word ("A", "is") is never matched as a definition
+    for (const form of forms.filter((f) => f.join(" ").length >= 3 && !(f.length === 1 && FILLER.has(f[0])))) for (const [k, ws] of sentences.entries()) {
+      // a sentence with a blank to fill is a prompt, not a statement ("Salt weighs ___ g; compare that with …")
+      if (indexOfRun(ws, form) < 0 || /_{2,}/.test(rawSentences[k])) continue;
+      if (new Set(ws.filter((w) => describing.has(w))).size >= 3) return true;
+    }
+  }
   const marks = new Set(distinguishingNumbers(item));
   return marks.size > 0 && sentences.some((ws) => compares(ws) && ws.some((w) => numbersIn(w).some((n) => marks.has(n))));
+}
+
+/** The counted parts a key names after its total ("5 faces: 1 square and 4 triangles" → 1 square, 4 triangles). */
+function keyParts(item) {
+  const a = norm(String(item.answer ?? ""));
+  const tail = a.includes(":") ? a.slice(a.indexOf(":") + 1) : String(item.answer ?? "").includes(":") ? norm(String(item.answer).split(":").slice(1).join(":")) : "";
+  // only a key whose head is itself a count ("5 faces: …"); "A rectangle: it is 2 long and 1 wide" names facts, not parts
+  const head = String(item.answer ?? "").split(":")[0];
+  if (!tail || !/\d/.test(head)) return [];
+  return [...tail.matchAll(/(?:^|\s)(\d+)\s+([a-z]{3,})/g)].map((m) => ({ n: m[1], stem: m[2].slice(0, Math.min(5, m[2].length)) }));
+}
+/** Does a sentence state this part's count (the number within three words before the part's noun)? */
+function statesCount(ws, p) {
+  for (let i = 0; i < ws.length; i++) {
+    if (!ws[i].startsWith(p.stem)) continue;
+    for (let j = Math.max(0, i - 3); j < i; j++) if (numbersIn(ws[j]).includes(p.n) || (ws[j] === "do" && p.n === "2")) return true;
+  }
+  return false;
+}
+/** The question's own describing words (4+ letters, not the key, not filler), in both prompts. */
+function describingWords(item, forms) {
+  const key = new Set(forms.flat());
+  const opts = new Set((item.options ?? []).flatMap((o) => wordsOf(o.text)));
+  return new Set([item.prompt_en, item.prompt_hi].filter(Boolean).flatMap(wordsOf)
+    .filter((w) => w.length >= 4 && !FILLER.has(w) && !key.has(w) && !opts.has(w) && !/\d/.test(w)));
 }

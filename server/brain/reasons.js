@@ -84,6 +84,13 @@ export const FAMILIES = Object.freeze({
   conv2: ["no_note", ...CONV2_INTENTS.flatMap((i) => [`note.${i}`, `shadow.${i}`])],
   p5: ["capped.assert", "capped.leave"],
   module: ["unverifiable"],
+  // round 4 (patch 13, SHADOW): the item-context set-aside (director/itemSetAside.js) on a predicate hit: would it have set
+  // the hit aside (safety_setaside_would.item_context) or why not (safety_setaside_not.*), the child's own content words
+  // (setaside_novel) and how many of their words were the item's (setaside_masked). Codes only, never words.
+  safety_setaside_would: ["item_context"],
+  safety_setaside_not: ["self_harm", "no_item", "unverified", "first_person", "guard", "actor", "harm", "novel", "rest_fires", "no_hit"],
+  setaside_novel: ["n0", "n1", "n2", "over"],
+  setaside_masked: ["n0", "n1", "n2", "n3", "n4", "n5plus"],
 });
 
 const SETS = Object.fromEntries(Object.entries(FAMILIES).map(([k, v]) => [k, new Set(v)]));

@@ -6,7 +6,7 @@
 // Common flags (every owner-*.mjs):
 //   --base URL        target (default TAXILA_BASE, else production https://taxila.dev)
 //   --seed N          the random seed (printed; the same seed replays the same child choices)
-//   --out DIR         where the run's transcripts go (default evals/owner-truth/results/acceptance-<stamp>/)
+//   --out DIR         where the run's transcripts go (default evals/owner-truth/results/acceptance-<stamp>-s<seed>-p<pid>/)
 //   --judge model     also run the model judge (Azure taxila-brain; .env.local keys) on top of the code rubric; a reply
 //                     fails when EITHER judge flags it (strict). Default: code rubric only (no model calls by the test).
 //   --browser / --no-browser   the Chromium checks (owner-1, owner-5); default on when Chromium exists
@@ -41,7 +41,9 @@ export const shuffle = (a) => { const b = [...a]; for (let i = b.length - 1; i >
 
 // ───────────────────────────── output ─────────────────────────────
 const stamp = new Date().toISOString().replace(/[:.]/g, "-").slice(0, 19);
-export const OUT = arg("out", join(ROOT, "evals", "owner-truth", "results", `acceptance-${stamp}`));
+// round 4 (patch 14): two lanes started in the same second (parallel seeds) wrote into ONE dir and overwrote each other: the
+// seed and the pid make the default unique
+export const OUT = arg("out", join(ROOT, "evals", "owner-truth", "results", `acceptance-${stamp}-s${SEED}-p${process.pid}`));
 export function save(name, data) {
   mkdirSync(OUT, { recursive: true });
   const p = join(OUT, name);
