@@ -1,0 +1,28 @@
+<p>Every painted image was made on Azure with gpt-image-2 (deployment taxila-image): 37 images out of the 90-image cap, about USD 8 by token count. Option 3 is drawn in code and needed no images. Each family's five expression frames are edits of its own front, so the identity comes from the pixels, not from a description. Every prompt, size, date and token count is in <code>gen.json</code>.</p>
+<h3>How each option was judged</h3>
+<ul>
+<li><b>My own eye</b>, at full size and at the real slot sizes: 90 × 117 and 250 px tall in the lesson, 150 × 190 in the home window, 38 × 48 in the game. I picked each family's front by eye <i>before</i> any judge result came back, so the judges could not steer the pick.</li>
+<li><b>A blind check</b> by two vision models on Azure from different makers: gpt-5.6-sol (n=3 per front) and Kimi K2.6 (n=2 per front). Neither was told her age, her job, her country or the product. Open questions came first (age, job, where she is from), then the yes/no ones. As a control, today's chibi was read as childish in 5/5 runs, and none of the four options was. So the judges can see childishness when it is there.</li>
+<li><b>An identity check</b>: each family's six frames as a grid, judged by the same two models (n=5 per family). It asks whether all six are the same person, and what each face is doing.</li>
+<li><b>Skin against Monk 6</b>, Asha's band in TEACHER-VISUAL, measured as g9.mjs does: the per-channel median of four 25 px patches (cheeks and forehead), averaged in linear light and converted to L*a*b*. The g9 bar is ΔL* ≤ 3 and ΔC* ≤ 4.</li>
+</ul>
+{{TABLE}}
+<p class="small">Age reads are every range a judge gave. The teacher, childish, sexualised and Indian columns count runs that said yes. The identity column counts runs that said all six frames are the same person.</p>
+<h3>What the judges caught, and what I changed</h3>
+<ul>
+<li>The first thinking frames (a side glance) read as a <b>sceptical side-eye</b> in 3/3 runs for the painted and the lamplight options. That breaks the rule that her face never reacts to an answer. I redid them with the eyes up and the brows level. Now 1 in 3 runs still calls the upward glance a mild eye-roll. In motion that is a timing problem: the glance should last under 3.5 s.</li>
+<li>The first speaking frames read as <b>surprised</b> (raised brows, wide eyes). I redid them with relaxed brows. Now every run reads "speaking".</li>
+<li>The line-of-light listening frame still reads as a sideways, sceptical glance in 2-3 of 3 runs, even after one fix. It is the weakest frame on the page.</li>
+</ul>
+<h3>Skin: every painted option is too orange for Monk 6</h3>
+<p>As generated, all three painted fronts are lighter than the Monk 6 swatch (ΔL* +6 to +14) and about twice as saturated (ΔC* +21 to +32). So is today's chibi. When the skin is graded to hit the bar exactly, it turns ashy and grey on the cream lamplight (right). A half-way grade (middle, C* about 37) looks the most like real skin. The g9 bar was written for a 3D material under a stage light, not for painted pixels, so the 2D target needs a decision: grade to the swatch, or measure inside the window's lamplight.</p>
+<div class="grade"><figure><img src="{{GRADE0}}" alt="as generated"><figcaption>As generated (C* 49)</figcaption></figure><figure><img src="{{GRADE1}}" alt="half-way grade"><figcaption>Half-way grade (C* 37)</figcaption></figure><figure><img src="{{GRADE2}}" alt="graded to Monk 6"><figcaption>Exactly Monk 6 (C* 28)</figcaption></figure></div>
+<h3>What this cannot tell you</h3>
+<ul>
+<li>A model's opinion is a stand-in, not yours, and not a child's or a parent's. No child or parent has seen these.</li>
+<li>These are stills. None of them has been rigged, so how each one moves is a forecast (see RIG-NOTES.md), not something I watched.</li>
+<li>"Reads as Indian" leans heavily on the saree and bindi. The judges said so themselves.</li>
+<li>The judges see "teacher" in all four. That is the clothes and the framing doing the work, so it does not separate the options.</li>
+</ul>
+<h3>Also tried and set aside (13 fronts)</h3>
+{{TRIED}}

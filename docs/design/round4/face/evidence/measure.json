@@ -1,0 +1,606 @@
+{
+ "date": "2026-10-10",
+ "method": "Measurements for the round-4 face options.\n1. Monk skin check, the method of scripts/character/g9.mjs moved to 2D: per patch the per-channel median, patches averaged\n   in linear light, CIE L*a*b* (D65). Bar from g9: |L* - L*_MST| <= 3 and |C* - C*_MST| <= 4, against MST 6 (Asha's band,\n   TEACHER-VISUAL \u00a74.3). Patches: forehead L/R (either side of the bindi) and cheek L/R, 25 x 25 px on the 1024 front,\n   placed by hand (PATCHES) and drawn on an overlay so the placement can be checked.\n2. Frame registration: how far each expression frame drifts from its front (ORB + RANSAC similarity on the whole frame,\n   so the plain background, hair and saree carry it): scale, rotation, translation in px at 1024.\n   python3 -I measure.py <out.json> <overlay.png>",
+ "MST_LAB": {
+  "1": {
+   "L": 94.2,
+   "a": 1.5,
+   "b": 5.4,
+   "C": 5.6
+  },
+  "2": {
+   "L": 92.3,
+   "a": 2.1,
+   "b": 7.3,
+   "C": 7.6
+  },
+  "3": {
+   "L": 93.1,
+   "a": 0.2,
+   "b": 14.2,
+   "C": 14.2
+  },
+  "4": {
+   "L": 87.6,
+   "a": 0.5,
+   "b": 17.7,
+   "C": 17.8
+  },
+  "5": {
+   "L": 77.9,
+   "a": 3.5,
+   "b": 23.1,
+   "C": 23.4
+  },
+  "6": {
+   "L": 55.1,
+   "a": 7.8,
+   "b": 26.7,
+   "C": 27.9
+  },
+  "7": {
+   "L": 42.5,
+   "a": 12.3,
+   "b": 20.5,
+   "C": 23.9
+  },
+  "8": {
+   "L": 30.7,
+   "a": 11.7,
+   "b": 13.3,
+   "C": 17.7
+  },
+  "9": {
+   "L": 21.1,
+   "a": 2.7,
+   "b": 6.0,
+   "C": 6.5
+  },
+  "10": {
+   "L": 14.6,
+   "a": 1.5,
+   "b": 3.5,
+   "C": 3.8
+  }
+ },
+ "skin": {
+  "today": {
+   "family": "today (c-front)",
+   "patches": {
+    "forehead_L": {
+     "at": [
+      455,
+      292
+     ],
+     "L": 62.8,
+     "a": 26.3,
+     "b": 43.9,
+     "C": 51.2
+    },
+    "forehead_R": {
+     "at": [
+      595,
+      292
+     ],
+     "L": 69.2,
+     "a": 27.3,
+     "b": 48.0,
+     "C": 55.2
+    },
+    "cheek_L": {
+     "at": [
+      415,
+      540
+     ],
+     "L": 74.8,
+     "a": 24.6,
+     "b": 47.4,
+     "C": 53.4
+    },
+    "cheek_R": {
+     "at": [
+      635,
+      540
+     ],
+     "L": 69.2,
+     "a": 28.4,
+     "b": 50.5,
+     "C": 57.9
+    }
+   },
+   "forehead": {
+    "L": 66.1,
+    "a": 26.8,
+    "b": 46.0,
+    "C": 53.3
+   },
+   "cheek": {
+    "L": 72.1,
+    "a": 26.4,
+    "b": 48.7,
+    "C": 55.4
+   },
+   "mean": {
+    "L": 69.2,
+    "a": 26.5,
+    "b": 47.4,
+    "C": 54.3
+   },
+   "target_MST6": {
+    "L": 55.1,
+    "a": 7.8,
+    "b": 26.7,
+    "C": 27.9
+   },
+   "dL": 14.1,
+   "dC": 26.4,
+   "pass_g9_bar": 0.0,
+   "nearest_MST": 6,
+   "dE76_to_MST": {
+    "5": 34.6,
+    "6": 31.3,
+    "7": 40.5,
+    "8": 53.5
+   }
+  },
+  "s3-graphic": {
+   "family": "stylised",
+   "patches": {
+    "forehead_L": {
+     "at": [
+      458,
+      222
+     ],
+     "L": 68.9,
+     "a": 19.6,
+     "b": 45.2,
+     "C": 49.3
+    },
+    "forehead_R": {
+     "at": [
+      560,
+      222
+     ],
+     "L": 65.4,
+     "a": 21.0,
+     "b": 46.0,
+     "C": 50.6
+    },
+    "cheek_L": {
+     "at": [
+      418,
+      405
+     ],
+     "L": 71.6,
+     "a": 18.8,
+     "b": 44.2,
+     "C": 48.0
+    },
+    "cheek_R": {
+     "at": [
+      600,
+      405
+     ],
+     "L": 70.0,
+     "a": 19.5,
+     "b": 44.6,
+     "C": 48.6
+    }
+   },
+   "forehead": {
+    "L": 67.2,
+    "a": 20.2,
+    "b": 45.5,
+    "C": 49.8
+   },
+   "cheek": {
+    "L": 70.8,
+    "a": 19.2,
+    "b": 44.4,
+    "C": 48.3
+   },
+   "mean": {
+    "L": 69.0,
+    "a": 19.7,
+    "b": 44.9,
+    "C": 49.0
+   },
+   "target_MST6": {
+    "L": 55.1,
+    "a": 7.8,
+    "b": 26.7,
+    "C": 27.9
+   },
+   "dL": 13.9,
+   "dC": 21.1,
+   "pass_g9_bar": 0.0,
+   "nearest_MST": 6,
+   "dE76_to_MST": {
+    "5": 28.6,
+    "6": 25.8,
+    "7": 36.8,
+    "8": 50.3
+   }
+  },
+  "a3-film": {
+   "family": "anime",
+   "patches": {
+    "forehead_L": {
+     "at": [
+      450,
+      248
+     ],
+     "L": 60.1,
+     "a": 25.3,
+     "b": 45.2,
+     "C": 51.8
+    },
+    "forehead_R": {
+     "at": [
+      562,
+      248
+     ],
+     "L": 60.4,
+     "a": 24.8,
+     "b": 45.4,
+     "C": 51.7
+    },
+    "cheek_L": {
+     "at": [
+      412,
+      440
+     ],
+     "L": 61.6,
+     "a": 23.5,
+     "b": 46.3,
+     "C": 51.9
+    },
+    "cheek_R": {
+     "at": [
+      612,
+      440
+     ],
+     "L": 60.1,
+     "a": 25.2,
+     "b": 46.1,
+     "C": 52.6
+    }
+   },
+   "forehead": {
+    "L": 60.3,
+    "a": 25.0,
+    "b": 45.3,
+    "C": 51.8
+   },
+   "cheek": {
+    "L": 60.8,
+    "a": 24.3,
+    "b": 46.2,
+    "C": 52.2
+   },
+   "mean": {
+    "L": 60.6,
+    "a": 24.7,
+    "b": 45.8,
+    "C": 52.0
+   },
+   "target_MST6": {
+    "L": 55.1,
+    "a": 7.8,
+    "b": 26.7,
+    "C": 27.9
+   },
+   "dL": 5.5,
+   "dC": 24.1,
+   "pass_g9_bar": 0.0,
+   "nearest_MST": 6,
+   "dE76_to_MST": {
+    "5": 35.6,
+    "6": 26.1,
+    "7": 33.5,
+    "8": 46.0
+   }
+  },
+  "w1-flat": {
+   "family": "world",
+   "patches": {
+    "forehead_L": {
+     "at": [
+      462,
+      205
+     ],
+     "L": 62.8,
+     "a": 30.0,
+     "b": 52.0,
+     "C": 60.0
+    },
+    "forehead_R": {
+     "at": [
+      562,
+      205
+     ],
+     "L": 60.7,
+     "a": 30.6,
+     "b": 50.5,
+     "C": 59.0
+    },
+    "cheek_L": {
+     "at": [
+      422,
+      385
+     ],
+     "L": 63.1,
+     "a": 32.2,
+     "b": 52.1,
+     "C": 61.2
+    },
+    "cheek_R": {
+     "at": [
+      600,
+      385
+     ],
+     "L": 64.1,
+     "a": 31.5,
+     "b": 52.2,
+     "C": 61.0
+    }
+   },
+   "forehead": {
+    "L": 61.8,
+    "a": 30.3,
+    "b": 51.3,
+    "C": 59.5
+   },
+   "cheek": {
+    "L": 63.6,
+    "a": 31.8,
+    "b": 52.1,
+    "C": 61.1
+   },
+   "mean": {
+    "L": 62.7,
+    "a": 31.1,
+    "b": 51.7,
+    "C": 60.3
+   },
+   "target_MST6": {
+    "L": 55.1,
+    "a": 7.8,
+    "b": 26.7,
+    "C": 27.9
+   },
+   "dL": 7.6,
+   "dC": 32.4,
+   "pass_g9_bar": 0.0,
+   "nearest_MST": 6,
+   "dE76_to_MST": {
+    "5": 42.6,
+    "6": 35.0,
+    "7": 41.7,
+    "8": 53.6
+   }
+  },
+  "line-rest": {
+   "family": "line",
+   "patches": {
+    "forehead_L": {
+     "at": [
+      470,
+      222
+     ],
+     "L": 58.1,
+     "a": 13.1,
+     "b": 29.2,
+     "C": 32.0
+    },
+    "forehead_R": {
+     "at": [
+      554,
+      222
+     ],
+     "L": 55.5,
+     "a": 12.3,
+     "b": 27.4,
+     "C": 30.0
+    },
+    "cheek_L": {
+     "at": [
+      410,
+      410
+     ],
+     "L": 57.0,
+     "a": 15.2,
+     "b": 28.5,
+     "C": 32.3
+    },
+    "cheek_R": {
+     "at": [
+      612,
+      410
+     ],
+     "L": 52.4,
+     "a": 14.4,
+     "b": 26.1,
+     "C": 29.8
+    }
+   },
+   "forehead": {
+    "L": 56.8,
+    "a": 12.7,
+    "b": 28.3,
+    "C": 31.0
+   },
+   "cheek": {
+    "L": 54.8,
+    "a": 14.8,
+    "b": 27.3,
+    "C": 31.1
+   },
+   "mean": {
+    "L": 55.8,
+    "a": 13.8,
+    "b": 27.8,
+    "C": 31.0
+   },
+   "target_MST6": {
+    "L": 55.1,
+    "a": 7.8,
+    "b": 26.7,
+    "C": 27.9
+   },
+   "dL": 0.7,
+   "dC": 3.1,
+   "pass_g9_bar": true,
+   "nearest_MST": 6,
+   "dE76_to_MST": {
+    "5": 24.8,
+    "6": 6.1,
+    "7": 15.2,
+    "8": 29.1
+   }
+  }
+ },
+ "registration": {
+  "s3-graphic": {
+   "speak2": {
+    "scale": 0.9944,
+    "rot_deg": 0.03,
+    "tx": -7.2,
+    "ty": -2.1,
+    "face_centre_shift_px": 11.0,
+    "inliers": 620,
+    "matches": 800
+   },
+   "listen": {
+    "scale": 0.9141,
+    "rot_deg": -12.44,
+    "tx": -46.7,
+    "ty": 133.8,
+    "face_centre_shift_px": 25.0,
+    "inliers": 288,
+    "matches": 800
+   },
+   "think2": {
+    "scale": 0.9878,
+    "rot_deg": -0.06,
+    "tx": -3.2,
+    "ty": -2.5,
+    "face_centre_shift_px": 11.9,
+    "inliers": 622,
+    "matches": 800
+   },
+   "warm": {
+    "scale": 0.978,
+    "rot_deg": -0.04,
+    "tx": -4.3,
+    "ty": -1.2,
+    "face_centre_shift_px": 18.5,
+    "inliers": 655,
+    "matches": 800
+   },
+   "blink": {
+    "scale": 0.987,
+    "rot_deg": -0.08,
+    "tx": 0.5,
+    "ty": -0.8,
+    "face_centre_shift_px": 8.8,
+    "inliers": 730,
+    "matches": 800
+   }
+  },
+  "a3-film": {
+   "speak2": {
+    "scale": 0.9942,
+    "rot_deg": -0.12,
+    "tx": 1.4,
+    "ty": 0.9,
+    "face_centre_shift_px": 2.6,
+    "inliers": 707,
+    "matches": 800
+   },
+   "listen": {
+    "scale": 0.9928,
+    "rot_deg": 12.77,
+    "tx": 136.6,
+    "ty": -76.6,
+    "face_centre_shift_px": 39.9,
+    "inliers": 418,
+    "matches": 800
+   },
+   "think2": {
+    "scale": 0.9932,
+    "rot_deg": -0.35,
+    "tx": -2.3,
+    "ty": 3.8,
+    "face_centre_shift_px": 4.0,
+    "inliers": 707,
+    "matches": 800
+   },
+   "warm": {
+    "scale": 1.0016,
+    "rot_deg": 0.0,
+    "tx": 1.8,
+    "ty": -0.8,
+    "face_centre_shift_px": 2.6,
+    "inliers": 731,
+    "matches": 800
+   },
+   "blink": {
+    "scale": 1.0001,
+    "rot_deg": -0.02,
+    "tx": 4.6,
+    "ty": 0.4,
+    "face_centre_shift_px": 4.8,
+    "inliers": 751,
+    "matches": 800
+   }
+  },
+  "w1-flat": {
+   "speak2": {
+    "scale": 0.9808,
+    "rot_deg": 0.01,
+    "tx": 10.3,
+    "ty": -4.6,
+    "face_centre_shift_px": 12.2,
+    "inliers": 735,
+    "matches": 800
+   },
+   "listen": {
+    "scale": 0.9475,
+    "rot_deg": 9.22,
+    "tx": 89.8,
+    "ty": -41.8,
+    "face_centre_shift_px": 10.8,
+    "inliers": 224,
+    "matches": 800
+   },
+   "think2": {
+    "scale": 0.9175,
+    "rot_deg": -1.02,
+    "tx": 41.1,
+    "ty": 19.2,
+    "face_centre_shift_px": 22.8,
+    "inliers": 451,
+    "matches": 800
+   },
+   "warm": {
+    "scale": 1.0003,
+    "rot_deg": 0.01,
+    "tx": -0.1,
+    "ty": -0.7,
+    "face_centre_shift_px": 0.5,
+    "inliers": 763,
+    "matches": 800
+   },
+   "blink": {
+    "scale": 0.9548,
+    "rot_deg": -0.15,
+    "tx": -3.6,
+    "ty": 0.3,
+    "face_centre_shift_px": 32.0,
+    "inliers": 616,
+    "matches": 800
+   }
+  }
+ }
+}

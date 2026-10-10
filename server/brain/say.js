@@ -26,15 +26,24 @@ const SOFT_FIX = new Set(["long", "twoq", "wrap", "script", "register", "stage",
 // round 3 fix (experience B10 / B2): her words never name a screen part by its internal name. The review heard "Chips mein
 // chuno: keep going, short break, ya stop for today" (c4-10) and "bar1 ke 4 parts", "bar2 ko … kijiye" over strips labelled
 // A and B (3 times): the child sees buttons and strips A / B, never "chips" or "bar1". PURE.
-const UI_WORD = /(?<![\p{L}\p{N}])(?:chips?\s+(?:mein|me|par|pe|se|on|in|from)\b|(?:the|on|from|in)\s+(?:the\s+)?chips\b|chips\s+(?:chuno|chuniye|choose|pick|tap|dabao|dabaiye|select)\b|bar\s?[1-9](?![\p{L}\p{N}]))/iu;
+// Precision (2026-10-10 scan): only a CHOOSING verb makes "chips" the buttons ("chips mein chuno", "chips par tap karo", "tap one
+// of the chips"); food chips in a lesson ("chips mein namak aur tel", "a potato chip on a piece of paper") are not. A strip's
+// internal name is "bar1" / "bar2" (or "bar 1 / 2" with a case marker after it); a bar graph's "bar 4 squares" is not.
+const CHOOSE = String.raw`(?:chuno|chuniye|chun\s+lo|choose|pick|tap|dabao|dabaiye|daba\s+do|select|click)`;
+const CHIPS_UI = String.raw`chips?\s+(?:mein|me|par|pe|se|on|in|from)\s+(?:se\s+|ek\s+|one\s+)?(?:\S+\s+){0,2}?${CHOOSE}|chips\s+${CHOOSE}|${CHOOSE}\s+(?:on\s+)?(?:one\s+of\s+)?(?:a\s+|the\s+|ek\s+)?chips?`;
+const BAR_UI = String.raw`bar[1-9](?![\p{L}\p{N}])|bar\s[12]\s+(?:ke|ko|mein|me|ka|ki|par|aur|and|is|has)(?![\p{L}])`;
+/** A sentence that points at what is on the screen ("Screen par…", "dekho", "look at", "this roti", "yeh board"). */
+const SCREEN_SENTENCE = /(?<![\p{L}])(?:screen|board|tray|dekho|dekhiye|dekhein|dekh\s+rahe|look|see\s+(?:the|this|how)|here|yahan|yahaan|is\s+(?:roti|picture|tasveer|board|shape|strip|bar)|yeh\s+(?:roti|picture|tasveer|board|shape|strip|bar)|this\s+(?:roti|picture|board|shape|strip|bar))(?![\p{L}])/iu;
+const UI_WORD = new RegExp(String.raw`(?<![\p{L}\p{N}])(?:${CHIPS_UI}|${BAR_UI})`, "iu");
 export const namesUiPart = (t) => UI_WORD.test(String(t ?? ""));
-/** The code repair: "chips mein / on the chips" → the screen; "bar1 / bar2" → A / B (the strips' own labels). */
+/** The code repair: "chips mein chuno / tap the chips" → the screen; "bar1 / bar2" → A / B (the strips' own labels). */
 export function plainUiWords(t, lang = "hinglish") {
   const scr = lang === "english" ? "on the screen" : "screen par";
   return String(t ?? "")
-    .replace(/(?<![\p{L}\p{N}])bar\s?([1-9])(?![\p{L}\p{N}])/giu, (_, d) => "ABCDEFGHI"[Number(d) - 1] ?? d)
-    .replace(/(?<![\p{L}\p{N}])(?:(?:the|on|from|in)\s+(?:the\s+)?chips|chips?\s+(?:mein|me|par|pe|se|on|in|from))\b/giu, scr)
-    .replace(/(?<![\p{L}\p{N}])chips(?=\s+(?:chuno|chuniye|choose|pick|tap|dabao|dabaiye|select)\b)/giu, scr)
+    .replace(new RegExp(String.raw`(?<![\p{L}\p{N}])bar\s?([12])(?=\s+(?:ke|ko|mein|me|ka|ki|par|aur|and|is|has)(?![\p{L}]))|(?<![\p{L}\p{N}])bar([1-9])(?![\p{L}\p{N}])`, "giu"), (_, a, b) => "ABCDEFGHI"[Number(a ?? b) - 1] ?? (a ?? b))
+    .replace(new RegExp(String.raw`(?<![\p{L}\p{N}])chips?\s+(?:mein|me|par|pe|se|on|in|from)(?=\s+(?:se\s+|ek\s+|one\s+)?(?:\S+\s+){0,2}?${CHOOSE})`, "giu"), scr)
+    .replace(new RegExp(String.raw`(?<![\p{L}\p{N}])chips(?=\s+${CHOOSE})`, "giu"), scr)
+    .replace(new RegExp(String.raw`(?<=${CHOOSE}\s+)(?:on\s+)?(?:one\s+of\s+)?(?:a\s+|the\s+|ek\s+)?chips?(?![\p{L}])`, "giu"), lang === "english" ? "a button on the screen" : "screen par ek button")
     .replace(/\s{2,}/g, " ").trim();
 }
 /** Text-mode hard ceiling for the reply guard (the compiled rule asks for TURN_WORDS). */
@@ -325,6 +334,11 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
   // "noconfirm" on what shipped). The answered item's own question and key are verified content: their parts may be named.
   const answered = R3 && verdict === "correct" && state.itemsDone?.length ? findItem(state, kit, state.itemsDone.at(-1)) : null;
   const partsLines = answered ? [promptFor(answered, lang), String(answered.answer ?? "")] : undefined;
+  // round 3 fix (owner-4 "example do", 2 of 2 local runs): a REQUESTED example / story / other way brings its own numbers
+  // ("12 mangoes ka 1/3 hissa") beside the board; only her sentences ABOUT the screen are held to what it shows. Every such
+  // sentence was stripped as "parts the screen does not show" and the turn shipped the model-failure line.
+  const ownWay = ["example", "story", "another"].includes(state.lastMove?.request);
+  const aboutScreen = (t) => (ownWay ? (String(t ?? "").match(/[^.!?।]+[.!?।]*\s*/g) ?? []).filter((x) => SCREEN_SENTENCE.test(x)).join("") : t);
   // round 2 (conversation): a lead-slot turn's length is its OWN words (the card question after them is verified content,
   // like a diagnostic's options): within the lead budget it is not "long"
   const slotState = { on: false };
@@ -342,7 +356,7 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
     // W2-B #1: the line names parts the mounted module does not show (she said quarters over fifths). Her OWN words only:
     // the kit's posed question is verified content (W2-E: the replay showed the predicate flagging a verified question
     // that names halves/quarters/eighths beside a 1/2-only predict screen, which cost a rewrite and her lead-in).
-    screenContradiction(own(t), module, partsLines) && "parts",
+    screenContradiction(aboutScreen(own(t)), module, partsLines) && "parts",
     registerBroken(t, address) && "register",
     leaksStage(t) && "stage",
     namesUiPart(own(t)) && "uiword",
@@ -470,7 +484,7 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
       found.includes("deny") && "it says their answer is wrong, but it was right — confirm it plainly",
       found.includes("corrects") && `it implies their answer was wrong or that the answer is something else, but their answer ${JSON.stringify(String(right.key))} was right — confirm it plainly and do not name any other answer as the result`,
       found.includes("screen") && "it tells them to tap or pick something on the screen, but nothing is on the screen to tap this turn — ask them to say it",
-      found.includes("parts") && `it names parts the screen does not show — ${screenContradiction(own(reply), module, partsLines)?.onScreen ?? ""}`,
+      found.includes("parts") && `it names parts the screen does not show — ${screenContradiction(aboutScreen(own(reply)), module, partsLines)?.onScreen ?? ""}`,
       found.includes("cantshow") && "it says you cannot show or draw — never say that; the board draws for you: talk about the idea itself",
       found.includes("stage") && "it reads out a field name, markup or a text picture (like 'Whiteboard:', brackets or rows of symbols like ●●●) — plain spoken words only; the board draws pictures, never your words",
       found.includes("uiword") && "it names a screen part by an internal name (chips, bar1) — say what the child sees: the buttons on the screen, strip A or B",
@@ -549,7 +563,13 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
       if (found.includes("corrects")) { reply = keepOr(stripCorrection(reply, right)); guard.replaced = true; }
       if (found.includes("screen")) { reply = keepOr(stripScreenRefs(reply)); guard.replaced = true; }
       // W2-B fixer: a rewrite that still names part counts the screen does not show loses those sentences
-      if (found.includes("parts")) { reply = keepOr(stripStrayParts(reply, module, partsLines, { keep: item ? promptFor(item, lang) : "" })); guard.replaced = true; }
+      if (found.includes("parts")) {
+        // a requested example keeps its own sentences: only the ones about the screen are taken out
+        const keepOwn = ownWay ? (x) => !SCREEN_SENTENCE.test(x) : null;
+        reply = keepOr(keepOwn ? (String(reply).match(/[^.!?।]+[.!?।]*\s*/g) ?? []).filter((x) => keepOwn(x) || !screenContradiction(x, module, partsLines)).join("").trim() || null
+          : stripStrayParts(reply, module, partsLines, { keep: item ? promptFor(item, lang) : "" }));
+        guard.replaced = true;
+      }
       if (found.includes("register") && address === "aap") { reply = toAap(reply); guard.repaired = true; }
       if (found.includes("stage")) { reply = stripStage(reply) || fallbackReply(state, item); guard.replaced = true; }
       if (found.includes("uiword")) { reply = plainUiWords(reply, lang); guard.repaired = true; }

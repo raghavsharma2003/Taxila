@@ -1,0 +1,183 @@
+{
+ "method": "blind single-image questionnaire, no context given; PROMPT verbatim below",
+ "prompt": "You are shown one character portrait. Answer only from what is drawn. Be blunt and specific.\n1. apparent_age_range: the age range the person appears to be, as \"lo-hi\" years.\n2. occupation_guesses: your top 3 guesses for her occupation or role, most likely first.\n3. origin_guess: where in the world would you guess she is from? Open answer, as specific as the picture allows.\n4. reads_as_teacher: could she credibly be a schoolteacher? true/false, plus one short reason.\n5. childish: does anything about the figure or the drawing read as childish, babyish, toy-like or made for toddlers (proportions, eyes, style)? true/false, plus what.\n6. sexualised: does anything read as sexualised, glamorous, seductive, coy or flirtatious (expression, pose, framing, clothing, make-up)? true/false, plus what.\n7. reads_as_indian: does she read as Indian specifically? true/false, plus which details.\n8. idealised: does the face read as an idealised doll or model face rather than a real individual? true/false.\n9. style: the art style in a few words.\nReply JSON only: {\"apparent_age_range\":\"\",\"occupation_guesses\":[],\"origin_guess\":\"\",\"reads_as_teacher\":{\"v\":bool,\"why\":\"\"},\"childish\":{\"v\":bool,\"what\":\"\"},\"sexualised\":{\"v\":bool,\"what\":\"\"},\"reads_as_indian\":{\"v\":bool,\"details\":\"\"},\"idealised\":bool,\"style\":\"\"}",
+ "runs": [
+  {
+   "label": "line-rest",
+   "file": "/tmp/claude-0/-home-user/ecee9fc1-62f9-5f67-a47d-69ca79d9981a/scratchpad/r4-face/raw/line-rest.png",
+   "model": "taxila-brain",
+   "rep": 1,
+   "date": "2026-10-10T06:03:45.891Z",
+   "answer": {
+    "apparent_age_range": "30-45",
+    "occupation_guesses": [
+     "schoolteacher",
+     "government office worker",
+     "community worker"
+    ],
+    "origin_guess": "South Asia, likely India",
+    "reads_as_teacher": {
+     "v": true,
+     "why": "The modest sari, neat hair and composed expression fit a conventional teacher portrait."
+    },
+    "childish": {
+     "v": false,
+     "what": "Adult proportions and restrained styling; only the simplified vector treatment is cartoon-like."
+    },
+    "sexualised": {
+     "v": false,
+     "what": "Neutral expression, frontal framing, minimal jewellery and modest clothing."
+    },
+    "reads_as_indian": {
+     "v": true,
+     "details": "The bindi, sari-style drape, low bun and small gold earrings are strongly associated with Indian dress."
+    },
+    "idealised": true,
+    "style": "clean flat-vector editorial portrait"
+   },
+   "usage": {
+    "completion_tokens": 258,
+    "completion_tokens_details": {
+     "accepted_prediction_tokens": 0,
+     "audio_tokens": 0,
+     "reasoning_tokens": 92,
+     "rejected_prediction_tokens": 0
+    },
+    "latency_checkpoint": {
+     "engine_tbt_ms": 11,
+     "engine_ttft_ms": 481,
+     "engine_ttlt_ms": 3299,
+     "pre_inference_ms": 114,
+     "service_tbt_ms": 11,
+     "service_ttft_ms": 787,
+     "service_ttlt_ms": 3602,
+     "user_visible_ttft_ms": 673
+    },
+    "prompt_tokens": 1026,
+    "prompt_tokens_details": {
+     "audio_tokens": 0,
+     "cached_tokens": 0
+    },
+    "total_tokens": 1284
+   }
+  },
+  {
+   "label": "line-rest",
+   "file": "/tmp/claude-0/-home-user/ecee9fc1-62f9-5f67-a47d-69ca79d9981a/scratchpad/r4-face/raw/line-rest.png",
+   "model": "taxila-brain",
+   "rep": 0,
+   "date": "2026-10-10T06:03:46.031Z",
+   "answer": {
+    "apparent_age_range": "30-45",
+    "occupation_guesses": [
+     "schoolteacher",
+     "office worker or civil servant",
+     "homemaker"
+    ],
+    "origin_guess": "India, plausibly South India",
+    "reads_as_teacher": {
+     "v": true,
+     "why": "The modest sari, tied-back hair, and composed expression fit a conventional teacher depiction."
+    },
+    "childish": {
+     "v": false,
+     "what": "Adult proportions and restrained facial styling; not babyish or toy-like."
+    },
+    "sexualised": {
+     "v": false,
+     "what": "Neutral expression, modest clothing, and straightforward bust framing."
+    },
+    "reads_as_indian": {
+     "v": true,
+     "details": "Bindi, sari with contrasting border, gold stud earrings, center-parted hair, and low bun."
+    },
+    "idealised": true,
+    "style": "clean flat vector portrait illustration"
+   },
+   "usage": {
+    "completion_tokens": 321,
+    "completion_tokens_details": {
+     "accepted_prediction_tokens": 0,
+     "audio_tokens": 0,
+     "reasoning_tokens": 153,
+     "rejected_prediction_tokens": 0
+    },
+    "latency_checkpoint": {
+     "engine_tbt_ms": 10,
+     "engine_ttft_ms": 303,
+     "engine_ttlt_ms": 3453,
+     "pre_inference_ms": 149,
+     "service_tbt_ms": 10,
+     "service_ttft_ms": 664,
+     "service_ttlt_ms": 3788,
+     "user_visible_ttft_ms": 515
+    },
+    "prompt_tokens": 1026,
+    "prompt_tokens_details": {
+     "audio_tokens": 0,
+     "cached_tokens": 0
+    },
+    "total_tokens": 1347
+   }
+  },
+  {
+   "label": "line-rest",
+   "file": "/tmp/claude-0/-home-user/ecee9fc1-62f9-5f67-a47d-69ca79d9981a/scratchpad/r4-face/raw/line-rest.png",
+   "model": "taxila-brain",
+   "rep": 2,
+   "date": "2026-10-10T06:03:49.755Z",
+   "answer": {
+    "apparent_age_range": "35-50",
+    "occupation_guesses": [
+     "schoolteacher",
+     "office worker or civil servant",
+     "community worker"
+    ],
+    "origin_guess": "Not determinable; the portrait is culturally coded toward India or the Indian subcontinent through the sari and bindi.",
+    "reads_as_teacher": {
+     "v": true,
+     "why": "The modest sari and composed, formal presentation fit a conventional teacher depiction."
+    },
+    "childish": {
+     "v": false,
+     "what": "Simplified flat-vector features, but the proportions and styling clearly depict an adult."
+    },
+    "sexualised": {
+     "v": false,
+     "what": "Neutral expression, straightforward framing, modest clothing, and no seductive pose or glamour styling."
+    },
+    "reads_as_indian": {
+     "v": true,
+     "details": "The bindi, sari-style drape, gold stud earrings, center-parted hair, and low bun are strongly Indian-coded."
+    },
+    "idealised": false,
+    "style": "clean flat-vector character illustration"
+   },
+   "usage": {
+    "completion_tokens": 625,
+    "completion_tokens_details": {
+     "accepted_prediction_tokens": 0,
+     "audio_tokens": 0,
+     "reasoning_tokens": 431,
+     "rejected_prediction_tokens": 0
+    },
+    "latency_checkpoint": {
+     "engine_tbt_ms": 11,
+     "engine_ttft_ms": 279,
+     "engine_ttlt_ms": 7011,
+     "pre_inference_ms": 132,
+     "service_tbt_ms": 11,
+     "service_ttft_ms": 583,
+     "service_ttlt_ms": 7310,
+     "user_visible_ttft_ms": 450
+    },
+    "prompt_tokens": 1026,
+    "prompt_tokens_details": {
+     "audio_tokens": 0,
+     "cached_tokens": 0
+    },
+    "total_tokens": 1651
+   }
+  }
+ ]
+}

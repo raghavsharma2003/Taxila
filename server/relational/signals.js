@@ -73,6 +73,27 @@ const COPULA_BEFORE = /(?:^|\s)(?:is|was|are|means|mean|called|say|says|said|wri
 // समझाइए" is "enough explaining", not a stop: held-out in-lesson negatives v2)
 const STEER = /(?<![\p{L}\p{M}])(?:this one|that one|is sawal|ye sawal|yeh sawal|is wala|ye wala|give (?:me )?another|another one|next one|next question|something else|kuch aur|dusra|doosra|agla|agle|explain|samjha|samjhao|samjhaiye|samjhayiye|samajh nahi|got it|i get it|understood|i understand|i know|samajh (?:gaya|gayi|aa gaya)|samjh (?:gaya|gayi|aa gaya)|(?:can|could) we do (?:science|english|hindi|evs|sst|social|maths|math|something|another|a different|some other|the next|next|a game|drawing|a story)|let'?s do (?:science|english|hindi|evs|something|another|a game)|instead|talk about|baat karein|baat karte|change|skip|समझ (?:आया|आ गया|गया|गयी|गई)|समझ नहीं|समझाओ|समझाइए|समझाइये|समझाना|दूसरा|अगला|स्किप)(?![\p{L}\p{M}])/u;
 
+// round 3 fix (experience B8): "yeh nahi padhna, fractions padhna hai" names a subject to study INSTEAD: a steer, never a
+// stop phrase (after a stop check-in it was the second stop and the relational policy RELEASED the lesson, with the subject
+// never offered). Only a real word before the study verb ("<subject> padhna hai"): a negation, a pronoun or a filler there
+// ("nahi padhna hai", "mujhe padhna hai", "padhna hi nahi hai") is not a subject, and the stop reading stands.
+const STUDY_VERB = new Set(["padhna", "padhni", "seekhna", "sikhna", "samajhna"]);
+const STUDY_AUX = new Set(["hai", "h", "chahta", "chahti", "chahiye"]);
+const NOT_A_SUBJECT = new Set(["nahi", "nahin", "nhi", "na", "mat", "mujhe", "muje", "hume", "humein", "main", "mai", "ab", "abhi", "aaj", "kal", "aur", "yeh", "ye", "is", "isko", "ise",
+  "bas", "kuch", "aage", "phir", "toh", "to", "hi", "bilkul", "zara", "thoda", "jyada", "zyada", "bhi", "wala", "wali", "lesson", "class", "padhai", "homework",
+  // when / where, never what: "baad mein padhna hai", "ghar jaake padhna hai" are a stop for now, not another subject
+  "baad", "mein", "me", "later", "ghar", "jaake", "jakar", "akele", "khud", "dheere", "sirf"]);
+/** "<subject> padhna hai": the word right before the study verb is a real word (3+ letters, not a negation / pronoun / filler). */
+const studyInstead = (whole) => {
+  const w = String(whole).split(/[^\p{L}\p{M}]+/u).filter(Boolean);
+  for (let i = 1; i < w.length - 1; i++) {
+    if (!STUDY_VERB.has(w[i]) || !STUDY_AUX.has(w[i + 1])) continue;
+    const before = w[i - 1];
+    if (before.length >= 3 && !NOT_A_SUBJECT.has(before) && !STUDY_VERB.has(before)) return true;
+  }
+  return false;
+};
+
 /** Does the hit (match m over the sub-clause norm) close its clause the way a real goodbye or stop phrase does? */
 function anchoredLeave(kind, norm, m) {
   if (NUM_MARK.test(norm)) return false;
@@ -118,7 +139,7 @@ export function signalsOf(text, ctx = {}) {
   const whole = normForMatch(raw.replace(/\?/g, " "));
   const anyActor = ACTOR.test(` ${whole} `);
   // a stop phrase is void in a turn that answers, steers or skips (the whole turn, not only its clause)
-  const stopVoid = NUM_MARK.test(whole) || STEER.test(whole);
+  const stopVoid = NUM_MARK.test(whole) || STEER.test(whole) || studyInstead(whole);
   for (const clause of clausesOf(raw)) {
     const norm = normForMatch(clause.text.replace(/\?/g, " "));
     if (!norm) continue;

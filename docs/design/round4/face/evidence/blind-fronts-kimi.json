@@ -1,0 +1,886 @@
+{
+ "method": "blind single-image questionnaire, no context given; PROMPT verbatim below",
+ "prompt": "You are shown one character portrait. Answer only from what is drawn. Be blunt and specific.\n1. apparent_age_range: the age range the person appears to be, as \"lo-hi\" years.\n2. occupation_guesses: your top 3 guesses for her occupation or role, most likely first.\n3. origin_guess: where in the world would you guess she is from? Open answer, as specific as the picture allows.\n4. reads_as_teacher: could she credibly be a schoolteacher? true/false, plus one short reason.\n5. childish: does anything about the figure or the drawing read as childish, babyish, toy-like or made for toddlers (proportions, eyes, style)? true/false, plus what.\n6. sexualised: does anything read as sexualised, glamorous, seductive, coy or flirtatious (expression, pose, framing, clothing, make-up)? true/false, plus what.\n7. reads_as_indian: does she read as Indian specifically? true/false, plus which details.\n8. idealised: does the face read as an idealised doll or model face rather than a real individual? true/false.\n9. style: the art style in a few words.\nReply JSON only: {\"apparent_age_range\":\"\",\"occupation_guesses\":[],\"origin_guess\":\"\",\"reads_as_teacher\":{\"v\":bool,\"why\":\"\"},\"childish\":{\"v\":bool,\"what\":\"\"},\"sexualised\":{\"v\":bool,\"what\":\"\"},\"reads_as_indian\":{\"v\":bool,\"details\":\"\"},\"idealised\":bool,\"style\":\"\"}",
+ "runs": [
+  {
+   "label": "today",
+   "file": "docs/design/teacher/stylised/concepts/c-front.webp",
+   "model": "taxila-kimi26",
+   "rep": 0,
+   "date": "2026-10-10T05:34:49.101Z",
+   "answer": {
+    "apparent_age_range": "25-35",
+    "occupation_guesses": [
+     "Teacher",
+     "Nurse/healthcare worker",
+     "Administrative assistant"
+    ],
+    "origin_guess": "India",
+    "reads_as_teacher": {
+     "v": true,
+     "why": "Modest collared top, friendly but mature expression, and approachable demeanor fit a schoolteacher in family-oriented animation."
+    },
+    "childish": {
+     "v": true,
+     "what": "Enormous rounded eyes, perfectly smooth plastic-like skin, simplified facial sculpt and proportions typical of CGI characters made for children's media."
+    },
+    "sexualised": {
+     "v": false,
+     "what": "Nothing; clothing is modest with a high neck/long sleeves, pose is neutral bust framing, expression is plain friendly with no flirtatious or glamorous cues."
+    },
+    "reads_as_indian": {
+     "v": true,
+     "details": "Red bindi centered on forehead, gold stud earrings, dark hair and skin tone, and a kurta-style teal top with contrast trim."
+    },
+    "idealised": true,
+    "style": "3D CGI cartoon, smooth Pixar-style digital render"
+   },
+   "usage": {
+    "prompt_tokens": 1721,
+    "completion_tokens": 1411,
+    "total_tokens": 3132,
+    "audio_prompt_tokens": 0,
+    "prompt_tokens_details": {
+     "cached_tokens": 1664,
+     "image_tokens": 1369
+    }
+   }
+  },
+  {
+   "label": "s2-game",
+   "file": "/tmp/claude-0/-home-user/ecee9fc1-62f9-5f67-a47d-69ca79d9981a/scratchpad/r4-face/raw/s2-game.png",
+   "model": "taxila-kimi26",
+   "rep": 0,
+   "date": "2026-10-10T05:34:49.875Z",
+   "answer": {
+    "apparent_age_range": "30-45",
+    "occupation_guesses": [
+     "schoolteacher",
+     "administrative professional",
+     "homemaker"
+    ],
+    "origin_guess": "India",
+    "reads_as_teacher": {
+     "v": true,
+     "why": "modest sari, mature composed expression, respectable conventional appearance"
+    },
+    "childish": {
+     "v": false,
+     "what": "normal adult proportions, realistic rendering, no enlarged eyes or toy-like stylisation"
+    },
+    "sexualised": {
+     "v": false,
+     "what": "conservative full-coverage clothing, neutral expression, straightforward frontal pose, no makeup or suggestive framing"
+    },
+    "reads_as_indian": {
+     "v": true,
+     "details": "red bindi, sari with woven border, gold stud earrings, skin tone and facial features"
+    },
+    "idealised": false,
+    "style": "textured realistic oil-style digital portrait with visible brushwork"
+   },
+   "usage": {
+    "prompt_tokens": 1721,
+    "completion_tokens": 1753,
+    "total_tokens": 3474,
+    "audio_prompt_tokens": 0,
+    "prompt_tokens_details": {
+     "cached_tokens": 0,
+     "image_tokens": 1369
+    }
+   }
+  },
+  {
+   "label": "today",
+   "file": "docs/design/teacher/stylised/concepts/c-front.webp",
+   "model": "taxila-kimi26",
+   "rep": 1,
+   "date": "2026-10-10T05:34:51.068Z",
+   "answer": {
+    "apparent_age_range": "25-35",
+    "occupation_guesses": [
+     "teacher",
+     "administrative professional",
+     "nurse or caregiver"
+    ],
+    "origin_guess": "India",
+    "reads_as_teacher": {
+     "v": true,
+     "why": "warm, approachable smile and modest, tidy dress read as trustworthy and professional in an educational setting"
+    },
+    "childish": {
+     "v": true,
+     "what": "massive glossy eyes, perfectly rounded face, tiny nose and lack of facial texture give a toy-like, infantilised CGI doll look"
+    },
+    "sexualised": {
+     "v": false,
+     "what": "nothing; high-neck long-sleeve top, neutral front-facing pose, friendly but non-flirtatious expression, no makeup or framing that signals glamour or seduction"
+    },
+    "reads_as_indian": {
+     "v": true,
+     "details": "dark red bindi on forehead, gold ball earrings, teal kurta-style top with orange piping and split neckline, warm brown skin and black hair"
+    },
+    "idealised": true,
+    "style": "3D CGI cartoon, smooth stylised render"
+   },
+   "usage": {
+    "prompt_tokens": 1721,
+    "completion_tokens": 1652,
+    "total_tokens": 3373,
+    "audio_prompt_tokens": 0,
+    "prompt_tokens_details": {
+     "cached_tokens": 0,
+     "image_tokens": 1369
+    }
+   }
+  },
+  {
+   "label": "s3-graphic",
+   "file": "/tmp/claude-0/-home-user/ecee9fc1-62f9-5f67-a47d-69ca79d9981a/scratchpad/r4-face/raw/s3-graphic.png",
+   "model": "taxila-kimi26",
+   "rep": 1,
+   "date": "2026-10-10T05:34:56.885Z",
+   "answer": {
+    "apparent_age_range": "25-35",
+    "occupation_guesses": [
+     "schoolteacher",
+     "administrative assistant",
+     "bank clerk"
+    ],
+    "origin_guess": "India",
+    "reads_as_teacher": {
+     "v": true,
+     "why": "Neat sari, bindi, modest blouse, composed neutral expression; looks respectable and orderly."
+    },
+    "childish": {
+     "v": false,
+     "what": "Nothing: realistic adult proportions, natural eyes, serious expression, no toy-like or toddler styling."
+    },
+    "sexualised": {
+     "v": false,
+     "what": "Nothing: fully covered sari, neutral closed-lip expression, no makeup, no cleavage or suggestive framing."
+    },
+    "reads_as_indian": {
+     "v": true,
+     "details": "Red bindi, dark hair in bun, gold stud earrings, teal sari with border, brown skin, South Asian features."
+    },
+    "idealised": false,
+    "style": "painterly realistic portrait illustration"
+   },
+   "usage": {
+    "prompt_tokens": 1721,
+    "completion_tokens": 1017,
+    "total_tokens": 2738,
+    "audio_prompt_tokens": 0,
+    "prompt_tokens_details": {
+     "cached_tokens": 0,
+     "image_tokens": 1369
+    }
+   }
+  },
+  {
+   "label": "s2-game",
+   "file": "/tmp/claude-0/-home-user/ecee9fc1-62f9-5f67-a47d-69ca79d9981a/scratchpad/r4-face/raw/s2-game.png",
+   "model": "taxila-kimi26",
+   "rep": 1,
+   "date": "2026-10-10T05:34:58.982Z",
+   "answer": {
+    "apparent_age_range": "25-35",
+    "occupation_guesses": [
+     "schoolteacher",
+     "office worker",
+     "homemaker"
+    ],
+    "origin_guess": "India",
+    "reads_as_teacher": {
+     "v": true,
+     "why": "Modest sari, bindi, and composed neutral expression read as professional and approachable."
+    },
+    "childish": {
+     "v": false,
+     "what": "Nothing; adult proportions, realistic facial texture, and serious presentation."
+    },
+    "sexualised": {
+     "v": false,
+     "what": "Fully covered sari, neutral expression, no makeup or suggestive framing."
+    },
+    "reads_as_indian": {
+     "v": true,
+     "details": "Red bindi, blue sari with traditional border, brown skin, black hair, facial features."
+    },
+    "idealised": false,
+    "style": "Realistic painted portrait"
+   },
+   "usage": {
+    "prompt_tokens": 1721,
+    "completion_tokens": 1754,
+    "total_tokens": 3475,
+    "audio_prompt_tokens": 0,
+    "prompt_tokens_details": {
+     "cached_tokens": 320,
+     "image_tokens": 1369
+    }
+   }
+  },
+  {
+   "label": "s3-graphic",
+   "file": "/tmp/claude-0/-home-user/ecee9fc1-62f9-5f67-a47d-69ca79d9981a/scratchpad/r4-face/raw/s3-graphic.png",
+   "model": "taxila-kimi26",
+   "rep": 0,
+   "date": "2026-10-10T05:35:00.675Z",
+   "answer": {
+    "apparent_age_range": "25-40",
+    "occupation_guesses": [
+     "Schoolteacher",
+     "Bank employee",
+     "Office administrator"
+    ],
+    "origin_guess": "India",
+    "reads_as_teacher": {
+     "v": true,
+     "why": "Neat sari, bindi, small gold earrings and a composed, professional expression read as a conventional schoolteacher."
+    },
+    "childish": {
+     "v": false,
+     "what": "Nothing; proportions are fully adult, expression is mature, and the detailed realistic style is not toy-like."
+    },
+    "sexualised": {
+     "v": false,
+     "what": "Nothing; traditional full-coverage sari, neutral direct gaze, no makeup or flirtatious framing."
+    },
+    "reads_as_indian": {
+     "v": true,
+     "details": "Red bindi, sari, gold stud earrings, brown skin tone and facial structure."
+    },
+    "idealised": false,
+    "style": "Realistic textured digital painting"
+   },
+   "usage": {
+    "prompt_tokens": 1721,
+    "completion_tokens": 1917,
+    "total_tokens": 3638,
+    "audio_prompt_tokens": 0,
+    "prompt_tokens_details": {
+     "cached_tokens": 0,
+     "image_tokens": 1369
+    }
+   }
+  },
+  {
+   "label": "s4-feature",
+   "file": "/tmp/claude-0/-home-user/ecee9fc1-62f9-5f67-a47d-69ca79d9981a/scratchpad/r4-face/raw/s4-feature.png",
+   "model": "taxila-kimi26",
+   "rep": 0,
+   "date": "2026-10-10T05:35:06.497Z",
+   "answer": {
+    "apparent_age_range": "25-35",
+    "occupation_guesses": [
+     "teacher",
+     "doctor",
+     "administrator"
+    ],
+    "origin_guess": "South India",
+    "reads_as_teacher": {
+     "v": true,
+     "why": "Neat saree and composed, approachable expression fit a schoolteacher's professional presentation."
+    },
+    "childish": {
+     "v": false,
+     "what": "Fully adult realistic proportions and painterly rendering; no oversized eyes or toy-like stylisation."
+    },
+    "sexualised": {
+     "v": false,
+     "what": "Modest high-neck saree, neutral direct gaze, no revealing framing or flirtatious expression."
+    },
+    "reads_as_indian": {
+     "v": true,
+     "details": "Red bindi, saree with woven border, gold stud earrings, skin tone and facial features."
+    },
+    "idealised": false,
+    "style": "Painterly realism with visible textured brushwork"
+   },
+   "usage": {
+    "prompt_tokens": 1721,
+    "completion_tokens": 1807,
+    "total_tokens": 3528,
+    "audio_prompt_tokens": 0,
+    "prompt_tokens_details": {
+     "cached_tokens": 320,
+     "image_tokens": 1369
+    }
+   }
+  },
+  {
+   "label": "s4-feature",
+   "file": "/tmp/claude-0/-home-user/ecee9fc1-62f9-5f67-a47d-69ca79d9981a/scratchpad/r4-face/raw/s4-feature.png",
+   "model": "taxila-kimi26",
+   "rep": 1,
+   "date": "2026-10-10T05:35:08.702Z",
+   "answer": {
+    "apparent_age_range": "25-35",
+    "occupation_guesses": [
+     "Teacher",
+     "Administrative professional",
+     "Homemaker"
+    ],
+    "origin_guess": "India",
+    "reads_as_teacher": {
+     "v": true,
+     "why": "Modest sari, neat appearance, and composed mature expression fit a schoolteacher."
+    },
+    "childish": {
+     "v": false,
+     "what": "Adult realistic proportions, natural eye size, and serious painterly style."
+    },
+    "sexualised": {
+     "v": false,
+     "what": "High-neck conservative sari, neutral direct gaze, no makeup or pose emphasis."
+    },
+    "reads_as_indian": {
+     "v": true,
+     "details": "Red bindi, sari with gold-border detailing, gold earrings, skin tone, and facial features."
+    },
+    "idealised": false,
+    "style": "Painterly realistic digital portrait"
+   },
+   "usage": {
+    "prompt_tokens": 1721,
+    "completion_tokens": 2026,
+    "total_tokens": 3747,
+    "audio_prompt_tokens": 0,
+    "prompt_tokens_details": {
+     "cached_tokens": 320,
+     "image_tokens": 1369
+    }
+   }
+  },
+  {
+   "label": "s4-poster",
+   "file": "/tmp/claude-0/-home-user/ecee9fc1-62f9-5f67-a47d-69ca79d9981a/scratchpad/r4-face/raw/s4-poster.png",
+   "model": "taxila-kimi26",
+   "rep": 0,
+   "date": "2026-10-10T05:35:10.967Z",
+   "answer": {
+    "apparent_age_range": "25-35",
+    "occupation_guesses": [
+     "Schoolteacher",
+     "Administrative assistant",
+     "Bank clerk"
+    ],
+    "origin_guess": "India",
+    "reads_as_teacher": {
+     "v": true,
+     "why": "Composed expression and modest saree project authority and respectability."
+    },
+    "childish": {
+     "v": false,
+     "what": "Adult proportions, mature facial structure, and realistic illustration style."
+    },
+    "sexualised": {
+     "v": false,
+     "what": "Modest high-neck saree, neutral frontal pose, and earnest expression."
+    },
+    "reads_as_indian": {
+     "v": true,
+     "details": "Red bindi, blue saree with woven border, brown skin, black hair, and gold studs."
+    },
+    "idealised": true,
+    "style": "Realistic digital illustration with textured, painterly brushwork"
+   },
+   "usage": {
+    "prompt_tokens": 1721,
+    "completion_tokens": 1638,
+    "total_tokens": 3359,
+    "audio_prompt_tokens": 0,
+    "prompt_tokens_details": {
+     "cached_tokens": 320,
+     "image_tokens": 1369
+    }
+   }
+  },
+  {
+   "label": "a2-cel",
+   "file": "/tmp/claude-0/-home-user/ecee9fc1-62f9-5f67-a47d-69ca79d9981a/scratchpad/r4-face/raw/a2-cel.png",
+   "model": "taxila-kimi26",
+   "rep": 1,
+   "date": "2026-10-10T05:35:15.827Z",
+   "answer": {
+    "apparent_age_range": "25-40",
+    "occupation_guesses": [
+     "teacher",
+     "office worker/administrator",
+     "homemaker"
+    ],
+    "origin_guess": "India",
+    "reads_as_teacher": {
+     "v": true,
+     "why": "Neat saree, mature composed expression, and understated jewelry fit a schoolteacher stereotype."
+    },
+    "childish": {
+     "v": false,
+     "what": "Nothing is childish; proportions, eyes, and style are all adult."
+    },
+    "sexualised": {
+     "v": false,
+     "what": "Modest high-neck saree, neutral expression, no revealing framing or flirtatious makeup."
+    },
+    "reads_as_indian": {
+     "v": true,
+     "details": "Bindi, saree, gold stud earrings, brown skin, and black hair."
+    },
+    "idealised": true,
+    "style": "Clean cel-shaded vector anime portrait"
+   },
+   "usage": {
+    "prompt_tokens": 1721,
+    "completion_tokens": 607,
+    "total_tokens": 2328,
+    "audio_prompt_tokens": 0,
+    "prompt_tokens_details": {
+     "cached_tokens": 320,
+     "image_tokens": 1369
+    }
+   }
+  },
+  {
+   "label": "s4-poster",
+   "file": "/tmp/claude-0/-home-user/ecee9fc1-62f9-5f67-a47d-69ca79d9981a/scratchpad/r4-face/raw/s4-poster.png",
+   "model": "taxila-kimi26",
+   "rep": 1,
+   "date": "2026-10-10T05:35:16.860Z",
+   "answer": {
+    "apparent_age_range": "25-35",
+    "occupation_guesses": [
+     "teacher",
+     "administrator",
+     "doctor"
+    ],
+    "origin_guess": "India",
+    "reads_as_teacher": {
+     "v": true,
+     "why": "conservative sari, neat appearance, and composed expression read as professional and authoritative"
+    },
+    "childish": {
+     "v": false,
+     "what": "realistic adult proportions, normal-sized eyes, and sober style with no toy-like qualities"
+    },
+    "sexualised": {
+     "v": false,
+     "what": "fully covered sari, neutral frontal pose, and dignified expression with no flirtatious cues"
+    },
+    "reads_as_indian": {
+     "v": true,
+     "details": "red bindi, blue sari with woven border, gold stud earrings, and facial features"
+    },
+    "idealised": true,
+    "style": "realistic digital painting"
+   },
+   "usage": {
+    "prompt_tokens": 1721,
+    "completion_tokens": 1864,
+    "total_tokens": 3585,
+    "audio_prompt_tokens": 0,
+    "prompt_tokens_details": {
+     "cached_tokens": 0,
+     "image_tokens": 1369
+    }
+   }
+  },
+  {
+   "label": "a2-cel",
+   "file": "/tmp/claude-0/-home-user/ecee9fc1-62f9-5f67-a47d-69ca79d9981a/scratchpad/r4-face/raw/a2-cel.png",
+   "model": "taxila-kimi26",
+   "rep": 0,
+   "date": "2026-10-10T05:35:18.424Z",
+   "answer": {
+    "apparent_age_range": "25-40",
+    "occupation_guesses": [
+     "schoolteacher",
+     "administrative professional",
+     "lecturer"
+    ],
+    "origin_guess": "India",
+    "reads_as_teacher": {
+     "v": true,
+     "why": "Modest sari, neat hair, bindi and composed expression match the common visual archetype of an Indian schoolteacher."
+    },
+    "childish": {
+     "v": false,
+     "what": "Proportions are adult-realistic; eyes are stylised but not oversized or infantile; overall presentation is mature."
+    },
+    "sexualised": {
+     "v": false,
+     "what": "Sari is worn modestly with full coverage; expression is neutral and direct; no suggestive pose, makeup or framing."
+    },
+    "reads_as_indian": {
+     "v": true,
+     "details": "Forehead bindi, sari with border, gold stud earrings, warm brown skin tone and dark hair are culturally specific to Indian dress."
+    },
+    "idealised": true,
+    "style": "Cel-shaded anime illustration, clean linework, flat colours"
+   },
+   "usage": {
+    "prompt_tokens": 1721,
+    "completion_tokens": 1468,
+    "total_tokens": 3189,
+    "audio_prompt_tokens": 0,
+    "prompt_tokens_details": {
+     "cached_tokens": 320,
+     "image_tokens": 1369
+    }
+   }
+  },
+  {
+   "label": "a3-film",
+   "file": "/tmp/claude-0/-home-user/ecee9fc1-62f9-5f67-a47d-69ca79d9981a/scratchpad/r4-face/raw/a3-film.png",
+   "model": "taxila-kimi26",
+   "rep": 0,
+   "date": "2026-10-10T05:35:24.837Z",
+   "answer": {
+    "apparent_age_range": "25-35",
+    "occupation_guesses": [
+     "schoolteacher",
+     "office worker/administrator",
+     "homemaker"
+    ],
+    "origin_guess": "India",
+    "reads_as_teacher": {
+     "v": true,
+     "why": "Wearing a sari with a bindi and small gold studs, hair neatly parted and pinned back; this exact modest, orderly presentation is the default visual shorthand for an Indian schoolteacher."
+    },
+    "childish": {
+     "v": false,
+     "what": "Adult proportions throughout: defined jaw, visible neck structure, mature nose and eyes that are large but not infantile. No toddler-style roundness or toy aesthetics."
+    },
+    "sexualised": {
+     "v": false,
+     "what": "Modest high-neck sari coverage with no skin shown below the collarbone; expression is neutral and direct, not coy; no exaggerated makeup, cleavage, or suggestive framing."
+    },
+    "reads_as_indian": {
+     "v": true,
+     "details": "Red bindi centered on forehead, teal sari with traditional woven border, small gold stud earrings, dark hair parted in the middle and pinned back, warm brown skin tone and facial structure."
+    },
+    "idealised": true,
+    "style": "cel-shaded anime-influenced portrait"
+   },
+   "usage": {
+    "prompt_tokens": 1721,
+    "completion_tokens": 1670,
+    "total_tokens": 3391,
+    "audio_prompt_tokens": 0,
+    "prompt_tokens_details": {
+     "cached_tokens": 0,
+     "image_tokens": 1369
+    }
+   }
+  },
+  {
+   "label": "a3-cel",
+   "file": "/tmp/claude-0/-home-user/ecee9fc1-62f9-5f67-a47d-69ca79d9981a/scratchpad/r4-face/raw/a3-cel.png",
+   "model": "taxila-kimi26",
+   "rep": 0,
+   "date": "2026-10-10T05:35:25.133Z",
+   "answer": {
+    "apparent_age_range": "25-40",
+    "occupation_guesses": [
+     "Teacher",
+     "Administrative professional",
+     "Doctor / Nurse"
+    ],
+    "origin_guess": "India",
+    "reads_as_teacher": {
+     "v": true,
+     "why": "Neat saree, bindi, and composed, approachable expression match the archetype of a schoolteacher."
+    },
+    "childish": {
+     "v": false,
+     "what": "Adult proportions, realistic facial structure, and restrained style; nothing juvenile."
+    },
+    "sexualised": {
+     "v": false,
+     "what": "Saree is modest and fully covering; expression is neutral and professional with no flirtatious cues."
+    },
+    "reads_as_indian": {
+     "v": true,
+     "details": "Red bindi, dark hair in a bun, brown skin, small gold earrings, and a teal saree with a woven border."
+    },
+    "idealised": true,
+    "style": "Semi-realistic digital illustration, clean linework, soft cel-shading, graphic-novel portrait"
+   },
+   "usage": {
+    "prompt_tokens": 1721,
+    "completion_tokens": 1138,
+    "total_tokens": 2859,
+    "audio_prompt_tokens": 0,
+    "prompt_tokens_details": {
+     "cached_tokens": 320,
+     "image_tokens": 1369
+    }
+   }
+  },
+  {
+   "label": "a3-film",
+   "file": "/tmp/claude-0/-home-user/ecee9fc1-62f9-5f67-a47d-69ca79d9981a/scratchpad/r4-face/raw/a3-film.png",
+   "model": "taxila-kimi26",
+   "rep": 1,
+   "date": "2026-10-10T05:35:32.958Z",
+   "answer": {
+    "apparent_age_range": "25-35",
+    "occupation_guesses": [
+     "schoolteacher",
+     "government office worker",
+     "homemaker"
+    ],
+    "origin_guess": "India",
+    "reads_as_teacher": {
+     "v": true,
+     "why": "Modest saree, neat bun, composed expression—looks professional and approachable."
+    },
+    "childish": {
+     "v": false,
+     "what": "Adult proportions and realistic rendering; no toy-like or babyish features."
+    },
+    "sexualised": {
+     "v": false,
+     "what": "Conservative clothing, neutral expression, no revealing framing or flirtatious cues."
+    },
+    "reads_as_indian": {
+     "v": true,
+     "details": "Red bindi, saree with traditional border, gold earrings, brown skin, dark hair."
+    },
+    "idealised": true,
+    "style": "Anime-influenced digital portrait, cel-shaded"
+   },
+   "usage": {
+    "prompt_tokens": 1721,
+    "completion_tokens": 1715,
+    "total_tokens": 3436,
+    "audio_prompt_tokens": 0,
+    "prompt_tokens_details": {
+     "cached_tokens": 320,
+     "image_tokens": 1369
+    }
+   }
+  },
+  {
+   "label": "a3-cel",
+   "file": "/tmp/claude-0/-home-user/ecee9fc1-62f9-5f67-a47d-69ca79d9981a/scratchpad/r4-face/raw/a3-cel.png",
+   "model": "taxila-kimi26",
+   "rep": 1,
+   "date": "2026-10-10T05:35:37.056Z",
+   "answer": {
+    "apparent_age_range": "25-35",
+    "occupation_guesses": [
+     "schoolteacher",
+     "office worker",
+     "homemaker"
+    ],
+    "origin_guess": "India",
+    "reads_as_teacher": {
+     "v": true,
+     "why": "Modest saree, bindi, and composed expression fit a schoolteacher."
+    },
+    "childish": {
+     "v": false,
+     "what": "Adult proportions and realistic facial structure; no toy-like or toddler exaggeration."
+    },
+    "sexualised": {
+     "v": false,
+     "what": "Modest saree, neutral expression, standard framing, no revealing pose or flirtatious makeup."
+    },
+    "reads_as_indian": {
+     "v": true,
+     "details": "Red bindi, saree, brown skin, black hair, and gold stud earrings."
+    },
+    "idealised": true,
+    "style": "Cel-shaded digital illustration, anime-influenced realism."
+   },
+   "usage": {
+    "prompt_tokens": 1721,
+    "completion_tokens": 1711,
+    "total_tokens": 3432,
+    "audio_prompt_tokens": 0,
+    "prompt_tokens_details": {
+     "cached_tokens": 320,
+     "image_tokens": 1369
+    }
+   }
+  },
+  {
+   "label": "a4-warm",
+   "file": "/tmp/claude-0/-home-user/ecee9fc1-62f9-5f67-a47d-69ca79d9981a/scratchpad/r4-face/raw/a4-warm.png",
+   "model": "taxila-kimi26",
+   "rep": 0,
+   "date": "2026-10-10T05:35:39.336Z",
+   "answer": {
+    "apparent_age_range": "18-28",
+    "occupation_guesses": [
+     "schoolteacher",
+     "university student",
+     "office worker"
+    ],
+    "origin_guess": "India",
+    "reads_as_teacher": {
+     "v": true,
+     "why": "modest saree, bindi and neat appearance fit a South Asian educator stereotype"
+    },
+    "childish": {
+     "v": false,
+     "what": "adult proportions, composed expression, restrained realistic style"
+    },
+    "sexualised": {
+     "v": false,
+     "what": "high-neck modest clothing, neutral expression, no suggestive pose or makeup"
+    },
+    "reads_as_indian": {
+     "v": true,
+     "details": "red bindi, gold stud earrings, saree-style garment with woven border, warm brown skin, black hair"
+    },
+    "idealised": true,
+    "style": "clean digital illustration, anime-influenced realism"
+   },
+   "usage": {
+    "prompt_tokens": 1721,
+    "completion_tokens": 2087,
+    "total_tokens": 3808,
+    "audio_prompt_tokens": 0,
+    "prompt_tokens_details": {
+     "cached_tokens": 320,
+     "image_tokens": 1369
+    }
+   }
+  },
+  {
+   "label": "w1-flat",
+   "file": "/tmp/claude-0/-home-user/ecee9fc1-62f9-5f67-a47d-69ca79d9981a/scratchpad/r4-face/raw/w1-flat.png",
+   "model": "taxila-kimi26",
+   "rep": 0,
+   "date": "2026-10-10T05:35:43.012Z",
+   "answer": {
+    "apparent_age_range": "25-35",
+    "occupation_guesses": [
+     "schoolteacher",
+     "bank officer",
+     "administrative professional"
+    ],
+    "origin_guess": "India",
+    "reads_as_teacher": {
+     "v": true,
+     "why": "Neat sari, conservative blouse, tidy bun, bindi, and composed expression fit the stereotype of an Indian schoolteacher."
+    },
+    "childish": {
+     "v": false,
+     "what": "Nothing—adult proportions, realistic eyes, and sober styling throughout."
+    },
+    "sexualised": {
+     "v": false,
+     "what": "Nothing—modest high-neck sari coverage, neutral frontal pose, plain makeup, no flirtatious expression."
+    },
+    "reads_as_indian": {
+     "v": true,
+     "details": "Red bindi, sari with woven border, gold studs, brown skin, dark hair, and South Asian facial features."
+    },
+    "idealised": true,
+    "style": "Clean vector illustration with flat shading"
+   },
+   "usage": {
+    "prompt_tokens": 1721,
+    "completion_tokens": 920,
+    "total_tokens": 2641,
+    "audio_prompt_tokens": 0,
+    "prompt_tokens_details": {
+     "cached_tokens": 320,
+     "image_tokens": 1369
+    }
+   }
+  },
+  {
+   "label": "a4-warm",
+   "file": "/tmp/claude-0/-home-user/ecee9fc1-62f9-5f67-a47d-69ca79d9981a/scratchpad/r4-face/raw/a4-warm.png",
+   "model": "taxila-kimi26",
+   "rep": 1,
+   "date": "2026-10-10T05:35:45.345Z",
+   "answer": {
+    "apparent_age_range": "20-30",
+    "occupation_guesses": [
+     "teacher",
+     "office worker",
+     "student"
+    ],
+    "origin_guess": "India",
+    "reads_as_teacher": {
+     "v": true,
+     "why": "Neat sari, modest dress, and composed mature appearance fit a schoolteacher."
+    },
+    "childish": {
+     "v": false,
+     "what": "Adult proportions and features; nothing toy-like or toddler-targeted."
+    },
+    "sexualised": {
+     "v": false,
+     "what": "Modest high-neck sari, neutral expression, no skin emphasis or suggestive pose."
+    },
+    "reads_as_indian": {
+     "v": true,
+     "details": "Red bindi, sari, gold stud earrings, skin tone, and facial features."
+    },
+    "idealised": true,
+    "style": "Clean flat digital illustration with stylized realism and soft shading."
+   },
+   "usage": {
+    "prompt_tokens": 1721,
+    "completion_tokens": 2099,
+    "total_tokens": 3820,
+    "audio_prompt_tokens": 0,
+    "prompt_tokens_details": {
+     "cached_tokens": 320,
+     "image_tokens": 1369
+    }
+   }
+  },
+  {
+   "label": "w1-flat",
+   "file": "/tmp/claude-0/-home-user/ecee9fc1-62f9-5f67-a47d-69ca79d9981a/scratchpad/r4-face/raw/w1-flat.png",
+   "model": "taxila-kimi26",
+   "rep": 1,
+   "date": "2026-10-10T05:35:48.919Z",
+   "answer": {
+    "apparent_age_range": "25-35",
+    "occupation_guesses": [
+     "teacher",
+     "administrative professional",
+     "homemaker"
+    ],
+    "origin_guess": "India",
+    "reads_as_teacher": {
+     "v": true,
+     "why": "modest saree, neat bun, bindi and calm composed expression fit a schoolteacher archetype"
+    },
+    "childish": {
+     "v": false,
+     "what": "none; adult proportions, realistic facial structure, no oversized eyes or toy-like stylisation"
+    },
+    "sexualised": {
+     "v": false,
+     "what": "none; high-neck modest saree, neutral front-facing pose, composed expression, no revealing framing"
+    },
+    "reads_as_indian": {
+     "v": true,
+     "details": "red bindi, saree with traditional border, gold earrings, skin tone and South Asian facial features"
+    },
+    "idealised": true,
+    "style": "clean vector-style digital portrait"
+   },
+   "usage": {
+    "prompt_tokens": 1721,
+    "completion_tokens": 1761,
+    "total_tokens": 3482,
+    "audio_prompt_tokens": 0,
+    "prompt_tokens_details": {
+     "cached_tokens": 320,
+     "image_tokens": 1369
+    }
+   }
+  }
+ ]
+}

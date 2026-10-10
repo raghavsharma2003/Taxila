@@ -1,0 +1,618 @@
+{
+ "method": "blind 3x2 grid questionnaire; prompt verbatim",
+ "prompt": "The image is a 3 x 2 grid of six portraits; cells are numbered 1-6 in reading order (top row 1, 2, 3; bottom row 4, 5, 6).\nJudge strictly, from what is drawn.\n1. same_person: are all six the same person drawn in the same art style? true/false.\n2. differences: for each of cells 2-6, any difference from cell 1 in face shape, facial features, apparent age, skin tone, hair, jewellery, clothing or art style. IGNORE expression, gaze direction and head tilt. Empty string if none.\n3. identity_score: identity consistency across the six, 1-5 (5 = clearly one character sheet, 3 = recognisably the same but with visible drift, 1 = different people).\n4. state: for each cell 1-6, what the face is doing, in 2-5 words (open answer).\n5. anything_off: anything in any cell that reads as childish, sexualised, disapproving, uncanny or broken, with the cell number. Empty string if none.\nReply JSON only: {\"same_person\":bool,\"differences\":{\"2\":\"\",\"3\":\"\",\"4\":\"\",\"5\":\"\",\"6\":\"\"},\"identity_score\":n,\"state\":{\"1\":\"\",\"2\":\"\",\"3\":\"\",\"4\":\"\",\"5\":\"\",\"6\":\"\"},\"anything_off\":\"\"}",
+ "runs": [
+  {
+   "label": "stylised",
+   "model": "taxila-brain",
+   "rep": 0,
+   "date": "2026-10-10T06:03:38.406Z",
+   "answer": {
+    "same_person": true,
+    "differences": {
+     "2": "",
+     "3": "",
+     "4": "",
+     "5": "",
+     "6": ""
+    },
+    "identity_score": 5,
+    "state": {
+     "1": "neutral, looking forward",
+     "2": "speaking with mouth open",
+     "3": "faint smile, sideways gaze",
+     "4": "looking upward thoughtfully",
+     "5": "smiling softly",
+     "6": "eyes closed calmly"
+    },
+    "anything_off": ""
+   },
+   "usage": {
+    "completion_tokens": 244,
+    "completion_tokens_details": {
+     "accepted_prediction_tokens": 0,
+     "audio_tokens": 0,
+     "reasoning_tokens": 156,
+     "rejected_prediction_tokens": 0
+    },
+    "latency_checkpoint": {
+     "engine_tbt_ms": 11,
+     "engine_ttft_ms": 833,
+     "engine_ttlt_ms": 3414,
+     "pre_inference_ms": 461,
+     "service_tbt_ms": 11,
+     "service_ttft_ms": 1680,
+     "service_ttlt_ms": 4254,
+     "user_visible_ttft_ms": 1219
+    },
+    "prompt_tokens": 1332,
+    "prompt_tokens_details": {
+     "audio_tokens": 0,
+     "cached_tokens": 0
+    },
+    "total_tokens": 1576
+   }
+  },
+  {
+   "label": "stylised",
+   "model": "taxila-brain",
+   "rep": 1,
+   "date": "2026-10-10T06:03:40.444Z",
+   "answer": {
+    "same_person": true,
+    "differences": {
+     "2": "",
+     "3": "",
+     "4": "",
+     "5": "",
+     "6": ""
+    },
+    "identity_score": 5,
+    "state": {
+     "1": "neutral forward look",
+     "2": "speaking with mouth open",
+     "3": "soft sideways glance",
+     "4": "looking upward",
+     "5": "gently smiling",
+     "6": "eyes peacefully closed"
+    },
+    "anything_off": ""
+   },
+   "usage": {
+    "completion_tokens": 403,
+    "completion_tokens_details": {
+     "accepted_prediction_tokens": 0,
+     "audio_tokens": 0,
+     "reasoning_tokens": 320,
+     "rejected_prediction_tokens": 0
+    },
+    "latency_checkpoint": {
+     "engine_tbt_ms": 12,
+     "engine_ttft_ms": 416,
+     "engine_ttlt_ms": 5233,
+     "pre_inference_ms": 629,
+     "service_tbt_ms": 12,
+     "service_ttft_ms": 1315,
+     "service_ttlt_ms": 6073,
+     "user_visible_ttft_ms": 687
+    },
+    "prompt_tokens": 1332,
+    "prompt_tokens_details": {
+     "audio_tokens": 0,
+     "cached_tokens": 0
+    },
+    "total_tokens": 1735
+   }
+  },
+  {
+   "label": "stylised",
+   "model": "taxila-brain",
+   "rep": 2,
+   "date": "2026-10-10T06:03:41.346Z",
+   "answer": {
+    "same_person": true,
+    "differences": {
+     "2": "",
+     "3": "",
+     "4": "",
+     "5": "",
+     "6": ""
+    },
+    "identity_score": 5,
+    "state": {
+     "1": "neutral, looking forward",
+     "2": "speaking with mouth open",
+     "3": "slight sideways smile",
+     "4": "rolling eyes upward",
+     "5": "smiling gently",
+     "6": "eyes closed calmly"
+    },
+    "anything_off": "Cell 4: upward eye-roll reads mildly disapproving."
+   },
+   "usage": {
+    "completion_tokens": 523,
+    "completion_tokens_details": {
+     "accepted_prediction_tokens": 0,
+     "audio_tokens": 0,
+     "reasoning_tokens": 425,
+     "rejected_prediction_tokens": 0
+    },
+    "latency_checkpoint": {
+     "engine_tbt_ms": 11,
+     "engine_ttft_ms": 394,
+     "engine_ttlt_ms": 6026,
+     "pre_inference_ms": 649,
+     "service_tbt_ms": 11,
+     "service_ttft_ms": 1307,
+     "service_ttlt_ms": 6953,
+     "user_visible_ttft_ms": 657
+    },
+    "prompt_tokens": 1332,
+    "prompt_tokens_details": {
+     "audio_tokens": 0,
+     "cached_tokens": 0
+    },
+    "total_tokens": 1855
+   }
+  },
+  {
+   "label": "anime",
+   "model": "taxila-brain",
+   "rep": 0,
+   "date": "2026-10-10T06:03:42.890Z",
+   "answer": {
+    "same_person": true,
+    "differences": {
+     "2": "",
+     "3": "",
+     "4": "",
+     "5": "",
+     "6": ""
+    },
+    "identity_score": 5,
+    "state": {
+     "1": "calm neutral expression",
+     "2": "speaking with mouth open",
+     "3": "gazing softly aside",
+     "4": "looking to the side",
+     "5": "smiling gently",
+     "6": "eyes peacefully closed"
+    },
+    "anything_off": ""
+   },
+   "usage": {
+    "completion_tokens": 194,
+    "completion_tokens_details": {
+     "accepted_prediction_tokens": 0,
+     "audio_tokens": 0,
+     "reasoning_tokens": 107,
+     "rejected_prediction_tokens": 0
+    },
+    "latency_checkpoint": {
+     "engine_tbt_ms": 9,
+     "engine_ttft_ms": 382,
+     "engine_ttlt_ms": 2173,
+     "pre_inference_ms": 361,
+     "service_tbt_ms": 9,
+     "service_ttft_ms": 956,
+     "service_ttlt_ms": 2741,
+     "user_visible_ttft_ms": 594
+    },
+    "prompt_tokens": 1332,
+    "prompt_tokens_details": {
+     "audio_tokens": 0,
+     "cached_tokens": 0
+    },
+    "total_tokens": 1526
+   }
+  },
+  {
+   "label": "anime",
+   "model": "taxila-brain",
+   "rep": 1,
+   "date": "2026-10-10T06:03:44.985Z",
+   "answer": {
+    "same_person": true,
+    "differences": {
+     "2": "",
+     "3": "",
+     "4": "",
+     "5": "",
+     "6": ""
+    },
+    "identity_score": 5,
+    "state": {
+     "1": "calm neutral expression",
+     "2": "speaking with mouth open",
+     "3": "soft sideways glance",
+     "4": "neutral attentive expression",
+     "5": "slight warm smile",
+     "6": "eyes closed serenely"
+    },
+    "anything_off": ""
+   },
+   "usage": {
+    "completion_tokens": 212,
+    "completion_tokens_details": {
+     "accepted_prediction_tokens": 0,
+     "audio_tokens": 0,
+     "reasoning_tokens": 125,
+     "rejected_prediction_tokens": 0
+    },
+    "latency_checkpoint": {
+     "engine_tbt_ms": 11,
+     "engine_ttft_ms": 347,
+     "engine_ttlt_ms": 2738,
+     "pre_inference_ms": 438,
+     "service_tbt_ms": 11,
+     "service_ttft_ms": 994,
+     "service_ttlt_ms": 3379,
+     "user_visible_ttft_ms": 556
+    },
+    "prompt_tokens": 1332,
+    "prompt_tokens_details": {
+     "audio_tokens": 0,
+     "cached_tokens": 0
+    },
+    "total_tokens": 1544
+   }
+  },
+  {
+   "label": "anime",
+   "model": "taxila-brain",
+   "rep": 2,
+   "date": "2026-10-10T06:03:47.669Z",
+   "answer": {
+    "same_person": true,
+    "differences": {
+     "2": "",
+     "3": "",
+     "4": "",
+     "5": "",
+     "6": ""
+    },
+    "identity_score": 5,
+    "state": {
+     "1": "calm neutral expression",
+     "2": "speaking with mouth open",
+     "3": "soft attentive look",
+     "4": "neutral direct gaze",
+     "5": "gently smiling",
+     "6": "eyes closed serenely"
+    },
+    "anything_off": ""
+   },
+   "usage": {
+    "completion_tokens": 347,
+    "completion_tokens_details": {
+     "accepted_prediction_tokens": 0,
+     "audio_tokens": 0,
+     "reasoning_tokens": 261,
+     "rejected_prediction_tokens": 0
+    },
+    "latency_checkpoint": {
+     "engine_tbt_ms": 11,
+     "engine_ttft_ms": 410,
+     "engine_ttlt_ms": 4123,
+     "pre_inference_ms": 575,
+     "service_tbt_ms": 10,
+     "service_ttft_ms": 1291,
+     "service_ttlt_ms": 4891,
+     "user_visible_ttft_ms": 716
+    },
+    "prompt_tokens": 1332,
+    "prompt_tokens_details": {
+     "audio_tokens": 0,
+     "cached_tokens": 0
+    },
+    "total_tokens": 1679
+   }
+  },
+  {
+   "label": "world",
+   "model": "taxila-brain",
+   "rep": 0,
+   "date": "2026-10-10T06:03:58.532Z",
+   "answer": {
+    "same_person": true,
+    "differences": {
+     "2": "",
+     "3": "Slightly narrower face and smaller bindi.",
+     "4": "Face appears slightly smaller and narrower; bindi is smaller.",
+     "5": "",
+     "6": "Face appears slightly longer and narrower; bindi is smaller."
+    },
+    "identity_score": 5,
+    "state": {
+     "1": "calm slight smile",
+     "2": "speaking with mouth open",
+     "3": "gentle closed-mouth smile",
+     "4": "pursed lips, looking upward",
+     "5": "warm slight smile",
+     "6": "eyes closed calmly"
+    },
+    "anything_off": ""
+   },
+   "usage": {
+    "completion_tokens": 569,
+    "completion_tokens_details": {
+     "accepted_prediction_tokens": 0,
+     "audio_tokens": 0,
+     "reasoning_tokens": 446,
+     "rejected_prediction_tokens": 0
+    },
+    "latency_checkpoint": {
+     "engine_tbt_ms": 11,
+     "engine_ttft_ms": 451,
+     "engine_ttlt_ms": 6782,
+     "pre_inference_ms": 276,
+     "service_tbt_ms": 11,
+     "service_ttft_ms": 919,
+     "service_ttlt_ms": 7246,
+     "user_visible_ttft_ms": 643
+    },
+    "prompt_tokens": 1332,
+    "prompt_tokens_details": {
+     "audio_tokens": 0,
+     "cached_tokens": 0
+    },
+    "total_tokens": 1901
+   }
+  },
+  {
+   "label": "world",
+   "model": "taxila-brain",
+   "rep": 2,
+   "date": "2026-10-10T06:03:59.971Z",
+   "answer": {
+    "same_person": true,
+    "differences": {
+     "2": "",
+     "3": "",
+     "4": "Slightly rounder, shorter-looking face and subtly younger appearance.",
+     "5": "",
+     "6": ""
+    },
+    "identity_score": 5,
+    "state": {
+     "1": "calm neutral smile",
+     "2": "speaking with mouth open",
+     "3": "gently smiling sideways",
+     "4": "looking upward thoughtfully",
+     "5": "warm gentle smile",
+     "6": "eyes closed serenely"
+    },
+    "anything_off": ""
+   },
+   "usage": {
+    "completion_tokens": 368,
+    "completion_tokens_details": {
+     "accepted_prediction_tokens": 0,
+     "audio_tokens": 0,
+     "reasoning_tokens": 267,
+     "rejected_prediction_tokens": 0
+    },
+    "latency_checkpoint": {
+     "engine_tbt_ms": 11,
+     "engine_ttft_ms": 461,
+     "engine_ttlt_ms": 4362,
+     "pre_inference_ms": 276,
+     "service_tbt_ms": 11,
+     "service_ttft_ms": 936,
+     "service_ttlt_ms": 4827,
+     "user_visible_ttft_ms": 660
+    },
+    "prompt_tokens": 1332,
+    "prompt_tokens_details": {
+     "audio_tokens": 0,
+     "cached_tokens": 0
+    },
+    "total_tokens": 1700
+   }
+  },
+  {
+   "label": "world",
+   "model": "taxila-brain",
+   "rep": 1,
+   "date": "2026-10-10T06:04:02.112Z",
+   "answer": {
+    "same_person": true,
+    "differences": {
+     "2": "",
+     "3": "",
+     "4": "",
+     "5": "",
+     "6": ""
+    },
+    "identity_score": 5,
+    "state": {
+     "1": "neutral slight smile",
+     "2": "speaking with mouth open",
+     "3": "gentle sideways smile",
+     "4": "eye-roll with pursed lips",
+     "5": "warm closed-mouth smile",
+     "6": "eyes calmly closed"
+    },
+    "anything_off": "Cell 4 reads mildly disapproving due to the upward eye-roll and pursed lips."
+   },
+   "usage": {
+    "completion_tokens": 619,
+    "completion_tokens_details": {
+     "accepted_prediction_tokens": 0,
+     "audio_tokens": 0,
+     "reasoning_tokens": 512,
+     "rejected_prediction_tokens": 0
+    },
+    "latency_checkpoint": {
+     "engine_tbt_ms": 11,
+     "engine_ttft_ms": 426,
+     "engine_ttlt_ms": 7203,
+     "pre_inference_ms": 440,
+     "service_tbt_ms": 11,
+     "service_ttft_ms": 1097,
+     "service_ttlt_ms": 7874,
+     "user_visible_ttft_ms": 657
+    },
+    "prompt_tokens": 1332,
+    "prompt_tokens_details": {
+     "audio_tokens": 0,
+     "cached_tokens": 0
+    },
+    "total_tokens": 1951
+   }
+  },
+  {
+   "label": "line",
+   "model": "taxila-brain",
+   "rep": 0,
+   "date": "2026-10-10T06:07:06.532Z",
+   "answer": {
+    "same_person": true,
+    "differences": {
+     "2": "",
+     "3": "",
+     "4": "",
+     "5": "More facial lines around the eyes and cheeks, giving an older appearance.",
+     "6": ""
+    },
+    "identity_score": 4,
+    "state": {
+     "1": "neutral forward look",
+     "2": "speaking with open smile",
+     "3": "glancing sideways skeptically",
+     "4": "looking upward thoughtfully",
+     "5": "faint knowing smile",
+     "6": "eyes calmly closed"
+    },
+    "anything_off": "Cell 3 reads as mildly disapproving or skeptical."
+   },
+   "usage": {
+    "completion_tokens": 395,
+    "completion_tokens_details": {
+     "accepted_prediction_tokens": 0,
+     "audio_tokens": 0,
+     "reasoning_tokens": 283,
+     "rejected_prediction_tokens": 0
+    },
+    "latency_checkpoint": {
+     "engine_tbt_ms": 11,
+     "engine_ttft_ms": 368,
+     "engine_ttlt_ms": 4810,
+     "pre_inference_ms": 170,
+     "service_tbt_ms": 11,
+     "service_ttft_ms": 757,
+     "service_ttlt_ms": 5192,
+     "user_visible_ttft_ms": 587
+    },
+    "prompt_tokens": 1332,
+    "prompt_tokens_details": {
+     "audio_tokens": 0,
+     "cached_tokens": 0
+    },
+    "total_tokens": 1727
+   }
+  },
+  {
+   "label": "line",
+   "model": "taxila-brain",
+   "rep": 1,
+   "date": "2026-10-10T06:07:08.006Z",
+   "answer": {
+    "same_person": true,
+    "differences": {
+     "2": "",
+     "3": "",
+     "4": "",
+     "5": "",
+     "6": ""
+    },
+    "identity_score": 5,
+    "state": {
+     "1": "looking forward neutrally",
+     "2": "smiling and speaking",
+     "3": "glancing sideways skeptically",
+     "4": "looking upward pensively",
+     "5": "squinting with slight smile",
+     "6": "eyes calmly closed"
+    },
+    "anything_off": "Cell 3 reads mildly disapproving; cell 5 reads skeptical."
+   },
+   "usage": {
+    "completion_tokens": 534,
+    "completion_tokens_details": {
+     "accepted_prediction_tokens": 0,
+     "audio_tokens": 0,
+     "reasoning_tokens": 429,
+     "rejected_prediction_tokens": 0
+    },
+    "latency_checkpoint": {
+     "engine_tbt_ms": 10,
+     "engine_ttft_ms": 621,
+     "engine_ttlt_ms": 6101,
+     "pre_inference_ms": 183,
+     "service_tbt_ms": 10,
+     "service_ttft_ms": 1144,
+     "service_ttlt_ms": 6614,
+     "user_visible_ttft_ms": 961
+    },
+    "prompt_tokens": 1332,
+    "prompt_tokens_details": {
+     "audio_tokens": 0,
+     "cached_tokens": 0
+    },
+    "total_tokens": 1866
+   }
+  },
+  {
+   "label": "line",
+   "model": "taxila-brain",
+   "rep": 2,
+   "date": "2026-10-10T06:07:09.799Z",
+   "answer": {
+    "same_person": true,
+    "differences": {
+     "2": "",
+     "3": "",
+     "4": "",
+     "5": "Added under-eye and cheek lines make her appear slightly older.",
+     "6": ""
+    },
+    "identity_score": 4,
+    "state": {
+     "1": "neutral, looking forward",
+     "2": "smiling with mouth open",
+     "3": "glancing sideways",
+     "4": "looking upward",
+     "5": "smiling faintly",
+     "6": "eyes closed calmly"
+    },
+    "anything_off": "Cell 4's upward eye-roll can read as mildly disapproving."
+   },
+   "usage": {
+    "completion_tokens": 623,
+    "completion_tokens_details": {
+     "accepted_prediction_tokens": 0,
+     "audio_tokens": 0,
+     "reasoning_tokens": 512,
+     "rejected_prediction_tokens": 0
+    },
+    "latency_checkpoint": {
+     "engine_tbt_ms": 12,
+     "engine_ttft_ms": 331,
+     "engine_ttlt_ms": 7567,
+     "pre_inference_ms": 356,
+     "service_tbt_ms": 12,
+     "service_ttft_ms": 979,
+     "service_ttlt_ms": 8210,
+     "user_visible_ttft_ms": 623
+    },
+    "prompt_tokens": 1332,
+    "prompt_tokens_details": {
+     "audio_tokens": 0,
+     "cached_tokens": 0
+    },
+    "total_tokens": 1955
+   }
+  }
+ ]
+}

@@ -413,6 +413,9 @@ describe("round3 fix: her words name what is really on the screen (experience B2
     assert.ok(namesUiPart("Chips mein chuno: keep going, short break, ya stop for today."));
     assert.ok(namesUiPart("bar1 ke 4 parts mein 1 shaded hai; bar2 ko kitne parts kijiye?"));
     assert.equal(namesUiPart("Ek packet chips 10 rupaye ka hai."), false, "a word problem's chips are not a screen part");
+    // the kits' own words never trip it (26 of 257,119 kit strings did: food chips, a bar graph's bars)
+    for (const t of ["chips mein namak aur tel", "Press a potato chip on a piece of plain paper for a minute", "Bilal ka bar 4 square ooncha hai.", "Ek bar 5 square ooncha hai. Woh kya dikhata hai?", "Chips ka band packet bina khole hilao.", "Batter A ka bar 9 units"]) assert.equal(namesUiPart(t), false, t);
+    for (const t of ["Neeche chips par tap karo.", "Tap one of the chips below.", "bar2 ko 4 equal parts mein todiye", "bar 2 ko 4 parts kijiye"]) assert.ok(namesUiPart(t), t);
     assert.equal(plainUiWords("bar1 ke 4 parts; bar2 ko 8 kijiye", "hinglish"), "A ke 4 parts; B ko 8 kijiye");
     assert.doesNotMatch(stopCheck(), /chips/, "the check-in shape no longer says 'on the chips' (she recited it)");
   });
@@ -423,6 +426,14 @@ describe("round3 fix: true and fair things said to the child (experience B6)", (
     assert.deepEqual(arithmeticSlip("1 by 4 ko 3 se multiply karne par 3 by 12 milta hai.")?.value, "3/4");
     assert.equal(arithmeticSlip("7 + 5 = 13 hota hai")?.value, "12");
     for (const t of ["1/4 × 3 = 3/4", "2000 + 50 = 2050 g", "1 kg 300 g = 1000 g + 300 g = ___ g.", "12 ÷ 4 = 3", "Square: 4 × 14 = 56"]) assert.equal(arithmeticSlip(t), null, t);
+    // units and mixed numbers are read, never guessed (each of these read as a false slip, and a true line was rewritten)
+    for (const t of ["1 kg + 300 g = 1300 g", "3 × 250 g = 750 g", "3/4 × 2 = 1 1/2", "2 1/4 - 1/4 = 2", "Example: 1/2 × 3/4 = 3/8", "2 m + 50 cm = 250 cm", "1 kg 300 g + 200 g = 1 kg 500 g"]) assert.equal(arithmeticSlip(t), null, t);
+    assert.equal(arithmeticSlip("3 × 250 g = 700 g")?.value, "750");
+    assert.equal(arithmeticSlip("1/2 × 3/4 = 3/6")?.value, "3/8");
+    assert.equal(arithmeticSlip("300 g + 200 g = 600 g")?.value, "500");
+    assert.equal(arithmeticSlip("Let's see: 7 + 5 = 13.")?.value, "12", "an apostrophe is not a quote");
+    // someone else's working put up to be checked is a teaching move, never her slip
+    for (const t of ["Bholu says 14 − 6 = 12. Check his answer.", "My answer: 1/2 + 1/3 = 2/5. Is that right?", "Kiran ne likha: '3 ÷ 45 = 0.067'. Galti dhoondo.", "17 ÷ 5 = 3 remainder 2", "100 ÷ 400 = 25%", "1901-2000 = 20th century"]) assert.equal(arithmeticSlip(t), null, t);
   });
   test("her own closed sum answered with a bare number is checked for her words ('Haan, 2000 g…' to 2000 + 50)", () => {
     assert.equal(selfPosedVerdict("Total grams batao: 2000 + 50 = ___?", "2000"), "incorrect");
@@ -468,6 +479,17 @@ describe("round3 fix: 'yeh nahi padhna, photosynthesis padhna hai' switches the 
     assert.equal(requestOf("mujhe yeh nahi padhna")?.type, "stop", "no subject named: the stop check-in as before");
     for (const t of ["can we do a simulation please", "mujhe padhna hai", "mujhe yeh padhna hai", "aur padhna hai"]) assert.notEqual(requestOf(t)?.type, "switch", t);
     assert.equal(switchSubjectOf("didi mujhe decimals seekhna hai"), "decimals");
+  });
+  test("the new request types are in the trace's closed vocabulary", async () => {
+    const { isReason } = await import("../server/brain/reasons.js");
+    for (const t of ["switch", "play_act"]) assert.ok(isReason(`request.${t}`), t);
+  });
+  test("a named subject to study instead voids the relational stop reading too (after a stop check-in it RELEASED the lesson)", async () => {
+    const { stopKind } = await import("../server/relational/signals.js");
+    // the local probe: "mujhe ab yeh nahi padhna" → the check-in, then "yeh nahi padhna, fractions padhna hai" → a second
+    // stop phrase to the relational policy → RELEASE → the lesson ended, with the subject they asked for never offered
+    for (const t of ["yeh nahi padhna, fractions padhna hai", "sir mujhe ab yeh nahi padhna, photosynthesis padhna hai", "nahi padhna yeh, decimals seekhna hai"]) assert.equal(stopKind(t), null, t);
+    for (const t of ["mujhe ab yeh nahi padhna", "mujhe nahi padhna hai", "aur nahi padhna hai", "nahi padhna, ghar jaana hai", "bas, aaj ke liye itna hi", "yeh nahi padhna, mujhe padhna hi nahi hai", "aaj nahi padhna hai", "mujhe ab kuch nahi padhna hai", "abhi bilkul nahi padhna hai", "yeh nahi padhna, baad mein padhna hai", "nahi padhna, ghar jaake padhna hai"]) assert.equal(stopKind(t), "end_request", t);
   });
   test("a class topic is offered with a Start button; choosing it closes this lesson and names the next one", async () => {
     const topic = findTopic("photosynthesis", 7);
@@ -534,5 +556,30 @@ describe("round3 fix: the Young desk keeps the child's work on screen; tiles fit
     const css = readFileSyncFix(new URL("../src/child/lesson/desk.css", import.meta.url), "utf8");
     assert.match(css, /\.dk-tile\[data-words\] \{ font-size: var\(--t-state\);/);
     assert.match(css, /\.dk-tile-key \{[^}]*font-size: max\(14px, var\(--t-meta\)\)/);
+  });
+});
+
+describe("round3 fix: an example she was ASKED for may use its own numbers beside a board (owner-4 'example do': 2 of 2 local runs got the model-failure line)", () => {
+  afterEach(() => { replyDeps.chat = chat; });
+  const BOARD = { id: "m2", engine: "explainer@1", params: { script: { facts: { kind: "animation", archetype: "fraction-parts@1", onScreen: { whole: "roti", parts: 5, shaded: 3, fraction: "3/5" } }, ops: [] } } };
+  const lessonAt = () => {
+    let r = step(initLessonState({ topicId: K.topicId, kit: K, ctx: CTX, seed: 11, now: 0 }), { event: "start", kit: K, now: 0 });
+    r = turn(r, cls("no_evidence"));
+    return r;
+  };
+  test("a requested example's own fractions are not 'parts the screen does not show'; a line about the screen still is", async () => {
+    const r = lessonAt();
+    const state = { ...r.state, activeItemId: undefined, module: BOARD, lastMove: { ...r.state.lastMove, kind: "reteach", itemId: undefined, request: "example" } };
+    const drafts = ["Example: 12 mangoes ka 1/3 hissa nikaalna ho, toh 12 ko 1/3 se multiply kijiye. Kitne mangoes milenge?"];
+    replyDeps.chat = async () => ({ text: drafts[0] });
+    const out = await textReply({ instructions: "x", state, kit: K, childText: "example do", history: [], ui: r.ui, module: BOARD });
+    assert.ok(!out.guard.caught.includes("parts"), JSON.stringify(out.guard));
+    assert.match(out.reply, /12 mangoes ka 1\/3/);
+    assert.notEqual(out.reply, FALLBACK.hinglish ?? "");
+    let n = 0;
+    const bad = ["Screen par roti ka 1/4 hissa shaded hai. Kitna hissa?", "Screen par roti ka 1/4 hissa shaded hai. Kitna hissa?"];
+    replyDeps.chat = async () => ({ text: bad[Math.min(n++, 1)] });
+    const out2 = await textReply({ instructions: "x", state, kit: K, childText: "example do", history: [], ui: r.ui, module: BOARD });
+    assert.ok(out2.guard.caught.includes("parts"), "a sentence about the screen is still checked against it");
   });
 });

@@ -1,0 +1,294 @@
+{
+ "method": "blind 3x2 grid questionnaire; prompt verbatim",
+ "prompt": "The image is a 3 x 2 grid of six portraits; cells are numbered 1-6 in reading order (top row 1, 2, 3; bottom row 4, 5, 6).\nJudge strictly, from what is drawn.\n1. same_person: are all six the same person drawn in the same art style? true/false.\n2. differences: for each of cells 2-6, any difference from cell 1 in face shape, facial features, apparent age, skin tone, hair, jewellery, clothing or art style. IGNORE expression, gaze direction and head tilt. Empty string if none.\n3. identity_score: identity consistency across the six, 1-5 (5 = clearly one character sheet, 3 = recognisably the same but with visible drift, 1 = different people).\n4. state: for each cell 1-6, what the face is doing, in 2-5 words (open answer).\n5. anything_off: anything in any cell that reads as childish, sexualised, disapproving, uncanny or broken, with the cell number. Empty string if none.\nReply JSON only: {\"same_person\":bool,\"differences\":{\"2\":\"\",\"3\":\"\",\"4\":\"\",\"5\":\"\",\"6\":\"\"},\"identity_score\":n,\"state\":{\"1\":\"\",\"2\":\"\",\"3\":\"\",\"4\":\"\",\"5\":\"\",\"6\":\"\"},\"anything_off\":\"\"}",
+ "runs": [
+  {
+   "label": "stylised",
+   "model": "taxila-kimi26",
+   "rep": 1,
+   "date": "2026-10-10T06:04:19.655Z",
+   "answer": {
+    "same_person": true,
+    "differences": {
+     "2": "",
+     "3": "",
+     "4": "",
+     "5": "",
+     "6": ""
+    },
+    "identity_score": 5,
+    "state": {
+     "1": "Neutral composed expression",
+     "2": "Mouth slightly open",
+     "3": "Subtle knowing smile",
+     "4": "Neutral sideways glance",
+     "5": "Warm gentle smile",
+     "6": "Eyes closed peacefully"
+    },
+    "anything_off": ""
+   },
+   "usage": {
+    "prompt_tokens": 2338,
+    "completion_tokens": 2144,
+    "total_tokens": 4482,
+    "audio_prompt_tokens": 0,
+    "prompt_tokens_details": {
+     "cached_tokens": 256,
+     "image_tokens": 2035
+    }
+   }
+  },
+  {
+   "label": "anime",
+   "model": "taxila-kimi26",
+   "rep": 1,
+   "date": "2026-10-10T06:04:32.220Z",
+   "answer": {
+    "same_person": true,
+    "differences": {
+     "2": "",
+     "3": "",
+     "4": "",
+     "5": "",
+     "6": ""
+    },
+    "identity_score": 5,
+    "state": {
+     "1": "Neutral calm expression",
+     "2": "Mouth open speaking",
+     "3": "Glancing to the side",
+     "4": "Blank neutral look",
+     "5": "Soft gentle smile",
+     "6": "Eyes closed peacefully"
+    },
+    "anything_off": ""
+   },
+   "usage": {
+    "prompt_tokens": 2338,
+    "completion_tokens": 2361,
+    "total_tokens": 4699,
+    "audio_prompt_tokens": 0,
+    "prompt_tokens_details": {
+     "cached_tokens": 256,
+     "image_tokens": 2035
+    }
+   }
+  },
+  {
+   "label": "stylised",
+   "model": "taxila-kimi26",
+   "rep": 0,
+   "date": "2026-10-10T06:04:55.686Z",
+   "answer": {
+    "same_person": true,
+    "differences": {
+     "2": "",
+     "3": "",
+     "4": "",
+     "5": "",
+     "6": ""
+    },
+    "identity_score": 5,
+    "state": {
+     "1": "neutral calm expression",
+     "2": "mouth slightly open",
+     "3": "slight knowing smile",
+     "4": "eyes glancing sideways",
+     "5": "warm gentle smile",
+     "6": "eyes closed peacefully"
+    },
+    "anything_off": ""
+   },
+   "usage": {
+    "prompt_tokens": 2338,
+    "completion_tokens": 2162,
+    "total_tokens": 4500,
+    "audio_prompt_tokens": 0,
+    "prompt_tokens_details": {
+     "cached_tokens": 256,
+     "image_tokens": 2035
+    }
+   }
+  },
+  {
+   "label": "anime",
+   "model": "taxila-kimi26",
+   "rep": 0,
+   "date": "2026-10-10T06:04:57.624Z",
+   "answer": {
+    "same_person": true,
+    "differences": {
+     "2": "",
+     "3": "",
+     "4": "",
+     "5": "",
+     "6": ""
+    },
+    "identity_score": 5,
+    "state": {
+     "1": "Neutral calm expression",
+     "2": "Mouth open speaking",
+     "3": "Looking off to side",
+     "4": "Stoic neutral face",
+     "5": "Gentle slight smile",
+     "6": "Eyes closed peacefully"
+    },
+    "anything_off": ""
+   },
+   "usage": {
+    "prompt_tokens": 2338,
+    "completion_tokens": 2853,
+    "total_tokens": 5191,
+    "audio_prompt_tokens": 0,
+    "prompt_tokens_details": {
+     "cached_tokens": 2304,
+     "image_tokens": 2035
+    }
+   }
+  },
+  {
+   "label": "world",
+   "model": "taxila-kimi26",
+   "rep": 1,
+   "date": "2026-10-10T06:05:16.644Z",
+   "answer": {
+    "same_person": true,
+    "differences": {
+     "2": "",
+     "3": "",
+     "4": "",
+     "5": "",
+     "6": ""
+    },
+    "identity_score": 5,
+    "state": {
+     "1": "neutral front-facing gaze",
+     "2": "mouth slightly open",
+     "3": "subtle closed-mouth smile",
+     "4": "gazing upward and right",
+     "5": "soft warm smile",
+     "6": "eyes closed peacefully"
+    },
+    "anything_off": ""
+   },
+   "usage": {
+    "prompt_tokens": 2338,
+    "completion_tokens": 2383,
+    "total_tokens": 4721,
+    "audio_prompt_tokens": 0,
+    "prompt_tokens_details": {
+     "cached_tokens": 256,
+     "image_tokens": 2035
+    }
+   }
+  },
+  {
+   "label": "world",
+   "model": "taxila-kimi26",
+   "rep": 0,
+   "date": "2026-10-10T06:05:31.578Z",
+   "answer": {
+    "same_person": true,
+    "differences": {
+     "2": "",
+     "3": "",
+     "4": "",
+     "5": "",
+     "6": ""
+    },
+    "identity_score": 5,
+    "state": {
+     "1": "neutral calm expression",
+     "2": "mouth slightly open",
+     "3": "soft pleased smile",
+     "4": "eyes glancing upward",
+     "5": "slight contented smile",
+     "6": "eyes closed peacefully"
+    },
+    "anything_off": ""
+   },
+   "usage": {
+    "prompt_tokens": 2338,
+    "completion_tokens": 2568,
+    "total_tokens": 4906,
+    "audio_prompt_tokens": 0,
+    "prompt_tokens_details": {
+     "cached_tokens": 0,
+     "image_tokens": 2035
+    }
+   }
+  },
+  {
+   "label": "line",
+   "model": "taxila-kimi26",
+   "rep": 0,
+   "date": "2026-10-10T06:07:25.601Z",
+   "answer": {
+    "same_person": true,
+    "differences": {
+     "2": "",
+     "3": "",
+     "4": "",
+     "5": "",
+     "6": ""
+    },
+    "identity_score": 5,
+    "state": {
+     "1": "neutral calm face",
+     "2": "mouth open speaking",
+     "3": "slight polite smile",
+     "4": "eyes look left",
+     "5": "eyes look right",
+     "6": "eyes closed resting"
+    },
+    "anything_off": ""
+   },
+   "usage": {
+    "prompt_tokens": 2338,
+    "completion_tokens": 2916,
+    "total_tokens": 5254,
+    "audio_prompt_tokens": 0,
+    "prompt_tokens_details": {
+     "cached_tokens": 256,
+     "image_tokens": 2035
+    }
+   }
+  },
+  {
+   "label": "line",
+   "model": "taxila-kimi26",
+   "rep": 1,
+   "date": "2026-10-10T06:07:27.883Z",
+   "answer": {
+    "same_person": true,
+    "differences": {
+     "2": "",
+     "3": "",
+     "4": "",
+     "5": "",
+     "6": ""
+    },
+    "identity_score": 5,
+    "state": {
+     "1": "neutral calm expression",
+     "2": "smiling with open mouth",
+     "3": "subtle smile looking forward",
+     "4": "eyes looking to side",
+     "5": "gentle closed mouth smile",
+     "6": "eyes closed peacefully"
+    },
+    "anything_off": ""
+   },
+   "usage": {
+    "prompt_tokens": 2338,
+    "completion_tokens": 2130,
+    "total_tokens": 4468,
+    "audio_prompt_tokens": 0,
+    "prompt_tokens_details": {
+     "cached_tokens": 256,
+     "image_tokens": 2035
+    }
+   }
+  }
+ ]
+}

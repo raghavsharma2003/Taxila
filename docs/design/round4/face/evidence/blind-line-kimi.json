@@ -1,0 +1,94 @@
+{
+ "method": "blind single-image questionnaire, no context given; PROMPT verbatim below",
+ "prompt": "You are shown one character portrait. Answer only from what is drawn. Be blunt and specific.\n1. apparent_age_range: the age range the person appears to be, as \"lo-hi\" years.\n2. occupation_guesses: your top 3 guesses for her occupation or role, most likely first.\n3. origin_guess: where in the world would you guess she is from? Open answer, as specific as the picture allows.\n4. reads_as_teacher: could she credibly be a schoolteacher? true/false, plus one short reason.\n5. childish: does anything about the figure or the drawing read as childish, babyish, toy-like or made for toddlers (proportions, eyes, style)? true/false, plus what.\n6. sexualised: does anything read as sexualised, glamorous, seductive, coy or flirtatious (expression, pose, framing, clothing, make-up)? true/false, plus what.\n7. reads_as_indian: does she read as Indian specifically? true/false, plus which details.\n8. idealised: does the face read as an idealised doll or model face rather than a real individual? true/false.\n9. style: the art style in a few words.\nReply JSON only: {\"apparent_age_range\":\"\",\"occupation_guesses\":[],\"origin_guess\":\"\",\"reads_as_teacher\":{\"v\":bool,\"why\":\"\"},\"childish\":{\"v\":bool,\"what\":\"\"},\"sexualised\":{\"v\":bool,\"what\":\"\"},\"reads_as_indian\":{\"v\":bool,\"details\":\"\"},\"idealised\":bool,\"style\":\"\"}",
+ "runs": [
+  {
+   "label": "line-rest",
+   "file": "/tmp/claude-0/-home-user/ecee9fc1-62f9-5f67-a47d-69ca79d9981a/scratchpad/r4-face/raw/line-rest.png",
+   "model": "taxila-kimi26",
+   "rep": 0,
+   "date": "2026-10-10T06:03:58.357Z",
+   "answer": {
+    "apparent_age_range": "35-50",
+    "occupation_guesses": [
+     "schoolteacher",
+     "homemaker",
+     "office clerk"
+    ],
+    "origin_guess": "India",
+    "reads_as_teacher": {
+     "v": true,
+     "why": "Mature, modest, neatly dressed in a sari with a neutral, authoritative expression typical of a schoolteacher."
+    },
+    "childish": {
+     "v": false,
+     "what": "Nothing infantile; proportions are adult and the style is a simple flat illustration without toy-like exaggeration."
+    },
+    "sexualised": {
+     "v": false,
+     "what": "Neutral expression, modest sari covering the shoulders, no makeup, coy pose, or flirtatious framing."
+    },
+    "reads_as_indian": {
+     "v": true,
+     "details": "Red bindi, sari with visible border, gold earrings, skin tone, and hairstyle."
+    },
+    "idealised": false,
+    "style": "flat vector illustration, minimalist"
+   },
+   "usage": {
+    "prompt_tokens": 1721,
+    "completion_tokens": 1290,
+    "total_tokens": 3011,
+    "audio_prompt_tokens": 0,
+    "prompt_tokens_details": {
+     "cached_tokens": 320,
+     "image_tokens": 1369
+    }
+   }
+  },
+  {
+   "label": "line-rest",
+   "file": "/tmp/claude-0/-home-user/ecee9fc1-62f9-5f67-a47d-69ca79d9981a/scratchpad/r4-face/raw/line-rest.png",
+   "model": "taxila-kimi26",
+   "rep": 1,
+   "date": "2026-10-10T06:04:07.341Z",
+   "answer": {
+    "apparent_age_range": "35-50",
+    "occupation_guesses": [
+     "schoolteacher",
+     "homemaker",
+     "office worker"
+    ],
+    "origin_guess": "India",
+    "reads_as_teacher": {
+     "v": true,
+     "why": "Neat sari, bindi, and composed expression match the common archetype of an Indian schoolteacher."
+    },
+    "childish": {
+     "v": false,
+     "what": "Adult facial proportions and stylized flat vector rendering; no enlarged eyes, toy-like roundness or toddler cues."
+    },
+    "sexualised": {
+     "v": false,
+     "what": "Modest high-coverage sari, neutral direct expression, no makeup beyond bindi, and straightforward head-and-shoulders framing."
+    },
+    "reads_as_indian": {
+     "v": true,
+     "details": "Red bindi, sari with coloured border, gold stud earrings, brown skin tone and dark hair in a low bun."
+    },
+    "idealised": false,
+    "style": "Flat vector illustration with clean lines and solid colour blocks."
+   },
+   "usage": {
+    "prompt_tokens": 1721,
+    "completion_tokens": 1630,
+    "total_tokens": 3351,
+    "audio_prompt_tokens": 0,
+    "prompt_tokens_details": {
+     "cached_tokens": 320,
+     "image_tokens": 1369
+    }
+   }
+  }
+ ]
+}

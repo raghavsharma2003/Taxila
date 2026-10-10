@@ -1,0 +1,284 @@
+{
+ "nodes": [
+  {
+   "id": "dec-r3fix-sexual-ask-code-first",
+   "kind": "decision",
+   "title": "Round 3 fix (adversarial B4): a sexual-content ask is read FIRST in code (server/conversation/lexicon.js sexualAsk, any turn length: porn, blue film, gande / adult / naked / nangi videos in a media or person frame) and declined in classify.js classifyFast whatever the p5 flag says; requests.js never reads it as a visual / game / story ask; policy.js applyNote is monotone on a decline (a later note can never turn a code decline into small talk). Reverse if a kit string or a real child turn is declined by it (kit scan 2026-10-10: 0 of 257,119 kit strings after the rejections below), or if the model note is measured to decline the same set without the code",
+   "at": "2026-10-10"
+  },
+  {
+   "id": "dec-r3fix-play-admission-by-skill",
+   "kind": "decision",
+   "title": "Round 3 fix (adversarial B1): play is admitted by SKILL, never by topic. build-coverage.mjs writes ACTS (the kit skills a play rule's act exercises, from the rule's own grammar), levels.js entryFor admits only on those, forge3 compose.js admitPlay asks the same; coverage rebuilt (skillsAdmitted 83, rulesNotAdmitted 1). Supersedes the topic-tag admission (rj-r3g-topic-tag-admission). Reverse if a skill's own kit items are shown to be exercised by a rule ACTS does not list (then widen ACTS from evidence, never back to the topic)",
+   "at": "2026-10-10"
+  },
+  {
+   "id": "dec-r3fix-play-act-not-graded",
+   "kind": "decision",
+   "title": "Round 3 fix (adversarial B2): while a play piece is up (state.playOn), a turn the closed play voice grammar parses (parseVoice) is a play_act request: it goes to the game and is never graded against the folded card question (no credit, no wrong, no hint rung). Reverse if children are measured answering the CARD in words while a game is up (then the card must be unfolded, not graded blind)",
+   "at": "2026-10-10"
+  },
+  {
+   "id": "dec-r3fix-forget-means-gone",
+   "kind": "decision",
+   "title": "Round 3 fix (adversarial B3/B3b/B5): 'forget that' deletes every memory row she HELD this lesson (the callback she opened with, the brief's memory lines, by id, any lesson), strips memory from the brief for the rest of the lesson, and stops callbacks; the parent corner shows and deletes memories (/api/parent/memory, src/parent Pages memory card). After a disclosure in the lesson (safeguardedAt / distressAt) a forget request gets the fixed forget_after_safety line and never the 'I will not keep it' promise (say.js guard + FALLBACK.forgetSafety). Reverse only with a safeguarding review: the incident row and hand-off are never deleted by a child's request",
+   "at": "2026-10-10"
+  },
+  {
+   "id": "dec-r3fix-fitshape-optional-clauses",
+   "kind": "decision",
+   "title": "Round 3 fix (experience B7): a lead in front of the hook (a share, a decline, a park) no longer 500s the turn. shapes.js marks the clauses that are OPTIONAL (kit contexts, the protege mention, the comparison rule...) and state.js fitShape drops them least-important first, only when the move section is over its room; the compile budget gate still throws (never truncate). Scan: 8,604 of 278,880 compiles threw on HEAD, 0 now. Reverse if a dropped clause is shown to matter for a measured outcome (then shorten the mandatory text instead)",
+   "at": "2026-10-10"
+  },
+  {
+   "id": "dec-r3fix-server-runs-frame-normalize",
+   "kind": "decision",
+   "title": "Round 3 fix (experience B2/B4): the server runs the SAME normalize() the frame runs (server/director/engine-check.js over src/modules/frame/engines/*.logic.ts) and never mounts a config the frame would refuse (modules.js mountable); measure@1's tool comes from the item's own units (shared/engine-catalog.js measureToolFor: grams/kg mount nothing, litres the jug, cm the ruler). Reverse if a refused config is shown to render usefully (then fix normalize, not the gate)",
+   "at": "2026-10-10"
+  },
+  {
+   "id": "dec-r3fix-arith-and-ui-guards",
+   "kind": "decision",
+   "title": "Round 3 fix (experience B6/B10/B2): two reply guards in code. server/brain/arith.js arithmeticSlip (her own false 'A op B = C' / 'A ko B se multiply karne par C', exact rationals, unit-, chain-, mixed-number- and reported-claim-aware) triggers a rewrite; selfPosedVerdict checks a bare number against HER OWN closed sum so the praise guard can refuse 'Haan, 2000 g' to 2000 + 50. say.js namesUiPart / plainUiWords repairs 'chips mein chuno' and 'bar1 / bar2' in code (no model call). Reverse a guard if its false-flag rate on kit strings or real replies rises above 0 (method: ms-r3fix-guard-precision)",
+   "at": "2026-10-10"
+  },
+  {
+   "id": "dec-r3fix-switch-topic",
+   "kind": "decision",
+   "title": "Round 3 fix (experience B8): 'yeh nahi padhna, <subject> padhna hai' is a SWITCH request read before the stop words (requests.js switchSubjectOf); the Director offers that topic of the child's class with a Start tile (curriculum.js findTopic, word-start match), or says honestly it is not in their lessons; Start ends this lesson and the client starts the named one (TurnResponse.switchTo, nav.start). The relational stop reading is void on such a turn too (signals.js studyInstead), or the check-in's second stop RELEASED the lesson. No subject named stays the stop check-in. Reverse if children are measured using the switch to leave (then add Stop for today to the offer)",
+   "at": "2026-10-10"
+  },
+  {
+   "id": "dec-r3fix-young-help-on-demand",
+   "kind": "decision",
+   "title": "Round 3 fix (experience B5/B10): the timed Young help menu never covers a tray (module, studio, board, play); Help opens it on demand as a layer over the work, which stays mounted. Word tiles ('Keep going / Short break / Stop for today') are set at the label size in BOTH tile components (AnswerTray PictureTiles is the one children see; WorkTray ChoiceTiles), badges max(14px, meta). Reverse if Young children are measured not finding Help without the timer",
+   "at": "2026-10-10"
+  },
+  {
+   "id": "dec-r3fix-requested-example-own-numbers",
+   "kind": "decision",
+   "title": "Round 3 fix (owner-4 'example do', typed, Kabir c7: the fixed model-failure line in 2 of 2 local runs): on a turn answering a REQUESTED example / story / other way, the 'parts the screen does not show' guard (W2-B screenContradiction) reads only her sentences that point at the screen; the example's own numbers ('12 mangoes ka 1/3 hissa') beside a 3/5 roti board are not contradictions, so they are no longer stripped down to nothing. A sentence about the screen is still held to it. Reverse if a requested example is measured confusing children by naming other part counts while the board is up",
+   "at": "2026-10-10"
+  },
+  {
+   "id": "ms-r3fix-budget-scan-2026-10-10",
+   "kind": "measurement",
+   "title": "Compile fit scan, 2026-10-10 (scratch budget-scan.mjs, pure, no model): 830 kit topics x 21 lead requests x registers x languages x lanes, at the hook and the first practice item = 278,880 compiles. HEAD (git archive) 8,604 BudgetError throws (every one a lead in front of a hook: 'section move needs 261-299 tokens (cap 260)'); fixed tree 0. The review's repro (c7-maths-ch08-t01 Hinglish aap, 'batting, main opener hoon apni colony team mein') compiles in text and voice",
+   "at": "2026-10-10"
+  },
+  {
+   "id": "ms-r3fix-engine-scan-2026-10-10",
+   "kind": "measurement",
+   "title": "Engine plan scan, 2026-10-10 (scratch engine-scan.mjs, pure): 12,289 kit items through planEngine. HEAD 5,748 plans of which 436 configs the frame's own normalize() refuses (all mountable on HEAD: the tray took them off while her line pointed at the screen); fixed tree 5,520 plans, 376 refused by normalize and filtered by mountable(), so 0 refused configs mount. The 60 fewer refused are measure@1 plans for mass items (grams/kg) that now mount nothing",
+   "at": "2026-10-10"
+  },
+  {
+   "id": "ms-r3fix-guard-precision-2026-10-10",
+   "kind": "measurement",
+   "title": "Reply-guard precision, 2026-10-10. arithmeticSlip over every string in data/kits (257,119): first version 472 false flags (chains '4 + 4 + 4 = 12', reported misconceptions 'Says 37 + 2 = 57', remainders, units, mixed numbers, ratios, decimals), final 0; over the 75 replies of the experience review: 1 hit, the real slip ('1 by 4 ko 3 se multiply karne par 3 by 12'). namesUiPart: first version 26 kit false flags (food chips, bar-graph bars), final 0 of 257,119; review replies 6 of 75 hit, exactly the 6 the review cited, all repaired to A/B / 'screen par'. Corroboration replay (assertion-rung numbers): 1,131 graded rows, wrong 15 -> 15, uncredited 35 -> 35, 0 right answers turned into no evidence",
+   "at": "2026-10-10"
+  },
+  {
+   "id": "ms-r3fix-desk-browser-2026-10-10",
+   "kind": "measurement",
+   "title": "Young desk browser check, 2026-10-10, LOCAL production build of the working tree (node server/serve.mjs, NODE_ENV=production, Neon TEST), Playwright Chromium, class-4 Hinglish test child, turns sent via the Help menu with the body rewritten to the child's words; NOT taxila.dev, NOT a child. Before the tile fix: 360 px stop check-in labels 36 px and overflowing their tiles (the WorkTray-only fix never reached AnswerTray, the component children see), and a named subject after a stop check-in ENDED the lesson (relational second stop). After: 25/25 at 360, 412, 1366 (labels 20 px, no overflow, no 'chips', switch offers c4-maths-ch05-t01, Start begins that lesson, 201); B5: a studio piece stays on screen 17 s into her turn at 360 and 1366 (3/3)",
+   "at": "2026-10-10"
+  },
+  {
+   "id": "ms-r3fix-latency-breakdown-2026-10-10",
+   "kind": "measurement",
+   "title": "Where the silence after an answer goes (experience B1), from the review's own timeline (docs/design/round3/review-shots/review-evidence.json, local prod build, FIXED 750 ms fake transcription, n=48-50 timed turns, PTT and hands-free mixed): end of speech -> commit p50 1,037 ms; -> final transcript p50 1,792; -> turn POST p50 1,844; turn p50 3,050 / p90 4,791 ms; -> TTS request p50 5,163; -> her first audible word p50 6,070 / p90 7,583 ms. The server TTS prewarm already exists (server/voice/prewarm.js, default on); the turn's model calls are the largest block. Not fixed this round",
+   "at": "2026-10-10"
+  },
+  {
+   "id": "rj-r3fix-bare-sex-token",
+   "kind": "rejection",
+   "title": "A bare 'sex' token in the sexual-content predicate: it declined 16 kit strings (class 8 SST 'sex ratio', class 9 science 'sex hormones', 'sex-linked'). Removed; the older out-of-bounds list still declines a short turn that is only that word",
+   "at": "2026-10-10"
+  },
+  {
+   "id": "rj-r3fix-nangi-unanchored",
+   "kind": "rejection",
+   "title": "'nangi / nanga / naked' anywhere in a turn as a sexual ask: kits teach 'nangi dhalaan' (bare slope), 'nange pair' (bare feet), 'nangi aankhon se' (naked eye). The word now counts only in a media or person frame (video, photo, pic, film, dekhna, dikhao, tum / aap ...)",
+   "at": "2026-10-10"
+  },
+  {
+   "id": "rj-r3fix-switch-on-way-words",
+   "kind": "rejection",
+   "title": "Reading 'can we do <anything>' as a topic switch: 'can we do a simulation please' became a switch to the subject 'simulation' (broke round3-forge-requests). A way of doing today's work (simulation, game, video, picture, quiz, story, practice...) is never a subject",
+   "at": "2026-10-10"
+  },
+  {
+   "id": "rj-r3fix-substring-topic-match",
+   "kind": "rejection",
+   "title": "findTopic by substring: 'time' matched 'Centimetres and metres', so a child asking for time would have been offered the length lesson. Words must start a title word",
+   "at": "2026-10-10"
+  },
+  {
+   "id": "rj-r3fix-static-test-for-ui-fix",
+   "kind": "rejection",
+   "title": "Pinning a UI fix with a source-text test only: the word-tile fix went into WorkTray ChoiceTiles, its static test passed, and the tiles children see (AnswerTray PictureTiles) still overflowed at 360. Only the browser check caught it. A UI blocker is closed by a browser measurement on the built client",
+   "at": "2026-10-10"
+  },
+  {
+   "id": "rj-r3fix-n1-checkin-goodbye-words",
+   "kind": "rejection",
+   "title": "Not applied: adversarial N1 (let a Hinglish stop check-in that offers 'aaj ke liye yahin rok dete hain' ship as drafted). It conflicts with owner-3's goodbye-word rule and rj-fixr2-checkin-wrap-exempt; the cost is one rewrite call and the fixed line on that path. Owner decision",
+   "at": "2026-10-10"
+  },
+  {
+   "id": "open-r3fix-latency-not-fixed",
+   "kind": "open",
+   "title": "Experience B1 (4-11 s silence, 0 of 43 answers within 900 ms) is NOT fixed at the root this round. Prewarm exists; the remaining levers are TAXILA_TURN_PREFETCH=on (integrator: turn p50 3,614 -> 2,521 ms, 10/10 adopted; review n=4 replies 4.4-5.5 s; estimated +62% model calls per turn on maxed quotas, cost not re-measured) and streaming the first guarded sentence to TTS (not attempted: every byte guard runs on the whole reply before speech)",
+   "at": "2026-10-10"
+  },
+  {
+   "id": "open-r3fix-content-gaps",
+   "kind": "open",
+   "title": "Left open: class 4 grams topic has no play rule (a game ask there is said honestly, 'no game is ready'); 'animation dikhao, half ka half' has no moving content; boards are still often generic English flowcharts in Hinglish lessons; the content-filter fail-closed path turned 1 correct answer into a safeguard in the local battery (a rewrite blocked by the filter), same path as the integrator's open problem 3",
+   "at": "2026-10-10"
+  }
+ ],
+ "edges": [
+  {
+   "src": "dec-r3fix-play-admission-by-skill",
+   "rel": "supersedes",
+   "dst": "rj-r3g-topic-tag-admission"
+  },
+  {
+   "src": "dec-r3fix-play-admission-by-skill",
+   "rel": "inherits",
+   "dst": "r3g-admission-by-skill"
+  },
+  {
+   "src": "dec-r3fix-play-admission-by-skill",
+   "rel": "caused_by",
+   "dst": "open-r3adv-play-admission-by-topic"
+  },
+  {
+   "src": "dec-r3fix-play-act-not-graded",
+   "rel": "caused_by",
+   "dst": "open-r3adv-game-command-graded"
+  },
+  {
+   "src": "dec-r3fix-sexual-ask-code-first",
+   "rel": "caused_by",
+   "dst": "rj-r3adv-small-talk-in-bytes"
+  },
+  {
+   "src": "dec-r3fix-sexual-ask-code-first",
+   "rel": "inherits",
+   "dst": "ship5-fix-sexual-content-to-child-predicate"
+  },
+  {
+   "src": "rj-r3fix-bare-sex-token",
+   "rel": "constrains",
+   "dst": "dec-r3fix-sexual-ask-code-first"
+  },
+  {
+   "src": "rj-r3fix-nangi-unanchored",
+   "rel": "constrains",
+   "dst": "dec-r3fix-sexual-ask-code-first"
+  },
+  {
+   "src": "dec-r3fix-forget-means-gone",
+   "rel": "caused_by",
+   "dst": "rj-r3adv-forget-ok-after-disclosure"
+  },
+  {
+   "src": "dec-r3fix-forget-means-gone",
+   "rel": "inherits",
+   "dst": "dec-r3rh-forget-honoured"
+  },
+  {
+   "src": "dec-r3fix-fitshape-optional-clauses",
+   "rel": "measured_by",
+   "dst": "ms-r3fix-budget-scan-2026-10-10"
+  },
+  {
+   "src": "dec-r3fix-fitshape-optional-clauses",
+   "rel": "caused_by",
+   "dst": "ms-r3rv-budget-500-2026-10-10"
+  },
+  {
+   "src": "dec-r3fix-server-runs-frame-normalize",
+   "rel": "measured_by",
+   "dst": "ms-r3fix-engine-scan-2026-10-10"
+  },
+  {
+   "src": "dec-r3fix-server-runs-frame-normalize",
+   "rel": "caused_by",
+   "dst": "open-r3rv-measure-engine-for-mass"
+  },
+  {
+   "src": "dec-r3fix-arith-and-ui-guards",
+   "rel": "measured_by",
+   "dst": "ms-r3fix-guard-precision-2026-10-10"
+  },
+  {
+   "src": "dec-r3fix-arith-and-ui-guards",
+   "rel": "caused_by",
+   "dst": "ms-r3rv-truth-errors-2026-10-10"
+  },
+  {
+   "src": "dec-r3fix-switch-topic",
+   "rel": "measured_by",
+   "dst": "ms-r3fix-desk-browser-2026-10-10"
+  },
+  {
+   "src": "dec-r3fix-switch-topic",
+   "rel": "caused_by",
+   "dst": "ms-r3rv-requests-honoured-2026-10-10"
+  },
+  {
+   "src": "rj-r3fix-switch-on-way-words",
+   "rel": "constrains",
+   "dst": "dec-r3fix-switch-topic"
+  },
+  {
+   "src": "rj-r3fix-substring-topic-match",
+   "rel": "constrains",
+   "dst": "dec-r3fix-switch-topic"
+  },
+  {
+   "src": "dec-r3fix-young-help-on-demand",
+   "rel": "caused_by",
+   "dst": "open-r3rv-young-help-covers-activity"
+  },
+  {
+   "src": "dec-r3fix-young-help-on-demand",
+   "rel": "measured_by",
+   "dst": "ms-r3fix-desk-browser-2026-10-10"
+  },
+  {
+   "src": "rj-r3fix-static-test-for-ui-fix",
+   "rel": "constrains",
+   "dst": "dec-r3fix-young-help-on-demand"
+  },
+  {
+   "src": "rj-r3fix-n1-checkin-goodbye-words",
+   "rel": "constrains",
+   "dst": "rj-fixr2-checkin-wrap-exempt"
+  },
+  {
+   "src": "open-r3fix-latency-not-fixed",
+   "rel": "measured_by",
+   "dst": "ms-r3fix-latency-breakdown-2026-10-10"
+  },
+  {
+   "src": "open-r3fix-latency-not-fixed",
+   "rel": "caused_by",
+   "dst": "ms-r3rv-silence-after-answer-2026-10-10"
+  },
+  {
+   "src": "open-r3fix-latency-not-fixed",
+   "rel": "inherits",
+   "dst": "dec-r3rh-prefetch-on"
+  },
+  {
+   "src": "dec-r3fix-requested-example-own-numbers",
+   "rel": "constrains",
+   "dst": "dec-r3fix-arith-and-ui-guards"
+  }
+ ]
+}
