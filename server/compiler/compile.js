@@ -19,6 +19,7 @@
 //     (`lessonState.moveVoiced`), and the appended-last check is the BRANCH for the reply now being
 //     answered — derived from step() itself (director/state.js branchesFor), with the safety escape first,
 //     because the safeguard move only reaches the instructions one turn later.
+import { playCheck } from "../director/play-verbs.js";
 import { SHAPES as REL_SHAPES } from "../relational/policy.js";
 import { floorText, FLOOR_HEADING } from "./floor.js";
 import { gatesFor, assertMinorGates } from "./gates.js";
@@ -155,6 +156,9 @@ function lessonParts({ lessonState: s, item, content = [], branches, topic, lang
     }
   }
   content.forEach((line) => parts.push({ text: `- ${line}`, drop: 8 }));
+  // round 4 (session-first, TAXILA_SESSION_FIRST): the Conductor's plan as HER private prior (director/session/prior.js
+  // priorNotes): at most two notes with the lesson facts, droppable before the move's content, never a list she reads out
+  for (const note of (Array.isArray(s.sessionNotes) ? s.sessionNotes : []).slice(0, 2)) parts.push({ text: `- ${String(note).replace(/["“”]/g, "").slice(0, 200)}`, drop: 7 });
   if (lane === "voice" && branches) {
     if (branches.listenFor?.length) parts.push({ text: `- key ideas to listen for (checking only): ${branches.listenFor.join("; ")}`, drop: 8 });
     const seen = new Set(content);
@@ -253,6 +257,13 @@ function lastParts({ lessonState: s, move, item, branches, ageBand, language, pr
     // about how she will respond; the vetted opening is prepended in code (server/relational/openings.js).
     check = `${check} Begin with the child, never with how you will respond.`;
     shape = "at most 35 words, short calm sentences. End by asking if they are okay right now, then stop.";
+  } else if (move.intake) {
+    // round 4 (session-first intake, director/session/beat.js): the move's own question is the only one; for the confirm probe
+    // that is the kit question, pinned verbatim (content); never a lesson explanation or a quiz of her own here
+    check = move.ask
+      ? `the only question this turn, in their language: "${String(move.ask).replace(/"/g, "'")}" — no other question; no verdict words; no lesson content yet.`
+      : "no lesson content and no quiz question of your own this turn; only what the move names, then hand the floor back.";
+    shape = `at most ${n} words. One idea. End by handing the floor back, then stop.`;
   } else if (voice) {
     check = [`when they reply: ${ESCAPE_VOICE}`, STOP, branchClause(branches, poser(writtenAsk ? "text" : lane, language, s, ageBand)), keyRule].filter(Boolean).join("; ");
     shape = move.kind === "wrap"
@@ -277,6 +288,10 @@ function lastParts({ lessonState: s, move, item, branches, ageBand, language, pr
     }
     shape = `at most ${n} words. One idea. End by handing the floor back — one question or a try-this — then stop.`;
   }
+  // round 4 (G2 Khand finding): a play piece is up (brain/turn.js state.playOn with its family and mode; patch request 04):
+  // the card is folded away, and any task words come from the piece's mode, never the card question's verb
+  const pc = move.kind !== "safeguard" && move.kind !== "wrap" && s.playOn?.mode ? playCheck(s.playOn, language) : null;
+  if (pc) check = pc;
   if (fix.length) check = `your last turn broke the floor — first ${fix.join("; ")}; then ${check}`;
   // round 3 (relational-human): a memory about THIS child from the record (last lesson's learning, a win), said FIRST in a
   // few words of her own. Here, not mid-brief: position is mechanism (memory-2day 2026-10-09: in the MOVE section the
@@ -285,8 +300,13 @@ function lastParts({ lessonState: s, move, item, branches, ageBand, language, pr
   const cb = s.rel?.callback;
   const lead = cb?.lead && cb.fragment && move.kind !== "safeguard" && move.kind !== "wrap" && !fix.length
     ? [{ text: `OPEN THIS TURN WITH what you remember of them, in a few words of your own, before the move (true, from your record; a note, not words to say): ${String(cb.fragment).slice(0, 140)}`, drop: 10 }] : [];
+  // round 4 (conversation): what the child's request must get this turn, last (position is mechanism; director/shapes.js
+  // MUST_NOTE). A note, never a line; droppable (shed before anything else here when the section is over its cap).
+  const must = move.must && move.kind !== "safeguard" && move.kind !== "wrap" && !fix.length
+    ? [{ text: `THIS TURN FIRST (a note, not words to say): ${String(move.must).replace(/["“”]/g, "").slice(0, 300)}`, drop: 9 }] : [];
   return [
     ...lead,
+    ...must,
     { text: `ONE MORE CHECK: ${check}`, drop: null },
     { text: `${TURN_SHAPE_PREFIX} (last and most important): ${shape}`, drop: null },
   ];

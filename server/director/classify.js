@@ -124,6 +124,27 @@ export function targetFor(s, kit, item) {
 // key "6" 424 times and "37 4" matched "37.4" 23 times in the deterministic path); any other dot or dash is punctuation.
 const norm = (s) => normAnswer(String(s ?? "").replace(/[−–]/g, "-")).replace(/(?<!\d)\.|\.(?!\d)/g, " ").replace(/(?<=[\p{L}\p{N}])-|-(?!\d)/gu, " ").replace(/\s+/g, " ").trim();
 
+// round 4 (conversation): the doubt words a hedged answer is wrapped in, at either end only (never inside the answer)
+const HEDGE_HEAD = /^(?:(?:hmm+|umm+|uh+|ok|so|achha|accha|didi|ma'?am)[\s,]+)*(?:(?:shayad|shaayad|maybe|perhaps|probably|i\s+think|i\s+guess|mujhe\s+lagta\s+hai|lagta\s+hai|is\s+it|kya\s+ye|kya\s+yeh|kya)[\s,:]+)+/i;
+const HEDGE_TAIL = /(?:[\s,?!.]+(?:not\s+sure|pakka\s+nahi(?:\s+(?:pata|hai|hoon))?|sure\s+nahi(?:\s+hoon)?|idk|i\s+think|i\s+guess|shayad|maybe|ho\s+sakta\s+hai(?:\s+kya)?|hoga|hogi|hai\s+na|hai\s+kya|right|na|ji|hai|h|lagta\s+hai))+[\s?!.]*$|[\s?!.]+$/i;
+/** PURE. The answer inside a hedge ("shayad X? pakka nahi pata" → "X"), or null when nothing was wrapped around it. */
+export function hedgeCore(text) {
+  const t = String(text ?? "").trim();
+  const c = t.replace(HEDGE_HEAD, "").replace(HEDGE_TAIL, "").trim();
+  return c && c !== t ? c : null;
+}
+// a spoken self-correction: the answer after the LAST correction marker is the child's final answer
+const CORRECTION = /(?:^|[\s,.;!…]+)(?:no+\s+sorry|sorry\s+no|nahi\s+nahi|nahin\s+nahin|no\s+no|no\s+wait|wait\s+no|i\s+mean|actually(?:\s+no)?|nahi\s+balki|sorry|matlab)(?=[\s,.;!…]+\S)/gi;
+/** PURE. The words after the last self-correction marker ("8 cm measures only the drawing no sorry segment" → "segment"), or null. */
+export function correctedTail(text) {
+  const t = String(text ?? "");
+  let last = null;
+  for (const m of t.matchAll(CORRECTION)) last = m;
+  if (!last) return null;
+  const tail = t.slice(last.index + last[0].length).replace(/^[\s,.;!…:]+/, "").trim();
+  return tail && tail.split(/\s+/).length <= 8 ? (hedgeCore(tail) ?? tail) : null;
+}
+
 /** Map an option ("key" | "mN" | "other_wrong" …) to an outcome. */
 function fromMatch(match, target) {
   if (match === "key") return { outcome: "correct" };
@@ -508,6 +529,24 @@ export function classifyFast({ target, childText, asrConfidence, typed, chipId, 
     }
     const opt = target.options?.find((o) => norm(o.text) === t);
     if (opt) { const m = fromMatch(optionTag(opt, target), target); return done(m.outcome, "exact", m); }
+    // round 4 (conversation; battery 2026-10-10): the same exact match on the child's FINAL words, (a) with the doubt words a
+    // hedge wraps around it taken off ("shayad 1/3 before, 2/3 after? pakka nahi pata" was graded partial by the model, and
+    // she re-asked a right answer) and (b) after a spoken self-correction ("… no sorry segment": the last answer counts, and
+    // the model read the whole line as no answer). Exact only: anything else still goes to the model.
+    if (p5Flag("R4CONV")) {
+      for (const [cand, src] of [[hedgeCore(text), "exact_hedged"], [correctedTail(text), "exact_final"]]) {
+        if (!cand || norm(cand) === t) continue;
+        // the doubt words ("pakka nahi pata") are not a don't-know when an answer came with them
+        if (src === "exact_hedged") flags.dontKnow = false;
+        const c = norm(cand);
+        if (!c) continue;
+        if (target.key && norm(target.key) === c && aposSig(target.key) === aposSig(cand)) return done("correct", src);
+        const h = (target.also || []).find((k) => k && norm(k) === c && aposSig(k) === aposSig(cand));
+        if (h) { const lab = target.alsoLabel?.[h]; if (lab === "partial") return done("partial", src); if (lab !== "wrong") return done("correct", src); }
+        const o = target.options?.find((x) => norm(x.text) === c);
+        if (o) { const m = fromMatch(optionTag(o, target), target); return done(m.outcome, src, m); }
+      }
+    }
   }
   // V1.1: a key that IS a number is graded by value in code (evals/grading-truth: the model credited "-180" for 180°,
   // "15 ya 150" for 15 and failed "14/8" for 1 3/4). One readable number equal to the key → correct; one readable number

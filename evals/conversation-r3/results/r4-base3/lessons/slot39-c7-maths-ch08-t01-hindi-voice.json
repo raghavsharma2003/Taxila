@@ -1,0 +1,3694 @@
+{
+ "slot": 39,
+ "topic": "c7-maths-ch08-t01",
+ "cls": 7,
+ "lang": "hindi",
+ "lane": "voice",
+ "lessons": [
+  {
+   "lessonId": "bed2056f-70bd-4a90-b05c-4dd61d1b5771",
+   "why": "start",
+   "at": "2026-10-10T11:30:50.805Z",
+   "teacher": "Arjun"
+  }
+ ],
+ "turns": [
+  {
+   "who": "teacher",
+   "kind": "opening",
+   "lessonId": "bed2056f-70bd-4a90-b05c-4dd61d1b5771",
+   "teacherReply": "Namaste Vihaan, main Arjun, aapka AI teacher. Aaj fractions multiply karenge—cricket ke half-over ka quarter sochiye. Aapko cricket mein kya pasand hai?",
+   "ui": {
+    "status": "your_turn",
+    "phase": "warmup",
+    "handover": "answer",
+    "answerForm": "words",
+    "tray": "none",
+    "shortTitle": "Multiplying fractions",
+    "beat": {
+     "beatId": "b1-arrive",
+     "type": "arrive",
+     "index": 1
+    },
+    "ask": {
+     "text": "Aapko cricket mein kya pasand hai?"
+    }
+   }
+  },
+  {
+   "who": "child",
+   "tag": "greet",
+   "lessonId": "bed2056f-70bd-4a90-b05c-4dd61d1b5771",
+   "childText": "हाँ तैयार हूँ",
+   "ms": 1564,
+   "error": null,
+   "teacherReply": "Badiya, Vihaan. Sochiye: half-over ka quarter, yani aadhe ka ek-chautha hissa. Aapka andaaza kya hai—poore over ka kaunsa fraction? Bittu ko bhi batayenge.",
+   "move": {
+    "kind": "hook",
+    "shape": "open with one concrete everyday situation built on their interest (cricket) — kit contexts: recipes and rotis, sharing cake and pizza, farm field fractions; ask what they think will happen or which they would pick — a prediction, no right answer yet; any bigger/more comparison: two quantities of one kind, in one unit — a count against a count, a distance against a distance; never across kinds; mention once: at the end they will teach this to Bittu (a pretend new student who missed this class); address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu",
+    "format": "F4"
+   },
+   "ui": {
+    "status": "your_turn",
+    "phase": "teach",
+    "handover": "answer",
+    "answerForm": "words",
+    "tray": "none",
+    "shortTitle": "Multiplying fractions",
+    "beat": {
+     "beatId": "b2-hook",
+     "type": "hook",
+     "index": 2
+    },
+    "ask": {
+     "text": "Aapka andaaza kya hai—poore over ka kaunsa fraction?"
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false
+    },
+    "verdict": "attempt",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 807,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "teach",
+    "ms": 1561,
+    "item": null,
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 38
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 39
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 659
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 704
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1467
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1511
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1514
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1515
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1165
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 1516
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 1561
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "probe:example-03",
+   "lessonId": "bed2056f-70bd-4a90-b05c-4dd61d1b5771",
+   "childText": "ek example de do please",
+   "ms": 1720,
+   "error": null,
+   "teacherReply": "Example: 12 runs ka 3/5 hissa nikaalna ho, toh 12 ko 3/5 se multiply karenge. Pehle 12 ka 1/5 kitna hoga?",
+   "move": {
+    "kind": "reteach",
+    "shape": "they asked for an example: one concrete everyday example of the SAME idea, your own numbers, plainly marked as an example; the idea in LESSON NOW is still the one on the table; no new step of the lesson yet; end with one small question about it; address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu",
+    "skillId": "c7-maths-ch08-t01-s1",
+    "request": "example"
+   },
+   "ui": {
+    "status": "your_turn",
+    "phase": "teach",
+    "handover": "answer",
+    "answerForm": "words",
+    "tray": "studio",
+    "shortTitle": "Multiplying fractions",
+    "beat": {
+     "beatId": "b3-explain",
+     "type": "explain",
+     "index": 3
+    },
+    "ask": {
+     "text": "Pehle 12 ka 1/5 kitna hoga?"
+    },
+    "studioSlot": {
+     "slotId": "bed2056f-70bd-4a90-b05c-4dd61d1b5771:wb:2:slot",
+     "intentId": "bed2056f-70bd-4a90-b05c-4dd61d1b5771:wb:2",
+     "state": "planning"
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false
+    },
+    "verdict": "ungraded",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "request"
+    },
+    "note": null,
+    "hintLevel": 0,
+    "phase": "teach",
+    "ms": 1717,
+    "item": null,
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 40
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 41
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 494
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 539
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 543
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 543
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1000
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 1641
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 1717
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "filler",
+   "lessonId": "bed2056f-70bd-4a90-b05c-4dd61d1b5771",
+   "childText": "अच्छा",
+   "ms": 1425,
+   "error": null,
+   "teacherReply": "12 runs ko 5 equal groups mein baantne par har group 12 ka 1/5 hoga. Aap bataiye, ek group mein kitne runs aayenge?",
+   "move": {
+    "kind": "explain",
+    "shape": "one idea only: Multiply a whole number by a fraction and find a fraction of a quantity; an example from their interest (cricket) if it fits naturally; objects first, then the symbol; point at the screen only at what the on-screen row lists; never a drawing made of characters; end with one small question that makes them USE the idea — never 'samjha?'; address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu",
+    "skillId": "c7-maths-ch08-t01-s1",
+    "format": "F3"
+   },
+   "ui": {
+    "status": "your_turn",
+    "phase": "teach",
+    "handover": "answer",
+    "answerForm": "words",
+    "tray": "studio",
+    "shortTitle": "Multiplying fractions",
+    "beat": {
+     "beatId": "b3-explain",
+     "type": "explain",
+     "index": 3
+    },
+    "ask": {
+     "text": "Aap bataiye, ek group mein kitne runs aayenge?"
+    },
+    "studioSlot": {
+     "slotId": "bed2056f-70bd-4a90-b05c-4dd61d1b5771:wb:3:slot",
+     "intentId": "bed2056f-70bd-4a90-b05c-4dd61d1b5771:wb:3",
+     "state": "planning"
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false
+    },
+    "verdict": "ungraded",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 638,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "teach",
+    "ms": 1421,
+    "item": null,
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 39
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 39
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 636
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 681
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1276
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1319
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1324
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1324
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1264
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 1358
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 1421
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "probe:meta_feedback-05",
+   "lessonId": "bed2056f-70bd-4a90-b05c-4dd61d1b5771",
+   "childText": "aap boring ho",
+   "ms": 1974,
+   "error": null,
+   "teacherReply": "Aapko yeh part boring lag raha hai—chaliye format badalte hain. Choose kijiye: game, picture, ya 10-second challenge?",
+   "move": {
+    "kind": "repair",
+    "shape": "they are bored: first say back in a few words, in their words, that this part is boring for them, no guilt; then change something NOW; offer a different way into today's idea: a game, a picture or a quick challenge, shown on screen as choices; ask which; no lesson question this turn; address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu",
+    "request": "boredom"
+   },
+   "ui": {
+    "status": "your_turn",
+    "chips": [
+     {
+      "id": "req:visual",
+      "label": "Show me a picture"
+     },
+     {
+      "id": "req:story",
+      "label": "Tell it as a story"
+     },
+     {
+      "id": "req:game",
+      "label": "Play a game"
+     },
+     {
+      "id": "stop:continue",
+      "label": "Back to the lesson"
+     }
+    ],
+    "phase": "teach",
+    "handover": "choice",
+    "answerForm": "choice",
+    "tray": "tiles",
+    "shortTitle": "Multiplying fractions",
+    "beat": {
+     "beatId": "b3-explain",
+     "type": "explain",
+     "index": 3
+    },
+    "ask": {
+     "text": "Choose kijiye: game, picture, ya 10-second challenge?"
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false
+    },
+    "verdict": "ungraded",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "request"
+    },
+    "note": null,
+    "hintLevel": 0,
+    "phase": "teach",
+    "ms": 1971,
+    "item": null,
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 38
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 39
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 372
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 414
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 416
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 417
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1497
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 1919
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 1971
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "filler",
+   "lessonId": "bed2056f-70bd-4a90-b05c-4dd61d1b5771",
+   "childText": "समझ गया",
+   "ms": 2489,
+   "error": null,
+   "teacherReply": "Chaliye naye numbers: 2/3 of 3/4 ko multiplication mein likhna hai.",
+   "move": {
+    "kind": "worked_example",
+    "shape": "worked example, part 1 of 2: say one step, then ask them for the next step; their thinking, your pace; no new idea; address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu",
+    "skillId": "c7-maths-ch08-t01-s1",
+    "format": "F2"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "math",
+     "value": "Find 3/5 of 2/3 of a cake."
+    },
+    "phase": "teach",
+    "handover": "answer",
+    "answerForm": "words",
+    "tray": "module",
+    "shortTitle": "Multiplying fractions",
+    "beat": {
+     "beatId": "b4-worked_example",
+     "type": "worked_example",
+     "index": 4
+    },
+    "ask": {
+     "text": "Chaliye naye numbers: 2/3 of 3/4 ko multiplication mein likhna hai."
+    }
+   },
+   "moduleCommands": [
+    {
+     "op": "mount",
+     "moduleId": "m5",
+     "engine": "explainer@1",
+     "params": {
+      "script": {
+       "v": 1,
+       "scriptId": "ex-183h3qt",
+       "line": {
+        "lessonId": "bed2056f-70bd-4a90-b05c-4dd61d1b5771"
+       },
+       "anchor": "line_audio_start",
+       "board": {
+        "w": 400,
+        "h": 300,
+        "ground": "chalk"
+       },
+       "mode": "fresh",
+       "durationMs": 6330,
+       "ops": [
+        {
+         "id": "o1",
+         "op": "circle",
+         "startMs": 180,
+         "endMs": 1080,
+         "weight": 2,
+         "c": [
+          130,
+          150
+         ],
+         "r": 95,
+         "fill": "soft"
+        },
+        {
+         "id": "o2",
+         "op": "line",
+         "startMs": 1130,
+         "endMs": 1350,
+         "weight": 1,
+         "from": [
+          130,
+          150
+         ],
+         "to": [
+          130,
+          55
+         ]
+        },
+        {
+         "id": "o3",
+         "op": "line",
+         "startMs": 1400,
+         "endMs": 1620,
+         "weight": 1,
+         "from": [
+          130,
+          150
+         ],
+         "to": [
+          220.4,
+          120.6
+         ]
+        },
+        {
+         "id": "o4",
+         "op": "line",
+         "startMs": 1670,
+         "endMs": 1890,
+         "weight": 1,
+         "from": [
+          130,
+          150
+         ],
+         "to": [
+          185.8,
+          226.9
+         ]
+        },
+        {
+         "id": "o5",
+         "op": "line",
+         "startMs": 1940,
+         "endMs": 2160,
+         "weight": 1,
+         "from": [
+          130,
+          150
+         ],
+         "to": [
+          74.2,
+          226.9
+         ]
+        },
+        {
+         "id": "o6",
+         "op": "line",
+         "startMs": 2210,
+         "endMs": 2430,
+         "weight": 1,
+         "from": [
+          130,
+          150
+         ],
+         "to": [
+          39.6,
+          120.6
+         ]
+        },
+        {
+         "id": "s0",
+         "op": "sector",
+         "startMs": 2550,
+         "endMs": 2930,
+         "ink": "accent",
+         "weight": 1,
+         "c": [
+          130,
+          150
+         ],
+         "r": 93,
+         "fill": "accent",
+         "fromDeg": 0,
+         "toDeg": 72
+        },
+        {
+         "id": "s1",
+         "op": "sector",
+         "startMs": 3050,
+         "endMs": 3430,
+         "ink": "accent",
+         "weight": 1,
+         "c": [
+          130,
+          150
+         ],
+         "r": 93,
+         "fill": "accent",
+         "fromDeg": 72,
+         "toDeg": 144
+        },
+        {
+         "id": "s2",
+         "op": "sector",
+         "startMs": 3550,
+         "endMs": 3930,
+         "ink": "accent",
+         "weight": 1,
+         "c": [
+          130,
+          150
+         ],
+         "r": 93,
+         "fill": "accent",
+         "fromDeg": 144,
+         "toDeg": 216
+        },
+        {
+         "id": "frac",
+         "op": "numwork",
+         "startMs": 4230,
+         "endMs": 5030,
+         "ink": "accent",
+         "weight": 2,
+         "at": [
+          296,
+          120
+         ],
+         "layout": "fraction",
+         "rows": [
+          [
+           "3"
+          ],
+          [
+           "5"
+          ]
+         ]
+        },
+        {
+         "id": "o7",
+         "op": "highlight",
+         "startMs": 5330,
+         "endMs": 5930,
+         "ink": "mark",
+         "target": "frac",
+         "style": "circle"
+        }
+       ],
+       "facts": {
+        "kind": "animation",
+        "archetype": "fraction-parts@1",
+        "onScreen": {
+         "whole": "roti",
+         "parts": 5,
+         "shaded": 3,
+         "fraction": "3/5"
+        }
+       }
+      },
+      "template": "fraction-parts@1",
+      "mode": "play"
+     }
+    }
+   ],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [
+      "leak"
+     ],
+     "rewritten": true,
+     "replaced": true,
+     "firstDraft": "Theek hai, Vihaan. Ab 3/5 of 2/3 cake ko multiplication mein likhiye: kaunse do fractions multiply honge?",
+     "afterRewrite": [
+      "parts",
+      "leak"
+     ],
+     "final": [
+      "parts"
+     ]
+    },
+    "verdict": "ungraded",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 495,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "teach",
+    "ms": 2486,
+    "item": null,
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 40
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 40
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 646
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 694
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1143
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1190
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1193
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1193
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1003
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1334
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 2436
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 2486
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "advance",
+   "lessonId": "bed2056f-70bd-4a90-b05c-4dd61d1b5771",
+   "childText": "ठीक है",
+   "ms": 1708,
+   "error": null,
+   "teacherReply": "Badhiya, Vihaan. Ab fraction ko cake ke equal parts jaise dekhenge—pehle picture, phir rule. Khaali jagah bhariye: 'Of' means ___: 3/5 × 2/3.",
+   "move": {
+    "kind": "practice",
+    "shape": "the earlier steps in LESSON NOW, said briefly as done; then the step with the gap is theirs: pose it as written; wait; never fill the gap for them; address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu",
+    "itemId": "fade:0",
+    "skillId": "c7-maths-ch08-t01-s1",
+    "hintLevel": 0,
+    "probe": "P15",
+    "format": "F2"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "math",
+     "value": "Find 3/5 of 2/3 of a cake. · 'Of' means ___: 3/5 × 2/3."
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "Khaali jagah bhariye: 'Of' means ___: 3/5 × 2/3.",
+     "itemId": "fade:0"
+    },
+    "answerForm": "words",
+    "tray": "none",
+    "shortTitle": "Multiplying fractions",
+    "beat": {
+     "beatId": "b5-practice_set",
+     "type": "practice_set",
+     "index": 5
+    }
+   },
+   "moduleCommands": [
+    {
+     "op": "unmount",
+     "moduleId": "m5"
+    }
+   ],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false,
+     "leadSlot": true
+    },
+    "verdict": "ungraded",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 485,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 1705,
+    "item": "fade:0",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 59
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 59
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 1099
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 1165
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1586
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1650
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1654
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1655
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1292
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 1656
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 1705
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "advance",
+   "lessonId": "bed2056f-70bd-4a90-b05c-4dd61d1b5771",
+   "childText": "समझ गया",
+   "ms": 3575,
+   "error": null,
+   "teacherReply": "Cricket mein “of” ka matlab hota hai kisi quantity ka hissa lena. Fraction mein ise kis operation se dikhate hain, yaad kijiye. Khaali jagah bhariye: 'Of' means ___: 3/5 × 2/3.",
+   "move": {
+    "kind": "repair",
+    "shape": "you did not catch it clearly: ask them to say it once more; no verdict on their reply: neither praise nor 'wrong'; address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu",
+    "itemId": "fade:0",
+    "skillId": "c7-maths-ch08-t01-s1",
+    "hintLevel": 0
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "math",
+     "value": "3/5  ·  2/3"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "Khaali jagah bhariye: 'Of' means ___: 3/5 × 2/3.",
+     "itemId": "fade:0"
+    },
+    "answerForm": "words",
+    "tray": "studio",
+    "shortTitle": "Multiplying fractions",
+    "beat": {
+     "beatId": "b5-practice_set",
+     "type": "practice_set",
+     "index": 5
+    },
+    "studioSlot": {
+     "slotId": "bed2056f-70bd-4a90-b05c-4dd61d1b5771:st:1:slot",
+     "intentId": "bed2056f-70bd-4a90-b05c-4dd61d1b5771:st:1",
+     "state": "fallback_shown",
+     "artifact": {
+      "kind": "skeleton",
+      "stage": {
+       "w": 360,
+       "h": 320
+      },
+      "skeleton": "fraction-parts",
+      "archetype": "shade_fraction",
+      "intentId": "bed2056f-70bd-4a90-b05c-4dd61d1b5771:st:1",
+      "params": {
+       "items": [
+        {
+         "id": "i1",
+         "n": 2,
+         "d": 3
+        },
+        {
+         "id": "i2",
+         "n": 3,
+         "d": 4
+        },
+        {
+         "id": "i3",
+         "n": 3,
+         "d": 5
+        }
+       ],
+       "picture": "pizza"
+      },
+      "strings": {
+       "title": "भिन्न रंग भरो",
+       "instr": "दिए गए भागों में सही रंग भरो",
+       "check": "जाँचें",
+       "right": "बहुत अच्छा! उत्तर सही है।",
+       "wrong": "फिर सोचो, कुछ भाग बाकी हैं।",
+       "done": "शानदार! तुमने सभी भिन्न पूरे किए।",
+       "hint": "हर पिज़्ज़ा के बराबर भाग गिनो।"
+      }
+     }
+    }
+   },
+   "moduleCommands": [],
+   "studio": {
+    "reveal": "bed2056f-70bd-4a90-b05c-4dd61d1b5771:st:1"
+   },
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false,
+     "leadSlot": true
+    },
+    "verdict": "unverified",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": null,
+     "waitedMs": 1599,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 3573,
+    "item": "fade:0",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 40
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 41
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 599
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 648
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 2246
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 2250
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 2251
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": "timeout",
+      "ms": 2402
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1266
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 3525
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 3572
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "advance",
+   "lessonId": "bed2056f-70bd-4a90-b05c-4dd61d1b5771",
+   "childText": "समझ गया",
+   "ms": 1754,
+   "error": null,
+   "teacherReply": "Aap screen par diye gaye choices mein se ek choose kijiye. Khaali jagah bhariye: 'Of' means ___: 3/5 × 2/3.",
+   "move": {
+    "kind": "repair",
+    "shape": "no verdict on their reply; the choices are now on screen; the same question again, as written; tell them they can pick one of the choices on screen; do not read the choices with any lean toward one; no verdict on their reply: neither praise nor 'wrong'; address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu",
+    "itemId": "fade:0",
+    "skillId": "c7-maths-ch08-t01-s1",
+    "hintLevel": 0
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "math",
+     "value": "3/5  ·  2/3"
+    },
+    "chips": [
+     {
+      "id": "pick:0",
+      "label": "6/5 (= 1 1/5)"
+     },
+     {
+      "id": "pick:1",
+      "label": "multiply"
+     },
+     {
+      "id": "pick:2",
+      "label": "5"
+     }
+    ],
+    "phase": "practice",
+    "handover": "choice",
+    "ask": {
+     "text": "Khaali jagah bhariye: 'Of' means ___: 3/5 × 2/3.",
+     "itemId": "fade:0"
+    },
+    "answerForm": "choice",
+    "tray": "tiles",
+    "shortTitle": "Multiplying fractions",
+    "beat": {
+     "beatId": "b5-practice_set",
+     "type": "practice_set",
+     "index": 5
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false,
+     "leadSlot": true
+    },
+    "verdict": "unverified",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 839,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 1751,
+    "item": "fade:0",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 59
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 60
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 782
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 850
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1622
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1689
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1691
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1692
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1044
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 1693
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 1751
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "advance",
+   "lessonId": "bed2056f-70bd-4a90-b05c-4dd61d1b5771",
+   "childText": "ठीक है",
+   "ms": 2778,
+   "error": null,
+   "teacherReply": "Chaliye, ab isi idea ko ek naye ticket-situation mein apply kijiye. School fair ke 120 tickets hain. Class 7 ko unka 3/4 milta hai, phir woh apne hisse ka 2/3 bechti hai. Class 7 kitne tickets bechti hai?",
+   "move": {
+    "kind": "probe",
+    "shape": "leave this one for later, no verdict and no answer given; the next question; pose the question as written, in their language; then wait; same idea, new situation; let them carry it over; no verdict on their reply: neither praise nor 'wrong'; address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu",
+    "itemId": "c7-maths-ch08-t01-rl-h1",
+    "skillId": "c7-maths-ch08-t01-s1",
+    "hintLevel": 0,
+    "probe": "P3"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "math",
+     "value": "3/4  ·  2/3"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "Class 7 ko unka 3/4 milta hai, phir woh apne hisse ka 2/3 bechti hai. Class 7 kitne tickets bechti hai?",
+     "itemId": "c7-maths-ch08-t01-rl-h1"
+    },
+    "answerForm": "words",
+    "tray": "studio",
+    "shortTitle": "Multiplying fractions",
+    "beat": {
+     "beatId": "b6-probe",
+     "type": "probe",
+     "index": 6
+    },
+    "studioSlot": {
+     "slotId": "bed2056f-70bd-4a90-b05c-4dd61d1b5771:st:1:slot",
+     "intentId": "bed2056f-70bd-4a90-b05c-4dd61d1b5771:st:1",
+     "state": "fallback_shown",
+     "artifact": {
+      "kind": "skeleton",
+      "stage": {
+       "w": 360,
+       "h": 320
+      },
+      "skeleton": "fraction-parts",
+      "archetype": "shade_fraction",
+      "intentId": "bed2056f-70bd-4a90-b05c-4dd61d1b5771:st:1",
+      "params": {
+       "items": [
+        {
+         "id": "i1",
+         "n": 2,
+         "d": 3
+        },
+        {
+         "id": "i2",
+         "n": 3,
+         "d": 4
+        },
+        {
+         "id": "i3",
+         "n": 3,
+         "d": 5
+        }
+       ],
+       "picture": "pizza"
+      },
+      "strings": {
+       "title": "भिन्न रंग भरो",
+       "instr": "दिए गए भागों में सही रंग भरो",
+       "check": "जाँचें",
+       "right": "बहुत अच्छा! उत्तर सही है।",
+       "wrong": "फिर सोचो, कुछ भाग बाकी हैं।",
+       "done": "शानदार! तुमने सभी भिन्न पूरे किए।",
+       "hint": "हर पिज़्ज़ा के बराबर भाग गिनो।"
+      }
+     }
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false,
+     "leadSlot": true
+    },
+    "verdict": "unverified",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 437,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 2774,
+    "item": "c7-maths-ch08-t01-rl-h1",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 39
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 39
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 739
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 786
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1178
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1223
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1229
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1230
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1483
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 2725
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 2774
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "probe:noise-03",
+   "lessonId": "bed2056f-70bd-4a90-b05c-4dd61d1b5771",
+   "childText": "kya kya hai wo naa",
+   "ms": 1325,
+   "error": null,
+   "teacherReply": "Vihaan, aapki baat ka kuch hissa clear nahi suna. Kripya use phir se kahiye ya apni baat poori kijiye. Class 7 ko unka 3/4 milta hai, phir woh apne hisse ka 2/3 bechti hai. Class 7 kitne tickets bechti hai?",
+   "move": {
+    "kind": "probe",
+    "shape": "two parts — first: you did not catch all of what they said: no verdict and no blame (the line was unclear, never them); ask them in a few warm words to say it again or finish the thought; second: the question on the card, as written, in their language; then wait; no verdict on their reply: neither praise nor 'wrong'; address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu",
+    "itemId": "c7-maths-ch08-t01-rl-h1",
+    "skillId": "c7-maths-ch08-t01-s1",
+    "hintLevel": 0,
+    "probe": "P3",
+    "request": "unclear",
+    "lead": "you did not catch all of what they said: no verdict and no blame (the line was unclear, never them); ask them in a few warm words to say it again or finish the thought"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "math",
+     "value": "3/4  ·  2/3"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "Class 7 ko unka 3/4 milta hai, phir woh apne hisse ka 2/3 bechti hai. Class 7 kitne tickets bechti hai?",
+     "itemId": "c7-maths-ch08-t01-rl-h1"
+    },
+    "answerForm": "words",
+    "tray": "studio",
+    "shortTitle": "Multiplying fractions",
+    "beat": {
+     "beatId": "b6-probe",
+     "type": "probe",
+     "index": 6
+    },
+    "studioSlot": {
+     "slotId": "bed2056f-70bd-4a90-b05c-4dd61d1b5771:st:1:slot",
+     "intentId": "bed2056f-70bd-4a90-b05c-4dd61d1b5771:st:1",
+     "state": "fallback_shown",
+     "artifact": {
+      "kind": "skeleton",
+      "stage": {
+       "w": 360,
+       "h": 320
+      },
+      "skeleton": "fraction-parts",
+      "archetype": "shade_fraction",
+      "intentId": "bed2056f-70bd-4a90-b05c-4dd61d1b5771:st:1",
+      "params": {
+       "items": [
+        {
+         "id": "i1",
+         "n": 2,
+         "d": 3
+        },
+        {
+         "id": "i2",
+         "n": 3,
+         "d": 4
+        },
+        {
+         "id": "i3",
+         "n": 3,
+         "d": 5
+        }
+       ],
+       "picture": "pizza"
+      },
+      "strings": {
+       "title": "भिन्न रंग भरो",
+       "instr": "दिए गए भागों में सही रंग भरो",
+       "check": "जाँचें",
+       "right": "बहुत अच्छा! उत्तर सही है।",
+       "wrong": "फिर सोचो, कुछ भाग बाकी हैं।",
+       "done": "शानदार! तुमने सभी भिन्न पूरे किए।",
+       "hint": "हर पिज़्ज़ा के बराबर भाग गिनो।"
+      }
+     }
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false,
+     "leadSlot": true
+    },
+    "verdict": "ungraded",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "request"
+    },
+    "note": null,
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 1321,
+    "item": "c7-maths-ch08-t01-rl-h1",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 56
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 57
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 398
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 460
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 463
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 464
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 803
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 1276
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 1321
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "recovery",
+   "lessonId": "bed2056f-70bd-4a90-b05c-4dd61d1b5771",
+   "childText": "60",
+   "ms": 1351,
+   "error": null,
+   "teacherReply": "Aapne 60 nikala—pehle 120 ka 3/4, phir uska 2/3 lena bilkul sahi hai. Ab bataiye, 3/4 × 2/3 mein kaunsa number cancel hoga?",
+   "move": {
+    "kind": "explain",
+    "shape": "confirm specifically: name the exact thing they got right, no ability words; one idea only: Multiply two fractions with an area model and with the rule; an example from their interest (cricket) if it fits naturally; objects first, then the symbol; point at the screen only at what the on-screen row lists; never a drawing made of characters; end with one small question that makes them USE the idea — never 'samjha?'; address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu",
+    "skillId": "c7-maths-ch08-t01-s2",
+    "format": "F3"
+   },
+   "ui": {
+    "status": "your_turn",
+    "phase": "practice",
+    "handover": "answer",
+    "answerForm": "words",
+    "tray": "module",
+    "shortTitle": "Multiplying fractions",
+    "verdict": "correct",
+    "beat": {
+     "beatId": "b7-explain",
+     "type": "explain",
+     "index": 7
+    },
+    "ask": {
+     "text": "Ab bataiye, 3/4 × 2/3 mein kaunsa number cancel hoga?"
+    }
+   },
+   "moduleCommands": [
+    {
+     "op": "mount",
+     "moduleId": "m11",
+     "engine": "explainer@1",
+     "params": {
+      "script": {
+       "v": 1,
+       "scriptId": "ex-183h3qt",
+       "line": {
+        "lessonId": "bed2056f-70bd-4a90-b05c-4dd61d1b5771"
+       },
+       "anchor": "line_audio_start",
+       "board": {
+        "w": 400,
+        "h": 300,
+        "ground": "chalk"
+       },
+       "mode": "fresh",
+       "durationMs": 6330,
+       "ops": [
+        {
+         "id": "o1",
+         "op": "circle",
+         "startMs": 180,
+         "endMs": 1080,
+         "weight": 2,
+         "c": [
+          130,
+          150
+         ],
+         "r": 95,
+         "fill": "soft"
+        },
+        {
+         "id": "o2",
+         "op": "line",
+         "startMs": 1130,
+         "endMs": 1350,
+         "weight": 1,
+         "from": [
+          130,
+          150
+         ],
+         "to": [
+          130,
+          55
+         ]
+        },
+        {
+         "id": "o3",
+         "op": "line",
+         "startMs": 1400,
+         "endMs": 1620,
+         "weight": 1,
+         "from": [
+          130,
+          150
+         ],
+         "to": [
+          220.4,
+          120.6
+         ]
+        },
+        {
+         "id": "o4",
+         "op": "line",
+         "startMs": 1670,
+         "endMs": 1890,
+         "weight": 1,
+         "from": [
+          130,
+          150
+         ],
+         "to": [
+          185.8,
+          226.9
+         ]
+        },
+        {
+         "id": "o5",
+         "op": "line",
+         "startMs": 1940,
+         "endMs": 2160,
+         "weight": 1,
+         "from": [
+          130,
+          150
+         ],
+         "to": [
+          74.2,
+          226.9
+         ]
+        },
+        {
+         "id": "o6",
+         "op": "line",
+         "startMs": 2210,
+         "endMs": 2430,
+         "weight": 1,
+         "from": [
+          130,
+          150
+         ],
+         "to": [
+          39.6,
+          120.6
+         ]
+        },
+        {
+         "id": "s0",
+         "op": "sector",
+         "startMs": 2550,
+         "endMs": 2930,
+         "ink": "accent",
+         "weight": 1,
+         "c": [
+          130,
+          150
+         ],
+         "r": 93,
+         "fill": "accent",
+         "fromDeg": 0,
+         "toDeg": 72
+        },
+        {
+         "id": "s1",
+         "op": "sector",
+         "startMs": 3050,
+         "endMs": 3430,
+         "ink": "accent",
+         "weight": 1,
+         "c": [
+          130,
+          150
+         ],
+         "r": 93,
+         "fill": "accent",
+         "fromDeg": 72,
+         "toDeg": 144
+        },
+        {
+         "id": "s2",
+         "op": "sector",
+         "startMs": 3550,
+         "endMs": 3930,
+         "ink": "accent",
+         "weight": 1,
+         "c": [
+          130,
+          150
+         ],
+         "r": 93,
+         "fill": "accent",
+         "fromDeg": 144,
+         "toDeg": 216
+        },
+        {
+         "id": "frac",
+         "op": "numwork",
+         "startMs": 4230,
+         "endMs": 5030,
+         "ink": "accent",
+         "weight": 2,
+         "at": [
+          296,
+          120
+         ],
+         "layout": "fraction",
+         "rows": [
+          [
+           "3"
+          ],
+          [
+           "5"
+          ]
+         ]
+        },
+        {
+         "id": "o7",
+         "op": "highlight",
+         "startMs": 5330,
+         "endMs": 5930,
+         "ink": "mark",
+         "target": "frac",
+         "style": "circle"
+        }
+       ],
+       "facts": {
+        "kind": "animation",
+        "archetype": "fraction-parts@1",
+        "onScreen": {
+         "whole": "roti",
+         "parts": 5,
+         "shaded": 3,
+         "fraction": "3/5"
+        }
+       }
+      },
+      "template": "fraction-parts@1",
+      "mode": "play"
+     }
+    }
+   ],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false
+    },
+    "verdict": "correct",
+    "cls": {
+     "outcome": "correct",
+     "source": "exact"
+    },
+    "note": null,
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 1348,
+    "item": null,
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 60
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 61
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 66
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 108
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 109
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1177
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 1290
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 1348
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "advance",
+   "lessonId": "bed2056f-70bd-4a90-b05c-4dd61d1b5771",
+   "childText": "समझ गया",
+   "ms": 2600,
+   "error": null,
+   "teacherReply": "Bahut achchha, Vihaan. Ab isi multiplication rule ko ek chhote area-model wale example mein dekhenge. Ek poster ki width ka 2/3 aur height ka 1/4 shade kiya gaya hai. Dono directions mein shaded hissa poore poster ka kaunsa fraction hai?",
+   "move": {
+    "kind": "practice",
+    "shape": "pose the question as written, in their language; then wait; address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu",
+    "itemId": "c7-maths-ch08-t01-rl-o2",
+    "skillId": "c7-maths-ch08-t01-s2",
+    "hintLevel": 0,
+    "probe": "P15"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "math",
+     "value": "2/3  ·  1/4"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "Dono directions mein shaded hissa poore poster ka kaunsa fraction hai?",
+     "itemId": "c7-maths-ch08-t01-rl-o2"
+    },
+    "answerForm": "number",
+    "tray": "studio",
+    "shortTitle": "Multiplying fractions",
+    "beat": {
+     "beatId": "b8-practice_set",
+     "type": "practice_set",
+     "index": 8
+    },
+    "studioSlot": {
+     "slotId": "bed2056f-70bd-4a90-b05c-4dd61d1b5771:st:1:slot",
+     "intentId": "bed2056f-70bd-4a90-b05c-4dd61d1b5771:st:1",
+     "state": "fallback_shown",
+     "artifact": {
+      "kind": "skeleton",
+      "stage": {
+       "w": 360,
+       "h": 320
+      },
+      "skeleton": "fraction-parts",
+      "archetype": "shade_fraction",
+      "intentId": "bed2056f-70bd-4a90-b05c-4dd61d1b5771:st:1",
+      "params": {
+       "items": [
+        {
+         "id": "i1",
+         "n": 2,
+         "d": 3
+        },
+        {
+         "id": "i2",
+         "n": 3,
+         "d": 4
+        },
+        {
+         "id": "i3",
+         "n": 3,
+         "d": 5
+        }
+       ],
+       "picture": "pizza"
+      },
+      "strings": {
+       "title": "भिन्न रंग भरो",
+       "instr": "दिए गए भागों में सही रंग भरो",
+       "check": "जाँचें",
+       "right": "बहुत अच्छा! उत्तर सही है।",
+       "wrong": "फिर सोचो, कुछ भाग बाकी हैं।",
+       "done": "शानदार! तुमने सभी भिन्न पूरे किए।",
+       "hint": "हर पिज़्ज़ा के बराबर भाग गिनो।"
+      }
+     }
+    }
+   },
+   "moduleCommands": [
+    {
+     "op": "unmount",
+     "moduleId": "m11"
+    }
+   ],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false,
+     "leadSlot": true
+    },
+    "verdict": "ungraded",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 670,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 2596,
+    "item": "c7-maths-ch08-t01-rl-o2",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 69
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 69
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 619
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 696
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1290
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1366
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1370
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1371
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1169
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 2549
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 2596
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "probe:self_correction-01",
+   "lessonId": "bed2056f-70bd-4a90-b05c-4dd61d1b5771",
+   "childText": "6/1 nahi nahi wait 1/6",
+   "ms": 3591,
+   "error": null,
+   "teacherReply": "Picture ya multiplication rule mein aapne kaunsa step dekha?",
+   "move": {
+    "kind": "probe",
+    "shape": "confirm in two or three words only — the reason is theirs to give, so do not explain it; covert shape: protege naive but-why; Bittu, who does not know it, asks why; about THIS question; one open question; wait; a real question, never a check on them; address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu",
+    "itemId": "c7-maths-ch08-t01-rl-o2",
+    "skillId": "c7-maths-ch08-t01-s2",
+    "hintLevel": 0,
+    "probe": "P2"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "math",
+     "value": "2/3  ·  1/4"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "answerForm": "words",
+    "tray": "studio",
+    "shortTitle": "Multiplying fractions",
+    "verdict": "correct",
+    "beat": {
+     "beatId": "b9-probe",
+     "type": "probe",
+     "index": 9
+    },
+    "ask": {
+     "text": "Picture ya multiplication rule mein aapne kaunsa step dekha?"
+    },
+    "studioSlot": {
+     "slotId": "bed2056f-70bd-4a90-b05c-4dd61d1b5771:st:1:slot",
+     "intentId": "bed2056f-70bd-4a90-b05c-4dd61d1b5771:st:1",
+     "state": "fallback_shown",
+     "artifact": {
+      "kind": "skeleton",
+      "stage": {
+       "w": 360,
+       "h": 320
+      },
+      "skeleton": "fraction-parts",
+      "archetype": "shade_fraction",
+      "intentId": "bed2056f-70bd-4a90-b05c-4dd61d1b5771:st:1",
+      "params": {
+       "items": [
+        {
+         "id": "i1",
+         "n": 2,
+         "d": 3
+        },
+        {
+         "id": "i2",
+         "n": 3,
+         "d": 4
+        },
+        {
+         "id": "i3",
+         "n": 3,
+         "d": 5
+        }
+       ],
+       "picture": "pizza"
+      },
+      "strings": {
+       "title": "भिन्न रंग भरो",
+       "instr": "दिए गए भागों में सही रंग भरो",
+       "check": "जाँचें",
+       "right": "बहुत अच्छा! उत्तर सही है।",
+       "wrong": "फिर सोचो, कुछ भाग बाकी हैं।",
+       "done": "शानदार! तुमने सभी भिन्न पूरे किए।",
+       "hint": "हर पिज़्ज़ा के बराबर भाग गिनो।"
+      }
+     }
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [
+      "nowhy",
+      "flat"
+     ],
+     "rewritten": true,
+     "replaced": false,
+     "firstDraft": "Haan, Vihaan—sahi fraction 1/6 hai. Aapne numerator aur denominator ko ulatne wali galti turant sudhaar li.",
+     "afterRewrite": [
+      "twoq",
+      "noconfirm"
+     ],
+     "repaired": true,
+     "final": [
+      "noconfirm"
+     ]
+    },
+    "verdict": "correct",
+    "cls": {
+     "outcome": "correct",
+     "source": "number_selfcorrect"
+    },
+    "note": null,
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 3588,
+    "item": "c7-maths-ch08-t01-rl-o2",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 59
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 59
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 479
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 546
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 549
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 550
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1343
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1636
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 3535
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 3588
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "filler",
+   "lessonId": "bed2056f-70bd-4a90-b05c-4dd61d1b5771",
+   "childText": "समझ गया",
+   "ms": 3607,
+   "error": null,
+   "teacherReply": "Chaliye, ab fraction of a quantity ko picture se number mein badalne ka ek naya practice karte hain. School debate ke liye 40 minute hain. Riya ki team us samay ka 3/5 use karti hai. Woh kitne minute use karti hai?",
+   "move": {
+    "kind": "practice",
+    "shape": "give the reason yourself in one plain line (their answer was right); pose the question as written, in their language; then wait; address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu",
+    "itemId": "c7-maths-ch08-t01-rl-o1",
+    "skillId": "c7-maths-ch08-t01-s1",
+    "hintLevel": 0,
+    "probe": "P15"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "math",
+     "value": "3/5"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "School debate ke liye 40 minute hain. Riya ki team us samay ka 3/5 use karti hai. Woh kitne minute use karti hai?",
+     "itemId": "c7-maths-ch08-t01-rl-o1"
+    },
+    "answerForm": "words",
+    "tray": "studio",
+    "shortTitle": "Multiplying fractions",
+    "beat": {
+     "beatId": "b10-practice_set",
+     "type": "practice_set",
+     "index": 10
+    },
+    "studioSlot": {
+     "slotId": "bed2056f-70bd-4a90-b05c-4dd61d1b5771:st:1:slot",
+     "intentId": "bed2056f-70bd-4a90-b05c-4dd61d1b5771:st:1",
+     "state": "fallback_shown",
+     "artifact": {
+      "kind": "skeleton",
+      "stage": {
+       "w": 360,
+       "h": 320
+      },
+      "skeleton": "fraction-parts",
+      "archetype": "shade_fraction",
+      "intentId": "bed2056f-70bd-4a90-b05c-4dd61d1b5771:st:1",
+      "params": {
+       "items": [
+        {
+         "id": "i1",
+         "n": 2,
+         "d": 3
+        },
+        {
+         "id": "i2",
+         "n": 3,
+         "d": 4
+        },
+        {
+         "id": "i3",
+         "n": 3,
+         "d": 5
+        }
+       ],
+       "picture": "pizza"
+      },
+      "strings": {
+       "title": "भिन्न रंग भरो",
+       "instr": "दिए गए भागों में सही रंग भरो",
+       "check": "जाँचें",
+       "right": "बहुत अच्छा! उत्तर सही है।",
+       "wrong": "फिर सोचो, कुछ भाग बाकी हैं।",
+       "done": "शानदार! तुमने सभी भिन्न पूरे किए।",
+       "hint": "हर पिज़्ज़ा के बराबर भाग गिनो।"
+      }
+     }
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false,
+     "leadSlot": true
+    },
+    "verdict": "unverified",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": null,
+     "waitedMs": 1527,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 3602,
+    "item": "c7-maths-ch08-t01-rl-o1",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 59
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 59
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 671
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 738
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 2265
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 2268
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 2269
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": "timeout",
+      "ms": 2402
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1270
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 3547
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 3602
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "probe:dont_know-05",
+   "lessonId": "bed2056f-70bd-4a90-b05c-4dd61d1b5771",
+   "childText": "hmm nahi pata yaar",
+   "ms": 2146,
+   "error": null,
+   "teacherReply": "Koi baat nahi, Vihaan. Total time ko 5 equal parts mein baantiye, phir unmein se 3 parts lijiye. School debate ke liye 40 minute hain. Riya ki team us samay ka 3/5 use karti hai. Woh kitne minute use karti hai?",
+   "move": {
+    "kind": "hint",
+    "shape": "rung 2 of 4 (hint): Divide the total time into five equal parts, then take three.; the key stays unsaid; no verdict on their reply: neither praise nor 'wrong'; address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu",
+    "itemId": "c7-maths-ch08-t01-rl-o1",
+    "skillId": "c7-maths-ch08-t01-s1",
+    "hintLevel": 2
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "math",
+     "value": "3/5"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "School debate ke liye 40 minute hain. Riya ki team us samay ka 3/5 use karti hai. Woh kitne minute use karti hai?",
+     "itemId": "c7-maths-ch08-t01-rl-o1"
+    },
+    "answerForm": "words",
+    "tray": "none",
+    "hint": {
+     "level": 2,
+     "text": "Divide the total time into five equal parts, then take three."
+    },
+    "shortTitle": "Multiplying fractions",
+    "beat": {
+     "beatId": "b10-practice_set",
+     "type": "practice_set",
+     "index": 10
+    }
+   },
+   "moduleCommands": [],
+   "studio": {
+    "retire": "bed2056f-70bd-4a90-b05c-4dd61d1b5771:st:1"
+   },
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false,
+     "leadSlot": true
+    },
+    "verdict": "unverified",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "lexical"
+    },
+    "note": null,
+    "hintLevel": 2,
+    "phase": "practice",
+    "ms": 2143,
+    "item": "c7-maths-ch08-t01-rl-o1",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 60
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 60
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 452
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 517
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 520
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 521
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1561
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 2092
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 2142
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "recovery",
+   "lessonId": "bed2056f-70bd-4a90-b05c-4dd61d1b5771",
+   "childText": "24",
+   "ms": 1242,
+   "error": null,
+   "teacherReply": "Aapne 40 ko 5 equal parts mein baanta: 40 ÷ 5 = 8, phir 3 parts liye: 8 × 3 = 24 minute. Exact method sahi hai. 12 × 1/3, 12 se bada hai ya chhota?",
+   "move": {
+    "kind": "probe",
+    "shape": "confirm specifically: name the exact thing they got right, no ability words; pose the question as written, in their language; then wait; read its choices plainly; no lean in your voice toward any of them; address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu",
+    "itemId": "diag:c7-maths-ch08-t01-m-mult-bigger",
+    "skillId": "c7-maths-ch08-t01-s1",
+    "hintLevel": 0,
+    "probe": "P7"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "math",
+     "value": "1/3"
+    },
+    "chips": [
+     {
+      "id": "opt:0",
+      "label": "Smaller (it is 4)"
+     },
+     {
+      "id": "opt:1",
+      "label": "Bigger, because multiplying makes bigger"
+     },
+     {
+      "id": "opt:2",
+      "label": "The same"
+     }
+    ],
+    "phase": "practice",
+    "handover": "choice",
+    "ask": {
+     "text": "12 × 1/3, 12 se bada hai ya chhota?",
+     "itemId": "diag:c7-maths-ch08-t01-m-mult-bigger"
+    },
+    "answerForm": "choice",
+    "tray": "tiles",
+    "shortTitle": "Multiplying fractions",
+    "verdict": "correct",
+    "withHelp": true,
+    "beat": {
+     "beatId": "b11-probe",
+     "type": "probe",
+     "index": 11
+    }
+   },
+   "moduleCommands": [
+    {
+     "op": "mount",
+     "moduleId": "g1-8674772f",
+     "engine": "scene@1",
+     "params": {
+      "scene": {
+       "dsl": "scene@1",
+       "meta": {
+        "band": "B4",
+        "lang": "hi",
+        "title": {
+         "en": "The scorer's puzzle",
+         "hi": "स्कोरर की पहेली",
+         "hi_latn": "Scorer ki paheli"
+        },
+        "template": "choice-card@1",
+        "topic_ids": [
+         "c7-maths-ch08-t01"
+        ],
+        "objective_ids": [
+         "c7-maths-ch08-t01-s1"
+        ]
+       },
+       "vars": [
+        {
+         "id": "pick",
+         "tl": "child's pick",
+         "init": "none",
+         "type": "enum",
+         "options": [
+          "none",
+          "o1",
+          "o2",
+          "o3"
+         ]
+        }
+       ],
+       "goals": [],
+       "nodes": [
+        {
+         "w": 760,
+         "x": 420,
+         "y": 119,
+         "id": "title",
+         "kind": "text",
+         "size": "title",
+         "text": {
+          "en": "The scorer's puzzle",
+          "hi": "स्कोरर की पहेली",
+          "hi_latn": "Scorer ki paheli"
+         },
+         "align": "middle"
+        },
+        {
+         "h": 110,
+         "w": 110,
+         "x": 900,
+         "y": 75,
+         "id": "decor",
+         "lib": "obj.ball",
+         "kind": "sprite",
+         "role": "context"
+        },
+        {
+         "w": 900,
+         "x": 500,
+         "y": 320,
+         "id": "question",
+         "kind": "text",
+         "size": "caption",
+         "text": {
+          "en": "Is 12 × 1/3 bigger or smaller than 12?",
+          "hi": "12 × 1/3, 12 se bada hai ya chhota?",
+          "hi_latn": "12 × 1/3, 12 se bada hai ya chhota?"
+         },
+         "align": "middle"
+        },
+        {
+         "x": 500,
+         "y": 946.3333333333333,
+         "id": "ch",
+         "var": "pick",
+         "kind": "choice",
+         "commit": true,
+         "layout": "column",
+         "options": [
+          {
+           "id": "o1",
+           "misc": "MC.C7_MATHS_CH08_T01_M_MULT_BIGGER",
+           "label": {
+            "en": "Bigger, because multiplying makes bigger",
+            "hi": "Bigger, because multiplying makes bigger",
+            "hi_latn": "Bigger, because multiplying makes bigger"
+           }
+          },
+          {
+           "id": "o2",
+           "label": {
+            "en": "The same",
+            "hi": "The same",
+            "hi_latn": "The same"
+           }
+          },
+          {
+           "id": "o3",
+           "label": {
+            "en": "Smaller (it is 4)",
+            "hi": "Smaller (it is 4)",
+            "hi_latn": "Smaller (it is 4)"
+           }
+          }
+         ]
+        }
+       ],
+       "probe": {
+        "id": "p_pick",
+        "ask": {
+         "en": "Is 12 × 1/3 bigger or smaller than 12?",
+         "hi": "12 × 1/3, 12 se bada hai ya chhota?",
+         "hi_latn": "12 × 1/3, 12 se bada hai ya chhota?"
+        },
+        "kind": "diagnose",
+        "traps": [
+         {
+          "misc": "MC.C7_MATHS_CH08_T01_M_MULT_BIGGER",
+          "when": "pick == 'o1'"
+         }
+        ],
+        "commit": {
+         "via": "choice",
+         "node": "ch"
+        },
+        "correct": "pick == 'o3'"
+       },
+       "stage": {
+        "bg": "bg",
+        "aspect": "3:4"
+       },
+       "derive": [],
+       "feedback": "on_commit",
+       "timelines": []
+      }
+     },
+     "goal": "g1:diag:c7-maths-ch08-t01-m-mult-bigger"
+    }
+   ],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [
+      "drift",
+      "flat",
+      "ask"
+     ],
+     "rewritten": false,
+     "replaced": false,
+     "firstDraft": "Aapne 40 ko 5 equal parts mein baanta: 40 ÷ 5 = 8, phir 3 parts liye: 8 × 3 = 24 minute. Exact method sahi hai.",
+     "repaired": true
+    },
+    "verdict": "correct",
+    "cls": {
+     "outcome": "correct",
+     "source": "exact"
+    },
+    "note": null,
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 1239,
+    "item": "diag:c7-maths-ch08-t01-m-mult-bigger",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 60
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 60
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 67
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 110
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 110
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1058
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 1179
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 1239
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "probe:harder-03",
+   "lessonId": "bed2056f-70bd-4a90-b05c-4dd61d1b5771",
+   "childText": "ye toh bahut easy hai tough wala do",
+   "ms": 1623,
+   "error": null,
+   "teacherReply": "Theek hai, Vihaan—ab ek multi-step fraction problem lenge. Pehle poori quantity ko equal parts mein sochiye, phir fraction apply kijiye. Ek recipe mein 3/4 cup cheeni chahiye. Aap aadhi recipe banate hain. Kitni cheeni chahiye?",
+   "move": {
+    "kind": "probe",
+    "shape": "they asked for a harder one: take them at their word, a short warm line; the harder question; pose the question as written, in their language; then wait; same idea, new situation; let them carry it over; no verdict on their reply: neither praise nor 'wrong'; address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu",
+    "itemId": "c7-maths-ch08-t01-i10",
+    "skillId": "c7-maths-ch08-t01-s1",
+    "hintLevel": 0,
+    "probe": "P3",
+    "request": "harder"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "math",
+     "value": "3/4"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "Ek recipe mein 3/4 cup cheeni chahiye. Aap aadhi recipe banate hain. Kitni cheeni chahiye?",
+     "itemId": "c7-maths-ch08-t01-i10"
+    },
+    "answerForm": "words",
+    "tray": "none",
+    "shortTitle": "Multiplying fractions",
+    "beat": {
+     "beatId": "b11-probe",
+     "type": "probe",
+     "index": 11
+    },
+    "teacherAffect": {
+     "display": "warm_pride",
+     "intensity": 1
+    }
+   },
+   "moduleCommands": [
+    {
+     "op": "unmount",
+     "moduleId": "g1-8674772f"
+    }
+   ],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false,
+     "leadSlot": true
+    },
+    "verdict": "unverified",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "request"
+    },
+    "note": null,
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 1619,
+    "item": "c7-maths-ch08-t01-i10",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 58
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 59
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 513
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 576
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 581
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 581
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 984
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 1572
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 1619
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "recovery",
+   "lessonId": "bed2056f-70bd-4a90-b05c-4dd61d1b5771",
+   "childText": "3/8",
+   "ms": 2673,
+   "error": null,
+   "teacherReply": "Sahi, Vihaan. Aapne 3/4 ka aadha liya—3/8 kyun aaya, aapne kaise socha?",
+   "move": {
+    "kind": "probe",
+    "shape": "confirm in two or three words only — the reason is theirs to give, so do not explain it; covert shape: say more on the childs own word; about THIS question; one open question; wait; a real question, never a check on them; address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu",
+    "itemId": "c7-maths-ch08-t01-i10",
+    "skillId": "c7-maths-ch08-t01-s1",
+    "hintLevel": 0,
+    "probe": "P2"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "math",
+     "value": "3/4"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "answerForm": "words",
+    "tray": "none",
+    "shortTitle": "Multiplying fractions",
+    "verdict": "correct",
+    "beat": {
+     "beatId": "b11-probe",
+     "type": "probe",
+     "index": 11
+    },
+    "ask": {
+     "text": "Aapne 3/4 ka aadha liya—3/8 kyun aaya, aapne kaise socha?"
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [
+      "nowhy"
+     ],
+     "rewritten": true,
+     "replaced": false,
+     "firstDraft": "Sahi: aadhi recipe ka matlab 3/4 ka 1/2, isliye 3/8 cup. Ab tough: 2/3 litre juice ka 3/4 hissa nikaaliye. Kitna juice milega?",
+     "afterRewrite": []
+    },
+    "verdict": "correct",
+    "cls": {
+     "outcome": "correct",
+     "source": "exact"
+    },
+    "note": null,
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 2669,
+    "item": "c7-maths-ch08-t01-i10",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 62
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 63
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 68
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 114
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 114
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1404
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1091
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 2615
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 2669
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "advance",
+   "lessonId": "bed2056f-70bd-4a90-b05c-4dd61d1b5771",
+   "childText": "समझ गया",
+   "ms": 2819,
+   "error": null,
+   "teacherReply": "Achha, Vihaan. Ab rule boliye: do fractions multiply karte waqt numerator aur denominator ke saath kya karte hain?",
+   "move": {
+    "kind": "explain",
+    "shape": "give the reason yourself in one plain line (their answer was right); one idea only: Predict whether a product is bigger or smaller than the number being multiplied; an example from their interest (cricket) if it fits naturally; objects first, then the symbol; point at the screen only at what the on-screen row lists; never a drawing made of characters; end with one small question that makes them USE the idea — never 'samjha?'; address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu",
+    "skillId": "c7-maths-ch08-t01-s3",
+    "format": "F3"
+   },
+   "ui": {
+    "status": "your_turn",
+    "phase": "practice",
+    "handover": "answer",
+    "answerForm": "words",
+    "tray": "studio",
+    "shortTitle": "Multiplying fractions",
+    "beat": {
+     "beatId": "b12-explain",
+     "type": "explain",
+     "index": 12
+    },
+    "ask": {
+     "text": "Ab rule boliye: do fractions multiply karte waqt numerator aur denominator ke saath kya karte hain?"
+    },
+    "studioSlot": {
+     "slotId": "bed2056f-70bd-4a90-b05c-4dd61d1b5771:wb:19:slot",
+     "intentId": "bed2056f-70bd-4a90-b05c-4dd61d1b5771:wb:19",
+     "state": "planning"
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false
+    },
+    "verdict": "unverified",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 574,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 2807,
+    "item": null,
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 60
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 61
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 744
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 812
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1319
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1386
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1391
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1392
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1222
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 2729
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 2807
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "advance",
+   "lessonId": "bed2056f-70bd-4a90-b05c-4dd61d1b5771",
+   "childText": "समझ गया",
+   "ms": 1604,
+   "error": null,
+   "teacherReply": "Theek hai, Vihaan. Ab isi rule ko thoda tricky situation mein apply karke dekhiye. 1/2 × 3/4, 3/4 se chhota kyun hai?",
+   "move": {
+    "kind": "probe",
+    "shape": "pose the question as written, in their language; then wait; ask for their reason, not just the answer; address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu",
+    "itemId": "c7-maths-ch08-t01-i07",
+    "skillId": "c7-maths-ch08-t01-s3",
+    "hintLevel": 0,
+    "probe": "P2"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "math",
+     "value": "1/2  ·  3/4  ·  3/4"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "1/2 × 3/4, 3/4 se chhota kyun hai?",
+     "itemId": "c7-maths-ch08-t01-i07"
+    },
+    "answerForm": "words",
+    "tray": "none",
+    "shortTitle": "Multiplying fractions",
+    "beat": {
+     "beatId": "b13-probe",
+     "type": "probe",
+     "index": 13
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false,
+     "leadSlot": true
+    },
+    "verdict": "ungraded",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 609,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 1598,
+    "item": "c7-maths-ch08-t01-i07",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 58
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 59
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 823
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 889
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1434
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1498
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1501
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1502
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1436
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 1554
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 1598
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "probe:answer_correct-08",
+   "lessonId": "bed2056f-70bd-4a90-b05c-4dd61d1b5771",
+   "childText": "half of 3/4 होगा",
+   "ms": 2505,
+   "error": null,
+   "teacherReply": "Bilkul, Vihaan— aapne sahi pehchaana: 1/2 lena matlab 3/4 ka half lena. Jaldi: 15 ka 2/3 kitna hai?",
+   "move": {
+    "kind": "retrieval",
+    "shape": "acknowledge their reason specifically — the method; pose the question as written, in their language; then wait; a quick look back; no hints inside the asking; address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu",
+    "itemId": "c7-maths-ch08-t01-i14",
+    "skillId": "c7-maths-ch08-t01-s1",
+    "hintLevel": 0,
+    "probe": "P10"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "math",
+     "value": "2/3"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "Jaldi: 15 ka 2/3 kitna hai?",
+     "itemId": "c7-maths-ch08-t01-i14"
+    },
+    "answerForm": "number",
+    "tray": "module",
+    "shortTitle": "Multiplying fractions",
+    "verdict": "correct",
+    "beat": {
+     "beatId": "b14-warmup",
+     "type": "warmup",
+     "index": 14
+    }
+   },
+   "moduleCommands": [
+    {
+     "op": "mount",
+     "moduleId": "m21",
+     "engine": "fractions@1",
+     "params": {
+      "topicId": "c7-maths-ch08-t01",
+      "skillId": "c7-maths-ch08-t01-s1",
+      "lang": "hindi",
+      "mode": "of",
+      "target": "2/3",
+      "count": 15,
+      "itemId": "c7-maths-ch08-t01-i14"
+     },
+     "goal": "item:c7-maths-ch08-t01-i14"
+    }
+   ],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false,
+     "leadSlot": true
+    },
+    "verdict": "correct",
+    "cls": {
+     "outcome": "correct",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": false,
+     "intent": null,
+     "waitedMs": 1,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 2502,
+    "item": "c7-maths-ch08-t01-i14",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 64
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 64
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 933
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 1009
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1011
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1015
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1016
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1247
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1425
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 2448
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 2502
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "recovery",
+   "lessonId": "bed2056f-70bd-4a90-b05c-4dd61d1b5771",
+   "childText": "10",
+   "ms": 1403,
+   "error": null,
+   "teacherReply": "Bilkul sahi, Vihaan— aapne 15 ka do-tihai nikaal kar 10 bataya. 2/5 + 3/5 aur 2/5 × 3/5 ko compare kariye. Ek 1 ke barabar kyun hai aur doosra sirf 6/25?",
+   "move": {
+    "kind": "probe",
+    "shape": "confirm specifically: name the exact thing they got right, no ability words; pose the question as written, in their language; then wait; two cases side by side; ask which one fits and what is different; address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu",
+    "itemId": "c7-maths-ch08-t01-i06",
+    "skillId": "c7-maths-ch08-t01-s2",
+    "hintLevel": 0,
+    "probe": "P8"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "math",
+     "value": "2/5  ·  3/5  ·  2/5  ·  3/5  ·  6/25"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "2/5 + 3/5 aur 2/5 × 3/5 ko compare kariye. Ek 1 ke barabar kyun hai aur doosra sirf 6/25?",
+     "itemId": "c7-maths-ch08-t01-i06"
+    },
+    "answerForm": "words",
+    "tray": "module",
+    "shortTitle": "Multiplying fractions",
+    "verdict": "correct",
+    "beat": {
+     "beatId": "b15-probe",
+     "type": "probe",
+     "index": 15
+    }
+   },
+   "moduleCommands": [
+    {
+     "op": "unmount",
+     "moduleId": "m21"
+    },
+    {
+     "op": "mount",
+     "moduleId": "m22",
+     "engine": "multiply-divide@1",
+     "params": {
+      "topicId": "c7-maths-ch08-t01",
+      "skillId": "c7-maths-ch08-t01-s2",
+      "lang": "hindi",
+      "mode": "array",
+      "a": 5,
+      "b": 3,
+      "ask": "product",
+      "predict": true
+     }
+    }
+   ],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false,
+     "leadSlot": true
+    },
+    "verdict": "correct",
+    "cls": {
+     "outcome": "correct",
+     "source": "exact"
+    },
+    "note": null,
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 1399,
+    "item": "c7-maths-ch08-t01-i06",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 60
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 61
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 65
+     },
+     {
+      "k": "@settled",
+      "dep": null,
+      "st": null,
+      "ms": 67
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 109
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 109
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1220
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 1336
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 1399
+     }
+    ]
+   }
+  }
+ ]
+}

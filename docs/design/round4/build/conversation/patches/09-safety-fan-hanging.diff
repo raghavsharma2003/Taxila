@@ -1,0 +1,20 @@
+diff --git a/server/safety/lexicon.js b/server/safety/lexicon.js
+index f40f1e47..aea8e189 100644
+--- a/server/safety/lexicon.js
++++ b/server/safety/lexicon.js
+@@ -102,7 +102,14 @@ const SHAPES = [
+   ["self_harm", "kalai_cut", `(?:kalai|kalaiyon|nas|nasen|nason)(?: pe| par| ki| ko)? (?:kut|kat|kati|kata|kate|blade)`, (m, full) => ACCIDENT.test(full)],
+   ["self_harm", "poison", `(?:jehar|jahar|jehr|jaher|poison)(?: [a-z]+)? (?:kha|pi|pee|kha)(?: [a-z]+)? (?:lun|lunga|lungi|lu|lena|liya|li|jaunga|jaungi)|(?:drink|eat|take|drank|ate|took|svalov\\w*) (?:some )?poison`],
+   ["self_harm", "train_ke_aage", `(?:train|tren|bus|truk|gadi|kar)(?: ke)? (?:age|niche|samne|samane) (?:kud|a|so|let|chala|chali|jump)(?: [a-z]+)? (?:jaunga|jaungi|jaun|jau|jana|dunga|dungi)|(?:jump|lie dovn|lay dovn) in front of (?:a |the )?(?:train|bus|truk|kar)`],
+-  ["self_harm", "hang_fansi", `(?:pankhe|pankha|panka|rasi|dupate|dupata|chuni|fanda|fande) se latak|(?:fansi|fasi) (?:laga|lga|le|lagaunga|lagaungi|laga lunga|laga lungi|le lunga|le lungi|lagana)|(?:hang|hanging) ${SELFX}`],
++  ["self_harm", "hang_fansi", `(?:pankhe|pankha|panka|rasi|dupate|dupata|chuni|fanda|fande) se latak|(?:fansi|fasi) (?:laga|lga|le|lagaunga|lagaungi|laga lunga|laga lungi|le lunga|le lungi|lagana)|(?:hang|hanging) ${SELFX}`
++    // round 4 (stream 4A, patch request 09): the English "fan" was missing ("fan se latak jaungi", "ceiling fan se latak
++    // jaunga", Devanagari फैन from canonical "fain"). Only with the child as the one hanging: a first-person future after
++    // "latak" (never "fan latak raha hai", "kapde fan pe latka diye"), or "hang (myself) from / on the fan"
++    // (only words the vocabulary already has, plus fan / fain: a new literal joins VOCAB and stops the canonicaliser
++    // correcting its misspellings, e.g. "jaugi" -> "jaungi", which other shapes rely on)
++    + `|(?:kiling |kamre ka |kamre ke )?(?:fan|fain|pankhe|pankha)(?: ke)? (?:se|pe|par|me|mein)(?: [a-z]+){0,5} latak(?: ke| kar| kr)? (?:jaungi|jaunga|jaun|jau|jana hai|jana chahti|jana chahta|mar jaungi|mar jaunga|jaenge)`
++    + `|(?:hang|hanging) (?:${SELFX} )?(?:from|on|to) (?:the |our |this |mi )?(?:kiling )?fan`],
+   ["self_harm", "meri_zarurat_nahi", `(?:kisi ko|kisiko) (?:bhi )?(?:meri )?(?:jarurat|jarurt|jrurat) (?:nahi|nahin|nai)|${I_S} (?:chala|chali) (?:jaun|jau|jaunga|jaungi)(?: to| toh)? (?:behtar|acha|achha|thik|beter)`],
+   ["self_harm", "sab_mere_bina_khush", `(?:sab|sabhi|log|ghar vale|gharvale|family) mere bina${g(2)} (?:khush|thik|acha|achhe|beter|aram)`, (m, full) => LESSON.test(full)],
+   ["self_harm", "stop_living", `(?:vant to|vana|gonna|gona|going to|just) stop (?:living|liv|breathing|eksisting)`],
