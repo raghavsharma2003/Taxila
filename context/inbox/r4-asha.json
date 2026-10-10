@@ -35,6 +35,18 @@
       "kind": "measurement",
       "title": "r8 vs lamp2 on one harness (evals/face-puppet/lipsync-looks.mjs; offline, Diya's 24 stored lines, product timing path, 60 fps; 132 bilabial words, offset over 21 lines with a forced-alignment track), 2026-10-10: r8 sealed 122/132 with the product rule, 132/132 with rig2's extension; offset median +10 ms, 95% within +-50 ms, unchanged. lamp2 123 -> 132/132; median +5 ms, 67% within +-50 (76% at a +-150 ms lag search; 52% at 30 fps). lamp2's misses are a stepped key mouth locking a syllable away (4/21 lines at +-235-320 ms), not the TTS events or a constant lead. No blind judge (no available model judges audio-video sync).",
       "at": "2026-10-10"
+    },
+    {
+      "id": "ms-r4a-journey-audit-2026-10-10",
+      "kind": "measurement",
+      "title": "End-to-end journey audit (docs/design/round4/build/journey/AUDIT.md), local production builds with prod-routing, Neon test branch, phone 360 + one laptop pass, fake ASR, US container, 2026-10-10/11: A (base 4f92408c) sign-up -> 9 set-up steps -> Hello -> lesson 1 (14 turns) -> day 2 (+1d) -> parent corner; B (stream K a0da1109, ui.kaksha + TAXILA_SESSION_FIRST=on). Owner-vision scores A/B: gamified 1/2, content built on the go 0/0, understands the child 2/2, human-like bond 2/2, just-start-from-school 0/2. Top defects: the session-first start has no client (purpose 'session' never sent); 0 games or built content in 3 lessons, the whiteboard called 'a game'; correct answers ungraded and the question repeated; false acceptance; no continuity across days; 'I'm tired' dead end; first sound 4.2-7.4 s at lesson start, replies 4.2-8.1 s.",
+      "at": "2026-10-10"
+    },
+    {
+      "id": "open-r4a-session-first-no-client",
+      "kind": "open",
+      "title": "No client sends purpose 'session' (base src/child/lesson/answers.ts purposeOf; stream K's Start too), so TAXILA_SESSION_FIRST's 'aaj school mein kya hua' start (which works at the API and adapts to the child's school topic) is unreachable. Owner of the fix: stream K (Kaksha Start) + 4A.",
+      "at": "2026-10-10"
     }
   ],
   "edges": [
@@ -72,6 +84,11 @@
       "src": "dc-r4a-lamp2-owner-cohort",
       "rel": "measured_by",
       "dst": "ms-r4a-lipsync-looks-2026-10-10"
+    },
+    {
+      "src": "open-r4a-session-first-no-client",
+      "rel": "measured_by",
+      "dst": "ms-r4a-journey-audit-2026-10-10"
     }
   ]
 }
