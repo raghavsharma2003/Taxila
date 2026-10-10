@@ -401,6 +401,21 @@ async function mountLibrary(L, piece, lib, a) {
 
 // ───────────────────────────── the seam ─────────────────────────────
 
+/**
+ * round 4 G1 (games-core patch 03): the skills a practice-beat game may practise, in the order to try them: the skill of the
+ * current practice move first, then the plan's other skills in plan order up to it (never one the lesson has not yet
+ * taught: a skill after the practice skill in the plan), each only when play admits it (`has`, levels.js hasPlay).
+ * Without a known practice skill: the plan's skills in plan order.
+ */
+export function playSkillsFor(practiceSkill, planSkills, has) {
+  const plan = (planSkills ?? []).filter((x) => typeof x === "string");
+  const at = practiceSkill ? plan.indexOf(practiceSkill) : -1;
+  const taught = practiceSkill ? (at >= 0 ? plan.slice(0, at) : []) : plan;
+  const out = [];
+  for (const sk of [...(practiceSkill ? [practiceSkill] : []), ...taught]) if (!out.includes(sk) && has(sk)) out.push(sk);
+  return out;
+}
+
 export const studioSeam = {
   /**
    * Lesson-start prefetch (W2 rule for intents): the plan's skills, the kit's diagnostic misconceptions for them and this
@@ -443,16 +458,19 @@ export const studioSeam = {
       // practice slot from the library piece; on a miss (no play for the skill, a refused certificate) the library piece
       // stays. Revealed only at the practice_set beat (beatsFor: a game), never mid-explanation.
       const practice = [...L.pieces.values()].find((p) => p.need === "practice");
-      const playSkill = practice?.skillId ?? (ctx.skillIds?.length ? ctx.skillIds[ctx.skillIds.length - 1] : null);
-      if (playSkill && process.env.FORGE3_PLAY !== "0" && L.child?.id && L.studioControl !== "off") {
-        const r = await buildLive({ need: "practice", lessonId: ctx.lessonId, child: L.child, skillId: playSkill, topicId: L.topicId, lesson: L.forge3 ?? null }, { q: deps.q ?? undefined }).catch(() => null);
-        if (r?.artifact?.kind === "play") {
+      if (process.env.FORGE3_PLAY !== "0" && L.child?.id && L.studioControl !== "off") {
+        const { hasPlay } = await import("../play/levels.js").catch(() => ({ hasPlay: () => false }));
+        for (const playSkill of playSkillsFor(practice?.skillId ?? null, ctx.skillIds ?? [], hasPlay).slice(0, 3)) {
+          const r = await buildLive({ need: "practice", lessonId: ctx.lessonId, child: L.child, skillId: playSkill, topicId: L.topicId, lesson: L.forge3 ?? null }, { q: deps.q ?? undefined }).catch(() => null);
+          if (r?.artifact?.kind !== "play") continue;
           L.forge3 = r.lesson;
           const intentId = `${ctx.lessonId}:play:practice`;
+          // an OFFER the child can decline: "not_this" on it (hostFeedback) brings the library practice piece back
           L.pieces.set(intentId, { intentId, slotId: `${intentId}:slot`, kind: "game", archetype: `play:${r.artifact.play.family}/${r.artifact.play.mode}`, source: "play",
             artifact: r.artifact, facts: r.facts, skillId: r.artifact.play.skillId, need: "practice", neededAtMs: NEEDED_AT.practice, requested: false,
-            state: "ready", retired: false, createdAt: Date.now(), composeMs: r.ms });
+            state: "ready", retired: false, createdAt: Date.now(), composeMs: r.ms, ...(practice ? { declineTo: practice } : {}) });
           if (practice) L.pieces.delete(practice.intentId);
+          break;
         }
       }
       // pieces run in parallel: each is background work (model calls on the background quota lane)
@@ -996,6 +1014,8 @@ export async function hostFeedback({ lessonId, intentId, action }) {
     return { ok: true };
   }
   if (action === "not_this") {
+    // round 4 G1 (games-core patch 03): a declined practice-beat game gives the practice slot back to the library piece
+    if (p.declineTo && !L.pieces.has(p.declineTo.intentId)) L.pieces.set(p.declineTo.intentId, p.declineTo);
     L.excluded.add(p.archetype);
     retirePiece(L, intentId, "not_this");
     for (const q of L.pieces.values()) if (q.archetype === p.archetype && q.state !== "retired") q.retired = true;
