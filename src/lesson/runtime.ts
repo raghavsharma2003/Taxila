@@ -641,7 +641,13 @@ export class LessonRuntime {
 
   private dispatch(e: StatusInput): void {
     if (e.type === "settle" || e.type === "reset") this.events.emit({ type: e.type });
+    const wasSpeaking = this.flags.teacherSpeaking;
     this.flags = reduceStatus(this.flags, e);
+    // round 4 G1 (games-core patch 01): a play piece ducks its music bed under her voice (O-G2: to 0 within ~120 ms); it
+    // hears her only through this window event, on each flip of teacherSpeaking
+    if (this.flags.teacherSpeaking !== wasSpeaking && typeof window !== "undefined") {
+      try { window.dispatchEvent(new CustomEvent("taxila:teacher-speaking", { detail: { on: this.flags.teacherSpeaking } })); } catch { /* no play */ }
+    }
     const status = statusOf(this.flags);
     if (status !== this.state.status) this.store.set({ status });
     // Watchdog: a "thinking" nobody answers (lost turn, dropped response) must not stick.
