@@ -4,7 +4,7 @@ import { q, one, tx, GUARD_FAILED } from "../db.js";
 import { need, bad, send, HttpError } from "../http.js";
 import { createSession, destroySession, requireGuardian, requireChild } from "../auth.js";
 import { requireParentIfPinSet, checkAccountPassword, verifySecret, hashSecret, rateLimit } from "./parent.js";
-import { teacherFor } from "../compiler/characters/index.js";
+import { SINGLE_TEACHER_ID, servesClass, singleTeacher, teacherFor } from "../compiler/characters/index.js";
 import { onConsentChange } from "../conductor/hooks.js";
 import { voicesigSeam } from "../voicesig/lesson.js";
 
@@ -181,11 +181,15 @@ export async function logout(req, res) {
   send(res, 200, { ok: true });
 }
 
-/** A child row as the client sees it: teacher_name is the EFFECTIVE custom name (null when the look's own is in use). */
+/**
+ * A child row as the client sees it: teacher_id is the teacher who TEACHES the child (teacherFor: Asha for every class
+ * under the single teacher, dc-r4-single-teacher-asha, whatever an older row stored), and teacher_name is the
+ * EFFECTIVE custom name (null when the look's own is in use). The server is the one source; no client re-derives it.
+ */
 export function clientChild(c) {
-  if (!c || !c.teacher_name) return c;
+  if (!c) return c;
   const t = teacherFor(c);
-  return { ...c, teacher_name: t.name !== t.characterName ? t.name : null };
+  return { ...c, teacher_id: t.id, teacher_name: c.teacher_name && t.name !== t.characterName ? t.name : null };
 }
 
 export async function me(req, res) {
@@ -253,14 +257,16 @@ export async function createChild(req, res, body) {
   const medium = MEDIUMS.includes(body.schoolMedium) ? body.schoolMedium : "english";
   const lang = ["hinglish", "hindi", "english"].includes(body.languagePref) ? body.languagePref : "hinglish";
   const interests = Array.isArray(body.interests) ? body.interests.slice(0, 8).map((s) => String(s).slice(0, 30)) : [];
-  const teacher = cl <= 4 ? "asha" : "arjun";
+  // the class's teacher (Asha, every class, under the single teacher); a body teacherId only when it serves the class
+  const teacher = singleTeacher() ? SINGLE_TEACHER_ID : cl <= 4 ? "asha" : "arjun";
+  if (body.teacherId != null && !servesClass(body.teacherId, cl)) throw bad("teacher not offered for this class");
   const c = await one(
     `insert into child(guardian_id, first_name, class_level, board, school_medium, language_pref, birth_year, avatar, teacher_id, interests)
      values ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10) returning *`,
     [g.id, firstName.slice(0, 40), cl, board, medium, lang, body.birthYear || null, body.avatar || null, body.teacherId || teacher, interests]);
   await q("insert into rel_state(child_id) values ($1) on conflict do nothing", [c.id]);
   await q("insert into audit(guardian_id, action, detail) values ($1, 'child_create', $2)", [g.id, { childId: c.id }]);
-  send(res, 201, { child: c });
+  send(res, 201, { child: clientChild(c) });
 }
 
 export async function updateChild(req, res, body) {
@@ -268,13 +274,14 @@ export async function updateChild(req, res, body) {
   if (body.board !== undefined && !BOARDS.includes(body.board)) throw bad("unknown board");
   if (body.schoolMedium !== undefined && !MEDIUMS.includes(body.schoolMedium)) throw bad("unknown school medium");
   if (body.classLevel !== undefined && !(Number(body.classLevel) >= 1 && Number(body.classLevel) <= 9)) throw bad("class must be 1-9");
+  if (body.teacherId != null && !servesClass(body.teacherId, body.classLevel ?? child.class_level)) throw bad("teacher not offered for this class");
   const fields = { first_name: body.firstName, class_level: body.classLevel, board: body.board, school_medium: body.schoolMedium,
     language_pref: body.languagePref, interests: body.interests, teacher_id: body.teacherId, avatar: body.avatar };
   // The child's own picks (avatar, interests: C1-C3) stay child-writable; the profile facts are the parent's.
   if (["first_name", "class_level", "board", "school_medium", "language_pref", "teacher_id"].some((k) => fields[k] !== undefined)) await requireParentIfPinSet(req);
   const sets = [], vals = [];
   for (const [k, v] of Object.entries(fields)) if (v !== undefined) { vals.push(v); sets.push(`${k} = $${vals.length}`); }
-  if (!sets.length) return send(res, 200, { child });
+  if (!sets.length) return send(res, 200, { child: clientChild(child) });
   vals.push(child.id);
   // A parent moving the child to another look resets the name, as the picker's switch does (tutor.js CHOOSE_SQL): the
   // name the child gave one look belongs to that look. One statement: the reset and its 'switch' history row together.

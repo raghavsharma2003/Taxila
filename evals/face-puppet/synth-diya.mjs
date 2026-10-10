@@ -1,6 +1,7 @@
 // Synthesise the V4 battery with Diya (en-IN-Diya:DragonHDLatestNeural, base rate -35%, the production SSML from
 // server/voice/expressive/compile/dhd.js plainSsml) over the Azure websocket, keeping her viseme + word-boundary events.
-//   node --env-file=.env.local evals/face-puppet/synth-diya.mjs [--force]
+//   node --env-file=.env.local evals/face-puppet/synth-diya.mjs [--force] [--rate N] [--out <dir under out/>]
+//   (--rate 0 --out diya-r0: the production rate since the owner's 2026-10-05 ear check; the committed set is -35)
 // Writes evals/face-puppet/out/diya/NN.pcm (s16le 24 kHz mono) and NN.json ({text, ssml, visemes, words, ttfbMs, ms}).
 // Also times 5 REST vs 5 websocket first-byte latencies on the same line (the server patch must not cost first sound).
 import fs from "node:fs";
@@ -11,9 +12,10 @@ import { LINES } from "./lines.mjs";
 const region = process.env.AZURE_SPEECH_REGION || process.env.AZURE_SPEECH_REGION_SIN;
 const key = process.env.AZURE_SPEECH_KEY || process.env.AZURE_SPEECH_KEY_SIN;
 if (!region || !key) throw new Error("no Azure Speech config");
-const OUT = new URL("./out/diya/", import.meta.url).pathname;
+const argOf = (n, d) => (process.argv.includes(n) ? process.argv[process.argv.indexOf(n) + 1] : d);
+const OUT = new URL(`./out/${argOf("--out", "diya")}/`, import.meta.url).pathname;
 fs.mkdirSync(OUT, { recursive: true });
-const V = { voice: "en-IN-Diya:DragonHDLatestNeural", baseRate: -35 };
+const V = { voice: "en-IN-Diya:DragonHDLatestNeural", baseRate: Number(argOf("--rate", -35)) };
 const force = process.argv.includes("--force");
 let chars = 0;
 for (let i = 0; i < LINES.length; i++) {

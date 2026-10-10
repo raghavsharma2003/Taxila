@@ -1,0 +1,103 @@
+{
+  "nodes": [
+    {
+      "id": "r4u-app-directions-three",
+      "kind": "component",
+      "title": "U1 three gamified app directions as offline interactive prototypes of the full session-first journey (open/Start, duplex intake 'aaj school mein kya hua?' -> mapped topic -> agreed plan, beat-by-beat board + checkpoint, Antariksh launch, session end, world with yesterday/today, parent view; Hinglish/Hindi/English; 360x800 + 1366x768): A Kaksha (dark game client, orbit world: secured ideas dock as stations, the planet's night side lights up), B Nagar (daylight isometric city: each secured idea raises a real Indian structure, e.g. equivalent fractions -> a baoli of equal steps), C Chhaap (riso print studio: each secured idea opens a block-print stamp; the poster prints a new pass). docs/design/round4/app/{kaksha,nagar,chhaap}/index.html, COMPARE.md",
+      "at": "2026-10-10"
+    },
+    {
+      "id": "r4u-judge-ranking-kaksha-first",
+      "kind": "measurement",
+      "title": "U1 blind MODEL-JUDGE ranking of the three directions (n = 5 three-way rankings per judge, taxila-brain GPT family + taxila-kimi26 Kimi K2.6, shuffled neutral letters, 2026-10-10): Kaksha first overall 10/10 and coolest-to-a-12-year-old 10/10; most premium Nagar 6/10, Kaksha 4/10; least childish Kaksha 7, Nagar 2, Chhaap 1; Chhaap 0/10 first (Kimi: 'craft app for much younger kids'). Advisory: model judges, no child, no owner.",
+      "at": "2026-10-10"
+    },
+    {
+      "id": "r4u-judge-absolute-saturated",
+      "kind": "measurement",
+      "title": "U1 blind MODEL-JUDGE absolute pass (six separate 360x800@2x screens per call, n = 5 per judge per direction, 1-5 scales + binary atomic items, 2026-10-10, 0 errors): scales saturate (cool 4.00 in 5/6 cells, sd 0; Chhaap Kimi 3.60); childish <= 1 met only by Kaksha-GPT (1.00 +/- 0), others 1.20-1.80; premium Nagar-Kimi 4.40 highest; India feel 5.00 everywhere; 0 kiddie palette, 0 bubbly font, 30/30 'teacher reads adult professional'; GPT said 'mascot present' 5/5 on Kaksha although there is none (judge artefact). Common named weakness: the phone lesson board looks static below the line (Kimi 7/15).",
+      "at": "2026-10-10"
+    },
+    {
+      "id": "r4u-lint-clean",
+      "kind": "measurement",
+      "title": "U1 own lint (_src/lint.mjs, Playwright Chromium computed styles, 8 states x 3 languages x 2 viewports = 48 page states per direction, 2026-10-10): after fixes 0 text < 14 px, 0 Devanagari < 16 px, 0 targets < 44 px, 0 WCAG contrast fails, 0 overflow pages on all three (before: 12 small, 4/0/0 Devanagari, 48 targets, 54/126/72 contrast incl. a gradient-approximation over-count, 0/0/6 overflow). Board numerals refit below 700 px to about 21 px.",
+      "at": "2026-10-10"
+    },
+    {
+      "id": "r4u-rec-kaksha-shell",
+      "kind": "open",
+      "title": "OWNER DECISION NEEDED: pick U1 direction A Kaksha / B Nagar / C Chhaap. Stream recommendation: Kaksha as the shell (only direction ranked first by both judge families, flows straight into Antariksh), optionally with a Nagar-style buildable settlement on the planet so the world's objects ARE the ideas; run the five-second child test (TEARDOWN 3.2, include girls and class 4-5) before scale, since Kaksha's risk is a gamer/male skew no model can measure.",
+      "at": "2026-10-10"
+    },
+    {
+      "id": "r4u-rj-headless-video-capture",
+      "kind": "rejection",
+      "title": "Tried: Playwright headless recordVideo of each prototype's journey as motion evidence (2026-10-10). Broke: about 30 s of the 60 s clip recorded black while the page was live and screenshots were fine, and View Transitions stalled under capture; clips removed rather than shipped misleading. Use the live prototype or a screenshot-sequence capture instead.",
+      "at": "2026-10-10"
+    },
+    {
+      "id": "dc-r4-app-kaksha",
+      "kind": "decision",
+      "title": "2026-10-10 main session, as the owner's delegate and provisional until the owner overrides: build U1 direction A Kaksha (dark game-client shell, orbit world, hangar collection) with Nagar's best idea folded in as a secondary layer: a buildable settlement on the planet where each secured skill raises a structure that embodies the idea (earned by secured skills only, never bought, never random, never erased). Nagar and Chhaap prototypes stay in docs/design/round4/app/ for provenance; build spec docs/design/round4/app/BUILD-SPEC.md. Why: Kaksha was first in 10/10 blind model-judge rankings (both families) and the only direction with childish <= 1 (GPT). Reverse if: the owner picks B or C; or a child pilot shows Kaksha's dark space theme tests worse than daylight with classes 1-3 (five-second 'who is this for' or free-choice return), or reads as 'for boys' to girls at a materially higher rate than Nagar.",
+      "at": "2026-10-10"
+    }
+  ],
+  "edges": [
+    {
+      "src": "r4u-app-directions-three",
+      "rel": "part_of",
+      "dst": "dc-r4-owner-vision-superhuman-tutor"
+    },
+    {
+      "src": "dc-r4-gamification-b",
+      "rel": "constrains",
+      "dst": "r4u-app-directions-three"
+    },
+    {
+      "src": "r4u-app-directions-three",
+      "rel": "measured_by",
+      "dst": "r4u-judge-ranking-kaksha-first"
+    },
+    {
+      "src": "r4u-app-directions-three",
+      "rel": "measured_by",
+      "dst": "r4u-judge-absolute-saturated"
+    },
+    {
+      "src": "r4u-app-directions-three",
+      "rel": "measured_by",
+      "dst": "r4u-lint-clean"
+    },
+    {
+      "src": "r4u-rec-kaksha-shell",
+      "rel": "caused_by",
+      "dst": "r4u-judge-ranking-kaksha-first"
+    },
+    {
+      "src": "r4u-rec-kaksha-shell",
+      "rel": "part_of",
+      "dst": "r4u-app-directions-three"
+    },
+    {
+      "src": "dc-r4-app-kaksha",
+      "rel": "supersedes",
+      "dst": "r4u-rec-kaksha-shell"
+    },
+    {
+      "src": "dc-r4-app-kaksha",
+      "rel": "caused_by",
+      "dst": "r4u-judge-ranking-kaksha-first"
+    },
+    {
+      "src": "dc-r4-app-kaksha",
+      "rel": "part_of",
+      "dst": "dc-r4-owner-vision-superhuman-tutor"
+    },
+    {
+      "src": "dc-r4-gamification-b",
+      "rel": "constrains",
+      "dst": "dc-r4-app-kaksha"
+    }
+  ]
+}

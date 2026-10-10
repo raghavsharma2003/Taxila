@@ -1,0 +1,20 @@
+diff --git a/src/face-puppet/PuppetFace.tsx b/src/face-puppet/PuppetFace.tsx
+index 750642eaaddfd498cc90ac45c39a6e2aec9fb7e1..caca66495d8465785135804c26cd5bd06d8535d9 100644
+--- a/src/face-puppet/PuppetFace.tsx
++++ b/src/face-puppet/PuppetFace.tsx
+@@ -78,12 +78,9 @@ function adopt(key: string): PuppetStage | null {
+   return s;
+ }
+ 
+-/** The tutors the puppet IS: concept C is Asha (look "teal", Diya's voice). Any other tutor keeps their own face.
+- *  Arjun (ship5 p2-face decision, 2026-10-05): no puppet art exists for him, and the style-C rig is one painted woman's
+- *  layer stack (bun, locks, bindi, kurta; no glasses layer), judged over 8 polish rounds; a male variant "from the same
+- *  rig" is new art to that bar, not a reskin. So Arjun keeps TutorFace (his 3D head / plate), and no lesson ever swaps
+- *  faces. Consequence, stated plainly: class 5-9 children default to Arjun (shared/tutors.js defaultTutorFor), so they
+- *  see the puppet only if they pick Asha. */
++/** The tutors the puppet IS: Asha, the one teacher (owner 2026-10-10, round 4: Arjun and every teacher choice removed,
++ *  shared/tutors.js). Her look is face.look (look.ts): r8 = concept C, lamp1 = the grown-up Asha. Any other id resolves
++ *  to her (faceTutor), so every child sees the puppet. */
+ export const PUPPET_TUTORS: ReadonlySet<string> = new Set(["asha"]);
+ 
+ export function PuppetFace(p: PuppetFaceProps) {

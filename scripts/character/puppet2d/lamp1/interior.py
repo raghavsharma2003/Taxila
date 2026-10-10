@@ -15,7 +15,7 @@ def band(r0, r1, c0, c1):
         m = a[r].mean(0) + 1e-3
         o[r] = np.clip(a[r] / m * tgt, 0, 255)
 band(0, 32, (226, 212, 192), (214, 198, 176))     # teeth: warm off-white, a touch darker toward the gum line
-band(32, 48, (66, 32, 34), (118, 54, 42))         # cavity: deep plum-brown roof to a warmer floor
+band(32, 48, (84, 40, 36), (132, 62, 48))         # cavity: plum-brown roof to a warm floor (C2: "a dark smeared cavity" at (66, 32, 34))
 band(48, 64, (172, 88, 70), (182, 96, 76))        # tongue: muted rose
 Image.fromarray(o.round().astype(np.uint8)).save(sys.argv[1], "WEBP", lossless=True)
 print("interior recoloured", sys.argv[1])

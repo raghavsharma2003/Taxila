@@ -1,11 +1,11 @@
 // Landing `/` (PRODUCT-DESIGN-V2 §6.1.1). Trust before ask, for an Indian parent deciding in a minute:
-//   hero (the painted study desk + the teachers a child can pick, the promise, one CTA above the fold at 584 dp)
+//   hero (the painted study desk + the one teacher, the promise, one CTA above the fold at 584 dp)
 //   → see a real lesson (a captured V-SHOT of the Desk, never a mock-up) → what you'll see as a parent (a real
-//   How-do-we-know card with sample data, labelled "Sample") → progress is a garden, not a score → your child picks
-//   the teacher → our promises → price → FAQ → helplines → final CTA → footer.
+//   How-do-we-know card with sample data, labelled "Sample") → progress is a garden, not a score → one teacher for
+//   every lesson (round 4: ONE teacher, dc-r4-single-teacher-asha; no pick, no naming) → our promises → price → FAQ → helplines → final CTA → footer.
 // Rules: English chrome; no exclamation marks, no dashes, digits for numbers; no testimonials, ratings or outcome
-// numbers (none exist yet); no "replaces tutors" claim; no teacher name or pronoun, in text or in audio (the child
-// names the teacher); every claim maps to something shipped; the lamp colour never appears here (G-LAMP-1). Every
+// numbers (none exist yet); no "replaces tutors" claim; no teacher name or pronoun, in text or in audio (the
+// owner's call on naming her here is open, BUILD-PLAN §5 decision 4); every claim maps to something shipped; the lamp colour never appears here (G-LAMP-1). Every
 // image goes through the B2 loader with a flat fallback, so the page is complete before any art lands.
 // "Hear a lesson" (§6.1.1) is held back: the only recorded clips are the named onboarding greeting ("I am Asha
 // didi"), which would give the parent a fixed named teacher. It returns with no-name lesson clips (deviation
@@ -79,7 +79,7 @@ function SampleEvidence() {
 const FAQ: { q: string; a: string }[] = [
   { q: "Which classes and boards?", a: "Classes 1 to 9, from your child's own school book: CBSE and NCERT, RBSE and other state boards. Maths, science, English and Hindi to start." },
   { q: "Which language does the teacher speak?", a: "English, Hindi or Hinglish, as you choose at set-up. The buttons and screens are always in simple English, and captions show exactly what the teacher says." },
-  { q: "Does my child know it is an AI?", a: "Yes. The teacher says so at the first meeting, an AI label sits next to the teacher on every screen, and whatever name your child gives the teacher, it never pretends to be a person." },
+  { q: "Does my child know it is an AI?", a: "Yes. The teacher says so at the first meeting, an AI label sits next to the teacher on every screen, and the teacher never pretends to be a person." },
   { q: "What does my child need?", a: "Any Android phone or a computer with a browser, internet, and a quiet corner. Headphones help. A lesson is 10 to 45 minutes, as you set it." },
   { q: "What if my child is upset or unsafe?", a: "The teacher stops the lesson, tells your child they are not in trouble, gives the Childline and Tele-MANAS numbers, and asks them to find a grown-up. You are told in the parent corner." },
   { q: "Is my child's voice recorded?", a: "Audio of your child's voice is not stored. Lessons, answers and the evidence about what they learned are kept so you can see them, and you can delete them." },
@@ -102,7 +102,7 @@ export default function Landing() {
             <div className="hero-art">
               <HeroArt id="bg/landing-hero" className="hero-paint" fallback={<HeroFallback />} />
               {/* Code-drawn plates (no bytes): they paint with the first frame and never delay the hero image. */}
-              <div className="hero-cast" aria-label="AI teachers your child can choose from" role="img" data-ready="">
+              <div className="hero-cast" aria-label="Your child's AI teacher" role="img" data-ready="">
                 {SITE_TUTORS.map((t, i) => <TeacherPortrait key={t.id} tutor={t} size={i === 0 ? 112 : 84} />)}
               </div>
               <p className="hero-cast-label" aria-hidden="true">AI teacher</p>
@@ -165,14 +165,14 @@ export default function Landing() {
           </div>
         </section>
 
-        {/* ── names the teacher (flows G9: "chooses a face" returns only when there is more than one look per band) ── */}
+        {/* ── one teacher (round 4: no pick and no naming card; flows G9's choice returns only if the owner brings it back) ── */}
         <section className="sect" aria-labelledby="pick-h">
           <div className="site-wrap pick">
             <div className="pick-cast" aria-hidden="true">{SITE_TUTORS.map((t) => <figure key={t.id} className="pick-face"><TeacherPortrait tutor={t} size={120} /><figcaption>AI teacher</figcaption></figure>)}</div>
             <div className="pick-text">
-              <h2 id="pick-h" className="sect-h">Your child names the teacher</h2>
-              <p className="sect-lead">Your child meets the teacher for their class and gives the teacher a name. The same teacher then appears in every lesson, so there is one person to get to know.</p>
-              <p className="site-note">Whatever the name, the teacher is an AI and says so. Names are checked against lists of public figures, unkind words and romance words.</p>
+              <h2 id="pick-h" className="sect-h">One teacher for every lesson</h2>
+              <p className="sect-lead">Your child meets one AI teacher, for every class from 1 to 9. The same teacher appears in every lesson, so there is one person to get to know.</p>
+              <p className="site-note">The teacher is an AI and says so, at the first meeting and whenever your child asks.</p>
             </div>
           </div>
         </section>

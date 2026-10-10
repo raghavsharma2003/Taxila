@@ -73,8 +73,8 @@ console.log(`app: ${BASE} (built ${dist})`);
 // ───────────────────────────── fixtures ─────────────────────────────
 const NOW = Date.now();
 const ago = (d) => new Date(NOW - d * 86400_000).toISOString();
-const RIYA = { id: "c-riya", first_name: "Riya", class_level: 5, board: "cbse", school_medium: "english", language_pref: "hinglish", teacher_id: "arjun", avatar: "red-panda", interests: ["Cricket"] };
-const KABIR = { id: "c-kabir", first_name: "Kabir", class_level: 8, board: "cbse", school_medium: "english", language_pref: "english", teacher_id: "arjun", avatar: "rocket", interests: [] };
+const RIYA = { id: "c-riya", first_name: "Riya", class_level: 5, board: "cbse", school_medium: "english", language_pref: "hinglish", teacher_id: "asha", avatar: "red-panda", interests: ["Cricket"] };
+const KABIR = { id: "c-kabir", first_name: "Kabir", class_level: 8, board: "cbse", school_medium: "english", language_pref: "english", teacher_id: "asha", avatar: "rocket", interests: [] };
 const SK_CAN = "c5-maths-ch01-t01-s1", SK_PRACT = "c5-maths-ch02-t01-s1";
 const ROW = (d, outcome, hints = 0) => ({ at: ago(d), outcome, hintsUsed: hints });
 const claim = (kind, skillId, level, rows, extra = {}) => ({ kind, skillId, title: kind === "can_now" ? "Read and write 5- and 6-digit numbers" : "Fractions of a group",
@@ -217,7 +217,7 @@ async function mockApi(page) {
       return json(200, { ok: true, receipt: { code: "TX-1A2B3C4D", at: new Date(NOW).toISOString(), children: 2, backupsGoneBy: new Date(NOW + 7 * 86400_000).toISOString() } });
     }
     if (p === "/api/children" && m === "DELETE") return json(200, { ok: true });
-    if (p === "/api/child/teacher") return json(200, { teacher: { id: "arjun", name: "Arjun" }, eligible: [] });
+    if (p === "/api/child/teacher") return json(200, { teacher: { id: "asha", name: "Asha" }, eligible: [] });
     return json(404, { error: "unmocked" });
   });
 }

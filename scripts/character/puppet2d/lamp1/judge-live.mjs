@@ -28,7 +28,7 @@ const res = fs.existsSync(out) ? JSON.parse(fs.readFileSync(out, "utf8")) : { me
 const imgs = [ref, moments, seq].map((p) => ({ type: "image_url", image_url: { url: "data:image/jpeg;base64," + jpg(p), detail: "high" } }));
 async function one(rep) {
   const body = { model, messages: [{ role: "user", content: [{ type: "text", text: PROMPT }, ...imgs] }] };
-  if (model === "taxila-brain") { body.max_completion_tokens = 9000; body.reasoning_effort = "medium"; body.response_format = { type: "json_object" }; } else body.max_tokens = 3000;
+  if (model === "taxila-brain") { body.max_completion_tokens = 9000; body.reasoning_effort = "medium"; body.response_format = { type: "json_object" }; } else body.max_tokens = 12000;
   for (let a = 0; a < 4; a++) {
     try {
       const r = await fetch(`${E}/chat/completions`, { method: "POST", headers: { "api-key": K, "content-type": "application/json" }, body: JSON.stringify(body), signal: AbortSignal.timeout(300000) });

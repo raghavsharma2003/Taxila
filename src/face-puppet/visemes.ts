@@ -114,11 +114,46 @@ export function stopFlagsFromText(text: string): boolean[] {
 /** One timed mouth event, ms from the part's first sample. */
 export interface TimedViseme { ms: number; id: number; target: MouthTarget }
 
+// Round 4 (Asha lamp1): bilabial seals from the word text. Measured on Diya DragonHD reading a romanised Hinglish line
+// (docs/design/round4/asha/evidence/stageC-log-412.json, 2026-10-10): of 9 words with a b / m / p sound, Azure's viseme
+// track held a viseme 21 (p b m) for 5 and none for 4 (baarah, pencil, dabbon, batao), so the mouth never sealed on them,
+// although the rig seals on every 21 it is given (lip gap 0.00 px at each). Only where Azure gave a word NO 21 at all:
+//   - a word-initial b / bh / p / m (Roman) or प ब भ म (Devanagari): one 21 at the word start - 20 ms (Azure's own seals
+//     on that line sit 30 ms before to 10 ms after the word start);
+//   - else a word-internal bb / pp / mm / mb / mp (Roman): one 21 at that letter's share of the word's duration.
+// "ph" is left to Azure (Hinglish "phir" is [pʰ], English "phone" is [f]). With the rule: 9 / 9 sealed on that line.
+// One line, n = 9 words: the timing rule is a measured heuristic, not a forced alignment (open: the 24-line battery).
+const BILABIAL_ONSET_ROMAN = /^(?:bh|b|p(?!h)|m)/;
+const BILABIAL_ONSET_DEV = /^[पबभम]/u;
+const BILABIAL_INNER_ROMAN = /(?:bb|pp|mm|mb|mp)/;
+export function addBilabials(visemes: ReadonlyArray<{ ms: number; id: number }>, words: ReadonlyArray<{ ms: number; durMs: number; text: string }>): { ms: number; id: number }[] {
+  const out = visemes.map((v) => ({ ms: v.ms, id: v.id }));
+  if (!words.length) return out;
+  const has21 = (a: number, b: number) => visemes.some((v) => v.id === 21 && v.ms >= a && v.ms <= b);
+  for (const w of words) {
+    const raw = String(w.text || "").normalize("NFC");
+    const dev = /[ऀ-ॿ]/u.test(raw);
+    const r = dev ? raw : raw.toLowerCase().replace(/[^a-z]/g, "");
+    if (!r || has21(w.ms - 60, w.ms + w.durMs)) continue;
+    let at: number | null = null;
+    if (dev ? BILABIAL_ONSET_DEV.test(r) : BILABIAL_ONSET_ROMAN.test(r)) at = w.ms - 20;
+    else if (!dev) { const m = BILABIAL_INNER_ROMAN.exec(r); if (m) at = Math.round(w.ms + w.durMs * ((m.index + 1) / r.length)); }
+    if (at == null) continue;
+    // never on top of another event: 15 ms clear of the one before
+    const prev = out.filter((v) => v.ms <= at!).reduce((a, v) => Math.max(a, v.ms), -Infinity);
+    if (at - prev < 15) at = prev + 15;
+    out.push({ ms: at, id: 21 });
+  }
+  out.sort((a, b) => a.ms - b.ms);
+  return out;
+}
+
 /**
  * Resolve a part's raw Azure events into timed mouth targets, applying the word-text Hindi rules. Words are matched to
  * visemes by time (a viseme belongs to the word whose [ms, ms + durMs) holds it).
  */
-export function resolveVisemes(visemes: ReadonlyArray<{ ms: number; id: number }>, words: ReadonlyArray<{ ms: number; durMs: number; text: string }> = [], text?: string): TimedViseme[] {
+export function resolveVisemes(visemes0: ReadonlyArray<{ ms: number; id: number }>, words: ReadonlyArray<{ ms: number; durMs: number; text: string }> = [], text?: string): TimedViseme[] {
+  const visemes = addBilabials(visemes0, words);   // round 4: the seals Azure's track leaves out (above)
   const out: TimedViseme[] = [];
   const flags = words.map((w) => ({ ...w, f: wordFlags(w.text), k: 0, n19: 0 }));
   const wordOf = (ms: number) => flags.find((x) => ms >= x.ms - 10 && ms < x.ms + x.durMs + 10);
