@@ -18433,6 +18433,27 @@
    "at": "2026-10-10",
    "title": "2026-10-10 main session: migration numbers for round 4 are allotted centrally to avoid collisions: 024 board_page (stream 2), 025 child_school_chapter (4A), 026 play_build (G2 Khand), 027 child_controls.play_verb (G1 patch 02, with /api/parent/controls applied by main at G1's merge). All additive (create/add if not exists, no drops). Reverse if: a stream needs a destructive migration, which then needs owner approval and a TEST-branch rehearsal first.",
    "source": "inbox/r4-main-1135.json"
+  },
+  {
+   "id": "dc-r4-safety05-succeed-not-suicide",
+   "kind": "decision",
+   "at": "2026-10-10",
+   "title": "2026-10-10 main session safety review of patch request 05 (stream 4A @a3d5704): server/safety/lexicon.js suicide_spellings shape counts a hit only if it survives with the succeed family (suc+e+d+(s|ed|ing)?) masked out of the RAW text, because 'succeed/succeeded/succeeds' canonicalise to 'sukide', the same as the misspelling 'sucide'. Live defect it closes: a child typing a kit answer such as 'B: she found her own way and succeeded' or 'If you try again, you will succeed' (24 kit strings) got the self-harm safeguard and the helplines. Every real spelling still fires, including a succeed word beside it ('succeed nahi hua toh sucide kar lunga'). Only this one shape is touched; nothing removed or narrowed elsewhere. Review test moved into npm test as tests/safety-r4-scan-succeed.test.mjs with the main review's probes. Reverse if: a real disclosure is found that the succeed-family mask hides (then narrow the mask, never drop the shape).",
+   "source": "inbox/r4-safety05.json"
+  },
+  {
+   "id": "ms-r4-safety05-review-numbers",
+   "kind": "measurement",
+   "at": "2026-10-10",
+   "title": "2026-10-10 patch 05 review vs base 9920f21 (CPU, deterministic). Main probe: 7 base false alarms removed (incl. 'Did the plan succeed?', 'i want to succeed in my exams'), 10/10 disclosures still fire. Every 6+ char string under data/kits, data/curriculum, evals, tests (337,886): base fires 885, patched 850; 35 removed (all succeed family), 0 new. fingerprint.mjs 18,438 draws: lost 0, gained 0, kind changed 0. safety-robust run.mjs identical on both arms. Safety suites 114/114; adversarial 22/23 both arms (pre-existing non-blocking); persona invariants 105/105. Full gate on the patched tree: tsc, vite, npm test 2,616 pass / 0 fail / 3 skipped, prompt budget PASS.",
+   "source": "inbox/r4-safety05.json"
+  },
+  {
+   "id": "rj-r4-content-filter-completion-safeguard",
+   "kind": "finding",
+   "at": "2026-10-10",
+   "title": "2026-10-10 root cause (stream 4A, tests/prod/r4-conversation-sg-repro.mjs, 1 of 58 fresh lessons): the false safeguard on 'explain it differently' (stream 5 owner-4, Zoya class 5) was the Azure content filter blocking the model's REPLY completion (HTTP 200, finish_reason content_filter); turn.js failed closed and re-planned the turn as a disclosure, so the child got the helplines although the predicate, the model distress read (0/480 false reads) and the UNDERSTAND note (0/96) were all clean. The [lesson] turn line printed the original cls, hiding the cause. Fix proposed as patch 06 (say.js: one fresh reply on a completion block before failing closed; a prompt block still fails closed at once), under main safety review.",
+   "source": "inbox/r4-safety05.json"
   }
  ],
  "edges": [
@@ -29828,6 +29849,16 @@
   },
   {
    "src": "ms-r4-safety03-prod-deploy",
+   "rel": "part_of",
+   "dst": "dc-r4-safety03-peer-actor-shipped"
+  },
+  {
+   "src": "dc-r4-safety05-succeed-not-suicide",
+   "rel": "measured_by",
+   "dst": "ms-r4-safety05-review-numbers"
+  },
+  {
+   "src": "dc-r4-safety05-succeed-not-suicide",
    "rel": "part_of",
    "dst": "dc-r4-safety03-peer-actor-shipped"
   }
