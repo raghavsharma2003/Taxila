@@ -426,6 +426,10 @@ export async function lessonTurn(req, body) {
   }
   let cls;
   try { cls = classified ? await P.clsP : null; } finally { clsDone(); }
+  // r4-latency (main-session ask): WHICH stage set the distress flag, as codes only (never the child's words), so a false
+  // safeguard can be attributed from the log line and debug.distress. First source wins; later ones are appended.
+  const distressSrc = [];
+  if (cls?.flags?.distress) distressSrc.push(cls.source === "predicate" ? "predicate" : cls.source === "content_filter" ? "content_filter" : "classify_model");
   if (pre) trace.push(...pre.prefetch.trace.map((t) => ({ ...t, prefetched: true })));
   mark("classified");
   let noteReason = null, noteDebug = null;
@@ -433,7 +437,9 @@ export async function lessonTurn(req, body) {
     const nonAnswer = cls.outcome === "no_evidence" && !cls.request && !cls.help && !cls.flags?.distress;
     const waitT0 = performance.now();
     const note = await settleWithin(noteP, nonAnswer ? Math.max(0, NOTE_WAIT_MS - (performance.now() - noteT0)) : 0);
+    const before = !!cls.flags?.distress;
     if (note) cls = applyNote(cls, note, { mode: c2 });
+    if (!before && cls?.flags?.distress) distressSrc.push("understand_note");
     noteReason = note ? `conv2.${c2 === "shadow" ? "shadow" : "note"}.${note.intent}` : "conv2.no_note";
     noteDebug = { nonAnswer, intent: note?.intent ?? null, waitedMs: Math.round(performance.now() - waitT0), parallel: P.noteParallel ? await settleWithin(P.noteParallel, 0) : null };
     mark("noted");
@@ -452,6 +458,7 @@ export async function lessonTurn(req, body) {
   const pendingSafety = body.duplex?.safetyPending;
   if (cls && pendingSafety && !cls.flags?.distress) {
     cls = { ...cls, flags: { ...cls.flags, distress: true, distressKind: cls.flags?.distressKind ?? (typeof pendingSafety.kind === "string" ? pendingSafety.kind : "duplex_partial") } };
+    distressSrc.push("duplex_pending");
   }
   // ... and a model distress read on the committed turn (classify's model flag or distressCheck, which now runs on every
   // committed child turn with words) reaches the duplex floor as a model note, so a reply speculated on the partials is
@@ -533,6 +540,7 @@ export async function lessonTurn(req, body) {
   const relFx = relationalEffects(kernel.arb);
   const needRelease = relFx.release && !["wrap", "safeguard"].includes(r.move.kind);
   const needSafety = relFx.safety && r.move.kind !== "safeguard";
+  if (needSafety) distressSrc.push("relational_floor");
   if (needRelease || needSafety || relFx.overlay || relFx.callbackId || relFx.noticeId) {
     const relCls = needSafety ? { ...(cls ?? { outcome: "no_evidence", confidence: 1 }), source: cls?.source ?? "relational",
       flags: { ...(cls?.flags ?? fast?.flags ?? {}), distress: true, distressKind: cls?.flags?.distressKind ?? "relational_floor" } }
@@ -671,6 +679,7 @@ export async function lessonTurn(req, body) {
       noteDid(next, { cls: blockedCls, target, activeItem, kit, childText, tapped, hintLevel: state.hintLevel, seq: childRowSeq(staged), leaked });
       teacherReply = fallbackReply(next, null);
       filteredSafeguard = true;
+      distressSrc.push("content_filter");
       guard = { ...guard, caught: [...new Set([...(guard?.caught ?? []), "content_filter"])], replaced: true };
       replyFloor = [];
       // the move is now the safeguard: the kernel runs again so the floor freezes everything below it
@@ -946,7 +955,8 @@ export async function lessonTurn(req, body) {
   if (late) flushHeld(child, lesson, next).catch((e) => console.warn("[lesson] late turn: held evidence not stored:", e.message));
   const voice = await voiceP;
   const ms = Math.round(performance.now() - t0);
-  console.info(`[lesson] turn ${lesson.id} #${next.turn} ${r.move.kind}${r.hold ? " (hold)" : ""}${late ? " (late)" : ""} cls=${cls ? `${cls.outcome}/${cls.source}` : "module"}${speculation ? ` spec=${speculation.hit ? "hit" : "miss"}/${speculation.tried}` : ""} ${ms}ms`);
+  const distress = distressOf(distressSrc, { move: r.move.kind, episodeOpen: !!prev.safeguard, kind: cls?.flags?.distressKind ?? next.safeguard?.kind ?? null });
+  console.info(`[lesson] turn ${lesson.id} #${next.turn} ${r.move.kind}${distress ? ` distress=${distress.sources.join("+")}${distress.kind ? `/${distress.kind}` : ""}` : ""}${r.hold ? " (hold)" : ""}${late ? " (late)" : ""} cls=${cls ? `${cls.outcome}/${cls.source}` : "module"}${speculation ? ` spec=${speculation.hit ? "hit" : "miss"}/${speculation.tried}` : ""} ${ms}ms`);
   /** @type {import("../../shared/contracts").TurnResponse} */
   const out = { ...(late ? {} : clientInstructions(state.mode, instructions)), ...outCore };
   const vsShadow = vsShadowP && debugFor(req) ? await vsShadowP : null;
@@ -962,7 +972,7 @@ export async function lessonTurn(req, body) {
       ...(speculation ? { speculation } : {}), ...(prewarmed ? { ttsPrewarmed: true } : {}),
       prefetch: pre ? { adopted: true, aheadMs: pre.prefetch.aheadMs } : { adopted: false, miss: adoptMissOf(lesson.id) }, ...(noteDebug ? { note: noteDebug } : {}),
       item: item ? { id: item.id, kind: item.kind, prompt_en: item.prompt_en, prompt_hi: item.prompt_hi, answer: item.answer, acceptable: item.acceptable, ...(item.options ? { options: item.options.map((o) => o.text) } : {}) } : null,
-      kitVerified: kit.verified, ms, timings: trace,
+      kitVerified: kit.verified, ms, timings: trace, ...(distress ? { distress } : {}),
       stage: { accepted: kernel.arb.accepted.map((p) => p.kind), rejected: kernel.arb.rejected.map((x) => `${x.p.kind}:${x.why}`), wb: kernel.wb?.declined ?? null, studioPropose: studioView?.propose ?? null,
         point: stagecraftPoint ? { want: stagecraftPoint.want?.family ?? null, request: stagecraftPoint.request?.kind ?? null } : null, slot: studioSlot?.artifact?.kind ?? null, tray: r.ui?.tray ?? null },
       ...(voice ? { voice: { reliable: voice.reliable, signals: voice.signals, z: voice.z } } : {}),
@@ -971,6 +981,21 @@ export async function lessonTurn(req, body) {
     };
   }
   return out;
+}
+
+/** A distress kind is a CODE (safety.js families, "model", "model_note", "duplex_partial", ...); anything else, e.g. a string a
+ *  client sent, is reported as "other", so no free text reaches the log. */
+const KIND_CODE = /^[a-z][a-z0-9_]{0,31}$/;
+/**
+ * r4-latency: the turn's distress attribution, codes only: { sources: ["predicate" | "classify_model" | "understand_note" |
+ * "duplex_pending" | "relational_floor" | "content_filter" | "episode_open"], kind }, or null on a turn with no distress and
+ * no safeguarding move. "episode_open" = the move is a safeguard only because an earlier turn opened the episode.
+ */
+export function distressOf(sources, { move, episodeOpen = false, kind = null } = {}) {
+  const src = [...new Set(sources)];
+  if (!src.length && move === "safeguard") src.push(episodeOpen ? "episode_open" : "unattributed");
+  if (!src.length) return null;
+  return { sources: src, kind: typeof kind === "string" && KIND_CODE.test(kind) ? kind : kind == null ? null : "other" };
 }
 
 /** The child row's seq among this turn's staged rows (the DidCard cites it). */
