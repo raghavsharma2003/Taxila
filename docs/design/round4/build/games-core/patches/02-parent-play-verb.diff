@@ -6,7 +6,7 @@ index 00000000..058b7604
 @@ -0,0 +1,6 @@
 +-- round 4 G1 (games-core patch 02; owner decision O-G4, dc-r4-games-o-g): the parent's switch for the game verb at
 +-- non-living targets: "fire" (daago, the default) or "scan" (words and sound only; nothing in the game changes but the
-+-- button label and the effect sound). Additive; no row changes. The main session assigns the migration number.
++-- button label and the effect sound). Additive; no row changes. Number 027 assigned by the main session.
 +alter table child_controls add column if not exists play_verb text not null default 'fire';
 +alter table child_controls drop constraint if exists child_controls_play_verb_check;
 +alter table child_controls add constraint child_controls_play_verb_check check (play_verb in ('fire', 'scan'));
