@@ -1,0 +1,788 @@
+{
+ "date": "2026-10-10",
+ "method": "Painted keys at exact registration (lamp2). For every key edit (raw/<key>-t<n>.png, or a Stage B edit):\n  1. register the repaint to the front: ORB + RANSAC similarity on features OUTSIDE the key's region, then ECC\n     (affine) on a window round the region with the region itself masked out;\n  2. colour: a per-channel gain + offset fitted on the ring just outside the region, then the remaining boundary\n     difference spread inside by a membrane (Laplace) solve, so the key meets the front with no step;\n  3. composite: comp = front * (1 - m) + key * m, m = the region mask feathered INWARD (m = 0 on and outside the\n     region boundary), so every pixel outside the region is the front's, bit for bit;\n  4. prove it: SSIM(comp, front) over the pixels outside the region (gate >= 0.995; by construction 1.0), plus the\n     seam residual on the ring (mean |key - front| in 0-255 before and after the colour fit).\nRegions are hand-read on a 20 px grid in rig space (scratch grid-eyes.png, grid-mouth.png).\n    python3 -I keys.py <key>=<file> [...]      (writes rs/k-<key>.png comp + rs/m-<key>.png mask, evidence/keys.json)",
+ "keys": {
+  "aa": {
+   "key": "aa",
+   "src": "aa-t1.png",
+   "region": "mouth",
+   "feather_px": 12,
+   "orb_scale": 1.0076,
+   "orb_rot_deg": -0.111,
+   "orb_shift_px": [
+    -6.3,
+    3.8
+   ],
+   "inliers": 727,
+   "ecc_affine": [
+    [
+     1.0039,
+     0.0028,
+     -4.301
+    ],
+    [
+     -0.002,
+     1.0018,
+     1.1344
+    ]
+   ],
+   "ring_mean_abs_diff_255": {
+    "registered": 4.6,
+    "after_gain_offset": 3.14
+   },
+   "gain_offset_rgb": [
+    [
+     0.8459,
+     37.0
+    ],
+    [
+     0.8367,
+     22.41
+    ],
+    [
+     0.6142,
+     18.0
+    ]
+   ],
+   "ssim_outside_region": 1.0,
+   "max_abs_diff_outside_region_255": 0.0,
+   "region_px": 18971
+  },
+  "closed": {
+   "key": "closed",
+   "src": "x-blink.webp",
+   "region": "eyes",
+   "feather_px": 9,
+   "orb_scale": 1.0004,
+   "orb_rot_deg": 0.011,
+   "orb_shift_px": [
+    -0.3,
+    0.1
+   ],
+   "inliers": 1050,
+   "ecc_affine": [
+    [
+     1.0013,
+     -0.0002,
+     -0.4937
+    ],
+    [
+     0.0003,
+     0.9924,
+     4.2156
+    ]
+   ],
+   "ring_mean_abs_diff_255": {
+    "registered": 3.89,
+    "after_gain_offset": 3.64
+   },
+   "gain_offset_rgb": [
+    [
+     0.9944,
+     0.21
+    ],
+    [
+     1.0049,
+     -0.29
+    ],
+    [
+     0.8241,
+     9.42
+    ]
+   ],
+   "ssim_outside_region": 1.0,
+   "max_abs_diff_outside_region_255": 0.0,
+   "region_px": 17162
+  },
+  "half": {
+   "key": "half",
+   "src": "x-mid.webp",
+   "region": "eyes",
+   "feather_px": 9,
+   "orb_scale": 1.0036,
+   "orb_rot_deg": -0.011,
+   "orb_shift_px": [
+    -4.5,
+    2.3
+   ],
+   "inliers": 882,
+   "ecc_affine": [
+    [
+     1.0042,
+     0.0006,
+     -2.1925
+    ],
+    [
+     -0.0001,
+     0.9969,
+     2.1885
+    ]
+   ],
+   "ring_mean_abs_diff_255": {
+    "registered": 3.54,
+    "after_gain_offset": 2.75
+   },
+   "gain_offset_rgb": [
+    [
+     1.0021,
+     0.64
+    ],
+    [
+     1.0374,
+     -1.57
+    ],
+    [
+     0.9136,
+     6.1
+    ]
+   ],
+   "ssim_outside_region": 1.0,
+   "max_abs_diff_outside_region_255": 0.0,
+   "region_px": 17162
+  },
+  "mbp": {
+   "key": "mbp",
+   "src": "mbp-t1.png",
+   "region": "mouth",
+   "feather_px": 12,
+   "orb_scale": 1.006,
+   "orb_rot_deg": 0.109,
+   "orb_shift_px": [
+    -2.7,
+    0.4
+   ],
+   "inliers": 765,
+   "ecc_affine": [
+    [
+     1.0044,
+     -0.0021,
+     -1.3143
+    ],
+    [
+     0.0021,
+     0.9916,
+     3.3288
+    ]
+   ],
+   "ring_mean_abs_diff_255": {
+    "registered": 4.0,
+    "after_gain_offset": 1.61
+   },
+   "gain_offset_rgb": [
+    [
+     0.9866,
+     7.53
+    ],
+    [
+     0.9923,
+     5.38
+    ],
+    [
+     0.8818,
+     7.23
+    ]
+   ],
+   "ssim_outside_region": 1.0,
+   "max_abs_diff_outside_region_255": 0.0,
+   "region_px": 18971
+  },
+  "eh": {
+   "key": "eh",
+   "src": "eh-t3.png",
+   "region": "mouth",
+   "feather_px": 12,
+   "orb_scale": 1.0065,
+   "orb_rot_deg": 0.146,
+   "orb_shift_px": [
+    -2.2,
+    1.5
+   ],
+   "inliers": 772,
+   "ecc_affine": [
+    [
+     1.0054,
+     -0.0029,
+     -1.0185
+    ],
+    [
+     0.0016,
+     0.9918,
+     3.9215
+    ]
+   ],
+   "ring_mean_abs_diff_255": {
+    "registered": 2.98,
+    "after_gain_offset": 1.49
+   },
+   "gain_offset_rgb": [
+    [
+     0.9524,
+     13.8
+    ],
+    [
+     0.9697,
+     6.25
+    ],
+    [
+     0.8315,
+     8.24
+    ]
+   ],
+   "ssim_outside_region": 1.0,
+   "max_abs_diff_outside_region_255": 0.0,
+   "region_px": 18971
+  },
+  "ee": {
+   "key": "ee",
+   "src": "ee-t5.png",
+   "region": "mouth",
+   "feather_px": 12,
+   "orb_scale": 1.0073,
+   "orb_rot_deg": 0.172,
+   "orb_shift_px": [
+    -1.7,
+    -12.5
+   ],
+   "inliers": 792,
+   "ecc_affine": [
+    [
+     1.0073,
+     -0.0032,
+     -1.2347
+    ],
+    [
+     0.0021,
+     0.994,
+     2.8043
+    ]
+   ],
+   "ring_mean_abs_diff_255": {
+    "registered": 2.88,
+    "after_gain_offset": 1.46
+   },
+   "gain_offset_rgb": [
+    [
+     0.9289,
+     18.27
+    ],
+    [
+     0.9516,
+     8.32
+    ],
+    [
+     0.8008,
+     9.36
+    ]
+   ],
+   "ssim_outside_region": 1.0,
+   "max_abs_diff_outside_region_255": 0.0,
+   "region_px": 18971
+  },
+  "oh": {
+   "key": "oh",
+   "src": "oh-t3.png",
+   "region": "mouth",
+   "feather_px": 12,
+   "orb_scale": 1.0244,
+   "orb_rot_deg": 0.041,
+   "orb_shift_px": [
+    -11.7,
+    0.6
+   ],
+   "inliers": 801,
+   "ecc_affine": [
+    [
+     1.0064,
+     0.0004,
+     -4.0623
+    ],
+    [
+     0.0005,
+     1.0016,
+     -0.4803
+    ]
+   ],
+   "ring_mean_abs_diff_255": {
+    "registered": 5.36,
+    "after_gain_offset": 3.97
+   },
+   "gain_offset_rgb": [
+    [
+     0.6826,
+     69.98
+    ],
+    [
+     0.7385,
+     34.36
+    ],
+    [
+     0.7077,
+     15.64
+    ]
+   ],
+   "ssim_outside_region": 1.0,
+   "max_abs_diff_outside_region_255": 0.0,
+   "region_px": 18971
+  },
+  "oo": {
+   "key": "oo",
+   "src": "oo-t5.png",
+   "region": "mouth",
+   "feather_px": 12,
+   "orb_scale": 1.007,
+   "orb_rot_deg": -0.053,
+   "orb_shift_px": [
+    -4.5,
+    0.6
+   ],
+   "inliers": 800,
+   "ecc_affine": [
+    [
+     1.0052,
+     0.0014,
+     -3.4132
+    ],
+    [
+     -0.001,
+     0.9988,
+     1.7267
+    ]
+   ],
+   "ring_mean_abs_diff_255": {
+    "registered": 3.19,
+    "after_gain_offset": 1.47
+   },
+   "gain_offset_rgb": [
+    [
+     0.954,
+     12.4
+    ],
+    [
+     0.999,
+     3.98
+    ],
+    [
+     0.9152,
+     5.71
+    ]
+   ],
+   "ssim_outside_region": 1.0,
+   "max_abs_diff_outside_region_255": 0.0,
+   "region_px": 18971
+  },
+  "fv": {
+   "key": "fv",
+   "src": "fv-t5.png",
+   "region": "mouth",
+   "feather_px": 12,
+   "orb_scale": 1.061,
+   "orb_rot_deg": 0.13,
+   "orb_shift_px": [
+    -24.6,
+    0.1
+   ],
+   "inliers": 708,
+   "ecc_affine": [
+    [
+     1.0071,
+     -0.0023,
+     -1.5206
+    ],
+    [
+     0.002,
+     0.9972,
+     0.9872
+    ]
+   ],
+   "ring_mean_abs_diff_255": {
+    "registered": 3.19,
+    "after_gain_offset": 1.59
+   },
+   "gain_offset_rgb": [
+    [
+     0.9828,
+     6.48
+    ],
+    [
+     1.0025,
+     3.67
+    ],
+    [
+     0.9007,
+     6.01
+    ]
+   ],
+   "ssim_outside_region": 1.0,
+   "max_abs_diff_outside_region_255": 0.0,
+   "region_px": 18971
+  },
+  "ltd": {
+   "key": "ltd",
+   "src": "ltd-t5.png",
+   "region": "mouth",
+   "feather_px": 12,
+   "orb_scale": 1.0099,
+   "orb_rot_deg": -0.043,
+   "orb_shift_px": [
+    -6.5,
+    2.3
+   ],
+   "inliers": 850,
+   "ecc_affine": [
+    [
+     1.0059,
+     0.0011,
+     -3.9022
+    ],
+    [
+     -0.0019,
+     0.9957,
+     4.2225
+    ]
+   ],
+   "ring_mean_abs_diff_255": {
+    "registered": 3.29,
+    "after_gain_offset": 1.63
+   },
+   "gain_offset_rgb": [
+    [
+     1.016,
+     1.81
+    ],
+    [
+     1.0319,
+     -1.13
+    ],
+    [
+     0.893,
+     5.78
+    ]
+   ],
+   "ssim_outside_region": 1.0,
+   "max_abs_diff_outside_region_255": 0.0,
+   "region_px": 18971
+  },
+  "smile": {
+   "key": "smile",
+   "src": "smile-t1.png",
+   "region": "mouth",
+   "feather_px": 12,
+   "orb_scale": 1.0075,
+   "orb_rot_deg": -0.073,
+   "orb_shift_px": [
+    -5.0,
+    2.8
+   ],
+   "inliers": 750,
+   "ecc_affine": [
+    [
+     1.0038,
+     0.0009,
+     -2.3834
+    ],
+    [
+     -0.0014,
+     0.993,
+     4.6679
+    ]
+   ],
+   "ring_mean_abs_diff_255": {
+    "registered": 3.03,
+    "after_gain_offset": 1.7
+   },
+   "gain_offset_rgb": [
+    [
+     0.9857,
+     6.39
+    ],
+    [
+     1.002,
+     2.84
+    ],
+    [
+     1.0469,
+     -0.4
+    ]
+   ],
+   "ssim_outside_region": 1.0,
+   "max_abs_diff_outside_region_255": 0.0,
+   "region_px": 18971
+  },
+  "calm": {
+   "key": "calm",
+   "src": "calm-t1.png",
+   "region": "mouth",
+   "feather_px": 12,
+   "orb_scale": 1.01,
+   "orb_rot_deg": 0.066,
+   "orb_shift_px": [
+    -5.0,
+    3.8
+   ],
+   "inliers": 967,
+   "ecc_affine": [
+    [
+     1.0052,
+     -0.0017,
+     -1.3789
+    ],
+    [
+     0.0004,
+     0.9963,
+     2.563
+    ]
+   ],
+   "ring_mean_abs_diff_255": {
+    "registered": 2.7,
+    "after_gain_offset": 1.45
+   },
+   "gain_offset_rgb": [
+    [
+     0.9843,
+     7.02
+    ],
+    [
+     1.0111,
+     1.11
+    ],
+    [
+     0.8988,
+     5.13
+    ]
+   ],
+   "ssim_outside_region": 1.0,
+   "max_abs_diff_outside_region_255": 0.0,
+   "region_px": 18971
+  },
+  "lookL": {
+   "key": "lookL",
+   "src": "lookL-t1.png",
+   "region": "eyes",
+   "feather_px": 9,
+   "orb_scale": 1.0092,
+   "orb_rot_deg": -0.177,
+   "orb_shift_px": [
+    -7.7,
+    5.0
+   ],
+   "inliers": 672,
+   "ecc_affine": [
+    [
+     1.005,
+     0.0027,
+     -4.8014
+    ],
+    [
+     -0.0033,
+     0.9964,
+     4.7778
+    ]
+   ],
+   "ring_mean_abs_diff_255": {
+    "registered": 3.78,
+    "after_gain_offset": 2.56
+   },
+   "gain_offset_rgb": [
+    [
+     0.9944,
+     3.72
+    ],
+    [
+     1.0521,
+     -1.97
+    ],
+    [
+     1.1907,
+     -5.05
+    ]
+   ],
+   "ssim_outside_region": 1.0,
+   "max_abs_diff_outside_region_255": 0.0,
+   "region_px": 17162
+  },
+  "lookR": {
+   "key": "lookR",
+   "src": "lookR-t1.png",
+   "region": "eyes",
+   "feather_px": 9,
+   "orb_scale": 1.0063,
+   "orb_rot_deg": 0.144,
+   "orb_shift_px": [
+    -1.9,
+    2.5
+   ],
+   "inliers": 806,
+   "ecc_affine": [
+    [
+     1.005,
+     -0.0025,
+     -0.7496
+    ],
+    [
+     0.0023,
+     0.994,
+     2.7452
+    ]
+   ],
+   "ring_mean_abs_diff_255": {
+    "registered": 3.1,
+    "after_gain_offset": 2.47
+   },
+   "gain_offset_rgb": [
+    [
+     0.9881,
+     4.63
+    ],
+    [
+     1.0415,
+     -2.13
+    ],
+    [
+     1.0875,
+     -2.76
+    ]
+   ],
+   "ssim_outside_region": 1.0,
+   "max_abs_diff_outside_region_255": 0.0,
+   "region_px": 17162
+  },
+  "lookUp": {
+   "key": "lookUp",
+   "src": "lookUp-t5.png",
+   "region": "eyes",
+   "feather_px": 9,
+   "orb_scale": 1.0044,
+   "orb_rot_deg": 0.178,
+   "orb_shift_px": [
+    -0.1,
+    3.3
+   ],
+   "inliers": 683,
+   "ecc_affine": [
+    [
+     1.0037,
+     -0.0044,
+     1.2259
+    ],
+    [
+     0.0018,
+     0.9912,
+     4.9762
+    ]
+   ],
+   "ring_mean_abs_diff_255": {
+    "registered": 3.78,
+    "after_gain_offset": 2.93
+   },
+   "gain_offset_rgb": [
+    [
+     0.9685,
+     8.61
+    ],
+    [
+     1.0217,
+     0.83
+    ],
+    [
+     1.1329,
+     -2.58
+    ]
+   ],
+   "ssim_outside_region": 1.0,
+   "max_abs_diff_outside_region_255": 0.0,
+   "region_px": 17162
+  },
+  "raised": {
+   "key": "raised",
+   "src": "raised-t1.png",
+   "region": "brows",
+   "feather_px": 10,
+   "orb_scale": 1.0196,
+   "orb_rot_deg": 0.014,
+   "orb_shift_px": [
+    -7.5,
+    5.3
+   ],
+   "inliers": 699,
+   "ecc_affine": [
+    [
+     1.0044,
+     0.0014,
+     -2.6129
+    ],
+    [
+     -0.0013,
+     0.9965,
+     4.9067
+    ]
+   ],
+   "ring_mean_abs_diff_255": {
+    "registered": 4.35,
+    "after_gain_offset": 3.55
+   },
+   "gain_offset_rgb": [
+    [
+     0.993,
+     1.49
+    ],
+    [
+     1.0539,
+     -2.06
+    ],
+    [
+     1.0786,
+     -0.42
+    ]
+   ],
+   "ssim_outside_region": 1.0,
+   "max_abs_diff_outside_region_255": 0.0,
+   "region_px": 29341
+  },
+  "concern": {
+   "key": "concern",
+   "src": "concern-t2.png",
+   "region": "brows",
+   "feather_px": 10,
+   "orb_scale": 1.0098,
+   "orb_rot_deg": 0.009,
+   "orb_shift_px": [
+    -4.6,
+    1.3
+   ],
+   "inliers": 855,
+   "ecc_affine": [
+    [
+     1.0067,
+     0.0001,
+     -3.1513
+    ],
+    [
+     -0.001,
+     0.9987,
+     1.6175
+    ]
+   ],
+   "ring_mean_abs_diff_255": {
+    "registered": 3.99,
+    "after_gain_offset": 3.43
+   },
+   "gain_offset_rgb": [
+    [
+     1.0053,
+     0.48
+    ],
+    [
+     1.0505,
+     -3.25
+    ],
+    [
+     1.1069,
+     -2.68
+    ]
+   ],
+   "ssim_outside_region": 1.0,
+   "max_abs_diff_outside_region_255": 0.0,
+   "region_px": 29341
+  }
+ }
+}

@@ -1,0 +1,149 @@
+diff --git a/server/face-puppet/config.js b/server/face-puppet/config.js
+index 956d3f15..81182ef7 100644
+--- a/server/face-puppet/config.js
++++ b/server/face-puppet/config.js
+@@ -16,7 +16,8 @@ import { PUPPET_REV } from "./rev.js";
+ /** Looks a client may be told to paint. */
+ export const FACE_LOOKS = Object.freeze(["r8"]);
+ /** Looks keyed in src/face-puppet/assets.ts but held (never served): the client keeps the same list (HELD_LOOKS). */
+-export const HELD_FACE_LOOKS = Object.freeze(["lamp1"]);
++// lamp2 (round 4 rig2, painted keys) is held too: blind premium 2.6-2.8 vs r8 3.0-3.4 in the same runs (asha/rig2/RESULTS.md)
++export const HELD_FACE_LOOKS = Object.freeze(["lamp1", "lamp2"]);
+ 
+ /** TAXILA_FACE_LOOK, or the default pack (PUPPET_REV) for an unset, unknown or held value. */
+ export const faceLookOf = (env = process.env) => {
+diff --git a/src/face-puppet/assets.ts b/src/face-puppet/assets.ts
+index 3133aee9..4b80db7c 100644
+--- a/src/face-puppet/assets.ts
++++ b/src/face-puppet/assets.ts
+@@ -4,15 +4,18 @@
+ //           dc-r4-outfit-cardigan-print-kurta). HELD (2026-10-10): its live puppet failed the blind uncanny gate (4, 5, 3,
+ //           4 / 5 against <= 1; r8 0 / 5; rj-r4-lamp1-mesh-warp-uncanny), so no page may paint it: neither ?look= nor
+ //           TAXILA_FACE_LOOK selects a held look (dev builds can still trial it with &heldlook=1). A passing rig (lamp2)
+-//           joins as a new look.
++//           joins as a new look;
++//   lamp2 — the same grown-up Asha as painted KEYS (round 4 rig2: mouths, eyes and brows swapped, never warped; Canvas 2D
++//           KeyRig in ./rig-keys). HELD (2026-10-10): blind uncanny passes in v3 (1, 1, 0 / 5) but premium 2.6-2.8 stays
++//           below r8's 3.0-3.4 in the same runs (docs/design/round4/asha/rig2/RESULTS.md).
+ // Each pack is WebP layers + geometry, served from /face-puppet/<look>/ (public/), fetched lazily after mount. Which look
+ // a page shows is decided in ./look.ts (?look= on the device, else the server's TAXILA_FACE_LOOK).
+-export type PuppetLook = "r8" | "lamp1";
+-export const PUPPET_LOOKS: readonly PuppetLook[] = ["r8", "lamp1"];
++export type PuppetLook = "r8" | "lamp1" | "lamp2";
++export const PUPPET_LOOKS: readonly PuppetLook[] = ["r8", "lamp1", "lamp2"];
+ /** The deploy default while the server has not said otherwise. Making lamp1 the default needs the owner's yes. */
+ export const DEFAULT_LOOK: PuppetLook = "r8";
+ /** Looks keyed here but never painted (see lamp1 above). The server keeps the same list (server/face-puppet/config.js). */
+-export const HELD_LOOKS: readonly PuppetLook[] = ["lamp1"];
++export const HELD_LOOKS: readonly PuppetLook[] = ["lamp1", "lamp2"];
+ /** A look a page may paint: keyed and not held; `{ held: true }` (dev trials only) also admits a held one. */
+ export const isPuppetLook = (v: unknown, { held = false }: { held?: boolean } = {}): v is PuppetLook =>
+   typeof v === "string" && (PUPPET_LOOKS as readonly string[]).includes(v) && (held || !(HELD_LOOKS as readonly string[]).includes(v));
+@@ -26,6 +29,8 @@ export interface LookPack {
+   clear: readonly [number, number, number];
+   /** The rest-space window shown per framing: [x0, y0, width] in the pack's 1024² space (its geom.json `views`). */
+   view: { readonly medium: View; readonly close: View };
++  /** The rig kind: the r8 mesh runtime (./runtime/rig.js, the default) or the painted-key rig (./rig-keys, lamp2). */
++  rig?: "mesh" | "keys";
+ }
+ 
+ const PACKS: Record<PuppetLook, LookPack> = {
+@@ -34,6 +39,9 @@ const PACKS: Record<PuppetLook, LookPack> = {
+   // the lamplit flat backdrop and views of the lamp1 pack's own geom.json (`clear`, `views`); tests/r4-asha-look.test.mjs
+   // checks these against public/face-puppet/lamp1/geom.json whenever the pack is there
+   lamp1: { look: "lamp1", base: "/face-puppet/lamp1/", clear: [0.96, 0.82, 0.6], view: { medium: [60, 0, 904], close: [171, 30, 708] } },
++  // lamp2 packs in the native px of the 1024 front (art/character/puppet2d/lamp2/geom.json); these are lamp1's two
++  // framings moved there (rig space / 1.4629 + the 162 px crop), the same windows on her face
++  lamp2: { look: "lamp2", base: "/face-puppet/lamp2/", clear: [0.9686, 0.8235, 0.6157], view: { medium: [203, 0, 618], close: [279, 20.5, 484] }, rig: "keys" },
+ };
+ 
+ export const lookPack = (look: PuppetLook = DEFAULT_LOOK): LookPack => PACKS[look] ?? PACKS[DEFAULT_LOOK];
+diff --git a/src/face-puppet/stage.ts b/src/face-puppet/stage.ts
+index 36d38140..6dfc6e62 100644
+--- a/src/face-puppet/stage.ts
++++ b/src/face-puppet/stage.ts
+@@ -14,6 +14,9 @@
+ // fired), stall (a drawn-frame gap > STALL_MS), all also kept in `log` for the ?facerig=1 read-out and the acceptance test.
+ // Audio floor: nothing here touches playback; the tap is analysis-only (src/avatar/tap.ts).
+ import { Puppet2DRig } from "./runtime/rig.js";
++// round 4 rig2: the painted-key rig of a "keys" look (lamp2): Canvas 2D, no WebGL, the same driver
++import { KeyRig } from "./rig-keys/keyrig.ts";
++import { KEY_LEAD_MS } from "./rig-keys/schedule.ts";
+ import { PuppetDriver } from "./driver.ts";
+ import { loadRigChunked } from "./loader.ts";
+ import { clearPageSafety, pageInSafety } from "./latch.ts";
+@@ -72,7 +75,7 @@ export class PuppetStage {
+   readonly driver: PuppetDriver;
+   private host: HTMLElement;
+   private o: PuppetStageOptions;
+-  private rig: Puppet2DRig | null = null;
++  private rig: Puppet2DRig | KeyRig | null = null;
+   private tap: TeacherTap;
+   private raf = 0;
+   private running = false;
+@@ -105,6 +108,8 @@ export class PuppetStage {
+     this.o = o;
+     this.dpr = Math.min(2, typeof devicePixelRatio === "number" ? devicePixelRatio : 1);
+     this.driver = new PuppetDriver({ band: o.band, seed: o.seed, reducedMotion: o.reducedMotion, gentle: o.gentle });
++    // a key rig switches painted mouths a beat after a continuous mouth would open: its own lead (rig-keys/schedule.ts)
++    if (lookPack(o.look).rig === "keys") this.driver.visemes.lead += KEY_LEAD_MS;
+     // a face mounted during a safety turn (the TroubleScreen's) is neutral from its first frame (latch.ts)
+     if (pageInSafety()) { this.driver.safetyTurn(performance.now()); this.wasSafe = true; }
+     this.tap = new TeacherTap(o.sources);
+@@ -143,16 +148,18 @@ export class PuppetStage {
+   /** Load the pack and the rig; resolves when the first frame can draw. Rejects → the host falls back. */
+   async init(): Promise<void> {
+     const t0 = performance.now();
+-    if (typeof WebGL2RenderingContext === "undefined") throw new Error("no WebGL2");
+-    this.host.appendChild(this.canvas);
+     const pack = lookPack(this.o.look);
++    if (pack.rig !== "keys" && typeof WebGL2RenderingContext === "undefined") throw new Error("no WebGL2");
++    this.host.appendChild(this.canvas);
+     const view = [...pack.view[this.o.framing ?? "medium"]] as [number, number, number];
+     const ropts = { ext: "webp", dpr: this.dpr, view, clear: [...pack.clear] as [number, number, number], reducedMotion: this.o.reducedMotion };
+     const base = this.o.base ?? pack.base;
+     // ship5 p2-face: the chunked loader (loader.ts) by default: bitmaps decoded off-thread, warm-up in <= 8 ms slices.
+     // The judged single-task path (load + warm) stays available for the parity eval and as the loader's own fallback.
+     const abort = { aborted: false };
+-    const load = this.o.loader === "judged"
++    const load: Promise<{ rig: Puppet2DRig | KeyRig; path: string; slices: number; longestSliceMs: number; warmFrameMs: number }> = pack.rig === "keys"
++      ? KeyRig.load(this.canvas, base, { dpr: this.dpr, view, clear: ropts.clear, reducedMotion: this.o.reducedMotion }).then((rig) => { rig.warm(); return { rig, path: "keys", slices: 1, longestSliceMs: NaN, warmFrameMs: NaN }; })
++      : this.o.loader === "judged"
+       ? Puppet2DRig.load(this.canvas, base, ropts).then((rig) => { rig.warm(); return { rig, path: "judged", slices: 1, longestSliceMs: NaN, warmFrameMs: NaN }; })
+       : loadRigChunked(this.canvas, base, ropts, { signal: abort });
+     const timeout = new Promise<never>((_, rej) => { const id = window.setTimeout(() => { abort.aborted = true; rej(new Error("puppet load timeout")); }, this.o.loadTimeoutMs ?? 8000); this.timers.add(id); });
+@@ -265,6 +272,8 @@ export class PuppetStage {
+     const w0 = performance.now();
+     const tap = this.tap.read();
+     rig.R.dpr = this.dpr;
++    // a key rig shows the calm neutral mouth (never the smile) and neutral brows in a safety turn (KeyRig.calm)
++    if (rig instanceof KeyRig) rig.calm = this.driver.inSafety;
+     const r0 = performance.now();
+     const f = this.driver.frame({ nowMs: now, tap, status: this.status, childLevel: this.childLevel }, rig);
+     const rigMs = performance.now() - r0 - f.workMs;
+@@ -368,8 +377,9 @@ export class PuppetStage {
+   private onRestored = () => {
+     if (this.disposed || this.losses > 1) return;
+     // every GL object died with the context: rebuild the rig (the pack is in the HTTP cache)
+-    this.rig = null;
+     const pack = lookPack(this.o.look);
++    if (pack.rig === "keys") return; // a 2D key rig has no GL context to lose
++    this.rig = null;
+     const view = [...pack.view[this.o.framing ?? "medium"]] as [number, number, number];
+     Puppet2DRig.load(this.canvas, this.o.base ?? pack.base, { ext: "webp", dpr: this.dpr, view, clear: [...pack.clear] as [number, number, number], reducedMotion: this.o.reducedMotion })
+       .then((rig) => { if (this.disposed) return rig.dispose(); rig.warm(); this.rig = rig; this.t0 = performance.now(); this.frames = 0; this.start(); })
+diff --git a/tests/r4-asha-look.test.mjs b/tests/r4-asha-look.test.mjs
+index 22b2023d..efd8af9b 100644
+--- a/tests/r4-asha-look.test.mjs
++++ b/tests/r4-asha-look.test.mjs
+@@ -21,7 +21,9 @@ const answer = (body) => async () => ({ ok: true, status: 200, json: async () =>
+ const fresh = (q = "") => { store.clear(); search = q; F.resetPuppetServerFlag(); L.resetLookForTests(); };
+ 
+ test("assets: one pack per look, keyed (base, clear colour, views, posters); r8 stays the default and its old names hold", () => {
+-  assert.deepEqual([...A.PUPPET_LOOKS], ["r8", "lamp1"]);
++  assert.deepEqual([...A.PUPPET_LOOKS], ["r8", "lamp1", "lamp2"]);
++  assert.equal(A.isPuppetLook("lamp2"), false, "lamp2 is held too (rig2 RESULTS.md)");
++  assert.equal(A.lookPack("lamp2").rig, "keys");
+   assert.deepEqual([...FACE_LOOKS, ...HELD_FACE_LOOKS].sort(), [...A.PUPPET_LOOKS].sort(), "the server and the client key the same looks");
+   assert.deepEqual([...HELD_FACE_LOOKS], [...A.HELD_LOOKS], "and hold the same ones");
+   assert.equal(A.isPuppetLook("lamp1"), false, "held: never painted");
