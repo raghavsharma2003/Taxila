@@ -1,0 +1,39 @@
+diff --git a/src/onboarding/Consent.tsx b/src/onboarding/Consent.tsx
+index 2c0049a1..ea41186c 100644
+--- a/src/onboarding/Consent.tsx
++++ b/src/onboarding/Consent.tsx
+@@ -32,7 +32,11 @@ export function PromisesStep() {
+   ];
+   return (
+     <StepFrame step="promises" title="Our promises, before you sign up"
+-      footer={<HoldButton block typedWord="parent" showHint onConfirm={() => nav("/start/phone")}>Hold to continue</HoldButton>}>
++      footer={<div className="onb-go">
++        <HoldButton block typedWord="parent" showHint onConfirm={() => nav("/start/phone")}>Hold to continue</HoldButton>
++        {/* round 4 journey audit #12: the full text sits under the gate, so the gate is above the 360 x 800 fold */}
++        <Link to="/trust" className="block-link">Full text</Link>
++      </div>}>
+       <ul className="promise-list">
+         {rows.map((p) => (
+           <li key={p.art} className="row promise-li">
+@@ -41,7 +45,6 @@ export function PromisesStep() {
+           </li>
+         ))}
+       </ul>
+-      <Link to="/trust" className="block-link">Full text</Link>
+     </StepFrame>
+   );
+ }
+diff --git a/src/onboarding/onboarding-v2.css b/src/onboarding/onboarding-v2.css
+index 25383b08..dd2fd82e 100644
+--- a/src/onboarding/onboarding-v2.css
++++ b/src/onboarding/onboarding-v2.css
+@@ -23,6 +23,9 @@
+ .onb-like-fb { display: block; width: 100%; height: 100%; border-radius: 30%; background: var(--nib-soft); }
+ .onb-hand .handover-tile { min-height: 168px; gap: var(--space-2); text-align: center; }
+ .onb-v2 .promise-li .spot { flex: none; }
++/* round 4 journey audit #12: each promise row already has its own padding and rule; no grid gap on top of it, so the
++   hold gate sits above the 360 x 800 fold */
++.onb-v2 .promise-list { gap: 0; }
+ @media (min-width: 1024px) {
+   .onb-edge { display: block; position: fixed; inset: 0; z-index: 0; }
+   .onb-edge .scene { position: absolute; }

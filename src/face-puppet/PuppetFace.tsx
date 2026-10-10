@@ -88,8 +88,8 @@ function adopt(key: string): PuppetStage | null {
  *  TutorFace (his 3D head / plate) until it ends, so no lesson ever swaps faces. */
 export const PUPPET_TUTORS: ReadonlySet<string> = new Set(["asha"]);
 
-/** A look whose every fallback is its own still (never TutorFace): the grown-up Asha. */
-export const holdsOwnStill = (look: PuppetLook | null): boolean => look === "lamp1";
+/** A look whose every fallback is its own still (never TutorFace): the grown-up Asha (lamp1, lamp2). */
+export const holdsOwnStill = (look: PuppetLook | null): boolean => look === "lamp1" || look === "lamp2";
 
 export function PuppetFace(p: PuppetFaceProps) {
   const tutor = faceTutor(p.tutorId, p.band);

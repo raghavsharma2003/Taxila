@@ -1,0 +1,94 @@
+{
+  "nodes": [
+    {
+      "id": "dc-r4a-face-look-owner-cohort",
+      "kind": "decision",
+      "title": "5b prep (2026-10-10): a candidate puppet look reaches the owner's own accounts first, server-side, never by a URL switch in production: TAXILA_FACE_LOOK_FOR (guardian emails or sha256) + TAXILA_FACE_COHORT_LOOK (a look in COHORT_FACE_LOOKS) in server/face-puppet/config.js faceConfigFor, reusing the duplex cohort helpers; a signed-in listed guardian gets { look, cohort: 'owner' }, everyone else (and a missing, expired or > 2.5 s lookup) the global look; held looks never served; cookie-dependent answers private/no-store, vary cookie; the client admits a cohort-only look only from that answer, never from ?look=, and never remembers it. Inert until a cohort-only look (lamp2) is keyed. Reverse if: the owner wants the candidate for everyone (then it moves to FACE_LOOKS) or rejects it (then it is removed).",
+      "at": "2026-10-10"
+    },
+    {
+      "id": "dc-r4a-lamp2-owner-cohort",
+      "kind": "decision",
+      "title": "5b (2026-10-10, main session as the owner's delegate): lamp2 (rig2 v3 K3, painted keys, Canvas 2D KeyRig) is a COHORT-ONLY look: COHORT_FACE_LOOKS = COHORT_LOOKS = ['lamp2'], served only via TAXILA_FACE_LOOK_FOR + TAXILA_FACE_COHORT_LOOK=lamp2 to the owner's signed-in accounts; everyone else r8; never from ?look= or TAXILA_FACE_LOOK; lamp1 stays held. Its fallbacks hold its own still. Reverse if: the owner, after real lessons, wants it for everyone (move to FACE_LOOKS) or rejects it (remove the key and the pack).",
+      "at": "2026-10-10"
+    },
+    {
+      "id": "ms-r4a-lamp2-cohort-battery-2026-10-10",
+      "kind": "measurement",
+      "title": "lamp2 via the cohort answer, shot battery 360/412/1366 x young/older (mocked API, production build with dev routes, headless Chromium): 609/648; every ONE/NAMES/CHOICE/ERR check passes incl. the T1 calm face and at most one visible live face; the 39 failures are pre-existing 13 px text (r8 run: 36). A non-cohort page with ?look=lamp2 paints r8. Bilabials on lamp2 (offline Diya battery, product timing into MouthKeys): 123/132 with the product rule, 132/132 with rig2's extension (not wired). Lip-sync median +5 ms, 67% within +-50 ms (76% at +-150 ms lag search).",
+      "at": "2026-10-10"
+    },
+    {
+      "id": "dc-r4a-face-turn-first",
+      "kind": "decision",
+      "title": "Turn first (2026-10-10): the puppet stage draws nothing for TURN_HOLD_MS = 300 ms when the child's turn is sent (window events taxila:play-heard, fired by the runtime on child_final before queueTurn, and taxila:turn-sending, patch request 08), never while she speaks; the held gap is not a stall. Root cause: on a software-GL page each puppet frame is one 50-170 ms main-thread task (native WebGL raster; the frame's JS is ~1 ms, so the governor cannot see it), and the outbox's IndexedDB steps + fetch queue behind it. Reverse if: a raster-aware governor or an off-main-thread face (OffscreenCanvas in a worker) makes a frame cheap enough that final -> POST stays <= 30 ms p50 without the hold.",
+      "at": "2026-10-10"
+    },
+    {
+      "id": "ms-r4a-turn-post-puppet-ab-2026-10-10",
+      "kind": "measurement",
+      "title": "final transcript -> turn POST, tap-to-talk, r4-timeline driver (local production build, real models + DragonHD TTS, fixed 750 ms fake ASR, synthetic child clip, plain account class 7, r4-latency's 12 lines, phone 360, headless Chromium software GL), 2026-10-10: before (puppet on) n = 24 p50 149 / p90 538 ms; after (turn-first hold) n = 24 p50 16 / p90 23 ms; puppet off n = 12 p50 11 / p90 14 ms. Stage drawn fps p50 30.0 -> 29.9, interval p95 67 -> 67 ms, stalls 5 -> 3. Probe tests/prod/r4-asha-taskwait.mjs (n = 12 per arm, play-heard -> 2 IndexedDB writes -> fetch): 251.8 -> 1.9 ms p50 at 1x CPU, 371.6 -> 5.5 at 4x; puppet off 1.7 / 6.5. Not a phone: no Android device on the cloud container. With production routing (tests/prod/prod-routing.env, prefetch on in the server; the client sent none on tap-to-talk in this tree), merged tree 79c14571, n = 12 per arm: before p50 244 / p90 534, after 15 / 21, puppet off 10 / 13 ms; drawn fps 20 both.",
+      "at": "2026-10-10"
+    },
+    {
+      "id": "ms-r4a-lipsync-looks-2026-10-10",
+      "kind": "measurement",
+      "title": "r8 vs lamp2 on one harness (evals/face-puppet/lipsync-looks.mjs; offline, Diya's 24 stored lines, product timing path, 60 fps; 132 bilabial words, offset over 21 lines with a forced-alignment track), 2026-10-10: r8 sealed 122/132 with the product rule, 132/132 with rig2's extension; offset median +10 ms, 95% within +-50 ms, unchanged. lamp2 123 -> 132/132; median +5 ms, 67% within +-50 (76% at a +-150 ms lag search; 52% at 30 fps). lamp2's misses are a stepped key mouth locking a syllable away (4/21 lines at +-235-320 ms), not the TTS events or a constant lead. No blind judge (no available model judges audio-video sync).",
+      "at": "2026-10-10"
+    },
+    {
+      "id": "ms-r4a-journey-audit-2026-10-10",
+      "kind": "measurement",
+      "title": "End-to-end journey audit (docs/design/round4/build/journey/AUDIT.md), local production builds with prod-routing, Neon test branch, phone 360 + one laptop pass, fake ASR, US container, 2026-10-10/11: A (base 4f92408c) sign-up -> 9 set-up steps -> Hello -> lesson 1 (14 turns) -> day 2 (+1d) -> parent corner; B (stream K a0da1109, ui.kaksha + TAXILA_SESSION_FIRST=on). Owner-vision scores A/B: gamified 1/2, content built on the go 0/0, understands the child 2/2, human-like bond 2/2, just-start-from-school 0/2. Top defects: the session-first start has no client (purpose 'session' never sent); 0 games or built content in 3 lessons, the whiteboard called 'a game'; correct answers ungraded and the question repeated; false acceptance; no continuity across days; 'I'm tired' dead end; first sound 4.2-7.4 s at lesson start, replies 4.2-8.1 s.",
+      "at": "2026-10-10"
+    },
+    {
+      "id": "open-r4a-session-first-no-client",
+      "kind": "open",
+      "title": "No client sends purpose 'session' (base src/child/lesson/answers.ts purposeOf; stream K's Start too), so TAXILA_SESSION_FIRST's 'aaj school mein kya hua' start (which works at the API and adapts to the child's school topic) is unreachable. Owner of the fix: stream K (Kaksha Start) + 4A.",
+      "at": "2026-10-10"
+    }
+  ],
+  "edges": [
+    {
+      "src": "dc-r4a-face-look-owner-cohort",
+      "rel": "part_of",
+      "dst": "dc-r4a-look-switch"
+    },
+    {
+      "src": "dc-r4a-lamp2-owner-cohort",
+      "rel": "part_of",
+      "dst": "dc-r4a-face-look-owner-cohort"
+    },
+    {
+      "src": "dc-r4a-lamp2-owner-cohort",
+      "rel": "measured_by",
+      "dst": "ms-r4a-lamp2-cohort-battery-2026-10-10"
+    },
+    {
+      "src": "dc-r4a-face-turn-first",
+      "rel": "supersedes",
+      "dst": "open-r4lat-puppet-delays-turn-post"
+    },
+    {
+      "src": "dc-r4a-face-turn-first",
+      "rel": "measured_by",
+      "dst": "ms-r4a-turn-post-puppet-ab-2026-10-10"
+    },
+    {
+      "src": "open-r4lat-puppet-delays-turn-post",
+      "rel": "measured_by",
+      "dst": "ms-r4a-turn-post-puppet-ab-2026-10-10"
+    },
+    {
+      "src": "dc-r4a-lamp2-owner-cohort",
+      "rel": "measured_by",
+      "dst": "ms-r4a-lipsync-looks-2026-10-10"
+    },
+    {
+      "src": "open-r4a-session-first-no-client",
+      "rel": "measured_by",
+      "dst": "ms-r4a-journey-audit-2026-10-10"
+    }
+  ]
+}

@@ -130,17 +130,18 @@ export function SitePage({ children, title }: { children: ReactNode; title: stri
 export const SITE_TUTORS: TutorCharacter[] = TUTORS.filter((t) => t.status === "live");
 
 /** A teacher's face as the lesson draws it at rest: under the r8 look the code-drawn plate (Plate2D `still`, the same
- *  person as the lesson's tier D face, no bytes to fetch); under lamp1, the grown-up Asha, her rest still from the
+ *  person as the lesson's tier D face, no bytes to fetch); under lamp1 or lamp2, the grown-up Asha, her rest still from the
  *  pack, never the vector (BUILD-PLAN §3.5 Part B: no fallback changes the face). Nothing paints until the page's look is
  *  known (./face-puppet/look.ts), so the site never shows one face and then another. Hidden from assistive tech: the
  *  caller labels the group. */
 export function TeacherPortrait({ tutor, size }: { tutor: TutorCharacter; size: number }) {
   const look = usePuppetLook();
-  const still = look === "lamp1" && tutor.id === "asha";
+  const grown = look === "lamp1" || look === "lamp2" ? look : null;
+  const still = grown !== null && tutor.id === "asha";
   return (
     <span className="rig-portrait" style={{ width: size, height: size }} data-tutor={tutor.id} data-look={look ?? "pending"} aria-hidden="true">
       {still ? (
-        <img className="site-still" src={puppetPoster("close", "lamp1")} alt="" width={size} height={size} decoding="async" draggable={false}
+        <img className="site-still" src={puppetPoster("close", grown ?? undefined)} alt="" width={size} height={size} decoding="async" draggable={false}
           style={{ width: "100%", height: "auto", display: "block" }} />
       ) : look ? (
         <Plate2D tutor={tutor} still reducedMotion className="site-plate" />

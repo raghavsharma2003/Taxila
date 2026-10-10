@@ -61,7 +61,7 @@ export function puppetForcedOn(): boolean {
 
 export const FACE_CONFIG_URL = "/api/face/config";
 /** What GET /api/face/config answers (server/face-puppet/config.js); `look` since round 4 (TAXILA_FACE_LOOK). */
-export interface FaceServerConfig { puppet2d: boolean; look: string | null }
+export interface FaceServerConfig { puppet2d: boolean; look: string | null; cohort?: boolean }
 const OPEN: FaceServerConfig = { puppet2d: true, look: null };
 let serverAsk: Promise<FaceServerConfig> | null = null;
 let serverKnown: FaceServerConfig | null = null;
@@ -76,8 +76,8 @@ export function faceServerConfig(fetchImpl: typeof fetch | undefined = typeof fe
     try {
       const r = await fetchImpl(FACE_CONFIG_URL, { signal: ctl?.signal, credentials: "same-origin" });
       if (!r.ok) return OPEN;
-      const j = (await r.json()) as { puppet2d?: unknown; look?: unknown };
-      return { puppet2d: j?.puppet2d !== false, look: typeof j?.look === "string" ? j.look : null };
+      const j = (await r.json()) as { puppet2d?: unknown; look?: unknown; cohort?: unknown };
+      return { puppet2d: j?.puppet2d !== false, look: typeof j?.look === "string" ? j.look : null, cohort: j?.cohort === "owner" };
     } catch {
       return OPEN;
     } finally {

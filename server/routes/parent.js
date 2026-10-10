@@ -478,10 +478,11 @@ export async function parentLabelOf(id) {
 
 // ───────────────────────────── controls ─────────────────────────────
 
-/** §6.9 defaults by class [I]: Class 1-2 20 min (two B1 micro-sessions), 3-5 30, 6-9 45; hours 07:00-20:30. */
+/** §6.9 defaults by class [I]: Class 1-2 20 min (two B1 micro-sessions), 3-5 30, 6-9 45; hours 06:30-21:30 (round 4: Indian
+ *  homework time runs past 20:30; was 07:00-20:30). */
 export function defaultControls(classLevel) {
   const cl = Number(classLevel);
-  return { dailyMinutes: cl <= 2 ? 20 : cl <= 5 ? 30 : 45, hoursStart: "07:00", hoursEnd: "20:30", captionsAlways: false, comfortMode: false,
+  return { dailyMinutes: cl <= 2 ? 20 : cl <= 5 ? 30 : 45, hoursStart: "06:30", hoursEnd: "21:30", captionsAlways: false, comfortMode: false,
     address: cl >= 5 ? "aap" : null, reportChannel: "whatsapp" };
 }
 const controlsOut = (row, child) => row ? {

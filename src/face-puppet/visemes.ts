@@ -148,12 +148,45 @@ export function addBilabials(visemes: ReadonlyArray<{ ms: number; id: number }>,
   return out;
 }
 
+// The EXTENDED rule (round 4 rig2, lamp2 only: dc-r4a-lamp2-owner-cohort): after addBilabials, a word that still holds no
+// 21 gets one per single b / m / p letter, inside or at the end of the word (tum, Ab, about, carbon, dhoop, lagbhag, खुशबू,
+// Shabash, vaashpikaran): at the letter's share of the word's duration, or 45 ms before the word's end for a final
+// letter. "ph" stays Azure's. Measured (evals/face-puppet/lipsync-looks.mjs, 24 Diya lines, 132 bilabial words): lamp2
+// 123 -> 132 sealed, r8 122 -> 132, offset unchanged on both. r8 keeps the base rule until the main session judges r8's
+// contact sheet (docs/design/round4/build/asha/bilabial-sheet/).
+const BILABIAL_DEV_LETTER = /[पबभम]/u;
+export function addBilabialsExtended(visemes: ReadonlyArray<{ ms: number; id: number }>, words: ReadonlyArray<{ ms: number; durMs: number; text: string }>): { ms: number; id: number }[] {
+  const base = addBilabials(visemes, words);
+  if (!words.length) return base;
+  const out = base.slice();
+  const has21 = (a: number, b: number) => base.some((v) => v.id === 21 && v.ms >= a && v.ms <= b);
+  for (const w of words) {
+    const raw = String(w.text || "").normalize("NFC");
+    if (has21(w.ms - 60, w.ms + w.durMs)) continue;
+    const dev = /[ऀ-ॿ]/u.test(raw);
+    const letters = dev ? [...raw].filter((c) => /[ऀ-ॿ]/u.test(c)) : [...raw.toLowerCase().replace(/[^a-z]/g, "")];
+    const n = letters.length;
+    for (let i = 0; i < n; i++) {
+      const c = letters[i];
+      const bil = dev ? BILABIAL_DEV_LETTER.test(c) : c === "b" || c === "m" || (c === "p" && letters[i + 1] !== "h");
+      if (!bil) continue;
+      let at = i === n - 1 ? w.ms + w.durMs - 45 : Math.round(w.ms + w.durMs * ((i + 0.5) / n));
+      const prev = out.filter((v) => v.ms <= at).reduce((a, v) => Math.max(a, v.ms), -Infinity);
+      if (at - prev < 15) at = prev + 15;
+      out.push({ ms: at, id: 21 });
+    }
+  }
+  out.sort((a, b) => a.ms - b.ms);
+  return out;
+}
+
 /**
  * Resolve a part's raw Azure events into timed mouth targets, applying the word-text Hindi rules. Words are matched to
  * visemes by time (a viseme belongs to the word whose [ms, ms + durMs) holds it).
  */
-export function resolveVisemes(visemes0: ReadonlyArray<{ ms: number; id: number }>, words: ReadonlyArray<{ ms: number; durMs: number; text: string }> = [], text?: string): TimedViseme[] {
-  const visemes = addBilabials(visemes0, words);   // round 4: the seals Azure's track leaves out (above)
+export function resolveVisemes(visemes0: ReadonlyArray<{ ms: number; id: number }>, words: ReadonlyArray<{ ms: number; durMs: number; text: string }> = [], text?: string, opts: { extendedBilabials?: boolean } = {}): TimedViseme[] {
+  // round 4: the seals Azure's track leaves out (above); the extended rule only where the look asks for it (lamp2)
+  const visemes = opts.extendedBilabials ? addBilabialsExtended(visemes0, words) : addBilabials(visemes0, words);
   const out: TimedViseme[] = [];
   const flags = words.map((w) => ({ ...w, f: wordFlags(w.text), k: 0, n19: 0 }));
   const wordOf = (ms: number) => flags.find((x) => ms >= x.ms - 10 && ms < x.ms + x.durMs + 10);

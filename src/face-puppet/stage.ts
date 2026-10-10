@@ -14,6 +14,9 @@
 // fired), stall (a drawn-frame gap > STALL_MS), all also kept in `log` for the ?facerig=1 read-out and the acceptance test.
 // Audio floor: nothing here touches playback; the tap is analysis-only (src/avatar/tap.ts).
 import { Puppet2DRig } from "./runtime/rig.js";
+// round 4 rig2: the painted-key rig of a "keys" look (lamp2): Canvas 2D, no WebGL, the same driver
+import { KeyRig } from "./rig-keys/keyrig.ts";
+import { KEY_LEAD_MS } from "./rig-keys/schedule.ts";
 import { PuppetDriver } from "./driver.ts";
 import { loadRigChunked } from "./loader.ts";
 import { clearPageSafety, pageInSafety } from "./latch.ts";
@@ -60,6 +63,19 @@ export interface PuppetStageOptions {
 /** A drawn-frame gap above this is a visible freeze (5+ frames at 30 fps), reported as a `stall` event. */
 export const STALL_MS = 180;
 
+/**
+ * Turn first (open-r4lat-puppet-delays-turn-post): when the child's turn is committed, the face draws nothing for this
+ * long, so the turn POST is never queued behind a frame. The runtime sends that turn after a chain of macrotasks (the
+ * outbox's IndexedDB reserve + write, then fetch), and each one waits for the task holding the main thread; on a
+ * software-GL page a puppet frame is a 50-170 ms task (tests/prod/r4-asha-taskwait.mjs). Measured: the chain takes
+ * ~10 ms on a free thread. The face is in its thinking hold then (breath, drift), so one held frame of this length is
+ * not seen; she never holds while speaking.
+ */
+export const TURN_HOLD_MS = 300;
+/** The page events that mean "the child's turn is being sent now": the runtime's child_final (src/lesson/runtime.ts
+ *  dispatches `taxila:play-heard` synchronously, just before it queues the turn) and a dedicated one for any sender. */
+export const TURN_EVENTS = ["taxila:play-heard", "taxila:turn-sending"] as const;
+
 /** At most one RUNNING stage per page: the newest started. Measured (ship5 p2-face): the safeguarding TroubleScreen
  *  mounted a second live puppet over the lesson tile (two WebGL loops on a budget phone). The others hold their last
  *  frame (suspended) and the most recent of them resumes when the foreground stage is disposed. */
@@ -72,7 +88,7 @@ export class PuppetStage {
   readonly driver: PuppetDriver;
   private host: HTMLElement;
   private o: PuppetStageOptions;
-  private rig: Puppet2DRig | null = null;
+  private rig: Puppet2DRig | KeyRig | null = null;
   private tap: TeacherTap;
   private raf = 0;
   private running = false;
@@ -86,6 +102,10 @@ export class PuppetStage {
   private curFps = 60;
   private strikes = 0;
   private lastDraw = 0;
+  /** No frame is drawn before this (performance.now ms): the turn-first hold (TURN_HOLD_MS). */
+  private holdUntil = 0;
+  /** How many turn holds this stage has taken (the ?facerig read-out and the evals). */
+  turnHolds = 0;
   private lastNow = 0;
   private work: number[] = [];
   private rigMs: number[] = [];
@@ -105,6 +125,9 @@ export class PuppetStage {
     this.o = o;
     this.dpr = Math.min(2, typeof devicePixelRatio === "number" ? devicePixelRatio : 1);
     this.driver = new PuppetDriver({ band: o.band, seed: o.seed, reducedMotion: o.reducedMotion, gentle: o.gentle });
+    // a key rig switches painted mouths a beat after a continuous mouth would open: its own lead (rig-keys/schedule.ts)
+    // and seals every single b / m / p (the extended rule, owner-cohort lamp2 only; r8 keeps the base rule)
+    if (lookPack(o.look).rig === "keys") { this.driver.visemes.lead += KEY_LEAD_MS; this.driver.visemes.extendedBilabials = true; }
     // a face mounted during a safety turn (the TroubleScreen's) is neutral from its first frame (latch.ts)
     if (pageInSafety()) { this.driver.safetyTurn(performance.now()); this.wasSafe = true; }
     this.tap = new TeacherTap(o.sources);
@@ -143,16 +166,18 @@ export class PuppetStage {
   /** Load the pack and the rig; resolves when the first frame can draw. Rejects → the host falls back. */
   async init(): Promise<void> {
     const t0 = performance.now();
-    if (typeof WebGL2RenderingContext === "undefined") throw new Error("no WebGL2");
-    this.host.appendChild(this.canvas);
     const pack = lookPack(this.o.look);
+    if (pack.rig !== "keys" && typeof WebGL2RenderingContext === "undefined") throw new Error("no WebGL2");
+    this.host.appendChild(this.canvas);
     const view = [...pack.view[this.o.framing ?? "medium"]] as [number, number, number];
     const ropts = { ext: "webp", dpr: this.dpr, view, clear: [...pack.clear] as [number, number, number], reducedMotion: this.o.reducedMotion };
     const base = this.o.base ?? pack.base;
     // ship5 p2-face: the chunked loader (loader.ts) by default: bitmaps decoded off-thread, warm-up in <= 8 ms slices.
     // The judged single-task path (load + warm) stays available for the parity eval and as the loader's own fallback.
     const abort = { aborted: false };
-    const load = this.o.loader === "judged"
+    const load: Promise<{ rig: Puppet2DRig | KeyRig; path: string; slices: number; longestSliceMs: number; warmFrameMs: number }> = pack.rig === "keys"
+      ? KeyRig.load(this.canvas, base, { dpr: this.dpr, view, clear: ropts.clear, reducedMotion: this.o.reducedMotion }).then((rig) => { rig.warm(); return { rig, path: "keys", slices: 1, longestSliceMs: NaN, warmFrameMs: NaN }; })
+      : this.o.loader === "judged"
       ? Puppet2DRig.load(this.canvas, base, ropts).then((rig) => { rig.warm(); return { rig, path: "judged", slices: 1, longestSliceMs: NaN, warmFrameMs: NaN }; })
       : loadRigChunked(this.canvas, base, ropts, { signal: abort });
     const timeout = new Promise<never>((_, rej) => { const id = window.setTimeout(() => { abort.aborted = true; rej(new Error("puppet load timeout")); }, this.o.loadTimeoutMs ?? 8000); this.timers.add(id); });
@@ -178,6 +203,18 @@ export class PuppetStage {
       else if (e.kind === "ack") this.driver.ack(e.phase, now);
     }));
     this.offs.push(faceCues.on((cue: FaceCue) => this.onCue(cue)));
+    if (typeof window !== "undefined") {
+      const onTurn = () => this.holdForTurn();
+      for (const t of TURN_EVENTS) window.addEventListener(t, onTurn);
+      this.offs.push(() => { for (const t of TURN_EVENTS) window.removeEventListener(t, onTurn); });
+    }
+  }
+
+  /** The child's turn is being sent: draw nothing for TURN_HOLD_MS (never while she speaks). Public for the evals. */
+  holdForTurn(now = performance.now()): void {
+    if (this.status === "speaking") return;
+    this.holdUntil = now + TURN_HOLD_MS;
+    this.turnHolds++;
   }
 
   private onCue(cue: FaceCue): void {
@@ -251,6 +288,9 @@ export class PuppetStage {
   tick(now: number, force = false): void {
     const rig = this.rig;
     if (!rig || this.disposed) return;
+    // turn first: the child's turn is on its way to the server; the main thread is its until then
+    if (!force && now < this.holdUntil && this.status !== "speaking") return;
+    if (this.holdUntil) { this.holdUntil = 0; this.lastNow = 0; } // a held gap is not a stall
     // adaptive rate (low CPU): 60 fps while she speaks or the face is changing (a state change, an expression ramp, a nod,
     // a look); 30 fps in the slow holds (listening, thinking, idle: breath, drift and blinks, whose shaper already runs on
     // 30 Hz steps). The governor's cap, when it has stepped down, wins.
@@ -265,6 +305,8 @@ export class PuppetStage {
     const w0 = performance.now();
     const tap = this.tap.read();
     rig.R.dpr = this.dpr;
+    // a key rig shows the calm neutral mouth (never the smile) and neutral brows in a safety turn (KeyRig.calm)
+    if (rig instanceof KeyRig) rig.calm = this.driver.inSafety;
     const r0 = performance.now();
     const f = this.driver.frame({ nowMs: now, tap, status: this.status, childLevel: this.childLevel }, rig);
     const rigMs = performance.now() - r0 - f.workMs;
@@ -368,8 +410,9 @@ export class PuppetStage {
   private onRestored = () => {
     if (this.disposed || this.losses > 1) return;
     // every GL object died with the context: rebuild the rig (the pack is in the HTTP cache)
-    this.rig = null;
     const pack = lookPack(this.o.look);
+    if (pack.rig === "keys") return; // a 2D key rig has no GL context to lose
+    this.rig = null;
     const view = [...pack.view[this.o.framing ?? "medium"]] as [number, number, number];
     Puppet2DRig.load(this.canvas, this.o.base ?? pack.base, { ext: "webp", dpr: this.dpr, view, clear: [...pack.clear] as [number, number, number], reducedMotion: this.o.reducedMotion })
       .then((rig) => { if (this.disposed) return rig.dispose(); rig.warm(); this.rig = rig; this.t0 = performance.now(); this.frames = 0; this.start(); })

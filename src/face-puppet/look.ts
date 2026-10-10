@@ -4,6 +4,8 @@
 //   2. the server's TAXILA_FACE_LOOK, from GET /api/face/config (server/face-puppet/config.js), remembered on this device
 //      so the next page paints the right face at once;
 //   3. DEFAULT_LOOK (r8).
+// A COHORT look (assets.ts COHORT_LOOKS) is painted only when the server names it for this signed-in owner account
+// (TAXILA_FACE_LOOK_FOR), never from ?look=, and that answer is not remembered on the device.
 // A HELD look (assets.ts HELD_LOOKS: lamp1) is never painted from either source; a dev build (or VITE_DEV_ROUTES=1)
 // admits one with &heldlook=1 next to ?look= (the shot battery's trial of a pack that has not passed its gate).
 // A page never swaps a look it has already painted: faceLookNow() is what the first frame uses; when it is null (first
@@ -47,6 +49,9 @@ const read = (k: string): PuppetLook | null => {
   }
 };
 
+/** A look the server may name: a live one, or a cohort-only one when the answer says it is for the owner cohort. */
+const fromServer = (v: string | null, cohort: boolean): boolean => isPuppetLook(v, { cohort });
+
 /** The device's own choice (?look=), or null. */
 export function deviceLook(): PuppetLook | null {
   applyUrl();
@@ -69,8 +74,8 @@ export function setDeviceLook(look: PuppetLook | null): void {
 export function faceLookNow(): PuppetLook | null {
   const d = deviceLook();
   if (d) return d;
-  const s = faceServerKnown()?.look;
-  if (isPuppetLook(s)) return s;
+  const known = faceServerKnown();
+  if (known && fromServer(known.look, !!known.cohort)) return known.look as PuppetLook;
   return read(LOOK_SERVER_KEY);
 }
 
@@ -79,13 +84,16 @@ export async function faceLook(fetchImpl?: typeof fetch): Promise<PuppetLook> {
   const d = deviceLook();
   if (d) return d;
   const c = await faceServerConfig(fetchImpl);
-  if (isPuppetLook(c.look)) {
-    try {
-      localStorage.setItem(LOOK_SERVER_KEY, c.look);
-    } catch {
-      /* storage blocked */
+  if (fromServer(c.look, !!c.cohort)) {
+    // a cohort answer depends on who is signed in: never remembered for the next page (the first frame waits instead)
+    if (!c.cohort) {
+      try {
+        localStorage.setItem(LOOK_SERVER_KEY, c.look as string);
+      } catch {
+        /* storage blocked */
+      }
     }
-    return c.look;
+    return c.look as PuppetLook;
   }
   return read(LOOK_SERVER_KEY) ?? DEFAULT_LOOK;
 }

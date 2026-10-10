@@ -1,0 +1,243 @@
+{
+ "date": "2026-10-10",
+ "method": "Round 4 stream 5: bilabial seals and the lip-sync offset, r8 vs lamp2, the product text rule vs rig2's extension\n(./bilabial2.js, a candidate), on ONE harness and ONE line set. Offline, no Azure spend: Diya's 24 stored lines\n(evals/face-puppet/out/diya/NN.{json,pcm,ctc.json}).\nThe product timing path for both looks: track = resolveVisemes(visemes, words, text) (which applies the product rule,\naddBilabials); per 60 fps frame, weightsAt(track, t + EVENT_LEAD_MS [+ KEY_LEAD_MS for a key rig]).\n  r8      the continuous mouth: sealed when viseme_PP >= 0.9 at a frame; drawn openness = jawOpen / 0.62\n  lamp2   rig2's MouthKeys: sealed when the painted mbp key is up at >= 0.9; openness = KEY_OPENNESS through crossfades\n  seals   every word with a b / m / p sound (Roman b, bh, p not before h, m; Devanagari प ब भ म; or Azure's own 21\n          inside it) is SEALED if a frame inside [word start - 80 ms, word end] is sealed\n  offset  lipsync-offset.mjs's E3: best Pearson lag (5 ms grid) of drawn openness vs the audio log-energy envelope,\n          minus the same lag of the wav2vec2 forced-alignment track of the same audio (+ = the mouth is later);\n          search +-300 ms, and +-150 ms beside it\n  pacing  the same at 30 fps (the stage's slow-hold rate) for the frame-pacing share of the error\n  node evals/face-puppet/lipsync-looks.mjs [out.json]",
+ "arms": {
+  "r8/product": {
+   "sealed": "122/132",
+   "missed": [
+    "01:Ab",
+    "02:dhoop",
+    "02:carbon",
+    "03:about",
+    "04:tum",
+    "08:lagbhag",
+    "11:खुशबू",
+    "14:Shabash",
+    "14:Ab",
+    "15:vaashpikaran"
+   ],
+   "offset": {
+    "n": 21,
+    "median": 10,
+    "q25": 0,
+    "q75": 20,
+    "min": -20,
+    "max": 230,
+    "within50": 0.95
+   },
+   "offsetLag150": {
+    "n": 21,
+    "median": 10,
+    "q25": 0,
+    "q75": 15,
+    "min": -20,
+    "max": 50,
+    "within50": 1
+   },
+   "offset30fps": {
+    "n": 21,
+    "median": 20,
+    "q25": 5,
+    "q75": 30,
+    "min": -10,
+    "max": 230,
+    "within50": 0.9
+   },
+   "perLine": [
+    0,
+    0,
+    -5,
+    15,
+    10,
+    30,
+    15,
+    15,
+    10,
+    10,
+    20,
+    30,
+    -10,
+    30,
+    0,
+    -15,
+    230,
+    10,
+    -20,
+    50,
+    -15
+   ]
+  },
+  "r8/extension": {
+   "sealed": "132/132",
+   "missed": [],
+   "offset": {
+    "n": 21,
+    "median": 10,
+    "q25": 0,
+    "q75": 20,
+    "min": -25,
+    "max": 230,
+    "within50": 0.95
+   },
+   "offsetLag150": {
+    "n": 21,
+    "median": 10,
+    "q25": 0,
+    "q75": 15,
+    "min": -25,
+    "max": 50,
+    "within50": 1
+   },
+   "offset30fps": {
+    "n": 21,
+    "median": 20,
+    "q25": 5,
+    "q75": 30,
+    "min": -15,
+    "max": 230,
+    "within50": 0.9
+   },
+   "perLine": [
+    0,
+    0,
+    -5,
+    10,
+    10,
+    30,
+    15,
+    15,
+    10,
+    10,
+    20,
+    30,
+    -10,
+    30,
+    0,
+    -15,
+    230,
+    10,
+    -20,
+    50,
+    -25
+   ]
+  },
+  "lamp2/product": {
+   "sealed": "123/132",
+   "missed": [
+    "02:dhoop",
+    "02:carbon",
+    "03:about",
+    "04:tum",
+    "08:lagbhag",
+    "11:खुशबू",
+    "14:Shabash",
+    "14:Ab",
+    "15:vaashpikaran"
+   ],
+   "offset": {
+    "n": 21,
+    "median": 5,
+    "q25": -15,
+    "q75": 40,
+    "min": -320,
+    "max": 235,
+    "within50": 0.67
+   },
+   "offsetLag150": {
+    "n": 21,
+    "median": 5,
+    "q25": -15,
+    "q75": 40,
+    "min": -65,
+    "max": 100,
+    "within50": 0.76
+   },
+   "offset30fps": {
+    "n": 21,
+    "median": 30,
+    "q25": 0,
+    "q75": 60,
+    "min": -295,
+    "max": 235,
+    "within50": 0.52
+   },
+   "perLine": [
+    25,
+    5,
+    -5,
+    -5,
+    70,
+    40,
+    -65,
+    20,
+    -5,
+    10,
+    -250,
+    40,
+    -40,
+    -15,
+    85,
+    235,
+    5,
+    235,
+    -25,
+    -320,
+    -15
+   ]
+  },
+  "lamp2/extension": {
+   "sealed": "132/132",
+   "missed": [],
+   "offset": {
+    "n": 21,
+    "median": 5,
+    "q25": -15,
+    "q75": 40,
+    "min": -320,
+    "max": 235,
+    "within50": 0.67
+   },
+   "offsetLag150": {
+    "n": 21,
+    "median": 10,
+    "q25": -15,
+    "q75": 40,
+    "min": -65,
+    "max": 100,
+    "within50": 0.76
+   },
+   "offset30fps": {
+    "n": 21,
+    "median": 35,
+    "q25": 0,
+    "q75": 60,
+    "min": -295,
+    "max": 235,
+    "within50": 0.52
+   },
+   "perLine": [
+    25,
+    30,
+    -15,
+    -10,
+    70,
+    40,
+    -65,
+    25,
+    -5,
+    10,
+    -250,
+    40,
+    -45,
+    -15,
+    85,
+    235,
+    5,
+    235,
+    -25,
+    -320,
+    -15
+   ]
+  }
+ }
+}

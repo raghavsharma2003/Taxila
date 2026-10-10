@@ -7,22 +7,29 @@ import assert from "node:assert/strict";
 import { existsSync, readFileSync } from "node:fs";
 
 const store = new Map();
-globalThis.localStorage = { getItem: (k) => (store.has(k) ? store.get(k) : null), setItem: (k, v) => store.set(k, String(v)), removeItem: (k) => store.delete(k) };
+// this file's page globals, (re)installed by every reset: another test file run in the same process installs its own
+const stub = (name, value) => Object.defineProperty(globalThis, name, { value, configurable: true, writable: true });
+const storage = { getItem: (k) => (store.has(k) ? store.get(k) : null), setItem: (k, v) => store.set(k, String(v)), removeItem: (k) => store.delete(k) };
 let search = "";
-globalThis.location = { get search() { return search; } };
+const where = { get search() { return search; } };
+const ownGlobals = () => { stub("localStorage", storage); stub("location", where); };
+ownGlobals();
 const A = await import("../src/face-puppet/assets.ts");
 const F = await import("../src/face-puppet/flag.ts");
 const L = await import("../src/face-puppet/look.ts");
-const { faceConfig, faceLookOf, FACE_LOOKS, HELD_FACE_LOOKS } = await import("../server/face-puppet/config.js");
+const { faceConfig, faceLookOf, FACE_LOOKS, HELD_FACE_LOOKS, COHORT_FACE_LOOKS } = await import("../server/face-puppet/config.js");
 const { PUPPET_REV: SERVER_REV } = await import("../server/face-puppet/rev.js");
 
 const ROOT = new URL("..", import.meta.url);
 const answer = (body) => async () => ({ ok: true, status: 200, json: async () => body });
-const fresh = (q = "") => { store.clear(); search = q; F.resetPuppetServerFlag(); L.resetLookForTests(); };
+const fresh = (q = "") => { ownGlobals(); store.clear(); search = q; F.resetPuppetServerFlag(); L.resetLookForTests(); };
 
 test("assets: one pack per look, keyed (base, clear colour, views, posters); r8 stays the default and its old names hold", () => {
-  assert.deepEqual([...A.PUPPET_LOOKS], ["r8", "lamp1"]);
-  assert.deepEqual([...FACE_LOOKS, ...HELD_FACE_LOOKS].sort(), [...A.PUPPET_LOOKS].sort(), "the server and the client key the same looks");
+  assert.deepEqual([...A.PUPPET_LOOKS], ["r8", "lamp1", "lamp2"]);
+  assert.deepEqual([...FACE_LOOKS, ...HELD_FACE_LOOKS, ...COHORT_FACE_LOOKS].sort(), [...A.PUPPET_LOOKS].sort(), "the server and the client key the same looks");
+  assert.equal(A.isPuppetLook("lamp2"), false, "lamp2 is owner-cohort only: never painted without the server's cohort answer");
+  assert.equal(A.lookPack("lamp2").rig, "keys");
+  assert.equal(A.lookPack("lamp2").base, "/face-puppet/lamp2/");
   assert.deepEqual([...HELD_FACE_LOOKS], [...A.HELD_LOOKS], "and hold the same ones");
   assert.equal(A.isPuppetLook("lamp1"), false, "held: never painted");
   assert.equal(A.isPuppetLook("lamp1", { held: true }), true, "a dev trial may admit it");
@@ -49,10 +56,13 @@ test("assets: a SHIPPED pack's clear colour and views are its geom.json's own (p
     if (!g.views) continue; // r8 predates `views` in geom.json: its views are the tuned constants
     const p = A.lookPack(look);
     assert.deepEqual([...p.clear], g.clear, `${look} clear`);
+    // a key pack's geom.json views are 4-number contain windows for its own demo; the product's framings are keyed
+    if (g.views.medium.length !== 3) continue;
     assert.deepEqual([...p.view.medium], g.views.medium, `${look} medium view`);
     assert.deepEqual([...p.view.close], g.views.close, `${look} close view`);
   }
   assert.ok(!existsSync(new URL("public/face-puppet/lamp1/", ROOT)), "the held lamp1 pack is not shipped");
+  assert.ok(existsSync(new URL("public/face-puppet/lamp2/geom.json", ROOT)), "the cohort's lamp2 pack is shipped");
 });
 
 test("server: /api/face/config reports the look; unset, unknown or HELD is r8", () => {
@@ -106,7 +116,7 @@ test("client: the kill switch and the look come from ONE config request", async 
 
 test("under lamp1 no path shows TutorFace's Plate2D for Asha: the puppet's fallbacks and the kill switch hold her still", () => {
   const face = readFileSync(new URL("src/face-puppet/PuppetFace.tsx", ROOT), "utf8");
-  assert.match(face, /export const holdsOwnStill = \(look: PuppetLook \| null\): boolean => look === "lamp1";/);
+  assert.match(face, /export const holdsOwnStill = \(look: PuppetLook \| null\): boolean => look === "lamp1" \|\| look === "lamp2";/);
   assert.match(face, /setPhase\(revealed\.current \|\| holdsOwnStill\(look\) \? "held" : "fallback"\)/, "a pre-reveal failure holds the still");
   assert.match(face, /if \(phase === "fallback" && !p\.still && !holdsOwnStill\(look\)\)/, "TutorFace only for a look that has no own still");
   assert.match(face, /failedThisPage \? \(holdsOwnStill\(faceLookNow\(\)\) \? "held" : "fallback"\)/, "a page that saw a failure starts on the still");
@@ -115,5 +125,6 @@ test("under lamp1 no path shows TutorFace's Plate2D for Asha: the puppet's fallb
   assert.match(lesson, /if \(off && !holdsOwnStill\(faceLookNow\(\)\)\) return <TutorFace/, "the kill switch keeps her still under lamp1");
   assert.match(lesson, /still=\{off \|\| p\.tier === "D"\}/);
   const site = readFileSync(new URL("src/app/landing/Site.tsx", ROOT), "utf8");
-  assert.match(site, /look === "lamp1" && tutor\.id === "asha"/, "the landing portrait is her lamp1 still under lamp1");
+  assert.match(site, /const grown = look === "lamp1" \|\| look === "lamp2" \? look : null;/);
+  assert.match(site, /const still = grown !== null && tutor\.id === "asha";/, "the landing portrait is her own still under lamp1 or lamp2");
 });
