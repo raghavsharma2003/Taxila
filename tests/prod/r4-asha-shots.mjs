@@ -2,6 +2,7 @@
 // dev routes on (the /dev/desk lesson fixtures), every /api/* mocked in the page (no server, no model, no database):
 //
 //   PLAYWRIGHT_BROWSERS_PATH=/opt/pw-browsers node tests/prod/r4-asha-shots.mjs [--look r8|lamp1|lamp2] [--dist <dir>] [--shots <dir>]
+//     [--only <surface regex>]
 // (a held look, lamp1, is trialled with ?look=lamp1&heldlook=1, which only this dev-routes build honours; it needs the
 // pack copied into public/face-puppet/lamp1/ first. An owner-cohort look, lamp2, comes the way the owner's browser gets
 // it: the config answer marked `cohort: "owner"`; then a NON-cohort pass asks for it by ?look= and must paint r8.)
@@ -106,7 +107,13 @@ async function audit(page) {
     const visible = (el) => { const r = el.getBoundingClientRect(); const cs = getComputedStyle(el); return r.width > 0 && r.height > 0 && cs.visibility !== "hidden" && cs.display !== "none"; };
     for (const el of document.querySelectorAll("[data-teacher-id], [data-tutor]")) out.teachers.push(el.getAttribute("data-teacher-id") ?? el.getAttribute("data-tutor"));
     for (const el of document.querySelectorAll(".fp-host")) out.looks.push(el.getAttribute("data-look"));
-    out.live = [...document.querySelectorAll(".fp-host canvas")].filter(visible).length;
+    // a live face the child can SEE: on screen and on top at its centre (a lesson face under the help sheet is covered)
+    out.live = [...document.querySelectorAll(".fp-host canvas")].filter((c) => {
+      if (!visible(c)) return false;
+      const r = c.getBoundingClientRect(), x = r.left + r.width / 2, y = r.top + r.height / 2;
+      const top = x >= 0 && y >= 0 && x < innerWidth && y < innerHeight ? document.elementFromPoint(x, y) : null;
+      return !!top && (top === c || c.closest(".fp-host")?.contains(top));
+    }).length;
     const bad = /\b(arjun|uma)\b/i;
     const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
     for (let n = walker.nextNode(); n; n = walker.nextNode()) {
@@ -152,7 +159,10 @@ let configAnswer = COHORT ? { look: LOOK, cohort: "owner" } : { look: LOOK };
 let want = LOOK;
 let urlLook = HELD ? `look=${LOOK}&heldlook=1` : "";
 const trial = (url) => (urlLook ? `${url}${url.includes("?") ? "&" : "?"}${urlLook}` : url);
+// --only <regex>: run just the surfaces whose name matches (a re-check; results.json then holds only those)
+const ONLY = arg("--only", null);
 async function surface(name, url0, opts, act) {
+  if (ONLY && !new RegExp(ONLY).test(name)) return;
   const url = trial(url0);
   for (const v of VIEWS) {
     const tag = `${name} ${v.w}x${v.h}`;
@@ -204,7 +214,9 @@ try {
     // a NON-cohort account: the server answers the global look; ?look=<cohort look> (even with &heldlook=1) is ignored
     configAnswer = { look: "r8" };
     want = "r8";
-    urlLook = `look=${LOOK}&heldlook=1`;
+    // (a production build has no &heldlook=1 trial; this dev-routes build would honour it, so the pass asks the
+    // production way: ?look= alone, and the unit tests cover &heldlook=1 on a production build)
+    urlLook = `look=${LOOK}`;
     await surface("noncohort-lesson-speaking-b3", "/dev/desk?fixture=speaking&band=b3&face=live", { wait: 2500 });
     await surface("noncohort-hello-older", `/c/${KIDS.older.id}/hello`, { kid: KIDS.older });
   }

@@ -5,6 +5,18 @@
       "kind": "decision",
       "title": "5b prep (2026-10-10): a candidate puppet look reaches the owner's own accounts first, server-side, never by a URL switch in production: TAXILA_FACE_LOOK_FOR (guardian emails or sha256) + TAXILA_FACE_COHORT_LOOK (a look in COHORT_FACE_LOOKS) in server/face-puppet/config.js faceConfigFor, reusing the duplex cohort helpers; a signed-in listed guardian gets { look, cohort: 'owner' }, everyone else (and a missing, expired or > 2.5 s lookup) the global look; held looks never served; cookie-dependent answers private/no-store, vary cookie; the client admits a cohort-only look only from that answer, never from ?look=, and never remembers it. Inert until a cohort-only look (lamp2) is keyed. Reverse if: the owner wants the candidate for everyone (then it moves to FACE_LOOKS) or rejects it (then it is removed).",
       "at": "2026-10-10"
+    },
+    {
+      "id": "dc-r4a-lamp2-owner-cohort",
+      "kind": "decision",
+      "title": "5b (2026-10-10, main session as the owner's delegate): lamp2 (rig2 v3 K3, painted keys, Canvas 2D KeyRig) is a COHORT-ONLY look: COHORT_FACE_LOOKS = COHORT_LOOKS = ['lamp2'], served only via TAXILA_FACE_LOOK_FOR + TAXILA_FACE_COHORT_LOOK=lamp2 to the owner's signed-in accounts; everyone else r8; never from ?look= or TAXILA_FACE_LOOK; lamp1 stays held. Its fallbacks hold its own still. Reverse if: the owner, after real lessons, wants it for everyone (move to FACE_LOOKS) or rejects it (remove the key and the pack).",
+      "at": "2026-10-10"
+    },
+    {
+      "id": "ms-r4a-lamp2-cohort-battery-2026-10-10",
+      "kind": "measurement",
+      "title": "lamp2 via the cohort answer, shot battery 360/412/1366 x young/older (mocked API, production build with dev routes, headless Chromium): 609/648; every ONE/NAMES/CHOICE/ERR check passes incl. the T1 calm face and at most one visible live face; the 39 failures are pre-existing 13 px text (r8 run: 36). A non-cohort page with ?look=lamp2 paints r8. Bilabials on lamp2 (offline Diya battery, product timing into MouthKeys): 123/132 with the product rule, 132/132 with rig2's extension (not wired). Lip-sync median +5 ms, 67% within +-50 ms (76% at +-150 ms lag search).",
+      "at": "2026-10-10"
     }
   ],
   "edges": [
@@ -12,6 +24,16 @@
       "src": "dc-r4a-face-look-owner-cohort",
       "rel": "part_of",
       "dst": "dc-r4a-look-switch"
+    },
+    {
+      "src": "dc-r4a-lamp2-owner-cohort",
+      "rel": "part_of",
+      "dst": "dc-r4a-face-look-owner-cohort"
+    },
+    {
+      "src": "ms-r4a-lamp2-cohort-battery-2026-10-10",
+      "rel": "measures",
+      "dst": "dc-r4a-lamp2-owner-cohort"
     }
   ]
 }

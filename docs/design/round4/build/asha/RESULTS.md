@@ -184,12 +184,58 @@ URL switch in production:
 - A cookie-dependent answer is `private, no-store` with `vary: cookie`. The list never leaves the server.
 - On the client, a cohort-only look is admitted only from the server's cohort answer, never from `?look=`, and that
   answer is not remembered on the device.
-- Inert today: `COHORT_FACE_LOOKS` / `COHORT_LOOKS` are empty. Wiring lamp2 means keying its pack, adding it to both
+- (Inert when written; 5b below wires lamp2.) Wiring lamp2 means keying its pack, adding it to both
   lists and setting the two env values on the Container App. Tests: `tests/r4-asha-cohort.test.mjs` (4).
+
+### 5b: lamp2 for the owner cohort only (2026-10-10)
+
+The main session's decision, as the owner's delegate: lamp2 (rig2 v3 K3, `claude/r4-asha-rig2` @ 9a43c6ba) goes to the
+owner's own accounts only. Everyone else stays on r8. The owner's eye on real lessons decides a general rollout.
+- **Keyed as cohort-only**: `COHORT_FACE_LOOKS` = `COHORT_LOOKS` = `["lamp2"]`.
+  - Served only when `/api/face/config` answers a signed-in guardian on `TAXILA_FACE_LOOK_FOR`, with
+    `TAXILA_FACE_COHORT_LOOK=lamp2`. The main session sets both at deploy.
+  - Never from `?look=`, a stored device choice or `TAXILA_FACE_LOOK`. lamp1 stays held.
+  - Pack: `rig: "keys"`, clear colour from its own `geom.json`, rig2's two framings.
+- **The stage** (rig2 integrate patch 01, stage hunk): a keys look loads rig2's `KeyRig` (Canvas 2D, no WebGL2 needed)
+  from `src/face-puppet/rig-keys/`. It adds `KEY_LEAD_MS` to the viseme lead, sets `rig.calm` from the driver's safety
+  turn every frame, and skips the GL context-restore path. Its fallbacks (and the landing portrait) hold her lamp2 still,
+  never the r8 vector.
+- **Pack**: `public/face-puppet/lamp2/`, 130 KB of rig layers + keys, 180 KB with both posters (r8: 210 KB).
+- **Tests**:
+  - `tests/r4-asha-cohort.test.mjs`: a cohort account gets lamp2. A non-cohort account, a signed-out page and an unset
+    list get r8, though the pack ships in `public/`. `?look=lamp2`, with or without `&heldlook=1`, and a stored lamp2
+    are ignored. lamp2 without the cohort mark is r8. A cohort answer is not remembered. The stage's calm and keys
+    wiring.
+  - `tests/r4-asha-look.test.mjs` updated. `tests/r4-asha-rig2.test.mjs`: rig2's 7 schedule tests, incl. the
+    safety-turn calm mouth.
+  - Full gate: `npx tsc -b && npx vite build && npm test` = 2,549 pass / 60 fail (the same 60 browser-engine failures,
+    the container's Chromium build) / 0 new. check-prompt-budget PASS. lint-ui 353 (= baseline).
+- **Shot battery, lamp2 served through the cohort answer** (`--look lamp2`: the mocked config says
+  `{ look: "lamp2", cohort: "owner" }`). 360 / 412 / 1366, young and older. `shots/lamp2/`: **609 / 648**.
+  - Every ONE (Asha everywhere, every puppet paints lamp2, at most one live face the child can see), NAMES, CHOICE and
+    ERR check passes, incl. the Trouble (T1) calm-safety face and the help sheet.
+  - The 39 failures are all FIT `text ≥ 14 px` (13 px "Talk", the child nav, onboarding "Step 2 of 9", landing
+    "Sample"). The same checks fail on r8 (the r8 run: 36); they are not lamp2's.
+  - Non-cohort pass: the server answers r8 and the page asks `?look=lamp2`; every puppet paints r8.
+  - Note: the r8 run found 2 live canvases on the help sheet, the lesson face under it. Covered, not seen, but still
+    drawing; see the latency item below.
+- **Bilabials on lamp2** (rig2's `battery.mjs`, offline, the stored Diya battery, product timing path → lamp2
+  `MouthKeys` at 60 fps): 123 / 132 bilabial words sealed with the product's text rule (`visemes.ts` addBilabials).
+  rig2's extension (`bilabial2.js`) gets 132 / 132; its 9 misses are single internal or final b/m/p words (tum, Ab,
+  about, carbon, dhoop, lagbhag, खुशबू, Shabash, vaashpikaran). The extension changes the text rule for every look,
+  r8 too, so it is NOT wired: an owner or main-session call.
+- **lamp2 lip-sync offset** (same run): median +5 ms (IQR -15..+40), 67% within ±50 ms; 76% with the lag search held to
+  ±150 ms. The median passes; the ≥ 80% share target does not (rig2 measured the same).
+- **lamp2 blinks**: rig2's own schedule, 16.0 / 18.7 per minute quiet / speaking over 10 simulated minutes
+  (`tests/r4-asha-rig2.test.mjs`).
+- **One live face, fps**: rig2 measured lamp2 at 59.9 fps on the 80 px speech row and on the 412 desk, at a 4x CPU
+  throttle (headless Chromium, not a phone; rig2 `evidence/fps-*.json`). Not re-measured here.
 
 ## Not met / open
 
 - Part C waits on the pack.
-- Owner decisions needed: (1) lamp1 as the default (`TAXILA_FACE_LOOK=lamp1`), only after Part C and his phone look;
+- lamp2: rig2's bilabial extension (123 → 132 / 132 on lamp2) changes the text rule for every look: needs a call.
+  lamp2's lip-sync share within ±50 ms is 67-76% against the ≥ 80% target.
+- Owner decisions needed: (1) lamp1 as the default (`TAXILA_FACE_LOOK=lamp1`), only after Part C and their phone look;
   (2) "Asha didi" as her address for classes 5-9 (kept, since the persona invariants are tuned on it); (3) the naming
   card: removed here as a teacher choice, restorable in one line.
