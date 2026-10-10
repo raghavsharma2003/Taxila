@@ -11,6 +11,7 @@ import { wantAt, restIsDue, restRetire } from "../server/stagecraft/policy.js";
 import { admissible } from "../server/stagecraft/catalog.js";
 import { familyKey } from "../server/stagecraft/sources.js";
 import * as bridge from "../server/stagecraft/seam-bridge.js";
+import * as trayGate from "../server/forge3/tray-gate.js";
 import { stageRest, kernelView } from "../server/stagecraft/kernel-point.js";
 import { revealPoint, REST_CFG } from "../server/stagecraft/adapters.js";
 import * as boardSync from "../server/stagecraft/board-sync.js";
@@ -197,7 +198,9 @@ function setup(lessonId, { onScreen = null } = {}) {
 const pointFor = (lessonId, o = {}) => revealPoint({ lessonId, turnSeq: 9, safety: false, beat: "practice_set", beatChanged: true, topicId: T, skillId: keyOf(lessonId).skillId, band: "B3", lang: "hinglish", kitHash: "k",
   lastPolicyRevealTurn: 0, at: 400_000, phase: "her_turn", ...o }, { catalog });
 
-test("merge: a Stagecraft reveal wins over a Wave 2 proposal and carries a stage-tagged facts row and a 1000x625 stage", () => {
+test("merge: a Stagecraft reveal wins over a Wave 2 proposal and carries a stage-tagged facts row and a 1000x625 stage", (t) => {
+  // round 4 content: Studio v2 is off the child path (the tray gate); this test drives the merge mechanics behind the gate
+  trayGate._certifyStudioV2ForTests(true); t.after(() => trayGate._certifyStudioV2ForTests(false));
   const id = "m-1"; setup(id);
   const v = bridge.augmentView(id, { statuses: [], onScreen: null, propose: { reveal: "w2-x" } }, pointFor(id));
   assert.notEqual(v.propose.reveal, "w2-x");
@@ -210,7 +213,9 @@ test("merge: a Stagecraft reveal wins over a Wave 2 proposal and carries a stage
   assert.ok(bridge.gradeSessionFor(p), "graded by the engine registry");
   bridge.detach(id);
 });
-test("merge: a Wave 2 piece the child is on stays for a plan-led want, and is replaced for the child's own request", () => {
+test("merge: a Wave 2 piece the child is on stays for a plan-led want, and is replaced for the child's own request", (t) => {
+  // round 4 content: Studio v2 is off the child path (the tray gate); this test drives the merge mechanics behind the gate
+  trayGate._certifyStudioV2ForTests(true); t.after(() => trayGate._certifyStudioV2ForTests(false));
   const w2 = { intentId: "w2-on", kind: "game", state: "in_use", source: "library", revealedTurn: 8 };
   const id = "m-2"; setup(id, { onScreen: { ...w2 } });
   const v = bridge.augmentView(id, { statuses: [], onScreen: { kind: "game" } }, pointFor(id));

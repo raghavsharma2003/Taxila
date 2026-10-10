@@ -11,15 +11,21 @@
 //   POST /api/studio/feedback                  {lessonId, intentId, action: "again" | "not_this"}
 //   POST /api/studio/frame-error               {lessonId, intentId, reason} → the skeleton slot comes back; only csp /
 //                                              runtime / navigated count as incidents against the build
+//   POST /api/studio/viewport                  {lessonId, box: {w, h}, young} → the device's viewport class for the ONE tray gate
+//                                              (server/forge3/tray-gate.js; round 4 content): every piece is certified at it
 //   POST /api/studio/wb-timing                 {lessonId, lateMs, source} → the whiteboard's sync telemetry (W2-F fixer)
 //   GET  /api/studio/made-for?childId=         the Made for you shelf / the parent's "Made for {child}" feed (W2-A renders)
+//   GET  /api/studio/notebook?childId=         round 4 content: the child's lessons that drew boards, newest first (any device)
+//   GET  /api/studio/notebook/pages?lessonId=  every board of one lesson, in the order it was drawn (replay)
 //   POST /api/studio/made-for/hide             {childId, id} → hides a shelf card (evidence rows untouched)
 import { HttpError, bad, send } from "../http.js";
 import { one, q } from "../db.js";
 import { requireChild, sessionTokenHash } from "../auth.js";
-import { subscribe, slotSnapshot, hostAnswer, hostFeedback, hostFrameError, noteWbTiming } from "../studio/seam.js";
+import { subscribe, slotSnapshot, hostAnswer, hostFeedback, hostFrameError, noteWbTiming, noteViewport } from "../studio/seam.js";
 import { getBuild } from "../studio/store.js";
 import { archetype } from "../studio/archetypes/index.js";
+import { hasConsent } from "../auth.js";
+import { getTopic } from "../content/curriculum.js";
 
 const UUID = /^[0-9a-f-]{36}$/i;
 const INTENT = /^[\w:.-]{1,160}$/;
@@ -109,6 +115,15 @@ async function frameError(req, res, body) {
   send(res, 200, r);
 }
 
+/** The Desk's work-tray box (CSS px; numbers only). The gate's class for this lesson; unknown stays the 360 phone. */
+async function viewportRoute(req, res, body) {
+  const { lesson } = await lessonFor(req, body?.lessonId);
+  const w = Number(body?.box?.w), h = Number(body?.box?.h);
+  if (!(w >= 100 && w <= 4000 && h >= 50 && h <= 4000)) throw bad("invalid box");
+  const v = noteViewport(lesson.id, { w, h }, body?.young === true);
+  send(res, 200, { vp: v?.vp ?? "p360", tight: !!v?.tight });
+}
+
 /** The whiteboard's sync telemetry: how late a script reached the board relative to her line's audio (numbers only). */
 async function wbTimingRoute(req, res, body) {
   await lessonFor(req, body?.lessonId);
@@ -137,6 +152,40 @@ async function madeFor(req, res) {
   send(res, 200, { cards });
 }
 
+/**
+ * round 4 content, the notebook: the child's lessons with boards, newest first (≤ 30), from the server (every device sees
+ * every page). Hidden (not empty) when the parent chose "Only this session" (learning_profile off), like the map.
+ */
+async function notebook(req, res) {
+  const childId = query(req).get("childId");
+  if (!UUID.test(String(childId ?? ""))) throw bad("invalid childId");
+  const { guardian } = await requireChild(req, childId);
+  if (!(await hasConsent(guardian.id, childId, "learning_profile"))) return send(res, 200, { hidden: true, pages: [] });
+  const rows = await q(
+    `select l.id as lesson_id, l.topic_id, l.started_at, l.ended_at, count(b.id)::int as boards,
+            (array_agg(b.script order by b.seq))[1] as first
+       from lesson l join board_page b on b.lesson_id = l.id
+      where l.child_id = $1
+      group by l.id order by l.started_at desc limit 30`, [childId]);
+  const pages = rows.map((r) => {
+    let title = null;
+    try { title = getTopic(r.topic_id)?.title ?? null; } catch { title = null; }
+    return { lessonId: r.lesson_id, topicId: r.topic_id, title, startedAt: r.started_at, ended: !!r.ended_at, boards: r.boards, first: r.first ?? null };
+  });
+  send(res, 200, { hidden: false, pages });
+}
+
+/** Every board of one lesson, in the order it was drawn (the notebook's replay). */
+async function notebookPages(req, res) {
+  const lessonId = query(req).get("lessonId");
+  const { lesson, child } = await lessonFor(req, lessonId);
+  const rows = await q("select seq, beat, script, created_at from board_page where lesson_id = $1 order by seq limit 120", [lesson.id]);
+  let title = null;
+  const topicId = (await one("select topic_id from lesson where id = $1", [lesson.id]))?.topic_id ?? null;
+  try { title = getTopic(topicId)?.title ?? null; } catch { title = null; }
+  send(res, 200, { lessonId: lesson.id, childId: child.id, topicId, title, ended: !!lesson.ended_at, boards: rows.map((r) => ({ seq: r.seq, beat: r.beat, script: r.script, at: r.created_at })) });
+}
+
 async function hide(req, res, body) {
   if (!UUID.test(String(body?.childId ?? ""))) throw bad("invalid childId");
   await requireChild(req, body.childId);
@@ -153,6 +202,9 @@ export const routes = {
   "POST /api/studio/feedback": feedback,
   "POST /api/studio/frame-error": frameError,
   "POST /api/studio/wb-timing": wbTimingRoute,
+  "POST /api/studio/viewport": viewportRoute,
+  "GET /api/studio/notebook": notebook,
+  "GET /api/studio/notebook/pages": notebookPages,
   "GET /api/studio/made-for": madeFor,
   "POST /api/studio/made-for/hide": hide,
 };

@@ -34,7 +34,10 @@ function lesson(id) {
 }
 const point = (id, turn, childText) => stagecraftPointFor({ lesson: { id, topic_id: T }, prev: { beat: { type: "explain" }, turn }, state: {}, kit, child: { class_level: 6, language_pref: "hinglish" }, childText, now: Date.now() });
 
-test("seam (patch 03): a child's request is proposed, shown by slotFor, revealed by onReveal and graded by the HOST", { skip }, async () => {
+test("seam (patch 03): a child's request is proposed, shown by slotFor, revealed by onReveal and graded by the HOST", { skip }, async (tc) => {
+  // round 4 content: Studio v2 is off the child path (the tray gate); this test drives the seam mechanics behind the gate
+  const gate = await import("../server/forge3/tray-gate.js");
+  gate._certifyStudioV2ForTests(true); tc.after(() => gate._certifyStudioV2ForTests(false));
   const id = "p4s-1"; const { L } = lesson(id);
   for (let k = 0; k < 3; k++) studioSeam.statusFacts(id, { beat: "explain" });       // past the first-reveal turn
   const p = point(id, 4, "animation dikhao na");

@@ -293,7 +293,10 @@ export function measureDocument() {
   const out = { vw, vh, texts: [], targets: [], cut: 0, scrollable: false, fit: null };
   const de = document.documentElement, body = document.body;
   const bs = getComputedStyle(body), hs = getComputedStyle(de);
-  out.scrollable = (/(auto|scroll)/.test(bs.overflowY) && body.scrollHeight > body.clientHeight + 2) || (/(auto|scroll)/.test(hs.overflowY) && de.scrollHeight > vh + 2) || (hs.overflowY === "visible" && bs.overflowY === "visible" && de.scrollHeight > vh + 2);
+  // round 4 content: a body's overflow propagates to the viewport when <html> is `visible` (CSS overflow propagation), so
+  // body overflow:auto with a tall document scrolls the frame (fit.ts sets it); before, that case read as not scrollable
+  out.scrollable = (/(auto|scroll)/.test(bs.overflowY) && body.scrollHeight > body.clientHeight + 2) || (/(auto|scroll)/.test(hs.overflowY) && de.scrollHeight > vh + 2)
+    || (hs.overflowY === "visible" && bs.overflowY !== "hidden" && bs.overflowY !== "clip" && de.scrollHeight > vh + 2);
   out.fit = document.getElementById("root")?.dataset?.fit ?? null;
   const walker = document.createTreeWalker(body, NodeFilter.SHOW_TEXT);
   const seen = new Set();
@@ -310,15 +313,29 @@ export function measureDocument() {
     if (el instanceof SVGElement) { const m = el.getScreenCTM?.(); if (m) px *= Math.hypot(m.a, m.b); }
     else px *= scaleOf(el);
     const outside = x < -1 || y < -1 || x2 > vw + 1 || y2 > vh + 1;
+    // past the left / right edge: never reachable by the vertical scroll the frame has
+    const outsideX = x < -1 || x2 > vw + 1;
     if (outside) out.cut++;
-    out.texts.push({ t: t.slice(0, 60), px: Math.round(px * 10) / 10, outside });
+    out.texts.push({ t: t.slice(0, 60), px: Math.round(px * 10) / 10, outside, outsideX, rs: rs.slice(0, 8).map((q) => ({ x: q.left, y: q.top, w: q.width, h: q.height })) });
+  }
+  // round 4 content: overlapping words (≥ 20% of the smaller one's area), as measureStage counts them on the stage
+  out.overlaps = [];
+  for (let i = 0; i < out.texts.length; i++) for (let j = i + 1; j < out.texts.length; j++) {
+    // per LINE box (a wrapped sentence's union box would cover the inline value it contains)
+    let share = 0;
+    for (const a of out.texts[i].rs) for (const b of out.texts[j].rs) {
+      const w = Math.min(a.x + a.w, b.x + b.w) - Math.max(a.x, b.x), h = Math.min(a.y + a.h, b.y + b.h) - Math.max(a.y, b.y);
+      if (w > 0 && h > 0) share = Math.max(share, (w * h) / Math.max(1, Math.min(a.w * a.h, b.w * b.h)));
+    }
+    if (share >= 0.2 && out.overlaps.length < 20) out.overlaps.push({ a: out.texts[i].t.slice(0, 20), b: out.texts[j].t.slice(0, 20), share: Math.round(share * 100) / 100 });
   }
   for (const el of document.querySelectorAll("button, [role=button], input, [data-tap]")) {
     if (!vis(el)) continue;
     const r = el.getBoundingClientRect();
     const outside = r.left < -1 || r.top < -1 || r.right > vw + 1 || r.bottom > vh + 1;
+    const outsideX = r.left < -1 || r.right > vw + 1;
     if (outside) out.cut++;
-    out.targets.push({ label: (el.getAttribute("aria-label") || el.textContent || "").trim().slice(0, 30), w: Math.round(r.width), h: Math.round(r.height), outside });
+    out.targets.push({ label: (el.getAttribute("aria-label") || el.textContent || "").trim().slice(0, 30), w: Math.round(r.width), h: Math.round(r.height), outside, outsideX });
   }
   return out;
 }

@@ -1,0 +1,50 @@
+diff --git a/tests/p4-content-seam.test.mjs b/tests/p4-content-seam.test.mjs
+index a0b85c48..e6d8b58b 100644
+--- a/tests/p4-content-seam.test.mjs
++++ b/tests/p4-content-seam.test.mjs
+@@ -34,7 +34,10 @@ function lesson(id) {
+ }
+ const point = (id, turn, childText) => stagecraftPointFor({ lesson: { id, topic_id: T }, prev: { beat: { type: "explain" }, turn }, state: {}, kit, child: { class_level: 6, language_pref: "hinglish" }, childText, now: Date.now() });
+ 
+-test("seam (patch 03): a child's request is proposed, shown by slotFor, revealed by onReveal and graded by the HOST", { skip }, async () => {
++test("seam (patch 03): a child's request is proposed, shown by slotFor, revealed by onReveal and graded by the HOST", { skip }, async (tc) => {
++  // round 4 content: Studio v2 is off the child path (the tray gate); this test drives the seam mechanics behind the gate
++  const gate = await import("../server/forge3/tray-gate.js");
++  gate._certifyStudioV2ForTests(true); tc.after(() => gate._certifyStudioV2ForTests(false));
+   const id = "p4s-1"; const { L } = lesson(id);
+   for (let k = 0; k < 3; k++) studioSeam.statusFacts(id, { beat: "explain" });       // past the first-reveal turn
+   const p = point(id, 4, "animation dikhao na");
+diff --git a/tests/p4-content-unit.test.mjs b/tests/p4-content-unit.test.mjs
+index f76f9311..8582580f 100644
+--- a/tests/p4-content-unit.test.mjs
++++ b/tests/p4-content-unit.test.mjs
+@@ -11,6 +11,7 @@ import { wantAt, restIsDue, restRetire } from "../server/stagecraft/policy.js";
+ import { admissible } from "../server/stagecraft/catalog.js";
+ import { familyKey } from "../server/stagecraft/sources.js";
+ import * as bridge from "../server/stagecraft/seam-bridge.js";
++import * as trayGate from "../server/forge3/tray-gate.js";
+ import { stageRest, kernelView } from "../server/stagecraft/kernel-point.js";
+ import { revealPoint, REST_CFG } from "../server/stagecraft/adapters.js";
+ import * as boardSync from "../server/stagecraft/board-sync.js";
+@@ -197,7 +198,9 @@ function setup(lessonId, { onScreen = null } = {}) {
+ const pointFor = (lessonId, o = {}) => revealPoint({ lessonId, turnSeq: 9, safety: false, beat: "practice_set", beatChanged: true, topicId: T, skillId: keyOf(lessonId).skillId, band: "B3", lang: "hinglish", kitHash: "k",
+   lastPolicyRevealTurn: 0, at: 400_000, phase: "her_turn", ...o }, { catalog });
+ 
+-test("merge: a Stagecraft reveal wins over a Wave 2 proposal and carries a stage-tagged facts row and a 1000x625 stage", () => {
++test("merge: a Stagecraft reveal wins over a Wave 2 proposal and carries a stage-tagged facts row and a 1000x625 stage", (t) => {
++  // round 4 content: Studio v2 is off the child path (the tray gate); this test drives the merge mechanics behind the gate
++  trayGate._certifyStudioV2ForTests(true); t.after(() => trayGate._certifyStudioV2ForTests(false));
+   const id = "m-1"; setup(id);
+   const v = bridge.augmentView(id, { statuses: [], onScreen: null, propose: { reveal: "w2-x" } }, pointFor(id));
+   assert.notEqual(v.propose.reveal, "w2-x");
+@@ -210,7 +213,9 @@ test("merge: a Stagecraft reveal wins over a Wave 2 proposal and carries a stage
+   assert.ok(bridge.gradeSessionFor(p), "graded by the engine registry");
+   bridge.detach(id);
+ });
+-test("merge: a Wave 2 piece the child is on stays for a plan-led want, and is replaced for the child's own request", () => {
++test("merge: a Wave 2 piece the child is on stays for a plan-led want, and is replaced for the child's own request", (t) => {
++  // round 4 content: Studio v2 is off the child path (the tray gate); this test drives the merge mechanics behind the gate
++  trayGate._certifyStudioV2ForTests(true); t.after(() => trayGate._certifyStudioV2ForTests(false));
+   const w2 = { intentId: "w2-on", kind: "game", state: "in_use", source: "library", revealedTurn: 8 };
+   const id = "m-2"; setup(id, { onScreen: { ...w2 } });
+   const v = bridge.augmentView(id, { statuses: [], onScreen: { kind: "game" } }, pointFor(id));

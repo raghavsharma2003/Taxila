@@ -84,7 +84,8 @@ function Scale({ c, level, revealed, hlOf }: { c: MSConfig; level: number; revea
         <g key={v} data-mark={fmtNum(v)}>
           <line className={isMajor(v) ? "ms-major" : "ms-minor"} x1={isMajor(v) ? 52 : 62} x2={76} y1={y(v)} y2={y(v)} />
           {isMajor(v) && (Math.round((v - c.min) / c.major) % labelEvery === 0) && <text x={46} y={y(v) + 4} textAnchor="end">{fmtNum(v)}</text>}
-          {i === 0 && <text x={46} y={244} textAnchor="end">{c.unit}</text>}
+          {/* the unit sits right of the scale's foot, clear of the 0 label (round 4: "0" × "mL" overlapped at every size) */}
+          {i === 0 && <text x={78} y={248} textAnchor="start" data-keep="">{c.unit}</text>}
         </g>
       ))}
       {revealed && <line className="nl-ring" x1={50} x2={196} y1={y(c.value)} y2={y(c.value)} />}

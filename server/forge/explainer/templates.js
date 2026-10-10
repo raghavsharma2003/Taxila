@@ -4,7 +4,7 @@
 // count, carry and label box is computed HERE, never by a model (explainer-dsl's rule: "geometry/arithmetic computed in
 // code, never by the LLM"), and labels are drawn by code on top (never baked into a picture).
 //
-//   maths:    fraction-parts@1, combine-count@1, number-line-hop@1, column-op@1, place-value@1, equal-groups@1
+//   maths:    fraction-parts@1, fraction-of@1 (round 4 content: "half ka half", a/b of c/d as an area model), combine-count@1, number-line-hop@1, column-op@1, place-value@1, equal-groups@1
 //   diagrams: flow@1, cycle@1, compare@1, parts@1, label@1 (a vetted sketch: plant, flower, leaf, insect)
 //   geometry and data (W2-B fixer): angle@1, shape@1 (polygons, circle; two congruent copies), symmetry@1, area-grid@1
 //     (unit squares / a scaled rectangle, area or perimeter), bar-chart@1
@@ -15,7 +15,7 @@
 import { normalizeScript, lintScript, textBox, textProblem } from "../../../shared/whiteboard.js";
 
 export const BOARD = { w: 400, h: 300 };
-export const TEMPLATES = ["fraction-parts@1", "combine-count@1", "number-line-hop@1", "column-op@1", "place-value@1", "equal-groups@1",
+export const TEMPLATES = ["fraction-parts@1", "fraction-of@1", "combine-count@1", "number-line-hop@1", "column-op@1", "place-value@1", "equal-groups@1",
   "flow@1", "cycle@1", "compare@1", "parts@1", "label@1", "angle@1", "shape@1", "symmetry@1", "area-grid@1", "bar-chart@1"];
 /** The StudioFacts kind each template is (what the Brain reads as "what is on screen"). */
 export const KIND_OF = { "flow@1": "diagram", "cycle@1": "diagram", "compare@1": "diagram", "parts@1": "diagram", "label@1": "diagram",
@@ -111,9 +111,69 @@ function fractionParts(c, tl) {
     for (let i = 0; i < shade; i++) tl.add({ id: `s${i}`, op: "sector", c: [cx, cy], r: r - 2, fromDeg: (i * 360) / parts, toDeg: ((i + 1) * 360) / parts, fill: "accent", ink: "accent", weight: 1 }, 380, { gap: 120 });
   }
   const fx = whole === "bar" ? 200 : 310, fy = whole === "bar" ? 225 : 120;
-  tl.add({ id: "frac", op: "numwork", at: [fx - 14, fy], layout: "fraction", rows: [[String(shade)], [String(parts)]], ink: "accent", weight: 2 }, 800, { gap: 300 });
+  // round 4 content: nothing shaded writes no fraction ("0/5" is a number her line never said: W4)
+  if (shade > 0) tl.add({ id: "frac", op: "numwork", at: [fx - 14, fy], layout: "fraction", rows: [[String(shade)], [String(parts)]], ink: "accent", weight: 2 }, 800, { gap: 300 });
   if (shade > 0) tl.add({ op: "highlight", target: "frac", style: "circle", ink: "mark" }, 600, { gap: 300 });
   return { facts };
+}
+
+/**
+ * round 4 content: the rectangle her line describes as a grid ("5 columns aur 3 rows", "15 equal parts, unmein 6
+ * marked"): rows x cols equal cells, the first `shade` filled, row by row. The column and row counts are written (her
+ * own givens); the cell total and the fraction only when her line does not ask for them. Measured: 4 board slots on a
+ * local production run (2026-10-10) failed while she pointed at such a rectangle, because no template drew it.
+ */
+function shadeGrid(c, tl) {
+  const { rows, cols } = c;
+  // `block: [r, c]`: the top-left r x c cells shaded (her "shaded hissa 2 columns aur 3 rows"); else the first `shade` cells
+  const block = Array.isArray(c.block) && isInt(c.block[0], 1, rows) && isInt(c.block[1], 1, cols) ? c.block : null;
+  const shade = block ? block[0] * block[1] : c.shade ?? 0;
+  if (!isInt(rows, 1, 6) || !isInt(cols, 1, 10) || rows * cols < 2 || !isInt(shade, 0, rows * cols)) return { error: "grid_range" };
+  // the fraction (when written) needs ~70 units under the grid: the grid gives up height for it
+  const withFrac = !c.hideResult && shade > 0;
+  const cell = Math.min(300 / cols, (withFrac ? 140 : 170) / rows, 56);
+  const W = cols * cell, H = rows * cell, x0 = 200 - W / 2, y0 = 52 + ((withFrac ? 140 : 170) - H) / 2;
+  tl.add({ id: "whole", op: "rect", at: [x0, y0], w: W, h: H, weight: 2 }, 800);
+  let k = 0;
+  for (let r = 0; r < rows; r++) for (let q = 0; q < cols; q++) {
+    const on = block ? r < block[0] && q < block[1] : k++ < shade;
+    tl.add({ id: `g${r}_${q}`, op: "rect", at: [x0 + q * cell + 2, y0 + r * cell + 2], w: cell - 4, h: cell - 4, weight: 1,
+      ...(on ? { fill: "accent", ink: "accent" } : { ink: "soft" }) }, on ? 200 : 90, { gap: on ? 60 : 20 });
+  }
+  // the labels only when her line named the columns and rows (a grid laid out for "15 equal parts" invents neither)
+  if (c.labels !== false && cols > 1) tl.add({ op: "text", at: [200, y0 - 16], text: `${cols} columns`, size: "s", ink: "soft" }, 400, { gap: 200 });
+  if (c.labels !== false && rows > 1) tl.add({ op: "text", at: [200, y0 + H + 18], text: `${rows} rows`, size: "s", ink: "soft" }, 400, { gap: 120 });
+  const total = rows * cols;
+  if (withFrac) tl.add({ id: "frac", op: "numwork", at: [186, y0 + H + (c.labels !== false && rows > 1 ? 34 : 14)], layout: "fraction", rows: [[String(shade)], [String(total)]], ink: "accent", weight: 2 }, 700, { gap: 300 });
+  return { facts: { rows, cols, cells: c.hideResult ? "? (child works it out)" : total, shaded: shade } };
+}
+
+/**
+ * round 4 content (the owner's review, 2026-10-10: "animation dikha sakte ho, half ka half kaise hota hai" got a static
+ * 3/5 roti): a/b OF c/d drawn as the area model a class 6-7 book uses, step by step while she speaks: the whole; cut into
+ * d columns, c of them shaded (c/d); the same whole cut into b rows; a of the b rows marked INSIDE the shaded part (a/b of
+ * it); then the count: (a × c) of the (b × d) small parts, written as a/b × c/d = ac/bd. Every number from the call.
+ */
+function fractionOf(c, tl) {
+  const { a, b, c: cn, d } = c;
+  if (!isInt(b, 2, 6) || !isInt(a, 1, b) || !isInt(d, 2, 6) || !isInt(cn, 1, d)) return { error: "fraction_of_range" };
+  const x0 = 60, y0 = 46, W = 280, H = 168, cw = W / d, rh = H / b;
+  tl.add({ id: "whole", op: "rect", at: [x0, y0], w: W, h: H, weight: 2 }, 800);
+  // step 1: the inner fraction c/d, column by column
+  for (let i = 1; i < d; i++) tl.add({ op: "line", from: [x0 + i * cw, y0], to: [x0 + i * cw, y0 + H], weight: 1 }, 220, { gap: 50 });
+  for (let i = 0; i < cn; i++) tl.add({ id: `c${i}`, op: "rect", at: [x0 + i * cw + 3, y0 + 3], w: cw - 6, h: H - 6, fill: "soft", ink: "accent", weight: 1 }, 320, { gap: 100 });
+  tl.add({ id: "inner", op: "text", at: [x0 + (cn * cw) / 2, y0 - 16], text: `${cn}/${d}`, size: "m", ink: "accent" }, 380, { gap: 160 });
+  // step 2: the outer fraction a/b of that part, row by row inside the shaded columns
+  tl.pause(400);
+  for (let j = 1; j < b; j++) tl.add({ op: "line", from: [x0, y0 + j * rh], to: [x0 + W, y0 + j * rh], weight: 1, ink: "soft" }, 220, { gap: 50 });
+  for (let j = 0; j < a; j++) tl.add({ id: `r${j}`, op: "rect", at: [x0 + 5, y0 + j * rh + 5], w: cn * cw - 10, h: rh - 10, fill: "accent", ink: "mark", weight: 1 }, 380, { gap: 140 });
+  tl.add({ id: "outer", op: "text", at: [x0 + W + 12, y0 + (a * rh) / 2], text: `${a}/${b}`, size: "m", ink: "mark", align: "start" }, 380, { gap: 160 });
+  // step 3: count the small parts: a × c of b × d
+  const res = c.hideResult ? "?" : `${a * cn}/${b * d}`;
+  tl.pause(300);
+  tl.add({ id: "eq", op: "numwork", at: [40, 262], layout: "equation", rows: [[`${a}/${b}`, "×", `${cn}/${d}`, "=", res]], weight: 2 }, 1100, { gap: 300 });
+  if (!c.hideResult) tl.add({ op: "highlight", target: "eq", style: "underline", ink: "mark" }, 500, { gap: 200 });
+  return { facts: { whole: "rectangle", inner: `${cn}/${d}`, outer: `${a}/${b} of it`, small_parts: b * d, marked: c.hideResult ? "?" : a * cn, result: c.hideResult ? "? (child works it out)" : res } };
 }
 
 function combineCount(c, tl) {
@@ -622,9 +682,11 @@ function barChart(c, tl) {
 }
 
 const BUILD = {
-  "fraction-parts@1": fractionParts, "combine-count@1": combineCount, "number-line-hop@1": numberLineHop, "column-op@1": columnOp,
+  "fraction-parts@1": fractionParts, "fraction-of@1": fractionOf, "combine-count@1": combineCount, "number-line-hop@1": numberLineHop, "column-op@1": columnOp,
   "place-value@1": placeValue, "equal-groups@1": equalGroups, "flow@1": flow, "cycle@1": cycle, "compare@1": compare, "parts@1": parts, "label@1": label,
   "angle@1": angle, "shape@1": shape, "symmetry@1": symmetry, "area-grid@1": areaGrid, "bar-chart@1": barChart,
+  // code-only (the claims board): not offered to any model, so not in TEMPLATES
+  "shade-grid@1": shadeGrid,
 };
 
 /**
