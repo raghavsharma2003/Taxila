@@ -58,7 +58,7 @@ export function create(core: Core3D, depsIn: EngineDeps): EngineView {
 
   // ── layout (solved for THIS box)
   let LW = 2, linePx = 300, boxW = 360, boxH = 400;
-  let tickLabels: LabelHandle[] = [];
+  const tickLabels = new Map<string, LabelHandle>();
   const L = {
     aim: core.label({ id: "aim", text: "", lang: "en", size: 20, kind: "numeral", at: { x: 0, y: 0, z: 0 }, dy: -8, align: "bottom", role: "you", frac: true }),
     truth: [0, 1].map((i) => core.label({ id: `truth${i}`, text: "", lang: "en", size: 20, kind: "numeral", at: { x: 0, y: 0, z: 0 }, align: "bottom", role: "good", frac: true, hidden: true })),
@@ -101,19 +101,23 @@ export function create(core: Core3D, depsIn: EngineDeps): EngineView {
       tmpM.compose(tmpV.set(uToX(valToU(v)), 0.02, 0), tmpQ.identity(), tmpS.set(0.85, 0.28, 0.85)); W.ticks.setMatrixAt(k++, tmpM);
     }
     W.ticks.count = k; W.ticks.instanceMatrix.needsUpdate = true;
-    for (const t of tickLabels) t.remove();
-    tickLabels = [];
-    // labels on majors, thinned so no two overlap at this box (the ends are always labelled)
-    const shown: number[] = [];
-    const want = p.labels === "ends" ? [0, nMaj] : Array.from({ length: nMaj + 1 }, (_, j) => j);
+    // labels on majors at ONE uniform stride (1, 2, 5, 10, … dividing the line) so no two overlap at this box; the ends
+    // are always labelled. Handles are reused across layouts (a resize never blanks the labels for a frame).
     const est = (j: number) => fmtTick(p.lo + j * p.major).length * 18 * 0.62 + 16;
-    const pxAt = (j: number) => (j / nMaj) * linePx;
-    for (const j of want) {
-      const last = shown[shown.length - 1];
-      if (last === undefined || pxAt(j) - pxAt(last) >= (est(j) + est(last)) / 2 + 6) shown.push(j);
-      else if (j === nMaj) { shown.pop(); const prev = shown[shown.length - 1]; if (prev === undefined || pxAt(j) - pxAt(prev) >= (est(j) + est(prev)) / 2 + 6) shown.push(j); }
+    const pxPer = linePx / Math.max(1, nMaj);
+    const widest = Math.max(...Array.from({ length: nMaj + 1 }, (_, j) => est(j)));
+    const strides = [1, 2, 4, 5, 10, 20, 25, 50, 100].filter((k) => nMaj % k === 0);
+    const stride = p.labels === "ends" ? nMaj : strides.find((k) => k * pxPer >= widest + 6) ?? nMaj;
+    const shown = Array.from({ length: nMaj + 1 }, (_, j) => j).filter((j) => j % stride === 0 || j === nMaj);
+    // the last stride step before the end may crowd the end label: drop the inner one, never an end
+    if (shown.length >= 3 && (shown[shown.length - 1] - shown[shown.length - 2]) * pxPer < (est(shown[shown.length - 1]) + est(shown[shown.length - 2])) / 2 + 6) shown.splice(shown.length - 2, 1);
+    const keep = new Set(shown.map((j) => `tick${j}`));
+    for (const [id, h] of tickLabels) if (!keep.has(id)) { h.remove(); tickLabels.delete(id); }
+    for (const j of shown) {
+      const spec = { text: fmtTick(p.lo + j * p.major), at: wpt(valToU(p.lo + j * p.major), -0.32) };
+      const h = tickLabels.get(`tick${j}`);
+      if (h) h.set(spec); else tickLabels.set(`tick${j}`, core.label({ id: `tick${j}`, lang: "en", size: 18, kind: "numeral", align: "top", ...spec }));
     }
-    for (const j of shown) tickLabels.push(core.label({ id: `tick${j}`, text: fmtTick(p.lo + j * p.major), lang: "en", size: 18, kind: "numeral", at: wpt(valToU(p.lo + j * p.major), -0.32), align: "top" }));
     // rounding: the halfway mark is the one landmark that decides up or down
     W.half.visible = p.goal === "round"; W.half.position.x = uToX(0.5);
     L.half.set({ text: say(lang, "line.half"), lang: tl(), hidden: p.goal !== "round", at: wpt(0.5, 0.78) });
@@ -252,7 +256,20 @@ export function create(core: Core3D, depsIn: EngineDeps): EngineView {
 
   // ── gates: compare order, rounding landmarks, doors
   function gateUs(): number[] {
-    if (gateMode === "order") return p.values.map((v) => valToU(H.valueOf(v)));
+    if (gateMode === "order") {
+      // at the values' true places; two close values are pushed apart around their midpoint (order kept: the further left
+      // is still the smaller) so the gates and their labels never sit on each other
+      const us = p.values.map((v) => valToU(H.valueOf(v)));
+      const wPx = Math.max(...p.values.map((v) => v.text.length * 18 * 0.62 + 16), 76) + 14;
+      const minU = Math.min(0.9, wPx / Math.max(1, linePx));
+      if (us.length === 2 && Math.abs(us[0] - us[1]) < minU) {
+        const lo = us[0] <= us[1] ? 0 : 1, hi = 1 - lo;
+        let mid = (us[0] + us[1]) / 2;
+        mid = Math.max(minU / 2, Math.min(1 - minU / 2, mid));
+        us[lo] = mid - minU / 2; us[hi] = mid + minU / 2;
+      }
+      return us;
+    }
     if (gateMode === "round") return [0, 1];
     if (gateMode === "doors") return doorList.map((_, i) => (doorList.length === 1 ? 0.5 : i === 0 ? 0.22 : 0.78));
     return [];
@@ -502,6 +519,6 @@ export function create(core: Core3D, depsIn: EngineDeps): EngineView {
     layout, update, pointer, busy, goal, readouts, controls, react, demo, doors, relevel, redress,
     key: (k: string) => { if (k === "ArrowLeft") nudge(-1); else if (k === "ArrowRight") nudge(1); else if (k === " " || k === "Enter") fire(); },
     speaking: () => { /* the bus ducks; nothing in the world waits on her voice */ },
-    dispose: () => { for (const t of tickLabels) t.remove(); },
+    dispose: () => { for (const t of tickLabels.values()) t.remove(); },
   };
 }
