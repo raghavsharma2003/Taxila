@@ -363,6 +363,25 @@ session, the same flags): **17 / 13**. The earlier "1 / 1" for production came f
   - it costs one turn per such acknowledgement and must be measured the same way.
 - Cause D (the protégé with the child's name) is fixed and tested.
 
+### 5e. The batch (7fd936d1): patch 14 + D + 13-shadow + the leak fix; lever 5 measured off vs on
+
+Same method as 5d: one lane, prod routing, judge on, 3 seeds × 14 child turns × 6 sessions. Pace comes from
+`evals/conversation-r4/owner2-pace.mjs`.
+
+| arm | turns with a defect | J turns | J after a bare ack | first practice question (median child turn) | questions posed | answers graded | re-teach turns with no question |
+|---|---|---|---|---|---|---|---|
+| batch, TAXILA_ACK_CLOSE off (the default) | 40 | 40 | 18 | 4 | 78 | 50 | 6 |
+| batch, TAXILA_ACK_CLOSE **on** | 37 | 36 | **22** | **8** | **59** | **36** | **52** |
+
+**Lever 5 fails the bar:**
+- J after a bare acknowledgement did not drop (18 → 22).
+- The lesson is about half as fast: each teach step costs a held turn whenever the simulated child says "haan", which it often does.
+- It stays **off** (the default) and is recorded as a rejection in the context inbox.
+
+The batch with the lever off matches the earlier arms: 40 J turns, R5.loop 0.
+
+**The judge:** J.confused is a strong signal, not ground truth. Its precision against the reviewer's list is a lower bound of 16%; an agent's (non-human) read put about 13 of 16 judge-only flags as genuine. A human pass on 40 flags is on the owner's list.
+
 ## 6. Owner and main-session decisions needed
 
 1. **Patch 03 (safety floor):** a safety review, then apply.

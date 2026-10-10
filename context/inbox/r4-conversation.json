@@ -53,6 +53,12 @@
    "kind": "decision",
    "title": "The answer-leak predicate (director/items.js revealsAnswer) also catches (a) every counted part of a key whose head is a count (\"5 faces: 1 square and 4 triangles\" said as \"chaar triangles aur ek square\" before \"kitne faces?\") and (b) a key the question names as an option said with 3+ of the question's own describing words (\"tumne corner kaha, woh point jahan teen edges milti hain\"), never in a sentence with a blank. Found by r4-latency's blind rewrite review (D15, D22; D10 and D26 also caught). Cost: kit hints rungs 1-3 flagged 575 -> 576 of 37,194 (the new one: \"Equal sides and square corners\" for the key \"A square\"). Reverse if: a measured false leak on live replies",
    "at": "2026-10-10"
+  },
+  {
+   "id": "r4c-rj-ack-close-hold",
+   "kind": "rejection",
+   "title": "Tried (7fd936d1, lever 5, TAXILA_ACK_CLOSE=on): hold the teach step one turn after a bare haan / ok to a teaching question, so she closes her own question. Broke the main session's bar: owner-2, one lane, prod routing, judge on, 3 seeds x 90 turns vs off: J turns 40 -> 36 but J after a bare ack 18 -> 22 (no drop), the first practice question at child turn 8 vs 4 (median), questions posed 78 -> 59, answers graded 50 -> 36, re-teach turns with no question 6 -> 52 (each teach step costs a turn when the simulated child says haan, which it often does). Kept OFF (default); do not turn on",
+   "at": "2026-10-10"
   }
  ],
  "edges": [
