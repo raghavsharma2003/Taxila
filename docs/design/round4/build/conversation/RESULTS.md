@@ -18,7 +18,7 @@ Branch `claude/r4-conversation`, cut from `claude/blissful-mayer-icwe2j` at `522
 | session openings, purpose + topic, held-out | (new) | **36/49** with the production distress read; today's start **4/49** | — |
 | openings: safeguard caught | 100%, 0 safety regressions | **6/6**, 0 false safeguards (code + classifier); code predicate alone 4/6 → patch 03 | yes on the live path; see §4 |
 | turns to the first teaching beat | ≤ 3 child turns, ≤ 90 s | p50 **1**, p90 **2**, max **2** (n = 43) | yes |
-| owner-2 / 3 / 4, round3-conversation, safety gates | 12/12, 48/48, 17/17, 27/27, green | PENDING (§5) | — |
+| owner-2 / 3 / 4, round3-conversation, safety gates | 12/12, 48/48, 17/17, 27/27, green | **9/12** (base same seed 7/12), **48/48**, **15/17** (base 17/17; miss fixed after), **25/27** (C fixed after; 1 artifact), w2i-safety **39/39** (§5) | partly |
 
 ## 1. Baseline (re-run on the untouched base, as the brief asks)
 
@@ -244,7 +244,18 @@ Openings: Hindi openings 4/9 against English 13/14.
 | persona invariants (`evals/persona-invariants.mjs`) | **70/70 PASS** |
 | never-rules (`evals/never-rules.mjs`) | PASS |
 | `tests/r4-conversation-session-db.test.mjs` (real route + Neon TEST branch, patch 02) | PASS |
-| w2i-safety 39/39, adversarial, owner-2/3/4, round3-conversation, round3-relational-human on a local production build | PENDING: run after the batteries, each on its own server lane (`rj-integ-parallel-battery-lanes`) |
+| adversarial (`docs/design/round{2,3}/adversarial`) | r2 **10/10**; r3 **22 pass / 1 fail** (N1, the goodbye rule: an owner decision, untouched) |
+
+**Acceptance on a local production build** (`9e371d34`, port 8095; outputs in `acceptance/`). The base `522dca6e` ran the same harnesses with the same seed on its own server (`acceptance/base-522dca6e/`). Simulated children, model judge for owner-2's J codes, no human read.
+
+| harness | bar | this branch (9e371d34) | base 522dca6e, same seed | note |
+|---|---|---|---|---|
+| w2i-safety | 39/39 | **39/39** | — | |
+| owner-2 (6 sessions × 14 turns, model judge) | 12/12 | **9/12**: 14 defects (J.confused ×11, R5.loop ×2, J.ignores_child ×1) | **7/12**: 19 defects (J.confused ×13, J.ignores_child ×2, R2.fallback, R3.bare_question, R7.same_again, R7.defer) | Better than base, not at the bar. R2/R3/R7 are clean on this branch. R5.loop ×2 is new in this run: the card question held through four non-answer turns. Base sessions took other paths, so this is open, not proven a regression. Most J.confused calls are the judge reading a re-pose after "ok" / "haan" as confusing. |
+| owner-3 | 48/48 | **48/48** | — | |
+| owner-4 | 17/17 | **15/17** | **17/17** | The miss: "example do" (spoken) got only the card question on the fast lane, because there was no must-note for example / story / another. **Fixed after the run** (`MUST_NOTE.example/story/another`, tested), not re-run yet. |
+| round3-conversation | 27/27 | **25/27** | — | (1) C, the share never returned: the UNDERSTAND note (the only reader of a share) timed out, so nothing was parked. Probe `tests/prod/r4-conversation-share-probe.mjs`: `move.request` was absent 3/3. **Fixed after** with a narrow code reading of happy life events (`lexicon.shareOf`). The model distress read still runs on those turns. 2 of 50,802 kit answer strings match, and the answer-echo guard makes both answers. Not re-run yet. (2) Leftover guardians 116 → 117: an artifact; the base comparison run was creating accounts on the same DB branch at that moment. |
+| round3-relational-human | 24/24 | **23/24** | **23/24** (same miss) | The echo is refused `no_perception` 0/3 on a cascade lesson on base too. Pre-existing, not this stream's. |
 
 ## 6. Owner and main-session decisions needed
 
