@@ -61,6 +61,7 @@ export const COPY = {
   "line.smaller": L("{v} chhota", "{v} is smaller", "{v} छोटा"),
   "line.gap": L("{g} ka farak", "off by {g}", "{g} का अंतर"),
   "line.gapAbout": L("lagbhag {g} ka farak", "about {g} off", "लगभग {g} का अंतर"),
+
   // lab
   "lab.goal.predict": L("Pehle socho: kis {noun} mein zyada?", "Think first: which {noun} gets more?", "पहले सोचो: किस {noun} में ज़्यादा?"),
   "lab.goal.predict.less": L("Pehle socho: kaunsa pehle?", "Think first: which one first?", "पहले सोचो: कौन-सा पहले?"),

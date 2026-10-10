@@ -53,7 +53,9 @@ export function pickLevels<P, S, A extends PlayActBody>(logic: FamilyLogic<P, S,
     const proof = proveLevel(logic, v);
     if (!proof) continue;
     const p = pFirstTry(c.difficulty, req.pL);
-    const diag = proof.discriminates.reduce((s, id) => s + (req.mis[id] ?? 0.15), 0);
+    const diag = proof.discriminates.reduce((s, id) => s + (req.mis[id] ?? 0.15), 0)
+      // round 4 G1: the misconception just seen is the level's target; when no level can show it, the focus simply drops
+      + (req.focus && proof.discriminates.includes(req.focus) ? 2.5 : 0);
     const novelty = recent.has(c.signature) ? -0.6 : 0.25;
     scored.push({ c: { ...c, level: v }, proof, p, base: 1.4 * diag + novelty });
   }
@@ -61,7 +63,7 @@ export function pickLevels<P, S, A extends PlayActBody>(logic: FamilyLogic<P, S,
   const score = (s: (typeof scored)[number], band: number) => s.base - 2.2 * Math.abs(s.p - band);
   const finish = (s: (typeof scored)[number], sc: number, door?: "garam" | "teekha"): PlayLevel<P> => {
     const ms = (typeof performance !== "undefined" ? performance.now() : Date.now()) - t0;
-    return { ...s.c.level, ...(door ? { door } : {}), proof: { ...s.proof, pFirstTry: +s.p.toFixed(3), score: +sc.toFixed(3), genMs: +ms.toFixed(2) } };
+    return { ...s.c.level, sig: s.c.signature, ...(door ? { door } : {}), proof: { ...s.proof, pFirstTry: +s.p.toFixed(3), score: +sc.toFixed(3), genMs: +ms.toFixed(2) } };
   };
   const byG = [...scored].sort((a, b) => score(b, BAND.garam) - score(a, BAND.garam) || (a.c.signature < b.c.signature ? -1 : 1));
   const g = byG[0];

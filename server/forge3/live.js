@@ -80,7 +80,7 @@ function twinOfLevel(logic, level) {
 
 /**
  * The live piece for an interactive ask, or null.
- * @param {{ ask: string, lessonId: string, child: { id: string, class_level?: number, language_pref?: string },
+ * @param {{ ask?: string, need?: string, lessonId: string, child: { id: string, class_level?: number, language_pref?: string },
  *   skillId?: string|null, topicId?: string|null, vp?: string|null, moduleInTray?: boolean, safety?: boolean,
  *   lesson?: { shown?: object[], lastArt?: string|null }, childArt?: string|null }} m
  * @param {{ q?: Function, coverage?: any, certs?: any, playCerts?: any, now?: () => number }} [deps]
@@ -90,7 +90,8 @@ export async function buildLive(m, deps = {}) {
   const t0 = Date.now();
   if (!m?.child?.id || m.safety) return null;
   const { classLevel } = topicParts(m.topicId);
-  const plan = compose({ ask: m.ask, skillId: m.skillId ?? null, topicId: m.topicId ?? null, vp: m.vp ?? null, moduleInTray: !!m.moduleInTray,
+  // round 4 G1 (games-core patch 03): a lesson NEED (the practice beat) composes like an interactive ask
+  const plan = compose({ ask: m.ask, ...(m.need ? { need: m.need } : {}), skillId: m.skillId ?? null, topicId: m.topicId ?? null, vp: m.vp ?? null, moduleInTray: !!m.moduleInTray,
     lesson: m.lesson ?? null, childArt: m.childArt ?? null, classLevel: m.child.class_level ?? classLevel ?? 6 },
     { ...(deps.coverage !== undefined ? { coverage: deps.coverage } : {}), ...(deps.certs ? { certs: deps.certs } : {}), ...(deps.playCerts !== undefined ? { playCerts: deps.playCerts } : {}) });
   // the first PLAY rung of the ladder: a library game ranked above it (variety: the same family twice in a row) is
