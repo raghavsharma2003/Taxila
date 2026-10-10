@@ -438,6 +438,23 @@ export const studioSeam = {
         piece.facts = factsOf(archetype(c.archetype), c.params);
         L.pieces.set(piece.intentId, piece);
       }
+      // round 4 G1 (games-core patch 03): the PRACTICE beat offers a real game when play admits the practice skill (a code-
+      // built, solver-proven level through the same forge3 path a "game khelna hai" ask takes; no model call). It takes the
+      // practice slot from the library piece; on a miss (no play for the skill, a refused certificate) the library piece
+      // stays. Revealed only at the practice_set beat (beatsFor: a game), never mid-explanation.
+      const practice = [...L.pieces.values()].find((p) => p.need === "practice");
+      const playSkill = practice?.skillId ?? (ctx.skillIds?.length ? ctx.skillIds[ctx.skillIds.length - 1] : null);
+      if (playSkill && process.env.FORGE3_PLAY !== "0" && L.child?.id && L.studioControl !== "off") {
+        const r = await buildLive({ need: "practice", lessonId: ctx.lessonId, child: L.child, skillId: playSkill, topicId: L.topicId, lesson: L.forge3 ?? null }, { q: deps.q ?? undefined }).catch(() => null);
+        if (r?.artifact?.kind === "play") {
+          L.forge3 = r.lesson;
+          const intentId = `${ctx.lessonId}:play:practice`;
+          L.pieces.set(intentId, { intentId, slotId: `${intentId}:slot`, kind: "game", archetype: `play:${r.artifact.play.family}/${r.artifact.play.mode}`, source: "play",
+            artifact: r.artifact, facts: r.facts, skillId: r.artifact.play.skillId, need: "practice", neededAtMs: NEEDED_AT.practice, requested: false,
+            state: "ready", retired: false, createdAt: Date.now(), composeMs: r.ms });
+          if (practice) L.pieces.delete(practice.intentId);
+        }
+      }
       // pieces run in parallel: each is background work (model calls on the background quota lane)
       await Promise.all([...L.pieces.values()].filter((p) => p.state === "planning" && p.kind !== "whiteboard").map((p) => runPiece(L, p).catch(() => { p.source = "skeleton"; p.state = "fallback_ready"; })));
     })().catch((e) => console.warn("[studio] prefetch failed:", e?.message));
