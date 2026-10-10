@@ -15,7 +15,7 @@
   {
    "id": "r4k-ms-law-truth-battery",
    "kind": "measurement",
-   "title": "Nazariya truth battery: 0 wrong grades over >= 5,000 acts per mode (5 modes, ~25,000 acts; random + mal-rule + solver acts) against an independent oracle; generator p95 <= 50 ms; tampered plots, claim fields and cross-level replays refused (tests/r4-khand-law.test.mjs, node, 2026-10-10)",
+   "title": "Nazariya truth battery: 0 wrong grades over >= 5,000 acts per mode (5 modes, ~25,000 acts; random + mal-rule + solver acts) against an independent oracle; generator p95 <= 12 ms single process; tampered plots, claim fields and cross-level replays refused (tests/r4-khand-law.test.mjs, node, 2026-10-10)",
    "at": "2026-10-10"
   },
   {
@@ -59,6 +59,48 @@
    "kind": "open",
    "title": "Khand frame rate and touch are measured only on headless SwiftShader at 4x CPU throttle; a real ₹10k phone run is owner-dependent (O-R4)",
    "at": "2026-10-10"
+  },
+  {
+   "id": "r4k-ms-fps-proxy",
+   "kind": "measurement",
+   "title": "Khand fps at 4x CPU throttle, SwiftShader proxy, DPR 1, camera orbiting: 54-55 at 360x800, 40-47 at 412x915, 16-18 at 1366x768; our JS 1-4 ms p50 per frame, 5-11 draws, <10k triangles (n = 9 runs x 10 s, headless Chromium, load 1.2-4.6, 2026-10-10)",
+   "at": "2026-10-10"
+  },
+  {
+   "id": "r4k-ms-remesh-worker",
+   "kind": "measurement",
+   "title": "Khand re-mesh in the worker: 0.1-0.2 ms p50 / 0.2-2.0 ms p95 per edit, 0 ms on the main thread (prototype main-thread re-mesh 8.2 / 19.1 ms) (n = 40 edits x 9 runs, 4x throttle, proxy, 2026-10-10)",
+   "at": "2026-10-10"
+  },
+  {
+   "id": "r4k-ms-c4-shots",
+   "kind": "measurement",
+   "title": "Khand C4 floor audit: 104 shots (13 mode/goals x 3 viewports, engine and 2D twin, mistake/solved at 360), 0 failures; lesson Desk 9/9 views pass (headless, 2026-10-10)",
+   "at": "2026-10-10"
+  },
+  {
+   "id": "r4k-ms-c9-loop",
+   "kind": "measurement",
+   "title": "Khand C9 loop on a local production build: 139/139 checks; every entry served, graded and tamper-refused; builds saved; one kt_evidence row via game, replays fold nothing; 'game khelna hai' puts the block world on stage (n = 1 run, 3 asks, own Neon TEST branch, 2026-10-10)",
+   "at": "2026-10-10"
+  },
+  {
+   "id": "r4k-rej-facts-floor-fence",
+   "kind": "rejection",
+   "title": "Floor facts row floor=9 fence=12 sides=3x3: the seam turn said 'perimeter 9' for a 3x3 floor (n = 1, model output, C9 run 2026-10-10). Replaced by area / perimeter / rect '3 by 3'; the re-run read it right",
+   "at": "2026-10-10"
+  },
+  {
+   "id": "r4k-open-c10-412-1366",
+   "kind": "open",
+   "title": "C10 unmet on the proxy at 412 (40-47 fps) and 1366 (16-18): SwiftShader fill-bound at the tier-3d DPR floor 1.0; needs the phone run (O-R4) or a lower floor (G1 / owner)",
+   "at": "2026-10-10"
+  },
+  {
+   "id": "r4k-open-practice-beat",
+   "kind": "open",
+   "title": "C9 'at a practice beat' not measured for Khand topics (only the asked path)",
+   "at": "2026-10-10"
   }
  ],
  "edges": [
@@ -81,6 +123,21 @@
    "src": "r4k-dec-coverage-11-topics",
    "rel": "part_of",
    "dst": "r4k-nazariya-law-block-plot"
+  },
+  {
+   "src": "r4k-dec-mesher-in-worker",
+   "rel": "measured_by",
+   "dst": "r4k-ms-remesh-worker"
+  },
+  {
+   "src": "r4k-open-c10-412-1366",
+   "rel": "caused_by",
+   "dst": "r4k-ms-fps-proxy"
+  },
+  {
+   "src": "r4k-dec-coverage-11-topics",
+   "rel": "measured_by",
+   "dst": "r4k-ms-c9-loop"
   }
  ]
 }

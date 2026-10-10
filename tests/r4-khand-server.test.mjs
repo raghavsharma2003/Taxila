@@ -68,7 +68,7 @@ describe("r4-khand reactions", () => {
   const fam = bank().family?.nazariya;
   it("the loader merges data/play/reactions/nazariya.json into the bank", () => { assert.ok(fam?.law_refused?.en?.length >= 10); });
   it("every shape in every language passes the play guard and the lesson's never-rules floor, filled", () => {
-    const SAMPLE = { off: 2, top_off: 1, front_off: 1, side_off: 0, rows: 6, cols: 8, said: 14, blocks: 12, floor: 9, fence: 12, side: 4, hmax: 3, view: "front", goal: "cube", act: "layer" };
+    const SAMPLE = { off: 2, top_off: 1, front_off: 1, side_off: 0, rows: 6, cols: 8, said: 14, blocks: 12, area: 9, perimeter: 12, side: 4, hmax: 3, view: "front", goal: "cube", act: "layer" };
     let n = 0;
     for (const [moment, langs] of Object.entries(fam)) for (const [lang, shapes] of Object.entries(langs)) for (const sh of shapes) {
       const text = fill(sh, { ...SAMPLE, why: /\{\?why=([^}|]*)/.exec(sh)?.[1] ?? "", mal: /\{\?mal=([^}|]*)/.exec(sh)?.[1] ?? "", mode: /\{\?mode=([^}|]*)/.exec(sh)?.[1] ?? "", off: /\{\?off=([^}|]*)/.exec(sh)?.[1] ?? 2 });

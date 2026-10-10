@@ -169,7 +169,7 @@ if (flag("load")) {
     await cdp.send("Emulation.setCPUThrottlingRate", { rate: 4 });
     let bytes = 0; cdp.on("Network.loadingFinished", (e) => { bytes += e.encodedDataLength; });
     const t0 = Date.now();
-    await page.goto(`${BASE}?family=nazariya&mode=views&goal=build3&class=4&fade=1&seed=3`);
+    await page.goto(`${BASE}?family=nazariya&tier=3d&mode=views&goal=build3&class=4&fade=1&seed=3`);
     await page.waitForFunction(() => performance.getEntriesByName("khand-first-frame").length > 0, null, { timeout: 120000 });
     const ff = await page.evaluate(() => performance.getEntriesByName("khand-first-frame")[0].startTime);
     results.load.push({ profile: pr.id, run, firstFrameMs: Math.round(ff), wallMs: Date.now() - t0, kb: Math.round(bytes / 1024) });

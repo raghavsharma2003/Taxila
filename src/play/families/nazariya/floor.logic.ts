@@ -94,8 +94,10 @@ function validate(raw: unknown): FloorParams | null {
 
 function check(level: PlayLevel<FloorParams>, s: NzState, seq: number): Applied {
   const p = level.params, ap = areaPerimeter(p, s.h), box = solidBox(p, s.h), bumped = { ...s, acts: s.acts + 1 };
-  const facts: Facts = { floor: ap.area, fence: ap.perimeter };
-  const won = () => ({ state: commit(s, { ...s, done: true }), moments: [mom("solved", seq, { ...facts, ...(box ? { sides: `${box.a}x${box.b}` } : {}) })] });
+  // facts the Director reads as key=value: say exactly what each number is (a model read "floor=9 fence=12 sides=3x3" as
+  // "3 sides of 3, perimeter 9" in the C9 run, 2026-10-10)
+  const facts: Facts = { area: ap.area, perimeter: ap.perimeter };
+  const won = () => ({ state: commit(s, { ...s, done: true }), moments: [mom("solved", seq, { ...facts, ...(box ? { rect: `${box.a} by ${box.b}` } : {}) })] });
   const miss = (kind: "near_miss" | "law_refused", why: string): Applied => ({ state: bumped, moments: [mom(kind, seq, { ...facts, why })], refused: "mismatch" });
   if (p.goal === "area") {
     if (!connected(p, s.h)) return { state: bumped, moments: [mom("law_refused", seq, { ...facts, why: "one_floor" })], refused: "one_floor" };
@@ -186,11 +188,11 @@ function generate(req: GenRequest): Candidate<FloorParams>[] {
 }
 
 function facts(level: PlayLevel<FloorParams>, s: NzState): Facts {
-  const p = level.params, ap = areaPerimeter(p, s.h), f: Facts = { goal: p.goal, target: p.n };
+  const p = level.params, ap = areaPerimeter(p, s.h), f: Facts = { goal: p.goal, [p.goal === "area" || p.goal === "min" ? "area_asked" : "perimeter_asked"]: p.n };
   // the live counts are on screen at fade 1 only; later fades show them after a check
-  if (level.fade === 1 || s.checks > 0 || s.done) { f.floor = ap.area; f.fence = ap.perimeter; }
+  if (level.fade === 1 || s.checks > 0 || s.done) { f.area = ap.area; f.perimeter = ap.perimeter; }
   const box = solidBox(p, s.h);
-  if (box && (level.fade === 1 || s.done)) f.sides = `${box.a}x${box.b}`;
+  if (box && (level.fade === 1 || s.done)) f.rect = `${box.a} by ${box.b}`;
   if (s.done) f.done = "yes";
   return f;
 }

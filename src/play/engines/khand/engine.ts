@@ -286,7 +286,7 @@ export function create(core: Core3D, deps: EngineDeps): EngineView {
 
   const TOOL_SAYS: Record<Tool, string> = { build: "Building", remove: "Breaking", look: "Looking", walk: "Walking" };
   // which tool is on, said in the world (the buttons stay one short word each at 360 px)
-  const badge = core.label({ id: "tool", text: TOOL_SAYS[tool], lang: "en", size: 16, kind: "text", at: { box: { x: 56, y: 24 } } });
+  const badge = core.label({ id: "tool", text: TOOL_SAYS[tool], lang: "en", size: 16, kind: "text", at: { box: { x: 70, y: 34 } } });
   function setTool(t: Tool): void {
     tool = t;
     badge.set({ text: TOOL_SAYS[t] });

@@ -117,7 +117,7 @@ await withTestAccount(async ({ api, child }) => {
   const { chromium } = await import("playwright");
   const browser = await chromium.launch({ executablePath: process.env.KHAND_CHROME || "/opt/pw-browsers/chromium", args: ["--use-gl=angle", "--use-angle=swiftshader", "--enable-unsafe-swiftshader", "--ignore-gpu-blocklist", "--autoplay-policy=no-user-gesture-required"] });
   try {
-    for (const c of [{ id: "ask-perimeter", topic: "c6-maths-ch06-t01", cls: 6, ask: "game khelna hai" }, { id: "ask-array", topic: "c4-maths-ch09-t01", cls: 4, ask: "game khelna hai" }, { id: "ask-views-en", topic: "c4-maths-ch02-t01", cls: 4, ask: "can we play a game?" }]) {
+    for (const c of [{ id: "ask-perimeter", topic: "c6-maths-ch06-t01", cls: 6, ask: "game khelna hai" }, { id: "ask-array", topic: "c4-maths-ch09-t01", cls: 5, ask: "game khelna hai" }, { id: "ask-views-en", topic: "c4-maths-ch02-t01", cls: 5, ask: "can we play a game?" }]) {
       const { child: kid } = await api("POST", "/api/children", { firstName: "Meher", classLevel: c.cls, languagePref: "hinglish", interests: ["cricket"] });
       await api("POST", "/api/consent", { childId: kid.id, grants: { core_tutoring: true, learning_profile: true, memory: true } });
       await api("POST", "/api/parent/controls", { childId: kid.id, hoursStart: "00:00", hoursEnd: "23:59", dailyMinutes: 120 });
@@ -131,7 +131,7 @@ await withTestAccount(async ({ api, child }) => {
       page.on("response", async (rr) => { if (!/\/api\/(lesson\/turn|studio\/slot)/.test(rr.url())) return; try { const j = await rr.json(); const sl = j.slot ?? j.ui?.studioSlot ?? null; if (sl?.artifact) slots.push({ at: Date.now(), kind: sl.artifact.kind, family: sl.artifact.play?.family ?? null, mode: sl.artifact.play?.mode ?? null }); } catch { /* */ } });
       const rec = { id: c.id, topic: c.topic, ask: c.ask };
       try {
-        await page.goto(`${BASE}/c/${childId}/practice/${c.topic}?mode=text`, { waitUntil: "domcontentloaded", timeout: 60000 });
+        await page.goto(`${BASE}/c/${childId}/practice/${c.topic}?mode=text&tier=3d`, { waitUntil: "domcontentloaded", timeout: 60000 });
         await page.waitForSelector('[data-testid="lesson"]', { timeout: 60000 });
         const send = async (text) => {
           const input = page.locator('[data-testid="child-input"]');
