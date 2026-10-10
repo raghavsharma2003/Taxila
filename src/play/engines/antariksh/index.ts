@@ -222,7 +222,8 @@ export function create(core: Core3D, depsIn: EngineDeps): EngineView {
       const truth = H.valueOf(v), tu = valToU(truth), mk = s.marks[i];
       revealed[i] = true;
       const t = targets[i]; t.g.visible = true; t.g.position.x = uToX(tu); t.g.scale.setScalar(0.01);
-      L.truth[i].set({ text: v.text, hidden: false, at: wpt(tu, 1.25), frac: v.form === "fraction" });
+      // a second value's label rides one step higher (two close values never share a band)
+      L.truth[i].set({ text: v.text, hidden: false, at: wpt(tu, 1.25), dy: -i * (v.form === "fraction" ? 54 : 34), frac: v.form === "fraction" });
       const hit = mk !== null && Math.abs(mk - truth) <= p.tol;
       const gb = W.gapBars[i], gm = gb.material as THREE.MeshBasicMaterial;
       if (hit) {

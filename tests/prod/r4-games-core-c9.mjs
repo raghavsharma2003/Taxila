@@ -4,6 +4,9 @@
 //   (a) ASKED: the child types "game khelna hai" → the lesson turn's Studio slot carries a play piece (forge3 live.js);
 //   (b) AT A PRACTICE BEAT: plain turns until the Director's practice_set beat reveals the prefetched play piece
 //       (games-core patch 03; without it this half reports "not reached");
+//   (c) PER SKILL: for every admitted skill, a lesson on its topic and the play session the Director's admission starts
+//       for exactly that skill (/api/play/start { skillId, lessonId }), so every skill is shown through the same grade →
+//       token → turn → ledger path even when the lesson's opening skill is not that one (admission is by skill);
 // and in both, through the server grade into the ledger: the level (Nishana; Antariksh renders it, with a dress), its
 // solution posted as raw acts with the engine on screen, the signed evidence + seam tokens on a module-only turn, the
 // teacher's full turn, exactly one kt_evidence row via "game" for the level's skill. Pure API (what the device would send);
@@ -18,7 +21,7 @@ import { reactionProblems } from "../../shared/play.ts";
 import { ENGINE_THEMES } from "../../src/play/engines/core3d/api.ts";
 
 const arg = (k, d) => { const i = process.argv.indexOf(`--${k}`); return i > 0 ? process.argv[i + 1] : d; };
-const ONLY = arg("only", null), BEAT = arg("beat", "1") !== "0", MAX_TURNS = Number(arg("turns", 14));
+const ONLY = arg("only", null), BEAT = arg("beat", "1") !== "0", ASKED = arg("asked", "1") !== "0", PER_SKILL = arg("skills", "1") !== "0", MAX_TURNS = Number(arg("turns", 14));
 const OUT = arg("out", join(process.cwd(), "docs/design/round4/build/games-core/results"));
 mkdirSync(OUT, { recursive: true });
 const cov = JSON.parse(readFileSync(new URL("../../data/play/coverage.json", import.meta.url), "utf8"));
@@ -86,7 +89,7 @@ await withTestAccount(async ({ api }) => {
     const child = await childFor(e.classLevel);
     const row = { topicId, asked: null, beat: null };
     // (a) asked
-    try {
+    if (ASKED) try {
       const les = await api("POST", "/api/lesson/start", { childId: child.id, mode: "text", topicId });
       await api("POST", "/api/lesson/turn", { lessonId: les.lessonId, childText: "haan", turnSeq: 1 });
       const t = await api("POST", "/api/lesson/turn", { lessonId: les.lessonId, childText: "game khelna hai", turnSeq: 2 });
@@ -108,6 +111,19 @@ await withTestAccount(async ({ api }) => {
       ok(!!art, `C9b ${topicId}: the practice beat offers the game (turn ${row.beatTurn ?? "-"})`);
       await api("POST", "/api/lesson/end", { lessonId: les.lessonId }, [200, 201, 404, 409]).catch(() => null);
     } catch (er) { ok(false, `C9b ${topicId}: ${String(er.message ?? er).slice(0, 160)}`); }
+    // (c) every admitted skill of the topic, through the Director's admission for that skill
+    if (PER_SKILL) for (const skillId of [...new Set(cov.entries.filter((x) => x.family === "nishana" && x.topicId === topicId).flatMap((x) => x.skillIds))]) {
+      try {
+        const les = await api("POST", "/api/lesson/start", { childId: child.id, mode: "text", topicId });
+        const adm = await api("GET", `/api/play/admit?skillId=${skillId}`);
+        ok(adm.play === true && adm.family === "nishana", `C9c ${skillId}: admitted by skill (${adm.family}/${adm.mode} ${adm.goal})`);
+        const ps = await api("POST", "/api/play/start", { childId: child.id, skillId, lessonId: les.lessonId, lang: "hinglish" });
+        const r = await foldThrough(api, child, les.lessonId, { play: { sessionId: ps.sessionId } }, 1, `C9c ${skillId}`);
+        ok(r.skillId === skillId, `C9c ${skillId}: the evidence is on that skill (${r.skillId})`);
+        (row.skills ??= []).push(r);
+        await api("POST", "/api/lesson/end", { lessonId: les.lessonId }, [200, 201, 404, 409]).catch(() => null);
+      } catch (er) { ok(false, `C9c ${skillId}: ${String(er.message ?? er).slice(0, 160)}`); }
+    }
     report.topics.push(row);
     writeFileSync(join(OUT, `c9${ONLY ? "-" + ONLY : ""}.json`), JSON.stringify(report, null, 1));
   }
