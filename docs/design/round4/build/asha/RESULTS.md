@@ -231,6 +231,118 @@ owner's own accounts only. Everyone else stays on r8. The owner's eye on real le
 - **One live face, fps**: rig2 measured lamp2 at 59.9 fps on the 80 px speech row and on the 412 desk, at a 4x CPU
   throttle (headless Chromium, not a phone; rig2 `evidence/fps-*.json`). Not re-measured here.
 
+### Main-session asks on 5b (2026-10-10, after 51a2aaf5)
+
+**1. The 60 `npm test` failures, by name.** All 60 are in `tests/engines-browser.test.mjs`, and all 60 fail one
+assertion, "no console errors (engine crash, CSP violation) in the frame". The console error is the same each time:
+`Refused to connect to 'ws://localhost:<port>/?token=…' because it violates … "connect-src 'none'"`. Nothing in the
+engine code opens that socket.
+
+**Cause:** this container's browser pairing. Playwright 1.63 expects Chromium build 1243; the container ships build 1194,
+which is symlinked under the 1243 name (`/opt/pw-browsers`). The old build trips the engine frame's CSP. Evidence:
+- The base tree (9920f21, a separate worktree) fails the same 60 in this container.
+- The main session's integration tree passes them (2,672 / 0).
+
+The 60, each with that one cause (Chromium 1194 under Playwright 1.63, CSP refusal of a `ws://localhost` connection):
+- number-line@1 place 3/4 (one wrong commit first)
+- number-line@1 read a decimal marker (Hindi labels)
+- number-line@1 jump 7 → 12 with +1/+5 (ages 6-9, 64 px targets)
+- number-line@1 from Director context only (fractions extracted from the prompt)
+- collections@1 count 7 (tag each, one wrong total first)
+- collections@1 make 13 with +10/+1 (ages 6-9)
+- collections@1 compare from Director numbers (spread side wrong first, stuck after two)
+- place-value@1 build 305 (Hinglish place names)
+- place-value@1 read 305: concatenated '3005' graded wrong and tagged
+- place-value@1 compare 2,999 vs 10,001 (lakh grouping)
+- fractions@1 make 3/4 on a circle (roti)
+- fractions@1 compare 2/3 vs 3/4 (bigger)
+- fractions@1 equivalent to 1/2 on quarters
+- fractions@1 add 1/4 + 2/4 (add_across tagged)
+- multiply-divide@1 array 3 × 4
+- multiply-divide@1 share 7 among 3 (deal rounds, keep 1 back)
+- multiply-divide@1 every rectangle of 6
+- geoboard@1 build area 6, perimeter 10
+- geoboard@1 measure the perimeter of a 3×2 rectangle (area given first = swap)
+- geoboard@1 contrast: same area, different perimeter (ages 6-9)
+- data-graphs@1 read a pictograph: most
+- data-graphs@1 read a value with the key (icons counted = icon_ignores_key)
+- data-graphs@1 build a bar graph from a table
+- patterns@1 repeat ● ■ ● ■ _ _
+- patterns@1 grow 3, 6, 9, 12 → 15, 18
+- patterns@1 grid: multiples of 3 up to 12
+- measure@1 broken ruler: object from 2 cm, 5 cm long (end read first)
+- measure@1 pour 600 mL into the jug
+- measure@1 read 25 °C on a thermometer (Hindi)
+- sky@1 day and night: turn India into night
+- sky@1 shadow stick with POE (predict noon, then find the shortest shadow)
+- sky@1 moon phases: find the full moon
+- motion-lab@1 speed: reach 20 m in 5 s (a run that falls short first)
+- motion-lab@1 friction: test every surface, then pick the farthest
+- motion-lab@1 pendulum: a fair test on mass, then 'the same' (animated)
+- water-cycle@1 cycle: one wrong process, then all the way round
+- water-cycle@1 states with POE: temperature stays while boiling
+- water-cycle@1 groundwater: forest cover, pump 2, run 10 years
+- scene@1 compare-choice: tap the side with more
+- scene@1 sequence-steps: swap into order, Check
+- scene@1 sort-bins: tap a piece, tap a bin (the drag twin)
+- scene@1 predict-reveal: commit a prediction (reveal timeline plays)
+- scene@1 slider-explore: move the Sun until the shadow is under 1 m (goal, no probe)
+- scene@1 count-group: deal mangoes onto 2 plates (voice-commit probe, goal by taps)
+- scene@1 Forge choice-card (G1 fill)
+- planned: c4 'Round 3620 to the nearest 100' → number-line rounding (target never shown)
+- planned: c4 '2, 5, 8, 11, ___' → number-line jump from 11 by 3
+- planned: c5 'Fill in: 1/3 = ?/6' → fractions equivalent on a fixed sixths shape
+- planned: c4 'Write in numbers: four thousand fifty' → place-value build from the name (numeral never shown)
+- planned: c4 'Key: 1 star = 100 people … 7 stars' → data-graphs pictograph read
+- planned: c4 'What is 7 × 8?' → multiply-divide product entry (building 7×8 alone is not graded)
+- planned: c4 'Eggs come in trays of 6 … 3 trays' → product entry, the expression is not shown
+- planned: c1 '4 tens and 6 ones. Write the number.' → place-value read of the given pieces (46 never shown)
+- predict: fractions@1 compare hides the shapes until the pick (Director predict, engine mode kept)
+- predict: multiply-divide@1 product hides the dots until the verdict
+- predict: number-line@1 place hides the marker readout until the verdict
+- data-graphs@1 bar read: a labelled value axis (gridlines every step) makes the value readable
+- commands: fractions@1 highlight + reveal before the child acts, set_param starts a new goal
+- commands: scene@1 reveal marks the right choice-card option
+- commands: unknown param and bad values degrade with params_adjusted, not a crash
+
+**2. The bilabial extension on r8** (`evals/face-puppet/lipsync-looks.mjs`, one harness and one line set for both looks;
+`./bilabial2.js` is rig2's rule copied as a candidate, not wired). Offline: Diya's 24 stored lines, the product timing
+path, 60 fps; 132 bilabial words; the offset over the 21 lines with a forced-alignment track.
+
+| look / rule | sealed | offset median | within ±50 ms | ±150 ms lag search | within ±50 at 30 fps |
+|---|---|---|---|---|---|
+| r8 / product rule | 122 / 132 | +10 ms | 95% | 100% | 90% |
+| r8 / + extension | **132 / 132** | +10 ms | 95% | 100% | 90% |
+| lamp2 / product rule | 123 / 132 | +5 ms | 67% | 76% | 52% |
+| lamp2 / + extension | **132 / 132** | +5 ms | 67% | 76% | 52% |
+
+- On r8, the extension seals all 10 product-rule misses and leaves the offset unchanged.
+- **Blind judge: not run.** The available judge (`evals/face-puppet/judge-blind.mjs`) scores a still 3×3 grid for look
+  (premium / uncanny). It doesn't see audio, so it can't judge whether lips close in time with a sound, and no available
+  Azure model judges audio-video sync. Per the repo law (a model never grades; classify against verified keys), the
+  seal count above is the instrument.
+- Main's rule was: adopt for both if r8 is the same or better on all three; for lamp2 only if r8 is worse anywhere. r8
+  is better on seals and the same on offset; the third (the judge) is missing. **Not wired**, and the call goes back to
+  the main session.
+
+**3. lamp2 lip sync: 67% within ±50 ms against r8's 95%**, same harness. Per the main session's rule, this blocks lamp2
+beyond the owner cohort; it doesn't block the cohort. Root cause, line by line (`out/lipsync-looks.json` `perLine`):
+- **Not the TTS word-boundary or viseme events.** r8 gets 95% from the same events.
+- **Not a constant lead or lag.** lamp2's median is +5 ms.
+- **The drawn signal's shape.** 4 of 21 lines lock a whole syllable away (±235-320 ms; r8 on the same lines: -15..+50),
+  and 3 are 65-85 ms off. A stepped mouth (a few painted openness levels, each held ≥ 70 ms, crossfaded) correlates with
+  the audio envelope at the neighbouring syllable too. A ±150 ms search recovers 2 of those lines (76%).
+- **Frame pacing amplifies it.** At 30 fps lamp2 falls to 52%, r8 only to 90%. The stage speaks at 60 fps, so the 67%
+  is the speaking figure.
+- What would move it: a mouth closer to continuous (more painted openness levels, or a short-hold tween between keys).
+  The open-mouth texture flicker rig2's judges saw argues against more keys; rig2's RESULTS names an artist-drawn mouth
+  sheet.
+
+**4. 13 px text: 39 on lamp2 vs 36 on r8.** The 3 extra are `FIT noncohort-lesson-speaking-b3` at 360 / 412 / 1366, a
+NEW surface in the lamp2 battery: the non-cohort pass re-shows the lesson-speaking fixture. It fails on the same 13 px
+"Talk" label as `FIT lesson-speaking-b3` on r8 (all three widths). The label is `src/child/lesson/TalkButton.tsx`,
+stream 2's Desk, not this stream's. No new 13 px text on any screen.
+
 ### The turn POST waited behind the puppet: turn first (open-r4lat-puppet-delays-turn-post, 2026-10-10)
 
 The r4-latency finding: on tap-to-talk, final transcript → turn POST was p50 ~205 ms with the puppet on, against 8-29 ms
