@@ -1,0 +1,162 @@
+{
+ "method": "blind 2x2 lineup, positions shuffled per run, letters mapped back to labels; prompt verbatim",
+ "prompt": "The image is a 2 x 2 grid of four portraits of the same woman in four different outfits, labelled A (top left), B (top right), C (bottom left), D (bottom right). Judge only what is drawn.\n1. most_friendly: which cell looks the most friendly and approachable? one letter, plus one short reason.\n2. most_cool: which cell would a 12-year-old most likely think of as a \"cool\" teacher? one letter, plus one short reason.\n3. most_professional: which cell would a parent see as the most professional for their child's teacher? one letter, plus one short reason.\n4. least_professional: which cell would a parent see as the least professional? one letter, plus one short reason.\n5. overall: for the teacher of a children's tutoring app (ages 6-15) trusted by parents, which ONE outfit would you choose? one letter, plus one short reason.\n6. ranking_overall: all four letters, best first.\nReply JSON only: {\"most_friendly\":{\"v\":\"\",\"why\":\"\"},\"most_cool\":{\"v\":\"\",\"why\":\"\"},\"most_professional\":{\"v\":\"\",\"why\":\"\"},\"least_professional\":{\"v\":\"\",\"why\":\"\"},\"overall\":{\"v\":\"\",\"why\":\"\"},\"ranking_overall\":[]}",
+ "runs": [
+  {
+   "model": "taxila-kimi26",
+   "rep": 0,
+   "seed": 200,
+   "order": [
+    "o3-shirt",
+    "o4-cardigan",
+    "o2-denim",
+    "o1-print"
+   ],
+   "date": "2026-10-10T06:46:31.247Z",
+   "raw": {
+    "most_friendly": {
+     "v": "B",
+     "why": "The soft rust cardigan over a dark top gives a warm, approachable, inviting look."
+    },
+    "most_cool": {
+     "v": "C",
+     "why": "The layered denim overshirt has a relaxed, contemporary vibe a pre-teen would relate to."
+    },
+    "most_professional": {
+     "v": "A",
+     "why": "The crisp collared button-up with a pen in the pocket signals formal authority and competence."
+    },
+    "least_professional": {
+     "v": "C",
+     "why": "The open casual denim shirt looks too laid-back and informal for a teaching role."
+    },
+    "overall": {
+     "v": "B",
+     "why": "The neat cardigan strikes the best balance between parent-trusted professionalism and kid-friendly warmth."
+    },
+    "ranking_overall": [
+     "B",
+     "A",
+     "D",
+     "C"
+    ]
+   },
+   "mapped": {
+    "most_friendly": {
+     "v": "o4-cardigan",
+     "why": "The soft rust cardigan over a dark top gives a warm, approachable, inviting look."
+    },
+    "most_cool": {
+     "v": "o2-denim",
+     "why": "The layered denim overshirt has a relaxed, contemporary vibe a pre-teen would relate to."
+    },
+    "most_professional": {
+     "v": "o3-shirt",
+     "why": "The crisp collared button-up with a pen in the pocket signals formal authority and competence."
+    },
+    "least_professional": {
+     "v": "o2-denim",
+     "why": "The open casual denim shirt looks too laid-back and informal for a teaching role."
+    },
+    "overall": {
+     "v": "o4-cardigan",
+     "why": "The neat cardigan strikes the best balance between parent-trusted professionalism and kid-friendly warmth."
+    },
+    "ranking_overall": [
+     "o4-cardigan",
+     "o3-shirt",
+     "o1-print",
+     "o2-denim"
+    ]
+   },
+   "usage": {
+    "prompt_tokens": 1726,
+    "completion_tokens": 2571,
+    "total_tokens": 4297,
+    "audio_prompt_tokens": 0,
+    "prompt_tokens_details": {
+     "cached_tokens": 1664,
+     "image_tokens": 1444
+    }
+   }
+  },
+  {
+   "model": "taxila-kimi26",
+   "rep": 1,
+   "seed": 201,
+   "order": [
+    "o4-cardigan",
+    "o2-denim",
+    "o1-print",
+    "o3-shirt"
+   ],
+   "date": "2026-10-10T06:46:47.324Z",
+   "raw": {
+    "most_friendly": {
+     "v": "A",
+     "why": "The soft, warm cardigan has cozy, inviting colors that look approachable and nurturing."
+    },
+    "most_cool": {
+     "v": "B",
+     "why": "The denim shirt has a casual, trendy style that tweens typically find relatable and cool."
+    },
+    "most_professional": {
+     "v": "D",
+     "why": "The crisp collared shirt with a pen in the pocket reads as neat, formal educator workwear."
+    },
+    "least_professional": {
+     "v": "B",
+     "why": "Denim is inherently casual and reads as too informal compared with the other options."
+    },
+    "overall": {
+     "v": "D",
+     "why": "A polished yet approachable look that signals competence and earns parent trust for tutoring."
+    },
+    "ranking_overall": [
+     "D",
+     "A",
+     "C",
+     "B"
+    ]
+   },
+   "mapped": {
+    "most_friendly": {
+     "v": "o4-cardigan",
+     "why": "The soft, warm cardigan has cozy, inviting colors that look approachable and nurturing."
+    },
+    "most_cool": {
+     "v": "o2-denim",
+     "why": "The denim shirt has a casual, trendy style that tweens typically find relatable and cool."
+    },
+    "most_professional": {
+     "v": "o3-shirt",
+     "why": "The crisp collared shirt with a pen in the pocket reads as neat, formal educator workwear."
+    },
+    "least_professional": {
+     "v": "o2-denim",
+     "why": "Denim is inherently casual and reads as too informal compared with the other options."
+    },
+    "overall": {
+     "v": "o3-shirt",
+     "why": "A polished yet approachable look that signals competence and earns parent trust for tutoring."
+    },
+    "ranking_overall": [
+     "o3-shirt",
+     "o4-cardigan",
+     "o1-print",
+     "o2-denim"
+    ]
+   },
+   "usage": {
+    "prompt_tokens": 1726,
+    "completion_tokens": 2818,
+    "total_tokens": 4544,
+    "audio_prompt_tokens": 0,
+    "prompt_tokens_details": {
+     "cached_tokens": 256,
+     "image_tokens": 1444
+    }
+   }
+  }
+ ]
+}

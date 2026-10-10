@@ -1,0 +1,843 @@
+{
+ "method": "blind single-image questionnaire, no context given; PROMPT verbatim",
+ "prompt": "You are shown one character portrait. Answer only from what is drawn. Be blunt and specific.\n1. apparent_age_range: the age range the person appears to be, as \"lo-hi\" years.\n2. occupation_guesses: your top 3 guesses for her occupation or role, most likely first.\n3. origin_guess: where in the world would you guess she is from? Open answer, as specific as the picture allows.\n4. clothing: what she is wearing, in at most 12 words.\n5. reads_as_teacher: could she credibly be a schoolteacher? true/false, plus one short reason.\n6. friendly: how friendly and approachable does she look? 1-5 (1 = cold or stern, 5 = very warm and approachable), plus one short reason.\n7. cool: if she were a teacher, how likely is a 12-year-old to think she is a \"cool\" teacher? 1-5 (1 = not at all, 5 = very), plus one short reason.\n8. parent_professional: would a parent see her look and outfit as professional enough for their child's teacher? 1-5 (1 = not at all, 5 = fully), plus one short reason.\n9. childish: does anything about the figure or the drawing read as childish, babyish, toy-like or made for toddlers? true/false, plus what.\n10. sexualised: does anything read as sexualised, glamorous, seductive, coy or flirtatious (expression, pose, framing, clothing, make-up)? true/false, plus what.\n11. reads_as_indian: does she read as Indian specifically? true/false, plus which details.\nReply JSON only: {\"apparent_age_range\":\"\",\"occupation_guesses\":[],\"origin_guess\":\"\",\"clothing\":\"\",\"reads_as_teacher\":{\"v\":bool,\"why\":\"\"},\"friendly\":{\"v\":n,\"why\":\"\"},\"cool\":{\"v\":n,\"why\":\"\"},\"parent_professional\":{\"v\":n,\"why\":\"\"},\"childish\":{\"v\":bool,\"what\":\"\"},\"sexualised\":{\"v\":bool,\"what\":\"\"},\"reads_as_indian\":{\"v\":bool,\"details\":\"\"}}",
+ "runs": [
+  {
+   "label": "saree-original",
+   "file": "r4-asha/raw/w1-flat.png",
+   "model": "taxila-kimi26",
+   "rep": 1,
+   "date": "2026-10-10T06:39:00.337Z",
+   "answer": {
+    "apparent_age_range": "25-35",
+    "occupation_guesses": [
+     "Teacher",
+     "Bank officer",
+     "Administrative assistant"
+    ],
+    "origin_guess": "India",
+    "clothing": "Teal sari with red border, matching blouse, gold stud earrings.",
+    "reads_as_teacher": {
+     "v": true,
+     "why": "Sari and composed demeanor match typical Indian schoolteacher appearance."
+    },
+    "friendly": {
+     "v": 4,
+     "why": "Soft eyes and slight smile give a warm, approachable impression."
+    },
+    "cool": {
+     "v": 2,
+     "why": "Traditional sari and calm expression read conventional, not trendy."
+    },
+    "parent_professional": {
+     "v": 5,
+     "why": "Sari is a formal, widely accepted professional outfit in India."
+    },
+    "childish": {
+     "v": false,
+     "what": "Nothing; illustration style is realistic and mature."
+    },
+    "sexualised": {
+     "v": false,
+     "what": "Fully covered sari, modest neckline, neutral expression, no suggestive framing."
+    },
+    "reads_as_indian": {
+     "v": true,
+     "details": "Bindi, sari, skin tone, dark hair, and facial features."
+    }
+   },
+   "usage": {
+    "prompt_tokens": 1844,
+    "completion_tokens": 1753,
+    "total_tokens": 3597,
+    "audio_prompt_tokens": 0,
+    "prompt_tokens_details": {
+     "cached_tokens": 0,
+     "image_tokens": 1369
+    }
+   }
+  },
+  {
+   "label": "saree-age",
+   "file": "r4-asha/raw/age-b.png",
+   "model": "taxila-kimi26",
+   "rep": 0,
+   "date": "2026-10-10T06:39:02.193Z",
+   "answer": {
+    "apparent_age_range": "25-35",
+    "occupation_guesses": [
+     "Teacher",
+     "Bank employee",
+     "Administrative assistant"
+    ],
+    "origin_guess": "India",
+    "clothing": "Teal sari with red border and matching blouse",
+    "reads_as_teacher": {
+     "v": true,
+     "why": "Neat traditional attire and composed expression suit a schoolteacher"
+    },
+    "friendly": {
+     "v": 3,
+     "why": "Calm and neutral expression, not cold but not overtly warm either"
+    },
+    "cool": {
+     "v": 2,
+     "why": "Traditional sari and serious composure read formal, not trendy to a tween"
+    },
+    "parent_professional": {
+     "v": 5,
+     "why": "Sari is formal, modest, and culturally standard professional attire"
+    },
+    "childish": {
+     "v": false,
+     "what": "Nothing; the style and clothing are adult and realistic"
+    },
+    "sexualised": {
+     "v": false,
+     "what": "Full-coverage clothing, neutral pose, no suggestive expression or framing"
+    },
+    "reads_as_indian": {
+     "v": true,
+     "details": "Bindi, sari, brown skin, dark hair, and facial structure"
+    }
+   },
+   "usage": {
+    "prompt_tokens": 1844,
+    "completion_tokens": 2186,
+    "total_tokens": 4030,
+    "audio_prompt_tokens": 0,
+    "prompt_tokens_details": {
+     "cached_tokens": 0,
+     "image_tokens": 1369
+    }
+   }
+  },
+  {
+   "label": "saree-original",
+   "file": "r4-asha/raw/w1-flat.png",
+   "model": "taxila-kimi26",
+   "rep": 0,
+   "date": "2026-10-10T06:39:08.943Z",
+   "answer": {
+    "apparent_age_range": "25-35",
+    "occupation_guesses": [
+     "Schoolteacher",
+     "Administrative professional",
+     "Bank clerk"
+    ],
+    "origin_guess": "India",
+    "clothing": "Teal sari with red-brown border, matching blouse, small gold earrings",
+    "reads_as_teacher": {
+     "v": true,
+     "why": "Neat sari, bindi, and composed mature look fit a schoolteacher stereotype."
+    },
+    "friendly": {
+     "v": 4,
+     "why": "Calm expression with soft eyes; neutral yet welcoming."
+    },
+    "cool": {
+     "v": 2,
+     "why": "Traditional attire and reserved demeanor read proper, not trendy."
+    },
+    "parent_professional": {
+     "v": 5,
+     "why": "Sari and modest presentation are highly professional and respectable."
+    },
+    "childish": {
+     "v": false,
+     "what": "Nothing; style and subject are adult and realistic."
+    },
+    "sexualised": {
+     "v": false,
+     "what": "Modest full coverage, neutral expression, no suggestive pose or makeup."
+    },
+    "reads_as_indian": {
+     "v": true,
+     "details": "Red bindi, sari, gold studs, and South Asian facial features."
+    }
+   },
+   "usage": {
+    "prompt_tokens": 1844,
+    "completion_tokens": 2179,
+    "total_tokens": 4023,
+    "audio_prompt_tokens": 0,
+    "prompt_tokens_details": {
+     "cached_tokens": 0,
+     "image_tokens": 1369
+    }
+   }
+  },
+  {
+   "label": "saree-age",
+   "file": "r4-asha/raw/age-b.png",
+   "model": "taxila-kimi26",
+   "rep": 1,
+   "date": "2026-10-10T06:39:13.811Z",
+   "answer": {
+    "apparent_age_range": "25-35",
+    "occupation_guesses": [
+     "teacher",
+     "bank clerk",
+     "homemaker"
+    ],
+    "origin_guess": "India",
+    "clothing": "Teal saree with red-brown border, matching blouse, gold earrings",
+    "reads_as_teacher": {
+     "v": true,
+     "why": "Saree, bindi, and composed neat appearance fit typical Indian schoolteacher look."
+    },
+    "friendly": {
+     "v": 4,
+     "why": "Soft slight smile and calm direct gaze feel welcoming."
+    },
+    "cool": {
+     "v": 2,
+     "why": "Traditional formal saree and tidy bun read conservative, not trendy."
+    },
+    "parent_professional": {
+     "v": 5,
+     "why": "Saree is formal, modest, and standard professional attire."
+    },
+    "childish": {
+     "v": false,
+     "what": "Nothing; realistic adult portrait with mature styling."
+    },
+    "sexualised": {
+     "v": false,
+     "what": "Modest neckline, neutral straight pose, no makeup or revealing details."
+    },
+    "reads_as_indian": {
+     "v": true,
+     "details": "Red bindi, saree, gold studs, center-parted bun, brown skin and features."
+    }
+   },
+   "usage": {
+    "prompt_tokens": 1844,
+    "completion_tokens": 2539,
+    "total_tokens": 4383,
+    "audio_prompt_tokens": 0,
+    "prompt_tokens_details": {
+     "cached_tokens": 448,
+     "image_tokens": 1369
+    }
+   }
+  },
+  {
+   "label": "o1-print",
+   "file": "r4-asha/raw/o1-print.png",
+   "model": "taxila-kimi26",
+   "rep": 0,
+   "date": "2026-10-10T06:42:46.302Z",
+   "answer": {
+    "apparent_age_range": "25-35",
+    "occupation_guesses": [
+     "teacher",
+     "administrative professional",
+     "nurse"
+    ],
+    "origin_guess": "India",
+    "clothing": "blue mandarin-collar kurta with small white leaf print",
+    "reads_as_teacher": {
+     "v": true,
+     "why": "Neat, modest attire and composed, mature expression suit a schoolteacher."
+    },
+    "friendly": {
+     "v": 4,
+     "why": "Gentle closed-mouth smile and calm eyes read as warm and approachable."
+    },
+    "cool": {
+     "v": 3,
+     "why": "Traditional, tidy look is respectable but not trendy or youthful."
+    },
+    "parent_professional": {
+     "v": 5,
+     "why": "Conservative, clean, and formal enough to satisfy parents easily."
+    },
+    "childish": {
+     "v": false,
+     "what": "No toy-like or babyish elements; realistic adult proportions and style."
+    },
+    "sexualised": {
+     "v": false,
+     "what": "High neckline, neutral pose, no makeup or flirtatious expression or framing."
+    },
+    "reads_as_indian": {
+     "v": true,
+     "details": "Red bindi, kurta, South Asian facial features and hairstyle."
+    }
+   },
+   "usage": {
+    "prompt_tokens": 1844,
+    "completion_tokens": 1614,
+    "total_tokens": 3458,
+    "audio_prompt_tokens": 0,
+    "prompt_tokens_details": {
+     "cached_tokens": 448,
+     "image_tokens": 1369
+    }
+   }
+  },
+  {
+   "label": "o1-print",
+   "file": "r4-asha/raw/o1-print.png",
+   "model": "taxila-kimi26",
+   "rep": 1,
+   "date": "2026-10-10T06:42:51.501Z",
+   "answer": {
+    "apparent_age_range": "25-35",
+    "occupation_guesses": [
+     "Teacher",
+     "Office administrator",
+     "Customer service representative"
+    ],
+    "origin_guess": "India",
+    "clothing": "Blue kurta with white leaf print, mandarin collar, buttons",
+    "reads_as_teacher": {
+     "v": true,
+     "why": "Neat conservative clothing, composed expression, and mature tidy appearance suit an educator."
+    },
+    "friendly": {
+     "v": 4,
+     "why": "Soft eyes and a faint calm smile read as warm and approachable."
+    },
+    "cool": {
+     "v": 3,
+     "why": "Traditional modest style is respectable but lacks trendiness or edge."
+    },
+    "parent_professional": {
+     "v": 5,
+     "why": "Fully covered, pressed kurta and tidy grooming signal propriety and competence."
+    },
+    "childish": {
+     "v": false,
+     "what": "Nothing; realistic adult proportions, formal pose, and sober clothing."
+    },
+    "sexualised": {
+     "v": false,
+     "what": "High-neck kurta covers fully; expression and pose are neutral and formal."
+    },
+    "reads_as_indian": {
+     "v": true,
+     "details": "Red bindi, kurta, stud earrings, skin tone, and facial features."
+    }
+   },
+   "usage": {
+    "prompt_tokens": 1844,
+    "completion_tokens": 2310,
+    "total_tokens": 4154,
+    "audio_prompt_tokens": 0,
+    "prompt_tokens_details": {
+     "cached_tokens": 0,
+     "image_tokens": 1369
+    }
+   }
+  },
+  {
+   "label": "o3-shirt",
+   "file": "r4-asha/raw/o3-shirt.png",
+   "model": "taxila-kimi26",
+   "rep": 0,
+   "date": "2026-10-10T06:43:01.533Z",
+   "answer": {
+    "apparent_age_range": "25-35",
+    "occupation_guesses": [
+     "teacher",
+     "office administrator",
+     "nurse"
+    ],
+    "origin_guess": "India",
+    "clothing": "Light blue button-up collared shirt, pen in pocket",
+    "reads_as_teacher": {
+     "v": true,
+     "why": "Pen in pocket and neat collared shirt are classic teacher attire"
+    },
+    "friendly": {
+     "v": 4,
+     "why": "Soft smile and calm, direct eye contact feel approachable"
+    },
+    "cool": {
+     "v": 2,
+     "why": "Conventional neat style lacks casual or trendy edge kids see as cool"
+    },
+    "parent_professional": {
+     "v": 5,
+     "why": "Conservative, tidy shirt and modest presentation look fully professional"
+    },
+    "childish": {
+     "v": false,
+     "what": "Nothing; illustration is realistic and adult in style and dress"
+    },
+    "sexualised": {
+     "v": false,
+     "what": "Modest work shirt, neutral pose and expression, no makeup emphasis"
+    },
+    "reads_as_indian": {
+     "v": true,
+     "details": "Red bindi, brown skin tone, and facial structure indicate Indian origin"
+    }
+   },
+   "usage": {
+    "prompt_tokens": 1844,
+    "completion_tokens": 1777,
+    "total_tokens": 3621,
+    "audio_prompt_tokens": 0,
+    "prompt_tokens_details": {
+     "cached_tokens": 448,
+     "image_tokens": 1369
+    }
+   }
+  },
+  {
+   "label": "o2-denim",
+   "file": "r4-asha/raw/o2-denim.png",
+   "model": "taxila-kimi26",
+   "rep": 1,
+   "date": "2026-10-10T06:43:24.120Z",
+   "answer": {
+    "apparent_age_range": "25-35",
+    "occupation_guesses": [
+     "teacher",
+     "office administrator",
+     "college lecturer"
+    ],
+    "origin_guess": "India",
+    "clothing": "Blue denim shirt over teal top, pen in breast pocket.",
+    "reads_as_teacher": {
+     "v": true,
+     "why": "Pen in pocket, neat button-up shirt, calm and composed expression."
+    },
+    "friendly": {
+     "v": 4,
+     "why": "Gentle closed-lip smile and warm, direct eye contact."
+    },
+    "cool": {
+     "v": 3,
+     "why": "Casual denim is relatable, but the look is sensible rather than trendy."
+    },
+    "parent_professional": {
+     "v": 4,
+     "why": "Tidy, practical outfit; only slightly marked down for casual denim fabric."
+    },
+    "childish": {
+     "v": false,
+     "what": "Adult proportions, realistic style, and sober clothing throughout."
+    },
+    "sexualised": {
+     "v": false,
+     "what": "Fully covered, neutral front-facing pose, no seductive expression or styling."
+    },
+    "reads_as_indian": {
+     "v": true,
+     "details": "Red bindi, brown skin tone, dark eyes and hair, facial structure."
+    }
+   },
+   "usage": {
+    "prompt_tokens": 1844,
+    "completion_tokens": 1854,
+    "total_tokens": 3698,
+    "audio_prompt_tokens": 0,
+    "prompt_tokens_details": {
+     "cached_tokens": 0,
+     "image_tokens": 1369
+    }
+   }
+  },
+  {
+   "label": "o4-cardigan",
+   "file": "r4-asha/raw/o4-cardigan.png",
+   "model": "taxila-kimi26",
+   "rep": 0,
+   "date": "2026-10-10T06:43:33.112Z",
+   "answer": {
+    "apparent_age_range": "25-40",
+    "occupation_guesses": [
+     "teacher",
+     "administrator",
+     "librarian"
+    ],
+    "origin_guess": "India",
+    "clothing": "rust cardigan over dark teal top, stud earrings",
+    "reads_as_teacher": {
+     "v": true,
+     "why": "neat cardigan and modest, put-together look fit typical teacher"
+    },
+    "friendly": {
+     "v": 4,
+     "why": "slight smile and calm eye contact read as gently approachable"
+    },
+    "cool": {
+     "v": 2,
+     "why": "conventional modest style lacks trendy or edgy flair"
+    },
+    "parent_professional": {
+     "v": 5,
+     "why": "conservative, tidy outfit looks fully appropriate"
+    },
+    "childish": {
+     "v": false,
+     "what": "nothing; stylized but adult in style and dress"
+    },
+    "sexualised": {
+     "v": false,
+     "what": "nothing; fully covered, neutral front-facing pose and expression"
+    },
+    "reads_as_indian": {
+     "v": true,
+     "details": "bindi, skin tone, facial features, dark hair in low buns"
+    }
+   },
+   "usage": {
+    "prompt_tokens": 1844,
+    "completion_tokens": 1700,
+    "total_tokens": 3544,
+    "audio_prompt_tokens": 0,
+    "prompt_tokens_details": {
+     "cached_tokens": 448,
+     "image_tokens": 1369
+    }
+   }
+  },
+  {
+   "label": "o4-cardigan",
+   "file": "r4-asha/raw/o4-cardigan.png",
+   "model": "taxila-kimi26",
+   "rep": 1,
+   "date": "2026-10-10T06:43:48.081Z",
+   "answer": {
+    "apparent_age_range": "25-35",
+    "occupation_guesses": [
+     "Teacher",
+     "Administrator",
+     "Counselor"
+    ],
+    "origin_guess": "India",
+    "clothing": "Rust cardigan over dark teal top",
+    "reads_as_teacher": {
+     "v": true,
+     "why": "Modest layered outfit, neat hair, and calm approachable expression fit a teacher."
+    },
+    "friendly": {
+     "v": 4,
+     "why": "Soft eyes and a gentle slight smile make her look warm and welcoming."
+    },
+    "cool": {
+     "v": 2,
+     "why": "Neat but conventional clothes and a traditional look lack trendy or playful edge."
+    },
+    "parent_professional": {
+     "v": 5,
+     "why": "Conservative, tidy, and well-groomed appearance is fully appropriate for a child's teacher."
+    },
+    "childish": {
+     "v": false,
+     "what": "Nothing; realistic adult proportions and styling with no toy-like or babyish elements."
+    },
+    "sexualised": {
+     "v": false,
+     "what": "Nothing; modest clothing, neutral straight pose, and calm expression with no flirtatious cues."
+    },
+    "reads_as_indian": {
+     "v": true,
+     "details": "Red bindi, brown skin tone, facial features, and dark center-parted hair styled in a low bun."
+    }
+   },
+   "usage": {
+    "prompt_tokens": 1844,
+    "completion_tokens": 1884,
+    "total_tokens": 3728,
+    "audio_prompt_tokens": 0,
+    "prompt_tokens_details": {
+     "cached_tokens": 1792,
+     "image_tokens": 1369
+    }
+   }
+  },
+  {
+   "label": "o2-denim",
+   "file": "r4-asha/raw/o2-denim.png",
+   "model": "taxila-kimi26",
+   "rep": 0,
+   "date": "2026-10-10T06:44:15.603Z",
+   "answer": {
+    "apparent_age_range": "22-28",
+    "occupation_guesses": [
+     "teacher",
+     "administrator",
+     "social worker"
+    ],
+    "origin_guess": "India",
+    "clothing": "teal top under blue denim shirt, pen in pocket",
+    "reads_as_teacher": {
+     "v": true,
+     "why": "pen in pocket and tidy, practical clothes fit an educator"
+    },
+    "friendly": {
+     "v": 4,
+     "why": "slight closed-mouth smile and calm direct gaze look welcoming"
+    },
+    "cool": {
+     "v": 3,
+     "why": "casual denim is relatable but not particularly trendy or youthful"
+    },
+    "parent_professional": {
+     "v": 4,
+     "why": "modest and neat, though denim is slightly less formal than business wear"
+    },
+    "childish": {
+     "v": false,
+     "what": "nothing; she is drawn as an adult with adult proportions and features"
+    },
+    "sexualised": {
+     "v": false,
+     "what": "nothing; clothing is full-coverage and expression is neutral"
+    },
+    "reads_as_indian": {
+     "v": true,
+     "details": "red bindi, brown skin, dark hair and South Asian facial features"
+    }
+   },
+   "usage": {
+    "prompt_tokens": 1844,
+    "completion_tokens": 2177,
+    "total_tokens": 4021,
+    "audio_prompt_tokens": 0,
+    "prompt_tokens_details": {
+     "cached_tokens": 1792,
+     "image_tokens": 1369
+    }
+   }
+  },
+  {
+   "label": "o3-shirt",
+   "model": "taxila-kimi26",
+   "rep": 1,
+   "error": "400 {\"id\":\"234ac4196d37407789b18028fc9cffe0\",\"model\":\"Kimi-K2.6\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\"},\"finish_reason\":\"content_filter\",\"content_filter_results\":{\"error\":{\""
+  },
+  {
+   "label": "o3-shirt",
+   "model": "taxila-kimi26",
+   "rep": 0,
+   "error": "400 {\"id\":\"84d4df47fdfc4feb8c22ddc2109f6dea\",\"model\":\"Kimi-K2.6\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\"},\"finish_reason\":\"content_filter\",\"content_filter_results\":{\"error\":{\""
+  },
+  {
+   "label": "o6-cardigan-print",
+   "file": "r4-asha/raw/o6-cardigan-print.png",
+   "model": "taxila-kimi26",
+   "rep": 0,
+   "date": "2026-10-10T06:49:51.231Z",
+   "answer": {
+    "apparent_age_range": "25-35",
+    "occupation_guesses": [
+     "teacher",
+     "academic",
+     "office professional"
+    ],
+    "origin_guess": "India",
+    "clothing": "Teal patterned kurta, rust cardigan, small stud earrings",
+    "reads_as_teacher": {
+     "v": true,
+     "why": "Neat modest clothing and composed expression suit an educator."
+    },
+    "friendly": {
+     "v": 4,
+     "why": "Soft smile and direct calm gaze feel warm and approachable."
+    },
+    "cool": {
+     "v": 2,
+     "why": "Traditional formal attire and demeanor lack trendy casual elements."
+    },
+    "parent_professional": {
+     "v": 5,
+     "why": "Conservative, tidy, fully covered outfit appears highly professional."
+    },
+    "childish": {
+     "v": false,
+     "what": "Realistic adult proportions and mature styling throughout."
+    },
+    "sexualised": {
+     "v": false,
+     "what": "Modest high neckline, loose layers, neutral expression and pose."
+    },
+    "reads_as_indian": {
+     "v": true,
+     "details": "Red bindi, kurta top, brown skin tone, dark hair, features."
+    }
+   },
+   "usage": {
+    "prompt_tokens": 1844,
+    "completion_tokens": 1879,
+    "total_tokens": 3723,
+    "audio_prompt_tokens": 0,
+    "prompt_tokens_details": {
+     "cached_tokens": 448,
+     "image_tokens": 1369
+    }
+   }
+  },
+  {
+   "label": "o5-denim-print",
+   "file": "r4-asha/raw/o5-denim-print.png",
+   "model": "taxila-kimi26",
+   "rep": 0,
+   "date": "2026-10-10T06:49:52.306Z",
+   "answer": {
+    "apparent_age_range": "25-35",
+    "occupation_guesses": [
+     "teacher",
+     "doctor",
+     "office administrator"
+    ],
+    "origin_guess": "India",
+    "clothing": "Navy collared shirt over teal patterned tunic, pen in pocket.",
+    "reads_as_teacher": {
+     "v": true,
+     "why": "Pen in breast pocket and neat practical layered outfit."
+    },
+    "friendly": {
+     "v": 3,
+     "why": "Calm, composed expression; mildly welcoming but not smiling."
+    },
+    "cool": {
+     "v": 2,
+     "why": "Formal, traditional clothes look responsible rather than trendy to a child."
+    },
+    "parent_professional": {
+     "v": 5,
+     "why": "Conservative, tidy dress and pen in pocket signal competence and reliability."
+    },
+    "childish": {
+     "v": false,
+     "what": "Nothing; realistic adult proportions and restrained illustration style."
+    },
+    "sexualised": {
+     "v": false,
+     "what": "High-neck full-coverage outfit, neutral expression, straightforward portrait framing."
+    },
+    "reads_as_indian": {
+     "v": true,
+     "why": "Red bindi, brown skin, dark hair, and kurta-style printed top."
+    }
+   },
+   "usage": {
+    "prompt_tokens": 1844,
+    "completion_tokens": 1831,
+    "total_tokens": 3675,
+    "audio_prompt_tokens": 0,
+    "prompt_tokens_details": {
+     "cached_tokens": 448,
+     "image_tokens": 1369
+    }
+   }
+  },
+  {
+   "label": "o6-cardigan-print",
+   "file": "r4-asha/raw/o6-cardigan-print.png",
+   "model": "taxila-kimi26",
+   "rep": 1,
+   "date": "2026-10-10T06:50:03.530Z",
+   "answer": {
+    "apparent_age_range": "25-35",
+    "occupation_guesses": [
+     "teacher",
+     "administrator",
+     "librarian"
+    ],
+    "origin_guess": "India",
+    "clothing": "teal patterned collared shirt under rust cardigan",
+    "reads_as_teacher": {
+     "v": true,
+     "why": "neat collar, cardigan, and composed expression fit a classroom role"
+    },
+    "friendly": {
+     "v": 4,
+     "why": "soft smile and calm direct gaze"
+    },
+    "cool": {
+     "v": 3,
+     "why": "pleasant but traditional style lacks obvious trendiness"
+    },
+    "parent_professional": {
+     "v": 5,
+     "why": "fully covered, tidy layers project appropriate authority"
+    },
+    "childish": {
+     "v": false,
+     "what": "nothing; adult proportions and tailored clothing"
+    },
+    "sexualised": {
+     "v": false,
+     "what": "nothing; loose fit, high neckline, neutral stance and expression"
+    },
+    "reads_as_indian": {
+     "v": true,
+     "details": "bindi, center-parted dark hair, warm brown skin, and kurta-style top"
+    }
+   },
+   "usage": {
+    "prompt_tokens": 1844,
+    "completion_tokens": 2280,
+    "total_tokens": 4124,
+    "audio_prompt_tokens": 0,
+    "prompt_tokens_details": {
+     "cached_tokens": 448,
+     "image_tokens": 1369
+    }
+   }
+  },
+  {
+   "label": "o5-denim-print",
+   "file": "r4-asha/raw/o5-denim-print.png",
+   "model": "taxila-kimi26",
+   "rep": 1,
+   "date": "2026-10-10T06:50:15.475Z",
+   "answer": {
+    "apparent_age_range": "28-38",
+    "occupation_guesses": [
+     "teacher",
+     "administrator",
+     "social worker"
+    ],
+    "origin_guess": "India",
+    "clothing": "Teal printed kurta under navy shirt with pen in pocket",
+    "reads_as_teacher": {
+     "v": true,
+     "why": "Pen in pocket, neat layered clothes, composed mature appearance"
+    },
+    "friendly": {
+     "v": 4,
+     "why": "Direct calm gaze with a faintly warm, gentle expression"
+    },
+    "cool": {
+     "v": 3,
+     "why": "Looks respectable and traditional, not trendy or playful"
+    },
+    "parent_professional": {
+     "v": 5,
+     "why": "Modest, tidy, practical attire with neat grooming and no distractions"
+    },
+    "childish": {
+     "v": false,
+     "what": "Nothing; it is a realistic adult portrait with no toy-like elements"
+    },
+    "sexualised": {
+     "v": false,
+     "what": "Fully covered modest clothing, neutral straight-on pose, no glamour or flirtation"
+    },
+    "reads_as_indian": {
+     "v": true,
+     "details": "Red bindi, kurta top, brown skin, dark hair, South Asian facial features"
+    }
+   },
+   "usage": {
+    "prompt_tokens": 1844,
+    "completion_tokens": 2168,
+    "total_tokens": 4012,
+    "audio_prompt_tokens": 0,
+    "prompt_tokens_details": {
+     "cached_tokens": 448,
+     "image_tokens": 1369
+    }
+   }
+  }
+ ]
+}

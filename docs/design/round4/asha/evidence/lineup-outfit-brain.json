@@ -1,0 +1,285 @@
+{
+ "method": "blind 2x2 lineup, positions shuffled per run, letters mapped back to labels; prompt verbatim",
+ "prompt": "The image is a 2 x 2 grid of four portraits of the same woman in four different outfits, labelled A (top left), B (top right), C (bottom left), D (bottom right). Judge only what is drawn.\n1. most_friendly: which cell looks the most friendly and approachable? one letter, plus one short reason.\n2. most_cool: which cell would a 12-year-old most likely think of as a \"cool\" teacher? one letter, plus one short reason.\n3. most_professional: which cell would a parent see as the most professional for their child's teacher? one letter, plus one short reason.\n4. least_professional: which cell would a parent see as the least professional? one letter, plus one short reason.\n5. overall: for the teacher of a children's tutoring app (ages 6-15) trusted by parents, which ONE outfit would you choose? one letter, plus one short reason.\n6. ranking_overall: all four letters, best first.\nReply JSON only: {\"most_friendly\":{\"v\":\"\",\"why\":\"\"},\"most_cool\":{\"v\":\"\",\"why\":\"\"},\"most_professional\":{\"v\":\"\",\"why\":\"\"},\"least_professional\":{\"v\":\"\",\"why\":\"\"},\"overall\":{\"v\":\"\",\"why\":\"\"},\"ranking_overall\":[]}",
+ "runs": [
+  {
+   "model": "taxila-brain",
+   "rep": 0,
+   "seed": 100,
+   "order": [
+    "o4-cardigan",
+    "o3-shirt",
+    "o2-denim",
+    "o1-print"
+   ],
+   "date": "2026-10-10T06:45:45.442Z",
+   "raw": {
+    "most_friendly": {
+     "v": "A",
+     "why": "The warm cardigan creates a soft, approachable look."
+    },
+    "most_cool": {
+     "v": "C",
+     "why": "The denim jacket gives a relaxed, youthful style."
+    },
+    "most_professional": {
+     "v": "B",
+     "why": "The collared shirt and pocket pen look practical and teacher-like."
+    },
+    "least_professional": {
+     "v": "C",
+     "why": "The casual denim jacket appears least formal."
+    },
+    "overall": {
+     "v": "A",
+     "why": "It best balances warmth, trustworthiness, and teacher-appropriate polish."
+    },
+    "ranking_overall": [
+     "A",
+     "B",
+     "D",
+     "C"
+    ]
+   },
+   "mapped": {
+    "most_friendly": {
+     "v": "o4-cardigan",
+     "why": "The warm cardigan creates a soft, approachable look."
+    },
+    "most_cool": {
+     "v": "o2-denim",
+     "why": "The denim jacket gives a relaxed, youthful style."
+    },
+    "most_professional": {
+     "v": "o3-shirt",
+     "why": "The collared shirt and pocket pen look practical and teacher-like."
+    },
+    "least_professional": {
+     "v": "o2-denim",
+     "why": "The casual denim jacket appears least formal."
+    },
+    "overall": {
+     "v": "o4-cardigan",
+     "why": "It best balances warmth, trustworthiness, and teacher-appropriate polish."
+    },
+    "ranking_overall": [
+     "o4-cardigan",
+     "o3-shirt",
+     "o1-print",
+     "o2-denim"
+    ]
+   },
+   "usage": {
+    "completion_tokens": 216,
+    "completion_tokens_details": {
+     "accepted_prediction_tokens": 0,
+     "audio_tokens": 0,
+     "reasoning_tokens": 82,
+     "rejected_prediction_tokens": 0
+    },
+    "latency_checkpoint": {
+     "engine_tbt_ms": 10,
+     "engine_ttft_ms": 327,
+     "engine_ttlt_ms": 2401,
+     "pre_inference_ms": 195,
+     "service_tbt_ms": 10,
+     "service_ttft_ms": 724,
+     "service_ttlt_ms": 2793,
+     "user_visible_ttft_ms": 529
+    },
+    "prompt_tokens": 966,
+    "prompt_tokens_details": {
+     "audio_tokens": 0,
+     "cached_tokens": 0
+    },
+    "total_tokens": 1182
+   }
+  },
+  {
+   "model": "taxila-brain",
+   "rep": 1,
+   "seed": 101,
+   "order": [
+    "o2-denim",
+    "o3-shirt",
+    "o1-print",
+    "o4-cardigan"
+   ],
+   "date": "2026-10-10T06:45:49.873Z",
+   "raw": {
+    "most_friendly": {
+     "v": "D",
+     "why": "Warm cardigan and soft colors feel approachable."
+    },
+    "most_cool": {
+     "v": "A",
+     "why": "The denim jacket gives a relaxed, youthful look."
+    },
+    "most_professional": {
+     "v": "B",
+     "why": "The neat collared shirt looks polished and workplace-ready."
+    },
+    "least_professional": {
+     "v": "A",
+     "why": "The denim jacket appears the most casual."
+    },
+    "overall": {
+     "v": "D",
+     "why": "It balances warmth, trustworthiness, and teacher-appropriate polish."
+    },
+    "ranking_overall": [
+     "D",
+     "B",
+     "C",
+     "A"
+    ]
+   },
+   "mapped": {
+    "most_friendly": {
+     "v": "o4-cardigan",
+     "why": "Warm cardigan and soft colors feel approachable."
+    },
+    "most_cool": {
+     "v": "o2-denim",
+     "why": "The denim jacket gives a relaxed, youthful look."
+    },
+    "most_professional": {
+     "v": "o3-shirt",
+     "why": "The neat collared shirt looks polished and workplace-ready."
+    },
+    "least_professional": {
+     "v": "o2-denim",
+     "why": "The denim jacket appears the most casual."
+    },
+    "overall": {
+     "v": "o4-cardigan",
+     "why": "It balances warmth, trustworthiness, and teacher-appropriate polish."
+    },
+    "ranking_overall": [
+     "o4-cardigan",
+     "o3-shirt",
+     "o1-print",
+     "o2-denim"
+    ]
+   },
+   "usage": {
+    "completion_tokens": 194,
+    "completion_tokens_details": {
+     "accepted_prediction_tokens": 0,
+     "audio_tokens": 0,
+     "reasoning_tokens": 65,
+     "rejected_prediction_tokens": 0
+    },
+    "latency_checkpoint": {
+     "engine_tbt_ms": 10,
+     "engine_ttft_ms": 359,
+     "engine_ttlt_ms": 2354,
+     "pre_inference_ms": 182,
+     "service_tbt_ms": 10,
+     "service_ttft_ms": 764,
+     "service_ttlt_ms": 2731,
+     "user_visible_ttft_ms": 582
+    },
+    "prompt_tokens": 966,
+    "prompt_tokens_details": {
+     "audio_tokens": 0,
+     "cached_tokens": 0
+    },
+    "total_tokens": 1160
+   }
+  },
+  {
+   "model": "taxila-brain",
+   "rep": 2,
+   "seed": 102,
+   "order": [
+    "o2-denim",
+    "o1-print",
+    "o3-shirt",
+    "o4-cardigan"
+   ],
+   "date": "2026-10-10T06:45:55.494Z",
+   "raw": {
+    "most_friendly": {
+     "v": "D",
+     "why": "The warm cardigan creates a soft, approachable look."
+    },
+    "most_cool": {
+     "v": "A",
+     "why": "The denim jacket gives a relaxed, youthful style."
+    },
+    "most_professional": {
+     "v": "C",
+     "why": "The collared button-up shirt and pen look polished and work-ready."
+    },
+    "least_professional": {
+     "v": "A",
+     "why": "The casual denim jacket appears least formal."
+    },
+    "overall": {
+     "v": "D",
+     "why": "The cardigan balances warmth, trustworthiness, and teacher-appropriate polish."
+    },
+    "ranking_overall": [
+     "D",
+     "B",
+     "C",
+     "A"
+    ]
+   },
+   "mapped": {
+    "most_friendly": {
+     "v": "o4-cardigan",
+     "why": "The warm cardigan creates a soft, approachable look."
+    },
+    "most_cool": {
+     "v": "o2-denim",
+     "why": "The denim jacket gives a relaxed, youthful style."
+    },
+    "most_professional": {
+     "v": "o3-shirt",
+     "why": "The collared button-up shirt and pen look polished and work-ready."
+    },
+    "least_professional": {
+     "v": "o2-denim",
+     "why": "The casual denim jacket appears least formal."
+    },
+    "overall": {
+     "v": "o4-cardigan",
+     "why": "The cardigan balances warmth, trustworthiness, and teacher-appropriate polish."
+    },
+    "ranking_overall": [
+     "o4-cardigan",
+     "o1-print",
+     "o3-shirt",
+     "o2-denim"
+    ]
+   },
+   "usage": {
+    "completion_tokens": 254,
+    "completion_tokens_details": {
+     "accepted_prediction_tokens": 0,
+     "audio_tokens": 0,
+     "reasoning_tokens": 119,
+     "rejected_prediction_tokens": 0
+    },
+    "latency_checkpoint": {
+     "engine_tbt_ms": 12,
+     "engine_ttft_ms": 307,
+     "engine_ttlt_ms": 3258,
+     "pre_inference_ms": 284,
+     "service_tbt_ms": 12,
+     "service_ttft_ms": 814,
+     "service_ttlt_ms": 3792,
+     "user_visible_ttft_ms": 531
+    },
+    "prompt_tokens": 966,
+    "prompt_tokens_details": {
+     "audio_tokens": 0,
+     "cached_tokens": 0
+    },
+    "total_tokens": 1220
+   }
+  }
+ ]
+}

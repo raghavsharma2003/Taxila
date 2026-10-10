@@ -1,0 +1,162 @@
+{
+ "method": "blind 2x2 lineup, positions shuffled per run, letters mapped back to labels; prompt verbatim",
+ "prompt": "The image is a 2 x 2 grid of four portraits of the same woman in four different outfits, labelled A (top left), B (top right), C (bottom left), D (bottom right). Judge only what is drawn.\n1. most_friendly: which cell looks the most friendly and approachable? one letter, plus one short reason.\n2. most_cool: which cell would a 12-year-old most likely think of as a \"cool\" teacher? one letter, plus one short reason.\n3. most_professional: which cell would a parent see as the most professional for their child's teacher? one letter, plus one short reason.\n4. least_professional: which cell would a parent see as the least professional? one letter, plus one short reason.\n5. overall: for the teacher of a children's tutoring app (ages 6-15) trusted by parents, which ONE outfit would you choose? one letter, plus one short reason.\n6. ranking_overall: all four letters, best first.\nReply JSON only: {\"most_friendly\":{\"v\":\"\",\"why\":\"\"},\"most_cool\":{\"v\":\"\",\"why\":\"\"},\"most_professional\":{\"v\":\"\",\"why\":\"\"},\"least_professional\":{\"v\":\"\",\"why\":\"\"},\"overall\":{\"v\":\"\",\"why\":\"\"},\"ranking_overall\":[]}",
+ "runs": [
+  {
+   "model": "taxila-kimi26",
+   "rep": 0,
+   "seed": 400,
+   "order": [
+    "o4-cardigan",
+    "o6-cardigan-print",
+    "o2-denim",
+    "o5-denim-print"
+   ],
+   "date": "2026-10-10T06:50:46.303Z",
+   "raw": {
+    "most_friendly": {
+     "v": "A",
+     "why": "The soft, open cardigan over a plain top creates the gentlest, most relaxed silhouette with nothing formal or stiff."
+    },
+    "most_cool": {
+     "v": "C",
+     "why": "The casual denim/chambray shirt is the trendiest and most relaxed piece, closest to everyday youth fashion."
+    },
+    "most_professional": {
+     "v": "D",
+     "why": "The dark, structured collared jacket with a pocket and pen reads as the most formal and authoritative work attire."
+    },
+    "least_professional": {
+     "v": "C",
+     "why": "The light denim shirt is visibly the most casual, unstructured garment, resembling weekend rather than work wear."
+    },
+    "overall": {
+     "v": "B",
+     "why": "The cardigan keeps it warm and approachable for kids, while the collared, patterned underlayer looks deliberately dressed-up and trustworthy to parents."
+    },
+    "ranking_overall": [
+     "B",
+     "D",
+     "A",
+     "C"
+    ]
+   },
+   "mapped": {
+    "most_friendly": {
+     "v": "o4-cardigan",
+     "why": "The soft, open cardigan over a plain top creates the gentlest, most relaxed silhouette with nothing formal or stiff."
+    },
+    "most_cool": {
+     "v": "o2-denim",
+     "why": "The casual denim/chambray shirt is the trendiest and most relaxed piece, closest to everyday youth fashion."
+    },
+    "most_professional": {
+     "v": "o5-denim-print",
+     "why": "The dark, structured collared jacket with a pocket and pen reads as the most formal and authoritative work attire."
+    },
+    "least_professional": {
+     "v": "o2-denim",
+     "why": "The light denim shirt is visibly the most casual, unstructured garment, resembling weekend rather than work wear."
+    },
+    "overall": {
+     "v": "o6-cardigan-print",
+     "why": "The cardigan keeps it warm and approachable for kids, while the collared, patterned underlayer looks deliberately dressed-up and trustworthy to parents."
+    },
+    "ranking_overall": [
+     "o6-cardigan-print",
+     "o5-denim-print",
+     "o4-cardigan",
+     "o2-denim"
+    ]
+   },
+   "usage": {
+    "prompt_tokens": 1726,
+    "completion_tokens": 2759,
+    "total_tokens": 4485,
+    "audio_prompt_tokens": 0,
+    "prompt_tokens_details": {
+     "cached_tokens": 0,
+     "image_tokens": 1444
+    }
+   }
+  },
+  {
+   "model": "taxila-kimi26",
+   "rep": 1,
+   "seed": 401,
+   "order": [
+    "o4-cardigan",
+    "o2-denim",
+    "o5-denim-print",
+    "o6-cardigan-print"
+   ],
+   "date": "2026-10-10T06:51:03.783Z",
+   "raw": {
+    "most_friendly": {
+     "v": "D",
+     "why": "Soft rust cardigan over a patterned kurta looks warmly inviting."
+    },
+    "most_cool": {
+     "v": "B",
+     "why": "Casual denim jacket gives a trendy, relaxed vibe."
+    },
+    "most_professional": {
+     "v": "C",
+     "why": "Dark collared layer, neat kurta, and pen convey authority and preparedness."
+    },
+    "least_professional": {
+     "v": "B",
+     "why": "Denim is too casual for most parents’ expectations of a teacher."
+    },
+    "overall": {
+     "v": "D",
+     "why": "Balances approachable warmth with tidy, respectable attire for a tutor."
+    },
+    "ranking_overall": [
+     "D",
+     "C",
+     "A",
+     "B"
+    ]
+   },
+   "mapped": {
+    "most_friendly": {
+     "v": "o6-cardigan-print",
+     "why": "Soft rust cardigan over a patterned kurta looks warmly inviting."
+    },
+    "most_cool": {
+     "v": "o2-denim",
+     "why": "Casual denim jacket gives a trendy, relaxed vibe."
+    },
+    "most_professional": {
+     "v": "o5-denim-print",
+     "why": "Dark collared layer, neat kurta, and pen convey authority and preparedness."
+    },
+    "least_professional": {
+     "v": "o2-denim",
+     "why": "Denim is too casual for most parents’ expectations of a teacher."
+    },
+    "overall": {
+     "v": "o6-cardigan-print",
+     "why": "Balances approachable warmth with tidy, respectable attire for a tutor."
+    },
+    "ranking_overall": [
+     "o6-cardigan-print",
+     "o5-denim-print",
+     "o4-cardigan",
+     "o2-denim"
+    ]
+   },
+   "usage": {
+    "prompt_tokens": 1726,
+    "completion_tokens": 2732,
+    "total_tokens": 4458,
+    "audio_prompt_tokens": 0,
+    "prompt_tokens_details": {
+     "cached_tokens": 256,
+     "image_tokens": 1444
+    }
+   }
+  }
+ ]
+}

@@ -50,7 +50,7 @@ p50 3,614 -> 2,521 ms) and first-sentence streaming to TTS (not attempted: guard
 |---|---|
 | npx tsc -b | exit 0 |
 | npx vite build | exit 0 |
-| npm test | 2,591 tests: 2,584 pass, 4 fail, 3 skipped. Fails: migrations-applied (reads the PRODUCTION db, 023 not applied there; TEST has 24/24) and conductor-db (3 subtests, Neon TEST races; see battery notes) |
+| npm test | 2,591 tests: 2,584 pass, 4 fail, 3 skipped (21.7 min). Fails: migrations-applied (reads the PRODUCTION db, where 023 is not applied; TEST has 24/24) and 3 conductor-db subtests, which raced this stream's own worker on the shared TEST branch: tests/conductor-db.test.mjs alone with the worker stopped 14/14 |
 | check-prompt-budget | PASS, worst 1,696 / 2,600 |
 | persona invariants | 70/70 |
 | runtime-image-imports | 1/1 |
@@ -66,3 +66,33 @@ p50 3,614 -> 2,521 ms) and first-sentence streaming to TTS (not attempted: guard
 Image copy, NODE_ENV=production, TEST: /?ready=1 200, /api/health?ready=1 200 (db ok), /modules.html 200, /play.html 200,
 /api/duplex/config 200 shadow, POST /api/duplex/shadow 204, /api/parent/memory 401 signed out (400 on a malformed id),
 POST /api/play/start 400 without a child. Worker-image copy (no src/): starts, "worker up", ticker leader.
+
+## Local battery (final tree on the production-image copy, worker-image copy running)
+
+| file | now | integrator 2026-10-09 | note |
+|---|---|---|---|
+| w2i-safety | 39/39 | n/a | pass 2 was 38/39: the global @taxila.test count rose while this stream's browser check ran (harness artifact); alone 39/39 |
+| owner-1 grading | 7/7 | 7/7 | typed 0/68 wrong, module 0/42, frame 0/256 misgrades |
+| owner-2 no confusion | 10/12 | 8/12 | 2 defects in 90 turns, both R7.defer ("wapas aate hain" after an honest answer) |
+| owner-3 ending | 48/48 | 48/48 | |
+| owner-4 steering | 17/17 | 17/17 | pass 2 was 15/17 ("example do" got the model-failure line 2 of 2 runs): fixed (requested-example parts guard) and re-run |
+| owner-5 visual | 11/14 | 11/14, 9/14 | 2 Studio slots failed in forge (slot never became an artifact) |
+| round3-conversation | 26/27 | 22/28 | a happy share noticed but not returned to within 8 turns |
+| round3-truth | 11/11 | 11/11 | |
+| round3-relational-human | 29/29 | 23/24 (prefetch off) | prefetch off here |
+| round3-play | 93/93 | 93/93 | |
+| round3-forge | 39/46 | 40/47 | real on stage 12/12 (11/12); game asks ending in something to do 1/6 (2/6); playable views 3/18 (6/18); nonsense boards 0/17 (0/14); request to piece p90 2,273 ms n=1 (4,145) |
+| round3-duplex | 18/18 | 18/18 | |
+| round3-voicesig | 39/39 | 39/39 | pass 2 was 34/35: one lesson start 500 (NeonDbError in the start transaction, class only logged); not reproduced on re-run |
+| round2-truth | 26/26 | 23/25 | |
+| round2-conversation | 31/31 | 31/31 | |
+| w2i-release | 39/39 | n/a | |
+| p5 acceptance | 42/42 | 42/42 | |
+| w2a-parent-truth | 65/65 | n/a | |
+| w1a-young-text | 14/14 | n/a | |
+| w1b-tray | 10/10 | n/a | |
+| w2flow-walk | 83/84 | 78/79 | the walker's 2 scripted wrong answers both landed on covert probes (no verdict shown by design; each got a hint) |
+| desk browser (this stream) | 25/25 + 3/3 | n/a | stop check-in, switch, B5 at 360/412/1366 |
+
+The playable-views drop (6/18 -> 3/18) is the cost of admission by skill: "simulation dikhao" in c7-science-ch01-t01 got the
+drying lab before because the topic had it; the lab exercises s3 (test an idea fairly) and the lesson was on s1.

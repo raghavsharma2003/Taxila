@@ -1,0 +1,11 @@
+{
+ "nodes": [
+  {
+   "id": "rj-restart-without-resume-2026-10-09",
+   "kind": "rejection",
+   "title": "2026-10-09 ~20:45 UTC the container restarted mid round-3 review (integrate done, safety + experience reviews in flight). The main loop WIP-committed the review drafts, then answered the next 'continue' turn with no action instead of re-invoking Workflow({scriptPath, resumeFromRunId}). The workflow sat dead until the next safety-net check-in resumed it (~6 h of wall clock lost, both reviews restarted from scratch). Rule: after a container-restart notice, the restart handling is not done until every stopped workflow is resumed (or explicitly abandoned and the owner told) in that same turn; a WIP commit alone is not recovery. The safety-net routine prompt carries the exact resume call so a missed turn costs at most one check-in interval.",
+   "at": "2026-10-09"
+  }
+ ],
+ "edges": []
+}

@@ -85,6 +85,12 @@
    "at": "2026-10-10"
   },
   {
+   "id": "ms-r3fix-battery-2026-10-10",
+   "kind": "measurement",
+   "title": "Round 3 fix local battery, 2026-10-10, final tree on a production-image copy (Neon TEST, prod routing, prefetch off, adult-scripted, NOT taxila.dev): w2i-safety 39/39, owner-1 7/7 (typed 0/68 wrong, module 0/42, frame 0/256), owner-2 10/12 (2 R7.defer in 90 turns), owner-3 48/48, owner-4 17/17, owner-5 11/14, round3-conversation 26/27, round3-truth 11/11, round3-relational-human 29/29, round3-play 93/93, round3-forge 39/46 (real 12/12, doable 1/6, playable views 3/18, nonsense boards 0/17), round3-duplex 18/18, round3-voicesig 39/39, round2-truth 26/26, round2-conversation 31/31, w2i-release 39/39, p5 42/42, w2a-parent-truth 65/65, w1a-young-text 14/14, w1b-tray 10/10, w2flow-walk 83/84. npm test 2,591: 2,584 pass, fails = migrations-applied (prod db) + 3 conductor-db subtests racing this stream's worker on TEST (alone 14/14)",
+   "at": "2026-10-10"
+  },
+  {
    "id": "ms-r3fix-latency-breakdown-2026-10-10",
    "kind": "measurement",
    "title": "Where the silence after an answer goes (experience B1), from the review's own timeline (docs/design/round3/review-shots/review-evidence.json, local prod build, FIXED 750 ms fake transcription, n=48-50 timed turns, PTT and hands-free mixed): end of speech -> commit p50 1,037 ms; -> final transcript p50 1,792; -> turn POST p50 1,844; turn p50 3,050 / p90 4,791 ms; -> TTS request p50 5,163; -> her first audible word p50 6,070 / p90 7,583 ms. The server TTS prewarm already exists (server/voice/prewarm.js, default on); the turn's model calls are the largest block. Not fixed this round",
@@ -136,6 +142,18 @@
    "id": "open-r3fix-content-gaps",
    "kind": "open",
    "title": "Left open: class 4 grams topic has no play rule (a game ask there is said honestly, 'no game is ready'); 'animation dikhao, half ka half' has no moving content; boards are still often generic English flowcharts in Hinglish lessons; the content-filter fail-closed path turned 1 correct answer into a safeguard in the local battery (a rewrite blocked by the filter), same path as the integrator's open problem 3",
+   "at": "2026-10-10"
+  },
+  {
+   "id": "rj-r3fix-worker-during-npm-test",
+   "kind": "rejection",
+   "title": "Running a local worker against the Neon TEST branch while npm test runs: tests/conductor-db.test.mjs (job leases, retries, the step mutex) failed 3 subtests because the worker took the test's jobs. Alone with no worker 14/14. Stop every worker on TEST before npm test",
+   "at": "2026-10-10"
+  },
+  {
+   "id": "rj-r3fix-skill-admission-cost",
+   "kind": "rejection",
+   "title": "Not a rejection of admission by skill, the cost of it: playable views in round3-forge fell 6/18 -> 3/18 because the c7-science-ch01-t01 drying lab exercises s3 (test fairly) and the lesson was on s1. Widen ACTS only from evidence that a rule's act exercises a skill (a kit-text or judged mapping), never back to the topic",
    "at": "2026-10-10"
   }
  ],
@@ -279,6 +297,16 @@
    "src": "dec-r3fix-requested-example-own-numbers",
    "rel": "constrains",
    "dst": "dec-r3fix-arith-and-ui-guards"
+  },
+  {
+   "src": "rj-r3fix-skill-admission-cost",
+   "rel": "constrains",
+   "dst": "dec-r3fix-play-admission-by-skill"
+  },
+  {
+   "src": "dec-r3fix-play-admission-by-skill",
+   "rel": "measured_by",
+   "dst": "ms-r3fix-battery-2026-10-10"
   }
  ]
 }

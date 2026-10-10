@@ -1,0 +1,39 @@
+{
+ "nodes": [
+  {
+   "id": "dc-r4-face-lamplight-flat",
+   "kind": "decision",
+   "title": "2026-10-10 owner picked face option 4 'Lamplight flat' (docs/design/round4/face/, family w1-flat) for Asha, over the painted option the face agent and main loop recommended: \"go with 'Lamplight flat (my addition)' option 4 and make the 2d model\". She is drawn in Prakash's own light model (flat shapes, violet shadows, lamp-gold light, almost no outlines), so she belongs to the world instead of being a sticker on it (audit cause 1). Known weaknesses to fix in the new front: blind age reads 25-35 (needs stronger age cues toward early-to-mid 30s), skin most orange of the four (half-way grade toward Monk 6, measured in lamplight), lips slightly dark (could read as lipstick). Rig path: the r8 puppet2d method (cutter + membrane fill + lid keys + mouth patches) carries over for flat colour fields; estimate about 1-1.5 agent-weeks after the new front (RIG-NOTES \u00a76). Reverse if: the rigged clip at the 90 x 117 lesson slot reads as generic 'vector people' or not-premium to the owner, or a blind 'childish' check on the rigged clip rises above 1/5.",
+   "at": "2026-10-10"
+  },
+  {
+   "id": "dc-r4-outfit-friendly-cool",
+   "kind": "decision",
+   "title": "2026-10-10 owner: \"maybe instead of saree there can be something else so that she look more friendly and bit cool (research on this)\". The saree is replaced by an outfit chosen by research and a blind friendliness/coolness/professional check, within the child-safety and dignity floor (modest, everyday professional, no glamour, no romance register, adult). The main loop picks on evidence and shows the owner the outfit options; the owner can override before the body layer is final. Reverse if: the owner prefers the saree after seeing the options, or parents in a test read the chosen outfit as unprofessional for a teacher.",
+   "at": "2026-10-10"
+  },
+  {
+   "id": "dc-r4-single-teacher-asha",
+   "kind": "decision",
+   "title": "2026-10-10 owner: \"lts not focus on arjun etc now till we have everything else figured out till i tell you again only 1 teacher avatar of this option 4 is fine, because there are so many other things that we need to focus and build.\" Round 4 ships ONE teacher, Asha (option 4). Arjun, Uma and any teacher choice are parked: no Arjun face work, and the round-4 build removes the choose-your-teacher step (first run becomes 'meet Asha'). Supersedes the multi-teacher pick from task 14 / the Prakash prototype's niche picker for now. Reverse only when the owner says so.",
+   "at": "2026-10-10"
+  }
+ ],
+ "edges": [
+  {
+   "src": "dc-r4-face-lamplight-flat",
+   "rel": "refines",
+   "dst": "dc-r4-direction-prakash-grownup-face"
+  },
+  {
+   "src": "dc-r4-outfit-friendly-cool",
+   "rel": "refines",
+   "dst": "dc-r4-face-lamplight-flat"
+  },
+  {
+   "src": "dc-r4-single-teacher-asha",
+   "rel": "related",
+   "dst": "dc-r4-face-lamplight-flat"
+  }
+ ]
+}
