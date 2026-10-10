@@ -930,6 +930,9 @@ function retirePiece(L, intentId, why) {
   if (!p || p.state === "retired") return;
   const wasVisible = VISIBLE.has(p.state);
   p.state = "retired"; p.retired = true; p.retiredWhy = why;
+  // round 4: the child declined a game: the practice beat goes back to Stagecraft / the boards for this lesson
+  // (server/stagecraft/seam-bridge.js merge)
+  if ((why === "not_this" || why === "declined") && (p.source === "play" || String(p.archetype ?? "").startsWith("play:"))) L.playDeclined = true;
   if (L.onScreen === intentId) { L.onScreen = null; if (why !== "replaced") stagecraft.noteRetired(L.lessonId); }
   push(L, { t: "status", status: statusOf(p) });
   if (p.mountId) dbq("update studio_mount set outcome = outcome || $2::jsonb where id = $1", [p.mountId, JSON.stringify({ retired: why })]).catch(() => {});

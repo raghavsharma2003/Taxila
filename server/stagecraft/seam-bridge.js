@@ -77,6 +77,15 @@ function merge(lessonId, host, view, point, outcome) {
     return out;
   };
   if (!outcome || outcome.act !== "reveal" || !L) return keepW2();
+  // round 4 (owner's vision via the main session, 2026-10-10: games built on the go, the skill as the mechanic): at a
+  // PRACTICE beat an admitted play piece for the skill being practised wins over a Stagecraft reveal. It is an offer the
+  // child can decline (NEVER MANIPULATE): after one decline in this lesson the practice beat is Stagecraft's / the
+  // boards' again. Measured (G2, claude/r4-khand, local production, n = 3 lessons): Stagecraft's reveal took every
+  // practice beat (turns 5-11), so the play proposal was never shown.
+  if (isPracticeBeat(point.current?.beat ?? point.beat) && !L.playDeclined && isPlayPiece(view?.propose?.reveal ? L.pieces.get(view.propose.reveal) : null)) {
+    host.playWins = (host.playWins ?? 0) + 1;
+    return keepW2();
+  }
   // a Wave 2 piece the child is on stays unless the child asked for something else or is stuck on it (board reteach)
   if (onPiece && onPiece.source !== "stagecraft" && !exempt) return keepW2();
   const id = outcome.candidateId;
@@ -102,6 +111,10 @@ function merge(lessonId, host, view, point, outcome) {
   out.revealing = facts;
   return out;
 }
+
+const isPracticeBeat = (beat) => beat === "practice" || beat === "practice_set";
+/** A play piece (server/forge3/live.js through seam.composeAsk, or a W2 proposal of a play family). */
+export const isPlayPiece = (p) => !!p && (p.source === "play" || String(p.archetype ?? "").startsWith("play:"));
 
 /** A Stagecraft piece's facts archetype on the reply's facts row: tagged, so it never collides with a module engine id
  *  (shared/engine-catalog.js has a water-cycle@1 too) and seam.js isStudioRow can tell it is Studio's own row. */
