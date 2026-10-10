@@ -108,6 +108,36 @@
    "title": "E1 angles is a new small family law kon (कोण): angles as an amount of turning. turn (c5-maths-ch03-t01: quarter/half/three-quarter, cw/acw; mal-rules cw-confuse, half-is-quarter) and set (c6-maths-ch02-t03: open a given angle against a two-scale protractor; mal-rule wrong-scale = 180−θ). No live angle readout and no snapping (either is the answer); set levels within tolerance of 0/90/180 are never served (shortcut). It renders through a 2D dial view; an Antariksh 3D mode for kon is not built. Not on the play map (server/play/world.js FAMILIES unchanged).",
    "at": "2026-10-10",
    "reversal": "if a measured child run shows the dial unreadable at 360 px or the wrong-scale probe never fires, revisit the view or drop the set goal"
+  },
+  {
+   "id": "ms-r4g1-c10-proxy-fps-2026-10-10",
+   "kind": "measurement",
+   "at": "2026-10-10",
+   "title": "Antariksh C10 proxy (SwiftShader, headless Chromium 1194, 4-core shared container, 4x CPU throttle, n = 3 runs × 12 s each): median fps 360 px 42.6 / 412 px 28.9 / 1366 px 9.3 with the DPR floor 0.75 (36.4 / 25.7 / 9.3 at floor 1); our JS work p95 13-16 ms at every size, software raster is the rest. Bar 50: NOT met on the proxy; real-phone fps NOT measured (O-R4)."
+  },
+  {
+   "id": "ms-r4g1-c4-audit-2026-10-10",
+   "kind": "measurement",
+   "at": "2026-10-10",
+   "title": "Antariksh C4: forge3 cert 28/28 Nishana cells (2D 4 arts + 3D 3 themes × bands 4 / 7) pass at 360 / 412 / 1366; harness audit 18 skills × 3 themes × 3 sizes × 2 bands × aim/miss/hit 308/324, the 16 misses one clipped gap label (c7-maths-ch03-t01), fixed with keepInBox, re-audit 36/36."
+  },
+  {
+   "id": "ms-r4g1-c9-2026-10-10",
+   "kind": "measurement",
+   "at": "2026-10-10",
+   "title": "Antariksh C9 on a local production build with prod routing (head 78b7a86b): asked 8/12 topics (the other 4 open on an s1 play does not admit: correctly no game for an untaught skill); practice beat 0/12 (the Stagecraft reveal holds the slot; waits on stream 2); per skill (C9c) all 18 skills through the server grade into one kt_evidence row via game."
+  },
+  {
+   "id": "ms-r4g1-round3-play-final-2026-10-10",
+   "kind": "measurement",
+   "at": "2026-10-10",
+   "title": "round3-play 93/93 on the G1 tree (local prod build, prod routing, 2 runs alternating with a base 39c88fe server): start p90 525 / 230 ms vs base 676 / 473 ms; the earlier 844 ms was a cold first run."
+  },
+  {
+   "id": "ms-r4g1-duck-2026-10-10",
+   "kind": "measurement",
+   "at": "2026-10-10",
+   "title": "Music duck under her voice at 120 ms: 5.1% of the bed with τ 40 ms (just over the < 5% bar), 1.7-1.9% with τ 30 ms (n = 3, harness checks)."
   }
  ],
  "edges": [
@@ -179,6 +209,26 @@
   {
    "src": "dc-r4g1-kon-angles-law",
    "rel": "part_of",
+   "dst": "dc-r4g1-core3d-contract"
+  },
+  {
+   "src": "ms-r4g1-c10-proxy-fps-2026-10-10",
+   "rel": "measured_by",
+   "dst": "dc-r4g1-core3d-contract"
+  },
+  {
+   "src": "ms-r4g1-c4-audit-2026-10-10",
+   "rel": "measured_by",
+   "dst": "dc-r4g1-core3d-contract"
+  },
+  {
+   "src": "ms-r4g1-c9-2026-10-10",
+   "rel": "measured_by",
+   "dst": "dc-r4g1-core3d-contract"
+  },
+  {
+   "src": "ms-r4g1-duck-2026-10-10",
+   "rel": "measured_by",
    "dst": "dc-r4g1-core3d-contract"
   }
  ]
