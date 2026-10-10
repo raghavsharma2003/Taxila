@@ -93,7 +93,7 @@ function candidates(ask, kit, lessonId, band, predicted) {
  * @param {any} ask whiteboardIntentOf(...) with an empty line
  * @param {{ kit?: any, redact?: string[], now?: number }} o
  */
-export function preselect(ask, { kit, redact = [], now = Date.now() } = {}) {
+export function preselect(ask, { kit, redact = [], now = Date.now(), certify = null } = {}) {
   try {
     if (!boardFirstOn() || !kit) return null;
     const id = String(ask?.intent?.intentId ?? "");
@@ -111,6 +111,9 @@ export function preselect(ask, { kit, redact = [], now = Date.now() } = {}) {
     const band = ctx.band ?? "B3";
     for (const c of candidates(a2, kit, ask?.line?.lessonId ?? ask?.intent?.lessonId, band, predicted)) {
       const s = withSectors(retime(c.script, Math.max(800, Number(c.script.durationMs) || 0), ctx.speechMs), ctx.reply);
+      // round 4 content: a board the child's device cannot show legibly (server/forge3/tray-gate.js) is never preselected:
+      // her line is written from this board's facts row, so it must be one that will reach the stage
+      if (certify && !certify({ ...s, board: { ...WB_BOARD, ...(s.board ?? {}) } })) continue;
       const r = regate({ ...s, board: { ...WB_BOARD, ...(s.board ?? {}) } }, a2, ctx);
       const failing = r.ok ? [] : (r.gate?.checks ?? []).filter((x) => !x.pass).map((x) => x.id);
       if (!r.ok && (!r.gate?.script || failing.some((f) => !LINE_BOUND.has(f)))) continue;

@@ -62,7 +62,11 @@ export type StudioWire =
   | { t: "partial"; intentId: string; html: string }          // guarded, markup-only, pre-ready
   | { t: "status"; status: StudioStatus }
   | { t: "ready"; intentId: string; src: string; sha256: string; stage?: StageSize }
-  | { t: "script"; intentId: string; script: WhiteboardScript };   // a whiteboard script (or its next chunk)
+  | { t: "script"; intentId: string; script: WhiteboardScript }   // a whiteboard script (or its next chunk)
+  /** round 4 content (request → piece): a certified piece composed for the child's own ask, shown before her reply lands;
+   *  the turn's response then carries the same slot (or a `retract` follows when the turn did not show it). */
+  | { t: "slot"; slot: StudioSlot; early: true }
+  | { t: "retract"; intentId: string };
 
 /** The seam's per-turn view for the Brain (server/studio/seam.js statusFacts): what is on screen, in values. */
 export interface StudioTurnView {

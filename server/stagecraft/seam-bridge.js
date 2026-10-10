@@ -14,6 +14,8 @@ import { _lesson } from "../studio/seam.js";
 import { restIsDue } from "./policy.js";
 import { REST_CFG } from "./adapters.js";
 import { createStageGradeSession } from "./grade.js";
+// round 4 content: the ONE certificate gate (Studio v2 is off the child path unless certified at all three sizes)
+import { certifyForTray, viewportOf } from "../forge3/tray-gate.js";
 
 // `var` + function declarations (hoisted): kernel-point.js registers its hooks at load, and with the seam ⇄ bridge import
 // cycle (patch 03) it may run before this module's body has evaluated; a `let`/`const` binding would be in its TDZ then.
@@ -80,6 +82,16 @@ function merge(lessonId, host, view, point, outcome) {
   const id = outcome.candidateId;
   const c = host.state.candidates.find((x) => x.id === id) ?? null;
   const facts = { kind: outcome.facts.kind, archetype: stageArchetypeTag(outcome.facts.archetype), onScreen: { ...(outcome.facts.onScreen ?? {}) } };
+  // round 4 content: certified at the device's class (and at all three sizes) BEFORE it is proposed, or the W2 view stands
+  const sc0 = { rung: outcome.rung, archetype: c?.archetype ?? outcome.facts.archetype, spec: c?.payload?.spec ?? null, boardTwin: c?.boardTwin ?? null };
+  const vpNow = viewportOf(lessonId);
+  const cert = certifyForTray({ kind: "stagecraft", stagecraft: sc0 }, { vp: vpNow.vp, box: vpNow.box, young: vpNow.known ? vpNow.young : (L.child?.class_level ?? 6) <= 4,
+    topicId: L.topicId ?? point.current?.topicId ?? null, factsKind: facts.kind, verdict: c?.verdict ?? null });
+  if (!cert.ok) {
+    host.gateRefusals = (host.gateRefusals ?? 0) + 1;
+    console.info(`[stagecraft] tray gate refused ${outcome.rung} ${sc0.archetype ?? "-"} at ${cert.vp}: ${String(cert.why).slice(0, 100)}`);
+    return keepW2();
+  }
   // a seam piece for it, so slotFor / factsRowForSlot / onReveal run their existing paths (one piece, one door)
   L.pieces.set(id, { intentId: id, slotId: `${id}:slot`, kind: facts.kind === "whiteboard" ? "diagram" : facts.kind, archetype: c?.archetype ?? outcome.facts.archetype, params: {}, skillId: point.current.skillId,
     misconceptionId: point.current.misconceptionId ?? null, need: want?.need ?? "explain", neededAtMs: 0, intent: null, personal: outcome.rung === "generated_spec",

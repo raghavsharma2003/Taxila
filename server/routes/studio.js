@@ -11,13 +11,15 @@
 //   POST /api/studio/feedback                  {lessonId, intentId, action: "again" | "not_this"}
 //   POST /api/studio/frame-error               {lessonId, intentId, reason} → the skeleton slot comes back; only csp /
 //                                              runtime / navigated count as incidents against the build
+//   POST /api/studio/viewport                  {lessonId, box: {w, h}, young} → the device's viewport class for the ONE tray gate
+//                                              (server/forge3/tray-gate.js; round 4 content): every piece is certified at it
 //   POST /api/studio/wb-timing                 {lessonId, lateMs, source} → the whiteboard's sync telemetry (W2-F fixer)
 //   GET  /api/studio/made-for?childId=         the Made for you shelf / the parent's "Made for {child}" feed (W2-A renders)
 //   POST /api/studio/made-for/hide             {childId, id} → hides a shelf card (evidence rows untouched)
 import { HttpError, bad, send } from "../http.js";
 import { one, q } from "../db.js";
 import { requireChild, sessionTokenHash } from "../auth.js";
-import { subscribe, slotSnapshot, hostAnswer, hostFeedback, hostFrameError, noteWbTiming } from "../studio/seam.js";
+import { subscribe, slotSnapshot, hostAnswer, hostFeedback, hostFrameError, noteWbTiming, noteViewport } from "../studio/seam.js";
 import { getBuild } from "../studio/store.js";
 import { archetype } from "../studio/archetypes/index.js";
 
@@ -109,6 +111,15 @@ async function frameError(req, res, body) {
   send(res, 200, r);
 }
 
+/** The Desk's work-tray box (CSS px; numbers only). The gate's class for this lesson; unknown stays the 360 phone. */
+async function viewportRoute(req, res, body) {
+  const { lesson } = await lessonFor(req, body?.lessonId);
+  const w = Number(body?.box?.w), h = Number(body?.box?.h);
+  if (!(w >= 100 && w <= 4000 && h >= 50 && h <= 4000)) throw bad("invalid box");
+  const v = noteViewport(lesson.id, { w, h }, body?.young === true);
+  send(res, 200, { vp: v?.vp ?? "p360", tight: !!v?.tight });
+}
+
 /** The whiteboard's sync telemetry: how late a script reached the board relative to her line's audio (numbers only). */
 async function wbTimingRoute(req, res, body) {
   await lessonFor(req, body?.lessonId);
@@ -153,6 +164,7 @@ export const routes = {
   "POST /api/studio/feedback": feedback,
   "POST /api/studio/frame-error": frameError,
   "POST /api/studio/wb-timing": wbTimingRoute,
+  "POST /api/studio/viewport": viewportRoute,
   "GET /api/studio/made-for": madeFor,
   "POST /api/studio/made-for/hide": hide,
 };

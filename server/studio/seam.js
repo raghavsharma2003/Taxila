@@ -37,6 +37,10 @@ import * as boardFirst from "../stagecraft/board-first.js";
 import { boardGroundFor, dressBoard } from "../forge3/art.js";
 import { buildLive } from "../forge3/live.js";
 import { INTERACTIVE_ASKS } from "../forge3/compose.js";
+// round 4 content: the ONE certificate gate (server/forge3/tray-gate.js): nothing reaches the tray uncertified at the
+// device's viewport class (the Desk reports its tray box: POST /api/studio/viewport)
+import { certifyForTray, viewportOf, setViewport } from "../forge3/tray-gate.js";
+import { topicParts } from "../forge3/art.js";
 
 /** Bounds (LIVE-STUDIO §3.1, §3.8; STUDENT-FLOW §5.3). */
 export const STUDIO_LIMITS = Object.freeze({
@@ -121,6 +125,8 @@ export function subscribe(lessonId, sub) {
   for (const p of L.pieces.values()) {
     if (!isVisible(p)) continue;
     try {
+      // the replay is gated like the turn: a board this device's box cannot show legibly is not sent
+      if (p.artifact?.kind === "whiteboard" && !certifyForTray(p.artifact, gateCtx(L, p)).ok) continue;
       sub.send({ t: "status", status: statusOf(p) });
       if (p.artifact?.kind === "whiteboard") sub.send({ t: "script", intentId: p.intentId, script: p.artifact.script });
     } catch { /* a dead stream is dropped on the next push */ }
@@ -196,6 +202,49 @@ export function slotOf(p, state = p.state) {
   const st = state === "fallback_ready" ? "fallback_shown" : state;
   return { slotId: p.slotId, intentId: p.intentId, state: st, ...(art ? { artifact: art } : {}) };
 }
+
+// ───────────────────────────── the certificate gate (round 4 content) ─────────────────────────────
+
+/** The gate's context for a lesson: the device's class and box, its band, the topic. */
+function gateCtx(L, p = null) {
+  const v = viewportOf(L?.lessonId);
+  const classLevel = L?.child?.class_level ?? topicParts(L?.topicId ?? null).classLevel ?? 6;
+  return { vp: v.vp, box: v.box, young: v.known ? v.young : classLevel <= 4, topicId: L?.topicId ?? null, classLevel,
+    verdict: p?.verdict ?? null, factsKind: p?.facts?.kind ?? null };
+}
+/** Telemetry: what the gate refused (ids, kinds and reasons only; never a child's words). */
+const refusals = [];
+function noteRefusal(L, p, r, where) {
+  refusals.push({ at: Date.now(), where, kind: r.kind, cert: r.cert, vp: r.vp, why: String(r.why ?? "").slice(0, 120), archetype: p?.archetype ?? null });
+  if (refusals.length > 500) refusals.shift();
+  console.info(`[studio] tray gate refused ${where} ${r.kind} at ${r.vp}: ${String(r.why ?? "").slice(0, 100)}`);
+}
+export const gateRefusals = () => refusals.slice();
+/**
+ * The slot of a piece IF its artifact is certified at the device's class, else null. A frame that is not judged at this
+ * size falls back to its skeleton-as-activity when the skeleton is certified (the same params and words; host-graded).
+ */
+function gatedSlot(L, p, state = p.state, where = "slot") {
+  const slot = slotOf(p, state);
+  if (!slot?.artifact) return slot; // nothing drawn yet (a whiteboard planning): no pixels
+  const ctx = gateCtx(L, p);
+  const r = certifyForTray(slot.artifact, ctx);
+  if (r.ok) return slot;
+  if (slot.artifact.kind === "frame" && slot.artifact.skeleton) {
+    const a = slot.artifact;
+    const sk = { kind: "skeleton", stage: a.stage, skeleton: a.skeleton, archetype: a.archetype, intentId: a.intentId, params: a.params ?? {}, strings: a.strings ?? {} };
+    if (certifyForTray(sk, ctx).ok) return { ...slot, state: "fallback_shown", artifact: sk };
+  }
+  noteRefusal(L, p, r, where);
+  return null;
+}
+/** Is a piece's artifact certified now (statusFacts proposes only what slotFor would show)? */
+function certifiedNow(L, p) {
+  if (p.kind === "whiteboard") return true; // boards are gated when drawn
+  return !!gatedSlot(L, p, p.state === "fallback_ready" ? "fallback_shown" : "revealed", "propose");
+}
+/** The Desk reported its tray box (routes/studio.js POST /api/studio/viewport). */
+export function noteViewport(lessonId, box, young) { return setViewport(lessonId, { box, young }); }
 
 // ───────────────────────────── prefetch (lesson start) ─────────────────────────────
 
@@ -489,7 +538,7 @@ export const studioSeam = {
     const fits = (p) => (beat ? beatsFor(p).includes(beat) : p.neededAtMs <= clock);
     // the piece made for this beat first (a contrast piece in the contrast beat), then by when it was wanted
     const own = (p) => (beat && (BEAT_NEED[beat] ?? []).includes(p.need) ? 0 : 1);
-    const next = pieces.filter((p) => isRevealable(p) && fits(p)).sort((x, y) => own(x) - own(y) || x.neededAtMs - y.neededAtMs)[0];
+    const next = pieces.filter((p) => isRevealable(p) && fits(p) && certifiedNow(L, p)).sort((x, y) => own(x) - own(y) || x.neededAtMs - y.neededAtMs)[0];
     if (next) { view.propose = { reveal: next.intentId }; if (next.facts) view.revealing = next.facts; }
     return stagecraft.augmentView(lessonId, view, hint?.stagecraftPoint ?? null);
   },
@@ -516,7 +565,7 @@ export const studioSeam = {
       const child = x.child?.id ? x.child : L.child;
       if (!child?.id) return null;
       const r = await buildLive({ ask: x.visual, lessonId, child: { id: child.id, class_level: child.class_level, language_pref: child.language_pref },
-        skillId: x.skillId ?? null, topicId: x.topicId ?? L.topicId ?? null, vp: x.vp ?? null, lesson: L.forge3 ?? null }, { q: deps.q ?? undefined });
+        skillId: x.skillId ?? null, topicId: x.topicId ?? L.topicId ?? null, vp: x.vp ?? viewportOf(lessonId).vp, lesson: L.forge3 ?? null }, { q: deps.q ?? undefined });
       if (!r) return null;
       L.forge3 = r.lesson;
       const n = [...L.pieces.values()].filter((p) => p.source === "play").length + 1;
@@ -525,6 +574,10 @@ export const studioSeam = {
         artifact: r.artifact, facts: r.facts, skillId: r.artifact.play.skillId, need: "practice", requested: true, state: "ready", retired: false, createdAt: Date.now(), composeMs: r.ms };
       L.pieces.set(intentId, piece);
       L.pendingPlay = { intentId, turn: L.turn };
+      // round 4 content (request → piece ≤ 3 s): the certified piece goes to the child's stage NOW, before her reply is
+      // written; this turn's slotFor shows the same slot (or retracts it). Never for an uncertified piece.
+      const early = process.env.TAXILA_EARLY_PIECE === "0" ? null : gatedSlot(L, piece, "revealed", "early");
+      if (early) { push(L, { t: "slot", slot: early, early: true }); L.pendingPlay.early = true; }
       return { kind: "play", intentId, family: r.artifact.play.family, mode: r.artifact.play.mode, art: r.artifact.play.art ?? null, ms: r.ms };
     } catch (e) {
       console.warn("[studio] composeAsk failed:", e?.message);
@@ -546,13 +599,17 @@ export const studioSeam = {
     L.shown = null;
     // a safeguarding turn: the Help sheet replaces the Desk; whatever was on screen is frozen and retired, and nothing
     // new is shown for the rest of the lesson (STUDENT-FLOW §5.7)
-    if (hint?.safety) { studioSeam.onSafety(lessonId); L.pendingPlay = null; return null; }
+    if (hint?.safety) { if (L.pendingPlay?.early) push(L, { t: "retract", intentId: L.pendingPlay.intentId }); studioSeam.onSafety(lessonId); L.pendingPlay = null; return null; }
     // round 3 forge: the play piece composeAsk built for the child's interactive ask this turn is shown now: the child's
     // own request takes the tray from the Director's show (the same rule as a requested Stagecraft piece), and whatever
     // Studio had on screen is replaced
-    const pend = L.pendingPlay && L.pendingPlay.turn === L.turn ? L.pieces.get(L.pendingPlay.intentId) : null;
+    const pendRec = L.pendingPlay;
+    const pend = pendRec && pendRec.turn === L.turn ? L.pieces.get(pendRec.intentId) : null;
     L.pendingPlay = null;
-    if (pend && !L.safety && hint?.visualRequest && pend.state === "ready") {
+    const pendSlot = pend && !L.safety && hint?.visualRequest && pend.state === "ready" ? gatedSlot(L, pend, "revealed", "play") : null;
+    // a piece shown early that this turn does not show leaves the stage again (never a stale piece under her line)
+    if (pendRec?.early && !pendSlot) push(L, { t: "retract", intentId: pendRec.intentId });
+    if (pendSlot) {
       if (L.onScreen && L.onScreen !== pend.intentId) retirePiece(L, L.onScreen, "replaced");
       pend.state = "revealed"; pend.revealedTurn = L.turn; pend.revealedAt = Date.now();
       L.onScreen = pend.intentId; L.lastRevealTurn = L.turn;
@@ -560,7 +617,7 @@ export const studioSeam = {
       push(L, { t: "status", status: statusOf(pend) });
       // (no studio_mount row: its source check admits the Studio sources only, measured 2026-10-09 "violates check
       // constraint studio_mount_source_check"; the play stream records what was played through its own grade path)
-      return slotOf(pend, "revealed");
+      return pendSlot;
     }
     if (turnStudio?.retire && turnStudio.retire === L.onScreen) return null;
     // the Director's move needs the tray this turn (an item's tiles or pad, its module, the board): Studio yields it
@@ -581,10 +638,20 @@ export const studioSeam = {
       // a Stagecraft piece was admitted for this beat by the reveal policy (its want): only the tray and her own question
       // hold it, and a piece the CHILD asked for is held only by the Director's tray (her question is about it)
       if (p && !VISIBLE.has(p.state) && (trayTaken || (!!hint?.asking && !p.requested) || (beat && p.source !== "stagecraft" && !beatsFor(p).includes(beat)))) p.heldTurn = L.turn;
-      else if (p && (isRevealable(p) || VISIBLE.has(p.state))) { L.shown = { intentId: p.intentId, revealing: !VISIBLE.has(p.state) }; return slotOf(p, p.source === "skeleton" ? "fallback_ready" : "revealed"); }
+      else if (p && (isRevealable(p) || VISIBLE.has(p.state))) {
+        const g = gatedSlot(L, p, p.source === "skeleton" ? "fallback_ready" : "revealed", "reveal");
+        // round 4 content: not certified at this device's size → held (onReveal skips it; it never reaches the tray)
+        if (!g) p.heldTurn = L.turn;
+        else { L.shown = { intentId: p.intentId, revealing: !VISIBLE.has(p.state) }; return g; }
+      }
     }
     const on = L.onScreen ? L.pieces.get(L.onScreen) : null;
-    if (on && !trayTaken && VISIBLE.has(on.state) && on.kind !== "whiteboard") { L.shown = { intentId: on.intentId, revealing: false }; return slotOf(on, on.source === "skeleton" ? "fallback_ready" : on.state); }
+    if (on && !trayTaken && VISIBLE.has(on.state) && on.kind !== "whiteboard") {
+      const g = gatedSlot(L, on, on.source === "skeleton" ? "fallback_ready" : on.state, "on_screen");
+      // the device changed to a box the piece is not certified for: it leaves the tray (never shown broken)
+      if (!g) { retirePiece(L, on.intentId, "uncertified"); return null; }
+      L.shown = { intentId: on.intentId, revealing: false }; return g;
+    }
     return null;
   },
 
@@ -699,9 +766,13 @@ export const studioSeam = {
     };
     const showFallbackOrFail = () => {
       const kept = keptPrevious();
-      if (kept) { drawn({ ok: true, script: kept, source: "kept", syncMs: null }); return; }
+      if (kept && drawn({ ok: true, script: kept, source: "kept", syncMs: null })) return;
       const shown0 = fallbackScript && !p.retired && L.onScreen === intentId ? gatedFallback() : null;
-      const shown = shown0 ? dress(shown0) : null;
+      const shown1 = shown0 ? dress(shown0) : null;
+      // round 4 content: the template is pixels too: certified at the device's box or not shown
+      const tg = shown1 ? certifyForTray({ kind: "whiteboard", script: shown1 }, gateCtx(L, p)) : null;
+      if (tg && !tg.ok) noteRefusal(L, p, tg, "template");
+      const shown = tg?.ok ? shown1 : null;
       if (shown) {
         p.artifact = { kind: "whiteboard", stage: { w: shown.board.w, h: shown.board.h }, script: shown };
         // a board, never an interactive piece (brain/propose.js reads kind/archetype "whiteboard" as not holding attention)
@@ -717,6 +788,10 @@ export const studioSeam = {
     // a board passed the gate against her line: on the slot, on the wire, in the mount row (shared by board-first and the ladder)
     const drawn = (r0) => {
       const r = r0?.script ? { ...r0, script: dress(r0.script) } : r0;
+      if (!r?.script) return false;
+      // round 4 content: the ONE gate before the board reaches the stage (the device's box, the client's own fit)
+      const g = certifyForTray({ kind: "whiteboard", script: r.script }, gateCtx(L, p));
+      if (!g.ok) { noteRefusal(L, p, g, `board:${r.source ?? "line"}`); return false; }
       p.artifact = { kind: "whiteboard", stage: { w: r.script.board.w, h: r.script.board.h }, script: r.script };
       p.facts = r.script.facts ?? null;
       p.state = "revealed"; p.revealedAt = Date.now(); p.revealedTurn = L.turn; p.boardSource = r.source ?? "line"; p.syncMs = r.syncMs ?? null;
@@ -735,21 +810,19 @@ export const studioSeam = {
         const add = L.wbUsdPending; L.wbUsdPending = 0;
         dbq("update studio_mount set usd = coalesce(usd, 0) + $2 where id = $1", [head.mountId, add]).catch(() => {});
       }
+      return true;
     };
     // round 2 content, board-first: the board chosen at kernel time (her line was written from its facts row), re-timed and
     // re-gated on her REAL line with the full gate W0-W9. A pass is drawn NOW and rides this turn's response; a fail runs the
     // ladder below exactly as before.
     const first = boardFirst.takePreselected(ask, boardSync.gateCtxFor(ask, { kit: L.kit ?? undefined, redact: L.redact ?? [], prior: [] }));
-    if (first) {
-      drawn(first);
-      return { slotId: p.slotId, intentId, state: "revealed", artifact: p.artifact };
-    }
+    if (first && drawn(first)) return { slotId: p.slotId, intentId, state: "revealed", artifact: p.artifact };
     { const st = boardFirst.pickState(ask); if (st !== "none") console.info(`[studio] board-first ${st} topic=${String(ask?.kit?.topicId ?? "").slice(0, 40)} beat=${ask?.intent?.beat ?? "-"}`); }
     // a CONTINUED board: the board on screen, re-gated on her new line, stays up NOW (her row named it); the continuation
     // plan below still runs and replaces it when it lands (the same slot's {t:"script"}), else the kept board stays.
     // Before: the slot planned with an empty stage for up to the 7 s budget (measured: 7/45 boards, lateness up to ~6 s).
-    const keptNow = ask.mode === "continue" ? keptPrevious() : null;
-    if (keptNow) drawn({ ok: true, script: keptNow, source: "kept", syncMs: 0 });
+    const kept0 = ask.mode === "continue" ? keptPrevious() : null;
+    const keptNow = kept0 && drawn({ ok: true, script: kept0, source: "kept", syncMs: 0 }) ? kept0 : null;
     // ship5 p4-content board sync: the speculative board (prepareWhiteboard), the line plan raced against the sync deadline,
     // then the kit's code board, all re-gated against her line (TAXILA_BOARD_SYNC=0: exactly deps.planWhiteboard)
     boardSync.plan(ask, { kit: L.kit ?? undefined, prev, redact: L.redact, budgetMs: STUDIO_LIMITS.wbBudgetMs, planWhiteboard: deps.planWhiteboard, fallbackScript,
@@ -759,7 +832,7 @@ export const studioSeam = {
         const usd = Number(r?.usd) || 0;
         try { breaker.spend(usd); } catch { /* spend accounting never breaks a lesson */ }
         L.wbUsdPending = (L.wbUsdPending ?? 0) + usd;
-        if (r?.ok && r.script) drawn(r);
+        if (r?.ok && r.script && drawn(r)) { /* drawn on her line */ }
         else if (keptNow) { /* the kept board stays: never a failed slot under a board she is pointing at */ }
         else {
           // telemetry: check ids only (never her line, never the child): why the board stayed calm
@@ -814,7 +887,8 @@ export const studioSeam = {
       const on = L.onScreen ? L.pieces.get(L.onScreen) : null;
       if (on && VISIBLE.has(on.state) && on.kind !== "whiteboard" && !on.grade?.complete && !(ask.replaces && ask.replaces === on.intentId)) return null;
       if (L.pieces.has(String(ask.intent.intentId))) return null;
-      return boardFirst.preselect(ask, { kit: L.kit ?? undefined, redact: L.redact ?? [] })?.row ?? null;
+      return boardFirst.preselect(ask, { kit: L.kit ?? undefined, redact: L.redact ?? [],
+        certify: (script) => certifyForTray({ kind: "whiteboard", script }, gateCtx(L)).ok })?.row ?? null;
     } catch { return null; }
   },
 
@@ -1034,7 +1108,9 @@ export function slotSnapshot(lessonId, intentId) {
   const L = lessons.get(lessonId);
   const p = L?.pieces.get(intentId);
   if (!p) return null;
-  return slotOf(p, p.state === "planning" && p.kind === "whiteboard" ? "planning" : p.state);
+  const st = p.state === "planning" && p.kind === "whiteboard" ? "planning" : p.state;
+  // round 4 content: a snapshot is pixels too: uncertified at this device → the slot ended (the Desk gives the tray back)
+  return gatedSlot(L, p, st, "snapshot") ?? { slotId: p.slotId, intentId: p.intentId, state: "failed" };
 }
 
 /** The facts row prefix (director/modules.js FACTS_ROW_PREFIX: one shape for whatever is on screen). */
