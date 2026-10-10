@@ -76,3 +76,24 @@ is refused by the sandboxed frame's CSP (`connect-src 'none'`).
 - K0 touches no frame, engine or vite-config file.
 
 **Other checks:** `npx tsc -b` and `npx vite build` pass, and `check-prompt-budget` reports PASS.
+
+## Performance: G35-class PROXY, not a phone (2026-10-10)
+
+**Setup:** the dev fixture page at 360 × 800, DPR 2. Headless Chromium on SwiftShader (software WebGL) with CPU ×4
+throttling. Each run takes 6 s of frames after a 2.5 s settle, n = 1 run per screen. Probe: `/tmp` script, method
+recorded here.
+
+| screen | frame interval p50 / p95 | JS inside rAF p50 / p95 | long tasks |
+|---|---|---|---|
+| Home, live face (r8) | 66.7-83.2 / 83.4 ms (about 12-15 fps) | 0.8 / 15 ms | 80-82 (max about 100 ms) |
+| Home, still face (`face=plate`) | 16.7 / 16.7 ms (60 fps) | 0.1 / 1.1 ms | 0 |
+| World, orbit | 16.7 / 16.8 ms | 0.2 / 1.3 ms | 0 |
+| World, settlement | 16.7 / 16.7 ms | 0.1 / 1.3 ms | 0 |
+| Hangar | 16.7 / 16.7 ms | 0.1 / 1.0 ms | 0 |
+
+**Reading:**
+- The Kaksha shell (starfield, orbit canvas, settlement SVG) stays inside the §7 budgets on this proxy. Starfield and
+  orbit JS stay ≤ 1.3 ms p95, against budgets of ≤ 2 ms and ≤ 4 ms.
+- **Home's drop is the live face rendered on software WebGL,** the same r8 runtime that today's Home mounts. It is
+  stream 5's governor and tier logic, not the shell.
+- On a real GPU the face's own governor applies. This proxy cannot judge that. The reference phone (K-O3) can.
