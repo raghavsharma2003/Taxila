@@ -131,6 +131,18 @@
    "kind": "decision",
    "title": "Every turn that sets distress records which stage set it (classify_model, predicate, content_filter, understand_note, duplex_pending, relational_floor; episode_open / unattributed for a safeguard move with none) on the [lesson] turn log line and in debug.distress, codes only; a kind that is not a code is reported as other (server/brain/turn.js distressOf, tests/r4-latency-distress-source.test.mjs). Reverse if: never; extend the code list when a new stage can set distress.",
    "at": "2026-10-10"
+  },
+  {
+   "id": "ms-r4lat-ptt-page-clock-n48-2026-10-10",
+   "kind": "measurement",
+   "title": "Tap-to-talk page clock at n = 48 (tests/prod/r4-timeline, local production build, fixed 750 ms fake ASR, synthesised clip, plain account class 7, Done 0.7 s after speech, every after flag on, merged tree 620a0a0e, headless Chromium in a US cloud container, 2026-10-10): reply audible p50 4,477 / p90 5,885 ms; prefetch 48/48; echo asked 48/48, granted 5 (all not_yet). Final transcript to turn POST p50 259 / p90 731 ms (min 178). Puppet face A/B, n = 12 each, fresh driver: TAXILA_FACE_PUPPET2D=0 gives 8-29 ms, puppet on gives 78-521 ms. The puppet main-thread work delays the turn POST (headless software rendering; not yet measured on a phone).",
+   "at": "2026-10-10"
+  },
+  {
+   "id": "open-r4lat-puppet-delays-turn-post",
+   "kind": "open",
+   "title": "The puppet face delays the tap-to-talk turn POST by ~200-500 ms after the final transcript in headless Chromium (n = 12 vs 12, puppet on/off). Owner: stream 5 (src/face-puppet). Next: profile on a real low-end phone; if it holds, send the turn before the frame work (or yield).",
+   "at": "2026-10-10"
   }
  ],
  "edges": [
@@ -218,6 +230,16 @@
    "src": "open-r4lat-3000-floor",
    "rel": "measured_by",
    "dst": "rj-r4lat-reply-luna"
+  },
+  {
+   "src": "open-r4lat-puppet-delays-turn-post",
+   "rel": "measured_by",
+   "dst": "ms-r4lat-ptt-page-clock-n48-2026-10-10"
+  },
+  {
+   "src": "ms-r4lat-ptt-page-clock-n48-2026-10-10",
+   "rel": "measured_by",
+   "dst": "ms-r4lat-ptt-page-clock-2026-10-10"
   }
  ]
 }

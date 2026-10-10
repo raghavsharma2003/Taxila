@@ -16,7 +16,7 @@ over WebSocket from this host. "Audible" = first PCM byte + 60 ms player lead + 
 | step 0 baseline reproduced | done: 5,183 / 6,712 ms (n = 58) on PRODUCTION STT, within 15 % of 6,070 |
 | per-stage turn trace | done: `evals/latency/stages.mjs` over first-sound rows (server marks + model calls) |
 | dock "Thinking… N s" counter | patch request 01 (stream 2's file), applied on this branch as a `[patch-request]` commit |
-| L1 levers | built and measured. **After, n = 117: reply audible p50 4,238 / p90 5,718 ms** (from 5,183 / 6,712: −945 / −994). Tap-to-talk page clock (n = 12): 5,005 → 3,452 after two client bug fixes |
+| L1 levers | built and measured. **After, n = 117: reply audible p50 4,238 / p90 5,718 ms** (from 5,183 / 6,712: −945 / −994). Tap-to-talk page clock: 5,005 → 3,452 after two client bug fixes (n = 12); **4,477 / 5,885 at n = 48** on the merged tree, with ~260 ms of it the puppet face delaying the turn POST (headless; reported) |
 | reply bar p50 ≤ 3,000 / p90 ≤ 4,500 | **NOT met** (4,238 / 5,718 at n = 117). Why, and what would meet it: "The floor" below |
 | L2 echo instant | `TAXILA_ACK_AT_MS=1000` holds the ack-leak bars (n = 48 graded); 850 leaks. Echo audible p50 2,971 → **2,285 ms** (n = 17 played); ≤ 1,500 **NOT met** (floor below) |
 | L3 shadow | early distress read measured (below); echo-at-900 counterfactual below |
@@ -217,6 +217,19 @@ FIXED 750 ms commit → final (driver.mjs), a synthesised child clip (gpt-4o-min
 | branch before the client fixes | 12 | 5,005 | 0/12 | 0/12 | 0 |
 | + Done tap → prefetch (`cascadeLink.talkEnd`) | 12 | 4,392 | 12/12 | 0/12 | 0 |
 | + press opens the echo's turn (`cascadeLink.talkStart`) | 12 | **3,452** | 12/12 | 12/12 | 2 (both graded, decided ~2.1 s) |
+
+**Tap-to-talk at n = 48** (the main session's pre-merge bar, n ≥ 40; merged tree 620a0a0e, same 12 lines × 4 lessons, every
+after flag on, `runs/ptt-page-clock-n48.jsonl`): **reply audible p50 4,477 / p90 5,885 ms**; prefetch sent 48/48; the echo
+was asked on 48/48 and granted on 5, all on not_yet turns (decided at 2.2-3.0 s). Read the n = 12 run's 3,452 above as
+optimistic: at this n the turn itself took p50 1,358 ms (was 945), and a NEW gap appeared between the final transcript and
+the turn POST: **p50 259 / p90 731 ms, never below 178 ms** (it was 8-23 ms at n = 12).
+
+That gap is the puppet face. One lesson each on a fresh driver: `TAXILA_FACE_PUPPET2D=0` gives final → POST 8-29 ms (n = 12,
+`runs/ptt-page-clock-puppet-off-n12.jsonl`); the puppet on gives 78-521 ms (p50 ~205, n = 12, `…-puppet-on-n12.jsonl`). The
+puppet's work keeps the page's main thread busy, and the turn POST waits behind it. This is headless Chromium in a cloud container
+(software rendering, no GPU), so a phone will differ in size, either way. The face code is stream 5's (`src/face-puppet/**`),
+read-only here. Reported to the main session: profile the puppet's frame work on a real low-end phone. If it holds there,
+the client should send the turn before painting (or yield the frame).
 
 Two client bugs, both fixed in `src/lesson/cascadeLink.ts` (tests/r4-latency-ptt-prefetch.test.mjs fails on the old link):
 - the prefetcher's "child stopped" signal came only from the energy VAD, which tap-to-talk does not use, so tap-to-talk never
