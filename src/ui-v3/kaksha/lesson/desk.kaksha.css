@@ -1,0 +1,165 @@
+/* The Desk under the Kaksha skin (BUILD-SPEC §3.3; K1) and the Debrief (§3.5). Loaded only with the Kaksha lesson chunk.
+   The Desk (stream 2) is untouched: it writes data-skin="kaksha" on its root and data-zone on its zones (patch K-P2),
+   and this file re-points the Desk's own tokens at the Kaksha palette, then dresses the zones. Nothing here changes a
+   zone's size, the layout solver's rows, an element's presence or any behaviour.
+   Rules kept: tokens only (no colour literals); text ≥ 14 px; targets keep the Desk's own sizes; the lamp stays on the
+   Answer dock alone and turns plasma (L-LAMP); the face stays verdict-neutral (no celebration on her frame); a wrong
+   answer is look-again violet, never red; reduced motion keeps every state, drops the motion.
+   Specificity: `.kx[data-ktheme] .dk[data-skin][data-v2]` (0,5,0) outranks the Desk tokens' light/dark selectors (0,4,0)
+   whatever order the chunks load in. */
+
+.kx[data-ktheme] .dk[data-skin="kaksha"][data-v2] {
+  color-scheme: dark;
+  --paper: var(--k-void); --surface: var(--k-raise); --tray: var(--k-deep);
+  --ink: var(--k-ink); --ink-2: var(--k-ink-2); --line: var(--k-line-2);
+  --veil: color-mix(in srgb, var(--k-void) 72%, transparent);
+  /* brand → plasma: primary buttons and the send key; plasma is "your move" */
+  --nib: var(--k-move); --nib-soft: color-mix(in srgb, var(--k-move) 16%, var(--k-raise)); --on-nib: var(--k-on-move);
+  --listen: var(--k-ion); --on-listen: var(--k-void); --think: var(--k-ink-3);
+  --got: var(--k-secure); --got-soft: color-mix(in srgb, var(--k-secure) 14%, var(--k-raise));
+  --trouble: var(--k-rose);
+  --focus: var(--k-move); --focus-halo: var(--k-void);
+  /* the mission board */
+  --board: var(--k-deep); --board-frame: var(--k-line-2); --chalk: var(--k-ink); --chalk-2: var(--k-look);
+  /* her ground: the lit warm comms ground behind both face packs (they were cut against a cream clear colour) */
+  --stage: var(--k-lit-2);
+  --stage-pool: radial-gradient(110% 90% at 50% 30%, var(--k-lit-1) 0, var(--k-lit-2) 55%, var(--k-lit-3) 100%);
+  /* type and shape: Space Grotesk (Devanagari stays Mukta through :lang(hi)); hairlines and corners, no pills */
+  --font-ui: var(--k-sans); --font-heading: var(--k-sans);
+  --radius-pill: 3px; --radius-card: 2px; --radius-md: 2px; --radius-sm: 2px; --radius-lg: 4px; --radius-tile: 2px; --radius-window: 2px; --radius-xs: 2px;
+  --elev-card: none; --elev-sheet: none;
+  background: var(--k-void);
+}
+.kx[data-ktheme="dawn"] .dk[data-skin="kaksha"][data-v2] { color-scheme: light; }
+
+/* a still sky behind the Desk: two soft glows, no stars and no animation (the Desk owns the frame, §7) */
+.dk[data-skin="kaksha"]::before { content: ""; position: absolute; inset: 0; z-index: 0; pointer-events: none;
+  background: radial-gradient(90% 55% at 80% 0%, color-mix(in srgb, var(--k-ion) 12%, transparent) 0, transparent 70%),
+              radial-gradient(70% 45% at 0% 100%, color-mix(in srgb, var(--k-move) 7%, transparent) 0, transparent 70%); }
+.dk[data-skin="kaksha"] > * { position: relative; z-index: 1; }
+.dk[data-skin="kaksha"] > .dk-veil { position: absolute; z-index: 40; }
+.dk[data-skin="kaksha"] > .dk-sr { position: absolute !important; }
+
+/* ── chamfer: the Kaksha corner on panels (clip-path; the Desk's borders stay hairlines) ── */
+.dk[data-skin="kaksha"] :is([data-zone="card"], [data-zone="tray"], [data-zone="strip"], [data-zone="dock"]) > *,
+.dk[data-skin="kaksha"] :is(.dk-sheet, .dk-didcard, .dk-tile, .dk-btn--primary) {
+  clip-path: polygon(12px 0, 100% 0, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0 100%, 0 12px);
+}
+.dk[data-skin="kaksha"] [data-zone="dock"] > * { clip-path: polygon(16px 0, 100% 0, 100% calc(100% - 16px), calc(100% - 16px) 100%, 0 100%, 0 16px); }
+
+/* ── top bar: mono labels, a hairline under it ── */
+.dk[data-skin="kaksha"] [data-zone="top"] { border-bottom: 1px solid var(--k-line); }
+.dk[data-skin="kaksha"] [data-zone="top"] .dk-pause { background: var(--k-panel-solid); border-color: var(--k-line-2); }
+.dk[data-skin="kaksha"] [data-zone="top"] :is(.dk-short, .dk-practice) { font-family: var(--k-mono); letter-spacing: .04em; }
+/* the phase line as a segment bar: beats, never a score */
+.dk[data-skin="kaksha"] [data-zone="top"] .dk-phaseline { gap: 4px; font-family: var(--k-mono); font-size: 14px; letter-spacing: .06em; text-transform: uppercase; }
+.dk[data-skin="kaksha"] [data-zone="top"] .dk-phaseline li { padding-bottom: 3px; border-bottom: 2px solid var(--k-line-2); color: var(--k-ink-3); }
+.dk[data-skin="kaksha"] [data-zone="top"] .dk-phaseline li + li::before { content: none; }
+.dk[data-skin="kaksha"] [data-zone="top"] .dk-phaseline li[aria-current] { color: var(--k-ink); border-bottom-color: var(--k-move); }
+
+/* ── her comms frame: the window on the lit ground, corner ticks, a kesar rim while she speaks (never on a verdict) ── */
+.dk[data-skin="kaksha"] :is([data-zone="teacher"], [data-zone="window"]) .teacher-window { border: 1px solid var(--k-line-2); }
+.dk[data-skin="kaksha"] :is([data-zone="teacher"], [data-zone="window"]) .teacher-ground-paper { background: var(--stage-pool); }
+.dk[data-skin="kaksha"]:is([data-floor="speaking"], [data-floor="showing"]) :is([data-zone="teacher"], [data-zone="window"]) .teacher-window {
+  border-color: var(--k-her); box-shadow: inset 0 0 0 1px var(--k-her), inset 0 0 40px color-mix(in srgb, var(--k-her) 20%, transparent); }
+.dk[data-skin="kaksha"] .dk-window { position: relative; }
+.dk[data-skin="kaksha"] .dk-window::before, .dk[data-skin="kaksha"] .dk-window::after { content: ""; position: absolute; z-index: 3; width: 14px; height: 14px; pointer-events: none; border: solid var(--k-her); opacity: .9; }
+.dk[data-skin="kaksha"] .dk-window::before { top: 8px; right: 8px; border-width: 1.5px 1.5px 0 0; }
+.dk[data-skin="kaksha"] .dk-window::after { bottom: 40px; left: 8px; border-width: 0 0 1.5px 1.5px; }
+.dk[data-skin="kaksha"][data-layout="wide"] .dk-window::after { bottom: 8px; }
+.dk[data-skin="kaksha"] .dk-speechrow-face .teacher-window { border-radius: 4px; }
+.dk[data-skin="kaksha"] .dk-speechrow-face .teacher-face-host { border-radius: 4px; }
+.dk[data-skin="kaksha"] .teacher-label { color: var(--k-ink-2); }
+.dk[data-skin="kaksha"] .dk-ailabel { font-family: var(--k-mono); color: var(--k-her); letter-spacing: .04em; }
+.dk[data-skin="kaksha"] .teacher-aitag { background: var(--k-panel-solid); color: var(--k-her); border-color: color-mix(in srgb, var(--k-her) 60%, transparent); font-family: var(--k-mono); }
+
+/* ── caption: her phrase in Space Grotesk; she is kesar while speaking ── */
+.dk[data-skin="kaksha"] [data-zone="caption"] .dk-caption-line { font-family: var(--k-sans); font-weight: 500; letter-spacing: -.005em; }
+.dk[data-skin="kaksha"]:is([data-floor="speaking"], [data-floor="showing"]) .dk-caption-line { color: var(--k-ink); }
+.dk[data-skin="kaksha"] .dk-speechrow .dk-caption { border-left: 2px solid var(--k-her); padding-left: 10px; }
+
+/* ── question card: a glass panel with a plasma tick at its edge ── */
+.dk[data-skin="kaksha"] [data-zone="card"] > .dk-card { background: var(--k-panel-solid); border-color: var(--k-line-2); box-shadow: inset 3px 0 0 var(--k-move); }
+.dk[data-skin="kaksha"] [data-zone="card"] > .dk-card--empty { box-shadow: none; background: transparent; }
+.dk[data-skin="kaksha"] .dk-chip { background: var(--k-deep); }
+.dk[data-skin="kaksha"] .dk-chip[data-verdict="not_yet"], .dk[data-skin="kaksha"] .dk-chip[data-verdict="partial"] { border-color: var(--k-look); border-width: 2px; }
+.dk[data-skin="kaksha"] .dk-rung { color: var(--k-look); font-family: var(--k-mono); }
+
+/* ── the mission board: a deep panel with a 32 px grid that fades out towards the edges ── */
+.dk[data-skin="kaksha"] [data-zone="tray"] > .dk-tray { background: var(--k-deep); border: 1px solid var(--k-line-2); }
+.dk[data-skin="kaksha"] [data-zone="tray"] > .dk-tray::before { content: ""; position: absolute; inset: 0; pointer-events: none;
+  background-image: linear-gradient(var(--k-line) 1px, transparent 1px), linear-gradient(90deg, var(--k-line) 1px, transparent 1px);
+  background-size: 32px 32px; background-position: center;
+  -webkit-mask-image: radial-gradient(70% 70% at 50% 50%, black 30%, transparent 100%); mask-image: radial-gradient(70% 70% at 50% 50%, black 30%, transparent 100%); }
+.dk[data-skin="kaksha"] [data-zone="tray"] > .dk-tray--module::before { content: none; }
+.dk[data-skin="kaksha"] .dk-chalk { font-family: var(--k-sans); }
+.dk[data-skin="kaksha"] .dk-chalk--math { font-family: var(--k-mono); }
+.dk[data-skin="kaksha"] .dk-chalk--answer { color: var(--k-move); }
+.dk[data-skin="kaksha"] .dk-tile { background: var(--k-panel-solid); border-color: var(--k-line-2); }
+.dk[data-skin="kaksha"] .dk-key:not(.dk-key--send) { background: var(--k-panel-solid); border-color: var(--k-line-2); }
+
+/* ── the Answer dock: the only lamp, in plasma. The lamp tokens are re-pointed ON the dock and nowhere else (L-LAMP) ── */
+.kx[data-ktheme] .dk[data-skin="kaksha"][data-v2] .dk-dock { --lamp: var(--k-move); --lamp-wash: color-mix(in srgb, var(--k-move) 13%, var(--k-deep)); --lamp-ring: var(--k-move); --lamp-ink: var(--k-move); }
+.dk[data-skin="kaksha"] [data-zone="dock"] > .dk-dock { background: var(--k-panel-solid); border-color: var(--k-line-2); }
+.dk[data-skin="kaksha"] [data-zone="dock"] > .dk-dock[data-lamp] { background: var(--lamp-wash); border-color: var(--k-move); }
+.dk[data-skin="kaksha"] .dk-word-text { font-family: var(--k-sans); letter-spacing: .01em; }
+.dk[data-skin="kaksha"] .dk-mode { font-family: var(--k-sans); }
+/* the word inside the mic disc is 13 px (11 px small) on the Desk; Kaksha's floor is 14 px, and both still fit the disc */
+.dk[data-skin="kaksha"][data-family="older"] .dk-mic-word, .dk[data-skin="kaksha"] .dk-mic--small .dk-mic-word { font-size: 14px; }
+.dk[data-skin="kaksha"] .dk-side { background: var(--k-panel-solid); border-color: var(--k-line-2); }
+.dk[data-skin="kaksha"] .dk-input { background: var(--k-deep); border-color: var(--k-line-2); }
+
+/* ── sheets keep their content and order (Pause prints 1098 and 14416 with no scroll); only the surface changes ── */
+.dk[data-skin="kaksha"] .dk-sheet { background: var(--k-panel-solid); border: 1px solid var(--k-line-2); }
+.dk[data-skin="kaksha"] .dk-call { background: var(--k-deep); border-color: var(--k-line-2); }
+.dk[data-skin="kaksha"] .dk-strip { background: var(--k-panel-solid); }
+
+/* ── Debrief (§3.5) ── */
+.dk[data-skin="kaksha"][data-summary="1"] { overflow-y: auto; }
+.kx-debrief { position: relative; z-index: 1; min-height: 100%; max-width: 640px; margin: 0 auto; padding: 16px 16px 24px; display: flex; flex-direction: column; gap: 16px; color: var(--k-ink); font-family: var(--k-sans); }
+.kx-debrief--show { justify-content: center; }
+.kx-db-head { display: flex; align-items: center; gap: 14px; padding-top: 8px; }
+.kx-db-face { --k-cut: 10px; flex: none; width: 72px; height: 84px; }
+.kx-db-headtext { min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+.kx-db-who { display: flex; align-items: center; gap: 8px; margin: 2px 0 0; }
+.kx-db-who b { font: 700 16px/1.2 var(--k-sans); }
+.kx-db-who .kx-ai { padding: 4px 6px; }
+.kx-db-her { margin: 0; padding: 12px 14px; border-left: 2px solid var(--k-her); background: var(--k-panel-solid); color: var(--k-ink); font-size: 18px; line-height: 1.4; }
+.kx-db-her:lang(hi) { font-family: var(--k-deva); }
+.kx-db-sec { display: flex; flex-direction: column; gap: 10px; }
+.kx-db-sec .kx-sub { margin: 0; }
+.kx-db-did, .kx-db-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.kx-db-card { --k-cut: 10px; padding: 10px 14px; background: var(--k-panel-solid); border: 1px solid var(--k-line-2); display: flex; flex-direction: column; gap: 4px; }
+.kx-db-card[data-verified="1"] { box-shadow: inset 3px 0 0 var(--k-secure); }
+.kx-db-ask { margin: 0; color: var(--k-ink-2); font-size: 15px; line-height: 1.35; }
+.kx-db-ans { margin: 0; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.kx-db-key { font: 500 14px/1.2 var(--k-mono); letter-spacing: .05em; text-transform: uppercase; color: var(--k-ink-3); }
+.kx-db-val { font-weight: 700; font-size: 18px; font-variant-numeric: tabular-nums; }
+.kx-db-ans [data-speech]:lang(hi), .kx-db-ask:lang(hi) { font-family: var(--k-deva); }
+.kx-db-tick { display: inline-flex; color: var(--k-secure); }
+.kx-db-how { font-size: 15px; color: var(--k-ink-2); }
+.kx-db-did--big .kx-db-val { font-size: 24px; }
+.kx-db-did--big .kx-db-ask { font-size: 18px; }
+.kx-db-secure { padding: 14px; border: 1px solid color-mix(in srgb, var(--k-secure) 45%, transparent); background: color-mix(in srgb, var(--k-secure) 7%, var(--k-deep)); }
+.kx-db-note { margin: 0; color: var(--k-ink-2); font-size: 15px; }
+.kx-db-skill { --k-cut: 8px; display: flex; gap: 12px; align-items: flex-start; padding: 10px 12px; background: var(--k-panel-solid); }
+.kx-db-dot { flex: none; width: 12px; height: 12px; margin-top: 5px; border-radius: 50%; background: var(--k-secure); box-shadow: 0 0 0 4px color-mix(in srgb, var(--k-secure) 22%, transparent); }
+.kx-db-skilltext { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.kx-db-skilltext b { font-size: 17px; line-height: 1.3; }
+.kx-db-opened { font-size: 15px; color: var(--k-ink-2); }
+.kx-db-next { margin: 0; color: var(--k-ink-2); font-size: 16px; }
+.kx-db-show { display: flex; flex-direction: column; gap: 4px; font-weight: 600; }
+.kx-db-show .kx-row { margin-top: 4px; }
+/* Finish stays on screen when the Debrief scrolls (it is the only way on) */
+.kx-db-finish { position: sticky; bottom: 12px; z-index: 2; width: 100%; max-width: 360px; margin: auto auto 0; box-shadow: 0 0 0 8px var(--k-void); }
+.kx-db-finish:disabled { opacity: .5; cursor: default; }
+/* the dock / rise moment: a new secure skill's dot pulses mint for 3 s (reduced motion: it simply appears) */
+.kx-db-skill[data-new] .kx-db-dot { animation: kx-db-pulse 1s var(--k-e-out) 3; }
+@keyframes kx-db-pulse { 0% { transform: scale(.3); } 60% { transform: scale(1.25); } 100% { transform: scale(1); } }
+.kx[data-motion="reduced"] .kx-db-skill[data-new] .kx-db-dot { animation: none; }
+@media (prefers-reduced-motion: reduce) { .kx-db-skill[data-new] .kx-db-dot { animation: none; } }
+
+@media (min-width: 900px) {
+  .kx-debrief { padding-top: 40px; gap: 20px; }
+  .kx-db-face { width: 120px; height: 140px; }
+}

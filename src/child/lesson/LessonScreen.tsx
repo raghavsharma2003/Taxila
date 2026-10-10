@@ -3,7 +3,7 @@
 // useDesk's model. Voice lessons start on the CASCADE lane (voice-lane-cascade-default) with no second start
 // gate: the audio unlock is carried from the tap that opened the lesson. The Summary renders here when the lesson
 // ends (the separate /lesson/:lid/summary route belongs to the child-routes owner; Summary.tsx is ready for it).
-import { useCallback, useEffect, useRef, useState } from "react";
+import { lazy, Suspense, useCallback, useEffect, useRef, useState } from "react";
 import type { LessonStartRequest } from "../../../shared/contracts.ts";
 import { ApiError } from "../../lesson/api.ts";
 import type { RuntimeDeps } from "../../lesson/runtime.ts";
@@ -17,11 +17,16 @@ import { ageBandOf } from "../band.ts";
 import { useChild } from "../ChildShell.tsx";
 import { markLessonDone } from "../day.ts";
 import { readArtefacts, saveArtefact } from "../prefs.ts";
-import { Desk, sameSize, type DeskSize } from "./Desk.tsx";
+import { Desk, sameSize, type DeskSize, type DeskSkin } from "./Desk.tsx";
 import { openMicAllowed, useHeadset } from "./headset.ts";
 import { useDesk } from "./useDesk.ts";
 import { cachedTextOnly } from "../plan.ts";
 import { useSyncExternalStore } from "react";
+import { kakshaEnabled } from "../../ui-v3/kaksha/flag.ts";
+
+// r4 K-P2: behind `ui.kaksha` (default off) the Desk renders inside the Kaksha frame (skin CSS + the Debrief at the
+// end). A lazy chunk: with the flag off nothing of it loads, and the Desk renders exactly as before.
+const KakshaLesson = lazy(() => import("../../ui-v3/kaksha/lesson/KakshaLesson.tsx"));
 
 export type LessonVariant = "lesson" | "practice" | "doubt";
 
@@ -134,10 +139,18 @@ export function LessonScreen({ variant, topicId, firstText }: LessonScreenProps)
   }
 
   // The lesson's own identity: the name pinned at lesson start (state.teacher), so a rename never changes an open lesson.
+  const desk = (skin?: DeskSkin) => (
+    <Desk m={m} a={a} media={{ meters: [runtime.levels.teacher, bridge.replayLevel], mic: runtime.levels.mic, modules: runtime.modules, lang: child.language_pref, ageBand: ageBandOf(band) }}
+      dockRef={dockRef} live={live} onSize={onSize} theme={prefs.theme === "system" ? null : prefs.theme} {...skin} />
+  );
+  const kaksha = kakshaEnabled((me as { ui?: { kaksha?: boolean } }).ui?.kaksha);
   return (
     <TeacherNameProvider id={m.teacher.id} name={m.teacher.name}>
-      <Desk m={m} a={a} media={{ meters: [runtime.levels.teacher, bridge.replayLevel], mic: runtime.levels.mic, modules: runtime.modules, lang: child.language_pref, ageBand: ageBandOf(band) }}
-        dockRef={dockRef} live={live} onSize={onSize} theme={prefs.theme === "system" ? null : prefs.theme} />
+      {kaksha ? (
+        <Suspense fallback={null}>
+          <KakshaLesson cid={cid} family={family} reducedMotion={reducedMotion}>{desk}</KakshaLesson>
+        </Suspense>
+      ) : desk()}
     </TeacherNameProvider>
   );
 }
