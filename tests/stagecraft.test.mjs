@@ -297,7 +297,9 @@ test("telemetry fold: readiness, waste, swaps excluded; rows never carry words",
   for (const e of effects.filter((x) => x.e === "telemetry")) for (const v of Object.values(e.row)) assert.ok(typeof v !== "string" || v.length < 200);
 });
 
-test("seam bridge: on → Stagecraft owns the proposal through a seam piece; shadow → the W2 view is untouched; slot is never loading", async () => {
+// round 4 content: Studio v2 is off the child path unless certified AS ITSELF at all three sizes (server/forge3/tray-gate.js);
+// no library piece is today, so "on" now keeps the W2 view and counts the refusal. The slot shape is still checked.
+test("seam bridge: on → a Studio v2 reveal goes through the tray gate (refused today: the W2 view stands); shadow → the W2 view is untouched; slot is never loading", async () => {
   const { studioSeam } = await import("../server/studio/seam.js");
   const bridge = await import("../server/stagecraft/seam-bridge.js");
   const { revealPoint } = await import("../server/stagecraft/adapters.js");
@@ -316,14 +318,12 @@ test("seam bridge: on → Stagecraft owns the proposal through a seam piece; sha
     const v = bridge.augmentView(lessonId, w2view, p);
     if (mode === "shadow") assert.equal(v, w2view);
     else {
-      assert.notEqual(v.propose.reveal, "w2-piece");
-      // the piece the seam's existing slotFor / onReveal paths will carry (patch P3 routes slotOf to stagecraftSlot)
+      assert.equal(v.propose.reveal, "w2-piece", "the uncertified Studio v2 piece is not proposed: the W2 view stands");
+      assert.ok((host.gateRefusals ?? 0) >= 1, "the refusal is counted");
       const { _lesson } = await import("../server/studio/seam.js");
-      const piece = _lesson(lessonId).pieces.get(v.propose.reveal);
-      assert.equal(piece.source, "stagecraft"); assert.equal(piece.state, "ready");
-      const slot = bridge.stagecraftSlot(piece);
-      assert.equal(slot.state, "ready"); assert.ok(["engine_default", "generated_spec", "library", "board"].includes(slot.artifact.stagecraft.rung));
-      assert.equal(bridge.stagecraftSlot({ slotId: "s", intentId: "i", state: "ready", stagecraft: { rung: "board" } }).artifact.kind, "stagecraft");
+      assert.ok(![..._lesson(lessonId).pieces.values()].some((x) => x.source === "stagecraft"), "no Stagecraft piece was created");
+      const slot = bridge.stagecraftSlot({ slotId: "s", intentId: "i", state: "ready", stagecraft: { rung: "engine_default" } });
+      assert.equal(slot.state, "ready"); assert.equal(slot.artifact.kind, "stagecraft");
     }
     bridge.detach(lessonId);
   }

@@ -22,6 +22,9 @@ export function codePick({ kit, item = null, text, representation, interest }) {
   const lower = src.toLowerCase();
   const n = ints(v);
   const rep = String(representation ?? "").toLowerCase();
+  // round 4 content: a fraction OF a fraction ("3/5 of 2/3", "1/2 × 1/4", "half of a half", "aadhe ka aadha"): the area model
+  const of = fractionOfIn(src);
+  if (of) return { template: "fraction-of@1", ...of };
   // a fraction of a whole: the first proper fraction with a small denominator
   const fr = v.fractions.find(([a, d]) => d >= 2 && d <= 12 && a >= 0 && a <= d);
   if (fr) {
@@ -64,6 +67,18 @@ export function codePick({ kit, item = null, text, representation, interest }) {
   const big = n.find((x) => x >= 1000 && x <= 9_999_999);
   if (big && /place|value|lakh|thousand|digit|expanded|read|write|number name|indian/.test(lower)) return { template: "place-value@1", value: big };
   return geometryPick({ kit, src, lower, n });
+}
+
+const UNIT_FR = { half: [1, 2], halves: [1, 2], aadha: [1, 2], aadhe: [1, 2], aadhi: [1, 2], third: [1, 3], tihai: [1, 3], quarter: [1, 4], chauthai: [1, 4], fourth: [1, 4] };
+/** a/b of c/d in the text, or null: numerals ("3/5 of 2/3", "1/2 × 1/4") or words ("half of a half", "half ka half"). */
+export function fractionOfIn(text) {
+  const t = String(text ?? "").toLowerCase();
+  const m = t.match(/(\d+)\s*\/\s*(\d+)\s*(?:of|ka|ki|ke|×|\*|times)\s*(?:a\s+|an\s+)?(\d+)\s*\/\s*(\d+)/);
+  const ok = (a, b, c, d) => b >= 2 && b <= 6 && a >= 1 && a <= b && d >= 2 && d <= 6 && c >= 1 && c <= d;
+  if (m) { const [a, b, c, d] = m.slice(1).map(Number); return ok(a, b, c, d) ? { a, b, c, d } : null; }
+  const w = t.match(/\b(half|aadh[aei]|third|tihai|quarter|chauthai|fourth)\s+(?:of\s+(?:a|an|the)?\s*|ka\s+|ki\s+|ke\s+)(half|halves|aadh[aei]|third|tihai|quarter|chauthai|fourth)\b/);
+  if (w) { const [a, b] = UNIT_FR[w[1]], [c, d] = UNIT_FR[w[2]]; return ok(a, b, c, d) ? { a, b, c, d } : null; }
+  return null;
 }
 
 // ───────────────────────────── geometry and data (W2-B fixer, major 2) ─────────────────────────────

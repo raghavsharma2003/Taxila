@@ -56,7 +56,8 @@ before(async () => {
   page.on("pageerror", (e) => console.error("harness pageerror", e));
   // Errors from inside the frame (engine crashes, CSP violations) surface as console errors.
   // The dev server's HMR websocket is refused by the frame CSP on purpose (vite.config.ts): not an engine error.
-  const devNoise = /favicon|Connecting to 'ws:\/\/(localhost|127\.0\.0\.1)[^']*' violates|\[vite\]/;
+  // (Chromium ≥ 141 words it "Refused to connect to 'ws://…' because it violates")
+  const devNoise = /favicon|(Connecting to|Refused to connect to) 'ws:\/\/(localhost|127\.0\.0\.1)[^']*'( because it)? violates|\[vite\]/;
   page.on("console", (m) => { if (m.type() === "error" && !devNoise.test(m.text())) consoleErrors.push(m.text()); });
   await page.goto(`${base}tests/fixtures/engine-harness.html`);
 });
