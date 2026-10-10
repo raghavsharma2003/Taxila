@@ -206,7 +206,7 @@ html = f"""<title>Asha, Grown Up</title>
 {open(f"{HERE}/evidence.html").read().replace("{{GRADE0}}", GRADE[0]).replace("{{GRADE1}}", GRADE[1]).replace("{{GRADE2}}", GRADE[2]).replace("{{TABLE}}", summary_table()).replace("{{TRIED}}", tried_html())}
 </section>
 <section class="panel pick" id="pick"><span class="eyebrow lamp">My pick</span><h2 class="h-2">{esc(REC['title'])}</h2>{REC['html']}</section>
-<footer class="foot">Made 2026-10-10 by the face agent. Every painted image comes from Azure (gpt-image-2, deployment taxila-image), and every prompt is in gen.json. Option 3 is drawn in code. Nothing here is a real person.</footer>
+<footer class="foot">Made 2026-10-10 by the face agent. Every painted image comes from Azure (gpt-image-2, deployment taxila-image), and every prompt is in gen.json. Option 3 is drawn in code. No photo or real person was used as a reference.</footer>
 </main>
 <script>{open(f"{HERE}/page.js").read()}</script>
 """
