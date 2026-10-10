@@ -49,3 +49,9 @@ rotate the shared Azure model and speech keys.
 | U1 gamified app directions | `claude/r4-app-design` | `test-r4-appdesign` (br-steep-salad-b7pui4hh) | session_01UTiatddezKEzf62yL8aMux |
 
 Key sets: the lesson stack plus `DEPLOY_IMAGE` and `AZURE_IMAGE_*` (text-free art packs only) for all three.
+
+## Wave 2b (09:50 UTC 2026-10-10)
+
+| stream | branch | Neon TEST branch | session |
+|---|---|---|---|
+| Asha rig v2 (painted keys swapped, no mesh warp; after rj-r4-lamp1-mesh-warp-uncanny) | `claude/r4-asha-rig2` | `test-r4-asharig` (br-delicate-dawn-b7hy0k8b) | session_01CFBcnqMYa97thSCvAZPV1j |
