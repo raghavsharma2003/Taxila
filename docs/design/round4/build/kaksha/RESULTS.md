@@ -22,8 +22,13 @@ Chromium with CPU ×4 throttling at 360 × 800, DPR 2. None was measured on a ph
 | routes | **[patch-request] K-P8** `src/child/routes.tsx` | Index → `KakshaHome`, `map` → `KakshaWorld`, new `hangar` → `KakshaHangar`, only when `ui.kaksha` is on. The flag is read at render; the chunks are lazy |
 | lint allow | **[patch-request] K-P7** `scripts/lint-ui.mjs` | L-HEX for the Kaksha palette files; L-DEVA and L-HING for the dormant copy columns |
 
-**Turn it on (owner cohort):** add `?ui=kaksha` to any child URL once per device (it is stored in
-`tx.flag.ui.kaksha`). `?ui=classic` turns it off and `?ui=default` clears it.
+**Turn it on (owner cohort):** set `TAXILA_UI_KAKSHA` on the Container App to the owner's sha256(email). That is
+K-P10: a server-side cohort answered on /api/me. Then open a child URL once with `?ui=kaksha`, which stores
+`tx.flag.ui.kaksha` on the device.
+- In a production build, the URL and device key count **only** for accounts in that cohort. Anyone else who types
+  `?ui=kaksha` keeps today's Home (`tests/r4-kaksha-cohort.test.mjs`).
+- `?ui=classic` turns it off. `?ui=default` clears it.
+- Dev builds keep the URL switch free.
 
 ## Numbers (2026-10-10, this tree)
 
@@ -33,6 +38,7 @@ Chromium with CPU ×4 throttling at 360 × 800, DPR 2. None was measured on a ph
 | `tests/r4-kaksha-lint.test.mjs` | **8 / 8 pass** | K-MIRROR, K-CONTRAST (every text pair ≥ 5:1 in both themes), K-FLOOR, K-NOLOCK / K-NOCOUNT / K-ECON, K-EN, K-AI, K-THEME |
 | `tests/ui-v3-lint.test.mjs` (existing) | **8 / 8 pass** with the Kaksha files under `src/ui-v3` | the existing RS-1 lint now also covers Kaksha |
 | rendered lint, `tests/prod/r4-kaksha-shots.mjs` | **0 findings over 48 page states** (8 states × 360 / 412 / 1366 × night / dawn; 606 text elements): 0 text < 14 px, 0 Devanagari < 16 px, 0 targets < 44 px, 0 contrast failures, 0 overflow, 0 page errors | Playwright Chromium on the dev page. The **first run found a real defect**: the Start label was 1.33 : 1 on plasma (a reset rule outranked the CTA colour). Fixed with `:where()` resets, then 0 |
+| `tests/r4-kaksha-cohort.test.mjs` (K-P10) | **4 / 4 pass** | Outside the cohort, `?ui=kaksha` gives today's Home. Covers plain and hashed lists, the classic override and dev freedom |
 | `node scripts/lint-ui.mjs --json` | **353 findings** (the baseline) with K-P7; 491 without | static scan over `src/` |
 | `npx tsc -b`, `npx vite build` | pass | Kaksha lazy chunks: `views` 9.4 KB, `KakshaWorld` 2.3 KB, `KakshaHome` 0.7 KB JS gzip; CSS 4.9 KB gzip, loaded only when the flag is on. Spec budget ≤ 45 + 30 KB |
 | `node scripts/check-prompt-budget.mjs` | PASS | unchanged (no prompt code touched) |
@@ -47,7 +53,6 @@ resting), World (today, yesterday, empty, settlement) and Hangar.
   window.
 - **K-P1** (the rig's clear colour follows the lit ground) is not needed yet. Kaksha draws the lit ground behind
   `<Teacher ground={false}>`.
-- **No server cohort flag yet.** The device flag only. `TAXILA_UI_KAKSHA` needs a server config patch (main).
 - **The "Yesterday" world is a device snapshot,** rolled on the child's first World view of a day. The real secure
   date per skill is K-P5 (`secure_since`, main). Until then the settlement slots fall back to each skill's seed: stable
   for a given set, but a newly secured skill can shift slot order.

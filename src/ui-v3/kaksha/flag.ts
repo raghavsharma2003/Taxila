@@ -7,8 +7,49 @@
 //   2. localStorage "tx.flag.ui.kaksha" = "1" | "0" (per device: the owner cohort and the acceptance harness);
 //   3. VITE_UI_KAKSHA=1 at build time (only after BUILD-SPEC §11 and the five-second child test, K-O4);
 //   4. off.
-// The server cohort switch (TAXILA_UI_KAKSHA via /api/face/config-style config) is a later patch, not K0.
+//
+// PRODUCTION GATE (K-P10, main session 2026-10-10): in a production build steps 1-2 count ONLY when the server says this
+// account is in the owner cohort (GET /api/me → ui.kaksha, from TAXILA_UI_KAKSHA hashed accounts; server/ui/kaksha-cohort.js).
+// Anyone else who types ?ui=kaksha keeps today's Home. In dev builds the URL / device switch stays free.
 export const UI_KAKSHA_KEY = "tx.flag.ui.kaksha";
+
+export interface KakshaInputs {
+  /** A dev build (import.meta.env.DEV). */
+  dev: boolean;
+  /** VITE_UI_KAKSHA=1: the deploy-wide default (only after BUILD-SPEC §11 and the child test). */
+  buildDefault: boolean;
+  /** GET /api/me ui.kaksha: this account is in the owner cohort. Undefined while /api/me has not answered. */
+  server: boolean | undefined;
+  /** The device's own switch (?ui=kaksha / localStorage): true on, false off, null not set. */
+  device: boolean | null;
+}
+
+/** The whole rule, pure (tests/r4-kaksha-cohort.test.mjs). */
+export function kakshaDecision(i: KakshaInputs): boolean {
+  if (i.device === false) return false; // ?ui=classic always wins on this device
+  if (i.buildDefault) return true;
+  if (i.dev) return i.device === true;
+  return i.server === true && i.device === true;
+}
+
+function isDev(): boolean {
+  try {
+    return !!import.meta.env?.DEV;
+  } catch {
+    return false;
+  }
+}
+
+/** The device switch alone (after applying any ?ui= in the URL). */
+export function kakshaDevice(): boolean | null {
+  applyUrlSwitch();
+  try {
+    const v = typeof localStorage !== "undefined" ? localStorage.getItem(UI_KAKSHA_KEY) : null;
+    return v === "1" ? true : v === "0" ? false : null;
+  } catch {
+    return null;
+  }
+}
 
 let urlApplied = false;
 function applyUrlSwitch(): void {
@@ -33,16 +74,9 @@ export function kakshaBuildDefault(): boolean {
   }
 }
 
-export function kakshaEnabled(): boolean {
-  applyUrlSwitch();
-  try {
-    const v = typeof localStorage !== "undefined" ? localStorage.getItem(UI_KAKSHA_KEY) : null;
-    if (v === "1") return true;
-    if (v === "0") return false;
-  } catch {
-    /* storage blocked */
-  }
-  return kakshaBuildDefault();
+/** Is Kaksha on for this render? `server` is /api/me's ui.kaksha (the owner cohort). */
+export function kakshaEnabled(server?: boolean): boolean {
+  return kakshaDecision({ dev: isDev(), buildDefault: kakshaBuildDefault(), server, device: kakshaDevice() });
 }
 
 export function setKaksha(on: boolean | null): void {

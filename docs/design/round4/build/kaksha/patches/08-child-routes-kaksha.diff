@@ -1,5 +1,5 @@
 diff --git a/src/child/routes.tsx b/src/child/routes.tsx
-index 080f0d7c..55a0b1a6 100644
+index 080f0d7c..3941ee86 100644
 --- a/src/child/routes.tsx
 +++ b/src/child/routes.tsx
 @@ -9,10 +9,14 @@
@@ -12,12 +12,13 @@ index 080f0d7c..55a0b1a6 100644
  // Renames (§5.1): /doubt → /ask, /notes → /notebook (the old paths redirect).
  import { lazy, Suspense, type ReactNode } from "react";
  import { Navigate, type RouteObject } from "react-router-dom";
- import { ChildShell } from "./ChildShell.tsx";
+-import { ChildShell } from "./ChildShell.tsx";
++import { ChildShell, useChild } from "./ChildShell.tsx";
 +import { kakshaEnabled } from "../ui-v3/kaksha/flag.ts";
  
  const Home = lazy(() => import("./screens/Home.tsx").then((m) => ({ default: m.Home })));
  const Hello = lazy(() => import("./screens/Hello.tsx").then((m) => ({ default: m.Hello })));
-@@ -23,6 +27,14 @@ const MapScreen = lazy(() => import("./screens/Map.tsx").then((m) => ({ default:
+@@ -23,6 +27,15 @@ const MapScreen = lazy(() => import("./screens/Map.tsx").then((m) => ({ default:
  const Notebook = lazy(() => import("./screens/Notebook.tsx").then((m) => ({ default: m.Notebook })));
  const Me = lazy(() => import("./screens/Me.tsx").then((m) => ({ default: m.Me })));
  const TeacherScreen = lazy(() => import("./screens/Teacher.tsx").then((m) => ({ default: m.TeacherScreen })));
@@ -25,14 +26,15 @@ index 080f0d7c..55a0b1a6 100644
 +const KakshaWorld = lazy(() => import("../ui-v3/kaksha/screens/KakshaWorld.tsx").then((m) => ({ default: m.KakshaWorld })));
 +const KakshaHangar = lazy(() => import("../ui-v3/kaksha/screens/KakshaWorld.tsx").then((m) => ({ default: m.KakshaHangar })));
 +
-+/** ui.kaksha switch, read at render (K-P8). */
++/** ui.kaksha switch, read at render (K-P8); in production only for the server's owner cohort (/api/me ui.kaksha, K-P10). */
 +function Kx({ on, off }: { on: ReactNode; off: ReactNode }) {
-+  return <>{kakshaEnabled() ? on : off}</>;
++  const { me } = useChild();
++  return <>{kakshaEnabled((me as { ui?: { kaksha?: boolean } }).ui?.kaksha) ? on : off}</>;
 +}
  
  const s = (el: ReactNode) => <Suspense fallback={null}>{el}</Suspense>;
  
-@@ -31,14 +43,15 @@ export const childRoutes: RouteObject[] = [
+@@ -31,14 +44,15 @@ export const childRoutes: RouteObject[] = [
      path: "/c/:cid",
      element: <ChildShell />,
      children: [

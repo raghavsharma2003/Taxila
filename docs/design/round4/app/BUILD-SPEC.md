@@ -518,6 +518,7 @@ Each goes to `docs/design/round4/build/kaksha/patches/NN-*.diff` with an `APPLY.
 | K-P6 | `src/parent/Home.tsx` (no stream owns it, so main) and `server/routes/parent.js` (main) | the "in her words" intake card and the "made" card, consent-gated | `e2e-design-b3-parent` and `w2a-parent-truth` unchanged |
 | K-P7 | `scripts/lint-ui.mjs` (main) | allow `src/ui-v3/tokens.css` raw hex; the K-O1 chrome switch; the Kaksha proper nouns in L-HING | `tests/ui-v2-lint` |
 | K-P8 | `src/child/routes.tsx` (5) | `/hangar` route and the `ui.kaksha` element switch on index and `map` | `child-routes-db`, `e2e-design-b2` |
+| K-P10 | `server/routes/account.js` + `server/ui/kaksha-cohort.js` (main) | the server-side owner cohort (`TAXILA_UI_KAKSHA`) on /api/me; production clients honour `?ui=kaksha` only inside it | `tests/r4-kaksha-cohort.test.mjs` |
 | K-P9 | `src/app/routes.tsx` (main) | nothing if K-P8 suffices; otherwise mount `V3Root` inside `ChildMode` behind the flag (cf. the unapplied `docs/design/reset/prework/rs1/patches/01-router-ui-v3.patch`) | route tests |
 
 ### 10.3 Where K sits in the merge order
