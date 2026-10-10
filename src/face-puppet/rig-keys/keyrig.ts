@@ -101,11 +101,17 @@ export class KeyRig {
     const ch = Math.max(1, Math.round((cv.clientHeight || cv.height / this.R.dpr) * this.R.dpr));
     if (cv.width !== cw) cv.width = cw;
     if (cv.height !== ch) cv.height = ch;
-    const v = this.view, vh = v[3] ?? v[2];
-    const s = Math.min(cw / v[2], ch / vh);
-    // contain-centred framing, as the r8 / lamp1 runtime fits a 4-element view
-    this.origin = [v[0] + (v[2] - cw / s) / 2, v[1] + (vh - ch / s) / 2];
-    this.scale = s;
+    const v = this.view;
+    if (v.length >= 4) {
+      // a 4-element view [x0, y0, w, h]: contain-centred, as the r8 / lamp1 runtime fits one
+      const s = Math.min(cw / v[2], ch / v[3]);
+      this.origin = [v[0] + (v[2] - cw / s) / 2, v[1] + (v[3] - ch / s) / 2];
+      this.scale = s;
+    } else {
+      // a 3-element view [x0, y0, width] (the product's LookPack framings): the width fills the canvas from the top-left
+      this.origin = [v[0], v[1]];
+      this.scale = cw / v[2];
+    }
     const key = `${cw}x${ch}|${v.join(",")}`;
     if (key !== this.cacheKey) { this.cacheKey = key; this.build(); }
   }

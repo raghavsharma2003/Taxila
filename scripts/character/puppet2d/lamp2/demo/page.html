@@ -180,6 +180,7 @@ window.WAV = "/*WAV*/";
   }
   function newDriver() {
     driver = new T.PuppetDriver({ band: "b2", seed: 7, reducedMotion: $("#reduced").checked });
+    if (P.geom.rev === "lamp2") driver.visemes.lead += T.KEY_LEAD_MS;   // the key rig's lead (schedule.ts KEY_LEAD_MS)
     fan = { clock: null, frame(bs, head, gaze, lean, breath) { for (const r of rigs) { r.clock = this.clock; r.calm = driver.inSafety; r.frame(bs, head, gaze, lean, breath); } } };
   }
   // ---- one tick of the scene at scene time st (s) and wall clock nowMs (ms); playAt = the perf-clock ms of the line's first sample
@@ -192,7 +193,7 @@ window.WAV = "/*WAV*/";
   const LOG = [];
   function tick(nowMs) {
     const st = (nowMs - sc.t0) / 1000;
-    if (!sc.pushed && st >= SPEAK_AT - 0.2) { driver.visemes.push(1, sc.playAt, Q.get("bilabial") === "0" ? VIS : T.addBilabials(VIS, WORDS), WORDS, nowMs, window.LINE.text); sc.pushed = true; }
+    if (!sc.pushed && st >= SPEAK_AT - 0.2) { driver.visemes.push(1, sc.playAt, Q.get("bilabial") === "0" ? VIS : (P.geom.rev === "lamp2" ? T.addBilabials2 : T.addBilabials)(VIS, WORDS), WORDS, nowMs, window.LINE.text); sc.pushed = true; }
     // the warm smile a beat after the floor moves to your_turn (the floor change releases whatever expression is up)
     if (!sc.warmed && st >= WARM_AT + 0.15) { driver.evalEmote("warm", nowMs, undefined, 1.6, 1); sc.warmed = true; }
     driver.evalHead = [0, turnAt(st), 0];

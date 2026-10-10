@@ -7,3 +7,6 @@ export { Puppet2DRig } from "/home/user/Taxila/src/face-puppet/runtime/rig.js";
 export { applySafetyFloor } from "/home/user/Taxila/src/face-puppet/safety.ts";
 // round 4 lamp1: the text-side bilabial seals (prepared as integrate/06 there; applied here so the demo shows it)
 export { addBilabials } from "/home/user/Taxila/scripts/character/puppet2d/lamp1/demo/bilabial.js";
+// lamp2: the key rig's viseme lead (the host adds it to PuppetDriver.visemes.lead) and the extended bilabial rule
+export { KEY_LEAD_MS } from "/home/user/Taxila/src/face-puppet/rig-keys/schedule.ts";
+export { addBilabials2 } from "/home/user/Taxila/scripts/character/puppet2d/lamp2/bilabial2.js";

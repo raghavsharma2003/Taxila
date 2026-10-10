@@ -22,6 +22,10 @@ R = [
 ('for (const r of rigs) r.R.gl.finish(); return this.st;', 'for (const r of rigs) if (r.R.gl) r.R.gl.finish(); return this.st;'),
 ('fan = { clock: null, frame(bs, head, gaze, lean, breath) { for (const r of rigs) { r.clock = this.clock; r.frame(bs, head, gaze, lean, breath); } } };',
  'fan = { clock: null, frame(bs, head, gaze, lean, breath) { for (const r of rigs) { r.clock = this.clock; r.calm = driver.inSafety; r.frame(bs, head, gaze, lean, breath); } } };'),
+('driver.visemes.push(1, sc.playAt, Q.get("bilabial") === "0" ? VIS : T.addBilabials(VIS, WORDS), WORDS, nowMs, window.LINE.text);',
+ 'driver.visemes.push(1, sc.playAt, Q.get("bilabial") === "0" ? VIS : (P.geom.rev === "lamp2" ? T.addBilabials2 : T.addBilabials)(VIS, WORDS), WORDS, nowMs, window.LINE.text);'),
+('    driver = new T.PuppetDriver({ band: "b2", seed: 7, reducedMotion: $("#reduced").checked });',
+ '    driver = new T.PuppetDriver({ band: "b2", seed: 7, reducedMotion: $("#reduced").checked });\n    if (P.geom.rev === "lamp2") driver.visemes.lead += T.KEY_LEAD_MS;   // the key rig\'s lead (schedule.ts KEY_LEAD_MS)'),
 ]
 for a, b in R:
     assert a in s, a[:60]

@@ -22,6 +22,12 @@ export const SEAL_HOLD_MS = 45;
 export const EYE_FADE_MS = 45;
 export const BROW_FADE_MS = 200;
 
+/** ms the host adds to the viseme scheduler's lead (PuppetDriver.visemes.lead, track.ts EVENT_LEAD_MS) for this rig: a
+ *  key switches when the next viseme's weight overtakes the last and then dissolves, so without it the painted mouth runs
+ *  later than the continuous mouth the judged timing was set on (battery.mjs, 24 Diya lines). Never applied to the audio
+ *  tap path. */
+export const KEY_LEAD_MS = 35;
+
 /** Drawn mouth openness per key (0 closed .. 1 the aa key), for the lip-sync offset estimator. */
 export const KEY_OPENNESS: Record<MouthKey, number> = { rest: 0, calm: 0, smile: 0, mbp: 0, aa: 1, eh: 0.55, ee: 0.35, oh: 0.75, oo: 0.35, fv: 0.15, ltd: 0.3 };
 
