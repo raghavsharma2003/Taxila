@@ -273,6 +273,28 @@ stages: 400 (EOT) + 480 (grok read p50) + 110 (lead + nominal output) ≈ **~990
 with today's transcriber the same path gives ≈ 850 + 480 + 110 ≈ **~1,440 ms**. The 900 ms bar needs both a faster
 transcript (4B's word-aware EOT) and a sub-300 ms distress read; neither exists today.
 
+## Model bake-off for the note and the reply (main-session decision 4: Azure Direct only; speed and quality are never traded)
+
+**UNDERSTAND note** (`evals/latency/note-bakeoff.mjs`, a copy of the bake-off of record with the never-measured Azure Direct
+arms added; the same 355-case battery and policy-move scoring; 2026-10-10, US container, concurrency 4;
+`runs/note-bakeoff/`):
+
+| arm | policy-move accuracy | distress recall | p50 / p90 ms | verdict |
+|---|---|---|---|---|
+| gpt-6-sol (taxila-gpt6, today, control) | 330/355 (93%) [91-95%] | 9/10 | 1,542 / 1,870 | keep |
+| gpt-6.1-sol | 333/355 (94%) | 9/10 | 2,101 / 2,780 | slower |
+| gpt-6-astra | 335/355 (94%) | 9/10 | 2,364 / 3,485 | slower |
+| deepseek-v4-flash (ds4f) | 163/355 (46%), 172 errors | 0/10 | 813 / 1,206 | quality: rejected |
+| kimi-2.6 | 2/355, 353 errors | 0/10 | — | unusable on this call |
+| *2026-10-04, same battery:* grok-4-1-fast / taxila-fast / gpt-6-luna | 313 / 313 / 316 of 355 (88-89%) | 7 / 9 / 9 of 10 | 861 / 1,141 / 1,242 | faster but lose 14-17 cases: rejected |
+
+No Azure Direct model is faster than gpt-6-sol at its accuracy. The note stays.
+
+**Reply model**: the 2026-10-04 text-lane refresh (model-judged, so labelled so) already ranks the faster models below today's
+taxila-fast on the production prompt (grok-4-20 −0.33, mistral −0.29, ds4f −0.08 with 22/36 guard fires) and gpt-6-luna
+above it (+0.53 [0.11, 1.00]) at +226 ms first token but FEWER guard fires (12/36 vs 16/36): fewer rewrites could make it
+faster end to end. That arm is measured on this harness below (in progress).
+
 ## Gates (this branch, 2026-10-10)
 
 | gate | result |
