@@ -1,0 +1,29 @@
+{
+ "date": "2026-10-10",
+ "method": "lamp2 pack: two rigid layers + painted key patches, in the NATIVE pixel space of the approved 1024 front (rig-b).\n  body   the figure with everything above the neck cut removed (the neck kept under the chin, so a head lift shows neck);\n  head   hair, face, ears, earrings, bun and locks, down to a soft cut across the neck (it moves rigidly over the body);\n  keys   one RGBA patch per painted key (mouth / eyes / brows): rgb = the key, alpha = its region mask feathered\n         inward; drawn over the head layer it reproduces keys.py's composite exactly, and the rest of the face is the\n         front's own pixels (the patch alpha is 0 there).\nMatte: alpha from the colour distance to the cream ground (lamp1 restssim.py formula), colour decontaminated, so the\ncanvas clear colour replaces the paper. Skin grade: the Stage B half-way-to-MST-6 grade (kC 0.7262, dL -3.35, lamp1\nskin.py), applied to the front AND to every key the same way. Key detail comes from rig space (keys.py), carried to\nnative space as a difference (key - front) so a patch equals the base wherever the key equals the front.\n    python3 -I pack.py        (writes art/character/puppet2d/lamp2/*.webp, geom.json, pack-report.json)",
+ "space": "native px of the 1024 rig-b front",
+ "files": {
+  "body": 12824,
+  "head": 43478,
+  "mbp": 3284,
+  "aa": 3840,
+  "eh": 3670,
+  "ee": 3628,
+  "oh": 3378,
+  "oo": 3380,
+  "fv": 3524,
+  "ltd": 3868,
+  "smile": 3506,
+  "calm": 3374,
+  "closed": 4838,
+  "half": 4866,
+  "lookL": 5572,
+  "lookR": 5666,
+  "lookUp": 5506,
+  "raised": 5374,
+  "concern": 5310,
+  "geom.json": 1191
+ },
+ "packBytes": 130077,
+ "poster": 21384
+}
