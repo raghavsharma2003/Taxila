@@ -333,3 +333,53 @@ continuers still stop or pause her:
 **R3 stays at 160/195 = 82.1 % (TRAIN 84/103, TEST 76/92).** The rule-based levers on this rig are spent. What is left needs
 either a closed-loop rig (the 8 revokes) or better words faster (a children's STT, or a continuer classifier on the audio
 itself), and it needs children's speech to judge.
+
+## 16. The closed-loop AMI rig (main session ask, 2026-10-10)
+
+`evals/duplex-r4/ami-closed.mjs` (results in `evals/duplex-r4/results/closed-*.json`). In this rig her floor reacts:
+- stop ends her line and pause silences it; resume continues it;
+- a line due while the child holds the floor is skipped;
+- the recorded mic's bleed of her line is replaced by the noise floor while she is not sounding it, and STT items that
+  began in such frames are dropped.
+
+What it cannot change: the child is a recording, so X's words and timing never react to her. Same real adult AMI speech
+and recorded real STT events as §6; not children.
+
+**Check against the round-3 rig.** `--open` (no reaction) on TRAIN gives continuers 84/103, barge-ins ≤ 200 ms 17/22 (19
+stopped) and room 12/101: the official rows exactly. Bleed is 76/420 against 77/421, one line at a session boundary.
+
+**Aligned closed loop, before (frozen base) → after (this branch), real events, all 4 meetings:**
+
+| split | lines played / skipped | R1-AMI pause cut-offs | AMI end gap p50 | R3 continuers kept | R4 ≤ 200 ms | R5 room | R6 bleed |
+|---|---|---|---|---|---|---|---|
+| TRAIN before | 422 / 1,018 | 47/345 | 1,730 ms | 17/19 | 1/1 | 0/33 | 15/205 = 7.3 % |
+| TRAIN after | 419 / 1,021 | 47/345 | 1,730 ms | 16/18 | 1/1 | 0/33 | 13/203 = 6.4 % |
+| TEST before | 597 / 1,170 | 25/216 | 1,870 ms | 24/26 | 4/7 | 3/69 | 9/162 = 5.6 % |
+| TEST after | 595 / 1,172 | 25/216 | 1,880 ms | 24/26 | 4/7 | 3/68 | 8/161 = 5.0 % |
+| ALL before | 1,019 / 2,188 | 72/561 = 12.8 % | 1,820 ms | 41/45 = 91.1 % | 5/8 | 3/102 = 2.9 % | 24/367 = 6.5 % |
+| ALL after | 1,014 / 2,193 | 72/561 = 12.8 % | 1,820 ms | 40/44 = 90.9 % | 5/8 | 3/101 = 3.0 % | 21/364 = 5.8 % |
+
+**Event by event, no event got worse.** The only difference is one continuer (IS1008b, pair CB, kept BEFORE) that never
+happens AFTER: the line it fell in was skipped.
+
+**What it shows, plainly:**
+1. **The 8 TRAIN revokes are gone.** Once her audio really stops, no continuer lands on a line that has ended. That
+   confirms they were open-loop artefacts.
+2. **The rig is degenerate for R3 / R4: 2 of every 3 of her lines are skipped.** In a 4-person meeting the recorded
+   "child" talks often and never yields to her, so her floor is free only where X happens to be silent. That leaves 45
+   continuers (from 195) and 8 barge-ins (from 51), and they are not a fair sample: they are biased toward easy
+   moments. R3 91 % and R5 3 % here are NOT evidence that the criteria are met, and they are not claimed.
+3. **A "reply" variant is worse, not better.** `--shift-replies` answers every commit with her next line moved to the
+   commit (TRAIN, results `closed-shifted-train.json`). It re-times 1,087 of 1,167 lines against a child who cannot
+   react: continuers 29/34, room 33/136. It measures a different conversation, so it is a stress variant only.
+4. **The AMI turn-end rows (R1-AMI 12.8 %, gap p50 1.8 s) are not R1 / R2.** In a meeting the next talker often is
+   not her, so they are reported only to show before = after. The criteria R1 / R2 / R1b / R2b stay E1's (eot-bench,
+   §2-§4), where her line plays no part and a closed loop changes nothing.
+5. **R7 (safety) is not on AMI.** The safety tests and the P1_SAFETY seam are unchanged (§5).
+
+**Conclusion.** A closed loop needs BOTH sides to react. With a recorded child it removes the open-loop artefacts but
+starves the sample. The real closed-loop measurement is a live one:
+- the owner's hands-free test and Gate S shadow telemetry; or
+- a simulated child that reacts to her. TaxilaFDB (§8) is simulated but its child is scripted, so one would have to be
+  built;
+- with an owner decision, children's speech.

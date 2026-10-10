@@ -119,6 +119,12 @@
       "kind": "rejection",
       "title": "duplex r4 R3 trial: a short ended (or echo-level) burst whose own words are 1-2 tokens with no listening token, no '?', no 'no' and no call to her is a misheard continuer. AMI TRAIN: continuers 84 -> 82/103 (1 token) and 81/103 (2 tokens), room 12 -> 9/101, bleed 77 -> 72 / 60/421. It fixed none of the targeted misheard continuers ('sure' -> 'As much', 'yeah' -> 'could') and two other continuers ('mm', 'oh yeah') failed through knock-on state changes. Rejected: R3 is the target and a turn got worse",
       "at": "2026-10-10"
+    },
+    {
+      "id": "ms-r4dx-ami-closed-loop-2026-10-10",
+      "kind": "measurement",
+      "title": "duplex r4 closed-loop AMI rig (evals/duplex-r4/ami-closed.mjs; real adult AMI speech + recorded real STT, not children; 2026-10-10): --open reproduces the round-3 rig on TRAIN (84/103, 17/22, 12/101; bleed 76/420 vs 77/421). Aligned closed loop, 4 meetings, before -> after: continuers 41/45 -> 40/44, barge-ins <= 200 ms 5/8 -> 5/8, room 3/102 -> 3/101, bleed 24/367 -> 21/364; no event worse event-by-event. The open-loop revokes disappear, but 2,188 of 3,207 lines are skipped (a recorded child never yields), so the sample is starved and biased: not evidence for R3/R4. Needs a child that reacts (live test, Gate S, or a simulator)",
+      "at": "2026-10-10"
     }
   ],
   "edges": [
@@ -190,6 +196,11 @@
     {
       "src": "rj-r4dx-short-turn-misheard-continuer",
       "rel": "rejected_for",
+      "dst": "ms-r4dx-ami-overlap-2026-10-10"
+    },
+    {
+      "src": "ms-r4dx-ami-closed-loop-2026-10-10",
+      "rel": "measured_by",
       "dst": "ms-r4dx-ami-overlap-2026-10-10"
     }
   ]
