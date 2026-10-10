@@ -1,0 +1,155 @@
+diff --git a/src/child/lesson/Desk.tsx b/src/child/lesson/Desk.tsx
+index f408c8bd..999d7fe1 100644
+--- a/src/child/lesson/Desk.tsx
++++ b/src/child/lesson/Desk.tsx
+@@ -79,8 +79,15 @@ export interface DeskProps {
+   supportCode?: string | null;
+   /** Theme for Older (light / dark / follow): written on the Desk root; Young is always light. */
+   theme?: "light" | "dark" | null;
++  /** r4 K-P2: a skin name written on the root as data-skin (CSS only: the zones, layout and behaviour never change). */
++  skin?: string;
++  /** r4 K-P2: the lesson-end screen in place of the Summary (the Kaksha Debrief). Absent: today's Summary. */
++  renderSummary?: (p: { m: DeskModel; meters: TapSource[]; onFinish: () => void }) => ReactNode;
+ }
+ 
++/** r4 K-P2: what a skin passes the Desk (LessonScreen hands it to the skin's frame, which calls back with it). */
++export type DeskSkin = Pick<DeskProps, "skin" | "renderSummary">;
++
+ /** The tray's content (absolutely positioned in .dk-tray-body) plus the tray zone's padding. */
+ function trayNeedOf(el: Element | null): number {
+   if (!el) return 0;
+@@ -89,7 +96,7 @@ function trayNeedOf(el: Element | null): number {
+   return Math.ceil((el as HTMLElement).offsetHeight + (zs ? parseFloat(zs.paddingTop) + parseFloat(zs.paddingBottom) : 0));
+ }
+ 
+-export function Desk({ m, a, media, dockRef, live, onSize, notMeWindow, phaseLine = true, supportCode, theme }: DeskProps) {
++export function Desk({ m, a, media, dockRef, live, onSize, notMeWindow, phaseLine = true, supportCode, theme, skin, renderSummary }: DeskProps) {
+   const root = useRef<HTMLDivElement>(null);
+   const measureRef = useRef<() => void>(() => {});
+   const ro = useRef<ResizeObserver | null>(null);
+@@ -169,6 +176,7 @@ export function Desk({ m, a, media, dockRef, live, onSize, notMeWindow, phaseLin
+     "data-theme": young ? "light" : theme ?? undefined,
+     "data-motion": m.reducedMotion ? "reduce" : undefined,
+     "data-overflow": L.overflow ? "1" : undefined,
++    "data-skin": skin || undefined,
+     "data-testid": "lesson",
+     lang: "en-IN",
+   } as const;
+@@ -184,7 +192,7 @@ export function Desk({ m, a, media, dockRef, live, onSize, notMeWindow, phaseLin
+     return <div {...rootAttrs}><TroubleScreen m={m} id={full} onAction={a.troubleAction} code={supportCode} />{liveRegions}</div>;
+   }
+   if (m.summary) {
+-    return <div {...rootAttrs} data-summary="1"><Summary m={m} meters={media.meters} onFinish={a.finish} />{liveRegions}</div>;
++    return <div {...rootAttrs} data-summary="1">{renderSummary ? renderSummary({ m, meters: media.meters, onFinish: a.finish }) : <Summary m={m} meters={media.meters} onFinish={a.finish} />}{liveRegions}</div>;
+   }
+ 
+   const topBar = <TopBar m={m} a={a} notMeWindow={!!(notMeWindow ?? m.notMeWindow)} phaseLine={phaseLine} wide={L.kind === "wide"} />;
+@@ -218,20 +226,20 @@ export function Desk({ m, a, media, dockRef, live, onSize, notMeWindow, phaseLin
+         {/* the "{T} · AI teacher" label sits right under her face (flows G15), then the caption; same row heights */}
+         <div className="dk-col dk-col--left" style={{ gridColumn: 2, gridTemplateRows: `${left.padTop}px ${left.window}px ${left.label}px ${left.gapA}px ${left.caption}px ${left.gapB}px ${left.pad}px` }}>
+           <span />
+-          <div className="dk-zone dk-zone--window"><TeacherWindow m={m} media={faceMedia} floor={floor} labelBelow={false} /></div>
++          <div className="dk-zone dk-zone--window" data-zone="window"><TeacherWindow m={m} media={faceMedia} floor={floor} labelBelow={false} /></div>
+           <p className="dk-ailabel" data-ai-label="">{t("teacher.label", { T: m.teacher.name })}</p>
+           <span />
+-          <div className="dk-zone dk-zone--caption">{m.captionsOn && <Caption text={m.caption.text} speaking={m.caption.speaking} visible={captionVisible(floor)} lang={m.caption.lang} />}</div>
++          <div className="dk-zone dk-zone--caption" data-zone="caption">{m.captionsOn && <Caption text={m.caption.text} speaking={m.caption.speaking} visible={captionVisible(floor)} lang={m.caption.lang} />}</div>
+           <span />
+         </div>
+         <div className="dk-col dk-col--right" style={{ gridColumn: 4, gridTemplateRows: `${right.padTop}px ${right.card}px ${right.gapA}px ${right.tray}px ${right.gapB}px ${right.strip}px ${right.dock}px ${right.pad}px` }}>
+           <span />
+-          <div className="dk-zone dk-zone--card">{card}</div>
++          <div className="dk-zone dk-zone--card" data-zone="card">{card}</div>
+           <span />
+-          <div className="dk-zone dk-zone--tray">{tray}</div>
++          <div className="dk-zone dk-zone--tray" data-zone="tray">{tray}</div>
+           <span />
+-          <div className="dk-zone dk-zone--strip">{strip}</div>
+-          <div className="dk-zone dk-zone--dock">{dock}</div>
++          <div className="dk-zone dk-zone--strip" data-zone="strip">{strip}</div>
++          <div className="dk-zone dk-zone--dock" data-zone="dock">{dock}</div>
+         </div>
+       </div>
+     );
+@@ -244,14 +252,14 @@ export function Desk({ m, a, media, dockRef, live, onSize, notMeWindow, phaseLin
+     body = (
+       <div className="dk-phone" style={style}>
+         {topBar}
+-        <div className="dk-zone dk-zone--teacher">{faceZone}</div>
+-        <div className="dk-zone dk-zone--caption">{L.geometry === "face" && !L.keyboard && m.captionsOn && z.caption > 0 && (
++        <div className="dk-zone dk-zone--teacher" data-zone="teacher">{faceZone}</div>
++        <div className="dk-zone dk-zone--caption" data-zone="caption">{L.geometry === "face" && !L.keyboard && m.captionsOn && z.caption > 0 && (
+           <Caption text={m.caption.text} speaking={m.caption.speaking} visible={captionVisible(floor)} lang={m.caption.lang} />
+         )}</div>
+-        <div className="dk-zone dk-zone--card">{card}</div>
+-        <div className="dk-zone dk-zone--tray">{L.keyboard ? (m.tray ? <p className="dk-traystrip">{t("tray.activity")}</p> : null) : tray}</div>
+-        <div className="dk-zone dk-zone--strip">{strip}</div>
+-        <div className="dk-zone dk-zone--dock">{dock}</div>
++        <div className="dk-zone dk-zone--card" data-zone="card">{card}</div>
++        <div className="dk-zone dk-zone--tray" data-zone="tray">{L.keyboard ? (m.tray ? <p className="dk-traystrip">{t("tray.activity")}</p> : null) : tray}</div>
++        <div className="dk-zone dk-zone--strip" data-zone="strip">{strip}</div>
++        <div className="dk-zone dk-zone--dock" data-zone="dock">{dock}</div>
+         <span />
+       </div>
+     );
+@@ -283,7 +291,7 @@ function TopBar({ m, a, notMeWindow, phaseLine, wide }: { m: DeskModel; a: DeskP
+     return () => document.removeEventListener("click", off);
+   }, [menu, closeMenu]);
+   return (
+-    <header className="dk-top">
++    <header className="dk-top" data-zone="top">
+       <button type="button" className="dk-pause" onClick={a.pause} disabled={m.gate !== null} data-testid="pause">
+         <Glyph name="pause" size={young ? 28 : 24} /><span>{t("bar.pause")}</span>
+       </button>
+diff --git a/src/child/lesson/LessonScreen.tsx b/src/child/lesson/LessonScreen.tsx
+index 30640f04..e599fe38 100644
+--- a/src/child/lesson/LessonScreen.tsx
++++ b/src/child/lesson/LessonScreen.tsx
+@@ -3,7 +3,7 @@
+ // useDesk's model. Voice lessons start on the CASCADE lane (voice-lane-cascade-default) with no second start
+ // gate: the audio unlock is carried from the tap that opened the lesson. The Summary renders here when the lesson
+ // ends (the separate /lesson/:lid/summary route belongs to the child-routes owner; Summary.tsx is ready for it).
+-import { useCallback, useEffect, useRef, useState } from "react";
++import { lazy, Suspense, useCallback, useEffect, useRef, useState } from "react";
+ import type { LessonStartRequest } from "../../../shared/contracts.ts";
+ import { ApiError } from "../../lesson/api.ts";
+ import type { RuntimeDeps } from "../../lesson/runtime.ts";
+@@ -17,11 +17,16 @@ import { ageBandOf } from "../band.ts";
+ import { useChild } from "../ChildShell.tsx";
+ import { markLessonDone } from "../day.ts";
+ import { readArtefacts, saveArtefact } from "../prefs.ts";
+-import { Desk, sameSize, type DeskSize } from "./Desk.tsx";
++import { Desk, sameSize, type DeskSize, type DeskSkin } from "./Desk.tsx";
+ import { openMicAllowed, useHeadset } from "./headset.ts";
+ import { useDesk } from "./useDesk.ts";
+ import { cachedTextOnly } from "../plan.ts";
+ import { useSyncExternalStore } from "react";
++import { kakshaEnabled } from "../../ui-v3/kaksha/flag.ts";
++
++// r4 K-P2: behind `ui.kaksha` (default off) the Desk renders inside the Kaksha frame (skin CSS + the Debrief at the
++// end). A lazy chunk: with the flag off nothing of it loads, and the Desk renders exactly as before.
++const KakshaLesson = lazy(() => import("../../ui-v3/kaksha/lesson/KakshaLesson.tsx"));
+ 
+ export type LessonVariant = "lesson" | "practice" | "doubt";
+ 
+@@ -134,10 +139,18 @@ export function LessonScreen({ variant, topicId, firstText }: LessonScreenProps)
+   }
+ 
+   // The lesson's own identity: the name pinned at lesson start (state.teacher), so a rename never changes an open lesson.
++  const desk = (skin?: DeskSkin) => (
++    <Desk m={m} a={a} media={{ meters: [runtime.levels.teacher, bridge.replayLevel], mic: runtime.levels.mic, modules: runtime.modules, lang: child.language_pref, ageBand: ageBandOf(band) }}
++      dockRef={dockRef} live={live} onSize={onSize} theme={prefs.theme === "system" ? null : prefs.theme} {...skin} />
++  );
++  const kaksha = kakshaEnabled((me as { ui?: { kaksha?: boolean } }).ui?.kaksha);
+   return (
+     <TeacherNameProvider id={m.teacher.id} name={m.teacher.name}>
+-      <Desk m={m} a={a} media={{ meters: [runtime.levels.teacher, bridge.replayLevel], mic: runtime.levels.mic, modules: runtime.modules, lang: child.language_pref, ageBand: ageBandOf(band) }}
+-        dockRef={dockRef} live={live} onSize={onSize} theme={prefs.theme === "system" ? null : prefs.theme} />
++      {kaksha ? (
++        <Suspense fallback={null}>
++          <KakshaLesson cid={cid} family={family} reducedMotion={reducedMotion}>{desk}</KakshaLesson>
++        </Suspense>
++      ) : desk()}
+     </TeacherNameProvider>
+   );
+ }

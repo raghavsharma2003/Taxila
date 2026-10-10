@@ -79,7 +79,16 @@ export interface DeskProps {
   supportCode?: string | null;
   /** Theme for Older (light / dark / follow): written on the Desk root; Young is always light. */
   theme?: "light" | "dark" | null;
+  /** r4 K-P2: a skin name written on the root as data-skin (CSS only: the zones, layout and behaviour never change). */
+  skin?: string;
+  /** r4 K-P2: the lesson-end screen in place of the Summary (the Kaksha Debrief). Absent: today's Summary. */
+  renderSummary?: (p: { m: DeskModel; meters: TapSource[]; onFinish: () => void }) => ReactNode;
+  /** r4 K-P12: the skin's intake card (m.intake), drawn at the top of the Question card. Absent: nothing (today). */
+  renderIntake?: (m: DeskModel) => ReactNode;
 }
+
+/** r4 K-P2: what a skin passes the Desk (LessonScreen hands it to the skin's frame, which calls back with it). */
+export type DeskSkin = Pick<DeskProps, "skin" | "renderSummary" | "renderIntake">;
 
 /** The tray's content (absolutely positioned in .dk-tray-body) plus the tray zone's padding. */
 function trayNeedOf(el: Element | null): number {
@@ -89,7 +98,7 @@ function trayNeedOf(el: Element | null): number {
   return Math.ceil((el as HTMLElement).offsetHeight + (zs ? parseFloat(zs.paddingTop) + parseFloat(zs.paddingBottom) : 0));
 }
 
-export function Desk({ m, a, media, dockRef, live, onSize, notMeWindow, phaseLine = true, supportCode, theme }: DeskProps) {
+export function Desk({ m, a, media, dockRef, live, onSize, notMeWindow, phaseLine = true, supportCode, theme, skin, renderSummary, renderIntake }: DeskProps) {
   const root = useRef<HTMLDivElement>(null);
   const measureRef = useRef<() => void>(() => {});
   const ro = useRef<ResizeObserver | null>(null);
@@ -169,6 +178,7 @@ export function Desk({ m, a, media, dockRef, live, onSize, notMeWindow, phaseLin
     "data-theme": young ? "light" : theme ?? undefined,
     "data-motion": m.reducedMotion ? "reduce" : undefined,
     "data-overflow": L.overflow ? "1" : undefined,
+    "data-skin": skin || undefined,
     "data-testid": "lesson",
     lang: "en-IN",
   } as const;
@@ -184,13 +194,14 @@ export function Desk({ m, a, media, dockRef, live, onSize, notMeWindow, phaseLin
     return <div {...rootAttrs}><TroubleScreen m={m} id={full} onAction={a.troubleAction} code={supportCode} />{liveRegions}</div>;
   }
   if (m.summary) {
-    return <div {...rootAttrs} data-summary="1"><Summary m={m} meters={media.meters} onFinish={a.finish} />{liveRegions}</div>;
+    return <div {...rootAttrs} data-summary="1">{renderSummary ? renderSummary({ m, meters: media.meters, onFinish: a.finish }) : <Summary m={m} meters={media.meters} onFinish={a.finish} />}{liveRegions}</div>;
   }
 
   const topBar = <TopBar m={m} a={a} notMeWindow={!!(notMeWindow ?? m.notMeWindow)} phaseLine={phaseLine} wide={L.kind === "wide"} />;
   // round 3 play mode (docs/design/round3/play/patches/04): the game's own goal rail is the card while a play piece is up
   const playMode = m.tray?.kind === "studio" && (m.tray.studio?.artifact?.kind as string | undefined) === "play";
-  const card = playMode ? null : <QuestionCard ask={m.ask} answer={m.answer} young={young} onHear={a.hearQuestion} onFix={a.fixAnswer} goal={m.ask ? null : m.shortTitle ? t("card.goal", { topic: m.shortTitle }) : null} />;
+  const card = playMode ? null : <QuestionCard ask={m.ask} answer={m.answer} young={young} onHear={a.hearQuestion} onFix={a.fixAnswer} goal={m.ask ? null : m.shortTitle ? t("card.goal", { topic: m.shortTitle }) : null}
+    lead={m.intake && renderIntake ? renderIntake(m) : null} />;
   // The answer surfaces (tiles, the NumberPad, the Help menu over them) are AnswerTray's; the activity and the board
   // stay WorkTray's (W1-B). BUILD-PLAN W1-A items 3 and 11.
   const answerTray = m.tray && (m.tray.kind === "tiles" || m.tray.kind === "pad" || !!m.tray.overlay);
@@ -218,20 +229,20 @@ export function Desk({ m, a, media, dockRef, live, onSize, notMeWindow, phaseLin
         {/* the "{T} · AI teacher" label sits right under her face (flows G15), then the caption; same row heights */}
         <div className="dk-col dk-col--left" style={{ gridColumn: 2, gridTemplateRows: `${left.padTop}px ${left.window}px ${left.label}px ${left.gapA}px ${left.caption}px ${left.gapB}px ${left.pad}px` }}>
           <span />
-          <div className="dk-zone dk-zone--window"><TeacherWindow m={m} media={faceMedia} floor={floor} labelBelow={false} /></div>
+          <div className="dk-zone dk-zone--window" data-zone="window"><TeacherWindow m={m} media={faceMedia} floor={floor} labelBelow={false} /></div>
           <p className="dk-ailabel" data-ai-label="">{t("teacher.label", { T: m.teacher.name })}</p>
           <span />
-          <div className="dk-zone dk-zone--caption">{m.captionsOn && <Caption text={m.caption.text} speaking={m.caption.speaking} visible={captionVisible(floor)} lang={m.caption.lang} />}</div>
+          <div className="dk-zone dk-zone--caption" data-zone="caption">{m.captionsOn && <Caption text={m.caption.text} speaking={m.caption.speaking} visible={captionVisible(floor)} lang={m.caption.lang} />}</div>
           <span />
         </div>
         <div className="dk-col dk-col--right" style={{ gridColumn: 4, gridTemplateRows: `${right.padTop}px ${right.card}px ${right.gapA}px ${right.tray}px ${right.gapB}px ${right.strip}px ${right.dock}px ${right.pad}px` }}>
           <span />
-          <div className="dk-zone dk-zone--card">{card}</div>
+          <div className="dk-zone dk-zone--card" data-zone="card">{card}</div>
           <span />
-          <div className="dk-zone dk-zone--tray">{tray}</div>
+          <div className="dk-zone dk-zone--tray" data-zone="tray">{tray}</div>
           <span />
-          <div className="dk-zone dk-zone--strip">{strip}</div>
-          <div className="dk-zone dk-zone--dock">{dock}</div>
+          <div className="dk-zone dk-zone--strip" data-zone="strip">{strip}</div>
+          <div className="dk-zone dk-zone--dock" data-zone="dock">{dock}</div>
         </div>
       </div>
     );
@@ -244,14 +255,14 @@ export function Desk({ m, a, media, dockRef, live, onSize, notMeWindow, phaseLin
     body = (
       <div className="dk-phone" style={style}>
         {topBar}
-        <div className="dk-zone dk-zone--teacher">{faceZone}</div>
-        <div className="dk-zone dk-zone--caption">{L.geometry === "face" && !L.keyboard && m.captionsOn && z.caption > 0 && (
+        <div className="dk-zone dk-zone--teacher" data-zone="teacher">{faceZone}</div>
+        <div className="dk-zone dk-zone--caption" data-zone="caption">{L.geometry === "face" && !L.keyboard && m.captionsOn && z.caption > 0 && (
           <Caption text={m.caption.text} speaking={m.caption.speaking} visible={captionVisible(floor)} lang={m.caption.lang} />
         )}</div>
-        <div className="dk-zone dk-zone--card">{card}</div>
-        <div className="dk-zone dk-zone--tray">{L.keyboard ? (m.tray ? <p className="dk-traystrip">{t("tray.activity")}</p> : null) : tray}</div>
-        <div className="dk-zone dk-zone--strip">{strip}</div>
-        <div className="dk-zone dk-zone--dock">{dock}</div>
+        <div className="dk-zone dk-zone--card" data-zone="card">{card}</div>
+        <div className="dk-zone dk-zone--tray" data-zone="tray">{L.keyboard ? (m.tray ? <p className="dk-traystrip">{t("tray.activity")}</p> : null) : tray}</div>
+        <div className="dk-zone dk-zone--strip" data-zone="strip">{strip}</div>
+        <div className="dk-zone dk-zone--dock" data-zone="dock">{dock}</div>
         <span />
       </div>
     );
@@ -283,7 +294,7 @@ function TopBar({ m, a, notMeWindow, phaseLine, wide }: { m: DeskModel; a: DeskP
     return () => document.removeEventListener("click", off);
   }, [menu, closeMenu]);
   return (
-    <header className="dk-top">
+    <header className="dk-top" data-zone="top">
       <button type="button" className="dk-pause" onClick={a.pause} disabled={m.gate !== null} data-testid="pause">
         <Glyph name="pause" size={young ? 28 : 24} /><span>{t("bar.pause")}</span>
       </button>

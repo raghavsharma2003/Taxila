@@ -1,0 +1,30 @@
+/* The Briefing (BUILD-SPEC §3.4, §6; K2), inside the play box. Tokens only; text ≥ 14 px; the launch target ≥ 48 px.
+   Plasma is the one "your move" colour on the card (the launch button). The warp hides the engine while it mounts.
+   In the Desk (embedded play) her face and caption stay in the Desk's SpeechRow above the box: the HUD pip of §3.4 would
+   be a second face on screen (§5 rule 1), so the box gets no pip. */
+.kx-brief { position: absolute; inset: 0; z-index: 5; display: flex; align-items: center; justify-content: center; padding: 10px;
+  background: radial-gradient(120% 90% at 50% 0%, var(--k-bar) 0, var(--k-void) 70%); color: var(--k-ink); font-family: var(--k-sans); overflow: hidden; }
+.kx-brief[data-launched="1"] { padding: 0; background: var(--k-void); }
+.kx-brief-card { --k-cut: 14px; width: min(100%, 460px); max-height: 100%; overflow: auto; display: flex; flex-direction: column; gap: 8px;
+  padding: 16px 16px 12px; background: var(--k-panel-solid); border: 1px solid var(--k-line-2); box-shadow: inset 3px 0 0 var(--k-her); }
+.kx-brief-title { margin: 0; font: 700 28px/1.05 var(--k-sans); letter-spacing: -.02em; }
+.kx-brief-mode { margin: 0; font: 500 15px/1.3 var(--k-mono); letter-spacing: .04em; color: var(--k-her); }
+.kx-brief-lines { list-style: none; margin: 4px 0 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.kx-brief-lines li { position: relative; padding-left: 16px; font-size: 15px; line-height: 1.35; color: var(--k-ink-2); }
+.kx-brief-lines li::before { content: ""; position: absolute; left: 2px; top: .55em; width: 6px; height: 6px; background: var(--k-ion); }
+.kx-brief-lines li[data-line="built"] { color: var(--k-ink); font-weight: 600; }
+.kx-brief-lines li[data-line="built"]::before { background: var(--k-secure); }
+.kx-brief-go { position: relative; margin-top: 10px; min-height: 56px; width: 100%; touch-action: none; user-select: none; -webkit-user-select: none; }
+.kx-brief-fill { position: absolute; inset: 0; background: color-mix(in srgb, var(--k-ink) 32%, transparent); transform: scaleX(0); transform-origin: left center;
+  transition: transform .22s linear; pointer-events: none; }
+.kx-brief-go[data-hold="1"] .kx-brief-fill { transform: scaleX(1); transition: transform .65s linear; }
+.kx-brief-word { position: relative; }
+.kx-brief-hint { margin: 2px 0 0; text-align: center; font-size: 14px; color: var(--k-ink-3); }
+.kx-brief[data-young="1"] .kx-brief-title { font-size: 26px; }
+.kx-brief[data-young="1"] .kx-brief-go { min-height: 64px; }
+.kx-warp { position: absolute; inset: 0; width: 100%; height: 100%; display: block; color: var(--k-ink); }
+.kx-warp--fade { background: var(--k-void); animation: kx-warp-fade .2s linear both; }
+@keyframes kx-warp-fade { from { opacity: 1; } to { opacity: 0; } }
+@media (max-height: 360px) { .kx-brief-card { gap: 4px; padding: 10px 12px 8px; } .kx-brief-title { font-size: 22px; } .kx-brief-go { min-height: 48px; margin-top: 4px; } }
+@media (prefers-reduced-motion: reduce) { .kx-brief-fill { transition: none; } }
+.kx[data-motion="reduced"] .kx-brief-fill { transition: none; }

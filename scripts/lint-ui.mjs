@@ -54,12 +54,19 @@ export const ALLOW = {
     ["src/studio-v2/core/host.css", "the Studio v2 host's own token block (--sv2-*) is defined here; the rules below it use the variables"],
     ["src/studio-v2/engines/", "canvas engine art (sky, moon, circuit, heat maps): pixels drawn on a <canvas> inside the stage box, not CSS chrome — the same reason as src/modules/frame/ and the whiteboard palette"],
     ["src/studio-v2/gallery/", "the engine gallery (src/studio-v2/gallery/index.html) is a dev page: not an entry of the production build (vite.config.ts inputs are index.html and modules.html)"],
+    // r4 Kaksha (BUILD-SPEC K-P7)
+    ["src/ui-v3/kaksha/tokens.css", "the Kaksha palette is defined here (mirrors tokens.ts; tests/r4-kaksha-lint.test.mjs K-MIRROR and K-CONTRAST)"],
+    ["src/ui-v3/kaksha/tokens.ts", "the Kaksha palette's source of truth (night / dawn); every other Kaksha file uses the --k-* variables"],
   ],
   "L-DEVA": [
     // ship5 integration (p2-face)
+    ["src/ui-v3/kaksha/copy.ts", "dormant localisation columns (G-EN-1's reversal parameter, K-O1): CHROME_LANG is fixed \"en\"; no Devanagari is rendered (tests/r4-kaksha-lint.test.mjs K-EN)"],
     ["src/face-puppet/visemes.ts", "speech processing, not chrome: the TTS text → mouth-shape tables (phoneme notes, the Hindi retroflex / dental stop sets read off the line she speaks); nothing in this file is rendered (the same reason src/lesson/*.ts speech code is not scanned)"],
   ],
-  "L-HING": [["src/ui/copy.ts", "defines the wordlist itself"]],
+  "L-HING": [
+    ["src/ui/copy.ts", "defines the wordlist itself"],
+    ["src/ui-v3/kaksha/copy.ts", "dormant localisation columns (G-EN-1's reversal parameter, dc-r4-kaksha-k-o-answers K-O1): CHROME_LANG is fixed \"en\" in code and kt() reads only that column; tests/r4-kaksha-lint.test.mjs K-EN proves it"],
+  ],
   "L-HOLD": [],
 };
 
