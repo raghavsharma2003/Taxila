@@ -51,7 +51,7 @@ const INIT = ({ asrFinalMs }) => {
   window.fetch = async function (input, init) {
     const url = typeof input === "string" ? input : input?.url ?? String(input);
     const rec = /\/api\//.test(url) ? { path: url.replace(location.origin, "").split("?")[0], t0: T(), method: init?.method || "GET" } : null;
-    if (rec && /lesson\/turn|turn-ack|turn-prefetch|tts-stream/.test(rec.path)) { try { rec.body = typeof init?.body === "string" ? init.body.slice(0, 400) : null; } catch { /* */ } }
+    if (rec && /lesson\/turn|turn-ack|turn-prefetch|tts-stream/.test(rec.path)) { try { rec.body = typeof init?.body === "string" ? init.body.slice(0, 4000) : null; } catch { /* */ } }
     if (rec) { R.net.push(rec); if (R.net.length > 600) R.net.splice(0, 100); }
     try {
       const res = await of.apply(this, arguments);
@@ -90,16 +90,35 @@ const INIT = ({ asrFinalMs }) => {
   // the fake transcription call
   const S = { dc: null, td: undefined, n: 0, pending: null };
   const emit = (e) => { R.stt.push({ t: T(), ev: e.type, item: e.item_id, text: e.transcript ?? e.delta }); try { S.dc?.onmessage?.({ data: JSON.stringify(e) }); } catch (err) { R.errs.push("emit " + err); } };
+  // A commit closes the OPEN item of the current utterance with the words spoken by now; the audio after it becomes a NEW
+  // item, transcribed on its own (gpt-live-transcribe does exactly this: in the recorded round-2 events 205 of 206 client
+  // commits were followed by a new item carrying the next words). Before (r4 duplex patch 01) a mid-utterance commit (the
+  // engine's micro-commit probe at a 150 ms pause) cut the utterance and every later word was lost.
   const finish = (why) => {
-    const p = S.pending;
-    if (!p || p.done) return;
-    p.done = true;
-    const now = T();
-    let text = p.text;
-    if (now < p.end - 50) { const k = Math.max(1, Math.round(p.words.length * Math.max(0, (now - p.t0) / (p.end - p.t0)))); text = p.words.slice(0, k).join(" "); p.cut = text; }
-    emit({ type: "input_audio_buffer.committed", item_id: p.id });
-    p.commitAt = now; p.why = why;
-    setTimeout(() => { emit({ type: "conversation.item.input_audio_transcription.completed", item_id: p.id, transcript: text }); p.finalAt = T(); }, asrFinalMs);
+    const it = S.pending;
+    if (!it || it.done) return;
+    const u = it.u, now = T();
+    it.done = true;
+    const spoken = now >= u.end - 50 ? u.words.length : Math.max(it.from, Math.round(u.words.length * Math.max(0, (now - u.t0) / (u.end - u.t0))));
+    it.to = spoken;
+    const text = u.words.slice(it.from, it.to).join(" ");
+    emit({ type: "input_audio_buffer.committed", item_id: it.id });
+    it.commitAt = now; it.why = why;
+    // the say record reports the item that holds its LAST word (the one the turn waits for), and the first early commit
+    if (it.to < u.words.length) { u.earlyCommits = (u.earlyCommits ?? 0) + 1; u.firstEarlyAt ??= now; S.pending = openItem(u, it.to); }
+    else { u.commitAt = now; u.why = why; }
+    setTimeout(() => {
+      emit({ type: "conversation.item.input_audio_transcription.completed", item_id: it.id, transcript: text });
+      it.finalAt = T();
+      if (it.to >= u.words.length) u.finalAt = it.finalAt;
+    }, asrFinalMs);
+  };
+  /** A new item of utterance `u` starting at word `from` (its audio continues from now). */
+  const openItem = (u, from) => {
+    const it = { id: `it${++S.n}`, from, to: null, done: false, t0: T() };
+    Object.defineProperty(it, "u", { value: u, enumerable: false }); // no cycle in the serialised timeline
+    u.items.push(it);
+    return it;
   };
   const onClient = (m) => {
     R.client.push({ t: T(), type: m.type, td: m.session?.audio?.input?.turn_detection ?? (m.session ? null : undefined) });
@@ -124,20 +143,26 @@ const INIT = ({ asrFinalMs }) => {
   window.__say = (text, o = {}) => {
     const words = String(text).split(/\s+/).filter(Boolean);
     const ms = o.ms ?? Math.max(900, Math.round(words.length * 380));
-    const id = `it${++S.n}`, t0 = T();
+    const t0 = T();
     speak(ms);
-    const p = { id, text, words, t0, end: t0 + ms, done: false };
-    S.pending = p;
-    R.says.push(p);
+    const u = { text, words, t0, end: t0 + ms, items: [] };
+    const first = openItem(u, 0);
+    u.id = first.id;
+    S.pending = first;
+    R.says.push(u);
     const vad = S.td && S.td.type === "server_vad";
-    p.mode = vad ? "vad" : "ptt";
-    if (vad) setTimeout(() => emit({ type: "input_audio_buffer.speech_started", item_id: id, audio_start_ms: Math.round(t0) }), 150);
-    words.forEach((w, i) => setTimeout(() => { if (!p.done || (p.finalAt === undefined)) emit({ type: "conversation.item.input_audio_transcription.delta", item_id: id, delta: (i ? " " : "") + w }); }, 450 + Math.round((ms * (i + 1)) / words.length)));
+    u.mode = vad ? "vad" : "ptt";
+    if (vad) setTimeout(() => emit({ type: "input_audio_buffer.speech_started", item_id: first.id, audio_start_ms: Math.round(t0) }), 150);
+    // each word's delta goes to the item that holds it, unless that item's final already carried it
+    words.forEach((w, i) => setTimeout(() => {
+      const it = u.items.find((x) => i >= x.from && (x.to === null || i < x.to));
+      if (it && it.finalAt === undefined) emit({ type: "conversation.item.input_audio_transcription.delta", item_id: it.id, delta: (i > it.from ? " " : "") + w });
+    }, 450 + Math.round((ms * (i + 1)) / words.length)));
     if (vad) {
       const sil = Number(S.td.silence_duration_ms) || 900;
-      setTimeout(() => { if (p.done) return; emit({ type: "input_audio_buffer.speech_stopped", item_id: id }); p.vadStopAt = T(); finish("server_vad"); }, ms + sil);
+      setTimeout(() => { const it = S.pending; if (!it || it.done || it.u !== u) return; emit({ type: "input_audio_buffer.speech_stopped", item_id: it.id }); u.vadStopAt = T(); finish("server_vad"); }, ms + sil);
     }
-    return { id, ms, mode: p.mode, td: S.td };
+    return { id: first.id, ms, mode: u.mode, td: S.td };
   };
   window.addEventListener("error", (e) => R.errs.push(String(e.message).slice(0, 200)));
 };
@@ -261,6 +286,7 @@ async function timeline(s, since) {
     const r = (x) => (x == null ? null : Math.round(x));
     return {
       said: say?.text ?? null, sent: turn?.body ? (turn.body.match(/"childText":"((?:[^"\\]|\\.)*)"/)?.[1] ?? null) : null, mode: say?.mode ?? null, speechMs: say ? r(say.end - say.t0) : null, cut: say?.cut ?? null, commitWhy: say?.why ?? null,
+      sttItems: say?.items?.length ?? null, earlyCommits: say?.earlyCommits ?? 0, endToFirstEarlyCommit: say?.firstEarlyAt ? r(say.firstEarlyAt - end) : null,
       endToCommit: say?.commitAt ? r(say.commitAt - end) : null, endToFinal: say?.finalAt ? r(say.finalAt - end) : null,
       endToTurnPost: turn ? r(turn.t0 - end) : null, turnMs: turn?.t1 ? r(turn.t1 - turn.t0) : null, turnStatus: turn?.status ?? null,
       ackStatus: ack?.status ?? null, endToAck: ack?.t1 ? r(ack.t1 - end) : null, prefetch: pre.map((p) => p.status),
@@ -273,7 +299,7 @@ async function timeline(s, since) {
 
 async function tapIfVisible(page, sel) { const l = page.locator(sel).first(); if (await l.isVisible().catch(() => false)) { await l.click({ timeout: 5000 }).catch(() => {}); return true; } return false; }
 
-async function say(s, { text, wait = true, politeMs = 20_000, doneAfterMs = null, barge = false }) {
+async function say(s, { text, wait = true, politeMs = 20_000, doneAfterMs = null, barge = false, ms: msOverride = null }) {
   const p = s.page;
   let since = await p.evaluate(() => performance.now());
   // tap-to-talk when the Desk shows the talk button (hands-free: no button)
@@ -295,7 +321,7 @@ async function say(s, { text, wait = true, politeMs = 20_000, doneAfterMs = null
     if (on !== "true") { await p.locator(micSel).click({ timeout: 5000 }).catch(() => {}); tapped = true; await sleep(250); }
   }
   const before = s.turns.length;
-  const info = await p.evaluate((t) => window.__say(t), text);
+  const info = await p.evaluate(([t, o]) => window.__say(t, o), [text, { ms: msOverride ?? undefined }]);
   let doneTapped = false;
   if (tapped) {
     // a child who waits for the auto-end; Done after doneAfterMs (if given) or 4 s past the end of speech
