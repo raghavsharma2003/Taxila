@@ -3,7 +3,7 @@
 // Stagecraft keeps the stage as before; the play piece is an offer, and after one decline in the lesson the practice beat is
 // Stagecraft's again (NEVER MANIPULATE). G2 measured Stagecraft taking every practice beat (claude/r4-khand, n = 3).
 // Studio v2 is certified for the duration of each test (the merge mechanics behind the tray gate). No browser, no model.
-import { describe, it, after } from "node:test";
+import { describe, it, before, after } from "node:test";
 import assert from "node:assert/strict";
 import { kitTopicAny } from "../server/stagecraft/catalogue.js";
 import { createBuilders } from "../server/stagecraft/builders.js";
@@ -36,7 +36,8 @@ const pointFor = (lessonId, beat) => revealPoint({ lessonId, turnSeq: 9, safety:
 const viewWith = (id) => ({ statuses: [], onScreen: null, propose: { reveal: id } });
 
 describe("r4: practice beat, play vs Stagecraft", () => {
-  trayGate._certifyStudioV2ForTests(true);
+  // on only while these tests run (a one-process suite must not see Studio v2 certified in other files' tests)
+  before(() => trayGate._certifyStudioV2ForTests(true));
   after(() => trayGate._certifyStudioV2ForTests(false));
   it("a practice_set beat with an admitted play piece: the play piece is proposed, not the Stagecraft reveal", () => {
     const id = "pp-1"; const { host, play } = setup(id, "practice_set");
