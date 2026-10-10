@@ -17725,6 +17725,55 @@
    "title": "2026-10-10 owner verdict on the three round-4 directions (Taal, Instrument, Prakash; docs/design/round4/): \"go with Prakash with a grown-up face, show me that face also or we can make anime type women face of mature and confident women\". Round 4 builds the whole product in the Prakash game-native world (docs/design/round4/world/SPEC.md): one lamplit Indian world, progress as a valley of pavilions growing chalk plan -> scaffold -> lit -> carved stone, light the only reward. The shipped chibi puppet face is out; the teacher gets a grown-up face, candidates in two or more styles including a mature, confident anime style, shown to the owner before the rig is rebuilt. Rationale: Prakash is the only direction where learning itself is the game (the owner's gamification thesis); its weak point in the prototype was the reused childish face (audit cause 1, 'the teacher is a sticker'). Reverse if: the owner rejects every face candidate, or a child/parent test shows the world metaphor confuses progress (children cannot say what a lit pavilion means), or Prakash's map cannot hold 30 fps on a Mali-G52-class phone after optimisation.",
    "at": "2026-10-10",
    "source": "inbox/r4-owner-pick.json"
+  },
+  {
+   "id": "rj-deploy-worktree-shares-branch-ref",
+   "kind": "rejection",
+   "title": "2026-10-10 the clean-worktree deploy recipe (git worktree add --force <dir> <sha>; git checkout --ignore-other-worktrees <branch>) puts the deploy worktree on the SAME branch ref as the main tree. A WIP commit made in the main tree while the deploy ran (to satisfy the stop hook) moved that shared ref, so the deploy worktree's HEAD silently became the new commit while its files stayed at the gated sha: the retry after a transient 'fetch failed' refused with 'HEAD b371f4e is not pushed', and the 25-minute gate had to be re-run for the new (docs-only) sha. Rules: during a deploy, make NO commits on that branch in the main tree (leave the agent's files uncommitted until the deploy is live); retry a deploy only after checking `git -C <worktree> rev-parse HEAD` equals the gated sha; if a commit did slip in, push it, `git -C <worktree> reset --hard <new tip>` and re-gate. A transient 'fetch failed' right after the gate stamp is safe to retry without --gate only while HEAD is unchanged.",
+   "at": "2026-10-10",
+   "source": "inbox/r3-deploy-worktree-shared-branch.json"
+  },
+  {
+   "id": "dc-r4-outfit-cardigan-print-kurta",
+   "kind": "decision",
+   "title": "2026-10-10 owner confirmed Asha's outfit: \"Cardigan + print kurta lets do\" — a terracotta-rust open cardigan over a teal band-collar block-print kurta, oxidised-silver studs (docs/design/round4/asha/outfit/, published https://claude.ai/artifact/Uwh5rrAZEZdSjwARLyThpH). Evidence: blind lineups n=5 chose it as the overall outfit 5/5 and the cardigan friendliest; professional 5.0/5, Indian 5/5, childish 0/5, sexualised 0/5; but 'cool to a 12-year-old' only 2.8/5 (same as the saree). Runner-up kept on file: dark denim over the print kurta (cool 3.2, professional 5.0). Reverse if: a child test reads her as strict or old-fashioned, or the owner asks for more 'cool' — swap the body layer to the dark-denim variant (the rig keeps clothes as one swappable layer).",
+   "at": "2026-10-10",
+   "source": "inbox/r4-outfit-confirmed.json"
+  },
+  {
+   "id": "dc-owner-ship-complete-to-prod-2026-10-10",
+   "kind": "decision",
+   "title": "2026-10-10 owner directives, verbatim: (1) \"dont start the sessions yet i wanna text the product after the round goes out and all the thing we have in pipeline we deploy, because i wanna decide the direction of the product which i think its lacking and there are so many gaps that i wanna one by one work on. right now taxila.dev dont even have the ui,ux upgrade yet and none of the features that we talked about.\" (2) \"yes use the same email for hands-free, also i want you to bascially deploy everything live after completing it so that i can test a good/latest version atleast. its focus on completing thing with no copremises 100% quality ad deploy them and put them on prod, everything tested and no gaps. the game/content development and its deploy for the student is extremey fucked up and nonsense and fully broken.\" Decisions: no parallel cloud sessions until the owner says so (work runs in this session's agents/workflows); every finished piece goes to production as soon as its gates and batteries pass — nothing is left on a branch or a preview for the owner to imagine; the owner's hands-free (duplex live) cohort is the guardian account of the session user's email (sha256 in TAXILA_DUPLEX_LIVE_FOR); the game/content experience for students is the first quality target after round 3 ships, then the Prakash UI rebuild with Asha (lamp1), then latency. Reverse if: the owner sets a different order.",
+   "at": "2026-10-10",
+   "source": "inbox/r4-owner-ship-everything.json"
+  },
+  {
+   "id": "dc-r4-owner-vision-superhuman-tutor",
+   "kind": "decision",
+   "title": "2026-10-10 owner product direction, verbatim: \"real great fully gamified app for student learning which they find cool and engaging accordingly we need to make the ui ,ux and the product design, the duplex architecture and the duplex content creation all that has to be fully working, check this https://sketchmind.ai/ and projects and products like this best things from here need to be incoperated in our product to since it has to be a complete world class revolutionary product, also the games that we are creating have to be minecraft ,space fighter level or atleast around that proper game games i mean and everything need to be build on the go and depending on the overall understanding of the student and the ongoing convo/lecture with the duplex way. keep logging context too. on the go world class content generation(basis on the student style and the chemistry of tutor and student and the current convo and past)+ understanding the student understood or not+ understanding how the student lear(be it visual,in interations, repetitions, etc) and accoringly creating content+ humall tan like tutor which have a bond with student and behave like huaman and evolve and grows like human+ and these things keep evolving and changing dynamically conversation by conversation interaction by interaction +for everything we need to replicate a human teacher(like we are using the duplex architecture to achieve a part of it in some feauture like this we need to crack everything for all the features) and create a super human highly personalised tutor that can teach anything!! the concept of modules also i dont appreciate that much ideally teacher should just understand what the student was learning in the school and then continue from here and learn itself and teaches to student (what the student wants to learn+ which class he is in+age+ what going on currently in the school today(teacher should just ask that) and understand +accrodingly understand what to teach from that and even continue on that topic and even revise it like tution teachers do) just stant the session and the ai tutor should able to hadle everything since its a superhuman teacher right?\" Decisions: (1) round 4 is re-planned around this; the BUILD-PLAN of 2026-10-10 (keep today's shell, round-3 play families) is superseded where it conflicts. (2) The entry is SESSION-FIRST, not module-first: the child opens a session, the teacher asks what happened at school today / what they want to learn / what is coming up, maps that to the syllabus graph, then teaches, continues and revises like a tuition teacher; the Conductor's day plan becomes her private plan, not a menu the child picks from. (3) The app becomes a gamified world students find cool (UI/UX/product design rebuilt, owner sees directions before scale). (4) Games aim at real-game quality (the owner's bar: Minecraft / space-fighter class), assembled live from the lesson and the learner model, with the skill being taught as the core mechanic. (5) Content is generated live from the learner model, the relationship and the conversation; SketchMind's 'draws while it talks' (ink synced to voice, plan agreed first, checkpoints, saved notebook) is the named reference. (6) 'How the student learns' is modelled as measured responsiveness per representation and practice pattern, NOT as a fixed VARK learning-style label (matching instruction to a self-reported style has no supporting evidence; see the research note when it lands). (7) Every feature is built by replicating what a human tutor does, the way duplex replicates turn-taking. (8) Context logging continues every phase. (9) Still standing from dc-r4-prakash-dropped-asha-only: one teacher, grown-up Asha (option 4, cardigan + print kurta), no Prakash; only its 'keep today's app shell' clause is superseded. Reverse if: the owner picks a different order or rejects the gamified direction after seeing it.",
+   "at": "2026-10-10",
+   "source": "inbox/r4-owner-vision-2026-10-10.json"
+  },
+  {
+   "id": "dc-r4-parallel-cloud-sessions",
+   "kind": "decision",
+   "title": "2026-10-10 owner: the USD 250 Claude Code cloud credit (expires this month) may be used for more capacity; \"May those sessions push to their own branches: that is you call entirely\" and \"you are the decision maker in all these thing\". Decision: round 4 runs as 4-6 parallel Claude Code cloud sessions (each its own container: own CPUs and disk, so the 4-CPU / 2-workflow-agent / ~5 GB-disk limits of the main container stop being the bottleneck), each on its own branch claude/r4-<stream> cut from claude/blissful-mayer-icwe2j, with file ownership fixed by docs/design/round4/BUILD-PLAN.md. Only the main session merges into claude/blissful-mayer-icwe2j, runs the gates and batteries, migrates and deploys. Reverse if: merge conflicts or integration failures cost more than the parallel time saved (e.g. two merges in a row need a rework day), or the credit runs out.",
+   "at": "2026-10-10",
+   "source": "inbox/r4-parallel-sessions.json"
+  },
+  {
+   "id": "dc-r4-session-keys-least-privilege",
+   "kind": "decision",
+   "title": "2026-10-10 owner allowed passing API keys to the parallel sessions in their first prompt (\"its okay to give then in chat, im allowing you\"), overriding the standing rule that secrets live only in .env.local and the hosting secret store, for the parallel sessions only. Applied with least privilege: each session receives only the Azure model/speech/image keys its stream needs and the Neon TEST branch URL; NEVER the production DATABASE_URL, the Azure service-principal (deploy) credentials, ACS email keys, or the Neon API; sessions must never write a key into a file or a commit (they load it into a gitignored .env.local in their own container). Keys pasted into session prompts persist in those transcripts, so rotate the shared model/speech keys after the round-4 push. Reverse if: any key appears in a commit or file, or the owner withdraws the permission.",
+   "at": "2026-10-10",
+   "source": "inbox/r4-parallel-sessions.json"
+  },
+  {
+   "id": "dc-r4-prakash-dropped-asha-only",
+   "kind": "decision",
+   "title": "2026-10-10 owner: \"you can start as many as you want and lets not care even a bit about prakash and lets focus on only 1 teaher that is asha(new grown up veriosn)\". The Prakash world UI rebuild is dropped entirely (the prototype stays in docs/design/round4/world/ as a record). Round 4 keeps today's app shell and screens; the one teacher-visual change is the new grown-up Asha (face option 4, cardigan + block-print kurta, lamp1 puppet) replacing the chibi puppet everywhere, with every other teacher and the teacher choice removed. Parallel cloud sessions are approved without limit. Round 4 streams: games/play for students, live content (forge), latency (first sound <= 900 ms), conversation + two-way + duplex, Asha integration. Reverse if: the owner revives a UI direction after testing the shipped round-3/round-4 product.",
+   "at": "2026-10-10",
+   "source": "inbox/r4-prakash-dropped.json"
   }
  ],
  "edges": [
@@ -28482,6 +28531,41 @@
    "src": "dc-r4-single-teacher-asha",
    "rel": "constrains",
    "dst": "dc-r4-face-lamplight-flat"
+  },
+  {
+   "src": "dc-r4-outfit-cardigan-print-kurta",
+   "rel": "supersedes",
+   "dst": "dc-r4-outfit-friendly-cool"
+  },
+  {
+   "src": "dc-r4-session-keys-least-privilege",
+   "rel": "constrains",
+   "dst": "dc-r4-parallel-cloud-sessions"
+  },
+  {
+   "src": "dc-r4-prakash-dropped-asha-only",
+   "rel": "supersedes",
+   "dst": "dc-r4-direction-prakash-grownup-face"
+  },
+  {
+   "src": "dc-r4-prakash-dropped-asha-only",
+   "rel": "supersedes",
+   "dst": "dc-owner-ship-complete-to-prod-2026-10-10"
+  },
+  {
+   "src": "dc-owner-ship-complete-to-prod-2026-10-10",
+   "rel": "constrains",
+   "dst": "dc-r4-parallel-cloud-sessions"
+  },
+  {
+   "src": "dc-r4-owner-vision-superhuman-tutor",
+   "rel": "supersedes",
+   "dst": "dc-r4-prakash-dropped-asha-only"
+  },
+  {
+   "src": "dc-r4-owner-vision-superhuman-tutor",
+   "rel": "constrains",
+   "dst": "dc-r4-parallel-cloud-sessions"
   }
  ]
 }

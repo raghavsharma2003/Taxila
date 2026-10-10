@@ -1,0 +1,4 @@
+#!/bin/bash
+# r '<json>' -> compact view
+S="$(cd "$(dirname "$0")" && pwd)"
+curl -sS -m ${RV_TIMEOUT:-200} -X POST http://127.0.0.1:5199/ -d "$1" | node $S/brief.mjs

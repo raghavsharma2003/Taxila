@@ -37,8 +37,8 @@ GEOM = {
     "bunL": (292, 562, 392, 768), "bunR": (660, 562, 776, 776),
     "eyeL": (355, 380, 495, 450), "eyeR": (555, 380, 698, 450),
     "browLbox": (330, 328, 502, 392), "browRbox": (548, 328, 722, 392),
-    "irisL": (425.5, 418.0, 21.5), "irisR": (626.0, 417.0, 21.5),
-    "catchL": (429.5, 408.5, 3.8), "catchR": (626.5, 407.5, 3.8),
+    "irisL": (425.4, 411.9, 21.6), "irisR": (625.5, 411.2, 22.1),   # least-squares circles on the iris/sclera edge (n 41 / 43 edge points, residual sd 0.23 / 0.17 px)
+    "catchL": (426.1, 407.5, 2.8), "catchR": (625.3, 407.1, 2.8),   # intensity centroids of the painted catchlights
     # the openings, read from column / row colour profiles of front.png (2026-10-10); L = screen-left (her right)
     "eyeL_pts": {"top": [(386, 419), (390, 413), (395, 409), (400, 406), (410, 404.5), (420, 403.8), (428, 403.5), (440, 405), (450, 408), (455, 410.5), (460, 414), (465, 420)],
                  "bot": [(386, 421), (390, 425), (395, 427), (400, 428), (410, 430.5), (420, 432.5), (428, 433), (436, 432.5), (445, 430.5), (452, 428), (458, 426.5), (465, 420)]},
@@ -77,7 +77,11 @@ def pullpush(img, known, smooth_iters=0, region=None):
             sm = cv2.filter2D(out, -1, k, borderType=cv2.BORDER_REPLICATE); out[reg] = sm[reg]
     return out
 
+ZFIX = {}   # name -> (zone pixels this layer owns, alpha, colour): the flat-backdrop unmix (set after the masks, below)
 def save_layer(name, rgb, alpha, pad=2):
+    if name in ZFIX:
+        own, za, zrgb, other = ZFIX[name]
+        alpha = np.where(own, za, np.where(other, 0.0, alpha)); rgb = np.where(own[..., None], zrgb, rgb)
     a = np.clip(alpha, 0, 1); ys, xs = np.where(a > 0.004)
     x0, y0 = max(0, xs.min() - pad), max(0, ys.min() - pad); x1, y1 = min(W, xs.max() + 1 + pad), min(H, ys.max() + 1 + pad)
     rgba = np.dstack([np.clip(rgb, 0, 255), a * 255])[y0:y1, x0:x1].round().astype(np.uint8)
@@ -116,10 +120,12 @@ def hairfinish(rgb, a, shrink=0.14):
     return rgb, np.where(solid, 1.0, a2).astype(np.float32)
 
 # ------------------------------------------------------------------ classes
-dark = (lum < 78) & ((R - B) < 42)
+# hair, lashes and brows are near-neutral dark; the deep teal kurta (35, 79, 88) is dark too, but green-blue: excluded
+dark = (lum < 78) & ((R - B) < 42) & ((G - R) < 22) & ((B - R) < 30)
 face_poly = poly(GEOM["jaw"] + GEOM["face_top"])
 earLp, earRp = poly(GEOM["earL"]), poly(GEOM["earR"])
-feature_boxes = [GEOM["eyeL"], GEOM["eyeR"], GEOM["browLbox"], GEOM["browRbox"], (470, 520, 580, 560), (430, 575, 625, 645), (510, 330, 540, 356)]
+feature_boxes = [GEOM["eyeL"], GEOM["eyeR"], GEOM["browLbox"], GEOM["browRbox"], (470, 520, 580, 560), (430, 575, 625, 645), (510, 330, 540, 356),
+                 (290, 530, 322, 564), (732, 530, 764, 563)]   # + the two oxidised studs (their dark filigree is not hair)
 lab, n = ndi.label(dark)
 hair_all = np.zeros((H, W), bool)
 for i, sl in enumerate(ndi.find_objects(lab), 1):
@@ -132,11 +138,20 @@ for i, sl in enumerate(ndi.find_objects(lab), 1):
         hair_all[sl] |= comp
 rim = ndi.binary_dilation(hair_all, iterations=2) & (lum < 175) & ~face_poly & ~bgc
 hair_all = ndi.binary_closing(hair_all | rim, iterations=2)
+# the art's offset outline: a thin dark line 1-3 px outside every hair mass, with a pale gap between. The line breaks
+# into specks the size filter drops (and the lower lock strands with it): keep neutral dark pixels near the masses and
+# inside the lock polygons, then close the gap into the shape (OUTLINE: alpha 1 inside, matte only on the outer edge)
+_neutral = ((R - B) < 70) & ((G - R) < 22) & ((B - R) < 30)
+_thin = (lum < 160) & _neutral & (lum < 200) & ~bgc
+_thin &= ndi.binary_dilation(hair_all, iterations=8) | poly(GEOM["lockL"]) | poly(GEOM["lockR"])
+_thin &= ~face_poly | ~ndi.binary_erosion(face_poly, iterations=6)
+OUTLINE = ndi.binary_closing(hair_all | _thin, iterations=3) & ~ndi.binary_erosion(face_poly, iterations=6)
+hair_all = hair_all | (OUTLINE & ~ndi.binary_dilation(face_poly & ~hair_all, iterations=0))
 # the brows are never hair (the brow boxes sit inside the face polygon's top)
 hair_all &= ~(box(GEOM["browLbox"]) | box(GEOM["browRbox"]))
 lockLp, lockRp = poly(GEOM["lockL"]), poly(GEOM["lockR"])
-lockL = hair_all & lockLp & (yy > 446)
-lockR = hair_all & lockRp & (yy > 476)
+lockL = (hair_all | (_thin & lockLp)) & lockLp & (yy > 446)
+lockR = (hair_all | (_thin & lockRp)) & lockRp & (yy > 476)
 bunbox = box(GEOM["bunL"]) | box(GEOM["bunR"])
 bun = hair_all & bunbox & ~lockLp & ~lockRp & (yy > 566)
 _lb, _ = ndi.label(bun)
@@ -158,6 +173,25 @@ lb2, k2 = ndi.label(body)
 sz = ndi.sum(body, lb2, range(1, k2 + 1))
 body = np.isin(lb2, 1 + np.where(sz > 5000)[0])
 fg = face | hair_all | ears | body
+# ---- the flat backdrop is known exactly (cream, std < 1.5): every pixel within 4 px of it is unmixed against it
+# (a = how far it sits from the cream relative to its layer's own colour, colour = (pixel - (1 - a) cream) / a), so
+# over the clear colour the rest frame IS the painting at every silhouette, outline and pale rim included; each such
+# pixel belongs to exactly one layer, the nearest mask (r8's two-colour matte read the art's painted brown outlines
+# and pale rims as half-transparent hair: a ragged, shrunken silhouette)
+_owners = [("lockL", lockL), ("lockR", lockR), ("hair", hair), ("bun", bun), ("ears", ears), ("body", body), ("face", face)]
+_dist = np.stack([ndi.distance_transform_edt(~m) for _, m in _owners])
+_near = _dist.min(0); _who = _dist.argmin(0)
+_dC = np.sqrt(((im0 - BGC) ** 2).sum(2))
+ZONE = (_near <= 4) & ndi.binary_dilation(bgc, iterations=4) & (yy < 1000)
+for _i, (_n, _m) in enumerate(_owners):
+    own = ZONE & (_who == _i)
+    F0 = pullpush(im0, ndi.binary_erosion(_m, iterations=2) if ndi.binary_erosion(_m, iterations=2).any() else _m)
+    span = np.maximum(np.sqrt(((F0 - BGC) ** 2).sum(2)), 60.0)
+    za = np.clip(_dC / span, 0, 1)
+    need = np.max(np.where(im0 > BGC, (im0 - BGC) / np.maximum(255.0 - BGC, 1.0), 0.0), axis=2)   # a pale rim brighter than the cream
+    za = np.where(_dC < 4.0, 0.0, np.clip(np.maximum(za, need), 0, 1))
+    zrgb = np.clip((im - (1 - za[..., None]) * BGC) / np.maximum(za, 1e-3)[..., None], 0, 255)
+    ZFIX[_n] = (own, za, zrgb, ZONE & (_who != _i))
 geom_out = {"size": [W, H], "rects": {}, "eyes": {}, "brows": {}, "src": "docs/design/round4/asha/images/rig-b.webp (rig space: rigspace.py)"}
 
 # ------------------------------------------------------------------ eyes: openings traced per column from colour classes
@@ -179,7 +213,7 @@ for side in ("L", "R"):
     for i, x in enumerate(X):
         if Bt[i] > T[i]: opening[int(round(T[i])):int(round(Bt[i])), x] = True
     # the lash band: the dark run above the opening, per column (and the wing beyond the outer corner)
-    lashm = eb & (lum < 62) & ((R - B) < 30) & ~disk
+    lashm = eb & (((lum < 62) & ((R - B) < 30)) | ((lum < 72) & ((R - B) < 60) & (np.abs(xx - (xb_ if side == "L" else xa)) < 14))) & ~disk   # + the inner-canthus line
     lashm = ndi.binary_closing(lashm, iterations=1)
     LXc = np.where(lashm.any(0))[0]
     LX = np.arange(max(int(LXc.min()), xa - 18), min(int(LXc.max()), xb_ + 18) + 1)
@@ -207,7 +241,10 @@ for side in ("L", "R"):
     LT = smooth_curve(LX, LT, 1.2, 5); LB = smooth_curve(LX, LB, 1.2, 5)
     # ---- sclera
     sc_area = ndi.binary_dilation(opening, iterations=14) & eb
-    known = ndi.binary_dilation(opening, iterations=2) & ~ndi.binary_dilation(disk, iterations=2) & sclera_c
+    # the art's own sclera wherever it shows (right up to the iris edge, so the rest frame is the painting); only
+    # iris-coloured pixels and the iris edge's dark anti-aliasing are filled
+    disk_o = (xx - icx) ** 2 + (yy - icy) ** 2 <= (ir + 0.5) ** 2
+    known = ndi.binary_dilation(opening, iterations=2) & sclera_c & (~disk_o | (lum > 135))
     sclera_rgb = pullpush(im, known, smooth_iters=200, region=sc_area & ~known)
     geom_out["rects"][f"sclera{side}"] = save_layer(f"sclera{side}", sclera_rgb, sc_area.astype(np.float32))
     # ---- iris: the disk, catchlight painted out, lid-covered top mirrored from the visible bottom (r8)
@@ -216,7 +253,7 @@ for side in ("L", "R"):
     known_i = disk & ~ndi.binary_dilation(catch, iterations=2) & ((xx - icx) ** 2 + (yy - icy) ** 2 <= (ir - 0.5) ** 2)
     covered = np.zeros((H, W), bool); low_cov = np.zeros((H, W), bool)
     for i, x in enumerate(X):
-        covered[:int(np.ceil(T[i])) + 1, x] = True; low_cov[int(np.floor(Bt[i])) - 1:, x] = True
+        covered[:int(np.ceil(T[i])) + 1, x] = True; low_cov[int(np.ceil(Bt[i])):, x] = True   # every visible row is the art's
     known_i &= ~covered & ~low_cov & opening
     iris_src = im.copy()
     my = np.clip((2 * icy - yy).round().astype(int), 0, H - 1)
@@ -227,7 +264,7 @@ for side in ("L", "R"):
     ia = np.clip((ir + 0.3) - np.sqrt((xx - icx) ** 2 + (yy - icy) ** 2), 0, 1)
     geom_out["rects"][f"iris{side}"] = save_layer(f"iris{side}", iris_rgb, ia)
     cdist = np.sqrt((xx - ccx) ** 2 + (yy - ccy) ** 2)
-    geom_out["rects"][f"catch{side}"] = save_layer(f"catch{side}", np.full_like(im, 255), np.clip((cr + 0.5) - cdist, 0, 1))
+    geom_out["rects"][f"catch{side}"] = save_layer(f"catch{side}", np.full_like(im, 255), np.clip((cr + 0.8 - cdist) / 1.6, 0, 1))   # the painted catch has a soft 1.5 px edge
     # ---- upper lid: the lash band + the lid skin above it (feathered to 0 at the top), analytic lower edge in the opening
     fall = 24
     lid_alpha = np.zeros((H, W), np.float32); lidmask = np.zeros((H, W), bool)
@@ -259,7 +296,10 @@ for side in ("L", "R"):
             low[y, x] = np.clip(y + 0.5 - (yb - 0.5), 0, 1) * np.clip((yb + 17 - y) / 8.0, 0, 1)
     low *= np.clip(np.minimum(xx - xa, xb_ - xx) / 10.0, 0, 1)
     geom_out["rects"][f"lower{side}"] = save_layer(f"lower{side}", im, low)
-    eye_fill |= ndi.binary_dilation(opening | lidmask, iterations=3)
+    # the face keeps its own pixels round the eye (lash band, canthi): only the opening is a hole. The lid layer stretches
+    # over the skin above its lash in every blink, so nothing under it is ever uncovered; r8's wider hole replaced the
+    # inner canthus with fill and the lid's end showed as a vertical seam there
+    eye_fill |= ndi.binary_dilation(opening, iterations=2)
     geom_out["eyes"][side] = {"x": [xa, xb_], "top": [round(float(v), 2) for v in T], "bot": [round(float(v), 2) for v in Bt],
         "lashX": [int(LX[0]), int(LX[-1])], "lashTop": [round(float(v), 2) for v in LT], "lashBot": [round(float(v), 2) for v in LB],
         "iris": [icx, icy, ir], "pupil": [icx, icy, ir * 0.5, ir * 0.5], "catch": [ccx, ccy, cr], "fall": fall}
@@ -270,6 +310,10 @@ for side in ("L", "R"):
     bm = box(GEOM["brow" + side + "box"]) & (lum < 95) & ((R - B) < 60) & ~hair & ~lockL & ~lockR
     lb_, k_ = ndi.label(bm); szs = ndi.sum(bm, lb_, range(1, k_ + 1)); bm = lb_ == (1 + int(np.argmax(szs)))
     bm = ndi.binary_closing(bm, iterations=2)
+    # hysteresis: the stroke's lighter anti-aliased tips (lum 95-135, still brow-brown) belong to the brow, or they stay on
+    # the skin as dark commas when the brow lifts
+    for _ in range(3):
+        bm = bm | (ndi.binary_dilation(bm, iterations=2) & box(GEOM["brow" + side + "box"]) & (lum < 135) & ((R - B) < 95) & ~hair)
     rgb, a = matte(bm, erode=1)
     geom_out["rects"][f"brow{side}"] = save_layer(f"brow{side}", rgb, a)
     ys_b, xs_b = np.where(bm)
@@ -278,7 +322,7 @@ for side in ("L", "R"):
     cl = np.array(cl); okc = ~np.isnan(cl); cl = np.interp(np.arange(len(cl)), np.where(okc)[0], cl[okc])
     cl = ndi.gaussian_filter1d(cl, 2.0)
     geom_out["brows"][side] = {"x": [x0b, x1b], "y": [int(ys_b.min()), int(ys_b.max())], "cl": {"x0": x0b, "y": [round(float(v), 1) for v in cl]}}
-    brow_fill |= ndi.binary_dilation(bm, iterations=4)
+    brow_fill |= ndi.binary_dilation(bm, iterations=8)   # the painted brow shading reaches ~6 px past the stroke
 
 # ------------------------------------------------------------------ mouth: the traced lip line + the rest patch
 MCX, MCY = 525, 606
@@ -299,11 +343,27 @@ geom_out["mouthLine"] = {"x0": LX0, "step": LSTEP, "y": line}
 # ------------------------------------------------------------------ face base: skin with the features removed, overscan
 over_face = hair | lockL | lockR
 _disk = lambda r: (np.add.outer(np.arange(-r, r + 1) ** 2, np.arange(-r, r + 1) ** 2) <= r * r)
-face_area = face | (ndi.binary_dilation(face, iterations=28) & (hair | ears) & ~ndi.binary_dilation(bgc, iterations=6))
-face_area |= ndi.binary_dilation(face, iterations=10) & (lockL | lockR | bun) & ~bgc
+# the overscan goes only under layers drawn AFTER the face (hair, locks): r8's reach over the ears and the bun painted
+# skin over the ear lobe, the stud and the bun's edge (the ears already continue 10 px under the face)
+face_area = face | (ndi.binary_dilation(face, iterations=28) & hair & ~ndi.binary_dilation(bgc, iterations=6))
+face_area |= ndi.binary_dilation(face, iterations=10) & (lockL | lockR) & ~ndi.binary_dilation(bgc, iterations=3)
 holes = eye_fill | brow_fill | lips
 known = ndi.binary_erosion(face, iterations=3) & ~holes
 face_rgb = pullpush(im, known, smooth_iters=400, region=face_area & ~known)
+# under the brows: a column-wise blend between the skin just above and just below each brow hole (the membrane fill
+# smeared the nose-bridge shading up into a brow-shaped ghost that a raised brow uncovered)
+for side in ("L", "R"):
+    bx0, by0, bx1, by1 = GEOM["brow" + side + "box"]
+    hole = brow_fill & box((bx0 - 6, by0 - 12, bx1 + 6, by1 + 12))
+    for x in range(bx0 - 6, bx1 + 6):
+        ys = np.where(hole[:, x])[0]
+        if not len(ys): continue
+        y0, y1 = ys.min() - 2, ys.max() + 2
+        ca = im[y0 - 2:y0 + 1, x].mean(0); cb = im[y1:y1 + 3, x].mean(0)
+        t = (np.arange(y0, y1 + 1) - y0) / max(1, y1 - y0)
+        face_rgb[y0:y1 + 1, x] = ca[None] * (1 - t[:, None]) + cb[None] * t[:, None]
+    reg = ndi.binary_dilation(hole, iterations=3)
+    face_rgb = np.where(reg[..., None], np.stack([ndi.gaussian_filter(face_rgb[..., c], (1.0, 2.5)) for c in range(3)], -1), face_rgb)
 vis = ndi.binary_erosion(face, iterations=1) & ~holes
 face_rgb[vis] = im[vis]
 _, fa = matte(face, face_area & ~face, band=5)
@@ -341,7 +401,7 @@ for name, m in (("hair", hair), ("bun", bun), ("lockL", lockL), ("lockR", lockR)
         _pts = np.argwhere(bun)[:, ::-1].astype(np.int32)
         _hull = np.zeros((H, W), np.uint8); cv2.fillConvexPoly(_hull, cv2.convexHull(_pts), 1)
         bun_shape = _hull.astype(bool) & (yy > 566)
-        over = bun_shape & ~bun & ~ndi.binary_dilation(bgc, iterations=1)
+        over = bun_shape & ~bun & ~ndi.binary_dilation(bgc, iterations=3)
     if name.startswith("lock"):
         rgb, a = matte(m, None, band=2, erode=1)
         a = np.where(ndi.binary_dilation(m, iterations=2), a, 0)
@@ -352,10 +412,15 @@ for name, m in (("hair", hair), ("bun", bun), ("lockL", lockL), ("lockR", lockR)
         rgb = np.where((over & ~m)[..., None], pullpush(im, ndi.binary_erosion(m, iterations=2)), rgb)
         a = np.where(over & ~ndi.binary_dilation(m, iterations=2), soft(bun_shape, 0.8), a)
     # cream trapped inside the mask (between strands) matted out by colour (rj-p2d-trapped-cream-in-locks)
-    cream_t = np.clip((lum - 70.0) / (205.0 - 70.0), 0, 1) * (np.sqrt(((im0 - BGC) ** 2).sum(2)) < 60)
-    inner_m = ndi.binary_dilation(m, iterations=2)
-    a = np.where(inner_m & ~(over if over is not None else np.zeros_like(m)), a * (1 - cream_t), a)
-    rgb, a = hairfinish(rgb, a)
+    if name.startswith("lock"):
+        cream_t = np.clip((lum - 70.0) / (205.0 - 70.0), 0, 1) * (np.sqrt(((im0 - BGC) ** 2).sum(2)) < 60)
+        inner_m = ndi.binary_dilation(m, iterations=2)
+        a = np.where(inner_m & ~(over if over is not None else np.zeros_like(m)), a * (1 - cream_t), a)
+        rgb, a = hairfinish(rgb, a, shrink=0.0)
+    else:
+        rgb, a = hairfinish(rgb, a)
+        core = ndi.binary_erosion(m, iterations=1)
+        a = np.where(core, 1.0, a); rgb = np.where(core[..., None], im, rgb)
     geom_out["rects"][name] = save_layer(name, rgb, a)
 
 # ------------------------------------------------------------------ lock bed: a clean plate under each lock (r8)
@@ -387,7 +452,7 @@ _el[:_yt] = _el[_yt]; _er[:_yt] = _er[_yt]
 _el = np.where(np.isnan(_el), nl, _el); _er = np.where(np.isnan(_er), nr, _er)
 neck_shape = (yy > 600) & (yy < 820) & (xx >= _el[:, None]) & (xx <= _er[:, None])
 neck_up = neck_shape & ~body & ~ndi.binary_dilation(bgc, iterations=1) & ~lockL & ~lockR & ~ndi.binary_dilation(bun, iterations=1)
-body_area = body | neck_up | (ndi.binary_dilation(body, iterations=8) & (lockL | lockR | hair | bun) & ~bgc)
+body_area = body | neck_up | (ndi.binary_dilation(body, iterations=8) & (lockL | lockR | hair) & ~ndi.binary_dilation(bgc, iterations=3))   # never into the bun: it is drawn first
 neck_skin = ndi.binary_erosion(body, iterations=2) & ((R - B) > 60) & (yy < 820) & neck_shape
 known_b = ndi.binary_erosion(body, iterations=2) & ~((yy < 820) & neck_shape & ((R - B) <= 60))
 body_rgb = pullpush(im, known_b, smooth_iters=300, region=body_area & ~known_b)

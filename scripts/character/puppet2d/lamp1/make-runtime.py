@@ -155,6 +155,13 @@ rig = rep(rig, [
      "    if (this.view.length >= 4) { const cw = R.canvas.width, ch = R.canvas.height, v = this.view, sc = Math.min(cw / v[2], ch / v[3]), w = cw / sc, h = ch / sc; R.setCam(v[0] + (v[2] - w) / 2, v[1] + (v[3] - h) / 2, w); }\n    else R.setCam(this.view[0], this.view[1], this.view[2]);"),
     ("    this.R.dpr = opts.dpr || Math.min(2, window.devicePixelRatio || 1);",
      "    this.R.dpr = opts.dpr || Math.min(2, window.devicePixelRatio || 1);\n    this.R.face = { nose: F.noseShade, mk: F.mouth.k, tint: F.shade.tint };   // lamp1: per-face shader constants"),
+    # lamp1: the procedural lid shadow is F.eye.shade = [at rest, once the lid has moved >= 4 px]. A front whose sclera
+    # carries its own painted lid shadow (lamp1) takes [0, 0.3]: the rest frame is the painting, and the shadow rides a
+    # lowered lid; c-front ([0.4, 0.4]) is unchanged. F.eye.round = the opening's rounded-end length (c-front 6 px).
+    ("catchScr, catchC: [ccx, ccy], catchA, lidShade: 0.4, topY: interp(E.xa, E.top, icx),",
+     "catchScr, catchC: [ccx, ccy], catchA, lidShade: F.eye.shade[0] + (F.eye.shade[1] - F.eye.shade[0]) * clamp01(Math.abs(interp(E.xa, E.top, icx) - interp(E.xa, e.top, icx)) / 4), topY: interp(E.xa, E.top, icx),"),
+    ("      if (dEnd < 6) { const f = Math.sqrt(Math.max(0, 1 - (1 - dEnd / 6) ** 2)),",
+     "      if (dEnd < F.eye.round) { const f = Math.sqrt(Math.max(0, 1 - (1 - dEnd / F.eye.round) ** 2)),"),
 ], "rig.js")
 _zh = rig[rig.index("function zHead("):rig.index("return z;\n}")]
 assert len(re.findall(r"(?<![\w.])PX\.", rig)) == len(re.findall(r"(?<![\w.])PX\.", _zh)), "PX. outside zHead (its local alias of F.px)"

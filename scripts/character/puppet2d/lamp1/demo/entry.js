@@ -1,0 +1,5 @@
+// The demo bundle: the production PuppetDriver (src/face-puppet/driver.ts, unchanged: behaviour, lip driver, acting
+// policy, safety floor) + the lamp1 rig (scripts/character/puppet2d/lamp1/runtime). Bundled with rolldown as an IIFE.
+export { PuppetDriver } from "/home/user/Taxila/src/face-puppet/driver.ts";
+export { Puppet2DRig } from "/home/user/Taxila/scripts/character/puppet2d/lamp1/runtime/rig.js";
+export { applySafetyFloor } from "/home/user/Taxila/src/face-puppet/safety.ts";

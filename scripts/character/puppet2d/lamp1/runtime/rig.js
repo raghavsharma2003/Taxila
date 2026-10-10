@@ -1032,7 +1032,7 @@ export class Puppet2DRig {
       let top = E.top[ii], bot = E.bot[ii];
       // r2: round the opening's ends (the hand-read corners were blunt: a vertical white edge at 2x and on turns)
       const dEnd = Math.min(x - E.xa, E.xb - x);
-      if (dEnd < 6) { const f = Math.sqrt(Math.max(0, 1 - (1 - dEnd / 6) ** 2)), mid = (top + bot) / 2; top = mid + (top - mid) * f; bot = mid + (bot - mid) * f; }
+      if (dEnd < F.eye.round) { const f = Math.sqrt(Math.max(0, 1 - (1 - dEnd / F.eye.round) ** 2)), mid = (top + bot) / 2; top = mid + (top - mid) * f; bot = mid + (bot - mid) * f; }
       const ys = [top - 2.1, top - 0.1, Math.max(top - 0.1, bot - 0.6), Math.max(top - 0.1, bot + 1.4)];
       for (let j = 0; j < 4; j++) {
         const y = bot <= top + 0.05 ? top : ys[j];
@@ -1078,7 +1078,7 @@ export class Puppet2DRig {
       iris: { tex: this.tex["iris" + sd], rect: this.g.rects["iris" + sd] },
       catch: { tex: this.tex["catch" + sd], rect: this.g.rects["catch" + sd] },
       irisC: [icx, icy], irisScr, irisK, irisScale: [irisSX, E.blink > 0.85 ? 0.95 : 1],
-      catchScr, catchC: [ccx, ccy], catchA, lidShade: 0.4, topY: interp(E.xa, E.top, icx),
+      catchScr, catchC: [ccx, ccy], catchA, lidShade: F.eye.shade[0] + (F.eye.shade[1] - F.eye.shade[0]) * clamp01(Math.abs(interp(E.xa, E.top, icx) - interp(E.xa, e.top, icx)) / 4), topY: interp(E.xa, E.top, icx),
     });
     // lower lid band
     for (let i = 0; i < E.BC; i++)

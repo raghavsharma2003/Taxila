@@ -1,0 +1,11 @@
+{
+  "nodes": [
+    {
+      "id": "rj-deploy-worktree-shares-branch-ref",
+      "kind": "rejection",
+      "title": "2026-10-10 the clean-worktree deploy recipe (git worktree add --force <dir> <sha>; git checkout --ignore-other-worktrees <branch>) puts the deploy worktree on the SAME branch ref as the main tree. A WIP commit made in the main tree while the deploy ran (to satisfy the stop hook) moved that shared ref, so the deploy worktree's HEAD silently became the new commit while its files stayed at the gated sha: the retry after a transient 'fetch failed' refused with 'HEAD b371f4e is not pushed', and the 25-minute gate had to be re-run for the new (docs-only) sha. Rules: during a deploy, make NO commits on that branch in the main tree (leave the agent's files uncommitted until the deploy is live); retry a deploy only after checking `git -C <worktree> rev-parse HEAD` equals the gated sha; if a commit did slip in, push it, `git -C <worktree> reset --hard <new tip>` and re-gate. A transient 'fetch failed' right after the gate stamp is safe to retry without --gate only while HEAD is unchanged.",
+      "at": "2026-10-10"
+    }
+  ],
+  "edges": []
+}
