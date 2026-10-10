@@ -95,6 +95,8 @@ export interface DressedSpec {
   secure: boolean;
   /** music may sound at all (class 4-5 default off until the child turns it on, O-G2) */
   musicAllowed: boolean;
+  /** the bed the dress chose before the class rule (what plays if the child turns music on); "off" = no toggle */
+  musicMood: "calm" | "drive" | "off";
 }
 
 // ───────────────────────────── what the core gives an engine ─────────────────────────────
@@ -228,6 +230,14 @@ export interface EngineView {
   demo?(): void;
   /** the teacher started / stopped speaking (captions and the lesson's TTS): duck, hold any reveal sweep */
   speaking?(on: boolean): void;
+  /** the server's two doors after a level (garam / teekha). An engine that draws them in the world (warp gates the child
+   *  steers into) returns true and calls `choose` on the child's commit; false = the host draws its DOM doors */
+  doors?(doors: { door: "garam" | "teekha"; hint: string }[] | null, choose: (door: "garam" | "teekha") => void): boolean;
+  /** the next level in the SAME world (the warp): a new level and a new controller, no remount. Absent = remount */
+  relevel?(deps: EngineDeps): void;
+  /** a validated dress that arrived after mount (the delta, ≤ 1.9 s): applied only if the child has not acted yet;
+   *  returns false when refused (the base dress stays for this level) */
+  redress?(spec: DressedSpec): boolean;
   dispose(): void;
 }
 
@@ -301,6 +311,7 @@ export function dressFor(r: DressRules): DressedSpec {
   if (d.lang !== r.lessonLang) { d.lang = r.lessonLang; from.lang = "rule"; }
   if (d.pace === "brisk" && !r.secure) { d.pace = "steady"; from.pace = "rule"; }
   const musicAllowed = r.classLevel >= 6 || r.childMusicOn;
+  const musicMood = d.music;
   if (!musicAllowed && d.music !== "off") { d.music = "off"; from.music = "rule"; }
-  return { dress: d, from, verb: r.verb, secure: r.secure, musicAllowed };
+  return { dress: d, from, verb: r.verb, secure: r.secure, musicAllowed, musicMood };
 }

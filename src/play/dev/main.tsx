@@ -12,6 +12,8 @@ import { pickLevels } from "../core/pick.ts";
 import { newHistory, pickReaction, type ReactionBank } from "../core/react.ts";
 import { PlayStage, type PlayDoor } from "../PlayStage.tsx";
 import bankJson from "../../../data/play/reactions.json";
+import { dressFor, validateDelta } from "../engines/core3d/api.ts";
+import { baseDress } from "../engines/core3d/dress.ts";
 
 const q = new URLSearchParams(location.search);
 const family = (q.get("family") ?? "todo-jodo") as FamilyId;
@@ -29,6 +31,11 @@ const bank = bankJson as unknown as ReactionBank;
 const demo = q.get("demo") === "1";
 const reduced = q.get("reduced") === "1";
 const harder = q.get("harder") === "1";
+const engine = (q.get("engine") ?? "auto") as "auto" | "2d" | "3d";
+const verb = (q.get("verb") === "scan" ? "scan" : "fire") as "fire" | "scan";
+// a dress from the query (validated field by field exactly as the server validates a model's delta)
+const devDelta = validateDelta("antariksh", Object.fromEntries(["theme", "wrapper", "music", "pace", "teacherMove"].filter((k) => q.get(k)).map((k) => [k, q.get(k)])));
+const devSecure = q.get("secure") === "1";
 
 function makeLevel(seed: number, door?: "garam" | "teekha"): { garam: PlayLevel; teekha: PlayLevel | null } | null {
   const logic = logicFor(family, mode); if (!logic) return null;
@@ -58,6 +65,7 @@ function App() {
   const [solved, setSolved] = useState(false);
   const art = useMemo(() => artParam ?? pickArt({ family, subject: family === "kyun-lab" ? "science" : "maths", topicId, classLevel }).art, []);
   useEffect(() => { setSolved(false); }, [levels]);
+  const dress = useMemo(() => dressFor({ engine: "antariksh", base: baseDress({ engine: "antariksh", key: levels?.garam.levelId ?? "none", lang, firstLevel: demo }), delta: devDelta, classLevel, secure: devSecure, childMusicOn: false, lessonLang: lang, verb }), [levels]);
   if (!levels) return <p style={{ color: "#fff" }}>no level</p>;
   const level = levels.garam;
   const next = makeLevel(seed + 101);
@@ -69,7 +77,7 @@ function App() {
   (window as unknown as { __playLevel: PlayLevel; __playNext: unknown }).__playLevel = level;
   return (
     <div style={{ position: "fixed", inset: 0 }}>
-      <PlayStage level={level} art={art} lang={lang} classLevel={classLevel} caption={caption} teacherName="Ira" debug demo={demo} reducedMotion={reduced} sound={false}
+      <PlayStage level={level} art={art} lang={lang} classLevel={classLevel} caption={caption} teacherName="Ira" debug demo={demo} reducedMotion={reduced} sound={false} engine={engine} verb={verb} dress={dress}
         doors={solved ? doors.map((d) => ({ ...d, hint: d.door === "garam" ? (lang === "en" ? "one more like this" : "isi tarah ka ek aur") : (lang === "en" ? "a bit harder" : "thoda mushkil") })) : null}
         onDoor={(d) => { setDoor(d.door); setSeed((s) => s + 101); setCaption(null); }}
         world={WORLD}
