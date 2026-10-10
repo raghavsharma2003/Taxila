@@ -99,6 +99,35 @@ landing. First run: 483 / 531 checks. **ONE (every face is Asha), NAMES (no Arju
 overflow and page errors: 0 failures.** Failures: the map-sheet selector (fixed in the harness), and text < 14 px in shared
 chrome I do not own (13 px "Talk" mic label, the bottom nav, "Step 2 of 9", "Sample"), which the base comparison will place.
 
+### DB-backed proofs (Neon test branch, real routes, no model calls)
+
+- `tests/lesson-safety-naming-db.run.mjs` 9/9, new test 7: classes 1-9 (rows as they exist: Arjun stored for 5-9) start a
+  real lesson. Each gets Asha, "she", Diya's DragonHD voice (`dhdVoiceFor`), the band's register in the compiled
+  instructions, the band's protégé (Golu 1-4, Bittu 5-9) and the pinned `ctx.teacherId = asha`.
+- `tests/tutor-db-e2e.mjs` 9/9: the offer is `[asha]`; uma and arjun are refused with nothing written; a pick of Asha over
+  an old Arjun row logs the switch; 409 while live; the B1 parent gate; erasure cascades.
+- `child-routes-db`, `reports-db`, `ship5-review-filter-face-db`: green on the branch (`child-routes-db` with patch 07).
+  These suites SKIP inside `npm test` in a stream session (see APPLY.md note), on the base too, so they were run
+  separately with a decoy `DATABASE_URL`.
+
+### e2e harnesses (mocked API, production build, Chromium)
+
+- `tests/e2e-design-lesson-safety-naming.mjs`: 136 / 145. Every Hello / Your-teacher / parent-row / N-REAL check passes
+  (N-REAL on the real routes: a pre-round-4 Arjun row reaches `/api/me` as Asha under her own name; her stored name
+  is honoured; the parent's Reset is stored on Asha). The 9 failures are outside stream 5: the lesson hint line (4,
+  lesson code), unnamed date inputs in parent Controls' "open now" (4), and a sandboxed-frame serviceWorker page error (1).
+- `tests/e2e-design-b2.mjs --quick`: 429 / 433. One was my harness still expecting "he" (fixed). The other 3 are
+  V-TGT 48 px "Me" on the young home (shared chrome).
+
+### lamp1 trial with the WIP pack (NOT integrated, nothing committed from the pack)
+
+In a scratch worktree: the current `art/character/puppet2d/lamp1/` was copied to `public/face-puppet/lamp1/`, the rest
+posters were rendered from the live rig (`run.mjs poster --look lamp1`: medium 46.9 KB, close 60.4 KB), and the shot battery
+ran with `--look lamp1`: 489 / 525. **Every non-chrome check passed:** every face is Asha painted in lamp1, no Arjun/Uma,
+no choice, no overflow, no page errors, and the map sheet. The 36 failures are the shared-chrome text sizes. The live
+puppet runs in the lesson Face layout, the SpeechRow face and Your teacher. Payload note for the Asha agent: the pack's wire
+size is 156.5 KB (`pack-report.json`), over r8's 142 KB budget (BUILD-PLAN §3.5).
+
 ## Not met / open
 
 - Part C waits on the pack.
