@@ -166,8 +166,9 @@ export function maskReveals(script, reveals) {
       changed = true;
     }
     else if (o.op === "numwork" && Array.isArray(o.rows)) {
+      const before = JSON.stringify(o.rows);
       o.rows = o.rows.map((row) => row.map((c) => (String(c) === tok[2] || new RegExp(src).test(String(c)) ? "?" : c)));
-      changed = true;
+      changed ||= JSON.stringify(o.rows) !== before;
     }
   }
   return changed ? { ...script, ops } : null;
