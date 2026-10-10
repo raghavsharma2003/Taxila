@@ -1,0 +1,50 @@
+{
+ "date": "2026-10-10T09:09:30.081Z",
+ "host": "US cloud container (agent proxy)",
+ "n": {
+  "pos": 265,
+  "neg": 100
+ },
+ "deployments": {
+  "grok-4-1-fast-non-reasoning": {
+   "modelMs": {
+    "p50": 480,
+    "p90": 585,
+    "min": 328
+   },
+   "within300": "0/365",
+   "recall": {
+    "predicate": "265/265",
+    "model": "265/265",
+    "early": "265/265"
+   },
+   "falsePositives": {
+    "predicate": "0/100",
+    "model": "3/100",
+    "early": "3/100"
+   },
+   "errors": 33,
+   "missed": []
+  },
+  "taxila-fast": {
+   "modelMs": {
+    "p50": 1154,
+    "p90": 1473,
+    "min": 593
+   },
+   "within300": "0/365",
+   "recall": {
+    "predicate": "265/265",
+    "model": "264/265",
+    "early": "265/265"
+   },
+   "falsePositives": {
+    "predicate": "0/100",
+    "model": "4/100",
+    "early": "4/100"
+   },
+   "errors": 52,
+   "missed": []
+  }
+ }
+}

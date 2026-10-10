@@ -54,20 +54,6 @@ export function modeOf(m: Pick<DeskModel, "answerForm" | "family" | "mic" | "typ
   return up ? { key: "floor.mode.tap_above", glyph: "hand_up" } : m.showHelp ? { key: "floor.mode.help", glyph: null } : null;
 }
 
-/** Older, thinking: "Thinking… N s" from 4 s, ticking here (the dock), not across the whole Desk. */
-function useThinkingSeconds(since: number | null | undefined): number | null {
-  const [now, setNow] = useState(() => Date.now());
-  useEffect(() => {
-    if (since == null) return;
-    setNow(Date.now());
-    const id = setInterval(() => setNow(Date.now()), 1000);
-    return () => clearInterval(id);
-  }, [since]);
-  if (since == null) return null;
-  const ms = now - since;
-  return ms >= 4000 ? Math.floor(ms / 1000) : null;
-}
-
 /** Strips that hold the child's answer: the floor word is suspended while they show. */
 const HOLDS_ANSWER = new Set<StripId>(["T2", "T4"]);
 
@@ -75,10 +61,10 @@ export function AnswerDock({ m, a, micMeter, stripId, lit, setRef }:
   { m: DeskModel; a: DeskActions; micMeter?: Meter; stripId: StripId | null; lit: boolean; setRef?: (el: HTMLElement | null) => void }) {
   const young = m.family === "young";
   const yourTurn = m.floor === "your_turn" || m.floor === "yielding";
-  const liveSeconds = useThinkingSeconds(m.floor === "thinking" ? m.thinkingSince : null);
   const held = !!stripId && HOLDS_ANSWER.has(stripId);
   const word = held ? t("floor.held")
-    : stateWord(m.floor, { teacher: m.teacher.name, thinkingLabel: m.thinkingLabel, seconds: m.thinkingSeconds ?? liveSeconds, lastOne: m.lastOne, tapToTalk: m.mic.tapToTalk });
+    : stateWord(m.floor, { teacher: m.teacher.name, thinkingLabel: m.thinkingLabel, // r4-latency patch 01: no seconds counter while she thinks; her face carries the wait (rj-symbolic-wait-indicator)
+      seconds: null, lastOne: m.lastOne, tapToTalk: m.mic.tapToTalk });
   const mode = held ? null : yourTurn && !stripId ? modeOf(m) : m.floor === "listening" && m.mic.tapToTalk ? { key: (young ? "floor.mode.done_young" : "floor.mode.done") as CopyKey, glyph: null } : null;
   // While she talks (or shows), the dock holds only the mic (barge-in); the side controls come with YOUR TURN
   // (§4.2 speaking row), so SPEAKING and YOUR TURN differ by shape, not only by the lamp's colour (V-SIG-3).

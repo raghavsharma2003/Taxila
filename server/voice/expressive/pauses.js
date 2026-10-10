@@ -6,7 +6,8 @@
 // edgeTrim() is a streaming transform over PCM s16le (24 kHz mono):
 //   lead  drop the leading run below the threshold (keeping KEEP_MS before the onset; at most MAX_LEAD_MS is dropped,
 //         so a soft onset is never eaten);
-//   tail  hold back up to MAX_TAIL_MS and, at the end, drop the trailing run below the threshold (keeping KEEP_TAIL_MS).
+//   tail  hold back the quiet run after the last loud frame (at most MAX_TAIL_MS of it) and, at the end, drop it
+//         (keeping KEEP_TAIL_MS); loud audio is never held, so the first byte is not delayed.
 // Odd byte boundaries are carried. Pure apart from the async iteration; tested on synthetic streams.
 export const RATE = 24_000;
 export const THRESH = Math.round(32768 * 10 ** (-50 / 20)); // -50 dBFS on a 10 ms frame's peak
@@ -45,7 +46,8 @@ export async function* edgeTrim(src, { lead = false, tail = false, onLead } = {}
   let carry = Buffer.alloc(0);
   let consumed = 0; // samples taken from src while leading (V4: onLead reports how many the trim removed)
   let leading = lead;
-  let held = Buffer.alloc(0); // tail hold-back
+  let held = Buffer.alloc(0); // tail hold-back: the quiet run after the last loud frame
+  let loudSeen = false, quietTail = false; // quietTail: the held run starts right after a loud frame (keep KEEP_TAIL_MS of it)
   let dropped = 0;
   let pre = Buffer.alloc(0);
   for await (const piece of src) {
@@ -70,17 +72,28 @@ export async function* edgeTrim(src, { lead = false, tail = false, onLead } = {}
       try { onLead?.(consumed - (buf.length >> 1)); } catch { /* a listener never stops the voice */ }
     }
     if (!tail) { if (buf.length) yield buf; continue; }
+    // r4-latency: only the QUIET run after the last loud frame is held back (at most MAX_TAIL_MS of it); everything up to
+    // that frame goes out at once. The old rule held back the last MAX_TAIL_MS of ALL audio, so part 0 of every multi-part
+    // reply waited for 800 ms of synthesis before its first byte (+250-350 ms of first sound, evals/latency/dhd-ttfb-region.mjs
+    // 2026-10-10). The bytes written are the same rule's: the trailing quiet run is cut to KEEP_TAIL_MS at the end, and a
+    // quiet run longer than MAX_TAIL_MS is only ever trimmed in its last MAX_TAIL_MS.
     held = Buffer.concat([held, buf]);
+    const off = offsetOf(held);
+    if (off > 0) {
+      yield Buffer.from(held.subarray(0, off * 2));
+      held = held.subarray(off * 2);
+      loudSeen = true;
+      quietTail = true;
+    }
     const keep = samplesOf(MAX_TAIL_MS) * 2;
     if (held.length > keep) {
-      const out = held.subarray(0, held.length - keep);
+      yield Buffer.from(held.subarray(0, held.length - keep));
       held = held.subarray(held.length - keep);
-      yield Buffer.from(out);
+      quietTail = false; // the last loud frame is now more than MAX_TAIL_MS back: the window holds no loud audio
     }
   }
-  if (tail && held.length) {
-    const off = offsetOf(held);
-    const end = off === 0 ? 0 : Math.min(held.length >> 1, off + samplesOf(KEEP_TAIL_MS));
+  if (tail && held.length && loudSeen && quietTail) {
+    const end = Math.min(held.length >> 1, samplesOf(KEEP_TAIL_MS));
     if (end) yield held.subarray(0, end * 2);
   }
   if (carry.length && !tail) yield Buffer.from(carry);

@@ -19,6 +19,8 @@ import { isBare, repeatsEarlier, tidy, leadWithoutQuestion, sentences } from "..
 import { p5Flag } from "../conversation/flags.js";
 import { leadSlotWanted, leadSlotNote, cleanLead, leadOk, composeTurn, requestNote, turnNote, LEAD_MAX_WORDS, LEAD_MIN_FIRST, LEAD_MAX_FIRST } from "../conversation/compose.js";
 import { fallbackLead } from "../conversation/fallback-lead.js";
+// r4-latency: the TTS part split (part 0 = the first sentence the child hears)
+import { splitSentences } from "../voice/sentences.js";
 
 /** p5-interaction: problems a gutted teaching turn's one retry may still carry, because code repairs them (never truth). */
 const HELP_ASKS = new Set(["another", "clarify", "slower", "example", "story", "frustration", "easier"]);
@@ -406,6 +408,7 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
     ...history.map((t) => ({ role: t.who === "teacher" ? "assistant" : "user", content: scrubbed(t.text) })),
     { role: "user", content: childText ? scrubbed(childText) : "(the child has joined the lesson and is listening)" },
   ];
+  const replyT0 = performance.now();
   // Replies take ~1-2 s (measured in evals/director-sim.mjs); a stuck call is cut at 6 s and retried once.
   const ask = (msgs) => replyDeps.chat(DEPLOY.reply, msgs, { maxTokens: 220, effort: "none", timeoutMs: 6000, trace }).then((r) => r.text.trim());
   let reply;
@@ -462,6 +465,14 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
   }
   let found = problems(reply);
   const guard = { caught: found, rewritten: false, replaced: false, ...(found.length ? { firstDraft: reply } : {}), ...(guardSlot.used ? { leadSlot: true } : {}) };
+  // r4-latency (TAXILA_TTS_FIRST_SENTENCE, SHADOW): can the draft's first TTS sentence be LOCKED now — could it start speaking
+  // while the rest of the turn is still being guarded or rewritten? Locked only when it passes every per-sentence guard on its
+  // own, names nothing on the screen (the child would still see the last turn's), asks nothing, and the minimal turn
+  // `s1 + the pinned kit question` passes EVERY guard of the whole turn, so a final reply that starts with s1 always exists.
+  // Shadow records the lock and whether the final reply (today's path, unchanged) still starts with s1; nothing else moves.
+  const early = firstSentenceMode() === "off" ? null
+    : lockFirstSentence({ reply, askEnd: pinned ? askEnd : null, problems, closing: CLOSING_MOVES.has(kindNow) || !!checkin || forgetSafety || whyProbe || thinkingWait || restBreak || !!item?.diagnostic,
+      spoken: state.mode !== "text", confirmNeeded: G && verdict === "correct", t0: replyT0 });
   // Drift (a posing turn that asked some other question) is repaired without a model call when it is the
   // only problem besides the hand-back the posed question supplies: what the draft said BEFORE its first
   // question (the acknowledgement), then the verified question itself — what the rewrite produced in 9/9
@@ -690,6 +701,11 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
   // The final words, checked once more (debug and the evals read it): what reached the child.
   const final = problems(reply).filter((p) => p !== "long" || words(reply) > max);
   if (final.length) guard.final = final;
+  if (early) {
+    const kept = early.locked ? String(reply).trim().startsWith(early.s1) : false;
+    guard.early = { mode: firstSentenceMode(), locked: early.locked, ...(early.why ? { why: early.why } : {}), ...(early.locked ? { kept, lockedMs: early.ms } : {}),
+      finalMs: Math.round(performance.now() - replyT0) };
+  }
   // The floor families of what will actually be said (the cascade speaks exactly this): [] after the guard, unless
   // even the fixed line broke a rule. The caller turns a non-empty list into the next correction and an incident.
   const floor = final.includes("floor") ? floorOf(reply) : [];
@@ -762,4 +778,43 @@ export function speakNotWrite(reply, askEnd = null) {
   let lead = r.slice(0, cut);
   for (const [re, to] of WRITE_TO_SAY) lead = lead.replace(re, (m) => (m[0] === m[0].toUpperCase() ? to[0].toUpperCase() + to.slice(1) : to));
   return lead + r.slice(cut);
+}
+
+// ───────────── r4-latency: the first TTS sentence, locked early (TAXILA_TTS_FIRST_SENTENCE) ─────────────
+
+/** off (default) | shadow (lock decided and logged on guard.early; behaviour unchanged). The live mode is not built yet. */
+export const firstSentenceMode = (env = process.env) => (/^shadow$/i.test(String(env.TAXILA_TTS_FIRST_SENTENCE ?? "")) ? "shadow" : "off");
+
+/** The guards a single sentence can fail on its own (truth, safety, register, screen, script). The rest judge the whole
+ *  turn's shape (ask, flat, drift, twoq, long, bare, nowhy, noconfirm) and are checked on `s1 + the question` instead. */
+export const PER_SENTENCE = new Set(["floor", "forget", "praise", "deny", "corrects", "screen", "parts", "register", "stage", "uiword", "cantshow",
+  "leak", "units", "math", "script", "thinkq", "wrap", "same"]);
+
+/**
+ * PURE (given the turn's own `problems`). Lock the draft's first TTS sentence (server/voice/sentences.js splitSentences,
+ * the same split the speech parts use) when ALL hold: a spoken lane; not a closing / check-in / forget-after-safety / why /
+ * thinking / break / diagnostic turn; a pinned kit question; the draft has more than one sentence; s1 asks nothing and
+ * names nothing on the screen or in the UI; s1 fails no per-sentence guard; on a right answer s1 confirms it; and the
+ * minimal turn joinAsk(s1, question) fails no guard at all (so a final reply that starts with s1 always exists).
+ * @returns {{ locked: true, s1: string, fallback: string, ms: number } | { locked: false, why: string }}
+ */
+export function lockFirstSentence({ reply, askEnd, problems, closing, spoken, confirmNeeded, t0 = performance.now() }) {
+  const no = (why) => ({ locked: false, why });
+  if (!spoken) return no("text_lane");
+  if (closing) return no("turn_kind");
+  if (!askEnd) return no("no_pinned_question");
+  const parts = splitSentences(String(reply ?? "").trim());
+  if (parts.length < 2) return no("one_sentence");
+  const s1 = parts[0].trim();
+  if (/[?？]/.test(s1)) return no("s1_asks");
+  if (SCREEN_SENTENCE.test(s1) || namesUiPart(s1)) return no("s1_screen");
+  if (words(s1) < 2) return no("s1_short");
+  const own = problems(s1).filter((p) => PER_SENTENCE.has(p));
+  if (own.length) return no(`s1_${own[0]}`);
+  if (confirmNeeded && !confirmsFirst(s1)) return no("s1_noconfirm");
+  const fallback = joinAsk(s1, askEnd);
+  if (!fallback.startsWith(s1)) return no("join");
+  const whole = problems(fallback);
+  if (whole.length) return no(`min_${whole[0]}`);
+  return { locked: true, s1, fallback, ms: Math.round(performance.now() - t0) };
 }

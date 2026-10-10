@@ -613,6 +613,13 @@ export class CascadeLink implements TeacherLink {
     // A press is the child's explicit "my turn": she stops outright (no pause-and-decide).
     this.clearBargeTimers();
     this.stopReply("cancelled", true);
+    // r4-latency: the press opens a new child turn for the echo and the prefetch, as child_speech_start does on hands-free
+    // (onChildEvent). Without it the AckClient kept the last reply's closed turn and never asked on tap-to-talk (page-clock
+    // timeline 2026-10-10: 0 turn-ack requests in 24 tap-to-talk turns; round 3: 0 in 21). Every echo rule stays the
+    // server's (server/latency/ack.js: graded answer, after classify and its distress read, the governor).
+    this.stopAck();
+    this.ack?.onSpeech();
+    this.prefetcher?.onSpeech();
     if (this.transportKind === "webrtc") {
       this.protocol.talkStartedAt = at;
       this.setMicEnabled(true);
@@ -629,6 +636,11 @@ export class CascadeLink implements TeacherLink {
     this.turn = { speechEndAt: at };
     if (this.recorder) this.recorder.releasedAt = at;
     this.events.emit({ type: "child_speech_end", at });
+    // r4-latency: the Done tap is the child's explicit end of turn. On tap-to-talk gpt-live-transcribe has streamed the words
+    // during speech (evals/latency/ptt-deltas.mjs: 8/8 had deltas before the commit; last delta p50 +711 ms, final +1,286 ms,
+    // deltas = final 8/8), so the stable partial goes to the prefetch now instead of never (onQuiet was hands-free only).
+    // The recording fallback has no partials: nothing to send.
+    if (this.transportKind === "webrtc") this.prefetcher?.onQuiet();
     this.clearPttTail();
     this.pttTail = setTimeout(() => {
       this.pttTail = null;

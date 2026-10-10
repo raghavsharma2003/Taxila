@@ -86,34 +86,70 @@ export function perceive(d, x) {
   const noteState = track(noteP);
   const clsP = x.classified ? d.classify(x.clsArgs) : Promise.resolve(null);
   clsP.catch(() => {});
-  const out = { now, fast, specs, noteP, noteT0, clsP, c2, noteParallel: null };
+  const out = { now, fast, specs, noteP, noteT0, clsP, c2, noteParallel: null, exact: null };
   if (noteP && x.textLane && !x.late && (x.noteParallel === true || (x.noteParallel !== false && noteParallelOn()))) {
     out.noteParallel = clsP.then((cls) => {
       if (!isNonAnswer(cls) || noteState.settled) return null;
       return exactSpec(d, x, cls, now, specs);
     }).catch(() => null);
   }
+  // Rule 5 (r4-latency, EXACT): on the PREFETCH only, the moment classify (and, on a non-answer, the note, within the turn's
+  // own NOTE_WAIT_MS) is in, the reply for the plan the turn will make is started, before the final transcript and the /turn
+  // request exist. The turn adopts it through the same exact reply key (rule 2), so nothing it says differs; a key that
+  // does not match is a miss and the turn writes its own reply, as before. Never on a distress read or a content-filter
+  // block (the turn plans those itself). Costs one reply call per prefetch the turn does not adopt.
+  if (x.exact && x.textLane && !x.late && x.classified && d.applyNote) {
+    out.exact = clsP.then(async (cls) => {
+      if (!cls || cls.flags?.distress || cls.source === "content_filter") return null;
+      let c = cls;
+      if (noteP) {
+        // the turn: a non-answer waits for the note until NOTE_WAIT_MS from its start; any other turn takes it only if in
+        const note = isNonAnswer(cls)
+          ? await settleWithin(noteP, Math.max(0, (d.noteWaitMs ?? 2200) - (performance.now() - noteT0)))
+          : noteState.settled ? noteState.value : null;
+        if (note) c = d.applyNote(cls, note, { mode: c2 });
+      }
+      if (x.childText && d.steerOn?.()) c = d.withAnswerMods(c, x.childText);
+      // a placeholder goes on the list NOW (synchronously after the note), so the turn's pickSpeculation, which runs after
+      // its own plan, always sees it
+      let done;
+      specs.push(new Promise((r) => { done = r; }).then((s) => s));
+      const how = await exactSpec(d, x, c, now, specs, done).catch(() => { done(null); return null; });
+      return how;
+    }).catch(() => null);
+  }
   return out;
+}
+
+/** EXACT is off unless TAXILA_EXACT_SPEC=on (release flag; BUILD-PLAN §5: ships as today's behaviour). */
+export const exactSpecOn = (env = process.env) => /^(on|1|true|yes)$/i.test(String(env.TAXILA_EXACT_SPEC ?? ""));
+
+/** The promise's value if it settles within `ms` (0: only if already settled), else null. Never throws. */
+function settleWithin(p, ms) {
+  return Promise.race([p.catch(() => null), new Promise((res) => setTimeout(() => res(null), Math.max(0, ms)))]);
 }
 
 /**
  * The reply for the plan `cls` gives (the no-note plan), pushed onto `specs` so the turn's pickSpeculation finds it — unless
  * a speculative reply with the same key is already being written. Resolves with "dup" | "launched" | "hold" | null.
  */
-async function exactSpec(d, x, cls, now, specs) {
+async function exactSpec(d, x, cls, now, specs, settle = null) {
   const trace = [];
+  const mine = settle ? specs.length - 1 : -1; // the placeholder this call fills (rule 5), skipped in the dup scan
   const plan = await d.planTurn(x.state, cls, { ...x.planCtx, now });
-  if (plan.r.hold) return "hold";
+  if (plan.r.hold) { settle?.(null); return "hold"; }
   const next = plan.r.state;
   const history = x.historyOf(next);
   const key = d.replyKey(next, x.planCtx.kit, plan.r, plan.instructions, x.said, history);
-  for (const p of [...specs]) {
+  for (const [i, p] of [...specs].entries()) {
+    if (i === mine) continue;
     const s = await p.catch(() => null);
-    if (s?.key === key) return "dup";
+    if (s?.key === key) { settle?.(null); return "dup"; }
   }
   const result = d.textReply({ instructions: plan.instructions, state: next, kit: x.planCtx.kit, childText: x.said, trace, history, ui: plan.r.ui, module: next.module });
   result.catch(() => {});
-  specs.push(Promise.resolve({ key, trace, result, noteParallel: true }));
+  const s = { key, trace, result, ...(settle ? { exact: true } : { noteParallel: true }) };
+  if (settle) settle(s); else specs.push(Promise.resolve(s));
   return "launched";
 }
 

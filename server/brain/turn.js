@@ -426,6 +426,10 @@ export async function lessonTurn(req, body) {
   }
   let cls;
   try { cls = classified ? await P.clsP : null; } finally { clsDone(); }
+  // r4-latency (main-session ask): WHICH stage set the distress flag, as codes only (never the child's words), so a false
+  // safeguard can be attributed from the log line and debug.distress. First source wins; later ones are appended.
+  const distressSrc = [];
+  if (cls?.flags?.distress) distressSrc.push(cls.source === "predicate" ? "predicate" : cls.source === "content_filter" ? "content_filter" : "classify_model");
   if (pre) trace.push(...pre.prefetch.trace.map((t) => ({ ...t, prefetched: true })));
   mark("classified");
   let noteReason = null, noteDebug = null;
@@ -433,7 +437,9 @@ export async function lessonTurn(req, body) {
     const nonAnswer = cls.outcome === "no_evidence" && !cls.request && !cls.help && !cls.flags?.distress;
     const waitT0 = performance.now();
     const note = await settleWithin(noteP, nonAnswer ? Math.max(0, NOTE_WAIT_MS - (performance.now() - noteT0)) : 0);
+    const before = !!cls.flags?.distress;
     if (note) cls = applyNote(cls, note, { mode: c2 });
+    if (!before && cls?.flags?.distress) distressSrc.push("understand_note");
     noteReason = note ? `conv2.${c2 === "shadow" ? "shadow" : "note"}.${note.intent}` : "conv2.no_note";
     noteDebug = { nonAnswer, intent: note?.intent ?? null, waitedMs: Math.round(performance.now() - waitT0), parallel: P.noteParallel ? await settleWithin(P.noteParallel, 0) : null };
     mark("noted");
@@ -452,6 +458,7 @@ export async function lessonTurn(req, body) {
   const pendingSafety = body.duplex?.safetyPending;
   if (cls && pendingSafety && !cls.flags?.distress) {
     cls = { ...cls, flags: { ...cls.flags, distress: true, distressKind: cls.flags?.distressKind ?? (typeof pendingSafety.kind === "string" ? pendingSafety.kind : "duplex_partial") } };
+    distressSrc.push("duplex_pending");
   }
   // round 4 (4A patch request 10): the realtime lane's reply was blocked by the content filter twice (TurnRequest.replyFiltered).
   // OR-ed in like safetyPending: a hint that can only ADD safety (the turn is re-planned as the safeguard, as a blocked text
@@ -537,6 +544,7 @@ export async function lessonTurn(req, body) {
   const relFx = relationalEffects(kernel.arb);
   const needRelease = relFx.release && !["wrap", "safeguard"].includes(r.move.kind);
   const needSafety = relFx.safety && r.move.kind !== "safeguard";
+  if (needSafety) distressSrc.push("relational_floor");
   if (needRelease || needSafety || relFx.overlay || relFx.callbackId || relFx.noticeId) {
     const relCls = needSafety ? { ...(cls ?? { outcome: "no_evidence", confidence: 1 }), source: cls?.source ?? "relational",
       flags: { ...(cls?.flags ?? fast?.flags ?? {}), distress: true, distressKind: cls?.flags?.distressKind ?? "relational_floor" } }
@@ -628,20 +636,9 @@ export async function lessonTurn(req, body) {
   // and the instructions are recompiled only when the row changed.
   if (!late) {
     const studioRow = studioSlot ? seamSafe("studio.factsRowForSlot", () => (typeof studioSeam.factsRowForSlot === "function" ? studioSeam.factsRowForSlot(lesson.id, studioSlot) : null), null) : null;
-    const before = Array.isArray(next.lastContent) ? next.lastContent : [];
-    const kept = before.filter((l) => !isStudioRow(l) && !isBoardFirstRow(l));
     // the board-first row only when no other piece takes the tray this turn (one thing on screen)
     const boardRow = wbFirstRow && !(studioSlot?.artifact && studioSlot.artifact.kind !== "whiteboard") ? wbFirstRow : null;
-    const content = [...kept, ...(studioRow ? [studioRow] : []), ...(boardRow ? [boardRow] : [])];
-    if (content.length !== before.length || content.some((l, i) => l !== before[i])) {
-      next.lastContent = content;
-      try { instructions = instructionsFor(next, kit); } catch (e) {
-        // the row does not fit the budget: the turn goes on without it (and the reply guard strips any screen pointer)
-        next.lastContent = kept;
-        try { instructions = instructionsFor(next, kit); } catch { next.lastContent = before; }
-        console.warn(`[studio] facts row left out of the compile: ${String(e?.message ?? e).slice(0, 80)}`);
-      }
-    }
+    instructions = withFactsRows(next, kit, instructions, { studioRow, boardRow });
   }
   // round 3 fix (experience B2 / B3): a game / moving ask this turn could not answer with a play piece: her move says what is
   // really on the screen (the engine kept, or nothing that moves), never "game mode on" over a number pad
@@ -668,7 +665,7 @@ export async function lessonTurn(req, body) {
   if (textLane && (!r.hold || revoice) && !late) {
     const key = replyKey(next, kit, r, instructions, said, historyOf(next));
     const hit = await pickSpeculation(specs, key);
-    speculation = specs.length ? { tried: specs.length, hit: !!hit, ...(hit ? {} : { differs: await missReason(specs, key) }) } : undefined;
+    speculation = specs.length ? { tried: specs.length, hit: !!hit, ...(hit?.exact ? { exact: true } : {}), ...(hit ? {} : { differs: await missReason(specs, key) }) } : undefined;
     if (hit) trace.push(...hit.trace.map((t) => ({ ...t, speculative: true })));
     let filtered, filteredSafeguard = false;
     ({ reply: teacherReply, guard, filtered, floor: replyFloor = [] } = hit
@@ -686,6 +683,7 @@ export async function lessonTurn(req, body) {
       noteDid(next, { cls: blockedCls, target, activeItem, kit, childText, tapped, hintLevel: state.hintLevel, seq: childRowSeq(staged), leaked });
       teacherReply = fallbackReply(next, null);
       filteredSafeguard = true;
+      distressSrc.push("content_filter");
       guard = { ...guard, caught: [...new Set([...(guard?.caught ?? []), "content_filter"])], replaced: true };
       replyFloor = [];
       // the move is now the safeguard: the kernel runs again so the floor freezes everything below it
@@ -963,7 +961,8 @@ export async function lessonTurn(req, body) {
   if (late) flushHeld(child, lesson, next).catch((e) => console.warn("[lesson] late turn: held evidence not stored:", e.message));
   const voice = await voiceP;
   const ms = Math.round(performance.now() - t0);
-  console.info(`[lesson] turn ${lesson.id} #${next.turn} ${r.move.kind}${r.hold ? " (hold)" : ""}${late ? " (late)" : ""} cls=${cls ? `${cls.outcome}/${cls.source}` : "module"}${speculation ? ` spec=${speculation.hit ? "hit" : "miss"}/${speculation.tried}` : ""} ${ms}ms`);
+  const distress = distressOf(distressSrc, { move: r.move.kind, episodeOpen: !!prev.safeguard, kind: cls?.flags?.distressKind ?? next.safeguard?.kind ?? null });
+  console.info(`[lesson] turn ${lesson.id} #${next.turn} ${r.move.kind}${distress ? ` distress=${distress.sources.join("+")}${distress.kind ? `/${distress.kind}` : ""}` : ""}${r.hold ? " (hold)" : ""}${late ? " (late)" : ""} cls=${cls ? `${cls.outcome}/${cls.source}` : "module"}${speculation ? ` spec=${speculation.hit ? "hit" : "miss"}/${speculation.tried}` : ""} ${ms}ms`);
   /** @type {import("../../shared/contracts").TurnResponse} */
   const out = { ...(late ? {} : clientInstructions(state.mode, instructions)), ...outCore };
   const vsShadow = vsShadowP && debugFor(req) ? await vsShadowP : null;
@@ -979,7 +978,7 @@ export async function lessonTurn(req, body) {
       ...(speculation ? { speculation } : {}), ...(prewarmed ? { ttsPrewarmed: true } : {}),
       prefetch: pre ? { adopted: true, aheadMs: pre.prefetch.aheadMs } : { adopted: false, miss: adoptMissOf(lesson.id) }, ...(noteDebug ? { note: noteDebug } : {}),
       item: item ? { id: item.id, kind: item.kind, prompt_en: item.prompt_en, prompt_hi: item.prompt_hi, answer: item.answer, acceptable: item.acceptable, ...(item.options ? { options: item.options.map((o) => o.text) } : {}) } : null,
-      kitVerified: kit.verified, ms, timings: trace,
+      kitVerified: kit.verified, ms, timings: trace, ...(distress ? { distress } : {}),
       stage: { accepted: kernel.arb.accepted.map((p) => p.kind), rejected: kernel.arb.rejected.map((x) => `${x.p.kind}:${x.why}`), wb: kernel.wb?.declined ?? null, studioPropose: studioView?.propose ?? null,
         point: stagecraftPoint ? { want: stagecraftPoint.want?.family ?? null, request: stagecraftPoint.request?.kind ?? null } : null, slot: studioSlot?.artifact?.kind ?? null, tray: r.ui?.tray ?? null },
       ...(voice ? { voice: { reliable: voice.reliable, signals: voice.signals, z: voice.z } } : {}),
@@ -988,6 +987,21 @@ export async function lessonTurn(req, body) {
     };
   }
   return out;
+}
+
+/** A distress kind is a CODE (safety.js families, "model", "model_note", "duplex_partial", ...); anything else, e.g. a string a
+ *  client sent, is reported as "other", so no free text reaches the log. */
+const KIND_CODE = /^[a-z][a-z0-9_]{0,31}$/;
+/**
+ * r4-latency: the turn's distress attribution, codes only: { sources: ["predicate" | "classify_model" | "understand_note" |
+ * "duplex_pending" | "relational_floor" | "content_filter" | "episode_open"], kind }, or null on a turn with no distress and
+ * no safeguarding move. "episode_open" = the move is a safeguard only because an earlier turn opened the episode.
+ */
+export function distressOf(sources, { move, episodeOpen = false, kind = null } = {}) {
+  const src = [...new Set(sources)];
+  if (!src.length && move === "safeguard") src.push(episodeOpen ? "episode_open" : "unattributed");
+  if (!src.length) return null;
+  return { sources: src, kind: typeof kind === "string" && KIND_CODE.test(kind) ? kind : kind == null ? null : "other" };
 }
 
 /** The child row's seq among this turn's staged rows (the DidCard cites it). */
@@ -1213,12 +1227,50 @@ export const specFanout = () => {
   return Number.isFinite(n) ? Math.max(0, Math.min(4, Math.floor(n))) : 3;
 };
 
+/**
+ * The turn's facts rows on the move's content: last turn's Studio and board-first rows out, this turn's in (the slot the
+ * turn shows, the board chosen first), and the instructions recompiled only when the content changed. A row that does not
+ * fit the budget is left out (the reply guard strips any screen pointer). Mutates next.lastContent; returns the
+ * instructions. ONE function for the real turn and the speculative plans (r4-latency), so their reply keys can match.
+ */
+export function withFactsRows(next, kit, instructions, { studioRow = null, boardRow = null } = {}) {
+  const before = Array.isArray(next.lastContent) ? next.lastContent : [];
+  const kept = before.filter((l) => !isStudioRow(l) && !isBoardFirstRow(l));
+  const content = [...kept, ...(studioRow ? [studioRow] : []), ...(boardRow ? [boardRow] : [])];
+  if (content.length === before.length && content.every((l, i) => l === before[i])) return instructions;
+  next.lastContent = content;
+  try { return instructionsFor(next, kit); } catch (e) {
+    next.lastContent = kept;
+    let out = instructions;
+    try { out = instructionsFor(next, kit); } catch { next.lastContent = before; }
+    console.warn(`[studio] facts row left out of the compile: ${String(e?.message ?? e).slice(0, 80)}`);
+    return out;
+  }
+}
+
+/**
+ * r4-latency: a speculative plan as the real turn will see it when the screen does not change this turn: the Studio row
+ * of the piece already on screen (studioSeam.peekFactsRow, read only) goes on its content exactly as the turn's slotFor +
+ * factsRowForSlot would put it (first-sound 2026-10-10, prefetch on: 10 of 38 speculation misses differed ONLY by that
+ * row; 9 more only by the board-first row, which needs the kernel). A turn that reveals, retires or takes the tray
+ * computes another row, and its key simply misses (as before).
+ * TAXILA_SPEC_STUDIO_ROW=off restores the old speculative plan.
+ */
+export async function specPlan(state, cls, ctx) {
+  const plan = await planTurn(state, cls, ctx);
+  if (process.env.TAXILA_SPEC_STUDIO_ROW === "off" || plan.r.hold || !ctx?.lesson?.id || typeof studioSeam.peekFactsRow !== "function") return plan;
+  let studioRow = null;
+  try { studioRow = studioSeam.peekFactsRow(ctx.lesson.id, { tray: plan.r.ui?.tray ?? null }); } catch { return plan; }
+  const instructions = withFactsRows(plan.r.state, ctx.kit, plan.instructions, { studioRow });
+  return instructions === plan.instructions ? plan : { ...plan, instructions };
+}
+
 export function speculate(state, target, flags, planCtx, { said, historyOf }, { outcomes: only, source = "speculative" } = {}) {
   const outcomes = (only ?? SPEC_OUTCOMES[target.mode] ?? []).slice(0, specFanout());
   return outcomes.map((outcome) => {
     const trace = [];
     const cls = { outcome, confidence: 1, source, flags: { ...flags } };
-    const p = planTurn(state, cls, { ...planCtx, now: planCtx.now ?? Date.now() }).then((plan) => {
+    const p = specPlan(state, cls, { ...planCtx, now: planCtx.now ?? Date.now() }).then((plan) => {
       if (plan.r.hold) return null;
       const next = plan.r.state;
       const history = historyOf(next);
@@ -1246,7 +1298,7 @@ export async function pickSpeculation(specs, key) {
     const s = await p.catch(() => null);
     if (s?.key !== key) continue;
     const result = await s.result.catch(() => null);
-    return result && !result.guard.caught.includes("unavailable") && !result.filtered ? { trace: s.trace, result } : null;
+    return result && !result.guard.caught.includes("unavailable") && !result.filtered ? { trace: s.trace, result, ...(s.exact ? { exact: true } : {}) } : null;
   }
   return null;
 }
@@ -1314,7 +1366,7 @@ export async function missReason(specs, key) {
 }
 
 /** What perceive() (server/latency/perceive.js) calls: the turn's own functions, so the prefetch runs the turn's code. */
-const PERCEIVE_DEPS = { classifyFast, classify, understand, speculate, planTurn, replyKey, textReply, conv2Mode };
+const PERCEIVE_DEPS = { classifyFast, classify, understand, speculate, planTurn: specPlan, replyKey, textReply, conv2Mode };
 /** round 3 fix (adversarial B2): is a play piece up? The Studio slot showed one last turn (state.playOn, set below), or the
  *  last move answered the child's game ask (the piece is coming up on this turn's screen). */
 export const playIsUp = (state) => !!state?.playOn || state?.lastMove?.visual === "game";
