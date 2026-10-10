@@ -139,6 +139,19 @@ lines below in code and tests; the batteries were not re-run on them.
 | round2-content | not run on base here | 38/39 (R 12/12 requests on stage; the miss: M "an item-bound mount in c6-maths-ch07-t01": only 2 of its 19 items bind an engine, 0 gate refusals in process) |
 | request → piece (r4-content-speed, 360 phone, typed) | not run | p50 1.7 s, **p90 5.5 s** (n = 22: 5 play topics, 17 engine topics; 2 with no piece) |
 
+### 3.1 After merging base `9920f21` (stream 5a + safety release) and the practice-beat rule
+Local production build of `8e879a4a`, 2026-10-10 12:55-13:20 UTC, load average 0.6 → 4.9 (heavier than §3).
+Gates on `8e879a4a`: tsc, vite clean; `npm test` 2,647 pass / 0 fail / 5 skipped; budget PASS; lint-ui 353 (new base 353).
+
+| harness | before the practice-beat rule (`f728cf4a`) | merged tree (`8e879a4a`) |
+|---|---|---|
+| round3-play | 93/93 | 93/93 |
+| round2-content | 38/39 | 36/39: R 12/12, board slots 18/18, 0 pointed-empty, 0 gate fails; 3 × M (an item-bound engine mount): the Director's posed path changed (a break, a worked-example path), no play piece at a practice beat in those lessons |
+| owner-5-visual | 14/14 | 12/14: 11/12 requests; the miss is V3.child_draws (the board was drawn; her NEXT reply told the child to draw: the reply guard, stream 3) |
+| round3-forge | 45/49 | 45/49 (R1 12/12, R2 3/6 strict / 5/6 with her-clause boards, R3 0 nonsense, R4 36/36; T1 API n = 1 at 3.97 s) |
+| r4-content-boards | 51 boards, 0 contradictions, 0 illegible, 2 unfilled | 51 boards, **0 contradictions, 0 illegible**, 4 unfilled (3 of the 4 lines draw in tests, `009c179c`; the 4th states a sub-region count, "3/5 wale hissa mein 9 boxes", which W10 is not loosened for) |
+| request → piece | p90 5.5 s (n = 22) | p90 4.4 s (n = 22, loaded); new pieces only p50 3.2 s (n = 14) |
+
 Still short, and why:
 - **(5) speed.** An engine piece arrives in the turn response, so its time is the turn's (3.0 / 4.7 / 5.5 s tails); 7 of
   the 22 asks found an engine already up from an earlier turn (≈ 15 ms; the harness now reports those apart). The early
