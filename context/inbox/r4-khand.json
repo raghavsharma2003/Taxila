@@ -99,13 +99,19 @@
   {
    "id": "r4k-open-practice-beat",
    "kind": "open",
-   "title": "C9 'at a practice beat' unmet for Khand topics: 0/3 practice lessons (4, 4, 9 typed turns) offered the game unasked; the offer rule is the Director's / compose ladder's (tests/prod/r4-khand-beat.mjs, local prod, 2026-10-10)",
+   "title": "C9 'at a practice beat' unmet for Khand topics, including on G1 @d2177c80 with its patch 03: 0/3 lessons (lesson route, 11 turns). Drops: patch 03 picks the plan's last skill (c6-ch06-t01-s3, not admitted by Khand) → no game; a built game is held on a turn where her move asks a question; at practice_set the Stagecraft host's own reveal wins over the Wave 2 play proposal (server/stagecraft/seam-bridge.js merge) and its pieces then hold the stage (tests/prod/r4-khand-beat.mjs + trace, local prod, 2026-10-10)",
    "at": "2026-10-10"
   },
   {
    "id": "r4k-dec-twin-first",
    "kind": "decision",
    "title": "Khand loads twin-first: the 2D board twin of the level paints and is playable at once (0.88 / 1.3 / 2.1-2.2 s at 10 / 3 / 1.2 Mbps, 4x CPU, dev page, n = 3 each, 2026-10-10), and the 3D world takes over at a turn-point with the same controller (1.6-1.8 / 2.4-2.6 / 4.4-4.6 s). Reversal: a child pilot shows the mid-level swap confuses (then swap only between levels)",
+   "at": "2026-10-10"
+  },
+  {
+   "id": "r4k-rej-beat-on-quick-practice",
+   "kind": "rejection",
+   "title": "Measuring C9's practice beat on /practice/<topic>: that route starts purpose 'practice' (Quick Practice), where studioSeam.prefetch adds no Studio piece by design, so no beat rule can ever fire there (3 runs, 2026-10-10). Measure on the lesson route",
    "at": "2026-10-10"
   }
  ],
@@ -144,6 +150,11 @@
    "src": "r4k-open-c10-device",
    "rel": "caused_by",
    "dst": "r4k-ms-fps-proxy"
+  },
+  {
+   "src": "r4k-rej-beat-on-quick-practice",
+   "rel": "part_of",
+   "dst": "r4k-open-practice-beat"
   }
  ]
 }

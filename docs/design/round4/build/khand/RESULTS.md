@@ -38,8 +38,8 @@ c5-maths-ch10-t02, c6-maths-ch09-t01 (mirror).
 | C5 | ≥ 80% of graded acts are manipulations | **met by design** (not separately counted): every goal is built (place / layer / break); the only non-spatial commits are a count (array, powers), a same/different prediction (turned array) and the check | the law's act grammar |
 | C6 | words: 0 verdict words, 0 unrevealed keys, 0 floor violations | **met**: every shape × language passes the play guard and the lesson floor. Every `{?why=}` names a refusal the law makes and every `{?mal=}` a mal-rule it implements. The key was never spoken on any mal path; K6 found 0 bad lines on the live server | `tests/r4-khand-server.test.mjs`; loop K6 |
 | C7 | signed evidence folds `via: "game"`; a forged token folds nothing | **met**: one `kt_evidence` row via game; the same tokens again and a forged token fold nothing | loop P8 (local prod, own Neon branch) |
-| C8 | no reward economy | **met by construction**; G1's economy lint has not yet run on this tree (it is on G1's branch) | code review; `tests/play-style-lint.test.mjs` |
-| C9 | reachable in a lesson when asked and at a practice beat, through the server grade into the ledger | **asked: met** ("game khelna hai" on perimeter and arrays, "can we play a game?" on views: the play slot is `nazariya/<mode>` and the block world is on the stage). **Practice beat: not met**: 0 of 3 practice lessons put the block world on the stage unasked (perimeter, area, square numbers; 4, 4 and 9 typed turns; only whiteboards appeared) | loop A1 / P8, 139/139 checks; `tests/prod/r4-khand-beat.mjs` (local prod, n = 3, 2026-10-10) |
+| C8 | no reward economy | **met by construction**. G1's economy lint (`tests/r4-games-core-economy.test.mjs`) on the trial merge: lints 1 and 3 pass. Lint 2 (no wall clock) flagged Khand's re-mesh timing, which is now removed: a shipped Khand reads no clock. The only lines it still flags are in `shim/stage3d.ts`, the copy of G1's own allow-listed stage, which the port deletes | code review; `tests/play-style-lint.test.mjs` |
+| C9 | reachable in a lesson when asked and at a practice beat, through the server grade into the ledger | **asked: met** ("game khelna hai" on perimeter and arrays, "can we play a game?" on views: the play slot is `nazariya/<mode>` and the block world is on the stage). **Practice beat: not met, including with G1's patch 03**: 0 of 3 lessons put the block world on the stage unasked, on base, with stream 2's `move.visual` line, and on a trial merge of G1 @d2177c80 (patch 03 included) + Khand. Where it drops is traced in §4 | loop A1 / P8, 139/139 checks; `tests/prod/r4-khand-beat.mjs` (local prod, n = 3 per run, 2026-10-10) |
 | C10 | ≥ 50 fps median at 4× throttle | **not measured on device.** The SwiftShader proxy numbers (54-56 / 40-48 / 16-18 fps at 360 / 412 / 1366) are kept as a proxy only and never count as met. The main session decided (as delegate) that the tier-3d DPR floor stays 1.0; the real-phone run (O-R4, a ₹10k Android) decides C10 | `r4-khand-shots.mjs --fps` (proxy) |
 
 ## 3. Numbers (proxy unless said)
@@ -62,7 +62,9 @@ Mpx/s here, far below a phone GPU. The scene is 5-11 draws and under 10k triangl
 
 **The re-mesh path** (the prototype's main-thread re-mesh was 8.2 ms p50 / 19.1 ms p95): an edit every 250 ms, n = 40 per
 run. The mesh runs **in the worker**: 0.1-0.2 ms p50 / 0.2-2.0 ms p95. The main thread does no meshing. Worker round trip
-4-17 ms p50; the main-thread frame p50 stays 16.7 ms at 360 / 412.
+4-17 ms p50; the main-thread frame p50 stays 16.7 ms at 360 / 412. (Measured before G1's economy lint 2 applied. Khand now
+reads no clock in a shipped build. The harness injects one, `__khandClock`, and times only the round trip: the
+worker-side mesh ms is no longer taken in the browser. The node mesher test covers the mesh itself.)
 
 **Greedy meshing** (node, exact): 4×4×4 cube 80 → 9 quads; 6×4 floor 44 → 5; 9×9 pit with paving 165 → 9. It covers
 exactly the naive faces on 300 random builds.
@@ -92,23 +94,39 @@ sides=3x3`. The row now says `area=9 perimeter=12 rect=3 by 3`, and the re-run r
   decided the tier-3d DPR floor stays 1.0. The phone run (O-R4) decides it. Proposed to G1, not built here: a frame-time
   governor behind a default-off flag that lowers the render scale only when measured p95 frame time on the real device
   is over budget.
-- **C9 "at a practice beat": 0/3, with and without stream 2's Director patch.** n = 3 practice lessons, 11 turns each,
-  typed lane plus the NumberPad on numeric items, local prod, 2026-10-10:
+- **C9 "at a practice beat": 0/3 in every run, including with G1's patch 03.** n = 3 lessons, 11 turns each, typed lane
+  plus the NumberPad on numeric items, local prod, own Neon TEST branch, 2026-10-10:
 
-  | run | lessons that offered the game unasked |
-  |---|---|
-  | base | **0/3** (`results/beat-local-base.json`) |
-  | with stream 2's `if (p.visual) move.visual = p.visual;` before `planModule` (applied locally only, never committed) | **0/3** (`results/beat-local-patched.json`) |
+  | run | route | lessons that offered the game unasked |
+  |---|---|---|
+  | base | `/practice/` | **0/3** (`results/beat-local-base.json`) |
+  | with stream 2's `if (p.visual) move.visual = p.visual;` (local only, never committed) | `/practice/` | **0/3** (`results/beat-local-patched.json`) |
+  | trial merge G1 @d2177c80 (patch 03 included) + Khand | `/practice/` | **0/3** (`results/beat-local-g1p03.json`) |
+  | same trial merge | `/lesson/new?topic=` | **0/3** (`results/beat-local-g1p03-lesson.json`, re-run with a trace: `-lesson-dbg.json` + `beat-local-g1p03-trace.txt`) |
 
-  The moves were hook → explain → worked_example → practice → hint / probe / practice (no visual ask among them).
+  **My harness ran the wrong surface in the first three runs.** `/practice/<topic>` starts with purpose `practice`
+  (Quick Practice), and `studioSeam.prefetch` returns before any Studio piece for that purpose, patch 03 included. Those
+  runs could never reach the beat. The harness now opens the lesson route by default (`--route practice` keeps the old
+  run). On the lesson route the Director reaches `practice` at turn 4-5 in all three lessons. The offer drops at three
+  points (trace, temporary logging in the trial tree only, never committed):
 
-  Root cause in code: a play piece is composed only by `studioSeam.composeAsk` (`server/studio/seam.js`), which returns
-  null unless the turn's visual is one of `INTERACTIVE_ASKS`, i.e. the child asked to play or see it move.
-  `server/brain/turn.js` calls it only for such an ask. **No rule anywhere offers a play piece at a practice beat.** The
-  `move.visual` patch fixes the module default for asks, a different path. The fix is a new rule, not Khand's: at a
-  practice move on a skill the play coverage admits (`hasPlay(skillId)`), compose the play piece as for an ask. It would
-  sit in the turn kernel (`server/brain/turn.js`, stream 3) and the studio seam (`server/studio/seam.js`, stream 2), with
-  the Director (4A) deciding when. Khand is admitted like every family, so it gets that rule when it lands.
+  1. **Prefetch, perimeter (c6-maths-ch06-t01): no game is built.** Patch 03 takes the plan's LAST skill,
+     `c6-maths-ch06-t01-s3` ("solve real perimeter problems, including finding a side from the perimeter"). Khand
+     admits s1 and s2 of that topic, not s3, so `buildLive` returns null. The other two lessons built one:
+     `nazariya/floor` (area) and `nazariya/powers` (squares).
+  2. **Turn 4: the game is held.** Studio proposes `play:practice`, but `slotFor` holds it because her move asks a
+     question of its own (`hint.asking`, `!p.requested`).
+  3. **Turn 5, the `practice_set` beat: Stagecraft takes the stage.** Studio proposes `play:practice` again, but this
+     lesson has a Stagecraft host in mode `on`. `server/stagecraft/seam-bridge.js` `merge()` lets Stagecraft's own reveal
+     win over a Wave 2 proposal ("Stagecraft's reveal wins over a Wave 2 proposal"), so its piece `c1` is revealed. From
+     then on a piece is on screen, and `statusFacts` makes no new proposal while it is up. Stagecraft pieces filled the
+     stage from turn 5 to turn 11 in all three lessons.
+
+  Why G1's own C9b passes: it is API-only. It may not attach a Stagecraft host, or it may meet a beat without a
+  question. That is G1's to confirm; I have not run it on a Khand topic. The fixes are outside Khand's files: in
+  `seam-bridge.js` `merge()` (Stagecraft), let a `need: "practice"` play piece at `practice_set` count as exempt, or
+  have Stagecraft offer it. Optionally, patch 03 could pick any admitted plan skill, not just the last one. Inside
+  Khand, admitting `-s3` (a floor goal "find the missing side from the perimeter") is possible law work, not done.
 - **"Two lessons stopped taking typed input after 4 turns": not a bug. It was my harness.** Repro (base run, 2026-10-10):
   at turn 5 of c6-maths-ch06-t01 and c5-maths-ch11-t01 the practice item was numeric ("Khaali jagah bhariye: 3 × 160 =
   __ m"). The dock correctly swapped the text field for the NumberPad (`number-pad` and `pad-send` visible,
