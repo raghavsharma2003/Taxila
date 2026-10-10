@@ -55,3 +55,11 @@ Key sets: the lesson stack plus `DEPLOY_IMAGE` and `AZURE_IMAGE_*` (text-free ar
 | stream | branch | Neon TEST branch | session |
 |---|---|---|---|
 | Asha rig v2 (painted keys swapped, no mesh warp; after rj-r4-lamp1-mesh-warp-uncanny) | `claude/r4-asha-rig2` | `test-r4-asharig` (br-delicate-dawn-b7hy0k8b) | session_01CFBcnqMYa97thSCvAZPV1j |
+
+## Wave 3 (10:20 UTC 2026-10-10)
+
+| stream | branch | Neon TEST branch | session |
+|---|---|---|---|
+| K Kaksha app shell (U1 continues; BUILD-SPEC.md slices K0-K4; K-O answers in dc-r4-kaksha-k-o-answers) | `claude/r4-app-design` | `test-r4-appdesign` (br-steep-salad-b7pui4hh) | session_01UTiatddezKEzf62yL8aMux |
+
+Merge order: 5a → 2 → G1 → G2 → 4A → 4B → 3 → 5b → K (K slices land behind `ui.kaksha`, default off, as their seams merge).
