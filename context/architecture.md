@@ -301,3 +301,7 @@ Proposed seams (patches in `evals/safety-robust/patches/`):
 - `fn-r4-local-routing-differs-from-prod` (2026-10-10): A local serve.mjs on .env.local runs a different classifier and turn path from production: DEPLOY_CLASSIFY, TAXILA_CLASSIFY_HEDGE_MS, TAXILA_TURN_PREFETCH, TAXILA_ACK_AT_MS and TAXILA_STT_MODEL are set only on taxila-web; snapshot in tests/prod/prod-routing.env
 - `open-r4-codefloor-hinglish-push-sport-child-object` (2026-10-10): Code-floor misses on base: Hinglish/Devanagari 'X ne mujhe dhakka diya' (English forms fire), and a sport turn's frame setting aside a hit whose object is the child ('cricket mein seniors ne mujhe dhakka diya aur maara'); required as an amendment to patch 12
 - `open-r4-gaaliyan-plural-gap` (2026-10-10): The plural 'gaaliyan' stays quiet on the code floor: adding it as a lexicon literal made the STT garble 'goliyan' (pills) unreadable (34 recall draws lost); the model distress read is the only catch
+
+
+## Merged inbox entries (write-up from the entry text)
+- `open-r4-conversation-confusion-15pct` (2026-10-10): About 15% of teacher turns on production are judged confusing (owner-2, judge on, 2 seeds): a jump to a new question after a bare acknowledgement, a re-posed blank after 'nahi samjha', a right answer not acknowledged; 4A to classify causes, calibrate the judge on human-reviewed transcripts, and fix the top cause

@@ -3695,3 +3695,7 @@ and repeated duplex partials. Relational AT-U8 (p99 ≤ 3 ms per turn; it calls 
 
 ## Merged inbox entries (write-up from the entry text)
 - `ms-r4c-box-contract-2026-10-10` (2026-10-10): Stage box contract (n = 12 boxes, /dev/desk work-studio and work-play fixtures, Vite dev, headless Chromium 141, 2026-10-10): Older tray 328x404 / 380x519 / 752x408 at 360x800 / 412x915 / 1366x768 (equal to round 3's live taxila.dev measurement), Young tray 328x380 / 380x495 / 752x408; play mode Older 328x532 / 380x647 / 752x552, Young 328x484 / 380x599 / 752x552. docs/design/round4/build/box-contract.json; tests/prod/r4-content-box-contract.mjs --check.
+
+
+<!-- merged from inbox/r4-main-1720.json -->
+- `ms-r4-owner2-prod-judge-on` (2026-10-10, 17:05-17:20 UTC): tests/prod/owner-2-no-confusion.mjs --base https://taxila.dev --judge model, 6 sessions x 14 turns, production c439bd7. Seed 7: 8/12 checks, 17 defects on 16 of 90 judged turns (J.confused x10, J.ignores_child x3, R5.loop x3, R3.bare_question x1). Seed 1010: 8/12, 13 on 13 (J.confused x11, R5.loop x1, R6.gutted x1). Evidence: evals/owner-truth/results/acceptance-2026-10-10T17-05-18 and ...T17-05-21. 4A's local runs of the same seeds on tests/prod/prod-routing.env: 19 and 18. The code-scored part varies run to run on the same seed (seed 7 without the judge earlier: 1 code defect; with it: 4).

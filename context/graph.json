@@ -18741,6 +18741,34 @@
    "title": "Tried (round 3 forge, src/modules/frame/fit.ts): scaling an engine that does not fit its frame down to a fixed floor of 0.75. Broke (certify-tray.js --modules, n = 2 samples per (engine, mode, band), contract boxes, 2026-10-10): 18 px words became 13.5 px and 54 px keys 40 px, so 0 of 15 engines passed at the 360 phone tray. Replaced by a floor per engine: the scale never takes the smallest word below the band's floor (14 / 16 px) nor a target below 44 px; past that the frame scrolls vertically. Plus svgText.ts: SVG words grown back to the floor at the SVG's real width, crowded sibling labels thinned (map-label rule).",
    "at": "2026-10-10",
    "source": "inbox/r4-content.json"
+  },
+  {
+   "id": "ms-r4-owner2-prod-judge-on",
+   "kind": "measurement",
+   "at": "2026-10-10",
+   "title": "owner-2 on taxila.dev (c439bd7) WITH --judge model: seed 7 17 defects on 16 of 90 turns (J.confused 10, J.ignores_child 3, R5.loop 3, R3.bare_question 1); seed 1010 13 on 13 (J.confused 11, R5.loop 1, R6.gutted 1); matches 4A's local runs on prod routing (19, 18)",
+   "source": "inbox/r4-main-1720.json"
+  },
+  {
+   "id": "rj-r4-owner2-prod-without-judge",
+   "kind": "rejection",
+   "at": "2026-10-10",
+   "title": "Main session's owner-2 production runs at 3 seeds ('2 defects / 270 turns', ms-r4-4a-owner2-3seeds) were run WITHOUT --judge model, so the J checks were off and the number was the code rubric only; compared against judge-on local runs it manufactured a 10x local-vs-prod gap",
+   "source": "inbox/r4-main-1720.json"
+  },
+  {
+   "id": "rj-r4-owner2-gap-is-routing",
+   "kind": "rejection",
+   "at": "2026-10-10",
+   "title": "Hypothesis that local batteries differ from production because of model routing: 4A's local base with tests/prod/prod-routing.env still showed 19 / 18 defects, the same as production once production was judged the same way; the env difference is real but explains nothing measured",
+   "source": "inbox/r4-main-1720.json"
+  },
+  {
+   "id": "open-r4-conversation-confusion-15pct",
+   "kind": "open",
+   "at": "2026-10-10",
+   "title": "About 15% of teacher turns on production are judged confusing (owner-2, judge on, 2 seeds): a jump to a new question after a bare acknowledgement, a re-posed blank after 'nahi samjha', a right answer not acknowledged; 4A to classify causes, calibrate the judge on human-reviewed transcripts, and fix the top cause",
+   "source": "inbox/r4-main-1720.json"
   }
  ],
  "edges": [
@@ -30288,6 +30316,21 @@
    "src": "rj-r4c-frame-fit-floor-075",
    "rel": "part_of",
    "dst": "dc-r4c-one-tray-gate"
+  },
+  {
+   "src": "rj-r4-owner2-prod-without-judge",
+   "rel": "supersedes",
+   "dst": "ms-r4-4a-owner2-3seeds"
+  },
+  {
+   "src": "rj-r4-owner2-gap-is-routing",
+   "rel": "supersedes",
+   "dst": "fn-r4-local-routing-differs-from-prod"
+  },
+  {
+   "src": "open-r4-conversation-confusion-15pct",
+   "rel": "measured_by",
+   "dst": "ms-r4-owner2-prod-judge-on"
   }
  ]
 }

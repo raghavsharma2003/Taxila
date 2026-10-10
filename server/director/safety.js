@@ -203,8 +203,10 @@ const FAMILIES = {
 // session miss traces to it.
 /** Anything that makes a frame unsafe to apply, anywhere in the turn: harm detail, repetition, cause, secrecy, fear, "really".
  *  Day-0 gates review: also "real" ("die in the game and in real") and a setting the child widens or denies ("game mein
- *  bhi", "is game mein nahi", "not just in the game"): each of those read as ideation set aside as play. */
-const GUARD_VETO = /(?<![\p{L}\p{M}])(?:sach(?:\s+mein|\s+me|mu?ch)?|really|seriously|for\s+real|real\s+life|actually|asli|roz|rozana|daily|every\s*day|har\s+(?:din|roz|raat)|gussa|gusse|angry|belt|chappal|danda|dande|stick|blood|khoon|chot|zakhm|nishaan|nishan|bruise|injur\w*|dard|hurts?|darr?\s+lag\w*|scared|afraid|darta|darti|mat\s+batana|don'?t\s+tell|secret|kapde|private|galat\s+jagah|gandi|gande|kyunki|kyuki|because|coz|cuz|jab|when|whenever|zinda|jeena|jeene|jine|khud\s+ko|myself|suicid\w*|pills?|zeher|poison|chhat|roof|jump\w*|akela|akeli|alone|raat\s+ko|at\s+night|ghar\s+(?:pe|par|mein|me)|at\s+home|mere\s+saath|with\s+me|bhi\s+(?:aisa|waisa|wahi)|me\s+too|real|(?:mein|me|main)\s+(?:bhi|nahi|nahin|nhi)|not\s+(?:just\s+|only\s+)?in\s+(?:the\s+|a\s+)?games?|nahi\s+(?:sach|asli|real))(?![\p{L}\p{M}])/iu;
+ *  bhi", "is game mein nahi", "not just in the game"): each of those read as ideation set aside as play.
+ *  Round 4 (patch request 12): a slap or gaali, like the belt / danda, is harm detail ("cricket ke match mein ... sab Riya ko gaali
+ *  dete hain" was set aside as sport). */
+const GUARD_VETO = /(?<![\p{L}\p{M}])(?:sach(?:\s+mein|\s+me|mu?ch)?|really|seriously|for\s+real|real\s+life|actually|asli|roz|rozana|daily|every\s*day|har\s+(?:din|roz|raat)|gussa|gusse|angry|belt|chappal|danda|dande|stick|gaali|gaaliyan|gaaliyaan|thappad|thappar|गाली|गालियां|गालियाँ|थप्पड़|थप्पड़|थप्पड|blood|khoon|chot|zakhm|nishaan|nishan|bruise|injur\w*|dard|hurts?|darr?\s+lag\w*|scared|afraid|darta|darti|mat\s+batana|don'?t\s+tell|secret|kapde|private|galat\s+jagah|gandi|gande|kyunki|kyuki|because|coz|cuz|jab|when|whenever|zinda|jeena|jeene|jine|khud\s+ko|myself|suicid\w*|pills?|zeher|poison|chhat|roof|jump\w*|akela|akeli|alone|raat\s+ko|at\s+night|ghar\s+(?:pe|par|mein|me)|at\s+home|mere\s+saath|with\s+me|bhi\s+(?:aisa|waisa|wahi)|me\s+too|real|(?:mein|me|main)\s+(?:bhi|nahi|nahin|nhi)|not\s+(?:just\s+|only\s+)?in\s+(?:the\s+|a\s+)?games?|nahi\s+(?:sach|asli|real))(?![\p{L}\p{M}])/iu;
 /** Sports and games as the SETTING of a hit / beat / die line ("beats me at chess", "chess mein maarte", "in the game"). */
 const SPORT_WORDS = "games?|chess|ludo|carrom|cricket|match|matches|race|kabaddi|badminton|football|pillow\\s*fight|free\\s*fire|pubg|bgmi|minecraft|roblox|levels?|video\\s*games?|khel";
 const SPORT_SETTING = new RegExp(`(?<![\\p{L}\\p{M}])(?:(?:in|at|during)\\s+(?:every\\s+|the\\s+|a\\s+|this\\s+)?(?:${SPORT_WORDS})|(?:${SPORT_WORDS})\\s+(?:mein|me|main|mai)|respawn\\w*|headshot)(?![\\p{L}\\p{M}])`, "iu");
@@ -227,6 +229,8 @@ const REPORTED = /(?<![\p{L}\p{M}])(?:kaha|kehta|kehti|kehte|bola|boli|said|says
 const PRAISE_TOUCH = /(?<![\p{L}\p{M}])(?:shabash|shabaash|well\s+done|good\s+job|bukhaar|bukhar|fever|temperature|aashirwad|ashirwad|blessing|high\s*five)(?![\p{L}\p{M}])/iu;
 const TOUCH_WORD = /(?<![\p{L}\p{M}])(?:chhua|chua|chhuaa|chhoo\w*|chhu\w*|touch\w*|छुआ|छू\w*)(?![\p{L}\p{M}])/iu;
 
+/** A push, slap, kick or punch (never "maar" / "beat", which also mean "defeat" in a game). Patch request 12, amended. */
+const PHYSICAL_HIT = /(?<![\p{L}\p{M}])(?:dhakk[aeo]|dhaka|thappad|thapad|thappar|laat|lath|ghoons[aeo]|ghus[aeo]|push(?:ed|es|ing)?|shov(?:e|ed|es|ing)|slap(?:s|ped|ping)?|kick(?:s|ed|ing)?|punch(?:es|ed|ing)?|धक्क[ाे]|थप्पड़|थप्पड|लात|घूँस[ाे]|घूंस[ाे])(?![\p{L}\p{M}])/iu;
 const FIRST_PERSON_OBJECT = /(?<![\p{L}\p{M}])(?:mujhe|mujhko|mereko|me|i)(?![\p{L}\p{M}])/iu;
 /** The clause of `t` around [a, b): from the last clause mark before a to the first after b. */
 function clauseOf(t, a, b) {
@@ -246,7 +250,11 @@ export function guardFrameOf(kind, t, span, clause) {
   if (!(kind === "abuse" && FIRST_PERSON_OBJECT.test(span)) && STORY.test(clause) && REPORTED.test(clause)) return "story";
   if (kind === "abuse") {
     // a sport / pest OBJECT explains the hit only when the child is not the one hit and it is not the instrument ("ball se")
-    if (SPORT_SETTING.test(clause) || (SPORT_OBJECT.test(span) && !childHit)) return "sports";
+    // round 4 (patch request 12, amended on the main safety review): a sport SETTING never explains a push, slap, kick or punch
+    // whose object is the child ("cricket mein seniors ne mujhe dhakka diya aur maara"). "maar" / "beat" stay the frame's: "beats
+    // me at chess" / "chess mein maarta hai" (defeat) is the false alarm the frame was built for.
+    const physChild = kind === "abuse" && FIRST_PERSON_OBJECT.test(span) && PHYSICAL_HIT.test(span);
+    if ((SPORT_SETTING.test(clause) && !physChild) || (SPORT_OBJECT.test(span) && !childHit)) return "sports";
     if (PEST.test(clause) && !childHit) return "pest";
     if (THING_SUBJECT.test(clause)) return "idiom";
     if (TOUCH_WORD.test(span) && PRAISE_TOUCH.test(clause)) return "praise_touch";
