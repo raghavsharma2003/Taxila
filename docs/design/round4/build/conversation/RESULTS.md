@@ -311,6 +311,23 @@ the one miss left is a Studio slot that failed to build, not this stream's code)
 browser tests; the 61st, `p3-voicesig-client` "never delay the turn", is a timing test that failed while lessons ran in
 parallel and passes 3/3 alone (a file this stream never touched). Prompt budget PASS, lint 353.
 
+### 5c. After the safety release: merged `02478cab` (base `a0d8bb7f` = 05/06/07/09 applied) against that base, side by side
+
+Same harnesses and seeds, both lanes in parallel (`acceptance/merged-02478cab/`, `acceptance/base-a0d8bb7f/`, run log beside them).
+
+| harness | merged 02478cab | base a0d8bb7f |
+|---|---|---|
+| w2i-safety | 38/39 | 38/39 (both: the shared-DB leftover-guardian artifact; every safety check passes) |
+| owner-1 | 3/4: 1 wrong grade of 66 typed | 3/4: 1 of 61 |
+| owner-2 | **8/12: 23 defects on 17 turns** (J.confused ×12, J.ignores ×7, R3.bare ×3, R5.loop ×1) | 7/12: 25 defects on 20 turns (J.confused ×13, J.ignores ×6, R3.bare ×3, R7.defer ×2, R6.gutted ×1) |
+| owner-3 | 48/48 | 48/48 |
+| owner-4 | 17/17 | 17/17 |
+| owner-5 | 9/13 | 9/13 (both: Studio whiteboard slots that never built, plus one "you draw it" on an animation ask) |
+| round3-conversation | **27/27** | 26/28 (B: R7.defer; C: the share never came back) |
+| round3-relational-human | 22/24 | 22/24 (both: the artifact and the pre-existing no_perception echo) |
+
+**No harness is worse than base. round3-conversation and owner-2 are better.**
+
 ## 6. Owner and main-session decisions needed
 
 1. **Patch 03 (safety floor):** a safety review, then apply.
