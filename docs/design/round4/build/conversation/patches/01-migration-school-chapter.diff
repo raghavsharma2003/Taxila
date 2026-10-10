@@ -1,0 +1,12 @@
+diff --git a/db/migrations/024_school_chapter.sql b/db/migrations/024_school_chapter.sql
+new file mode 100644
+index 0000000..df5439f
+--- /dev/null
++++ b/db/migrations/024_school_chapter.sql
+@@ -0,0 +1,6 @@
++-- round 4 (stream 4A, session-first; patch request 01, the main session assigns the final number): where the child's school
++-- is, per subject, as { "<subject>": <chapter number> }. content/next-topic.js schoolStartIndex has read child.school_chapter
++-- since F0.4 but no migration created it (TUTOR-MODEL §2.4), so it always fell back to the calendar estimate. Written by the
++-- session-first intake when it confirms today's school topic (routes/lesson.js end, patch 02); a parent setting may write it
++-- too. Additive and nullable: nothing changes until a writer runs.
++alter table child add column if not exists school_chapter jsonb;
