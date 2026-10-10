@@ -484,6 +484,16 @@ export const MUST_NOTE = Object.freeze({
   adopt: "first, in a few words, take what they said about your teaching on board (a thank-you for praise, or the change you make now); then do it",
   adult: "first greet the grown-up as a grown-up in a few words and say what you will do; then hand back to the child by name",
   boredom: "first acknowledge it is getting boring in a few words, no guilt; then the change",
+  // round 4 round B (battery 2026-10-10: "no game is ready for this yet", "video nahi" broke zero visible failure: a build
+  // that is not there is never mentioned; game_request 4/8, animation 2/5)
+  visual_game: "start a game now, in one line: if one is on the screen, how to play it; if not, a quick spoken game on this idea (one rule, then their first turn); never say a game is not ready or not available",
+  visual_animation: "never say there is no video or animation: if something on the screen moves, point at what moves; if not, show the movement in words, step by step, as it happens",
+  visual_diagram: "never say there is no picture: if it is on the screen, point at what to look at; if not, paint it in words with things they can see at home",
+  // the hook after a no (out_of_bounds reengages 8/12: the decline came, the hook was the bare question again)
+  decline: "after the short no: one genuinely interesting thing from today's idea (a surprising fact, a real-life puzzle), then the question; never only the question",
+  // a clarify that gave the answer away (clarify-09)
+  clarify: "say what the question asks in simpler words; never the answer, the reason or the key words of the answer",
+  answer_q: "answer their question first, in at most two sentences, correctly and simply; only then carry on",
 });
 export const parkAlso = ({ topic }) => `they also asked about ${clean(topic) || "something else"}: one line that you will come back to it after this`;
 /** Round 3: the turn after a stop check-in that was not a stop ("haan", an answer): the lesson simply goes on. Local

@@ -237,6 +237,18 @@ export function alsoQuestion(text) {
   return m[1].replace(/[^\p{L}\p{N} ,'-]/gu, " ").replace(/\s+/g, " ").trim().slice(0, 60) || null;
 }
 
+/** Round 4 round B: a turn shaped as a real question (a "?" or a question word leading or closing it; 4-24 words; never a
+ *  request to HER, a stop or a share): the Director answers it first when no question is on the table. PURE. */
+const Q_LEAD = /^(?:(?:didi|ma'?am|sir|achha|accha|ok|toh|to|par|but|aur|and|so)[\s,]+)*(?:kya|kyun|kyu|kyon|kaise|kab|kahan|kitna|kitni|kitne|kaun|kaunsa|kaunsi|why|how|what|when|where|which|who|is|are|does|do|can|will|would|if|agar)\b/i;
+const Q_TAIL = /(?:\?|\b(?:kya|kyun|kaise|na)\s*\??)\s*$/i;
+export function questionShaped(text) {
+  const t = T(text);
+  const n = words(t);
+  if (n < 4 || n > 24) return false;
+  if (readIntent(t) || ASKS_HER.test(t) && !/\?\s*$/.test(t)) return false;
+  return /\?\s*$/.test(t) || Q_LEAD.test(t) || Q_TAIL.test(t);
+}
+
 /** The p5 reading types (state.js acts on each; tests enumerate them). */
 export const P5_TYPES = Object.freeze(["confused", "clarify", "repeat", "back", "skip", "harder", "easier", "know", "boredom", "frustration",
   "thinking", "identity", "small_talk", "oob", "break", "adult", "ask_invite", "unclear"]);

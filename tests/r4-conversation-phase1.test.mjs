@@ -107,3 +107,21 @@ test("the must-note never rides on a safeguard and is shed (never a budget throw
   assert.doesNotMatch(shed.text, /THIS TURN FIRST/);
   assert.match(compileWithReport({ ...input, move: f.move }).text, /THIS TURN FIRST/);
 });
+
+test("round B: a question about the idea with nothing on the table is answered first; requests and short turns are not questions", async () => {
+  const { questionShaped } = await import("../server/conversation/lexicon.js");
+  for (const t of ["kya 1/3 hamesha 1/4 se bada hota hai?", "agar line 0 se 2 tak ho toh 1/2 kahan aayega"]) assert.ok(questionShaped(t), t);
+  for (const t of ["example do", "haan samajh gaya", "3/4", "ok next", "picture dikhao na please"]) assert.ok(!questionShaped(t), t);
+  const r = step(fresh(), { event: "start", kit: K, now: 0 });
+  const t = turn(r, NE, { text: "kya 1/3 hamesha 1/4 se bada hota hai?" });
+  assert.equal(t.move.request, "answer_q");
+  assert.match(t.move.must ?? "", /answer their question first/);
+});
+
+test("round B: a game / video / picture request never announces that nothing is ready (zero visible failure)", () => {
+  const r = toPractice();
+  for (const [text, re] of [["can we play a game", /never say a game is not ready/], ["video dikhao", /never say there is no video/], ["picture dikhao", /never say there is no picture/]]) {
+    const n = turn(r, said(r, text), { text });
+    assert.match(n.move.must ?? "", re, text);
+  }
+});

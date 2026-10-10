@@ -39,7 +39,7 @@ import { directorProposal } from "./proposal.js";
 import { p5Flag } from "../conversation/flags.js";
 import { unsafeChildPhrase } from "../conversation/screen.js";
 import { parkEntry, pushLater, recentParked, dueParked, serveLater } from "../conversation/policy.js";
-import { alsoReading, alsoQuestion } from "../conversation/lexicon.js";
+import { alsoReading, alsoQuestion, questionShaped } from "../conversation/lexicon.js";
 import { intakeStart, intakeStep } from "./session/beat.js";
 import { newSession, openSegment } from "./session/segments.js";
 import { priorNotes } from "./session/prior.js";
@@ -1298,6 +1298,13 @@ export function step(prev, input) {
     const q = alsoQuestion(input.text ?? "");
     if (q && !unsafeChildPhrase(q)) input = { ...input, cls: { ...input.cls, alsoPark: { topic: q, learning: true } } };
   }
+  // round 4 round B (battery question_on_topic: "kya 1/3 hamesha 1/4 se bada hota hai?" said over an explanation got the next
+  // teaching step): with NO question on the table, a turn shaped as a question about the idea is their question, answered
+  // first (answer_q); never with an item on the table (there it may be an answer), never over a request or the floor
+  if (input.event === "turn" && p5Flag("R4CONV") && input.cls && !input.cls.request && !input.cls.help && !input.cls.flags?.distress
+    && input.cls.outcome === "no_evidence" && !s.activeItemId && ["teach", "warmup"].includes(s.phase) && questionShaped(input.text ?? "")) {
+    input = { ...input, cls: { ...input.cls, request: { type: "answer_q", whole: true, src: "r4" } } };
+  }
   const now = input.now ?? Date.now();
   if (input.event !== "start") s.turn += 1; // every call bumps the turn: the route's optimistic state check keys on it
   s.minutes = Math.round((now - s.startedAt) / 6000) / 10;
@@ -1388,7 +1395,7 @@ export function step(prev, input) {
   const move = { kind: p.kind, shape };
   // round 4 (conversation): the request's must-do (and a second need's) as a last-section note (compile.js lastParts)
   if (!input.branch && p5Flag("R4CONV") && input.event === "turn" && !["safeguard", "wrap"].includes(p.kind)) {
-    const key = p.request === "uptake" ? input.cls?.request?.kind ?? null : p.request;
+    const key = p.request === "uptake" ? input.cls?.request?.kind ?? null : p.request === "visual" ? `visual_${p.visual ?? "diagram"}` : p.request;
     const must = [SH.MUST_NOTE[key], ...(also ?? []).filter((x) => x !== key).map((x) => SH.ALSO_NOTE[x])].filter(Boolean);
     if (must.length) move.must = must.join("; ").slice(0, 300);
   }
