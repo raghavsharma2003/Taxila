@@ -1,0 +1,70 @@
+<!doctype html>
+<!--
+  Antariksh Nishana: a research prototype, NOT product code (docs/research/round4/games/FEASIBILITY.md §5).
+  Serve the repo root (e.g. `npx vite --port 5173` or any static server at /home/user/Taxila) and open
+  /docs/research/round4/games/proto/index.html?skill=s2&mis=count-marks&fade=2&lang=hinglish&theme=neela-nebula&music=calm
+  Query: skill s1|s2|s3 · mis count-marks|whole-number-bias|all-less-than-one · fade 1|2|3 · lang hinglish|en|hi ·
+  theme neela-nebula|laal-grah|hara-toofan · wrapper mine-sweep|beacon-rescue|comet-catch · music calm|drive|off ·
+  pace steady|brisk · bot 1|mis · dpr <n> (locks DPR, no governor) · debug · reduced
+  three.js is loaded from ONE pinned CDN URL (the same 0.180.0 the repo already uses in src/avatar/three); no package.json change.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Antariksh Nishana</title>
+<style>
+  @font-face { font-family: "Mukta"; font-weight: 600; font-display: swap; src: url("/fonts/mukta-600-devanagari.woff2") format("woff2"), url("/public/fonts/mukta-600-devanagari.woff2") format("woff2"); unicode-range: U+0900-097F, U+200C-200D, U+25CC, U+A8E0-A8FF; }
+  @font-face { font-family: "Mukta"; font-weight: 600; font-display: swap; src: url("/fonts/mukta-600-latin.woff2") format("woff2"), url("/public/fonts/mukta-600-latin.woff2") format("woff2"); unicode-range: U+0000-00FF, U+2013-2014, U+2018-201D, U+2026, U+2192, U+2713; }
+  :root { --ground: #05060d; --ink: #eef1ff; --ink2: #b7bfe0; --ion: #8b98ff; --good: #7ff0b8; --panel: rgba(14, 18, 40, 0.86); }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; background: var(--ground); color: var(--ink); font-family: "Mukta", "Noto Sans Devanagari", "Lohit Devanagari", system-ui, sans-serif; font-weight: 600; -webkit-tap-highlight-color: transparent; overscroll-behavior: none; }
+  #app { height: 100dvh; display: grid; grid-template-rows: 64px 1fr 64px 84px; max-width: 980px; margin: 0 auto; }
+  /* teacher strip: her face (placeholder for the lamp1 micro-face) + a 2-line caption; play mode keeps her on screen */
+  #strip { display: flex; align-items: center; gap: 10px; padding: 8px 16px; background: linear-gradient(#0b0e22, #070915); border-bottom: 1px solid #1c2350; }
+  #face { flex: none; width: 48px; height: 48px; border-radius: 50%; background: radial-gradient(circle at 40% 35%, #f3c9a8, #b9785a 70%); display: grid; place-items: center; color: #3a1d14; font-size: 18px; box-shadow: 0 0 0 2px #2a2f63; transition: box-shadow 160ms; }
+  #face.talk { box-shadow: 0 0 0 3px var(--ion); }
+  #caption { margin: 0; font-size: 17px; line-height: 1.35; color: var(--ink); opacity: 0.25; transition: opacity 160ms; max-height: 2.8em; overflow: visible; }
+  #caption:lang(hi) { font-size: 18px; line-height: 1.5; }
+  #caption.on { opacity: 1; }
+  #world { position: relative; overflow: hidden; touch-action: none; cursor: ew-resize; }
+  #world canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+  #labels { position: absolute; inset: 0; pointer-events: none; }
+  #labels > div { position: absolute; left: 0; top: 0; will-change: transform; white-space: nowrap; }
+  .tick { font-size: 20px; color: #dfe9ff; font-variant-numeric: tabular-nums; text-shadow: 0 0 6px #000, 0 0 2px #000; }
+  .frac { display: inline-flex; flex-direction: column; align-items: center; line-height: 1.05; font-variant-numeric: tabular-nums; vertical-align: middle; }
+  .frac > span + span { border-top: 2px solid currentColor; padding-top: 1px; min-width: 1.1em; text-align: center; }
+  .truth { font-size: 20px; color: #fff; background: rgba(5, 6, 13, 0.6); padding: 2px 8px; border-radius: 10px; opacity: 0; transition: opacity 150ms; }
+  .truth.on, .gaplabel.on { opacity: 1; }
+  .gaplabel { font-size: 17px; color: var(--ink2); opacity: 0; transition: opacity 150ms; text-shadow: 0 0 6px #000; }
+  .gatelabel { font-size: 18px; padding: 2px 10px; border-radius: 10px; background: rgba(5, 6, 13, 0.6); }
+  .gatelabel.g { color: #7fe3ff; } .gatelabel.t { color: #ffad7a; }
+  #hint { position: absolute; left: 16px; bottom: 10px; font-size: 15px; color: var(--ink2); opacity: 0.8; pointer-events: none; }
+  #rail { display: flex; align-items: center; justify-content: center; gap: 12px; padding: 0 16px; background: #070915; border-top: 1px solid #1c2350; }
+  .chip { min-width: 64px; height: 52px; padding: 0 12px; border-radius: 14px; border: 2px solid #283066; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 20px; color: var(--ink2); }
+  .chip.now { border-color: var(--ion); color: var(--ink); background: rgba(139, 152, 255, 0.12); }
+  .chip.done { color: var(--good); border-color: #1f5b45; }
+  .tickmark { font-size: 18px; }
+  .rail-doors { display: flex; gap: 24px; font-size: 18px; } .door.g { color: #7fe3ff; } .door.t { color: #ffad7a; }
+  #dock { display: flex; align-items: center; justify-content: center; padding: 10px 16px 14px; background: #070915; }
+  #fire { width: 100%; max-width: 420px; height: 60px; border: 0; border-radius: 18px; background: var(--ion); color: #0a0c1e; font: inherit; font-size: 22px; letter-spacing: 0; cursor: pointer; box-shadow: 0 6px 0 #4b56b8; transition: transform 60ms, box-shadow 60ms; }
+  #fire:lang(hi) { letter-spacing: 0; }
+  #fire:active { transform: translateY(4px); box-shadow: 0 2px 0 #4b56b8; }
+  #twin { position: absolute; inset: 12px; background: var(--panel); border-radius: 16px; padding: 16px; font-size: 18px; }
+  .twinq { font-size: 24px; }
+  #debug { position: absolute; right: 6px; top: 6px; margin: 0; max-width: 60%; font: 11px/1.25 ui-monospace, monospace; color: #9fb0ff; background: rgba(0, 0, 0, 0.55); white-space: pre-wrap; pointer-events: none; }
+  #debug:empty { display: none; }
+  @media (min-width: 900px) { #app { grid-template-rows: 72px 1fr 64px 84px; } }
+</style>
+<script type="importmap">{ "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.min.js" } }</script>
+</head>
+<body>
+<div id="app">
+  <header id="strip"><div id="face" aria-hidden="true">A</div><p id="caption" aria-live="polite"></p></header>
+  <main id="world" aria-label="game world"><div id="labels"></div><div id="hint"></div><div id="twin" hidden></div><pre id="debug"></pre></main>
+  <div id="rail" aria-label="targets"></div>
+  <footer id="dock"><button id="fire" type="button">Daago</button></footer>
+</div>
+<script type="module" src="./game.js"></script>
+</body>
+</html>

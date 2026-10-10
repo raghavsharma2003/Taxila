@@ -31,10 +31,27 @@ blind-outfit.mjs, lineup-outfit.mjs, tally-outfit.py = judges; slots.py, build_o
   (Asha), Arjun and every teacher-choice step removed (shared/tutors.js, onboarding/picker, copy, parent corner, tests).
   Still patches + APPLY.md only; round 3 is deploying.
 
-## Stage B: in progress
-- Rig front = o6 with one more age step (age reads 25-35 on every outfit), flat bg, mouth closed neutral, eyes open.
-- Edits of the rig front: speak aa, listen tilt, think (eyes up-aside, brows LEVEL), warm, blink, + mid lid; register (DIS).
-- Skin: half-way grade to Monk 6, measured inside the jharokha grade.
-- Identity check (blind n = 5) across frames.
+## Stage B: DONE (2026-10-10 ~07:20Z)
+- Rig front: `images/rig-b.webp` (o6 + one more age step; blind ages 25-36, n = 5). Pick: `evidence/rig-pick.txt`.
+- Expression edits of rig-b: x-speak (aa), x-listen (tilt), x-think (eyes up-aside, brows level), x-warm, x-blink, + x-mid
+  lid and x-yawL / x-yawR (~30 deg keys for the turn field). Registered (ORB + RANSAC): `evidence/register-B.json`.
+- Skin: graded half-way to MST 6 (kC 0.7262, dL -3.35): mean L* 61.8 -> 58.4, C* 65.3 -> 46.4 (target 55.1 / 27.9);
+  4 patches, `evidence/skin-B.json` (also measured in the old jharokha grade; that frame is gone now).
+- Blind identity check, n = 5 (3 gpt-5.6-sol + 2 Kimi K2.6) on a 3 x 2 grid: same person 5/5, identity 5,5,4,5,5,
+  nothing childish / uncanny / disapproving: `evidence/idcheck-B-{brain,kimi}.json`.
+- Ledger after Stage B: 18 images, USD 3.56.
 
-## Stage C / D: not started
+## Stage C: in progress (live 2D puppet, r8 arm-P method)
+- Rig space = crop (162,0)-(862,700) of the 1024 front x 1.4629 (`rigspace.py`, frames in scratch `rs/`).
+- Cutter `layers.py` -> lid keys `lidkeys.py` -> turn keyform field `keyfield.py` -> `pack.py` (per-face constants block
+  `geom.face`, read by the runtime's `face.js`). Runtime = r8's, derived by `make-runtime.py` with asserted replacements
+  (every c-front constant reads F; defaults = c-front, so an r8 pack renders unchanged). Bundle: `demo/entry.js`
+  (production PuppetDriver + lamp1 rig) via rolldown into scratch `demo-build/puppet.js`.
+- Pack: `art/character/puppet2d/lamp1/` (geom.json + webp layers). 156.5 KB on the wire (gate <= 250 KB).
+- Rest gate (`restssim.py`, harness `harness.mjs`, SwiftShader): head SSIM 0.9734 at 1024, 0.9741 at 720 (gate >= 0.97)
+  after: iris circles refit (old centres were 6 px low), catchlights re-centred, painted lid shadow kept (procedural
+  shade only once the lid moves), the face overscan no longer painted over the ears / bun, and every pixel within 4 px
+  of the flat cream unmixed against it (outlines and pale rims kept). Was 0.9454 before this pass.
+- Next: views for today's slots, demo.html, clips, fps, blind judges.
+
+## Stage D: not started

@@ -39,7 +39,12 @@ FACE = {
 }
 g["face"] = FACE
 g["clear"] = [246 / 255, 209 / 255, 152 / 255]   # her own cream: the layers keep the art's pale outline gaps, cut against it
-g["views"] = {"close": [171, 30, 708], "medium": [60, 0, 904]}
+# 4-element views [x0, y0, w, h]: the region that must show, fitted contain-and-centred into any window (runtime render)
+#   close  = the whole head, hair top (y 42) to the bun's foot (771): the 80 px SpeechRow circle
+#   medium = head + neck + shoulders, y 25-900: every window (desk 325x316 .. 440x440, Home 319x172 wide,
+#            Meet 220x222, Summary 78x100); below y ~930 the cardigan reaches the rest-space edges, so a wide window's
+#            extra width never shows a cut sleeve
+g["views"] = {"close": [160, 40, 730, 730], "medium": [110, 25, 830, 875]}
 g["src"] = "docs/design/round4/asha/images/rig-b.webp, rig space = crop (162, 0)-(862, 700) x 1.4629 (rigspace.py), skin graded half-way to MST 6 (skin.py)"
 json.dump(g, open(f"{L}/geom-final.json", "w"), indent=1)
 import subprocess
