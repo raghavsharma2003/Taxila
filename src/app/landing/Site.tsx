@@ -1,12 +1,14 @@
 // The marketing site's shared chrome (PRODUCT-DESIGN-V2 §6.1): header, footer, the hand-drawn brand mark, the
 // helplines as tel: buttons, the inline ₹ glyph (§5.4: no shipped Latin subset covers U+20B9), the teacher portraits
 // and the art hook. Used by the landing and by every public page (Public.tsx), so the site reads as one product.
-// English chrome only (§5.3). No teacher name or pronoun is written here: the child names the teacher (decision
-// child-names-teacher), so the site says "the teacher" and shows the looks unnamed.
+// English chrome only (§5.3). No teacher name or pronoun is written here (whether the site names her is the owner's
+// open call, BUILD-PLAN §5 decision 4), so the site says "the teacher" and shows her unnamed.
 import { useEffect, useState, type ReactNode } from "react";
 import { Link, NavLink } from "react-router-dom";
 import { TUTORS, type TutorCharacter } from "../../../shared/tutors.js";
 import { Plate2D } from "../../avatar/Plate2D.tsx";
+import { puppetPoster } from "../../face-puppet/assets.ts";
+import { usePuppetLook } from "../../face-puppet/useLook.ts";
 import { Icon, useArt } from "../../ui/index.ts";
 import type { SitePromise } from "../promises.ts";
 import "../../styles/landing.css";
@@ -127,14 +129,22 @@ export function SitePage({ children, title }: { children: ReactNode; title: stri
  *  stable teacher). */
 export const SITE_TUTORS: TutorCharacter[] = TUTORS.filter((t) => t.status === "live");
 
-/** A teacher's face as the picker draws its portrait: the code-drawn plate from the look (Plate2D `still`, the
- *  same person as the lesson's tier D face). No bytes to fetch, so it never competes with the hero for the LCP.
- *  The plate's own accessible name carries the catalogue name, so the portrait is hidden from assistive tech and
- *  the caller labels the group. */
+/** A teacher's face as the lesson draws it at rest: under the r8 look the code-drawn plate (Plate2D `still`, the same
+ *  person as the lesson's tier D face, no bytes to fetch); under lamp1, the grown-up Asha, her rest still from the
+ *  pack, never the vector (BUILD-PLAN §3.5 Part B: no fallback changes the face). Nothing paints until the page's look is
+ *  known (./face-puppet/look.ts), so the site never shows one face and then another. Hidden from assistive tech: the
+ *  caller labels the group. */
 export function TeacherPortrait({ tutor, size }: { tutor: TutorCharacter; size: number }) {
+  const look = usePuppetLook();
+  const still = look === "lamp1" && tutor.id === "asha";
   return (
-    <span className="rig-portrait" style={{ width: size, height: size }} data-tutor={tutor.id} aria-hidden="true">
-      <Plate2D tutor={tutor} still reducedMotion className="site-plate" />
+    <span className="rig-portrait" style={{ width: size, height: size }} data-tutor={tutor.id} data-look={look ?? "pending"} aria-hidden="true">
+      {still ? (
+        <img className="site-still" src={puppetPoster("close", "lamp1")} alt="" width={size} height={size} decoding="async" draggable={false}
+          style={{ width: "100%", height: "auto", display: "block" }} />
+      ) : look ? (
+        <Plate2D tutor={tutor} still reducedMotion className="site-plate" />
+      ) : null}
     </span>
   );
 }

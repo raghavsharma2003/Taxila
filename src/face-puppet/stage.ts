@@ -18,7 +18,7 @@ import { PuppetDriver } from "./driver.ts";
 import { loadRigChunked } from "./loader.ts";
 import { clearPageSafety, pageInSafety } from "./latch.ts";
 import { puppetBus } from "./bus.ts";
-import { PUPPET_BASE, PUPPET_CLEAR, PUPPET_VIEW } from "./assets.ts";
+import { lookPack, type PuppetLook } from "./assets.ts";
 import { TeacherTap, type TapSource } from "../avatar/tap.ts";
 import { faceCues, faceAffectOf, gazeAngles, gazeElement, type FaceCue } from "../avatar/faceCues.ts";
 import type { FloorStatus } from "../avatar/behaviour.ts";
@@ -43,7 +43,9 @@ export interface PuppetStageOptions {
   reducedMotion?: boolean;
   gentle?: boolean;
   seed?: number;
-  /** Base URL of the pack (default the shipped rev). */
+  /** The puppet look (./assets.ts): its pack, clear colour and views. Default the shipped default look. */
+  look?: PuppetLook;
+  /** Base URL of the pack (default the look's own). */
   base?: string;
   /** Budget for the frame's JS work at p95 (ms). 8 ms leaves half a 60 fps frame for the GPU and the page. */
   budgetMs?: number;
@@ -143,9 +145,10 @@ export class PuppetStage {
     const t0 = performance.now();
     if (typeof WebGL2RenderingContext === "undefined") throw new Error("no WebGL2");
     this.host.appendChild(this.canvas);
-    const view = [...PUPPET_VIEW[this.o.framing ?? "medium"]] as [number, number, number];
-    const ropts = { ext: "webp", dpr: this.dpr, view, clear: PUPPET_CLEAR, reducedMotion: this.o.reducedMotion };
-    const base = this.o.base ?? PUPPET_BASE;
+    const pack = lookPack(this.o.look);
+    const view = [...pack.view[this.o.framing ?? "medium"]] as [number, number, number];
+    const ropts = { ext: "webp", dpr: this.dpr, view, clear: [...pack.clear] as [number, number, number], reducedMotion: this.o.reducedMotion };
+    const base = this.o.base ?? pack.base;
     // ship5 p2-face: the chunked loader (loader.ts) by default: bitmaps decoded off-thread, warm-up in <= 8 ms slices.
     // The judged single-task path (load + warm) stays available for the parity eval and as the loader's own fallback.
     const abort = { aborted: false };
@@ -206,7 +209,7 @@ export class PuppetStage {
     this.host = host;
     this.o = { ...this.o, framing, onEvent: onEvent ?? this.o.onEvent };
     host.appendChild(this.canvas);
-    if (this.rig) this.rig.view = [...PUPPET_VIEW[framing]];
+    if (this.rig) this.rig.view = [...lookPack(this.o.look).view[framing]];
   }
 
   get isRevealed(): boolean {
@@ -366,8 +369,9 @@ export class PuppetStage {
     if (this.disposed || this.losses > 1) return;
     // every GL object died with the context: rebuild the rig (the pack is in the HTTP cache)
     this.rig = null;
-    const view = [...PUPPET_VIEW[this.o.framing ?? "medium"]] as [number, number, number];
-    Puppet2DRig.load(this.canvas, this.o.base ?? PUPPET_BASE, { ext: "webp", dpr: this.dpr, view, clear: PUPPET_CLEAR, reducedMotion: this.o.reducedMotion })
+    const pack = lookPack(this.o.look);
+    const view = [...pack.view[this.o.framing ?? "medium"]] as [number, number, number];
+    Puppet2DRig.load(this.canvas, this.o.base ?? pack.base, { ext: "webp", dpr: this.dpr, view, clear: [...pack.clear] as [number, number, number], reducedMotion: this.o.reducedMotion })
       .then((rig) => { if (this.disposed) return rig.dispose(); rig.warm(); this.rig = rig; this.t0 = performance.now(); this.frames = 0; this.start(); })
       .catch((err: unknown) => this.emit({ type: "fallback", reason: `rebuild after context loss failed: ${String(err).slice(0, 120)}` }));
   };

@@ -1,0 +1,84 @@
+// Which puppet LOOK this page shows (round 4 stream 5, the look switch; ./assets.ts has the packs). First hit wins:
+//   1. `?look=r8|lamp1|default` in any URL, persisted to this device (the same pattern as ?puppet=): the owner's own
+//      phone, the acceptance runs and the shot battery;
+//   2. the server's TAXILA_FACE_LOOK, from GET /api/face/config (server/face-puppet/config.js), remembered on this device
+//      so the next page paints the right face at once;
+//   3. DEFAULT_LOOK (r8).
+// A page never swaps a look it has already painted: faceLookNow() is what the first frame uses; when it is null (first
+// visit, no device choice) the face host shows only the backdrop until the server answers (≤ 1.5 s, fail-open → r8).
+import { DEFAULT_LOOK, isPuppetLook, type PuppetLook } from "./assets.ts";
+import { faceServerConfig, faceServerKnown } from "./flag.ts";
+
+export const LOOK_DEVICE_KEY = "tx.face.look";
+export const LOOK_SERVER_KEY = "tx.face.look.server";
+
+let urlApplied = false;
+function applyUrl(): void {
+  if (urlApplied) return;
+  urlApplied = true;
+  try {
+    if (typeof location === "undefined") return;
+    const v = new URLSearchParams(location.search).get("look");
+    if (v === "default") setDeviceLook(null);
+    else if (isPuppetLook(v)) setDeviceLook(v);
+  } catch {
+    /* no URL / storage */
+  }
+}
+
+const read = (k: string): PuppetLook | null => {
+  try {
+    const v = typeof localStorage !== "undefined" ? localStorage.getItem(k) : null;
+    return isPuppetLook(v) ? v : null;
+  } catch {
+    return null;
+  }
+};
+
+/** The device's own choice (?look=), or null. */
+export function deviceLook(): PuppetLook | null {
+  applyUrl();
+  return read(LOOK_DEVICE_KEY);
+}
+
+export function setDeviceLook(look: PuppetLook | null): void {
+  try {
+    if (look === null) localStorage.removeItem(LOOK_DEVICE_KEY);
+    else localStorage.setItem(LOOK_DEVICE_KEY, look);
+  } catch {
+    /* storage blocked */
+  }
+}
+
+/**
+ * The look to paint NOW, synchronously: the device's choice, else the server's answer on this page, else the server's
+ * answer remembered from an earlier page; null when none is known yet (wait for faceLook()).
+ */
+export function faceLookNow(): PuppetLook | null {
+  const d = deviceLook();
+  if (d) return d;
+  const s = faceServerKnown()?.look;
+  if (isPuppetLook(s)) return s;
+  return read(LOOK_SERVER_KEY);
+}
+
+/** The look, once the server has answered (or failed open). Remembers the server's answer for the next page. */
+export async function faceLook(fetchImpl?: typeof fetch): Promise<PuppetLook> {
+  const d = deviceLook();
+  if (d) return d;
+  const c = await faceServerConfig(fetchImpl);
+  if (isPuppetLook(c.look)) {
+    try {
+      localStorage.setItem(LOOK_SERVER_KEY, c.look);
+    } catch {
+      /* storage blocked */
+    }
+    return c.look;
+  }
+  return read(LOOK_SERVER_KEY) ?? DEFAULT_LOOK;
+}
+
+/** Tests only. */
+export function resetLookForTests(): void {
+  urlApplied = false;
+}

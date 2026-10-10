@@ -1,13 +1,46 @@
-// Where the shipped puppet lives. PUPPET_REV is the polish round whose runtime and pack are synced
-// (evals/face-puppet/sync-runtime.mjs). r8 = JUDGE-r8 4.1/5 (JUDGE-r7 4.0): the owner's ship bar is 4.0.
-// The pack is ~132 KB of WebP + geometry, served from /face-puppet/<rev>/ (public/), fetched lazily after mount.
-export const PUPPET_REV = "r8";
-export const PUPPET_BASE = `/face-puppet/${PUPPET_REV}/`;
-/** The rest-pose still per framing (the same face at t = 0, the `still` slot and the post-reveal fallback). Rendered by
- *  `node evals/face-puppet/run.mjs poster` from the live rig at rest, over the view's full width and down to the bottom of the art,
- *  so `width: 100%; height: auto` from the top lines up with the canvas pixel for pixel. */
-export const puppetPoster = (framing: "medium" | "close" = "medium") => `${PUPPET_BASE}rest-${framing}.webp`;
-/** c-front's backdrop cream: the painted layers were cut against it, so the canvas clears to it (no halo). */
-export const PUPPET_CLEAR: [number, number, number] = [251.4 / 255, 229.4 / 255, 188.6 / 255];
-/** The rest-space window shown per framing: [x0, y0, width] in c-front pixels (1024² space). */
-export const PUPPET_VIEW = { medium: [60, 8, 904], close: [140, 70, 744] } as const satisfies Record<string, readonly [number, number, number]>;
+// Where the shipped puppets live, per LOOK (round 4 stream 5, the look switch). A look is one judged puppet pack:
+//   r8    — the style-C chibi Asha (JUDGE-r8 4.1/5; the owner's ship bar is 4.0); the default until the owner says go;
+//   lamp1 — the grown-up Asha, face option 4 "Lamplight flat", cardigan + block-print kurta (dc-r4-face-lamplight-flat,
+//           dc-r4-outfit-cardigan-print-kurta), copied from art/character/puppet2d/lamp1/ by stream 5.
+// Each pack is WebP layers + geometry, served from /face-puppet/<look>/ (public/), fetched lazily after mount. Which look
+// a page shows is decided in ./look.ts (?look= on the device, else the server's TAXILA_FACE_LOOK).
+export type PuppetLook = "r8" | "lamp1";
+export const PUPPET_LOOKS: readonly PuppetLook[] = ["r8", "lamp1"];
+/** The deploy default while the server has not said otherwise. Making lamp1 the default needs the owner's yes. */
+export const DEFAULT_LOOK: PuppetLook = "r8";
+export const isPuppetLook = (v: unknown): v is PuppetLook => typeof v === "string" && (PUPPET_LOOKS as readonly string[]).includes(v);
+
+type View = readonly [number, number, number];
+export interface LookPack {
+  look: PuppetLook;
+  /** /face-puppet/<look>/ */
+  base: string;
+  /** The backdrop the painted layers were cut against: the canvas clears to it (no halo). 0-1 RGB. */
+  clear: readonly [number, number, number];
+  /** The rest-space window shown per framing: [x0, y0, width] in the pack's 1024² space (its geom.json `views`). */
+  view: { readonly medium: View; readonly close: View };
+}
+
+const PACKS: Record<PuppetLook, LookPack> = {
+  // c-front's backdrop cream; views tuned over the r8 polish rounds
+  r8: { look: "r8", base: "/face-puppet/r8/", clear: [251.4 / 255, 229.4 / 255, 188.6 / 255], view: { medium: [60, 8, 904], close: [140, 70, 744] } },
+  // the lamplit flat backdrop and views of the lamp1 pack's own geom.json (`clear`, `views`); tests/r4-asha-look.test.mjs
+  // checks these against public/face-puppet/lamp1/geom.json whenever the pack is there
+  lamp1: { look: "lamp1", base: "/face-puppet/lamp1/", clear: [0.96, 0.82, 0.6], view: { medium: [60, 0, 904], close: [171, 30, 708] } },
+};
+
+export const lookPack = (look: PuppetLook = DEFAULT_LOOK): LookPack => PACKS[look] ?? PACKS[DEFAULT_LOOK];
+/** The pack's backdrop as a CSS colour (the host paints it before any pixel of the face arrives). */
+export const lookBackground = (look: PuppetLook = DEFAULT_LOOK): string => `rgb(${lookPack(look).clear.map((c) => Math.round(c * 255)).join(",")})`;
+
+/** The rest-pose still per framing (the same face at t = 0, the `still` slot and every fallback of a look). Rendered by
+ *  `node evals/face-puppet/run.mjs poster` from the live rig at rest, over the view's full width and down to the bottom of
+ *  the art, so `width: 100%; height: auto` from the top lines up with the canvas pixel for pixel. */
+export const puppetPoster = (framing: "medium" | "close" = "medium", look: PuppetLook = DEFAULT_LOOK) => `${lookPack(look).base}rest-${framing}.webp`;
+
+// The r8 names every caller used before the switch (tests/p2-face-server.test.mjs checks PUPPET_REV against the server's).
+/** The default pack revision (mirrors server/face-puppet/rev.js PUPPET_REV). */
+export const PUPPET_REV = DEFAULT_LOOK;
+export const PUPPET_BASE = PACKS.r8.base;
+export const PUPPET_CLEAR: [number, number, number] = [...PACKS.r8.clear];
+export const PUPPET_VIEW = { medium: PACKS.r8.view.medium, close: PACKS.r8.view.close } as const satisfies Record<string, View>;
