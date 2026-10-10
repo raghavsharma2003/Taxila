@@ -1,5 +1,5 @@
 diff --git a/server/brain/turn.js b/server/brain/turn.js
-index cbe82ed1..67b646dc 100644
+index cbe82ed1..79d791b1 100644
 --- a/server/brain/turn.js
 +++ b/server/brain/turn.js
 @@ -453,6 +453,10 @@ export async function lessonTurn(req, body) {
@@ -13,7 +13,17 @@ index cbe82ed1..67b646dc 100644
    // ... and a model distress read on the committed turn (classify's model flag or distressCheck, which now runs on every
    // committed child turn with words) reaches the duplex floor as a model note, so a reply speculated on the partials is
    // cancelled there as well (PartialSafety.modelNote was never called before this).
-@@ -1333,3 +1337,15 @@ export function earlierExchanges(recent = [], n = 2) {
+@@ -1158,8 +1162,7 @@ export async function planTurn(base, cls, c) {
+     // A belief voiced outside a keyed item counts on the misconception ledger, never as graded evidence.
+     if (cls?.voiced) writes.push(misconceptionFlagStmt(child.id, cls.voiced, child));
+   }
+-  const incident = cls?.flags.distress
+-    ? { source: cls.source === "predicate" ? "predicate" : cls.source === "content_filter" ? "content_filter" : "classifier", family: cls.flags.distressKind } : null;
++  const incident = incidentOf(cls);
+   if (incident) writes.push(incidentStmt(child.id, lesson.id, childSeq, incident));
+   return { evidence, events, writes, skillChanges, incident, r, instructions, skipped, learner: { before: live, after } };
+ }
+@@ -1333,3 +1336,22 @@ export function earlierExchanges(recent = [], n = 2) {
  
  /** The duplex floor's sticky partial-safety state on the request (never trusted to subtract). */
  const pendingSafetyOf = (body) => !!body?.duplex?.safetyPending;
@@ -26,8 +36,40 @@ index cbe82ed1..67b646dc 100644
 + */
 +export function withReplyFiltered(cls, body, fast = null) {
 +  if (!(Number(body?.replyFiltered) >= 2) || cls?.flags?.distress) return cls;
-+  return { ...(cls ?? { outcome: "no_evidence", confidence: 1, source: "content_filter" }),
++  // the source is the content filter's, as on the blocked text reply's path: the incident and the trace say so (incidentOf)
++  return { ...(cls ?? { outcome: "no_evidence", confidence: 1 }), source: "content_filter",
 +    flags: { ...(cls?.flags ?? fast?.flags ?? {}), distress: true, distressKind: cls?.flags?.distressKind ?? "content_filter" } };
++}
++
++/** PURE. The safeguarding incident a classified turn opens (its source and family), or null. Exported for tests. */
++export function incidentOf(cls) {
++  return cls?.flags?.distress
++    ? { source: cls.source === "predicate" ? "predicate" : cls.source === "content_filter" ? "content_filter" : "classifier", family: cls.flags.distressKind } : null;
++}
+diff --git a/server/routes/lesson.js b/server/routes/lesson.js
+index 77aa7001..5f7719f2 100644
+--- a/server/routes/lesson.js
++++ b/server/routes/lesson.js
+@@ -149,7 +149,9 @@ async function start(req, res, body) {
+     voicesigSeam.startRows({ q, hasConsent, guardianId: guardian.id, childId: child.id }),
+   ]);
+   if (!core) throw forbidden("core_tutoring consent is required before a lesson");
+-  const mode = body.mode === "text" || body.mode === "cascade" ? body.mode : "voice";
++  // round 4 (4A patch request 10b, main safety review): a start with no mode (or an unknown one) lands on the CASCADE lane,
++  // the lane with the strongest floor (the server writes every reply); the realtime lane needs an explicit mode: "voice"
++  const mode = startModeOf(body.mode);
+   const purpose = START_PURPOSES.has(body.purpose) ? body.purpose : "lesson";
+   // Seam (W2-A, server/lesson/purpose.js): an Ask start with no topic is routed by the child's first words; null (and any
+   // unknown topic id) leaves the topic resolved exactly as before.
+@@ -606,3 +608,9 @@ export const routes = {
+ 
+ /** Internals for tests (the turn's planning and speculation, which need no database or model). */
+ export const __test = { safeguardLine, planTurn, replyKey, speculate, specFanout, textReply, noteDid, withAsk, uiVerdictOf, fallbackReply, scrubbed };
++
++/** Round 4 (4A patch request 10b): the lane a start runs on. Only an explicit "text" or "voice" is honoured; no mode, or an
++ *  unknown one, is the cascade lane (the strongest floor: the server writes every reply). PURE; exported for tests. */
++export function startModeOf(mode) {
++  return mode === "text" || mode === "voice" ? mode : "cascade";
 +}
 diff --git a/server/voice/realtimeSession.js b/server/voice/realtimeSession.js
 index 53dea108..b25557c4 100644
@@ -147,7 +189,7 @@ index 3a7d1499..17444b8c 100644
    }
  
 diff --git a/src/lesson/runtime.ts b/src/lesson/runtime.ts
-index cb75fa1c..5ec2784e 100644
+index cb75fa1c..e79d92c6 100644
 --- a/src/lesson/runtime.ts
 +++ b/src/lesson/runtime.ts
 @@ -198,6 +198,8 @@ interface ChildInput {
@@ -193,7 +235,7 @@ index cb75fa1c..5ec2784e 100644
        if (input.asrConfidence !== undefined) req.asrConfidence = input.asrConfidence;
        const teacher = this.teacherTurns.take(input.startedAt);
        if (teacher && this.state.mode === "voice") {
-@@ -847,6 +856,29 @@ export class LessonRuntime {
+@@ -847,6 +856,39 @@ export class LessonRuntime {
      for (const cue of this.face.program(faceUiOf(ui), this.faceTurn)) faceCues.emit(cue);
    }
  
@@ -214,7 +256,17 @@ index cb75fa1c..5ec2784e 100644
 +    const handOff = this.safeguardPending;
 +    if (this.link?.mode === "voice" && laneSwitchEnabled() && this.api.switchLane) {
 +      if (!handOff) this.replyFilteredPending = 2;
-+      void this.switchToCascade("content_filter");
++      const gen = this.generation;
++      void this.switchToCascade("content_filter").then(() => {
++        if (gen !== this.generation || this.state.phase !== "live") return;
++        // main safety review: a switch the server REFUSED (a network blip) leaves the lesson on the realtime link, and the
++        // pending hint rides only a resume turn: it would never reach the server. Still on the voice link with no switch in
++        // flight → send it now on this lane (step 3). A switch already in flight keeps riding that switch's resume turn.
++        if (this.link?.mode === "voice" && !this.laneSwitching && this.replyFilteredPending) {
++          this.replyFilteredPending = 0;
++          this.queueTurn({ childText: "", replyFiltered: 2 });
++        }
++      });
 +      return;
 +    }
 +    if (!handOff) this.queueTurn({ childText: "", replyFiltered: 2 });

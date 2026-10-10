@@ -7,7 +7,8 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { RealtimeProtocol, RATE_LIMITED } from "../../../../../../src/lesson/realtime.ts";
 import { LessonRuntime } from "../../../../../../src/lesson/runtime.ts";
-import { withReplyFiltered } from "../../../../../../server/brain/turn.js";
+import { withReplyFiltered, incidentOf } from "../../../../../../server/brain/turn.js";
+import { startModeOf } from "../../../../../../server/routes/lesson.js";
 import { initLessonState, step } from "../../../../../../server/director/state.js";
 import { kit, CTX, cls } from "../../../../../../tests/fixtures/kit.mjs";
 
@@ -62,13 +63,14 @@ class FakeLink {
   interrupt() {} setPushToTalk() {} talkStart() {} talkEnd() {} setPace() {} setDelivery() {}
   close() { this.closed = true; }
 }
-function fakeApi() {
+function fakeApi({ refuse = false, safeguardFirst = false } = {}) {
   const calls = { start: [], turn: [], lane: [] };
   return { calls,
     start: async (req) => { calls.start.push(req); return { lessonId: "L1", topic: { id: "t", title: "Fractions", chapter: "6" }, ...(req.mode === "cascade" ? { teacherOpening: "Namaste!", teacherOpeningSeq: 1 } : { instructions: "INSTR-0" }), teacher: { id: "asha", name: "Asha", voice: "marin" }, moduleCommands: [], ui: {} }; },
-    turn: async (req) => { calls.turn.push(req); return { move: { kind: req.replyFiltered ? "safeguard" : "probe", shape: "x" }, moduleCommands: [], ui: {}, teacherReply: "line", teacherReplySeq: 10 }; },
+    turn: async (req) => { calls.turn.push(req); const sg = req.replyFiltered || (safeguardFirst && calls.turn.length === 1);
+      return { move: { kind: sg ? "safeguard" : "probe", shape: "x" }, ...(sg && safeguardFirst ? { speakNow: "interrupt" } : {}), moduleCommands: [], ui: {}, teacherReply: "line", teacherReplySeq: 10 }; },
     end: async () => ({}), realtimeToken: async () => ({}),
-    switchLane: async (lessonId, reason) => { calls.lane.push([lessonId, reason]); return { mode: "cascade", switched: true }; } };
+    switchLane: async (lessonId, reason) => { calls.lane.push([lessonId, reason]); if (refuse) throw new Error("network blip"); return { mode: "cascade", switched: true }; } };
 }
 const flush = () => new Promise((r) => setTimeout(r, 0));
 
@@ -88,8 +90,46 @@ test("a second block: the helplines are on screen now, the lesson moves to casca
   const resume = api.calls.turn.find((t) => t.laneResume);
   assert.ok(resume, "a resume turn was sent");
   assert.equal(resume.replyFiltered, 2);
+  assert.equal(api.calls.turn.filter((t) => t.replyFiltered === 2).length, 1, "exactly one turn carries it");
   assert.equal(rt.state.mode, "text", "the cascade lane speaks the server's line");
   rt.dispose();
+});
+
+const runtimeFor = (api, links) => new LessonRuntime({ api, timers: { setTimeout: () => 0, clearTimeout: () => {} }, voiceFeatures: false,
+  outboxStore: () => Promise.reject(new Error("no idb")), createLink: (m, ctx) => { const l = new FakeLink(m, ctx); links.push(l); return l; } });
+
+test("main review change 1: a REFUSED switch still reaches the server: one signal turn with replyFiltered 2 on the voice lane, no stale pending", async () => {
+  const api = fakeApi({ refuse: true }), links = [];
+  const rt = runtimeFor(api, links);
+  await rt.start("child-1", "voice");
+  links[0].emit({ type: "reply_filtered", responseId: "r1", count: 1 });
+  links[0].emit({ type: "reply_filtered", responseId: "r2", count: 2 });
+  for (let i = 0; i < 12; i++) await flush();
+  assert.ok(rt.state.lateSafeguard, "the helplines are on screen");
+  assert.deepEqual(api.calls.lane, [["L1", "content_filter"]], "the switch was asked for");
+  assert.equal(rt.state.mode, "voice", "the refused switch left the lesson on the realtime link");
+  const sig = api.calls.turn.filter((t) => t.replyFiltered === 2);
+  assert.equal(sig.length, 1, "exactly one turn carries the hint");
+  assert.equal(sig[0].laneResume, undefined, "on the current lane, not a resume turn");
+  assert.equal(sig[0].childText, "");
+  rt.dispose();
+});
+
+test("main review change 1: when the blocked reply was itself the safeguarding hand-off, no second safeguard POST (switch ok or refused)", async () => {
+  for (const refuse of [false, true]) {
+    const api = fakeApi({ refuse, safeguardFirst: true }), links = [];
+    const rt = runtimeFor(api, links);
+    await rt.start("child-1", "voice");
+    links[0].emit({ type: "child_final", text: "something worrying", startedAt: Date.now(), typed: false });
+    for (let i = 0; i < 10; i++) await flush();
+    const before = api.calls.turn.length;
+    links[0].emit({ type: "reply_filtered", responseId: "r2", count: 2 });
+    for (let i = 0; i < 12; i++) await flush();
+    assert.ok(rt.state.lateSafeguard, `helplines on screen (refuse ${refuse})`);
+    assert.equal(api.calls.turn.filter((t) => t.replyFiltered).length, 0, `no replyFiltered POST (refuse ${refuse})`);
+    assert.ok(api.calls.turn.length <= before + 1, `at most the plain resume turn (refuse ${refuse})`);
+    rt.dispose();
+  }
 });
 
 // ───────────── the server ─────────────
@@ -112,4 +152,18 @@ test("server: replyFiltered: 2 yields the safeguard move with the helplines; it 
   const already = { ...clean, flags: { ...clean.flags, distress: true, distressKind: "self_harm" } };
   assert.equal(withReplyFiltered(already, { replyFiltered: 2 }), already, "an existing distress kind is kept");
   assert.equal(withReplyFiltered(clean, { replyFiltered: 2 }).outcome, "correct", "only the flag is added");
+  // main review change 2: the incident and the trace name the content filter, never "classifier"
+  assert.equal(c.source, "content_filter");
+  assert.deepEqual(incidentOf(c), { source: "content_filter", family: "content_filter" });
+  assert.equal(incidentOf(withReplyFiltered(clean, { replyFiltered: 2 })).source, "content_filter");
+  assert.equal(incidentOf(already).source, "classifier", "an existing distress keeps its own source");
+});
+
+test("10b: a start with no mode (or an unknown one) runs on the cascade lane; only an explicit 'voice' mints realtime", () => {
+  assert.equal(startModeOf(undefined), "cascade");
+  assert.equal(startModeOf(""), "cascade");
+  assert.equal(startModeOf("realtime"), "cascade");
+  assert.equal(startModeOf("cascade"), "cascade");
+  assert.equal(startModeOf("text"), "text");
+  assert.equal(startModeOf("voice"), "voice");
 });
