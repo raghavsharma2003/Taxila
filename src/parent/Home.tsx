@@ -16,7 +16,7 @@ import { teacherRecord } from "../ui/teacher/useTeacher.ts";
 import { bandForClass } from "../app/band.ts";
 import { isRelock, parentApi, speakUrl, type Claim, type Overview, type SyllabusOut } from "./api.ts";
 import { gateHeadline } from "./claims.ts";
-import { dayWord, fmtClock, fmtDayLong, HOME, parentError } from "./copy.ts";
+import { atHomeText, dayWord, fmtClock, fmtDayLong, HOME, parentError } from "./copy.ts";
 import { EvidenceSheet } from "./EvidenceSheet.tsx";
 import { ReportEvidenceSheet } from "./Report.tsx";
 import { useGate } from "./Gate.tsx";
@@ -99,7 +99,7 @@ function TryAtHome({ d, cid, onHow }: { d: NonNullable<Overview["tryAtHome"]>; c
           {d.pictures.map((p) => <li key={p}><Art id={p} className="pa-pic" alt={p.split("/")[1].replace(/-/g, " ")} fallback={<span />} /></li>)}
         </ul>
       )}
-      <p className="pa-try-text">{d.text.replace(/^At home:\s*/, "")}</p>
+      <p className="pa-try-text">{atHomeText(d.text)}</p>
       {d.claimId && (
         <button type="button" className="pa-how pa-textbtn" onClick={() => onHow(d.claimId!)}>How do we know? <Icon name="chevron" size={18} /></button>
       )}

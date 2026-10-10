@@ -56,7 +56,7 @@ html:has(.pa[data-tabs="off"]) { scroll-padding-top: 64px; }
 .pa-tabs { position: fixed; inset: auto 0 0 0; z-index: 20; display: grid; grid-template-columns: repeat(4, 1fr); min-height: 64px;
   padding-bottom: env(safe-area-inset-bottom); background: var(--surface); border-top: 1px solid var(--tray); }
 .pa-tab { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; min-height: 64px; color: var(--ink-2);
-  text-decoration: none; font-size: 0.8125rem; font-weight: 600; }
+  text-decoration: none; font-size: 0.875rem; font-weight: 600; }  /* 14 px: the floor (journey audit #15; was 13) */
 .pa-tab.is-active { color: var(--nib); }
 .pa-tab.is-active span { text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 4px; }
 .pa-main { min-width: 0; }
