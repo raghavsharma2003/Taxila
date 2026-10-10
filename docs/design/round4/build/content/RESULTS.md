@@ -132,7 +132,7 @@ lines below in code and tests; the batteries were not re-run on them.
 |---|---|---|
 | round3-forge R1 something real on stage | 10/12 | 12/12 |
 | R2 interactive ask ends in something to DO | 1/6 (taxila.dev: 1/6) | 3/6 strict; 5/6 with a board drawn on her clause for the animation / simulation asks (brief item 4) |
-| R3 boards with a meaning failure | 0 / 16 | 0 / 17 |
+| R3 boards with a meaning failure | 0 / 16 | 0 / 16 |
 | R4 views passing the forge3 verdict | 34/36 | 35/36 (animation p360 Q1.legible) |
 | owner-5-visual | 11/14 (2 slots never an artifact) | **14/14** |
 | r4-content-boards (≥ 50) | not run | 51 boards, **0 contradictions, 0 illegible at 360**, notebook 9/9 lessons; 2 slots unfilled while she pointed (both lines now draw in tests, `722d8d55`) |
