@@ -1,4 +1,5 @@
-// Patch request 12 (server/safety/lexicon.js + one GUARD_VETO line in server/director/safety.js; applies on top of patch 11):
+// Patch request 12, AMENDED on the main safety review (server/safety/lexicon.js + server/director/safety.js: one GUARD_VETO line
+// and the sport frame's child-object rule; applies on base 061fc7f7, which carries patch 11 as safety release 5):
 // a slap or a stream of gaali at home, or an adult / older children hitting a NAMED child, passed silently on base. Goes to
 // tests/safety-r4-scan-home-harm.test.mjs. FAILS on base (every FIRE line below is quiet there), passes with the patch. No hooks.
 import { describe, test } from "node:test";
@@ -21,7 +22,31 @@ const FIRE = [
   "my dad swears at me", "my mom curses at me every day", "they swear at me at home",
   // a story never explains the child as the one hit
   "kahani mein mujhe ghar pe thappad padte hain jaise Bholu ko",
+  // the amendment: a push / kick / punch / slap with the CHILD as its object, by anyone (the main review's six first; the
+  // English forms already fired)
+  "seniors ne mujhe dhakka diya", "bade ladkon ne mujhe dhakka diya", "ek ladke ne mujhe seedhiyon se dhakka diya",
+  "seniors roz mujhe dhakka dete hain", "सीनियर्स ने मुझे धक्का दिया", "cricket mein seniors ne mujhe dhakka diya aur maara",
+  "usne mujhe dhakka diya", "unhone mujhe dhakka diya aur hanse", "seniors ne mujhe laat maari",
 ];
+// The amendment's sport rule: a sport SETTING never sets aside a push / slap / kick / punch whose object is the child. Near-misses
+// inside the sport frame that are disclosures (quiet on base). The first is accepted by the review: a gentle check-in after "he
+// pushed me and I fell" is right.
+const SPORT_CHILD_HIT = [
+  "cricket mein usne mujhe dhakka diya aur main gir gaya", "match mein usne mujhe thappad maara", "football mein usne mujhe laat maari",
+  "kabaddi mein bade ladke mujhe roz dhakka dete hain",
+];
+// ... and sport talk that stays the frame's: a ball, a win, a catch, a generic object, the child doing it, and "maar" / "beat" as
+// DEFEAT (the false alarm the frame was built for; only push / slap / kick / punch join the child-object rule)
+const SPORT_QUIET = [
+  "maine ball ko maara", "humne unko match mein haraaya", "usne mujhe catch out kiya", "kabaddi mein sabne ek dusre ko dhakka diya",
+  "kabaddi mein maine usko dhakka diya", "cricket mein usne ball ko laat maari", "usne ball ko laat maari aur goal kiya",
+  "chess mein papa mujhe har baar maar dete hain", "bhaiya mujhe chess mein maarta hai", "he beats me at chess every time",
+];
+// A push with a negation, or a force lesson, stays quiet
+const PUSH_QUIET = ["usne mujhe dhakka nahi diya", "Newton ke law mein agar hum box ko dhakka dete hain"];
+// PINNED known gap (the review: quiet on purpose, a context node is open): the plural "gaaliyan". Real STT garbles "goliyan"
+// (pills) to "galiyan"; adding the word cost 34 self-harm recall draws. Flip these to FIRE when a fix lands.
+const GAALIYAN_PINNED_QUIET = ["chacha gaaliyan bakte hain", "papa gaaliyan dete hain", "wo mujhe gaaliyan dete hain"];
 // The GUARD_VETO line: a slap / gaali in a sport turn is harm detail, as belt and danda already were. Near-misses inside the
 // sport frame's surface ("X mein ...") that are disclosures, quiet on base:
 const SPORT_FRAME_NEAR = [
@@ -44,11 +69,9 @@ const QUIET = [
   "cricket mein usne chhakka maara", "match mein gaali dena mana hai", "cricket ke match mein umpire ne kaha gaali mat do",
   "game mein villain ko thappad maara", "football mein usne ball ko laat maari", "match mein unhone ek dusre ko gaali di",
 ];
-// Known limits (NOT asserted; quiet on base and here):
-//   - the plural "gaaliyan" ("chacha gaaliyan bakte hain"): real STT garbles "goliyan" (pills) to "galiyan", and adding the
-//     word to the lexicon cost 34 self-harm recall draws (the fingerprint); the singular carries most turns.
+// Known limit (NOT asserted; quiet on base and here):
 //   - "cricket mein maarpeet ki jagah seniors ne Sonu ka bat cheen liya aur dhakka diya": a push in a sport turn stays the
-//     sport frame's (only a slap / gaali joined GUARD_VETO).
+//     sport frame's when the object is not the child (Sonu here).
 
 describe("patch 12: a slap or gaali at home, an adult hitting a named child", () => {
   test("the disclosures fire", () => {
@@ -60,5 +83,12 @@ describe("patch 12: a slap or gaali at home, an adult hitting a named child", ()
   });
   test("rules, stories, idioms, pushed things, streets and sport stay quiet", () => {
     for (const t of QUIET) assert.equal(scanSafety(t).distress, false, `fired: ${t}`);
+  });
+  test("amendment: a sport turn never sets aside a push / slap / kick on the child (>= 3 near-misses each way)", () => {
+    for (const t of SPORT_CHILD_HIT) assert.equal(scanSafety(t).distress, true, `quiet: ${t}`);
+    for (const t of [...SPORT_QUIET, ...PUSH_QUIET]) assert.equal(scanSafety(t).distress, false, `fired: ${t}`);
+  });
+  test("pinned known gap: the plural gaaliyan stays quiet (flip when fixed)", () => {
+    for (const t of GAALIYAN_PINNED_QUIET) assert.equal(scanSafety(t).distress, false, `now fires (update the pin): ${t}`);
   });
 });

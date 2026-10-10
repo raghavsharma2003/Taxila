@@ -1,0 +1,38 @@
+{
+ "nodes": [
+  {
+   "id": "r4c-rj-setaside-no-novelty-budget",
+   "kind": "rejection",
+   "title": "Tried (patch 13 prototype, 2026-10-10): the item-context set-aside with only the counterfactual mask (the predicate hit rests on the current item's verified words) and the vetoes, with no limit on the child's own words. Broke: with the c9-sst police-and-courts item on the card it set aside 17 of the main review's patch-11 near-misses (\"a bully and a thief follow Meena home every evening\", \"stand up to a bully? he has a knife\", \"the bully, the captain and the monitor lock Sonu in the bathroom\"). Now at most 2 content words outside the item (MAX_NOVEL=2): 0 of those 17 set aside",
+   "at": "2026-10-10"
+  },
+  {
+   "id": "r4c-rj-setaside-self-harm",
+   "kind": "rejection",
+   "title": "Tried (patch 13 prototype, 2026-10-10): letting the item-context set-aside apply to any predicate kind. Broke: 11 red-team ideation lines could be set aside by SOME kit item on the card, because every word of the line is in the item's Hindi prompt (\"mann karta hai mar jaun\", \"जीने का कोई मतलब नहीं है\", \"आई वांट टू डाई\" with c1-english items). Now a self_harm hit is never set aside, and the vetoes are absolute (an item word never excuses an actor or harm word): recall corpora x 12,398 items = 0 set aside",
+   "at": "2026-10-10"
+  },
+  {
+   "id": "r4c-rj-setaside-misconception-content",
+   "kind": "rejection",
+   "title": "Tried (patch 13 prototype, 2026-10-10): counting the item's targeted misconception record (signs, remediation the teacher says aloud) as item content. Gained: \"a bully has power but not authority\" on c9-sst i03. Broke: 3 more kit strings and one more near-miss (\"they will bully anyone who is new\") set aside. Item fields only (main review agreed)",
+   "at": "2026-10-10"
+  },
+  {
+   "id": "r4c-ms-setaside-main10-2026-10-10",
+   "kind": "measurement",
+   "title": "Patch 13 prototype (MAX_NOVEL=2, item fields only; prototype, not product code; no child has used it) on the main review's 10 realistic c9-sst answers: on i08 (police and courts) 6/10 set aside; 6 and 9 fire on the teacher actor veto (expected), 8 on GUARD_VETO 'because', 10 on novelty (standing, means, brave). On i01 / i03 0/10 (bully is not in those items' content: correct by design). Risk: recall corpora 438 firing x 12,398 items = 0; 842 test / near-miss / kit strings x all items = 3, all c9-sst i08's own kit content",
+   "at": "2026-10-10"
+  },
+  {
+   "id": "r4c-ms-owner2-stall-root-cause",
+   "kind": "measurement",
+   "title": "owner-2 R5.loop (prod-like local, seeds 7 and 1010, s5-zoya c5-evs): the faded step fade:2 stayed on the card 4 turns. Cause read in the transcripts: 'mummy bula rahi thi, haan' (back) re-posed the card word for word, and 'ek min... haan bolo' had no code reading, so the UNDERSTAND note guessed slower / another way, which the card cap exempts (RE_PRESENT). Patch 14: pause word + go-on read in code as back; a back on a card held 2+ turns moves down the ladder (choices, else a hint rung); a note-sourced request never gets the cap exemption. Replay test tests/r4-conversation-stall.test.mjs",
+   "at": "2026-10-10"
+  }
+ ],
+ "edges": [
+  { "src": "r4c-rj-setaside-no-novelty-budget", "rel": "measured_by", "dst": "r4c-ms-setaside-main10-2026-10-10" },
+  { "src": "r4c-rj-setaside-self-harm", "rel": "measured_by", "dst": "r4c-ms-setaside-main10-2026-10-10" }
+ ]
+}
