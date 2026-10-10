@@ -39,7 +39,11 @@ import { directorProposal } from "./proposal.js";
 import { p5Flag } from "../conversation/flags.js";
 import { unsafeChildPhrase } from "../conversation/screen.js";
 import { parkEntry, pushLater, recentParked, dueParked, serveLater } from "../conversation/policy.js";
-import { alsoReading } from "../conversation/lexicon.js";
+import { alsoReading, alsoQuestion, questionShaped } from "../conversation/lexicon.js";
+import { intakeStart, intakeStep } from "./session/beat.js";
+import { newSession, openSegment } from "./session/segments.js";
+import { priorNotes } from "./session/prior.js";
+import { kitFromFile } from "../content/kits.js";
 
 /**
  * Probe shapes the live lane can pose AND grade today: the why-class shapes (probe.why, R-EXP against the kit's key
@@ -167,7 +171,91 @@ export function initLessonState({ topicId, kit, skills = {}, history = {}, stuck
     persona: newPersonaState({ band, classLevel, medium: ctx.schoolMedium ?? "english" }), vibe: null, turnsSinceError: 99,
     // p5-interaction: the Later list (CONVERSATION-V2 §5: parked questions, returned at a boundary) and the card pins
     later: [], pinItem: undefined, pinRun: 0,
+    // round 4 (session-first, TAXILA_SESSION_FIRST; director/session/*): the session and its INTAKE beat when the route
+    // started a session with no topic chosen by the child (ctx.session); absent on every other start
+    ...(ctx.session && !practiceSet && !asking ? sessionFields(ctx, classLevel, now) : {}),
   };
+}
+
+/** Round 4 (session-first): the session object and the intake beat's state for a session start (ctx.session). */
+function sessionFields(ctx, classLevel, now) {
+  const sc = ctx.session ?? {};
+  const intake = intakeStart({ now, classLevel, ctx: { subjects: sc.subjects ?? [], pointer: sc.pointer ?? {} } });
+  return { session: newSession({ id: ctx.sessionId, now, classLevel, prior: sc.prior ?? null }), intake: intake.state, intakeOpen: intake.move };
+}
+
+/**
+ * Round 4 (session-first): open a new segment on `topicId` inside this lesson (the state is re-pointed at its verified kit,
+ * in place). false when the topic has no kit file (the switch offer stays as before).
+ */
+function sessionSwitchTo(s, topicId, purpose, now) {
+  const kit = segmentKit(topicId);
+  if (!kit) return false;
+  const next = reinitForSegment(s, kit, now, { purpose, mode: "teach" });
+  for (const k of Object.keys(s)) delete s[k];
+  Object.assign(s, next);
+  s.session = openSegment(s.session, { purpose, topicId, mode: "teach", why: [{ code: "switch", ref: topicId }] }, { kitHash: kit.hash, now });
+  s.sessionNotes = priorNotes(s.session.prior, s.session.segments.at(-1));
+  return true;
+}
+
+/** The kit a session segment pins (the verified file kit; a topic with none keeps the lesson's kit). */
+const segmentKit = (topicId) => { const t = getTopic(topicId); return t ? kitFromFile(t) : null; };
+
+/**
+ * Round 4 (session-first): the lesson state re-pointed at a new segment's kit, in the SAME lesson. Everything the route or
+ * the conversation added (brief, mode, the relationship, the Later list, prefs, affect, persona, talk, the turn counters)
+ * is kept; the teaching state is fresh for the new kit (initLessonState). The per-turn kit loader (brain/rows.js kitFor)
+ * reads state.topicId + state.kitHash from here on.
+ */
+export function reinitForSegment(s, kit, now, decision) {
+  const t = getTopic(kit.topicId);
+  const fresh = initLessonState({ topicId: kit.topicId, kit, ctx: { ...s.ctx, session: undefined, topicTitle: t?.title ?? s.ctx.topicTitle }, seed: s.seed, now, comp: null });
+  const out = { ...fresh };
+  for (const k of Object.keys(s)) if (!(k in fresh)) out[k] = s[k];
+  for (const k of ["turn", "seq", "recent", "affect", "persona", "talk", "later", "prefs", "safeguard", "startedAt", "minutes", "lastBreakTurn", "vibe", "turnsSinceError", "probeSess"]) if (k in s) out[k] = s[k];
+  out.session = s.session; out.intake = s.intake; delete out.intakeOpen;
+  out.kitHash = kit.hash; out.kitVerified = kit.verified;
+  out.purpose = "lesson";
+  // the child's school position on the decided topic: a transfer start skips the hook (never a repeat of what they know)
+  if (decision?.mode === "transfer") { out.teachPlan = []; out.phase = "practice"; out.introduced = kit.skills.map((sk) => sk.id); }
+  if (decision?.mode === "revise") { out.teachPlan = out.teachPlan.filter((x) => x !== "hook"); }
+  return out;
+}
+
+/**
+ * Round 4 (session-first): the intake beat's move for this step, or null when the intake is over (the Director decides as
+ * always). At most 3 child turns and 90 s (beat.js); the safety predicate pre-empts it (the classifier's distress flag goes
+ * to decide()'s safeguard, unchanged). When the intake decides, the session opens its first segment: on another topic the
+ * state is re-pointed at that topic's verified kit (reinitForSegment); the move is the one-line agenda, no item, no stage.
+ */
+function sessionIntake(s, input, now) {
+  if (!s.intake || s.intake.stage === "done" || input.branch || input.event === "module") return null;
+  if (input.event === "start") return plan("intake", s.intakeOpen?.shape ?? "", { chips: s.intakeOpen?.chips, intake: true });
+  if (input.cls?.flags?.distress || s.safeguard) { s.intake = { ...s.intake, stage: "done" }; return null; }
+  const prior = s.session?.prior ?? {};
+  const statusOf = (id) => { const t = getTopic(id); if (!t) return "unseen"; const own = Object.values(s.skills ?? {}).filter((x) => String(x.skillId ?? "").startsWith(`${id}-`)); return own.length ? (own.every((x) => x.status === "mastered") ? "mastered" : own.some((x) => x.attempts >= 3 && x.pKnown < 0.4) ? "weak" : "in_progress") : "unseen"; };
+  let r = intakeStep(s.intake, { text: input.text ?? input.answer ?? "", chipId: input.chipId, now, kitFor: input.kitFor ?? segmentKit, statusOf, prior, explore: !!input.explore });
+  // a confirm reply code cannot grade: the classifier's label when the lesson's own kit is the candidate's, else no evidence
+  // (the grade only moves the segment's mode, never its topic)
+  if (r.needsGrade) r = intakeStep(r.state, { graded: input.kit?.topicId === r.state.pick?.topicId ? (input.cls?.outcome ?? "no_evidence") : "no_evidence", now, kitFor: input.kitFor ?? segmentKit, statusOf, prior });
+  s.intake = r.state;
+  if (!r.done) {
+    const ask = r.move?.item ? promptFor(r.move.item, s.ctx.lang) : null;
+    return plan(r.move.kind, r.move.shape, { intake: true, ...(ask ? { ask } : {}) });
+  }
+  const d = r.decision;
+  if (d.purpose === "safeguard") return null; // decide() owns the safeguard (the predicate already fired in the words)
+  let next = s;
+  const kit = d.topicId ? segmentKit(d.mode === "foundation_first" && d.foundation ? d.foundation : d.topicId) : null;
+  if (kit && kit.topicId !== s.topicId) {
+    next = reinitForSegment(s, kit, now, d);
+    for (const k of Object.keys(s)) delete s[k];
+    Object.assign(s, next);
+  } else if (kit) { s.kitHash = s.kitHash ?? kit.hash; }
+  s.session = openSegment(s.session, d, { kitHash: kit?.hash ?? s.kitHash ?? null, now });
+  s.sessionNotes = priorNotes(s.session.prior, s.session.segments.at(-1));
+  return plan("intake_agenda", r.move.shape, { intake: true, segment: { n: s.session.segments.length, topicId: s.topicId, purpose: d.purpose, mode: d.mode } });
 }
 
 /** Rule 3 schedule: always on a skill with no generative pass yet; sampled once it is consolidating. */
@@ -376,8 +464,11 @@ function poseNext(s, input, prefix, preferred) {
   // round 3 (conversation; tests/prod/round3-conversation C): after a right answer the why-probe path reaches here with no
   // active item, so "right after this question" was kept only at the wrap; the question that just resolved is the last move's
   if (p5Flag("STEER") && s.later?.length && (s.activeItemId || (p5Flag("R3CONV") && s.lastMove?.itemId))) {
-    const due = dueParked(s.later, "item_resolved");
-    if (due) { s.later = serveLater(s.later, due.id, s.turn); prefix = join(prefix, SH.returnParked({ topic: due.topic, share: !!due.share })); }
+    // round 4 (round3-conversation C on prod: a cousin's wedding shared mid-teaching was promised "before the lesson ends"
+    // and never came back): an open share is also brought back at an item boundary four or more turns after it was told
+    const due = dueParked(s.later, "item_resolved")
+      ?? (p5Flag("R4CONV") ? (s.later ?? []).find((p) => !p.servedAt && p.share && s.turn - (p.at ?? s.turn) >= 4) ?? null : null);
+    if (due) { s.later = serveLater(s.later, due.id, s.turn); prefix = join(prefix, SH.returnParked({ topic: due.topic, share: !!due.share })); s.servedNow = { topic: due.topic, share: !!due.share }; }
   }
   s.activeItemId = undefined; s.hintLevel = 0; s.pendingWhy = undefined;
   if (leavePractice(s, kit)) return s.practiceSet ? practiceDone(s, prefix) : enterTeachback(s, prefix);
@@ -726,7 +817,7 @@ function helpMove(s, input, item, help) {
     // NEXT teach step with the request as a prefix, 5/16 not acted on): a request for the idea another way is answered on
     // THE idea being taught, and the teach step does not advance. Help menu chips (cls.help) keep moving on (below).
     // (also in practice before its first item: an explain turn poseNext gave a skill nobody had explained yet)
-    if (p5Flag("STEER") && !input.cls?.help && ["another", "example", "story", "slower"].includes(help)
+    if (p5Flag("STEER") && !input.cls?.help && ["another", "example", "story", "slower", "deeper"].includes(help)
       && (s.phase === "teach" || (s.phase === "practice" && TEACH_KINDS.has(s.lastMove?.kind)))) return teachAgainPlan(s, kit, help);
     // Any other help on a teaching turn moves the teaching on, more simply: a Young child in the text lane can answer a
     // teaching turn only through the Help menu, and a help that re-said the same step would hold them there for good.
@@ -798,6 +889,10 @@ function requestMove(s, input, item, req, labels) {
         : plan("repair", SH.declineOob(), { request: "decline" });
       const hit = findTopic(subject, s.ctx?.classLevel);
       if (hit && hit.id === s.topicId) return resume(s, input, item, "they asked for the topic you are already on: say so warmly in a few words, then carry on");
+      // round 4 (session-first, (d)): inside a session the topic they asked for opens a new SEGMENT in this same lesson (its
+      // own verified kit), never a new lesson; this turn is one short no-stage line, the next one teaches it
+      if (hit && s.session && sessionSwitchTo(s, hit.id, "child_request", input.now ?? Date.now()))
+        return plan("intake_agenda", SH.switchGo({ title: hit.title }), { intake: true, segment: { n: s.session.segments.length, topicId: s.topicId, purpose: "child_request", mode: "teach" }, request: "switch" });
       if (hit) return plan("break", SH.switchOffer({ title: hit.title }), { chips: [{ id: `switch:${hit.id}`, label: `Start ${hit.title}`.slice(0, 40) }, { id: "stop:continue", label: labels.back }], request: "switch" });
       return plan("break", SH.switchElsewhere({ subject }), { chips: [{ id: "stop:continue", label: labels.back }, { id: "stop:end", label: labels.stop }], request: "switch" });
     }
@@ -819,6 +914,18 @@ function requestMove(s, input, item, req, labels) {
     case "another": case "example": case "story": case "slower": {
       const p = helpMove(s, input, item, req.type);
       return p && { ...p, request: req.type };
+    }
+    // round 4 (session-first (f)): "aur batao / go deeper". With a practice question on the table: the harder question on the
+    // same skill (the one on the table is left, no verdict); otherwise the same idea one layer further (no new step).
+    case "deeper": {
+      if (item && s.phase === "practice") {
+        s.skipped.push(item.id);
+        const h = hardestFor(s, kit, item.skillId);
+        if (h) s.nextItemId = h.id;
+        return { ...poseNext(s, input, SH.levelDeeper()), request: "deeper" };
+      }
+      if (item) return plan(moveKindFor(item), SH.pose({ item, prefix: SH.levelDeeper() }), { item, probe: probeFor(item), chips: optionChips(item), request: "deeper" });
+      return teachAgainPlan(s, kit, "deeper");
     }
     case "visual": {
       // A picture on the stage (item 5): a re-teach move with the diagram representation, so planModule mounts the item's
@@ -880,7 +987,23 @@ function p5RequestMove(s, input, item, req, labels) {
     }
     case "back": return withLead(SH.welcomeBack());
     case "skip": return item ? { ...leaveItem(s, input, item, SH.SKIP_ITEM), request: "skip" } : helpMove(s, input, item, "skip");
-    case "know": return { ...helpMove(s, input, item, "know"), request: "know" };
+    case "know": {
+      // round 4 (conversation; battery skip_ahead 1/7): "ye mujhe aata hai, aage chalo" got the SAME question back, or one
+      // more line of teaching. Taken at their word: the skill counts as introduced (no explain turn first), and a question on
+      // the table is left (no verdict) for the hardest one of its skill, the quick check that proves it
+      if (p5Flag("R4CONV")) {
+        const sk = currentSkillId(s, kit, item);
+        if (sk && !s.introduced.includes(sk)) s.introduced.push(sk);
+        if (item && s.phase === "practice") {
+          s.skipped.push(item.id);
+          const h = hardestFor(s, kit, item.skillId);
+          if (h) s.nextItemId = h.id;
+          return { ...poseNext(s, input, SH.KNOWS_IT), request: "know" };
+        }
+        if (item && s.phase === "warmup") { s.skipped.push(item.id); return { ...nextWarmup(s, input, SH.KNOWS_IT), request: "know" }; }
+      }
+      return { ...helpMove(s, input, item, "know"), request: "know" };
+    }
     case "harder": case "easier": {
       if (!item || s.phase !== "practice") return req.type === "harder" ? { ...helpMove(s, input, item, "know"), request: "harder" } : teachAgainPlan(s, kit, "another");
       s.skipped.push(item.id);                                   // left, no verdict: it was never their answer
@@ -988,7 +1111,7 @@ function enterTeachback(s, prefix) {
   // CONVERSATION-V2 §5: every open parked question is offered before the wrap
   if (p5Flag("STEER") && s.later?.length) {
     const due = dueParked(s.later, "before_wrap");
-    if (due) { s.later = serveLater(s.later, due.id, s.turn); prefix = join(prefix, SH.returnParked({ topic: due.topic, share: !!due.share })); }
+    if (due) { s.later = serveLater(s.later, due.id, s.turn); prefix = join(prefix, SH.returnParked({ topic: due.topic, share: !!due.share })); s.servedNow = { topic: due.topic, share: !!due.share }; }
   }
   s.phase = "teachback"; s.teachbackAsked = true; s.activeItemId = undefined; s.hintLevel = 0;
   // The lesson's teach-back IS shape C01 (announced protégé teach-back): its answer is a probe turn in the budget.
@@ -1009,6 +1132,12 @@ function teachback(s, input) {
 
 function toWrap(s, { prefix, stopping = false }) {
   if (stopping && !["wrap", "done"].includes(s.phase)) s.stoppedEarly = true;   // child.js countsAsDone (owner-truth item 3)
+  // round 4: a wrap the lesson reaches by itself (time, the plan) keeps the promise to come back to what they shared or asked;
+  // never on a child's stop or goodbye (letting them go is quick: NEVER MANIPULATE)
+  if (!stopping && p5Flag("R4CONV") && s.later?.length) {
+    const due = dueParked(s.later, "before_wrap");
+    if (due) { s.later = serveLater(s.later, due.id, s.turn); prefix = join(prefix, SH.returnParked({ topic: due.topic, share: !!due.share })); s.servedNow = { topic: due.topic, share: !!due.share }; }
+  }
   s.stopAsked = undefined; s.sidebar = undefined;
   s.phase = "done"; s.activeItemId = undefined; s.pendingWhy = undefined; s.hintLevel = 0;
   return plan("wrap", SH.wrap({ prefix, nextTitle: s.ctx.nextTitle, stopping }), stopping ? { stopping: true } : {});
@@ -1191,6 +1320,19 @@ function capPlan(s, input, p) {
  */
 export function step(prev, input) {
   const s = structuredClone(prev);
+  // round 4 (conversation): a question tacked onto a graded answer ("yes, also why is the sky blue") is parked like the note's
+  // alongside reading (code-first; the note runs only on non-answer turns). Screened in code like every parked topic.
+  if (input.event === "turn" && p5Flag("R4CONV") && input.cls && !input.cls.alsoPark && ["correct", "incorrect", "partial", "misconception"].includes(input.cls.outcome)) {
+    const q = alsoQuestion(input.text ?? "");
+    if (q && !unsafeChildPhrase(q)) input = { ...input, cls: { ...input.cls, alsoPark: { topic: q, learning: true } } };
+  }
+  // round 4 round B (battery question_on_topic: "kya 1/3 hamesha 1/4 se bada hota hai?" said over an explanation got the next
+  // teaching step): with NO question on the table, a turn shaped as a question about the idea is their question, answered
+  // first (answer_q); never with an item on the table (there it may be an answer), never over a request or the floor
+  if (input.event === "turn" && p5Flag("R4CONV") && input.cls && !input.cls.request && !input.cls.help && !input.cls.flags?.distress
+    && input.cls.outcome === "no_evidence" && !s.activeItemId && ["teach", "warmup"].includes(s.phase) && questionShaped(input.text ?? "")) {
+    input = { ...input, cls: { ...input.cls, request: { type: "answer_q", whole: true, src: "r4" } } };
+  }
   const now = input.now ?? Date.now();
   if (input.event !== "start") s.turn += 1; // every call bumps the turn: the route's optimistic state check keys on it
   s.minutes = Math.round((now - s.startedAt) / 6000) / 10;
@@ -1246,7 +1388,9 @@ export function step(prev, input) {
       s.probeSess = markAsked(s.probeSess, { skillId: t.skillId, shapeId: null, facet: "M", mandatory: true, reason: t.reason }, s.comp?.[t.skillId]?.belief ?? null);
     }
   }
-  let p = reacting ? moduleReaction(s, input, active) : decide(s, input, active);
+  // round 4 (session-first): the intake beat runs before the Director's own decision while it is open
+  let p = sessionIntake(s, input, now);
+  if (!p) p = reacting ? moduleReaction(s, input, active) : decide(s, input, active);
   if (p && !input.branch && p5Flag("CARDCAP")) p = capPlan(s, input, p);
   if (!p) {
     return { state: s, move: s.lastMove, moduleCommands: [], ui: s.lastUi ?? { status: "your_turn" }, end: s.phase === "done", hold: true, ...describe(s, input.kit) };
@@ -1277,6 +1421,19 @@ export function step(prev, input) {
     if (extra && join(shape, extra).length <= SHAPE_ROOM) shape = join(shape, extra);
   }
   const move = { kind: p.kind, shape };
+  // round 4 (conversation): the request's must-do (and a second need's) as a last-section note (compile.js lastParts)
+  let backLead = null;
+  if (!input.branch && p5Flag("R4CONV") && input.event === "turn" && !["safeguard", "wrap"].includes(p.kind)) {
+    const key = p.request === "uptake" ? input.cls?.request?.kind ?? null : p.request === "visual" ? `visual_${p.visual ?? "diagram"}` : p.request;
+    // a parked question or share served this turn comes back FIRST (it lost to the move in the middle of the shape)
+    const back = s.servedNow ? SH.returnParked({ topic: s.servedNow.topic, share: s.servedNow.share }).replace(/^before the next thing: /, "first, ") : null;
+    backLead = back;
+    const parked = input.cls?.alsoPark?.topic ? SH.parkAlso({ topic: input.cls.alsoPark.topic }) : null;
+    // a share kept for later this turn: the note carries the promise (never only "react warmly")
+    const kept = key === "personal_share" ? (s.later ?? []).find((e) => e.share && e.at === s.turn && !e.servedAt) : null;
+    const must = [back, kept ? SH.mustShareKept({ promise: kept.promise }) : SH.MUST_NOTE[key], parked, ...(also ?? []).filter((x) => x !== key).map((x) => SH.ALSO_NOTE[x])].filter(Boolean);
+    if (must.length) move.must = must.join("; ").slice(0, 300);
+  }
   // round 2 (conversation): how the child asked to be taught ("step by step", "picture first") rides on every later move
   // (compile.js renders it, droppable): before this, s.prefs was written and never read, so a method request lasted one turn
   if (p5Flag("STEER") && s.prefs?.length && !["safeguard", "wrap"].includes(p.kind)) move.prefs = s.prefs.slice(-2);
@@ -1293,14 +1450,23 @@ export function step(prev, input) {
   // A reaction keeps the step's content (e.g. the worked example the teacher is in the middle of) and the
   // activity on screen.
   if (!reacting || p.content) s.lastContent = p.content ?? [];
+  // stream 2 R2 root cause: planModule reads move.visual (modules.js interactiveDefault), so it is set BEFORE planModule
+  if (p.visual) move.visual = p.visual;
   const moduleCommands = reacting ? [] : planModule(s, { kit: input.kit, item, move, lang: s.ctx.lang, band: s.probeSess?.band ?? bandOf(s.ctx.classLevel), representation: p.representation });
   // The child's request this move answers (requests.js): the brain reads it (a visual request asks Studio on any lane).
   if (p.request) move.request = p.request;
   // round 2 safety floor: a stop check-in ("stop") or the relational goodbye check-in ("rel") — brain/say.js guards its
   // words as an offer to stop, never as a teaching turn that "goes on" (adversarial B2)
   if (p.checkin) move.checkin = p.checkin;
+  // round 4 (session-first): the intake's move (no stage build) and, for the confirm probe, the kit question it poses
+  delete s.servedNow;
+  if (p.intake) { move.intake = true; if (p.ask) move.ask = String(p.ask).slice(0, 300); if (p.segment) move.segment = p.segment; }
   // round 2 (conversation): the request's own note, for the lead slot's last instruction (brain/say.js)
   if (p.lead && p5Flag("STEER")) move.lead = String(p.lead).slice(0, 400);
+  // ... and a served return rides on the lead too: a first pose is written by the LEAD SLOT (brain/say.js leadSlotNote), whose
+  // last note carries move.lead, not the compile's last section (merged-tree round3-conversation C: the share was served with
+  // its must-note on a first pose, and the bridge went straight to the new question)
+  if (backLead && p5Flag("STEER")) move.lead = [backLead, move.lead].filter(Boolean).join("; ").slice(0, 400);
   if (p.visual) {
     move.visual = p.visual;
     // what is on the stage decides the words: point at it, or (nothing mounted) show it with things they know — never a

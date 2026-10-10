@@ -1,0 +1,34 @@
+--- a/server/director/safety.js	2026-10-10 09:01:40.753658622 +0000
++++ b/server/director/safety.js	2026-10-10 10:05:29.546000437 +0000
+@@ -15,6 +15,10 @@
+ /** People a child names when disclosing harm (English and Hindi kinship / authority words). */
+ const ACTOR_EN = "he|she|they|papa|mummy|mumma|mum|mom|dad|daddy|father|mother|brother|sister|step\\s*(?:father|mother|dad|mom)|uncle|aunty|auntie|teacher|sir|ma'?am|madam|bhai|bhaiya|didi|chacha|chachi|mama|mami|someone|somebody";
+ const ACTOR_HI = "papa|mummy|mumma|mammi|maa|pitaji|mata\\s*ji|bhai|bhaiya|didi|chacha|chachi|mama|mami|uncle|aunty|sir|madam|teacher|dada|dadi|nana|nani|sautela|sauteli";
++// round 4 patch request 03 (stream 4A, session-first openings 2026-10-10: "aaj school mein ek bade ladke ne mujhe maara" passed
++// the predicate): peers are the commonest actor in a school-day disclosure. Only with the CHILD as the object (mujhe / humein),
++// so a story's "ek ladka paani mein gir ke mara" (died) and "ladke six maarte hain" stay quiet.
++const ACTOR_PEER = "ladka|ladke|ladki|ladkiyan|ladkiyon|larka|larke|larki|senior|seniors|classmates?|bachche|bacche|sab\\s+log|kuch\\s+(?:ladke|bachche)";
+ 
+ // ── passive ideation (ROUTER-CHANGES A2, 2026-10-04) ──
+ // "I don't want to wake up tomorrow" and "kabhi kabhi lagta hai main na rahun toh" returned distress:false here;
+@@ -131,6 +135,20 @@
+     // ... and a disclosure need not say "mujhe" at all: "papa marte hain", "sir ne chhua".
+     new RegExp(`\\b(${ACTOR_HI})\\s+(\\S+\\s+)?(maar|mar|peet|pit)(te|ti|ta)\\b|\\b(${ACTOR_HI})\\s+ne\\s+(\\S+\\s+)?(maara|mara|peeta|pita|chhua|chua|chhuaa)\\b`, "i"),
+     /(मुझे(?:\s+\S+){0,2}?\s+(मारते|मारती|पीटते|पीटती|छूते|छूता)|गंदा\s*छू|(पापा|मम्मी|भाई|चाचा|मामा|सर)\s+(\S+\s+)?(मारते|मारती|पीटते|पीटती))/,
++    // round 4 patch request 03: a peer who hits the child ("ek bade ladke ne mujhe maara", "seniors humein peetate hain"), and
++    // the Devanagari form with up to four words between मुझे and the verb ("सब मुझे रोज़ चिढ़ाते हैं और मारते हैं")
++    new RegExp(`\\b(?:${ACTOR_PEER})\\s+ne\\s+(?:\\S+\\s+)?(?:mujhe|mujhko|humein|hume|hamein)\\s+(?:\\S+\\s+){0,3}?(?:maara|mara|peeta|pita|peet\\s+diya|maar\\s+diya|chhua|chua)\\b|\\b(?:${ACTOR_PEER})\\s+(?:\\S+\\s+){0,2}?(?:mujhe|mujhko|humein|hume|hamein)\\s+(?:\\S+\\s+){0,2}?(?:maar|peet|pit)(?:te|ti|ta)\\b`, "i"),
++    /(?:पापा|मम्मी|माँ|भाई|भैया|चाचा|मामा|सर|टीचर|अंकल|लड़का|लड़के|लड़की|सीनियर)\s+ने\s+(?:\S+\s+){0,5}?(?:मुझे|हमें|मुझको)\s+(?:\S+\s+){0,2}?(?:मारा|पीटा|मारी|पीटी)|मुझे(?:\s+\S+){3,4}?\s+(?:मारते|मारती|पीटते|पीटती)\s+(?:हैं|है)|(?:लड़का|लड़के|लड़की|सीनियर|बच्चे)\s+(?:ने\s+)?(?:\S+\s+)?मुझे\s+(?:\S+\s+)?(?:मारा|पीटा|मारते|पीटते)/,
++    // round 4 patch request 03, set 2 (2026-10-10): "papa ne kal raat phir belt se maara, abhi bhi dard ho raha" (six words
++    // between the actor and the verb; an instrument or a pain word makes it a beating, never a story or a game); a peer who
++    // hits habitually ("ek ladka roz recess me maarta hai"); the English bullying shape ("everyone in class calls me names
++    // and i cry in the washroom every day")
++    { re: new RegExp(`\\b(?:${ACTOR_HI})\\s+ne\\s+(?:[^\\s.!?।]+\\s+){0,7}?(?:belt|danda|dande|chappal|joota|jute|chhadi|stick|haath|thappad|ghoonsa|lath|laat)\\s+(?:se\\s+)?(?:\\S+\\s+)?(?:maara|mara|peeta|pita|maari|lagaya|lagayi|maarta|maarti)\\b|\\b(?:${ACTOR_HI})\\s+ne\\s+(?:[^\\s.!?।]+\\s+){0,7}?(?:maara|mara|peeta|pita)\\b[^.!?।]{0,40}\\b(?:dard|chot|nishaan|nishan|sujan|khoon)\\b`, "i"),
++      // what was hit is a pest, a ball or a thing ("mummy ne chappal se cockroach maara", "bat se ball ko maara"): not a disclosure
++      test(t) { const m = this.re.exec(String(t)); return !!m && !/\b(?:machhar|machchar|makkhi|mosquito|fly|flies|cockroach|chuha|chuhe|chhipkali|lizard|saa?np|snake|ball|gend|shot|six|chhakka|chauka|board|table|darwaza|door|deewar|wall|kil|keel|nail)\b/i.test(m[0]); } },
++    new RegExp(`\\b(?:ek\\s+|kuch\\s+|wo\\s+|woh\\s+|ye\\s+)?(?:${ACTOR_PEER})\\s+(?:\\S+\\s+){0,3}?(?:roz|rozana|daily|har\\s+din|hamesha|recess|break|bus|class)\\s+(?:\\S+\\s+){0,2}?(?:maar|peet|pit)(?:ta|ti|te)\\s+(?:hai|hain)\\b`, "i"),
++    /\b(?:a|an|some|the|two|older|big|bigger)?\s*(?:older\s+|bigger\s+|big\s+)?(?:boy|boys|girl|girls|kid|kids|senior|seniors|classmates?|bully|bullies)\b(?:\s+[^\s.!?]+){0,4}?\s+(?:hits|hit|beats|beat|slaps|slapped|kicks|kicked|punches|punched|pushes|pushed|hurts|hurt)\s+me\b/i,
++    /\b(?:everyone|everybody|they|all\s+(?:of\s+)?(?:them|the\s+kids|my\s+classmates))\s+(?:in\s+(?:my\s+)?class\s+)?(?:calls?|call)\s+me\s+(?:names|bad\s+names|fat|ugly|stupid|dumb)\b[^.!?]{0,60}\b(?:i\s+cry|crying|cry\s+every|hate\s+going|don'?t\s+want\s+to\s+go)\b/i,
+     // W2-I R3 (RELATIONAL-OS §9.3 F6 grooming branch; P2 `secret` script): a third party asking the child for a photo, a
+     // meeting or secrecy is a safeguarding moment, not a lesson boundary. The actor + ask frame keeps "sir ne photo bheja"
+     // (a homework photo the child received) quiet: the ask must be FOR the child's photo or for secrecy. Kind: abuse.
