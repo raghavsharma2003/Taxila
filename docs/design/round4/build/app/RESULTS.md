@@ -71,7 +71,27 @@ n = 5 per judge per direction plus n = 5 three-way rankings per judge, 2026-10-1
 2. **Whether to run the five-second child test first,** before the wave-3 build: 20 class 4-5 and 20 class 7-8
    children, with girls included.
 
-## Next (after the pick)
+## After the pick (2026-10-10)
+
+**The pick:** the main session, as the owner's delegate, picked **Kaksha**, plus a Nagar-style settlement layer
+(`dc-r4-app-kaksha`, provisional until the owner overrides).
+
+**The build spec:** `docs/design/round4/app/BUILD-SPEC.md`. It covers:
+- screens mapped onto `src/child` routes, the Desk, `src/play`, `src/parent` and `src/onboarding`;
+- G1 and G2 engine reuse (a Briefing slot, no game code);
+- the `<Teacher>` slot contract (r8 live, lamp1 behind `TAXILA_FACE_LOOK`, a lit ground);
+- motion and ₹10k-phone performance budgets;
+- one three-column copy table behind G-EN-1;
+- the parent view with the safety floor unchanged;
+- the economy logic lint;
+- a wave-3 stream K that owns the unowned `src/ui-v3/**`, with patches K-P1 to K-P9, slices K0 to K4 in the merge
+  order, and the acceptance bars.
+
+**Conflicts surfaced for the owner:**
+- **K-O1:** G-EN-1 English-only chrome against the brief's Hinglish and Hindi labels.
+- **K-O2:** dark Kaksha for young children against `ds-band-fork-older`. The proposal is Kaksha Dawn for classes 1-4.
+
+## Earlier plan (now done)
 
 Write `docs/design/round4/app/BUILD-SPEC.md` for the chosen direction, mapped onto `src/app`, `src/child`,
 `src/parent`, `src/onboarding`, the `<Teacher>` slot, the Desk and `src/play`. It will cover screens, components,
