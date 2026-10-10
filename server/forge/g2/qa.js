@@ -26,6 +26,7 @@ import { SIZE_BUDGET } from "./bundle.js";
 import { frameLevels, loadTopic } from "./levels.js";
 import { revealsAnswer } from "../../director/items.js";
 import { sameV, fold, kitTruth, regrade, rederive, solveUnits } from "./truth.js";
+const REAL_NOW = Date.now.bind(Date);
 export { kitTruth, rederive, solveUnits };
 
 export const QA_VERSION = "g2-qa@2";
@@ -99,8 +100,9 @@ async function playOnce(browser, { html, levels, init, wrongPaths = true, captur
   const page = await context.newPage();
   page.on("console", (m) => { if (m.type() === "error") consoleErrors.push(m.text().slice(0, 200)); });
   page.on("pageerror", (e) => pageErrors.push(String(e.message).slice(0, 200)));
-  const deadline = Date.now() + timeoutMs;
-  const left = () => Math.max(1, deadline - Date.now());
+  // the clock captured at module load (a test may mock Date after import): the gate's own deadline always holds
+  const deadline = REAL_NOW() + timeoutMs;
+  const left = () => Math.max(1, deadline - REAL_NOW());
   try {
     await page.addInitScript((i) => { if (location.hostname === "forge-host.test") window.__init = i; }, init);
     await page.goto(HOST, { waitUntil: "load", timeout: left() });

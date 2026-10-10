@@ -26,6 +26,23 @@ import { boxes, visible, tap, visibleTexts, strayWords, overflow, sleep, styleSi
 
 export const GATE_VERSION = "studio-gate@1";
 
+// round 4 content (main session, 2026-10-10: a 240 s CI timeout of "gate (browser): goldens pass…"): the gate's waits are
+// bounded whatever the process clock does. A test may freeze or mock performance.now / Date / timers after import; the
+// polls below use the clock and timer captured at module load AND an iteration cap, so a piece that never answers ends
+// at the gate's own deadline instead of looping forever.
+const REAL = { now: Date.now.bind(Date), setTimeout: globalThis.setTimeout.bind(globalThis) };
+const pause = (ms) => new Promise((r) => REAL.setTimeout(r, ms));
+/** Poll `done()` every `step` ms for at most `ms`. → whether done() held. */
+export async function waitUntil(done, ms, step) {
+  const end = REAL.now() + ms;
+  for (let i = 0, cap = Math.ceil(ms / step) + 1; i < cap; i++) {
+    if (done()) return true;
+    if (REAL.now() >= end) break;
+    await pause(step);
+  }
+  return !!done();
+}
+
 /** The hard-check ids each G family maps to (for reports and the router bench's failure table). */
 export const family = (id) => id.split(".")[0];
 
@@ -85,8 +102,7 @@ export async function runGate(browser, job) {
     const tl = performance.now();
     await page.setContent(doc.html, { waitUntil: "load", timeout: 10_000 });
     await page.waitForFunction(() => true, null, { timeout: 100 }).catch(() => {});
-    const deadline = tl + 5000;
-    while (!log.some((e) => e.type === "ready") && performance.now() < deadline) await sleep(50);
+    await waitUntil(() => log.some((e) => e.type === "ready"), 5000, 50);
     const ready = log.find((e) => e.type === "ready");
     readyMs = ready ? Math.round(ready.at - tl) : null;
     add("G1.ready_le_5s", !!ready, readyMs);
@@ -139,7 +155,7 @@ export async function runGate(browser, job) {
       tap: (sel, o) => tap(page, sel, o),
       answers: () => log.filter((e) => e.type === "answer"),
       lastAnswer: () => log.filter((e) => e.type === "answer").at(-1) ?? null,
-      waitAnswer: async (n, ms = 1500) => { const t = performance.now(); while (log.filter((e) => e.type === "answer").length < n && performance.now() - t < ms) await sleep(40); return log.filter((e) => e.type === "answer").at(-1) ?? null; },
+      waitAnswer: async (n, ms = 1500) => { await waitUntil(() => log.filter((e) => e.type === "answer").length >= n, ms, 40); return log.filter((e) => e.type === "answer").at(-1) ?? null; },
     };
     try { await player.play(pctx); } catch (e) { add("harness_completed", false, String(e?.message ?? e).slice(0, 200)); }
     await sleep(300);
