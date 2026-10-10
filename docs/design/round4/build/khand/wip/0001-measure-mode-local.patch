@@ -1,0 +1,1549 @@
+From 2cf37bdc78faa24e101185c02de4dc809fef0af3 Mon Sep 17 00:00:00 2001
+From: Claude <noreply@anthropic.com>
+Date: Sat, 10 Oct 2026 20:13:47 +0000
+Subject: [PATCH] local only (owner: no new features): Khand MEASURE mode, work
+ in progress
+
+Law + oracle battery (0 wrong grades over 10,001 acts), 15 rules over 6 topics, reactions, 2D bay-card twin, engine
+labels / pad / pick. Not finished: 3D shots time out on the measure dev page; arts not certified. Do not push.
+---
+ data/play/coverage.json                     | 428 +++++++++++++++++++-
+ data/play/reactions/nazariya.json           |  89 +++-
+ server/play/react.js                        |   2 +-
+ server/play/tools/rules/nazariya.mjs        |  29 ++
+ shared/play.ts                              |   2 +-
+ src/play/engines/khand/copy.json            |  30 ++
+ src/play/engines/khand/engine.ts            |  39 +-
+ src/play/engines/khand/words.ts             |   5 +
+ src/play/families/index.ts                  |   3 +-
+ src/play/families/nazariya/grid.ts          |   7 +
+ src/play/families/nazariya/index.ts         |   7 +-
+ src/play/families/nazariya/measure.logic.ts | 292 +++++++++++++
+ src/play/families/nazariya/measure.view.ts  | 109 +++++
+ src/play/families/views.ts                  |   2 +
+ tests/prod/r4-khand-shots.mjs               |   8 +-
+ tests/r4-khand-law.test.mjs                 |  32 ++
+ tests/r4-khand-server.test.mjs              |   8 +-
+ 17 files changed, 1056 insertions(+), 36 deletions(-)
+ create mode 100644 src/play/families/nazariya/measure.logic.ts
+ create mode 100644 src/play/families/nazariya/measure.view.ts
+
+diff --git a/data/play/coverage.json b/data/play/coverage.json
+index bcd34190..83bae73b 100644
+--- a/data/play/coverage.json
++++ b/data/play/coverage.json
+@@ -3,14 +3,14 @@
+  "note": "built by server/play/tools/build-coverage.mjs from RULES + ACTS; do not edit by hand",
+  "counts": {
+   "topicsInScope": 250,
+-  "topicsCovered": 57,
+-  "entries": 72,
+-  "withMisconceptionMap": 51,
+-  "mappedMisconceptions": 89,
++  "topicsCovered": 63,
++  "entries": 86,
++  "withMisconceptionMap": 57,
++  "mappedMisconceptions": 99,
+   "bySubject": {
+    "maths": {
+     "inScope": 141,
+-    "covered": 42
++    "covered": 48
+    },
+    "science": {
+     "inScope": 69,
+@@ -24,11 +24,11 @@
+   "byClass": {
+    "4": {
+     "inScope": 50,
+-    "covered": 10
++    "covered": 13
+    },
+    "5": {
+     "inScope": 52,
+-    "covered": 11
++    "covered": 14
+    },
+    "6": {
+     "inScope": 69,
+@@ -44,9 +44,9 @@
+    "taraazu": 4,
+    "nishana": 12,
+    "kyun-lab": 15,
+-   "nazariya": 11
++   "nazariya": 17
+   },
+-  "skillsAdmitted": 105,
++  "skillsAdmitted": 116,
+   "rulesNotAdmitted": 1
+  },
+  "skills": {
+@@ -1703,6 +1703,157 @@
+    "contexts": [],
+    "why": "RULES c6-maths-ch01-t01 nazariya/powers/cube · ACTS"
+   },
++  "c4-maths-ch08-t01-s1": {
++   "topicId": "c4-maths-ch08-t01",
++   "family": "nazariya",
++   "mode": "measure",
++   "goal": "total",
++   "grammar": {
++    "unit": "g"
++   },
++   "misMap": {
++    "ratio-small": "c4-maths-ch08-t01-m-kg-is-100g"
++   },
++   "contexts": [],
++   "why": "RULES c4-maths-ch08-t01 nazariya/measure/total · ACTS"
++  },
++  "c4-maths-ch08-t01-s2": {
++   "topicId": "c4-maths-ch08-t01",
++   "family": "nazariya",
++   "mode": "measure",
++   "goal": "compare",
++   "grammar": {
++    "unit": "g"
++   },
++   "misMap": {
++    "number-only": "c4-maths-ch08-t01-m-number-only"
++   },
++   "contexts": [],
++   "why": "RULES c4-maths-ch08-t01 nazariya/measure/compare · ACTS"
++  },
++  "c4-maths-ch08-t02-s1": {
++   "topicId": "c4-maths-ch08-t02",
++   "family": "nazariya",
++   "mode": "measure",
++   "goal": "total",
++   "grammar": {
++    "unit": "ml"
++   },
++   "misMap": {
++    "ratio-small": "c4-maths-ch08-t02-m-l-is-100ml"
++   },
++   "contexts": [],
++   "why": "RULES c4-maths-ch08-t02 nazariya/measure/total · ACTS"
++  },
++  "c4-maths-ch08-t02-s2": {
++   "topicId": "c4-maths-ch08-t02",
++   "family": "nazariya",
++   "mode": "measure",
++   "goal": "compare",
++   "grammar": {
++    "unit": "ml"
++   },
++   "misMap": {
++    "number-only": "c4-maths-ch08-t02-m-number-only"
++   },
++   "contexts": [],
++   "why": "RULES c4-maths-ch08-t02 nazariya/measure/compare · ACTS"
++  },
++  "c5-maths-ch08-t01-s2": {
++   "topicId": "c5-maths-ch08-t01",
++   "family": "nazariya",
++   "mode": "measure",
++   "goal": "total",
++   "grammar": {
++    "unit": "g"
++   },
++   "misMap": {
++    "mixed-concat": "c5-maths-ch08-t01-m-mixed-concat"
++   },
++   "contexts": [],
++   "why": "RULES c5-maths-ch08-t01 nazariya/measure/total · ACTS"
++  },
++  "c5-maths-ch08-t01-s1": {
++   "topicId": "c5-maths-ch08-t01",
++   "family": "nazariya",
++   "mode": "measure",
++   "goal": "split",
++   "grammar": {
++    "unit": "g"
++   },
++   "misMap": {},
++   "contexts": [],
++   "why": "RULES c5-maths-ch08-t01 nazariya/measure/split · ACTS"
++  },
++  "c5-maths-ch08-t01-s3": {
++   "topicId": "c5-maths-ch08-t01",
++   "family": "nazariya",
++   "mode": "measure",
++   "goal": "compare",
++   "grammar": {
++    "unit": "g"
++   },
++   "misMap": {
++    "number-only": "c5-maths-ch08-t01-m-bigger-number-heavier"
++   },
++   "contexts": [],
++   "why": "RULES c5-maths-ch08-t01 nazariya/measure/compare · ACTS"
++  },
++  "c5-maths-ch08-t02-s2": {
++   "topicId": "c5-maths-ch08-t02",
++   "family": "nazariya",
++   "mode": "measure",
++   "goal": "total",
++   "grammar": {
++    "unit": "ml"
++   },
++   "misMap": {
++    "mixed-concat": "c5-maths-ch08-t02-m-mixed-concat"
++   },
++   "contexts": [],
++   "why": "RULES c5-maths-ch08-t02 nazariya/measure/total · ACTS"
++  },
++  "c5-maths-ch08-t02-s1": {
++   "topicId": "c5-maths-ch08-t02",
++   "family": "nazariya",
++   "mode": "measure",
++   "goal": "split",
++   "grammar": {
++    "unit": "ml"
++   },
++   "misMap": {},
++   "contexts": [],
++   "why": "RULES c5-maths-ch08-t02 nazariya/measure/split · ACTS"
++  },
++  "c5-maths-ch05-t01-s2": {
++   "topicId": "c5-maths-ch05-t01",
++   "family": "nazariya",
++   "mode": "measure",
++   "goal": "total",
++   "grammar": {
++    "unit": "m"
++   },
++   "misMap": {
++    "ratio-small": "c5-maths-ch05-t01-m-km-100m",
++    "mixed-concat": "c5-maths-ch05-t01-m-mixed-concat"
++   },
++   "contexts": [],
++   "why": "RULES c5-maths-ch05-t01 nazariya/measure/total · ACTS"
++  },
++  "c4-maths-ch06-t01-s2": {
++   "topicId": "c4-maths-ch06-t01",
++   "family": "nazariya",
++   "mode": "measure",
++   "goal": "total",
++   "grammar": {
++    "unit": "cm"
++   },
++   "misMap": {
++    "ratio-small": "c4-maths-ch06-t01-m-m-is-10cm"
++   },
++   "contexts": [],
++   "why": "RULES c4-maths-ch06-t01 nazariya/measure/total · ACTS"
++  },
+   "c4-maths-ch11-t02-s1": {
+    "topicId": "c4-maths-ch11-t02",
+    "family": "nazariya",
+@@ -3335,6 +3486,265 @@
+     "square-double": "c6-maths-ch01-t01-m-square-double"
+    }
+   },
++  {
++   "topicId": "c4-maths-ch08-t01",
++   "title": "Grams and kilograms",
++   "classLevel": 4,
++   "subject": "maths",
++   "family": "nazariya",
++   "mode": "measure",
++   "goal": "total",
++   "skillId": "c4-maths-ch08-t01-s1",
++   "skillIds": [
++    "c4-maths-ch08-t01-s1"
++   ],
++   "grammar": {
++    "unit": "g"
++   },
++   "misMap": {
++    "ratio-small": "c4-maths-ch08-t01-m-kg-is-100g"
++   }
++  },
++  {
++   "topicId": "c4-maths-ch08-t01",
++   "title": "Grams and kilograms",
++   "classLevel": 4,
++   "subject": "maths",
++   "family": "nazariya",
++   "mode": "measure",
++   "goal": "make",
++   "skillId": "c4-maths-ch08-t01-s1",
++   "skillIds": [
++    "c4-maths-ch08-t01-s1"
++   ],
++   "grammar": {
++    "unit": "g"
++   },
++   "misMap": {}
++  },
++  {
++   "topicId": "c4-maths-ch08-t01",
++   "title": "Grams and kilograms",
++   "classLevel": 4,
++   "subject": "maths",
++   "family": "nazariya",
++   "mode": "measure",
++   "goal": "compare",
++   "skillId": "c4-maths-ch08-t01-s2",
++   "skillIds": [
++    "c4-maths-ch08-t01-s2"
++   ],
++   "grammar": {
++    "unit": "g"
++   },
++   "misMap": {
++    "number-only": "c4-maths-ch08-t01-m-number-only"
++   }
++  },
++  {
++   "topicId": "c4-maths-ch08-t02",
++   "title": "Millilitres and litres",
++   "classLevel": 4,
++   "subject": "maths",
++   "family": "nazariya",
++   "mode": "measure",
++   "goal": "total",
++   "skillId": "c4-maths-ch08-t02-s1",
++   "skillIds": [
++    "c4-maths-ch08-t02-s1"
++   ],
++   "grammar": {
++    "unit": "ml"
++   },
++   "misMap": {
++    "ratio-small": "c4-maths-ch08-t02-m-l-is-100ml"
++   }
++  },
++  {
++   "topicId": "c4-maths-ch08-t02",
++   "title": "Millilitres and litres",
++   "classLevel": 4,
++   "subject": "maths",
++   "family": "nazariya",
++   "mode": "measure",
++   "goal": "compare",
++   "skillId": "c4-maths-ch08-t02-s2",
++   "skillIds": [
++    "c4-maths-ch08-t02-s2"
++   ],
++   "grammar": {
++    "unit": "ml"
++   },
++   "misMap": {
++    "number-only": "c4-maths-ch08-t02-m-number-only"
++   }
++  },
++  {
++   "topicId": "c5-maths-ch08-t01",
++   "title": "Converting kg and g",
++   "classLevel": 5,
++   "subject": "maths",
++   "family": "nazariya",
++   "mode": "measure",
++   "goal": "total",
++   "skillId": "c5-maths-ch08-t01-s2",
++   "skillIds": [
++    "c5-maths-ch08-t01-s2"
++   ],
++   "grammar": {
++    "unit": "g"
++   },
++   "misMap": {
++    "mixed-concat": "c5-maths-ch08-t01-m-mixed-concat"
++   }
++  },
++  {
++   "topicId": "c5-maths-ch08-t01",
++   "title": "Converting kg and g",
++   "classLevel": 5,
++   "subject": "maths",
++   "family": "nazariya",
++   "mode": "measure",
++   "goal": "split",
++   "skillId": "c5-maths-ch08-t01-s1",
++   "skillIds": [
++    "c5-maths-ch08-t01-s1"
++   ],
++   "grammar": {
++    "unit": "g"
++   },
++   "misMap": {}
++  },
++  {
++   "topicId": "c5-maths-ch08-t01",
++   "title": "Converting kg and g",
++   "classLevel": 5,
++   "subject": "maths",
++   "family": "nazariya",
++   "mode": "measure",
++   "goal": "compare",
++   "skillId": "c5-maths-ch08-t01-s3",
++   "skillIds": [
++    "c5-maths-ch08-t01-s3"
++   ],
++   "grammar": {
++    "unit": "g"
++   },
++   "misMap": {
++    "number-only": "c5-maths-ch08-t01-m-bigger-number-heavier"
++   }
++  },
++  {
++   "topicId": "c5-maths-ch08-t02",
++   "title": "Converting l and ml",
++   "classLevel": 5,
++   "subject": "maths",
++   "family": "nazariya",
++   "mode": "measure",
++   "goal": "total",
++   "skillId": "c5-maths-ch08-t02-s2",
++   "skillIds": [
++    "c5-maths-ch08-t02-s2"
++   ],
++   "grammar": {
++    "unit": "ml"
++   },
++   "misMap": {
++    "mixed-concat": "c5-maths-ch08-t02-m-mixed-concat"
++   }
++  },
++  {
++   "topicId": "c5-maths-ch08-t02",
++   "title": "Converting l and ml",
++   "classLevel": 5,
++   "subject": "maths",
++   "family": "nazariya",
++   "mode": "measure",
++   "goal": "split",
++   "skillId": "c5-maths-ch08-t02-s1",
++   "skillIds": [
++    "c5-maths-ch08-t02-s1"
++   ],
++   "grammar": {
++    "unit": "ml"
++   },
++   "misMap": {}
++  },
++  {
++   "topicId": "c5-maths-ch05-t01",
++   "title": "Kilometres, metres and centimetres",
++   "classLevel": 5,
++   "subject": "maths",
++   "family": "nazariya",
++   "mode": "measure",
++   "goal": "total",
++   "skillId": "c5-maths-ch05-t01-s2",
++   "skillIds": [
++    "c5-maths-ch05-t01-s2"
++   ],
++   "grammar": {
++    "unit": "m"
++   },
++   "misMap": {
++    "ratio-small": "c5-maths-ch05-t01-m-km-100m",
++    "mixed-concat": "c5-maths-ch05-t01-m-mixed-concat"
++   }
++  },
++  {
++   "topicId": "c5-maths-ch05-t01",
++   "title": "Kilometres, metres and centimetres",
++   "classLevel": 5,
++   "subject": "maths",
++   "family": "nazariya",
++   "mode": "measure",
++   "goal": "split",
++   "skillId": "c5-maths-ch05-t01-s2",
++   "skillIds": [
++    "c5-maths-ch05-t01-s2"
++   ],
++   "grammar": {
++    "unit": "m"
++   },
++   "misMap": {
++    "ratio-small": "c5-maths-ch05-t01-m-km-100m"
++   }
++  },
++  {
++   "topicId": "c4-maths-ch06-t01",
++   "title": "Centimetres and metres",
++   "classLevel": 4,
++   "subject": "maths",
++   "family": "nazariya",
++   "mode": "measure",
++   "goal": "total",
++   "skillId": "c4-maths-ch06-t01-s2",
++   "skillIds": [
++    "c4-maths-ch06-t01-s2"
++   ],
++   "grammar": {
++    "unit": "cm"
++   },
++   "misMap": {
++    "ratio-small": "c4-maths-ch06-t01-m-m-is-10cm"
++   }
++  },
++  {
++   "topicId": "c4-maths-ch06-t01",
++   "title": "Centimetres and metres",
++   "classLevel": 4,
++   "subject": "maths",
++   "family": "nazariya",
++   "mode": "measure",
++   "goal": "make",
++   "skillId": "c4-maths-ch06-t01-s2",
++   "skillIds": [
++    "c4-maths-ch06-t01-s2"
++   ],
++   "grammar": {
++    "unit": "cm"
++   },
++   "misMap": {}
++  },
+   {
+    "topicId": "c4-maths-ch11-t02",
+    "title": "Completing symmetrical figures",
+diff --git a/data/play/reactions/nazariya.json b/data/play/reactions/nazariya.json
+index f0f084f5..f03acae6 100644
+--- a/data/play/reactions/nazariya.json
++++ b/data/play/reactions/nazariya.json
+@@ -42,7 +42,14 @@
+      "{?why=not_solid}Beech mein jagah khaali hai.",
+      "{?why=not_a_reflection}Shishe mein dekho, kahan alag hai.",
+      "{?why=say_side_first}Pehle doosri side bolo.",
+-     "{?why=say_the_side}Yeh khet fit hai. Doosri side kitni lambi hai?"
++     "{?why=say_the_side}Yeh khet fit hai. Doosri side kitni lambi hai?",
++     "{?why=tap_a_bay}Ek block daalne ke liye bay par tap karo.",
++     "{?why=bay_full}Woh bay bhar gaya.",
++     "{?why=empty}Wahan lene ko kuch nahi hai.",
++     "{?why=pick_a_pan}Pehle chuno: kis taraf zyada hai?",
++     "{?why=too_heavy}Yeh {target} {unit} se zyada hai.",
++     "{?why=too_light}Yeh {target} {unit} se kam hai.",
++     "{?why=say_whole_first}Pehle bolo: kitne poore?"
+     ],
+     "en": [
+      "{?why=locked}That part is already built.",
+@@ -68,7 +75,14 @@
+      "{?why=not_solid}There's a gap inside.",
+      "{?why=not_a_reflection}Look in the glass: where is it different?",
+      "{?why=say_side_first}First say the other side.",
+-     "{?why=say_the_side}This field fits. How long is the other side?"
++     "{?why=say_the_side}This field fits. How long is the other side?",
++     "{?why=tap_a_bay}Tap a bay to add one block.",
++     "{?why=bay_full}That bay is full.",
++     "{?why=empty}Nothing to take there.",
++     "{?why=pick_a_pan}First pick the side with more.",
++     "{?why=too_heavy}That is more than {target} {unit}.",
++     "{?why=too_light}That is less than {target} {unit}.",
++     "{?why=say_whole_first}First say how many whole ones."
+     ],
+     "hi": [
+      "{?why=locked}यह हिस्सा पहले से बना है।",
+@@ -94,7 +108,14 @@
+      "{?why=not_solid}बीच में जगह खाली है।",
+      "{?why=not_a_reflection}शीशे में देखो, कहाँ अलग है।",
+      "{?why=say_side_first}पहले दूसरी साइड बोलो।",
+-     "{?why=say_the_side}यह खेत ठीक बैठता है। दूसरी साइड कितनी लंबी है?"
++     "{?why=say_the_side}यह खेत ठीक बैठता है। दूसरी साइड कितनी लंबी है?",
++     "{?why=tap_a_bay}एक ब्लॉक रखने के लिए खाने पर टैप करो।",
++     "{?why=bay_full}वह खाना भर गया।",
++     "{?why=empty}वहाँ लेने को कुछ नहीं है।",
++     "{?why=pick_a_pan}पहले चुनो: किस तरफ़ ज़्यादा है?",
++     "{?why=too_heavy}यह {target} {unit} से ज़्यादा है।",
++     "{?why=too_light}यह {target} {unit} से कम है।",
++     "{?why=say_whole_first}पहले बोलो: कितने पूरे?"
+     ]
+    },
+    "misconception_consequence": {
+@@ -119,7 +140,10 @@
+      "{?mal=wrong-axis}Shisha kahan hai? Usi ke aar-paar dekho.",
+      "{?mal=missing-side}{length} by {said} ke khet ki baad {fence_if} hogi. Chaaron sides gino.",
+      "{?mal=area-for-perimeter}{length} guna {said} toh farsh hai. Iski baad {fence_if} hai.",
+-     "{?mal=l-plus-b}{length} aur {said} sirf aadha chakkar hain: woh baad {fence_if} hai."
++     "{?mal=l-plus-b}{length} aur {said} sirf aadha chakkar hain: woh baad {fence_if} hai.",
++     "{?mal=ratio-small}Ek bade block ke andar chhote cubes gino.",
++     "{?mal=mixed-concat}{said} {unit} se toh ek bada block bhi nahi bharega.",
++     "{?mal=number-only}Sirf number nahi, unit bhi dekho: {left} aur {right}."
+     ],
+     "en": [
+      "{?mal=top-flat}From the top it matches. Now look from the front.",
+@@ -142,7 +166,10 @@
+      "{?mal=wrong-axis}Where is the glass? Look across it.",
+      "{?mal=missing-side}A {length} by {said} field takes {fence_if} of fence. Count all four sides.",
+      "{?mal=area-for-perimeter}{length} times {said} is the floor. Its fence is {fence_if}.",
+-     "{?mal=l-plus-b}{length} and {said} go only half way round: that fence is {fence_if}."
++     "{?mal=l-plus-b}{length} and {said} go only half way round: that fence is {fence_if}.",
++     "{?mal=ratio-small}Count the small cubes inside one big block.",
++     "{?mal=mixed-concat}{said} {unit} would not even fill one big block.",
++     "{?mal=number-only}Look at the units, not just the numbers: {left} and {right}."
+     ],
+     "hi": [
+      "{?mal=top-flat}ऊपर से मिलता है। अब सामने से देखो।",
+@@ -165,7 +192,10 @@
+      "{?mal=wrong-axis}शीशा कहाँ है? उसी के आर-पार देखो।",
+      "{?mal=missing-side}{length} × {said} के खेत की बाड़ {fence_if} होगी। चारों साइड गिनो।",
+      "{?mal=area-for-perimeter}{length} गुणा {said} तो फ़र्श है। इसकी बाड़ {fence_if} है।",
+-     "{?mal=l-plus-b}{length} और {said} सिर्फ़ आधा चक्कर हैं: वह बाड़ {fence_if} है।"
++     "{?mal=l-plus-b}{length} और {said} सिर्फ़ आधा चक्कर हैं: वह बाड़ {fence_if} है।",
++     "{?mal=ratio-small}एक बड़े ब्लॉक के अंदर छोटे क्यूब गिनो।",
++     "{?mal=mixed-concat}{said} {unit} से तो एक बड़ा ब्लॉक भी नहीं भरेगा।",
++     "{?mal=number-only}सिर्फ़ संख्या नहीं, इकाई भी देखो: {left} और {right}।"
+     ]
+    },
+    "near_miss": {
+@@ -173,19 +203,28 @@
+      "{?off=1}Bas ek khaana alag.",
+      "{?mode=array}Paas hai. Ek line phir gino.",
+      "{?why=floor_count}Bas ek tile ka farak.",
+-     "{?why=fence_length}Baad mein bas do ka farak."
++     "{?why=fence_length}Baad mein bas do ka farak.",
++     "{?why=too_heavy}Bas ek block zyada hai.",
++     "{?why=too_light}Bas ek block kam hai.",
++     "{?why=count_again}Bas ek block ka fark. Phir se gino."
+     ],
+     "en": [
+      "{?off=1}Just one spot is different.",
+      "{?mode=array}Close. Count one row again.",
+      "{?why=floor_count}Just one tile off.",
+-     "{?why=fence_length}The fence is just two off."
++     "{?why=fence_length}The fence is just two off.",
++     "{?why=too_heavy}Just one block too many.",
++     "{?why=too_light}Just one block short.",
++     "{?why=count_again}Just one block off. Count again."
+     ],
+     "hi": [
+      "{?off=1}बस एक खाना अलग।",
+      "{?mode=array}पास है। एक पंक्ति फिर गिनो।",
+      "{?why=floor_count}बस एक टाइल का अंतर।",
+-     "{?why=fence_length}बाड़ में बस दो का अंतर।"
++     "{?why=fence_length}बाड़ में बस दो का अंतर।",
++     "{?why=too_heavy}बस एक ब्लॉक ज़्यादा है।",
++     "{?why=too_light}बस एक ब्लॉक कम है।",
++     "{?why=count_again}बस एक ब्लॉक का फ़र्क। फिर से गिनो।"
+     ]
+    },
+    "solved": {
+@@ -195,7 +234,12 @@
+      "{?mode=powers}Bhuja {side}: {blocks} blocks.",
+      "{?mode=floor}Farsh {area}, baad {perimeter}.",
+      "{?mode=mirror}Shishe mein poora.",
+-     "{?goal=side}{length} by {said}: baad {perimeter}."
++     "{?goal=side}{length} by {said}: baad {perimeter}.",
++     "{?mode=measure}{load} = {said} {unit}.",
++     "{?made}{load} = {made} {unit}.",
++     "{?mode=measure}{target}: poore {said} {unit}.",
++     "{?heavier=left}{left} zyada hai {right} se.",
++     "{?heavier=right}{right} zyada hai {left} se."
+     ],
+     "en": [
+      "{?mode=views}The same from all three sides.",
+@@ -203,7 +247,12 @@
+      "{?mode=powers}Side {side}: {blocks} blocks.",
+      "{?mode=floor}Floor {area}, fence {perimeter}.",
+      "{?mode=mirror}Whole in the glass.",
+-     "{?goal=side}{length} by {said}: the fence is {perimeter}."
++     "{?goal=side}{length} by {said}: the fence is {perimeter}.",
++     "{?mode=measure}{load} = {said} {unit}.",
++     "{?made}{load} = {made} {unit}.",
++     "{?mode=measure}{target}: {said} whole {unit}.",
++     "{?heavier=left}{left} has more than {right}.",
++     "{?heavier=right}{right} has more than {left}."
+     ],
+     "hi": [
+      "{?mode=views}तीनों तरफ़ से वही।",
+@@ -211,7 +260,23 @@
+      "{?mode=powers}भुजा {side}: {blocks} ब्लॉक।",
+      "{?mode=floor}फ़र्श {area}, बाड़ {perimeter}।",
+      "{?mode=mirror}शीशे में पूरा।",
+-     "{?goal=side}{length} × {said}: बाड़ {perimeter}।"
++     "{?goal=side}{length} × {said}: बाड़ {perimeter}।",
++     "{?mode=measure}{load} = {said} {unit}।",
++     "{?made}{load} = {made} {unit}।",
++     "{?mode=measure}{target}: पूरे {said} {unit}।",
++     "{?heavier=left}{left}, {right} से ज़्यादा है।",
++     "{?heavier=right}{right}, {left} से ज़्यादा है।"
++    ]
++   },
++   "prediction_violated": {
++    "en": [
++     "{?heavier}The other side has more."
++    ],
++    "hinglish": [
++     "{?heavier}Doosri taraf zyada hai."
++    ],
++    "hi": [
++     "{?heavier}दूसरी तरफ़ ज़्यादा है।"
+     ]
+    }
+   }
+diff --git a/server/play/react.js b/server/play/react.js
+index 800abd8d..0bcc0b79 100644
+--- a/server/play/react.js
++++ b/server/play/react.js
+@@ -42,7 +42,7 @@ export function hiddenOf(level) {
+     case "atoms": return p.goal === "hcf" ? [gcd(p.n, p.m)] : p.goal === "lcm" ? [lcm(p.n, p.m)] : [];
+     case "bundles": return [p.a - p.b];
+     case "place": case "compare": return [];
+-    case "views": case "array": case "floor": case "powers": case "mirror": return nazariyaHidden(level);   // r4-khand
++    case "views": case "array": case "floor": case "powers": case "mirror": case "measure": return nazariyaHidden(level);   // r4-khand
+     default: return [];
+   }
+ }
+diff --git a/server/play/tools/rules/nazariya.mjs b/server/play/tools/rules/nazariya.mjs
+index dd029d2a..8cfc047f 100644
+--- a/server/play/tools/rules/nazariya.mjs
++++ b/server/play/tools/rules/nazariya.mjs
+@@ -26,6 +26,21 @@ export const RULES = [
+   // square and cube numbers: say the next term, then build it
+   R("c6-maths-ch01-t01", N, "powers", "square", { "square-double": "square-double" }),
+   R("c6-maths-ch01-t01", N, "powers", "cube", { "square-double": "square-double" }),
++  // measure: quantities from base-ten unit blocks whose voxels are the small unit (a 1 kg cube is 1000 one-gram voxels)
++  R("c4-maths-ch08-t01", N, "measure", "total", { "ratio-small": "kg-is-100g" }, { unit: "g" }),
++  R("c4-maths-ch08-t01", N, "measure", "make", {}, { unit: "g" }),
++  R("c4-maths-ch08-t01", N, "measure", "compare", { "number-only": "number-only" }, { unit: "g" }),
++  R("c4-maths-ch08-t02", N, "measure", "total", { "ratio-small": "l-is-100ml" }, { unit: "ml" }),
++  R("c4-maths-ch08-t02", N, "measure", "compare", { "number-only": "number-only" }, { unit: "ml" }),
++  R("c5-maths-ch08-t01", N, "measure", "total", { "mixed-concat": "mixed-concat" }, { unit: "g" }),
++  R("c5-maths-ch08-t01", N, "measure", "split", {}, { unit: "g" }),
++  R("c5-maths-ch08-t01", N, "measure", "compare", { "number-only": "bigger-number-heavier" }, { unit: "g" }),
++  R("c5-maths-ch08-t02", N, "measure", "total", { "mixed-concat": "mixed-concat" }, { unit: "ml" }),
++  R("c5-maths-ch08-t02", N, "measure", "split", {}, { unit: "ml" }),
++  R("c5-maths-ch05-t01", N, "measure", "total", { "ratio-small": "km-100m", "mixed-concat": "mixed-concat" }, { unit: "m" }),
++  R("c5-maths-ch05-t01", N, "measure", "split", { "ratio-small": "km-100m" }, { unit: "m" }),
++  R("c4-maths-ch06-t01", N, "measure", "total", { "ratio-small": "m-is-10cm" }, { unit: "cm" }),
++  R("c4-maths-ch06-t01", N, "measure", "make", {}, { unit: "cm" }),
+   // symmetry: complete the build across the glass
+   R("c4-maths-ch11-t02", N, "mirror", "complete", { "copy-no-flip": "copy-no-flip", "distance-off": "distance-not-kept", "wrong-direction": "wrong-direction" }, { axes: ["x", "z"], hmax: 2 }, ["kagaz", "chalk"]),
+   R("c5-maths-ch10-t02", N, "mirror", "complete", { "copy-no-flip": "copy-not-flip" }, { axes: ["x"] }, ["kagaz", "chalk"]),
+@@ -46,6 +61,20 @@ export const ACTS = {
+   "c6-maths-ch06-t02|max": ["s3"],               // same fence, different floor
+   "c6-maths-ch01-t01|square": ["s2"],            // extend the square numbers
+   "c6-maths-ch01-t01|cube": ["s3"],              // the cube numbers
++  "c4-maths-ch08-t01|total": ["s1"],             // 1 kg = 1000 g: kg (and kg g) to g
++  "c4-maths-ch08-t01|make": ["s1"],              // g to the blocks: the places of the number
++  "c4-maths-ch08-t01|compare": ["s2"],           // compare weights in different units
++  "c4-maths-ch08-t02|total": ["s1"],
++  "c4-maths-ch08-t02|compare": ["s2"],
++  "c5-maths-ch08-t01|total": ["s2"],             // mixed units: 2 kg 50 g = 2050 g
++  "c5-maths-ch08-t01|split": ["s1"],             // g back to whole kg
++  "c5-maths-ch08-t01|compare": ["s3"],
++  "c5-maths-ch08-t02|total": ["s2"],
++  "c5-maths-ch08-t02|split": ["s1"],
++  "c5-maths-ch05-t01|total": ["s2"],             // km m to m
++  "c5-maths-ch05-t01|split": ["s2"],
++  "c4-maths-ch06-t01|total": ["s2"],             // 1 m = 100 cm
++  "c4-maths-ch06-t01|make": ["s2"],
+   "c4-maths-ch11-t02|complete": ["s1", "s2", "s3"], // flip across a standing line; keep the distance; a lying line
+   "c5-maths-ch10-t02|complete": ["s1"],          // complete a design across a mirror line
+   "c6-maths-ch09-t01|complete": ["s3"],          // complete a figure symmetric about a line
+diff --git a/shared/play.ts b/shared/play.ts
+index 19ae15ed..2024b407 100644
+--- a/shared/play.ts
++++ b/shared/play.ts
+@@ -29,7 +29,7 @@ export const MODES = {
+   taraazu: ["equation", "equality"],
+   nishana: ["place", "compare"],
+   "kyun-lab": ["fair-test"],
+-  nazariya: ["views", "array", "floor", "powers", "mirror"],   // r4-khand
++  nazariya: ["views", "array", "floor", "powers", "mirror", "measure"],   // r4-khand
+ } as const satisfies Record<FamilyId, readonly string[]>;
+ export type ModeOf<F extends FamilyId> = (typeof MODES)[F][number];
+ export type PlayMode = (typeof MODES)[FamilyId][number];
+diff --git a/src/play/engines/khand/copy.json b/src/play/engines/khand/copy.json
+index e76979c7..257012c0 100644
+--- a/src/play/engines/khand/copy.json
++++ b/src/play/engines/khand/copy.json
+@@ -70,6 +70,36 @@
+    "en": "The glass lies flat. Build the other half.",
+    "hinglish": "Shisha leta hai. Doosra aadha banao.",
+    "hi": "शीशा लेटा है। दूसरा आधा बनाओ।"
++  },
++  "measure.total": {
++   "en": "{load}: how many {small}?",
++   "hinglish": "{load}: kitne {small}?",
++   "hi": "{load}: कितने {small}?"
++  },
++  "measure.make": {
++   "en": "Make {target} {small} with the blocks.",
++   "hinglish": "Blocks se {target} {small} banao.",
++   "hi": "ब्लॉक से {target} {small} बनाओ।"
++  },
++  "measure.split": {
++   "en": "{target} {small}: how many whole {big}?",
++   "hinglish": "{target} {small}: kitne poore {big}?",
++   "hi": "{target} {small}: कितने पूरे {big}?"
++  },
++  "measure.compare.g": {
++   "en": "{left} or {right}: which is heavier?",
++   "hinglish": "{left} ya {right}: kaunsa bhaari?",
++   "hi": "{left} या {right}: कौन भारी?"
++  },
++  "measure.compare.ml": {
++   "en": "{left} or {right}: which holds more?",
++   "hinglish": "{left} ya {right}: kismein zyada?",
++   "hi": "{left} या {right}: किसमें ज़्यादा?"
++  },
++  "measure.compare.m": {
++   "en": "{left} or {right}: which is longer?",
++   "hinglish": "{left} ya {right}: kaunsa lamba?",
++   "hi": "{left} या {right}: कौन लंबा?"
+   }
+  },
+  "views": {
+diff --git a/src/play/engines/khand/engine.ts b/src/play/engines/khand/engine.ts
+index 156f2402..79a340f5 100644
+--- a/src/play/engines/khand/engine.ts
++++ b/src/play/engines/khand/engine.ts
+@@ -18,6 +18,7 @@ import { viewOf, type ViewsParams } from "../../families/nazariya/views.logic.ts
+ import type { ArrayParams } from "../../families/nazariya/array.logic.ts";
+ import { pitCells } from "../../families/nazariya/array.logic.ts";
+ import { areaPerimeter } from "../../families/nazariya/floor.logic.ts";
++import { UNITS, countsOf, textOf, valueOf, type MeasureParams } from "../../families/nazariya/measure.logic.ts";
+ import { termOf, type PowersParams } from "../../families/nazariya/powers.logic.ts";
+ import { mirrorMismatch, truthOf, type MirrorParams } from "../../families/nazariya/mirror.logic.ts";
+ import { KhandScene, type Hit, type Snap } from "./scene.ts";
+@@ -166,6 +167,16 @@ export function create(core: Core3D, deps: EngineDeps): EngineView {
+       for (let t = 1; t <= pw.k; t++) { out.push({ id: `t${t}`, text: String(termOf(pw.goal, t)), at: [x + t / 2, (pw.goal === "square" ? 1 : t) + 0.6, 1 + t / 2] }); x += t + 1; }
+       out.push({ id: "next", text: "?", at: [pw.bay.x0 + pw.bay.size / 2, 0.6, pw.bay.z0 + pw.bay.size / 2] });
+     }
++    if (mode === "measure") {
++      // every bay says which piece it holds; compare's two pans say their written loads until the child picks
++      const m = p as unknown as MeasureParams, U = UNITS[m.unit], K = U.sizes.length;
++      m.bays.forEach((b, i) => out.push({ id: `bay${i}`, text: U.piece[b.k], at: [b.x0 + b.w / 2, 0.4, -0.9] }));
++      if (m.goal === "compare" && (ctl.state as NzState).predicted === null) {
++        const L = m.bays.slice(0, K), R = m.bays.slice(K);
++        out.push({ id: "panL", text: textOf(m, m.given!), at: [(L[0].x0 + L[K - 1].x0 + L[K - 1].w) / 2, 2.2, 5] });
++        out.push({ id: "panR", text: textOf(m, m.other!), at: [(R[0].x0 + R[K - 1].x0 + R[K - 1].w) / 2, 2.2, 5] });
++      }
++    }
+     return out;
+   }
+   function syncLabels(): void {
+@@ -181,7 +192,9 @@ export function create(core: Core3D, deps: EngineDeps): EngineView {
+   }
+ 
+   // ── acts
+-  let tool: Tool = mode === "array" && goal === "fill" && fade === 3 ? "look" : "build";
++  const measure = mode === "measure" ? (p as unknown as MeasureParams) : null;
++  // nothing to build in a given load or a comparison: the finger looks around
++  let tool: Tool = (mode === "array" && goal === "fill" && fade === 3) || (measure && (measure.goal === "total" || measure.goal === "compare")) ? "look" : "build";
+   let num = 0;
+   let pad = false;
+   const side = mode === "floor" && goal === "side";
+@@ -191,6 +204,8 @@ export function create(core: Core3D, deps: EngineDeps): EngineView {
+     if (mode === "array" && goal === "fill") { if (fade === 3) return true; const a = p as unknown as ArrayParams; return pitCells(a, a.pit).every((i) => s.h[i] >= 1); }
+     // powers, and a "side" floor at fade >= 2: the number comes before any building
+     if (mode === "powers" || side) return fade >= 2 && s.named === null;
++    // measure: a given load is counted at once; "how many whole" at fade >= 2 is said before anything is laid
++    if (measure) return measure.goal === "total" ? s.named === null : measure.goal === "split" && fade >= 2 && s.named === null;
+     return false;
+   };
+   function act(a: NazariyaAct): { moments: Moment[]; refused?: string } {
+@@ -322,7 +337,10 @@ export function create(core: Core3D, deps: EngineDeps): EngineView {
+     goal: (): string => goalOf(level, lang),
+     readouts(): Readout[] {
+       const s = ctl.state as NzState, out: Readout[] = [];
+-      if (side) {
++      if (measure) {
++        if (measure.goal === "make") out.push({ k: "Made", v: fade === 1 || reveal || s.done ? String(valueOf(measure, countsOf(measure, s.h))) : "?", role: "q1" });
++        if (measure.goal === "total" || measure.goal === "split") out.push({ k: "Number", v: pad ? String(num) : s.named !== null ? String(s.named) : "?", role: "you" });
++      } else if (side) {
+         const ap = areaPerimeter(p, s.h);
+         out.push({ k: "Fence", v: fade === 1 || reveal || s.done ? String(ap.perimeter) : "?", role: "q4" }, { k: "Side", v: pad ? String(num) : s.named !== null ? String(s.named) : "?", role: "you" });
+       } else if (mode === "floor") {
+@@ -346,11 +364,21 @@ export function create(core: Core3D, deps: EngineDeps): EngineView {
+         for (let k = 1; k <= 9; k++) c.push({ id: `k${k}`, label: String(k), kind: "pad", group: k <= 5 ? "pad1" : "pad2", onPress: () => { num = Math.min(9999, num * 10 + k); deps.changed(); } });
+         c.push({ id: "k0", label: "0", kind: "pad", group: "pad2", onPress: () => { num = Math.min(9999, num * 10); deps.changed(); } });
+         c.push({ id: "kdel", label: "Del", kind: "pad", group: "pad1", aria: "Delete a digit", onPress: () => { num = Math.floor(num / 10); deps.changed(); } });
+-        const canClose = !(mode === "array" && fade === 3) && !(side && fade >= 2 && s.named === null);
++        const canClose = !(mode === "array" && fade === 3) && !(side && fade >= 2 && s.named === null) && !(measure && (measure.goal === "total" || (measure.goal === "split" && fade >= 2 && s.named === null)));
+         if (canClose) c.push({ id: "close", label: "Build", kind: "secondary", group: "go", onPress: () => { pad = false; deps.changed(); } });
+         c.push({ id: "name", label: `Say ${num}`, kind: "primary", you: true, group: "go", onPress: () => { const r = act({ kind: "name", n: num }); if (!r.refused) { num = 0; pad = false; } deps.changed(); } });
+         return c;
+       }
++      if (measure && measure.goal === "compare") {
++        c.push({ id: "pick-left", label: "Left side", kind: "secondary", group: "predict", onPress: () => act({ kind: "predict", same: true }) });
++        c.push({ id: "pick-right", label: "Right side", kind: "secondary", group: "predict", onPress: () => act({ kind: "predict", same: false }) });
++        return c;
++      }
++      if (measure && measure.goal === "total") {
++        c.push({ id: "tool-look", label: "Look", kind: "choice", group: "tools", onPress: () => setTool("look") });
++        c.push({ id: "say", label: s.named === null ? "Say how many" : "Say again", kind: "primary", you: true, group: "go", onPress: () => { pad = true; deps.changed(); } });
++        return c;
++      }
+       const tools: [Tool, string][] = [["build", "Build"], ["remove", "Break"], ["look", "Look"], ["walk", "Walk"]];
+       for (const [t, label] of tools) c.push({ id: `tool-${t}`, label, kind: "choice", group: "tools", aria: `${label}${tool === t ? " (on)" : ""}`, disabled: false, onPress: () => setTool(t) });
+       if (mode === "views" || mode === "mirror") {
+@@ -363,7 +391,8 @@ export function create(core: Core3D, deps: EngineDeps): EngineView {
+         c.push({ id: "diff", label: "Different", kind: "secondary", group: "predict", onPress: () => act({ kind: "predict", same: false }) });
+       }
+       c.push({ id: "undo", label: "Undo", kind: "secondary", group: "go", onPress: () => act({ kind: "undo" }) });
+-      if (mode === "array" && goal === "fill") c.push({ id: "say", label: "Say how many", kind: "primary", you: true, group: "go", onPress: () => { pad = true; deps.changed(); } });
++      if (measure && measure.goal === "split") c.push({ id: "say", label: s.named === null ? "Say how many" : "Say again", kind: "primary", you: true, group: "go", onPress: () => { pad = true; deps.changed(); } });
++      else if (mode === "array" && goal === "fill") c.push({ id: "say", label: "Say how many", kind: "primary", you: true, group: "go", onPress: () => { pad = true; deps.changed(); } });
+       else if (side) {
+         c.push({ id: "done", label: "Check", kind: "secondary", group: "go", onPress: () => act({ kind: "check" }) });
+         c.push({ id: "say", label: s.named === null ? "Say the side" : "Say again", kind: "primary", you: true, group: "go", onPress: () => { pad = true; deps.changed(); } });
+@@ -393,7 +422,7 @@ export function create(core: Core3D, deps: EngineDeps): EngineView {
+         sfx("good"); overlays(); return;
+       }
+       // a "side" number lays its own field: its fence is shown whatever it was
+-      const checked = ms.some((m) => m.kind === "misconception_consequence" || m.kind === "near_miss") || refused === "mismatch" || (side && refused === "wrong_count");
++      const checked = ms.some((m) => m.kind === "misconception_consequence" || m.kind === "near_miss") || refused === "mismatch" || (side && refused === "wrong_count") || refused === "wrong_prediction";
+       if (checked) {
+         reveal = true;
+         if (mode === "mirror") {
+diff --git a/src/play/engines/khand/words.ts b/src/play/engines/khand/words.ts
+index 6600896a..0e21e784 100644
+--- a/src/play/engines/khand/words.ts
++++ b/src/play/engines/khand/words.ts
+@@ -3,6 +3,7 @@
+ import type { Lang, PlayLevel } from "../../../../shared/play.ts";
+ import COPY from "./copy.json";
+ import { termOf, type PowersParams } from "../../families/nazariya/powers.logic.ts";
++import { UNITS, textOf, type MeasureParams } from "../../families/nazariya/measure.logic.ts";
+ 
+ export const say = (lang: Lang, key: string, slots: Record<string, string | number> = {}): string => {
+   const g = (COPY.goal as Record<string, Record<string, string>>)[key];
+@@ -16,6 +17,10 @@ export function goalOf(level: PlayLevel, lang: Lang): string {
+   if (mode === "array") return say(lang, goal === "turn" ? "array.turn" : fade === 3 ? "array.fill3" : "array.fill");
+   if (mode === "floor") return say(lang, `floor.${goal}`, { n: Number(sp.n), a: Number(sp.a ?? 0) });
+   if (mode === "powers") { const pw = sp as unknown as PowersParams; return say(lang, `powers.${pw.goal}`, { terms: Array.from({ length: pw.k }, (_, i) => termOf(pw.goal, i + 1)).join(", ") }); }
++  if (mode === "measure") {
++    const m = sp as unknown as MeasureParams, U = UNITS[m.unit], slots = { small: U.small, big: U.big, target: Number(m.target ?? 0), load: m.given ? textOf(m, m.given) : "", left: m.given ? textOf(m, m.given) : "", right: m.other ? textOf(m, m.other) : "" };
++    return say(lang, m.goal === "compare" ? `measure.compare.${m.unit === "cm" ? "m" : m.unit === "half" ? "ml" : m.unit}` : `measure.${m.goal}`, slots);
++  }
+   if (mode === "mirror") return say(lang, sp.axis === "z" ? "mirror.z" : "mirror.x");
+   return "";
+ }
+diff --git a/src/play/families/index.ts b/src/play/families/index.ts
+index 38890e16..91eaf6c0 100644
+--- a/src/play/families/index.ts
++++ b/src/play/families/index.ts
+@@ -6,7 +6,7 @@ import { bundlesLogic } from "./todo-jodo/bundles.logic.ts";
+ import { balanceLogic } from "./taraazu/balance.logic.ts";
+ import { lineLogic } from "./nishana/line.logic.ts";
+ import { labLogic } from "./kyun-lab/lab.logic.ts";
+-import { viewsLogic, arrayLogic, floorLogic, powersLogic, mirrorLogic } from "./nazariya/index.ts";   // r4-khand
++import { viewsLogic, arrayLogic, floorLogic, powersLogic, mirrorLogic, measureLogic } from "./nazariya/index.ts";   // r4-khand
+ 
+ type AnyLogic = FamilyLogic<unknown, unknown, PlayActBody>;
+ const asAny = (l: unknown) => l as AnyLogic;
+@@ -25,5 +25,6 @@ export const LOGIC: Record<string, AnyLogic> = {
+   "nazariya/floor": asAny(floorLogic),
+   "nazariya/powers": asAny(powersLogic),
+   "nazariya/mirror": asAny(mirrorLogic),
++  "nazariya/measure": asAny(measureLogic),
+ };
+ export function logicFor(family: FamilyId, mode: PlayMode): AnyLogic | null { return LOGIC[`${family}/${mode}`] ?? null; }
+diff --git a/src/play/families/nazariya/grid.ts b/src/play/families/nazariya/grid.ts
+index bf7f3453..35514e36 100644
+--- a/src/play/families/nazariya/grid.ts
++++ b/src/play/families/nazariya/grid.ts
+@@ -119,6 +119,8 @@ export interface ModeSpec<P extends Plot> {
+   name?(level: PlayLevel<P>, s: NzState, n: number, seq: number): Applied;
+   /** a same / not-same prediction; absent = refused */
+   predict?(level: PlayLevel<P>, s: NzState, same: boolean, seq: number): Applied;
++  /** a mode whose build acts mean something else (measure: a tap in a bay adds ONE piece): the new heights, or a refusal */
++  build?(level: PlayLevel<P>, s: NzState, act: NazariyaAct): number[] | string;
+   /** a build act the mode refuses in this state (e.g. "predict first"), or null */
+   gate?(level: PlayLevel<P>, s: NzState, act: NazariyaAct): string | null;
+   /** after a legal build act (e.g. the array pit filled → solved at fade 1-2 needs a name; nothing by default) */
+@@ -167,6 +169,11 @@ export function makeLogic<P extends Plot>(spec: ModeSpec<P>): FamilyLogic<P, NzS
+       out.push(...(spec.afterBuild?.(level, next, seq) ?? []));
+       return { state: next, moments: out };
+     };
++    if (spec.build && (act.kind === "place" || act.kind === "remove" || act.kind === "layer" || act.kind === "clear")) {
++      const r = spec.build(level, s, act);
++      if (typeof r === "string") { out.push(mom("law_refused", seq, { why: r })); return { state: bump(s), moments: out, refused: r }; }
++      return built1(r, act.kind);
++    }
+     switch (act.kind) {
+       case "place": case "remove": {
+         const x = Number(act.x), z = Number(act.z);
+diff --git a/src/play/families/nazariya/index.ts b/src/play/families/nazariya/index.ts
+index 0249d0ea..31321cf4 100644
+--- a/src/play/families/nazariya/index.ts
++++ b/src/play/families/nazariya/index.ts
+@@ -6,9 +6,10 @@ import { arrayLogic, type ArrayParams } from "./array.logic.ts";
+ import { floorLogic, best, sideKey, type FloorParams } from "./floor.logic.ts";
+ import { powersLogic, termOf, type PowersParams } from "./powers.logic.ts";
+ import { mirrorLogic } from "./mirror.logic.ts";
++import { measureLogic, keyOf as measureKey, type MeasureParams } from "./measure.logic.ts";
+ 
+-export { viewsLogic, arrayLogic, floorLogic, powersLogic, mirrorLogic };
+-export const NAZARIYA_LOGIC = { views: viewsLogic, array: arrayLogic, floor: floorLogic, powers: powersLogic, mirror: mirrorLogic } as const;
++export { viewsLogic, arrayLogic, floorLogic, powersLogic, mirrorLogic, measureLogic };
++export const NAZARIYA_LOGIC = { views: viewsLogic, array: arrayLogic, floor: floorLogic, powers: powersLogic, mirror: mirrorLogic, measure: measureLogic } as const;
+ 
+ /** Values her micro-lines may never say before the child produces them (the key), per mode. */
+ export function nazariyaHidden(level: PlayLevel<unknown>): (string | number)[] {
+@@ -17,6 +18,8 @@ export function nazariyaHidden(level: PlayLevel<unknown>): (string | number)[] {
+     case "array": { const a = p as unknown as ArrayParams; return [a.r * a.c]; }
+     case "powers": { const a = p as unknown as PowersParams; return [termOf(a.goal, a.s)]; }
+     case "floor": { const a = p as unknown as FloorParams; if (a.goal === "side") return [sideKey(a)]; if (a.goal !== "max" && a.goal !== "min") return []; const b = best(a); return b ? [b.value] : []; }
++    // measure: the total / whole units the child is asked for (compare's answer is a pan, not a number)
++    case "measure": { const a = p as unknown as MeasureParams; return a.goal === "total" || a.goal === "split" ? [measureKey(a)] : []; }
+     default: return [];
+   }
+ }
+diff --git a/src/play/families/nazariya/measure.logic.ts b/src/play/families/nazariya/measure.logic.ts
+new file mode 100644
+index 00000000..64120e55
+--- /dev/null
++++ b/src/play/families/nazariya/measure.logic.ts
+@@ -0,0 +1,292 @@
++// Nazariya · measure (weight, capacity, length: c4-maths-ch08, c5-maths-ch08, c5-maths-ch05, c4-maths-ch06, c3-maths-ch11).
++// Quantities are built from base-ten unit blocks whose VOLUME is their size in the small unit: a 1 kg block is a
++// 10 × 10 × 10 cube of 1 g voxels, 100 g a 10 × 10 flat, 10 g a rod of ten, 1 g one voxel (likewise l / ml, km / m;
++// for m / cm the metre is the 10 × 10 flat of 100 cm; half litres are two-voxel dominoes). So the number of small units
++// in the world is literally the number of voxels, and every count below is a count of voxels, never a table.
++//   total   — a load is given (locked): say how many small units it is (2 kg 50 g → 2050).
++//   make    — a target in the small unit is given (2050 g): tap the bays to lay it, then check.
++//   split   — a target in the small unit is given (4250 g): say how many WHOLE big units it holds (4).
++//   compare — two loads written in different units (1 kg | 900 g): say which pan is heavier, then the blocks appear.
++// Mal-rules (the number a belief says): ratio-small (1 kg = 100 g: the big unit taken ten times too small) · mixed-concat
++// (2 kg 50 g read as 250: the parts written side by side) · number-only (the pan with the bigger NUMBER is heavier).
++import type { Candidate, Facts, GenRequest, Moment, NazariyaAct, PlayLevel } from "../../../../shared/play.ts";
++import { mulberry32 } from "../../core/rng.ts";
++import { commit, lvl, makeLogic, mom, zeros, type Applied, type NzState, type Plot } from "./grid.ts";
++
++export type MeasureUnit = "g" | "ml" | "m" | "cm" | "half";
++export type MeasureGoal = "total" | "make" | "split" | "compare";
++/** Piece sizes in the small unit, biggest first, and the words for each piece and for the two units. */
++export const UNITS: Record<MeasureUnit, { sizes: number[]; piece: string[]; big: string; small: string }> = {
++  g: { sizes: [1000, 100, 10, 1], piece: ["1 kg", "100 g", "10 g", "1 g"], big: "kg", small: "g" },
++  ml: { sizes: [1000, 100, 10, 1], piece: ["1 l", "100 ml", "10 ml", "1 ml"], big: "l", small: "ml" },
++  m: { sizes: [1000, 100, 10, 1], piece: ["1 km", "100 m", "10 m", "1 m"], big: "km", small: "m" },
++  cm: { sizes: [100, 10, 1], piece: ["1 m", "10 cm", "1 cm"], big: "m", small: "cm" },
++  half: { sizes: [2, 1], piece: ["1 l", "½ l"], big: "l", small: "half litres" },
++};
++/** What "more" means for the unit's quantity (compare's question). */
++export const moreWord = (u: MeasureUnit) => (u === "g" ? "heavier" : u === "ml" || u === "half" ? "holds more" : "longer");
++export const MEASURE_MAL = ["ratio-small", "mixed-concat", "number-only"] as const;
++const GAP = 1, STACK_CAP = 19;
++
++/** One bay: where piece kind k lives and how its pieces are laid (by size). */
++export interface Bay { k: number; x0: number; w: number; d: number; cap: number }
++export interface MeasureParams extends Plot {
++  goal: MeasureGoal; unit: MeasureUnit;
++  /** counts per piece kind of the given load (total; compare's left pan) */
++  given?: number[];
++  /** compare's right pan, counts per piece kind */
++  other?: number[];
++  /** make / split: the target in the small unit */
++  target?: number;
++  /** the child's bays (make / split), or the given loads' bays (total / compare) */
++  bays: Bay[];
++}
++
++const footprint = (size: number): [number, number] => (size >= 100 ? [10, 10] : size === 10 ? [10, 10] : size === 2 ? [2, 10] : [10, 1]);
++const capsFor = (sizes: number[], bigCap: number) => sizes.map((s, k) => (k === 0 && s === 1000 ? bigCap : STACK_CAP));
++/** Bays left to right from x0: a cube kind gets one footprint per piece; every other kind one footprint, stacked. */
++function baysFrom(sizes: number[], caps: number[], x0: number): { bays: Bay[]; w: number } {
++  const bays: Bay[] = []; let x = x0;
++  sizes.forEach((s, k) => {
++    const [fw, fd] = footprint(s), w = s === 1000 ? caps[k] * (fw + GAP) - GAP : fw;
++    bays.push({ k, x0: x, w, d: fd, cap: caps[k] }); x += w + GAP + 1;
++  });
++  return { bays, w: x - x0 - GAP - 1 };
++}
++/** Lay `count` pieces of `size` in a bay (canonical: rows / cells filled first, then the next layer). */
++function lay(h: number[], W: number, b: Bay, size: number, count: number): void {
++  if (size === 1000) { for (let c = 0; c < count; c++) for (let z = 0; z < 10; z++) for (let x = 0; x < 10; x++) h[z * W + b.x0 + c * 11 + x] = 10; return; }
++  if (size === 100) { for (let z = 0; z < 10; z++) for (let x = 0; x < 10; x++) h[z * W + b.x0 + x] = count; return; }
++  if (size === 10) { for (let i = 0; i < count; i++) { const z = i % 10; for (let x = 0; x < 10; x++) h[z * W + b.x0 + x]++; } return; }
++  if (size === 2) { for (let i = 0; i < count; i++) { const z = i % 10; h[z * W + b.x0]++; h[z * W + b.x0 + 1]++; } return; }
++  for (let i = 0; i < count; i++) h[b.x0 + (i % 10)]++;
++}
++const cellsOf = (W: number, b: Bay): number[] => { const out: number[] = []; for (let z = 0; z < b.d; z++) for (let x = 0; x < b.w; x++) out.push(z * W + b.x0 + x); return out; };
++
++/** The plot for (unit, goal, loads / target): rebuilt from these alone, so a device can never move the scenery. */
++export function measurePlot(r: { goal: MeasureGoal; unit: MeasureUnit; given?: number[]; other?: number[]; target?: number }): MeasureParams | null {
++  const U = UNITS[r.unit]; if (!U) return null;
++  const S = U.sizes, K = S.length;
++  const okCounts = (c: unknown): c is number[] => Array.isArray(c) && c.length === K && c.every((v) => Number.isInteger(v) && v >= 0 && v <= 9);
++  if (r.goal === "total" || r.goal === "compare") {
++    if (!okCounts(r.given) || (r.goal === "compare" && !okCounts(r.other))) return null;
++    const bigCap = Math.max(1, r.given[0], r.other?.[0] ?? 0);
++    const left = baysFrom(S, capsFor(S, bigCap), 0);
++    const right = r.goal === "compare" ? baysFrom(S, capsFor(S, bigCap), left.w + 3) : null;
++    const W = right ? left.w + 3 + right.w : left.w, D = 10;
++    const base = zeros(W * D);
++    // total: the load stands from the start; compare: the pans are empty until the child has said which is heavier
++    if (r.goal === "total") left.bays.forEach((b) => lay(base, W, b, S[b.k], r.given![b.k]));
++    return { w: W, d: D, hmax: S[0] === 1000 ? 10 : STACK_CAP, base, lock: Array(W * D).fill(1), goal: r.goal, unit: r.unit, given: [...r.given], ...(r.other ? { other: [...r.other] } : {}), bays: [...left.bays, ...(right?.bays ?? [])] };
++  }
++  const T = Number(r.target);
++  if (!Number.isInteger(T) || T < 1 || T > 9999) return null;
++  const bigCap = Math.min(9, Math.floor(T / S[0]) + 1);
++  const { bays, w } = baysFrom(S, capsFor(S, bigCap), 0);
++  const W = w, D = 10, lock = Array(W * D).fill(1);
++  for (const b of bays) for (const i of cellsOf(W, b)) lock[i] = 0;
++  return { w: W, d: D, hmax: Math.max(S[0] === 1000 ? 10 : 0, STACK_CAP), base: zeros(W * D), lock, goal: r.goal, unit: r.unit, target: T, bays };
++}
++
++/** Counts per piece kind in the child's bays (make / split), read off the voxels. */
++export function countsOf(p: MeasureParams, h: readonly number[]): number[] {
++  const S = UNITS[p.unit].sizes, out = S.map(() => 0);
++  for (const b of p.bays) { let v = 0; for (const i of cellsOf(p.w, b)) v += h[i]; out[b.k] += Math.round(v / S[b.k]); }
++  return out;
++}
++/** The value of a load in the small unit: its voxels (= Σ count × size). */
++export const valueOf = (p: { unit: MeasureUnit }, c: readonly number[]) => c.reduce((a, n, k) => a + n * UNITS[p.unit].sizes[k], 0);
++/** A load as words: "2 kg 50 g" (big part, then the rest in the small unit). */
++export function textOf(p: { unit: MeasureUnit }, c: readonly number[]): string {
++  const U = UNITS[p.unit], big = c[0], rest = valueOf(p, c) - big * U.sizes[0];
++  if (p.unit === "half") return `${big} l${rest ? " and a half" : ""}`;
++  return [big ? `${big} ${U.big}` : "", rest || !big ? `${rest} ${U.small}` : ""].filter(Boolean).join(" ");
++}
++/** The answer: total → the value; split → whole big units; compare → left heavier? (1 / 0). */
++export function keyOf(p: MeasureParams): number {
++  const S = UNITS[p.unit].sizes;
++  if (p.goal === "total") return valueOf(p, p.given!);
++  if (p.goal === "split") return Math.floor(p.target! / S[0]);
++  if (p.goal === "compare") return valueOf(p, p.given!) > valueOf(p, p.other!) ? 1 : 0;
++  return p.target!;
++}
++/** The number (or pan) each belief gives here, or null where it says nothing different. */
++export function malValue(p: MeasureParams, mal: string): number | null {
++  const S = UNITS[p.unit].sizes, small = S[0] / 10;
++  if (p.unit === "half") return null;
++  if (p.goal === "total") {
++    const big = p.given![0], rest = valueOf(p, p.given!) - big * S[0];
++    if (mal === "ratio-small") return big ? big * small + rest : null;
++    if (mal === "mixed-concat") return big && rest ? Number(`${big}${rest}`) : null;
++  }
++  if (p.goal === "split" && mal === "ratio-small") return Math.floor(p.target! / small);
++  if (p.goal === "compare" && mal === "number-only") {
++    // the number written on each pan: the left load in its big unit, the right in the small unit
++    const l = p.given![0], r = valueOf(p, p.other!);
++    return l === r ? null : l > r ? 1 : 0;
++  }
++  return null;
++}
++/** The beliefs this level tells apart: a value that differs from the key and from every other belief's. */
++function malsApart(level: PlayLevel<MeasureParams>): string[] {
++  const p = level.params, key = keyOf(p), vals = MEASURE_MAL.map((m) => malValue(p, m));
++  return MEASURE_MAL.filter((m, i) => m in level.mal && vals[i] !== null && vals[i] !== key && (vals[i] as number) <= 9999 && vals.filter((v) => v === vals[i]).length === 1);
++}
++
++function validate(raw: unknown): MeasureParams | null {
++  const r = raw as Partial<MeasureParams> | null;
++  if (!r || typeof r !== "object" || !["total", "make", "split", "compare"].includes(String(r.goal)) || !(String(r.unit) in UNITS)) return null;
++  const p = measurePlot({ goal: r.goal as MeasureGoal, unit: r.unit as MeasureUnit, given: r.given, other: r.other, target: r.target });
++  if (!p) return null;
++  // the level's plot must be exactly the one these numbers make
++  const same = (a: unknown, b: unknown[]) => Array.isArray(a) && a.length === b.length && a.every((v, i) => v === b[i]);
++  if (r.w !== p.w || r.d !== p.d || r.hmax !== p.hmax || !same(r.base, p.base) || !same(r.lock, p.lock)) return null;
++  if (p.goal === "total" && (valueOf(p, p.given!) < 1 || valueOf(p, p.given!) > 9999)) return null;
++  if (p.goal === "split" && keyOf(p) < 1) return null;
++  if (p.goal === "compare" && valueOf(p, p.given!) === valueOf(p, p.other!)) return null;
++  return p;
++}
++
++/** make / split: a tap in a bay adds (place) or takes (remove) ONE piece of that bay's size. Drags are not pieces. */
++function build(level: PlayLevel<MeasureParams>, s: NzState, act: NazariyaAct): number[] | string {
++  const p = level.params;
++  if (p.goal === "total" || p.goal === "compare") return "locked";
++  if (act.kind === "layer" || act.kind === "clear") return "tap_a_bay";
++  const a = act as { x?: number; z?: number }, x = Number(a.x), z = Number(a.z);
++  const b = p.bays.find((y) => x >= y.x0 && x < y.x0 + y.w && z >= 0 && z < y.d);
++  if (!b) return "locked";
++  const c = countsOf(p, s.h);
++  if (act.kind === "place") { if (c[b.k] >= b.cap) return "bay_full"; c[b.k]++; }
++  else { if (c[b.k] <= 0) return "empty"; c[b.k]--; }
++  const h = zeros(p.w * p.d), S = UNITS[p.unit].sizes;
++  for (const y of p.bays) lay(h, p.w, y, S[y.k], c[y.k]);
++  return h;
++}
++/** split at fade ≥ 2: the number is said before anything is laid (the live total would read it off) */
++function gate(level: PlayLevel<MeasureParams>, s: NzState, act: NazariyaAct): string | null {
++  const isBuild = act.kind === "place" || act.kind === "remove" || act.kind === "layer" || act.kind === "clear";
++  return isBuild && level.params.goal === "split" && level.fade >= 2 && s.named === null ? "say_whole_first" : null;
++}
++
++function check(level: PlayLevel<MeasureParams>, s: NzState, seq: number): Applied {
++  const p = level.params, bumped = { ...s, acts: s.acts + 1 };
++  if (p.goal !== "make") return { state: bumped, moments: [mom("law_refused", seq, { why: p.goal === "compare" ? "pick_a_pan" : "say_how_many" })], refused: "say_first" };
++  const c = countsOf(p, s.h), v = valueOf(p, c), T = p.target!;
++  if (v === 0) return { state: bumped, moments: [mom("law_refused", seq, { why: "build_first" })], refused: "build_first" };
++  const facts: Facts = { made: v, target: T, unit: UNITS[p.unit].small };
++  if (v === T) return { state: commit(s, { ...s, done: true }), moments: [mom("solved", seq, { ...facts, load: textOf(p, c) })] };
++  const near = UNITS[p.unit].sizes.includes(Math.abs(v - T));
++  return { state: bumped, moments: [mom(near ? "near_miss" : "law_refused", seq, { ...facts, why: v > T ? "too_heavy" : "too_light" })], refused: "mismatch" };
++}
++
++function name(level: PlayLevel<MeasureParams>, s: NzState, n: number, seq: number): Applied {
++  const p = level.params, bumped = { ...s, acts: s.acts + 1 };
++  if (p.goal !== "total" && p.goal !== "split") return { state: bumped, moments: [], refused: "no_name_here" };
++  const key = keyOf(p), U = UNITS[p.unit], next = commit(s, { ...s, named: n });
++  const shown: Facts = { said: n, unit: p.goal === "split" ? U.big : U.small, ...(p.goal === "total" ? { load: textOf(p, p.given!) } : { target: `${p.target} ${U.small}` }) };
++  if (n === key) return { state: { ...next, done: true }, moments: [mom("solved", seq, shown)] };
++  const mal = malsApart(level).find((m) => malValue(p, m) === n);
++  if (mal) return { state: next, moments: [mom("misconception_consequence", seq, shown, mal)], refused: "wrong_count" };
++  // one piece off (total), or one whole unit off (split): a slip
++  const slip = p.goal === "total" ? U.sizes.includes(Math.abs(n - key)) : Math.abs(n - key) === 1;
++  return { state: next, moments: [mom(slip ? "near_miss" : "law_refused", seq, { ...shown, why: "count_again" })], refused: "wrong_count" };
++}
++/** compare: "left is heavier" (same: true) or "right is heavier" (same: false); then the pans fill and tip. */
++function predict(level: PlayLevel<MeasureParams>, s: NzState, left: boolean, seq: number): Applied {
++  const p = level.params, bumped = { ...s, acts: s.acts + 1 };
++  if (p.goal !== "compare") return { state: bumped, moments: [], refused: "no_predict_here" };
++  const h = zeros(p.w * p.d), S = UNITS[p.unit].sizes, K = S.length;
++  p.bays.forEach((b, i) => lay(h, p.w, b, S[b.k], (i < K ? p.given! : p.other!)[b.k]));
++  const lv = valueOf(p, p.given!), rv = valueOf(p, p.other!), shown: Facts = { left: textOf(p, p.given!), right: textOf(p, p.other!), heavier: lv > rv ? "left" : "right" };
++  const right = (lv > rv) === left;
++  const next = commit(s, { ...s, h, predicted: left, done: right });
++  if (right) return { state: next, moments: [mom("prediction_confirmed", seq, shown), mom("solved", seq, shown)] };
++  const mal = malsApart(level).find((m) => malValue(p, m) === (left ? 1 : 0));
++  const out: Moment[] = [mal ? mom("misconception_consequence", seq, shown, mal) : mom("prediction_violated", seq, shown)];
++  return { state: next, moments: out, refused: "wrong_prediction" };
++}
++
++/** Taps that lay the target with the fewest pieces (the digits of the target, read as places). */
++function tapsFor(p: MeasureParams, counts: number[]): NazariyaAct[] {
++  const acts: NazariyaAct[] = [];
++  for (const b of p.bays) for (let i = 0; i < counts[b.k]; i++) acts.push({ kind: "place", x: b.x0, z: 0 });
++  return acts;
++}
++const digitsOf = (p: MeasureParams, T: number) => UNITS[p.unit].sizes.map((sz, k, S) => (k === 0 ? Math.floor(T / sz) : Math.floor((T % S[k - 1]) / sz)));
++function solve(level: PlayLevel<MeasureParams>): NazariyaAct[] | null {
++  const p = level.params;
++  if (p.goal === "make") return [...tapsFor(p, digitsOf(p, p.target!)), { kind: "check" }];
++  if (p.goal === "compare") return [{ kind: "predict", same: keyOf(p) === 1 }];
++  return [{ kind: "name", n: keyOf(p) }];
++}
++/** Without the idea: the number of pieces, the big count alone, the rest alone, the biggest digit run, the target
++ *  itself (split). None may be the key; compare is a two-way pick and has no strategy that beats the law. */
++function shortcut(level: PlayLevel<MeasureParams>): NazariyaAct[] | null {
++  const p = level.params, key = keyOf(p);
++  if (p.goal === "compare" || p.goal === "make") return null;
++  const c = p.given ?? digitsOf(p, p.target!), S = UNITS[p.unit].sizes;
++  // (split: the big digit IS the idea, reading the thousands place, so it is not a shortcut there)
++  const tries = [c.reduce((a, b) => a + b, 0), ...(p.goal === "total" ? [c[0]] : []), valueOf(p, c) - c[0] * S[0], ...(p.goal === "split" ? [p.target!] : [])];
++  for (const n of tries) if (n === key) return [{ kind: "name", n }];
++  return null;
++}
++function malActs(level: PlayLevel<MeasureParams>, mal: string): NazariyaAct[] | null {
++  if (!malsApart(level).includes(mal)) return null;
++  const v = malValue(level.params, mal)!;
++  return level.params.goal === "compare" ? [{ kind: "predict", same: v === 1 }] : [{ kind: "name", n: v }];
++}
++
++function generate(req: GenRequest): Candidate<MeasureParams>[] {
++  const g = req.grammar as { unit?: MeasureUnit };
++  const unit: MeasureUnit = g.unit && g.unit in UNITS ? g.unit : "g";
++  const goal = ((req.goal as MeasureGoal) ?? "total") as MeasureGoal, S = UNITS[unit].sizes;
++  const rnd = mulberry32(req.seed), out: Candidate<MeasureParams>[] = [];
++  const push = (r: Parameters<typeof measurePlot>[0], sig: string, diff: number) => {
++    const params = measurePlot(r);
++    if (params && validate(params)) out.push({ signature: sig, difficulty: Math.min(1, diff), level: lvl(req, "measure", goal, params, sig) });
++  };
++  // half the loads skip the place right below the big unit (2 kg 50 g, 1 m 5 cm): there the parts written side by side
++  // (250, 15) are not the value, so the mixed-concat belief shows (the kit's own examples have this shape)
++  const counts = (big: number) => { const skip = rnd() < 0.5; return S.map((_, k) => (k === 0 ? big : (k === 1 && skip) || rnd() < 0.3 ? 0 : 1 + Math.floor(rnd() * 9))); };
++  for (let i = 0; i < 24; i++) {
++    if (goal === "total") {
++      const big = unit === "half" ? 1 + Math.floor(rnd() * 5) : 1 + Math.floor(rnd() * 4);
++      const c = unit === "half" ? [big, rnd() < 0.3 ? 1 : 0] : counts(big);
++      push({ goal, unit, given: c }, `total:${c.join(".")}`, 0.2 + 0.1 * c.filter(Boolean).length);
++    } else if (goal === "make" || goal === "split") {
++      const c = counts(1 + Math.floor(rnd() * 4)), T = valueOf({ unit }, c);
++      if (T > 9999 || T < S[0]) continue;
++      push({ goal, unit, target: T }, `${goal}:${T}`, goal === "make" ? 0.25 + 0.05 * c.filter(Boolean).length : 0.35);
++    } else {
++      // left: whole big units; right: small units only, as one written number. Mostly the bigger NUMBER is the lighter pan
++      const a = 1 + Math.floor(rnd() * 3), lighter = rnd() < 0.7;
++      const rv = lighter ? Math.max(a + 1, a * S[0] - (1 + Math.floor(rnd() * 9)) * S[1]) : a * S[0] + (1 + Math.floor(rnd() * 9)) * S[1];
++      const left = S.map((_, k) => (k === 0 ? a : 0)), right = digitsOf({ unit } as MeasureParams, rv);
++      if (right[0] > 9 || right.some((v) => v > 9)) continue;
++      push({ goal, unit, given: left, other: right }, `compare:${a}:${rv}`, 0.3);
++    }
++  }
++  return out;
++}
++
++function facts(level: PlayLevel<MeasureParams>, s: NzState): Facts {
++  const p = level.params, U = UNITS[p.unit], f: Facts = { goal: p.goal, unit: U.small, big_unit: U.big };
++  if (p.goal === "total") f.load = textOf(p, p.given!);
++  if (p.goal === "make" || p.goal === "split") f.target = `${p.target} ${U.small}`;
++  if (p.goal === "compare") { f.left = textOf(p, p.given!); f.right = textOf(p, p.other!); if (s.predicted !== null) f.picked = s.predicted ? "left" : "right"; }
++  if (p.goal === "make" && (level.fade === 1 || s.checks > 0 || s.done)) f.made = valueOf(p, countsOf(p, s.h));
++  if (s.named !== null) f.said = s.named;
++  if (s.done) f.done = "yes";
++  return f;
++}
++function board(level: PlayLevel<MeasureParams>, s: NzState) {
++  const p = level.params, U = UNITS[p.unit];
++  const ask = p.goal === "total" ? `${textOf(p, p.given!)} = ? ${U.small}` : p.goal === "make" ? `make ${p.target} ${U.small}` : p.goal === "split" ? `${p.target} ${U.small} = ? whole ${U.big}` : `${textOf(p, p.given!)} | ${textOf(p, p.other!)}: which ${moreWord(p.unit)}?`;
++  const lines = [ask];
++  if (p.goal === "make") lines.push(`yours: ${valueOf(p, countsOf(p, s.h))} ${U.small}`);
++  if (s.named !== null) lines.push(`said: ${s.named}`);
++  return { title: "Measure", lines };
++}
++
++export const measureLogic = makeLogic<MeasureParams>({ mode: "measure", malRules: MEASURE_MAL, validate, check, name, predict, gate, build, solve, shortcut, malActs, generate, facts, board });
++export const measureHelpers = { measurePlot, countsOf, valueOf, textOf, keyOf, malValue, UNITS };
+diff --git a/src/play/families/nazariya/measure.view.ts b/src/play/families/nazariya/measure.view.ts
+new file mode 100644
+index 00000000..b7d6f130
+--- /dev/null
++++ b/src/play/families/nazariya/measure.view.ts
+@@ -0,0 +1,109 @@
++// Nazariya · measure, drawn flat: Khand's BOARD TWIN for the unit-block mode (the plot is too wide to draw cell by cell
++// on a phone). One card per bay: the piece's name ("1 kg", "100 g"), a small drawing of its shape (cube, flat, rod,
++// one), and how many are there. A tap on a card adds one piece (Break takes one off); compare shows the two written
++// loads until the child picks a side, then the pieces. Same goal line and control ids as the 3D engine.
++import type { Moment, NazariyaAct, PlayActBody } from "../../../../shared/play.ts";
++import type { PointerKind, ViewApi } from "../../core/stage.ts";
++import { clamp, type ControlSpec, type FamilyView, type MakeView, type Readout, type ViewDeps } from "../../core/viewkit.ts";
++import { goalOf } from "../../engines/khand/words.ts";
++import type { NzState } from "./grid.ts";
++import { UNITS, countsOf, textOf, valueOf, type MeasureParams } from "./measure.logic.ts";
++
++export const makeMeasureView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
++  const deps = depsIn as unknown as ViewDeps<MeasureParams, NzState, NazariyaAct>;
++  const { level, ctl, lang } = deps;
++  const p = level.params, U = UNITS[p.unit], K = U.sizes.length, fade = level.fade;
++  const pans = p.goal === "compare" ? 2 : 1, open = p.goal === "make" || p.goal === "split";
++  let tool: "build" | "remove" = "build", pad = p.goal === "total" || (p.goal === "split" && fade >= 2), num = 0, reveal = false;
++  let cw = 80, ch = 104, gap = 8, ox = 12, oy = 12, rowH = 140;
++  const st = () => ctl.state;
++  const act = (a: NazariyaAct) => { const r = ctl.dispatch(a as PlayActBody as never); deps.changed(); return r; };
++
++  function layout(w: number, h: number): void {
++    cw = clamp(Math.floor((w - 24 - (K - 1) * gap) / K), 64, 120);
++    ch = clamp(Math.floor((h - 24 - (pans - 1) * 40) / pans) - 28, 88, 140);
++    ox = Math.round((w - (K * cw + (K - 1) * gap)) / 2); oy = 34; rowH = ch + 40;
++  }
++  /** counts on a pan: the given load, the right pan, or the child's own pieces */
++  const countsOn = (pan: number, s: NzState): number[] | null => {
++    if (p.goal === "total") return p.given!;
++    if (p.goal === "compare") return s.predicted === null ? null : pan === 0 ? p.given! : p.other!;
++    return countsOf(p, s.h);
++  };
++  function icon(c: CanvasRenderingContext2D, size: number, x: number, y: number, s: number, role: "q1" | "q2"): void {
++    const P = api.P, u = Math.max(3, Math.floor(s / 12));
++    if (size >= 1000) { P.body(c, x, y, s, s, { role, r: 3 }); P.body(c, x + s * 0.18, y - s * 0.18, s, s * 0.18, { role, r: 2, state: "dim" }); }
++    else if (size === 100) P.body(c, x, y + s * 0.6, s, s * 0.4, { role, r: 3 });
++    else if (size === 10) P.body(c, x, y + s * 0.8, s, u * 2, { role, r: 2 });
++    else if (size === 2) P.body(c, x + s * 0.3, y + s * 0.7, u * 4, u * 2, { role, r: 2 });
++    else P.body(c, x + s * 0.4, y + s * 0.7, u * 2, u * 2, { role, r: 2 });
++  }
++  function draw(c: CanvasRenderingContext2D): void {
++    const P = api.P, s = st();
++    for (let pan = 0; pan < pans; pan++) {
++      const y0 = oy + pan * rowH, counts = countsOn(pan, s), role = open ? "q1" : "q2";
++      if (pans === 2) P.text(c, `${pan === 0 ? "Left" : "Right"}: ${textOf(p, pan === 0 ? p.given! : p.other!)}`, ox, y0 - 14, { size: 16, role: "ink", align: "left" });
++      for (let k = 0; k < K; k++) {
++        const x = ox + k * (cw + gap);
++        api.target(`bay-${pan}-${k}`, x, y0, cw, ch);
++        P.body(c, x, y0, cw, ch, { role: "panel", r: 10 });
++        P.text(c, U.piece[k], x + cw / 2, y0 + 16, { size: 16, role: "ink2" });
++        icon(c, U.sizes[k], x + cw * 0.25, y0 + 30, cw * 0.5, role);
++        P.text(c, counts ? String(counts[k]) : "?", x + cw / 2, y0 + ch - 22, { size: 24, role: "ink", font: "mono" });
++      }
++    }
++  }
++  function pointer(kind: PointerKind, x: number, y: number): void {
++    if (kind !== "up" || pad || st().done || !open) return;
++    const k = Math.floor((x - ox) / (cw + gap)), inside = k >= 0 && k < K && x - ox - k * (cw + gap) <= cw && y >= oy && y <= oy + ch;
++    if (!inside) return;
++    const b = p.bays.find((y2) => y2.k === k)!;
++    act({ kind: tool === "build" ? "place" : "remove", x: b.x0, z: 0 });
++    api.invalidate();
++  }
++
++  const view: FamilyView = {
++    layout, update() {}, draw, pointer, dragging: () => false,
++    goal: () => goalOf(level, lang),
++    readouts(): Readout[] {
++      const s = st(), out: Readout[] = [];
++      if (p.goal === "make") out.push({ k: "Made", v: fade === 1 || reveal || s.done ? `${valueOf(p, countsOf(p, s.h))}` : "?", role: "q1" });
++      if (p.goal === "total" || p.goal === "split") out.push({ k: "Number", v: pad ? String(num) : s.named !== null ? String(s.named) : "?", role: "you" });
++      return out;
++    },
++    controls(): ControlSpec[] {
++      const s = st(), c: ControlSpec[] = [];
++      if (s.done) return c;
++      if (pad) {
++        for (let k = 1; k <= 9; k++) c.push({ id: `k${k}`, label: String(k), kind: "pad", group: k <= 5 ? "pad1" : "pad2", onPress: () => { num = Math.min(9999, num * 10 + k); deps.changed(); } });
++        c.push({ id: "k0", label: "0", kind: "pad", group: "pad2", onPress: () => { num = Math.min(9999, num * 10); deps.changed(); } });
++        c.push({ id: "kdel", label: "Del", kind: "pad", group: "pad1", aria: "Delete a digit", onPress: () => { num = Math.floor(num / 10); deps.changed(); } });
++        if (open && !(p.goal === "split" && fade >= 2 && s.named === null)) c.push({ id: "close", label: "Build", kind: "secondary", group: "go", onPress: () => { pad = false; deps.changed(); } });
++        c.push({ id: "name", label: `Say ${num}`, kind: "primary", you: true, group: "go", onPress: () => { const r = act({ kind: "name", n: num }); if (!r.refused) { num = 0; pad = false; } deps.changed(); } });
++        return c;
++      }
++      if (p.goal === "compare") {
++        c.push({ id: "pick-left", label: "Left side", kind: "secondary", group: "predict", onPress: () => act({ kind: "predict", same: true }) });
++        c.push({ id: "pick-right", label: "Right side", kind: "secondary", group: "predict", onPress: () => act({ kind: "predict", same: false }) });
++        return c;
++      }
++      if (open) {
++        c.push({ id: "tool-build", label: "Build", kind: "choice", group: "tools", aria: `Build${tool === "build" ? " (on)" : ""}`, onPress: () => { tool = "build"; deps.changed(); } });
++        c.push({ id: "tool-remove", label: "Break", kind: "choice", group: "tools", aria: `Break${tool === "remove" ? " (on)" : ""}`, onPress: () => { tool = "remove"; deps.changed(); } });
++        c.push({ id: "undo", label: "Undo", kind: "secondary", group: "go", onPress: () => act({ kind: "undo" }) });
++      }
++      if (p.goal === "make") c.push({ id: "done", label: "Check", kind: "primary", you: true, group: "go", onPress: () => act({ kind: "check" }) });
++      else c.push({ id: "say", label: s.named === null ? "Say how many" : "Say again", kind: "primary", you: true, group: "go", onPress: () => { pad = true; deps.changed(); } });
++      return c;
++    },
++    react(ms: Moment[], refused: string | undefined): void {
++      const kinds = new Set(ms.map((m) => m.kind));
++      if (kinds.has("solved")) { reveal = true; api.sfx("good"); }
++      else if (kinds.has("misconception_consequence") || kinds.has("near_miss") || refused === "mismatch" || refused === "wrong_prediction") { reveal = true; api.sfx("look"); }
++      else if (refused) api.sfx("refuse");
++      else if (kinds.has("progress")) api.sfx("drop");
++      api.invalidate(); deps.changed();
++    },
++  };
++  return view;
++};
+diff --git a/src/play/families/views.ts b/src/play/families/views.ts
+index 83d2cfdc..b9eb6025 100644
+--- a/src/play/families/views.ts
++++ b/src/play/families/views.ts
+@@ -8,6 +8,7 @@ import { makeBalanceView } from "./taraazu/balance.view.ts";
+ import { makeLineView } from "./nishana/line.view.ts";
+ import { makeLabView } from "./kyun-lab/lab.view.ts";
+ import { makePlotView } from "./nazariya/plot.view.ts";   // r4-khand: the 2D board twin of the Khand engine
++import { makeMeasureView } from "./nazariya/measure.view.ts";   // r4-khand: measure (unit blocks) drawn as bay cards
+ import { mountStage3D, KHAND_ENTRY, type Stage3DOpts, type Stage3DMount } from "../engines/khand/index.ts";
+ 
+ export const VIEWS: Record<string, MakeView> = {
+@@ -24,6 +25,7 @@ export const VIEWS: Record<string, MakeView> = {
+   "nazariya/floor": makePlotView,
+   "nazariya/powers": makePlotView,
+   "nazariya/mirror": makePlotView,
++  "nazariya/measure": makeMeasureView,
+ };
+ export function viewFor(family: FamilyId, mode: PlayMode): MakeView | null { return VIEWS[`${family}/${mode}`] ?? null; }
+ 
+diff --git a/tests/prod/r4-khand-shots.mjs b/tests/prod/r4-khand-shots.mjs
+index 575b9d3f..010e23e3 100644
+--- a/tests/prod/r4-khand-shots.mjs
++++ b/tests/prod/r4-khand-shots.mjs
+@@ -55,6 +55,11 @@ const MODES = [
+   { id: "floor-min", q: "mode=floor&goal=min&class=5&fade=1&seed=4" },
+   { id: "floor-side", q: "mode=floor&goal=side&class=6&fade=1&seed=3&grammar=%7B%22plot%22%3A%5B12%2C9%5D%7D" },
+   { id: "floor-side-f2", q: "mode=floor&goal=side&class=6&fade=2&seed=5&grammar=%7B%22plot%22%3A%5B12%2C9%5D%7D" },
++  { id: "measure-total-g", q: "mode=measure&goal=total&class=4&fade=1&seed=3&grammar=%7B%22unit%22%3A%22g%22%7D" },
++  { id: "measure-make-g", q: "mode=measure&goal=make&class=4&fade=1&seed=4&grammar=%7B%22unit%22%3A%22g%22%7D" },
++  { id: "measure-split-ml", q: "mode=measure&goal=split&class=5&fade=2&seed=3&grammar=%7B%22unit%22%3A%22ml%22%7D" },
++  { id: "measure-compare-g", q: "mode=measure&goal=compare&class=4&fade=1&seed=5&grammar=%7B%22unit%22%3A%22g%22%7D" },
++  { id: "measure-total-cm", q: "mode=measure&goal=total&class=4&fade=2&seed=6&grammar=%7B%22unit%22%3A%22cm%22%7D" },
+   { id: "powers-square", q: "mode=powers&goal=square&class=6&fade=2&seed=3" },
+   { id: "powers-cube", q: "mode=powers&goal=cube&class=6&fade=1&seed=3" },
+   { id: "mirror-x", q: "mode=mirror&goal=complete&class=4&fade=1&seed=3&grammar=%7B%22axes%22%3A%5B%22x%22%5D%7D" },
+@@ -100,7 +105,8 @@ async function open(browser, vp, q, extra = {}) {
+   const twin = /[?&]tier=2d\b/.test(`&${q}`);
+   await page.goto(`${BASE}?family=nazariya&lang=${extra.lang ?? "hinglish"}&${twin ? "" : "tier=3d&"}${q}`);
+   if (twin) await page.waitForSelector("[data-testid=play-controls] button", { timeout: 60000 });
+-  else await page.waitForFunction(() => window.__khand && window.__khand.info().draws > 0 && window.__play?.mode3d?.(), null, { timeout: 60000 });
++  else await page.waitForFunction(() => window.__khand && window.__khand.info().draws > 0 && window.__play?.mode3d?.(), null, { timeout: 60000 })
++    .catch(async (e) => { console.log("open timed out", q, JSON.stringify(errors), await page.evaluate(() => ({ khand: !!window.__khand, play: !!window.__play, mode3d: window.__play?.mode3d?.(), text: document.body.innerText.slice(0, 200) })).catch(() => null)); throw e; });
+   await page.waitForTimeout(600);
+   return { ctx, page, errors };
+ }
+diff --git a/tests/r4-khand-law.test.mjs b/tests/r4-khand-law.test.mjs
+index 073ba397..d6a4dc23 100644
+--- a/tests/r4-khand-law.test.mjs
++++ b/tests/r4-khand-law.test.mjs
+@@ -20,6 +20,9 @@ const CASES = [
+   { mode: "mirror", goals: ["complete"], grammars: [{ axes: ["x"] }, { axes: ["z"] }] },
+   // the inverse (the missing side from the fence) gets its own battery, not a fifth of the floor one
+   { mode: "floor", label: "floor/side", goals: ["side"], grammars: [{}, { plot: [12, 9] }] },
++  // measure: base-ten unit blocks (kg / g, l / ml, km / m; m / cm; half litres)
++  { mode: "measure", label: "measure/g", goals: ["total", "make", "split", "compare"], grammars: [{ unit: "g" }, { unit: "ml" }, { unit: "m" }] },
++  { mode: "measure", label: "measure/cm+half", goals: ["total", "make", "split"], grammars: [{ unit: "cm" }, { unit: "cm" }, { unit: "half" }] },
+ ];
+ const reqOf = (logic, mode, goal, seed, fade, grammar, classLevel = 5) => ({
+   family: "nazariya", mode, topicId: "c0-test", skillId: "c0-test-s1", classLevel, fade, goal, mis: {},
+@@ -90,6 +93,16 @@ const ORACLE = {
+     if (p.goal === "max") return f.per === p.n && f.area === Math.max(...all.filter(([a, b]) => 2 * a + 2 * b === p.n).map(([a, b]) => a * b));
+     return f.area === p.n && f.per === Math.min(...all.filter(([a, b]) => a * b === p.n).map(([a, b]) => 2 * a + 2 * b));
+   },
++  measure(level, s) {
++    // worked out here from the voxels and a unit table of its own, never from the law's counts
++    const p = level.params, BIG = { g: 1000, ml: 1000, m: 1000, cm: 100, half: 2 }[p.unit];
++    const SIZES = { g: [1000, 100, 10, 1], ml: [1000, 100, 10, 1], m: [1000, 100, 10, 1], cm: [100, 10, 1], half: [2, 1] }[p.unit];
++    const val = (c) => c.reduce((a, n, k) => a + n * SIZES[k], 0);
++    if (p.goal === "total") return s.named === p.base.reduce((a, v) => a + v, 0);
++    if (p.goal === "make") return s.h.reduce((a, v, i) => a + v - p.base[i], 0) === p.target;
++    if (p.goal === "split") return s.named === Math.floor(p.target / BIG);
++    return s.predicted === (val(p.given) > val(p.other));
++  },
+   powers(level, s) {
+     const p = level.params, r = rectOf(p, s.h), side = p.k + 1, n = p.goal === "square" ? side ** 2 : side ** 3;
+     return !!r && r.a === side && r.b === side && r.hgt === (p.goal === "square" ? 1 : side) && s.named === n;
+@@ -115,6 +128,12 @@ function randomAct(level, s, rnd) {
+   if (u < 0.56) return { kind: "layer", x0: rx(), z0: rz(), x1: rx(), z1: rz() };
+   if (u < 0.62) return { kind: "clear", x0: rx(), z0: rz(), x1: rx(), z1: rz() };
+   if (u < 0.74) {
++    if (level.mode === "measure") {
++      const SZ = { g: [1000, 100, 10, 1], ml: [1000, 100, 10, 1], m: [1000, 100, 10, 1], cm: [100, 10, 1], half: [2, 1] }[p.unit];
++      const key = p.goal === "total" ? p.base.reduce((a, v) => a + v, 0) : p.goal === "split" ? Math.floor(p.target / SZ[0]) : 7;
++      const opts = [key, key + 1, key - 1, key + SZ[0], key - SZ[0] + (SZ[1] ?? 0), Math.floor(rnd() * 3000), p.target ?? 3];
++      return { kind: "name", n: opts[Math.floor(rnd() * opts.length)] };
++    }
+     const side = level.mode === "floor" && p.goal === "side";
+     const key = level.mode === "array" ? p.r * p.c : level.mode === "powers" ? (p.goal === "square" ? (p.k + 1) ** 2 : (p.k + 1) ** 3) : side ? (p.n - 2 * p.a) / 2 : 10;
+     const opts = [key, key + 1, key - 1, Math.floor(rnd() * 80), level.mode === "array" ? p.r + p.c : 2 * (p.k ?? 1), ...(side ? [p.n - p.a, p.n - 2 * p.a, p.n / p.a, p.n / 2, p.a] : [])];
+@@ -209,6 +228,19 @@ describe("r4-khand nazariya: randomised truth battery (0 wrong grades over ≥ 2
+   }
+ });
+ 
++describe("r4-khand nazariya measure: a load's voxels are its value in the small unit", () => {
++  it("every generated load: voxels = Σ count × size; the plot is rebuilt from the numbers alone", () => {
++    const logic = LOGIC["nazariya/measure"];
++    for (const c of CASES.filter((x) => x.mode === "measure")) for (const level of levelsOf(c, 40)) {
++      const p = level.params, SZ = { g: [1000, 100, 10, 1], ml: [1000, 100, 10, 1], m: [1000, 100, 10, 1], cm: [100, 10, 1], half: [2, 1] }[p.unit];
++      if (p.goal === "total") assert.equal(p.base.reduce((a, v) => a + v, 0), p.given.reduce((a, n, k) => a + n * SZ[k], 0), level.levelId);
++      if (p.goal === "make") { const end = replayAll(logic, level, env(logic.solve(level))).state; assert.equal(end.h.reduce((a, v) => a + v, 0), p.target); }
++      assert.equal(logic.validate({ ...level, params: { ...p, base: p.base.map((v, i) => (i === 0 ? v + 1 : v)) } }), null, "a moved block is refused");
++      assert.equal(logic.validate({ ...level, params: { ...p, lock: p.lock.map(() => 0) } }), null, "unlocked scenery is refused");
++    }
++  });
++});
++
+ describe("r4-khand nazariya: the device cannot write the level or the verdict", () => {
+   const level = levelsOf(CASES[3], 2)[0];
+   const logic = LOGIC["nazariya/powers"];
+diff --git a/tests/r4-khand-server.test.mjs b/tests/r4-khand-server.test.mjs
+index 2cbb0fbe..1622e211 100644
+--- a/tests/r4-khand-server.test.mjs
++++ b/tests/r4-khand-server.test.mjs
+@@ -30,7 +30,7 @@ describe("r4-khand coverage", () => {
+       for (const sk of e.skillIds) assert.ok(kit.skills.some((s) => s.id === sk), sk);
+       assert.deepEqual(e.skillIds, ACTS[`${e.topicId}|${e.goal}`].map((x) => `${e.topicId}-${x}`));
+     }
+-    assert.equal(new Set(entries.map((e) => e.topicId)).size, 11);
++    assert.equal(new Set(entries.map((e) => e.topicId)).size, 17);   // 11 + measure (c4-ch08 t01 / t02, c5-ch08 t01 / t02, c5-ch05-t01, c4-ch06-t01)
+   });
+   it("admission is by skill: each claimed skill finds a Nazariya entry whose act exercises it", () => {
+     for (const e of NZ()) for (const sk of e.skillIds) {
+@@ -68,10 +68,10 @@ describe("r4-khand reactions", () => {
+   const fam = bank().family?.nazariya;
+   it("the loader merges data/play/reactions/nazariya.json into the bank", () => { assert.ok(fam?.law_refused?.en?.length >= 10); });
+   it("every shape in every language passes the play guard and the lesson's never-rules floor, filled", () => {
+-    const SAMPLE = { off: 2, top_off: 1, front_off: 1, side_off: 0, rows: 6, cols: 8, said: 14, blocks: 12, area: 9, perimeter: 12, side: 4, hmax: 3, view: "front", goal: "cube", act: "layer", length: 5, fence_if: 38 };
++    const SAMPLE = { off: 2, top_off: 1, front_off: 1, side_off: 0, rows: 6, cols: 8, said: 14, blocks: 12, area: 9, perimeter: 12, side: 4, hmax: 3, view: "front", goal: "cube", act: "layer", length: 5, fence_if: 38, unit: "g", load: "2 kg 50 g", made: 2050, target: 2050, left: "1 kg", right: "900 g", heavier: "left" };
+     let n = 0;
+     for (const [moment, langs] of Object.entries(fam)) for (const [lang, shapes] of Object.entries(langs)) for (const sh of shapes) {
+-      const text = fill(sh, { ...SAMPLE, why: /\{\?why=([^}|]*)/.exec(sh)?.[1] ?? "", mal: /\{\?mal=([^}|]*)/.exec(sh)?.[1] ?? "", mode: /\{\?mode=([^}|]*)/.exec(sh)?.[1] ?? "", goal: /\{\?goal=([^}|]*)/.exec(sh)?.[1] ?? SAMPLE.goal, off: /\{\?off=([^}|]*)/.exec(sh)?.[1] ?? 2 });
++      const text = fill(sh, { ...SAMPLE, why: /\{\?why=([^}|]*)/.exec(sh)?.[1] ?? "", mal: /\{\?mal=([^}|]*)/.exec(sh)?.[1] ?? "", mode: /\{\?mode=([^}|]*)/.exec(sh)?.[1] ?? "", goal: /\{\?goal=([^}|]*)/.exec(sh)?.[1] ?? SAMPLE.goal, heavier: /\{\?heavier=([^}|]*)/.exec(sh)?.[1] ?? SAMPLE.heavier, off: /\{\?off=([^}|]*)/.exec(sh)?.[1] ?? 2 });
+       assert.ok(text, `${moment}/${lang}: ${sh}`);
+       assert.deepEqual(reactionProblems(text), [], `${moment}/${lang}: ${text}`);
+       assert.equal(floorOk(text), true, `${moment}/${lang}: ${text}`);
+@@ -80,7 +80,7 @@ describe("r4-khand reactions", () => {
+     assert.ok(n >= 120, `${n} shapes`);
+   });
+   it("a shape is said only where it is true: every {?why=} is a refusal the law makes, every {?mal=} a mal-rule it implements", () => {
+-    const src = ["grid", "views.logic", "array.logic", "floor.logic", "powers.logic", "mirror.logic"].map((f) => readFileSync(new URL(`../src/play/families/nazariya/${f}.ts`, import.meta.url), "utf8")).join("\n");
++    const src = ["grid", "views.logic", "array.logic", "floor.logic", "powers.logic", "mirror.logic", "measure.logic"].map((f) => readFileSync(new URL(`../src/play/families/nazariya/${f}.ts`, import.meta.url), "utf8")).join("\n");
+     const mals = new Set(Object.values(LOGIC).filter((l) => l.family === "nazariya").flatMap((l) => l.malRules));
+     for (const langs of Object.values(fam)) for (const shapes of Object.values(langs)) for (const sh of shapes) {
+       const why = /^\{\?why=([^}]*)\}/.exec(sh)?.[1];
+-- 
+2.43.0
+
