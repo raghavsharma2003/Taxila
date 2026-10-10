@@ -295,15 +295,21 @@ guardians" failures are an artifact of the two lanes sharing one DB branch, and 
 | owner-1 (grading) | 3/4: 1 wrong grade of 62 typed | 3/4: 2 wrong grades of 68 typed | no worse |
 | owner-2 (no confusion, 6 × 14 turns) | 7/12: **17 defects on 14 turns** (J.confused ×11, R3.bare ×2, R5.loop, R6.gutted, J.ignores, J.contradicts) | 8/12: **23 defects on 19 turns** (J.confused ×16, R7.defer ×3, J.ignores ×2, J.wrong_person, R3.bare) | fewer defects; R7.defer gone. The check count differs only because the defects land in different categories. R5.loop: the same child path (pata nahi → wrong → samajh nahi aaya on one card) gives the same hold on BOTH trees in the Director alone (3 seeds); base's children took other paths. |
 | owner-3 (ending) | 48/48 | 48/48 | same |
-| owner-4 (steering) | 14/17 | 17/17 | 2 misses. "example do" gave a concrete example that was not named as one: **fixed after** (`ff13a9ff`, the note asks for the example to be named). "English mein batao" held for one turn, then a Hinglish reply: the Director keeps lang english pinned, and this branch changes nothing in the language path (`learner/brief.js` LANG row, untouched), so this is reply-model variance on n = 1. |
-| owner-5 (visual) | 10/13 | 10/13 | different misses. Base: two ASCII "diagrams" in the reply (V3), which the round-B note prevents. Merged: two whiteboard asks whose words named the board but never sent the eyes to it, plus one failed Studio slot. **Fixed after** (`02553453`, the note says: if the screen has it, send their eyes there). |
-| round3-conversation | 26/27 | 26/27 | C failed on both. **Fixed after** (`0e4eac51`): a first pose is written by the lead slot, whose note carries move.lead and not the last section, so the served return now also rides on move.lead. Re-run on `0e4eac51`: **27/27**; the share probe brought it back 4/4. |
+| owner-4 (steering) | 14/17 → **17/17** on `0e4eac51` | 17/17 (17/17 again) | 2 misses. "example do" gave a concrete example that was not named as one: **fixed after** (`ff13a9ff`, the note asks for the example to be named). "English mein batao" held for one turn, then a Hinglish reply: the Director keeps lang english pinned, and this branch changes nothing in the language path (`learner/brief.js` LANG row, untouched), so this is reply-model variance on n = 1. |
+| owner-5 (visual) | 10/13 → **11/13** on `0e4eac51` | 10/13 | different misses. Base: two ASCII "diagrams" in the reply (V3), which the round-B note prevents. Merged: two whiteboard asks whose words named the board but never sent the eyes to it, plus one failed Studio slot. **Fixed after** (`02553453`, the note says: if the screen has it, send their eyes there). |
+| round3-conversation | 26/27 → **27/27** on `0e4eac51` | 26/27 | C failed on both. **Fixed after** (`0e4eac51`): a first pose is written by the lead slot, whose note carries move.lead and not the last section, so the served return now also rides on move.lead. Re-run on `0e4eac51`: **27/27**; the share probe brought it back 4/4. |
 | round3-relational-human | 21/24 | 21/24 | same: the leftover-guardian artifact ×2 and the pre-existing no_perception echo on a cascade lesson |
 | adversarial | r2 10/10, r3 22 / 1 (N1) | the same | N1 is the owner's goodbye decision |
 
 **Read for the merge:** no harness is worse than base except owner-4 by 2 checks. One of those has a code cause, fixed; the
-other is reply-model variance on one pair. owner-2 has fewer defects than base. Not yet re-run on the final head:
-owner-4 and owner-5 after `ff13a9ff` / `02553453`.
+other is reply-model variance on one pair. owner-2 has fewer defects than base.
+
+**Re-run on the final head `0e4eac51`** (with the example, picture and lead-slot return fixes; `acceptance/head-0e4eac51/`),
+with base run again beside it (`acceptance/base-9920f21e-run2/`): owner-4 **17/17** (base 17/17); owner-5 **11/13** (base 10/13;
+the one miss left is a Studio slot that failed to build, not this stream's code); round3-conversation **27/27**. Gate on
+`9ddb5820`: tsc and vite pass, npm test 2,592 pass / 61 fail / 4 skipped. 60 of the failures are the known environmental
+browser tests; the 61st, `p3-voicesig-client` "never delay the turn", is a timing test that failed while lessons ran in
+parallel and passes 3/3 alone (a file this stream never touched). Prompt budget PASS, lint 353.
 
 ## 6. Owner and main-session decisions needed
 
