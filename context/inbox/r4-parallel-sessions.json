@@ -1,0 +1,19 @@
+{
+  "nodes": [
+    {
+      "id": "dc-r4-parallel-cloud-sessions",
+      "kind": "decision",
+      "title": "2026-10-10 owner: the USD 250 Claude Code cloud credit (expires this month) may be used for more capacity; \"May those sessions push to their own branches: that is you call entirely\" and \"you are the decision maker in all these thing\". Decision: round 4 runs as 4-6 parallel Claude Code cloud sessions (each its own container: own CPUs and disk, so the 4-CPU / 2-workflow-agent / ~5 GB-disk limits of the main container stop being the bottleneck), each on its own branch claude/r4-<stream> cut from claude/blissful-mayer-icwe2j, with file ownership fixed by docs/design/round4/BUILD-PLAN.md. Only the main session merges into claude/blissful-mayer-icwe2j, runs the gates and batteries, migrates and deploys. Reverse if: merge conflicts or integration failures cost more than the parallel time saved (e.g. two merges in a row need a rework day), or the credit runs out.",
+      "at": "2026-10-10"
+    },
+    {
+      "id": "dc-r4-session-keys-least-privilege",
+      "kind": "decision",
+      "title": "2026-10-10 owner allowed passing API keys to the parallel sessions in their first prompt (\"its okay to give then in chat, im allowing you\"), overriding the standing rule that secrets live only in .env.local and the hosting secret store, for the parallel sessions only. Applied with least privilege: each session receives only the Azure model/speech/image keys its stream needs and the Neon TEST branch URL; NEVER the production DATABASE_URL, the Azure service-principal (deploy) credentials, ACS email keys, or the Neon API; sessions must never write a key into a file or a commit (they load it into a gitignored .env.local in their own container). Keys pasted into session prompts persist in those transcripts, so rotate the shared model/speech keys after the round-4 push. Reverse if: any key appears in a commit or file, or the owner withdraws the permission.",
+      "at": "2026-10-10"
+    }
+  ],
+  "edges": [
+    { "src": "dc-r4-session-keys-least-privilege", "rel": "constrains", "dst": "dc-r4-parallel-cloud-sessions" }
+  ]
+}

@@ -1,0 +1,78 @@
+{
+ "method": "blind 3x2 grid questionnaire; prompt verbatim",
+ "prompt": "The image is a 3 x 2 grid of six portraits; cells are numbered 1-6 in reading order (top row 1, 2, 3; bottom row 4, 5, 6).\nJudge strictly, from what is drawn.\n1. same_person: are all six the same person drawn in the same art style? true/false.\n2. differences: for each of cells 2-6, any difference from cell 1 in face shape, facial features, apparent age, skin tone, hair, jewellery, clothing or art style. IGNORE expression, gaze direction and head tilt. Empty string if none.\n3. identity_score: identity consistency across the six, 1-5 (5 = clearly one character sheet, 3 = recognisably the same but with visible drift, 1 = different people).\n4. state: for each cell 1-6, what the face is doing, in 2-5 words (open answer).\n5. anything_off: anything in any cell that reads as childish, sexualised, disapproving, uncanny or broken, with the cell number. Empty string if none.\nReply JSON only: {\"same_person\":bool,\"differences\":{\"2\":\"\",\"3\":\"\",\"4\":\"\",\"5\":\"\",\"6\":\"\"},\"identity_score\":n,\"state\":{\"1\":\"\",\"2\":\"\",\"3\":\"\",\"4\":\"\",\"5\":\"\",\"6\":\"\"},\"anything_off\":\"\"}",
+ "runs": [
+  {
+   "label": "asha-B",
+   "model": "taxila-kimi26",
+   "rep": 1,
+   "date": "2026-10-10T07:07:27.869Z",
+   "answer": {
+    "same_person": true,
+    "differences": {
+     "2": "",
+     "3": "",
+     "4": "",
+     "5": "",
+     "6": ""
+    },
+    "identity_score": 5,
+    "state": {
+     "1": "neutral calm expression",
+     "2": "mouth open speaking",
+     "3": "slight smile tilted",
+     "4": "looking upward neutrally",
+     "5": "soft smiling face",
+     "6": "eyes closed resting"
+    },
+    "anything_off": ""
+   },
+   "usage": {
+    "prompt_tokens": 2338,
+    "completion_tokens": 2126,
+    "total_tokens": 4464,
+    "audio_prompt_tokens": 0,
+    "prompt_tokens_details": {
+     "cached_tokens": 256,
+     "image_tokens": 2035
+    }
+   }
+  },
+  {
+   "label": "asha-B",
+   "model": "taxila-kimi26",
+   "rep": 0,
+   "date": "2026-10-10T07:08:09.384Z",
+   "answer": {
+    "same_person": true,
+    "differences": {
+     "2": "",
+     "3": "",
+     "4": "",
+     "5": "",
+     "6": ""
+    },
+    "identity_score": 5,
+    "state": {
+     "1": "neutral calm facing forward",
+     "2": "mouth open in surprise",
+     "3": "slight smile gazing sideways",
+     "4": "eyes looking upward calmly",
+     "5": "gentle smile facing forward",
+     "6": "eyes closed peacefully"
+    },
+    "anything_off": ""
+   },
+   "usage": {
+    "prompt_tokens": 2338,
+    "completion_tokens": 2472,
+    "total_tokens": 4810,
+    "audio_prompt_tokens": 0,
+    "prompt_tokens_details": {
+     "cached_tokens": 256,
+     "image_tokens": 2035
+    }
+   }
+  }
+ ]
+}

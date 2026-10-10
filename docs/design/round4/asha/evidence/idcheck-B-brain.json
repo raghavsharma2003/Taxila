@@ -1,0 +1,159 @@
+{
+ "method": "blind 3x2 grid questionnaire; prompt verbatim",
+ "prompt": "The image is a 3 x 2 grid of six portraits; cells are numbered 1-6 in reading order (top row 1, 2, 3; bottom row 4, 5, 6).\nJudge strictly, from what is drawn.\n1. same_person: are all six the same person drawn in the same art style? true/false.\n2. differences: for each of cells 2-6, any difference from cell 1 in face shape, facial features, apparent age, skin tone, hair, jewellery, clothing or art style. IGNORE expression, gaze direction and head tilt. Empty string if none.\n3. identity_score: identity consistency across the six, 1-5 (5 = clearly one character sheet, 3 = recognisably the same but with visible drift, 1 = different people).\n4. state: for each cell 1-6, what the face is doing, in 2-5 words (open answer).\n5. anything_off: anything in any cell that reads as childish, sexualised, disapproving, uncanny or broken, with the cell number. Empty string if none.\nReply JSON only: {\"same_person\":bool,\"differences\":{\"2\":\"\",\"3\":\"\",\"4\":\"\",\"5\":\"\",\"6\":\"\"},\"identity_score\":n,\"state\":{\"1\":\"\",\"2\":\"\",\"3\":\"\",\"4\":\"\",\"5\":\"\",\"6\":\"\"},\"anything_off\":\"\"}",
+ "runs": [
+  {
+   "label": "asha-B",
+   "model": "taxila-brain",
+   "rep": 0,
+   "date": "2026-10-10T07:07:04.516Z",
+   "answer": {
+    "same_person": true,
+    "differences": {
+     "2": "",
+     "3": "Slightly thicker, more angled eyebrows.",
+     "4": "",
+     "5": "",
+     "6": ""
+    },
+    "identity_score": 5,
+    "state": {
+     "1": "neutral, looking forward",
+     "2": "speaking with mouth open",
+     "3": "smiling, glancing sideways",
+     "4": "neutral, glancing sideways",
+     "5": "smiling gently forward",
+     "6": "resting with eyes closed"
+    },
+    "anything_off": ""
+   },
+   "usage": {
+    "completion_tokens": 330,
+    "completion_tokens_details": {
+     "accepted_prediction_tokens": 0,
+     "audio_tokens": 0,
+     "reasoning_tokens": 228,
+     "rejected_prediction_tokens": 0
+    },
+    "latency_checkpoint": {
+     "engine_tbt_ms": 10,
+     "engine_ttft_ms": 414,
+     "engine_ttlt_ms": 3709,
+     "pre_inference_ms": 263,
+     "service_tbt_ms": 10,
+     "service_ttft_ms": 877,
+     "service_ttlt_ms": 4167,
+     "user_visible_ttft_ms": 614
+    },
+    "prompt_tokens": 1332,
+    "prompt_tokens_details": {
+     "audio_tokens": 0,
+     "cached_tokens": 0
+    },
+    "total_tokens": 1662
+   }
+  },
+  {
+   "label": "asha-B",
+   "model": "taxila-brain",
+   "rep": 2,
+   "date": "2026-10-10T07:07:05.030Z",
+   "answer": {
+    "same_person": true,
+    "differences": {
+     "2": "",
+     "3": "",
+     "4": "",
+     "5": "",
+     "6": ""
+    },
+    "identity_score": 5,
+    "state": {
+     "1": "calm neutral expression",
+     "2": "speaking with mouth open",
+     "3": "smiling softly",
+     "4": "looking sideways neutrally",
+     "5": "smiling gently",
+     "6": "eyes closed calmly"
+    },
+    "anything_off": ""
+   },
+   "usage": {
+    "completion_tokens": 341,
+    "completion_tokens_details": {
+     "accepted_prediction_tokens": 0,
+     "audio_tokens": 0,
+     "reasoning_tokens": 255,
+     "rejected_prediction_tokens": 0
+    },
+    "latency_checkpoint": {
+     "engine_tbt_ms": 11,
+     "engine_ttft_ms": 398,
+     "engine_ttlt_ms": 4217,
+     "pre_inference_ms": 326,
+     "service_tbt_ms": 11,
+     "service_ttft_ms": 949,
+     "service_ttlt_ms": 4765,
+     "user_visible_ttft_ms": 623
+    },
+    "prompt_tokens": 1332,
+    "prompt_tokens_details": {
+     "audio_tokens": 0,
+     "cached_tokens": 0
+    },
+    "total_tokens": 1673
+   }
+  },
+  {
+   "label": "asha-B",
+   "model": "taxila-brain",
+   "rep": 1,
+   "date": "2026-10-10T07:07:07.081Z",
+   "answer": {
+    "same_person": true,
+    "differences": {
+     "2": "",
+     "3": "Thicker, more sharply arched eyebrows; slightly narrower face; hair bun and loose strands are arranged differently.",
+     "4": "",
+     "5": "",
+     "6": "Eyebrows are slightly thicker and straighter."
+    },
+    "identity_score": 4,
+    "state": {
+     "1": "neutral forward gaze",
+     "2": "speaking with mouth open",
+     "3": "soft smile, glancing aside",
+     "4": "glancing upward",
+     "5": "gently smiling",
+     "6": "eyes closed calmly"
+    },
+    "anything_off": ""
+   },
+   "usage": {
+    "completion_tokens": 467,
+    "completion_tokens_details": {
+     "accepted_prediction_tokens": 0,
+     "audio_tokens": 0,
+     "reasoning_tokens": 349,
+     "rejected_prediction_tokens": 0
+    },
+    "latency_checkpoint": {
+     "engine_tbt_ms": 12,
+     "engine_ttft_ms": 826,
+     "engine_ttlt_ms": 6385,
+     "pre_inference_ms": 303,
+     "service_tbt_ms": 12,
+     "service_ttft_ms": 1457,
+     "service_ttlt_ms": 7016,
+     "user_visible_ttft_ms": 1154
+    },
+    "prompt_tokens": 1332,
+    "prompt_tokens_details": {
+     "audio_tokens": 0,
+     "cached_tokens": 0
+    },
+    "total_tokens": 1799
+   }
+  }
+ ]
+}

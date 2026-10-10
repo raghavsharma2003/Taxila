@@ -1,0 +1,13 @@
+{
+  "nodes": [
+    {
+      "id": "dc-owner-ship-complete-to-prod-2026-10-10",
+      "kind": "decision",
+      "title": "2026-10-10 owner directives, verbatim: (1) \"dont start the sessions yet i wanna text the product after the round goes out and all the thing we have in pipeline we deploy, because i wanna decide the direction of the product which i think its lacking and there are so many gaps that i wanna one by one work on. right now taxila.dev dont even have the ui,ux upgrade yet and none of the features that we talked about.\" (2) \"yes use the same email for hands-free, also i want you to bascially deploy everything live after completing it so that i can test a good/latest version atleast. its focus on completing thing with no copremises 100% quality ad deploy them and put them on prod, everything tested and no gaps. the game/content development and its deploy for the student is extremey fucked up and nonsense and fully broken.\" Decisions: no parallel cloud sessions until the owner says so (work runs in this session's agents/workflows); every finished piece goes to production as soon as its gates and batteries pass — nothing is left on a branch or a preview for the owner to imagine; the owner's hands-free (duplex live) cohort is the guardian account of the session user's email (sha256 in TAXILA_DUPLEX_LIVE_FOR); the game/content experience for students is the first quality target after round 3 ships, then the Prakash UI rebuild with Asha (lamp1), then latency. Reverse if: the owner sets a different order.",
+      "at": "2026-10-10"
+    }
+  ],
+  "edges": [
+    { "src": "dc-owner-ship-complete-to-prod-2026-10-10", "rel": "constrains", "dst": "dc-r4-parallel-cloud-sessions" }
+  ]
+}

@@ -1,0 +1,62 @@
+{
+ "front": "rig-b",
+ "method": "Register each Stage-B edit to the rig front (ORB + RANSAC similarity on the whole frame, as face/source/measure.py),\nwrite the frame registered by scale + translation only (rotation kept: the listening tilt is real), and report drift.\nAlso builds the blind identity grid (3 x 2: rest, speak, listen, think, warm, blink; the judge is not told the order).\n    python3 -I register.py <out.json>",
+ "frames": {
+  "x-speak": {
+   "scale_frame_to_front": 1.0011,
+   "rot_deg": -0.0,
+   "face_centre_shift_px": 0.2,
+   "inliers": 792,
+   "matches": 800
+  },
+  "x-listen": {
+   "scale_frame_to_front": 1.089,
+   "rot_deg": 14.82,
+   "face_centre_shift_px": 6.7,
+   "inliers": 193,
+   "matches": 800
+  },
+  "x-think": {
+   "scale_frame_to_front": 1.1026,
+   "rot_deg": 0.13,
+   "face_centre_shift_px": 45.8,
+   "inliers": 531,
+   "matches": 800
+  },
+  "x-warm": {
+   "scale_frame_to_front": 1.0428,
+   "rot_deg": 0.0,
+   "face_centre_shift_px": 15.9,
+   "inliers": 661,
+   "matches": 800
+  },
+  "x-blink": {
+   "scale_frame_to_front": 1.0008,
+   "rot_deg": -0.01,
+   "face_centre_shift_px": 0.1,
+   "inliers": 772,
+   "matches": 800
+  },
+  "x-mid": {
+   "scale_frame_to_front": 1.0048,
+   "rot_deg": -0.02,
+   "face_centre_shift_px": 3.3,
+   "inliers": 730,
+   "matches": 800
+  },
+  "x-yawL": {
+   "scale_frame_to_front": 1.0341,
+   "rot_deg": 0.11,
+   "face_centre_shift_px": 30.8,
+   "inliers": 487,
+   "matches": 800
+  },
+  "x-yawR": {
+   "scale_frame_to_front": 1.0433,
+   "rot_deg": 0.73,
+   "face_centre_shift_px": 21.7,
+   "inliers": 202,
+   "matches": 800
+  }
+ }
+}

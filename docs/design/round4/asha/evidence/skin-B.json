@@ -1,0 +1,180 @@
+{
+ "date": "2026-10-10",
+ "method": "Skin: measure the rig front against Monk 6, grade the skin half-way toward it, and re-measure inside the jharokha's\nlamplight grade (the multiply vignette + screen rim of world/source/src/style.css .jh-grade/.jh-rim, as slots.py).\nMethod as docs/design/round4/face/source/measure.py (g9 moved to 2D): 4 hand-placed 25 x 25 patches (forehead L/R either\nside of the bindi, cheeks L/R) in rig space, per-channel median, mean in linear light, CIE L*a*b* D65.\nGrade as face/source/skingrade.py: a hue-wedge skin mask (head and neck only, the rust cardigan excluded), chroma x kC and\nL* + dL with kC, dL solved so the patch mean lands half-way (in L* and C*) between the measured value and MST 6.\n    python3 -I skin.py <out.json>     (writes rs/<frame>-g.png for every rig-space frame)",
+ "target_MST6": {
+  "L": 55.1,
+  "a": 7.8,
+  "b": 26.7,
+  "C": 27.9
+ },
+ "patches_rigspace": {
+  "forehead_L": [
+   470,
+   262
+  ],
+  "forehead_R": [
+   580,
+   262
+  ],
+  "cheek_L": [
+   400,
+   522
+  ],
+  "cheek_R": [
+   650,
+   522
+  ]
+ },
+ "flat_before": {
+  "patches": {
+   "forehead_L": {
+    "L": 62.4,
+    "a": 33.2,
+    "b": 57.0,
+    "C": 66.0
+   },
+   "forehead_R": {
+    "L": 61.9,
+    "a": 33.0,
+    "b": 55.6,
+    "C": 64.7
+   },
+   "cheek_L": {
+    "L": 61.0,
+    "a": 33.7,
+    "b": 55.9,
+    "C": 65.3
+   },
+   "cheek_R": {
+    "L": 61.7,
+    "a": 33.5,
+    "b": 55.9,
+    "C": 65.1
+   }
+  },
+  "mean": {
+   "L": 61.8,
+   "a": 33.3,
+   "b": 56.1,
+   "C": 65.3
+  },
+  "dL": 6.7,
+  "dC": 37.4,
+  "g9_bar": false
+ },
+ "flat_after": {
+  "patches": {
+   "forehead_L": {
+    "L": 59.0,
+    "a": 22.8,
+    "b": 41.0,
+    "C": 46.9
+   },
+   "forehead_R": {
+    "L": 58.6,
+    "a": 23.0,
+    "b": 40.1,
+    "C": 46.2
+   },
+   "cheek_L": {
+    "L": 57.6,
+    "a": 23.7,
+    "b": 39.9,
+    "C": 46.4
+   },
+   "cheek_R": {
+    "L": 58.2,
+    "a": 23.1,
+    "b": 40.1,
+    "C": 46.3
+   }
+  },
+  "mean": {
+   "L": 58.4,
+   "a": 23.1,
+   "b": 40.3,
+   "C": 46.4
+  },
+  "dL": 3.3,
+  "dC": 18.5,
+  "g9_bar": false
+ },
+ "grade": {
+  "kC": 0.7262,
+  "dL": -3.35
+ },
+ "in_window_before": {
+  "patches": {
+   "forehead_L": {
+    "L": 62.4,
+    "a": 33.2,
+    "b": 57.0,
+    "C": 66.0
+   },
+   "forehead_R": {
+    "L": 61.9,
+    "a": 33.0,
+    "b": 55.6,
+    "C": 64.7
+   },
+   "cheek_L": {
+    "L": 60.6,
+    "a": 33.8,
+    "b": 55.5,
+    "C": 65.0
+   },
+   "cheek_R": {
+    "L": 61.3,
+    "a": 33.6,
+    "b": 55.9,
+    "C": 65.2
+   }
+  },
+  "mean": {
+   "L": 61.6,
+   "a": 33.4,
+   "b": 56.0,
+   "C": 65.2
+  },
+  "dL": 6.5,
+  "dC": 37.3,
+  "g9_bar": false
+ },
+ "in_window_after": {
+  "patches": {
+   "forehead_L": {
+    "L": 59.0,
+    "a": 22.8,
+    "b": 41.0,
+    "C": 46.9
+   },
+   "forehead_R": {
+    "L": 58.6,
+    "a": 23.0,
+    "b": 40.1,
+    "C": 46.2
+   },
+   "cheek_L": {
+    "L": 57.3,
+    "a": 23.7,
+    "b": 40.0,
+    "C": 46.5
+   },
+   "cheek_R": {
+    "L": 58.0,
+    "a": 23.6,
+    "b": 39.8,
+    "C": 46.3
+   }
+  },
+  "mean": {
+   "L": 58.2,
+   "a": 23.3,
+   "b": 40.2,
+   "C": 46.5
+  },
+  "dL": 3.1,
+  "dC": 18.6,
+  "g9_bar": false
+ }
+}
