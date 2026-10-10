@@ -1,0 +1,4766 @@
+{
+ "base": "http://127.0.0.1:8787",
+ "startedAt": "2026-10-10T20:44:02.054Z",
+ "conc": 4,
+ "reps": 1,
+ "requests": [
+  {
+   "tag": "picture \"picture dikhao\" (spoken, c5-maths-ch02-t01, rep 1)",
+   "kind": "board",
+   "real": true,
+   "boardLateMs": -130,
+   "inResponse": false,
+   "refers": true,
+   "turnMs": 1577,
+   "reply": "Aarav, screen par number line dekhiye: 0 se 1 tak 5 equal gaps hain; 2/5, 0 se doosre gap par hai. Ab point dikhaiye.",
+   "transcript": {
+    "lessonId": "c4a42e76-619d-4d73-ac98-37ee3637e82e",
+    "mode": "cascade",
+    "topicId": "c5-maths-ch02-t01",
+    "opening": {
+     "reply": "Namaste Aarav, main Asha, aapki AI teacher. Aaj cricket pitch jaise number line par fractions rakhenge. Aapko cricket mein batting pasand hai ya bowling?",
+     "ui": {
+      "status": "your_turn",
+      "phase": "warmup",
+      "handover": "answer",
+      "answerForm": "words",
+      "tray": "none",
+      "shortTitle": "Fractions on a line",
+      "beat": {
+       "beatId": "b1-arrive",
+       "type": "arrive",
+       "index": 1
+      },
+      "ask": {
+       "text": "Aapko cricket mein batting pasand hai ya bowling?"
+      }
+     },
+     "moduleCommands": []
+    },
+    "rows": [
+     {
+      "n": 1,
+      "child": "haan ready hoon",
+      "kind": "greet",
+      "ms": 2388,
+      "r": {
+       "move": {
+        "kind": "hook"
+       },
+       "teacherReply": "Badhiya, Aarav. Cricket pitch ko 4 equal parts mein baantiye: har hissa fraction ka ek step hoga. 1 se pehle kitne steps honge?",
+       "ui": {
+        "status": "your_turn",
+        "phase": "teach",
+        "handover": "answer",
+        "answerForm": "words",
+        "tray": "none",
+        "shortTitle": "Fractions on a line",
+        "beat": {
+         "beatId": "b2-hook",
+         "type": "hook",
+         "index": 2
+        },
+        "ask": {
+         "text": "1 se pehle kitne steps honge?"
+        }
+       },
+       "moduleCommands": []
+      }
+     },
+     {
+      "n": 2,
+      "child": "ok samajh gaya",
+      "kind": "filler",
+      "ms": 1800,
+      "r": {
+       "move": {
+        "kind": "explain"
+       },
+       "teacherReply": "Aarav, ab 0 se 1 ko 5 equal gaps mein baantiye; har gap 1/5 hai. Screen par 2/5 ka point kaunsa hoga?",
+       "ui": {
+        "status": "your_turn",
+        "phase": "teach",
+        "handover": "answer",
+        "answerForm": "words",
+        "tray": "module",
+        "shortTitle": "Fractions on a line",
+        "beat": {
+         "beatId": "b3-explain",
+         "type": "explain",
+         "index": 3
+        },
+        "ask": {
+         "text": "Screen par 2/5 ka point kaunsa hoga?"
+        }
+       },
+       "moduleCommands": [
+        {
+         "op": "mount",
+         "moduleId": "m2",
+         "engine": "number-line@1",
+         "params": {
+          "topicId": "c5-maths-ch02-t01",
+          "skillId": null,
+          "lang": "hinglish",
+          "fractions": [
+           [
+            2,
+            5
+           ]
+          ],
+          "numbers": [
+           0,
+           1
+          ]
+         }
+        }
+       ]
+      }
+     },
+     {
+      "n": 3,
+      "child": "picture dikhao",
+      "kind": "visual",
+      "ms": 1577,
+      "r": {
+       "move": {
+        "kind": "reteach"
+       },
+       "teacherReply": "Aarav, screen par number line dekhiye: 0 se 1 tak 5 equal gaps hain; 2/5, 0 se doosre gap par hai. Ab point dikhaiye.",
+       "ui": {
+        "status": "your_turn",
+        "phase": "teach",
+        "handover": "answer",
+        "answerForm": "words",
+        "tray": "studio",
+        "shortTitle": "Fractions on a line",
+        "beat": {
+         "beatId": "b3-explain",
+         "type": "explain",
+         "index": 3
+        },
+        "ask": {
+         "text": "Ab point dikhaiye."
+        },
+        "studioSlot": {
+         "slotId": "c4a42e76-619d-4d73-ac98-37ee3637e82e:wb:3:slot",
+         "intentId": "c4a42e76-619d-4d73-ac98-37ee3637e82e:wb:3",
+         "state": "planning"
+        }
+       },
+       "moduleCommands": [
+        {
+         "op": "unmount",
+         "moduleId": "m2"
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  {
+   "tag": "diagram \"show me a diagram\" (typed, c6-maths-ch07-t01, rep 1)",
+   "kind": "board",
+   "real": true,
+   "boardLateMs": -700,
+   "inResponse": true,
+   "refers": true,
+   "turnMs": 1498,
+   "reply": "Meher, look at the screen: 15 dots are split into 3 equal groups, each group has 5 dots. What fraction is one group?",
+   "transcript": {
+    "lessonId": "5f042bd2-d68d-4d6a-88e9-b0ed72aa847e",
+    "mode": "text",
+    "topicId": "c6-maths-ch07-t01",
+    "opening": {
+     "reply": "Hi Meher, I’m Asha, your AI teacher. Today we’ll explore equal shares and fractions. What do you enjoy painting most?",
+     "ui": {
+      "status": "your_turn",
+      "phase": "warmup",
+      "handover": "answer",
+      "answerForm": "words",
+      "tray": "none",
+      "shortTitle": "Fractional units",
+      "beat": {
+       "beatId": "b1-arrive",
+       "type": "arrive",
+       "index": 1
+      },
+      "ask": {
+       "text": "What do you enjoy painting most?"
+      }
+     },
+     "moduleCommands": []
+    },
+    "rows": [
+     {
+      "n": 1,
+      "child": "hi! yes I'm ready",
+      "kind": "greet",
+      "ms": 2360,
+      "r": {
+       "move": {
+        "kind": "hook"
+       },
+       "teacherReply": "Meher, imagine sharing one roti equally among 2 siblings or 4 siblings. Which share would you choose, and why? At the end, teach this to Bittu.",
+       "ui": {
+        "status": "your_turn",
+        "phase": "teach",
+        "handover": "answer",
+        "answerForm": "words",
+        "tray": "none",
+        "shortTitle": "Fractional units",
+        "beat": {
+         "beatId": "b2-hook",
+         "type": "hook",
+         "index": 2
+        },
+        "ask": {
+         "text": "Which share would you choose, and why?"
+        }
+       },
+       "moduleCommands": []
+      }
+     },
+     {
+      "n": 2,
+      "child": "alright",
+      "kind": "filler",
+      "ms": 2587,
+      "r": {
+       "move": {
+        "kind": "explain"
+       },
+       "teacherReply": "Meher, one fractional unit means one of equal parts: one of 3 parts is one-third. On screen, 15 dots form 3 equal groups of 5. What fraction is one group?",
+       "ui": {
+        "status": "your_turn",
+        "phase": "teach",
+        "handover": "answer",
+        "answerForm": "words",
+        "tray": "studio",
+        "shortTitle": "Fractional units",
+        "beat": {
+         "beatId": "b3-explain",
+         "type": "explain",
+         "index": 3
+        },
+        "ask": {
+         "text": "What fraction is one group?"
+        },
+        "studioSlot": {
+         "slotId": "5f042bd2-d68d-4d6a-88e9-b0ed72aa847e:wb:2:slot",
+         "intentId": "5f042bd2-d68d-4d6a-88e9-b0ed72aa847e:wb:2",
+         "state": "revealed",
+         "artifact": {
+          "kind": "whiteboard",
+          "stage": {
+           "w": 400,
+           "h": 300
+          },
+          "script": {
+           "v": 1,
+           "scriptId": "5f042bd2-d68d-4d6a-88e9-b0ed72aa847e:wb:2",
+           "line": {
+            "lessonId": "5f042bd2-d68d-4d6a-88e9-b0ed72aa847e",
+            "teacherReplySeq": 5
+           },
+           "anchor": "line_audio_start",
+           "board": {
+            "w": 400,
+            "h": 300,
+            "ground": "chalk"
+           },
+           "mode": "fresh",
+           "durationMs": 14092,
+           "ops": [
+            {
+             "id": "o1",
+             "op": "ellipse",
+             "startMs": 330,
+             "endMs": 1375,
+             "weight": 1,
+             "c": [
+              86.7,
+              110
+             ],
+             "rx": 50.7,
+             "ry": 62
+            },
+            {
+             "id": "o2",
+             "op": "circle",
+             "startMs": 1485,
+             "endMs": 1788,
+             "ink": "accent",
+             "weight": 1,
+             "c": [
+              77.7,
+              97
+             ],
+             "r": 5,
+             "fill": "accent"
+            },
+            {
+             "id": "o3",
+             "op": "circle",
+             "startMs": 1898,
+             "endMs": 2201,
+             "ink": "accent",
+             "weight": 1,
+             "c": [
+              95.7,
+              97
+             ],
+             "r": 5,
+             "fill": "accent"
+            },
+            {
+             "id": "o4",
+             "op": "circle",
+             "startMs": 2311,
+             "endMs": 2613,
+             "ink": "accent",
+             "weight": 1,
+             "c": [
+              77.7,
+              110
+             ],
+             "r": 5,
+             "fill": "accent"
+            },
+            {
+             "id": "o5",
+             "op": "circle",
+             "startMs": 2723,
+             "endMs": 3026,
+             "ink": "accent",
+             "weight": 1,
+             "c": [
+              95.7,
+              110
+             ],
+             "r": 5,
+             "fill": "accent"
+            },
+            {
+             "id": "o6",
+             "op": "circle",
+             "startMs": 3136,
+             "endMs": 3439,
+             "ink": "accent",
+             "weight": 1,
+             "c": [
+              77.7,
+              123
+             ],
+             "r": 5,
+             "fill": "accent"
+            },
+            {
+             "id": "o7",
+             "op": "ellipse",
+             "startMs": 3769,
+             "endMs": 4814,
+             "weight": 1,
+             "c": [
+              200,
+              110
+             ],
+             "rx": 50.7,
+             "ry": 62
+            },
+            {
+             "id": "o8",
+             "op": "circle",
+             "startMs": 4924,
+             "endMs": 5227,
+             "ink": "accent",
+             "weight": 1,
+             "c": [
+              191,
+              97
+             ],
+             "r": 5,
+             "fill": "accent"
+            },
+            {
+             "id": "o9",
+             "op": "circle",
+             "startMs": 5337,
+             "endMs": 5639,
+             "ink": "accent",
+             "weight": 1,
+             "c": [
+              209,
+              97
+             ],
+             "r": 5,
+             "fill": "accent"
+            },
+            {
+             "id": "o10",
+             "op": "circle",
+             "startMs": 5749,
+             "endMs": 6052,
+             "ink": "accent",
+             "weight": 1,
+             "c": [
+              191,
+              110
+             ],
+             "r": 5,
+             "fill": "accent"
+            },
+            {
+             "id": "o11",
+             "op": "circle",
+             "startMs": 6162,
+             "endMs": 6465,
+             "ink": "accent",
+             "weight": 1,
+             "c": [
+              209,
+              110
+             ],
+             "r": 5,
+             "fill": "accent"
+            },
+            {
+             "id": "o12",
+             "op": "circle",
+             "startMs": 6575,
+             "endMs": 6877,
+             "ink": "accent",
+             "weight": 1,
+             "c": [
+              191,
+              123
+             ],
+             "r": 5,
+             "fill": "accent"
+            },
+            {
+             "id": "o13",
+             "op": "ellipse",
+             "startMs": 7207,
+             "endMs": 8253,
+             "weight": 1,
+             "c": [
+              313.3,
+              110
+             ],
+             "rx": 50.7,
+             "ry": 62
+            },
+            {
+             "id": "o14",
+             "op": "circle",
+             "startMs": 8363,
+             "endMs": 8665,
+             "ink": "accent",
+             "weight": 1,
+             "c": [
+              304.3,
+              97
+             ],
+             "r": 5,
+             "fill": "accent"
+            },
+            {
+             "id": "o15",
+             "op": "circle",
+             "startMs": 8775,
+             "endMs": 9078,
+             "ink": "accent",
+             "weight": 1,
+             "c": [
+              322.3,
+              97
+             ],
+             "r": 5,
+             "fill": "accent"
+            },
+            {
+             "id": "o16",
+             "op": "circle",
+             "startMs": 9188,
+             "endMs": 9491,
+             "ink": "accent",
+             "weight": 1,
+             "c": [
+              304.3,
+              110
+             ],
+             "r": 5,
+             "fill": "accent"
+            },
+            {
+             "id": "o17",
+             "op": "circle",
+             "startMs": 9601,
+             "endMs": 9903,
+             "ink": "accent",
+             "weight": 1,
+             "c": [
+              322.3,
+              110
+             ],
+             "r": 5,
+             "fill": "accent"
+            },
+            {
+             "id": "o18",
+             "op": "circle",
+             "startMs": 10013,
+             "endMs": 10316,
+             "ink": "accent",
+             "weight": 1,
+             "c": [
+              304.3,
+              123
+             ],
+             "r": 5,
+             "fill": "accent"
+            },
+            {
+             "id": "eq",
+             "op": "numwork",
+             "startMs": 11141,
+             "endMs": 13892,
+             "weight": 2,
+             "at": [
+              110,
+              240
+             ],
+             "layout": "equation",
+             "rows": [
+              [
+               "?",
+               "×",
+               "5",
+               "=",
+               "15"
+              ]
+             ]
+            }
+           ],
+           "facts": {
+            "kind": "diagram",
+            "archetype": "whiteboard",
+            "onScreen": {
+             "numbers": "5 15"
+            }
+           }
+          }
+         }
+        }
+       },
+       "moduleCommands": []
+      }
+     },
+     {
+      "n": 3,
+      "child": "show me a diagram",
+      "kind": "visual",
+      "ms": 1498,
+      "r": {
+       "move": {
+        "kind": "reteach"
+       },
+       "teacherReply": "Meher, look at the screen: 15 dots are split into 3 equal groups, each group has 5 dots. What fraction is one group?",
+       "ui": {
+        "status": "your_turn",
+        "phase": "teach",
+        "handover": "answer",
+        "answerForm": "words",
+        "tray": "studio",
+        "shortTitle": "Fractional units",
+        "beat": {
+         "beatId": "b3-explain",
+         "type": "explain",
+         "index": 3
+        },
+        "ask": {
+         "text": "What fraction is one group?"
+        },
+        "studioSlot": {
+         "slotId": "5f042bd2-d68d-4d6a-88e9-b0ed72aa847e:wb:3:slot",
+         "intentId": "5f042bd2-d68d-4d6a-88e9-b0ed72aa847e:wb:3",
+         "state": "revealed",
+         "artifact": {
+          "kind": "whiteboard",
+          "stage": {
+           "w": 400,
+           "h": 300
+          },
+          "script": {
+           "v": 1,
+           "scriptId": "5f042bd2-d68d-4d6a-88e9-b0ed72aa847e:wb:3",
+           "line": {
+            "lessonId": "5f042bd2-d68d-4d6a-88e9-b0ed72aa847e",
+            "teacherReplySeq": 7
+           },
+           "anchor": "line_audio_start",
+           "board": {
+            "w": 400,
+            "h": 300,
+            "ground": "chalk"
+           },
+           "mode": "continue",
+           "durationMs": 10716,
+           "ops": [
+            {
+             "id": "o1",
+             "op": "ellipse",
+             "startMs": 250,
+             "endMs": 1041,
+             "weight": 1,
+             "c": [
+              86.7,
+              110
+             ],
+             "rx": 50.7,
+             "ry": 62
+            },
+            {
+             "id": "o2",
+             "op": "circle",
+             "startMs": 1124,
+             "endMs": 1353,
+             "ink": "accent",
+             "weight": 1,
+             "c": [
+              77.7,
+              97
+             ],
+             "r": 5,
+             "fill": "accent"
+            },
+            {
+             "id": "o3",
+             "op": "circle",
+             "startMs": 1437,
+             "endMs": 1666,
+             "ink": "accent",
+             "weight": 1,
+             "c": [
+              95.7,
+              97
+             ],
+             "r": 5,
+             "fill": "accent"
+            },
+            {
+             "id": "o4",
+             "op": "circle",
+             "startMs": 1749,
+             "endMs": 1978,
+             "ink": "accent",
+             "weight": 1,
+             "c": [
+              77.7,
+              110
+             ],
+             "r": 5,
+             "fill": "accent"
+            },
+            {
+             "id": "o5",
+             "op": "circle",
+             "startMs": 2061,
+             "endMs": 2291,
+             "ink": "accent",
+             "weight": 1,
+             "c": [
+              95.7,
+              110
+             ],
+             "r": 5,
+             "fill": "accent"
+            },
+            {
+             "id": "o6",
+             "op": "circle",
+             "startMs": 2374,
+             "endMs": 2603,
+             "ink": "accent",
+             "weight": 1,
+             "c": [
+              77.7,
+              123
+             ],
+             "r": 5,
+             "fill": "accent"
+            },
+            {
+             "id": "o7",
+             "op": "ellipse",
+             "startMs": 2853,
+             "endMs": 3644,
+             "weight": 1,
+             "c": [
+              200,
+              110
+             ],
+             "rx": 50.7,
+             "ry": 62
+            },
+            {
+             "id": "o8",
+             "op": "circle",
+             "startMs": 3727,
+             "endMs": 3957,
+             "ink": "accent",
+             "weight": 1,
+             "c": [
+              191,
+              97
+             ],
+             "r": 5,
+             "fill": "accent"
+            },
+            {
+             "id": "o9",
+             "op": "circle",
+             "startMs": 4040,
+             "endMs": 4268,
+             "ink": "accent",
+             "weight": 1,
+             "c": [
+              209,
+              97
+             ],
+             "r": 5,
+             "fill": "accent"
+            },
+            {
+             "id": "o10",
+             "op": "circle",
+             "startMs": 4352,
+             "endMs": 4581,
+             "ink": "accent",
+             "weight": 1,
+             "c": [
+              191,
+              110
+             ],
+             "r": 5,
+             "fill": "accent"
+            },
+            {
+             "id": "o11",
+             "op": "circle",
+             "startMs": 4664,
+             "endMs": 4894,
+             "ink": "accent",
+             "weight": 1,
+             "c": [
+              209,
+              110
+             ],
+             "r": 5,
+             "fill": "accent"
+            },
+            {
+             "id": "o12",
+             "op": "circle",
+             "startMs": 4977,
+             "endMs": 5206,
+             "ink": "accent",
+             "weight": 1,
+             "c": [
+              191,
+              123
+             ],
+             "r": 5,
+             "fill": "accent"
+            },
+            {
+             "id": "o13",
+             "op": "ellipse",
+             "startMs": 5455,
+             "endMs": 6247,
+             "weight": 1,
+             "c": [
+              313.3,
+              110
+             ],
+             "rx": 50.7,
+             "ry": 62
+            },
+            {
+             "id": "o14",
+             "op": "circle",
+             "startMs": 6330,
+             "endMs": 6559,
+             "ink": "accent",
+             "weight": 1,
+             "c": [
+              304.3,
+              97
+             ],
+             "r": 5,
+             "fill": "accent"
+            },
+            {
+             "id": "o15",
+             "op": "circle",
+             "startMs": 6642,
+             "endMs": 6872,
+             "ink": "accent",
+             "weight": 1,
+             "c": [
+              322.3,
+              97
+             ],
+             "r": 5,
+             "fill": "accent"
+            },
+            {
+             "id": "o16",
+             "op": "circle",
+             "startMs": 6955,
+             "endMs": 7184,
+             "ink": "accent",
+             "weight": 1,
+             "c": [
+              304.3,
+              110
+             ],
+             "r": 5,
+             "fill": "accent"
+            },
+            {
+             "id": "o17",
+             "op": "circle",
+             "startMs": 7268,
+             "endMs": 7496,
+             "ink": "accent",
+             "weight": 1,
+             "c": [
+              322.3,
+              110
+             ],
+             "r": 5,
+             "fill": "accent"
+            },
+            {
+             "id": "o18",
+             "op": "circle",
+             "startMs": 7579,
+             "endMs": 7809,
+             "ink": "accent",
+             "weight": 1,
+             "c": [
+              304.3,
+              123
+             ],
+             "r": 5,
+             "fill": "accent"
+            },
+            {
+             "id": "eq",
+             "op": "numwork",
+             "startMs": 8433,
+             "endMs": 10516,
+             "weight": 2,
+             "at": [
+              110,
+              240
+             ],
+             "layout": "equation",
+             "rows": [
+              [
+               "?",
+               "×",
+               "5",
+               "=",
+               "15"
+              ]
+             ]
+            }
+           ],
+           "facts": {
+            "kind": "diagram",
+            "archetype": "whiteboard",
+            "onScreen": {
+             "numbers": "5 15"
+            }
+           }
+          }
+         }
+        }
+       },
+       "moduleCommands": []
+      }
+     }
+    ]
+   }
+  },
+  {
+   "tag": "picture \"picture dikhao\" (typed, c5-maths-ch02-t01, rep 1)",
+   "kind": "board",
+   "real": true,
+   "boardLateMs": -128,
+   "inResponse": false,
+   "refers": true,
+   "turnMs": 1933,
+   "reply": "Aarav, screen par number line dekhiye: 0 se 1 ke beech 2/5, paanch equal parts mein doosre point par hai. Aap doosra point dikhaiye.",
+   "transcript": {
+    "lessonId": "d4d220bb-5595-49c3-b32d-0a882e806851",
+    "mode": "text",
+    "topicId": "c5-maths-ch02-t01",
+    "opening": {
+     "reply": "Namaste Aarav, main Asha, aapki AI teacher. Aaj fractions ko number line par cricket pitch ki tarah place karenge. Aapko cricket mein kya pasand hai?",
+     "ui": {
+      "status": "your_turn",
+      "phase": "warmup",
+      "handover": "answer",
+      "answerForm": "words",
+      "tray": "none",
+      "shortTitle": "Fractions on a line",
+      "beat": {
+       "beatId": "b1-arrive",
+       "type": "arrive",
+       "index": 1
+      },
+      "ask": {
+       "text": "Aapko cricket mein kya pasand hai?"
+      }
+     },
+     "moduleCommands": []
+    },
+    "rows": [
+     {
+      "n": 1,
+      "child": "haan ready hoon",
+      "kind": "greet",
+      "ms": 2757,
+      "r": {
+       "move": {
+        "kind": "hook"
+       },
+       "teacherReply": "Aarav, cricket pitch ko 4 equal parts mein baantiye; 5/4 ka matlab 4 parts ke baad ek aur part. Number line par kahan hoga?",
+       "ui": {
+        "status": "your_turn",
+        "phase": "teach",
+        "handover": "answer",
+        "answerForm": "words",
+        "tray": "none",
+        "shortTitle": "Fractions on a line",
+        "beat": {
+         "beatId": "b2-hook",
+         "type": "hook",
+         "index": 2
+        },
+        "ask": {
+         "text": "Number line par kahan hoga?"
+        }
+       },
+       "moduleCommands": []
+      }
+     },
+     {
+      "n": 2,
+      "child": "haan bolo",
+      "kind": "filler",
+      "ms": 2628,
+      "r": {
+       "move": {
+        "kind": "explain"
+       },
+       "teacherReply": "Aarav, 0 se 1 tak 5 equal gaps sochiye; 2/5, doosre gap par hoga. Aap number line par 2/5 kahan rakhenge?",
+       "ui": {
+        "status": "your_turn",
+        "phase": "teach",
+        "handover": "answer",
+        "answerForm": "words",
+        "tray": "module",
+        "shortTitle": "Fractions on a line",
+        "beat": {
+         "beatId": "b3-explain",
+         "type": "explain",
+         "index": 3
+        },
+        "ask": {
+         "text": "Aap number line par 2/5 kahan rakhenge?"
+        }
+       },
+       "moduleCommands": [
+        {
+         "op": "mount",
+         "moduleId": "m2",
+         "engine": "number-line@1",
+         "params": {
+          "topicId": "c5-maths-ch02-t01",
+          "skillId": null,
+          "lang": "hinglish",
+          "fractions": [
+           [
+            2,
+            5
+           ]
+          ],
+          "numbers": [
+           0,
+           1
+          ]
+         }
+        }
+       ]
+      }
+     },
+     {
+      "n": 3,
+      "child": "picture dikhao",
+      "kind": "visual",
+      "ms": 1933,
+      "r": {
+       "move": {
+        "kind": "reteach"
+       },
+       "teacherReply": "Aarav, screen par number line dekhiye: 0 se 1 ke beech 2/5, paanch equal parts mein doosre point par hai. Aap doosra point dikhaiye.",
+       "ui": {
+        "status": "your_turn",
+        "phase": "teach",
+        "handover": "answer",
+        "answerForm": "words",
+        "tray": "studio",
+        "shortTitle": "Fractions on a line",
+        "beat": {
+         "beatId": "b3-explain",
+         "type": "explain",
+         "index": 3
+        },
+        "ask": {
+         "text": "Aap doosra point dikhaiye."
+        },
+        "studioSlot": {
+         "slotId": "d4d220bb-5595-49c3-b32d-0a882e806851:wb:3:slot",
+         "intentId": "d4d220bb-5595-49c3-b32d-0a882e806851:wb:3",
+         "state": "planning"
+        }
+       },
+       "moduleCommands": [
+        {
+         "op": "unmount",
+         "moduleId": "m2"
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  {
+   "tag": "diagram \"show me a diagram\" (spoken, c6-maths-ch07-t01, rep 1)",
+   "kind": "board",
+   "real": true,
+   "boardLateMs": -700,
+   "inResponse": true,
+   "refers": true,
+   "turnMs": 2547,
+   "reply": "Meher, look at the screen: 15 dots arranged as 3 equal groups of 5. How many dots are in one group?",
+   "transcript": {
+    "lessonId": "3881e15d-3d33-4d58-985e-b9f113e23e23",
+    "mode": "cascade",
+    "topicId": "c6-maths-ch07-t01",
+    "opening": {
+     "reply": "Hi Meher, I’m Asha, your AI teacher. Today we’ll explore equal shares and fractions. Which painting colour do you enjoy using most?",
+     "ui": {
+      "status": "your_turn",
+      "phase": "warmup",
+      "handover": "answer",
+      "answerForm": "words",
+      "tray": "none",
+      "shortTitle": "Fractional units",
+      "beat": {
+       "beatId": "b1-arrive",
+       "type": "arrive",
+       "index": 1
+      },
+      "ask": {
+       "text": "Which painting colour do you enjoy using most?"
+      }
+     },
+     "moduleCommands": []
+    },
+    "rows": [
+     {
+      "n": 1,
+      "child": "hi yes i'm ready",
+      "kind": "greet",
+      "ms": 2781,
+      "r": {
+       "move": {
+        "kind": "hook"
+       },
+       "teacherReply": "Meher, imagine sharing one roti equally among 2 siblings or 4 siblings. Which share would you pick, and why? At the end, teach Bittu.",
+       "ui": {
+        "status": "your_turn",
+        "phase": "teach",
+        "handover": "answer",
+        "answerForm": "words",
+        "tray": "none",
+        "shortTitle": "Fractional units",
+        "beat": {
+         "beatId": "b2-hook",
+         "type": "hook",
+         "index": 2
+        },
+        "ask": {
+         "text": "Which share would you pick, and why?"
+        }
+       },
+       "moduleCommands": []
+      }
+     },
+     {
+      "n": 2,
+      "child": "got it",
+      "kind": "filler",
+      "ms": 3143,
+      "r": {
+       "move": {
+        "kind": "explain"
+       },
+       "teacherReply": "A fractional unit means one of equal parts: one part out of 3 is written one-third. If there are more equal parts, each part is smaller. What is one part out of 5?",
+       "ui": {
+        "status": "your_turn",
+        "phase": "teach",
+        "handover": "answer",
+        "answerForm": "words",
+        "tray": "studio",
+        "shortTitle": "Fractional units",
+        "beat": {
+         "beatId": "b3-explain",
+         "type": "explain",
+         "index": 3
+        },
+        "ask": {
+         "text": "What is one part out of 5?"
+        },
+        "studioSlot": {
+         "slotId": "3881e15d-3d33-4d58-985e-b9f113e23e23:wb:2:slot",
+         "intentId": "3881e15d-3d33-4d58-985e-b9f113e23e23:wb:2",
+         "state": "revealed",
+         "artifact": {
+          "kind": "whiteboard",
+          "stage": {
+           "w": 400,
+           "h": 300
+          },
+          "script": {
+           "v": 1,
+           "scriptId": "3881e15d-3d33-4d58-985e-b9f113e23e23:wb:2",
+           "line": {
+            "lessonId": "3881e15d-3d33-4d58-985e-b9f113e23e23",
+            "teacherReplySeq": 5
+           },
+           "anchor": "line_audio_start",
+           "board": {
+            "w": 400,
+            "h": 300,
+            "ground": "chalk"
+           },
+           "mode": "fresh",
+           "durationMs": 14092,
+           "ops": [
+            {
+             "id": "o1",
+             "op": "ellipse",
+             "startMs": 330,
+             "endMs": 1375,
+             "weight": 1,
+             "c": [
+              86.7,
+              110
+             ],
+             "rx": 50.7,
+             "ry": 62
+            },
+            {
+             "id": "o2",
+             "op": "circle",
+             "startMs": 1485,
+             "endMs": 1788,
+             "ink": "accent",
+             "weight": 1,
+             "c": [
+              77.7,
+              97
+             ],
+             "r": 5,
+             "fill": "accent"
+            },
+            {
+             "id": "o3",
+             "op": "circle",
+             "startMs": 1898,
+             "endMs": 2201,
+             "ink": "accent",
+             "weight": 1,
+             "c": [
+              95.7,
+              97
+             ],
+             "r": 5,
+             "fill": "accent"
+            },
+            {
+             "id": "o4",
+             "op": "circle",
+             "startMs": 2311,
+             "endMs": 2613,
+             "ink": "accent",
+             "weight": 1,
+             "c": [
+              77.7,
+              110
+             ],
+             "r": 5,
+             "fill": "accent"
+            },
+            {
+             "id": "o5",
+             "op": "circle",
+             "startMs": 2723,
+             "endMs": 3026,
+             "ink": "accent",
+             "weight": 1,
+             "c": [
+              95.7,
+              110
+             ],
+             "r": 5,
+             "fill": "accent"
+            },
+            {
+             "id": "o6",
+             "op": "circle",
+             "startMs": 3136,
+             "endMs": 3439,
+             "ink": "accent",
+             "weight": 1,
+             "c": [
+              77.7,
+              123
+             ],
+             "r": 5,
+             "fill": "accent"
+            },
+            {
+             "id": "o7",
+             "op": "ellipse",
+             "startMs": 3769,
+             "endMs": 4814,
+             "weight": 1,
+             "c": [
+              200,
+              110
+             ],
+             "rx": 50.7,
+             "ry": 62
+            },
+            {
+             "id": "o8",
+             "op": "circle",
+             "startMs": 4924,
+             "endMs": 5227,
+             "ink": "accent",
+             "weight": 1,
+             "c": [
+              191,
+              97
+             ],
+             "r": 5,
+             "fill": "accent"
+            },
+            {
+             "id": "o9",
+             "op": "circle",
+             "startMs": 5337,
+             "endMs": 5639,
+             "ink": "accent",
+             "weight": 1,
+             "c": [
+              209,
+              97
+             ],
+             "r": 5,
+             "fill": "accent"
+            },
+            {
+             "id": "o10",
+             "op": "circle",
+             "startMs": 5749,
+             "endMs": 6052,
+             "ink": "accent",
+             "weight": 1,
+             "c": [
+              191,
+              110
+             ],
+             "r": 5,
+             "fill": "accent"
+            },
+            {
+             "id": "o11",
+             "op": "circle",
+             "startMs": 6162,
+             "endMs": 6465,
+             "ink": "accent",
+             "weight": 1,
+             "c": [
+              209,
+              110
+             ],
+             "r": 5,
+             "fill": "accent"
+            },
+            {
+             "id": "o12",
+             "op": "circle",
+             "startMs": 6575,
+             "endMs": 6877,
+             "ink": "accent",
+             "weight": 1,
+             "c": [
+              191,
+              123
+             ],
+             "r": 5,
+             "fill": "accent"
+            },
+            {
+             "id": "o13",
+             "op": "ellipse",
+             "startMs": 7207,
+             "endMs": 8253,
+             "weight": 1,
+             "c": [
+              313.3,
+              110
+             ],
+             "rx": 50.7,
+             "ry": 62
+            },
+            {
+             "id": "o14",
+             "op": "circle",
+             "startMs": 8363,
+             "endMs": 8665,
+             "ink": "accent",
+             "weight": 1,
+             "c": [
+              304.3,
+              97
+             ],
+             "r": 5,
+             "fill": "accent"
+            },
+            {
+             "id": "o15",
+             "op": "circle",
+             "startMs": 8775,
+             "endMs": 9078,
+             "ink": "accent",
+             "weight": 1,
+             "c": [
+              322.3,
+              97
+             ],
+             "r": 5,
+             "fill": "accent"
+            },
+            {
+             "id": "o16",
+             "op": "circle",
+             "startMs": 9188,
+             "endMs": 9491,
+             "ink": "accent",
+             "weight": 1,
+             "c": [
+              304.3,
+              110
+             ],
+             "r": 5,
+             "fill": "accent"
+            },
+            {
+             "id": "o17",
+             "op": "circle",
+             "startMs": 9601,
+             "endMs": 9903,
+             "ink": "accent",
+             "weight": 1,
+             "c": [
+              322.3,
+              110
+             ],
+             "r": 5,
+             "fill": "accent"
+            },
+            {
+             "id": "o18",
+             "op": "circle",
+             "startMs": 10013,
+             "endMs": 10316,
+             "ink": "accent",
+             "weight": 1,
+             "c": [
+              304.3,
+              123
+             ],
+             "r": 5,
+             "fill": "accent"
+            },
+            {
+             "id": "eq",
+             "op": "numwork",
+             "startMs": 11141,
+             "endMs": 13892,
+             "weight": 2,
+             "at": [
+              110,
+              240
+             ],
+             "layout": "equation",
+             "rows": [
+              [
+               "?",
+               "×",
+               "5",
+               "=",
+               "15"
+              ]
+             ]
+            }
+           ],
+           "facts": {
+            "kind": "diagram",
+            "archetype": "whiteboard",
+            "onScreen": {
+             "numbers": "5 15"
+            }
+           }
+          }
+         }
+        }
+       },
+       "moduleCommands": []
+      }
+     },
+     {
+      "n": 3,
+      "child": "show me a diagram",
+      "kind": "visual",
+      "ms": 2547,
+      "r": {
+       "move": {
+        "kind": "reteach"
+       },
+       "teacherReply": "Meher, look at the screen: 15 dots arranged as 3 equal groups of 5. How many dots are in one group?",
+       "ui": {
+        "status": "your_turn",
+        "phase": "teach",
+        "handover": "answer",
+        "answerForm": "words",
+        "tray": "studio",
+        "shortTitle": "Fractional units",
+        "beat": {
+         "beatId": "b3-explain",
+         "type": "explain",
+         "index": 3
+        },
+        "ask": {
+         "text": "How many dots are in one group?"
+        },
+        "studioSlot": {
+         "slotId": "3881e15d-3d33-4d58-985e-b9f113e23e23:wb:3:slot",
+         "intentId": "3881e15d-3d33-4d58-985e-b9f113e23e23:wb:3",
+         "state": "revealed",
+         "artifact": {
+          "kind": "whiteboard",
+          "stage": {
+           "w": 400,
+           "h": 300
+          },
+          "script": {
+           "v": 1,
+           "scriptId": "3881e15d-3d33-4d58-985e-b9f113e23e23:wb:3",
+           "line": {
+            "lessonId": "3881e15d-3d33-4d58-985e-b9f113e23e23",
+            "teacherReplySeq": 7
+           },
+           "anchor": "line_audio_start",
+           "board": {
+            "w": 400,
+            "h": 300,
+            "ground": "chalk"
+           },
+           "mode": "continue",
+           "durationMs": 9319,
+           "ops": [
+            {
+             "id": "o1",
+             "op": "ellipse",
+             "startMs": 217,
+             "endMs": 903,
+             "weight": 1,
+             "c": [
+              86.7,
+              110
+             ],
+             "rx": 50.7,
+             "ry": 62
+            },
+            {
+             "id": "o2",
+             "op": "circle",
+             "startMs": 975,
+             "endMs": 1174,
+             "ink": "accent",
+             "weight": 1,
+             "c": [
+              77.7,
+              97
+             ],
+             "r": 5,
+             "fill": "accent"
+            },
+            {
+             "id": "o3",
+             "op": "circle",
+             "startMs": 1246,
+             "endMs": 1445,
+             "ink": "accent",
+             "weight": 1,
+             "c": [
+              95.7,
+              97
+             ],
+             "r": 5,
+             "fill": "accent"
+            },
+            {
+             "id": "o4",
+             "op": "circle",
+             "startMs": 1517,
+             "endMs": 1715,
+             "ink": "accent",
+             "weight": 1,
+             "c": [
+              77.7,
+              110
+             ],
+             "r": 5,
+             "fill": "accent"
+            },
+            {
+             "id": "o5",
+             "op": "circle",
+             "startMs": 1787,
+             "endMs": 1986,
+             "ink": "accent",
+             "weight": 1,
+             "c": [
+              95.7,
+              110
+             ],
+             "r": 5,
+             "fill": "accent"
+            },
+            {
+             "id": "o6",
+             "op": "circle",
+             "startMs": 2058,
+             "endMs": 2257,
+             "ink": "accent",
+             "weight": 1,
+             "c": [
+              77.7,
+              123
+             ],
+             "r": 5,
+             "fill": "accent"
+            },
+            {
+             "id": "o7",
+             "op": "ellipse",
+             "startMs": 2474,
+             "endMs": 3160,
+             "weight": 1,
+             "c": [
+              200,
+              110
+             ],
+             "rx": 50.7,
+             "ry": 62
+            },
+            {
+             "id": "o8",
+             "op": "circle",
+             "startMs": 3232,
+             "endMs": 3431,
+             "ink": "accent",
+             "weight": 1,
+             "c": [
+              191,
+              97
+             ],
+             "r": 5,
+             "fill": "accent"
+            },
+            {
+             "id": "o9",
+             "op": "circle",
+             "startMs": 3503,
+             "endMs": 3701,
+             "ink": "accent",
+             "weight": 1,
+             "c": [
+              209,
+              97
+             ],
+             "r": 5,
+             "fill": "accent"
+            },
+            {
+             "id": "o10",
+             "op": "circle",
+             "startMs": 3774,
+             "endMs": 3973,
+             "ink": "accent",
+             "weight": 1,
+             "c": [
+              191,
+              110
+             ],
+             "r": 5,
+             "fill": "accent"
+            },
+            {
+             "id": "o11",
+             "op": "circle",
+             "startMs": 4045,
+             "endMs": 4244,
+             "ink": "accent",
+             "weight": 1,
+             "c": [
+              209,
+              110
+             ],
+             "r": 5,
+             "fill": "accent"
+            },
+            {
+             "id": "o12",
+             "op": "circle",
+             "startMs": 4316,
+             "endMs": 4514,
+             "ink": "accent",
+             "weight": 1,
+             "c": [
+              191,
+              123
+             ],
+             "r": 5,
+             "fill": "accent"
+            },
+            {
+             "id": "o13",
+             "op": "ellipse",
+             "startMs": 4731,
+             "endMs": 5417,
+             "weight": 1,
+             "c": [
+              313.3,
+              110
+             ],
+             "rx": 50.7,
+             "ry": 62
+            },
+            {
+             "id": "o14",
+             "op": "circle",
+             "startMs": 5489,
+             "endMs": 5688,
+             "ink": "accent",
+             "weight": 1,
+             "c": [
+              304.3,
+              97
+             ],
+             "r": 5,
+             "fill": "accent"
+            },
+            {
+             "id": "o15",
+             "op": "circle",
+             "startMs": 5760,
+             "endMs": 5959,
+             "ink": "accent",
+             "weight": 1,
+             "c": [
+              322.3,
+              97
+             ],
+             "r": 5,
+             "fill": "accent"
+            },
+            {
+             "id": "o16",
+             "op": "circle",
+             "startMs": 6031,
+             "endMs": 6230,
+             "ink": "accent",
+             "weight": 1,
+             "c": [
+              304.3,
+              110
+             ],
+             "r": 5,
+             "fill": "accent"
+            },
+            {
+             "id": "o17",
+             "op": "circle",
+             "startMs": 6302,
+             "endMs": 6500,
+             "ink": "accent",
+             "weight": 1,
+             "c": [
+              322.3,
+              110
+             ],
+             "r": 5,
+             "fill": "accent"
+            },
+            {
+             "id": "o18",
+             "op": "circle",
+             "startMs": 6573,
+             "endMs": 6771,
+             "ink": "accent",
+             "weight": 1,
+             "c": [
+              304.3,
+              123
+             ],
+             "r": 5,
+             "fill": "accent"
+            },
+            {
+             "id": "eq",
+             "op": "numwork",
+             "startMs": 7313,
+             "endMs": 9119,
+             "weight": 2,
+             "at": [
+              110,
+              240
+             ],
+             "layout": "equation",
+             "rows": [
+              [
+               "?",
+               "×",
+               "5",
+               "=",
+               "15"
+              ]
+             ]
+            }
+           ],
+           "facts": {
+            "kind": "diagram",
+            "archetype": "whiteboard",
+            "onScreen": {
+             "numbers": "5 15"
+            }
+           }
+          }
+         }
+        }
+       },
+       "moduleCommands": []
+      }
+     }
+    ]
+   }
+  },
+  {
+   "tag": "draw \"draw it\" (typed, c5-evs-ch01-t01, rep 1)",
+   "kind": "board",
+   "real": true,
+   "boardLateMs": -700,
+   "inResponse": true,
+   "refers": true,
+   "turnMs": 1662,
+   "reply": "Screen par water-cycle dekhiye: liquid paani upar jaakar vapour, clouds mein condenses; ice melts hokar paani banti hai. Aap clouds mein kya dekh rahe hain?",
+   "transcript": {
+    "lessonId": "7b1b1d42-8c32-4967-b749-45431974d4cf",
+    "mode": "text",
+    "topicId": "c5-evs-ch01-t01",
+    "opening": {
+     "reply": "Namaste Zoya, main Asha, aapki AI teacher. Aaj Water in different forms and places dekhenge. Aapko dance kaunsa style pasand hai?",
+     "ui": {
+      "status": "your_turn",
+      "phase": "warmup",
+      "handover": "answer",
+      "answerForm": "words",
+      "tray": "none",
+      "shortTitle": "Forms of water",
+      "beat": {
+       "beatId": "b1-arrive",
+       "type": "arrive",
+       "index": 1
+      },
+      "ask": {
+       "text": "Aapko dance kaunsa style pasand hai?"
+      }
+     },
+     "moduleCommands": []
+    },
+    "rows": [
+     {
+      "n": 1,
+      "child": "haan ready hoon",
+      "kind": "greet",
+      "ms": 1282,
+      "r": {
+       "move": {
+        "kind": "hook"
+       },
+       "teacherReply": "Zoya, monsoon mein school uniform geeli ho jaati hai. Aapke hisaab se dhoop mein woh jaldi dry hogi ya raat mein?",
+       "ui": {
+        "status": "your_turn",
+        "phase": "teach",
+        "handover": "answer",
+        "answerForm": "words",
+        "tray": "none",
+        "shortTitle": "Forms of water",
+        "beat": {
+         "beatId": "b2-hook",
+         "type": "hook",
+         "index": 2
+        },
+        "ask": {
+         "text": "Aapke hisaab se dhoop mein woh jaldi dry hogi ya raat mein?"
+        }
+       },
+       "moduleCommands": []
+      }
+     },
+     {
+      "n": 2,
+      "child": "mummy bula rahi thi, haan",
+      "kind": "filler",
+      "ms": 1902,
+      "r": {
+       "move": {
+        "kind": "explain"
+       },
+       "teacherReply": "Wapas aa gaye, Zoya. Water ki teen forms hain: liquid paani, solid ice, aur invisible water vapour. Aap ek-ek jagah batayenge?",
+       "ui": {
+        "status": "your_turn",
+        "phase": "teach",
+        "handover": "answer",
+        "answerForm": "words",
+        "tray": "module",
+        "shortTitle": "Forms of water",
+        "beat": {
+         "beatId": "b3-explain",
+         "type": "explain",
+         "index": 3
+        },
+        "ask": {
+         "text": "Aap ek-ek jagah batayenge?"
+        }
+       },
+       "moduleCommands": [
+        {
+         "op": "mount",
+         "moduleId": "m2",
+         "engine": "water-cycle@1",
+         "params": {
+          "topicId": "c5-evs-ch01-t01",
+          "skillId": null,
+          "lang": "hinglish",
+          "scene": "states"
+         }
+        }
+       ]
+      }
+     },
+     {
+      "n": 3,
+      "child": "draw it",
+      "kind": "visual",
+      "ms": 1662,
+      "r": {
+       "move": {
+        "kind": "reteach"
+       },
+       "teacherReply": "Screen par water-cycle dekhiye: liquid paani upar jaakar vapour, clouds mein condenses; ice melts hokar paani banti hai. Aap clouds mein kya dekh rahe hain?",
+       "ui": {
+        "status": "your_turn",
+        "phase": "teach",
+        "handover": "answer",
+        "answerForm": "words",
+        "tray": "studio",
+        "shortTitle": "Forms of water",
+        "beat": {
+         "beatId": "b3-explain",
+         "type": "explain",
+         "index": 3
+        },
+        "ask": {
+         "text": "Aap clouds mein kya dekh rahe hain?"
+        },
+        "studioSlot": {
+         "slotId": "7b1b1d42-8c32-4967-b749-45431974d4cf:wb:3:slot",
+         "intentId": "7b1b1d42-8c32-4967-b749-45431974d4cf:wb:3",
+         "state": "revealed",
+         "artifact": {
+          "kind": "whiteboard",
+          "stage": {
+           "w": 400,
+           "h": 300
+          },
+          "script": {
+           "v": 1,
+           "scriptId": "7b1b1d42-8c32-4967-b749-45431974d4cf:wb:3",
+           "line": {
+            "lessonId": "7b1b1d42-8c32-4967-b749-45431974d4cf",
+            "teacherReplySeq": 7
+           },
+           "anchor": "line_audio_start",
+           "board": {
+            "w": 400,
+            "h": 300,
+            "ground": "paper"
+           },
+           "mode": "fresh",
+           "durationMs": 12985,
+           "ops": [
+            {
+             "id": "t0",
+             "op": "text",
+             "startMs": 258,
+             "endMs": 1442,
+             "ink": "accent",
+             "at": [
+              200,
+              52
+             ],
+             "text": "evaporates",
+             "size": "m"
+            },
+            {
+             "id": "o1",
+             "op": "arrow",
+             "startMs": 1743,
+             "endMs": 2712,
+             "ink": "accent",
+             "from": [
+              241.6,
+              84
+             ],
+             "to": [
+              288.4,
+              120
+             ],
+             "bend": -0.25
+            },
+            {
+             "id": "t1",
+             "op": "text",
+             "startMs": 2970,
+             "endMs": 4154,
+             "at": [
+              330,
+              152
+             ],
+             "text": "condenses",
+             "size": "m"
+            },
+            {
+             "id": "o2",
+             "op": "arrow",
+             "startMs": 4455,
+             "endMs": 5424,
+             "ink": "accent",
+             "from": [
+              288.4,
+              184
+             ],
+             "to": [
+              241.6,
+              220
+             ],
+             "bend": -0.25
+            },
+            {
+             "id": "t2",
+             "op": "text",
+             "startMs": 5682,
+             "endMs": 6866,
+             "at": [
+              200,
+              252
+             ],
+             "text": "freezes",
+             "size": "m"
+            },
+            {
+             "id": "o3",
+             "op": "arrow",
+             "startMs": 7167,
+             "endMs": 8136,
+             "ink": "accent",
+             "from": [
+              158.4,
+              220
+             ],
+             "to": [
+              111.6,
+              184
+             ],
+             "bend": -0.25
+            },
+            {
+             "id": "t3",
+             "op": "text",
+             "startMs": 8394,
+             "endMs": 9578,
+             "at": [
+              70,
+              152
+             ],
+             "text": "melts",
+             "size": "m"
+            },
+            {
+             "id": "o4",
+             "op": "arrow",
+             "startMs": 9879,
+             "endMs": 10848,
+             "ink": "accent",
+             "from": [
+              111.6,
+              120
+             ],
+             "to": [
+              158.4,
+              84
+             ],
+             "bend": -0.25
+            },
+            {
+             "id": "o5",
+             "op": "highlight",
+             "startMs": 11493,
+             "endMs": 12785,
+             "ink": "mark",
+             "target": "t0",
+             "style": "circle"
+            }
+           ],
+           "facts": {
+            "kind": "diagram",
+            "archetype": "whiteboard",
+            "onScreen": {
+             "labels": "evaporates | condenses | freezes | melts"
+            }
+           }
+          }
+         }
+        }
+       },
+       "moduleCommands": [
+        {
+         "op": "unmount",
+         "moduleId": "m2"
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  {
+   "tag": "draw \"draw it\" (spoken, c5-evs-ch01-t01, rep 1)",
+   "kind": "board",
+   "real": true,
+   "boardLateMs": -700,
+   "inResponse": true,
+   "refers": true,
+   "turnMs": 2155,
+   "reply": "Screen par water cycle dekhiye: paani garam hokar vapour, thanda hokar drops. Aap bataiye, drops banne ko kya kahenge?",
+   "transcript": {
+    "lessonId": "bf35b665-6d36-43b7-91f3-4cad8453ba88",
+    "mode": "cascade",
+    "topicId": "c5-evs-ch01-t01",
+    "opening": {
+     "reply": "Namaste Zoya, main Asha, aapki AI teacher. Aaj water ke different forms aur places dekhenge. Aapko dance mein kaunsa step pasand hai?",
+     "ui": {
+      "status": "your_turn",
+      "phase": "warmup",
+      "handover": "answer",
+      "answerForm": "words",
+      "tray": "none",
+      "shortTitle": "Forms of water",
+      "beat": {
+       "beatId": "b1-arrive",
+       "type": "arrive",
+       "index": 1
+      },
+      "ask": {
+       "text": "Aapko dance mein kaunsa step pasand hai?"
+      }
+     },
+     "moduleCommands": []
+    },
+    "rows": [
+     {
+      "n": 1,
+      "child": "haan ready hoon",
+      "kind": "greet",
+      "ms": 1612,
+      "r": {
+       "move": {
+        "kind": "hook"
+       },
+       "teacherReply": "Kitchen mein garam chai se bhaap nikalti hai. Aapke hisaab se bhaap thandi plate se takraakar kya banegi?",
+       "ui": {
+        "status": "your_turn",
+        "phase": "teach",
+        "handover": "answer",
+        "answerForm": "words",
+        "tray": "none",
+        "shortTitle": "Forms of water",
+        "beat": {
+         "beatId": "b2-hook",
+         "type": "hook",
+         "index": 2
+        },
+        "ask": {
+         "text": "Aapke hisaab se bhaap thandi plate se takraakar kya banegi?"
+        }
+       },
+       "moduleCommands": []
+      }
+     },
+     {
+      "n": 2,
+      "child": "ek min haan bolo",
+      "kind": "filler",
+      "ms": 3083,
+      "r": {
+       "move": {
+        "kind": "hook"
+       },
+       "teacherReply": "Haan Zoya, bilkul. Bhaap thandi plate par paani ki boondon mein badal sakti hai— aap batayiye, isse water ka kaunsa form dikhta hai?",
+       "ui": {
+        "status": "your_turn",
+        "phase": "teach",
+        "handover": "answer",
+        "answerForm": "words",
+        "tray": "none",
+        "shortTitle": "Forms of water",
+        "beat": {
+         "beatId": "b2-hook",
+         "type": "hook",
+         "index": 2
+        },
+        "ask": {
+         "text": "Bhaap thandi plate par paani ki boondon mein badal sakti hai— aap batayiye, isse water ka kaunsa form dikhta hai?"
+        }
+       },
+       "moduleCommands": []
+      }
+     },
+     {
+      "n": 3,
+      "child": "draw it",
+      "kind": "visual",
+      "ms": 2155,
+      "r": {
+       "move": {
+        "kind": "reteach"
+       },
+       "teacherReply": "Screen par water cycle dekhiye: paani garam hokar vapour, thanda hokar drops. Aap bataiye, drops banne ko kya kahenge?",
+       "ui": {
+        "status": "your_turn",
+        "phase": "teach",
+        "handover": "answer",
+        "answerForm": "words",
+        "tray": "studio",
+        "shortTitle": "Forms of water",
+        "beat": {
+         "beatId": "b3-explain",
+         "type": "explain",
+         "index": 3
+        },
+        "ask": {
+         "text": "Aap bataiye, drops banne ko kya kahenge?"
+        },
+        "studioSlot": {
+         "slotId": "bf35b665-6d36-43b7-91f3-4cad8453ba88:wb:3:slot",
+         "intentId": "bf35b665-6d36-43b7-91f3-4cad8453ba88:wb:3",
+         "state": "revealed",
+         "artifact": {
+          "kind": "whiteboard",
+          "stage": {
+           "w": 400,
+           "h": 300
+          },
+          "script": {
+           "v": 1,
+           "scriptId": "bf35b665-6d36-43b7-91f3-4cad8453ba88:wb:3",
+           "line": {
+            "lessonId": "bf35b665-6d36-43b7-91f3-4cad8453ba88",
+            "teacherReplySeq": 7
+           },
+           "anchor": "line_audio_start",
+           "board": {
+            "w": 400,
+            "h": 300,
+            "ground": "grid"
+           },
+           "mode": "fresh",
+           "durationMs": 9870,
+           "ops": [
+            {
+             "id": "t0",
+             "op": "text",
+             "startMs": 195,
+             "endMs": 1091,
+             "ink": "accent",
+             "at": [
+              200,
+              52
+             ],
+             "text": "evaporates",
+             "size": "m"
+            },
+            {
+             "id": "o1",
+             "op": "arrow",
+             "startMs": 1319,
+             "endMs": 2051,
+             "ink": "accent",
+             "from": [
+              241.6,
+              84
+             ],
+             "to": [
+              288.4,
+              120
+             ],
+             "bend": -0.25
+            },
+            {
+             "id": "t1",
+             "op": "text",
+             "startMs": 2247,
+             "endMs": 3142,
+             "at": [
+              330,
+              152
+             ],
+             "text": "condenses",
+             "size": "m"
+            },
+            {
+             "id": "o2",
+             "op": "arrow",
+             "startMs": 3370,
+             "endMs": 4103,
+             "ink": "accent",
+             "from": [
+              288.4,
+              184
+             ],
+             "to": [
+              241.6,
+              220
+             ],
+             "bend": -0.25
+            },
+            {
+             "id": "t2",
+             "op": "text",
+             "startMs": 4298,
+             "endMs": 5193,
+             "at": [
+              200,
+              252
+             ],
+             "text": "freezes",
+             "size": "m"
+            },
+            {
+             "id": "o3",
+             "op": "arrow",
+             "startMs": 5421,
+             "endMs": 6154,
+             "ink": "accent",
+             "from": [
+              158.4,
+              220
+             ],
+             "to": [
+              111.6,
+              184
+             ],
+             "bend": -0.25
+            },
+            {
+             "id": "t3",
+             "op": "text",
+             "startMs": 6349,
+             "endMs": 7245,
+             "at": [
+              70,
+              152
+             ],
+             "text": "melts",
+             "size": "m"
+            },
+            {
+             "id": "o4",
+             "op": "arrow",
+             "startMs": 7472,
+             "endMs": 8205,
+             "ink": "accent",
+             "from": [
+              111.6,
+              120
+             ],
+             "to": [
+              158.4,
+              84
+             ],
+             "bend": -0.25
+            },
+            {
+             "id": "o5",
+             "op": "highlight",
+             "startMs": 8693,
+             "endMs": 9670,
+             "ink": "mark",
+             "target": "t0",
+             "style": "circle"
+            }
+           ],
+           "facts": {
+            "kind": "diagram",
+            "archetype": "whiteboard",
+            "onScreen": {
+             "labels": "evaporates | condenses | freezes | melts"
+            }
+           }
+          }
+         }
+        }
+       },
+       "moduleCommands": []
+      }
+     }
+    ]
+   }
+  },
+  {
+   "tag": "whiteboard \"whiteboard pe bana ke samjhao\" (typed, c7-maths-ch08-t01, rep 1)",
+   "kind": "board",
+   "real": true,
+   "boardLateMs": -700,
+   "inResponse": true,
+   "refers": true,
+   "turnMs": 2285,
+   "reply": "Kabir, whiteboard par dekhiye: pehle 120 ko 4 equal parts mein baantiye; 3 parts Class 7 ka hissa hain. Phir us hisse ko 3 equal parts mein dekhiye. Class 7 ko unka 3/4 milta hai, phir woh apne hisse ka 2/3 bechti hai. Class 7 kitne tickets bechti hai?",
+   "transcript": {
+    "lessonId": "ef74d88f-cfd6-4683-95f9-f1f7d07822a8",
+    "mode": "text",
+    "topicId": "c7-maths-ch08-t01",
+    "opening": {
+     "reply": "Namaste Kabir, main Asha, aapki AI teacher. Aaj fractions multiply karenge—cricket runs jaisa. Aapko cricket mein batting ya bowling pasand hai?",
+     "ui": {
+      "status": "your_turn",
+      "phase": "warmup",
+      "handover": "answer",
+      "answerForm": "words",
+      "tray": "none",
+      "shortTitle": "Multiplying fractions",
+      "beat": {
+       "beatId": "b1-arrive",
+       "type": "arrive",
+       "index": 1
+      },
+      "ask": {
+       "text": "Aapko cricket mein batting ya bowling pasand hai?"
+      }
+     },
+     "moduleCommands": []
+    },
+    "rows": [
+     {
+      "n": 1,
+      "child": "haan bhai ready, chalo shuru karo haha",
+      "kind": "greet",
+      "ms": 2605,
+      "r": {
+       "move": {
+        "kind": "hook"
+       },
+       "teacherReply": "Haha, cricket bat ready! Sochiye, innings ka 2/3 hissa bacha hai, aur uska 1/4 powerplay hai—powerplay poori innings ka kitna hissa hoga?",
+       "ui": {
+        "status": "your_turn",
+        "phase": "teach",
+        "handover": "answer",
+        "answerForm": "words",
+        "tray": "none",
+        "shortTitle": "Multiplying fractions",
+        "beat": {
+         "beatId": "b2-hook",
+         "type": "hook",
+         "index": 2
+        },
+        "ask": {
+         "text": "Sochiye, innings ka 2/3 hissa bacha hai, aur uska 1/4 powerplay hai—powerplay poori innings ka kitna hissa hoga?"
+        },
+        "teacherAffect": {
+         "display": "playful",
+         "intensity": 1
+        }
+       },
+       "moduleCommands": []
+      }
+     },
+     {
+      "n": 2,
+      "child": "achha achha, aage",
+      "kind": "filler",
+      "ms": 2353,
+      "r": {
+       "move": {
+        "kind": "probe",
+        "itemId": "c7-maths-ch08-t01-rl-h1"
+       },
+       "teacherReply": "Theek hai Kabir, ab aap card wala question khud padhiye aur pehle decide kijiye: kaunsi do fractions multiply hongi. School fair ke 120 tickets hain. Class 7 ko unka 3/4 milta hai, phir woh apne hisse ka 2/3 bechti hai. Class 7 kitne tickets bechti hai?",
+       "ui": {
+        "status": "your_turn",
+        "whiteboard": {
+         "kind": "math",
+         "value": "3/4  ·  2/3"
+        },
+        "phase": "practice",
+        "handover": "answer",
+        "ask": {
+         "text": "Class 7 ko unka 3/4 milta hai, phir woh apne hisse ka 2/3 bechti hai. Class 7 kitne tickets bechti hai?",
+         "itemId": "c7-maths-ch08-t01-rl-h1"
+        },
+        "answerForm": "words",
+        "tray": "none",
+        "shortTitle": "Multiplying fractions",
+        "beat": {
+         "beatId": "b3-probe",
+         "type": "probe",
+         "index": 3
+        }
+       },
+       "moduleCommands": []
+      }
+     },
+     {
+      "n": 3,
+      "child": "whiteboard pe bana ke samjhao",
+      "kind": "visual",
+      "ms": 2285,
+      "r": {
+       "move": {
+        "kind": "reteach",
+        "itemId": "c7-maths-ch08-t01-rl-h1"
+       },
+       "teacherReply": "Kabir, whiteboard par dekhiye: pehle 120 ko 4 equal parts mein baantiye; 3 parts Class 7 ka hissa hain. Phir us hisse ko 3 equal parts mein dekhiye. Class 7 ko unka 3/4 milta hai, phir woh apne hisse ka 2/3 bechti hai. Class 7 kitne tickets bechti hai?",
+       "ui": {
+        "status": "your_turn",
+        "whiteboard": {
+         "kind": "math",
+         "value": "3/4  ·  2/3"
+        },
+        "phase": "practice",
+        "handover": "answer",
+        "ask": {
+         "text": "Class 7 ko unka 3/4 milta hai, phir woh apne hisse ka 2/3 bechti hai. Class 7 kitne tickets bechti hai?",
+         "itemId": "c7-maths-ch08-t01-rl-h1"
+        },
+        "answerForm": "words",
+        "tray": "studio",
+        "shortTitle": "Multiplying fractions",
+        "beat": {
+         "beatId": "b4-explain",
+         "type": "explain",
+         "index": 4
+        },
+        "studioSlot": {
+         "slotId": "ef74d88f-cfd6-4683-95f9-f1f7d07822a8:wb:3:slot",
+         "intentId": "ef74d88f-cfd6-4683-95f9-f1f7d07822a8:wb:3",
+         "state": "revealed",
+         "artifact": {
+          "kind": "whiteboard",
+          "stage": {
+           "w": 400,
+           "h": 300
+          },
+          "script": {
+           "v": 1,
+           "scriptId": "ef74d88f-cfd6-4683-95f9-f1f7d07822a8:wb:3",
+           "line": {
+            "lessonId": "ef74d88f-cfd6-4683-95f9-f1f7d07822a8",
+            "teacherReplySeq": 7
+           },
+           "anchor": "line_audio_start",
+           "board": {
+            "w": 400,
+            "h": 300,
+            "ground": "grid"
+           },
+           "mode": "fresh",
+           "durationMs": 22840,
+           "ops": [
+            {
+             "id": "o1",
+             "op": "circle",
+             "startMs": 720,
+             "endMs": 4320,
+             "weight": 2,
+             "c": [
+              130,
+              150
+             ],
+             "r": 95
+            },
+            {
+             "id": "o1p1",
+             "op": "sector",
+             "startMs": 4520,
+             "endMs": 5550,
+             "c": [
+              130,
+              150
+             ],
+             "r": 95,
+             "fromDeg": 0,
+             "toDeg": 90
+            },
+            {
+             "id": "o1p2",
+             "op": "sector",
+             "startMs": 5550,
+             "endMs": 6580,
+             "c": [
+              130,
+              150
+             ],
+             "r": 95,
+             "fromDeg": 90,
+             "toDeg": 180
+            },
+            {
+             "id": "o1p3",
+             "op": "sector",
+             "startMs": 6580,
+             "endMs": 7610,
+             "c": [
+              130,
+              150
+             ],
+             "r": 95,
+             "fromDeg": 180,
+             "toDeg": 270
+            },
+            {
+             "id": "o1p4",
+             "op": "sector",
+             "startMs": 7610,
+             "endMs": 8640,
+             "c": [
+              130,
+              150
+             ],
+             "r": 95,
+             "fromDeg": 270,
+             "toDeg": 360
+            },
+            {
+             "id": "s0",
+             "op": "sector",
+             "startMs": 9120,
+             "endMs": 10640,
+             "ink": "accent",
+             "weight": 1,
+             "c": [
+              130,
+              150
+             ],
+             "r": 93,
+             "fill": "accent",
+             "fromDeg": 0,
+             "toDeg": 90
+            },
+            {
+             "id": "s1",
+             "op": "sector",
+             "startMs": 11120,
+             "endMs": 12640,
+             "ink": "accent",
+             "weight": 1,
+             "c": [
+              130,
+              150
+             ],
+             "r": 93,
+             "fill": "accent",
+             "fromDeg": 90,
+             "toDeg": 180
+            },
+            {
+             "id": "s2",
+             "op": "sector",
+             "startMs": 13120,
+             "endMs": 14640,
+             "ink": "accent",
+             "weight": 1,
+             "c": [
+              130,
+              150
+             ],
+             "r": 93,
+             "fill": "accent",
+             "fromDeg": 180,
+             "toDeg": 270
+            },
+            {
+             "id": "frac",
+             "op": "numwork",
+             "startMs": 15840,
+             "endMs": 19040,
+             "ink": "accent",
+             "weight": 2,
+             "at": [
+              296,
+              120
+             ],
+             "layout": "fraction",
+             "rows": [
+              [
+               "?"
+              ],
+              [
+               "?"
+              ]
+             ]
+            },
+            {
+             "id": "o6",
+             "op": "highlight",
+             "startMs": 20240,
+             "endMs": 22640,
+             "ink": "mark",
+             "target": "frac",
+             "style": "circle"
+            }
+           ],
+           "facts": {
+            "kind": "diagram",
+            "archetype": "whiteboard",
+            "onScreen": {}
+           }
+          }
+         }
+        }
+       },
+       "moduleCommands": []
+      }
+     }
+    ]
+   }
+  },
+  {
+   "tag": "whiteboard \"whiteboard pe bana ke samjhao\" (spoken, c7-maths-ch08-t01, rep 1)",
+   "kind": "slot:failed",
+   "real": false,
+   "slotFailed": true,
+   "refers": true,
+   "turnMs": 1818,
+   "reply": "Kabir, whiteboard par 120 tickets ko 4 equal parts mein dekhiye; 3 parts Class 7 ke hain. Ab un 3 parts ko 3 equal rows mein baantiye. Class 7 ko unka 3/4 milta hai, phir woh apne hisse ka 2/3 bechti hai. Class 7 kitne tickets bechti hai?",
+   "transcript": {
+    "lessonId": "f7a9813c-0b6b-43f9-8e34-58c2a2cd32ae",
+    "mode": "cascade",
+    "topicId": "c7-maths-ch08-t01",
+    "opening": {
+     "reply": "Namaste Kabir, main Asha, aapki AI teacher. Aaj fractions multiply karenge—cricket ke runs jaisa. Aapko cricket mein batting ya bowling pasand hai?",
+     "ui": {
+      "status": "your_turn",
+      "phase": "warmup",
+      "handover": "answer",
+      "answerForm": "words",
+      "tray": "none",
+      "shortTitle": "Multiplying fractions",
+      "beat": {
+       "beatId": "b1-arrive",
+       "type": "arrive",
+       "index": 1
+      },
+      "ask": {
+       "text": "Aapko cricket mein batting ya bowling pasand hai?"
+      }
+     },
+     "moduleCommands": []
+    },
+    "rows": [
+     {
+      "n": 1,
+      "child": "haan bhai ready chalo shuru karo haha",
+      "kind": "greet",
+      "ms": 3036,
+      "r": {
+       "move": {
+        "kind": "hook"
+       },
+       "teacherReply": "Kabir, pehle pitch ka aadha hissa sochiye, uska bhi aadha cover karna ho—poore pitch ka kitna hissa hoga? Aap prediction dijiye.",
+       "ui": {
+        "status": "your_turn",
+        "phase": "teach",
+        "handover": "answer",
+        "answerForm": "words",
+        "tray": "none",
+        "shortTitle": "Multiplying fractions",
+        "beat": {
+         "beatId": "b2-hook",
+         "type": "hook",
+         "index": 2
+        },
+        "ask": {
+         "text": "Kabir, pehle pitch ka aadha hissa sochiye, uska bhi aadha cover karna ho—poore pitch ka kitna hissa hoga?"
+        },
+        "teacherAffect": {
+         "display": "playful",
+         "intensity": 1
+        }
+       },
+       "moduleCommands": []
+      }
+     },
+     {
+      "n": 2,
+      "child": "achha achha aage",
+      "kind": "filler",
+      "ms": 3967,
+      "r": {
+       "move": {
+        "kind": "probe",
+        "itemId": "c7-maths-ch08-t01-rl-h1"
+       },
+       "teacherReply": "Kabir, ab isi idea ko naye situation mein lagaiye: School fair ke 120 tickets hain. Class 7 ko unka 3/4 milta hai, phir woh apne hisse ka 2/3 bechti hai. Class 7 kitne tickets bechti hai?",
+       "ui": {
+        "status": "your_turn",
+        "whiteboard": {
+         "kind": "math",
+         "value": "3/4  ·  2/3"
+        },
+        "phase": "practice",
+        "handover": "answer",
+        "ask": {
+         "text": "Class 7 ko unka 3/4 milta hai, phir woh apne hisse ka 2/3 bechti hai. Class 7 kitne tickets bechti hai?",
+         "itemId": "c7-maths-ch08-t01-rl-h1"
+        },
+        "answerForm": "words",
+        "tray": "none",
+        "shortTitle": "Multiplying fractions",
+        "beat": {
+         "beatId": "b3-probe",
+         "type": "probe",
+         "index": 3
+        }
+       },
+       "moduleCommands": []
+      }
+     },
+     {
+      "n": 3,
+      "child": "whiteboard pe bana ke samjhao",
+      "kind": "visual",
+      "ms": 1818,
+      "r": {
+       "move": {
+        "kind": "reteach",
+        "itemId": "c7-maths-ch08-t01-rl-h1"
+       },
+       "teacherReply": "Kabir, whiteboard par 120 tickets ko 4 equal parts mein dekhiye; 3 parts Class 7 ke hain. Ab un 3 parts ko 3 equal rows mein baantiye. Class 7 ko unka 3/4 milta hai, phir woh apne hisse ka 2/3 bechti hai. Class 7 kitne tickets bechti hai?",
+       "ui": {
+        "status": "your_turn",
+        "whiteboard": {
+         "kind": "math",
+         "value": "3/4  ·  2/3"
+        },
+        "phase": "practice",
+        "handover": "answer",
+        "ask": {
+         "text": "Class 7 ko unka 3/4 milta hai, phir woh apne hisse ka 2/3 bechti hai. Class 7 kitne tickets bechti hai?",
+         "itemId": "c7-maths-ch08-t01-rl-h1"
+        },
+        "answerForm": "words",
+        "tray": "studio",
+        "shortTitle": "Multiplying fractions",
+        "beat": {
+         "beatId": "b4-explain",
+         "type": "explain",
+         "index": 4
+        },
+        "studioSlot": {
+         "slotId": "f7a9813c-0b6b-43f9-8e34-58c2a2cd32ae:wb:3:slot",
+         "intentId": "f7a9813c-0b6b-43f9-8e34-58c2a2cd32ae:wb:3",
+         "state": "planning"
+        }
+       },
+       "moduleCommands": []
+      }
+     }
+    ]
+   }
+  },
+  {
+   "tag": "game \"game khelna hai\" (typed, c4-maths-ch05-t01, rep 1)",
+   "kind": "play",
+   "real": true,
+   "pieceMs": 3362,
+   "refers": true,
+   "turnMs": 3362,
+   "reply": "Golu, screen par strips jodo: ek whole strip ko 2 equal parts mein banao; pehla part kaunsa chuno?",
+   "transcript": {
+    "lessonId": "24dc6fcd-9863-4609-b893-becb2a5b0b91",
+    "mode": "text",
+    "topicId": "c4-maths-ch05-t01",
+    "opening": {
+     "reply": "Namaste Golu, main Asha, tumhari AI teacher hoon. Aaj equal shares waali fractions seekhenge. Tumhe cartoons mein kya pasand hai?",
+     "ui": {
+      "status": "your_turn",
+      "phase": "warmup",
+      "handover": "answer",
+      "answerForm": "words",
+      "tray": "none",
+      "shortTitle": "Equal shares",
+      "beat": {
+       "beatId": "b1-arrive",
+       "type": "arrive",
+       "index": 1
+      },
+      "ask": {
+       "text": "Tumhe cartoons mein kya pasand hai?"
+      }
+     },
+     "moduleCommands": []
+    },
+    "rows": [
+     {
+      "n": 1,
+      "child": "haan",
+      "kind": "greet",
+      "ms": 1558,
+      "r": {
+       "move": {
+        "kind": "hook"
+       },
+       "teacherReply": "Golu, birthday cake ko 4 equal pieces mein baantoge; tumhe har bachche ko kitna cake milega, kya lagta hai?",
+       "ui": {
+        "status": "your_turn",
+        "phase": "teach",
+        "handover": "answer",
+        "answerForm": "words",
+        "tray": "none",
+        "shortTitle": "Equal shares",
+        "beat": {
+         "beatId": "b2-hook",
+         "type": "hook",
+         "index": 2
+        },
+        "ask": {
+         "text": "Golu, birthday cake ko 4 equal pieces mein baantoge; tumhe har bachche ko kitna cake milega, kya lagta hai?"
+        }
+       },
+       "moduleCommands": []
+      }
+     },
+     {
+      "n": 2,
+      "child": "haan",
+      "kind": "filler",
+      "ms": 2448,
+      "r": {
+       "move": {
+        "kind": "explain"
+       },
+       "teacherReply": "Golu, screen par 1/3 hai; iska matlab shape ke 3 equal parts, ek part tum kitna kahoge?",
+       "ui": {
+        "status": "your_turn",
+        "phase": "teach",
+        "handover": "answer",
+        "answerForm": "words",
+        "tray": "module",
+        "shortTitle": "Equal shares",
+        "beat": {
+         "beatId": "b3-explain",
+         "type": "explain",
+         "index": 3
+        },
+        "ask": {
+         "text": "Golu, screen par 1/3 hai; iska matlab shape ke 3 equal parts, ek part tum kitna kahoge?"
+        }
+       },
+       "moduleCommands": [
+        {
+         "op": "mount",
+         "moduleId": "m2",
+         "engine": "fractions@1",
+         "params": {
+          "topicId": "c4-maths-ch05-t01",
+          "skillId": null,
+          "lang": "hinglish",
+          "fractions": [
+           [
+            1,
+            3
+           ]
+          ],
+          "numbers": [
+           15
+          ]
+         }
+        }
+       ]
+      }
+     },
+     {
+      "n": 3,
+      "child": "game khelna hai",
+      "kind": "visual",
+      "ms": 3362,
+      "r": {
+       "move": {
+        "kind": "reteach"
+       },
+       "teacherReply": "Golu, screen par strips jodo: ek whole strip ko 2 equal parts mein banao; pehla part kaunsa chuno?",
+       "ui": {
+        "status": "your_turn",
+        "phase": "teach",
+        "handover": "answer",
+        "answerForm": "words",
+        "tray": "studio",
+        "shortTitle": "Equal shares",
+        "beat": {
+         "beatId": "b3-explain",
+         "type": "explain",
+         "index": 3
+        },
+        "ask": {
+         "text": "Golu, screen par strips jodo: ek whole strip ko 2 equal parts mein banao; pehla part kaunsa chuno?"
+        },
+        "studioSlot": {
+         "slotId": "24dc6fcd-9863-4609-b893-becb2a5b0b91:play:2:slot",
+         "intentId": "24dc6fcd-9863-4609-b893-becb2a5b0b91:play:2",
+         "state": "revealed",
+         "artifact": {
+          "kind": "play",
+          "stage": {
+           "w": 360,
+           "h": 576
+          },
+          "play": {
+           "sessionId": "eyJjaGlsZElkIjoiZWNmOTQ5NmYtYmVjZi00YTg3LWJhMzQtNTFiZDdmNjA4MDA1Iiwia2V5IjoiYzQtbWF0aHMtY2gwNS10MDF8dG9kby1qb2RvL3N0cmlwc3xtYWtlIiwic2tpbGxJZCI6ImM0LW1hdGhzLWNoMDUtdDAxLXMxIiwibGVzc29uSWQiOiIyNGRjNmZjZC05ODYzLTQ2MDktYjg5My1iZWNiMmE1YjBiOTEiLCJjbGFzc0xldmVsIjo0LCJmYWRlIjoxLCJsYW5nIjoiaGluZ2xpc2giLCJjaGlsZEFydCI6bnVsbCwibGFzdEFydCI6ImNoYWxrIiwibWlzIjp7fSwicEwiOjAuNDQ5LCJzZWN1cmUiOmZhbHNlLCJuIjowLCJzZWVkIjo4NzQ3ODc4NTEsImRvb3IiOiJnYXJhbSIsInJlY2VudCI6W10sImhpc3QiOm51bGwsInYiOjEsImV4cCI6MTc5MTY4NjY3NDU2OH0.dlrIRyeoQ7zE8-WGM2vt28-DHpMUoftZHm_p1qYrjWc",
+           "family": "todo-jodo",
+           "mode": "strips",
+           "skillId": "c4-maths-ch05-t01-s1",
+           "topicId": "c4-maths-ch05-t01",
+           "art": "chalk",
+           "levelId": "strips-make:1/2-874787851"
+          },
+          "boardTwin": {
+           "board": {
+            "title": "Barabar hisse",
+            "lines": [
+             "1: 0 (0/1)"
+            ]
+           }
+          }
+         }
+        }
+       },
+       "moduleCommands": [
+        {
+         "op": "unmount",
+         "moduleId": "m2"
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  {
+   "tag": "game \"game khelna hai\" (spoken, c4-maths-ch05-t01, rep 1)",
+   "kind": "play",
+   "real": true,
+   "pieceMs": 2144,
+   "refers": true,
+   "turnMs": 2144,
+   "reply": "Golu, screen par strips jodo: ek strip ko do barabar parts mein baanto—pehla part shade karke dikhao.",
+   "transcript": {
+    "lessonId": "d682d78f-49a6-4cd2-8248-481e0e639a78",
+    "mode": "cascade",
+    "topicId": "c4-maths-ch05-t01",
+    "opening": {
+     "reply": "Namaste Golu, main Asha, tumhari AI teacher hoon. Aaj fractions as equal shares karenge. Tumhe cartoons mein kya pasand hai?",
+     "ui": {
+      "status": "your_turn",
+      "phase": "warmup",
+      "handover": "answer",
+      "answerForm": "words",
+      "tray": "none",
+      "shortTitle": "Equal shares",
+      "beat": {
+       "beatId": "b1-arrive",
+       "type": "arrive",
+       "index": 1
+      },
+      "ask": {
+       "text": "Tumhe cartoons mein kya pasand hai?"
+      }
+     },
+     "moduleCommands": []
+    },
+    "rows": [
+     {
+      "n": 1,
+      "child": "haan",
+      "kind": "greet",
+      "ms": 1477,
+      "r": {
+       "move": {
+        "kind": "hook"
+       },
+       "teacherReply": "Golu, socho ek roti ko do barabar parts mein baante; tum kaunsa part loge—ek ya dono?",
+       "ui": {
+        "status": "your_turn",
+        "phase": "teach",
+        "handover": "answer",
+        "answerForm": "words",
+        "tray": "none",
+        "shortTitle": "Equal shares",
+        "beat": {
+         "beatId": "b2-hook",
+         "type": "hook",
+         "index": 2
+        },
+        "ask": {
+         "text": "Golu, socho ek roti ko do barabar parts mein baante; tum kaunsa part loge—ek ya dono?"
+        }
+       },
+       "moduleCommands": []
+      }
+     },
+     {
+      "n": 2,
+      "child": "haan",
+      "kind": "filler",
+      "ms": 2920,
+      "r": {
+       "move": {
+        "kind": "explain"
+       },
+       "teacherReply": "Golu, teen barabar parts mein ek part ko third kehte hain; screen par 1/3 hai—kitne parts bane?",
+       "ui": {
+        "status": "your_turn",
+        "phase": "teach",
+        "handover": "answer",
+        "answerForm": "words",
+        "tray": "module",
+        "shortTitle": "Equal shares",
+        "beat": {
+         "beatId": "b3-explain",
+         "type": "explain",
+         "index": 3
+        },
+        "ask": {
+         "text": "Golu, teen barabar parts mein ek part ko third kehte hain; screen par 1/3 hai—kitne parts bane?"
+        }
+       },
+       "moduleCommands": [
+        {
+         "op": "mount",
+         "moduleId": "m2",
+         "engine": "fractions@1",
+         "params": {
+          "topicId": "c4-maths-ch05-t01",
+          "skillId": null,
+          "lang": "hinglish",
+          "fractions": [
+           [
+            1,
+            3
+           ]
+          ],
+          "numbers": [
+           15
+          ]
+         }
+        }
+       ]
+      }
+     },
+     {
+      "n": 3,
+      "child": "game khelna hai",
+      "kind": "visual",
+      "ms": 2144,
+      "r": {
+       "move": {
+        "kind": "reteach"
+       },
+       "teacherReply": "Golu, screen par strips jodo: ek strip ko do barabar parts mein baanto—pehla part shade karke dikhao.",
+       "ui": {
+        "status": "your_turn",
+        "phase": "teach",
+        "handover": "answer",
+        "answerForm": "words",
+        "tray": "studio",
+        "shortTitle": "Equal shares",
+        "beat": {
+         "beatId": "b3-explain",
+         "type": "explain",
+         "index": 3
+        },
+        "ask": {
+         "text": "Golu, screen par strips jodo: ek strip ko do barabar parts mein baanto—pehla part shade karke dikhao."
+        },
+        "studioSlot": {
+         "slotId": "d682d78f-49a6-4cd2-8248-481e0e639a78:play:2:slot",
+         "intentId": "d682d78f-49a6-4cd2-8248-481e0e639a78:play:2",
+         "state": "revealed",
+         "artifact": {
+          "kind": "play",
+          "stage": {
+           "w": 360,
+           "h": 576
+          },
+          "play": {
+           "sessionId": "eyJjaGlsZElkIjoiYzAzZGU4MDgtYzBhNC00OGJkLWI3ZWItNDdmMjk4NDliZGYyIiwia2V5IjoiYzQtbWF0aHMtY2gwNS10MDF8dG9kby1qb2RvL3N0cmlwc3xtYWtlIiwic2tpbGxJZCI6ImM0LW1hdGhzLWNoMDUtdDAxLXMxIiwibGVzc29uSWQiOiJkNjgyZDc4Zi00OWE2LTRjZDItODI0OC00ODFlMGU2MzlhNzgiLCJjbGFzc0xldmVsIjo0LCJmYWRlIjoxLCJsYW5nIjoiaGluZ2xpc2giLCJjaGlsZEFydCI6bnVsbCwibGFzdEFydCI6ImNoYWxrIiwibWlzIjp7fSwicEwiOjAuNDQ5LCJzZWN1cmUiOmZhbHNlLCJuIjowLCJzZWVkIjo0MDAxMDcyMDcsImRvb3IiOiJnYXJhbSIsInJlY2VudCI6W10sImhpc3QiOm51bGwsInYiOjEsImV4cCI6MTc5MTY4NjY3ODA1OH0.BB5T-WPodL8LioU_Xwe59xctX1h31sBUNycQWLmHNhk",
+           "family": "todo-jodo",
+           "mode": "strips",
+           "skillId": "c4-maths-ch05-t01-s1",
+           "topicId": "c4-maths-ch05-t01",
+           "art": "chalk",
+           "levelId": "strips-make:1/2-400107207"
+          },
+          "boardTwin": {
+           "board": {
+            "title": "Barabar hisse",
+            "lines": [
+             "1: 0 (0/1)"
+            ]
+           }
+          }
+         }
+        }
+       },
+       "moduleCommands": [
+        {
+         "op": "unmount",
+         "moduleId": "m2"
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  {
+   "tag": "animation \"animation dikhao na\" (typed, c6-science-ch01-t01, rep 1)",
+   "kind": "board",
+   "real": true,
+   "boardLateMs": -700,
+   "inResponse": true,
+   "refers": true,
+   "turnMs": 1777,
+   "reply": "Ishaan, screen par movement nahi hai; words mein dekhiye: doodh, nimbu, hilaiye, phir doodh badalta hai. Aap kya observe karenge?",
+   "transcript": {
+    "lessonId": "c99c3c8f-7d62-4080-a128-9f7e5d7caa4a",
+    "mode": "text",
+    "topicId": "c6-science-ch01-t01",
+    "opening": {
+     "reply": "Namaste Ishaan, main Asha, aapki AI teacher. Aaj hum dekhenge scientists kaise pata lagate hain. Aapko football mein kya pasand hai?",
+     "ui": {
+      "status": "your_turn",
+      "phase": "warmup",
+      "handover": "answer",
+      "answerForm": "words",
+      "tray": "none",
+      "shortTitle": "How scientists find out",
+      "beat": {
+       "beatId": "b1-arrive",
+       "type": "arrive",
+       "index": 1
+      },
+      "ask": {
+       "text": "Aapko football mein kya pasand hai?"
+      }
+     },
+     "moduleCommands": []
+    },
+    "rows": [
+     {
+      "n": 1,
+      "child": "नमस्ते, हाँ तैयार हूँ",
+      "kind": "greet",
+      "ms": 1748,
+      "r": {
+       "move": {
+        "kind": "hook"
+       },
+       "teacherReply": "Kitchen mein doodh aur nimbu se paneer banate waqt aap pehle kya predict karenge—doodh badlega ya nahi? Reason bhi batayiye. Bittu ko ant mein samjhayenge.",
+       "ui": {
+        "status": "your_turn",
+        "phase": "teach",
+        "handover": "answer",
+        "answerForm": "words",
+        "tray": "none",
+        "shortTitle": "How scientists find out",
+        "beat": {
+         "beatId": "b2-hook",
+         "type": "hook",
+         "index": 2
+        },
+        "ask": {
+         "text": "Kitchen mein doodh aur nimbu se paneer banate waqt aap pehle kya predict karenge—doodh badlega ya nahi?"
+        }
+       },
+       "moduleCommands": []
+      }
+     },
+     {
+      "n": 2,
+      "child": "अच्छा",
+      "kind": "filler",
+      "ms": 2485,
+      "r": {
+       "move": {
+        "kind": "explain"
+       },
+       "teacherReply": "Observation ko testable question banaiye: “Nimbu daalne par doodh badlega?” Iska jawab experiment se check ho sakta hai. Aap ek aisa question banaiye.",
+       "ui": {
+        "status": "your_turn",
+        "phase": "teach",
+        "handover": "answer",
+        "answerForm": "words",
+        "tray": "studio",
+        "shortTitle": "How scientists find out",
+        "beat": {
+         "beatId": "b3-explain",
+         "type": "explain",
+         "index": 3
+        },
+        "ask": {
+         "text": "Observation ko testable question banaiye: “Nimbu daalne par doodh badlega?"
+        },
+        "studioSlot": {
+         "slotId": "c99c3c8f-7d62-4080-a128-9f7e5d7caa4a:wb:2:slot",
+         "intentId": "c99c3c8f-7d62-4080-a128-9f7e5d7caa4a:wb:2",
+         "state": "revealed",
+         "artifact": {
+          "kind": "whiteboard",
+          "stage": {
+           "w": 400,
+           "h": 300
+          },
+          "script": {
+           "v": 1,
+           "scriptId": "c99c3c8f-7d62-4080-a128-9f7e5d7caa4a:wb:2",
+           "line": {
+            "lessonId": "c99c3c8f-7d62-4080-a128-9f7e5d7caa4a",
+            "teacherReplySeq": 5
+           },
+           "anchor": "line_audio_start",
+           "board": {
+            "w": 400,
+            "h": 300,
+            "ground": "grid"
+           },
+           "mode": "fresh",
+           "durationMs": 12545,
+           "ops": [
+            {
+             "id": "b0",
+             "op": "rect",
+             "startMs": 124,
+             "endMs": 777,
+             "weight": 2,
+             "at": [
+              25,
+              30
+             ],
+             "w": 160,
+             "h": 58,
+             "round": 10
+            },
+            {
+             "id": "t0",
+             "op": "text",
+             "startMs": 840,
+             "endMs": 1617,
+             "at": [
+              105,
+              61
+             ],
+             "text": "Observe",
+             "size": "m"
+            },
+            {
+             "id": "o1",
+             "op": "arrow",
+             "startMs": 1866,
+             "endMs": 2565,
+             "ink": "accent",
+             "from": [
+              105,
+              91
+             ],
+             "to": [
+              105,
+              133
+             ]
+            },
+            {
+             "id": "b1",
+             "op": "rect",
+             "startMs": 2690,
+             "endMs": 3343,
+             "weight": 2,
+             "at": [
+              25,
+              136
+             ],
+             "w": 160,
+             "h": 58,
+             "round": 10
+            },
+            {
+             "id": "t1",
+             "op": "text",
+             "startMs": 3405,
+             "endMs": 3871,
+             "at": [
+              105,
+              155
+             ],
+             "text": "Ask a testable",
+             "size": "s"
+            },
+            {
+             "id": "o2",
+             "op": "text",
+             "startMs": 3871,
+             "endMs": 4338,
+             "at": [
+              105,
+              179
+             ],
+             "text": "question",
+             "size": "s"
+            },
+            {
+             "id": "o3",
+             "op": "arrow",
+             "startMs": 4586,
+             "endMs": 5286,
+             "ink": "accent",
+             "from": [
+              105,
+              197
+             ],
+             "to": [
+              105,
+              239
+             ]
+            },
+            {
+             "id": "b2",
+             "op": "rect",
+             "startMs": 5410,
+             "endMs": 6063,
+             "weight": 2,
+             "at": [
+              25,
+              242
+             ],
+             "w": 160,
+             "h": 58,
+             "round": 10
+            },
+            {
+             "id": "t2",
+             "op": "text",
+             "startMs": 6126,
+             "endMs": 6592,
+             "at": [
+              105,
+              261
+             ],
+             "text": "Predict with",
+             "size": "s"
+            },
+            {
+             "id": "o4",
+             "op": "text",
+             "startMs": 6592,
+             "endMs": 7058,
+             "at": [
+              105,
+              285
+             ],
+             "text": "a reason",
+             "size": "s"
+            },
+            {
+             "id": "o5",
+             "op": "arrow",
+             "startMs": 7307,
+             "endMs": 8007,
+             "ink": "accent",
+             "from": [
+              188,
+              271
+             ],
+             "to": [
+              212,
+              59
+             ],
+             "bend": 0.2
+            },
+            {
+             "id": "b3",
+             "op": "rect",
+             "startMs": 8131,
+             "endMs": 8784,
+             "weight": 2,
+             "at": [
+              215,
+              30
+             ],
+             "w": 160,
+             "h": 58,
+             "round": 10
+            },
+            {
+             "id": "t3",
+             "op": "text",
+             "startMs": 8846,
+             "endMs": 9624,
+             "at": [
+              295,
+              61
+             ],
+             "text": "Test fairly",
+             "size": "s"
+            },
+            {
+             "id": "o6",
+             "op": "arrow",
+             "startMs": 9873,
+             "endMs": 10572,
+             "ink": "accent",
+             "from": [
+              295,
+              91
+             ],
+             "to": [
+              295,
+              133
+             ]
+            },
+            {
+             "id": "b4",
+             "op": "rect",
+             "startMs": 10697,
+             "endMs": 11350,
+             "weight": 2,
+             "at": [
+              215,
+              136
+             ],
+             "w": 160,
+             "h": 58,
+             "round": 10
+            },
+            {
+             "id": "t4",
+             "op": "text",
+             "startMs": 11412,
+             "endMs": 11878,
+             "at": [
+              295,
+              155
+             ],
+             "text": "Observe and",
+             "size": "s"
+            },
+            {
+             "id": "o7",
+             "op": "text",
+             "startMs": 11878,
+             "endMs": 12345,
+             "at": [
+              295,
+              179
+             ],
+             "text": "conclude",
+             "size": "s"
+            }
+           ],
+           "facts": {
+            "kind": "diagram",
+            "archetype": "whiteboard",
+            "onScreen": {
+             "labels": "Observe | Ask a testable | question | Pr"
+            }
+           }
+          }
+         }
+        }
+       },
+       "moduleCommands": []
+      }
+     },
+     {
+      "n": 3,
+      "child": "animation dikhao na",
+      "kind": "visual",
+      "ms": 1777,
+      "r": {
+       "move": {
+        "kind": "reteach"
+       },
+       "teacherReply": "Ishaan, screen par movement nahi hai; words mein dekhiye: doodh, nimbu, hilaiye, phir doodh badalta hai. Aap kya observe karenge?",
+       "ui": {
+        "status": "your_turn",
+        "phase": "teach",
+        "handover": "answer",
+        "answerForm": "words",
+        "tray": "studio",
+        "shortTitle": "How scientists find out",
+        "beat": {
+         "beatId": "b3-explain",
+         "type": "explain",
+         "index": 3
+        },
+        "ask": {
+         "text": "Aap kya observe karenge?"
+        },
+        "studioSlot": {
+         "slotId": "c99c3c8f-7d62-4080-a128-9f7e5d7caa4a:wb:3:slot",
+         "intentId": "c99c3c8f-7d62-4080-a128-9f7e5d7caa4a:wb:3",
+         "state": "revealed",
+         "artifact": {
+          "kind": "whiteboard",
+          "stage": {
+           "w": 400,
+           "h": 300
+          },
+          "script": {
+           "v": 1,
+           "scriptId": "c99c3c8f-7d62-4080-a128-9f7e5d7caa4a:wb:3",
+           "line": {
+            "lessonId": "c99c3c8f-7d62-4080-a128-9f7e5d7caa4a",
+            "teacherReplySeq": 7
+           },
+           "anchor": "line_audio_start",
+           "board": {
+            "w": 400,
+            "h": 300,
+            "ground": "grid"
+           },
+           "mode": "continue",
+           "durationMs": 10779,
+           "ops": [
+            {
+             "id": "b0",
+             "op": "rect",
+             "startMs": 106,
+             "endMs": 666,
+             "weight": 2,
+             "at": [
+              25,
+              30
+             ],
+             "w": 160,
+             "h": 58,
+             "round": 10
+            },
+            {
+             "id": "t0",
+             "op": "text",
+             "startMs": 720,
+             "endMs": 1386,
+             "at": [
+              105,
+              61
+             ],
+             "text": "Observe",
+             "size": "m"
+            },
+            {
+             "id": "o1",
+             "op": "arrow",
+             "startMs": 1599,
+             "endMs": 2198,
+             "ink": "accent",
+             "from": [
+              105,
+              91
+             ],
+             "to": [
+              105,
+              133
+             ]
+            },
+            {
+             "id": "b1",
+             "op": "rect",
+             "startMs": 2305,
+             "endMs": 2865,
+             "weight": 2,
+             "at": [
+              25,
+              136
+             ],
+             "w": 160,
+             "h": 58,
+             "round": 10
+            },
+            {
+             "id": "t1",
+             "op": "text",
+             "startMs": 2918,
+             "endMs": 3317,
+             "at": [
+              105,
+              155
+             ],
+             "text": "Ask a testable",
+             "size": "s"
+            },
+            {
+             "id": "o2",
+             "op": "text",
+             "startMs": 3317,
+             "endMs": 3717,
+             "at": [
+              105,
+              179
+             ],
+             "text": "question",
+             "size": "s"
+            },
+            {
+             "id": "o3",
+             "op": "arrow",
+             "startMs": 3930,
+             "endMs": 4530,
+             "ink": "accent",
+             "from": [
+              105,
+              197
+             ],
+             "to": [
+              105,
+              239
+             ]
+            },
+            {
+             "id": "b2",
+             "op": "rect",
+             "startMs": 4636,
+             "endMs": 5195,
+             "weight": 2,
+             "at": [
+              25,
+              242
+             ],
+             "w": 160,
+             "h": 58,
+             "round": 10
+            },
+            {
+             "id": "t2",
+             "op": "text",
+             "startMs": 5249,
+             "endMs": 5649,
+             "at": [
+              105,
+              261
+             ],
+             "text": "Predict with",
+             "size": "s"
+            },
+            {
+             "id": "o4",
+             "op": "text",
+             "startMs": 5649,
+             "endMs": 6048,
+             "at": [
+              105,
+              285
+             ],
+             "text": "a reason",
+             "size": "s"
+            },
+            {
+             "id": "o5",
+             "op": "arrow",
+             "startMs": 6261,
+             "endMs": 6861,
+             "ink": "accent",
+             "from": [
+              188,
+              271
+             ],
+             "to": [
+              212,
+              59
+             ],
+             "bend": 0.2
+            },
+            {
+             "id": "b3",
+             "op": "rect",
+             "startMs": 6968,
+             "endMs": 7527,
+             "weight": 2,
+             "at": [
+              215,
+              30
+             ],
+             "w": 160,
+             "h": 58,
+             "round": 10
+            },
+            {
+             "id": "t3",
+             "op": "text",
+             "startMs": 7580,
+             "endMs": 8247,
+             "at": [
+              295,
+              61
+             ],
+             "text": "Test fairly",
+             "size": "s"
+            },
+            {
+             "id": "o6",
+             "op": "arrow",
+             "startMs": 8460,
+             "endMs": 9059,
+             "ink": "accent",
+             "from": [
+              295,
+              91
+             ],
+             "to": [
+              295,
+              133
+             ]
+            },
+            {
+             "id": "b4",
+             "op": "rect",
+             "startMs": 9166,
+             "endMs": 9726,
+             "weight": 2,
+             "at": [
+              215,
+              136
+             ],
+             "w": 160,
+             "h": 58,
+             "round": 10
+            },
+            {
+             "id": "t4",
+             "op": "text",
+             "startMs": 9779,
+             "endMs": 10178,
+             "at": [
+              295,
+              155
+             ],
+             "text": "Observe and",
+             "size": "s"
+            },
+            {
+             "id": "o7",
+             "op": "text",
+             "startMs": 10178,
+             "endMs": 10579,
+             "at": [
+              295,
+              179
+             ],
+             "text": "conclude",
+             "size": "s"
+            }
+           ],
+           "facts": {
+            "kind": "diagram",
+            "archetype": "whiteboard",
+            "onScreen": {
+             "labels": "Observe | Ask a testable | question | Pr"
+            }
+           }
+          }
+         }
+        }
+       },
+       "moduleCommands": []
+      }
+     }
+    ]
+   }
+  },
+  {
+   "tag": "animation \"animation dikhao na\" (spoken, c6-science-ch01-t01, rep 1)",
+   "kind": "board",
+   "real": true,
+   "boardLateMs": -700,
+   "inResponse": true,
+   "refers": true,
+   "turnMs": 1845,
+   "reply": "Screen par movement nahi hai; words mein dekhiye: beej, paani, dhoop; roz naapna; dono results compare karna. Aap kya observe karenge?",
+   "transcript": {
+    "lessonId": "deb6beb8-1f64-4ec1-adcc-41d2c4f0a8f2",
+    "mode": "cascade",
+    "topicId": "c6-science-ch01-t01",
+    "opening": {
+     "reply": "Namaste Ishaan, main Asha, aapki AI teacher. Aaj dekhenge scientists kaise pata lagate hain—football mein aapko kya observe karna pasand hai?",
+     "ui": {
+      "status": "your_turn",
+      "phase": "warmup",
+      "handover": "answer",
+      "answerForm": "words",
+      "tray": "none",
+      "shortTitle": "How scientists find out",
+      "beat": {
+       "beatId": "b1-arrive",
+       "type": "arrive",
+       "index": 1
+      },
+      "ask": {
+       "text": "Aaj dekhenge scientists kaise pata lagate hain—football mein aapko kya observe karna pasand hai?"
+      }
+     },
+     "moduleCommands": []
+    },
+    "rows": [
+     {
+      "n": 1,
+      "child": "नमस्ते हाँ तैयार हूँ",
+      "kind": "greet",
+      "ms": 1573,
+      "r": {
+       "move": {
+        "kind": "hook"
+       },
+       "teacherReply": "Kitchen mein do beej rakhiye: ek ko dhoop, doosre ko andhere mein. Aapki prediction kya hogi, aur reason kya hai?",
+       "ui": {
+        "status": "your_turn",
+        "phase": "teach",
+        "handover": "answer",
+        "answerForm": "words",
+        "tray": "none",
+        "shortTitle": "How scientists find out",
+        "beat": {
+         "beatId": "b2-hook",
+         "type": "hook",
+         "index": 2
+        },
+        "ask": {
+         "text": "Aapki prediction kya hogi, aur reason kya hai?"
+        }
+       },
+       "moduleCommands": []
+      }
+     },
+     {
+      "n": 2,
+      "child": "अच्छा",
+      "kind": "filler",
+      "ms": 2790,
+      "r": {
+       "move": {
+        "kind": "explain"
+       },
+       "teacherReply": "Pehle observation ko testable question banaiye: “Kya dhoop mein rakha beej andhere wale se jaldi ugega?” Aap apna question boliye.",
+       "ui": {
+        "status": "your_turn",
+        "phase": "teach",
+        "handover": "answer",
+        "answerForm": "words",
+        "tray": "studio",
+        "shortTitle": "How scientists find out",
+        "beat": {
+         "beatId": "b3-explain",
+         "type": "explain",
+         "index": 3
+        },
+        "ask": {
+         "text": "Pehle observation ko testable question banaiye: “Kya dhoop mein rakha beej andhere wale se jaldi ugega?"
+        },
+        "studioSlot": {
+         "slotId": "deb6beb8-1f64-4ec1-adcc-41d2c4f0a8f2:wb:2:slot",
+         "intentId": "deb6beb8-1f64-4ec1-adcc-41d2c4f0a8f2:wb:2",
+         "state": "revealed",
+         "artifact": {
+          "kind": "whiteboard",
+          "stage": {
+           "w": 400,
+           "h": 300
+          },
+          "script": {
+           "v": 1,
+           "scriptId": "deb6beb8-1f64-4ec1-adcc-41d2c4f0a8f2:wb:2",
+           "line": {
+            "lessonId": "deb6beb8-1f64-4ec1-adcc-41d2c4f0a8f2",
+            "teacherReplySeq": 5
+           },
+           "anchor": "line_audio_start",
+           "board": {
+            "w": 400,
+            "h": 300,
+            "ground": "grid"
+           },
+           "mode": "fresh",
+           "durationMs": 10898,
+           "ops": [
+            {
+             "id": "b0",
+             "op": "rect",
+             "startMs": 108,
+             "endMs": 674,
+             "weight": 2,
+             "at": [
+              25,
+              30
+             ],
+             "w": 160,
+             "h": 58,
+             "round": 10
+            },
+            {
+             "id": "t0",
+             "op": "text",
+             "startMs": 728,
+             "endMs": 1401,
+             "at": [
+              105,
+              61
+             ],
+             "text": "Observe",
+             "size": "m"
+            },
+            {
+             "id": "o1",
+             "op": "arrow",
+             "startMs": 1617,
+             "endMs": 2223,
+             "ink": "accent",
+             "from": [
+              105,
+              91
+             ],
+             "to": [
+              105,
+              133
+             ]
+            },
+            {
+             "id": "b1",
+             "op": "rect",
+             "startMs": 2331,
+             "endMs": 2897,
+             "weight": 2,
+             "at": [
+              25,
+              136
+             ],
+             "w": 160,
+             "h": 58,
+             "round": 10
+            },
+            {
+             "id": "t1",
+             "op": "text",
+             "startMs": 2951,
+             "endMs": 3355,
+             "at": [
+              105,
+              155
+             ],
+             "text": "Ask a testable",
+             "size": "s"
+            },
+            {
+             "id": "o2",
+             "op": "text",
+             "startMs": 3355,
+             "endMs": 3759,
+             "at": [
+              105,
+              179
+             ],
+             "text": "question",
+             "size": "s"
+            },
+            {
+             "id": "o3",
+             "op": "arrow",
+             "startMs": 3975,
+             "endMs": 4581,
+             "ink": "accent",
+             "from": [
+              105,
+              197
+             ],
+             "to": [
+              105,
+              239
+             ]
+            },
+            {
+             "id": "b2",
+             "op": "rect",
+             "startMs": 4689,
+             "endMs": 5255,
+             "weight": 2,
+             "at": [
+              25,
+              242
+             ],
+             "w": 160,
+             "h": 58,
+             "round": 10
+            },
+            {
+             "id": "t2",
+             "op": "text",
+             "startMs": 5309,
+             "endMs": 5713,
+             "at": [
+              105,
+              261
+             ],
+             "text": "Predict with",
+             "size": "s"
+            },
+            {
+             "id": "o4",
+             "op": "text",
+             "startMs": 5713,
+             "endMs": 6117,
+             "at": [
+              105,
+              285
+             ],
+             "text": "a reason",
+             "size": "s"
+            },
+            {
+             "id": "o5",
+             "op": "arrow",
+             "startMs": 6333,
+             "endMs": 6939,
+             "ink": "accent",
+             "from": [
+              188,
+              271
+             ],
+             "to": [
+              212,
+              59
+             ],
+             "bend": 0.2
+            },
+            {
+             "id": "b3",
+             "op": "rect",
+             "startMs": 7047,
+             "endMs": 7613,
+             "weight": 2,
+             "at": [
+              215,
+              30
+             ],
+             "w": 160,
+             "h": 58,
+             "round": 10
+            },
+            {
+             "id": "t3",
+             "op": "text",
+             "startMs": 7667,
+             "endMs": 8340,
+             "at": [
+              295,
+              61
+             ],
+             "text": "Test fairly",
+             "size": "s"
+            },
+            {
+             "id": "o6",
+             "op": "arrow",
+             "startMs": 8556,
+             "endMs": 9162,
+             "ink": "accent",
+             "from": [
+              295,
+              91
+             ],
+             "to": [
+              295,
+              133
+             ]
+            },
+            {
+             "id": "b4",
+             "op": "rect",
+             "startMs": 9270,
+             "endMs": 9836,
+             "weight": 2,
+             "at": [
+              215,
+              136
+             ],
+             "w": 160,
+             "h": 58,
+             "round": 10
+            },
+            {
+             "id": "t4",
+             "op": "text",
+             "startMs": 9890,
+             "endMs": 10294,
+             "at": [
+              295,
+              155
+             ],
+             "text": "Observe and",
+             "size": "s"
+            },
+            {
+             "id": "o7",
+             "op": "text",
+             "startMs": 10294,
+             "endMs": 10698,
+             "at": [
+              295,
+              179
+             ],
+             "text": "conclude",
+             "size": "s"
+            }
+           ],
+           "facts": {
+            "kind": "diagram",
+            "archetype": "whiteboard",
+            "onScreen": {
+             "labels": "Observe | Ask a testable | question | Pr"
+            }
+           }
+          }
+         }
+        }
+       },
+       "moduleCommands": []
+      }
+     },
+     {
+      "n": 3,
+      "child": "animation dikhao na",
+      "kind": "visual",
+      "ms": 1845,
+      "r": {
+       "move": {
+        "kind": "reteach"
+       },
+       "teacherReply": "Screen par movement nahi hai; words mein dekhiye: beej, paani, dhoop; roz naapna; dono results compare karna. Aap kya observe karenge?",
+       "ui": {
+        "status": "your_turn",
+        "phase": "teach",
+        "handover": "answer",
+        "answerForm": "words",
+        "tray": "studio",
+        "shortTitle": "How scientists find out",
+        "beat": {
+         "beatId": "b3-explain",
+         "type": "explain",
+         "index": 3
+        },
+        "ask": {
+         "text": "Aap kya observe karenge?"
+        },
+        "studioSlot": {
+         "slotId": "deb6beb8-1f64-4ec1-adcc-41d2c4f0a8f2:wb:3:slot",
+         "intentId": "deb6beb8-1f64-4ec1-adcc-41d2c4f0a8f2:wb:3",
+         "state": "revealed",
+         "artifact": {
+          "kind": "whiteboard",
+          "stage": {
+           "w": 400,
+           "h": 300
+          },
+          "script": {
+           "v": 1,
+           "scriptId": "deb6beb8-1f64-4ec1-adcc-41d2c4f0a8f2:wb:3",
+           "line": {
+            "lessonId": "deb6beb8-1f64-4ec1-adcc-41d2c4f0a8f2",
+            "teacherReplySeq": 7
+           },
+           "anchor": "line_audio_start",
+           "board": {
+            "w": 400,
+            "h": 300,
+            "ground": "grid"
+           },
+           "mode": "continue",
+           "durationMs": 11162,
+           "ops": [
+            {
+             "id": "b0",
+             "op": "rect",
+             "startMs": 111,
+             "endMs": 691,
+             "weight": 2,
+             "at": [
+              25,
+              30
+             ],
+             "w": 160,
+             "h": 58,
+             "round": 10
+            },
+            {
+             "id": "t0",
+             "op": "text",
+             "startMs": 746,
+             "endMs": 1436,
+             "at": [
+              105,
+              61
+             ],
+             "text": "Observe",
+             "size": "m"
+            },
+            {
+             "id": "o1",
+             "op": "arrow",
+             "startMs": 1657,
+             "endMs": 2278,
+             "ink": "accent",
+             "from": [
+              105,
+              91
+             ],
+             "to": [
+              105,
+              133
+             ]
+            },
+            {
+             "id": "b1",
+             "op": "rect",
+             "startMs": 2389,
+             "endMs": 2969,
+             "weight": 2,
+             "at": [
+              25,
+              136
+             ],
+             "w": 160,
+             "h": 58,
+             "round": 10
+            },
+            {
+             "id": "t1",
+             "op": "text",
+             "startMs": 3024,
+             "endMs": 3438,
+             "at": [
+              105,
+              155
+             ],
+             "text": "Ask a testable",
+             "size": "s"
+            },
+            {
+             "id": "o2",
+             "op": "text",
+             "startMs": 3438,
+             "endMs": 3852,
+             "at": [
+              105,
+              179
+             ],
+             "text": "question",
+             "size": "s"
+            },
+            {
+             "id": "o3",
+             "op": "arrow",
+             "startMs": 4073,
+             "endMs": 4694,
+             "ink": "accent",
+             "from": [
+              105,
+              197
+             ],
+             "to": [
+              105,
+              239
+             ]
+            },
+            {
+             "id": "b2",
+             "op": "rect",
+             "startMs": 4805,
+             "endMs": 5385,
+             "weight": 2,
+             "at": [
+              25,
+              242
+             ],
+             "w": 160,
+             "h": 58,
+             "round": 10
+            },
+            {
+             "id": "t2",
+             "op": "text",
+             "startMs": 5440,
+             "endMs": 5854,
+             "at": [
+              105,
+              261
+             ],
+             "text": "Predict with",
+             "size": "s"
+            },
+            {
+             "id": "o4",
+             "op": "text",
+             "startMs": 5854,
+             "endMs": 6268,
+             "at": [
+              105,
+              285
+             ],
+             "text": "a reason",
+             "size": "s"
+            },
+            {
+             "id": "o5",
+             "op": "arrow",
+             "startMs": 6489,
+             "endMs": 7110,
+             "ink": "accent",
+             "from": [
+              188,
+              271
+             ],
+             "to": [
+              212,
+              59
+             ],
+             "bend": 0.2
+            },
+            {
+             "id": "b3",
+             "op": "rect",
+             "startMs": 7221,
+             "endMs": 7801,
+             "weight": 2,
+             "at": [
+              215,
+              30
+             ],
+             "w": 160,
+             "h": 58,
+             "round": 10
+            },
+            {
+             "id": "t3",
+             "op": "text",
+             "startMs": 7856,
+             "endMs": 8546,
+             "at": [
+              295,
+              61
+             ],
+             "text": "Test fairly",
+             "size": "s"
+            },
+            {
+             "id": "o6",
+             "op": "arrow",
+             "startMs": 8767,
+             "endMs": 9388,
+             "ink": "accent",
+             "from": [
+              295,
+              91
+             ],
+             "to": [
+              295,
+              133
+             ]
+            },
+            {
+             "id": "b4",
+             "op": "rect",
+             "startMs": 9499,
+             "endMs": 10079,
+             "weight": 2,
+             "at": [
+              215,
+              136
+             ],
+             "w": 160,
+             "h": 58,
+             "round": 10
+            },
+            {
+             "id": "t4",
+             "op": "text",
+             "startMs": 10134,
+             "endMs": 10548,
+             "at": [
+              295,
+              155
+             ],
+             "text": "Observe and",
+             "size": "s"
+            },
+            {
+             "id": "o7",
+             "op": "text",
+             "startMs": 10548,
+             "endMs": 10962,
+             "at": [
+              295,
+              179
+             ],
+             "text": "conclude",
+             "size": "s"
+            }
+           ],
+           "facts": {
+            "kind": "diagram",
+            "archetype": "whiteboard",
+            "onScreen": {
+             "labels": "Observe | Ask a testable | question | Pr"
+            }
+           }
+          }
+         }
+        }
+       },
+       "moduleCommands": []
+      }
+     }
+    ]
+   }
+  }
+ ],
+ "boards": [
+  {
+   "topicId": "c7-science-ch01-t01",
+   "real": true,
+   "lateMs": -700,
+   "inResponse": true,
+   "pass": true,
+   "reply": "Agar plant ko sunlight se farq padta hai, idea test kijiye: do same plants, sirf light badliye, daily measure kijiye. Evidence kya batayega?"
+  },
+  {
+   "topicId": "c6-science-ch01-t01",
+   "real": true,
+   "lateMs": -700,
+   "inResponse": true,
+   "pass": true,
+   "reply": "Pehle jo dikhta hai, usse observation kehte hain; phir us par testable question banate hain. Aap batayiye: doodh aur nimbu milane par kya badlega?"
+  },
+  {
+   "topicId": "c7-science-ch01-t01",
+   "real": true,
+   "lateMs": -700,
+   "inResponse": true,
+   "pass": true,
+   "reply": "Do same plants rakhiye, sirf ek ko light dijiye; roz height naapkar compare kijiye. Isse kis cheez ka evidence milega?"
+  },
+  {
+   "topicId": "c6-science-ch01-t01",
+   "real": true,
+   "lateMs": -700,
+   "inResponse": true,
+   "pass": true,
+   "reply": "Aap ek cheez dekhte hain, phir poochte hain: “Kya nimbu doodh ko badlega? ” Iska jawab test karke mil sakta hai."
+  },
+  {
+   "topicId": "c7-science-ch01-t01",
+   "real": true,
+   "lateMs": -700,
+   "inResponse": true,
+   "pass": true,
+   "reply": "Jaise cricket mein ball dekhkar decision hota hai: prediction ko observation aur measurement se check kijiye. Umpire ne kya observe kiya?"
+  },
+  {
+   "topicId": "c7-science-ch01-t01",
+   "real": true,
+   "lateMs": -700,
+   "inResponse": true,
+   "pass": true,
+   "reply": "Science mein bhi pehle idea hota hai, phir observation aur measurement se check karte hain; sirf kisi authority ki baat enough nahi. Aap kya naapenge?"
+  },
+  {
+   "topicId": "c6-science-ch01-t01",
+   "real": true,
+   "lateMs": -700,
+   "inResponse": true,
+   "pass": true,
+   "reply": "Jaise cricket mein aap dekhte hain ki geeli ball shayad kam door jaaye; yeh observation hai. Isse testable question banega: “Kya geeli ball, dry ball se kam door jaati hai?” Aap isse kaise test karenge?"
+  },
+  {
+   "topicId": "c5-maths-ch02-t01",
+   "real": true,
+   "lateMs": -81,
+   "inResponse": false,
+   "pass": true,
+   "reply": "Aarav, board par 0 se 1 ke beech 5 equal parts dekhiye: 0—1/5—2/5—3/5—4/5—1. 2/5 kahan hai?"
+  },
+  {
+   "topicId": "c7-science-ch01-t01",
+   "real": true,
+   "lateMs": -700,
+   "inResponse": true,
+   "pass": true,
+   "reply": "Board par dekhiye: Idea: light se plant ki growth badhegi. Do same cups, sirf light alag. Roz height naapkar kya compare karenge?"
+  },
+  {
+   "topicId": "c6-science-ch01-t01",
+   "real": true,
+   "lateMs": -700,
+   "inResponse": true,
+   "pass": true,
+   "reply": "Question tab testable hota hai jab uska jawab observation ya measurement se mil sake. Aap geeli aur dry ball ki distance kaise naapenge?"
+  },
+  {
+   "topicId": "c6-science-ch01-t01",
+   "real": true,
+   "lateMs": -700,
+   "inResponse": true,
+   "pass": true,
+   "reply": "Board dekhiye: Observation: ball geeli hai. Aap dono balls ki distance kaise naapenge?"
+  },
+  {
+   "topicId": "c4-maths-ch05-t01",
+   "real": true,
+   "lateMs": -128,
+   "inResponse": false,
+   "pass": true,
+   "reply": "Aarav, board par one-third dekho: poori cheez 3 equal parts mein banti hai. Har part kaisa hai?"
+  },
+  {
+   "topicId": "c6-maths-ch07-t01",
+   "real": true,
+   "lateMs": 1143,
+   "inResponse": false,
+   "pass": true,
+   "reply": "Aarav, ek roti ko 4 equal parts mein baantiye; har part whole ka one-fourth, yani fractional unit 1/4 hai. 1/4 ka matlab?"
+  },
+  {
+   "topicId": "c6-maths-ch07-t01",
+   "real": true,
+   "lateMs": -700,
+   "inResponse": true,
+   "pass": true,
+   "reply": "Aarav, ek chocolate ko 4 barabar tukdon mein baantne par har tukda 1/4 hota hai. Aise kitne equal tukde hain?"
+  },
+  {
+   "topicId": "c6-maths-ch07-t01",
+   "real": true,
+   "lateMs": -700,
+   "inResponse": true,
+   "pass": true,
+   "reply": "Jaise cricket pitch ko 4 equal zones mein baantein, har zone pitch ka 1/4 fractional unit hai. Aap kitne equal zones ginenge?"
+  },
+  {
+   "topicId": "c5-evs-ch01-t01",
+   "real": true,
+   "lateMs": -700,
+   "inResponse": true,
+   "pass": true,
+   "reply": "Board dekhiye: water vapour upar jaakar thandi hoti hai, phir chhoti boondein banti hain. Is badlav ko kya kahenge?"
+  },
+  {
+   "topicId": "c6-maths-ch07-t01",
+   "real": true,
+   "lateMs": 1145,
+   "inResponse": false,
+   "pass": true,
+   "reply": "Aarav, agar 1 roti ko 3 equal tukdon mein baantein, har tukda 1/3 hoga. Roti ko barabar baantna kyun zaroori hai?"
+  },
+  {
+   "topicId": "c6-maths-ch07-t01",
+   "real": true,
+   "lateMs": -700,
+   "inResponse": true,
+   "pass": true,
+   "reply": "Aarav, board par 3 equal parts dekhiye: 1/3 | 1/3 | 1/3. Har part whole ka ek hissa hai. Kitne parts hain?"
+  }
+ ],
+ "mounts": [
+  {
+   "topicId": "c6-maths-ch07-t01",
+   "bound": [],
+   "mounts": [],
+   "posed": "hook:- explain:- worked_example:- practice:fade:3 hint:fade:3 hint:fade:3 probe:rl-h1 explain:- probe:rl-o2"
+  },
+  {
+   "topicId": "c4-maths-ch05-t01",
+   "bound": [],
+   "mounts": [
+    "fractions@1",
+    "fractions@1"
+   ],
+   "posed": "hook:- explain:- worked_example:- practice:fade:0 break:- practice:fade:0 hint:fade:0 probe:rl-h1 explain:-"
+  },
+  {
+   "topicId": "c7-maths-ch08-t01",
+   "bound": [
+    {
+     "engine": "scene@1",
+     "goal": "g1:diag:c7-maths-ch08-t01-m-mult-bigger"
+    }
+   ],
+   "mounts": [
+    "scene@1"
+   ],
+   "posed": "hook:- explain:- probe:rl-h1 probe:- explain:- practice:rl-o2 probe:- probe:diag:c7-maths-ch08-t01-m-mult-bigger"
+  }
+ ],
+ "coverage": {
+  "root": "/home/user/taxila-int/",
+  "boardFirst": true,
+  "total": 385,
+  "counts": {
+   "game": 368,
+   "explainer": 369,
+   "board": 380,
+   "key": 385,
+   "all4": 364
+  },
+  "keyItems": {
+   "verifiedAgree": 6658,
+   "items": 6658
+  },
+  "mathsBinding": {
+   "topics": 141,
+   "topicsWithABoundItem": 35,
+   "boundItems": 83,
+   "items": 2497
+  },
+  "perSubject": {
+   "maths": {
+    "topics": 141,
+    "game": 131,
+    "explainer": 131,
+    "board": 139,
+    "key": 141,
+    "all4": 129
+   },
+   "science": {
+    "topics": 69,
+    "game": 64,
+    "explainer": 64,
+    "board": 67,
+    "key": 69,
+    "all4": 63
+   },
+   "evs": {
+    "topics": 40,
+    "game": 39,
+    "explainer": 39,
+    "board": 40,
+    "key": 40,
+    "all4": 39
+   },
+   "sst": {
+    "topics": 34,
+    "game": 34,
+    "explainer": 34,
+    "board": 34,
+    "key": 34,
+    "all4": 34
+   },
+   "english": {
+    "topics": 53,
+    "game": 52,
+    "explainer": 53,
+    "board": 53,
+    "key": 53,
+    "all4": 52
+   },
+   "hindi": {
+    "topics": 48,
+    "game": 48,
+    "explainer": 48,
+    "board": 47,
+    "key": 48,
+    "all4": 47
+   }
+  }
+ },
+ "skipped": {
+  "R": 0,
+  "B": 0,
+  "M": 0
+ },
+ "summary": {
+  "pieceMs": {
+   "n": 2,
+   "p50": 2144,
+   "p90": 3362
+  },
+  "boardLate": {
+   "n": 27,
+   "p50": -700,
+   "p90": -81
+  },
+  "realRequests": "11/12",
+  "boardSlotsFilled": "18/18",
+  "gateFails": 0,
+  "pointedEmpty": 1,
+  "wallMs": 132900
+ }
+}
