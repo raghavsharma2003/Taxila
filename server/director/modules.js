@@ -98,6 +98,11 @@ function interactiveDefault(s, kit, lang, ageBand) {
   let params = null;
   if (engine === "geoboard@1") params = /perimeter|boundary|fence|border|around/.test(words) ? { mode: "build", ask: "perimeter", perimeter: 12 }
     : /area|square units|cover/.test(words) ? { mode: "build", ask: "area", area: 6 } : null;
+  // a number to build in the place-value chart, as long as the topic's own numbers (its words name the digit count)
+  else if (engine === "place-value@1") {
+    const places = /6-digit|lakh/.test(words) && !/5-/.test(words) ? 6 : /5-|5 digit|ten thousand|thousands/.test(words) ? 5 : /4-|4 digit|thousand/.test(words) ? 4 : 3;
+    params = { mode: "build", a: [0, 0, 0, 345, 4506, 45236, 345216][places], places };
+  }
   if (!params) return null;
   return mountable(s, { engine, params: { ...params, topicId: kit.topicId, lang }, goal: undefined, bindItem: false, itemId: null, predict: false, ageBand });
 }
