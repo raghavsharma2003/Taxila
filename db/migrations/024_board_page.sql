@@ -1,6 +1,6 @@
 -- round 4 content (stream 2), the NOTEBOOK: every board a child was shown, in order, per lesson, so the notebook lists them
--- on any device (not only the device that took the lesson) and replays them in order. PROVISIONAL NUMBER: the main session
--- allots migration numbers (docs/design/round4/build/content/patches/01-board-page.diff; db/migrations/README.md).
+-- on any device (not only the device that took the lesson) and replays them in order. Number 024 allotted by the main
+-- session (2026-10-10; 025 is stream 4A's child.school_chapter). docs/design/round4/build/content/patches/01-*.diff.
 -- Lesson-keyed like studio_mount (rj-studio-mount-child-id-column): no child_id column; the child is reached through the
 -- lesson and the rows go with it (on delete cascade). The script is the board as drawn (its ops, card and facts; the
 -- gate redacted the child's name); never the child's words. Additive; safe to re-run.

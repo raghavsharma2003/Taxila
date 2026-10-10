@@ -1293,6 +1293,10 @@ export function step(prev, input) {
   // A reaction keeps the step's content (e.g. the worked example the teacher is in the middle of) and the
   // activity on screen.
   if (!reacting || p.content) s.lastContent = p.content ?? [];
+  // round 4 content (patch 02): the child's visual ask is on the move BEFORE the module plan, so a game / animation /
+  // simulation ask gets the topic engine's open task (modules.js interactiveDefault); before, move.visual was set below,
+  // after planModule, and every such ask got the still board rung (round3-forge R2 1/6 on taxila.dev, 2026-10-10)
+  if (p.visual) move.visual = p.visual;
   const moduleCommands = reacting ? [] : planModule(s, { kit: input.kit, item, move, lang: s.ctx.lang, band: s.probeSess?.band ?? bandOf(s.ctx.classLevel), representation: p.representation });
   // The child's request this move answers (requests.js): the brain reads it (a visual request asks Studio on any lane).
   if (p.request) move.request = p.request;
