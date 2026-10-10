@@ -11,7 +11,7 @@ index 00000000..1e925e0a
 +alter table child_controls alter column hours_start set default '06:30';
 +alter table child_controls alter column hours_end set default '21:30';
 diff --git a/src/child/copy.ts b/src/child/copy.ts
-index 2514c861..cb777895 100644
+index 2514c861..4660bb6c 100644
 --- a/src/child/copy.ts
 +++ b/src/child/copy.ts
 @@ -142,6 +142,13 @@ const S = {
@@ -19,9 +19,9 @@ index 2514c861..cb777895 100644
    done: "Done",
    helloNext: "Next",
 +  // Hello's "say hi" (round 4: the set-up's microphone check, now hers; nothing is recorded)
-+  sayHiQ: "Say hi to {T}!",
++  sayHiQ: "Say hi to {T}",
 +  sayHiListening: "{T} is listening",
-+  sayHiHeard: "{T} heard you!",
++  sayHiHeard: "{T} heard you",
 +  sayHiNone: "That's OK. You can tap and type too.",
 +  sayHiStart: "Say hi",
 +  skip: "Skip",

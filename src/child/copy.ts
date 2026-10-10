@@ -143,9 +143,9 @@ const S = {
   done: "Done",
   helloNext: "Next",
   // Hello's "say hi" (round 4: the set-up's microphone check, now hers; nothing is recorded)
-  sayHiQ: "Say hi to {T}!",
+  sayHiQ: "Say hi to {T}",
   sayHiListening: "{T} is listening",
-  sayHiHeard: "{T} heard you!",
+  sayHiHeard: "{T} heard you",
   sayHiNone: "That's OK. You can tap and type too.",
   sayHiStart: "Say hi",
   skip: "Skip",
