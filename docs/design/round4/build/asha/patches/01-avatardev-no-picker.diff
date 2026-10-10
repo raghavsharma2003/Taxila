@@ -1,0 +1,53 @@
+diff --git a/src/pages/AvatarDev.tsx b/src/pages/AvatarDev.tsx
+index 6c98b9c0..7ff95ad5 100644
+--- a/src/pages/AvatarDev.tsx
++++ b/src/pages/AvatarDev.tsx
+@@ -1,7 +1,7 @@
+-// /dev/avatar (dev builds or VITE_DEV_ROUTES=1 only): the 3D tutor and the picker without a lesson.
++// /dev/avatar (dev builds or VITE_DEV_ROUTES=1 only): the 3D tutor without a lesson (the picker is gone: one teacher).
+ //   ?tutor=asha|arjun|uma  ?face=B|Blite|D|E  ?status=speaking|listening|thinking|your_turn|idle  ?framing=medium|close
+ //   ?reduced=1  ?voice=1 (start the synthetic voice at once; needs a gesture unless autoplay is allowed)
+-//   ?view=face|picker|both  ?class=1-9  ?lang=hinglish|hindi|english  ?offer=sheet|wide
++//   ?class=1-9
+ // The synthetic voice is a looped, syllable-modulated harmonic signal (≈ 4.5 syllables/s, phrase pauses, bright/dark
+ // vowels) on a LevelMeter exactly as a link attaches one, so the face runs its real tap → lip → behaviour path.
+ // The face sits inside the real <TeacherStage> through its `face` slot: the same mount the lesson screen uses.
+@@ -9,7 +9,6 @@ import { useEffect, useMemo, useState } from "react";
+ import { createLevelAnalyser, LevelMeter } from "../lesson/level.ts";
+ import { TeacherStage } from "../stage/TeacherStage.tsx";
+ import { TutorFace } from "../avatar/TutorFace.tsx";
+-import { TutorPicker } from "../avatar/picker/TutorPicker.tsx";
+ import type { FloorStatus } from "../avatar/behaviour.ts";
+ import type { StageEvent } from "../avatar/three/stage3d.ts";
+ import type { FaceTier } from "../avatar/tier.ts";
+@@ -53,9 +52,7 @@ export default function AvatarDev() {
+   const [status, setStatus] = useState<FloorStatus | null>((q.get("status") as FloorStatus) || "your_turn");
+   const [reduced, setReduced] = useState(q.get("reduced") === "1");
+   const [playing, setPlaying] = useState(false);
+-  const view = q.get("view") ?? "both";
+   const cls = Number(q.get("class") ?? 6);
+-  const lang = q.get("lang") ?? "hinglish";
+   const framing = (q.get("framing") as "medium" | "close") ?? "medium";
+   const tier = (q.get("face") as FaceTier) || undefined;
+   const meter = useMemo(() => new LevelMeter(), []);
+@@ -105,7 +102,7 @@ export default function AvatarDev() {
+ 
+   return (
+     <div style={{ fontFamily: "system-ui, sans-serif", padding: 12, display: "grid", gap: 16, background: "#f3ece2", minHeight: "100vh", boxSizing: "border-box" }}>
+-      {view !== "picker" && (
++      {(
+         <section style={{ display: "grid", gap: 8 }}>
+           <div style={{ display: "flex", gap: 6, flexWrap: "wrap", alignItems: "center" }}>
+             {["asha", "arjun", "uma"].map((id) => (
+@@ -131,11 +128,6 @@ export default function AvatarDev() {
+           </div>
+         </section>
+       )}
+-      {view !== "face" && (
+-        <section style={{ background: "#fffaf2", borderRadius: 16 }}>
+-          <TutorPicker childId="dev-child-0001" band={band} lang={lang} reducedMotion={reduced} onDone={() => {}} preview={{ classLevel: cls, includeDraft: true, offer: q.get("offer") === "wide" ? "wide" : "sheet" }} />
+-        </section>
+-      )}
+     </div>
+   );
+ }

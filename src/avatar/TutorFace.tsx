@@ -76,8 +76,10 @@ if (import.meta.env?.DEV && typeof window !== "undefined") (window as unknown as
 const OVERRIDE_OK = !!import.meta.env?.DEV || import.meta.env?.VITE_DEV_ROUTES === "1";
 
 /**
- * The tutor for an id, else the class default for the BAND (b1-b2 = classes 1-4 → Asha, b3-b4 = 5-9 → Arjun), the
- * same rule as the server's teacherFor, so an unknown/null id can never put Asha's face over Arjun's voice.
+ * The tutor for an id, else the class default: Asha for every band (ONE teacher, dc-r4-single-teacher-asha), the
+ * same rule as the server's teacherFor. A known id is honoured as given, parked or not: the server sends the id of the
+ * teacher who actually speaks (clientChild, the lesson's pinned card), so a lesson pinned to Arjun before round 4 keeps
+ * his face with his voice until it ends, and no face is ever swapped under a voice.
  */
 export function faceTutor(id: string | null | undefined, band: string): TutorCharacter {
   return tutorById(id) ?? tutorById(defaultTutorFor({ class_level: band === "b3" || band === "b4" ? 5 : 1 }))!;

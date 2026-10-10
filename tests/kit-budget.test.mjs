@@ -7,7 +7,7 @@ import assert from "node:assert/strict";
 import { readdirSync, readFileSync } from "fs";
 import { normalizeKit, RUNG_DEFAULTS } from "../server/content/kits.js";
 import { compileWithReport, BudgetError } from "../server/compiler/compile.js";
-import { CHARACTERS } from "../server/compiler/characters/index.js";
+import { CHARACTERS, sheetFor } from "../server/compiler/characters/index.js";
 import { initLessonState, branchesFor } from "../server/director/state.js";
 import { buildPracticeQueue, findItem, promptFor, revealsAnswer } from "../server/director/items.js";
 import * as SH from "../server/director/shapes.js";
@@ -85,7 +85,8 @@ test("every queued item and diagnostic compiles on both lanes, every language an
     for (const id of ids) {
       for (const lang of LANGS) {
         for (const ageBand of ["6-9", "10-15"]) {
-          const character = ageBand === "6-9" ? CHARACTERS.asha : CHARACTERS.arjun;
+          // the ONE teacher in the band's register (dc-r4-single-teacher-asha); Arjun is parked
+          const character = sheetFor(CHARACTERS.asha, ageBand === "6-9" ? 3 : 7);
           const variants = [
             { lane: "text", hintLevel: 0, moveVoiced: false },
             { lane: "text", hintLevel: 3, moveVoiced: false, correction: ["ai_denial", "ability"] },
