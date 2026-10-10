@@ -2446,3 +2446,7 @@ words are left to read.
 <!-- merged from inbox/r4-safety-rel4.json -->
 - `rj-r4-root-hooks-in-one-process-test-runner` (2026-10-10): top-level test.before/after in a test file attach to the ROOT test because npm test is one process (tests/index.js); a virtual performance.now stayed installed for every later test and broke forge-g1-serve intermittently. Put hooks inside a describe; prove through a tests/index.js-shaped runner.
 - `rj-r4-lexicon-literals-shadow-corrections` (2026-10-10): misspelling literals added to a lexicon shape became VOCAB words and stopped the canonicaliser correcting them, costing three other shapes recall (fingerprint lost 4). Use only existing VOCAB words; always run the fingerprint both arms.
+
+
+## Merged inbox entries (write-up from the entry text)
+- `r4c-rj-unknown-probe-is-not-a-fail` (2026-10-10): Tried: a foundation (back-chain) segment when the intake's confirm probe got no answer (pata nahi) on a topic whose prerequisite was unseen. Broke: a class-6 child who said pata nahi right after class was sent to a class-5 topic (every new child has unseen prerequisites). Now only a WRONG answer on the probe, or a weak prerequisite, means school is ahead of the child
