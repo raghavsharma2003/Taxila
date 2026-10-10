@@ -1,0 +1,196 @@
+{
+  "nodes": [
+    {
+      "id": "dc-r4-autonomy-permissions",
+      "kind": "decision",
+      "at": "2026-10-10",
+      "title": "Owner directive: this session and every child session run fully autonomously, never asking the owner for permission or a choice; .claude/settings.json pre-approves every tool for single-repo Taxila sessions, with a deny floor (Neon data-destroying tools, domain purchases, sending mail as the owner); owner-level decisions route to the main session"
+    },
+    {
+      "id": "ms-r4-13shadow-corpus-contract",
+      "kind": "measurement",
+      "at": "2026-10-10",
+      "title": "Patch 13 shadow contract, corpus-wide on 4A 7fd936d1: 1,206 scanSafety-firing strings (of 376,989) x 4 posed verified items (129 drawn from 12,289), 4,824 classifyFast runs off vs shadow: 0 result/flag diffs, 0 throws; would-set-aside 7, only on the two bully items"
+    },
+    {
+      "id": "rj-r4-13shadow-unguarded",
+      "kind": "rejection",
+      "at": "2026-10-10",
+      "title": "Patch 13 as delivered computed the shadow set-aside unguarded inside classifyFast's predicate branch: an item whose fields throw crashed the floor's own branch in shadow while 'off' fired normally (review test fails on 7fd936d1)"
+    },
+    {
+      "id": "dc-r4-13shadow-failsafe",
+      "kind": "decision",
+      "at": "2026-10-10",
+      "title": "Main safety review amendment to patch 13: the shadow computation is wrapped so any error returns the plain predicate result with no annotation; test tests/r4-item-setaside-failsafe.test.mjs (fails on 7fd936d1, passes amended); ships with 4A's batch"
+    },
+    {
+      "id": "ms-r4a-journey-audit-owner-vision",
+      "kind": "measurement",
+      "at": "2026-10-10",
+      "title": "Stream 5 end-to-end journey audit (local prod builds, fake ASR, US container): owner-vision scores today / Kaksha+session-first: gamified 1/2, games built on the go 0/0, knows if understood 2/2, bond 2/2, just-start school-first 0/2 (of 5); 15 ranked defects"
+    },
+    {
+      "id": "dc-r4-audit-fix-routing",
+      "kind": "decision",
+      "at": "2026-10-10",
+      "title": "Journey-audit defects routed: #2 no built/play content (G2 leads root cause, patch requests to 4A/stream 2/G1); #3/4/5/6/10a grading truth, tired dead end, ask extraction, cross-day continuity (4A, after the session-start measurement); #7/8 start and reply latency (stream 3, re-measured on production first); #9/10b/13/14 visual honesty, Desk truncation, summary mismatch, picture reload (stream 2, ahead of the skin); Kaksha rows (K); #11/12/15 hours, set-up length, small UI (stream 5)"
+    },
+    {
+      "id": "dc-r4-first-lesson-any-hour",
+      "kind": "decision",
+      "at": "2026-10-10",
+      "title": "A child's first lesson right after set-up opens at any hour (the parent is present and just handed over; cap and safety holds still apply); the default lesson window becomes 06:30-21:30 IST (was 07:00-20:30); migration 028 for the column defaults"
+    },
+    {
+      "id": "dc-r4-setup-five-steps",
+      "kind": "decision",
+      "at": "2026-10-10",
+      "title": "Set-up cut from 9 steps to 5 before the child hears Asha (child: class/board/language; promises + hold gate; account; consent; name + PIN + hand over); register, school language, daily time and hours take defaults; interests chosen by the child in Hello; the mic check folds into Hello; AI disclosure and the AI-honesty promise unchanged"
+    },
+    {
+      "id": "dc-r4-release-sequence-r7-r9",
+      "kind": "decision",
+      "at": "2026-10-10",
+      "title": "Release sequence: R7 = stream 2's packaging fix (e7edc829) + safety release 6; R8 = G1 + K-P3/K-P4 + Kaksha (723e6cfc, TAXILA_UI_KAKSHA owner hash only); R9 = 4A's batch + the session-first owner cohort (TAXILA_SESSION_FIRST_FOR) after an end-to-end session-start owner-2 run; then G2, 4B, stream 3, 5b"
+    },
+    {
+      "id": "fn-r4-no-built-content-root-causes",
+      "kind": "finding",
+      "at": "2026-10-10",
+      "title": "G2's root causes for 0 built/play pieces in 3 lessons (trial tree base + G1 + r4-khand, 3 children, 6 game asks): RC1 no admitted play family for most topics and the null fallback serves the board, which the reply calls 'a game'; RC2 Khand art refused by visual QA (no play.json cells at p360); RC3 Studio truth packs only for shade_fraction / number_line_jump, so prefetch makes nothing for non-fraction topics; RC4 first sessions are promoted-library-only and the library is empty; RC5 a skeleton on screen blocks the next game ask"
+    },
+    {
+      "id": "dc-r4-first-session-live-pieces",
+      "kind": "decision",
+      "at": "2026-10-10",
+      "title": "A first session may take gate-passed live pieces and skeletons (router rule 5 no longer promoted-only when no promoted row exists); a skeleton is not a game in progress"
+    },
+    {
+      "id": "dc-r4-never-call-board-a-game",
+      "kind": "decision",
+      "at": "2026-10-10",
+      "title": "On a game ask with no live play piece she says plainly there is no game for this topic today and offers what is on screen; 'game' may describe a surface only when a play piece is live, enforced by predicate in the reply path"
+    },
+    {
+      "id": "ms-r4-play-coverage-59-514",
+      "kind": "measurement",
+      "at": "2026-10-10",
+      "title": "Play coverage (base + G1 + Khand, coverage.json): 59 of 514 topics (11%) have an admitted play family; classes 1-3 and 8-9 have 0; of the 36 topics a fresh child starts on today (classes 3-8) 6 have a game"
+    },
+    {
+      "id": "dc-r4-universal-item-arena",
+      "kind": "decision",
+      "at": "2026-10-10",
+      "title": "Two-layer games: law-based families stay the deep games (G2: MEASURE first, then the fraction area model), and G1 builds a universal item-arena family over verified closed-form kit items (graded against the verified key, never by a model) so every eligible topic has a game; eligibility is measured before the build"
+    },
+    {
+      "id": "fn-r4-worktree-disk",
+      "kind": "finding",
+      "at": "2026-10-10",
+      "title": "A full Taxila worktree is 4.3 GB (docs 2.2 GB, evals 0.8 GB, art 0.6 GB) against ~3 GB free: two review worktrees filled the disk to 1.4 GB free mid-checkout; review copies are made with git archive of server/shared/data only (44 MB), the image file set with git archive minus docs/evals/tests/art (217 MB)"
+    }
+  ],
+  "edges": [
+    {
+      "src": "dc-r4-13shadow-failsafe",
+      "rel": "caused_by",
+      "dst": "rj-r4-13shadow-unguarded"
+    },
+    {
+      "src": "dc-r4-13shadow-failsafe",
+      "rel": "part_of",
+      "dst": "dc-r4-item-setaside-shadow-first"
+    },
+    {
+      "src": "ms-r4-13shadow-corpus-contract",
+      "rel": "part_of",
+      "dst": "dc-r4-item-setaside-shadow-first"
+    },
+    {
+      "src": "dc-r4-audit-fix-routing",
+      "rel": "caused_by",
+      "dst": "ms-r4a-journey-audit-owner-vision"
+    },
+    {
+      "src": "dc-r4-first-lesson-any-hour",
+      "rel": "caused_by",
+      "dst": "ms-r4a-journey-audit-owner-vision"
+    },
+    {
+      "src": "dc-r4-setup-five-steps",
+      "rel": "caused_by",
+      "dst": "ms-r4a-journey-audit-owner-vision"
+    },
+    {
+      "src": "fn-r4-no-built-content-root-causes",
+      "rel": "caused_by",
+      "dst": "ms-r4a-journey-audit-owner-vision"
+    },
+    {
+      "src": "dc-r4-first-session-live-pieces",
+      "rel": "caused_by",
+      "dst": "fn-r4-no-built-content-root-causes"
+    },
+    {
+      "src": "dc-r4-never-call-board-a-game",
+      "rel": "caused_by",
+      "dst": "fn-r4-no-built-content-root-causes"
+    },
+    {
+      "src": "ms-r4-play-coverage-59-514",
+      "rel": "part_of",
+      "dst": "fn-r4-no-built-content-root-causes"
+    },
+    {
+      "src": "dc-r4-universal-item-arena",
+      "rel": "caused_by",
+      "dst": "ms-r4-play-coverage-59-514"
+    },
+    {
+      "src": "dc-r4-release-sequence-r7-r9",
+      "rel": "supersedes",
+      "dst": "dc-r4-merge-order-core-first"
+    },
+    {
+      "src": "r4k-k1-built",
+      "rel": "measured_by",
+      "dst": "r4k-k1-rendered"
+    },
+    {
+      "src": "r4k-k1-built",
+      "rel": "measured_by",
+      "dst": "r4k-k1-latency-live"
+    },
+    {
+      "src": "r4k-k1-built",
+      "rel": "measured_by",
+      "dst": "r4k-k1-latency-client"
+    },
+    {
+      "src": "r4k-k2-built",
+      "rel": "measured_by",
+      "dst": "r4k-k2-rendered"
+    },
+    {
+      "src": "r4k-k2-built",
+      "rel": "measured_by",
+      "dst": "r4k-k2-frame"
+    },
+    {
+      "src": "r4k-k1-built",
+      "rel": "measured_by",
+      "dst": "r4k-truth-11-4"
+    },
+    {
+      "src": "r4k-k3-built",
+      "rel": "measured_by",
+      "dst": "r4k-parity-integration"
+    }
+  ],
+  "md": {
+    "decisions": "- `dc-r4-autonomy-permissions` (2026-10-10): owner directive, verbatim intent: \"behave fully autonomously … in no case you require permission from me\". Base 4f92408 adds `.claude/settings.json` (read by single-repo sessions): every built-in tool and the claude-code-remote, github, Neon, Vercel and Claude_Docs MCP servers are pre-approved; deny (refused, never prompted): Neon delete project/branch/snapshot/database/role/endpoint, reset_from_parent, restore_snapshot, finalize_branch_restore, reset role password, set default branch; Vercel buy/transfer domain; Gmail send/reply/forward. The multi-repo main session does not read repo settings; the owner's switch for running sessions is Auto in the mode menu (bypass is not offered in cloud sessions). Child sessions were told to send owner-level decisions to the main session. The security rules (secrets, least privilege, the child-safety floor) are unchanged. Reverse if: a pre-approved tool does something the owner would not have approved (move it to deny), or the owner asks for prompts back.\n- `dc-r4-13shadow-failsafe` (2026-10-10): main safety review of 4A's patch 13 (TAXILA_ITEM_SETASIDE, default shadow). Approved for shadow with one amendment made by main at integration: in classifyFast's distress branch the shadow (askedOther → revealsAnswer, itemSetAside) runs in try/catch, any error returns done(\"no_evidence\",\"predicate\") with no setAsideWould. Review evidence: no safety file changed (safety.js, server/safety/, floor.js, safetyStrings.ts), so scanSafety is identical on both arms; the corpus contract (ms-r4-13shadow-corpus-contract) 0 diffs / 0 throws; the fail-safe test fails on 7fd936d1 and passes amended. Turning it on still needs the one-decision patch and >= 1 week or >= 200 production shadow decisions. Reverse if: a production shadow trace shows a would-set-aside on a disclosure (the flag goes off and the rule is redesigned).\n- `dc-r4-audit-fix-routing` (2026-10-10): stream 5's journey audit (claude/r4-asha 0cea014a, docs/design/round4/build/journey/AUDIT.md) is the work list for the next wave, ranked by the owner's vision. Owners as in the node. The audit is re-run end to end after the fixes land and the vision scores are the bar (games built on the go and school-first must leave 0). Reverse if: a re-run shows a different gap leading.\n- `dc-r4-first-lesson-any-hour` (2026-10-10): the default window 07:00-20:30 left an evening set-up with no first lesson (audit #11), and Indian homework time runs past 20:30. Built by stream 5 as patch 09 (+ 09b, migration 028 for the column defaults): the first lesson opens at any hour; from the second lesson the hours hold; the daily cap and any safety hold always apply. Reverse if: parents report late first lessons as unwanted, or usage shows first lessons after 21:30 end early.\n- `dc-r4-setup-five-steps` (2026-10-10): set-up had 9 steps before the child heard Asha (audit #12). Approved cut to 5 (stream 5's proposal), account kept before the first lesson because /api/children, consent and the PIN need a guardian session. Measured before/after (steps, taps, time to her first sound) is required with the head. Reverse if: the measured time to first sound does not fall, or parents miss a deferred control.\n- `dc-r4-first-session-live-pieces` (2026-10-10): router rule 5 (studio.first_session_promoted_only, bond stage meeting) meant a new child could never see a built piece while the promoted library is empty (G2 RC4). A first session now takes pieces that passed the truth checks, the tray gate and visual QA; promoted rows still come first where they exist. Owner: stream 2. Reverse if: first-session live pieces show a higher defect rate than later-session ones.\n- `dc-r4-never-call-board-a-game` (2026-10-10): with no play piece the turn fell back to the board and the reply said \"Screen par game …\" / \"Game mode on\" over a fill-in item (G2 RC1): a false statement to a child. On a game ask: a real stagecraft:game if one exists, else a plain 'no game for this topic today' and what is on screen. Enforced by predicate on the reply (a surface word like game only when a play piece is live), not by instruction. Owner: 4A. Reverse if: never (honesty floor); the wording may change.\n- `dc-r4-universal-item-arena` (2026-10-10): with 11% of topics admitted (ms-r4-play-coverage-59-514), law families alone cannot meet the owner's \"fully gamified\" vision soon. G2 builds MEASURE (unit blocks on a balance / jug / ruler; closes >= 7 topics, 4 of today's fresh-child topics) then the area model; G1 builds an item arena on core3d: each challenge one verified closed-form kit item, deterministic grading against the verified key, a wrong answer shows a hint rung or the mal-rule note, never the key; evidence via:\"game\" at a lower weight than a law family; same certificates as Antariksh. Reverse if: the eligibility count shows too few closed-form items per topic, or children's evidence from the arena proves weaker than a board item (then it is a reward surface, not evidence).\n- `dc-r4-release-sequence-r7-r9` (2026-10-10): supersedes the core-first merge order: 4A's batch no longer waits behind the Kaksha re-skin; Kaksha ships structure-first behind the owner cohort (parity 72/72 for everyone else, measured by K) and its futurist look layer follows as a delta. Reverse if: R8's battery shows a non-cohort change (Kaksha is rolled back and 4A moves ahead).",
+    "measurements": "- `ms-r4-play-coverage-59-514` (2026-10-10): G2, trial tree base 4f92408 + G1 cb078473 + r4-khand, coverage.json. Admitted / all by class x subject: c1 maths 0/29, c2 maths 0/24, c3 maths 0/32, c3 evs 0/24, c4 maths 9/30, c4 evs 1/20, c5 maths 11/32, c5 evs 1/20, c6 maths 16/36, c6 science 5/33, c7 maths 8/43, c7 science 8/36, c8 maths 0/37, c8 science 0/34, c9 maths 0/41, c9 science 0/43; all 59/514. Planner frequency by the planner's own rule (schoolStartIndex, weekly April-January, weights 3/2/1): today's fresh-child topics in classes 3-8 are 36, 6 with a game. Top uncovered include c6-maths-ch03-t01, c3 halves and quarters, c4 grams and kilograms (the audit topic), c6 states of water, c8 mixtures.\n- `ms-r4-13shadow-corpus-contract` (2026-10-10): scratchpad shadowcheck.mjs on a git-archive copy of 4A 7fd936d1 (server, shared, data). Corpus: every string >= 6 chars in data/kits, data/curriculum, evals and tests (376,989), of which scanSafety fires on 1,206. Each firing string ran through classifyFast (typed, posed: heard = the item's prompt) against 4 items (2 rotating from 129 sampled every 97th of 12,289 verified items, plus c9-sst-ch14-t01-i08 and c7-science-ch06-t02-i11) with TAXILA_ITEM_SETASIDE=off then shadow: 4,824 runs, result minus setAsideWould and flags identical in all, source always predicate, 0 throws either way. would-set-aside 7 (all on the two bully items: e.g. \"Who would stop a bully or a thief?\", \"anti bullying week in school\"); not-set-aside reasons: self_harm 2,420, first_person 1,744, guard 232, actor 228, novel 100, harm 88, rest_fires 5. A first run with a broken sampler (2 items) gave the same 0 / 0.\n- `ms-r4a-journey-audit-owner-vision` (2026-10-10): stream 5, claude/r4-asha 0cea014a, docs/design/round4/build/journey/AUDIT.md + shots/A (63), shots/B (16). A = base 4f92408 production flags; B = K a0da1109 with VITE_UI_KAKSHA=1 + TAXILA_SESSION_FIRST=on. Local production builds on prod-routing.env, stream 5's Neon test branch, r4-timeline driver, headless Chromium 360x800 + 1366x768, fake ASR (750 ms commit), US container, two children (class 4 via the real UI, class 7 via API), test clock +1 day. Scores (of 5) A / B: gamified 1 / 2; games built on the go 0 / 0; knows whether understood 2 / 2; bond 2 / 2; just start, school first 0 / 2. Timings: lesson-1 start to first sound 7.4 s (start call 3.0 s + speech 4.3 s), later starts 4.2-4.7 s; replies 4.2-8.1 s after speech end, ack 0.75-1.35 s. Not a child; not production.",
+    "rejected": "- `rj-r4-13shadow-unguarded` (2026-10-10): 4A's patch 13 computed the shadow annotation (askedOther → revealsAnswer, then itemSetAside) directly in classifyFast's predicate branch. What broke: with an item whose content fields throw on read, TAXILA_ITEM_SETASIDE=off returned the predicate result and shadow threw (\"broken item field answer\"), so a shadow-only feature could take down the floor's own branch on exactly the turns it exists for. 4A's own byte-identity test used well-formed items only. Fixed by dc-r4-13shadow-failsafe. Lesson: anything added to a safety branch for observation is wrapped so it cannot fail the branch, and the review test uses a hostile input, not just realistic ones."
+  }
+}

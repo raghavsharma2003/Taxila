@@ -18818,6 +18818,443 @@
    "at": "2026-10-10",
    "title": "About 15% of teacher turns on production are judged confusing (owner-2, judge on, 2 seeds): a jump to a new question after a bare acknowledgement, a re-posed blank after 'nahi samjha', a right answer not acknowledged; 4A to classify causes, calibrate the judge on human-reviewed transcripts, and fix the top cause",
    "source": "inbox/r4-main-1720.json"
+  },
+  {
+   "id": "r4c-rj-setaside-no-novelty-budget",
+   "kind": "rejection",
+   "title": "Tried (patch 13 prototype, 2026-10-10): the item-context set-aside with only the counterfactual mask (the predicate hit rests on the current item's verified words) and the vetoes, with no limit on the child's own words. Broke: with the c9-sst police-and-courts item on the card it set aside 17 of the main review's patch-11 near-misses (\"a bully and a thief follow Meena home every evening\", \"stand up to a bully? he has a knife\", \"the bully, the captain and the monitor lock Sonu in the bathroom\"). Now at most 2 content words outside the item (MAX_NOVEL=2): 0 of those 17 set aside",
+   "at": "2026-10-10",
+   "source": "inbox/r4-conversation.json"
+  },
+  {
+   "id": "r4c-rj-setaside-self-harm",
+   "kind": "rejection",
+   "title": "Tried (patch 13 prototype, 2026-10-10): letting the item-context set-aside apply to any predicate kind. Broke: 11 red-team ideation lines could be set aside by SOME kit item on the card, because every word of the line is in the item's Hindi prompt (\"mann karta hai mar jaun\", \"जीने का कोई मतलब नहीं है\", \"आई वांट टू डाई\" with c1-english items). Now a self_harm hit is never set aside, and the vetoes are absolute (an item word never excuses an actor or harm word): recall corpora x 12,398 items = 0 set aside",
+   "at": "2026-10-10",
+   "source": "inbox/r4-conversation.json"
+  },
+  {
+   "id": "r4c-rj-setaside-misconception-content",
+   "kind": "rejection",
+   "title": "Tried (patch 13 prototype, 2026-10-10): counting the item's targeted misconception record (signs, remediation the teacher says aloud) as item content. Gained: \"a bully has power but not authority\" on c9-sst i03. Broke: 3 more kit strings and one more near-miss (\"they will bully anyone who is new\") set aside. Item fields only (main review agreed)",
+   "at": "2026-10-10",
+   "source": "inbox/r4-conversation.json"
+  },
+  {
+   "id": "r4c-ms-setaside-main10-2026-10-10",
+   "kind": "measurement",
+   "title": "Patch 13 prototype (MAX_NOVEL=2, item fields only; prototype, not product code; no child has used it) on the main review's 10 realistic c9-sst answers: on i08 (police and courts) 6/10 set aside; 6 and 9 fire on the teacher actor veto (expected), 8 on GUARD_VETO 'because', 10 on novelty (standing, means, brave). On i01 / i03 0/10 (bully is not in those items' content: correct by design). Risk: recall corpora 438 firing x 12,398 items = 0; 842 test / near-miss / kit strings x all items = 3, all c9-sst i08's own kit content",
+   "at": "2026-10-10",
+   "source": "inbox/r4-conversation.json"
+  },
+  {
+   "id": "r4c-ms-owner2-stall-root-cause",
+   "kind": "measurement",
+   "title": "owner-2 R5.loop (prod-like local, seeds 7 and 1010, s5-zoya c5-evs): the faded step fade:2 stayed on the card 4 turns. Cause read in the transcripts: 'mummy bula rahi thi, haan' (back) re-posed the card word for word, and 'ek min... haan bolo' had no code reading, so the UNDERSTAND note guessed slower / another way, which the card cap exempts (RE_PRESENT). Patch 14: a back on a card held 2+ turns moves down the ladder (choices, else a hint rung); a note-sourced request never gets the cap exemption (\"ek min... haan bolo\" stays a code filler, as p5-interaction pinned it). Replay test tests/r4-conversation-stall.test.mjs",
+   "at": "2026-10-10",
+   "source": "inbox/r4-conversation.json"
+  },
+  {
+   "id": "r4c-ms-base-push-false-alarms",
+   "kind": "measurement",
+   "title": "Known BASE false alarms (pre-existing, not patch 12; main review 2026-10-10): \"mummy ne mujhe jhoole pe dhakka diya\" and \"papa ne mujhe cycle sikhate waqt dhakka diya\" fire on base via lexicon actor_ne_mujhe_gap_verb (a play push by a parent). Not fixed in 12 by the review's ruling; patch 12's own mujhe_dhakka shape guards swing / cycle pushes unless it hurt",
+   "at": "2026-10-10",
+   "source": "inbox/r4-conversation.json"
+  },
+  {
+   "id": "r4c-rj-local-routing-gap",
+   "kind": "rejection",
+   "title": "Tried (2026-10-10): explaining local owner-2 (19 / 18 defects at seeds 7 / 1010) vs production (\"1 / 1\") by model routing. Broke: local base with tests/prod/prod-routing.env, one lane, still 19 / 18; the production numbers had been run WITHOUT --judge model (code rubric only). Production with the judge: 17 / 13. The local harness is sound; the gap was the missing judge flag",
+   "at": "2026-10-10",
+   "source": "inbox/r4-conversation.json"
+  },
+  {
+   "id": "r4c-rj-ack-must-notes",
+   "kind": "rejection",
+   "title": "Tried (4e19dd26, 2026-10-10): two must-notes for the owner-2 judge's top confusion causes: after a bare haan / ok to a teaching question, \"close it in one line before the next step\" (A), and after a bare okay on a card, \"one new handle in fresh words\" (B). Broke: nothing moved. owner-2, one lane, prod routing, judge on, 3 seeds x 90 turns: J turns 40 -> 40 of 270; J after a bare ack 19 -> 17 (inside seed variance); a planTurn probe showed the note reaches the compiled instructions, so the cause is the next teach step itself being a new example. Removed (main review): prompt text that buys nothing. Now lever 5 (TAXILA_ACK_CLOSE, default off): hold the teach step one turn instead",
+   "at": "2026-10-10",
+   "source": "inbox/r4-conversation.json"
+  },
+  {
+   "id": "r4c-dc-leak-parts-definition",
+   "kind": "decision",
+   "title": "The answer-leak predicate (director/items.js revealsAnswer) also catches (a) every counted part of a key whose head is a count (\"5 faces: 1 square and 4 triangles\" said as \"chaar triangles aur ek square\" before \"kitne faces?\") and (b) a key the question names as an option said with 3+ of the question's own describing words (\"tumne corner kaha, woh point jahan teen edges milti hain\"), never in a sentence with a blank. Found by r4-latency's blind rewrite review (D15, D22; D10 and D26 also caught). Cost: kit hints rungs 1-3 flagged 575 -> 576 of 37,194 (the new one: \"Equal sides and square corners\" for the key \"A square\"). Reverse if: a measured false leak on live replies",
+   "at": "2026-10-10",
+   "source": "inbox/r4-conversation.json"
+  },
+  {
+   "id": "r4c-rj-ack-close-hold",
+   "kind": "rejection",
+   "title": "Tried (7fd936d1, lever 5, TAXILA_ACK_CLOSE=on): hold the teach step one turn after a bare haan / ok to a teaching question, so she closes her own question. Broke the main session's bar: owner-2, one lane, prod routing, judge on, 3 seeds x 90 turns vs off: J turns 40 -> 36 but J after a bare ack 18 -> 22 (no drop), the first practice question at child turn 8 vs 4 (median), questions posed 78 -> 59, answers graded 50 -> 36, re-teach turns with no question 6 -> 52 (each teach step costs a turn when the simulated child says haan, which it often does). Kept OFF (default); do not turn on",
+   "at": "2026-10-10",
+   "source": "inbox/r4-conversation.json"
+  },
+  {
+   "id": "dc-r4g1-core3d-contract",
+   "kind": "decision",
+   "title": "2026-10-10 G1: real-game engines implement core3d@1 (docs/design/round4/build/games-core/CORE-API.md, src/play/engines/core3d/api.ts): an engine is a VIEW over a family law (acts only through PlayController.dispatch; the server replays and grades), mounted by PlayStage at the real box, with the round-3 2D view of the same law as the board twin and low-tier fallback holding the SAME controller (a context loss keeps the level and every act); DOM labels over WebGL with audited floors; a ratcheting frame governor; procedural audio with a voice duck; stable control ids so the closed voice grammar works unchanged; a cause-traced progress store for the economy lint. Reverse if: an engine needs state the law cannot express (then extend the law, not the engine), or the 2D fallback swap loses an act on a real phone.",
+   "at": "2026-10-10",
+   "source": "inbox/r4-games-core.json"
+  },
+  {
+   "id": "dc-r4g1-rules-split",
+   "kind": "decision",
+   "title": "2026-10-10 G1 S0.3: play coverage RULES/ACTS live one file per family in server/play/tools/rules/<family>.mjs; rules/index.mjs fixes the admission order (the four round-3 families first, then any further file alphabetically, auto-discovered) so a lane adds a family without editing a shared file; reaction lines may also live in data/play/reactions/<id>.json (family or engine blocks; a duplicate id throws). Measured: build-coverage --check and data/play/coverage.json byte-identical before/after; play tests 180/180 before/after. Reverse if: auto-discovery admits a stray file (then switch to an explicit list hand-merged by main).",
+   "at": "2026-10-10",
+   "source": "inbox/r4-games-core.json"
+  },
+  {
+   "id": "dc-r4g1-antariksh-law-mapping",
+   "kind": "decision",
+   "title": "2026-10-10 G1: E1 Antariksh renders the EXISTING Nishana law (line.logic.ts), not the prototype's law.js: fire = place (+ commit when every value is placed); compare = fire at both, then fly into the smaller value's gate (order act; gates at the values' true places, pushed apart around the midpoint when close, left-to-right order kept); rounding = land the value, then fly into the nearer landmark's gate (round act); voice 'yahan' / 'upar' / 'neeche' reach the same acts through voiceOnly controls; doors are warp gates and the next level arrives in the same world (relevel). Targets are never alive (mine / beacon / comet, O-G4). Reverse if: C5 judges call the gate commit a pick from a list, or children fly the gate by elimination without reading the line (first-try gate accuracy near 50% in the pilot).",
+   "at": "2026-10-10",
+   "source": "inbox/r4-games-core.json"
+  },
+  {
+   "id": "dc-r4g1-dress-delta-route",
+   "kind": "decision",
+   "title": "2026-10-10 G1: the model's dress arrives through POST /api/play/dress (server/play/dress.js), asked once per play segment by PlaySession at mount, not on the lesson turn path (the turn files are other streams'): one taxila-fast call, strict closed-enum schema, validated field by field (non-enum dropped, never repaired), 1.9 s deadline from the request (late / 429 / error / TAXILA_PLAY_DRESS=off = base dress), worn only if the child has not acted yet; the story wrapper then stays for the segment while the theme rotates per level. The model sees closed interest tags and telegraphic state, never the child's name or words. Reverse if: the dress lands after the first act on most real sessions (then move the call to the turn's nomination, a patch to stream 3 / 4A), or the owner drops model dress.",
+   "at": "2026-10-10",
+   "source": "inbox/r4-games-core.json"
+  },
+  {
+   "id": "dc-r4g1-focusmal-from-lesson",
+   "kind": "decision",
+   "title": "2026-10-10 G1: focusMal = the misconception the lesson just saw, read by server/play/start.js (no turn-path patch): the last kt_evidence row of this lesson classified to one of the entry's mapped kit misconceptions, else the Director's last reteach_attempts trigger misconception_seen / misconception_confirmed (migration 023); the picker adds +2.5 to levels that discriminate it and drops the focus when none can; a level's own first-decision misconception becomes the next level's focus (nextFocus, applied only at the door so the current level regenerates identically). Reverse if: focus levels show no higher discrimination rate than unfocused ones in the pilot.",
+   "at": "2026-10-10",
+   "source": "inbox/r4-games-core.json"
+  },
+  {
+   "id": "rj-r4g1-novelty-levelid-vs-signature",
+   "kind": "rejection",
+   "title": "2026-10-10 G1: play picker novelty never fired on the server: the session kept recent LEVEL IDS while the picker compared candidate SIGNATURES (and recent was appended after the level was generated). Found when the Antariksh door served 1/3 again on three seeds. Fixed: levels carry sig; nextBody (levels.js) adds the played level's sig BEFORE generating the next (token regeneration stays identical); one rule for the door preview and /api/play/next. Also: a teekha door with no harder candidate at the fade now goes one fade up instead of not existing.",
+   "at": "2026-10-10",
+   "source": "inbox/r4-games-core.json"
+  },
+  {
+   "id": "ms-r4g1-rules-split-identical-2026-10-10",
+   "kind": "measurement",
+   "title": "S0.3 split identical (n = 1 build + 180 play tests, node --test tests/play-*.test.mjs tests/round3-fix.test.mjs before and after, 2026-10-10): coverage.json sha256 identical, build-coverage --check output byte-identical, 180/180 pass before and after (only a timing diagnostic line differs).",
+   "at": "2026-10-10",
+   "source": "inbox/r4-games-core.json"
+  },
+  {
+   "id": "ms-r4g1-economy-lint-2026-10-10",
+   "kind": "measurement",
+   "title": "Economy lint in npm test (tests/r4-games-core-economy.test.mjs, 2026-10-10): 8/8 pass on src/play/engines/** and every family law; negative control: one planted file with Math.random, Date.now, localStorage, a setTimeout dispatching a commit, an untraced progress write and 'streak bonus' trips all six static rules (6/6 fail as they must); runtime: every Nishana entry x 3 seeds x (solve + every mal-rule + junk) grades identically with Math.random / Date.now / performance.now booby-trapped and act times scrambled (>= 100 runs).",
+   "at": "2026-10-10",
+   "source": "inbox/r4-games-core.json"
+  },
+  {
+   "id": "ms-r4g1-engine-browser-2026-10-10",
+   "kind": "measurement",
+   "title": "Antariksh in a browser (tests/r4-games-core-engine.test.mjs, headless Chromium 1194 aliased, SwiftShader software GL, 360x800, 2026-10-10): 7/7: place, compare and round each solved by taps on the world + the commit control with every progress write traced to an act, a moment or the level start; a mal-rule shot decloaks and draws the gap (no verdict word); voice 'yahan' presses commit via voice; doors drawn as warp gates (no DOM doors) re-level the same 3D world (1 canvas); a lost WebGL context falls to the 2D board twin with the same acts. Correctness only; no frame-rate claim.",
+   "at": "2026-10-10",
+   "source": "inbox/r4-games-core.json"
+  },
+  {
+   "id": "ms-r4g1-bundle-2026-10-10",
+   "kind": "measurement",
+   "title": "Antariksh bundle (vite build of the play dev harness, brotli q11 via node zlib, 2026-10-10): engine chunk 8.9 KB br, 3D stage incl. three.js 68.1 + 40.8 KB br (on demand: a 2D level and a 2D-tier device download neither); the play chunk fell from 231 KB to 127 KB br once the stage became a dynamic import.",
+   "at": "2026-10-10",
+   "source": "inbox/r4-games-core.json"
+  },
+  {
+   "id": "o-r4g1-real-phone-fps",
+   "kind": "open",
+   "title": "Antariksh frame rate on a real Rs 10k phone is NOT measured (needs the owner's device, O-R4); every fps number from G1 is a SwiftShader proxy in headless Chromium on a shared container.",
+   "at": "2026-10-10",
+   "source": "inbox/r4-games-core.json"
+  },
+  {
+   "id": "dc-r4g1-play-kill-switches",
+   "kind": "decision",
+   "title": "2026-10-10 G1: two play release switches, both default to today's behaviour: TAXILA_PLAY=off admits nothing (entryFor / hasPlay; no play piece is built, asked or at a beat; /api/play/start 404; the lesson keeps board and voice) and TAXILA_PLAY_3D=off sends render: \"2d\" with no engine dress (the round-3 2D views only, no engine chunk loaded; a rollback of the engines alone). Reverse if: ops needs a per-engine or per-cohort switch (then key it by engine id).",
+   "at": "2026-10-10",
+   "source": "inbox/r4-games-core.json"
+  },
+  {
+   "id": "dc-r4g1-cert-both-renderers",
+   "kind": "decision",
+   "title": "2026-10-10 G1: server/forge3/play-cert.js judges a (family, mode) that an engine renders on BOTH renderers a child can get: the 2D view in every art (cells <art>@c<band>, unchanged, what forge3 compose reads) and the 3D engine in every theme (cells 3d:<theme>@c<band>, the render verified); the harness tells its own page which renderer to mount (window.__taxilaPlayRender, never set in the app) and keeps the WebGL drawing buffer only then. Reverse if: compose starts choosing per renderer (then it reads the 3d cells for 3D-tier devices).",
+   "at": "2026-10-10",
+   "source": "inbox/r4-games-core.json"
+  },
+  {
+   "id": "rj-r4g1-2d-compare-labels-c4",
+   "kind": "rejection",
+   "title": "2026-10-10 G1: the round-3 2D Nishana view drew every major tick label at 16 px; on 0-10,000 lines for classes 4-5 the labels '1,000' x '2,000' overlapped at 360 and 412 (forge3 judge Q3.apart), so certs/play.json refused nishana/compare @c4 on phones and forge3 compose served no game for c4-maths-ch04-t02, c4-maths-ch10-t02, c5-maths-ch01-t01 on phones (C9a, local production build: no piece). Fixed: one uniform label stride per box (the ends always), the same rule as Antariksh's ticks.",
+   "at": "2026-10-10",
+   "source": "inbox/r4-games-core.json"
+  },
+  {
+   "id": "o-r4g1-practice-beat-tray",
+   "kind": "open",
+   "title": "C9b (the game AT a practice beat, unasked) is NOT met: with games-core patch 03 the seam builds the play practice piece (probe: <lessonId>:play:practice present among the lesson's pieces), but on the local production build the Director's own practice items hold the tray at practice moves (turns 4, 7, 8 of 14 plain turns, c5-maths-ch02-t01) and a Stagecraft piece takes it between them, so the piece is never revealed. Offering the game AS the practice item is a Director decision (stream 4A / main): proposal: at a practice_set beat whose skill play admits, the practice move's tray is the play piece, and the bare delayed item stays the Director's.",
+   "at": "2026-10-10",
+   "source": "inbox/r4-games-core.json"
+  },
+  {
+   "id": "ms-r4g1-c9-local-prod-2026-10-10",
+   "kind": "measurement",
+   "title": "Antariksh C9 on a local production build (node server/serve.mjs + server/worker.mjs, NODE_ENV=production, own Neon TEST branch, prod model routing, tests/prod/r4-games-core-c9.mjs, 2026-10-10): C9c every one of the 18 admitted Nishana skills through the Director's admission for that skill, /api/play/level with Antariksh's dress, the solution as raw acts with engine antariksh, server grade solved, signed evidence + level_end seam on a module-only turn, her full turn, exactly one kt_evidence row via game on that skill: 145/145 checks. C9a 'game khelna hai' asked in a lesson: 7/12 topics end to end (50/55 checks); 3 misses were the 2D compare certificate (fixed since, rerun pending), 2 were lessons opening on a skill play does not admit (correctly no game).",
+   "at": "2026-10-10",
+   "source": "inbox/r4-games-core.json"
+  },
+  {
+   "id": "ms-r4g1-round3-play-2026-10-10",
+   "kind": "measurement",
+   "title": "round3-play on the G1 tree (local production build, n = 1 run, 2026-10-10): 92/93; the one miss was T1 /api/play/start p90 840 ms vs the 800 ms local bar while two SwiftShader jobs loaded the host; the start route's reads were then made parallel (re-measure pending, same harness, idle host, against a base-tree server).",
+   "at": "2026-10-10",
+   "source": "inbox/r4-games-core.json"
+  },
+  {
+   "id": "dc-r4g1-kon-angles-law",
+   "kind": "decision",
+   "title": "E1 angles is a new small family law kon (कोण): angles as an amount of turning. turn (c5-maths-ch03-t01: quarter/half/three-quarter, cw/acw; mal-rules cw-confuse, half-is-quarter) and set (c6-maths-ch02-t03: open a given angle against a two-scale protractor; mal-rule wrong-scale = 180−θ). No live angle readout and no snapping (either is the answer); set levels within tolerance of 0/90/180 are never served (shortcut). It renders through a 2D dial view; an Antariksh 3D mode for kon is not built. Not on the play map (server/play/world.js FAMILIES unchanged).",
+   "at": "2026-10-10",
+   "reversal": "if a measured child run shows the dial unreadable at 360 px or the wrong-scale probe never fires, revisit the view or drop the set goal",
+   "source": "inbox/r4-games-core.json"
+  },
+  {
+   "id": "ms-r4g1-c10-proxy-fps-2026-10-10",
+   "kind": "measurement",
+   "at": "2026-10-10",
+   "title": "Antariksh C10 proxy (SwiftShader, headless Chromium 1194, 4-core shared container, 4x CPU throttle, n = 3 runs × 12 s each): median fps 360 px 42.6 / 412 px 28.9 / 1366 px 9.3 with the DPR floor 0.75 (36.4 / 25.7 / 9.3 at floor 1); our JS work p95 13-16 ms at every size, software raster is the rest. Bar 50: NOT met on the proxy; real-phone fps NOT measured (O-R4).",
+   "source": "inbox/r4-games-core.json"
+  },
+  {
+   "id": "ms-r4g1-c4-audit-2026-10-10",
+   "kind": "measurement",
+   "at": "2026-10-10",
+   "title": "Antariksh C4: forge3 cert 28/28 Nishana cells (2D 4 arts + 3D 3 themes × bands 4 / 7) pass at 360 / 412 / 1366; harness audit 18 skills × 3 themes × 3 sizes × 2 bands × aim/miss/hit 308/324, the 16 misses one clipped gap label (c7-maths-ch03-t01), fixed with keepInBox, re-audit 36/36.",
+   "source": "inbox/r4-games-core.json"
+  },
+  {
+   "id": "ms-r4g1-c9-2026-10-10",
+   "kind": "measurement",
+   "at": "2026-10-10",
+   "title": "Antariksh C9 on a local production build with prod routing (head 78b7a86b): asked 8/12 topics (the other 4 open on an s1 play does not admit: correctly no game for an untaught skill); practice beat 0/12 (the Stagecraft reveal holds the slot; waits on stream 2); per skill (C9c) all 18 skills through the server grade into one kt_evidence row via game.",
+   "source": "inbox/r4-games-core.json"
+  },
+  {
+   "id": "ms-r4g1-round3-play-final-2026-10-10",
+   "kind": "measurement",
+   "at": "2026-10-10",
+   "title": "round3-play 93/93 on the G1 tree (local prod build, prod routing, 2 runs alternating with a base 39c88fe server): start p90 525 / 230 ms vs base 676 / 473 ms; the earlier 844 ms was a cold first run.",
+   "source": "inbox/r4-games-core.json"
+  },
+  {
+   "id": "ms-r4g1-duck-2026-10-10",
+   "kind": "measurement",
+   "at": "2026-10-10",
+   "title": "Music duck under her voice at 120 ms: 5.1% of the bed with τ 40 ms (just over the < 5% bar), 1.7-1.9% with τ 30 ms (n = 3, harness checks).",
+   "source": "inbox/r4-games-core.json"
+  },
+  {
+   "id": "r4k-k0-built",
+   "kind": "component",
+   "title": "Stream K slice K0 (Kaksha, behind ui.kaksha, default off; claude/r4-app-design): scoped Kaksha tokens (.v3.kx; night for the Older family, dawn for the Young family, keyed on band family), Space Grotesk font, KakshaRoot/Sky/Comms shell, Start-only Home (safety_hold/offline/signed-out fall through to today's Home unchanged), World orbit + settlement + Hangar as a pure function of GET /api/child/map (src/ui-v3/kaksha/world.ts, data/kaksha/catalog.json), per-child equip on device, dev fixture page; patch requests K-P8 (src/child/routes.tsx) and K-P7 (scripts/lint-ui.mjs allow). docs/design/round4/build/kaksha/RESULTS.md",
+   "at": "2026-10-10",
+   "source": "inbox/r4-kaksha.json"
+  },
+  {
+   "id": "r4k-k0-economy-lint",
+   "kind": "measurement",
+   "title": "Kaksha economy logic test (tests/r4-kaksha-economy.test.mjs, 2026-10-10): 6/6 pass; stations/structures/opened items exist iff a matching skill is secure over 200 random maps; monotonic over 300 random promotions; no clock or Math.random in world.ts; deterministic and append-only settlement slots given secure_since; no counts exposed; no price/chance/currency fields.",
+   "at": "2026-10-10",
+   "source": "inbox/r4-kaksha.json"
+  },
+  {
+   "id": "r4k-k0-rendered-lint",
+   "kind": "measurement",
+   "title": "Kaksha rendered lint (tests/prod/r4-kaksha-shots.mjs, Playwright Chromium on the dev fixture page, 8 states x 360/412/1366 x night/dawn = 48 page states, 606 text elements, 2026-10-10): 0 text < 14 px, 0 Devanagari < 16 px, 0 targets < 44 px, 0 contrast fails, 0 overflow, 0 page errors, after fixing one real defect the first run found (Start label 1.33:1 on plasma: a generic reset outranked the CTA colour; fixed with :where() resets). lint-ui stays at its 353 baseline with K-P7 (491 without). Kaksha lazy chunks about 12.4 KB JS + 4.9 KB CSS gzip.",
+   "at": "2026-10-10",
+   "source": "inbox/r4-kaksha.json"
+  },
+  {
+   "id": "r4k-rj-playwright-shell-mismatch",
+   "kind": "rejection",
+   "title": "Tried: npm test in a fresh stream container after npm ci (2026-10-10). Broke: playwright 1.63 looks for /opt/pw-browsers/chromium_headless_shell-1243 but the image ships 1194, so every browser-backed test fails in its before() hook (1,843 fails in 15 s, none from the change). Local workaround without playwright install: symlink the 1194 headless_shell files into chromium_headless_shell-1243/chrome-headless-shell-linux64/ (binary named chrome-headless-shell). A stream's npm test result is only meaningful after that.",
+   "at": "2026-10-10",
+   "source": "inbox/r4-kaksha.json"
+  },
+  {
+   "id": "r4k-k1-built",
+   "kind": "component",
+   "title": "Stream K slice K1 (claude/r4-app-design, behind ui.kaksha + the server owner cohort): the Kaksha Desk skin (CSS only over the Desk's own tokens and data-zone attributes; the lamp stays on the Answer dock, plasma) and the Debrief in place of the Summary (What you did = the Summary's verified cards; Now secure = ledger diff of /api/child/map read at lesson start vs end, unknown claims nothing; Opened = World's own function; her closing line only when a statement). Patch request K-P2 to stream 2 (Desk.tsx skin/data-zone/renderSummary, LessonScreen lazy KakshaLesson). docs/design/round4/build/kaksha/RESULTS.md",
+   "at": "2026-10-10",
+   "source": "inbox/r4-kaksha.json"
+  },
+  {
+   "id": "r4k-k1-rendered",
+   "kind": "measurement",
+   "title": "K1 rendered lint + safety checks (tests/prod/r4-kaksha-desk-shots.mjs, Playwright Chromium, the real Desk with fixture models + the Debrief, 9 states x class 4/6/7 x 360/412/1366 = 81 pages, 1,434 text elements, 2026-10-10): 0 text < 14 px, 0 Devanagari < 16 px, 0 targets < 44 px, 0 contrast fails, 0 overflow; Pause reachable in one tap and 1098/14416 on screen with no scroll on every lesson state; lamp on the dock only; Now secure exactly the crossing skill. lint-ui 353 (baseline).",
+   "at": "2026-10-10",
+   "source": "inbox/r4-kaksha.json"
+  },
+  {
+   "id": "r4k-k1-latency-live",
+   "kind": "measurement",
+   "title": "K1 turn latency on live models (r4-timeline driver, local production build, real Azure models, stream Neon TEST, fixed 750 ms fake ASR, synthetic clip; turn prefetch OFF (preload default; production runs it ON); 4 interleaved arms Kaksha/classic x puppet/still, n=12 turns each, 2026-10-10): end of speech -> POST p50 1,988 / 2,000 (puppet Kaksha/classic), 2,185 / 1,374 (still); POST p50 2,535 / 2,311, 1,991 / 2,451. Bimodal by the conversation's turn-taking (POST 10-35 ms after the final transcript, or held 1-5 s; same turn index lands alike across arms): this n cannot resolve a skin effect. Not a child, not a phone.",
+   "at": "2026-10-10",
+   "source": "inbox/r4-kaksha.json"
+  },
+  {
+   "id": "r4k-k1-latency-client",
+   "kind": "measurement",
+   "title": "K1 client turn latency, deterministic (real LessonRuntime on the Desk dev page's scripted Director; 360x800 DPR 2, CPU x4, SwiftShader = G35-class proxy, not a phone; n=30 per arm, paired by turn position, 2026-10-10): Kaksha minus classic, send -> turn call: still face +1.4 ms (95% CI +/-12.6; p50 128 vs 122 ms), puppet +13 ms (+/-47; p50 530 vs 430, p90 1,104 vs 1,097); answer -> painted: still +17.7 +/-26.5 ms, puppet -4.6 +/-24.0 ms. Every interval includes 0: no measurable added latency.",
+   "at": "2026-10-10",
+   "source": "inbox/r4-kaksha.json"
+  },
+  {
+   "id": "r4k-k2-built",
+   "kind": "component",
+   "title": "Stream K slice K2 (claude/r4-app-design; behind ui.kaksha + cohort; built against G1 claude/r4-games-core 78b7a86b read-only): the Kaksha Briefing in front of a real-game engine (recipe lines read only from the level and the dress; the look named only once the model's dress has answered; hold-to-launch 650 ms, Enter launches, warp ~950 ms, reduced motion 200 ms fade) and the Hangar hull/trail colours on Antariksh (only open items; colour only). Patch requests to G1: K-P3 (src/play/briefing.ts seam; PlayStudioRenderer shows the card only when an engine will really mount, fetches the model dress during the card and hands it to PlaySession), K-P4 (DressedSpec.cosmetics client-only; Antariksh tints hull, flame, exhaust). No HUD pip in the embedded Desk (one face at a time).",
+   "at": "2026-10-10",
+   "source": "inbox/r4-kaksha.json"
+  },
+  {
+   "id": "r4k-k2-rendered",
+   "kind": "measurement",
+   "title": "K2 rendered checks (tests/prod/r4-kaksha-briefing.mjs on G1 + K-P3/K-P4, production build of the dev page, Playwright Chromium SwiftShader with 3D forced, class 4/6/7 x phone 328x460 and laptop 736x460 boxes, 2026-10-10): 0 text < 14 px, 0 targets < 44 px, 0 contrast fails, 0 overflow over 6 pages; a 300 ms press does not launch, a 700 ms hold and Enter do; the look line absent before the model dress and naming the model's theme after; the card gone after the warp; acts posted with and without the Hangar colours byte-identical (2 posts, 3 acts).",
+   "at": "2026-10-10",
+   "source": "inbox/r4-kaksha.json"
+  },
+  {
+   "id": "r4k-k2-frame",
+   "kind": "measurement",
+   "title": "K2 launch -> engine first painted frame (production build, CPU x4, SwiftShader, 360x800 DPR 2 = G35-class proxy, not a phone; n=12 per arm interleaved, 2026-10-10): with the Briefing p50 1,229 / p90 1,341 ms; the engine alone (level -> first frame, no Briefing) p50 1,200 / p90 1,345 ms. The spec's 1,200 ms bar is not met, set by the engine's own mount; the Briefing adds nothing measurable. Dev-server (unbundled) runs read ~1,440 ms and are not representative.",
+   "at": "2026-10-10",
+   "source": "inbox/r4-kaksha.json"
+  },
+  {
+   "id": "r4k-truth-11-4",
+   "kind": "measurement",
+   "title": "Kaksha §11.4 truth (tests/prod/r4-kaksha-truth.mjs, local production build with prod routing on the stream's Neon TEST branch, test clock, scripted text child from data/kits class 5 maths; 10 accounts x 2 evaluated sessions = 20, 2026-10-10): the Debrief's Now secure (nowSecure over GET /api/child/map before/after) equals the ledger diff (loadTruth -> MAP_SHAPE read from the DB) in 20/20 sessions; 0 false secure, 0 missed, 0 unreadable; 8 sessions with a real crossing (12 skills), each caused in that lesson by a scored right row >= 20 h after the skill's first scored row. No +1-day session crossed (certification came at +2 days). 90/90 checks.",
+   "at": "2026-10-10",
+   "source": "inbox/r4-kaksha.json"
+  },
+  {
+   "id": "r4k-k3-built",
+   "kind": "component",
+   "title": "Stream K slice K3 (claude/r4-app-design): the session-first intake on the Kaksha Desk. Patch requests K-P11 (server/director/state.js intakeUi -> ui.intake {phase ask|which|mapped|plan, mapped {topicId,title,trail} from getTopic ONLY, plan {segments:[{purpose}]}}; pure, no DB read, prompt unchanged; to 4A for owner review) and K-P12 (stream 2's Desk: DeskModel.intake, QuestionCard lead slot inside the measured body, Desk renderIntake; inert without a skin). Client: IntakeCard at the top of the Question card, no controls, never the child's words. Tests: r4-kaksha-intake 6/6 on 4A's fixtures; 4A session tests 19/19; rendered lint 0 over 108 pages incl. intake states.",
+   "at": "2026-10-10",
+   "source": "inbox/r4-kaksha.json"
+  },
+  {
+   "id": "r4k-parity-integration",
+   "kind": "measurement",
+   "title": "Kaksha integration parity: a non-cohort account sees today's app (same body DOM as base 0c90ebb on 16 pages x 5 captures; on 15/16 pages a branch capture is pixel-identical to a base capture, the 16th within base-vs-base noise; no Kaksha chunk fetched); the cohort account gets Kaksha with no URL step (TAXILA_UI_KAKSHA, the TAXILA_DUPLEX_LIVE_FOR scheme); ?ui=classic turns it off per device",
+   "n": 16,
+   "method": "tests/prod/r4-kaksha-parity.mjs 72/72: two local production builds (base 0c90ebb vs claude/r4-app-design) on the stream Neon TEST branch, Chromium 412x915 reduced motion; body innerHTML normalised (asset hashes, data-zone, data-wb-t); per page 3 base + 2 branch captures, pass when the closest cross pair <= the base-vs-base max (floor 64 px); one real scripted lesson, its start answer replayed to both builds",
+   "date": "2026-10-10",
+   "source": "inbox/r4-kaksha.json"
+  },
+  {
+   "id": "dc-r4-autonomy-permissions",
+   "kind": "decision",
+   "at": "2026-10-10",
+   "title": "Owner directive: this session and every child session run fully autonomously, never asking the owner for permission or a choice; .claude/settings.json pre-approves every tool for single-repo Taxila sessions, with a deny floor (Neon data-destroying tools, domain purchases, sending mail as the owner); owner-level decisions route to the main session",
+   "source": "inbox/r4-main-2000.json"
+  },
+  {
+   "id": "ms-r4-13shadow-corpus-contract",
+   "kind": "measurement",
+   "at": "2026-10-10",
+   "title": "Patch 13 shadow contract, corpus-wide on 4A 7fd936d1: 1,206 scanSafety-firing strings (of 376,989) x 4 posed verified items (129 drawn from 12,289), 4,824 classifyFast runs off vs shadow: 0 result/flag diffs, 0 throws; would-set-aside 7, only on the two bully items",
+   "source": "inbox/r4-main-2000.json"
+  },
+  {
+   "id": "rj-r4-13shadow-unguarded",
+   "kind": "rejection",
+   "at": "2026-10-10",
+   "title": "Patch 13 as delivered computed the shadow set-aside unguarded inside classifyFast's predicate branch: an item whose fields throw crashed the floor's own branch in shadow while 'off' fired normally (review test fails on 7fd936d1)",
+   "source": "inbox/r4-main-2000.json"
+  },
+  {
+   "id": "dc-r4-13shadow-failsafe",
+   "kind": "decision",
+   "at": "2026-10-10",
+   "title": "Main safety review amendment to patch 13: the shadow computation is wrapped so any error returns the plain predicate result with no annotation; test tests/r4-item-setaside-failsafe.test.mjs (fails on 7fd936d1, passes amended); ships with 4A's batch",
+   "source": "inbox/r4-main-2000.json"
+  },
+  {
+   "id": "ms-r4a-journey-audit-owner-vision",
+   "kind": "measurement",
+   "at": "2026-10-10",
+   "title": "Stream 5 end-to-end journey audit (local prod builds, fake ASR, US container): owner-vision scores today / Kaksha+session-first: gamified 1/2, games built on the go 0/0, knows if understood 2/2, bond 2/2, just-start school-first 0/2 (of 5); 15 ranked defects",
+   "source": "inbox/r4-main-2000.json"
+  },
+  {
+   "id": "dc-r4-audit-fix-routing",
+   "kind": "decision",
+   "at": "2026-10-10",
+   "title": "Journey-audit defects routed: #2 no built/play content (G2 leads root cause, patch requests to 4A/stream 2/G1); #3/4/5/6/10a grading truth, tired dead end, ask extraction, cross-day continuity (4A, after the session-start measurement); #7/8 start and reply latency (stream 3, re-measured on production first); #9/10b/13/14 visual honesty, Desk truncation, summary mismatch, picture reload (stream 2, ahead of the skin); Kaksha rows (K); #11/12/15 hours, set-up length, small UI (stream 5)",
+   "source": "inbox/r4-main-2000.json"
+  },
+  {
+   "id": "dc-r4-first-lesson-any-hour",
+   "kind": "decision",
+   "at": "2026-10-10",
+   "title": "A child's first lesson right after set-up opens at any hour (the parent is present and just handed over; cap and safety holds still apply); the default lesson window becomes 06:30-21:30 IST (was 07:00-20:30); migration 028 for the column defaults",
+   "source": "inbox/r4-main-2000.json"
+  },
+  {
+   "id": "dc-r4-setup-five-steps",
+   "kind": "decision",
+   "at": "2026-10-10",
+   "title": "Set-up cut from 9 steps to 5 before the child hears Asha (child: class/board/language; promises + hold gate; account; consent; name + PIN + hand over); register, school language, daily time and hours take defaults; interests chosen by the child in Hello; the mic check folds into Hello; AI disclosure and the AI-honesty promise unchanged",
+   "source": "inbox/r4-main-2000.json"
+  },
+  {
+   "id": "dc-r4-release-sequence-r7-r9",
+   "kind": "decision",
+   "at": "2026-10-10",
+   "title": "Release sequence: R7 = stream 2's packaging fix (e7edc829) + safety release 6; R8 = G1 + K-P3/K-P4 + Kaksha (723e6cfc, TAXILA_UI_KAKSHA owner hash only); R9 = 4A's batch + the session-first owner cohort (TAXILA_SESSION_FIRST_FOR) after an end-to-end session-start owner-2 run; then G2, 4B, stream 3, 5b",
+   "source": "inbox/r4-main-2000.json"
+  },
+  {
+   "id": "fn-r4-no-built-content-root-causes",
+   "kind": "finding",
+   "at": "2026-10-10",
+   "title": "G2's root causes for 0 built/play pieces in 3 lessons (trial tree base + G1 + r4-khand, 3 children, 6 game asks): RC1 no admitted play family for most topics and the null fallback serves the board, which the reply calls 'a game'; RC2 Khand art refused by visual QA (no play.json cells at p360); RC3 Studio truth packs only for shade_fraction / number_line_jump, so prefetch makes nothing for non-fraction topics; RC4 first sessions are promoted-library-only and the library is empty; RC5 a skeleton on screen blocks the next game ask",
+   "source": "inbox/r4-main-2000.json"
+  },
+  {
+   "id": "dc-r4-first-session-live-pieces",
+   "kind": "decision",
+   "at": "2026-10-10",
+   "title": "A first session may take gate-passed live pieces and skeletons (router rule 5 no longer promoted-only when no promoted row exists); a skeleton is not a game in progress",
+   "source": "inbox/r4-main-2000.json"
+  },
+  {
+   "id": "dc-r4-never-call-board-a-game",
+   "kind": "decision",
+   "at": "2026-10-10",
+   "title": "On a game ask with no live play piece she says plainly there is no game for this topic today and offers what is on screen; 'game' may describe a surface only when a play piece is live, enforced by predicate in the reply path",
+   "source": "inbox/r4-main-2000.json"
+  },
+  {
+   "id": "ms-r4-play-coverage-59-514",
+   "kind": "measurement",
+   "at": "2026-10-10",
+   "title": "Play coverage (base + G1 + Khand, coverage.json): 59 of 514 topics (11%) have an admitted play family; classes 1-3 and 8-9 have 0; of the 36 topics a fresh child starts on today (classes 3-8) 6 have a game",
+   "source": "inbox/r4-main-2000.json"
+  },
+  {
+   "id": "dc-r4-universal-item-arena",
+   "kind": "decision",
+   "at": "2026-10-10",
+   "title": "Two-layer games: law-based families stay the deep games (G2: MEASURE first, then the fraction area model), and G1 builds a universal item-arena family over verified closed-form kit items (graded against the verified key, never by a model) so every eligible topic has a game; eligibility is measured before the build",
+   "source": "inbox/r4-main-2000.json"
+  },
+  {
+   "id": "fn-r4-worktree-disk",
+   "kind": "finding",
+   "at": "2026-10-10",
+   "title": "A full Taxila worktree is 4.3 GB (docs 2.2 GB, evals 0.8 GB, art 0.6 GB) against ~3 GB free: two review worktrees filled the disk to 1.4 GB free mid-checkout; review copies are made with git archive of server/shared/data only (44 MB), the image file set with git archive minus docs/evals/tests/art (217 MB)",
+   "source": "inbox/r4-main-2000.json"
   }
  ],
  "edges": [
@@ -30405,6 +30842,236 @@
    "src": "open-r4-conversation-confusion-15pct",
    "rel": "measured_by",
    "dst": "ms-r4-owner2-prod-judge-on"
+  },
+  {
+   "src": "r4c-rj-setaside-no-novelty-budget",
+   "rel": "measured_by",
+   "dst": "r4c-ms-setaside-main10-2026-10-10"
+  },
+  {
+   "src": "r4c-rj-setaside-self-harm",
+   "rel": "measured_by",
+   "dst": "r4c-ms-setaside-main10-2026-10-10"
+  },
+  {
+   "src": "dc-r4g1-core3d-contract",
+   "rel": "part_of",
+   "dst": "dc-r4-games-o-g"
+  },
+  {
+   "src": "dc-r4g1-core3d-contract",
+   "rel": "inherits",
+   "dst": "r4g-engines-are-views-over-family-laws"
+  },
+  {
+   "src": "dc-r4g1-antariksh-law-mapping",
+   "rel": "part_of",
+   "dst": "r4g-round4-antariksh-first"
+  },
+  {
+   "src": "dc-r4g1-dress-delta-route",
+   "rel": "part_of",
+   "dst": "dc-r4-games-o-g"
+  },
+  {
+   "src": "dc-r4g1-focusmal-from-lesson",
+   "rel": "part_of",
+   "dst": "r4g-round4-antariksh-first"
+  },
+  {
+   "src": "ms-r4g1-economy-lint-2026-10-10",
+   "rel": "measured_by",
+   "dst": "dc-r4-gamification-b"
+  },
+  {
+   "src": "ms-r4g1-rules-split-identical-2026-10-10",
+   "rel": "measured_by",
+   "dst": "dc-r4g1-rules-split"
+  },
+  {
+   "src": "ms-r4g1-engine-browser-2026-10-10",
+   "rel": "measured_by",
+   "dst": "dc-r4g1-antariksh-law-mapping"
+  },
+  {
+   "src": "o-r4g1-real-phone-fps",
+   "rel": "blocks",
+   "dst": "r4g-round4-antariksh-first"
+  },
+  {
+   "src": "dc-r4g1-cert-both-renderers",
+   "rel": "part_of",
+   "dst": "dc-r4g1-core3d-contract"
+  },
+  {
+   "src": "rj-r4g1-2d-compare-labels-c4",
+   "rel": "caused_by",
+   "dst": "dc-r4g1-cert-both-renderers"
+  },
+  {
+   "src": "o-r4g1-practice-beat-tray",
+   "rel": "blocks",
+   "dst": "r4g-round4-antariksh-first"
+  },
+  {
+   "src": "ms-r4g1-c9-local-prod-2026-10-10",
+   "rel": "measured_by",
+   "dst": "dc-r4g1-antariksh-law-mapping"
+  },
+  {
+   "src": "dc-r4g1-kon-angles-law",
+   "rel": "part_of",
+   "dst": "dc-r4g1-core3d-contract"
+  },
+  {
+   "src": "ms-r4g1-c10-proxy-fps-2026-10-10",
+   "rel": "measured_by",
+   "dst": "dc-r4g1-core3d-contract"
+  },
+  {
+   "src": "ms-r4g1-c4-audit-2026-10-10",
+   "rel": "measured_by",
+   "dst": "dc-r4g1-core3d-contract"
+  },
+  {
+   "src": "ms-r4g1-c9-2026-10-10",
+   "rel": "measured_by",
+   "dst": "dc-r4g1-core3d-contract"
+  },
+  {
+   "src": "ms-r4g1-duck-2026-10-10",
+   "rel": "measured_by",
+   "dst": "dc-r4g1-core3d-contract"
+  },
+  {
+   "src": "r4k-k0-built",
+   "rel": "part_of",
+   "dst": "dc-r4-app-kaksha"
+  },
+  {
+   "src": "dc-r4-gamification-b",
+   "rel": "constrains",
+   "dst": "r4k-k0-built"
+  },
+  {
+   "src": "r4k-k0-built",
+   "rel": "measured_by",
+   "dst": "r4k-k0-economy-lint"
+  },
+  {
+   "src": "r4k-k0-built",
+   "rel": "measured_by",
+   "dst": "r4k-k0-rendered-lint"
+  },
+  {
+   "src": "r4k-k1-built",
+   "rel": "part_of",
+   "dst": "dc-r4-app-kaksha"
+  },
+  {
+   "src": "r4k-k2-built",
+   "rel": "part_of",
+   "dst": "dc-r4-app-kaksha"
+  },
+  {
+   "src": "r4k-k3-built",
+   "rel": "part_of",
+   "dst": "dc-r4-app-kaksha"
+  },
+  {
+   "src": "dc-r4-13shadow-failsafe",
+   "rel": "caused_by",
+   "dst": "rj-r4-13shadow-unguarded"
+  },
+  {
+   "src": "dc-r4-13shadow-failsafe",
+   "rel": "part_of",
+   "dst": "dc-r4-item-setaside-shadow-first"
+  },
+  {
+   "src": "ms-r4-13shadow-corpus-contract",
+   "rel": "part_of",
+   "dst": "dc-r4-item-setaside-shadow-first"
+  },
+  {
+   "src": "dc-r4-audit-fix-routing",
+   "rel": "caused_by",
+   "dst": "ms-r4a-journey-audit-owner-vision"
+  },
+  {
+   "src": "dc-r4-first-lesson-any-hour",
+   "rel": "caused_by",
+   "dst": "ms-r4a-journey-audit-owner-vision"
+  },
+  {
+   "src": "dc-r4-setup-five-steps",
+   "rel": "caused_by",
+   "dst": "ms-r4a-journey-audit-owner-vision"
+  },
+  {
+   "src": "fn-r4-no-built-content-root-causes",
+   "rel": "caused_by",
+   "dst": "ms-r4a-journey-audit-owner-vision"
+  },
+  {
+   "src": "dc-r4-first-session-live-pieces",
+   "rel": "caused_by",
+   "dst": "fn-r4-no-built-content-root-causes"
+  },
+  {
+   "src": "dc-r4-never-call-board-a-game",
+   "rel": "caused_by",
+   "dst": "fn-r4-no-built-content-root-causes"
+  },
+  {
+   "src": "ms-r4-play-coverage-59-514",
+   "rel": "part_of",
+   "dst": "fn-r4-no-built-content-root-causes"
+  },
+  {
+   "src": "dc-r4-universal-item-arena",
+   "rel": "caused_by",
+   "dst": "ms-r4-play-coverage-59-514"
+  },
+  {
+   "src": "dc-r4-release-sequence-r7-r9",
+   "rel": "supersedes",
+   "dst": "dc-r4-merge-order-core-first"
+  },
+  {
+   "src": "r4k-k1-built",
+   "rel": "measured_by",
+   "dst": "r4k-k1-rendered"
+  },
+  {
+   "src": "r4k-k1-built",
+   "rel": "measured_by",
+   "dst": "r4k-k1-latency-live"
+  },
+  {
+   "src": "r4k-k1-built",
+   "rel": "measured_by",
+   "dst": "r4k-k1-latency-client"
+  },
+  {
+   "src": "r4k-k2-built",
+   "rel": "measured_by",
+   "dst": "r4k-k2-rendered"
+  },
+  {
+   "src": "r4k-k2-built",
+   "rel": "measured_by",
+   "dst": "r4k-k2-frame"
+  },
+  {
+   "src": "r4k-k1-built",
+   "rel": "measured_by",
+   "dst": "r4k-truth-11-4"
+  },
+  {
+   "src": "r4k-k3-built",
+   "rel": "measured_by",
+   "dst": "r4k-parity-integration"
   }
  ]
 }
