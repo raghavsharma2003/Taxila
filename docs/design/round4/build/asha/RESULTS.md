@@ -170,6 +170,23 @@ size is 156.5 KB (`pack-report.json`), over r8's 142 KB budget (BUILD-PLAN §3.5
   al. 1997). The "15-20" in the ask is the resting rate, and idle stays near it (19). In the first 15.2 s of speech, the
   old behaviour read 24-39 / min across the 8 seeds, so one short clip can read high. Regression: `tests/r4-asha-blink.test.mjs`.
 
+### 5a live; 5b prep: the owner cohort for a candidate look (2026-10-10)
+
+5a (single teacher + look switch + lamp1 held + bilabials + blinks) is LIVE: base 9920f21, prod revision
+taxila-web--s9920f21-e9c2 (main session: gate 2,614 / 0 / 3 skipped, canary smoke 4/4).
+
+For 5b, a candidate look (lamp2, if the owner picks it) goes to the owner's own accounts first, server-side and never by a
+URL switch in production:
+- `TAXILA_FACE_LOOK_FOR` (guardian emails or their sha256) + `TAXILA_FACE_COHORT_LOOK` (a look in `COHORT_FACE_LOOKS`)
+  on the server (`server/face-puppet/config.js` `faceConfigFor`, the duplex cohort's helpers).
+- A signed-in guardian on the list gets `{ look, cohort: "owner" }`. Everyone else gets the global look, and so does any
+  lookup that is missing, expired or slower than 2.5 s. A held look is never served. The kill switch is unchanged.
+- A cookie-dependent answer is `private, no-store` with `vary: cookie`. The list never leaves the server.
+- On the client, a cohort-only look is admitted only from the server's cohort answer, never from `?look=`, and that
+  answer is not remembered on the device.
+- Inert today: `COHORT_FACE_LOOKS` / `COHORT_LOOKS` are empty. Wiring lamp2 means keying its pack, adding it to both
+  lists and setting the two env values on the Container App. Tests: `tests/r4-asha-cohort.test.mjs` (4).
+
 ## Not met / open
 
 - Part C waits on the pack.

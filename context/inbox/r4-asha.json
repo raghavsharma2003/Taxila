@@ -1,0 +1,17 @@
+{
+  "nodes": [
+    {
+      "id": "dc-r4a-face-look-owner-cohort",
+      "kind": "decision",
+      "title": "5b prep (2026-10-10): a candidate puppet look reaches the owner's own accounts first, server-side, never by a URL switch in production: TAXILA_FACE_LOOK_FOR (guardian emails or sha256) + TAXILA_FACE_COHORT_LOOK (a look in COHORT_FACE_LOOKS) in server/face-puppet/config.js faceConfigFor, reusing the duplex cohort helpers; a signed-in listed guardian gets { look, cohort: 'owner' }, everyone else (and a missing, expired or > 2.5 s lookup) the global look; held looks never served; cookie-dependent answers private/no-store, vary cookie; the client admits a cohort-only look only from that answer, never from ?look=, and never remembers it. Inert until a cohort-only look (lamp2) is keyed. Reverse if: the owner wants the candidate for everyone (then it moves to FACE_LOOKS) or rejects it (then it is removed).",
+      "at": "2026-10-10"
+    }
+  ],
+  "edges": [
+    {
+      "src": "dc-r4a-face-look-owner-cohort",
+      "rel": "part_of",
+      "dst": "dc-r4a-look-switch"
+    }
+  ]
+}

@@ -13,9 +13,17 @@ export const PUPPET_LOOKS: readonly PuppetLook[] = ["r8", "lamp1"];
 export const DEFAULT_LOOK: PuppetLook = "r8";
 /** Looks keyed here but never painted (see lamp1 above). The server keeps the same list (server/face-puppet/config.js). */
 export const HELD_LOOKS: readonly PuppetLook[] = ["lamp1"];
-/** A look a page may paint: keyed and not held; `{ held: true }` (dev trials only) also admits a held one. */
-export const isPuppetLook = (v: unknown, { held = false }: { held?: boolean } = {}): v is PuppetLook =>
-  typeof v === "string" && (PUPPET_LOOKS as readonly string[]).includes(v) && (held || !(HELD_LOOKS as readonly string[]).includes(v));
+/** Looks painted ONLY when the server names them for the owner cohort (server/face-puppet/config.js COHORT_FACE_LOOKS,
+ *  TAXILA_FACE_LOOK_FOR): never from ?look= in production. Empty until a candidate (e.g. lamp2) is approved for that. */
+export const COHORT_LOOKS: readonly PuppetLook[] = [];
+/**
+ * A look a page may paint: keyed, not held and not cohort-only. `{ cohort: true }` (the server's owner-cohort answer)
+ * also admits a cohort-only look; `{ held: true }` (dev trials only) admits a held or cohort-only one.
+ */
+export const isPuppetLook = (v: unknown, { held = false, cohort = false }: { held?: boolean; cohort?: boolean } = {}): v is PuppetLook =>
+  typeof v === "string" && (PUPPET_LOOKS as readonly string[]).includes(v)
+  && (held || !(HELD_LOOKS as readonly string[]).includes(v))
+  && (held || cohort || !(COHORT_LOOKS as readonly string[]).includes(v));
 
 type View = readonly [number, number, number];
 export interface LookPack {
