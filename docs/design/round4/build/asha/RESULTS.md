@@ -77,7 +77,7 @@ models, **LLM-played child (simulation, not a child)**, 14 turns. Concurrency â‰
 | class 6, base (**Arjun**) | 9 | 0.160 | 0.177 0.138 0.178 0.135 0.150 0.178 0.139 0.160 0.164 | 390 / 73 |
 | class 6, branch, Asha band **v1** (her young warmth, humour, pace notes) | 6 | 0.138 | 0.177 0.159 0.129 0.137 0.133 0.138 | 390 / 67, drop 16%: **FAIL**, rejected |
 | class 6, branch, Asha band **v2** (Arjun's notes + "ask more than tell" + "never babyish") | 9 | 0.145 | 0.142 0.139 0.145 0.155 0.143 0.183 0.160 0.138 0.166 | 397 / 71, drop 9.4%: passes the 10% rule only narrowly; rejected for v3 |
-| class 6, branch, Asha band **v3, SHIPPED** (Arjun's notes verbatim, "didi-tutor" register) | 6 (3 more running) | 0.163 | 0.164 0.197 0.161 0.186 0.155 0.142 | 389 / 78, drop -1.6% (a rise): **PASS** |
+| class 6, branch, Asha band **v3, SHIPPED** (Arjun's notes verbatim, "didi-tutor" register) | 9 | 0.164 | 0.164 0.197 0.161 0.186 0.155 0.142 0.170 0.189 0.161 | 389 / 79, drop -2.5% (a rise): **PASS** (`scripts/talk-gate.mjs --baseline base-c6 --candidate asha3-c6`) |
 
 Reading: with the same teaching notes, the simulated class 6 child talks as much to Asha as to Arjun, so the
 name, the voice and "didi" are not what moved the number. The notes were. Asha's young-band warmth, humour and pace

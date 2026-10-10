@@ -715,11 +715,12 @@ for (const who of ["neha", "dev"]) {
     const card = async () => page.locator("[data-testid=hello]").getAttribute("data-card");
     check(`hello card 1 names her ${tag}`, (await page.locator(".hello-name").innerText()).length > 1);
     check(`V-ID-1 hello ${tag}`, (await page.locator("[data-teacher-id]").first().getAttribute("data-teacher-id")) === child.teacher_id);
-    check(`hello card 1 audio ${tag}`, young ? (await page.locator("[data-testid=hello-hear]").innerText()).startsWith("Tap to hear") : (await page.locator("[data-testid=hello-next]").count()) === 1);
+    // Asha's greeting clip exists in every family language: every child gets "Tap to hear" (one teacher, round 4)
+    check(`hello card 1 audio ${tag}`, (await page.locator("[data-testid=hello-hear]").innerText()).startsWith("Tap to hear"));
     report(`${tag} c1`, await audit(page, { young }));
     await shot(page, `hello__1-greeting__${b}__${v.w}__light`);
-    await page.locator(young ? "[data-testid=hello-hear]" : "[data-testid=hello-next]").click();
-    if (young) await page.locator("text=Next").first().click({ timeout: 2500 }).catch(() => {});
+    await page.locator("[data-testid=hello-hear]").click();
+    await page.locator("text=Next").first().click({ timeout: 2500 }).catch(() => {});
     await page.waitForFunction(() => document.querySelector("[data-testid=hello]")?.getAttribute("data-card") === "ai", null, { timeout: 8000 }).catch(() => {});
     check(`hello card 2 AI disclosure ${tag}`, (await card()) === "ai" && /computer teacher, not a person/.test(await page.locator(".hello-card").innerText()));
     report(`${tag} c2`, await audit(page, { young }));
@@ -774,7 +775,7 @@ for (const v of VIEWS) {
   const st2 = await page.evaluate(() => ({ y: window.scrollY, focus: document.activeElement?.tagName, h1: document.querySelector("h1")?.textContent }));
   check(`V-ONB promises before the account, at scroll 0 ${tag}`, page.url().endsWith("/start/promises") && st2.y === 0 && st2.focus === "H1", JSON.stringify(st2));
   check(`V-ONB promises name the teacher ${tag}`, /Asha is an AI and says so/.test(await page.locator("main").innerText()));
-  check(`V-ONB promise pronoun agrees (he tells … he's) ${tag}`, /He tells your child he's a computer teacher/.test(await page.locator("main").innerText()));
+  check(`V-ONB promise pronoun agrees (she tells … she's) ${tag}`, /She tells your child she's a computer teacher/.test(await page.locator("main").innerText()));
   report(`${tag} promises`, await audit(page, { young: false }));
   await shot(page, `onboarding__3-promises__adult__${v.w}__light`);
   await ctx.close();

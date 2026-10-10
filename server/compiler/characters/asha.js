@@ -35,7 +35,7 @@ const young = {
 /**
  * Classes 5-9: the same Asha in the register Arjun's sheet was measured in: his competence notes VERBATIM, re-registered
  * as a didi-tutor. Measured (director-sim --class 6, LLM-played child, n = 9 per arm, 2026-10-10; RESULTS.md): child talk
- * share median 0.163 vs Arjun's 0.160. Two warmer variants talked the child down and were rejected: her young warmth /
+ * share median 0.164 vs Arjun's 0.160. Two warmer variants talked the child down and were rejected: her young warmth /
  * humour / pace notes (0.138, -16%), and "never babyish" + "ask more than tell" (0.145, -9.4%). Change a word here only
  * with the talk gate re-run.
  */

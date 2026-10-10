@@ -219,8 +219,9 @@ try {
       const { ctx, page, st } = await open({ kid, tutors: 1 }, `/c/${kid.id}/hello`, { ...v, theme });
       await page.waitForSelector("[data-testid=hello]", { timeout: 10_000 }).catch(() => {});
       check(`N-HELLO the teacher is Asha ${tag}`, (await page.locator("[data-teacher-id]").first().getAttribute("data-teacher-id").catch(() => null)) === "asha");
-      await page.locator(young ? "[data-testid=hello-hear]" : "[data-testid=hello-next]").click().catch(() => {});
-      if (young) await page.locator("text=Next").first().click({ timeout: 2500 }).catch(() => {});
+      // Asha has a greeting clip in every family language, so every child (not only Young) may get "Tap to hear"
+      await page.locator("[data-testid=hello-hear], [data-testid=hello-next]").first().click().catch(() => {});
+      await page.locator("text=Next").first().click({ timeout: 2500 }).catch(() => {});
       await page.waitForFunction(() => document.querySelector("[data-testid=hello]")?.getAttribute("data-card") === "ai", null, { timeout: 8000 }).catch(() => {});
       check(`N-HELLO the AI card ${tag}`, (await cardOf(page)) === "ai");
       await page.locator("[data-testid=hello-gotit]").click();
@@ -316,7 +317,9 @@ async function realRun() {
   const fromEnv = (n) => process.env[n] || (fs.existsSync(envFile) ? (fs.readFileSync(envFile, "utf8").split("\n").find((l) => l.startsWith(n + "=")) || "").slice(n.length + 1).replace(/^"(.*)"$/, "$1") : "");
   const TEST = fromEnv("CONDUCTOR_TEST_DATABASE_URL"), PROD = fromEnv("DATABASE_URL");
   const host = (u) => { try { return new URL(u).hostname.replace(/-pooler\./, "."); } catch { return ""; } };
-  if (!TEST || (PROD && host(TEST) === host(PROD))) {
+  // a stream session's .env.local points DATABASE_URL at its own test branch too (TAXILA_DB=test): then equality is not prod
+  const isTestEnv = fromEnv("TAXILA_DB") === "test";
+  if (!TEST || (!isTestEnv && PROD && host(TEST) === host(PROD))) {
     console.log(`SKIP N-REAL: ${!TEST ? "CONDUCTOR_TEST_DATABASE_URL not set" : "the test URL is the production endpoint"}`);
     results.push({ name: "N-REAL skipped", ok: true, detail: "no test branch", skipped: true });
     return;
