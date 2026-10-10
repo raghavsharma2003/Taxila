@@ -93,8 +93,10 @@ async function open(browser, vp, q, extra = {}) {
   const errors = [];
   page.on("pageerror", (e) => errors.push(String(e.message ?? e).slice(0, 160)));
   page.on("console", (m) => { if (m.type() === "error" && !/GL Driver|favicon|Failed to load resource/.test(m.text())) errors.push(m.text().slice(0, 160)); });
-  await page.goto(`${BASE}?family=nazariya&lang=${extra.lang ?? "hinglish"}&${q}`);
-  await page.waitForFunction(() => window.__khand && window.__khand.info().draws > 0, null, { timeout: 60000 });
+  const twin = /[?&]tier=2d\b/.test(`&${q}`);
+  await page.goto(`${BASE}?family=nazariya&lang=${extra.lang ?? "hinglish"}&${twin ? "" : "tier=3d&"}${q}`);
+  if (twin) await page.waitForSelector("[data-testid=play-controls] button", { timeout: 60000 });
+  else await page.waitForFunction(() => window.__khand && window.__khand.info().draws > 0, null, { timeout: 60000 });
   await page.waitForTimeout(600);
   return { ctx, page, errors };
 }
@@ -108,11 +110,12 @@ if (flag("shots")) {
   let k = 0;
   for (const m of MODES) for (const vp of VIEWPORTS) {
     const art = ARTS[k++ % ARTS.length];
-    const states = vp.id === "p360" ? ["mid", "mistake", "solved"] : ["mid"];
+    const states = vp.id === "p360" ? ["mid", "mistake", "solved", "twin"] : ["mid", "twin"];
     for (const st of states) {
-      const { ctx, page, errors } = await open(browser, vp, `${m.q}&art=${art}`);
+      // "twin": the 2D board twin the host mounts when the 3D engine cannot run (tier 2d: SwiftShader without the override)
+      const { ctx, page, errors } = await open(browser, vp, `${m.q}&art=${art}${st === "twin" ? "&tier=2d" : ""}`);
       let note = "";
-      if (st === "mid") await solveSteps(page, 0.6);
+      if (st === "mid" || st === "twin") await solveSteps(page, 0.6);
       if (st === "mistake") note = (await mistake(page)) ?? "none";
       if (st === "solved") await solveSteps(page, 1);
       await page.evaluate(() => window.__khand?.setTool && null);

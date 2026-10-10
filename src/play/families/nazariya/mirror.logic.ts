@@ -98,7 +98,7 @@ function generate(req: GenRequest): Candidate<MirrorParams>[] {
   const g = req.grammar as { axes?: ("x" | "z")[]; hmax?: number; ms?: number[] };
   const rnd = mulberry32(req.seed), out: Candidate<MirrorParams>[] = [];
   const axes = g.axes ?? ["x"], hmax = g.hmax ?? (req.classLevel <= 4 ? 2 : 3), ms = g.ms ?? (req.classLevel <= 4 ? [3, 4] : [3, 4, 5]);
-  for (let k = 0; k < 60; k++) {
+  for (let k = 0; k < 36; k++) {
     const axis = axes[k % axes.length], m = ms[Math.floor(rnd() * ms.length)], other = 3 + Math.floor(rnd() * 3);
     const w = axis === "x" ? 2 * m : other, d = axis === "x" ? other : 2 * m;
     const given = zeros(w * d);

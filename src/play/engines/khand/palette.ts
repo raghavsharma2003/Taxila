@@ -25,5 +25,6 @@ export const TILE_RGB: Record<string, [number, number, number]> = {
   givenSide: [0x6f82b8, 0x56689e, 0x8c9dcc],
   pad: [0xcdb991, 0xb8a47c, 0xe0cfa8],
   leaf: [0x4f8f3a, 0x3f7a2e, 0x6aa84e],
+  snow: [0xeef3f7, 0xd7e1ea, 0xffffff],
 };
 export const rgbStr = (n: number) => `rgb(${(n >> 16) & 255},${(n >> 8) & 255},${n & 255})`;

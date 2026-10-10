@@ -138,7 +138,7 @@ function generate(req: GenRequest): Candidate<ViewsParams>[] {
   const goal = (req.goal as "build3" | "same") ?? g.goal ?? "build3";
   const rnd = mulberry32(req.seed), out: Candidate<ViewsParams>[] = [];
   const maxSide = g.maxSide ?? (req.classLevel <= 4 ? 3 : 4), hmax = g.hmax ?? (req.classLevel <= 4 ? 3 : 4);
-  for (let k = 0; k < 70; k++) {
+  for (let k = 0; k < 36; k++) {
     const w = 2 + Math.floor(rnd() * (maxSide - 1)), d = goal === "build3" && rnd() < 0.6 ? w : 2 + Math.floor(rnd() * (maxSide - 1));
     const n = w * d;
     const h = Array.from({ length: n }, () => (rnd() < 0.3 ? 0 : 1 + Math.floor(rnd() * hmax)));

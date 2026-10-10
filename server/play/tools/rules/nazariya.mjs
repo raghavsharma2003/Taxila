@@ -4,6 +4,8 @@
 // ACTS: `${topicId}|${goal}` → the kit skills the act exercises (the first is the entry's own).
 const R = (topicId, family, mode, goal, misMap = {}, grammar = {}, arts = undefined) => ({ topicId, family, mode, goal, misMap, grammar, arts });
 const N = "nazariya";
+/** G1's S0.3 per-family loader (server/play/tools/rules/index.mjs on claude/r4-games-core) reads `family`, RULES and ACTS. */
+export const family = N;
 
 export const RULES = [
   // views: build the structure whose top / front / side views are given; or a different build with one same view

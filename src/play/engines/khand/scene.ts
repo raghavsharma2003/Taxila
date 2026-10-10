@@ -10,7 +10,7 @@
 import {
   BoxGeometry, BufferAttribute, BufferGeometry, CanvasTexture, Color, DoubleSide, EdgesGeometry, Group, LineBasicMaterial, LineSegments, Mesh,
   MeshBasicMaterial, NearestFilter, OrthographicCamera, PerspectiveCamera, PlaneGeometry, Points, PointsMaterial, Raycaster, Scene, ShaderMaterial,
-  SphereGeometry, BackSide, Vector2, Vector3, WebGLRenderer, type Camera, type Texture,
+  SphereGeometry, BackSide, Vector2, Vector3, type WebGLRenderer, type Camera, type Texture,
 } from "three";
 import type { ArtTokens } from "../../../../shared/play.ts";
 import { meshVolume, volumeOf, type MeshOut } from "./mesher.ts";
@@ -120,7 +120,6 @@ export class Rig {
 export interface PlotGeom { w: number; d: number; hmax: number; sy: number }
 export class KhandScene {
   readonly renderer: WebGLRenderer;
-  readonly scene = new Scene();
   readonly cam = new PerspectiveCamera(48, 1, 0.1, 400);
   readonly ortho = new OrthographicCamera(-5, 5, 5, -5, 0.1, 400);
   readonly rig = new Rig();
@@ -142,10 +141,12 @@ export class KhandScene {
   private dustV: Float32Array; private dustLife = 0;
   private terrainH = new Map<string, number>();
   readonly info = { draws: 0, tris: 0 };
-  w = 1; h = 1; dpr = 1;
-  constructor(canvas: HTMLCanvasElement, art: ArtTokens, atlas: Texture | null, timeOfDay: "day" | "dusk" | "night") {
-    this.renderer = new WebGLRenderer({ canvas, antialias: false, alpha: false, powerPreference: "high-performance", preserveDrawingBuffer: false });
-    this.renderer.autoClear = true;
+  w = 1; h = 1;
+  /** The renderer and scene are the core's (core3d@1): the scene only adds its world to them. */
+  readonly scene: Scene;
+  readonly theme: "mitti" | "barf" | "jungle";
+  constructor(renderer: WebGLRenderer, scene: Scene, art: ArtTokens, atlas: Texture | null, timeOfDay: "day" | "dusk" | "night", theme: "mitti" | "barf" | "jungle" = "mitti") {
+    this.renderer = renderer; this.scene = scene; this.theme = theme;
     this.art = art; this.sky = SKY[timeOfDay];
     this.blockMat = blockMaterial(atlas, this.sky);
     this.build = new PooledMesh(this.blockMat);
@@ -166,7 +167,6 @@ export class KhandScene {
     const dg = new BufferGeometry(); dg.setAttribute("position", new BufferAttribute(new Float32Array(n * 3), 3));
     this.dust = new Points(dg, new PointsMaterial({ color: new Color(0xf3ead8), size: 0.12, transparent: true, opacity: 0.9, depthWrite: false }));
     this.dust.visible = false; this.dust.frustumCulled = false; this.overlay.add(this.dust);
-    canvas.addEventListener("webglcontextlost", (e) => e.preventDefault());
   }
   /** Lay out the plot: pad, terrain round it (seeded, deterministic), camera framing. */
   setPlot(p: PlotGeom, seed: number): void {
@@ -188,12 +188,12 @@ export class KhandScene {
       const h = far <= 0 ? 0 : Math.max(0, Math.min(SY - 3, Math.round(smooth(x, z) * (1.2 + far * 0.28) - 0.6 + far * 0.08)));
       hs.push(h); if (h) this.terrainH.set(`${px},${pz}`, h);
       // a tree here and there on flat-ish ground a little way out
-      if (far > 3 && hsh(x * 7, z * 13) < 0.03 && h < SY - 4) mats.set(`${x},${z}`, h);
+      if (far > 3 && hsh(x * 7, z * 13) < (this.theme === "jungle" ? 0.09 : this.theme === "barf" ? 0.015 : 0.03) && h < SY - 4) mats.set(`${x},${z}`, h);
     }
     const vol = volumeOf(W, D, SY, hs.map((h, i) => { const k = `${i % W},${Math.floor(i / W)}`; return mats.has(k) ? h + 3 : h; }), (i, y) => {
       const x = i % W, z = Math.floor(i / W), base = hs[i];
       if (mats.has(`${x},${z}`) && y >= base) return y >= base + 2 ? MAT.leaf : MAT.wood;
-      return y >= base - 1 ? MAT.grass : MAT.stone;
+      return y >= base - 1 ? (this.theme === "barf" ? MAT.snow : MAT.grass) : MAT.stone;
     });
     // tree crowns: a plus of leaves round the top trunk block
     for (const k of mats.keys()) {
@@ -207,7 +207,7 @@ export class KhandScene {
     const g = new PlaneGeometry(400, 400); g.rotateX(-Math.PI / 2);
     const gv = g.getAttribute("position").count, guv = new Float32Array(gv * 2);
     for (let i = 0; i < gv; i++) { guv[i * 2] = g.getAttribute("position").getX(i); guv[i * 2 + 1] = g.getAttribute("position").getZ(i); }
-    g.setAttribute("uvb", new BufferAttribute(guv, 2)); g.setAttribute("tile", new BufferAttribute(new Float32Array(gv).fill(0), 1)); g.setAttribute("shade", new BufferAttribute(new Float32Array(gv).fill(0.92), 1));
+    g.setAttribute("uvb", new BufferAttribute(guv, 2)); g.setAttribute("tile", new BufferAttribute(new Float32Array(gv).fill(this.theme === "barf" ? 15 : 0), 1)); g.setAttribute("shade", new BufferAttribute(new Float32Array(gv).fill(0.92), 1));
     const gm = new Mesh(g, this.blockMat); gm.position.set(p.w / 2, -0.001, p.d / 2); this.root.add(gm);
     // frame the plot
     const span = Math.max(p.w, p.d, p.hmax * 1.4);
@@ -248,18 +248,18 @@ export class KhandScene {
       this.ortho.lookAt(mid); this.ortho.updateProjectionMatrix();
     }
   }
-  resize(w: number, h: number, dpr: number): void {
-    this.w = w; this.h = h; this.dpr = dpr;
-    this.renderer.setPixelRatio(dpr); this.renderer.setSize(w, h, false);
+  resize(w: number, h: number): void {
+    this.w = w; this.h = h;
     this.cam.aspect = w / Math.max(1, h);
     // a narrow phone sees the plot whole: widen the vertical field for tall boxes
     this.cam.fov = w / Math.max(1, h) < 0.7 ? 58 : 46;
     this.cam.updateProjectionMatrix();
   }
-  render(): void {
+  /** Before the core renders: place the cameras; returns the camera to render with. */
+  frame(): Camera {
     this.placeCameras();
-    this.renderer.render(this.scene, this.activeCamera());
     this.info.draws = this.renderer.info.render.calls; this.info.tris = this.renderer.info.render.triangles;
+    return this.activeCamera();
   }
 
   // ── picking: a voxel walk (DDA) through the plot's height map, then the ground
@@ -435,7 +435,6 @@ export class KhandScene {
   dispose(): void {
     this.build.dispose(); this.terrain.dispose();
     this.scene.traverse((o) => { const m = o as Mesh; m.geometry?.dispose?.(); const mm = m.material as { dispose?: () => void } | undefined; mm?.dispose?.(); });
-    this.renderer.dispose();
   }
 }
 export { volumeOf };

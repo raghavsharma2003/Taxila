@@ -11,6 +11,7 @@ export const MAT = {
   jade: 7,
   given: 8,      // the filled array beside a turned pit
   leaf: 9,       // scenery: tree tops round the plot
+  snow: 10,      // scenery: the barf theme's ground
 } as const;
 export type MatId = (typeof MAT)[keyof typeof MAT];
 /** The child's palette: cosmetic only (the law counts blocks, never colours). */
@@ -29,6 +30,7 @@ export function tileOf(mat: number, dir: number): number {
     case MAT.jade: return 10;
     case MAT.given: return dir === 2 ? 11 : 12;
     case MAT.leaf: return 14;
+    case MAT.snow: return dir === 2 ? 15 : 4;
     default: return 15;
   }
 }

@@ -1,21 +1,17 @@
-// Khand · the engine mount: a WebGL canvas at the world box's real size, the frame loop (render on demand, a resolution
-// governor), touch input, DOM labels over the world, and the FamilyView the play host reads (goal, readouts, controls,
-// reactions). Every act goes through the PlayController, which runs the pure Nazariya law and records the raw envelope the
-// server replays; nothing here decides an outcome.
+// Khand · the engine (core3d@1: docs/design/round4/build/games-core/CORE-API.md). A VIEW over the Nazariya law: the core
+// hands it the renderer, scene, frame loop, labels, audio and the board-twin fallback; Khand adds the block world, touch
+// building and the overlays. Every act goes through the PlayController, which runs the pure law and records the raw
+// envelope the server replays; nothing here decides an outcome, keeps a score, reads a clock for progress or draws random.
 //
-// Input (one finger):  Build  — tap a face or the pad: a block lands on that column; drag across the pad: a whole layer.
-//                      Remove — tap: the top block comes off; drag: a layer comes off.
-//                      Look   — drag orbits the camera.     Walk — the stick moves you, a drag turns your head.
-// Two fingers: pinch zooms, a two-finger drag orbits, in every tool. A drag that starts on the sky always orbits.
-//
-// G1's economy lint: no clocks or randomness in the progress path (the loop's clock drives only the camera and the
-// juice), no persisted counters (the child's build is saved by the server from its own replay).
-import type { ArtId, Lang, Moment, NazariyaAct, PlayActBody, PlayLevel } from "../../../../shared/play.ts";
-import type { PlayController } from "../../core/controller.ts";
-import type { StageHandle, PerfSummary } from "../../core/stage.ts";
-import type { ControlSpec, FamilyView, Readout } from "../../core/viewkit.ts";
-import { ART, newAudit } from "../../core/styles.ts";
-import { sound, type SoundEvent } from "../../core/sound.ts";
+// Input (one finger, forwarded by the core):  Build — tap a face or the pad: a block lands on that column; drag across the
+// pad: a whole layer.  Break — tap: the top block comes off; drag: a layer comes off.  Look — drag orbits.  Walk — the
+// stick moves you, a drag turns your head. Two fingers (tracked here): pinch zooms, a two-finger drag orbits.
+import type { Moment, NazariyaAct, PlayActBody } from "../../../../shared/play.ts";
+import type { PointerKind } from "../../core/stage.ts";
+import type { ControlSpec, Readout } from "../../core/viewkit.ts";
+import { ART } from "../../core/styles.ts";
+import type { Scene, WebGLRenderer } from "three";
+import type { Core3D, EngineDeps, EngineView, LabelHandle, Sfx } from "./shim/api.ts";
 import type { NzState, Plot } from "../../families/nazariya/grid.ts";
 import { frontView, sideView, topView, built } from "../../families/nazariya/grid.ts";
 import { viewOf, type ViewsParams } from "../../families/nazariya/views.logic.ts";
@@ -29,45 +25,20 @@ import { MeshClient } from "./meshClient.ts";
 import { volumeOf } from "./mesher.ts";
 import { MAT, PALETTE } from "./tiles.ts";
 import { makeAtlas } from "./textures.ts";
-import COPY from "./copy.json";
+import { goalOf } from "./words.ts";
 
-export interface EngineDeps {
-  level: PlayLevel; ctl: PlayController; lang: Lang; changed(): void;
-  art: ArtId; young: boolean; reducedMotion?: boolean; sound?: boolean; onFail?(why: string): void;
-  /** fixed device pixel ratio (harness); default min(devicePixelRatio, 1.5) with the governor */
-  dpr?: number;
-  /** test seam: mesh on the main thread */
-  noWorker?: boolean;
-}
-export interface EngineMount { view: FamilyView; stage: StageHandle }
 type Tool = "build" | "remove" | "walk" | "look";
 
-const say = (lang: Lang, key: string, slots: Record<string, string | number> = {}): string => {
-  const g = (COPY.goal as Record<string, Record<string, string>>)[key];
-  const t = g?.[lang] ?? g?.en ?? "";
-  return t.replace(/\{(\w+)\}/g, (_, k: string) => String(slots[k] ?? ""));
-};
-const viewWord = (lang: Lang, v: string) => (COPY.views as Record<string, Record<string, string>>)[v]?.[lang] ?? v;
+type Theme = "mitti" | "barf" | "jungle";
 
-export function mountKhand(host: HTMLElement, deps: EngineDeps): EngineMount {
-  const { level, ctl, lang } = deps;
+export function create(core: Core3D, deps: EngineDeps): EngineView {
+  const { level, lang } = deps, ctl = deps.ctl as unknown as import("../../core/controller.ts").PlayController;
   const p = level.params as Plot & Record<string, unknown>;
   const mode = level.mode, goal = level.goal, fade = level.fade;
-  let art = ART[deps.art];
-  const reduced = deps.reducedMotion ?? (typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion: reduce)").matches);
-  if (deps.sound === false) sound.setMuted(true);
-
-  // ── DOM: the canvas, the label layer, the walk stick
-  const canvas = document.createElement("canvas");
-  canvas.className = "pl-canvas kh-canvas";
-  canvas.setAttribute("role", "application");
-  canvas.setAttribute("aria-label", "Block world");
-  canvas.style.cssText = "position:absolute;inset:0;width:100%;height:100%;touch-action:none;display:block";
-  host.appendChild(canvas);
-  const labels = document.createElement("div");
-  labels.className = "kh-labels";
-  labels.style.cssText = "position:absolute;inset:0;pointer-events:none;overflow:hidden";
-  host.appendChild(labels);
+  // the 3D world keeps one art direction (kagaz hues for the learning objects); the theme dresses the world itself
+  const art = ART.kagaz;
+  const canvas = (core.renderer as WebGLRenderer).domElement, host = canvas.parentElement as HTMLElement;
+  const reduced = core.reduced, young = core.young;
   const stick = document.createElement("div");
   stick.className = "kh-stick";
   stick.setAttribute("aria-label", "Walk stick");
@@ -76,18 +47,9 @@ export function mountKhand(host: HTMLElement, deps: EngineDeps): EngineMount {
   const knob = document.createElement("div");
   knob.style.cssText = `position:absolute;left:32px;top:32px;width:40px;height:40px;border-radius:20px;background:${art.you}`;
   stick.appendChild(knob); host.appendChild(stick);
-  // which tool is on, said in the world (the buttons stay one short word each at 360 px)
-  const badge = document.createElement("span");
-  badge.className = "kh-tool";
-  badge.setAttribute("aria-live", "polite");
-  badge.style.cssText = `position:absolute;left:8px;top:8px;pointer-events:none;font:600 16px/1.2 ${art.font.ui};color:${art.ink};background:${art.panel};border:1px solid ${art.panelEdge};border-radius:12px;padding:4px 10px`;
-  host.appendChild(badge);
-
-  const audit = newAudit(deps.art, deps.young);
-  let scene: KhandScene;
-  try { scene = new KhandScene(canvas, art, makeAtlas(), art.dark ? "night" : "day"); }
-  catch { deps.onFail?.("webgl"); return failed(); }
-  const mesher = new MeshClient(!deps.noWorker);
+  const theme = (["mitti", "barf", "jungle"].includes(deps.spec.dress.theme) ? deps.spec.dress.theme : "mitti") as Theme;
+  const scene = new KhandScene(core.renderer as WebGLRenderer, core.scene as Scene, art, makeAtlas(), "day", theme);
+  const mesher = new MeshClient(!(typeof location !== "undefined" && /[?&]noworker=1\b/.test(location.search)));
   const sy = Math.max(...p.base, p.hmax) + 1;
   scene.setPlot({ w: p.w, d: p.d, hmax: p.hmax, sy }, level.seed);
   if (mode === "views" || mode === "mirror") scene.rig.tPitch = scene.rig.pitch = 0.5;
@@ -111,8 +73,7 @@ export function mountKhand(host: HTMLElement, deps: EngineDeps): EngineMount {
   let shown: number[] = [...(ctl.state as NzState).h];
   let reveal = false;                   // fade ≥ 2: the child's own projection / counts appear only after a check
   let glowAfterCheck: { x: number; z: number; h: number }[] = [];
-  let dirty = true;
-  const invalidate = () => { dirty = true; };
+  const invalidate = () => core.invalidate();
   async function remesh(): Promise<void> {
     const vol = volumeOf(p.w, p.d, sy, shown, matAt);
     const r = await mesher.mesh(vol);
@@ -178,13 +139,13 @@ export function mountKhand(host: HTMLElement, deps: EngineDeps): EngineMount {
     }
     if (mode === "mirror") { const m = p as unknown as MirrorParams; scene.glass(m.axis, m.m, m.axis === "x" ? m.d : m.w, m.hmax); }
     scene.setGlow(glowAfterCheck);
-    labelsDirty = true;
+    syncLabels();
     invalidate();
   }
 
-  // ── labels over the world (DOM: crisp text at the floor sizes, on backing pills)
-  let labelsDirty = true;
-  const labelEls = new Map<string, HTMLSpanElement>();
+  // ── labels over the world: DOM pills the core places from world anchors (plot-local + the root offset)
+  const labelHandles = new Map<string, LabelHandle>();
+  const off = { x: -p.w / 2, z: -p.d / 2 };
   function labelSpecs(): { id: string; text: string; at: [number, number, number] }[] {
     const out: { id: string; text: string; at: [number, number, number] }[] = [];
     if (mode === "views") {
@@ -207,24 +168,16 @@ export function mountKhand(host: HTMLElement, deps: EngineDeps): EngineMount {
     }
     return out;
   }
-  function placeLabels(): void {
-    const specs = labelSpecs(), seen = new Set<string>();
-    audit.texts = [];
-    for (const sp of specs) {
-      let el = labelEls.get(sp.id);
-      if (!el) {
-        el = document.createElement("span"); el.className = "kh-label"; el.dataset.id = sp.id;
-        el.style.cssText = `position:absolute;transform:translate(-50%,-50%);font:600 ${deps.young ? 20 : 18}px/1.2 ${art.font.ui};color:${art.ink};background:${art.panel};border:1px solid ${art.panelEdge};border-radius:12px;padding:2px 10px;white-space:nowrap`;
-        labels.appendChild(el); labelEls.set(sp.id, el);
-      }
-      el.textContent = sp.text;
-      const sc = scene.toScreen(sp.at[0], sp.at[1], sp.at[2]);
+  function syncLabels(): void {
+    const seen = new Set<string>();
+    for (const sp of labelSpecs()) {
       seen.add(sp.id);
-      if (!sc || sc.x < 0 || sc.y < 0 || sc.x > scene.w || sc.y > scene.h) { el.style.display = "none"; continue; }
-      el.style.display = ""; el.style.left = `${sc.x}px`; el.style.top = `${sc.y}px`;
-      audit.texts.push({ s: sp.text, px: deps.young ? 20 : 18, x: sc.x, y: sc.y, w: el.offsetWidth || 0, align: "center" });
+      const at = { x: sp.at[0] + off.x, y: sp.at[1], z: sp.at[2] + off.z }, kind = /^\d+$/.test(sp.text) ? "numeral" as const : "text" as const;
+      const h = labelHandles.get(sp.id);
+      if (h) h.set({ text: sp.text, at });
+      else labelHandles.set(sp.id, core.label({ id: sp.id, text: sp.text, lang: "en", size: young ? 20 : 18, kind, at }));
     }
-    for (const [id, el] of labelEls) if (!seen.has(id)) { el.remove(); labelEls.delete(id); }
+    for (const [id, h] of labelHandles) if (!seen.has(id)) { h.remove(); labelHandles.delete(id); }
   }
 
   // ── acts
@@ -241,13 +194,34 @@ export function mountKhand(host: HTMLElement, deps: EngineDeps): EngineMount {
   function act(a: NazariyaAct): { moments: Moment[]; refused?: string } {
     return ctl.dispatch(a as PlayActBody as never);
   }
-  const sfx = (ev: SoundEvent, n = 0) => { try { sound.play(art, ev, n); } catch { /* silent */ } };
+  const SFX: Record<string, Sfx> = { drop: "land", pour: "land", slide: "undo", refuse: "miss", look: "look", good: "good", tick: "select" };
+  const sfx = (ev: string, _n = 0) => core.audio.sfx(SFX[ev] ?? "select");
 
   // ── pointer input
   const pointers = new Map<number, { x: number; y: number }>();
   let drag: { kind: "orbit" | "build" | "remove" | "look"; sx: number; sy: number; lx: number; ly: number; moved: number; anchor?: { x: number; z: number; level: number; hit: Hit }; cur?: { x: number; z: number } } | null = null;
   let pinch: { d: number; cx: number; cy: number } | null = null;
   const pos = (e: PointerEvent) => { const r = canvas.getBoundingClientRect(); return { x: e.clientX - r.left, y: e.clientY - r.top }; };
+  let mouse = false;
+  // the core forwards ONE pointer (the child's finger); a second finger is tracked here only for pinch and two-finger orbit
+  const touchDown = (e: PointerEvent) => {
+    mouse = e.pointerType === "mouse";
+    pointers.set(e.pointerId, pos(e));
+    if (pointers.size === 2) { const [a, b] = [...pointers.values()]; pinch = { d: Math.hypot(a.x - b.x, a.y - b.y), cx: (a.x + b.x) / 2, cy: (a.y + b.y) / 2 }; drag = null; scene.showDrag(null); scene.showCursor(null); invalidate(); }
+  };
+  const touchMove = (e: PointerEvent) => {
+    if (!pointers.has(e.pointerId)) return;
+    pointers.set(e.pointerId, pos(e));
+    if (pinch && pointers.size >= 2) {
+      const [a, b] = [...pointers.values()], d = Math.hypot(a.x - b.x, a.y - b.y), cx = (a.x + b.x) / 2, cy = (a.y + b.y) / 2;
+      if (pinch.d > 0) scene.rig.zoomBy(pinch.d / Math.max(1, d));
+      scene.rig.orbitBy(cx - pinch.cx, cy - pinch.cy);
+      pinch = { d, cx, cy }; invalidate();
+    }
+  };
+  const touchUp = (e: PointerEvent) => { pointers.delete(e.pointerId); if (pointers.size < 2) pinch = null; };
+  canvas.addEventListener("pointerdown", touchDown); canvas.addEventListener("pointermove", touchMove);
+  canvas.addEventListener("pointerup", touchUp); canvas.addEventListener("pointercancel", touchUp);
   const targetOf = (hit: Hit, removing: boolean): { x: number; z: number; level: number } | null => {
     if (removing) return hit.kind === "block" ? { x: hit.x, z: hit.z, level: shown[hit.z * p.w + hit.x] - 1 } : null;
     let x = hit.x, z = hit.z;
@@ -255,16 +229,8 @@ export function mountKhand(host: HTMLElement, deps: EngineDeps): EngineMount {
     if (x < 0 || z < 0 || x >= p.w || z >= p.d) return null;
     return { x, z, level: shown[z * p.w + x] };
   };
-  function down(e: PointerEvent): void {
-    sound.unlock();
-    try { canvas.setPointerCapture(e.pointerId); } catch { /* synthetic */ }
-    const q = pos(e); pointers.set(e.pointerId, q);
-    if (pointers.size === 2) {
-      const [a, b] = [...pointers.values()];
-      pinch = { d: Math.hypot(a.x - b.x, a.y - b.y), cx: (a.x + b.x) / 2, cy: (a.y + b.y) / 2 };
-      drag = null; scene.showDrag(null); return;
-    }
-    ctl.finger(true);
+  function down(q: { x: number; y: number }): void {
+    if (pinch) return;
     if (tool === "walk") { drag = { kind: "look", sx: q.x, sy: q.y, lx: q.x, ly: q.y, moved: 0 }; return; }
     const hit = tool === "look" ? null : scene.pick(q.x, q.y);
     const tgt = hit ? targetOf(hit, tool === "remove") : null;
@@ -273,18 +239,11 @@ export function mountKhand(host: HTMLElement, deps: EngineDeps): EngineMount {
     scene.showCursor({ x: tgt.x, y: tgt.level, z: tgt.z });
     invalidate();
   }
-  function move(e: PointerEvent): void {
-    const q = pos(e);
-    if (pointers.has(e.pointerId)) pointers.set(e.pointerId, q);
-    if (pinch && pointers.size >= 2) {
-      const [a, b] = [...pointers.values()], d = Math.hypot(a.x - b.x, a.y - b.y), cx = (a.x + b.x) / 2, cy = (a.y + b.y) / 2;
-      if (pinch.d > 0) scene.rig.zoomBy(pinch.d / Math.max(1, d));
-      scene.rig.orbitBy(cx - pinch.cx, cy - pinch.cy);
-      pinch = { d, cx, cy }; invalidate(); return;
-    }
+  function move(q: { x: number; y: number }): void {
+    if (pinch) { drag = null; return; }
     if (!drag) {
       // a mouse hover previews where a block would go
-      if (e.pointerType === "mouse" && (tool === "build" || tool === "remove")) { const hit = scene.pick(q.x, q.y), t = hit ? targetOf(hit, tool === "remove") : null; scene.showCursor(t ? { x: t.x, y: t.level, z: t.z } : null); invalidate(); }
+      if (mouse && (tool === "build" || tool === "remove")) { const hit = scene.pick(q.x, q.y), t = hit ? targetOf(hit, tool === "remove") : null; scene.showCursor(t ? { x: t.x, y: t.level, z: t.z } : null); invalidate(); }
       return;
     }
     drag.moved += Math.hypot(q.x - drag.lx, q.y - drag.ly);
@@ -298,10 +257,8 @@ export function mountKhand(host: HTMLElement, deps: EngineDeps): EngineMount {
     drag.lx = q.x; drag.ly = q.y;
     invalidate();
   }
-  function up(e: PointerEvent): void {
-    pointers.delete(e.pointerId);
-    if (pinch) { if (pointers.size < 2) pinch = null; return; }
-    ctl.finger(false);
+  function up(): void {
+    if (pinch) { drag = null; return; }
     const d = drag; drag = null;
     scene.showDrag(null); scene.showCursor(null); invalidate();
     if (!d || !d.anchor) return;
@@ -310,10 +267,8 @@ export function mountKhand(host: HTMLElement, deps: EngineDeps): EngineMount {
     if (d.kind === "build") act(rect ? { kind: "layer", x0: a.x, z0: a.z, x1: c.x, z1: c.z } : { kind: "place", x: a.x, z: a.z });
     if (d.kind === "remove") act(rect ? { kind: "clear", x0: a.x, z0: a.z, x1: c.x, z1: c.z } : { kind: "remove", x: a.x, z: a.z });
   }
-  function cancel(e: PointerEvent): void { pointers.delete(e.pointerId); pinch = null; drag = null; ctl.finger(false); scene.showDrag(null); scene.showCursor(null); invalidate(); }
+  function cancel(): void { drag = null; scene.showDrag(null); scene.showCursor(null); invalidate(); }
   const wheel = (e: WheelEvent) => { e.preventDefault(); scene.rig.zoomBy(e.deltaY > 0 ? 1.1 : 0.9); invalidate(); };
-  canvas.addEventListener("pointerdown", down); canvas.addEventListener("pointermove", move);
-  canvas.addEventListener("pointerup", up); canvas.addEventListener("pointercancel", cancel);
   canvas.addEventListener("wheel", wheel, { passive: false });
   // the walk stick
   let stickId: number | null = null;
@@ -330,9 +285,11 @@ export function mountKhand(host: HTMLElement, deps: EngineDeps): EngineMount {
   stick.addEventListener("pointerup", stickUp); stick.addEventListener("pointercancel", stickUp);
 
   const TOOL_SAYS: Record<Tool, string> = { build: "Building", remove: "Breaking", look: "Looking", walk: "Walking" };
+  // which tool is on, said in the world (the buttons stay one short word each at 360 px)
+  const badge = core.label({ id: "tool", text: TOOL_SAYS[tool], lang: "en", size: 16, kind: "text", at: { box: { x: 56, y: 24 } } });
   function setTool(t: Tool): void {
     tool = t;
-    badge.textContent = TOOL_SAYS[t];
+    badge.set({ text: TOOL_SAYS[t] });
     scene.rig.walk = t === "walk";
     if (t === "walk") { scene.rig.snap = null; scene.rig.wy = scene.floorAt(scene.rig.wx, scene.rig.wz) + 1.6; }
     stick.style.display = t === "walk" ? "block" : "none";
@@ -340,69 +297,27 @@ export function mountKhand(host: HTMLElement, deps: EngineDeps): EngineMount {
   }
   function setSnap(s: Snap): void { scene.rig.setSnap(s); if (!s) { scene.rig.tPitch = 0.55; scene.rig.tYaw = 0.6; } if (tool === "walk") setTool("look"); invalidate(); deps.changed(); }
 
-  // ── the loop: render on demand, a resolution governor, the perf summary the harness reads
-  let dpr = deps.dpr ?? Math.min(typeof window !== "undefined" ? window.devicePixelRatio || 1 : 1, 1.5);
-  const dprSteps: number[] = [];
-  let raf = 0, last = performance.now(), disposed = false, drawn = 0, errs = 0;
-  const frames: number[] = [], drawMs: number[] = [];
-  let slow: number[] = [];
-  function resize(): void {
-    const r = host.getBoundingClientRect();
-    const w = Math.max(1, Math.round(r.width)), h = Math.max(1, Math.round(r.height));
-    scene.resize(w, h, dpr); audit.box = { w, h };
-    labelsDirty = true; invalidate();
-  }
-  const ro = typeof ResizeObserver !== "undefined" ? new ResizeObserver(() => resize()) : null;
-  ro?.observe(host);
-  function frame(now: number): void {
-    if (disposed) return;
-    raf = requestAnimationFrame(frame);
-    if (document.hidden) { last = now; return; }
-    const raw = now - last; last = now;
-    frames.push(raw); if (frames.length > 20000) frames.splice(0, 10000);
-    const dt = Math.min(raw / 1000, 1 / 20);
-    let busy = false;
-    try {
-      busy = scene.rig.step(dt, scene.floorAt) || busy;
-      busy = scene.stepJuice(reduced ? 1 : dt) || busy;
-      if (!dirty && !busy && !drag && !pinch) return;
-      dirty = false;
-      const t0 = performance.now();
-      scene.render();
-      if (!drawn && typeof performance !== "undefined" && performance.mark) performance.mark("khand-first-frame");
-      if (labelsDirty || busy || drag || pinch) { placeLabels(); labelsDirty = false; }
-      drawMs.push(performance.now() - t0); drawn++;
-      audit.frame++;
-    } catch (e) {
-      errs++;
-      if (typeof console !== "undefined") console.warn("[khand] frame error", String((e as Error)?.message ?? e).slice(0, 160));
-      if (errs >= 3) { deps.onFail?.("frame_errors"); disposed = true; cancelAnimationFrame(raf); }
-      return;
-    }
-    slow.push(raw);
-    if (slow.length >= 90) {
-      const s = [...slow].sort((a, b) => a - b), med = s[s.length >> 1];
-      if (med > 19.2 && deps.dpr == null && dpr > 0.76) { dpr = dpr > 1.3 ? 1.25 : dpr > 1.1 ? 1 : dpr > 0.9 ? 0.85 : 0.75; dprSteps.push(dpr); resize(); }
-      slow = [];
-    }
-  }
-  canvas.addEventListener("webglcontextlost", () => deps.onFail?.("context_lost"));
-  resize();
+  // ── per frame: the core owns the loop and renders after update (on demand: busy() while anything moves)
+  let busyNow = false, continuousOn = false;
   sync();
-  raf = requestAnimationFrame(frame);
 
   // ── the view the host reads
-  const sp = level.params as Record<string, unknown>;
-  const view: FamilyView = {
-    layout() { /* the engine lays itself out on resize */ }, update() { /* own loop */ }, draw() { /* own canvas */ }, pointer() { /* own input */ },
-    goal(): string {
-      if (mode === "views") return say(lang, sp.goal === "same" ? "views.same" : "views.build3", { view: viewWord(lang, String(sp.view ?? "front")) });
-      if (mode === "array") return say(lang, goal === "turn" ? "array.turn" : fade === 3 ? "array.fill3" : "array.fill");
-      if (mode === "floor") return say(lang, `floor.${goal}`, { n: Number(sp.n) });
-      if (mode === "powers") { const pw = p as unknown as PowersParams; return say(lang, `powers.${pw.goal}`, { terms: Array.from({ length: pw.k }, (_, i) => termOf(pw.goal, i + 1)).join(", ") }); }
-      if (mode === "mirror") return say(lang, (p as unknown as MirrorParams).axis === "z" ? "mirror.z" : "mirror.x");
-      return "";
+  const view: EngineView = {
+    layout(box) { scene.resize(box.w, box.h); syncLabels(); invalidate(); },
+    update(dt) {
+      if (continuousOn) scene.rig.tYaw += 0.012;
+      let busy = scene.rig.step(dt, scene.floorAt);
+      busy = scene.stepJuice(reduced ? 1 : dt) || busy;
+      core.camera = scene.frame();
+      busyNow = busy || !!drag || !!pinch || continuousOn;
     },
+    busy: () => busyNow,
+    pointer(kind: PointerKind, x: number, y: number) {
+      const q = { x, y };
+      if (kind === "down") down(q); else if (kind === "move") move(q); else if (kind === "up") up(); else cancel();
+    },
+    key(k: string) { if (k === "Backspace") act({ kind: "undo" }); if (k === "Enter") act({ kind: "check" }); },
+    goal: (): string => goalOf(level, lang),
     readouts(): Readout[] {
       const s = ctl.state as NzState, out: Readout[] = [];
       if (mode === "floor") {
@@ -481,45 +396,19 @@ export function mountKhand(host: HTMLElement, deps: EngineDeps): EngineMount {
       if (refused && refused !== "level_over") sfx("refuse");
       if (kinds.has("prediction_committed") || kinds.has("prediction_confirmed") || kinds.has("prediction_violated")) sfx("tick");
     },
-    voice(a: PlayActBody): boolean { act(a as NazariyaAct); return true; },
-  };
-  if (padWanted()) pad = true;
-  badge.textContent = TOOL_SAYS[tool];
-
-  const perf = (reset = false): PerfSummary => {
-    const f = frames.slice(10), s = [...f].sort((a, b) => a - b), pct = (q: number) => (s.length ? +s[Math.min(s.length - 1, Math.floor(q * s.length))].toFixed(2) : 0);
-    const total = f.reduce((a, b) => a + b, 0), dm = [...drawMs].sort((a, b) => a - b), dq = (q: number) => (dm.length ? +dm[Math.min(dm.length - 1, Math.floor(q * dm.length))].toFixed(2) : 0);
-    const out = { drawP50: dq(0.5), drawP95: dq(0.95), n: f.length, drawn, fps: total ? +((1000 * f.length) / total).toFixed(1) : 0, p50: pct(0.5), p95: pct(0.95), over20: f.length ? +((100 * f.filter((x) => x > 20).length) / f.length).toFixed(1) : 0, over33: f.length ? +((100 * f.filter((x) => x > 33.4).length) / f.length).toFixed(1) : 0, dpr, dprSteps: [...dprSteps] };
-    if (reset) { frames.length = 0; drawMs.length = 0; drawn = 0; }
-    return out;
-  };
-  const stage: StageHandle = {
-    canvas, audit, perf,
-    setArt(id: ArtId) { art = ART[id]; audit.art = id; scene.setArt(art); overlays(); },
-    resize, invalidate,
     dispose() {
-      if (disposed) return; disposed = true; cancelAnimationFrame(raf); ro?.disconnect();
-      mesher.dispose(); scene.dispose(); canvas.remove(); labels.remove(); stick.remove(); badge.remove();
+      mesher.dispose(); scene.dispose(); stick.remove(); badge.remove();
+      for (const h of labelHandles.values()) h.remove();
+      canvas.removeEventListener("pointerdown", touchDown); canvas.removeEventListener("pointermove", touchMove);
+      canvas.removeEventListener("pointerup", touchUp); canvas.removeEventListener("pointercancel", touchUp); canvas.removeEventListener("wheel", wheel);
     },
   };
-  // the harness and the engine's own tests read these (never the app)
-  const khandApi = {
-    scene, mesher, setTool, setSnap, act, audit, perf, info: () => ({ ...scene.info, dpr, worker: mesher.usingWorker, mesh: mesher.timings }),
-    continuous: (on: boolean) => { continuousOn = on; },
-  };
-  (stage as unknown as { khand: unknown }).khand = khandApi;
-  // the play dev harness (window.__play present) also gets the engine's own hooks
-  if (typeof window !== "undefined" && (window as unknown as { __play?: unknown }).__play) (window as unknown as { __khand: unknown }).__khand = khandApi;
-  let continuousOn = false;
-  const baseInvalidate = invalidate;
-  void baseInvalidate;
-  // the fps harness keeps the camera moving (an orbiting child) so every frame renders
-  const spin = () => { if (disposed) return; if (continuousOn) { scene.rig.tYaw += 0.012; invalidate(); } requestAnimationFrame(spin); };
-  requestAnimationFrame(spin);
-  return { view, stage };
+  if (padWanted()) pad = true;
 
-  function failed(): EngineMount {
-    const stub: FamilyView = { layout() {}, update() {}, draw() {}, pointer() {}, goal: () => "", readouts: () => [], controls: () => [], react() {} };
-    return { view: stub, stage: { canvas, audit, perf: () => ({ n: 0, drawn: 0, fps: 0, p50: 0, p95: 0, over20: 0, over33: 0, dpr: 1, dprSteps: [], drawP50: 0, drawP95: 0 }), setArt() {}, resize() {}, invalidate() {}, dispose() { canvas.remove(); labels.remove(); stick.remove(); } } };
-  }
+  // the play dev harness (window.__play present) also gets the engine's own hooks
+  if (typeof window !== "undefined" && (window as unknown as { __play?: unknown }).__play) (window as unknown as { __khand: unknown }).__khand = {
+    scene, mesher, setTool, setSnap, act, perf: (reset?: boolean) => (window as unknown as { __play: { perf(r?: boolean): unknown } }).__play.perf(reset),
+    info: () => ({ ...scene.info, worker: mesher.usingWorker, mesh: mesher.timings, theme }), continuous: (on: boolean) => { continuousOn = on; invalidate(); },
+  };
+  return view;
 }

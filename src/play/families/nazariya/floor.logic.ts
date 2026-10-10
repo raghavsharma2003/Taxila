@@ -35,7 +35,16 @@ export function rects(p: { w: number; d: number }): [number, number][] {
   return out;
 }
 /** max: the largest area among fitting rectangles with perimeter n; min: the smallest perimeter among those of area n. */
+const BEST = new Map<string, { value: number; next: number | null } | null>();
 export function best(p: FloorParams): { value: number; next: number | null } | null {
+  const key = `${p.goal}:${p.n}:${p.w}x${p.d}`;
+  if (BEST.has(key)) return BEST.get(key) ?? null;
+  const v = bestOf(p);
+  if (BEST.size > 2000) BEST.clear();
+  BEST.set(key, v);
+  return v;
+}
+function bestOf(p: FloorParams): { value: number; next: number | null } | null {
   const vals = p.goal === "max" ? rects(p).filter(([a, b]) => 2 * (a + b) === p.n).map(([a, b]) => a * b)
     : p.goal === "min" ? rects(p).filter(([a, b]) => a * b === p.n).map(([a, b]) => 2 * (a + b)) : [];
   if (!vals.length) return null;

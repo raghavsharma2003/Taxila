@@ -28,7 +28,7 @@ const TILES: Painter[] = [
   /* 12 given side */ (px, k) => { speckle(TILE_RGB.givenSide, 0.25)(px, k); for (let i = 0; i < TILE_PX; i++) px(i, 15, TILE_RGB.givenSide[1]); },
   /* 13 build pad (the plot's ground, one cell per tile, edged) */ (px, k) => { speckle(TILE_RGB.pad, 0.3)(px, k); for (let i = 0; i < TILE_PX; i++) { px(i, 0, TILE_RGB.pad[1]); px(0, i, TILE_RGB.pad[1]); } },
   /* 14 leaves */ speckle(TILE_RGB.leaf, 0.6),
-  /* 15 fallback */ speckle(TILE_RGB.stoneTop, 0.2),
+  /* 15 snow (the barf theme's ground; also the fallback) */ speckle(TILE_RGB.snow, 0.25),
 ];
 
 /** The atlas as a three.js texture (or null where no 2D canvas exists). */
