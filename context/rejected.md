@@ -2462,3 +2462,7 @@ words are left to read.
 
 ## Merged inbox entries (write-up from the entry text)
 - `rj-r4c-frame-fit-floor-075` (2026-10-10): Tried (round 3 forge, src/modules/frame/fit.ts): scaling an engine that does not fit its frame down to a fixed floor of 0.75. Broke (certify-tray.js --modules, n = 2 samples per (engine, mode, band), contract boxes, 2026-10-10): 18 px words became 13.5 px and 54 px keys 40 px, so 0 of 15 engines passed at the 360 phone tray. Replaced by a floor per engine: the scale never takes the smallest word below the band's floor (14 / 16 px) nor a target below 44 px; past that the frame scrolls vertically. Plus svgText.ts: SVG words grown back to the floor at the SVG's real width, crowded sibling labels thinned (map-label rule).
+
+
+<!-- merged from inbox/r4-main-1800.json -->
+- `rj-r4-gate-tests-checkout-not-image` (2026-10-10): every check before the stream 2 deploy ran on the full git checkout: the gate's npm test, stream 2's own side-by-side batteries (local serve.mjs from the working tree) and the canary (a 2-turn text lesson that never asks for a visual). server/forge3/tray-gate.js:44 reads CONTRACT_FILE = docs/design/round4/build/box-contract.json, .dockerignore excludes docs/, and readJson() falls back to { boxes: {} }, so contractBox() returns null for every viewport class and the gate refuses every tray artifact. What broke: the image's file set was never exercised, and a required data file failed silently. Fixed by dc-r4-content-release-checks; stream 2 moves the contract into a packaged path.
