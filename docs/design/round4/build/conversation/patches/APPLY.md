@@ -1,5 +1,9 @@
 # Stream 4A (conversation) · patch requests
 
+> **2026-10-10, 4A is LIVE (base 38431ab, taxila.dev revision s38431ab):** 01 (migration 025, applied on production), 02 and 04
+> arrived on base with the 4A integration. **10 is APPROVED** (32abc178, including 10b); it ships with 11 as one narrow safety
+> release once 11 passes review (amended in 2feaeb96). Both diffs apply cleanly on 38431ab. 08 is a design note.
+
 > **2026-10-10, applied on base:** 03 (`7ec8202`, amended), 05 (`6166d0a`), 06, 07 and 09 (`a491caf`, with the main review's
 > amendment to 06: if the fresh reply fails for any reason other than a filter block, the ORIGINAL block stands and the turn
 > fails closed). All are merged into this branch, and their diffs are dropped from this folder. The rows below are kept as the
