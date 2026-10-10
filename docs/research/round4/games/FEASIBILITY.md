@@ -209,7 +209,8 @@ built from the repo's own `node_modules/three` 0.180.0.
 
 The reasons:
 - three is already in the repo, with types (`@types/three` 0.180.0). It is the smallest serious 3D renderer here.
-- It has the largest body of LLM-written examples, which matters for agent-built engines.
+- It is the most common target of LLM-written 3D web code (Rosebud builds on it [S]). That matters for agent-built
+  engines, though the claim is not measured here [U].
 - WebGPU is on its roadmap (`three.webgpu.js` ships).
 
 What three costs us: no editor, no built-in physics and no scene tooling. We write the engine layer ourselves. That
@@ -539,7 +540,7 @@ Screens (JPEG, 54-141 KB each): `shots/01-aim-360`, `02-mistake-countmarks-360` 
 
 ### 5.3 How to read these numbers (honesty)
 
-- **The frame-rate proxy measures SwiftShader, not our game.** During the runs Chromium's GPU process used 188-209% CPU
+- **The frame-rate proxy measures SwiftShader, not our game.** During the runs Chromium's GPU process used about 190-210% CPU
   doing software rasterization. CDP's CPU throttle slows the renderer's main thread, not that process. So the
   unthrottled reference gives the same 30 fps as the 4x-throttled run at DPR 1.5. The DPR sweep shows fps rising as
   pixels fall (DPR 0.5 gives 59.9 fps, DPR 1.5 gives 15 and DPR 2 gives 12 under the same contention, while our JS
@@ -552,9 +553,11 @@ Screens (JPEG, 54-141 KB each): `shots/01-aim-360`, `02-mistake-countmarks-360` 
     throttle**;
   - the scene's draw-call, triangle, texture and heap numbers are exact properties of the build;
   - the governor works: it stepped DPR 1.5 → 1.25 → 1.0 when p95 frame time exceeded 24 ms and held 59.9 fps.
-- **Contention.** Another session's production test (`tests/prod/owner-1-grading.mjs`, with its own browser) started
-  at 07:59 UTC. The rows marked with a load average above 4 ran during it. They were re-run when the machine was quieter
-  (paired with a baseline under the same contention: the mistake path ran at 15 fps against a 15 fps baseline, so the first run's 12 fps was contention, not the code path).
+- **Contention.** Another session ran production tests on the same host: `tests/prod/owner-1-grading.mjs` from 07:59
+  UTC, then screenshot captures from about 08:06, whose GPU process ran at 237-285% CPU. The first eight fps rows ran
+  at load ≤ ~4. Every later row is marked contended. The machine never went quiet, so each contended configuration was
+  re-run back to back with a baseline under the same contention. The mistake path ran at 15 fps against a 15 fps
+  baseline, so the first run's 12 fps was contention, not the code path.
 - **What this prototype does not prove:**
   - fun;
   - learning;
@@ -563,7 +566,7 @@ Screens (JPEG, 54-141 KB each): `shots/01-aim-360`, `02-mistake-countmarks-360` 
   - touch precision on a real screen;
   - Asha's real face and voice in the strip (a placeholder circle and captions here);
   - the server round-trip (the law is shared, but no server route was built);
-  - a production level grammar: 3 skills × 3 kit misconceptions, against Nishana's 15 mal-rules and 16 admitted
+  - a production level grammar: 3 skills × 3 kit misconceptions, against Nishana's 15 mal-rules and 18 admitted
     skills;
   - art direction beyond one programmer's procedural look.
 
@@ -586,9 +589,11 @@ All four rows ran while another session's browser was loading the host (load ave
 pessimistic. The first run of this bench drew holes: a signed XOR in the value-noise hash gave negative heights. That is
 fixed (unsigned), and these rows are from the fixed build.
 
-Reading: a bounded build world sized to a lesson (6 × 6 chunks or fewer) meshes and re-meshes well inside a frame on
-the proxy's throttled main thread. Greedy meshing would cut triangles by roughly 3-10x if the floor phone needs it
-[E]. As with the space slice, fps on the proxy is SwiftShader-bound.
+Reading: a bounded build world sized to a lesson (6 × 6 chunks or fewer) is feasible.
+- **Re-meshing:** 8.2 ms p50 fits a 30 fps frame on the throttled, contended main thread, but 19.1 ms p95 does not fit
+  a 60 fps frame. Production meshing belongs in a worker. Greedy meshing would cut triangles by roughly 3-10x [E].
+- **Heap:** it grew from 10 to 22.6 MB under edits because every re-mesh allocates a new geometry. Pool the buffers.
+- **fps:** on the proxy it is SwiftShader-bound, as for the space slice.
 
 ---
 
@@ -669,7 +674,8 @@ children.
 - The round-3 play stream built 4 families / 16 modes with solvers, mal-rules, views, a server and tests in about one
   stream-day (`docs/design/round3/play/RESULTS.md`). Its quality was "below DragonBox" and its fps was short on 10/16
   modes.
-- This prototype took one agent about 2 hours of wall time for one engine slice on one skill set.
+- This prototype took one agent under an hour of wall time to first playable, and about 1.5 hours including fixes and
+  measurement, for one engine slice on one skill set.
 - `mechanics.md` §10.6's 3-6 agent-weeks per family was an unmeasured estimate. The play stream's actuals came in far
   below it, but at a lower quality bar.
 
