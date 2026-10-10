@@ -17,9 +17,9 @@ Anek=AnekDevanagari-devanagari-normal.woff2;font-weight:100 800;font-stretch:75%
    Architectural, editorial, quiet; the game lives in the world, not in badges. */
 :root{
   --sky1:#BFD9E4; --sky2:#E9E4DA; --haze:#F4EFE7;
-  --ink:#14202A; --ink2:#46525C; --ink3:#5E6A73;
+  --ink:#14202A; --ink2:#36424B; --ink3:#3F4A52;
   --card:rgba(255,255,255,.78); --card2:rgba(255,255,255,.92); --line:rgba(20,32,42,.12); --line2:rgba(20,32,42,.24);
-  --move:#1E2A57; --move2:#2E3D78; --her:#C2512A; --secure:#0B7A70; --look:#5650C4; --sand:#EBD9BA;
+  --move:#1E2A57; --move2:#2E3D78; --her:#C2512A; --secure:#086A61; --look:#5650C4; --sand:#EBD9BA;
   --serif:"Serif","TiroD",Georgia,serif; --sans:"Grot","Anek",system-ui,sans-serif; --deva:"Anek","Grot",sans-serif; --dserif:"TiroD","Serif",serif;
   --e-out:cubic-bezier(.16,1,.3,1); --e-spring:cubic-bezier(.34,1.56,.64,1);
   --r:14px;
@@ -33,14 +33,14 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;-webki
 .app{position:relative;max-width:1366px;margin:0 auto;min-height:100dvh}
 section[data-screen]{min-height:100dvh;padding:0 16px 28px;display:flex;flex-direction:column;position:relative}
 section[hidden]{display:none!important}
-.k{font:600 14px/1.2 var(--sans);letter-spacing:.08em;text-transform:uppercase;color:var(--ink3)}
+.k{font:600 15px/1.2 var(--sans);letter-spacing:.08em;text-transform:uppercase;color:var(--ink3)}
 body[data-lang=hi] .k{font:600 16px/1.3 var(--deva);letter-spacing:0;text-transform:none}
 .top{display:flex;align-items:center;gap:8px;min-height:60px}
 .sp{flex:1}
 .brand{display:flex;align-items:center;gap:8px;font:400 24px/1 var(--serif);letter-spacing:-.01em}
 .brand svg{width:26px;height:26px}
 @media (max-width:420px){.brand span{display:none}}
-.langs{display:flex;background:rgba(255,255,255,.6);border:1px solid var(--line);border-radius:12px;padding:3px;height:46px}
+.langs{display:flex;background:rgba(255,255,255,.6);border:1px solid var(--line);border-radius:12px;padding:3px;height:52px}
 .langs button{min-width:44px;padding:0 10px;border-radius:9px;font:600 14px/1 var(--sans);color:var(--ink2)}
 .langs button[data-lang-btn=hi]{font:600 16px/1 var(--deva)}
 .langs button[aria-pressed=true]{background:var(--ink);color:#fff}
@@ -156,7 +156,7 @@ body[data-lang=hi] .cp-chip{font:700 16px/1 var(--deva)}
 .cp-chip.on{display:inline-flex;animation:rise .5s var(--e-out)}
 .ink{fill:none;stroke-linecap:round;stroke-linejoin:round}
 .l-main{stroke:var(--ink);stroke-width:3.5}.l-tick{stroke:var(--ink);stroke-width:3}.l-arc{stroke:var(--her);stroke-width:3.5}
-.l-num{fill:var(--ink2);font:600 21px var(--sans)}.l-frac{fill:var(--her);font:700 25px var(--sans)}
+.l-num{fill:var(--ink2);font:600 26px var(--sans)}.l-frac{fill:var(--her);font:700 31px var(--sans)}
 .l-hit{fill:transparent;cursor:pointer}.l-mark{fill:var(--move)}
 .draw{stroke-dasharray:var(--len);stroke-dashoffset:var(--len);animation:draw var(--d,.9s) var(--e-out) forwards}
 @keyframes draw{to{stroke-dashoffset:0}}
@@ -210,7 +210,7 @@ body[data-lang=hi] .end-hero h2{font:400 38px/1.25 var(--dserif)}
 .did li{display:grid;grid-template-columns:26px 1fr;gap:10px;padding:10px 0;border-top:1px solid var(--line);font-size:17px}
 .did svg{width:22px;height:22px;color:var(--secure)}
 .built{display:grid;grid-template-columns:1fr 140px;gap:12px;padding:16px;align-items:center;background:linear-gradient(135deg,rgba(11,122,112,.13),rgba(255,255,255,.85) 60%)}
-.built .k{color:var(--secure)}
+.built .k{color:#05564F}
 .built h3{margin:4px 0;font:400 30px/1.05 var(--serif)}
 body[data-lang=hi] .built h3{font:400 26px/1.3 var(--dserif)}
 .built p{margin:0;color:var(--ink2);font-size:15px}
@@ -221,7 +221,7 @@ body[data-lang=hi] .built p{font-size:16px}
 .bp .solid{opacity:0;animation:solid .8s ease forwards 1.9s}
 @keyframes solid{to{opacity:1}}
 .tmr{padding:14px 16px;display:grid;gap:4px}
-.tmr .k{color:var(--her)}
+.tmr .k{color:#9E3E1B}
 .end-asha{display:grid;grid-template-columns:72px 1fr;gap:12px;align-items:center}
 .end-asha .portrait{width:72px;height:84px;border-radius:16px;view-transition-name:asha}
 .end-asha .portrait .nm{display:none}
@@ -231,7 +231,7 @@ body[data-lang=hi] .built p{font-size:16px}
 .world-wrap{flex:1;display:grid;gap:14px;align-content:start}
 .world-title h2{margin:0;font:400 40px/1 var(--serif)}
 body[data-lang=hi] .world-title h2{font:400 36px/1.25 var(--dserif)}
-.seg{display:flex;background:rgba(255,255,255,.6);border:1px solid var(--line);border-radius:12px;padding:3px;height:46px}
+.seg{display:flex;background:rgba(255,255,255,.6);border:1px solid var(--line);border-radius:12px;padding:3px;height:52px}
 .seg button{min-width:64px;padding:0 12px;border-radius:9px;font-weight:600;font-size:15px}
 body[data-lang=hi] .seg button{font-size:16px}
 .seg button[aria-pressed=true]{background:var(--ink);color:#fff}
@@ -277,7 +277,7 @@ body[data-lang=hi] .st{font:700 16px/1 var(--deva)}
 .p-grid{display:grid;gap:12px}
 .made{display:grid;grid-template-columns:120px 1fr;gap:12px;align-items:center}
 .made img{width:120px;height:90px;border-radius:10px;object-fit:cover}
-.safe .k{color:var(--her)}
+.safe .k{color:#9E3E1B}
 
 ::view-transition-old(root){animation:.3s var(--e-out) both vo}
 ::view-transition-new(root){animation:.55s var(--e-out) both vn}
@@ -388,7 +388,7 @@ body[data-lang=hi] .st{font:700 16px/1 var(--deva)}
       <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M4 12.5l5 5L20 6"/></svg><span data-t="end.d3"></span></li></ul></div>
     <div style="display:grid;gap:14px">
       <div class="card built"><div><span class="k" data-t="secured"></span><h3 data-t="secured.what"></h3><p data-t="secured.how"></p>
-        <div class="opened"><span class="k" style="color:var(--secure)" data-t="n.built"></span><span data-t="n.baoli"></span></div></div>
+        <div class="opened"><span class="k" style="color:#05564F" data-t="n.built"></span><span data-t="n.baoli"></span></div></div>
         <svg class="bp" viewBox="0 0 140 120" id="bp"></svg></div>
       <div class="card tmr"><span class="k" data-t="tomorrow"></span><span data-t="end.next"></span></div>
     </div>
@@ -551,15 +551,16 @@ U.on.intake = async (tok, opt) => {
 };
 
 /* ---------- LESSON ---------- */
-const svg = document.getElementById('ink'); const X0 = 60, X1 = 580, Y = 170;
+const svg = document.getElementById('ink'); let X0 = 60, X1 = 580; const Y = 170;
 function el(tag, a, cls) { const e = mk(tag, a, svg); if (cls) e.setAttribute('class', cls); return e; }
 function stroke(d, cls, dur = 0.9, delay = 0) { const p = el('path', { d }, 'ink ' + cls); const L = p.getTotalLength(); p.style.setProperty('--len', L); p.style.setProperty('--d', dur + 's'); p.style.animationDelay = delay + 's'; p.classList.add('draw'); return p; }
 function text(x, y, t, cls, delay = 0) { const e = el('text', { x, y, 'text-anchor': 'middle' }, cls + ' pop'); e.textContent = t; e.style.animationDelay = delay + 's'; return e; }
-function frac(x, y, a, b, delay = 0) { const g = el('g', {}, 'pop'); g.style.animationDelay = delay + 's'; mk('text', { x, y, 'text-anchor': 'middle', class: 'l-frac' }, g).textContent = a; mk('text', { x, y: y + 30, 'text-anchor': 'middle', class: 'l-frac' }, g).textContent = b; mk('line', { x1: x - 13, x2: x + 13, y1: y + 8, y2: y + 8, stroke: '#C2512A', 'stroke-width': 2.5 }, g); return g; }
+function frac(x, y, a, b, delay = 0) { const g = el('g', {}, 'pop'); g.style.animationDelay = delay + 's'; mk('text', { x, y, 'text-anchor': 'middle', class: 'l-frac' }, g).textContent = a; mk('text', { x, y: y + 36, 'text-anchor': 'middle', class: 'l-frac' }, g).textContent = b; mk('line', { x1: x - 13, x2: x + 13, y1: y + 10, y2: y + 10, stroke: '#C2512A', 'stroke-width': 2.5 }, g); return g; }
+function fitBoard() { const W = innerWidth < 700 ? 400 : 640; svg.setAttribute('viewBox', `0 0 ${W} 300`); X0 = 44; X1 = W - 44; }
 const xs = (n) => Array.from({ length: n + 1 }, (_, i) => X0 + (X1 - X0) * i / n);
 function stepUI(i) { U.$$('#steps i').forEach((e, k) => e.classList.toggle('done', k < i)); document.getElementById('stepname').textContent = `${T('step')} ${i}`; }
 U.on.lesson = async (tok, opt) => {
-  svg.innerHTML = ''; document.getElementById('board').classList.remove('ask'); document.getElementById('cpchip').classList.remove('on'); show('hint', false); document.getElementById('toplay').classList.remove('on');
+  fitBoard(); svg.innerHTML = ''; document.getElementById('board').classList.remove('ask'); document.getElementById('cpchip').classList.remove('on'); show('hint', false); document.getElementById('toplay').classList.remove('on');
   const cap = document.getElementById('cap-lesson');
   if (opt.at === 'check' || opt.at === 'ok') return checkpoint(tok, cap, opt.at);
   stepUI(1); await U.wait(350, tok);
@@ -570,7 +571,7 @@ U.on.lesson = async (tok, opt) => {
   await U.wait(700, tok); return checkpoint(tok, cap);
 };
 async function checkpoint(tok, cap, at) {
-  svg.innerHTML = ''; stepUI(5); const board = document.getElementById('board'); document.getElementById('cpchip').classList.add('on'); U.sfx('soft');
+  fitBoard(); svg.innerHTML = ''; stepUI(5); const board = document.getElementById('board'); document.getElementById('cpchip').classList.add('on'); U.sfx('soft');
   stroke(`M${X0} ${Y}H${X1}`, 'l-main', 0.8, 0.1); xs(4).forEach((x, i) => stroke(`M${x} ${Y - 14}V${Y + 14}`, 'l-tick', 0.3, 0.5 + i * 0.12)); text(X0, Y + 50, '0', 'l-num', 0.4); text(X1, Y + 50, '1', 'l-num', 0.4);
   const hit = el('rect', { x: X0 - 30, y: Y - 60, width: X1 - X0 + 60, height: 120 }, 'l-hit');
   if (at === 'ok') return finish(tok, cap, xs(4)[3], true);
