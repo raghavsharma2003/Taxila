@@ -128,6 +128,30 @@ no choice, no overflow, no page errors, and the map sheet. The 36 failures are t
 puppet runs in the lesson Face layout, the SpeechRow face and Your teacher. Payload note for the Asha agent: the pack's wire
 size is 156.5 KB (`pack-report.json`), over r8's 142 KB budget (BUILD-PLAN §3.5).
 
+### Main-session asks of 2026-10-10 (after the Asha agent's final)
+
+- **Part C on hold.** lamp1's live puppet failed the blind uncanny gate (4, 5, 3, 4 / 5 against ≤ 1; r8 is 0 / 5). lamp1
+  is now HELD in code (`HELD_LOOKS` on client and server). `?look=lamp1`, a stored lamp1, and `TAXILA_FACE_LOOK=lamp1` all
+  resolve to r8. A dev build can trial a held pack with `&heldlook=1` (the shot battery). r8 stays the default and the only
+  live look. A passing rig (lamp2) joins the switch as a new look.
+- **Bilabials from the text** (agent patch 06, `addBilabials` in `src/face-puppet/visemes.ts`). The agent measured one
+  line (9 words). The 24-line battery (`evals/face-puppet/bilabial-battery.mjs`, offline, Diya's committed lines at rate -35):
+  b/m/p words sealed **35 / 76 by Azure alone → 76 / 76 with the rule, 0 false seals**. Timing by lipsync-offset's E2
+  (seal centre minus the deepest audio-energy dip within ±120 ms): Azure's own seals median 5 ms, IQR [-90, 95],
+  |median| 95 (n 92); the added seals median 15 ms, IQR [-55, 80], |median| 80 (n 41). The added seals land as close to
+  the acoustic closure as Azure's own. p2-face unit suite 33 / 33 with it.
+- **Blink rate.** The "46/min" came from one 15.2 s clip. Measured through the real `PuppetDriver` path on Diya's 24
+  lines (simulation, n = 8 seeds):
+
+  | | rate -35 (committed lines, 2.8 min) | rate 0 (production, 1.9 min) |
+  |---|---|---|
+  | before | 27.9 / min (26.1-29.7) | 29.4 / min (26.8-31.5) |
+  | after (event blinks move the next blink, never add one) | | **26.8 / min (22.0-27.3)** |
+
+  The target is the table's 26 while speaking: human conversation is about 26 / min, rest 17, reading 4.5 (Bentivoglio et
+  al. 1997). The "15-20" in the ask is the resting rate, and idle stays near it (19). In the first 15.2 s of speech, the
+  old behaviour read 24-39 / min across the 8 seeds, so one short clip can read high. Regression: `tests/r4-asha-blink.test.mjs`.
+
 ## Not met / open
 
 - Part C waits on the pack.
