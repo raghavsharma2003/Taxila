@@ -17,6 +17,7 @@ import type { FamilyId, Lang, Moment, PlayMode } from "../../../../shared/play.t
 import type { PlayController } from "../../core/controller.ts";
 import type { ControlSpec, Readout } from "../../core/viewkit.ts";
 import type { PerfSummary, PointerKind } from "../../core/stage.ts";
+import type { PlayCosmetics } from "../../briefing.ts";
 
 export const CORE3D_VERSION = "core3d@1" as const;
 
@@ -97,6 +98,9 @@ export interface DressedSpec {
   musicAllowed: boolean;
   /** the bed the dress chose before the class rule (what plays if the child turns music on); "off" = no toggle */
   musicMood: "calm" | "drive" | "off";
+  /** r4 K-P4: the child's Hangar colours (hull, trail) as 0xRRGGBB. CLIENT-ONLY: set from the child's own equip, never by
+   *  a model or the server. Colour only: laws, levels, acts and grades never read it; an engine may tint its own craft. */
+  cosmetics?: PlayCosmetics | null;
 }
 
 // ───────────────────────────── what the core gives an engine ─────────────────────────────

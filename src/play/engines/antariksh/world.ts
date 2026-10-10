@@ -202,6 +202,11 @@ export function buildWorld(scene: THREE.Scene, rnd: () => number) {
     (planet.material as THREE.MeshLambertMaterial).color.setHex(T.planet); (ring.material as THREE.MeshBasicMaterial).color.setHex(T.ring); rockMat.color.setHex(T.rock);
     barMat.color.setHex(T.line); (glow.material as THREE.MeshBasicMaterial).color.setHex(T.glow); (curtain.material as THREE.MeshBasicMaterial).color.setHex(T.line);
   }
-  return { ship, flame, lineGroup, bar, glow, ticks, pylonL, pylonR, half, curtain, reticle, bolt, shock, marks, gapBars, gates, makeTarget, burst, stepParticles, stream, theme, liveParticles: () => liveParts, tmpM, tmpQ, tmpV, tmpS };
+  /** r4 K-P4: the child's Hangar colours on the craft only (never a learning object, never VOLT); null = the craft's own */
+  function cosmetics(c: { hull?: number | null; trail?: number | null } | null | undefined): void {
+    hullMat.color.setHex(c?.hull ?? 0xdfe4f2);
+    (flame.material as THREE.MeshBasicMaterial).color.setHex(c?.trail ?? 0x8fd8ff);
+  }
+  return { ship, flame, cosmetics, lineGroup, bar, glow, ticks, pylonL, pylonR, half, curtain, reticle, bolt, shock, marks, gapBars, gates, makeTarget, burst, stepParticles, stream, theme, liveParticles: () => liveParts, tmpM, tmpQ, tmpV, tmpS };
 }
 export type World = ReturnType<typeof buildWorld>;

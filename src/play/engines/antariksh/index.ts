@@ -136,6 +136,7 @@ export function create(core: Core3D, depsIn: EngineDeps): EngineView {
     W.theme(T, level.seed);
     core.labelColors(T.labels);
     for (const g of W.gates) { (g.tor.material as THREE.MeshBasicMaterial).color.setHex(T.garam); (g.disc.material as THREE.MeshBasicMaterial).color.setHex(T.garam); }
+    W.cosmetics(spec.cosmetics); // r4 K-P4: colour only
   }
 
   function startLevel(): void {
@@ -433,7 +434,7 @@ export function create(core: Core3D, depsIn: EngineDeps): EngineView {
     W.ship.position.set(shipX, SHIP_Y + (core.reduced ? 0 : Math.sin(core.t * 2.1) * 0.05), SHIP_Z);
     W.ship.rotation.set(0.06, 0, THREE.MathUtils.clamp(-shipVX * 0.18, -0.7, 0.7));
     W.flame.scale.set(1, 1, 0.8 + core.cosmeticRandom() * 0.4 + warpK * 2.5);
-    if (!core.reduced && Math.round(core.t * 60) % 2 === 0) W.burst(tmpV.set(shipX, W.ship.position.y, SHIP_Z + 1.0), 1, T.glow, 0.25, 0.35);
+    if (!core.reduced && Math.round(core.t * 60) % 2 === 0) W.burst(tmpV.set(shipX, W.ship.position.y, SHIP_Z + 1.0), 1, spec.cosmetics?.trail ?? T.glow, 0.25, 0.35); // r4 K-P4: the exhaust wears the trail colour
     W.reticle.position.x = uToX(uVis);
     W.reticle.visible = phase === "aim" || phase === "flight" || phase === "gates" || phase === "doors";
     if (!core.reduced) W.reticle.rotation.z += dt * 1.5;

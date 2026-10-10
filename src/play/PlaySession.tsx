@@ -1,8 +1,9 @@
 // A server-backed play session around PlayStage: posts every act (the server replays ALL acts and grades them), shows her
 // micro-line at a play turn-point, offers the server's two doors after a level, and reports level ends upward (the lesson
 // forwards the seam and the server's evidence rows; GRAMMAR.md §6). The local controller never waits on the network.
-import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
-import type { ArtId, Lang, PlayActEnvelope, PlayActResponse, PlayLevel, PlayWorldFamily } from "../../shared/play.ts";
+import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import type { ArtId, Lang, PlayActEnvelope, PlayActResponse, PlayDressResponse, PlayLevel, PlayWorldFamily } from "../../shared/play.ts";
+import type { PlayCosmetics } from "./briefing.ts";
 import { PlayStage, type PlayDoor, type PlayEvent } from "./PlayStage.tsx";
 import { playApi } from "./client.ts";
 import type { DressedSpec } from "./engines/core3d/api.ts";
@@ -29,6 +30,10 @@ export interface PlaySessionProps {
   embedded?: boolean;
   /** the base dress the level response carried (a real-game engine renders this level) */
   dress?: DressedSpec | null;
+  /** r4 K-P3: the model-dress reply already requested (a Briefing fetched it while it was up): used instead of a second fetch */
+  dressReply?: Promise<PlayDressResponse | null> | null;
+  /** r4 K-P4: the child's Hangar colours for the engine (colour only; laws, levels, acts and grades never read them) */
+  cosmetics?: PlayCosmetics | null;
   /** renderer override (the harness): "3d" lets a software GPU through */
   engine?: "auto" | "2d" | "3d";
   /** the certification harness reads canvas pixels: keep the WebGL drawing buffer (never set for a child) */
@@ -47,8 +52,8 @@ export function PlaySession(p: PlaySessionProps) {
   useEffect(() => {
     if (!p.dress) return;
     const ac = new AbortController();
-    playApi.dress({ sessionId: p.sessionId, music: musicPref() ?? undefined }, ac.signal).then((r) => {
-      if (!r || r.source !== "model") return;
+    (p.dressReply ?? playApi.dress({ sessionId: p.sessionId, music: musicPref() ?? undefined }, ac.signal)).then((r) => {
+      if (ac.signal.aborted || !r || r.source !== "model") return;
       if (r.dress.from.wrapper === "model") carry.current = r.dress.dress.wrapper;
       setDress(r.dress);
     });
@@ -93,6 +98,8 @@ export function PlaySession(p: PlaySessionProps) {
     if (r.dress) setDress(carry.current ? { ...r.dress, dress: { ...r.dress.dress, wrapper: carry.current }, from: { ...r.dress.from, wrapper: "model" } } : r.dress);
   }, [p]);
 
+  // r4 K-P4: the Hangar colours ride on the dress the engine wears (one object per dress, so no spurious redress)
+  const worn = useMemo(() => (dress && p.cosmetics ? { ...dress, cosmetics: p.cosmetics } : dress), [dress, p.cosmetics]);
   return <PlayStage level={level} art={art} lang={p.lang} classLevel={p.classLevel} caption={caption} face={p.face} teacherName={p.teacherName}
-    doors={doors} onDoor={onDoor} world={p.world ?? null} onEvent={onEvent} reducedMotion={p.reducedMotion} heard={p.heard} embedded={p.embedded} dress={dress} engine={p.engine} verb={dress?.verb} preserveDrawing={p.preserveDrawing} />;
+    doors={doors} onDoor={onDoor} world={p.world ?? null} onEvent={onEvent} reducedMotion={p.reducedMotion} heard={p.heard} embedded={p.embedded} dress={worn} engine={p.engine} verb={dress?.verb} preserveDrawing={p.preserveDrawing} />;
 }
