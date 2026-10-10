@@ -7,11 +7,13 @@
 import * as THREE from "three";
 
 export const VOLT = 0xcbff4d;   // the one "your move" hue: the reticle and the probe marks only
-export interface Theme { bg: number; fog: number; line: number; glow: number; target: number; rock: number; planet: number; ring: number; neb: [string, string, string]; garam: number; teekha: number }
+export interface Theme { bg: number; fog: number; line: number; glow: number; target: number; rock: number; planet: number; ring: number; neb: [number, number, number]; garam: number; teekha: number;
+  /** the label palette over this world (pills and roles): art-pack colours, applied through core.labelColors */
+  labels: { ink: number; you: number; good: number; look: number; q1: number; q2: number; pill: number; pillAlpha: number } }
 export const THEMES: Record<string, Theme> = {
-  "neela-nebula": { bg: 0x070a1c, fog: 0x0b1030, line: 0x7fe3ff, glow: 0x2a9dff, target: 0xff5a7a, rock: 0x5b5f86, planet: 0x6a4bd8, ring: 0xb9a6ff, neb: ["#1b2a8a", "#6b2bd0", "#0e7bb8"], garam: 0x7fe3ff, teekha: 0xff8a3d },
-  "laal-grah": { bg: 0x140707, fog: 0x2a0d0a, line: 0xffd27a, glow: 0xff7a2a, target: 0x7affd9, rock: 0x7a4b3a, planet: 0xd8572b, ring: 0xffb07a, neb: ["#7a1d10", "#c2410c", "#4a1340"], garam: 0xffd27a, teekha: 0x7affd9 },
-  "hara-toofan": { bg: 0x04110d, fog: 0x072019, line: 0x9dffd0, glow: 0x19c28a, target: 0xffc04d, rock: 0x3d6656, planet: 0x1f9d6b, ring: 0xa6ffd8, neb: ["#0d5c45", "#136b8a", "#1f3d14"], garam: 0x9dffd0, teekha: 0xffc04d },
+  "neela-nebula": { bg: 0x070a1c, fog: 0x0b1030, line: 0x7fe3ff, glow: 0x2a9dff, target: 0xff5a7a, rock: 0x5b5f86, planet: 0x6a4bd8, ring: 0xb9a6ff, neb: [0x1b2a8a, 0x6b2bd0, 0x0e7bb8], garam: 0x7fe3ff, teekha: 0xff8a3d, labels: { ink: 0xeef1ff, you: 0xcbff4d, good: 0x7ff0b8, look: 0xffd27a, q1: 0x7fe3ff, q2: 0xffad7a, pill: 0x05060d, pillAlpha: 0.66 } },
+  "laal-grah": { bg: 0x140707, fog: 0x2a0d0a, line: 0xffd27a, glow: 0xff7a2a, target: 0x7affd9, rock: 0x7a4b3a, planet: 0xd8572b, ring: 0xffb07a, neb: [0x7a1d10, 0xc2410c, 0x4a1340], garam: 0xffd27a, teekha: 0x7affd9, labels: { ink: 0xfff3ea, you: 0xcbff4d, good: 0x9dffd0, look: 0xffd27a, q1: 0xffd27a, q2: 0x7affd9, pill: 0x140707, pillAlpha: 0.7 } },
+  "hara-toofan": { bg: 0x04110d, fog: 0x072019, line: 0x9dffd0, glow: 0x19c28a, target: 0xffc04d, rock: 0x3d6656, planet: 0x1f9d6b, ring: 0xa6ffd8, neb: [0x0d5c45, 0x136b8a, 0x1f3d14], garam: 0x9dffd0, teekha: 0xffc04d, labels: { ink: 0xeefff7, you: 0xcbff4d, good: 0x9dffd0, look: 0xffd27a, q1: 0x9dffd0, q2: 0xffc04d, pill: 0x04110d, pillAlpha: 0.7 } },
 };
 export const CAM = new THREE.Vector3(0, 3.0, 7.5), LOOK = new THREE.Vector3(0, 0.4, -12);
 export const LINE_Y = 0.7, LINE_Z = -6, SHIP_Z = 1.6, SHIP_Y = 0.55;
@@ -31,12 +33,13 @@ export function buildWorld(scene: THREE.Scene, rnd: () => number) {
   function paintSky(T: Theme, seed: number): void {
     const g = skyCanvas.getContext("2d"); if (!g) return;
     g.globalCompositeOperation = "source-over"; g.globalAlpha = 1;
-    g.fillStyle = "#" + T.bg.toString(16).padStart(6, "0"); g.fillRect(0, 0, 512, 256);
+    g.fillStyle = `rgb(${(T.bg >> 16) & 255}, ${(T.bg >> 8) & 255}, ${T.bg & 255})`; g.fillRect(0, 0, 512, 256);
     let s = (seed * 9301 + 49297) % 233280; const r = () => ((s = (s * 9301 + 49297) % 233280) / 233280);
     g.globalCompositeOperation = "lighter";
+    const rgba = (n: number, a: number) => `rgba(${(n >> 16) & 255}, ${(n >> 8) & 255}, ${n & 255}, ${a})`;
     for (let i = 0; i < 22; i++) { const x = r() * 512, y = 60 + r() * 140, rad = 30 + r() * 110, c = T.neb[i % 3];
-      const gr = g.createRadialGradient(x, y, 0, x, y, rad); gr.addColorStop(0, c + "66"); gr.addColorStop(1, c + "00"); g.fillStyle = gr; g.fillRect(x - rad, y - rad, rad * 2, rad * 2); }
-    g.globalCompositeOperation = "source-over"; g.fillStyle = "#ffffff";
+      const gr = g.createRadialGradient(x, y, 0, x, y, rad); gr.addColorStop(0, rgba(c, 0.4)); gr.addColorStop(1, rgba(c, 0)); g.fillStyle = gr; g.fillRect(x - rad, y - rad, rad * 2, rad * 2); }
+    g.globalCompositeOperation = "source-over"; g.fillStyle = "rgb(255, 255, 255)";
     for (let i = 0; i < 260; i++) { g.globalAlpha = 0.3 + r() * 0.7; g.fillRect(r() * 512, r() * 256, 1, 1); }
     g.globalAlpha = 1; skyTex.needsUpdate = true;
   }
@@ -47,7 +50,7 @@ export function buildWorld(scene: THREE.Scene, rnd: () => number) {
   ring.rotation.set(1.2, 0.3, 0); planet.add(ring);
 
   const dotCanvas = document.createElement("canvas"); dotCanvas.width = dotCanvas.height = 32;
-  { const g = dotCanvas.getContext("2d"); if (g) { const gr = g.createRadialGradient(16, 16, 0, 16, 16, 16); gr.addColorStop(0, "#fff"); gr.addColorStop(0.35, "#fffc"); gr.addColorStop(1, "#fff0"); g.fillStyle = gr; g.fillRect(0, 0, 32, 32); } }
+  { const g = dotCanvas.getContext("2d"); if (g) { const gr = g.createRadialGradient(16, 16, 0, 16, 16, 16); gr.addColorStop(0, "rgba(255, 255, 255, 1)"); gr.addColorStop(0.35, "rgba(255, 255, 255, 0.8)"); gr.addColorStop(1, "rgba(255, 255, 255, 0)"); g.fillStyle = gr; g.fillRect(0, 0, 32, 32); } }
   const dotTex = new THREE.CanvasTexture(dotCanvas);
 
   const starPos = new Float32Array(NSTAR * 3), streakPos = new Float32Array(NSTAR * 6);
@@ -90,7 +93,7 @@ export function buildWorld(scene: THREE.Scene, rnd: () => number) {
   const barMat = new THREE.MeshBasicMaterial({ color: 0x7fe3ff, depthTest: false });
   const bar = new THREE.Mesh(new THREE.BoxGeometry(1, 0.1, 0.1), barMat); bar.renderOrder = 4; lineGroup.add(bar);
   const softTex = (stops: [number, string][]) => { const c = document.createElement("canvas"); c.width = 4; c.height = 64; const g = c.getContext("2d"); if (g) { const gr = g.createLinearGradient(0, 0, 0, 64); for (const [o, col] of stops) gr.addColorStop(o, col); g.fillStyle = gr; g.fillRect(0, 0, 4, 64); } return new THREE.CanvasTexture(c); };
-  const glow = new THREE.Mesh(new THREE.PlaneGeometry(1, 0.9), new THREE.MeshBasicMaterial({ map: softTex([[0, "#0000"], [0.5, "#fff"], [1, "#0000"]]), color: 0x2a9dff, transparent: true, opacity: 0.55, blending: THREE.AdditiveBlending, depthWrite: false, depthTest: false }));
+  const glow = new THREE.Mesh(new THREE.PlaneGeometry(1, 0.9), new THREE.MeshBasicMaterial({ map: softTex([[0, "rgba(0, 0, 0, 0)"], [0.5, "rgba(255, 255, 255, 1)"], [1, "rgba(0, 0, 0, 0)"]]), color: 0x2a9dff, transparent: true, opacity: 0.55, blending: THREE.AdditiveBlending, depthWrite: false, depthTest: false }));
   glow.renderOrder = 3; lineGroup.add(glow);
   const ticks = new THREE.InstancedMesh(new THREE.BoxGeometry(0.045, 1, 0.045), barMat, MAXTICK); ticks.renderOrder = 4; lineGroup.add(ticks);
   const pylonGeo = new THREE.ConeGeometry(0.12, 0.45, 8), pylonL = new THREE.Mesh(pylonGeo, barMat), pylonR = new THREE.Mesh(pylonGeo, barMat);

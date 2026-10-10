@@ -79,6 +79,14 @@ export class LabelLayer {
     }
     return { texts, clipped };
   }
+  /** theme colours → CSS variables on the layer (numbers in, so no colour literal lives in CSS) */
+  colors(c: { ink: number; you: number; good: number; look: number; q1: number; q2: number; pill: number; pillAlpha: number }): void {
+    const hex = (n: number) => "#" + (n >>> 0).toString(16).padStart(6, "0").slice(-6);
+    const rgb = (n: number) => `${(n >> 16) & 255}, ${(n >> 8) & 255}, ${n & 255}`;
+    const st = this.el.style;
+    for (const k of ["ink", "you", "good", "look", "q1", "q2"] as const) st.setProperty(`--c3-${k}`, hex(c[k]));
+    st.setProperty("--c3-pill", `rgba(${rgb(c.pill)}, ${Math.max(0, Math.min(1, c.pillAlpha))})`);
+  }
   /** the rect of a label (the harness checks where a number sits) */
   rect(id: string): { x: number; y: number; w: number; h: number } | null { const L = this.live.get(id); return L && L.on ? { x: L.x, y: L.y, w: L.w, h: L.h } : null; }
   clear(): void { for (const L of this.live.values()) L.el.remove(); this.live.clear(); }

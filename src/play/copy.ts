@@ -61,23 +61,7 @@ export const COPY = {
   "line.smaller": L("{v} chhota", "{v} is smaller", "{v} छोटा"),
   "line.gap": L("{g} ka farak", "off by {g}", "{g} का अंतर"),
   "line.gapAbout": L("lagbhag {g} ka farak", "about {g} off", "लगभग {g} का अंतर"),
-  // the play music toggle (O-G2)
-  "music.on": L("Music chalao", "Music on", "संगीत चालू"),
-  "music.off": L("Music band", "Music off", "संगीत बंद"),
-  // Antariksh (E1, a 3D view over the Nishana law). Targets are never alive (O-G4): mines, beacons, comets. The verb is
-  // "daago / fire" or, by the parent's switch, "scan" (words and sound only)
-  "ant.fire": L("Daago", "Fire", "दागो"),
-  "ant.scan": L("Scan karo", "Scan", "स्कैन करो"),
-  "ant.go": L("Chalo", "Go", "चलो"),
-  "ant.drag": L("Kahin bhi kheencho, nishana lagao", "Drag anywhere to aim", "कहीं भी खींचो, निशाना लगाओ"),
-  "ant.goal.mine-sweep": L("{v} pe chhupi mine dhoondo", "Find the hidden mine at {v}", "{v} पर छिपी माइन ढूँढो"),
-  "ant.goal.beacon-rescue": L("{v} pe chhupa beacon dhoondo", "Find the hidden beacon at {v}", "{v} पर छिपा बीकन ढूँढो"),
-  "ant.goal.comet-catch": L("{v} pe chhupa comet dhoondo", "Find the hidden comet at {v}", "{v} पर छिपा धूमकेतु ढूँढो"),
-  "ant.goal.cmp": L("Dono ko line par dhoondo", "Find both on the line", "दोनों को रेखा पर ढूँढो"),
-  "ant.goal.cmp2": L("Chhote wale ke gate mein udo", "Fly into the smaller one's gate", "छोटे वाले के गेट में उड़ो"),
-  "ant.goal.round2": L("Zyada paas wale {t} ke gate mein udo", "Fly into the gate of the nearer {t}", "ज़्यादा पास वाले {t} के गेट में उड़ो"),
-  "ant.goal.doors": L("Agla sector chuno: gate mein udo", "Pick the next sector: fly into a gate", "अगला सेक्टर चुनो: गेट में उड़ो"),
-  "ant.same": L("barabar", "same", "बराबर"),
+
   // lab
   "lab.goal.predict": L("Pehle socho: kis {noun} mein zyada?", "Think first: which {noun} gets more?", "पहले सोचो: किस {noun} में ज़्यादा?"),
   "lab.goal.predict.less": L("Pehle socho: kaunsa pehle?", "Think first: which one first?", "पहले सोचो: कौन-सा पहले?"),

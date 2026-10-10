@@ -16,6 +16,7 @@ import type { ControlSpec, FamilyView, Readout } from "./core/viewkit.ts";
 import { ART } from "./core/styles.ts";
 import { sound } from "./core/sound.ts";
 import { say } from "./copy.ts";
+import { word } from "./engines/words.ts";
 import { parseVoice, pressesFor, type VoiceIntent } from "./core/voice.ts";
 import { PlayMap } from "./world/PlayMap.tsx";
 import { engineFor } from "./engines/registry.ts";
@@ -275,7 +276,7 @@ export function PlayStage(props: PlayStageProps) {
       <div className="pl-world" ref={worldRef} data-testid="play-world">
         {render.kind === "wait" && <div className="c3-warp" aria-hidden="true" />}
         {render.kind === "3d" && spec && spec.musicMood !== "off" && (
-          <button type="button" className="c3-music" data-testid="play-music" aria-pressed={music === "on"} aria-label={say(lang, music === "on" ? "music.off" : "music.on")}
+          <button type="button" className="c3-music" data-testid="play-music" aria-pressed={music === "on"} aria-label={word(lang, music === "on" ? "music.off" : "music.on")}
             onClick={() => { const next = music === "on" ? "off" : "on"; setMusic(next); setMusicPref(next); const st = stageRef.current; if (st && "core" in st) { const b = (st as Stage3DHandle).bus; b.musicAllowed = next === "on"; b.unlock(); b.music(next === "on" ? spec.musicMood : "off"); } }}>{music === "on" ? "♪" : "♪̸"}</button>
         )}
       </div>

@@ -1,0 +1,81 @@
+{
+ "nodes": [
+  {
+   "id": "dc-r4g1-core3d-contract",
+   "kind": "decision",
+   "title": "2026-10-10 G1: real-game engines implement core3d@1 (docs/design/round4/build/games-core/CORE-API.md, src/play/engines/core3d/api.ts): an engine is a VIEW over a family law (acts only through PlayController.dispatch; the server replays and grades), mounted by PlayStage at the real box, with the round-3 2D view of the same law as the board twin and low-tier fallback holding the SAME controller (a context loss keeps the level and every act); DOM labels over WebGL with audited floors; a ratcheting frame governor; procedural audio with a voice duck; stable control ids so the closed voice grammar works unchanged; a cause-traced progress store for the economy lint. Reverse if: an engine needs state the law cannot express (then extend the law, not the engine), or the 2D fallback swap loses an act on a real phone.",
+   "at": "2026-10-10"
+  },
+  {
+   "id": "dc-r4g1-rules-split",
+   "kind": "decision",
+   "title": "2026-10-10 G1 S0.3: play coverage RULES/ACTS live one file per family in server/play/tools/rules/<family>.mjs; rules/index.mjs fixes the admission order (the four round-3 families first, then any further file alphabetically, auto-discovered) so a lane adds a family without editing a shared file; reaction lines may also live in data/play/reactions/<id>.json (family or engine blocks; a duplicate id throws). Measured: build-coverage --check and data/play/coverage.json byte-identical before/after; play tests 180/180 before/after. Reverse if: auto-discovery admits a stray file (then switch to an explicit list hand-merged by main).",
+   "at": "2026-10-10"
+  },
+  {
+   "id": "dc-r4g1-antariksh-law-mapping",
+   "kind": "decision",
+   "title": "2026-10-10 G1: E1 Antariksh renders the EXISTING Nishana law (line.logic.ts), not the prototype's law.js: fire = place (+ commit when every value is placed); compare = fire at both, then fly into the smaller value's gate (order act; gates at the values' true places, pushed apart around the midpoint when close, left-to-right order kept); rounding = land the value, then fly into the nearer landmark's gate (round act); voice 'yahan' / 'upar' / 'neeche' reach the same acts through voiceOnly controls; doors are warp gates and the next level arrives in the same world (relevel). Targets are never alive (mine / beacon / comet, O-G4). Reverse if: C5 judges call the gate commit a pick from a list, or children fly the gate by elimination without reading the line (first-try gate accuracy near 50% in the pilot).",
+   "at": "2026-10-10"
+  },
+  {
+   "id": "dc-r4g1-dress-delta-route",
+   "kind": "decision",
+   "title": "2026-10-10 G1: the model's dress arrives through POST /api/play/dress (server/play/dress.js), asked once per play segment by PlaySession at mount, not on the lesson turn path (the turn files are other streams'): one taxila-fast call, strict closed-enum schema, validated field by field (non-enum dropped, never repaired), 1.9 s deadline from the request (late / 429 / error / TAXILA_PLAY_DRESS=off = base dress), worn only if the child has not acted yet; the story wrapper then stays for the segment while the theme rotates per level. The model sees closed interest tags and telegraphic state, never the child's name or words. Reverse if: the dress lands after the first act on most real sessions (then move the call to the turn's nomination, a patch to stream 3 / 4A), or the owner drops model dress.",
+   "at": "2026-10-10"
+  },
+  {
+   "id": "dc-r4g1-focusmal-from-lesson",
+   "kind": "decision",
+   "title": "2026-10-10 G1: focusMal = the misconception the lesson just saw, read by server/play/start.js (no turn-path patch): the last kt_evidence row of this lesson classified to one of the entry's mapped kit misconceptions, else the Director's last reteach_attempts trigger misconception_seen / misconception_confirmed (migration 023); the picker adds +2.5 to levels that discriminate it and drops the focus when none can; a level's own first-decision misconception becomes the next level's focus (nextFocus, applied only at the door so the current level regenerates identically). Reverse if: focus levels show no higher discrimination rate than unfocused ones in the pilot.",
+   "at": "2026-10-10"
+  },
+  {
+   "id": "rj-r4g1-novelty-levelid-vs-signature",
+   "kind": "rejection",
+   "title": "2026-10-10 G1: play picker novelty never fired on the server: the session kept recent LEVEL IDS while the picker compared candidate SIGNATURES (and recent was appended after the level was generated). Found when the Antariksh door served 1/3 again on three seeds. Fixed: levels carry sig; nextBody (levels.js) adds the played level's sig BEFORE generating the next (token regeneration stays identical); one rule for the door preview and /api/play/next. Also: a teekha door with no harder candidate at the fade now goes one fade up instead of not existing.",
+   "at": "2026-10-10"
+  },
+  {
+   "id": "ms-r4g1-rules-split-identical-2026-10-10",
+   "kind": "measurement",
+   "title": "S0.3 split identical (n = 1 build + 180 play tests, node --test tests/play-*.test.mjs tests/round3-fix.test.mjs before and after, 2026-10-10): coverage.json sha256 identical, build-coverage --check output byte-identical, 180/180 pass before and after (only a timing diagnostic line differs).",
+   "at": "2026-10-10"
+  },
+  {
+   "id": "ms-r4g1-economy-lint-2026-10-10",
+   "kind": "measurement",
+   "title": "Economy lint in npm test (tests/r4-games-core-economy.test.mjs, 2026-10-10): 8/8 pass on src/play/engines/** and every family law; negative control: one planted file with Math.random, Date.now, localStorage, a setTimeout dispatching a commit, an untraced progress write and 'streak bonus' trips all six static rules (6/6 fail as they must); runtime: every Nishana entry x 3 seeds x (solve + every mal-rule + junk) grades identically with Math.random / Date.now / performance.now booby-trapped and act times scrambled (>= 100 runs).",
+   "at": "2026-10-10"
+  },
+  {
+   "id": "ms-r4g1-engine-browser-2026-10-10",
+   "kind": "measurement",
+   "title": "Antariksh in a browser (tests/r4-games-core-engine.test.mjs, headless Chromium 1194 aliased, SwiftShader software GL, 360x800, 2026-10-10): 7/7: place, compare and round each solved by taps on the world + the commit control with every progress write traced to an act, a moment or the level start; a mal-rule shot decloaks and draws the gap (no verdict word); voice 'yahan' presses commit via voice; doors drawn as warp gates (no DOM doors) re-level the same 3D world (1 canvas); a lost WebGL context falls to the 2D board twin with the same acts. Correctness only; no frame-rate claim.",
+   "at": "2026-10-10"
+  },
+  {
+   "id": "ms-r4g1-bundle-2026-10-10",
+   "kind": "measurement",
+   "title": "Antariksh bundle (vite build of the play dev harness, brotli q11 via node zlib, 2026-10-10): engine chunk 8.9 KB br, 3D stage incl. three.js 68.1 + 40.8 KB br (on demand: a 2D level and a 2D-tier device download neither); the play chunk fell from 231 KB to 127 KB br once the stage became a dynamic import.",
+   "at": "2026-10-10"
+  },
+  {
+   "id": "o-r4g1-real-phone-fps",
+   "kind": "open",
+   "title": "Antariksh frame rate on a real Rs 10k phone is NOT measured (needs the owner's device, O-R4); every fps number from G1 is a SwiftShader proxy in headless Chromium on a shared container.",
+   "at": "2026-10-10"
+  }
+ ],
+ "edges": [
+  { "src": "dc-r4g1-core3d-contract", "rel": "part_of", "dst": "dc-r4-games-o-g" },
+  { "src": "dc-r4g1-core3d-contract", "rel": "inherits", "dst": "r4g-engines-are-views-over-family-laws" },
+  { "src": "dc-r4g1-antariksh-law-mapping", "rel": "part_of", "dst": "r4g-round4-antariksh-first" },
+  { "src": "dc-r4g1-dress-delta-route", "rel": "part_of", "dst": "dc-r4-games-o-g" },
+  { "src": "dc-r4g1-focusmal-from-lesson", "rel": "part_of", "dst": "r4g-round4-antariksh-first" },
+  { "src": "ms-r4g1-economy-lint-2026-10-10", "rel": "measured_by", "dst": "dc-r4-gamification-b" },
+  { "src": "ms-r4g1-rules-split-identical-2026-10-10", "rel": "measured_by", "dst": "dc-r4g1-rules-split" },
+  { "src": "ms-r4g1-engine-browser-2026-10-10", "rel": "measured_by", "dst": "dc-r4g1-antariksh-law-mapping" },
+  { "src": "o-r4g1-real-phone-fps", "rel": "blocks", "dst": "r4g-round4-antariksh-first" }
+ ]
+}

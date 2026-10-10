@@ -21,7 +21,7 @@ import { reactionFor } from "./react.js";
 import { mapStateFrom, worldFamily, FAMILIES } from "./world.js";
 import { signEvidence, signSeam } from "./evidence.js";
 import { playFactsRow } from "../../shared/play.ts";
-import { baseSpec, dressSpecFor } from "./dress.js";
+import { baseSpec, dressSpecFor, withVerb } from "./dress.js";
 import { engineFor } from "../../src/play/engines/registry.ts";
 
 const bad = (msg) => new HttpError(400, msg);
@@ -57,7 +57,7 @@ export const routes = {
     let mapState = () => ({ shape: "not_started", recheck: false });
     try { const { loadTruth, MAP_SHAPE } = await import("../reports/truth.js"); mapState = mapStateFrom(await loadTruth(child), MAP_SHAPE); } catch { /* ahead */ }
     const world = worldFamily({ family: r.entry.family, classLevel: r.session.classLevel, mapState, hereTopic: r.entry.topicId });
-    send(res, 200, { sessionId: r.sessionId, level: r.level, art: r.art, bank: [], world, dress: baseSpec(r.session, r.level, child)?.spec ?? null });
+    send(res, 200, { sessionId: r.sessionId, level: r.level, art: r.art, bank: [], world, dress: baseSpec(r.session, r.level, await withVerb(child, dbq))?.spec ?? null });
   },
 
   /** the level a session token points at (the Studio renderer mounts a PlayArtifact from its sessionId) */
@@ -70,7 +70,7 @@ export const routes = {
     if (!entry) throw bad("stale_session");
     const level = currentLevel(s, entry);
     if (!level) return send(res, 409, { error: "no_level" });
-    send(res, 200, { sessionId: b.sessionId, level, art: artFor(s, entry), dress: baseSpec(s, level, child)?.spec ?? null });
+    send(res, 200, { sessionId: b.sessionId, level, art: artFor(s, entry), dress: baseSpec(s, level, await withVerb(child, dbq))?.spec ?? null });
   },
 
   "POST /api/play/act": async (req, res, body) => {
@@ -120,7 +120,7 @@ export const routes = {
     if (!level) return send(res, 409, { error: "no_level" });
     const art = artFor(next, entry);
     next.lastArt = art.art;
-    send(res, 200, { sessionId: sessionOut(next), level, art, bank: [], dress: baseSpec(next, level, child)?.spec ?? null });
+    send(res, 200, { sessionId: sessionOut(next), level, art, bank: [], dress: baseSpec(next, level, await withVerb(child, dbq))?.spec ?? null });
   },
 
   "POST /api/play/dress": async (req, res, body) => {
@@ -132,7 +132,7 @@ export const routes = {
     if (!entry) throw bad("stale_session");
     const level = currentLevel(s, entry);
     if (!level) return send(res, 409, { error: "no_level" });
-    const r = await dressSpecFor({ s, level, child, topicTitle: entry.title, childMusicOn: b.music === "on" });
+    const r = await dressSpecFor({ s, level, child: await withVerb(child, dbq), topicTitle: entry.title, childMusicOn: b.music === "on" });
     if (!r) return send(res, 404, { error: "no_engine" });
     send(res, 200, { dress: r.spec, source: r.source, ms: r.ms });
   },

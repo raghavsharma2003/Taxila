@@ -25,9 +25,15 @@ export function interestTags(interests) {
   return Object.entries(INTEREST_TAGS).filter(([, re]) => re.test(text)).map(([k]) => k).slice(0, 4);
 }
 
-/** The parent's wording switch (O-G4): a per-child setting when the column exists (patch request 02), else the operator
- *  default TAXILA_PLAY_VERB=scan|fire (default fire). */
+/** The parent's wording switch (O-G4): the child's parent control when set (child.play_verb, read by readVerb from
+ *  child_controls; patch request 02 adds the column), else the operator default TAXILA_PLAY_VERB=scan|fire (default fire). */
 export const verbFor = (child, env = process.env) => (child?.play_verb === "scan" || child?.play_verb === "fire" ? child.play_verb : env.TAXILA_PLAY_VERB === "scan" ? "scan" : "fire");
+/** The child row with its parent's play verb attached (a missing column or row = the operator default). Never throws. */
+export async function withVerb(child, q) {
+  if (!q || !child?.id) return child;
+  try { const [r] = await q("select play_verb from child_controls where child_id = $1", [child.id]); return r?.play_verb ? { ...child, play_verb: r.play_verb } : child; }
+  catch { return child; }
+}
 
 /** The base DressedSpec for a session's current level (no model). null when no 3D engine renders this level. */
 export function baseSpec(s, level, child, { childMusicOn = false } = {}) {

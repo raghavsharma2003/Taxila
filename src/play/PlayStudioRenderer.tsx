@@ -19,6 +19,7 @@ import { playApi } from "./client.ts";
 import { MIN_BOX, PLAY_HEARD } from "./core/box.ts";
 import { playLangOf } from "./lessonLang.ts";
 import type { DressedSpec } from "./engines/core3d/api.ts";
+import { prefetchEngine } from "./engines/registry.ts";
 
 export default function PlayStudioRenderer(props: ArtifactRendererProps) {
   const art = (props.artifact as unknown as PlayArtifact).play;
@@ -28,6 +29,8 @@ export default function PlayStudioRenderer(props: ArtifactRendererProps) {
   useEffect(() => {
     if (small) { props.onEvent({ type: "error", reason: "runtime", message: "layout" }); return; }
     const ac = new AbortController();
+    // the engine chunk loads while the level is fetched (a 3D-capable device then mounts without a second wait)
+    prefetchEngine(art.family, art.mode);
     playApi.level({ sessionId: art.sessionId }, ac.signal).then((r) => {
       if (!r) { props.onEvent({ type: "error", reason: "unavailable", message: "play level" }); return; }
       setState({ sid: r.sessionId, level: r.level, art: r.art.art, dress: r.dress ?? null });

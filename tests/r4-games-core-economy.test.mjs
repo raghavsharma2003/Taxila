@@ -75,7 +75,10 @@ test("economy lint 5 · the progress store refuses an untraced write and keeps t
 test("economy lint 6 · no economy words in engine copy or engine string literals", () => {
   const WORDS = /\b(points?|coins?|gems?|streaks?|lives|life left|rewards?|leaderboard|rank(ing)?|xp|level up|bonus|jackpot|loot|unlock(ed)?|hurry|jaldi|time'?s up|game over)\b/i;
   const bad = [];
-  for (const [k, line] of Object.entries(COPY)) if (k.startsWith("ant.") || k.startsWith("music.")) for (const v of Object.values(line)) if (WORDS.test(v)) bad.push(`${k}: ${v}`);
+  const EW = JSON.parse(readFileSync(join(ROOT, "data/play/engine-words.json"), "utf8")).words;
+  assert.ok(Object.keys(EW).length >= 10, "engine words file read");
+  for (const [k, line] of Object.entries(EW)) for (const v of Object.values(line)) if (WORDS.test(v)) bad.push(`${k}: ${v}`);
+  void COPY;
   for (const f of ENGINES) for (const [i, l] of code(f).entries()) for (const m of l.matchAll(/(["'`])((?:\\.|(?!\1)[^\\])*)\1/g)) if (m[2].length >= 3 && WORDS.test(m[2])) bad.push(`${rel(f)}:${i + 1}: ${m[2]}`);
   assert.deepEqual(bad, []);
 });

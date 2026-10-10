@@ -96,6 +96,7 @@ export function mountStage3D(host: HTMLElement, create: Create, deps: EngineDeps
       return (2 * d * Math.tan(THREE.MathUtils.degToRad(cam.fov / 2))) / Math.max(1, h);
     },
     label: (spec) => labels.add(spec),
+    labelColors: (c) => labels.colors(c),
     target(id, x, y, tw, th) { targets.push({ id, x, y, w: tw, h: th }); },
     audio: bus,
     hitstop(ms) { if (!reduced) hitstop = Math.max(hitstop, Math.min(80, ms) / 1000); },

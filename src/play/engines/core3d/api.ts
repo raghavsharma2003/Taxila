@@ -194,6 +194,9 @@ export interface Core3D {
   /** world units per CSS px at depth `z` on the current camera (the layout solve's one primitive) */
   worldPerPx(z: number): number;
   label(spec: LabelSpec): LabelHandle;
+  /** the label palette of the engine's theme (art-pack colours as numbers, 0xRRGGBB): applied to every label's pill and
+   *  roles as CSS variables, so colours live with the theme, never as literals in CSS */
+  labelColors(c: { ink: number; you: number; good: number; look: number; q1: number; q2: number; pill: number; pillAlpha: number }): void;
   /** a touch region for this frame, CSS px (drag-anywhere engines register the whole world once per layout) */
   target(id: string, x: number, y: number, w: number, h: number): void;
   audio: AudioBus;

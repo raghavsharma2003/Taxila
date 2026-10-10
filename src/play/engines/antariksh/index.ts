@@ -18,6 +18,7 @@ import { lineHelpers as H } from "../../families/nishana/line.logic.ts";
 import type { PlayController } from "../../core/controller.ts";
 import type { ControlSpec, Readout } from "../../core/viewkit.ts";
 import { say } from "../../copy.ts";
+import { word, type WordKey } from "../words.ts";
 import type { Core3D, DressedSpec, EngineDeps, EngineView, LabelHandle } from "../core3d/api.ts";
 import { buildWorld, CAM, LOOK, LINE_Y, LINE_Z, SHIP_Y, SHIP_Z, THEMES, VOLT, type TargetObj, type Theme, type Wrapper } from "./world.ts";
 
@@ -133,6 +134,7 @@ export function create(core: Core3D, depsIn: EngineDeps): EngineView {
   function applyTheme(): void {
     T = THEMES[spec.dress.theme] ?? THEMES["neela-nebula"];
     W.theme(T, level.seed);
+    core.labelColors(T.labels);
     for (const g of W.gates) { (g.tor.material as THREE.MeshBasicMaterial).color.setHex(T.garam); (g.disc.material as THREE.MeshBasicMaterial).color.setHex(T.garam); }
   }
 
@@ -149,7 +151,7 @@ export function create(core: Core3D, depsIn: EngineDeps): EngineView {
     hideGates();
     core.progress.set("cur", 0, { level: "start" });
     core.audio.music(spec.musicMood);
-    L.hint.set({ text: say(lang, "ant.drag"), lang: tl(), hidden: false });
+    L.hint.set({ text: word(lang, "ant.drag"), lang: tl(), hidden: false });
     if (boxW > 1) layout({ w: boxW, h: boxH });
     syncFromState();
     setPhase(phase === "warp" ? "warp" : "aim");
@@ -453,11 +455,11 @@ export function create(core: Core3D, depsIn: EngineDeps): EngineView {
   // ── chrome
   function goal(): string {
     const s = st();
-    if (phase === "doors") return say(lang, "ant.goal.doors");
+    if (phase === "doors") return word(lang, "ant.goal.doors");
     if (s.done) return "";
-    if (p.goal === "round") return s.landed ? say(lang, "ant.goal.round2", { t: say(lang, p.to && p.to >= 10000 ? "line.u10000" : p.to && p.to >= 1000 ? "line.u1000" : p.to && p.to >= 100 ? "line.u100" : "line.u10") }) : say(lang, `ant.goal.${wrapper}`, { v: p.values[0].text });
-    if (p.goal === "compare") return s.landed ? say(lang, "ant.goal.cmp2") : say(lang, "ant.goal.cmp");
-    return say(lang, `ant.goal.${wrapper}`, { v: p.values[0].text });
+    if (p.goal === "round") return s.landed ? word(lang, "ant.goal.round2", { t: say(lang, p.to && p.to >= 10000 ? "line.u10000" : p.to && p.to >= 1000 ? "line.u1000" : p.to && p.to >= 100 ? "line.u100" : "line.u10") }) : word(lang, `ant.goal.${wrapper}` as WordKey, { v: p.values[0].text });
+    if (p.goal === "compare") return s.landed ? word(lang, "ant.goal.cmp2") : word(lang, "ant.goal.cmp");
+    return word(lang, `ant.goal.${wrapper}` as WordKey, { v: p.values[0].text });
   }
   function readouts(): Readout[] {
     if (p.goal !== "compare") return [];
@@ -468,7 +470,7 @@ export function create(core: Core3D, depsIn: EngineDeps): EngineView {
     if (phase === "warp") return out;
     if (phase === "doors") {
       out.push({ id: "nudge-left", label: "◀", aria: "steer left", kind: "pad", group: "go", onPress: () => nudge(-1) });
-      out.push({ id: "commit", label: say(lang, "ant.go"), kind: "primary", group: "go", you: true, onPress: () => fire() });
+      out.push({ id: "commit", label: word(lang, "ant.go"), kind: "primary", group: "go", you: true, onPress: () => fire() });
       out.push({ id: "nudge-right", label: "▶", aria: "steer right", kind: "pad", group: "go", onPress: () => nudge(1) });
       return out;
     }
@@ -476,14 +478,14 @@ export function create(core: Core3D, depsIn: EngineDeps): EngineView {
     const busyNow = phase === "flight" || phase === "reveal";
     out.push({ id: "nudge-left", label: "◀", aria: "steer left", kind: "pad", group: "go", disabled: busyNow, onPress: () => nudge(-1) });
     if (gateMode === "order") {
-      out.push({ id: "commit", label: say(lang, "ant.go"), kind: "primary", group: "go", you: true, disabled: busyNow, onPress: () => fire() });
+      out.push({ id: "commit", label: word(lang, "ant.go"), kind: "primary", group: "go", you: true, disabled: busyNow, onPress: () => fire() });
       for (const i of [0, 1]) out.push({ id: `order-${i}`, label: say(lang, "line.smaller", { v: p.values[i].text }), kind: "choice", group: "order", voiceOnly: true, onPress: () => orderAct(i) });
-      out.push({ id: "order-same", label: say(lang, "ant.same"), kind: "choice", group: "order", voiceOnly: true, onPress: () => orderAct(-1) });
+      out.push({ id: "order-same", label: word(lang, "ant.same"), kind: "choice", group: "order", voiceOnly: true, onPress: () => orderAct(-1) });
     } else if (gateMode === "round") {
-      out.push({ id: "commit", label: say(lang, "ant.go"), kind: "primary", group: "go", you: true, disabled: busyNow, onPress: () => fire() });
+      out.push({ id: "commit", label: word(lang, "ant.go"), kind: "primary", group: "go", you: true, disabled: busyNow, onPress: () => fire() });
       for (const end of [p.lo, p.hi]) out.push({ id: `round-${end}`, label: `${end === p.lo ? "↓" : "↑"} ${H.fmtWhole(end)}`, kind: "choice", group: "order", voiceOnly: true, onPress: () => roundAct(end) });
     } else {
-      out.push({ id: "commit", label: say(lang, spec.verb === "scan" ? "ant.scan" : "ant.fire"), kind: "primary", group: "go", you: true, disabled: busyNow, onPress: () => fire() });
+      out.push({ id: "commit", label: word(lang, spec.verb === "scan" ? "ant.scan" : "ant.fire"), kind: "primary", group: "go", you: true, disabled: busyNow, onPress: () => fire() });
     }
     out.push({ id: "nudge-right", label: "▶", aria: "steer right", kind: "pad", group: "go", disabled: busyNow, onPress: () => nudge(1) });
     if (s.marks.some((m) => m !== null) || s.commits > 0) out.push({ id: "undo", label: say(lang, "undo"), kind: "secondary", group: "undo", disabled: busyNow, onPress: () => act({ kind: "undo" }) });
@@ -509,7 +511,7 @@ export function create(core: Core3D, depsIn: EngineDeps): EngineView {
   function redress(s: DressedSpec): boolean {
     if (ctl.acts.length || phase !== "aim") return false;
     spec = s; lang = s.dress.lang; applyTheme(); wrapper = s.dress.wrapper as Wrapper; makeTargets(); core.audio.music(s.musicMood);
-    L.hint.set({ text: say(lang, "ant.drag"), lang: tl() }); changed();
+    L.hint.set({ text: word(lang, "ant.drag"), lang: tl() }); changed();
     if (s.dress.teacherMove === "ghost-first") demo();
     return true;
   }
