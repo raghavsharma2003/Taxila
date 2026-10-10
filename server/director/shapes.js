@@ -490,7 +490,8 @@ export const MUST_NOTE = Object.freeze({
   // that is not there is never mentioned; game_request 4/8, animation 2/5)
   visual_game: "start a game now, in one line: if one is on the screen, how to play it; if not, a quick spoken game on this idea (one rule, then their first turn); never say a game is not ready or not available",
   visual_animation: "never say there is no video or animation: if something on the screen moves, point at what moves; if not, show the movement in words, step by step, as it happens",
-  visual_diagram: "never say there is no picture: if it is on the screen, point at what to look at; if not, paint it in words with things they can see at home",
+  // merged-tree owner-5 (whiteboard): "Whiteboard par 120 tickets ... samajhiye" named the board but never sent the eyes to it
+  visual_diagram: "never say there is no picture, never draw with characters; if the screen has it, first send their eyes there (dekho / look) and say what to see; if not, paint it in words",
   // the hook after a no (out_of_bounds reengages 8/12: the decline came, the hook was the bare question again)
   // battery arm 3 (pooled, out_of_bounds 11 -> 7 of 23): "after the short no" read as curt ("lesson ke baad bhi nahi", "woh
   // baat hum yahan nahi karenge"; the judges' declines_warm). The no stays kind; the hook leads into the question
