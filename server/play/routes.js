@@ -14,7 +14,7 @@
 import { readJson, send, HttpError } from "../http.js";
 import { requireChild } from "../auth.js";
 import { signSession, verifySession } from "./session.js";
-import { artFor, coverage, currentLevel, entryByKey, entryFor, nextBody } from "./levels.js";
+import { artFor, coverage, currentLevel, entryByKey, entryFor, nextBody, play3dOff } from "./levels.js";
 import { startSession } from "./start.js";
 import { gradeActs, lessonEvidence } from "./grade.js";
 import { reactionFor } from "./react.js";
@@ -62,7 +62,7 @@ export const routes = {
     ]);
     if (truth) try { mapState = mapStateFrom(truth.t, truth.m.MAP_SHAPE); } catch { /* ahead */ }
     const world = worldFamily({ family: r.entry.family, classLevel: r.session.classLevel, mapState, hereTopic: r.entry.topicId });
-    send(res, 200, { sessionId: r.sessionId, level: r.level, art: r.art, bank: [], world, dress: baseSpec(r.session, r.level, vChild)?.spec ?? null });
+    send(res, 200, { sessionId: r.sessionId, level: r.level, art: r.art, bank: [], world, dress: baseSpec(r.session, r.level, vChild)?.spec ?? null, ...(play3dOff() ? { render: "2d" } : {}) });
   },
 
   /** the level a session token points at (the Studio renderer mounts a PlayArtifact from its sessionId) */
@@ -75,7 +75,7 @@ export const routes = {
     if (!entry) throw bad("stale_session");
     const level = currentLevel(s, entry);
     if (!level) return send(res, 409, { error: "no_level" });
-    send(res, 200, { sessionId: b.sessionId, level, art: artFor(s, entry), dress: baseSpec(s, level, await withVerb(child, dbq))?.spec ?? null });
+    send(res, 200, { sessionId: b.sessionId, level, art: artFor(s, entry), dress: baseSpec(s, level, await withVerb(child, dbq))?.spec ?? null, ...(play3dOff() ? { render: "2d" } : {}) });
   },
 
   "POST /api/play/act": async (req, res, body) => {
@@ -125,7 +125,7 @@ export const routes = {
     if (!level) return send(res, 409, { error: "no_level" });
     const art = artFor(next, entry);
     next.lastArt = art.art;
-    send(res, 200, { sessionId: sessionOut(next), level, art, bank: [], dress: baseSpec(next, level, await withVerb(child, dbq))?.spec ?? null });
+    send(res, 200, { sessionId: sessionOut(next), level, art, bank: [], dress: baseSpec(next, level, await withVerb(child, dbq))?.spec ?? null, ...(play3dOff() ? { render: "2d" } : {}) });
   },
 
   "POST /api/play/dress": async (req, res, body) => {

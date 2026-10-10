@@ -152,3 +152,24 @@ test("C6 · engine lines replace the family's 2D words only when the device repo
   assert.ok(with2d.some((t) => /jhanda|rehta/i.test(t)), JSON.stringify(with2d));
   assert.ok(reactionFor(ms, { lang: "hinglish", level, engine: "antariksh", nowS: 100 }).reaction);
 });
+
+test("kill switches: TAXILA_PLAY=off admits nothing; TAXILA_PLAY_3D=off sends no engine dress (the 2D view plays)", async () => {
+  const { entryFor: ef, hasPlay } = await import("../server/play/levels.js");
+  const before = { p: process.env.TAXILA_PLAY, d: process.env.TAXILA_PLAY_3D };
+  try {
+    process.env.TAXILA_PLAY = "off";
+    assert.equal(ef({ skillId: "c5-maths-ch02-t01-s2" }), null);
+    assert.equal(hasPlay("c5-maths-ch02-t01-s2"), false);
+    assert.equal(await startSession({ id: "c1", class_level: 5 }, { skillId: "c5-maths-ch02-t01-s2" }), null);
+    delete process.env.TAXILA_PLAY;
+    assert.ok(ef({ skillId: "c5-maths-ch02-t01-s2" }));
+    process.env.TAXILA_PLAY_3D = "off";
+    const s = sess(), level = currentLevel(s, entry);
+    assert.equal(baseSpec(s, level, child), null);
+    delete process.env.TAXILA_PLAY_3D;
+    assert.ok(baseSpec(s, level, child));
+  } finally {
+    if (before.p === undefined) delete process.env.TAXILA_PLAY; else process.env.TAXILA_PLAY = before.p;
+    if (before.d === undefined) delete process.env.TAXILA_PLAY_3D; else process.env.TAXILA_PLAY_3D = before.d;
+  }
+});

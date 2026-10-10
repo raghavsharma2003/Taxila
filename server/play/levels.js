@@ -21,7 +21,14 @@ export function setCoverage(c) { COVERAGE = c; }
  * The coverage entry for a request: a skill (the Director's admission) or a topic; `goal` narrows when a topic has several.
  * The first entry in file order wins (RULES order puts the core mechanic of a topic first).
  */
+/** The play kill switch (BUILD-PLAN §5 release flags): TAXILA_PLAY=off admits nothing, so no play piece is built anywhere
+ *  (asked, at a beat, /api/play/start) and the Director's admission says no; the lesson keeps its board and voice. */
+export const playOff = (env = process.env) => env.TAXILA_PLAY === "off";
+/** The 3D-only kill switch: TAXILA_PLAY_3D=off serves every level to the round-3 2D view (a rollback of the engines alone). */
+export const play3dOff = (env = process.env) => env.TAXILA_PLAY_3D === "off";
+
 export function entryFor({ skillId = null, topicId = null, family = null, goal = null } = {}, cov = coverage()) {
+  if (playOff()) return null;
   const ok = (e) => (!family || e.family === family) && (!goal || e.goal === goal);
   // round 3 fix (adversarial B1): admission is by SKILL. A lesson that names its skill gets only a game whose act exercises
   // that skill (coverage ACTS), never the topic's other game: "game khelna hai" in an addition lesson served the
@@ -34,7 +41,7 @@ export function entryFor({ skillId = null, topicId = null, family = null, goal =
 export const entryKey = (e) => `${e.topicId}|${e.family}/${e.mode}|${e.goal}`;
 export function entryByKey(key, cov = coverage()) { return cov.entries.find((e) => entryKey(e) === key) ?? null; }
 /** Is there a play game for this skill? (the Director's admission check, patched in by docs/design/round3/play/patches) */
-export const hasPlay = (skillId, cov = coverage()) => cov.entries.some((e) => e.skillIds.includes(skillId));
+export const hasPlay = (skillId, cov = coverage()) => !playOff() && cov.entries.some((e) => e.skillIds.includes(skillId));
 
 /** The picker's request from a session body (the same body always yields the same levels: the picker is pure). */
 export function genRequest(s, entry) {

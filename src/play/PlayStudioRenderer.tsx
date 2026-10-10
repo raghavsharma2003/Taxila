@@ -32,7 +32,7 @@ const certForce = (): CertForce | null => {
 
 export default function PlayStudioRenderer(props: ArtifactRendererProps) {
   const art = (props.artifact as unknown as PlayArtifact).play;
-  const [state, setState] = useState<{ sid: string; level: PlayLevel; art: ArtId; dress: DressedSpec | null } | null>(null);
+  const [state, setState] = useState<{ sid: string; level: PlayLevel; art: ArtId; dress: DressedSpec | null; render2d: boolean } | null>(null);
   const [heard, setHeard] = useState<{ id: number; text: string } | null>(null);
   const small = props.px.w < MIN_BOX.w || props.px.h < MIN_BOX.h;
   useEffect(() => {
@@ -42,7 +42,8 @@ export default function PlayStudioRenderer(props: ArtifactRendererProps) {
     prefetchEngine(art.family, art.mode);
     playApi.level({ sessionId: art.sessionId }, ac.signal).then((r) => {
       if (!r) { props.onEvent({ type: "error", reason: "unavailable", message: "play level" }); return; }
-      setState({ sid: r.sessionId, level: r.level, art: r.art.art, dress: r.dress ?? null });
+      // the server's 3D kill switch (TAXILA_PLAY_3D=off) sends render: "2d": the round-3 view plays, no engine is loaded
+      setState({ sid: r.sessionId, level: r.level, art: r.art.art, dress: r.dress ?? null, render2d: r.render === "2d" });
       props.onEvent({ type: "ready" });
     });
     return () => ac.abort();
@@ -62,7 +63,7 @@ export default function PlayStudioRenderer(props: ArtifactRendererProps) {
   const forcedDress = force?.render === "3d" && force.theme && state.dress ? { ...state.dress, dress: { ...state.dress.dress, theme: force.theme, ...(force.wrapper ? { wrapper: force.wrapper as DressedSpec["dress"]["wrapper"] } : {}) } } : null;
   return (
     <div style={{ width: props.px.w, height: props.px.h, position: "relative" }} data-testid="play-studio">
-      <PlaySession sessionId={state.sid} level={state.level} art={state.art} dress={forcedDress ?? state.dress} engine={force?.render} preserveDrawing={!!force} lang={lang} classLevel={props.young ? 4 : 6} reducedMotion={props.reducedMotion} embedded heard={heard}
+      <PlaySession sessionId={state.sid} level={state.level} art={state.art} dress={forcedDress ?? state.dress} engine={force?.render ?? (state.render2d ? "2d" : undefined)} preserveDrawing={!!force} lang={lang} classLevel={props.young ? 4 : 6} reducedMotion={props.reducedMotion} embedded heard={heard}
         onActivity={(name, data) => props.onEvent({ type: "interaction", name, data })}
         onToken={(kind, token, seamKind) => props.onEvent({ type: "interaction", name: kind === "evidence" ? "play_evidence" : "play_seam", data: { token, ...(seamKind ? { seam: seamKind } : {}) } })}
         onLevelEnd={(r) => { props.onEvent({ type: "interaction", name: "play_level_end", data: { verdict: r.grade?.verdict ?? null, levelId: r.levelId } }); props.onEvent({ type: "done" }); }}

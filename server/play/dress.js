@@ -37,6 +37,7 @@ export async function withVerb(child, q) {
 
 /** The base DressedSpec for a session's current level (no model). null when no 3D engine renders this level. */
 export function baseSpec(s, level, child, { childMusicOn = false } = {}) {
+  if (process.env.TAXILA_PLAY_3D === "off") return null;
   const e = engineFor(level.family, level.mode, level.goal);
   if (!e) return null;
   const base = baseDress({ engine: e.id, key: s.key, n: s.n ?? 0, lang: s.lang, firstLevel: (s.n ?? 0) === 0 });
