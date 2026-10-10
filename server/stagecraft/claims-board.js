@@ -5,8 +5,8 @@
 // failed and her line pointed at nothing.
 //
 // Her line's own claims (server/studio/qa/semantics.js screenClaims: "N equal parts", "N groups, M in each") plus a shaded
-// count ("3 shaded", "5 mein se 3") become a template call (server/forge/explainer/templates.js: fraction-parts@1,
-// equal-groups@1); the result is hidden when her line asks for it. The caller re-gates the board against her line with the
+// count ("3 shaded", "5 mein se 3", "unmein 6 marked") become a template call (server/forge/explainer/templates.js:
+// fraction-parts@1, equal-groups@1, shade-grid@1 for "5 columns aur 3 rows" or more than 12 parts); the result is hidden when her line asks for it. The caller re-gates the board against her line with the
 // full gate (W0-W13), so a claims board that would reveal an answer or contradict her is never drawn. Pure, no model.
 import { screenClaims } from "../studio/qa/semantics.js";
 import { expand } from "../forge/explainer/templates.js";
@@ -19,8 +19,9 @@ const W = `(\\d+|${Object.keys(NUM).join("|")})`;
 /** The shaded count her line states ("3 shaded", "3 rangeen", "5 mein se 3", "3 out of 5"), or null. */
 export function shadedIn(line, parts) {
   const t = String(line ?? "").toLowerCase();
-  const m = t.match(new RegExp(`\\b${W}\\s+(?:parts?\\s+|hisse\\s+|tukde\\s+)?(?:shaded|coloured|colored|rangeen|rang\\s+bhare|bhare)\\b`))
-    ?? t.match(new RegExp(`\\b${parts}\\s+(?:mein\\s+se|me\\s+se|out\\s+of)\\s+${W}\\b`));
+  const m = t.match(new RegExp(`\\b${W}\\s+(?:parts?\\s+|hisse\\s+|tukde\\s+|boxes\\s+|cells?\\s+|squares?\\s+)?(?:shaded|coloured|colored|rangeen|rang\\s+bhare|bhare|marked)\\b`))
+    ?? t.match(new RegExp(`\\b${parts}\\s+(?:mein\\s+se|me\\s+se|out\\s+of)\\s+${W}\\b`))
+    ?? t.match(new RegExp(`\\b(?:unmein|unme|inmein|of\\s+them|of\\s+these)\\s+${W}\\s+(?:shaded|coloured|colored|rangeen|marked)\\b`));
   if (!m) return null;
   const n = num(m[1]);
   return Number.isInteger(n) && n >= 0 && n <= parts ? n : null;
@@ -36,6 +37,16 @@ export function claimsCalls(line) {
   const eachN = eachM ? num(eachM[1]) : null;
   for (const g of c.groups) if (g.each == null && eachN) g.each = eachN;
   for (const g of c.groups) if (g.each != null && g.n >= 2 && g.n <= 6 && g.each >= 1 && g.each <= 8) out.push({ template: "equal-groups@1", groups: g.n, each: g.each, hideResult: asks });
+  // a grid ("5 columns aur 3 rows"; or more than 12 equal parts, laid out as the squarest grid): its cells, the shaded
+  // count her line gives. Her line naming shaded / marked cells WITHOUT a count draws nothing (the board would show none).
+  const namesShade = /\b(shaded|coloured|colored|rangeen|marked)\b/i.test(String(line ?? ""));
+  const grids = c.grids.map((g) => ({ ...g, labels: true }));
+  for (const n of c.parts) if (n > 12 && n <= 60) { let r = Math.floor(Math.sqrt(n)); while (r > 1 && n % r) r--; if (r > 1) grids.push({ rows: r, cols: n / r, labels: false }); }
+  for (const g of grids) {
+    const shade = shadedIn(line, g.rows * g.cols);
+    if (namesShade && shade == null) continue;
+    out.push({ template: "shade-grid@1", rows: g.rows, cols: g.cols, shade: shade ?? 0, labels: g.labels, hideResult: asks });
+  }
   for (const n of c.parts) if (n >= 2 && n <= 12) {
     const shade = shadedIn(line, n);
     const food = /roti|chapati|pizza|cake|pie/i.test(String(line ?? ""));

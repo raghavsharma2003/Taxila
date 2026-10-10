@@ -117,6 +117,33 @@ function fractionParts(c, tl) {
 }
 
 /**
+ * round 4 content: the rectangle her line describes as a grid ("5 columns aur 3 rows", "15 equal parts, unmein 6
+ * marked"): rows x cols equal cells, the first `shade` filled, row by row. The column and row counts are written (her
+ * own givens); the cell total and the fraction only when her line does not ask for them. Measured: 4 board slots on a
+ * local production run (2026-10-10) failed while she pointed at such a rectangle, because no template drew it.
+ */
+function shadeGrid(c, tl) {
+  const { rows, cols } = c;
+  const shade = c.shade ?? 0;
+  if (!isInt(rows, 1, 6) || !isInt(cols, 1, 10) || rows * cols < 2 || !isInt(shade, 0, rows * cols)) return { error: "grid_range" };
+  const cell = Math.min(300 / cols, 170 / rows, 56);
+  const W = cols * cell, H = rows * cell, x0 = 200 - W / 2, y0 = 52 + (170 - H) / 2;
+  tl.add({ id: "whole", op: "rect", at: [x0, y0], w: W, h: H, weight: 2 }, 800);
+  let k = 0;
+  for (let r = 0; r < rows; r++) for (let q = 0; q < cols; q++) {
+    const on = k++ < shade;
+    tl.add({ id: `g${r}_${q}`, op: "rect", at: [x0 + q * cell + 2, y0 + r * cell + 2], w: cell - 4, h: cell - 4, weight: 1,
+      ...(on ? { fill: "accent", ink: "accent" } : { ink: "soft" }) }, on ? 200 : 90, { gap: on ? 60 : 20 });
+  }
+  // the labels only when her line named the columns and rows (a grid laid out for "15 equal parts" invents neither)
+  if (c.labels !== false && cols > 1) tl.add({ op: "text", at: [200, y0 - 16], text: `${cols} columns`, size: "s", ink: "soft" }, 400, { gap: 200 });
+  if (c.labels !== false && rows > 1) tl.add({ op: "text", at: [200, y0 + H + 18], text: `${rows} rows`, size: "s", ink: "soft" }, 400, { gap: 120 });
+  const total = rows * cols;
+  if (!c.hideResult && shade > 0) tl.add({ id: "frac", op: "numwork", at: [186, y0 + H + 40], layout: "fraction", rows: [[String(shade)], [String(total)]], ink: "accent", weight: 2 }, 700, { gap: 300 });
+  return { facts: { rows, cols, cells: c.hideResult ? "? (child works it out)" : total, shaded: shade } };
+}
+
+/**
  * round 4 content (the owner's review, 2026-10-10: "animation dikha sakte ho, half ka half kaise hota hai" got a static
  * 3/5 roti): a/b OF c/d drawn as the area model a class 6-7 book uses, step by step while she speaks: the whole; cut into
  * d columns, c of them shaded (c/d); the same whole cut into b rows; a of the b rows marked INSIDE the shaded part (a/b of
@@ -653,6 +680,8 @@ const BUILD = {
   "fraction-parts@1": fractionParts, "fraction-of@1": fractionOf, "combine-count@1": combineCount, "number-line-hop@1": numberLineHop, "column-op@1": columnOp,
   "place-value@1": placeValue, "equal-groups@1": equalGroups, "flow@1": flow, "cycle@1": cycle, "compare@1": compare, "parts@1": parts, "label@1": label,
   "angle@1": angle, "shape@1": shape, "symmetry@1": symmetry, "area-grid@1": areaGrid, "bar-chart@1": barChart,
+  // code-only (the claims board): not offered to any model, so not in TEMPLATES
+  "shade-grid@1": shadeGrid,
 };
 
 /**

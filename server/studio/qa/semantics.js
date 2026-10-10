@@ -39,7 +39,7 @@ const GROUP_WORDS = "groups?|baskets?|plates?|bags?|rows?|sets?|tokri|toliyan|sa
 const ITEM_WORDS = "dots?|items?|objects?|balls?|counters?|beads?|stars?|circles?|sweets?|laddoos?|apples?|mangoes|things|cheezein";
 
 /**
- * The counts her line claims are on the screen. → { parts: number[], gaps: number[], groups: {n, each}[] }
+ * The counts her line claims are on the screen. → { parts: number[], gaps: number[], groups: {n, each}[], grids: {rows, cols}[] }
  * Only explicit "N equal parts / N gaps / N groups each with M" claims: a fraction written in her line (2/5) is a number,
  * not a claim about the picture.
  */
@@ -47,10 +47,19 @@ const ITEM_WORDS = "dots?|items?|objects?|balls?|counters?|beads?|stars?|circles
 const SUPPOSE = /\b(if|agar|would|could|suppose|imagine|maan(?:o|\s+lo|\s+lijiye|\s+lete)|socho|sochiye|jab|when)\b/i;
 export function screenClaims(line) {
   const full = String(line ?? "").toLowerCase();
-  const out = { parts: [], gaps: [], groups: [] };
+  const out = { parts: [], gaps: [], groups: [], grids: [] };
   if (!POINTS_AT_SCREEN.test(full)) return out;
   // only the clauses that state what is there (a supposing clause is a question about a picture that is not drawn)
-  const s = full.split(/(?<=[.;?!])\s+|\s+[—–-]\s+/).filter((c) => !SUPPOSE.test(c)).join(" . ");
+  let s = full.split(/(?<=[.;?!])\s+|\s+[—–-]\s+/).filter((c) => !SUPPOSE.test(c)).join(" . ");
+  // round 4 content: "5 columns aur 3 rows" is ONE claim, a 3 x 5 grid of 15 cells (before: "3 rows mein" read as 3 equal
+  // parts and "3 rows mein hai: total 15" as 3 groups of 15). Both counts are taken out of the clause once read.
+  const colM = s.match(new RegExp(`\\b${NUM_RE}\\s+(?:equal\\s+|barabar\\s+)?columns?\\b`, "iu"));
+  const rowM = s.match(new RegExp(`\\b${NUM_RE}\\s+(?:equal\\s+|barabar\\s+)?rows?\\b`, "iu"));
+  if (colM && rowM) {
+    const cols = toNum(colM[1]), rows = toNum(rowM[1]);
+    if (cols >= 1 && rows >= 1 && cols * rows >= 2 && cols * rows <= 60) out.grids.push({ rows, cols });
+    s = s.replace(colM[0], " grid ").replace(rowM[0], " grid ");
+  }
   const add = (arr, n) => { if (Number.isFinite(n) && n >= 2 && n <= 24 && !arr.includes(n)) arr.push(n); };
   // "3 equal groups, each holding 5 dots" / "3 groups of 5" / "teen group, har group mein 5"
   for (const m of s.matchAll(new RegExp(`\\b${NUM_RE}\\s+(?:equal\\s+|barabar\\s+|same\\s+)?(?:${GROUP_WORDS})\\b[^.?!;]{0,40}?(?:\\beach\\b|\\bhar\\b|\\bof\\b|\\bmein\\b)[^.?!;\\d]{0,24}?${NUM_RE}\\b(?:\\s*(?:${ITEM_WORDS}))?`, "giu"))) {
@@ -113,11 +122,13 @@ export function drawnCounts(ops) {
 /** W10: every count her line claims is on the screen is drawn. → string[] problems ([] = pass) */
 export function claimsNotDrawn(line, ops) {
   const claims = screenClaims(line);
-  if (!claims.parts.length && !claims.gaps.length && !claims.groups.length) return [];
+  if (!claims.parts.length && !claims.gaps.length && !claims.groups.length && !claims.grids.length) return [];
   const d = drawnCounts(ops);
   const out = [];
   const famHas = (n) => d.families.some((f) => f.n === n && f.kind !== "ellipse" && f.kind !== "ring") || d.lines.some((l) => l.gaps === n);
   for (const n of claims.parts) if (!famHas(n) && d.groups.filter((x) => x.held > 0).length !== n) out.push(`${n} equal parts said, none drawn`);
+  // a grid: rows x cols equal cells drawn (one family of that many equal boxes)
+  for (const g of claims.grids) if (!d.families.some((f) => f.kind === "rect" && f.n === g.rows * g.cols)) out.push(`${g.cols} columns x ${g.rows} rows said, no ${g.rows * g.cols} equal cells drawn`);
   for (const n of claims.gaps) if (!d.lines.some((l) => l.gaps === n) && !d.families.some((f) => f.n === n && (f.kind === "rect" || f.kind === "sector"))) out.push(`${n} gaps said, the line shows ${d.lines.map((l) => l.gaps).join("/") || "no ticks"}`);
   for (const g of claims.groups) {
     const filled = d.groups.filter((x) => x.held > 0);
