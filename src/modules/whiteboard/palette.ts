@@ -22,3 +22,34 @@ export function paletteFor(ground: Ground): Palette {
 
 /** A handwriting face from the system (the frame's CSP allows no web fonts): legible first, hand-made second. */
 export const HAND_FONT = '"Segoe Print", "Chalkboard SE", "Comic Sans MS", "Comic Neue", casual, "Noto Sans Devanagari", system-ui, sans-serif';
+
+/**
+ * r4 (owner directive "modern, futuristic, Gen-Alpha", main session 2026-10-10): the board under the Kaksha skin. The
+ * colours are KAKSHA'S tokens (src/ui-v3/kaksha/tokens.css, --k-*), read at runtime from where the board mounts: this
+ * file holds no colour of its own for it (one palette source). Roles (settled with U1/K): ground --k-deep, a thin glow
+ * edge --k-line-2 (no wooden frame), grid --k-line, text and strokes --k-ink, soft --k-ink-3, the emphasised quantity
+ * --k-ion, attention --k-her, a tick --k-secure; the product's sans for words, Kaksha's mono for numbers. Every ground
+ * (chalk, paper, grid) takes the skin's one ground; grid keeps its lines. → null when the tokens are not present.
+ */
+export interface BoardSkin { palette: Palette; font: string; numFont: string }
+export const K_BOARD_VARS = ["--k-deep", "--k-line", "--k-line-2", "--k-ink", "--k-ink-3", "--k-ion", "--k-her", "--k-secure", "--k-sans", "--k-mono"] as const;
+export function kakshaBoardSkin(read: (name: string) => string, ground: Ground): BoardSkin | null {
+  const v = (n: string) => String(read(n) ?? "").trim();
+  if (!v("--k-deep") || !v("--k-ink")) return null;
+  const palette: Palette = {
+    ground: v("--k-deep"), edge: v("--k-line-2"), fillAlpha: 0.3,
+    ink: { chalk: v("--k-ink"), ink: v("--k-ink"), accent: v("--k-ion"), mark: v("--k-her"), good: v("--k-secure"), soft: v("--k-ink-3") },
+    ...(ground === "grid" ? { grid: v("--k-line") } : {}),
+  };
+  return { palette, font: v("--k-sans") || "system-ui, sans-serif", numFont: v("--k-mono") || "ui-monospace, monospace" };
+}
+/** A number, a fraction or an equation (drawn in the skin's mono face). */
+export const isNumeric = (s: string) => /^[\d\s/×÷+\-−=?.,:%()]+$/.test(s) && /\d|\?/.test(s);
+
+/** The board skin of the page the board is drawn in: Kaksha's tokens off the Desk root marked data-skin="kaksha" (K-P2). */
+export function boardSkinFromDocument(ground: Ground, doc: Document | undefined = typeof document !== "undefined" ? document : undefined): BoardSkin | null {
+  const el = doc?.querySelector('[data-skin="kaksha"]');
+  if (!el || typeof getComputedStyle !== "function") return null;
+  const cs = getComputedStyle(el);
+  return kakshaBoardSkin((n) => cs.getPropertyValue(n), ground);
+}

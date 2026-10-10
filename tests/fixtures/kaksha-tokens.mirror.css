@@ -1,0 +1,113 @@
+/* DEV MIRROR, NOT A TOKEN SET: a byte copy of Kaksha's src/ui-v3/kaksha/tokens.css (origin/claude/r4-app-design @ a0da1109)
+   for the ?skin=kaksha shots (tests/prod/r4-content-skin-shots.mjs injects it into /dev/desk) and the board-contrast
+   test only, until Kaksha lands on base; then this file is deleted and both read Kaksha's own. Outside src/ on
+   purpose: no product or dev page imports it, so the branch ships no token set of its own. */
+/* Kaksha tokens (BUILD-SPEC §2.2). Mirrors src/ui-v3/kaksha/tokens.ts exactly (tests/r4-kaksha-lint.test.mjs checks).
+   A layer over src/ui-v3: the root is `.v3.kx`; data-ktheme="night" (Older family) or "dawn" (Young family, K-O2).
+   Space Grotesk is self-hosted from /fonts (OFL, public/fonts/OFL-NOTICE.txt); Geist Mono ships with src/ui-v3/fonts;
+   Devanagari (her name and speech only; chrome is English, G-EN-1) uses the Mukta face declared in ../tokens.css. */
+@font-face {
+  font-family: "Space Grotesk"; src: url(/fonts/space-grotesk-latin.woff2) format("woff2");
+  font-weight: 300 700; font-display: swap;
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+.kx, .kx[data-ktheme="night"] {
+  --k-void: #05060A;
+  --k-deep: #0A0D16;
+  --k-raise: #121728;
+  --k-bar: #1A2036;
+  --k-panel: rgba(16, 20, 34, .78);
+  --k-panel-solid: #10142A;
+  --k-line: rgba(150, 170, 255, .16);
+  --k-line-2: rgba(150, 170, 255, .3);
+  --k-ink: #EEF1F8;
+  --k-ink-2: #B9C0D4;
+  --k-ink-3: #9AA3BC;
+  --k-move: #3EE6FF;
+  --k-move-deep: #0FB8D6;
+  --k-on-move: #021015;
+  --k-her: #FFB547;
+  --k-secure: #7CF5B5;
+  --k-look: #B3A6FF;
+  --k-rose: #FF6B81;
+  --k-ion: #8C9CFF;
+  --k-r-maths: #8B98FF;
+  --k-r-science: #2FD3C7;
+  --k-r-evs: #7CF5B5;
+  --k-r-english: #FF8A7A;
+  --k-r-hindi: #C69BFF;
+  --k-r-social: #5AB8FF;
+  --k-lit-1: #F4D3A0;
+  --k-lit-2: #D9A877;
+  --k-lit-3: #9C6E55;
+  --k-sand-t: #EEDDBF;
+  --k-sand-l: #D9C19B;
+  --k-sand-r: #C4A67C;
+  --k-ter-t: #D4683C;
+  --k-ter-l: #B4502A;
+  --k-ter-r: #93401F;
+  --k-mar-t: #F7F4EE;
+  --k-mar-l: #E2DCD0;
+  --k-mar-r: #C9C1B2;
+  --k-gr-t: #93B77A;
+  --k-gr-l: #77A062;
+  --k-gr-r: #5F854F;
+  --k-water: #6FB5CB;
+  --k-rock-1: #7D6A5A;
+  --k-rock-2: #5C4C40;
+  --k-sans: "Space Grotesk", "Atkinson Hyperlegible Next", "Mukta", system-ui, sans-serif;
+  --k-mono: "Geist Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  --k-deva: "Mukta", "Space Grotesk", sans-serif;
+  --k-cut: 12px;
+  --k-e-out: cubic-bezier(.16, 1, .3, 1);
+  --k-e-snap: cubic-bezier(.3, 1.4, .4, 1);
+  color-scheme: dark;
+}
+
+.kx[data-ktheme="dawn"] {
+  --k-void: #F3F1FA;
+  --k-deep: #FFFFFF;
+  --k-raise: #FFFFFF;
+  --k-bar: #E8E6F5;
+  --k-panel: rgba(255, 255, 255, .82);
+  --k-panel-solid: #FFFFFF;
+  --k-line: rgba(40, 50, 110, .14);
+  --k-line-2: rgba(40, 50, 110, .28);
+  --k-ink: #141833;
+  --k-ink-2: #3A4066;
+  --k-ink-3: #4A5070;
+  --k-move: #0B6F86;
+  --k-move-deep: #085A6D;
+  --k-on-move: #FFFFFF;
+  --k-her: #8F4F00;
+  --k-secure: #08664A;
+  --k-look: #5B4BD0;
+  --k-rose: #A82A42;
+  --k-ion: #3F4FD8;
+  --k-r-maths: #3F4FD8;
+  --k-r-science: #0B8C83;
+  --k-r-evs: #08664A;
+  --k-r-english: #C2493A;
+  --k-r-hindi: #7B4FC4;
+  --k-r-social: #1F6FB8;
+  --k-lit-1: #F4D3A0;
+  --k-lit-2: #D9A877;
+  --k-lit-3: #9C6E55;
+  --k-sand-t: #EEDDBF;
+  --k-sand-l: #D9C19B;
+  --k-sand-r: #C4A67C;
+  --k-ter-t: #D4683C;
+  --k-ter-l: #B4502A;
+  --k-ter-r: #93401F;
+  --k-mar-t: #F7F4EE;
+  --k-mar-l: #E2DCD0;
+  --k-mar-r: #C9C1B2;
+  --k-gr-t: #93B77A;
+  --k-gr-l: #77A062;
+  --k-gr-r: #5F854F;
+  --k-water: #6FB5CB;
+  --k-rock-1: #7D6A5A;
+  --k-rock-2: #5C4C40;
+  color-scheme: light;
+}

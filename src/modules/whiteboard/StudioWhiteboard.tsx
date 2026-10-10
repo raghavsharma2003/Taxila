@@ -14,6 +14,7 @@ import { normalizeScript } from "../../../shared/whiteboard.js";
 import type { ArtifactRendererProps } from "../../studio/renderers.ts";
 import { awaitLineAnchor, type AnchorTiming } from "./clock.ts";
 import { WhiteboardPlayer } from "./Player.tsx";
+import { boardSkinFromDocument } from "./palette.ts";
 
 /**
  * lessonId → the board: `ops` = what is on it after the script `scriptId` (re-scoped ids), `base` = what was on it
@@ -102,9 +103,12 @@ export function StudioWhiteboard({ artifact, px, reducedMotion, onEvent }: Artif
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [script, norm.errors]);
 
+  // r4: the Kaksha skin's board when the Desk wears it (palette.ts: Kaksha's own tokens, read where the board mounts)
+  const ground = script?.board.ground ?? "chalk";
+  const skin = useMemo(() => boardSkinFromDocument(ground), [ground]);
   if (!script) return null;
   return (
-    <WhiteboardPlayer script={script} prior={prior} startAt={startAt} reducedMotion={reducedMotion} width={px.w} height={px.h}
+    <WhiteboardPlayer script={script} prior={prior} startAt={startAt} reducedMotion={reducedMotion} width={px.w} height={px.h} skin={skin}
       className="wb-svg" onDone={() => {
         if (emitted.current) return;
         emitted.current = true;

@@ -13,7 +13,7 @@ import { resolveParams } from "./params.ts";
 import { parseHostToModule } from "./protocol.ts";
 import { hasEngine, loadEngine, loadedEngine } from "./registry.ts";
 
-type Init = Extract<HostToModule, { type: "init" }>;
+type Init = Extract<HostToModule, { type: "init" }> & { skin?: Record<string, string> };
 
 /** The host names this frame's module in the URL hash (#<moduleId>), so "ready" can carry it. */
 const HASH_ID = decodeURIComponent(location.hash.slice(1));
@@ -198,6 +198,11 @@ function LiveFrame() {
 
   // round 4 content: the band's text floor for the frame fit (fit.ts never shrinks words below it)
   if (init?.ageBand && typeof document !== "undefined") document.documentElement.dataset.ageBand = init.ageBand;
+  // r4: under the Kaksha skin the frame wears Kaksha's tokens (frame.css [data-skin="kaksha"] maps them; none are kept here)
+  if (init?.skin && typeof document !== "undefined" && document.documentElement.dataset.skin !== "kaksha") {
+    for (const [k, v] of Object.entries(init.skin)) document.documentElement.style.setProperty(k, v);
+    document.documentElement.dataset.skin = "kaksha";
+  }
   if (!init || loaded.status === "waiting" || loaded.status === "loading") return <div className="frame-wait" aria-busy="true" />;
   if (loaded.status === "missing") return <ComingSoon lang={init.lang} />;
   const Engine = loaded.engine.Component;

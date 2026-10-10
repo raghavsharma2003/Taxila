@@ -17,6 +17,34 @@ other sessions) or from pure code. **No child has used any of this.** Each numbe
 | (6) owner-5 slots that never became an artifact | **met**: owner-5 14/14 |
 | (7) V3.3 at scale | simulation 93.0% right-artifact-ready, 0 stale or wrong reveals, 0 visible failures (n = 200 lessons, SIMULATION) |
 | beat-by-beat board, notebook | built behind `TAXILA_BEAT_BOARD` (off); notebook saved per lesson (patch 01), replayable; plan card waits on 4A's session plan |
+| Kaksha skin for the tray (audit items 1-5) + K-P12 | **built, inert without the skin** (§2a); 42 before / after shots, 0 failing |
+
+## 2a. The tray under the Kaksha skin (2026-10-10)
+
+Owner directive (via main): modern, futuristic, Gen-Alpha, not "too Indian". The skin is on only where the Kaksha shell
+is (`data-skin="kaksha"` on the Desk, a `.kx` ancestor carrying `data-ktheme` night / dawn); the beige shell keeps
+today's board, byte for byte (no skin attribute → every new rule is unmatched, `kakshaBoardSkin` returns null).
+
+- **One palette source.** Nothing here defines a colour. The board reads Kaksha's resolved `--k-*` values at mount
+  (`palette.ts kakshaBoardSkin`): ground `--k-deep`, edge `--k-line-2`, ink `--k-ink`, accent `--k-ion`, mark `--k-her`,
+  good `--k-secure`, soft `--k-ink-3`, grid `--k-line`. `--k-move` is not used (Kaksha reserves it for "your move").
+  The stage, skeletons and chips map the studio vars onto `--k-*` (`studio.css`); the sandboxed module frame gets the
+  resolved values in its init (`host.tsx` → `protocol.ts`, which takes only `--k-*` names with short safe values →
+  `bootstrap.tsx`) and maps its `--fx-*` onto them (`frame.css`). A test fails on any colour literal in a skin rule.
+- **Type.** The board's hand font gives way to Kaksha's product face (`--k-sans`); numbers and fractions on the board
+  are set in Geist Mono (`--k-mono`).
+- **Ground.** chalk / paper / grid → one glass ground (`--k-deep` + a `--k-ion` glow edge); the grid keeps a faint
+  `--k-line` grid. Young (dawn) gets the cool light variant from Kaksha's own dawn theme.
+- **K-P12** (Kaksha's patch, applied): `DeskModel.intake`, QuestionCard `lead` slot, Desk `renderIntake`; nothing renders
+  without a skin's `renderIntake`.
+- **Measured** (`tests/prod/r4-content-skin-shots.mjs`, /dev/desk fixtures + product-build module frames, 360 × 800,
+  412 × 915, 1366 × 768, both families, theme values from the dev mirror of Kaksha's `tokens.css` @ `a0da1109`, kept in
+  `tests/fixtures/` only until Kaksha lands): board text worst contrast **7.68:1 night / 6.32:1 dawn** (floor 4.5, Kaksha
+  bar 5); smallest board text 19.4 / 22.6 / 28.6 px (beat board) and 16.2 / 18.8 / 22.1 px (skeleton), unchanged by the
+  skin; every module frame marked skinned. Shots: `shots/skin/` (`*-before.png` / `*-kaksha.png`).
+- **Fixed on the way:** the place-value game ask built 345, not the kit's number (the Director sent `a:`; the engine
+  reads `value`); now 45,236 for 5 places (test).
+- **Open:** U1/K has not yet confirmed the role mapping (mark = `--k-her`, submit not `--k-move`); one-line change if not.
 
 ## 1. Baseline (the untouched base `522dca6e`, re-run first)
 
