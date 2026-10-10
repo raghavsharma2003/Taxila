@@ -64,6 +64,11 @@ const STORY = /\b(?:story|kahani|kahaani)\s*(?:ki\s+tarah|jaisa|jaise|se|mein|me
 const SLOWER = /\b(?:slow(?:ly)?(?:\s+please)?|slower|dheere(?:\s+(?:bolo|boliye|se|please|batao|bataiye))?|dhire(?:\s+(?:bolo|boliye|se))?|aaram\s+se\s+(?:bolo|batao|samjhao)|too\s+fast|bahut\s+(?:tez|fast|jaldi)|itna\s+(?:tez|fast|jaldi)|jaldi\s+mat|ruk\s+ruk\s+ke|step\s+by\s+step)\b/i;
 const VISUAL = /\b(?:(?:show|draw|make)\s+(?:me\s+)?(?:a\s+|the\s+|it\s+|this\s+)?(?:diagram|picture|drawing|image|figure|graph|chart|model|it|this)|(?:diagram|picture|photo|image|drawing|chitra|tasveer|figure)\s+(?:dikhao|dikhaiye|banao|banaiye|bana\s+do|draw|show|please|chahiye|se\s+samjhao)|(?:draw|bana(?:\s+ke|kar)?)\s+(?:karke\s+)?(?:samjhao|dikhao|batao)|draw\s+(?:it|this|karo|kijiye)|whiteboard\s+(?:pe|par|per|mein|me|on)|(?:on|use)\s+the\s+(?:whiteboard|board)|board\s+(?:pe|par|per)\s+(?:bana|likh|dikha)\w*|can\s+you\s+(?:show|draw)|dikha\s+(?:ke|kar)\s+samjhao|dikhao\s+na)\b/i;
 const GAME = /\b(?:game|khel|activity)\s*(?:khelna|khelte|khelo|khel\s+sakte|chahiye|dikhao|karo|karna|please)?\b|\blet'?s\s+play\b|\bplay\s+a\s+game\b/i;
+// round 4 (stream 4A, session-first (f)): the "go deeper" family beside "simpler": "aur batao", "tell me more", "go deeper",
+// "detail mein samjhao", "isme aur kya hota hai". The same idea one layer further (the why behind it, where it shows up, how it
+// links to what comes next), never a new skill and never "say it again". A harder QUESTION ("mushkil wala do", "too easy")
+// stays conversation/lexicon.js HARDER.
+const DEEPER = /\b(?:aur\s+(?:batao|bataiye|bataao|samjhao|samjhaiye|sunao|jaanna\s+hai|janna\s+hai|detail|details|gehra[ie]?|andar\s+tak)|(?:aur\s+)?detail\s+(?:mein|me|main|se)(?:\s+(?:batao|bataiye|samjhao|samjhaiye|explain))?|(?:tell|teach|show)\s+me\s+more|more\s+(?:about\s+(?:it|this|that)|details?|on\s+(?:this|that|it))|(?:go|dig|let'?s\s+go)\s+deeper|deeper|in\s+depth|explain\s+(?:it\s+|this\s+)?(?:more|further|in\s+detail)|(?:isme|ismein|is\s+mein|iske\s+baare\s+mein)\s+aur\s+(?:kya|kuch)|gehrai\s+(?:se|mein)|aage\s+ka\s+(?:batao|samjhao)|next\s+level)\b|और\s+(?:बताओ|बताइए|समझाओ)|विस्तार\s+से/i;
 // round 3 forge (patch 08): "simulation dikhao" / "simulate karo" is an interactive ask too; before, no pattern matched it and
 // only the model classifier's flag sometimes made it one (2 of 5 forge acceptance runs read it as a plain worked example)
 const ANIMATION = /\b(?:animation|animate|video|cartoon|simulation|simulate|simulator)\s*(?:dikhao|dikhaiye|chahiye|please|banao|show|karo|kijiye)?\b|\bshow\s+(?:me\s+)?(?:an?\s+)?(?:animation|video|simulation)\b/i;
@@ -95,7 +100,7 @@ const wordCount = (t) => t.split(/\s+/).filter(Boolean).length;
 /**
  * PURE. The request a child's turn makes, or null.
  * @param {string} text  the child's words (typed, or an ASR transcript)
- * @returns {null | { type: "goodbye"|"stop"|"continue"|"break"|"change_topic"|"topic"|"language"|"another"|"example"|"story"|"slower"|"visual",
+ * @returns {null | { type: "goodbye"|"stop"|"continue"|"break"|"change_topic"|"topic"|"language"|"another"|"example"|"story"|"slower"|"deeper"|"visual",
  *   subject?: string, lang?: "hindi"|"english"|"hinglish", kind?: "diagram"|"game"|"animation", whole: boolean }}
  *   whole: the turn is ONLY the request (no attempt alongside it), so it may be acted on with no classifier call.
  */
@@ -131,6 +136,7 @@ export function requestOf(text) {
   if (whole && GAME.test(t) && !/\b(?:game\s+(?:mein|me)\s+\d)/.test(t)) return { type: "visual", kind: "game", whole };
   if (whole && STORY.test(t)) return { type: "story", whole };
   if (whole && EXAMPLE.test(t)) return { type: "example", whole };
+  if (whole && (DEEPER.test(t) || DEEPER.test(raw))) return { type: "deeper", whole };
   if (whole && SLOWER.test(t)) return { type: "slower", whole };
   if (whole && ANOTHER.test(t)) return { type: "another", whole };
   if (whole) {
@@ -144,4 +150,4 @@ export function requestOf(text) {
 /** The request types that are about the lesson's flow (never acted on without the classifier's distress read too). */
 export const FLOW_REQUESTS = new Set(["goodbye", "stop"]);
 /** The request types that map onto the Director's existing help moves (state.js helpMove; until now reachable only by a chip). */
-export const HELP_OF_REQUEST = Object.freeze({ another: "another", example: "example", story: "story", slower: "slower" });
+export const HELP_OF_REQUEST = Object.freeze({ another: "another", example: "example", story: "story", slower: "slower", deeper: "deeper" });

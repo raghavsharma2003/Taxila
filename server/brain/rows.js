@@ -3,7 +3,7 @@
 // turn's one transaction).
 import { tx } from "../db.js";
 import { HttpError } from "../http.js";
-import { getKit, pinnedKit } from "../content/index.js";
+import { getKit, pinnedKit, pinKit } from "../content/index.js";
 import { lockStmt, modeGuardStmt } from "../learner/writer.js";
 import { askFromReply } from "../director/say.js";
 
@@ -21,9 +21,14 @@ export const RECENT_TURNS = 8;
  * while lessons run, and a lesson's item ids mean nothing in any other version. Never generated mid-lesson;
  * unavailable is a 503, not a crash. A lesson stored before pinning existed reads the current kit.
  */
-export async function kitFor(topicId, state) {
+export async function kitFor(topicId0, state) {
+  // round 4 (session-first): a session's segment pins its own kit inside the same lesson (director/session/segments.js), so
+  // the lesson row's topic_id is the first segment's; the state's topic is the open segment's
+  const topicId = state?.session && state?.topicId ? state.topicId : topicId0;
   const kit = state?.kitHash ? await pinnedKit(topicId, state.kitHash) : await getKit(topicId, { generate: false });
   if (!kit) throw new HttpError(503, "no teaching content is available for this topic yet");
+  // a segment's kit is pinned durably the first time a turn reads it (idempotent), as the lesson start pins the first
+  if (state?.session && topicId !== topicId0) Promise.resolve(pinKit(kit)).catch(() => {});
   return kit;
 }
 

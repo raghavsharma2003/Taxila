@@ -40,6 +40,10 @@ import { p5Flag } from "../conversation/flags.js";
 import { unsafeChildPhrase } from "../conversation/screen.js";
 import { parkEntry, pushLater, recentParked, dueParked, serveLater } from "../conversation/policy.js";
 import { alsoReading } from "../conversation/lexicon.js";
+import { intakeStart, intakeStep } from "./session/beat.js";
+import { newSession, openSegment } from "./session/segments.js";
+import { priorNotes } from "./session/prior.js";
+import { kitFromFile } from "../content/kits.js";
 
 /**
  * Probe shapes the live lane can pose AND grade today: the why-class shapes (probe.why, R-EXP against the kit's key
@@ -167,7 +171,76 @@ export function initLessonState({ topicId, kit, skills = {}, history = {}, stuck
     persona: newPersonaState({ band, classLevel, medium: ctx.schoolMedium ?? "english" }), vibe: null, turnsSinceError: 99,
     // p5-interaction: the Later list (CONVERSATION-V2 §5: parked questions, returned at a boundary) and the card pins
     later: [], pinItem: undefined, pinRun: 0,
+    // round 4 (session-first, TAXILA_SESSION_FIRST; director/session/*): the session and its INTAKE beat when the route
+    // started a session with no topic chosen by the child (ctx.session); absent on every other start
+    ...(ctx.session && !practiceSet && !asking ? sessionFields(ctx, classLevel, now) : {}),
   };
+}
+
+/** Round 4 (session-first): the session object and the intake beat's state for a session start (ctx.session). */
+function sessionFields(ctx, classLevel, now) {
+  const sc = ctx.session ?? {};
+  const intake = intakeStart({ now, classLevel, ctx: { subjects: sc.subjects ?? [], pointer: sc.pointer ?? {} } });
+  return { session: newSession({ id: ctx.sessionId, now, classLevel, prior: sc.prior ?? null }), intake: intake.state, intakeOpen: intake.move };
+}
+
+/** The kit a session segment pins (the verified file kit; a topic with none keeps the lesson's kit). */
+const segmentKit = (topicId) => { const t = getTopic(topicId); return t ? kitFromFile(t) : null; };
+
+/**
+ * Round 4 (session-first): the lesson state re-pointed at a new segment's kit, in the SAME lesson. Everything the route or
+ * the conversation added (brief, mode, the relationship, the Later list, prefs, affect, persona, talk, the turn counters)
+ * is kept; the teaching state is fresh for the new kit (initLessonState). The per-turn kit loader (brain/rows.js kitFor)
+ * reads state.topicId + state.kitHash from here on.
+ */
+export function reinitForSegment(s, kit, now, decision) {
+  const t = getTopic(kit.topicId);
+  const fresh = initLessonState({ topicId: kit.topicId, kit, ctx: { ...s.ctx, session: undefined, topicTitle: t?.title ?? s.ctx.topicTitle }, seed: s.seed, now, comp: null });
+  const out = { ...fresh };
+  for (const k of Object.keys(s)) if (!(k in fresh)) out[k] = s[k];
+  for (const k of ["turn", "seq", "recent", "affect", "persona", "talk", "later", "prefs", "safeguard", "startedAt", "minutes", "lastBreakTurn", "vibe", "turnsSinceError", "probeSess"]) if (k in s) out[k] = s[k];
+  out.session = s.session; out.intake = s.intake; delete out.intakeOpen;
+  out.kitHash = kit.hash; out.kitVerified = kit.verified;
+  out.purpose = "lesson";
+  // the child's school position on the decided topic: a transfer start skips the hook (never a repeat of what they know)
+  if (decision?.mode === "transfer") { out.teachPlan = []; out.phase = "practice"; out.introduced = kit.skills.map((sk) => sk.id); }
+  if (decision?.mode === "revise") { out.teachPlan = out.teachPlan.filter((x) => x !== "hook"); }
+  return out;
+}
+
+/**
+ * Round 4 (session-first): the intake beat's move for this step, or null when the intake is over (the Director decides as
+ * always). At most 3 child turns and 90 s (beat.js); the safety predicate pre-empts it (the classifier's distress flag goes
+ * to decide()'s safeguard, unchanged). When the intake decides, the session opens its first segment: on another topic the
+ * state is re-pointed at that topic's verified kit (reinitForSegment); the move is the one-line agenda, no item, no stage.
+ */
+function sessionIntake(s, input, now) {
+  if (!s.intake || s.intake.stage === "done" || input.branch || input.event === "module") return null;
+  if (input.event === "start") return plan("intake", s.intakeOpen?.shape ?? "", { chips: s.intakeOpen?.chips, intake: true });
+  if (input.cls?.flags?.distress || s.safeguard) { s.intake = { ...s.intake, stage: "done" }; return null; }
+  const prior = s.session?.prior ?? {};
+  const statusOf = (id) => { const t = getTopic(id); if (!t) return "unseen"; const own = Object.values(s.skills ?? {}).filter((x) => String(x.skillId ?? "").startsWith(`${id}-`)); return own.length ? (own.every((x) => x.status === "mastered") ? "mastered" : own.some((x) => x.attempts >= 3 && x.pKnown < 0.4) ? "weak" : "in_progress") : "unseen"; };
+  let r = intakeStep(s.intake, { text: input.text ?? input.answer ?? "", chipId: input.chipId, now, kitFor: input.kitFor ?? segmentKit, statusOf, prior, explore: !!input.explore });
+  // a confirm reply code cannot grade: the classifier's label when the lesson's own kit is the candidate's, else no evidence
+  // (the grade only moves the segment's mode, never its topic)
+  if (r.needsGrade) r = intakeStep(r.state, { graded: input.kit?.topicId === r.state.pick?.topicId ? (input.cls?.outcome ?? "no_evidence") : "no_evidence", now, kitFor: input.kitFor ?? segmentKit, statusOf, prior });
+  s.intake = r.state;
+  if (!r.done) {
+    const ask = r.move?.item ? promptFor(r.move.item, s.ctx.lang) : null;
+    return plan(r.move.kind, r.move.shape, { intake: true, ...(ask ? { ask } : {}) });
+  }
+  const d = r.decision;
+  if (d.purpose === "safeguard") return null; // decide() owns the safeguard (the predicate already fired in the words)
+  let next = s;
+  const kit = d.topicId ? segmentKit(d.mode === "foundation_first" && d.foundation ? d.foundation : d.topicId) : null;
+  if (kit && kit.topicId !== s.topicId) {
+    next = reinitForSegment(s, kit, now, d);
+    for (const k of Object.keys(s)) delete s[k];
+    Object.assign(s, next);
+  } else if (kit) { s.kitHash = s.kitHash ?? kit.hash; }
+  s.session = openSegment(s.session, d, { kitHash: kit?.hash ?? s.kitHash ?? null, now });
+  s.sessionNotes = priorNotes(s.session.prior, s.session.segments.at(-1));
+  return plan("intake_agenda", r.move.shape, { intake: true, segment: { n: s.session.segments.length, topicId: s.topicId, purpose: d.purpose, mode: d.mode } });
 }
 
 /** Rule 3 schedule: always on a skill with no generative pass yet; sampled once it is consolidating. */
@@ -726,7 +799,7 @@ function helpMove(s, input, item, help) {
     // NEXT teach step with the request as a prefix, 5/16 not acted on): a request for the idea another way is answered on
     // THE idea being taught, and the teach step does not advance. Help menu chips (cls.help) keep moving on (below).
     // (also in practice before its first item: an explain turn poseNext gave a skill nobody had explained yet)
-    if (p5Flag("STEER") && !input.cls?.help && ["another", "example", "story", "slower"].includes(help)
+    if (p5Flag("STEER") && !input.cls?.help && ["another", "example", "story", "slower", "deeper"].includes(help)
       && (s.phase === "teach" || (s.phase === "practice" && TEACH_KINDS.has(s.lastMove?.kind)))) return teachAgainPlan(s, kit, help);
     // Any other help on a teaching turn moves the teaching on, more simply: a Young child in the text lane can answer a
     // teaching turn only through the Help menu, and a help that re-said the same step would hold them there for good.
@@ -819,6 +892,18 @@ function requestMove(s, input, item, req, labels) {
     case "another": case "example": case "story": case "slower": {
       const p = helpMove(s, input, item, req.type);
       return p && { ...p, request: req.type };
+    }
+    // round 4 (session-first (f)): "aur batao / go deeper". With a practice question on the table: the harder question on the
+    // same skill (the one on the table is left, no verdict); otherwise the same idea one layer further (no new step).
+    case "deeper": {
+      if (item && s.phase === "practice") {
+        s.skipped.push(item.id);
+        const h = hardestFor(s, kit, item.skillId);
+        if (h) s.nextItemId = h.id;
+        return { ...poseNext(s, input, SH.levelDeeper()), request: "deeper" };
+      }
+      if (item) return plan(moveKindFor(item), SH.pose({ item, prefix: SH.levelDeeper() }), { item, probe: probeFor(item), chips: optionChips(item), request: "deeper" });
+      return teachAgainPlan(s, kit, "deeper");
     }
     case "visual": {
       // A picture on the stage (item 5): a re-teach move with the diagram representation, so planModule mounts the item's
@@ -1246,7 +1331,9 @@ export function step(prev, input) {
       s.probeSess = markAsked(s.probeSess, { skillId: t.skillId, shapeId: null, facet: "M", mandatory: true, reason: t.reason }, s.comp?.[t.skillId]?.belief ?? null);
     }
   }
-  let p = reacting ? moduleReaction(s, input, active) : decide(s, input, active);
+  // round 4 (session-first): the intake beat runs before the Director's own decision while it is open
+  let p = sessionIntake(s, input, now);
+  if (!p) p = reacting ? moduleReaction(s, input, active) : decide(s, input, active);
   if (p && !input.branch && p5Flag("CARDCAP")) p = capPlan(s, input, p);
   if (!p) {
     return { state: s, move: s.lastMove, moduleCommands: [], ui: s.lastUi ?? { status: "your_turn" }, end: s.phase === "done", hold: true, ...describe(s, input.kit) };
@@ -1299,6 +1386,8 @@ export function step(prev, input) {
   // round 2 safety floor: a stop check-in ("stop") or the relational goodbye check-in ("rel") — brain/say.js guards its
   // words as an offer to stop, never as a teaching turn that "goes on" (adversarial B2)
   if (p.checkin) move.checkin = p.checkin;
+  // round 4 (session-first): the intake's move (no stage build) and, for the confirm probe, the kit question it poses
+  if (p.intake) { move.intake = true; if (p.ask) move.ask = String(p.ask).slice(0, 300); if (p.segment) move.segment = p.segment; }
   // round 2 (conversation): the request's own note, for the lead slot's last instruction (brain/say.js)
   if (p.lead && p5Flag("STEER")) move.lead = String(p.lead).slice(0, 400);
   if (p.visual) {

@@ -155,6 +155,9 @@ function lessonParts({ lessonState: s, item, content = [], branches, topic, lang
     }
   }
   content.forEach((line) => parts.push({ text: `- ${line}`, drop: 8 }));
+  // round 4 (session-first, TAXILA_SESSION_FIRST): the Conductor's plan as HER private prior (director/session/prior.js
+  // priorNotes): at most two notes with the lesson facts, droppable before the move's content, never a list she reads out
+  for (const note of (Array.isArray(s.sessionNotes) ? s.sessionNotes : []).slice(0, 2)) parts.push({ text: `- ${String(note).replace(/["“”]/g, "").slice(0, 200)}`, drop: 7 });
   if (lane === "voice" && branches) {
     if (branches.listenFor?.length) parts.push({ text: `- key ideas to listen for (checking only): ${branches.listenFor.join("; ")}`, drop: 8 });
     const seen = new Set(content);
@@ -253,6 +256,13 @@ function lastParts({ lessonState: s, move, item, branches, ageBand, language, pr
     // about how she will respond; the vetted opening is prepended in code (server/relational/openings.js).
     check = `${check} Begin with the child, never with how you will respond.`;
     shape = "at most 35 words, short calm sentences. End by asking if they are okay right now, then stop.";
+  } else if (move.intake) {
+    // round 4 (session-first intake, director/session/beat.js): the move's own question is the only one; for the confirm probe
+    // that is the kit question, pinned verbatim (content); never a lesson explanation or a quiz of her own here
+    check = move.ask
+      ? `the only question this turn, in their language: "${String(move.ask).replace(/"/g, "'")}" — no other question; no verdict words; no lesson content yet.`
+      : "no lesson content and no quiz question of your own this turn; only what the move names, then hand the floor back.";
+    shape = `at most ${n} words. One idea. End by handing the floor back, then stop.`;
   } else if (voice) {
     check = [`when they reply: ${ESCAPE_VOICE}`, STOP, branchClause(branches, poser(writtenAsk ? "text" : lane, language, s, ageBand)), keyRule].filter(Boolean).join("; ");
     shape = move.kind === "wrap"

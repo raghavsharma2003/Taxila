@@ -360,6 +360,7 @@ export const teachAgain = ({ how }) => join(
   how === "story" ? "they asked for it as a story: the SAME idea told in story form — a named character, a moment (one day…), what happened — a few lines"
     : how === "example" ? "they asked for an example: one concrete everyday example of the SAME idea, your own numbers, plainly marked as an example"
       : how === "slower" ? "they asked you to slow down: say in two or three words that you will go slower; then the SAME idea in short simple sentences, one small step"
+        : how === "deeper" ? "they asked to go deeper: the SAME idea one layer further, the why behind it or where it shows up in real life or how it links to what comes next; correct and simple, never a new skill, never your earlier words"
         : "they did not follow it: the SAME idea a new, simpler way in (a picture in words, real objects, or a different example), never your earlier words",
   "the idea in LESSON NOW is still the one on the table; no new step of the lesson yet",
   "end with one small question about it",
@@ -373,6 +374,7 @@ export const breakYes = () => "they asked for a short break: agree warmly; the l
 export const repeatShort = () => "they did not catch it: the last point again, shorter and slower; nothing new";
 export const welcomeBack = () => "they are back after a moment away: welcome them back in two or three words, no goodbye and no fuss; carry on";
 export const levelHarder = () => "they asked for a harder one: take them at their word, a short warm line; the harder question";
+export const levelDeeper = () => "they asked to go deeper: take them at their word in a few warm words; the harder question on the same idea, a step further";
 export const levelEasier = () => "they asked for an easier one: a short warm line, no fuss; the easier question";
 export const boredOffer = () => join(
   // round 3: say back what they said (it is boring) before the change: "acknowledges" failed on J2 for "game, picture or challenge?"
