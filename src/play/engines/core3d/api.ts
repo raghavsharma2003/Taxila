@@ -56,7 +56,7 @@ export interface TierBudget {
   particles: number;
 }
 export const TIER_BUDGET: Record<Exclude<PlayTier, "2d">, TierBudget> = {
-  "3d": { dprCap: 1.5, dprFloor: 1, maxDraws: 80, maxTris: 150_000, particles: 1 },
+  "3d": { dprCap: 1.5, dprFloor: 0.75, maxDraws: 80, maxTris: 150_000, particles: 1 },
   "3d-lite": { dprCap: 1, dprFloor: 1, maxDraws: 40, maxTris: 60_000, particles: 0.4 },
 };
 
