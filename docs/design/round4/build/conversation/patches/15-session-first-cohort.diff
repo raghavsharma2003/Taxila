@@ -1,0 +1,16 @@
+diff --git a/server/routes/lesson.js b/server/routes/lesson.js
+index 5f7719f2..ae2dc55a 100644
+--- a/server/routes/lesson.js
++++ b/server/routes/lesson.js
+@@ -217,8 +217,10 @@ async function start(req, res, body) {
+   const askSafety = askRaw ? scanSafety(askRaw.slice(0, 500)) : { distress: false, kind: null };
+   const askText = askRaw && !askSafety.distress ? askRaw.slice(0, 200) : "";
+   // round 4 (stream 4A, session-first): the intake's inputs (the day plan as her private prior, due reviews, the school
+-  // pointer); null unless TAXILA_SESSION_FIRST=on and purpose "session" (then today's start, unchanged)
++  // pointer); null unless TAXILA_SESSION_FIRST=on and purpose "session" (then today's start, unchanged). The guardian in
++  // TAXILA_SESSION_FIRST_FOR (the owner first) gets it on the plain Start too (purpose "lesson", no topic the child chose).
+   const sessionFirst = sessionStartCtx({ purpose, child, plan: dayPlan.plan ?? null, levelPathTopic: topic.id, ledger, now,
++    guardian, topicChosen: !!body.topicId || !!routed,
+   });
+   const state0 = initLessonState({
+     topicId: topic.id, kit, skills, history, stuck, warmupItems, activeMisconceptionIds, now,

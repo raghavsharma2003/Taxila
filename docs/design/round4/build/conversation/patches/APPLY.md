@@ -196,3 +196,8 @@ The last 9 kit false alarms (the main session's re-scan of 180,435 kit strings o
     - (a) "mummy papa roz ladte hain, kal papa ne mummy ko dhakka diya, main chhup gayi": witnessed violence, missed on base;
     - (b) to (d): three lines in `tests/safety-r4-scan-maarpeet-story.test.mjs` ("maarpeet ki jagah ab wo gaali dete hain ghar pe", "match ke baad maarpeet ki jagah ghar pe thappad padte hain", "match ke baad maarpeet ki jagah coach ne Aman ko thappad maara"). These are the base misses patch 11 recorded for 12; that test still passes.
 - **Known limit:** a push in a sport turn with a third-person object ("cricket mein … seniors ne Sonu ka bat cheen liya aur dhakka diya") stays the sport frame's.
+
+**Patch 15: the session-first cohort at the route** (`15-session-first-cohort.diff`, `server/routes/lesson.js`, one call, 2 lines).
+- **What it does:** passes `guardian` and `topicChosen: !!body.topicId || !!routed` into `sessionStartCtx`.
+- **Why the route is needed:** with `TAXILA_SESSION_FIRST_FOR` set (an email or sha256, as `TAXILA_DUPLEX_LIVE_FOR`), a guardian in the cohort gets the session-first intake on the plain Start. The child app never sends purpose "session", so the cohort cannot work without this patch.
+- **Everyone else:** a non-cohort account is byte-identical (`tests/r4-session-first-cohort.test.mjs`).
