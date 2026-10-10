@@ -444,9 +444,24 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
     if (reply) { guardSlot.used = true; slotState.on = true; }
     reply ??= await ask(lastNotes ? [...messages, { role: "system", content: lastNotes }] : messages);
   } catch (e) {
-    if (isContentFilter(e)) { console.warn("[lesson] reply blocked by the content filter"); return blocked(); }
-    console.warn("[lesson] reply unavailable, falling back:", e.message);
-    return { reply: fallbackReply(state, item), guard: { caught: ["unavailable"], rewritten: false, replaced: true } };
+    // round 4 (stream 4A, 2026-10-10): a block on the COMPLETION (HTTP 200, finish_reason content_filter: the filter judged
+    // the model's own words, not the child's) gets ONE fresh reply before the turn fails closed. In context, "explain it
+    // differently" (Zoya, class 5, states of water) drew 1 completion block in 58 lessons and the child got the helplines;
+    // the child's words had passed the predicate and the model distress read. A block on the PROMPT (HTTP 400: the child's
+    // words are in it) and a second completion block still fail CLOSED, as before.
+    let again = null;
+    if (isContentFilter(e) && e.status === 200) {
+      console.warn("[lesson] reply completion blocked by the content filter: one fresh reply");
+      // main safety review: if the fresh reply fails for any other reason (a timeout, a 5xx), the ORIGINAL block stands
+      // and the turn fails closed; only a second filter block replaces it (same outcome)
+      try { again = await ask(lastNotes ? [...messages, { role: "system", content: lastNotes }] : messages); } catch (e2) { if (isContentFilter(e2)) e = e2; }
+    }
+    if (again) reply = again;
+    else {
+      if (isContentFilter(e)) { console.warn("[lesson] reply blocked by the content filter"); return blocked(); }
+      console.warn("[lesson] reply unavailable, falling back:", e.message);
+      return { reply: fallbackReply(state, item), guard: { caught: ["unavailable"], rewritten: false, replaced: true } };
+    }
   }
   let found = problems(reply);
   const guard = { caught: found, rewritten: false, replaced: false, ...(found.length ? { firstDraft: reply } : {}), ...(guardSlot.used ? { leadSlot: true } : {}) };
