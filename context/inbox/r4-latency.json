@@ -123,7 +123,7 @@
   {
    "id": "ms-r4lat-test-shared-process-2026-10-10",
    "kind": "measurement",
-   "title": "Root cause of the full-suite-only test failures (p4-content-seam host-graded event, p2-face-player re-anchor cuts): tests/index.js runs every *.test.mjs in ONE node:test process, so module state is shared and a root-level before()/after() holds for the whole run (an import-time/root _setDeps replaced another file seam fakes; two root performance.now pins froze each other). Not load. Five files in one process: 2 fails before, 0 after (3/3). Fix 031724d3: install and restore per test body. Rule: never stub shared module state or globals at import time or in a root hook.",
+   "title": "Root cause of the full-suite-only test failures (p4-content-seam host-graded event, p2-face-player re-anchor cuts): tests/index.js runs every *.test.mjs in ONE node:test process, so module state is shared and a root-level before()/after() holds for the whole run (an import-time/root _setDeps replaced another file seam fakes; two root performance.now pins froze each other). Not load. Five files in one process: 2 fails before, 0 after (3/3). Fix 031724d3: install and restore per test body. Rule: never stub shared module state or globals at import time or in a root hook. The same leak caused the CI 240 s timeout of studio-qa gate (browser) goldens: server/studio/qa/gate.js polls performance.now() for ready/answers, so on a frozen clock a never-answering mutant (no_done) loops forever. Reproduced in one process (76e51a15 p2-face-player + studio-qa: timeout; per-test version: pass).",
    "at": "2026-10-10"
   },
   {

@@ -33,12 +33,14 @@ async function sleep(ms) {
   VNOW = end;
   await flush();
 }
-const realNow = Object.getOwnPropertyDescriptor(performance, "now");
 // Per test, not test.before/after: npm test runs EVERY test file in one process (tests/index.js), where a root-level hook
 // holds for the whole run, so the virtual clock leaked into (or was replaced by) other files' clocks.
+// The clock being replaced is read when the test STARTS, not at import: this file can be imported while another file's
+// test has its own virtual clock installed, and keeping that one as "real" would freeze performance.now for good.
 const onVirtualClock = (fn) => async (t) => {
+  const prev = Object.getOwnPropertyDescriptor(performance, "now");
   performance.now = () => VNOW;
-  try { return await fn(t); } finally { if (realNow) Object.defineProperty(performance, "now", realNow); else delete performance.now; timers.clear(); }
+  try { return await fn(t); } finally { if (prev) Object.defineProperty(performance, "now", prev); else delete performance.now; timers.clear(); }
 };
 class FakeAudioContext {
   constructor() { this.t0 = performance.now(); this.sources = []; this.destination = { connect() {}, disconnect() {} }; }
