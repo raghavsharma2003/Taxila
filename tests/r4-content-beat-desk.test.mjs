@@ -1,7 +1,7 @@
 // Round 4 · stream 2 (content), v2: the beat-by-beat board on the REAL Desk (/dev/desk work-beat fixture, Vite dev server,
 // Chromium) at 360 x 800, 412 x 915 and 1366 x 768, Older and Young: the card header and the board fit the tray, her
 // caption stays visible, nothing scrolls sideways, every word ≥ 14 px (16 px Young). Skipped without Chromium.
-import { test, before, after } from "node:test";
+import { describe, test, before, after } from "node:test";
 import assert from "node:assert/strict";
 import { existsSync, readdirSync } from "node:fs";
 
@@ -9,6 +9,8 @@ const ROOT = new URL("..", import.meta.url).pathname;
 const dir = process.env.PLAYWRIGHT_BROWSERS_PATH;
 const SKIP = !dir || !existsSync(dir) || !readdirSync(dir).some((d) => d.startsWith("chromium")) ? "no Chromium" : false;
 let vite, browser, base;
+// hooks inside a describe (the suite may run as one process: a top-level hook would run for every file)
+describe("r4 content: the beat board on the real Desk", () => {
 before(async () => {
   if (SKIP) return;
   const { createServer } = await import("vite");
@@ -45,3 +47,4 @@ for (const [w, h] of [[360, 800], [412, 915], [1366, 768]]) for (const band of [
     } finally { await page.close(); }
   });
 }
+});
