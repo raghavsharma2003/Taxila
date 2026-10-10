@@ -19,7 +19,9 @@
 
 export const PLAY_VERSION = "play@1" as const;
 /** The four flagship families of round 3. The grammar is open: a new family adds its id here and registers its logic. */
-export const FAMILIES = ["todo-jodo", "taraazu", "nishana", "kyun-lab"] as const;
+export const FAMILIES = ["todo-jodo", "taraazu", "nishana", "kyun-lab",
+  "kon",          // round 4 G1: angles as an amount of turning (E1 Antariksh angles)
+] as const;
 export type FamilyId = (typeof FAMILIES)[number];
 /** Family sub-worlds. A mode is one representation with its own law inside a family. */
 export const MODES = {
@@ -27,6 +29,7 @@ export const MODES = {
   taraazu: ["equation", "equality"],
   nishana: ["place", "compare"],
   "kyun-lab": ["fair-test"],
+  kon: ["turn", "set"],
 } as const satisfies Record<FamilyId, readonly string[]>;
 export type ModeOf<F extends FamilyId> = (typeof MODES)[F][number];
 export type PlayMode = (typeof MODES)[FamilyId][number];
@@ -157,7 +160,12 @@ export type LabAct =
   | { kind: "run" }
   | { kind: "conclude"; factor: string }                // the factor that made the difference, or "cant_tell"
   | { kind: "undo" };
-export type PlayActBody = AtomsAct | StripsAct | BundlesAct | BalanceAct | LineAct | LabAct;
+// Kon (round 4 G1, angles)
+export type KonAct =
+  | { kind: "turn"; deg: number }                       // point the arm at heading `deg` (degrees, 0 = right, anticlockwise +)
+  | { kind: "commit" }
+  | { kind: "undo" };
+export type PlayActBody = AtomsAct | StripsAct | BundlesAct | BalanceAct | LineAct | LabAct | KonAct;
 
 /** Field names that look like a verdict claim. Stripped from every act before replay (rj-ot-frame-claim-as-grade). */
 export const CLAIM_KEYS = Object.freeze(["correct", "verdict", "right", "isCorrect", "score", "pass", "solved", "grade"]);
@@ -306,6 +314,7 @@ export const FAMILY_ARTS: Record<FamilyId, readonly ArtId[]> = {
   taraazu: ["kagaz", "chalk", "blueprint", "raat"],
   nishana: ["blueprint", "kagaz", "chalk", "raat"],
   "kyun-lab": ["kagaz", "blueprint", "raat", "chalk"],
+  kon: ["blueprint", "raat", "kagaz", "chalk"],
 };
 export interface ArtPickInput {
   family: FamilyId; subject: Subject; topicId: string; classLevel: number;

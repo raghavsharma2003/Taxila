@@ -311,7 +311,8 @@ export function PlayStage(props: PlayStageProps) {
 }
 
 export function familyTitle(f: PlayLevel["family"], lang: Lang): string {
-  const t: Record<PlayLevel["family"], [string, string, string]> = {
+  if (f === "kon") return word(lang, "kon.title");
+  const t: Record<Exclude<PlayLevel["family"], "kon">, [string, string, string]> = {
     "todo-jodo": ["Todo-Jodo", "Split & Merge", "तोड़ो-जोड़ो"],
     taraazu: ["Taraazu", "Balance", "तराज़ू"],
     nishana: ["Nishana", "On the Line", "निशाना"],

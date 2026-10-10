@@ -7,6 +7,7 @@ import { makeBundlesView } from "./todo-jodo/bundles.view.ts";
 import { makeBalanceView } from "./taraazu/balance.view.ts";
 import { makeLineView } from "./nishana/line.view.ts";
 import { makeLabView } from "./kyun-lab/lab.view.ts";
+import { makeKonView } from "./kon/kon.view.ts";
 
 export const VIEWS: Record<string, MakeView> = {
   "todo-jodo/atoms": makeAtomsView,
@@ -17,5 +18,7 @@ export const VIEWS: Record<string, MakeView> = {
   "nishana/place": makeLineView,
   "nishana/compare": makeLineView,
   "kyun-lab/fair-test": makeLabView,
+  "kon/turn": makeKonView,
+  "kon/set": makeKonView,
 };
 export function viewFor(family: FamilyId, mode: PlayMode): MakeView | null { return VIEWS[`${family}/${mode}`] ?? null; }
