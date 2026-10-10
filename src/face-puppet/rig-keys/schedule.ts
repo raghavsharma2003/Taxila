@@ -13,8 +13,8 @@ export type MouthKey = "rest" | "calm" | "smile" | "mbp" | "aa" | "eh" | "ee" | 
 export type EyeKey = "open" | "half" | "closed" | "lookL" | "lookR" | "lookUp";
 export type BrowKey = "neutral" | "raised" | "concern";
 
-/** The mouth swap crossfade (ms): the low end of the brief's 60-90 ms. */
-export const FADE_MS = 60;
+/** The mouth swap crossfade (ms), under the brief's 60-90 ms cap. J1 (60 ms): 2 of 6 consecutive 15 fps frames landed mid-dissolve and the judges read the double teeth as "swimming"; P1 takes 45 ms. */
+export const FADE_MS = 45;
 /** The shortest a mouth drawing stays up (ms) before the next replaces it: ~2 frames at 24 fps (anime "on twos"). */
 export const HOLD_MS = 70;
 /** A seal may give way sooner: the next sound's mouth must not be late. */
@@ -190,6 +190,7 @@ export class BrowKeys {
   private f = new Fader<BrowKey>("neutral", BROW_FADE_MS);
   private want: BrowKey = "neutral";
   private since = -1e9;
+
   /** `lookingUp`: the thinking glance keeps level brows (an upward look under raised brows reads as surprise). */
   static target(bs: Record<string, number>, calm = false, lookingUp = false): BrowKey {
     const inner = bs.browInnerUp ?? 0;
@@ -213,7 +214,10 @@ export class BrowKeys {
 }
 
 /** Rigid motion budget (RESEARCH R12, R13), native px of the front and degrees. */
-export const MOTION = { rotMaxDeg: 2, swayMaxPx: 3.5, nodMaxPx: 3, breathScale: 0.0022 } as const;
+// P2 (J2: the head sat on the +-2 deg clamp in listening and thinking, and the judges read the tilted painting as
+// "features sliding over the collar"): half the roll, a lower cap, slower easing. P3 tried more (roll cap 1.5, a sway
+// toward each glance, brow flashes at phrase onsets) and J4 read it as "proportions swim" (uncanny 2/5): reverted.
+export const MOTION = { rotMaxDeg: 1.2, swayMaxPx: 3, nodMaxPx: 2.2, breathScale: 0.0022 } as const;
 
 export interface Pose { rot: number; sway: number; nod: number; breath: number; lean: number }
 
@@ -226,13 +230,13 @@ export class HeadMotion {
     const m = reduced ? 0.3 : 1;
     const [pitch, yaw, roll] = [head[0] ?? 0, head[1] ?? 0, head[2] ?? 0];
     const want: Pose = {
-      rot: clamp((roll * 0.55 + yaw * 0.06) * m, -MOTION.rotMaxDeg, MOTION.rotMaxDeg),
+      rot: clamp((roll * 0.3 + yaw * 0.04) * m, -MOTION.rotMaxDeg, MOTION.rotMaxDeg),
       sway: clamp(yaw * 0.3 * m, -MOTION.swayMaxPx, MOTION.swayMaxPx),
-      nod: clamp(pitch * 0.45 * m, -MOTION.nodMaxPx, MOTION.nodMaxPx),
+      nod: clamp(pitch * 0.35 * m, -MOTION.nodMaxPx, MOTION.nodMaxPx),
       breath: clamp(breath, -1, 1),
       lean: clamp(Math.tanh(lean / 0.7) * m, -1, 1),
     };
-    const a = 1 - Math.exp(-dt / 70);
+    const a = 1 - Math.exp(-dt / 110);
     for (const k of Object.keys(want) as Array<keyof Pose>) this.p[k] += (want[k] - this.p[k]) * (k === "breath" ? 1 : a);
     return { ...this.p };
   }

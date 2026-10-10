@@ -16,6 +16,29 @@ const EYES = (look) => `${KEEP("eyes")}
 New eyes: ${look}. Her eyebrows, eyelid shape, head position and mouth stay exactly the same.`;
 const BROWS = (b) => `${KEEP("eyebrows")}
 New eyebrows: ${b}. Her eyes, eyelids, mouth and head position stay exactly the same.`;
+// P1 (after J1: "teeth and mouth interior differ between consecutive frames"): the mid mouths are repainted FROM a sibling
+// key (--from), so a family shares one set of teeth and lips: eh and oh from aa, ltd from ee.
+const FAMILY = (from, change) => `Edit this illustration of a woman. Keep the picture exactly as it is, including her mouth's
+style: the same lips, the same teeth (their shape, size, colour and number), the same mouth interior colour, and everything
+else in the image unchanged. Do not move, zoom, crop, re-centre or re-light anything.
+Change only how far her mouth is open: ${change}.`;
+export const P1 = {
+  eh: FAMILY("aa", "close it to about half of its current opening, as when saying 'eh' while talking: the same upper teeth still showing along the top"),
+  oh: FAMILY("aa", "round the lips into a medium oval as when saying 'o' in 'go', the same upper teeth just visible at the top of the opening"),
+  ltd: FAMILY("ee", "part the lips a little more, as when saying 'l' or 't', with the tip of the tongue just visible touching behind the same upper teeth"),
+  lookUp: EYES_P1(),
+  // P3 (J3 Kimi 2/2: "the open mouth is a flat dark void, no teeth or tongue"): the aa interior, painted from the aa key
+  aa: `Edit this illustration of a woman. Keep the picture exactly as it is: the same person, face, lips, the same size and
+shape of her open mouth, head position, hair, clothes, background, style, colours and lighting. Do not move, zoom, crop,
+re-centre or re-light anything. Change only the inside of her open mouth: paint the upper front teeth clearly as a soft
+ivory row under the upper lip, and the tongue resting low in the mouth in a soft, muted rose-brown, with a little shadow
+at the back; natural and calm, in the same flat painterly style.`,
+};
+function EYES_P1() { return `Edit this illustration of a woman. Keep the picture exactly as it is: the same person, the same face, head position,
+size and angle, the same hair, earrings, bindi, clothes, background, style, colours and lighting. Do not move, zoom, crop,
+re-centre or re-light anything. Change only her eyes: both eyes glance slightly up and to the viewer's right, as when
+thinking, and both irises move by exactly the same small amount in the same direction, so the two eyes stay parallel and
+look at the same point. Her eyelids, eyebrows and mouth stay exactly the same.`; }
 export const JOBS = {
   // mouth set (Diya's visemes collapsed: RESEARCH.md §4)
   mbp: MOUTH("lips closed and pressed gently together, as in the middle of saying 'm' or 'b': a little flatter and thinner than at rest, corners relaxed, no smile"),
@@ -42,6 +65,9 @@ export const JOBS = {
 const [which = "all"] = process.argv.slice(2);
 const tryN = process.argv.includes("--try") ? process.argv[process.argv.indexOf("--try") + 1] : "1";
 const list = which === "all" ? Object.keys(JOBS) : which.split(",");
+// --from <key>: start from that key's composite (rs/k-<key>.png) with the P1 family prompt; --p1: the P1 prompt from the front
+const from = process.argv.includes("--from") ? process.argv[process.argv.indexOf("--from") + 1] : null;
+const p1 = process.argv.includes("--p1") || !!from;
 fs.mkdirSync(`${S}/raw`, { recursive: true });
 const q = [...list];
 const worker = async () => {
@@ -50,7 +76,8 @@ const worker = async () => {
     const out = `${S}/raw/${k}-t${tryN}.png`;
     if (fs.existsSync(out)) { console.log("skip", k); continue; }
     try {
-      const buf = await edit({ tag: `lamp2-${k}-t${tryN}`, stage: "keys", prompt: JOBS[k], images: [{ file: `${S}/rs/front.png`, name: "front.png" }], quality: "high", size: "1024x1024", fidelity: "high" });
+      const src = from ? `${S}/rs/k-${from}.png` : `${S}/rs/front.png`;
+      const buf = await edit({ tag: `lamp2-${k}-t${tryN}`, stage: p1 ? "keys-P1" : "keys", prompt: p1 ? P1[k] : JOBS[k], images: [{ file: src, name: "front.png" }], quality: "high", size: "1024x1024", fidelity: "high" });
       fs.writeFileSync(out, buf);
     } catch (e) { console.log("FAIL", k, String(e.message).slice(0, 200)); }
   }

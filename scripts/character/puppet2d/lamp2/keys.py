@@ -30,7 +30,9 @@ REGIONS = {
     # both eyes with lids, lashes, the lid crease and the lower-lid shadow; under the brows
     "eyes": (lambda: ell(421, 413, 76, 32, 40) | ell(627, 413, 76, 32, 40), 9),
     # both brows with the skin round them, down to just above the lid crease
-    "brows": (lambda: ell(414, 360, 98, 36, 26) | ell(636, 358, 98, 36, 26), 9),
+    # P2: wider and deeper (J2: the old inner brow ends sat on the region edge and the boundary fill dragged them inward
+    # as a ghost); the two lobes now meet over the nose bridge
+    "brows": (lambda: ell(420, 358, 116, 42, 40) | ell(630, 356, 116, 42, 40), 10),
 }
 KEY_REGION = {k: "mouth" for k in ["mbp", "aa", "eh", "ee", "oh", "oo", "fv", "ltd", "smile", "calm"]}
 KEY_REGION.update({k: "eyes" for k in ["closed", "half", "lookL", "lookR", "lookUp"]})
@@ -103,8 +105,9 @@ def build(key, path, front):
         g, o = np.linalg.lstsq(A, front[..., c][ring], rcond=None)[0]
         reg[..., c] = reg[..., c] * g + o; fit.append([round(float(g), 4), round(float(o), 2)])
     after_fit = float(np.abs(reg[ring] - front[ring]).mean())
-    # membrane: the leftover boundary difference spread inside the region
-    diff = front - reg
+    # membrane: the leftover boundary difference spread inside the region. P2: low-passed first (sigma 3 px), so only
+    # the colour step crosses the border, never a sharp line of the front (J2: the lid crease came in as a brow ghost)
+    diff = ndi.gaussian_filter(front - reg, sigma=(3, 3, 0))
     reg = reg + membrane(diff, region) * region[..., None]
     m = np.clip(ndi.distance_transform_edt(region) / feather, 0, 1).astype(np.float32)
     m = m * m * (3 - 2 * m)
@@ -121,7 +124,18 @@ def build(key, path, front):
     Image.fromarray((m * 255).round().astype(np.uint8)).save(f"{S}/rs/m-{rname}.png")
     return res
 
+# The chosen take of every key (review notes in RESULTS.md): raw/<key>-t<n>.png, or a Stage B edit of rig-b.
+# eh / oh t3 were painted FROM the aa composite and ltd t3 FROM the ee composite (P1: one set of teeth per family).
+# P3's aa t4 (a fuller interior) and its eh / oh t4 are on file and NOT used: J4 regressed ("teeth a flat block").
+STAGEB = "/home/user/Taxila/docs/design/round4/asha/images"
+SOURCES = {"mbp": "t1", "aa": "t1", "eh": "t3", "ee": "t2", "oh": "t3", "oo": "t2", "fv": "t1", "ltd": "t3", "smile": "t1",
+           "calm": "t1", "lookL": "t1", "lookR": "t1", "lookUp": "t2", "raised": "t1", "concern": "t2",
+           "closed": f"{STAGEB}/x-blink.webp", "half": f"{STAGEB}/x-mid.webp"}
+ORDER = ["aa", "ee", "mbp", "fv", "smile", "calm", "lookL", "lookR", "lookUp", "raised", "concern", "closed", "half", "eh", "oh", "ltd"]
+
 if __name__ == "__main__":
+    if sys.argv[1:] == ["--all"]:
+        sys.argv[1:] = [f"{k}={SOURCES[k] if '/' in SOURCES[k] else f'{S}/raw/{k}-{SOURCES[k]}.png'}" for k in ORDER]
     front = np.asarray(Image.open(f"{S}/rs/front.png").convert("RGB")).astype(np.float32)
     os.makedirs(EVID, exist_ok=True)
     jf = f"{EVID}/keys.json"
