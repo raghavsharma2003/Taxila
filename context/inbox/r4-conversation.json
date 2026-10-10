@@ -27,12 +27,32 @@
   {
    "id": "r4c-ms-owner2-stall-root-cause",
    "kind": "measurement",
-   "title": "owner-2 R5.loop (prod-like local, seeds 7 and 1010, s5-zoya c5-evs): the faded step fade:2 stayed on the card 4 turns. Cause read in the transcripts: 'mummy bula rahi thi, haan' (back) re-posed the card word for word, and 'ek min... haan bolo' had no code reading, so the UNDERSTAND note guessed slower / another way, which the card cap exempts (RE_PRESENT). Patch 14: pause word + go-on read in code as back; a back on a card held 2+ turns moves down the ladder (choices, else a hint rung); a note-sourced request never gets the cap exemption. Replay test tests/r4-conversation-stall.test.mjs",
+   "title": "owner-2 R5.loop (prod-like local, seeds 7 and 1010, s5-zoya c5-evs): the faded step fade:2 stayed on the card 4 turns. Cause read in the transcripts: 'mummy bula rahi thi, haan' (back) re-posed the card word for word, and 'ek min... haan bolo' had no code reading, so the UNDERSTAND note guessed slower / another way, which the card cap exempts (RE_PRESENT). Patch 14: a back on a card held 2+ turns moves down the ladder (choices, else a hint rung); a note-sourced request never gets the cap exemption (\"ek min... haan bolo\" stays a code filler, as p5-interaction pinned it). Replay test tests/r4-conversation-stall.test.mjs",
+   "at": "2026-10-10"
+  },
+  {
+   "id": "r4c-ms-base-push-false-alarms",
+   "kind": "measurement",
+   "title": "Known BASE false alarms (pre-existing, not patch 12; main review 2026-10-10): \"mummy ne mujhe jhoole pe dhakka diya\" and \"papa ne mujhe cycle sikhate waqt dhakka diya\" fire on base via lexicon actor_ne_mujhe_gap_verb (a play push by a parent). Not fixed in 12 by the review's ruling; patch 12's own mujhe_dhakka shape guards swing / cycle pushes unless it hurt",
+   "at": "2026-10-10"
+  },
+  {
+   "id": "r4c-rj-local-routing-gap",
+   "kind": "rejection",
+   "title": "Tried (2026-10-10): explaining local owner-2 (19 / 18 defects at seeds 7 / 1010) vs production (\"1 / 1\") by model routing. Broke: local base with tests/prod/prod-routing.env, one lane, still 19 / 18; the production numbers had been run WITHOUT --judge model (code rubric only). Production with the judge: 17 / 13. The local harness is sound; the gap was the missing judge flag",
    "at": "2026-10-10"
   }
  ],
  "edges": [
-  { "src": "r4c-rj-setaside-no-novelty-budget", "rel": "measured_by", "dst": "r4c-ms-setaside-main10-2026-10-10" },
-  { "src": "r4c-rj-setaside-self-harm", "rel": "measured_by", "dst": "r4c-ms-setaside-main10-2026-10-10" }
+  {
+   "src": "r4c-rj-setaside-no-novelty-budget",
+   "rel": "measured_by",
+   "dst": "r4c-ms-setaside-main10-2026-10-10"
+  },
+  {
+   "src": "r4c-rj-setaside-self-harm",
+   "rel": "measured_by",
+   "dst": "r4c-ms-setaside-main10-2026-10-10"
+  }
  ]
 }

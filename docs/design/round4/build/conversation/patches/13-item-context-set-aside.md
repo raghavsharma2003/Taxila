@@ -150,3 +150,32 @@ through the prototype.
   changes). w2i-safety 39/39, r2 10/10, r3 unchanged, persona 105/105.
 - **One consumer test per seam** listed above: a set-aside turn shows no safeguard UI, no helpline line, no
   relational harm signal and no safety ack, and it gets a grade.
+
+## Review outcome and the shadow build (2026-10-10)
+
+**Main safety review:** direction approved (conditions 0-5, one decision per turn, never subtracting duplex `safetyPending`,
+no set-aside on realtime), the misconception record stays OUT of item content, and it ships **shadow-first**.
+
+**Built (this stream's files only; the floor fires exactly as before):**
+- **`server/director/itemSetAside.js`:** the pure rule (conditions 0-4).
+  - GUARD_VETO is read through the exported `guardFrameOf`, so `safety.js` is untouched.
+  - The flag `TAXILA_ITEM_SETASIDE` = off | shadow | on, default **shadow**. "on" acts as shadow until the one-decision patch.
+- **`server/director/classify.js`:** on a predicate hit, the result carries `setAsideWould: { mode, aside, why, novel, masked }`.
+  It is skipped for a chip or a module answer. Outcome, source and every flag are unchanged.
+- **`server/brain/{trace,reasons}.js`:** closed codes on the brain_trace row, never words:
+  - `safety_setaside_would.item_context`, or `safety_setaside_not.<why>`;
+  - `setaside_novel.n0|n1|n2|over`, `setaside_masked.n0..n5plus`;
+  - the item id is the row's own column, and the masked span can be recomputed offline from the stored turn.
+- **`tests/r4-item-setaside.test.mjs`** (11 tests):
+  - ≥ 3 near-misses for each condition 0, 1, 2/3, 4a, 4b, 4c, 4d;
+  - the review's 10 answers with their expected reasons (6 set aside on i08; 6 and 9 actor, 8 guard, 10 novel);
+  - the shadow contract: `classifyFast` with the flag off and in shadow gives deep-equal results apart from the annotation, and every trace code is a known reason.
+- **`evals/conversation-r4/setaside-risk.mjs`:** the risk cross product.
+  - Full run: 438 firing disclosures × 12,398 verified items = **0** set aside.
+  - `--sample N --seed S` for CI.
+  - `--lines` reports a lines file (the 842 test, near-miss and kit strings: 3, all c9-sst i08's own kit content).
+  - It exits 1 when a recall disclosure would be set aside.
+
+**Not built:** the "on" path. One decision per turn in `brain/turn.js` (read-only for this stream), consumed by every seam
+listed above, plus the unconditional model distress read on a set-aside turn. It is a separate patch request, after
+≥ 1 week or ≥ 200 shadow decisions from production, whichever is later.

@@ -205,6 +205,17 @@ export function shareOf(text) {
   return t.replace(/[^\p{L}\p{N} ,'-]/gu, " ").replace(/\s+/g, " ").trim().slice(0, 60) || null;
 }
 
+/**
+ * round 4 (owner-2 judge, production and local, 2026-10-10): a bare acknowledgement with no content ("haan", "ok", "hmm",
+ * "achha", "yes", "theek hai, aage", "हाँ", "अच्छा"): on a teaching question it answers nothing, and the next step must close
+ * that question before moving on (state.js; the judge's top cause of J.confused: "abruptly switches … without addressing
+ * the child's haan"). PURE. Never a request reading: readIntent leaves these to the phase.
+ */
+const ACK = String.raw`(?:haan|haa|ha|han|hanji|ok|okay|okk|okie|hmm+|hm|achha|acha|accha|theek\s+hai|thik\s+hai|thik|theek|yes|yeah|yep|sure|alright|got\s+it|samajh\s+gaya|samajh\s+gayi|samjha|हाँ|हां|हा|ठीक\s+है|अच्छा|समझ\s+गया|समझ\s+गई)`;
+const ACK_TAIL = String.raw`(?:ji|didi|sir|ma'?am|bhai|boss|aage|chalo|bolo|go\s+on|continue|lol|haha)`;
+const BARE_ACK = new RegExp(String.raw`^(?:(?:lol|haha)\s+)?${ACK}(?:[\s,.!]+(?:${ACK}|${ACK_TAIL}))*[\s,.!?]*$`, "iu");
+export const bareAck = (text) => { const t = T(text); return !!t && words(t) <= 6 && BARE_ACK.test(t); };
+
 export function readIntent(text) {
   const t = T(text);
   if (!t) return null;

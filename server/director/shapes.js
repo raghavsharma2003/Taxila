@@ -515,6 +515,12 @@ export const MUST_NOTE = Object.freeze({
  *  as a last-section note, "add nothing they did not say" won over the share shape's promise, and a share KEPT for later got
  *  no "we'll come back to it" (the judges' parks / acknowledges). When the share was kept this turn, the note carries it. */
 export const mustShareKept = ({ promise }) => `your first words react warmly to what they shared, in their words; then a few words that you will come back to it ${promise === "after_question" ? "right after this question" : "before the lesson ends"}`;
+/** Round 4 (owner-2 judge, top cause of J.confused, production and local 2026-10-10): after a teaching question the child only
+ *  acknowledged ("haan", "ok", "hmm"), the next step opened a NEW example as if nothing had been asked. The note closes the
+ *  asked question first. `asked` is the teacher's own last question (never the child's words). */
+export const ackClose = ({ asked }) => `they only said okay to your question "${clean(asked).slice(0, 90)}": first answer it yourself in one short line, then link it to this step in a few words (the same example, or say plainly it is a new one)`;
+/** ... and the card question re-asked after a bare okay read as "repeats the previous question without new guidance". */
+export const ACK_CARD = "they only said okay, not an answer: first one new concrete handle (what to look at, or the first step), in words you have not used yet; then the question";
 export const parkAlso = ({ topic }) => `they also asked about ${clean(topic) || "something else"}: one line that you will come back to it after this`;
 /** Round 3: the turn after a stop check-in that was not a stop ("haan", an answer): the lesson simply goes on. Local
  *  battery base-head-1: "yes" after the check-in got "Lesson ended, Meher. You may close the book now. <a question>". */
