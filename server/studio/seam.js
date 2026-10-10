@@ -613,6 +613,31 @@ export const studioSeam = {
   },
 
   /**
+   * r4-latency (patch 02): the facts row slotFor + factsRowForSlot give on a turn that neither reveals nor retires a piece
+   * and leaves the tray to Studio: the piece already on screen stays. READ ONLY (no L.shown, no retire, no push), so the
+   * speculative replies written before the classifier returns (server/brain/turn.js speculate) carry the same row the
+   * real turn adds after its kernel; a turn that does change the screen just misses the speculation, as before.
+   * null when nothing would be on screen.
+   * @param {string} lessonId @param {{ tray?: string | null }} [o] the planned move's UiDirectives.tray
+   */
+  peekFactsRow(lessonId, { tray = null } = {}) {
+    const L = lessons.get(lessonId);
+    if (!L || L.safety) return null;
+    if (typeof tray === "string" && DIRECTOR_TRAYS.has(tray)) return null;
+    const on = L.onScreen ? L.pieces.get(L.onScreen) : null;
+    if (!on || on.kind === "whiteboard" || !VISIBLE.has(on.state) || !on.facts) return null;
+    const slot = slotOf(on, on.source === "skeleton" ? "fallback_ready" : on.state);
+    if (!slot?.artifact || slot.artifact.kind === "whiteboard") return null;
+    const extra = {};
+    if (on.grade) {
+      if (on.grade.complete) extra.state = "finished";
+      else if (on.grade.lastVerdict) extra["last answer"] = on.grade.lastVerdict;
+      if (on.grade.wrongCount) extra["wrong tries"] = on.grade.wrongCount;
+    }
+    return rowOf({ ...on.facts, onScreen: { ...(on.facts.onScreen ?? {}), ...extra } });
+  },
+
+  /**
    * The committed turn revealed / retired a piece: record the mount, push the status. After the commit, never awaited.
    * @param {{ lessonId: string, childId: string, turn: number, studio: import("../../shared/brain").TurnStudio }} ev
    */
