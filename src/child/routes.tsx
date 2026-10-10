@@ -15,7 +15,7 @@
 // Renames (§5.1): /doubt → /ask, /notes → /notebook (the old paths redirect).
 import { lazy, Suspense, type ReactNode } from "react";
 import { Navigate, type RouteObject } from "react-router-dom";
-import { ChildShell } from "./ChildShell.tsx";
+import { ChildShell, useChild } from "./ChildShell.tsx";
 import { kakshaEnabled } from "../ui-v3/kaksha/flag.ts";
 
 const Home = lazy(() => import("./screens/Home.tsx").then((m) => ({ default: m.Home })));
@@ -31,9 +31,10 @@ const KakshaHome = lazy(() => import("../ui-v3/kaksha/screens/KakshaHome.tsx").t
 const KakshaWorld = lazy(() => import("../ui-v3/kaksha/screens/KakshaWorld.tsx").then((m) => ({ default: m.KakshaWorld })));
 const KakshaHangar = lazy(() => import("../ui-v3/kaksha/screens/KakshaWorld.tsx").then((m) => ({ default: m.KakshaHangar })));
 
-/** ui.kaksha switch, read at render (K-P8). */
+/** ui.kaksha switch, read at render (K-P8); in production only for the server's owner cohort (/api/me ui.kaksha, K-P10). */
 function Kx({ on, off }: { on: ReactNode; off: ReactNode }) {
-  return <>{kakshaEnabled() ? on : off}</>;
+  const { me } = useChild();
+  return <>{kakshaEnabled((me as { ui?: { kaksha?: boolean } }).ui?.kaksha) ? on : off}</>;
 }
 
 const s = (el: ReactNode) => <Suspense fallback={null}>{el}</Suspense>;
