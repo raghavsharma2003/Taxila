@@ -3,6 +3,8 @@
 // parameter G-EN-1's reversal names ("reverse if Hindi-medium children can't navigate English chrome"): they are never
 // rendered while CHROME_LANG is "en". Her speech and captions never come from this table (they follow language_pref).
 // Proper nouns allowed in English chrome: Kaksha, Antariksh, Khand, Asha (K-P7 allowlist).
+import { futurist } from "./look.ts";
+
 export type ChromeLang = "en" | "hinglish" | "hi";
 /** Fixed. Changing it is an owner decision (reverse G-EN-1), not a setting. */
 export const CHROME_LANG: ChromeLang = "en";
@@ -23,6 +25,9 @@ export const KX = {
   aiTeacher: K("AI teacher", "AI teacher", "AI टीचर"),
   myOrbit: K("My orbit", "Meri Kaksha", "मेरी कक्षा"),
   forParents: K("For parents", "Bade log", "बड़ों के लिए"),
+  notMe: K("Not {name}?", "{name} nahi?", "{name} नहीं?"),
+  // Hello (K-P13, audit B02): what really happens next, for every start (session-first or a planned lesson)
+  helloOlder: K("First a quick chat, then Asha teaches from there. Nobody sees a score.", "Pehle thodi baat, phir Asha padhayegi. Score koi nahi dekhta.", "पहले थोड़ी बात, फिर आशा पढ़ाएगी। स्कोर कोई नहीं देखता।"),
   back: K("Back", "Wapas", "वापस"),
   yourWorld: K("Your world", "Tumhari duniya", "तुम्हारी दुनिया"),
   orbitTitle: K("{name}'s Kaksha", "{name} ki Kaksha", "{name} की कक्षा"),
@@ -108,10 +113,29 @@ export const KX = {
 
 export type KxKey = keyof typeof KX;
 
+// The futurist looks' English (owner directive 2026-10-10: global, modern names; the direction pass,
+// docs/design/round4/build/kaksha/futurist/). The world and shell names are the first of the shortlist there, until the
+// main session names them. The settlement is the base.
+export const KX_NAMES = { world: "Zenith", shell: "Flight Deck" } as const;
+const FUTURIST: Partial<Record<KxKey, string>> = {
+  myOrbit: "My world",
+  yourWorld: "Planet {world}",
+  orbitTitle: "{name}'s world",
+  viewSettlement: "Base",
+  settlementSub: "Each idea you make secure builds one part of your base, and the part shows the idea.",
+  raises: "Builds a {what} at your base",
+  emptyWorld: "Your first secure idea lands here. Ideas become secure after a short check on another day.",
+  hangarSub: "Every idea you make secure opens a part for your ship. Nothing here is bought, and nothing is ever taken away.",
+  hidden: "Your parent has kept this private for now. Your Hangar and your ship are still yours.",
+};
+
 /** The chrome string (always English while G-EN-1 stands), with {vars}. */
 export function kt(key: KxKey, vars: Record<string, string> = {}): string {
   const row = KX[key];
-  const s = row[CHROME_LANG] || row.en;
+  const on = futurist();
+  const fut = on ? FUTURIST[key] : undefined;
+  if (on) vars = { world: KX_NAMES.world, shell: KX_NAMES.shell, ...vars };
+  const s = fut ?? (row[CHROME_LANG] || row.en);
   return s.replace(/\{(\w+)\}/g, (_, k: string) => vars[k] ?? "");
 }
 

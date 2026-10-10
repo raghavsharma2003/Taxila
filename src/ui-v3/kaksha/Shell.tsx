@@ -11,14 +11,16 @@ import { useEffect, useRef, type CSSProperties, type ReactNode } from "react";
 import "../tokens.css";
 import "./tokens.css";
 import "./kaksha.css";
+import "./futurist.css";
 import { Teacher } from "../../ui/teacher/Teacher.tsx";
 import type { TeacherFloor } from "../../ui/teacher/Teacher.tsx";
 import { kakshaThemeFor } from "./tokens.ts";
 import { kt } from "./copy.ts";
+import { lookAttr } from "./look.ts";
 
 export function KakshaRoot({ family, reducedMotion, screen, children }: { family: "young" | "older"; reducedMotion: boolean; screen: string; children: ReactNode }) {
   return (
-    <div className="v3 kx" data-ktheme={kakshaThemeFor(family)} data-motion={reducedMotion ? "reduced" : undefined} data-kscreen={screen}>
+    <div className="v3 kx" data-ktheme={kakshaThemeFor(family)} data-klook={lookAttr(family)} data-motion={reducedMotion ? "reduced" : undefined} data-kscreen={screen}>
       {children}
     </div>
   );

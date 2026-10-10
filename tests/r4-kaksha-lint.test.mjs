@@ -53,6 +53,37 @@ test("K-CONTRAST: every Kaksha text pair ≥ 5:1 in night and dawn", async () =>
   assert.deepEqual(fails, []);
 });
 
+test("K-MIRROR-LOOKS: tokens.css carries every futurist palette value (holo, volt × night, dawn)", async () => {
+  const t = await import(path.join(DIR, "tokens.ts"));
+  const css = read(path.join(DIR, "tokens.css")).toLowerCase().replace(/\s+/g, " ");
+  const kebab = (k) => "--k-" + k.replace(/([A-Z])/g, "-$1").toLowerCase().replace(/([a-z])(\d)/g, "$1-$2");
+  const block = (sel) => { const i = css.indexOf(sel); assert.ok(i >= 0, `no block ${sel}`); return css.slice(i, css.indexOf("}", i)); };
+  const missing = [];
+  for (const look of ["holo", "volt"]) {
+    const blocks = { night: block(`.kx[data-klook="${look}"], .kx[data-klook="${look}"][data-ktheme="night"], .tx-child[data-klook="${look}"][data-ktheme="night"] {`), dawn: block(`.kx[data-klook="${look}"][data-ktheme="dawn"], .tx-child[data-klook="${look}"][data-ktheme="dawn"] {`) };
+    for (const theme of ["night", "dawn"]) {
+      for (const [k, v] of Object.entries(t.K_LOOKS[look][theme])) if (!blocks[theme].includes(`${kebab(k)}: ${String(v).toLowerCase()}`)) missing.push(`${look} ${theme} ${kebab(k)}`);
+    }
+  }
+  assert.deepEqual(missing, []);
+});
+
+test("K-CONTRAST-LOOKS: every Kaksha text pair ≥ 5:1 in every futurist palette", async () => {
+  const t = await import(path.join(DIR, "tokens.ts"));
+  const fails = [];
+  for (const look of ["holo", "volt"]) for (const theme of ["night", "dawn"]) {
+    const P = t.K_LOOKS[look][theme];
+    for (const [fg, bg, where] of t.K_TEXT_PAIRS) {
+      const c = t.kContrast(P, fg, bg);
+      if (c < 5) fails.push(`${look} ${theme} ${fg} on ${bg} (${where}) = ${c.toFixed(2)}`);
+    }
+    // the move's gradient ends on moveDeep: its label must hold there too
+    const end = t.kContrast(P, "onMove", "moveDeep");
+    if (end < 5) fails.push(`${look} ${theme} onMove on moveDeep = ${end.toFixed(2)}`);
+  }
+  assert.deepEqual(fails, []);
+});
+
 test("K-FLOOR: CSS text ≥ 14 px and interactive heights ≥ 44 px", () => {
   const hits = [];
   for (const f of files.filter((x) => x.endsWith(".css"))) {

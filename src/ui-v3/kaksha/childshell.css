@@ -1,0 +1,45 @@
+/* The child screens Kaksha does not draw itself (Hello, Ask, Notebook, Me, Teacher, practice, the play frames) under the
+   Kaksha look, so the owner never meets a mixed look (main session, 2026-10-10). ChildShell's [data-v2] root carries
+   data-klook + data-ktheme ONLY when ui.kaksha is on (K-P14, shell-theme.ts); these rules re-point the v2 tokens
+   (src/styles/tokens.css) at the k tokens (tokens.css, which defines them on that root too). Flag off: no attribute, no
+   rule here matches. var() only: no colour literal. The Desk keeps its own skin (desk.kaksha.css); Kaksha's own screens
+   (.kx) read the k tokens directly. Specificity 0,5,0 beats the v2 dark-theme block (0,4,0). */
+.tx-child.tx-child[data-v2][data-klook][data-ktheme] {
+  --k-sans: "Space Grotesk", "Atkinson Hyperlegible Next", "Mukta", system-ui, sans-serif;
+  --k-mono: "Geist Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  --bg: var(--k-void); --paper: var(--k-void); --surface: var(--k-raise); --surface-2: var(--k-bar); --tray: var(--k-bar);
+  --ink: var(--k-ink); --ink-2: var(--k-ink-2); --line: var(--k-ink-3); --tile-border: var(--k-line-2);
+  --veil: color-mix(in srgb, var(--k-void) 62%, transparent);
+  --nib: var(--k-move); --nib-soft: color-mix(in srgb, var(--k-move) 16%, var(--k-raise)); --on-nib: var(--k-on-move);
+  --listen: var(--k-ion); --on-listen: var(--k-void); --think: var(--k-ink-3);
+  --got: var(--k-secure); --got-soft: color-mix(in srgb, var(--k-secure) 16%, var(--k-raise));
+  --trouble: var(--k-rose); --jamun: var(--k-look); --jamun-soft: color-mix(in srgb, var(--k-look) 16%, var(--k-raise));
+  --focus: var(--k-ion); --focus-halo: var(--k-void);
+  --sky-panel: var(--k-deep); --sky-label: var(--k-ink); --stage: var(--k-deep); --stage-ink: var(--k-ink); --stage-ink-2: var(--k-ink-2);
+  --font-ui: var(--k-sans); --font-text: var(--k-sans); --font-heading: var(--k-sans); --font-title: var(--k-sans); --font-display: var(--k-sans);
+  --elev-card: 0 0 0 1px var(--k-line-2);
+  background: var(--k-void); color: var(--k-ink);
+  color-scheme: dark;
+}
+.tx-child.tx-child[data-v2][data-klook][data-ktheme="dawn"] { color-scheme: light; }
+/* the look's backdrop on a fixed layer behind the screen (the shell's own ground stays solid --k-void, so every text
+   ground is a plain colour): Volt older a faint HUD grid, Volt young a dot grid, Holo two soft nebula glows */
+.tx-child.tx-child[data-v2][data-klook][data-ktheme] { isolation: isolate; }
+.tx-child.tx-child[data-v2][data-klook][data-ktheme]::before { content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none; }
+.tx-child.tx-child[data-v2][data-klook="volt"][data-ktheme="night"]::before {
+  background: repeating-linear-gradient(0deg, var(--k-line) 0 1px, transparent 1px 44px), repeating-linear-gradient(90deg, var(--k-line) 0 1px, transparent 1px 44px);
+}
+/* Volt young: "toy plastic": a thick ink outline and a hard offset shadow on cards, a dot grid behind */
+.tx-child.tx-child[data-v2][data-klook="volt"][data-ktheme="dawn"] { --tile-border: var(--k-ink); --elev-card: 4px 4px 0 0 var(--k-ink), 0 0 0 2.5px var(--k-ink); }
+.tx-child.tx-child[data-v2][data-klook="volt"][data-ktheme="dawn"]::before {
+  background: radial-gradient(color-mix(in srgb, var(--k-ion) 16%, transparent) 1.6px, transparent 2.2px) 0 0 / 22px 22px;
+}
+.tx-child.tx-child[data-v2][data-klook="holo"]::before {
+  background: radial-gradient(55% 40% at 92% 4%, color-mix(in srgb, var(--k-her) 20%, transparent), transparent 70%),
+    radial-gradient(60% 45% at 0% 100%, color-mix(in srgb, var(--k-move) 16%, transparent), transparent 70%);
+}
+/* the tab labels at the 14 px floor (today's 13 px, audit #15) */
+.tx-child[data-klook] .cs-nav-item { font-size: .875rem; }
+/* the painted room scenes (art.tsx <Scene>, aria-hidden decoration: a wooden table, a wall with leaves) are the old warm
+   look; under Kaksha the look's own backdrop stands behind every screen. Content art (<Spot>) stays. */
+.tx-child[data-klook] .scene { display: none; }

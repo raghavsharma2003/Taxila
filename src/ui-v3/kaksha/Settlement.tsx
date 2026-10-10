@@ -7,6 +7,8 @@
 import type { ReactNode } from "react";
 import type { Structure } from "./world.ts";
 import { GRID } from "./world.ts";
+import { baseGround, baseShapes } from "./Base.tsx";
+import { futurist as futuristOn } from "./look.ts";
 
 type P = [number, number];
 const S = 26;
@@ -102,21 +104,28 @@ export function shapes(kind: string, x: number, y: number, key: string): ReactNo
 
 export function Settlement({ structures, label, onPick, reducedMotion }: { structures: Structure[]; label: string; onPick?: (skillId: string) => void; reducedMotion: boolean }) {
   const N = GRID * 2 + 1;
+  // a futurist look draws the same structures as a base on the planet (Base.tsx); the rules are world.ts's either way
+  const futurist = futuristOn();
   const ground: ReactNode[] = [];
-  box(ground, "base", 0, 0, -0.7, N, N, 0.7, "sand");
-  box(ground, "lawn", 0, 0, -0.04, N, N, 0.04, "gr");
+  if (futurist) ground.push(...baseGround(N, !structures.some((s) => s.x === GRID - 1 && s.y === GRID - 1)));
+  else {
+    box(ground, "base", 0, 0, -0.7, N, N, 0.7, "sand");
+    box(ground, "lawn", 0, 0, -0.04, N, N, 0.04, "gr");
+  }
+  const draw = futurist ? baseShapes : shapes;
   const rock = [iso(0, N, -0.7), iso(N, N, -0.7), iso(N * 0.7, N * 0.8, -3.2), iso(N * 0.3, N * 0.75, -2.8)];
   const sorted = structures.slice().sort((a, b) => a.x + a.y - (b.x + b.y));
   const [minX] = iso(0, N, 0), [maxX] = iso(N, 0, 0);
-  const top = iso(0, 0, 4)[1], bottom = iso(N * 0.7, N * 0.8, -3.2)[1];
+  // the base sits on a flat plate (no rock underside): frame it tighter so the structures read at phone size
+  const top = iso(0, 0, futurist ? 2.6 : 4)[1], bottom = futurist ? iso(N, N, -0.7)[1] : iso(N * 0.7, N * 0.8, -3.2)[1];
   return (
     <div className="kx-settle kx-cut" role="img" aria-label={label}>
       <svg viewBox={`${minX - 8} ${top - 8} ${maxX - minX + 16} ${bottom - top + 16}`} aria-hidden="true" data-reduced={reducedMotion ? "" : undefined}>
-        <polygon className="kx-m-rock" points={pts(rock)} />
+        {!futurist && <polygon className="kx-m-rock" points={pts(rock)} />}
         {ground}
         {sorted.map((s) => (
           <g key={s.skillId} className={`kx-bld${s.isNew && !reducedMotion ? " kx-rise" : ""}`} onClick={onPick ? () => onPick(s.skillId) : undefined}>
-            {shapes(s.kind, s.x * 2 + 0.2, s.y * 2 + 0.2, s.skillId)}
+            {draw(s.kind, s.x * 2 + 0.2, s.y * 2 + 0.2, s.skillId)}
           </g>
         ))}
       </svg>

@@ -110,7 +110,9 @@ async function compare(name, acct, route, opts = {}) {
   const cross = [];
   for (const a of xs) for (const b of ys) cross.push(await pixelDiff(a.png, b.png));
   const px = Math.min(...cross), ctl = Math.max(...within), bar = Math.max(64, ctl);
-  const domEqual = xs.every((a) => ys.every((b) => a.html === b.html));
+  // every branch capture must be a DOM the base itself produced (a page that animates, e.g. the notebook's whiteboard
+  // replaying its strokes, differs between two captures of the SAME build: controlDom false)
+  const domEqual = ys.every((b) => xs.some((a) => a.html === b.html));
   const row = { name, route, search: opts.search ?? "", url: [x.url, y.url], domEqual, controlDom: xs.every((a) => a.html === x.html), pixels: px, pixelsCross: cross, controlPixels: within, kakshaChunks: [...new Set(ys.flatMap((b) => b.kchunks))], kakshaRoot: ys.some((b) => b.kx) };
   if (!domEqual) row.diff = firstDiff(x.html, ys.find((b) => b.html !== x.html)?.html ?? y.html);
   if (!domEqual || px > bar) {
@@ -120,7 +122,7 @@ async function compare(name, acct, route, opts = {}) {
   }
   rows.push(row);
   ok(xs.every((a) => a.url === x.url) && ys.every((b) => b.url === x.url), `N ${name}: same URL on both builds (${x.url})`);
-  ok(domEqual, `N ${name}: body DOM equal on all 5 captures${domEqual ? "" : ` (first difference at ${row.diff.at})`}`);
+  ok(domEqual, `N ${name}: every branch DOM is one the base produced (base self-agreement ${row.controlDom})${domEqual ? "" : ` (first difference at ${row.diff.at})`}`);
   ok(px <= bar, `N ${name}: the branch draws a picture the base draws (closest pair ${px} px; base vs base up to ${ctl} px)`);
   ok(!row.kakshaChunks.length && !row.kakshaRoot, `N ${name}: no Kaksha chunk or root on the branch (${row.kakshaChunks.join(",") || "none"})`);
   return row;

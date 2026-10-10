@@ -38,3 +38,19 @@ export function nowSecure(before: MapLike | null, after: MapLike | null, cat: Ca
   }
   return out;
 }
+
+/**
+ * Her closing line for the Debrief, or "" when her last line is not a closing (audit B05, 2026-10-10: a lesson the child
+ * ended early showed her open fill-in prompt "Khaali jagah bhariye: 'Of' means __: 3/5 × 2/3." as the summary's lead).
+ * Not a closing when it is a question (ends "?"), carries a fill-in blank ("__"), or is the question still on the card
+ * (her last ask: the same words, either way round). PURE; her words are never rewritten, only kept or dropped.
+ */
+export function closingLine(caption: string, ask: string | null | undefined): string {
+  const last = String(caption ?? "").replace(/\s+/g, " ").trim();
+  if (!last) return "";
+  if (/[?？]\s*["'”’)]*$/.test(last) || /_{2,}/.test(last)) return "";
+  const norm = (x: string) => x.toLowerCase().replace(/[^\p{L}\p{N}]+/gu, " ").trim();
+  const a = norm(String(ask ?? "")), c = norm(last);
+  if (a && c && (c.includes(a) || a.includes(c) || (a.length >= 24 && c.includes(a.slice(-24))))) return "";
+  return last;
+}

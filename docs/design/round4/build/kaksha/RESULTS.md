@@ -7,6 +7,57 @@
 **Honesty:** no child has used any of this. Every performance number below is a **G35-class proxy**: headless
 Chromium with CPU ×4 throttling at 360 × 800, DPR 2. None was measured on a phone (K-O3 is open).
 
+## The Kaksha look across the whole child app (2026-10-10; behind ui.kaksha, the owner cohort)
+
+**Scope (main session, from the owner):** "Beautiful UI UX we need, which engages Gen Alphas." It is design only, with
+no new mechanics.
+- **The pick:** **Volt for both families.** Its lime is ui-v3's own `--volt` (`#CBFF4D` dark, `#C2F542` light), so the one-volt law holds (`tests/ui-v3-lint` L-CANDY). Young is the "toy plastic" look and older is a carbon HUD. On older Volt,
+  lime is only on CTAs, the your-turn lamp and the "Now secure" moment; every other accent is ion or ultraviolet.
+- **The alternate:** **Holo**, behind a per-device switch with the `?ui=` pattern. `?look=holo` or `?look=volt` sets
+  it, and `?look=default` clears it. There is no settings UI.
+- **The direction pass and both options:** `futurist/README.md` and `futurist/pick-360.webp`.
+
+**How it reaches every child screen:**
+- **Kaksha's own screens** (Home, World and its base, Hangar, Desk skin, Debrief) take the look directly
+  (`data-klook` on the `.kx` root).
+- **Every other child screen** (Hello, Ask, Notebook, Me, Teacher, the lesson frame) takes it through ChildShell. Its
+  `[data-v2]` root carries `data-klook` + `data-ktheme` **only under ui.kaksha** (K-P14), and the Kaksha-owned
+  `childshell.css` (var() only) points the v2 tokens at the k tokens.
+- **Backdrops:** the painted room scenes are hidden under the look, and the look's backdrop (HUD grid, dot grid,
+  nebula) sits on a fixed layer behind the screen. The screen's own ground stays a solid colour.
+
+**Certificates (measured 2026-10-10):**
+
+| check | n | result | method |
+|---|---|---|---|
+| every child screen under the look | 120 pages | **0 findings** | `tests/prod/r4-kaksha-screens.mjs`: a local production build and a real cohort account with a class 3 and a class 7 child. 10 pages (hello, home, world, hangar, ask, notebook, me, teacher, the lesson's first screen, and the same with a **180-character question**, WRAP-1: the whole question on the card, wrapped, nothing clamped or clipped; main 2026-10-10, 4A's 7565adf) × Volt and Holo × 360/412/1366. Per page: text ≥ 14 px, Devanagari ≥ 16 px, targets ≥ 44 px, contrast ≥ 4.5:1 on the composited ground, no overflow, LOOK-1 (no page in the old look), AI-1. Shots and per-look sheets are in `screens/` |
+| Kaksha screens, every look | 72 pages | **0 findings** | `tests/prod/r4-kaksha-futurist-shots.mjs` on the dev pages (the real views, plus the Desk and Debrief with fixture models): classic, Volt and Holo × 6 screens × 2 families × 360/1366, with TRUTH-1, EARN-1 and BASE-1/2 |
+| palettes | 6 palettes × 21 pairs | all **≥ 5:1** | `tests/r4-kaksha-lint.test.mjs` K-CONTRAST(-LOOKS). This includes the move's label at both ends of its gradient |
+| non-cohort accounts unchanged | 16 pages × 5 captures | **72 / 72** | `tests/prod/r4-kaksha-parity.mjs`: base `0c90ebb` vs this branch. Every branch DOM is one the base itself produced, and every branch picture is one the base draws. No Kaksha chunk is fetched |
+| lint-ui | whole tree | 353 (the baseline) | `node scripts/lint-ui.mjs --json` |
+| reduced motion | | stills everything | kaksha.css's global rule covers every look, and the earned-moment burst is removed |
+
+**Known, not fixed here:**
+- **Older Me page at 412 px:** the "Captions" row label is cut and the theme row is tight. The row was already tight
+  in today's app, and Space Grotesk is slightly wider. The lint has no overlap check, so this came from looking at the
+  shots. It is a stream 5 / 2 layout item.
+- **The question card's "…":** `askText()` in `server/director/say.js` (routed to 4A).
+
+## Audit fixes (stream 5's journey audit, Kaksha rows; 2026-10-10)
+
+Source: `claude/r4-asha` @ 0cea014a, `docs/design/round4/build/journey/AUDIT.md`, the B rows (a real Kaksha journey on a
+local build). Main asked for these on top of 723e6cfc, separate from the look layer. Each one is pinned by
+`tests/r4-kaksha-audit.test.mjs`.
+
+| row | what the child saw | cause | fix |
+|---|---|---|---|
+| B04-04 | the topic header cut to "Multiplying f" | my skin set the top-bar topic in mono at .04em, wider than the stock sans, in a nowrap box | sans; on a phone it may wrap to a second line, never cut. Measured on the Desk dev page with `?title=`: "Multiplying fractions" and a 23-char title are 1 line at 360 and 412, 2 lines at 320, never clipped |
+| B04-04 | the question card ends in "…" | **not Kaksha**: the server's `askText()` (`server/director/say.js`) cuts an ask longer than `ASK_MAX` with no "?" sentence on a word boundary and adds "…". Here her ask ran "…; ab bataiye, 6/15 ko kis chhote fraction mein…" | reported to main for 4A / the Director. The Desk draws the text whole |
+| B05 | the Debrief led with her unanswered fill-in prompt ("Khaali jagah bhariye: 'Of' means __: 3/5 × 2/3.") | the closing-line rule dropped only lines ending in "?" | `closingLine()` (`lesson/debrief.ts`, pure): a line is not a closing when it is a question, carries a fill-in blank (`__`), or is the question still on the card. Her words are kept or dropped, never rewritten |
+| B06 | Finish → "Who is learning?" on a 2-child account | LessonScreen's finish sends a 2-child device to the picker | Kaksha only (K-P2 rev 2, `patches/02b-…`): Finish → the child's Home. Kaksha Home shows **"Not {name}?"** → `/who` when the account has 2+ children, so a sibling still gets on in one tap. Flag off: unchanged |
+| B02 | Hello: "Let's find what you already know", then a normal lesson | copy promised an assessment | Kaksha only (K-P13): "First a quick chat, then Asha teaches from there. Nobody sees a score." This is true for both the session-first start and a planned lesson. Flag off: unchanged |
+| #1 | "Just start" opened a fixed topic | Kaksha Home's Start added `?topic=<plan topic>` | Start opens a plain `/lesson/new`, so the client sends no `topicId`. The server decides, and 4A's cohort turns a plain start into the school-first session |
+
 ## Integration readiness (merge order step 3: K0-K3 with `ui.kaksha` ON for the owner's account only; 2026-10-10)
 
 **How it is switched on for one account:** `TAXILA_UI_KAKSHA` on the web container. The scheme is the same as

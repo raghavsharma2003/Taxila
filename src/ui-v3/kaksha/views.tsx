@@ -6,7 +6,9 @@ import { useState, type MouseEvent, type ReactNode } from "react";
 import { Comms, Sky } from "./Shell.tsx";
 import { Orbit } from "./Orbit.tsx";
 import { Settlement } from "./Settlement.tsx";
-import { kt, RING_LABEL } from "./copy.ts";
+import { kt, KX_NAMES, RING_LABEL } from "./copy.ts";
+import { BASE } from "./Base.tsx";
+import { futurist } from "./look.ts";
 import type { HangarItem, World } from "./world.ts";
 import type { TeacherFloor } from "../../ui/teacher/Teacher.tsx";
 
@@ -30,6 +32,7 @@ const I = {
   orbit: "M12 8.8a3.2 3.2 0 1 0 0 6.4a3.2 3.2 0 1 0 0-6.4M2.4 14.6c-.9-2.7 3-6 8.7-7.4s10.9-.6 11.8 2.1-3 6-8.7 7.4-10.9.6-11.8-2.1",
   parent: "M9 8a3 3 0 1 0 0-.01M3 20c0-3.5 2.7-6 6-6s6 2.5 6 6M17 9.5a2.4 2.4 0 1 0 0-.01M15.5 20c0-2.4 1-4.4 3-4.8",
   back: "M15 5l-7 7 7 7",
+  swap: "M7 7h11l-3-3M17 17H6l3 3",
   hangar: "M3 20V10l9-6 9 6v10M8 20v-6h8v6",
 };
 
@@ -45,6 +48,8 @@ export interface HomeViewProps {
   startTo: string;
   worldTo: string;
   parentTo: string;
+  /** The child picker, when this account has more than one child (audit B06: Finish now lands here, so a sibling needs a way on). */
+  whoTo?: string | null;
   opensAt?: string | null;
   greeting: "morning" | "day" | "evening";
   go?: Go;
@@ -60,6 +65,7 @@ export function HomeView(p: HomeViewProps) {
       <Sky screen="home" reducedMotion={p.reducedMotion} />
       <header className="kx-top">
         <span className="kx-mark" aria-label="Taxila"><i aria-hidden="true" /><span className="kx-wordmark">TAXILA</span></span>
+        {futurist() && <span className="kx-shell">{KX_NAMES.shell}</span>}
       </header>
       <main className="kx-home-main">
         <Comms className="kx-home-face" teacherId={p.teacher.id} teacherName={p.teacher.name} band={p.teacher.band} form={p.teacher.form} tier={p.teacher.tier}
@@ -77,6 +83,7 @@ export function HomeView(p: HomeViewProps) {
           <nav className="kx-dock" aria-label="More">
             <A to={p.worldTo} go={p.go} className="kx-dockbtn kx-cut" testid="kx-world"><Icon d={I.orbit} />{kt("myOrbit")}</A>
             <A to={p.parentTo} go={p.go} className="kx-dockbtn kx-cut" testid="grownups"><Icon d={I.parent} />{kt("forParents")}</A>
+            {p.whoTo && <A to={p.whoTo} go={p.go} className="kx-dockbtn kx-cut" testid="kx-who"><Icon d={I.swap} />{kt("notMe", { name: p.childName })}</A>}
           </nav>
         </section>
       </main>
@@ -168,7 +175,7 @@ export function WorldView(p: WorldViewProps) {
           <>
             <span className="kx-label kx-secure-ink">{kt("secureSince")}</span>
             <h2 id="kx-sheet-h" className="kx-h3">{station?.title ?? built?.title}</h2>
-            {built && <p className="kx-sub">{`${built.label}: ${built.why}`}</p>}
+            {built && <p className="kx-sub">{futurist() && BASE[built.kind] ? `${BASE[built.kind].label}: ${BASE[built.kind].why}` : `${built.label}: ${built.why}`}</p>}
             {opened.map((i) => <p key={i.id} className="kx-sub">{`${kt("opened")}: ${i.label}`}</p>)}
             <button type="button" className="kx-ghost kx-cut" onClick={() => setPick(null)}>{kt("close")}</button>
           </>
@@ -191,6 +198,18 @@ export function ItemArt({ item }: { item: Pick<HangarItem, "kind" | "hue" | "id"
       </svg>
     );
   }
+  if (item.kind === "emote") {
+    // an emote: a reaction the child can send her at the end of a lesson (direction proposal; earned like every item)
+    const g = item.id.endsWith("rocket") ? "M80 8c12 8 16 22 12 36H68C64 30 68 16 80 8zM68 44l-8 10h12M92 44l8 10H88M76 46h8l-4 12z"
+      : item.id.endsWith("wave") ? "M60 40c0-12 8-18 14-18M74 22v-8M82 22V10M90 24V12M98 28V18M60 40c2 10 10 16 22 16 12 0 18-8 18-20V26"
+      : "M80 8l6 18h18l-14 11 5 18-15-11-15 11 5-18-14-11h18z";
+    return (
+      <svg className="kx-item-art" viewBox="0 0 160 64" aria-hidden="true">
+        <circle cx="80" cy="32" r="30" fill={`color-mix(in srgb, ${c} 18%, transparent)`} />
+        <path d={g} fill={item.id.endsWith("wave") ? "none" : c} stroke={c} strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
+    );
+  }
   if (item.kind === "rim") {
     return (
       <svg className="kx-item-art" viewBox="0 0 160 64" aria-hidden="true">
@@ -207,6 +226,29 @@ export function ItemArt({ item }: { item: Pick<HangarItem, "kind" | "hue" | "id"
       <path d="M80 32l-10-10 34 8z" fill={c} />
       <path d="M84 18l22 14-22 14" fill="none" stroke={c} strokeWidth="2" />
     </svg>
+  );
+}
+
+/** The ship as equipped, and its slots (futurist looks): what the child has put together, never what is missing. */
+function Loadout({ items, equipped }: { items: HangarItem[]; equipped: Record<string, string> }) {
+  const on = (kind: string) => items.find((i) => i.id === equipped[kind] && i.open) ?? null;
+  const hue = (kind: string, fallback: string) => { const i = on(kind); return i ? `var(--k-hue-${i.hue})` : fallback; };
+  const SLOTS: Array<[string, string]> = [["hull", "Hull"], ["trail", "Trail"], ["board", "Board"], ["emote", "Emote"]];
+  return (
+    <section className="kx-loadout kx-cut" aria-label="Your ship">
+      <svg viewBox="0 0 132 110" aria-hidden="true">
+        <path d="M66 70 L58 104 L66 96 L74 104 Z" fill={hue("trail", "var(--k-move)")} opacity=".85" />
+        <path d="M66 6 C82 26 86 50 82 74 L50 74 C46 50 50 26 66 6 Z" fill="var(--k-ship-hull)" stroke={hue("hull", "var(--k-line-2)")} strokeWidth="4" />
+        <path d="M50 54 L34 80 L50 74 Z M82 54 L98 80 L82 74 Z" fill={hue("hull", "var(--k-move)")} />
+        <circle cx="66" cy="38" r="9" fill="var(--k-move)" />
+      </svg>
+      <ul className="kx-slots">
+        {SLOTS.map(([kind, name]) => {
+          const i = on(kind);
+          return <li key={kind} className={`kx-slot${i ? " is-on" : ""}`}><span>{name}</span><b>{i ? i.label : "Standard"}</b></li>;
+        })}
+      </ul>
+    </section>
   );
 }
 
@@ -230,6 +272,7 @@ export function HangarView(p: HangarViewProps) {
       <main className="kx-hangar-main">
         <h1 className="kx-h2">{kt("hangar")}</h1>
         <p className="kx-sub">{kt("hangarSub")}</p>
+        {futurist() && <Loadout items={p.items} equipped={p.equipped} />}
         <ul className="kx-tiles">
           {p.items.map((it) => {
             const inUse = p.equipped[it.kind] === it.id;

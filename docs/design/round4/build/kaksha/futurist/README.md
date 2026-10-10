@@ -10,8 +10,13 @@ everything is earned by real learning.
 - Each option has an **older** (dark) palette and a **young** (bright) palette.
 - Each was shot at **360 × 800** and **1366 × 768**.
 
-The looks are a CSS and token layer on the same components (`data-klook`). The pick is therefore one line in
-`src/ui-v3/kaksha/look.ts` (`KAKSHA_LOOK`). Until the main session picks, every build ships `"classic"`, which is unchanged.
+The looks are a CSS and token layer on the same components (`data-klook`), and the pick is one line in
+`src/ui-v3/kaksha/look.ts` (`KAKSHA_LOOK`).
+
+**Picked (main session, 2026-10-10): Volt for both families**, with Holo as the alternate behind a per-device
+`?look=holo` / `?look=volt` switch (`?look=default` clears it). On older Volt, lime is only on CTAs, the lamp and the
+"Now secure" moment. The world and shell names are the shortlist's first entries (Zenith, Flight Deck) until they are
+named. The look now covers the whole child app for the Kaksha cohort (`../RESULTS.md`).
 
 ## Look at these first
 
@@ -117,8 +122,7 @@ Astroneer, Outer Wilds, No Man's Sky, Fortnite, Roblox, Minecraft, Brawl Stars).
 | **The app shell** (the child's space; brand stays Taxila) | **Flight Deck** | **Skyport** | **Launch Bay** |
 | **The settlement** | **Base** (as directed) | Outpost | Colony |
 
-The renders use **Zenith + Flight Deck** in Holo and **Lumen + Skyport** in Volt, so the two read differently. These
-are placeholders in `copy.ts` (`LOOK_NAMES`).
+The shipped copy uses **Zenith + Flight Deck** (placeholders: `KX_NAMES` in `copy.ts`) until the main session names them.
 - **Already English:** subject rings say Maths / Science / English / EVS / Hindi / Social, and the copy reads
   "Planet Zenith", "Riya's world", "Orbit | Base", "My world".
 - **Placeholders kept:** the game names (Antariksh, Khand) still appear only in the Briefing (K2), until G1/G2 rename them.
@@ -181,7 +185,7 @@ node tests/prod/r4-kaksha-futurist-shots.mjs   # regenerates every shot, the she
   the base materials.
 - `src/ui-v3/kaksha/Base.tsx`: the base structures and the ground with the launch pad. `Settlement.tsx` draws it in a
   futurist look.
-- `copy.ts`: the futurist English and `LOOK_NAMES`. `views.tsx`: shell name, base labels, loadout, emote art.
+- `copy.ts`: the futurist English and `KX_NAMES`. `views.tsx`: shell name, base labels, loadout, emote art.
   `lesson/Debrief.tsx`: the earned moment.
 
 **What landing the pick means:**

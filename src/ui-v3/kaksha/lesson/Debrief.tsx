@@ -13,8 +13,10 @@ import type { DeskModel, DidCard } from "../../../child/lesson/model.ts";
 import catalogJson from "../../../../data/kaksha/catalog.json";
 import { Comms } from "../Shell.tsx";
 import { kt } from "../copy.ts";
+import { baseLabelOf } from "../Base.tsx";
+import { futurist } from "../look.ts";
 import type { Catalog } from "../world.ts";
-import { nowSecure, type DebriefSecure, type MapLike } from "./debrief.ts";
+import { closingLine, nowSecure, type DebriefSecure, type MapLike } from "./debrief.ts";
 
 const CATALOG = catalogJson as unknown as Catalog;
 
@@ -51,10 +53,9 @@ export function DebriefView({ m, onFinish, secure }: DebriefViewProps) {
   const cards = s.cards.slice(0, 3);
   const anyVerified = cards.some((c) => c.verified);
   const triedLine = s.tried === 1 ? kt("triedOne") : kt("tried", { n: String(s.tried) });
-  // her last line closes the session only when it is a statement: a lesson the child ended early stops on her open
-  // question, and a question left hanging on the end screen reads as a demand (live shots, 2026-10-10)
-  const last = m.caption.text.trim();
-  const closing = /[?？]\s*["'”’)]*$/.test(last) ? "" : last;
+  // her last line closes the session only when it is a closing: a lesson the child ended early stops on her open
+  // question or fill-in prompt, which on the end screen reads as a demand (live shots and audit B05, 2026-10-10)
+  const closing = closingLine(m.caption.text, m.ask?.text);
   const face = (
     <Comms teacherId={m.teacher.id} teacherName={m.teacher.name} band={m.band} floor="idle" framing="close" form={m.faceForm}
       reducedMotion={m.reducedMotion} showName={false} className="kx-db-face" />
@@ -100,15 +101,20 @@ export function DebriefView({ m, onFinish, secure }: DebriefViewProps) {
 
       {!s.ending && secure && secure.length > 0 && (
         <section className="kx-db-sec kx-db-secure" aria-labelledby="kx-db-secure" data-testid="now-secure">
-          <h2 id="kx-db-secure" className="kx-label kx-secure-ink">{kt("nowSecure")}</h2>
-          <p className="kx-db-note">{kt("secureNote")}</p>
+          {/* futurist looks: the first crossing is the earned moment (it carries the heading and the note); any others list below */}
+          {futurist() ? <Earned skill={secure[0]} /> : (
+            <>
+              <h2 id="kx-db-secure" className="kx-label kx-secure-ink">{kt("nowSecure")}</h2>
+              <p className="kx-db-note">{kt("secureNote")}</p>
+            </>
+          )}
           <ul className="kx-db-list">
-            {secure.map((k) => (
+            {(futurist() ? secure.slice(1) : secure).map((k) => (
               <li key={k.skillId} className="kx-db-skill kx-cut" data-new="">
                 <span className="kx-db-dot" aria-hidden="true" />
                 <div className="kx-db-skilltext">
                   <b>{k.title}</b>
-                  {k.structure && <span className="kx-db-opened">{kt("raises", { what: k.structure })}</span>}
+                  {k.structure && <span className="kx-db-opened">{kt("raises", { what: futurist() ? baseLabelOf(k.structure) : k.structure })}</span>}
                   {k.items.length > 0 && (
                     <span className="kx-db-opened"><span className="kx-db-key">{kt("openedTitle")}</span> {k.items.join(", ")}</span>
                   )}
@@ -133,6 +139,27 @@ export function DebriefView({ m, onFinish, secure }: DebriefViewProps) {
 
       <button type="button" className="kx-cta kx-cut kx-db-finish" onClick={onFinish} disabled={s.ending} data-testid="finish">{kt("finish")}</button>
     </main>
+  );
+}
+
+/** The earned moment (futurist looks): one earned thing, celebrated once. It appears only when the ledger says a skill
+ *  crossed to secure in this session (debrief.ts), names the idea and what it builds, and counts nothing. */
+function Earned({ skill }: { skill: DebriefSecure }) {
+  const HUES = ["--k-secure", "--k-move", "--k-her", "--k-look", "--k-ion"];
+  return (
+    <div className="kx-earn kx-cut">
+      <span className="kx-earn-burst" aria-hidden="true">
+        {Array.from({ length: 14 }, (_, i) => <i key={i} style={{ ["--a" as string]: `${(i * 360) / 14}deg`, ["--c" as string]: `var(${HUES[i % HUES.length]})` }} />)}
+      </span>
+      <span className="kx-earn-badge" aria-hidden="true">
+        <svg viewBox="0 0 64 64"><path d="M32 4l24 10v16c0 15-10 26-24 30C18 56 8 45 8 30V14z" fill="var(--k-secure)" /><path d="M21 32l8 8 15-17" fill="none" stroke="var(--k-void)" strokeWidth="5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+      </span>
+      <h2 id="kx-db-secure" className="kx-earn-tag">{kt("nowSecure")}</h2>
+      <p className="kx-earn-title">{skill.title}</p>
+      {skill.structure && <p className="kx-earn-sub">{kt("raises", { what: baseLabelOf(skill.structure) })}</p>}
+      {skill.items.length > 0 && <p className="kx-earn-sub">{`${kt("openedTitle")}: ${skill.items.join(", ")}`}</p>}
+      <p className="kx-earn-note">{kt("secureNote")}</p>
+    </div>
   );
 }
 

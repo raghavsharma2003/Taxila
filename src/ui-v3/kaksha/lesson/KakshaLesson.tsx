@@ -8,6 +8,7 @@
 // the open Hangar items the child's equipped hull and trail may tint the play engine with (K2, seam K-P3 / K-P4).
 //   - PlayBriefingContext (src/play/briefing.ts): the Briefing card in front of a real-game engine, plus the cosmetics.
 // Nothing here touches the turn path: no fetch per turn, no timer, no rAF (the latency driver measures this, RESULTS.md).
+import { lookAttr } from "../look.ts";
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
 import type { TapSource } from "../../../avatar/tap.ts";
 import type { DeskModel } from "../../../child/lesson/model.ts";
@@ -60,7 +61,7 @@ export default function KakshaLesson({ cid, family, reducedMotion, children, loa
   );
   const renderIntake = useCallback((m: DeskModel) => (m.intake ? <IntakeCard intake={m.intake} /> : null), []);
   return (
-    <div className="v3 kx kx-lesson" data-ktheme={kakshaThemeFor(family)} data-motion={reducedMotion ? "reduced" : undefined} data-kscreen="lesson">
+    <div className="v3 kx kx-lesson" data-ktheme={kakshaThemeFor(family)} data-klook={lookAttr(family)} data-motion={reducedMotion ? "reduced" : undefined} data-kscreen="lesson">
       <PlayBriefingContext.Provider value={briefing}>{children({ skin: "kaksha", renderSummary, renderIntake })}</PlayBriefingContext.Provider>
     </div>
   );

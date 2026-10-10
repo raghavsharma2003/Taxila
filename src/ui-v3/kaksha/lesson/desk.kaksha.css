@@ -50,7 +50,11 @@
 /* ── top bar: mono labels, a hairline under it ── */
 .dk[data-skin="kaksha"] [data-zone="top"] { border-bottom: 1px solid var(--k-line); }
 .dk[data-skin="kaksha"] [data-zone="top"] .dk-pause { background: var(--k-panel-solid); border-color: var(--k-line-2); }
-.dk[data-skin="kaksha"] [data-zone="top"] :is(.dk-short, .dk-practice) { font-family: var(--k-mono); letter-spacing: .04em; }
+.dk[data-skin="kaksha"] [data-zone="top"] .dk-practice { font-family: var(--k-mono); letter-spacing: .04em; }
+/* the topic in the bar is sans and never cut (audit B04-04: mono at .04em clipped "Multiplying fractions" to "Multiplying f"
+   at 360 px): it may take a second line on a phone, the phase line sits under it */
+.dk[data-skin="kaksha"] [data-zone="top"] .dk-short { font-family: var(--k-sans); letter-spacing: 0; }
+.dk[data-skin="kaksha"][data-layout="phone"] [data-zone="top"] .dk-short { white-space: normal; line-height: 1.12; max-width: 100%; }
 /* the phase line as a segment bar: beats, never a score */
 .dk[data-skin="kaksha"] [data-zone="top"] .dk-phaseline { gap: 4px; font-family: var(--k-mono); font-size: 14px; letter-spacing: .06em; text-transform: uppercase; }
 .dk[data-skin="kaksha"] [data-zone="top"] .dk-phaseline li { padding-bottom: 3px; border-bottom: 2px solid var(--k-line-2); color: var(--k-ink-3); }
