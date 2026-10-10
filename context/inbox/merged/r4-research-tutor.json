@@ -1,0 +1,141 @@
+{
+  "nodes": [
+    {
+      "id": "r4t-tutor-model",
+      "kind": "decision",
+      "title": "Proposed (research, not built): the superhuman tuition teacher (docs/research/round4/tutor/TUTOR-MODEL.md) = session-first INTAKE + a measured per-child LearnerHow state (10 dimensions, never a style) + every feature replicated the duplex way (human signal -> measure -> code decides -> model words). Builds on SchoolMirror (school-sync-homework.md), the comprehension engine, fading.js, reteach.js and the Relational OS; changes lesson start, the plan's home card and the switch path. Reverse if: M-TM1 (intake mapping) or M-TM5 (live understood-found) miss their bars, or the owner rejects session-first after seeing it.",
+      "at": "2026-10-10"
+    },
+    {
+      "id": "r4t-session-segments",
+      "kind": "decision",
+      "title": "Proposed: a SESSION holds several SEGMENTS; each segment is today's lesson row pinning ONE kit (content/index.js pinning, evidence ids and the end transaction unchanged); a topic switch opens the next segment server-side inside the turn response. Today lesson.topic_id is NOT NULL (001_core.sql) and director/state.js 'switch' offers a 'Start <title>' chip that begins a NEW lesson, which the child experiences as a module boundary. Reverse if: per-segment pinning breaks evidence ids, reteach resolution or the end transaction in the integration battery.",
+      "at": "2026-10-10"
+    },
+    {
+      "id": "r4t-intake-beat",
+      "kind": "decision",
+      "title": "Proposed: every session opens with an INTAKE beat (<= 3 child turns, <= 90 s, no stage build): one open question about today at school; intakeParse -> IntakeFrame with a closed kind (taught | homework | test | not_understood | want | nothing | unknown | share); activity words (copy, check, test, homework, class, revision, ma'am, sir) never name a topic; candidates constrained to class x subject x SchoolMirror pointer +-2 chapters (+ one class below); purpose.js matchTopic as stage 1, a closed-label pick piggybacked on classify only when the lexicon abstains; the confirmation turn is a GRADED probe ('show one thing your teacher did', kit key) that also places the child within the chapter; p < 0.6 -> a two-way 'which one?'; a confirmed pick writes SchoolMirror child_said (w 0.55, half-life 5 d). Reverse if: M-TM1 < 85% top-1 or > 3% confidently wrong on >= 200 labelled utterances per band (classes 1-3, 4-6, 7-9).",
+      "at": "2026-10-10"
+    },
+    {
+      "id": "r4t-plan-private-prior",
+      "kind": "decision",
+      "title": "Proposed: the Conductor's day plan becomes a PlanPrior handed to the session (level-path topic, due reviews, test window, promises, school pointer, successFirst, opener), never a child-visible topic card; the home shows Start (or Continue) only, and the topic title moves to the parent view (owner decision). One precedence in code: safety > a safe child request > test tomorrow > homework due > today's school topic > due reviews > level path; every session keeps a 2-4 min revise slice from FSRS due, delayed checks and weave. The plan reaches the compile as LESSON NOW notes, never a list; the spoken agenda is one line built from the decided segments, with at most a two-way choice of order. Reverse if: the owner keeps the topic card, or M-TM3 school continuity < 70% of school-day sessions.",
+      "at": "2026-10-10"
+    },
+    {
+      "id": "m-r4t-school-today-probe-2026-10-10",
+      "kind": "measurement",
+      "title": "Intake mapping probe (n = 12 Hinglish 'what happened at school today' utterances, classes 4-8, labels written before the run, deterministic, no model, docs/research/round4/tutor/school-today-probe.mjs, 2026-10-10). server/lesson/purpose.js matchTopic: 7/12 right, 2 wrong, 3 missed. Wrong: 'ma'am ne copy check ki' -> c5 Checking reasonableness; a class-6 'angles padhaye, acute obtuse' -> the class-5 topic (class 6 says 'Types of angles'). Missed: 'hindi mein kavita padhi'; 'mughal empire' (no title of the new class-8 SST book contains it); 'table of 7 ... kal test hai'. server/content/curriculum.js findTopic: 0/12.",
+      "at": "2026-10-10"
+    },
+    {
+      "id": "rj-r4t-findtopic-as-intake",
+      "kind": "rejection",
+      "title": "Tried (probe 2026-10-10, n = 12): curriculum.js findTopic as the mapper for a child's account of the school day. Broke: 0/12. It requires EVERY 4+-letter word of the query to start a title word, so a whole sentence never matches. Instead: IntakeFrame parse + pointer-constrained candidates + matchTopic as stage 1. findTopic stays for short named-subject switches, where its word-start rule prevents substring traps.",
+      "at": "2026-10-10"
+    },
+    {
+      "id": "rj-r4t-activity-word-as-topic",
+      "kind": "rejection",
+      "title": "Tried (probe 2026-10-10): lexical topic matching over the whole intake sentence. Broke: 'ma'am ne copy check ki' (nothing taught) was routed to c5 'Checking reasonableness' (1 of 12). Activity words of the school day (copy, check, test, homework, class, revision) are never a subject; same family as rj-r3fix-switch-on-way-words. Instead: parse the frame kind first, then strip activity words before topic matching.",
+      "at": "2026-10-10"
+    },
+    {
+      "id": "r4t-school-chapter-never-stored",
+      "kind": "finding",
+      "title": "OPEN: server/content/next-topic.js schoolStartIndex reads child.school_chapter, but no migration creates that column (grep 2026-10-10). Placement therefore always falls back to the calendar estimate (x 0.8 of the year fraction). It also reads legacy skill_state, not the kt ledger. The SchoolMirror pointer (school-sync-homework.md SS1-SS14, designed 2026-10-02, no code references) is the replacement input.",
+      "at": "2026-10-10"
+    },
+    {
+      "id": "r4t-learner-how-state",
+      "kind": "decision",
+      "title": "Proposed: LearnerHow = 10 measured dimensions, never a style label: H1 prior knowledge, H2 guidance need, H3 representation responsiveness, H4 retention (FSRS), H5 repetition-to-criterion, H6 pace, H7 engagement, H8 interest hooks, H9 language, H10 the child's 'what helped' choice. Each comes from first attempts on verified keys or from session behaviour, and each is bound to a legal tier. H3 = Beta per (child, topicType x subject, representation class): credited on graded first attempts (unaided 1, hint 0.5, game 0.5); a delayed check adds +1 to the representation used at first teaching; shrunk to the population prior (n0 = 4); 60-day half-life; voice, vibe, timing and affect are never inputs. H3 drives the FIRST representation for a new skill (Thompson sample over the content-fit candidates, exploration floor 0.2), not only re-teach. Reverse if: E-PROFILE (M-TM4) shows no gain over population-best on 1- and 4-week delayed unaided accuracy.",
+      "at": "2026-10-10"
+    },
+    {
+      "id": "r4t-how-tables-without-writers",
+      "kind": "finding",
+      "title": "OPEN (grep 2026-10-10): rep_fluency (007) is read by server/comprehension/session.js, but nothing writes it. format_posterior (016) is neither read nor written. stagecraft/policy.js wantAt has no per-child representation input. So today 'how she learns' persists only through reteach_attempts child history, FSRS memory, recent outcomes and the 14-day stuck counts; the first teaching of a skill never uses this child's history.",
+      "at": "2026-10-10"
+    },
+    {
+      "id": "r4t-h3-persist-owner",
+      "kind": "finding",
+      "title": "OPEN (owner + counsel): persisting H3 per child at M1 conflicts with LM9 (per-child format personalisation only at M3 and after the HTE gate) under DPDP s.9(3). Precedent: re-teach arm history is already per child (w2c-reteach-child-history-first). Options: (a) treat H3 as academic record (outcomes on verified keys, no timing or affect, shrunk to population, shown to the parent as 'How <T> teaches <child>'); (b) a parent opt-in consent like voice_pace_memory (021); (c) population-only until M3.",
+      "at": "2026-10-10"
+    },
+    {
+      "id": "r4t-teach-anything-tiers",
+      "kind": "decision",
+      "title": "Proposed: 'teach anything' has 4 tiers. (a) In the graph, any class; above the child's class only after a prerequisite check. (b) A school-vocabulary and old-book alias layer (data/curriculum/aliases.json, library-level, reviewed, child-free; e.g. 'Mughal empire' -> c8-sst-ch02). (c) Out of the graph but safe: an 'explore' segment under the mini-kit law. taxila-fast writes and taxila-brain blind-solves; only reproduced keys grade; verified:false halves weight; cached at library level, child-free; demand-ranked into human review; no facts carried by pixels. (d) Refused by a scope predicate (harm, weapons, drugs, sexual content beyond NCERT framing, diagnosis, persuasion, others' data, live-exam cheating, contact), with an adjacent safe topic offered. Gap: minikit.js builds only from curriculum entries. Reverse if: M-TM7 red-team finds any unsafe teach-along or > 5% false refusals on benign curiosities.",
+      "at": "2026-10-10"
+    },
+    {
+      "id": "r4t-tuition-evidence",
+      "kind": "finding",
+      "title": "Indian tuition evidence (TUTOR-MODEL §1.1, searched 2026-10-10). CMS:E 2025 (NSS 80th round, 221,617 students): 27.0% in coaching, urban 30.7 / rural 25.5 [summaries; report not opened]. Dongre & Tewary 2015 (sibling fixed effects, ~0.5 M ASER children): effect ~ one extra year of school, largest for disadvantaged and low-level children. Sujatha 2014 (n = 4,031, grades 9-10, 4 states): to pass exams 43%; 'do not understand teaching at school' 27% govt / 18% private unaided; tutors teach to the exam pattern, test frequently and give individual attention; 19.8% taught by their own school teacher. Mindspark (Delhi after-school centres, teaching at the child's actual level): +0.36 SD maths, +0.22 SD Hindi in 4.5 months (NBER WP 22923).",
+      "at": "2026-10-10"
+    },
+    {
+      "id": "r4t-no-tuition-session-ethnography",
+      "kind": "finding",
+      "title": "OPEN (owner): no ethnography or observation of an Indian primary home-tuition SESSION was found (search 2026-10-10). Closest: Bhorkar 2024, 37 provider interviews in Maharashtra; Thirumurthy 2014, parents' homework involvement. TUTOR-MODEL §1.2's session pattern (opening question, notebook check, re-teaching today's class topic, test-driven weeks, weekly revision) is practitioner knowledge [A]. M-TM6 (10-20 Hindi-belt tutor interviews + 5 observed sessions, consented) would replace it.",
+      "at": "2026-10-10"
+    },
+    {
+      "id": "r4t-live-underprobes",
+      "kind": "finding",
+      "title": "For 'understood or not', the lever is probes, not grading. The deployed live policy finds 2.1% of true understanders in simulation (macro 0.489-0.496), against the engine's 0.578 found (comp-sim) and an oracle-prober at 0.710 macro. Session-first adds one graded intake probe on the school topic per session. Bar M-TM5: >= 0.40 found at false mastery <= 0.025 in the sim, then on children. 'Samajh aaya?' is never evidence (Person et al. 1994: comprehension-gauging answers 'very misleading'; Chi et al. 2004: tutors overestimate understanding).",
+      "at": "2026-10-10"
+    },
+    {
+      "id": "r4t-memory-tier-c-owner",
+      "kind": "finding",
+      "title": "OPEN (owner + counsel): the owner's 'bond like a human, evolves like a human' implies callbacks to the child's life and running jokes across sessions. That is memory tier C, not built by design (LM14). Proposed narrow tier C: only what the child offered; passes memory.js NOT_AN_OPENER (no illness, fear, people, hurt); <= 5 items, 30-day expiry; visible to and deletable by both child and parent; used only as an opener callback or the setting of an example, never as a reason to come back. Until decided, life callbacks stay within the session.",
+      "at": "2026-10-10"
+    },
+    {
+      "id": "r4t-feature-replication",
+      "kind": "decision",
+      "title": "Proposed: every tutor feature is built the way duplex was. Name the great human tutor's signal, measure it, let code decide and the model word it. TUTOR-MODEL §6 maps 18 features to the machine equivalent and their status. Built: explaining, board, checking (under-probed), practice, game admission by skill, mood from words and task, her own mistake, ending, parent update. Partial: test prep, revision slice, preparing between sessions, teach-anything a/b. Missing: the opening intake, the school pointer, notebook/homework ladder, the 'didn't understand in class' trigger, teach-anything c/d.",
+      "at": "2026-10-10"
+    }
+  ],
+  "edges": [
+    { "src": "r4t-tutor-model", "rel": "caused_by", "dst": "dc-r4-owner-vision-superhuman-tutor" },
+    { "src": "r4t-tutor-model", "rel": "caused_by", "dst": "r4t-tuition-evidence" },
+    { "src": "r4t-session-segments", "rel": "part_of", "dst": "r4t-tutor-model" },
+    { "src": "r4t-intake-beat", "rel": "part_of", "dst": "r4t-tutor-model" },
+    { "src": "r4t-plan-private-prior", "rel": "part_of", "dst": "r4t-tutor-model" },
+    { "src": "r4t-learner-how-state", "rel": "part_of", "dst": "r4t-tutor-model" },
+    { "src": "r4t-teach-anything-tiers", "rel": "part_of", "dst": "r4t-tutor-model" },
+    { "src": "r4t-feature-replication", "rel": "part_of", "dst": "r4t-tutor-model" },
+    { "src": "r4t-no-tuition-session-ethnography", "rel": "part_of", "dst": "r4t-tutor-model" },
+    { "src": "r4t-intake-beat", "rel": "measured_by", "dst": "m-r4t-school-today-probe-2026-10-10" },
+    { "src": "r4t-intake-beat", "rel": "measured_by", "dst": "m-w2a-ask-routing-2026-10-04" },
+    { "src": "rj-r4t-findtopic-as-intake", "rel": "measured_by", "dst": "m-r4t-school-today-probe-2026-10-10" },
+    { "src": "rj-r4t-activity-word-as-topic", "rel": "measured_by", "dst": "m-r4t-school-today-probe-2026-10-10" },
+    { "src": "rj-r4t-activity-word-as-topic", "rel": "constrains", "dst": "r4t-intake-beat" },
+    { "src": "rj-r3fix-switch-on-way-words", "rel": "constrains", "dst": "r4t-intake-beat" },
+    { "src": "rj-passive-tutor", "rel": "constrains", "dst": "r4t-intake-beat" },
+    { "src": "r4t-intake-beat", "rel": "caused_by", "dst": "r4t-school-chapter-never-stored" },
+    { "src": "conductor-code-reducer", "rel": "constrains", "dst": "r4t-plan-private-prior" },
+    { "src": "rj-advice-menu-for-weak-learners", "rel": "constrains", "dst": "r4t-plan-private-prior" },
+    { "src": "rj-style-attribute-to-generator", "rel": "constrains", "dst": "r4t-learner-how-state" },
+    { "src": "learner-legal-mode-ratchet", "rel": "constrains", "dst": "r4t-learner-how-state" },
+    { "src": "dpdp-9-3-learner-gate", "rel": "constrains", "dst": "r4t-learner-how-state" },
+    { "src": "ct-no-voice-emotion-inference", "rel": "constrains", "dst": "r4t-learner-how-state" },
+    { "src": "r4t-learner-how-state", "rel": "caused_by", "dst": "r4t-how-tables-without-writers" },
+    { "src": "r4t-learner-how-state", "rel": "blocks", "dst": "r4t-h3-persist-owner" },
+    { "src": "w2c-reteach-child-history-first", "rel": "constrains", "dst": "r4t-h3-persist-owner" },
+    { "src": "generated-media-carries-facts", "rel": "constrains", "dst": "r4t-teach-anything-tiers" },
+    { "src": "r4t-live-underprobes", "rel": "measured_by", "dst": "w1c-live-sim-headline" },
+    { "src": "r4t-live-underprobes", "rel": "measured_by", "dst": "w1c-live-sim-headline-2" },
+    { "src": "r4t-live-underprobes", "rel": "part_of", "dst": "r4t-tutor-model" },
+    { "src": "mk-warmth-not-intimacy", "rel": "constrains", "dst": "r4t-memory-tier-c-owner" },
+    { "src": "relational-os-spec", "rel": "constrains", "dst": "r4t-memory-tier-c-owner" },
+    { "src": "dec-r3rh-callbacks-from-learning-record", "rel": "constrains", "dst": "r4t-memory-tier-c-owner" }
+  ]
+}

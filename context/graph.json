@@ -6,7 +6,8 @@
   "rejection": "something tried that did not work, and what broke",
   "component": "a part of the system",
   "constraint": "a rule that bounds future work",
-  "open": "a known gap, unresolved"
+  "open": "a known gap, unresolved",
+  "finding": "a researched external fact or product observation, with its source URL (verified by reading, not measured by us)"
  },
  "relations": {
   "supersedes": "this replaced that",
@@ -17774,6 +17775,244 @@
    "title": "2026-10-10 owner: \"you can start as many as you want and lets not care even a bit about prakash and lets focus on only 1 teaher that is asha(new grown up veriosn)\". The Prakash world UI rebuild is dropped entirely (the prototype stays in docs/design/round4/world/ as a record). Round 4 keeps today's app shell and screens; the one teacher-visual change is the new grown-up Asha (face option 4, cardigan + block-print kurta, lamp1 puppet) replacing the chibi puppet everywhere, with every other teacher and the teacher choice removed. Parallel cloud sessions are approved without limit. Round 4 streams: games/play for students, live content (forge), latency (first sound <= 900 ms), conversation + two-way + duplex, Asha integration. Reverse if: the owner revives a UI direction after testing the shipped round-3/round-4 product.",
    "at": "2026-10-10",
    "source": "inbox/r4-prakash-dropped.json"
+  },
+  {
+   "id": "r4p-sketchmind-sync-is-beat-order",
+   "kind": "finding",
+   "title": "SketchMind's 'draws while it talks' is beat-level ORDERING, not word-level alignment: its own engineering posts describe the LLM emitting NDJSON commands (write_text typewriter, draw = SVG chunks 'revealed only when complete', speak = TTS, write_latex = KaTeX) over SSE, processed sequentially; first words ~1 s; an infinite canvas of spaces/columns; sessions serialized for exact reload. No word-level audio/ink alignment is described anywhere public. Consistent with Taxila's karaoke-from-transcript-estimate rejection and teacher-stage-cue-scheduler (clause cues, 400 ms pre-roll): Taxila is at par on the mechanism; the gaps are product packaging (one idea per beat, typed beat cards, every topic opens on a picture, a persistent notebook). Source: sketchmind.ai/blog/how-ai-tutoring-works, /blog/introducing-whiteboard, /llms.txt, read 2026-10-10. Detail: docs/research/round4/products/TEARDOWN.md §1.3-1.4.",
+   "at": "2026-10-10",
+   "source": "inbox/r4-research-products.json"
+  },
+  {
+   "id": "r4p-sketchmind-demo-scripted-timeline-2026-10-10",
+   "kind": "measurement",
+   "title": "SketchMind homepage 'A real lesson, replayed exactly as it streams' is a hand-timed script with no audio (n = 1 page load per viewport, Playwright 1.63 headless Chromium, 360x800 and 1366x768, plus the inline demo script, 2026-10-10): fixed setTimeout reveals (title 200 ms, figure placeholder 900 ms, 17 caption words at 1,600 + 170 ms x i so about 350 wpm and done by about 4.3 s, figure 3,100 ms, notes 3,600-6,450 ms, formula 7,200, table 8,200, takeaway 9,400, 'Checkpoint ahead' chip 10,300, 'writing the next part' 11,200); 0 audio elements, 0 audio requests. At 360x800 the voice caption has zero height (hidden), the board is 1,347 px tall (741 px at 1366) and the figure starts 692 px down, below a phone's fold; the Focus and Overview tabs are disabled spans titled 'Available in the app'. Shots: docs/research/round4/products/shots/sketchmind-*.webp.",
+   "at": "2026-10-10",
+   "source": "inbox/r4-research-products.json"
+  },
+  {
+   "id": "r4p-sketchmind-price-inr-2026-10-10",
+   "kind": "measurement",
+   "title": "SketchMind India pricing (n = 1 read of the public GET /api/billing/plans?currency=INR plus the pricing and support pages, 2026-10-10): Free = 2 lessons a day on a rolling day/week/month allowance, 'Earn more lessons by learning'; Plus (weekly) and Pro (monthly/yearly) 'Coming soon' (subscriptionsEnabled false, plans []); the only paid item is a one-time 5-lesson pack at Rs 1,999 (baseMinor 199900 INR), 18% GST added at checkout (about Rs 2,359), i.e. Rs 400 a lesson before GST, more than a whole month at the Rs 299 Indian voice-tutor price point; only INR is available (USD/GBP/AUD/SGD listed, available false); Razorpay, UPI.",
+   "at": "2026-10-10",
+   "source": "inbox/r4-research-products.json"
+  },
+  {
+   "id": "r4p-sketchmind-plan-first-opening-shapes",
+   "kind": "finding",
+   "title": "SketchMind starts every lesson with a plan the learner agrees to ('I have a physics test on Friday' -> 'Let's plan it: Forces -> Newton's laws -> practice. Sound good?'); a lesson is defined as 'from the plan you agree together through to the checkpoints'. Each topic opens in one of three shapes (Anchored: one familiar scene, then the idea; Lean: the idea in sentence 1-2; Direct: no warm-up), chosen from who you are (student vs professional), self-reported level (moves one step, 'never removes a step the idea actually rests on') and purpose (exam -> one step toward Direct). 'From the beginning' decides coverage, not speed. Every topic opens on a picture; exact diagrams for exact things (fractions, ray paths, circuits, forces), scenes for processes. A thumbs-down on any beat is read by a person. Source: sketchmind.ai homepage, /support, /blog/how-lumi-paces-your-lesson (5 Sep 2026), read 2026-10-10. Maps to the owner's session-first direction; Taxila's school chapter is supplied by the parent (server/content/next-topic.js schoolStartIndex) and no child-side 'aaj school mein kya hua' intake exists.",
+   "at": "2026-10-10",
+   "source": "inbox/r4-research-products.json"
+  },
+  {
+   "id": "r4p-sketchmind-checkpoints-binary",
+   "kind": "finding",
+   "title": "SketchMind's public checkpoint is an announced, binary card ('Checkpoint ahead — Lumi asks, you answer'; 'Is gravity a force? Yes / No'), with progress counted in beats ('4 of 5 beats done · Resume →'); 'checkpoints that quietly reshape the lesson' is claimed, and the grading is not visible. A two-option check is 50% guessable, so Taxila's covert evidence, typed grading and delayed re-check stay ahead; take the announcement chip and the beat progress, not the binary check. Source: sketchmind.ai homepage, /comparison, read 2026-10-10.",
+   "at": "2026-10-10",
+   "source": "inbox/r4-research-products.json"
+  },
+  {
+   "id": "r4p-sketchmind-notebook-replay",
+   "kind": "finding",
+   "title": "SketchMind's notebook is its memory object: 'Every board saves itself. Reopen it to review, continue where you stopped, or export clean PDF notes' (paid); a Replay lesson control; sessions serialized for exact reload. Taxila's src/child/screens/Notebook.tsx keeps one card per lesson (the best question and the child's answer), lists pages from this device only (b2-notebook-device-source: no endpoint lists a child's lessons), and has no board replay or continue-from-here. Source: sketchmind.ai /support, FAQ, /blog/how-ai-tutoring-works; Notebook.tsx header, read 2026-10-10.",
+   "at": "2026-10-10",
+   "source": "inbox/r4-research-products.json"
+  },
+  {
+   "id": "r4p-sketchmind-streak-and-vendors",
+   "kind": "finding",
+   "title": "SketchMind itself runs a loss-framed streak ('miss a whole day and it resets to zero') and pays out free lessons as a reward ('Earn more lessons by learning'). Its privacy policy (2026-10-10) lists Anthropic, OpenAI and Google Gemini for lesson generation, Sarvam for TTS and STT, Azure Speech as TTS fallback, and smallest.ai and OpenAI for STT (the Apr-May 2026 posts said ElevenLabs), and says it is 'not directed at children under 13', while it runs a parents-only Lumi early access for India/UAE/Singapore/US (invitations from the week of 20 Jul 2026) and quotes a 'dad of an 8-year-old'. Plus/Pro list 'Talk to Lumi — ask out loud' as 'In the works'. Source: sketchmind.ai /support, /pricing, /privacy-policy, /families/in, read 2026-10-10.",
+   "at": "2026-10-10",
+   "source": "inbox/r4-research-products.json"
+  },
+  {
+   "id": "r4p-taxila-no-deeper-request",
+   "kind": "finding",
+   "title": "Taxila's closed request taxonomy (server/director/requests.js: goodbye, stop, continue, break, change_topic, topic, language, another, example, story, slower, visual) has no 'go deeper / harder / aur batao / more about this' type; 'another' covers 'simpler' ('aur aasan karo'). SketchMind ships both verbs ('Say simpler and it re-explains with a new sketch. Say go deeper and the lesson expands'). Read 2026-10-10.",
+   "at": "2026-10-10",
+   "source": "inbox/r4-research-products.json"
+  },
+  {
+   "id": "r4p-economy-ban-copy-only",
+   "kind": "finding",
+   "title": "The no-economy rule is enforced on copy only (read 2026-10-10). BUILD-PLAN 2026-10-10 contract C8 ('no points, coins, streaks, timers or locks', B6) names tests/play-style-lint.test.mjs, which checks colour literals, family views and lab sources, not the ban. Real enforcement: src/ui-v3/lint/rules.mjs WORDS (xp, streaks, level up, earn/collect/win stars|coins|gems, trophy, confetti) via tests/ui-v3-lint.test.mjs, and the reaction word list in tests/play-react.test.mjs. A timer, lock or points total in game logic passes every test. Lineage of the rule: Meera persona NEVER MANIPULATE -> gurukul safety-floor-teacher §5.1 (fear-and-obligation test) -> motivation-without-rewards.md mw-no-reward-economy / mw-no-time-grids (2026-10-02; neither id is in graph.json) -> design-v3-no-streaks-mastery (2026-10-04; allows in-run HUD numbers) -> r3p-world-ledger-view and live-tech §0.8 (2026-10-09) -> BUILD-PLAN line 75 / C8.",
+   "at": "2026-10-10",
+   "source": "inbox/r4-research-products.json"
+  },
+  {
+   "id": "r4p-peers-run-economies",
+   "kind": "finding",
+   "title": "Every major peer now runs a reward economy, and none publishes evidence that it raises learning: Khan Academy (2 Oct 2026) Missions, Gems 'that recognize their learning effort', a RANDOM Khanmigo accessory per 50 Gems, class Gem Challenges with teacher-chosen rewards, and a weekly streak that resets without a new Proficient skill; Brilliant weekly leagues (30 learners, 10 levels, promotion/demotion) with XP that resets weekly; Duolingo streaks (15.4M revived in one event); Mindspark Sparkies driving class/city/country leaderboards; Edzy (India, classes 6-12) duels and streaks; SketchMind a day streak. Sources: blog.khanacademy.org five-ways post (read), support.khanacademy.org, help.brilliant.org leagues FAQ, apps.apple.com id1541664545, edzy.ai (read), 2026-10-10.",
+   "at": "2026-10-10",
+   "source": "inbox/r4-research-products.json"
+  },
+  {
+   "id": "r4p-gamification-evidence-split",
+   "kind": "finding",
+   "title": "Gamification evidence splits by mechanic, not by 'gamified or not' (desk review, 2026-10-10). Helps on average: Sailer & Homner 2020 (PDF read) g = 0.49 cognitive (k = 19), 0.36 motivational (k = 16), 0.25 behavioural (k = 9); game fiction and competition-combined-with-collaboration moderate the behavioural effect. Learning levers that pass the NEVER MANIPULATE fear-and-obligation test: the skill as the core mechanic (Habgood & Ainsworth 2011, about 7x voluntary play, n = 16), success-dependent juice (Kao 2024, n = 1,699), choice, creation, fiction, co-op. Harmful mechanics, which fail the test: contingent rewards (Deci 1999, d -0.28 to -0.40 on free choice, worse for children), mandatory badges plus a leaderboard (Hanus & Fox 2015, lower motivation and exam scores), broken streaks (Silverman & Barasch 2022), bottom positions on an absolute leaderboard (Bai et al. 2021), random drops (Zendle & Cairns 2018, eta2 = 0.054, n = 7,422). Visual fidelity has no learning evidence: simpler/schematic visuals did as well or better (Clark et al. 2016; Wouters et al. 2013). Detail: TEARDOWN.md §3.3.",
+   "at": "2026-10-10",
+   "source": "inbox/r4-research-products.json"
+  },
+  {
+   "id": "r4p-gamification-owner-fork",
+   "kind": "finding",
+   "title": "OWNER DECISION NEEDED (not decided here): does 'fully gamified' mean game quality and agency, or an economy? Options in TEARDOWN.md §3.5. (A) game-native, economy-free: today's rule plus a mechanic-level lint. (B) A plus identity and collections earned by evidence: cosmetics opened by secured skills, never bought or random; co-op goals with no individual tallies; real-time action on secure skills only. (C) a Khan-style soft economy: effort points, Missions, a weekly reset. (D) the full Duolingo/Brilliant retention stack, which is incompatible with the safety floor's NEVER MANIPULATE as written. Each option comes with its evidence, risk, metric and reversal condition (reverse on delayed retention and free-choice persistence, not DAU).",
+   "at": "2026-10-10",
+   "source": "inbox/r4-research-products.json"
+  },
+  {
+   "id": "r4p-no-live-game-generation-in-session",
+   "kind": "finding",
+   "title": "No product generates real games live inside a child's lesson (desk review, 2026-10-10). Closest: TutorFlow Games (beta Aug 2026, teacher-side): one sentence -> an editable plan -> browser game code -> an automated play test before delivery ('A version that freezes or will not start is rebuilt, not sent'), taking 'a few minutes', with arcade templates; Google Project Genie / Genie 3 (public 29 Jan 2026): a real-time world model, 18+ in the US, about one minute of memory, a research prototype, non-Azure. So the owner's 'Minecraft / space fighter level, built on the go' bar has to be met by live COMPOSITION of certified engines (dec-r3-composed-play-typed-pairs, delta p50 1.32-1.53 s), not by live code or pixels; copy TutorFlow's play-before-ship gate per composed instance.",
+   "at": "2026-10-10",
+   "source": "inbox/r4-research-products.json"
+  },
+  {
+   "id": "r4p-live-visuals-table-stakes-2026",
+   "kind": "finding",
+   "title": "Generated or parameterised interactive visuals became platform table stakes in 2026, with no published learning outcomes: ChatGPT dynamic visual explanations (10 Mar 2026, 70+ maths/science concepts with sliders, all logged-in users); Gemini interactive simulations and 3D models (9 Apr 2026); Khanmigo Gemini-generated diagrams that respond when a student drags a point (27 Aug 2026; 'no evidence of better learning outcomes' yet); Penseum (Mar 2026) voice plus a canvas that annotates the learner's mistake. Taxila's edge must be correctness at phone size, the teacher reacting to the child's act, and Hinglish voice. Sources: techcrunch.com 2026-03-10 (read), blog.google, producthunt penseum-2 (read), 2026-10-10.",
+   "at": "2026-10-10",
+   "source": "inbox/r4-research-products.json"
+  },
+  {
+   "id": "r4p-india-kids-games-data-gap",
+   "kind": "finding",
+   "title": "There is no published data on what Indian 9-14-year-olds play or call babyish (desk review, 2026-10-10). Best available: Ormax 2021 (urban kids, 10 cities): Ludo King, Subway Surfers and Garena Free Fire in the top-5 most-trusted media brands, 85% played a mobile game in the last week. Sensor Tower 2025: Indian mobile gamers are 86% male and 77% aged 18-34, so children are invisible in market data. BGMI under-18 rules: parent OTP, 3 h a day, Rs 7,000 a day. Free Fire is banned and Free Fire MAX is the legal version. Taxila must measure its own children (an onboarding 'kaunsa game' question; the five-second test in round4/world RESEARCH §4).",
+   "at": "2026-10-10",
+   "source": "inbox/r4-research-products.json"
+  },
+  {
+   "id": "r4p-india-voice-tutors-cluster-9-12",
+   "kind": "finding",
+   "title": "Indian voice-first AI tutors cluster in classes 9-12 (desk review, 2026-10-10): YoLearn (Hindi/Hinglish voice, grades 9-12), Edza AI (voice plus a collaborative whiteboard, classes 7-12, 30,000+ learners mostly 9-12, press release), ShikshaAI (NGO). PhysicsWallah (Business Today, 1 Jun 2026, read): 135M+ free learners, about 3.5M daily active at about 2 h a day, AI Guru 'more than 3 million voice queries within a month', about 90% of queries solved by AI with a thumbs-down escalating to a human, AI tutor promised 'this year'. Hinglish voice-in, voice-out board teaching for classes 1-8 on a Rs 10k phone remains unoccupied.",
+   "at": "2026-10-10",
+   "source": "inbox/r4-research-products.json"
+  },
+  {
+   "id": "r4p-azure-word-boundary-test",
+   "kind": "finding",
+   "title": "Opening to TEST, not adopt: the karaoke rejection was measured on the realtime lane, where the transcript is untimed. In the cascade lane Azure TTS can emit word-boundary events with audio offsets, but Microsoft's pages conflict on HD voices (the HD-voices page says they 'don't support word boundary events'; a Jan 2026 Foundry post says Dragon HD Omni does), and Omni is rejected for production (dragonhdomni-not-production). teacher-stage-cue-scheduler's reversal test E-TV-2 should be run on the production voice before word-lit captions are reconsidered. Read 2026-10-10.",
+   "at": "2026-10-10",
+   "source": "inbox/r4-research-products.json"
+  },
+  {
+   "id": "r4t-tutor-model",
+   "kind": "decision",
+   "title": "Proposed (research, not built): the superhuman tuition teacher (docs/research/round4/tutor/TUTOR-MODEL.md) = session-first INTAKE + a measured per-child LearnerHow state (10 dimensions, never a style) + every feature replicated the duplex way (human signal -> measure -> code decides -> model words). Builds on SchoolMirror (school-sync-homework.md), the comprehension engine, fading.js, reteach.js and the Relational OS; changes lesson start, the plan's home card and the switch path. Reverse if: M-TM1 (intake mapping) or M-TM5 (live understood-found) miss their bars, or the owner rejects session-first after seeing it.",
+   "at": "2026-10-10",
+   "source": "inbox/r4-research-tutor.json"
+  },
+  {
+   "id": "r4t-session-segments",
+   "kind": "decision",
+   "title": "Proposed: a SESSION holds several SEGMENTS; each segment is today's lesson row pinning ONE kit (content/index.js pinning, evidence ids and the end transaction unchanged); a topic switch opens the next segment server-side inside the turn response. Today lesson.topic_id is NOT NULL (001_core.sql) and director/state.js 'switch' offers a 'Start <title>' chip that begins a NEW lesson, which the child experiences as a module boundary. Reverse if: per-segment pinning breaks evidence ids, reteach resolution or the end transaction in the integration battery.",
+   "at": "2026-10-10",
+   "source": "inbox/r4-research-tutor.json"
+  },
+  {
+   "id": "r4t-intake-beat",
+   "kind": "decision",
+   "title": "Proposed: every session opens with an INTAKE beat (<= 3 child turns, <= 90 s, no stage build): one open question about today at school; intakeParse -> IntakeFrame with a closed kind (taught | homework | test | not_understood | want | nothing | unknown | share); activity words (copy, check, test, homework, class, revision, ma'am, sir) never name a topic; candidates constrained to class x subject x SchoolMirror pointer +-2 chapters (+ one class below); purpose.js matchTopic as stage 1, a closed-label pick piggybacked on classify only when the lexicon abstains; the confirmation turn is a GRADED probe ('show one thing your teacher did', kit key) that also places the child within the chapter; p < 0.6 -> a two-way 'which one?'; a confirmed pick writes SchoolMirror child_said (w 0.55, half-life 5 d). Reverse if: M-TM1 < 85% top-1 or > 3% confidently wrong on >= 200 labelled utterances per band (classes 1-3, 4-6, 7-9).",
+   "at": "2026-10-10",
+   "source": "inbox/r4-research-tutor.json"
+  },
+  {
+   "id": "r4t-plan-private-prior",
+   "kind": "decision",
+   "title": "Proposed: the Conductor's day plan becomes a PlanPrior handed to the session (level-path topic, due reviews, test window, promises, school pointer, successFirst, opener), never a child-visible topic card; the home shows Start (or Continue) only, and the topic title moves to the parent view (owner decision). One precedence in code: safety > a safe child request > test tomorrow > homework due > today's school topic > due reviews > level path; every session keeps a 2-4 min revise slice from FSRS due, delayed checks and weave. The plan reaches the compile as LESSON NOW notes, never a list; the spoken agenda is one line built from the decided segments, with at most a two-way choice of order. Reverse if: the owner keeps the topic card, or M-TM3 school continuity < 70% of school-day sessions.",
+   "at": "2026-10-10",
+   "source": "inbox/r4-research-tutor.json"
+  },
+  {
+   "id": "m-r4t-school-today-probe-2026-10-10",
+   "kind": "measurement",
+   "title": "Intake mapping probe (n = 12 Hinglish 'what happened at school today' utterances, classes 4-8, labels written before the run, deterministic, no model, docs/research/round4/tutor/school-today-probe.mjs, 2026-10-10). server/lesson/purpose.js matchTopic: 7/12 right, 2 wrong, 3 missed. Wrong: 'ma'am ne copy check ki' -> c5 Checking reasonableness; a class-6 'angles padhaye, acute obtuse' -> the class-5 topic (class 6 says 'Types of angles'). Missed: 'hindi mein kavita padhi'; 'mughal empire' (no title of the new class-8 SST book contains it); 'table of 7 ... kal test hai'. server/content/curriculum.js findTopic: 0/12.",
+   "at": "2026-10-10",
+   "source": "inbox/r4-research-tutor.json"
+  },
+  {
+   "id": "rj-r4t-findtopic-as-intake",
+   "kind": "rejection",
+   "title": "Tried (probe 2026-10-10, n = 12): curriculum.js findTopic as the mapper for a child's account of the school day. Broke: 0/12. It requires EVERY 4+-letter word of the query to start a title word, so a whole sentence never matches. Instead: IntakeFrame parse + pointer-constrained candidates + matchTopic as stage 1. findTopic stays for short named-subject switches, where its word-start rule prevents substring traps.",
+   "at": "2026-10-10",
+   "source": "inbox/r4-research-tutor.json"
+  },
+  {
+   "id": "rj-r4t-activity-word-as-topic",
+   "kind": "rejection",
+   "title": "Tried (probe 2026-10-10): lexical topic matching over the whole intake sentence. Broke: 'ma'am ne copy check ki' (nothing taught) was routed to c5 'Checking reasonableness' (1 of 12). Activity words of the school day (copy, check, test, homework, class, revision) are never a subject; same family as rj-r3fix-switch-on-way-words. Instead: parse the frame kind first, then strip activity words before topic matching.",
+   "at": "2026-10-10",
+   "source": "inbox/r4-research-tutor.json"
+  },
+  {
+   "id": "r4t-school-chapter-never-stored",
+   "kind": "finding",
+   "title": "OPEN: server/content/next-topic.js schoolStartIndex reads child.school_chapter, but no migration creates that column (grep 2026-10-10). Placement therefore always falls back to the calendar estimate (x 0.8 of the year fraction). It also reads legacy skill_state, not the kt ledger. The SchoolMirror pointer (school-sync-homework.md SS1-SS14, designed 2026-10-02, no code references) is the replacement input.",
+   "at": "2026-10-10",
+   "source": "inbox/r4-research-tutor.json"
+  },
+  {
+   "id": "r4t-learner-how-state",
+   "kind": "decision",
+   "title": "Proposed: LearnerHow = 10 measured dimensions, never a style label: H1 prior knowledge, H2 guidance need, H3 representation responsiveness, H4 retention (FSRS), H5 repetition-to-criterion, H6 pace, H7 engagement, H8 interest hooks, H9 language, H10 the child's 'what helped' choice. Each comes from first attempts on verified keys or from session behaviour, and each is bound to a legal tier. H3 = Beta per (child, topicType x subject, representation class): credited on graded first attempts (unaided 1, hint 0.5, game 0.5); a delayed check adds +1 to the representation used at first teaching; shrunk to the population prior (n0 = 4); 60-day half-life; voice, vibe, timing and affect are never inputs. H3 drives the FIRST representation for a new skill (Thompson sample over the content-fit candidates, exploration floor 0.2), not only re-teach. Reverse if: E-PROFILE (M-TM4) shows no gain over population-best on 1- and 4-week delayed unaided accuracy.",
+   "at": "2026-10-10",
+   "source": "inbox/r4-research-tutor.json"
+  },
+  {
+   "id": "r4t-how-tables-without-writers",
+   "kind": "finding",
+   "title": "OPEN (grep 2026-10-10): rep_fluency (007) is read by server/comprehension/session.js, but nothing writes it. format_posterior (016) is neither read nor written. stagecraft/policy.js wantAt has no per-child representation input. So today 'how she learns' persists only through reteach_attempts child history, FSRS memory, recent outcomes and the 14-day stuck counts; the first teaching of a skill never uses this child's history.",
+   "at": "2026-10-10",
+   "source": "inbox/r4-research-tutor.json"
+  },
+  {
+   "id": "r4t-h3-persist-owner",
+   "kind": "finding",
+   "title": "OPEN (owner + counsel): persisting H3 per child at M1 conflicts with LM9 (per-child format personalisation only at M3 and after the HTE gate) under DPDP s.9(3). Precedent: re-teach arm history is already per child (w2c-reteach-child-history-first). Options: (a) treat H3 as academic record (outcomes on verified keys, no timing or affect, shrunk to population, shown to the parent as 'How <T> teaches <child>'); (b) a parent opt-in consent like voice_pace_memory (021); (c) population-only until M3.",
+   "at": "2026-10-10",
+   "source": "inbox/r4-research-tutor.json"
+  },
+  {
+   "id": "r4t-teach-anything-tiers",
+   "kind": "decision",
+   "title": "Proposed: 'teach anything' has 4 tiers. (a) In the graph, any class; above the child's class only after a prerequisite check. (b) A school-vocabulary and old-book alias layer (data/curriculum/aliases.json, library-level, reviewed, child-free; e.g. 'Mughal empire' -> c8-sst-ch02). (c) Out of the graph but safe: an 'explore' segment under the mini-kit law. taxila-fast writes and taxila-brain blind-solves; only reproduced keys grade; verified:false halves weight; cached at library level, child-free; demand-ranked into human review; no facts carried by pixels. (d) Refused by a scope predicate (harm, weapons, drugs, sexual content beyond NCERT framing, diagnosis, persuasion, others' data, live-exam cheating, contact), with an adjacent safe topic offered. Gap: minikit.js builds only from curriculum entries. Reverse if: M-TM7 red-team finds any unsafe teach-along or > 5% false refusals on benign curiosities.",
+   "at": "2026-10-10",
+   "source": "inbox/r4-research-tutor.json"
+  },
+  {
+   "id": "r4t-tuition-evidence",
+   "kind": "finding",
+   "title": "Indian tuition evidence (TUTOR-MODEL §1.1, searched 2026-10-10). CMS:E 2025 (NSS 80th round, 221,617 students): 27.0% in coaching, urban 30.7 / rural 25.5 [summaries; report not opened]. Dongre & Tewary 2015 (sibling fixed effects, ~0.5 M ASER children): effect ~ one extra year of school, largest for disadvantaged and low-level children. Sujatha 2014 (n = 4,031, grades 9-10, 4 states): to pass exams 43%; 'do not understand teaching at school' 27% govt / 18% private unaided; tutors teach to the exam pattern, test frequently and give individual attention; 19.8% taught by their own school teacher. Mindspark (Delhi after-school centres, teaching at the child's actual level): +0.36 SD maths, +0.22 SD Hindi in 4.5 months (NBER WP 22923).",
+   "at": "2026-10-10",
+   "source": "inbox/r4-research-tutor.json"
+  },
+  {
+   "id": "r4t-no-tuition-session-ethnography",
+   "kind": "finding",
+   "title": "OPEN (owner): no ethnography or observation of an Indian primary home-tuition SESSION was found (search 2026-10-10). Closest: Bhorkar 2024, 37 provider interviews in Maharashtra; Thirumurthy 2014, parents' homework involvement. TUTOR-MODEL §1.2's session pattern (opening question, notebook check, re-teaching today's class topic, test-driven weeks, weekly revision) is practitioner knowledge [A]. M-TM6 (10-20 Hindi-belt tutor interviews + 5 observed sessions, consented) would replace it.",
+   "at": "2026-10-10",
+   "source": "inbox/r4-research-tutor.json"
+  },
+  {
+   "id": "r4t-live-underprobes",
+   "kind": "finding",
+   "title": "For 'understood or not', the lever is probes, not grading. The deployed live policy finds 2.1% of true understanders in simulation (macro 0.489-0.496), against the engine's 0.578 found (comp-sim) and an oracle-prober at 0.710 macro. Session-first adds one graded intake probe on the school topic per session. Bar M-TM5: >= 0.40 found at false mastery <= 0.025 in the sim, then on children. 'Samajh aaya?' is never evidence (Person et al. 1994: comprehension-gauging answers 'very misleading'; Chi et al. 2004: tutors overestimate understanding).",
+   "at": "2026-10-10",
+   "source": "inbox/r4-research-tutor.json"
+  },
+  {
+   "id": "r4t-memory-tier-c-owner",
+   "kind": "finding",
+   "title": "OPEN (owner + counsel): the owner's 'bond like a human, evolves like a human' implies callbacks to the child's life and running jokes across sessions. That is memory tier C, not built by design (LM14). Proposed narrow tier C: only what the child offered; passes memory.js NOT_AN_OPENER (no illness, fear, people, hurt); <= 5 items, 30-day expiry; visible to and deletable by both child and parent; used only as an opener callback or the setting of an example, never as a reason to come back. Until decided, life callbacks stay within the session.",
+   "at": "2026-10-10",
+   "source": "inbox/r4-research-tutor.json"
+  },
+  {
+   "id": "r4t-feature-replication",
+   "kind": "decision",
+   "title": "Proposed: every tutor feature is built the way duplex was. Name the great human tutor's signal, measure it, let code decide and the model word it. TUTOR-MODEL §6 maps 18 features to the machine equivalent and their status. Built: explaining, board, checking (under-probed), practice, game admission by skill, mood from words and task, her own mistake, ending, parent update. Partial: test prep, revision slice, preparing between sessions, teach-anything a/b. Missing: the opening intake, the school pointer, notebook/homework ladder, the 'didn't understand in class' trigger, teach-anything c/d.",
+   "at": "2026-10-10",
+   "source": "inbox/r4-research-tutor.json"
   }
  ],
  "edges": [
@@ -28566,6 +28805,261 @@
    "src": "dc-r4-owner-vision-superhuman-tutor",
    "rel": "constrains",
    "dst": "dc-r4-parallel-cloud-sessions"
+  },
+  {
+   "src": "r4p-sketchmind-sync-is-beat-order",
+   "rel": "caused_by",
+   "dst": "dc-r4-owner-vision-superhuman-tutor"
+  },
+  {
+   "src": "r4p-sketchmind-demo-scripted-timeline-2026-10-10",
+   "rel": "caused_by",
+   "dst": "dc-r4-owner-vision-superhuman-tutor"
+  },
+  {
+   "src": "r4p-sketchmind-price-inr-2026-10-10",
+   "rel": "caused_by",
+   "dst": "dc-r4-owner-vision-superhuman-tutor"
+  },
+  {
+   "src": "r4p-sketchmind-plan-first-opening-shapes",
+   "rel": "caused_by",
+   "dst": "dc-r4-owner-vision-superhuman-tutor"
+  },
+  {
+   "src": "r4p-sketchmind-checkpoints-binary",
+   "rel": "caused_by",
+   "dst": "dc-r4-owner-vision-superhuman-tutor"
+  },
+  {
+   "src": "r4p-sketchmind-notebook-replay",
+   "rel": "caused_by",
+   "dst": "dc-r4-owner-vision-superhuman-tutor"
+  },
+  {
+   "src": "r4p-sketchmind-streak-and-vendors",
+   "rel": "caused_by",
+   "dst": "dc-r4-owner-vision-superhuman-tutor"
+  },
+  {
+   "src": "r4p-taxila-no-deeper-request",
+   "rel": "caused_by",
+   "dst": "r4p-sketchmind-plan-first-opening-shapes"
+  },
+  {
+   "src": "r4p-economy-ban-copy-only",
+   "rel": "caused_by",
+   "dst": "design-v3-no-streaks-mastery"
+  },
+  {
+   "src": "r4p-peers-run-economies",
+   "rel": "caused_by",
+   "dst": "dc-r4-owner-vision-superhuman-tutor"
+  },
+  {
+   "src": "r4p-gamification-evidence-split",
+   "rel": "caused_by",
+   "dst": "dc-r4-owner-vision-superhuman-tutor"
+  },
+  {
+   "src": "r4p-gamification-owner-fork",
+   "rel": "caused_by",
+   "dst": "r4p-gamification-evidence-split"
+  },
+  {
+   "src": "dc-r4-owner-vision-superhuman-tutor",
+   "rel": "blocks",
+   "dst": "r4p-gamification-owner-fork"
+  },
+  {
+   "src": "r4p-no-live-game-generation-in-session",
+   "rel": "caused_by",
+   "dst": "dc-r4-owner-vision-superhuman-tutor"
+  },
+  {
+   "src": "r4p-live-visuals-table-stakes-2026",
+   "rel": "caused_by",
+   "dst": "dc-r4-owner-vision-superhuman-tutor"
+  },
+  {
+   "src": "r4p-india-kids-games-data-gap",
+   "rel": "caused_by",
+   "dst": "dc-r4-owner-vision-superhuman-tutor"
+  },
+  {
+   "src": "r4p-india-voice-tutors-cluster-9-12",
+   "rel": "caused_by",
+   "dst": "dc-r4-owner-vision-superhuman-tutor"
+  },
+  {
+   "src": "r4p-azure-word-boundary-test",
+   "rel": "caused_by",
+   "dst": "karaoke-from-transcript-estimate"
+  },
+  {
+   "src": "r4t-tutor-model",
+   "rel": "caused_by",
+   "dst": "dc-r4-owner-vision-superhuman-tutor"
+  },
+  {
+   "src": "r4t-tutor-model",
+   "rel": "caused_by",
+   "dst": "r4t-tuition-evidence"
+  },
+  {
+   "src": "r4t-session-segments",
+   "rel": "part_of",
+   "dst": "r4t-tutor-model"
+  },
+  {
+   "src": "r4t-intake-beat",
+   "rel": "part_of",
+   "dst": "r4t-tutor-model"
+  },
+  {
+   "src": "r4t-plan-private-prior",
+   "rel": "part_of",
+   "dst": "r4t-tutor-model"
+  },
+  {
+   "src": "r4t-learner-how-state",
+   "rel": "part_of",
+   "dst": "r4t-tutor-model"
+  },
+  {
+   "src": "r4t-teach-anything-tiers",
+   "rel": "part_of",
+   "dst": "r4t-tutor-model"
+  },
+  {
+   "src": "r4t-feature-replication",
+   "rel": "part_of",
+   "dst": "r4t-tutor-model"
+  },
+  {
+   "src": "r4t-no-tuition-session-ethnography",
+   "rel": "part_of",
+   "dst": "r4t-tutor-model"
+  },
+  {
+   "src": "r4t-intake-beat",
+   "rel": "measured_by",
+   "dst": "m-r4t-school-today-probe-2026-10-10"
+  },
+  {
+   "src": "r4t-intake-beat",
+   "rel": "measured_by",
+   "dst": "m-w2a-ask-routing-2026-10-04"
+  },
+  {
+   "src": "rj-r4t-findtopic-as-intake",
+   "rel": "measured_by",
+   "dst": "m-r4t-school-today-probe-2026-10-10"
+  },
+  {
+   "src": "rj-r4t-activity-word-as-topic",
+   "rel": "measured_by",
+   "dst": "m-r4t-school-today-probe-2026-10-10"
+  },
+  {
+   "src": "rj-r4t-activity-word-as-topic",
+   "rel": "constrains",
+   "dst": "r4t-intake-beat"
+  },
+  {
+   "src": "rj-r3fix-switch-on-way-words",
+   "rel": "constrains",
+   "dst": "r4t-intake-beat"
+  },
+  {
+   "src": "rj-passive-tutor",
+   "rel": "constrains",
+   "dst": "r4t-intake-beat"
+  },
+  {
+   "src": "r4t-intake-beat",
+   "rel": "caused_by",
+   "dst": "r4t-school-chapter-never-stored"
+  },
+  {
+   "src": "conductor-code-reducer",
+   "rel": "constrains",
+   "dst": "r4t-plan-private-prior"
+  },
+  {
+   "src": "rj-advice-menu-for-weak-learners",
+   "rel": "constrains",
+   "dst": "r4t-plan-private-prior"
+  },
+  {
+   "src": "rj-style-attribute-to-generator",
+   "rel": "constrains",
+   "dst": "r4t-learner-how-state"
+  },
+  {
+   "src": "learner-legal-mode-ratchet",
+   "rel": "constrains",
+   "dst": "r4t-learner-how-state"
+  },
+  {
+   "src": "dpdp-9-3-learner-gate",
+   "rel": "constrains",
+   "dst": "r4t-learner-how-state"
+  },
+  {
+   "src": "ct-no-voice-emotion-inference",
+   "rel": "constrains",
+   "dst": "r4t-learner-how-state"
+  },
+  {
+   "src": "r4t-learner-how-state",
+   "rel": "caused_by",
+   "dst": "r4t-how-tables-without-writers"
+  },
+  {
+   "src": "r4t-learner-how-state",
+   "rel": "blocks",
+   "dst": "r4t-h3-persist-owner"
+  },
+  {
+   "src": "w2c-reteach-child-history-first",
+   "rel": "constrains",
+   "dst": "r4t-h3-persist-owner"
+  },
+  {
+   "src": "generated-media-carries-facts",
+   "rel": "constrains",
+   "dst": "r4t-teach-anything-tiers"
+  },
+  {
+   "src": "r4t-live-underprobes",
+   "rel": "measured_by",
+   "dst": "w1c-live-sim-headline"
+  },
+  {
+   "src": "r4t-live-underprobes",
+   "rel": "measured_by",
+   "dst": "w1c-live-sim-headline-2"
+  },
+  {
+   "src": "r4t-live-underprobes",
+   "rel": "part_of",
+   "dst": "r4t-tutor-model"
+  },
+  {
+   "src": "mk-warmth-not-intimacy",
+   "rel": "constrains",
+   "dst": "r4t-memory-tier-c-owner"
+  },
+  {
+   "src": "relational-os-spec",
+   "rel": "constrains",
+   "dst": "r4t-memory-tier-c-owner"
+  },
+  {
+   "src": "dec-r3rh-callbacks-from-learning-record",
+   "rel": "constrains",
+   "dst": "r4t-memory-tier-c-owner"
   }
  ]
 }
