@@ -63,6 +63,7 @@ Base = untouched `8e438f04` in a separate worktree; branch = this tree. Same con
 | `node --test tests/kit-budget.test.mjs` | pass | pass | patch 03 |
 | `node scripts/lint-ui.mjs --json` | 353 findings | 353 findings, 0 new (diffed by rule + file + text) | |
 | `node scripts/context.mjs --check` | ok | ok | |
+| `npm test` (merged with base 343fa08c, head 0ee71c68) | | 2,598 tests: 2,533 pass, 60 fail (the same 60), 5 skipped; 0 failures not on the base | |
 | `npm test` | 2,575 tests: 2,505 pass, 64 fail, 6 skipped | 2,593 tests: 2,527 pass, 60 fail, 6 skipped; 0 failures not on the base (diffed by test name) | the branch's 60 are the base's 60 engines-browser scenarios; the base's other 4 (frame/tray timing tests) passed on the branch. The branch run had sheet v2; v3 differs only in notes data, and its targeted tests (114), budget and invariants were re-run green | all 64 base failures are Chromium-iframe tests: the container has Chromium 1194, playwright 1.63 wants 1243 (linked locally, never downloaded), and its CSP console wording differs from the harness's dev-noise filter. Environmental. |
 
 ### Talk gate (persona change): child talk share, director-sim
@@ -98,6 +99,23 @@ trouble T1 / help (b2 and b3), Hello, Home, Map sheet, Your teacher (young and o
 landing. First run: 483 / 531 checks. **ONE (every face is Asha), NAMES (no Arjun/Uma), CHOICE (no teacher choice),
 overflow and page errors: 0 failures.** Failures: the map-sheet selector (fixed in the harness), and text < 14 px in shared
 chrome I do not own (13 px "Talk" mic label, the bottom nav, "Step 2 of 9", "Sample"), which the base comparison will place.
+
+### Owner batteries: owner-1..5 and round3-conversation (base vs branch)
+
+Method: local production builds (`server/serve.mjs` + `server/worker.mjs`, `NODE_ENV=production`, prod model routing), my
+Neon branch, seed 774993, n = 1 run each, one tree at a time. Children are scripted personas (no real child) and the
+grading is code. Load: shared Azure quota.
+
+| battery | base 8e438f04 | branch | note |
+|---|---|---|---|
+| owner-1 grading | 6/7 | 6/7 | one false_fail re-ask on both |
+| owner-2 no-confusion | 8/12 | 9/12 | R5.loop and R7.defer on both; base's R6.gutted gone |
+| owner-3 ending | 48/48 | 48/48 | |
+| owner-4 steering | 17/17, then 17/17 and 17/17 on re-run | 17/18, then 17/17 and 17/17 on re-run | the one FAIL was cleanup held by the safeguarding guard: in one lesson the scripted "explain it differently" was classified to the safeguard move (model request classifier) and she gave the helplines. It did not recur in 2 re-runs on the branch: classifier variance on the safe side (reported to 4A) |
+| owner-5 visual | 10/14 | 11/14 | the same failure classes on both |
+| round3-conversation | 24/26 | 25/27 | the same B (R7.defer) and C (promise kept) failures on both |
+
+No persona regression. All numbers come from simulated children.
 
 ### DB-backed proofs (Neon test branch, real routes, no model calls)
 
