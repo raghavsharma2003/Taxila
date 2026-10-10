@@ -1,0 +1,1955 @@
+diff --git a/shared/tutors.js b/shared/tutors.js
+index ed52b55e5f9076f474c410c91e5d316ba2d2323c..1120c12ee3800a8154dd456a076b37ffcfc6c371 100644
+--- a/shared/tutors.js
++++ b/shared/tutors.js
+@@ -1,6 +1,9 @@
+-// The tutor cast (VOICE-TEACHER.md §6: Asha, Arjun, Uma) as a versioned static manifest, plus the pure
+-// eligibility / ordering rules of AVATAR.md §7.1 and tutor-selection-ux.md §4, §6.3. Plain JS so the server
+-// (plain ESM) and the client (TS, via tutors.d.ts) share ONE copy of the rules.
++// The tutor cast as a versioned static manifest, plus the pure eligibility rules of AVATAR.md §7.1. Plain JS so the
++// server (plain ESM) and the client (TS, via tutors.d.ts) share ONE copy of the rules.
++// ONE teacher (owner 2026-10-10, round 4: "focus on only 1 teacher that is asha (new grown up version)"): Asha teaches
++// every class 1-9. Arjun and the draft Uma are gone, and with them every teacher-choice step (the picker, Hello's
++// "pick a teacher" card, the Your-teacher switch, POST /api/tutors/choose, the parent's teacher PATCH). The rules below
++// still run on a one-entry catalogue: eligibleTutors() answers mode "single" for every child.
+ //
+ // What lives here is product copy and look data, never persona text: the style notes describe teaching, are
+ // ≤ 8 words, make no friendship claim and never frame by subject (tutor-selection-ux §4). The persona sheets
+@@ -23,9 +26,9 @@ export const TUTORS = [
+       hindi: "चित्रों के साथ, कदम-कदम पर",
+       hinglish: "pictures ke saath, step by step",
+     },
+-    // offer: the persona sheet's own range (asha.js classes [1, 4]); wide: AVATAR §5.1 once the band layer
+-    // carries register (TAXILA_TUTOR_OFFER=wide).
+-    fit: { offerClasses: [1, 4], wideOfferClasses: [1, 6], serveClasses: [1, 7] },
++    // every class: the persona sheet carries a register per band (asha.js: classes 1-4 her own, 5-9 the register
++    // written and tested for those classes), so the sheet range, the wide range and the serve range are all 1-9
++    fit: { offerClasses: [1, 9], wideOfferClasses: [1, 9], serveClasses: [1, 9] },
+     look: {
+       rev: 1, presentedGender: "F", apparentAge: 24, mst: 6, signatureColor: "#3E7C74",
+       skin: "#C99366", skinShade: "#B07E55", hair: "#2A1C14", hairStyle: "ponytail", glasses: "none",
+@@ -35,52 +38,6 @@ export const TUTORS = [
+     faceStyle: { smile: 0.8, headGain: 1.1, browGain: 1.1 },
+     voice: { cps: 13.5, speakerMeanHz: 220 },
+   },
+-  {
+-    id: "arjun",
+-    lookId: "slate",
+-    status: "live",
+-    displayName: { roman: "Arjun", deva: "अर्जुन" },
+-    roleChips: ["bhaiya"],
+-    styleChip: { english: "guess, then check", hindi: "पहले अंदाज़ा, फिर जाँच", hinglish: "guess, phir check" },
+-    styleNote: {
+-      english: "loves puzzles: guess first, then check",
+-      hindi: "पहेलियाँ पसंद: पहले अंदाज़ा, फिर जाँच",
+-      hinglish: "puzzles pasand: pehle guess, phir check",
+-    },
+-    fit: { offerClasses: [5, 9], wideOfferClasses: [1, 9], serveClasses: [1, 9] },
+-    look: {
+-      rev: 1, presentedGender: "M", apparentAge: 26, mst: 7, signatureColor: "#44607F",
+-      skin: "#A9744A", skinShade: "#93633D", hair: "#1F1712", hairStyle: "curls", glasses: "round",
+-      top: "#44607F", topShade: "#384F69", accent: "#E9E4D8", accentBorder: "#2E4257", attire: "shirt-tee",
+-      iris: "#3A2416", lip: "#7E4636",
+-    },
+-    faceStyle: { smile: 0.7, headGain: 1.2, browGain: 1.0 },
+-    voice: { cps: 13.5, speakerMeanHz: 120 },
+-  },
+-  {
+-    id: "uma",
+-    lookId: "plum",
+-    // No persona sheet (server/compiler/characters/uma.js) and no voice probed yet (VOICE-TEACHER §6: "needs a
+-    // low-register arm"): shown only in dev previews until both exist. A character + voice + face are one unit.
+-    status: "draft",
+-    displayName: { roman: "Uma", deva: "उमा" },
+-    roleChips: ["maam"],
+-    styleChip: { english: "calm and clear", hindi: "शांत और साफ़", hinglish: "calm aur clear" },
+-    styleNote: {
+-      english: "calm and clear; recall first, then practice",
+-      hindi: "शांत और साफ़: पहले याद, फिर अभ्यास",
+-      hinglish: "calm aur clear: pehle yaad, phir practice",
+-    },
+-    fit: { offerClasses: [7, 9], wideOfferClasses: [7, 9], serveClasses: [7, 9] },
+-    look: {
+-      rev: 1, presentedGender: "F", apparentAge: 34, mst: 8, signatureColor: "#7A4A6E",
+-      skin: "#8A5634", skinShade: "#764829", hair: "#241812", hairStyle: "bun", glasses: "none",
+-      top: "#7A4A6E", topShade: "#653C5B", accent: "#EADFC8", accentBorder: "#C2410C", attire: "saree",
+-      iris: "#2E1C10", lip: "#6E3A30",
+-    },
+-    faceStyle: { smile: 0.55, headGain: 0.8, browGain: 1.2 },
+-    voice: { cps: 12.5, speakerMeanHz: 200 },
+-  },
+ ];
+ 
+ export const tutorById = (id) => TUTORS.find((t) => t.id === id) ?? null;
+@@ -163,8 +120,8 @@ export function eligibleTutors(child, { catalogue = TUTORS, hasSheet = () => tru
+   return { mode: "picker", band, tutors: pickCovering(seededShuffle(el, seedOf(child.id)), max) };
+ }
+ 
+-/** The class default when nothing was chosen (matches server teacherFor's rule). */
+-export const defaultTutorFor = (child) => (Number(child.class_level) <= 4 ? "asha" : "arjun");
++/** The teacher every child has (matches server teacherFor): one teacher. Kept as a function for its callers. */
++export const defaultTutorFor = (_child) => "asha";
+ 
+ // ───────────── the child names the teacher (decision child-names-teacher) ─────────────
+ // The SHAPE half of the name predicate, shared so the picker can answer instantly; the server's
+@@ -176,8 +133,9 @@ export const defaultTutorFor = (child) => (Number(child.class_level) <= 4 ? "ash
+ /** 2-16 characters: Latin letters, with at most two single spaces or hyphens between letters. */
+ export const TEACHER_NAME = Object.freeze({ min: 2, max: 16, re: /^[A-Za-z]+(?:[ -][A-Za-z]+){0,2}$/ });
+ 
+-/** The names the picker offers (owner: "Asha, Arjun and Uma are suggestions"). Never a default the child must keep. */
+-export const NAME_SUGGESTIONS = Object.freeze(["Asha", "Arjun", "Uma"]);
++/** The names the namer offers (owner: "Asha, Arjun and Uma are suggestions"; round 4: one woman teacher, so the
++ *  man's name is no longer offered). Never a default the child must keep. */
++export const NAME_SUGGESTIONS = Object.freeze(["Asha", "Uma"]);
+ 
+ /** Typed text → the name as it would be stored: trimmed, inner whitespace collapsed, each word capitalised. */
+ export function normalizeTeacherName(raw) {
+diff --git a/server/compiler/characters/index.js b/server/compiler/characters/index.js
+index 6fe3c236c90876c46ae35a8157a2964d85c23f69..f7082b029e32058136ef1a0d6f66465ef64b2019 100644
+--- a/server/compiler/characters/index.js
++++ b/server/compiler/characters/index.js
+@@ -1,11 +1,21 @@
+-// Teacher character registry. Voices are configurable per deployment (TAXILA_VOICE_ASHA / _ARJUN) because a
+-// voice is chosen by blind ear test, not by code review (inherited rejection: voice by metrics).
++// Teacher character registry: ONE teacher, Asha, for every class (owner 2026-10-10, round 4). Her voice is configurable
++// per deployment (TAXILA_VOICE_ASHA) because a voice is chosen by blind ear test, not by code review (inherited
++// rejection: voice by metrics).
+ import asha from "./asha.js";
+-import arjun from "./arjun.js";
+ import { tutorById } from "../../../shared/tutors.js";
+ import { effectiveTeacherName } from "./naming.js";
+ 
+-export const CHARACTERS = { asha, arjun };
++export const CHARACTERS = { asha };
++
++/**
++ * The sheet for a class: a character with an `older` register (asha.js) uses it from `older.from` up (its notes and its
++ * protégé), else its own. Everything else (name, address, pronouns, voice, every floor rule) is the character's.
++ */
++export function forClass(c, classLevel) {
++  const o = c?.older;
++  if (!o || !(Number(classLevel) >= o.from)) return c;
++  return { ...c, notes: o.notes, protege: o.protege };
++}
+ 
+ /** Offer ranges: the persona sheets' own (default), or AVATAR §5.1 widened once the band layer carries register. */
+ export const offerMode = () => (process.env.TAXILA_TUTOR_OFFER === "wide" ? "wide" : "sheet");
+@@ -25,7 +35,7 @@ export function servesClass(id, classLevel, mode = offerMode()) {
+   return cls >= lo && cls <= hi;
+ }
+ 
+-const classDefault = (child) => (child.class_level <= 4 ? asha : arjun);
++const classDefault = (_child) => asha;
+ 
+ /**
+  * A character under the name the child gave it (decision child-names-teacher): name and addressedAs change ("Asha
+@@ -46,15 +56,17 @@ export function named(c, name) {
+  * (ctx.teacherName, fixed at lesson start), so a rename between turns never changes an open lesson's persona.
+  */
+ export function characterForState(state) {
+-  const c = CHARACTERS[state?.ctx?.teacherId];
+-  return c ? named(c, state.ctx.teacherName) : c;
++  const pinned = CHARACTERS[state?.ctx?.teacherId];
++  // a lesson pinned to a retired id (an open "arjun" lesson at deploy) continues as Asha under her own name
++  const c = pinned ?? (state?.ctx ? asha : undefined);
++  return c ? named(forClass(c, state.ctx.classLevel), pinned ? state.ctx.teacherName : c.name) : c;
+ }
+ const warned = new Set();
+ 
+ /**
+  * The character for a child: their saved teacher_id when that character serves the child's class (servesClass),
+- * else the class default (Asha for classes 1-4, Arjun for 5-9). An out-of-range saved pick is logged once per
+- * child per process and NOT rewritten: the row keeps the child's choice so a later class or mode can honour it.
++ * else the default (Asha, the one teacher; a row still holding a retired id such as "arjun" lands here). An
++ * out-of-range saved pick is logged once per child per process and NOT rewritten.
+  */
+ export function teacherFor(child) {
+   const saved = CHARACTERS[child.teacher_id];
+@@ -67,7 +79,7 @@ export function teacherFor(child) {
+       console.warn(`[teacher] saved ${saved.id} does not serve class ${child.class_level} (${offerMode()}); using ${c.id}`);
+     }
+   }
+-  return { ...named(c, effectiveTeacherName(c, child)), voice: process.env[`TAXILA_VOICE_${c.id.toUpperCase()}`] || c.voice };
++  return { ...named(forClass(c, child.class_level), effectiveTeacherName(c, child)), voice: process.env[`TAXILA_VOICE_${c.id.toUpperCase()}`] || c.voice };
+ }
+ 
+ /**
+@@ -83,7 +95,7 @@ export function teacherFor(child) {
+ export function teacherForLesson(child, pinnedId, pinnedName) {
+   const c = pinnedId && CHARACTERS[pinnedId];
+   if (!c) return teacherFor(child);
+-  return { ...named(c, pinnedName ?? c.name), voice: process.env[`TAXILA_VOICE_${c.id.toUpperCase()}`] || c.voice };
++  return { ...named(forClass(c, child.class_level), pinnedName ?? c.name), voice: process.env[`TAXILA_VOICE_${c.id.toUpperCase()}`] || c.voice };
+ }
+ 
+ /**
+diff --git a/server/compiler/characters/asha.js b/server/compiler/characters/asha.js
+index cc08cb101dac82a4b281b22acefd1d99f2b03451..487f6b54a9f794acdc51664e2e9650b49fe6d252 100644
+--- a/server/compiler/characters/asha.js
++++ b/server/compiler/characters/asha.js
+@@ -1,5 +1,8 @@
+-// Asha — the teacher character for classes 1-4. NOTES and SHAPES only: no line she could recite
+-// (inherited law `recited-prompt`: example quotes in a prompt get read out verbatim).
++// Asha — the one teacher character, classes 1-9 (owner 2026-10-10, round 4: one teacher, the grown-up Asha). NOTES and
++// SHAPES only: no line she could recite (inherited law `recited-prompt`: example quotes in a prompt get read out verbatim).
++// Two registers, chosen by class (characters/index.js forClass): classes 1-4 keep her own sheet below, unchanged;
++// classes 5-9 take `older`, the register written and tested for those classes (it was Arjun's sheet, classes 5-9), with
++// only the role word changed (bhaiya-tutor → didi-teacher). Name, address, pronouns and voice are hers in both.
+ export default {
+   id: "asha",
+   name: "Asha",
+@@ -7,7 +10,7 @@ export default {
+   // Pronouns for every surface that talks ABOUT the teacher (parent notes, the summary, the child UI): one record.
+   pronouns: { subject: "she", object: "her", possessive: "her" },
+   voice: "marin",
+-  classes: [1, 4],
++  classes: [1, 9],
+   // Care-receiving protégé for teach-back: 6-9-year-olds explain better to someone smaller than them.
+   protege: { name: "Golu", what: "a pretend baby elephant just starting school" },
+   notes: [
+@@ -21,4 +24,20 @@ export default {
+     "address: the child's first name; no pet names or endearments",
+     "pace: unhurried, waits for the child; short simple words",
+   ],
++  // classes 5-9
++  older: {
++    from: 5,
++    protege: { name: "Bittu", what: "a pretend new student who missed this class" },
++    notes: [
++      "an AI teacher character for Indian children in classes 5-9; a sharp, kind didi-teacher register",
++      "has no real age, family, home, body or life events — never invent them",
++      "competence before warmth: diagnose what they tried before explaining; respect their reasoning",
++      "teaching: the child does the thinking; questions over lectures; one idea per turn; picture → rule → number",
++      "praise: names the exact step or method, never ability; no comparisons with other children",
++      "mistakes: say plainly which step broke, with no softening, then the next nudge",
++      "humour: dry and light, about the problem or everyday life; never about the child; none while they struggle",
++      "address: the child's first name; no nicknames",
++      "pace: brisk but patient; waits for a full answer",
++    ],
++  },
+ };
+diff --git a/server/compiler/characters/arjun.js b/server/compiler/characters/arjun.js
+deleted file mode 100644
+index da86717c4d083f1a9a733b87dda06725c362e49d..0000000000000000000000000000000000000000
+--- a/server/compiler/characters/arjun.js
++++ /dev/null
+@@ -1,22 +0,0 @@
+-// Arjun — the teacher character for classes 5-9. NOTES and SHAPES only: no line he could recite.
+-export default {
+-  id: "arjun",
+-  name: "Arjun",
+-  addressedAs: "Arjun bhaiya",
+-  // Pronouns for every surface that talks ABOUT the teacher (parent notes, the summary, the child UI): one record.
+-  pronouns: { subject: "he", object: "him", possessive: "his" },
+-  voice: "cedar",
+-  classes: [5, 9],
+-  protege: { name: "Bittu", what: "a pretend new student who missed this class" },
+-  notes: [
+-    "an AI teacher character for Indian children in classes 5-9; a sharp, kind bhaiya-tutor register",
+-    "has no real age, family, home, body or life events — never invent them",
+-    "competence before warmth: diagnose what they tried before explaining; respect their reasoning",
+-    "teaching: the child does the thinking; questions over lectures; one idea per turn; picture → rule → number",
+-    "praise: names the exact step or method, never ability; no comparisons with other children",
+-    "mistakes: say plainly which step broke, with no softening, then the next nudge",
+-    "humour: dry and light, about the problem or everyday life; never about the child; none while they struggle",
+-    "address: the child's first name; no nicknames",
+-    "pace: brisk but patient; waits for a full answer",
+-  ],
+-};
+diff --git a/server/routes/tutor.js b/server/routes/tutor.js
+index 6bda7b2ac88191828b273f35c72e9c4c5f7da210..3a59c9f6d5a3024bb6da1a3d5062ec895f8c06ca 100644
+--- a/server/routes/tutor.js
++++ b/server/routes/tutor.js
+@@ -1,37 +1,26 @@
+-// /api/tutors — who may teach this child, and the child's own pick (AVATAR.md §7, tutor-selection-ux §5).
++// /api/tutors — the child's teacher and the name the child gave her (AVATAR.md §7; decision child-names-teacher).
+ //
+-//   GET  /api/tutors?childId=…   → { current, chosen, mode, band, tutors: [id…] (shuffled per child, no default), live }
+-//   POST /api/tutors/choose      body { childId, tutorId, source: "child" | "child_random", shown?: [id…], msToChoose? }
++//   GET  /api/tutors?childId=…   → { current, chosen, mode, band, tutors: [id…], live, name, characterName, custom, suggestions }
+ //   POST /api/tutors/name        body { childId, name: string | null, source?: "child" | "parent" }   (child-names-teacher)
+ //   GET  /api/tutors/name?childId=…  → { name, characterName, custom, history } (the parent corner; behind its gate)
+ //
+-// Rules (each enforced here, not in the client):
+-// - The offer comes from shared/tutors.js eligibleTutors(): the child's CLASS (never content level, never device
+-//   tier), the tutor's status, and a persona sheet + voice existing on this server (CHARACTERS). A character,
+-//   its voice and its face are one unit, so a tutor without a sheet (uma, today) is never offered.
+-// - Parent control (a CHANGE from account.js, where every teacher_id write needs the Parent corner once a PIN
+-//   exists): in B2-B4 the child picks and switches freely (AVATAR §7.1 "free"). In B1 (classes 1-2) a switch
+-//   needs the Parent-corner unlock; a first pick is free ONLY when the current teacher is the class default, so a
+-//   teacher the parent set at onboarding or via PATCH counts as already chosen.
+-// - 409 while a lesson is open (ended_at null, activity in the last LIVE_HOURS): voice and session are bound for
+-//   the call (§7.4). The check and the write are ONE statement. The lesson also pins its own teacher
+-//   (state.ctx.teacherId → compile() and /api/tts via teacherForLesson), so a switch that lands next to an open
+-//   lesson changes the NEXT lesson only.
+-// - The saved pick is bounded on every read by teacherFor/servesClass (the sheet's classes, or wide), so a class
+-//   change or switching `wide` off can never keep a register outside the child's class.
+-// - No reason field anywhere. tutor_switch is analytics only (never read by brief/affect/Director code).
++// ONE teacher (owner 2026-10-10, round 4): Asha teaches every class, so there is nothing to choose. POST
++// /api/tutors/choose (the child's pick and switch) is gone with the picker; GET keeps its shape for clients already
++// installed (the APK): mode is "single" for every child, which those clients already render as her card, no choice.
++// - The offer still comes from shared/tutors.js eligibleTutors() (a one-entry catalogue, a persona sheet + voice existing
++//   on this server: CHARACTERS).
++// - The saved teacher_id is bounded on every read by teacherFor (a row holding a retired id lands on Asha).
+ import { one as dbOne, q as dbQ } from "../db.js";
+ import { bad, need, send, HttpError } from "../http.js";
+ import { requireChild as authRequireChild } from "../auth.js";
+ import { requireParentIfPinSet as parentGate } from "./parent.js";
+ import { CHARACTERS, offerMode as charactersOfferMode, teacherCard, teacherFor } from "../compiler/characters/index.js";
+ import { checkTeacherName, effectiveTeacherName } from "../compiler/characters/naming.js";
+-import { CATALOGUE_REV, bandOfClass, defaultTutorFor, eligibleTutors, teacherNameSuggestions, tutorById } from "../../shared/tutors.js";
++import { CATALOGUE_REV, bandOfClass, eligibleTutors, teacherNameSuggestions } from "../../shared/tutors.js";
+ 
+-const SOURCES = ["child", "child_random"];
+ const ID_RE = /^[0-9a-f-]{36}$/i;
+-/** An open lesson with activity this recent blocks a switch. The client keeps no lesson across a page load, so an
+- *  older open row is an abandoned tab; the lesson's own teacher is pinned either way (teacherForLesson). */
++/** An open lesson with activity this recent counts as live (GET /api/tutors `live`). The client keeps no lesson across a
++ *  page load, so an older open row is an abandoned tab. */
+ export const LIVE_HOURS = 6;
+ 
+ /** Injectable for the in-process route test (tests/avatar-tutor-routes.test.mjs); production uses the real ones. */
+@@ -44,23 +33,6 @@ export function eligibilityFor(child) {
+   return eligibleTutors(child, { hasSheet, offer: offerMode() });
+ }
+ 
+-/** A first pick counts as a switch when a parent already set a non-default teacher (onboarding or PATCH). */
+-export const effectivelyChosen = (child) => !!child.tutor_chosen_at || (!!child.teacher_id && child.teacher_id !== defaultTutorFor(child));
+-
+-/**
+- * The pure decision for a pick. → { ok: true, needsParent, switching } or { ok: false, status, error }.
+- * `live` = a lesson for this child is open and active; `chosenBefore` = effectivelyChosen(child).
+- */
+-export function decideChoice({ child, tutorId, source, live, eligibility, chosenBefore }) {
+-  if (!SOURCES.includes(source)) return { ok: false, status: 400, error: "unknown source" };
+-  if (!tutorById(tutorId)) return { ok: false, status: 400, error: "unknown tutor" };
+-  if (live) return { ok: false, status: 409, error: "a lesson is live; change teacher between lessons" };
+-  if (!eligibility.tutors.some((t) => t.id === tutorId)) return { ok: false, status: 403, error: "tutor not offered for this child" };
+-  const switching = chosenBefore && child.teacher_id !== tutorId;
+-  const needsParent = switching && bandOfClass(child.class_level) === "b1";
+-  return { ok: true, needsParent, switching };
+-}
+-
+ const LIVE_SQL = `select 1 from lesson l where l.child_id = $1 and l.ended_at is null
+        and greatest(l.started_at, coalesce((select max(t.at) from turn t where t.lesson_id = l.id), l.started_at)) > now() - interval '${LIVE_HOURS} hours'`;
+ 
+@@ -68,26 +40,6 @@ async function lessonLive(childId) {
+   return !!(await deps.one(`${LIVE_SQL} limit 1`, [childId]));
+ }
+ 
+-/**
+- * The pick as ONE statement: the open-lesson check, the child update and the tutor_switch row commit together or
+- * not at all (no teacher change without its log row; no update racing past the live check inside the statement).
+- * from_id is the teacher the child moved AWAY from, always (class default or parent pick on a first pick).
+- */
+-export const CHOOSE_SQL = `with live as (${LIVE_SQL} limit 1),
+-  old as (select id, teacher_id, teacher_name from child where id = $1),
+-  upd as (update child c set teacher_id = $2::text, tutor_chosen_at = now(),
+-              teacher_name = case when old.teacher_id is distinct from $2::text then null else c.teacher_name end,
+-              teacher_name_at = case when old.teacher_id is distinct from $2::text and old.teacher_name is not null then now() else c.teacher_name_at end
+-            from old
+-            where c.id = old.id and not exists (select 1 from live)
+-            returning c.id, c.teacher_id, c.tutor_chosen_at, c.teacher_name, old.teacher_id as from_id, old.teacher_name as from_name),
+-  ins as (insert into tutor_switch(child_id, from_id, to_id, to_rev, source, shown, ms_to_choose)
+-            select id, from_id, $2::text, $3::int, $4::text, $5::text[], $6::int from upd returning id),
+-  -- the name the child gave the old look does not follow them to a new one (it belongs to the look they named)
+-  renamed as (insert into teacher_name_history(child_id, name, character_id, source)
+-            select id, null, $2::text, 'switch' from upd where from_id is distinct from $2::text and from_name is not null returning id)
+-  select upd.id, upd.teacher_id, upd.tutor_chosen_at, upd.teacher_name, upd.from_id from upd`;
+-
+ async function getTutors(req, res) {
+   const childId = new URL(req.url || "/", "http://x").searchParams.get("childId") || "";
+   if (!ID_RE.test(childId)) throw bad("invalid childId");
+@@ -103,22 +55,6 @@ async function getTutors(req, res) {
+   });
+ }
+ 
+-async function choose(req, res, body) {
+-  const { childId, tutorId } = need(body, "childId", "tutorId");
+-  if (!ID_RE.test(childId)) throw bad("invalid childId");
+-  const { child } = await deps.requireChild(req, childId);
+-  const source = body.source ?? "child";
+-  const d = decideChoice({ child, tutorId, source, live: await lessonLive(child.id), eligibility: eligibilityFor(child), chosenBefore: effectivelyChosen(child) });
+-  if (!d.ok) throw new HttpError(d.status, d.error);
+-  if (d.needsParent) await deps.requireParentIfPinSet(req);
+-  const shown = Array.isArray(body.shown) ? body.shown.filter((s) => typeof s === "string" && tutorById(s)).slice(0, 6) : [];
+-  const ms = Number.isFinite(Number(body.msToChoose)) ? Math.max(0, Math.min(3_600_000, Math.round(Number(body.msToChoose)))) : null;
+-  const c = await deps.one(CHOOSE_SQL, [child.id, tutorId, tutorById(tutorId).look.rev, source, shown, ms]);
+-  // No row back: a lesson opened between the pre-check and the write (the statement saw it).
+-  if (!c) throw new HttpError(409, "a lesson is live; change teacher between lessons");
+-  send(res, 200, { current: c.teacher_id, chosen: true, chosenAt: c.tutor_chosen_at, name: c.teacher_name ?? null });
+-}
+-
+ // ───────────── the child names the teacher (decision child-names-teacher) ─────────────
+ 
+ const NAME_SOURCES = ["child", "parent"];
+@@ -199,7 +135,6 @@ async function getName(req, res) {
+ 
+ export const routes = {
+   "GET /api/tutors": getTutors,
+-  "POST /api/tutors/choose": choose,
+   "POST /api/tutors/name": setName,
+   "GET /api/tutors/name": getName,
+ };
+diff --git a/server/routes/account.js b/server/routes/account.js
+index b5ab03c4ba8c49be546e0af08ed2ee2ae62cc42f..c2a4d5214f5fd7bd80b21970184c6282e3c62579 100644
+--- a/server/routes/account.js
++++ b/server/routes/account.js
+@@ -253,11 +253,11 @@ export async function createChild(req, res, body) {
+   const medium = MEDIUMS.includes(body.schoolMedium) ? body.schoolMedium : "english";
+   const lang = ["hinglish", "hindi", "english"].includes(body.languagePref) ? body.languagePref : "hinglish";
+   const interests = Array.isArray(body.interests) ? body.interests.slice(0, 8).map((s) => String(s).slice(0, 30)) : [];
+-  const teacher = cl <= 4 ? "asha" : "arjun";
++  const teacher = "asha";   // one teacher (round 4): a body teacherId is ignored
+   const c = await one(
+     `insert into child(guardian_id, first_name, class_level, board, school_medium, language_pref, birth_year, avatar, teacher_id, interests)
+      values ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10) returning *`,
+-    [g.id, firstName.slice(0, 40), cl, board, medium, lang, body.birthYear || null, body.avatar || null, body.teacherId || teacher, interests]);
++    [g.id, firstName.slice(0, 40), cl, board, medium, lang, body.birthYear || null, body.avatar || null, teacher, interests]);
+   await q("insert into rel_state(child_id) values ($1) on conflict do nothing", [c.id]);
+   await q("insert into audit(guardian_id, action, detail) values ($1, 'child_create', $2)", [g.id, { childId: c.id }]);
+   send(res, 201, { child: c });
+@@ -269,24 +269,15 @@ export async function updateChild(req, res, body) {
+   if (body.schoolMedium !== undefined && !MEDIUMS.includes(body.schoolMedium)) throw bad("unknown school medium");
+   if (body.classLevel !== undefined && !(Number(body.classLevel) >= 1 && Number(body.classLevel) <= 9)) throw bad("class must be 1-9");
+   const fields = { first_name: body.firstName, class_level: body.classLevel, board: body.board, school_medium: body.schoolMedium,
+-    language_pref: body.languagePref, interests: body.interests, teacher_id: body.teacherId, avatar: body.avatar };
+-  // The child's own picks (avatar, interests: C1-C3) stay child-writable; the profile facts are the parent's.
+-  if (["first_name", "class_level", "board", "school_medium", "language_pref", "teacher_id"].some((k) => fields[k] !== undefined)) await requireParentIfPinSet(req);
++    language_pref: body.languagePref, interests: body.interests, avatar: body.avatar };
++  // The child's own picks (avatar, interests: C1-C3) stay child-writable; the profile facts are the parent's. The teacher
++  // is no longer writable at all (one teacher, round 4): a body teacherId is ignored.
++  if (["first_name", "class_level", "board", "school_medium", "language_pref"].some((k) => fields[k] !== undefined)) await requireParentIfPinSet(req);
+   const sets = [], vals = [];
+   for (const [k, v] of Object.entries(fields)) if (v !== undefined) { vals.push(v); sets.push(`${k} = $${vals.length}`); }
+   if (!sets.length) return send(res, 200, { child });
+   vals.push(child.id);
+-  // A parent moving the child to another look resets the name, as the picker's switch does (tutor.js CHOOSE_SQL): the
+-  // name the child gave one look belongs to that look. One statement: the reset and its 'switch' history row together.
+-  const switching = fields.teacher_id !== undefined && fields.teacher_id !== child.teacher_id;
+-  const resetSql = switching ? ", teacher_name = null, teacher_name_at = case when teacher_name is not null then now() else teacher_name_at end" : "";
+-  const c = switching
+-    ? await one(`with old as (select id, teacher_name from child where id = $${vals.length}),
+-        upd as (update child set ${sets.join(", ")}${resetSql} where id = $${vals.length} returning *),
+-        hist as (insert into teacher_name_history(child_id, name, character_id, source)
+-          select upd.id, null, upd.teacher_id, 'switch' from upd join old on old.id = upd.id where old.teacher_name is not null returning id)
+-        select * from upd`, vals)
+-    : await one(`update child set ${sets.join(", ")} where id = $${vals.length} returning *`, vals);
++  const c = await one(`update child set ${sets.join(", ")} where id = $${vals.length} returning *`, vals);
+   send(res, 200, { child: clientChild(c) });
+ }
+ 
+diff --git a/src/child/screens/Teacher.tsx b/src/child/screens/Teacher.tsx
+index d611a7dcf4818acafc8d29cd942847539e850b6a..821b31fca4bad897d511fb4076d93cee6689852d 100644
+--- a/src/child/screens/Teacher.tsx
++++ b/src/child/screens/Teacher.tsx
+@@ -1,22 +1,15 @@
+-// /c/:cid/teacher "Your teacher" (PRODUCT-DESIGN-V2 §6.3.9; audit #4: "the tutor picker shows a third face … with
+-// nothing else to pick"). ONE stable identity: every face here is the same character record the lesson uses
+-// (src/ui/teacher, shared/tutors.js), rendered as the plate of the rig (never a second live face, §8).
+-//   One eligible → her card: still, name, "AI teacher". No fake choice.
+-//   Two or more → the offer from GET /api/tutors (class-based, shuffled per child server-side, NO default), a tile per
+-//     teacher; choosing opens a confirm: "{T2} will teach your next lesson. {T2} will know what you've learned."
+-//     Switching only between lessons (server `live` → disabled with the reason). A refusal from the parent's policy
+-//     says "Ask a grown-up to change your teacher." "Choose for me" picks at random and still asks to confirm.
+-//   Naming (decision child-names-teacher): the child names the look they picked (src/child/teacher/TeacherNamer); a new
+-//     look starts under its own name and the naming step follows the confirm. "Change name" renames the current one.
+-// Not yet (open item): the 10 s preview clips in each teacher's voice (rendered from the rig, TV §13).
+-import { useEffect, useMemo, useState } from "react";
+-import { useNavigate, useSearchParams } from "react-router-dom";
+-import { Sheet } from "../../ui/Sheet.tsx";
++// /c/:cid/teacher "Your teacher" (PRODUCT-DESIGN-V2 §6.3.9; audit #4). ONE teacher (owner 2026-10-10, round 4): Asha
++// teaches every class, so this screen is her card, never a choice: her still, name, "AI teacher", and the naming row.
++// Every face here is the same character record the lesson uses (src/ui/teacher, shared/tutors.js), rendered as the plate
++// of the rig (never a second live face, §8).
++//   Naming (decision child-names-teacher): "Change name" renames her (src/child/teacher/TeacherNamer); the server's code
++//   predicate checks the name, and any name is still an AI teacher.
++import { useEffect, useState } from "react";
+ import { Teacher } from "../../ui/teacher/Teacher.tsx";
+ import { teacherRecord, useTeacher } from "../../ui/teacher/useTeacher.ts";
+ import { TeacherNamer } from "../teacher/TeacherNamer.tsx";
+ import { fill, NAME_COPY } from "../teacher/naming.ts";
+-import { ApiError, chooseTutor, getTutors, offerOf, type TutorsResponse } from "../api.ts";
++import { getTutors, type TutorsResponse } from "../api.ts";
+ import { Spot } from "../art.tsx";
+ import { ChildScreen } from "../chrome.tsx";
+ import { useChild } from "../ChildShell.tsx";
+@@ -32,110 +25,36 @@ function TeacherCardFace({ id, band, size }: { id: string; band: string; size: n
+   );
+ }
+ 
+-/** The choice itself, shared by Your teacher and Hello card 5. `onDone(id)` after a confirmed pick. */
+-export function TeacherChoice({ data, onDone, firstPick }: { data: TutorsResponse; onDone: (id: string) => void; firstPick?: boolean }) {
+-  const { cid, band } = useChild();
+-  const offer = offerOf(data);
+-  const [pending, setPending] = useState<{ id: string; random: boolean } | null>(null);
+-  const [busy, setBusy] = useState(false);
+-  const [note, setNote] = useState<string | null>(data.live ? t("teacherBetween") : null);
+-  const current = firstPick ? null : data.current;
+-  const confirm = async () => {
+-    if (!pending) return;
+-    setBusy(true);
+-    try {
+-      await chooseTutor(cid, pending.id, pending.random ? "child_random" : "child");
+-      onDone(pending.id);
+-    } catch (e) {
+-      setNote(e instanceof ApiError && (e.status === 403 || e.status === 409) ? (data.live ? t("teacherBetween") : t("teacherAskGrownup")) : t("connectionWeak"));
+-      setPending(null);
+-    } finally {
+-      setBusy(false);
+-    }
+-  };
+-  const name = (id: string) => teacherRecord(id, band).name;
+-  return (
+-    <div className="tc">
+-      <div className="tc-grid" role="list">
+-        {offer.map((id) => (
+-          <div key={id} role="listitem" className={`cs-card tc-tile ${current === id ? "tc-tile--current" : ""}`} data-teacher-id={id}>
+-            <TeacherCardFace id={id} band={band} size={160} />
+-            <p className="tc-name">{name(id)}</p>
+-            <p className="tc-role">{t("aiTeacher")}</p>
+-            {current === id ? (
+-              <p className="tc-current">{t("teacherCurrent")}</p>
+-            ) : (
+-              <button type="button" className="cs-btn cs-btn--secondary" disabled={data.live || busy} onClick={() => setPending({ id, random: false })}
+-                data-testid={`choose-${id}`}>
+-                {t("teacherChoose", { T: name(id) })}
+-              </button>
+-            )}
+-          </div>
+-        ))}
+-      </div>
+-      {!data.live && (
+-        <button type="button" className="cs-btn cs-btn--quiet" onClick={() => {
+-          const pool = offer.filter((id) => id !== current);
+-          if (pool.length) setPending({ id: pool[Math.floor(Math.random() * pool.length)], random: true });
+-        }} data-testid="choose-for-me">{t("teacherChooseForMe")}</button>
+-      )}
+-      {note && <p className="cs-reason" role="status">{note}</p>}
+-      <Sheet open={!!pending} onClose={() => setPending(null)} title={pending ? name(pending.id) : ""} closeLabel={t("close")}>
+-        {pending && (
+-          <div className="tc-confirm">
+-            <TeacherCardFace id={pending.id} band={band} size={120} />
+-            <p>{t("teacherConfirm", { T: name(pending.id) })}</p>
+-            <button type="button" className="cs-btn cs-btn--primary" onClick={() => void confirm()} disabled={busy} data-testid="confirm-teacher">
+-              {t("teacherYes", { T: name(pending.id) })}
+-            </button>
+-            <button type="button" className="cs-btn cs-btn--secondary" onClick={() => setPending(null)}>{t("teacherKeep")}</button>
+-          </div>
+-        )}
+-      </Sheet>
+-    </div>
+-  );
+-}
+-
+-export { offerOf };
+-
+ export function TeacherScreen() {
+   const { cid, child, band, family, refresh } = useChild();
+   const { plan } = usePlan(cid);
+-  const nav = useNavigate();
+-  const [q] = useSearchParams();
++  // GET /api/tutors: only the names the namer suggests (there is no offer to show)
+   const [data, setData] = useState<TutorsResponse | null>(null);
+-  const [failed, setFailed] = useState(false);
+   useEffect(() => {
+     let live = true;
+-    getTutors(cid).then((d) => live && setData(d), () => live && setFailed(true));
++    getTutors(cid).then((d) => live && setData(d), () => {});
+     return () => {
+       live = false;
+     };
+   }, [cid]);
+-  const offer = useMemo(() => offerOf(data), [data]);
+-  const rec = useTeacher(child.teacher_id, band); // under the name the child gave it
+-  // the naming step: for the current teacher ("Change name"), or for a look just chosen
+-  const [naming, setNaming] = useState<{ id: string; afterPick: boolean } | null>(null);
++  const rec = useTeacher(child.teacher_id, band); // under the name the child gave her
++  const [naming, setNaming] = useState(false);
+   const [savedName, setSavedName] = useState<string | null>(null);
+-  const next = q.get("next");
+-  const back = next && next.startsWith(`/c/${cid}`) ? next : `/c/${cid}`;
+-  const single = failed || (data && (data.mode !== "picker" || offer.length < 2));
+ 
+   const nameRow = (
+     <div className="tn-current" data-testid="teacher-name-row">
+       <p>{fill(NAME_COPY.current, { T: rec.name })}</p>
+-      <button type="button" className="cs-btn cs-btn--secondary cs-btn--sm" onClick={() => setNaming({ id: rec.id, afterPick: false })} data-testid="name-change">{NAME_COPY.change}</button>
++      <button type="button" className="cs-btn cs-btn--secondary cs-btn--sm" onClick={() => setNaming(true)} data-testid="name-change">{NAME_COPY.change}</button>
+     </div>
+   );
+   if (naming) {
+-    const fresh = naming.afterPick; // a look just chosen: it starts under its own name, and the step returns to `back`
+     return (
+       <ChildScreen testid="teacher" ground="plain" title={t("yourTeacher")} surfaces={plan.surfaces} className="teacher-screen">
+         <section className="cs-card tc-one tc-naming">
+-          <TeacherNamer cid={cid} characterId={naming.id} band={band} young={family === "young"} current={fresh ? null : rec.name}
++          <TeacherNamer cid={cid} characterId={rec.id} band={band} young={family === "young"} current={rec.name}
+             suggestions={data?.suggestions} headingLevel={2}
+-            onDone={(n) => { setSavedName(n); setNaming(null); refresh(); if (fresh) nav(back, { replace: true }); }}
+-            onCancel={fresh ? undefined : () => setNaming(null)} />
++            onDone={(n) => { setSavedName(n); setNaming(false); refresh(); }}
++            onCancel={() => setNaming(false)} />
+         </section>
+       </ChildScreen>
+     );
+@@ -144,24 +63,13 @@ export function TeacherScreen() {
+   return (
+     <ChildScreen testid="teacher" ground="plain" title={t("yourTeacher")} surfaces={plan.surfaces} className="teacher-screen">
+       {savedName && <p className="cs-reason" role="status" data-testid="name-saved">{fill(NAME_COPY.saved, { T: savedName })}</p>}
+-      {single ? (
+-        <section className="cs-card tc-one" data-teacher-id={rec.id}>
+-          <TeacherCardFace id={rec.id} band={band} size={200} />
+-          <p className="tc-name">{rec.name}</p>
+-          <p className="tc-role">{t("aiTeacher")}</p>
+-          <p className="tc-line">{t("teacherOne", { T: rec.name })}</p>
+-          {nameRow}
+-        </section>
+-      ) : data ? (
+-        <>
+-          {nameRow}
+-          <h2 className="tc-q">{t("teacherPickTitle")}</h2>
+-          {/* a new look comes with its own name; the naming step follows the confirm */}
+-          <TeacherChoice data={data} onDone={(id) => { refresh(); setNaming({ id, afterPick: true }); }} />
+-        </>
+-      ) : (
+-        <div className="map-wait" aria-busy="true" />
+-      )}
++      <section className="cs-card tc-one" data-teacher-id={rec.id}>
++        <TeacherCardFace id={rec.id} band={band} size={200} />
++        <p className="tc-name">{rec.name}</p>
++        <p className="tc-role">{t("aiTeacher")}</p>
++        <p className="tc-line">{t("teacherOne", { T: rec.name })}</p>
++        {nameRow}
++      </section>
+     </ChildScreen>
+   );
+ }
+diff --git a/src/child/screens/Hello.tsx b/src/child/screens/Hello.tsx
+index 371272bfc6222ad06929a9a20cd3a2f475c6b67c..6a91ea33e612c63e7237e272eb4c0aac4faa2e2b 100644
+--- a/src/child/screens/Hello.tsx
++++ b/src/child/screens/Hello.tsx
+@@ -7,11 +7,10 @@
+ //     learn." + Got it (always a labelled button).
+ //   3 Pick your picture: 6 of the 24 avatar discs, "More pictures", "That's me". This is the Who tile from now on.
+ //   4 Confirm what you like: the parent's picks preselected; That's right · Change. (Skipped when the parent chose none.)
+-//   5 Pick a teacher: only when ≥ 2 are eligible; no default; "Choose for me". The child's first choice. Deviation:
+-//     each teacher shows a still, not §6.3.2's "two preview clips" (no per-teacher preview clip exists yet).
+-//   6 Name your teacher (decision child-names-teacher): every child, after the AI card, names the look they have (Asha,
+-//     Arjun and Uma are suggestions; "Keep {T}" keeps the look's own name). The name is checked by the server's code
+-//     predicate; a refusal is a gentle retry. The AI card came first, and the step repeats it: any name, still an AI.
++//   5 Name your teacher (decision child-names-teacher): every child, after the AI card, names her (Asha and Uma are
++//     suggestions; "Keep {T}" keeps her own name). The name is checked by the server's code predicate; a refusal is a
++//     gentle retry. The AI card came first, and the step repeats it: any name, still an AI.
++// ONE teacher (owner 2026-10-10, round 4): the "pick a teacher" card is gone; every child has Asha.
+ // Then STRAIGHT into lesson 1: no second start gate (the Desk carries none). Every label is English; what she says
+ // is in the family's language.
+ import { useEffect, useMemo, useState } from "react";
+@@ -25,12 +24,11 @@ import { INTERESTS, interestIds } from "../interests.ts";
+ import { t } from "../copy.ts";
+ import { AVATARS, Avatar, avatarName, Icon, Picto } from "../pictos.tsx";
+ import { helloClip, useVoiceClip } from "../voice.ts";
+-import { offerOf, TeacherChoice } from "./Teacher.tsx";
+ import { TeacherNamer } from "../teacher/TeacherNamer.tsx";
+ 
+ const label = (id: string) => id.charAt(0).toUpperCase() + id.slice(1);
+ 
+-type Card = "greet" | "ai" | "picture" | "likes" | "change" | "teacher" | "name";
++type Card = "greet" | "ai" | "picture" | "likes" | "change" | "name";
+ 
+ function InterestTile({ id, on, toggle }: { id: string; on: boolean; toggle?: () => void }) {
+   const body = (
+@@ -58,7 +56,6 @@ export function Hello() {
+   const [page, setPage] = useState(0);
+   const [likes, setLikes] = useState<string[]>(parentPicks);
+   const [tutors, setTutors] = useState<TutorsResponse | null>(null);
+-  const [named, setNamed] = useState<string | null>(null); // the look being named (the pick, or the one they have)
+   useEffect(() => {
+     let live = true;
+     getTutors(cid).then((d) => live && setTutors(d), () => {});
+@@ -66,7 +63,6 @@ export function Hello() {
+       live = false;
+     };
+   }, [cid]);
+-  const twoTeachers = !!tutors && tutors.mode === "picker" && offerOf(tutors).length >= 2 && !tutors.chosen;
+   // The hand-over tap is the audio unlock (flows G14; V2 §3.3): when this page was reached by a tap (the SPA carries
+   // user activation), her greeting plays at once, with no second "Tap to hear {T}" gate. A cold load keeps the button.
+   const [autoTried, setAutoTried] = useState(false);
+@@ -97,9 +93,8 @@ export function Hello() {
+     }
+     nav(`/c/${cid}/lesson/new`, { replace: true });
+   };
+-  const toName = (id: string | null | undefined) => { setNamed(id ?? rec.id); setCard("name"); };
+-  const afterLikes = (picks: string[]) => { setLikes(picks); if (twoTeachers) setCard("teacher"); else toName(rec.id); };
+-  const afterPicture = () => (parentPicks.length ? setCard("likes") : twoTeachers ? setCard("teacher") : toName(rec.id));
++  const afterLikes = (picks: string[]) => { setLikes(picks); setCard("name"); };
++  const afterPicture = () => (parentPicks.length ? setCard("likes") : setCard("name"));
+ 
+   const pageAvatars = AVATARS.slice((page * 6) % AVATARS.length, ((page * 6) % AVATARS.length) + 6);
+   const framing = young ? t("storyStart") : t("olderStart");
+@@ -149,7 +144,7 @@ export function Hello() {
+             </button>
+             <button type="button" className="cs-btn cs-btn--primary" disabled={!avatar} onClick={afterPicture} data-testid="hello-thatsme">{t("thatsMe")}</button>
+           </div>
+-          {!parentPicks.length && !twoTeachers && <p className="hello-framing">{framing}</p>}
++          {!parentPicks.length && <p className="hello-framing">{framing}</p>}
+         </>
+       );
+       break;
+@@ -162,7 +157,7 @@ export function Hello() {
+             <button type="button" className="cs-btn cs-btn--secondary" onClick={() => setCard("change")}><Picto id="picto/pencil" size={32} /> <span>{t("change")}</span></button>
+             <button type="button" className="cs-btn cs-btn--primary" onClick={() => afterLikes(parentPicks)} data-testid="hello-right">{t("thatsRight")}</button>
+           </div>
+-          {!twoTeachers && <p className="hello-framing">{framing}</p>}
++          <p className="hello-framing">{framing}</p>
+         </>
+       );
+       break;
+@@ -180,20 +175,11 @@ export function Hello() {
+         </>
+       );
+       break;
+-    case "teacher":
+-      body = (
+-        <>
+-          <h2 tabIndex={-1} className="hello-q">{t("teacherPickTitle")}</h2>
+-          {tutors && <TeacherChoice data={tutors} firstPick onDone={(id) => { refresh(); toName(id); }} />}
+-          <p className="hello-framing">{framing}</p>
+-        </>
+-      );
+-      break;
+     case "name":
+       body = (
+         <>
+-          <TeacherNamer cid={cid} characterId={named ?? rec.id} band={band} young={young} suggestions={tutors?.suggestions} face={false}
+-            current={named && named !== rec.id ? null : rec.name}
++          <TeacherNamer cid={cid} characterId={rec.id} band={band} young={young} suggestions={tutors?.suggestions} face={false}
++            current={rec.name}
+             onDone={() => { refresh(); void finish(); }} />
+           <p className="hello-framing">{framing}</p>
+         </>
+@@ -204,11 +190,10 @@ export function Hello() {
+   return (
+     <div className={`cs hello ${young ? "cs--young" : "cs--older"}`} data-testid="hello" data-card={card}>
+       <main className="hello-main" id="main" data-compact={card !== "greet" || undefined}>
+-        {/* card 5 shows the choice only: no teacher's face is bigger than the other's (no default, §3.3 step 5) */}
+-        {card !== "teacher" && <div className="hello-face">
++        <div className="hello-face">
+           <Teacher teacherId={rec.id} band={band} form="live" floor={clip.playing ? "speaking" : card === "greet" ? "idle" : "your_turn"}
+             meters={[clip.meter]} label="below" lights="up" reducedMotion={reducedMotion} aiPicto={young} />
+-        </div>}
++        </div>
+         {/* no aria-live here: each card moves focus to its title, which announces it once (a live region too = twice) */}
+         <section className="cs-card hello-card">{body}</section>
+       </main>
+diff --git a/src/child/api.ts b/src/child/api.ts
+index 614a1ada5ec92fdfaa4a8a98cee7ce670c98a1ac..cf9f2c730aee44d174c3ce0d12b5e4795aa49352 100644
+--- a/src/child/api.ts
++++ b/src/child/api.ts
+@@ -3,7 +3,6 @@
+ // fallback state, never an error string aimed at the child (§4.7 "raw API strings are never shown").
+ import { takeEarlyMe } from "../app/boot.ts";
+ import type { ChildMapResponse, ChildMapSkill, DidCard, LessonSummary, MapState } from "../../shared/contracts.ts";
+-import { tutorById } from "../../shared/tutors.js";
+ import { ApiError, getJson, postJson } from "../lesson/api.ts";
+ 
+ export interface ChildRow {
+@@ -110,17 +109,10 @@ export interface TutorsResponse {
+   suggestions?: string[];
+ }
+ export const getTutors = (cid: string) => getJson<TutorsResponse>(`/api/tutors?childId=${encodeURIComponent(cid)}`);
+-export const chooseTutor = (cid: string, tutorId: string, source: "child" | "child_random") =>
+-  postJson("/api/tutors/choose", { childId: cid, tutorId, source });
+ 
+ /** The page's best card: a verified one first, then one with an answer. Pure. */
+ export function bestCard(cards: DidCard[]): DidCard | null {
+   return cards.find((c) => c.tick && !c.withHelp) ?? cards.find((c) => c.tick) ?? cards.find((c) => c.answer) ?? null;
+ }
+ 
+-/** The offer to show: the server's order, real characters only. Pure. */
+-export function offerOf(r: TutorsResponse | null): string[] {
+-  return (r?.tutors ?? []).filter((id) => !!tutorById(id));
+-}
+-
+ export { ApiError, postJson };
+diff --git a/src/child/copy.ts b/src/child/copy.ts
+index 51043a57f57f6427221d1aa002d9abaffaaf9484..2514c8615759acea0b24881824c034a2e12c65f7 100644
+--- a/src/child/copy.ts
++++ b/src/child/copy.ts
+@@ -126,15 +126,6 @@ const S = {
+   off: "off",
+   // your teacher (§6.3.9)
+   teacherOne: "{T} is your teacher.",
+-  teacherPickTitle: "Who would you like as your teacher?",
+-  teacherChoose: "Choose {T}",
+-  teacherChooseForMe: "Choose for me",
+-  teacherConfirm: "{T} will teach your next lesson. {T} will know what you've learned.",
+-  teacherYes: "Yes, choose {T}",
+-  teacherKeep: "Keep my teacher",
+-  teacherBetween: "You can change your teacher after this lesson.",
+-  teacherAskGrownup: "Ask a grown-up to change your teacher.",
+-  teacherCurrent: "Your teacher now",
+   // Hello (§3.3, §6.3.2)
+   tapToHear: "Tap to hear {T}",
+   hearAgain: "Hear again",
+diff --git a/src/onboarding/steps/Meet.tsx b/src/onboarding/steps/Meet.tsx
+index 41668b9fb1d10e9794ed47263643fa7a4e958246..8d9fcde2a356f65ea9e63e19c7f11559c9118db1 100644
+--- a/src/onboarding/steps/Meet.tsx
++++ b/src/onboarding/steps/Meet.tsx
+@@ -1,14 +1,13 @@
+ // Step 2 "Meet {T}" (PRODUCT-DESIGN-V2 §3.2, §6.2, §8; audit #4, #24). The parent meets the teacher the child will
+-// actually get for the class chosen in step 1 (GET /api/child/teacher?classLevel= → the class's teacher and who else
+-// is eligible; offline: the same rule locally, shared/tutors.js). Same face as the lesson (the plate of the one rig),
+-// name from the character record, pronoun from the record (never hard-coded). The language she speaks is chosen here,
+-// once: English · Hindi · Hindi and English mix. A ▶ plays her greeting only when a clip exists IN HER OWN VOICE (today:
+-// Asha's); a clip is never played under another teacher's face. Two eligible: both cards, "Your child will choose at
+-// the first lesson".
++// actually get (GET /api/child/teacher?classLevel=; offline: the same rule locally, shared/tutors.js). ONE teacher
++// (owner 2026-10-10, round 4): Asha, for every class, so there is never a second card or a "your child will choose".
++// Same face as the lesson (the plate of the one rig), name and pronoun from the character record (never hard-coded).
++// The language she speaks is chosen here, once: English · Hindi · Hindi and English mix. A ▶ plays her greeting in her
++// own voice.
+ import { useEffect, useState } from "react";
+ import { Navigate, useNavigate, useSearchParams } from "react-router-dom";
+ import type { TeacherCard } from "../../../shared/contracts.ts";
+-import { defaultTutorFor, eligibleTutors } from "../../../shared/tutors.js";
++import { defaultTutorFor } from "../../../shared/tutors.js";
+ import { Button, Icon, TeacherFace, useClip, type Lang } from "../../ui/index.ts";
+ import { teacherRecord } from "../../ui/teacher/useTeacher.ts";
+ import { getJson } from "../../app/api.ts";
+@@ -31,13 +30,12 @@ const TRANSCRIPT: Partial<Record<string, Record<Speak, string>>> = {
+   },
+ };
+ 
+-interface Offer { teacher: { id: string; name: string; subject: string }; eligible: { id: string; name: string }[] }
++interface Offer { teacher: { id: string; name: string; subject: string } }
+ 
+ function local(classLevel: number): Offer {
+   const id = defaultTutorFor({ class_level: classLevel });
+   const rec = teacherRecord(id, classLevel <= 4 ? "b2" : "b3");
+-  const el = eligibleTutors({ id: `class-${classLevel}`, class_level: classLevel });
+-  return { teacher: { id: rec.id, name: rec.name, subject: rec.pronouns.subject }, eligible: el.tutors.map((x) => ({ id: x.id, name: x.displayName.roman })) };
++  return { teacher: { id: rec.id, name: rec.name, subject: rec.pronouns.subject } };
+ }
+ 
+ const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
+@@ -71,10 +69,9 @@ export function MeetStep() {
+   useEffect(() => {
+     if (!cl) return;
+     let live = true;
+-    getJson<{ teacher: TeacherCard; eligible?: TeacherCard[] }>(`/api/child/teacher?classLevel=${cl}`).then((r) => {
++    getJson<{ teacher: TeacherCard }>(`/api/child/teacher?classLevel=${cl}`).then((r) => {
+       if (!live || !r?.teacher) return;
+-      setOffer({ teacher: { id: r.teacher.id, name: r.teacher.name, subject: r.teacher.pronouns?.subject ?? "they" },
+-        eligible: (r.eligible ?? []).map((x) => ({ id: x.id, name: x.name })) });
++      setOffer({ teacher: { id: r.teacher.id, name: r.teacher.name, subject: r.teacher.pronouns?.subject ?? "they" } });
+     }, () => {});
+     return () => {
+       live = false;
+@@ -82,7 +79,6 @@ export function MeetStep() {
+   }, [cl]);
+   if (!cl) return <Navigate to={`/start/class${adding ? "?add=1" : ""}`} replace />;
+   const o = offer ?? local(cl);
+-  const two = o.eligible.length >= 2;
+   const speak = (d.child?.languagePref as Speak | undefined) ?? (d.lang === "hi" ? "hindi" : d.lang === "en" ? "english" : undefined);
+   const pick = (l: (typeof LANGS)[number]) => {
+     set((cur) => ({ lang: l.ui, child: { ...(cur.child ?? {}), languagePref: l.id } }));
+@@ -91,7 +87,7 @@ export function MeetStep() {
+   const they = cap(o.teacher.subject === "they" ? "they" : o.teacher.subject);
+   const band = cl <= 4 ? "b2" : "b3";
+   const transcript = speak ? TRANSCRIPT[o.teacher.id]?.[speak] : undefined;
+-  const title = two ? "Meet the teachers" : `Meet ${o.teacher.name}`;
++  const title = `Meet ${o.teacher.name}`;
+ 
+   return (
+     <StepFrame step="meet" title={title} back
+@@ -101,16 +97,13 @@ export function MeetStep() {
+           <Button block disabled={!speak} aria-describedby={speak ? undefined : "meet-why"} onClick={() => nav(nextStep("meet", adding))}>Continue</Button>
+         </div>
+       }>
+-      <div className={`onb-meet ${two ? "onb-meet--two" : ""}`}>
+-        {(two ? o.eligible : [o.teacher]).map((x) => (
+-          <figure key={x.id} className="onb-teacher" data-teacher-id={x.id}>
+-            <TeacherFace teacherId={x.id} band={band} size={two ? 150 : 220} />
+-          </figure>
+-        ))}
++      <div className="onb-meet">
++        <figure className="onb-teacher" data-teacher-id={o.teacher.id}>
++          <TeacherFace teacherId={o.teacher.id} band={band} size={220} />
++        </figure>
+       </div>
+-      {two && <p className="t-lead">Your child will choose at the first lesson.</p>}
+       <fieldset className="fs">
+-        <legend className="label">{two ? "They'll speak in:" : `${they}'ll speak in:`}</legend>
++        <legend className="label">{`${they}'ll speak in:`}</legend>
+         <div role="radiogroup" aria-label="Language" className="stack-sm">
+           {LANGS.map((l) => <LangTile key={l.id} l={l} teacherId={o.teacher.id} selected={speak === l.id} onPick={() => pick(l)} />)}
+         </div>
+diff --git a/src/avatar/picker/TutorPicker.tsx b/src/avatar/picker/TutorPicker.tsx
+deleted file mode 100644
+index 89a0e5d587fb82e2e5781d9d7af92c93a88f9b0b..0000000000000000000000000000000000000000
+--- a/src/avatar/picker/TutorPicker.tsx
++++ /dev/null
+@@ -1,218 +0,0 @@
+-// The tutor picker (C1b and "My teacher"; AVATAR.md §7.1, tutor-selection-ux §4, §5.2, §9). M0 scope:
+-//  - the offer and its order come from the server (GET /api/tutors): class-based, shuffled per child, NO default
+-//    highlighted; the current tutor (My teacher) is marked but never pre-selected for a first pick;
+-//  - tiles: still portrait (the 2D plate of the same person), name in Roman + Devanagari, role chip, B2 style chip /
+-//    B3+ style note, an always-present "AI teacher" chip, signature colour as a border only;
+-//  - selecting a tile wakes THAT tutor's live 3D head in place (at most one head at a time: the "one warm head"
+-//    rule); "Choose" is a separate control (never a second tap on the tile); "Pick for me" selects uniformly at
+-//    random and still waits for Choose; no timeout ever auto-picks;
+-//  - radiogroup semantics, arrow keys, 1-4 jump, Enter chooses; targets per band (B1 112 · B2 96 · B3 64 · B4 48 px).
+-//    The tiles hold NO interactive child (a radio's children are presentational: TalkBack flattens a nested button,
+-//    and axe flags nested-interactive); the one Choose button sits under the radiogroup, enabled once a tile is on;
+-//  - while a lesson is open (GET live) the "after the lesson" copy shows up front and Choose stays disabled.
+-// Not in M0 (open items): voiced previews rendered by the runtime (G-PREV), the name greeting on the head.
+-import { useCallback, useEffect, useMemo, useRef, useState, type KeyboardEvent } from "react";
+-import { getJson, postJson, ApiError } from "../../lesson/api.ts";
+-import { eligibleTutors, tutorById, type TutorCharacter } from "../../../shared/tutors.js";
+-import { Plate2D } from "../Plate2D.tsx";
+-// V4 patch 06 (Review v4): the face the child picks is the face that teaches. Where the puppet IS the tutor (Asha) and
+-// face.puppet2d is on, the picker shows the style-C puppet (live when selected, its rest poster on the tiles); every
+-// other tutor keeps TutorFace / Plate2D exactly as before.
+-import { LessonFace as TutorFace } from "../../face-puppet/LessonFace.tsx";
+-import { PuppetFace, PUPPET_TUTORS } from "../../face-puppet/PuppetFace.tsx";
+-import { puppet2dEnabled } from "../../face-puppet/flag.ts";
+-import { p, role } from "./copy.ts";
+-import "../avatar.css";
+-
+-export interface TutorsResponse {
+-  /** null when the child row has no teacher_id yet (the class default applies). */
+-  current: string | null;
+-  chosen: boolean;
+-  mode: "picker" | "single" | "none";
+-  band: string;
+-  tutors: string[];
+-  live: boolean;
+-}
+-
+-export interface TutorPickerProps {
+-  childId: string;
+-  /** Visual band (layout and target sizes). */
+-  band: "b1" | "b2" | "b3" | "b4";
+-  lang: string;
+-  reducedMotion?: boolean;
+-  /** Called after a successful pick (or "continue" when there is nothing to pick). */
+-  onDone: (tutorId: string) => void;
+-  /** Dev / screenshot mode: no API; the offer is computed locally, drafts included. */
+-  preview?: { classLevel: number; includeDraft?: boolean; offer?: "sheet" | "wide" };
+-  /** Injectable API (tests). */
+-  api?: { list(childId: string): Promise<TutorsResponse>; choose(body: unknown): Promise<unknown> };
+-}
+-
+-const MIN_TARGET = { b1: 112, b2: 96, b3: 64, b4: 48 } as const;
+-
+-const httpApi = {
+-  list: (childId: string) => getJson<TutorsResponse>(`/api/tutors?childId=${encodeURIComponent(childId)}`),
+-  choose: (body: unknown) => postJson("/api/tutors/choose", body),
+-};
+-
+-export function TutorPicker(props: TutorPickerProps) {
+-  const { childId, band, lang, reducedMotion = false, onDone, preview } = props;
+-  const api = props.api ?? httpApi;
+-  const [data, setData] = useState<TutorsResponse | null>(null);
+-  const [error, setError] = useState<string | null>(null);
+-  const [selected, setSelected] = useState<string | null>(null);
+-  const [source, setSource] = useState<"child" | "child_random">("child");
+-  const [done, setDone] = useState<string | null>(null);
+-  const [busy, setBusy] = useState(false);
+-  const t0 = useRef(performance.now());
+-  const tileRefs = useRef<(HTMLDivElement | null)[]>([]);
+-
+-  useEffect(() => {
+-    if (preview) {
+-      const el = eligibleTutors({ id: childId, class_level: preview.classLevel }, { includeDraft: preview.includeDraft, offer: preview.offer });
+-      setData({ current: "", chosen: false, mode: el.mode, band: el.band, tutors: el.tutors.map((x) => x.id), live: false });
+-      return;
+-    }
+-    let live = true;
+-    api.list(childId).then((d) => live && setData(d), () => live && setError(p("weak", lang)));
+-    return () => {
+-      live = false;
+-    };
+-    // The api object is fixed per mount; re-list only when the child or preview changes.
+-  }, [childId, preview?.classLevel, preview?.includeDraft, preview?.offer]);
+-
+-  const tutors = useMemo(() => (data?.tutors ?? []).map((id) => tutorById(id)).filter((x): x is TutorCharacter => !!x), [data]);
+-
+-  const choose = useCallback(async () => {
+-    if (!selected || busy || data?.live) return;
+-    setBusy(true);
+-    setError(null);
+-    try {
+-      if (!preview) await api.choose({ childId, tutorId: selected, source, shown: tutors.map((x) => x.id), msToChoose: Math.round(performance.now() - t0.current) });
+-      setDone(selected);
+-    } catch (e) {
+-      setError(e instanceof ApiError && e.status === 409 ? p("live", lang) : e instanceof ApiError && (e.status === 423 || e.status === 403) ? p("askGrownup", lang) : p("weak", lang));
+-    } finally {
+-      setBusy(false);
+-    }
+-  }, [selected, busy, preview, api, childId, source, tutors, lang, data?.live]);
+-
+-  const onKey = (e: KeyboardEvent<HTMLDivElement>) => {
+-    const i = tutors.findIndex((x) => x.id === selected);
+-    const n = tutors.length;
+-    if (/^[1-4]$/.test(e.key) && Number(e.key) <= n) {
+-      e.preventDefault();
+-      pick(tutors[Number(e.key) - 1].id, "child");
+-      tileRefs.current[Number(e.key) - 1]?.focus();
+-    } else if (e.key === "ArrowRight" || e.key === "ArrowDown" || e.key === "ArrowLeft" || e.key === "ArrowUp") {
+-      e.preventDefault();
+-      const d = e.key === "ArrowRight" || e.key === "ArrowDown" ? 1 : -1;
+-      const j = ((i < 0 ? (d > 0 ? -1 : 0) : i) + d + n) % n;
+-      pick(tutors[j].id, "child");
+-      tileRefs.current[j]?.focus();
+-    } else if (e.key === "Enter" && selected) {
+-      e.preventDefault();
+-      void choose();
+-    }
+-  };
+-
+-  function pick(id: string, how: "child" | "child_random") {
+-    setSelected(id);
+-    setSource(how);
+-  }
+-
+-  if (error && !data) return <main className="tx-picker"><p role="alert">{error}</p></main>;
+-  if (!data) return <main className="tx-picker" aria-busy="true" />;
+-
+-  // Nothing to choose: never a fake one-tile choice.
+-  if (data.mode !== "picker" && !done) {
+-    const only = tutorById(data.current) ?? tutors[0] ?? null;
+-    return (
+-      <main className="tx-picker tx-picker-chosen" data-mode={data.mode}>
+-        <h1>{p("only", lang)}</h1>
+-        {only && <div className="tx-picker-stage"><TutorFace tutorId={only.id} band={band} status={null} teacher={[]} reducedMotion={reducedMotion} framing="medium" lang={lang} /></div>}
+-        {only && <p className="tx-tile-name">{only.displayName.roman} <small>{only.displayName.deva}</small></p>}
+-        <button type="button" className="tx-picker-go" style={{ minHeight: MIN_TARGET[band] / 2 + 24 }} onClick={() => onDone(only?.id ?? data.current)}>{p("start", lang)}</button>
+-      </main>
+-    );
+-  }
+-
+-  if (done) {
+-    const tutor = tutorById(done)!;
+-    return (
+-      <main className="tx-picker tx-picker-chosen" style={{ ["--sig" as string]: tutor.look.signatureColor }} data-chosen={tutor.id}>
+-        <div className="tx-picker-stage">
+-          <TutorFace tutorId={tutor.id} band={band} status="your_turn" teacher={[]} reducedMotion={reducedMotion} framing="medium" lang={lang} />
+-        </div>
+-        <h1>{tutor.displayName.roman} <small>{tutor.displayName.deva}</small></h1>
+-        <p className="tx-picker-sub" role="status">{p("chosen", lang)}</p>
+-        {(band === "b3" || band === "b4") && <p className="tx-picker-note">{p("changeLater", lang)}</p>}
+-        <button type="button" className="tx-picker-go" onClick={() => onDone(tutor.id)}>{p("start", lang)}</button>
+-      </main>
+-    );
+-  }
+-
+-  const older = band === "b3" || band === "b4";
+-  const selectedTutor = selected ? tutorById(selected) : null;
+-  return (
+-    <main className="tx-picker" data-band={band}>
+-      <h1 id="tx-pick-q">{p("question", lang)}</h1>
+-      <p className="tx-picker-sub">{p("sub", lang)}</p>
+-      <div className="tx-picker-grid" role="radiogroup" aria-labelledby="tx-pick-q" data-count={tutors.length} onKeyDown={onKey}>
+-        {tutors.map((tu, i) => {
+-          const on = selected === tu.id;
+-          const note = older ? tu.styleNote[lang as "english"] ?? tu.styleNote.hinglish : band === "b2" ? tu.styleChip[lang as "english"] ?? tu.styleChip.hinglish : null;
+-          return (
+-            <div
+-              key={tu.id}
+-              ref={(el) => {
+-                tileRefs.current[i] = el;
+-              }}
+-              className="tx-tile-tutor"
+-              role="radio"
+-              aria-checked={on}
+-              aria-label={`${tu.displayName.roman}, ${p("aiTeacher", lang)}${note ? `, ${note}` : ""}`}
+-              tabIndex={on || (!selected && i === 0) ? 0 : -1}
+-              style={{ ["--sig" as string]: tu.look.signatureColor }}
+-              data-tutor={tu.id}
+-              data-status={tu.status}
+-              onClick={() => pick(tu.id, "child")}
+-            >
+-              <div className="tx-tile-portrait">
+-                {on && !reducedMotion ? (
+-                  <TutorFace tutorId={tu.id} band={band} status="your_turn" teacher={[]} reducedMotion={reducedMotion} framing="medium" lang={lang} />
+-                ) : PUPPET_TUTORS.has(tu.id) && puppet2dEnabled() ? (
+-                  <PuppetFace tutorId={tu.id} band={band} status={null} teacher={[]} still framing="medium" lang={lang} className="tx-tutorface-plate" />
+-                ) : (
+-                  <Plate2D tutor={tu} still reducedMotion={reducedMotion} className="tx-tutorface-plate" lang={lang} />
+-                )}
+-              </div>
+-              <p className="tx-tile-name">{tu.displayName.roman}<small lang="hi">{tu.displayName.deva}</small></p>
+-              <div className="tx-tile-chips">
+-                {tu.roleChips.map((r) => <span key={r} className="tx-chip">{role(r, lang)}</span>)}
+-                <span className="tx-chip tx-chip--ai">{p("aiTeacher", lang)}</span>
+-              </div>
+-              {note && <p className="tx-tile-note">{note}</p>}
+-            </div>
+-          );
+-        })}
+-      </div>
+-      {data.live && <p className="tx-picker-note" role="status">{p("live", lang)}</p>}
+-      <div className="tx-tile-actions tx-picker-actions" style={selectedTutor ? { ["--sig" as string]: selectedTutor.look.signatureColor } : undefined}>
+-        <button type="button" className="tx-choose" style={{ minHeight: MIN_TARGET[band] }} disabled={!selected || busy || data.live}
+-          onClick={() => void choose()}>
+-          {p("choose", lang)}
+-        </button>
+-      </div>
+-      <button type="button" className="tx-picker-dice" style={{ minHeight: MIN_TARGET[band] }} onClick={() => pick(tutors[Math.floor(Math.random() * tutors.length)].id, "child_random")}>
+-        <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" style={{ verticalAlign: "-4px", marginRight: 6 }}>
+-          <rect x="3" y="3" width="18" height="18" rx="4" fill="none" stroke="currentColor" strokeWidth="2" />
+-          {[[8, 8], [16, 16], [12, 12], [16, 8], [8, 16]].map(([x, y]) => <circle key={`${x}${y}`} cx={x} cy={y} r="1.6" fill="currentColor" />)}
+-        </svg>
+-        {p("dice", lang)}
+-      </button>
+-      {error && <p role="alert">{error}</p>}
+-      <p className="tx-sr" aria-live="polite">{selected ? `${tutorById(selected)?.displayName.roman}` : ""}</p>
+-    </main>
+-  );
+-}
+diff --git a/src/avatar/picker/TeacherRoute.tsx b/src/avatar/picker/TeacherRoute.tsx
+deleted file mode 100644
+index ad7b03f844058f9b395fe0ddbc23b35c1bea5850..0000000000000000000000000000000000000000
+--- a/src/avatar/picker/TeacherRoute.tsx
++++ /dev/null
+@@ -1,14 +0,0 @@
+-// /c/:cid/teacher: the picker inside the child shell (C1b first run, and "My teacher" from Home). After a pick the
+-// child goes back to Home (or to `?next=` when the first-run flow sends them on).
+-import { useNavigate, useSearchParams } from "react-router-dom";
+-import { useChild } from "../../child/ChildShell.tsx";
+-import { TutorPicker } from "./TutorPicker.tsx";
+-
+-export default function TeacherRoute() {
+-  const { cid, band, lang, reducedMotion } = useChild();
+-  const nav = useNavigate();
+-  const [q] = useSearchParams();
+-  const next = q.get("next");
+-  const safeNext = next && next.startsWith(`/c/${cid}`) ? next : `/c/${cid}`;
+-  return <TutorPicker childId={cid} band={band} lang={lang} reducedMotion={reducedMotion} onDone={() => nav(safeNext, { replace: true })} />;
+-}
+diff --git a/src/pages/AvatarDev.tsx b/src/pages/AvatarDev.tsx
+index 6c98b9c0833cd1c601b684f6060720f8fcfb7501..1cf2696e155726eb5766d642dca2efc559714981 100644
+--- a/src/pages/AvatarDev.tsx
++++ b/src/pages/AvatarDev.tsx
+@@ -1,7 +1,7 @@
+-// /dev/avatar (dev builds or VITE_DEV_ROUTES=1 only): the 3D tutor and the picker without a lesson.
+-//   ?tutor=asha|arjun|uma  ?face=B|Blite|D|E  ?status=speaking|listening|thinking|your_turn|idle  ?framing=medium|close
++// /dev/avatar (dev builds or VITE_DEV_ROUTES=1 only): the 3D tutor without a lesson (the picker is gone: one teacher).
++//   ?tutor=asha  ?face=B|Blite|D|E  ?status=speaking|listening|thinking|your_turn|idle  ?framing=medium|close
+ //   ?reduced=1  ?voice=1 (start the synthetic voice at once; needs a gesture unless autoplay is allowed)
+-//   ?view=face|picker|both  ?class=1-9  ?lang=hinglish|hindi|english  ?offer=sheet|wide
++//   ?class=1-9
+ // The synthetic voice is a looped, syllable-modulated harmonic signal (≈ 4.5 syllables/s, phrase pauses, bright/dark
+ // vowels) on a LevelMeter exactly as a link attaches one, so the face runs its real tap → lip → behaviour path.
+ // The face sits inside the real <TeacherStage> through its `face` slot: the same mount the lesson screen uses.
+@@ -9,7 +9,6 @@ import { useEffect, useMemo, useState } from "react";
+ import { createLevelAnalyser, LevelMeter } from "../lesson/level.ts";
+ import { TeacherStage } from "../stage/TeacherStage.tsx";
+ import { TutorFace } from "../avatar/TutorFace.tsx";
+-import { TutorPicker } from "../avatar/picker/TutorPicker.tsx";
+ import type { FloorStatus } from "../avatar/behaviour.ts";
+ import type { StageEvent } from "../avatar/three/stage3d.ts";
+ import type { FaceTier } from "../avatar/tier.ts";
+@@ -53,9 +52,7 @@ export default function AvatarDev() {
+   const [status, setStatus] = useState<FloorStatus | null>((q.get("status") as FloorStatus) || "your_turn");
+   const [reduced, setReduced] = useState(q.get("reduced") === "1");
+   const [playing, setPlaying] = useState(false);
+-  const view = q.get("view") ?? "both";
+   const cls = Number(q.get("class") ?? 6);
+-  const lang = q.get("lang") ?? "hinglish";
+   const framing = (q.get("framing") as "medium" | "close") ?? "medium";
+   const tier = (q.get("face") as FaceTier) || undefined;
+   const meter = useMemo(() => new LevelMeter(), []);
+@@ -105,7 +102,7 @@ export default function AvatarDev() {
+ 
+   return (
+     <div style={{ fontFamily: "system-ui, sans-serif", padding: 12, display: "grid", gap: 16, background: "#f3ece2", minHeight: "100vh", boxSizing: "border-box" }}>
+-      {view !== "picker" && (
++      {(
+         <section style={{ display: "grid", gap: 8 }}>
+           <div style={{ display: "flex", gap: 6, flexWrap: "wrap", alignItems: "center" }}>
+             {["asha", "arjun", "uma"].map((id) => (
+@@ -131,11 +128,6 @@ export default function AvatarDev() {
+           </div>
+         </section>
+       )}
+-      {view !== "face" && (
+-        <section style={{ background: "#fffaf2", borderRadius: 16 }}>
+-          <TutorPicker childId="dev-child-0001" band={band} lang={lang} reducedMotion={reduced} onDone={() => {}} preview={{ classLevel: cls, includeDraft: true, offer: q.get("offer") === "wide" ? "wide" : "sheet" }} />
+-        </section>
+-      )}
+     </div>
+   );
+ }
+diff --git a/src/avatar/TutorFace.tsx b/src/avatar/TutorFace.tsx
+index 37dd925719394e9f18bcf345aef4ac4c9c4d7990..a2d8da6fe8042cb88bffb43e71ddacc06c4df8a3 100644
+--- a/src/avatar/TutorFace.tsx
++++ b/src/avatar/TutorFace.tsx
+@@ -76,8 +76,8 @@ if (import.meta.env?.DEV && typeof window !== "undefined") (window as unknown as
+ const OVERRIDE_OK = !!import.meta.env?.DEV || import.meta.env?.VITE_DEV_ROUTES === "1";
+ 
+ /**
+- * The tutor for an id, else the class default for the BAND (b1-b2 = classes 1-4 → Asha, b3-b4 = 5-9 → Arjun), the
+- * same rule as the server's teacherFor, so an unknown/null id can never put Asha's face over Arjun's voice.
++ * The tutor for an id, else the default (one teacher, round 4: Asha for every band), the same rule as the server's
++ * teacherFor, so an unknown/null/retired id (a row still holding "arjun") shows her face with her voice.
+  */
+ export function faceTutor(id: string | null | undefined, band: string): TutorCharacter {
+   return tutorById(id) ?? tutorById(defaultTutorFor({ class_level: band === "b3" || band === "b4" ? 5 : 1 }))!;
+diff --git a/src/child/voice.ts b/src/child/voice.ts
+index e9772a7d695af1b0b2574d9894ab83455eb5bf2d..27fd5d024dc0a49bddd4da73c757d3b0127ec439 100644
+--- a/src/child/voice.ts
++++ b/src/child/voice.ts
+@@ -1,8 +1,8 @@
+ // Her pre-rendered clips outside the lesson (PRODUCT-DESIGN-V2 §3.3 step 1: "a pre-rendered greeting clip with no
+ // name in it"). A clip plays ONLY in its own teacher's voice: a clip recorded by one teacher is never played under
+ // another teacher's face (one teacher, §8: the voice is an identity anchor). Today only Asha's greeting exists, in the
+-// three family languages (public/audio/hello-*.mp3, the onboarding clips). Arjun and Uma have none yet, so their
+-// Hello card shows the words and her face without sound (open item: render their greetings in their live voices).
++// three family languages (public/audio/hello-*.mp3, the onboarding clips). She is the one teacher (round 4), so every
++// child has a greeting in her voice.
+ import { useEffect, useRef, useState } from "react";
+ 
+ const HELLO: Record<string, Partial<Record<"english" | "hindi" | "hinglish", string>>> = {
+diff --git a/src/child/lesson/dev/DeskDev.tsx b/src/child/lesson/dev/DeskDev.tsx
+index ba5c3940632fa826d02de7f9c41e1fc1f38f5bb9..205d7e8d11b4b02c3692af0104b1c89a6bf43eba 100644
+--- a/src/child/lesson/dev/DeskDev.tsx
++++ b/src/child/lesson/dev/DeskDev.tsx
+@@ -137,7 +137,7 @@ function LiveDesk({ band, theme, reduced, size, onSize, sp }: { band: Band; them
+     retrySchedule: sp.get("retry") === "fast" ? [200, 400, 800] : undefined,
+   }));
+   const { runtime } = useLesson(deps);
+-  const rec = teacherRecord(young ? "asha" : "arjun", band);
++  const rec = teacherRecord("asha", band);   // one teacher (round 4)
+   const { m, a, dockRef, live } = useDesk(runtime, null, {
+     cid: "dev-child", band, family: familyOf(band), teacherId: rec.id, teacherName: rec.name, childName: young ? "Riya" : "Kabir",
+     lessonLang: "hinglish", captionsAlways: false, sounds: true, haptics: true, reducedMotion: reduced, timing: 1, variant: "lesson",
+diff --git a/src/child/lesson/dev/script.ts b/src/child/lesson/dev/script.ts
+index ff88fb93777e91f2641d91a91931d4f23ce0b567..5661ffa8e7a75575af2811e14bde99f92545ce13 100644
+--- a/src/child/lesson/dev/script.ts
++++ b/src/child/lesson/dev/script.ts
+@@ -73,8 +73,8 @@ export function scriptedApi(o: ScriptOptions): LessonApi & { calls: TurnRequest[
+       if (o.startFail) throw new ApiError(o.startFail, o.startFail === 401 ? "not signed in" : "server error", null);
+       return {
+         lessonId: "dev-lesson", topic: { id: "dev-fractions", title: o.young ? "Halves" : "Fractions: halves and quarters", chapter: "Fractions" },
+-        teacher: { id: o.young ? "asha" : "arjun", name: o.young ? "Asha" : "Arjun", voice: "dev", addressedAs: o.young ? "Asha didi" : "Arjun bhaiya", role: "AI teacher",
+-          pronouns: o.young ? { subject: "she", object: "her", possessive: "her" } : { subject: "he", object: "him", possessive: "his" }, lookRev: 1, signatureColor: null },
++        teacher: { id: "asha", name: "Asha", voice: "dev", addressedAs: "Asha didi", role: "AI teacher",   // one teacher (round 4)
++          pronouns: { subject: "she", object: "her", possessive: "her" }, lookRev: 1, signatureColor: null },
+         moduleCommands: [], ui: s.opening.ui,
+         teacherOpening: s.opening.reply, teacherOpeningSeq: 1,
+       };
+diff --git a/tests/avatar-tutors.test.mjs b/tests/avatar-tutors.test.mjs
+index 3ca5ee8bbba9e3e4c375f0691990cd7874c4d79c..ffeb0b1e3c00fbef09c7b717fb1ebf8e230e6c73 100644
+--- a/tests/avatar-tutors.test.mjs
++++ b/tests/avatar-tutors.test.mjs
+@@ -1,92 +1,75 @@
+-// Tutor selection (avatar-m0): the shared cast manifest, eligibility and ordering (tutor-selection-ux §4, §6.3),
+-// the server's pick decision (server/routes/tutor.js), and the additive migration 008.
++// The teacher cast (avatar-m0, round 4): ONE teacher. Asha teaches every class (owner 2026-10-10); Arjun, the draft Uma
++// and every teacher-choice step are gone (shared/tutors.js, server/routes/tutor.js, the picker screens). These checks
++// pin that down: one live tutor with a persona sheet, "single" for every class (so no client ever shows a choice), the
++// server's teacher for any saved id is Asha, and the class 5-9 register rides her own sheet.
+ import { test } from "node:test";
+ import assert from "node:assert/strict";
+ import { readFileSync } from "fs";
+-import { TUTORS, bandOfClass, eligibleTutors, pickCovering, seedOf, seededShuffle, tutorById, defaultTutorFor, CHOICE } from "../shared/tutors.js";
+-import { decideChoice, eligibilityFor, hasSheet } from "../server/routes/tutor.js";
+-import { CHARACTERS, teacherFor } from "../server/compiler/characters/index.js";
++import { TUTORS, eligibleTutors, pickCovering, seedOf, seededShuffle, tutorById, defaultTutorFor, NAME_SUGGESTIONS } from "../shared/tutors.js";
++import { eligibilityFor, hasSheet, routes } from "../server/routes/tutor.js";
++import { CHARACTERS, forClass, teacherFor, teacherForLesson, characterForState } from "../server/compiler/characters/index.js";
+ 
+ const kid = (cls, id = "00000000-0000-4000-8000-000000000001") => ({ id, class_level: cls, teacher_id: defaultTutorFor({ class_level: cls }) });
+ 
+-test("cast: Asha, Arjun, Uma; every live tutor has a persona sheet; style notes ≤ 8 words with no friendship claim", () => {
+-  assert.deepEqual(TUTORS.map((t) => t.id), ["asha", "arjun", "uma"]);
++test("cast: Asha alone, live, with a persona sheet; style notes ≤ 8 words with no friendship claim", () => {
++  assert.deepEqual(TUTORS.map((t) => t.id), ["asha"]);
++  assert.deepEqual(Object.keys(CHARACTERS), ["asha"]);
+   for (const t of TUTORS) {
+-    if (t.status === "live") assert.ok(hasSheet(t.id), `${t.id} is live but has no sheet`);
++    assert.equal(t.status, "live");
++    assert.ok(hasSheet(t.id), `${t.id} is live but has no sheet`);
+     for (const note of Object.values(t.styleNote)) {
+       assert.ok(note.split(/\s+/).length <= 8, `${t.id}: "${note}"`);
+       assert.ok(!/friend|dost|always|hamesha|miss you|love you|pyaar/i.test(note), `${t.id}: no friendship / companion register`);
+     }
+-    assert.ok(t.look.mst >= 1 && t.look.mst <= 10);
++    assert.ok(t.look.mst >= 6, "MST ≥ 6");
+   }
+-  assert.equal(tutorById("uma").status, "draft", "uma has no sheet and no probed voice yet");
+-  assert.ok(!hasSheet("uma"));
+-  assert.ok(TUTORS.filter((t) => t.look.mst >= 6).length * 2 >= TUTORS.length, "at least half the cast at MST ≥ 6");
++  assert.equal(tutorById("arjun"), null);
++  assert.equal(tutorById("uma"), null);
++  assert.ok(!NAME_SUGGESTIONS.includes("Arjun"), "a man's name is not suggested for the one woman teacher");
+ });
+ 
+-test("eligibility (sheet ranges): one live tutor per class today → no fake one-tile picker", () => {
+-  for (let c = 1; c <= 9; c++) {
+-    const e = eligibleTutors(kid(c), { hasSheet });
+-    assert.equal(e.mode, "single", `class ${c}`);
+-    assert.equal(e.tutors[0].id, c <= 4 ? "asha" : "arjun");
+-    assert.equal(e.tutors[0].id, teacherFor({ class_level: c }).id, "the offer matches the server's class default");
++test("eligibility: 'single' for every class, sheet and wide ranges alike (no client shows a choice)", () => {
++  for (let c = 1; c <= 9; c++) for (const offer of ["sheet", "wide"]) {
++    const e = eligibleTutors(kid(c), { hasSheet, offer });
++    assert.equal(e.mode, "single", `class ${c} ${offer}`);
++    assert.deepEqual(e.tutors.map((t) => t.id), ["asha"]);
++    assert.equal(eligibilityFor(kid(c)).mode, "single");
+   }
++  assert.equal(defaultTutorFor({ class_level: 8 }), "asha");
+ });
+ 
+-test("eligibility: Uma appears for classes 7-9 once she has a sheet (drafts included in preview)", () => {
+-  for (const c of [7, 8, 9]) {
+-    const e = eligibleTutors(kid(c), { includeDraft: true });
+-    assert.equal(e.mode, "picker");
+-    assert.deepEqual(e.tutors.map((t) => t.id).sort(), ["arjun", "uma"]);
++test("the server's teacher is Asha for every class and every saved id, including a retired 'arjun' row", () => {
++  for (let c = 1; c <= 9; c++) for (const id of ["asha", "arjun", null, "zed"]) {
++    const t = teacherFor({ id: "c", class_level: c, teacher_id: id });
++    assert.deepEqual([t.id, t.name, t.pronouns.subject], ["asha", "Asha", "she"], `class ${c} saved ${id}`);
+   }
+-  assert.ok(!eligibleTutors(kid(6), { includeDraft: true }).tutors.some((t) => t.id === "uma"));
++  // an open lesson pinned to the retired id continues as Asha under her own name (never "Arjun" in her voice)
++  assert.equal(teacherForLesson({ id: "c", class_level: 8 }, "arjun", "Arjun").name, "Asha");
++  const st = characterForState({ ctx: { teacherId: "arjun", teacherName: "Arjun", classLevel: 8 } });
++  assert.deepEqual([st.id, st.name], ["asha", "Asha"]);
+ });
+ 
+-test("eligibility (wide ranges): class 1-6 get Asha + Arjun; option counts per band stay in range", () => {
+-  for (let c = 1; c <= 9; c++) {
+-    const e = eligibleTutors(kid(c), { hasSheet, offer: "wide", includeDraft: true });
+-    const [min, max] = CHOICE[bandOfClass(c)];
+-    if (e.mode === "picker") assert.ok(e.tutors.length >= min && e.tutors.length <= max, `class ${c}: ${e.tutors.length}`);
+-    if (c <= 6) assert.deepEqual(e.tutors.map((t) => t.id).sort(), ["arjun", "asha"]);
+-  }
+-  assert.equal(eligibleTutors(kid(1), { offer: "wide", allow: ["asha"] }).mode, "single", "a parent allow-list of one skips the picker");
++test("one teacher, two registers: classes 1-4 her own sheet, 5-9 the register written for them", () => {
++  const young = teacherFor({ id: "c", class_level: 3 }), older = teacherFor({ id: "c", class_level: 7 });
++  assert.equal(young.protege.name, "Golu");
++  assert.equal(older.protege.name, "Bittu");
++  assert.match(young.notes[0], /young Indian children/);
++  assert.match(older.notes[0], /classes 5-9; a sharp, kind didi-teacher register/);
++  assert.equal(young.addressedAs, older.addressedAs, "one address for every class");
++  for (const n of older.notes) assert.ok(!/bhaiya|\bhe\b|\bhis\b/i.test(n), `no male register left in "${n}"`);
++  assert.equal(forClass(CHARACTERS.asha, 4).notes, CHARACTERS.asha.notes);
++  assert.equal(characterForState({ ctx: { teacherId: "asha", classLevel: 6 } }).protege.name, "Bittu");
+ });
+ 
+-test("order: stable per child, shuffled across children, no position bias (n = 4,000 ids, 2 tutors)", () => {
+-  const a = eligibleTutors(kid(3, "a1b2"), { offer: "wide" }).tutors.map((t) => t.id);
+-  assert.deepEqual(eligibleTutors(kid(3, "a1b2"), { offer: "wide" }).tutors.map((t) => t.id), a, "same child, same order");
+-  let ashaFirst = 0;
+-  const N = 4000;
+-  for (let i = 0; i < N; i++) if (eligibleTutors(kid(3, `child-${i}`), { offer: "wide" }).tutors[0].id === "asha") ashaFirst++;
+-  const share = ashaFirst / N;
+-  assert.ok(Math.abs(share - 0.5) < 0.03, `asha first in ${(share * 100).toFixed(1)}% (expected ≈ 50%)`);
+-  assert.notEqual(seedOf("x"), seedOf("y"));
+-  assert.deepEqual([...seededShuffle([1, 2, 3, 4], 9)].sort(), [1, 2, 3, 4]);
++test("no choose endpoint: the picker's POST is gone; GET and the name routes stay", () => {
++  assert.deepEqual(Object.keys(routes).sort(), ["GET /api/tutors", "GET /api/tutors/name", "POST /api/tutors/name"]);
+ });
+ 
+-test("pickCovering keeps ≥ 1 per presented gender when it must drop tutors", () => {
+-  const mk = (id, g, mst) => ({ id, look: { presentedGender: g, mst } });
+-  const pool = [mk("f1", "F", 4), mk("f2", "F", 5), mk("f3", "F", 7), mk("m1", "M", 3)];
+-  const two = pickCovering(pool, 2);
+-  assert.equal(two.length, 2);
+-  assert.ok(two.some((t) => t.look.presentedGender === "M") && two.some((t) => t.look.presentedGender === "F"));
+-});
+-
+-test("decideChoice: unknown → 400, live lesson → 409, not offered → 403, a B1 switch needs the parent", () => {
+-  const c8 = kid(8), el8 = eligibilityFor(c8);
+-  assert.equal(decideChoice({ child: c8, tutorId: "zed", source: "child", live: false, eligibility: el8, chosenBefore: false }).status, 400);
+-  assert.equal(decideChoice({ child: c8, tutorId: "arjun", source: "hack", live: false, eligibility: el8, chosenBefore: false }).status, 400);
+-  assert.equal(decideChoice({ child: c8, tutorId: "arjun", source: "child", live: true, eligibility: el8, chosenBefore: false }).status, 409);
+-  assert.equal(decideChoice({ child: c8, tutorId: "uma", source: "child", live: false, eligibility: el8, chosenBefore: false }).status, 403, "draft refused");
+-  assert.equal(decideChoice({ child: c8, tutorId: "asha", source: "child", live: false, eligibility: el8, chosenBefore: false }).status, 403, "outside her sheet's classes");
+-  const ok = decideChoice({ child: c8, tutorId: "arjun", source: "child_random", live: false, eligibility: el8, chosenBefore: false });
+-  assert.deepEqual([ok.ok, ok.needsParent], [true, false]);
+-  const c2 = { ...kid(2), teacher_id: "asha" };
+-  const wide2 = eligibleTutors(c2, { hasSheet, offer: "wide" });
+-  assert.equal(decideChoice({ child: c2, tutorId: "arjun", source: "child", live: false, eligibility: wide2, chosenBefore: true }).needsParent, true, "B1 switch: ask a parent");
+-  assert.equal(decideChoice({ child: c2, tutorId: "arjun", source: "child", live: false, eligibility: wide2, chosenBefore: false }).needsParent, false, "the first pick is the child's own");
+-  const c6 = { ...kid(6), teacher_id: "arjun" };
+-  assert.equal(decideChoice({ child: c6, tutorId: "asha", source: "child", live: false, eligibility: eligibleTutors(c6, { hasSheet, offer: "wide" }), chosenBefore: true }).needsParent, false, "B3 switches are free");
++test("the shared helpers still behave on a one-entry catalogue (kept for callers)", () => {
++  assert.notEqual(seedOf("x"), seedOf("y"));
++  assert.deepEqual([...seededShuffle([1, 2, 3, 4], 9)].sort(), [1, 2, 3, 4]);
++  const one = pickCovering([TUTORS[0]], 2);
++  assert.deepEqual(one.map((t) => t.id), ["asha"]);
+ });
+ 
+ test("the cast's server registry and the manifest agree (a character, its voice and its face are one unit)", () => {
+diff --git a/tests/avatar-tutor-routes.test.mjs b/tests/avatar-tutor-routes.test.mjs
+index c28d0d1286b6055538ae9386376827aebbf8b663..6be7e433754998830b943343bdabdd5f96d9bd13 100644
+--- a/tests/avatar-tutor-routes.test.mjs
++++ b/tests/avatar-tutor-routes.test.mjs
+@@ -1,41 +1,31 @@
+-// The tutor routes in process (server/routes/tutor.js) with a stubbed db + auth: the HTTP layer the pure
+-// decideChoice tests do not reach — auth is called with the child id, the parent gate fires only where policy says,
+-// the pick is ONE statement (check + update + log), a statement that returns no row is a 409, and the pinned-teacher
+-// / class-bound rules of characters/index.js. The real-database run is tests/tutor-db-e2e.mjs (test branch only).
++// The tutor routes in process (server/routes/tutor.js) with a stubbed db + auth. ONE teacher (round 4): there is no
++// choose route any more; GET /api/tutors keeps its shape (installed clients read `mode`, `tutors`, the name and the
++// suggestions) and answers mode "single" with Asha; the class bound and the pinned-lesson rules of characters/index.js
++// now always land on Asha. The real-database run is tests/tutor-db-e2e.mjs (test branch only).
+ import { describe, test, beforeEach } from "node:test";
+ import assert from "node:assert/strict";
+-import { routes, deps, CHOOSE_SQL, effectivelyChosen, LIVE_HOURS } from "../server/routes/tutor.js";
++import { routes, deps, LIVE_HOURS } from "../server/routes/tutor.js";
+ import { servesClass, teacherFor, teacherForLesson } from "../server/compiler/characters/index.js";
+ import { TUTORS } from "../shared/tutors.js";
+ import asha from "../server/compiler/characters/asha.js";
+-import arjun from "../server/compiler/characters/arjun.js";
+ 
+ const CID = "00000000-0000-4000-8000-0000000000c1";
+-let calls, child, liveRow, chooseRow, parentGateCalls;
++let calls, child, liveRow;
+ const real = { ...deps };
+ 
+ // One describe: `npm test` runs all files in one process, and a top-level hook would also wrap other files' tests.
+ describe("avatar tutor routes", () => {
+ beforeEach(() => {
+   calls = [];
+-  parentGateCalls = 0;
+   liveRow = null;
+-  child = { id: CID, class_level: 8, teacher_id: "arjun", tutor_chosen_at: null };
+-  chooseRow = { id: CID, teacher_id: "arjun", tutor_chosen_at: "2026-10-03T00:00:00Z", from_id: "arjun" };
++  child = { id: CID, class_level: 8, teacher_id: "arjun", tutor_chosen_at: null, first_name: "Kabir" };
+   deps.requireChild = async (_req, id) => {
+     calls.push(["auth", id]);
+     if (id !== CID) throw Object.assign(new Error("forbidden"), { status: 403 });
+     return { child };
+   };
+-  deps.requireParentIfPinSet = async () => {
+-    parentGateCalls++;
+-    throw Object.assign(new Error("locked"), { status: 423 });
+-  };
+-  deps.one = async (sql, params) => {
+-    calls.push(["sql", sql, params]);
+-    if (sql === CHOOSE_SQL) return chooseRow;
+-    return liveRow;
+-  };
++  deps.requireParentIfPinSet = async () => { throw Object.assign(new Error("locked"), { status: 423 }); };
++  deps.one = async (sql, params) => { calls.push(["sql", sql, params]); return liveRow; };
+   delete process.env.TAXILA_TUTOR_OFFER;
+ });
+ process.on("exit", () => Object.assign(deps, real));
+@@ -43,15 +33,16 @@ process.on("exit", () => Object.assign(deps, real));
+ function res() {
+   return { statusCode: 0, headers: {}, body: null, setHeader(k, v) { this.headers[k] = v; }, end(b) { this.body = b ? JSON.parse(b) : null; } };
+ }
+-const choose = (body) => { const r = res(); return routes["POST /api/tutors/choose"]({ headers: {} }, r, body).then(() => r); };
+ const list = (id) => { const r = res(); return routes["GET /api/tutors"]({ url: `/api/tutors?childId=${id}`, headers: {} }, r).then(() => r); };
+ 
+-test("GET: auth on the child id; current may be null; live comes from the open-lesson query", async () => {
+-  child.teacher_id = null;
++test("GET: auth on the child id; mode single with Asha for a retired 'arjun' row; live from the open-lesson query", async () => {
+   const r = await list(CID);
+   assert.equal(r.statusCode, 200);
+   assert.deepEqual(calls[0], ["auth", CID]);
+-  assert.equal(r.body.current, null);
++  assert.equal(r.body.mode, "single");
++  assert.deepEqual(r.body.tutors, ["asha"]);
++  assert.equal(r.body.name, "Asha");
++  assert.ok(!r.body.suggestions.includes("Arjun"));
+   assert.equal(r.body.live, false);
+   liveRow = { "?column?": 1 };
+   assert.equal((await list(CID)).body.live, true);
+@@ -61,81 +52,28 @@ test("GET: auth on the child id; current may be null; live comes from the open-l
+   await assert.rejects(list("not-a-uuid"), (e) => e.status === 400);
+ });
+ 
+-test("POST: the pick is one statement (live check + update + log) with from_id = the previous teacher", async () => {
+-  const r = await choose({ childId: CID, tutorId: "arjun", source: "child", shown: ["arjun", "nobody"], msToChoose: 1234.4 });
+-  assert.equal(r.statusCode, 200);
+-  const sql = calls.filter((c) => c[0] === "sql" && c[1] === CHOOSE_SQL);
+-  assert.equal(sql.length, 1, "exactly one write statement");
+-  assert.match(CHOOSE_SQL, /with live as[\s\S]*update child[\s\S]*not exists \(select 1 from live\)[\s\S]*insert into tutor_switch[\s\S]*from upd/);
+-  assert.match(CHOOSE_SQL, /old\.teacher_id as from_id/, "from_id is the previous teacher, unconditionally");
+-  assert.deepEqual(sql[0][2], [CID, "arjun", 1, "child", ["arjun"], 1234]);
+-  assert.equal(parentGateCalls, 0);
+-});
+-
+-test("POST: the statement returning no row (a lesson opened in between) is a 409, not a silent success", async () => {
+-  chooseRow = null;
+-  await assert.rejects(choose({ childId: CID, tutorId: "arjun" }), (e) => e.status === 409);
+-});
+-
+-test("POST: an open lesson → 409 before any write; a draft or out-of-class tutor → 403", async () => {
+-  liveRow = { x: 1 };
+-  await assert.rejects(choose({ childId: CID, tutorId: "arjun" }), (e) => e.status === 409);
+-  assert.ok(!calls.some((c) => c[1] === CHOOSE_SQL));
+-  liveRow = null;
+-  await assert.rejects(choose({ childId: CID, tutorId: "uma" }), (e) => e.status === 403);
+-  await assert.rejects(choose({ childId: CID, tutorId: "asha" }), (e) => e.status === 403);
+-});
+-
+-test("POST B1: a switch goes through the Parent-corner gate; a parent-set non-default teacher counts as chosen", async () => {
+-  process.env.TAXILA_TUTOR_OFFER = "wide";
+-  child = { id: CID, class_level: 2, teacher_id: "asha", tutor_chosen_at: null };
+-  // first pick over the class default: free
+-  assert.equal((await choose({ childId: CID, tutorId: "arjun" })).statusCode, 200);
+-  assert.equal(parentGateCalls, 0);
+-  // the parent had set arjun at onboarding (teacher_id ≠ class default): the child's first pick is a switch
+-  child = { id: CID, class_level: 2, teacher_id: "arjun", tutor_chosen_at: null };
+-  assert.equal(effectivelyChosen(child), true);
+-  calls = [];
+-  await assert.rejects(choose({ childId: CID, tutorId: "asha" }), (e) => e.status === 423);
+-  assert.equal(parentGateCalls, 1);
+-  assert.ok(!calls.some((c) => c[1] === CHOOSE_SQL), "nothing written when the gate refuses");
+-  // B3 (class 6) switches are free
+-  child = { id: CID, class_level: 6, teacher_id: "arjun", tutor_chosen_at: "2026-10-01" };
+-  assert.equal((await choose({ childId: CID, tutorId: "asha" })).statusCode, 200);
+-  assert.equal(parentGateCalls, 1);
++test("no POST /api/tutors/choose: a pick request has no route to land on", () => {
++  assert.equal(routes["POST /api/tutors/choose"], undefined);
+ });
+ 
+-test("teacherFor bounds a saved pick by the sheet's classes (or wide); class change / wide-off revert to the default", () => {
+-  const warn = console.warn;
+-  console.warn = () => {};
+-  try {
+-    // sheet mode: the persona sheet's own classes
+-    assert.equal(teacherFor({ id: "a", class_level: 1, teacher_id: "arjun" }).id, "asha", "Arjun's sheet is classes 5-9");
+-    assert.equal(teacherFor({ id: "a", class_level: 8, teacher_id: "asha" }).id, "arjun", "Asha's sheet is classes 1-4");
+-    assert.equal(teacherFor({ id: "a", class_level: 3, teacher_id: "asha" }).id, "asha");
+-    assert.equal(teacherFor({ id: "a", class_level: 3, teacher_id: null }).id, "asha");
+-    // wide: AVATAR §5.1 ranges, consistent with what the picker offered
+-    process.env.TAXILA_TUTOR_OFFER = "wide";
+-    assert.equal(teacherFor({ id: "a", class_level: 6, teacher_id: "asha" }).id, "asha");
+-    assert.equal(teacherFor({ id: "a", class_level: 1, teacher_id: "arjun" }).id, "arjun");
+-    assert.equal(teacherFor({ id: "a", class_level: 7, teacher_id: "asha" }).id, "arjun", "outside Asha's wide range");
+-    delete process.env.TAXILA_TUTOR_OFFER;
+-    // wide switched off: the same saved row now serves the sheet range
+-    assert.equal(teacherFor({ id: "a", class_level: 6, teacher_id: "asha" }).id, "arjun");
+-  } finally {
+-    console.warn = warn;
++test("teacherFor: Asha for every class, sheet or wide, whatever the saved id", () => {
++  for (const mode of [undefined, "wide"]) {
++    if (mode) process.env.TAXILA_TUTOR_OFFER = mode; else delete process.env.TAXILA_TUTOR_OFFER;
++    for (let c = 1; c <= 9; c++) for (const id of ["asha", "arjun", null]) assert.equal(teacherFor({ id: "a", class_level: c, teacher_id: id }).id, "asha", `${mode} class ${c} ${id}`);
+   }
+-  // the manifest's sheet-mode offer ranges ARE the sheets' classes (one source of truth for register)
++  delete process.env.TAXILA_TUTOR_OFFER;
++  // the manifest's sheet-mode offer range IS the sheet's classes (one source of truth for register)
+   assert.deepEqual(TUTORS.find((t) => t.id === "asha").fit.offerClasses, asha.classes);
+-  assert.deepEqual(TUTORS.find((t) => t.id === "arjun").fit.offerClasses, arjun.classes);
+-  assert.equal(servesClass("uma", 8), false, "no sheet, never served");
++  assert.deepEqual(asha.classes, [1, 9]);
++  assert.equal(servesClass("arjun", 8), false, "no sheet, never served");
++  assert.equal(servesClass("asha", 9), true);
+ });
+ 
+-test("teacherForLesson: the lesson's pinned teacher wins over the child's current pick", () => {
++test("teacherForLesson: the pinned teacher wins; a pin to a retired id falls back to Asha", () => {
+   const kid = { id: "a", class_level: 3, teacher_id: "asha" };
+-  assert.equal(teacherForLesson({ ...kid, teacher_id: "arjun" }, "asha").id, "asha");
+-  assert.equal(teacherForLesson({ ...kid, teacher_id: "asha" }, "arjun").voice, teacherFor({ id: "b", class_level: 7 }).voice);
++  assert.equal(teacherForLesson(kid, "asha").id, "asha");
++  assert.equal(teacherForLesson(kid, "arjun").id, "asha");
+   assert.equal(teacherForLesson(kid, null).id, "asha", "a lesson without a pin falls back to teacherFor");
+-  assert.equal(teacherForLesson(kid, "zed").id, "asha");
++  assert.equal(teacherForLesson({ ...kid, class_level: 8 }, "asha").protege.name, "Bittu", "the class 5-9 register");
+ });
+ });
+diff --git a/tests/teacher-name.test.mjs b/tests/teacher-name.test.mjs
+index b900370d3a3124ea8c8aefe11ba2bfa683e13b94..83a9d3e66793a0bd89d6b0673e720c5be79763b6 100644
+--- a/tests/teacher-name.test.mjs
++++ b/tests/teacher-name.test.mjs
+@@ -6,7 +6,7 @@ import assert from "node:assert/strict";
+ import { checkTeacherName, effectiveTeacherName } from "../server/compiler/characters/naming.js";
+ import { CHARACTERS, characterForState, named, teacherCard, teacherFor, teacherForLesson } from "../server/compiler/characters/index.js";
+ import { normalizeTeacherName, teacherNameShape, teacherNameSuggestions, NAME_SUGGESTIONS } from "../shared/tutors.js";
+-import { decideName, NAME_SQL, CHOOSE_SQL } from "../server/routes/tutor.js";
++import { decideName, NAME_SQL } from "../server/routes/tutor.js";
+ import { initLessonState, step } from "../server/director/state.js";
+ import { instructionsFor } from "../server/compiler/instructions.js";
+ import { greet } from "../server/director/shapes.js";
+@@ -64,10 +64,11 @@ test("name predicate: normalisation and suggestions (the child's own name is nev
+   assert.equal(teacherNameShape("Miss Meenu"), null);
+   assert.equal(teacherNameShape("Miss Meenu Rao Ji"), "length", "17 characters");
+   assert.equal(teacherNameShape("Ms Meenu Rao Ji"), "charset", "four words: three separators");
+-  assert.deepEqual(NAME_SUGGESTIONS, ["Asha", "Arjun", "Uma"]);
+-  assert.deepEqual(teacherNameSuggestions("arjun", {}), ["Arjun", "Asha", "Uma"], "the look's own name first");
+-  assert.deepEqual(teacherNameSuggestions("asha", { childFirstName: "Uma" }), ["Asha", "Arjun"]);
+-  assert.deepEqual(checkTeacherName("Uma", { childFirstName: "Uma", characterId: "asha" }).suggestions, ["Asha", "Arjun"]);
++  // one woman teacher (round 4): the man's name is no longer a suggestion
++  assert.deepEqual(NAME_SUGGESTIONS, ["Asha", "Uma"]);
++  assert.deepEqual(teacherNameSuggestions("asha", {}), ["Asha", "Uma"], "the look's own name first");
++  assert.deepEqual(teacherNameSuggestions("asha", { childFirstName: "Uma" }), ["Asha"]);
++  assert.deepEqual(checkTeacherName("Uma", { childFirstName: "Uma", characterId: "asha" }).suggestions, ["Asha"]);
+ });
+ 
+ test("the character under the child's name: name and addressedAs change; look, voice, pronouns and notes do not", () => {
+@@ -77,7 +78,7 @@ test("the character under the child's name: name and addressedAs change; look, v
+   assert.equal(a.characterName, "Asha");
+   assert.deepEqual(a.notes, CHARACTERS.asha.notes);
+   assert.deepEqual(a.pronouns, CHARACTERS.asha.pronouns);
+-  assert.equal(named(CHARACTERS.arjun, "Rao Sir").addressedAs, "Rao Sir", "a titled name is said as given");
++  assert.equal(named(CHARACTERS.asha, "Rao Madam").addressedAs, "Rao Madam", "a titled name is said as given");
+   assert.equal(named(CHARACTERS.asha, "Asha").addressedAs, "Asha didi");
+   const child = { id: "c1", class_level: 3, teacher_id: "asha", first_name: "Riya", teacher_name: "Meenu" };
+   const t = teacherFor(child);
+@@ -140,19 +141,17 @@ test("a renamed teacher re-introduces herself under the new name as an AI teache
+ });
+ 
+ test("the name route decides in code: refusal is a 422 with a reason and suggestions; the look's own name stores null", () => {
+-  const child = { id: "c1", class_level: 6, teacher_id: "arjun", first_name: "Kabir" };
+-  assert.deepEqual(decideName({ child, name: "Rohan", source: "child" }), { ok: true, stored: "Rohan" });
+-  assert.deepEqual(decideName({ child, name: "arjun", source: "child" }), { ok: true, stored: null }, "the look's own name is no rename");
++  const child = { id: "c1", class_level: 6, teacher_id: "asha", first_name: "Kabir" };
++  assert.deepEqual(decideName({ child, name: "Meenu", source: "child" }), { ok: true, stored: "Meenu" });
++  assert.deepEqual(decideName({ child, name: "asha", source: "child" }), { ok: true, stored: null }, "the look's own name is no rename");
+   assert.deepEqual(decideName({ child, name: null, source: "parent" }), { ok: true, stored: null });
+   const no = decideName({ child, name: "Kabir", source: "child" });
+   assert.equal(no.ok, false);
+   assert.equal(no.status, 422);
+   assert.equal(no.reason, "own_name");
+-  assert.ok(no.suggestions.includes("Arjun"));
++  assert.ok(no.suggestions.includes("Asha"));
+   assert.equal(decideName({ child, name: "x".repeat(65), source: "child" }).status, 400);
+   assert.equal(decideName({ child, name: "Rohan", source: "admin" }).status, 400);
+   // one statement each: the child row and its history row land together; a switch resets the name (history 'switch')
+   assert.match(NAME_SQL, /update child set teacher_name[\s\S]*insert into teacher_name_history/);
+-  assert.match(CHOOSE_SQL, /teacher_name = case when old\.teacher_id is distinct from \$2::text then null/);
+-  assert.match(CHOOSE_SQL, /'switch'/);
+ });
+diff --git a/tests/gates.test.mjs b/tests/gates.test.mjs
+index 497d20bf092e3eebb4da4366d473d40c9292e939..1c6d9dfde3c0c11eab5cb9a09b75a75f0c295211 100644
+--- a/tests/gates.test.mjs
++++ b/tests/gates.test.mjs
+@@ -5,7 +5,7 @@ import assert from "node:assert/strict";
+ import { readFileSync, readdirSync } from "node:fs";
+ import { gatesFor, saferGates, assertMinorGates, MINOR_GATES } from "../server/compiler/gates.js";
+ import { compile, FLOOR_FIX, FIX_LOAD_GATE } from "../server/compiler/compile.js";
+-import { CHARACTERS } from "../server/compiler/characters/index.js";
++import { CHARACTERS, forClass } from "../server/compiler/characters/index.js";
+ 
+ test("every tier — adult, verified, unverified, unknown, garbage — gets the frozen minor gates", () => {
+   for (const t of ["adult", "verified_adult", "unverified", "minor", undefined, null, 18, {}, "13+"]) assert.equal(gatesFor(t), MINOR_GATES, String(t));
+@@ -24,7 +24,7 @@ test("the ratchet only restricts: a permissive set on either side comes back min
+ 
+ test("compile() gives a brief that claims adulthood the same minor floor, byte for byte", () => {
+   const base = {
+-    character: CHARACTERS.arjun, lessonState: { phase: "teach", turn: 1, minutes: 0, hintLevel: 0 }, move: { kind: "explain", shape: "one idea" },
++    character: forClass(CHARACTERS.asha, 8), lessonState: { phase: "teach", turn: 1, minutes: 0, hintLevel: 0 }, move: { kind: "explain", shape: "one idea" },
+     topic: { title: "Fractions", classLevel: 6, subject: "maths" }, language: "english", lane: "text",
+   };
+   const brief = { firstName: "A", classLevel: 6, ageBand: "10-15", languagePref: "english", interests: [], recentWins: [], activeMisconceptions: [], memoryCallbacks: [], vibe: { pace: "medium", verbosity: "brief", humour: "low" }, relationshipStage: "new" };
+diff --git a/tests/kit-budget.test.mjs b/tests/kit-budget.test.mjs
+index 92f17ce8047791b849dec9a18e603cb5cd4a4c81..1f1e1ac771b3c6bac625e19a43cf8e12747d30ca 100644
+--- a/tests/kit-budget.test.mjs
++++ b/tests/kit-budget.test.mjs
+@@ -7,7 +7,7 @@ import assert from "node:assert/strict";
+ import { readdirSync, readFileSync } from "fs";
+ import { normalizeKit, RUNG_DEFAULTS } from "../server/content/kits.js";
+ import { compileWithReport, BudgetError } from "../server/compiler/compile.js";
+-import { CHARACTERS } from "../server/compiler/characters/index.js";
++import { CHARACTERS, forClass } from "../server/compiler/characters/index.js";
+ import { initLessonState, branchesFor } from "../server/director/state.js";
+ import { buildPracticeQueue, findItem, promptFor, revealsAnswer } from "../server/director/items.js";
+ import * as SH from "../server/director/shapes.js";
+@@ -85,7 +85,7 @@ test("every queued item and diagnostic compiles on both lanes, every language an
+     for (const id of ids) {
+       for (const lang of LANGS) {
+         for (const ageBand of ["6-9", "10-15"]) {
+-          const character = ageBand === "6-9" ? CHARACTERS.asha : CHARACTERS.arjun;
++          const character = forClass(CHARACTERS.asha, ageBand === "6-9" ? 2 : 8);   // one teacher, both registers (round 4)
+           const variants = [
+             { lane: "text", hintLevel: 0, moveVoiced: false },
+             { lane: "text", hintLevel: 3, moveVoiced: false, correction: ["ai_denial", "ability"] },
+diff --git a/tests/w2c-director.test.mjs b/tests/w2c-director.test.mjs
+index f65a65253a4cc8d402fa067068c97e9c0a49e3f0..6a43e81f9c522b3c8f0fdfecd9d9d33483c3ddff 100644
+--- a/tests/w2c-director.test.mjs
++++ b/tests/w2c-director.test.mjs
+@@ -18,7 +18,7 @@ import { explicitPace } from "../server/persona/pace.js";
+ import { instructionsFor } from "../server/compiler/instructions.js";
+ import { compileWithReport, TOKEN_BUDGET, TURN_SHAPE_PREFIX } from "../server/compiler/compile.js";
+ import { briefViewFor } from "../server/learner/briefView.js";
+-import { CHARACTERS } from "../server/compiler/characters/index.js";
++import { CHARACTERS, forClass } from "../server/compiler/characters/index.js";
+ import { getTopic } from "../server/content/curriculum.js";
+ 
+ const kitOf = (file, idx = 0) => {
+@@ -308,7 +308,7 @@ test("the v2 brief at its full size fits the prompt budget on the worst items, b
+           lastMove: { kind: "hint", itemId: item.id, skillId: item.skillId, hintLevel: 3, shape: "rung 3 of 4 (prompt): x" }, correction: ["ai_denial", "exclusivity"] });
+         const view = briefViewFor(s, k2);
+         assert.ok(view, `${k2.topicId} renders a v2 view`);
+-        const out = compileWithReport({ character: CHARACTERS.arjun, brief: huge, briefView: view, lessonState: s, move: s.lastMove, item: { ...item }, content: [],
++        const out = compileWithReport({ character: forClass(CHARACTERS.asha, 8), brief: huge, briefView: view, lessonState: s, move: s.lastMove, item: { ...item }, content: [],
+           topic: getTopic(k2.topicId) ?? { title: "T", classLevel: 5, subject: "maths" }, language: lang, lane });
+         worst = Math.max(worst, out.tokens);
+       }
+diff --git a/tests/lesson-truth.test.mjs b/tests/lesson-truth.test.mjs
+index 160b6aa87d9ae0f0940c3a49a9c0bccfe6d673e2..e7467c41acb30d72a61d82cf4a36536b96654f55 100644
+--- a/tests/lesson-truth.test.mjs
++++ b/tests/lesson-truth.test.mjs
+@@ -58,8 +58,8 @@ test("register: kit questions in aap forms keep their meaning words; the predica
+   assert.equal(toAap("Do tukde, dono barabar."), "Do tukde, dono barabar.", "'do' (two) and 'dono' stay");
+   assert.equal(toAap("अब तुम एक पहेली बनाओ और मुझसे पूछो।"), "अब आप एक पहेली बनाइए और मुझसे पूछिए।");
+   // audit 17-c8-lesson-2-open: a Class 8 "aap" child greeted "tumhara… Tumhe…"
+-  assert.ok(registerBroken("Namaste Kabir! Main Arjun, tumhara AI teacher. Tumhe space mein kya pasand hai?", "aap"));
+-  assert.ok(!registerBroken("Namaste Kabir! Main Arjun, aapka AI teacher. Aapko space mein kya pasand hai?", "aap"));
++  assert.ok(registerBroken("Namaste Kabir! Main Asha, tumhari AI teacher. Tumhe space mein kya pasand hai?", "aap"));
++  assert.ok(!registerBroken("Namaste Kabir! Main Asha, aapki AI teacher. Aapko space mein kya pasand hai?", "aap"));
+   assert.ok(registerBroken("Aap batayiye.", "tum"));
+   assert.ok(!registerBroken("Which is bigger?", "aap"), "English has no register marks");
+   // every Hinglish item of the real kit, asked of an aap child, carries no tum mark
+@@ -264,9 +264,9 @@ test("ui: an item turn pins the ask (≤ 120, the posed text), names the handove
+ 
+ // ───────────── (6) one teacher ─────────────
+ 
+-test("teacher: one record carries name, pronouns and voice; Arjun is 'he' everywhere the server speaks about him", () => {
++test("teacher: one record carries name, pronouns and voice; a retired 'arjun' row is Asha, 'she', in every class", () => {
+   const a = teacherCard(teacherFor({ id: "c", class_level: 8, teacher_id: "arjun" }));
+-  assert.deepEqual([a.id, a.name, a.pronouns.subject, a.role], ["arjun", "Arjun", "he", "AI teacher"]);
++  assert.deepEqual([a.id, a.name, a.pronouns.subject, a.role], ["asha", "Asha", "she", "AI teacher"]);
+   assert.equal(teacherCard(teacherFor({ id: "c", class_level: 3, teacher_id: null })).pronouns.subject, "she");
+   for (const c of Object.values(CHARACTERS)) assert.ok(c.pronouns?.subject && c.pronouns.object && c.pronouns.possessive, c.id);
+ });
+diff --git a/tests/w2a-experience.test.mjs b/tests/w2a-experience.test.mjs
+index 1912a723009094163041b54cdcac0ebf210de7f2..a62deb3465951f9c52ef634b72e051e44819f270 100644
+--- a/tests/w2a-experience.test.mjs
++++ b/tests/w2a-experience.test.mjs
+@@ -221,9 +221,8 @@ test("sign-in and sign-up errors sit on their field, in sentences; never the API
+   assert.equal(authErrorOf(new ApiError(429, "too many", {})).text, W2A["auth.err.wait"]);
+ });
+ 
+-test("teacher names fit the teacher (no 'Arjun' for a woman teacher); child labels are short; her line is server words", () => {
+-  assert.deepEqual(fitNames(["Asha", "Arjun", "Uma", "Tara"], "asha"), ["Asha", "Uma", "Tara"]);
+-  assert.deepEqual(fitNames(["Arjun", "Asha", "Uma"], "arjun"), ["Arjun"]);
++test("teacher names fit the teacher (one teacher: no other character's name to filter); child labels are short; her line is server words", () => {
++  assert.deepEqual(fitNames(["Asha", "Uma", "Tara"], "asha"), ["Asha", "Uma", "Tara"]);
+   assert.equal(childLabelOf("Make a sensible estimate of a collection using a known group"), "Make a sensible estimate");
+   assert.equal(childLabelOf("Anything", "Count in tens"), "Count in tens");
+   assert.ok(childLabelOf("Name faces, edges and corners on a solid shape").split(" ").length <= 6);
+diff --git a/tests/ui-v2-b2.test.mjs b/tests/ui-v2-b2.test.mjs
+index 2182113985366dc07e1dc53366b4afc756ab4475..d522e492a36a31136a0857d3ad77f30753eeb77e 100644
+--- a/tests/ui-v2-b2.test.mjs
++++ b/tests/ui-v2-b2.test.mjs
+@@ -5,7 +5,7 @@ import assert from "node:assert/strict";
+ import { BUDGETS, heightFor, lampHueShare, lintVerdict, QUALITIES, shipPlan } from "../scripts/gen-assets.mjs";
+ import { lint } from "../scripts/lint-ui.mjs";
+ import { fallbackPlan, fromServer, isPlanResponse, practiceOffered, RESUME_BY_ID } from "../src/child/plan.ts";
+-import { bestCard, normaliseMap, offerOf } from "../src/child/api.ts";
++import { bestCard, normaliseMap } from "../src/child/api.ts";
+ import { chapterLines, gardenBeds, layoutSky } from "../src/child/progress/layout.ts";
+ import { visibleEdges } from "../src/child/progress/prereqs.ts";
+ import { CHILD_STRINGS, clock, t } from "../src/child/copy.ts";
+@@ -122,11 +122,10 @@ test("Sky edges are real prerequisites between visible topics only", () => {
+   assert.deepEqual(visibleEdges(pre, new Set(["t1", "t2", "t3"])), [["t1", "t2"], ["t2", "t3"]]);
+ });
+ 
+-test("Notebook page: a verified card first; Your teacher: real characters only, server order", () => {
++test("Notebook page: a verified card first", () => {
+   const cards = [{ answer: "x", tick: false, withHelp: false }, { answer: "y", tick: true, withHelp: true }, { answer: "z", tick: true, withHelp: false }];
+   assert.equal(bestCard(cards).answer, "z");
+   assert.equal(bestCard([]), null);
+-  assert.deepEqual(offerOf({ tutors: ["arjun", "nobody", "asha"] }), ["arjun", "asha"]);
+ });
+ 
+ test("child chrome copy is English (G-EN-1) and never makes her a person with a life (§6.3.3, §8)", () => {
+@@ -137,7 +136,7 @@ test("child chrome copy is English (G-EN-1) and never makes her a person with a
+     assert.doesNotMatch(s, /!/, `no exclamation marks: "${s}"`);
+     assert.doesNotMatch(s, /\s[—–-]\s/, `no dashes: "${s}"`);
+   }
+-  assert.equal(t("teacherLabel", { T: "Arjun" }), "Arjun · AI teacher");
++  assert.equal(t("teacherLabel", { T: "Asha" }), "Asha · AI teacher");
+   assert.equal(t("resting", { time: clock("07:00") }), "Lessons open again at 7:00 am.");
+   assert.equal(clock("20:30"), "8:30 pm");
+ });
+diff --git a/tests/lesson-safety-naming-db.run.mjs b/tests/lesson-safety-naming-db.run.mjs
+index f36815966a61f2c72480ec3fd2cc8c6840816097..45981bb614cd566989461d0bf391f3c04194a406 100644
+--- a/tests/lesson-safety-naming-db.run.mjs
++++ b/tests/lesson-safety-naming-db.run.mjs
+@@ -66,7 +66,7 @@ describe("lesson safety + teacher naming (test branch)", { skip: SKIP, concurren
+     let r = await call(`/api/tutors?childId=${kid}`);
+     assert.equal(r.status, 200, JSON.stringify(r.body));
+     assert.equal(r.body.name, "Asha");
+-    assert.deepEqual(r.body.suggestions, ["Asha", "Arjun", "Uma"]);
++    assert.deepEqual(r.body.suggestions, ["Asha", "Uma"]);   // one woman teacher (round 4)
+     for (const [name, reason] of [["Jaanu", "not_allowed"], ["Riya", "own_name"], ["Virat Kohli", "public_figure"], ["Asha2", "shape"], ["Best Friend", "not_allowed"]]) {
+       r = await call("/api/tutors/name", { method: "POST", body: { childId: kid, name } });
+       assert.equal(r.status, 422, name);
+@@ -228,19 +228,15 @@ describe("lesson safety + teacher naming (test branch)", { skip: SKIP, concurren
+     assert.equal(me.body.children.find((c) => c.id === kid).teacher_name, "Meenu");
+   });
+ 
+-  test("PATCH /api/children teacherId: a parent's switch resets the name with a 'switch' history row, like the picker's", async () => {
++  test("PATCH /api/children teacherId: ignored (one teacher, round 4): no switch, no name reset, no history row", async () => {
+     const n = (await one("select count(*)::int as n from teacher_name_history where child_id = $1", [kid])).n;
+     let r = await call("/api/children", { method: "PATCH", body: { childId: kid, languagePref: "hinglish" } });
+     assert.equal(r.status, 200, JSON.stringify(r.body));
+     assert.equal(r.body.child.teacher_name, "Meenu", "no switch, no reset");
+     r = await call("/api/children", { method: "PATCH", body: { childId: kid, teacherId: "arjun" } });
+     assert.equal(r.status, 200, JSON.stringify(r.body));
+-    assert.deepEqual([r.body.child.teacher_id, r.body.child.teacher_name], ["arjun", null]);
+-    const h = await q("select name, source, character_id from teacher_name_history where child_id = $1 order by at desc", [kid]);
+-    assert.equal(h.length, n + 1);
+-    assert.deepEqual([h[0].name, h[0].source, h[0].character_id], [null, "switch", "arjun"]);
+-    await call("/api/children", { method: "PATCH", body: { childId: kid, teacherId: "asha" } });
+-    assert.equal((await q("select 1 from teacher_name_history where child_id = $1", [kid])).length, n + 1, "no name to reset: no history row");
++    assert.deepEqual([r.body.child.teacher_id, r.body.child.teacher_name], ["asha", "Meenu"]);
++    assert.equal((await q("select 1 from teacher_name_history where child_id = $1", [kid])).length, n, "nothing written");
+   });
+ 
+   test("POST /api/tutors/name is rate limited per child (a script cannot walk the denylist)", async () => {
+diff --git a/tests/child-routes-db.run.mjs b/tests/child-routes-db.run.mjs
+index b249db38e641fc4aca69279ce85569d3d3864cf6..985e2d4ada3efb07a3a637d35a4feccb7923d924 100644
+--- a/tests/child-routes-db.run.mjs
++++ b/tests/child-routes-db.run.mjs
+@@ -70,8 +70,8 @@ describe("child routes (test branch)", { skip: SKIP, concurrency: false, timeout
+     assert.equal(r.body.homeState, "default");
+     assert.equal(r.body.topic.id, topic.id);
+     assert.ok(r.body.topic.shortTitle.length <= 24);
+-    assert.equal(r.body.teacher.name, "Arjun");
+-    assert.equal(r.body.teacher.pronouns.subject, "he");
++    assert.equal(r.body.teacher.name, "Asha", "a class 8 row still holding 'arjun' is taught by Asha (one teacher, round 4)");
++    assert.equal(r.body.teacher.pronouns.subject, "she");
+     assert.deepEqual(r.body.surfaces, { map: true, notebook: true, resume: true });
+     const req = await call("/api/lesson/request", { method: "POST", body: { cid: kid } });
+     assert.deepEqual(req.body, { granted: true, topicId: topic.id });
+@@ -201,7 +201,7 @@ describe("child routes (test branch)", { skip: SKIP, concurrency: false, timeout
+     assert.equal((await call(`/api/child/teacher?childId=${kid3}`)).body.teacher.name, "Asha");
+     const c = await call("/api/child/teacher?classLevel=6");
+     assert.equal(c.status, 200);
+-    assert.equal(c.body.teacher.id, "arjun");
++    assert.equal(c.body.teacher.id, "asha");
+     assert.ok(c.body.eligible.every((t) => t.pronouns?.subject));
+     assert.equal((await call("/api/child/teacher?classLevel=12")).status, 400);
+   });
+diff --git a/tests/tutor-db-e2e.mjs b/tests/tutor-db-e2e.mjs
+deleted file mode 100644
+index d4941b3042209fb33d62bf9db62d317c55f33072..0000000000000000000000000000000000000000
+--- a/tests/tutor-db-e2e.mjs
++++ /dev/null
+@@ -1,122 +0,0 @@
+-// The tutor routes (server/routes/tutor.js) end to end against a REAL Neon database with migration 008 applied.
+-// NEVER production: runs only against CONDUCTOR_TEST_DATABASE_URL (a dedicated Neon test branch) and refuses when
+-// its host is the DATABASE_URL (production) host. Not part of `npm test` (it rewires DATABASE_URL for the process).
+-//   node tests/tutor-db-e2e.mjs
+-// Checks: offer + per-child order, first pick without a parent unlock, tutor_switch row, a draft (uma) refused,
+-// 409 while a lesson is live, a B1 switch needs the Parent corner once a PIN exists, erasure cascades the log.
+-import assert from "node:assert/strict";
+-import { existsSync, readFileSync } from "fs";
+-import { randomUUID } from "crypto";
+-import { Readable } from "stream";
+-
+-const envFile = new URL("../.env.local", import.meta.url);
+-const fromEnv = (n) => (existsSync(envFile) ? (readFileSync(envFile, "utf8").split("\n").find((l) => l.startsWith(n + "=")) || "").slice(n.length + 1).replace(/^"(.*)"$/, "$1") : "");
+-const hostOf = (u) => { try { return new URL(u).hostname.replace(/-pooler\./, "."); } catch { return ""; } };
+-const TEST = process.env.CONDUCTOR_TEST_DATABASE_URL || fromEnv("CONDUCTOR_TEST_DATABASE_URL");
+-const PROD = process.env.DATABASE_URL || fromEnv("DATABASE_URL");
+-if (!TEST) { console.log("SKIP: CONDUCTOR_TEST_DATABASE_URL not set"); process.exit(0); }
+-if (PROD && hostOf(TEST) === hostOf(PROD)) { console.error("REFUSING: the test URL is the production endpoint"); process.exit(1); }
+-process.env.DATABASE_URL = TEST;
+-delete process.env.DB_DRIVER;
+-
+-const { q, one } = await import("../server/db.js");
+-const { handle } = await import("../server/router.js");
+-const { routes } = await import("../server/routes/tutor.js");
+-const { register } = await import("../server/router.js");
+-const { createSession, hashPassword } = await import("../server/auth.js");
+-register(routes);
+-
+-function call(method, url, body, cookie) {
+-  const req = Readable.from(body ? [Buffer.from(JSON.stringify(body))] : []);
+-  Object.assign(req, { method, url, headers: { cookie, "content-type": "application/json", "user-agent": "tutor-e2e" } });
+-  return new Promise((resolve) => {
+-    const res = { statusCode: 200, headers: {}, setHeader(k, v) { this.headers[k] = v; }, writeHead(s, h) { this.statusCode = s; Object.assign(this.headers, h || {}); return this; },
+-      end(b) { resolve({ status: this.statusCode, body: b ? JSON.parse(String(b)) : null }); } };
+-    void handle(req, res);
+-  });
+-}
+-
+-const run = randomUUID().slice(0, 8);
+-const g = await one("insert into guardian(email, pw_hash, name) values ($1, 'x', 'tutor-e2e') returning id", [`tutor-e2e+${run}@test.invalid`]);
+-const results = [];
+-const ok = (name) => { results.push(name); console.log("ok -", name); };
+-try {
+-  const fake = { headers: {}, setHeader(k, v) { this.headers[k] = v; } };
+-  await createSession(fake, g.id, "tutor-e2e");
+-  const cookie = String(fake.headers["set-cookie"]).split(";")[0];
+-  const kid8 = (await one("insert into child(guardian_id, first_name, class_level) values ($1,'E2E8',8) returning id", [g.id])).id;
+-  const kid2 = (await one("insert into child(guardian_id, first_name, class_level) values ($1,'E2E2',2) returning id", [g.id])).id;
+-
+-  const l8 = await call("GET", `/api/tutors?childId=${kid8}`, null, cookie);
+-  assert.equal(l8.status, 200);
+-  assert.equal(l8.body.chosen, false);
+-  assert.ok(!l8.body.tutors.includes("uma"), "a draft tutor (no persona sheet) is never offered");
+-  ok(`GET offer class 8: mode=${l8.body.mode} tutors=${l8.body.tutors.join(",")} (uma excluded)`);
+-
+-  const draft = await call("POST", "/api/tutors/choose", { childId: kid8, tutorId: "uma", source: "child" }, cookie);
+-  assert.equal(draft.status, 403);
+-  ok("POST uma (draft) → 403");
+-
+-  const before8 = (await one("select teacher_id from child where id = $1", [kid8])).teacher_id;
+-  const pick = await call("POST", "/api/tutors/choose", { childId: kid8, tutorId: "arjun", source: "child", shown: ["arjun"], msToChoose: 4200 }, cookie);
+-  assert.equal(pick.status, 200, JSON.stringify(pick.body));
+-  const row = await one("select teacher_id, tutor_chosen_at from child where id = $1", [kid8]);
+-  assert.equal(row.teacher_id, "arjun");
+-  assert.ok(row.tutor_chosen_at);
+-  const sw = await one("select from_id, to_id, source, shown, ms_to_choose from tutor_switch where child_id = $1", [kid8]);
+-  assert.deepEqual([sw.from_id, sw.to_id, sw.source, sw.ms_to_choose], [before8, "arjun", "child", 4200]);
+-  ok(`first pick stored: child.teacher_id + tutor_chosen_at + one tutor_switch row (from_id = previous teacher_id: ${before8})`);
+-
+-  // a live lesson (open, recent) → 409
+-  const lid = randomUUID();
+-  await q("insert into lesson(id, child_id, topic_id, kind, state) values ($1,$2,'t','live','{}')", [lid, kid8]);
+-  const busy = await call("POST", "/api/tutors/choose", { childId: kid8, tutorId: "arjun", source: "child" }, cookie);
+-  assert.equal(busy.status, 409);
+-  const live = await call("GET", `/api/tutors?childId=${kid8}`, null, cookie);
+-  assert.equal(live.body.live, true);
+-  // paused for an hour (the old 15-minute window let this through) → still 409
+-  await q("update lesson set started_at = now() - interval '61 minutes' where id = $1", [lid]);
+-  assert.equal((await call("POST", "/api/tutors/choose", { childId: kid8, tutorId: "arjun", source: "child" }, cookie)).status, 409);
+-  // an abandoned tab (open, idle > LIVE_HOURS) does not block the next lesson's teacher forever
+-  await q("update lesson set started_at = now() - interval '7 hours' where id = $1", [lid]);
+-  assert.equal((await call("GET", `/api/tutors?childId=${kid8}`, null, cookie)).body.live, false);
+-  await q("update lesson set ended_at = now() where id = $1", [lid]);
+-  ok("409 while a lesson is live, also after a 61-minute pause; an open row idle 7 h is abandoned; GET reports live");
+-
+-  // the check and the write are one statement: the update + log row commit together, from_id = previous teacher
+-  const n0 = (await one("select count(*)::int as n from tutor_switch where child_id = $1", [kid8])).n;
+-  await q("update child set teacher_id = 'arjun' where id = $1", [kid8]);
+-  const re = await call("POST", "/api/tutors/choose", { childId: kid8, tutorId: "arjun", source: "child" }, cookie);
+-  assert.equal(re.status, 200);
+-  const last = await one("select from_id, to_id from tutor_switch where child_id = $1 order by at desc, id desc limit 1", [kid8]);
+-  assert.equal((await one("select count(*)::int as n from tutor_switch where child_id = $1", [kid8])).n, n0 + 1);
+-  assert.deepEqual([last.from_id, last.to_id], ["arjun", "arjun"]);
+-  ok("single-statement pick: exactly one log row per pick; from_id records the previous teacher");
+-
+-  // B1 (class 2): the first pick is free; a SWITCH needs the Parent corner once a PIN exists
+-  const first2 = await call("POST", "/api/tutors/choose", { childId: kid2, tutorId: "asha", source: "child_random" }, cookie);
+-  assert.equal(first2.status, 200, JSON.stringify(first2.body));
+-  await q("insert into guardian_pin(guardian_id, pin_hash) values ($1, $2)", [g.id, hashPassword("1234")]);
+-  const again = await call("POST", "/api/tutors/choose", { childId: kid2, tutorId: "asha", source: "child" }, cookie);
+-  assert.equal(again.status, 200, "re-choosing the same tutor is not a switch");
+-  ok("B1: first pick (child_random) without unlock; same-tutor re-pick allowed with a PIN set");
+-  process.env.TAXILA_TUTOR_OFFER = "wide"; // arjun offered to class 2 only under the widened ranges
+-  const sw2 = await call("POST", "/api/tutors/choose", { childId: kid2, tutorId: "arjun", source: "child" }, cookie);
+-  delete process.env.TAXILA_TUTOR_OFFER;
+-  assert.ok(sw2.status >= 400 && sw2.status < 500 && sw2.status !== 409, `B1 switch without the corner must be refused, got ${sw2.status}`);
+-  assert.equal((await one("select teacher_id from child where id = $1", [kid2])).teacher_id, "asha");
+-  ok(`B1 switch asha → arjun with a PIN set and the corner locked → ${sw2.status} (unchanged)`);
+-
+-  // foreign child → 403
+-  const other = await call("GET", `/api/tutors?childId=${randomUUID()}`, null, cookie);
+-  assert.equal(other.status, 403);
+-  ok("another family's child → 403");
+-
+-  await q("delete from child where id = $1", [kid8]);
+-  const left = await one("select count(*)::int as n from tutor_switch where child_id = $1", [kid8]);
+-  assert.equal(left.n, 0);
+-  ok("erasing the child cascades tutor_switch");
+-} finally {
+-  await q("delete from guardian where id = $1", [g.id]);
+-}
+-console.log(`\n${results.length} checks passed (${new Date().toISOString()}, test branch host ${hostOf(TEST).split(".")[0]})`);

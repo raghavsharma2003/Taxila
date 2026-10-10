@@ -1,0 +1,347 @@
+diff --git a/src/face-puppet/look.ts b/src/face-puppet/look.ts
+new file mode 100644
+index 0000000000000000000000000000000000000000..bccd3c01c3d5d017e427c567304f7ed7103a60fe
+--- /dev/null
++++ b/src/face-puppet/look.ts
+@@ -0,0 +1,59 @@
++// `face.look`: which painted puppet the style-C face wears. Presentation only: the driver, the safety floor, the AI
++// disclosure and the audio path are the same for every look (the runtime is one, src/face-puppet/runtime).
++//   r8    concept C, the first Asha (teal kurta), judged 4.1 (polish r8);
++//   lamp1 round 4, option 4 "Lamplight flat": the grown-up Asha in a cardigan over a print kurta (owner pick 2026-10-10),
++//         docs/design/round4/asha/.
++// Resolution, first hit wins (the same shape as face.puppet2d, flag.ts):
++//   1. `?look=r8|lamp1|default` in any URL (persisted to this device);
++//   2. localStorage "tx.flag.face.look";
++//   3. VITE_FACE_LOOK at build time;
++//   4. DEFAULT_LOOK.
++// Read once per page (assets.ts resolves it at import): a switch takes effect on the next load, never mid-lesson, so a
++// lesson never changes face.
++export type PuppetLookId = "r8" | "lamp1";
++export const LOOK_IDS: readonly PuppetLookId[] = ["r8", "lamp1"];
++/** The deploy default. integrate/04-default-lamp1.patch flips it to "lamp1" once the switch has been checked in the app. */
++export const DEFAULT_LOOK: PuppetLookId = "r8";
++export const LOOK_FLAG_KEY = "tx.flag.face.look";
++
++const isLook = (v: unknown): v is PuppetLookId => typeof v === "string" && (LOOK_IDS as readonly string[]).includes(v);
++
++let urlApplied = false;
++function applyUrl(): void {
++  if (urlApplied) return;
++  urlApplied = true;
++  try {
++    if (typeof location === "undefined") return;
++    const v = new URLSearchParams(location.search).get("look");
++    if (v === "default") setPuppetLook(null);
++    else if (isLook(v)) setPuppetLook(v);
++  } catch {
++    /* no URL / storage */
++  }
++}
++
++export function puppetLookId(): PuppetLookId {
++  applyUrl();
++  try {
++    const v = typeof localStorage !== "undefined" ? localStorage.getItem(LOOK_FLAG_KEY) : null;
++    if (isLook(v)) return v;
++  } catch {
++    /* storage blocked */
++  }
++  const env = import.meta.env?.VITE_FACE_LOOK;
++  return isLook(env) ? env : DEFAULT_LOOK;
++}
++
++export function setPuppetLook(id: PuppetLookId | null): void {
++  try {
++    if (id === null) localStorage.removeItem(LOOK_FLAG_KEY);
++    else localStorage.setItem(LOOK_FLAG_KEY, id);
++  } catch {
++    /* storage blocked */
++  }
++}
++
++/** Tests only: re-read the URL on the next call. */
++export function resetLookUrl(): void {
++  urlApplied = false;
++}
+diff --git a/src/face-puppet/assets.ts b/src/face-puppet/assets.ts
+index af3ce16246e0dc89fa8015c421e6d1e347efb7c4..284e8da133ddaad74e46a630b3eee1eeecc25905 100644
+--- a/src/face-puppet/assets.ts
++++ b/src/face-puppet/assets.ts
+@@ -1,13 +1,69 @@
+-// Where the shipped puppet lives. PUPPET_REV is the polish round whose runtime and pack are synced
+-// (evals/face-puppet/sync-runtime.mjs). r8 = JUDGE-r8 4.1/5 (JUDGE-r7 4.0): the owner's ship bar is 4.0.
+-// The pack is ~132 KB of WebP + geometry, served from /face-puppet/<rev>/ (public/), fetched lazily after mount.
+-export const PUPPET_REV = "r8";
++// Where the shipped puppet lives, per look (look.ts: face.look). One runtime renders every look (src/face-puppet/runtime,
++// synced by evals/face-puppet/sync-runtime.mjs); a look is its pack, its backdrop cream, its framings and its poster.
++//   r8    = JUDGE-r8 4.1/5 (JUDGE-r7 4.0): the owner's ship bar is 4.0. ~132 KB of WebP + geometry.
++//   lamp1 = round 4 Asha (docs/design/round4/asha/): rest SSIM 0.973 vs her approved front, ~157 KB on the wire.
++// Each pack is served from /face-puppet/<rev>/ (public/), fetched lazily after mount.
++import type { CSSProperties } from "react";
++import { puppetLookId, type PuppetLookId } from "./look.ts";
++
++/** A framing's rest-space window. r8: [x0, y0, width] (the width maps to the canvas width, top-aligned). lamp1:
++ *  [x0, y0, width, height], a REGION the runtime fits inside the canvas (contain, centred), so a wide window (child Home
++ *  319 x 172) never crops her chin and a tall one never shows the empty rest space under the hem. */
++export type PuppetView = readonly number[];
++
++export interface PuppetLook {
++  rev: string;
++  /** The backdrop cream the layers were cut against: the canvas clears to it (no halo), the host paints it under the poster. */
++  clear: [number, number, number];
++  view: { medium: PuppetView; close: PuppetView };
++  /** The rest-pose still (no WebGL): r8 one per framing, lamp1 one full rest-space frame placed by posterStyle(). */
++  poster: (framing: "medium" | "close") => string;
++}
++
++export const LOOKS: Record<PuppetLookId, PuppetLook> = {
++  r8: {
++    rev: "r8",
++    clear: [251.4 / 255, 229.4 / 255, 188.6 / 255],
++    view: { medium: [60, 8, 904], close: [140, 70, 744] },
++    // rendered by `node evals/face-puppet/run.mjs poster` from the live rig at rest, over the view's full width and down to
++    // the bottom of the art, so `width: 100%; height: auto` from the top lines up with the canvas pixel for pixel
++    poster: (framing) => `/face-puppet/r8/rest-${framing}.webp`,
++  },
++  lamp1: {
++    rev: "lamp1",
++    clear: [246 / 255, 209 / 255, 152 / 255],
++    // close: the whole head (hair top y 42 to the bun's foot 771), the 80 px SpeechRow circle; medium: head, neck and
++    // shoulders (y 25-900; below ~930 the cardigan reaches the rest-space edges, so a wide window never shows a cut sleeve)
++    view: { medium: [110, 25, 830, 875], close: [160, 40, 730, 730] },
++    // one 1024 x 1024 rest frame (the live rig at rest, scripts/character/puppet2d/lamp1/poster.mjs): posterStyle() places
++    // it with the runtime's own contain fit, so the poster and the first live frame line up in any window
++    poster: () => `/face-puppet/lamp1/rest.webp`,
++  },
++};
++
++export const PUPPET_LOOK: PuppetLook = LOOKS[puppetLookId()];
++export const PUPPET_REV = PUPPET_LOOK.rev;
+ export const PUPPET_BASE = `/face-puppet/${PUPPET_REV}/`;
+-/** The rest-pose still per framing (the same face at t = 0, the `still` slot and the post-reveal fallback). Rendered by
+- *  `node evals/face-puppet/run.mjs poster` from the live rig at rest, over the view's full width and down to the bottom of the art,
+- *  so `width: 100%; height: auto` from the top lines up with the canvas pixel for pixel. */
+-export const puppetPoster = (framing: "medium" | "close" = "medium") => `${PUPPET_BASE}rest-${framing}.webp`;
+-/** c-front's backdrop cream: the painted layers were cut against it, so the canvas clears to it (no halo). */
+-export const PUPPET_CLEAR: [number, number, number] = [251.4 / 255, 229.4 / 255, 188.6 / 255];
+-/** The rest-space window shown per framing: [x0, y0, width] in c-front pixels (1024² space). */
+-export const PUPPET_VIEW = { medium: [60, 8, 904], close: [140, 70, 744] } as const satisfies Record<string, readonly [number, number, number]>;
++export const puppetPoster = (framing: "medium" | "close" = "medium") => PUPPET_LOOK.poster(framing);
++export const PUPPET_CLEAR: [number, number, number] = PUPPET_LOOK.clear;
++export const PUPPET_VIEW: { medium: PuppetView; close: PuppetView } = PUPPET_LOOK.view;
++/** The host's backdrop under the poster: the look's cream, as CSS. */
++export const puppetHostColor = (look: PuppetLook = PUPPET_LOOK) => `rgb(${look.clear.map((c) => Math.round(c * 255)).join(",")})`;
++
++/**
++ * The poster <img> style for a framing. A 3-element view (r8): the poster spans the view's width from the top. A
++ * 4-element view (lamp1): the full 1024 x 1024 rest frame scaled by min(W / w, H / h) and centred on the region, i.e.
++ * the runtime's fit (rig.js render: sc = min(cw / v[2], ch / v[3])), written in container units of the host (the host
++ * sets container-type: size), so it needs no JS and no resize listener.
++ */
++export function posterStyle(framing: "medium" | "close" = "medium", look: PuppetLook = PUPPET_LOOK): CSSProperties {
++  const v = look.view[framing];
++  if (v.length < 4) return { position: "absolute", left: 0, top: 0, width: "100%", height: "auto", display: "block" };
++  const [x0, y0, w, h] = v;
++  const k = `min(100cqw / ${w}, 100cqh / ${h})`;
++  return {
++    position: "absolute", display: "block", maxWidth: "none",
++    width: `calc(1024 * ${k})`, height: `calc(1024 * ${k})`,
++    left: `calc(50cqw - ${x0 + w / 2} * ${k})`, top: `calc(50cqh - ${y0 + h / 2} * ${k})`,
++  };
++}
+diff --git a/src/face-puppet/stage.ts b/src/face-puppet/stage.ts
+index 1875a2e34ee3b471dc991dca70736f2924c0df71..a044c358bba3afba591236c9d9f26418611a48db 100644
+--- a/src/face-puppet/stage.ts
++++ b/src/face-puppet/stage.ts
+@@ -143,7 +143,7 @@ export class PuppetStage {
+     const t0 = performance.now();
+     if (typeof WebGL2RenderingContext === "undefined") throw new Error("no WebGL2");
+     this.host.appendChild(this.canvas);
+-    const view = [...PUPPET_VIEW[this.o.framing ?? "medium"]] as [number, number, number];
++    const view = [...PUPPET_VIEW[this.o.framing ?? "medium"]];   // [x0, y0, w] (r8) or [x0, y0, w, h] (lamp1), assets.ts
+     const ropts = { ext: "webp", dpr: this.dpr, view, clear: PUPPET_CLEAR, reducedMotion: this.o.reducedMotion };
+     const base = this.o.base ?? PUPPET_BASE;
+     // ship5 p2-face: the chunked loader (loader.ts) by default: bitmaps decoded off-thread, warm-up in <= 8 ms slices.
+@@ -366,7 +366,7 @@ export class PuppetStage {
+     if (this.disposed || this.losses > 1) return;
+     // every GL object died with the context: rebuild the rig (the pack is in the HTTP cache)
+     this.rig = null;
+-    const view = [...PUPPET_VIEW[this.o.framing ?? "medium"]] as [number, number, number];
++    const view = [...PUPPET_VIEW[this.o.framing ?? "medium"]];   // [x0, y0, w] (r8) or [x0, y0, w, h] (lamp1), assets.ts
+     Puppet2DRig.load(this.canvas, this.o.base ?? PUPPET_BASE, { ext: "webp", dpr: this.dpr, view, clear: PUPPET_CLEAR, reducedMotion: this.o.reducedMotion })
+       .then((rig) => { if (this.disposed) return rig.dispose(); rig.warm(); this.rig = rig; this.t0 = performance.now(); this.frames = 0; this.start(); })
+       .catch((err: unknown) => this.emit({ type: "fallback", reason: `rebuild after context loss failed: ${String(err).slice(0, 120)}` }));
+diff --git a/src/face-puppet/PuppetFace.tsx b/src/face-puppet/PuppetFace.tsx
+index 6c6812ebf91d1e9b59568207c3d00c4d2b43cfb2..750642eaaddfd498cc90ac45c39a6e2aec9fb7e1 100644
+--- a/src/face-puppet/PuppetFace.tsx
++++ b/src/face-puppet/PuppetFace.tsx
+@@ -12,7 +12,7 @@ import { TutorFace, faceTutor } from "../avatar/TutorFace.tsx";
+ import { p as copy } from "../avatar/picker/copy.ts";
+ import type { Emotion, FloorStatus } from "../avatar/behaviour.ts";
+ import type { TapSource } from "../avatar/tap.ts";
+-import { puppetPoster } from "./assets.ts";
++import { posterStyle, puppetHostColor, puppetPoster } from "./assets.ts";
+ import { puppetForcedOn, puppetServerAllows } from "./flag.ts";
+ import { puppetBus } from "./bus.ts";
+ import "./latch.ts"; // the page's safety latch listens from the first face mount, before the stage chunk loads
+@@ -182,9 +182,9 @@ export function PuppetFace(p: PuppetFaceProps) {
+   }
+   return (
+     <div ref={host} className={`fp-host ${p.className ?? ""}`} data-face="puppet2d" data-phase={p.still ? "still" : phase} data-tutor={tutor.id}
+-      role="img" aria-label={label} style={{ position: "relative", overflow: "hidden", width: "100%", height: "100%", background: "rgb(251,229,189)" }}>
++      role="img" aria-label={label} style={{ position: "relative", overflow: "hidden", width: "100%", height: "100%", background: puppetHostColor(), containerType: "size" }}>
+       <img src={puppetPoster(p.framing ?? "medium")} alt="" aria-hidden="true" draggable={false} decoding="async"
+-        style={{ position: "absolute", left: 0, top: 0, width: "100%", height: "auto", display: "block" }} />
++        style={posterStyle(p.framing ?? "medium")} />
+     </div>
+   );
+ }
+diff --git a/src/face-puppet/runtime/rig.d.ts b/src/face-puppet/runtime/rig.d.ts
+index 6a886720bfb3b7b2831027758f55c90c7052ba5c..ce748b9da08a09e604e20e346fcdfac7a26f757b 100644
+--- a/src/face-puppet/runtime/rig.d.ts
++++ b/src/face-puppet/runtime/rig.d.ts
+@@ -3,7 +3,8 @@
+ export interface RigLoadOptions {
+   ext?: string;
+   dpr?: number;
+-  view?: [number, number, number];
++  /** [x0, y0, width] (top-aligned, the width spans the canvas) or [x0, y0, width, height] (a region fitted contain-centred). */
++  view?: number[];
+   preserve?: boolean;
+   clear?: [number, number, number];
+   reducedMotion?: boolean;
+@@ -18,7 +19,7 @@ export declare class Puppet2DRig {
+   R: { gl: WebGL2RenderingContext; canvas: HTMLCanvasElement; dpr: number; draws: number; tris: number };
+   mouth: { name: string; row: string };
+   life: { reduced: boolean; still?: boolean };
+-  view: [number, number, number];
++  view: number[];
+   frame(bs: Record<string, number>, head: number[], gaze: number[], lean: number, breath: number): void;
+   apply(bs: Record<string, number>, head: number[], gaze: number[], lean: number, breath: number): void;
+   render(): void;
+diff --git a/evals/face-puppet/sync-runtime.mjs b/evals/face-puppet/sync-runtime.mjs
+index 3234fa926a4550e5cf2819f5a95bd9abc8b2b7ae..24f486d5ead87bcf1a83feaacbd514710ed5a161 100644
+--- a/evals/face-puppet/sync-runtime.mjs
++++ b/evals/face-puppet/sync-runtime.mjs
+@@ -6,27 +6,33 @@
+ //   applied at runtime, never by editing judged code.
+ // - art/character/puppet2d/polish-<rev>/pack/*.webp + geom.json → public/face-puppet/<rev>/ (the turn plates plateL/R are
+ //   left out: the product turn is the shared field, plates are the opt-in evaluation path).
+-// Re-run with a newer rev once that round is judged >= the shipped one; then bump PUPPET_REV in src/face-puppet/assets.ts.
++// Re-run with a newer rev once that round is judged >= the shipped one; then add / switch its look in src/face-puppet/assets.ts.
++// lamp1 (round 4 Asha): its runtime is r8's with every c-front constant read from the pack's geom.face (runtime/face.js,
++// defaults = c-front), derived by scripts/character/puppet2d/lamp1/make-runtime.py, so ONE synced runtime renders both
++// the r8 and the lamp1 pack (r8 through it: docs/design/round4/asha/evidence/r8-parity.json). Its posters are made by
++// scripts/character/puppet2d/lamp1/poster.mjs (one rest frame, rest.webp).
+ import fs from "node:fs";
+ import crypto from "node:crypto";
+ 
+ const rev = process.argv[2] || "r8";
+-const SRC = `scripts/character/puppet2d/polish-${rev}/runtime/`;
+-const PACK = `art/character/puppet2d/polish-${rev}/pack/`;
++const LAMP = rev === "lamp1";
++const SRC = LAMP ? "scripts/character/puppet2d/lamp1/runtime/" : `scripts/character/puppet2d/polish-${rev}/runtime/`;
++const PACK = LAMP ? "art/character/puppet2d/lamp1/" : `art/character/puppet2d/polish-${rev}/pack/`;
+ const DST = "src/face-puppet/runtime/";
+ const PUB = `public/face-puppet/${rev}/`;
+ fs.mkdirSync(DST, { recursive: true });
+ fs.mkdirSync(PUB, { recursive: true });
+ const manifest = { rev, date: new Date().toISOString().slice(0, 10), runtime: {}, pack: {} };
+-for (const f of ["rig.js", "gl.js", "lips.js", "life.js", "expr.js"]) {
++for (const f of ["rig.js", "gl.js", "lips.js", "life.js", "expr.js", ...(LAMP ? ["face.js"] : [])]) {
+   const body = fs.readFileSync(SRC + f, "utf8");
+   const sha = crypto.createHash("sha256").update(body).digest("hex").slice(0, 16);
+   manifest.runtime[f] = sha;
+-  fs.writeFileSync(DST + f, `// SYNCED from ${SRC}${f} (puppet polish ${rev}, judged) by evals/face-puppet/sync-runtime.mjs; sha256 ${sha}.\n// Do not edit here: change the polish round, re-judge, re-sync.\n${body}`);
++  const what = LAMP ? "round 4 lamp1: renders the r8 pack pixel-identical, docs/design/round4/asha/evidence/r8-parity.json" : `puppet polish ${rev}, judged`;
++  fs.writeFileSync(DST + f, `// SYNCED from ${SRC}${f} (${what}) by evals/face-puppet/sync-runtime.mjs; sha256 ${sha}.\n// Do not edit here: change the polish round, re-judge, re-sync.\n${body}`);
+ }
+ let bytes = 0;
+ for (const f of fs.readdirSync(PACK)) {
+-  if (!/\.(webp|json)$/.test(f) || /^plate[LR]\./.test(f) || f === "pack-report.json") continue;
++  if (!/\.(webp|json)$/.test(f) || /^plate[LR]\./.test(f) || f === "pack-report.json" || f === "manifest.json") continue;
+   fs.copyFileSync(PACK + f, PUB + f);
+   const n = fs.statSync(PUB + f).size;
+   bytes += n;
+diff --git a/tests/p2-face-look.test.mjs b/tests/p2-face-look.test.mjs
+new file mode 100644
+index 0000000000000000000000000000000000000000..3c37e42cf89bf259cf3414a4875cfae71379c096
+--- /dev/null
++++ b/tests/p2-face-look.test.mjs
+@@ -0,0 +1,76 @@
++// round 4 (Asha lamp1): the face.look switch and the per-look assets. A look is presentation only: one runtime, one
++// driver, one safety floor. Patch 01 adds the switch (default r8); patch 02 syncs the lamp1-derived runtime; patch 03
++// ships the lamp1 pack; patch 04 makes lamp1 the default. Each check that needs a later patch skips until it is applied.
++import test from "node:test";
++import assert from "node:assert/strict";
++import fs from "node:fs";
++
++const store = new Map();
++globalThis.localStorage = { getItem: (k) => (store.has(k) ? store.get(k) : null), setItem: (k, v) => store.set(k, String(v)), removeItem: (k) => store.delete(k) };
++const L = await import("../src/face-puppet/look.ts");
++const A = await import("../src/face-puppet/assets.ts");
++const exists = (p) => fs.existsSync(new URL(p, import.meta.url));
++
++test("face.look: the deploy default, the device switch, 'default' forgets, junk is ignored", () => {
++  store.clear();
++  assert.equal(L.puppetLookId(), L.DEFAULT_LOOK);
++  L.setPuppetLook("lamp1");
++  assert.equal(L.puppetLookId(), "lamp1");
++  L.setPuppetLook("r8");
++  assert.equal(L.puppetLookId(), "r8");
++  L.setPuppetLook(null);
++  assert.equal(L.puppetLookId(), L.DEFAULT_LOOK);
++  store.set(L.LOOK_FLAG_KEY, "arjun");
++  assert.equal(L.puppetLookId(), L.DEFAULT_LOOK, "an unknown look never reaches the asset table");
++  store.clear();
++});
++
++test("every look has a pack base, a cream, both framings, and a poster path under its own rev", () => {
++  for (const id of L.LOOK_IDS) {
++    const k = A.LOOKS[id];
++    assert.equal(k.rev, id);
++    assert.equal(k.clear.length, 3);
++    for (const f of ["medium", "close"]) {
++      assert.ok([3, 4].includes(k.view[f].length), `${id} ${f} view is [x0,y0,w] or [x0,y0,w,h]`);
++      assert.ok(k.poster(f).startsWith(`/face-puppet/${id}/`));
++    }
++  }
++  assert.equal(A.PUPPET_BASE, `/face-puppet/${A.PUPPET_REV}/`);
++});
++
++test("lamp1 poster placement = the runtime's contain fit (rig.js render), in container units", () => {
++  const k = A.LOOKS.lamp1;
++  for (const f of ["medium", "close"]) {
++    const [x0, y0, w, h] = k.view[f];
++    const st = A.posterStyle(f, k);
++    assert.match(String(st.width), new RegExp(`^calc\\(1024 \\* min\\(100cqw / ${w}, 100cqh / ${h}\\)\\)$`));
++    assert.match(String(st.left), new RegExp(`^calc\\(50cqw - ${x0 + w / 2} \\* min\\(`));
++    assert.match(String(st.top), new RegExp(`^calc\\(50cqh - ${y0 + h / 2} \\* min\\(`));
++    // the same numbers the runtime's camera produces, for the app's own windows (CSS px): the poster's rest-space origin
++    for (const [W, H] of [[325, 316], [375, 405], [440, 440], [319, 172], [80, 80], [78, 100]]) {
++      const sc = Math.min(W / w, H / h), cw = W / sc, ch = H / sc;
++      const camX = x0 + (w - cw) / 2, camY = y0 + (h - ch) / 2;           // rig.js: R.setCam(v0 + (v2 - w) / 2, v1 + (v3 - h) / 2, w)
++      const left = W / 2 - (x0 + w / 2) * sc, top = H / 2 - (y0 + h / 2) * sc; // posterStyle, evaluated
++      assert.ok(Math.abs(left + camX * sc) < 1e-9 && Math.abs(top + camY * sc) < 1e-9, `${f} ${W}x${H}`);
++    }
++  }
++  assert.deepEqual(A.posterStyle("medium", A.LOOKS.r8).width, "100%", "r8 keeps its width-from-the-top poster");
++});
++
++const RUNTIME_LAMP = exists("../src/face-puppet/runtime/face.js");
++test("patch 02: the synced runtime fits 4-element views and reads per-face constants", { skip: RUNTIME_LAMP ? false : "patch 02 (lamp1 runtime) not applied yet" }, () => {
++  const rig = fs.readFileSync(new URL("../src/face-puppet/runtime/rig.js", import.meta.url), "utf8");
++  assert.match(rig, /sc = Math\.min\(cw \/ v\[2\], ch \/ v\[3\]\)/);
++  assert.match(rig, /import \{ F, setFace, onFace \} from "\.\/face\.js"/);
++});
++
++const PACK_LAMP = exists("../public/face-puppet/lamp1/geom.json");
++test("patch 03: the lamp1 pack and its poster are in public/, under the 250 KB budget", { skip: PACK_LAMP ? false : "patch 03 (lamp1 pack) not applied yet" }, () => {
++  const m = JSON.parse(fs.readFileSync(new URL("../public/face-puppet/lamp1/manifest.json", import.meta.url), "utf8"));
++  assert.equal(m.rev, "lamp1");
++  for (const f of ["geom.json", "face.webp", "interior.webp", "rest.webp"]) assert.ok(exists(`../public/face-puppet/lamp1/${f}`), `${f} shipped`);
++  const bytes = Object.entries(m.pack).filter(([f]) => f !== "rest.webp").reduce((a, [, n]) => a + n, 0);
++  assert.ok(bytes <= 250 * 1024, `pack ${bytes} B`);
++  const g = JSON.parse(fs.readFileSync(new URL("../public/face-puppet/lamp1/geom.json", import.meta.url), "utf8"));
++  assert.ok(g.face && g.face.mouth && g.views && g.clear, "lamp1 carries its own face constants, framings and cream");
++});

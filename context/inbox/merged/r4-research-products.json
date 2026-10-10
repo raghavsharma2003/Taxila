@@ -1,0 +1,126 @@
+{
+  "nodes": [
+    {
+      "id": "r4p-sketchmind-sync-is-beat-order",
+      "kind": "finding",
+      "title": "SketchMind's 'draws while it talks' is beat-level ORDERING, not word-level alignment: its own engineering posts describe the LLM emitting NDJSON commands (write_text typewriter, draw = SVG chunks 'revealed only when complete', speak = TTS, write_latex = KaTeX) over SSE, processed sequentially; first words ~1 s; an infinite canvas of spaces/columns; sessions serialized for exact reload. No word-level audio/ink alignment is described anywhere public. Consistent with Taxila's karaoke-from-transcript-estimate rejection and teacher-stage-cue-scheduler (clause cues, 400 ms pre-roll): Taxila is at par on the mechanism; the gaps are product packaging (one idea per beat, typed beat cards, every topic opens on a picture, a persistent notebook). Source: sketchmind.ai/blog/how-ai-tutoring-works, /blog/introducing-whiteboard, /llms.txt, read 2026-10-10. Detail: docs/research/round4/products/TEARDOWN.md §1.3-1.4.",
+      "at": "2026-10-10"
+    },
+    {
+      "id": "r4p-sketchmind-demo-scripted-timeline-2026-10-10",
+      "kind": "measurement",
+      "title": "SketchMind homepage 'A real lesson, replayed exactly as it streams' is a hand-timed script with no audio (n = 1 page load per viewport, Playwright 1.63 headless Chromium, 360x800 and 1366x768, plus the inline demo script, 2026-10-10): fixed setTimeout reveals (title 200 ms, figure placeholder 900 ms, 17 caption words at 1,600 + 170 ms x i so about 350 wpm and done by about 4.3 s, figure 3,100 ms, notes 3,600-6,450 ms, formula 7,200, table 8,200, takeaway 9,400, 'Checkpoint ahead' chip 10,300, 'writing the next part' 11,200); 0 audio elements, 0 audio requests. At 360x800 the voice caption has zero height (hidden), the board is 1,347 px tall (741 px at 1366) and the figure starts 692 px down, below a phone's fold; the Focus and Overview tabs are disabled spans titled 'Available in the app'. Shots: docs/research/round4/products/shots/sketchmind-*.webp.",
+      "at": "2026-10-10"
+    },
+    {
+      "id": "r4p-sketchmind-price-inr-2026-10-10",
+      "kind": "measurement",
+      "title": "SketchMind India pricing (n = 1 read of the public GET /api/billing/plans?currency=INR plus the pricing and support pages, 2026-10-10): Free = 2 lessons a day on a rolling day/week/month allowance, 'Earn more lessons by learning'; Plus (weekly) and Pro (monthly/yearly) 'Coming soon' (subscriptionsEnabled false, plans []); the only paid item is a one-time 5-lesson pack at Rs 1,999 (baseMinor 199900 INR), 18% GST added at checkout (about Rs 2,359), i.e. Rs 400 a lesson before GST, more than a whole month at the Rs 299 Indian voice-tutor price point; only INR is available (USD/GBP/AUD/SGD listed, available false); Razorpay, UPI.",
+      "at": "2026-10-10"
+    },
+    {
+      "id": "r4p-sketchmind-plan-first-opening-shapes",
+      "kind": "finding",
+      "title": "SketchMind starts every lesson with a plan the learner agrees to ('I have a physics test on Friday' -> 'Let's plan it: Forces -> Newton's laws -> practice. Sound good?'); a lesson is defined as 'from the plan you agree together through to the checkpoints'. Each topic opens in one of three shapes (Anchored: one familiar scene, then the idea; Lean: the idea in sentence 1-2; Direct: no warm-up), chosen from who you are (student vs professional), self-reported level (moves one step, 'never removes a step the idea actually rests on') and purpose (exam -> one step toward Direct). 'From the beginning' decides coverage, not speed. Every topic opens on a picture; exact diagrams for exact things (fractions, ray paths, circuits, forces), scenes for processes. A thumbs-down on any beat is read by a person. Source: sketchmind.ai homepage, /support, /blog/how-lumi-paces-your-lesson (5 Sep 2026), read 2026-10-10. Maps to the owner's session-first direction; Taxila's school chapter is supplied by the parent (server/content/next-topic.js schoolStartIndex) and no child-side 'aaj school mein kya hua' intake exists.",
+      "at": "2026-10-10"
+    },
+    {
+      "id": "r4p-sketchmind-checkpoints-binary",
+      "kind": "finding",
+      "title": "SketchMind's public checkpoint is an announced, binary card ('Checkpoint ahead — Lumi asks, you answer'; 'Is gravity a force? Yes / No'), with progress counted in beats ('4 of 5 beats done · Resume →'); 'checkpoints that quietly reshape the lesson' is claimed, and the grading is not visible. A two-option check is 50% guessable, so Taxila's covert evidence, typed grading and delayed re-check stay ahead; take the announcement chip and the beat progress, not the binary check. Source: sketchmind.ai homepage, /comparison, read 2026-10-10.",
+      "at": "2026-10-10"
+    },
+    {
+      "id": "r4p-sketchmind-notebook-replay",
+      "kind": "finding",
+      "title": "SketchMind's notebook is its memory object: 'Every board saves itself. Reopen it to review, continue where you stopped, or export clean PDF notes' (paid); a Replay lesson control; sessions serialized for exact reload. Taxila's src/child/screens/Notebook.tsx keeps one card per lesson (the best question and the child's answer), lists pages from this device only (b2-notebook-device-source: no endpoint lists a child's lessons), and has no board replay or continue-from-here. Source: sketchmind.ai /support, FAQ, /blog/how-ai-tutoring-works; Notebook.tsx header, read 2026-10-10.",
+      "at": "2026-10-10"
+    },
+    {
+      "id": "r4p-sketchmind-streak-and-vendors",
+      "kind": "finding",
+      "title": "SketchMind itself runs a loss-framed streak ('miss a whole day and it resets to zero') and pays out free lessons as a reward ('Earn more lessons by learning'). Its privacy policy (2026-10-10) lists Anthropic, OpenAI and Google Gemini for lesson generation, Sarvam for TTS and STT, Azure Speech as TTS fallback, and smallest.ai and OpenAI for STT (the Apr-May 2026 posts said ElevenLabs), and says it is 'not directed at children under 13', while it runs a parents-only Lumi early access for India/UAE/Singapore/US (invitations from the week of 20 Jul 2026) and quotes a 'dad of an 8-year-old'. Plus/Pro list 'Talk to Lumi — ask out loud' as 'In the works'. Source: sketchmind.ai /support, /pricing, /privacy-policy, /families/in, read 2026-10-10.",
+      "at": "2026-10-10"
+    },
+    {
+      "id": "r4p-taxila-no-deeper-request",
+      "kind": "finding",
+      "title": "Taxila's closed request taxonomy (server/director/requests.js: goodbye, stop, continue, break, change_topic, topic, language, another, example, story, slower, visual) has no 'go deeper / harder / aur batao / more about this' type; 'another' covers 'simpler' ('aur aasan karo'). SketchMind ships both verbs ('Say simpler and it re-explains with a new sketch. Say go deeper and the lesson expands'). Read 2026-10-10.",
+      "at": "2026-10-10"
+    },
+    {
+      "id": "r4p-economy-ban-copy-only",
+      "kind": "finding",
+      "title": "The no-economy rule is enforced on copy only (read 2026-10-10). BUILD-PLAN 2026-10-10 contract C8 ('no points, coins, streaks, timers or locks', B6) names tests/play-style-lint.test.mjs, which checks colour literals, family views and lab sources, not the ban. Real enforcement: src/ui-v3/lint/rules.mjs WORDS (xp, streaks, level up, earn/collect/win stars|coins|gems, trophy, confetti) via tests/ui-v3-lint.test.mjs, and the reaction word list in tests/play-react.test.mjs. A timer, lock or points total in game logic passes every test. Lineage of the rule: Meera persona NEVER MANIPULATE -> gurukul safety-floor-teacher §5.1 (fear-and-obligation test) -> motivation-without-rewards.md mw-no-reward-economy / mw-no-time-grids (2026-10-02; neither id is in graph.json) -> design-v3-no-streaks-mastery (2026-10-04; allows in-run HUD numbers) -> r3p-world-ledger-view and live-tech §0.8 (2026-10-09) -> BUILD-PLAN line 75 / C8.",
+      "at": "2026-10-10"
+    },
+    {
+      "id": "r4p-peers-run-economies",
+      "kind": "finding",
+      "title": "Every major peer now runs a reward economy, and none publishes evidence that it raises learning: Khan Academy (2 Oct 2026) Missions, Gems 'that recognize their learning effort', a RANDOM Khanmigo accessory per 50 Gems, class Gem Challenges with teacher-chosen rewards, and a weekly streak that resets without a new Proficient skill; Brilliant weekly leagues (30 learners, 10 levels, promotion/demotion) with XP that resets weekly; Duolingo streaks (15.4M revived in one event); Mindspark Sparkies driving class/city/country leaderboards; Edzy (India, classes 6-12) duels and streaks; SketchMind a day streak. Sources: blog.khanacademy.org five-ways post (read), support.khanacademy.org, help.brilliant.org leagues FAQ, apps.apple.com id1541664545, edzy.ai (read), 2026-10-10.",
+      "at": "2026-10-10"
+    },
+    {
+      "id": "r4p-gamification-evidence-split",
+      "kind": "finding",
+      "title": "Gamification evidence splits by mechanic, not by 'gamified or not' (desk review, 2026-10-10). Helps on average: Sailer & Homner 2020 (PDF read) g = 0.49 cognitive (k = 19), 0.36 motivational (k = 16), 0.25 behavioural (k = 9); game fiction and competition-combined-with-collaboration moderate the behavioural effect. Learning levers that pass the NEVER MANIPULATE fear-and-obligation test: the skill as the core mechanic (Habgood & Ainsworth 2011, about 7x voluntary play, n = 16), success-dependent juice (Kao 2024, n = 1,699), choice, creation, fiction, co-op. Harmful mechanics, which fail the test: contingent rewards (Deci 1999, d -0.28 to -0.40 on free choice, worse for children), mandatory badges plus a leaderboard (Hanus & Fox 2015, lower motivation and exam scores), broken streaks (Silverman & Barasch 2022), bottom positions on an absolute leaderboard (Bai et al. 2021), random drops (Zendle & Cairns 2018, eta2 = 0.054, n = 7,422). Visual fidelity has no learning evidence: simpler/schematic visuals did as well or better (Clark et al. 2016; Wouters et al. 2013). Detail: TEARDOWN.md §3.3.",
+      "at": "2026-10-10"
+    },
+    {
+      "id": "r4p-gamification-owner-fork",
+      "kind": "finding",
+      "title": "OWNER DECISION NEEDED (not decided here): does 'fully gamified' mean game quality and agency, or an economy? Options in TEARDOWN.md §3.5. (A) game-native, economy-free: today's rule plus a mechanic-level lint. (B) A plus identity and collections earned by evidence: cosmetics opened by secured skills, never bought or random; co-op goals with no individual tallies; real-time action on secure skills only. (C) a Khan-style soft economy: effort points, Missions, a weekly reset. (D) the full Duolingo/Brilliant retention stack, which is incompatible with the safety floor's NEVER MANIPULATE as written. Each option comes with its evidence, risk, metric and reversal condition (reverse on delayed retention and free-choice persistence, not DAU).",
+      "at": "2026-10-10"
+    },
+    {
+      "id": "r4p-no-live-game-generation-in-session",
+      "kind": "finding",
+      "title": "No product generates real games live inside a child's lesson (desk review, 2026-10-10). Closest: TutorFlow Games (beta Aug 2026, teacher-side): one sentence -> an editable plan -> browser game code -> an automated play test before delivery ('A version that freezes or will not start is rebuilt, not sent'), taking 'a few minutes', with arcade templates; Google Project Genie / Genie 3 (public 29 Jan 2026): a real-time world model, 18+ in the US, about one minute of memory, a research prototype, non-Azure. So the owner's 'Minecraft / space fighter level, built on the go' bar has to be met by live COMPOSITION of certified engines (dec-r3-composed-play-typed-pairs, delta p50 1.32-1.53 s), not by live code or pixels; copy TutorFlow's play-before-ship gate per composed instance.",
+      "at": "2026-10-10"
+    },
+    {
+      "id": "r4p-live-visuals-table-stakes-2026",
+      "kind": "finding",
+      "title": "Generated or parameterised interactive visuals became platform table stakes in 2026, with no published learning outcomes: ChatGPT dynamic visual explanations (10 Mar 2026, 70+ maths/science concepts with sliders, all logged-in users); Gemini interactive simulations and 3D models (9 Apr 2026); Khanmigo Gemini-generated diagrams that respond when a student drags a point (27 Aug 2026; 'no evidence of better learning outcomes' yet); Penseum (Mar 2026) voice plus a canvas that annotates the learner's mistake. Taxila's edge must be correctness at phone size, the teacher reacting to the child's act, and Hinglish voice. Sources: techcrunch.com 2026-03-10 (read), blog.google, producthunt penseum-2 (read), 2026-10-10.",
+      "at": "2026-10-10"
+    },
+    {
+      "id": "r4p-india-kids-games-data-gap",
+      "kind": "finding",
+      "title": "There is no published data on what Indian 9-14-year-olds play or call babyish (desk review, 2026-10-10). Best available: Ormax 2021 (urban kids, 10 cities): Ludo King, Subway Surfers and Garena Free Fire in the top-5 most-trusted media brands, 85% played a mobile game in the last week. Sensor Tower 2025: Indian mobile gamers are 86% male and 77% aged 18-34, so children are invisible in market data. BGMI under-18 rules: parent OTP, 3 h a day, Rs 7,000 a day. Free Fire is banned and Free Fire MAX is the legal version. Taxila must measure its own children (an onboarding 'kaunsa game' question; the five-second test in round4/world RESEARCH §4).",
+      "at": "2026-10-10"
+    },
+    {
+      "id": "r4p-india-voice-tutors-cluster-9-12",
+      "kind": "finding",
+      "title": "Indian voice-first AI tutors cluster in classes 9-12 (desk review, 2026-10-10): YoLearn (Hindi/Hinglish voice, grades 9-12), Edza AI (voice plus a collaborative whiteboard, classes 7-12, 30,000+ learners mostly 9-12, press release), ShikshaAI (NGO). PhysicsWallah (Business Today, 1 Jun 2026, read): 135M+ free learners, about 3.5M daily active at about 2 h a day, AI Guru 'more than 3 million voice queries within a month', about 90% of queries solved by AI with a thumbs-down escalating to a human, AI tutor promised 'this year'. Hinglish voice-in, voice-out board teaching for classes 1-8 on a Rs 10k phone remains unoccupied.",
+      "at": "2026-10-10"
+    },
+    {
+      "id": "r4p-azure-word-boundary-test",
+      "kind": "finding",
+      "title": "Opening to TEST, not adopt: the karaoke rejection was measured on the realtime lane, where the transcript is untimed. In the cascade lane Azure TTS can emit word-boundary events with audio offsets, but Microsoft's pages conflict on HD voices (the HD-voices page says they 'don't support word boundary events'; a Jan 2026 Foundry post says Dragon HD Omni does), and Omni is rejected for production (dragonhdomni-not-production). teacher-stage-cue-scheduler's reversal test E-TV-2 should be run on the production voice before word-lit captions are reconsidered. Read 2026-10-10.",
+      "at": "2026-10-10"
+    }
+  ],
+  "edges": [
+    { "src": "r4p-sketchmind-sync-is-beat-order", "rel": "caused_by", "dst": "dc-r4-owner-vision-superhuman-tutor" },
+    { "src": "r4p-sketchmind-demo-scripted-timeline-2026-10-10", "rel": "caused_by", "dst": "dc-r4-owner-vision-superhuman-tutor" },
+    { "src": "r4p-sketchmind-price-inr-2026-10-10", "rel": "caused_by", "dst": "dc-r4-owner-vision-superhuman-tutor" },
+    { "src": "r4p-sketchmind-plan-first-opening-shapes", "rel": "caused_by", "dst": "dc-r4-owner-vision-superhuman-tutor" },
+    { "src": "r4p-sketchmind-checkpoints-binary", "rel": "caused_by", "dst": "dc-r4-owner-vision-superhuman-tutor" },
+    { "src": "r4p-sketchmind-notebook-replay", "rel": "caused_by", "dst": "dc-r4-owner-vision-superhuman-tutor" },
+    { "src": "r4p-sketchmind-streak-and-vendors", "rel": "caused_by", "dst": "dc-r4-owner-vision-superhuman-tutor" },
+    { "src": "r4p-taxila-no-deeper-request", "rel": "caused_by", "dst": "r4p-sketchmind-plan-first-opening-shapes" },
+    { "src": "r4p-economy-ban-copy-only", "rel": "caused_by", "dst": "design-v3-no-streaks-mastery" },
+    { "src": "r4p-peers-run-economies", "rel": "caused_by", "dst": "dc-r4-owner-vision-superhuman-tutor" },
+    { "src": "r4p-gamification-evidence-split", "rel": "caused_by", "dst": "dc-r4-owner-vision-superhuman-tutor" },
+    { "src": "r4p-gamification-owner-fork", "rel": "caused_by", "dst": "r4p-gamification-evidence-split" },
+    { "src": "dc-r4-owner-vision-superhuman-tutor", "rel": "blocks", "dst": "r4p-gamification-owner-fork" },
+    { "src": "r4p-no-live-game-generation-in-session", "rel": "caused_by", "dst": "dc-r4-owner-vision-superhuman-tutor" },
+    { "src": "r4p-live-visuals-table-stakes-2026", "rel": "caused_by", "dst": "dc-r4-owner-vision-superhuman-tutor" },
+    { "src": "r4p-india-kids-games-data-gap", "rel": "caused_by", "dst": "dc-r4-owner-vision-superhuman-tutor" },
+    { "src": "r4p-india-voice-tutors-cluster-9-12", "rel": "caused_by", "dst": "dc-r4-owner-vision-superhuman-tutor" },
+    { "src": "r4p-azure-word-boundary-test", "rel": "caused_by", "dst": "karaoke-from-transcript-estimate" }
+  ]
+}

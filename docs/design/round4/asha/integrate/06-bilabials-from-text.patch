@@ -1,0 +1,87 @@
+diff --git a/src/face-puppet/visemes.ts b/src/face-puppet/visemes.ts
+index 791582d5419ba0b1bee1fc06341bb242397a4f49..ad04ba2362d7e5b16d020eb2968bdf842a5bc89e 100644
+--- a/src/face-puppet/visemes.ts
++++ b/src/face-puppet/visemes.ts
+@@ -114,11 +114,46 @@ export function stopFlagsFromText(text: string): boolean[] {
+ /** One timed mouth event, ms from the part's first sample. */
+ export interface TimedViseme { ms: number; id: number; target: MouthTarget }
+ 
++// Round 4 (Asha lamp1): bilabial seals from the word text. Measured on Diya DragonHD reading a romanised Hinglish line
++// (docs/design/round4/asha/evidence/stageC-log-412.json, 2026-10-10): of 9 words with a b / m / p sound, Azure's viseme
++// track held a viseme 21 (p b m) for 5 and none for 4 (baarah, pencil, dabbon, batao), so the mouth never sealed on them,
++// although the rig seals on every 21 it is given (lip gap 0.00 px at each). Only where Azure gave a word NO 21 at all:
++//   - a word-initial b / bh / p / m (Roman) or प ब भ म (Devanagari): one 21 at the word start - 20 ms (Azure's own seals
++//     on that line sit 30 ms before to 10 ms after the word start);
++//   - else a word-internal bb / pp / mm / mb / mp (Roman): one 21 at that letter's share of the word's duration.
++// "ph" is left to Azure (Hinglish "phir" is [pʰ], English "phone" is [f]). With the rule: 9 / 9 sealed on that line.
++// One line, n = 9 words: the timing rule is a measured heuristic, not a forced alignment (open: the 24-line battery).
++const BILABIAL_ONSET_ROMAN = /^(?:bh|b|p(?!h)|m)/;
++const BILABIAL_ONSET_DEV = /^[पबभम]/u;
++const BILABIAL_INNER_ROMAN = /(?:bb|pp|mm|mb|mp)/;
++export function addBilabials(visemes: ReadonlyArray<{ ms: number; id: number }>, words: ReadonlyArray<{ ms: number; durMs: number; text: string }>): { ms: number; id: number }[] {
++  const out = visemes.map((v) => ({ ms: v.ms, id: v.id }));
++  if (!words.length) return out;
++  const has21 = (a: number, b: number) => visemes.some((v) => v.id === 21 && v.ms >= a && v.ms <= b);
++  for (const w of words) {
++    const raw = String(w.text || "").normalize("NFC");
++    const dev = /[ऀ-ॿ]/u.test(raw);
++    const r = dev ? raw : raw.toLowerCase().replace(/[^a-z]/g, "");
++    if (!r || has21(w.ms - 60, w.ms + w.durMs)) continue;
++    let at: number | null = null;
++    if (dev ? BILABIAL_ONSET_DEV.test(r) : BILABIAL_ONSET_ROMAN.test(r)) at = w.ms - 20;
++    else if (!dev) { const m = BILABIAL_INNER_ROMAN.exec(r); if (m) at = Math.round(w.ms + w.durMs * ((m.index + 1) / r.length)); }
++    if (at == null) continue;
++    // never on top of another event: 15 ms clear of the one before
++    const prev = out.filter((v) => v.ms <= at!).reduce((a, v) => Math.max(a, v.ms), -Infinity);
++    if (at - prev < 15) at = prev + 15;
++    out.push({ ms: at, id: 21 });
++  }
++  out.sort((a, b) => a.ms - b.ms);
++  return out;
++}
++
+ /**
+  * Resolve a part's raw Azure events into timed mouth targets, applying the word-text Hindi rules. Words are matched to
+  * visemes by time (a viseme belongs to the word whose [ms, ms + durMs) holds it).
+  */
+-export function resolveVisemes(visemes: ReadonlyArray<{ ms: number; id: number }>, words: ReadonlyArray<{ ms: number; durMs: number; text: string }> = [], text?: string): TimedViseme[] {
++export function resolveVisemes(visemes0: ReadonlyArray<{ ms: number; id: number }>, words: ReadonlyArray<{ ms: number; durMs: number; text: string }> = [], text?: string): TimedViseme[] {
++  const visemes = addBilabials(visemes0, words);   // round 4: the seals Azure's track leaves out (above)
+   const out: TimedViseme[] = [];
+   const flags = words.map((w) => ({ ...w, f: wordFlags(w.text), k: 0, n19: 0 }));
+   const wordOf = (ms: number) => flags.find((x) => ms >= x.ms - 10 && ms < x.ms + x.durMs + 10);
+diff --git a/tests/p2-face-bilabial.test.mjs b/tests/p2-face-bilabial.test.mjs
+new file mode 100644
+index 0000000000000000000000000000000000000000..f4ef75f5c5c74c441b40ba1aae4f212381375050
+--- /dev/null
++++ b/tests/p2-face-bilabial.test.mjs
+@@ -0,0 +1,29 @@
++// Round 4 (Asha lamp1): the text-side bilabial seals in src/face-puppet/visemes.ts (addBilabials, called by
++// resolveVisemes). Pure, no audio: the cases are the measured line's own words and Azure events (2026-10-10).
++import test from "node:test";
++import assert from "node:assert/strict";
++import { addBilabials, resolveVisemes } from "../src/face-puppet/visemes.ts";
++
++test("a b / p / m word with no viseme 21 gets one at its start; a word Azure already sealed is left alone", () => {
++  const V = [{ ms: 960, id: 21 }, { ms: 1000, id: 21 }, { ms: 1080, id: 11 }, { ms: 4200, id: 15 }, { ms: 4240, id: 1 }, { ms: 4400, id: 4 }, { ms: 7080, id: 1 }, { ms: 7120, id: 19 }];
++  const W = [{ ms: 990, durMs: 400, text: "mazedaar" }, { ms: 4150, durMs: 240, text: "baarah" }, { ms: 4390, durMs: 240, text: "pencil" }, { ms: 7110, durMs: 320, text: "batao" }];
++  const out = addBilabials(V, W);
++  const seals = out.filter((v) => v.id === 21).map((v) => v.ms);
++  assert.deepEqual(seals, [960, 1000, 4130, 4370, 7095], "mazedaar untouched; baarah, pencil at start - 20; batao 15 ms after the event before it");
++  assert.equal(out.length, V.length + 3);
++  for (let i = 1; i < out.length; i++) assert.ok(out[i].ms >= out[i - 1].ms, "sorted");
++});
++
++test("word-internal bb / mm, Devanagari onsets, and the cases that must NOT get a seal", () => {
++  const W = [{ ms: 5070, durMs: 240, text: "dabbon" }, { ms: 6000, durMs: 200, text: "बस" }, { ms: 6950, durMs: 160, text: "phir" }, { ms: 8000, durMs: 200, text: "Socho," }];
++  const out = addBilabials([{ ms: 5120, id: 1 }, { ms: 5160, id: 19 }, { ms: 6950, id: 17 }], W);
++  const seals = out.filter((v) => v.id === 21).map((v) => v.ms);
++  assert.deepEqual(seals, [Math.round(5070 + 240 * (3 / 6)), 5980], "dabbon's bb at its share; बस at its start; phir (ph) and socho get none");
++  assert.deepEqual(addBilabials([{ ms: 0, id: 0 }], []), [{ ms: 0, id: 0 }], "no words: nothing to read");
++});
++
++test("resolveVisemes carries the added seal as a full PP target", () => {
++  const track = resolveVisemes([{ ms: 4200, id: 15 }, { ms: 4240, id: 1 }], [{ ms: 4150, durMs: 240, text: "baarah" }]);
++  const pp = track.find((e) => e.id === 21);
++  assert.ok(pp && pp.ms === 4130 && pp.target.v === "viseme_PP" && pp.target.w === 1);
++});

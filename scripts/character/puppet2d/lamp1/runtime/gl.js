@@ -135,6 +135,7 @@ uniform float uShadeK;
 uniform float uOver;   // r5: 1 = the f/v overlay pass: only the upper teeth tips, drawn OVER the tucked lower lip
 uniform float uExt;    // r6: how far the strip reaches below the lower inner edge (px)
 uniform float uMK;     // lamp1: mouth scale (the cavity's px constants were tuned on c-front's mouth)
+uniform vec3 uTongueMul; uniform vec3 uTeethMul;   // lamp1: per-face interior colour
 out vec4 o;
 vec3 rowc(float row, float u){ vec4 c = texture(uTex, vec2(u, (row + 0.5) / 64.0)); return c.rgb / max(c.a, 0.001); }
 // r4 (judge r3 fix 2): the teeth's free edge is the PAINTED contour's smooth fit (rows 12.9 - 2.7u^2 - 0.3u^4 of the
@@ -218,7 +219,7 @@ void main(){
     }
     // a contact shadow just outside the tongue's edge keeps it legible against the cavity at 1x
     col *= 1.0 - (0.08 + 0.45 * uTongue.y) * clamp(1.0 - abs(h - db) / 3.5, 0.0, 1.0) * (1.0 - cov);
-    col = mix(col, t, cov);
+    col = mix(col, t * uTongueMul, cov);
   }
   // ---- lower teeth (bottom-anchored on the lower lip), then upper teeth (hang from the upper lip, slide up as they hide)
   float lwT = 0.52, uwT = 0.76;
@@ -232,7 +233,7 @@ void main(){
     float cov = clamp((hL - db) / px + 0.5, 0.0, 1.0) * (1.0 - smoothstep(lwT - 0.12 - 0.1 * joyT, lwT, a)) * gapT;
     float row = 31.0 - clamp(db * rp, 0.0, contourRows(vS / lwT) - 2.5);
     vec3 lt = rowc(row, ul) * dimT * (1.0 - 0.3 * pow(a / lwT, 2.0)) * vec3(1.12, 1.09, 1.04) * mix(vec3(1.0), vec3(0.8, 0.7, 0.64), uTongue.w);   // r5: the lower row read grey beside the upper one
-    col = mix(col, lt, cov);
+    col = mix(col, lt * uTeethMul, cov);
   }
   if (a < uwT && uTeeth.x > 0.01) {
     float uu = clamp((vS / uwT) * 0.5 + 0.5, 0.0, 1.0);
@@ -243,7 +244,7 @@ void main(){
     vec3 ut = rowc(row, uu) * 1.08 * dimT * (1.0 - 0.3 * pow(a / uwT, 2.0) - 0.06 * joyT * pow(a / uwT, 2.0)) * mix(vec3(1.0), vec3(0.88, 0.78, 0.72), uTongue.w);   // r6: dim (ch funnel shadow, warm)
     // the free edge catches a whisper of shadow (painted teeth have it), inside the coverage ramp only
     ut *= 1.0 - 0.08 * clamp(1.0 - (hU - dt) / 1.6, 0.0, 1.0);
-    col = mix(col, ut, cov);
+    col = mix(col, ut * uTeethMul, cov);
   }
   // the upper lip's shadow on whatever sits right under it; r6: a soft 2 px rim on BOTH inner edges (the lips roll in),
   // so the cavity never reads as a crisp cut-out against the lip
@@ -298,7 +299,7 @@ export class Renderer {
     gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
     gl.disable(gl.DEPTH_TEST);
     this.cam = [0, 0, 1, 0];
-    this.face = { nose: [532, 528, 508, 1], mk: 1, tint: [0, 0, 0] };   // lamp1: set by the rig from geom.face
+    this.face = { nose: [532, 528, 508, 1], mk: 1, tint: [0, 0, 0], tongue: [1, 1, 1], teeth: [1, 1, 1] };   // lamp1: set by the rig from geom.face
     this.draws = 0;
     this.tris = 0;
   }
@@ -412,6 +413,8 @@ export class Renderer {
     gl.useProgram(P.p);
     gl.uniform1f(P.u.uExt, ext);
     gl.uniform1f(P.u.uMK, this.face.mk);
+    gl.uniform3fv(P.u.uTongueMul, this.face.tongue);
+    gl.uniform3fv(P.u.uTeethMul, this.face.teeth);
     gl.uniform1f(P.u.uOver, over);
     gl.uniform2f(P.u.uView, this.canvas.width, this.canvas.height);
     gl.uniform4fv(P.u.uCam, this.cam);
