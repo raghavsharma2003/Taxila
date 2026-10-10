@@ -168,6 +168,8 @@ test("a happy life share is read in code and kept for later (the note timed out 
   r = turn(r, said(r, text), { text });
   assert.equal(r.move.request, "uptake");
   assert.ok((r.state.later ?? []).some((e) => e.share && /shaadi/.test(e.topic)), JSON.stringify(r.state.later));
+  // battery arm 3 (family D): the last-section note of a KEPT share carries the promise, never only "react warmly"
+  assert.match(r.move.must ?? "", /react warmly .*come back to it (?:right after this question|before the lesson ends)/);
   // a kit answer in the same words is an answer, never a share
   const t = { mode: "item", key: "hamari team jeet gayi", also: [], misconceptions: [], item: { prompt_en: "x" } };
   assert.equal(classifyFast({ target: t, childText: "hamari team jeet gayi", typed: true }).result?.outcome, "correct");

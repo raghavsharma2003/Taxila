@@ -507,6 +507,10 @@ export const MUST_NOTE = Object.freeze({
   story: "first a tiny story of two or three sentences with a child in it, about this idea; only then the question",
   another: "a different example or question from the last one, never the same one again",
 });
+/** Round 4 (battery arm 3, family D: diversion-13 "mere paas naya cycle aaya hai", personal_share-01 "aaj mera birthday hai"):
+ *  as a last-section note, "add nothing they did not say" won over the share shape's promise, and a share KEPT for later got
+ *  no "we'll come back to it" (the judges' parks / acknowledges). When the share was kept this turn, the note carries it. */
+export const mustShareKept = ({ promise }) => `your first words react warmly to what they shared, in their words; then a few words that you will come back to it ${promise === "after_question" ? "right after this question" : "before the lesson ends"}`;
 export const parkAlso = ({ topic }) => `they also asked about ${clean(topic) || "something else"}: one line that you will come back to it after this`;
 /** Round 3: the turn after a stop check-in that was not a stop ("haan", an answer): the lesson simply goes on. Local
  *  battery base-head-1: "yes" after the check-in got "Lesson ended, Meher. You may close the book now. <a question>". */
