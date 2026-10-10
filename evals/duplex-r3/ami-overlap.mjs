@@ -28,8 +28,11 @@ async function applySets(sets) {
   const cfg = await import(ROOT + "src/duplex/config.ts");
   for (const kv of sets.split(",")) {
     const [k, v] = kv.split("=");
-    const [obj, key] = k.split(".");
-    cfg[obj][key] = v === "true" ? true : v === "false" ? false : Number(v);
+    // dotted paths of any depth (round 4: OVERLAP.echoRef.on=true)
+    const keys = k.split(".");
+    let o = cfg;
+    for (const key of keys.slice(0, -1)) o = o[key];
+    o[keys.at(-1)] = v === "true" ? true : v === "false" ? false : Number(v);
   }
 }
 

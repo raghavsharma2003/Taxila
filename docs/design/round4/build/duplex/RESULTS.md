@@ -269,3 +269,39 @@ the next real evidence.
    Confirm it stays if the owner's own hands-free test finds it slow.
 2. **Whether to fund the target-speaker gate (X3).** It is the only path to R5 and R6. It needs an enrolment step with
    consent, an on-device model, and a children's sibling / TV evaluation set.
+
+## 14. The funded echo reference for R6 (main session, 2026-10-10): what was built, measured and dropped
+
+Bar: R6 self-yields on her own bleed ≤ 2 %, measured against her own output on the same AMI rig (13.2 % baseline), with
+R1-R4 and the stop / repair / safeguard yields held, and an ambiguous case yielding to the child.
+
+| attempt (AMI TRAIN, ES2004b + IS1008b; all other rows as shipped) | continuers | barge-ins ≤ 200 ms | room | bleed (R6) | verdict |
+|---|---|---|---|---|---|
+| shipped (no reference) | 84/103 | 17/22 | 12/101 | 77/421 = 18.3 % | – |
+| envelope echo reference (mic envelope tracks her output envelope, 0.5 s + 0.2 s windows, best lag ≤ 60 ms) REPLACING the level rule | 79/103 | 17/22 | 13/101 | 80/421 | worse: rejected |
+| the same reference only ADDING echo explanations to the level rule | 84/103 | 17/22 | 12/101 | 77/421 | no change: rejected |
+| burst-level lexical gate (a "turn"'s words yield only from a burst ≥ N ms above her echo), N = 200 | 85/103 | 18/22 | 7/101 | 45/421 = 10.7 % | **loses a real barge-in**: rejected |
+| the same, N = 300 / 400 | 85 / 88 | 19 / 19 | 6 / 5 | 42 / 26 | loses the same barge-in: rejected |
+
+- **Why the burst gate is rejected despite its numbers.** "s 'scuse me for one sec" (ES2004b, a real interruption over
+  her) became an interruption that was never hushed and never yielded at N = 200 and 300. The talker's voice sat at her
+  echo level, so neither the hush nor the words fired. The official R4 row cannot see this, because a hush counts as a
+  stop. The per-barge-in check (`evals/duplex-r4/ami-artefact.mjs`, `results/ami-artefact-*.txt`) can.
+- **Why an envelope reference cannot do it here.** Frame level, echo-only vs talk-over: correlation AUC 0.82, residual
+  AUC 0.86 (`evals/duplex-r4/echoref-probe.mjs`). With the child-wins-a-doubt rule (both windows must track her), too few
+  real echo frames are explained.
+- **Why AMI cannot show a phone.** A real echo canceller on AMI (`evals/duplex-r4/ami-aec.mjs`, NLMS, her own audio as
+  the reference, 128-2,048 taps) removes only 4-6 dB of her voice from another participant's headset. On AMI her "echo"
+  is another person's voice crossing a room into a different microphone, not a loudspeaker-to-mic path. On a phone the
+  canceller's reference is the exact signal sent to the speaker, and the browser's AEC (`echoCancellation: true` in
+  `cascadeLink.ts`) already does this, typically 20-30 dB. So **a waveform reference in the engine would duplicate the
+  platform AEC, and no seam patch is requested.**
+- **The phone-like profile we do have** is SIMULATED (TaxilaFDB: her TTS through a simulated AEC-residue path). Echo
+  self-triggers are 0/80 on each of 3 lanes on TEST (0/240, Wilson upper ≈ 1.6 %) and 0/40 per lane on TRAIN, BEFORE and
+  AFTER. On that profile R6 ≤ 2 % holds. It is not a real phone.
+- **What would give a real number:** the reference phone (O-R4) playing her through its own speaker with the browser's
+  AEC on and counting self-yields, or Gate S shadow telemetry from real lessons. Neither is possible from this sandbox.
+
+**Result against the funded bar: R6 ≤ 2 % is NOT met on the AMI rig, and the reversal condition holds.** Per the
+decision: accept R6 as unmet on AMI, and gate duplex "on" on shadow telemetry (and a reference-phone run). R1-R4 and
+every stop / repair / safeguard yield are untouched: the engine source is exactly as before this attempt.

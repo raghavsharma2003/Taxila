@@ -56,10 +56,7 @@ export function classifyOverlap(f: OverlapFeatures, s: { voicing: boolean; f0Slo
       case "repair": codes.push("repeat_request"); return out("barge_in", 0.95, true, true, "repair_request", null);
       case "stop": codes.push("stop_request"); return out("barge_in", 0.97, true, true, "stop_request", null);
       case "answer": return out("barge_in", 0.95, true, true, f.herAskedYesNo ? "answer_to_her_question" : "fold_in", null);
-      default:
-        // round 4 (OVERLAP.lexicalTurnNeedsVoiceMs): a turn's words from a burst that was her own bleed throughout
-        if (OVERLAP.lexicalTurnNeedsVoiceMs > 0 && f.nonEchoMs !== undefined && f.nonEchoMs < OVERLAP.lexicalTurnNeedsVoiceMs) { codes.push("echo_match"); return out(null, 0.4, false, true, null, "too_short"); }
-        return out("barge_in", 0.92, true, true, "barge_in", null);
+      default: return out("barge_in", 0.92, true, true, "barge_in", null);
     }
   }
 

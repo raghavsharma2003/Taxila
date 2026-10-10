@@ -95,6 +95,24 @@
       "kind": "decision",
       "title": "duplex R6: build an echo reference measured from her own output (correlation of the mic with her playback) in src/duplex, any link seam as a patch request; bar R6 self-yields <= 2 % on the same AMI rig (13.2 % baseline) with R1-R4 and stop / repair / safeguard yields held; an ambiguous correlation yields to the child (main session 2026-10-10, no spend, no biometrics). Reverse if: the reference correlation cannot reach <= 2 % without hurting R1-R4; then accept R6 as unmet and gate duplex on on shadow telemetry from real lessons.",
       "at": "2026-10-10"
+    },
+    {
+      "id": "rj-r4dx-envelope-echo-reference",
+      "kind": "rejection",
+      "title": "duplex r4 tried (funded AEC-reference work, R6): an envelope echo reference (mic dB envelope tracks her output envelope over 0.5 s + 0.2 s at the best lag <= 60 ms, and no louder than her predicted echo). Broke / no gain on AMI TRAIN: replacing the level rule 84 -> 79/103 continuers and 77 -> 80/421 bleed self-yields; only adding echo explanations to it: identical to without (frame AUC 0.82; with the child-wins-a-doubt rule too few echo frames qualify)",
+      "at": "2026-10-10"
+    },
+    {
+      "id": "rj-r4dx-burst-lexical-gate",
+      "kind": "rejection",
+      "title": "duplex r4 tried: a turn's words yield only from a burst that voiced >= N ms above her echo level (N 100-400). AMI TRAIN looked strong (N 200: room 12 -> 7/101, bleed 77 -> 45/421, continuers 84 -> 85/103) but at N 200 and 300 the real interruption \"s 'scuse me for one sec\" (ES2004b) was never hushed and never yielded: the talker sat at her echo level. R4 cannot see it (a hush counts as a stop); the per-barge-in check can. Rejected: a lost real interruption outweighs the false-yield gain",
+      "at": "2026-10-10"
+    },
+    {
+      "id": "ms-r4dx-ami-aec-2026-10-10",
+      "kind": "measurement",
+      "title": "duplex r4 a linear echo canceller (NLMS, her own audio as reference, 128-2,048 taps) on AMI real speech removes only 4-6 dB of her voice from another participant's headset (IS1008b pair A/B, 300 s; 4.6 dB at 128 taps, 6.3 dB at 1,024; 2026-10-10): AMI cross-talk is not loudspeaker echo, so AMI R6 cannot stand in for a phone with AEC. SIMULATED phone-like echo (TaxilaFDB, 3 lanes): echo self-triggers 0/240 TEST (Wilson upper ~1.6 %), 0/120 TRAIN, before and after",
+      "at": "2026-10-10"
     }
   ],
   "edges": [
@@ -152,6 +170,16 @@
       "src": "dc-r4dx-aec-reference-funded",
       "rel": "part_of",
       "dst": "open-r4dx-r5-r6-target-speaker"
+    },
+    {
+      "src": "rj-r4dx-envelope-echo-reference",
+      "rel": "part_of",
+      "dst": "dc-r4dx-aec-reference-funded"
+    },
+    {
+      "src": "ms-r4dx-ami-aec-2026-10-10",
+      "rel": "measured_by",
+      "dst": "dc-r4dx-aec-reference-funded"
     }
   ]
 }
