@@ -12,6 +12,7 @@ import { stagecraftPointFor } from "../server/stagecraft/kernel-point.js";
 import { kitFromFile } from "../server/content/kits.js";
 import { getTopic } from "../server/content/curriculum.js";
 import { withFactsRows } from "../server/brain/turn.js";
+import { _certifyStudioV2ForTests } from "../server/forge3/tray-gate.js";
 
 const { studioSeam, _lesson, _setDeps, hostAnswer } = seam;
 const T = "c6-maths-ch05-t02";
@@ -23,11 +24,15 @@ const instantOnly = () => ({ instant: createBuilders().instant, generatedSpec: a
 // tests/p4-content-seam.test.mjs's evidence writer, so its "graded by the HOST" saw no event. The fakes go in for each
 // of THIS file's tests only, and the deps they replaced are put back after it.
 const FAKES = { writeEvidence: async () => ({ written: true }), q: async () => [], gateAvailable: () => false };
+// The tray gate (server/forge3/tray-gate.js, base 2026-10-10) refuses every Studio v2 piece that is only its board twin
+// at the 360 phone; its test hook certifies them, so a piece reaches the screen for this file to peek at. Module state
+// too: on for each test only.
 const withFakes = (fn) => async (t) => {
   const live = _setDeps({});
   const saved = Object.fromEntries(Object.keys(FAKES).map((k) => [k, live[k]]));
   _setDeps(FAKES);
-  try { return await fn(t); } finally { _setDeps(saved); }
+  _certifyStudioV2ForTests(true);
+  try { return await fn(t); } finally { _certifyStudioV2ForTests(false); _setDeps(saved); }
 };
 
 function lesson(id) {
