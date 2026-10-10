@@ -65,17 +65,121 @@
    "kind": "open",
    "title": "Antariksh frame rate on a real Rs 10k phone is NOT measured (needs the owner's device, O-R4); every fps number from G1 is a SwiftShader proxy in headless Chromium on a shared container.",
    "at": "2026-10-10"
+  },
+  {
+   "id": "dc-r4g1-play-kill-switches",
+   "kind": "decision",
+   "title": "2026-10-10 G1: two play release switches, both default to today's behaviour: TAXILA_PLAY=off admits nothing (entryFor / hasPlay; no play piece is built, asked or at a beat; /api/play/start 404; the lesson keeps board and voice) and TAXILA_PLAY_3D=off sends render: \"2d\" with no engine dress (the round-3 2D views only, no engine chunk loaded; a rollback of the engines alone). Reverse if: ops needs a per-engine or per-cohort switch (then key it by engine id).",
+   "at": "2026-10-10"
+  },
+  {
+   "id": "dc-r4g1-cert-both-renderers",
+   "kind": "decision",
+   "title": "2026-10-10 G1: server/forge3/play-cert.js judges a (family, mode) that an engine renders on BOTH renderers a child can get: the 2D view in every art (cells <art>@c<band>, unchanged, what forge3 compose reads) and the 3D engine in every theme (cells 3d:<theme>@c<band>, the render verified); the harness tells its own page which renderer to mount (window.__taxilaPlayRender, never set in the app) and keeps the WebGL drawing buffer only then. Reverse if: compose starts choosing per renderer (then it reads the 3d cells for 3D-tier devices).",
+   "at": "2026-10-10"
+  },
+  {
+   "id": "rj-r4g1-2d-compare-labels-c4",
+   "kind": "rejection",
+   "title": "2026-10-10 G1: the round-3 2D Nishana view drew every major tick label at 16 px; on 0-10,000 lines for classes 4-5 the labels '1,000' x '2,000' overlapped at 360 and 412 (forge3 judge Q3.apart), so certs/play.json refused nishana/compare @c4 on phones and forge3 compose served no game for c4-maths-ch04-t02, c4-maths-ch10-t02, c5-maths-ch01-t01 on phones (C9a, local production build: no piece). Fixed: one uniform label stride per box (the ends always), the same rule as Antariksh's ticks.",
+   "at": "2026-10-10"
+  },
+  {
+   "id": "o-r4g1-practice-beat-tray",
+   "kind": "open",
+   "title": "C9b (the game AT a practice beat, unasked) is NOT met: with games-core patch 03 the seam builds the play practice piece (probe: <lessonId>:play:practice present among the lesson's pieces), but on the local production build the Director's own practice items hold the tray at practice moves (turns 4, 7, 8 of 14 plain turns, c5-maths-ch02-t01) and a Stagecraft piece takes it between them, so the piece is never revealed. Offering the game AS the practice item is a Director decision (stream 4A / main): proposal: at a practice_set beat whose skill play admits, the practice move's tray is the play piece, and the bare delayed item stays the Director's.",
+   "at": "2026-10-10"
+  },
+  {
+   "id": "ms-r4g1-c9-local-prod-2026-10-10",
+   "kind": "measurement",
+   "title": "Antariksh C9 on a local production build (node server/serve.mjs + server/worker.mjs, NODE_ENV=production, own Neon TEST branch, prod model routing, tests/prod/r4-games-core-c9.mjs, 2026-10-10): C9c every one of the 18 admitted Nishana skills through the Director's admission for that skill, /api/play/level with Antariksh's dress, the solution as raw acts with engine antariksh, server grade solved, signed evidence + level_end seam on a module-only turn, her full turn, exactly one kt_evidence row via game on that skill: 145/145 checks. C9a 'game khelna hai' asked in a lesson: 7/12 topics end to end (50/55 checks); 3 misses were the 2D compare certificate (fixed since, rerun pending), 2 were lessons opening on a skill play does not admit (correctly no game).",
+   "at": "2026-10-10"
+  },
+  {
+   "id": "ms-r4g1-round3-play-2026-10-10",
+   "kind": "measurement",
+   "title": "round3-play on the G1 tree (local production build, n = 1 run, 2026-10-10): 92/93; the one miss was T1 /api/play/start p90 840 ms vs the 800 ms local bar while two SwiftShader jobs loaded the host; the start route's reads were then made parallel (re-measure pending, same harness, idle host, against a base-tree server).",
+   "at": "2026-10-10"
+  },
+  {
+   "id": "dc-r4g1-kon-angles-law",
+   "kind": "decision",
+   "title": "E1 angles is a new small family law kon (कोण): angles as an amount of turning. turn (c5-maths-ch03-t01: quarter/half/three-quarter, cw/acw; mal-rules cw-confuse, half-is-quarter) and set (c6-maths-ch02-t03: open a given angle against a two-scale protractor; mal-rule wrong-scale = 180−θ). No live angle readout and no snapping (either is the answer); set levels within tolerance of 0/90/180 are never served (shortcut). It renders through a 2D dial view; an Antariksh 3D mode for kon is not built. Not on the play map (server/play/world.js FAMILIES unchanged).",
+   "at": "2026-10-10",
+   "reversal": "if a measured child run shows the dial unreadable at 360 px or the wrong-scale probe never fires, revisit the view or drop the set goal"
   }
  ],
  "edges": [
-  { "src": "dc-r4g1-core3d-contract", "rel": "part_of", "dst": "dc-r4-games-o-g" },
-  { "src": "dc-r4g1-core3d-contract", "rel": "inherits", "dst": "r4g-engines-are-views-over-family-laws" },
-  { "src": "dc-r4g1-antariksh-law-mapping", "rel": "part_of", "dst": "r4g-round4-antariksh-first" },
-  { "src": "dc-r4g1-dress-delta-route", "rel": "part_of", "dst": "dc-r4-games-o-g" },
-  { "src": "dc-r4g1-focusmal-from-lesson", "rel": "part_of", "dst": "r4g-round4-antariksh-first" },
-  { "src": "ms-r4g1-economy-lint-2026-10-10", "rel": "measured_by", "dst": "dc-r4-gamification-b" },
-  { "src": "ms-r4g1-rules-split-identical-2026-10-10", "rel": "measured_by", "dst": "dc-r4g1-rules-split" },
-  { "src": "ms-r4g1-engine-browser-2026-10-10", "rel": "measured_by", "dst": "dc-r4g1-antariksh-law-mapping" },
-  { "src": "o-r4g1-real-phone-fps", "rel": "blocks", "dst": "r4g-round4-antariksh-first" }
+  {
+   "src": "dc-r4g1-core3d-contract",
+   "rel": "part_of",
+   "dst": "dc-r4-games-o-g"
+  },
+  {
+   "src": "dc-r4g1-core3d-contract",
+   "rel": "inherits",
+   "dst": "r4g-engines-are-views-over-family-laws"
+  },
+  {
+   "src": "dc-r4g1-antariksh-law-mapping",
+   "rel": "part_of",
+   "dst": "r4g-round4-antariksh-first"
+  },
+  {
+   "src": "dc-r4g1-dress-delta-route",
+   "rel": "part_of",
+   "dst": "dc-r4-games-o-g"
+  },
+  {
+   "src": "dc-r4g1-focusmal-from-lesson",
+   "rel": "part_of",
+   "dst": "r4g-round4-antariksh-first"
+  },
+  {
+   "src": "ms-r4g1-economy-lint-2026-10-10",
+   "rel": "measured_by",
+   "dst": "dc-r4-gamification-b"
+  },
+  {
+   "src": "ms-r4g1-rules-split-identical-2026-10-10",
+   "rel": "measured_by",
+   "dst": "dc-r4g1-rules-split"
+  },
+  {
+   "src": "ms-r4g1-engine-browser-2026-10-10",
+   "rel": "measured_by",
+   "dst": "dc-r4g1-antariksh-law-mapping"
+  },
+  {
+   "src": "o-r4g1-real-phone-fps",
+   "rel": "blocks",
+   "dst": "r4g-round4-antariksh-first"
+  },
+  {
+   "src": "dc-r4g1-cert-both-renderers",
+   "rel": "part_of",
+   "dst": "dc-r4g1-core3d-contract"
+  },
+  {
+   "src": "rj-r4g1-2d-compare-labels-c4",
+   "rel": "caused_by",
+   "dst": "dc-r4g1-cert-both-renderers"
+  },
+  {
+   "src": "o-r4g1-practice-beat-tray",
+   "rel": "blocks",
+   "dst": "r4g-round4-antariksh-first"
+  },
+  {
+   "src": "ms-r4g1-c9-local-prod-2026-10-10",
+   "rel": "measured_by",
+   "dst": "dc-r4g1-antariksh-law-mapping"
+  },
+  {
+   "src": "dc-r4g1-kon-angles-law",
+   "rel": "part_of",
+   "dst": "dc-r4g1-core3d-contract"
+  }
  ]
 }
