@@ -1446,6 +1446,8 @@ export function step(prev, input) {
   // A reaction keeps the step's content (e.g. the worked example the teacher is in the middle of) and the
   // activity on screen.
   if (!reacting || p.content) s.lastContent = p.content ?? [];
+  // stream 2 R2 root cause: planModule reads move.visual (modules.js interactiveDefault), so it is set BEFORE planModule
+  if (p.visual) move.visual = p.visual;
   const moduleCommands = reacting ? [] : planModule(s, { kit: input.kit, item, move, lang: s.ctx.lang, band: s.probeSess?.band ?? bandOf(s.ctx.classLevel), representation: p.representation });
   // The child's request this move answers (requests.js): the brain reads it (a visual request asks Studio on any lane).
   if (p.request) move.request = p.request;

@@ -499,6 +499,11 @@ export const MUST_NOTE = Object.freeze({
   small_talk: "answer their question honestly in one line as an AI; then straight into the work, with no words about going back or later",
   identity: "plainly an AI teacher, in one line; then straight into the work, with no words about going back or later",
   joke: "one playful line back of your own; then straight into the work, with no words about going back or later",
+  // owner-4 (local acceptance on 9e371d34, 2026-10-10): "example do" on the fast lane got only the card question; the lead
+  // note alone did not carry it
+  example: "first one concrete example from their life (things at home, school, cricket, food), worked through in a line or two; only then the question",
+  story: "first a tiny story of two or three sentences with a child in it, about this idea; only then the question",
+  another: "a different example or question from the last one, never the same one again",
 });
 export const parkAlso = ({ topic }) => `they also asked about ${clean(topic) || "something else"}: one line that you will come back to it after this`;
 /** Round 3: the turn after a stop check-in that was not a stop ("haan", an answer): the lesson simply goes on. Local

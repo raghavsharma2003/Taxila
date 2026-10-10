@@ -2,7 +2,7 @@
 // no network. The battery lines quoted here are the BATTERY's (evals/conversation-v2/cases.mjs); none is from the held-out set.
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { readIntent, alsoQuestion } from "../server/conversation/lexicon.js";
+import { readIntent, alsoQuestion, shareOf } from "../server/conversation/lexicon.js";
 import { requestOf } from "../server/director/requests.js";
 import { classifyFast, hedgeCore, correctedTail, targetFor } from "../server/director/classify.js";
 import { MUST_NOTE } from "../server/director/shapes.js";
@@ -92,6 +92,14 @@ test("frustration, slower and thinking aloud carry their must-do into the LAST s
   }
 });
 
+test("'example do' / a story / another one carry their must-do (owner-4: the fast lane gave only the card question)", () => {
+  const r = toPractice();
+  for (const [text, re] of [["example do", /concrete example/], ["story ki tarah batao", /tiny story/]]) {
+    const n = turn(r, said(r, text), { text });
+    assert.match(n.move.must ?? "", re, `${text}: ${n.move.request}`);
+  }
+});
+
 test("the must-note never rides on a safeguard and is shed (never a budget throw) when the last section is full", () => {
   const r = toPractice();
   const distress = cls("no_evidence", { flags: { distress: true, distressKind: "abuse" } });
@@ -146,6 +154,23 @@ test("a share told during teaching is brought back later in the lesson, as a las
   assert.ok(back, "the share came back with a must-note");
   assert.match(back.move.must, /^first, come back to what they told you earlier/);
   assert.ok(back.state.later.find((e) => e.share).servedAt != null);
+});
+
+test("a happy life share is read in code and kept for later (the note timed out on a local prod build); a sad one is not", () => {
+  for (const t of ["meri cousin ki shaadi hai next week", "aaj mera birthday hai", "ghar pe naya puppy aaya hai", "we won the match today"]) {
+    assert.ok(shareOf(t), t);
+    assert.equal(readIntent(t)?.type, "share", t);
+  }
+  for (const t of ["mera dog kal mar gaya", "meri dadi hospital mein hai", "meri cousin ki shaadi kab hai?", "mera answer 1/3 hai", "we did a trip to the moon chapter"]) assert.equal(shareOf(t), null, t);
+  let r = step(fresh(), { event: "start", kit: K, now: 0 });
+  r = turn(r, NE);
+  const text = "meri cousin ki shaadi hai next week";
+  r = turn(r, said(r, text), { text });
+  assert.equal(r.move.request, "uptake");
+  assert.ok((r.state.later ?? []).some((e) => e.share && /shaadi/.test(e.topic)), JSON.stringify(r.state.later));
+  // a kit answer in the same words is an answer, never a share
+  const t = { mode: "item", key: "hamari team jeet gayi", also: [], misconceptions: [], item: { prompt_en: "x" } };
+  assert.equal(classifyFast({ target: t, childText: "hamari team jeet gayi", typed: true }).result?.outcome, "correct");
 });
 
 test("tired AND an easier ask is the easier ask with empathy, never a break; a parked side question rides last", () => {

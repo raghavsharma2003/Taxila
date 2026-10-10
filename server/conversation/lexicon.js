@@ -190,6 +190,21 @@ const ASK_INVITE = /^(?:(?:didi|di|ma'?am|sir|bhaiya|teacher)\s+)?(?:(?:mera|mer
  * @param {string} text  the child's words (typed, or an ASR transcript)
  * @returns {null | { type: "confused"|"clarify"|"repeat"|"back"|"skip"|"harder"|"easier"|"know"|"boredom"|"frustration"|"thinking"|"identity"|"small_talk"|"oob", whole: true, src: "p5" }}
  */
+// round 4 (round3-conversation C on a local prod build, 2026-10-10: "meri cousin ki shaadi hai next week" was noticed by the
+// words but never parked, because the share came only from the UNDERSTAND note, and that lane timed out): a HAPPY life event in
+// the child's own life, read in code. Narrow on purpose: a first-person possessive + a person / pet / home + an event noun,
+// or "aaj mera birthday", with no sad or hurt word (a sad share stays with the note and the gentle line; state.js also
+// screens share_sad). The topic is the child's own words.
+const SHARE_EVENT = String.raw`(?:shaadi|wedding|birthday|b'?day|janamdin|janmdin|party|function|trip|tour|picnic|match|tournament|competition|prize|medal|trophy|puppy|kitten|billi|kutta|doggy|naya\s+(?:ghar|phone|cycle|bhai|bhaiya|baby)|new\s+(?:house|home|phone|bike|cycle|baby|puppy|kitten))`;
+const SHARE_R4 = new RegExp(String.raw`^(?:(?:didi|ma'?am|sir|achha|accha|pata\s+hai|you\s+know|guess\s+what)[\s,!]+)*(?:(?:meri|mera|mere|hamari|hamara|humari|humara|my|our)\s+[\p{L}' ]{0,24}?${SHARE_EVENT}|(?:aaj|kal|next\s+week|today|tomorrow)\s+(?:meri|mera|mere|my)\s+${SHARE_EVENT}|(?:hum|we)\s+[\p{L} ]{0,20}?(?:trip|picnic|tour)\s+(?:pe|par|ke\s+liye|to|on)?\s*(?:ja\b|jaa\b|gaye|gaya|going|went)|(?:hum|we)\s+(?:are\s+going|went|ja\s+rahe|gaye)\s+[\p{L} ]{0,20}?(?:trip|picnic|tour|wedding|shaadi)\b|(?:hum|we|hamari\s+team|our\s+team)\s+(?:ne\s+)?(?:match\s+)?(?:jeet|won\b)|(?:ghar|home)\s+(?:pe|par|mein|me)\s+[\p{L} ]{0,16}?${SHARE_EVENT})`, "iu");
+const SHARE_SAD = /\b(?:mar\s+gay|died|dead|beemar|bimar|hospital|sick|accident|chot|ro\s+raha|ro\s+rahi|cry|crying|dar|scared|maar|maara|pit|lost|haar\s+gay|cancel|nahi\s+(?:ho|hoga|hui|jaa))/i;
+/** PURE. A happy life event they told about themselves → its topic (their words, ≤ 60 chars), else null. */
+export function shareOf(text) {
+  const t = T(text);
+  if (!t || words(t) > 14 || /[?？]/.test(t) || !SHARE_R4.test(t) || SHARE_SAD.test(t)) return null;
+  return t.replace(/[^\p{L}\p{N} ,'-]/gu, " ").replace(/\s+/g, " ").trim().slice(0, 60) || null;
+}
+
 export function readIntent(text) {
   const t = T(text);
   if (!t) return null;
@@ -233,6 +248,7 @@ export function readIntent(text) {
   if (ASK_INVITE.test(t)) return hit("ask_invite");
   if (IDENTITY.test(t)) return hit("identity");
   if (SMALL_TALK.test(t) || (p5Flag("R3CONV") && SMALL_TALK_DO.test(t))) return hit("small_talk");
+  if (p5Flag("R4CONV")) { const topic = shareOf(t); if (topic) return { ...hit("share"), topic }; }
   return null;
 }
 
