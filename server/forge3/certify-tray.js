@@ -111,6 +111,11 @@ export async function moduleSamples(per = 8) {
       }
     }
   }
+  // the open tasks modules.js interactiveDefault mounts for an interactive ask (they must be certified like the rest)
+  for (const band of ["young", "older"]) for (const params of [{ mode: "build", ask: "perimeter", perimeter: 12 }, { mode: "build", ask: "area", area: 6 }]) {
+    const key = `geoboard@1|build|${band}`;
+    by.set(key, [...(by.get(key) ?? []), { topicId: "default", params: { ...params, lang: "hinglish" }, goal: null, ageBand: band === "young" ? "6-9" : "10-15" }]);
+  }
   const out = [];
   for (const [key, list] of by) {
     const [engine, mode, band] = key.split("|");
@@ -120,7 +125,7 @@ export async function moduleSamples(per = 8) {
 }
 
 /** A static server for the product build (dist/: modules.html + assets) with the frame's CSP, and a host page. */
-function serveDist(dist) {
+export function serveDist(dist) {
   const TYPES = { ".html": "text/html; charset=utf-8", ".js": "text/javascript", ".css": "text/css", ".json": "application/json", ".woff2": "font/woff2", ".svg": "image/svg+xml", ".png": "image/png", ".webp": "image/webp" };
   const HOST = `<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><style>body{margin:0}#tray{position:absolute;left:16px;top:120px;overflow:hidden}iframe{display:block;width:100%;height:100%;border:0}</style></head><body><div id="tray"></div><script>
     window.events=[];let port=null;window.mount=(o)=>{window.events=[];port=null;const t=document.getElementById('tray');t.innerHTML='';t.style.width=o.w+'px';t.style.height=o.h+'px';
@@ -145,7 +150,7 @@ function serveDist(dist) {
 }
 
 /** One engine sample at each judged box: mount it in a sandboxed frame of the tray's size, measure inside the frame. */
-async function judgeModule(page, s, young, shotDir) {
+export async function judgeModule(page, s, young, shotDir) {
   const views = [];
   for (const v of trayViewports(young)) {
     await page.setViewportSize(v.viewport);
@@ -221,20 +226,34 @@ if (import.meta.url === `file://${process.argv[1]}`) {
       if (!fs.existsSync(path.join(dist, "modules.html"))) throw new Error(`no ${dist}/modules.html: run npx vite build first`);
       const samples = (await moduleSamples(per)).filter((s) => !only || s.engine === only);
       const { server, base } = await serveDist(dist);
+      const conc = Math.max(1, Math.min(4, Number(arg("conc", "3")) || 3));
       const ctx = await browser.newContext({ viewport: { width: 360, height: 800 }, deviceScaleFactor: 2, hasTouch: true });
-      const page = await ctx.newPage();
-      await page.goto(`${base}/host.html`);
       const table = { v: 1, qa: QA_VERSION, at: new Date().toISOString(), viewports: VP_CLASSES, boxes: "docs/design/round4/build/box-contract.json tray boxes (b3 older, b2 young)",
-        source: "shared/engine-catalog.js planEngine over every kit item (show, predict), lang hinglish", engines: {}, samples: [] };
-      for (const s of samples) {
-        const young = s.band === "young";
-        const views = await judgeModule(page, s, young, shots ? path.join(shots, "modules") : null);
-        addViews(cellOf(table, ["engines", s.engine, "modes", s.mode, s.band]), views);
-        table.samples.push({ engine: s.engine, mode: s.mode, band: s.band, topicId: s.topicId, params: s.params, views });
-        console.log(`${s.engine} ${s.mode} ${s.band} ${s.topicId}: ${views.map((v) => `${v.vp}:${v.serve ? "ok" : `${v.fails.join("+")}(${v.minPx}px${v.err ? " " + v.err : ""})`}`).join(" ")}`);
-      }
+        source: "shared/engine-catalog.js planEngine over every kit item (show, predict), lang hinglish; plus modules.js interactiveDefault tasks", engines: {}, samples: [] };
+      const queue = [...samples];
+      // one page per worker (each page its own frame): the samples are independent
+      await Promise.all(Array.from({ length: conc }, async () => {
+        const page = await ctx.newPage();
+        await page.goto(`${base}/host.html`);
+        while (queue.length) {
+          const s = queue.shift();
+          const young = s.band === "young";
+          const views = await judgeModule(page, s, young, shots ? path.join(shots, "modules") : null);
+          addViews(cellOf(table, ["engines", s.engine, "modes", s.mode, s.band]), views);
+          table.samples.push({ engine: s.engine, mode: s.mode, band: s.band, topicId: s.topicId, params: s.params, views });
+          console.log(`${s.engine} ${s.mode} ${s.band} ${s.topicId}: ${views.map((v) => `${v.vp}:${v.serve ? "ok" : `${v.fails.join("+")}(${v.minPx}px${v.err ? " " + v.err : ""})`}`).join(" ")}`);
+        }
+      }));
       await ctx.close(); server.close();
-      fs.writeFileSync(arg("out", MODULE_CERT_FILE), JSON.stringify(table, null, 1));
+      // --only: merge this engine's rows into the existing table (the rest stays as certified)
+      const outFile = arg("out", MODULE_CERT_FILE);
+      if (only && fs.existsSync(outFile)) {
+        const prev = JSON.parse(fs.readFileSync(outFile, "utf8"));
+        prev.engines = { ...(prev.engines ?? {}), ...table.engines };
+        prev.samples = [...(prev.samples ?? []).filter((x) => x.engine !== only), ...table.samples];
+        prev.at = table.at;
+        fs.writeFileSync(outFile, JSON.stringify(prev, null, 1));
+      } else fs.writeFileSync(outFile, JSON.stringify(table, null, 1));
       for (const [e, row] of Object.entries(table.engines)) for (const [m, bands] of Object.entries(row.modes)) for (const [b, c] of Object.entries(bands)) console.log(`CELL ${e} ${m} ${b} n=${c.n} serve ${JSON.stringify(c.serveByViewport)} ${c.fails.slice(0, 3).join(" ")}`);
     }
   } finally { await browser.close(); }

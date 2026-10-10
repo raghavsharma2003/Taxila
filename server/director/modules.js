@@ -84,6 +84,24 @@ function mountable(s, plan) {
   return { ...plan, params };
 }
 
+/**
+ * round 4 content (brief item 4): the child asked for a game / animation / simulation, the topic has an engine, but the
+ * item's own config is one the engine refuses (measured: 9 of 22 c6-maths-ch06-t01 "Perimeter" plans, "build needs an area
+ * or a perimeter target" / "measure needs a shape"), so the ask fell to a still board. A canonical, open task for the
+ * topic's engine instead (unbound: graded nothing; the engine checks the shape itself), only from the topic's own words.
+ */
+const INTERACTIVE_VISUALS = new Set(["game", "animation", "simulation"]);
+function interactiveDefault(s, kit, lang, ageBand) {
+  const engine = TOPIC_MAP[kit?.topicId];
+  if (!engine || !ENGINES[engine]) return null;
+  const words = [kit?.title, ...(kit?.skills ?? []).map((k) => k.title ?? k.name ?? "")].join(" ").toLowerCase();
+  let params = null;
+  if (engine === "geoboard@1") params = /perimeter|boundary|fence|border|around/.test(words) ? { mode: "build", ask: "perimeter", perimeter: 12 }
+    : /area|square units|cover/.test(words) ? { mode: "build", ask: "area", area: 6 } : null;
+  if (!params) return null;
+  return mountable(s, { engine, params: { ...params, topicId: kit.topicId, lang }, goal: undefined, bindItem: false, itemId: null, predict: false, ageBand });
+}
+
 /** A bound plan shown on a teaching move: the same activity, answers graded nothing. */
 function unbind(plan) {
   if (!plan?.bindItem) return plan;
@@ -130,6 +148,9 @@ function planModuleInner(s, { kit, item, move, lang, band, representation }) {
     const plan = mountable(s, unbind(planEngine({ kit, item: source, lang, mode: "show", representation, topicMap: TOPIC_MAP, ageBand })));
     // an engine show whose visible values state the open item's key (a number line ending on it) is skipped too
     if (plan && !(open && leaksOpenItem({ facts: moduleFacts({ id: "probe", engine: plan.engine, params: plan.params }), ops: [] }, open))) return apply(plan);
+    // round 4 content: an interactive ask gets the topic engine's open task before the board rung
+    const free = INTERACTIVE_VISUALS.has(String(move.visual ?? "")) ? interactiveDefault(s, kit, lang, ageBand) : null;
+    if (free && !(open && leaksOpenItem({ facts: moduleFacts({ id: "probe", engine: free.engine, params: free.params }), ops: [] }, open))) return apply(free);
     // rungs 4-5: the board explanation / diagram (code pick from the same text, the topic library, the lesson's fill)
     // never-an-answer (W2-B fixer, blocker 1): the item the child is still answering is OPEN; the board drawn for it
     // shows the method with "?" for the result, or a parallel example, and never that item's key (explainer/guard.js)

@@ -157,6 +157,9 @@ button.pt-slot { cursor: pointer; border-style: dashed; }
 .ms-major { stroke: var(--fx-ink); stroke-width: 2; }
 .ms-minor { stroke: var(--fx-ink); stroke-width: 1; }
 .ms-body { fill: var(--fx-empty); stroke: var(--fx-ink); stroke-width: 2; }
+/* round 4 content: the jug's outline is a path drawn OVER the water; CSS fill beats its fill="none" attribute, so every
+   "how much water is in the jug?" showed an empty jug (certs/modules.json shots, 2026-10-10) */
+path.ms-body { fill: none; }
 .ms-object { fill: var(--fx-fill); stroke: var(--fx-ink); stroke-width: 2; }
 .ms-liquid { fill: var(--fx-accent); opacity: 0.55; }
 .ms-mercury { fill: #c0392b; }

@@ -35,9 +35,14 @@ export function applySvgFloor(root: ParentNode, young: boolean): { grown: number
       const units = parseFloat(getComputedStyle(t).fontSize) || 0;
       if (units > 0 && units * k < floor) { t.style.fontSize = `${Math.ceil((floor / k) * 10) / 10}px`; t.dataset.floorSet = "1"; grown++; }
     }
-    // thin: per parent group, hide every other overlapping label (left to right) until none overlap
-    const groups = new Map<Element, SVGTextElement[]>();
-    for (const t of texts) { const p = t.parentElement?.closest("g") ?? svg; groups.set(p, [...(groups.get(p) ?? []), t]); }
+    // thin: per ROW of labels (the same baseline, ±6 units: a number line's tick labels each sit in their own <g>), hide
+    // every other overlapping label (left to right) until none in the row overlap
+    const groups = new Map<number, SVGTextElement[]>();
+    for (const t of texts) {
+      let y = 0;
+      try { const b = t.getBBox(); y = Math.round((b.y + b.height) / 6); } catch { continue; }
+      groups.set(y, [...(groups.get(y) ?? []), t]);
+    }
     for (const list of groups.values()) {
       for (let pass = 0; pass < 4; pass++) {
         const shown = list.filter((t) => t.style.display !== "none" && t.textContent?.trim());
@@ -46,7 +51,15 @@ export function applySvgFloor(root: ParentNode, young: boolean): { grown: number
         for (let i = 0; i < shown.length && !clash; i++) for (let j = i + 1; j < shown.length; j++) if (boxesOverlap(boxes[i], boxes[j])) { clash = true; break; }
         if (!clash) break;
         const sorted = shown.map((t, i) => ({ t, x: boxes[i].x })).sort((a, b) => a.x - b.x);
-        sorted.forEach(({ t }, i) => { if (i % 2 === 1 && !keep(t)) { t.style.display = "none"; t.dataset.thinned = "1"; hidden++; } });
+        // is-big protects a label only when it marks the few values that matter, not a whole row of labelled ticks
+        const bigRow = sorted.filter(({ t }) => t.classList.contains("is-big")).length > sorted.length / 2;
+        const protect = (t: Element) => (bigRow ? t.hasAttribute("data-keep") || t.hasAttribute("data-target") : keep(t));
+        // every other label goes; the line's two ends always stay (an odd last index hides its neighbour instead)
+        const last = sorted.length - 1;
+        sorted.forEach(({ t }, i) => {
+          const drop = i === last ? false : i === last - 1 && last % 2 === 1 ? true : i % 2 === 1;
+          if (drop && !protect(t)) { t.style.display = "none"; t.dataset.thinned = "1"; hidden++; }
+        });
       }
     }
   }
