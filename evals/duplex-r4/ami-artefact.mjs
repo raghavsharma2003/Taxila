@@ -20,7 +20,7 @@ function spurts(words, maxGap) { const out = []; for (const [s, e, w] of words) 
 const anyTalk = (words, a, b) => words.some(([s, e]) => s < b && e > a);
 const herLines = (M, Y) => spurts(M.chans[Y].words.map(([s, e, w]) => [s, e, dec(w)]), 700).filter((s) => s.end - s.start >= 600).map((s) => ({ start: s.start, end: s.end, text: s.words.map((w) => w[2]).join(" "), outDb: M.chans[Y].db }));
 const HER = new Set(["her_turn", "overlap"]);
-const out = { cont: { n: 0, fail: 0, failOffFloor: 0 }, barge: { n: 0, late: 0, lateOffFloor: 0, lateOffFloorStopped200: 0 } };
+const out = { cont: { n: 0, fail: 0, nOffFloor: 0, failOffFloor: 0 }, barge: { n: 0, late: 0, nOffFloor: 0, lateOffFloor: 0 } };
 const dir = argv[0];
 for (const m of opt("--meetings", "ES2004b").split(",")) {
   const M = JSON.parse(fs.readFileSync(path.join(dir, `${m}.json`), "utf8"));
@@ -42,11 +42,13 @@ for (const m of opt("--meetings", "ES2004b").split(",")) {
           const offFloor = !HER.has(phaseAt(b.start - 20));
           if (listening && b.end - b.start <= 1200 && y.end - b.end >= 1000) {
             out.cont.n++;
+            if (offFloor) out.cont.nOffFloor++;
             if (yieldsIn(b.start - 20, b.end + 1000).length) { out.cont.fail++; if (offFloor) out.cont.failOffFloor++; }
           } else if (!listening && toks.filter((w) => !LISTEN.has(w)).length >= 2 && y.end - b.start <= 2000 && y.end > b.start) {
             const xEnd = spurts(xw.filter(([s]) => s >= b.start), 500)[0]?.end ?? b.end;
             if (xEnd - y.end < 1000) continue;
             out.barge.n++;
+            if (offFloor) out.barge.nOffFloor++;
             const h = duckOf(b.start - 1000, b.start + 2000), yl = yieldsIn(b.start - 1000, b.start + 2500)[0];
             const stop = Math.min(h ? Math.max(0, h[0] + 20 - b.start) : Infinity, yl ? Math.max(0, yl[0] + 50 - b.start) : Infinity);
             if (stop > 200) { out.barge.late++; if (offFloor) out.barge.lateOffFloor++; }
