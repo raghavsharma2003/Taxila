@@ -43,7 +43,9 @@ export function runGates(sha, { cmds = GATE_CMDS, allowDirty = false } = {}) {
   for (const cmd of cmds) {
     const s = Date.now();
     console.log(`gate: ${cmd}`);
-    const r = spawnSync("bash", ["-lc", cmd], { cwd: ROOT, stdio: "inherit", timeout: 1_500_000, env: { ...process.env, CI: "1" } });
+    // 60 min per command (was 25): release 9's one-process npm test finished all 3,026 tests green at 1,520 s and was
+    // SIGTERMed by the old 1,500 s cap twice (context ms-r4-gate-timeout). Still a cap, so a hung test cannot hold a release.
+    const r = spawnSync("bash", ["-lc", cmd], { cwd: ROOT, stdio: "inherit", timeout: 3_600_000, env: { ...process.env, CI: "1" } });
     results.push({ cmd, code: r.status, signal: r.signal, s: Math.round((Date.now() - s) / 1000) });
     if (r.status !== 0) {
       writeStamp(sha, { pass: false, dirty: !!dirty, results });
