@@ -380,7 +380,23 @@ software GL; `latency/ptt-*.jsonl`):
 | **after (puppet on)** | 24 | **16 ms** | **23 ms** | 9-56 | 29.9 / 67 ms / 3 (12 turn holds) |
 | puppet off (same after build) | 12 | 11 ms | 14 ms | 8-16 | n/a |
 
-The bar (p50 ≤ 30 ms, n ≥ 12) is met. The before arm's two runs read p50 322 and 146: it swings with where the frame
+**Again with production routing**, as the main session asked (merged tree 79c14571; server
+`--env-file=.env.local --env-file=tests/prod/prod-routing.env`, so `TAXILA_TURN_PREFETCH=on`; same driver, lines and
+phone; `latency/ptt-prodrouting-*.jsonl`):
+
+| arm | n | final → POST p50 | p90 | min-max | stage drawn fps p50 / interval p95 / stalls |
+|---|---|---|---|---|---|
+| before (puppet on) | 12 | 244 ms | 534 ms | 71-729 | 20 / 67 ms / 4 (2,150 first load; 183-450) |
+| **after (puppet on)** | 12 | **15 ms** | **21 ms** | 10-40 | 20 / 67 ms / 6 (2,133 first load; 217-433) |
+| puppet off | 12 | 10 ms | 13 ms | 7-14 | n/a |
+
+- Stalls 4 vs 6 sit in the same 183-450 ms range on both builds. The hold's own gap is exempt from stall counting, so
+  this is headless jitter. Read the counts as noise at n = 1 lesson each.
+- Prefetch is on in the server env, but the client sends none on tap-to-talk in this tree: a 2-turn check read
+  `prefetch: []`. The client fix that makes tap-to-talk prefetch (`cascadeLink.talkEnd`) is on `claude/r4-latency`,
+  not yet in base.
+
+The bar (p50 ≤ 30 ms, n ≥ 12) is met in both runs. The before arm's two runs read p50 322 and 146: it swings with where the frame
 clock is when the final lands.
 
 **Probe** (`tests/prod/r4-asha-taskwait.mjs`, `/dev/desk` fixture, the runtime's own sequence: `play-heard` → 2
