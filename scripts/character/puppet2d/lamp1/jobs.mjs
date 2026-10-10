@@ -56,4 +56,44 @@ export const JOBS = {
   "age-b": { stage: "A", src: "w1-flat", prompt: AGE, quality: "high" },
 };
 for (const [id, d] of Object.entries(OUTFITS)) JOBS[id] = { stage: "A", src: "AGE_PICK", prompt: OUT_SAME(d), quality: "high" };
+
+// ---- Stage B: the rig front (o6 + one more age step) and its edits
+const WEAR = "the terracotta-rust open cardigan, the teal band-collar block-print kurta, the small oxidised-silver studs";
+const RIGFRONT = `The same woman as in the input image, ${STYLE}. Keep exactly her identity, face, eyes, nose, brows, the small dark maroon bindi, `
+  + `skin tone, hair arrangement (centre parting, neat low bun, one loose lock in front of each ear), ${WEAR}, the framing (front view, head and `
+  + "shoulders, head upright and centred, same size and position) and the soft even frontal light. Change only these, subtly, so she reads as a "
+  + "settled woman of about 35 (never older than 38, never tired, no grey hair, no wrinkles): a touch more fullness under the cheekbones and along "
+  + "the jaw; slightly heavier, calmer upper eyelids; the faintest soft planes at the outer eye corners and from the nose wings toward the mouth "
+  + "corners; the neat low bun a little lower and fuller at the nape. Lips natural and unpainted, matte brown-rose. Mouth closed with the lips "
+  + "together, corners level and relaxed: a calm, pleasant resting face. Eyes open looking straight at the viewer, brows relaxed. "
+  + BG;
+JOBS["rig-a"] = { stage: "B", src: "o6-cardigan-print", prompt: RIGFRONT, quality: "high" };
+JOBS["rig-b"] = { stage: "B", src: "o6-cardigan-print", prompt: RIGFRONT, quality: "high" };
+
+// the expression set as edits of the chosen rig front (RIG_PICK = <scratch>/rig-pick.txt). Prompts follow the face agent's
+// kept option-4 edits (gen.json: speak2, listen, think2, warm, blink), with the outfit words changed.
+const SAMEB = "The same person as in the input image, drawn in exactly the same art style: identical face, proportions, skin tone, eyes, hair and "
+  + `bun, bindi, earrings, ${WEAR}, framing, plain flat cream background and light. Front view, head and shoulders as in the input image. Change only what is described: `;
+export const EXPR = {
+  "x-speak": SAMEB + "she is mid-word, speaking calmly to a class: the mouth open on an 'aa' sound, the jaw dropped about a quarter, the lips relaxed, "
+    + "the edge of the upper teeth and a little of the tongue visible, a soft dark mouth interior, the mouth corners relaxed. The eyes and brows stay "
+    + "EXACTLY as in the input image (relaxed, not raised, not widened): an ordinary speaking face, not surprise.",
+  "x-listen": SAMEB + "attentive listening: her head tilted about 6 degrees toward her right shoulder (the viewer's left), eyes on the viewer, brows "
+    + "very slightly raised in interest, lips closed with the faintest softening at the corners. Calm and attentive.",
+  "x-think": SAMEB + "thinking: her eyes glance clearly UPWARD and a little to the side (toward the top corner of the image), the head still facing "
+    + "front and very slightly raised; the brows level and relaxed (not drawn together, not frowning, not raised), the lips closed and soft, a calm "
+    + "inward look, as if recalling something. Composed, never sceptical, never a side-eye, never disapproving.",
+  "x-warm": SAMEB + "a small, real, warm smile: lips closed or just parted, the corners lifted, the cheeks slightly raised so the lower lids lift a "
+    + "little and faint smile lines appear at the outer eye corners. A teacher pleased with a good idea, not a grin, not coy.",
+  "x-blink": SAMEB + "both eyes fully closed in a natural blink: the upper lids lowered to meet the lower lids, the lash line visible along each "
+    + "closed lid, brows relaxed, mouth closed and neutral exactly as in the input image.",
+  "x-mid": SAMEB + "both eyes half closed, caught in the middle of a blink: the upper lids lowered to about half way, covering the top half of the "
+    + "irises, the lash line following the lowered lid, brows relaxed and unchanged, mouth closed and neutral exactly as in the input image.",
+  // painted ~30 degree turn keys for the yaw keyform field (rj-p2d-small-turn-keys: 'small turn' prompts give 12-15 deg)
+  "x-yawL": SAMEB + "her head and neck turned about 30 degrees toward the LEFT edge of the image (a clear three-quarter view, her nose pointing "
+    + "toward the image's left), shoulders still facing front, eyes looking where her face points, mouth closed and neutral, the same light.",
+  "x-yawR": SAMEB + "her head and neck turned about 30 degrees toward the RIGHT edge of the image (a clear three-quarter view, her nose pointing "
+    + "toward the image's right), shoulders still facing front, eyes looking where her face points, mouth closed and neutral, the same light.",
+};
+for (const [id, p] of Object.entries(EXPR)) JOBS[id] = { stage: "B", src: "RIG_PICK", prompt: p, quality: "high" };
 export { STYLE, KEEP, BG, FACE_REST };

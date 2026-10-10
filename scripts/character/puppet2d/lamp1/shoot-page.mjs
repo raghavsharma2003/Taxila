@@ -44,7 +44,7 @@ for (const [w, h] of [[360, 800], [412, 915], [1366, 768]]) {
   chk.pageErrors = errs;
   report[`${w}x${h}`] = chk;
   await pg.screenshot({ path: `${out}/page-${w}x${h}.png`, fullPage: false });
-  if (process.argv.includes("--full")) await pg.screenshot({ path: `${out}/page-${w}x${h}-full.png`, fullPage: true });
+  if (process.argv.includes("--full") && w !== 412) await pg.screenshot({ path: `${out}/page-${w}x${h}-full.png`, fullPage: true });
   await ctx.close();
 }
 fs.writeFileSync(`${out}/checks.json`, JSON.stringify(report, null, 1));

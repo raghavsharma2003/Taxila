@@ -17,7 +17,7 @@ const { JOBS } = await import(new URL(jobsFile, import.meta.url));
 const ids = (argv[0] || "").split(",").filter(Boolean);
 const force = argv.includes("--force");
 const conc = +opt("--conc", 2);
-const resolveSrc = (s) => (s === "AGE_PICK" ? fs.readFileSync(`${SCR}/age-pick.txt`, "utf8").trim() : s);
+const resolveSrc = (s) => (s === "AGE_PICK" ? fs.readFileSync(`${SCR}/age-pick.txt`, "utf8").trim() : s === "RIG_PICK" ? fs.readFileSync(`${SCR}/rig-pick.txt`, "utf8").trim() : s);
 
 const queue = ids.map((id) => { const j = JOBS[id]; if (!j) throw new Error(`no job ${id}`); return { id, ...j }; })
   .filter((j) => force || !fs.existsSync(`${RAW}/${j.id}.png`));

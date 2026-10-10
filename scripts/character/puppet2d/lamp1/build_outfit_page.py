@@ -145,13 +145,27 @@ EXTRA_CSS = """
 .facepair figcaption { font: 500 14px/1.35 var(--f-ui); color: var(--ink-3); margin-top: 4px; }
 .desc { font: 400 16px/1.5 var(--f-ui); color: var(--ink-2); }
 .sumt td:first-child { color: var(--ink); }
+.sumt { width: 100%; border-collapse: collapse; font: 400 14px/1.4 var(--f-ui); color: var(--ink-2); }
+.sumt th, .sumt td { text-align: left; padding: 6px 4px; border-top: 1px solid var(--hair-2); vertical-align: top; }
+.sumt th { color: var(--ink-3); font-weight: 600; }
+.sumcards { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.sumcards li { display: grid; gap: 2px; padding: 8px 0; border-top: 1px solid var(--hair-2); font: 400 15px/1.45 var(--f-ui); color: var(--ink-2); }
+.sumcards b { color: var(--ink); font-weight: 600; font-size: 16px; }
 @media (min-width: 760px) {
   .pickgrid, .viewer { grid-template-columns: minmax(0, 512px) minmax(0, 1fr); align-items: start; }
   .sel { grid-template-columns: repeat(8, minmax(0, 1fr)); }
   .slots4 { grid-template-columns: 1fr 1fr; }
   .slot.home { grid-column: 1 / -1; }
+  .pickgrid .why, .viewer .why { grid-template-columns: 1fr; gap: 14px; }
 }
 """
+
+def summary_cards():
+    out = []
+    for fid, *_ in FRONTS:
+        s = T["single"][fid]
+        out.append(f"<li><b>{esc(ASSET[fid]['name'])}</b><span>ages {esc(', '.join(sorted(set(s['ages']))))}</span><span>friendly {s['friendly_mean']} · cool {s['cool_mean']} · professional {s['prof_mean']}</span><span>Indian {s['indian']}/{s['n']} · childish {s['childish']}/{s['n']} · sexualised {s['sexualised']}/{s['n']}</span></li>")
+    return "".join(out)
 
 def summary_rows():
     out = []
@@ -216,7 +230,8 @@ page = f"""<title>Asha's outfit</title>
 <section class="ev panel" id="votes">
   <p class="eyebrow">Head to head</p>
   <h3>All eight at a glance (single-image blind check, n = 5 each)</h3>
-  <div class="tw"><table class="sumt"><thead><tr><th>outfit</th><th>ages read</th><th>friendly</th><th>cool</th><th>professional</th><th>Indian</th><th>childish · sexualised</th></tr></thead><tbody>{summary_rows()}</tbody></table></div>
+  <table class="sumt wide-only"><thead><tr><th>outfit</th><th>ages read</th><th>friendly</th><th>cool</th><th>professional</th><th>Indian</th><th>childish · sexualised</th></tr></thead><tbody>{summary_rows()}</tbody></table>
+  <ul class="narrow-only sumcards">{summary_cards()}</ul>
   <p>Friendly, cool and professional are means of five 1-5 ratings. On a single picture the judges rate almost everything 4 for friendly, so the forced-choice lineups below separate the outfits better. In each run, four outfits sat in a 2 × 2 grid, the positions were shuffled, and the judge had to pick one per question.</p>
   {lineup('lineup-outfit', 'Round 1: the four first outfits (n = 5)')}
   {lineup('lineup2-outfit', 'Round 2: the four layered outfits (n = 5)')}
