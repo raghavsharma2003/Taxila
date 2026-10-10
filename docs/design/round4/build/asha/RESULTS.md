@@ -217,8 +217,8 @@ owner's own accounts only. Everyone else stays on r8. The owner's eye on real le
   - The 39 failures are all FIT `text ≥ 14 px` (13 px "Talk", the child nav, onboarding "Step 2 of 9", landing
     "Sample"). The same checks fail on r8 (the r8 run: 36); they are not lamp2's.
   - Non-cohort pass: the server answers r8 and the page asks `?look=lamp2`; every puppet paints r8.
-  - Note: the r8 run found 2 live canvases on the help sheet, the lesson face under it. Covered, not seen, but still
-    drawing; see the latency item below.
+  - Note: the r8 run found 2 canvases on the help sheet; the second is the lesson face under it, covered. It is not
+    drawing: the stage runs one stage per page (`foreground` in `stage.ts`), and the covered one is suspended.
 - **Bilabials on lamp2** (rig2's `battery.mjs`, offline, the stored Diya battery, product timing path → lamp2
   `MouthKeys` at 60 fps): 123 / 132 bilabial words sealed with the product's text rule (`visemes.ts` addBilabials).
   rig2's extension (`bilabial2.js`) gets 132 / 132; its 9 misses are single internal or final b/m/p words (tum, Ab,
@@ -231,9 +231,76 @@ owner's own accounts only. Everyone else stays on r8. The owner's eye on real le
 - **One live face, fps**: rig2 measured lamp2 at 59.9 fps on the 80 px speech row and on the 412 desk, at a 4x CPU
   throttle (headless Chromium, not a phone; rig2 `evidence/fps-*.json`). Not re-measured here.
 
+### The turn POST waited behind the puppet: turn first (open-r4lat-puppet-delays-turn-post, 2026-10-10)
+
+The r4-latency finding: on tap-to-talk, final transcript → turn POST was p50 ~205 ms with the puppet on, against 8-29 ms
+with it off.
+
+**Root cause** (CPU profile + `tests/prod/r4-asha-taskwait.mjs`, headless Chromium, software GL):
+- On this machine every puppet frame is one long main-thread task: 50-100 ms unthrottled, up to 170 ms at a 4× CPU
+  throttle. The page manages only 9-21 frames a second.
+- Almost all of it is native WebGL rasterisation of the 656×724 canvas: `(program)` 3,022 of 3,166 ms profiled. The
+  frame's JavaScript is ~100 ms per 3 s.
+- The runtime sends the turn after a chain of macrotasks: `queueTurn` → `runTurn` → the outbox's IndexedDB reserve +
+  write → `fetch`. Each waits behind the frame holding the thread.
+- Probe, puppet on vs off: `setTimeout(0)` wait p50 50-200 ms vs ~4 ms; an outbox-shaped IndexedDB chain 350-660 ms vs
+  2-7 ms.
+- The stage's governor never steps down, because it times only the frame's JavaScript (~1 ms). Not changed here:
+  counting raster time would step r8 down to its 20 fps floor and its still on the very headless machines the look
+  reviews measure on. A real phone GPU makes this raster far cheaper (not measured).
+
+**Fix** (`src/face-puppet/stage.ts`):
+- On the child's turn, the stage draws nothing for `TURN_HOLD_MS` = 300 ms. It listens for the `taxila:play-heard` page
+  event, which the runtime fires synchronously on `child_final` just before `queueTurn`, and for `taxila:turn-sending`
+  (patch request 08, not applied: shared file).
+- Never while she speaks. The held gap is not counted as a stall.
+- In tap-to-talk she is in her thinking hold then (breath, drift), so the held frame is not seen.
+- `tests/r4-asha-turnfirst.test.mjs` pins the hold and the runtime coupling.
+
+**Before / after on the r4-timeline driver** (r4-latency's own; local production build, real models and DragonHD TTS,
+fixed 750 ms fake ASR, synthetic child clip (gpt-4o-mini-tts ×1.2: not a child), plain account class 7, tap-to-talk, Done
+0.7 s after speech, r4-latency's 12 lines, one lesson per arm on a fresh browser context, phone 360, headless Chromium
+software GL; `latency/ptt-*.jsonl`):
+
+| arm | n | final → POST p50 | p90 | min-max | stage drawn fps p50 / interval p95 / stalls |
+|---|---|---|---|---|---|
+| before (puppet on) | 24 | 149 ms | 538 ms | 47-717 | 30.0 / 67 ms / 5 |
+| **after (puppet on)** | 24 | **16 ms** | **23 ms** | 9-56 | 29.9 / 67 ms / 3 (12 turn holds) |
+| puppet off (same after build) | 12 | 11 ms | 14 ms | 8-16 | n/a |
+
+The bar (p50 ≤ 30 ms, n ≥ 12) is met. The before arm's two runs read p50 322 and 146: it swings with where the frame
+clock is when the final lands.
+
+**Probe** (`tests/prod/r4-asha-taskwait.mjs`, `/dev/desk` fixture, the runtime's own sequence: `play-heard` → 2
+IndexedDB writes → `fetch`, n = 12 per arm; `latency/taskwait-*.json`):
+
+| state | CPU | before p50 / p90 | after p50 / p90 | puppet off p50 |
+|---|---|---|---|---|
+| your turn (thinking alike) | 1× | 251.8 / 337.8 | **1.9 / 2.8** | 1.7 |
+| your turn | 4× | 371.6 / 420.5 | **5.5 / 7.8** | 6.5 |
+| she is speaking | 1× | 296.5 / 318.6 | 250.9 / 316.6 (no hold, by design) | 2.1 |
+
+The speaking row is a child turn sent while she talks, e.g. a typed barge-in. Holding there would freeze her mouth
+mid-sentence, so it keeps the old cost. On tap-to-talk (the measured path) the child's turn lands in her thinking or
+listening hold.
+
+**The other bars:**
+- **fps:** drawn fps and interval p95 are unchanged (table).
+- **Lip sync:** the hold never runs while she speaks, and the viseme schedule is untouched, so lip sync can't move; not
+  re-measured.
+- **Look:** no look or pack code changed.
+
+**Real phone:** not profiled. There is no Android device on this cloud container, so there was no CDP trace on one.
+Every number here is headless Chromium with software rendering.
+
 ## Not met / open
 
 - Part C waits on the pack.
+- The puppet governor counts only the frame's JavaScript, not raster time, so it can't see a page it starves (above).
+  The turn POST is covered by the hold. A raster-aware governor needs a decision on what headless review machines
+  should show.
+- A child turn sent while she speaks still waits behind frames (~250 ms, headless). Patch 08 doesn't change that.
+- A real Android profile is still owed.
 - lamp2: rig2's bilabial extension (123 → 132 / 132 on lamp2) changes the text rule for every look: needs a call.
   lamp2's lip-sync share within ±50 ms is 67-76% against the ≥ 80% target.
 - Owner decisions needed: (1) lamp1 as the default (`TAXILA_FACE_LOOK=lamp1`), only after Part C and their phone look;

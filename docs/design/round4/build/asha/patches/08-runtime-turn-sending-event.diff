@@ -1,0 +1,15 @@
+diff --git a/src/lesson/runtime.ts b/src/lesson/runtime.ts
+index cb75fa1c..66da9f6e 100644
+--- a/src/lesson/runtime.ts
++++ b/src/lesson/runtime.ts
+@@ -682,6 +682,10 @@ export class LessonRuntime {
+ 
+   private queueTurn(input: ChildInput | null): void {
+     const gen = this.generation;
++    // open-r4lat-puppet-delays-turn-post: a child turn is about to be sent; the puppet face (src/face-puppet/stage.ts
++    // TURN_EVENTS) holds its frame so the outbox writes and the POST are not queued behind a frame (every child turn:
++    // typed, chip and an empty-ASR repair too, which the play event above does not cover)
++    if (input && typeof window !== "undefined") { try { window.dispatchEvent(new Event("taxila:turn-sending")); } catch { /* no window */ } }
+     // A child turn that failed: no reply is coming, so the wait is settled AFTER pendingTurns drops (the floor
+     // ignores a settle while a Director call is still counted in flight), on every lane.
+     let settleAfter = false;
