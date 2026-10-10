@@ -108,7 +108,12 @@ export function judgeFrame(d, o = {}) {
   const small = (d?.texts ?? []).filter((t) => t.px > 0 && t.px < floor);
   add(hard, "Q1.legible", !small.length, small.length ? `${small.length} runs < ${floor} px, e.g. "${small[0].t}" ${small[0].px} px` : null);
   const cutText = (d?.texts ?? []).filter((t) => t.outside).length, cutTargets = (d?.targets ?? []).filter((t) => t.outside).length;
-  add(hard, "Q2.whole", d?.scrollable || (cutText === 0 && cutTargets === 0), cutText || cutTargets ? `${cutText} text runs and ${cutTargets} targets past the frame${d?.scrollable ? " (the frame scrolls to them)" : ""}` : null);
+  // round 4 content: the frame scrolls only vertically: anything past its left or right edge is cut whatever the scroll
+  const cutX = (d?.texts ?? []).filter((t) => t.outsideX).length + (d?.targets ?? []).filter((t) => t.outsideX).length;
+  add(hard, "Q2.whole", !cutX && (d?.scrollable || (cutText === 0 && cutTargets === 0)), cutText || cutTargets ? `${cutText} text runs and ${cutTargets} targets past the frame${cutX ? ` (${cutX} past its side edges)` : d?.scrollable ? " (the frame scrolls to them)" : ""}` : null);
+  // round 4 content: words drawn over each other (tick labels grown to the floor and not thinned)
+  const ov = d?.overlaps ?? [];
+  add(hard, "Q3.apart", !ov.length, ov.length ? `${ov.length} overlaps, e.g. "${ov[0].a}" × "${ov[0].b}" (${ov[0].share})` : null);
   const tg = (d?.targets ?? []).filter((t) => Math.min(t.w, t.h) < FLOORS.target);
   add(hard, "Q4.touchable", !tg.length, tg.length ? `${tg.length} targets < 44 px, e.g. "${tg[0].label}" ${tg[0].w}x${tg[0].h}` : null);
   add(hard, "Q5.drawn", (d?.texts?.length ?? 0) + (d?.targets?.length ?? 0) > 0, null);

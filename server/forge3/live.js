@@ -17,6 +17,7 @@
 // and the caller keeps its own path (the board, the engine in the tray, voice).
 import { compose, noteShown, playCertificates, playPassed } from "./compose.js";
 import { topicParts } from "./art.js";
+import { certifyForTray } from "./tray-gate.js";
 
 /** Bound on the learner-input read (2 small queries): past it the level is picked with the class defaults. */
 export const LEARNER_READ_MS = 350;
@@ -120,13 +121,14 @@ export async function buildLive(m, deps = {}) {
   // the client does not report its box: an unknown size is judged as the 360 phone (the commonest and the hardest box)
   const vpEff = m.vp ?? "p360";
   const okArt = (a) => playPassed(table, s.level.family, s.level.mode, a, vpEff, band, s.level.topicId);
-  if (s.art?.art && okArt(s.art.art) === false) {
+  // round 4 content: an art never judged at this size is refused too (round 3 allowed it): swap to one that passed
+  if (s.art?.art && okArt(s.art.art) !== true) {
     const alt = Object.keys(table?.pieces?.[`${s.level.family}/${s.level.mode}`] ?? {}).map((k) => k.split("@")[0]).find((a) => a !== s.art.art && okArt(a) === true);
     if (!alt) { plan.why.push(`play ${s.level.family}/${s.level.mode}: no art passed the visual QA at ${vpEff}`); return null; }
     try { const r2 = await P.startSession(m.child, { skillId: m.skillId ?? null, topicId: m.topicId ?? null, goal: rung.goal ?? null, lessonId: m.lessonId, art: alt, lastArt: m.lesson?.lastArt ?? null }, undefined); if (r2?.level) s = r2; } catch { /* keep s */ }
     if (s.art?.art !== alt) return null;
     plan.why.push(`play art ${alt}: the picked art failed the visual QA`);
-  } else if (s.art?.art && okArt(s.art.art) == null) plan.why.push(`play ${s.level.family}/${s.level.mode} ${s.art.art}: not yet judged`);
+  }
   const art = s.art?.art ?? rung.art ?? null;
   const boardTwin = twinOfLevel(logic, s.level);
   const artifact = {
@@ -136,6 +138,9 @@ export async function buildLive(m, deps = {}) {
     play: { sessionId: s.sessionId, family: s.level.family, mode: s.level.mode, skillId: s.level.skillId, topicId: s.level.topicId, art, levelId: s.level.levelId },
     ...(boardTwin ? { boardTwin } : {}),
   };
+  // the ONE tray gate (server/forge3/tray-gate.js): the piece as it will be revealed, at the device's class
+  const gate = certifyForTray(artifact, { vp: vpEff, classLevel: m.child.class_level ?? classLevel ?? 6, topicId: s.level.topicId, ...(deps.playCerts !== undefined ? { playCerts: deps.playCerts } : {}) });
+  if (!gate.ok) { plan.why.push(`tray gate: ${gate.why}`); return null; }
   const facts = { kind: "game", archetype: "play@1", onScreen: { game: `${s.level.family}/${s.level.mode}`, ...factsOfLevel(logic, s.level), ...(await screenWordsOf(s.level, m.child.language_pref)) } };
   // (level and artPick stay on the server: the client fetches the level by its session; the QA harness judges it)
   return { rung: { ...rung, art }, artifact, facts, boardTwin, level: s.level, artPick: s.art ?? null, lesson: noteShown(m.lesson ?? {}, { ...rung, art }), why: plan.why, ms: Date.now() - t0 };

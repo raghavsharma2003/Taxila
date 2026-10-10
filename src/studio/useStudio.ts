@@ -13,11 +13,13 @@ export const lessonOfIntent = (intentId?: string | null): string | null => {
   return UUID.test(head) ? head : null;
 };
 
-interface PieceWire { status?: StudioStatus; artifact?: StudioArtifact; partial?: string }
+interface PieceWire { status?: StudioStatus; artifact?: StudioArtifact; partial?: string; retracted?: boolean }
 type Listener = () => void;
 
 class LessonWire {
   pieces = new Map<string, PieceWire>();
+  /** round 4 content: a certified piece the server composed for the child's ask, shown before the turn lands. */
+  early: { slot: StudioSlot; at: number } | null = null;
   listeners = new Set<Listener>();
   es: EventSource | null = null;
   constructor(readonly lessonId: string) {}
@@ -34,6 +36,11 @@ class LessonWire {
     else if (m.t === "script" && m.intentId && m.script) this.patch(m.intentId, { artifact: { kind: "whiteboard", stage: { w: m.script.board.w, h: m.script.board.h }, script: m.script } });
     else if (m.t === "partial" && m.intentId && typeof m.html === "string") this.patch(m.intentId, { partial: m.html.slice(0, 120_000) });
     else if (m.t === "ready" && m.intentId) this.patch(m.intentId, {});
+    else if (m.t === "slot" && m.slot?.intentId && m.slot.artifact) { this.early = { slot: m.slot, at: Date.now() }; this.patch(m.slot.intentId, { artifact: m.slot.artifact }); }
+    else if (m.t === "retract" && m.intentId) {
+      if (this.early?.slot.intentId === m.intentId) this.early = null;
+      this.patch(m.intentId, { retracted: true });
+    }
   }
   patch(id: string, p: PieceWire) {
     this.pieces.set(id, { ...this.pieces.get(id), ...p });
@@ -84,6 +91,8 @@ export const studioApi = {
     if (!/^\/api\/studio\/build\?sha=[0-9a-f]{64}$/.test(src)) return null;
     try { const res = await fetch(src, { credentials: "same-origin" }); return res.ok ? await res.json() : null; } catch { return null; }
   },
+  /** round 4 content: the Desk's work-tray box, so the server certifies what it reveals at THIS device's size. */
+  viewport: (lessonId: string, box: { w: number; h: number }, young: boolean) => postJson<{ vp: string; tight: boolean }>("/api/studio/viewport", { lessonId, box, young }),
   async slot(lessonId: string, intentId: string): Promise<StudioSlot | null> {
     try {
       const res = await fetch(`/api/studio/slot?lessonId=${encodeURIComponent(lessonId)}&intentId=${encodeURIComponent(intentId)}`, { credentials: "same-origin" });
@@ -123,6 +132,21 @@ export function useStudioSlot(slot: StudioSlot): StudioSlot {
     return { ...slot, state, ...(artifact ? { artifact } : {}) };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [slot, lessonId, tick, fetched]);
+}
+
+/** round 4 content: open the lesson's Studio stream at lesson start (an early piece can arrive before any stage mounts). */
+export function openStudioWire(lessonId: string | null): void { if (lessonId && UUID.test(lessonId)) wireFor(lessonId); }
+/** The early slot the server pushed for this lesson (null once retracted or never). Re-renders on every wire message. */
+export function useEarlySlot(lessonId: string | null): { slot: StudioSlot; at: number } | null {
+  const [, setTick] = useState(0);
+  useEffect(() => {
+    if (!lessonId || !UUID.test(lessonId)) return;
+    const w = wireFor(lessonId);
+    const l = () => setTick((t) => t + 1);
+    w.listeners.add(l);
+    return () => { w.listeners.delete(l); };
+  }, [lessonId]);
+  return lessonId ? wires.get(lessonId)?.early ?? null : null;
 }
 
 /** The latest streamed partial paint of a piece being made (decoration under the veil), or null. */

@@ -99,7 +99,8 @@ export const realtimeSeam = {
 // ───────────── POST /api/lesson/lane ─────────────
 
 /** Why the client may move a lesson off the realtime lane. */
-const SWITCH_REASONS = new Set(["rate_limit", "mint_refused", "unavailable"]);
+// "content_filter": the realtime reply and its one retry were blocked (4A patch request 10; the resume turn carries replyFiltered)
+const SWITCH_REASONS = new Set(["rate_limit", "mint_refused", "unavailable", "content_filter"]);
 
 /**
  * Move a live realtime lesson to the cascade lane, mid-sitting. Idempotent: a lesson already on cascade answers 200
