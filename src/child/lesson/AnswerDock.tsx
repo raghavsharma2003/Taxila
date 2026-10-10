@@ -34,7 +34,7 @@ export function modeOf(m: Pick<DeskModel, "answerForm" | "family" | "mic" | "typ
   if (helpMenu) return { key: "floor.mode.tap_above", glyph: "hand_up" };
   switch (m.answerForm) {
     case "choice":
-      if (!up) return noVoiceYoung ? (m.showHelp ? { key: "floor.mode.help", glyph: null } : null) : { key: "floor.mode.say_or_tap", glyph: null };
+      if (!up) return noVoiceYoung ? (m.showHelp ? { key: "floor.mode.help", glyph: null } : null) : { key: "floor.mode.say", glyph: null };
       return young ? { key: "floor.mode.tap_above", glyph: "hand_up" } : { key: "floor.mode.say_or_tap", glyph: null };
     case "tap_in_tray":
       if (up) return { key: "floor.mode.tray", glyph: young ? "hand_up" : null };
@@ -49,7 +49,9 @@ export function modeOf(m: Pick<DeskModel, "answerForm" | "family" | "mic" | "typ
       break;
   }
   // words, and every form whose tray target is gone
-  if (m.mic.available) return { key: "floor.mode.say_or_tap", glyph: null };
+  // journey audit #10b (A28, A44): "Say it, or tap" with nothing to tap read as a line cut off; the mode line says
+  // "tap" only where there is something to tap
+  if (m.mic.available) return { key: "floor.mode.say", glyph: null };
   if (!young) return { key: "floor.mode.type", glyph: null };
   return up ? { key: "floor.mode.tap_above", glyph: "hand_up" } : m.showHelp ? { key: "floor.mode.help", glyph: null } : null;
 }

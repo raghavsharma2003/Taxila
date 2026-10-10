@@ -1,0 +1,108 @@
+diff --git a/server/routes/lesson.js b/server/routes/lesson.js
+index 5f7719f2..3d66cc03 100644
+--- a/server/routes/lesson.js
++++ b/server/routes/lesson.js
+@@ -9,7 +9,7 @@ import { need, bad, forbidden, notFound, send, HttpError } from "../http.js";
+ import { requireChild, hasConsent, sessionTokenHash } from "../auth.js";
+ import { chat, mintRealtimeSecret, endpoint, realtimeLane, DEPLOY } from "../azure.js";
+ import { getTopic, getKit, pinKit, pinnedKit, topicOf, topicSequence } from "../content/index.js";
+-import { nextTopicOf } from "../reports/truth.js";
++import { nextTopicOf, supersede, engineRow } from "../reports/truth.js";
+ import { hasAbilityLabel } from "../learner/brief.js";
+ import { buildChildBrief, loadRecentOutcomes, loadRecentStuck } from "../learner/model.js";
+ import { canWrite } from "../learner/mode.js";
+@@ -26,7 +26,7 @@ import { teacherFor, teacherForLesson, teacherCard } from "../compiler/character
+ import { prewarm } from "../voice/prewarm.js";
+ import { styleForChild } from "./voice.js";
+ import { planFor } from "./child.js";
+-import { requireParentIfPinSet, defaultControls } from "./parent.js";
++import { requireParentIfPinSet, defaultControls, engineTick } from "./parent.js";
+ import { forgeSeam } from "../forge/seam.js";
+ import { talkReport } from "../director/talk.js";
+ import { onLessonStart, onLessonEnd } from "../conductor/hooks.js";
+@@ -439,7 +439,7 @@ function lessonFacts(state, evidence, kit) {
+  * the same "warm" program whatever happened. No score, minutes or comparison is ever in it.
+  * @returns {import("../../shared/contracts").LessonSummary}
+  */
+-export function lessonSummary(state, { topic, teacher }) {
++export function lessonSummary(state, { topic, teacher, rows = null }) {
+   const did = Array.isArray(state?.did) ? state.did : [];
+   const latest = new Map();
+   for (const d of did.filter((x) => x.kind === "item")) latest.set(d.itemId, d);
+@@ -452,6 +452,10 @@ export function lessonSummary(state, { topic, teacher }) {
+   const anyVerified = cards.length > 0;
+   if (!anyVerified) cards = attempts.map((d) => card(d, false));
+   cards = cards.slice(0, 3);
++  // journey audit #13: the tick and "with a hint" come from the engine rows of the card's own turn when they are read
++  // (parent.js engineTick, the claim the parent's evidence page shows), never the Director's hint rung alone, so the
++  // child's "On your own" and the parent's "Right, with a hint" cannot disagree about the same answer
++  if (rows) cards = cards.map((c) => (c.turnSeq != null && rows.some((r) => r.turnSeq === Number(c.turnSeq)) ? { ...c, ...engineTick(rows, c.turnSeq) } : c));
+   return {
+     title: topic?.title ?? null, shortTitle: topic ? shortTitleOf(topic.title) : null, cards,
+     ...(anyVerified ? {} : { tried: attempts.length }),
+@@ -460,6 +464,13 @@ export function lessonSummary(state, { topic, teacher }) {
+   };
+ }
+ 
++/** The lesson's scored engine rows (the same read and filter as the parent's lesson page). Never throws: [] on error. */
++async function engineRowsOf(childId, lessonId) {
++  const raw = await q(`select id, seq, session_id, occurred_at, skill_ids, cls, outcome, grader, item_key, teach, pre_attempt_help, entry_rung,
++      misconception_id, via, contaminated, assisted from kt_evidence where child_id = $1 and session_id = $2 order by seq`, [childId, String(lessonId)]).catch(() => []);
++  return supersede(raw).map(engineRow).filter((r) => r.scored);
++}
++
+ /** A lesson summary with "Next time" from the ONE next-topic answer (falls back to the start's pinned title). */
+ async function withPlanNext(did, child) {
+   const next = await nextTopicOf(child);
+@@ -484,7 +495,7 @@ async function end(req, res, body) {
+   const topicRow = getTopic(topicId);
+   // "Next time" on the end summary is the ONE next-topic answer read NOW (after this lesson's evidence), the same the
+   // home, Progress and the parent read (reports/truth.js nextTopicForPlan), never the sequence-next pinned at the start
+-  const did = async (st) => withPlanNext(lessonSummary(st, { topic: topicRow, teacher }), child);
++  const did = async (st) => withPlanNext(lessonSummary(st, { topic: topicRow, teacher, rows: await engineRowsOf(child.id, lesson.id) }), child);
+   const already = async (row) => send(res, 200, { summary: row?.summary ?? null, parentNote: row?.parent_note ?? null, alreadyEnded: true, did: await did(row?.state ?? lesson.state) });
+   if (lesson.ended_at) return already(lesson);
+   // Claim the lesson BEFORE the slow summary: of two overlapping ends (a double tap, a retry on timeout) only
+@@ -589,7 +600,7 @@ async function summaryRead(req, res) {
+   const id = new URL(req.url || "/", "http://x").searchParams.get("lessonId");
+   const { lesson, child } = await loadLessonFor(req, id);
+   const teacher = teacherForLesson(child, lesson.state?.ctx?.teacherId, lesson.state?.ctx?.teacherName);
+-  send(res, 200, { lessonId: lesson.id, ended: !!lesson.ended_at, did: await withPlanNext(lessonSummary(lesson.state, { topic: getTopic(lesson.topic_id), teacher }), child) });
++  send(res, 200, { lessonId: lesson.id, ended: !!lesson.ended_at, did: await withPlanNext(lessonSummary(lesson.state, { topic: getTopic(lesson.topic_id), teacher, rows: await engineRowsOf(child.id, lesson.id) }), child) });
+ }
+ 
+ /** POST /api/lesson/turn: a thin adapter over the Brain's turn handler (every refusal is a thrown HttpError). */
+diff --git a/tests/r4-content-summary-claims.test.mjs b/tests/r4-content-summary-claims.test.mjs
+new file mode 100644
+index 00000000..7a7dbb17
+--- /dev/null
++++ b/tests/r4-content-summary-claims.test.mjs
+@@ -0,0 +1,28 @@
++// Round 4 · stream 2, journey audit #13 (A31 vs A40): the child's summary said "On your own" for the pad answer the
++// parent's evidence page called "Right, with a hint". One claim source: with the lesson's engine rows read, the
++// summary's tick and "with a hint" are engineTick of the card's own turn, as on the parent page (patch request 04).
++import { describe, it } from "node:test";
++import assert from "node:assert/strict";
++import { lessonSummary } from "../server/routes/lesson.js";
++import { engineTick } from "../server/routes/parent.js";
++
++const state = { did: [{ kind: "item", itemId: "i1", ask: "3/4 ka aadha?", answer: "3/8", verdict: "correct", verified: true, withHelp: false, seq: 7, turn: 4 }] };
++const row = (over) => ({ turnSeq: 7, cls: "item.open", result: "right", firstTryUnaided: true, scored: true, skillIds: [], ...over });
++
++describe("r4: the child's summary and the parent's evidence make one claim", () => {
++  it("a right answer that was not first-try-unaided reads 'with a hint' on both", () => {
++    const rows = [row({ result: "right_hint", firstTryUnaided: false })];
++    const card = lessonSummary(state, { topic: null, teacher: null, rows }).cards[0];
++    assert.deepEqual({ tick: card.tick, withHelp: card.withHelp }, engineTick(rows, 7));
++    assert.equal(card.withHelp, true);
++  });
++  it("first try, unaided: 'on your own' on both", () => {
++    const rows = [row({})];
++    const card = lessonSummary(state, { topic: null, teacher: null, rows }).cards[0];
++    assert.equal(card.tick, true); assert.equal(card.withHelp, false);
++  });
++  it("no engine row for the turn (rows not read, or the row not written yet): the lesson's own record stands", () => {
++    assert.equal(lessonSummary(state, { topic: null, teacher: null }).cards[0].withHelp, false);
++    assert.equal(lessonSummary(state, { topic: null, teacher: null, rows: [row({ turnSeq: 99, firstTryUnaided: false })] }).cards[0].withHelp, false);
++  });
++});

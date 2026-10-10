@@ -27,7 +27,11 @@ today's board, byte for byte (no skin attribute → every new rule is unmatched,
 
 - **One palette source.** Nothing here defines a colour. The board reads Kaksha's resolved `--k-*` values at mount
   (`palette.ts kakshaBoardSkin`): ground `--k-deep`, edge `--k-line-2`, ink `--k-ink`, accent `--k-ion`, mark `--k-her`,
-  good `--k-secure`, soft `--k-ink-3`, grid `--k-line`. `--k-move` is not used (Kaksha reserves it for "your move").
+  good `--k-secure`, soft `--k-ink-3`, grid `--k-line`; mark `--k-look` (K: "look again", never red, never a verdict;
+  `--k-her` is hers alone). `--k-move` is never used (Kaksha's one "your move" colour, on the Answer dock). Skeletons:
+  Check is `--k-ink` with `--k-void` text; "picked" is a 2px `--k-ion` border on an ion wash over `--k-raise`, `--k-ink`
+  text (no text on a solid ion fill). A theme or look switch (`data-ktheme` / `data-klook`) re-reads the tokens under the
+  board; a module frame takes them at mount.
   The stage, skeletons and chips map the studio vars onto `--k-*` (`studio.css`); the sandboxed module frame gets the
   resolved values in its init (`host.tsx` → `protocol.ts`, which takes only `--k-*` names with short safe values →
   `bootstrap.tsx`) and maps its `--fx-*` onto them (`frame.css`). A test fails on any colour literal in a skin rule.
@@ -44,7 +48,24 @@ today's board, byte for byte (no skin attribute → every new rule is unmatched,
   skin; every module frame marked skinned. Shots: `shots/skin/` (`*-before.png` / `*-kaksha.png`).
 - **Fixed on the way:** the place-value game ask built 345, not the kit's number (the Director sent `a:`; the engine
   reads `value`); now 45,236 for 5 places (test).
-- **Open:** U1/K has not yet confirmed the role mapping (mark = `--k-her`, submit not `--k-move`); one-line change if not.
+- **Settled with K** (2026-10-10): every pair above measured ≥ 5:1 by K in all six palettes (classic, holo, volt × night,
+  dawn); this branch's test checks classic night and dawn from the mirror.
+
+## 2b. UX fixes from the journey audit (stream 5, `claude/r4-asha` AUDIT.md), 2026-10-10
+
+- **#10b "Say it, or tap" read as cut off** (A28, A44). The words were whole on screen; the line itself was a fragment,
+  shown when there was nothing to tap. Now "Say your answer" when nothing is up, "Say it, or tap an answer" when tiles
+  are. Separately the mode line clipped for real at 360 ("Use the numbers above", 152 px in 122): it now wraps. Probe
+  `tests/prod/r4-content-dock-lines.mjs` (12 fixtures × 2 families × 360 / 412 / 1366): 0 clipped. Shots: `shots/ux/`.
+- **#13 the child summary vs the parent's evidence** (A31 vs A40, A36). Two halves: (a) "You listened to Asha today"
+  after 4 spoken answers: the server's lesson record holds only item and teach-back turns, so it came back empty; the
+  Desk now shows the answers it saw (never ticked) and "You tried N questions" (`useDesk.ts`). (b) "On your own" vs
+  "Right, with a hint": two sources for one claim (the Director's hint rung vs the engine row). Patch request **04** to
+  `server/routes/lesson.js` makes the summary take `engineTick`, the parent page's own claim, whenever the turn has an
+  engine row. Kaksha's summary leading with an unanswered prompt (B05) is K's.
+- **#14 the chosen picture shown only after a reload** (A32 vs A33). Hello saved the picture but never re-read the
+  shell's child record (Me did); now it does. The "Who is learning?" tiles read a page-level cache of their own and
+  can still show the old picture until a reload (not measured); that file is not mine (`src/app/api.ts` `refreshMe`).
 
 ## 1. Baseline (the untouched base `522dca6e`, re-run first)
 

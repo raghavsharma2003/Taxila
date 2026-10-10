@@ -43,7 +43,7 @@ function InterestTile({ id, on, toggle }: { id: string; on: boolean; toggle?: ()
 }
 
 export function Hello() {
-  const { cid, child, band, family, lang, setPrefs, reducedMotion } = useChild();
+  const { cid, child, band, family, lang, setPrefs, reducedMotion, refresh } = useChild();
   const nav = useNavigate();
   const young = family === "young";
   const rec = useTeacher(child.teacher_id, band);
@@ -78,6 +78,9 @@ export function Hello() {
     setPrefs({ hello: true, picture: avatar });
     try {
       await updateChild(cid, { ...(avatar ? { avatar } : {}), ...(picks.length ? { interests: picks.map(label) } : {}) });
+      // journey audit #14 (A32 vs A33): the shell's child record was the one loaded before the pick, so Home showed the
+      // old picture until a reload; re-read it now, as Me does after a change of picture
+      refresh();
     } catch {
       /* the lesson still starts; the picks stay on this device */
     }

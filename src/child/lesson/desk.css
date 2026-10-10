@@ -201,7 +201,8 @@
 .dk-word[data-floor="thinking"] .dk-word-glyph { color: var(--think); }
 .dk-word[data-floor="idle"] .dk-word-glyph { opacity: 0; }
 .dk-dock[data-lamp] .dk-word-text, .dk-dock[data-lamp] .dk-word-glyph { color: var(--lamp-ink); }
-.dk-mode { display: inline-flex; align-items: center; gap: var(--space-1); color: var(--ink-2); font-size: var(--t-meta); font-weight: 600; white-space: nowrap; min-width: 0; overflow: hidden; }
+/* journey audit #10b: the mode line wraps rather than clips ("Use the numbers above" lost its end at 360) */
+.dk-mode { display: inline-flex; align-items: center; gap: var(--space-1); color: var(--ink-2); font-size: var(--t-meta); font-weight: 600; line-height: 1.25; min-width: 0; text-wrap: balance; }
 .dk-word-text { white-space: nowrap; }
 .dk-dock[data-lamp] .dk-mode { color: var(--lamp-ink); }
 .dk-wait { flex: none; border: 1px solid var(--line); background: var(--surface); border-radius: var(--radius-pill); min-height: 32px; padding: 0 var(--space-3); font-weight: 600; font-size: var(--t-meta); position: relative; }

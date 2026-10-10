@@ -154,7 +154,7 @@
 [data-skin="kaksha"] .st-stage {
   --paper: var(--k-deep); --surface: var(--k-raise); --tray: var(--k-raise);
   --ink: var(--k-ink); --ink-2: var(--k-ink-2); --line: var(--k-line-2);
-  --nib: var(--k-ion); --nib-soft: color-mix(in srgb, var(--k-ion) 18%, transparent); --on-nib: var(--k-deep);
+  --nib: var(--k-ion); --nib-soft: color-mix(in srgb, var(--k-ion) 18%, var(--k-raise)); --on-nib: var(--k-deep);
   --font-ui: var(--k-sans);
   background: var(--k-deep);
 }
@@ -163,10 +163,13 @@
 [data-skin="kaksha"] .sk { font-family: var(--k-sans); }
 [data-skin="kaksha"] .sk .sk-big, [data-skin="kaksha"] .sk .sk-num { font-family: var(--k-mono); }
 [data-skin="kaksha"] .sk .sk-part { fill: var(--k-raise); stroke: var(--k-ink-2); }
-[data-skin="kaksha"] .sk .sk-btn rect { fill: var(--k-raise); stroke: var(--k-line-2); stroke-width: 1; }
-[data-skin="kaksha"] .sk .sk-btn text { fill: var(--k-ink); }
-[data-skin="kaksha"] .sk .sk-btn.is-on rect { fill: var(--k-ion); stroke: var(--k-ion); }
-[data-skin="kaksha"] .sk .sk-btn.is-on text { fill: var(--k-deep); }
+/* K's roles (2026-10-10): Check is the tray's strong neutral (--k-ink ground, --k-void text), never --k-move (the one
+   "your move" colour, on the Answer dock); "picked" is a 2px --k-ion border on an ion wash over --k-raise with --k-ink
+   text, never a solid --k-ion fill (no tested text-on-ion pair) */
+[data-skin="kaksha"] .sk .sk-btn rect { fill: var(--k-ink); stroke: none; }
+[data-skin="kaksha"] .sk .sk-btn text { fill: var(--k-void); }
+[data-skin="kaksha"] .sk .sk-btn.is-on rect { fill: var(--nib-soft); stroke: var(--k-ion); stroke-width: 2; }
+[data-skin="kaksha"] .sk .sk-btn.is-on text { fill: var(--k-ink); }
 [data-skin="kaksha"] .st-cardhead { font-family: var(--k-sans); color: var(--k-ink); }
 [data-skin="kaksha"] .st-chip-kind { background: var(--k-raise); border-color: var(--k-line-2); color: var(--k-ink); }
 [data-skin="kaksha"] .st-chip-check { border-color: var(--k-line-2); color: var(--k-ink-2); }

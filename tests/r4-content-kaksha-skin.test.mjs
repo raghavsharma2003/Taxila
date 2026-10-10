@@ -36,6 +36,8 @@ describe("r4: the tray under the Kaksha skin", () => {
     assert.equal(s.palette.ink.ink, NIGHT["--k-ink"]);
     assert.equal(s.palette.ink.accent, NIGHT["--k-ion"]);
     assert.equal(s.palette.grid, NIGHT["--k-line"]);
+    assert.equal(s.palette.ink.mark, NIGHT["--k-look"], "mark is Kaksha's 'look again' role; --k-her is hers alone (K, 2026-10-10)");
+    assert.ok(!Object.values(s.palette.ink).includes(NIGHT["--k-move"]), "the tray never uses the your-move colour");
     assert.equal(kakshaBoardSkin((n) => NIGHT[n] ?? "", "chalk").palette.grid, undefined, "chalk and paper draw no grid");
     assert.match(s.numFont, /Geist Mono|mono/i);
     assert.notEqual(paletteFor("chalk").ground, s.palette.ground, "today's chalkboard stays for everyone else");
@@ -46,6 +48,14 @@ describe("r4: the tray under the Kaksha skin", () => {
       const s = kakshaBoardSkin((n) => T[n] ?? "", "paper");
       const bad = Object.entries(s.palette.ink).map(([k, v]) => [k, Math.round(ratio(v, s.palette.ground) * 100) / 100]).filter(([, r]) => r < 5);
       assert.deepEqual(bad, []);
+    });
+  }
+  for (const [name, T] of [["night (Older)", NIGHT], ["dawn (Young)", DAWN]]) {
+    it(`${name}: the skeleton's text pairs (K's roles) are ≥ 5:1`, () => {
+      const mix = (a, b, p) => "#" + [0, 2, 4].map((i) => Math.round(parseInt(a.slice(1 + i, 3 + i), 16) * p + parseInt(b.slice(1 + i, 3 + i), 16) * (1 - p)).toString(16).padStart(2, "0")).join("");
+      assert.ok(ratio(T["--k-void"], T["--k-ink"]) >= 5, "Check: --k-void on --k-ink");
+      assert.ok(ratio(T["--k-ink"], mix(T["--k-ion"], T["--k-raise"], 0.18)) >= 5, "picked: --k-ink on the ion wash over --k-raise");
+      assert.ok(ratio(T["--k-ink"], T["--k-raise"]) >= 5, "a button at rest: --k-ink on --k-raise");
     });
   }
   it("the frame takes only --k-* names with safe values from init", () => {

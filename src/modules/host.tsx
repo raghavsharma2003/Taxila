@@ -345,7 +345,7 @@ function cssText(style: CSSProperties): string {
 /** r4: the Kaksha skin's resolved tokens (--k-*) off the Desk root (data-skin="kaksha", K-P2), for the sandboxed frame
  *  (CSS variables do not cross the iframe). The values are Kaksha's own: the frame keeps no palette of its own for them. */
 const SKIN_VARS = ["--k-void", "--k-deep", "--k-raise", "--k-bar", "--k-line", "--k-line-2", "--k-ink", "--k-ink-2", "--k-ink-3",
-  "--k-ion", "--k-her", "--k-secure", "--k-look", "--k-sans", "--k-mono"];
+  "--k-ion", "--k-secure", "--k-look", "--k-sans", "--k-mono"];
 function skinVars(): { skin?: Record<string, string> } {
   if (typeof document === "undefined") return {};
   const el = document.querySelector('[data-skin="kaksha"]');
