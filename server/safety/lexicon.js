@@ -141,7 +141,9 @@ const SHAPES = [
   ["abuse", "khana_nahi_milta", `${I_O}${g(3)} (?:khana|bhojan) (?:nahi|nahin|nai) (?:dete|deti|deta|diya|dia|milta)`],
   ["abuse", "nonparent_mujhe_gap_chhoote", `(?:${NONPARENT})(?: ji)?${g(2)} ${I_O}${g(6)} (?:chute|chuta|chuti|chua|touch karte|touch karta|hath lagate|hath lagata)(?! nahi| nahin| nai)`, (m, full) => LESSON.test(full)],
   ["abuse", "threw_at_me", `(?:${ACTOR_EN}) (?:threv|throvs|throv)${g(3)} at me`, (m, full) => LESSON.test(full)],
-  ["abuse", "maarpeet_maar_padti", `(?:${ACTOR}|${I_O}|ghar (?:pe|par|men|mein|me))${g(3)} (?:marpit|mar pit|marpitai|pitai) (?:karte|karti|karta|hoti|kiya|ki)|(?:${I_O}|ghar (?:pe|par|men|mein|me))${g(2)} (?:mar|pitai|danda|dande|chapal|belt) (?:padti|pdti|parti|padi|pdi|khani padti)`, (m, full) => LESSON.test(full)],
+  ["abuse", "maarpeet_maar_padti", `(?:${ACTOR}|${I_O}|ghar (?:pe|par|men|mein|me))${g(3)} (?:marpit|mar pit|marpitai|pitai) (?:karte|karti|karta|hoti|kiya|ki)|(?:${I_O}|ghar (?:pe|par|men|mein|me))${g(2)} (?:mar|pitai|danda|dande|chapal|belt) (?:padti|pdti|parti|padi|pdi|khani padti)`
+    // round 4 (4A patch request 11): the reversed order, "maarpeet hoti hai ghar pe" (only words the shape already has)
+    + `|(?:marpit|mar pit|marpitai|pitai) (?:karte|karti|karta|hoti|kiya|ki)(?: hai| hain)? ghar (?:pe|par|men|mein|me)`, (m, full) => LESSON.test(full)],
   ["abuse", "actor_ne_mujhe_gap_verb", `(?:${ACTOR})(?: ji)? ne ${I_O}${g(3)} (?:mara|pita|chua|jalaya|jala diya|jala dia|thapad|lat|ghusa|dhaka|nocha|dabaya|band kar diya)`, (m, full) => LESSON.test(full)],
   ["abuse", "actor_burns_me", `(?:${ACTOR_EN}) (?:burns|burned|burnt|chokes|choked|loks|loked|pinches|pinched|bites|ties|tied|throws|threw|pushes|pushed|slaps|slaped|kiks|kiked) me`, (m, full) => LESSON.test(full)],
   ["abuse", "kapde_utarne", `(?:${NONPARENT})(?: ji)?${g(4)} kapde (?:utar|utarne|utarte|utarta|utarti|utarvate|utarvata|utarvaye|utaro|kholne|kholte|kholta|kholo|utarvane)|(?:makes|made|asks|asked|tels|told|vants|vanted|forces|forced) me (?:to )?(?:take of|remove|undres)|undres(?:ed|ing)? me`],
@@ -289,7 +291,23 @@ const SUCCEED_RAW = /(?<![\p{L}])suc+e+d+(?:s|ed|ing)?(?![\p{L}])/giu;
 // strings (docs/design/round4/build/conversation/safety-kit-hits.md). Each mask belongs to ONE shape: a hit of that shape
 // counts only when it survives with the listed RAW words masked out ("when": the mask applies only if that raw word is in the
 // turn). Every other shape, and every true spelling of these five, is untouched (docs/design/round3/adversarial/r4-scan-masks.test.mjs).
+// round 4 (4A patch request 11): a first-person or "us" word anywhere in the turn vetoes a mask (the child is involved)
+const CHILD_RAW = /(?<![\p{L}\p{M}])(?:i|me|my|mine|myself|we|us|our|mujhe|mujhko|mujhse|mereko|mera|meri|mere|main|mai|maine|hum|humein|hume|hamein|hamara|hamari|hamare|humara|humari|humare|मैं|मैंने|मुझे|मुझको|मुझसे|मेरा|मेरी|मेरे|हम|हमें|हमारा|हमारी|हमारे)(?![\p{L}\p{M}])/iu;
+// a named character of a class story and a reason clause (ताकि / taaki / so that): the story retold, never "kisi ko mat
+// batana" on its own. Main safety review: ONLY बाबा भारती / Baba Bharati (Sultan and Kharag Singh are real people's names:
+// "Sultan uncle ne kaha kisi ko mat batana taaki ..." is a disclosure), and any other adult or actor word vetoes the mask.
+const STORY_NAMED = /(?:बाबा\s+भारती|baba\s+bhar(?:a)?ti)/iu;
+const REASON_CLAUSE = /(?<![\p{L}\p{M}])(?:ताकि|taaki|taki|so\s+that)(?![\p{L}\p{M}])/iu;
+const ADULT_ACTOR_RAW = new RegExp(`(?<![\\p{L}\\p{M}])(?:${ACTOR}|${NONPARENT}|uncle|uncles|aunty|aunti|auntie|chacha|chachu|chachi|mama|mami|mamu|papa|pappa|dad|daddy|mummy|mumma|mom|mama ji|bhaiya|bhaiyya|bhai|didi|sir|madam|ma'?am|teacher|nana|nani|dada|dadi|tau|tai|fufa|bua|mausi|mausa|padosi|neighbou?r|coach|tutor|driver|guard|अंकल|आंटी|चाचा|चाची|मामा|मामी|पापा|मम्मी|माँ|भैया|भाई|दीदी|सर|मैडम|टीचर|नाना|नानी|दादा|दादी|ताऊ|ताई|फूफा|बुआ|मौसी|मौसा|पड़ोसी|कोच|ड्राइवर)(?![\\p{L}\\p{M}])`, "iu");
+const SPORT_CUE_RAW = /(?<![\p{L}\p{M}])(?:khel\w*|game|games|match|matches|sport\w*|cricket|kabaddi|football|खेल\S*|मैच)(?![\p{L}\p{M}])/iu;
+const HOME_HARM_RAW = /(?<![\p{L}\p{M}])(?:ghar|gharpe|home|house|gaali|gali|belt|dhamki|danda|dande|chappal|thappad|घर|गाली|बेल्ट|धमकी|डंडा|चप्पल|थप्पड़)(?![\p{L}\p{M}])/iu;
 const RAW_MASKS = {
+  // "गुस्से में मारपीट की जगह अच्छा खेलकर जवाब दिया" (a sportsmanship answer: fighting is what they did NOT do)
+  // main safety review: only in a SPORT turn (khel / game / match …), never with an actor, home or harm word in it
+  maarpeet_maar_padti: [{ when: (t) => SPORT_CUE_RAW.test(t) && !ADULT_ACTOR_RAW.test(t) && !HOME_HARM_RAW.test(t), unless: CHILD_RAW, mask: /(?:मारपीट|maa?rpe?e?t|maa?r\s+pe?e?t|maa?rpit)\s+(?:की|ki|ke)\s+(?:जगह|jagah|बजाय|bajaye|bajay|बदले|badle)/giu }],
+  // the story retold with a named character and a reason clause; the secrecy words themselves are masked only then
+  secret_dont_tell: [{ when: (t) => STORY_NAMED.test(t) && REASON_CLAUSE.test(t) && !ADULT_ACTOR_RAW.test(t), unless: CHILD_RAW,
+    mask: /(?:किसी\s+को|kisi\s*ko|kisiko)\s+(?:मत|mat|na|ना)\s+(?:बताना|batana|bolna|बोलना)/giu }],
   // "exhaust fans let them out" read "fansi le...": only the PLURAL appliance word (canonical "fans" -> "fansi"); a single
   // fan is never masked ("ceiling fan se latak jaunga" must fire, patch 09)
   hang_fansi: [{ mask: /(?<![\p{L}])(?:exhaust|ceiling|table|pedestal|wall|electric|cooling|kitchen)\s+fans(?![\p{L}])/giu }],
@@ -308,8 +326,9 @@ function rawMasked(id, text) {
   const masks = RAW_MASKS[id];
   if (!masks) return null;
   let t = String(text), hit = false;
-  for (const { when, mask } of masks) {
-    if (when && !when.test(t)) continue;
+  for (const { when, unless, mask } of masks) {
+    if (when && !(typeof when === "function" ? when(t) : when.test(t))) continue;
+    if (unless && unless.test(t)) continue;
     mask.lastIndex = 0;
     if (mask.test(t)) { hit = true; mask.lastIndex = 0; t = t.replace(mask, " "); }
     mask.lastIndex = 0;

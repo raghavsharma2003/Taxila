@@ -236,6 +236,9 @@ describe("lesson safety + teacher naming (test branch)", { skip: SKIP, concurren
       // rows as they exist today: classes 5-9 stored the old default Arjun
       const cid = (await one("insert into child (guardian_id, first_name, class_level, language_pref, teacher_id) values ($1, 'Mira', $2, 'hinglish', $3) returning id",
         [guardian, cls, cls > 4 ? "arjun" : "asha"])).id;
+      // all-day hours, as for `kid` above: without a row the default window (07:00-20:30 IST) makes this test fail on the clock
+      await q(`insert into child_controls (child_id, daily_minutes, hours_start, hours_end) values ($1, 45, '00:00', '23:59')
+        on conflict (child_id) do update set hours_start = '00:00', hours_end = '23:59', daily_minutes = 45`, [cid]);
       const r = await call("/api/lesson/start", { method: "POST", body: { childId: cid, mode: "voice", purpose: "practice" } });
       assert.equal(r.status, 201, `class ${cls}: ${JSON.stringify(r.body).slice(0, 300)}`);
       assert.deepEqual([r.body.teacher.id, r.body.teacher.name, r.body.teacher.pronouns.subject, r.body.teacher.role], ["asha", "Asha", "she", "AI teacher"], `class ${cls}`);
