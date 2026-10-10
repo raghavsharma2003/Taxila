@@ -65,6 +65,14 @@ describe("r4 content: claims boards on the owner-5 lines of this branch's local 
     const order = board("Aarav, board par 3 columns aur 5 rows banaiye: kul 15 boxes. Unmein 6 shade kijiye. Aap marked boxes ki sankhya boliye.");
     assert.ok(order?.ok); assert.equal(order.script.ops.filter((o) => o.op === "rect" && o.fill === "accent").length, 0, "she tells the child to shade: nothing shaded for her");
   });
+  it("the 51-board battery's last two: '5 slices mein 2 liye', and 15 boxes with 6 shaded where she asks the child to write it", () => {
+    const taken = board("Aarav, fraction mein upar wala number liye gaye parts, neeche wala total equal parts batata hai. 5 slices mein 2 liye—fraction kya hoga?");
+    assert.ok(taken?.ok); assert.equal(taken.script.ops.filter((o) => o.op === "sector" && o.fill === "accent").length, 2);
+    const grid = board("Aarav, screen par 15 equal boxes hain; 6 shaded boxes ko count kijiye. Fraction mein upar shaded, neeche total—likhiye.");
+    assert.ok(grid?.ok); assert.equal(grid.script.ops.filter((o) => o.op === "rect" && o.fill === "accent").length, 6);
+    assert.ok(!grid.script.ops.some((o) => o.op === "numwork"), "she asks the child to write the fraction: it is not written");
+    for (const r of [taken, grid]) assert.ok(certifyForTray({ kind: "whiteboard", script: r.script }, { vp: "p360" }).ok, "legible at the 360 phone");
+  });
   it("a code board for her CONTINUE line is drawn fresh (it replaces the board; the old words are not under it)", () => {
     const line = "Ishaan, screen par animation move nahi hogi; flow dekhiye: Observe, Ask, Predict, Test, phir Conclude. Ismein pehla step kya hai?";
     const a = { ...ask(line), mode: "continue" };

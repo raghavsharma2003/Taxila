@@ -24,7 +24,9 @@ export function shadedIn(line, parts) {
   const notOrder = "(?!\\s+(?:kijiye|kariye|karo|karein|karen|kare|kar\\s+do|kar\\s+dijiye))";
   const m = t.match(new RegExp(`\\b${W}\\s+(?:parts?\\s+|hisse\\s+|tukde\\s+|boxes\\s+|cells?\\s+|squares?\\s+)?${V}\\b${notOrder}`))
     ?? t.match(new RegExp(`\\b${parts}\\s+(?:mein\\s+se|me\\s+se|out\\s+of)\\s+${W}\\b`))
-    ?? t.match(new RegExp(`\\b(?:unmein|unme|inmein|of\\s+them|of\\s+these)\\s+${W}\\s+${V}\\b${notOrder}`));
+    ?? t.match(new RegExp(`\\b(?:unmein|unme|inmein|of\\s+them|of\\s+these)\\s+${W}\\s+${V}\\b${notOrder}`))
+    // "5 slices mein 2 liye" / "4 mein se 3 khaye" / "3 of the 5 taken": the parts taken are the parts marked
+    ?? t.match(new RegExp(`\\b${parts}\\s+(?:[a-z]+\\s+)?(?:mein(?:\\s+se)?|me(?:\\s+se)?|of)\\s+${W}\\s+(?:liye|liya|li|khaye|khaya|khayi|taken|eaten|uthaye)\\b`));
   if (!m) return null;
   const n = num(m[1]);
   return Number.isInteger(n) && n >= 0 && n <= parts ? n : null;
@@ -55,7 +57,7 @@ export function flowIn(line) {
 /** Template calls that draw her line's screen claims (most specific first), or []. */
 export function claimsCalls(line) {
   const c = screenClaims(line);
-  const asks = /\?\s*$/.test(String(line ?? "").trim()) || /\b(kitne|kitna|kitni|how many|how much|bataiye|batao|what is)\b/i.test(String(line ?? ""));
+  const asks = /\?\s*$/.test(String(line ?? "").trim()) || /\b(kitne|kitna|kitni|how many|how much|bataiye|batao|what is|likhiye|likho|boliye|bolo|write|say)\b/i.test(String(line ?? ""));
   const out = [];
   // "3 equal groups, with 5 dots in each" / "5 each" / "har group mein 5": the each-count after the group word
   const eachM = String(line ?? "").toLowerCase().match(new RegExp(`\\b${W}\\s+(?:[a-z]+\\s+)?(?:in\\s+each|each|har\\s+(?:group|ek)\\s+mein)\\b`));

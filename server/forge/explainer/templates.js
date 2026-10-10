@@ -111,7 +111,8 @@ function fractionParts(c, tl) {
     for (let i = 0; i < shade; i++) tl.add({ id: `s${i}`, op: "sector", c: [cx, cy], r: r - 2, fromDeg: (i * 360) / parts, toDeg: ((i + 1) * 360) / parts, fill: "accent", ink: "accent", weight: 1 }, 380, { gap: 120 });
   }
   const fx = whole === "bar" ? 200 : 310, fy = whole === "bar" ? 225 : 120;
-  tl.add({ id: "frac", op: "numwork", at: [fx - 14, fy], layout: "fraction", rows: [[String(shade)], [String(parts)]], ink: "accent", weight: 2 }, 800, { gap: 300 });
+  // round 4 content: nothing shaded writes no fraction ("0/5" is a number her line never said: W4)
+  if (shade > 0) tl.add({ id: "frac", op: "numwork", at: [fx - 14, fy], layout: "fraction", rows: [[String(shade)], [String(parts)]], ink: "accent", weight: 2 }, 800, { gap: 300 });
   if (shade > 0) tl.add({ op: "highlight", target: "frac", style: "circle", ink: "mark" }, 600, { gap: 300 });
   return { facts };
 }
@@ -128,8 +129,10 @@ function shadeGrid(c, tl) {
   const block = Array.isArray(c.block) && isInt(c.block[0], 1, rows) && isInt(c.block[1], 1, cols) ? c.block : null;
   const shade = block ? block[0] * block[1] : c.shade ?? 0;
   if (!isInt(rows, 1, 6) || !isInt(cols, 1, 10) || rows * cols < 2 || !isInt(shade, 0, rows * cols)) return { error: "grid_range" };
-  const cell = Math.min(300 / cols, 170 / rows, 56);
-  const W = cols * cell, H = rows * cell, x0 = 200 - W / 2, y0 = 52 + (170 - H) / 2;
+  // the fraction (when written) needs ~70 units under the grid: the grid gives up height for it
+  const withFrac = !c.hideResult && shade > 0;
+  const cell = Math.min(300 / cols, (withFrac ? 140 : 170) / rows, 56);
+  const W = cols * cell, H = rows * cell, x0 = 200 - W / 2, y0 = 52 + ((withFrac ? 140 : 170) - H) / 2;
   tl.add({ id: "whole", op: "rect", at: [x0, y0], w: W, h: H, weight: 2 }, 800);
   let k = 0;
   for (let r = 0; r < rows; r++) for (let q = 0; q < cols; q++) {
@@ -141,7 +144,7 @@ function shadeGrid(c, tl) {
   if (c.labels !== false && cols > 1) tl.add({ op: "text", at: [200, y0 - 16], text: `${cols} columns`, size: "s", ink: "soft" }, 400, { gap: 200 });
   if (c.labels !== false && rows > 1) tl.add({ op: "text", at: [200, y0 + H + 18], text: `${rows} rows`, size: "s", ink: "soft" }, 400, { gap: 120 });
   const total = rows * cols;
-  if (!c.hideResult && shade > 0) tl.add({ id: "frac", op: "numwork", at: [186, y0 + H + 40], layout: "fraction", rows: [[String(shade)], [String(total)]], ink: "accent", weight: 2 }, 700, { gap: 300 });
+  if (withFrac) tl.add({ id: "frac", op: "numwork", at: [186, y0 + H + (c.labels !== false && rows > 1 ? 34 : 14)], layout: "fraction", rows: [[String(shade)], [String(total)]], ink: "accent", weight: 2 }, 700, { gap: 300 });
   return { facts: { rows, cols, cells: c.hideResult ? "? (child works it out)" : total, shaded: shade } };
 }
 

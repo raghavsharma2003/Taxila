@@ -92,7 +92,14 @@ try {
             }
             await page.waitForFunction(() => !document.querySelector('[data-testid="child-input"]')?.disabled, null, { timeout: 45_000 }).catch(() => {});
             await input.fill(text);
-            if (mark) { await page.evaluate(() => { window.__askAt = performance.now(); window.__pieceAt = 0; }); turnMs = -1; }
+            if (mark) {
+              // was a piece already in the tray when she asked? (an engine from an earlier turn: the frame persists across
+              // mounts, so a new mount cannot be told apart in the DOM; such asks are reported apart)
+              const had = await page.evaluate(() => { const st = document.querySelector('[data-testid="studio-stage"]'); const k = st?.getAttribute("data-kind");
+                return !!((k && k !== "whiteboard" && st.getAttribute("data-legible") !== "twin") || document.querySelector(".dk-module iframe")); });
+              rec.hadPiece = had;
+              await page.evaluate(() => { window.__askAt = performance.now(); window.__pieceAt = 0; }); turnMs = -1;
+            }
             const t0 = Date.now();
             await input.press("Enter");
             await page.waitForTimeout(2500);
@@ -109,7 +116,7 @@ try {
         } catch (e) { rec.error = String(e.message).slice(0, 200); }
         finally { await ctx.close().catch(() => {}); }
         rows.push(rec);
-        console.log(`${c.topicId} "${c.ask}": piece ${rec.pieceMs ?? "none"} ms (${rec.kind ?? "-"}), turn ${rec.turnMs ?? "-"} ms${rec.error ? ` ERROR ${rec.error}` : ""}`);
+        console.log(`${c.topicId} "${c.ask}": piece ${rec.pieceMs ?? "none"} ms (${rec.kind ?? "-"}${rec.hadPiece ? ", already up" : ""}), turn ${rec.turnMs ?? "-"} ms${rec.error ? ` ERROR ${rec.error}` : ""}`);
       }, { tag: "r4cs", child: { firstName: "Riya" } });
     }
   }));
@@ -123,6 +130,9 @@ const all = [...got, ...none.map(() => Infinity)];
 ok(rows.length >= 20, `asks run ${rows.length} ≥ 20`);
 ok(q(all, 0.9) <= 3000, `request → piece in the tray p50 ${q(all, 0.5)} ms, p90 ${q(all, 0.9)} ms ≤ 3000 (n = ${all.length}; ${none.length} asks with no piece count as > 3 s; load avg ${load0.toFixed(1)} → ${loadavg()[0].toFixed(1)} on this machine)`);
 const turns = rows.filter((r) => r.turnMs != null).map((r) => r.turnMs);
+const fresh = rows.filter((r) => !r.hadPiece);
+const freshAll = [...fresh.filter((r) => r.pieceMs != null).map((r) => r.pieceMs), ...fresh.filter((r) => r.pieceMs == null).map(() => Infinity)];
+warn(`of which a NEW piece (none in the tray when she asked): p50 ${q(freshAll, 0.5)} ms, p90 ${q(freshAll, 0.9)} ms (n = ${freshAll.length}); ${rows.length - fresh.length} asks found a piece already up (an engine from an earlier turn)`);
 if (turns.length) warn(`the ask's turn response (network): p50 ${q(turns, 0.5)} ms, p90 ${q(turns, 0.9)} ms (n = ${turns.length})`);
 writeFileSync(join(OUT, "r4-content-speed.json"), JSON.stringify({ base: BASE, at: new Date().toISOString(), load: [load0, loadavg()[0]], rows }, null, 1));
 done();
