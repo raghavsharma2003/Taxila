@@ -1,149 +1,163 @@
 {
- "nodes": [
-  {
-   "id": "r4k-k0-built",
-   "kind": "component",
-   "title": "Stream K slice K0 (Kaksha, behind ui.kaksha, default off; claude/r4-app-design): scoped Kaksha tokens (.v3.kx; night for the Older family, dawn for the Young family, keyed on band family), Space Grotesk font, KakshaRoot/Sky/Comms shell, Start-only Home (safety_hold/offline/signed-out fall through to today's Home unchanged), World orbit + settlement + Hangar as a pure function of GET /api/child/map (src/ui-v3/kaksha/world.ts, data/kaksha/catalog.json), per-child equip on device, dev fixture page; patch requests K-P8 (src/child/routes.tsx) and K-P7 (scripts/lint-ui.mjs allow). docs/design/round4/build/kaksha/RESULTS.md",
-   "at": "2026-10-10"
-  },
-  {
-   "id": "r4k-k0-economy-lint",
-   "kind": "measurement",
-   "title": "Kaksha economy logic test (tests/r4-kaksha-economy.test.mjs, 2026-10-10): 6/6 pass; stations/structures/opened items exist iff a matching skill is secure over 200 random maps; monotonic over 300 random promotions; no clock or Math.random in world.ts; deterministic and append-only settlement slots given secure_since; no counts exposed; no price/chance/currency fields.",
-   "at": "2026-10-10"
-  },
-  {
-   "id": "r4k-k0-rendered-lint",
-   "kind": "measurement",
-   "title": "Kaksha rendered lint (tests/prod/r4-kaksha-shots.mjs, Playwright Chromium on the dev fixture page, 8 states x 360/412/1366 x night/dawn = 48 page states, 606 text elements, 2026-10-10): 0 text < 14 px, 0 Devanagari < 16 px, 0 targets < 44 px, 0 contrast fails, 0 overflow, 0 page errors, after fixing one real defect the first run found (Start label 1.33:1 on plasma: a generic reset outranked the CTA colour; fixed with :where() resets). lint-ui stays at its 353 baseline with K-P7 (491 without). Kaksha lazy chunks about 12.4 KB JS + 4.9 KB CSS gzip.",
-   "at": "2026-10-10"
-  },
-  {
-   "id": "r4k-rj-playwright-shell-mismatch",
-   "kind": "rejection",
-   "title": "Tried: npm test in a fresh stream container after npm ci (2026-10-10). Broke: playwright 1.63 looks for /opt/pw-browsers/chromium_headless_shell-1243 but the image ships 1194, so every browser-backed test fails in its before() hook (1,843 fails in 15 s, none from the change). Local workaround without playwright install: symlink the 1194 headless_shell files into chromium_headless_shell-1243/chrome-headless-shell-linux64/ (binary named chrome-headless-shell). A stream's npm test result is only meaningful after that.",
-   "at": "2026-10-10"
-  },
-  {
-   "id": "r4k-k1-built",
-   "kind": "component",
-   "title": "Stream K slice K1 (claude/r4-app-design, behind ui.kaksha + the server owner cohort): the Kaksha Desk skin (CSS only over the Desk's own tokens and data-zone attributes; the lamp stays on the Answer dock, plasma) and the Debrief in place of the Summary (What you did = the Summary's verified cards; Now secure = ledger diff of /api/child/map read at lesson start vs end, unknown claims nothing; Opened = World's own function; her closing line only when a statement). Patch request K-P2 to stream 2 (Desk.tsx skin/data-zone/renderSummary, LessonScreen lazy KakshaLesson). docs/design/round4/build/kaksha/RESULTS.md",
-   "at": "2026-10-10"
-  },
-  {
-   "id": "r4k-k1-rendered",
-   "kind": "measurement",
-   "title": "K1 rendered lint + safety checks (tests/prod/r4-kaksha-desk-shots.mjs, Playwright Chromium, the real Desk with fixture models + the Debrief, 9 states x class 4/6/7 x 360/412/1366 = 81 pages, 1,434 text elements, 2026-10-10): 0 text < 14 px, 0 Devanagari < 16 px, 0 targets < 44 px, 0 contrast fails, 0 overflow; Pause reachable in one tap and 1098/14416 on screen with no scroll on every lesson state; lamp on the dock only; Now secure exactly the crossing skill. lint-ui 353 (baseline).",
-   "at": "2026-10-10"
-  },
-  {
-   "id": "r4k-k1-latency-live",
-   "kind": "measurement",
-   "title": "K1 turn latency on live models (r4-timeline driver, local production build, real Azure models, stream Neon TEST, fixed 750 ms fake ASR, synthetic clip; turn prefetch OFF (preload default; production runs it ON); 4 interleaved arms Kaksha/classic x puppet/still, n=12 turns each, 2026-10-10): end of speech -> POST p50 1,988 / 2,000 (puppet Kaksha/classic), 2,185 / 1,374 (still); POST p50 2,535 / 2,311, 1,991 / 2,451. Bimodal by the conversation's turn-taking (POST 10-35 ms after the final transcript, or held 1-5 s; same turn index lands alike across arms): this n cannot resolve a skin effect. Not a child, not a phone.",
-   "at": "2026-10-10"
-  },
-  {
-   "id": "r4k-k1-latency-client",
-   "kind": "measurement",
-   "title": "K1 client turn latency, deterministic (real LessonRuntime on the Desk dev page's scripted Director; 360x800 DPR 2, CPU x4, SwiftShader = G35-class proxy, not a phone; n=30 per arm, paired by turn position, 2026-10-10): Kaksha minus classic, send -> turn call: still face +1.4 ms (95% CI +/-12.6; p50 128 vs 122 ms), puppet +13 ms (+/-47; p50 530 vs 430, p90 1,104 vs 1,097); answer -> painted: still +17.7 +/-26.5 ms, puppet -4.6 +/-24.0 ms. Every interval includes 0: no measurable added latency.",
-   "at": "2026-10-10"
-  },
-  {
-   "id": "r4k-k2-built",
-   "kind": "component",
-   "title": "Stream K slice K2 (claude/r4-app-design; behind ui.kaksha + cohort; built against G1 claude/r4-games-core 78b7a86b read-only): the Kaksha Briefing in front of a real-game engine (recipe lines read only from the level and the dress; the look named only once the model's dress has answered; hold-to-launch 650 ms, Enter launches, warp ~950 ms, reduced motion 200 ms fade) and the Hangar hull/trail colours on Antariksh (only open items; colour only). Patch requests to G1: K-P3 (src/play/briefing.ts seam; PlayStudioRenderer shows the card only when an engine will really mount, fetches the model dress during the card and hands it to PlaySession), K-P4 (DressedSpec.cosmetics client-only; Antariksh tints hull, flame, exhaust). No HUD pip in the embedded Desk (one face at a time).",
-   "at": "2026-10-10"
-  },
-  {
-   "id": "r4k-k2-rendered",
-   "kind": "measurement",
-   "title": "K2 rendered checks (tests/prod/r4-kaksha-briefing.mjs on G1 + K-P3/K-P4, production build of the dev page, Playwright Chromium SwiftShader with 3D forced, class 4/6/7 x phone 328x460 and laptop 736x460 boxes, 2026-10-10): 0 text < 14 px, 0 targets < 44 px, 0 contrast fails, 0 overflow over 6 pages; a 300 ms press does not launch, a 700 ms hold and Enter do; the look line absent before the model dress and naming the model's theme after; the card gone after the warp; acts posted with and without the Hangar colours byte-identical (2 posts, 3 acts).",
-   "at": "2026-10-10"
-  },
-  {
-   "id": "r4k-k2-frame",
-   "kind": "measurement",
-   "title": "K2 launch -> engine first painted frame (production build, CPU x4, SwiftShader, 360x800 DPR 2 = G35-class proxy, not a phone; n=12 per arm interleaved, 2026-10-10): with the Briefing p50 1,229 / p90 1,341 ms; the engine alone (level -> first frame, no Briefing) p50 1,200 / p90 1,345 ms. The spec's 1,200 ms bar is not met, set by the engine's own mount; the Briefing adds nothing measurable. Dev-server (unbundled) runs read ~1,440 ms and are not representative.",
-   "at": "2026-10-10"
-  },
-  {
-   "id": "r4k-truth-11-4",
-   "kind": "measurement",
-   "title": "Kaksha §11.4 truth (tests/prod/r4-kaksha-truth.mjs, local production build with prod routing on the stream's Neon TEST branch, test clock, scripted text child from data/kits class 5 maths; 10 accounts x 2 evaluated sessions = 20, 2026-10-10): the Debrief's Now secure (nowSecure over GET /api/child/map before/after) equals the ledger diff (loadTruth -> MAP_SHAPE read from the DB) in 20/20 sessions; 0 false secure, 0 missed, 0 unreadable; 8 sessions with a real crossing (12 skills), each caused in that lesson by a scored right row >= 20 h after the skill's first scored row. No +1-day session crossed (certification came at +2 days). 90/90 checks.",
-   "at": "2026-10-10"
-  },
-  {
-   "id": "r4k-k3-built",
-   "kind": "component",
-   "title": "Stream K slice K3 (claude/r4-app-design): the session-first intake on the Kaksha Desk. Patch requests K-P11 (server/director/state.js intakeUi -> ui.intake {phase ask|which|mapped|plan, mapped {topicId,title,trail} from getTopic ONLY, plan {segments:[{purpose}]}}; pure, no DB read, prompt unchanged; to 4A for owner review) and K-P12 (stream 2's Desk: DeskModel.intake, QuestionCard lead slot inside the measured body, Desk renderIntake; inert without a skin). Client: IntakeCard at the top of the Question card, no controls, never the child's words. Tests: r4-kaksha-intake 6/6 on 4A's fixtures; 4A session tests 19/19; rendered lint 0 over 108 pages incl. intake states.",
-   "at": "2026-10-10"
-  }
- ],
- "edges": [
-  {
-   "src": "r4k-k0-built",
-   "rel": "part_of",
-   "dst": "dc-r4-app-kaksha"
-  },
-  {
-   "src": "dc-r4-gamification-b",
-   "rel": "constrains",
-   "dst": "r4k-k0-built"
-  },
-  {
-   "src": "r4k-k0-built",
-   "rel": "measured_by",
-   "dst": "r4k-k0-economy-lint"
-  },
-  {
-   "src": "r4k-k0-built",
-   "rel": "measured_by",
-   "dst": "r4k-k0-rendered-lint"
-  },
-  {
-   "src": "r4k-k1-rendered",
-   "rel": "measures",
-   "dst": "r4k-k1-built"
-  },
-  {
-   "src": "r4k-k1-latency-live",
-   "rel": "measures",
-   "dst": "r4k-k1-built"
-  },
-  {
-   "src": "r4k-k1-latency-client",
-   "rel": "measures",
-   "dst": "r4k-k1-built"
-  },
-  {
-   "src": "r4k-k1-built",
-   "rel": "part_of",
-   "dst": "dc-r4-app-kaksha"
-  },
-  {
-   "src": "r4k-k2-built",
-   "rel": "part_of",
-   "dst": "dc-r4-app-kaksha"
-  },
-  {
-   "src": "r4k-k2-rendered",
-   "rel": "measures",
-   "dst": "r4k-k2-built"
-  },
-  {
-   "src": "r4k-k2-frame",
-   "rel": "measures",
-   "dst": "r4k-k2-built"
-  },
-  {
-   "src": "r4k-truth-11-4",
-   "rel": "measures",
-   "dst": "r4k-k1-built"
-  },
-  {
-   "src": "r4k-k3-built",
-   "rel": "part_of",
-   "dst": "dc-r4-app-kaksha"
-  }
- ]
+  "nodes": [
+    {
+      "id": "r4k-k0-built",
+      "kind": "component",
+      "title": "Stream K slice K0 (Kaksha, behind ui.kaksha, default off; claude/r4-app-design): scoped Kaksha tokens (.v3.kx; night for the Older family, dawn for the Young family, keyed on band family), Space Grotesk font, KakshaRoot/Sky/Comms shell, Start-only Home (safety_hold/offline/signed-out fall through to today's Home unchanged), World orbit + settlement + Hangar as a pure function of GET /api/child/map (src/ui-v3/kaksha/world.ts, data/kaksha/catalog.json), per-child equip on device, dev fixture page; patch requests K-P8 (src/child/routes.tsx) and K-P7 (scripts/lint-ui.mjs allow). docs/design/round4/build/kaksha/RESULTS.md",
+      "at": "2026-10-10"
+    },
+    {
+      "id": "r4k-k0-economy-lint",
+      "kind": "measurement",
+      "title": "Kaksha economy logic test (tests/r4-kaksha-economy.test.mjs, 2026-10-10): 6/6 pass; stations/structures/opened items exist iff a matching skill is secure over 200 random maps; monotonic over 300 random promotions; no clock or Math.random in world.ts; deterministic and append-only settlement slots given secure_since; no counts exposed; no price/chance/currency fields.",
+      "at": "2026-10-10"
+    },
+    {
+      "id": "r4k-k0-rendered-lint",
+      "kind": "measurement",
+      "title": "Kaksha rendered lint (tests/prod/r4-kaksha-shots.mjs, Playwright Chromium on the dev fixture page, 8 states x 360/412/1366 x night/dawn = 48 page states, 606 text elements, 2026-10-10): 0 text < 14 px, 0 Devanagari < 16 px, 0 targets < 44 px, 0 contrast fails, 0 overflow, 0 page errors, after fixing one real defect the first run found (Start label 1.33:1 on plasma: a generic reset outranked the CTA colour; fixed with :where() resets). lint-ui stays at its 353 baseline with K-P7 (491 without). Kaksha lazy chunks about 12.4 KB JS + 4.9 KB CSS gzip.",
+      "at": "2026-10-10"
+    },
+    {
+      "id": "r4k-rj-playwright-shell-mismatch",
+      "kind": "rejection",
+      "title": "Tried: npm test in a fresh stream container after npm ci (2026-10-10). Broke: playwright 1.63 looks for /opt/pw-browsers/chromium_headless_shell-1243 but the image ships 1194, so every browser-backed test fails in its before() hook (1,843 fails in 15 s, none from the change). Local workaround without playwright install: symlink the 1194 headless_shell files into chromium_headless_shell-1243/chrome-headless-shell-linux64/ (binary named chrome-headless-shell). A stream's npm test result is only meaningful after that.",
+      "at": "2026-10-10"
+    },
+    {
+      "id": "r4k-k1-built",
+      "kind": "component",
+      "title": "Stream K slice K1 (claude/r4-app-design, behind ui.kaksha + the server owner cohort): the Kaksha Desk skin (CSS only over the Desk's own tokens and data-zone attributes; the lamp stays on the Answer dock, plasma) and the Debrief in place of the Summary (What you did = the Summary's verified cards; Now secure = ledger diff of /api/child/map read at lesson start vs end, unknown claims nothing; Opened = World's own function; her closing line only when a statement). Patch request K-P2 to stream 2 (Desk.tsx skin/data-zone/renderSummary, LessonScreen lazy KakshaLesson). docs/design/round4/build/kaksha/RESULTS.md",
+      "at": "2026-10-10"
+    },
+    {
+      "id": "r4k-k1-rendered",
+      "kind": "measurement",
+      "title": "K1 rendered lint + safety checks (tests/prod/r4-kaksha-desk-shots.mjs, Playwright Chromium, the real Desk with fixture models + the Debrief, 9 states x class 4/6/7 x 360/412/1366 = 81 pages, 1,434 text elements, 2026-10-10): 0 text < 14 px, 0 Devanagari < 16 px, 0 targets < 44 px, 0 contrast fails, 0 overflow; Pause reachable in one tap and 1098/14416 on screen with no scroll on every lesson state; lamp on the dock only; Now secure exactly the crossing skill. lint-ui 353 (baseline).",
+      "at": "2026-10-10"
+    },
+    {
+      "id": "r4k-k1-latency-live",
+      "kind": "measurement",
+      "title": "K1 turn latency on live models (r4-timeline driver, local production build, real Azure models, stream Neon TEST, fixed 750 ms fake ASR, synthetic clip; turn prefetch OFF (preload default; production runs it ON); 4 interleaved arms Kaksha/classic x puppet/still, n=12 turns each, 2026-10-10): end of speech -> POST p50 1,988 / 2,000 (puppet Kaksha/classic), 2,185 / 1,374 (still); POST p50 2,535 / 2,311, 1,991 / 2,451. Bimodal by the conversation's turn-taking (POST 10-35 ms after the final transcript, or held 1-5 s; same turn index lands alike across arms): this n cannot resolve a skin effect. Not a child, not a phone.",
+      "at": "2026-10-10"
+    },
+    {
+      "id": "r4k-k1-latency-client",
+      "kind": "measurement",
+      "title": "K1 client turn latency, deterministic (real LessonRuntime on the Desk dev page's scripted Director; 360x800 DPR 2, CPU x4, SwiftShader = G35-class proxy, not a phone; n=30 per arm, paired by turn position, 2026-10-10): Kaksha minus classic, send -> turn call: still face +1.4 ms (95% CI +/-12.6; p50 128 vs 122 ms), puppet +13 ms (+/-47; p50 530 vs 430, p90 1,104 vs 1,097); answer -> painted: still +17.7 +/-26.5 ms, puppet -4.6 +/-24.0 ms. Every interval includes 0: no measurable added latency.",
+      "at": "2026-10-10"
+    },
+    {
+      "id": "r4k-k2-built",
+      "kind": "component",
+      "title": "Stream K slice K2 (claude/r4-app-design; behind ui.kaksha + cohort; built against G1 claude/r4-games-core 78b7a86b read-only): the Kaksha Briefing in front of a real-game engine (recipe lines read only from the level and the dress; the look named only once the model's dress has answered; hold-to-launch 650 ms, Enter launches, warp ~950 ms, reduced motion 200 ms fade) and the Hangar hull/trail colours on Antariksh (only open items; colour only). Patch requests to G1: K-P3 (src/play/briefing.ts seam; PlayStudioRenderer shows the card only when an engine will really mount, fetches the model dress during the card and hands it to PlaySession), K-P4 (DressedSpec.cosmetics client-only; Antariksh tints hull, flame, exhaust). No HUD pip in the embedded Desk (one face at a time).",
+      "at": "2026-10-10"
+    },
+    {
+      "id": "r4k-k2-rendered",
+      "kind": "measurement",
+      "title": "K2 rendered checks (tests/prod/r4-kaksha-briefing.mjs on G1 + K-P3/K-P4, production build of the dev page, Playwright Chromium SwiftShader with 3D forced, class 4/6/7 x phone 328x460 and laptop 736x460 boxes, 2026-10-10): 0 text < 14 px, 0 targets < 44 px, 0 contrast fails, 0 overflow over 6 pages; a 300 ms press does not launch, a 700 ms hold and Enter do; the look line absent before the model dress and naming the model's theme after; the card gone after the warp; acts posted with and without the Hangar colours byte-identical (2 posts, 3 acts).",
+      "at": "2026-10-10"
+    },
+    {
+      "id": "r4k-k2-frame",
+      "kind": "measurement",
+      "title": "K2 launch -> engine first painted frame (production build, CPU x4, SwiftShader, 360x800 DPR 2 = G35-class proxy, not a phone; n=12 per arm interleaved, 2026-10-10): with the Briefing p50 1,229 / p90 1,341 ms; the engine alone (level -> first frame, no Briefing) p50 1,200 / p90 1,345 ms. The spec's 1,200 ms bar is not met, set by the engine's own mount; the Briefing adds nothing measurable. Dev-server (unbundled) runs read ~1,440 ms and are not representative.",
+      "at": "2026-10-10"
+    },
+    {
+      "id": "r4k-truth-11-4",
+      "kind": "measurement",
+      "title": "Kaksha §11.4 truth (tests/prod/r4-kaksha-truth.mjs, local production build with prod routing on the stream's Neon TEST branch, test clock, scripted text child from data/kits class 5 maths; 10 accounts x 2 evaluated sessions = 20, 2026-10-10): the Debrief's Now secure (nowSecure over GET /api/child/map before/after) equals the ledger diff (loadTruth -> MAP_SHAPE read from the DB) in 20/20 sessions; 0 false secure, 0 missed, 0 unreadable; 8 sessions with a real crossing (12 skills), each caused in that lesson by a scored right row >= 20 h after the skill's first scored row. No +1-day session crossed (certification came at +2 days). 90/90 checks.",
+      "at": "2026-10-10"
+    },
+    {
+      "id": "r4k-k3-built",
+      "kind": "component",
+      "title": "Stream K slice K3 (claude/r4-app-design): the session-first intake on the Kaksha Desk. Patch requests K-P11 (server/director/state.js intakeUi -> ui.intake {phase ask|which|mapped|plan, mapped {topicId,title,trail} from getTopic ONLY, plan {segments:[{purpose}]}}; pure, no DB read, prompt unchanged; to 4A for owner review) and K-P12 (stream 2's Desk: DeskModel.intake, QuestionCard lead slot inside the measured body, Desk renderIntake; inert without a skin). Client: IntakeCard at the top of the Question card, no controls, never the child's words. Tests: r4-kaksha-intake 6/6 on 4A's fixtures; 4A session tests 19/19; rendered lint 0 over 108 pages incl. intake states.",
+      "at": "2026-10-10"
+    },
+    {
+      "id": "r4k-parity-integration",
+      "kind": "measurement",
+      "title": "Kaksha integration parity: a non-cohort account sees today's app (same body DOM as base 0c90ebb on 16 pages x 5 captures; on 15/16 pages a branch capture is pixel-identical to a base capture, the 16th within base-vs-base noise; no Kaksha chunk fetched); the cohort account gets Kaksha with no URL step (TAXILA_UI_KAKSHA, the TAXILA_DUPLEX_LIVE_FOR scheme); ?ui=classic turns it off per device",
+      "n": 16,
+      "method": "tests/prod/r4-kaksha-parity.mjs 72/72: two local production builds (base 0c90ebb vs claude/r4-app-design) on the stream Neon TEST branch, Chromium 412x915 reduced motion; body innerHTML normalised (asset hashes, data-zone, data-wb-t); per page 3 base + 2 branch captures, pass when the closest cross pair <= the base-vs-base max (floor 64 px); one real scripted lesson, its start answer replayed to both builds",
+      "date": "2026-10-10",
+      "source": "docs/design/round4/build/kaksha/RESULTS.md#integration-readiness"
+    }
+  ],
+  "edges": [
+    {
+      "src": "r4k-k0-built",
+      "rel": "part_of",
+      "dst": "dc-r4-app-kaksha"
+    },
+    {
+      "src": "dc-r4-gamification-b",
+      "rel": "constrains",
+      "dst": "r4k-k0-built"
+    },
+    {
+      "src": "r4k-k0-built",
+      "rel": "measured_by",
+      "dst": "r4k-k0-economy-lint"
+    },
+    {
+      "src": "r4k-k0-built",
+      "rel": "measured_by",
+      "dst": "r4k-k0-rendered-lint"
+    },
+    {
+      "src": "r4k-k1-rendered",
+      "rel": "measures",
+      "dst": "r4k-k1-built"
+    },
+    {
+      "src": "r4k-k1-latency-live",
+      "rel": "measures",
+      "dst": "r4k-k1-built"
+    },
+    {
+      "src": "r4k-k1-latency-client",
+      "rel": "measures",
+      "dst": "r4k-k1-built"
+    },
+    {
+      "src": "r4k-k1-built",
+      "rel": "part_of",
+      "dst": "dc-r4-app-kaksha"
+    },
+    {
+      "src": "r4k-k2-built",
+      "rel": "part_of",
+      "dst": "dc-r4-app-kaksha"
+    },
+    {
+      "src": "r4k-k2-rendered",
+      "rel": "measures",
+      "dst": "r4k-k2-built"
+    },
+    {
+      "src": "r4k-k2-frame",
+      "rel": "measures",
+      "dst": "r4k-k2-built"
+    },
+    {
+      "src": "r4k-truth-11-4",
+      "rel": "measures",
+      "dst": "r4k-k1-built"
+    },
+    {
+      "src": "r4k-k3-built",
+      "rel": "part_of",
+      "dst": "dc-r4-app-kaksha"
+    },
+    {
+      "src": "r4k-parity-integration",
+      "rel": "measures",
+      "dst": "r4k-k3-built"
+    }
+  ]
 }

@@ -8,9 +8,10 @@
 //   3. VITE_UI_KAKSHA=1 at build time (only after BUILD-SPEC §11 and the five-second child test, K-O4);
 //   4. off.
 //
-// PRODUCTION GATE (K-P10, main session 2026-10-10): in a production build steps 1-2 count ONLY when the server says this
-// account is in the owner cohort (GET /api/me → ui.kaksha, from TAXILA_UI_KAKSHA hashed accounts; server/ui/kaksha-cohort.js).
-// Anyone else who types ?ui=kaksha keeps today's Home. In dev builds the URL / device switch stays free.
+// PRODUCTION GATE (K-P10, main session 2026-10-10): in a production build Kaksha is ON for an account the server says is
+// in the owner cohort (GET /api/me → ui.kaksha, from TAXILA_UI_KAKSHA hashed accounts; server/ui/kaksha-cohort.js), with no
+// URL step (merge order 2026-10-10: "ON for the owner's account only"); ?ui=classic still turns it off on that device.
+// Anyone else, ?ui=kaksha typed or not, keeps today's app. In dev builds the URL / device switch stays free.
 export const UI_KAKSHA_KEY = "tx.flag.ui.kaksha";
 
 export interface KakshaInputs {
@@ -29,7 +30,7 @@ export function kakshaDecision(i: KakshaInputs): boolean {
   if (i.device === false) return false; // ?ui=classic always wins on this device
   if (i.buildDefault) return true;
   if (i.dev) return i.device === true;
-  return i.server === true && i.device === true;
+  return i.server === true;
 }
 
 function isDev(): boolean {

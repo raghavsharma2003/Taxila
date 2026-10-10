@@ -7,6 +7,54 @@
 **Honesty:** no child has used any of this. Every performance number below is a **G35-class proxy**: headless
 Chromium with CPU ×4 throttling at 360 × 800, DPR 2. None was measured on a phone (K-O3 is open).
 
+## Integration readiness (merge order step 3: K0-K3 with `ui.kaksha` ON for the owner's account only; 2026-10-10)
+
+**How it is switched on for one account:** `TAXILA_UI_KAKSHA` on the web container. The scheme is the same as
+`TAXILA_DUPLEX_LIVE_FOR`: comma-separated guardian accounts, each a lower-case email **or** the sha256 hex of one. Prefer
+the hash: then the env carries no address. Compute it with
+`node -e 'console.log(require("crypto").createHash("sha256").update(process.argv[1].trim().toLowerCase()).digest("hex"))' <email>`.
+GET /api/me (and /api/child/boot, which folds `meData`) answers `ui: { kaksha: true }` for a signed-in guardian on the list.
+Everyone else gets `{ kaksha: false }`, and the list is never revealed. When the variable is unset or empty, nobody gets
+it. Removing it and rolling the revision turns it off for everyone. It is presentation only: no safety, data or prompt
+switch.
+
+**Changed today:** in a production build, a cohort account now gets Kaksha with **no URL step** (`src/ui-v3/kaksha/flag.ts`
+`kakshaDecision`: `server === true`). Before, it also needed `?ui=kaksha` once on each device. `?ui=classic` still turns it
+off on a device, and `?ui=default` gives the account's answer back. Outside the cohort, `?ui=kaksha` does nothing.
+Covered by `tests/r4-kaksha-cohort.test.mjs`.
+
+**Parity (`tests/prod/r4-kaksha-parity.mjs`, 72 / 72, 2026-10-10).**
+- **Method.** Two local production builds on this stream's Neon TEST branch, side by side: base `0c90ebb` (today's app)
+  and this branch, started with a test cohort email. Chromium at 412 × 915, reduced motion, animations off.
+- **Pages, for a non-cohort account.**
+  - Visited with no URL switch and again with `?ui=kaksha`.
+  - The first visit (→ /hello), then after one real scripted lesson: Home, map, ask, notebook, me, teacher.
+  - The lesson's first screen: the start answer was recorded from the real lesson and replayed to both builds.
+- **Exact DOM: equal on all 16 pages, across all five captures of each** (three of the base, two of the branch). The body `innerHTML` was compared after normalising asset hashes, the Desk's inert
+  `data-zone` attributes (K-P2) and the whiteboard's own draw clock (`data-wb-t`, which differs between any two
+  captures of the same build).
+- **Pictures: the branch draws a picture the base itself draws.**
+  - On 15 of 16 pages, a branch capture is **pixel-identical** to a base capture.
+  - On the lesson's first screen, the closest pair differs by 10 px, while two base captures differ from each other by
+    up to 12 px.
+  - Two captures of the *same* build differ because of the page's own moving parts. A probe on /map put every difference
+    inside one 44 × 44 px box: the child's avatar at the top left. The whiteboard's strokes also move. This reaches
+    857 px on /map.
+- **No Kaksha chunk is requested** on any non-cohort page.
+- **/hangar** (the one new route) sends a non-cohort child to today's Home.
+- **Cohort account:** Kaksha with no URL step. `?ui=classic` turns it off and it stays off on that device; `?ui=default`
+  brings it back. The base build shows that same account today's app.
+- **What is not byte-identical, stated so nobody is surprised.** The JSON of GET /api/me gains `ui: { kaksha: false }`.
+  The JS bundle gains the flag module and three lazy Kaksha chunks that are never fetched. The lesson DOM gains
+  `data-zone` attributes. None of these changes a rendered pixel or a behaviour (measured above).
+
+**Patches, re-checked on a clean index, 2026-10-10.**
+- **On base `2142d378`, in order:** K-P7, K-P8, K-P10, K-P2, K-P12, K-P11 all apply. The resulting files equal this
+  branch's, byte for byte. The one exception is `tests/r4-kaksha-intake.test.mjs`: K-P11 ships its five server tests,
+  and the sixth (client) test needs K-P12 and the card, so it travels with the K merge.
+- **K-P10 regenerated.** Base had added a `voicesigSeam` import to `server/routes/account.js` above the hunk.
+- **On G1 `cb078473`:** K-P3, then K-P4, apply. G1 is not on base yet.
+
 ## K3: the intake on the Desk (flag `ui.kaksha`, owner cohort only; needs K-P11 and K-P12)
 
 **Gap found on base:** 4A's session-first intake reached the client only as her words and the answer chips. There was no
