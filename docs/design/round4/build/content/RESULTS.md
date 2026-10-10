@@ -152,6 +152,23 @@ Gates on `8e879a4a`: tsc, vite clean; `npm test` 2,647 pass / 0 fail / 5 skipped
 | r4-content-boards | 51 boards, 0 contradictions, 0 illegible, 2 unfilled | 51 boards, **0 contradictions, 0 illegible**, 4 unfilled (3 of the 4 lines draw in tests, `009c179c`; the 4th states a sub-region count, "3/5 wale hissa mein 9 boxes", which W10 is not loosened for) |
 | request → piece | p90 5.5 s (n = 22) | p90 4.4 s (n = 22, loaded); new pieces only p50 3.2 s (n = 14) |
 
+### 3.2 The merge bar: base vs branch, same seed, one tree at a time, production routing (2026-10-10 15:45-16:15 UTC)
+Base `39c88fe` and branch `e0872290` (that base merged), each served alone on the same port, own Neon branch,
+`--env-file=.env.local --env-file=tests/prod/prod-routing.env` (production's classifier, prefetch, hedge, ack), seed 4242,
+every battery started at load1 < 2. The board battery is this branch's harness for both arms (the same yardstick).
+
+| harness | base `39c88fe` | branch `e0872290` |
+|---|---|---|
+| round3-play | 93/93 | 93/93 |
+| round2-content | 25/30 (requests 11/12, board slots 8/9, 2 failed while she pointed, M 2/3) | **38/39** (12/12, 18/18, 0, M 3/3; the miss: piece p90 3.5 s at n = 2) |
+| owner-5-visual | 10/14 (9/12 requests: 3 slots never an artifact) | **14/14** |
+| round3-forge | 39/46: R1 11/12, R2 1/6, R4 35/36 views | **45/49**: R1 12/12, R2 3/6 (5/6 counting her-clause boards for animation / simulation), R4 36/36; T1 API n = 1 at 3.0 s |
+| r4-content-boards | 50 boards, 1 contradiction (W5), 5 unfilled while she pointed (notebook route absent on base) | **51 boards, 0 contradictions, 0 illegible, 1 unfilled**, notebook saved and replayable |
+
+Gates on `e0872290`: tsc, vite clean; budget PASS; lint-ui 353 (= base); persona-invariants 105/105; `npm test` 2,705 pass /
+0 fail / 6 skipped. Read with §3.1: round2-content M and owner-5 V3.child_draws were run-to-run variance (both pass on the
+branch here, on the same seed).
+
 Still short, and why:
 - **(5) speed.** An engine piece arrives in the turn response, so its time is the turn's (3.0 / 4.7 / 5.5 s tails); 7 of
   the 22 asks found an engine already up from an earlier turn (≈ 15 ms; the harness now reports those apart). The early
