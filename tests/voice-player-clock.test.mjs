@@ -1,13 +1,39 @@
 // W2-G fixer (2026-10-05, w2g-clause-events-on-player-clock): the PLAYER is the source of timing for the whiteboard.
 // The line anchor (clock.ts markLineAudioStart) is marked at the time the first sample is scheduled to sound, on the
 // performance.now() clock, and each clause onset is emitted when its sample is scheduled, with playAt = when it sounds:
-// the start lead, an underrun gap and a pause/resume all included. A fake AudioContext whose clock is performance.now().
+// the start lead, an underrun gap and a pause/resume all included. A fake AudioContext whose clock is performance.now(),
+// itself virtual (below).
 import test from "node:test";
 import assert from "node:assert/strict";
 import { PcmStreamPlayer, onTtsEvent, START_LEAD_S, PCM_RATE } from "../src/lesson/ttsStream.ts";
 import { awaitLineAnchor } from "../src/modules/whiteboard/clock.ts";
 
-const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+// r4-latency (2026-10-10, main-session ask): the clock is VIRTUAL. performance.now() (the player's and clock.ts's clock)
+// reads VNOW, the fake sources end on a virtual timer queue, and the test moves time with advance(ms) instead of real
+// sleeps. Before, a loaded runner oversleeping or undersleeping a real setTimeout moved every wall-clock delta (CI:
+// 299.87 ms against a > 300 bound), so the test measured the machine, not the player's scheduling math.
+let VNOW = 1000;
+const timers = new Set(); // { at, fn }
+const flush = () => new Promise((r) => setImmediate(r));
+/** Move virtual time forward by `ms`, firing every due timer in order (with the microtasks it triggers). */
+async function advance(ms) {
+  const end = VNOW + ms;
+  await flush();
+  for (;;) {
+    const due = [...timers].filter((t) => t.at <= end).sort((a, b) => a.at - b.at)[0];
+    if (!due) break;
+    timers.delete(due);
+    VNOW = Math.max(VNOW, due.at);
+    due.fn();
+    await flush();
+  }
+  VNOW = end;
+  await flush();
+}
+const sleep = advance;
+const realNow = Object.getOwnPropertyDescriptor(performance, "now");
+test.before(() => { performance.now = () => VNOW; });
+test.after(() => { if (realNow) Object.defineProperty(performance, "now", realNow); else delete performance.now; timers.clear(); });
 class FakeAudioContext {
   constructor() { this.t0 = performance.now(); this.sources = []; this.destination = { connect() {}, disconnect() {} }; }
   get currentTime() { return (performance.now() - this.t0) / 1000; }
@@ -16,8 +42,12 @@ class FakeAudioContext {
   createBufferSource() {
     const ctx = this;
     const s = { connect() {}, disconnect() {} };
-    s.start = (at) => { s.startedAt = at; s.timer = setTimeout(() => { s.onended?.(); }, Math.max(0, (at - ctx.currentTime) * 1000) + s.buffer.duration * 1000); };
-    s.stop = () => { clearTimeout(s.timer); s.stopped = true; };
+    s.start = (at) => {
+      s.startedAt = at;
+      s.timer = { at: VNOW + Math.max(0, (at - ctx.currentTime) * 1000) + s.buffer.duration * 1000, fn: () => s.onended?.() };
+      timers.add(s.timer);
+    };
+    s.stop = () => { timers.delete(s.timer); s.stopped = true; };
     this.sources.push(s);
     return s;
   }
@@ -46,8 +76,9 @@ test("player clock: line anchor at the first sample; clause onsets at their sche
     assert.ok(anchor !== null, "the anchor fired");
     assert.ok(Math.abs(anchor - perfOf(ctx, first.startedAt)) <= 10, `anchor ${anchor} vs ${perfOf(ctx, first.startedAt)}`);
     assert.ok(first.startedAt >= START_LEAD_S - 0.02);
-    // the link stalls past the end of part 0 → an underrun; part 1's onset is at its sample, which now sounds later
-    await sleep(250);
+    // the link stalls well past the end of part 0 (it ends at ~265 ms) → an underrun; part 1's onset is at its sample, which
+    // now sounds later. 400 ms, not 250: with an exact clock 250 put part 1 at exactly +300 ms, ON the > 300 bound below.
+    await sleep(400);
     sink.clause({ t: "clause", clause: 3, part: 1, atSample: Math.round(0.2 * PCM_RATE), atMs: 200 });
     ctl.enqueue(pcmBytes(1.5)); // long, so the pause below lands before part 2 sounds even on a loaded machine
     await sleep(5);
