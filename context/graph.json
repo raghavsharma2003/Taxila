@@ -18671,6 +18671,48 @@
    "at": "2026-10-10",
    "title": "Code-floor misses on base: 'ghar pe thappad padte hain', 'wo gaali dete hain ghar pe' (caught only by the model distress read); patch 12 requested from 4A",
    "source": "inbox/r4-main-1515.json"
+  },
+  {
+   "id": "ms-r4-safety-rel5-prod-deploy",
+   "kind": "measurement",
+   "at": "2026-10-10",
+   "title": "Safety release 5 (patch 10 realtime content-filter fail-closed + 10b start default cascade; patch 11 v3 maarpeet/story masks) live as taxila-web--sc439bd7-k0kh: gate 2,684/0/3; both-arms 376,528 strings 0 NEW / 2 LOST (intended); fingerprint 0/0/0; suites 177/177; r3-adversarial 22/23; persona 105/105; canary 4/4; live start-lane probe 6/6; w2i-safety 39/39 (local, TEST); round3-conversation 27/27 (prod)",
+   "source": "inbox/r4-main-1630.json"
+  },
+  {
+   "id": "ms-r4-worker-c439bd7",
+   "kind": "measurement",
+   "at": "2026-10-10",
+   "title": "Worker redeployed at c439bd7 (taxila-worker--wc439bd7-t214, RunningAtMaxScale Healthy, jobs canary */15 and nightly 22:40 on the same image); a manual canary execution Succeeded. The worker had run b371f4e's safety predicate since the morning",
+   "source": "inbox/r4-main-1630.json"
+  },
+  {
+   "id": "fn-r4-local-routing-differs-from-prod",
+   "kind": "finding",
+   "at": "2026-10-10",
+   "title": "A local serve.mjs on .env.local runs a different classifier and turn path from production: DEPLOY_CLASSIFY, TAXILA_CLASSIFY_HEDGE_MS, TAXILA_TURN_PREFETCH, TAXILA_ACK_AT_MS and TAXILA_STT_MODEL are set only on taxila-web; snapshot in tests/prod/prod-routing.env",
+   "source": "inbox/r4-main-1630.json"
+  },
+  {
+   "id": "dc-r4-item-setaside-shadow-first",
+   "kind": "decision",
+   "at": "2026-10-10",
+   "title": "Patch 13 (item-context set-aside) is built behind TAXILA_ITEM_SETASIDE=off|shadow|on, default shadow: the floor fires as today and the trace records would-set-asides; on only after >= 1 week of production shadow decisions or >= 200 would-set-asides are reviewed",
+   "source": "inbox/r4-main-1630.json"
+  },
+  {
+   "id": "open-r4-codefloor-hinglish-push-sport-child-object",
+   "kind": "open",
+   "at": "2026-10-10",
+   "title": "Code-floor misses on base: Hinglish/Devanagari 'X ne mujhe dhakka diya' (English forms fire), and a sport turn's frame setting aside a hit whose object is the child ('cricket mein seniors ne mujhe dhakka diya aur maara'); required as an amendment to patch 12",
+   "source": "inbox/r4-main-1630.json"
+  },
+  {
+   "id": "open-r4-gaaliyan-plural-gap",
+   "kind": "open",
+   "at": "2026-10-10",
+   "title": "The plural 'gaaliyan' stays quiet on the code floor: adding it as a lexicon literal made the STT garble 'goliyan' (pills) unreadable (34 recall draws lost); the model distress read is the only catch",
+   "source": "inbox/r4-main-1630.json"
   }
  ],
  "edges": [
@@ -30188,6 +30230,21 @@
    "src": "rj-r4-safety11-v2-bully-frames-string-fit",
    "rel": "supersedes",
    "dst": "rj-r4-safety11-v1-frames-too-wide"
+  },
+  {
+   "src": "ms-r4-worker-c439bd7",
+   "rel": "part_of",
+   "dst": "ms-r4-safety-rel5-prod-deploy"
+  },
+  {
+   "src": "dc-r4-item-setaside-shadow-first",
+   "rel": "part_of",
+   "dst": "dc-r4-bully-item-context-design"
+  },
+  {
+   "src": "ms-r4-4a-owner2-3seeds",
+   "rel": "caused_by",
+   "dst": "fn-r4-local-routing-differs-from-prod"
   }
  ]
 }

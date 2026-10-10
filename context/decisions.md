@@ -5645,3 +5645,7 @@ text predicate (`rj-sr-raw-recall-98-target`).
 
 <!-- merged from inbox/r4-main-1515.json -->
 - `dc-r4-bully-item-context-design` (2026-10-10): lesson-vocabulary false alarms are closed at the classify call-site with the posed item as context, not by frames over the child's words: the set-aside holds only when every flagged span is a word of the current item's verified content and the turn carries no first-person/us, harm/fear, adult-actor or GUARD_VETO word; the model distress read still runs. Design note first (where the target is known; intake and voice turns with no item; the model backstop shown to run; >= 3 near-misses per condition). Reverse if: the model distress read is shown not to run when the predicate is quiet, or near-misses show a child disclosure that uses the lesson word going quiet.
+
+
+<!-- merged from inbox/r4-main-1630.json -->
+- `dc-r4-item-setaside-shadow-first` (2026-10-10): the item-context set-aside (patch 13) relaxes the safety floor, so it ships behind TAXILA_ITEM_SETASIDE = off | shadow | on with default shadow. In shadow the floor fires exactly as today and the trace records a would-set-aside (item id, masked span, novel-word count; no extra child words). It is turned on only after the main session reviews >= 1 week of production shadow decisions or >= 200 would-set-asides, whichever is later. Reverse if: a shadow decision is found on a disclosure (the flag stays off and the rule is redesigned), or the shadow log shows the false-safeguard problem is too rare to justify the relaxation.
