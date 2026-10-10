@@ -7,6 +7,7 @@ import { balanceLogic } from "./taraazu/balance.logic.ts";
 import { lineLogic } from "./nishana/line.logic.ts";
 import { labLogic } from "./kyun-lab/lab.logic.ts";
 import { konLogic } from "./kon/kon.logic.ts";
+import { viewsLogic, arrayLogic, floorLogic, powersLogic, mirrorLogic } from "./nazariya/index.ts";   // r4-khand
 
 type AnyLogic = FamilyLogic<unknown, unknown, PlayActBody>;
 const asAny = (l: unknown) => l as AnyLogic;
@@ -21,5 +22,11 @@ export const LOGIC: Record<string, AnyLogic> = {
   "kyun-lab/fair-test": asAny(labLogic),
   "kon/turn": asAny(konLogic),
   "kon/set": asAny(konLogic),
+  // r4-khand: Nazariya, drawn by the Khand block world
+  "nazariya/views": asAny(viewsLogic),
+  "nazariya/array": asAny(arrayLogic),
+  "nazariya/floor": asAny(floorLogic),
+  "nazariya/powers": asAny(powersLogic),
+  "nazariya/mirror": asAny(mirrorLogic),
 };
 export function logicFor(family: FamilyId, mode: PlayMode): AnyLogic | null { return LOGIC[`${family}/${mode}`] ?? null; }

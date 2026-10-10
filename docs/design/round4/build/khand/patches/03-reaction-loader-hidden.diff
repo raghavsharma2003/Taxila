@@ -1,0 +1,72 @@
+diff --git a/server/play/react.js b/server/play/react.js
+index b7f2ce66..800abd8d 100644
+--- a/server/play/react.js
++++ b/server/play/react.js
+@@ -2,16 +2,36 @@
+ // on top of the play guard (shared/play.ts reactionProblems) the lesson's own never-rules floor over the TEACHER's words
+ // (server/director/safety.js floorViolations) and a scanSafety pass. A line that trips anything is skipped, never edited.
+ // The hidden values (the level's key: the answer the child has not produced yet) may never be spoken.
+-import { readFileSync } from "node:fs";
++import { readFileSync, readdirSync, existsSync } from "node:fs";
+ import { fileURLToPath } from "node:url";
+ import { dirname, join } from "node:path";
+ import { pickReaction, newHistory } from "../../src/play/core/react.ts";
+ import { floorViolations, scanSafety } from "../director/safety.js";
+ import { gcd, lcm } from "../../src/play/core/rat.ts";
++import { nazariyaHidden } from "../../src/play/families/nazariya/index.ts";
+ 
+ const ROOT = join(dirname(fileURLToPath(import.meta.url)), "../..");
+ let BANK = null;
+-export function bank() { BANK ??= JSON.parse(readFileSync(join(ROOT, "data/play/reactions.json"), "utf8")); return BANK; }
++/**
++ * data/play/reactions.json plus every data/play/reactions/<name>.json (S0.3: one file per family or engine, so lanes add
++ * lines without editing a shared file). A split file holds `{ family: { <id>: … } }` and / or `{ engine: { <id>: … } }`;
++ * an id may not be defined twice (a merge never silently overwrites another lane's lines).
++ */
++export function bank() {
++  if (BANK) return BANK;
++  const b = JSON.parse(readFileSync(join(ROOT, "data/play/reactions.json"), "utf8"));
++  b.family ??= {}; b.engine ??= {};
++  const dir = join(ROOT, "data/play/reactions");
++  if (existsSync(dir)) for (const f of readdirSync(dir).filter((x) => x.endsWith(".json")).sort()) {
++    const part = JSON.parse(readFileSync(join(dir, f), "utf8"));
++    for (const key of ["family", "engine"]) for (const [id, lines] of Object.entries(part[key] ?? {})) {
++      if (b[key][id]) throw new Error(`data/play/reactions/${f}: ${key} ${id} is already defined`);
++      b[key][id] = lines;
++    }
++  }
++  BANK = b;
++  return BANK;
++}
+ 
+ /** Values a line must not say aloud before the child produces them (per family; the server knows the key). */
+ export function hiddenOf(level) {
+@@ -22,6 +42,7 @@ export function hiddenOf(level) {
+     case "atoms": return p.goal === "hcf" ? [gcd(p.n, p.m)] : p.goal === "lcm" ? [lcm(p.n, p.m)] : [];
+     case "bundles": return [p.a - p.b];
+     case "place": case "compare": return [];
++    case "views": case "array": case "floor": case "powers": case "mirror": return nazariyaHidden(level);   // r4-khand
+     default: return [];
+   }
+ }
+diff --git a/src/play/dev/main.tsx b/src/play/dev/main.tsx
+index 4d86b9b0..34037617 100644
+--- a/src/play/dev/main.tsx
++++ b/src/play/dev/main.tsx
+@@ -12,6 +12,7 @@ import { pickLevels } from "../core/pick.ts";
+ import { newHistory, pickReaction, type ReactionBank } from "../core/react.ts";
+ import { PlayStage, type PlayDoor } from "../PlayStage.tsx";
+ import bankJson from "../../../data/play/reactions.json";
++import nazariyaBank from "../../../data/play/reactions/nazariya.json";
+ 
+ const q = new URLSearchParams(location.search);
+ const family = (q.get("family") ?? "todo-jodo") as FamilyId;
+@@ -25,7 +26,7 @@ const goal = q.get("goal") ?? undefined;
+ const grammar = JSON.parse(q.get("grammar") ?? "{}") as Record<string, unknown>;
+ const topicId = q.get("topic") ?? `dev-${family}-${mode}`;
+ const skillId = q.get("skill") ?? `${topicId}-s1`;
+-const bank = bankJson as unknown as ReactionBank;
++const bank = { ...(bankJson as unknown as ReactionBank), family: { ...((bankJson as unknown as ReactionBank).family ?? {}), nazariya: (nazariyaBank as unknown as { family: { nazariya: unknown } }).family.nazariya } } as unknown as ReactionBank;
+ const demo = q.get("demo") === "1";
+ const reduced = q.get("reduced") === "1";
+ const harder = q.get("harder") === "1";

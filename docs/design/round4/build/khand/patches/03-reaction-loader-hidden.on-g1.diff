@@ -1,0 +1,41 @@
+diff --git a/server/play/react.js b/server/play/react.js
+index 6313ef98..07abd332 100644
+--- a/server/play/react.js
++++ b/server/play/react.js
+@@ -8,6 +8,7 @@ import { dirname, join } from "node:path";
+ import { pickReaction, newHistory } from "../../src/play/core/react.ts";
+ import { floorViolations, scanSafety } from "../director/safety.js";
+ import { gcd, lcm } from "../../src/play/core/rat.ts";
++import { nazariyaHidden } from "../../src/play/families/nazariya/index.ts";
+ 
+ const ROOT = join(dirname(fileURLToPath(import.meta.url)), "../..");
+ let BANK = null;
+@@ -41,6 +42,7 @@ export function hiddenOf(level) {
+     case "atoms": return p.goal === "hcf" ? [gcd(p.n, p.m)] : p.goal === "lcm" ? [lcm(p.n, p.m)] : [];
+     case "bundles": return [p.a - p.b];
+     case "place": case "compare": return [];
++    case "views": case "array": case "floor": case "powers": case "mirror": return nazariyaHidden(level);   // r4-khand
+     default: return [];
+   }
+ }
+diff --git a/src/play/dev/main.tsx b/src/play/dev/main.tsx
+index 27934951..04b1a66f 100644
+--- a/src/play/dev/main.tsx
++++ b/src/play/dev/main.tsx
+@@ -15,6 +15,7 @@ import bankJson from "../../../data/play/reactions.json";
+ import antJson from "../../../data/play/reactions/antariksh.json";
+ import { dressFor, validateDelta } from "../engines/core3d/api.ts";
+ import { baseDress } from "../engines/core3d/dress.ts";
++import nazariyaBank from "../../../data/play/reactions/nazariya.json";
+ 
+ const q = new URLSearchParams(location.search);
+ const family = (q.get("family") ?? "todo-jodo") as FamilyId;
+@@ -28,7 +29,7 @@ const goal = q.get("goal") ?? undefined;
+ const grammar = JSON.parse(q.get("grammar") ?? "{}") as Record<string, unknown>;
+ const topicId = q.get("topic") ?? `dev-${family}-${mode}`;
+ const skillId = q.get("skill") ?? `${topicId}-s1`;
+-const bank = { ...(bankJson as unknown as ReactionBank), engine: (antJson as unknown as ReactionBank).engine } as ReactionBank;
++const bank = { ...(bankJson as unknown as ReactionBank), engine: (antJson as unknown as ReactionBank).engine, family: { ...((bankJson as unknown as ReactionBank).family ?? {}), ...(nazariyaBank as unknown as { family: ReactionBank["family"] }).family } } as ReactionBank;
+ const demo = q.get("demo") === "1";
+ const reduced = q.get("reduced") === "1";
+ const harder = q.get("harder") === "1";

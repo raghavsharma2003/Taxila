@@ -21,6 +21,7 @@ export const PLAY_VERSION = "play@1" as const;
 /** The four flagship families of round 3. The grammar is open: a new family adds its id here and registers its logic. */
 export const FAMILIES = ["todo-jodo", "taraazu", "nishana", "kyun-lab",
   "kon",          // round 4 G1: angles as an amount of turning (E1 Antariksh angles)
+  "nazariya",   // r4-khand: block world (views, arrays, area/perimeter, squares/cubes, mirror)
 ] as const;
 export type FamilyId = (typeof FAMILIES)[number];
 /** Family sub-worlds. A mode is one representation with its own law inside a family. */
@@ -30,6 +31,7 @@ export const MODES = {
   nishana: ["place", "compare"],
   "kyun-lab": ["fair-test"],
   kon: ["turn", "set"],
+  nazariya: ["views", "array", "floor", "powers", "mirror"],   // r4-khand
 } as const satisfies Record<FamilyId, readonly string[]>;
 export type ModeOf<F extends FamilyId> = (typeof MODES)[F][number];
 export type PlayMode = (typeof MODES)[FamilyId][number];
@@ -165,7 +167,17 @@ export type KonAct =
   | { kind: "turn"; deg: number }                       // point the arm at heading `deg` (degrees, 0 = right, anticlockwise +)
   | { kind: "commit" }
   | { kind: "undo" };
-export type PlayActBody = AtomsAct | StripsAct | BundlesAct | BalanceAct | LineAct | LabAct | KonAct;
+// Nazariya (r4-khand): the block plot. A build act changes column heights (gravity: a block rests on the ground or a block).
+export type NazariyaAct =
+  | { kind: "place"; x: number; z: number }             // one block on top of column (x, z)
+  | { kind: "remove"; x: number; z: number }            // the top block of column (x, z)
+  | { kind: "layer"; x0: number; z0: number; x1: number; z1: number }   // one block on every open column of the rectangle
+  | { kind: "clear"; x0: number; z0: number; x1: number; z1: number }   // the top block off every open column of the rectangle
+  | { kind: "name"; n: number }                         // say how many blocks (array count; the next square / cube number)
+  | { kind: "predict"; same: boolean }                  // array "turn": the turned array takes the same number of blocks?
+  | { kind: "check" }                                   // commit the build: the law compares it with the goal
+  | { kind: "undo" };
+export type PlayActBody = AtomsAct | StripsAct | BundlesAct | BalanceAct | LineAct | LabAct | KonAct | NazariyaAct;
 
 /** Field names that look like a verdict claim. Stripped from every act before replay (rj-ot-frame-claim-as-grade). */
 export const CLAIM_KEYS = Object.freeze(["correct", "verdict", "right", "isCorrect", "score", "pass", "solved", "grade"]);
@@ -315,6 +327,7 @@ export const FAMILY_ARTS: Record<FamilyId, readonly ArtId[]> = {
   nishana: ["blueprint", "kagaz", "chalk", "raat"],
   "kyun-lab": ["kagaz", "blueprint", "raat", "chalk"],
   kon: ["blueprint", "raat", "kagaz", "chalk"],
+  nazariya: ["kagaz", "blueprint", "chalk", "raat"],
 };
 export interface ArtPickInput {
   family: FamilyId; subject: Subject; topicId: string; classLevel: number;

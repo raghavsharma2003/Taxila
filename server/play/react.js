@@ -8,6 +8,7 @@ import { dirname, join } from "node:path";
 import { pickReaction, newHistory } from "../../src/play/core/react.ts";
 import { floorViolations, scanSafety } from "../director/safety.js";
 import { gcd, lcm } from "../../src/play/core/rat.ts";
+import { nazariyaHidden } from "../../src/play/families/nazariya/index.ts";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "../..");
 let BANK = null;
@@ -41,6 +42,7 @@ export function hiddenOf(level) {
     case "atoms": return p.goal === "hcf" ? [gcd(p.n, p.m)] : p.goal === "lcm" ? [lcm(p.n, p.m)] : [];
     case "bundles": return [p.a - p.b];
     case "place": case "compare": return [];
+    case "views": case "array": case "floor": case "powers": case "mirror": return nazariyaHidden(level);   // r4-khand
     default: return [];
   }
 }

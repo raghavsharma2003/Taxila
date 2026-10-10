@@ -8,6 +8,7 @@ import { makeBalanceView } from "./taraazu/balance.view.ts";
 import { makeLineView } from "./nishana/line.view.ts";
 import { makeLabView } from "./kyun-lab/lab.view.ts";
 import { makeKonView } from "./kon/kon.view.ts";
+import { makePlotView } from "./nazariya/plot.view.ts";   // r4-khand: the 2D board twin of the Khand engine
 
 export const VIEWS: Record<string, MakeView> = {
   "todo-jodo/atoms": makeAtomsView,
@@ -20,5 +21,10 @@ export const VIEWS: Record<string, MakeView> = {
   "kyun-lab/fair-test": makeLabView,
   "kon/turn": makeKonView,
   "kon/set": makeKonView,
+  "nazariya/views": makePlotView,
+  "nazariya/array": makePlotView,
+  "nazariya/floor": makePlotView,
+  "nazariya/powers": makePlotView,
+  "nazariya/mirror": makePlotView,
 };
 export function viewFor(family: FamilyId, mode: PlayMode): MakeView | null { return VIEWS[`${family}/${mode}`] ?? null; }

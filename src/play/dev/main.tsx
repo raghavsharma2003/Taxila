@@ -15,6 +15,7 @@ import bankJson from "../../../data/play/reactions.json";
 import antJson from "../../../data/play/reactions/antariksh.json";
 import { dressFor, validateDelta } from "../engines/core3d/api.ts";
 import { baseDress } from "../engines/core3d/dress.ts";
+import nazariyaBank from "../../../data/play/reactions/nazariya.json";
 
 const q = new URLSearchParams(location.search);
 const family = (q.get("family") ?? "todo-jodo") as FamilyId;
@@ -28,7 +29,7 @@ const goal = q.get("goal") ?? undefined;
 const grammar = JSON.parse(q.get("grammar") ?? "{}") as Record<string, unknown>;
 const topicId = q.get("topic") ?? `dev-${family}-${mode}`;
 const skillId = q.get("skill") ?? `${topicId}-s1`;
-const bank = { ...(bankJson as unknown as ReactionBank), engine: (antJson as unknown as ReactionBank).engine } as ReactionBank;
+const bank = { ...(bankJson as unknown as ReactionBank), engine: (antJson as unknown as ReactionBank).engine, family: { ...((bankJson as unknown as ReactionBank).family ?? {}), nazariya: (nazariyaBank as unknown as { family: { nazariya: unknown } }).family.nazariya } } as unknown as ReactionBank;
 const demo = q.get("demo") === "1";
 const reduced = q.get("reduced") === "1";
 const harder = q.get("harder") === "1";

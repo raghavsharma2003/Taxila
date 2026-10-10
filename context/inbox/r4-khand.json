@@ -1,0 +1,177 @@
+{
+ "nodes": [
+  {
+   "id": "r4k-nazariya-law-block-plot",
+   "kind": "component",
+   "title": "Nazariya law as one height-map block plot under five Khand modes (views, array, floor, powers, mirror): generators, solvers, shortcut search, kit mal-rules, board twin; src/play/families/nazariya (r4-khand, 2026-10-10)",
+   "at": "2026-10-10"
+  },
+  {
+   "id": "r4k-dec-heightmap-gravity",
+   "kind": "decision",
+   "title": "Khand builds are height maps (a block rests on the ground or a block; a side-face tap drops onto that column). Every claimed topic is a height-map task and the law, views and fence stay exact. Reversal: a claimed topic needs overhangs or holes (e.g. nets, hollow solids) — then the law moves to a voxel set and the projections to per-cell ray tests",
+   "at": "2026-10-10"
+  },
+  {
+   "id": "r4k-ms-law-truth-battery",
+   "kind": "measurement",
+   "title": "Nazariya truth battery: 0 wrong grades over >= 5,000 acts per mode (5 modes, ~25,000 acts; random + mal-rule + solver acts) against an independent oracle; generator p95 <= 12 ms single process; tampered plots, claim fields and cross-level replays refused (tests/r4-khand-law.test.mjs, node, 2026-10-10)",
+   "at": "2026-10-10"
+  },
+  {
+   "id": "r4k-ms-greedy-mesher",
+   "kind": "measurement",
+   "title": "Greedy mesher with corner AO covers exactly the naive faces on 300 random builds; quads naive→greedy: 4x4x4 cube 80→9, 6x4 floor 44→5, 9x9 pit 165→9 (tests/r4-khand-mesher.test.mjs, node, 2026-10-10)",
+   "at": "2026-10-10"
+  },
+  {
+   "id": "r4k-dec-mesher-in-worker",
+   "kind": "decision",
+   "title": "Khand meshes in a Web Worker (buffers transferred, pooled GPU buffers, latest request wins) with the same pure mesher on the main thread only when no worker can start. Reversal: a device where the worker round trip exceeds one frame of a main-thread mesh for lesson-sized plots",
+   "at": "2026-10-10"
+  },
+  {
+   "id": "r4k-dec-coverage-11-topics",
+   "kind": "decision",
+   "title": "Khand claims 11 class 4-6 maths topics (views c4-ch02-t01; arrays c4-ch09-t01; area/perimeter c5-ch11-t01/t02/t03, c6-ch06-t01/t02; square and cube numbers c6-ch01-t01; mirror c4-ch11-t02, c5-ch10-t02, c6-ch09-t01) over 16 rules (the 16th, 2026-10-10: floor goal \"side\" for c6-maths-ch06-t01-s3, the missing side from the perimeter), every mal-rule mapped to a verified kit misconception. Reversal: a topic's certificate fails on the integrated tree",
+   "at": "2026-10-10"
+  },
+  {
+   "id": "r4k-dec-code-drawn-atlas",
+   "kind": "decision",
+   "title": "Khand block textures and sky are drawn in code (a 64x64 pixel atlas, a gradient dome, voxel hills and trees), not Azure-generated images: zero bytes, no text to review, deterministic. Reversal: the owner calls the look basic; then generate text-free skyboxes with DEPLOY_IMAGE (WebP < 300 KB, reviewed)",
+   "at": "2026-10-10"
+  },
+  {
+   "id": "r4k-dec-build-artefact-server-replay",
+   "kind": "decision",
+   "title": "A child's Khand build is saved (play_build, migration 026) only from the server's own replay of a solved level; heights only, no counter; GET /api/play/builds lists them. Reversal: the owner wants unsolved free builds kept too",
+   "at": "2026-10-10"
+  },
+  {
+   "id": "r4k-open-core-api-port",
+   "kind": "open",
+   "title": "Port Khand from its thin three.js adapter (src/play/engines/khand + patch 04 engine mount) onto G1's CORE-API once main merges G1",
+   "at": "2026-10-10"
+  },
+  {
+   "id": "r4k-open-real-phone",
+   "kind": "open",
+   "title": "Khand frame rate and touch are measured only on headless SwiftShader at 4x CPU throttle; a real ₹10k phone run is owner-dependent (O-R4)",
+   "at": "2026-10-10"
+  },
+  {
+   "id": "r4k-ms-fps-proxy",
+   "kind": "measurement",
+   "title": "Khand fps at 4x CPU throttle, SwiftShader proxy, DPR 1, camera orbiting: 54-55 at 360x800, 40-47 at 412x915, 16-18 at 1366x768; our JS 1-4 ms p50 per frame, 5-11 draws, <10k triangles (n = 9 runs x 10 s, headless Chromium, load 1.2-4.6, 2026-10-10)",
+   "at": "2026-10-10"
+  },
+  {
+   "id": "r4k-ms-remesh-worker",
+   "kind": "measurement",
+   "title": "Khand re-mesh in the worker: 0.1-0.2 ms p50 / 0.2-2.0 ms p95 per edit, 0 ms on the main thread (prototype main-thread re-mesh 8.2 / 19.1 ms) (n = 40 edits x 9 runs, 4x throttle, proxy, 2026-10-10)",
+   "at": "2026-10-10"
+  },
+  {
+   "id": "r4k-ms-c4-shots",
+   "kind": "measurement",
+   "title": "Khand C4 floor audit: 104 shots (13 mode/goals x 3 viewports, engine and 2D twin, mistake/solved at 360), 0 failures; lesson Desk 9/9 views pass (headless, 2026-10-10)",
+   "at": "2026-10-10"
+  },
+  {
+   "id": "r4k-ms-c9-loop",
+   "kind": "measurement",
+   "title": "Khand C9 loop on a local production build: 139/139 checks; every entry served, graded and tamper-refused; builds saved; one kt_evidence row via game, replays fold nothing; 'game khelna hai' puts the block world on stage (n = 1 run, 3 asks, own Neon TEST branch, 2026-10-10)",
+   "at": "2026-10-10"
+  },
+  {
+   "id": "r4k-rej-facts-floor-fence",
+   "kind": "rejection",
+   "title": "Floor facts row floor=9 fence=12 sides=3x3: the seam turn said 'perimeter 9' for a 3x3 floor (n = 1, model output, C9 run 2026-10-10). Replaced by area / perimeter / rect '3 by 3'; the re-run read it right",
+   "at": "2026-10-10"
+  },
+  {
+   "id": "r4k-open-c10-device",
+   "kind": "open",
+   "title": "C10 not measured on device: SwiftShader proxy only (54-56 / 40-48 / 16-18 fps at 360 / 412 / 1366, 4x throttle). Tier-3d DPR floor stays 1.0 (main session's delegate decision, 2026-10-10); the ₹10k Android run (O-R4) decides",
+   "at": "2026-10-10"
+  },
+  {
+   "id": "r4k-open-practice-beat",
+   "kind": "open",
+   "title": "C9 'at a practice beat' unmet for Khand topics, including on G1 @d2177c80 with its patch 03: 0/3 lessons (lesson route, 11 turns). Drops: patch 03 picks the plan's last skill (c6-ch06-t01-s3, not admitted by Khand) → no game; a built game is held on a turn where her move asks a question; at practice_set the Stagecraft host's own reveal wins over the Wave 2 play proposal (server/stagecraft/seam-bridge.js merge) and its pieces then hold the stage (tests/prod/r4-khand-beat.mjs + trace, local prod, 2026-10-10)",
+   "at": "2026-10-10"
+  },
+  {
+   "id": "r4k-dec-twin-first",
+   "kind": "decision",
+   "title": "Khand loads twin-first: the 2D board twin of the level paints and is playable at once (0.88 / 1.3 / 2.1-2.2 s at 10 / 3 / 1.2 Mbps, 4x CPU, dev page, n = 3 each, 2026-10-10), and the 3D world takes over at a turn-point with the same controller (1.6-1.8 / 2.4-2.6 / 4.4-4.6 s). Reversal: a child pilot shows the mid-level swap confuses (then swap only between levels)",
+   "at": "2026-10-10"
+  },
+  {
+   "id": "r4k-rej-beat-on-quick-practice",
+   "kind": "rejection",
+   "title": "Measuring C9's practice beat on /practice/<topic>: that route starts purpose 'practice' (Quick Practice), where studioSeam.prefetch adds no Studio piece by design, so no beat rule can ever fire there (3 runs, 2026-10-10). Measure on the lesson route",
+   "at": "2026-10-10"
+  },
+  {
+   "id": "r4k-ms-floor-side-battery",
+   "kind": "measurement",
+   "title": "Floor goal 'side' (missing side from a fence, b = n/2 − a): 0 wrong grades over 5,002 acts / 1,207 graded logs (651 solved, 587 incorrect, 479 kit misconceptions caught: n − a, n ÷ a, n − 2a) against an oracle that searches 2(a + b) = n; 2,400/2,400 generated levels solve clean and shortcut-free, generator p95 0.7 ms; 16 shots at 360/412/1366, 0 floor failures (tests/r4-khand-law.test.mjs, r4-khand-shots.mjs, 2026-10-10)",
+   "at": "2026-10-10"
+  },
+  {
+   "id": "r4k-dec-stackverse-look",
+   "kind": "decision",
+   "title": "Khand's child-facing name is Stackverse (provisional until the owner confirms and a trademark search is done; 'Voxa' dropped as already used by software products). The look moves from Indian-coded (mitti/barf/jungle themes; brick/sandstone/wood/jade blocks; grass hills; wooden fence; 'khet') to modern sci-fi: Neon Grid/Cryo/Biodome themes, Neon/Glass/Chrome/Holo blocks, floating panel islands, an aurora sky, a laser fence with lit panels, and juicy place/break/solve feedback. Done after integration under fixed budgets: 0 wrong grades, twin playable in <= 2.2 s at 1.2 Mbps, <= 11 draws, < 10k triangles (owner directive via the main session, 2026-10-10). Reversal: the owner rejects the name or the look in review",
+   "at": "2026-10-10"
+  }
+ ],
+ "edges": [
+  {
+   "src": "r4k-nazariya-law-block-plot",
+   "rel": "measured_by",
+   "dst": "r4k-ms-law-truth-battery"
+  },
+  {
+   "src": "r4k-dec-mesher-in-worker",
+   "rel": "measured_by",
+   "dst": "r4k-ms-greedy-mesher"
+  },
+  {
+   "src": "r4k-dec-heightmap-gravity",
+   "rel": "part_of",
+   "dst": "r4k-nazariya-law-block-plot"
+  },
+  {
+   "src": "r4k-dec-coverage-11-topics",
+   "rel": "part_of",
+   "dst": "r4k-nazariya-law-block-plot"
+  },
+  {
+   "src": "r4k-dec-mesher-in-worker",
+   "rel": "measured_by",
+   "dst": "r4k-ms-remesh-worker"
+  },
+  {
+   "src": "r4k-dec-coverage-11-topics",
+   "rel": "measured_by",
+   "dst": "r4k-ms-c9-loop"
+  },
+  {
+   "src": "r4k-open-c10-device",
+   "rel": "caused_by",
+   "dst": "r4k-ms-fps-proxy"
+  },
+  {
+   "src": "r4k-rej-beat-on-quick-practice",
+   "rel": "part_of",
+   "dst": "r4k-open-practice-beat"
+  },
+  {
+   "src": "r4k-dec-coverage-11-topics",
+   "rel": "measured_by",
+   "dst": "r4k-ms-floor-side-battery"
+  }
+ ]
+}

@@ -1,0 +1,128 @@
+diff --git a/src/play/PlayStage.tsx b/src/play/PlayStage.tsx
+index 9027e2a9..2300dcb8 100644
+--- a/src/play/PlayStage.tsx
++++ b/src/play/PlayStage.tsx
+@@ -9,7 +9,7 @@ import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, typ
+ import type { ArtId, Door, Lang, Moment, PlayActEnvelope, PlayLevel, PlayWorldFamily } from "../../shared/play.ts";
+ import { FLOORS } from "../../shared/play.ts";
+ import { logicFor } from "./families/index.ts";
+-import { viewFor } from "./families/views.ts";
++import { engineFor, viewFor } from "./families/views.ts";
+ import { PlayController } from "./core/controller.ts";
+ import { mountStage, type StageHandle } from "./core/stage.ts";
+ import type { ControlSpec, FamilyView, Readout } from "./core/viewkit.ts";
+@@ -82,8 +82,8 @@ export function PlayStage(props: PlayStageProps) {
+ 
+   useEffect(() => {
+     const host = worldRef.current;
+-    const logic = logicFor(level.family, level.mode), make = viewFor(level.family, level.mode);
+-    if (!host || !logic || !make) { onEvent.current?.({ type: "fail", why: "no_family" }); return; }
++    const logic = logicFor(level.family, level.mode), make = viewFor(level.family, level.mode), engine = engineFor(level.family, level.mode);
++    if (!host || !logic || (!make && !engine)) { onEvent.current?.({ type: "fail", why: "no_family" }); return; }
+     let view: FamilyView | null = null;
+     const ctl = new PlayController(logic, level, {
+       onAct: (env) => onEvent.current?.({ type: "act", env }),
+@@ -92,15 +92,49 @@ export function PlayStage(props: PlayStageProps) {
+       onImpasse: () => onEvent.current?.({ type: "impasse" }),
+     });
+     ctlRef.current = ctl;
+-    const stage = mountStage(host, (api) => { view = make(api, { level, ctl, lang, changed }); return view; },
+-      { art, young, reducedMotion: props.reducedMotion, sound: props.sound, onFail: (why) => onEvent.current?.({ type: "fail", why }) });
++    const onFail = (why: string) => onEvent.current?.({ type: "fail", why });
++    const mount2d = () => mountStage(host, (api) => { view = make!(api, { level, ctl, lang, changed }); return view; }, { art, young, reducedMotion: props.reducedMotion, sound: props.sound, onFail });
++    // a 3D engine (r4-khand, core3d@1): the 2D view of the same mode paints FIRST and is playable at once; the 3D world
++    // streams in behind it and takes over at a turn-point WITH THE SAME CONTROLLER (the level, its state and every act
++    // survive). When the engine cannot run (tier 2d, a lost context, frame errors) the 2D view stays or comes back.
++    let stage: StageHandle;
++    let live3d = false, gone = false, back2d = false;
++    const to2d = (why: string) => {
++      if (back2d || !make) { onFail(why); return; }
++      back2d = true;
++      const old = stage; queueMicrotask(() => { if (gone) return; old?.dispose(); stage = mount2d(); stageRef.current = stage; viewRef.current = view; changed(); });
++    };
++    if (engine && make) {
++      stage = mount2d();
++      let m: ReturnType<typeof engine> | null = null;
++      m = engine(host, { level, ctl, lang, changed, art, young, classLevel: props.classLevel, reducedMotion: props.reducedMotion, sound: props.sound, hidden: true,
++        onReady: () => {
++          const swap = () => {
++            if (gone || live3d || back2d) return;
++            if (!ctl.atTurnPoint()) { setTimeout(swap, 250); return; }
++            if (!m) return;
++            live3d = true;
++            const old = stage; stage = m.stage; view = m.view; old.dispose(); m.reveal?.();
++            stageRef.current = stage; viewRef.current = view;
++            try { view?.react([], undefined); } catch { /* the world resyncs on the next act */ }
++            changed();
++          };
++          swap();
++        },
++        onFail: (why) => { if (live3d) to2d(why); else queueMicrotask(() => m?.stage.dispose()); } });
++      // the engine could not mount (tier 2d, no WebGL): the 2D view simply stays
++      if (m.failed) m.stage.dispose();
++    } else if (engine) {
++      const m = engine(host, { level, ctl, lang, changed, art, young, classLevel: props.classLevel, reducedMotion: props.reducedMotion, sound: props.sound, onFail });
++      stage = m.stage; view = m.view;
++    } else stage = mount2d();
+     stageRef.current = stage; viewRef.current = view;
+     changed();
+     onEvent.current?.({ type: "ready" });
+     if (props.demo && view) setTimeout(() => (view as FamilyView | null)?.demo?.(), 700);
+     if (props.debug && typeof window !== "undefined") {
+       (window as unknown as { __play: unknown }).__play = {
+-        level, audit: stage.audit, perf: (r?: boolean) => stage.perf(r), invalidate: () => stage.invalidate(),
++        level, get audit() { return stage.audit; }, perf: (r?: boolean) => stage.perf(r), invalidate: () => stage.invalidate(), mode3d: () => live3d,
+         dispatch: (a: unknown) => ctl.dispatch(a as never), state: () => ctl.state, solve: () => logic.solve(level), facts: () => ctl.facts(),
+         controls: () => viewRef.current?.controls().map((c) => ({ id: c.id, label: c.label, disabled: !!c.disabled })),
+         press: (id: string) => { const c = viewRef.current?.controls().find((x) => x.id === id); c?.onPress(); return !!c; },
+@@ -111,7 +145,7 @@ export function PlayStage(props: PlayStageProps) {
+         mal: () => logic.malRules.slice(), malActs: (id: string) => logic.malActs(level, id),
+       };
+     }
+-    return () => { stage.dispose(); ctl.dispose(); stageRef.current = null; viewRef.current = null; ctlRef.current = null; };
++    return () => { gone = true; stageRef.current?.dispose(); stage.dispose(); ctl.dispose(); stageRef.current = null; viewRef.current = null; ctlRef.current = null; };
+     // a new level (or art direction) is a new world
+   }, [level, art, lang, young, props.reducedMotion, props.sound, props.debug, props.demo, changed]);
+ 
+@@ -190,6 +224,7 @@ export function familyTitle(f: PlayLevel["family"], lang: Lang): string {
+     taraazu: ["Taraazu", "Balance", "तराज़ू"],
+     nishana: ["Nishana", "On the Line", "निशाना"],
+     "kyun-lab": ["Kyun-Lab", "Why Lab", "क्यों-लैब"],
++    nazariya: ["Khand", "Block World", "Khand"],
+   };
+   const [hg, en, hi] = t[f];
+   return lang === "en" ? en : lang === "hi" ? hi : hg;
+diff --git a/src/play/families/views.ts b/src/play/families/views.ts
+index 5ffb08e1..83d2cfdc 100644
+--- a/src/play/families/views.ts
++++ b/src/play/families/views.ts
+@@ -7,6 +7,8 @@ import { makeBundlesView } from "./todo-jodo/bundles.view.ts";
+ import { makeBalanceView } from "./taraazu/balance.view.ts";
+ import { makeLineView } from "./nishana/line.view.ts";
+ import { makeLabView } from "./kyun-lab/lab.view.ts";
++import { makePlotView } from "./nazariya/plot.view.ts";   // r4-khand: the 2D board twin of the Khand engine
++import { mountStage3D, KHAND_ENTRY, type Stage3DOpts, type Stage3DMount } from "../engines/khand/index.ts";
+ 
+ export const VIEWS: Record<string, MakeView> = {
+   "todo-jodo/atoms": makeAtomsView,
+@@ -17,5 +19,20 @@ export const VIEWS: Record<string, MakeView> = {
+   "nishana/place": makeLineView,
+   "nishana/compare": makeLineView,
+   "kyun-lab/fair-test": makeLabView,
++  "nazariya/views": makePlotView,
++  "nazariya/array": makePlotView,
++  "nazariya/floor": makePlotView,
++  "nazariya/powers": makePlotView,
++  "nazariya/mirror": makePlotView,
+ };
+ export function viewFor(family: FamilyId, mode: PlayMode): MakeView | null { return VIEWS[`${family}/${mode}`] ?? null; }
++
++/** 3D engines (r4-khand, until G1's core3d registry lands): a mode drawn by a core3d@1 engine mounts through the stage3d
++ *  adapter instead of the 2D stage; it returns the same FamilyView chrome and a StageHandle. On failure (no WebGL2, a
++ *  software GPU outside the harness, context loss) the host falls back to the 2D view of the same mode, same controller. */
++export type MountEngine = (host: HTMLElement, opts: Stage3DOpts) => Stage3DMount;
++const ENGINE_ENTRIES = [KHAND_ENTRY];
++export function engineFor(family: FamilyId, mode: PlayMode): MountEngine | null {
++  const e = ENGINE_ENTRIES.find((x) => x.renders.some((r) => r.family === family && r.mode === mode));
++  return e ? (host, opts) => mountStage3D(host, e, opts) : null;
++}

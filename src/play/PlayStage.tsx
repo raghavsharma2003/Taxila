@@ -318,6 +318,7 @@ export function familyTitle(f: PlayLevel["family"] | string, lang: Lang): string
     taraazu: ["Taraazu", "Balance", "तराज़ू"],
     nishana: ["Nishana", "On the Line", "निशाना"],
     "kyun-lab": ["Kyun-Lab", "Why Lab", "क्यों-लैब"],
+    nazariya: ["Khand", "Block World", "Khand"],
   };
   const row = t[f];
   if (!row) return word(lang, `${f}.title` as WordKey) || f;

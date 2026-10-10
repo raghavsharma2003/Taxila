@@ -102,7 +102,7 @@ describe("round3 forge: the live play piece (buildLive)", () => {
     assert.ok(r.ms < 3000);
   });
   it("no piece: a topic without play coverage, an excluded topic, a picture ask, a safeguarding moment", async () => {
-    const m = (o) => buildLive({ ask: "game", lessonId: "L1", child: child(6), skillId: null, topicId: "c6-maths-ch06-t01", ...o }, { q: null, playCerts: ALL_PASS });
+    const m = (o) => buildLive({ ask: "game", lessonId: "L1", child: child(6), skillId: null, topicId: "c6-maths-ch03-t01", ...o }, { q: null, playCerts: ALL_PASS });
     assert.equal(await m({}), null);
     assert.equal(await m({ topicId: "c7-science-ch06-t01", child: child(7) }), null, "adolescence topics are never gamified");
     assert.equal(await m({ topicId: "c4-maths-ch05-t01", ask: "picture" }), null);

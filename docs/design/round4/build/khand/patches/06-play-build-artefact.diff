@@ -1,0 +1,104 @@
+diff --git a/db/migrations/026_r4khand_play_build.sql b/db/migrations/026_r4khand_play_build.sql
+new file mode 100644
+index 00000000..b7c595f2
+--- /dev/null
++++ b/db/migrations/026_r4khand_play_build.sql
+@@ -0,0 +1,21 @@
++-- r4-khand (BUILD-PLAN-V2 §3 G2; number 026 allotted by the main session: 024 board_page, 025 child_school_chapter).
++-- play_build: the child's own Khand builds, kept as artefacts (game-mechanics G5: a child's build, shown to the parent).
++-- Written ONLY by the server from its own replay of the child's acts on a solved level (server/play/builds.js); the device
++-- never sends a build. Heights only (the law's state); no counter, no score, nothing that unlocks or decays.
++-- Erasure: child_id cascades with the child row.
++create table if not exists play_build (
++  id         bigserial primary key,
++  child_id   uuid not null references child(id) on delete cascade,
++  level_id   text not null,
++  topic_id   text not null,
++  skill_id   text not null,
++  mode       text not null,
++  goal       text not null,
++  w          smallint not null,
++  d          smallint not null,
++  heights    smallint[] not null,
++  base       smallint[] not null,
++  created_at timestamptz not null default now(),
++  unique (child_id, level_id)
++);
++create index if not exists play_build_child on play_build (child_id, created_at desc);
+diff --git a/server/play/builds.js b/server/play/builds.js
+new file mode 100644
+index 00000000..507da9a6
+--- /dev/null
++++ b/server/play/builds.js
+@@ -0,0 +1,32 @@
++// r4-khand: the child's Khand builds as artefacts (db/migrations/026_r4khand_play_build.sql). The server saves a build only
++// from ITS OWN replay of the child's raw acts on a level it regenerated, and only when its own grade says solved; the device
++// never sends a build. One row per (child, level): a replayed post saves nothing new. Reading is the child's own (and the
++// parent's, through the same requireChild guard). No counts are kept or shown: a gallery, not a tally.
++import { logicFor } from "../../src/play/families/index.ts";
++import { replayAll } from "../../src/play/core/replay.ts";
++import { sanitizeActs } from "../../shared/play.ts";
++
++/** The end state of a solved Nazariya level from the raw acts, or null (another family, not solved, a bad level). */
++export function buildOf(level, rawActs) {
++  if (level?.family !== "nazariya") return null;
++  const logic = logicFor(level.family, level.mode), v = logic?.validate(level);
++  if (!v) return null;
++  const r = replayAll(logic, v, sanitizeActs(rawActs));
++  if (!logic.goalMet(v, r.state)) return null;
++  return { levelId: v.levelId, topicId: v.topicId, skillId: v.skillId, mode: v.mode, goal: v.goal, w: v.params.w, d: v.params.d, heights: r.state.h, base: v.params.base };
++}
++/** Save a solved build (idempotent). Never throws: a failed save never blocks play. */
++export async function saveBuild(q, childId, level, rawActs) {
++  const b = buildOf(level, rawActs);
++  if (!b) return false;
++  try {
++    await q("insert into play_build (child_id, level_id, topic_id, skill_id, mode, goal, w, d, heights, base) values ($1,$2,$3,$4,$5,$6,$7,$8,$9::smallint[],$10::smallint[]) on conflict (child_id, level_id) do nothing",
++      [childId, b.levelId, b.topicId, b.skillId, b.mode, b.goal, b.w, b.d, b.heights, b.base]);
++    return true;
++  } catch { return false; }
++}
++/** The child's builds, newest first. */
++export async function listBuilds(q, childId, limit = 24) {
++  const rows = await q("select level_id, topic_id, skill_id, mode, goal, w, d, heights, base, created_at from play_build where child_id = $1 order by created_at desc limit $2", [childId, Math.max(1, Math.min(60, limit))]);
++  return rows.map((r) => ({ levelId: r.level_id, topicId: r.topic_id, skillId: r.skill_id, mode: r.mode, goal: r.goal, w: Number(r.w), d: Number(r.d), heights: (r.heights ?? []).map(Number), base: (r.base ?? []).map(Number), at: r.created_at }));
++}
+diff --git a/server/play/routes.js b/server/play/routes.js
+index e08e1463..2a7e6d1b 100644
+--- a/server/play/routes.js
++++ b/server/play/routes.js
+@@ -9,6 +9,7 @@
+ //   POST /api/play/level   { sessionId } → session, level, art           (the Studio renderer's mount)
+ //   GET  /api/play/world?childId= → { classLevel, families }
+ //   GET  /api/play/admit?skillId= → { play: boolean, family, mode }   (the Director's admission check)
++//   GET  /api/play/builds?childId= → { builds }   (r4-khand: the child's saved Khand builds, newest first)
+ import { readJson, send, HttpError } from "../http.js";
+ import { requireChild } from "../auth.js";
+ import { signSession, verifySession } from "./session.js";
+@@ -88,6 +89,8 @@ export const routes = {
+     const rows = ended ? lessonEvidence(g.grade, level) : [];
+     // inside a lesson: the server's own rows, signed for this child and lesson (the turn folds only a verified token)
+     const evidenceToken = ended && s.lessonId && rows.length ? signEvidence({ childId: s.childId, lessonId: s.lessonId, levelId: level.levelId, rows }) : undefined;
++    // r4-khand: a solved block-world level is kept as the child's artefact, from the server's own replay (never the device's)
++    if (ended && g.grade.verdict === "solved" && level.family === "nazariya") { const { saveBuild } = await import("./builds.js"); await saveBuild(dbq, s.childId, level, b.acts ?? []); }
+     const seam = seamOf(g.grade, level, fresh, !!b.impasse);
+     const seamToken = seam && s.lessonId ? signSeam({ childId: s.childId, lessonId: s.lessonId, kind: seam.kind, row: playFactsRow({ game: `${level.family}/${level.mode}`, ...seam.facts }) }) : undefined;
+     const out = { levelId: level.levelId, moments: fresh, reaction, ...(seamToken ? { seamToken } : {}), ...(ended ? { grade: g.grade, doors: doorsFor(s, entry, s.lang), evidence: rows, ...(evidenceToken ? { evidenceToken } : {}) } : {}),
+@@ -124,6 +127,17 @@ export const routes = {
+     send(res, 200, { classLevel, families: FAMILIES.map((family) => worldFamily({ family, classLevel, mapState, hereTopic: u.searchParams.get("topicId") })) });
+   },
+ 
++  "GET /api/play/builds": async (req, res) => {
++    const u = new URL(req.url, "http://x");
++    const childId = u.searchParams.get("childId");
++    if (!childId) throw bad("childId required");
++    await requireChild(req, childId);
++    const { listBuilds } = await import("./builds.js");
++    let builds = [];
++    try { builds = await listBuilds(dbq, childId); } catch { /* none yet */ }
++    send(res, 200, { builds });
++  },
++
+   "GET /api/play/admit": async (req, res) => {
+     const u = new URL(req.url, "http://x");
+     const e = entryFor({ skillId: u.searchParams.get("skillId"), topicId: u.searchParams.get("topicId") });
