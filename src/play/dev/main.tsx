@@ -12,6 +12,7 @@ import { pickLevels } from "../core/pick.ts";
 import { newHistory, pickReaction, type ReactionBank } from "../core/react.ts";
 import { PlayStage, type PlayDoor } from "../PlayStage.tsx";
 import bankJson from "../../../data/play/reactions.json";
+import nazariyaBank from "../../../data/play/reactions/nazariya.json";
 
 const q = new URLSearchParams(location.search);
 const family = (q.get("family") ?? "todo-jodo") as FamilyId;
@@ -25,7 +26,7 @@ const goal = q.get("goal") ?? undefined;
 const grammar = JSON.parse(q.get("grammar") ?? "{}") as Record<string, unknown>;
 const topicId = q.get("topic") ?? `dev-${family}-${mode}`;
 const skillId = q.get("skill") ?? `${topicId}-s1`;
-const bank = bankJson as unknown as ReactionBank;
+const bank = { ...(bankJson as unknown as ReactionBank), family: { ...((bankJson as unknown as ReactionBank).family ?? {}), nazariya: nazariyaBank.moments } } as unknown as ReactionBank;
 const demo = q.get("demo") === "1";
 const reduced = q.get("reduced") === "1";
 const harder = q.get("harder") === "1";

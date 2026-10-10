@@ -158,7 +158,17 @@ export type LabAct =
   | { kind: "run" }
   | { kind: "conclude"; factor: string }                // the factor that made the difference, or "cant_tell"
   | { kind: "undo" };
-export type PlayActBody = AtomsAct | StripsAct | BundlesAct | BalanceAct | LineAct | LabAct;
+// Nazariya (r4-khand): the block plot. A build act changes column heights (gravity: a block rests on the ground or a block).
+export type NazariyaAct =
+  | { kind: "place"; x: number; z: number }             // one block on top of column (x, z)
+  | { kind: "remove"; x: number; z: number }            // the top block of column (x, z)
+  | { kind: "layer"; x0: number; z0: number; x1: number; z1: number }   // one block on every open column of the rectangle
+  | { kind: "clear"; x0: number; z0: number; x1: number; z1: number }   // the top block off every open column of the rectangle
+  | { kind: "name"; n: number }                         // say how many blocks (array count; the next square / cube number)
+  | { kind: "predict"; same: boolean }                  // array "turn": the turned array takes the same number of blocks?
+  | { kind: "check" }                                   // commit the build: the law compares it with the goal
+  | { kind: "undo" };
+export type PlayActBody = AtomsAct | StripsAct | BundlesAct | BalanceAct | LineAct | LabAct | NazariyaAct;
 
 /** Field names that look like a verdict claim. Stripped from every act before replay (rj-ot-frame-claim-as-grade). */
 export const CLAIM_KEYS = Object.freeze(["correct", "verdict", "right", "isCorrect", "score", "pass", "solved", "grade"]);
@@ -305,6 +315,7 @@ export const FAMILY_ARTS: Record<FamilyId, readonly ArtId[]> = {
   taraazu: ["kagaz", "chalk", "blueprint", "raat"],
   nishana: ["blueprint", "kagaz", "chalk", "raat"],
   "kyun-lab": ["kagaz", "blueprint", "raat", "chalk"],
+  nazariya: ["kagaz", "blueprint", "chalk", "raat"],
 };
 export interface ArtPickInput {
   family: FamilyId; subject: Subject; topicId: string; classLevel: number;

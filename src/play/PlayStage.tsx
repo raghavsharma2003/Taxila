@@ -9,7 +9,7 @@ import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, typ
 import type { ArtId, Door, Lang, Moment, PlayActEnvelope, PlayLevel, PlayWorldFamily } from "../../shared/play.ts";
 import { FLOORS } from "../../shared/play.ts";
 import { logicFor } from "./families/index.ts";
-import { viewFor } from "./families/views.ts";
+import { engineFor, viewFor } from "./families/views.ts";
 import { PlayController } from "./core/controller.ts";
 import { mountStage, type StageHandle } from "./core/stage.ts";
 import type { ControlSpec, FamilyView, Readout } from "./core/viewkit.ts";
@@ -82,8 +82,8 @@ export function PlayStage(props: PlayStageProps) {
 
   useEffect(() => {
     const host = worldRef.current;
-    const logic = logicFor(level.family, level.mode), make = viewFor(level.family, level.mode);
-    if (!host || !logic || !make) { onEvent.current?.({ type: "fail", why: "no_family" }); return; }
+    const logic = logicFor(level.family, level.mode), make = viewFor(level.family, level.mode), engine = engineFor(level.family, level.mode);
+    if (!host || !logic || (!make && !engine)) { onEvent.current?.({ type: "fail", why: "no_family" }); return; }
     let view: FamilyView | null = null;
     const ctl = new PlayController(logic, level, {
       onAct: (env) => onEvent.current?.({ type: "act", env }),
@@ -92,8 +92,10 @@ export function PlayStage(props: PlayStageProps) {
       onImpasse: () => onEvent.current?.({ type: "impasse" }),
     });
     ctlRef.current = ctl;
-    const stage = mountStage(host, (api) => { view = make(api, { level, ctl, lang, changed }); return view; },
-      { art, young, reducedMotion: props.reducedMotion, sound: props.sound, onFail: (why) => onEvent.current?.({ type: "fail", why }) });
+    const onFail = (why: string) => onEvent.current?.({ type: "fail", why });
+    // a 3D engine (r4-khand) mounts its own WebGL world; every other mode draws on the 2D stage
+    const stage = engine ? (() => { const m = engine(host, { level, ctl, lang, changed, art, young, reducedMotion: props.reducedMotion, sound: props.sound, onFail }); view = m.view; return m.stage; })()
+      : mountStage(host, (api) => { view = make!(api, { level, ctl, lang, changed }); return view; }, { art, young, reducedMotion: props.reducedMotion, sound: props.sound, onFail });
     stageRef.current = stage; viewRef.current = view;
     changed();
     onEvent.current?.({ type: "ready" });
@@ -190,6 +192,7 @@ export function familyTitle(f: PlayLevel["family"], lang: Lang): string {
     taraazu: ["Taraazu", "Balance", "तराज़ू"],
     nishana: ["Nishana", "On the Line", "निशाना"],
     "kyun-lab": ["Kyun-Lab", "Why Lab", "क्यों-लैब"],
+    nazariya: ["Khand", "Block World", "Khand"],
   };
   const [hg, en, hi] = t[f];
   return lang === "en" ? en : lang === "hi" ? hi : hg;

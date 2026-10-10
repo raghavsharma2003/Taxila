@@ -29,7 +29,7 @@ export function edges() {
   }
   return EDGES;
 }
-export const FAMILIES = ["todo-jodo", "taraazu", "nishana", "kyun-lab"];
+export const FAMILIES = ["todo-jodo", "taraazu", "nishana", "kyun-lab", "nazariya"];
 
 /**
  * PURE. The family's world for a child.

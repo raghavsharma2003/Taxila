@@ -9,6 +9,7 @@
 //   POST /api/play/level   { sessionId } → session, level, art           (the Studio renderer's mount)
 //   GET  /api/play/world?childId= → { classLevel, families }
 //   GET  /api/play/admit?skillId= → { play: boolean, family, mode }   (the Director's admission check)
+//   GET  /api/play/builds?childId= → { builds }   (r4-khand: the child's saved Khand builds, newest first)
 import { readJson, send, HttpError } from "../http.js";
 import { requireChild } from "../auth.js";
 import { signSession, verifySession } from "./session.js";
@@ -88,6 +89,8 @@ export const routes = {
     const rows = ended ? lessonEvidence(g.grade, level) : [];
     // inside a lesson: the server's own rows, signed for this child and lesson (the turn folds only a verified token)
     const evidenceToken = ended && s.lessonId && rows.length ? signEvidence({ childId: s.childId, lessonId: s.lessonId, levelId: level.levelId, rows }) : undefined;
+    // r4-khand: a solved block-world level is kept as the child's artefact, from the server's own replay (never the device's)
+    if (ended && g.grade.verdict === "solved" && level.family === "nazariya") { const { saveBuild } = await import("./builds.js"); await saveBuild(dbq, s.childId, level, b.acts ?? []); }
     const seam = seamOf(g.grade, level, fresh, !!b.impasse);
     const seamToken = seam && s.lessonId ? signSeam({ childId: s.childId, lessonId: s.lessonId, kind: seam.kind, row: playFactsRow({ game: `${level.family}/${level.mode}`, ...seam.facts }) }) : undefined;
     const out = { levelId: level.levelId, moments: fresh, reaction, ...(seamToken ? { seamToken } : {}), ...(ended ? { grade: g.grade, doors: doorsFor(s, entry, s.lang), evidence: rows, ...(evidenceToken ? { evidenceToken } : {}) } : {}),
@@ -122,6 +125,17 @@ export const routes = {
     const truth = await loadTruth(child);
     const mapState = mapStateFrom(truth, MAP_SHAPE);
     send(res, 200, { classLevel, families: FAMILIES.map((family) => worldFamily({ family, classLevel, mapState, hereTopic: u.searchParams.get("topicId") })) });
+  },
+
+  "GET /api/play/builds": async (req, res) => {
+    const u = new URL(req.url, "http://x");
+    const childId = u.searchParams.get("childId");
+    if (!childId) throw bad("childId required");
+    await requireChild(req, childId);
+    const { listBuilds } = await import("./builds.js");
+    let builds = [];
+    try { builds = await listBuilds(dbq, childId); } catch { /* none yet */ }
+    send(res, 200, { builds });
   },
 
   "GET /api/play/admit": async (req, res) => {

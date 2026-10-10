@@ -14,6 +14,7 @@ import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import { LOGIC } from "../../../src/play/families/index.ts";
 import { LABS } from "../../../src/play/families/kyun-lab/labs.ts";
+import { RULES as NAZARIYA_RULES, ACTS as NAZARIYA_ACTS } from "./rules/nazariya.mjs";   // r4-khand (per-family rule file, S0.3)
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "../../..");
 const OUT = join(ROOT, "data/play/coverage.json");
@@ -86,6 +87,7 @@ export const RULES = [
   R("c7-science-ch07-t03", "kyun-lab", "fair-test", "predict", { "black-attracts-heat": "m2" }, { labs: ["rang"] }),
   R("c7-science-ch08-t01", "kyun-lab", "fair-test", "predict", { "heavy-faster": "m1", "pull-changes-period": "m2" }, { labs: ["jhoola"] }),
   R("c7-science-ch11-t02", "kyun-lab", "fair-test", "predict", { "shadow-same-size": "m3" }, { labs: ["parchhai"] }),
+  ...NAZARIYA_RULES,
 ];
 
 /**
@@ -156,6 +158,7 @@ export const ACTS = {
   "c7-science-ch07-t03|predict": ["s2", "s3"],
   "c7-science-ch08-t01|predict": ["s3", "s2"],          // length / mass / swing vs period; timing 10 swings
   "c7-science-ch11-t02|predict": ["s2"],
+  ...NAZARIYA_ACTS,
 };
 
 /** Topics deliberately NOT given a game, with the reason (a game would trivialise or mis-frame them). */
@@ -214,7 +217,7 @@ export function build() {
     mappedMisconceptions: new Set(entries.flatMap((e) => Object.values(e.misMap))).size,
     bySubject: Object.fromEntries(["maths", "science", "evs"].map((s) => [s, { inScope: by((t) => t.id.includes(`-${s}-`)).length, covered: by((t) => t.id.includes(`-${s}-`) && covered.has(t.id)).length }])),
     byClass: Object.fromEntries([4, 5, 6, 7].map((k) => [k, { inScope: by((t) => t.classLevel === k).length, covered: by((t) => t.classLevel === k && covered.has(t.id)).length }])),
-    byFamily: Object.fromEntries(["todo-jodo", "taraazu", "nishana", "kyun-lab"].map((f) => [f, new Set(entries.filter((e) => e.family === f).map((e) => e.topicId)).size])),
+    byFamily: Object.fromEntries(["todo-jodo", "taraazu", "nishana", "kyun-lab", "nazariya"].map((f) => [f, new Set(entries.filter((e) => e.family === f).map((e) => e.topicId)).size])),
   };
   // GRAMMAR.md §10: `skills` (skill id → its admitted game; the topic's FIRST rule wins) and `excluded` (topic id → why)
   const excluded = Object.fromEntries(inScope.filter((t) => EXCLUDED.some((e) => t.id.startsWith(e.prefix))).map((t) => [t.id, EXCLUDED.find((e) => t.id.startsWith(e.prefix)).why]));

@@ -2,16 +2,29 @@
 // on top of the play guard (shared/play.ts reactionProblems) the lesson's own never-rules floor over the TEACHER's words
 // (server/director/safety.js floorViolations) and a scanSafety pass. A line that trips anything is skipped, never edited.
 // The hidden values (the level's key: the answer the child has not produced yet) may never be spoken.
-import { readFileSync } from "node:fs";
+import { readFileSync, readdirSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import { pickReaction, newHistory } from "../../src/play/core/react.ts";
 import { floorViolations, scanSafety } from "../director/safety.js";
 import { gcd, lcm } from "../../src/play/core/rat.ts";
+import { nazariyaHidden } from "../../src/play/families/nazariya/index.ts";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "../..");
 let BANK = null;
-export function bank() { BANK ??= JSON.parse(readFileSync(join(ROOT, "data/play/reactions.json"), "utf8")); return BANK; }
+/** data/play/reactions.json, plus one file per family in data/play/reactions/ ({ family, moments }) merged as bank.family[f]. */
+export function bank() {
+  if (BANK) return BANK;
+  const b = JSON.parse(readFileSync(join(ROOT, "data/play/reactions.json"), "utf8"));
+  let files = [];
+  try { files = readdirSync(join(ROOT, "data/play/reactions")).filter((f) => f.endsWith(".json")).sort(); } catch { /* none */ }
+  for (const f of files) {
+    const fam = JSON.parse(readFileSync(join(ROOT, "data/play/reactions", f), "utf8"));
+    if (fam?.family && fam.moments) b.family = { ...(b.family ?? {}), [fam.family]: fam.moments };
+  }
+  BANK = b;
+  return BANK;
+}
 
 /** Values a line must not say aloud before the child produces them (per family; the server knows the key). */
 export function hiddenOf(level) {
@@ -22,6 +35,7 @@ export function hiddenOf(level) {
     case "atoms": return p.goal === "hcf" ? [gcd(p.n, p.m)] : p.goal === "lcm" ? [lcm(p.n, p.m)] : [];
     case "bundles": return [p.a - p.b];
     case "place": case "compare": return [];
+    case "views": case "array": case "floor": case "powers": case "mirror": return nazariyaHidden(level);   // r4-khand
     default: return [];
   }
 }
