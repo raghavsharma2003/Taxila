@@ -55,8 +55,13 @@ export function augmentView(lessonId, view, point) {
  * retires a piece that has been up long enough; a "board" outcome adds no piece: the Wave 2 whiteboard (drawn on her
  * line) is the board, and a Stagecraft piece proposed here would decline it (propose.js reveal_ready).
  */
-function merge(lessonId, host, view, point, outcome) {
+function merge(lessonId, host, view0, point, outcome) {
   const L = _lesson(lessonId);
+  // round 4: after the child declined a game this lesson, no game is proposed again at a practice beat (the beat is
+  // Stagecraft's / the boards'), whether or not Stagecraft reveals now
+  const practice = isPracticeBeat(point.current?.beat ?? point.beat);
+  const w2Play = isPlayPiece(view0?.propose?.reveal ? L?.pieces.get(view0.propose.reveal) : null);
+  const view = practice && w2Play && L?.playDeclined ? { ...view0, propose: undefined } : view0;
   const want = point.want ?? null;
   const out = { statuses: view?.statuses ?? [], onScreen: view?.onScreen ?? null, ...(view?.outcome ? { outcome: view.outcome } : {}), ...(view?.suggest ? { suggest: view.suggest } : {}) };
   const on = L?.onScreen ? L.pieces.get(L.onScreen) : null;
@@ -82,7 +87,7 @@ function merge(lessonId, host, view, point, outcome) {
   // child can decline (NEVER MANIPULATE): after one decline in this lesson the practice beat is Stagecraft's / the
   // boards' again. Measured (G2, claude/r4-khand, local production, n = 3 lessons): Stagecraft's reveal took every
   // practice beat (turns 5-11), so the play proposal was never shown.
-  if (isPracticeBeat(point.current?.beat ?? point.beat) && !L.playDeclined && isPlayPiece(view?.propose?.reveal ? L.pieces.get(view.propose.reveal) : null)) {
+  if (practice && w2Play && !L.playDeclined) {
     host.playWins = (host.playWins ?? 0) + 1;
     return keepW2();
   }
