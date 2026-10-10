@@ -1,0 +1,62 @@
+{
+  "nodes": [
+    {
+      "id": "ms-r4-safety-rel5-prod-deploy",
+      "kind": "measurement",
+      "at": "2026-10-10",
+      "title": "Safety release 5 (patch 10 realtime content-filter fail-closed + 10b start default cascade; patch 11 v3 maarpeet/story masks) live as taxila-web--sc439bd7-k0kh: gate 2,684/0/3; both-arms 376,528 strings 0 NEW / 2 LOST (intended); fingerprint 0/0/0; suites 177/177; r3-adversarial 22/23; persona 105/105; canary 4/4; live start-lane probe 6/6; w2i-safety 39/39 (local, TEST); round3-conversation 27/27 (prod)"
+    },
+    {
+      "id": "ms-r4-worker-c439bd7",
+      "kind": "measurement",
+      "at": "2026-10-10",
+      "title": "Worker redeployed at c439bd7 (taxila-worker--wc439bd7-t214, RunningAtMaxScale Healthy, jobs canary */15 and nightly 22:40 on the same image); a manual canary execution Succeeded. The worker had run b371f4e's safety predicate since the morning"
+    },
+    {
+      "id": "fn-r4-local-routing-differs-from-prod",
+      "kind": "finding",
+      "at": "2026-10-10",
+      "title": "A local serve.mjs on .env.local runs a different classifier and turn path from production: DEPLOY_CLASSIFY, TAXILA_CLASSIFY_HEDGE_MS, TAXILA_TURN_PREFETCH, TAXILA_ACK_AT_MS and TAXILA_STT_MODEL are set only on taxila-web; snapshot in tests/prod/prod-routing.env"
+    },
+    {
+      "id": "dc-r4-item-setaside-shadow-first",
+      "kind": "decision",
+      "at": "2026-10-10",
+      "title": "Patch 13 (item-context set-aside) is built behind TAXILA_ITEM_SETASIDE=off|shadow|on, default shadow: the floor fires as today and the trace records would-set-asides; on only after >= 1 week of production shadow decisions or >= 200 would-set-asides are reviewed"
+    },
+    {
+      "id": "open-r4-codefloor-hinglish-push-sport-child-object",
+      "kind": "open",
+      "at": "2026-10-10",
+      "title": "Code-floor misses on base: Hinglish/Devanagari 'X ne mujhe dhakka diya' (English forms fire), and a sport turn's frame setting aside a hit whose object is the child ('cricket mein seniors ne mujhe dhakka diya aur maara'); required as an amendment to patch 12"
+    },
+    {
+      "id": "open-r4-gaaliyan-plural-gap",
+      "kind": "open",
+      "at": "2026-10-10",
+      "title": "The plural 'gaaliyan' stays quiet on the code floor: adding it as a lexicon literal made the STT garble 'goliyan' (pills) unreadable (34 recall draws lost); the model distress read is the only catch"
+    }
+  ],
+  "edges": [
+    {
+      "src": "ms-r4-worker-c439bd7",
+      "rel": "part_of",
+      "dst": "ms-r4-safety-rel5-prod-deploy"
+    },
+    {
+      "src": "dc-r4-item-setaside-shadow-first",
+      "rel": "part_of",
+      "dst": "dc-r4-bully-item-context-design"
+    },
+    {
+      "src": "ms-r4-4a-owner2-3seeds",
+      "rel": "caused_by",
+      "dst": "fn-r4-local-routing-differs-from-prod"
+    }
+  ],
+  "md": {
+    "measurements": "- `ms-r4-safety-rel5-prod-deploy` (2026-10-10, 16:20 UTC): c439bd7 (base 39c88fe + patch 10 from 4A 32abc178 + patch 11 v3 from 4A 8558dbcb, tests tests/safety-r4-realtime-filter.test.mjs and tests/safety-r4-scan-maarpeet-story.test.mjs) live as taxila-web--sc439bd7-k0kh, previous 38431ab kept for rollback. Gate: npm test 2,684 pass / 0 fail / 3 skipped (one process), prompt budget PASS, migrations green. Review standard: both-arms scanSafety diff over 376,528 strings (data/kits, data/curriculum, evals, tests) 0 NEW, 2 LOST (the c6-hindi sportsmanship and Baba Bharati answers, intended); evals/safety-robust/fingerprint.mjs 18,438 draws 0 lost / 0 gained / 0 kind changed; evals/safety-robust/run.mjs output identical on both arms; safety suites + client-runtime + brain-turn 177/177; r3-adversarial 22/23 (N1, pre-existing); persona-invariants 105/105. Post-deploy: canary w0-smoke 4/4; a live probe (scratchpad probe-10b.mjs, one test account, deleted) found a start with no mode and with a typo mode both on the server-written lane, an explicit voice start on realtime (6/6); tests/prod/w2i-safety.mjs 39/39 on a local production server of c439bd7 on the Neon TEST branch with tests/prod/prod-routing.env; tests/prod/round3-conversation.mjs 27/27 on taxila.dev.\n- `ms-r4-worker-c439bd7` (2026-10-10, 16:25 UTC): scripts/deploy-worker.mjs --jobs at c439bd7 after the Conductor freeze (21:30 IST): taxila-worker--wc439bd7-t214 Healthy at 1 replica, jobs taxila-conductor-canary (*/15) and taxila-conductor-nightly (22:40 UTC) on image taxila-worker:c439bd7; one canary execution started by hand (taxila-conductor-canary-ftusqmb) Succeeded.",
+    "decisions": "- `dc-r4-item-setaside-shadow-first` (2026-10-10): the item-context set-aside (patch 13) relaxes the safety floor, so it ships behind TAXILA_ITEM_SETASIDE = off | shadow | on with default shadow. In shadow the floor fires exactly as today and the trace records a would-set-aside (item id, masked span, novel-word count; no extra child words). It is turned on only after the main session reviews >= 1 week of production shadow decisions or >= 200 would-set-asides, whichever is later. Reverse if: a shadow decision is found on a disclosure (the flag stays off and the rule is redesigned), or the shadow log shows the false-safeguard problem is too rare to justify the relaxation.",
+    "rejected": ""
+  }
+}
