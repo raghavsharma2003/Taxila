@@ -3,7 +3,8 @@
 **Date:** 2026-10-10. **Author:** stream U1 (`claude/r4-app-design`).
 
 **Status:** the main session picked Kaksha as the owner's delegate (`dc-r4-app-kaksha`, provisional until the owner
-overrides). This spec maps it onto the code at base `db33615f`. If the owner picks Nagar or Chhaap instead, the same
+overrides). The four questions in §12 were answered on 2026-10-10 (`dc-r4-kaksha-k-o-answers`). Slice K0 is built on
+`claude/r4-app-design`; see `docs/design/round4/build/kaksha/RESULTS.md`. This spec maps it onto the code at base `db33615f`. If the owner picks Nagar or Chhaap instead, the same
 structure is kept and only §2 (tokens), §4 (world) and §6 (motion) are re-targeted.
 
 **Read with:**
@@ -491,13 +492,13 @@ starfield and blur down by the same ratchet. It never steps back up in a session
 
 ---
 
-## 10. Ownership: a new wave-3 stream K (`claude/r4-kaksha`) and its patches
+## 10. Ownership: stream K (on `claude/r4-app-design`) and its patches
 
 ### 10.1 Stream K owns (may edit)
 
 - `src/ui-v3/**`: tokens, primitives, screens (Home, World, Hangar, EndOfLesson / Debrief, Briefing), skin CSS
   (`skin/desk.kaksha.css` and the play HUD), `copy.ts`, flag, lint. This takes over the unowned folder.
-- `data/kaksha/{structures,unlocks}.json`
+- `data/kaksha/**` (K0 ships one `catalog.json` holding both the structures and the Hangar items)
 - `public/fonts/space-grotesk-latin.woff2` (+ the OFL notice line)
 - `tests/r4-kaksha-*.test.mjs`, `tests/prod/r4-kaksha-*.mjs`
 - `docs/design/round4/app/**` (this spec and its successors), `docs/design/round4/build/kaksha/**`,
@@ -551,15 +552,28 @@ can land early slices, because each slice depends only on merged seams:
    - childish ≤ 1 on both families;
    - cool ≥ 4 on both;
    - ranked against the U1 prototype no worse than 5 / 10.
-7. **People:** the owner looks on his phone and says go. If the owner approves it, the five-second child test
+7. **People:** the owner looks at it on the owner's phone and says go. If the owner approves it, the five-second child test
    (TEARDOWN §3.2, 20 class 4-5 and 20 class 7-8, girls included) runs before 100%. Its result can fire the
    `dc-r4-app-kaksha` reversal.
 
 ---
 
-## 12. Owner decisions this build needs
+## 12. Owner decisions: answered 2026-10-10 (`dc-r4-kaksha-k-o-answers`)
 
-- **K-O1:** keep chrome English-only (G-EN-1), or turn on the Hinglish and Hindi chrome columns for the cohort.
-- **K-O2:** confirm Kaksha Dawn (light) for classes 1-4 and dark Kaksha for 5-9, or another split.
-- **K-O3:** the reference phone (O-R4) for §7.
-- **K-O4:** whether the five-second child test runs before the flag goes beyond the owner cohort (recommended).
+- **K-O1:** G-EN-1 stands.
+  - `CHROME_LANG` is fixed to `"en"` in code, and there is no child-facing language switch.
+  - The Hinglish and Hindi columns may sit dormant in `copy.ts`.
+  - Kaksha, Antariksh, Khand and Asha are allowed proper nouns.
+  - Structure names and verbs are English: stepwell, Settlement, For parents, Fire.
+- **K-O2:** Kaksha Dawn for the Young family, dark for the Older family. Keyed on the band **family**
+  (`src/child/band.ts`), never the raw class.
+- **K-O3:** the reference phone stays the owner's call. Every performance number is labelled a G35-class proxy
+  until then.
+- **K-O4:** `ui.kaksha` never goes beyond the owner cohort without the five-second child test. The owner arranges the
+  children and consent.
+- **§4.3:** the equipped choice stays per child, keyed by cid. The server pref lands before 100%.
+
+**K0 deviations from this spec, each recorded in RESULTS.md:**
+- **Tokens:** a scoped layer (`src/ui-v3/kaksha/tokens.{ts,css}`, root `.v3.kx`) rather than a retune of the v3
+  Night/Day tokens. The unrouted v3 screens and their tests keep working, and the one-volt lint stays per system.
+- **Catalogue:** one `data/kaksha/catalog.json` instead of two files.

@@ -1,0 +1,14 @@
+{
+  "nodes": [
+    {"id": "r4k-k0-built", "kind": "component", "title": "Stream K slice K0 (Kaksha, behind ui.kaksha, default off; claude/r4-app-design): scoped Kaksha tokens (.v3.kx; night for the Older family, dawn for the Young family, keyed on band family), Space Grotesk font, KakshaRoot/Sky/Comms shell, Start-only Home (safety_hold/offline/signed-out fall through to today's Home unchanged), World orbit + settlement + Hangar as a pure function of GET /api/child/map (src/ui-v3/kaksha/world.ts, data/kaksha/catalog.json), per-child equip on device, dev fixture page; patch requests K-P8 (src/child/routes.tsx) and K-P7 (scripts/lint-ui.mjs allow). docs/design/round4/build/kaksha/RESULTS.md", "at": "2026-10-10"},
+    {"id": "r4k-k0-economy-lint", "kind": "measurement", "title": "Kaksha economy logic test (tests/r4-kaksha-economy.test.mjs, 2026-10-10): 6/6 pass; stations/structures/opened items exist iff a matching skill is secure over 200 random maps; monotonic over 300 random promotions; no clock or Math.random in world.ts; deterministic and append-only settlement slots given secure_since; no counts exposed; no price/chance/currency fields.", "at": "2026-10-10"},
+    {"id": "r4k-k0-rendered-lint", "kind": "measurement", "title": "Kaksha rendered lint (tests/prod/r4-kaksha-shots.mjs, Playwright Chromium on the dev fixture page, 8 states x 360/412/1366 x night/dawn = 48 page states, 606 text elements, 2026-10-10): 0 text < 14 px, 0 Devanagari < 16 px, 0 targets < 44 px, 0 contrast fails, 0 overflow, 0 page errors, after fixing one real defect the first run found (Start label 1.33:1 on plasma: a generic reset outranked the CTA colour; fixed with :where() resets). lint-ui stays at its 353 baseline with K-P7 (491 without). Kaksha lazy chunks about 12.4 KB JS + 4.9 KB CSS gzip.", "at": "2026-10-10"},
+    {"id": "r4k-rj-playwright-shell-mismatch", "kind": "rejection", "title": "Tried: npm test in a fresh stream container after npm ci (2026-10-10). Broke: playwright 1.63 looks for /opt/pw-browsers/chromium_headless_shell-1243 but the image ships 1194, so every browser-backed test fails in its before() hook (1,843 fails in 15 s, none from the change). Local workaround without playwright install: symlink the 1194 headless_shell files into chromium_headless_shell-1243/chrome-headless-shell-linux64/ (binary named chrome-headless-shell). A stream's npm test result is only meaningful after that.", "at": "2026-10-10"}
+  ],
+  "edges": [
+    {"src": "r4k-k0-built", "rel": "part_of", "dst": "dc-r4-app-kaksha"},
+    {"src": "dc-r4-gamification-b", "rel": "constrains", "dst": "r4k-k0-built"},
+    {"src": "r4k-k0-built", "rel": "measured_by", "dst": "r4k-k0-economy-lint"},
+    {"src": "r4k-k0-built", "rel": "measured_by", "dst": "r4k-k0-rendered-lint"}
+  ]
+}
