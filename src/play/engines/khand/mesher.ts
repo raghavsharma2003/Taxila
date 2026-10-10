@@ -30,8 +30,9 @@ const solid = (v: Volume, x: number, y: number, z: number) => at(v, x, y, z) !==
 /** Face light by direction: a fixed sun from above and the front-right (baked; the shader adds no lighting of its own). */
 const FACE_LIGHT = [0.84, 0.66, 1.0, 0.5, 0.76, 0.92];
 
-export function meshVolume(v: Volume, tileOf: TileOf = defaultTile): MeshOut {
-  const t0 = typeof performance !== "undefined" ? performance.now() : Date.now();
+/** `clock` is a harness-only perf read-out (never in a shipped build: Khand reads no clock); without it `ms` is 0. */
+export function meshVolume(v: Volume, tileOf: TileOf = defaultTile, clock?: () => number): MeshOut {
+  const t0 = clock ? clock() : 0;
   const pos: number[] = [], nor: number[] = [], uv: number[] = [], til: number[] = [], sh: number[] = [], idx: number[] = [];
   const dims = [v.sx, v.sy, v.sz];
   let quads = 0;
@@ -100,7 +101,7 @@ export function meshVolume(v: Volume, tileOf: TileOf = defaultTile): MeshOut {
     for (const k of order) idx.push(base + k);
     quads++;
   }
-  const ms = (typeof performance !== "undefined" ? performance.now() : Date.now()) - t0;
+  const ms = clock ? clock() - t0 : 0;
   return { positions: new Float32Array(pos), normals: new Float32Array(nor), uvb: new Float32Array(uv), tile: new Float32Array(til), shade: new Float32Array(sh), index: new Uint32Array(idx), quads, ms };
 }
 

@@ -1,5 +1,6 @@
-// r4-khand · C9 "at a practice beat": a practice lesson on a Khand topic, typed lane, the child answering ordinarily (never
-// asking for a game). Does the lesson put the block world on the stage by itself within N turns? Reported per topic with
+// r4-khand · C9 "at a practice beat": a LESSON on a Khand topic (the lesson route, purpose "lesson": Quick Practice at
+// /practice/ carries no Studio pieces by design, so it can never reach the beat; --route practice runs it anyway), typed
+// lane, the child answering ordinarily (never asking for a game). Does the lesson put the block world on the stage by itself within N turns? Reported per topic with
 // the turn it appeared and every slot kind seen; a real child client against a local production build (model calls).
 //
 //   NODE_USE_ENV_PROXY=1 TAXILA_BASE=http://127.0.0.1:8787 node tests/prod/r4-khand-beat.mjs [--turns 8]
@@ -8,7 +9,7 @@ import { join } from "node:path";
 import { withTestAccount, ok, warn, done, BASE } from "./lib.mjs";
 
 const arg = (k, d) => { const i = process.argv.indexOf(`--${k}`); return i > 0 ? process.argv[i + 1] : d; };
-const TURNS = Number(arg("turns", 10));
+const TURNS = Number(arg("turns", 10)), ROUTE = arg("route", "lesson");
 const OUT = join(process.cwd(), "docs", "design", "round4", "build", "khand", "results");
 mkdirSync(OUT, { recursive: true });
 const CASES = [
@@ -38,12 +39,12 @@ await withTestAccount(async ({ api }) => {
         if (!/\/api\//.test(u)) return;
         const path = new URL(u).pathname;
         let j = null; try { j = await r.json(); } catch { /* not json */ }
-        net.push({ turn, path, status: r.status(), move: j?.move?.kind ?? null, ended: j?.ended ?? j?.lessonEnded ?? j?.end ?? null, phase: j?.phase ?? j?.ui?.phase ?? null, reply: typeof j?.teacherReply === "string" ? j.teacherReply.slice(0, 80) : null, err: j?.error ?? null });
+        net.push({ turn, path, status: r.status(), move: j?.move?.kind ?? null, ended: j?.ended ?? j?.lessonEnded ?? j?.end ?? null, phase: j?.phase ?? j?.ui?.phase ?? null, reply: typeof j?.teacherReply === "string" ? j.teacherReply.slice(0, 80) : null, err: j?.error ?? null, ...(/lesson\/start/.test(path) ? { topic: j?.topicId ?? j?.topic?.id ?? j?.lesson?.topicId ?? null, purpose: j?.purpose ?? null } : {}) });
         const sl = j?.slot ?? j?.ui?.studioSlot ?? null; if (sl?.artifact) slots.push({ turn, kind: sl.artifact.kind, family: sl.artifact.play?.family ?? null });
       });
-      const row = { topic: c.topic, turns: 0, firstPlayTurn: null, slots: [] };
+      const row = { topic: c.topic, route: ROUTE, turns: 0, firstPlayTurn: null, slots: [] };
       try {
-        await page.goto(`${BASE}/c/${child.id}/practice/${c.topic}?mode=text&tier=3d`, { waitUntil: "domcontentloaded", timeout: 60000 });
+        await page.goto(ROUTE === "practice" ? `${BASE}/c/${child.id}/practice/${c.topic}?mode=text&tier=3d` : `${BASE}/c/${child.id}/lesson/new?topic=${c.topic}&mode=text&tier=3d`, { waitUntil: "domcontentloaded", timeout: 60000 });
         await page.waitForSelector('[data-testid="lesson"]', { timeout: 60000 });
         await page.waitForTimeout(2500);
         for (const text of ["namaste didi", ...c.answers].slice(0, TURNS + 1)) {
@@ -88,5 +89,5 @@ await withTestAccount(async ({ api }) => {
   ok(rows.length === CASES.length, `B1 ran ${rows.length} practice lessons (${rows.filter((r) => r.firstPlayTurn).length} reached the game unasked)`);
   if (!rows.some((r) => r.firstPlayTurn)) warn("B1: no practice lesson put the block world on the stage unasked within the turns run");
 }, { tag: "khandbeat", child: { classLevel: 6 } });
-writeFileSync(join(OUT, process.env.BEAT_TAG ? `beat-local-${process.env.BEAT_TAG}.json` : "beat-local.json"), JSON.stringify({ at: new Date().toISOString(), base: BASE, turns: TURNS, rows }, null, 1));
+writeFileSync(join(OUT, process.env.BEAT_TAG ? `beat-local-${process.env.BEAT_TAG}.json` : "beat-local.json"), JSON.stringify({ at: new Date().toISOString(), base: BASE, route: ROUTE, turns: TURNS, rows }, null, 1));
 done();

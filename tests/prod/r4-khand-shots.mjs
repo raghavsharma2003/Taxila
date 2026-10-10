@@ -89,6 +89,8 @@ const AUDIT = `(() => {
 
 async function open(browser, vp, q, extra = {}) {
   const ctx = await browser.newContext({ viewport: { width: vp.w, height: vp.h }, deviceScaleFactor: 1, ...extra });
+  // the perf clock Khand's mesher client times round trips with (a shipped build has none: Khand reads no clock)
+  await ctx.addInitScript(() => { window.__khandClock = () => performance.now(); });
   const page = await ctx.newPage();
   const errors = [];
   page.on("pageerror", (e) => errors.push(String(e.message ?? e).slice(0, 160)));
@@ -152,7 +154,7 @@ if (flag("fps")) {
       for (let k = 0; k < 40; k++) { const i = open[(k * 7) % open.length], x = i % p.w, z = Math.floor(i / p.w); window.__play.dispatch(k % 2 ? { kind: "remove", x, z } : { kind: "place", x, z }); await new Promise((r) => setTimeout(r, 250)); }
     });
     await page.waitForTimeout(500);
-    const ed = await page.evaluate(() => { const t = window.__khand.mesher.timings, q = (a, f) => { const s = [...a].sort((x, y) => x - y); return s.length ? +s[Math.min(s.length - 1, Math.floor(f * s.length))].toFixed(2) : null; }; const pf = window.__khand.perf(); return { n: t.mesh.length, where: [...new Set(t.where)], meshP50: q(t.mesh, 0.5), meshP95: q(t.mesh, 0.95), tripP50: q(t.trip, 0.5), tripP95: q(t.trip, 0.95), frameP50: pf.p50, frameP95: pf.p95, renderP95: pf.drawP95 }; });
+    const ed = await page.evaluate(() => { const t = window.__khand.mesher.timings, q = (a, f) => { const s = [...a].sort((x, y) => x - y); return s.length ? +s[Math.min(s.length - 1, Math.floor(f * s.length))].toFixed(2) : null; }; const pf = window.__khand.perf(); return { n: t.mesh.length, where: [...new Set(t.where)], /* worker-side mesh ms is not timed (no clock in the worker); trip = post → mesh back */ meshP50: t.where.includes("main") ? q(t.mesh, 0.5) : null, meshP95: t.where.includes("main") ? q(t.mesh, 0.95) : null, tripP50: q(t.trip, 0.5), tripP95: q(t.trip, 0.95), frameP50: pf.p50, frameP95: pf.p95, renderP95: pf.drawP95 }; });
     results.edits.push({ vp: vp.id, mode: m.id, throttle: 4, ...ed });
     console.log(`edits ${vp.id} ${m.id}: n=${ed.n} where=${ed.where} mesh ${ed.meshP50}/${ed.meshP95} ms (worker), round trip ${ed.tripP50}/${ed.tripP95} ms, main frame ${ed.frameP50}/${ed.frameP95} ms`);
     await ctx.close();
