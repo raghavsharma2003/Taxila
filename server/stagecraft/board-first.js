@@ -123,7 +123,10 @@ export function preselect(ask, { kit, redact = [], now = Date.now(), certify = n
       const facts = r.ok ? r.script.facts : scriptFacts(r.gate.script, { kind: "diagram", archetype: "whiteboard" });
       const row = rowOfFacts(facts, countsOf(s));
       if (!row) continue;
-      const pick = { at: now, script: s, facts, by: c.by, template: c.template, row, predicted, strict: r.ok };
+      // a board that passed only once its answer was written "?" (board-sync maskReveals) is kept AS MASKED: her real line
+      // is re-gated against what will be drawn
+      const kept = r.ok && r.script?.ops ? { ...s, ops: r.script.ops } : s;
+      const pick = { at: now, script: kept, facts, by: c.by, template: c.template, row, predicted, strict: r.ok };
       picks.set(id, pick);
       return pick;
     }

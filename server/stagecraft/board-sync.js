@@ -160,6 +160,11 @@ export function maskReveals(script, reveals) {
     if (!o) continue;
     const src = `(^|[^\\d/.])${esc(tok[2])}($|[^\\d/.])`;
     if ((o.op === "text" || o.op === "label") && new RegExp(src).test(String(o.text))) { o.text = String(o.text).replace(new RegExp(src, "g"), "$1?$2"); changed = true; }
+    else if (o.op === "numwork" && o.layout === "fraction" && /^\d+\/\d+$/.test(tok[2]) && Array.isArray(o.rows) && String(o.rows?.[0]?.[0]) === tok[2].split("/")[0] && String(o.rows?.[1]?.[0]) === tok[2].split("/")[1]) {
+      // a stacked fraction a over b: its top written "?" (the whole stays, so the question is still what she asked)
+      o.rows = [["?"], ...o.rows.slice(1)];
+      changed = true;
+    }
     else if (o.op === "numwork" && Array.isArray(o.rows)) {
       o.rows = o.rows.map((row) => row.map((c) => (String(c) === tok[2] || new RegExp(src).test(String(c)) ? "?" : c)));
       changed = true;

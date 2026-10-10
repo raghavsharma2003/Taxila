@@ -82,8 +82,11 @@ async function lessonFor(topicId) {
             const n = normalizeScript(sc, { strict: false });
             const g = gateWhiteboard(n.ok ? n.script : sc, { reply: line, kit: kit ?? undefined, speechMs: speechMsOf(r.teacherReply ?? ""), banned: [name], withhold: withheldValues(kit, { line }) });
             const gateFails = g.checks.filter((c) => !c.pass).map((c) => c.id);
+            // what failed, so a re-gate that differs from the server's (this harness has the kit, not the turn's content
+            // lines) can be told apart from a real contradiction
+            const gateDetail = g.checks.filter((c) => !c.pass).map((c) => `${c.id}: ${JSON.stringify(c.detail ?? null).slice(0, 160)}`);
             const leg = boardAt(sc, box, { young });
-            boards.push({ lessonId: L.lessonId, topicId, scriptId: sc.scriptId, ground: sc.board?.ground ?? null, line: line.slice(0, 220), meaning, gateFails, legible: leg.ok, minPx: leg.minPx, ms });
+            boards.push({ lessonId: L.lessonId, topicId, scriptId: sc.scriptId, ground: sc.board?.ground ?? null, line: line.slice(0, 220), meaning, gateFails, gateDetail, legible: leg.ok, minPx: leg.minPx, ms });
           }
         }
         if (r?.end) break;

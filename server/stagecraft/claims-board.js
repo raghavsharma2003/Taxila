@@ -19,13 +19,18 @@ const W = `(\\d+|${Object.keys(NUM).join("|")})`;
 /** The shaded count her line states ("3 shaded", "3 rangeen", "5 mein se 3", "3 out of 5"), or null. */
 export function shadedIn(line, parts) {
   const t = String(line ?? "").toLowerCase();
-  const m = t.match(new RegExp(`\\b${W}\\s+(?:parts?\\s+|hisse\\s+|tukde\\s+|boxes\\s+|cells?\\s+|squares?\\s+)?(?:shaded|coloured|colored|rangeen|rang\\s+bhare|bhare|marked)\\b`))
+  const V = "(?:shaded|shade|coloured|colored|rangeen|rang\\s+bhare|bhare|marked|mark)";
+  // an instruction to the child ("6 shade kijiye") states nothing that is on the screen
+  const notOrder = "(?!\\s+(?:kijiye|kariye|karo|karein|karen|kare|kar\\s+do|kar\\s+dijiye))";
+  const m = t.match(new RegExp(`\\b${W}\\s+(?:parts?\\s+|hisse\\s+|tukde\\s+|boxes\\s+|cells?\\s+|squares?\\s+)?${V}\\b${notOrder}`))
     ?? t.match(new RegExp(`\\b${parts}\\s+(?:mein\\s+se|me\\s+se|out\\s+of)\\s+${W}\\b`))
-    ?? t.match(new RegExp(`\\b(?:unmein|unme|inmein|of\\s+them|of\\s+these)\\s+${W}\\s+(?:shaded|coloured|colored|rangeen|marked)\\b`));
+    ?? t.match(new RegExp(`\\b(?:unmein|unme|inmein|of\\s+them|of\\s+these)\\s+${W}\\s+${V}\\b${notOrder}`));
   if (!m) return null;
   const n = num(m[1]);
   return Number.isInteger(n) && n >= 0 && n <= parts ? n : null;
 }
+/** Her line tells the CHILD to shade ("6 shade kijiye"): the board shows the whole, nothing shaded for her. */
+const shadeOrder = (line) => /\b(?:shade|mark|colou?r|rang)\w*\s+(?:kijiye|kariye|karo|karein|karen|kare|kar\s+do|kar\s+dijiye)\b/i.test(String(line ?? ""));
 
 /**
  * The steps her line lists over the screen ("flow dekhiye: Observe, Ask, Predict, Test, phir Conclude"), 3-6 short names
@@ -59,7 +64,7 @@ export function claimsCalls(line) {
   for (const g of c.groups) if (g.each != null && g.n >= 2 && g.n <= 6 && g.each >= 1 && g.each <= 8) out.push({ template: "equal-groups@1", groups: g.n, each: g.each, hideResult: asks });
   // a grid ("5 columns aur 3 rows"; or more than 12 equal parts, laid out as the squarest grid): its cells, the shaded
   // count her line gives. Her line naming shaded / marked cells WITHOUT a count draws nothing (the board would show none).
-  const namesShade = /\b(shaded|coloured|colored|rangeen|marked|mark)\b/i.test(String(line ?? ""));
+  const namesShade = /\b(shaded|shade|coloured|colored|rangeen|marked|mark)\b/i.test(String(line ?? "")) && !shadeOrder(line);
   // the area model of a fraction of a fraction ("5 columns aur 3 rows; 3/5 wale hisson mein 2 rows mark"): c/d of the
   // columns, a of the b rows inside them (fraction-of@1), the count hidden when she asks for it
   for (const g of c.grids) {
@@ -71,6 +76,12 @@ export function claimsCalls(line) {
   const grids = c.grids.map((g) => ({ ...g, labels: true }));
   for (const n of c.parts) if (n > 12 && n <= 60) { let r = Math.floor(Math.sqrt(n)); while (r > 1 && n % r) r--; if (r > 1) grids.push({ rows: r, cols: n / r, labels: false }); }
   for (const g of grids) {
+    // a shaded block of the grid ("shaded hissa 2 columns aur 3 rows cover karta hai")
+    const blk = String(line ?? "").toLowerCase().match(new RegExp(`\\b(?:shaded|marked|rangeen|coloured|colored)\\b[^.?!;]{0,30}?\\b${W}\\s+columns?\\s+(?:aur|and|x|×)\\s+${W}\\s+rows?`));
+    if (blk && g.labels) {
+      const sc = num(blk[1]), sr = num(blk[2]);
+      if (sc >= 1 && sc <= g.cols && sr >= 1 && sr <= g.rows) { out.push({ template: "shade-grid@1", rows: g.rows, cols: g.cols, block: [sr, sc], labels: true, hideResult: asks }); continue; }
+    }
     const shade = shadedIn(line, g.rows * g.cols);
     if (namesShade && shade == null) continue;
     out.push({ template: "shade-grid@1", rows: g.rows, cols: g.cols, shade: shade ?? 0, labels: g.labels, hideResult: asks });

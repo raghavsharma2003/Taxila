@@ -57,6 +57,14 @@ describe("r4 content: claims boards on the owner-5 lines of this branch's local 
     assert.deepEqual(claimsNotDrawn(line, r.script.ops), []);
     assert.ok(!JSON.stringify(r.script.ops).includes('"6"'), "the 6 she asks for is not written");
   });
+  it("three more lines of the 52-board battery: 'ek part shade hai', a shaded block of the grid, an order to shade", () => {
+    const one = board("Aarav, board par teen barabar parts dekho; ek part shade hai. Kitne parts shade hue?");
+    assert.ok(one?.ok); assert.equal(one.script.ops.filter((o) => o.op === "sector" && o.fill === "accent").length, 1);
+    const blk = board("Aarav, screen ke rectangle mein 3 columns aur 5 rows dekhiye; shaded hissa 2 columns aur 3 rows cover karta hai. Marked boxes kitne?");
+    assert.ok(blk?.ok); assert.equal(blk.script.ops.filter((o) => o.op === "rect" && o.fill === "accent").length, 6);
+    const order = board("Aarav, board par 3 columns aur 5 rows banaiye: kul 15 boxes. Unmein 6 shade kijiye. Aap marked boxes ki sankhya boliye.");
+    assert.ok(order?.ok); assert.equal(order.script.ops.filter((o) => o.op === "rect" && o.fill === "accent").length, 0, "she tells the child to shade: nothing shaded for her");
+  });
   it("a code board for her CONTINUE line is drawn fresh (it replaces the board; the old words are not under it)", () => {
     const line = "Ishaan, screen par animation move nahi hogi; flow dekhiye: Observe, Ask, Predict, Test, phir Conclude. Ismein pehla step kya hai?";
     const a = { ...ask(line), mode: "continue" };
@@ -70,6 +78,11 @@ describe("r4 content: claims boards on the owner-5 lines of this branch's local 
 describe("r4 content: a board refused only for writing the answer keeps its picture with '?'", async () => {
   const { regate, retime, maskReveals } = await import("../server/stagecraft/board-sync.js");
   const { expand } = await import("../server/forge/explainer/templates.js");
+  it("a stacked fraction that is the answer keeps its bottom and writes its top '?'", () => {
+    const script = { ops: [{ id: "frac", op: "numwork", layout: "fraction", at: [200, 200], rows: [["1"], ["3"]] }] };
+    assert.deepEqual(maskReveals(script, ["frac: 1/3 = answer 1/3"]).ops[0].rows, [["?"], ["3"]]);
+    assert.equal(maskReveals(script, ["frac: 2/3 = answer 2/3"]), null, "a different fraction is not touched");
+  });
   it("masks the revealing number and passes the full gate; anything else still refuses", () => {
     const a = ask("Board par dekho: 3 groups, har group mein 4 laddoo. Kitne laddoo hain?");
     const ctx = { ...gateCtxFor(a, {}), withhold: { values: ["12"], words: [], phrases: [] } };

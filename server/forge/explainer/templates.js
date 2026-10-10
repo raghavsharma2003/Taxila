@@ -124,14 +124,16 @@ function fractionParts(c, tl) {
  */
 function shadeGrid(c, tl) {
   const { rows, cols } = c;
-  const shade = c.shade ?? 0;
+  // `block: [r, c]`: the top-left r x c cells shaded (her "shaded hissa 2 columns aur 3 rows"); else the first `shade` cells
+  const block = Array.isArray(c.block) && isInt(c.block[0], 1, rows) && isInt(c.block[1], 1, cols) ? c.block : null;
+  const shade = block ? block[0] * block[1] : c.shade ?? 0;
   if (!isInt(rows, 1, 6) || !isInt(cols, 1, 10) || rows * cols < 2 || !isInt(shade, 0, rows * cols)) return { error: "grid_range" };
   const cell = Math.min(300 / cols, 170 / rows, 56);
   const W = cols * cell, H = rows * cell, x0 = 200 - W / 2, y0 = 52 + (170 - H) / 2;
   tl.add({ id: "whole", op: "rect", at: [x0, y0], w: W, h: H, weight: 2 }, 800);
   let k = 0;
   for (let r = 0; r < rows; r++) for (let q = 0; q < cols; q++) {
-    const on = k++ < shade;
+    const on = block ? r < block[0] && q < block[1] : k++ < shade;
     tl.add({ id: `g${r}_${q}`, op: "rect", at: [x0 + q * cell + 2, y0 + r * cell + 2], w: cell - 4, h: cell - 4, weight: 1,
       ...(on ? { fill: "accent", ink: "accent" } : { ink: "soft" }) }, on ? 200 : 90, { gap: on ? 60 : 20 });
   }
