@@ -9,7 +9,8 @@
 //   everyone   a fresh signed-in parent (not in the cohort) → still shadow: the cohort is not "anyone with a session"
 //   owner      the cohort account → { duplex: "on", cohort: "owner" } (the owner can try hands-free on any device)
 //   shadow     POST /api/duplex/shadow still answers 204 (round-2 telemetry unbroken)
-//   bundle     the served client carries the round-3 engine (stage A version 2026-10-09.r3) and the eager end of turn
+//   bundle     the served client carries THIS tree's engine (its stage A version, read from src/duplex/engineRules.ts; round 3
+//              was 2026-10-09.r3, round 4 2026-10-10.r4) and the eager end of turn
 //   browser    (Chromium available, R3_BROWSER != 0) the switch end to end in the shipped client: a spoken lesson with a FAKE
 //              microphone and a scripted transcription call (the p1-duplex acceptance harness's fake, copied: that file runs
 //              on import), and no click after the start tap:
@@ -204,6 +205,7 @@ else {
 
 // ── bundle ──
 try {
+  const { STAGE_A } = await import("../../src/duplex/engineRules.ts");
   const html = await (await fetch(BASE + "/")).text();
   const queue = [...html.matchAll(/<script[^>]+src="([^"]+\.js)"/g)].map((m) => new URL(m[1], BASE + "/").href);
   const seen = new Set();
@@ -213,11 +215,11 @@ try {
     if (seen.has(u)) continue;
     seen.add(u);
     const js = await (await fetch(u)).text().catch(() => "");
-    if (js.includes("2026-10-09.r3")) engine = true;
+    if (js.includes(STAGE_A.version)) engine = true;
     if (js.includes("eagerStarts")) eager = true;
     for (const m of js.matchAll(/["'`](\/?assets\/[A-Za-z0-9_.-]+\.js)["'`]/g)) queue.push(new URL(m[1].replace(/^\/?/, "/"), BASE).href);
   }
-  ok(engine && eager, `bundle: the client carries the round-3 engine (word-aware end of turn ${engine}, eager end of turn ${eager}; ${seen.size} chunks read)`);
+  ok(engine && eager, `bundle: the client carries this tree's engine ${STAGE_A.version} (${engine}), eager end of turn ${eager}; ${seen.size} chunks read`);
 } catch (e) {
   ok(false, `bundle: could not read the client: ${e.message}`);
 }
