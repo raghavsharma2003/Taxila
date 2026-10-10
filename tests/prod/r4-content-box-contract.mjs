@@ -13,6 +13,8 @@ import { fileURLToPath } from "node:url";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const FILE = join(ROOT, "docs", "design", "round4", "build", "box-contract.json");
+// the runtime copy the tray gate reads (server/ is in the production image, docs/ is not): written with the same bytes
+const RUNTIME_FILE = join(ROOT, "server", "forge3", "certs", "box-contract.json");
 const SIZES = [{ vp: "p360", width: 360, height: 800 }, { vp: "p412", width: 412, height: 915 }, { vp: "l1366", width: 1366, height: 768 }];
 const BANDS = ["b3", "b2"];
 
@@ -65,14 +67,16 @@ if (import.meta.url === `file://${process.argv[1]}`) {
       const p = prev.boxes?.[band]?.[key]?.[s.vp]?.box, n = boxes[band][key][s.vp].box;
       if (p && smaller(n, p)) { failed = true; console.error(`refusing to shrink ${band} ${key} ${s.vp}`); boxes[band][key][s.vp].box = p; }
     }
-    writeFileSync(FILE, JSON.stringify({
+    const body = JSON.stringify({
       v: 1, owner: "stream 2 (content)", rule: "grow a box, never shrink one",
       method: "tests/prod/r4-content-box-contract.mjs: /dev/desk work-studio and work-play fixtures (1-2 line question card, no trouble strip), Vite dev server, headless Chromium, the [data-testid=studio-stage] rect",
       measuredAt: new Date().toISOString().slice(0, 10),
       bands: { b3: "Older Desk (classes 5-9)", b2: "Young Desk (classes 1-4)" },
       boxes,
-    }, null, 1) + "\n");
-    console.log(`wrote ${FILE}`);
+    }, null, 1) + "\n";
+    writeFileSync(FILE, body);
+    writeFileSync(RUNTIME_FILE, body);
+    console.log(`wrote ${FILE} and ${RUNTIME_FILE}`);
   }
   process.exit(failed ? 1 : 0);
 }
