@@ -80,6 +80,10 @@ async function duplexLink({ tap = "ok", mode = "on" } = {}) {
   link.on((e) => events.push(e));
   await link.connect();
   await sleep(60);
+  // round 4: the engine comes up asynchronously (data channel open → tap → backstop VAD); on a loaded machine (full npm test
+  // beside other work) 60 ms was not always enough and the first assertion saw it still starting. Wait until it is live or
+  // has stepped aside, never longer than 3 s (the no-frames watchdog is off in this rig).
+  if (mode === "on") for (const t0 = Date.now(); Date.now() - t0 < 3000 && !(states.at(-1)?.live || states.at(-1)?.fallback);) await sleep(10);
   return { env, link, events, states, pc: env.pcs[0], feed: () => feed };
 }
 
