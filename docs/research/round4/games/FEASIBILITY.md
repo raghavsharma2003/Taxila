@@ -60,15 +60,22 @@ and its GPU is not a Mali, Adreno or PowerVR. §5.3 explains what the proxy can 
      classified and the child's interests (§3.2).
    - **Evidence is unchanged:** raw acts go to a server replay, then an HMAC-signed token, then `kt_evidence` with
      `via: "game"` at weight 0.5. It never counts as the delayed check.
-5. **What NEVER MANIPULATE removes from "real games", and the compliant variant for each** (§6):
-   - no score;
-   - no lives or game over (a miss leaves a visible consequence and costs nothing);
-   - no countdowns (the world flies in real time but **waits for the decision**);
-   - no unlocks (doors, not locks);
-   - no loot, ranks or streaks.
+5. **NEVER MANIPULATE in real-game genres** (§6). This follows the main session's delegated option B
+   (`dc-r4-gamification-b`):
+   - no currency or points carried across sessions (an in-run score that ends with the run is allowed; the prototype
+     shows none);
+   - no lives that gate learning (a miss leaves a visible consequence and costs nothing);
+   - no countdown pressure on new skills: the world flies in real time but **waits for the decision**, and fast action
+     is a mode only for skills the ledger calls secure;
+   - no unlocks (doors, not locks), no random drops, ranks or streaks.
 
-   Real games have three things that round 3 forbids. Each needs an **owner decision**: music (here a bed that
-   hard-ducks under her voice), dense environment art (G12's sprite budget), and a "shooting" verb for class 4.
+   Three things real games have still need an **owner decision**:
+   - a music bed (here it hard-ducks under her voice);
+   - dense environment art (G12's sprite budget);
+   - a "shooting" verb for classes 4-5.
+
+   The ban is enforced on copy only today (`r4p-economy-ban-copy-only`). Engines therefore need a logic-level lint
+   (§6).
 6. **What round 4 can honestly ship:** one cloud session (3-4 days) can productionise **one engine (Antariksh) over the
    existing Nishana law** for its 16 admitted skills, at three viewports, with the evidence path. A second engine
    (Khand, voxel) can reach a playable state but not certification (§7). The other five are later. The learning claim is
@@ -181,7 +188,7 @@ built from the repo's own `node_modules/three` 0.180.0.
 | three.js (all exports) | MIT | 0.180.0 | 684 | 171 | 138 | | | |
 | Babylon.js (full UMD) | Apache-2.0 | 9.30.0 | 8,418 | 1,816 | 1,270 | 3D engine | powers noa / bloxd.io [S] | too heavy as a UMD; tree-shaken ES modules are smaller [U] |
 | PlayCanvas engine | MIT (the editor is a paid SaaS; the engine is free) | 2.23.2 | 2,491 | 642 | 499 | 3D engine | vendor test: ~60 fps on low-end phones (2016, pre-WebGL2) [S]; forum: Android slowdowns from DPR and shadows [S] | strong engine, 5x three's size, adds a second 3D stack |
-| Phaser | MIT | 4.2.1 | 1,344 | 346 | 276 | 2D framework | a Phaser 4 single-file probe: 6/6 functional on six Azure models [R `game-code-probe-models-2026-10-02`] | not needed: the play families already have a Canvas2D stage |
+| Phaser | MIT | 4.2.1 | 1,344 | 346 | 276 | 2D framework | a Phaser 4 single-file codegen probe: 6/6 functional on six of eight Azure models, 4/6 on the other two [R `game-code-probe-models-2026-10-02`] | not needed: the play families already have a Canvas2D stage |
 | PixiJS | MIT | 8.22.0 | 821 | 232 | 185 | 2D renderer (WebGL) | — | only if a 2D engine needs > 2k sprites |
 | Rapier 3D (compat, wasm inlined) | Apache-2.0 | 0.21.0 | 4,239 | 1,606 | 1,168 | physics (wasm) | the repo already carries 0.12.0 transitively | too heavy for a lesson; only for rigid-body-heavy engines |
 | Rapier 2D (compat) | Apache-2.0 | 0.21.0 | 3,330 | 1,252 | 923 | physics | | same |
@@ -215,7 +222,7 @@ layer is a few hundred lines per engine, as the prototype shows.
 | artefact | how | latency | truth-safe? | live? |
 |---|---|---|---|---|
 | level numbers, positions, keys | the family law in code (`law.generate`) | **0.07 ms p50, 0.81 ms p95** [M, n = 1,520 levels, node]; compose incl. dress validation 0.66 / 1.19 ms [M, n = 200] | yes: solver-proven, shortcut-checked, discriminating | **yes, per level, on device or server** |
-| dress (theme, wrapper, music, pace, teacher move) | `taxila-fast` strict-schema enums | p50 1.3-1.5 s, p90 1.5-1.9 s, 50-80 tokens, ~$0.0002 [R `ms-r3-live-delta-probe-2026-10-09`, US → eastus2, n = 24 + 12] | yes: enums only; a model string is never shown | **yes, per segment**; the base dress if late |
+| dress (theme, wrapper, music, pace, teacher move, language) | `taxila-fast-bg` strict-schema enums, effort none | **this prototype's schema: p50 1,133 / p90 1,442 / max 1,759 ms, 12/12 valid, 40 output tokens** [M, n = 12, US → eastus2]; round 3's richer delta p50 1.3-1.5 s / p90 1.5-1.9 s, ~$0.0002 [R `ms-r3-live-delta-probe-2026-10-09`, n = 24 + 12] | yes: enums only; a model string is never shown | **yes, per segment**; the base dress if late |
 | teacher's in-play lines | authored bank, filled by code; DragonHD pre-synthesis | first byte 228 ms [R] | yes: conditioned, guarded (`r3p-reaction-shape-conditions`) | yes |
 | a full game spec (a model writing params) | Studio v2 catalogue | 6.2 s p50 / 11.9 s p90; 19% needed a fix pass [R `ms-r3-catalogue-spec-latency-2026-10-09`] | no: needs validators | no (library lane) |
 | a game written as code (Lovable / Rosebud / Astrocade style) | codex / sol builds + gate | 36.7-54.2 s p50 per build + gate 4.8-11.6 s [R live-studio bench]; Forge G2 ≈ $0.20 per build and 166-223 s [R] | no: human review required before a child (`forge-live-codegen-race`) | **no**; offline library only |
