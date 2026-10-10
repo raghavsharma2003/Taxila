@@ -53,6 +53,8 @@ export const M0_HISTORY_TABLES = Object.freeze([
   "teacher_name_history",
   // 018_relational.sql (W2-I): parent-visible relational facts (typed templates over closed slots) — history, deleted on M0
   "relational_note",
+  // r4-khand (play_build migration): the child's saved Khand builds, a gallery derived from solved levels — history, deleted on M0
+  "play_build",
 ]);
 
 /**

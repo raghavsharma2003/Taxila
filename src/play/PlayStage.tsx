@@ -93,9 +93,18 @@ export function PlayStage(props: PlayStageProps) {
     });
     ctlRef.current = ctl;
     const onFail = (why: string) => onEvent.current?.({ type: "fail", why });
-    // a 3D engine (r4-khand) mounts its own WebGL world; every other mode draws on the 2D stage
-    const stage = engine ? (() => { const m = engine(host, { level, ctl, lang, changed, art, young, reducedMotion: props.reducedMotion, sound: props.sound, onFail }); view = m.view; return m.stage; })()
-      : mountStage(host, (api) => { view = make!(api, { level, ctl, lang, changed }); return view; }, { art, young, reducedMotion: props.reducedMotion, sound: props.sound, onFail });
+    const mount2d = () => mountStage(host, (api) => { view = make!(api, { level, ctl, lang, changed }); return view; }, { art, young, reducedMotion: props.reducedMotion, sound: props.sound, onFail });
+    // a 3D engine (r4-khand, core3d@1) mounts its own WebGL world; when it cannot run (tier 2d, a lost context, frame
+    // errors) the 2D view of the same mode takes over WITH THE SAME CONTROLLER: the level, its state and every act survive
+    let stage: StageHandle;
+    let swapped = false;
+    const to2d = (why: string) => {
+      if (swapped || !make) { onFail(why); return; }
+      swapped = true;
+      const old = stage; queueMicrotask(() => { old?.dispose(); stage = mount2d(); stageRef.current = stage; viewRef.current = view; changed(); });
+    };
+    stage = engine ? (() => { const m = engine(host, { level, ctl, lang, changed, art, young, classLevel: props.classLevel, reducedMotion: props.reducedMotion, sound: props.sound, onFail: to2d }); view = m.view; return m.stage; })()
+      : mount2d();
     stageRef.current = stage; viewRef.current = view;
     changed();
     onEvent.current?.({ type: "ready" });
@@ -113,7 +122,7 @@ export function PlayStage(props: PlayStageProps) {
         mal: () => logic.malRules.slice(), malActs: (id: string) => logic.malActs(level, id),
       };
     }
-    return () => { stage.dispose(); ctl.dispose(); stageRef.current = null; viewRef.current = null; ctlRef.current = null; };
+    return () => { stageRef.current?.dispose(); stage.dispose(); ctl.dispose(); stageRef.current = null; viewRef.current = null; ctlRef.current = null; };
     // a new level (or art direction) is a new world
   }, [level, art, lang, young, props.reducedMotion, props.sound, props.debug, props.demo, changed]);
 
