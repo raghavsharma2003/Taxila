@@ -1,8 +1,8 @@
 // Her pre-rendered clips outside the lesson (PRODUCT-DESIGN-V2 §3.3 step 1: "a pre-rendered greeting clip with no
 // name in it"). A clip plays ONLY in its own teacher's voice: a clip recorded by one teacher is never played under
 // another teacher's face (one teacher, §8: the voice is an identity anchor). Today only Asha's greeting exists, in the
-// three family languages (public/audio/hello-*.mp3, the onboarding clips). Arjun and Uma have none yet, so their
-// Hello card shows the words and her face without sound (open item: render their greetings in their live voices).
+// three family languages (public/audio/hello-*.mp3, the onboarding clips). She is the one teacher (round 4,
+// dc-r4-single-teacher-asha), so every child's Hello has a greeting in her voice.
 import { useEffect, useRef, useState } from "react";
 
 const HELLO: Record<string, Partial<Record<"english" | "hindi" | "hinglish", string>>> = {

@@ -66,6 +66,8 @@ export function requestFromReading(reading) {
   if (!reading) return null;
   const map = { confused: "another", identity: "identity", small_talk: "uptake", oob: "decline" };
   const type = map[reading.type] ?? reading.type;
+  // round 4: a share read in code is the same uptake the note gives (state.js keeps it in s.later with its topic)
+  if (reading.type === "share") return { type: "uptake", kind: "personal_share", topic: reading.topic, whole: true, src: "p5" };
   return { type, whole: true, src: "p5", ...(reading.type === "small_talk" ? { kind: "small_talk" } : {}), ...(reading.type === "confused" ? { confused: true } : {}) };
 }
 

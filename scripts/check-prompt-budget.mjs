@@ -12,7 +12,11 @@
 import { readdirSync, readFileSync } from "node:fs";
 import { normalizeKit } from "../server/content/kits.js";
 import { compileWithReport, BudgetError, TOKEN_BUDGET, SECTION_CAPS, FLOOR_FIX } from "../server/compiler/compile.js";
-import { CHARACTERS } from "../server/compiler/characters/index.js";
+import { CHARACTERS, sheetFor } from "../server/compiler/characters/index.js";
+
+// Every sheet that can be served in a band: Asha in that band's register (classes 1-4 / 5-9; dc-r4-single-teacher-asha)
+// and, for 10-15, Arjun too (the TAXILA_SINGLE_TEACHER=off rollback, and lessons pinned to him before round 4).
+const sheetsFor = (ageBand) => (ageBand === "6-9" ? [sheetFor(CHARACTERS.asha, 3)] : [sheetFor(CHARACTERS.asha, 7), CHARACTERS.arjun]);
 import { initLessonState, branchesFor } from "../server/director/state.js";
 import { promptFor } from "../server/director/items.js";
 import * as SH from "../server/director/shapes.js";
@@ -66,24 +70,26 @@ const run = (input, id) => {
 for (const { kit, item, classLevel, subject } of worst) {
   const topic = { title: kit.topicId, classLevel, subject };
   for (const lane of ["text", "voice"]) for (const language of LANGS) for (const ageBand of BANDS) for (const hintLevel of (ALL ? [3] : [0, 3])) for (const correction of CORRECTIONS) {
-    const character = ageBand === "6-9" ? CHARACTERS.asha : CHARACTERS.arjun;
+    for (const character of sheetsFor(ageBand)) {
     const s = initLessonState({ topicId: kit.topicId, kit, seed: 7, now: 0, ctx: { firstName: "Aarav", teacherName: character.name, teacherId: character.id,
       protege: character.protege, ageBand, lang: language, interests: ["cricket"], firstMeeting: false, hasCallback: true, topicTitle: "T", nextTitle: "N" } });
     Object.assign(s, { phase: "practice", introduced: kit.skills.map((k) => k.id), activeItemId: item.id, hintLevel, turn: 9, minutes: 6, moveVoiced: lane === "voice" && hintLevel > 0, correction,
       lastMove: hintLevel ? { kind: "hint", itemId: item.id, skillId: item.skillId, hintLevel, shape: SH.hint({ level: hintLevel, rungShape: item.hints[hintLevel - 1] }) }
         : { kind: "practice", itemId: item.id, skillId: item.skillId, hintLevel: 0, shape: SH.pose({ item, prefix: SH.CONFIRM.correct }) } });
     run({ character, brief: brief(ageBand, language), lessonState: s, move: s.lastMove, item, content: [], topic, language, lane,
-      ...(lane === "voice" ? { branches: branchesFor(s, kit) } : {}) }, `${item.id}·${lane}·${language}·${ageBand}·r${hintLevel}·${correction ? correction.length : 0}fix`);
+      ...(lane === "voice" ? { branches: branchesFor(s, kit) } : {}) }, `${item.id}·${character.id}·${lane}·${language}·${ageBand}·r${hintLevel}·${correction ? correction.length : 0}fix`);
+    }
   }
 }
 // The closing moves with a full brief (no item): safeguard (the helpline must always fit) and wrap.
 const { kit, classLevel, subject } = kits[0];
 for (const lane of ["text", "voice"]) for (const language of LANGS) for (const ageBand of BANDS) for (const kind of ["safeguard", "wrap"]) {
-  const character = ageBand === "6-9" ? CHARACTERS.asha : CHARACTERS.arjun;
+  for (const character of sheetsFor(ageBand)) {
   const s = initLessonState({ topicId: kit.topicId, kit, seed: 7, now: 0, ctx: { firstName: "Aarav", teacherName: character.name, teacherId: character.id,
     protege: character.protege, ageBand, lang: language, interests: [], firstMeeting: false, hasCallback: false, topicTitle: "T", nextTitle: "N" } });
   Object.assign(s, { phase: "practice", turn: 9, minutes: 6, correction: fixKeys, lastMove: { kind, shape: kind === "safeguard" ? SH.safeguardStay() : "a short warm close" } });
-  run({ character, brief: brief(ageBand, language), lessonState: s, move: s.lastMove, content: [], topic: { title: kit.topicId, classLevel, subject }, language, lane }, `${kind}·${lane}·${language}·${ageBand}`);
+  run({ character, brief: brief(ageBand, language), lessonState: s, move: s.lastMove, content: [], topic: { title: kit.topicId, classLevel, subject }, language, lane }, `${kind}·${character.id}·${lane}·${language}·${ageBand}`);
+  }
 }
 
 console.log(`compiled ${n} worst-case lesson states from the ${worst.length} longest of ${pool.length} items (${kits.length} topics)`);

@@ -1,0 +1,23 @@
+{
+  "nodes": [
+    {
+      "id": "ms-r4-safety03-prod-deploy",
+      "kind": "measurement",
+      "at": "2026-10-10",
+      "title": "2026-10-10 11:30 UTC narrow safety release 7ec8202 (patch 03 as amended) live on taxila.dev as revision taxila-web--s7ec8202-cdah, via scripts/deploy-azure.mjs --gate from the main tree on the base branch. Gate on the exact commit: tsc, vite, npm test 2,591 pass / 0 fail / 3 skipped (2,594), prompt budget worst 1,645 / 2,600; every migration applied on the target database; canary w0-smoke 4/4 at 0% traffic; then 100%. tests/prod/w2i-safety.mjs on https://taxila.dev: 1/1 (the disclosure arm is skipped on a remote target by design, since it opens a real safeguarding incident; the predicate's disclosure behaviour is covered offline by ms-r4-safety03-review-numbers). Previous revision taxila-web--sb371f4e-p6pe keeps label previous, so rollback is one traffic PATCH."
+    },
+    {
+      "id": "dc-r4-migration-027-play-verb",
+      "kind": "decision",
+      "at": "2026-10-10",
+      "title": "2026-10-10 main session: migration numbers for round 4 are allotted centrally to avoid collisions: 024 board_page (stream 2), 025 child_school_chapter (4A), 026 play_build (G2 Khand), 027 child_controls.play_verb (G1 patch 02, with /api/parent/controls applied by main at G1's merge). All additive (create/add if not exists, no drops). Reverse if: a stream needs a destructive migration, which then needs owner approval and a TEST-branch rehearsal first."
+    }
+  ],
+  "edges": [
+    { "src": "ms-r4-safety03-prod-deploy", "rel": "part_of", "dst": "dc-r4-safety03-peer-actor-shipped" }
+  ],
+  "md": {
+    "measurements": "- `ms-r4-safety03-prod-deploy` (2026-10-10): Narrow safety release 7ec8202 live as taxila-web--s7ec8202-cdah (deploy-azure --gate): npm test 2,591/0/3 skipped, prompt budget 1,645/2,600, migrations applied, canary w0-smoke 4/4, then 100%; w2i-safety on taxila.dev 1/1 (disclosure arm skipped on remote by design). Rollback = one traffic PATCH to taxila-web--sb371f4e-p6pe.",
+    "decisions": "- `dc-r4-migration-027-play-verb` (2026-10-10): Round-4 migration numbers are allotted centrally: 024 board_page (stream 2), 025 child_school_chapter (4A), 026 play_build (G2), 027 child_controls.play_verb (G1 patch 02; /api/parent/controls by main at G1's merge). All additive. Reverse if a stream needs a destructive migration (owner approval + TEST rehearsal first)."
+  }
+}

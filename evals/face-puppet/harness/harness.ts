@@ -14,6 +14,8 @@ import type { FloorStatus } from "../../../src/avatar/behaviour.ts";
 const Q = new URLSearchParams(location.search);
 const MODE = Q.get("mode") || "rt";
 const SIZE = +(Q.get("px") || 720);
+// ?look=r8|lamp1 (round 4): which puppet pack the stage loads (src/face-puppet/assets.ts); default the shipped default
+const LOOK = (Q.get("look") === "lamp1" ? "lamp1" : "r8") as "r8" | "lamp1";
 
 interface Line { pcm: Float32Array; meta: { text: string; visemes: { ms: number; id: number }[]; words: { ms: number; durMs: number; text: string }[]; ms: number } }
 async function loadLine(id: string): Promise<Line> {
@@ -42,7 +44,7 @@ async function realtime() {
   let level = 0;
   const tapSrc: TapSource = { get value() { return level; }, onTap(fn) { fn(analyser); return () => fn(null); } };
   const stats: unknown[] = [];
-  const stage = new PuppetStage(host, { band: "b2", sources: [tapSrc], budgetMs: Q.get("budget") ? +Q.get("budget")! : undefined, onEvent: (e) => { if (e.type !== "stats") stats.push(e); } });
+  const stage = new PuppetStage(host, { look: LOOK, band: "b2", sources: [tapSrc], budgetMs: Q.get("budget") ? +Q.get("budget")! : undefined, onEvent: (e) => { if (e.type !== "stats") stats.push(e); } });
   await stage.init();
   stage.start();
   const lines = (Q.get("line") || "00").split(",");
@@ -100,7 +102,7 @@ async function capture() {
   };
   const fakeUp = { context: { createAnalyser: () => fakeOwn, sampleRate: 24000 }, connect() {}, disconnect() {} };
   const tapSrc: TapSource = { value: 0, onTap(fn) { fn(fakeUp as unknown as AnalyserNode); return () => {}; } };
-  const stage = new PuppetStage(host, { band: "b2", sources: [tapSrc], loadTimeoutMs: 30000, now: () => clock });
+  const stage = new PuppetStage(host, { look: LOOK, band: "b2", sources: [tapSrc], loadTimeoutMs: 30000, now: () => clock });
   await stage.init();
   stage.canvas.style.transition = "none";
   // performance.now() is the driver's clock in production; in capture the stage is ticked with the scripted clock, and

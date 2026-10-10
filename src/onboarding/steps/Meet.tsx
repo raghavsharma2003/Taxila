@@ -1,14 +1,14 @@
 // Step 2 "Meet {T}" (PRODUCT-DESIGN-V2 §3.2, §6.2, §8; audit #4, #24). The parent meets the teacher the child will
-// actually get for the class chosen in step 1 (GET /api/child/teacher?classLevel= → the class's teacher and who else
-// is eligible; offline: the same rule locally, shared/tutors.js). Same face as the lesson (the plate of the one rig),
-// name from the character record, pronoun from the record (never hard-coded). The language she speaks is chosen here,
-// once: English · Hindi · Hindi and English mix. A ▶ plays her greeting only when a clip exists IN HER OWN VOICE (today:
-// Asha's); a clip is never played under another teacher's face. Two eligible: both cards, "Your child will choose at
-// the first lesson".
+// actually get for the class chosen in step 1 (GET /api/child/teacher?classLevel= → the class's teacher; offline: the
+// same rule locally, shared/tutors.js). ONE teacher, Asha, for every class (dc-r4-single-teacher-asha): there is no
+// pick and no "the child will choose" (round 4). Same face as the lesson (the plate of the one rig), name from the
+// character record, pronoun from the record (never hard-coded). The language she speaks is chosen here, once:
+// English · Hindi · Hindi and English mix. A ▶ plays her greeting only when a clip exists IN HER OWN VOICE; a clip is
+// never played under another teacher's face.
 import { useEffect, useState } from "react";
 import { Navigate, useNavigate, useSearchParams } from "react-router-dom";
 import type { TeacherCard } from "../../../shared/contracts.ts";
-import { defaultTutorFor, eligibleTutors } from "../../../shared/tutors.js";
+import { defaultTutorFor } from "../../../shared/tutors.js";
 import { Button, Icon, TeacherFace, useClip, type Lang } from "../../ui/index.ts";
 import { teacherRecord } from "../../ui/teacher/useTeacher.ts";
 import { getJson } from "../../app/api.ts";
@@ -31,13 +31,11 @@ const TRANSCRIPT: Partial<Record<string, Record<Speak, string>>> = {
   },
 };
 
-interface Offer { teacher: { id: string; name: string; subject: string }; eligible: { id: string; name: string }[] }
+interface Offer { teacher: { id: string; name: string; subject: string } }
 
 function local(classLevel: number): Offer {
-  const id = defaultTutorFor({ class_level: classLevel });
-  const rec = teacherRecord(id, classLevel <= 4 ? "b2" : "b3");
-  const el = eligibleTutors({ id: `class-${classLevel}`, class_level: classLevel });
-  return { teacher: { id: rec.id, name: rec.name, subject: rec.pronouns.subject }, eligible: el.tutors.map((x) => ({ id: x.id, name: x.displayName.roman })) };
+  const rec = teacherRecord(defaultTutorFor({ class_level: classLevel }), classLevel <= 4 ? "b2" : "b3");
+  return { teacher: { id: rec.id, name: rec.name, subject: rec.pronouns.subject } };
 }
 
 const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
@@ -71,10 +69,9 @@ export function MeetStep() {
   useEffect(() => {
     if (!cl) return;
     let live = true;
-    getJson<{ teacher: TeacherCard; eligible?: TeacherCard[] }>(`/api/child/teacher?classLevel=${cl}`).then((r) => {
+    getJson<{ teacher: TeacherCard }>(`/api/child/teacher?classLevel=${cl}`).then((r) => {
       if (!live || !r?.teacher) return;
-      setOffer({ teacher: { id: r.teacher.id, name: r.teacher.name, subject: r.teacher.pronouns?.subject ?? "they" },
-        eligible: (r.eligible ?? []).map((x) => ({ id: x.id, name: x.name })) });
+      setOffer({ teacher: { id: r.teacher.id, name: r.teacher.name, subject: r.teacher.pronouns?.subject ?? "they" } });
     }, () => {});
     return () => {
       live = false;
@@ -82,7 +79,6 @@ export function MeetStep() {
   }, [cl]);
   if (!cl) return <Navigate to={`/start/class${adding ? "?add=1" : ""}`} replace />;
   const o = offer ?? local(cl);
-  const two = o.eligible.length >= 2;
   const speak = (d.child?.languagePref as Speak | undefined) ?? (d.lang === "hi" ? "hindi" : d.lang === "en" ? "english" : undefined);
   const pick = (l: (typeof LANGS)[number]) => {
     set((cur) => ({ lang: l.ui, child: { ...(cur.child ?? {}), languagePref: l.id } }));
@@ -91,7 +87,7 @@ export function MeetStep() {
   const they = cap(o.teacher.subject === "they" ? "they" : o.teacher.subject);
   const band = cl <= 4 ? "b2" : "b3";
   const transcript = speak ? TRANSCRIPT[o.teacher.id]?.[speak] : undefined;
-  const title = two ? "Meet the teachers" : `Meet ${o.teacher.name}`;
+  const title = `Meet ${o.teacher.name}`;
 
   return (
     <StepFrame step="meet" title={title} back
@@ -101,16 +97,13 @@ export function MeetStep() {
           <Button block disabled={!speak} aria-describedby={speak ? undefined : "meet-why"} onClick={() => nav(nextStep("meet", adding))}>Continue</Button>
         </div>
       }>
-      <div className={`onb-meet ${two ? "onb-meet--two" : ""}`}>
-        {(two ? o.eligible : [o.teacher]).map((x) => (
-          <figure key={x.id} className="onb-teacher" data-teacher-id={x.id}>
-            <TeacherFace teacherId={x.id} band={band} size={two ? 150 : 220} />
-          </figure>
-        ))}
+      <div className="onb-meet">
+        <figure className="onb-teacher" data-teacher-id={o.teacher.id}>
+          <TeacherFace teacherId={o.teacher.id} band={band} size={220} />
+        </figure>
       </div>
-      {two && <p className="t-lead">Your child will choose at the first lesson.</p>}
       <fieldset className="fs">
-        <legend className="label">{two ? "They'll speak in:" : `${they}'ll speak in:`}</legend>
+        <legend className="label">{`${they}'ll speak in:`}</legend>
         <div role="radiogroup" aria-label="Language" className="stack-sm">
           {LANGS.map((l) => <LangTile key={l.id} l={l} teacherId={o.teacher.id} selected={speak === l.id} onPick={() => pick(l)} />)}
         </div>

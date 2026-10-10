@@ -41,17 +41,27 @@ blind-outfit.mjs, lineup-outfit.mjs, tally-outfit.py = judges; slots.py, build_o
   nothing childish / uncanny / disapproving: `evidence/idcheck-B-{brain,kimi}.json`.
 - Ledger after Stage B: 18 images, USD 3.56.
 
-## Stage C: in progress (live 2D puppet, r8 arm-P method)
+## Stage C: DONE, gate FAILED, kill rule applied (2026-10-10 ~09:35Z)
 - Rig space = crop (162,0)-(862,700) of the 1024 front x 1.4629 (`rigspace.py`, frames in scratch `rs/`).
 - Cutter `layers.py` -> lid keys `lidkeys.py` -> turn keyform field `keyfield.py` -> `pack.py` (per-face constants block
   `geom.face`, read by the runtime's `face.js`). Runtime = r8's, derived by `make-runtime.py` with asserted replacements
-  (every c-front constant reads F; defaults = c-front, so an r8 pack renders unchanged). Bundle: `demo/entry.js`
-  (production PuppetDriver + lamp1 rig) via rolldown into scratch `demo-build/puppet.js`.
-- Pack: `art/character/puppet2d/lamp1/` (geom.json + webp layers). 156.5 KB on the wire (gate <= 250 KB).
-- Rest gate (`restssim.py`, harness `harness.mjs`, SwiftShader): head SSIM 0.9734 at 1024, 0.9741 at 720 (gate >= 0.97)
-  after: iris circles refit (old centres were 6 px low), catchlights re-centred, painted lid shadow kept (procedural
-  shade only once the lid moves), the face overscan no longer painted over the ears / bun, and every pixel within 4 px
-  of the flat cream unmixed against it (outlines and pale rims kept). Was 0.9454 before this pass.
-- Next: views for today's slots, demo.html, clips, fps, blind judges.
+  (every c-front constant reads F; defaults = c-front). r8 pack through it: pixel-identical, 12 poses (`evidence/r8-parity.json`).
+- Pack `art/character/puppet2d/lamp1/`: 156.8 KB wire / 183 KB raw + poster `rest.webp` 50.7 KB (gate <= 250 KB).
+- Rest gate: head SSIM 0.9734 (1024) / 0.9741 (720), gate >= 0.97 (`evidence/rest-ssim-*.json`).
+- Slots (app audit shots, 1x CSS px): desk window 325x316 / 375x405 / 440x440; speech row circle 80; Home 319x172 /
+  319x240 / 279x312; Meet 220x222; Summary ~78x100. Views: 4-element regions fitted contain-centred.
+- Demo `art/character/puppet2d/lamp1/demo.html` (836 KB, self-contained, interactive smoke-tested at 360 and 1366: no
+  errors, no horizontal scroll). Clips `clips/asha-{360,412,1366}.mp4` + `asha-412-calm.mp4` (15.2 s, H.264 + her line).
+  Frame sheets `evidence/frames-{360,412,1366}.webp`. Logs `evidence/stageC-log-*.json`.
+- Measured: bilabials 9/9 with the text rule (5/9 from Azure alone); blink reads (closed frame at 5.0 s); blinks 46/min
+  while speaking (production behaviour); nods 10.75 / 11.77 s; safety calm smile 0, no nods; fps 80 px row 57.3 at 4x
+  (headless SwiftShader), desk 375x405 10.5 at 4x (software raster).
+- Blind judges (n = 5 per round, 3 gpt-5.6-sol + 2 Kimi K2.6): same person 5/5, childish 0/5 every round; UNCANNY
+  4, 5, 3, 4 /5 over C1-C4 (gate <= 1/5); premium 2.4-2.6. Shipped r8 through the same protocol: uncanny 0/5, premium 3.6.
+  Without the eval turn: uncanny 5/5. `evidence/judge-live-tally.md`. Three polish rounds used; kill rule: stopped.
 
-## Stage D: not started
+## Stage D: DONE (prepared, not applied), 2026-10-10 ~09:40Z
+- `integrate/APPLY.md` + 7 patches: 01 look switch (default r8), 02 runtime, 03 pack (binary), 04 default lamp1 (HOLD:
+  Stage C failed), 05 + 05b one teacher, 06 bilabials from text. All `git apply --check` clean on the base; applied in
+  order to a fresh copy = the tested tree (tsc clean, vite build OK, the listed tests pass).
+- `CONTEXT-PROPOSED.md` written.

@@ -27,7 +27,8 @@ export interface TutorLook {
 
 export interface TutorCharacter {
   id: string;
-  status: "draft" | "live" | "paused" | "retired";
+  /** "parked": kept in code, never offered, shown or defaulted (dc-r4-single-teacher-asha). */
+  status: "draft" | "live" | "paused" | "parked" | "retired";
   displayName: { roman: string; deva: string };
   roleChips: RoleChip[];
   /** B2: a 3-word style chip. */
@@ -63,7 +64,8 @@ export function eligibleTutors(
   child: { id: string; class_level: number | string },
   opts?: { catalogue?: TutorCharacter[]; hasSheet?: (id: string) => boolean; allow?: string[] | null; offer?: "sheet" | "wide"; includeDraft?: boolean },
 ): Eligibility;
-export function defaultTutorFor(child: { class_level: number | string }): string;
+export const SINGLE_TEACHER_ID: "asha";
+export function defaultTutorFor(child: { class_level: number | string }, opts?: { single?: boolean }): string;
 
 export const TEACHER_NAME: { readonly min: number; readonly max: number; readonly re: RegExp };
 export const NAME_SUGGESTIONS: readonly string[];

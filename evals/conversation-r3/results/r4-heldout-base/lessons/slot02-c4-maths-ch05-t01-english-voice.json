@@ -1,0 +1,2174 @@
+{
+ "slot": 2,
+ "topic": "c4-maths-ch05-t01",
+ "cls": 4,
+ "lang": "english",
+ "lane": "voice",
+ "lessons": [
+  {
+   "lessonId": "569f7912-5698-462e-9c55-d574065974e4",
+   "why": "start",
+   "at": "2026-10-10T08:41:54.278Z",
+   "teacher": "Asha"
+  }
+ ],
+ "turns": [
+  {
+   "who": "teacher",
+   "kind": "opening",
+   "lessonId": "569f7912-5698-462e-9c55-d574065974e4",
+   "teacherReply": "Hi Zoya, I’m Asha, your AI teacher. Today we’ll share footballs equally into fractions. Ready to begin?",
+   "ui": {
+    "status": "your_turn",
+    "phase": "warmup",
+    "handover": "answer",
+    "answerForm": "words",
+    "tray": "none",
+    "shortTitle": "Equal shares",
+    "beat": {
+     "beatId": "b1-arrive",
+     "type": "arrive",
+     "index": 1
+    },
+    "ask": {
+     "text": "Ready to begin?"
+    }
+   }
+  },
+  {
+   "who": "child",
+   "tag": "greet",
+   "lessonId": "569f7912-5698-462e-9c55-d574065974e4",
+   "childText": "hello",
+   "ms": 1306,
+   "error": null,
+   "teacherReply": "Hi Zoya! Imagine sharing one football cake equally among players. What might happen to each piece?",
+   "move": {
+    "kind": "hook",
+    "shape": "open with one concrete everyday situation built on their interest (football) — kit contexts: rotis and parathas, birthday cake, watermelon; ask what they think will happen or which they would pick — a prediction, no right answer yet; any bigger/more comparison: two quantities of one kind, in one unit — a count against a count, a distance against a distance; never across kinds; mention once: at the end they will teach this to Golu (a pretend baby elephant just starting school)",
+    "format": "F4"
+   },
+   "ui": {
+    "status": "your_turn",
+    "phase": "teach",
+    "handover": "answer",
+    "answerForm": "words",
+    "tray": "none",
+    "shortTitle": "Equal shares",
+    "beat": {
+     "beatId": "b2-hook",
+     "type": "hook",
+     "index": 2
+    },
+    "ask": {
+     "text": "What might happen to each piece?"
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false
+    },
+    "verdict": "ungraded",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 548,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "teach",
+    "ms": 1298,
+    "item": null,
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 43
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 43
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 653
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 699
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1201
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1246
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1249
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1250
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1004
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 1251
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 1298
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "probe:h-language_switch-01",
+   "lessonId": "569f7912-5698-462e-9c55-d574065974e4",
+   "childText": "please do it in hindi from now",
+   "ms": 1891,
+   "error": null,
+   "teacherReply": "Zoya, ab se main saral Hindi mein bolungi. Ek cheez ko barabar hisson mein baantna fraction hai; ek hissa kitna hoga?",
+   "move": {
+    "kind": "reteach",
+    "shape": "they asked for simple Hindi (Roman script when written): from now on every turn in simple Hindi (Roman script when written), even if they reply in another language; say the last idea again in it, simply, and end with one small question",
+    "skillId": "c4-maths-ch05-t01-s1",
+    "request": "language"
+   },
+   "ui": {
+    "status": "your_turn",
+    "phase": "teach",
+    "handover": "answer",
+    "answerForm": "words",
+    "tray": "module",
+    "shortTitle": "Equal shares",
+    "beat": {
+     "beatId": "b3-explain",
+     "type": "explain",
+     "index": 3
+    },
+    "ask": {
+     "text": "Ek cheez ko barabar hisson mein baantna fraction hai; ek hissa kitna hoga?"
+    }
+   },
+   "moduleCommands": [
+    {
+     "op": "mount",
+     "moduleId": "m2",
+     "engine": "fractions@1",
+     "params": {
+      "topicId": "c4-maths-ch05-t01",
+      "skillId": null,
+      "lang": "hindi",
+      "fractions": [
+       [
+        1,
+        3
+       ]
+      ],
+      "numbers": [
+       15
+      ]
+     }
+    }
+   ],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false
+    },
+    "verdict": "ungraded",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "request"
+    },
+    "note": null,
+    "hintLevel": 0,
+    "phase": "teach",
+    "ms": 1888,
+    "item": null,
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 43
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 43
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 403
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 449
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 452
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 452
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1369
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 1826
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 1888
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "filler",
+   "lessonId": "569f7912-5698-462e-9c55-d574065974e4",
+   "childText": "got it",
+   "ms": 1516,
+   "error": null,
+   "teacherReply": "Zoya, teen barabar hisson mein baantne par har hissa one-third, yani 1/3, hota hai. Teen mein ek hissa kaise likhogi?",
+   "move": {
+    "kind": "explain",
+    "shape": "one idea only: Recognise equal parts and name halves, thirds and quarters of a shape; an example from their interest (football) if it fits naturally; objects first, then the symbol; point at the screen only at what the on-screen row lists; never a drawing made of characters; end with one small question that makes them USE the idea — never 'samjha?'",
+    "skillId": "c4-maths-ch05-t01-s1",
+    "format": "F3"
+   },
+   "ui": {
+    "status": "your_turn",
+    "phase": "teach",
+    "handover": "answer",
+    "answerForm": "words",
+    "tray": "module",
+    "shortTitle": "Equal shares",
+    "beat": {
+     "beatId": "b3-explain",
+     "type": "explain",
+     "index": 3
+    },
+    "ask": {
+     "text": "Teen mein ek hissa kaise likhogi?"
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false
+    },
+    "verdict": "ungraded",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 511,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "teach",
+    "ms": 1512,
+    "item": null,
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 89
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 89
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 845
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 941
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1359
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1453
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1458
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1458
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1148
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 1459
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 1512
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "advance",
+   "lessonId": "569f7912-5698-462e-9c55-d574065974e4",
+   "childText": "alright",
+   "ms": 1321,
+   "error": null,
+   "teacherReply": "Zoya, ab 15 pencils ko teen barabar groups mein baantna hai. Pehle ek group mein kitni pencils hongi?",
+   "move": {
+    "kind": "worked_example",
+    "shape": "worked example, part 1 of 2: say one step, then ask them for the next step; their thinking, your pace; no new idea",
+    "skillId": "c4-maths-ch05-t01-s1",
+    "format": "F2"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "math",
+     "value": "What is 1/3 of 15 pencils?"
+    },
+    "phase": "teach",
+    "handover": "answer",
+    "answerForm": "words",
+    "tray": "module",
+    "shortTitle": "Equal shares",
+    "beat": {
+     "beatId": "b4-worked_example",
+     "type": "worked_example",
+     "index": 4
+    },
+    "ask": {
+     "text": "Pehle ek group mein kitni pencils hongi?"
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false
+    },
+    "verdict": "ungraded",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 234,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "teach",
+    "ms": 1317,
+    "item": null,
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 39
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 39
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 797
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 839
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1032
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1073
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1075
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1076
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1162
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 1268
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 1317
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "advance",
+   "lessonId": "569f7912-5698-462e-9c55-d574065974e4",
+   "childText": "ok",
+   "ms": 2301,
+   "error": null,
+   "teacherReply": "Zoya, pehle humne barabar hisson ka matlab samjha. Khaali jagah bharo: 1/3 means 1 of ___ equal groups.",
+   "move": {
+    "kind": "practice",
+    "shape": "the earlier steps in LESSON NOW, said briefly as done; then the step with the gap is theirs: pose it as written; wait; never fill the gap for them",
+    "itemId": "fade:0",
+    "skillId": "c4-maths-ch05-t01-s1",
+    "hintLevel": 0,
+    "probe": "P15",
+    "format": "F2"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "math",
+     "value": "What is 1/3 of 15 pencils? · 1/3 means 1 of ___ equal groups."
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "Khaali jagah bharo: 1/3 means 1 of ___ equal groups.",
+     "itemId": "fade:0"
+    },
+    "answerForm": "number",
+    "tray": "none",
+    "shortTitle": "Equal shares",
+    "beat": {
+     "beatId": "b5-practice_set",
+     "type": "practice_set",
+     "index": 5
+    }
+   },
+   "moduleCommands": [
+    {
+     "op": "unmount",
+     "moduleId": "m2"
+    }
+   ],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false,
+     "leadSlot": true
+    },
+    "verdict": "ungraded",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": null,
+     "waitedMs": 1552,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 2297,
+    "item": "fade:0",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 42
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 42
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 646
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 693
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 2245
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 2248
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 2248
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 975
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 2249
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 2297
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "advance",
+   "lessonId": "569f7912-5698-462e-9c55-d574065974e4",
+   "childText": "alright",
+   "ms": 2742,
+   "error": null,
+   "teacherReply": "Zoya, screen par fraction ka slice dekho. Pehle kul barabar groups gino, phir socho ek group liya gaya hai. Khaali jagah bharo: 1/3 means 1 of ___ equal groups.",
+   "move": {
+    "kind": "repair",
+    "shape": "you did not catch it clearly: ask them to say it once more; no verdict on their reply: neither praise nor 'wrong'",
+    "itemId": "fade:0",
+    "skillId": "c4-maths-ch05-t01-s1",
+    "hintLevel": 0
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "math",
+     "value": "1/3"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "Khaali jagah bharo: 1/3 means 1 of ___ equal groups.",
+     "itemId": "fade:0"
+    },
+    "answerForm": "number",
+    "tray": "studio",
+    "shortTitle": "Equal shares",
+    "beat": {
+     "beatId": "b5-practice_set",
+     "type": "practice_set",
+     "index": 5
+    },
+    "studioSlot": {
+     "slotId": "569f7912-5698-462e-9c55-d574065974e4:c1:slot",
+     "intentId": "569f7912-5698-462e-9c55-d574065974e4:c1",
+     "state": "revealed",
+     "artifact": {
+      "kind": "stagecraft",
+      "stage": {
+       "w": 1000,
+       "h": 625
+      },
+      "stagecraft": {
+       "rung": "engine_default",
+       "archetype": "slice-at@1",
+       "spec": {
+        "archetype": "slice-at@1",
+        "skills": [
+         "c4-maths-ch05-t01"
+        ],
+        "lang": "en",
+        "strings": {
+         "coach": "Swipe through the bar",
+         "wave": "Wave",
+         "cut": "Cut the bar",
+         "parts": "Equal parts",
+         "exact": "CLEAN CUT",
+         "close": "CLOSE",
+         "offBy": "off by",
+         "runDone": "Run complete",
+         "accuracy": "accuracy",
+         "sliced": "sliced",
+         "chain": "chain",
+         "smaller": "smaller piece"
+        },
+        "waves": [
+         {
+          "title": "Halves and quarters",
+          "sub": "Cut the bar as the fraction asks",
+          "items": [
+           {
+            "cut": "1/2"
+           },
+           {
+            "cut": "1/4"
+           },
+           {
+            "cut": "3/4"
+           }
+          ],
+          "gravity": 0.85,
+          "gap": 2.6,
+          "marks": true
+         },
+         {
+          "title": "Equal thirds",
+          "sub": "Make every share the same size",
+          "items": [
+           {
+            "cut": "1/3"
+           },
+           {
+            "cut": "2/3"
+           },
+           {
+            "parts": 3
+           }
+          ],
+          "gravity": 0.95,
+          "gap": 2.4,
+          "marks": false
+         },
+         {
+          "title": "Fair sharing",
+          "sub": "Each piece must match the others",
+          "items": [
+           {
+            "parts": 4
+           },
+           {
+            "parts": 3
+           },
+           {
+            "cut": "1/4"
+           }
+          ],
+          "gravity": 0.8,
+          "gap": 3.2,
+          "marks": false,
+          "targets": "c4-maths-ch05-t01-m-unequal-parts"
+         },
+         {
+          "title": "Piece size",
+          "sub": "Notice how more parts change each piece",
+          "items": [
+           {
+            "cut": "1/2"
+           },
+           {
+            "cut": "1/3"
+           },
+           {
+            "cut": "1/4"
+           }
+          ],
+          "gravity": 1,
+          "gap": 2.4,
+          "marks": false,
+          "targets": "c4-maths-ch05-t01-m-bigger-denominator-bigger"
+         }
+        ]
+       },
+       "boardTwin": {
+        "scriptRef": "board:c4-maths-ch05-t01-s1|practice|-|-",
+        "values": {
+         "title": "Fraction Slice",
+         "need": "practice"
+        },
+        "board": {
+         "title": "Fraction Slice",
+         "lines": [
+          "equal",
+          "fraction",
+          "piece",
+          "part"
+         ],
+         "figure": {
+          "kind": "none"
+         }
+        }
+       },
+       "board": null,
+       "cue": {
+        "clauseIdx": 0,
+        "preRollMs": 400,
+        "crossFadeMs": 420
+       },
+       "buildSha": null,
+       "blobUrl": null
+      }
+     }
+    }
+   },
+   "moduleCommands": [],
+   "studio": {
+    "reveal": "569f7912-5698-462e-9c55-d574065974e4:c1"
+   },
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false,
+     "leadSlot": true
+    },
+    "verdict": "unverified",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 506,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 2739,
+    "item": "fade:0",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 49
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 49
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 1035
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 1091
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1542
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1597
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1600
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1600
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1085
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 2691
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 2739
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "advance",
+   "lessonId": "569f7912-5698-462e-9c55-d574065974e4",
+   "childText": "okay",
+   "ms": 1625,
+   "error": null,
+   "teacherReply": "Zoya, choices screen par hain. Tum unmein se koi ek choice chun sakti ho. Khaali jagah bharo: 1/3 means 1 of ___ equal groups.",
+   "move": {
+    "kind": "repair",
+    "shape": "no verdict on their reply; the choices are now on screen; the same question again, as written; tell them they can pick one of the choices on screen; do not read the choices with any lean toward one; no verdict on their reply: neither praise nor 'wrong'",
+    "itemId": "fade:0",
+    "skillId": "c4-maths-ch05-t01-s1",
+    "hintLevel": 0
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "math",
+     "value": "1/3"
+    },
+    "chips": [
+     {
+      "id": "pick:0",
+      "label": "4"
+     },
+     {
+      "id": "pick:1",
+      "label": "2"
+     },
+     {
+      "id": "pick:2",
+      "label": "3"
+     }
+    ],
+    "phase": "practice",
+    "handover": "choice",
+    "ask": {
+     "text": "Khaali jagah bharo: 1/3 means 1 of ___ equal groups.",
+     "itemId": "fade:0"
+    },
+    "answerForm": "choice",
+    "tray": "tiles",
+    "shortTitle": "Equal shares",
+    "beat": {
+     "beatId": "b5-practice_set",
+     "type": "practice_set",
+     "index": 5
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false,
+     "leadSlot": true
+    },
+    "verdict": "unverified",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 491,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 1622,
+    "item": "fade:0",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 59
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 59
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 691
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 755
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1182
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1246
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1248
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1248
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1437
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 1564
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 1622
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "advance",
+   "lessonId": "569f7912-5698-462e-9c55-d574065974e4",
+   "childText": "okay",
+   "ms": 3114,
+   "error": null,
+   "teacherReply": "Ab isi baat ko flags ke naye example mein lagao. Do ek-size ke rectangular school flags mein 4-4 coloured sections hain. Flag A ke sections barabar hain; Flag B mein ek chauda aur teen patle hain. Kis flag ka ek section pakka one-quarter hai: A ya B?",
+   "move": {
+    "kind": "probe",
+    "shape": "leave this one for later, no verdict and no answer given; the next question; pose the question as written, in their language; then wait; same idea, new situation; let them carry it over; no verdict on their reply: neither praise nor 'wrong'",
+    "itemId": "c4-maths-ch05-t01-rl-h1",
+    "skillId": "c4-maths-ch05-t01-s1",
+    "hintLevel": 0,
+    "probe": "P3"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "math",
+     "value": "4  ·  4"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "Kis flag ka ek section pakka one-quarter hai: A ya B?",
+     "itemId": "c4-maths-ch05-t01-rl-h1"
+    },
+    "answerForm": "words",
+    "tray": "studio",
+    "shortTitle": "Equal shares",
+    "beat": {
+     "beatId": "b6-probe",
+     "type": "probe",
+     "index": 6
+    },
+    "studioSlot": {
+     "slotId": "569f7912-5698-462e-9c55-d574065974e4:c1:slot",
+     "intentId": "569f7912-5698-462e-9c55-d574065974e4:c1",
+     "state": "revealed",
+     "artifact": {
+      "kind": "stagecraft",
+      "stage": {
+       "w": 1000,
+       "h": 625
+      },
+      "stagecraft": {
+       "rung": "engine_default",
+       "archetype": "slice-at@1",
+       "spec": {
+        "archetype": "slice-at@1",
+        "skills": [
+         "c4-maths-ch05-t01"
+        ],
+        "lang": "en",
+        "strings": {
+         "coach": "Swipe through the bar",
+         "wave": "Wave",
+         "cut": "Cut the bar",
+         "parts": "Equal parts",
+         "exact": "CLEAN CUT",
+         "close": "CLOSE",
+         "offBy": "off by",
+         "runDone": "Run complete",
+         "accuracy": "accuracy",
+         "sliced": "sliced",
+         "chain": "chain",
+         "smaller": "smaller piece"
+        },
+        "waves": [
+         {
+          "title": "Halves and quarters",
+          "sub": "Cut the bar as the fraction asks",
+          "items": [
+           {
+            "cut": "1/2"
+           },
+           {
+            "cut": "1/4"
+           },
+           {
+            "cut": "3/4"
+           }
+          ],
+          "gravity": 0.85,
+          "gap": 2.6,
+          "marks": true
+         },
+         {
+          "title": "Equal thirds",
+          "sub": "Make every share the same size",
+          "items": [
+           {
+            "cut": "1/3"
+           },
+           {
+            "cut": "2/3"
+           },
+           {
+            "parts": 3
+           }
+          ],
+          "gravity": 0.95,
+          "gap": 2.4,
+          "marks": false
+         },
+         {
+          "title": "Fair sharing",
+          "sub": "Each piece must match the others",
+          "items": [
+           {
+            "parts": 4
+           },
+           {
+            "parts": 3
+           },
+           {
+            "cut": "1/4"
+           }
+          ],
+          "gravity": 0.8,
+          "gap": 3.2,
+          "marks": false,
+          "targets": "c4-maths-ch05-t01-m-unequal-parts"
+         },
+         {
+          "title": "Piece size",
+          "sub": "Notice how more parts change each piece",
+          "items": [
+           {
+            "cut": "1/2"
+           },
+           {
+            "cut": "1/3"
+           },
+           {
+            "cut": "1/4"
+           }
+          ],
+          "gravity": 1,
+          "gap": 2.4,
+          "marks": false,
+          "targets": "c4-maths-ch05-t01-m-bigger-denominator-bigger"
+         }
+        ]
+       },
+       "boardTwin": {
+        "scriptRef": "board:c4-maths-ch05-t01-s1|practice|-|-",
+        "values": {
+         "title": "Fraction Slice",
+         "need": "practice"
+        },
+        "board": {
+         "title": "Fraction Slice",
+         "lines": [
+          "equal",
+          "fraction",
+          "piece",
+          "part"
+         ],
+         "figure": {
+          "kind": "none"
+         }
+        }
+       },
+       "board": null,
+       "cue": {
+        "clauseIdx": 0,
+        "preRollMs": 400,
+        "crossFadeMs": 420
+       },
+       "buildSha": null,
+       "blobUrl": null
+      }
+     }
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false,
+     "leadSlot": true
+    },
+    "verdict": "unverified",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 574,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 3111,
+    "item": "c4-maths-ch05-t01-rl-h1",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 47
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 47
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 825
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 877
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1400
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1451
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1453
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1454
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1601
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 3062
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 3110
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "recovery",
+   "lessonId": "569f7912-5698-462e-9c55-d574065974e4",
+   "childText": "a",
+   "ms": 1562,
+   "error": null,
+   "teacherReply": "Sahi, Zoya—Flag A mein chaar barabar sections hain. Har section kul ka one-quarter hai. Flag B kyun nahi?",
+   "move": {
+    "kind": "explain",
+    "shape": "confirm specifically: name the exact thing they got right, no ability words; one idea only: Find a fraction of a collection, such as 1/2 of 8 or 1/3 of 12; an example from their interest (football) if it fits naturally; objects first, then the symbol; point at the screen only at what the on-screen row lists; never a drawing made of characters; end with one small question that makes them USE the idea — never 'samjha?'",
+    "skillId": "c4-maths-ch05-t01-s2",
+    "format": "F3"
+   },
+   "ui": {
+    "status": "your_turn",
+    "phase": "practice",
+    "handover": "answer",
+    "answerForm": "words",
+    "tray": "module",
+    "shortTitle": "Equal shares",
+    "verdict": "correct",
+    "beat": {
+     "beatId": "b7-explain",
+     "type": "explain",
+     "index": 7
+    },
+    "ask": {
+     "text": "Flag B kyun nahi?"
+    }
+   },
+   "moduleCommands": [
+    {
+     "op": "mount",
+     "moduleId": "m9",
+     "engine": "fractions@1",
+     "params": {
+      "topicId": "c4-maths-ch05-t01",
+      "skillId": null,
+      "lang": "hindi",
+      "fractions": [
+       [
+        1,
+        3
+       ]
+      ],
+      "numbers": [
+       15
+      ]
+     }
+    }
+   ],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false
+    },
+    "verdict": "correct",
+    "cls": {
+     "outcome": "correct",
+     "source": "exact"
+    },
+    "note": null,
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 1559,
+    "item": null,
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 54
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 55
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 62
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 104
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 104
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1393
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 1502
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 1559
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "filler",
+   "lessonId": "569f7912-5698-462e-9c55-d574065974e4",
+   "childText": "ok",
+   "ms": 2391,
+   "error": null,
+   "teacherReply": "Zoya, barabar hisson ko pehchanna fraction samajhne ka zaroori pehla kadam hai. Music club ke paas 9 drumsticks hain. Unka ek-tihaai hissa spare rakha hai. Kitni drumsticks spare hain?",
+   "move": {
+    "kind": "practice",
+    "shape": "pose the question as written, in their language; then wait",
+    "itemId": "c4-maths-ch05-t01-rl-o2",
+    "skillId": "c4-maths-ch05-t01-s2",
+    "hintLevel": 0,
+    "probe": "P15"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "math",
+     "value": "9"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "Music club ke paas 9 drumsticks hain. Unka ek-tihaai hissa spare rakha hai. Kitni drumsticks spare hain?",
+     "itemId": "c4-maths-ch05-t01-rl-o2"
+    },
+    "answerForm": "words",
+    "tray": "studio",
+    "shortTitle": "Equal shares",
+    "beat": {
+     "beatId": "b8-practice_set",
+     "type": "practice_set",
+     "index": 8
+    },
+    "studioSlot": {
+     "slotId": "569f7912-5698-462e-9c55-d574065974e4:c1:slot",
+     "intentId": "569f7912-5698-462e-9c55-d574065974e4:c1",
+     "state": "revealed",
+     "artifact": {
+      "kind": "stagecraft",
+      "stage": {
+       "w": 1000,
+       "h": 625
+      },
+      "stagecraft": {
+       "rung": "engine_default",
+       "archetype": "slice-at@1",
+       "spec": {
+        "archetype": "slice-at@1",
+        "skills": [
+         "c4-maths-ch05-t01"
+        ],
+        "lang": "en",
+        "strings": {
+         "coach": "Swipe through the bar",
+         "wave": "Wave",
+         "cut": "Cut the bar",
+         "parts": "Equal parts",
+         "exact": "CLEAN CUT",
+         "close": "CLOSE",
+         "offBy": "off by",
+         "runDone": "Run complete",
+         "accuracy": "accuracy",
+         "sliced": "sliced",
+         "chain": "chain",
+         "smaller": "smaller piece"
+        },
+        "waves": [
+         {
+          "title": "Halves and quarters",
+          "sub": "Cut the bar as the fraction asks",
+          "items": [
+           {
+            "cut": "1/2"
+           },
+           {
+            "cut": "1/4"
+           },
+           {
+            "cut": "3/4"
+           }
+          ],
+          "gravity": 0.85,
+          "gap": 2.6,
+          "marks": true
+         },
+         {
+          "title": "Equal thirds",
+          "sub": "Make every share the same size",
+          "items": [
+           {
+            "cut": "1/3"
+           },
+           {
+            "cut": "2/3"
+           },
+           {
+            "parts": 3
+           }
+          ],
+          "gravity": 0.95,
+          "gap": 2.4,
+          "marks": false
+         },
+         {
+          "title": "Fair sharing",
+          "sub": "Each piece must match the others",
+          "items": [
+           {
+            "parts": 4
+           },
+           {
+            "parts": 3
+           },
+           {
+            "cut": "1/4"
+           }
+          ],
+          "gravity": 0.8,
+          "gap": 3.2,
+          "marks": false,
+          "targets": "c4-maths-ch05-t01-m-unequal-parts"
+         },
+         {
+          "title": "Piece size",
+          "sub": "Notice how more parts change each piece",
+          "items": [
+           {
+            "cut": "1/2"
+           },
+           {
+            "cut": "1/3"
+           },
+           {
+            "cut": "1/4"
+           }
+          ],
+          "gravity": 1,
+          "gap": 2.4,
+          "marks": false,
+          "targets": "c4-maths-ch05-t01-m-bigger-denominator-bigger"
+         }
+        ]
+       },
+       "boardTwin": {
+        "scriptRef": "board:c4-maths-ch05-t01-s1|practice|-|-",
+        "values": {
+         "title": "Fraction Slice",
+         "need": "practice"
+        },
+        "board": {
+         "title": "Fraction Slice",
+         "lines": [
+          "equal",
+          "fraction",
+          "piece",
+          "part"
+         ],
+         "figure": {
+          "kind": "none"
+         }
+        }
+       },
+       "board": null,
+       "cue": {
+        "clauseIdx": 0,
+        "preRollMs": 400,
+        "crossFadeMs": 420
+       },
+       "buildSha": null,
+       "blobUrl": null
+      }
+     }
+    }
+   },
+   "moduleCommands": [
+    {
+     "op": "unmount",
+     "moduleId": "m9"
+    }
+   ],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false,
+     "leadSlot": true
+    },
+    "verdict": "ungraded",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 438,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 2388,
+    "item": "c4-maths-ch05-t01-rl-o2",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 56
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 57
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 853
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 914
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1292
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1352
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1355
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1355
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 980
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 2341
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 2388
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "recovery",
+   "lessonId": "569f7912-5698-462e-9c55-d574065974e4",
+   "childText": "3",
+   "ms": 1677,
+   "error": null,
+   "teacherReply": "Bilkul, Zoya—9 ko 3 barabar groups mein baantne par har group 3 hota hai. 1/3 kitne drumsticks?",
+   "move": {
+    "kind": "explain",
+    "shape": "confirm specifically: name the exact thing they got right, no ability words; one idea only: Compare unit fractions like 1/2, 1/3 and 1/4 of the same whole; an example from their interest (football) if it fits naturally; objects first, then the symbol; point at the screen only at what the on-screen row lists; never a drawing made of characters; end with one small question that makes them USE the idea — never 'samjha?'",
+    "skillId": "c4-maths-ch05-t01-s3",
+    "format": "F3"
+   },
+   "ui": {
+    "status": "your_turn",
+    "phase": "practice",
+    "handover": "answer",
+    "answerForm": "words",
+    "tray": "module",
+    "shortTitle": "Equal shares",
+    "verdict": "correct",
+    "beat": {
+     "beatId": "b9-explain",
+     "type": "explain",
+     "index": 9
+    },
+    "ask": {
+     "text": "1/3 kitne drumsticks?"
+    }
+   },
+   "moduleCommands": [
+    {
+     "op": "mount",
+     "moduleId": "m11",
+     "engine": "fractions@1",
+     "params": {
+      "topicId": "c4-maths-ch05-t01",
+      "skillId": null,
+      "lang": "hindi",
+      "fractions": [
+       [
+        1,
+        3
+       ]
+      ],
+      "numbers": [
+       15
+      ]
+     }
+    }
+   ],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false
+    },
+    "verdict": "correct",
+    "cls": {
+     "outcome": "correct",
+     "source": "exact"
+    },
+    "note": null,
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 1664,
+    "item": null,
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 56
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 56
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 62
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 104
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 104
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1493
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 1602
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 1664
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "filler",
+   "lessonId": "569f7912-5698-462e-9c55-d574065974e4",
+   "childText": "alright",
+   "ms": 1419,
+   "error": null,
+   "teacherReply": "Zoya, 1/3 ka matlab 3 barabar hisson mein se 1 hissa. Kaun bada hai: ek roti ka 1/3 ya usi roti ka 1/2?",
+   "move": {
+    "kind": "probe",
+    "shape": "pose the question as written, in their language; then wait; read its choices plainly; no lean in your voice toward any of them",
+    "itemId": "diag:c4-maths-ch05-t01-m-bigger-denominator-bigger",
+    "skillId": "c4-maths-ch05-t01-s3",
+    "hintLevel": 0,
+    "probe": "P7"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "math",
+     "value": "1/3  ·  1/2"
+    },
+    "chips": [
+     {
+      "id": "opt:0",
+      "label": "1/2"
+     },
+     {
+      "id": "opt:1",
+      "label": "1/3, because 3 is bigger than 2"
+     }
+    ],
+    "phase": "practice",
+    "handover": "choice",
+    "ask": {
+     "text": "Kaun bada hai: ek roti ka 1/3 ya usi roti ka 1/2?",
+     "itemId": "diag:c4-maths-ch05-t01-m-bigger-denominator-bigger"
+    },
+    "answerForm": "choice",
+    "tray": "tiles",
+    "shortTitle": "Equal shares",
+    "beat": {
+     "beatId": "b10-probe",
+     "type": "probe",
+     "index": 10
+    }
+   },
+   "moduleCommands": [
+    {
+     "op": "unmount",
+     "moduleId": "m11"
+    },
+    {
+     "op": "mount",
+     "moduleId": "m12",
+     "engine": "fractions@1",
+     "params": {
+      "topicId": "c4-maths-ch05-t01",
+      "skillId": "c4-maths-ch05-t01-s3",
+      "lang": "hindi",
+      "mode": "compare",
+      "fractions": [
+       "1/3",
+       "1/2"
+      ],
+      "question": "bigger",
+      "model": "circle",
+      "predict": true,
+      "itemId": "diag:c4-maths-ch05-t01-m-bigger-denominator-bigger"
+     },
+     "goal": "item:diag:c4-maths-ch05-t01-m-bigger-denominator-bigger"
+    }
+   ],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [
+      "drift",
+      "ask"
+     ],
+     "rewritten": false,
+     "replaced": false,
+     "firstDraft": "Zoya, 1/3 ka matlab 3 barabar hisson mein se 1 hissa. 12 football cards ka 1/3 kitna hoga?",
+     "repaired": true
+    },
+    "verdict": "ungraded",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 588,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 1416,
+    "item": "diag:c4-maths-ch05-t01-m-bigger-denominator-bigger",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 43
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 44
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 721
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 770
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1310
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1358
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1361
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1361
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1221
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 1362
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 1416
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "recovery",
+   "lessonId": "569f7912-5698-462e-9c55-d574065974e4",
+   "childText": "1/2",
+   "ms": 2320,
+   "error": null,
+   "teacherReply": "Bilkul, Zoya—1/2 bada hai. Tumne yeh kaise jaana?",
+   "move": {
+    "kind": "probe",
+    "shape": "confirm in two or three words only — the reason is theirs to give, so do not explain it; covert shape: protege naive but-why; Golu, who does not know it, asks why; offer two reasons to pick from: the right reason vs the wrong belief (both in LESSON NOW), in either order; a real question, never a check on them",
+    "itemId": "diag:c4-maths-ch05-t01-m-bigger-denominator-bigger",
+    "skillId": "c4-maths-ch05-t01-s3",
+    "hintLevel": 0,
+    "probe": "P2"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "math",
+     "value": "1/3  ·  1/2"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "answerForm": "words",
+    "tray": "module",
+    "shortTitle": "Equal shares",
+    "verdict": "correct",
+    "beat": {
+     "beatId": "b10-probe",
+     "type": "probe",
+     "index": 10
+    },
+    "ask": {
+     "text": "Tumne yeh kaise jaana?"
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [
+      "nowhy",
+      "noconfirm"
+     ],
+     "rewritten": true,
+     "replaced": false,
+     "firstDraft": "Zoya, tumne 1/2 chuna. Ab batao, 1/3 aur 1/2 mein kis mein roti ke kam tukde bante hain?",
+     "afterRewrite": []
+    },
+    "verdict": "correct",
+    "cls": {
+     "outcome": "correct",
+     "source": "exact"
+    },
+    "note": null,
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 2317,
+    "item": "diag:c4-maths-ch05-t01-m-bigger-denominator-bigger",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 58
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 58
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 66
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 113
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 114
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1328
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 807
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 2255
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 2316
+     }
+    ]
+   }
+  }
+ ]
+}

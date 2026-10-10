@@ -13,7 +13,7 @@ import { PUPPET_REV as CLIENT_REV } from "../src/face-puppet/assets.ts";
 const read = (p) => fs.readFileSync(new URL(p, import.meta.url), "utf8");
 
 test("face config: both switches ship ON; '0' turns each off on its own; nothing else does", () => {
-  assert.deepEqual(faceConfig({}), { puppet2d: true, visemes: true, rev: SERVER_REV });
+  assert.deepEqual(faceConfig({}), { puppet2d: true, visemes: true, rev: SERVER_REV, look: SERVER_REV });
   assert.equal(faceConfig({ TAXILA_FACE_PUPPET2D: "0" }).puppet2d, false);
   assert.equal(faceConfig({ TAXILA_FACE_PUPPET2D: "0" }).visemes, true);
   assert.equal(faceConfig({ TAXILA_DHD_VISEMES: "0" }).visemes, false);
@@ -32,7 +32,7 @@ test("GET /api/face/config answers the switches, short-cached, with no child dat
   try { await fn({ headers: {} }, res); } finally { if (prev === undefined) delete process.env.TAXILA_FACE_PUPPET2D; else process.env.TAXILA_FACE_PUPPET2D = prev; }
   assert.equal(status, 200);
   assert.match(headers["cache-control"], /max-age=60/);
-  assert.deepEqual(Object.keys(JSON.parse(body)).sort(), ["puppet2d", "rev", "visemes"]);
+  assert.deepEqual(Object.keys(JSON.parse(body)).sort(), ["look", "puppet2d", "rev", "visemes"]);
   assert.equal(JSON.parse(body).puppet2d, false);
 });
 

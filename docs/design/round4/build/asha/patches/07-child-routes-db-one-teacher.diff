@@ -1,0 +1,26 @@
+diff --git a/tests/child-routes-db.run.mjs b/tests/child-routes-db.run.mjs
+index b249db38..307a036d 100644
+--- a/tests/child-routes-db.run.mjs
++++ b/tests/child-routes-db.run.mjs
+@@ -70,8 +70,9 @@ describe("child routes (test branch)", { skip: SKIP, concurrency: false, timeout
+     assert.equal(r.body.homeState, "default");
+     assert.equal(r.body.topic.id, topic.id);
+     assert.ok(r.body.topic.shortTitle.length <= 24);
+-    assert.equal(r.body.teacher.name, "Arjun");
+-    assert.equal(r.body.teacher.pronouns.subject, "he");
++    // ONE teacher (dc-r4-single-teacher-asha): a class 8 row that still stores the old default Arjun is taught by Asha
++    assert.equal(r.body.teacher.name, "Asha");
++    assert.equal(r.body.teacher.pronouns.subject, "she");
+     assert.deepEqual(r.body.surfaces, { map: true, notebook: true, resume: true });
+     const req = await call("/api/lesson/request", { method: "POST", body: { cid: kid } });
+     assert.deepEqual(req.body, { granted: true, topicId: topic.id });
+@@ -201,7 +202,8 @@ describe("child routes (test branch)", { skip: SKIP, concurrency: false, timeout
+     assert.equal((await call(`/api/child/teacher?childId=${kid3}`)).body.teacher.name, "Asha");
+     const c = await call("/api/child/teacher?classLevel=6");
+     assert.equal(c.status, 200);
+-    assert.equal(c.body.teacher.id, "arjun");
++    assert.equal(c.body.teacher.id, "asha", "the class's teacher before a child exists: Asha for every class");
++    assert.deepEqual(c.body.eligible.map((t) => t.id), ["asha"]);
+     assert.ok(c.body.eligible.every((t) => t.pronouns?.subject));
+     assert.equal((await call("/api/child/teacher?classLevel=12")).status, 400);
+   });

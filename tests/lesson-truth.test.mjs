@@ -12,7 +12,7 @@ import { classifyFast, askedOther, targetFor, isChoiceQuestion } from "../server
 import { instructionsFor } from "../server/compiler/instructions.js";
 import { kitFromFile } from "../server/content/kits.js";
 import { getTopic } from "../server/content/curriculum.js";
-import { CHARACTERS, teacherCard, teacherFor } from "../server/compiler/characters/index.js";
+import { CHARACTERS, teacherCard, teacherFor, teacherForLesson } from "../server/compiler/characters/index.js";
 import { __test as L, replyDeps, lessonSummary, lessonInterests, startRefusal } from "../server/routes/lesson.js";
 import { homeStateOf, legacyHome, buildMap, lessonMinutes, countsAsDone } from "../server/routes/child.js";
 import { kit, CTX, cls, BRIEF } from "./fixtures/kit.mjs";
@@ -265,8 +265,10 @@ test("ui: an item turn pins the ask (≤ 120, the posed text), names the handove
 // ───────────── (6) one teacher ─────────────
 
 test("teacher: one record carries name, pronouns and voice; Arjun is 'he' everywhere the server speaks about him", () => {
-  const a = teacherCard(teacherFor({ id: "c", class_level: 8, teacher_id: "arjun" }));
+  // Arjun is parked (dc-r4-single-teacher-asha): he speaks only in a lesson pinned to him before round 4
+  const a = teacherCard(teacherForLesson({ id: "c", class_level: 8, teacher_id: "arjun" }, "arjun", "Arjun"));
   assert.deepEqual([a.id, a.name, a.pronouns.subject, a.role], ["arjun", "Arjun", "he", "AI teacher"]);
+  assert.equal(teacherCard(teacherFor({ id: "c", class_level: 8, teacher_id: "arjun" })).pronouns.subject, "she", "the next lesson is Asha's");
   assert.equal(teacherCard(teacherFor({ id: "c", class_level: 3, teacher_id: null })).pronouns.subject, "she");
   for (const c of Object.values(CHARACTERS)) assert.ok(c.pronouns?.subject && c.pronouns.object && c.pronouns.possessive, c.id);
 });

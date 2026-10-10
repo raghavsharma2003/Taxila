@@ -360,6 +360,7 @@ export const teachAgain = ({ how }) => join(
   how === "story" ? "they asked for it as a story: the SAME idea told in story form — a named character, a moment (one day…), what happened — a few lines"
     : how === "example" ? "they asked for an example: one concrete everyday example of the SAME idea, your own numbers, plainly marked as an example"
       : how === "slower" ? "they asked you to slow down: say in two or three words that you will go slower; then the SAME idea in short simple sentences, one small step"
+        : how === "deeper" ? "they asked to go deeper: the SAME idea one layer further, the why behind it or where it shows up in real life or how it links to what comes next; correct and simple, never a new skill, never your earlier words"
         : "they did not follow it: the SAME idea a new, simpler way in (a picture in words, real objects, or a different example), never your earlier words",
   "the idea in LESSON NOW is still the one on the table; no new step of the lesson yet",
   "end with one small question about it",
@@ -373,6 +374,7 @@ export const breakYes = () => "they asked for a short break: agree warmly; the l
 export const repeatShort = () => "they did not catch it: the last point again, shorter and slower; nothing new";
 export const welcomeBack = () => "they are back after a moment away: welcome them back in two or three words, no goodbye and no fuss; carry on";
 export const levelHarder = () => "they asked for a harder one: take them at their word, a short warm line; the harder question";
+export const levelDeeper = () => "they asked to go deeper: take them at their word in a few warm words; the harder question on the same idea, a step further";
 export const levelEasier = () => "they asked for an easier one: a short warm line, no fuss; the easier question";
 export const boredOffer = () => join(
   // round 3: say back what they said (it is boring) before the change: "acknowledges" failed on J2 for "game, picture or challenge?"
@@ -461,8 +463,58 @@ export const ALSO_NOTE = {
   boredom: "they also said it is boring: acknowledge it in a few words, no guilt",
   easier: "they also asked for it easier: make the step smaller and simpler",
   slower: "they also asked you to go slower: short simple sentences, one small step",
-  simpler: "they also did not follow: say it more simply",
+  // round 4 (battery arm 2, multi_intent-01 "samajh nahi aaya, Hindi mein batao"): as a last-section note, "say it more
+  // simply" was read as an announcement ("ab main tumhe Hindi mein samjhaunga") and the question came back unexplained
+  simpler: "they also did not follow: before the question, one or two short lines on what it asks, in simpler words; never only a promise to explain",
 };
+/**
+ * Round 4 (conversation): what a request's move MUST do this turn, as a short note the compile places in the LAST section
+ * (compile.js lastParts, before the check): in the MOVE section the shape lost to the last section's "the same question
+ * again" (battery 2026-10-10: frustration 2/8 repeated the question with no smaller step; skip_ahead 1/7 explained again;
+ * slower 2/6 promised to slow down and re-asked; a share 1/5 got no warm reaction; "haan" opened a wait on a mid-thought and
+ * read as a verdict). Notes, never lines; keyed by the move's request type (or the uptake's kind).
+ */
+export const MUST_NOTE = Object.freeze({
+  frustration: "first one short line that this is hard work and that is okay (about the work, never them); then the smaller step from the move, said plainly, before any question",
+  know: "no explanation at all, not one line of teaching: straight to the one quick check",
+  harder: "no explanation: straight to the harder question",
+  deeper: "the next layer of the same idea first, in a few short lines; then one small question",
+  slower: "first the idea again in two or three very short pieces, one per sentence; only then the question",
+  thinking: "only a short go-on of two to four words: no yes or agreement word (haan, yes, sahi, right), no hint, no question",
+  personal_share: "your first words react warmly to what they shared, named in their words; add nothing they did not say",
+  adapt: "first, in a few words, take what they said about your teaching on board (a thank-you for praise, or the change you make now); then do it",
+  adopt: "first, in a few words, take what they said about your teaching on board (a thank-you for praise, or the change you make now); then do it",
+  adult: "first greet the grown-up as a grown-up in a few words and say what you will do; then hand back to the child by name",
+  boredom: "first acknowledge it is getting boring in a few words, no guilt; then the change",
+  // round 4 round B (battery 2026-10-10: "no game is ready for this yet", "video nahi" broke zero visible failure: a build
+  // that is not there is never mentioned; game_request 4/8, animation 2/5)
+  visual_game: "start a game now, in one line: if one is on the screen, how to play it; if not, a quick spoken game on this idea (one rule, then their first turn); never say a game is not ready or not available",
+  visual_animation: "never say there is no video or animation: if something on the screen moves, point at what moves; if not, show the movement in words, step by step, as it happens",
+  // merged-tree owner-5 (whiteboard): "Whiteboard par 120 tickets ... samajhiye" named the board but never sent the eyes to it
+  visual_diagram: "never say there is no picture, never draw with characters; if the screen has it, first send their eyes there (dekho / look) and say what to see; if not, paint it in words",
+  // the hook after a no (out_of_bounds reengages 8/12: the decline came, the hook was the bare question again)
+  // battery arm 3 (pooled, out_of_bounds 11 -> 7 of 23): "after the short no" read as curt ("lesson ke baad bhi nahi", "woh
+  // baat hum yahan nahi karenge"; the judges' declines_warm). The no stays kind; the hook leads into the question
+  decline: "a kind, warm no in a few words, never curt; then one genuinely interesting thing from today's idea (a surprising fact, a real-life puzzle) leading into the question; never only the question",
+  // a clarify that gave the answer away (clarify-09)
+  clarify: "say what the question asks in simpler words; never the answer, the reason or the key words of the answer",
+  answer_q: "answer their question first, in at most two sentences, correctly and simply; only then carry on",
+  // owner-2 R7.defer (10/12 on the round-3 tree): a side question answered honestly, then "chalo wapas aate hain" / "let's get
+  // back" read as deferring it; after the answer the work simply goes on
+  small_talk: "answer their question honestly in one line as an AI; then straight into the work, with no words about going back or later",
+  identity: "plainly an AI teacher, in one line; then straight into the work, with no words about going back or later",
+  joke: "one playful line back of your own; then straight into the work, with no words about going back or later",
+  // owner-4 (local acceptance on 9e371d34, 2026-10-10): "example do" on the fast lane got only the card question; the lead
+  // note alone did not carry it
+  // merged-tree owner-4: an unlabelled example ("ghar mein do same cups mein seeds rakhiye ...") did not read as one
+  example: "first one concrete example from their life (home, school, cricket, food), named as an example (for example / jaise), in a line or two; only then the question",
+  story: "first a tiny story of two or three sentences with a child in it, about this idea; only then the question",
+  another: "a different example or question from the last one, never the same one again",
+});
+/** Round 4 (battery arm 3, family D: diversion-13 "mere paas naya cycle aaya hai", personal_share-01 "aaj mera birthday hai"):
+ *  as a last-section note, "add nothing they did not say" won over the share shape's promise, and a share KEPT for later got
+ *  no "we'll come back to it" (the judges' parks / acknowledges). When the share was kept this turn, the note carries it. */
+export const mustShareKept = ({ promise }) => `your first words react warmly to what they shared, in their words; then a few words that you will come back to it ${promise === "after_question" ? "right after this question" : "before the lesson ends"}`;
 export const parkAlso = ({ topic }) => `they also asked about ${clean(topic) || "something else"}: one line that you will come back to it after this`;
 /** Round 3: the turn after a stop check-in that was not a stop ("haan", an answer): the lesson simply goes on. Local
  *  battery base-head-1: "yes" after the check-in got "Lesson ended, Meher. You may close the book now. <a question>". */

@@ -11,7 +11,7 @@ const vp = process.argv[2] || "360";
 const dsf = Number(arg("--dsf", "1")), fps = Number(arg("--fps", "30")), secs = Number(arg("--secs", "15.2"));
 const stills = arg("--stills", "");
 const SCR = "/tmp/claude-0/-home-user/ecee9fc1-62f9-5f67-a47d-69ca79d9981a/scratchpad/r4-asha";
-const OUT = `${SCR}/cap-${vp}${dsf !== 1 ? "-x" + dsf : ""}${stills ? "-stills" : ""}${arg("--q", "").includes("calm=1") ? "-calm" : ""}`;
+const OUT = `${SCR}/cap-${arg("--tag", "")}${vp}${dsf !== 1 ? "-x" + dsf : ""}${stills ? "-stills" : ""}${arg("--q", "").includes("calm=1") ? "-calm" : ""}`;
 const CLIPS = "/home/user/Taxila/docs/design/round4/asha/clips";
 fs.rmSync(OUT, { recursive: true, force: true }); fs.mkdirSync(OUT, { recursive: true }); fs.mkdirSync(CLIPS, { recursive: true });
 const W = Number(vp) || 360;
@@ -19,7 +19,8 @@ const b = await chromium.launch({ args: ["--use-gl=angle", "--use-angle=swiftsha
 const pg = await b.newPage({ viewport: { width: W, height: 900 }, deviceScaleFactor: dsf });
 const errs = []; pg.on("pageerror", (e) => errs.push(e.message)); pg.on("console", (m) => { if (m.type() === "error") errs.push(m.text()); });
 const extra = arg("--q", "");
-await pg.goto(`file:///home/user/Taxila/art/character/puppet2d/lamp1/demo.html?capture=1&vp=${vp}&dpr=${Math.max(2, dsf)}${extra ? "&" + extra : ""}`);
+const PAGE = arg("--page", "/home/user/Taxila/art/character/puppet2d/lamp1/demo.html");
+await pg.goto(`file://${PAGE}?capture=1&vp=${vp}&dpr=${Math.max(2, dsf)}${extra ? "&" + extra : ""}`);
 await pg.waitForFunction(() => window.cap && window.cap.ready, null, { timeout: 60000 });
 await pg.evaluate(() => window.cap.start());
 const stage = await pg.$("#stage");
@@ -39,7 +40,7 @@ fs.writeFileSync(`${OUT}/log.json`, JSON.stringify({ vp, dsf, fps, slots: await 
 if (errs.length) console.log("page errors:", errs.slice(0, 5));
 await b.close();
 if (!stills) {
-  const clip = `${CLIPS}/asha-${vp}${extra.includes("calm=1") ? "-calm" : ""}.mp4`;
+  const clip = arg("--tag", "") ? `${SCR}/${arg("--tag", "")}${vp}.mp4` : `${CLIPS}/asha-${vp}${extra.includes("calm=1") ? "-calm" : ""}.mp4`;
   execFileSync("ffmpeg", ["-y", "-loglevel", "error", "-framerate", String(fps), "-i", `${OUT}/f%04d.png`, "-i", `${SCR}/tts/line.wav`,
     "-filter_complex", "[0:v]pad=ceil(iw/2)*2:ceil(ih/2)*2:color=0xF6F3EC,format=yuv420p[v];[1:a]adelay=1500|1500,apad[a]", "-map", "[v]", "-map", "[a]",
     "-c:v", "libx264", "-crf", "24", "-preset", "slow", "-c:a", "aac", "-b:a", "64k", "-t", String(secs), "-movflags", "+faststart", clip]);

@@ -1,0 +1,16 @@
+{
+  "nodes": [
+    {
+      "id": "ms-r4-safety-rel4-prod-deploy",
+      "kind": "measurement",
+      "at": "2026-10-10",
+      "title": "2026-10-10 13:47 UTC safety release a491caf live on taxila.dev as taxila-web--sa491caf-2gx1 (patches 05, 06, 07, 09 + deterministic clock-test scoping + forge flavourPick <= 500). Gate stamp from deploy-azure --gate --dry-run on the exact commit (tsc, vite, npm test 2,632 pass / 0 fail / 3 skipped, prompt budget PASS), then pushed and deployed from the stamp; every migration applied; canary w0-smoke 4/4 at 0% traffic; then 100%. w2i-safety on https://taxila.dev 1/1 (the disclosure arm is skipped on a remote target by design). Previous revision taxila-web--s9920f21-e9c2 keeps label previous (rollback = one traffic PATCH). The worker (still b371f4e) imports safety.js via voicesig and is redeployed after 16:00 UTC."
+    }
+  ],
+  "edges": [
+    { "src": "ms-r4-safety-rel4-prod-deploy", "rel": "part_of", "dst": "dc-r4-safety06-07-09-shipped" }
+  ],
+  "md": {
+    "measurements": "- `ms-r4-safety-rel4-prod-deploy` (2026-10-10): Safety release a491caf (patches 05/06/07/09 + test scoping + forge <= 500) live as taxila-web--sa491caf-2gx1: gate 2,632/0/3 skipped, budget PASS, migrations applied, canary w0-smoke 4/4, then 100%; w2i-safety remote 1/1 (disclosure arm skipped by design). Rollback = one traffic PATCH to taxila-web--s9920f21-e9c2. Worker redeploy after 16:00 UTC."
+  }
+}

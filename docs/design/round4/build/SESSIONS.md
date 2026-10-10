@@ -39,3 +39,27 @@ rotate the shared Azure model and speech keys.
   what the child wants to learn, maps that to the syllabus, then teaches, continues and revises like a tuition
   teacher. The design is still being researched (`docs/research/round4/tutor/TUTOR-MODEL.md`), and the main session
   will send it. Until then, work the battery, weakest families first.
+
+## Wave 2 (launched 08:34-08:35 UTC 2026-10-10; base 0e4bb7b; plan docs/design/round4/BUILD-PLAN-V2.md)
+
+| stream | branch | Neon TEST branch (own compute) | session |
+|---|---|---|---|
+| G1 games core + Antariksh | `claude/r4-games-core` | `test-r4-games` (br-plain-mountain-b73g6jms) | session_01YEt7ysvaB8ujW1FBv7Gj2v |
+| G2 Khand voxel world | `claude/r4-khand` | `test-r4-khand` (br-solitary-dream-b7vxsn0x) | session_01DB3TSEKLjYe5fdvcbZK3TE |
+| U1 gamified app directions | `claude/r4-app-design` | `test-r4-appdesign` (br-steep-salad-b7pui4hh) | session_01UTiatddezKEzf62yL8aMux |
+
+Key sets: the lesson stack plus `DEPLOY_IMAGE` and `AZURE_IMAGE_*` (text-free art packs only) for all three.
+
+## Wave 2b (09:50 UTC 2026-10-10)
+
+| stream | branch | Neon TEST branch | session |
+|---|---|---|---|
+| Asha rig v2 (painted keys swapped, no mesh warp; after rj-r4-lamp1-mesh-warp-uncanny) | `claude/r4-asha-rig2` | `test-r4-asharig` (br-delicate-dawn-b7hy0k8b) | session_01CFBcnqMYa97thSCvAZPV1j |
+
+## Wave 3 (10:20 UTC 2026-10-10)
+
+| stream | branch | Neon TEST branch | session |
+|---|---|---|---|
+| K Kaksha app shell (U1 continues; BUILD-SPEC.md slices K0-K4; K-O answers in dc-r4-kaksha-k-o-answers) | `claude/r4-app-design` | `test-r4-appdesign` (br-steep-salad-b7pui4hh) | session_01UTiatddezKEzf62yL8aMux |
+
+Merge order: 5a → 2 → G1 → G2 → 4A → 4B → 3 → 5b → K (K slices land behind `ui.kaksha`, default off, as their seams merge).
