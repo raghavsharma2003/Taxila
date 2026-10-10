@@ -14,6 +14,9 @@
 // fired), stall (a drawn-frame gap > STALL_MS), all also kept in `log` for the ?facerig=1 read-out and the acceptance test.
 // Audio floor: nothing here touches playback; the tap is analysis-only (src/avatar/tap.ts).
 import { Puppet2DRig } from "./runtime/rig.js";
+// round 4 rig2: the painted-key rig of a "keys" look (lamp2): Canvas 2D, no WebGL, the same driver
+import { KeyRig } from "./rig-keys/keyrig.ts";
+import { KEY_LEAD_MS } from "./rig-keys/schedule.ts";
 import { PuppetDriver } from "./driver.ts";
 import { loadRigChunked } from "./loader.ts";
 import { clearPageSafety, pageInSafety } from "./latch.ts";
@@ -72,7 +75,7 @@ export class PuppetStage {
   readonly driver: PuppetDriver;
   private host: HTMLElement;
   private o: PuppetStageOptions;
-  private rig: Puppet2DRig | null = null;
+  private rig: Puppet2DRig | KeyRig | null = null;
   private tap: TeacherTap;
   private raf = 0;
   private running = false;
@@ -105,6 +108,8 @@ export class PuppetStage {
     this.o = o;
     this.dpr = Math.min(2, typeof devicePixelRatio === "number" ? devicePixelRatio : 1);
     this.driver = new PuppetDriver({ band: o.band, seed: o.seed, reducedMotion: o.reducedMotion, gentle: o.gentle });
+    // a key rig switches painted mouths a beat after a continuous mouth would open: its own lead (rig-keys/schedule.ts)
+    if (lookPack(o.look).rig === "keys") this.driver.visemes.lead += KEY_LEAD_MS;
     // a face mounted during a safety turn (the TroubleScreen's) is neutral from its first frame (latch.ts)
     if (pageInSafety()) { this.driver.safetyTurn(performance.now()); this.wasSafe = true; }
     this.tap = new TeacherTap(o.sources);
@@ -143,16 +148,18 @@ export class PuppetStage {
   /** Load the pack and the rig; resolves when the first frame can draw. Rejects → the host falls back. */
   async init(): Promise<void> {
     const t0 = performance.now();
-    if (typeof WebGL2RenderingContext === "undefined") throw new Error("no WebGL2");
-    this.host.appendChild(this.canvas);
     const pack = lookPack(this.o.look);
+    if (pack.rig !== "keys" && typeof WebGL2RenderingContext === "undefined") throw new Error("no WebGL2");
+    this.host.appendChild(this.canvas);
     const view = [...pack.view[this.o.framing ?? "medium"]] as [number, number, number];
     const ropts = { ext: "webp", dpr: this.dpr, view, clear: [...pack.clear] as [number, number, number], reducedMotion: this.o.reducedMotion };
     const base = this.o.base ?? pack.base;
     // ship5 p2-face: the chunked loader (loader.ts) by default: bitmaps decoded off-thread, warm-up in <= 8 ms slices.
     // The judged single-task path (load + warm) stays available for the parity eval and as the loader's own fallback.
     const abort = { aborted: false };
-    const load = this.o.loader === "judged"
+    const load: Promise<{ rig: Puppet2DRig | KeyRig; path: string; slices: number; longestSliceMs: number; warmFrameMs: number }> = pack.rig === "keys"
+      ? KeyRig.load(this.canvas, base, { dpr: this.dpr, view, clear: ropts.clear, reducedMotion: this.o.reducedMotion }).then((rig) => { rig.warm(); return { rig, path: "keys", slices: 1, longestSliceMs: NaN, warmFrameMs: NaN }; })
+      : this.o.loader === "judged"
       ? Puppet2DRig.load(this.canvas, base, ropts).then((rig) => { rig.warm(); return { rig, path: "judged", slices: 1, longestSliceMs: NaN, warmFrameMs: NaN }; })
       : loadRigChunked(this.canvas, base, ropts, { signal: abort });
     const timeout = new Promise<never>((_, rej) => { const id = window.setTimeout(() => { abort.aborted = true; rej(new Error("puppet load timeout")); }, this.o.loadTimeoutMs ?? 8000); this.timers.add(id); });
@@ -265,6 +272,8 @@ export class PuppetStage {
     const w0 = performance.now();
     const tap = this.tap.read();
     rig.R.dpr = this.dpr;
+    // a key rig shows the calm neutral mouth (never the smile) and neutral brows in a safety turn (KeyRig.calm)
+    if (rig instanceof KeyRig) rig.calm = this.driver.inSafety;
     const r0 = performance.now();
     const f = this.driver.frame({ nowMs: now, tap, status: this.status, childLevel: this.childLevel }, rig);
     const rigMs = performance.now() - r0 - f.workMs;
@@ -368,8 +377,9 @@ export class PuppetStage {
   private onRestored = () => {
     if (this.disposed || this.losses > 1) return;
     // every GL object died with the context: rebuild the rig (the pack is in the HTTP cache)
-    this.rig = null;
     const pack = lookPack(this.o.look);
+    if (pack.rig === "keys") return; // a 2D key rig has no GL context to lose
+    this.rig = null;
     const view = [...pack.view[this.o.framing ?? "medium"]] as [number, number, number];
     Puppet2DRig.load(this.canvas, this.o.base ?? pack.base, { ext: "webp", dpr: this.dpr, view, clear: [...pack.clear] as [number, number, number], reducedMotion: this.o.reducedMotion })
       .then((rig) => { if (this.disposed) return rig.dispose(); rig.warm(); this.rig = rig; this.t0 = performance.now(); this.frames = 0; this.start(); })

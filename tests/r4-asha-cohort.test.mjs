@@ -1,15 +1,16 @@
 // Round 4 stream 5 (5b prep): a look for the OWNER COHORT only, server-side (TAXILA_FACE_LOOK_FOR + TAXILA_FACE_COHORT_LOOK,
-// the duplex cohort's pattern), never a URL switch in production. Inert until a cohort-only look is keyed (lamp2 on the
-// owner's yes): COHORT_FACE_LOOKS is empty, so the server tests inject one.
+// the duplex cohort's pattern), never a URL switch in production. 5b (2026-10-10): lamp2, rig2's painted-key Asha, is that
+// look; everyone else stays on r8. The first tests inject a stand-in cohort look ("cand"); the lamp2 tests use the real list.
 import test from "node:test";
 import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
+import { existsSync, readFileSync, statSync } from "node:fs";
 
 const store = new Map();
 globalThis.localStorage = { getItem: (k) => (store.has(k) ? store.get(k) : null), setItem: (k, v) => store.set(k, String(v)), removeItem: (k) => store.delete(k) };
 let search = "";
 globalThis.location = { get search() { return search; } };
-const { faceConfigFor, cohortLookOf, COHORT_FACE_LOOKS, routes } = await import("../server/face-puppet/config.js");
+const { faceConfigFor, faceLookOf, cohortLookOf, COHORT_FACE_LOOKS, routes } = await import("../server/face-puppet/config.js");
 const A = await import("../src/face-puppet/assets.ts");
 const F = await import("../src/face-puppet/flag.ts");
 const L = await import("../src/face-puppet/look.ts");
@@ -22,7 +23,6 @@ const opts = (lookup, more = {}) => ({ lookup, cohortLooks: ["cand"], timeoutMs:
 const asOwner = async () => ({ email: "Owner@Example.test" });
 
 test("server: only a signed-in guardian on the list gets the cohort look; everyone else the global one", async () => {
-  assert.deepEqual([...COHORT_FACE_LOOKS], [], "inert until a cohort-only look is approved");
   const base = { puppet2d: true, visemes: true, rev: "r8", look: "r8" };
   assert.deepEqual(await faceConfigFor(req("tx_session=abc"), { env: env(), ...opts(asOwner) }), { ...base, look: "cand", cohort: "owner" });
   assert.deepEqual(await faceConfigFor(req("tx_session=abc"), { env: env({ TAXILA_FACE_LOOK_FOR: sha(OWNER) }), ...opts(asOwner) }), { ...base, look: "cand", cohort: "owner" }, "a hashed list works");
@@ -68,10 +68,55 @@ test("client: a cohort-only look is never taken from ?look=; a cohort answer is 
   assert.equal(store.get(L.LOOK_SERVER_KEY), undefined, "a cohort answer is not remembered for the next page");
   fresh();
   assert.equal(await L.faceLook(answer({ puppet2d: true, look: "lamp1", cohort: "owner" })), "r8", "held stays held, cohort or not");
-  // the gate itself, with a cohort-only look name (none is keyed yet, so the predicate is checked on its rules)
-  const src = (await import("node:fs")).readFileSync(new URL("../src/face-puppet/assets.ts", import.meta.url), "utf8");
+  // the gate's source: the URL path never passes the cohort flag
+  const src = readFileSync(new URL("../src/face-puppet/assets.ts", import.meta.url), "utf8");
   assert.match(src, /&& \(held \|\| cohort \|\| !\(COHORT_LOOKS as readonly string\[\]\)\.includes\(v\)\)/, "?look= (no cohort flag) never admits a cohort-only look");
-  const look = (await import("node:fs")).readFileSync(new URL("../src/face-puppet/look.ts", import.meta.url), "utf8");
+  const look = readFileSync(new URL("../src/face-puppet/look.ts", import.meta.url), "utf8");
   assert.match(look, /const fromServer = \(v: string \| null, cohort: boolean\): boolean => isPuppetLook\(v, \{ cohort \}\);/);
   assert.match(look, /else if \(isPuppetLook\(v, \{ held: heldTrial \}\)\) setDeviceLook\(v\);/, "the URL path passes no cohort flag");
+});
+
+// 5b: lamp2 for the owner's accounts only (TAXILA_FACE_COHORT_LOOK=lamp2, TAXILA_FACE_LOOK_FOR=<owner hash> at deploy)
+const lamp2Env = (over = {}) => ({ TAXILA_FACE_LOOK_FOR: sha(OWNER), TAXILA_FACE_COHORT_LOOK: "lamp2", ...over });
+
+test("lamp2: the owner cohort's look; every other account (and a URL) gets r8, though the pack ships in public/", async () => {
+  assert.deepEqual([...COHORT_FACE_LOOKS], ["lamp2"]);
+  assert.ok(existsSync(new URL("../public/face-puppet/lamp2/geom.json", import.meta.url)), "the pack ships");
+  const base = { puppet2d: true, visemes: true, rev: "r8", look: "r8" };
+  const lamp2 = (lookup, cookie = "tx_session=abc", env = lamp2Env()) => faceConfigFor(req(cookie), { env, lookup, timeoutMs: 200 });
+  assert.deepEqual(await lamp2(asOwner), { ...base, look: "lamp2", cohort: "owner" }, "a cohort account gets lamp2");
+  assert.deepEqual(await lamp2(async () => ({ email: "parent@else.test" })), base, "a non-cohort account gets r8");
+  assert.deepEqual(await lamp2(asOwner, ""), base, "signed out: r8");
+  assert.deepEqual(await lamp2(asOwner, "tx_session=abc", lamp2Env({ TAXILA_FACE_LOOK_FOR: "" })), base, "no cohort configured: r8");
+  assert.equal(faceLookOf({ TAXILA_FACE_LOOK: "lamp2" }), "r8", "the global look can never be lamp2 (cohort-only)");
+  // a non-cohort browser asking for lamp2 by URL (and with it stored from an older build) still paints r8
+  for (const q of ["?look=lamp2", "?look=lamp2&heldlook=1"]) {
+    store.clear(); search = q; F.resetPuppetServerFlag(); L.resetLookForTests();
+    assert.equal(L.faceLookNow(), null, `${q}: ignored`);
+    store.set(L.LOOK_DEVICE_KEY, "lamp2");
+    store.set(L.LOOK_SERVER_KEY, "lamp2");
+    assert.equal(L.faceLookNow(), null, `${q}: a stored lamp2 is ignored`);
+    assert.equal(await L.faceLook(async () => ({ ok: true, status: 200, json: async () => base })), "r8", `${q}: the server says r8`);
+    assert.equal(await L.faceLook(async () => ({ ok: true, status: 200, json: async () => ({ ...base, look: "lamp2" }) })), "r8", `${q}: lamp2 without the cohort mark`);
+  }
+  // the owner's browser: the server's cohort answer paints lamp2 on this page and is not remembered for the next
+  store.clear(); search = ""; F.resetPuppetServerFlag(); L.resetLookForTests();
+  assert.equal(await L.faceLook(async () => ({ ok: true, status: 200, json: async () => ({ ...base, look: "lamp2", cohort: "owner" }) })), "lamp2");
+  assert.equal(L.faceLookNow(), "lamp2", "the rest of the page");
+  assert.equal(store.get(L.LOOK_SERVER_KEY), undefined, "never remembered");
+});
+
+test("lamp2: the key rig runs on the stage (no WebGL needed), calm in a safety turn, and never falls back to the vector", () => {
+  const stage = readFileSync(new URL("../src/face-puppet/stage.ts", import.meta.url), "utf8");
+  assert.match(stage, /if \(rig instanceof KeyRig\) rig\.calm = this\.driver\.inSafety;/, "the safety turn's calm face, every frame");
+  assert.match(stage, /if \(pack\.rig !== "keys" && typeof WebGL2RenderingContext === "undefined"\) throw/);
+  assert.match(stage, /if \(lookPack\(o\.look\)\.rig === "keys"\) this\.driver\.visemes\.lead \+= KEY_LEAD_MS;/);
+  const face = readFileSync(new URL("../src/face-puppet/PuppetFace.tsx", import.meta.url), "utf8");
+  assert.match(face, /holdsOwnStill = \(look: PuppetLook \| null\): boolean => look === "lamp1" \|\| look === "lamp2";/);
+  for (const f of ["rest-medium", "rest-close", "body", "head"]) assert.ok(existsSync(new URL(`../public/face-puppet/lamp2/${f}.webp`, import.meta.url)), f);
+  const g = JSON.parse(readFileSync(new URL("../public/face-puppet/lamp2/geom.json", import.meta.url), "utf8"));
+  for (const k of Object.keys(g.keys)) assert.ok(existsSync(new URL(`../public/face-puppet/lamp2/${k}.webp`, import.meta.url)), `key ${k}`);
+  assert.ok(g.keys.calm, "the calm neutral mouth is in the pack");
+  const bytes = ["body", "head", ...Object.keys(g.keys)].reduce((n, k) => n + statSync(new URL(`../public/face-puppet/lamp2/${k}.webp`, import.meta.url)).size, 0);
+  assert.ok(bytes < 200_000, `lamp2 pack ${bytes} B: at most r8's weight class`);
 });

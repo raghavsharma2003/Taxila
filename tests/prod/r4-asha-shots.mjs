@@ -1,16 +1,18 @@
 // Round 4 stream 5: the SHOT BATTERY of every face surface (BUILD-PLAN §3.5 gates), on a production build with the
 // dev routes on (the /dev/desk lesson fixtures), every /api/* mocked in the page (no server, no model, no database):
 //
-//   PLAYWRIGHT_BROWSERS_PATH=/opt/pw-browsers node tests/prod/r4-asha-shots.mjs [--look r8|lamp1] [--dist <dir>] [--shots <dir>]
+//   PLAYWRIGHT_BROWSERS_PATH=/opt/pw-browsers node tests/prod/r4-asha-shots.mjs [--look r8|lamp1|lamp2] [--dist <dir>] [--shots <dir>]
 // (a held look, lamp1, is trialled with ?look=lamp1&heldlook=1, which only this dev-routes build honours; it needs the
-// pack copied into public/face-puppet/lamp1/ first)
+// pack copied into public/face-puppet/lamp1/ first. An owner-cohort look, lamp2, comes the way the owner's browser gets
+// it: the config answer marked `cohort: "owner"`; then a NON-cohort pass asks for it by ?look= and must paint r8.)
 //
 // Surfaces × 360x800, 412x915, 1366x768 × young (class 3) / older (class 6):
 //   lesson Face layout (speaking, your_turn), Work layout (work-speaking, the play/board slot), Summary, Trouble (T1),
 //   Help sheet; Hello; Home; the Map skill sheet; Your teacher; onboarding Meet (class 3 and class 7); the landing.
 // The look comes from GET /api/face/config (mocked `look`), the way production picks it.
 // Checks on every page:
-//   ONE    every drawn teacher is Asha (data-teacher-id / data-tutor), and every puppet host paints the requested look
+//   ONE    every drawn teacher is Asha (data-teacher-id / data-tutor), and every puppet host paints the requested look;
+//          at most one live face (puppet canvas) per screen
 //   NAMES  no visible text or accessible name says Arjun or Uma
 //   CHOICE no teacher choice: no choose / pick / change-teacher control, no naming card
 //   FIT    0 horizontal overflow at the emulated width; visible text ≥ 14 px (captions in the face excepted: none)
@@ -84,7 +86,7 @@ async function mockApi(page, kid) {
   await page.route("**/api/**", async (route) => {
     const req = route.request(), url = new URL(req.url()), p = url.pathname;
     const json = (status, body) => route.fulfill({ status, contentType: "application/json", body: JSON.stringify(body) });
-    if (p === "/api/face/config") return json(200, { puppet2d: true, visemes: true, rev: "r8", look: LOOK });
+    if (p === "/api/face/config") return json(200, { puppet2d: true, visemes: true, rev: "r8", ...configAnswer });
     if (p === "/api/me") return json(200, { guardian: { id: "g1", email: "parent@example.test", name: "Parent" }, children: kid ? [kid] : [] });
     if (p === "/api/child/plan") return json(200, plan(kid));
     if (p === "/api/child/map") return json(200, mapFor(kid));
@@ -100,10 +102,11 @@ async function mockApi(page, kid) {
 async function audit(page) {
   const vw = page.viewportSize()?.width ?? 0;
   return page.evaluate(({ vw }) => {
-    const out = { teachers: [], looks: [], names: [], choice: [], small: [], hscroll: 0 };
+    const out = { teachers: [], looks: [], live: 0, names: [], choice: [], small: [], hscroll: 0 };
     const visible = (el) => { const r = el.getBoundingClientRect(); const cs = getComputedStyle(el); return r.width > 0 && r.height > 0 && cs.visibility !== "hidden" && cs.display !== "none"; };
     for (const el of document.querySelectorAll("[data-teacher-id], [data-tutor]")) out.teachers.push(el.getAttribute("data-teacher-id") ?? el.getAttribute("data-tutor"));
     for (const el of document.querySelectorAll(".fp-host")) out.looks.push(el.getAttribute("data-look"));
+    out.live = [...document.querySelectorAll(".fp-host canvas")].filter(visible).length;
     const bad = /\b(arjun|uma)\b/i;
     const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
     for (let n = walker.nextNode(); n; n = walker.nextNode()) {
@@ -143,7 +146,12 @@ async function open(url, { w, h, kid = null, storage = {}, wait = 1600 }) {
 
 // a held look (assets.ts HELD_LOOKS) is admitted only as a dev trial: ?look=<look>&heldlook=1 on every page
 const HELD = ["lamp1"].includes(LOOK);
-const trial = (url) => (HELD ? `${url}${url.includes("?") ? "&" : "?"}look=${LOOK}&heldlook=1` : url);
+// an owner-cohort look (assets.ts COHORT_LOOKS) only from the server's answer for a cohort account
+const COHORT = ["lamp2"].includes(LOOK);
+let configAnswer = COHORT ? { look: LOOK, cohort: "owner" } : { look: LOOK };
+let want = LOOK;
+let urlLook = HELD ? `look=${LOOK}&heldlook=1` : "";
+const trial = (url) => (urlLook ? `${url}${url.includes("?") ? "&" : "?"}${urlLook}` : url);
 async function surface(name, url0, opts, act) {
   const url = trial(url0);
   for (const v of VIEWS) {
@@ -155,7 +163,8 @@ async function surface(name, url0, opts, act) {
     const a = await audit(page);
     const faces = a.teachers.filter(Boolean);
     check(`ONE ${tag}: a teacher is drawn and she is Asha`, (opts.faceless || faces.length > 0) && faces.every((id) => id === "asha"), faces.join(","));
-    check(`ONE ${tag}: every puppet paints the ${LOOK} look`, a.looks.every((l) => l === LOOK), a.looks.join(","));
+    check(`ONE ${tag}: every puppet paints the ${want} look`, a.looks.every((l) => l === want), a.looks.join(","));
+    check(`ONE ${tag}: at most one live face`, a.live <= 1, `${a.live} live`);
     check(`NAMES ${tag}: no Arjun or Uma`, a.names.length === 0, a.names.join(" | "));
     check(`CHOICE ${tag}: no teacher choice`, a.choice.length === 0, a.choice.join(" | "));
     check(`FIT ${tag}: no horizontal overflow`, a.hscroll <= 1, `${a.hscroll}px`);
@@ -191,6 +200,14 @@ try {
     await surface(`onboarding-meet-c${cls}`, "/start/meet", { storage: { "tx.onboarding": JSON.stringify({ lang: "en", child: { classLevel: cls, board: "cbse" } }) } });
   }
   await surface("landing", "/", { wait: 2500 });
+  if (COHORT) {
+    // a NON-cohort account: the server answers the global look; ?look=<cohort look> (even with &heldlook=1) is ignored
+    configAnswer = { look: "r8" };
+    want = "r8";
+    urlLook = `look=${LOOK}&heldlook=1`;
+    await surface("noncohort-lesson-speaking-b3", "/dev/desk?fixture=speaking&band=b3&face=live", { wait: 2500 });
+    await surface("noncohort-hello-older", `/c/${KIDS.older.id}/hello`, { kid: KIDS.older });
+  }
 } finally {
   await browser.close();
   srv.kill();

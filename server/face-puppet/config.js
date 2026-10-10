@@ -26,9 +26,9 @@ import { inCohort, liveCohort } from "../duplex/config.js";
 export const FACE_LOOKS = Object.freeze(["r8"]);
 /** Looks keyed in src/face-puppet/assets.ts but held (never served): the client keeps the same list (HELD_LOOKS). */
 export const HELD_FACE_LOOKS = Object.freeze(["lamp1"]);
-/** Looks served ONLY to the owner cohort (a candidate the owner is judging on his own phone). Empty until one is approved
- *  for that (e.g. lamp2); the client keeps the same list (COHORT_LOOKS in src/face-puppet/assets.ts). */
-export const COHORT_FACE_LOOKS = Object.freeze([]);
+/** Looks served ONLY to the owner cohort (a candidate the owner is judging on their own phone): lamp2 (rig2's painted keys,
+ *  2026-10-10). The client keeps the same list (COHORT_LOOKS in src/face-puppet/assets.ts). */
+export const COHORT_FACE_LOOKS = Object.freeze(["lamp2"]);
 
 /** TAXILA_FACE_LOOK, or the default pack (PUPPET_REV) for an unset, unknown or held value. */
 export const faceLookOf = (env = process.env) => {

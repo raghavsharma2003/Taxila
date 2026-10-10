@@ -3,19 +3,22 @@
 //   lamp1 — the grown-up Asha, face option 4 "Lamplight flat", cardigan + block-print kurta (dc-r4-face-lamplight-flat,
 //           dc-r4-outfit-cardigan-print-kurta). HELD (2026-10-10): its live puppet failed the blind uncanny gate (4, 5, 3,
 //           4 / 5 against <= 1; r8 0 / 5; rj-r4-lamp1-mesh-warp-uncanny), so no page may paint it: neither ?look= nor
-//           TAXILA_FACE_LOOK selects a held look (dev builds can still trial it with &heldlook=1). A passing rig (lamp2)
-//           joins as a new look.
+//           TAXILA_FACE_LOOK selects a held look (dev builds can still trial it with &heldlook=1);
+//   lamp2 — the same grown-up Asha as painted KEYS (round 4 rig2: mouths, eyes and brows swapped, never warped; Canvas 2D
+//           KeyRig in ./rig-keys). OWNER COHORT ONLY (2026-10-10, main session as the owner's delegate): blind uncanny
+//           1, 1, 0 / 5, same person 5/5, childish 0/5, premium 2.6-2.8 vs r8's 3.0-3.4 (model judges,
+//           docs/design/round4/asha/rig2/RESULTS.md). The owner judges it on real lessons; everyone else stays on r8.
 // Each pack is WebP layers + geometry, served from /face-puppet/<look>/ (public/), fetched lazily after mount. Which look
 // a page shows is decided in ./look.ts (?look= on the device, else the server's TAXILA_FACE_LOOK).
-export type PuppetLook = "r8" | "lamp1";
-export const PUPPET_LOOKS: readonly PuppetLook[] = ["r8", "lamp1"];
+export type PuppetLook = "r8" | "lamp1" | "lamp2";
+export const PUPPET_LOOKS: readonly PuppetLook[] = ["r8", "lamp1", "lamp2"];
 /** The deploy default while the server has not said otherwise. Making lamp1 the default needs the owner's yes. */
 export const DEFAULT_LOOK: PuppetLook = "r8";
 /** Looks keyed here but never painted (see lamp1 above). The server keeps the same list (server/face-puppet/config.js). */
 export const HELD_LOOKS: readonly PuppetLook[] = ["lamp1"];
 /** Looks painted ONLY when the server names them for the owner cohort (server/face-puppet/config.js COHORT_FACE_LOOKS,
- *  TAXILA_FACE_LOOK_FOR): never from ?look= in production. Empty until a candidate (e.g. lamp2) is approved for that. */
-export const COHORT_LOOKS: readonly PuppetLook[] = [];
+ *  TAXILA_FACE_LOOK_FOR): never from ?look= in production. */
+export const COHORT_LOOKS: readonly PuppetLook[] = ["lamp2"];
 /**
  * A look a page may paint: keyed, not held and not cohort-only. `{ cohort: true }` (the server's owner-cohort answer)
  * also admits a cohort-only look; `{ held: true }` (dev trials only) admits a held or cohort-only one.
@@ -34,6 +37,8 @@ export interface LookPack {
   clear: readonly [number, number, number];
   /** The rest-space window shown per framing: [x0, y0, width] in the pack's 1024² space (its geom.json `views`). */
   view: { readonly medium: View; readonly close: View };
+  /** The rig kind: the r8 mesh runtime (./runtime/rig.js, the default) or the painted-key rig (./rig-keys, lamp2). */
+  rig?: "mesh" | "keys";
 }
 
 const PACKS: Record<PuppetLook, LookPack> = {
@@ -42,6 +47,9 @@ const PACKS: Record<PuppetLook, LookPack> = {
   // the lamplit flat backdrop and views of the lamp1 pack's own geom.json (`clear`, `views`); tests/r4-asha-look.test.mjs
   // checks these against public/face-puppet/lamp1/geom.json whenever the pack is there
   lamp1: { look: "lamp1", base: "/face-puppet/lamp1/", clear: [0.96, 0.82, 0.6], view: { medium: [60, 0, 904], close: [171, 30, 708] } },
+  // lamp2 packs in the native px of the 1024 front: the clear colour is its geom.json's own; the framings are lamp1's two
+  // windows moved there (rig space / 1.4629 + the 162 px crop, rig2's integrate patch), the same windows on her face
+  lamp2: { look: "lamp2", base: "/face-puppet/lamp2/", clear: [0.9686, 0.8157, 0.6], view: { medium: [203, 0, 618], close: [279, 20.5, 484] }, rig: "keys" },
 };
 
 export const lookPack = (look: PuppetLook = DEFAULT_LOOK): LookPack => PACKS[look] ?? PACKS[DEFAULT_LOOK];
