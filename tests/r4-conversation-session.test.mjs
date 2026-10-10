@@ -266,3 +266,19 @@ test("Director: no session ctx → today's start, unchanged", () => {
   assert.equal(s0.session, undefined);
   assert.notEqual(step(s0, { event: "start", kit, now: 0 }).move.kind, "intake");
 });
+
+test("Director: inside a session, 'X padhna hai' opens a new segment on X in the SAME lesson (never a new lesson or a Start chip)", () => {
+  const { r } = sessionLesson();
+  let t = step(r.state, { event: "turn", kit: kitFor("c6-maths-ch06-t01"), cls: NE, text: "aaj kuch nahi hua", now: 10_000 });
+  assert.equal(t.state.intake.stage, "done");
+  const k1 = kitFor(t.state.topicId);
+  const req = { outcome: "no_evidence", confidence: 1, source: "request", flags: NE.flags, request: { type: "switch", subject: "magnets", whole: true } };
+  const n = step(t.state, { event: "turn", kit: k1, cls: req, text: "mujhe magnets padhna hai", now: 20_000 });
+  assert.equal(n.move.kind, "intake_agenda");
+  assert.ok(n.state.topicId.startsWith("c6-science-ch04"), n.state.topicId);
+  assert.equal(n.state.session.segments.length, 2);
+  assert.equal(n.state.session.segments[1].purpose, "child_request");
+  assert.equal(n.state.ctx.sessionId, "s-test");
+  assert.ok(!(n.ui?.chips ?? []).some((c) => String(c.id).startsWith("switch:")), "no Start chip that would begin a new lesson");
+  assert.equal(n.end, false);
+});

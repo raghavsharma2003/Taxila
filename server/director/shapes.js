@@ -494,6 +494,11 @@ export const MUST_NOTE = Object.freeze({
   // a clarify that gave the answer away (clarify-09)
   clarify: "say what the question asks in simpler words; never the answer, the reason or the key words of the answer",
   answer_q: "answer their question first, in at most two sentences, correctly and simply; only then carry on",
+  // owner-2 R7.defer (10/12 on the round-3 tree): a side question answered honestly, then "chalo wapas aate hain" / "let's get
+  // back" read as deferring it; after the answer the work simply goes on
+  small_talk: "answer their question honestly in one line as an AI; then straight into the work, with no words about going back or later",
+  identity: "plainly an AI teacher, in one line; then straight into the work, with no words about going back or later",
+  joke: "one playful line back of your own; then straight into the work, with no words about going back or later",
 });
 export const parkAlso = ({ topic }) => `they also asked about ${clean(topic) || "something else"}: one line that you will come back to it after this`;
 /** Round 3: the turn after a stop check-in that was not a stop ("haan", an answer): the lesson simply goes on. Local

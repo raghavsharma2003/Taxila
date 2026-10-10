@@ -184,6 +184,21 @@ function sessionFields(ctx, classLevel, now) {
   return { session: newSession({ id: ctx.sessionId, now, classLevel, prior: sc.prior ?? null }), intake: intake.state, intakeOpen: intake.move };
 }
 
+/**
+ * Round 4 (session-first): open a new segment on `topicId` inside this lesson (the state is re-pointed at its verified kit,
+ * in place). false when the topic has no kit file (the switch offer stays as before).
+ */
+function sessionSwitchTo(s, topicId, purpose, now) {
+  const kit = segmentKit(topicId);
+  if (!kit) return false;
+  const next = reinitForSegment(s, kit, now, { purpose, mode: "teach" });
+  for (const k of Object.keys(s)) delete s[k];
+  Object.assign(s, next);
+  s.session = openSegment(s.session, { purpose, topicId, mode: "teach", why: [{ code: "switch", ref: topicId }] }, { kitHash: kit.hash, now });
+  s.sessionNotes = priorNotes(s.session.prior, s.session.segments.at(-1));
+  return true;
+}
+
 /** The kit a session segment pins (the verified file kit; a topic with none keeps the lesson's kit). */
 const segmentKit = (topicId) => { const t = getTopic(topicId); return t ? kitFromFile(t) : null; };
 
@@ -871,6 +886,10 @@ function requestMove(s, input, item, req, labels) {
         : plan("repair", SH.declineOob(), { request: "decline" });
       const hit = findTopic(subject, s.ctx?.classLevel);
       if (hit && hit.id === s.topicId) return resume(s, input, item, "they asked for the topic you are already on: say so warmly in a few words, then carry on");
+      // round 4 (session-first, (d)): inside a session the topic they asked for opens a new SEGMENT in this same lesson (its
+      // own verified kit), never a new lesson; this turn is one short no-stage line, the next one teaches it
+      if (hit && s.session && sessionSwitchTo(s, hit.id, "child_request", input.now ?? Date.now()))
+        return plan("intake_agenda", SH.switchGo({ title: hit.title }), { intake: true, segment: { n: s.session.segments.length, topicId: s.topicId, purpose: "child_request", mode: "teach" }, request: "switch" });
       if (hit) return plan("break", SH.switchOffer({ title: hit.title }), { chips: [{ id: `switch:${hit.id}`, label: `Start ${hit.title}`.slice(0, 40) }, { id: "stop:continue", label: labels.back }], request: "switch" });
       return plan("break", SH.switchElsewhere({ subject }), { chips: [{ id: "stop:continue", label: labels.back }, { id: "stop:end", label: labels.stop }], request: "switch" });
     }
