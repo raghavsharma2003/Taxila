@@ -34,7 +34,14 @@ for (const e of cov.entries ?? []) {
 }
 const topics = [];
 for (let i = 0; topics.length < N && i < 50; i++) for (const list of byFamily.values()) if (list[i] && topics.length < N) topics.push(list[i]);
-if (topics.length < N) warn(`only ${topics.length} topics have a play level certified at the 360 phone`);
+const playTopics = topics.length;
+// round 4 content: an interactive ask on a topic with an engine now mounts its open task (modules.js interactiveDefault,
+// patch 02): those topics answer with a piece too (an engine frame); taken from the engine map, maths classes 4-7
+const ENGINE_MAP = JSON.parse(readFileSync(join(ROOT, "shared", "engine-topic-map.json"), "utf8"));
+const engineTopics = Object.entries(ENGINE_MAP).filter(([t, e]) => /^c[4-7]-maths-/.test(t) && /geoboard@1|place-value@1/.test(String(e))).map(([t]) => t);
+for (let i = 0; topics.length < N && i < engineTopics.length; i++) if (!topics.includes(engineTopics[i])) topics.push(engineTopics[i]);
+if (topics.length < N) warn(`only ${topics.length} topics (${playTopics} with a certified play level at the 360 phone)`);
+else console.log(`topics: ${playTopics} with a certified play level, ${topics.length - playTopics} with a topic engine`);
 
 async function launchBrowser() {
   process.env.PLAYWRIGHT_BROWSERS_PATH ||= "/opt/pw-browsers";
@@ -51,7 +58,9 @@ try {
   await Promise.all(Array.from({ length: CONC }, async () => {
     while (queue.length) {
       const c = queue.shift();
-      const classLevel = Number(c.topicId.match(/^c(\d)/)[1]);
+      // classes 1-4 are the Young family, who never type words (useDesk.ts, PRODUCT-DESIGN §6.3.4): this typed-lane harness
+      // takes a class-5 child for a class-4 topic (as G2 did); the voice lane is not timed here
+      const classLevel = Math.max(5, Number(c.topicId.match(/^c(\d)/)[1]));
       await withTestAccount(async ({ api }) => {
         const persona = { ...PERSONAS.aarav, classLevel, topics: [c.topicId] };
         const child = await freshChild(api, persona);
