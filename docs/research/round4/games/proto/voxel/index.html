@@ -15,7 +15,7 @@ const scene = new THREE.Scene(); scene.background = new THREE.Color(0x9cc8ff); s
 const cam = new THREE.PerspectiveCamera(65, 1, 0.1, 500); scene.add(new THREE.HemisphereLight(0xffffff, 0x445566, 2.2));
 const mat = new THREE.MeshLambertMaterial({ vertexColors: true });
 // value-noise terrain, deterministic
-const hash = (x, z) => { let h = (x * 374761393 + z * 668265263) >>> 0; h = (h ^ (h >>> 13)) * 1274126177 >>> 0; return (h ^ (h >>> 16)) / 4294967296; };
+const hash = (x, z) => { let h = (Math.imul(x, 374761393) + Math.imul(z, 668265263)) >>> 0; h = Math.imul(h ^ (h >>> 13), 1274126177) >>> 0; return ((h ^ (h >>> 16)) >>> 0) / 4294967296; };   // unsigned: a signed XOR made negative heights (holes) in the first run
 const smooth = (x, z, s) => { const xi = Math.floor(x / s), zi = Math.floor(z / s), fx = x / s - xi, fz = z / s - zi, u = fx * fx * (3 - 2 * fx), v = fz * fz * (3 - 2 * fz);
   const a = hash(xi, zi), b = hash(xi + 1, zi), c2 = hash(xi, zi + 1), d = hash(xi + 1, zi + 1); return a + (b - a) * u + (c2 - a) * v + (a - b - c2 + d) * u * v; };
 const W = VIEW * CH, vox = new Uint8Array(W * W * HGT), idx = (x, y, z) => (y * W + z) * W + x;

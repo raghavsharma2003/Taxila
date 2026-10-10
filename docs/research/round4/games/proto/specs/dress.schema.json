@@ -1,0 +1,64 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "$id": "antariksh-dress@0",
+ "title": "Antariksh dress delta (the ONLY thing a model may write)",
+ "description": "Closed enums only. No numbers, positions, keys or child-facing sentences: code computes the level and the teacher bank owns every word. Use as the strict json_schema of one taxila-fast call (effort none). A missing or invalid field falls back to the base dress.",
+ "type": "object",
+ "additionalProperties": false,
+ "required": [
+  "theme",
+  "wrapper",
+  "music",
+  "pace",
+  "teacherMove",
+  "lang"
+ ],
+ "properties": {
+  "theme": {
+   "type": "string",
+   "enum": [
+    "neela-nebula",
+    "laal-grah",
+    "hara-toofan"
+   ]
+  },
+  "wrapper": {
+   "type": "string",
+   "enum": [
+    "beacon-rescue",
+    "mine-sweep",
+    "comet-catch"
+   ]
+  },
+  "music": {
+   "type": "string",
+   "enum": [
+    "calm",
+    "drive",
+    "off"
+   ]
+  },
+  "pace": {
+   "type": "string",
+   "enum": [
+    "steady",
+    "brisk"
+   ]
+  },
+  "teacherMove": {
+   "type": "string",
+   "enum": [
+    "notice",
+    "ghost-first"
+   ]
+  },
+  "lang": {
+   "type": "string",
+   "enum": [
+    "hinglish",
+    "en",
+    "hi"
+   ]
+  }
+ }
+}

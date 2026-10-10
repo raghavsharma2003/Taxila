@@ -11,7 +11,7 @@ const vp = process.argv[2] || "360";
 const dsf = Number(arg("--dsf", "1")), fps = Number(arg("--fps", "30")), secs = Number(arg("--secs", "15.2"));
 const stills = arg("--stills", "");
 const SCR = "/tmp/claude-0/-home-user/ecee9fc1-62f9-5f67-a47d-69ca79d9981a/scratchpad/r4-asha";
-const OUT = `${SCR}/cap-${vp}${dsf !== 1 ? "-x" + dsf : ""}${stills ? "-stills" : ""}`;
+const OUT = `${SCR}/cap-${vp}${dsf !== 1 ? "-x" + dsf : ""}${stills ? "-stills" : ""}${arg("--q", "").includes("calm=1") ? "-calm" : ""}`;
 const CLIPS = "/home/user/Taxila/docs/design/round4/asha/clips";
 fs.rmSync(OUT, { recursive: true, force: true }); fs.mkdirSync(OUT, { recursive: true }); fs.mkdirSync(CLIPS, { recursive: true });
 const W = Number(vp) || 360;

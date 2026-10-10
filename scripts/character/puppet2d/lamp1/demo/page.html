@@ -186,7 +186,7 @@ window.WAV = "/*WAV*/";
   const LOG = [];
   function tick(nowMs) {
     const st = (nowMs - sc.t0) / 1000;
-    if (!sc.pushed && st >= SPEAK_AT - 0.2) { driver.visemes.push(1, sc.playAt, VIS, WORDS, nowMs, window.LINE.text); sc.pushed = true; }
+    if (!sc.pushed && st >= SPEAK_AT - 0.2) { driver.visemes.push(1, sc.playAt, Q.get("bilabial") === "0" ? VIS : T.addBilabials(VIS, WORDS), WORDS, nowMs, window.LINE.text); sc.pushed = true; }
     if (!sc.looked && st >= THINK_AT + 0.15) { driver.lookAt(12, 9, 1.2, "demo: thinking glance"); sc.looked = true; }
     if (!sc.warmed && st >= WARM_AT) { driver.evalEmote("warm", nowMs, undefined, 1.7, 1); sc.warmed = true; }
     driver.evalHead = [0, turnAt(st), 0];

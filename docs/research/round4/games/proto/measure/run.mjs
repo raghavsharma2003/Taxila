@@ -99,6 +99,12 @@ if (MODE === "fps" || MODE === "all") {
   writeFileSync(join(OUT, "fps.json"), JSON.stringify(results, null, 1));
 }
 
+if (MODE === "rerun") {
+  // each contended configuration next to the baseline, back to back, so a comparison holds under the same contention
+  const pairs = [["misconception bot", { query: "bot=mis&dpr=1.5&skill=s2&mis=count-marks&fade=2" }], ["phone 412x915", { w: 412, h: 915, query: "bot=1&dpr=1.5&theme=laal-grah" }], ["laptop 1366x768 dpr1", { w: 1366, h: 768, scale: 1, query: "bot=1&dpr=1&theme=hara-toofan&lang=en" }]];
+  for (const [label, o] of pairs) { await fpsRun(`rerun baseline (before ${label}) dpr1.5 x4`, { ms: 8000 }); await fpsRun(`rerun ${label} x4`, { ...o, ms: 8000 }); }
+  writeFileSync(join(OUT, "rerun.json"), JSON.stringify(results, null, 1));
+}
 if (MODE === "sweep") {
   // what bounds the proxy: if fps rises as DPR (fill) falls while JS work stays flat, the proxy is SwiftShader fill-bound
   for (const d of [0.5, 0.75, 1, 1.5, 2]) await fpsRun(`sweep dpr${d} x4`, { query: `bot=1&dpr=${d}`, ms: 8000 });

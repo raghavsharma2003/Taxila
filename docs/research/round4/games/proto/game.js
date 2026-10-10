@@ -422,7 +422,7 @@ function frame(now) {
 }
 function placeLabels() {
   for (const e of labelEls) { const p = project(tmpV.set(uToX(+e.dataset.u), LINE_Y - 0.5, LINE_Z)); e.style.transform = `translate(${p.x.toFixed(1)}px, ${p.y.toFixed(1)}px) translate(-50%, 0)`; }
-  for (const e of [gapLabelEl, truthLabelEl]) if (e.classList.contains("on")) { const p = project(tmpV.set(uToX(+e.dataset.u), LINE_Y + (e === truthLabelEl ? 1.55 : -1.15), LINE_Z)); e.style.transform = `translate(${p.x.toFixed(1)}px, ${p.y.toFixed(1)}px) translate(-50%, -50%)`; }
+  for (const e of [gapLabelEl, truthLabelEl]) if (e.classList.contains("on")) { const p = project(tmpV.set(uToX(+e.dataset.u), LINE_Y + (e === truthLabelEl ? 1.55 : -1.75), LINE_Z)); e.style.transform = `translate(${p.x.toFixed(1)}px, ${p.y.toFixed(1)}px) translate(-50%, -50%)`; }
   for (const e of gateEls) { const g = gates[+e.dataset.gate].g; const p = project(g.getWorldPosition(tmpV).add(new THREE.Vector3(0, -1.35, 0))); e.style.transform = `translate(${p.x.toFixed(1)}px, ${p.y.toFixed(1)}px) translate(-50%, 0)`; }
 }
 
