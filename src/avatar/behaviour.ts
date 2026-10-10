@@ -57,6 +57,8 @@ export interface BehaviourOptions {
 
 const BLINK_PER_MIN: Record<FaceState, number> = { idle: 17, speaking: 26, your_turn: 18, listening: 18, thinking: 22 };
 const BLINK_K = 3;
+/** Share of blinks that come as a double (a second closure 120 ms after the first). */
+const BLINK_DOUBLE_P = 0.12;
 const BLINK_MS = { close: 70, hold: 40, open: 140 };
 const BAND_SCALE: Record<BandKey, number> = { b1: 1.0, b2: 0.9, b3: 0.7, b4: 0.55 };
 export const MUTUAL_GAZE_MAX_S = 4;
@@ -159,7 +161,7 @@ export class Behaviour {
   private nextMicro = 0;
   private micro: [number, number] = [0, 0];
   private thinkAvertAt = 0;
-  private blink = { next: 0, active: false, t0: 0, lastEnd: -9, mean: 3.5, queueDouble: false };
+  private blink = { next: 0, active: false, t0: 0, lastEnd: -9, mean: 3.5, queueDouble: false, credit: 0 };
   private nod = { x: 0, v: 0 };
   private tilt = 0;
   private lean = 0;
@@ -205,9 +207,16 @@ export class Behaviour {
   private blinkMean(): number {
     return 60 / BLINK_PER_MIN[this.state];
   }
+  /**
+   * The next interval, plus the time an event blink pulled the last one forward: event blinks (a phrase pause, a gaze
+   * shift) MOVE a blink, never add one. Before (round 4, measured): the face blinked 29.4/min while speaking against the
+   * table's 26 (Bentivoglio et al. 1997, conversation), PuppetDriver on Diya's 24 lines at rate 0, n = 8 seeds; after:
+   * 26.8 (docs/design/round4/build/asha/RESULTS.md).
+   */
   private scheduleBlink(): void {
     this.blink.mean = this.blinkMean();
-    this.blink.next = this.t + gamma(this.r, BLINK_K, this.blink.mean / BLINK_K);
+    this.blink.next = this.t + gamma(this.r, BLINK_K, this.blink.mean / BLINK_K) + this.blink.credit;
+    this.blink.credit = 0;
   }
   /** On a state change the pending interval is time-warped, never redrawn (redrawing halves the rate in short states). */
   private rescaleBlink(): void {
@@ -219,6 +228,7 @@ export class Behaviour {
   private blinkNow(win = 0.6): void {
     if (this.t - this.blink.lastEnd < 0.6 || this.blink.active) return;
     if (this.blink.next - this.t > win * this.blink.mean) return;
+    this.blink.credit += Math.max(0, this.blink.next - this.t);
     this.blink.next = this.t;
   }
 
@@ -413,7 +423,7 @@ export class Behaviour {
       if (e >= BLINK_MS.close + BLINK_MS.hold + BLINK_MS.open) {
         B.active = false;
         B.lastEnd = t;
-        if (!B.queueDouble && r() < 0.12) {
+        if (!B.queueDouble && r() < BLINK_DOUBLE_P) {
           B.queueDouble = true;
           B.next = t + 0.12;
         } else {
