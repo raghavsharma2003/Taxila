@@ -137,3 +137,48 @@ TTS clip with exactly 450 / 700 / 1,000 ms between phrases, `evals/duplex-r4/syn
   (half on the class wait, half on the silence backstop; this fake transcript carries no punctuation, which the real lanes
   do, so it reads fewer clauses as finished than production would). The decision → POST step (p50 ~0.3 s, ~1.1 s on 5 of
   18 turns) is after the commit, in `src/lesson` (stream 3), not in the engine.
+
+### 7.1 The same check on the REAL transcriber (the main session's confirmation ask)
+
+`evals/duplex-r4/realstt-midpause.mjs`: the same SYNTHETIC clips streamed in real time to the REAL production transcription
+socket (D4, gpt-live-transcribe, the server's `sttSession` shape with the 1,500 ms VAD backstop) from the US sandbox, the
+engine in the loop, its probes live. 4 Director contexts × 6 utterances per pause length (n = 72). (The browser link
+cannot reach Azure WebRTC from this sandbox; the browser path is covered by the patched-fake rows above.)
+
+| pause | context | BEFORE truncated | AFTER truncated | AFTER speech end → commit p50 |
+|---|---|---|---|---|
+| 450 ms | open question / open explanation | 0/12 | 0/12 | 2,560 ms (wait time II, by design) |
+| 450 ms | closed phrase / closed number | 0/12 | 0/12 | 1,165 / 800 ms (BEFORE 790 / 775) |
+| 700 ms | all four | 0/24 | 0/24 | 1,125-2,525 ms |
+| 1,000 ms | open question / open explanation | 0/12 | 0/12 | 2,534 ms |
+| **1,000 ms** | **closed phrase / closed number** | **2/12** | **0/12** | 1,334 / 794 ms |
+| **all** | | **2/72** | **0/72** | |
+
+- **The 2 BEFORE cuts:** once a value is heard ("चार"), the closed-answer silence backstop was max(700 ms, the child's hold
+  p50), sized for a bare "62". On the second 1,000 ms pause the real final for "…चार कॉर्नर।" covered the audio in time
+  and the backstop fired. **Fix:** a closed answer longer than a short answer (more than 3 words) gets at least the free
+  exchange's class wait as its backstop (`governor.ts` backstopMs, `config.ts CLOSED_ELABORATION`). A complete short answer
+  still ends at once on the engine's own turn end.
+- **Cost:** closed phrase answers longer than 3 words are decided ~+375 ms later (790 → 1,165 ms at the 450 ms clip).
+  SIMULATED TaxilaFDB TEST: turns decided more than 2 s after the end +1.3 to +1.5 points (D4 10.4 → 11.9 %, FAST 8.7 →
+  10.0 %, MAI_HOME 9.7 → 11.2 %); TRAIN unchanged; attribution by ablation: this row alone (§8). The main session's rule
+  for this round: a teacher who waits 300 ms longer beats one who cuts the child off.
+- n = 6 per cell; 2/12 → 0/12 is small, but the mechanism is exact (the trace shows the 700 ms backstop firing).
+
+## 8. SIMULATED TaxilaFDB (child-like TTS voices, mixed echo / noise, reactive STT model; not children, not real speech)
+
+`evals/duplex-r3/fdb.mjs` (unchanged), 3 lanes. BEFORE = the frozen base, AFTER = this branch.
+
+| split | lane | cut-offs (thinking) | gap p50 / p90 | missed (> 2 s) | paused within 1 s of a barge-in | stopped <= 200 ms | continuers kept | safety (unsafe / detected) |
+|---|---|---|---|---|---|---|---|---|
+| TEST | D4 | 2.7 % → 2.7 % | 1,160 / 1,590 → 1,160 / 1,560 | 10.4 → 11.9 % | 22.2 → 8.3 % | 105/108 → 105/108 | 98.6 → 98.6 % | 0/84, 84/84 → same |
+| TEST | FAST | 2.7 → 2.7 % | 570 / 1,500 → 560 / 1,490 | 8.7 → 10.0 % | 68.5 → 60.2 % | 104/108 → 104/108 | 97.2 → 97.2 % | 0/84, 84/84 → same |
+| TEST | MAI_HOME | 3.4 → 3.4 % | 540 / 1,514 → 470 / 1,500 | 9.7 → 11.2 % | 43.5 → 38.0 % | 105/108 → 105/108 | 98.6 → 98.6 % | 1/84, 83/84 → same (pre-existing) |
+| TRAIN | D4 / FAST / MAI | 1.1 / 1.8 / 1.1 % → same | p90 FAST 1,348 → 1,400 | 4.0 / 1.9 / 3.1 % → same | 16.7 / 74.2 / 45.0 → 7.5 / 71.7 / 35.0 % | 115 → 116 / 115 / 115 of 120 | | |
+| DEV | all | 1.0 % → same | same | 0 → 0 | (no overlap items) | | | |
+
+Ablations on TRAIN (`results/fdb-r4-abl-*.json`): "paused within 1 s" falls only because of `hushAfterRelease` (off →
+exactly the BEFORE row): the hush now meets those bursts, so the pause waits for the hushed sustain (1 s) while she is
+already inaudible (-26 dB). The child-facing number (her audio down within 200 ms) is equal or better. Round 3 made the
+same trade (the hush stands in for the pause). On TEST, "missed" rises only because of `CLOSED_ELABORATION`
+(off → exactly BEFORE). The safety rows do not move; MAI_HOME's 1 undetected of 84 is in the BEFORE run too.
