@@ -208,6 +208,9 @@ the stable partial (L3).
 The browser path the first-sound harness does not model. Local production build (`server/serve.mjs`, `NODE_ENV=production`,
 the r4-timeline preload = prod routing), every "after" flag on, Playwright phone 360 × 800, fake transcription call with a
 FIXED 750 ms commit → final (driver.mjs), a synthesised child clip (gpt-4o-mini-tts ×1.2; not a child). Small n: indicative.
+Config of every page-clock run here: TAXILA_TURN_PREFETCH=on (exported by the run scripts; the server log lines show
+`spec=hit|miss`) and TAXILA_EXACT_SPEC=on, TAXILA_ACK_AT_MS=1000 (the after config, not production's 1200). The preload used
+to default prefetch to off and now reads production's snapshot (`tests/prod/prod-routing.env`); none of these runs were prefetch-off.
 
 **Tap-to-talk** (the default path for every child outside the duplex cohort), plain account, class 7, the child taps Done
 0.7 s after speaking, same 12 lines each:
@@ -323,6 +326,59 @@ stages: 400 (EOT) + 480 (grok read p50) + 110 (lead + nominal output) ≈ **~990
 400 ms. They are not: gpt-live-transcribe's joined deltas are complete only at p50 ~850 ms after speech end (n = 110), so
 with today's transcriber the same path gives ≈ 850 + 480 + 110 ≈ **~1,440 ms**. The 900 ms bar needs both a faster
 transcript (4B's word-aware EOT) and a sub-300 ms distress read; neither exists today.
+
+## Production config on the merged tree, and two measurements for the main session (2026-10-10)
+
+Run: first-sound, 2 × (3 lessons × 20 turns), merged tree 19009ced (base 36e1357a: 4A's conversation code as live on
+taxila.dev), routing = `tests/prod/prod-routing.env` through the preload (prefetch ON, ACK_AT_MS 1200, EXACT off), US
+container. `runs/prod-{a,b}.json`. **Reply audible p50 4,121 / p90 5,746 ms, n = 117.** Rows now carry the caught draft
+(`guardDetail.firstDraft`) and the prefetched partials in order (`partials`).
+
+### (a) Rewrites by guard, judged blind
+
+29 of 117 turns were rewritten; the rewrite call costs p50 1,018 / p90 1,481 ms (measured per turn from its own calls).
+Each first draft was judged by an agent reviewer (a subagent, not a product model) that saw only the move, the verdict,
+the child's words and the draft. It did not see the guard that fired, the rewrite or the shipped line. It used a fixed
+rubric: wrong, gives the answer away, unsafe, script a Roman TTS voice mangles, breaks the turn's job, or clearly too long.
+`runs/rewrite-judge/` holds the blind set, the key and the judgements. **8 of 29 rewrites were needed; 21 (72%) were judged
+not needed.**
+
+| guard (a turn can carry several) | fired on rewritten turns | judged needed | notes |
+|---|---|---|---|
+| long | 10 | 3 | 2 of the 3 were really answer give-aways ("chaar triangles aur ek square … kitne faces?"; the corner defined, then asked) that `leak` did NOT catch: the length rewrite fixed them by accident. Drafts were 31-39 words |
+| thinkq | 6 | 0 | the judge cannot see the think-aloud state this guard reads: weakest judgement in the table |
+| ask | 6 | 2 | needed when combined with twoq / drift |
+| praise | 5 | 0 | the no-praise rule is a policy (G-PRAISE), not wrongness: the judge accepted the praise as fine |
+| flat | 3 | 0 | |
+| script | 2 | **2** | Devanagari inside the Roman line ("gिन रहे"; a whole sentence): always needed |
+| nowhy, twoq, noconfirm, drift, same | 1 each | 0, 1, 1, 1, 1 | |
+
+**Latency if the false rewrites were removed** (each judged-not-needed turn loses its own measured rewrite call; same 117 rows,
+bootstrap over turns): p50 4,121 → 4,053 (**−68 ms [−209, 0]**); p90 5,746 → 5,397 (**−457 ms [−1,007, −107]**). With
+every rewrite removed, p50 would be 4,017 and p90 5,190. Rewrites hit the tail (25% of turns), not the median: they are
+not the lever for the p50 bar.
+Limits: one judge, one battery (class 4, one topic, synthetic child), n = 29 rewrites. `thinkq` and `praise` are judged without
+the state or policy that defines them. This is evidence for stream 4A, which owns the guards (safety-adjacent; nothing patched
+here). The finding that matters most may be the two give-aways `leak` missed.
+
+### (b) L3 shadow: the stable partial against the final transcript
+
+Same 117 turns (synthetic child speech, gpt-live-transcribe from this container). The device prefetches a stable partial
+after 250 ms of quiet deltas, at most 3 per item:
+- **last** partial sent = final transcript on **107 / 107** turns that had one (10 had none). It arrives p50 1,086 ms after
+  speech end, against the final at 1,551: a lead of **p50 477 / p90 640 ms**;
+- **first** partial sent = final on only 26 / 107. **On 81 / 107 (76%) it was cut mid-utterance** (trailing words missing), and on
+  20 of those the ANSWER token was missing ("मुझे लगता है एक" → "मुझे लगता है एक एजेस"; "…जहाँ मिलते हैं, वो" → "…वो एज है").
+  No negation flipped and no word changed: the partial is always a prefix of the final;
+- distress: **0 of 117 finals carry a distress word** (this battery has none), so the window "distress in the final but not
+  in the partial" is **0 of 0: unmeasured at this n**. The 76% truncation rate above is the size of the risk: a disclosure at
+  the END of an utterance ("…papa maarte hain") would be missing from a first partial about that often.
+
+Expected p50 gain: **at most ~480 ms**, and only if the turn commits on the partial that turns out to be the last. That is
+known only in hindsight, unless an end-of-turn signal (4B's word-aware EOT) marks it. Committing on the first stable partial
+would answer a truncated utterance on 3 of 4 turns. Any design must keep the main session's hard requirement: re-scan the
+FINAL transcript with scanSafety and classify, and withdraw or replace the committed reply before it is audible when the
+final carries distress the partial lacked. Shadow only; nothing built or flagged.
 
 ## Model bake-off for the note and the reply (main-session decision 4: Azure Direct only; speed and quality are never traded)
 

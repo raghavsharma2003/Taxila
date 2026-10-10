@@ -149,6 +149,24 @@
    "kind": "decision",
    "title": "A new turn turnSeq is CLAIMED in one IndexedDB readwrite transaction: the lesson high-water mark row is read, the next turnSeq chosen, and the mark and the answer written together. Held records are read only when no mark exists. The inflight status write goes out with the request and is awaited before the delete. The durable write still precedes the send. Multi-tab safe: IndexedDB runs overlapping readwrite transactions one at a time, across pages. Real Chromium, two pages, 2 x 25 turns, all distinct; the reserve-then-put control collides. The late-disclosure flush test passes. Final to POST with the puppet on (headless, long-task observer): 477/792 ms (n = 12) to 88/317 ms (n = 24). The rejected per-page seed (1b5cfdcd) gave 61/154 but could share a turnSeq across tabs, which the server would replay as another turn reply. Reverse if: a turn is lost or replayed across pages, or a reader of the stored inflight status appears.",
    "at": "2026-10-10"
+  },
+  {
+   "id": "ms-r4lat-prod-config-2026-10-10",
+   "kind": "measurement",
+   "title": "First-sound on the merged tree 19009ced (4A live conversation code) with production routing from tests/prod/prod-routing.env (prefetch on, ACK 1200, EXACT off), 2 x 3 lessons x 20 turns, US container, 2026-10-10: reply audible p50 4,121 / p90 5,746 ms, n = 117.",
+   "at": "2026-10-10"
+  },
+  {
+   "id": "ms-r4lat-rewrites-by-guard-2026-10-10",
+   "kind": "measurement",
+   "title": "Rewrites judged blind (agent reviewer saw move, verdict, child words, draft; not the guard, the rewrite or the shipped line; fixed rubric), prod config, n = 117 turns, 29 rewritten, 2026-10-10: 8 needed, 21 not (72%). By guard (fired / needed): long 10/3 (2 of those 3 were answer give-aways that leak did not catch), thinkq 6/0 (judge blind to think-aloud state), ask 6/2, praise 5/0 (policy, not wrongness), flat 3/0, script 2/2, nowhy 1/0, twoq 1/1, noconfirm 1/1, drift 1/1, same 1/1. Rewrite call p50 1,018 ms. Removing the false rewrites: p50 -68 ms [-209, 0], p90 -457 ms [-1,007, -107]; no rewrites at all p50 4,017. Rewrites are a tail lever, not a p50 lever. Evidence for 4A; nothing patched.",
+   "at": "2026-10-10"
+  },
+  {
+   "id": "ms-r4lat-l3-partial-vs-final-2026-10-10",
+   "kind": "measurement",
+   "title": "L3 shadow, prod config, n = 117 turns (107 with a prefetched partial), synthetic child speech, gpt-live-transcribe, 2026-10-10. The LAST partial equals the final on 107/107, arriving p50 1,086 ms after speech end vs final 1,551 (lead p50 477 / p90 640). The FIRST partial equals the final on only 26/107: 81/107 (76%) were truncated mid-utterance, 20 of them missing the answer token. No negation flips; the partial is always a prefix. Distress in the final: 0/117, so the distress-only-in-final window is 0 of 0, unmeasured. Expected L3 p50 gain at most ~480 ms, and only with an end-of-turn signal that marks the last partial. The final must be re-scanned (scanSafety + classify) in any design.",
+   "at": "2026-10-10"
   }
  ],
  "edges": [
@@ -251,6 +269,21 @@
    "src": "dec-r4lat-outbox-fewer-roundtrips",
    "rel": "measured_by",
    "dst": "ms-r4lat-ptt-page-clock-n48-2026-10-10"
+  },
+  {
+   "src": "open-r4lat-3000-floor",
+   "rel": "measured_by",
+   "dst": "ms-r4lat-rewrites-by-guard-2026-10-10"
+  },
+  {
+   "src": "open-r4lat-3000-floor",
+   "rel": "measured_by",
+   "dst": "ms-r4lat-l3-partial-vs-final-2026-10-10"
+  },
+  {
+   "src": "open-r4lat-3000-floor",
+   "rel": "measured_by",
+   "dst": "ms-r4lat-prod-config-2026-10-10"
   }
  ]
 }
