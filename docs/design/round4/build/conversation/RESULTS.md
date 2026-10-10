@@ -12,7 +12,7 @@ Branch `claude/r4-conversation`, cut from `claude/blissful-mayer-icwe2j` at `522
 
 | check | bar | measured | met? |
 |---|---|---|---|
-| CONVERSATION-V2 battery, strict | ≥ 85%, every family ≥ 75% | base **69.2%** (n = 354); after: see §2 | no |
+| CONVERSATION-V2 battery, strict | ≥ 85%, every family ≥ 75% | base **69.2%** (n = 354). Arm 3 vs base side by side, 2 passes pooled (n = 707): **69.9% vs 68.5%**, McNemar 0.46, not significant; no family significant either way (§2) | no |
 | held-out (round-2 78 cases), strict | (no bar; guards against tuning) | base **69.7%** (n = 76); after: see §2 | — |
 | session-first intake → topic, held-out | beat today's router | **65/74** vs today's **56/74** (wrong 3 vs 4, missed 6 vs 14) | yes (on this held-out set) |
 | session openings, purpose + topic, held-out | (new) | **36/49** with the production distress read; today's start **4/49** | — |
@@ -143,12 +143,37 @@ Families, strict (base → arm 1): A 59.4 → 56.3, B 76.5 → 76.5, C 68.1 → 
   - two had a code cause, now fixed after arm 2 (`9e371d34`): "thak gaya hoon, kya thoda easy kar sakte ho?" read as a break, and a parked side question with no last-section note;
   - the rest are wording.
 
-**After arm 2 (not yet battery-measured):**
-- the share fix: a family wedding was screened as romance and never returned (production round3-conversation C);
-- the small-talk / identity / joke must-notes (production owner-2 R7.defer);
-- the play-mode verbs;
-- tired + easier;
-- the parked-question must-note.
+**Arm 3** = everything through `ac3f1abd`: rounds A + B, plus the share-screen fix, the small-talk / identity / joke / example /
+story / another must-notes, the play verbs, tired + easier, the parked-question note, the code-read happy share and the G fix
+(the also-confused note). It ran against the untouched base `522dca6e` **side by side, twice** (seeds 7 and 8; concurrency 2
+each). Sized for power: arm 2 had ~83 discordant pairs at n = 354, so a 5-point net gain gives z ≈ 2.0 (~50% power) from one
+pass and ~75-80% pooled over two. Results: `r4-compare-base3-arm3.json`, `r4-compare-base3b-arm3b.json`, `r4-compare-base3-arm3-pooled.json`.
+
+| score | pass a (seed 7, n 353) | pass b (seed 8, n 354) | **pooled (n 707)** | pooled lost / gained | McNemar |
+|---|---|---|---|---|---|
+| strict | 68.0 → 68.8 | 68.9 → 70.9 | **68.5 → 69.9** | 84 / 94 | 0.46 |
+| J1 | 75.1 → 76.2 | 76.6 → 77.7 | 75.8 → 76.9 | 66 / 74 | 0.35 |
+| lenient | 77.9 → 79.6 | 79.9 → 80.8 | 78.9 → 80.2 | 60 / 69 | 0.50 |
+
+| family (pooled n) | base strict | arm 3 strict | base J1 | arm 3 J1 |
+|---|---|---|---|---|
+| A work (127) | 59.8 | 61.4 | 70.9 | 65.4 |
+| B questions (68) | 82.4 | 76.5 | 85.3 | 83.8 |
+| C steering (226) | 66.8 | 72.1 | 77.0 | 81.4 |
+| D attention (144) | 66.7 | 65.3 | 70.1 | 70.1 |
+| E energy (64) | 73.4 | 75.0 | 73.4 | 79.7 |
+| F session (34) | 91.2 | 94.1 | 94.1 | 94.1 |
+| G low-signal (44) | 61.4 | 61.4 | 77.3 | 81.8 |
+
+- **No significant change, either way, overall or in any family.** The +1.4 strict is inside the noise. A 5-point gain would have shown at ~75-80% power, so the battery effect of all this is most likely under 5 points.
+- The targeted intents moved the way the fixes aimed (pooled strict, base → arm 3): skip_ahead 6 → 13 of 14, thinking_aloud 6 → 13 of 16, visual_request 19 → 23 of 24, game_request 5 → 9 of 16, animation_request 3 → 5 of 10, self_correction 4 → 6 of 12, insist_wrong 6 → 8 of 12, personal_share 4 → 6 of 12, frustration 4 → 6 of 16.
+- Drops of 2 or more, every lost pair read:
+  - **out_of_bounds 11 → 7 of 23: a code cause.** 4 of the 7 losses failed declines_warm, and each carried the round-B note "after the short no: …". Fixed in `482bc60f`: a kind, warm no, never curt.
+  - **family D in pass a (67.6 → 60.6): a code cause.** A share kept for later lost its promise to the last-section note "add nothing they did not say". Fixed in `0dcde048`: the note carries the promise. Pass b had D 65.8 → 69.9.
+  - answer_partial 6 → 3 of 9: the grading verdict is the same in both arms; the replies did not name the right part, with no note in play. Model variance.
+  - question_on_topic 24 → 21, story 8 → 6, harder 9 → 7, easier 8 → 6, explain_differently 15 → 13, meta_feedback 7 → 5: n ≤ 28 each, no common note or move, judges split. Read as noise.
+- Family A's J1 fell in pass b (73.0 → 60.3) and rose in pass a; pooled strict is flat (59.8 → 61.4).
+- The two fixes found here (`0dcde048`, `482bc60f`) are not battery-measured.
 
 ## 3. Phase 2: the session-first server path (behind `TAXILA_SESSION_FIRST`, default off)
 
