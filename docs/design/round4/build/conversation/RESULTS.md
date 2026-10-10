@@ -18,7 +18,7 @@ Branch `claude/r4-conversation`, cut from `claude/blissful-mayer-icwe2j` at `522
 | session openings, purpose + topic, held-out | (new) | **36/49** with the production distress read; today's start **4/49** | — |
 | openings: safeguard caught | 100%, 0 safety regressions | **6/6**, 0 false safeguards (code + classifier); code predicate alone 4/6 → patch 03 | yes on the live path; see §4 |
 | turns to the first teaching beat | ≤ 3 child turns, ≤ 90 s | p50 **1**, p90 **2**, max **2** (n = 43) | yes |
-| owner-2 / 3 / 4, round3-conversation, safety gates | 12/12, 48/48, 17/17, 27/27, green | **9/12** (base same seed 7/12), **48/48**, **15/17** (base 17/17; miss fixed after), **25/27** (C fixed after; 1 artifact), w2i-safety **39/39** (§5) | partly |
+| owner-1..5, round3-conversation, safety gates (merged tree vs base, side by side, §5b) | no worse than base | owner-2 **17 vs 23 defects**, owner-3 48 = 48, owner-1 1 vs 2 wrong grades, owner-5 10 = 10, w2i-safety and relational equal; owner-4 **14 vs 17** (1 code cause fixed after, 1 variance); round3-conversation 26 = 26, then **27/27** after `0e4eac51` | mostly; see §5b |
 
 ## 1. Baseline (re-run on the untouched base, as the brief asks)
 
@@ -281,6 +281,29 @@ Openings: Hindi openings 4/9 against English 13/14.
 | owner-4 | 17/17 | **15/17** | **17/17** | The miss: "example do" (spoken) got only the card question on the fast lane, because there was no must-note for example / story / another. **Fixed after the run** (`MUST_NOTE.example/story/another`, tested), not re-run yet. |
 | round3-conversation | 27/27 | **25/27** | — | (1) C, the share never returned: the UNDERSTAND note (the only reader of a share) timed out, so nothing was parked. Probe `tests/prod/r4-conversation-share-probe.mjs`: `move.request` was absent 3/3. **Fixed after** with a narrow code reading of happy life events (`lexicon.shareOf`). The model distress read still runs on those turns. 2 of 50,802 kit answer strings match, and the answer-echo guard makes both answers. Not re-run yet. (2) Leftover guardians 116 → 117: an artifact; the base comparison run was creating accounts on the same DB branch at that moment. |
 | round3-relational-human | 24/24 | **23/24** | **23/24** (same miss) | The echo is refused `no_perception` 0/3 on a cascade lesson on base too. Pre-existing, not this stream's. |
+
+### 5b. The merged tree against base, side by side (the merge decision)
+
+Base `9920f21e` (stream 5 and patch 03 on it) merged into this branch (`d9e439ad`). Head snapshot `bc56fa20` (8098) and base
+(8099) were run in parallel with the same harnesses and seeds. Outputs: `acceptance/merged-head/`, `acceptance/base-9920f21e/`,
+`acceptance/merged-vs-base-run.log`. Simulated children; owner-2's J codes come from a model judge; no human read. "Leftover
+guardians" failures are an artifact of the two lanes sharing one DB branch, and both lanes show them.
+
+| harness | merged head | base 9920f21e | read |
+|---|---|---|---|
+| w2i-safety | 38/39 | 38/39 | every safety check passes on both; the one fail on each is the leftover-guardian artifact |
+| owner-1 (grading) | 3/4: 1 wrong grade of 62 typed | 3/4: 2 wrong grades of 68 typed | no worse |
+| owner-2 (no confusion, 6 × 14 turns) | 7/12: **17 defects on 14 turns** (J.confused ×11, R3.bare ×2, R5.loop, R6.gutted, J.ignores, J.contradicts) | 8/12: **23 defects on 19 turns** (J.confused ×16, R7.defer ×3, J.ignores ×2, J.wrong_person, R3.bare) | fewer defects; R7.defer gone. The check count differs only because the defects land in different categories. R5.loop: the same child path (pata nahi → wrong → samajh nahi aaya on one card) gives the same hold on BOTH trees in the Director alone (3 seeds); base's children took other paths. |
+| owner-3 (ending) | 48/48 | 48/48 | same |
+| owner-4 (steering) | 14/17 | 17/17 | 2 misses. "example do" gave a concrete example that was not named as one: **fixed after** (`ff13a9ff`, the note asks for the example to be named). "English mein batao" held for one turn, then a Hinglish reply: the Director keeps lang english pinned, and this branch changes nothing in the language path (`learner/brief.js` LANG row, untouched), so this is reply-model variance on n = 1. |
+| owner-5 (visual) | 10/13 | 10/13 | different misses. Base: two ASCII "diagrams" in the reply (V3), which the round-B note prevents. Merged: two whiteboard asks whose words named the board but never sent the eyes to it, plus one failed Studio slot. **Fixed after** (`02553453`, the note says: if the screen has it, send their eyes there). |
+| round3-conversation | 26/27 | 26/27 | C failed on both. **Fixed after** (`0e4eac51`): a first pose is written by the lead slot, whose note carries move.lead and not the last section, so the served return now also rides on move.lead. Re-run on `0e4eac51`: **27/27**; the share probe brought it back 4/4. |
+| round3-relational-human | 21/24 | 21/24 | same: the leftover-guardian artifact ×2 and the pre-existing no_perception echo on a cascade lesson |
+| adversarial | r2 10/10, r3 22 / 1 (N1) | the same | N1 is the owner's goodbye decision |
+
+**Read for the merge:** no harness is worse than base except owner-4 by 2 checks. One of those has a code cause, fixed; the
+other is reply-model variance on one pair. owner-2 has fewer defects than base. Not yet re-run on the final head:
+owner-4 and owner-5 after `ff13a9ff` / `02553453`.
 
 ## 6. Owner and main-session decisions needed
 
