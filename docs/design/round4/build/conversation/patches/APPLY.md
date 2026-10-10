@@ -157,3 +157,20 @@ The last 9 kit false alarms (the main session's re-scan of 180,435 kit strings o
 - **Known limits** (quiet on base and here; listed in the test, not asserted):
   - The plural "gaaliyan" (see the VOCAB cost above).
   - A push in a sport turn ("cricket mein … dhakka diya") stays the sport frame's.
+
+**Patch 13: the item-context set-aside** (`13-item-context-set-aside.md`, design note; NO product code; measurement scripts in `13-prototype/`).
+- **The rule.** Set aside a predicate hit only when ALL of these hold:
+  - not self-harm, ever;
+  - the current posed item is verified;
+  - the words that fired are the item's own (counterfactual mask);
+  - at most 2 of the child's own content words;
+  - absolute vetoes: first person (raw and garble-corrected), adult actor, harm / fear / weapon, GUARD_VETO;
+  - the model distress read always runs.
+- **Prototype, at MAX_NOVEL=2:**
+  - recall corpora × all 12,398 items: **0** set aside;
+  - 842 test, near-miss and kit strings × all items: only c9-sst i08's own kit content set aside;
+  - cases: 43/46 as expected, and the 3 misses fail closed.
+- **What failed on the way:**
+  - without the novelty budget, 17 of main's patch 11 near-misses were set aside;
+  - without the self-harm rule, 11 red-team ideation lines.
+- **Waiting on main:** the 10 realistic civics answers from the patch 11 review.
