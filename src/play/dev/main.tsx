@@ -26,7 +26,7 @@ const goal = q.get("goal") ?? undefined;
 const grammar = JSON.parse(q.get("grammar") ?? "{}") as Record<string, unknown>;
 const topicId = q.get("topic") ?? `dev-${family}-${mode}`;
 const skillId = q.get("skill") ?? `${topicId}-s1`;
-const bank = { ...(bankJson as unknown as ReactionBank), family: { ...((bankJson as unknown as ReactionBank).family ?? {}), nazariya: nazariyaBank.moments } } as unknown as ReactionBank;
+const bank = { ...(bankJson as unknown as ReactionBank), family: { ...((bankJson as unknown as ReactionBank).family ?? {}), nazariya: (nazariyaBank as unknown as { family: { nazariya: unknown } }).family.nazariya } } as unknown as ReactionBank;
 const demo = q.get("demo") === "1";
 const reduced = q.get("reduced") === "1";
 const harder = q.get("harder") === "1";

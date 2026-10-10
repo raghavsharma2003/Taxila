@@ -2,7 +2,7 @@
 // on top of the play guard (shared/play.ts reactionProblems) the lesson's own never-rules floor over the TEACHER's words
 // (server/director/safety.js floorViolations) and a scanSafety pass. A line that trips anything is skipped, never edited.
 // The hidden values (the level's key: the answer the child has not produced yet) may never be spoken.
-import { readFileSync, readdirSync } from "node:fs";
+import { readFileSync, readdirSync, existsSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import { pickReaction, newHistory } from "../../src/play/core/react.ts";
@@ -12,15 +12,22 @@ import { nazariyaHidden } from "../../src/play/families/nazariya/index.ts";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "../..");
 let BANK = null;
-/** data/play/reactions.json, plus one file per family in data/play/reactions/ ({ family, moments }) merged as bank.family[f]. */
+/**
+ * data/play/reactions.json plus every data/play/reactions/<name>.json (S0.3: one file per family or engine, so lanes add
+ * lines without editing a shared file). A split file holds `{ family: { <id>: … } }` and / or `{ engine: { <id>: … } }`;
+ * an id may not be defined twice (a merge never silently overwrites another lane's lines).
+ */
 export function bank() {
   if (BANK) return BANK;
   const b = JSON.parse(readFileSync(join(ROOT, "data/play/reactions.json"), "utf8"));
-  let files = [];
-  try { files = readdirSync(join(ROOT, "data/play/reactions")).filter((f) => f.endsWith(".json")).sort(); } catch { /* none */ }
-  for (const f of files) {
-    const fam = JSON.parse(readFileSync(join(ROOT, "data/play/reactions", f), "utf8"));
-    if (fam?.family && fam.moments) b.family = { ...(b.family ?? {}), [fam.family]: fam.moments };
+  b.family ??= {}; b.engine ??= {};
+  const dir = join(ROOT, "data/play/reactions");
+  if (existsSync(dir)) for (const f of readdirSync(dir).filter((x) => x.endsWith(".json")).sort()) {
+    const part = JSON.parse(readFileSync(join(dir, f), "utf8"));
+    for (const key of ["family", "engine"]) for (const [id, lines] of Object.entries(part[key] ?? {})) {
+      if (b[key][id]) throw new Error(`data/play/reactions/${f}: ${key} ${id} is already defined`);
+      b[key][id] = lines;
+    }
   }
   BANK = b;
   return BANK;
