@@ -328,6 +328,41 @@ Same harnesses and seeds, both lanes in parallel (`acceptance/merged-02478cab/`,
 
 **No harness is worse than base. round3-conversation and owner-2 are better.**
 
+### 5d. owner-2 with the model judge: production reconciled, patch 14, and the confusion fixes (2026-10-10)
+
+One lane, `--env-file=.env.local --env-file=tests/prod/prod-routing.env`, NODE_ENV=production, `--sessions 6 --turns 14 --judge model`.
+Simulated children, one model judge, no human read.
+
+**Local vs production.** Base 061fc7f7 locally: **19 / 18** turns with a defect at seeds 7 / 1010. Production c439bd7 (the main
+session, the same flags): **17 / 13**. The earlier "1 / 1" for production came from a run without `--judge model`.
+- The local harness is sound.
+- Routing was not the cause either: both of my launch scripts already carried DEPLOY_CLASSIFY and the hedge.
+- Outputs: `acceptance/owner2-routing-base-061fc7f7/`.
+
+**The judge (calibration, `confusion-causes.md` §1).** On 394 human-reviewed production turns it flags 21% as confusing.
+- Against the reviewer's item-2 list it has 16% precision and 52% recall. That list was not built as a "confusing" label set.
+- A non-human read of 16 judge-only flags found about 13 genuinely confusing.
+- A human pass over the disagreements is still needed.
+
+**Patch 14 and the confusion fixes, 3 seeds × 90 turns = 270 turns per arm:**
+
+| arm | turns with a defect | J turns (confused / ignores) | J turns after a bare "haan / ok" | R5.loop |
+|---|---|---|---|---|
+| before (790a5808) | 42 | 40 | 19 | **2** |
+| patch 14 only | 43 | 40 | 19 | **0** |
+| patch 14 + confusion fixes (4e19dd26) | 42 | 40 | 17 | **0** |
+
+**Read:**
+- Patch 14 removes the stall loop (R5.loop 2 → 0) and costs nothing measurable.
+- The confusion fixes did **not** move the judge's count at n = 3 seeds: 40 → 40, and 19 → 17 after a bare acknowledgement, which is within seed variance (seed 1010 alone went 13 → 16).
+- A direct `planTurn` probe shows the cause-A must-note reaches the compiled instructions ("THIS TURN FIRST … only said okay …").
+- So what remains is the reply model plus the kit's teach plan: the next teach step is itself a new example (halves → thirds), and a note to "close the question first" does not change the step it introduces.
+- The next lever is a Director change, proposed and not built:
+  - on a bare acknowledgement to a teaching question, the next turn closes that question (answer + one line linking to the idea) WITHOUT advancing the teach step;
+  - the step advances on the following turn;
+  - it costs one turn per such acknowledgement and must be measured the same way.
+- Cause D (the protégé with the child's name) is fixed and tested.
+
 ## 6. Owner and main-session decisions needed
 
 1. **Patch 03 (safety floor):** a safety review, then apply.
