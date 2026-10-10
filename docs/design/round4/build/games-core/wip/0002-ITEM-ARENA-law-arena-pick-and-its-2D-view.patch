@@ -1,0 +1,498 @@
+From af20c8626db6fb21733a6abaad7eaec74f4d2bcc Mon Sep 17 00:00:00 2001
+From: Claude <noreply@anthropic.com>
+Date: Sat, 10 Oct 2026 20:12:27 +0000
+Subject: [PATCH 2/3] ITEM-ARENA law (arena/pick) and its 2D view
+
+One verified kit item per level: aim, fire, graded against the verified key in code. The first shot is the evidence; a
+miss darkens that option and shows the kit's hint rung (never the key); claim fields never decide. 2D view: the question
+is the goal line (unclamped DOM text, Devanagari renders), lettered option buttons and targets. Every bank challenge is
+served by the picker; >= 2000-act random battery.
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01YEt7ysvaB8ujW1FBv7Gj2v
+---
+ data/play/engine-words.json            |  25 ++++++
+ shared/play.ts                         |  10 ++-
+ src/play/PlayStage.tsx                 |   4 +-
+ src/play/core/viewkit.ts               |   4 +
+ src/play/families/arena/arena.logic.ts | 104 +++++++++++++++++++++++++
+ src/play/families/arena/arena.view.ts  | 102 ++++++++++++++++++++++++
+ src/play/families/index.ts             |   2 +
+ src/play/families/views.ts             |   2 +
+ src/play/play.css                      |   6 ++
+ tests/r4-games-core-arena-law.test.mjs |  69 ++++++++++++++++
+ 10 files changed, 325 insertions(+), 3 deletions(-)
+ create mode 100644 src/play/families/arena/arena.logic.ts
+ create mode 100644 src/play/families/arena/arena.view.ts
+ create mode 100644 tests/r4-games-core-arena-law.test.mjs
+
+diff --git a/data/play/engine-words.json b/data/play/engine-words.json
+index 81eaea25..729982b4 100644
+--- a/data/play/engine-words.json
++++ b/data/play/engine-words.json
+@@ -110,6 +110,31 @@
+    "hinglish": "anticlockwise",
+    "en": "anticlockwise",
+    "hi": "घड़ी की उलटी दिशा में"
++  },
++  "arena.title": {
++   "hinglish": "Arena",
++   "en": "Arena",
++   "hi": "Arena"
++  },
++  "arena.fire": {
++   "hinglish": "Fire",
++   "en": "Fire",
++   "hi": "Fire"
++  },
++  "arena.scan": {
++   "hinglish": "Scan",
++   "en": "Scan",
++   "hi": "Scan"
++  },
++  "arena.yes": {
++   "hinglish": "Haan",
++   "en": "Yes",
++   "hi": "हाँ"
++  },
++  "arena.no": {
++   "hinglish": "Nahi",
++   "en": "No",
++   "hi": "नहीं"
+   }
+  }
+ }
+diff --git a/shared/play.ts b/shared/play.ts
+index a64ba3ad..e140c64f 100644
+--- a/shared/play.ts
++++ b/shared/play.ts
+@@ -21,6 +21,7 @@ export const PLAY_VERSION = "play@1" as const;
+ /** The four flagship families of round 3. The grammar is open: a new family adds its id here and registers its logic. */
+ export const FAMILIES = ["todo-jodo", "taraazu", "nishana", "kyun-lab",
+   "kon",          // round 4 G1: angles as an amount of turning (E1 Antariksh angles)
++  "arena",        // round 4 G1: ITEM-ARENA, one verified kit item per level, graded against its verified key
+ ] as const;
+ export type FamilyId = (typeof FAMILIES)[number];
+ /** Family sub-worlds. A mode is one representation with its own law inside a family. */
+@@ -30,6 +31,7 @@ export const MODES = {
+   nishana: ["place", "compare"],
+   "kyun-lab": ["fair-test"],
+   kon: ["turn", "set"],
++  arena: ["pick"],
+ } as const satisfies Record<FamilyId, readonly string[]>;
+ export type ModeOf<F extends FamilyId> = (typeof MODES)[F][number];
+ export type PlayMode = (typeof MODES)[FamilyId][number];
+@@ -165,7 +167,12 @@ export type KonAct =
+   | { kind: "turn"; deg: number }                       // point the arm at heading `deg` (degrees, 0 = right, anticlockwise +)
+   | { kind: "commit" }
+   | { kind: "undo" };
+-export type PlayActBody = AtomsAct | StripsAct | BundlesAct | BalanceAct | LineAct | LabAct | KonAct;
++// ITEM-ARENA (round 4 G1)
++export type ArenaAct =
++  | { kind: "aim"; option: string }                     // point at a target (an option id)
++  | { kind: "fire" }                                    // the shot: graded against the verified key
++  | { kind: "undo" };
++export type PlayActBody = AtomsAct | StripsAct | BundlesAct | BalanceAct | LineAct | LabAct | KonAct | ArenaAct;
+ 
+ /** Field names that look like a verdict claim. Stripped from every act before replay (rj-ot-frame-claim-as-grade). */
+ export const CLAIM_KEYS = Object.freeze(["correct", "verdict", "right", "isCorrect", "score", "pass", "solved", "grade"]);
+@@ -315,6 +322,7 @@ export const FAMILY_ARTS: Record<FamilyId, readonly ArtId[]> = {
+   nishana: ["blueprint", "kagaz", "chalk", "raat"],
+   "kyun-lab": ["kagaz", "blueprint", "raat", "chalk"],
+   kon: ["blueprint", "raat", "kagaz", "chalk"],
++  arena: ["raat", "blueprint", "kagaz", "chalk"],
+ };
+ export interface ArtPickInput {
+   family: FamilyId; subject: Subject; topicId: string; classLevel: number;
+diff --git a/src/play/PlayStage.tsx b/src/play/PlayStage.tsx
+index ba1d7041..7dde7218 100644
+--- a/src/play/PlayStage.tsx
++++ b/src/play/PlayStage.tsx
+@@ -171,7 +171,7 @@ export function PlayStage(props: PlayStageProps) {
+     const make = viewFor(level.family, level.mode);
+     if (!make) { onEvent.current?.({ type: "fail", why: "no_family" }); return; }
+     let view: FamilyView | null = null;
+-    const stage = mountStage(host, (api) => { view = make(api, { level, ctl, lang, changed }); return view; },
++    const stage = mountStage(host, (api) => { view = make(api, { level, ctl, lang, changed, verb: props.verb ?? "fire" }); return view; },
+       { art, young, reducedMotion: props.reducedMotion, sound: props.sound, onFail: (why) => onEvent.current?.({ type: "fail", why }) });
+     stageRef.current = stage; viewRef.current = view;
+     changed();
+@@ -290,7 +290,7 @@ export function PlayStage(props: PlayStageProps) {
+         {groups.map(([g, cs]) => (
+           <div key={g} className={`pl-row pl-row--${g}`} data-group={g}>
+             {cs.map((c) => (
+-              <button key={c.id} type="button" className={`pl-btn pl-btn--${c.kind ?? "secondary"}`} data-you={c.you ? "1" : undefined} disabled={c.disabled}
++              <button key={c.id} type="button" className={`pl-btn pl-btn--${c.kind ?? "secondary"}`} data-you={c.you ? "1" : undefined} disabled={c.disabled} aria-pressed={c.pressed === undefined ? undefined : c.pressed}
+                 aria-label={c.aria ?? c.label} data-testid={`play-ctl-${c.id}`} onClick={() => { sound.unlock(); c.onPress(); changed(); }}>{c.label}</button>
+             ))}
+           </div>
+diff --git a/src/play/core/viewkit.ts b/src/play/core/viewkit.ts
+index f067950c..36109165 100644
+--- a/src/play/core/viewkit.ts
++++ b/src/play/core/viewkit.ts
+@@ -16,6 +16,8 @@ export interface ControlSpec {
+   /** controls with the same group share a row */
+   group?: string;
+   aria?: string;
++  /** a toggle that is on now (an aimed option): rendered as aria-pressed */
++  pressed?: boolean;
+ }
+ export interface Readout { k: string; v: string; role?: Role }
+ export interface FamilyView extends View {
+@@ -35,6 +37,8 @@ export interface ViewDeps<P = unknown, S = unknown, A extends PlayActBody = Play
+   lang: Lang;
+   /** ask the host to re-render its DOM chrome (goal, readouts, controls) */
+   changed(): void;
++  /** the parent's wording switch for the shot (O-G4): "fire" (default) or "scan" */
++  verb?: "fire" | "scan";
+ }
+ export type MakeView = (api: ViewApi, deps: ViewDeps) => FamilyView;
+ 
+diff --git a/src/play/families/arena/arena.logic.ts b/src/play/families/arena/arena.logic.ts
+new file mode 100644
+index 00000000..dc34fd15
+--- /dev/null
++++ b/src/play/families/arena/arena.logic.ts
+@@ -0,0 +1,104 @@
++// ITEM-ARENA (round 4 G1): the broad-net game family. Each level is ONE verified kit item (data/arena, built by
++// server/play/tools/build-arena.mjs from items with verified.agrees === true); the options fly as targets, the child aims
++// and fires, and the law grades the shot against the verified key, in code. A model never grades and never writes a
++// challenge. A wrong shot shows the kit's hint rung (never the key) and that target goes dark; the first shot is the
++// evidence (gradeLevel: the first decisive moment), later shots only finish the level. Evidence is a recognition among a
++// few targets, so it enters the ledger at a lower weight than a law family (server/play/evidence.js: controllerEasy,
++// form "recognise" → game 0.5 × 0.5 = 0.25).
++// The challenges ride the GenRequest (`grammar.items`, attached by the play server from data/arena); the client never
++// loads the bank.
++import type { ArenaAct, Candidate, FamilyLogic, Facts, GenRequest, Moment, PlayActEnvelope, PlayGrade, PlayLevel } from "../../../../shared/play.ts";
++import { gradeLevel, popUndo, pushUndo, type Undoable } from "../../core/replay.ts";
++
++export interface ArenaOption { id: string; text: string; word?: "yes" | "no" }
++export interface ArenaChallenge {
++  id: string; topicId: string; skillId: string; difficulty: number; form: "numeric" | "yesno" | "choice";
++  prompt: { en: string; hi: string }; options: ArenaOption[]; keyText: string; hint: string | null; mis?: string;
++}
++export interface ArenaParams {
++  itemId: string; form: ArenaChallenge["form"]; prompt: { en: string; hi: string }; options: ArenaOption[];
++  /** the option id of the verified key */
++  key: string; hint: string | null;
++}
++export interface ArenaState extends Undoable<ArenaState> { aim: string | null; out: string[]; shots: number; done: boolean; acts: number }
++
++const mom = (kind: Moment["kind"], seq: number, facts: Facts): Moment => ({ kind, seq, facts });
++
++function validate(level: PlayLevel<unknown>): PlayLevel<ArenaParams> | null {
++  const p = level.params as Partial<ArenaParams> | null;
++  if (!p || typeof p.itemId !== "string" || !Array.isArray(p.options) || typeof p.key !== "string") return null;
++  if (p.form !== "numeric" && p.form !== "yesno" && p.form !== "choice") return null;
++  const options = p.options.filter((o) => o && typeof o.id === "string" && typeof o.text === "string" && o.text.length <= 120).slice(0, 4);
++  if (options.length < 2 || options.length !== p.options.length) return null;
++  if (new Set(options.map((o) => o.id)).size !== options.length || !options.some((o) => o.id === p.key)) return null;
++  const prompt = { en: String(p.prompt?.en ?? "").slice(0, 400), hi: String(p.prompt?.hi ?? p.prompt?.en ?? "").slice(0, 400) };
++  if (!prompt.en) return null;
++  return { ...level, params: { itemId: p.itemId, form: p.form, prompt, options, key: p.key, hint: typeof p.hint === "string" ? p.hint.slice(0, 200) : null } } as PlayLevel<ArenaParams>;
++}
++const init = (_l: PlayLevel<ArenaParams>): ArenaState => ({ aim: null, out: [], shots: 0, done: false, acts: 0, prev: null, depth: 0 });
++
++function apply(level: PlayLevel<ArenaParams>, s: ArenaState, act: ArenaAct, seq: number): { state: ArenaState; moments: Moment[]; refused?: string } {
++  const p = level.params, out: Moment[] = [];
++  if (s.done) return { state: s, moments: [], refused: "level_over" };
++  const bump = (st: ArenaState): ArenaState => ({ ...st, acts: s.acts + 1 });
++  if (s.acts === 0) out.push(mom("first_act", seq, { act: act.kind }));
++  if (act.kind === "undo") return { state: { ...popUndo(s), acts: s.acts + 1 }, moments: out };
++  if (act.kind === "aim") {
++    const o = p.options.find((x) => x.id === act.option);
++    if (!o) return { state: bump(s), moments: out, refused: "bad_option" };
++    if (s.out.includes(o.id)) return { state: bump(s), moments: out, refused: "already_out" };
++    return { state: bump(pushUndo(s, { ...s, aim: o.id })), moments: out };
++  }
++  if (act.kind === "fire") {
++    if (!s.aim) return { state: bump(s), moments: out, refused: "aim_first" };
++    const o = p.options.find((x) => x.id === s.aim) as ArenaOption;
++    const next = bump(pushUndo(s, { ...s, shots: s.shots + 1 }));
++    if (o.id === p.key) { out.push(mom("solved", seq, { picked: o.text, shots: s.shots + 1 })); return { state: { ...next, done: true, aim: null }, moments: out }; }
++    // a miss: that target goes dark; the hint rung shows on screen (never the key); the first miss is the evidence
++    out.push(mom("law_refused", seq, { picked: o.text, why: "not_this", left: p.options.length - s.out.length - 1 }));
++    return { state: { ...next, out: [...s.out, o.id], aim: null }, moments: out, refused: "missed" };
++  }
++  return { state: bump(s), moments: out, refused: "unknown_act" };
++}
++const goalMet = (_l: PlayLevel<ArenaParams>, s: ArenaState) => s.done;
++const solve = (level: PlayLevel<ArenaParams>): ArenaAct[] => [{ kind: "aim", option: level.params.key }, { kind: "fire" }];
++/** no act sequence passes without knowing the key: the options are shuffled at build time and graded by id */
++const shortcut = (_l: PlayLevel<ArenaParams>): ArenaAct[] | null => null;
++const malActs = (_l: PlayLevel<ArenaParams>, _mal: string): ArenaAct[] | null => null;
++
++/** one candidate per challenge of the request's skill (else of the topic), novelty by item id */
++function generate(req: GenRequest): Candidate<ArenaParams>[] {
++  const items = (Array.isArray(req.grammar?.items) ? req.grammar.items : []) as ArenaChallenge[];
++  const mine = items.filter((c) => c.skillId === req.skillId);
++  const pool = mine.length ? mine : items.filter((c) => c.topicId === req.topicId);
++  return pool.map((c) => ({
++    signature: `arena:${c.id}`,
++    difficulty: Math.min(1, Math.max(0, ((c.difficulty ?? 2) - 1) / 4 + (c.form === "yesno" ? -0.1 : 0))),
++    level: {
++      v: "play@1", levelId: `arena-${c.id}-${req.seed}`.replace(/[^a-z0-9:/.,_-]/gi, "_"), family: "arena", mode: "pick", topicId: c.topicId, skillId: c.skillId,
++      fade: req.fade, goal: "pick", params: { itemId: c.id, form: c.form, prompt: c.prompt, options: c.options.map((o) => ({ id: o.id, text: o.text, ...(o.word ? { word: o.word } : {}) })),
++        key: (c.options.find((o) => o.text === c.keyText) ?? c.options[0]).id, hint: c.hint ?? null },
++      targets: [], mal: {}, slip: null, context: "space", seed: req.seed,
++      proof: { solvable: true, shortcutFree: true, minActs: 2, solutions: 1, discriminates: [], pFirstTry: 0, score: 0, genMs: 0 },
++    },
++  }));
++}
++function facts(level: PlayLevel<ArenaParams>, s: ArenaState): Facts {
++  // on-screen values only; the key is never a fact until the child has hit it
++  const f: Facts = { goal: "pick", options: level.params.options.length };
++  if (s.out.length) f.out = s.out.length;
++  if (s.done) { f.done = "yes"; f.answer = (level.params.options.find((o) => o.id === level.params.key) as ArenaOption).text; }
++  return f;
++}
++function board(level: PlayLevel<ArenaParams>, s: ArenaState) {
++  const p = level.params;
++  return { title: "Arena", lines: [p.prompt.en.slice(0, 80), p.options.filter((o) => !s.out.includes(o.id)).map((o) => o.text).join(" · ").slice(0, 80)] };
++}
++function grade(level: PlayLevel<ArenaParams>, acts: PlayActEnvelope<ArenaAct>[]): PlayGrade {
++  return gradeLevel(arenaLogic, level, acts, { decisiveRefusals: ["missed"], final: true });
++}
++
++export const arenaLogic: FamilyLogic<ArenaParams, ArenaState, ArenaAct> = {
++  family: "arena", modes: ["pick"], malRules: [],
++  validate, init, apply, goalMet, generate, solve, shortcut, malActs, grade, facts, board,
++};
+diff --git a/src/play/families/arena/arena.view.ts b/src/play/families/arena/arena.view.ts
+new file mode 100644
+index 00000000..9364fc1e
+--- /dev/null
++++ b/src/play/families/arena/arena.view.ts
+@@ -0,0 +1,102 @@
++// ITEM-ARENA · the 2D view (the board twin and the 2D-tier view; round 4 G1). The question is the goal line (real DOM
++// text: it wraps and Devanagari renders); each option is a lettered button and a lettered target in the world. Tap an
++// option (or its target) to aim, then fire. A hit decloaks the target; a miss darkens it and the kit's hint rung shows in
++// the world (never the key). No timer, no score.
++import type { ArenaAct, Moment } from "../../../../shared/play.ts";
++import type { PointerKind, ViewApi } from "../../core/stage.ts";
++import { clamp, type ControlSpec, type FamilyView, type MakeView, type Readout, type ViewDeps } from "../../core/viewkit.ts";
++import { word } from "../../engines/words.ts";
++import type { ArenaParams, ArenaState } from "./arena.logic.ts";
++
++export const LETTERS = ["A", "B", "C", "D"] as const;
++/** the option's words in the lesson's language (yes / no are the only words the arena itself supplies) */
++export function optionText(o: { text: string; word?: "yes" | "no" }, lang: Parameters<typeof word>[0]): string {
++  return o.word === "yes" ? word(lang, "arena.yes") : o.word === "no" ? word(lang, "arena.no") : o.text;
++}
++/** the question in the lesson's language: English for an English lesson, the kit's Hindi / Hinglish line otherwise */
++export const promptText = (p: ArenaParams, lang: string) => (lang === "en" ? p.prompt.en : p.prompt.hi || p.prompt.en);
++
++export const makeArenaView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
++  const deps = depsIn as unknown as ViewDeps<ArenaParams, ArenaState, ArenaAct>;
++  const { level, ctl, lang } = deps;
++  const p = level.params, n = p.options.length;
++  let W = 360, H = 400, hitAt = -1, missAt = -1, lastMiss: string | null = null;
++  const pos: { x: number; y: number; r: number }[] = [];
++  const st = () => ctl.state;
++
++  function layout(w: number, h: number): void {
++    W = w; H = h;
++    const r = clamp(Math.min(w / (n * 2.6), h / 5), 26, 54);
++    pos.length = 0;
++    for (let i = 0; i < n; i++) pos.push({ x: (w * (i + 0.5)) / n, y: h * 0.36 + (i % 2 ? r * 0.5 : -r * 0.2), r });
++  }
++  function act(a: ArenaAct): void { ctl.dispatch(a); deps.changed(); }
++  function react(ms: Moment[], refused: string | undefined): void {
++    const last = ctl.acts[ctl.acts.length - 1]?.act as ArenaAct | undefined;
++    if (last?.kind === "aim" && !refused) api.sfx("select");
++    for (const m of ms) {
++      if (m.kind === "solved") {
++        hitAt = api.t; api.sfx("good"); api.fx.shake(3);
++        const i = p.options.findIndex((o) => o.id === p.key);
++        if (pos[i]) api.fx.burst(pos[i].x, pos[i].y, { n: 22, color: api.P.color("good"), speed: 150, life: 0.7, size: 3, kind: "spark" });
++      }
++      if (m.kind === "law_refused") { missAt = api.t; lastMiss = String(m.facts.picked ?? ""); api.sfx("look"); api.fx.shake(1.5); }
++    }
++    api.invalidate(); deps.changed();
++  }
++  function pointer(kind: PointerKind, x: number, y: number): void {
++    if (kind !== "down" || st().done) return;
++    const i = pos.findIndex((q) => Math.hypot(x - q.x, y - q.y) <= q.r * 1.25);
++    if (i >= 0 && !st().out.includes(p.options[i].id)) act({ kind: "aim", option: p.options[i].id });
++  }
++  const update = () => { /* targets drift only in the 3D arena; the 2D board stays still */ };
++  const busy = () => (hitAt >= 0 && api.t - hitAt < 0.8) || (missAt >= 0 && api.t - missAt < 0.4);
++
++  function wrap(c: CanvasRenderingContext2D, s: string, maxW: number, px: number): string[] {
++    c.save(); c.font = `600 ${px}px system-ui, sans-serif`;
++    const out: string[] = []; let line = "";
++    for (const w of s.split(/\s+/)) {
++      const t = line ? `${line} ${w}` : w;
++      if (c.measureText(t).width * 1.12 > maxW && line) { out.push(line); line = w; } else line = t;
++    }
++    if (line) out.push(line);
++    c.restore();
++    return out.slice(0, 4);
++  }
++  function draw(c: CanvasRenderingContext2D): void {
++    const P = api.P, s = st();
++    for (let i = 0; i < n; i++) {
++      const o = p.options[i], q = pos[i]; if (!q) continue;
++      const out = s.out.includes(o.id), aimed = s.aim === o.id, hit = s.done && o.id === p.key;
++      api.target(`opt-${o.id}`, q.x - q.r, q.y - q.r, q.r * 2, q.r * 2);
++      P.circle(c, q.x, q.y, q.r, { role: hit ? "good" : out ? "ink3" : aimed ? "you" : "ink2", width: aimed || hit ? 4 : 2, alpha: out ? 0.35 : 1 });
++      if (hit) P.circle(c, q.x, q.y, q.r * (1 + clamp((api.t - hitAt) / 0.5, 0, 1) * 0.5), { role: "good", width: 2, alpha: 1 - clamp((api.t - hitAt) / 0.5, 0, 1) });
++      P.text(c, LETTERS[i], q.x, q.y, { size: Math.round(q.r * 0.8), weight: 800, font: "display", role: out ? "ink3" : aimed ? "you" : "ink", alpha: out ? 0.45 : 1 });
++    }
++    // the ship and the aim line
++    const sx = W / 2, sy = H * 0.86;
++    P.stroke(c, [[sx - 16, sy + 12], [sx, sy - 18], [sx + 16, sy + 12], [sx, sy + 4]], { role: "ink", width: 3, closed: true });
++    const ai = p.options.findIndex((o) => o.id === s.aim);
++    if (ai >= 0 && pos[ai]) P.stroke(c, [[sx, sy - 20], [pos[ai].x, pos[ai].y + pos[ai].r]], { role: "you", width: 2, dash: [6, 6] });
++    // after a miss: the hint rung (never the key)
++    if (s.out.length && !s.done && p.hint) {
++      const lines = wrap(c, p.hint, Math.min(W - 32, 520), 16), top = H * 0.6;
++      lines.forEach((l, k) => P.text(c, l, W / 2, top + k * 21, { size: 16, role: "look", weight: 600 }));
++    }
++  }
++
++  const goal = () => promptText(p, lang);
++  const readouts = (): Readout[] => [];
++  function controls(): ControlSpec[] {
++    const s = st();
++    const opts: ControlSpec[] = p.options.map((o, i) => ({
++      id: `opt-${o.id}`, label: `${LETTERS[i]} · ${optionText(o, lang)}`, kind: "choice", group: "options",
++      disabled: s.done || s.out.includes(o.id), pressed: s.aim === o.id, onPress: () => act({ kind: "aim", option: o.id }),
++    }));
++    if (s.done) return opts;
++    return [...opts, { id: "commit", label: word(lang, deps.verb === "scan" ? "arena.scan" : "arena.fire"), kind: "primary", group: "go", you: s.aim !== null, disabled: s.aim === null, onPress: () => act({ kind: "fire" }) }];
++  }
++  void lastMiss;
++  const view: FamilyView = { layout, update, draw, pointer, busy, goal, readouts, controls, react, dragging: () => false };
++  return view;
++};
+diff --git a/src/play/families/index.ts b/src/play/families/index.ts
+index 46120628..19a1a5b7 100644
+--- a/src/play/families/index.ts
++++ b/src/play/families/index.ts
+@@ -7,6 +7,7 @@ import { balanceLogic } from "./taraazu/balance.logic.ts";
+ import { lineLogic } from "./nishana/line.logic.ts";
+ import { labLogic } from "./kyun-lab/lab.logic.ts";
+ import { konLogic } from "./kon/kon.logic.ts";
++import { arenaLogic } from "./arena/arena.logic.ts";
+ 
+ type AnyLogic = FamilyLogic<unknown, unknown, PlayActBody>;
+ const asAny = (l: unknown) => l as AnyLogic;
+@@ -21,5 +22,6 @@ export const LOGIC: Record<string, AnyLogic> = {
+   "kyun-lab/fair-test": asAny(labLogic),
+   "kon/turn": asAny(konLogic),
+   "kon/set": asAny(konLogic),
++  "arena/pick": asAny(arenaLogic),
+ };
+ export function logicFor(family: FamilyId, mode: PlayMode): AnyLogic | null { return LOGIC[`${family}/${mode}`] ?? null; }
+diff --git a/src/play/families/views.ts b/src/play/families/views.ts
+index 12c93df8..930001a5 100644
+--- a/src/play/families/views.ts
++++ b/src/play/families/views.ts
+@@ -8,6 +8,7 @@ import { makeBalanceView } from "./taraazu/balance.view.ts";
+ import { makeLineView } from "./nishana/line.view.ts";
+ import { makeLabView } from "./kyun-lab/lab.view.ts";
+ import { makeKonView } from "./kon/kon.view.ts";
++import { makeArenaView } from "./arena/arena.view.ts";
+ 
+ export const VIEWS: Record<string, MakeView> = {
+   "todo-jodo/atoms": makeAtomsView,
+@@ -20,5 +21,6 @@ export const VIEWS: Record<string, MakeView> = {
+   "kyun-lab/fair-test": makeLabView,
+   "kon/turn": makeKonView,
+   "kon/set": makeKonView,
++  "arena/pick": makeArenaView,
+ };
+ export function viewFor(family: FamilyId, mode: PlayMode): MakeView | null { return VIEWS[`${family}/${mode}`] ?? null; }
+diff --git a/src/play/play.css b/src/play/play.css
+index 187a56f5..035a26af 100644
+--- a/src/play/play.css
++++ b/src/play/play.css
+@@ -94,3 +94,9 @@
+ .pl-root[data-embedded] .pl-top, .pl-root[data-embedded] .pl-teacher { display: none; }
+ .pl-root[data-embedded][data-layout="wide"] { grid-template-columns: minmax(0, 1fr) 300px; grid-template-rows: minmax(0, 1fr) auto; grid-template-areas: "world rail" "world controls"; }
+ .pl-root[data-embedded][data-layout="wide"] .pl-doors { right: 300px; }
++
++/* ITEM-ARENA (round 4 G1): the question is the goal line and is never clamped; options sit two to a row and wrap */
++.pl-root[data-family="arena"] .pl-goal { display: block; -webkit-line-clamp: unset; overflow: visible; font-size: 17px; }
++.pl-row--options { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
++.pl-row--options .pl-btn { white-space: normal; line-height: 1.25; min-height: 56px; padding: 8px 12px; text-align: left; font-size: 17px; }
++.pl-btn[aria-pressed="true"] { outline: 3px solid var(--pl-you); outline-offset: 1px; }
+diff --git a/tests/r4-games-core-arena-law.test.mjs b/tests/r4-games-core-arena-law.test.mjs
+new file mode 100644
+index 00000000..8f6262bf
+--- /dev/null
++++ b/tests/r4-games-core-arena-law.test.mjs
+@@ -0,0 +1,69 @@
++// ITEM-ARENA law (round 4 G1): the shot is graded against the verified key in code; the first shot is the evidence; a
++// claim field never decides; a miss darkens that option and never reveals the key in the facts; every bank challenge
++// plays through the picker (solvable, shortcut-free) and survives a random battery (≥ 2000 acts) without throwing.
++import { test } from "node:test";
++import assert from "node:assert/strict";
++import { readFileSync, readdirSync } from "node:fs";
++import { arenaLogic } from "../src/play/families/arena/arena.logic.ts";
++import { pickLevels } from "../src/play/core/pick.ts";
++
++const bank = readdirSync(new URL("../data/arena/", import.meta.url)).filter((f) => /^c\d-[a-z]+\.json$/.test(f))
++  .flatMap((f) => JSON.parse(readFileSync(new URL(`../data/arena/${f}`, import.meta.url), "utf8")).challenges);
++const req = (items, o = {}) => ({ family: "arena", mode: "pick", goal: "pick", topicId: items[0].topicId, skillId: items[0].skillId, classLevel: 5, fade: 1, mis: {}, misMap: {}, grammar: { items }, recent: [], seed: 7, ...o });
++const env = (acts) => acts.map((act, i) => ({ seq: i + 1, t: i * 500, act }));
++const levelOf = (c) => arenaLogic.validate(arenaLogic.generate(req([c]))[0].level);
++
++test("arena: a hit on the key solves; a first miss is the evidence (incorrect) even if a later shot hits", () => {
++  const c = bank.find((x) => x.form === "numeric"), L = levelOf(c);
++  const key = L.params.key, wrong = L.params.options.find((o) => o.id !== key).id;
++  const hit = arenaLogic.grade(L, env([{ kind: "aim", option: key }, { kind: "fire" }]));
++  assert.equal(hit.verdict, "solved"); assert.equal(hit.evidence[0].outcome, "correct");
++  const g = arenaLogic.grade(L, env([{ kind: "aim", option: wrong }, { kind: "fire" }, { kind: "aim", option: key }, { kind: "fire" }]));
++  assert.equal(g.verdict, "solved");
++  assert.equal(g.evidence.length, 1); assert.equal(g.evidence[0].outcome, "incorrect"); assert.equal(g.evidence[0].actSeq, 2);
++});
++
++test("arena: claim fields never decide; a darkened option cannot be aimed again; the key is not a fact before the hit", () => {
++  const c = bank.find((x) => x.form === "choice"), L = levelOf(c);
++  const key = L.params.key, wrong = L.params.options.find((o) => o.id !== key).id;
++  const g = arenaLogic.grade(L, env([{ kind: "aim", option: wrong, correct: true }, { kind: "fire", solved: true, verdict: "correct" }]));
++  assert.notEqual(g.verdict, "solved"); assert.equal(g.evidence[0].outcome, "incorrect");
++  let s = arenaLogic.init(L);
++  s = arenaLogic.apply(L, s, { kind: "aim", option: wrong }, 1).state;
++  const miss = arenaLogic.apply(L, s, { kind: "fire" }, 2);
++  assert.equal(miss.refused, "missed");
++  assert.ok(!Object.values(miss.moments.flatMap((m) => Object.values(m.facts))).includes(c.keyText), "a miss never names the key");
++  assert.equal(arenaLogic.facts(L, miss.state).answer, undefined);
++  assert.equal(arenaLogic.apply(L, miss.state, { kind: "aim", option: wrong }, 3).refused, "already_out");
++  assert.equal(arenaLogic.apply(L, arenaLogic.init(L), { kind: "fire" }, 1).refused, "aim_first");
++});
++
++test("arena: every bank challenge is a valid, solvable, shortcut-free level the picker serves", () => {
++  let n = 0;
++  for (const c of bank) {
++    const r = pickLevels(arenaLogic, req([c]));
++    assert.ok(r?.garam, `${c.id} not served`);
++    assert.equal(r.garam.params.options.find((o) => o.id === r.garam.params.key).text, c.keyText, c.id);
++    n++;
++  }
++  assert.ok(n > 2000);
++});
++
++test("arena: ≥ 2000 random acts with claim fields mixed in: the law never throws and solved ⇔ the key was hit", () => {
++  let seed = 5, acts = 0;
++  const rnd = () => ((seed = (seed * 1103515245 + 12345) >>> 0) / 2 ** 32);
++  for (const c of bank.slice(0, 400)) {
++    const L = levelOf(c);
++    let s = arenaLogic.init(L), lastAim = null, hitKey = false;
++    for (let i = 0; i < 8 && !s.done; i++) {
++      const r = rnd();
++      const a = r < 0.5 ? { kind: "aim", option: L.params.options[Math.floor(rnd() * L.params.options.length)].id, ...(rnd() < 0.2 ? { correct: true } : {}) }
++        : r < 0.9 ? { kind: "fire", ...(rnd() < 0.2 ? { solved: true } : {}) } : { kind: "undo" };
++      if (a.kind === "fire" && s.aim === L.params.key) hitKey = true;
++      s = arenaLogic.apply(L, s, a, i + 1).state; acts++;
++      lastAim = s.aim ?? lastAim;
++    }
++    assert.equal(arenaLogic.goalMet(L, s), hitKey, `${c.id}: solved without hitting the key, or the reverse`);
++  }
++  assert.ok(acts >= 2000, `only ${acts} acts`);
++});
+-- 
+2.43.0
+
