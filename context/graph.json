@@ -18762,6 +18762,34 @@
    "at": "2026-10-10",
    "title": "A content release is proven on the image's file set before deploy (a server started from a git archive without docs/evals/tests), its post-deploy battery includes a Studio request, and serving code may not read runtime data from docs/, evals/ or tests/ (guard test); required runtime data fails loud, never falls back silently",
    "source": "inbox/r4-main-1800.json"
+  },
+  {
+   "id": "owner-core-over-avatar-20261010",
+   "kind": "constraint",
+   "at": "2026-10-10",
+   "title": "Owner 2026-10-10 ~19:00 UTC: the avatar (grown-up Asha) is an add-on to build later; the main product is the tutor described earlier (gamified app, games and content built on the go, understanding detection, a human-like tutor with a bond, 'just start the session, she asks what happened at school today and handles everything'); focus there; asked where product design, UI/UX, user flow and journey stand",
+   "source": "inbox/r4-main-1900.json"
+  },
+  {
+   "id": "dc-r4-merge-order-core-first",
+   "kind": "decision",
+   "at": "2026-10-10",
+   "title": "Merge order after the owner's directive: stream 2 fix + safety release 6, then G1, then Kaksha K0-K3 (ui.kaksha on for the owner's account), then 4A's batch (conversation quality, session-first owner cohort), then G2, 4B, 3, and 5b (avatar) last; avatar work on hold; stream 5 reassigned to an end-to-end journey audit",
+   "source": "inbox/r4-main-1900.json"
+  },
+  {
+   "id": "owner-modern-futurist-vibe-20261010",
+   "kind": "constraint",
+   "at": "2026-10-10",
+   "title": "Owner 2026-10-10: 'Don't go too Indian; be modern, futuristic, engaging and cool, the vibe Gen Alpha likes' (look and feel of the app, worlds and games)",
+   "source": "inbox/r4-main-1915.json"
+  },
+  {
+   "id": "dc-r4-futurist-reskin",
+   "kind": "decision",
+   "at": "2026-10-10",
+   "title": "Look-and-feel re-skin before Kaksha merges: global modern English UI names (no Meri Kaksha, Basti, Ganit/Vigyan/Bhasha), the Indian-town settlement becomes a futuristic base or colony, saffron accent replaced by a neon or electric sci-fi system, new English names for Antariksh and Khand, Gen-Alpha engagement patterns (skins, emotes, juicy feedback) with no coins, streaks, leaderboards or loot boxes; lesson language stays the child's",
+   "source": "inbox/r4-main-1915.json"
   }
  ],
  "edges": [
@@ -30319,6 +30347,21 @@
    "src": "dc-r4-content-release-checks",
    "rel": "caused_by",
    "dst": "rj-r4-gate-tests-checkout-not-image"
+  },
+  {
+   "src": "owner-core-over-avatar-20261010",
+   "rel": "constrains",
+   "dst": "dc-r4-merge-order-core-first"
+  },
+  {
+   "src": "owner-modern-futurist-vibe-20261010",
+   "rel": "constrains",
+   "dst": "dc-r4-futurist-reskin"
+  },
+  {
+   "src": "dc-r4-futurist-reskin",
+   "rel": "part_of",
+   "dst": "dc-r4-app-kaksha"
   }
  ]
 }
