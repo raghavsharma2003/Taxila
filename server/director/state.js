@@ -1570,8 +1570,37 @@ const NUMERIC_KEY = /^[-−]?[\d,]+(?:[./]\d+)?$/;
  * kit item; a text-lane turn with no item gets it from the words actually said, routes/lesson.js), how the child
  * is expected to answer, what the tray holds, the phase and a ≤ 24-character title.
  */
+// r4 K-P11 (stream K, for 4A's intake): the subject words the intake card's trail prints (chrome is English, G-EN-1)
+const INTAKE_SUBJECT = { maths: "Maths", science: "Science", evs: "EVS", english: "English", hindi: "Hindi", sst: "Social Science", social: "Social Science" };
+
+/**
+ * PURE. r4 K-P11: what the child's screen may show of the session-first intake (BUILD-SPEC §3.2), from the intake beat's own
+ * state and the syllabus graph ONLY: never a model's words, no database read, nothing added to the prompt.
+ *   phase   "ask" (her opening / a follow-up) · "which" (one of two chapters) · "mapped" (the confirm probe on the picked topic)
+ *           · "plan" (the decided segment: the one-line agenda)
+ *   mapped  the topic the intake mapped the child's words to: its title, and the trail class · subject · chapter (getTopic)
+ *   plan    the segments the session opened, purpose only (no titles: TUTOR-MODEL "3 dots"); a foundation segment carries the
+ *           asked topic as its `then`
+ * Exported for tests; null when the move is not an intake move.
+ * @returns {{ phase: "ask"|"which"|"mapped"|"plan", mapped?: { topicId: string, title: string, trail: string[] }, plan?: { segments: { purpose: string }[] } } | null}
+ */
+export function intakeUi(s, p, move) {
+  if (!p?.intake || !move) return null;
+  const st = s.intake ?? {};
+  const phase = move.kind === "intake_agenda" ? "plan" : move.kind === "intake_confirm" ? "mapped" : st.stage === "which" ? "which" : "ask";
+  const out = { phase };
+  const seg = phase === "plan" ? s.session?.segments?.at(-1) ?? null : null;
+  const topicId = phase === "plan" ? (seg?.then?.topicId ?? seg?.topicId ?? p.segment?.topicId ?? null) : phase === "mapped" ? (st.pick?.topicId ?? null) : null;
+  const t = topicId ? getTopic(topicId) : null;
+  if (t) out.mapped = { topicId: t.id, title: t.title, trail: [`Class ${t.classLevel}`, INTAKE_SUBJECT[t.subject] ?? t.subject, t.chapter.title] };
+  if (seg) out.plan = { segments: [{ purpose: seg.purpose }, ...(seg.then?.purpose ? [{ purpose: seg.then.purpose }] : [])] };
+  return out;
+}
+
 function uiFor(s, p, move, item, kit) {
   const ui = { status: "your_turn" };
+  const intake = intakeUi(s, p, move);
+  if (intake) ui.intake = intake;
   const topic = getTopic(s.topicId);
   const board = p.whiteboard ?? (item ? anchorOf(item, s.ctx.lang) : null);
   if (board && !isObjective(board.value, kit, topic)) ui.whiteboard = board;

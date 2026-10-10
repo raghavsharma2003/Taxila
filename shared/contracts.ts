@@ -140,6 +140,16 @@ export interface UiDirectives {
    * Until W2-C sends it, the client counts the graded items of a practice lesson itself (useDesk practiceCount).
    */
   practice?: { n: number; of: number; done?: boolean };
+  // r4-4A (patch K-P11 from stream K): the session-first intake as the child's screen may show it (BUILD-SPEC §3.2). Built
+  // by the Director from the intake beat's state and the syllabus graph only (server/director/state.js intakeUi): never a
+  // model's words. Absent outside the intake.
+  intake?: {
+    phase: "ask" | "which" | "mapped" | "plan";
+    /** the topic the child's words were mapped to: its syllabus title and the trail class · subject · chapter */
+    mapped?: { topicId: string; title: string; trail: string[] };
+    /** the session's opened segments, purpose only (no titles on the agenda strip) */
+    plan?: { segments: Array<{ purpose: string }> };
+  };
 }
 
 /** The teacher as every surface shows them: the server is the one source (compiler/characters teacherCard). */
