@@ -292,6 +292,12 @@ export interface LexicalMarkers {
   endShape?: "terminal" | "comma" | "broken" | "unclosed" | null;
   /** Two or more numbers in the last four words and no closing mark: a number being read out (digits, a list, a table). */
   enumerating?: boolean;
+  /**
+   * Round 4 (duplex): the turn names something being read out (a number, an address, an id: "मोबाइल नंबर", "फ्लैट", "pin")
+   * and the unclosed tail is that noun or a number: a dictation, whose groups are separated by long pauses ("सात सौ … छह").
+   * Optional for older constructors.
+   */
+  dictating?: boolean;
 }
 
 /**
@@ -299,7 +305,7 @@ export interface LexicalMarkers {
  * pauseClass). It sets the least silence before she takes the floor (config.ts PAUSE_WAIT) and whether the turn may be
  * prepared early (the eager end of turn).
  */
-export type PauseClass = "hold" | "enumerating" | "question" | "idk" | "complete";
+export type PauseClass = "hold" | "dictation" | "enumerating" | "question" | "idk" | "complete";
 
 /** Expected-answer grammar state. "prefix_ambiguous": complete as is but a longer value is possible ("sixty" → "sixty-two",
  *  "तीन" when the form is a fraction is "pending"). "overfull": more than `slots` values (a list, or a repair). */

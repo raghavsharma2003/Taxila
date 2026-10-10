@@ -61,9 +61,17 @@ describe("round3 duplex: the word-aware end of turn (EOT3)", () => {
     assert.equal(cls("जी जी, मैं ज़रूर आऊँगा। और"), "hold", "open tail");
     assert.equal(cls("उसका कुछ फ़ोन नंबर मेरे को मिल जाता,"), "hold", "comma");
     assert.equal(cls("मेरा नाम हर्ष वि-"), "hold", "broken word");
-    assert.equal(cls("मेरा मोबाइल नंबर है- 700"), "hold", "unclosed number");
-    assert.equal(cls("मेरा फोन नंबर है 7 0 तीन 6, 8"), "enumerating", "digits read out in groups");
-    assert.equal(cls("मेरा नंबर है 7 0 तीन 6 8"), "enumerating");
+    assert.equal(cls("हमारे पास है- 700"), "hold", "unclosed number");
+    assert.equal(cls("तो गिनती है 7 0 तीन 6, 8"), "enumerating", "numbers read out in groups");
+    assert.equal(cls("गिनती है 7 0 तीन 6 8"), "enumerating");
+    // round 4: a read-out (a dictation noun in the turn, the noun or a number at an unclosed tail) is its own, longest class
+    assert.equal(cls("मेरा मोबाइल नंबर है- 700"), "dictation", "a phone number being read out");
+    assert.equal(cls("मेरा फोन नंबर है 7 0 तीन 6, 8"), "dictation", "digits of a phone number in groups");
+    assert.equal(cls("मुझे लगता है कि वो टेबल नंबर"), "dictation", "the read-out still to come");
+    assert.equal(cls("मेरा पता है फ्लैट नंबर एक 4 6"), "dictation", "an address");
+    assert.equal(cls("मेरा नंबर है 7 0 तीन 6 8 1।"), "complete", "a closed read-out is not held");
+    assert.equal(cls("मेरा फोन नंबर क्या है?"), "question", "a question to her keeps its own wait");
+    assert.notEqual(cls("no, 5"), "dictation", "a bare English 'no' is not a dictation noun");
     assert.equal(cls("और मेरी मीटिंग में नुकसान हो गया, उसका भरपाई कौन करेगा?"), "question");
     assert.equal(cls("पता नहीं"), "idk");
     assert.equal(cls("मैंने खेती के उपकरणों के लिए सब्सिडी का आवेदन किया था।"), "complete");
@@ -71,7 +79,7 @@ describe("round3 duplex: the word-aware end of turn (EOT3)", () => {
   });
 
   it("outside closed answers the least silence is PAUSE_WAIT by class; closed answers keep their own waits", () => {
-    for (const [text, k] of [["मैंने आवेदन किया था।", "complete"], ["उसका भरपाई कौन करेगा?", "question"], ["मेरा नंबर है 7 0 तीन 6 8", "enumerating"], ["पता नहीं", "idk"]]) {
+    for (const [text, k] of [["मैंने आवेदन किया था।", "complete"], ["उसका भरपाई कौन करेगा?", "question"], ["गिनती है 7 0 तीन 6 8", "enumerating"], ["मेरा नंबर है 7 0 तीन 6 8", "dictation"], ["पता नहीं", "idk"]]) {
       const tk = tickWith(markersOf(text));
       assert.equal(extraWait(tk, estimate(tk)), PAUSE_WAIT[k], `${k}: ${text}`);
     }
@@ -83,7 +91,7 @@ describe("round3 duplex: the word-aware end of turn (EOT3)", () => {
     const g = new Governor({ flags: FLAGS });
     g.phase = "child_turn"; g.phaseSince = 1000;
     const unsure = { id: { id: "u", stage: "A", version: "t" }, contract: "cce/2026-10-04", reset() {}, tick: () => ({ action: "HOLD", detail: { action: "HOLD", reason: "uncertain" }, confidence: 0.5, pComplete: 0.3, pHoldWanted: 0.5, reasons: [], engine: { id: "u", stage: "A", version: "t" } }) };
-    const hold = markersOf("मेरा मोबाइल नंबर है- 700");
+    const hold = markersOf("हमारे पास है- 700");
     assert.equal(g.decide(tickWith(hold, { child: { ...tickWith(hold).child, silenceRunMs: 1100 } }), unsure).decision.action, "HOLD");
     assert.equal(g.decide(tickWith(hold, { t: 5600, child: { ...tickWith(hold).child, silenceRunMs: PAUSE_WAIT.hold + 20 } }), unsure).decision.action, "SPEAK");
   });
@@ -144,7 +152,8 @@ describe("round3 duplex: real-speech replays of thinking pauses the shipped engi
       }
       const end = commits.find((c) => c[0] >= tr.end - 200);
       assert.ok(end, `${id}: the turn end is committed`);
-      assert.ok(end[0] - tr.end <= PAUSE_WAIT.hold + 500, `${id}: decided ${Math.round(end[0] - tr.end)} ms after the end`);
+      // round 4: hi__4164 ENDS on a phone number read-out, so its turn end waits the dictation class
+      assert.ok(end[0] - tr.end <= Math.max(PAUSE_WAIT.hold, PAUSE_WAIT.dictation) + 500, `${id}: decided ${Math.round(end[0] - tr.end)} ms after the end`);
     });
   }
 });

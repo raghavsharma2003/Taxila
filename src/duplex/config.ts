@@ -102,7 +102,14 @@ export const OPEN_TURN_WAIT = { prosodyFinal: 1100 as Ms, neutral: 1100 as Ms, p
  * fastest setting with <= 3 % cut-offs on both lanes; reported on TEST. Supersedes OPEN_TURN_WAIT (kept for older imports).
  * Real adult speech, not children: the pilot refits it. Mutable so the sweep can set it.
  */
-export const PAUSE_WAIT: Record<"hold" | "enumerating" | "question" | "idk" | "complete", Ms> = { hold: 1600, enumerating: 1200, question: 900, idk: 0, complete: 1100 };
+/*
+ * Round 4 (duplex, 2026-10-10): + `dictation` (markers.ts `dictating`: a number / address / id being read out, its tail the
+ * noun or a number, not closed). Real eot-bench Hindi, both real STT lanes: 6 of the 13 thinking pauses round 3 still cut
+ * (MAI + D4) were read-outs ("टेबल नंबर [1.5 s] है", "मोबाइल नंबर है सात सौ [1.2 s] सिक्स…", "7 0 090 2 0 6 8 1 [2.2 s] मेरा
+ * ईमेल"). 2,400 ms is the least wait with the fewest TRAIN cut-offs on both lanes (evals/duplex-r4/eot-sweep-r4.mjs; MAI 2 → 0,
+ * D4 3 → 1 of 77); TEST is reported (RESULTS.md). The turn-end gap p50 does not move (few turns END on a read-out).
+ */
+export const PAUSE_WAIT: Record<"hold" | "dictation" | "enumerating" | "question" | "idk" | "complete", Ms> = { hold: 1600, dictation: 2400, enumerating: 1200, question: 900, idk: 0, complete: 1100 };
 /** A hesitant first value (pausesThisTurn >= 1 or a filler before it) waits for this much silence too (§2.5.1; M-B1 21/21). */
 export const HESITANT_VALUE_SILENCE_MS: Ms = 300;
 /** word / phrase forms: complete only with prosodic finality or this much silence (§2.5.1). */
