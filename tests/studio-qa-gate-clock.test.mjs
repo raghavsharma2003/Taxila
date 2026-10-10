@@ -19,13 +19,17 @@ describe("studio gate waits under a frozen or mocked clock", () => {
     } finally { performance.now = real; }
   });
   it("mocked timers and Date do not hang the gate's sleep or its polls", { timeout: 5000 }, async (t) => {
-    t.mock.timers.enable({ apis: ["setTimeout", "Date"] });
+    // setTimeout through mock.timers; Date.now frozen by hand (mock.timers' Date cannot be enabled when another harness
+    // has already replaced Date, as the suite's per-test virtual clocks may have)
+    t.mock.timers.enable({ apis: ["setTimeout"] });
+    const realNow = Date.now, at = Date.now();
+    Date.now = () => at;
     try {
       let n = 0;
       await sleep(10);                                    // the mocked setTimeout never fires; the gate's sleep still does
       assert.equal(await waitUntil(() => ++n > 3, 500, 5), true);
       assert.equal(await waitUntil(() => false, 100, 10), false, "a never-true condition still ends");
-    } finally { t.mock.timers.reset(); }
+    } finally { Date.now = realNow; t.mock.timers.reset(); }
   });
   it("a condition that holds returns at once", async () => {
     assert.equal(await waitUntil(() => true, 5000, 50), true);
