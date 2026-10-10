@@ -38,7 +38,9 @@ export async function flavourPick({ item, topicTitle, skins, timeoutMs = FLAVOUR
   if (process.env.FORGE_FLAVOUR === "off") return fallback("flavour_off");
   // Not enough of the caller's budget left for a call (the turn path at needByMs 2000 always lands here): the code
   // pick ships now and index.js may upgrade the cached fill to a model pick in the background ("no_time").
-  if (timeoutMs < 500) return fallback("no_time");
+  // ≤, not <: the turn path passes 2000 − 1500 − elapsed, exactly 500 when the clock has not advanced (a virtual or
+  // coarse performance.now), and a 500 ms call against a 1.88 s p50 is a billed timeout, not a pick.
+  if (timeoutMs <= 500) return fallback("no_time");
   // Structure, not sentences: labelled fields the model reads; nothing here is text a child or voice will see.
   const sys = [
     "task: pick skin, hook and decor for a short practice activity. JSON only.",

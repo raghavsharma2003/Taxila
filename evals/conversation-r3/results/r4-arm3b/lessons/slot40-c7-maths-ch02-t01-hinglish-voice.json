@@ -1,0 +1,4252 @@
+{
+ "slot": 40,
+ "topic": "c7-maths-ch02-t01",
+ "cls": 7,
+ "lang": "hinglish",
+ "lane": "voice",
+ "lessons": [
+  {
+   "lessonId": "db17ad6b-3915-4d9f-81b3-da0deb0c6276",
+   "why": "start",
+   "at": "2026-10-10T12:01:44.853Z",
+   "teacher": "Arjun"
+  }
+ ],
+ "turns": [
+  {
+   "who": "teacher",
+   "kind": "opening",
+   "lessonId": "db17ad6b-3915-4d9f-81b3-da0deb0c6276",
+   "teacherReply": "Namaste Riya, main Arjun, aapka AI teacher. Aaj hum word situations se arithmetic expressions likhenge. Aapko music mein kaunsa instrument pasand hai?",
+   "ui": {
+    "status": "your_turn",
+    "phase": "warmup",
+    "handover": "answer",
+    "answerForm": "words",
+    "tray": "none",
+    "shortTitle": "Writing expressions",
+    "beat": {
+     "beatId": "b1-arrive",
+     "type": "arrive",
+     "index": 1
+    },
+    "ask": {
+     "text": "Aapko music mein kaunsa instrument pasand hai?"
+    }
+   }
+  },
+  {
+   "who": "child",
+   "tag": "greet",
+   "lessonId": "db17ad6b-3915-4d9f-81b3-da0deb0c6276",
+   "childText": "hello haan shuru karo",
+   "ms": 1461,
+   "error": null,
+   "teacherReply": "Riya, canteen mein samosa 15 rupaye ka aur juice 20 rupaye ka ho, toh total bill dikhane ke liye aap kya likhenge?",
+   "move": {
+    "kind": "hook",
+    "shape": "open with one concrete everyday situation — kit contexts: canteen and chai-stall bills, auto-rickshaw fares, sharing a pizza or a cab; ask what they think will happen or which they would pick — a prediction, no right answer yet; any bigger/more comparison: two quantities of one kind, in one unit — a count against a count, a distance against a distance; never across kinds; mention once: at the end they will teach this to Bittu (a pretend new student who missed this class); address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu",
+    "format": "F4"
+   },
+   "ui": {
+    "status": "your_turn",
+    "phase": "teach",
+    "handover": "answer",
+    "answerForm": "words",
+    "tray": "none",
+    "shortTitle": "Writing expressions",
+    "beat": {
+     "beatId": "b2-hook",
+     "type": "hook",
+     "index": 2
+    },
+    "ask": {
+     "text": "Riya, canteen mein samosa 15 rupaye ka aur juice 20 rupaye ka ho, toh total bill dikhane ke liye aap kya likhenge?"
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false
+    },
+    "verdict": "attempt",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 459,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "teach",
+    "ms": 1457,
+    "item": null,
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 40
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 41
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 899
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 943
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1359
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1401
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1404
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1404
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1185
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 1405
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 1457
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "probe:clarify-10",
+   "lessonId": "db17ad6b-3915-4d9f-81b3-da0deb0c6276",
+   "childText": "what do you mean by expression",
+   "ms": 3013,
+   "error": null,
+   "teacherReply": "Riya, arithmetic expression numbers aur operations ka short maths sentence hota hai, jaise 15 plus 20. Ismein answer nahi likhte. Aap expression batayenge?",
+   "move": {
+    "kind": "reteach",
+    "shape": "they did not follow it: the SAME idea a new, simpler way in (a picture in words, real objects, or a different example), never your earlier words; the idea in LESSON NOW is still the one on the table; no new step of the lesson yet; end with one small question about it; address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu",
+    "must": "a different example or question from the last one, never the same one again",
+    "skillId": "c7-maths-ch02-t01-s1",
+    "request": "another"
+   },
+   "ui": {
+    "status": "your_turn",
+    "phase": "teach",
+    "handover": "answer",
+    "answerForm": "words",
+    "tray": "studio",
+    "shortTitle": "Writing expressions",
+    "beat": {
+     "beatId": "b3-explain",
+     "type": "explain",
+     "index": 3
+    },
+    "ask": {
+     "text": "Aap expression batayenge?"
+    },
+    "studioSlot": {
+     "slotId": "db17ad6b-3915-4d9f-81b3-da0deb0c6276:wb:2:slot",
+     "intentId": "db17ad6b-3915-4d9f-81b3-da0deb0c6276:wb:2",
+     "state": "revealed",
+     "artifact": {
+      "kind": "whiteboard",
+      "stage": {
+       "w": 508,
+       "h": 317
+      },
+      "script": {
+       "v": 1,
+       "scriptId": "db17ad6b-3915-4d9f-81b3-da0deb0c6276:wb:2",
+       "line": {
+        "lessonId": "db17ad6b-3915-4d9f-81b3-da0deb0c6276",
+        "teacherReplySeq": 5
+       },
+       "anchor": "line_audio_start",
+       "board": {
+        "w": 508,
+        "h": 317,
+        "ground": "chalk"
+       },
+       "mode": "fresh",
+       "durationMs": 9308,
+       "ops": [
+        {
+         "id": "n1",
+         "op": "circle",
+         "startMs": 0,
+         "endMs": 1634,
+         "ink": "chalk",
+         "weight": 2,
+         "c": [
+          95.2,
+          114.3
+         ],
+         "r": 30.5
+        },
+        {
+         "id": "n2",
+         "op": "circle",
+         "startMs": 1168,
+         "endMs": 2802,
+         "ink": "chalk",
+         "weight": 2,
+         "c": [
+          190.5,
+          114.3
+         ],
+         "r": 30.5
+        },
+        {
+         "id": "op1",
+         "op": "text",
+         "startMs": 2102,
+         "endMs": 3036,
+         "ink": "accent",
+         "weight": 2,
+         "at": [
+          142.9,
+          120.6
+         ],
+         "text": "+",
+         "size": "l",
+         "align": "middle"
+        },
+        {
+         "id": "n3",
+         "op": "circle",
+         "startMs": 2570,
+         "endMs": 4204,
+         "ink": "chalk",
+         "weight": 2,
+         "c": [
+          285.7,
+          114.3
+         ],
+         "r": 30.5
+        },
+        {
+         "id": "op2",
+         "op": "text",
+         "startMs": 3270,
+         "endMs": 4204,
+         "ink": "accent",
+         "weight": 2,
+         "at": [
+          238.1,
+          120.6
+         ],
+         "text": "×",
+         "size": "l",
+         "align": "middle"
+        },
+        {
+         "id": "expr",
+         "op": "label",
+         "startMs": 5138,
+         "endMs": 7006,
+         "ink": "chalk",
+         "weight": 1,
+         "at": [
+          190.5,
+          190.5
+         ],
+         "text": "expression",
+         "to": [
+          190.5,
+          146
+         ]
+        },
+        {
+         "id": "value",
+         "op": "label",
+         "startMs": 7474,
+         "endMs": 9108,
+         "ink": "good",
+         "weight": 1,
+         "at": [
+          317.5,
+          114.3
+         ],
+         "text": "value",
+         "to": [
+          316.2,
+          114.3
+         ]
+        }
+       ],
+       "facts": {
+        "kind": "diagram",
+        "archetype": "whiteboard",
+        "onScreen": {
+         "labels": "+ | × | expression | value"
+        }
+       }
+      }
+     }
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false
+    },
+    "verdict": "ungraded",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "clarify",
+     "waitedMs": 506,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "teach",
+    "ms": 3010,
+    "item": null,
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 57
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 58
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 796
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 859
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1303
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1364
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1367
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1368
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1526
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 2929
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 3010
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "filler",
+   "lessonId": "db17ad6b-3915-4d9f-81b3-da0deb0c6276",
+   "childText": "achha",
+   "ms": 3272,
+   "error": null,
+   "teacherReply": "Expression mein objects pehle sochiye, phir operation symbol lagaiye: samosa aur juice ke liye numbers kaise jodenge, Riya?",
+   "move": {
+    "kind": "explain",
+    "shape": "one idea only: Write an arithmetic expression for a word situation; objects first, then the symbol; point at the screen only at what the on-screen row lists; never a drawing made of characters; end with one small question that makes them USE the idea — never 'samjha?'; address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu",
+    "skillId": "c7-maths-ch02-t01-s1",
+    "format": "F4"
+   },
+   "ui": {
+    "status": "your_turn",
+    "phase": "teach",
+    "handover": "answer",
+    "answerForm": "words",
+    "tray": "studio",
+    "shortTitle": "Writing expressions",
+    "beat": {
+     "beatId": "b3-explain",
+     "type": "explain",
+     "index": 3
+    },
+    "ask": {
+     "text": "Expression mein objects pehle sochiye, phir operation symbol lagaiye: samosa aur juice ke liye numbers kaise jodenge,…"
+    },
+    "studioSlot": {
+     "slotId": "db17ad6b-3915-4d9f-81b3-da0deb0c6276:wb:3:slot",
+     "intentId": "db17ad6b-3915-4d9f-81b3-da0deb0c6276:wb:3",
+     "state": "revealed",
+     "artifact": {
+      "kind": "whiteboard",
+      "stage": {
+       "w": 508,
+       "h": 317
+      },
+      "script": {
+       "v": 1,
+       "scriptId": "db17ad6b-3915-4d9f-81b3-da0deb0c6276:wb:3",
+       "line": {
+        "lessonId": "db17ad6b-3915-4d9f-81b3-da0deb0c6276",
+        "teacherReplySeq": 7
+       },
+       "anchor": "line_audio_start",
+       "board": {
+        "w": 508,
+        "h": 317,
+        "ground": "chalk"
+       },
+       "mode": "continue",
+       "durationMs": 10230,
+       "ops": [
+        {
+         "id": "n1",
+         "op": "circle",
+         "startMs": 0,
+         "endMs": 1799,
+         "ink": "chalk",
+         "weight": 2,
+         "c": [
+          95.2,
+          114.3
+         ],
+         "r": 30.5
+        },
+        {
+         "id": "n2",
+         "op": "circle",
+         "startMs": 1286,
+         "endMs": 3086,
+         "ink": "chalk",
+         "weight": 2,
+         "c": [
+          190.5,
+          114.3
+         ],
+         "r": 30.5
+        },
+        {
+         "id": "op1",
+         "op": "text",
+         "startMs": 2315,
+         "endMs": 3343,
+         "ink": "accent",
+         "weight": 2,
+         "at": [
+          142.9,
+          120.6
+         ],
+         "text": "+",
+         "size": "l",
+         "align": "middle"
+        },
+        {
+         "id": "n3",
+         "op": "circle",
+         "startMs": 2830,
+         "endMs": 4629,
+         "ink": "chalk",
+         "weight": 2,
+         "c": [
+          285.7,
+          114.3
+         ],
+         "r": 30.5
+        },
+        {
+         "id": "op2",
+         "op": "text",
+         "startMs": 3601,
+         "endMs": 4629,
+         "ink": "accent",
+         "weight": 2,
+         "at": [
+          238.1,
+          120.6
+         ],
+         "text": "×",
+         "size": "l",
+         "align": "middle"
+        },
+        {
+         "id": "expr",
+         "op": "label",
+         "startMs": 5658,
+         "endMs": 7715,
+         "ink": "chalk",
+         "weight": 1,
+         "at": [
+          190.5,
+          190.5
+         ],
+         "text": "expression",
+         "to": [
+          190.5,
+          146
+         ]
+        },
+        {
+         "id": "value",
+         "op": "label",
+         "startMs": 8230,
+         "endMs": 10030,
+         "ink": "good",
+         "weight": 1,
+         "at": [
+          317.5,
+          114.3
+         ],
+         "text": "value",
+         "to": [
+          316.2,
+          114.3
+         ]
+        }
+       ],
+       "facts": {
+        "kind": "diagram",
+        "archetype": "whiteboard",
+        "onScreen": {
+         "labels": "+ | × | expression | value"
+        }
+       }
+      }
+     }
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false
+    },
+    "verdict": "ungraded",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 714,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "teach",
+    "ms": 3269,
+    "item": null,
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 39
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 40
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 877
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 921
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1592
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1635
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1639
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1639
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1507
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 3150
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 3269
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "probe:meta_feedback-03",
+   "lessonId": "db17ad6b-3915-4d9f-81b3-da0deb0c6276",
+   "childText": "aap baar baar same question puchte ho",
+   "ms": 2386,
+   "error": null,
+   "teacherReply": "Sahi kaha, Riya—main repeat kar raha tha. Ab main pehle step dikhaunga, phir sirf agla step aapse poochunga. 15 plus 20 ka expression kya hoga?",
+   "move": {
+    "kind": "worked_example",
+    "shape": "they said how they want it: do it that way from now on, or say kindly why not and do the nearest thing; worked example, part 1 of 2: say one step, then ask them for the next step; their thinking, your pace; no new idea; address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu",
+    "must": "first, in a few words, take what they said about your teaching on board (a thank-you for praise, or the change you make now); then do it",
+    "skillId": "c7-maths-ch02-t01-s1",
+    "format": "F2",
+    "request": "adapt",
+    "lead": "they said how they want it: do it that way from now on, or say kindly why not and do the nearest thing"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "math",
+     "value": "Without adding, compare 247 + 389 and 250 + 386."
+    },
+    "phase": "teach",
+    "handover": "answer",
+    "answerForm": "words",
+    "tray": "studio",
+    "shortTitle": "Writing expressions",
+    "beat": {
+     "beatId": "b4-worked_example",
+     "type": "worked_example",
+     "index": 4
+    },
+    "ask": {
+     "text": "15 plus 20 ka expression kya hoga?"
+    },
+    "studioSlot": {
+     "slotId": "db17ad6b-3915-4d9f-81b3-da0deb0c6276:wb:4:slot",
+     "intentId": "db17ad6b-3915-4d9f-81b3-da0deb0c6276:wb:4",
+     "state": "revealed",
+     "artifact": {
+      "kind": "whiteboard",
+      "stage": {
+       "w": 508,
+       "h": 317
+      },
+      "script": {
+       "v": 1,
+       "scriptId": "db17ad6b-3915-4d9f-81b3-da0deb0c6276:wb:4",
+       "line": {
+        "lessonId": "db17ad6b-3915-4d9f-81b3-da0deb0c6276",
+        "teacherReplySeq": 9
+       },
+       "anchor": "line_audio_start",
+       "board": {
+        "w": 508,
+        "h": 317,
+        "ground": "chalk"
+       },
+       "mode": "fresh",
+       "durationMs": 12550,
+       "ops": [
+        {
+         "id": "n1",
+         "op": "circle",
+         "startMs": 0,
+         "endMs": 2217,
+         "ink": "chalk",
+         "weight": 2,
+         "c": [
+          95.2,
+          114.3
+         ],
+         "r": 30.5
+        },
+        {
+         "id": "n2",
+         "op": "circle",
+         "startMs": 1583,
+         "endMs": 3800,
+         "ink": "chalk",
+         "weight": 2,
+         "c": [
+          190.5,
+          114.3
+         ],
+         "r": 30.5
+        },
+        {
+         "id": "op1",
+         "op": "text",
+         "startMs": 2850,
+         "endMs": 4117,
+         "ink": "accent",
+         "weight": 2,
+         "at": [
+          142.9,
+          120.6
+         ],
+         "text": "+",
+         "size": "l",
+         "align": "middle"
+        },
+        {
+         "id": "n3",
+         "op": "circle",
+         "startMs": 3483,
+         "endMs": 5700,
+         "ink": "chalk",
+         "weight": 2,
+         "c": [
+          285.7,
+          114.3
+         ],
+         "r": 30.5
+        },
+        {
+         "id": "op2",
+         "op": "text",
+         "startMs": 4433,
+         "endMs": 5700,
+         "ink": "accent",
+         "weight": 2,
+         "at": [
+          238.1,
+          120.6
+         ],
+         "text": "×",
+         "size": "l",
+         "align": "middle"
+        },
+        {
+         "id": "expr",
+         "op": "label",
+         "startMs": 6967,
+         "endMs": 9500,
+         "ink": "chalk",
+         "weight": 1,
+         "at": [
+          190.5,
+          190.5
+         ],
+         "text": "expression",
+         "to": [
+          190.5,
+          146
+         ]
+        },
+        {
+         "id": "value",
+         "op": "label",
+         "startMs": 10134,
+         "endMs": 12350,
+         "ink": "good",
+         "weight": 1,
+         "at": [
+          317.5,
+          114.3
+         ],
+         "text": "value",
+         "to": [
+          316.2,
+          114.3
+         ]
+        }
+       ],
+       "facts": {
+        "kind": "diagram",
+        "archetype": "whiteboard",
+        "onScreen": {
+         "labels": "+ | × | expression | value"
+        }
+       }
+      }
+     }
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false
+    },
+    "verdict": "ungraded",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "meta_feedback",
+     "waitedMs": 372,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "teach",
+    "ms": 2384,
+    "item": null,
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 48
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 49
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 710
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 766
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1083
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1138
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1142
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1142
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1132
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 2316
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 2383
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "filler",
+   "lessonId": "db17ad6b-3915-4d9f-81b3-da0deb0c6276",
+   "childText": "achha",
+   "ms": 2859,
+   "error": null,
+   "teacherReply": "Expression likhne ke liye numbers ke beech operation lagate hain: 15 plus 20. Iska value nikaale bina ise kaise likhenge?",
+   "move": {
+    "kind": "worked_example",
+    "shape": "worked example, part 2 of 2: say one step, then ask them for the next step; their thinking, your pace; no new idea; address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu",
+    "skillId": "c7-maths-ch02-t01-s1",
+    "format": "F2"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "math",
+     "value": "Without adding, compare 247 + 389 and 250 + 386."
+    },
+    "phase": "teach",
+    "handover": "answer",
+    "answerForm": "words",
+    "tray": "studio",
+    "shortTitle": "Writing expressions",
+    "beat": {
+     "beatId": "b4-worked_example",
+     "type": "worked_example",
+     "index": 4
+    },
+    "ask": {
+     "text": "Iska value nikaale bina ise kaise likhenge?"
+    },
+    "studioSlot": {
+     "slotId": "db17ad6b-3915-4d9f-81b3-da0deb0c6276:wb:5:slot",
+     "intentId": "db17ad6b-3915-4d9f-81b3-da0deb0c6276:wb:5",
+     "state": "revealed",
+     "artifact": {
+      "kind": "whiteboard",
+      "stage": {
+       "w": 508,
+       "h": 317
+      },
+      "script": {
+       "v": 1,
+       "scriptId": "db17ad6b-3915-4d9f-81b3-da0deb0c6276:wb:5",
+       "line": {
+        "lessonId": "db17ad6b-3915-4d9f-81b3-da0deb0c6276",
+        "teacherReplySeq": 11
+       },
+       "anchor": "line_audio_start",
+       "board": {
+        "w": 508,
+        "h": 317,
+        "ground": "chalk"
+       },
+       "mode": "continue",
+       "durationMs": 10860,
+       "ops": [
+        {
+         "id": "n1",
+         "op": "circle",
+         "startMs": 0,
+         "endMs": 1914,
+         "ink": "chalk",
+         "weight": 2,
+         "c": [
+          95.2,
+          114.3
+         ],
+         "r": 30.5
+        },
+        {
+         "id": "n2",
+         "op": "circle",
+         "startMs": 1366,
+         "endMs": 3280,
+         "ink": "chalk",
+         "weight": 2,
+         "c": [
+          190.5,
+          114.3
+         ],
+         "r": 30.5
+        },
+        {
+         "id": "op1",
+         "op": "text",
+         "startMs": 2460,
+         "endMs": 3554,
+         "ink": "accent",
+         "weight": 2,
+         "at": [
+          142.9,
+          120.6
+         ],
+         "text": "+",
+         "size": "l",
+         "align": "middle"
+        },
+        {
+         "id": "n3",
+         "op": "circle",
+         "startMs": 3006,
+         "endMs": 4920,
+         "ink": "chalk",
+         "weight": 2,
+         "c": [
+          285.7,
+          114.3
+         ],
+         "r": 30.5
+        },
+        {
+         "id": "op2",
+         "op": "text",
+         "startMs": 3827,
+         "endMs": 4920,
+         "ink": "accent",
+         "weight": 2,
+         "at": [
+          238.1,
+          120.6
+         ],
+         "text": "×",
+         "size": "l",
+         "align": "middle"
+        },
+        {
+         "id": "expr",
+         "op": "label",
+         "startMs": 6014,
+         "endMs": 8200,
+         "ink": "chalk",
+         "weight": 1,
+         "at": [
+          190.5,
+          190.5
+         ],
+         "text": "expression",
+         "to": [
+          190.5,
+          146
+         ]
+        },
+        {
+         "id": "value",
+         "op": "label",
+         "startMs": 8748,
+         "endMs": 10660,
+         "ink": "good",
+         "weight": 1,
+         "at": [
+          317.5,
+          114.3
+         ],
+         "text": "value",
+         "to": [
+          316.2,
+          114.3
+         ]
+        }
+       ],
+       "facts": {
+        "kind": "diagram",
+        "archetype": "whiteboard",
+        "onScreen": {
+         "labels": "+ | × | expression | value"
+        }
+       }
+      }
+     }
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false
+    },
+    "verdict": "ungraded",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 326,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "teach",
+    "ms": 2855,
+    "item": null,
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 56
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 56
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 744
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 804
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1071
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1130
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1133
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1134
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1555
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 2692
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 2855
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "advance",
+   "lessonId": "db17ad6b-3915-4d9f-81b3-da0deb0c6276",
+   "childText": "hmm achha",
+   "ms": 1813,
+   "error": null,
+   "teacherReply": "Theek hai, Riya. Is bill ka expression likhiye: ₹15 wale 3 samose aur ₹10 wali 2 chai.",
+   "move": {
+    "kind": "practice",
+    "shape": "pose the question as written, in their language; then wait; address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu",
+    "itemId": "c7-maths-ch02-t01-i01",
+    "skillId": "c7-maths-ch02-t01-s1",
+    "hintLevel": 0,
+    "probe": "P15"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "math",
+     "value": "15  ·  3  ·  10  ·  2"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "Is bill ka expression likhiye: ₹15 wale 3 samose aur ₹10 wali 2 chai.",
+     "itemId": "c7-maths-ch02-t01-i01"
+    },
+    "answerForm": "words",
+    "tray": "none",
+    "shortTitle": "Writing expressions",
+    "beat": {
+     "beatId": "b5-practice_set",
+     "type": "practice_set",
+     "index": 5
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false,
+     "leadSlot": true
+    },
+    "verdict": "ungraded",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 547,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 1798,
+    "item": "c7-maths-ch02-t01-i01",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 82
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 83
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 716
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 802
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1264
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1350
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1353
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1353
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1598
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 1737
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 1798
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "probe:skip_item-04",
+   "lessonId": "db17ad6b-3915-4d9f-81b3-da0deb0c6276",
+   "childText": "isko chhodo dusra do",
+   "ms": 2845,
+   "error": null,
+   "teacherReply": "Theek hai, Riya—isse chhodte hain. Naya sawaal kijiye: Metro card kharidne ke ₹200 lagte hain, aur har ride ₹18 ki hai. Card aur 5 rides ki total cost ka expression likhiye.",
+   "move": {
+    "kind": "practice",
+    "shape": "they asked to skip this one for now: no verdict, it comes back another day; the next question; pose the question as written, in their language; then wait; no verdict on their reply: neither praise nor 'wrong'; address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu",
+    "itemId": "c7-maths-ch02-t01-rl-o1",
+    "skillId": "c7-maths-ch02-t01-s1",
+    "hintLevel": 0,
+    "probe": "P15",
+    "request": "skip"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "math",
+     "value": "200  ·  18  ·  5"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "Metro card kharidne ke ₹200 lagte hain, aur har ride ₹18 ki hai. Card aur 5 rides ki total cost ka expression likhiye.",
+     "itemId": "c7-maths-ch02-t01-rl-o1"
+    },
+    "answerForm": "words",
+    "tray": "none",
+    "shortTitle": "Writing expressions",
+    "beat": {
+     "beatId": "b5-practice_set",
+     "type": "practice_set",
+     "index": 5
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false
+    },
+    "verdict": "unverified",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "request"
+    },
+    "note": null,
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 2842,
+    "item": "c7-maths-ch02-t01-rl-o1",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 51
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 52
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 579
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 639
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 642
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 643
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 855
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1285
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 2790
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 2842
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "recovery",
+   "lessonId": "db17ad6b-3915-4d9f-81b3-da0deb0c6276",
+   "childText": "290",
+   "ms": 2733,
+   "error": null,
+   "teacherReply": "Bilkul, Riya—290 sahi total cost hai. Isse expression mein kaise dikhayenge?",
+   "move": {
+    "kind": "probe",
+    "shape": "confirm in two or three words only — the reason is theirs to give, so do not explain it; covert shape: protege naive but-why; Bittu, who does not know it, asks why; about THIS question; one open question; wait; a real question, never a check on them; address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu",
+    "itemId": "c7-maths-ch02-t01-rl-o1",
+    "skillId": "c7-maths-ch02-t01-s1",
+    "hintLevel": 0,
+    "probe": "P2"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "math",
+     "value": "200  ·  18  ·  5"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "answerForm": "words",
+    "tray": "none",
+    "shortTitle": "Writing expressions",
+    "verdict": "correct",
+    "beat": {
+     "beatId": "b6-probe",
+     "type": "probe",
+     "index": 6
+    },
+    "ask": {
+     "text": "Isse expression mein kaise dikhayenge?"
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [
+      "noconfirm"
+     ],
+     "rewritten": true,
+     "replaced": false,
+     "firstDraft": "Riya, 290 total value hai; expression mein operation dikhate hain. Card ₹200 aur 5 rides ka kharcha kaise likhenge?",
+     "afterRewrite": []
+    },
+    "verdict": "correct",
+    "cls": {
+     "outcome": "correct",
+     "source": "exact"
+    },
+    "note": null,
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 2730,
+    "item": "c7-maths-ch02-t01-rl-o1",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 43
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 43
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 47
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 92
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 92
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1478
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1101
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 2677
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 2730
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "advance",
+   "lessonId": "db17ad6b-3915-4d9f-81b3-da0deb0c6276",
+   "childText": "ok samajh gaya",
+   "ms": 2365,
+   "error": null,
+   "teacherReply": "Riya, expression hoga 200 plus 5 into 18; ab bina poora calculate kiye bataiye, ismein 5 aur 18 kyun hain?",
+   "move": {
+    "kind": "explain",
+    "shape": "give the reason yourself in one plain line (their answer was right); one idea only: Compare two expressions by reasoning about their parts, without full calculation; objects first, then the symbol; point at the screen only at what the on-screen row lists; never a drawing made of characters; end with one small question that makes them USE the idea — never 'samjha?'; address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu",
+    "skillId": "c7-maths-ch02-t01-s2",
+    "format": "F4"
+   },
+   "ui": {
+    "status": "your_turn",
+    "phase": "practice",
+    "handover": "answer",
+    "answerForm": "words",
+    "tray": "module",
+    "shortTitle": "Writing expressions",
+    "beat": {
+     "beatId": "b7-explain",
+     "type": "explain",
+     "index": 7
+    },
+    "ask": {
+     "text": "Riya, expression hoga 200 plus 5 into 18; ab bina poora calculate kiye bataiye, ismein 5 aur 18 kyun hain?"
+    }
+   },
+   "moduleCommands": [
+    {
+     "op": "mount",
+     "moduleId": "m9",
+     "engine": "explainer@1",
+     "params": {
+      "script": {
+       "v": 1,
+       "scriptId": "ex-1gheyny",
+       "line": {
+        "lessonId": "db17ad6b-3915-4d9f-81b3-da0deb0c6276"
+       },
+       "anchor": "line_audio_start",
+       "board": {
+        "w": 400,
+        "h": 300,
+        "ground": "chalk"
+       },
+       "mode": "fresh",
+       "durationMs": 5110,
+       "ops": [
+        {
+         "id": "o1",
+         "op": "text",
+         "startMs": 40,
+         "endMs": 200,
+         "at": [
+          166,
+          95
+         ],
+         "text": "2",
+         "size": "l"
+        },
+        {
+         "id": "o2",
+         "op": "text",
+         "startMs": 240,
+         "endMs": 400,
+         "at": [
+          200,
+          95
+         ],
+         "text": "4",
+         "size": "l"
+        },
+        {
+         "id": "o3",
+         "op": "text",
+         "startMs": 440,
+         "endMs": 600,
+         "at": [
+          234,
+          95
+         ],
+         "text": "7",
+         "size": "l"
+        },
+        {
+         "id": "o4",
+         "op": "text",
+         "startMs": 640,
+         "endMs": 800,
+         "at": [
+          166,
+          140
+         ],
+         "text": "3",
+         "size": "l"
+        },
+        {
+         "id": "o5",
+         "op": "text",
+         "startMs": 840,
+         "endMs": 1000,
+         "at": [
+          200,
+          140
+         ],
+         "text": "8",
+         "size": "l"
+        },
+        {
+         "id": "o6",
+         "op": "text",
+         "startMs": 1040,
+         "endMs": 1200,
+         "at": [
+          234,
+          140
+         ],
+         "text": "9",
+         "size": "l"
+        },
+        {
+         "id": "o7",
+         "op": "text",
+         "startMs": 1380,
+         "endMs": 1580,
+         "at": [
+          128.6,
+          140
+         ],
+         "text": "+",
+         "size": "l"
+        },
+        {
+         "id": "o8",
+         "op": "line",
+         "startMs": 1730,
+         "endMs": 2230,
+         "weight": 2,
+         "from": [
+          111.6,
+          170
+         ],
+         "to": [
+          259,
+          170
+         ]
+        },
+        {
+         "id": "r2",
+         "op": "text",
+         "startMs": 2450,
+         "endMs": 2750,
+         "ink": "accent",
+         "at": [
+          234,
+          205
+         ],
+         "text": "6",
+         "size": "l"
+        },
+        {
+         "id": "o9",
+         "op": "text",
+         "startMs": 2950,
+         "endMs": 3210,
+         "ink": "mark",
+         "at": [
+          200,
+          55
+         ],
+         "text": "1",
+         "size": "s"
+        },
+        {
+         "id": "r1",
+         "op": "text",
+         "startMs": 3430,
+         "endMs": 3730,
+         "ink": "accent",
+         "at": [
+          200,
+          205
+         ],
+         "text": "3",
+         "size": "l"
+        },
+        {
+         "id": "o10",
+         "op": "text",
+         "startMs": 3930,
+         "endMs": 4190,
+         "ink": "mark",
+         "at": [
+          166,
+          55
+         ],
+         "text": "1",
+         "size": "s"
+        },
+        {
+         "id": "r0",
+         "op": "text",
+         "startMs": 4410,
+         "endMs": 4710,
+         "ink": "accent",
+         "at": [
+          166,
+          205
+         ],
+         "text": "6",
+         "size": "l"
+        }
+       ],
+       "facts": {
+        "kind": "animation",
+        "archetype": "column-op@1",
+        "onScreen": {
+         "first": 247,
+         "second": 389,
+         "operation": "add",
+         "result": 636,
+         "carries": 2
+        }
+       }
+      },
+      "template": "column-op@1",
+      "mode": "play"
+     }
+    }
+   ],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false
+    },
+    "verdict": "unverified",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 137,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 2360,
+    "item": null,
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 41
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 41
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 984
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 1035
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1122
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1172
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1176
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1177
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1120
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 2301
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 2360
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "advance",
+   "lessonId": "db17ad6b-3915-4d9f-81b3-da0deb0c6276",
+   "childText": "hmm achha",
+   "ms": 2339,
+   "error": null,
+   "teacherReply": "Theek hai, Riya. Bina calculate kiye bataiye, kaun bada hai: 486 + 239 ya 485 + 240?",
+   "move": {
+    "kind": "probe",
+    "shape": "pose the question as written, in their language; then wait; read its choices plainly; no lean in your voice toward any of them; address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu",
+    "itemId": "diag:c7-maths-ch02-t01-m-must-calc",
+    "skillId": "c7-maths-ch02-t01-s2",
+    "hintLevel": 0,
+    "probe": "P7"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "math",
+     "value": "486  ·  239  ·  485  ·  240"
+    },
+    "chips": [
+     {
+      "id": "opt:0",
+      "label": "I can't tell without adding"
+     },
+     {
+      "id": "opt:1",
+      "label": "486 + 239"
+     },
+     {
+      "id": "opt:2",
+      "label": "They are equal"
+     }
+    ],
+    "phase": "practice",
+    "handover": "choice",
+    "ask": {
+     "text": "Bina calculate kiye bataiye, kaun bada hai: 486 + 239 ya 485 + 240?",
+     "itemId": "diag:c7-maths-ch02-t01-m-must-calc"
+    },
+    "answerForm": "choice",
+    "tray": "tiles",
+    "shortTitle": "Writing expressions",
+    "beat": {
+     "beatId": "b8-probe",
+     "type": "probe",
+     "index": 8
+    }
+   },
+   "moduleCommands": [
+    {
+     "op": "unmount",
+     "moduleId": "m9"
+    },
+    {
+     "op": "mount",
+     "moduleId": "g1-e4d463ef",
+     "engine": "scene@1",
+     "params": {
+      "scene": {
+       "dsl": "scene@1",
+       "meta": {
+        "band": "B4",
+        "lang": "hi-Latn+en",
+        "title": {
+         "en": "Backstage puzzle",
+         "hi": "मंच के पीछे की पहेली",
+         "hi_latn": "Backstage paheli"
+        },
+        "template": "choice-card@1",
+        "topic_ids": [
+         "c7-maths-ch02-t01"
+        ],
+        "objective_ids": [
+         "c7-maths-ch02-t01-s2"
+        ]
+       },
+       "vars": [
+        {
+         "id": "pick",
+         "tl": "child's pick",
+         "init": "none",
+         "type": "enum",
+         "options": [
+          "none",
+          "o1",
+          "o2",
+          "o3"
+         ]
+        }
+       ],
+       "goals": [],
+       "nodes": [
+        {
+         "w": 760,
+         "x": 420,
+         "y": 84,
+         "id": "title",
+         "kind": "text",
+         "size": "title",
+         "text": {
+          "en": "Backstage puzzle",
+          "hi": "मंच के पीछे की पहेली",
+          "hi_latn": "Backstage paheli"
+         },
+         "align": "middle"
+        },
+        {
+         "h": 110,
+         "w": 110,
+         "x": 900,
+         "y": 75,
+         "id": "decor",
+         "lib": "sky.star",
+         "kind": "sprite",
+         "role": "context"
+        },
+        {
+         "w": 900,
+         "x": 500,
+         "y": 286,
+         "id": "question",
+         "kind": "text",
+         "size": "caption",
+         "text": {
+          "en": "Without calculating, which is bigger: 486 + 239 or 485 + 240?",
+          "hi": "Bina calculate kiye batao, kaun bada hai: 486 + 239 ya 485 + 240?",
+          "hi_latn": "Bina calculate kiye batao, kaun bada hai: 486 + 239 ya 485 + 240?"
+         },
+         "align": "middle"
+        },
+        {
+         "x": 500,
+         "y": 946.3333333333333,
+         "id": "ch",
+         "var": "pick",
+         "kind": "choice",
+         "commit": true,
+         "layout": "column",
+         "options": [
+          {
+           "id": "o1",
+           "misc": "MC.C7_MATHS_CH02_T01_M_MUST_CALC",
+           "label": {
+            "en": "I can't tell without adding",
+            "hi": "I can't tell without adding",
+            "hi_latn": "I can't tell without adding"
+           }
+          },
+          {
+           "id": "o2",
+           "label": {
+            "en": "486 + 239",
+            "hi": "486 + 239",
+            "hi_latn": "486 + 239"
+           }
+          },
+          {
+           "id": "o3",
+           "label": {
+            "en": "They are equal",
+            "hi": "They are equal",
+            "hi_latn": "They are equal"
+           }
+          }
+         ]
+        }
+       ],
+       "probe": {
+        "id": "p_pick",
+        "ask": {
+         "en": "Without calculating, which is bigger: 486 + 239 or 485 + 240?",
+         "hi": "Bina calculate kiye batao, kaun bada hai: 486 + 239 ya 485 + 240?",
+         "hi_latn": "Bina calculate kiye batao, kaun bada hai: 486 + 239 ya 485 + 240?"
+        },
+        "kind": "diagnose",
+        "traps": [
+         {
+          "misc": "MC.C7_MATHS_CH02_T01_M_MUST_CALC",
+          "when": "pick == 'o1'"
+         }
+        ],
+        "commit": {
+         "via": "choice",
+         "node": "ch"
+        },
+        "correct": "pick == 'o3'"
+       },
+       "stage": {
+        "bg": "bg",
+        "aspect": "3:4"
+       },
+       "derive": [],
+       "feedback": "on_commit",
+       "timelines": []
+      }
+     },
+     "goal": "g1:diag:c7-maths-ch02-t01-m-must-calc"
+    }
+   ],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [
+      "drift",
+      "flat",
+      "ask",
+      "wrap"
+     ],
+     "rewritten": false,
+     "replaced": false,
+     "firstDraft": "Theek hai, Riya. Aaj ke liye yahin stop karte hain.",
+     "repaired": true
+    },
+    "verdict": "ungraded",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": null,
+     "waitedMs": 1523,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 2336,
+    "item": "diag:c7-maths-ch02-t01-m-must-calc",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 70
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 70
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 676
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 750
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 2273
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 2277
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 2277
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 863
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 2280
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 2336
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "probe:curiosity_offlesson-08",
+   "lessonId": "db17ad6b-3915-4d9f-81b3-da0deb0c6276",
+   "childText": "how do airplanes stay up in the air",
+   "ms": 2970,
+   "error": null,
+   "teacherReply": "Riya, airplanes kaise hawa mein tikte hain—interesting! Is par abhi wapas aayenge. I can't tell without adding, 486 + 239, ya They are equal. Bina calculate kiye bataiye, kaun bada hai: 486 + 239 ya 485 + 240?",
+   "move": {
+    "kind": "probe",
+    "shape": "two parts — first: they brought up how airplanes stay up in the air: notice it warmly and specifically, in their words; promise to come back to it right after this question; no answer to it now; then back to the work; second: the question on the card, as written, in their language; then wait; read its choices plainly; no lean in your voice toward any of them; no verdict on their reply: neither praise nor 'wrong'; address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu",
+    "itemId": "diag:c7-maths-ch02-t01-m-must-calc",
+    "skillId": "c7-maths-ch02-t01-s2",
+    "hintLevel": 0,
+    "probe": "P7",
+    "request": "park",
+    "lead": "they brought up how airplanes stay up in the air: notice it warmly and specifically, in their words; promise to come back to it right after this question; no answer to it now; then back to the work"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "math",
+     "value": "486  ·  239  ·  485  ·  240"
+    },
+    "chips": [
+     {
+      "id": "opt:0",
+      "label": "I can't tell without adding"
+     },
+     {
+      "id": "opt:1",
+      "label": "486 + 239"
+     },
+     {
+      "id": "opt:2",
+      "label": "They are equal"
+     }
+    ],
+    "phase": "practice",
+    "handover": "choice",
+    "ask": {
+     "text": "Bina calculate kiye bataiye, kaun bada hai: 486 + 239 ya 485 + 240?",
+     "itemId": "diag:c7-maths-ch02-t01-m-must-calc"
+    },
+    "answerForm": "choice",
+    "tray": "tiles",
+    "shortTitle": "Writing expressions",
+    "beat": {
+     "beatId": "b8-probe",
+     "type": "probe",
+     "index": 8
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [
+      "ask"
+     ],
+     "rewritten": false,
+     "replaced": false,
+     "firstDraft": "Riya, airplanes kaise hawa mein tikte hain—interesting! Is par abhi wapas aayenge. Pehle: Bina calculate kiye bataiye, kaun bada hai: 486 + 239 ya 485 + 240? I can't tell without adding, 486 + 239, ya They are equal.",
+     "repaired": true
+    },
+    "verdict": "ungraded",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "curiosity_offlesson",
+     "waitedMs": 815,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 2966,
+    "item": "diag:c7-maths-ch02-t01-m-must-calc",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 66
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 67
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 698
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 772
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1514
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1587
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1592
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1593
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1321
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 2919
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 2966
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "recovery",
+   "lessonId": "db17ad6b-3915-4d9f-81b3-da0deb0c6276",
+   "childText": "they are equal",
+   "ms": 1596,
+   "error": null,
+   "teacherReply": "Bilkul, Riya—dono equal hain. Ab bataiye, aapne bina calculate kiye kaise jaana ki ek mein 1 kam aur doosre mein 1 zyada hone se total same rahega?",
+   "move": {
+    "kind": "probe",
+    "shape": "confirm in two or three words only — the reason is theirs to give, so do not explain it; covert shape: protege naive but-why; Bittu, who does not know it, asks why; about THIS question; one open question; wait; a real question, never a check on them; address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu",
+    "itemId": "diag:c7-maths-ch02-t01-m-must-calc",
+    "skillId": "c7-maths-ch02-t01-s2",
+    "hintLevel": 0,
+    "probe": "P2"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "math",
+     "value": "486  ·  239  ·  485  ·  240"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "answerForm": "words",
+    "tray": "module",
+    "shortTitle": "Writing expressions",
+    "verdict": "correct",
+    "beat": {
+     "beatId": "b8-probe",
+     "type": "probe",
+     "index": 8
+    },
+    "ask": {
+     "text": "Ab bataiye, aapne bina calculate kiye kaise jaana ki ek mein 1 kam aur doosre mein 1 zyada hone se total same rahega?"
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false
+    },
+    "verdict": "correct",
+    "cls": {
+     "outcome": "correct",
+     "source": "exact"
+    },
+    "note": null,
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 1591,
+    "item": "diag:c7-maths-ch02-t01-m-must-calc",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 63
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 63
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 394
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 462
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 465
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 466
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1063
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 1533
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 1591
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "advance",
+   "lessonId": "db17ad6b-3915-4d9f-81b3-da0deb0c6276",
+   "childText": "hmm achha",
+   "ms": 2461,
+   "error": null,
+   "teacherReply": "Chaliye, ab expression-writing par lautte hain. Situation ko do parts mein todkar sochiye: earning aur penalty. Ek game mein Riya 4 rounds mein har round 75 points leti hai, lekin 2 penalties par har baar 30 points khoti hai. Final score ka expression likhiye.",
+   "move": {
+    "kind": "practice",
+    "shape": "give the reason yourself in one plain line (their answer was right); before the next thing: come back to what they asked earlier (how airplanes stay up in the air) — at most two sentences, or a guided question; pose the question as written, in their language; then wait; address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu",
+    "must": "first, come back to what they asked earlier (how airplanes stay up in the air) — at most two sentences, or a guided question",
+    "itemId": "c7-maths-ch02-t01-rl-o2",
+    "skillId": "c7-maths-ch02-t01-s1",
+    "hintLevel": 0,
+    "probe": "P15"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "math",
+     "value": "4  ·  75  ·  2  ·  30"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "Ek game mein Riya 4 rounds mein har round 75 points leti hai, lekin 2 penalties par har baar 30 points khoti hai.…",
+     "itemId": "c7-maths-ch02-t01-rl-o2"
+    },
+    "answerForm": "words",
+    "tray": "none",
+    "shortTitle": "Writing expressions",
+    "beat": {
+     "beatId": "b9-practice_set",
+     "type": "practice_set",
+     "index": 9
+    }
+   },
+   "moduleCommands": [
+    {
+     "op": "unmount",
+     "moduleId": "g1-e4d463ef"
+    }
+   ],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false,
+     "leadSlot": true
+    },
+    "verdict": "unverified",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 723,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 2457,
+    "item": "c7-maths-ch02-t01-rl-o2",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 64
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 64
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 680
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 749
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1403
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1471
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1475
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1475
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 925
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 2408
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 2457
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "setup:insistence-02",
+   "lessonId": "db17ad6b-3915-4d9f-81b3-da0deb0c6276",
+   "childText": "btw plants window ki taraf kyun badhte hain",
+   "ms": 3234,
+   "error": null,
+   "teacherReply": "Riya, aapne plants ke window ya light ki taraf badhne wali baat notice ki—achha observation. Is par is question ke turant baad wapas aayenge. Ek game mein Riya 4 rounds mein har round 75 points leti hai, lekin 2 penalties par har baar 30 points khoti hai.…",
+   "move": {
+    "kind": "practice",
+    "shape": "two parts — first: they brought up Why plants grow toward a window or light: notice it warmly and specifically, in their words; promise to come back to it right after this question; no answer to it now; then back to the work; second: the question on the card, as written, in their language; then wait; no verdict on their reply: neither praise nor 'wrong'; address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu",
+    "itemId": "c7-maths-ch02-t01-rl-o2",
+    "skillId": "c7-maths-ch02-t01-s1",
+    "hintLevel": 0,
+    "probe": "P15",
+    "request": "park",
+    "lead": "they brought up Why plants grow toward a window or light: notice it warmly and specifically, in their words; promise to come back to it right after this question; no answer to it now; then back to the work"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "math",
+     "value": "4  ·  75  ·  2  ·  30"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "Ek game mein Riya 4 rounds mein har round 75 points leti hai, lekin 2 penalties par har baar 30 points khoti hai.…",
+     "itemId": "c7-maths-ch02-t01-rl-o2"
+    },
+    "answerForm": "words",
+    "tray": "none",
+    "shortTitle": "Writing expressions",
+    "beat": {
+     "beatId": "b9-practice_set",
+     "type": "practice_set",
+     "index": 9
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false,
+     "leadSlot": true
+    },
+    "verdict": "unverified",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "curiosity_offlesson",
+     "waitedMs": 672,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 3223,
+    "item": "c7-maths-ch02-t01-rl-o2",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 59
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 60
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 750
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 819
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1424
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1492
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1497
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1497
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1670
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 3176
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 3223
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "probe:insistence-02",
+   "lessonId": "db17ad6b-3915-4d9f-81b3-da0deb0c6276",
+   "childText": "bas ek minute batao na",
+   "ms": 2551,
+   "error": null,
+   "teacherReply": "Plants light ki taraf isliye badhte hain kyunki light unhe food banane mein help karti hai. Is movement ko phototropism kehte hain. Ek game mein Riya 4 rounds mein har round 75 points leti hai, lekin 2 penalties par har baar 30 points khoti hai.…",
+   "move": {
+    "kind": "practice",
+    "shape": "two parts — first: they asked again about Why plants grow toward a window or light: engage for real in at most two sentences, then back to the work; second: the question on the card, as written, in their language; then wait; no verdict on their reply: neither praise nor 'wrong'; address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu",
+    "itemId": "c7-maths-ch02-t01-rl-o2",
+    "skillId": "c7-maths-ch02-t01-s1",
+    "hintLevel": 0,
+    "probe": "P15",
+    "request": "detour",
+    "lead": "they asked again about Why plants grow toward a window or light: engage for real in at most two sentences, then back to the work"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "math",
+     "value": "4  ·  75  ·  2  ·  30"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "Ek game mein Riya 4 rounds mein har round 75 points leti hai, lekin 2 penalties par har baar 30 points khoti hai.…",
+     "itemId": "c7-maths-ch02-t01-rl-o2"
+    },
+    "answerForm": "words",
+    "tray": "none",
+    "shortTitle": "Writing expressions",
+    "beat": {
+     "beatId": "b9-practice_set",
+     "type": "practice_set",
+     "index": 9
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false,
+     "leadSlot": true
+    },
+    "verdict": "unverified",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "insistence",
+     "waitedMs": 872,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 2549,
+    "item": "c7-maths-ch02-t01-rl-o2",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 41
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 41
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 725
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 776
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1598
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1648
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1655
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1655
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 839
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 2502
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 2549
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "recovery",
+   "lessonId": "db17ad6b-3915-4d9f-81b3-da0deb0c6276",
+   "childText": "240",
+   "ms": 1795,
+   "error": null,
+   "teacherReply": "Haan, ₹240 sahi hai: aapne 4 baar 75 jodkar, 2 baar 30 ghataaya. Ek auto pehle km ke ₹30 aur uske baad har km ke ₹15 leta hai. 7 km ki sawaari ka expression likhiye aur kiraya nikaaliye.",
+   "move": {
+    "kind": "probe",
+    "shape": "confirm specifically: name the exact thing they got right, no ability words; pose the question as written, in their language; then wait; real-life situation; let them find the idea in it; address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu",
+    "itemId": "c7-maths-ch02-t01-i09",
+    "skillId": "c7-maths-ch02-t01-s1",
+    "hintLevel": 0,
+    "probe": "P4"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "math",
+     "value": "30  ·  15  ·  7"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "Ek auto pehle km ke ₹30 aur uske baad har km ke ₹15 leta hai. 7 km ki sawaari ka expression likhiye aur kiraya…",
+     "itemId": "c7-maths-ch02-t01-i09"
+    },
+    "answerForm": "words",
+    "tray": "none",
+    "shortTitle": "Writing expressions",
+    "verdict": "correct",
+    "beat": {
+     "beatId": "b10-probe",
+     "type": "probe",
+     "index": 10
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false,
+     "leadSlot": true
+    },
+    "verdict": "correct",
+    "cls": {
+     "outcome": "correct",
+     "source": "exact"
+    },
+    "note": null,
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 1792,
+    "item": "c7-maths-ch02-t01-i09",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 39
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 40
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 43
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 88
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 88
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1636
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 1731
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 1792
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "probe:backchannel-03",
+   "lessonId": "db17ad6b-3915-4d9f-81b3-da0deb0c6276",
+   "childText": "achha",
+   "ms": 3186,
+   "error": null,
+   "teacherReply": "Theek hai, Riya. Pehle fixed charge aur baaki distance ka charge alag sochiye, phir dono ko jodiye. Ek auto pehle km ke ₹30 aur uske baad har km ke ₹15 leta hai. 7 km ki sawaari ka expression likhiye aur kiraya…",
+   "move": {
+    "kind": "repair",
+    "shape": "you did not catch it clearly: ask them to say it once more; no verdict on their reply: neither praise nor 'wrong'; address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu",
+    "itemId": "c7-maths-ch02-t01-i09",
+    "skillId": "c7-maths-ch02-t01-s1",
+    "hintLevel": 0
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "math",
+     "value": "30  ·  15  ·  7"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "Ek auto pehle km ke ₹30 aur uske baad har km ke ₹15 leta hai. 7 km ki sawaari ka expression likhiye aur kiraya…",
+     "itemId": "c7-maths-ch02-t01-i09"
+    },
+    "answerForm": "words",
+    "tray": "studio",
+    "shortTitle": "Writing expressions",
+    "beat": {
+     "beatId": "b10-probe",
+     "type": "probe",
+     "index": 10
+    },
+    "studioSlot": {
+     "slotId": "db17ad6b-3915-4d9f-81b3-da0deb0c6276:c4:slot",
+     "intentId": "db17ad6b-3915-4d9f-81b3-da0deb0c6276:c4",
+     "state": "revealed",
+     "artifact": {
+      "kind": "stagecraft",
+      "stage": {
+       "w": 1000,
+       "h": 625
+      },
+      "stagecraft": {
+       "rung": "engine_default",
+       "archetype": "rule-machine@1",
+       "spec": {
+        "archetype": "rule-machine@1",
+        "skills": [
+         "c7-maths-ch02-t01"
+        ],
+        "lang": "en",
+        "strings": {
+         "round": "Round",
+         "built": "machines",
+         "run": "RUN",
+         "want": "order",
+         "got": "made",
+         "coach": "Tap tiles to fill the machine, then RUN",
+         "runDone": "Factory closed",
+         "step": "step",
+         "predict": "step",
+         "inverse": "run it backwards",
+         "target": "target",
+         "steps": "steps",
+         "pick": "Pick a start",
+         "works": "WORKS",
+         "fix": "not for every input"
+        },
+        "title": "Expression Machine",
+        "rounds": [
+         {
+          "mode": "build",
+          "title": "Less than a number",
+          "sub": "start with each amount, then take away 7",
+          "rule": [
+           "-7"
+          ],
+          "inputs": [
+           20,
+           30,
+           40,
+           50
+          ],
+          "tiles": [
+           "-7",
+           "+7",
+           "-5",
+           "×2"
+          ],
+          "targets": "c7-maths-ch02-t01-m-words-order"
+         },
+         {
+          "mode": "build",
+          "title": "Metro card fare",
+          "sub": "card cost plus five ride costs",
+          "rule": [
+           "×5",
+           "+200"
+          ],
+          "inputs": [
+           18,
+           20,
+           25
+          ],
+          "tiles": [
+           "×5",
+           "+200",
+           "+18",
+           "-200"
+          ],
+          "targets": "c7-maths-ch02-t01-m-must-calc"
+         },
+         {
+          "mode": "brackets",
+          "title": "Make the target",
+          "sub": "place brackets to change the order",
+          "tokens": [
+           "3",
+           "+",
+           "4",
+           "×",
+           "5"
+          ],
+          "target": 35
+         }
+        ]
+       },
+       "boardTwin": {
+        "scriptRef": "board:c7-maths-ch02-t01-s1|probe|-|-",
+        "values": {
+         "title": "Machine Factory",
+         "need": "probe"
+        },
+        "board": {
+         "title": "Machine Factory",
+         "lines": [
+          "expression",
+          "without",
+          "bigger",
+          "equal"
+         ],
+         "figure": {
+          "kind": "none"
+         }
+        }
+       },
+       "board": null,
+       "cue": {
+        "clauseIdx": 0,
+        "preRollMs": 400,
+        "crossFadeMs": 420
+       },
+       "buildSha": null,
+       "blobUrl": null
+      }
+     }
+    }
+   },
+   "moduleCommands": [],
+   "studio": {
+    "reveal": "db17ad6b-3915-4d9f-81b3-da0deb0c6276:c4"
+   },
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false,
+     "leadSlot": true
+    },
+    "verdict": "unverified",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 853,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 3181,
+    "item": "c7-maths-ch02-t01-i09",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 43
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 43
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 799
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 853
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1654
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1706
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1708
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1708
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1407
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 3125
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 3180
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "recovery",
+   "lessonId": "db17ad6b-3915-4d9f-81b3-da0deb0c6276",
+   "childText": "120",
+   "ms": 2940,
+   "error": null,
+   "teacherReply": "₹120 sahi hai. Aapne 6 ko 15 se multiply karke 30 joda—yeh order kyun kaam karta hai?",
+   "move": {
+    "kind": "probe",
+    "shape": "confirm in two or three words only — the reason is theirs to give, so do not explain it; covert shape: would-you-rather where the concept decides (they judge or choose between views); about THIS question; one open question; wait; a real question, never a check on them; address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu",
+    "itemId": "c7-maths-ch02-t01-i09",
+    "skillId": "c7-maths-ch02-t01-s1",
+    "hintLevel": 0,
+    "probe": "P2"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "math",
+     "value": "30  ·  15  ·  7"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "answerForm": "words",
+    "tray": "studio",
+    "shortTitle": "Writing expressions",
+    "verdict": "correct",
+    "beat": {
+     "beatId": "b10-probe",
+     "type": "probe",
+     "index": 10
+    },
+    "ask": {
+     "text": "Aapne 6 ko 15 se multiply karke 30 joda—yeh order kyun kaam karta hai?"
+    },
+    "studioSlot": {
+     "slotId": "db17ad6b-3915-4d9f-81b3-da0deb0c6276:c4:slot",
+     "intentId": "db17ad6b-3915-4d9f-81b3-da0deb0c6276:c4",
+     "state": "revealed",
+     "artifact": {
+      "kind": "stagecraft",
+      "stage": {
+       "w": 1000,
+       "h": 625
+      },
+      "stagecraft": {
+       "rung": "engine_default",
+       "archetype": "rule-machine@1",
+       "spec": {
+        "archetype": "rule-machine@1",
+        "skills": [
+         "c7-maths-ch02-t01"
+        ],
+        "lang": "en",
+        "strings": {
+         "round": "Round",
+         "built": "machines",
+         "run": "RUN",
+         "want": "order",
+         "got": "made",
+         "coach": "Tap tiles to fill the machine, then RUN",
+         "runDone": "Factory closed",
+         "step": "step",
+         "predict": "step",
+         "inverse": "run it backwards",
+         "target": "target",
+         "steps": "steps",
+         "pick": "Pick a start",
+         "works": "WORKS",
+         "fix": "not for every input"
+        },
+        "title": "Expression Machine",
+        "rounds": [
+         {
+          "mode": "build",
+          "title": "Less than a number",
+          "sub": "start with each amount, then take away 7",
+          "rule": [
+           "-7"
+          ],
+          "inputs": [
+           20,
+           30,
+           40,
+           50
+          ],
+          "tiles": [
+           "-7",
+           "+7",
+           "-5",
+           "×2"
+          ],
+          "targets": "c7-maths-ch02-t01-m-words-order"
+         },
+         {
+          "mode": "build",
+          "title": "Metro card fare",
+          "sub": "card cost plus five ride costs",
+          "rule": [
+           "×5",
+           "+200"
+          ],
+          "inputs": [
+           18,
+           20,
+           25
+          ],
+          "tiles": [
+           "×5",
+           "+200",
+           "+18",
+           "-200"
+          ],
+          "targets": "c7-maths-ch02-t01-m-must-calc"
+         },
+         {
+          "mode": "brackets",
+          "title": "Make the target",
+          "sub": "place brackets to change the order",
+          "tokens": [
+           "3",
+           "+",
+           "4",
+           "×",
+           "5"
+          ],
+          "target": 35
+         }
+        ]
+       },
+       "boardTwin": {
+        "scriptRef": "board:c7-maths-ch02-t01-s1|probe|-|-",
+        "values": {
+         "title": "Machine Factory",
+         "need": "probe"
+        },
+        "board": {
+         "title": "Machine Factory",
+         "lines": [
+          "expression",
+          "without",
+          "bigger",
+          "equal"
+         ],
+         "figure": {
+          "kind": "none"
+         }
+        }
+       },
+       "board": null,
+       "cue": {
+        "clauseIdx": 0,
+        "preRollMs": 400,
+        "crossFadeMs": 420
+       },
+       "buildSha": null,
+       "blobUrl": null
+      }
+     }
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [
+      "nowhy",
+      "flat"
+     ],
+     "rewritten": true,
+     "replaced": false,
+     "firstDraft": "Riya, ₹120 sahi hai: expression 30 + 6 × 15 tha, kyunki pehle 1 km ka charge alag tha.",
+     "afterRewrite": []
+    },
+    "verdict": "correct",
+    "cls": {
+     "outcome": "correct",
+     "source": "exact"
+    },
+    "note": null,
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 2937,
+    "item": "c7-maths-ch02-t01-i09",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 62
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 63
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 67
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 123
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 124
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1635
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1106
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 2871
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 2937
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "advance",
+   "lessonId": "db17ad6b-3915-4d9f-81b3-da0deb0c6276",
+   "childText": "ok samajh gaya",
+   "ms": 2677,
+   "error": null,
+   "teacherReply": "Ab expression ko words se number form mein badalne ki practice karenge; pehle situation mein quantities pehchaaniye. 1000 − 345 aur 1000 − 354 ko bina ghataye compare kariye. Kaun bada hai, aur kyun?",
+   "move": {
+    "kind": "probe",
+    "shape": "give the reason yourself in one plain line (their answer was right); pose the question as written, in their language; then wait; two cases side by side; ask which one fits and what is different; address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu",
+    "itemId": "c7-maths-ch02-t01-i05",
+    "skillId": "c7-maths-ch02-t01-s2",
+    "hintLevel": 0,
+    "probe": "P8"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "math",
+     "value": "1000  ·  345  ·  1000  ·  354"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "1000 − 345 aur 1000 − 354 ko bina ghataye compare kariye. Kaun bada hai, aur kyun?",
+     "itemId": "c7-maths-ch02-t01-i05"
+    },
+    "answerForm": "words",
+    "tray": "studio",
+    "shortTitle": "Writing expressions",
+    "beat": {
+     "beatId": "b10-probe",
+     "type": "probe",
+     "index": 10
+    },
+    "studioSlot": {
+     "slotId": "db17ad6b-3915-4d9f-81b3-da0deb0c6276:c4:slot",
+     "intentId": "db17ad6b-3915-4d9f-81b3-da0deb0c6276:c4",
+     "state": "revealed",
+     "artifact": {
+      "kind": "stagecraft",
+      "stage": {
+       "w": 1000,
+       "h": 625
+      },
+      "stagecraft": {
+       "rung": "engine_default",
+       "archetype": "rule-machine@1",
+       "spec": {
+        "archetype": "rule-machine@1",
+        "skills": [
+         "c7-maths-ch02-t01"
+        ],
+        "lang": "en",
+        "strings": {
+         "round": "Round",
+         "built": "machines",
+         "run": "RUN",
+         "want": "order",
+         "got": "made",
+         "coach": "Tap tiles to fill the machine, then RUN",
+         "runDone": "Factory closed",
+         "step": "step",
+         "predict": "step",
+         "inverse": "run it backwards",
+         "target": "target",
+         "steps": "steps",
+         "pick": "Pick a start",
+         "works": "WORKS",
+         "fix": "not for every input"
+        },
+        "title": "Expression Machine",
+        "rounds": [
+         {
+          "mode": "build",
+          "title": "Less than a number",
+          "sub": "start with each amount, then take away 7",
+          "rule": [
+           "-7"
+          ],
+          "inputs": [
+           20,
+           30,
+           40,
+           50
+          ],
+          "tiles": [
+           "-7",
+           "+7",
+           "-5",
+           "×2"
+          ],
+          "targets": "c7-maths-ch02-t01-m-words-order"
+         },
+         {
+          "mode": "build",
+          "title": "Metro card fare",
+          "sub": "card cost plus five ride costs",
+          "rule": [
+           "×5",
+           "+200"
+          ],
+          "inputs": [
+           18,
+           20,
+           25
+          ],
+          "tiles": [
+           "×5",
+           "+200",
+           "+18",
+           "-200"
+          ],
+          "targets": "c7-maths-ch02-t01-m-must-calc"
+         },
+         {
+          "mode": "brackets",
+          "title": "Make the target",
+          "sub": "place brackets to change the order",
+          "tokens": [
+           "3",
+           "+",
+           "4",
+           "×",
+           "5"
+          ],
+          "target": 35
+         }
+        ]
+       },
+       "boardTwin": {
+        "scriptRef": "board:c7-maths-ch02-t01-s1|probe|-|-",
+        "values": {
+         "title": "Machine Factory",
+         "need": "probe"
+        },
+        "board": {
+         "title": "Machine Factory",
+         "lines": [
+          "expression",
+          "without",
+          "bigger",
+          "equal"
+         ],
+         "figure": {
+          "kind": "none"
+         }
+        }
+       },
+       "board": null,
+       "cue": {
+        "clauseIdx": 0,
+        "preRollMs": 400,
+        "crossFadeMs": 420
+       },
+       "buildSha": null,
+       "blobUrl": null
+      }
+     }
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false,
+     "leadSlot": true
+    },
+    "verdict": "unverified",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 535,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 2673,
+    "item": "c7-maths-ch02-t01-i05",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 61
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 62
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 771
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 837
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1307
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1372
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1378
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1378
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1236
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 2621
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 2673
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "probe:answer_wrong-08",
+   "lessonId": "db17ad6b-3915-4d9f-81b3-da0deb0c6276",
+   "childText": "1002 है",
+   "ms": 2832,
+   "error": null,
+   "teacherReply": "Riya, aapki baat mujhe clearly nahi mili. Kripya apna answer ek baar phir se kahiye. 1000 − 345 aur 1000 − 354 ko bina ghataye compare kariye. Kaun bada hai, aur kyun?",
+   "move": {
+    "kind": "repair",
+    "shape": "you did not catch it clearly: ask them to say it once more; no verdict on their reply: neither praise nor 'wrong'; address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu",
+    "itemId": "c7-maths-ch02-t01-i05",
+    "skillId": "c7-maths-ch02-t01-s2",
+    "hintLevel": 0
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "math",
+     "value": "1000  ·  345  ·  1000  ·  354"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "1000 − 345 aur 1000 − 354 ko bina ghataye compare kariye. Kaun bada hai, aur kyun?",
+     "itemId": "c7-maths-ch02-t01-i05"
+    },
+    "answerForm": "words",
+    "tray": "studio",
+    "shortTitle": "Writing expressions",
+    "beat": {
+     "beatId": "b10-probe",
+     "type": "probe",
+     "index": 10
+    },
+    "studioSlot": {
+     "slotId": "db17ad6b-3915-4d9f-81b3-da0deb0c6276:c4:slot",
+     "intentId": "db17ad6b-3915-4d9f-81b3-da0deb0c6276:c4",
+     "state": "revealed",
+     "artifact": {
+      "kind": "stagecraft",
+      "stage": {
+       "w": 1000,
+       "h": 625
+      },
+      "stagecraft": {
+       "rung": "engine_default",
+       "archetype": "rule-machine@1",
+       "spec": {
+        "archetype": "rule-machine@1",
+        "skills": [
+         "c7-maths-ch02-t01"
+        ],
+        "lang": "en",
+        "strings": {
+         "round": "Round",
+         "built": "machines",
+         "run": "RUN",
+         "want": "order",
+         "got": "made",
+         "coach": "Tap tiles to fill the machine, then RUN",
+         "runDone": "Factory closed",
+         "step": "step",
+         "predict": "step",
+         "inverse": "run it backwards",
+         "target": "target",
+         "steps": "steps",
+         "pick": "Pick a start",
+         "works": "WORKS",
+         "fix": "not for every input"
+        },
+        "title": "Expression Machine",
+        "rounds": [
+         {
+          "mode": "build",
+          "title": "Less than a number",
+          "sub": "start with each amount, then take away 7",
+          "rule": [
+           "-7"
+          ],
+          "inputs": [
+           20,
+           30,
+           40,
+           50
+          ],
+          "tiles": [
+           "-7",
+           "+7",
+           "-5",
+           "×2"
+          ],
+          "targets": "c7-maths-ch02-t01-m-words-order"
+         },
+         {
+          "mode": "build",
+          "title": "Metro card fare",
+          "sub": "card cost plus five ride costs",
+          "rule": [
+           "×5",
+           "+200"
+          ],
+          "inputs": [
+           18,
+           20,
+           25
+          ],
+          "tiles": [
+           "×5",
+           "+200",
+           "+18",
+           "-200"
+          ],
+          "targets": "c7-maths-ch02-t01-m-must-calc"
+         },
+         {
+          "mode": "brackets",
+          "title": "Make the target",
+          "sub": "place brackets to change the order",
+          "tokens": [
+           "3",
+           "+",
+           "4",
+           "×",
+           "5"
+          ],
+          "target": 35
+         }
+        ]
+       },
+       "boardTwin": {
+        "scriptRef": "board:c7-maths-ch02-t01-s1|probe|-|-",
+        "values": {
+         "title": "Machine Factory",
+         "need": "probe"
+        },
+        "board": {
+         "title": "Machine Factory",
+         "lines": [
+          "expression",
+          "without",
+          "bigger",
+          "equal"
+         ],
+         "figure": {
+          "kind": "none"
+         }
+        }
+       },
+       "board": null,
+       "cue": {
+        "clauseIdx": 0,
+        "preRollMs": 400,
+        "crossFadeMs": 420
+       },
+       "buildSha": null,
+       "blobUrl": null
+      }
+     }
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false,
+     "leadSlot": true
+    },
+    "verdict": "unverified",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "answer_wrong",
+     "waitedMs": 758,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 2830,
+    "item": "c7-maths-ch02-t01-i05",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 60
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 61
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 705
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 783
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1467
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1541
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1545
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1545
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1225
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 2777
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 2830
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "recovery",
+   "lessonId": "db17ad6b-3915-4d9f-81b3-da0deb0c6276",
+   "childText": "1000 − 345",
+   "ms": 1445,
+   "error": null,
+   "teacherReply": "Haan, Riya—1000 − 345 bada hai. Aapne kaise jaana ki dono mein se kaunsa number kam subtract ho raha hai?",
+   "move": {
+    "kind": "probe",
+    "shape": "confirm in two or three words only — the reason is theirs to give, so do not explain it; covert shape: would-you-rather where the concept decides (they judge or choose between views); about THIS question; one open question; wait; a real question, never a check on them; address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu",
+    "itemId": "c7-maths-ch02-t01-i05",
+    "skillId": "c7-maths-ch02-t01-s2",
+    "hintLevel": 0,
+    "probe": "P2"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "math",
+     "value": "1000  ·  345  ·  1000  ·  354"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "answerForm": "words",
+    "tray": "studio",
+    "shortTitle": "Writing expressions",
+    "verdict": "correct",
+    "beat": {
+     "beatId": "b10-probe",
+     "type": "probe",
+     "index": 10
+    },
+    "ask": {
+     "text": "Aapne kaise jaana ki dono mein se kaunsa number kam subtract ho raha hai?"
+    },
+    "studioSlot": {
+     "slotId": "db17ad6b-3915-4d9f-81b3-da0deb0c6276:c4:slot",
+     "intentId": "db17ad6b-3915-4d9f-81b3-da0deb0c6276:c4",
+     "state": "revealed",
+     "artifact": {
+      "kind": "stagecraft",
+      "stage": {
+       "w": 1000,
+       "h": 625
+      },
+      "stagecraft": {
+       "rung": "engine_default",
+       "archetype": "rule-machine@1",
+       "spec": {
+        "archetype": "rule-machine@1",
+        "skills": [
+         "c7-maths-ch02-t01"
+        ],
+        "lang": "en",
+        "strings": {
+         "round": "Round",
+         "built": "machines",
+         "run": "RUN",
+         "want": "order",
+         "got": "made",
+         "coach": "Tap tiles to fill the machine, then RUN",
+         "runDone": "Factory closed",
+         "step": "step",
+         "predict": "step",
+         "inverse": "run it backwards",
+         "target": "target",
+         "steps": "steps",
+         "pick": "Pick a start",
+         "works": "WORKS",
+         "fix": "not for every input"
+        },
+        "title": "Expression Machine",
+        "rounds": [
+         {
+          "mode": "build",
+          "title": "Less than a number",
+          "sub": "start with each amount, then take away 7",
+          "rule": [
+           "-7"
+          ],
+          "inputs": [
+           20,
+           30,
+           40,
+           50
+          ],
+          "tiles": [
+           "-7",
+           "+7",
+           "-5",
+           "×2"
+          ],
+          "targets": "c7-maths-ch02-t01-m-words-order"
+         },
+         {
+          "mode": "build",
+          "title": "Metro card fare",
+          "sub": "card cost plus five ride costs",
+          "rule": [
+           "×5",
+           "+200"
+          ],
+          "inputs": [
+           18,
+           20,
+           25
+          ],
+          "tiles": [
+           "×5",
+           "+200",
+           "+18",
+           "-200"
+          ],
+          "targets": "c7-maths-ch02-t01-m-must-calc"
+         },
+         {
+          "mode": "brackets",
+          "title": "Make the target",
+          "sub": "place brackets to change the order",
+          "tokens": [
+           "3",
+           "+",
+           "4",
+           "×",
+           "5"
+          ],
+          "target": 35
+         }
+        ]
+       },
+       "boardTwin": {
+        "scriptRef": "board:c7-maths-ch02-t01-s1|probe|-|-",
+        "values": {
+         "title": "Machine Factory",
+         "need": "probe"
+        },
+        "board": {
+         "title": "Machine Factory",
+         "lines": [
+          "expression",
+          "without",
+          "bigger",
+          "equal"
+         ],
+         "figure": {
+          "kind": "none"
+         }
+        }
+       },
+       "board": null,
+       "cue": {
+        "clauseIdx": 0,
+        "preRollMs": 400,
+        "crossFadeMs": 420
+       },
+       "buildSha": null,
+       "blobUrl": null
+      }
+     }
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false
+    },
+    "verdict": "correct",
+    "cls": {
+     "outcome": "correct",
+     "source": "exact"
+    },
+    "note": null,
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 1441,
+    "item": "c7-maths-ch02-t01-i05",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 61
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 62
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 66
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 108
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 108
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1259
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 1372
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 1441
+     }
+    ]
+   }
+  }
+ ]
+}

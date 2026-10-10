@@ -279,3 +279,11 @@ Proposed seams (patches in `evals/safety-robust/patches/`):
 
 ## Merged inbox entries (write-up from the entry text)
 - `rj-r4-content-filter-completion-safeguard` (2026-10-10): 2026-10-10 root cause (stream 4A, tests/prod/r4-conversation-sg-repro.mjs, 1 of 58 fresh lessons): the false safeguard on 'explain it differently' (stream 5 owner-4, Zoya class 5) was the Azure content filter blocking the model's REPLY completion (HTTP 200, finish_reason content_filter); turn.js failed closed and re-planned the turn as a disclosure, so the child got the helplines although the predicate, the model distress read (0/480 false reads) and the UNDERSTAND note (0/96) were all clean. The [lesson] turn line printed the original cls, hiding the cause. Fix proposed as patch 06 (say.js: one fresh reply on a completion block before failing closed; a prompt block still fails closed at once), under main safety review.
+
+
+## Merged inbox entries (write-up from the entry text)
+- `fn-r4-g1-test-url-echo-incident` (2026-10-10): 2026-10-10 12:36 UTC incident (G1 session): sourcing .env.local through bash (an '&' in the URL) echoed G1's own Neon TEST branch connection string into a local task output file in its container. Deleted along with two local env copies; never committed, pushed or sent; no prod and no child data. The session's own harness transcript still holds it (not editable), so the credential is retired when the test branch is deleted at the end of round 4. G1 gates now read env in node (util.parseEnv) and pass only test URLs to npm test.
+
+
+## Merged inbox entries (write-up from the entry text)
+- `r4c-open-floor-peer-actor` (2026-10-10): The frozen safety predicate misses a peer actor (ek bade ladke ne mujhe maara) and a Devanagari bullying line with four words between the pronoun and the verb; the live path catches both only through the classifier's model distress read (3/3 each). Patch request 03 (stream 4A) closes the code gap: 0 new hits on 118,491 kit strings and on the battery's utterances. Needs the main session's safety review

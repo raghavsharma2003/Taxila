@@ -1,0 +1,680 @@
+{
+ "slot": 48,
+ "topic": "c7-science-ch05-t01",
+ "cls": 7,
+ "lang": "hindi",
+ "lane": "text",
+ "lessons": [
+  {
+   "lessonId": "8c248ae1-2789-421c-896a-1ef72f7be41c",
+   "why": "start",
+   "at": "2026-10-10T08:49:51.324Z",
+   "teacher": "Arjun"
+  }
+ ],
+ "turns": [
+  {
+   "who": "teacher",
+   "kind": "opening",
+   "lessonId": "8c248ae1-2789-421c-896a-1ef72f7be41c",
+   "teacherReply": "Namaste Aarav, main Arjun, aapka AI teacher hoon. Aaj Physical aur chemical changes padhenge. Aapko drawing mein kya banana pasand hai?",
+   "ui": {
+    "status": "your_turn",
+    "phase": "warmup",
+    "handover": "answer",
+    "answerForm": "words",
+    "tray": "none",
+    "shortTitle": "Kinds of change",
+    "beat": {
+     "beatId": "b1-arrive",
+     "type": "arrive",
+     "index": 1
+    },
+    "ask": {
+     "text": "Aapko drawing mein kya banana pasand hai?"
+    }
+   }
+  },
+  {
+   "who": "child",
+   "tag": "greet",
+   "lessonId": "8c248ae1-2789-421c-896a-1ef72f7be41c",
+   "childText": "नमस्ते, शुरू करिए",
+   "ms": 1312,
+   "error": null,
+   "teacherReply": "Kitchen mein baraf pighal kar paani ban jaaye—yeh physical change hoga ya chemical change?",
+   "move": {
+    "kind": "hook",
+    "shape": "open with one concrete everyday situation — kit contexts: kitchen, festival sweets, monsoon; ask what they think will happen or which they would pick — a prediction, no right answer yet; any bigger/more comparison: two quantities of one kind, in one unit — a count against a count, a distance against a distance; never across kinds; mention once: at the end they will teach this to Bittu (a pretend new student who missed this class); address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu",
+    "format": "F4"
+   },
+   "ui": {
+    "status": "your_turn",
+    "phase": "teach",
+    "handover": "answer",
+    "answerForm": "words",
+    "tray": "none",
+    "shortTitle": "Kinds of change",
+    "beat": {
+     "beatId": "b2-hook",
+     "type": "hook",
+     "index": 2
+    },
+    "ask": {
+     "text": "Kitchen mein baraf pighal kar paani ban jaaye—yeh physical change hoga ya chemical change?"
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [
+      "twoq"
+     ],
+     "rewritten": false,
+     "replaced": false,
+     "firstDraft": "Kitchen mein baraf pighal kar paani ban jaaye—yeh physical change hoga ya chemical change? Aapka prediction kya hai?",
+     "repaired": true
+    },
+    "verdict": "attempt",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 329,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "teach",
+    "ms": 1302,
+    "item": null,
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 62
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 63
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 826
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 896
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1157
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1224
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1227
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1227
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1122
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 1243
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 1302
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "probe:h-boredom-02",
+   "lessonId": "8c248ae1-2789-421c-896a-1ef72f7be41c",
+   "childText": "neend aa rahi hai yaar",
+   "ms": 2031,
+   "error": null,
+   "teacherReply": "Aapko yeh part boring lag raha hai—chaliye tareeka badalte hain: game, picture, ya quick challenge—kaunsa choose kijiye?",
+   "move": {
+    "kind": "repair",
+    "shape": "they are bored: first say back in a few words, in their words, that this part is boring for them, no guilt; then change something NOW; offer a different way into today's idea: a game, a picture or a quick challenge, shown on screen as choices; ask which; no lesson question this turn; address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu",
+    "request": "boredom"
+   },
+   "ui": {
+    "status": "your_turn",
+    "chips": [
+     {
+      "id": "req:visual",
+      "label": "Show me a picture"
+     },
+     {
+      "id": "req:story",
+      "label": "Tell it as a story"
+     },
+     {
+      "id": "req:game",
+      "label": "Play a game"
+     },
+     {
+      "id": "stop:continue",
+      "label": "Back to the lesson"
+     }
+    ],
+    "phase": "teach",
+    "handover": "choice",
+    "answerForm": "choice",
+    "tray": "tiles",
+    "shortTitle": "Kinds of change",
+    "beat": {
+     "beatId": "b2-hook",
+     "type": "hook",
+     "index": 2
+    },
+    "ask": {
+     "text": "Aapko yeh part boring lag raha hai—chaliye tareeka badalte hain: game, picture, ya quick challenge—kaunsa choose kijiye?"
+    },
+    "teacherAffect": {
+     "display": "gentle_concern",
+     "intensity": 1
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false
+    },
+    "verdict": "ungraded",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "request"
+    },
+    "note": null,
+    "hintLevel": 0,
+    "phase": "teach",
+    "ms": 2028,
+    "item": null,
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 69
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 69
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 570
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 643
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 645
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 646
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1321
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 1971
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 2028
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "filler",
+   "lessonId": "8c248ae1-2789-421c-896a-1ef72f7be41c",
+   "childText": "अच्छा",
+   "ms": 1466,
+   "error": null,
+   "teacherReply": "Picture mode: kagaz ko fold karna physical change hai—shape badli, naya substance nahi. Aap ek aur example dijiye.",
+   "move": {
+    "kind": "explain",
+    "shape": "one idea only: Define a physical change (no new substance; only shape, size or state changes) and give examples; objects first, then the symbol; point at the screen only at what the on-screen row lists; never a drawing made of characters; end with one small question that makes them USE the idea — never 'samjha?'; address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu",
+    "skillId": "c7-science-ch05-t01-s1",
+    "format": "F1"
+   },
+   "ui": {
+    "status": "your_turn",
+    "phase": "teach",
+    "handover": "answer",
+    "answerForm": "words",
+    "tray": "module",
+    "shortTitle": "Kinds of change",
+    "beat": {
+     "beatId": "b3-explain",
+     "type": "explain",
+     "index": 3
+    },
+    "ask": {
+     "text": "Aap ek aur example dijiye."
+    }
+   },
+   "moduleCommands": [
+    {
+     "op": "mount",
+     "moduleId": "m3",
+     "engine": "explainer@1",
+     "params": {
+      "script": {
+       "v": 1,
+       "scriptId": "ex-zvnli8",
+       "line": {
+        "lessonId": "8c248ae1-2789-421c-896a-1ef72f7be41c"
+       },
+       "anchor": "line_audio_start",
+       "board": {
+        "w": 400,
+        "h": 300,
+        "ground": "chalk"
+       },
+       "mode": "fresh",
+       "durationMs": 8404,
+       "ops": [
+        {
+         "id": "h0",
+         "op": "text",
+         "startMs": 150,
+         "endMs": 650,
+         "ink": "accent",
+         "at": [
+          107.5,
+          36
+         ],
+         "text": "Physical change",
+         "size": "s"
+        },
+        {
+         "id": "o1",
+         "op": "line",
+         "startMs": 690,
+         "endMs": 990,
+         "ink": "accent",
+         "weight": 1,
+         "from": [
+          28,
+          62
+         ],
+         "to": [
+          187,
+          62
+         ]
+        },
+        {
+         "id": "h1",
+         "op": "text",
+         "startMs": 1140,
+         "endMs": 1640,
+         "ink": "accent",
+         "at": [
+          297.5,
+          36
+         ],
+         "text": "Chemical change",
+         "size": "s"
+        },
+        {
+         "id": "o2",
+         "op": "line",
+         "startMs": 1680,
+         "endMs": 1980,
+         "ink": "accent",
+         "weight": 1,
+         "from": [
+          218,
+          62
+         ],
+         "to": [
+          377,
+          62
+         ]
+        },
+        {
+         "id": "o3",
+         "op": "line",
+         "startMs": 2160,
+         "endMs": 2660,
+         "ink": "soft",
+         "weight": 1,
+         "from": [
+          200,
+          30
+         ],
+         "to": [
+          200,
+          280
+         ]
+        },
+        {
+         "id": "c00",
+         "op": "text",
+         "startMs": 2880,
+         "endMs": 3168,
+         "at": [
+          107.5,
+          88
+         ],
+         "text": "shape, size",
+         "size": "s"
+        },
+        {
+         "id": "o4",
+         "op": "text",
+         "startMs": 3168,
+         "endMs": 3456,
+         "at": [
+          107.5,
+          112
+         ],
+         "text": "or state",
+         "size": "s"
+        },
+        {
+         "id": "c10",
+         "op": "text",
+         "startMs": 3516,
+         "endMs": 3996,
+         "at": [
+          297.5,
+          100
+         ],
+         "text": "new substances",
+         "size": "s"
+        },
+        {
+         "id": "c01",
+         "op": "text",
+         "startMs": 4216,
+         "endMs": 4504,
+         "at": [
+          107.5,
+          140
+         ],
+         "text": "no new",
+         "size": "s"
+        },
+        {
+         "id": "o5",
+         "op": "text",
+         "startMs": 4504,
+         "endMs": 4792,
+         "at": [
+          107.5,
+          164
+         ],
+         "text": "substance",
+         "size": "s"
+        },
+        {
+         "id": "c11",
+         "op": "text",
+         "startMs": 4852,
+         "endMs": 5140,
+         "at": [
+          297.5,
+          140
+         ],
+         "text": "different",
+         "size": "s"
+        },
+        {
+         "id": "o6",
+         "op": "text",
+         "startMs": 5140,
+         "endMs": 5428,
+         "at": [
+          297.5,
+          164
+         ],
+         "text": "properties",
+         "size": "s"
+        },
+        {
+         "id": "c02",
+         "op": "text",
+         "startMs": 5648,
+         "endMs": 6128,
+         "at": [
+          107.5,
+          204
+         ],
+         "text": "melting ghee",
+         "size": "s"
+        },
+        {
+         "id": "c12",
+         "op": "text",
+         "startMs": 6188,
+         "endMs": 6668,
+         "at": [
+          297.5,
+          204
+         ],
+         "text": "burning a wick",
+         "size": "s"
+        },
+        {
+         "id": "c03",
+         "op": "text",
+         "startMs": 6888,
+         "endMs": 7176,
+         "at": [
+          107.5,
+          244
+         ],
+         "text": "dissolving",
+         "size": "s"
+        },
+        {
+         "id": "o7",
+         "op": "text",
+         "startMs": 7176,
+         "endMs": 7464,
+         "at": [
+          107.5,
+          268
+         ],
+         "text": "sugar",
+         "size": "s"
+        },
+        {
+         "id": "c13",
+         "op": "text",
+         "startMs": 7524,
+         "endMs": 8004,
+         "at": [
+          297.5,
+          256
+         ],
+         "text": "rusting",
+         "size": "s"
+        }
+       ],
+       "facts": {
+        "kind": "diagram",
+        "archetype": "compare@1",
+        "onScreen": {
+         "left": "Physical change",
+         "right": "Chemical change",
+         "rows": 4,
+         "left1": "shape, size or state",
+         "left2": "no new substance",
+         "left3": "melting ghee",
+         "left4": "dissolving sugar",
+         "right1": "new substances",
+         "right2": "different properties",
+         "right3": "burning a wick",
+         "right4": "rusting"
+        }
+       }
+      },
+      "template": "compare@1",
+      "mode": "play"
+     }
+    }
+   ],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false
+    },
+    "verdict": "ungraded",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 567,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "teach",
+    "ms": 1462,
+    "item": null,
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 115
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 116
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 715
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 840
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1283
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1407
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1410
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1411
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1077
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 1413
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 1462
+     }
+    ]
+   }
+  }
+ ]
+}

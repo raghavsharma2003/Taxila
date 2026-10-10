@@ -8,6 +8,8 @@ const BEAT_OF_MOVE = Object.freeze({
   greet: "arrive", retrieval: "warmup", hook: "hook", explain: "explain", worked_example: "worked_example", practice: "practice_set",
   probe: "probe", teachback: "teachback", wrap: "wrap", break: "break", safeguard: "safeguard", celebrate: "reflect",
   hint: null, repair: null, show_module: null, hold: null,
+  // round 4 (session-first): the intake beat is part of the arrival (stagecraft NO_STAGE_BEATS has "arrive": no stage build)
+  intake: "arrive", intake_confirm: "arrive", intake_agenda: "arrive",
 });
 
 /** The explanation beats: Studio may draw the explanation on the whiteboard while she speaks (owner priority 6). */

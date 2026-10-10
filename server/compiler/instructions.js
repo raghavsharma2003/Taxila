@@ -5,13 +5,19 @@ import { characterForState } from "./characters/index.js";
 import { getTopic } from "../content/curriculum.js";
 import { describe, branchesFor, skipItem } from "../director/state.js";
 import { briefViewFor } from "../learner/briefView.js";
+import { kitFromFile } from "../content/kits.js";
+
+const segmentKitOf = (topicId) => { const t = getTopic(topicId); return t ? kitFromFile(t) : null; };
 
 /**
  * One compile() for both lanes. The voice lane also gets the branches for the reply now being answered
  * (director/state.js branchesFor): its appended-last check is what the realtime model does on that reply,
  * and without them the check fell back to "nothing new; a short warm close" on every voice turn.
  */
-export function instructionsFor(state, kit, lane = state.mode === "voice" || !state.mode ? "voice" : "text") {
+export function instructionsFor(state, kit0, lane = state.mode === "voice" || !state.mode ? "voice" : "text") {
+  // round 4 (session-first): a session segment re-points the state at another verified kit inside the same lesson
+  // (director/state.js reinitForSegment); the compile reads that kit, never the lesson's first one
+  const kit = state.session && kit0?.topicId !== state.topicId ? (segmentKitOf(state.topicId) ?? kit0) : kit0;
   const input = {
     // the pinned character under its pinned name (child-names-teacher)
     // the CHILD-BRIEF v2 view (learner/briefView.js, W2-C #1), built from the state so every lane and the realtime

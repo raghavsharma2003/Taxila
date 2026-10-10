@@ -102,7 +102,14 @@ const SHAPES = [
   ["self_harm", "kalai_cut", `(?:kalai|kalaiyon|nas|nasen|nason)(?: pe| par| ki| ko)? (?:kut|kat|kati|kata|kate|blade)`, (m, full) => ACCIDENT.test(full)],
   ["self_harm", "poison", `(?:jehar|jahar|jehr|jaher|poison)(?: [a-z]+)? (?:kha|pi|pee|kha)(?: [a-z]+)? (?:lun|lunga|lungi|lu|lena|liya|li|jaunga|jaungi)|(?:drink|eat|take|drank|ate|took|svalov\\w*) (?:some )?poison`],
   ["self_harm", "train_ke_aage", `(?:train|tren|bus|truk|gadi|kar)(?: ke)? (?:age|niche|samne|samane) (?:kud|a|so|let|chala|chali|jump)(?: [a-z]+)? (?:jaunga|jaungi|jaun|jau|jana|dunga|dungi)|(?:jump|lie dovn|lay dovn) in front of (?:a |the )?(?:train|bus|truk|kar)`],
-  ["self_harm", "hang_fansi", `(?:pankhe|pankha|panka|rasi|dupate|dupata|chuni|fanda|fande) se latak|(?:fansi|fasi) (?:laga|lga|le|lagaunga|lagaungi|laga lunga|laga lungi|le lunga|le lungi|lagana)|(?:hang|hanging) ${SELFX}`],
+  ["self_harm", "hang_fansi", `(?:pankhe|pankha|panka|rasi|dupate|dupata|chuni|fanda|fande) se latak|(?:fansi|fasi) (?:laga|lga|le|lagaunga|lagaungi|laga lunga|laga lungi|le lunga|le lungi|lagana)|(?:hang|hanging) ${SELFX}`
+    // round 4 (stream 4A, patch request 09): the English "fan" was missing ("fan se latak jaungi", "ceiling fan se latak
+    // jaunga", Devanagari फैन from canonical "fain"). Only with the child as the one hanging: a first-person future after
+    // "latak" (never "fan latak raha hai", "kapde fan pe latka diye"), or "hang (myself) from / on the fan"
+    // (only words the vocabulary already has, plus fan / fain: a new literal joins VOCAB and stops the canonicaliser
+    // correcting its misspellings, e.g. "jaugi" -> "jaungi", which other shapes rely on)
+    + `|(?:kiling |kamre ka |kamre ke )?(?:fan|fain|pankhe|pankha)(?: ke)? (?:se|pe|par|me|mein)(?: [a-z]+){0,5} latak(?: ke| kar| kr)? (?:jaungi|jaunga|jaun|jau|jana hai|jana chahti|jana chahta|mar jaungi|mar jaunga|jaenge)`
+    + `|(?:hang|hanging) (?:${SELFX} )?(?:from|on|to) (?:the |our |this |mi )?(?:kiling )?fan`],
   ["self_harm", "meri_zarurat_nahi", `(?:kisi ko|kisiko) (?:bhi )?(?:meri )?(?:jarurat|jarurt|jrurat) (?:nahi|nahin|nai)|${I_S} (?:chala|chali) (?:jaun|jau|jaunga|jaungi)(?: to| toh)? (?:behtar|acha|achha|thik|beter)`],
   ["self_harm", "sab_mere_bina_khush", `(?:sab|sabhi|log|ghar vale|gharvale|family) mere bina${g(2)} (?:khush|thik|acha|achhe|beter|aram)`, (m, full) => LESSON.test(full)],
   ["self_harm", "stop_living", `(?:vant to|vana|gonna|gona|going to|just) stop (?:living|liv|breathing|eksisting)`],
@@ -278,6 +285,38 @@ const BY_WORD = (() => {
 // 4A, 2026-10-10). The canonical guard cannot tell them apart, so the raw words decide: a suicide-spelling hit counts only
 // when it survives with the succeed-family words masked out of the RAW text. Every other shape is untouched.
 const SUCCEED_RAW = /(?<![\p{L}])suc+e+d+(?:s|ed|ing)?(?![\p{L}])/giu;
+// round 4 (stream 4A, patch request 07, 2026-10-10): the same raw-word method, for five more canonical collisions found on kit
+// strings (docs/design/round4/build/conversation/safety-kit-hits.md). Each mask belongs to ONE shape: a hit of that shape
+// counts only when it survives with the listed RAW words masked out ("when": the mask applies only if that raw word is in the
+// turn). Every other shape, and every true spelling of these five, is untouched (docs/design/round3/adversarial/r4-scan-masks.test.mjs).
+const RAW_MASKS = {
+  // "exhaust fans let them out" read "fansi le...": only the PLURAL appliance word (canonical "fans" -> "fansi"); a single
+  // fan is never masked ("ceiling fan se latak jaunga" must fire, patch 09)
+  hang_fansi: [{ mask: /(?<![\p{L}])(?:exhaust|ceiling|table|pedestal|wall|electric|cooling|kitchen)\s+fans(?![\p{L}])/giu }],
+  // "point to lining up N" read "point to living"
+  jeene_ka_matlab_nahi: [{ mask: /(?<![\p{L}])lining(?![\p{L}])/giu }],
+  // "point to living things interacting there"
+  reason_to_live: [{ mask: /(?<![\p{L}])(?:living|non-living)\s+(?:things?|organisms?|beings?|creatures?)(?![\p{L}])/giu }, { mask: /(?<![\p{L}])lining(?![\p{L}])/giu }],
+  // "Meera's family has cut the ripe bajra crop" (a reading "nas kut"): cutting a crop, grass, paper, vegetables, cloth or hair
+  kalai_cut: [{ mask: /(?<![\p{L}])(?:cut|cuts|cutting)(?:\s+(?:the|a|an|some|ripe|green|dry|fresh|long|short|his|her|their|my|our))*\s+(?:crops?|grass|paper|vegetables?|cloth|clothes|hair|fasal|ghaas|ghas|kagaz|kaagaz|kapda|kapde|baal|sabzi|sabji|wheat|rice|bajra|paddy|fruits?|onions?|potato(?:es)?)(?![\p{L}])/giu }],
+  // "bulb ... raat ko apne aap jal jaata hai": a bulb, lamp, diya or light lighting by itself
+  khud_ko_khatam: [{ when: /(?<![\p{L}])(?:bulb|lamp|diya|diye|light|lights|batti|lantern|laltain|candle|mombatti|chaand|moon|sun|suraj)(?![\p{L}])/iu,
+    mask: /(?<![\p{L}])apne\s+a+p\s+(?:hi\s+)?jal(?:ta|ti|te|e)?\s+(?:ja+ta|ja+ti|ja+te|uth(?:ta|ti|te)|rah(?:ta|ti|te))(?![\p{L}])/giu }],
+};
+/** The raw text with one shape's benign words masked, or null when none of its masks applies. */
+function rawMasked(id, text) {
+  const masks = RAW_MASKS[id];
+  if (!masks) return null;
+  let t = String(text), hit = false;
+  for (const { when, mask } of masks) {
+    if (when && !when.test(t)) continue;
+    mask.lastIndex = 0;
+    if (mask.test(t)) { hit = true; mask.lastIndex = 0; t = t.replace(mask, " "); }
+    mask.lastIndex = 0;
+  }
+  return hit ? t : null;
+}
+
 export function lexiconScan(text) {
   const readings = readingsOf(text);
   if (!readings.length || !readings[0].text) return { distress: false, kind: null, shape: null };
@@ -292,6 +331,8 @@ export function lexiconScan(text) {
       if (!masked.some((r) => r.text && s.re.test(r.text))) continue;
     }
     SUCCEED_RAW.lastIndex = 0;
+    const benign = rawMasked(s.id, text);
+    if (benign != null && !readingsOf(benign).some((r) => r.text && s.re.test(r.text))) continue;
     return { distress: true, kind: s.kind, shape: s.id };
   }
   return { distress: false, kind: null, shape: null };

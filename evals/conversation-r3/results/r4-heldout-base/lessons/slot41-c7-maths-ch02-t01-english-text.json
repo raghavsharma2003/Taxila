@@ -1,0 +1,702 @@
+{
+ "slot": 41,
+ "topic": "c7-maths-ch02-t01",
+ "cls": 7,
+ "lang": "english",
+ "lane": "text",
+ "lessons": [
+  {
+   "lessonId": "8e92d94a-1914-4d75-bb16-7a56ffc87692",
+   "why": "start",
+   "at": "2026-10-10T08:49:01.781Z",
+   "teacher": "Arjun"
+  }
+ ],
+ "turns": [
+  {
+   "who": "teacher",
+   "kind": "opening",
+   "lessonId": "8e92d94a-1914-4d75-bb16-7a56ffc87692",
+   "teacherReply": "Hello Kabir, main Arjun, your AI teacher. Today we’ll write arithmetic expressions from word situations. Which music do you enjoy listening to?",
+   "ui": {
+    "status": "your_turn",
+    "phase": "warmup",
+    "handover": "answer",
+    "answerForm": "words",
+    "tray": "none",
+    "shortTitle": "Writing expressions",
+    "beat": {
+     "beatId": "b1-arrive",
+     "type": "arrive",
+     "index": 1
+    },
+    "ask": {
+     "text": "Which music do you enjoy listening to?"
+    }
+   }
+  },
+  {
+   "who": "child",
+   "tag": "greet",
+   "lessonId": "8e92d94a-1914-4d75-bb16-7a56ffc87692",
+   "childText": "yes let's start",
+   "ms": 1567,
+   "error": null,
+   "teacherReply": "Kabir, imagine a canteen bill: samosa costs 20 rupees and juice 15. What expression would show the total bill?",
+   "move": {
+    "kind": "hook",
+    "shape": "open with one concrete everyday situation — kit contexts: canteen and chai-stall bills, auto-rickshaw fares, sharing a pizza or a cab; ask what they think will happen or which they would pick — a prediction, no right answer yet; any bigger/more comparison: two quantities of one kind, in one unit — a count against a count, a distance against a distance; never across kinds; mention once: at the end they will teach this to Bittu (a pretend new student who missed this class)",
+    "format": "F4"
+   },
+   "ui": {
+    "status": "your_turn",
+    "phase": "teach",
+    "handover": "answer",
+    "answerForm": "words",
+    "tray": "none",
+    "shortTitle": "Writing expressions",
+    "beat": {
+     "beatId": "b2-hook",
+     "type": "hook",
+     "index": 2
+    },
+    "ask": {
+     "text": "What expression would show the total bill?"
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false
+    },
+    "verdict": "attempt",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 159,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "teach",
+    "ms": 1564,
+    "item": null,
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 42
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 42
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 1014
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 1059
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1174
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1218
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1220
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1220
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1430
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 1518
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 1564
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "probe:h-method_instruction-01",
+   "lessonId": "8e92d94a-1914-4d75-bb16-7a56ffc87692",
+   "childText": "use smaller numbers when you explain please",
+   "ms": 2539,
+   "error": null,
+   "teacherReply": "Sure, Kabir. Use smaller numbers: 2 rupees plus 3 rupees means 2 plus 3. What expression shows this total?",
+   "move": {
+    "kind": "explain",
+    "shape": "they said how they want it (Use smaller numbers when explaining): do it that way from now on, or say kindly why not and do the nearest thing; one idea only: Write an arithmetic expression for a word situation; objects first, then the symbol; point at the screen only at what the on-screen row lists; never a drawing made of characters; end with one small question that makes them USE the idea — never 'samjha?'",
+    "prefs": [
+     "Use smaller numbers when explaining"
+    ],
+    "skillId": "c7-maths-ch02-t01-s1",
+    "format": "F4",
+    "request": "adopt",
+    "lead": "they said how they want it (Use smaller numbers when explaining): do it that way from now on, or say kindly why not and do the nearest thing"
+   },
+   "ui": {
+    "status": "your_turn",
+    "phase": "teach",
+    "handover": "answer",
+    "answerForm": "words",
+    "tray": "studio",
+    "shortTitle": "Writing expressions",
+    "beat": {
+     "beatId": "b3-explain",
+     "type": "explain",
+     "index": 3
+    },
+    "ask": {
+     "text": "What expression shows this total?"
+    },
+    "studioSlot": {
+     "slotId": "8e92d94a-1914-4d75-bb16-7a56ffc87692:wb:2:slot",
+     "intentId": "8e92d94a-1914-4d75-bb16-7a56ffc87692:wb:2",
+     "state": "revealed",
+     "artifact": {
+      "kind": "whiteboard",
+      "stage": {
+       "w": 508,
+       "h": 317
+      },
+      "script": {
+       "v": 1,
+       "scriptId": "8e92d94a-1914-4d75-bb16-7a56ffc87692:wb:2",
+       "line": {
+        "lessonId": "8e92d94a-1914-4d75-bb16-7a56ffc87692",
+        "teacherReplySeq": 5
+       },
+       "anchor": "line_audio_start",
+       "board": {
+        "w": 508,
+        "h": 317,
+        "ground": "chalk"
+       },
+       "mode": "fresh",
+       "durationMs": 9787,
+       "ops": [
+        {
+         "id": "n1",
+         "op": "circle",
+         "startMs": 0,
+         "endMs": 1721,
+         "ink": "chalk",
+         "weight": 2,
+         "c": [
+          95.2,
+          114.3
+         ],
+         "r": 30.5
+        },
+        {
+         "id": "n2",
+         "op": "circle",
+         "startMs": 1229,
+         "endMs": 2950,
+         "ink": "chalk",
+         "weight": 2,
+         "c": [
+          190.5,
+          114.3
+         ],
+         "r": 30.5
+        },
+        {
+         "id": "op1",
+         "op": "text",
+         "startMs": 2212,
+         "endMs": 3196,
+         "ink": "accent",
+         "weight": 2,
+         "at": [
+          142.9,
+          120.6
+         ],
+         "text": "+",
+         "size": "l",
+         "align": "middle"
+        },
+        {
+         "id": "n3",
+         "op": "circle",
+         "startMs": 2704,
+         "endMs": 4425,
+         "ink": "chalk",
+         "weight": 2,
+         "c": [
+          285.7,
+          114.3
+         ],
+         "r": 30.5
+        },
+        {
+         "id": "op2",
+         "op": "text",
+         "startMs": 3442,
+         "endMs": 4425,
+         "ink": "accent",
+         "weight": 2,
+         "at": [
+          238.1,
+          120.6
+         ],
+         "text": "×",
+         "size": "l",
+         "align": "middle"
+        },
+        {
+         "id": "expr",
+         "op": "label",
+         "startMs": 5408,
+         "endMs": 7375,
+         "ink": "chalk",
+         "weight": 1,
+         "at": [
+          190.5,
+          190.5
+         ],
+         "text": "expression",
+         "to": [
+          190.5,
+          146
+         ]
+        },
+        {
+         "id": "value",
+         "op": "label",
+         "startMs": 7866,
+         "endMs": 9587,
+         "ink": "good",
+         "weight": 1,
+         "at": [
+          317.5,
+          114.3
+         ],
+         "text": "value",
+         "to": [
+          316.2,
+          114.3
+         ]
+        }
+       ],
+       "facts": {
+        "kind": "diagram",
+        "archetype": "whiteboard",
+        "onScreen": {
+         "labels": "+ | × | expression | value"
+        }
+       }
+      }
+     }
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false
+    },
+    "verdict": "ungraded",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "method_instruction",
+     "waitedMs": 433,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "teach",
+    "ms": 2535,
+    "item": null,
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 77
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 78
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 765
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 847
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1197
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1279
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1285
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1285
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1148
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 2470
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 2535
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "filler",
+   "lessonId": "8e92d94a-1914-4d75-bb16-7a56ffc87692",
+   "childText": "ok",
+   "ms": 4049,
+   "error": null,
+   "teacherReply": "Now compare 247 plus 389 with 250 plus 386: first parts differ by 3. What happens to the second parts?",
+   "move": {
+    "kind": "worked_example",
+    "shape": "worked example, part 1 of 2: say one step, then ask them for the next step; their thinking, your pace; no new idea",
+    "prefs": [
+     "Use smaller numbers when explaining"
+    ],
+    "skillId": "c7-maths-ch02-t01-s1",
+    "format": "F2"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "math",
+     "value": "Without adding, compare 247 + 389 and 250 + 386."
+    },
+    "phase": "teach",
+    "handover": "answer",
+    "answerForm": "words",
+    "tray": "studio",
+    "shortTitle": "Writing expressions",
+    "beat": {
+     "beatId": "b4-worked_example",
+     "type": "worked_example",
+     "index": 4
+    },
+    "ask": {
+     "text": "What happens to the second parts?"
+    },
+    "studioSlot": {
+     "slotId": "8e92d94a-1914-4d75-bb16-7a56ffc87692:wb:3:slot",
+     "intentId": "8e92d94a-1914-4d75-bb16-7a56ffc87692:wb:3",
+     "state": "revealed",
+     "artifact": {
+      "kind": "whiteboard",
+      "stage": {
+       "w": 508,
+       "h": 317
+      },
+      "script": {
+       "v": 1,
+       "scriptId": "8e92d94a-1914-4d75-bb16-7a56ffc87692:wb:3",
+       "line": {
+        "lessonId": "8e92d94a-1914-4d75-bb16-7a56ffc87692",
+        "teacherReplySeq": 7
+       },
+       "anchor": "line_audio_start",
+       "board": {
+        "w": 508,
+        "h": 317,
+        "ground": "chalk"
+       },
+       "mode": "fresh",
+       "durationMs": 15069,
+       "ops": [
+        {
+         "id": "n1",
+         "op": "circle",
+         "startMs": 0,
+         "endMs": 2669,
+         "ink": "chalk",
+         "weight": 2,
+         "c": [
+          95.2,
+          114.3
+         ],
+         "r": 30.5
+        },
+        {
+         "id": "n2",
+         "op": "circle",
+         "startMs": 1906,
+         "endMs": 4575,
+         "ink": "chalk",
+         "weight": 2,
+         "c": [
+          190.5,
+          114.3
+         ],
+         "r": 30.5
+        },
+        {
+         "id": "op1",
+         "op": "text",
+         "startMs": 3431,
+         "endMs": 4956,
+         "ink": "accent",
+         "weight": 2,
+         "at": [
+          142.9,
+          120.6
+         ],
+         "text": "+",
+         "size": "l",
+         "align": "middle"
+        },
+        {
+         "id": "n3",
+         "op": "circle",
+         "startMs": 4194,
+         "endMs": 6863,
+         "ink": "chalk",
+         "weight": 2,
+         "c": [
+          285.7,
+          114.3
+         ],
+         "r": 30.5
+        },
+        {
+         "id": "op2",
+         "op": "text",
+         "startMs": 5338,
+         "endMs": 6863,
+         "ink": "accent",
+         "weight": 2,
+         "at": [
+          238.1,
+          120.6
+         ],
+         "text": "×",
+         "size": "l",
+         "align": "middle"
+        },
+        {
+         "id": "expr",
+         "op": "label",
+         "startMs": 8388,
+         "endMs": 11438,
+         "ink": "chalk",
+         "weight": 1,
+         "at": [
+          190.5,
+          190.5
+         ],
+         "text": "expression",
+         "to": [
+          190.5,
+          146
+         ]
+        },
+        {
+         "id": "value",
+         "op": "label",
+         "startMs": 12200,
+         "endMs": 14869,
+         "ink": "good",
+         "weight": 1,
+         "at": [
+          317.5,
+          114.3
+         ],
+         "text": "value",
+         "to": [
+          316.2,
+          114.3
+         ]
+        }
+       ],
+       "facts": {
+        "kind": "diagram",
+        "archetype": "whiteboard",
+        "onScreen": {
+         "labels": "+ | × | expression | value"
+        }
+       }
+      }
+     }
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false
+    },
+    "verdict": "ungraded",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": null,
+     "waitedMs": 1544,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "teach",
+    "ms": 4047,
+    "item": null,
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 53
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 53
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 655
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 711
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 2255
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 2259
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 2260
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": "timeout",
+      "ms": 2402
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1692
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 3985
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 4047
+     }
+    ]
+   }
+  }
+ ]
+}
