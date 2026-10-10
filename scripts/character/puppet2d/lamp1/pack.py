@@ -26,7 +26,7 @@ FACE = {
     "pins": [[-2000, -2000], [-2000, -2000]], "pinS": 30,
     "cheeks": {"L": [445, 562], "R": [607, 562], "s": 42}, "wink": {"L": [425, 510], "R": [626, 510], "s": 48},
     "jawBroad": {"y": [606, 672], "s": 180}, "narrow": {"ax": [40, 170], "y": 660, "s": 70},
-    "body": {"cx": 525, "hem": 1024, "sh": [165, 280], "shY": [800, 880, 990, 1024], "bw": [880, 1024], "rollY": [800, 870], "neckY": [880, 770], "neckW": [150, 200]},
+    "body": {"cx": 525, "hem": 1024, "sh": [165, 280], "shY": [800, 880, 990, 1024], "bw": [880, 1024], "rollY": [800, 870], "neckY": [840, 750], "neckW": [150, 200], "neckV": 0.35, "neckV0": 90},
     "anchor": [525, 290, 120], "bunZ": -45, "lockBun": {"R": None},
     # the turn's far-side shadow is a flat violet plane (Prakash: shadows are violet, never grey)
     "shade": {"face": {"L": [325, 525], "R": [525, 725], "amt": 0.16}, "hair": {"L": [235, 650], "R": [400, 815], "amt": 0.1}, "tint": [0.30, 0.16, 0.46]},
@@ -34,7 +34,7 @@ FACE = {
     "glints": [[306, 547], [748, 546]], "glintA": 0.55,
     "k": 0.94, "ke": 1.0, "kb": 1.0,
     # her sclera carries the painted lid shadow: no procedural shade at rest, 0.3 once the lid moves; her corners are pointed
-    "eye": {"shade": [0.0, 0.3], "round": 3},
+    "eye": {"shade": [0.0, 0.3], "round": 3, "upK": 0.5, "upLid": 0.09},
     # her thinking glance: eyes up and aside, the pursed mouth, brows LEVEL (owner direction, Stage B think frame); the
     # c-front preset's one-brow arch + low brow read skeptical on the grown-up front
     # blind C1 (n = 5): the c-front glance [21, 20] read "eyes roll upward, misaligned" 4/5 on her front, and the listening

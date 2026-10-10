@@ -137,8 +137,17 @@ rig = rep(rig, [
     ("    const dipA = 5.0 * Math.max(this.blinkDip || 0,", "    const dipA = 5.0 * F.kb * Math.max(this.blinkDip || 0,"),
     ("    const shadeFace = [s.yaw >= 0 ? 1 : -1, s.yaw >= 0 ? 530 : 330, s.yaw >= 0 ? 730 : 530, 0.16 * Math.abs(s.yaw) / 20];\n    const shadeHair = [shadeFace[0], s.yaw >= 0 ? 400 : 200, s.yaw >= 0 ? 820 : 660, 0.1 * Math.abs(s.yaw) / 20];",
      "    const SF = F.shade.face, SH = F.shade.hair, sd0 = s.yaw >= 0 ? \"R\" : \"L\";\n    const shadeFace = [s.yaw >= 0 ? 1 : -1, SF[sd0][0], SF[sd0][1], SF.amt * Math.abs(s.yaw) / 20];\n    const shadeHair = [shadeFace[0], SH[sd0][0], SH[sd0][1], SH.amt * Math.abs(s.yaw) / 20];"),
+    # lamp1: F.eye.upK scales the iris's UPWARD travel and F.eye.upLid the upper lid's rise on an upward look (c-front 1 and
+    # 0.02). Her iris top sits under the lid at rest, so behaviour's speaking aversion ([4.7, 10.1]) and the thinking glance
+    # read "eyes roll upward" (blind C1-C3, 4/5, 5/5, 3/5): the iris travels less, and the lid lifts with it
     ("    const ox = (gz[0] / 25) * 18, oy = -(gz[1] / 20) * 12 + (gz[1] < 0 ? -gz[1] / 25 * 2 : 0);",
-     "    const ox = (gz[0] / 25) * 18 * F.ke, oy = (-(gz[1] / 20) * 12 + (gz[1] < 0 ? -gz[1] / 25 * 2 : 0)) * F.ke;"),
+     "    const ox = (gz[0] / 25) * 18 * F.ke, oy = (-(gz[1] / 20) * 12 * (gz[1] > 0 ? F.eye.upK : 1) + (gz[1] < 0 ? -gz[1] / 25 * 2 : 0)) * F.ke;"),
+    ("        const follow = (lookDown * 0.14 - lookUp * 0.02) * H * hump;", "        const follow = (lookDown * 0.14 - lookUp * F.eye.upLid) * H * hump;"),
+    # lamp1: the neck's head-follow region may shallow toward the sides (F.body.neckV px of depth lost per px beyond
+    # neckV0 from the centre line; c-front 0): her painted chin shadow reaches y 840, so the centre must follow deep, while
+    # the lapels at the sides (y ~790) must not (polish 2 dragged them: "a stray curved mark at the collar", C3 3/5)
+    ("        const neck = smooth(BD.neckY[0], BD.neckY[1], y) * (1 - smooth(BD.neckW[0], BD.neckW[1], Math.abs(x - BD.cx)));",
+     "        const neck = smooth(BD.neckY[0], BD.neckY[1], y + (BD.neckV || 0) * Math.max(0, Math.abs(x - BD.cx) - (BD.neckV0 || 0))) * (1 - smooth(BD.neckW[0], BD.neckW[1], Math.abs(x - BD.cx)));"),
     ("Math.min(push, 14)", "Math.min(push, 14 * F.ke)"),
     ("wy = smooth(M.rect[1], M.rect[1] + 60, M.rest[q * 2 + 1]);\n            y += 3.5 * (1 - r2) * wy;",
      "wy = smooth(M.rect[1], M.rect[1] + 60 * F.ke, M.rest[q * 2 + 1]);\n            y += 3.5 * F.ke * (1 - r2) * wy;"),

@@ -645,7 +645,7 @@ export class Puppet2DRig {
         // r4: delight's eyes SMILE: the cheek pushes the lower lid up harder (judge r3: 'delight without an eye squint')
         const rise = (q * 0.36 + c * 0.32 + sm * 0.07 + blinkSq) * H * Math.pow(hump, 1.4);
         let bot = B - rise + w * 0.09 * H * hump;
-        const follow = (lookDown * 0.14 - lookUp * 0.02) * H * hump;
+        const follow = (lookDown * 0.14 - lookUp * F.eye.upLid) * H * hump;
         const closed = T + 0.72 * (B - T) - Math.min(rise, 0.25 * H);   // the lids meet ~70% down (Memoji)
         let top = T + follow - w * 0.32 * H * hump - (this.happy || 0) * 0.07 * H * hump * hump;   // r4: surprise shows sclera ABOVE the iris (0.2 -> 0.32); r6: happy arch
         // blink: the upper lid travels to the meeting line, the lower lid rises the last part (eased: fast close)
@@ -850,7 +850,7 @@ export class Puppet2DRig {
           } }
         // r3: the neck column carries the head transform fully up to the jaw (the keyform field already decays to 0 at
         // the collar), so the chin and the neck under it move as one; uniform across the neck's width (no shear)
-        const neck = smooth(BD.neckY[0], BD.neckY[1], y) * (1 - smooth(BD.neckW[0], BD.neckW[1], Math.abs(x - BD.cx)));
+        const neck = smooth(BD.neckY[0], BD.neckY[1], y + (BD.neckV || 0) * Math.max(0, Math.abs(x - BD.cx) - (BD.neckV0 || 0))) * (1 - smooth(BD.neckW[0], BD.neckW[1], Math.abs(x - BD.cx)));
         if (neck > 0) {
           const [hx, hy] = this.project(x, y, zFast(x, y));
           X += (hx - x) * neck;
@@ -1057,7 +1057,7 @@ export class Puppet2DRig {
     const g0 = this.gaze || [0, 0], ms = this.life.sacc;   // r5: + fixational micro-saccades (life.js)
     const gz = [g0[0] + ms[0], g0[1] + ms[1] - (bd > 0 ? 6 * bd : 0)];
     // r2: the upward range was too timid to read as "looking up" (c-thinking parks the iris under the upper lid)
-    const ox = (gz[0] / 25) * 18 * F.ke, oy = (-(gz[1] / 20) * 12 + (gz[1] < 0 ? -gz[1] / 25 * 2 : 0)) * F.ke;
+    const ox = (gz[0] / 25) * 18 * F.ke, oy = (-(gz[1] / 20) * 12 * (gz[1] > 0 ? F.eye.upK : 1) + (gz[1] < 0 ? -gz[1] / 25 * 2 : 0)) * F.ke;
     const fx = Math.cos((gz[0] + 0.2 * s.yaw) * D2R * 1.2);
     const [icx, icy] = e.iris;
     // r2: a lowering lid pushes the catchlight down with it (it stays visible on the iris until the eye is nearly
