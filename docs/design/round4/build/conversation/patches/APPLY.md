@@ -18,7 +18,14 @@ Client follow-ups (not this stream's files; listed for the owners of `src/child`
 - a `move.segment` on a turn ({ n, topicId, purpose, mode }) means the lesson moved to a new topic in the same lesson: the
   client may refresh its topic title; nothing else changes (same lessonId, same turn route).
 
-## Safety-floor patch (needs the main session's safety review; NOT applied on this branch)
+## Safety-floor patches (need the main session's safety review; NOT applied on this branch)
+
+**03: APPLIED on base and SUPERSEDED by `7ec8202`** (the main session's amended version: game/pest object exclusion on the
+habitual and long-gap peer rules, a peer subject required for the Devanagari no-actor gap rule, four more misses caught).
+Do NOT re-apply this branch's `03-safety-peer-actor.diff`; it stays only as the record. Checked on the merged tree
+(`d9e439ad`): the review test 3/3, base's `tests/safety-r4-scan-disclosures.test.mjs` 3/3; both blind opening sets decide
+every safeguard opening by the CODE predicate alone (set 1 6/6, set 2 5/5; before: 4/6, 2/5), 0 false safeguards; kit strings
+41 hits on the merged tree = 41 on `522dca6e` (0 new); battery lines 9 hits, all `distress` cases.
 
 | # | file | owner | why | evidence |
 |---|---|---|---|---|
@@ -29,3 +36,9 @@ Client follow-ups (not this stream's files; listed for the owners of `src/child`
 | # | file | owner | why | proved by |
 |---|---|---|---|---|
 | 04 | `server/brain/turn.js` (one line) | stream 3 / main | G2 Khand finding: with a BUILD piece up she said "top view chuniye" (the folded card question's verb). `state.playOn` now carries the piece's `family` and `mode` from the Studio slot's artifact, so `compiler/compile.js` takes the task verb from `director/play-verbs.js` (one entry per `shared/play.ts` mode; a new family's mode with no entry fails the test). | `tests/r4-conversation-play-verbs.test.mjs` |
+
+## Patch 05 (frozen safety lexicon; needs the safety review)
+
+| # | file | owner | why | evidence |
+|---|---|---|---|---|
+| 05 | `server/safety/lexicon.js` (frozen floor) | main + safety review | A FALSE safeguard, pre-existing on `522dca6e` and on base: "succeed / succeeded / succeeds" canonicalise to `sukide`, the same as the misspelling "sucide", so `suicide_spellings` fires on "i want to succeed", "she succeeded" and 24 kit answer / prompt strings ("B: she found her own way and succeeded"). A child giving that answer gets the self-harm helplines. The canonical guard cannot tell the two apart, so the patch looks at the RAW words, for this one shape only: a hit counts only when it survives with the succeed-family words (`suc+e+d+(s|ed|ing)?`) masked out of the raw text. "sucide", "main sucide kar lunga", "i will do sucide", and "i want to succeed but sometimes i think of sucide" still fire. | `node --test docs/design/round3/adversarial/r4-scan-succeed.test.mjs` (fails without the patch, passes with it). All `tests/*safety*`, `*lexicon*`, `*fuzzy*` suites and the patch-03 review test: 92/92 with the patch. Kit strings 41 hits → 17: exactly the 24 succeed strings removed, 0 added. |
