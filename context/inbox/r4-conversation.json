@@ -59,6 +59,12 @@
    "kind": "rejection",
    "title": "Tried (7fd936d1, lever 5, TAXILA_ACK_CLOSE=on): hold the teach step one turn after a bare haan / ok to a teaching question, so she closes her own question. Broke the main session's bar: owner-2, one lane, prod routing, judge on, 3 seeds x 90 turns vs off: J turns 40 -> 36 but J after a bare ack 18 -> 22 (no drop), the first practice question at child turn 8 vs 4 (median), questions posed 78 -> 59, answers graded 50 -> 36, re-teach turns with no question 6 -> 52 (each teach step costs a turn when the simulated child says haan, which it often does). Kept OFF (default); do not turn on",
    "at": "2026-10-10"
+  },
+  {
+   "id": "r4c-ms-session-start-cohort-e2e",
+   "kind": "measurement",
+   "at": "2026-10-10",
+   "title": "Session-start end-to-end (owner-2, cohort head 4beed727 + patch 15, TAXILA_SESSION_FIRST_FOR = a test guardian) vs the plain-lesson batch arm (owner2-batch-ackclose-off, 7fd936d1). n = 3 seeds (7, 1010, 2027) × 6 personas × 14 child turns per arm (252 turns); method: tests/prod/owner-2-no-confusion.mjs --session --email, prod routing (tests/prod/prod-routing.env), --judge model, one lane, local server; pace by evals/conversation-r4/owner2-pace.mjs. Intake opened 18/18. Session vs plain: J turns 30 vs 40; J after a bare ack 17 vs 18; turns with any defect 32 vs 40; code defects 3 (2 R2.fallback, 1 R3.bare_question) vs 0; first practice at child turn 7 vs 4 (median); questions posed 57 vs 78; answers graded 28 vs 50; reteach turns with no question 17 vs 6. Read: fewer judge-flagged turns, slower pace, 2 fallback lines. J is a strong signal, not ground truth; no child used this. Results: docs/design/round4/build/conversation/acceptance/owner2-session-start-cohort/"
   }
  ],
  "edges": [

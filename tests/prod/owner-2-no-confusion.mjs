@@ -12,7 +12,8 @@
 //       no network, no account: calibration of the judge against transcripts a human already reviewed)
 import { readdirSync, readFileSync } from "fs";
 import { join } from "path";
-import { arg, withTestAccount, ok, warn, done, BASE, SEED, rnd, pick, PERSONAS, GREET, CONFUSED, OFFTOPIC, FILLER, answersFor, freshChild, openLesson, openingOf,
+import { getTopic } from "../../server/content/curriculum.js";
+import { arg, flag, withTestAccount, ok, warn, done, BASE, SEED, rnd, pick, PERSONAS, GREET, CONFUSED, OFFTOPIC, FILLER, answersFor, freshChild, openLesson, openingOf,
   rubric, modelJudge, floorContentOf, compact, save, tally, kitOf, itemOf, norm, OUT } from "./_owner.mjs";
 
 const SESSIONS = Number(arg("sessions", 6));
@@ -20,14 +21,22 @@ const TURNS = Number(arg("turns", 14));
 const replayDir = arg("replay", null);
 
 /** One child turn's plan for slot i of a session. */
+// round 4 (--session): the session-first start (no topic chosen; the intake asks what happened in school today). The first child
+// line names the persona's topic the way a child would, from the syllabus graph's chapter title.
+const SESSION = flag("session");
+const schoolToday = (persona, topicId) => {
+  const t = getTopic(topicId);
+  const ch = (t?.chapter?.title ?? t?.title ?? topicId).replace(/^\d+\.?\s*/, "");
+  return { english: `today we did ${ch} in class`, hindi: `आज स्कूल में ${ch} पढ़ाया`, shy: `${ch} hua aaj`, joker: `aaj ${ch} padhaya haha` }[persona.style] ?? `aaj school mein ${ch} padhaya`;
+};
 function planTurn(i, persona, L) {
   const S = persona.style;
-  if (i === 0) return { text: GREET[S] ?? GREET.hinglish, kind: "greet" };
+  if (i === 0) return SESSION ? { text: schoolToday(persona, L.wantTopic), kind: "greet" } : { text: GREET[S] ?? GREET.hinglish, kind: "greet" };
   if (i === 4) return { text: pick(CONFUSED[S] ?? CONFUSED.hinglish), kind: "confused" };
   if (i === 7) return { text: pick(OFFTOPIC[S] ?? OFFTOPIC.hinglish), kind: "offtopic" };
   const item = L.item(L.last);
   if (item && L.kit) {
-    const A = answersFor(item, L.kit, persona);
+    const A = answersFor(item, L.kitOf?.(L.last) ?? L.kit, persona);
     const roll = rnd();
     if (roll < 0.35) return { text: A.correct, kind: "answer", truth: "correct", itemId: item.id };
     if (roll < 0.6) return { text: A.wrong, kind: "answer", truth: "wrong", itemId: item.id };
@@ -97,7 +106,7 @@ if (replayDir) {
 }
 
 // ───────────────────────────── live ─────────────────────────────
-console.log(`owner-2 against ${BASE}: ${SESSIONS} sessions × ${TURNS} turns, seed ${SEED}${arg("judge", "") === "model" ? ", model judge on" : ""}`);
+console.log(`owner-2 against ${BASE}: ${SESSIONS} sessions × ${TURNS} turns, seed ${SEED}${SESSION ? ", SESSION-FIRST start (no topic)" : ""}${arg("judge", "") === "model" ? ", model judge on" : ""}`);
 const keys = Object.keys(PERSONAS);
 const lessons = [];
 const defects = [];
@@ -109,7 +118,7 @@ await withTestAccount(async ({ api, child: first }) => {
     const child = s === 0 && persona === PERSONAS[keys[0]] ? first : await freshChild(api, persona);
     const sid = `s${s + 1}-${keys[s % keys.length]}-${spoken ? "spoken" : "typed"}-${topicId}`;
     let L;
-    try { L = await openLesson(api, child, { topicId, spoken, persona }); }
+    try { L = await openLesson(api, child, { topicId: SESSION ? undefined : topicId, spoken, persona }); L.wantTopic = topicId; }
     catch (e) { defects.push({ session: sid, turn: 0, code: "R1.start", why: `the lesson did not start: ${e.message}` }); continue; }
     for (let i = 0; i < TURNS && !L.ended; i++) {
       const p = planTurn(i, persona, L);

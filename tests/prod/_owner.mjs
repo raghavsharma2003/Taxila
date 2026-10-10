@@ -327,7 +327,8 @@ export async function withTestAccount(fn, opts = {}) {
   const api = apiClient();
   api.children = [];
   const st = Date.now(), rnd6 = Math.random().toString(36).slice(2, 8);
-  const email = `prod-${opts.tag ?? "owner"}+${st}${rnd6}@taxila.test`, password = `prod-pw-${st}-${rnd6}`;
+  // --email: a fixed test address (round 4: a session-first cohort run sets TAXILA_SESSION_FIRST_FOR to it); deleted at cleanup as always
+  const email = arg("email", null) ?? `prod-${opts.tag ?? "owner"}+${st}${rnd6}@taxila.test`, password = `prod-pw-${st}-${rnd6}`;
   let signedUp = false;
   try {
     await api("POST", "/api/auth/signup", { email, password, name: "Prod Test", isGuardianAdult: true });
@@ -387,7 +388,11 @@ export async function openLesson(api, child, { topicId, spoken = false, persona,
     startMs: Date.now() - t0 };
   try { L.kit = kitOf(L.topicId); } catch { L.kit = null; }
   L.replies = () => [L.opening.teacherReply ?? L.opening.teacherOpening, ...L.rows.map((x) => x.r?.teacherReply)].filter(Boolean);
-  L.item = (r) => (L.kit ? itemOf(L.kit, r?.ui?.ask?.itemId) : null);
+  // round 4: a session-first intake can re-point the lesson to another topic; an item is looked up in its OWN topic's kit
+  const kits = new Map();
+  const kitForItem = (id) => { const t = /^(c\d-[a-z]+-ch\d+-t\d+)/.exec(String(id ?? ""))?.[1]; if (!t) return null; if (!kits.has(t)) { try { kits.set(t, kitOf(t)); } catch { kits.set(t, null); } } return kits.get(t); };
+  L.item = (r) => { const id = r?.ui?.ask?.itemId; if (!id) return null; const own = L.kit ? itemOf(L.kit, id) : null; if (own) return own; const k = kitForItem(id); return k ? itemOf(k, id) : null; };
+  L.kitOf = (r) => { const id = r?.ui?.ask?.itemId; return (L.kit && itemOf(L.kit, id)) ? L.kit : kitForItem(id) ?? L.kit; };
   /** One child turn. `text` is written as typed; on the spoken lane it goes as an ASR transcript. */
   L.turn = async (text, extra = {}) => {
     const words = spoken && !extra.raw ? spokenForm(text) : text;
