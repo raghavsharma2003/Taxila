@@ -339,7 +339,8 @@ export class Governor {
       const forceMs = OVERLAP.sustainCountsNonEcho && o.nonEchoMs !== undefined ? Math.min(c.voicedRunMs, o.nonEchoMs) : c.voicedRunMs;
       if (target && o.echoLikelihood < (OVERLAP.acousticYieldNeedsNonEcho ? 0.5 : 0.7) && c.voicing && forceMs >= OVERLAP.forceYieldMs) {
         veto("YIELD", "sustained_voice", { action: "YIELD", reason: "barge_in", atWordBoundary: true, resumable: true });
-      } else if (o.lexicalKind === "stop" || o.lexicalKind === "repair" || (target && (o.lexicalKind === "answer" || o.lexicalKind === "turn"))) {
+      } else if (o.lexicalKind === "stop" || o.lexicalKind === "repair" || (target && (o.lexicalKind === "answer" || (o.lexicalKind === "turn" && !(OVERLAP.lexicalTurnNeedsVoiceMs > 0 && o.nonEchoMs !== undefined && o.nonEchoMs < OVERLAP.lexicalTurnNeedsVoiceMs))))) {
+        // round 4 (OVERLAP.lexicalTurnNeedsVoiceMs): a turn's words from a burst that was her own bleed throughout do not yield
         // p1-duplex (2026-10-05): words from a burst far below the child's own level (the TV, the room) are not the child's
         // turn; only an explicit stop / repeat request from a quieter voice still stops her
         const reason = o.lexicalKind === "stop" ? "stop_request" : o.lexicalKind === "repair" ? "repair_request" : o.lexicalKind === "answer" ? "answer_to_her_question" : "barge_in";

@@ -87,3 +87,26 @@ describe("r4 duplex: a hush give-up lasts OVERLAP.hushGiveUpForMs", () => {
     assert.equal(giveUpThenWait(Math.max(0, OVERLAP.hushGiveUpForMs - 5000)).later, 0);
   });
 });
+
+import { classifyOverlap } from "../src/duplex/overlap.ts";
+
+describe("r4 duplex: a turn's words yield only from a burst that voiced above her echo (lexicalTurnNeedsVoiceMs)", () => {
+  const f = { onsetAt: 0, durMs: 600, targetSpeaker: null, echoLikelihood: 0.05, levelOverEchoDb: 0, onsetF0Rel: 0.5, atHerBoundary: false, words: "as much as we can", lexicalKind: "turn", herAskedYesNo: false, hushed: false };
+  const ended = { voicing: false, f0SlopeStPerS: null };
+  it("her own bleed (a burst never above her echo) does not stop her on its words", () => {
+    if (!(OVERLAP.lexicalTurnNeedsVoiceMs > 0)) return;
+    const o = classifyOverlap({ ...f, nonEchoMs: 0 }, ended, FREE);
+    assert.equal(o.decided, false);
+    assert.equal(o.yieldReason, null);
+  });
+  it("the child's burst (voiced above her echo) still yields on its words, even when they land after it ended", () => {
+    assert.equal(classifyOverlap({ ...f, nonEchoMs: 400 }, ended, FREE).yieldReason, "barge_in");
+  });
+  it("stop and repeat words always yield, whatever the burst", () => {
+    assert.equal(classifyOverlap({ ...f, nonEchoMs: 0, words: "ruko", lexicalKind: "stop" }, ended, FREE).yieldReason, "stop_request");
+    assert.equal(classifyOverlap({ ...f, nonEchoMs: 0, words: "kya", lexicalKind: "repair" }, ended, FREE).yieldReason, "repair_request");
+  });
+  it("older constructors without nonEchoMs keep the round-3 behaviour", () => {
+    assert.equal(classifyOverlap({ ...f }, ended, FREE).yieldReason, "barge_in");
+  });
+});

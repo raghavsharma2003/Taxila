@@ -266,6 +266,15 @@ export const OVERLAP = {
    */
   sustainCountsNonEcho: true,
   nonEchoDb: 3,
+  /**
+   * Round 4: words that read as a TURN yield only if the burst that carried them voiced at least this long clearly above
+   * her echo level (OverlapFeatures.nonEchoMs). A burst that was her own bleed throughout (her words leaking back through
+   * the mic) never stops her on its words. Judged on the BURST, not on the mic frame when the words land: a barge-in's
+   * words arrive after its burst has ended, when the mic hears only her echo (the frame-level version, rejected this round,
+   * swallowed a real barge-in in ship5 B3). Stop, repair and answer words always yield; the partial-safety predicate reads
+   * every word. 0 = off. [AMI TRAIN sweep]
+   */
+  lexicalTurnNeedsVoiceMs: 0 as Ms,
 };
 
 /**
