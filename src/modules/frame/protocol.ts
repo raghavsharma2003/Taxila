@@ -41,7 +41,9 @@ export function parseHostToModule(data: unknown): HostToModule | null {
         ...(isStr(data.goal) && { goal: data.goal }),
         lang: isStr(data.lang) ? data.lang : "english",
         ageBand: isStr(data.ageBand) ? data.ageBand : "10-15",
-      };
+        // r4: the skin's resolved tokens (Kaksha --k-* values from the host page): only --k-* names, short strings
+        ...(isObj(data.skin) && { skin: Object.fromEntries(Object.entries(data.skin).filter(([k, v]) => /^--k-[a-z0-9-]{1,24}$/.test(k) && isStr(v) && v.length <= 120 && !/[;{}<>]|url\(/i.test(v))) as Record<string, string> }),
+      } as HostToModule;
     case "set_param":
       return isStr(data.name) ? { type: "set_param", name: data.name, value: data.value } : null;
     case "highlight":

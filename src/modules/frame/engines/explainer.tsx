@@ -11,7 +11,7 @@ import type { EngineModule, EngineProps } from "../engine.ts";
 import { defineEngine } from "../kit/def.ts";
 import { normalizeScript } from "../../../../shared/whiteboard.js";
 import { WhiteboardPlayer } from "../../whiteboard/Player.tsx";
-import { paletteFor } from "../../whiteboard/palette.ts";
+import { boardSkinFromDocument, paletteFor } from "../../whiteboard/palette.ts";
 
 const def = defineEngine({
   id: "explainer@1",
@@ -73,10 +73,12 @@ function Explainer({ params, highlight, api }: EngineProps) {
     setStartAt(anchorAt(cue));
   }, [cue?.n]);
   if (!script) return null;
-  const pal = paletteFor(script.board.ground);
+  // r4: under the Kaksha skin (the frame root marked by init) the board wears Kaksha's tokens; else as before
+  const skin = boardSkinFromDocument(script.board.ground);
+  const pal = skin?.palette ?? paletteFor(script.board.ground);
   return (
     <div className="wb-root" style={{ background: pal.ground }} data-testid="explainer">
-      <WhiteboardPlayer script={script} startAt={startAt} reducedMotion={reducedMotionNow()} pulse={highlight} className="wb-svg"
+      <WhiteboardPlayer script={script} startAt={startAt} reducedMotion={reducedMotionNow()} pulse={highlight} className="wb-svg" skin={skin}
         onTapText={(op) => api.interaction("explainer.tap", { opId: op.id, label: op.text })}
         onDone={() => {
           setDone(true);

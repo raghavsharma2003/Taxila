@@ -60,6 +60,15 @@ export interface TrayModel {
 
 export interface DidCard { ask: string | null; answer: string; verified: boolean; withHelp: boolean }
 
+/** r4 K-P12: the session-first intake as the server sends it (BUILD-SPEC §3.2; 4A's UiDirectives.intake, K-P11). Typed
+ *  here structurally until K-P11 lands in shared/contracts.ts; the same shape, so the swap is a type alias. */
+export interface DeskIntake {
+  phase: "ask" | "listen" | "heard" | "mapped" | "plan";
+  mapped?: { topicId: string; title: string; trail: string[] };
+  plan?: { segments: Array<{ purpose: string }> };
+  chips?: string[];
+}
+
 export interface DeskModel {
   band: Band;
   family: Family;

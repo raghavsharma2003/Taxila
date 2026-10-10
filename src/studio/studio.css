@@ -145,3 +145,34 @@
 .st-beat i { width: 8px; height: 8px; border-radius: 50%; background: var(--line); }
 .st-beat i.is-done { background: var(--ink-2); }
 .st-beat i.is-now { background: var(--nib); width: 10px; height: 10px; }
+
+/* round 4 (owner directive "modern, futuristic, Gen-Alpha"; main session 2026-10-10): the tray under the Kaksha skin
+   (the Desk root carries data-skin="kaksha", K-P2). No colour of its own: the names the stage, the skeletons and the beat
+   card already use are pointed at KAKSHA'S tokens (src/ui-v3/kaksha/tokens.css, the one palette source; night for the
+   Older family, dawn for the Young). The board itself reads the same tokens (src/modules/whiteboard/palette.ts). Without
+   the skin none of this applies. */
+[data-skin="kaksha"] .st-stage {
+  --paper: var(--k-deep); --surface: var(--k-raise); --tray: var(--k-raise);
+  --ink: var(--k-ink); --ink-2: var(--k-ink-2); --line: var(--k-line-2);
+  --nib: var(--k-ion); --nib-soft: color-mix(in srgb, var(--k-ion) 18%, var(--k-raise)); --on-nib: var(--k-deep);
+  --font-ui: var(--k-sans);
+  background: var(--k-deep);
+}
+[data-skin="kaksha"] .st-box { background: var(--k-deep); border-radius: var(--k-cut, 12px);
+  box-shadow: 0 0 0 1px var(--k-line-2), 0 0 28px -10px color-mix(in srgb, var(--k-ion) 55%, transparent); }
+[data-skin="kaksha"] .sk { font-family: var(--k-sans); }
+[data-skin="kaksha"] .sk .sk-big, [data-skin="kaksha"] .sk .sk-num { font-family: var(--k-mono); }
+[data-skin="kaksha"] .sk .sk-part { fill: var(--k-raise); stroke: var(--k-ink-2); }
+/* K's roles (2026-10-10): Check is the tray's strong neutral (--k-ink ground, --k-void text), never --k-move (the one
+   "your move" colour, on the Answer dock); "picked" is a 2px --k-ion border on an ion wash over --k-raise with --k-ink
+   text, never a solid --k-ion fill (no tested text-on-ion pair) */
+[data-skin="kaksha"] .sk .sk-btn rect { fill: var(--k-ink); stroke: none; }
+[data-skin="kaksha"] .sk .sk-btn text { fill: var(--k-void); }
+[data-skin="kaksha"] .sk .sk-btn.is-on rect { fill: var(--nib-soft); stroke: var(--k-ion); stroke-width: 2; }
+[data-skin="kaksha"] .sk .sk-btn.is-on text { fill: var(--k-ink); }
+[data-skin="kaksha"] .st-cardhead { font-family: var(--k-sans); color: var(--k-ink); }
+[data-skin="kaksha"] .st-chip-kind { background: var(--k-raise); border-color: var(--k-line-2); color: var(--k-ink); }
+[data-skin="kaksha"] .st-chip-check { border-color: var(--k-line-2); color: var(--k-ink-2); }
+[data-skin="kaksha"] .st-beat i { background: var(--k-line-2); }
+[data-skin="kaksha"] .st-beat i.is-done { background: var(--k-ink-3); }
+[data-skin="kaksha"] .st-beat i.is-now { background: var(--k-ion); }

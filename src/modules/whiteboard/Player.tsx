@@ -9,7 +9,7 @@
 import { memo, useEffect, useMemo, useRef, useState } from "react";
 import type { WbOp, WhiteboardScript } from "../../../shared/studio.ts";
 import { erasers, opGeometry, opProgress, visibleShare, type OpGeometry } from "../../../shared/whiteboard.js";
-import { HAND_FONT, paletteFor, type Ink, type Palette } from "./palette.ts";
+import { HAND_FONT, paletteFor, isNumeric, type BoardSkin, type Ink, type Palette } from "./palette.ts";
 
 const WEIGHT: Record<number, number> = { 1: 2.4, 2: 3.4, 3: 5 };
 const nowMs = () => performance.now();
@@ -41,6 +41,8 @@ export interface WhiteboardPlayerProps {
    * minor 12: "point to the stamen" style covert checks, graded by the host from the op id, never by the frame).
    */
   onTapText?: (op: { id: string; text: string }) => void;
+  /** r4: the skin's board (palette and faces, palette.ts kakshaBoardSkin); absent = today's board. */
+  skin?: BoardSkin | null;
 }
 
 /** The script with clause-relative ops moved onto the line's clock (and its duration stretched to cover them). */
@@ -79,9 +81,10 @@ function useTimeline(startAt: number | null, endMs: number, frozenAt: number | u
   return t;
 }
 
-export function WhiteboardPlayer({ script: given, prior, startAt, reducedMotion = false, width = "100%", height = "100%", className, pulse, onDone, frozenAt, clauseOnsets, onTapText }: WhiteboardPlayerProps) {
+export function WhiteboardPlayer({ script: given, prior, startAt, reducedMotion = false, width = "100%", height = "100%", className, pulse, onDone, frozenAt, clauseOnsets, onTapText, skin }: WhiteboardPlayerProps) {
   const script = useMemo(() => onLineClock(given, clauseOnsets), [given, clauseOnsets]);
-  const pal = paletteFor(script.board.ground);
+  // r4: under a skin (Kaksha) the board takes the skin's palette and faces; without one, exactly as before
+  const pal = skin?.palette ?? paletteFor(script.board.ground);
   const { w: BW, h: BH } = script.board;
   const all = useMemo(() => [...(prior ?? []), ...script.ops], [prior, script]);
   const byId = useMemo(() => new Map(all.map((o) => [o.id, o])), [all]);
@@ -101,7 +104,7 @@ export function WhiteboardPlayer({ script: given, prior, startAt, reducedMotion 
   const pulseBox = pulse ? geoms.get(pulse.target)?.box ?? null : null;
   return (
     <svg className={className} viewBox={`0 0 ${BW} ${BH}`} width={width} height={height} preserveAspectRatio="xMidYMid meet"
-      role="img" aria-label={ariaOf(script)} data-wb-t={Math.max(0, Math.round(t))} style={{ display: "block", overflow: "hidden", fontFamily: HAND_FONT }}>
+      role="img" aria-label={ariaOf(script)} data-wb-t={Math.max(0, Math.round(t))} style={{ display: "block", overflow: "hidden", fontFamily: skin?.font ?? HAND_FONT }} data-skin={skin ? "kaksha" : undefined}>
       <rect x={0} y={0} width={BW} height={BH} fill={pal.ground} />
       {pal.grid && <Grid w={BW} h={BH} color={pal.grid} />}
       {all.map((op) => {
@@ -110,7 +113,7 @@ export function WhiteboardPlayer({ script: given, prior, startAt, reducedMotion 
         const vis = visibleShare(op, t, er);
         const p = q(op);
         if (p <= 0 || vis <= 0) return null;
-        return <OpView key={op.id} op={op} g={geoms.get(op.id)!} p={p} vis={vis} pal={pal} reducedMotion={reducedMotion} />;
+        return <OpView key={op.id} op={op} g={geoms.get(op.id)!} p={p} vis={vis} pal={pal} reducedMotion={reducedMotion} numFont={skin?.numFont ?? null} />;
       })}
       {pulseBox && <PulseRing key={pulse!.seq} box={pulseBox} color={pal.ink.mark} reducedMotion={reducedMotion} />}
       {onTapText && t >= script.durationMs && script.ops.filter((o) => (o.op === "text" || o.op === "label") && visibleShare(o, t, er) > 0).map((o) => {
@@ -136,7 +139,7 @@ const Grid = memo(function Grid({ w, h, color }: { w: number; h: number; color: 
   return <path d={lines.join(" ")} stroke={color} strokeWidth={1} fill="none" />;
 });
 
-const OpView = memo(function OpView({ op, g, p, vis, pal, reducedMotion }: { op: WbOp; g: OpGeometry; p: number; vis: number; pal: Palette; reducedMotion: boolean }) {
+const OpView = memo(function OpView({ op, g, p, vis, pal, reducedMotion, numFont = null }: { op: WbOp; g: OpGeometry; p: number; vis: number; pal: Palette; reducedMotion: boolean; numFont?: string | null }) {
   const color = pal.ink[(op.ink ?? "chalk") as Ink];
   const sw = WEIGHT[op.weight ?? 2];
   // the op's progress is spent on its paths in order, then on its texts (a label's leader, then its word)
@@ -163,7 +166,7 @@ const OpView = memo(function OpView({ op, g, p, vis, pal, reducedMotion }: { op:
         const shown = reducedMotion || s >= 1 ? tx.text : chars.slice(0, Math.max(1, Math.ceil(chars.length * s))).join("");
         return (
           <text key={i} x={tx.x} y={tx.y} fontSize={tx.size} fill={color} textAnchor={tx.align === "start" ? "start" : tx.align === "end" ? "end" : "middle"}
-            dominantBaseline="middle" style={{ fontVariantNumeric: "tabular-nums" }}>{shown}</text>
+            dominantBaseline="middle" style={{ fontVariantNumeric: "tabular-nums", ...(numFont && isNumeric(tx.text) ? { fontFamily: numFont } : {}) }}>{shown}</text>
         );
       })}
       {pulse && p > 0 && p < 1 && !reducedMotion && (

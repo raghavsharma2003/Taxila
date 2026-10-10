@@ -52,7 +52,7 @@ interface Slot {
   moduleId: string;
   key: string;
   engine: string;
-  init: Extract<HostToModule, { type: "init" }>;
+  init: Extract<HostToModule, { type: "init" }> & { skin?: Record<string, string> };
   history: HostToModule[];
   port: MessagePort | null;
   frame: HTMLIFrameElement | null;
@@ -204,7 +204,8 @@ export function ModuleHost({
             ...(cmd.goal !== undefined && { goal: cmd.goal }),
             lang: latest.current.lang,
             ageBand: latest.current.ageBand,
-          },
+            ...skinVars(),
+          } as Slot["init"],
           history: [],
           port: null,
           frame: spareFrame,
@@ -339,4 +340,17 @@ export function ModuleHost({
 function cssText(style: CSSProperties): string {
   return Object.entries(style).filter(([, v]) => v !== undefined && v !== null && v !== false)
     .map(([k, v]) => `${k.replace(/[A-Z]/g, (c) => `-${c.toLowerCase()}`)}:${typeof v === "number" && k !== "opacity" && k !== "zIndex" ? `${v}px` : v}`).join(";");
+}
+
+/** r4: the Kaksha skin's resolved tokens (--k-*) off the Desk root (data-skin="kaksha", K-P2), for the sandboxed frame
+ *  (CSS variables do not cross the iframe). The values are Kaksha's own: the frame keeps no palette of its own for them. */
+const SKIN_VARS = ["--k-void", "--k-deep", "--k-raise", "--k-bar", "--k-line", "--k-line-2", "--k-ink", "--k-ink-2", "--k-ink-3",
+  "--k-ion", "--k-secure", "--k-look", "--k-sans", "--k-mono"];
+function skinVars(): { skin?: Record<string, string> } {
+  if (typeof document === "undefined") return {};
+  const el = document.querySelector('[data-skin="kaksha"]');
+  if (!el) return {};
+  const cs = getComputedStyle(el);
+  const skin = Object.fromEntries(SKIN_VARS.map((n) => [n, cs.getPropertyValue(n).trim()]).filter(([, v]) => v));
+  return Object.keys(skin).length ? { skin } : {};
 }

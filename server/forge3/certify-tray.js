@@ -160,7 +160,7 @@ export function serveDist(dist) {
   const HOST = `<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><style>body{margin:0}#tray{position:absolute;left:16px;top:120px;overflow:hidden}iframe{display:block;width:100%;height:100%;border:0}</style></head><body><div id="tray"></div><script>
     window.events=[];let port=null;window.mount=(o)=>{window.events=[];port=null;const t=document.getElementById('tray');t.innerHTML='';t.style.width=o.w+'px';t.style.height=o.h+'px';
     const f=document.createElement('iframe');f.setAttribute('sandbox','allow-scripts');f.src='/modules.html#qa';t.appendChild(f);
-    const init={type:'init',moduleId:'qa',engine:o.engine,params:o.params,goal:o.goal||undefined,lang:o.lang||'hinglish',ageBand:o.ageBand||'10-15'};
+    const init={type:'init',moduleId:'qa',engine:o.engine,params:o.params,goal:o.goal||undefined,lang:o.lang||'hinglish',ageBand:o.ageBand||'10-15',skin:o.skin||undefined};
     const on=(e)=>{if(e.source!==f.contentWindow||!e.data||e.data.type!=='ready'||port)return;const ch=new MessageChannel();port=ch.port1;port.onmessage=(m)=>window.events.push(m.data);f.contentWindow.postMessage(init,'*',[ch.port2]);};
     window.addEventListener('message',on);};</script></body></html>`;
   const server = http.createServer((req, res) => {

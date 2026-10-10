@@ -25,6 +25,21 @@
     color-scheme: dark;
   }
 }
+/* r4 (owner directive "modern, futuristic, Gen-Alpha"): under the Kaksha skin the host passes Kaksha's resolved tokens
+   (--k-*) in init and the frame root is marked data-skin="kaksha" (bootstrap.tsx). Only names are mapped here: the
+   values are Kaksha's (src/ui-v3/kaksha/tokens.css, the one palette source). Beats :root and the dark media query. */
+:root[data-skin="kaksha"] {
+  --fx-bg: var(--k-deep);
+  --fx-ink: var(--k-ink);
+  --fx-ink-soft: var(--k-ink-2);
+  --fx-line: var(--k-line-2);
+  --fx-empty: var(--k-raise);
+  --fx-fill: var(--k-ion);
+  --fx-accent: var(--k-secure);
+  --fx-focus: var(--k-ion);
+  color-scheme: normal;
+}
+:root[data-skin="kaksha"] body { font-family: var(--k-sans), system-ui, sans-serif; }
 * { box-sizing: border-box; }
 html, body { margin: 0; background: var(--fx-bg); color: var(--fx-ink); }
 body {

@@ -23,7 +23,10 @@ describe("r4 content: interactive asks", () => {
       const s = { module: null, turn: 3, ctx: { sessionId: `r4i-${topic}`, classLevel: 6 }, failedEngines: [], lastContent: [] };
       assert.deepEqual(mounts(planModule(s, { kit, item: null, move: { kind: "explain" }, lang: "hinglish", band: "B3" })), ["explainer@1:play"]);
       s.turn = 4;
-      assert.deepEqual(mounts(planModule(s, { kit, item: null, move: { kind: "reteach", visual: "game" }, lang: "hinglish", band: "B3" })), [engine]);
+      const cmds = planModule(s, { kit, item: null, move: { kind: "reteach", visual: "game" }, lang: "hinglish", band: "B3" });
+      assert.deepEqual(mounts(cmds), [engine]);
+      // the place-value build target is `value` (placeValue.logic.ts normalize): a wrong name built the default 345
+      if (engine.startsWith("place-value")) { const p = cmds.find((c) => c.op === "mount")?.params ?? {}; assert.equal(p.value, 45236); assert.equal(p.places, 5); }
     });
   }
   it("a picture ask is unchanged: no engine task replaces the board", async () => {

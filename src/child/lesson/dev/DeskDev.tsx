@@ -32,7 +32,7 @@ export const FIXTURES = [
   // play piece in play mode (work-play); the slot carries no artifact, so the stage paints its calm ground in the box
   "work-studio", "work-play",
   // round 4 content (beat board): a carded board in the tray while she speaks (360 x 800 must keep her caption visible)
-  "work-beat",
+  "work-beat", "work-skeleton",
 ] as const;
 export type FixtureName = (typeof FIXTURES)[number];
 
@@ -94,6 +94,8 @@ export function fixtureModel(name: string, band: Band, size: DeskSize, faceForm:
   if (name === "work-pad" || name === "work-pad-help") tray = { kind: "pad", overlay: name === "work-pad-help" ? "help_menu" : null };
   else if (name === "work-tiles" || name === "help-menu" || name === "no-mic") tray = { kind: "tiles", tiles, overlay: name === "help-menu" ? "help_menu" : name === "no-mic" ? "no_mic" : null };
   else if (name === "work-beat") tray = { kind: "studio", studio: { slotId: "dev:beat:slot", intentId: "dev:beat", state: "revealed", artifact: { kind: "whiteboard", stage: { w: 400, h: 300 }, script: BEAT_SCRIPT } } as unknown as TrayModel["studio"], overlay: null };
+  // r4: a skeleton activity in the tray (the shade-fraction skeleton), for the Kaksha skin shots
+  else if (name === "work-skeleton") tray = { kind: "studio", studio: { slotId: "dev:sk:slot", intentId: "dev:sk", state: "revealed", artifact: { kind: "skeleton", stage: { w: 360, h: 320 }, skeleton: "fraction-parts", archetype: "shade_fraction", intentId: "dev:sk", params: { items: [{ id: "i1", n: 3, d: 4 }], picture: "pizza" }, strings: {} } } as unknown as TrayModel["studio"], overlay: null };
   else if (name === "work-studio" || play) tray = { kind: "studio", studio: { slotId: `dev:${name}:slot`, intentId: `dev:${name}`, state: "revealed" } as TrayModel["studio"], overlay: null };
   else if (work || name.startsWith("board-")) tray = { kind: "board", board: { lines: [{ text: "1/2 = 2/4", kind: "math" }], chalked: answered ? (young ? "1/2" : "two") : null, mark: verdict === "correct" ? "tick" : verdict === "not_yet" ? "underline" : null } };
   const geometry = tray ? "work" : "face";
@@ -136,10 +138,15 @@ export default function DeskDev() {
   const faceForm = sp.get("face") === "live" ? "live" : "plate";
   const m = fixtureModel(name, band, size, faceForm, reduced);
   const assertive = m.floor === "your_turn" && !m.strip && !m.sheet ? `Your turn. ${m.ask?.text ?? ""}` : "";
-  return (
+  const desk = (
     <Desk m={m} a={ACTIONS} media={{ meters: [silent], mic: silent, lang: "hinglish", ageBand: ageBandOf(band) }} live={{ assertive, polite: "" }}
-      onSize={onSize} theme={theme} phaseLine />
+      onSize={onSize} theme={theme} phaseLine skin={sp.get("skin") === "kaksha" ? "kaksha" : undefined} />
   );
+  // r4: ?skin=kaksha draws the Desk as KakshaLesson will (a .kx ancestor with the family's theme: night Older, dawn Young)
+  // over Kaksha's tokens: the shots harness injects them (tests/fixtures/kaksha-tokens.mirror.css) until Kaksha lands on base
+  return sp.get("skin") === "kaksha"
+    ? <div className="kx" data-ktheme={familyOf(band) === "young" ? "dawn" : "night"} style={{ display: "contents" }}>{desk}</div>
+    : desk;
 }
 
 function LiveDesk({ band, theme, reduced, size, onSize, sp }: { band: Band; theme: "light" | "dark" | null; reduced: boolean; size: DeskSize; onSize: (s: DeskSize) => void; sp: URLSearchParams }) {

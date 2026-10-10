@@ -598,6 +598,13 @@ export function useDesk(runtime: LessonRuntime, bridge: UiBridge | null, ctx: De
   // The server's own record of graded turns (lesson/end `did`) wins; the client's witnessed log is the fallback.
   const did = bs?.ended?.did ?? null;
   const summary = ended ? (() => {
+    // journey audit #13 (A36): the server's record holds only item and teach-back turns, so a lesson of spoken answers
+    // to her asks came back empty and read "You listened to Asha today". Then the answers this client saw are the
+    // cards, never ticked (no verified key said so).
+    if (did && did.cards.length === 0 && log.current.length > 0) {
+      const cards = log.current.slice(-3).map((c) => ({ ...c, verified: false, withHelp: false }));
+      return { cards, tried: Math.max(did.tried ?? 0, log.current.length), nextTopic: ctx.variant === "lesson" ? planNext ?? did.nextTitle : null, ending: state.phase === "ending" };
+    }
     if (did) {
       const cards: DidCard[] = did.cards.map((c) => ({ ask: c.ask, answer: c.answer, verified: c.tick, withHelp: c.withHelp }));
       return { cards, tried: did.tried ?? cards.length, nextTopic: ctx.variant === "lesson" ? planNext ?? did.nextTitle : null, ending: state.phase === "ending" };
