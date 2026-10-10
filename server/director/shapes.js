@@ -465,6 +465,26 @@ export const ALSO_NOTE = {
   slower: "they also asked you to go slower: short simple sentences, one small step",
   simpler: "they also did not follow: say it more simply",
 };
+/**
+ * Round 4 (conversation): what a request's move MUST do this turn, as a short note the compile places in the LAST section
+ * (compile.js lastParts, before the check): in the MOVE section the shape lost to the last section's "the same question
+ * again" (battery 2026-10-10: frustration 2/8 repeated the question with no smaller step; skip_ahead 1/7 explained again;
+ * slower 2/6 promised to slow down and re-asked; a share 1/5 got no warm reaction; "haan" opened a wait on a mid-thought and
+ * read as a verdict). Notes, never lines; keyed by the move's request type (or the uptake's kind).
+ */
+export const MUST_NOTE = Object.freeze({
+  frustration: "first one short line that this is hard work and that is okay (about the work, never them); then the smaller step from the move, said plainly, before any question",
+  know: "no explanation at all, not one line of teaching: straight to the one quick check",
+  harder: "no explanation: straight to the harder question",
+  deeper: "the next layer of the same idea first, in a few short lines; then one small question",
+  slower: "first the idea again in two or three very short pieces, one per sentence; only then the question",
+  thinking: "only a short go-on of two to four words: no yes or agreement word (haan, yes, sahi, right), no hint, no question",
+  personal_share: "your first words react warmly to what they shared, named in their words; add nothing they did not say",
+  adapt: "first, in a few words, take what they said about your teaching on board (a thank-you for praise, or the change you make now); then do it",
+  adopt: "first, in a few words, take what they said about your teaching on board (a thank-you for praise, or the change you make now); then do it",
+  adult: "first greet the grown-up as a grown-up in a few words and say what you will do; then hand back to the child by name",
+  boredom: "first acknowledge it is getting boring in a few words, no guilt; then the change",
+});
 export const parkAlso = ({ topic }) => `they also asked about ${clean(topic) || "something else"}: one line that you will come back to it after this`;
 /** Round 3: the turn after a stop check-in that was not a stop ("haan", an answer): the lesson simply goes on. Local
  *  battery base-head-1: "yes" after the check-in got "Lesson ended, Meher. You may close the book now. <a question>". */

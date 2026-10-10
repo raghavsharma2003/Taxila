@@ -13,6 +13,8 @@
 //   TAXILA_P5_R3CONV=off          round 3 conversation (2026-10-09): the first pose as a lead-slot turn, no drift check on a
 //                                 re-pose that ends on the card's form, the lead repair after a leak, the fixed code lead
 //                                 instead of a bare re-pose (brain/say.js); off = round 2's reply path exactly
+//   TAXILA_P5_R4CONV=off          round 4 conversation (2026-10-10): the request's must-do as a last-section note (position
+//                                 is mechanism), hedge- and self-correction-aware exact grading, wider know / adult readings
 //
 // Every switch defaults to ON. "off", "0", "false" (any case) turn one off.
 const OFF = /^(off|0|false|no)$/i;

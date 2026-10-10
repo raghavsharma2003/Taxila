@@ -15,9 +15,12 @@ const daysBetween = (a, b) => Math.round((Date.parse(b) - Date.parse(a)) / 86_40
  */
 export function planPrior(plan, x = {}) {
   const lesson = plan?.slots?.find((s) => s.kind === "live_lesson") ?? null;
-  const tw0 = x.testWindows?.[0] ?? null;
+  // the test window: the caller's rows when it has them, else the plan's own (a test_window why on the lesson slot; the planner
+  // sets newSkillBudget 0 when the test is under 2 days away)
+  const planTw = lesson?.why?.find((w) => w.code === "test_window");
+  const tw0 = x.testWindows?.[0] ?? (planTw ? { subject: planTw.ref, chapters: lesson.testChapters ?? [], soon: lesson.pace?.newSkillBudget === 0 } : null);
   const days = tw0?.to && x.learningDay ? daysBetween(x.learningDay, tw0.to) : null;
-  const testWindow = tw0 ? { subject: tw0.subject, when: days != null && days <= 1 ? "tomorrow" : "this_week", chapters: tw0.chapters ?? lesson?.testChapters ?? [] } : null;
+  const testWindow = tw0 ? { subject: tw0.subject, when: (days != null && days <= 1) || (days == null && tw0.soon) ? "tomorrow" : "this_week", chapters: tw0.chapters ?? lesson?.testChapters ?? [] } : null;
   return Object.freeze({
     classLevel: x.classLevel ?? null,
     levelPathTopic: x.levelPathTopic ?? null,

@@ -52,6 +52,10 @@ const IDENTITY = /\b(?:(?:tum|aap|tu)\s+(?:ek\s+)?(?:robot|ai|insaan|insan|human
 const SMALL_TALK = /\b(?:(?:aap|tum)\s+kaise\s+(?:ho|hain)|how\s+are\s+you|what'?s\s+your\s+(?:favou?rite|name|age)|(?:your|aapka|tumhara|aapki|tumhari)\s+(?:favou?rite|fav)\b|(?:aapko|tumhe|tumko)\s+(?:kaun\s*sa|kaunsa|kaun\s*si|kaunsi|kya)\s+[\p{L} ]{0,24}\s*(?:pasand|achha\s+lagta)|do\s+you\s+like|(?:aapko|tumhe)\s+[\p{L} ]{1,20}\s+(?:pasand|aata)\s+(?:hai|h)\s*\??$|kya\s+time\s+(?:hua|ho\s+gaya)|what\s+time\s+is\s+it|aaj\s+mausam|(?:aap|tum)\s+kahan\s+(?:rehte|rehti|rahte|rahti)|where\s+do\s+you\s+live|(?:aap|tum)\s+(?:kya\s+)?khate|do\s+you\s+(?:eat|sleep|play))|(?:आपको|आप\s*को|तुम्हें|तुमको)[^?।]{0,24}पसंद|आप\s+कैसे\s+हैं/iu;
 const BREAK = /^(?:(?:ok|okay|haan|didi|sorry)[\s,]+)*(?:brb|be\s+right\s+back|(?:can\s+we|let'?s|please)\s+(?:take\s+a\s+)?pause(?:\s+(?:for\s+)?(?:a\s+(?:bit|minute|moment|sec)|now))?|pause\s+(?:karo|kar\s+do|please|for\s+a\s+(?:bit|minute))|(?:paani|pani|water)\s+(?:pee\s*(?:ke|kar)|peeke|pi\s*ke|peekar)\s+(?:aata|aati|aaun|aau)\s*(?:hoon|hu|hun)?|(?:ek|1)\s+(?:min|minute)\s+(?:mein\s+)?(?:aata|aati)\s+(?:hoon|hu|hun)|(?:bathroom|washroom|toilet|loo)\s+(?:jaana|jana|jaau|jau|ja\s+ke\s+aata)\s*(?:hai|h|hoon|hu|aata\s+hoon)?|(?:i\s+)?(?:need|have)\s+to\s+(?:pee|use\s+the\s+(?:bathroom|washroom|toilet)))[\s.!?]*$/i;
 const ADULT = /\b(?:(?:hi|hello|namaste)[\s,]+)?(?:this\s+is\s+(?:his|her|their)\s+(?:father|mother|mom|mum|dad|papa|mummy|grandmother|grandfather|aunt|uncle|parent)|i'?m\s+(?:his|her|their)\s+(?:father|mother|mom|mum|dad|parent)|(?:main|mai)\s+(?:iski|iska|uski|uska|inki|inka)\s+(?:mummy|mumma|maa|papa|mother|father|mom|dad|nani|dadi|chachi|mausi)\s+(?:hoon|hu|hun|bol\s+rahi|bol\s+raha))\b/i;
+// round 4 (conversation; battery adult_voice 3/4: "beta ko thoda dheere padhao, wo naya hai" got no "a grown-up is speaking"):
+// a grown-up speaking ABOUT the child in the third person, asking her to teach them some way ("beta ko … padhao", "my son
+// needs …", "teach him slowly"). The child's sibling words (bhai, didi) are never read as a grown-up.
+const ADULT_R4 = /^(?:(?:hello|hi|namaste|ma'?am|madam|teacher(?:\s+ji)?|ji)[\s,]+)*(?:(?:mere|meri|hamare|humare|hamari)\s+)?(?:beta|beti|bete|bachche|bachcha|baccha|bachi|bitiya)\s+(?:ko|ke\s+saath|ke\s+liye)\b[^?]{0,60}\b(?:padhao|padhaiye|padhaaiye|padhana|sikhao|sikhaiye|samjhao|samjhaiye|karwao|karvao|karaiye|karwaiye|dijiye|dena|karaana|karana)\b|\b(?:my|our)\s+(?:son|daughter|child|kid|ward)\b|\b(?:please\s+)?teach\s+(?:him|her)\b|\b(?:he|she)\s+(?:is|'s)\s+(?:new|weak|slow|struggling)\s+(?:at|in|to|with)\b/i;
 const THINK_TRAIL = /(?:\b(?:because|so|then|but|wait|toh|phir|fir|aur|lekin|kyunki|kyuki|matlab|ruko)|\.{3}|…)\s*$/i;
 const OOB = /\b(?:(?:ghost|horror|bhoot|bhootni|bhootiya|bhutiya|darawni|darawna|darauni|daravni|darwani|scary|creepy|spooky)(?:\s+\S+){0,2}?\s+(?:story|stories|kahani|kahaniyan|kahaniya|movie|movies|film|films|picture|show|series|web\s*series|video|videos|game)|horror\s+(?:movie|film|story)|gaali|gali\s+(?:do|batao|sikhao)|bad\s+words?|(?:swear|curse)\s+words?|girl\s*friend|boy\s*friend|(?:kiss|sex)|how\s+to\s+(?:hack|kill|make\s+a\s+bomb|steal)|hack\s+(?:karna|karo|kaise|sikhao)|(?:mera|my)\s+(?:homework|essay|assignment)\s+(?:kar|likh|do|write)|(?:homework|essay|assignment)\s+(?:kar|likh)\s*(?:do|dijiye|ke\s+do|kar\s+do)|do\s+my\s+(?:homework|essay)|write\s+my\s+(?:essay|homework)|(?:pubg|bgmi|free\s*fire)\s+(?:kill|killing)\s+(?:tips|trick)|(?:bomb|gun|pistol)\s+(?:banana|kaise|banao|kaise\s+banate)|prank\b[^?]{0,40}\b(?:ro\s+de|rula|rone|hurt|chot|cry)|(?:aapko|tumhe|tumko|your)\s+(?:kaunsi|kaun\s*si|which|favou?rite)\s+(?:political\s+)?party(?:\s+(?:pasand|achhi|best))?)\b/i;
 
@@ -105,6 +109,17 @@ export function fragmentLike(t) {
   return (stutter || filler) && content && DANGLING.test(w.at(-1));
 }
 
+// round 4 (conversation; battery skip_ahead 1/7, 2026-10-10): "this is easy can we move on", "fast forward karo yaar", "jaldi
+// karo na", "ye toh school mein ho gaya aage", "skip the explanation i get it" had no code reading (the classifier's stop
+// flag or nothing). Whole turn only, no digits; "samajh gaya" alone stays an acknowledgement, "aage chalo" alone stays the
+// check-in's continue (requests.js), a bare "easy" stays HARDER's "too easy".
+const KNOW_R4 = new RegExp(String.raw`^(?:(?:ok|okay|haan|ha|didi|yaar|ma'?am|arre)[\s,]+)*(?:`
+  + String.raw`this\s+is\s+(?:so\s+|very\s+|too\s+)?easy|(?:ye|yeh|this)\s+(?:toh\s+|to\s+)?(?:bahut\s+)?(?:easy|aasan|asaan)\s+(?:hai|h|he)`
+  + String.raw`|(?:ye|yeh|this)\s+(?:toh\s+|to\s+)?(?:school|class)\s+(?:mein|me|main)\s+(?:ho\s+(?:gaya|gya|chuka)|padh\s+(?:liya|chuke)|kar\s+(?:liya|chuke)|seekh\s+liya)`
+  + String.raw`|(?:we|i)\s+(?:already\s+)?(?:did|learnt|learned|studied|covered)\s+(?:this|it)(?:\s+(?:in\s+school|in\s+class|already))?`
+  + String.raw`|(?:can\s+we\s+|let'?s\s+|please\s+)?(?:move\s+on|skip\s+ahead|go\s+faster|speed\s+(?:it\s+)?up)|fast\s*forward(?:\s+(?:karo|kar\s+do|please))?`
+  + String.raw`|jaldi\s+(?:karo|kijiye|chalo|aage\s+badho)|skip\s+the\s+(?:explanation|explaining|teaching)(?:[\s,]+i\s+(?:get|know)\s+it)?)`
+  + String.raw`(?:[\s,]+(?:can\s+we\s+move\s+on|move\s+on|aage(?:\s+(?:chalo|badho))?|chalo|na|yaar|please|plz|i\s+get\s+it|i\s+know\s+it))*[\s.!?]*$`, "i");
 /** Round 3: the whole turn is "I'm back" in the forms the battery's break follow-ups use ("aa gaya, chalo", "back, let's go",
  *  "आ गया"): the welcome-back move, never a re-pose with a generic "no problem" lead (smoke on the round-3 tree). */
 // round 3 (conversation; battery skip_item 2/5 after, 1/5 HEAD: "ye wala skip karo", "isko chhodo dusra do", "next question
@@ -181,7 +196,7 @@ export function readIntent(text) {
   if (n > 14) return null;
   // out of bounds first: never parked, never served (a number in it does not make it an answer: "PUBG mein 10 kill tips")
   if (OOB.test(t) && n <= 12) return hit("oob");
-  if (ADULT.test(t)) return hit("adult");
+  if (ADULT.test(t) || (p5Flag("R4CONV") && ADULT_R4.test(t))) return hit("adult");
   if (attemptLike(t)) return null;
   // before the thinking readings: a stutter that trails off on "the" / "ki" is a broken line, and the repair (say it again,
   // or finish it) serves a child who was also thinking
@@ -200,7 +215,7 @@ export function readIntent(text) {
   // round 3: "ruko, pehle diagram dikhao phir question" is a request after a hold word, never a thought in progress
   if (n >= 3 && !/[?？]/.test(t) && THINK_START.test(t) && !GO_ON.test(t) && !(p5Flag("R3CONV") && ASKS_HER.test(t))) return hit("thinking");
   if (SKIP.test(t) || (p5Flag("R3CONV") && SKIP_R3.test(t))) return hit("skip");
-  if (KNOW.test(t)) return hit("know");
+  if (KNOW.test(t) || (p5Flag("R4CONV") && KNOW_R4.test(t))) return hit("know");
   if (HARDER.test(t)) return hit("harder");
   if (EASIER.test(t)) return hit("easier");
   if (FRUSTRATION.test(t)) return hit("frustration");
@@ -210,6 +225,16 @@ export function readIntent(text) {
   if (IDENTITY.test(t)) return hit("identity");
   if (SMALL_TALK.test(t) || (p5Flag("R3CONV") && SMALL_TALK_DO.test(t))) return hit("small_talk");
   return null;
+}
+
+// round 4 (conversation; battery multi_intent-07 "yes also why is the sky blue": the answer was graded and the question was
+// never heard): a question tacked onto an answer after "also / aur / and / btw" is parked (code-first; the UNDERSTAND note
+// only runs on non-answer turns). PURE → the question (≤ 60 chars) or null.
+const ALSO_Q = /(?:^|[\s,;.!])(?:also|aur|and|plus|aur\s+haan|by\s+the\s+way|btw)[\s,]+((?:why|what|how|where|when|who|which|kyun|kyu|kyon|kaise|kaun|kahan|kab|kitna|kitne|kya)\s[^?]{2,80})\??\s*$/i;
+export function alsoQuestion(text) {
+  const m = T(text).match(ALSO_Q);
+  if (!m || words(m[1]) < 3) return null;
+  return m[1].replace(/[^\p{L}\p{N} ,'-]/gu, " ").replace(/\s+/g, " ").trim().slice(0, 60) || null;
 }
 
 /** The p5 reading types (state.js acts on each; tests enumerate them). */

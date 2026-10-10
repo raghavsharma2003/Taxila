@@ -39,7 +39,7 @@ import { directorProposal } from "./proposal.js";
 import { p5Flag } from "../conversation/flags.js";
 import { unsafeChildPhrase } from "../conversation/screen.js";
 import { parkEntry, pushLater, recentParked, dueParked, serveLater } from "../conversation/policy.js";
-import { alsoReading } from "../conversation/lexicon.js";
+import { alsoReading, alsoQuestion } from "../conversation/lexicon.js";
 import { intakeStart, intakeStep } from "./session/beat.js";
 import { newSession, openSegment } from "./session/segments.js";
 import { priorNotes } from "./session/prior.js";
@@ -965,7 +965,23 @@ function p5RequestMove(s, input, item, req, labels) {
     }
     case "back": return withLead(SH.welcomeBack());
     case "skip": return item ? { ...leaveItem(s, input, item, SH.SKIP_ITEM), request: "skip" } : helpMove(s, input, item, "skip");
-    case "know": return { ...helpMove(s, input, item, "know"), request: "know" };
+    case "know": {
+      // round 4 (conversation; battery skip_ahead 1/7): "ye mujhe aata hai, aage chalo" got the SAME question back, or one
+      // more line of teaching. Taken at their word: the skill counts as introduced (no explain turn first), and a question on
+      // the table is left (no verdict) for the hardest one of its skill, the quick check that proves it
+      if (p5Flag("R4CONV")) {
+        const sk = currentSkillId(s, kit, item);
+        if (sk && !s.introduced.includes(sk)) s.introduced.push(sk);
+        if (item && s.phase === "practice") {
+          s.skipped.push(item.id);
+          const h = hardestFor(s, kit, item.skillId);
+          if (h) s.nextItemId = h.id;
+          return { ...poseNext(s, input, SH.KNOWS_IT), request: "know" };
+        }
+        if (item && s.phase === "warmup") { s.skipped.push(item.id); return { ...nextWarmup(s, input, SH.KNOWS_IT), request: "know" }; }
+      }
+      return { ...helpMove(s, input, item, "know"), request: "know" };
+    }
     case "harder": case "easier": {
       if (!item || s.phase !== "practice") return req.type === "harder" ? { ...helpMove(s, input, item, "know"), request: "harder" } : teachAgainPlan(s, kit, "another");
       s.skipped.push(item.id);                                   // left, no verdict: it was never their answer
@@ -1276,6 +1292,12 @@ function capPlan(s, input, p) {
  */
 export function step(prev, input) {
   const s = structuredClone(prev);
+  // round 4 (conversation): a question tacked onto a graded answer ("yes, also why is the sky blue") is parked like the note's
+  // alongside reading (code-first; the note runs only on non-answer turns). Screened in code like every parked topic.
+  if (input.event === "turn" && p5Flag("R4CONV") && input.cls && !input.cls.alsoPark && ["correct", "incorrect", "partial", "misconception"].includes(input.cls.outcome)) {
+    const q = alsoQuestion(input.text ?? "");
+    if (q && !unsafeChildPhrase(q)) input = { ...input, cls: { ...input.cls, alsoPark: { topic: q, learning: true } } };
+  }
   const now = input.now ?? Date.now();
   if (input.event !== "start") s.turn += 1; // every call bumps the turn: the route's optimistic state check keys on it
   s.minutes = Math.round((now - s.startedAt) / 6000) / 10;
@@ -1364,6 +1386,12 @@ export function step(prev, input) {
     if (extra && join(shape, extra).length <= SHAPE_ROOM) shape = join(shape, extra);
   }
   const move = { kind: p.kind, shape };
+  // round 4 (conversation): the request's must-do (and a second need's) as a last-section note (compile.js lastParts)
+  if (!input.branch && p5Flag("R4CONV") && input.event === "turn" && !["safeguard", "wrap"].includes(p.kind)) {
+    const key = p.request === "uptake" ? input.cls?.request?.kind ?? null : p.request;
+    const must = [SH.MUST_NOTE[key], ...(also ?? []).filter((x) => x !== key).map((x) => SH.ALSO_NOTE[x])].filter(Boolean);
+    if (must.length) move.must = must.join("; ").slice(0, 300);
+  }
   // round 2 (conversation): how the child asked to be taught ("step by step", "picture first") rides on every later move
   // (compile.js renders it, droppable): before this, s.prefs was written and never read, so a method request lasted one turn
   if (p5Flag("STEER") && s.prefs?.length && !["safeguard", "wrap"].includes(p.kind)) move.prefs = s.prefs.slice(-2);

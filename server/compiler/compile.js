@@ -295,8 +295,13 @@ function lastParts({ lessonState: s, move, item, branches, ageBand, language, pr
   const cb = s.rel?.callback;
   const lead = cb?.lead && cb.fragment && move.kind !== "safeguard" && move.kind !== "wrap" && !fix.length
     ? [{ text: `OPEN THIS TURN WITH what you remember of them, in a few words of your own, before the move (true, from your record; a note, not words to say): ${String(cb.fragment).slice(0, 140)}`, drop: 10 }] : [];
+  // round 4 (conversation): what the child's request must get this turn, last (position is mechanism; director/shapes.js
+  // MUST_NOTE). A note, never a line; droppable (shed before anything else here when the section is over its cap).
+  const must = move.must && move.kind !== "safeguard" && move.kind !== "wrap" && !fix.length
+    ? [{ text: `THIS TURN FIRST (a note, not words to say): ${String(move.must).replace(/["“”]/g, "").slice(0, 300)}`, drop: 9 }] : [];
   return [
     ...lead,
+    ...must,
     { text: `ONE MORE CHECK: ${check}`, drop: null },
     { text: `${TURN_SHAPE_PREFIX} (last and most important): ${shape}`, drop: null },
   ];
