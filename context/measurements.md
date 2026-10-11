@@ -3911,3 +3911,25 @@ The full-page sheets are taken after scrolling the page in steps and requiring e
   - r4-content-boards: 3/5 when run in parallel with the other two batteries (3 slots unfilled, plus the known 1/52 W4 contradiction); 5/5 when re-run alone. Read: load variance, not the recorder. The recorder's studio and board hooks are synchronous, inside `record()`'s own try/catch, and read only optional properties.
   - The batteries' own sessions left no trace rows, because each deletes its test account at the end and the trace rows cascade: the erasure path, seen working.
   - Journey: 5 steps, 22 taps, first sound at 21.7 s (phone) and 21.5 s (laptop). Hello in Volt day, then /c/:id/lesson/new. `trace.mjs --session` showed 83 and 72 client events per page load: route, dev.info, labelled taps, net with status and ms, mic mode tap, desk state, card, tray, media mounts, and a perf.longtask of 901 ms on Hello.
+
+
+<!-- merged from inbox/r4-main-1830.json -->
+- `ms-r12-live` (2026-10-11, 18:00-18:15 UTC).
+  - Deploy: int/r4-rel12 23ac84d. Gate: 3,101 tests, 3,098 pass, 0 fail, 3 skipped. It is the third gate: the first fell to ms-r12-health-test-driver-memo; the second passed, and then the PIN fix (ms-r12-pin-taps-recorded) re-ran it.
+  - Before deploying: migration 029 applied to production, and the private container 'trace' created in taxilaforge.
+  - deploy-azure.mjs --set TAXILA_TRACE_FULL_FOR (the owner's two gmail guardians plus r12-recorder-proof@taxila.test) and the four owner cohorts (+ the gmail guardians). The first attempt failed 'fetch failed' at ARM before any change; the second went through. Canary w0 4/4. Live taxila-web--s23ac84d-oyjl; s9a170c5 deactivated, s556639e kept.
+  - Read-only check of the live template: all five cohort variables hold 2/2 of the owner's gmail hashes.
+  - Worker: deploy-worker.mjs --jobs puts taxila-worker--w23ac84d-yibj and both jobs on 23ac84d.
+  - Live tier-2 proof (scratchpad r12-liveproof.mjs: a Playwright lesson on taxila.dev, 412x915, with the audio-unlock tapped, three typed turns, a flag; the account was then deleted).
+    - /api/me trace.tier 2. REC chip shown.
+    - Recorded: ui.state 23, net.req/res 21, ui.render.stage 15, ui.tap 9, rrweb.chunk 9 (9 blobs), ui.media 6, ui.render.card 5, audio.tts.clip 4 (4 blobs), tts.request/start/end 4 each, ui.render.board 3, mic.mode 3, flag.owner 1, and more. No blob failures.
+    - After DELETE /api/account: 0 trace rows for the child.
+    - Missing: every server-side event. See ms-r12-trace-fk-poison.
+    - trace.mjs bugs found, sent to T-server/T-client: --replay calls trace-replay.mjs without --events; --session <child prefix> misses the child's page sessions; one srv line renders 'undefined'.
+- `ms-r12-trace-fk-poison` (2026-10-11 18:15-18:30 UTC).
+  - Probe: an API-only lesson on production (a fresh @taxila.test account, one turn, 6 s wait). trace_event held 0 rows for its guardian, lesson or child. All accounts together had 2 srv.req, 2 srv.res and 1 trace.dropped in the last 10 min.
+  - trace.dropped rows since the deploy: totals of 6-38 events dropped per flush.
+  - Log Analytics (taxila-logs, ContainerAppConsoleLogs_CL, '[trace]'): 'write failed (6 events dropped): insert or update on table "trace_event" violates foreign key constraint "trace_event_cid_fkey"'.
+  - Cause: server/trace/writer.js inserts a chunk of up to ROWS_PER_INSERT events from every session in one statement. The canary smoke (every 15 min), the batteries and the proofs delete their accounts; events still buffered for those children then violate the FK, and the writer drops the whole chunk, real sessions included.
+  - Fix (release 12.1): the INSERT ... SELECT keeps only rows whose cid and gid still exist (or are null), and RETURNING counts what was written. Nothing of a deleted child is written after its delete, which matches the erasure promise.
+  - tests/r12-trace-db.run.mjs test 5, on Neon TEST: a chunk with a ghost child and a ghost guardian among 4 rows writes the other 2. It fails on the old writer with the exact production error, and passes on the fix.

@@ -20291,6 +20291,27 @@
    "at": "2026-10-11",
    "title": "Release 12 packaged tree (2af8cfc on the Neon TEST branch): owner-5 12/14, round2-content 35/39, boards 3/5 when run beside the other two batteries but 5/5 alone, the journey 5 steps to Hello then lesson/new with the recorder capturing 72-83 client events per page load (routes, labelled taps, requests with status and ms, mic mode, Desk state, card, tray, media)",
    "source": "inbox/r4-main-1740.json"
+  },
+  {
+   "id": "ms-r12-live",
+   "kind": "measurement",
+   "at": "2026-10-11",
+   "title": "Release 12 (23ac84d, the flight recorder) live as taxila-web--s23ac84d-oyjl (canary 4/4; s556639e kept), worker taxila-worker--w23ac84d-yibj with both Conductor jobs on 23ac84d; gate 3,101 tests 3,098 pass 0 fail; live tier-2 proof account: /api/me trace.tier 2, REC chip, 9 rrweb chunks and 4 TTS clips in the private blob container, a ★ flag, 0 rows left after the account delete",
+   "source": "inbox/r4-main-1830.json"
+  },
+  {
+   "id": "ms-r12-trace-fk-poison",
+   "kind": "measurement",
+   "at": "2026-10-11",
+   "title": "Release 12 live: the server recorder lost most of its events. trace_event_cid_fkey failed whenever a buffered chunk held an event of an account deleted meanwhile (the canary every 15 min, batteries, proofs), dropping the WHOLE chunk (trace.dropped totals 6-38 per flush; a probe lesson's server events: 0). Fixed in release 12.1: the insert writes only rows whose child and guardian exist",
+   "source": "inbox/r4-main-1830.json"
+  },
+  {
+   "id": "rj-r12-insert-all-or-nothing",
+   "kind": "rejection",
+   "at": "2026-10-11",
+   "title": "One INSERT for a chunk of trace events from many sessions with FK columns to child/guardian: a single row of a just-deleted account fails the statement and the writer drops every session's events in that chunk",
+   "source": "inbox/r4-main-1830.json"
   }
  ],
  "edges": [
@@ -32663,6 +32684,21 @@
    "src": "ms-r12-packaged-checks",
    "rel": "part_of",
    "dst": "dc-r12-integration"
+  },
+  {
+   "src": "ms-r12-live",
+   "rel": "part_of",
+   "dst": "dc-r12-flight-recorder"
+  },
+  {
+   "src": "ms-r12-trace-fk-poison",
+   "rel": "part_of",
+   "dst": "ms-r12-live"
+  },
+  {
+   "src": "rj-r12-insert-all-or-nothing",
+   "rel": "caused_by",
+   "dst": "ms-r12-trace-fk-poison"
   }
  ]
 }

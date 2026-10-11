@@ -2526,3 +2526,7 @@ A lime (`--k-move`) brand mark in the header was tried and dropped: with the her
 <!-- merged from inbox/r12-t-client.json -->
 ## rj-r12-tclient-pixel-share-gate
 The replay proof first gated on the share of differing pixels (<= 2 %). A replay missing the caption line and the answer chip passed at 0.59 %. Replaced by a local gate: 32 px tiles, a tile differs when > 10 % of its pixels do, at most 4 such tiles (a focus ring the replayer cannot reproduce is 1-4).
+
+
+<!-- merged from inbox/r4-main-1830.json -->
+- `rj-r12-insert-all-or-nothing` (2026-10-11). Tried: the release 12 trace writer batched events from all sessions into one INSERT into a table whose cid and gid have foreign keys with ON DELETE CASCADE. What broke: account deletions are routine in production (the canary every 15 min, the batteries). Any buffered event of a just-deleted child failed the whole statement, and the writer, built to drop a failed chunk rather than grow memory, threw away every other session's events in it. The live server recorded almost nothing. Instead: filter on existence inside the statement (INSERT ... SELECT ... WHERE cid IS NULL OR EXISTS ...). A test now pins a mixed chunk.

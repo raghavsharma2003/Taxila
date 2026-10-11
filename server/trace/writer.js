@@ -91,11 +91,18 @@ function schedule() {
 export async function insertTraceRows(rows) {
   if (!rows.length) return 0;
   const { q } = await import("../db.js");
-  await q(`insert into trace_event (sid, pid, cid, gid, src, seq, t, kind, turn, rid, tier, data)
+  // Only rows whose child / guardian still exist. A deleted account's last events are still in the buffer when its rows
+  // cascade away; inserting them violated trace_event_cid_fkey and dropped the WHOLE chunk, other sessions' events with it
+  // (release 12 live: most server chunks lost to the canary's and the batteries' account deletions; ms-r12-trace-fk-poison).
+  // Dropping them is also the erasure promise: nothing of a deleted child is written after the delete.
+  const r = await q(`insert into trace_event (sid, pid, cid, gid, src, seq, t, kind, turn, rid, tier, data)
     select x.sid, x.pid, x.cid, x.gid, x.src, x.seq, to_timestamp(x.t / 1000.0), x.kind, x.turn, x.rid, x.tier, x.data
     from jsonb_to_recordset($1::jsonb) as x(sid text, pid text, cid uuid, gid uuid, src text, seq int, t double precision,
-      kind text, turn int, rid text, tier smallint, data jsonb)`, [JSON.stringify(rows)]);
-  return rows.length;
+      kind text, turn int, rid text, tier smallint, data jsonb)
+    where (x.cid is null or exists (select 1 from child c where c.id = x.cid))
+      and (x.gid is null or exists (select 1 from guardian g where g.id = x.gid))
+    returning 1`, [JSON.stringify(rows)]);
+  return Array.isArray(r) ? r.length : rows.length;
 }
 
 /**

@@ -156,4 +156,18 @@ describe("flight recorder (test branch)", { skip: SKIP, concurrency: false, time
     assert.deepEqual(left, ["mid2", "young1"]);
     assert.ok(deletedBlobs.includes(`old/${sid}/server-4.json`));
   });
+
+  test("a chunk holding a deleted child's event still writes everyone else's (no FK poison; ms-r12-trace-fk-poison)", async () => {
+    const sid = `fk-${RUN}`, ghost = randomUUID(), ghostG = randomUUID();
+    const n = await writer.insertTraceRows([
+      { sid, pid: null, cid: null, gid: null, src: "server", seq: 1, t: Date.now(), kind: "keep.a", turn: null, rid: null, tier: 1, data: {} },
+      { sid, pid: null, cid: ghost, gid: null, src: "server", seq: 2, t: Date.now(), kind: "ghost.child", turn: null, rid: null, tier: 1, data: {} },
+      { sid, pid: null, cid: null, gid: ghostG, src: "server", seq: 3, t: Date.now(), kind: "ghost.guardian", turn: null, rid: null, tier: 1, data: {} },
+      { sid, pid: null, cid: null, gid: null, src: "server", seq: 4, t: Date.now(), kind: "keep.b", turn: null, rid: null, tier: 1, data: {} },
+    ]);
+    assert.equal(n, 2, "only the two rows with no missing child / guardian are written");
+    const left = (await rowsOf("sid = $1", [sid])).map((x) => x.kind).sort();
+    assert.deepEqual(left, ["keep.a", "keep.b"]);
+    await q("delete from trace_event where sid = $1", [sid]);
+  });
 });
