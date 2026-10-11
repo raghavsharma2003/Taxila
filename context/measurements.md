@@ -3933,3 +3933,24 @@ The full-page sheets are taken after scrolling the page in steps and requiring e
   - Cause: server/trace/writer.js inserts a chunk of up to ROWS_PER_INSERT events from every session in one statement. The canary smoke (every 15 min), the batteries and the proofs delete their accounts; events still buffered for those children then violate the FK, and the writer drops the whole chunk, real sessions included.
   - Fix (release 12.1): the INSERT ... SELECT keeps only rows whose cid and gid still exist (or are null), and RETURNING counts what was written. Nothing of a deleted child is written after its delete, which matches the erasure promise.
   - tests/r12-trace-db.run.mjs test 5, on Neon TEST: a chunk with a ghost child and a ghost guardian among 4 rows writes the other 2. It fails on the old writer with the exact production error, and passes on the fix.
+
+
+<!-- merged from inbox/r4-main-1900.json -->
+- `ms-r121-board-sync-env-leak` (2026-10-11, 18:35-19:05 UTC).
+  - Symptom: the release 12.1 gate on int/r4-rel12.1 0e65392 ran 3,101 tests, 3,097 pass and 1 fail: tests/p4-content-unit.test.mjs:259 'board sync: the line plan wins inside the deadline; a slow line plan yields to a passing late speculative board', expected 'line', got 'code', duration 335 ms. The same test had failed once before in 4B's full-suite run. It passes alone.
+  - Reading the code: server/stagecraft/board-sync.js plan() answers 'code' only once the sync deadline has passed (`left <= 0`, or the deadline sleep winning the race). The default deadline is 1900 ms, so a 335 ms 'code' answer means the deadline was about 300 ms.
+  - Cause:
+    - tests/ship5-review-board-fallback.test.mjs sets `process.env.TAXILA_BOARD_SYNC_MS = "300"` at module top level and never restores it.
+    - npm test is `node --test tests/`, which resolves to tests/index.js: one process that imports every *.test.mjs in sorted order. node:test starts running a file's tests while later files are still importing.
+    - So the 's…' file's import lands while 'p4…' tests are running. From then on, every test in the process runs with the 300 ms deadline.
+    - Test 852's first half (a 20 ms line plan 'inside the default deadline') ran with 280 ms of margin instead of 1880 ms. In that window plan() also synchronously computes the code board (the full W0-W9 gate) before the race starts. Under full-suite load, that and the timers took past 300 ms.
+  - Probe: the old p4 and ship5 files, imported in one process in suite order, with a line logged at test 852:
+    - `TAXILA_BOARD_SYNC_MS=300 deadline=300 source=line syncMs=54`;
+    - with the event loop blocked 120 ms at a time (a stand-in for load), syncMs was 302-329 ms in 3/3 runs. The line still won, but past the deadline.
+  - The failure itself did not reproduce outside the full suite. It needs the synchronous code-board compute to run about 280 ms or more, which an injected loop block cannot cause. The evidence for it is the gate's 335 ms duration together with the code path.
+  - Fix (tests only, no product code):
+    - ship5-review-board-fallback sets the 300 ms deadline inside its test body and restores the previous value in finally.
+    - p4-content-unit gets `withSyncMs(ms, fn)`: each board-sync test sets its own deadline (undefined means the production default) and restores it in finally, even when an assertion fails. The kill-switch test restores TAXILA_BOARD_SYNC the same way.
+    - No assertion was loosened.
+  - Result with the fix: both files pass alone (28/28 and 1/1). Under the same injected load, 3/3 runs pass, and test 852 now runs under the real 1900 ms default (657-673 ms per test, both halves).
+  - Other top-level env writes in tests/*.test.mjs: forge-g1, forge-g1-serve and forge-g2 set FORGE_DB_CACHE/FORGE_BLOB off, a placeholder AZURE_OPENAI_*, and FORGE_PUBLIC_BASE. They point code away from real services, and no test asserts on their absence. Left as they are, and logged here.

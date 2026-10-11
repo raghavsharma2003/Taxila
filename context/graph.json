@@ -20312,6 +20312,20 @@
    "at": "2026-10-11",
    "title": "One INSERT for a chunk of trace events from many sessions with FK columns to child/guardian: a single row of a just-deleted account fails the statement and the writer drops every session's events in that chunk",
    "source": "inbox/r4-main-1830.json"
+  },
+  {
+   "id": "ms-r121-board-sync-env-leak",
+   "kind": "measurement",
+   "at": "2026-10-11",
+   "title": "Release 12.1's gate failed one test, p4-content-unit 'board sync: the line plan wins inside the deadline' ('code' !== 'line', 335 ms). Cause: ship5-review-board-fallback.test.mjs set TAXILA_BOARD_SYNC_MS=300 at module top level and never restored it, and the one-process suite imports later files while earlier files' tests run, so the test that claims the 1900 ms default ran under 300 ms (probe on the old files: deadline=300). Fixed: both files set the deadline inside the test and restore it in finally",
+   "source": "inbox/r4-main-1900.json"
+  },
+  {
+   "id": "rj-test-env-at-import",
+   "kind": "rejection",
+   "at": "2026-10-11",
+   "title": "A test file that writes process.env at module top level (or sets it in a test body and deletes it only on the success path) in the one-process npm test: the write lands mid-run in whichever earlier file's test is executing when the import happens, so another file's test changes behaviour depending on import timing",
+   "source": "inbox/r4-main-1900.json"
   }
  ],
  "edges": [
@@ -32699,6 +32713,16 @@
    "src": "rj-r12-insert-all-or-nothing",
    "rel": "caused_by",
    "dst": "ms-r12-trace-fk-poison"
+  },
+  {
+   "src": "ms-r121-board-sync-env-leak",
+   "rel": "part_of",
+   "dst": "dc-r12-integration"
+  },
+  {
+   "src": "rj-test-env-at-import",
+   "rel": "caused_by",
+   "dst": "ms-r121-board-sync-env-leak"
   }
  ]
 }
