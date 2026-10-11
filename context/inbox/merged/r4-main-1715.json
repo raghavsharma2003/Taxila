@@ -1,0 +1,20 @@
+{
+  "nodes": [
+    {
+      "id": "ms-r12-health-test-driver-memo",
+      "kind": "measurement",
+      "at": "2026-10-11",
+      "title": "Release 12 gate (d96f3e2): 3,097 tests, 3,093 pass, 1 fail. The fail was eyes.test 'health: ?ready=1 answers 503 without a database' (got 200), because server/db.js memoizes its driver and an earlier test in the one-process suite had already queried. A primed probe reproduces it 1/1 (alone it passes 9/9, release 12 and base alike); fixed with db._resetDriverForTests() in the test, keeping its assertion"
+    }
+  ],
+  "edges": [
+    {
+      "src": "ms-r12-health-test-driver-memo",
+      "rel": "part_of",
+      "dst": "dc-r12-integration"
+    }
+  ],
+  "md": {
+    "measurements": "- `ms-r12-health-test-driver-memo` (2026-10-11, 16:56-17:15 UTC).\n  - Release 12's first gate on int/r4-rel12 d96f3e2 failed with 3,097 tests, 3,093 pass, 1 fail, 3 skipped. The fail was tests/eyes.test.mjs 'health: shallow by default; ?ready=1 checks the database and answers 503 without one': expected 503, got 200.\n  - Cause: server/db.js keeps its driver in a module-level `_driver` once any query has run. The test unsets DATABASE_URL and expects `select 1` to fail. In the single-process `node --test tests/` run, an earlier test had already queried, so the memoized driver answered.\n  - Evidence:\n    - (a) eyes.test.mjs alone passes 9/9, on release 12 and on base 0b8dc83, with and without a DB url.\n    - (b) a probe test that runs one `select 1` through db.js, followed by eyes.test.mjs in one process (--experimental-test-isolation=none, TEST url), fails exactly that test, 1/1.\n    - (c) none of release 12's server hooks touch readiness (router, http, index and auth diffs read).\n  - Production readiness is unaffected: a replica's memoized driver still fails `select 1` when the database is down.\n  - Fix (int/r4-rel12): db.js exports `_resetDriverForTests()`, and the test calls it before unsetting DATABASE_URL and again in its finally. The assertion stands unchanged. The primed probe now passes 10/10.\n  - Why release 11 passed: no in-process test before eyes.test.mjs had queried. That is file order, not a guarantee."
+  }
+}

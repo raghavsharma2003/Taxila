@@ -20270,6 +20270,13 @@
    "at": "2026-10-11",
    "title": "Release 12 integration (int/r4-rel12 on base 0b8dc83): T-server claude/r4-latency c4f156a, T-client claude/r4-content 62e3716 (with its main.tsx + rrweb 2.1.7 patch-request), T-voice claude/r4-duplex c58dc40 (with its cascadeLink/LessonScreen patch-request); shared/trace.ts conflict resolved to T-server's version (its only change adds kinds). Release 13 (4A d348414, the RCA fixes) ships after release 12 on its own gate",
    "source": "inbox/r4-main-1630.json"
+  },
+  {
+   "id": "ms-r12-health-test-driver-memo",
+   "kind": "measurement",
+   "at": "2026-10-11",
+   "title": "Release 12 gate (d96f3e2): 3,097 tests, 3,093 pass, 1 fail. The fail was eyes.test 'health: ?ready=1 answers 503 without a database' (got 200), because server/db.js memoizes its driver and an earlier test in the one-process suite had already queried. A primed probe reproduces it 1/1 (alone it passes 9/9, release 12 and base alike); fixed with db._resetDriverForTests() in the test, keeping its assertion",
+   "source": "inbox/r4-main-1715.json"
   }
  ],
  "edges": [
@@ -32627,6 +32634,11 @@
    "src": "dc-r12-integration",
    "rel": "part_of",
    "dst": "dc-r12-flight-recorder"
+  },
+  {
+   "src": "ms-r12-health-test-driver-memo",
+   "rel": "part_of",
+   "dst": "dc-r12-integration"
   }
  ]
 }

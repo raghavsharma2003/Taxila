@@ -3880,3 +3880,16 @@ The full-page sheets are taken after scrolling the page in steps and requiring e
   - 16 of 17 child turns were spoken, and 0 of those 16 carry asr_conf: the live transcriber returns no logprobs (server/voice/stt.js).
   - The talk mix marked 8 of 17 turns 'unclear'.
   - No row records the talk mode (tap vs hands-free), so why the owner had to tap could not be read from the database. The cause was found separately: ms-r4-owner-cohort-wrong-email.
+
+
+<!-- merged from inbox/r4-main-1715.json -->
+- `ms-r12-health-test-driver-memo` (2026-10-11, 16:56-17:15 UTC).
+  - Release 12's first gate on int/r4-rel12 d96f3e2 failed with 3,097 tests, 3,093 pass, 1 fail, 3 skipped. The fail was tests/eyes.test.mjs 'health: shallow by default; ?ready=1 checks the database and answers 503 without one': expected 503, got 200.
+  - Cause: server/db.js keeps its driver in a module-level `_driver` once any query has run. The test unsets DATABASE_URL and expects `select 1` to fail. In the single-process `node --test tests/` run, an earlier test had already queried, so the memoized driver answered.
+  - Evidence:
+    - (a) eyes.test.mjs alone passes 9/9, on release 12 and on base 0b8dc83, with and without a DB url.
+    - (b) a probe test that runs one `select 1` through db.js, followed by eyes.test.mjs in one process (--experimental-test-isolation=none, TEST url), fails exactly that test, 1/1.
+    - (c) none of release 12's server hooks touch readiness (router, http, index and auth diffs read).
+  - Production readiness is unaffected: a replica's memoized driver still fails `select 1` when the database is down.
+  - Fix (int/r4-rel12): db.js exports `_resetDriverForTests()`, and the test calls it before unsetting DATABASE_URL and again in its finally. The assertion stands unchanged. The primed probe now passes 10/10.
+  - Why release 11 passed: no in-process test before eyes.test.mjs had queried. That is file order, not a guarantee.

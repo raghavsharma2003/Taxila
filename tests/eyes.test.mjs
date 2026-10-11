@@ -74,6 +74,10 @@ test("access log: one line per API request with route template, status, ms, hash
 });
 
 test("health: shallow by default; ?ready=1 checks the database and answers 503 without one", async () => {
+  // The suite runs every file in one process: an earlier test may have memoized a working db driver, which would
+  // answer `select 1` even with DATABASE_URL unset (release 12 gate, ms-r12-health-test-driver-memo). Start clean.
+  const { _resetDriverForTests } = await import("../server/db.js");
+  _resetDriverForTests();
   const saved = process.env.DATABASE_URL;
   delete process.env.DATABASE_URL;
   const origWarn = console.warn; console.warn = () => {};
@@ -84,7 +88,7 @@ test("health: shallow by default; ?ready=1 checks the database and answers 503 w
     const b = fakeRes(); await handle(req("GET", "/api/health?ready=1"), b);
     assert.equal(b.statusCode, 503);
     assert.equal(JSON.parse(b.body).db, "down");
-  } finally { if (saved !== undefined) process.env.DATABASE_URL = saved; console.warn = origWarn; }
+  } finally { if (saved !== undefined) process.env.DATABASE_URL = saved; console.warn = origWarn; _resetDriverForTests(); }
   assert.equal(typeof register, "function");
 });
 
