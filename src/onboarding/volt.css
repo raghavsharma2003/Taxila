@@ -183,3 +183,8 @@
 .onb-volt .onb-title:focus, .onb-volt .onb-title:focus-visible { outline: none; box-shadow: none; }
 /* the promise icons in ion, not lime (one lime element per screen: the hold gate) */
 .onb-volt .promise-icon { background: color-mix(in srgb, var(--k-ion) 16%, var(--k-raise)); color: var(--k-ion); border-radius: 0; }
+/* "I am a student" (step 1): a quiet ghost button with a 48 px target, not a tiny link (main's review, release 11) */
+.onb-volt .onb-ghost { align-self: flex-start; display: inline-flex; align-items: center; min-height: 48px; padding: 0 18px; gap: 8px;
+  border: 1px solid var(--k-line-2); background: var(--k-panel); color: var(--k-ink-2); text-decoration: none;
+  font: 600 15px/1 var(--k-mono); letter-spacing: .08em; text-transform: uppercase; }
+.onb-volt .onb-ghost:hover { color: var(--k-ink); box-shadow: inset 3px 0 0 var(--k-ion); }

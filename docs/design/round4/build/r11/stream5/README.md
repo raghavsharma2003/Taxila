@@ -22,6 +22,7 @@ five steps, fields, validation and consent words. Nothing in `server/**` or the 
 - **The child's moments in her family look.** Her voice previews (step 1) and her name (step 5) sit in a nested
   `.kx` panel themed by her family. Classes 1-4 get Volt day "toy plastic" (ink outline, hard offset shadow); older
   children get Volt night.
+- **"I am a student"** (step 1) is a 48 px quiet ghost button, not a tiny underlined link (main's review). Same words, same destination.
 - **Fixes on the way:**
   - The title takes focus on every step but no longer draws a box (main's release 9 screenshots).
   - The `»` on the CTA has empty alt text, so a button's name stays "Sign in".
