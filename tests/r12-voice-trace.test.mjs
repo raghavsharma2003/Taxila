@@ -6,12 +6,13 @@ import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { noteDuplexResolved, micModeWhy, SttTracer, unsureTokens, meanConfidence, setVoiceTraceSink, vt, VoiceLinkTrace, traceMicMode, fit, MAX_DATA_CHARS } from "../src/voice/trace.ts";
+import { resetVoiceTraceState, noteDuplexResolved, micModeWhy, SttTracer, unsureTokens, meanConfidence, setVoiceTraceSink, vt, VoiceLinkTrace, traceMicMode, fit, MAX_DATA_CHARS } from "../src/voice/trace.ts";
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(HERE, "..");
 
 function capture(full = false) {
+  resetVoiceTraceState(); // the suite may share this module with other files: start each test from a fresh page
   const events = [];
   const blobs = [];
   setVoiceTraceSink({ emit: (kind, data, opts) => events.push({ kind, data, tier: opts?.tier ?? 1 }), full: () => full, blob: (kind, blob, data) => blobs.push({ kind, blob, data }) });

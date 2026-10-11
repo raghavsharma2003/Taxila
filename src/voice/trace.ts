@@ -150,6 +150,12 @@ export function micModeWhy(i: MicModeInputs): MicModeWhy {
 let lastMode = "";
 let lastInputs: MicModeInputs | null = null;
 let resolved: { mode: "on" | "shadow" | "off"; source: string } | null = null;
+/** Tests: forget the per-page mic-mode memory (the last mode, inputs and resolved duplex mode). */
+export function resetVoiceTraceState(): void {
+  lastMode = "";
+  lastInputs = null;
+  resolved = null;
+}
 /** src/duplex/flags.ts: the duplex mode this lesson resolved to, and which rule decided it (mic.mode then carries it). */
 export const noteDuplexResolved = safe((mode: "on" | "shadow" | "off", source: string) => {
   resolved = { mode, source };
