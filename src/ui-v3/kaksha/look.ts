@@ -12,7 +12,10 @@ export type Family = "young" | "older";
 /** The shipped look per family. Changing it is the main session's pick, in code. */
 export const KAKSHA_LOOK: Record<Family, KLook> = { young: "volt", older: "volt" };
 
-export const LOOK_KEY = "tx.flag.ui.klook";
+// Release 11: versioned like flag.ts's key, so a ?look=holo from release 9/10 testing does not outlive the release; the
+// old key is ignored and removed on first read.
+export const LOOK_KEY = "tx.flag.ui.klook.r11";
+export const LOOK_KEY_OLD = "tx.flag.ui.klook";
 
 function isDev(): boolean {
   try {
@@ -27,6 +30,7 @@ let urlApplied = false;
 function devLook(): KLook | null {
   const ok = (v: string | null): v is KLook => v === "holo" || v === "volt" || (v === "classic" && isDev());
   try {
+    if (typeof localStorage !== "undefined" && localStorage.getItem(LOOK_KEY_OLD) !== null) localStorage.removeItem(LOOK_KEY_OLD);
     if (!urlApplied && typeof location !== "undefined") {
       urlApplied = true;
       const v = new URLSearchParams(location.search).get("look");
