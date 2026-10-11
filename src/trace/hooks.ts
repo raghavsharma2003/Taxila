@@ -94,6 +94,10 @@ export function hookRoute(): void {
 
 /** What a tapped element is, for the timeline. Never the value of a field; never a coordinate inside a text input. */
 export function describeTarget(t: Element): Record<string, unknown> | null {
+  // a masked region (the parent PIN pad, ui/PinPad.tsx): which key was pressed IS the secret, so a tap there is only "a tap
+  // in a masked region" (release 12 packaged-tree check found the PIN digits as tap labels; ms-r12-pin-taps-recorded)
+  const masked = t.closest("[data-trace-mask]");
+  if (masked) return { tag: "masked", label: "[masked]", zone: masked.closest("[data-zone]")?.getAttribute("data-zone") ?? undefined };
   const el = t.closest("button, a, [role], input, select, textarea, label, summary, [data-testid], svg [data-part], g[role=button]") ?? t;
   const tag = el.tagName.toLowerCase();
   const input = el instanceof HTMLInputElement || el instanceof HTMLTextAreaElement || el instanceof HTMLSelectElement;

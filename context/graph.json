@@ -20277,6 +20277,20 @@
    "at": "2026-10-11",
    "title": "Release 12 gate (d96f3e2): 3,097 tests, 3,093 pass, 1 fail. The fail was eyes.test 'health: ?ready=1 answers 503 without a database' (got 200), because server/db.js memoizes its driver and an earlier test in the one-process suite had already queried. A primed probe reproduces it 1/1 (alone it passes 9/9, release 12 and base alike); fixed with db._resetDriverForTests() in the test, keeping its assertion",
    "source": "inbox/r4-main-1715.json"
+  },
+  {
+   "id": "ms-r12-pin-taps-recorded",
+   "kind": "measurement",
+   "at": "2026-10-11",
+   "title": "Release 12's packaged-tree check caught the flight recorder recording the parent PIN for every account: the journey's ui.tap events read '2','5','8','0','Next','2','5','8','0','OK' on /start/child (the shared PinPad's keys are buttons, so input masking never applied). Fixed: PinPad is a masked region (data-trace-mask + rr-block, also blocked in rrweb); re-run journey 10/10 taps '[masked]', 0 digit labels",
+   "source": "inbox/r4-main-1740.json"
+  },
+  {
+   "id": "ms-r12-packaged-checks",
+   "kind": "measurement",
+   "at": "2026-10-11",
+   "title": "Release 12 packaged tree (2af8cfc on the Neon TEST branch): owner-5 12/14, round2-content 35/39, boards 3/5 when run beside the other two batteries but 5/5 alone, the journey 5 steps to Hello then lesson/new with the recorder capturing 72-83 client events per page load (routes, labelled taps, requests with status and ms, mic mode, Desk state, card, tray, media)",
+   "source": "inbox/r4-main-1740.json"
   }
  ],
  "edges": [
@@ -32637,6 +32651,16 @@
   },
   {
    "src": "ms-r12-health-test-driver-memo",
+   "rel": "part_of",
+   "dst": "dc-r12-integration"
+  },
+  {
+   "src": "ms-r12-pin-taps-recorded",
+   "rel": "part_of",
+   "dst": "dc-r12-flight-recorder"
+  },
+  {
+   "src": "ms-r12-packaged-checks",
    "rel": "part_of",
    "dst": "dc-r12-integration"
   }

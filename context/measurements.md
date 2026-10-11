@@ -3893,3 +3893,21 @@ The full-page sheets are taken after scrolling the page in steps and requiring e
   - Production readiness is unaffected: a replica's memoized driver still fails `select 1` when the database is down.
   - Fix (int/r4-rel12): db.js exports `_resetDriverForTests()`, and the test calls it before unsetting DATABASE_URL and again in its finally. The assertion stands unchanged. The primed probe now passes 10/10.
   - Why release 11 passed: no in-process test before eyes.test.mjs had queried. That is file order, not a guarantee.
+
+
+<!-- merged from inbox/r4-main-1740.json -->
+- `ms-r12-pin-taps-recorded` (2026-10-11 17:25-17:30 UTC). Method: r4-asha-setup-journey on the packaged release 12 tree (local production server, Neon TEST branch), then `scripts/trace.mjs --session <pid>`.
+  - The timeline held `tap "2"`, `"5"`, `"8"`, `"0"`, `"Next"`, `"2"`, `"5"`, `"8"`, `"0"`, `"OK"` on /start/child: the journey's parent PIN 2580, twice, in tier 1, for every account.
+  - Cause: T-client's masking covers inputs (password, email, tel, autocomplete=pin). The shared src/ui/PinPad.tsx is a group of buttons, so `describeTarget` read each key's text as its label. The masking test had no button keypad in it.
+  - Fix:
+    - PinPad's root carries `data-trace-mask="pin"` and the class `rr-block`;
+    - `describeTarget` returns only `{tag: 'masked', label: '[masked]'}` for a tap inside `[data-trace-mask]`, before any label is read;
+    - tier 2's rrweb `blockSelector` includes `[data-trace-mask]`, so the pad replays as a blank block;
+    - tests/r12-pin-mask.test.mjs pins all three, and that every PIN entry (parent Gate, onboarding ChildProfile, Setup, Pages) goes through PinPad.
+  - Re-run journey on the rebuilt tree: the same 10 taps read `[masked]`; 0 events with a digit label in the session's JSON.
+- `ms-r12-packaged-checks` (2026-10-11, 17:20-17:40 UTC). Release 12 int/r4-rel12 2af8cfc, packaged (git archive minus docs/evals/tests/art, plus the gate's dist), local production server on the TEST branch.
+  - owner-5-visual: 12/14, the animation answered in words (V3.child_draws), 11/12 visuals.
+  - round2-content: 35/39.
+  - r4-content-boards: 3/5 when run in parallel with the other two batteries (3 slots unfilled, plus the known 1/52 W4 contradiction); 5/5 when re-run alone. Read: load variance, not the recorder. The recorder's studio and board hooks are synchronous, inside `record()`'s own try/catch, and read only optional properties.
+  - The batteries' own sessions left no trace rows, because each deletes its test account at the end and the trace rows cascade: the erasure path, seen working.
+  - Journey: 5 steps, 22 taps, first sound at 21.7 s (phone) and 21.5 s (laptop). Hello in Volt day, then /c/:id/lesson/new. `trace.mjs --session` showed 83 and 72 client events per page load: route, dev.info, labelled taps, net with status and ms, mic mode tap, desk state, card, tray, media mounts, and a perf.longtask of 901 ms on Hello.

@@ -62,7 +62,7 @@ export async function startReplay(): Promise<void> {
       maskInputOptions: { password: true, email: true, tel: true, text: true, textarea: true },
       inlineStylesheet: true,
       collectFonts: false,
-      blockSelector: "[data-trace-block]",
+      blockSelector: "[data-trace-block], [data-trace-mask]", // a masked region (the parent PIN pad) replays as a blank block
     });
     // focus moved by the app's own code (the type row opening, a sheet) is not an rrweb interaction: record which node
     // holds focus as a custom event, so the replay shows the same focus ring (scripts/trace-replay.mjs applies it)
