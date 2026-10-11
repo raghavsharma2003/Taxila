@@ -35,7 +35,10 @@ describe("r12 T-client: masking", async () => {
 });
 
 describe("r12 T-client: the bus and the fetch wrapper", async () => {
-  globalThis.location = { href: "http://app.test/c/x", origin: "http://app.test", pathname: "/c/x", search: "" };
+  // other test files in the same process replace globalThis.location concurrently (r4-kaksha-*): the wrapper reads it
+  // synchronously at the call, so each call below sets it in the same tick
+  const here = () => { globalThis.location = { href: "http://app.test/c/x", origin: "http://app.test", pathname: "/c/x", search: "" }; };
+  here();
   const bus = await import("../src/trace/bus.ts");
   const { wrapFetch } = await import("../src/trace/net.ts");
   const sent = [];
@@ -82,11 +85,14 @@ describe("r12 T-client: the bus and the fetch wrapper", async () => {
     const resp = new Response('{"ok":true,"email":"a@b.co"}', { headers: { "content-type": "application/json" } });
     const orig = async (input, init) => { calls.push({ input, init }); return resp; };
     const f = wrapFetch(orig);
+    here();
     const r = await f("/api/lesson/turn", { method: "POST", body: JSON.stringify({ childText: "two", password: "p" }) });
     assert.equal(r, resp, "the same Response object reaches the app");
     assert.ok(new Headers(calls[0].init.headers).get(TRACE_RID_HEADER));
+    here();
     await f("/api/trace/batch", { method: "POST", body: "{}" });
     assert.equal(calls[1].init?.headers, undefined, "the recorder never tags or records itself");
+    here();
     await f("https://elsewhere.test/api/x");
     assert.equal(calls[2].init, undefined);
     await new Promise((res) => setTimeout(res, 20));
@@ -100,6 +106,7 @@ describe("r12 T-client: the bus and the fetch wrapper", async () => {
   it("a failing call rejects exactly as without the recorder", async () => {
     const boom = new TypeError("Failed to fetch");
     const f = wrapFetch(async () => { throw boom; });
+    here();
     await assert.rejects(f("/api/lesson/turn"), (e) => e === boom);
     await new Promise((res) => setTimeout(res, 5));
     assert.ok(seen.some((e) => e.kind === "net.err" && /Failed to fetch/.test(e.data.error)));
@@ -108,10 +115,12 @@ describe("r12 T-client: the bus and the fetch wrapper", async () => {
     const resp = new Response("ok");
     const f = wrapFetch(async () => resp);
     const weird = { get url() { throw new Error("hostile input"); } };
+    here();
     assert.equal(await f(weird), resp);
   });
   it("the tier is learned from /api/me's trace.tier", async () => {
     const f = wrapFetch(async () => new Response(JSON.stringify({ guardian: {}, children: [], trace: { tier: 2 } }), { headers: { "content-type": "application/json" } }));
+    here();
     await f("/api/me");
     await new Promise((res) => setTimeout(res, 20));
     assert.equal(bus.getTier(), 2);
