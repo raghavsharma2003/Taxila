@@ -1,0 +1,58 @@
+{
+ "nodes": [
+  {
+   "id": "dec-r12-tserver-one-writer",
+   "kind": "decision",
+   "title": "Server trace events go through ONE buffered writer (server/trace/writer.js). record() is synchronous: it masks, fits the event to 8 KB and buffers it. One jsonb multi-row insert per second. The buffer is capped at 5,000 events; past the cap, or on a failed or hung insert (deadline 8 s), events are dropped and counted, and the count is recorded as trace.dropped. It never throws or awaits on a request. Off under node --test unless TAXILA_TRACE=on; TAXILA_TRACE=off turns it off everywhere. Reverse if: the p95 recorder cost per turn exceeds 10 ms, or a lesson behaves differently with the recorder broken.",
+   "at": "2026-10-11"
+  },
+  {
+   "id": "dec-r12-tserver-identity-from-auth",
+   "kind": "decision",
+   "title": "Trace cid and gid come only from auth: requireGuardian, requireChild, loadTurnContext and the tts-stream ownership query fill a per-request AsyncLocalStorage store. Client batch events get a cid only when their sid is a lesson of the signed-in guardian. The sid is the lesson id, else the page-load id (x-taxila-pid), else g:<guardian>. Reverse if: never (the client is never trusted for identity).",
+   "at": "2026-10-11"
+  },
+  {
+   "id": "dec-r12-tserver-erasure",
+   "kind": "decision",
+   "title": "trace_event.cid and gid cascade from child and guardian (029_trace.sql), so DELETE /api/children and DELETE /api/account take trace rows in their own transaction. Rows keyed only by an erased lesson, and the blobs, are deleted after the commit, by ids and refs read before it. Retention runs nightly via ops.mjs --nightly: tier 1 after 30 days, tier 2 after 90, blobs first. Tested on Neon TEST (tests/r12-trace-db.run.mjs).",
+   "at": "2026-10-11"
+  },
+  {
+   "id": "ms-r12-tserver-budget-2026-10-11",
+   "kind": "measurement",
+   "title": "Flight recorder server cost, in-process server, 3 lessons x 10 turns, real Azure, TAXILA_TRACE_PROFILE=1, US container, 2026-10-11: record() time inside a /api/lesson/turn request p50 0.69 / p95 1.62 / max 1.65 ms (n = 29, about 7 events per turn); every request p95 1.32 ms (n = 175). Flush serialisation about 0.11 ms per turn (21.6 KB of events per turn). Budget is 10 ms p95: met.",
+   "at": "2026-10-11"
+  },
+  {
+   "id": "ms-r12-tserver-hung-insert-2026-10-11",
+   "kind": "measurement",
+   "title": "On a local production build (serve.mjs, Neon HTTP driver) one trace insert hung with no error, and every event after it was lost (1 of 6 turns recorded). Fix: an 8 s deadline per insert; the chunk counts as dropped and the writer moves on. The re-run recorded all 6 turns, 191 events, 0 dropped. Root cause of the hang not found (a stalled fetch through the proxy is suspected).",
+   "at": "2026-10-11"
+  },
+  {
+   "id": "open-r12-tserver-trace-container",
+   "kind": "open",
+   "title": "The private blob container trace must be created in the existing storage account before tier-2 blobs (model prompt and raw response, client rrweb and audio) can be stored. T-server does not change Azure resources. Until then a server tier-2 event records model.call.blob_failed, and POST /api/trace/blob returns the PUT failure.",
+   "at": "2026-10-11"
+  },
+  {
+   "id": "open-r12-tserver-play-events",
+   "kind": "open",
+   "title": "Dedicated play.mount and play.outcome events, and safety reads at lesson start, are not recorded in the first pass. The play routes are covered by srv.req and srv.res with masked bodies.",
+   "at": "2026-10-11"
+  }
+ ],
+ "edges": [
+  {
+   "src": "dec-r12-tserver-one-writer",
+   "rel": "measured_by",
+   "dst": "ms-r12-tserver-budget-2026-10-11"
+  },
+  {
+   "src": "dec-r12-tserver-one-writer",
+   "rel": "measured_by",
+   "dst": "ms-r12-tserver-hung-insert-2026-10-11"
+  }
+ ]
+}

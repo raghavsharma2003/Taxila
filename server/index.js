@@ -36,5 +36,5 @@ import { routes as play } from "./play/routes.js";
 // release 12 flight recorder: POST /api/trace/batch and /api/trace/blob (T-server, server/trace). One line.
 import { routes as trace } from "./trace/routes.js";
 
-register({ ...lesson, ...tts, ...parent, ...modules, ...voice, ...tutor, ...forge, ...child, ...testClock, ...studio, ...voicesig, ...duplex, ...duplexShadow, ...face, ...relational, ...latency, ...play, ...lane, ...trace });
+register({ ...lesson, ...tts, ...parent, ...modules, ...voice, ...tutor, ...forge, ...child, ...testClock, ...studio, ...voicesig, ...duplex, ...duplexShadow, ...face, ...relational, ...latency, ...play, ...trace, ...lane });
 export { handle, register };

@@ -196,7 +196,9 @@ export function clientChild(c) {
 }
 
 export async function me(req, res) {
-  send(res, 200, await meData(await requireGuardian(req)));
+  const g = await requireGuardian(req);
+  // release 12 flight recorder: the tier this account records at (2 = TAXILA_TRACE_FULL_FOR: the client shows REC)
+  send(res, 200, { ...(await meData(g)), trace: traceMeFor(g) });
 }
 
 /** GET /api/me's body for a signed-in guardian (also folded into GET /api/child/boot: one hop on child home). */
@@ -214,8 +216,7 @@ export async function meData(g) {
   const consents = await q(
     "select distinct on (child_id, purpose) child_id, purpose, granted, version, created_at from consent where guardian_id = $1 order by child_id, purpose, created_at desc", [g.id]);
   // r4 Kaksha (K-P10): the owner-test cohort for the ui.kaksha flag; false for everyone not on TAXILA_UI_KAKSHA.
-  // release 12 flight recorder: the tier this account records at (2 = TAXILA_TRACE_FULL_FOR: the client shows REC)
-  return { guardian: g, children, consents, ui: uiFlagsFor(g), trace: traceMeFor(g) };
+  return { guardian: g, children, consents, ui: uiFlagsFor(g) };
 }
 
 /** body: { childId?: uuid|null, grants: { [purpose]: boolean } } */
