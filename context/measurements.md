@@ -4005,3 +4005,33 @@ The full-page sheets are taken after scrolling the page in steps and requiring e
   - Continue pages 3-5, replayed through the client rule (StudioWhiteboard priorFor), land on earlier ops: page 4 writes ? over page 3's 4 and +3. This is the owner's 'drawn on top of the previous content'.
   - Speculation: of 17 turns, 14 missed (median server_ms 2526), 1 hit (585) and 2 were not speculated (1555). The one hit is the only speculated turn whose understanding note carried no request.
   - The screen guard G-SAY-1 checked only for tap targets, so turn 3's 'Screen par game' (no game mounted) and turn 23's 'screen par aloo' (a maths table on screen) passed. This is the owner's 'she claimed an image that was not there'.
+
+
+<!-- merged from inbox/r4-main-1930.json -->
+- `ms-r121-live` (2026-10-11, 19:22-19:30 UTC).
+  - Gate on int/r4-rel12.1 bf17b06: 3,101 tests, 3,098 pass, 0 fail, 3 skipped (the board-sync test passed in 223 ms; ms-r121-board-sync-env-leak). Prompt budget PASS. Stamp 19:22:25Z.
+  - Deploy: base fast-forwarded to bf17b06, then deploy-azure.mjs. The ACR build succeeded; revision taxila-web--sbf17b06-nhv3 at 0% canary passed w0-smoke 4/4, then went to 100%. s23ac84d-oyjl is kept as previous, s556639e deactivated. 260 s, first attempt.
+  - Live server recorder, measured with scratchpad srvtrace-probe.mjs: an API-only @taxila.test account, one lesson start and one turn on https://taxila.dev, then trace_event grouped by kind, then the account deleted.
+    - Lesson events: model.call 4, srv.req 2, srv.res 2, safety.scan 1, classify.verdict 1, director.turn 1, board.page 1, studio.slot.revealed 1, studio.rung_replaced 1, db.write 1.
+    - Guardian stream: srv.req 3, srv.res 3, model.call 1.
+    - The same probe on release 12 (ms-r12-trace-fk-poison) found 0 server events for its lesson.
+  - trace.dropped since 19:24Z: 0 rows. The probe's and the canary's own rows were erased with their accounts, as designed.
+  - Not yet re-proven live on 12.1: the tier-2 client replay from the real Azure container (release 13 carries the tooling fixes; the live proof runs after it).
+
+
+<!-- merged from inbox/r4-main-2020.json -->
+- `ms-r13-claims-in-flight` (2026-10-11, 20:00-20:40 UTC). Method: the packaged release 13 tree (5faa5b6; git archive minus docs/evals/tests/art, plus the gate's dist), local production server on the Neon TEST branch, owner-5-visual and round2-content in parallel. Release 12's packaged run (ms-r12-packaged-checks) is the baseline.
+  - Before:
+    - owner-5: 8/14 (release 12: 12/14). Visual requests 7/12 (release 12: 11/12): picture typed and spoken, draw typed, animation typed and spoken, all V2.no_reference ('something is on the stage but her words never point at it').
+    - round2-content: 29/39 (release 12: 35/39). New failures: picture x2, draw, game x2 and animation x2, all 'her words do not point at it'; R request→piece p90 4775 ms.
+  - Lines that shipped: 'Aarav, number line: 0 se 1 tak 5 barabar gaps…' (the pointing was taken out) and 'Ishaan, kuch move nahi ho raha; words mein…' (the rewrite, told the screen claim was false, said nothing moves).
+  - Cause:
+    - 4A's screenClaimProblem flagged any pointing sentence whose content words were not among stageWords(ui, module), and also when stageWords was EMPTY.
+    - On the turn that answers a visual request, the requested whiteboard is planned against her real line (board-sync) and acked after the reply, and a play piece lands 3-5 s later. So when the guard runs, the slot holds no artifact and stageWords is empty.
+    - The same happens with a mounted interactive engine (number line, strips), whose labels the guard cannot read.
+    - The guard then rewrote the line and stripped or unpointed the screen reference.
+  - Fix (server/director/say.js, server/brain/say.js):
+    - screenProblem(…, { coming }) skips the claim check when this turn's move answers a visual request (lastMove.request 'visual' with lastMove.visual);
+    - the content-word check runs only when the stage is KNOWN: a whiteboard artifact or an explainer@1 rung (a drawn script, known even with no text), or a script on the module or artifact. Otherwise a claim passes, as before release 13.
+  - Still caught: the owner's 'screen par aloo dekho' over the rules table, and 'Screen par game' with no play piece and nothing coming (tests/r13-integration-claims.test.mjs; r12-rca and r13-visual-honest all pass, plus 2 documented todos).
+  - After: After the fix, on the same packaged tree: owner-5 12/14 (visuals 11/12; the one failure is release 12's known V3.child_draws), round2-content 36/39 (the 3 failures are item-bound mount checks, as in release 12), boards 3/5 then 5/5 alone (n = 2; release 12: 3/5 in parallel, 5/5 alone), safety w2i 39/39, journey 5 steps / 22 taps / first sound 21.9 s phone, 20.9 s laptop. The one unfilled board in boards run 1 (c7-maths-ch08-t01, 'Screen par rectangle dekhiye', slot failed) is the residual risk of letting a line point at a piece in flight: the same topic's board failed in release 12 too; open.

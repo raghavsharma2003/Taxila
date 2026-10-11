@@ -1,0 +1,37 @@
+{
+  "nodes": [
+    {
+      "id": "ms-r13-claims-in-flight",
+      "kind": "measurement",
+      "at": "2026-10-11",
+      "title": "Release 13's screen-claim predicate, on the packaged tree, flagged legitimate pointing: owner-5 fell from 12/14 to 8/14 (visuals 11/12 to 7/12) and round2-content from 35/39 to 29/39 against release 12, every new failure V2.no_reference. The requested piece is in flight when her line is checked (stageWords empty), and an interactive engine's labels are unreadable. Fixed: the predicate stands aside for this turn's requested visual and for engines; drawn boards are still held to their words. After the fix, on the same packaged tree: owner-5 12/14 (visuals 11/12; the one failure is release 12's known V3.child_draws), round2-content 36/39 (the 3 failures are item-bound mount checks, as in release 12), boards 3/5 then 5/5 alone (n = 2; release 12: 3/5 in parallel, 5/5 alone), safety w2i 39/39, journey 5 steps / 22 taps / first sound 21.9 s phone, 20.9 s laptop. The one unfilled board in boards run 1 (c7-maths-ch08-t01, 'Screen par rectangle dekhiye', slot failed) is the residual risk of letting a line point at a piece in flight: the same topic's board failed in release 12 too; open."
+    },
+    {
+      "id": "rj-r13-claim-check-before-the-piece",
+      "kind": "rejection",
+      "at": "2026-10-11",
+      "title": "Checking a 'look at the screen' sentence against the stage's words at reply time, for the turn that brings the piece: the board is planned against her line (board-sync) and a game lands seconds later, so the stage is empty when the check runs and every pointing sentence reads as a false claim"
+    }
+  ],
+  "edges": [
+    {
+      "src": "ms-r13-claims-in-flight",
+      "rel": "part_of",
+      "dst": "dc-r12-integration"
+    },
+    {
+      "src": "ms-r13-claims-in-flight",
+      "rel": "measured_by",
+      "dst": "r4c-dc-screen-claims-by-predicate"
+    },
+    {
+      "src": "rj-r13-claim-check-before-the-piece",
+      "rel": "caused_by",
+      "dst": "ms-r13-claims-in-flight"
+    }
+  ],
+  "md": {
+    "measurements": "- `ms-r13-claims-in-flight` (2026-10-11, 20:00-20:40 UTC). Method: the packaged release 13 tree (5faa5b6; git archive minus docs/evals/tests/art, plus the gate's dist), local production server on the Neon TEST branch, owner-5-visual and round2-content in parallel. Release 12's packaged run (ms-r12-packaged-checks) is the baseline.\n  - Before:\n    - owner-5: 8/14 (release 12: 12/14). Visual requests 7/12 (release 12: 11/12): picture typed and spoken, draw typed, animation typed and spoken, all V2.no_reference ('something is on the stage but her words never point at it').\n    - round2-content: 29/39 (release 12: 35/39). New failures: picture x2, draw, game x2 and animation x2, all 'her words do not point at it'; R request→piece p90 4775 ms.\n  - Lines that shipped: 'Aarav, number line: 0 se 1 tak 5 barabar gaps…' (the pointing was taken out) and 'Ishaan, kuch move nahi ho raha; words mein…' (the rewrite, told the screen claim was false, said nothing moves).\n  - Cause:\n    - 4A's screenClaimProblem flagged any pointing sentence whose content words were not among stageWords(ui, module), and also when stageWords was EMPTY.\n    - On the turn that answers a visual request, the requested whiteboard is planned against her real line (board-sync) and acked after the reply, and a play piece lands 3-5 s later. So when the guard runs, the slot holds no artifact and stageWords is empty.\n    - The same happens with a mounted interactive engine (number line, strips), whose labels the guard cannot read.\n    - The guard then rewrote the line and stripped or unpointed the screen reference.\n  - Fix (server/director/say.js, server/brain/say.js):\n    - screenProblem(…, { coming }) skips the claim check when this turn's move answers a visual request (lastMove.request 'visual' with lastMove.visual);\n    - the content-word check runs only when the stage is KNOWN: a whiteboard artifact or an explainer@1 rung (a drawn script, known even with no text), or a script on the module or artifact. Otherwise a claim passes, as before release 13.\n  - Still caught: the owner's 'screen par aloo dekho' over the rules table, and 'Screen par game' with no play piece and nothing coming (tests/r13-integration-claims.test.mjs; r12-rca and r13-visual-honest all pass, plus 2 documented todos).\n  - After: After the fix, on the same packaged tree: owner-5 12/14 (visuals 11/12; the one failure is release 12's known V3.child_draws), round2-content 36/39 (the 3 failures are item-bound mount checks, as in release 12), boards 3/5 then 5/5 alone (n = 2; release 12: 3/5 in parallel, 5/5 alone), safety w2i 39/39, journey 5 steps / 22 taps / first sound 21.9 s phone, 20.9 s laptop. The one unfilled board in boards run 1 (c7-maths-ch08-t01, 'Screen par rectangle dekhiye', slot failed) is the residual risk of letting a line point at a piece in flight: the same topic's board failed in release 12 too; open.",
+    "rejected": "- `rj-r13-claim-check-before-the-piece` (2026-10-11). Tried: release 13 checked every 'screen par … dekho' sentence against the words of what was mounted when the reply was written, including the turn that brings the piece the child asked for. What broke: that piece is drawn in sync with her line or lands seconds after it, so the stage was empty at check time. Every pointing sentence counted as a false claim and was rewritten or unpointed, and owner-5's visual requests fell from 11/12 to 7/12 (ms-r13-claims-in-flight). Instead: a claim is checked only against a stage that is already there and readable (a drawn board). The piece this turn brings is the slot-failure path's concern. A predicate needs the state it judges to exist when it runs; one built from the owner's lessons was never run on the request turns, which a battery would have caught."
+  }
+}

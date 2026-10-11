@@ -20383,6 +20383,27 @@
    "at": "2026-10-11",
    "title": "Release 13 integration of the recorder tooling: T-server's trace.mjs --replay (gathers chunks from blobs) composed with T-client's trace-replay.mjs (--events, or a bare session); integration adds beacon chunks (no ref: rebuilt with traceBlobPath, that day or the next) and the flag's note (flag.note joined to flag.owner on pid + n). r12-trace-db 6/6 on TEST; a beacon unit test; a TEST-branch probe flag printed its note",
    "source": "inbox/r4-main-2000.json"
+  },
+  {
+   "id": "ms-r121-live",
+   "kind": "measurement",
+   "at": "2026-10-11",
+   "title": "Release 12.1 (bf17b06) live as taxila-web--sbf17b06-nhv3 (canary 4/4; s23ac84d kept). The server recorder now writes: a live API probe lesson recorded 13 server event kinds (director.turn, model.call x4, safety.scan, classify.verdict, board.page, studio.slot.revealed, studio.rung_replaced, db.write, srv.req/res) where release 12 recorded 0; trace.dropped 0 since the switch",
+   "source": "inbox/r4-main-1930.json"
+  },
+  {
+   "id": "ms-r13-claims-in-flight",
+   "kind": "measurement",
+   "at": "2026-10-11",
+   "title": "Release 13's screen-claim predicate, on the packaged tree, flagged legitimate pointing: owner-5 fell from 12/14 to 8/14 (visuals 11/12 to 7/12) and round2-content from 35/39 to 29/39 against release 12, every new failure V2.no_reference. The requested piece is in flight when her line is checked (stageWords empty), and an interactive engine's labels are unreadable. Fixed: the predicate stands aside for this turn's requested visual and for engines; drawn boards are still held to their words. After the fix, on the same packaged tree: owner-5 12/14 (visuals 11/12; the one failure is release 12's known V3.child_draws), round2-content 36/39 (the 3 failures are item-bound mount checks, as in release 12), boards 3/5 then 5/5 alone (n = 2; release 12: 3/5 in parallel, 5/5 alone), safety w2i 39/39, journey 5 steps / 22 taps / first sound 21.9 s phone, 20.9 s laptop. The one unfilled board in boards run 1 (c7-maths-ch08-t01, 'Screen par rectangle dekhiye', slot failed) is the residual risk of letting a line point at a piece in flight: the same topic's board failed in release 12 too; open.",
+   "source": "inbox/r4-main-2020.json"
+  },
+  {
+   "id": "rj-r13-claim-check-before-the-piece",
+   "kind": "rejection",
+   "at": "2026-10-11",
+   "title": "Checking a 'look at the screen' sentence against the stage's words at reply time, for the turn that brings the piece: the board is planned against her line (board-sync) and a game lands seconds later, so the stage is empty when the check runs and every pointing sentence reads as a false claim",
+   "source": "inbox/r4-main-2020.json"
   }
  ],
  "edges": [
@@ -32820,6 +32841,31 @@
    "src": "r4c-dc-screen-claims-by-predicate",
    "rel": "part_of",
    "dst": "dc-r12-integration"
+  },
+  {
+   "src": "ms-r121-live",
+   "rel": "part_of",
+   "dst": "dc-r12-flight-recorder"
+  },
+  {
+   "src": "ms-r121-live",
+   "rel": "supersedes",
+   "dst": "ms-r12-trace-fk-poison"
+  },
+  {
+   "src": "ms-r13-claims-in-flight",
+   "rel": "part_of",
+   "dst": "dc-r12-integration"
+  },
+  {
+   "src": "ms-r13-claims-in-flight",
+   "rel": "measured_by",
+   "dst": "r4c-dc-screen-claims-by-predicate"
+  },
+  {
+   "src": "rj-r13-claim-check-before-the-piece",
+   "rel": "caused_by",
+   "dst": "ms-r13-claims-in-flight"
   }
  ]
 }

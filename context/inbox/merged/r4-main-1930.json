@@ -1,0 +1,25 @@
+{
+  "nodes": [
+    {
+      "id": "ms-r121-live",
+      "kind": "measurement",
+      "at": "2026-10-11",
+      "title": "Release 12.1 (bf17b06) live as taxila-web--sbf17b06-nhv3 (canary 4/4; s23ac84d kept). The server recorder now writes: a live API probe lesson recorded 13 server event kinds (director.turn, model.call x4, safety.scan, classify.verdict, board.page, studio.slot.revealed, studio.rung_replaced, db.write, srv.req/res) where release 12 recorded 0; trace.dropped 0 since the switch"
+    }
+  ],
+  "edges": [
+    {
+      "src": "ms-r121-live",
+      "rel": "part_of",
+      "dst": "dc-r12-flight-recorder"
+    },
+    {
+      "src": "ms-r121-live",
+      "rel": "supersedes",
+      "dst": "ms-r12-trace-fk-poison"
+    }
+  ],
+  "md": {
+    "measurements": "- `ms-r121-live` (2026-10-11, 19:22-19:30 UTC).\n  - Gate on int/r4-rel12.1 bf17b06: 3,101 tests, 3,098 pass, 0 fail, 3 skipped (the board-sync test passed in 223 ms; ms-r121-board-sync-env-leak). Prompt budget PASS. Stamp 19:22:25Z.\n  - Deploy: base fast-forwarded to bf17b06, then deploy-azure.mjs. The ACR build succeeded; revision taxila-web--sbf17b06-nhv3 at 0% canary passed w0-smoke 4/4, then went to 100%. s23ac84d-oyjl is kept as previous, s556639e deactivated. 260 s, first attempt.\n  - Live server recorder, measured with scratchpad srvtrace-probe.mjs: an API-only @taxila.test account, one lesson start and one turn on https://taxila.dev, then trace_event grouped by kind, then the account deleted.\n    - Lesson events: model.call 4, srv.req 2, srv.res 2, safety.scan 1, classify.verdict 1, director.turn 1, board.page 1, studio.slot.revealed 1, studio.rung_replaced 1, db.write 1.\n    - Guardian stream: srv.req 3, srv.res 3, model.call 1.\n    - The same probe on release 12 (ms-r12-trace-fk-poison) found 0 server events for its lesson.\n  - trace.dropped since 19:24Z: 0 rows. The probe's and the canary's own rows were erased with their accounts, as designed.\n  - Not yet re-proven live on 12.1: the tier-2 client replay from the real Azure container (release 13 carries the tooling fixes; the live proof runs after it)."
+  }
+}
