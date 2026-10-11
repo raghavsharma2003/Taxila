@@ -1,0 +1,11 @@
+GET /api/me trace = {"tier":2}
+tapped "Tap to hear" at 2026-10-11T18:17:07.072Z
+screenshot at 2026-10-11T18:17:37.081Z (/c/235e83ba-679b-4a3b-accb-bd462c656d5a/lesson/new)
+POST /api/trace/blob statuses: [200,200,200,200,200,200,200]
+trace.mjs --replay 235e83ba --at 18:17:37 → exit 0
+[trace] replay 235e83ba: 6 rrweb chunk(s), 6 downloaded
+{"at":"2026-10-11T18:17:37.000Z","offsetMs":38226,"file":"/home/user/Taxila/docs/design/round4/build/r12/t-server/proof-replay/replay-181737.png","w":412,"h":915}
+
+replay PNGs: ["replay-181737.png"]
+DELETE /api/account 200
+trace rows of the child left after the erasure: 0

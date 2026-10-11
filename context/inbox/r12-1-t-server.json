@@ -1,0 +1,26 @@
+{
+ "nodes": [
+  {
+   "id": "ms-r12-1-replay-proof-2026-10-11",
+   "kind": "measurement",
+   "title": "Release 12.1 replay proof, 2026-10-11 18:16-18:18 UTC, n = 1. Packaged production build on Neon TEST, with a tier-2 proof account (the only TAXILA_TRACE_FULL_FOR entry). Playwright Chromium at 412x915 opened /c/<child>/lesson/new, tapped 'Tap to hear Asha', and the lesson started (real Azure). scripts/trace.mjs --replay <child-prefix> --at <screenshot second> gathered 6 rrweb chunks and rendered one PNG. Against the real screenshot it differs in 0.0 % of pixels (grey difference > 32). This container has no storage key, so the blobs went to a local TAXILA_TRACE_BLOB_DIR, not the trace container. Evidence: docs/design/round4/build/r12/t-server/proof-*.",
+   "at": "2026-10-11"
+  },
+  {
+   "id": "ms-r12-1-late-erased-event-fk-2026-10-11",
+   "kind": "measurement",
+   "title": "Found by the 12.1 proof, and fixed. A trace event naming a guardian erased since it was recorded broke trace_event_gid_fkey (the DELETE /api/account request's own srv.res, flushed after the commit), and the writer dropped its whole chunk (up to 400 rows; 2 that time). insertTraceRows now skips only the rows whose child or guardian no longer exists. Tested on Neon TEST (tests/r12-trace-db.run.mjs).",
+   "at": "2026-10-11"
+  },
+  {
+   "id": "dec-r12-1-child-session-by-rid",
+   "kind": "decision",
+   "title": "trace.mjs --session <child-prefix> means every session of that child: its lesson ids, every sid its rows sit under, the page loads joined by request id, and g:<guardian>. The page loads are joined by request id because a Desk page's client events carry no cid: the client never names the child, and the server stamps cid only on its own request events. A client event shares its rid with the server's request event. Reverse if: the client sends x-taxila-pid and the server stamps it, so pages can be joined by pid directly.",
+   "at": "2026-10-11"
+  }
+ ],
+ "edges": [
+  { "src": "dec-r12-tserver-erasure", "rel": "measured_by", "dst": "ms-r12-1-late-erased-event-fk-2026-10-11" },
+  { "src": "dec-r12-flight-recorder", "rel": "measured_by", "dst": "ms-r12-1-replay-proof-2026-10-11" }
+ ]
+}

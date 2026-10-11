@@ -94,7 +94,11 @@ export async function insertTraceRows(rows) {
   await q(`insert into trace_event (sid, pid, cid, gid, src, seq, t, kind, turn, rid, tier, data)
     select x.sid, x.pid, x.cid, x.gid, x.src, x.seq, to_timestamp(x.t / 1000.0), x.kind, x.turn, x.rid, x.tier, x.data
     from jsonb_to_recordset($1::jsonb) as x(sid text, pid text, cid uuid, gid uuid, src text, seq int, t double precision,
-      kind text, turn int, rid text, tier smallint, data jsonb)`, [JSON.stringify(rows)]);
+      kind text, turn int, rid text, tier smallint, data jsonb)
+    -- a row naming a child or guardian erased since it was recorded (the DELETE request's own srv.res, a late flush) is
+    -- not written: it would break the foreign key, and with it every other row of this chunk (seen 2026-10-11)
+    where (x.cid is null or exists (select 1 from child c where c.id = x.cid))
+      and (x.gid is null or exists (select 1 from guardian g where g.id = x.gid))`, [JSON.stringify(rows)]);
   return rows.length;
 }
 

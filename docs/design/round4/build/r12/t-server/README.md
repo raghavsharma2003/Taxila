@@ -129,3 +129,60 @@ The budget is ≤ 10 ms p95 per turn: met with about 8 ms to spare. A turn write
 
 - `safety.*` outside the turn: the lesson start's safety reads. The turn's `safety.scan` is there.
 - The `trace` storage container (above).
+
+## Release 12.1 (main's live tier-2 proof on taxila.dev found three bugs in `scripts/trace.mjs`)
+
+1. **`--replay` was broken.** It handed its own arguments to `scripts/trace-replay.mjs`, which answered with its usage line.
+   - Now `trace.mjs --replay <session> --at hh:mm:ss[,…] [--out dir] [--base origin] [--tz +05:30] [--keep]`:
+     - resolves the session (any form `--session` takes);
+     - gathers its `rrweb.chunk` events and downloads each `data.blob.ref` from the private `trace` container
+       (`getTraceBlob`, new in `server/trace/blob.js`) into a temp dir, in time order;
+     - calls `trace-replay.mjs --events <dir> --at … --out … --base …`.
+   - `--base` defaults to the recording's own origin (its rrweb meta event), else `https://taxila.dev`.
+   - The chunk format is T-client's `src/trace/tier2.ts`: each blob is a JSON array of rrweb events, which is what
+     trace-replay's `loadEvents()` reads.
+2. **`--session <child-prefix>` found only the guardian stream.** A child prefix now resolves to EVERY session of that child:
+   - its lesson ids;
+   - every sid its own rows sit under;
+   - the page loads whose requests named it. The Desk runs under the page id, and its client events carry no cid, so they
+     are joined by request id: a client event shares its rid with the server request event that auth stamped with the
+     child;
+   - `g:<gid>`.
+   An ambiguous prefix is an error. `--day` sets the day `--from` / `--to` refer to.
+3. **"← undefined undefined undefinedms".** A response body too big for 8 KB (seen: `GET /api/child/map`) fell through
+   `fit()` to its summary, which kept no fields, so `route`, `status` and `ms` were lost.
+   - `fit()` now also cuts long arrays (to 20, then 5 items) before giving up.
+   - Its summary keeps the event's own small fields.
+   - `lineFor()` never prints `undefined` and marks a cut body.
+
+Also found by the proof, and fixed:
+- **A late event of an erased account broke the foreign key, and that dropped its whole chunk** (up to 400 events). The
+  DELETE request's own `srv.res` is flushed after the commit. `insertTraceRows` now skips only the rows naming an erased
+  child or guardian.
+- The server's `tts.*` lines render as "audio stream …" (the client's `tts.end` keeps "she finished"). Their engines read
+  `oai` instead of `null`.
+
+### Proof on TEST (`replay-proof.mjs`, 2026-10-11 18:16-18:18 UTC)
+
+- **Setup:** packaged production build (`server/serve.mjs`, `NODE_ENV=production`, production routing) on the TEST branch.
+  The proof account is the only `TAXILA_TRACE_FULL_FOR` entry, so `GET /api/me` returns `{"tier":2}`.
+- **Run:** Playwright Chromium at 412x915 opens `/c/<child>/lesson/new` and taps "Tap to hear Asha". The lesson starts with
+  a real model call, and the screenshot is taken 30 s later.
+- **Blob store:** this container has no storage key, so the server and `trace.mjs` both used `TAXILA_TRACE_BLOB_DIR` (a
+  local directory in place of the container: same paths, same `/api/trace/blob` route; never set in production). With the
+  key set, the same run uses the `trace` container.
+- **Results:**
+  - `proof-session.txt` (`--session <child-prefix>`): 99 events from the lesson, the guardian stream and the page session
+    (`pages=…`), with no `undefined`. It includes `← GET /api/child/map 200 1452ms (body cut)`, the bug-3 response, now
+    rendered.
+  - `trace.mjs --replay <child-prefix> --at 18:17:37` read 6 chunks and wrote `proof-replay/replay-181737.png`.
+  - Against the real screenshot (`proof-screen.png`), the replay differs in **0.0 %** of pixels (grey difference > 32).
+  - DELETE /api/account returned 200, and 0 trace rows of the child are left.
+
+Tests:
+- `r12-trace-unit` (13): bug 3, and the `fit()` summary.
+- `r12-trace-db` (5, Neon TEST):
+  - the child prefix gets the Desk page by rid and never another page;
+  - the CLI timeline;
+  - `gatherReplay` (both chunks in order, the origin);
+  - the late-event foreign-key case.
