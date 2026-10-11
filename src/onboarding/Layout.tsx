@@ -9,6 +9,20 @@ import { Icon } from "../ui/index.ts";
 import { Brand } from "../app/Shell.tsx";
 import { useSurface } from "../app/band.ts";
 import { Scene } from "../child/art.tsx";
+import { bandForClass, familyOf } from "../child/band.ts";
+import { kakshaThemeFor } from "../ui-v3/kaksha/tokens.ts";
+import "../ui-v3/tokens.css";
+import "../ui-v3/kaksha/tokens.css";
+import "../ui-v3/kaksha/kaksha.css";
+import "./volt.css";
+
+/** Release 11 (dc-r4-volt-everywhere): K's Volt scope. The grown-up's screens are Volt night. */
+export const VOLT_NIGHT = { "data-klook": "volt", "data-ktheme": "night" } as const;
+/** The child's family look for a moment that faces her (her voice, her name): young (classes 1-4) Volt day, else night. */
+export const kidLook = (classLevel: number | undefined) =>
+  ({ "data-klook": "volt", "data-ktheme": kakshaThemeFor(familyOf(bandForClass(classLevel ?? 5))) }) as const;
+/** A HUD eyebrow per step (decoration: aria-hidden; the title carries the meaning). */
+const EYEBROW: Partial<Record<Step, string>> = { class: "Loadout", promises: "Ground rules", phone: "Your account", consent: "Permissions", child: "Hand-off" };
 
 /** Every set-up screen (some are off the first run since round 4's cut, but stay reachable by URL). */
 export type Step = "class" | "meet" | "promises" | "phone" | "consent" | "child" | "controls" | "check" | "handover";
@@ -44,7 +58,7 @@ export function StepFrame({ step, title, why, children, back = true, footer, doc
     if (text) document.title = `${text} · Taxila`;
   }, [title, docTitle]);
   return (
-    <div className="onb onb-v2" data-step={step ?? ""}>
+    <div className="onb onb-v2 kx onb-volt" {...VOLT_NIGHT} data-step={step ?? ""}>
       <div className="onb-edge" aria-hidden="true"><Scene id="onboarding-edge" fallback={<span />} /></div>
       <div className="onb-sheet">
         <header className="topbar col onb-top">
@@ -57,10 +71,11 @@ export function StepFrame({ step, title, why, children, back = true, footer, doc
         </header>
         {i >= 0 && (
           <div className="col onb-steps" aria-hidden="true">
-            {list.map((s, k) => <span key={s} className={`onb-seg ${k <= i ? "onb-seg--on" : ""}`} />)}
+            {list.map((s, k) => <span key={s} className={`onb-seg ${k <= i ? "onb-seg--on" : ""} ${k === i ? "onb-seg--now" : ""}`} />)}
           </div>
         )}
         <main id="main" className="col stack onb-main">
+          <p className="onb-eyebrow" aria-hidden="true">{(step && EYEBROW[step]) || "Taxila"}</p>
           <h1 ref={h1} tabIndex={-1} className="t-title onb-title">{title}</h1>
           {why && <p className="t-lead muted">{why}</p>}
           {children}
