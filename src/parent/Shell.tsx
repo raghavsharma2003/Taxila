@@ -15,7 +15,7 @@ import { bandForClass } from "../app/band.ts";
 import { readStore, writeStore } from "../app/storage.ts";
 import { isRelock } from "./api.ts";
 import { BOARD_NAME, fmtTime, parentError } from "./copy.ts";
-import { useGate } from "./Gate.tsx";
+import { useGate, VOLT_CALM } from "./Gate.tsx";
 
 const PARENT_CHILD_KEY = "tx.parentChild";
 
@@ -143,11 +143,12 @@ export function ParentShell({ title, children, child, kids, noTabs, wide, side }
   const onSwitch = (id: string) => nav(`${loc.pathname}?c=${id}`);
   const active = (e: Entry) => e.match.test(loc.pathname);
   return (
-    <div className="pa" data-parent-shell="" data-tabs={noTabs ? "off" : "on"}>
+    <div className="pa kx" {...VOLT_CALM} data-parent-shell="" data-tabs={noTabs ? "off" : "on"}>
       <a className="skip" href="#pa-main">Skip to content</a>
       <aside className="pa-rail" aria-label="Parent corner">
         <div className="pa-rail-brand"><Brand to={`/parent${q(cid)}`} /></div>
         {kids && child && <Switcher kids={kids} child={child} onSwitch={onSwitch} />}
+        <p className="pa-eyebrow pa-rail-eyebrow" aria-hidden="true">Sections</p>
         <nav className="pa-rail-nav" aria-label="Sections">
           {ENTRIES.map((e) => (
             <NavLink key={e.key} to={e.to(cid)} className={() => `pa-rail-item${active(e) ? " is-active" : ""}`} aria-current={active(e) ? "page" : undefined}>
@@ -166,7 +167,7 @@ export function ParentShell({ title, children, child, kids, noTabs, wide, side }
         </header>
         <div className="pa-band" aria-hidden="true"><Art id="bg/parent-header" cover className="pa-band-art" fallback={<span />} /></div>
         <div className={`pa-body${side ? " pa-body--side" : ""}${wide ? " pa-body--wide" : ""}`}>
-          <main id="pa-main" ref={mainRef} className="pa-content">{children}</main>
+          <main id="pa-main" ref={mainRef} className="pa-content"><p className="pa-eyebrow" aria-hidden="true">Parent corner · {title}</p>{children}</main>
           {side && <aside className="pa-side" aria-label="More about this week">{side}</aside>}
         </div>
       </div>

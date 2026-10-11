@@ -183,7 +183,7 @@ export default function ParentHome() {
         <div className="pa-stack">
           <h1 className="pa-h1">Parent corner</h1>
           <p className="pa-lead">There's no child profile on this account yet.</p>
-          <div className="pa-actions"><Button onClick={() => nav("/start/class?add=1")}>Add a child</Button></div>
+          <div className="pa-actions"><Button onClick={() => nav("/start/class?add=1")} data-volt="">Add a child</Button></div>
         </div>
       </ParentShell>
     );
