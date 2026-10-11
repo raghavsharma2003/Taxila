@@ -7,7 +7,8 @@
 //   end of turn (F1/F2/F5) decision (our cascade: commit; duplex: commit; realtime: response.created) minus the child's
 //                         true end: p50/p90; a decision inside a gold THINKING pause = a cut-off; none within 6 s = missed
 //   first audio           realtime arms: the reply's first audio delta minus the child's true end
-//   transcript            Hinglish skeleton CER: both sides romanised (a Devanagari → Latin map), vowels dropped, similar
+//   transcript            what the turn-taker hands on (cascade / Voice Live front end: the final transcript; duplex: the
+//                         committed turn text; realtime: the input transcript). Hinglish skeleton CER: both sides romanised (a Devanagari → Latin map), vowels dropped, similar
 //                         consonants merged, so "छप्पन" and "Chappan" compare equal. Approximate; relative between arms only
 //   tokens                realtime arms: response usage summed per session (cost per child-hour in BAKEOFF.md)
 //   node evals/duplex-2026-10/score.mjs --bake <dir> [--out file.json]
@@ -17,7 +18,7 @@ import path from "node:path";
 const arg = (n, d) => { const i = process.argv.indexOf(n); return i > 0 ? process.argv[i + 1] : d; };
 const BAKE = arg("--bake"), OUT = arg("--out", null);
 const q = (a, p) => { if (!a.length) return null; const z = [...a].sort((x, y) => x - y); return Math.round(z[Math.min(z.length - 1, Math.floor((z.length - 1) * p))]); };
-const THINK = new Set(["filler", "hesitation", "hold_request", "word_search", "repair_open", "mid_explanation", "drift_pause", "word_search_long", "hold_long"]);
+const THINK = new Set(["filler", "hesitation", "hold_request", "word_search", "repair_open", "mid_explanation", "drift_pause"]); // TaxilaFDB: word_search_long / hold_long allow a listed CUT_IN, never a cut-off
 
 // ── a crude Devanagari → Latin consonant skeleton (shared by both sides) ──
 const DEV = { "क": "k", "ख": "k", "ग": "g", "घ": "g", "ङ": "n", "च": "c", "छ": "c", "ज": "j", "झ": "j", "ञ": "n", "ट": "t", "ठ": "t", "ड": "d", "ढ": "d", "ण": "n", "त": "t", "थ": "t", "द": "d", "ध": "d", "न": "n", "प": "p", "फ": "f", "ब": "b", "भ": "b", "म": "m", "य": "y", "र": "r", "ल": "l", "व": "v", "श": "s", "ष": "s", "स": "s", "ह": "h", "ड़": "r", "ढ़": "r", "क़": "k", "ख़": "k", "ग़": "g", "ज़": "j", "फ़": "f", "ं": "n", "ँ": "n" };
@@ -40,7 +41,7 @@ function cer(ref, hyp) {
 /** One run → { yields[], decisions[], transcripts[], firstAudio[], herSpan, shift, usage } on the run's own clock. */
 function normalise(run, meta) {
   const g = meta.gold;
-  if (run.arm === "cascade") {
+  if (run.arm === "cascade" || run.arm === "voicelive-ref") {
     const ev = run.events;
     return {
       shift: 0, herSpan: [g.herSpan.start, g.herSpan.end],
@@ -55,7 +56,8 @@ function normalise(run, meta) {
       shift: 0, herSpan: [g.herSpan.start, g.herSpan.end],
       yields: run.acts.filter((a) => a[1] === "pause" || a[1] === "stop").map((a) => a[0]),
       decisions: run.acts.filter((a) => a[1] === "commit").map((a) => a[0]),
-      transcripts: run.stt.filter((e) => e.type.endsWith("transcription.completed")).map((e) => ({ t: e.t, text: e.text ?? "" })),
+      // what the Director receives: the engine's committed turn text (it strips her own echoed words), not the raw ASR
+      transcripts: run.acts.filter((a) => a[1] === "commit").map((a) => ({ t: a[0], text: a[2] ?? "" })),
       firstAudio: [], usage: null,
     };
   }
