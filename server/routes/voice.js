@@ -24,6 +24,8 @@ import { routes as featureRoutes } from "../voice/features.js";
 import { realtimeSeam } from "../voice/realtimeSession.js";
 import { seamSafe } from "../seam-safe.js";
 import { cascadeEngine, dhdVoiceFor, warnUnmeasuredOnce } from "../voice/voices.js";
+import { traceIdentify } from "../trace/context.js";
+import { record } from "../trace/writer.js";
 
 const VOICES = new Set(["alloy", "ash", "ballad", "coral", "echo", "fable", "nova", "onyx", "sage", "shimmer", "verse", "marin", "cedar"]);
 /** A push-to-talk turn is a child's answer: 30 s of Opus at ~32 kbit/s is ~120 kB; 2 MB is a generous cap. */
@@ -191,6 +193,7 @@ async function ttsStream(req, res, body) {
   // and its ownership was checked by that request, so no query here.
   const warm = prewarmTake(lessonId, seq, tokenHash);
   if (warm) {
+    traceIdentify({ guardian: { id: warm.guardianId, email: null }, child: warm.childId ? { id: warm.childId } : undefined });
     if (!allowSpeech(warm.guardianId)) { warm.abort.abort(); throw new HttpError(429, "too many speech requests"); }
     return streamParts(res, { entry: warm, t0, setupMs: Math.round(performance.now() - t0), prewarmed: Math.round(performance.now() - warm.at), framed });
   }
@@ -205,6 +208,7 @@ async function ttsStream(req, res, body) {
   if (row.turn_seq == null) throw notFound("no teacher turn to speak");
   if (row.guardian_id !== row.session_guardian) throw forbidden("child not found for this account");
   const guardian = { id: row.session_guardian };
+  traceIdentify({ guardian: { id: guardian.id, email: null }, child: { id: row.id } }); // release 12 flight recorder
   if (!allowSpeech(guardian.id)) throw new HttpError(429, "too many speech requests");
   const { turn_text: turnText, session_guardian: _sg, turn_seq: _seq, lesson_teacher: lessonTeacher, lesson_teacher_name: lessonTeacherName, lane_switched: laneSwitched, ...child } = row;
   const text = String(turnText ?? "").trim();
@@ -242,6 +246,7 @@ async function streamParts(res, { entry, t0, setupMs, prewarmed, framed = false,
   res.on("close", onClose);
   const out = frameWriter(res, framed);
   let wrote = 0;
+  let traced = "aborted"; // release 12 flight recorder: how this stream ended (tts.end)
   let headed = headersSent;
   let headerFramed = headersSent; // turn-audio wrote its own header frame
   const ensureHeader = () => {
@@ -264,6 +269,8 @@ async function streamParts(res, { entry, t0, setupMs, prewarmed, framed = false,
       headerFramed = true;
       out.json(FRAME.header, { v: 2, format: `pcm_s16le;rate=${PCM_RATE};channels=1`, sentences: parts.length, firstMs: Math.round(performance.now() - t0), setupMs,
         cache: jobs[0]?.cached ? "hit" : "miss", engine: entry.renders?.[0]?.engine ?? "oai", ...(prewarmed !== undefined ? { prewarmedMs: prewarmed } : {}) });
+      record("tts.first", { sentences: parts.length, firstMs: Math.round(performance.now() - t0), setupMs,
+        cache: jobs[0]?.cached ? "hit" : "miss", engine: entry.renders?.[0]?.engine ?? "oai", framed, ...(prewarmed !== undefined ? { prewarmedMs: prewarmed } : {}) });
     }
   };
   const sendPcm = async (chunk) => {
@@ -321,12 +328,14 @@ async function streamParts(res, { entry, t0, setupMs, prewarmed, framed = false,
         offMarks?.();
       }
     }
+    traced = headed ? "ok" : "empty";
     if (headed) out.json(FRAME.end, { t: "end", status: "ok", bytes: wrote, ms: Math.round(performance.now() - t0) });
     else if (headersSent) out.json(FRAME.end, { t: "end", status: "empty" });
     res.end();
   } catch (e) {
     if (abort.signal.aborted) return;
     abort.abort();
+    traced = headed ? "cut" : "failed";
     if (!headed) {
       if (e instanceof AzureError) throw new HttpError(502, "speech service unavailable");
       throw e;
@@ -337,6 +346,10 @@ async function streamParts(res, { entry, t0, setupMs, prewarmed, framed = false,
     res.end();
   } finally {
     res.off("close", onClose);
+    // every part's engine (a DragonHD → gpt-4o-mini-tts fallback shows here), the prelude, how the stream ended
+    record(traced === "cut" || traced === "failed" ? "tts.failed" : "tts.end", { status: traced, bytes: wrote,
+      ms: Math.round(performance.now() - t0), parts: parts.length, prelude: entry.prelude ? true : false,
+      engines: (entry.renders ?? []).map((r) => r?.engine ?? null), cached: jobs.map((j) => !!j?.cached) });
   }
 }
 

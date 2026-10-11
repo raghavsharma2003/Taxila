@@ -1,4 +1,5 @@
 // Minimal request/response helpers shared by every route.
+import { traceCtx, isUuid } from "./trace/context.js";
 export class HttpError extends Error {
   constructor(status, message, extra) { super(message); this.status = status; this.extra = extra; }
 }
@@ -31,6 +32,8 @@ export async function readJson(req, { maxBytes = MAX_BODY_BYTES } = {}) {
 }
 
 export function send(res, status, body, headers = {}) {
+  // release 12 flight recorder: the response body, for the router's srv.res (server/trace; masked and fitted there)
+  try { const s = traceCtx(); if (s) { s.resBody = body; if (isUuid(body?.lessonId)) s.sid ??= body.lessonId; if (s.sid === s.pid && isUuid(body?.lessonId)) s.sid = body.lessonId; } } catch { /* never */ }
   res.statusCode = status;
   for (const [k, v] of Object.entries(headers)) res.setHeader(k, v);
   if (body === undefined) return res.end();

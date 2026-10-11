@@ -113,7 +113,9 @@ async function boot(req, res) {
   const { guardian, child } = await requireChild(req, childIdOf(query(req).get("childId")));
   const { meData } = await import("./account.js");
   const [me, p] = await Promise.all([meData(guardian), planFor(child, guardian)]);
-  send(res, 200, { me, plan: p });
+  // release 12 flight recorder: the same trace tier GET /api/me carries (the child app boots from here)
+  const { traceMeFor } = await import("../trace/tier.js");
+  send(res, 200, { me: { ...me, trace: traceMeFor(guardian) }, plan: p });
 }
 
 /** GET /api/child/plan */

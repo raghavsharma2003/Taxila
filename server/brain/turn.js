@@ -72,6 +72,8 @@ import { parseVoice } from "../../src/play/core/voice.ts";
 // round 3 fix (experience B2 / B3): the visual ask's clause made true about the screen
 import { askTruth } from "../director/shapes.js";
 import { childTurnRow, clientInstructions, debugFor, floorIncidentStmt, incidentStmt, kitFor, laneOf, runTurnTx, stageTurns, turnInsertStmt, turnLane, withAsk, withSeamUi, withStudioSlot } from "./rows.js";
+import { traceIdentify, traceLesson } from "../trace/context.js";
+import { record } from "../trace/writer.js";
 
 /**
  * loadLessonFor + the core_tutoring consent check as ONE query, for the turn route: it is on the cascade
@@ -94,6 +96,7 @@ export async function loadTurnContext(req, lessonId) {
   if (!sessionTokenHash(req)) throw unauthorized();
   if (!g) throw unauthorized("session expired");
   if (child.guardian_id !== g.id) throw forbidden("child not found for this account");
+  traceIdentify({ guardian: g, child }); traceLesson(lesson.id, (lesson.state?.turn ?? 0) + 1); // release 12 flight recorder
   return { lesson, guardian: { id: g.id, email: g.email, name: g.name, locale: g.locale }, child, core: !!core };
 }
 
@@ -654,6 +657,8 @@ export async function lessonTurn(req, body) {
   // its studio_mount row and count in "Made for {child}" while the child never saw it (W2-E fixer, blocker).
   const studioReasons = [];
   let wbAcked = false, rungReplaced = false;
+  /** release 12 flight recorder: WHAT the live board replaced, by what, and why (studio.rung_replaced said only that it did) */
+  let rungInfo = null;
   const turnStudioNow = () => {
     const ts = late ? null : turnStudioOf(kernel.arb);
     if (!ts?.reveal || studioSlot?.intentId === ts.reveal) return ts;
@@ -777,6 +782,10 @@ export async function lessonTurn(req, body) {
         if (ask.payload?.replacesRung && next.module && (next.module.engine === RUNG_ENGINE || r.move?.visual)) {
           const id = next.module.id;
           const mountedNow = r.moduleCommands.some((c) => c.op === "mount" && c.moduleId === id);
+          rungInfo = { replaced: { moduleId: id, engine: next.module.engine ?? null, scriptOps: Array.isArray(next.module.params?.script?.ops) ? next.module.params.script.ops.length : null,
+            wasMounted: !mountedNow }, by: { slotId: studioSlot.slotId, intentId: studioSlot.intentId, state: studioSlot.state, artifact: studioSlot.artifact?.kind ?? null },
+            why: r.move?.visual ? "the move is visual: the live board is the explanation surface" : "ask_whiteboard.replacesRung: the live board replaces the template rung",
+            requested: !!ask.payload?.requested, fallbackScript: !!(ask.payload?.replacesRung && next.module?.params?.script) };
           r = { ...r, moduleCommands: [...r.moduleCommands.filter((c) => c.moduleId !== id || c.op === "unmount"), ...(mountedNow ? [] : [{ op: "unmount", moduleId: id }])] };
           next.module = null;
           if (Array.isArray(next.lastContent)) next.lastContent = next.lastContent.filter((l) => !(typeof l === "string" && l.startsWith(FACTS_ROW_PREFIX)));
@@ -879,6 +888,18 @@ export async function lessonTurn(req, body) {
   const uiV = late ? null : uiVerdictOf(cls, target, state).verdict ?? null;
   const releaseReasons = [...(r.move.kind === "wrap" && (relFx.release || cls?.flags?.wantsToStop) ? ["release.goodbye_wrap"] : []),
     ...(next.stopAsked === next.turn && r.move.kind !== "wrap" ? ["release.check_in_given"] : [])];
+  // the turn's reason codes: the brain_trace row and the flight recorder's director.turn carry the same list
+  const traceReasons = [`lane.${lane}`, ...(late ? ["turn.late"] : []), ...(moduleOnly ? ["turn.module_only"] : []),
+          ...(help ? ["turn.help"] : []), ...(laneResume ? [revoice ? "turn.lane_resume_revoice" : "turn.lane_resume"] : []), ...(kernel.replanned ? ["turn.replanned"] : []), ...(kernel.wb.declined ? [kernel.wb.declined] : []),
+          ...(speculation ? [speculation.hit ? "turn.speculation_hit" : "turn.speculation_miss"] : []), ...(pre ? ["turn.prefetch_adopted"] : []), ...(wbAcked ? ["studio.whiteboard_slot"] : []),
+          ...(rungReplaced ? ["studio.rung_replaced"] : []), ...studioReasons, ...releaseReasons,
+          ...comprehensionReasons({ cls, classified, help: !!help, uiVerdict: uiV, guard }), ...vsReasons,
+          ...(guard?.caught?.includes("unavailable") ? ["turn.fallback_reply"] : []),
+          // p5-interaction: what the turn was read as (intent / request ids only, never the child's words), the card cap,
+          // an unverifiable module answer
+          ...(noteReason ? [noteReason] : []), ...(cls?.request?.type ? [`request.${cls.request.type}`] : []),
+          ...(next.capped?.turn === next.turn ? [`p5.capped.${next.capped.how}`] : []), ...(moduleUnverified ? ["module.unverifiable"] : []),
+          ...[...seamErrors].map((c) => `component_error.${c}`)];
   let seqs = [];
   try {
     ({ seqs } = await runTurnTx(child, [
@@ -892,17 +913,7 @@ export async function lessonTurn(req, body) {
       // The Brain's record of this turn (TB12) and of a chosen re-teach arm (RT-ARM), when the 016 tables exist.
       ...(traceOk ? [brainTraceStmt({ lessonId: lesson.id, turn: next.turn, lane, move: r.move.kind, beat: kernel.beat?.type ?? null,
         inputsHash: inputsHashOf({ prev: state, cls, move: r.move, itemId: r.move.itemId ?? null, kitHash: state.kitHash ?? null, lane }),
-        proposals: kernel.proposals, arb: kernel.arb, reasons: [`lane.${lane}`, ...(late ? ["turn.late"] : []), ...(moduleOnly ? ["turn.module_only"] : []),
-          ...(help ? ["turn.help"] : []), ...(laneResume ? [revoice ? "turn.lane_resume_revoice" : "turn.lane_resume"] : []), ...(kernel.replanned ? ["turn.replanned"] : []), ...(kernel.wb.declined ? [kernel.wb.declined] : []),
-          ...(speculation ? [speculation.hit ? "turn.speculation_hit" : "turn.speculation_miss"] : []), ...(pre ? ["turn.prefetch_adopted"] : []), ...(wbAcked ? ["studio.whiteboard_slot"] : []),
-          ...(rungReplaced ? ["studio.rung_replaced"] : []), ...studioReasons, ...releaseReasons,
-          ...comprehensionReasons({ cls, classified, help: !!help, uiVerdict: uiV, guard }), ...vsReasons,
-          ...(guard?.caught?.includes("unavailable") ? ["turn.fallback_reply"] : []),
-          // p5-interaction: what the turn was read as (intent / request ids only, never the child's words), the card cap,
-          // an unverifiable module answer
-          ...(noteReason ? [noteReason] : []), ...(cls?.request?.type ? [`request.${cls.request.type}`] : []),
-          ...(next.capped?.turn === next.turn ? [`p5.capped.${next.capped.how}`] : []), ...(moduleUnverified ? ["module.unverifiable"] : []),
-          ...[...seamErrors].map((c) => `component_error.${c}`)],
+        proposals: kernel.proposals, arb: kernel.arb, reasons: traceReasons,
         serverMs: performance.now() - t0, kernelUs: kernel.us, legalMode: child.legal_mode ?? "M1",
         withIds: traceIdsOk, itemId: target?.mode === "item" ? activeItem?.id ?? null : null, misconceptionId: cls?.misconceptionId ?? cls?.voiced ?? null })] : []),
       ...(traceOk && decisionOk ? [reteachDecisionOf(next, { lessonId: lesson.id, legalMode: child.legal_mode ?? "M1" })].filter(Boolean) : []),
@@ -963,6 +974,27 @@ export async function lessonTurn(req, body) {
   const ms = Math.round(performance.now() - t0);
   const distress = distressOf(distressSrc, { move: r.move.kind, episodeOpen: !!prev.safeguard, kind: cls?.flags?.distressKind ?? next.safeguard?.kind ?? null });
   console.info(`[lesson] turn ${lesson.id} #${next.turn} ${r.move.kind}${distress ? ` distress=${distress.sources.join("+")}${distress.kind ? `/${distress.kind}` : ""}` : ""}${r.hold ? " (hold)" : ""}${late ? " (late)" : ""} cls=${cls ? `${cls.outcome}/${cls.source}` : "module"}${speculation ? ` spec=${speculation.hit ? "hit" : "miss"}/${speculation.tried}` : ""} ${ms}ms`);
+  // release 12 flight recorder (server/trace): the teaching decision with its accepted / rejected proposals and the details
+  // the reason codes only name (the rung a live board replaced; why a speculative reply missed), the classify outcome and
+  // the safety read (codes only). After the commit; synchronous buffer pushes, never awaited.
+  try {
+    traceLesson(lesson.id, next.turn);
+    record("director.turn", { move: r.move.kind, shape: r.move.shape ?? null, beat: kernel.beat?.type ?? null, beatId: kernel.beat?.id ?? null, phase: next.phase,
+      itemId: r.move.itemId ?? null, lane, legalMode: child.legal_mode ?? "M1", hold: !!r.hold, late: !!late, moduleOnly: !!moduleOnly, replanned: !!kernel.replanned,
+      accepted: kernel.arb.accepted.map((x) => ({ kind: x.kind, by: x.by ?? x.source ?? null })), rejected: kernel.arb.rejected.map((x) => ({ kind: x.p?.kind, why: x.why })),
+      reasons: traceReasons, ...(speculation ? { speculation } : {}), ...(rungInfo ? { rungReplaced: rungInfo } : {}),
+      studio: { slot: studioSlot ? { slotId: studioSlot.slotId, state: studioSlot.state, artifact: studioSlot.artifact?.kind ?? null } : null, turnStudio: turnStudio ?? null,
+        reasons: studioReasons, tray: r.ui?.tray ?? null, moduleCommands: (r.moduleCommands ?? []).map((c) => ({ op: c.op, moduleId: c.moduleId, engine: c.engine ?? null })) },
+      guard: guard ? { caught: guard.caught ?? [], rewritten: !!guard.rewritten, replaced: !!guard.replaced } : null,
+      teacherReply: teacherReply ?? null, teacherReplySeq: teacherReplySeq ?? null, ms }, { turn: next.turn });
+    if (rungInfo) record("studio.rung_replaced", rungInfo, { turn: next.turn });
+    if (speculation && !speculation.hit) record("turn.speculation_miss", { tried: speculation.tried, differs: speculation.differs ?? null }, { turn: next.turn });
+    if (cls) record("classify.verdict", { outcome: cls.outcome, source: cls.source, confidence: cls.confidence ?? null, misconceptionId: cls.misconceptionId ?? null,
+      uiVerdict: uiV, verdict, flags: cls.flags ? Object.fromEntries(Object.entries(cls.flags).filter(([, v]) => typeof v === "boolean" || typeof v === "number" || (typeof v === "string" && /^[a-z][a-z0-9_]{0,31}$/.test(v)))) : null }, { turn: next.turn });
+    record("safety.scan", { distress: !!distress, sources: distress?.sources ?? [], kind: distress?.kind ?? null, safeguardMove: r.move.kind === "safeguard",
+      episodeOpen: !!next.safeguard }, { turn: next.turn });
+    record("db.write", { table: "turn", lessonId: lesson.id, turn: next.turn, seqs: seqs?.length ?? 0, brainTrace: !!traceOk }, { turn: next.turn });
+  } catch { /* the recorder never breaks a turn */ }
   /** @type {import("../../shared/contracts").TurnResponse} */
   const out = { ...(late ? {} : clientInstructions(state.mode, instructions)), ...outCore };
   const vsShadow = vsShadowP && debugFor(req) ? await vsShadowP : null;
