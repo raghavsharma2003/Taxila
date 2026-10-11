@@ -234,11 +234,14 @@ separate arm.
 
 | arm | estimate | how |
 |---|---|---|
-| (a) cascade | **≈ $0.29** | `mk-azure-voice-cost-per-hour` (Rs28, 2026-10-02 model) |
-| (b) duplex engine | **≈ $1.3** | (a) + continuous gpt-live-transcribe for the open-mic hour ($1.02) |
+| (a) cascade | **≈ $0.59-1.84** | re-priced 2026-10-11 with the §5b meters. **High end:** S1 STT streamed for the hour $1.00, 5.6 terra for 120 turns $0.24, and her 30 min as Neural HD TTS (≈ 27k characters) $0.59. **Low end:** gpt-transcribe $0.27, 5.6 luna $0.02, and half the narration pre-rendered $0.30. The earlier **$0.29 (Rs28, `mk-azure-voice-cost-per-hour`) is too low**: TTS alone costs more than that once she speaks 30 min of the hour |
+| (b) duplex engine | **≈ $1.6-2.9** | (a) + continuous gpt-live-transcribe for the open-mic hour ($1.02) |
 | (c) Voice Live S2S, gpt-realtime-2.1 | **≈ $4.8-5.3** | audio out 36k tok $2.30 + child audio 7k $0.23 + her prior turn re-read ~43k $1.38 + text 180k in / 7k out $0.89; the existing model's windowed gpt-realtime figure is Rs512 ≈ $5.3 |
 | (d) gpt-realtime alone | **≈ $4.8-5.3** | same tokens |
-| (e) Voice Live front end + our cascade | **≈ $0.9-1.5** | (a) + the open-mic hour as speech audio in (36k tok × $0.017/1K ≈ $0.61); up to 2× if the stereo reference is billed as audio [U] |
+| (e) Voice Live front end + our cascade | **≈ $0.86-1.38** | (a) with STT replaced by the open-mic hour as Voice Live Std speech audio in (36k tok × $0.015/1K = $0.54). Add up to $0.54 if the stereo reference is billed as audio [U] |
+
+Per minute, these are $0.010-0.031 for (a) and $0.014-0.023 for (e). §5b's enterprise call is $0.035 and $0.027 for the
+same arms, because a call has no pre-rendered narration and assumes 30 s of agent speech every minute.
 
 The front-end-only billing unit is the open question: a session that never responds, with a stereo reference. It must
 be read off Azure Cost Management after a 1-hour test before (e) is widened.

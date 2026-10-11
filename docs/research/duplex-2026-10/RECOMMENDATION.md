@@ -40,7 +40,7 @@ Those are exactly the jobs our engine and Director already own.
 the audio leaves the service as it is generated. Our safety predicate (`server/director/safety.js`, frozen) can only
 run on text *after* the fact; a realtime transcript arrives alongside the audio, not before it. That breaks the
 child-safety floor: "our predicate must be able to gate what she says before it is heard". Cost is the second reason:
-≈ $4.8-5.3 per child-hour [E] against ≈ $0.9-1.5 for (e) [E]. True full duplex at $3/h is cheaper than (c), but see the next point.
+≈ $4.8-5.3 per child-hour [E] against ≈ $0.86-1.38 for (e) [E] (BAKEOFF §5, re-priced; (a) is $0.59-1.84). True full duplex at $3/h is cheaper than (c), but see the next point.
 
 **Why not GPT-Live-1 (true full duplex, Direct from Azure).** Two reasons:
 - The same gate problem as (c), and worse: the model talks over the child by design.

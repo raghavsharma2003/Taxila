@@ -41,6 +41,12 @@
       "kind": "decision",
       "title": "PROPOSED to main (docs/research/duplex-2026-10/RECOMMENDATION.md): commit to Voice Live as the acoustic FRONT END under our cascade. The client sends stereo (mic + what it actually played); Voice Live does Live-Reference AEC, deep noise suppression, azure_semantic_vad_multilingual and hi-IN/en-IN transcription with create_response false. Our duplex engine owns the floor (duck on speech_started, resume on our Hindi continuer list, re-ask on speech_started + empty transcript, decide-late merge for thinking pauses). Our Director writes and our safety predicate gates every word before our TTS speaks. Not (c)/(d): the model owns the floor and speaks before our predicate can gate, at ~$5/child-hour. Reverse if, on real phones and children: echo false barge-in > 5 % or true barge-in < 90 %; front-end bill > $1.5/child-hour; ASR > 5 CER points worse than gpt-live-transcribe; lone-word recall < 90 %; EOT +300 ms; a Direct S2S model offers text-before-audio gating; or Live-Reference AEC / Hindi VAD is withdrawn",
       "at": "2026-10-11"
+    },
+    {
+      "id": "ms-r12dr-voice-cost-per-minute-2026-10-11",
+      "kind": "measurement",
+      "title": "voice cost per conversation-minute 2026-10-11 (BAKEOFF.md §5b, evals/duplex-2026-10/cost-per-minute.mjs). Unit prices are from the Azure Retail Prices API: serviceName 'Foundry Tools' / 'Foundry Models' / 'Voice'. ACS PSTN per-minute rates are not in the API ($1 placeholder units); they come from the ACS pricing page and rates CSV. Enterprise call, 50/50 talk, 4 turns/min, AI only: (e) Voice Live front end + cascade $0.027; (a) cascade S1 + 5.6 terra + HD TTS $0.035; (a') budget $0.024; (b) $0.052; Voice Live Pro gpt-realtime-2.1 native $0.088, with Azure HD voice $0.040; gpt-realtime-2.1-mini $0.026; GPT-Live-1 $0.050 ('Live 1 Gl Unit' $3/h, now verified). US inbound geo $0.0085 + ACS streaming $0.004/min. India: no ACS numbers; Direct Routing $0.004/min + an Indian carrier. Child-hour re-priced with the same meters: (a) $0.59-1.84, (e) $0.86-1.38. This SUPERSEDES the Rs28 ($0.29) cascade figure in mk-azure-voice-cost-per-hour, which is too low: HD TTS for 30 min of her speech alone is $0.59",
+      "at": "2026-10-11"
     }
   ],
   "edges": [
@@ -73,6 +79,16 @@
       "src": "dc-r12dr-duplex-architecture",
       "rel": "measured_by",
       "dst": "ms-r12dr-landscape-2026-10-11"
+    },
+    {
+      "src": "ms-r12dr-voice-cost-per-minute-2026-10-11",
+      "rel": "supersedes",
+      "dst": "mk-azure-voice-cost-per-hour"
+    },
+    {
+      "src": "ms-r12dr-voice-cost-per-minute-2026-10-11",
+      "rel": "part_of",
+      "dst": "ms-r12dr-bakeoff-2026-10-11"
     }
   ]
 }
