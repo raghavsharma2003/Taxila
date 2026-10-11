@@ -6,6 +6,8 @@
 //       tier-1 account; oversized batches 413; secrets masked; GET /api/me says trace.tier;
 //   (3) the parent corner's DELETE /api/children deletes the child's trace rows (cid-keyed AND lesson-keyed ones) and their
 //       blobs; DELETE /api/account the same for the guardian;
+//   (5) scripts/trace.mjs: a child-id prefix pulls EVERY sid of the child (the Desk's page session joined by rid, the
+//       guardian stream, lessons), and --replay gathers the session's rrweb chunks from their blobs;
 //   (4) retention: tier 1 older than 30 days and tier 2 older than 90 days go (blobs first), younger rows stay.
 import { after, before, describe, test } from "node:test";
 import assert from "node:assert/strict";
@@ -138,6 +140,61 @@ describe("flight recorder (test branch)", { skip: SKIP, concurrency: false, time
     const acc = await call("/api/account", { method: "DELETE", tok: a.t, body: { password: a.pw, confirm: true } });
     assert.equal(acc.status, 200, JSON.stringify(acc.body));
     assert.equal((await rowsOf("cid = $1 or gid = $2", [keep, a.g])).length, 0);
+    // a late event of the erased account (the DELETE's own srv.res, flushed after the commit) is not written, and it never
+    // takes the rest of its chunk down with it (it once broke the foreign key and dropped the whole chunk)
+    const late = `late-${RUN}`;
+    await writer.insertTraceRows([
+      { sid: late, pid: null, cid: null, gid: a.g, src: "server", seq: 1, t: Date.now(), kind: "srv.res", turn: null, rid: null, tier: 1, data: { route: "DELETE /api/account" } },
+      { sid: late, pid: null, cid: keep, gid: null, src: "server", seq: 2, t: Date.now(), kind: "x", turn: null, rid: null, tier: 1, data: {} },
+      { sid: late, pid: null, cid: null, gid: null, src: "server", seq: 3, t: Date.now(), kind: "kept", turn: null, rid: null, tier: 1, data: {} },
+    ]);
+    assert.deepEqual((await rowsOf("sid = $1", [late])).map((r) => r.kind), ["kept"]);
+    await q("delete from trace_event where sid = $1", [late]);
+  });
+
+  test("trace.mjs: a child prefix finds the Desk's page session (rid join) and the guardian stream; --replay gathers its rrweb chunks", async () => {
+    const a = await account(`r12-cli+${RUN}@test.invalid`);
+    const { insertTraceRows } = writer;
+    const now = Date.now(), P = `pg${RUN}desk`, P2 = `pg${RUN}othr`, rid = `rid-${RUN}-desk`, g = `g:${a.g}`;
+    const row = (o) => ({ pid: null, cid: null, gid: null, src: "client", seq: 1, turn: null, rid: null, tier: 1, data: {}, ...o });
+    await insertTraceRows([
+      row({ sid: g, gid: a.g, cid: a.kid, src: "server", seq: 1, t: now - 5000, kind: "srv.req", rid, data: { route: "GET /api/child/desk" } }),
+      row({ sid: g, gid: a.g, src: "server", seq: 2, t: now - 6000, kind: "srv.res", data: { route: "GET /api/me", status: 200, ms: 3 } }),
+      row({ sid: P, pid: P, seq: 1, t: now - 5100, kind: "net.res", rid, data: { method: "GET", path: "/api/child/desk", status: 200 } }),
+      row({ sid: P, pid: P, seq: 2, t: now - 4000, kind: "flag.owner", data: { note: "the desk looks wrong" } }),
+      row({ sid: P, pid: P, seq: 3, t: now - 3000, kind: "rrweb.chunk", tier: 2, data: { seq: 2, blob: { ref: `d/${P}/client-2.json`, bytes: 2, type: "application/x-rrweb+json" } } }),
+      row({ sid: P, pid: P, seq: 4, t: now - 3500, kind: "rrweb.chunk", tier: 2, data: { seq: 1, blob: { ref: `d/${P}/client-1.json`, bytes: 2, type: "application/x-rrweb+json" } } }),
+      row({ sid: P2, pid: P2, seq: 1, t: now - 2000, kind: "ui.tap", rid: `rid-${RUN}-else`, data: { label: "another page" } }),
+    ]);
+    const { resolve, gatherReplay } = await import("../scripts/trace.mjs");
+    const r = await resolve(q, a.kid.slice(0, 13));
+    assert.deepEqual(r.cids, [a.kid]);
+    assert.ok(r.sids.includes(g), "the guardian stream");
+    assert.deepEqual(r.pids, [P], "the Desk's page session, joined by the request id; never another page");
+    // the CLI's merged timeline carries the page's flag and the guardian stream
+    const { spawnSync } = await import("node:child_process");
+    const cli = spawnSync(process.execPath, [new URL("../scripts/trace.mjs", import.meta.url).pathname, "--session", a.kid.slice(0, 13)],
+      { env: { ...process.env, DATABASE_URL: TEST, TEST_DATABASE_URL: TEST, CONDUCTOR_TEST_DATABASE_URL: TEST, TAXILA_DB: "test" }, encoding: "utf8", timeout: 60_000 });
+    assert.equal(cli.status, 0, cli.stderr);
+    assert.match(cli.stdout, /★ \[client\] OWNER FLAG: "the desk looks wrong"/);
+    assert.match(cli.stdout, /← GET \/api\/me 200 3ms/);
+    assert.doesNotMatch(cli.stdout, /another page|undefined/);
+    // --replay's gathering: both chunks, in time order, from their blobs
+    const { mkdtempSync, readdirSync, readFileSync: rf, rmSync } = await import("node:fs");
+    const dir = mkdtempSync(new URL("../node_modules/.cache-r12-", import.meta.url).pathname);
+    try {
+      const got = [];
+      const blobs = { [`d/${P}/client-1.json`]: [{ type: 4, timestamp: 1, data: { href: "https://taxila.dev/desk", width: 412, height: 915 } }], [`d/${P}/client-2.json`]: [{ type: 3, timestamp: 2, data: {} }] };
+      const g2 = await gatherReplay(q, a.kid.slice(0, 13), dir, async (ref) => { got.push(ref); return Buffer.from(JSON.stringify(blobs[ref])); });
+      assert.equal(g2.chunks, 2);
+      assert.deepEqual(got, [`d/${P}/client-1.json`, `d/${P}/client-2.json`]);
+      assert.equal(g2.href, "https://taxila.dev/desk");
+      const files = readdirSync(dir).sort();
+      assert.equal(files.length, 2);
+      assert.equal(JSON.parse(rf(`${dir}/${files[0]}`, "utf8"))[0].type, 4);
+    } finally { rmSync(dir, { recursive: true, force: true }); }
+    await q("delete from trace_event where sid = any($1::text[])", [[P, P2, g]]);
+    await q("delete from guardian where id = $1", [a.g]);
   });
 
   test("retention: tier 1 after 30 days, tier 2 after 90 days (blobs first); younger rows stay", async () => {

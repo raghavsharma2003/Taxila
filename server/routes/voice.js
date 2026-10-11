@@ -349,7 +349,7 @@ async function streamParts(res, { entry, t0, setupMs, prewarmed, framed = false,
     // every part's engine (a DragonHD → gpt-4o-mini-tts fallback shows here), the prelude, how the stream ended
     record(traced === "cut" || traced === "failed" ? "tts.failed" : "tts.end", { status: traced, bytes: wrote,
       ms: Math.round(performance.now() - t0), parts: parts.length, prelude: entry.prelude ? true : false,
-      engines: (entry.renders ?? []).map((r) => r?.engine ?? null), cached: jobs.map((j) => !!j?.cached) });
+      engines: (entry.renders ?? []).map((r) => r?.engine ?? "oai"), cached: jobs.map((j) => !!j?.cached) });
   }
 }
 

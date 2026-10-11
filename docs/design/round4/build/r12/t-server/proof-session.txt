@@ -1,0 +1,80 @@
+session 235e83ba  child=235e83ba-679b-4a3b-accb-bd462c656d5a  sids=cd35e768-6319-4f57-8ac1-208b85439193,g:e37cf8c6-1dd1-4d7f-b83f-f430f0a73f99  pages=d4fd5095-fc56-44b8-8e54-89e560e2778b  events=99  2026-10-11T18:16:57.338Z → 2026-10-11T18:17:51.104Z
+flags ★ 0  errors/failures ⚠ 0  turns 0
+18:16:57.338 [client] net POST /api/parent/lock 200 164ms
+18:16:57.338 [client] net GET /api/duplex/config 200 12ms
+18:16:57.340 [client] net GET /api/me 200 204ms
+18:16:57.433 [client] rrweb.start {"_mono":615,"chunkMs":10000,"canvasFps":4}
+18:16:57.434 [client] ui.media {"h":0,"w":0,"tag":"iframe","_mono":615,"phase":"mount"}
+18:16:57.434 [client] ui.media {"h":0,"w":0,"tag":"iframe","_mono":615,"phase":"mount"}
+18:16:57.576 [server] ← GET /api/me 200 233ms
+18:16:57.648 [client] mic mode tap
+18:16:57.649 [client] desk {"mic":{"talking":false,"available":true,"tapToTalk":true},"gate":null,"_mono":831,"floor":"idle","phase":null,"sheet":null,"strip":null,"layout":"phone","typing":false,"offline":false,"summary":false,"answerForm":"words"}
+18:16:57.650 [client] SCREEN card ""
+18:16:57.650 [client] ui.render.tray {"_mono":831,"empty":true}
+18:16:57.659 [client] desk {"mic":{"talking":false,"available":true,"tapToTalk":true},"gate":"locked","_mono":841,"floor":"idle","phase":null,"sheet":null,"strip":null,"layout":"phone","typing":false,"offline":false,"summary":false,"answerForm":"words"}
+18:16:57.803 [client] route /c/235e83ba-679b-4a3b-accb-bd462c656d5a/lesson/new
+18:16:57.805 [client] dev.info {"ua":"Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/141.0.7390.37 Safari/537.36","dpr":1,"lang":"en-US@posix","_mono":274,"cores":4,"touch":0,"screen":{"h":915,"w":412},"memoryGB…
+18:16:58.341 [client] net GET /api/face/config 200 149ms
+18:16:58.341 [client] net GET /api/child/map?childId=235e83ba-679b-4a3b-accb-bd462c656d5a 200 1243ms
+18:16:58.418 [client] ui.media {"h":405,"w":378,"tag":"canvas","zone":"teacher","_mono":1051,"phase":"mount","testid":"teacher-window"}
+18:16:58.658 [server] ← POST /api/parent/lock 200 152ms
+18:16:58.696 [server] ← GET /api/me 200 197ms
+18:16:58.709 [server] ← GET /api/duplex/config 200 3ms
+18:16:59.131 [server] ← GET /api/face/config 200 2ms
+18:16:59.337 [client] perf.longtask {"at":2202,"ms":250,"_mono":2470}
+18:16:59.366 [client] net GET /api/child/map?childId=235e83ba-679b-4a3b-accb-bd462c656d5a 200 1699ms
+18:17:00.213 [server] ← GET /api/child/map 200 1238ms (body cut)
+18:17:00.269 [client] perf.longtask {"at":2700,"ms":702,"_mono":3402}
+18:17:00.432 [server] ← GET /api/child/map 200 193ms (body cut)
+18:17:03.213 [client] perf.lcp {"t":1040,"el":"img","url":"/face-puppet/r8/rest-medium.webp","_mono":6346}
+18:17:05.628 [client] tap  "Tap to hear Asha"
+18:17:05.665 [client] desk {"mic":{"talking":false,"available":true,"tapToTalk":true},"gate":"starting","_mono":8798,"floor":"idle","phase":null,"sheet":null,"strip":null,"layout":"phone","typing":false,"offline":false,"summary":false,"answerForm":"words"}
+18:17:08.299 [client] trace.session {"to":"cd35e768-6319-4f57-8ac1-208b85439193","from":"d4fd5095-fc56-44b8-8e54-89e560e2778b","_mono":11323,"lesson":true}
+18:17:08.305 [client] mic.duplex {"asks":[{"ms":14,"retry":false,"cohort":null,"duplex":"shadow","status":200}],"mode":"shadow","_mono":11328,"build":"on","device":null,"server":"shadow","source":"server_shadow"}
+18:17:08.305 [client] mic mode tap
+18:17:08.343 [client] net POST /api/lesson/start 201 2270ms
+18:17:08.549 [client] ui.media {"h":2,"w":2,"src":"/modules.html","tag":"iframe","_mono":11572,"phase":"mount"}
+18:17:08.781 [client] rrweb.chunk {"to":1791742628761,"seq":1,"blob":{"ref":"2026-10-11/d4fd5095-fc56-44b8-8e54-89e560e2778b/client-1.json","type":"application/x-rrweb+json","bytes":474688},"from":1791742618774,"_mono":11098,"bytes":474677,"events":56}
+18:17:08.832 [client] mic.state {"lane":"cascade","_mono":11149,"state":"tap","transport":"webrtc","pushToTalk":true}
+18:17:08.883 [server] model taxila-fast chat 200 1245ms in=1014 out=35 prompt="WHO YOU ARE: Asha — the child calls you Asha didi - an AI t…" sha=3f79175d64cdcb71 blob=2026-10-11/server/server-179174262888.json
+            → "Namaste Riya, main Asha, tumhari AI teacher hoon. Aaj grams aur kilograms padhenge. Tum mujhe teacher bulaogi?"
+18:17:09.003 [client] net.sse {"path":"/api/studio/stream","_mono":11321,"phase":"open-request"}
+18:17:09.284 [client] mic.state {"lane":"cascade","_mono":12307,"error":"NotFoundError","state":"error"}
+18:17:09.284 [client] mic.state {"why":"Requested device not found","lane":"cascade","_mono":12308,"state":"closed","transport":"typed"}
+18:17:09.287 [client] mic mode tap
+18:17:09.300 [client] desk {"mic":{"talking":false,"available":false,"tapToTalk":false},"gate":"starting","_mono":12323,"floor":"idle","phase":null,"sheet":null,"strip":null,"layout":"phone","typing":false,"offline":false,"summary":false,"answerForm":"words"}
+18:17:09.341 [client] SCREEN chips 
+18:17:09.341 [client] ui.render.tray {"kind":"tiles","_mono":12365,"overlay":"no_mic"}
+18:17:09.348 [client] she will say "Namaste Riya, main Asha, tumhari AI teacher hoon. Aaj grams aur kilograms padhenge. Tum mujhe teacher bulaogi?"
+18:17:09.359 [client] desk {"mic":{"talking":false,"available":false,"tapToTalk":false},"gate":"starting","_mono":12382,"floor":"idle","phase":"warmup","sheet":null,"strip":null,"layout":"phone","typing":false,"offline":false,"summary":false,"answerForm":"words"}
+18:17:09.359 [client] SCREEN card "Tum mujhe teacher bulaogi?"
+18:17:09.362 [client] ui.media {"h":78,"w":78,"tag":"canvas","zone":"teacher","_mono":12385,"phase":"mount","testid":"speech-row"}
+18:17:09.362 [client] ui.media {"h":78,"w":78,"tag":"canvas","zone":"teacher","_mono":12385,"phase":"mount","testid":"speech-row"}
+18:17:09.399 [client] desk {"mic":{"talking":false,"available":false,"tapToTalk":false},"gate":null,"_mono":12423,"floor":"idle","phase":"warmup","sheet":null,"strip":null,"layout":"phone","typing":false,"offline":false,"summary":false,"answerForm":"words"}
+18:17:09.400 [client] perf.longtask {"at":11608,"ms":782,"_mono":12424}
+18:17:12.087 [client] she starts speaking
+18:17:12.096 [client] desk {"mic":{"talking":false,"available":false,"tapToTalk":false},"gate":null,"_mono":15825,"floor":"speaking","phase":"warmup","sheet":null,"strip":null,"layout":"phone","typing":false,"offline":false,"summary":false,"answerForm":"words"}
+18:17:12.127 [client] net POST /api/studio/viewport 200 4187ms
+18:17:12.660 [client] net.sse {"path":"/api/studio/stream","_mono":15683,"phase":"open"}
+18:17:12.699 [client] rrweb.chunk {"to":1791742629021,"seq":2,"blob":{"ref":"2026-10-11/d4fd5095-fc56-44b8-8e54-89e560e2778b/client-2.json","type":"application/x-rrweb+json","bytes":8990},"from":1791742629021,"_mono":15722,"bytes":8990,"events":1}
+18:17:12.853 [client] net POST /api/voice/tts-stream 200 3379ms
+18:17:13.759 [server] ← POST /api/lesson/start 201 6760ms
+18:17:13.925 [server] ← POST /api/studio/viewport 200 136ms
+18:17:13.935 [server] audio stream: first sound 2ms (setup 0ms, oai, cache miss, prewarmed 4827ms)
+18:17:14.694 [server] audio stream ok 504000 bytes 761ms (engines [null,null,null])
+18:17:14.695 [server] ← POST /api/voice/tts-stream 200 763ms
+18:17:16.953 [client] rrweb.chunk {"to":1791742638759,"seq":3,"blob":{"ref":"2026-10-11/cd35e768-6319-4f57-8ac1-208b85439193/client-3.json","type":"application/x-rrweb+json","bytes":97304},"from":1791742629523,"_mono":20682,"bytes":97303,"events":42}
+18:17:22.662 [client] she finished
+18:17:22.676 [client] desk {"mic":{"talking":false,"available":false,"tapToTalk":false},"gate":null,"_mono":26405,"floor":"your_turn","phase":"warmup","sheet":null,"strip":null,"layout":"phone","typing":false,"offline":false,"summary":false,"answerForm":"words"}
+18:17:22.811 [client] audio.tts.clip {"ms":10619,"seq":1,"blob":{"ref":"2026-10-11/cd35e768-6319-4f57-8ac1-208b85439193/client-b1.webm","type":"audio/webm;codecs=opus","bytes":169385},"type":"audio/webm;codecs=opus","_mono":26541,"bytes":169385,"status":"c…
+18:17:26.896 [client] rrweb.chunk {"to":1791742648715,"seq":4,"blob":{"ref":"2026-10-11/cd35e768-6319-4f57-8ac1-208b85439193/client-4.json","type":"application/x-rrweb+json","bytes":96524},"from":1791742639025,"_mono":30626,"bytes":96524,"events":42}
+18:17:36.900 [client] rrweb.chunk {"to":1791742658682,"seq":5,"blob":{"ref":"2026-10-11/cd35e768-6319-4f57-8ac1-208b85439193/client-5.json","type":"application/x-rrweb+json","bytes":92118},"from":1791742648974,"_mono":40629,"bytes":92118,"events":39}
+18:17:46.897 [client] rrweb.chunk {"to":1791742668707,"seq":6,"blob":{"ref":"2026-10-11/cd35e768-6319-4f57-8ac1-208b85439193/client-6.json","type":"application/x-rrweb+json","bytes":92090},"from":1791742658940,"_mono":50626,"bytes":92090,"events":39}
+18:17:47.286 [client] perf.lcp {"t":1040,"el":"img","url":"/face-puppet/r8/rest-medium.webp","_mono":51015}
+18:17:47.287 [client] rrweb.chunk {"to":1791742668973,"seq":7,"from":1791742668973,"_mono":51017,"bytes":2348,"beacon":true,"events":1}
+18:17:47.289 [client] mic.state {"lane":"cascade","_mono":51018,"state":"closed"}
+18:17:47.316 [client] desk {"mic":{"talking":false,"available":false,"tapToTalk":false},"gate":null,"_mono":51045,"floor":"your_turn","phase":"warmup","sheet":null,"strip":null,"layout":"phone","typing":false,"offline":false,"summary":true,"answerForm":"words"}
+18:17:47.316 [client] ui.render.summary {"next":null,"_mono":51045,"cards":[],"tried":0}
+18:17:50.936 [server] model taxila-fast chat 200 1363ms in=409 out=76 prompt="You write the record of one tutoring lesson with Riya (clas…" sha=3be15e28887c9e76 blob=2026-10-11/cd35e768-6319-4f57-8ac1-208b85439193/server-179174267093.json
+            → "{"summary":"No lesson interaction was recorded.\nNo practice or teach-back occurred.\nNo skills or misconceptions were observed.","parentNote":"There was no recorded lesson activity today, so no practice or progress can be noted. At home, …"
+18:17:51.104 [server] ← POST /api/lesson/end 200 1886ms
