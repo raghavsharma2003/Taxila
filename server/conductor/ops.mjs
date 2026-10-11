@@ -61,6 +61,9 @@ if (import.meta.url === `file://${process.argv[1]}`) {
       line({ kind: "conductor_rollup", ...(await rollup()) });
       const s = await sweepTestAccounts({ url: raw, olderThanMin: 60, limit: 500, apply: true, log: () => {} });
       line({ kind: "test_account_sweep", ...s });
+      // release 12 flight recorder: tier 1 kept 30 days, tier 2 kept 90 days (rows and their blobs)
+      try { line({ kind: "trace_retention", ...(await (await import("../trace/erase.js")).traceRetention()) }); }
+      catch (e) { console.error(`[ops] trace retention failed: ${e?.message ?? e}`); code = 1; }
       if (s.failed) code = 1;
     }
   } catch (e) {

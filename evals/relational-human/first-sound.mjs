@@ -494,7 +494,9 @@ async function lesson(L, rows = []) {
     }
     stt.ws.close();
   } finally {
-    if (childId) await api("DELETE", "/api/account", { password, confirm: true }).catch((e) => console.log(`could not delete the test account: ${e.message}`));
+    // --keep-account (release 12 recorder evidence): the test account stays so its trace can be read; its credentials are printed
+    if (childId && argv.includes("--keep-account")) console.log(`[L${L}] kept test account child=${childId}`);
+    else if (childId) await api("DELETE", "/api/account", { password, confirm: true }).catch((e) => console.log(`could not delete the test account: ${e.message}`));
   }
   return rows;
 }

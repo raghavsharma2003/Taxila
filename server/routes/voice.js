@@ -24,6 +24,7 @@ import { routes as featureRoutes } from "../voice/features.js";
 import { realtimeSeam } from "../voice/realtimeSession.js";
 import { seamSafe } from "../seam-safe.js";
 import { cascadeEngine, dhdVoiceFor, warnUnmeasuredOnce } from "../voice/voices.js";
+import { traceIdentify } from "../trace/context.js";
 
 const VOICES = new Set(["alloy", "ash", "ballad", "coral", "echo", "fable", "nova", "onyx", "sage", "shimmer", "verse", "marin", "cedar"]);
 /** A push-to-talk turn is a child's answer: 30 s of Opus at ~32 kbit/s is ~120 kB; 2 MB is a generous cap. */
@@ -191,6 +192,7 @@ async function ttsStream(req, res, body) {
   // and its ownership was checked by that request, so no query here.
   const warm = prewarmTake(lessonId, seq, tokenHash);
   if (warm) {
+    traceIdentify({ guardian: { id: warm.guardianId, email: null }, child: warm.childId ? { id: warm.childId } : undefined });
     if (!allowSpeech(warm.guardianId)) { warm.abort.abort(); throw new HttpError(429, "too many speech requests"); }
     return streamParts(res, { entry: warm, t0, setupMs: Math.round(performance.now() - t0), prewarmed: Math.round(performance.now() - warm.at), framed });
   }
@@ -205,6 +207,7 @@ async function ttsStream(req, res, body) {
   if (row.turn_seq == null) throw notFound("no teacher turn to speak");
   if (row.guardian_id !== row.session_guardian) throw forbidden("child not found for this account");
   const guardian = { id: row.session_guardian };
+  traceIdentify({ guardian: { id: guardian.id, email: null }, child: { id: row.id } }); // release 12 flight recorder
   if (!allowSpeech(guardian.id)) throw new HttpError(429, "too many speech requests");
   const { turn_text: turnText, session_guardian: _sg, turn_seq: _seq, lesson_teacher: lessonTeacher, lesson_teacher_name: lessonTeacherName, lane_switched: laneSwitched, ...child } = row;
   const text = String(turnText ?? "").trim();

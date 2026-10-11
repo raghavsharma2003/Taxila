@@ -5,6 +5,7 @@
 
 import { EndpointConfigError, laneEndpoint, laneKey, realtimeLane } from "./endpoints.js";
 import { admit, settle } from "./lanes.js";
+import { recordModelCall } from "./trace/model.js";
 
 const DEFAULT_TIMEOUT_MS = 20_000;
 const RETRY_DELAY_MS = 400;
@@ -133,6 +134,10 @@ async function post(kind, deployment, path, body, { timeoutMs = DEFAULT_TIMEOUT_
     if (signal?.aborted) throw new AzureError(`${kind} ${deployment} cancelled by the caller`, 0, "cancelled");
     log({ kind, deployment, status: status || err?.code || "error", ms: Math.round(performance.now() - t0), attempt,
       tokens: usage ? { in: usage.prompt_tokens ?? usage.input_tokens, out: usage.completion_tokens ?? usage.output_tokens } : undefined }, trace);
+    // release 12 flight recorder: model.call (server/trace/model.js; never throws, never awaits)
+    recordModelCall({ kind, deployment, lane, quotaLane, status: status || err?.code || "error", ms: Math.round(performance.now() - t0), attempt,
+      tokens: usage ? { in: usage.prompt_tokens ?? usage.input_tokens, out: usage.completion_tokens ?? usage.output_tokens } : undefined,
+      body, out: binary ? null : out, error: err ? String(err.message).slice(0, 200) : undefined });
     try {
       settle({ quotaLane, deployment, kind, status: status || err?.code || "error",
         usage: usage ? { in: usage.prompt_tokens ?? usage.input_tokens, out: usage.completion_tokens ?? usage.output_tokens } : undefined });
@@ -348,6 +353,8 @@ export async function chatStream(deployment, messages, opts = {}) {
   }
   const ms = Math.round(performance.now() - t0);
   log({ kind, deployment, status: status && !err ? status : err?.code || status || "error", ms, tokens: usage ? { in: usage.in, out: usage.out } : undefined }, trace);
+  recordModelCall({ kind, deployment, lane, quotaLane, status: status && !err ? status : err?.code || status || "error", ms, ttftMs,
+    tokens: usage ? { in: usage.in, out: usage.out } : undefined, body, text, error: err ? String(err.message).slice(0, 200) : undefined });
   try { settle({ quotaLane, deployment, kind, status: err ? (err.status || err.code) : status, usage: usage ? { in: usage.in, out: usage.out } : undefined }); }
   catch (e) { console.warn("[azure] lanes.settle failed:", e?.message); }
   if (err) {

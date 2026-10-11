@@ -16,6 +16,7 @@ import { REST_CFG } from "./adapters.js";
 import { createStageGradeSession } from "./grade.js";
 // round 4 content: the ONE certificate gate (Studio v2 is off the child path unless certified at all three sizes)
 import { certifyForTray, viewportOf } from "../forge3/tray-gate.js";
+import { record as traceRecord } from "../trace/writer.js";
 
 // `var` + function declarations (hoisted): kernel-point.js registers its hooks at load, and with the seam ⇄ bridge import
 // cycle (patch 03) it may run before this module's body has evaluated; a `let`/`const` binding would be in its TDZ then.
@@ -104,6 +105,8 @@ function merge(lessonId, host, view0, point, outcome) {
   if (!cert.ok) {
     host.gateRefusals = (host.gateRefusals ?? 0) + 1;
     console.info(`[stagecraft] tray gate refused ${outcome.rung} ${sc0.archetype ?? "-"} at ${cert.vp}: ${String(cert.why).slice(0, 100)}`);
+    traceRecord("studio.slot.refused", { gate: "tray", where: "stagecraft", rung: outcome.rung ?? null, archetype: sc0.archetype ?? null, vp: cert.vp ?? null,
+      cert: cert.cert ?? null, why: String(cert.why ?? "").slice(0, 300), candidateId: outcome.candidateId ?? null }, { sid: lessonId });
     return keepW2();
   }
   // a seam piece for it, so slotFor / factsRowForSlot / onReveal run their existing paths (one piece, one door)
