@@ -542,6 +542,8 @@ if (OUT) {
     host: os.hostname(), loadAvg: [loadAvg0, os.loadavg()[0]], wallS: Math.round((Date.now() - t0) / 1000), prefetch: PREFETCH, ack: ACK, turnAudio: TURN_AUDIO, debounceMs: DEBOUNCE_MS,
     script: SCRIPT_MODE, stt: process.env.TAXILA_STT_MODEL || process.env.DEPLOY_TRANSCRIBE || "(server default)",
     env: { TAXILA_TURN_PREFETCH: process.env.TAXILA_TURN_PREFETCH ?? "(default on)", TAXILA_ACK: process.env.TAXILA_ACK ?? "(default on)", AZURE_SPEECH_REGION: process.env.AZURE_SPEECH_REGION ?? null, TAXILA_DB: process.env.TAXILA_DB ?? null },
-    note: "synthetic child speech (gpt-4o-mini-tts ×1.2 pitch); WebSocket transcription from this US sandbox to eastus2; sound = first byte (or the ack's play time) + 60 ms lead + 50 ms NOMINAL output latency; device rules simulated" }, summary, rows }, null, 1));
+    note: "synthetic child speech (gpt-4o-mini-tts ×1.2 pitch); WebSocket transcription from this US sandbox to eastus2; sound = first byte (or the ack's play time) + 60 ms lead + 50 ms NOMINAL output latency; device rules simulated" }, summary, rows,
+    // release 12: the flight recorder's per-request cost (TAXILA_TRACE_PROFILE=1, in-process only)
+    ...(process.env.TAXILA_TRACE_PROFILE === "1" && server ? { traceProfile: (await import(ROOT + "server/trace/writer.js")).traceProfile() } : {}) }, null, 1));
 }
 process.exit(rows.length ? 0 : 1);

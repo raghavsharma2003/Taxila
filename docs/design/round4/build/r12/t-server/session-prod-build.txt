@@ -1,0 +1,250 @@
+session bddd1a3f-fed1-40bb-8d72-6b1146f532a3  sids=bddd1a3f-fed1-40bb-8d72-6b1146f532a3  events=191  2026-10-11T14:40:21.139Z → 2026-10-11T14:41:45.408Z
+flags ★ 0  errors/failures ⚠ 1  turns 6
+14:40:24.720 [server] model taxila-fast chat 200 1720ms in=1038 out=46 prompt="WHO YOU ARE: Asha — the child calls you Asha didi - an AI t…" sha=79b70f738d05860d
+            → "Namaste Aarav, main Asha, tumhari AI teacher. Aaj cricket ball jaisi 3D shapes ke faces, edges aur corners dekhenge. Tumhe cricket mein kya pasand hai?"
+14:40:26.414 [server] ← POST /api/lesson/start 201 5275ms
+14:40:27.101 [server] ← POST /api/voice/stt-token 200 679ms
+14:40:27.363 [server] model taxila-fast chat 200 893ms in=242 out=27 prompt="task: pick skin, hook and decor for a short practice activi…" sha=d0998ffbe22370a7
+            → "{"skin":"cricket","hook":"cricket.scorer","decor":"obj.ball"}"
+14:40:36.832 [server t1] ← POST /api/lesson/turn-ack 204 91ms
+14:40:37.083 [server t1] ← POST /api/lesson/turn-prefetch 202 346ms
+14:40:37.210 [server t1] ← POST /api/lesson/turn-ack 204 41ms
+14:40:37.221 [server t1] ← POST /api/lesson/turn-prefetch 202 55ms
+14:40:37.696 [server t1] CHILD → "हाँ, दीदी, मैं रेडी हूँ। मुझे लगता है डब्बे में ज़्यादा कॉर्नर्स होते हैं।" (POST /api/lesson/turn)
+14:40:38.051 [server t1] model grok-4-1-fast-non-reasoning chat 200 980ms in=650 out=28 prompt="You label one reply from an Indian school child (class 4) i…" sha=447cb0da8cc151b3
+            → "{"belief":"none","off_topic":false,"distress":false,"asks_for_answer":false,"wants_to_stop":false}"
+14:40:38.209 [server t1] model grok-4-1-fast-non-reasoning chat 200 990ms in=653 out=28 prompt="You label one reply from an Indian school child (class 4) i…" sha=4448532059e674e4
+            → "{"belief":"none","off_topic":false,"distress":false,"asks_for_answer":false,"wants_to_stop":false}"
+14:40:38.346 [server t1] model taxila-gpt6 chat 200 1300ms in=1143 out=56 prompt="You read ONE turn from an Indian school child (class 1-9) i…" sha=fb04ccfd347bae0e
+            → "{"intent":"answer_partial","also":[],"answer":"डब्बे में ज़्यादा कॉर्नर्स","topic":"","learning":false,"in_bounds":true,"lang_to":"","method":"","distress":false,"confidence":0.73}"
+14:40:38.912 [server t1] model taxila-fast chat 200 1624ms in=1151 out=32 prompt="WHO YOU ARE: Asha — the child calls you Asha didi - an AI t…" sha=4225f66a117dcc07
+            → "Aarav, tumhara prediction note karte hain: tiffin box ko dekhkar, tum kitne corners gin paoge?"
+14:40:39.162 [server t1] model taxila-fast chat 200 1996ms in=1148 out=31 prompt="WHO YOU ARE: Asha — the child calls you Asha didi - an AI t…" sha=109cecb3459f4b75
+            → "Aarav, tiffin box ko dekho: har flat surface ek face hai. Tum kitne faces gिनोगे?"
+14:40:39.220 [server t1] model taxila-gpt6 chat 200 2003ms in=1146 out=60 prompt="You read ONE turn from an Indian school child (class 1-9) i…" sha=2ebe08c61dbdbd50
+            → "{"intent":"answer_hedged","also":[],"answer":"डब्बे में ज़्यादा कॉर्नर्स होते हैं","topic":"","learning":false,"in_bounds":true,"lang_to":"","method":"","distress":false,"confidence":0.88}"
+14:40:39.308 [server t1] TURN 1 move=hook beat=hook
+            she says: "Aarav, tumhara prediction note karte hain: tiffin box ko dekhkar, tum kitne corners gin paoge?"
+            accepted: move,knobs
+            reasons: lane.cascade turn.speculation_hit turn.prefetch_adopted cls.no_evidence cls_source.model verdict.ungraded conv2.note.answer_hedged
+14:40:39.308 [server t1] classify no_evidence via model verdict=attempt
+14:40:39.308 [server t1] safety distress=false
+14:40:39.308 [server t1] db.write {"seqs":0,"turn":1,"table":"turn","lessonId":"bddd1a3f-fed1-40bb-8d72-6b1146f532a3","brainTrace":true}
+14:40:39.310 [server t1] ← POST /api/lesson/turn 200 1614ms
+14:40:40.305 [server t1] model taxila-fast chat 200 1087ms in=1174 out=29 prompt="WHO YOU ARE: Asha — the child calls you Asha didi - an AI t…" sha=c5e84b93db3872ec
+            → "Aarav, tiffin box ko dekho: har flat surface ek face hai. Tum kitne faces ginoge?"
+14:40:41.473 [server] ← POST /api/voice/tts-stream 200 2162ms
+14:40:49.272 [server t2] ← POST /api/lesson/turn-ack 204 41ms
+14:40:49.282 [server t2] ← POST /api/lesson/turn-prefetch 202 56ms
+14:40:49.884 [server t2] ← POST /api/lesson/turn-ack 204 42ms
+14:40:49.892 [server t2] ← POST /api/lesson/turn-prefetch 202 52ms
+14:40:50.084 [server t2] model grok-4-1-fast-non-reasoning chat 200 804ms in=625 out=28 prompt="You label one reply from an Indian school child (class 4) i…" sha=2a5b8122375f60f1
+            → "{"belief":"none","off_topic":false,"distress":false,"asks_for_answer":false,"wants_to_stop":false}"
+14:40:50.456 [server t2] model taxila-gpt6 chat 200 1177ms in=1186 out=45 prompt="You read ONE turn from an Indian school child (class 1-9) i…" sha=0c6e8e0778eec533
+            → "{"intent":"thinking_aloud","also":[],"answer":"","topic":"","learning":false,"in_bounds":true,"lang_to":"","method":"","distress":false,"confidence":0.89}"
+14:40:50.778 [server t2] model grok-4-1-fast-non-reasoning chat 200 889ms in=629 out=28 prompt="You label one reply from an Indian school child (class 4) i…" sha=58b6b9f6ed2716c7
+            → "{"belief":"none","off_topic":true,"distress":false,"asks_for_answer":false,"wants_to_stop":false}"
+14:40:50.912 [server t2] CHILD → "अच्छा, तो डब्बे की फ्लैट साइड को फेस कहते हैं।" (POST /api/lesson/turn)
+14:40:51.156 [server t2] model taxila-fast chat 200 1822ms in=1223 out=32 prompt="WHO YOU ARE: Asha — the child calls you Asha didi - an AI t…" sha=68c28138b7cab829
+            → "Bilkul, Aarav. Dabba ki har flat surface ek face hoti hai; ab uske kinaare edges gin kar batao."
+14:40:51.271 [server t2] model taxila-fast chat 200 1333ms in=1226 out=33 prompt="WHO YOU ARE: Asha — the child calls you Asha didi - an AI t…" sha=41bf542574156a6b
+            → "Bilkul, Aarav. Dabba ki flat surface ek face hoti hai; ab uski do faces milne wali line dhoondo."
+14:40:51.396 [server t2] model taxila-gpt6 chat 200 1507ms in=1189 out=59 prompt="You read ONE turn from an Indian school child (class 1-9) i…" sha=3ec33fdb4e8504dc
+            → "{"intent":"answer_correct","also":[],"answer":"डब्बे की फ्लैट साइड को फेस कहते हैं","topic":"","learning":false,"in_bounds":true,"lang_to":"","method":"","distress":false,"confidence":0.94}"
+14:40:52.388 [server t2] model taxila-fast chat 200 1114ms in=1263 out=32 prompt="WHO YOU ARE: Asha — the child calls you Asha didi - an AI t…" sha=34ce130e5948489c
+            → "Bilkul, Aarav. Dabba ki flat surface ek face hoti hai; do faces milne wali line ko tum kya kahoge?"
+14:40:53.124 [server t2] model taxila-fast chat 200 1682ms in=1259 out=41 prompt="WHO YOU ARE: Asha — the child calls you Asha didi - an AI t…" sha=6ffa83a6e6b59df9
+            → "Bilkul, Aarav. Dabba ki har flat surface ek face hai. Ab ek face par ungli chala kar batao—uske kinare kya kehlaayenge?"
+14:40:53.153 [server t2] BOARD page 1 CLEARS the board ops=8 "?D shape | faces | edges | corners"
+14:40:53.154 [server t2] studio slot revealed whiteboard intent=bddd1a3f-fed1-40bb-8d72-6b1146f532a3:wb…
+14:40:53.213 [server t2] TURN 2 move=explain beat=explain
+            she says: "Bilkul, Aarav. Dabba ki har flat surface ek face hai. Ab ek face par ungli chala kar batao—uske kinare kya kehlaayenge?"
+            accepted: move,knobs,ask_whiteboard
+            rung replaced: {"engine":"explainer@1","moduleId":"m2","scriptOps":8,"wasMounted":false} by {"state":"revealed","slotId":"bddd1a3f-fed1-40bb-8d72-6b1146f532a3:wb:2:slot","artifact":"whiteboard","intentId":"bddd1a3f-fed1-40bb-8d72-6b1146f532a3:wb:2"} — ask_whiteboard.replacesRung: the live board replaces the template rung
+            speculation miss: ["instructions [spec: || real: - on screen now (values to use when you point at the screen; never what is hidden): board · labels ?D shape | faces | ed]"]
+            reasons: lane.cascade turn.speculation_miss turn.prefetch_adopted studio.whiteboard_slot studio.rung_replaced cls.no_evidence cls_source.model verdict.ungraded conv2.note.answer_correct
+14:40:53.213 [server t2] rung replaced {"engine":"explainer@1","moduleId":"m2","scriptOps":8,"wasMounted":false} → {"state":"revealed","slotId":"bddd1a3f-fed1-40bb-8d72-6b1146f532a3:wb:2:slot","artifact":"whiteboard","intentId":"bddd1a3f-fed1-40bb-8d72-6b1146f532a3:wb:2"}: ask_whiteboard.replacesRung: the live board replaces the template rung
+14:40:53.213 [server t2] speculation miss (1): ["instructions [spec: || real: - on screen now (values to use when you point at the screen; never what is hidden): board · labels ?D shape | faces | ed]"]
+14:40:53.213 [server t2] classify no_evidence via model verdict=attempt
+14:40:53.213 [server t2] safety distress=false
+14:40:53.213 [server t2] db.write {"seqs":1,"turn":2,"table":"turn","lessonId":"bddd1a3f-fed1-40bb-8d72-6b1146f532a3","brainTrace":true}
+14:40:53.214 [server t2] ← POST /api/lesson/turn 200 2302ms
+14:40:54.409 [server t2] model taxila-gpt6-luna chat 200 2969ms in=1039 out=404 prompt="task: draw the teacher's spoken line on a classroom whitebo…" sha=67bc8aeea4061b19
+            → "{"ops":[{"id":"cube","op":"stroke","points":[[105,88],[210,88],[210,178],[105,178],[105,88],[151,48],[256,48],[256,138],[210,178],[256,138],[151,48],[105,88]],"t":[800,2100]},{"id":"facelabel","op":"label","at":[80,119],"text":"face","to":…"
+14:40:55.577 [server] ← POST /api/voice/tts-stream 200 2360ms
+14:41:02.947 [server t3] ← POST /api/lesson/turn-prefetch 202 77ms
+14:41:03.327 [server t3] ← POST /api/lesson/turn-prefetch 202 89ms
+14:41:03.774 [server t3] model grok-4-1-fast-non-reasoning chat 200 831ms in=634 out=28 prompt="You label one reply from an Indian school child (class 4) i…" sha=3756083635bade09
+            → "{"belief":"none","off_topic":false,"distress":false,"asks_for_answer":false,"wants_to_stop":false}"
+14:41:03.917 [server t3] ← POST /api/lesson/turn-prefetch 202 95ms
+14:41:03.941 [server t3] model taxila-fast chat 200 943ms in=1277 out=35 prompt="WHO YOU ARE: Asha — the child calls you Asha didi - an AI t…" sha=c71d6b941b670e85
+            → "Aarav, do faces jahan milte hain, us line ko edge kehte hain. Ab batao, edges ko tum kaise ginoge?"
+14:41:04.081 [server t3] model grok-4-1-fast-non-reasoning chat 200 757ms in=635 out=28 prompt="You label one reply from an Indian school child (class 4) i…" sha=88f4371d1e488c1c
+            → "{"belief":"none","off_topic":false,"distress":false,"asks_for_answer":false,"wants_to_stop":false}"
+14:41:04.146 [server t3] ← POST /api/lesson/turn-ack 204 1272ms
+14:41:04.503 [server t3] model taxila-fast chat 200 1135ms in=1278 out=32 prompt="WHO YOU ARE: Asha — the child calls you Asha didi - an AI t…" sha=355f198e6c6c9d5b
+            → "Aarav, do faces jahan milte hain, woh edge kehlaata hai. Ab matchbox ka ek edge dhoondo."
+14:41:04.526 [server t3] ← POST /api/lesson/turn-ack 204 1282ms
+14:41:04.539 [server t3] CHILD → "हाँ। समझ गया। दो फेसेस जहाँ मिलते हैं, वो एज है।" (POST /api/lesson/turn)
+14:41:04.757 [server t3] model taxila-gpt6 chat 200 1434ms in=1267 out=58 prompt="You read ONE turn from an Indian school child (class 1-9) i…" sha=32e8a7bca8623a5e
+            → "{"intent":"thinking_aloud","also":[],"answer":"दो फेसेस जहाँ मिलते हैं, वो…","topic":"","learning":false,"in_bounds":true,"lang_to":"","method":"","distress":false,"confidence":0.97}"
+14:41:04.772 [server t3] model taxila-gpt6 chat 200 1830ms in=1266 out=45 prompt="You read ONE turn from an Indian school child (class 1-9) i…" sha=cbd37a1fd9985950
+            → "{"intent":"thinking_aloud","also":[],"answer":"","topic":"","learning":false,"in_bounds":true,"lang_to":"","method":"","distress":false,"confidence":0.94}"
+14:41:05.018 [server t3] model grok-4-1-fast-non-reasoning chat 200 1104ms in=639 out=28 prompt="You label one reply from an Indian school child (class 4) i…" sha=f34a4bb16fe4bc4a
+            → "{"belief":"none","off_topic":false,"distress":false,"asks_for_answer":false,"wants_to_stop":false}"
+14:41:05.116 [server t3] ← POST /api/lesson/turn-ack 204 1292ms
+14:41:05.410 [server t3] model taxila-gpt6 chat 200 1498ms in=1270 out=59 prompt="You read ONE turn from an Indian school child (class 1-9) i…" sha=2d23a9472fd953cf
+            → "{"intent":"answer_correct","also":[],"answer":"दो फेसेस जहाँ मिलते हैं, वो एज है।","topic":"","learning":false,"in_bounds":true,"lang_to":"","method":"","distress":false,"confidence":0.98}"
+14:41:05.446 [server t3] model taxila-fast chat 200 1486ms in=1281 out=37 prompt="WHO YOU ARE: Asha — the child calls you Asha didi - an AI t…" sha=a1346fd0d8614114
+            → "Sahi, Aarav. Do faces jahan milte hain, woh edge hota hai. Ab teen edges jahan milte hain, use kya kahenge?"
+14:41:05.579 [server t3] model taxila-fast chat 200 1074ms in=1314 out=39 prompt="WHO YOU ARE: Asha — the child calls you Asha didi - an AI t…" sha=cfaf04bb414d0683
+            → "Aarav, do faces jahan milte hain, woh edge kehlaata hai. Matchbox ka ek edge dhoondhkar batao—kahan hai?"
+14:41:07.015 [server t3] model taxila-fast chat 200 1583ms in=1314 out=37 prompt="WHO YOU ARE: Asha — the child calls you Asha didi - an AI t…" sha=300b594fd703e7bc
+            → "Bilkul Aarav, do faces jahan milte hain, woh edge hota hai. Matchbox ko cuboid bolenge—ab corners gin kar batao?"
+14:41:07.031 [server t3] BOARD page 2 CLEARS the board ops=8 "?D shape | faces | edges | corners"
+14:41:07.031 [server t3] studio slot revealed whiteboard intent=bddd1a3f-fed1-40bb-8d72-6b1146f532a3:wb…
+14:41:07.086 [server t3] TURN 3 move=worked_example beat=worked_example
+            she says: "Bilkul Aarav, do faces jahan milte hain, woh edge hota hai. Matchbox ko cuboid bolenge—ab corners gin kar batao?"
+            accepted: move,knobs,ask_whiteboard
+            rung replaced: {"engine":"explainer@1","moduleId":"m3","scriptOps":8,"wasMounted":false} by {"state":"revealed","slotId":"bddd1a3f-fed1-40bb-8d72-6b1146f532a3:wb:3:slot","artifact":"whiteboard","intentId":"bddd1a3f-fed1-40bb-8d72-6b1146f532a3:wb:3"} — ask_whiteboard.replacesRung: the live board replaces the template rung
+            speculation miss: ["instructions [spec: || real: - on screen now (values to use when you point at the screen; never what is hidden): board · labels ?D shape | faces | ed]"]
+            reasons: lane.cascade turn.speculation_miss turn.prefetch_adopted studio.whiteboard_slot studio.rung_replaced cls.no_evidence cls_source.model verdict.ungraded conv2.note.answer_correct
+14:41:07.086 [server t3] rung replaced {"engine":"explainer@1","moduleId":"m3","scriptOps":8,"wasMounted":false} → {"state":"revealed","slotId":"bddd1a3f-fed1-40bb-8d72-6b1146f532a3:wb:3:slot","artifact":"whiteboard","intentId":"bddd1a3f-fed1-40bb-8d72-6b1146f532a3:wb:3"}: ask_whiteboard.replacesRung: the live board replaces the template rung
+14:41:07.086 [server t3] speculation miss (1): ["instructions [spec: || real: - on screen now (values to use when you point at the screen; never what is hidden): board · labels ?D shape | faces | ed]"]
+14:41:07.086 [server t3] classify no_evidence via model verdict=attempt
+14:41:07.086 [server t3] safety distress=false
+14:41:07.086 [server t3] db.write {"seqs":1,"turn":3,"table":"turn","lessonId":"bddd1a3f-fed1-40bb-8d72-6b1146f532a3","brainTrace":true}
+14:41:07.088 [server t3] ← POST /api/lesson/turn 200 2548ms
+14:41:07.860 [server t3] model taxila-gpt6-luna chat 200 3232ms in=1100 out=470 prompt="task: draw the teacher's spoken line on a classroom whitebo…" sha=0cf3e989bb6b7363
+            → "{"ops":[{"id":"cube","op":"stroke","points":[[102,105],[164,72],[226,105],[164,138],[102,105],[102,181],[164,214],[226,181],[226,105],[164,138],[164,214]],"t":[800,2100]},{"id":"faceMark","op":"polygon","points":[[104,108],[162,78],[162,13…"
+14:41:08.910 [server] ← POST /api/voice/tts-stream 200 1822ms
+14:41:16.708 [server t4] ← POST /api/lesson/turn-ack 204 82ms
+14:41:16.927 [server t4] ← POST /api/lesson/turn-prefetch 202 304ms
+14:41:17.715 [server t4] ← POST /api/lesson/turn-prefetch 202 67ms
+14:41:17.717 [server t4] ← POST /api/lesson/turn-ack 204 68ms
+14:41:17.940 [server t4] model taxila-fast chat 200 968ms in=1556 out=22 prompt="WHO YOU ARE: Asha — the child calls you Asha didi - an AI t…" sha=0f75e0e78f07c6e6
+            → "Corner वह point है जहाँ edges मिलते हैं। Cuboid की picture ध्यान से देखो।"
+14:41:18.092 [server t4] model grok-4-1-fast-non-reasoning chat 200 1168ms in=620 out=28 prompt="You label one reply from an Indian school child (class 4) i…" sha=1266d2a7b19e0428
+            → "{"belief":"none","off_topic":false,"distress":false,"asks_for_answer":false,"wants_to_stop":false}"
+14:41:18.217 [server t4] CHILD → "Or corner viewpoint हैना जहाँ edges मिलते हैं।" (POST /api/lesson/turn)
+14:41:18.327 [server t4] model taxila-gpt6 chat 200 1406ms in=1250 out=55 prompt="You read ONE turn from an Indian school child (class 1-9) i…" sha=b7c103c7dee3a67d
+            → "{"intent":"question_on_topic","also":[],"answer":"","topic":"Whether a corner is the point where edges meet","learning":true,"in_bounds":true,"lang_to":"","method":"","distress":false,"confidence":0.9}"
+14:41:18.477 [server t4] model grok-4-1-fast-non-reasoning chat 200 762ms in=625 out=28 prompt="You label one reply from an Indian school child (class 4) i…" sha=13ccfbe73f8cf7c2
+            → "{"belief":"none","off_topic":false,"distress":false,"asks_for_answer":false,"wants_to_stop":false}"
+14:41:19.019 [server t4] model taxila-fast chat 200 1262ms in=1561 out=30 prompt="WHO YOU ARE: Asha — the child calls you Asha didi - an AI t…" sha=3d950f4ab1d1e0ab
+            → "Haan, corner woh point hai jahan edges milte hain. Ab matchbox ke faces ginne ka step aayega."
+14:41:19.062 [server t4] model taxila-fast chat 200 1112ms in=1509 out=40 prompt="WHO YOU ARE: Asha — the child calls you Asha didi - an AI t…" sha=38dd65a097845d87
+            → "Corner woh point hai jahan edges milte hain. Khaali jagah bharo: Faces: top and bottom, front and back, left and right, so ___ faces."
+14:41:19.158 [server t4] model taxila-gpt6 chat 200 1448ms in=1255 out=62 prompt="You read ONE turn from an Indian school child (class 1-9) i…" sha=5918310ed751328d
+            → "{"intent":"check_my_work","also":[],"answer":"Corner वह point है जहाँ edges मिलते हैं।","topic":"3D shapes के corners","learning":true,"in_bounds":true,"lang_to":"","method":"","distress":false,"confidence":0.88}"
+14:41:19.219 [server t4] TURN 4 move=practice beat=practice_set item=fade:1
+            she says: "Haan, corner woh point hai jahan edges milte hain. Khaali jagah bharo: Faces: top and bottom, front and back, left and right, so ___ faces."
+            accepted: move,knobs
+            reasons: lane.cascade turn.speculation_hit turn.prefetch_adopted cls.no_evidence cls_source.model verdict.ungraded conv2.note.check_my_work
+14:41:19.219 [server t4] classify no_evidence via model verdict=attempt
+14:41:19.219 [server t4] safety distress=false
+14:41:19.219 [server t4] db.write {"seqs":0,"turn":4,"table":"turn","lessonId":"bddd1a3f-fed1-40bb-8d72-6b1146f532a3","brainTrace":true}
+14:41:19.220 [server t4] ← POST /api/lesson/turn 200 1003ms
+14:41:20.109 [server t4] model taxila-gpt6-luna chat 200 1831ms in=1091 out=183 prompt="task: draw the teacher's spoken line on a classroom whitebo…" sha=83b0669ab63eb601
+            → "{"ops":[{"id":"worked","op":"text","at":[96,40],"text":"worked example","size":"m","t":[800,1333]},{"id":"boxfront","op":"rect","at":[190,91],"w":116,"h":76,"t":[1333,2750]},{"id":"boxtop","op":"polygon","points":[[190,91],[222,66],[338,66…"
+14:41:22.505 [server] ← POST /api/voice/tts-stream 200 3283ms
+14:41:28.233 [server t5] ← POST /api/lesson/turn-prefetch 202 104ms
+14:41:28.517 [server t5] ← POST /api/lesson/turn-prefetch 202 57ms
+14:41:28.844 [server t5] ← POST /api/lesson/turn-prefetch 202 75ms
+14:41:29.056 [server t5] model grok-4-1-fast-non-reasoning chat 200 826ms in=1050 out=38 prompt="You label one reply from an Indian school child (class 4) i…" sha=daed5bdfb3fa2696
+            → "{"match":"dont_know","reason":"none","confidence":1,"off_topic":false,"distress":false,"asks_for_answer":false,"wants_to_stop":false}"
+14:41:29.242 [server t5] model grok-4-1-fast-non-reasoning chat 200 728ms in=1051 out=38 prompt="You label one reply from an Indian school child (class 4) i…" sha=074caab3927e9a75
+            → "{"match":"dont_know","reason":"none","confidence":1,"off_topic":false,"distress":false,"asks_for_answer":false,"wants_to_stop":false}"
+14:41:29.310 [server t5] model taxila-gpt6 chat 200 1087ms in=1277 out=47 prompt="You read ONE turn from an Indian school child (class 1-9) i…" sha=a22fcbcc986c55f1
+            → "{"intent":"repeat","also":["dont_know"],"answer":"","topic":"","learning":false,"in_bounds":true,"lang_to":"","method":"","distress":false,"confidence":0.96}"
+14:41:29.433 [server t5] ← POST /api/lesson/turn-ack 204 1295ms
+14:41:29.687 [server t5] model taxila-fast chat 200 1393ms in=1465 out=28 prompt="WHO YOU ARE: Asha — the child calls you Asha didi - an AI t…" sha=fc717ab930316a7f
+            → "Koi baat nahi, Aarav. Ek-ek pair gino: top-bottom, front-back, aur left-right."
+14:41:29.706 [server t5] model grok-4-1-fast-non-reasoning chat 200 864ms in=144 out=6 prompt="A reply from an Indian school child (class 4) in a lesson, …" sha=50d0eca40d5824cb
+            → "{"distress":false}"
+14:41:29.715 [server t5] ← POST /api/lesson/turn-ack 204 1252ms
+14:41:29.778 [server t5] model taxila-fast chat 200 1486ms in=1482 out=36 prompt="WHO YOU ARE: Asha — the child calls you Asha didi - an AI t…" sha=2e0898c8e2fa2d2c
+            → "Koi baat nahi, Aarav. Pehle top-bottom ko ek pair samjho, phir front-back aur left-right ko pairs mein ginो."
+14:41:29.969 [server t5] CHILD → "मुझे नहीं पता, एक बार और बताओ ना।" (POST /api/lesson/turn)
+14:41:30.020 ⚠ [server t5] studio slot refused  why: Studio v2 game is only its board twin at p360 (a 1000-unit world in that box): not the game at all three sizes
+14:41:30.042 [server t5] ← POST /api/lesson/turn-ack 204 1272ms
+14:41:30.060 [server t5] model taxila-gpt6 chat 200 1548ms in=1278 out=47 prompt="You read ONE turn from an Indian school child (class 1-9) i…" sha=42efe67fee8fd452
+            → "{"intent":"dont_know","also":["repeat"],"answer":"","topic":"","learning":false,"in_bounds":true,"lang_to":"","method":"","distress":false,"confidence":0.98}"
+14:41:30.074 [server t5] model taxila-fast chat 200 1514ms in=1483 out=33 prompt="WHO YOU ARE: Asha — the child calls you Asha didi - an AI t…" sha=2e1ed0e16bdc9b09
+            → "Aarav, pehle top-bottom ko ek pair gino. Phir front-back aur left-right ko alag-alag pairs gino."
+14:41:30.230 [server t5] model taxila-fast chat 200 1663ms in=1459 out=43 prompt="WHO YOU ARE: Asha — the child calls you Asha didi - an AI t…" sha=e61670e6b582d9a8
+            → "Haan Aarav, tumne bilkul sahi kaha: edges jahan milte hain, wahi corner hota hai. Chalo, ab faces ko ek-ek karke ginte hain."
+14:41:30.311 [server t5] model taxila-fast chat 200 1746ms in=1466 out=32 prompt="WHO YOU ARE: Asha — the child calls you Asha didi - an AI t…" sha=3ffca01ebfefaac7
+            → "Aarav, same move karo: top-bottom, front-back, aur left-right ko alag-alag face-pairs mein gino."
+14:41:30.492 [server t5] model grok-4-1-fast-non-reasoning chat 200 468ms in=147 out=6 prompt="A reply from an Indian school child (class 4) in a lesson, …" sha=76f3976288571a84
+            → "{"distress":false}"
+14:41:30.705 [server t5] model taxila-fast chat 200 2410ms in=1458 out=40 prompt="WHO YOU ARE: Asha — the child calls you Asha didi - an AI t…" sha=84c0c560fd750e08
+            → "Aarav, tumne bilkul sahi kaha: edges jahan milte hain, wahi corner hota hai. Chalo, ab faces ko dhyaan se ginेंगे."
+14:41:30.864 [server t5] model taxila-fast chat 200 1078ms in=1477 out=35 prompt="WHO YOU ARE: Asha — the child calls you Asha didi - an AI t…" sha=32faccfac99c9e5a
+            → "Koi baat nahi, Aarav. Top-bottom, front-back, left-right ke teen pairs gin kar khaali jagah bharo: ___ faces."
+14:41:31.227 [server t5] ← POST /api/lesson/turn-ack 204 1260ms
+14:41:31.509 [server t5] model taxila-fast chat 200 1278ms in=1381 out=46 prompt="WHO YOU ARE: Asha — the child calls you Asha didi - an AI t…" sha=7ba705a6eadb9daf
+            → "Aarav, tum faces ki ginti dobara sochna chahte ho. Cube shape ke stage prop par teen edges ek point par milti hain. Woh point face, edge ya corner hai?"
+14:41:31.529 [server t5] model taxila-fast chat 200 823ms in=1380 out=48 prompt="WHO YOU ARE: Asha — the child calls you Asha didi - an AI t…" sha=e3e003efc7ab2585
+            → "Aarav, tum pooch rahe ho ki cube mein कुल कितने faces hote hain। Cube shape ke stage prop par teen edges ek point par milti hain. Woh point face, edge ya corner hai?"
+14:41:31.810 [server t5] model taxila-fast chat 200 1312ms in=1513 out=51 prompt="WHO YOU ARE: Asha — the child calls you Asha didi - an AI t…" sha=f2e563ced82b1e19
+            → "Aarav, cuboid ke faces jodi mein hote hain: upar-neeche, aage-peeche, aur left-right. Ginti ke liye in chhe surfaces ko ek-ek karke count karo."
+14:41:31.876 [server t5] TURN 5 move=probe beat=probe item=c4-maths-ch01-t01-rl-h1
+            she says: "Aarav, cuboid ke faces jodi mein hote hain: upar-neeche, aage-peeche, aur left-right. Ginti ke liye in chhe surfaces ko ek-ek karke count karo. School display ke liye Meera sticks se cube ka frame banati hai. Kisi bhi ek corner par kitni stick-edges milti hain?"
+            accepted: move,knobs
+            reasons: lane.cascade cls.no_evidence cls_source.bytes verdict.ungraded request.deeper
+14:41:31.876 [server t5] classify no_evidence via request verdict=unverified
+14:41:31.876 [server t5] safety distress=false
+14:41:31.876 [server t5] db.write {"seqs":0,"turn":5,"table":"turn","lessonId":"bddd1a3f-fed1-40bb-8d72-6b1146f532a3","brainTrace":true}
+14:41:31.877 [server t5] ← POST /api/lesson/turn 200 1907ms
+14:41:32.422 [server t5] model taxila-fast chat 200 906ms in=1410 out=37 prompt="WHO YOU ARE: Asha — the child calls you Asha didi - an AI t…" sha=a202700c19322ee0
+            → "Bilkul Aarav, tumne sahi kaha: edges jahan milti hain, woh corner hai. Cube prop mein aisa point kya kehlaayega?"
+14:41:32.572 [server t5] model taxila-fast chat 200 1037ms in=1441 out=34 prompt="WHO YOU ARE: Asha — the child calls you Asha didi - an AI t…" sha=99f465ef60271b03
+            → "Bilkul Aarav, tumne sahi kaha: edges jahan milti hain, woh corner hai. Woh point face, edge ya corner hai?"
+14:41:35.341 [server] ← POST /api/voice/tts-stream 200 3463ms
+14:41:39.103 [server t6] ← POST /api/lesson/turn-prefetch 202 81ms
+14:41:39.106 [server t6] ← POST /api/lesson/turn-ack 204 81ms
+14:41:39.656 [server t6] ← POST /api/lesson/turn-ack 204 59ms
+14:41:39.670 [server t6] ← POST /api/lesson/turn-prefetch 202 75ms
+14:41:39.956 [server t6] model grok-4-1-fast-non-reasoning chat 200 857ms in=1087 out=37 prompt="You label one reply from an Indian school child (class 4) i…" sha=824d5ccd7f0f0201
+            → "{"match":"no_attempt","reason":"none","confidence":1,"off_topic":true,"distress":false,"asks_for_answer":false,"wants_to_stop":false}"
+14:41:40.094 [server t6] CHILD → "बस ऐसे ही पता था।" (POST /api/lesson/turn)
+14:41:40.367 [server t6] model taxila-fast chat 200 1220ms in=1519 out=33 prompt="WHO YOU ARE: Asha — the child calls you Asha didi - an AI t…" sha=3197dac5fd722f61
+            → "Ek corner ko ek chhota dot samjho. Us dot se nikalti sticks ko alag-alag ungli se trace karo."
+14:41:40.387 [server t6] model taxila-gpt6 chat 200 1291ms in=1350 out=44 prompt="You read ONE turn from an Indian school child (class 1-9) i…" sha=857e90ced9496184
+            → "{"intent":"backchannel","also":[],"answer":"","topic":"","learning":false,"in_bounds":true,"lang_to":"","method":"","distress":false,"confidence":0.68}"
+14:41:40.444 [server t6] model taxila-fast chat 200 1295ms in=1481 out=27 prompt="WHO YOU ARE: Asha — the child calls you Asha didi - an AI t…" sha=c8c4da0afbaf5c99
+            → "Theek hai, Aarav. Corner par milne wali sticks ko ek-ek karke ungli se trace karo."
+14:41:40.463 [server t6] model taxila-fast chat 200 1311ms in=1495 out=36 prompt="WHO YOU ARE: Asha — the child calls you Asha didi - an AI t…" sha=4138f1addf73a47c
+            → "Haan Aarav, tumne sahi kaha: edges milne wala point corner hota hai. Ab ek naya solid-shape example dekhenge."
+14:41:40.555 [server t6] model grok-4-1-fast-non-reasoning chat 200 888ms in=1090 out=37 prompt="You label one reply from an Indian school child (class 4) i…" sha=c13846b06cebe716
+            → "{"match":"no_attempt","reason":"none","confidence":1,"off_topic":false,"distress":false,"asks_for_answer":false,"wants_to_stop":false}"
+14:41:40.631 [server t6] model taxila-fast chat 200 913ms in=1522 out=35 prompt="WHO YOU ARE: Asha — the child calls you Asha didi - an AI t…" sha=ab12400e32c00500
+            → "Theek hai, Aarav. Kisi ek corner ko dhyan se dekho, aur wahan milne wali sticks ko ek-ek karke trace karo."
+14:41:40.768 [server t6] model taxila-fast chat 200 1046ms in=1498 out=35 prompt="WHO YOU ARE: Asha — the child calls you Asha didi - an AI t…" sha=2a34e506e6133636
+            → "Haan Aarav, tumne sahi kaha: ek corner par teen edges milti hain. Ab nayi shape ko dhyaan se dekhenge."
+14:41:41.137 [server t6] model taxila-gpt6 chat 200 1472ms in=1353 out=44 prompt="You read ONE turn from an Indian school child (class 1-9) i…" sha=58a32d29206dfe88
+            → "{"intent":"backchannel","also":[],"answer":"","topic":"","learning":false,"in_bounds":true,"lang_to":"","method":"","distress":false,"confidence":0.79}"
+14:41:41.158 [server t6] model taxila-fast chat 200 1438ms in=1484 out=32 prompt="WHO YOU ARE: Asha — the child calls you Asha didi - an AI t…" sha=9ad6bdb664b73ff5
+            → "Theek hai, Aarav. Corner par milti hui stick-edges ko ek-ek karke ungli se trace karke gino."
+14:41:41.217 [server t6] TURN 6 move=repair beat=probe item=c4-maths-ch01-t01-rl-h1
+            she says: "Theek hai, Aarav. Corner par milti hui stick-edges ko ek-ek karke ungli se trace karke gino. School display ke liye Meera sticks se cube ka frame banati hai. Kisi bhi ek corner par kitni stick-edges milti hain?"
+            accepted: move,knobs
+            reasons: lane.cascade turn.speculation_hit turn.prefetch_adopted cls.no_evidence cls_source.model verdict.ungraded conv2.note.backchannel
+14:41:41.217 [server t6] classify no_evidence via model verdict=unverified
+14:41:41.217 [server t6] safety distress=false
+14:41:41.217 [server t6] db.write {"seqs":0,"turn":6,"table":"turn","lessonId":"bddd1a3f-fed1-40bb-8d72-6b1146f532a3","brainTrace":true}
+14:41:41.218 [server t6] ← POST /api/lesson/turn 200 1124ms
+14:41:41.237 [server t6] model taxila-fast chat 200 774ms in=1417 out=46 prompt="WHO YOU ARE: Asha — the child calls you Asha didi - an AI t…" sha=d6f8c4ae34ef3c2a
+            → "Theek hai, Aarav—tumne edge aur corner ka farq samjha. Cube shape ke stage prop par teen edges ek point par milti hain. Woh point face, edge ya corner hai?"
+14:41:41.484 [server t6] model taxila-fast chat 200 715ms in=1420 out=43 prompt="WHO YOU ARE: Asha — the child calls you Asha didi - an AI t…" sha=40e43120859ab4b9
+            → "Tumne bataya ki corner woh point hai jahan edges milti hain. Cube shape ke stage prop par teen edges ek point par milti hain. Woh point face, edge ya corner hai?"
+14:41:42.573 [server t6] model taxila-fast chat 200 1087ms in=1476 out=53 prompt="WHO YOU ARE: Asha — the child calls you Asha didi - an AI t…" sha=d824409b2397ae4f
+            → "Bilkul, Aarav—tumne sahi kaha: edges jahan milti hain, woh point corner hota hai. Cube shape ke stage prop par teen edges ek point par milti hain. Woh point face, edge ya corner hai?"
+14:41:42.665 [server t6] model taxila-fast chat 200 1425ms in=1446 out=46 prompt="WHO YOU ARE: Asha — the child calls you Asha didi - an AI t…" sha=daf6119574a99eaf
+            → "Bilkul Aarav, tumne sahi kaha: edges jahan milti hain, woh corner hota hai. Cube shape ke stage prop par teen edges ek point par milti hain—woh kya hai?"
+14:41:43.665 [server t6] model taxila-fast chat 200 1088ms in=1576 out=37 prompt="WHO YOU ARE: Asha — the child calls you Asha didi - an AI t…" sha=2a25f9ff708ef00c
+            → "Bilkul, Aarav—tumne sahi kaha: corner woh point hai jahan edges milti hain. Ab next shape ko dhyaan se dekhenge."
+14:41:43.703 [server t6] model taxila-fast chat 200 1034ms in=1576 out=37 prompt="WHO YOU ARE: Asha — the child calls you Asha didi - an AI t…" sha=f2a4b2dfcbb01d99
+            → "Haan, Aarav, tumne sahi kaha: corner woh point hai jahan edges milti hain. Ab isi baat ko stage prop par lagao."
+14:41:45.408 [server] ← POST /api/voice/tts-stream 200 4188ms

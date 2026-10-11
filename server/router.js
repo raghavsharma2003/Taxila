@@ -197,11 +197,12 @@ function traceRequest(req, res, key, known, t0Wall, t0, ctx, store) {
   try {
     const url = new URL(req.url || "/", "http://x");
     const query = Object.fromEntries(url.searchParams);
+    const who = { sid: store.sid, pid: store.pid, rid: store.rid, gid: store.gid, cid: store.cid, turn: store.turn, accountTier: store.tier };
     record("srv.req", { route: known ? key : `${req.method} (unmatched)`, method: req.method, query, body: ctx.body ?? null,
-      ua: String(req.headers?.["user-agent"] ?? "").slice(0, 160) }, { t: t0Wall, sid: store.sid, rid: store.rid });
+      ua: String(req.headers?.["user-agent"] ?? "").slice(0, 160) }, { t: t0Wall, ...who });
     record("srv.res", { route: known ? key : `${req.method} (unmatched)`, status: res.statusCode, ms: Math.round(performance.now() - t0),
       body: store.resBody ?? null, ...(ctx.err ? { err: `${ctx.err.constructor?.name || "Error"}${ctx.err.code ? `:${ctx.err.code}` : ""}` } : {}),
-      ...(store.streamed ? { streamed: true } : {}) }, { sid: store.sid, rid: store.rid });
+      ...(store.streamed ? { streamed: true } : {}) }, who);
   } catch { /* the recorder never breaks a request */ }
 }
 

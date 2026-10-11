@@ -13,10 +13,22 @@ const FLUSH_MS = Number(process.env.TAXILA_TRACE_FLUSH_MS) || 1000;
 export const MAX_BUFFER = Number(process.env.TAXILA_TRACE_MAX_BUFFER) || 5000;
 /** Rows per insert statement. */
 const ROWS_PER_INSERT = 400;
+/** One insert may take this long; past it the chunk counts as dropped and the writer moves on (a hung connection must
+ *  never stall the recorder: observed 2026-10-11 on a local production build, every event after one hung insert was lost). */
+export const INSERT_DEADLINE_MS = 8000;
+const insertDeadline = () => Number(process.env.TAXILA_TRACE_INSERT_MS) || INSERT_DEADLINE_MS;
+const withDeadline = (p, ms) => new Promise((resolve, reject) => {
+  const timer = setTimeout(() => reject(new Error(`trace insert timed out after ${ms} ms`)), ms); // ref'd: cleared when the insert settles
+  Promise.resolve(p).then((v) => { clearTimeout(timer); resolve(v); }, (e) => { clearTimeout(timer); reject(e); });
+});
 
 const state = { buf: [], seq: 0, dropped: 0, reported: 0, timer: null, flushing: null, failures: 0, written: 0, insert: null, off: null };
 
-export const traceOff = () => (state.off ?? (process.env.TAXILA_TRACE === "off"));
+// Under `node --test` (npm test runs every file in one process) the recorder is OFF unless TAXILA_TRACE=on: its background
+// flushes would otherwise call the database (fetch) inside unrelated tests that stub fetch or count queries. Tests of the
+// recorder turn it on through _setTraceDeps({ off: false }); spawned route runners (no --test flag) record as production does.
+const UNDER_TEST = process.execArgv.includes("--test");
+export const traceOff = () => (state.off ?? (process.env.TAXILA_TRACE === "off" || (UNDER_TEST && process.env.TAXILA_TRACE !== "on")));
 
 /** Tests only: replace the insert (rows → Promise), turn the recorder on/off, read the counters. */
 export function _setTraceDeps({ insert, off } = {}) {
@@ -24,7 +36,10 @@ export function _setTraceDeps({ insert, off } = {}) {
   if (off !== undefined) state.off = off;
   return state;
 }
-export function _resetTrace() { state.buf = []; state.dropped = 0; state.reported = 0; state.written = 0; state.failures = 0; }
+export function _resetTrace() {
+  if (state.timer) clearTimeout(state.timer);
+  Object.assign(state, { buf: [], dropped: 0, reported: 0, written: 0, failures: 0, timer: null, flushing: null });
+}
 export const traceStats = () => ({ buffered: state.buf.length, dropped: state.dropped, written: state.written, failures: state.failures });
 
 /**
@@ -35,6 +50,7 @@ export const traceStats = () => ({ buffered: state.buf.length, dropped: state.dr
  *   tier 2 events are kept only when the request's account is on TAXILA_TRACE_FULL_FOR (or o.force2)
  */
 export function record(kind, data, o = {}) {
+  const p0 = PROFILE ? performance.now() : 0;
   try {
     if (traceOff()) return;
     const c = traceCtx() ?? {};
@@ -43,14 +59,27 @@ export function record(kind, data, o = {}) {
     if (state.buf.length >= MAX_BUFFER) { state.dropped++; return; }
     const { data: d } = fit(data);
     state.buf.push({
-      v: 1, sid: String(o.sid ?? c.sid ?? c.pid ?? "server").slice(0, 80), pid: o.pid ?? c.pid ?? null,
+      // no lesson and no page load: the guardian's own stream (signup, consent, /api/me, the parent corner), else "server"
+      v: 1, sid: String(o.sid ?? c.sid ?? c.pid ?? (isUuid(o.gid ?? c.gid) ? `g:${o.gid ?? c.gid}` : "server")).slice(0, 80), pid: o.pid ?? c.pid ?? null,
       cid: isUuid(o.cid ?? c.cid) ? (o.cid ?? c.cid) : null, gid: isUuid(o.gid ?? c.gid) ? (o.gid ?? c.gid) : null,
       src: o.src === "worker" ? "worker" : "server", seq: ++state.seq, t: o.t ?? Date.now(), kind: String(kind).slice(0, 80),
       turn: Number.isInteger(o.turn ?? c.turn) ? (o.turn ?? c.turn) : null, rid: o.rid ?? c.rid ?? null, tier, data: d,
     });
     schedule();
   } catch { /* the recorder never breaks a lesson */ }
+  finally { if (PROFILE) profileAdd(o.rid ?? traceCtx()?.rid ?? "-", performance.now() - p0, kind === "srv.res" ? data?.route : null); }
 }
+
+// ── the budget measurement (TAXILA_TRACE_PROFILE=1): time spent inside record() per request id, and in the flush's
+// serialisation (off the request path, but on the same event loop). evals read traceProfile(). Off in production.
+const PROFILE = process.env.TAXILA_TRACE_PROFILE === "1";
+const prof = { byRid: new Map(), flushMs: 0, flushes: 0 };
+function profileAdd(rid, ms, route) {
+  const e = prof.byRid.get(rid) ?? { ms: 0, n: 0, route: null };
+  e.ms += ms; e.n++; if (route) e.route = route;
+  prof.byRid.set(rid, e);
+}
+export const traceProfile = () => ({ byRid: [...prof.byRid.entries()].map(([rid, e]) => ({ rid, ...e })), flushMs: prof.flushMs, flushes: prof.flushes });
 
 function schedule() {
   if (state.timer) return;
@@ -87,7 +116,12 @@ export function flushTrace() {
       }
       while (state.buf.length) {
         const chunk = state.buf.splice(0, ROWS_PER_INSERT);
-        try { n += await (state.insert ?? insertTraceRows)(chunk); state.written += chunk.length; }
+        try {
+          const f0 = PROFILE ? performance.now() : 0;
+          const p = (state.insert ?? insertTraceRows)(chunk);
+          if (PROFILE) { prof.flushMs += performance.now() - f0; prof.flushes++; } // the synchronous part: serialising the chunk
+          n += await withDeadline(p, insertDeadline()); state.written += chunk.length;
+        }
         catch (e) {
           state.failures++; state.dropped += chunk.length;
           if (state.failures <= 3 || state.failures % 50 === 0) console.warn(`[trace] write failed (${chunk.length} events dropped):`, String(e?.message ?? e).slice(0, 160));
