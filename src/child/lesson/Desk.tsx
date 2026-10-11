@@ -3,6 +3,8 @@
 // something) · the Answer dock. Presentational: it renders a DeskModel (useDesk.ts builds it from the runtime;
 // the dev fixtures write it by hand). Two geometries (Face, Work) plus the Keyboard mode, solved in dp by
 // deskLayout.ts from the container, never a viewport query. 1280: two columns, so nothing jumps at a phase change.
+import { useTraceTier } from "../../trace/useTier.ts";
+import { flagMoment, flagNote } from "../../trace/flag.ts";
 import { useCallback, useEffect, useLayoutEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import type { TapSource } from "../../avatar/tap.ts";
 import type { Floor } from "../../lesson/floor.ts";
@@ -286,7 +288,11 @@ export function Desk({ m, a, media, dockRef, live, onSize, notMeWindow, phaseLin
 function TopBar({ m, a, notMeWindow, phaseLine, wide }: { m: DeskModel; a: DeskProps["a"]; notMeWindow: boolean; phaseLine: boolean; wide: boolean }) {
   const young = m.family === "young";
   const [menu, setMenu] = useState(false);
-  const closeMenu = useCallback(() => setMenu(false), []);
+  // r12 flight recorder, tier 2 (the owner cohort) only: the REC chip, and "Flag this moment" in the ⋯ menu
+  const rec = useTraceTier() === 2;
+  const [flagged, setFlagged] = useState<number | null>(null);
+  const [note, setNote] = useState("");
+  const closeMenu = useCallback(() => { setMenu(false); setFlagged(null); setNote(""); }, []);
   useEffect(() => {
     if (!menu) return;
     const off = (e: MouseEvent) => { if (!(e.target as HTMLElement).closest?.(".dk-more")) closeMenu(); };
@@ -306,18 +312,30 @@ function TopBar({ m, a, notMeWindow, phaseLine, wide }: { m: DeskModel; a: DeskP
         )}
         {!young && <PhaseLine phase={m.phase} full={wide} enabled={phaseLine} />}
         {m.offlineBadge && <span className="dk-badge"><Glyph name="cloud_slash" size={18} />{t("bar.offline")}</span>}
+        {rec && <span className="dk-rec" data-testid="rec-chip" title={t("bar.rec_title")}><i aria-hidden="true" />{t("bar.rec")}</span>}
       </div>
       <button type="button" className="dk-cc" onClick={a.toggleCaptions} aria-pressed={m.captionsOn} aria-label={m.captionsOn ? t("bar.captions_on") : t("bar.captions_off")} data-testid="cc">
         <Glyph name="cc" size={young ? 28 : 24} />
       </button>
-      {notMeWindow && a.notMe && (
+      {((notMeWindow && a.notMe) || rec) && (
         <span className="dk-more">
-          <button type="button" className="dk-cc" aria-expanded={menu} aria-label={t("bar.more")} onClick={() => setMenu((v) => !v)} data-testid="more">
+          <button type="button" className="dk-cc" aria-expanded={menu} aria-label={t("bar.more")} onClick={() => (menu ? closeMenu() : setMenu(true))} data-testid="more">
             <Glyph name="more" size={24} />
           </button>
           {menu && (
             <span className="dk-menu" role="menu">
-              <button type="button" role="menuitem" className="dk-row" onClick={() => { closeMenu(); a.notMe?.(); }}>{t("bar.not_me")}</button>
+              {notMeWindow && a.notMe && <button type="button" role="menuitem" className="dk-row" onClick={() => { closeMenu(); a.notMe?.(); }}>{t("bar.not_me")}</button>}
+              {rec && flagged === null && (
+                <button type="button" role="menuitem" className="dk-row" data-testid="flag-moment"
+                  onClick={() => setFlagged(flagMoment({ floor: m.floor, ask: m.ask?.text ?? null, tray: m.tray?.kind ?? null }))}>{t("bar.flag")}</button>
+              )}
+              {rec && flagged !== null && (
+                <form className="dk-flagnote" onSubmit={(e) => { e.preventDefault(); flagNote(flagged, note); closeMenu(); }}>
+                  <span className="dk-flagdone" role="status">{t("bar.flag_done")}</span>
+                  <input className="dk-input" value={note} onChange={(e) => setNote(e.target.value)} placeholder={t("bar.flag_note")} aria-label={t("bar.flag_note")} data-testid="flag-note" />
+                  <button type="submit" className="dk-row" data-testid="flag-save">{note.trim() ? t("bar.flag_save") : t("bar.flag_skip")}</button>
+                </form>
+              )}
             </span>
           )}
         </span>

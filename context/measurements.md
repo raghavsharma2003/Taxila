@@ -3849,3 +3849,65 @@ The full-page sheets are taken after scrolling the page in steps and requiring e
   - Trace: `studio.rung_replaced` on 11 of 14 rows and `turn.speculation_miss` on 12 of 14, with no record of what was replaced or why.
   - The next lesson, b08fe8a7 (14:06 UTC, 7 turns), repeats the table on both board pages.
   - What the tables cannot show: what the phone displayed (the owner reports drawings over previous content), image load or fail, audio played, the mic mode, the prompts and raw outputs, client errors.
+
+
+<!-- merged from inbox/r4-main-1545.json -->
+- `ms-r4-owner-cohort-wrong-email` (2026-10-11 15:45 UTC). Method: read-only SELECTs on production. Every guardian not on a test domain, listed by email DOMAIN and sha256 prefix only (scratchpad realguardians.mjs); the guardian of child 6fc3f68e checked against sha256(the Claude-account email) (childowner.mjs); the live taxila-web template checked with cohortcheck.mjs.
+  - Live template: TAXILA_DUPLEX_LIVE_FOR, TAXILA_UI_KAKSHA, TAXILA_SESSION_FIRST_FOR and TAXILA_FACE_LOOK_FOR each hold exactly that one hash.
+  - No guardian row has that email.
+  - 5 non-test guardians exist. The owner's test child 6fc3f68e ('Kiko', both of today's c9 lessons) belongs to a gmail.com guardian (prefix 5930482d, created 2026-10-04, 3 children, last lesson 2026-10-11 14:06 UTC). A second gmail.com guardian (prefix 8693f455) was created 2026-10-11 06:53 UTC, minutes after the owner's 06:49 'it all looks the same' screenshot.
+  - So from release 8 to release 11 no owner-cohort feature reached the owner's sessions: Kaksha before release 11 made it the default, the school-day start, hands-free duplex, and grown-up Asha's lamp2 look. This also explains T-voice's WHY-TAP candidate (a): the duplex config answered 'not in cohort', so it was tap-to-talk.
+
+
+<!-- merged from inbox/r12-t-client.json -->
+## m-r12-tclient-replay-proof
+`tests/prod/r12-t-client-replay.mjs`, 2026-10-11, dev server, Playwright Chromium 412x915 DPR 1, reduced motion. Scripted lesson (real LessonRuntime, scripted Director) at tier 2: screenshots at 4 moments, then the rrweb recording rendered at the same Date.now(); plus a board page (Desk fixture work-beat). Differing pixels (grey diff > 32): 0, 0.054, 0, 0.123, 0.02 %; differing 32 px tiles (> 10 % differing pixels): 0, 0, 0, 2, 0. Pairs in docs/design/round4/build/r12/t-client/pair-*.png.
+
+## m-r12-tclient-budgets
+`tests/prod/r12-t-client-budget.mjs`, 2026-10-11, n = 3 interleaved rounds, SwiftShader GL (a lab proxy, not a phone). Tier 1: scripted lesson, 3 turns, CPU x4: the recorder's own time 0.33 % median, 0.41 % max of wall time; page TaskDuration with vs without +0.12 % median. Tier 2 rAF fps over 4 s: board 60.0-60.2 (60.4 without), Antariksh 3D 56.6-58.4 (58.4-60.1 without), rrweb running (about 16 canvas frames per window). Identity: no recorder vs a sabotaged tier-2 recorder: identical floor sequence, turn requests and visible text (REC chip excluded), no page error. Masking (`r12-t-client-masking.mjs`): 0 leaks of password, email, phone, PIN, plain text, bearer token or response token across tier-1 events and the rrweb stream.
+
+
+## Merged inbox entries (write-up from the entry text)
+- `ms-r12-tserver-budget-2026-10-11` (2026-10-11): Flight recorder server cost, in-process server, 3 lessons x 10 turns, real Azure, TAXILA_TRACE_PROFILE=1, US container, 2026-10-11: record() time inside a /api/lesson/turn request p50 0.69 / p95 1.62 / max 1.65 ms (n = 29, about 7 events per turn); every request p95 1.32 ms (n = 175). Flush serialisation about 0.11 ms per turn (21.6 KB of events per turn). Budget is 10 ms p95: met.
+- `ms-r12-tserver-hung-insert-2026-10-11` (2026-10-11): On a local production build (serve.mjs, Neon HTTP driver) one trace insert hung with no error, and every event after it was lost (1 of 6 turns recorded). Fix: an 8 s deadline per insert; the chunk counts as dropped and the writer moves on. The re-run recorded all 6 turns, 191 events, 0 dropped. Root cause of the hang not found (a stalled fetch through the proxy is suspected).
+- `ms-r12-tvoice-voice-turn-2026-10-11` (2026-10-11): r12 T-voice scripted voice turn (LOCAL production build, desktop Chromium fake mic, r4-timeline fake transcriber with fixed 750 ms, TEST accounts; not a phone, not a child; 2026-10-11). Cohort account: /api/duplex/config {duplex:'on', cohort:'owner'} in 46 ms; engine live 7.4 s after the lesson screen opened; mic.mode duplex with no headset; 38 voice events, 0 blobs at tier 1. Tier 2: 2 audio.tts.clip (117/105 KB) and 1 audio.mic.chunk (58 KB, webm/opus). Non-cohort: shadow, so tap, with reasons talk_pref_tap, no_headset_detected, echo_probe_not_built, duplex_shadow_only. Trace cost: 0.44 us per transcript delta, 6.6 us per final (Node 22)
+- `ms-r12-tvoice-owner-lessons-voice-2026-10-11` (2026-10-11): r12 T-voice, from the owner's two c9 lessons of 2026-10-11 (read-only RCA export): both ran the cascade lane. 16/17 child turns were spoken; 0/16 carry asr_conf (the live transcriber returns no logprobs, server/voice/stt.js); the talk mix marked 8/17 turns 'unclear'. No row records the talk mode (tap vs hands-free), so why the owner had to tap cannot be read from the database
+
+
+<!-- merged from inbox/r4-main-1630.json -->
+- `ms-r12-tvoice-owner-lessons-voice-2026-10-11` (T-voice, 2026-10-11). Method: read-only, from main's RCA export of the owner's two c9 lessons (docs/design/round4/build/r12/rca/owner-lessons-2026-10-11.json).
+  - Both lessons ran the cascade lane.
+  - 16 of 17 child turns were spoken, and 0 of those 16 carry asr_conf: the live transcriber returns no logprobs (server/voice/stt.js).
+  - The talk mix marked 8 of 17 turns 'unclear'.
+  - No row records the talk mode (tap vs hands-free), so why the owner had to tap could not be read from the database. The cause was found separately: ms-r4-owner-cohort-wrong-email.
+
+
+<!-- merged from inbox/r4-main-1715.json -->
+- `ms-r12-health-test-driver-memo` (2026-10-11, 16:56-17:15 UTC).
+  - Release 12's first gate on int/r4-rel12 d96f3e2 failed with 3,097 tests, 3,093 pass, 1 fail, 3 skipped. The fail was tests/eyes.test.mjs 'health: shallow by default; ?ready=1 checks the database and answers 503 without one': expected 503, got 200.
+  - Cause: server/db.js keeps its driver in a module-level `_driver` once any query has run. The test unsets DATABASE_URL and expects `select 1` to fail. In the single-process `node --test tests/` run, an earlier test had already queried, so the memoized driver answered.
+  - Evidence:
+    - (a) eyes.test.mjs alone passes 9/9, on release 12 and on base 0b8dc83, with and without a DB url.
+    - (b) a probe test that runs one `select 1` through db.js, followed by eyes.test.mjs in one process (--experimental-test-isolation=none, TEST url), fails exactly that test, 1/1.
+    - (c) none of release 12's server hooks touch readiness (router, http, index and auth diffs read).
+  - Production readiness is unaffected: a replica's memoized driver still fails `select 1` when the database is down.
+  - Fix (int/r4-rel12): db.js exports `_resetDriverForTests()`, and the test calls it before unsetting DATABASE_URL and again in its finally. The assertion stands unchanged. The primed probe now passes 10/10.
+  - Why release 11 passed: no in-process test before eyes.test.mjs had queried. That is file order, not a guarantee.
+
+
+<!-- merged from inbox/r4-main-1740.json -->
+- `ms-r12-pin-taps-recorded` (2026-10-11 17:25-17:30 UTC). Method: r4-asha-setup-journey on the packaged release 12 tree (local production server, Neon TEST branch), then `scripts/trace.mjs --session <pid>`.
+  - The timeline held `tap "2"`, `"5"`, `"8"`, `"0"`, `"Next"`, `"2"`, `"5"`, `"8"`, `"0"`, `"OK"` on /start/child: the journey's parent PIN 2580, twice, in tier 1, for every account.
+  - Cause: T-client's masking covers inputs (password, email, tel, autocomplete=pin). The shared src/ui/PinPad.tsx is a group of buttons, so `describeTarget` read each key's text as its label. The masking test had no button keypad in it.
+  - Fix:
+    - PinPad's root carries `data-trace-mask="pin"` and the class `rr-block`;
+    - `describeTarget` returns only `{tag: 'masked', label: '[masked]'}` for a tap inside `[data-trace-mask]`, before any label is read;
+    - tier 2's rrweb `blockSelector` includes `[data-trace-mask]`, so the pad replays as a blank block;
+    - tests/r12-pin-mask.test.mjs pins all three, and that every PIN entry (parent Gate, onboarding ChildProfile, Setup, Pages) goes through PinPad.
+  - Re-run journey on the rebuilt tree: the same 10 taps read `[masked]`; 0 events with a digit label in the session's JSON.
+- `ms-r12-packaged-checks` (2026-10-11, 17:20-17:40 UTC). Release 12 int/r4-rel12 2af8cfc, packaged (git archive minus docs/evals/tests/art, plus the gate's dist), local production server on the TEST branch.
+  - owner-5-visual: 12/14, the animation answered in words (V3.child_draws), 11/12 visuals.
+  - round2-content: 35/39.
+  - r4-content-boards: 3/5 when run in parallel with the other two batteries (3 slots unfilled, plus the known 1/52 W4 contradiction); 5/5 when re-run alone. Read: load variance, not the recorder. The recorder's studio and board hooks are synchronous, inside `record()`'s own try/catch, and read only optional properties.
+  - The batteries' own sessions left no trace rows, because each deletes its test account at the end and the trace rows cascade: the erasure path, seen working.
+  - Journey: 5 steps, 22 taps, first sound at 21.7 s (phone) and 21.5 s (laptop). Hello in Volt day, then /c/:id/lesson/new. `trace.mjs --session` showed 83 and 72 client events per page load: route, dev.info, labelled taps, net with status and ms, mic mode tap, desk state, card, tray, media mounts, and a perf.longtask of 901 ms on Hello.

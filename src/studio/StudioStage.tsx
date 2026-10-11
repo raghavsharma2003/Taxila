@@ -25,6 +25,7 @@ import { fitStage, validStage, type StageFit } from "./fit.ts";
 import { rendererFor, type StudioStageEvent } from "./renderers.ts";
 import { StageMomentContext, type StageMoment } from "./stageContext.ts";
 import { lessonOfIntent, studioApi, usePartial, useStudioSlot } from "./useStudio.ts";
+import { traceStage } from "../trace/lesson.ts";
 import { partialDocument } from "./kit/bundle.ts";
 import { sanitizePartial } from "./kit/sanitize.ts";
 import { boardFrame, type BoardFrame } from "./boardView.ts";
@@ -255,6 +256,12 @@ export function StudioStage({ slot: given, young, lang, onEvent }: { slot: Studi
     onEvent?.({ type: "empty", slotId: slot.slotId });
   }, [gone, slot.state, slot.artifact, slot.slotId, twin, swap, onEvent]);
   const phase = phaseOf(state, !!artifact);
+  // r12 flight recorder: what the stage shows, each time it changes (the slot, its state, the artifact kind, a twin, a swap)
+  useEffect(() => {
+    traceStage({ slot: slot.slotId, intent: slot.intentId, mount: mountId.current, epoch, state, phase, kind: artifact?.kind ?? null, twin: !!twin, swap: swap?.kind ?? null, gone,
+      card: card?.kind ?? null, box: fit ? { w: Math.round(fit.w), h: Math.round(fit.h) } : null, renderer: artifact ? !!rendererFor(artifact.kind) : null });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [slot.slotId, state, phase, artifact, epoch, twin, swap, gone, !!fit]);
   const interactive = phase === "live" || phase === "reveal";
   const teacher = useTeacherName()?.name || "Your teacher";
   const caption = useMemo(() => tw2h(`making.${Math.abs(hashStr(lessonId ?? "")) % 3}` as "making.0", { T: teacher }), [lessonId, teacher]);
@@ -264,6 +271,8 @@ export function StudioStage({ slot: given, young, lang, onEvent }: { slot: Studi
   const latest = useRef(onEvent);
   latest.current = onEvent;
   const emit = useCallback((e: StudioStageEvent) => {
+    // r12 flight recorder: what the piece on screen reported (ready, done, error with its reason, answer, empty)
+    if (e.type !== "answer") traceStage({ event: e.type, kind: artifact?.kind, slot: slot.slotId, mount: mountId.current, epoch, ...("reason" in e ? { reason: (e as { reason?: string }).reason } : {}), ...("message" in e ? { message: String((e as { message?: string }).message ?? "").slice(0, 300) } : {}) });
     // a renderer's own "answer" is only the child's claim: the lesson hears the HOST's verdict ("graded", below)
     if (e.type !== "answer" && e.type !== "graded") latest.current?.(e);
     // round 3 forge: a play level whose layout refused this box, or an engine that failed, shows its board twin (when it

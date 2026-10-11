@@ -33,6 +33,8 @@ import { routes as relational } from "./relational/routes.js";
 // round 3 play: /api/play/* (the game families' sessions, raw-act re-grading, the world). One-line seam; the routes live in
 // server/play (docs/design/round3/play/GRAMMAR.md §6). No model call on any play route.
 import { routes as play } from "./play/routes.js";
+// release 12 flight recorder: POST /api/trace/batch and /api/trace/blob (T-server, server/trace). One line.
+import { routes as trace } from "./trace/routes.js";
 
-register({ ...lesson, ...tts, ...parent, ...modules, ...voice, ...tutor, ...forge, ...child, ...testClock, ...studio, ...voicesig, ...duplex, ...duplexShadow, ...face, ...relational, ...latency, ...play, ...lane });
+register({ ...lesson, ...tts, ...parent, ...modules, ...voice, ...tutor, ...forge, ...child, ...testClock, ...studio, ...voicesig, ...duplex, ...duplexShadow, ...face, ...relational, ...latency, ...play, ...trace, ...lane });
 export { handle, register };

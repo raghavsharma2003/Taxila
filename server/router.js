@@ -11,6 +11,9 @@ import { HttpError, readJson, send } from "./http.js";
 import * as account from "./routes/account.js";
 // W1-C seam: each request runs on its session's clock (a @taxila.test account may hold an offset; everyone else: real time).
 import { realNow, runRequestClock } from "./comprehension/testclock.js";
+// release 12 flight recorder (server/trace): one trace store per request, srv.req / srv.res at the end of it.
+import { runTrace, ridOf, pidOf, isUuid } from "./trace/context.js";
+import { record } from "./trace/writer.js";
 
 const REVISION = process.env.CONTAINER_APP_REVISION || null;
 /** The operator key (a Container App secret, deploy-azure.mjs SECRET_ENV): fresh health numbers, the forced 500. */
@@ -187,17 +190,46 @@ function accessLog(req, res, key, known, t0, ctx) {
   process.stdout.write(JSON.stringify(line) + "\n");
 }
 
+/** Paths whose requests are not recorded as srv.* (the recorder's own endpoints, liveness, the error beacon). */
+const UNTRACED = /^\/api\/(trace\/|health$|client-error$)/;
+/** Release 12: srv.req (stamped at the request's start) and srv.res at its end, with the store auth filled meanwhile. */
+function traceRequest(req, res, key, known, t0Wall, t0, ctx, store) {
+  try {
+    const url = new URL(req.url || "/", "http://x");
+    const query = Object.fromEntries(url.searchParams);
+    const who = { sid: store.sid, pid: store.pid, rid: store.rid, gid: store.gid, cid: store.cid, turn: store.turn, accountTier: store.tier };
+    record("srv.req", { route: known ? key : `${req.method} (unmatched)`, method: req.method, query, body: ctx.body ?? null,
+      ua: String(req.headers?.["user-agent"] ?? "").slice(0, 160) }, { t: t0Wall, ...who });
+    record("srv.res", { route: known ? key : `${req.method} (unmatched)`, status: res.statusCode, ms: Math.round(performance.now() - t0),
+      body: store.resBody ?? null, ...(ctx.err ? { err: `${ctx.err.constructor?.name || "Error"}${ctx.err.code ? `:${ctx.err.code}` : ""}` } : {}),
+      ...(store.streamed ? { streamed: true } : {}) }, who);
+  } catch { /* the recorder never breaks a request */ }
+}
+
 export async function handle(req, res) {
   const t0 = performance.now();
+  const t0Wall = Date.now();
   const path = (req.url || "/").split("?")[0].replace(/\/+$/, "");
   const key = `${req.method} ${path}`;
   const fn = ROUTES[key];
   const ctx = { body: null, err: null };
   if (ACCESS_LOG && path !== "/api/health") res.once?.("finish", () => accessLog(req, res, key, !!fn, t0, ctx));
+  const pidH = pidOf(req);
+  const store = { rid: ridOf(req), tier: 1, ...(pidH ? { pid: pidH, sid: pidH } : {}) };
+  if (!UNTRACED.test(path)) res.once?.("finish", () => traceRequest(req, res, key, !!fn, t0Wall, t0, ctx, store));
+  try { res.setHeader?.("x-taxila-rid", store.rid); } catch { /* headers already sent */ }
+  return runTrace(store, () => dispatch(req, res, key, fn, ctx, store));
+}
+
+async function dispatch(req, res, key, fn, ctx, store) {
   try {
     if (!fn) return send(res, 404, { error: `no route ${key}` });
-    const body = ["POST", "PATCH", "PUT", "DELETE"].includes(req.method) ? await readJson(req) : {};
+    // the trace blob route reads its own raw body (bytes, not JSON)
+    const raw = key === "POST /api/trace/blob";
+    const body = !raw && ["POST", "PATCH", "PUT", "DELETE"].includes(req.method) ? await readJson(req) : {};
     ctx.body = body;
+    const lessonId = body?.lessonId ?? (() => { try { return new URL(req.url || "/", "http://x").searchParams.get("lessonId"); } catch { return null; } })();
+    if (isUuid(lessonId)) store.sid = lessonId;
     await runRequestClock(req, () => fn(req, res, body));
   } catch (e) {
     if (e instanceof HttpError) return send(res, e.status, { error: e.message, ...(e.extra || {}) });

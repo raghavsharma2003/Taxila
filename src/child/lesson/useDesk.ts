@@ -7,6 +7,7 @@
 //   lamp, chime, haptic ← Signals(floor transition)     src/lesson/signals.ts
 //   trouble ← classifyTrouble(facts from events)        src/lesson/trouble.ts
 //   no lost answers ← runtime.outbox                    src/lesson/outbox.ts
+import { useTraceDesk } from "../../trace/lesson.ts";
 import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import type { Move } from "../../../shared/contracts.ts";
 import { FloorController, FLOOR_TIMING, type Floor, type FloorState } from "../../lesson/floor.ts";
@@ -913,6 +914,8 @@ export function useDesk(runtime: LessonRuntime, bridge: UiBridge | null, ctx: De
     },
   };
 
+  // r12 flight recorder: what this Desk shows (state, card, chips, tray), and the lesson as the trace session
+  useTraceDesk(m, state.lessonId ?? null);
   return { m, a, dockRef: (el: HTMLElement | null) => (dockEl.current = el), live: { assertive, polite }, floorCtl, state, t1Ms: T1_MS };
 }
 

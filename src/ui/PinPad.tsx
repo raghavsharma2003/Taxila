@@ -22,7 +22,9 @@ export function PinPad({ min = 4, max = 6, onComplete, label, disabled, resetKey
   };
 
   return (
-    <div className="pin" ref={ref} tabIndex={0} role="group" aria-label={label} onKeyDown={onKey} aria-disabled={disabled}>
+    // data-trace-mask + rr-block: the flight recorder never learns which key was pressed (tier-1 taps are "[masked]"; tier 2's
+    // DOM replay records the pad as a blank block), so a parent PIN is never in a trace (release 12, ms-r12-pin-taps-recorded)
+    <div className="pin rr-block" data-trace-mask="pin" ref={ref} tabIndex={0} role="group" aria-label={label} onKeyDown={onKey} aria-disabled={disabled}>
       <div className="pin-dots" aria-hidden="true">
         {Array.from({ length: Math.max(min, pin.length) }, (_, i) => <span key={i} className="pin-dot" data-on={i < pin.length} />)}
       </div>

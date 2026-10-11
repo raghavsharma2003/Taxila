@@ -5,6 +5,7 @@ import { JOB_KINDS } from "./config.js";
 import { consentGrantedSql } from "./consent.js";
 import { one, q, withTx } from "./pg.js";
 import { dueSql, hasTestClock, onChildClock } from "./offsets.js";
+import { record as traceRecord } from "../trace/writer.js";
 
 /**
  * What job.failed carries into the append-only log: a CODE, never exception text (§2.3: events carry no free
@@ -153,11 +154,18 @@ export async function runJob(job) {
   }
   const hbEvery = Math.max(1000, (job.lease_sec * 1000) / 3);
   const timer = setInterval(() => { heartbeat(job.id, job.attempts).catch(() => {}); }, hbEvery);
+  // release 12 flight recorder: the job's lifecycle (forge.job.* for Forge kinds, job.* for the rest), on the child's trace
+  const tk = /^forge/.test(job.kind) ? "forge.job" : "job";
+  const tctx = { src: "worker", sid: job.payload?.lessonId ?? `job:${job.id}`, cid: job.child_id ?? undefined };
+  const tStart = Date.now();
+  traceRecord(`${tk}.start`, { id: job.id, kind: job.kind, attempt: job.attempts, purpose: purpose ?? null }, tctx);
   try {
     // on the child's clock: a test child's report reads "now" as its guardian's shifted instant (offsets.js)
     const result = await onChildClock(q, job.child_id, () => fn(job, { heartbeat: () => heartbeat(job.id, job.attempts) }));
+    traceRecord(`${tk}.end`, { id: job.id, kind: job.kind, ok: true, ms: Date.now() - tStart, result: typeof result === "string" ? result : result ?? null }, tctx);
     return await completeJob(job.id, job.attempts, { ok: true, result: result ?? null });
   } catch (e) {
+    traceRecord(`${tk}.end`, { id: job.id, kind: job.kind, ok: false, ms: Date.now() - tStart, code: jobErrorCode(e), error: String(e?.message ?? e).slice(0, 300), final: !!e?.final }, tctx);
     return await completeJob(job.id, job.attempts, { ok: false, code: jobErrorCode(e), error: e?.message || String(e), final: !!e?.final });
   } finally {
     clearInterval(timer);

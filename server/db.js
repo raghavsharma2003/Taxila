@@ -7,6 +7,11 @@
 
 let _driver;
 /**
+ * Tests only: forget the memoized driver, so a test that unsets DATABASE_URL sees the database as absent even when an
+ * earlier test in the same `node --test` process already queried it (the suite runs every file in one process).
+ */
+export function _resetDriverForTests() { _driver = undefined; }
+/**
  * Idle pooled connections live 10 min (smooth G10: at 60 s the first turn after a child paused a minute paid a new TLS
  * handshake to Neon, 101 ms vs 7 ms warm). Neon's own idle limit is far longer; the pool is per replica, max 10.
  */

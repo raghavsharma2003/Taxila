@@ -4,6 +4,7 @@
 import { scryptSync, randomBytes, timingSafeEqual, createHash } from "crypto";
 import { q, one } from "./db.js";
 import { parseCookies, unauthorized, forbidden } from "./http.js";
+import { traceIdentify } from "./trace/context.js";
 
 const COOKIE = "tx_session";
 const TTL_DAYS = 30;
@@ -48,6 +49,7 @@ export async function requireGuardian(req) {
     "select g.id, g.email, g.name, g.locale from auth_session s join guardian g on g.id = s.guardian_id where s.token_hash = $1 and s.expires_at > now()",
     [sha(t)]);
   if (!g) throw unauthorized("session expired");
+  traceIdentify({ guardian: g }); // release 12 flight recorder: gid + tier for this request's events
   return g;
 }
 /** The signed-in session's token hash (what auth_session stores), or null: for routes that join it into one query. */
@@ -60,6 +62,7 @@ export async function requireChild(req, childId) {
   const guardian = await requireGuardian(req);
   const child = await one("select * from child where id = $1 and guardian_id = $2", [childId, guardian.id]);
   if (!child) throw forbidden("child not found for this account");
+  traceIdentify({ guardian, child });
   return { guardian, child };
 }
 /** Latest consent row per purpose decides. */

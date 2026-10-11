@@ -42,6 +42,7 @@ import { INTERACTIVE_ASKS } from "../forge3/compose.js";
 import { certifyForTray, viewportOf, setViewport } from "../forge3/tray-gate.js";
 import { topicParts } from "../forge3/art.js";
 import { beatBoardOn, cardFor, firstBoardOfSkill } from "../stagecraft/beat-card.js";
+import { record as traceRecord } from "../trace/writer.js";
 
 /** Bounds (LIVE-STUDIO §3.1, §3.8; STUDENT-FLOW §5.3). */
 export const STUDIO_LIMITS = Object.freeze({
@@ -117,6 +118,15 @@ export const _lesson = (lessonId) => lessons.get(lessonId) ?? null;
 
 /** Push a StudioWire message to every open stream of this lesson. Never throws. */
 function push(L, msg) {
+  // release 12 flight recorder: every slot status the client is sent, as studio.slot.<state> (failed carries its fallback and
+  // the piece's own reason when it has one). Outside the request too (builds finish later), so the lesson names the session.
+  if (msg?.t === "status" && msg.status) {
+    const st = msg.status, piece = st.intentId ? L.pieces?.get?.(st.intentId) : null;
+    traceRecord(`studio.slot.${String(st.state ?? "unknown").replace(/\s+/g, "_")}`, { intentId: st.intentId ?? null, slotId: st.slotId ?? piece?.slotId ?? null,
+      state: st.state ?? null, kind: piece?.kind ?? st.artifact?.kind ?? null, archetype: piece?.archetype ?? null, source: piece?.source ?? null,
+      fallback: st.fallback ?? null, why: piece?.retiredWhy ?? piece?.failWhy ?? null, artifact: st.artifact?.kind ?? null, subscribers: L.subs?.size ?? 0 },
+    { sid: L.lessonId, cid: L.childId ?? L.child?.id ?? undefined, turn: L.turn });
+  }
   for (const s of L.subs) { try { s.send(msg); } catch { L.subs.delete(s); } }
 }
 /** Subscribe a stream (routes/studio.js). Replays every visible piece first, so a late stream converges. → unsubscribe */
@@ -219,6 +229,7 @@ function noteRefusal(L, p, r, where) {
   refusals.push({ at: Date.now(), where, kind: r.kind, cert: r.cert, vp: r.vp, why: String(r.why ?? "").slice(0, 120), archetype: p?.archetype ?? null });
   if (refusals.length > 500) refusals.shift();
   console.info(`[studio] tray gate refused ${where} ${r.kind} at ${r.vp}: ${String(r.why ?? "").slice(0, 100)}`);
+  traceRecord("studio.slot.refused", { gate: "tray", where, kind: r.kind ?? null, vp: r.vp ?? null, cert: r.cert ?? null, why: String(r.why ?? "").slice(0, 300) });
 }
 export const gateRefusals = () => refusals.slice();
 /**
@@ -1051,6 +1062,12 @@ let boardPageWarned = false;
 function writeBoardPage(L, p, script, ask) {
   if (!L?.childId || !/^[0-9a-f-]{36}$/i.test(String(L.lessonId))) return;
   const seq = (p.boardSeq ??= (L.boardSeq = (L.boardSeq ?? 0) + 1));
+  // release 12 flight recorder: the page as sent, and whether it clears the board (fresh) or draws over the last one (continue)
+  traceRecord("board.page", { intentId: p.intentId, seq, mode: script?.mode ?? "fresh", clears: (script?.mode ?? "fresh") !== "continue",
+    ops: Array.isArray(script?.ops) ? script.ops.length : null, opKinds: Array.isArray(script?.ops) ? [...new Set(script.ops.map((o) => o?.op))].slice(0, 12) : null,
+    durationMs: script?.durationMs ?? null, skillId: ask?.intent?.skillId ?? null, beat: ask?.intent?.beat ?? null, topicId: L.topicId ?? null,
+    texts: Array.isArray(script?.ops) ? script.ops.map((o) => o?.text).filter((x) => typeof x === "string").slice(0, 30) : null },
+  { sid: L.lessonId, cid: L.childId, turn: L.turn });
   dbq(`insert into board_page (lesson_id, intent_id, seq, topic_id, skill_id, beat, script) values ($1, $2, $3, $4, $5, $6, $7)
          on conflict (lesson_id, intent_id) do update set script = excluded.script`,
     [L.lessonId, p.intentId, seq, L.topicId ?? null, ask?.intent?.skillId ?? null, ask?.intent?.beat ?? null, JSON.stringify(script)])

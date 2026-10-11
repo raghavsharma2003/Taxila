@@ -8,6 +8,8 @@ import { SINGLE_TEACHER_ID, servesClass, singleTeacher, teacherFor } from "../co
 import { onConsentChange } from "../conductor/hooks.js";
 import { voicesigSeam } from "../voicesig/lesson.js";
 import { uiFlagsFor } from "../ui/kaksha-cohort.js";
+import { traceMeFor } from "../trace/tier.js";
+import { traceBlobRefs, eraseTraceBlobs, traceLessonSids, eraseTraceRowsOfLessons } from "../trace/erase.js";
 
 export const CONSENT_VERSION = "2026-10-02.v1";
 // core_tutoring is required to use the product; the others are separately optional and revocable.
@@ -194,7 +196,9 @@ export function clientChild(c) {
 }
 
 export async function me(req, res) {
-  send(res, 200, await meData(await requireGuardian(req)));
+  const g = await requireGuardian(req);
+  // release 12 flight recorder: the tier this account records at (2 = TAXILA_TRACE_FULL_FOR: the client shows REC)
+  send(res, 200, { ...(await meData(g)), trace: traceMeFor(g) });
 }
 
 /** GET /api/me's body for a signed-in guardian (also folded into GET /api/child/boot: one hop on child home). */
@@ -371,12 +375,17 @@ export async function deleteChild(req, res, body) {
   await requireParentIfPinSet(req);
   await checkAccountPassword(guardian.id, body.password, "child_erase");
   const receipt = erasureCode();
+  // release 12 flight recorder: trace rows cascade with the child (029_trace.sql); their blobs are listed now, deleted after
+  const traceRefs = await traceBlobRefs({ childId: child.id }).catch(() => []);
+  const traceSids = await traceLessonSids({ childId: child.id }).catch(() => []);
   await erase(guardian.id, [
     ...safetyFirst(guardian.id, child.id, receipt),
     { text: "delete from consent where child_id = $1", params: [child.id] },
     { text: "delete from child where id = $1", params: [child.id] },
     { text: "insert into audit(guardian_id, action, detail) values ($1, 'child_erase', $2)", params: [guardian.id, { childId: child.id, receipt }] },
   ], "child");
+  await eraseTraceBlobs(traceRefs);
+  await eraseTraceRowsOfLessons(traceSids); // rows keyed only by an erased lesson (no cid on them); cid / gid rows cascaded
   send(res, 200, { ok: true });
 }
 
@@ -410,12 +419,17 @@ export async function deleteAccount(req, res, body) {
   const kids = await q("select id from child where guardian_id = $1", [g.id]);
   const receipt = erasureCode();
   const at = new Date();
+  // release 12 flight recorder: trace rows cascade with the guardian and the children; their blobs are deleted after the commit
+  const traceRefs = await traceBlobRefs({ guardianId: g.id }).catch(() => []);
+  const traceSids = await traceLessonSids({ guardianId: g.id }).catch(() => []);
   await erase(g.id, [
     ...safetyFirst(g.id, null, receipt),
     { text: "delete from guardian where id = $1", params: [g.id] },
     { text: "delete from audit where guardian_id = $1", params: [g.id] },
     { text: "insert into audit(guardian_id, action, detail) values ($1, 'account_erase', $2)", params: [g.id, { receipt }] },
   ], "account");
+  await eraseTraceBlobs(traceRefs);
+  await eraseTraceRowsOfLessons(traceSids);
   res.setHeader("set-cookie", COOKIE_CLEAR);
   send(res, 200, { ok: true, receipt: { code: receipt, at: at.toISOString(), children: kids.length,
     backupsGoneBy: new Date(at.getTime() + BACKUP_DAYS * 86400_000).toISOString() } });

@@ -20130,6 +20130,167 @@
    "at": "2026-10-11",
    "title": "Release 12: a flight recorder for every session. Tier 1 for every account: structured client and server events, no audio, keeping the public 'audio is never stored' promise. Tier 2 for the owner cohort (TAXILA_TRACE_FULL_FOR): rrweb DOM replay, mic and TTS audio, full model prompts and outputs, behind a visible REC chip. Queried by scripts/trace.mjs (timeline, replay PNG at a time, flags). Built by T-server (stream 3), T-client (stream 2) and T-voice (4B), with a root-cause pass by 4A; brief docs/design/round4/build/r12/TRACKING-BRIEF.md",
    "source": "inbox/r4-main-1415.json"
+  },
+  {
+   "id": "ms-r4-owner-cohort-wrong-email",
+   "kind": "measurement",
+   "at": "2026-10-11",
+   "title": "Every owner cohort (TAXILA_UI_KAKSHA, SESSION_FIRST_FOR, DUPLEX_LIVE_FOR, FACE_LOOK_FOR) holds sha256 of the Claude-account email, which is NO Taxila guardian at all; the owner tests with two gmail.com guardian accounts (one owns the test child 6fc3f68e, one created 2026-10-11 06:53 UTC), so no 'on for your account' feature since release 8 ever reached the owner",
+   "source": "inbox/r4-main-1545.json"
+  },
+  {
+   "id": "rj-r4-cohort-by-assumed-email",
+   "kind": "rejection",
+   "at": "2026-10-11",
+   "title": "Keying owner cohorts to the email the main session knows from its own context, without checking that a guardian account with that email exists and is the one the owner tests with: three releases of 'on for your account' features reached nobody, and the owner judged a build that lacked them",
+   "source": "inbox/r4-main-1545.json"
+  },
+  {
+   "id": "dc-r12-tclient-recorder",
+   "kind": "decision",
+   "title": "The client flight recorder: one bus in src/trace (masked, capped, 2 s batches + pagehide beacon, never throws, self-timed), /api fetch/EventSource/WebSocket wrappers with X-Taxila-Rid, page hooks, and lesson events from the Desk's own model and the stage's own render",
+   "at": "2026-10-11",
+   "source": "inbox/r12-t-client.json"
+  },
+  {
+   "id": "dc-r12-tclient-board-cleared-overlaid",
+   "kind": "decision",
+   "title": "Every board page records CLEARED vs OVERLAID twice: from the script (mode, prior ops) and from the screen after drawing (visible op groups from earlier pages): the owner's 'drawn over the previous content' is answered from what was visible",
+   "at": "2026-10-11",
+   "source": "inbox/r12-t-client.json"
+  },
+  {
+   "id": "dc-r12-tclient-replay-settled",
+   "kind": "decision",
+   "title": "trace-replay renders each moment as the screen settled: CSS animations jumped to their end and the recorded focus applied (a paused rrweb replay otherwise shows just-inserted text at opacity 0)",
+   "at": "2026-10-11",
+   "source": "inbox/r12-t-client.json"
+  },
+  {
+   "id": "m-r12-tclient-replay-proof",
+   "kind": "measurement",
+   "title": "Replay vs Playwright screenshot, 5 moments (scripted lesson x4, a board page): differing pixels 0-0.123 %, differing 32 px tiles 0-2 (gate <= 4)",
+   "at": "2026-10-11",
+   "source": "inbox/r12-t-client.json"
+  },
+  {
+   "id": "m-r12-tclient-budgets",
+   "kind": "measurement",
+   "title": "Recorder budgets, dev server, n=3: tier 1 main-thread share 0.33 % median / 0.41 % max (budget 2 %); tier 2 board 60 fps, Antariksh 56.6-58.4 fps (>= 50); a sabotaged recorder leaves the scripted lesson identical; masking: 0 leaks",
+   "at": "2026-10-11",
+   "source": "inbox/r12-t-client.json"
+  },
+  {
+   "id": "rj-r12-tclient-pixel-share-gate",
+   "kind": "rejection",
+   "title": "Gating replay fidelity on the share of differing pixels: rejected, a replay that lost the caption and the answer chip still differed on only 0.6 % of pixels; the gate is local (32 px tiles with > 10 % differing pixels)",
+   "at": "2026-10-11",
+   "source": "inbox/r12-t-client.json"
+  },
+  {
+   "id": "dec-r12-tserver-one-writer",
+   "kind": "decision",
+   "title": "Server trace events go through ONE buffered writer (server/trace/writer.js). record() is synchronous: it masks, fits the event to 8 KB and buffers it. One jsonb multi-row insert per second. The buffer is capped at 5,000 events; past the cap, or on a failed or hung insert (deadline 8 s), events are dropped and counted, and the count is recorded as trace.dropped. It never throws or awaits on a request. Off under node --test unless TAXILA_TRACE=on; TAXILA_TRACE=off turns it off everywhere. Reverse if: the p95 recorder cost per turn exceeds 10 ms, or a lesson behaves differently with the recorder broken.",
+   "at": "2026-10-11",
+   "source": "inbox/r12-t-server.json"
+  },
+  {
+   "id": "dec-r12-tserver-identity-from-auth",
+   "kind": "decision",
+   "title": "Trace cid and gid come only from auth: requireGuardian, requireChild, loadTurnContext and the tts-stream ownership query fill a per-request AsyncLocalStorage store. Client batch events get a cid only when their sid is a lesson of the signed-in guardian. The sid is the lesson id, else the page-load id (x-taxila-pid), else g:<guardian>. Reverse if: never (the client is never trusted for identity).",
+   "at": "2026-10-11",
+   "source": "inbox/r12-t-server.json"
+  },
+  {
+   "id": "dec-r12-tserver-erasure",
+   "kind": "decision",
+   "title": "trace_event.cid and gid cascade from child and guardian (029_trace.sql), so DELETE /api/children and DELETE /api/account take trace rows in their own transaction. Rows keyed only by an erased lesson, and the blobs, are deleted after the commit, by ids and refs read before it. Retention runs nightly via ops.mjs --nightly: tier 1 after 30 days, tier 2 after 90, blobs first. Tested on Neon TEST (tests/r12-trace-db.run.mjs).",
+   "at": "2026-10-11",
+   "source": "inbox/r12-t-server.json"
+  },
+  {
+   "id": "ms-r12-tserver-budget-2026-10-11",
+   "kind": "measurement",
+   "title": "Flight recorder server cost, in-process server, 3 lessons x 10 turns, real Azure, TAXILA_TRACE_PROFILE=1, US container, 2026-10-11: record() time inside a /api/lesson/turn request p50 0.69 / p95 1.62 / max 1.65 ms (n = 29, about 7 events per turn); every request p95 1.32 ms (n = 175). Flush serialisation about 0.11 ms per turn (21.6 KB of events per turn). Budget is 10 ms p95: met.",
+   "at": "2026-10-11",
+   "source": "inbox/r12-t-server.json"
+  },
+  {
+   "id": "ms-r12-tserver-hung-insert-2026-10-11",
+   "kind": "measurement",
+   "title": "On a local production build (serve.mjs, Neon HTTP driver) one trace insert hung with no error, and every event after it was lost (1 of 6 turns recorded). Fix: an 8 s deadline per insert; the chunk counts as dropped and the writer moves on. The re-run recorded all 6 turns, 191 events, 0 dropped. Root cause of the hang not found (a stalled fetch through the proxy is suspected).",
+   "at": "2026-10-11",
+   "source": "inbox/r12-t-server.json"
+  },
+  {
+   "id": "open-r12-tserver-trace-container",
+   "kind": "open",
+   "title": "The private blob container trace must be created in the existing storage account before tier-2 blobs (model prompt and raw response, client rrweb and audio) can be stored. T-server does not change Azure resources. Until then a server tier-2 event records model.call.blob_failed, and POST /api/trace/blob returns the PUT failure.",
+   "at": "2026-10-11",
+   "source": "inbox/r12-t-server.json"
+  },
+  {
+   "id": "open-r12-tserver-start-safety",
+   "kind": "open",
+   "title": "The lesson start's own safety reads are not recorded as safety.* events in the first pass. The start request is recorded through srv.req and srv.res and its model calls. The turn's safety.scan is recorded.",
+   "at": "2026-10-11",
+   "source": "inbox/r12-t-server.json"
+  },
+  {
+   "id": "dc-r12-tvoice-voice-events",
+   "kind": "decision",
+   "title": "r12 T-voice (2026-10-11): the voice events of the flight recorder come from src/voice/trace.ts. mic.mode carries tap|duplex with every gate that held. mic.duplex records the resolved duplex mode, its source and each /api/duplex/config answer. mic.duplex.start and duplex.fallback say why the engine is or is not live. The other events: vad.*, asr.partial (throttled 300 ms), asr.final (confidence, unsure words, ms from end of speech), tts.request/start/end/interrupt/error (played fully or not), bargein steps and duplex.decision. All are fire-and-forget and no-ops without a sink. Tier 2 only: audio.mic.chunk from the link's OWN mic stream and audio.tts.clip from her player's output; tier 1 never constructs a clip recorder. Reverse if: a measured turn slows (budget: <1 ms of voice tracing per turn) or the public 'never stored' promise changes",
+   "at": "2026-10-11",
+   "source": "inbox/r12-t-voice.json"
+  },
+  {
+   "id": "ms-r12-tvoice-voice-turn-2026-10-11",
+   "kind": "measurement",
+   "title": "r12 T-voice scripted voice turn (LOCAL production build, desktop Chromium fake mic, r4-timeline fake transcriber with fixed 750 ms, TEST accounts; not a phone, not a child; 2026-10-11). Cohort account: /api/duplex/config {duplex:'on', cohort:'owner'} in 46 ms; engine live 7.4 s after the lesson screen opened; mic.mode duplex with no headset; 38 voice events, 0 blobs at tier 1. Tier 2: 2 audio.tts.clip (117/105 KB) and 1 audio.mic.chunk (58 KB, webm/opus). Non-cohort: shadow, so tap, with reasons talk_pref_tap, no_headset_detected, echo_probe_not_built, duplex_shadow_only. Trace cost: 0.44 us per transcript delta, 6.6 us per final (Node 22)",
+   "at": "2026-10-11",
+   "source": "inbox/r12-t-voice.json"
+  },
+  {
+   "id": "ms-r12-tvoice-owner-lessons-voice-2026-10-11",
+   "kind": "measurement",
+   "title": "r12 T-voice, from the owner's two c9 lessons of 2026-10-11 (read-only RCA export): both ran the cascade lane. 16/17 child turns were spoken; 0/16 carry asr_conf (the live transcriber returns no logprobs, server/voice/stt.js); the talk mix marked 8/17 turns 'unclear'. No row records the talk mode (tap vs hands-free), so why the owner had to tap cannot be read from the database",
+   "at": "2026-10-11",
+   "source": "inbox/r12-t-voice.json"
+  },
+  {
+   "id": "open-r12-tvoice-why-tap",
+   "kind": "finding",
+   "title": "r12 T-voice: why the owner's Android phone ran tap-to-talk with the duplex cohort on. CONFIRMED by main (2026-10-11): every TAXILA_DUPLEX_LIVE_FOR hash was sha256 of an email no guardian row has (the owner tests with two other accounts), so /api/duplex/config answered shadow and the Desk stayed tap. In code, hands-free on a loudspeaker comes only from the live duplex engine; the Me page's headset hint belongs to the separate open-mic rule (misleading, not causal). Check: voice-turn.mjs --check-only --expect-cohort [--expect-tier2] asks /api/duplex/config and /api/me as the account and exits 1 on a mismatch",
+   "at": "2026-10-11",
+   "source": "inbox/r12-t-voice.json"
+  },
+  {
+   "id": "dc-r12-integration",
+   "kind": "decision",
+   "at": "2026-10-11",
+   "title": "Release 12 integration (int/r4-rel12 on base 0b8dc83): T-server claude/r4-latency c4f156a, T-client claude/r4-content 62e3716 (with its main.tsx + rrweb 2.1.7 patch-request), T-voice claude/r4-duplex c58dc40 (with its cascadeLink/LessonScreen patch-request); shared/trace.ts conflict resolved to T-server's version (its only change adds kinds). Release 13 (4A d348414, the RCA fixes) ships after release 12 on its own gate",
+   "source": "inbox/r4-main-1630.json"
+  },
+  {
+   "id": "ms-r12-health-test-driver-memo",
+   "kind": "measurement",
+   "at": "2026-10-11",
+   "title": "Release 12 gate (d96f3e2): 3,097 tests, 3,093 pass, 1 fail. The fail was eyes.test 'health: ?ready=1 answers 503 without a database' (got 200), because server/db.js memoizes its driver and an earlier test in the one-process suite had already queried. A primed probe reproduces it 1/1 (alone it passes 9/9, release 12 and base alike); fixed with db._resetDriverForTests() in the test, keeping its assertion",
+   "source": "inbox/r4-main-1715.json"
+  },
+  {
+   "id": "ms-r12-pin-taps-recorded",
+   "kind": "measurement",
+   "at": "2026-10-11",
+   "title": "Release 12's packaged-tree check caught the flight recorder recording the parent PIN for every account: the journey's ui.tap events read '2','5','8','0','Next','2','5','8','0','OK' on /start/child (the shared PinPad's keys are buttons, so input masking never applied). Fixed: PinPad is a masked region (data-trace-mask + rr-block, also blocked in rrweb); re-run journey 10/10 taps '[masked]', 0 digit labels",
+   "source": "inbox/r4-main-1740.json"
+  },
+  {
+   "id": "ms-r12-packaged-checks",
+   "kind": "measurement",
+   "at": "2026-10-11",
+   "title": "Release 12 packaged tree (2af8cfc on the Neon TEST branch): owner-5 12/14, round2-content 35/39, boards 3/5 when run beside the other two batteries but 5/5 alone, the journey 5 steps to Hello then lesson/new with the recorder capturing 72-83 client events per page load (routes, labelled taps, requests with status and ms, mic mode, Desk state, card, tray, media)",
+   "source": "inbox/r4-main-1740.json"
   }
  ],
  "edges": [
@@ -32422,6 +32583,86 @@
    "src": "dc-r12-flight-recorder",
    "rel": "caused_by",
    "dst": "ms-r4-owner-lesson-a95d2ff1"
+  },
+  {
+   "src": "rj-r4-cohort-by-assumed-email",
+   "rel": "caused_by",
+   "dst": "ms-r4-owner-cohort-wrong-email"
+  },
+  {
+   "src": "ms-r4-owner-cohort-wrong-email",
+   "rel": "part_of",
+   "dst": "dc-r12-flight-recorder"
+  },
+  {
+   "src": "dec-r12-tserver-one-writer",
+   "rel": "measured_by",
+   "dst": "ms-r12-tserver-budget-2026-10-11"
+  },
+  {
+   "src": "dec-r12-tserver-one-writer",
+   "rel": "measured_by",
+   "dst": "ms-r12-tserver-hung-insert-2026-10-11"
+  },
+  {
+   "src": "ms-r12-tvoice-voice-turn-2026-10-11",
+   "rel": "measured_by",
+   "dst": "dc-r12-tvoice-voice-events"
+  },
+  {
+   "src": "open-r12-tvoice-why-tap",
+   "rel": "part_of",
+   "dst": "dc-r12-tvoice-voice-events"
+  },
+  {
+   "src": "ms-r12-tvoice-owner-lessons-voice-2026-10-11",
+   "rel": "part_of",
+   "dst": "open-r12-tvoice-why-tap"
+  },
+  {
+   "src": "dc-r12-tclient-recorder",
+   "rel": "part_of",
+   "dst": "dc-r12-flight-recorder"
+  },
+  {
+   "src": "dc-r12-tclient-board-cleared-overlaid",
+   "rel": "part_of",
+   "dst": "dc-r12-flight-recorder"
+  },
+  {
+   "src": "dc-r12-tclient-replay-settled",
+   "rel": "part_of",
+   "dst": "dc-r12-flight-recorder"
+  },
+  {
+   "src": "dc-r12-tclient-replay-settled",
+   "rel": "measured_by",
+   "dst": "m-r12-tclient-replay-proof"
+  },
+  {
+   "src": "dc-r12-tclient-recorder",
+   "rel": "measured_by",
+   "dst": "m-r12-tclient-budgets"
+  },
+  {
+   "src": "dc-r12-integration",
+   "rel": "part_of",
+   "dst": "dc-r12-flight-recorder"
+  },
+  {
+   "src": "ms-r12-health-test-driver-memo",
+   "rel": "part_of",
+   "dst": "dc-r12-integration"
+  },
+  {
+   "src": "ms-r12-pin-taps-recorded",
+   "rel": "part_of",
+   "dst": "dc-r12-flight-recorder"
+  },
+  {
+   "src": "ms-r12-packaged-checks",
+   "rel": "part_of",
+   "dst": "dc-r12-integration"
   }
  ]
 }
