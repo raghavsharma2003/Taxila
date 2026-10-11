@@ -19973,6 +19973,20 @@
    "at": "2026-10-11",
    "title": "Release 11: one identity (Volt) on every surface for every account in production: Kaksha + Volt default ON in code (?ui=classic per-device escape), the public site rebuilt, set-up and sign-in, and the parent corner (Volt calm), by four streams (K, 2, 5, G1) from one brief (docs/design/round4/build/r11/BRIEF.md); presentation only",
    "source": "inbox/r4-main-0700.json"
+  },
+  {
+   "id": "ms-r4-r9-landing-frame-lazy",
+   "kind": "measurement",
+   "at": "2026-10-11",
+   "title": "Correction to ms-r4-r9-surfaces-unchanged: release 9's landing phone frames are NOT empty. A person scrolling loads shot-lesson and shot-garden (loading=lazy); only a full-page screenshot that never scrolls shows them blank. shot-parent (200, 22.5 KB) sits in a 0-height frame at 412 px by design",
+   "source": "inbox/r4-main-0745.json"
+  },
+  {
+   "id": "rj-r4-fullpage-shot-lazy",
+   "kind": "rejection",
+   "at": "2026-10-11",
+   "title": "A full-page Playwright screenshot as evidence of what a scrolling visitor sees: loading=lazy images below the first screen never load, so frames read as empty. Main reported a non-existent 'empty phone frame' from one, and stream 2's r11 landing sheet shows the same blank frames",
+   "source": "inbox/r4-main-0745.json"
   }
  ],
  "edges": [
@@ -32170,6 +32184,16 @@
    "src": "dc-r4-volt-everywhere",
    "rel": "supersedes",
    "dst": "dc-r4-owner-wrapup-directive"
+  },
+  {
+   "src": "ms-r4-r9-landing-frame-lazy",
+   "rel": "supersedes",
+   "dst": "ms-r4-r9-surfaces-unchanged"
+  },
+  {
+   "src": "rj-r4-fullpage-shot-lazy",
+   "rel": "caused_by",
+   "dst": "ms-r4-r9-landing-frame-lazy"
   }
  ]
 }
