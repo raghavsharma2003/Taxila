@@ -51,7 +51,7 @@ function normalise(run, meta) {
       firstAudio: [], usage: null,
     };
   }
-  if (run.arm === "duplex") {
+  if (run.arm === "duplex" || run.arm.startsWith("d5")) {
     return {
       shift: 0, herSpan: [g.herSpan.start, g.herSpan.end],
       yields: run.acts.filter((a) => a[1] === "pause" || a[1] === "stop").map((a) => a[0]),

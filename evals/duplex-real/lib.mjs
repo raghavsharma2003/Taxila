@@ -147,10 +147,12 @@ export async function openStt(lane, onEvent, { retries = 4 } = {}) {
  *   frames: { db[], f0[] } of x (the device features), optional `mask` (Uint8Array: frame → the room floor, see AMI turns)
  *   her:    [{ start, end, text, outDb?: number[] (per-frame output level) }] her lines on the session clock (open loop: a
  *           yield is scored, her audio is not cut; the mic already holds whatever echo the recording has)
- *   stt:    { lane } live, or { replay: events[] } (each { t, raw })
+ *   stt:    { lane } live, { open(onEvent) → socket } (a custom live lane: D5 runs the real Voice Live relay), or
+ *           { replay: events[] } (each { t, raw })
+ *   liveOptions: extra DuplexLive options (D5: { source: "voicelive", vadGate: "server" })
  * Returns { acts: [t, kind, extra][], phases, sttLog: [{t, raw}], stats, logs }.
  */
-export async function runSession({ id, x, frames, her = [], stt, band = "B4", mask = null, floorDb = null, log = false, DuplexLive, realtime = true, semantic = null }) {
+export async function runSession({ id, x, frames, her = [], stt, band = "B4", mask = null, floorDb = null, log = false, DuplexLive, realtime = true, semantic = null, liveOptions = {} }) {
   const acts = [], phases = [], logs = [], sttLog = [];
   const nFrames = frames.db.length;
   let clock = 0; // ms on the session clock
@@ -175,7 +177,7 @@ export async function runSession({ id, x, frames, her = [], stt, band = "B4", ma
     if (!hit) { semantic.miss?.(req); resolve(null); return; }
     semPending.push({ due: req.t + hit.latMs, resolve, val: { forTextHash: req.textHash, pComplete: hit.pComplete, pHoldWanted: hit.pHoldWanted ?? undefined, asksHer: hit.asksHer ?? undefined, offTask: hit.offTask ?? undefined, deployment: hit.deployment, issuedAt: req.t, arrivedAt: req.t + hit.latMs } });
   }) : undefined;
-  const live = new DuplexLive({ lessonId: `real-${id}`, port, ...(semFn ? { semantic: semFn } : {}), now: () => clock, setInterval: (fn) => { interval = fn; return 1; }, clearInterval: () => { interval = null; }, band,
+  const live = new DuplexLive({ lessonId: `real-${id}`, port, ...liveOptions, ...(semFn ? { semantic: semFn } : {}), now: () => clock, setInterval: (fn) => { interval = fn; return 1; }, clearInterval: () => { interval = null; }, band,
     log: (row) => { if (log || row.action === "YIELD" || row.action === "HUSH" || row.action === "SPEAK") logs.push([row.t, row.action, (row.reasons ?? []).join("+"), row.phase, row.detail]); } });
   live.start();
   // errors go where CascadeDuplex.onServerError sends them: an empty micro-commit tells the fan-in (when the engine has it)
@@ -187,7 +189,7 @@ export async function runSession({ id, x, frames, her = [], stt, band = "B4", ma
   let replayIdx = 0;
   const replay = stt.replay ?? (sim ? [] : null);
   const pending = [];
-  if (!replay) socket = await openStt(stt.lane, (e) => pending.push(e));
+  if (!replay) socket = stt.open ? await stt.open((e) => pending.push(e)) : await openStt(stt.lane, (e) => pending.push(e));
   const simItems = new Map();
   const simRaw = (ev) => {
     // SttSim events → the realtime socket's raw events (the same mapping as evals/p1-duplex/ami.mjs)
@@ -221,7 +223,7 @@ export async function runSession({ id, x, frames, her = [], stt, band = "B4", ma
       if (fired) for (let k = 0; k < 4; k++) await null; // let the host's .then apply the estimate on this frame
     }
     if (!replay) {
-      socket.append(x.subarray(i * HOP, (i + 1) * HOP));
+      socket.append(x.subarray(i * HOP, (i + 1) * HOP), i);
       while (pending.length) deliver(pending.shift());
     } else if (sim) {
       for (const ev of sim.tick(tf)) simRaw(ev);
@@ -242,7 +244,7 @@ export async function runSession({ id, x, frames, her = [], stt, band = "B4", ma
   live.stop();
   const errors = socket?.errors ?? [];
   socket?.close();
-  return { acts, phases, logs, sttLog, errors, stats: { ...live.stats, gaps: undefined, yieldLatency: undefined, hushLatency: undefined }, lane: sim ? "sim" : replay ? "replay" : stt.lane, model: socket?.model ?? null, region: socket?.region ?? null,
+  return { acts, phases, logs, sttLog, errors, stats: { ...live.stats, gaps: undefined, yieldLatency: undefined, hushLatency: undefined }, lane: sim ? "sim" : replay ? "replay" : stt.lane ?? socket?.lane ?? "custom", model: socket?.model ?? null, region: socket?.region ?? null,
     wallLagMs: replay ? null : Math.round(performance.now() - t0 - nFrames * HOP_MS) };
 }
 
