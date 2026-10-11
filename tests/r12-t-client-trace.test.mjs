@@ -127,3 +127,15 @@ describe("r12 T-client: the bus and the fetch wrapper", async () => {
     bus.setTier(1);
   });
 });
+
+describe("r12 T-client: the voice sink (globalThis.__taxilaTrace, T-voice's src/voice/trace.ts)", async () => {
+  const { voiceSink } = await import("../src/trace/index.ts");
+  it("has the shape T-voice looks for, and never throws", async () => {
+    assert.equal(typeof voiceSink.emit, "function");
+    assert.equal(typeof voiceSink.full, "function");
+    assert.equal(typeof voiceSink.blob, "function");
+    assert.equal(voiceSink.full(), false, "tier 1 by default");
+    assert.doesNotThrow(() => voiceSink.emit("asr.final", { text: "two" }, { tier: 1, turn: 3 }));
+    assert.equal(await voiceSink.blob("audio.mic.chunk", new Blob(["x"], { type: "audio/webm" }), {}), false, "no audio below tier 2");
+  });
+});
