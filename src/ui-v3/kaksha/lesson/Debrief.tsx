@@ -151,6 +151,7 @@ function Earned({ skill }: { skill: DebriefSecure }) {
       <span className="kx-earn-burst" aria-hidden="true">
         {Array.from({ length: 14 }, (_, i) => <i key={i} style={{ ["--a" as string]: `${(i * 360) / 14}deg`, ["--c" as string]: `var(${HUES[i % HUES.length]})` }} />)}
       </span>
+      <span className="kx-earn-rays" aria-hidden="true" />
       <span className="kx-earn-badge" aria-hidden="true">
         <svg viewBox="0 0 64 64"><path d="M32 4l24 10v16c0 15-10 26-24 30C18 56 8 45 8 30V14z" fill="var(--k-secure)" /><path d="M21 32l8 8 15-17" fill="none" stroke="var(--k-void)" strokeWidth="5" strokeLinecap="round" strokeLinejoin="round" /></svg>
       </span>

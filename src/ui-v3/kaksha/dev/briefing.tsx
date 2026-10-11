@@ -21,6 +21,8 @@ import "../../tokens.css";
 import "../tokens.css";
 import "../kaksha.css";
 import "../play/play.kaksha.css";
+import "../futurist.css";
+import { lookAttr } from "../look.ts";
 
 const q = new URLSearchParams(location.search);
 const cls = Number(q.get("class") ?? 6);
@@ -67,7 +69,7 @@ const art: PlayArtifact = { kind: "play", play: { sessionId: "dev-s1", family: "
 
 function App() {
   return (
-    <div className="v3 kx kx-lesson" data-ktheme={kakshaThemeFor(family)} data-motion={reduced ? "reduced" : undefined} style={{ minHeight: "100vh", padding: 16 }}>
+    <div className="v3 kx kx-lesson" data-ktheme={kakshaThemeFor(family)} data-klook={lookAttr(family)} data-motion={reduced ? "reduced" : undefined} style={{ minHeight: "100vh", padding: 16 }}>
       <PlayBriefingContext.Provider value={q.get("brief") === "0" ? null : { render: (p) => <Briefing {...p} launch={() => { probe.launchAt = performance.now(); p.launch(); }} />, cosmetics }}>
         <div style={{ width: W, height: H, margin: "0 auto", position: "relative", outline: "1px solid var(--k-line-2)" }}>
           <PlayStudioRenderer artifact={art as never} px={{ w: W, h: H }} design={{ w: W, h: H } as never} reducedMotion={reduced} young={family === "young"} lang={lang}

@@ -120,6 +120,7 @@ export function Settlement({ structures, label, onPick, reducedMotion }: { struc
   const top = iso(0, 0, futurist ? 2.6 : 4)[1], bottom = futurist ? iso(N, N, -0.7)[1] : iso(N * 0.7, N * 0.8, -3.2)[1];
   return (
     <div className="kx-settle kx-cut" role="img" aria-label={label}>
+      {futurist && <><span className="kx-depth kx-depth--far" aria-hidden="true" /><span className="kx-depth kx-depth--near" aria-hidden="true" /><span className="kx-horizon" aria-hidden="true" /></>}
       <svg viewBox={`${minX - 8} ${top - 8} ${maxX - minX + 16} ${bottom - top + 16}`} aria-hidden="true" data-reduced={reducedMotion ? "" : undefined}>
         {!futurist && <polygon className="kx-m-rock" points={pts(rock)} />}
         {ground}

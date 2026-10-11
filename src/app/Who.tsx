@@ -1,7 +1,7 @@
 // Child picker (`/who`, §2.3): the right child on the right profile, every session. One profile is still
 // shown (a sibling cannot inherit a session). The last child is pre-selected but the confirm step stays.
 // No badges, counts or progress on tiles. The parent door is small and dull, top right.
-import { useEffect, useState } from "react";
+import { useEffect, useState, type ReactElement } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { Icon } from "../ui/index.ts";
 import { ErrorNote } from "../ui/index.ts";
@@ -10,6 +10,9 @@ import { bandForClass, useSurface } from "./band.ts";
 import { Loading } from "./Shell.tsx";
 import { Avatar as ChildAvatar } from "../child/pictos.tsx";
 import { readStore, writeStore } from "./storage.ts";
+// Release 11 (dc-r4-volt-everywhere): the picker wears the child app's Volt look (the same tx-child[data-v2] scope as
+// ChildShell, so childshell.css re-points the v2 tokens); nothing on a ?ui=classic device
+import { kakshaShellAttrs } from "../ui-v3/kaksha/shell-theme.ts";
 
 export const LAST_CHILD_KEY = "tx.lastChild";
 
@@ -55,11 +58,13 @@ export default function Who() {
     nav(`/c/${c.id}`);
   };
 
-  if (err) return <main className="col center-fill"><ErrorNote>{err}</ErrorNote></main>;
-  if (!kids) return <Loading />;
+  const look = kakshaShellAttrs(null, young ? "young" : "older");
+  const scope = (el: ReactElement) => (Object.keys(look).length ? <div className="tx-child kx-who-scope" data-v2="" {...look}>{el}</div> : el);
+  if (err) return scope(<main className="col center-fill"><ErrorNote>{err}</ErrorNote></main>);
+  if (!kids) return scope(<Loading />);
   const chosen = kids.find((c) => c.id === picked) ?? null;
 
-  return (
+  return scope(
     <main className={`who ${young ? "who-young" : "who-older"}`}>
       <header className="topbar">
         <span className="spacer" />

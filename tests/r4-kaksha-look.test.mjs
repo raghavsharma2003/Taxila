@@ -38,16 +38,17 @@ test("?look=holo switches this device (both families) and stays; ?look=default g
   delete globalThis.localStorage; delete globalThis.location;
 });
 
-test("ChildShell carries the look ONLY for the ui.kaksha cohort (K-P14); everyone else gets nothing", () => {
-  device("");
-  assert.deepEqual(kakshaShellAttrs({ ui: { kaksha: true } }, "older"), { "data-klook": "volt", "data-ktheme": "night" });
-  assert.deepEqual(kakshaShellAttrs({ ui: { kaksha: true } }, "young"), { "data-klook": "volt", "data-ktheme": "dawn" });
-  assert.deepEqual(kakshaShellAttrs({ ui: { kaksha: false } }, "older"), {});
-  assert.deepEqual(kakshaShellAttrs({}, "older"), {});
-  assert.deepEqual(kakshaShellAttrs(null, "older"), {});
-  assert.deepEqual(kakshaShellAttrs({ ui: { kaksha: true } }, null), {});
+test("ChildShell carries the look for EVERY account (release 11), even before /api/me; nothing only on a ?ui=classic device", () => {
+  const store = device("");
+  for (const me of [{ ui: { kaksha: true } }, { ui: { kaksha: false } }, {}, null]) {
+    assert.deepEqual(kakshaShellAttrs(me, "older"), { "data-klook": "volt", "data-ktheme": "night" });
+    assert.deepEqual(kakshaShellAttrs(me, "young"), { "data-klook": "volt", "data-ktheme": "dawn" });
+  }
+  assert.deepEqual(kakshaShellAttrs(null, null), { "data-klook": "volt", "data-ktheme": "night" }, "the gate before /api/me: the night look");
+  store.set("tx.flag.ui.kaksha", "0");
+  assert.deepEqual(kakshaShellAttrs({ ui: { kaksha: true } }, "older"), {}, "?ui=classic device: today's classic shell");
   const shell = read("src/child/ChildShell.tsx");
-  assert.match(shell, /\.\.\.kakshaShellAttrs\(ctx \? me : null, ctx\?\.family\),/);
+  assert.match(shell, /\.\.\.kakshaShellAttrs\(ctx \? me : null, ctx\?\.family \?\? null\),/);
   delete globalThis.localStorage; delete globalThis.location;
 });
 

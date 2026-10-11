@@ -1,4 +1,5 @@
-// K-P10: the Kaksha owner cohort is enforced server-side (main session 2026-10-10). In a production build Kaksha is ON for
+// Release 11 (dc-r4-volt-everywhere): the cohort no longer gates anything (Kaksha is on for every account); the server
+// half below still answers ui.kaksha and stays harmless. Originally K-P10: the Kaksha owner cohort is enforced server-side (main session 2026-10-10). In a production build Kaksha is ON for
 // an account the server marks as in the cohort (GET /api/me → ui.kaksha, from TAXILA_UI_KAKSHA), with no URL step;
 // ?ui=classic turns it off on a device. An account outside the cohort that types ?ui=kaksha still gets today's Home.
 // Run: node --test tests/r4-kaksha-cohort.test.mjs
@@ -34,33 +35,31 @@ test("server: GET /api/me (and /api/child/boot, which folds meData) carries ui f
   assert.match(routes, /kakshaEnabled\(\(me as \{ ui\?: \{ kaksha\?: boolean \} \}\)\.ui\?\.kaksha\)/, "the route switch passes the server's cohort answer");
 });
 
-test("decision: production, outside the cohort, ?ui=kaksha → today's Home", () => {
-  for (const server of [false, undefined]) assert.equal(kakshaDecision({ dev: false, buildDefault: false, server, device: true }), false);
-  assert.equal(kakshaDecision({ dev: false, buildDefault: false, server: true, device: true }), true, "cohort + opt-in");
-  assert.equal(kakshaDecision({ dev: false, buildDefault: false, server: true, device: null }), true, "the cohort is ON with no URL step");
-  assert.equal(kakshaDecision({ dev: false, buildDefault: false, server: true, device: false }), false, "?ui=classic on the owner's device");
-  assert.equal(kakshaDecision({ dev: true, buildDefault: false, server: undefined, device: true }), true, "dev builds: the URL stays free");
-  assert.equal(kakshaDecision({ dev: false, buildDefault: true, server: false, device: null }), true, "the deploy-wide default, after acceptance");
-  assert.equal(kakshaDecision({ dev: false, buildDefault: true, server: true, device: false }), false, "?ui=classic always wins on the device");
+test("release 11 (dc-r4-volt-everywhere): Kaksha for EVERY account in every build; ?ui=classic is the only way out", () => {
+  for (const server of [false, undefined, true]) for (const dev of [false, true]) for (const buildDefault of [false, true]) {
+    assert.equal(kakshaDecision({ dev, buildDefault, server, device: null }), true, `on by default (server ${server}, dev ${dev})`);
+    assert.equal(kakshaDecision({ dev, buildDefault, server, device: true }), true);
+    assert.equal(kakshaDecision({ dev, buildDefault, server, device: false }), false, "?ui=classic on this device always wins");
+  }
 });
 
-test("end to end in a production-like runtime: typing ?ui=kaksha does nothing outside the cohort", () => {
+test("end to end in a production-like runtime: on with no URL; ?ui=classic turns it off on the device and it stays off; ?ui=default restores", () => {
   const store = new Map();
   globalThis.localStorage = { getItem: (k) => (store.has(k) ? store.get(k) : null), setItem: (k, v) => store.set(k, String(v)), removeItem: (k) => store.delete(k) };
-  globalThis.location = { search: "?ui=kaksha" };
+  globalThis.location = { search: "" };
   _resetKakshaUrlForTests();
-  // node has no import.meta.env: a production-like build (DEV false, VITE_UI_KAKSHA unset)
-  assert.equal(kakshaEnabled(false), false, "outside the cohort: today's Home");
-  assert.equal(kakshaEnabled(undefined), false, "before /api/me answers: today's Home");
-  assert.equal(store.get(UI_KAKSHA_KEY), "1", "the device remembers the opt-in");
-  assert.equal(kakshaEnabled(true), true, "inside the cohort: Kaksha");
-  globalThis.location = { search: "?ui=default" };
-  _resetKakshaUrlForTests();
-  assert.equal(kakshaEnabled(true), true, "inside the cohort with no device key: Kaksha");
-  assert.equal(kakshaEnabled(false), false, "and outside it: today's app");
+  assert.equal(kakshaEnabled(undefined), true, "before /api/me answers: Kaksha");
+  assert.equal(kakshaEnabled(false), true, "outside the old cohort: Kaksha");
   globalThis.location = { search: "?ui=classic" };
   _resetKakshaUrlForTests();
-  assert.equal(kakshaEnabled(true), false, "?ui=classic turns it off even in the cohort");
+  assert.equal(kakshaEnabled(true), false, "?ui=classic: today's classic app on this device");
+  assert.equal(store.get(UI_KAKSHA_KEY), "0");
+  globalThis.location = { search: "" };
+  _resetKakshaUrlForTests();
+  assert.equal(kakshaEnabled(true), false, "and it stays off on that device");
+  globalThis.location = { search: "?ui=default" };
+  _resetKakshaUrlForTests();
+  assert.equal(kakshaEnabled(false), true, "?ui=default clears the device choice");
   delete globalThis.localStorage;
   delete globalThis.location;
 });
