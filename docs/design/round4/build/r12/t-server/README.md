@@ -14,7 +14,7 @@ Everything goes through ONE buffered writer (`server/trace/writer.js`):
 
 | kind | where (the choke point) | what |
 |---|---|---|
-| `srv.req` / `srv.res` | `server/router.js` (every `/api` route except `/api/trace/*`, health, the error beacon) | route, rid (echoed as `x-taxila-rid`), status, ms, query, request and response bodies (masked, ≤ 8 KB) |
+| `srv.req` / `srv.res` | `server/router.js` (every `/api` route except `/api/trace/*`, health, the error beacon) | route, rid (from `x-taxila-rid`, or `_rid` in the query for an EventSource; echoed as `x-taxila-rid`), status, ms, query, request and response bodies (masked, ≤ 8 KB) |
 | `model.call` | `server/azure.js` `post()` and `chatStream()`, the one model-call wrapper | kind, deployment, lane, status, ms, attempt, tokens, ttft, prompt id (its first system line), prompt sha, output text; tier 2 adds a blob with the FULL request and raw response |
 | `director.turn` | `server/brain/turn.js` after the commit | move, shape, beat, item, phase, lane, legal mode, ACCEPTED and REJECTED proposals (with why), all reason codes, speculation, guard, Studio slot / reasons / module commands, her reply |
 | `studio.rung_replaced` | same | WHAT the live board replaced (module, engine, script ops, mounted?), BY what (slot, intent, state, artifact) and WHY |
@@ -24,12 +24,13 @@ Everything goes through ONE buffered writer (`server/trace/writer.js`):
 | `studio.slot.refused` | the tray gates (`studio/seam.js`, `stagecraft/seam-bridge.js`) | which gate, kind/rung, viewport class, the certificate's reason |
 | `board.page` | `server/studio/seam.js` `writeBoardPage()` | page seq, mode, **clears** the board or **draws over** the last page, op count and kinds, the words drawn |
 | `forge.job.start/end`, `job.start/end` | `server/conductor/jobs.js` `runJob()` (worker) | kind, attempt, ok, ms, error code |
+| `tts.first`, `tts.end` / `tts.failed` | `server/routes/voice.js` `streamParts()` (tts-stream and turn-audio) | first-audio ms, setup ms, cache hit, engine, prewarmed ms; at the end: ok / empty / cut / failed / aborted (the child went away), bytes, ms, EVERY part's engine (a DragonHD → gpt-4o-mini-tts fallback shows) |
 | `play.mount`, `play.act`, `play.outcome` | `server/play/routes.js` start / act | family, mode, level, skill; each act's grade moments and her reaction; the verdict when the level ends (on the lesson's timeline when the game runs in one) |
 
 The child and guardian ids always come from auth (`requireGuardian`, `requireChild`, `loadTurnContext`, the tts-stream
 ownership query), never from the client. The session id is:
 - the lesson id inside a lesson (a start is keyed by the lesson it created);
-- else the page-load id (`x-taxila-pid` header);
+- else the page-load id (`x-taxila-pid` header, or `_pid` in the query);
 - else `g:<guardian>`.
 
 **Masking** (`server/trace/mask.js`, gate-tested): password, PIN, email, phone, cookie, Authorization, any key, token or
@@ -56,7 +57,7 @@ anywhere. Token COUNTS are kept.
   - `cid` is set only when the event's `sid` is a lesson of THIS guardian;
   - `t` is corrected by `skewMs`.
   - Response `{accepted, rejected, tier}`.
-- `POST /api/trace/blob?sid=&src=client&seq=&ext=&type=`, raw bytes up to 12 MB, tier 2 only. Returns `{ref, bytes, type}`
+- `POST /api/trace/blob?sid=&src=client&seq=&ext=&type=`, raw bytes up to 12 MB, tier 2 only. `seq` is a number or a letter and a number (audio blobs: `b3`). Returns `{ref, bytes, type}`
   for `data.blob`.
 
 ## Erasure and retention

@@ -11,7 +11,7 @@ const safe = (s, n) => String(s ?? "").replace(/[^\w.-]/g, "_").slice(0, n);
 /** The blob path for one event's payload. */
 export function traceBlobPath({ sid, src, seq, ext, t = Date.now() }) {
   const day = new Date(t).toISOString().slice(0, 10);
-  return `${day}/${safe(sid, 80) || "nosid"}/${safe(src, 8) || "server"}-${Number(seq) || 0}.${safe(ext, 12) || "bin"}`;
+  return `${day}/${safe(sid, 80) || "nosid"}/${safe(src, 8) || "server"}-${safe(seq, 12) || "0"}.${safe(ext, 12) || "bin"}`;
 }
 
 /** Tests only: replace the network layer ({ put(path, buf, type), del(path) }). */

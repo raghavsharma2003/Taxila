@@ -12,7 +12,7 @@ import * as account from "./routes/account.js";
 // W1-C seam: each request runs on its session's clock (a @taxila.test account may hold an offset; everyone else: real time).
 import { realNow, runRequestClock } from "./comprehension/testclock.js";
 // release 12 flight recorder (server/trace): one trace store per request, srv.req / srv.res at the end of it.
-import { runTrace, ridOf, isUuid } from "./trace/context.js";
+import { runTrace, ridOf, pidOf, isUuid } from "./trace/context.js";
 import { record } from "./trace/writer.js";
 
 const REVISION = process.env.CONTAINER_APP_REVISION || null;
@@ -214,8 +214,8 @@ export async function handle(req, res) {
   const fn = ROUTES[key];
   const ctx = { body: null, err: null };
   if (ACCESS_LOG && path !== "/api/health") res.once?.("finish", () => accessLog(req, res, key, !!fn, t0, ctx));
-  const pidH = String(req.headers?.["x-taxila-pid"] ?? "");
-  const store = { rid: ridOf(req), tier: 1, ...(/^[\w-]{6,80}$/.test(pidH) ? { pid: pidH, sid: pidH } : {}) };
+  const pidH = pidOf(req);
+  const store = { rid: ridOf(req), tier: 1, ...(pidH ? { pid: pidH, sid: pidH } : {}) };
   if (!UNTRACED.test(path)) res.once?.("finish", () => traceRequest(req, res, key, !!fn, t0Wall, t0, ctx, store));
   try { res.setHeader?.("x-taxila-rid", store.rid); } catch { /* headers already sent */ }
   return runTrace(store, () => dispatch(req, res, key, fn, ctx, store));

@@ -86,9 +86,11 @@ export const TRACE_KINDS = {
   server: [
     "srv.req", "srv.res",
     "model.call",
-    "director.turn", "studio.rung_replaced", "turn.speculation_miss",
+    "director.turn", "turn.speculation_miss",
     "studio.slot.open", "studio.slot.plan", "studio.slot.build", "studio.slot.qa", "studio.slot.filled", "studio.slot.failed", "studio.slot.timeout",
-    "board.page", "forge.job.start", "forge.job.end", "play.mount", "play.outcome",
+    "studio.slot.refused", "studio.rung_replaced",
+    "board.page", "forge.job.start", "forge.job.end", "job.start", "job.end", "play.mount", "play.act", "play.outcome",
+    "tts.first", "tts.end", "tts.failed",
     "safety.scan", "safety.hold", "classify.verdict",
     "db.write", "trace.dropped",
   ],

@@ -12,10 +12,22 @@ const als = new AsyncLocalStorage();
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 export const isUuid = (v) => typeof v === "string" && UUID.test(v);
 
-/** A request id as the client sent it (X-Taxila-Rid), else a fresh one. Short and printable only. */
+const RID = /^[\w.:-]{6,64}$/;
+const queryParam = (req, name) => { try { return new URL(req?.url || "/", "http://x").searchParams.get(name) ?? ""; } catch { return ""; } };
+/** A request id as the client sent it (X-Taxila-Rid, or `_rid` in the query for an EventSource, which cannot set
+ *  headers), else a fresh one. Short and printable only. */
 export const ridOf = (req) => {
   const h = String(req?.headers?.["x-taxila-rid"] ?? "");
-  return /^[\w.:-]{6,64}$/.test(h) ? h : randomUUID();
+  if (RID.test(h)) return h;
+  const qr = String(req?.url ?? "").includes("_rid=") ? queryParam(req, "_rid") : "";
+  return RID.test(qr) ? qr : randomUUID();
+};
+/** The page-load id: X-Taxila-Pid, or `_pid` in the query (EventSource). "" when neither is valid. */
+export const pidOf = (req) => {
+  const h = String(req?.headers?.["x-taxila-pid"] ?? "");
+  if (/^[\w-]{6,80}$/.test(h)) return h;
+  const qp = String(req?.url ?? "").includes("_pid=") ? queryParam(req, "_pid") : "";
+  return /^[\w-]{6,80}$/.test(qp) ? qp : "";
 };
 
 /** Run `fn` inside a fresh trace store. */

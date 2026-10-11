@@ -25,6 +25,7 @@ import { realtimeSeam } from "../voice/realtimeSession.js";
 import { seamSafe } from "../seam-safe.js";
 import { cascadeEngine, dhdVoiceFor, warnUnmeasuredOnce } from "../voice/voices.js";
 import { traceIdentify } from "../trace/context.js";
+import { record } from "../trace/writer.js";
 
 const VOICES = new Set(["alloy", "ash", "ballad", "coral", "echo", "fable", "nova", "onyx", "sage", "shimmer", "verse", "marin", "cedar"]);
 /** A push-to-talk turn is a child's answer: 30 s of Opus at ~32 kbit/s is ~120 kB; 2 MB is a generous cap. */
@@ -245,6 +246,7 @@ async function streamParts(res, { entry, t0, setupMs, prewarmed, framed = false,
   res.on("close", onClose);
   const out = frameWriter(res, framed);
   let wrote = 0;
+  let traced = "aborted"; // release 12 flight recorder: how this stream ended (tts.end)
   let headed = headersSent;
   let headerFramed = headersSent; // turn-audio wrote its own header frame
   const ensureHeader = () => {
@@ -267,6 +269,8 @@ async function streamParts(res, { entry, t0, setupMs, prewarmed, framed = false,
       headerFramed = true;
       out.json(FRAME.header, { v: 2, format: `pcm_s16le;rate=${PCM_RATE};channels=1`, sentences: parts.length, firstMs: Math.round(performance.now() - t0), setupMs,
         cache: jobs[0]?.cached ? "hit" : "miss", engine: entry.renders?.[0]?.engine ?? "oai", ...(prewarmed !== undefined ? { prewarmedMs: prewarmed } : {}) });
+      record("tts.first", { sentences: parts.length, firstMs: Math.round(performance.now() - t0), setupMs,
+        cache: jobs[0]?.cached ? "hit" : "miss", engine: entry.renders?.[0]?.engine ?? "oai", framed, ...(prewarmed !== undefined ? { prewarmedMs: prewarmed } : {}) });
     }
   };
   const sendPcm = async (chunk) => {
@@ -324,12 +328,14 @@ async function streamParts(res, { entry, t0, setupMs, prewarmed, framed = false,
         offMarks?.();
       }
     }
+    traced = headed ? "ok" : "empty";
     if (headed) out.json(FRAME.end, { t: "end", status: "ok", bytes: wrote, ms: Math.round(performance.now() - t0) });
     else if (headersSent) out.json(FRAME.end, { t: "end", status: "empty" });
     res.end();
   } catch (e) {
     if (abort.signal.aborted) return;
     abort.abort();
+    traced = headed ? "cut" : "failed";
     if (!headed) {
       if (e instanceof AzureError) throw new HttpError(502, "speech service unavailable");
       throw e;
@@ -340,6 +346,10 @@ async function streamParts(res, { entry, t0, setupMs, prewarmed, framed = false,
     res.end();
   } finally {
     res.off("close", onClose);
+    // every part's engine (a DragonHD → gpt-4o-mini-tts fallback shows here), the prelude, how the stream ended
+    record(traced === "cut" || traced === "failed" ? "tts.failed" : "tts.end", { status: traced, bytes: wrote,
+      ms: Math.round(performance.now() - t0), parts: parts.length, prelude: entry.prelude ? true : false,
+      engines: (entry.renders ?? []).map((r) => r?.engine ?? null), cached: jobs.map((j) => !!j?.cached) });
   }
 }
 

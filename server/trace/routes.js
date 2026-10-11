@@ -94,9 +94,9 @@ export async function traceBlob(req, res) {
   if (!traceRateOk(`blob:${g.id}`, RATE.blobs)) throw new HttpError(429, "trace rate limit");
   if (!traceBlobConfigured()) throw new HttpError(503, "trace storage not configured");
   const u = new URL(req.url || "/", "http://x");
-  const sid = u.searchParams.get("sid"), src = u.searchParams.get("src") || "client", seq = Number(u.searchParams.get("seq"));
+  const sid = u.searchParams.get("sid"), src = u.searchParams.get("src") || "client", seq = String(u.searchParams.get("seq") ?? "");
   const ext = u.searchParams.get("ext") || "bin", type = (u.searchParams.get("type") || "application/octet-stream").slice(0, 80);
-  if (!sid || !/^[\w-]{6,80}$/.test(sid) || !Number.isInteger(seq) || !/^[a-z0-9]{1,12}$/i.test(ext) || src !== "client") throw bad("sid, src=client, seq and ext required");
+  if (!sid || !/^[\w-]{6,80}$/.test(sid) || !/^[a-z]?\d{1,9}$/i.test(seq) || !/^[a-z0-9]{1,12}$/i.test(ext) || src !== "client") throw bad("sid, src=client, seq and ext required");
   const buf = await readRaw(req, MAX_TRACE_BLOB_BYTES);
   const ref = await putTraceBlob(traceBlobPath({ sid, src, seq, ext }), buf, type);
   send(res, 200, ref);

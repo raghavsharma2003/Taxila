@@ -9,7 +9,8 @@ import { mask, fit, isMaskedKey } from "../server/trace/mask.js";
 import { tierForEmail, traceMeFor } from "../server/trace/tier.js";
 import { record, flushTrace, _setTraceDeps, _resetTrace, traceStats, MAX_BUFFER } from "../server/trace/writer.js";
 import { clientRow } from "../server/trace/routes.js";
-import { runTrace, traceIdentify, traceCtx } from "../server/trace/context.js";
+import { runTrace, traceIdentify, traceCtx, ridOf, pidOf } from "../server/trace/context.js";
+import { traceBlobPath } from "../server/trace/blob.js";
 import { outputTextOf } from "../server/trace/model.js";
 import { TRACE_MAX_DATA_BYTES } from "../shared/trace.ts";
 
@@ -194,4 +195,15 @@ test("the request store is per request: concurrent requests never see each other
     seen.push([i, traceCtx().rid]);
   })));
   for (const [i, rid] of seen) assert.equal(rid, `r${i}`);
+});
+
+test("EventSource ids ride the query (_rid / _pid) when no header can; audio blob seqs like b3 keep their name", () => {
+  assert.equal(ridOf({ url: "/api/studio/stream?lessonId=x&_rid=r-abc123", headers: {} }), "r-abc123");
+  assert.equal(ridOf({ url: "/api/x?_rid=r-abc123", headers: { "x-taxila-rid": "hdr-99999" } }), "hdr-99999"); // the header wins
+  assert.match(ridOf({ url: "/api/x?_rid=<script>", headers: {} }), /^[0-9a-f-]{36}$/); // junk → a fresh one
+  assert.equal(pidOf({ url: "/api/studio/stream?_pid=page-123456", headers: {} }), "page-123456");
+  assert.equal(pidOf({ url: "/api/x", headers: {} }), "");
+  const t = Date.UTC(2026, 9, 11);
+  assert.equal(traceBlobPath({ sid: "lesson-1", src: "client", seq: "b3", ext: "webm", t }), "2026-10-11/lesson-1/client-b3.webm");
+  assert.equal(traceBlobPath({ sid: "lesson-1", src: "client", seq: 7, ext: "json", t }), "2026-10-11/lesson-1/client-7.json");
 });
