@@ -36,6 +36,7 @@ import { puppetBus } from "../face-puppet/bus.ts";
 // ship5 p1-duplex: the hands-free duplex engine (src/duplex/cascadeDuplex.ts). Off unless the caller passes `duplex`.
 import type { CascadeDuplex, CascadeDuplexOptions, CascadeDuplexState } from "../duplex/cascadeDuplex.ts";
 import type { DuplexMode } from "../duplex/flags.ts";
+import { VoiceLinkTrace } from "../voice/trace.ts";
 
 export type CascadeTransport = "webrtc" | "recording" | "typed";
 
@@ -345,6 +346,8 @@ export class CascadeLink implements TeacherLink {
   private readonly onTransport?: (t: CascadeTransport) => void;
   private readonly events = new Emitter<LinkEvent>();
   private readonly protocol: TranscriptionProtocol;
+  /** r12 flight recorder: the voice events (src/voice/trace.ts); every call is wrapped and never changes the lesson. */
+  private readonly vtrace: VoiceLinkTrace;
 
   private ctx: AudioContext | null;
   private audioEl: HTMLAudioElement | null = null;
@@ -410,6 +413,7 @@ export class CascadeLink implements TeacherLink {
     this.duplexOptions = opts.duplexOptions;
     const dm = opts.duplex;
     if (dm) this.duplexMode = (typeof dm === "function" ? dm().catch((): DuplexMode => "on") : Promise.resolve(dm));
+    this.vtrace = new VoiceLinkTrace({ lessonId: opts.lessonId, lane: "cascade" });
     this.protocol = new TranscriptionProtocol({
       emit: (e) => this.onChildEvent(e),
       onSpeechStart: () => this.onServerSpeechStart(),
@@ -451,6 +455,7 @@ export class CascadeLink implements TeacherLink {
     } catch (err) {
       if (this.closed) throw new Error("the voice lesson was closed");
       console.warn("cascade: no microphone, continuing typed", err);
+      this.vtrace.micDenied(err);
       this.useTyped(err);
       this.events.emit({ type: "connection", state: "connected" });
       return;
@@ -460,6 +465,7 @@ export class CascadeLink implements TeacherLink {
       throw new Error("the voice lesson was closed");
     }
     this.mic = mic;
+    this.vtrace.micOpen(mic, this.ctx);
     const ctx = this.ctx!;
     const micAnalyser = createLevelAnalyser(ctx, ctx.createMediaStreamSource(mic));
     this.levels.mic.attach(micAnalyser);
@@ -513,6 +519,7 @@ export class CascadeLink implements TeacherLink {
       : this.speech({ lessonId: this.lessonId, seq }, signal, sink)), { req: { lessonId: this.lessonId, seq } });
     const cur: CurrentReply = { id, text, playback, playing: false, paused: null };
     this.current = cur;
+    this.vtrace.replyRequested(id, text, seq, playback, this.player.output, this.ctx);
     playback.started.then(
       (at) => {
         if (this.current !== cur || cur.paused) return;
@@ -595,6 +602,7 @@ export class CascadeLink implements TeacherLink {
     if (on === this.pushToTalk) return;
     this.clearPttTail();
     this.pushToTalk = on;
+    this.vtrace.pushToTalk(on, this.transportKind);
     this.talking = false;
     if (this.transportKind === "webrtc") {
       // ship5 p1-duplex: hands-free again while the engine decides → its 1,500 ms backstop, not the token's VAD
@@ -608,6 +616,7 @@ export class CascadeLink implements TeacherLink {
     if (!this.pushToTalk || this.talking || this.transportKind === "typed") return;
     this.clearPttTail();
     this.talking = true;
+    this.vtrace.tap("start");
     const at = Date.now();
     void this.ctx?.resume().catch(() => {});
     // A press is the child's explicit "my turn": she stops outright (no pause-and-decide).
@@ -632,6 +641,7 @@ export class CascadeLink implements TeacherLink {
   talkEnd(): void {
     if (!this.talking) return;
     this.talking = false;
+    this.vtrace.tap("end");
     const at = Date.now();
     this.turn = { speechEndAt: at };
     if (this.recorder) this.recorder.releasedAt = at;
@@ -656,6 +666,7 @@ export class CascadeLink implements TeacherLink {
 
   close(): void {
     if (this.closed) return;
+    this.vtrace.close();
     // turn.predictive: a held fragment is delivered before teardown, never dropped (it can be a disclosure)
     this.clearMergeTimer();
     const held = this.merger?.drain();
@@ -776,6 +787,7 @@ export class CascadeLink implements TeacherLink {
       const cur = this.current;
       if (cur?.paused) {
         const verdict = this.verdict(e, cur);
+        this.vtrace.bargein("verdict", { verdict, replyId: cur.id, pausedBy: cur.paused.by });
         if (verdict !== "turn") {
           this.bargeStats[verdict === "silent" ? "resumedSilent" : verdict === "echo" ? "resumedEcho" : "resumedBackchannel"]++;
           this.resumeReply();
@@ -812,12 +824,14 @@ export class CascadeLink implements TeacherLink {
     this.duckTimer = null;
     if (!cur) return;
     if (cur.playing) this.bargeStats.serverStartsWhilePlaying++;
+    this.vtrace.bargein("server_speech_start", { herPlaying: cur.playing, alreadyPaused: !!cur.paused });
     if (cur.paused) cur.paused.by = "server"; // a local pause, confirmed
     else this.pauseReply("server");
     this.armPauseTimer(PAUSE_MAX_MS);
   }
 
   private onLocalVad(edge: "onset" | "sustain" | "offset"): void {
+    this.vtrace.localVad(edge, !!this.current?.playing);
     // Round 2 latency: the device heard the child stop (offset) or go on (onset); hands-free only
     if (this.prefetcher && !this.pushToTalk) {
       if (edge === "offset") this.prefetcher.onQuiet();
@@ -830,6 +844,7 @@ export class CascadeLink implements TeacherLink {
     if (!cur?.playing || this.pushToTalk || edge === "offset" || this.duplexDeciding) return;
     if (edge === "onset" && this.localDuck) {
       this.bargeStats.localDucks++;
+      this.vtrace.bargein("local_duck", { level: DUCK_LEVEL });
       this.player?.duck(DUCK_LEVEL);
       if (this.duckTimer) clearTimeout(this.duckTimer);
       this.duckTimer = setTimeout(() => {
@@ -842,11 +857,13 @@ export class CascadeLink implements TeacherLink {
       // Sustained voice over her: stop the sound now (~120 ms after onset) rather than waiting 200-500 ms for
       // the server; it confirms within DUCK_RELEASE_MS or she resumes.
       this.bargeStats.localPauses++;
+      this.vtrace.bargein("local_pause");
       if (this.duckTimer) clearTimeout(this.duckTimer);
       this.duckTimer = null;
       this.pauseReply("local");
       this.armPauseTimer(DUCK_RELEASE_MS, () => {
         this.bargeStats.localUnconfirmed++;
+        this.vtrace.bargein("local_unconfirmed", { count: this.bargeStats.localUnconfirmed, giveUpAt: LOCAL_PAUSE_GIVE_UP });
         // Repeated unconfirmed local pauses are her own echo (or a noisy room): stop pausing on local energy.
         if (this.bargeStats.localUnconfirmed >= LOCAL_PAUSE_GIVE_UP) {
           this.localPause = false;
@@ -863,6 +880,7 @@ export class CascadeLink implements TeacherLink {
     if (!cur || cur.paused) return;
     cur.paused = { by, at: Date.now() };
     cur.playback.pause();
+    this.vtrace.replyPaused(cur.id, by, Math.round(cur.playback.remainingS() * 1000));
     if (cur.playing) {
       cur.playing = false;
       this.events.emit({ type: "teacher_audio_end" });
@@ -876,6 +894,7 @@ export class CascadeLink implements TeacherLink {
     this.pauseTimer = null;
     if (!cur?.paused) return;
     cur.paused = null;
+    this.vtrace.replyResumed(cur.id);
     this.player?.duck(1);
     cur.playback.resume();
     void cur.playback.started.then(() => {
@@ -916,6 +935,7 @@ export class CascadeLink implements TeacherLink {
     if (this.pauseTimer) clearTimeout(this.pauseTimer);
     this.pauseTimer = null;
     cur.playback.stop();
+    this.vtrace.replyStopped(cur.id, status, byChild);
     if (byChild) this.events.emit({ type: "teacher_interrupted", responseId: cur.id });
     if (byChild) this.prefetcher?.setInterrupted(true);
     if (cur.playing) this.events.emit({ type: "teacher_audio_end" });
@@ -939,10 +959,12 @@ export class CascadeLink implements TeacherLink {
     try {
       await this.open();
       if (this.closed) return;
+      this.vtrace.transport("webrtc");
       this.onTransport?.("webrtc");
     } catch (err) {
       if (this.closed) return;
       console.warn("cascade: transcription call unavailable, falling back to push-to-talk", err);
+      this.vtrace.transport("recording", err);
       this.teardownPeer();
       this.useRecording();
     }
@@ -952,6 +974,7 @@ export class CascadeLink implements TeacherLink {
     const tok = await this.fetchToken(this.lessonId);
     if (this.closed) throw new Error("the voice lesson was closed");
     this.audioInput = { ...obj(obj(obj(tok.session).audio).input) };
+    this.vtrace.sttConfig(this.audioInput);
     // turn.predictive: the candidate endpoint is 500 ms of silence; the merger keeps a mid-thought pause from ending the turn.
     if (this.merger && obj(this.audioInput.turn_detection).type === "server_vad") {
       this.audioInput = { ...this.audioInput, turn_detection: { ...obj(this.audioInput.turn_detection), silence_duration_ms: PREDICTIVE_SILENCE_MS } };
@@ -999,6 +1022,7 @@ export class CascadeLink implements TeacherLink {
     dc.onmessage = (m) => {
       try {
         const e = JSON.parse(String(m.data));
+        this.vtrace.sttEvent(e);
         if (e?.type === "error") this.onServerError(e);
         else if (!this.duplex?.onSttEvent(e)) this.protocol.handle(e);
       } catch (err) {
@@ -1036,17 +1060,22 @@ export class CascadeLink implements TeacherLink {
     } catch {
       mode = "off";
     }
-    if (mode === "off" || this.closed || this.duplex || this.transportKind !== "webrtc") return;
+    if (mode === "off" || this.closed || this.duplex || this.transportKind !== "webrtc") {
+      this.vtrace.duplexStart(mode, false, mode === "off" ? "mode_off" : this.transportKind !== "webrtc" ? `transport_${this.transportKind}` : this.closed ? "closed" : "already_started");
+      return;
+    }
     try {
       const { CascadeDuplex } = await import("../duplex/cascadeDuplex.ts");
       if (this.closed || this.duplex) return;
       const d = new CascadeDuplex(this.duplexSurface(), { ...this.duplexOptions, mode, face: this.duplexFace ?? null });
       this.duplex = d;
-      if (!(await d.start())) return; // it already restored today's path and reported the fallback
+      if (!(await d.start())) { this.vtrace.duplexStart(mode, false, `engine_fallback:${d.fallback ?? "unknown"}`); return; } // it already restored today's path and reported the fallback
+      this.vtrace.duplexStart(mode, d.deciding, d.deciding ? null : mode === "shadow" ? "shadow_never_decides" : "not_deciding");
       // hands-free for the whole lesson: the engine owns the floor (a pause sheet may still switch the mic off)
       if (mode === "on" && this.pushToTalk && d.deciding) this.setPushToTalk(false);
     } catch (err) {
       console.warn("cascade: the duplex engine could not start; staying on today's path", err);
+      this.vtrace.duplexStart(mode, false, "engine_error");
       this.onDuplex?.({ mode, live: false, fallback: "engine_error", phase: "idle", stats: null });
     }
   }
@@ -1161,6 +1190,7 @@ export class CascadeLink implements TeacherLink {
 
   private useTyped(err: unknown): void {
     this.transportKind = "typed";
+    this.vtrace.transport("typed", err);
     this.onTransport?.("typed");
     const name = err && typeof err === "object" && "name" in err ? String((err as { name: unknown }).name) : "";
     const why = name === "NotAllowedError" ? "the microphone is not allowed" : name === "NotFoundError" ? "no microphone was found" : "the microphone is unavailable";

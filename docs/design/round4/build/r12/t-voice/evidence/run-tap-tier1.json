@@ -1,0 +1,450 @@
+{
+ "run": "tap-tier1",
+ "account": "plain",
+ "tier": 1,
+ "text": "Mujhe lagta hai yeh recursive rule hai",
+ "at": "2026-10-11T14:39:17.152Z",
+ "lessonUrl": "/c/afad0af5-becb-42a6-8f47-f516167cf010/lesson/new",
+ "driverTimeline": {
+  "said": "Mujhe lagta hai yeh recursive rule hai",
+  "sent": "Mujhe lagta hai yeh recursive rule hai",
+  "mode": "ptt",
+  "speechMs": 2660,
+  "cut": null,
+  "commitWhy": "client_commit",
+  "sttItems": 1,
+  "earlyCommits": 0,
+  "endToFirstEarlyCommit": null,
+  "endToCommit": 2950,
+  "endToFinal": 3751,
+  "endToTurnPost": 3775,
+  "turnMs": 1484,
+  "turnStatus": 200,
+  "ackStatus": 204,
+  "endToAck": 2953,
+  "prefetch": [
+   202
+  ],
+  "ttsN": 1,
+  "endToTts": 5434,
+  "endToFirstSound": 2563,
+  "endToReplySound": 5790,
+  "clientCommits": 1
+ },
+ "events": [
+  {
+   "t": 1791729520614,
+   "mono": 5787,
+   "kind": "mic.mode",
+   "tier": 1,
+   "data": {
+    "mode": "tap",
+    "reasons": [
+     "talk_pref_tap",
+     "no_headset_detected",
+     "echo_probe_not_built",
+     "duplex_not_resolved_yet"
+    ],
+    "older": true,
+    "wanted": "tap",
+    "headset": false,
+    "echoDemoted": false,
+    "duplexLive": false,
+    "duplexFallback": null,
+    "transport": null,
+    "pushToTalk": true,
+    "ui": "child-desk",
+    "duplexSource": null
+   }
+  },
+  {
+   "t": 1791729523739,
+   "mono": 8912,
+   "kind": "mic.state",
+   "tier": 1,
+   "data": {
+    "state": "tap",
+    "pushToTalk": true,
+    "transport": "webrtc",
+    "lane": "cascade"
+   }
+  },
+  {
+   "t": 1791729523746,
+   "mono": 8919,
+   "kind": "mic.duplex",
+   "tier": 1,
+   "data": {
+    "mode": "shadow",
+    "source": "server_shadow",
+    "device": null,
+    "server": "shadow",
+    "build": "on",
+    "asks": [
+     {
+      "status": 200,
+      "ms": 45,
+      "duplex": "shadow",
+      "retry": false,
+      "cohort": null
+     }
+    ]
+   }
+  },
+  {
+   "t": 1791729523746,
+   "mono": 8919,
+   "kind": "mic.mode",
+   "tier": 1,
+   "data": {
+    "mode": "tap",
+    "reasons": [
+     "talk_pref_tap",
+     "no_headset_detected",
+     "echo_probe_not_built",
+     "duplex_shadow_only"
+    ],
+    "older": true,
+    "wanted": "tap",
+    "headset": false,
+    "echoDemoted": false,
+    "duplexLive": false,
+    "duplexFallback": null,
+    "transport": null,
+    "pushToTalk": true,
+    "ui": "child-desk",
+    "duplex": "shadow",
+    "duplexSource": "server_shadow"
+   }
+  },
+  {
+   "t": 1791729523746,
+   "mono": 8920,
+   "kind": "mic.state",
+   "tier": 1,
+   "data": {
+    "state": "open",
+    "lane": "cascade",
+    "label": "MediaStreamAudioDestinationNode",
+    "echoCancellation": null,
+    "noiseSuppression": null,
+    "autoGainControl": null,
+    "sampleRate": 48000,
+    "ctxRate": 44100
+   }
+  },
+  {
+   "t": 1791729523751,
+   "mono": 8925,
+   "kind": "tts.request",
+   "tier": 1,
+   "data": {
+    "replyId": "cascade-1",
+    "seq": 1,
+    "text": "Namaste Kabir, main Asha, aapki AI teacher. Aaj fractions multiply karenge—cricket pitch ke do parts jaisa. Aapka favourite cricket shot kaunsa hai?",
+    "chars": 148,
+    "lane": "cascade",
+    "voice": null,
+    "voiceNote": "chosen server-side (see srv tts events)"
+   }
+  },
+  {
+   "t": 1791729523924,
+   "mono": 9097,
+   "kind": "tts.start",
+   "tier": 1,
+   "data": {
+    "replyId": "cascade-1",
+    "seq": 1,
+    "msFromRequest": 232
+   }
+  },
+  {
+   "t": 1791729524196,
+   "mono": 9370,
+   "kind": "asr.config",
+   "tier": 1,
+   "data": {
+    "lane": "cascade",
+    "model": "taxila-live-transcribe",
+    "language": null,
+    "promptChars": 183,
+    "turnDetection": "server_vad"
+   }
+  },
+  {
+   "t": 1791729524395,
+   "mono": 9568,
+   "kind": "mic.state",
+   "tier": 1,
+   "data": {
+    "state": "transport",
+    "transport": "webrtc",
+    "why": null,
+    "lane": "cascade"
+   }
+  },
+  {
+   "t": 1791729525165,
+   "mono": 10338,
+   "kind": "mic.duplex.start",
+   "tier": 1,
+   "data": {
+    "mode": "shadow",
+    "live": false,
+    "why": "shadow_never_decides",
+    "lane": "cascade"
+   }
+  },
+  {
+   "t": 1791729532186,
+   "mono": 17359,
+   "kind": "duplex.decision",
+   "tier": 1,
+   "data": {
+    "action": "SPEAK",
+    "reasons": [
+     "wt1_ladder"
+    ],
+    "phase": "committed",
+    "detail": "speak:wt1_nudge:prompt",
+    "mode": "shadow",
+    "acted": false
+   }
+  },
+  {
+   "t": 1791729534099,
+   "mono": 19272,
+   "kind": "tts.end",
+   "tier": 1,
+   "data": {
+    "replyId": "cascade-1",
+    "seq": 1,
+    "status": "completed",
+    "playedFully": true,
+    "msUnplayed": 0,
+    "msFromStart": 10116
+   }
+  },
+  {
+   "t": 1791729535699,
+   "mono": 20872,
+   "kind": "vad.start",
+   "tier": 1,
+   "data": {
+    "source": "tap"
+   }
+  },
+  {
+   "t": 1791729536295,
+   "mono": 21468,
+   "kind": "duplex.decision",
+   "tier": 1,
+   "data": {
+    "action": "YIELD",
+    "reasons": [
+     "repaired",
+     "child_voicing"
+    ],
+    "phase": "child_turn",
+    "detail": "yield:revoke",
+    "mode": "shadow",
+    "acted": false
+   }
+  },
+  {
+   "t": 1791729536893,
+   "mono": 22067,
+   "kind": "vad.start",
+   "tier": 1,
+   "data": {
+    "source": "local",
+    "herPlaying": false
+   }
+  },
+  {
+   "t": 1791729536988,
+   "mono": 22161,
+   "kind": "vad.sustain",
+   "tier": 1,
+   "data": {
+    "source": "local",
+    "herPlaying": false
+   }
+  },
+  {
+   "t": 1791729536989,
+   "mono": 22162,
+   "kind": "asr.partial",
+   "tier": 1,
+   "data": {
+    "itemId": "it1",
+    "text": "Mujhe",
+    "msFromSpeechStart": null
+   }
+  },
+  {
+   "t": 1791729537356,
+   "mono": 22530,
+   "kind": "asr.partial",
+   "tier": 1,
+   "data": {
+    "itemId": "it1",
+    "text": "Mujhe lagta",
+    "msFromSpeechStart": null
+   }
+  },
+  {
+   "t": 1791729537765,
+   "mono": 22938,
+   "kind": "asr.partial",
+   "tier": 1,
+   "data": {
+    "itemId": "it1",
+    "text": "Mujhe lagta hai",
+    "msFromSpeechStart": null
+   }
+  },
+  {
+   "t": 1791729538137,
+   "mono": 23311,
+   "kind": "asr.partial",
+   "tier": 1,
+   "data": {
+    "itemId": "it1",
+    "text": "Mujhe lagta hai yeh",
+    "msFromSpeechStart": null
+   }
+  },
+  {
+   "t": 1791729538527,
+   "mono": 23701,
+   "kind": "asr.partial",
+   "tier": 1,
+   "data": {
+    "itemId": "it1",
+    "text": "Mujhe lagta hai yeh recursive",
+    "msFromSpeechStart": null
+   }
+  },
+  {
+   "t": 1791729538897,
+   "mono": 24071,
+   "kind": "asr.partial",
+   "tier": 1,
+   "data": {
+    "itemId": "it1",
+    "text": "Mujhe lagta hai yeh recursive rule",
+    "msFromSpeechStart": null
+   }
+  },
+  {
+   "t": 1791729539279,
+   "mono": 24452,
+   "kind": "asr.partial",
+   "tier": 1,
+   "data": {
+    "itemId": "it1",
+    "text": "Mujhe lagta hai yeh recursive rule hai",
+    "msFromSpeechStart": null
+   }
+  },
+  {
+   "t": 1791729540755,
+   "mono": 25929,
+   "kind": "vad.end",
+   "tier": 1,
+   "data": {
+    "source": "local",
+    "herPlaying": false
+   }
+  },
+  {
+   "t": 1791729541308,
+   "mono": 26481,
+   "kind": "vad.end",
+   "tier": 1,
+   "data": {
+    "source": "tap"
+   }
+  },
+  {
+   "t": 1791729541965,
+   "mono": 27138,
+   "kind": "duplex.decision",
+   "tier": 1,
+   "data": {
+    "action": "SPEAK",
+    "reasons": [
+     "backstop",
+     "lexical_horizon_unseen",
+     "silence_long_for_child"
+    ],
+    "phase": "committed",
+    "detail": "speak:backstop_silence:body",
+    "mode": "shadow",
+    "acted": false
+   }
+  },
+  {
+   "t": 1791729542494,
+   "mono": 27667,
+   "kind": "asr.final",
+   "tier": 1,
+   "data": {
+    "itemId": "it1",
+    "text": "Mujhe lagta hai yeh recursive rule hai",
+    "empty": false,
+    "confidence": null,
+    "unsure": [],
+    "alternatives": [],
+    "alternativesNote": "not provided by the transcription lane (one hypothesis; see unsure tokens)",
+    "language": null,
+    "model": "taxila-live-transcribe",
+    "msFromSpeechEnd": null,
+    "msFromSpeechStart": null
+   }
+  },
+  {
+   "t": 1791729544178,
+   "mono": 29352,
+   "kind": "tts.request",
+   "tier": 1,
+   "data": {
+    "replyId": "cascade-2",
+    "seq": 3,
+    "text": "Kabir, aapki baat poori clear nahi hui—please dobara kahiye: aap “recursive rule” ko fractions se kaise jod rahe hain?",
+    "chars": 118,
+    "lane": "cascade",
+    "voice": null,
+    "voiceNote": "chosen server-side (see srv tts events)"
+   }
+  },
+  {
+   "t": 1791729544480,
+   "mono": 29653,
+   "kind": "tts.start",
+   "tier": 1,
+   "data": {
+    "replyId": "cascade-2",
+    "seq": 3,
+    "msFromRequest": 362
+   }
+  },
+  {
+   "t": 1791729552433,
+   "mono": 37606,
+   "kind": "tts.end",
+   "tier": 1,
+   "data": {
+    "replyId": "cascade-2",
+    "seq": 3,
+    "status": "completed",
+    "playedFully": true,
+    "msUnplayed": 0,
+    "msFromStart": 7893
+   }
+  }
+ ],
+ "blobs": []
+}

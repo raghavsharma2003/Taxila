@@ -25,6 +25,7 @@ export const DUPLEX_KEY = "tx.flag.duplex";
 // answer lands (cascadeLink startDuplex → setPushToTalk(false)).
 const CONFIG_TIMEOUT_MS = 8000;
 const CONFIG_TRIES = 2;
+import { noteDuplexResolved, vt } from "../voice/trace.ts";
 
 const norm = (v: unknown): DuplexMode | null => (v === "1" || v === "on" ? "on" : v === "0" || v === "off" ? "off" : v === "shadow" ? "shadow" : null);
 
@@ -62,24 +63,33 @@ export function buildDuplex(): DuplexMode {
 }
 
 let serverMode: Promise<DuplexMode | null> | null = null;
+/** r12 flight recorder: what each /api/duplex/config ask answered (status, mode, retry, error), newest last. */
+const asks: Record<string, unknown>[] = [];
 /** One ask: a definite mode, null for a definite unknown value, or undefined to try again (error, timeout, "retry"). */
 async function askOnce(fetcher: typeof fetch): Promise<DuplexMode | null | undefined> {
   try {
     const ctl = typeof AbortController !== "undefined" ? new AbortController() : null;
     const timer = setTimeout(() => ctl?.abort(), CONFIG_TIMEOUT_MS);
     try {
+      const t0 = Date.now();
       const res = await fetcher("/api/duplex/config", { signal: ctl?.signal, credentials: "same-origin" });
-      if (!res.ok) return undefined;
-      const j = (await res.json()) as { duplex?: unknown; retry?: unknown };
+      if (!res.ok) { noteAsk({ status: res.status, ms: Date.now() - t0 }); return undefined; }
+      const j = (await res.json()) as { duplex?: unknown; retry?: unknown; cohort?: unknown };
+      noteAsk({ status: res.status, ms: Date.now() - t0, duplex: j?.duplex ?? null, retry: j?.retry === true, cohort: j?.cohort ?? null });
       // the server could not finish the cohort lookup in time: it says so instead of a silent "shadow"
       if (j?.retry === true) return undefined;
       return norm(j?.duplex);
     } finally {
       clearTimeout(timer);
     }
-  } catch {
+  } catch (err) {
+    noteAsk({ error: String((err as { name?: unknown })?.name ?? err).slice(0, 80) });
     return undefined;
   }
+}
+function noteAsk(a: Record<string, unknown>): void {
+  asks.push(a);
+  if (asks.length > 8) asks.shift();
 }
 /**
  * The server's runtime kill switch (one answer per page). null = unknown (missing route, timeout, error) after CONFIG_TRIES
@@ -106,12 +116,18 @@ export function prefetchDuplexConfig(): void {
 /** The mode for a lesson starting now. */
 export async function resolveDuplexMode(fetcher?: typeof fetch): Promise<DuplexMode> {
   const dev = deviceDuplex();
-  if (dev === "off" || dev === "on") return dev;
+  if (dev === "off" || dev === "on") return traced(dev, "device_key", dev, undefined);
   const srv = await serverDuplex(fetcher);
-  if (srv === "off") return "off";
-  if (srv === null) return buildDuplex() === "off" ? "off" : "shadow";
-  if (dev === "shadow" || srv === "shadow") return "shadow";
-  return srv;
+  if (srv === "off") return traced("off", "server_off", dev, srv);
+  if (srv === null) return traced(buildDuplex() === "off" ? "off" : "shadow", "server_unknown", dev, srv);
+  if (dev === "shadow" || srv === "shadow") return traced("shadow", dev === "shadow" ? "device_key" : "server_shadow", dev, srv);
+  return traced(srv, "server", dev, srv);
+}
+/** r12 flight recorder: the resolved mode, which rule decided it, and what the server said (the "why did I tap" record). */
+function traced(mode: DuplexMode, source: string, dev: DuplexMode | null, srv: DuplexMode | null | undefined): DuplexMode {
+  vt("mic.duplex", { mode, source, device: dev, server: srv === undefined ? "not_asked" : srv, build: buildDuplex(), asks: asks.slice(-CONFIG_TRIES) });
+  noteDuplexResolved(mode, source);
+  return mode;
 }
 
 /** Tests: forget the per-page caches. */
