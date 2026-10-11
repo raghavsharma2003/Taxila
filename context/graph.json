@@ -19952,6 +19952,27 @@
    "at": "2026-10-11",
    "title": "Release 9 worker: taxila-worker and the canary job reached 9a170c5 on 2026-10-11 ~00:20 UTC, but taxila-conductor-nightly stayed on c439bd7 until 06:05 UTC (first --jobs run: socket error; --jobs-only --from-tree retry: connect timeout to management.azure.com; third run Succeeded). No nightly fired on the old image after release 9 (next fire 22:40 UTC)",
    "source": "inbox/r4-main-0610.json"
+  },
+  {
+   "id": "owner-volt-everywhere-20261011",
+   "kind": "constraint",
+   "at": "2026-10-11",
+   "title": "Owner 2026-10-11 06:49 UTC, with a 412 px screenshot of taxila.dev's unchanged landing: 'The whole ui and ux just look the same. Please fix this and as discussed revamp the ui ux and product design and put it on prod. The design sense that we discussed. Need to revamp the whole thing'",
+   "source": "inbox/r4-main-0700.json"
+  },
+  {
+   "id": "ms-r4-r9-surfaces-unchanged",
+   "kind": "measurement",
+   "at": "2026-10-11",
+   "title": "Release 9 live screenshots (412x915, 6 public routes): landing, /promises, /help, /start/class and sign-in all in the pre-round-4 plain dark style; the landing's 'See a real lesson' phone frame renders empty; Volt existed only on the owner cohort's child screens",
+   "source": "inbox/r4-main-0700.json"
+  },
+  {
+   "id": "dc-r4-volt-everywhere",
+   "kind": "decision",
+   "at": "2026-10-11",
+   "title": "Release 11: one identity (Volt) on every surface for every account in production: Kaksha + Volt default ON in code (?ui=classic per-device escape), the public site rebuilt, set-up and sign-in, and the parent corner (Volt calm), by four streams (K, 2, 5, G1) from one brief (docs/design/round4/build/r11/BRIEF.md); presentation only",
+   "source": "inbox/r4-main-0700.json"
   }
  ],
  "edges": [
@@ -32129,6 +32150,26 @@
    "src": "ms-r4-rel9-worker-jobs",
    "rel": "part_of",
    "dst": "ms-r4-rel9-live"
+  },
+  {
+   "src": "owner-volt-everywhere-20261011",
+   "rel": "constrains",
+   "dst": "dc-r4-volt-everywhere"
+  },
+  {
+   "src": "dc-r4-volt-everywhere",
+   "rel": "caused_by",
+   "dst": "ms-r4-r9-surfaces-unchanged"
+  },
+  {
+   "src": "dc-r4-volt-everywhere",
+   "rel": "inherits",
+   "dst": "dc-r4-look-volt"
+  },
+  {
+   "src": "dc-r4-volt-everywhere",
+   "rel": "supersedes",
+   "dst": "dc-r4-owner-wrapup-directive"
   }
  ]
 }

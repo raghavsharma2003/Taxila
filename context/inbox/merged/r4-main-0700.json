@@ -1,0 +1,48 @@
+{
+  "nodes": [
+    {
+      "id": "owner-volt-everywhere-20261011",
+      "kind": "constraint",
+      "at": "2026-10-11",
+      "title": "Owner 2026-10-11 06:49 UTC, with a 412 px screenshot of taxila.dev's unchanged landing: 'The whole ui and ux just look the same. Please fix this and as discussed revamp the ui ux and product design and put it on prod. The design sense that we discussed. Need to revamp the whole thing'"
+    },
+    {
+      "id": "ms-r4-r9-surfaces-unchanged",
+      "kind": "measurement",
+      "at": "2026-10-11",
+      "title": "Release 9 live screenshots (412x915, 6 public routes): landing, /promises, /help, /start/class and sign-in all in the pre-round-4 plain dark style; the landing's 'See a real lesson' phone frame renders empty; Volt existed only on the owner cohort's child screens"
+    },
+    {
+      "id": "dc-r4-volt-everywhere",
+      "kind": "decision",
+      "at": "2026-10-11",
+      "title": "Release 11: one identity (Volt) on every surface for every account in production: Kaksha + Volt default ON in code (?ui=classic per-device escape), the public site rebuilt, set-up and sign-in, and the parent corner (Volt calm), by four streams (K, 2, 5, G1) from one brief (docs/design/round4/build/r11/BRIEF.md); presentation only"
+    }
+  ],
+  "edges": [
+    {
+      "src": "owner-volt-everywhere-20261011",
+      "rel": "constrains",
+      "dst": "dc-r4-volt-everywhere"
+    },
+    {
+      "src": "dc-r4-volt-everywhere",
+      "rel": "caused_by",
+      "dst": "ms-r4-r9-surfaces-unchanged"
+    },
+    {
+      "src": "dc-r4-volt-everywhere",
+      "rel": "inherits",
+      "dst": "dc-r4-look-volt"
+    },
+    {
+      "src": "dc-r4-volt-everywhere",
+      "rel": "supersedes",
+      "dst": "dc-r4-owner-wrapup-directive"
+    }
+  ],
+  "md": {
+    "measurements": "- `ms-r4-r9-surfaces-unchanged` (2026-10-11 06:55 UTC): Playwright, Chromium, 412x915, dark colour scheme, signed out, against https://taxila.dev on release 9 (9a170c5). Routes /, /promises, /start (to /start/class), /who (to /start/class), /parent (to /start/phone?login=1), /help. Each rendered in the pre-round-4 plain dark style: lavender CTA, serif headings on the landing, no Volt token. The landing (6,573 px tall) shows its 'Progress your child can see' phone frame empty. n = 6 routes, one run, signed out. Volt reached only child screens for the owner cohort (TAXILA_UI_KAKSHA hash) when signed in, so a signed-out visitor, and the owner on the landing, saw no change.",
+    "decisions": "- `dc-r4-volt-everywhere` (2026-10-11): after owner-volt-everywhere-20261011, release 11 puts one identity, Volt (K's tokens; no new palette), on every surface for every account in production. (1) Child app: Kaksha + Volt default ON in code (kakshaDecision), ?ui=classic as the per-device escape; every child screen with no classic leftovers; a juice pass inside dc-r4-gamification-b (K). (2) Public site: the landing rebuilt from scratch around real product captures (world, the Desk with Asha and her AI label, a game), plus /promises, /privacy, /help, /leaving and not-found (stream 2). (3) Set-up and sign-in in Volt night, with the same 5 steps, fields, validation and consent text (stream 5). (4) Parent corner in Volt calm, with the claims tests and parent battery unchanged (G1). Presentation only: no server, safety or data change; AI disclosure and helpline wording unchanged. Supersedes the owner-only cohort for the look in dc-r4-owner-wrapup-directive (the other cohorts stay until the owner says otherwise), and overrides dc-r4-app-kaksha's 'default only after the five-second child test' (K-O4) by owner directive. Reverse if: the owner's test of release 11 rejects Volt (Holo or a new direction; one line in look.ts for the child app), or a child test shows Volt reads worse than classic for classes 1-3 (five-second test or free-choice return)."
+  }
+}
