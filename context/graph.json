@@ -19924,6 +19924,27 @@
    "at": "2026-10-10",
    "title": "K's Volt look (355b8c82) folded into release 9 instead of a separate release 10, because the gate had to re-run anyway after the timeout fix; the look is behind ui.kaksha (owner cohort) with parity 72/72 measured by K",
    "source": "inbox/r4-main-2330.json"
+  },
+  {
+   "id": "ms-r4-rel8-live",
+   "kind": "measurement",
+   "at": "2026-10-10",
+   "title": "Release 8 live as taxila-web--s8448c98-b3f2 with TAXILA_UI_KAKSHA and TAXILA_SESSION_FIRST_FOR = owner hash: canary 4/4; taxila.dev owner-5 12/14, round2-content 36/39, boards 4/5 (1/52 board W4/W5 contradiction), round3-conversation 26/26",
+   "source": "inbox/r4-main-0010.json"
+  },
+  {
+   "id": "ms-r4-rel9-live",
+   "kind": "measurement",
+   "at": "2026-10-11",
+   "title": "Release 9 (9a170c5: G2 Khand, 4B duplex, stream 3 latency, 5b + 5-step set-up + patch 09, stream 2 skin/UX + patch 04, 4A whole question cards, K's Volt look) live as taxila-web--s9a170c5-xl3g with TAXILA_FACE_LOOK_FOR + TAXILA_FACE_COHORT_LOOK=lamp2 for the owner: gate 3,034/0/3; packaged owner-5 12/14, round2 37/39, boards 5/5, w2i 39/39; canary 4/4; taxila.dev owner-5 12/14, round2 33/39, boards 4/5, round3-conversation 26/26",
+   "source": "inbox/r4-main-0010.json"
+  },
+  {
+   "id": "ms-r4-visuals-1-in-12",
+   "kind": "measurement",
+   "at": "2026-10-11",
+   "title": "Across releases 7-9 on taxila.dev owner-5 scored 12/14 every time: each run one of 12 visual requests fails (a different request each run: the c7 fraction whiteboard twice, a diagram once), while round2-content varied 33-37/39 on the same failure types; a stable ~8% slot failure rate, not a release regression",
+   "source": "inbox/r4-main-0010.json"
   }
  ],
  "edges": [
@@ -32076,6 +32097,26 @@
    "src": "dc-r4-fold-look-into-r9",
    "rel": "part_of",
    "dst": "dc-r4-owner-wrapup-directive"
+  },
+  {
+   "src": "ms-r4-rel8-live",
+   "rel": "part_of",
+   "dst": "dc-r4-release-sequence-r7-r9"
+  },
+  {
+   "src": "ms-r4-rel9-live",
+   "rel": "part_of",
+   "dst": "dc-r4-release-sequence-r7-r9"
+  },
+  {
+   "src": "ms-r4-rel9-live",
+   "rel": "part_of",
+   "dst": "dc-r4-fold-look-into-r9"
+  },
+  {
+   "src": "ms-r4-visuals-1-in-12",
+   "rel": "part_of",
+   "dst": "ms-r4-rel9-live"
   }
  ]
 }
