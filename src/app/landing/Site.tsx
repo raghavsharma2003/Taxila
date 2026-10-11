@@ -1,6 +1,9 @@
-// The marketing site's shared chrome (PRODUCT-DESIGN-V2 §6.1): header, footer, the hand-drawn brand mark, the
-// helplines as tel: buttons, the inline ₹ glyph (§5.4: no shipped Latin subset covers U+20B9), the teacher portraits
-// and the art hook. Used by the landing and by every public page (Public.tsx), so the site reads as one product.
+// The marketing site's shared chrome (PRODUCT-DESIGN-V2 §6.1; release 11 "Volt everywhere", dc-r4-volt-everywhere):
+// header, footer, the brand mark, the helplines as tel: buttons, the inline ₹ glyph (§5.4: no shipped Latin subset
+// covers U+20B9), the teacher portraits and the art hook. Used by the landing and by every public page (Public.tsx), so
+// the site reads as one product. The whole site is drawn in Kaksha's Volt night: the page root carries K's own scope
+// (`.kx` + data-klook="volt" + data-ktheme="night", src/ui-v3/kaksha/shell-attrs.ts) and every colour is one of K's
+// tokens (src/ui-v3/kaksha/tokens.css); landing.css holds layout and no palette of its own.
 // English chrome only (§5.3). No teacher name or pronoun is written here (whether the site names her is the owner's
 // open call, BUILD-PLAN §5 decision 4), so the site says "the teacher" and shows her unnamed.
 import { useEffect, useState, type ReactNode } from "react";
@@ -11,18 +14,25 @@ import { puppetPoster } from "../../face-puppet/assets.ts";
 import { usePuppetLook } from "../../face-puppet/useLook.ts";
 import { Icon, useArt } from "../../ui/index.ts";
 import type { SitePromise } from "../promises.ts";
+import "../../ui-v3/tokens.css"; // Geist Mono (K's HUD face) is declared here
+import "../../ui-v3/kaksha/tokens.css";
+import "../../ui-v3/kaksha/kaksha.css";
+import "../../ui-v3/kaksha/futurist.css";
 import "../../styles/landing.css";
+
+/** The site root's scope: Kaksha's Volt night, as K's shell sets it on a child screen (never a palette of our own). */
+export const VOLT_NIGHT = { className: "kx sv", "data-klook": "volt", "data-ktheme": "night" } as const;
 
 /** The brand mark: an open book whose spine rises into a pen nib. Same glyph as public/favicon.svg (brand.mjs). */
 export function BrandMark({ size = 32 }: { size?: number }) {
   return (
     <svg width={size} height={size} viewBox="0 0 64 64" aria-hidden="true" focusable="false" className="brand-mark">
-      <rect x="3.84" y="3.84" width="56.32" height="56.32" rx="14" fill="var(--brand-ink)" />
-      <path d="M32 8.5C35.2 14.6 41.5 20.4 41.5 28c0 5-3.4 8.3-6.9 9.9V44h-5.2v-6.1c-3.5-1.6-6.9-4.9-6.9-9.9 0-7.6 6.3-13.4 9.5-19.5z" fill="var(--brand-cream)" />
-      <path d="M32 12.5v14" stroke="var(--brand-ink)" strokeWidth="2.2" strokeLinecap="round" />
-      <circle cx="32" cy="29.4" r="2.6" fill="var(--brand-ink)" />
-      <path d="M10 41.5c7.4-3.8 14.6-3.8 20.6.2V53c-6-4-13.2-4-20.6-.2z" fill="var(--brand-cream)" />
-      <path d="M54 41.5c-7.4-3.8-14.6-3.8-20.6.2V53c6-4 13.2-4 20.6-.2z" fill="var(--brand-cream)" />
+      <rect x="3.84" y="3.84" width="56.32" height="56.32" rx="14" fill="var(--k-ink)" />
+      <path d="M32 8.5C35.2 14.6 41.5 20.4 41.5 28c0 5-3.4 8.3-6.9 9.9V44h-5.2v-6.1c-3.5-1.6-6.9-4.9-6.9-9.9 0-7.6 6.3-13.4 9.5-19.5z" fill="var(--k-void)" />
+      <path d="M32 12.5v14" stroke="var(--k-ink)" strokeWidth="2.2" strokeLinecap="round" />
+      <circle cx="32" cy="29.4" r="2.6" fill="var(--k-ink)" />
+      <path d="M10 41.5c7.4-3.8 14.6-3.8 20.6.2V53c-6-4-13.2-4-20.6-.2z" fill="var(--k-void)" />
+      <path d="M54 41.5c-7.4-3.8-14.6-3.8-20.6.2V53c6-4 13.2-4 20.6-.2z" fill="var(--k-void)" />
     </svg>
   );
 }
@@ -55,26 +65,31 @@ export function useVisitor(): "new" | "signed-in" | "app" {
   return state;
 }
 
+/** The one lime element of a screen state (K's one-volt law): the chamfered CTA with its breathing glow. */
 export function PrimaryCta({ className = "" }: { className?: string }) {
   const who = useVisitor();
-  if (who === "app") return <Link className={`btn btn-primary site-cta ${className}`} to="/who">Open Taxila</Link>;
-  if (who === "signed-in") return <Link className={`btn btn-primary site-cta ${className}`} to="/who">Go to Taxila</Link>;
-  return <Link className={`btn btn-primary site-cta ${className}`} to="/start/class">Start free set-up</Link>;
+  const [to, label] = who === "new" ? ["/start/class", "Start free set-up"] : ["/who", who === "app" ? "Open Taxila" : "Go to Taxila"];
+  return <Link className={`kx-cta kx-cut sv-cta ${className}`} to={to}><span className="kx-cta-sweep" aria-hidden="true" />{label}</Link>;
 }
 
 export function SiteHeader({ home }: { home?: boolean }) {
   const who = useVisitor();
   return (
-    <header className="site-header">
-      <div className="site-wrap site-header-row">
-        <Link to="/" className="site-brand" aria-label="Taxila home"><BrandMark size={32} /><span>Taxila</span></Link>
-        <nav className="site-nav" aria-label="Site">
+    <header className="sv-header">
+      <div className="sv-wrap sv-header-row">
+        <Link to="/" className="sv-brand" aria-label="Taxila home"><BrandMark size={30} /><span>TAXILA</span></Link>
+        <nav className="sv-nav" aria-label="Site">
           {home ? <a href="#lesson">How a lesson works</a> : <NavLink to="/#lesson">How a lesson works</NavLink>}
           <NavLink to="/promises">Our promises</NavLink>
           <NavLink to="/help">Help and safety</NavLink>
         </nav>
-        <span className="site-spacer" />
-        {who === "new" ? <Link className="site-signin" to="/start/phone?login=1">Sign in</Link> : <Link className="site-signin" to="/who">{who === "app" ? "Open Taxila" : "Go to Taxila"}</Link>}
+        <span className="sv-spacer" />
+        {who === "new" ? (
+          <>
+            <Link className="sv-signin" to="/start/phone?login=1">Sign in</Link>
+            <Link className="sv-start kx-cut" to="/start/class">Start</Link>
+          </>
+        ) : <Link className="sv-start kx-cut" to="/who">{who === "app" ? "Open Taxila" : "Go to Taxila"}</Link>}
       </div>
     </header>
   );
@@ -83,28 +98,28 @@ export function SiteHeader({ home }: { home?: boolean }) {
 /** Childline and Tele-MANAS as real tel: buttons (§6.1.2 Help). Numbers re-verified at launch (§16). */
 export function Helplines() {
   return (
-    <div className="site-helplines">
-      <a className="btn btn-secondary site-tel" href="tel:1098"><span className="site-tel-name">Childline</span> <span className="site-tel-num">1098</span></a>
-      <a className="btn btn-secondary site-tel" href="tel:14416"><span className="site-tel-name">Tele-MANAS</span> <span className="site-tel-num">14416</span></a>
+    <div className="sv-helplines">
+      <a className="sv-tel kx-cut" href="tel:1098"><span className="sv-tel-name">Childline</span> <span className="sv-tel-num">1098</span></a>
+      <a className="sv-tel kx-cut" href="tel:14416"><span className="sv-tel-name">Tele-MANAS</span> <span className="sv-tel-num">14416</span></a>
     </div>
   );
 }
 
 export function SiteFooter() {
   return (
-    <footer className="site-footer">
-      <div className="site-wrap site-footer-grid">
-        <div className="site-stack-sm">
-          <Link to="/" className="site-brand" aria-label="Taxila home"><BrandMark size={28} /><span>Taxila</span></Link>
-          <p className="site-meta">A personal AI teacher for classes 1 to 9. The teacher is an AI and always says so.</p>
+    <footer className="sv-footer">
+      <div className="sv-wrap sv-footer-grid">
+        <div className="sv-stack">
+          <Link to="/" className="sv-brand" aria-label="Taxila home"><BrandMark size={26} /><span>TAXILA</span></Link>
+          <p className="sv-meta">A personal AI teacher for classes 1 to 9. The teacher is an AI and always says so.</p>
         </div>
-        <nav className="site-stack-sm" aria-label="Footer">
+        <nav className="sv-stack sv-footer-nav" aria-label="Footer">
           <Link to="/help">Help and safety</Link>
           <Link to="/privacy">Privacy</Link>
           <Link to="/promises">Our promises</Link>
         </nav>
-        <div className="site-stack-sm">
-          <p className="site-meta">If a child needs help now</p>
+        <div className="sv-stack">
+          <p className="kx-label">If a child needs help now</p>
           <Helplines />
         </div>
       </div>
@@ -112,13 +127,14 @@ export function SiteFooter() {
   );
 }
 
+/** A public page in the site's scope (Volt night): header, the page, footer. */
 export function SitePage({ children, title }: { children: ReactNode; title: string }) {
   useEffect(() => { document.title = `${title} · Taxila`; }, [title]);
   return (
-    <div className="site">
-      <a className="skip" href="#main">Skip to content</a>
+    <div {...VOLT_NIGHT}>
+      <a className="sv-skip" href="#main">Skip to content</a>
       <SiteHeader />
-      <main id="main" className="site-main">{children}</main>
+      <main id="main" className="sv-main">{children}</main>
       <SiteFooter />
     </div>
   );
@@ -201,7 +217,7 @@ export function SiteArt({ id, className, eager, fallback, alt = "" }: { id: stri
   );
 }
 
-/** Spot art for a promise; until the image lands, a tinted disc with the promise's icon. */
+/** A promise's mark: its icon in a HUD tile (Volt night). The painted spot art belonged to the old site and stays unused. */
 export function PromiseSpot({ p }: { p: SitePromise }) {
-  return <SiteArt id={p.art} className="promise-spot" fallback={<span className="promise-spot-fb"><Icon name={p.icon} size={28} /></span>} />;
+  return <span className="sv-spot kx-cut" aria-hidden="true"><Icon name={p.icon} size={24} /></span>;
 }
