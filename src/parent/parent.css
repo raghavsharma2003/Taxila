@@ -269,7 +269,7 @@ html:has(.pa[data-tabs="off"]) { scroll-padding-top: 64px; }
   --p-learning: var(--k-her); --p-pakka: var(--k-secure);
   --nib: var(--k-ion); --nib-soft: color-mix(in srgb, var(--k-ion) 14%, var(--k-deep)); --on-nib: var(--k-void);
   --got: var(--k-secure); --got-soft: color-mix(in srgb, var(--k-secure) 14%, var(--k-deep)); --trouble: var(--k-rose);
-  --jamun: var(--k-look); --jamun-soft: color-mix(in srgb, var(--k-look) 14%, var(--k-deep));
+  --jamun: var(--k-ion); --jamun-soft: color-mix(in srgb, var(--k-ion) 14%, var(--k-deep));
   --focus: var(--k-ion); --focus-halo: var(--k-void); --veil: color-mix(in srgb, var(--k-void) 70%, transparent);
   --stage: var(--k-raise);
   --font-ui: var(--k-sans); --font-text: var(--k-sans); --font-title: var(--k-sans); --font-heading: var(--k-sans); --font-display: var(--k-sans);
@@ -348,6 +348,7 @@ html:has(.pa[data-tabs="off"]) { scroll-padding-top: 64px; }
 .pa.kx[data-kcalm] .pa-seg { border-color: var(--k-line-2); background: var(--k-deep); }
 .pa.kx[data-kcalm] .pa-seg-btn[aria-selected="true"] { background: var(--k-ink); color: var(--k-void); }
 @media (prefers-reduced-motion: reduce) { :is(.pa, .pa-gate).kx[data-kcalm] .btn { transition: none; } }
+:is(.pa, .pa-gate).kx[data-kcalm] .pin-key { border-radius: 2px; }
 
 /* chrome: top bar, phone tabs, laptop rail */
 .pa.kx[data-kcalm] .pa-top { background: color-mix(in srgb, var(--k-void) 92%, transparent); border-bottom: 1px solid var(--k-line); backdrop-filter: blur(6px); }
