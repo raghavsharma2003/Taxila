@@ -1,0 +1,32 @@
+{
+  "nodes": [
+    {
+      "id": "ms-r4-owner-cohort-wrong-email",
+      "kind": "measurement",
+      "at": "2026-10-11",
+      "title": "Every owner cohort (TAXILA_UI_KAKSHA, SESSION_FIRST_FOR, DUPLEX_LIVE_FOR, FACE_LOOK_FOR) holds sha256 of the Claude-account email, which is NO Taxila guardian at all; the owner tests with two gmail.com guardian accounts (one owns the test child 6fc3f68e, one created 2026-10-11 06:53 UTC), so no 'on for your account' feature since release 8 ever reached the owner"
+    },
+    {
+      "id": "rj-r4-cohort-by-assumed-email",
+      "kind": "rejection",
+      "at": "2026-10-11",
+      "title": "Keying owner cohorts to the email the main session knows from its own context, without checking that a guardian account with that email exists and is the one the owner tests with: three releases of 'on for your account' features reached nobody, and the owner judged a build that lacked them"
+    }
+  ],
+  "edges": [
+    {
+      "src": "rj-r4-cohort-by-assumed-email",
+      "rel": "caused_by",
+      "dst": "ms-r4-owner-cohort-wrong-email"
+    },
+    {
+      "src": "ms-r4-owner-cohort-wrong-email",
+      "rel": "part_of",
+      "dst": "dc-r12-flight-recorder"
+    }
+  ],
+  "md": {
+    "measurements": "- `ms-r4-owner-cohort-wrong-email` (2026-10-11 15:45 UTC). Method: read-only SELECTs on production. Every guardian not on a test domain, listed by email DOMAIN and sha256 prefix only (scratchpad realguardians.mjs); the guardian of child 6fc3f68e checked against sha256(the Claude-account email) (childowner.mjs); the live taxila-web template checked with cohortcheck.mjs.\n  - Live template: TAXILA_DUPLEX_LIVE_FOR, TAXILA_UI_KAKSHA, TAXILA_SESSION_FIRST_FOR and TAXILA_FACE_LOOK_FOR each hold exactly that one hash.\n  - No guardian row has that email.\n  - 5 non-test guardians exist. The owner's test child 6fc3f68e ('Kiko', both of today's c9 lessons) belongs to a gmail.com guardian (prefix 5930482d, created 2026-10-04, 3 children, last lesson 2026-10-11 14:06 UTC). A second gmail.com guardian (prefix 8693f455) was created 2026-10-11 06:53 UTC, minutes after the owner's 06:49 'it all looks the same' screenshot.\n  - So from release 8 to release 11 no owner-cohort feature reached the owner's sessions: Kaksha before release 11 made it the default, the school-day start, hands-free duplex, and grown-up Asha's lamp2 look. This also explains T-voice's WHY-TAP candidate (a): the duplex config answered 'not in cohort', so it was tap-to-talk.",
+    "rejected": "- `rj-r4-cohort-by-assumed-email` (2026-10-11): tried: owner cohorts set from sha256 of the email the main session had in its own context, checked only by 'the live env contains that hash' (cohortcheck.mjs). What broke: nothing ever checked that a guardian with that email exists, or that it is the account the owner actually tests with. It isn't, so releases 8-11's owner-only features reached nobody, and the owner judged the app without them ('it all looks the same', then '1 out of 100'). Do instead: derive cohort hashes from the guardian rows the owner's own test sessions use, found by the child ids in the owner's screenshots and by recent non-test guardians. Then verify end to end that /api/me for that account reports the cohort flags."
+  }
+}

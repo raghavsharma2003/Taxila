@@ -20130,6 +20130,20 @@
    "at": "2026-10-11",
    "title": "Release 12: a flight recorder for every session. Tier 1 for every account: structured client and server events, no audio, keeping the public 'audio is never stored' promise. Tier 2 for the owner cohort (TAXILA_TRACE_FULL_FOR): rrweb DOM replay, mic and TTS audio, full model prompts and outputs, behind a visible REC chip. Queried by scripts/trace.mjs (timeline, replay PNG at a time, flags). Built by T-server (stream 3), T-client (stream 2) and T-voice (4B), with a root-cause pass by 4A; brief docs/design/round4/build/r12/TRACKING-BRIEF.md",
    "source": "inbox/r4-main-1415.json"
+  },
+  {
+   "id": "ms-r4-owner-cohort-wrong-email",
+   "kind": "measurement",
+   "at": "2026-10-11",
+   "title": "Every owner cohort (TAXILA_UI_KAKSHA, SESSION_FIRST_FOR, DUPLEX_LIVE_FOR, FACE_LOOK_FOR) holds sha256 of the Claude-account email, which is NO Taxila guardian at all; the owner tests with two gmail.com guardian accounts (one owns the test child 6fc3f68e, one created 2026-10-11 06:53 UTC), so no 'on for your account' feature since release 8 ever reached the owner",
+   "source": "inbox/r4-main-1545.json"
+  },
+  {
+   "id": "rj-r4-cohort-by-assumed-email",
+   "kind": "rejection",
+   "at": "2026-10-11",
+   "title": "Keying owner cohorts to the email the main session knows from its own context, without checking that a guardian account with that email exists and is the one the owner tests with: three releases of 'on for your account' features reached nobody, and the owner judged a build that lacked them",
+   "source": "inbox/r4-main-1545.json"
   }
  ],
  "edges": [
@@ -32422,6 +32436,16 @@
    "src": "dc-r12-flight-recorder",
    "rel": "caused_by",
    "dst": "ms-r4-owner-lesson-a95d2ff1"
+  },
+  {
+   "src": "rj-r4-cohort-by-assumed-email",
+   "rel": "caused_by",
+   "dst": "ms-r4-owner-cohort-wrong-email"
+  },
+  {
+   "src": "ms-r4-owner-cohort-wrong-email",
+   "rel": "part_of",
+   "dst": "dc-r12-flight-recorder"
   }
  ]
 }

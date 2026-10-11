@@ -3849,3 +3849,11 @@ The full-page sheets are taken after scrolling the page in steps and requiring e
   - Trace: `studio.rung_replaced` on 11 of 14 rows and `turn.speculation_miss` on 12 of 14, with no record of what was replaced or why.
   - The next lesson, b08fe8a7 (14:06 UTC, 7 turns), repeats the table on both board pages.
   - What the tables cannot show: what the phone displayed (the owner reports drawings over previous content), image load or fail, audio played, the mic mode, the prompts and raw outputs, client errors.
+
+
+<!-- merged from inbox/r4-main-1545.json -->
+- `ms-r4-owner-cohort-wrong-email` (2026-10-11 15:45 UTC). Method: read-only SELECTs on production. Every guardian not on a test domain, listed by email DOMAIN and sha256 prefix only (scratchpad realguardians.mjs); the guardian of child 6fc3f68e checked against sha256(the Claude-account email) (childowner.mjs); the live taxila-web template checked with cohortcheck.mjs.
+  - Live template: TAXILA_DUPLEX_LIVE_FOR, TAXILA_UI_KAKSHA, TAXILA_SESSION_FIRST_FOR and TAXILA_FACE_LOOK_FOR each hold exactly that one hash.
+  - No guardian row has that email.
+  - 5 non-test guardians exist. The owner's test child 6fc3f68e ('Kiko', both of today's c9 lessons) belongs to a gmail.com guardian (prefix 5930482d, created 2026-10-04, 3 children, last lesson 2026-10-11 14:06 UTC). A second gmail.com guardian (prefix 8693f455) was created 2026-10-11 06:53 UTC, minutes after the owner's 06:49 'it all looks the same' screenshot.
+  - So from release 8 to release 11 no owner-cohort feature reached the owner's sessions: Kaksha before release 11 made it the default, the school-day start, hands-free duplex, and grown-up Asha's lamp2 look. This also explains T-voice's WHY-TAP candidate (a): the duplex config answered 'not in cohort', so it was tap-to-talk.

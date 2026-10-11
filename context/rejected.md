@@ -2517,3 +2517,7 @@ A lime (`--k-move`) brand mark in the header was tried and dropped: with the her
 
 <!-- merged from inbox/r4-main-0835.json -->
 - `rj-r11-s5-cta-glow-under-clip` (2026-10-11, stream 5): tried: a drop-shadow glow (`filter: drop-shadow`) on the chamfered set-up CTA, the way futurist.css breathes the Kaksha CTA. What broke: the chamfer is a `clip-path`, and clip-path clips the element's own filter output, so the glow never showed at any size (stream 5's 360/412/1366 shots). Used instead: the one move breathes with an inner light sweep inside the clipped shape; reduced motion stills it.
+
+
+<!-- merged from inbox/r4-main-1545.json -->
+- `rj-r4-cohort-by-assumed-email` (2026-10-11): tried: owner cohorts set from sha256 of the email the main session had in its own context, checked only by 'the live env contains that hash' (cohortcheck.mjs). What broke: nothing ever checked that a guardian with that email exists, or that it is the account the owner actually tests with. It isn't, so releases 8-11's owner-only features reached nobody, and the owner judged the app without them ('it all looks the same', then '1 out of 100'). Do instead: derive cohort hashes from the guardian rows the owner's own test sessions use, found by the child ids in the owner's screenshots and by recent non-test guardians. Then verify end to end that /api/me for that account reports the cohort flags.
