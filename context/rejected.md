@@ -2513,3 +2513,7 @@ A lime (`--k-move`) brand mark in the header was tried and dropped: with the her
 
 ## Merged inbox entries (write-up from the entry text)
 - `rj-r11-s5-cta-glow-under-clip` (2026-10-11): A drop-shadow glow on the chamfered CTA: clip-path clips the filter, so the glow never shows. The one move breathes with an inner light sweep instead.
+
+
+<!-- merged from inbox/r4-main-0835.json -->
+- `rj-r11-s5-cta-glow-under-clip` (2026-10-11, stream 5): tried: a drop-shadow glow (`filter: drop-shadow`) on the chamfered set-up CTA, the way futurist.css breathes the Kaksha CTA. What broke: the chamfer is a `clip-path`, and clip-path clips the element's own filter output, so the glow never showed at any size (stream 5's 360/412/1366 shots). Used instead: the one move breathes with an inner light sweep inside the clipped shape; reduced motion stills it.
