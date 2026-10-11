@@ -243,6 +243,102 @@ separate arm.
 The front-end-only billing unit is the open question: a session that never responds, with a stereo reference. It must
 be read off Azure Cost Management after a 1-hour test before (e) is widened.
 
+## 5b. Cost per conversation-minute for an enterprise voice-calling SaaS (owner's question, 2026-10-11)
+
+**Sources.** All AI prices come from the **Azure Retail Prices API** (`prices.azure.com/api/retail/prices`), read
+2026-10-11 from this sandbox. It returned items here. The filters that work are:
+- `serviceName eq 'Foundry Tools'` for Speech and Voice Live (centralindia);
+- `serviceName eq 'Foundry Models'` for Azure OpenAI Media, GPT5 and Azure OpenAI;
+- `serviceName eq 'Voice'` for Azure Communication Services.
+
+**PSTN per-minute rates are NOT in the API.** The ACS "Local/Toll Free Calls" meters are $1 "Consumption Unit"
+placeholders. The rates below come from the ACS PSTN pricing page (`learn.microsoft.com/.../pstn-pricing`, updated
+2026-09-23) and its destination CSV (`github.com/Azure/Communication/.../communication-services-pstn-rates.csv`).
+Script: `evals/duplex-2026-10/cost-per-minute.mjs`.
+
+**Meters used [V]:**
+
+| meter | price |
+|---|---|
+| `Azure Speech / S1 Speech To Text` | $1 / hour |
+| `Azure Speech / Neural HD Text to Speech Characters` | $22 / 1M |
+| `Azure Speech / S1 Neural Text To Speech Characters` | $15 / 1M |
+| `Azure OpenAI GPT5 / 5.6 terra ShortCo Inp, Cd Inp, Opt Std Gl` | $2 / $0.2 / $12 per 1M |
+| `5.6 luna … Std Gl` | $0.2 / $0.02 / $1.2 per 1M |
+| `Azure OpenAI Media / gpt-realtime-2.1 Audio inp, Audio cd inp, Audio opt Gl` | $32 / $0.4 / $64 per 1M |
+| `gpt-realtime-2.1 Text inp, Text cd inp, Text opt Gl` | $4 / $0.4 / $24 per 1M |
+| `gpt-realtime-2.1-mini Audio inp, Audio opt Gl` | $10 / $20 per 1M |
+| `gpt-realtime-2.1-mini Text inp, Text opt Gl` | $0.6 / $2.4 per 1M |
+| `gpt-live-transcribe Gl Unit` | $1.02 / hour |
+| `Live 1 Gl Unit` (GPT-Live-1) | $3 / hour |
+| `Voice Live API Pro - LLM Audio Input Tokens` | $0.032 / 1K |
+| `Voice Live API Pro - LLM Text Output Tokens` | $0.016 / 1K |
+| `Voice Live API Pro - Standard Speech Audio Output Tokens` | $0.031 / 1K |
+| `Voice Live API Std - Standard Speech Audio Input Tokens` | $0.015 / 1K |
+| `Voice Live API Std - Standard Speech Audio Outpt Tokens` | $0.026 / 1K |
+| `Voice Live API Std - LLM Text Input Tokens` | $0.00066 / 1K |
+| `Voice Live API Std - LLM Text Output Tokens` | $0.00264 / 1K |
+| `Voice / Audio Streaming / Unmixed Audio Streaming` (ACS media to the AI) | $0.004 / min |
+| `Voice / Direct Routing / Standard Inbound, Standard Outbound` | $0.004 / min |
+
+**PSTN [V]:**
+- **US numbers (ACS pricing page):** inbound geographic $0.0085/min, inbound toll-free $0.022/min, outbound from
+  $0.013/min. The number itself is $1/mo geographic or $2/mo toll-free.
+- **India:** ACS sells **no Indian numbers**. Indian calling means ACS Direct Routing at $0.004/min plus an Indian SIP
+  trunk from a licensed carrier. That carrier rate is not on Azure [U]. Calls placed from a US ACS number to India cost
+  $0.035/min to mobiles and $0.045/min to landlines (CSV).
+
+**Assumptions per conversation-minute [E]:**
+- **Talk split:** 50/50, so the caller speaks 30 s and the agent 30 s.
+- **Turns:** 4 per minute.
+- **Audio tokens:** 10 per second in and 20 per second out. The input rate is [M]: 9 tokens for 0.97 s of speech in
+  the bake-off.
+- **Agent speech:** 450 TTS characters per minute.
+- **LLM context:** 2,000 tokens per turn, 75 % cached, and 60 output tokens per turn.
+- **Realtime arms:**
+  - The prior agent turn is re-read as uncached audio input.
+  - 8,000 cached history audio tokens per minute.
+  - 280 text-out tokens per minute, from the bake-off's measured text-out / audio-out ratio of 0.47 [M].
+- **STT:** billed on the streamed minute, not VAD-gated.
+- **Voice Live input:** billed on the streamed minute. A stereo reference may double it [U].
+
+**Per conversation-minute (USD):**
+
+| arm | STT | LLM | TTS | realtime model | AI total | + US inbound (geo) + streaming | + India Direct Routing + streaming (carrier extra) | SaaS price at 3× (US) |
+|---|---|---|---|---|---|---|---|---|
+| (a) cascade: S1 STT + 5.6 terra + Neural HD TTS | 0.0167 [V] | 0.0081 [E] | 0.0099 [E] | — | **0.035** | 0.047 | 0.043 | 0.141 |
+| (a′) cascade, budget: S1 STT + 5.6 luna + Neural TTS | 0.0167 | 0.0008 | 0.0067 | — | **0.024** | 0.037 | 0.032 | 0.110 |
+| (b) duplex engine on (a): + gpt-live-transcribe stream | 0.0337 | 0.0081 | 0.0099 | — | **0.052** | 0.064 | 0.060 | 0.192 |
+| (c1) Voice Live Pro, gpt-realtime-2.1, native voice | — | — | — | 0.0875 | **0.088** | 0.100 | 0.096 | 0.300 |
+| (c2) Voice Live Pro, gpt-realtime-2.1 + Azure HD voice | — | — | — | 0.0402 | **0.040** | 0.053 | 0.048 | 0.158 |
+| (c3) Voice Live Std, cascade-class LLM (4.1-mini tier) + Azure voice | 0.0090 | 0.0039 | 0.0156 | — | **0.029** | 0.041 | 0.037 | 0.123 |
+| (d) gpt-realtime-2.1 alone | — | — | — | 0.0875 | **0.088** | 0.100 | 0.096 | 0.300 |
+| (d′) gpt-realtime-2.1-mini alone | — | — | — | 0.0256 | **0.026** | 0.038 | 0.034 | 0.114 |
+| GPT-Live-1 (full duplex; $3/h unit [V]) | — | — | — | 0.0500 | **0.050** | 0.063 | 0.058 | 0.188 |
+| (e) Voice Live front end + cascade (a) | 0.0090 | 0.0081 | 0.0099 | — | **0.027** | 0.040 | 0.035 | 0.118 |
+
+Everything except the meter prices is [E].
+
+**Margin.** A 3× list price is a 67 % gross margin before hosting, support and payment costs. At 2.5×-4× the band is:
+- **(e) or (a):** $0.10-0.19/min (US inbound);
+- **(c1) or (d):** $0.25-0.40/min.
+
+**Readings.**
+- **Telephony is a third to a quarter of the cost on the cheap arms** (US inbound geographic plus streaming is
+  $0.0125/min). It is noise on gpt-realtime.
+- **Audio tokens dominate the realtime arms.** In (c1)/(d), native audio out at $64/M is 44 % of the cost, and audio in
+  (the caller plus the re-read agent turn) is 33 %. An Azure HD voice instead (c2) halves the cost.
+- **(e), the architecture recommended for Taxila, is also the cheapest serious option for enterprise calling.** It
+  costs about $0.027/min of AI plus telephony. It also keeps a text gate before every word, which an enterprise
+  compliance buyer will want for the same reason Taxila does.
+
+**Not included:**
+- container hosting (Azure Container Apps), storage, and call recording (`Call Recording / Dual Channel Stereo Audio`
+  $0.0025/min [V]);
+- number rental;
+- the Indian carrier's SIP rate;
+- taxes. "Pricing may include requisite taxes and fees" (ACS page).
+
 ## 6. Smart Turn v3.2 on the same audio (main asked)
 
 Setup: Pipecat Smart Turn v3.2 (BSD-2; Whisper-Tiny encoder, ONNX, CPU), with the reference preprocessing (last 8 s,
