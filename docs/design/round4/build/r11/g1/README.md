@@ -31,4 +31,7 @@ teacher" label beside the teacher, routes, API calls, server, safety files.
   - parent unit tests (`ui-v2-claims`, `parent-state`, `reports-gate`, `r4-asha-ux`, `r4-asha-single-teacher`) 52/52;
     UI lint suites (`ui-v2-lint`, `ui-v3-lint`, `r4-kaksha-lint`, `signals-lint`) 24/24; `scripts/lint-ui.mjs` 353
     findings, 0 in `src/parent`.
-  - `npx tsc -b && npx vite build`: pass.
+  - `npx tsc -b && npx vite build`: pass; prompt budget PASS.
+  - full `npm test` on this head: 3021 tests, 3014 pass, 6 skipped, 1 fail: `migrations-applied` (this session's own
+    TEST branch database lacked base migrations 024, 026 and 028; applied to that branch with `scripts/migrate.mjs`,
+    the test then passes). No other failure.
