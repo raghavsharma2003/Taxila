@@ -49,10 +49,17 @@ export function Footer() {
   );
 }
 
+/** Release 11 (dc-r4-volt-everywhere): the public site's paths load and fail in Volt night. K's tokens are in the main
+ *  stylesheet, so the scope attributes are enough; the few styles are token vars (no palette here). */
+const PUBLIC_PATH = /^\/(promises|privacy|help|leaving|trust)?\/?$/;
+const VOLT = { className: "kx", "data-klook": "volt", "data-ktheme": "night" } as const;
+const voltGround = { background: "var(--k-void)", color: "var(--k-ink)", fontFamily: "var(--k-sans)", minHeight: "100dvh" } as const;
+
 export function Loading({ label = "Loading" }: { label?: string }) {
+  const site = typeof location !== "undefined" && PUBLIC_PATH.test(location.pathname);
   return (
-    <div className="center-fill" role="status" aria-live="polite">
-      <div className="spinner" aria-hidden="true" />
+    <div className="center-fill" role="status" aria-live="polite" {...(site ? { ...VOLT, className: "center-fill kx", style: voltGround } : {})}>
+      <div className="spinner" aria-hidden="true" style={site ? { borderColor: "var(--k-line-2)", borderTopColor: "var(--k-ion)" } : undefined} />
       <span className="sr-only">{label}</span>
     </div>
   );
@@ -62,14 +69,17 @@ export function RouteError() {
   const err = useRouteError();
   const notFound = isRouteErrorResponse(err) && err.status === 404;
   return (
-    <main className="col stack center-fill" style={{ textAlign: "center" }}>
-      <h1 className="t-title">{notFound ? "This page is not here" : "Something went wrong on this screen"}</h1>
-      <p className="muted">{notFound ? "The link may be old." : "Your child's work is saved on our side. Try again, or go back home."}</p>
-      <div className="row" style={{ justifyContent: "center" }}>
-        <ButtonLink to="/" variant="secondary">Home</ButtonLink>
-        <button type="button" className="btn btn-primary" onClick={() => location.reload()}>Try again</button>
-      </div>
-    </main>
+    <div {...VOLT} style={voltGround}>
+      <main className="col stack center-fill" style={{ textAlign: "center", padding: "0 16px" }}>
+        <p style={{ margin: 0, font: "500 15px/1.2 var(--k-mono)", letterSpacing: ".06em", textTransform: "uppercase", color: "var(--k-ink-3)" }}>{notFound ? "// 404" : "// Something went wrong"}</p>
+        <h1 className="t-title" style={{ color: "var(--k-ink)", fontFamily: "var(--k-sans)" }}>{notFound ? "This page is not here" : "Something went wrong on this screen"}</h1>
+        <p style={{ color: "var(--k-ink-2)" }}>{notFound ? "The link may be old." : "Your child's work is saved on our side. Try again, or go back home."}</p>
+        <div className="row" style={{ justifyContent: "center" }}>
+          <ButtonLink to="/" variant="secondary">Home</ButtonLink>
+          <button type="button" className="btn btn-primary" onClick={() => location.reload()}>Try again</button>
+        </div>
+      </main>
+    </div>
   );
 }
 

@@ -2500,3 +2500,20 @@ words are left to read.
 - `r4k-rej-beat-on-quick-practice` (2026-10-10): Measuring C9's practice beat on /practice/<topic>: that route starts purpose 'practice' (Quick Practice), where studioSeam.prefetch adds no Studio piece by design, so no beat rule can ever fire there (3 runs, 2026-10-10). Measure on the lesson route
 - `rj-r4lat-debounce-100` (2026-10-10): Tried: device prefetch debounce 100 ms instead of 250 (first-sound, n = 58, 2026-10-10). Broke nothing, but the prefetch fired only 210 ms sooner while sending 2.4 prefetches per turn (more model calls) and adoption fell to 47/58; reply audible 4,185 / 5,915 ms, within run-to-run noise of 250 ms. Kept 250 ms.
 - `rj-r4lat-first-sentence-live` (2026-10-10): Tried (shadow): speaking the reply's first sentence as soon as it locks, before the rest of the turn is guarded/rewritten and committed. Measured on 117 turns (2026-10-10): s1 locks on 53/117, 44 of them speculation hits already final; only 2 of 34 rewrite turns can lock under safety-preserving rules (closing, check-in, why, thinking and teaching-without-a-pinned-question turns never lock). Estimated gain p50 57 ms (4,238 -> 4,235). Not built live: the client restructure and the unstored-s1-on-409 edge cost more than it buys. Re-measure with the shadow if the guard rewrite rate or the lock rules change.
+
+
+<!-- merged from inbox/r4-main-0745.json -->
+- `rj-r4-fullpage-shot-lazy` (2026-10-11): tried: `page.screenshot({ fullPage: true })` straight after load, used as evidence of what a visitor sees below the first screen. What broke: `loading="lazy"` images below the fold never load in it. Main logged an empty lesson-preview frame on release 9 that a scrolling visitor never sees (corrected by `ms-r4-r9-landing-frame-lazy`), and stream 2's r11 after-landing-full sheet shows the new lesson and world frames blank the same way. Use instead: scroll the page in steps before a full-page capture (or set the images eager in the capture build only), and assert `img.complete && naturalWidth > 0` for every frame.
+
+
+<!-- merged from inbox/r11-stream2.json -->
+## rj-r11-site-lime-brand
+A lime (`--k-move`) brand mark in the header was tried and dropped: with the hero's lime CTA it puts two lime elements on the first screen, against K's one-volt law. The mark is `--k-ink` on `--k-void`.
+
+
+## Merged inbox entries (write-up from the entry text)
+- `rj-r11-s5-cta-glow-under-clip` (2026-10-11): A drop-shadow glow on the chamfered CTA: clip-path clips the filter, so the glow never shows. The one move breathes with an inner light sweep instead.
+
+
+<!-- merged from inbox/r4-main-0835.json -->
+- `rj-r11-s5-cta-glow-under-clip` (2026-10-11, stream 5): tried: a drop-shadow glow (`filter: drop-shadow`) on the chamfered set-up CTA, the way futurist.css breathes the Kaksha CTA. What broke: the chamfer is a `clip-path`, and clip-path clips the element's own filter output, so the glow never showed at any size (stream 5's 360/412/1366 shots). Used instead: the one move breathes with an inner light sweep inside the clipped shape; reduced motion stills it.

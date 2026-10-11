@@ -98,7 +98,7 @@ export function Children() {
               </li>
             ))}
           </ul>
-          <div className="pa-actions"><Button onClick={() => nav("/start/class?add=1")}><Icon name="plus" size={20} /> Add a child</Button></div>
+          <div className="pa-actions"><Button onClick={() => nav("/start/class?add=1")} data-volt=""><Icon name="plus" size={20} /> Add a child</Button></div>
         </div>
       )}
     </ParentShell>
@@ -265,7 +265,7 @@ function Download() {
         <div className="pa-stack-sm">
           <PasswordAgain value={password} onChange={(v) => { setPassword(v); if (v) setPwErr(null); }} error={pwErr} id="pw-download" />
           <div className="pa-actions">
-            <Button onClick={go} disabled={busy}>{busy ? "Preparing" : "Download"}</Button>
+            <Button onClick={go} disabled={busy} data-volt="">{busy ? "Preparing" : "Download"}</Button>
             <Button variant="quiet" onClick={() => setOpen(false)}>Cancel</Button>
           </div>
           {err && <p className="pa-form-err" role="alert">{err}</p>}
@@ -471,7 +471,7 @@ export function ChangePin() {
         setPassword("");
       }}>
         <PasswordAgain value={password} onChange={(v) => { setPassword(v); if (v) setPwErr(null); }} error={pwErr} autoFocus id="pw-pin" />
-        <div className="pa-actions"><Button type="submit">Change PIN</Button></div>
+        <div className="pa-actions"><Button type="submit" data-volt="">Change PIN</Button></div>
       </form>
     );
   }

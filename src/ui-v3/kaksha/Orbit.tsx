@@ -169,7 +169,15 @@ export function Orbit({ world, reducedMotion, onPick, label }: OrbitProps) {
   };
   return (
     <div className="kx-orbit kx-cut" role="img" aria-label={label}>
+      {/* release 11 juice (futurist looks): two parallax star layers and the planet's light behind the canvas, the
+          child's ship on its own orbit in front (decoration only; still under reduced motion) */}
+      <span className="kx-depth kx-depth--far" aria-hidden="true" />
+      <span className="kx-depth kx-depth--near" aria-hidden="true" />
+      <span className="kx-planet-light" aria-hidden="true" />
       <canvas ref={ref} aria-hidden="true" onClick={onClick} />
+      <span className="kx-flyby" aria-hidden="true">
+        <svg viewBox="0 0 24 40" width="18" height="30"><path className="kx-ship-trail" d="M9 28 L12 40 L15 28 Z" /><path className="kx-ship-hull" d="M12 2 C17 9 18 18 17 28 L7 28 C6 18 7 9 12 2 Z" /><circle className="kx-ship-port" cx="12" cy="14" r="2.6" /></svg>
+      </span>
     </div>
   );
 }

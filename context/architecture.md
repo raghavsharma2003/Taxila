@@ -339,3 +339,8 @@ Proposed seams (patches in `evals/safety-robust/patches/`):
 
 ## Merged inbox entries (write-up from the entry text)
 - `r4k-audit-b-fixes` (undated): Kaksha fixes for stream 5 journey audit B rows (2026-10-10): top-bar topic sans and wraps (B04-04, was mono-clipped); Debrief closing line drops open prompts: question, fill-in blank, or the card question (B05, closingLine); Kaksha Finish goes Home with Not {name}? for 2-child accounts (B06, K-P2 rev 2); Kaksha Hello copy says what happens next (B02, K-P13); Kaksha Start sends no topicId (#1). Card ellipsis is server askText (say.js), reported to main/4A. Flag off unchanged
+
+
+## Merged inbox entries (write-up from the entry text)
+- `r11-k-juice` (undated): Release 11 K juice inside dc-r4-gamification-b: the World orbit and base panels get depth (two parallax star layers, the planet light, the child's ship on its own orbit, a horizon glow under the base); the Debrief's earned moment gets turning rays and a ring pulse behind the badge. Decoration only (aria-hidden), names the idea and counts nothing; reduced motion stills it
+- `r11-k-me-captions-412` (undated): Me page Choice rows (Captions, Teacher face, Theme) cut their label at 412 px because .me-text was flex 1 with min-width 0; fixed with a 9rem basis so the segmented choice wraps under the label

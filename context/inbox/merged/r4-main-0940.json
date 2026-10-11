@@ -1,0 +1,36 @@
+{
+  "nodes": [
+    {
+      "id": "ms-r4-rel11-live",
+      "kind": "measurement",
+      "at": "2026-10-11",
+      "title": "Release 11 (556639e, Volt everywhere) live as taxila-web--s556639e-41l9 at ~09:15 UTC: gate 3,054 tests 3,051 pass 0 fail 3 skipped; packaged tree journey 5 steps to Hello in Volt day and lesson/new, w2i-safety 39/39 alone, owner-5 10/14, round2 33/39, boards 4/5; canary 4/4; taxila.dev owner-5 14/14, round2-content 37/39, boards 5/5, round3-conversation 27/27"
+    },
+    {
+      "id": "ms-r4-r11-visual-variance",
+      "kind": "measurement",
+      "at": "2026-10-11",
+      "title": "Same server code (zero diff in server/shared/data/db/api/package files vs live 9a170c5): owner-5 visual slots 9/12 on the packaged tree (run alongside 3 other batteries and a browser journey) vs 12/12 on taxila.dev an hour later; slot failure is generation variance, not the release"
+    }
+  ],
+  "edges": [
+    {
+      "src": "ms-r4-rel11-live",
+      "rel": "part_of",
+      "dst": "dc-r4-volt-everywhere"
+    },
+    {
+      "src": "ms-r4-r11-visual-variance",
+      "rel": "part_of",
+      "dst": "ms-r4-visuals-1-in-12"
+    },
+    {
+      "src": "ms-r4-r11-visual-variance",
+      "rel": "part_of",
+      "dst": "ms-r4-rel11-live"
+    }
+  ],
+  "md": {
+    "measurements": "- `ms-r4-rel11-live` (2026-10-11): int/r4-rel11 556639e.\n  - Gate (deploy-azure --gate --dry-run, 1,582 s): 3,054 tests, 3,051 pass, 0 fail, 3 skipped; prompt budget PASS.\n  - Packaged tree (git archive minus docs/evals/tests/art, plus the gate's dist; local production server on the Neon TEST branch):\n    - r4-asha-setup-journey --hello via testdbrun (DATABASE_URL = TEST in the environment, which outranks --env-file; checked): 5 steps, 22 taps, 4 fields, first sound 21,864 ms on phone and 21,493 ms on laptop. Hello cards ai/picture/change/hi in Volt day (class 4), then /c/:id/lesson/new.\n    - w2i-safety alone: 39/39; leftover guardians 114 → 114.\n    - owner-5: 10/14. round2-content: 33/39. boards: 4/5.\n  - Deploy: ACR build, revision taxila-web--s556639e-41l9, canary w0 4/4, then 100%. s9a170c5-xl3g kept as previous; s8448c98-b3f2 deactivated.\n  - taxila.dev at 412x915, signed out: landing, /promises, /start/class, sign-in and /help all serve the Volt pages. Scrolling the landing, 5/5 images load.\n  - Live batteries on taxila.dev: owner-5-visual 14/14; round2-content 37/39 (only the known M item-bound mounts on c4-maths-ch05-t01 and c6-maths-ch07-t01); r4-content-boards 5/5; round3-conversation 27/27.\n  - Worker not redeployed: release 11 changes no server, shared, data, db or package file against 9a170c5, which is what taxila-worker and both Conductor jobs run.\n- `ms-r4-r11-visual-variance` (2026-10-11): owner-5-visual on byte-identical server code.\n  - Packaged tree: 9/12 visual requests filled. Two \"Studio slot opened but never became an artifact\" and one animation answered in words. It ran in parallel with round2-content, boards and a Playwright set-up journey against the same local server.\n  - taxila.dev, about an hour later, with the four live batteries in parallel against the Azure app: 12/12.\n  - Over releases 7-11 the live results are 12/14, 12/14, 12/14 and 14/14, so about 1 in 12 slots fails, varying from run to run. Read: one packaged run is too noisy to compare visual-slot rates across releases. Compare live runs, or run owner-5 alone."
+  }
+}

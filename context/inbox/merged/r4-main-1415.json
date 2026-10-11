@@ -1,0 +1,38 @@
+{
+  "nodes": [
+    {
+      "id": "owner-full-tracking-20261011",
+      "kind": "constraint",
+      "at": "2026-10-11",
+      "title": "Owner 2026-10-11 ~14:10 UTC after testing release 11: record everything (what was shown, loaded or not loaded, what the user said and did, what the teacher said and showed, what the backend did) in extreme detail, so the owner can point at a moment and main can audit by itself; rated the app '1 out of 100'"
+    },
+    {
+      "id": "ms-r4-owner-lesson-a95d2ff1",
+      "kind": "measurement",
+      "at": "2026-10-11",
+      "title": "Owner's lesson a95d2ff1 (c9 sequences, 13:47-13:52 UTC, 29 turns): 8 of 10 board pages open with the same 'Recursive rule | Explicit rule' table on skill s1 whatever the child asked (games, picture, aloo, a different subject); she claimed a game and an aloo picture on screen that were never mounted (3 mounts, all whiteboard); ASR heard 'recording rules' for 'recursive rules'; studio.rung_replaced on 11 of 14 trace rows with no detail"
+    },
+    {
+      "id": "dc-r12-flight-recorder",
+      "kind": "decision",
+      "at": "2026-10-11",
+      "title": "Release 12: a flight recorder for every session. Tier 1 for every account: structured client and server events, no audio, keeping the public 'audio is never stored' promise. Tier 2 for the owner cohort (TAXILA_TRACE_FULL_FOR): rrweb DOM replay, mic and TTS audio, full model prompts and outputs, behind a visible REC chip. Queried by scripts/trace.mjs (timeline, replay PNG at a time, flags). Built by T-server (stream 3), T-client (stream 2) and T-voice (4B), with a root-cause pass by 4A; brief docs/design/round4/build/r12/TRACKING-BRIEF.md"
+    }
+  ],
+  "edges": [
+    {
+      "src": "owner-full-tracking-20261011",
+      "rel": "constrains",
+      "dst": "dc-r12-flight-recorder"
+    },
+    {
+      "src": "dc-r12-flight-recorder",
+      "rel": "caused_by",
+      "dst": "ms-r4-owner-lesson-a95d2ff1"
+    }
+  ],
+  "md": {
+    "measurements": "- `ms-r4-owner-lesson-a95d2ff1` (2026-10-11, read-only SELECTs on production `turn`, `brain_trace`, `studio_mount`, `board_page` for the owner's test child): lesson a95d2ff1-0d79-4d4c-8f32-dd255c2236e1, c9-maths-ch08-t01, 13:47:28-13:52:21 UTC, 29 turns, 14 trace rows, 3 studio_mount rows, 10 board_page rows.\n  - Boards: 8 of 10 board pages begin with the ops text 'Recursive rule' (pages 1, 2, 6-10); pages 3-5 draw a staircase. All 3 mounts are kind whiteboard on skill c9-maths-ch08-t01-s1.\n  - Requests: the child asked for games (turn 2), a photo or visualisation (turn 10), the board cleared (turn 12, heard as 'recording rules jo kachra aa raha hai'), a different subject (turns 18 and 20) and a picture of aloo (turns 22-28).\n  - Her claims: 'Screen par game: left Recursive, right Explicit' (turn 3, no game mounted); 'screen par aloo dekho' (turns 23 and 25, while the board showed the table); then 'main is screen par nayi image nahi dikha sakti' (turn 29).\n  - Trace: `studio.rung_replaced` on 11 of 14 rows and `turn.speculation_miss` on 12 of 14, with no record of what was replaced or why.\n  - The next lesson, b08fe8a7 (14:06 UTC, 7 turns), repeats the table on both board pages.\n  - What the tables cannot show: what the phone displayed (the owner reports drawings over previous content), image load or fail, audio played, the mic mode, the prompts and raw outputs, client errors.",
+    "decisions": "- `dc-r12-flight-recorder` (2026-10-11): after owner-full-tracking-20261011, every session is recorded end to end in one time-ordered stream that main can query and replay without asking the owner.\n  - Tier 1, every account, always on: client events (routes, taps, stage/board/card/chips renders including clear-vs-overlay, image and media load/fail, network with request ids, errors, perf, device) and server events (requests and responses, model calls with tokens and output, director decisions with the details behind studio.rung_replaced and speculation misses, the Studio/board/forge/play lifecycle, safety and classify outcomes). No audio, so the public 'Audio of your child's voice is never stored' (landing FAQ, /privacy, promises.ts) stays true.\n  - Tier 2, owner cohort via TAXILA_TRACE_FULL_FOR: an rrweb DOM replay with canvas sampling, mic and TTS audio, full prompts and raw responses, and a visible REC chip.\n  - Storage: migration 029 trace_event in Neon, blobs in the existing Azure storage account (container 'trace'). Retention 30 days for tier 1 and 90 for tier 2; the parent corner's delete cascades.\n  - Budgets: at most 10 ms p95 server time per turn and at most 2% client main thread in tier 1. A recorder failure never changes a lesson.\n  - Access: scripts/trace.mjs (--recent, --session timeline, --replay --at to PNG, --flags) plus a 'Flag this moment' button for the owner.\n  - Reverse if: the owner wants tier 2 for everyone (rewrite the public promise first), tier 1 measurably slows a turn, or storage cost outgrows the evidence."
+  }
+}

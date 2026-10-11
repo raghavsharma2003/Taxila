@@ -14,7 +14,13 @@ import { lockBeacon, parentApi, type GateState } from "./api.ts";
 import { fmtTime, isPasswordError, parentError } from "./copy.ts";
 import { PasswordAgain } from "./fields.tsx";
 // The gate also renders inside onboarding (GateIfPin), outside the Parent-corner chunk: its styles travel with it.
+import "../ui-v3/tokens.css";
+import "../ui-v3/kaksha/tokens.css";
 import "./parent.css";
+
+/** Release 11 (dc-r4-volt-everywhere): the parent corner wears Volt night "calm" through K's own scope (src/ui-v3/kaksha:
+ *  `.kx` + data-klook + data-ktheme); parent.css re-points the v2 tokens at the k tokens under it. */
+export const VOLT_CALM = { "data-klook": "volt", "data-ktheme": "night", "data-kcalm": "" } as const;
 
 type Phase = { k: "loading" } | { k: "signedOut" } | { k: "set" } | { k: "locked" } | { k: "wait"; until: string | null } | { k: "open" } | { k: "forgot" } | { k: "error"; msg: string };
 
@@ -178,7 +184,7 @@ export function Gate({ children }: { children: ReactNode }) {
   if (phase.k === "signedOut") return <Navigate to={`/start/phone?login=1&next=${encodeURIComponent(loc.pathname + loc.search)}`} replace />;
 
   return (
-    <div className="pa-gate" data-gate={phase.k}>
+    <div className="pa-gate kx" {...VOLT_CALM} data-gate={phase.k}>
       <header className="pa-gate-top">
         <Brand to="/who" />
         <span className="pa-spacer" />
@@ -293,7 +299,7 @@ function ForgotPin({ onDone, onCancel, onWait }: { onDone: (g: GateState) => voi
         error={pinErr} onChange={(e) => { setPin(e.target.value.replace(/\D/g, "")); setPinErr(null); }} />
       {err && <p className="pa-form-err" role="alert">{err}</p>}
       <div className="pa-actions">
-        <Button type="submit" disabled={busy}>Save new PIN</Button>
+        <Button type="submit" disabled={busy} data-volt="">Save new PIN</Button>
         <Button variant="secondary" onClick={onCancel}>Cancel</Button>
       </div>
     </form>
@@ -304,7 +310,7 @@ function ForgotPin({ onDone, onCancel, onWait }: { onDone: (g: GateState) => voi
 function Erased({ r }: { r: ErasedReceipt }) {
   const day = (iso: string) => new Date(iso).toLocaleDateString("en-IN", { weekday: "short", day: "numeric", month: "short" });
   return (
-    <div className="pa-gate" data-gate="erased">
+    <div className="pa-gate kx" {...VOLT_CALM} data-gate="erased">
       <header className="pa-gate-top"><Brand to="/" /></header>
       <main id="main" className="pa-gate-card">
         <section className="pa-gate-head pa-receipt" role="status" aria-labelledby="pa-receipt-h" data-receipt={r.code}>
@@ -314,7 +320,7 @@ function Erased({ r }: { r: ErasedReceipt }) {
           <p>Backups are kept for safety for 7 days and are gone by {day(r.backupsGoneBy)}.</p>
           <p>We keep a record that this deletion happened, and any safety record our team must keep, with no names and no lesson content.</p>
           <p>Receipt code: <strong className="pa-mono">{r.code}</strong></p>
-          <Button onClick={() => window.location.assign("/")}>Go to the start page</Button>
+          <Button onClick={() => window.location.assign("/")} data-volt="">Go to the start page</Button>
         </section>
       </main>
     </div>

@@ -1,0 +1,47 @@
+{
+  "nodes": [
+    {
+      "id": "ms-r4-rel8-live",
+      "kind": "measurement",
+      "at": "2026-10-10",
+      "title": "Release 8 live as taxila-web--s8448c98-b3f2 with TAXILA_UI_KAKSHA and TAXILA_SESSION_FIRST_FOR = owner hash: canary 4/4; taxila.dev owner-5 12/14, round2-content 36/39, boards 4/5 (1/52 board W4/W5 contradiction), round3-conversation 26/26"
+    },
+    {
+      "id": "ms-r4-rel9-live",
+      "kind": "measurement",
+      "at": "2026-10-11",
+      "title": "Release 9 (9a170c5: G2 Khand, 4B duplex, stream 3 latency, 5b + 5-step set-up + patch 09, stream 2 skin/UX + patch 04, 4A whole question cards, K's Volt look) live as taxila-web--s9a170c5-xl3g with TAXILA_FACE_LOOK_FOR + TAXILA_FACE_COHORT_LOOK=lamp2 for the owner: gate 3,034/0/3; packaged owner-5 12/14, round2 37/39, boards 5/5, w2i 39/39; canary 4/4; taxila.dev owner-5 12/14, round2 33/39, boards 4/5, round3-conversation 26/26"
+    },
+    {
+      "id": "ms-r4-visuals-1-in-12",
+      "kind": "measurement",
+      "at": "2026-10-11",
+      "title": "Across releases 7-9 on taxila.dev owner-5 scored 12/14 every time: each run one of 12 visual requests fails (a different request each run: the c7 fraction whiteboard twice, a diagram once), while round2-content varied 33-37/39 on the same failure types; a stable ~8% slot failure rate, not a release regression"
+    }
+  ],
+  "edges": [
+    {
+      "src": "ms-r4-rel8-live",
+      "rel": "part_of",
+      "dst": "dc-r4-release-sequence-r7-r9"
+    },
+    {
+      "src": "ms-r4-rel9-live",
+      "rel": "part_of",
+      "dst": "dc-r4-release-sequence-r7-r9"
+    },
+    {
+      "src": "ms-r4-rel9-live",
+      "rel": "part_of",
+      "dst": "dc-r4-fold-look-into-r9"
+    },
+    {
+      "src": "ms-r4-visuals-1-in-12",
+      "rel": "part_of",
+      "dst": "ms-r4-rel9-live"
+    }
+  ],
+  "md": {
+    "measurements": "- `ms-r4-rel8-live` (2026-10-10, 20:55-21:10 UTC): deploy-azure.mjs --set TAXILA_UI_KAKSHA=<owner sha256> --set TAXILA_SESSION_FIRST_FOR=<owner sha256> (verified read-only against the live template: each contains the owner hash, one entry). Canary w0 4/4; live taxila-web--s8448c98-b3f2, sc439bd7-k0kh deactivated. taxila.dev battery: owner-5 12/14 (the c7 fraction-rectangle whiteboard slot), round2-content 36/39 (M item-bound mounts on c6-maths-ch07-t01, c4-maths-ch05-t01, c7-maths-ch08-t01), r4-content-boards 4/5 (1/52 board contradiction W4.numbers_from_truth / W5.words_from_line_or_kit on c6-maths-ch07-t01), round3-conversation 26/26.\n- `ms-r4-rel9-live` (2026-10-10 23:48 to 2026-10-11 00:20 UTC): int/r4-rel9 9a170c5. Gate (after the 60-minute cap, ms-r4-gate-timeout): 3,037 tests, 3,034 pass, 0 fail, 3 skipped; prompt budget PASS; migrations 026 (play_build) and 028 (child_controls hours defaults) applied on production and TEST before the gate. Packaged tree (local production server, TEST branch): owner-5 12/14 (one animation request: she said honestly that there is no movement on screen, then asked the child to draw it, V3.child_draws), round2-content 37/39, boards 5/5, w2i-safety 39/39 run alone. Deploy --set TAXILA_FACE_COHORT_LOOK=lamp2 --set TAXILA_FACE_LOOK_FOR=<owner sha256>; canary w0 4/4; live taxila-web--s9a170c5-xl3g (s35d6167-p02m deactivated, s8448c98-b3f2 kept for rollback). Live template verified: TAXILA_UI_KAKSHA, TAXILA_SESSION_FIRST_FOR, TAXILA_DUPLEX_LIVE_FOR, TAXILA_FACE_LOOK_FOR each contain the owner hash. taxila.dev: owner-5 12/14 (a diagram slot never filled), round2-content 33/39 (the c7 whiteboard slot + M mounts), boards 4/5 (one unfilled slot pointed at), round3-conversation 26/26. Worker taxila-worker rolled to 9a170c5 with --jobs.\n- `ms-r4-visuals-1-in-12` (2026-10-11): owner-5 on taxila.dev after release 7 (35d6167), release 8 (8448c98) and release 9 (9a170c5): 12/14 each time, each run with one of its 12 visual requests failing and a different request each run; the packaged-tree runs scored 14/14, 14/14 and 12/14. round2-content on the same releases 35, 36 and 33 of 39, with the same failure types every time (the c7-maths-ch08-t01 whiteboard slot; item-bound mounts missing on c6-maths-ch07-t01 / c4-maths-ch05-t01 / c7-maths-ch08-t01). Read: a stable slot failure rate around 1 in 12 live, not a regression of any one release; the honesty side (she still says 'screen par dekhiye') is audit #9."
+  }
+}

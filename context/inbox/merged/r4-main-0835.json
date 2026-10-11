@@ -1,0 +1,28 @@
+{
+  "nodes": [],
+  "edges": [
+    {
+      "src": "dc-r11-site-volt-night",
+      "rel": "part_of",
+      "dst": "dc-r4-volt-everywhere"
+    },
+    {
+      "src": "dc-r11-site-hero-real-captures",
+      "rel": "part_of",
+      "dst": "dc-r4-volt-everywhere"
+    },
+    {
+      "src": "dc-r11-site-volt-night",
+      "rel": "measured_by",
+      "dst": "m-r11-site-floors"
+    },
+    {
+      "src": "dc-r11-site-hero-real-captures",
+      "rel": "measured_by",
+      "dst": "m-r11-site-lcp"
+    }
+  ],
+  "md": {
+    "rejected": "- `rj-r11-s5-cta-glow-under-clip` (2026-10-11, stream 5): tried: a drop-shadow glow (`filter: drop-shadow`) on the chamfered set-up CTA, the way futurist.css breathes the Kaksha CTA. What broke: the chamfer is a `clip-path`, and clip-path clips the element's own filter output, so the glow never showed at any size (stream 5's 360/412/1366 shots). Used instead: the one move breathes with an inner light sweep inside the clipped shape; reduced motion stills it."
+  }
+}

@@ -1,0 +1,56 @@
+{
+  "nodes": [
+    {
+      "id": "dc-r11-k-kaksha-default-on",
+      "kind": "decision",
+      "title": "Release 11 (dc-r4-volt-everywhere), stream K: Kaksha + Volt is the child app for EVERY account in every build (kakshaDecision = device !== false); ?ui=classic is the per-device escape (?ui=default restores); the TAXILA_UI_KAKSHA cohort still answers /api/me but gates nothing (server untouched). ChildShell wears the look before /api/me answers (loading/error/signed-out gate: night). /who wears the same scope. Reversal: the owner or a child test shows a child cannot find their way in Volt (then ?ui=classic per device stays, and the default can flip back in one line)",
+      "date": "2026-10-11",
+      "source": "src/ui-v3/kaksha/flag.ts; docs/design/round4/build/r11/k/README.md"
+    },
+    {
+      "id": "r11-k-juice",
+      "kind": "component",
+      "title": "Release 11 K juice inside dc-r4-gamification-b: the World orbit and base panels get depth (two parallax star layers, the planet light, the child's ship on its own orbit, a horizon glow under the base); the Debrief's earned moment gets turning rays and a ring pulse behind the badge. Decoration only (aria-hidden), names the idea and counts nothing; reduced motion stills it",
+      "date": "2026-10-11",
+      "source": "src/ui-v3/kaksha/futurist.css"
+    },
+    {
+      "id": "r11-k-me-captions-412",
+      "kind": "finding",
+      "title": "Me page Choice rows (Captions, Teacher face, Theme) cut their label at 412 px because .me-text was flex 1 with min-width 0; fixed with a 9rem basis so the segmented choice wraps under the label",
+      "date": "2026-10-11",
+      "source": "src/child/child.css"
+    },
+    {
+      "id": "r11-k-pages-63",
+      "kind": "measurement",
+      "title": "Release 11 K: every child-mode page in Volt by default for an account outside any cohort; 63 real pages (who, hello, home, world, hangar, ask, notebook, me, teacher, practice, lesson first screen x young/older x 360/412/1366) 0 floor findings (14/16 px, 44 px, contrast, no overflow, LOOK-1, AI-1); SAYS-1 parity 0 differ vs the cohort Kaksha on base",
+      "n": 63,
+      "method": "tests/prod/r11-k-sheets.mjs: three local production builds on the stream Neon TEST branch (base efc0e721 no cohort = before, base with the account in TAXILA_UI_KAKSHA = parity reference, this branch with no cohort env = after); U1 in-page lint",
+      "date": "2026-10-11",
+      "source": "docs/design/round4/build/r11/k/README.md"
+    }
+  ],
+  "edges": [
+    {
+      "src": "dc-r11-k-kaksha-default-on",
+      "rel": "part_of",
+      "dst": "r4k-k3-built"
+    },
+    {
+      "src": "r11-k-juice",
+      "rel": "part_of",
+      "dst": "r4k-k3-built"
+    },
+    {
+      "src": "r11-k-me-captions-412",
+      "rel": "part_of",
+      "dst": "r4k-k3-built"
+    },
+    {
+      "src": "r11-k-pages-63",
+      "rel": "part_of",
+      "dst": "r4k-k3-built"
+    }
+  ]
+}

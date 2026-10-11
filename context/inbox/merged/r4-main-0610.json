@@ -1,0 +1,20 @@
+{
+  "nodes": [
+    {
+      "id": "ms-r4-rel9-worker-jobs",
+      "kind": "measurement",
+      "at": "2026-10-11",
+      "title": "Release 9 worker: taxila-worker and the canary job reached 9a170c5 on 2026-10-11 ~00:20 UTC, but taxila-conductor-nightly stayed on c439bd7 until 06:05 UTC (first --jobs run: socket error; --jobs-only --from-tree retry: connect timeout to management.azure.com; third run Succeeded). No nightly fired on the old image after release 9 (next fire 22:40 UTC)"
+    }
+  ],
+  "edges": [
+    {
+      "src": "ms-r4-rel9-worker-jobs",
+      "rel": "part_of",
+      "dst": "ms-r4-rel9-live"
+    }
+  ],
+  "md": {
+    "measurements": "- `ms-r4-rel9-worker-jobs` (2026-10-11): corrects the last line of `ms-r4-rel9-live` (\"Worker taxila-worker rolled to 9a170c5 with --jobs\"). The first `deploy-worker.mjs --jobs` run rolled the app (taxila-worker--w9a170c5-84dt) and re-created the canary job on 9a170c5, then hit a socket error before the nightly job, leaving taxila-conductor-nightly on c439bd7. A plain re-run was refused because base HEAD 62d00f8 (evidence + context only) had no gate. From a detached 9a170c5 checkout (gate stamp 2026-10-10T23:48:33Z, an ancestor of origin), `--jobs-only --from-tree` failed once with UND_ERR_CONNECT_TIMEOUT to management.azure.com:443 (10 s, after the 1,064-file upload) and succeeded on the next run at 06:05 UTC: ACR build Succeeded, migrations gate passed, both jobs re-scheduled. Read-only check after: worker Running on taxila-worker:9a170c5, canary Succeeded on 9a170c5, nightly Succeeded on 9a170c5. The nightly fires at 22:40 UTC, so none ran on c439bd7 after release 9 went live (2026-10-11 ~00:20 UTC)."
+  }
+}

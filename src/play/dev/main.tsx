@@ -21,6 +21,8 @@ const q = new URLSearchParams(location.search);
 const family = (q.get("family") ?? "todo-jodo") as FamilyId;
 const mode = (q.get("mode") ?? "atoms") as PlayMode;
 const lang = (q.get("lang") ?? "hinglish") as Lang;
+// release 11: the shell look the child app sets (K's data-klook / data-ktheme), so the Volt art remap can be shot here
+if (q.get("klook")) { document.body.setAttribute("data-klook", q.get("klook") as string); document.body.setAttribute("data-ktheme", q.get("ktheme") ?? "night"); }
 const classLevel = Number(q.get("class") ?? 6);
 const fade = Number(q.get("fade") ?? 1) as Fade;
 const seed0 = Number(q.get("seed") ?? 3);

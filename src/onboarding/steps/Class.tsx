@@ -5,7 +5,7 @@ import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { defaultTutorFor } from "../../../shared/tutors.js";
 import { Button, TileGroup } from "../../ui/index.ts";
 import { teacherRecord } from "../../ui/teacher/useTeacher.ts";
-import { nextStep, StepFrame } from "../Layout.tsx";
+import { kidLook, nextStep, StepFrame } from "../Layout.tsx";
 import { setLangPref, useDraft } from "../draft.ts";
 import { LangTile, LANGS, type Speak } from "./Meet.tsx";
 
@@ -41,13 +41,17 @@ export function ClassStep() {
       <fieldset className="fs"><legend className="label">Board</legend>
         <TileGroup label="Board" columns={3} value={c.board ?? null} onChange={(v) => setC({ board: v })} options={BOARDS} />
       </fieldset>
-      <fieldset className="fs">
-        <legend className="label">{`${rec.name} will speak in`}</legend>
-        <div role="radiogroup" aria-label="Language" className="stack-sm">
-          {LANGS.map((l) => <LangTile key={l.id} l={l} teacherId={rec.id} selected={speak === l.id} onPick={() => pick(l)} />)}
-        </div>
-      </fieldset>
-      {!adding && <Link to="/start/student" className="t-meta block-link">I am a student</Link>}
+      {/* release 11: her voice faces the child, so it sits in the child's family look (young: Volt day) */}
+      <section className="kx onb-volt onb-kid" {...kidLook(c.classLevel)}>
+        <p className="onb-kid-tag" aria-hidden="true">{`Hear ${rec.name}`}</p>
+        <fieldset className="fs">
+          <legend className="label">{`${rec.name} will speak in`}</legend>
+          <div role="radiogroup" aria-label="Language" className="stack-sm">
+            {LANGS.map((l) => <LangTile key={l.id} l={l} teacherId={rec.id} selected={speak === l.id} onPick={() => pick(l)} />)}
+          </div>
+        </fieldset>
+      </section>
+      {!adding && <Link to="/start/student" className="btn btn-secondary onb-ghost" data-testid="i-am-student">I am a student</Link>}
     </StepFrame>
   );
 }

@@ -1,0 +1,20 @@
+{
+  "nodes": [
+    {
+      "id": "dc-r4-r11-integration",
+      "kind": "decision",
+      "at": "2026-10-11",
+      "title": "Release 11 integration (int/r4-rel11): stream 2 site 56e7adf, stream 5 set-up 950d56c, G1 parent corner (cherry-picks of 4f20e1f 6ca3dde b9f58b5) + Volt play art a411034, K child app 8a752b9 (default on for every account, device keys versioned .r11). Kept out: G1's parked ITEM-ARENA patches (d1ad460). Next release: Volt day canvas palettes for the young family's play arts, the face window's cream ground, the parent sheet backdrop veil"
+    }
+  ],
+  "edges": [
+    {
+      "src": "dc-r4-r11-integration",
+      "rel": "part_of",
+      "dst": "dc-r4-volt-everywhere"
+    }
+  ],
+  "md": {
+    "decisions": "- `dc-r4-r11-integration` (2026-10-11): main reviewed each stream's before/after sheets against docs/design/round4/build/r11/BRIEF.md. Main also checked the integrated landing for a scrolling visitor: 6/6 images complete with naturalWidth > 0 at 412x915, on a vite preview of the merged tree. Merged into int/r4-rel11 on base 7e7c248:\n  - stream 2 (claude/r4-content 4c9b640, then 56e7adf: the Antariksh loop, 166 KB webm, lazy);\n  - stream 5 (claude/r4-asha cfaae03, then 950d56c: 'I am a student' as a 48 px ghost button);\n  - G1 (cherry-picks of 4f20e1f, 6ca3dde and b9f58b5, then a411034: the r3 family games open on blueprint/raat under Volt night);\n  - K (claude/r4-app-design bb3aa01, then 8a752b9).\n\n  Main asked K for 8a752b9 because devices that had typed ?ui=classic or ?look=… under release 9's test guide would otherwise have kept classic or Holo after the flip; the owner was told to try those switches. Kept out: d1ad460 (G1's parked ITEM-ARENA format-patches, about 120k lines, docs only), per dc-r4-owner-wrapup-directive's stop. Deferred to the next release, each named by its stream: Volt day canvas palettes for the young family's play arts (a Painter token read and a play-cert rerun, G1); the teacher face window's cream ground (K-P1 in src/ui/teacher, K); the parent sheet's dialog::backdrop veil (src/ui, G1). Reverse if: the release 11 gate or the packaged-tree batteries fail on a stream's change. Then drop that stream's merge and ship the rest."
+  }
+}

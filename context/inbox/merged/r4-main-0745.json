@@ -1,0 +1,32 @@
+{
+  "nodes": [
+    {
+      "id": "ms-r4-r9-landing-frame-lazy",
+      "kind": "measurement",
+      "at": "2026-10-11",
+      "title": "Correction to ms-r4-r9-surfaces-unchanged: release 9's landing phone frames are NOT empty. A person scrolling loads shot-lesson and shot-garden (loading=lazy); only a full-page screenshot that never scrolls shows them blank. shot-parent (200, 22.5 KB) sits in a 0-height frame at 412 px by design"
+    },
+    {
+      "id": "rj-r4-fullpage-shot-lazy",
+      "kind": "rejection",
+      "at": "2026-10-11",
+      "title": "A full-page Playwright screenshot as evidence of what a scrolling visitor sees: loading=lazy images below the first screen never load, so frames read as empty. Main reported a non-existent 'empty phone frame' from one, and stream 2's r11 landing sheet shows the same blank frames"
+    }
+  ],
+  "edges": [
+    {
+      "src": "ms-r4-r9-landing-frame-lazy",
+      "rel": "supersedes",
+      "dst": "ms-r4-r9-surfaces-unchanged"
+    },
+    {
+      "src": "rj-r4-fullpage-shot-lazy",
+      "rel": "caused_by",
+      "dst": "ms-r4-r9-landing-frame-lazy"
+    }
+  ],
+  "md": {
+    "measurements": "- `ms-r4-r9-landing-frame-lazy` (2026-10-11 07:45 UTC): corrects the empty-frame part of `ms-r4-r9-surfaces-unchanged` (the rest of it, every public surface in the pre-round-4 style, stands). Method: Playwright Chromium 412x915 on https://taxila.dev release 9, scrolling in 400 px steps with 250 ms dwell, then reading every `<img>`. landing-hero-phone (eager), shot-lesson (lazy, top 1,083 px) and shot-garden (lazy, top 2,912 px) all complete with naturalWidth > 0. shot-parent (lazy, top 5,658 px) did not load because its `.phone` frame is 0 px tall at this width; the file itself answers 200, 22,514 bytes. n = 1 run, one width. The 'empty phone frame' main reported at 06:55 UTC came from a non-scrolling full-page screenshot.",
+    "rejected": "- `rj-r4-fullpage-shot-lazy` (2026-10-11): tried: `page.screenshot({ fullPage: true })` straight after load, used as evidence of what a visitor sees below the first screen. What broke: `loading=\"lazy\"` images below the fold never load in it. Main logged an empty lesson-preview frame on release 9 that a scrolling visitor never sees (corrected by `ms-r4-r9-landing-frame-lazy`), and stream 2's r11 after-landing-full sheet shows the new lesson and world frames blank the same way. Use instead: scroll the page in steps before a full-page capture (or set the images eager in the capture build only), and assert `img.complete && naturalWidth > 0` for every frame."
+  }
+}

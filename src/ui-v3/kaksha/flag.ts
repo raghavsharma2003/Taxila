@@ -1,18 +1,15 @@
-// The `ui.kaksha` flag (BUILD-SPEC §3; default OFF). Off: the child surface renders exactly as today. On: the child
-// Home and World routes render the Kaksha screens (patch K-P8 to src/child/routes.tsx). Presentation only: never a
-// safety or data switch (the AI disclosure, helplines and every server truth are identical on both paths).
+// The `ui.kaksha` flag. Release 11 (dc-r4-volt-everywhere, owner 2026-10-11): Kaksha + Volt is THE child app, for
+// every account, in every build. There is no cohort gate any more: GET /api/me's ui.kaksha (TAXILA_UI_KAKSHA, K-P10) is
+// still read but no longer needed, so the server cohort is harmless. Presentation only: never a safety or data switch
+// (the AI disclosure, helplines and every server truth are identical on both paths).
 //
-// Resolution, first hit wins (the same pattern as src/ui-v3/flag.ts and src/face-puppet/flag.ts):
-//   1. `?ui=kaksha` / `?ui=classic` in any URL writes the device key below, once per page (`?ui=default` clears it);
-//   2. localStorage "tx.flag.ui.kaksha" = "1" | "0" (per device: the owner cohort and the acceptance harness);
-//   3. VITE_UI_KAKSHA=1 at build time (only after BUILD-SPEC §11 and the five-second child test, K-O4);
-//   4. off.
-//
-// PRODUCTION GATE (K-P10, main session 2026-10-10): in a production build Kaksha is ON for an account the server says is
-// in the owner cohort (GET /api/me → ui.kaksha, from TAXILA_UI_KAKSHA hashed accounts; server/ui/kaksha-cohort.js), with no
-// URL step (merge order 2026-10-10: "ON for the owner's account only"); ?ui=classic still turns it off on that device.
-// Anyone else, ?ui=kaksha typed or not, keeps today's app. In dev builds the URL / device switch stays free.
-export const UI_KAKSHA_KEY = "tx.flag.ui.kaksha";
+// The one way out is per device: `?ui=classic` in any URL writes the device key below ("0"), once per page, and today's
+// classic child app renders on that device until `?ui=default` (or `?ui=kaksha`) clears it. No settings UI.
+// Release 11: the device key is versioned, so every device starts on the shipped default (a device that tried
+// ?ui=classic under release 9's test guide would otherwise keep classic). The pre-release-11 key is ignored and removed
+// on first read; ?ui=classic / ?ui=default work exactly as before from then on.
+export const UI_KAKSHA_KEY = "tx.flag.ui.kaksha.r11";
+export const UI_KAKSHA_KEY_OLD = "tx.flag.ui.kaksha";
 
 export interface KakshaInputs {
   /** A dev build (import.meta.env.DEV). */
@@ -27,10 +24,9 @@ export interface KakshaInputs {
 
 /** The whole rule, pure (tests/r4-kaksha-cohort.test.mjs). */
 export function kakshaDecision(i: KakshaInputs): boolean {
-  if (i.device === false) return false; // ?ui=classic always wins on this device
-  if (i.buildDefault) return true;
-  if (i.dev) return i.device === true;
-  return i.server === true;
+  // ?ui=classic on this device is the escape hatch; otherwise Kaksha, for every account (release 11). The server's cohort
+  // answer, the build default and dev/prod no longer change the outcome (kept in the inputs for the tests that pin it).
+  return i.device !== false;
 }
 
 function isDev(): boolean {
@@ -43,6 +39,11 @@ function isDev(): boolean {
 
 /** The device switch alone (after applying any ?ui= in the URL). */
 export function kakshaDevice(): boolean | null {
+  try {
+    if (typeof localStorage !== "undefined" && localStorage.getItem(UI_KAKSHA_KEY_OLD) !== null) localStorage.removeItem(UI_KAKSHA_KEY_OLD);
+  } catch {
+    /* storage blocked */
+  }
   applyUrlSwitch();
   try {
     const v = typeof localStorage !== "undefined" ? localStorage.getItem(UI_KAKSHA_KEY) : null;
