@@ -152,7 +152,7 @@ const watchOnly = (module) => module?.engine === "explainer@1";
  * G-SAY-1 → true when the line refers to the screen and nothing on it can be acted on, or when it asks the child to tap
  * / pick something while the only thing on screen is a board drawn to be watched.
  */
-export function screenProblem(text, ui, module) {
+export function screenProblem(text, ui, module, { coming = false } = {}) {
   const t = String(text ?? "");
   if (refersToScreen(t)) {
     const act = ACT_WORDS.test(t);
@@ -161,7 +161,10 @@ export function screenProblem(text, ui, module) {
     // r12 RCA failure 5: LOOKING needs only something to look at — a whiteboard counts; what it shows is checked below
     if (!act && !screenHasTargets(ui, module) && !ui?.studioSlot?.artifact) return true;
   }
-  return screenClaimProblem(t, ui, module);
+  // release 13 integration (ms-r13-claims-in-flight): a piece this very turn brings (the child asked for a picture / game /
+  // animation and the move answers with one) is drawn in sync with her line or lands a moment later, so it is not on the
+  // stage yet when her words are checked; pointing at it is the point. A piece that then fails is the slot-failure path's.
+  return coming ? false : screenClaimProblem(t, ui, module);
 }
 
 // ── r12 RCA failure 2: a claim about the screen is checked against what is mounted ──
@@ -193,11 +196,17 @@ export function screenClaimProblem(text, ui, module) {
   const pointing = sentences.filter((x) => POINT_AT.test(x));
   if (!pointing.length) return false;
   const words = stageWords(ui, module);
+  const art = ui?.studioSlot?.artifact;
+  const known = art?.kind === "whiteboard" || !!art?.script?.ops || watchOnly(module) || !!module?.params?.script?.ops;
   for (const x of pointing) {
     if (PLAY_CLAIM.test(x) && !playMounted(ui, module)) return true;
     const content = (x.match(/[\p{L}\p{N}]+/gu) ?? []).filter((w) => w.length >= 3 && !CLAIM_STOP.has(w.toLowerCase()) && !/^[A-Z][a-z]+$/.test(w) || /^\d+$/.test(w));
     if (!content.length) continue;
-    if (!words.size || !content.some((w) => words.has(stem(w)))) return true;
+    // only a stage whose words are KNOWN can prove a claim false: a drawn board (a whiteboard, the explainer@1 rung) shows
+    // its script, so it is known even with no text on it; an interactive engine's or a play piece's labels are not
+    // readable here, so a claim about it passes, as before release 13
+    // (ms-r13-claims-in-flight)
+    if (known && (!words.size || !content.some((w) => words.has(stem(w))))) return true;
   }
   return false;
 }
