@@ -856,6 +856,9 @@ export const studioSeam = {
       // round 4 content, the beat-by-beat board (flag): the card this beat's board is (once per slot)
       if (beatBoardOn() && !p.card) { p.card = cardFor(L, ask, r.script, { template: r.template ?? null }); }
       if (p.card) r.script = { ...r.script, card: p.card };
+      // r12 RCA failure 7: a continue page that would land on what the child already sees is drawn on a clean board
+      if (r.script.mode === "continue" && boardSync.boardModeFor(r.script, L.wbUnder ?? []) === "fresh") r.script = { ...r.script, mode: "fresh" };
+      L.wbUnder = r.script.mode === "continue" ? [...(L.wbUnder ?? []), ...r.script.ops].slice(-120) : [...r.script.ops];
       p.artifact = { kind: "whiteboard", stage: { w: r.script.board.w, h: r.script.board.h }, script: r.script };
       p.facts = r.script.facts ?? null;
       p.state = "revealed"; p.revealedAt = Date.now(); p.revealedTurn = L.turn; p.boardSource = r.source ?? "line"; p.syncMs = r.syncMs ?? null;
@@ -973,6 +976,16 @@ export const studioSeam = {
     const L = lessons.get(lessonId);
     const on = L?.onScreen ? L.pieces.get(L.onScreen) : null;
     return !!(on && VISIBLE.has(on.state) && on.kind !== "whiteboard");
+  },
+
+  /** release 13 (r12 RCA failure 4): the child asked to clear the board: what is on screen retires and the next board is
+   * fresh (no continuation over what was cleared). Nothing is frozen: a later ask draws again. */
+  clearBoard(lessonId) {
+    const L = lessons.get(lessonId);
+    if (!L) return false;
+    if (L.onScreen) retirePiece(L, L.onScreen, "cleared");
+    L.wbPrev = null; L.wbUnder = []; L.wbBeatHead = null;
+    return true;
   },
 
   /** A safeguarding turn: freeze and retire everything on screen; no new piece for the rest of the lesson. */

@@ -38,6 +38,7 @@ import { explicitPace } from "../persona/pace.js";
 import { directorProposal } from "./proposal.js";
 import { p5Flag } from "../conversation/flags.js";
 import { unsafeChildPhrase } from "../conversation/screen.js";
+import { freeSubjectOf } from "./requests.js";
 import { parkEntry, pushLater, recentParked, dueParked, serveLater } from "../conversation/policy.js";
 import { alsoReading, alsoQuestion, questionShaped, bareAck } from "../conversation/lexicon.js";
 import { intakeStart, intakeStep } from "./session/beat.js";
@@ -911,7 +912,13 @@ function requestMove(s, input, item, req, labels) {
     case "change_topic":
       // owner rule (2026-10-05; w2i-release, OWNER-RESET #7): "can we talk about something else" is STEERING, never a break
       // or a wrap: a warm yes and a different way into today's idea (CONVERSATION-V2 §3.2 offer_choice)
-      if (p5Flag("STEER")) return plan("repair", SH.offerWays(), { chips: waysChips(labels), request: "change_topic" });
+      if (p5Flag("STEER")) {
+        // release 13 (A): never offer a picture that cannot be made: with a subject outside the kit named, the ways in are
+        // words only (no "Show me a picture" chip; turn 21 offered "aloo par picture" and nothing could draw it)
+        const off = offTopicNow(s, kit);
+        if (p5Flag("R4CONV") && off) return plan("repair", SH.offerWaysOff({ subject: off }), { chips: waysChips(labels).filter((c) => c.id !== "req:visual"), request: "change_topic" });
+        return plan("repair", SH.offerWays(), { chips: waysChips(labels), request: "change_topic" });
+      }
       s.sidebar = { asked: s.turn };
       return plan("break", SH.changeTopic(), { chips: [{ id: "stop:continue", label: labels.back }, { id: "break:rest", label: labels.rest }, { id: "stop:end", label: labels.stop }], request: "change_topic" });
     // round 3 fix (experience B8): a named subject to study INSTEAD: that topic of their class is offered (a button starts
@@ -962,6 +969,11 @@ function requestMove(s, input, item, req, labels) {
       return teachAgainPlan(s, kit, "deeper");
     }
     case "visual": {
+      // release 13 (A): a picture of something no piece can show (a subject outside the kit): she says plainly she cannot
+      // show it now and gives it in words; no board is asked for, nothing is said to be on the screen (fix 2 makes the claim
+      // impossible either way). The image rung (r12/rca/IMAGE-RUNG.md) will lift this for subjects it can draw.
+      const off = p5Flag("R4CONV") ? offSubject(req.subject, kit) ?? offTopicNow(s, kit) : null;
+      if (off && !unsafeChildPhrase(off)) return plan("reteach", SH.visualUnavailable({ subject: off }), { skillId: currentSkillId(s, kit, item), request: "visual_unavailable" });
       // A picture on the stage (item 5): a re-teach move with the diagram representation, so planModule mounts the item's
       // engine as a show or the explainer@1 board (SHOW_MOVES), and the brain asks Studio for the whiteboard on any lane
       // (brain/propose.js whiteboardAskOf `requested`). A picture of the question on the table is help: it spends a rung.
@@ -971,6 +983,19 @@ function requestMove(s, input, item, req, labels) {
     default: return p5Flag("STEER") ? p5RequestMove(s, input, item, req, labels) : null;
   }
 }
+
+/** Is this subject something the kit itself teaches (a skill title, an expectation or an item mentions it)? */
+const kitMentions = (kit, subject) => {
+  const w = String(subject ?? "").toLowerCase().normalize("NFKC").trim();
+  if (!w) return true;
+  const text = [...(kit?.skills ?? []).map((k) => k.title), ...(kit?.expectations ?? []), kit?.title ?? "",
+    ...(kit?.items ?? []).slice(0, 60).flatMap((i) => [i.prompt_en, i.prompt_hi])].join(" ").toLowerCase().normalize("NFKC");
+  return text.includes(w);
+};
+/** A request's subject when the kit does not teach it, else null. */
+const offSubject = (subject, kit) => (subject && !kitMentions(kit, subject) ? String(subject) : null);
+/** The off-kit subject the child named in the last few turns (state.offTopic), else null. */
+const offTopicNow = (s, kit) => (s.offTopic && s.turn - s.offTopic.turn <= 4 ? offSubject(s.offTopic.subject, kit) : null);
 
 const TEACH_KINDS = new Set(["hook", "explain", "worked_example", "reteach"]);
 /** The ways-in chips (UI chrome, English): a picture, a story, a game, or back to the lesson. */
@@ -1019,6 +1044,9 @@ function p5RequestMove(s, input, item, req, labels) {
       const kind = ["hook", "explain", "worked_example", "reteach"].includes(s.lastMove?.kind) ? s.lastMove.kind : "reteach";
       return plan(kind, join(SH.repeatShort(), s.lastMove?.shape), { skillId: currentSkillId(s, kit, item), content: s.lastContent ?? [], request: "repeat" });
     }
+    // r12 RCA failure 4: the board comes down this turn (brain/turn.js retires the Studio board on move.clear), then the step
+    // they were on, in words
+    case "clear_board": { const p = withLead(SH.boardCleared()); return p && { ...p, clear: "board" }; }
     case "back": return item && p5Flag("R4CONV") && s.pinItem === item.id && (s.pinRun ?? 0) >= 2 ? backOnHeldCard(s, input, item) : withLead(SH.welcomeBack());
     case "skip": return item ? { ...leaveItem(s, input, item, SH.SKIP_ITEM), request: "skip" } : helpMove(s, input, item, "skip");
     case "know": {
@@ -1255,6 +1283,12 @@ function decide(s, input, item) {
   const chipReq = p5Flag("STEER") && typeof chipId === "string" && /^req:(visual|story|game)$/.test(chipId)
     ? (chipId === "req:story" ? { type: "story", whole: true } : { type: "visual", kind: chipId === "req:game" ? "game" : "diagram", whole: true }) : null;
   const req = chipReq ?? cls?.request ?? null;
+  // release 13 (A): the subject the child named ("aloo"), kept a few turns so a later "Show me a picture" chip is answered
+  // honestly about IT (owner lesson a95d2ff1 turns 18-24)
+  if (p5Flag("R4CONV") && req && ["topic", "switch", "change_topic", "visual"].includes(req.type)) {
+    const subject = req.subject ?? freeSubjectOf(input.text ?? "");
+    if (subject) s.offTopic = { subject: String(subject).slice(0, 30), turn: s.turn };
+  }
   // p5-interaction: what the UNDERSTAND note read alongside a graded answer (a parked question, a hedge, a check)
   if (p5Flag("STEER") && cls?.alsoPark) s.later = pushLater(s.later ?? [], parkEntry({ ...cls.alsoPark, turn: s.turn, itemOnTable: true }));
   if (chipId === "stop:continue" || req?.type === "continue") {
@@ -1508,6 +1542,8 @@ export function step(prev, input) {
   const moduleCommands = reacting ? [] : planModule(s, { kit: input.kit, item, move, lang: s.ctx.lang, band: s.probeSess?.band ?? bandOf(s.ctx.classLevel), representation: p.representation });
   // The child's request this move answers (requests.js): the brain reads it (a visual request asks Studio on any lane).
   if (p.request) move.request = p.request;
+  // r12 RCA failure 4: the board the child asked to clear (brain/turn.js retires the Studio board and unmounts a rung)
+  if (p.clear) move.clear = p.clear;
   // round 2 safety floor: a stop check-in ("stop") or the relational goodbye check-in ("rel") — brain/say.js guards its
   // words as an offer to stop, never as a teaching turn that "goes on" (adversarial B2)
   if (p.checkin) move.checkin = p.checkin;

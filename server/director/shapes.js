@@ -372,6 +372,8 @@ export const clarifyQuestion = () => join(
 );
 export const breakYes = () => "they asked for a short break: agree warmly; the lesson waits right here for them; one line for when they are back; no question now";
 export const repeatShort = () => "they did not catch it: the last point again, shorter and slower; nothing new";
+// r12 RCA failure 4 (owner lesson a95d2ff1 turn 12): the board is cleared because they asked; never about background noise
+export const boardCleared = () => "they asked to clear the board: it is cleared now; say so in a few words, never about noise or the microphone; carry on";
 export const welcomeBack = () => "they are back after a moment away: welcome them back in two or three words, no goodbye and no fuss; carry on";
 export const levelHarder = () => "they asked for a harder one: take them at their word, a short warm line; the harder question";
 export const levelDeeper = () => "they asked to go deeper: take them at their word in a few warm words; the harder question on the same idea, a step further";
@@ -435,6 +437,18 @@ export const offerWays = () => join(
   "offer a different way into today's idea: a picture, a story or a game, shown on screen as choices, or a quick change of question; ask which",
   "no lesson question this turn",
 );
+/** release 13 (A): they named something outside today's lesson and want something else: only the ways that exist (words). */
+export const offerWaysOff = ({ subject }) => join(
+  `they want something else (they named ${clean(subject) || "another subject"}): agree warmly, in your own words; it is not in today's lesson`,
+  "offer a way into today's idea that you can really give now — a short story or a quick question game in words, shown on screen as choices; never offer a picture or a video of it",
+  "no lesson question this turn",
+);
+/** release 13 (A): a picture of something no piece can show: honest, then in words, then back. */
+export const visualUnavailable = ({ subject }) => join(
+  `they asked to see ${clean(subject) || "it"}: you cannot show a picture of it right now — say so plainly in a few words, never point at the screen or the board`,
+  `then describe ${clean(subject) || "it"} in words they can picture (shape, colour, where it is found), two short sentences`,
+  "then one small question that brings them back to today's idea",
+);
 /** round 3 fix (experience B8): "yeh nahi padhna, X padhna hai": a real topic of their class, offered (never a stop question). */
 export const switchOffer = ({ title }) => join(
   `they want to study ${clean(title) || "another topic"} instead: say yes warmly, in your own words; it is a real topic of their class`,
@@ -491,6 +505,8 @@ export const MUST_NOTE = Object.freeze({
   visual_game: "start a game now, in one line: if one is on the screen, how to play it; if not, a quick spoken game on this idea (one rule, then their first turn); never say a game is not ready or not available",
   visual_animation: "never say there is no video or animation: if something on the screen moves, point at what moves; if not, show the movement in words, step by step, as it happens",
   // merged-tree owner-5 (whiteboard): "Whiteboard par 120 tickets ... samajhiye" named the board but never sent the eyes to it
+  // release 13 (A): the honest floor for a picture nothing can make (r12 RCA failure 3)
+  visual_unavailable: "first, in a few words, that you cannot show that picture right now; never 'screen par' or 'board par' about it; then the words",
   visual_diagram: "never say there is no picture, never draw with characters; if the screen has it, first send their eyes there (dekho / look) and say what to see; if not, paint it in words",
   // the hook after a no (out_of_bounds reengages 8/12: the decline came, the hook was the bare question again)
   // battery arm 3 (pooled, out_of_bounds 11 -> 7 of 23): "after the short no" read as curt ("lesson ke baad bhi nahi", "woh
