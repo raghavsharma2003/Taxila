@@ -14,6 +14,15 @@
 //               transition is jumped to its end at each moment (a paused replay would otherwise freeze a just-inserted
 //               word at frame 0 of its fade-in), so the PNG is the screen as it settled
 // Writes <out>/replay-<hhmmss>.png per moment and prints one JSON line per PNG (time, offset, the event index reached).
+//
+// From the recorder's store (what scripts/trace.mjs --replay calls; T-server's file passes the session as the first word):
+//   node --env-file=.env.local scripts/trace-replay.mjs <session> --at hh:mm:ss[,…] [--out dir]
+//     <session>  a lesson id, a child id prefix (their latest session) or a page-load id, resolved as trace.mjs does
+//     the session's rrweb.chunk events are read from trace_event (TAXILA_DB=test for the TEST branch), and each chunk from
+//     the private "trace" container by its data.blob.ref (a chunk sent by beacon at pagehide carries no ref: its path is
+//     rebuilt as the server wrote it, {day}/{sid}/client-{seq}.json). TAXILA_TRACE_BLOB_DIR=<dir> reads the chunks from a
+//     local directory with the same layout instead (tests; a container copied down). --base defaults to the recording's
+//     own origin (its first Meta event).
 import fs from "node:fs";
 import path from "node:path";
 import { createRequire } from "node:module";
@@ -122,16 +131,83 @@ export async function renderReplay(o) {
   return out;
 }
 
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+const safe = (s, n) => String(s ?? "").replace(/[^\w.-]/g, "_").slice(0, n);
+
+/** trace.mjs's session resolution: a lesson id (with the page loads that led into it), a child id prefix, or a pid. */
+export async function resolveSession(q, key) {
+  if (UUID.test(key)) {
+    const pids = await q("select distinct pid from trace_event where sid = $1 and pid is not null", [key]);
+    return { sids: [key], pids: pids.map((r) => r.pid) };
+  }
+  if (/^[0-9a-f-]{4,35}$/i.test(key)) {
+    const r = await q("select sid from trace_event where cid::text like $1 order by t desc limit 1", [`${key}%`]);
+    if (r[0]) return resolveSession(q, r[0].sid);
+  }
+  return { sids: [key], pids: [key] };
+}
+
+/** One chunk's bytes: a local directory (TAXILA_TRACE_BLOB_DIR) or a SharedKey-signed GET on the private container. */
+export async function readTraceBlob(ref) {
+  const dir = process.env.TAXILA_TRACE_BLOB_DIR;
+  if (dir) { const f = path.join(dir, ref); return fs.existsSync(f) ? fs.readFileSync(f, "utf8") : null; }
+  const account = process.env.AZURE_STORAGE_ACCOUNT, key = process.env.AZURE_STORAGE_KEY;
+  if (!account || !key) throw new Error("AZURE_STORAGE_ACCOUNT / AZURE_STORAGE_KEY not set (or TAXILA_TRACE_BLOB_DIR)");
+  const { signRequest } = await import("../server/forge/blob.js");
+  const { TRACE_CONTAINER } = await import("../server/trace/blob.js");
+  const headers = { "x-ms-date": new Date().toUTCString(), "x-ms-version": "2021-08-06" };
+  headers.authorization = `SharedKey ${account}:${signRequest({ method: "GET", account, container: TRACE_CONTAINER, blob: ref, headers, key })}`;
+  const res = await fetch(`https://${account}.blob.core.windows.net/${TRACE_CONTAINER}/${ref}`, { headers });
+  if (res.status === 404) return null;
+  if (!res.ok) throw new Error(`trace blob GET ${res.status} ${ref}`);
+  return res.text();
+}
+
+/** Every rrweb event of a session, from its rrweb.chunk rows and their blobs, in time order. */
+export async function eventsForSession(key, { q, read = readTraceBlob, log = () => {} } = {}) {
+  const { sids, pids } = await resolveSession(q, key);
+  const rows = await q(`select sid, pid, t, data from trace_event where kind = 'rrweb.chunk' and (sid = any($1::text[]) or (pid is not null and pid = any($2::text[])))
+    order by t, seq`, [sids, pids]);
+  const events = [];
+  let missing = 0;
+  for (const r of rows) {
+    const d = r.data ?? {};
+    const day = (ms) => new Date(ms).toISOString().slice(0, 10);
+    const t = new Date(r.t).getTime();
+    // a beacon chunk has no ref: the server wrote it at {day}/{sid}/client-{seq}.json (the day it arrived: same day, or the next)
+    const refs = d.blob?.ref ? [d.blob.ref] : [day(t), day(t + 86_400_000)].map((dd) => `${dd}/${safe(r.sid, 80)}/client-${safe(d.seq, 12)}.json`);
+    let text = null;
+    for (const ref of refs) { text = await read(ref); if (text) break; }
+    if (!text) { missing++; log(`chunk ${d.seq} missing (${refs.join(" | ")})`); continue; }
+    try { const arr = JSON.parse(text); if (Array.isArray(arr)) events.push(...arr); } catch { missing++; }
+  }
+  log(`${rows.length} chunks, ${missing} missing, ${events.length} events`);
+  return events.filter((e) => e && typeof e.timestamp === "number").sort((a, b) => a.timestamp - b.timestamp);
+}
+
 if (import.meta.url === pathToFileURL(process.argv[1] ?? "").href) {
   const arg = (k, d) => { const i = process.argv.indexOf(`--${k}`); return i > 0 ? process.argv[i + 1] : d; };
   const src = arg("events");
   const ats = arg("at");
-  if (!src || !ats) {
-    console.error("usage: node scripts/trace-replay.mjs --events <file|dir> --at hh:mm:ss[,…] [--out dir] [--base origin] [--tz +05:30]");
+  // the session: --session <key>, or the first bare word (scripts/trace.mjs --replay <session> passes it that way)
+  const valued = new Set(["--events", "--at", "--out", "--base", "--tz", "--motion", "--session"]);
+  const words = process.argv.slice(2).filter((a, i, all) => !a.startsWith("--") && !valued.has(all[i - 1]));
+  const sessionKey = arg("session") ?? words[0];
+  if ((!src && !sessionKey) || !ats) {
+    console.error("usage: node scripts/trace-replay.mjs (--events <file|dir> | <session>) --at hh:mm:ss[,…] [--out dir] [--base origin] [--tz +05:30]");
     process.exit(2);
   }
-  const events = loadEvents(src);
+  let events;
+  if (src) events = loadEvents(src);
+  else {
+    const { q, closeDb } = await import("../server/db.js");
+    try { events = await eventsForSession(sessionKey, { q, log: (m) => console.error(`[replay] ${m}`) }); } finally { await closeDb?.(); }
+  }
+  if (!events.length) { console.error(`[replay] no rrweb events for ${src ?? sessionKey} (tier 2 only: was the account in TAXILA_TRACE_FULL_FOR?)`); process.exit(1); }
+  const metaHref = events.find((e) => e.type === 4)?.data?.href;
+  const base = arg("base") ?? (metaHref ? new URL(metaHref).origin : undefined);
   const at = ats.split(",").map((s) => resolveAt(s, events[0].timestamp, arg("tz", "+00:00")));
-  const res = await renderReplay({ events, at, out: arg("out", "trace-replay"), base: arg("base"), motion: arg("motion", "reduce"), executablePath: process.env.CHROMIUM });
+  const res = await renderReplay({ events, at, out: arg("out", "trace-replay"), base, motion: arg("motion", "reduce"), executablePath: process.env.CHROMIUM });
   for (const r of res) console.log(JSON.stringify(r));
+  process.exit(0);
 }

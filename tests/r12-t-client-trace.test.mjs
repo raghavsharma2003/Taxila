@@ -139,3 +139,31 @@ describe("r12 T-client: the voice sink (globalThis.__taxilaTrace, T-voice's src/
     assert.equal(await voiceSink.blob("audio.mic.chunk", new Blob(["x"], { type: "audio/webm" }), {}), false, "no audio below tier 2");
   });
 });
+
+describe("r12 T-client: the replay reads the recorder's store (scripts/trace.mjs --replay → scripts/trace-replay.mjs)", async () => {
+  const { eventsForSession, resolveSession } = await import("../scripts/trace-replay.mjs");
+  const SID = "3f2b6c1e-8a4d-4c2e-9b7f-1a2b3c4d5e6f", PID = "p-load-1";
+  const rows = [
+    { sid: PID, pid: PID, t: "2026-10-11T23:59:58Z", data: { seq: 1, blob: { ref: "2026-10-11/p-load-1/client-1.json" } } },
+    { sid: SID, pid: PID, t: "2026-10-11T23:59:59Z", data: { seq: 2, beacon: true } }, // no ref: rebuilt, and it arrived the next day
+    { sid: SID, pid: PID, t: "2026-10-12T00:00:05Z", data: { seq: 3, failed: 503 } }, // never stored
+  ];
+  const blobs = { "2026-10-11/p-load-1/client-1.json": JSON.stringify([{ type: 4, timestamp: 2, data: { href: "http://x/" } }, { type: 2, timestamp: 3 }]),
+    [`2026-10-12/${SID}/client-2.json`]: JSON.stringify([{ type: 3, timestamp: 9 }, { type: 3, timestamp: 1 }]) };
+  const q = async (sql, params) => {
+    if (/select distinct pid/.test(sql)) return params[0] === SID ? [{ pid: PID }] : [];
+    if (/cid::text like/.test(sql)) return [];
+    if (/rrweb\.chunk/.test(sql)) return rows.filter((r) => params[0].includes(r.sid) || params[1].includes(r.pid));
+    throw new Error(sql);
+  };
+  it("a lesson id brings the page loads that led into it; a pid is its own key", async () => {
+    assert.deepEqual(await resolveSession(q, SID), { sids: [SID], pids: [PID] });
+    assert.deepEqual(await resolveSession(q, PID), { sids: [PID], pids: [PID] });
+  });
+  it("chunks by ref, a beacon chunk by its rebuilt path, a missing one skipped; events in time order", async () => {
+    const log = [];
+    const ev = await eventsForSession(SID, { q, read: async (ref) => blobs[ref] ?? null, log: (m) => log.push(m) });
+    assert.deepEqual(ev.map((e) => e.timestamp), [1, 2, 3, 9]);
+    assert.match(log.at(-1), /3 chunks, 1 missing, 4 events/);
+  });
+});

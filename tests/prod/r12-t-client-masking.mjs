@@ -1,5 +1,6 @@
 // Release 12 · T-client, masking in a real page (brief §Masking, gate-tested): on the recorder harness at tier 2, a form
-// with a password, an email, a phone, a PIN and a plain field is typed into and tapped, and a /api call carries the same
+// with a password, an email, a phone, a PIN and a plain field is typed into and tapped, a button keypad marked as a masked
+// region (data-trace-mask, as the parent PIN pad) is tapped, and a /api call carries the same
 // secrets in its body and headers. No secret value may appear anywhere in what the recorder produced: the tier-1 events
 // (taps, keys, net bodies) and the tier-2 rrweb stream. The plain field's value is not recorded either (rrweb masks all
 // inputs). Writes docs/design/round4/build/r12/t-client/masking.json; exit 1 on any leak.
@@ -29,6 +30,16 @@ try {
     f.style.cssText = "position:fixed;left:0;top:0;z-index:99;background:#fff;color:#000;padding:8px;display:grid;gap:6px";
     document.body.appendChild(f);
   });
+  // a button keypad (the parent PIN pad is one: main found its digits recorded as tap labels): a masked region, as
+  // src/ui/PinPad.tsx marks it. Its taps must read [masked] and rrweb must replay it as a blank block.
+  await p.evaluate(() => {
+    const pad = document.createElement("div");
+    pad.className = "pin rr-block"; pad.setAttribute("data-trace-mask", "pin");
+    pad.style.cssText = "position:fixed;left:0;bottom:0;z-index:99;background:#fff;display:grid;grid-template-columns:repeat(5,40px);gap:4px;padding:8px";
+    pad.innerHTML = [1, 2, 3, 4, 5, 6, 7, 8, 9, 0].map((d) => `<button type="button" id="k${d}" aria-label="${d}">${d}</button>`).join("") + '<span id="padsecret">PAD-SECRET-TEXT</span>';
+    document.body.appendChild(pad);
+  });
+  for (const d of ["2", "5", "8", "0"]) await p.click(`#k${d}`);
   for (const [id, v] of [["pw", SECRETS.password], ["em", SECRETS.email], ["tel", SECRETS.tel], ["pin", SECRETS.pin], ["plain", SECRETS.plain]]) {
     await p.click(`#${id}`);
     await p.keyboard.type(v, { delay: 5 });
@@ -43,9 +54,13 @@ try {
   const leaks = Object.entries(SECRETS).filter(([, v]) => dump.includes(v)).map(([k]) => k);
   for (const extra of ["abcdefghijklmnop", "tok_abcdefghijklmnopqrstu", "Hunter2"]) if (dump.includes(extra)) leaks.push(extra);
   const taps = JSON.parse(dump).events.filter((e) => e.kind === "ui.tap").map((e) => ({ label: e.data.label, field: e.data.field, type: e.data.type }));
+  const keypad = { taps: taps.filter((x) => x.label === "[masked]").length, digitLabels: taps.filter((x) => /^\d$/.test(String(x.label ?? ""))).length, regionText: dump.includes("PAD-SECRET-TEXT") };
+  if (keypad.digitLabels) leaks.push("keypad-digit-labels");
+  if (keypad.regionText) leaks.push("keypad-region-in-rrweb");
+  if (keypad.taps < 4) leaks.push("keypad-taps-not-masked");
   const req = JSON.parse(dump).events.find((e) => e.kind === "net.req" && e.data.path === "/api/x/login");
-  out = { date: new Date().toISOString(), method: "recorder harness (tier 2) + a typed form + a /api call carrying the same secrets; the recorder's whole output searched for each secret", leaks, taps, requestBody: req?.data?.body ?? null, events: JSON.parse(dump).events.length, rrwebEvents: JSON.parse(dump).rrweb.length, ok: leaks.length === 0 && !!req };
+  out = { date: new Date().toISOString(), method: "recorder harness (tier 2) + a typed form + a /api call carrying the same secrets; the recorder's whole output searched for each secret", leaks, taps, keypad, requestBody: req?.data?.body ?? null, events: JSON.parse(dump).events.length, rrwebEvents: JSON.parse(dump).rrweb.length, ok: leaks.length === 0 && !!req };
 } finally { await browser.close(); stop(); }
 fs.writeFileSync(path.join(OUT, "masking.json"), JSON.stringify(out, null, 1));
-console.log(JSON.stringify({ leaks: out.leaks, taps: out.taps, requestBody: out.requestBody, ok: out.ok }, null, 1));
+console.log(JSON.stringify({ leaks: out.leaks, keypad: out.keypad, taps: out.taps, requestBody: out.requestBody, ok: out.ok }, null, 1));
 process.exit(out.ok ? 0 : 1);

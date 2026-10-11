@@ -87,6 +87,13 @@ The Desk's own model and the stage's own render are the source; nothing is infer
   `renderReplay()` / `loadEvents()` / `resolveAt()` for T-server's `scripts/trace.mjs --replay`.
 - It renders with rrweb's own Replayer (the engine inside rrweb-player), locally, in headless Chromium, and writes a
   PNG per moment.
+- **From the store** (what `scripts/trace.mjs --replay <session> --at hh:mm:ss` runs; the session is the first bare
+  word, resolved as `trace.mjs` resolves it: lesson id with its page loads, child id prefix, or pid). The agreed events
+  input: the session's `rrweb.chunk` rows in `trace_event`, each chunk read from the private `trace` container at
+  `data.blob.ref`; a chunk sent by beacon at pagehide has no ref, so its path is rebuilt as the server writes it
+  (`{day}/{sid}/client-{seq}.json`, that day or the next); a chunk with `failed` is skipped and counted. Blob reads are a
+  SharedKey GET with the PUT's own signer, or `TAXILA_TRACE_BLOB_DIR=<dir>` for a local copy with the same layout.
+  `--base` defaults to the recording's own origin (its Meta event).
 - At each moment it jumps CSS animations to their end, so a just-inserted word is not frozen at frame 0 of its fade-in.
   It also applies the recorded focus.
 
@@ -99,7 +106,11 @@ The Desk's own model and the stage's own render are the source; nothing is infer
 | **Tier 2 frame rate**, rAF over 4 s, n = 3 | board 60.0-60.2 fps (60.4 without the recorder); Antariksh 3D **56.6-58.4 fps** (58.4-60.1 without); rrweb ran in every window, about 16 canvas frames per window on Antariksh |
 | **A broken recorder never changes a lesson**: the scripted lesson with no recorder vs a sabotaged tier-2 recorder (its sink, sends and chunks all throw) | floor sequence, turn requests and visible text after every turn **identical** (the REC chip, tier 2's sanctioned addition, excluded), no page error |
 | **Masking** in a real page (`masking.json`): password, email, phone, PIN and plain fields typed and tapped, plus a `/api` call carrying the same secrets in body and headers | **0 leaks** in tier-1 events and the rrweb stream; tap labels `[masked]`; body `{email, password, pin, phone: [masked], note: "call me on [masked]"}` |
-| Unit tests `tests/r12-t-client-trace.test.mjs` | 12/12: masking by key and shape, batches under 256 KB, tier-2 refused at tier 1, rid only on `/api`, the app's own Response and rejection, faults fall back, tier from `/api/me` |
+| **Replay end to end on TEST** (`replay-e2e.json`, `pair-e2e.png`): the scripted lesson against the REAL API in-process on the Neon TEST branch, tier 2 by `TAXILA_TRACE_FULL_FOR` (the harness does not force it: `&real=1`), then `TAXILA_DB=test node scripts/trace.mjs --replay <pid> --at <hh:mm:ss.mmm>` | 2 `rrweb.chunk` rows stored at tier 2, both with a ref; 66 events read back; PNG vs screenshot **0 differing pixels, 0 tiles**. The blob transport is the one stub (no storage credentials in this container: PUT to a temp dir, read with `TAXILA_TRACE_BLOB_DIR`); **the Azure GET is not exercised** |
+| **Flag this moment keeps its note open** (same run) | note field shown at once, focused, still open 800 ms later, closes on save; `flag.owner` and `flag.note` stored on TEST. Against the pre-fix Desk the same check fails (note never shown, the menu closed: the tapped item was detached before the outside-tap handler ran) |
+| Masking, button keypad (`masking.json`, `keypad`) | a keypad in a `data-trace-mask` region, 4 digits tapped: every tap label `[masked]`, 0 digit labels, the region absent from the rrweb stream |
+| Unit tests `tests/r12-t-client-trace.test.mjs` | 15/15 (adds: session resolution, chunks by ref / rebuilt beacon path / missing, time order) |
+| Unit tests, release 12 as shipped | 12/12: masking by key and shape, batches under 256 KB, tier-2 refused at tier 1, rid only on `/api`, the app's own Response and rejection, faults fall back, tier from `/api/me` |
 
 Harnesses:
 
@@ -107,13 +118,18 @@ Harnesses:
 - `tests/prod/r12-t-client-budget.mjs`
 - `tests/prod/r12-t-client-masking.mjs`
 - `tests/prod/r12-t-client-smoke.mjs`
+- `tests/prod/r12-t-client-replay-e2e.mjs` (TEST branch; `NODE_USE_ENV_PROXY=1`)
 
-The dev harness is `src/trace/dev/lesson.html` (`?trace=off`, `&tier=2`, `&sabotage=1`, `&page=play`). It is never a
+The dev harness is `src/trace/dev/lesson.html` (`?trace=off`, `&tier=2`, `&sabotage=1`, `&page=play`, `&real=1` for the
+real trace endpoints behind the vite proxy). It is never a
 build input.
 
 ## Not done / for the other streams
 
-- **The full end-to-end proof** (brief rule 4: a scripted lesson on TEST against a packaged build, `scripts/trace.mjs
+- **For T-server:** the `trace_flag` view reads `data->>'note'` from `flag.owner` rows, but the note is a separate
+  `flag.note` event (same `pid` and `n`), so `--flags` prints an empty note. Join on `(pid, data->>'n')`, or say if the
+  client should resend the note on the owner row instead.
+- **Superseded (see the TEST row above):** the full end-to-end proof (brief rule 4: a scripted lesson on TEST against a packaged build, `scripts/trace.mjs
   --session` printing the merged timeline, `--replay` from stored blobs) needs T-server's `/api/trace/batch`,
   `/api/trace/blob`, the migration and `scripts/trace.mjs`. None of those are on this branch.
   - The proof here uses the dev server, with the trace endpoints answered by the harness.
