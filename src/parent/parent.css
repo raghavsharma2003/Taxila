@@ -251,3 +251,126 @@ html:has(.pa[data-tabs="off"]) { scroll-padding-top: 64px; }
 .pa-test-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; }
 .pa-field { display: flex; flex-direction: column; gap: 4px; font-size: var(--t-meta); color: var(--ink-2); min-width: 0; }
 .pa-field .input { min-height: 48px; }
+
+/* ════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+   Release 11 · Volt night "calm" (dc-r4-volt-everywhere; docs/design/round4/build/r11/BRIEF.md). The parent corner wears
+   the same identity as the child app at a lower intensity: K's tokens only (src/ui-v3/kaksha/tokens.css under the
+   .kx[data-klook="volt"][data-ktheme="night"] scope Shell.tsx and Gate.tsx set), no new palette, no new font host.
+   - the v2 tokens every shared component reads (Button, PinPad, Sheet, StateChip, Field) are re-pointed at k tokens here,
+     as childshell.css does for the child screens: var() only, no colour literal;
+   - no breathing glow, no loop; lime (--k-move) only on the ONE primary action a page marks [data-volt];
+   - mono `//` eyebrows, corner-bracket panels, the four plain words as HUD chips, the "How do we know?" rows as a timeline;
+   - floors: text ≥ 14 px, targets ≥ 44 px (the parent corner keeps its 48), contrast ≥ 5:1 by token pair.
+   ════════════════════════════════════════════════════════════════════════════════════════════════════════════════ */
+:is(.pa, .pa-gate).kx[data-klook="volt"][data-kcalm] {
+  --bg: var(--k-void); --paper: var(--k-void); --surface: var(--k-deep); --surface-2: var(--k-raise); --tray: var(--k-raise);
+  --ink: var(--k-ink); --ink-2: var(--k-ink-2); --line: var(--k-ink-3); --tile-border: var(--k-line-2);
+  --p-bg: var(--k-void); --p-ink: var(--k-ink); --p-ink-2: var(--k-ink-2); --p-ink-3: var(--k-ink-3);
+  --p-learning: var(--k-her); --p-pakka: var(--k-secure);
+  --nib: var(--k-ion); --nib-soft: color-mix(in srgb, var(--k-ion) 14%, var(--k-deep)); --on-nib: var(--k-void);
+  --got: var(--k-secure); --got-soft: color-mix(in srgb, var(--k-secure) 14%, var(--k-deep)); --trouble: var(--k-rose);
+  --jamun: var(--k-look); --jamun-soft: color-mix(in srgb, var(--k-look) 14%, var(--k-deep));
+  --focus: var(--k-ion); --focus-halo: var(--k-void); --veil: color-mix(in srgb, var(--k-void) 70%, transparent);
+  --stage: var(--k-raise);
+  --font-ui: var(--k-sans); --font-text: var(--k-sans); --font-title: var(--k-sans); --font-heading: var(--k-sans); --font-display: var(--k-sans);
+  --radius-card: 0px; --radius-sm: 2px; --radius-xs: 2px; --radius-pill: 2px; --elev-card: none;
+  --pa-cut: 10px; --pa-br: 14px;
+  background: var(--k-void); color: var(--k-ink); font-family: var(--k-sans); color-scheme: dark;
+  /* the HUD grid at a calm strength (the child app's grid, half the line) */
+  background-image: repeating-linear-gradient(0deg, color-mix(in srgb, var(--k-line) 55%, transparent) 0 1px, transparent 1px 44px),
+    repeating-linear-gradient(90deg, color-mix(in srgb, var(--k-line) 55%, transparent) 0 1px, transparent 1px 44px);
+  background-attachment: fixed;
+}
+:is(.pa, .pa-gate).kx[data-kcalm] :is(h1, h2, h3, .pa-h1, .pa-h2, .pa-headline, .pa-claim-text, .pa-alert-title, .pa-report-title, .pa-ev-skill) {
+  font-family: var(--k-sans); letter-spacing: -.02em; }
+.pa.kx[data-kcalm] .pa-h1 { font-size: 1.75rem; font-weight: 600; line-height: 1.15; }
+.pa.kx[data-kcalm] :is(.pa-headline, .pa-claim-text) { font-size: 1.1875rem; line-height: 1.35; font-weight: 500; }
+
+/* mono `//` eyebrows: the page's place in the corner, card titles, the rail's section label */
+.pa-eyebrow { display: none; }
+.pa.kx[data-kcalm] .pa-eyebrow, :is(.pa, .pa-gate).kx[data-kcalm] .pa-card-title {
+  display: block; margin: 0 0 var(--space-2); font: 500 0.875rem/1.3 var(--k-mono); letter-spacing: .08em; text-transform: uppercase; color: var(--k-ink-3); }
+:is(.pa, .pa-gate).kx[data-kcalm] :is(.pa-eyebrow, .pa-card-title)::before { content: "// "; color: var(--k-ion); }
+.pa.kx[data-kcalm] .pa-rail-eyebrow { padding: 0 var(--space-3); margin: var(--space-2) 0 0; }
+
+/* corner-bracket panels: a hairline frame, the four corners drawn brighter (backgrounds only: no pseudo element clash) */
+:is(.pa, .pa-gate).kx[data-kcalm] .pa-card {
+  border: 1px solid var(--k-line); border-radius: 0; box-shadow: none; padding: var(--space-4); gap: var(--space-3);
+  background:
+    linear-gradient(var(--k-ink-3), var(--k-ink-3)) top left / var(--pa-br) 1px, linear-gradient(var(--k-ink-3), var(--k-ink-3)) top left / 1px var(--pa-br),
+    linear-gradient(var(--k-ink-3), var(--k-ink-3)) top right / var(--pa-br) 1px, linear-gradient(var(--k-ink-3), var(--k-ink-3)) top right / 1px var(--pa-br),
+    linear-gradient(var(--k-ink-3), var(--k-ink-3)) bottom left / var(--pa-br) 1px, linear-gradient(var(--k-ink-3), var(--k-ink-3)) bottom left / 1px var(--pa-br),
+    linear-gradient(var(--k-ink-3), var(--k-ink-3)) bottom right / var(--pa-br) 1px, linear-gradient(var(--k-ink-3), var(--k-ink-3)) bottom right / 1px var(--pa-br),
+    var(--k-panel-solid);
+  background-repeat: no-repeat; }
+.pa.kx[data-kcalm] :is(.pa-try, .pa-alert) { border-left-width: 3px; }
+.pa.kx[data-kcalm] .pa-try { border-left-color: var(--k-ion); }
+.pa.kx[data-kcalm] .pa-alert { border-left-color: var(--k-rose); }
+.pa.kx[data-kcalm] .pa-chapter[data-here] { border-color: var(--k-ion); }
+:is(.pa, .pa-gate).kx[data-kcalm] :is(.pa-note, .pa-stale, .pa-confirm) { background: var(--k-raise); border: 1px solid var(--k-line); }
+.pa.kx[data-kcalm] .pa-band { display: none; }   /* the old warm header art: Volt's own ground stands behind every page */
+.pa.kx[data-kcalm] :is(.pa-quote, .pa-transcript li[data-speaker="child"]) { background: var(--k-raise); }
+
+/* the four plain words as HUD chips: mono, square-cut, the level's colour on its frame and mark (text stays ink) */
+:is(.pa, .pa-gate).kx[data-kcalm] .state {
+  border-radius: 0; border-width: 1px; min-height: 32px; padding: 2px 10px 2px 8px; gap: 6px; background: var(--k-deep);
+  font: 500 0.875rem/1.3 var(--k-mono); letter-spacing: .06em; text-transform: uppercase; color: var(--k-ink);
+  clip-path: polygon(6px 0, 100% 0, 100% calc(100% - 6px), calc(100% - 6px) 100%, 0 100%, 0 6px); }
+:is(.pa, .pa-gate).kx[data-kcalm] .state-0 { --c: var(--k-ink-3); }
+:is(.pa, .pa-gate).kx[data-kcalm] .state-1 { --c: var(--k-her); background: linear-gradient(90deg, color-mix(in srgb, var(--k-her) 18%, var(--k-deep)) 50%, var(--k-deep) 50%); }
+:is(.pa, .pa-gate).kx[data-kcalm] .state-2 { --c: var(--k-ion); background: color-mix(in srgb, var(--k-ion) 12%, var(--k-deep)); }
+:is(.pa, .pa-gate).kx[data-kcalm] .state-3 { --c: var(--k-secure); background: color-mix(in srgb, var(--k-secure) 16%, var(--k-deep)); color: var(--k-ink); }
+:is(.pa, .pa-gate).kx[data-kcalm] .state-3 .state-tag, :is(.pa, .pa-gate).kx[data-kcalm] .state-tag { color: var(--k-ink-2); font: 500 0.875rem/1.3 var(--k-mono); text-transform: none; letter-spacing: 0; }
+
+/* "How do we know?": the ledger rows as a timeline: one rail, a diamond node per row, the date in mono */
+.pa.kx[data-kcalm] .pa-ev-list { position: relative; padding-left: 22px; }
+.pa.kx[data-kcalm] .pa-ev-list::before { content: ""; position: absolute; left: 6px; top: var(--space-3); bottom: var(--space-3); width: 1px; background: var(--k-line-2); }
+.pa.kx[data-kcalm] .pa-ev-row { position: relative; border-top: 0; border-bottom: 1px solid var(--k-line); }
+.pa.kx[data-kcalm] .pa-ev-row::before { content: ""; position: absolute; left: -20px; top: calc(var(--space-3) + 5px); width: 9px; height: 9px;
+  background: var(--k-void); border: 1.5px solid var(--k-ink-3); transform: rotate(45deg); }
+.pa.kx[data-kcalm] .pa-ev-row[data-outcome="correct"]::before { border-color: var(--k-secure); background: color-mix(in srgb, var(--k-secure) 30%, var(--k-void)); }
+.pa.kx[data-kcalm] .pa-ev-date { font: 500 0.875rem/1.3 var(--k-mono); color: var(--k-ink-3); letter-spacing: .02em; }
+.pa.kx[data-kcalm] .pa-ev-skill { font-weight: 600; }
+
+/* controls: chamfered, calm. Primary = ion; the page's ONE marked action = lime (no glow, no loop) */
+:is(.pa, .pa-gate).kx[data-kcalm] .btn { border-radius: 0; font-weight: 600; letter-spacing: .01em;
+  clip-path: polygon(var(--pa-cut) 0, 100% 0, 100% calc(100% - var(--pa-cut)), calc(100% - var(--pa-cut)) 100%, 0 100%, 0 var(--pa-cut)); }
+:is(.pa, .pa-gate).kx[data-kcalm] .btn-primary { background: var(--k-ion); color: var(--k-void); border-color: var(--k-ion); }
+:is(.pa, .pa-gate).kx[data-kcalm] .btn-primary[data-volt], .pa-gate.kx[data-kcalm] .pin-key.btn-primary {
+  background: var(--k-move); color: var(--k-on-move); border-color: var(--k-move); text-transform: uppercase; letter-spacing: .08em; font-weight: 700; }
+:is(.pa, .pa-gate).kx[data-kcalm] :is(.btn-secondary, .btn-danger, .btn-destructive) { background: var(--k-deep); color: var(--k-ink); border-color: var(--k-line-2); }
+:is(.pa, .pa-gate).kx[data-kcalm] .btn-secondary:hover { box-shadow: inset 3px 0 0 var(--k-ion); }
+:is(.pa, .pa-gate).kx[data-kcalm] :is(.pa-how, .pa-textbtn, .pa-gate-help, .pa-here) { color: var(--k-ion); }
+:is(.pa, .pa-gate).kx[data-kcalm] :is(.input, input, select, textarea) { border-radius: 0; }
+.pa.kx[data-kcalm] .pa .pin-key.btn-primary, .pa.kx[data-kcalm] .pin-key.btn-primary { background: var(--k-ion); color: var(--k-void); border-color: var(--k-ion); }
+:is(.pa, .pa-gate).kx[data-kcalm] .pa-gate-icon { border-radius: 0; background: color-mix(in srgb, var(--k-ion) 14%, var(--k-deep)); color: var(--k-ion);
+  clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px); }
+.pa.kx[data-kcalm] .pa-seg { border-color: var(--k-line-2); background: var(--k-deep); }
+.pa.kx[data-kcalm] .pa-seg-btn[aria-selected="true"] { background: var(--k-ink); color: var(--k-void); }
+@media (prefers-reduced-motion: reduce) { :is(.pa, .pa-gate).kx[data-kcalm] .btn { transition: none; } }
+
+/* chrome: top bar, phone tabs, laptop rail */
+.pa.kx[data-kcalm] .pa-top { background: color-mix(in srgb, var(--k-void) 92%, transparent); border-bottom: 1px solid var(--k-line); backdrop-filter: blur(6px); }
+.pa.kx[data-kcalm] .pa-tabs { background: var(--k-deep); border-top: 1px solid var(--k-line-2); }
+.pa.kx[data-kcalm] .pa-tab { color: var(--k-ink-3); }
+.pa.kx[data-kcalm] .pa-tab.is-active { color: var(--k-ink); box-shadow: inset 0 2px 0 var(--k-ion); }
+.pa.kx[data-kcalm] .pa-tab.is-active span { text-decoration: none; }
+.pa.kx[data-kcalm] .pa-tab.is-active svg { color: var(--k-ion); }
+.pa.kx[data-kcalm] .pa-teacher-face, .pa.kx[data-kcalm] .pa-teacher-disc, .pa.kx[data-kcalm] .pa-kid-avatar, .pa.kx[data-kcalm] .pa-kid-disc { border-radius: 2px; }
+.pa.kx[data-kcalm] :is(.pa-rowlink, .pa-topic, .pa-skill-row, .pa-chap-mini, .pa-choice, .pa-danger, .pa-group-save, .pa-claim + .pa-claim) { border-color: var(--k-line); }
+.pa.kx[data-kcalm] .pa-rowlink:hover { box-shadow: inset 3px 0 0 var(--k-ion); }
+@media (min-width: 900px) {
+  .pa.kx[data-klook="volt"][data-kcalm] { background-image: linear-gradient(90deg, var(--k-deep) 0 239px, var(--k-line-2) 239px 240px, transparent 240px),
+    repeating-linear-gradient(0deg, color-mix(in srgb, var(--k-line) 55%, transparent) 0 1px, transparent 1px 44px),
+    repeating-linear-gradient(90deg, color-mix(in srgb, var(--k-line) 55%, transparent) 0 1px, transparent 1px 44px); }
+  .pa.kx[data-kcalm] .pa-rail { background: var(--k-deep); border-right: 1px solid var(--k-line-2); }
+  .pa.kx[data-kcalm] .pa-rail .pa-switch { border-radius: 0; border-color: var(--k-line-2); background: var(--k-void); }
+  .pa.kx[data-kcalm] .pa-rail-item { border-radius: 0; color: var(--k-ink-2); }
+  .pa.kx[data-kcalm] .pa-rail-item svg { color: var(--k-ink-3); }
+  .pa.kx[data-kcalm] .pa-rail-item:hover { box-shadow: inset 3px 0 0 var(--k-line-2); }
+  .pa.kx[data-kcalm] .pa-rail-item.is-active { background: var(--k-raise); color: var(--k-ink); box-shadow: inset 3px 0 0 var(--k-ion); }
+  .pa.kx[data-kcalm] .pa-rail-item.is-active svg { color: var(--k-ion); }
+  .pa.kx[data-kcalm] .pa-top { background: transparent; border-bottom: 0; backdrop-filter: none; }
+}
+/* the evidence drawer and every sheet opened from the corner */
+:is(.pa, .pa-gate).kx[data-kcalm] dialog.sheet { background: var(--k-deep); color: var(--k-ink); border: 1px solid var(--k-line-2); border-radius: 0; }
