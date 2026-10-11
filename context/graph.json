@@ -19987,6 +19987,114 @@
    "at": "2026-10-11",
    "title": "A full-page Playwright screenshot as evidence of what a scrolling visitor sees: loading=lazy images below the first screen never load, so frames read as empty. Main reported a non-existent 'empty phone frame' from one, and stream 2's r11 landing sheet shows the same blank frames",
    "source": "inbox/r4-main-0745.json"
+  },
+  {
+   "id": "dc-r11-g1-parent-volt-calm",
+   "kind": "decision",
+   "title": "Release 11 G1: the parent corner wears Volt night 'calm' through K's own scope (.kx + data-klook=volt + data-ktheme=night + data-kcalm on the .pa and .pa-gate roots). src/parent/parent.css re-points the v2 tokens the shared components read (Button, PinPad, Sheet, StateChip, Field) at the k tokens, as childshell.css does for the child screens: var() only, no new palette, K's self-hosted fonts. Calm = no breathing glow, no loop, lime (--k-move) only on the one action a page marks [data-volt]; ion for every other primary; mono // eyebrows; corner-bracket panels; the four plain words as HUD chips; the How do we know? rows as a timeline. Presentation only: copy, claims, helplines and the AI label unchanged.",
+   "at": "2026-10-11",
+   "reversal": "if a parent test or the owner finds the night ground harder to read than the light one (contrast, small text), add a calm day variant under the same scope rather than restoring the v2 paper look",
+   "source": "inbox/r11-g1.json"
+  },
+  {
+   "id": "ms-r11-g1-parent-battery-2026-10-11",
+   "kind": "measurement",
+   "title": "Parent Playwright battery (tests/e2e-design-b3-parent.mjs, unchanged, mocked /api, built SPA, n = 1 run each): base efc0e721 415/418, Volt calm 415/418; the same 3 failures on both (V-ONE generic activity, V-NEXT empty submit, V-NEXT wrong password: sign-in step, not parent CSS). Parent unit tests (ui-v2-claims, parent-state, reports-gate, r4-asha-ux, r4-asha-single-teacher) 52/52; UI lint suites 24/24; lint-ui 353 with 0 findings in src/parent.",
+   "at": "2026-10-11",
+   "source": "inbox/r11-g1.json"
+  },
+  {
+   "id": "dc-r11-k-kaksha-default-on",
+   "kind": "decision",
+   "title": "Release 11 (dc-r4-volt-everywhere), stream K: Kaksha + Volt is the child app for EVERY account in every build (kakshaDecision = device !== false); ?ui=classic is the per-device escape (?ui=default restores); the TAXILA_UI_KAKSHA cohort still answers /api/me but gates nothing (server untouched). ChildShell wears the look before /api/me answers (loading/error/signed-out gate: night). /who wears the same scope. Reversal: the owner or a child test shows a child cannot find their way in Volt (then ?ui=classic per device stays, and the default can flip back in one line)",
+   "date": "2026-10-11",
+   "source": "inbox/r11-k.json"
+  },
+  {
+   "id": "r11-k-juice",
+   "kind": "component",
+   "title": "Release 11 K juice inside dc-r4-gamification-b: the World orbit and base panels get depth (two parallax star layers, the planet light, the child's ship on its own orbit, a horizon glow under the base); the Debrief's earned moment gets turning rays and a ring pulse behind the badge. Decoration only (aria-hidden), names the idea and counts nothing; reduced motion stills it",
+   "date": "2026-10-11",
+   "source": "inbox/r11-k.json"
+  },
+  {
+   "id": "r11-k-me-captions-412",
+   "kind": "finding",
+   "title": "Me page Choice rows (Captions, Teacher face, Theme) cut their label at 412 px because .me-text was flex 1 with min-width 0; fixed with a 9rem basis so the segmented choice wraps under the label",
+   "date": "2026-10-11",
+   "source": "inbox/r11-k.json"
+  },
+  {
+   "id": "r11-k-pages-63",
+   "kind": "measurement",
+   "title": "Release 11 K: every child-mode page in Volt by default for an account outside any cohort; 63 real pages (who, hello, home, world, hangar, ask, notebook, me, teacher, practice, lesson first screen x young/older x 360/412/1366) 0 floor findings (14/16 px, 44 px, contrast, no overflow, LOOK-1, AI-1); SAYS-1 parity 0 differ vs the cohort Kaksha on base",
+   "n": 63,
+   "method": "tests/prod/r11-k-sheets.mjs: three local production builds on the stream Neon TEST branch (base efc0e721 no cohort = before, base with the account in TAXILA_UI_KAKSHA = parity reference, this branch with no cohort env = after); U1 in-page lint",
+   "date": "2026-10-11",
+   "source": "inbox/r11-k.json"
+  },
+  {
+   "id": "dc-r11-site-volt-night",
+   "kind": "decision",
+   "title": "The public site (landing, /promises, /privacy, /help, /leaving, not-found, header, footer) is drawn in Volt night inside K's own scope (.kx + data-klook=volt + data-ktheme=night); no site palette",
+   "at": "2026-10-11",
+   "source": "inbox/r11-stream2.json"
+  },
+  {
+   "id": "dc-r11-site-hero-real-captures",
+   "kind": "decision",
+   "title": "The landing hero shows the product itself: real captures of Home, the Desk mid-lesson (AI label) and Antariksh, re-taken by tests/prod/r11-site-captures.mjs; no painted or stock art",
+   "at": "2026-10-11",
+   "source": "inbox/r11-stream2.json"
+  },
+  {
+   "id": "m-r11-site-floors",
+   "kind": "measurement",
+   "title": "Public site after the Volt rebuild: 18 views (6 pages x 360/412/1366), 0 below a floor (overflow 0, min text 14 px, no target < 44 px, helplines on every page); before: landing 13 px text at all 3 sizes; every landing image and the game video loaded for a scrolling visitor at 360/412/1366 (6/6)",
+   "at": "2026-10-11",
+   "source": "inbox/r11-stream2.json"
+  },
+  {
+   "id": "m-r11-site-lcp",
+   "kind": "measurement",
+   "title": "Landing LCP, lab mid phone (412x915 DPR 2.6, CPU 4x, 1.6 Mbps/150 ms), n=5 each: before median 5068 ms (painted hero, 863 KB page), after 4212 ms (desk.webp 25 KB; the below-the-fold game loop is never the LCP element)",
+   "at": "2026-10-11",
+   "source": "inbox/r11-stream2.json"
+  },
+  {
+   "id": "rj-r11-site-lime-brand",
+   "kind": "rejection",
+   "title": "A lime brand mark in the site header: rejected, it would be a second lime element next to the CTA (K's one-volt law); the mark is ink on void",
+   "at": "2026-10-11",
+   "source": "inbox/r11-stream2.json"
+  },
+  {
+   "id": "dc-r11-s5-setup-volt-scope",
+   "kind": "decision",
+   "title": "Set-up and sign-in wear Volt night through K's own scope: StepFrame's root is .kx + data-klook=volt + data-ktheme=night, and src/onboarding/volt.css re-points the v2 tokens the shared components read at K's --k-* tokens (as childshell.css does), with no colour literal. The child's moments (her voice previews, her name) sit in a nested .kx panel in her family look (classes 1-4 Volt day). Lime only on the step's primary action. Reversal: K ships a set-up component set of its own, or the owner wants the grown-up surface calmer than night.",
+   "at": "2026-10-11",
+   "source": "inbox/r11-stream5.json"
+  },
+  {
+   "id": "ms-r11-s5-setup-shots-2026-10-11",
+   "kind": "measurement",
+   "title": "Set-up and sign-in before/after, a production build against the stream's Neon TEST branch, headless Chromium, a fresh account per viewport (n=1 per viewport per side, 12 surfaces each): 0 page errors and 0 horizontal overflow before and after at 360x800, 412x915 and 1366x768. The promises hold gate top/bottom after: 653/713 at 360x800 (was 708/756), 633/693 at 412x915, 689/749 at 1366x768: above the fold everywhere.",
+   "at": "2026-10-11",
+   "source": "inbox/r11-stream5.json"
+  },
+  {
+   "id": "rj-r11-s5-cta-glow-under-clip",
+   "kind": "rejection",
+   "title": "A drop-shadow glow on the chamfered CTA: clip-path clips the filter, so the glow never shows. The one move breathes with an inner light sweep instead.",
+   "at": "2026-10-11",
+   "source": "inbox/r11-stream5.json"
+  },
+  {
+   "id": "dc-r4-r11-integration",
+   "kind": "decision",
+   "at": "2026-10-11",
+   "title": "Release 11 integration (int/r4-rel11): stream 2 site 56e7adf, stream 5 set-up 950d56c, G1 parent corner (cherry-picks of 4f20e1f 6ca3dde b9f58b5) + Volt play art a411034, K child app 8a752b9 (default on for every account, device keys versioned .r11). Kept out: G1's parked ITEM-ARENA patches (d1ad460). Next release: Volt day canvas palettes for the young family's play arts, the face window's cream ground, the parent sheet backdrop veil",
+   "source": "inbox/r4-main-0830.json"
   }
  ],
  "edges": [
@@ -32194,6 +32302,46 @@
    "src": "rj-r4-fullpage-shot-lazy",
    "rel": "caused_by",
    "dst": "ms-r4-r9-landing-frame-lazy"
+  },
+  {
+   "src": "ms-r11-g1-parent-battery-2026-10-11",
+   "rel": "measured_by",
+   "dst": "dc-r11-g1-parent-volt-calm"
+  },
+  {
+   "src": "dc-r11-g1-parent-volt-calm",
+   "rel": "part_of",
+   "dst": "dc-r4-volt-everywhere"
+  },
+  {
+   "src": "dc-r11-k-kaksha-default-on",
+   "rel": "part_of",
+   "dst": "r4k-k3-built"
+  },
+  {
+   "src": "r11-k-juice",
+   "rel": "part_of",
+   "dst": "r4k-k3-built"
+  },
+  {
+   "src": "r11-k-me-captions-412",
+   "rel": "part_of",
+   "dst": "r4k-k3-built"
+  },
+  {
+   "src": "r11-k-pages-63",
+   "rel": "part_of",
+   "dst": "r4k-k3-built"
+  },
+  {
+   "src": "dc-r11-s5-setup-volt-scope",
+   "rel": "measured_by",
+   "dst": "ms-r11-s5-setup-shots-2026-10-11"
+  },
+  {
+   "src": "dc-r4-r11-integration",
+   "rel": "part_of",
+   "dst": "dc-r4-volt-everywhere"
   }
  ]
 }

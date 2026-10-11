@@ -3806,3 +3806,19 @@ and repeated duplex partials. Relational AT-U8 (p99 ≤ 3 ms per turn; it calls 
 
 <!-- merged from inbox/r4-main-0745.json -->
 - `ms-r4-r9-landing-frame-lazy` (2026-10-11 07:45 UTC): corrects the empty-frame part of `ms-r4-r9-surfaces-unchanged` (the rest of it, every public surface in the pre-round-4 style, stands). Method: Playwright Chromium 412x915 on https://taxila.dev release 9, scrolling in 400 px steps with 250 ms dwell, then reading every `<img>`. landing-hero-phone (eager), shot-lesson (lazy, top 1,083 px) and shot-garden (lazy, top 2,912 px) all complete with naturalWidth > 0. shot-parent (lazy, top 5,658 px) did not load because its `.phone` frame is 0 px tall at this width; the file itself answers 200, 22,514 bytes. n = 1 run, one width. The 'empty phone frame' main reported at 06:55 UTC came from a non-scrolling full-page screenshot.
+
+
+<!-- merged from inbox/r11-stream2.json -->
+## m-r11-site-floors
+`tests/prod/r11-site-sheets.mjs` on a production build of base `efc0e721` (before) and of this branch (after), served locally, 6 pages x 360x800 / 412x915 / 1366x768 = 18 views each. After: horizontal overflow 0, smallest visible text 14 px, no link or button under 44 px (inline links in sentences exempt), Childline 1098 and Tele-MANAS 14416 and the AI wording on every page. Before: the landing's smallest text was 13 px at all three sizes. Sheets: `docs/design/round4/build/r11/stream2/{before,after}-*.webp`. Date 2026-10-11. Adult harness, no child.
+
+## m-r11-site-lcp
+`tests/prod/r11-site-lcp.mjs`, n = 5 cold loads per build, Playwright Chromium on this container with DevTools emulation (412x915, DPR 2.6, CPU 4x slower, 1.6 Mbps down / 150 ms). Before: median 5068 ms, max 5112 ms, LCP element the painted hero webp. After: median 4212 ms, max 4332 ms (with the game loop added below the fold), LCP element `/site/desk.webp` (preloaded on `/` from index.html). Most of what remains is the app's JavaScript before first render, not the site's files. LAB numbers, not field data. Date 2026-10-11.
+
+The full-page sheets are taken after scrolling the page in steps and requiring every image (complete, naturalWidth > 0) and video (readyState >= 2) to have loaded: 6 of 6 on the landing at 360, 412 and 1366. A full-page shot that never scrolls leaves lazy frames empty (rj-r4-fullpage-shot-lazy).
+
+
+## Merged inbox entries (write-up from the entry text)
+- `ms-r11-g1-parent-battery-2026-10-11` (2026-10-11): Parent Playwright battery (tests/e2e-design-b3-parent.mjs, unchanged, mocked /api, built SPA, n = 1 run each): base efc0e721 415/418, Volt calm 415/418; the same 3 failures on both (V-ONE generic activity, V-NEXT empty submit, V-NEXT wrong password: sign-in step, not parent CSS). Parent unit tests (ui-v2-claims, parent-state, reports-gate, r4-asha-ux, r4-asha-single-teacher) 52/52; UI lint suites 24/24; lint-ui 353 with 0 findings in src/parent.
+- `r11-k-pages-63` (undated): Release 11 K: every child-mode page in Volt by default for an account outside any cohort; 63 real pages (who, hello, home, world, hangar, ask, notebook, me, teacher, practice, lesson first screen x young/older x 360/412/1366) 0 floor findings (14/16 px, 44 px, contrast, no overflow, LOOK-1, AI-1); SAYS-1 parity 0 differ vs the cohort Kaksha on base
+- `ms-r11-s5-setup-shots-2026-10-11` (2026-10-11): Set-up and sign-in before/after, a production build against the stream's Neon TEST branch, headless Chromium, a fresh account per viewport (n=1 per viewport per side, 12 surfaces each): 0 page errors and 0 horizontal overflow before and after at 360x800, 412x915 and 1366x768. The promises hold gate top/bottom after: 653/713 at 360x800 (was 708/756), 633/693 at 412x915, 689/749 at 1366x768: above the fold everywhere.

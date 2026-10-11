@@ -2504,3 +2504,12 @@ words are left to read.
 
 <!-- merged from inbox/r4-main-0745.json -->
 - `rj-r4-fullpage-shot-lazy` (2026-10-11): tried: `page.screenshot({ fullPage: true })` straight after load, used as evidence of what a visitor sees below the first screen. What broke: `loading="lazy"` images below the fold never load in it. Main logged an empty lesson-preview frame on release 9 that a scrolling visitor never sees (corrected by `ms-r4-r9-landing-frame-lazy`), and stream 2's r11 after-landing-full sheet shows the new lesson and world frames blank the same way. Use instead: scroll the page in steps before a full-page capture (or set the images eager in the capture build only), and assert `img.complete && naturalWidth > 0` for every frame.
+
+
+<!-- merged from inbox/r11-stream2.json -->
+## rj-r11-site-lime-brand
+A lime (`--k-move`) brand mark in the header was tried and dropped: with the hero's lime CTA it puts two lime elements on the first screen, against K's one-volt law. The mark is `--k-ink` on `--k-void`.
+
+
+## Merged inbox entries (write-up from the entry text)
+- `rj-r11-s5-cta-glow-under-clip` (2026-10-11): A drop-shadow glow on the chamfered CTA: clip-path clips the filter, so the glow never shows. The one move breathes with an inner light sweep instead.
