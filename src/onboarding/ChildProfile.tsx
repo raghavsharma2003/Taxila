@@ -15,7 +15,7 @@ import { teacherRecord } from "../ui/teacher/useTeacher.ts";
 import { ApiError, errText, getJson, lockBeacon, postJson, refreshMe, request } from "../app/api.ts";
 import { useGate } from "../parent/Gate.tsx";
 import { isGateError } from "../parent/api.ts";
-import { StepFrame } from "./Layout.tsx";
+import { kidLook, StepFrame } from "./Layout.tsx";
 import { clearDraft, useDraft } from "./draft.ts";
 import { defaultsFor } from "./Setup.tsx";
 
@@ -120,8 +120,12 @@ export function ChildStep() {
       <form className="stack" onSubmit={submit} noValidate>
         <p className="row t-meta">Class {cl}{c.board ? ` · ${c.board === "other-state" ? "Other board" : c.board.toUpperCase()}` : ""}
           <Link to={`/start/class${adding ? "?add=1" : ""}`} className="block-link" style={{ marginLeft: "auto" }}>Change</Link></p>
-        <Field label="Child's first name" hint="Just the name they are called at home is fine." autoComplete="off" maxLength={40}
-          value={c.firstName ?? ""} onChange={(e) => setC({ firstName: e.target.value })} required />
+        {/* release 11: her name faces the child, so it sits in the child's family look (young: Volt day) */}
+        <section className="kx onb-volt onb-kid" {...kidLook(cl)}>
+          <p className="onb-kid-tag" aria-hidden="true">{`What ${rec.name} calls them`}</p>
+          <Field label="Child's first name" hint="Just the name they are called at home is fine." autoComplete="off" maxLength={40}
+            value={c.firstName ?? ""} onChange={(e) => setC({ firstName: e.target.value })} required />
+        </section>
         {hasPin === false && (
           <section className="card card-flat stack-sm" aria-label="Parent PIN">
             <h2 className="t-h3 row" style={{ fontFamily: "var(--font-text)" }}><Icon name="lock" /> Parent PIN</h2>

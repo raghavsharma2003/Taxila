@@ -1,0 +1,185 @@
+/* Release 11 (dc-r4-volt-everywhere; docs/design/round4/build/r11/BRIEF.md): set-up and sign-in in K's Volt identity.
+   The grown-up's screens are Volt night: the StepFrame root is `.kx` + data-klook="volt" + data-ktheme="night" (the
+   scope K's Kaksha uses, src/ui-v3/kaksha/tokens.css), and `.onb-volt` re-points the v2 tokens the shared components
+   read (src/styles/ui.css) at K's --k-* tokens, as childshell.css does for the child screens. The moments that face the
+   child (her voice previews, her name) sit in a nested `.kx.onb-volt.onb-kid` panel in the child's family look (young:
+   Volt day "toy plastic"). var() and color-mix() of K's tokens only: no colour literal, no new font host.
+   Floors: text >= 14 px, targets >= 44 px, no horizontal scroll at 360, ONE lime element per screen state (the step's
+   primary action; the PIN pad's OK and the disabled state are not lime), reduced motion stills it all (kaksha.css). */
+
+/* ---------------------------------------------------------------- the v2 tokens on K's (root and child panels) */
+.kx.onb-volt {
+  --k-sans: "Space Grotesk", "Atkinson Hyperlegible Next", "Mukta", system-ui, sans-serif;
+  --k-mono: "Geist Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  --bg: var(--k-void); --paper: var(--k-void); --surface: var(--k-raise); --surface-2: var(--k-bar); --tray: var(--k-bar);
+  --ink: var(--k-ink); --ink-2: var(--k-ink-2); --line: var(--k-line-2); --tile-border: var(--k-line-2);
+  --p-bg: var(--k-void); --p-ink: var(--k-ink); --p-ink-2: var(--k-ink-2); --p-ink-3: var(--k-ink-3);
+  --p-learning: var(--k-ion); --p-pakka: var(--k-secure);
+  --nib: var(--k-move); --nib-soft: color-mix(in srgb, var(--k-move) 16%, var(--k-raise)); --on-nib: var(--k-on-move);
+  --jamun: var(--k-ion); --jamun-soft: color-mix(in srgb, var(--k-ion) 18%, var(--k-raise));
+  --got: var(--k-secure); --stop: var(--k-look); --trouble: var(--k-look); --listen: var(--k-ion);
+  --d4: color-mix(in srgb, var(--k-on-move) 22%, var(--k-move));
+  --focus: var(--k-ion); --focus-halo: var(--k-void);
+  --font-ui: var(--k-sans); --font-text: var(--k-sans); --font-heading: var(--k-sans); --font-title: var(--k-sans); --font-display: var(--k-sans);
+  --radius-xs: 0; --radius-sm: 0; --radius-md: 0; --radius-lg: 0; --radius-tile: 0; --radius-card: 0;
+  --elev-card: 0 0 0 1px var(--k-line-2);
+  --onb-cut: 12px;
+  --onb-cut-sm: 8px;
+  --onb-accent: var(--k-ion);
+  --onb-brk: linear-gradient(var(--onb-accent), var(--onb-accent));
+  color: var(--k-ink);
+  font-family: var(--k-sans);
+}
+.onb-volt.kx[data-ktheme="dawn"] { --onb-accent: var(--k-ion); --onb-cut: 0px; --onb-cut-sm: 0px; }
+.onb-volt :focus-visible { outline: 2px solid var(--k-ion); outline-offset: 3px; }
+
+/* ---------------------------------------------------------------- the frame: a HUD on a carbon grid */
+.onb-v2.onb-volt { background: var(--k-void); }
+.onb-v2.onb-volt::before { content: ""; position: absolute; inset: 0; z-index: 0; pointer-events: none;
+  background: radial-gradient(90% 55% at 85% -5%, color-mix(in srgb, var(--k-ion) 16%, transparent), transparent 70%),
+    radial-gradient(70% 40% at 0% 105%, color-mix(in srgb, var(--k-her) 12%, transparent), transparent 70%),
+    repeating-linear-gradient(0deg, var(--k-line) 0 1px, transparent 1px 44px),
+    repeating-linear-gradient(90deg, var(--k-line) 0 1px, transparent 1px 44px); }
+.onb-volt .onb-edge { display: none !important; }
+.onb-volt .onb-sheet { background: transparent; color: var(--k-ink); }
+.onb-volt .onb-top { min-height: 64px; }
+.onb-volt .iconbtn { min-width: 48px; min-height: 48px; border: 1px solid var(--k-line-2); background: var(--k-panel); color: var(--k-ink-2); border-radius: 0;
+  clip-path: polygon(var(--onb-cut-sm) 0, 100% 0, 100% calc(100% - var(--onb-cut-sm)), calc(100% - var(--onb-cut-sm)) 100%, 0 100%, 0 var(--onb-cut-sm)); }
+.onb-volt .onb-count { font: 600 15px/1 var(--k-mono); letter-spacing: .12em; text-transform: uppercase; color: var(--k-ink-2); }
+/* the HUD progress bar: one slanted cell per step, lit in ion; the current cell glows */
+.onb-volt .onb-steps { gap: 6px; padding-block: 2px 14px; }
+.onb-volt .onb-seg { height: 10px; border-radius: 0; background: var(--k-bar); transform: skewX(-24deg); box-shadow: inset 0 0 0 1px var(--k-line); }
+.onb-volt .onb-seg--on { background: var(--k-ion); box-shadow: none; }
+.onb-volt .onb-seg--now { box-shadow: 0 0 14px 1px color-mix(in srgb, var(--k-ion) 70%, transparent); animation: onb-pulse 2.4s ease-in-out infinite; }
+@keyframes onb-pulse { 50% { box-shadow: 0 0 4px 0 color-mix(in srgb, var(--k-ion) 50%, transparent); } }
+.onb-volt .onb-eyebrow { margin: 0 0 -6px; font: 600 15px/1.2 var(--k-mono); letter-spacing: .14em; text-transform: uppercase; color: var(--k-ion); }
+.onb-volt .onb-eyebrow::before { content: "// "; color: var(--k-ink-3); }
+.onb-volt .onb-title { font: 700 30px/1.08 var(--k-sans); letter-spacing: -.03em; color: var(--k-ink); }
+.onb-volt :is(.t-lead, .muted, .hint, .t-note, .t-meta) { color: var(--k-ink-2); }
+.onb-volt .t-note, .onb-volt .t-meta { font-size: .9375rem; }
+.onb-volt :is(.t-h3, h2) { font-family: var(--k-sans); letter-spacing: -.01em; }
+.onb-volt strong { color: var(--k-ink); }
+.onb-volt :is(.label, .fs legend, .field label, .field .label) { font: 600 15px/1.25 var(--k-mono); letter-spacing: .06em; text-transform: uppercase; color: var(--k-ink-2); }
+.onb-volt .fs legend::before, .onb-volt .field > label::before { content: "// "; color: var(--k-ink-3); }
+.onb-volt .field label .muted { text-transform: none; letter-spacing: 0; font-family: var(--k-sans); }
+.onb-volt .onb-main a:not(.btn) { color: var(--k-ion); text-decoration: underline; text-underline-offset: 3px; }
+/* the brand mark in ion, not lime: lime is the step's one move only */
+.onb-volt .brand { --nib: var(--k-ion); --on-nib: var(--k-void); color: var(--k-ink); font: 700 18px/1 var(--k-sans); letter-spacing: .02em; text-decoration: none; }
+
+/* ---------------------------------------------------------------- the one move: a chamfered lime slab */
+.onb-volt .btn { border-radius: 0; font-family: var(--k-sans); min-height: 52px;
+  clip-path: polygon(var(--onb-cut) 0, 100% 0, 100% calc(100% - var(--onb-cut)), calc(100% - var(--onb-cut)) 100%, 0 100%, 0 var(--onb-cut));
+  transition: transform .32s cubic-bezier(.34, 1.8, .5, 1), filter .2s, background-color .2s; }
+.onb-volt .btn:active:not(:disabled) { transform: scale(.96); transition-duration: .07s; }
+.onb-volt .btn-primary { min-height: 60px; background: var(--k-move); color: var(--k-on-move); border: 0;
+  font: 700 17px/1.1 var(--k-sans); letter-spacing: .08em; text-transform: uppercase;
+  background-image: linear-gradient(105deg, transparent 38%, color-mix(in srgb, var(--k-deep) 22%, transparent) 50%, transparent 62%);
+  background-size: 260% 100%; background-repeat: no-repeat; background-position: 130% 0; animation: onb-sweep 3.4s cubic-bezier(.2, .7, .3, 1) infinite 1s; }
+.onb-volt .btn-primary:not(.hold)::after { content: "»" / ""; font: 700 22px/1 var(--k-mono); margin-left: 8px; }
+.onb-volt .btn-primary:not(.hold):has(svg)::after { content: none; }
+@keyframes onb-sweep { 0% { background-position: 130% 0; } 45%, 100% { background-position: -30% 0; } }
+.onb-volt .btn-primary:disabled, .onb-volt .btn-primary[aria-disabled="true"] { opacity: 1; background: var(--k-bar); color: var(--k-ink-3); animation: none;
+  box-shadow: inset 0 0 0 1px var(--k-line-2); }
+.onb-volt .btn-secondary { background: var(--k-panel); color: var(--k-ink); border: 1px solid var(--k-line-2); }
+.onb-volt .btn-quiet { color: var(--k-ink-2); font: 600 15px/1 var(--k-mono); letter-spacing: .08em; text-transform: uppercase; text-decoration: none; clip-path: none; }
+.onb-volt .btn-quiet:hover { color: var(--k-ion); }
+.onb-volt .hold .hold-fill { background: var(--d4); }
+.onb-volt .hold-ring { color: var(--k-on-move); }
+.onb-volt .link-quiet, .onb-volt .block-link { color: var(--k-ion); font-weight: 600; }
+
+/* ---------------------------------------------------------------- big chamfered tiles */
+.onb-volt .tile { min-height: 64px; border-radius: 0; border: 1px solid var(--k-line-2); background: var(--k-panel); color: var(--k-ink);
+  font: 700 17px/1.15 var(--k-sans);
+  clip-path: polygon(var(--onb-cut) 0, 100% 0, 100% calc(100% - var(--onb-cut)), calc(100% - var(--onb-cut)) 100%, 0 100%, 0 var(--onb-cut));
+  transition: transform .32s cubic-bezier(.34, 1.8, .5, 1), background-color .2s, box-shadow .2s; }
+.onb-volt .tile:hover { box-shadow: inset 3px 0 0 var(--k-ion); }
+.onb-volt .tile:active { transform: scale(.95); transition-duration: .07s; }
+.onb-volt .tile[aria-pressed="true"], .onb-volt .tile[aria-checked="true"] { border-color: var(--k-ion); color: var(--k-ink);
+  background: linear-gradient(135deg, color-mix(in srgb, var(--k-ion) 28%, var(--k-raise)), color-mix(in srgb, var(--k-ion) 10%, var(--k-raise)));
+  box-shadow: inset 0 0 0 2px var(--k-ion), inset 0 -3px 0 0 var(--k-ion); }
+.onb-volt .tile .tile-tick { color: var(--k-ion); }
+.onb-volt .tiles { gap: 10px; }
+.onb-volt[data-step="class"] .tiles-3 .tile { min-height: 72px; font-size: 18px; }
+
+/* ---------------------------------------------------------------- inputs */
+.onb-volt .input, .onb-volt .phone-cc, .onb-volt .pw-toggle { border-radius: 0; border: 1px solid var(--k-line-2); background: var(--k-deep); color: var(--k-ink); min-height: 52px; }
+.onb-volt .input { font: 500 17px/1.3 var(--k-sans); box-shadow: inset 3px 0 0 var(--k-line-2); }
+.onb-volt .input:focus-visible { border-color: var(--k-ion); outline: none; box-shadow: inset 3px 0 0 var(--k-ion), 0 0 0 3px color-mix(in srgb, var(--k-ion) 30%, transparent); }
+.onb-volt .input[aria-invalid="true"] { border-color: var(--k-look); box-shadow: inset 3px 0 0 var(--k-look); }
+.onb-volt .phone-cc { font-family: var(--k-mono); color: var(--k-ink-2); }
+.onb-volt .pw-toggle { font: 600 15px/1 var(--k-mono); text-transform: uppercase; letter-spacing: .06em; color: var(--k-ink-2); }
+.onb-volt .field-error { color: var(--k-look); }
+.onb-volt .alert { border-radius: 0; border: 1px solid var(--k-look); border-left-width: 4px; background: color-mix(in srgb, var(--k-look) 12%, var(--k-raise)); color: var(--k-ink); }
+
+/* ---------------------------------------------------------------- panels with corner brackets */
+.onb-volt .card { border-radius: 0; border: 1px solid var(--k-line); box-shadow: none; color: var(--k-ink);
+  background: var(--onb-brk) top left / 14px 2px no-repeat, var(--onb-brk) top left / 2px 14px no-repeat,
+    var(--onb-brk) bottom right / 14px 2px no-repeat, var(--onb-brk) bottom right / 2px 14px no-repeat, var(--k-panel); }
+.onb-volt details > summary { color: var(--k-ion); font: 600 15px/1.3 var(--k-mono); letter-spacing: .04em; text-transform: uppercase; min-height: 44px; display: flex; align-items: center; cursor: pointer; }
+.onb-volt .chip { border-radius: 0; border: 1px solid var(--k-line-2); background: var(--k-panel); color: var(--k-ink); min-height: 44px; }
+.onb-volt .chip[aria-pressed="true"] { border-color: var(--k-ion); box-shadow: inset 0 0 0 1px var(--k-ion); }
+/* voice previews (a consent row's speaker, a language sample): a HUD audio chip, ion, with a level bar while playing */
+.onb-volt :is(.speaker, .onb-play, .consent-row .iconbtn) { border-radius: 0; border: 1px solid var(--k-ion); background: color-mix(in srgb, var(--k-ion) 10%, var(--k-panel)); color: var(--k-ion); }
+.onb-volt :is(.speaker, .onb-play)[aria-pressed="true"] { background: var(--k-ion); color: var(--k-void);
+  box-shadow: 0 0 16px -2px color-mix(in srgb, var(--k-ion) 70%, transparent); }
+
+/* ---------------------------------------------------------------- promises (the 2-s hold gate stays above the
+   360 x 800 fold: journey audit #12, patch 10; tests/prod/r11-asha-setup-shots.mjs measures it) */
+.onb-volt .promise-li { border-bottom: 1px solid var(--k-line); padding: 10px 0; gap: 12px; }
+.onb-volt .promise-li strong { font-size: 16px; line-height: 1.25; }
+.onb-volt .promise-li .muted { font-size: 15px; line-height: 1.35; }
+.onb-volt[data-step="promises"] .onb-actions { margin-top: 12px; }
+@media (max-width: 480px) {
+  .onb-volt .onb-top { min-height: 56px; }
+  .onb-volt .onb-steps { padding-bottom: 10px; }
+  .onb-volt .onb-title { font-size: 26px; }
+  .onb-volt .onb-eyebrow { margin-bottom: -10px; }
+  .onb-volt .promise-li .spot { width: 48px !important; height: 48px !important; }
+}
+
+/* ---------------------------------------------------------------- the PIN pad: chamfered keys, diamond dots, OK is NOT lime */
+.onb-volt .pin-dots { gap: 18px; }
+.onb-volt .pin-dot { width: 16px; height: 16px; border-radius: 0; transform: rotate(45deg); border: 2px solid var(--k-ion); }
+.onb-volt .pin-dot[data-on="true"] { background: var(--k-ion); box-shadow: 0 0 10px color-mix(in srgb, var(--k-ion) 70%, transparent); }
+.onb-volt .pin-key { border-radius: 0; border: 1px solid var(--k-line-2); background: var(--k-panel); color: var(--k-ink); font: 600 24px/1 var(--k-mono);
+  clip-path: polygon(var(--onb-cut-sm) 0, 100% 0, 100% calc(100% - var(--onb-cut-sm)), calc(100% - var(--onb-cut-sm)) 100%, 0 100%, 0 var(--onb-cut-sm)); }
+.onb-volt .pin-key:active:not(:disabled) { background: color-mix(in srgb, var(--k-ion) 22%, var(--k-raise)); }
+.onb-volt .pin-key.btn-primary { min-height: 64px; background: color-mix(in srgb, var(--k-ion) 18%, var(--k-raise)); color: var(--k-ink); border: 1px solid var(--k-ion);
+  font: 700 17px/1 var(--k-mono); letter-spacing: .08em; text-transform: uppercase; background-image: none; animation: none; }
+.onb-volt .pin-key.btn-primary::after { content: none; }
+.onb-volt .pin-key.btn-primary:disabled { border-color: var(--k-line-2); background: var(--k-panel); color: var(--k-ink-3); }
+.onb-volt .pin-key-quiet { border-color: transparent; background: transparent; color: var(--k-ink-2); }
+.onb-volt .stepper-val strong { font-family: var(--k-mono); }
+
+/* ---------------------------------------------------------------- the child's moments, in her family look */
+.onb-kid.kx { min-height: 0; overflow: visible; padding: 14px; margin-inline: -2px; position: relative;
+  border: 1px dashed var(--k-line-2); background: color-mix(in srgb, var(--k-raise) 70%, transparent); }
+.onb-kid.kx[data-ktheme="dawn"] { background: var(--k-void); border: 2.5px solid var(--k-ink); border-radius: 18px; box-shadow: 5px 5px 0 0 var(--k-ink); color: var(--k-ink); }
+.onb-kid-tag { margin: 0 0 8px; font: 600 15px/1.2 var(--k-mono); letter-spacing: .12em; text-transform: uppercase; color: var(--k-ink-2); }
+.onb-kid-tag::before { content: "// "; color: var(--k-ion); }
+.onb-kid.kx[data-ktheme="dawn"] .onb-kid-tag::before { content: "★ "; }
+.onb-kid.kx[data-ktheme="dawn"] .tile { border: 2.5px solid var(--k-ink); border-radius: 14px; clip-path: none; background: var(--k-deep); box-shadow: 3px 3px 0 0 var(--k-ink); }
+.onb-kid.kx[data-ktheme="dawn"] .tile[aria-checked="true"], .onb-kid.kx[data-ktheme="dawn"] .tile[aria-pressed="true"] {
+  background: color-mix(in srgb, var(--k-ion) 14%, var(--k-deep)); box-shadow: 3px 3px 0 0 var(--k-ion), inset 0 0 0 2px var(--k-ion); }
+.onb-kid.kx[data-ktheme="dawn"] :is(.onb-play, .input) { border: 2.5px solid var(--k-ink); border-radius: 14px; clip-path: none; background: var(--k-deep); color: var(--k-ink); box-shadow: 3px 3px 0 0 var(--k-ink); }
+.onb-kid.kx[data-ktheme="dawn"] .onb-play { color: var(--k-ion); }
+.onb-kid.kx[data-ktheme="dawn"] .onb-play[aria-pressed="true"] { background: var(--k-ion); color: var(--k-deep); }
+.onb-kid.kx[data-ktheme="dawn"] .fs legend::before, .onb-kid.kx[data-ktheme="dawn"] .field > label::before { content: none; }
+.onb-kid .onb-lang { gap: 10px; }
+.onb-kid .lang-word { font: 700 19px/1.15 var(--k-sans); }
+
+/* ---------------------------------------------------------------- the laptop: a HUD console centred on the grid */
+@media (min-width: 1024px) {
+  .onb-volt .onb-sheet { width: 600px; margin: 40px auto; border-radius: 0; border: 1px solid var(--k-line-2); box-shadow: 0 30px 80px -40px color-mix(in srgb, var(--k-ion) 45%, transparent);
+    background: var(--onb-brk) top left / 22px 2px no-repeat, var(--onb-brk) top left / 2px 22px no-repeat,
+      var(--onb-brk) top right / 22px 2px no-repeat, var(--onb-brk) top right / 2px 22px no-repeat,
+      var(--onb-brk) bottom left / 22px 2px no-repeat, var(--onb-brk) bottom left / 2px 22px no-repeat,
+      var(--onb-brk) bottom right / 22px 2px no-repeat, var(--onb-brk) bottom right / 2px 22px no-repeat,
+      var(--k-panel-solid); }
+  .onb-volt .onb-title { font-size: 38px; }
+}
+.onb-volt[data-motion="reduced"] *, .onb-volt[data-motion="reduced"] { animation: none !important; }
+/* the title takes focus on every step change (for screen readers); it never draws a focus box (main's r9 screenshots) */
+.onb-volt .onb-title:focus, .onb-volt .onb-title:focus-visible { outline: none; box-shadow: none; }
+/* the promise icons in ion, not lime (one lime element per screen: the hold gate) */
+.onb-volt .promise-icon { background: color-mix(in srgb, var(--k-ion) 16%, var(--k-raise)); color: var(--k-ion); border-radius: 0; }
