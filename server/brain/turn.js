@@ -27,7 +27,7 @@ import { step, evidenceFrom, upcomingItem } from "../director/state.js";
 import { noteModuleEvents, moduleAnswerOf } from "../director/modules.js";
 import { findItem, promptFor, revealsAnswer, whyKey, norm as normAnswer } from "../director/items.js";
 import { registerBroken } from "../director/register.js";
-import { verdictFor, uiVerdict, askText, refersToScreen, wrongAnswersOf } from "../director/say.js";
+import { verdictFor, uiVerdict, askText, refersToScreen, wrongAnswersOf, screenClaimProblem, stripScreenRefs } from "../director/say.js";
 import { mixedUnitComparison } from "../director/units.js";
 import { instructionsFor, instructionsAfter } from "../compiler/instructions.js";
 import { prewarm, drop as dropPrewarm } from "../voice/prewarm.js";
@@ -802,6 +802,25 @@ export async function lessonTurn(req, body) {
         moment = momentNow();
       } else studioReasons.push("studio_rejected.declined_by_studio");
     } else if (ask) studioReasons.push("studio_rejected.no_reply");
+    // release 13 integration (ms-r13-claims-after-board): the reply's claim check stands aside for the piece this turn brings
+    // (it is not drawn yet when the reply is checked). A board-first board IS drawn at the ack, so before a word is spoken her
+    // line's pointing is checked against the board that will actually be up; a line that points at what it does not show
+    // (owner replay of a95d2ff1, turn 23: "Screen par aloo ka picture dekhiye" over the rules table) is unpointed, its
+    // content kept, and the staged row says what she will say.
+    if (wbAcked && studioSlot?.artifact && teacherReply && !r.move?.clear
+      && seamSafe("say.claimAfterBoard", () => screenClaimProblem(teacherReply, withStudioSlot(r.ui, studioSlot), next.module), false)) {
+      const unpointed = seamSafe("say.unpointAfterBoard", () => stripScreenRefs(teacherReply), null);
+      if (unpointed && unpointed !== teacherReply) {
+        teacherReply = unpointed;
+        const row = staged.find((x) => x.seq === teacherReplySeq);
+        if (row) { row.text = unpointed; row.meta = { ...(row.meta ?? {}), guard: [...new Set([...(row.meta?.guard ?? []), "claim_after_board"])] }; }
+        const last = next.recent?.[next.recent.length - 1];
+        if (last?.who === "teacher") next.recent = [...next.recent.slice(0, -1), { ...last, text: unpointed.slice(0, 400) }];
+        guard = { ...guard, caught: [...new Set([...(guard?.caught ?? []), "claim_after_board"])], replaced: true };
+        studioReasons.push("say.claim_after_board");
+        delivery = seamSafe("expressive.planDelivery", () => expressiveSeam.planDelivery(moment, teacherReply), delivery);
+      }
+    }
     if (state.mode === "cascade" || state.mode === "text") {
       prewarmed = prewarm({ lessonId: lesson.id, seq: teacherReplySeq, text: teacherReply, tokenHash: sessionTokenHash(req), guardianId: guardian.id, style: styleForChild(child, undefined, state.ctx?.teacherId, state.ctx?.teacherName, { laneSwitched: !!state.laneSwitch }),
         ...(delivery ? { delivery } : {}) });

@@ -196,17 +196,15 @@ export function screenClaimProblem(text, ui, module) {
   const pointing = sentences.filter((x) => POINT_AT.test(x));
   if (!pointing.length) return false;
   const words = stageWords(ui, module);
-  const art = ui?.studioSlot?.artifact;
-  const known = art?.kind === "whiteboard" || !!art?.script?.ops || watchOnly(module) || !!module?.params?.script?.ops;
   for (const x of pointing) {
     if (PLAY_CLAIM.test(x) && !playMounted(ui, module)) return true;
     const content = (x.match(/[\p{L}\p{N}]+/gu) ?? []).filter((w) => w.length >= 3 && !CLAIM_STOP.has(w.toLowerCase()) && !/^[A-Z][a-z]+$/.test(w) || /^\d+$/.test(w));
     if (!content.length) continue;
-    // only a stage whose words are KNOWN can prove a claim false: a drawn board (a whiteboard, the explainer@1 rung) shows
-    // its script, so it is known even with no text on it; an interactive engine's or a play piece's labels are not
-    // readable here, so a claim about it passes, as before release 13
-    // (ms-r13-claims-in-flight)
-    if (known && (!words.size || !content.some((w) => words.has(stem(w))))) return true;
+    // only a stage that SHOWS words can prove a claim false by them (ms-r13-claims-in-flight, ms-r13-claims-after-board): a
+    // board of shapes only (15 dots in 3 groups), an interactive engine and a play piece carry no readable words here, so a
+    // content claim about them passes, as before release 13; a board WITH words that has none of hers (the owner's
+    // 'screen par aloo dekho' over the rules table) is a false claim
+    if (words.size && !content.some((w) => words.has(stem(w)))) return true;
   }
   return false;
 }

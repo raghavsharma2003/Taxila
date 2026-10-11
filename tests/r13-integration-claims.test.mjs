@@ -20,6 +20,11 @@ test("an interactive engine's labels are unknown: a pointing sentence about it p
   assert.equal(screenProblem("Screen par number line dekho: 0 se 1 ke beech 5 barabar gaps hain.", { chips: [] }, { id: "nl", engine: "numberline@1" }), false);
 });
 
+test("a board of shapes only carries no words to disprove a claim: pointing at its dots passes (ms-r13-claims-after-board)", () => {
+  const dots = { studioSlot: { slotId: "s", intentId: "i", artifact: { kind: "whiteboard", script: { ops: Array.from({ length: 15 }, (_, i) => ({ id: `d${i}`, op: "circle", c: [20 + i * 20, 50], r: 6 })) } } } };
+  assert.equal(screenProblem("Meher, look at the screen: 15 dots split into 3 equal groups, with 5 dots in each.", { chips: [], ...dots }, null), false);
+});
+
 test("a drawn board is still held to its words: the owner's 'board par aloo' over the rules table, and a game with nothing coming", () => {
   assert.equal(screenProblem("Kiko, screen par aloo dekho: mitti ke neeche gol tuber.", { chips: [], ...TABLE }, null), true);
   assert.equal(screenProblem("Kiko, board par dekhiye: Recursive rule aur Explicit rule.", { chips: [], ...TABLE }, null), false);

@@ -103,7 +103,12 @@ test("RCA evidence (passes today): 7 of 10 pages are the same s1 table; the scre
   // turn 11's mechanism: with a board (not a tap target) up, a 'screen' line is a problem, and the strip keeps only the
   // sentences without the word: the child got the bare last one
   const draft = "Screen par seedhi dekho: 4, 7, 10. Ab 10 ke baad number bolo.";
-  assert.equal(screenProblem(draft, { chips: [], ...BOARD_SLOT }, null), true, "no texts on this test board: nothing supports the claim");
+  // release 13 integration (ms-r13-claims-after-board): a board with no words cannot disprove a content claim (a board of
+  // shapes only is common and pointing at it is right; the packaged owner-5 run lost 4 of 12 visual requests to this);
+  // the owner's turn-11 board was the rules TABLE, whose words hold none of hers, and that is still a false claim
+  assert.equal(screenProblem(draft, { chips: [], ...BOARD_SLOT }, null), false, "a board of no words cannot disprove the claim");
+  const tableSlot = { studioSlot: { ...BOARD_SLOT.studioSlot, artifact: { kind: "whiteboard", script: { ops: TABLE_LABELS.split(" | ").map((text, i) => ({ id: `t${i}`, op: "text", text })) } } } };
+  assert.equal(screenProblem(draft, { chips: [], ...tableSlot }, null), true, "over the rules table, 'seedhi: 4, 7, 10' is not what the screen shows");
   assert.equal(stripScreenRefs(draft), "Seedhi: 4, 7, 10. Ab 10 ke baad number bolo.", "r13 fix 5: the strip keeps the content (today: the bare last sentence)");
   const spec = Object.values(EXPORT).flatMap((L) => L.brain_trace.map((b) => b.reasons));
   assert.equal(spec.filter((r) => r.includes("turn.speculation_miss")).length, 14);
