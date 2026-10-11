@@ -37,9 +37,9 @@
    "at": "2026-10-11"
   },
   {
-   "id": "open-r12-tserver-play-events",
+   "id": "open-r12-tserver-start-safety",
    "kind": "open",
-   "title": "Dedicated play.mount and play.outcome events, and safety reads at lesson start, are not recorded in the first pass. The play routes are covered by srv.req and srv.res with masked bodies.",
+   "title": "The lesson start's own safety reads are not recorded as safety.* events in the first pass. The start request is recorded through srv.req and srv.res and its model calls. The turn's safety.scan is recorded.",
    "at": "2026-10-11"
   }
  ],

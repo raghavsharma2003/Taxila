@@ -24,6 +24,7 @@ import { signEvidence, signSeam } from "./evidence.js";
 import { playFactsRow } from "../../shared/play.ts";
 import { baseSpec, dressSpecFor, withVerb } from "./dress.js";
 import { engineFor } from "../../src/play/engines/registry.ts";
+import { record as traceRecord } from "../trace/writer.js";
 
 const bad = (msg) => new HttpError(400, msg);
 const dbq = async (...a) => (await import("../db.js")).q(...a);
@@ -63,6 +64,9 @@ export const routes = {
     ]);
     if (truth) try { mapState = mapStateFrom(truth.t, truth.m.MAP_SHAPE); } catch { /* ahead */ }
     const world = worldFamily({ family: r.entry.family, classLevel: r.session.classLevel, mapState, hereTopic: r.entry.topicId });
+    // release 12 flight recorder: the game mounted (inside a lesson, on the lesson's timeline)
+    traceRecord("play.mount", { family: r.entry.family, mode: r.level?.mode ?? null, levelId: r.level?.levelId ?? null, skillId: b.skillId ?? null, topicId: r.entry.topicId ?? b.topicId ?? null,
+      goal: b.goal ?? null, art: r.art?.art ?? r.art ?? null, lessonId: b.lessonId ?? null }, { ...(typeof b.lessonId === "string" && b.lessonId.length === 36 ? { sid: b.lessonId } : {}) });
     send(res, 200, { sessionId: r.sessionId, level: r.level, art: r.art, bank: [], world, dress: baseSpec(r.session, r.level, vChild)?.spec ?? null, ...(play3dOff() ? { render: "2d" } : {}) });
   },
 
@@ -109,6 +113,10 @@ export const routes = {
     // the belief this level's first decision showed is the next level's focus (the current level's inputs never change)
     const seen = ended ? rows.find((r) => r.misconceptionId)?.misconceptionId ?? null : null;
     const s2 = { ...s, hist: history, ...(seen ? { nextFocus: seen } : {}) };
+    // release 12 flight recorder: every act's grade moment, and the level's outcome when it ends
+    traceRecord(ended ? "play.outcome" : "play.act", { family: level.family, mode: level.mode, levelId: level.levelId, final: !!b.final, impasse: !!b.impasse,
+      moments: fresh.map((m) => m.kind), ...(ended ? { verdict: g.grade.verdict ?? null, solved: !!g.solved, evidence: rows.length, misconceptionId: seen } : {}),
+      reaction: typeof reaction === "string" ? reaction : reaction?.text ?? null, engine: seenEngine }, { ...(typeof s.lessonId === "string" && s.lessonId.length === 36 ? { sid: s.lessonId } : {}) });
     const out = { levelId: level.levelId, moments: fresh, reaction, ...(seamToken ? { seamToken } : {}), ...(ended ? { grade: g.grade, doors: doorsFor(s2, entry, s.lang), evidence: rows, ...(evidenceToken ? { evidenceToken } : {}) } : {}),
       seam, sessionId: sessionOut(s2) };
     send(res, 200, out);

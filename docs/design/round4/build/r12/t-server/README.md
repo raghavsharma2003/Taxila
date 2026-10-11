@@ -24,6 +24,7 @@ Everything goes through ONE buffered writer (`server/trace/writer.js`):
 | `studio.slot.refused` | the tray gates (`studio/seam.js`, `stagecraft/seam-bridge.js`) | which gate, kind/rung, viewport class, the certificate's reason |
 | `board.page` | `server/studio/seam.js` `writeBoardPage()` | page seq, mode, **clears** the board or **draws over** the last page, op count and kinds, the words drawn |
 | `forge.job.start/end`, `job.start/end` | `server/conductor/jobs.js` `runJob()` (worker) | kind, attempt, ok, ms, error code |
+| `play.mount`, `play.act`, `play.outcome` | `server/play/routes.js` start / act | family, mode, level, skill; each act's grade moments and her reaction; the verdict when the level ends (on the lesson's timeline when the game runs in one) |
 
 The child and guardian ids always come from auth (`requireGuardian`, `requireChild`, `loadTurnContext`, the tts-stream
 ownership query), never from the client. The session id is:
@@ -117,8 +118,13 @@ The budget is ≤ 10 ms p95 per turn: met with about 8 ms to spare. A turn write
   - the **delete cascade** (child, then account: rows and blobs);
   - retention.
 
+## Gates (2026-10-11)
+
+- `npx tsc -b`: pass. `npx vite build`: pass. Prompt budget: pass. lint-ui: 353 (the baseline).
+- `npm test` on 18dc7f22: **3,044 pass, 0 fail**, browser tests included.
+- After the play events: the play tests pass (126/126), and so do `r12-trace-unit` (11/11) and `r12-trace-db` (4/4).
+
 ## Not done in this pass
 
-- Dedicated `play.mount` / `play.outcome` events. The play routes are covered by `srv.req` / `srv.res` (bodies included).
 - `safety.*` outside the turn: the lesson start's safety reads. The turn's `safety.scan` is there.
 - The `trace` storage container (above).
