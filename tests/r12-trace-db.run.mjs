@@ -174,7 +174,7 @@ describe("flight recorder (test branch)", { skip: SKIP, concurrency: false, time
     // the CLI's merged timeline carries the page's flag and the guardian stream
     const { spawnSync } = await import("node:child_process");
     const cli = spawnSync(process.execPath, [new URL("../scripts/trace.mjs", import.meta.url).pathname, "--session", a.kid.slice(0, 13)],
-      { env: { ...process.env, DATABASE_URL: TEST, TAXILA_DB: "test" }, encoding: "utf8", timeout: 60_000 });
+      { env: { ...process.env, DATABASE_URL: TEST, TEST_DATABASE_URL: TEST, CONDUCTOR_TEST_DATABASE_URL: TEST, TAXILA_DB: "test" }, encoding: "utf8", timeout: 60_000 });
     assert.equal(cli.status, 0, cli.stderr);
     assert.match(cli.stdout, /★ \[client\] OWNER FLAG: "the desk looks wrong"/);
     assert.match(cli.stdout, /← GET \/api\/me 200 3ms/);
