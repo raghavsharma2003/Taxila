@@ -4035,3 +4035,29 @@ The full-page sheets are taken after scrolling the page in steps and requiring e
     - the content-word check runs only when the stage is KNOWN: a whiteboard artifact or an explainer@1 rung (a drawn script, known even with no text), or a script on the module or artifact. Otherwise a claim passes, as before release 13.
   - Still caught: the owner's 'screen par aloo dekho' over the rules table, and 'Screen par game' with no play piece and nothing coming (tests/r13-integration-claims.test.mjs; r12-rca and r13-visual-honest all pass, plus 2 documented todos).
   - After: After the fix, on the same packaged tree: owner-5 12/14 (visuals 11/12; the one failure is release 12's known V3.child_draws), round2-content 36/39 (the 3 failures are item-bound mount checks, as in release 12), boards 3/5 then 5/5 alone (n = 2; release 12: 3/5 in parallel, 5/5 alone), safety w2i 39/39, journey 5 steps / 22 taps / first sound 21.9 s phone, 20.9 s laptop. The one unfilled board in boards run 1 (c7-maths-ch08-t01, 'Screen par rectangle dekhiye', slot failed) is the residual risk of letting a line point at a piece in flight: the same topic's board failed in release 12 too; open.
+
+
+<!-- merged from inbox/r4-main-2050.json -->
+- `ms-r13-claims-after-board` (2026-10-11, 20:00-21:00 UTC). Method: the packaged release 13 tree, local production server on Neon TEST; the owner replay (tests/prod/owner-replay-r12.mjs --lesson a95d2ff1: the child's exact 15 turns, chip as chip); owner-5-visual and round2-content in parallel; a console probe in the PACKAGED copy only, logging each firing of the new check.
+  - Replay 1, with the in-flight allowance only:
+    - turn 23 (chip 'Show me a picture'): 'Screen par aloo ka picture dekhiye: uski eyes se sprouts nikalte hain', over the rules table;
+    - turn 3 ("Show me some games"): 'Screen par game: Recursive ya Explicit choose kijiye', over the table, with no play piece.
+    - That is the owner's exact complaint. The board drawn for the request was the s1 table again (4A r13 fix 1, unbuilt), so the reply check had stood aside for a piece that did not show what she said.
+  - Change (server/brain/turn.js, server/director/say.js):
+    - after the whiteboard ack, which carries a board-first board in the same response, and before the TTS prewarm, her line is re-checked against the board that arrived;
+    - on a hit it is unpointed (stripScreenRefs: content kept), and the staged turn row, state.recent and the delivery plan get the new text;
+    - the guard records claim_after_board.
+  - Replay 3 (probe on, generic word-overlap check): the check fired on 2 turns. 'Screen par game: left Recursive, right Explicit…' became 'Compare game: left Recursive, right Explicit…'; 'Screen par potato dekhiye: …' lost its pointing.
+  - The generic check cost elsewhere (rj-r13-word-overlap-after-board): round2-content fell to 33/39 (3 draw and animation lines unpointed, 2 boards failing W6.timing after their lines shortened).
+  - Narrowed (boardClaimProblem + kitWordsOf): only (1) a game claimed while a board, not a play piece, is up, and (2) a picture of a thing ('X ka picture', 'picture of X') that neither the board's words nor the lesson's kit has.
+  - Final packaged run:
+    - owner-5 14/14, visual requests 12/12 (release 12: 12/14);
+    - round2-content 36/39, the 3 failures being item-bound mount checks as in release 12;
+    - boards 5/5 alone (51 boards, 0 contradictions, 0 unfilled), safety w2i 39/39, journey 5 steps / 22 taps / first sound 21.9 s phone, 20.9 s laptop (run before this change; the journey path has no board ack).
+  - Final replay (n = 1; her lines are model-written, so a replay shows code behaviour on the same child turns):
+    - turn 3 points at 'Recursive rule', which is on the board;
+    - turn 11: 'Photo nahi dikha sakti, par visual sochiye: 3, 6, 9, 12…';
+    - turn 13: 'Board clear hai.', and the board is cleared;
+    - turns 23, 25 and 27 describe aloo in words, with no screen claim.
+    - The probe did not fire (the model did not produce either shape that run).
+  - Open: open-r13-bare-pointing-on-request-turns.

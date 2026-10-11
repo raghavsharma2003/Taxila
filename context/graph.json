@@ -20404,6 +20404,27 @@
    "at": "2026-10-11",
    "title": "Checking a 'look at the screen' sentence against the stage's words at reply time, for the turn that brings the piece: the board is planned against her line (board-sync) and a game lands seconds later, so the stage is empty when the check runs and every pointing sentence reads as a false claim",
    "source": "inbox/r4-main-2020.json"
+  },
+  {
+   "id": "ms-r13-claims-after-board",
+   "kind": "measurement",
+   "at": "2026-10-11",
+   "title": "Release 13 integration, the owner replay (a95d2ff1 on the packaged tree, TEST): with only the in-flight allowance, turn 23 shipped 'Screen par aloo ka picture dekhiye' and turn 3 'Screen par game' over the rules table (the board drawn for the request was the table again: 4A fix 1, unbuilt). Added: her line is re-checked against the board that actually arrived (the board-first ack, before prewarm) for the owner's two false-claim shapes only, and unpointed. Final packaged run: owner-5 14/14, round2-content 36/39, replay honest on every turn the owner flagged",
+   "source": "inbox/r4-main-2050.json"
+  },
+  {
+   "id": "rj-r13-word-overlap-after-board",
+   "kind": "rejection",
+   "at": "2026-10-11",
+   "title": "Re-checking her line against the arrived board by word overlap: the board labels in its own words ('Solid / Liquid / Gas' while she says 'ice, paani, water vapour'), so 3 legitimate lines were unpointed in round2, and the shortened lines then failed their boards' W6 timing re-gate (2 boards)",
+   "source": "inbox/r4-main-2050.json"
+  },
+  {
+   "id": "open-r13-bare-pointing-on-request-turns",
+   "kind": "open",
+   "at": "2026-10-11",
+   "title": "Still open after release 13: on a turn that answers a visual request, a bare pointing line about a thing the board does not show ('Screen par potato dekhiye', no 'picture of' form) is not caught: the reply check stands aside for the piece in flight and the after-board check judges only the game and 'picture of X' shapes. Root fix: the board answers what the child asked for (4A r13 fix 1, RCA-1 todo)",
+   "source": "inbox/r4-main-2050.json"
   }
  ],
  "edges": [
@@ -32866,6 +32887,26 @@
    "src": "rj-r13-claim-check-before-the-piece",
    "rel": "caused_by",
    "dst": "ms-r13-claims-in-flight"
+  },
+  {
+   "src": "ms-r13-claims-after-board",
+   "rel": "part_of",
+   "dst": "dc-r12-integration"
+  },
+  {
+   "src": "ms-r13-claims-after-board",
+   "rel": "supersedes",
+   "dst": "ms-r13-claims-in-flight"
+  },
+  {
+   "src": "rj-r13-word-overlap-after-board",
+   "rel": "caused_by",
+   "dst": "ms-r13-claims-after-board"
+  },
+  {
+   "src": "open-r13-bare-pointing-on-request-turns",
+   "rel": "part_of",
+   "dst": "ms-r13-claims-after-board"
   }
  ]
 }
