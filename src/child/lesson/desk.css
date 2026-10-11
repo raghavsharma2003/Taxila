@@ -63,6 +63,12 @@
 .dk-cc { display: inline-flex; align-items: center; justify-content: center; min-width: var(--hit-min); min-height: var(--hit-min); border: 0; background: none; border-radius: var(--radius-pill); color: var(--ink-2); }
 .dk-cc[aria-pressed="true"] { color: var(--ink); }
 .dk-more { position: relative; }
+/* r12 flight recorder, tier 2 only: the REC chip (nobody is recorded without seeing it) and the flag's note row */
+.dk-rec { display: inline-flex; align-items: center; gap: 6px; min-height: 28px; padding: 2px var(--space-2); border: 1px solid var(--line); border-radius: var(--radius-pill);
+  font: 700 var(--t-meta)/1 var(--font-ui); letter-spacing: .08em; color: var(--ink); }
+.dk-rec i { width: 9px; height: 9px; border-radius: 50%; background: var(--k-rose, var(--stop, currentColor)); }
+.dk-flagnote { display: grid; gap: var(--space-1); padding: var(--space-2); }
+.dk-flagdone { font-weight: 700; }
 .dk-menu { position: absolute; right: 0; top: 100%; z-index: 30; min-width: 220px; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-md); padding: var(--space-1); box-shadow: var(--elev-card); }
 
 /* ── Teacher window / SpeechRow (the one renderer, resized) ── */

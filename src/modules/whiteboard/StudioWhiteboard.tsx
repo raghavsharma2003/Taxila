@@ -15,6 +15,7 @@ import type { ArtifactRendererProps } from "../../studio/renderers.ts";
 import { awaitLineAnchor, type AnchorTiming } from "./clock.ts";
 import { WhiteboardPlayer } from "./Player.tsx";
 import { boardSkinFromDocument, watchSkin } from "./palette.ts";
+import { traceBoardDrawn, traceBoardPage } from "../../trace/lesson.ts";
 
 /**
  * lessonId → the board: `ops` = what is on it after the script `scriptId` (re-scoped ids), `base` = what was on it
@@ -82,6 +83,8 @@ export function StudioWhiteboard({ artifact, px, reducedMotion, onEvent }: Artif
   }, [norm, before]);
   const [startAt, setStartAt] = useState<number | null>(null);
   const emitted = useRef(false);
+  const page = useRef(0);
+  const host = useRef<HTMLSpanElement>(null);
   const latest = useRef(onEvent);
   latest.current = onEvent;
 
@@ -95,6 +98,9 @@ export function StudioWhiteboard({ artifact, px, reducedMotion, onEvent }: Artif
     // the board this script leaves behind is what a later "continue" script draws on (kept now: the lesson may move on
     // before the drawing finishes)
     remember(script, prior, before.alias);
+    // r12 flight recorder: this page reached the screen; CLEARED (fresh) or OVERLAID on the earlier page's ops
+    page.current = traceBoardPage({ lessonId: script.line?.lessonId, scriptId: script.scriptId, mode: (script as { mode?: string }).mode, ops: script.ops.length, priorOps: prior.length, ground: script.board.ground,
+      texts: script.ops.flatMap((o) => (o.op === "text" || o.op === "label" ? [o.text] : [])) });
     latest.current({ type: "ready" });
     return awaitLineAnchor(script.line, (at, timing) => {
       setStartAt(at);
@@ -110,12 +116,16 @@ export function StudioWhiteboard({ artifact, px, reducedMotion, onEvent }: Artif
   useEffect(() => watchSkin(() => setSkinRev((n) => n + 1)), []);
   const skin = useMemo(() => boardSkinFromDocument(ground), [ground, skinRev]);
   if (!script) return null;
+  // display:contents: the recorder's handle on the drawn SVG, with no box of its own (layout and look unchanged)
   return (
-    <WhiteboardPlayer script={script} prior={prior} startAt={startAt} reducedMotion={reducedMotion} width={px.w} height={px.h} skin={skin}
-      className="wb-svg" onDone={() => {
-        if (emitted.current) return;
-        emitted.current = true;
-        latest.current({ type: "done" });
-      }} />
+    <span ref={host} style={{ display: "contents" }}>
+      <WhiteboardPlayer script={script} prior={prior} startAt={startAt} reducedMotion={reducedMotion} width={px.w} height={px.h} skin={skin}
+        className="wb-svg" onDone={() => {
+          if (emitted.current) return;
+          emitted.current = true;
+          traceBoardDrawn(host.current?.querySelector("svg") ?? null, { scriptId: script.scriptId, page: page.current, expectedOps: script.ops.length, expectedPrior: prior.length });
+          latest.current({ type: "done" });
+        }} />
+    </span>
   );
 }
