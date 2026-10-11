@@ -43,6 +43,15 @@ describe("r11: the public site in Volt night", () => {
     assert.equal((landing.match(/loading=\{eager \? "eager" : "lazy"\}/g) ?? []).length, 1);
     assert.equal((landing.match(/<Shot[^>]*\beager\b/g) ?? []).length, 1, "only the hero's live lesson is eager (the LCP)");
   });
+  it("the looped game capture: real recording, small, below the fold, never under reduced motion", () => {
+    const f = path.join(ROOT, "public", "site", "game-loop.webm");
+    assert.ok(fs.existsSync(f) && fs.statSync(f).size < 600_000, "game-loop.webm under 600 KB");
+    assert.match(landing, /<LoopShot poster="\/site\/game\.webp" src="\/site\/game-loop\.webm"/);
+    assert.match(landing, /prefers-reduced-motion: reduce\)"\)\.matches\) return;/, "reduced motion keeps the still");
+    assert.match(landing, /new IntersectionObserver/, "mounted only near the viewport");
+    const hero = landing.slice(landing.indexOf('className="sv-hero"'), landing.indexOf('id="lesson"'));
+    assert.doesNotMatch(hero, /LoopShot|\.webm/, "the hero (the LCP) has no video");
+  });
   it("the honest sections stay, word for word where they are claims", () => {
     for (const s of ["No points, no streaks, no leaderboards. Nothing shrinks if your child takes a day off.", "How do we know?", "Not started", "Practising", "Got it", "Secure",
       "If we cannot point to a check, we do not make the claim.", "That is why this page has no reviews, ratings or results.",

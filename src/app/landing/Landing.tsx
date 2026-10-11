@@ -8,7 +8,7 @@
 // or outcome numbers (none exist yet); no "replaces tutors" claim; every claim maps to something shipped; one lime
 // element per screen state (K's one-volt law): the CTA. The captures are the app's own screens
 // (tests/prod/r11-site-captures.mjs writes public/site/*.webp), never a mock-up or stock art.
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { Icon } from "../../ui/index.ts";
 import { useSurface } from "../band.ts";
@@ -22,6 +22,30 @@ function Shot({ src, alt, eager, tag, className = "" }: { src: string; alt: stri
       <span className="sv-br sv-br--a" aria-hidden="true" /><span className="sv-br sv-br--b" aria-hidden="true" />
       <img src={src} alt={alt} width={600} height={1333} decoding="async" loading={eager ? "eager" : "lazy"} {...(eager ? { fetchPriority: "high" as const } : {})} />
       {tag && <figcaption className="sv-shot-tag">{tag}</figcaption>}
+    </figure>
+  );
+}
+
+/** The game as it plays: a few seconds of the games harness's own Antariksh recording (public/site/game-loop.webm,
+ *  166 KB, 7 s), muted and looping, with the still as its poster. Below the fold only (never the LCP): the video mounts when
+ *  the frame nears the viewport; reduced motion keeps the still. */
+function LoopShot({ poster, src, alt, tag }: { poster: string; src: string; alt: string; tag: string }) {
+  const ref = useRef<HTMLElement>(null);
+  const [play, setPlay] = useState(false);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el || typeof IntersectionObserver === "undefined" || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const io = new IntersectionObserver((es) => { if (es.some((e) => e.isIntersecting)) { setPlay(true); io.disconnect(); } }, { rootMargin: "200px" });
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+  return (
+    <figure className="sv-shot" ref={ref}>
+      <span className="sv-br sv-br--a" aria-hidden="true" /><span className="sv-br sv-br--b" aria-hidden="true" />
+      {play
+        ? <video src={src} poster={poster} width={600} height={1331} autoPlay muted loop playsInline preload="auto" aria-label={alt} />
+        : <img src={poster} alt={alt} width={600} height={1331} decoding="async" loading="lazy" />}
+      <figcaption className="sv-shot-tag">{tag}</figcaption>
     </figure>
   );
 }
@@ -141,7 +165,7 @@ export default function Landing() {
               <p className="sv-note"><Icon name="shield" size={18} /> No points, no streaks, no leaderboards. Nothing shrinks if your child takes a day off.</p>
             </div>
             <div className="sv-split-media sv-pair">
-              <Shot src="/site/game.webp" alt="Antariksh, a space game on a number line, with the controls to steer and fire" tag="// ANTARIKSH" />
+              <LoopShot poster="/site/game.webp" src="/site/game-loop.webm" alt="Antariksh, a space game: the child steers a ship along a glowing number line to find one third" tag="// ANTARIKSH" />
               <Shot src="/site/world.webp" alt="Riya's world: a planet in orbit, and the list of skills she has learned in maths, science and English" tag="// YOUR WORLD" />
             </div>
           </div>
