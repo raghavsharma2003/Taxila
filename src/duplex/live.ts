@@ -28,6 +28,7 @@ import type { Floor } from "../lesson/floor.ts";
 import { EngineHost, NEUTRAL_CONTEXT, type HostCommand, type HostSttEvent, type ShadowRow } from "./host.ts";
 import type { SttEvent } from "../../server/duplex/fanin.js";
 import { WT1_DEFAULT } from "./config.ts";
+import { vt } from "../voice/trace.ts";
 
 /** What the bridge asks of the link (CascadeLink implements it; tests fake it). */
 export interface DuplexPort {
@@ -458,6 +459,7 @@ export class DuplexLive {
   }
 
   private handle(c: HostCommand): void {
+    traceDuplex(c, this.mode);
     const port = this.o.port;
     if (c.to === "log") {
       const r = c.row;
@@ -572,3 +574,23 @@ export class DuplexLive {
 }
 
 export type { ReasonCode, Ms };
+
+/** r12 flight recorder: what the engine decided (also in shadow, where nothing acts), as voice events. Never throws. */
+const TRACE_ACTIONS = new Set(["YIELD", "HUSH", "SPEAK", "CUT_IN"]);
+function traceDuplex(c: HostCommand, mode: string): void {
+  try {
+    const acted = mode !== "shadow";
+    if (c.to === "log") {
+      const r = c.row as { action?: string; reasons?: string[]; phase?: string; detail?: unknown; t?: number };
+      if (r.action && TRACE_ACTIONS.has(r.action)) vt("duplex.decision", { action: r.action, reasons: r.reasons ?? [], phase: r.phase ?? null, detail: r.detail ?? null, mode, acted });
+    } else if (c.to === "think" && c.op === "revoke") vt("bargein", { step: "engine_revoke", mode, acted });
+    else if (c.to === "voice") {
+      if (c.op === "yield") vt("bargein", { step: "engine_yield", reason: c.reason ?? null, resumable: !!c.resumable, mode, acted });
+      else if (c.op === "resume") vt("bargein", { step: "engine_resume", mode, acted });
+      else if (c.op === "duck" && c.level <= 0.06) vt("bargein", { step: "engine_hush", level: c.level, mode, acted });
+      else if (c.op === "speak" || c.op === "cut_in") vt("duplex.commit", { op: c.op, reason: c.reason ?? null, mode, acted });
+    }
+  } catch {
+    /* the recorder never touches the floor */
+  }
+}

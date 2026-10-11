@@ -24,6 +24,7 @@ import type { HostCommand, ShadowRow } from "./host.ts";
 import type { FloorPhase } from "./engine.ts";
 import type { DuplexMode } from "./flags.ts";
 import { ShadowTelemetry, type ShadowSummary } from "./shadowTelemetry.ts";
+import { vt } from "../voice/trace.ts";
 
 /** What the link exposes to the duplex (CascadeLink builds one; tests fake it). */
 export interface CascadeSurface {
@@ -285,6 +286,7 @@ export class CascadeDuplex {
   private onFallback(reason: DuplexFallbackReason): void {
     if (this.fallbackReason) return;
     this.fallbackReason = reason;
+    vt("duplex.fallback", { reason, mode: this.mode, frames: this.live.stats.frames, phase: this.phase });
     try { this.stopTap?.(); } catch { /* already gone */ }
     this.stopTap = null;
     // a committed-but-unanswered caption stays as it was; the link's own path owns the next final
