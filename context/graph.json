@@ -20460,6 +20460,13 @@
    "at": "2026-10-11",
    "title": "`state.flushing = (async () => { … finally { state.flushing = null } })()` as an in-flight guard: when the body has no await on its path (an empty buffer), the finally runs before the assignment, and the guard is left holding a settled promise forever",
    "source": "inbox/r4-main-2225.json"
+  },
+  {
+   "id": "ms-r132-live",
+   "kind": "measurement",
+   "at": "2026-10-11",
+   "title": "Release 13.2 (3cd45e8) live as taxila-web--s3cd45e8-ychf plus worker w3cd45e8-6ufy. The full recorder works end to end on the tier-2 browser lesson that wedged 13.1. Server: director.turn, classify.verdict, safety.scan and db.write x3, model.call x20 with prompt blobs, studio.slot.revealed x3, studio.slot.failed x1, board.page x3, tts first/end, srv x25. Client: events, 8 rrweb chunks, 4 TTS clips, a flag and its note. Replay rendered from the real Azure container. Writer counters drain (buffered 0, written 146, failures 0); 0 rows after the account delete",
+   "source": "inbox/r4-main-2300.json"
   }
  ],
  "edges": [
@@ -32977,6 +32984,16 @@
    "src": "ms-r131-flush-wedge",
    "rel": "measured_by",
    "dst": "dc-r131-writer-split-and-scrub"
+  },
+  {
+   "src": "ms-r132-live",
+   "rel": "part_of",
+   "dst": "dc-r12-flight-recorder"
+  },
+  {
+   "src": "ms-r132-live",
+   "rel": "supersedes",
+   "dst": "ms-r13-server-rows-lost-live"
   }
  ]
 }

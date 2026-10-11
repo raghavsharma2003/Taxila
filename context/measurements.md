@@ -4105,3 +4105,16 @@ The full-page sheets are taken after scrolling the page in steps and requiring e
     - tests/r131-trace-writer.test.mjs 'a flush on an EMPTY buffer never wedges the writer' fails on 03f101e and passes on the fix;
     - r12-trace-unit and r131 pass 17/17; r12-trace-db passes 6/6 on TEST.
   - Fix (release 13.2): the body awaits once before anything else, and its finally clears state.flushing only if it still holds its own promise.
+
+
+<!-- merged from inbox/r4-main-2300.json -->
+- `ms-r132-live` (2026-10-11, 22:45-23:00 UTC).
+  - Gate on 3cd45e8: 3,129 tests, 3,124 pass, 0 fail, 3 skipped, 2 todo. The dry run's ARM plan call hit 'fetch failed' after the gate; the stamp was written.
+  - Deploy: the first attempt hit 'fetch failed' (transient ARM), the second went through. Canary 4/4, then live taxila-web--s3cd45e8-ychf. Worker taxila-worker--w3cd45e8-6ufy with both jobs.
+  - Tier-2 live proof (scratchpad r12-liveproof.mjs on taxila.dev, 412x915, three typed turns, a flag with a note):
+    - /api/me tier 2; the REC chip; no page errors;
+    - every event kind above, plus net.req/res x22, ui.render.* (stage x10, card x5, tray x4, board x2), ui.tap x10, mic.mode x3 and vad.start/sustain;
+    - trace.mjs --replay: 8 chunks downloaded from the private 'trace' container and replay-225614.png rendered; by eye it shows the same card, REC chip and controls as the real screenshot;
+    - 0 rows after DELETE /api/account.
+  - Writer counters: buffered 2, then 0; written 146; failures 0; badRows 0, over 12 s.
+  - Evidence: docs/design/round4/build/r13/evidence/ (r132-liveproof-result.json, r132-replay-225614.png, r132-screen-flagged.png, r13-owner-replay-a95d2ff1.md).
