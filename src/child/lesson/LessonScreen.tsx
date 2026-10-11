@@ -19,6 +19,7 @@ import { markLessonDone } from "../day.ts";
 import { readArtefacts, saveArtefact } from "../prefs.ts";
 import { Desk, sameSize, type DeskSize, type DeskSkin } from "./Desk.tsx";
 import { openMicAllowed, useHeadset } from "./headset.ts";
+import { traceMicMode } from "../../voice/trace.ts";
 import { useDesk } from "./useDesk.ts";
 import { cachedTextOnly } from "../plan.ts";
 import { useSyncExternalStore } from "react";
@@ -56,6 +57,11 @@ export function LessonScreen({ variant, topicId, firstText }: LessonScreenProps)
   const { runtime } = useLesson(deps);
   const bs = useSyncExternalStore(bridge.store.subscribe, bridge.store.get, bridge.store.get);
   const headset = useHeadset();
+  // r12 flight recorder (T-voice): tap or hands-free, and every gate that decided it (src/voice/trace.ts micModeWhy)
+  useEffect(() => {
+    traceMicMode({ older: family === "older", wanted: prefs.talk === "open" ? "open" : "tap", headset, echoDemoted: bs.echoFlags >= ECHO_DEMOTE_FLAGS,
+      duplexLive: bs.duplexLive, duplexFallback: bs.duplexFallback, transport: bs.transport, pushToTalk: bs.pushToTalk, ui: "child-desk" });
+  }, [family, prefs.talk, headset, bs.echoFlags, bs.duplexLive, bs.duplexFallback, bs.transport, bs.pushToTalk]);
   const [firstLesson] = useState(() => readArtefacts(cid).length === 0);
   const rec = teacherRecord(child.teacher_id, band, child.teacher_name);
   const [size, setSize] = useState<DeskSize>({ w: typeof innerWidth === "number" ? innerWidth : 360, h: typeof innerHeight === "number" ? innerHeight : 640, fontScale: 1 });
