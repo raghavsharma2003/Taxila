@@ -48,7 +48,21 @@ So the switch works end to end on desktop Chromium when the cohort matches. The 
 - **"Unclear":** the Director's talk mix marked 8 of the 17 child turns `unclear` (6 + 2). Without the audio there is no
   way to tell a mishearing from an unclear child. Tier 2 keeps the mic clip for exactly this.
 
-## 3. The candidates, most likely first (all UNCONFIRMED until a release-12 lesson is recorded)
+## 3. The candidates, most likely first
+
+**CONFIRMED (main session, 2026-10-11 15:41 UTC): candidate 1.** Every owner cohort hash was sha256 of an email that **no
+guardian row has**. The owner tests with two other gmail.com guardian accounts. So `/api/duplex/config` answered
+"not in cohort", the lesson ran shadow, and the Desk stayed tap-to-talk. Logged as `ms-r4-owner-cohort-wrong-email`
+and `rj-r4-cohort-by-assumed-email`. The fix is configuration: the owner's real guardian hashes go into every cohort
+(and `TAXILA_TRACE_FULL_FOR`) at the release 12 deploy.
+
+**The check:** `voice-turn.mjs --check-only --base <host> --cookie-file <file> --expect-cohort [--expect-tier2]` asks
+the server, as that account, what it reports: `/api/duplex/config` must answer `{duplex:"on", cohort:"owner"}`, and
+`/api/me` must carry `trace.tier = 2`. It exits 1 on a mismatch. The full voice-turn run performs the same check
+first. Locally: the cohort test account passes; the non-cohort account fails with
+`{duplex:"shadow", cohort:null}` (exit 1).
+
+The other candidates stay possible on other phones, and the events in §4 record them:
 
 1. **The cohort answer was `shadow`.** Three ways this can happen:
    - The signed-in guardian's email does not match the env list exactly. The match is
