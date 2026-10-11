@@ -615,7 +615,15 @@ export async function lessonTurn(req, body) {
   // the piece already on screen (it stays in the tray across turns until retired). Known BEFORE the reply, so the reply
   // guard counts it as a screen target (director/say.js screenHasTargets reads ui.studioSlot). A whiteboard ack below
   // replaces it. null = nothing from Studio (the pre-seam turn).
-  let studioSlot = late ? null
+  // release 13 (r12 RCA failure 4): the child asked to clear the board ("board saaf karo", director/requests.js clear_board):
+  // whatever Studio shows retires, a template rung is unmounted, and the next board starts fresh (nothing is drawn this turn)
+  const clearing = !late && r.move?.clear === "board";
+  if (clearing) {
+    seamSafe("studio.clearBoard", () => (typeof studioSeam.clearBoard === "function" ? studioSeam.clearBoard(lesson.id) : null), null);
+    if (next.module?.id) { const id = next.module.id; r = { ...r, moduleCommands: [...r.moduleCommands.filter((c) => c.moduleId !== id), { op: "unmount", moduleId: id }] }; next.module = null; }
+    next.wbBeat = undefined;
+  }
+  let studioSlot = late || clearing ? null
     : seamSafe("studio.slotFor", () => (typeof studioSeam.slotFor === "function" ? studioSeam.slotFor(lesson.id, turnStudioOf(kernel.arb),
       { beat: kernel.beat?.type ?? null, tray: r.ui?.tray ?? null, safety: r.move.kind === "safeguard" || !!incident,
         asking: !!r.move.itemId && ASKING_MOVES.has(r.move.kind),

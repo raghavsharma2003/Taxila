@@ -1,0 +1,85 @@
+diff --git a/server/director/say.js b/server/director/say.js
+index 43fd9c6f..0f13b324 100644
+--- a/server/director/say.js
++++ b/server/director/say.js
+@@ -152,13 +152,76 @@ const watchOnly = (module) => module?.engine === "explainer@1";
+  * G-SAY-1 → true when the line refers to the screen and nothing on it can be acted on, or when it asks the child to tap
+  * / pick something while the only thing on screen is a board drawn to be watched.
+  */
+-export const screenProblem = (text, ui, module) => refersToScreen(text)
+-  && (!screenHasTargets(ui, module) || (watchOnly(module) && !ui?.chips?.length && ACT_WORDS.test(String(text ?? ""))));
++export function screenProblem(text, ui, module) {
++  const t = String(text ?? "");
++  if (refersToScreen(t)) {
++    const act = ACT_WORDS.test(t);
++    // acting on the screen needs something to act on (and never a board drawn to be watched)
++    if (act && (!screenHasTargets(ui, module) || (watchOnly(module) && !ui?.chips?.length))) return true;
++    // r12 RCA failure 5: LOOKING needs only something to look at — a whiteboard counts; what it shows is checked below
++    if (!act && !screenHasTargets(ui, module) && !ui?.studioSlot?.artifact) return true;
++  }
++  return screenClaimProblem(t, ui, module);
++}
++
++// ── r12 RCA failure 2: a claim about the screen is checked against what is mounted ──
++// Owner lesson a95d2ff1: "Screen par game: left Recursive, right Explicit" (turn 3, no game mounted) and "screen par aloo
++// dekho" / "board par aloo dekho" (turns 23, 25, a maths table on screen) passed, because G-SAY-1 asked only whether
++// there was something to TAP. A sentence that points at the screen or the board must name what is there.
++const POINT_AT = /\b(?:screen|board|whiteboard)\s+(?:par|pe|mein|me)\b|\bon\s+the\s+(?:screen|board)\b|\blook\s+at\s+the\s+(?:screen|board)\b|(?:स्क्रीन|बोर्ड)\s+(?:पर|में)/iu;
++const PLAY_CLAIM = /\b(?:game|games|khel|khelo|khelte|khelenge|activity|play)\b|गेम|खेल/iu;
++const CLAIM_STOP = new Set("screen board whiteboard dekho dekhiye dekhte dekh look there here yahan wahan abhi tumhe tumhara aapko aapka dikh raha rahi kaunsa kaunsi kitne kitna batao bataiye socho phir pehle aage left right upar neeche game khel".split(" "));
++const stem = (w) => w.toLowerCase().normalize("NFKC").slice(0, 5);
++/** The words a mounted piece shows: a whiteboard's texts, the rung's texts and facts, the chips' labels. */
++export function stageWords(ui, module) {
++  const out = new Set();
++  const add = (x) => { for (const w of String(x ?? "").split(/[^\p{L}\p{N}]+/u)) if (w.length >= 2) out.add(stem(w)); };
++  for (const o of ui?.studioSlot?.artifact?.script?.ops ?? []) if (o?.text) add(o.text);
++  for (const v of Object.values(ui?.studioSlot?.artifact?.script?.facts?.onScreen ?? {})) add(v);
++  for (const o of module?.params?.script?.ops ?? []) if (o?.text) add(o.text);
++  for (const v of Object.values(module?.params?.script?.facts?.onScreen ?? {})) add(v);
++  for (const c of ui?.chips ?? []) add(c?.label);
++  return out;
++}
++const playMounted = (ui, module) => ["play", "stagecraft"].includes(ui?.studioSlot?.artifact?.kind) || (!!module?.id && module.engine !== "explainer@1" && !!module.engine);
++/** true when a sentence points at the screen / board and claims what is not there: a game with no play piece up, or
++ * content none of whose words the mounted piece shows. PURE. */
++export function screenClaimProblem(text, ui, module) {
++  const sentences = String(text ?? "").match(/[^.!?।]+[.!?।]*/g) ?? [];
++  const pointing = sentences.filter((x) => POINT_AT.test(x));
++  if (!pointing.length) return false;
++  const words = stageWords(ui, module);
++  for (const x of pointing) {
++    if (PLAY_CLAIM.test(x) && !playMounted(ui, module)) return true;
++    const content = (x.match(/[\p{L}\p{N}]+/gu) ?? []).filter((w) => w.length >= 3 && !CLAIM_STOP.has(w.toLowerCase()) && !/^[A-Z][a-z]+$/.test(w) || /^\d+$/.test(w));
++    if (!content.length) continue;
++    if (!words.size || !content.some((w) => words.has(stem(w)))) return true;
++  }
++  return false;
++}
++
++/** "screen par … dekho:", "board pe dekhiye", "look at the screen:": the pointing phrase of a sentence that only LOOKS. */
++const POINTING = /\b(?:(?:screen|board)\s+(?:par|pe|mein|me)\s+|on\s+the\s+(?:screen|board)\s*,?\s*|स्क्रीन\s+पर\s+)((?:[\p{L}\p{N}]+\s+){0,3}?)(?:dekho|dekhiye|dekh\s+lo|dekhte\s+hain|look(?:\s+at\s+(?:it|this))?|देखो)\b\s*/iu;
++const LOOK_AT_SCREEN = /\b(?:look\s+at\s+the\s+(?:screen|board)|(?:screen|board)\s+(?:par|pe)\s+(?:dekho|dekhiye))\b\s*[:,—-]?\s*/iu;
++/**
++ * A sentence that only POINTS at the screen, with the pointing taken out and its content kept ("Screen par seedhi dekho:
++ * 4, 7, 10." → "Seedhi: 4, 7, 10."), or null when it asks the child to act (tap, drag …) or nothing worth saying is left.
++ * r12 RCA failure 5 (owner lesson a95d2ff1 turn 11): deleting the whole sentence took the sequence with it and the child got
++ * "Ab 10 ke baad number bolo." with no 10 before it.
++ */
++export function unpointScreen(sentence) {
++  const s0 = String(sentence ?? "");
++  if (ACT_WORDS.test(s0)) return null;
++  const s = s0.replace(POINTING, (_m, what) => (what ? `${what.trim()}: ` : "")).replace(LOOK_AT_SCREEN, "").replace(/:\s*:/, ":").replace(/^\s*[:,—-]\s*/, "").trim();
++  if (refersToScreen(s) || POINT_AT.test(s) || s.split(/\s+/).filter((w) => /[\p{L}\p{N}]/u.test(w)).length < 2) return null;
++  return s[0].toUpperCase() + s.slice(1);
++}
+ 
+-/** The line without the sentences that refer to the screen (null if nothing that hands the floor back is left). */
++/** The line without the sentences that refer to the screen (null if nothing that hands the floor back is left): a sentence
++ * that only points keeps its content in words (unpointScreen); one that asks the child to act on the screen goes. */
+ export function stripScreenRefs(text) {
+   const sentences = String(text ?? "").match(/[^.!?।]+[.!?।]*\s*/g) ?? [];
+-  return sentences.filter((s) => !refersToScreen(s)).join("").trim();
++  return sentences.map((s) => (refersToScreen(s) || POINT_AT.test(s) ? (unpointScreen(s) ? `${unpointScreen(s)} ` : "") : s)).join("").trim();
+ }
+ 
+ // ── the Question card ──

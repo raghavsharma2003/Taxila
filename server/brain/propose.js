@@ -72,6 +72,11 @@ export function whiteboardAskOf({ beat, lane, late, strained, move = null, studi
   // smaller step). W2-H's attention and reveal gates below still hold: an interactive piece mid-use is never pulled away.
   if (!requested && (!beat || !EXPLAIN_BEATS.has(beat.type))) return { proposals: [], declined: null };
   if (late) return { proposals: [], declined: "studio_rejected.late" };
+  // release 13 (r12 RCA failure 4): the turn that clears the board draws nothing new
+  if (move?.clear) return { proposals: [], declined: "studio_rejected.cleared" };
+  // release 13 (A): a picture nothing can make was asked for: no board this turn (the release-13 replay drew the maths table
+  // beside "aloo gol, bhura hota hai")
+  if (move?.request === "visual_unavailable") return { proposals: [], declined: "studio_rejected.not_explain" };
   if (move && !WHITEBOARD_MOVES.has(move.kind)) return { proposals: [], declined: "studio_rejected.not_explain" };
   if (!requested && lane === "voice") return { proposals: [], declined: "studio_rejected.voice_lane" };
   if (!requested && strained) return { proposals: [], declined: "studio_rejected.strained" };

@@ -116,6 +116,38 @@ export function withSectors(script, lineText) {
   const ops = sectorsForCutCircles(script.ops, counts, []);
   return ops === script.ops ? script : { ...script, ops };
 }
+/**
+ * r12 RCA failure 7 (owner lesson a95d2ff1, board pages 3-5: "those examples were drawn above the previous content"). The
+ * client draws EVERY op since the last fresh page under a "continue" script (src/modules/whiteboard/StudioWhiteboard.tsx
+ * priorFor/remember). A continue script whose new ops land on those earlier ops (a "?" written over a "4", a staircase
+ * across a table) is drawn fresh instead; one that builds beside them, targets them or erases first stays "continue".
+ * Boxes are coarse (text by its length and size). PURE.
+ */
+const TEXT_H = { s: 14, m: 20, l: 28, xl: 36 };
+export function opBox(o) {
+  const pts = [];
+  if (o?.op === "text" && Array.isArray(o.at)) { const h = TEXT_H[o.size] ?? 20, w = String(o.text ?? "").length * h * 0.55; pts.push([o.at[0] - w / 2, o.at[1] - h], [o.at[0] + w / 2, o.at[1] + h * 0.3]); }
+  else {
+    for (const k of ["from", "to", "at", "c"]) if (Array.isArray(o?.[k])) pts.push(o[k]);
+    if (Array.isArray(o?.points)) pts.push(...o.points);
+    if (o?.op === "rect" && Array.isArray(o.at)) pts.push([o.at[0] + (Number(o.w) || 0), o.at[1] + (Number(o.h) || 0)]);
+    if (o?.op === "circle" && Array.isArray(o.c)) pts.push([o.c[0] - (o.r ?? 0), o.c[1] - (o.r ?? 0)], [o.c[0] + (o.r ?? 0), o.c[1] + (o.r ?? 0)]);
+  }
+  if (!pts.length) return null;
+  const xs = pts.map((p) => Number(p[0])), ys = pts.map((p) => Number(p[1]));
+  return [Math.min(...xs), Math.min(...ys), Math.max(...xs), Math.max(...ys)];
+}
+const boxesMeet = (a, b) => !!a && !!b && a[0] < b[2] && b[0] < a[2] && a[1] < b[3] && b[1] < a[3];
+/** "continue" or "fresh" for a script meant to continue the board whose ops (since the last fresh page) are `under`. */
+export function boardModeFor(script, under = []) {
+  if (script?.mode !== "continue") return "fresh";
+  const ops = script.ops ?? [];
+  if (!under.length || ops.some((o) => o.op === "erase")) return "continue";
+  const earlier = under.filter((o) => o.op !== "erase" && o.op !== "highlight").map(opBox).filter(Boolean);
+  const lands = ops.some((o) => o.op !== "highlight" && !o.target && earlier.some((b) => boxesMeet(opBox(o), b)));
+  return lands ? "fresh" : "continue";
+}
+
 /** Re-gate a candidate script against her real line (and its stage). → { ok, script, gate } */
 export function regate(script, ask, ctx) {
   if (!script?.ops?.length) return { ok: false, script: null, gate: null };

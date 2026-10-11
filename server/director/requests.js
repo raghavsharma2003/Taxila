@@ -104,6 +104,32 @@ const wordCount = (t) => t.split(/\s+/).filter(Boolean).length;
  *   subject?: string, lang?: "hindi"|"english"|"hinglish", kind?: "diagram"|"game"|"animation", whole: boolean }}
  *   whole: the turn is ONLY the request (no attempt alongside it), so it may be acted on with no classifier call.
  */
+// r12 RCA failure 4 (owner lesson a95d2ff1 turn 12: "थोड़ा बैकग्राउंड क्लियर करो … recursive rules जो कचरा आ रहा है, हटाओ
+// उसको", answered "background noise main control nahi kar sakti"): clearing the board is a request of its own. The surface
+// word (board / screen / background / whiteboard / what is written on it) near a clear verb, either order, both scripts.
+const SURFACE = "(?:board|whiteboard|white\\s+board|screen|background|backgound|bekgraund|बोर्ड|व्हाइटबोर्ड|स्क्रीन|बैकग्राउंड|बैकग्राऊंड)";
+const CLEAR_VERB = "(?:clear|saaf|saf|hatao|hata\\s+do|hatado|mitao|mita\\s+do|erase|wipe|khali|khaali|क्लियर|साफ़?|हटाओ|हटा\\s+दो|मिटाओ|मिटा\\s+दो|खाली)";
+const CLEAR_BOARD = new RegExp(`${SURFACE}(?:\\s+\\S+){0,3}?\\s+${CLEAR_VERB}|${CLEAR_VERB}(?:\\s+\\S+){0,2}?\\s+${SURFACE}|(?:kachra|कचरा)(?:\\s+\\S+){0,5}?\\s+${CLEAR_VERB}`, "iu");
+
+// r12 RCA failure 3 / release 13 (A) (owner lesson a95d2ff1 turns 18-24: "मेरे को आलू के बारे में पढ़ना है", "आलू दिखाओ"): the
+// subject a child names, in either script, so the lesson can answer honestly about it. Generic words are not subjects.
+const GENERIC = /^(?:diagram|picture|photo|image|images|drawing|game|games|video|kuch|koi|kuchh|ye|yeh|is|isko|use|usko|woh|wo|mujhe|mere|mera|aap|tum|visualization|visualisation|chitra|tasveer|board|screen|chart|graph|model|animation|figure|sketch|map|table|ko|ka|ki|ke|ne|se|mein|me|par|pe|डायग्राम|डायग्रम|ड्रॉइंग|ड्राइंग|चित्र|ग्राफ|चार्ट|मॉडल|एनिमेशन|टेबल|को|का|की|के|ने|से|में|पर|इमेज|फोटो|पिक्चर|तस्वीर|गेम|वीडियो|कुछ|कोई|ये|यह|इसको|उसको|उसके|मुझे|मेरे|मेरा|आप|तुम)$/iu;
+const LEAD_WORDS = /^(?:(?:mere|mujhe|hume|humein|hamein|ko|ka|ki|ek|mera|meri|please|plz|bhai|bhaiya|yaar|didi|मेरे|मुझे|हमें|को|का|की|एक|मेरा|मेरी|भई|यार)\s+)+/iu;
+const STUDY_SUBJECT = /([\p{L}\p{M}\p{N} ]{2,40}?)\s+(?:ke|ki|के|की)\s+(?:baare|bare|बारे)\s+(?:mein|me|main|में)\s+(?:padh|पढ़|baat|बात|bata|बता|sikh|सीख|jaan|जान|dekh|देख)/u;
+const SHOW_SUBJECT = /(?:^|[\s,.!?।])([\p{L}\p{M}]{2,20})\s+(?:(?:ki|ka|ke|की|का|के)\s+)?(?:(?:photo|picture|image|tasveer|फोटो|पिक्चर|इमेज|तस्वीर)\s+)?(?:dikhao|dikhaiye|dikha\s+do|दिखाओ|दिखाइए|दिखा\s+दो)/u;
+const lastWords = (x, n = 2) => x.trim().split(/\s+/).slice(-n).join(" ");
+/** The free subject a child's turn names ("aloo ke baare mein padhna hai", "आलू दिखाओ"), or null. PURE. */
+export function freeSubjectOf(text) {
+  const t = String(text ?? "").normalize("NFKC");
+  for (const re of [STUDY_SUBJECT, SHOW_SUBJECT]) {
+    const m = t.match(re);
+    if (!m) continue;
+    const sub = lastWords(m[1].replace(LEAD_WORDS, "").trim(), re === STUDY_SUBJECT ? 2 : 1).replace(LEAD_WORDS, "").trim();
+    if (sub && !GENERIC.test(sub) && !sub.split(/\s+/).every((w) => GENERIC.test(w))) return sub.slice(0, 30);
+  }
+  return null;
+}
+
 export function requestOf(text) {
   const raw = T(text);
   if (!raw) return null;
@@ -113,6 +139,14 @@ export function requestOf(text) {
   const t = core(raw) || raw;
   const n = wordCount(t);
   const whole = !attemptLike(t) && n <= 12;
+  // the board is a surface, not an answer: clearing it is honoured at any length, never inside a numeric attempt
+  // (never ahead of a goodbye or a stop: leaving always wins)
+  if (!attemptLike(t) && CLEAR_BOARD.test(t) && !GOODBYE.test(t) && !STOP.test(t) && stopKind(text) !== "end_request") return { type: "clear_board", whole: true };   // a command to the screen, never an answer: acted on at any length
+  // release 13 (A): "X ke baare mein padhna hai" names a subject at any length (a long, upset turn is still that ask)
+  if (!attemptLike(t) && !GOODBYE.test(t) && !STOP.test(t) && STUDY_SUBJECT.test(String(text ?? "").normalize("NFKC"))) {
+    const subject = freeSubjectOf(text);
+    if (subject) return { type: "topic", subject, whole };
+  }
   // a turn of mostly answer words with a request tacked on is an answer (the request is ignored, the answer graded)
   if (!whole && n > 16) return null;
   // Leaving now beats everything (NEVER MANIPULATE): never read as a stop to check in on, nor a break.
@@ -133,7 +167,10 @@ export function requestOf(text) {
     const lang = LANG.hinglish.test(t) ? "hinglish" : LANG.english.test(t) ? "english" : LANG.hindi.test(t) ? "hindi" : null;
     if (lang) return { type: "language", lang, whole };
   }
-  if (VISUAL.test(t) || (whole && /^(?:diagram|picture|drawing|draw)\b/.test(t))) return { type: "visual", kind: "diagram", whole };
+  if (VISUAL.test(t) || (whole && /^(?:diagram|picture|drawing|draw)\b/.test(t))) {
+    const subject = freeSubjectOf(text);
+    return { type: "visual", kind: "diagram", whole, ...(subject ? { subject } : {}) };
+  }
   if (whole && ANIMATION.test(t)) return { type: "visual", kind: "animation", whole };
   if (whole && GAME.test(t) && !/\b(?:game\s+(?:mein|me)\s+\d)/.test(t)) return { type: "visual", kind: "game", whole };
   if (whole && STORY.test(t)) return { type: "story", whole };
