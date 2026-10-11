@@ -3839,3 +3839,13 @@ The full-page sheets are taken after scrolling the page in steps and requiring e
   - Packaged tree: 9/12 visual requests filled. Two "Studio slot opened but never became an artifact" and one animation answered in words. It ran in parallel with round2-content, boards and a Playwright set-up journey against the same local server.
   - taxila.dev, about an hour later, with the four live batteries in parallel against the Azure app: 12/12.
   - Over releases 7-11 the live results are 12/14, 12/14, 12/14 and 14/14, so about 1 in 12 slots fails, varying from run to run. Read: one packaged run is too noisy to compare visual-slot rates across releases. Compare live runs, or run owner-5 alone.
+
+
+<!-- merged from inbox/r4-main-1415.json -->
+- `ms-r4-owner-lesson-a95d2ff1` (2026-10-11, read-only SELECTs on production `turn`, `brain_trace`, `studio_mount`, `board_page` for the owner's test child): lesson a95d2ff1-0d79-4d4c-8f32-dd255c2236e1, c9-maths-ch08-t01, 13:47:28-13:52:21 UTC, 29 turns, 14 trace rows, 3 studio_mount rows, 10 board_page rows.
+  - Boards: 8 of 10 board pages begin with the ops text 'Recursive rule' (pages 1, 2, 6-10); pages 3-5 draw a staircase. All 3 mounts are kind whiteboard on skill c9-maths-ch08-t01-s1.
+  - Requests: the child asked for games (turn 2), a photo or visualisation (turn 10), the board cleared (turn 12, heard as 'recording rules jo kachra aa raha hai'), a different subject (turns 18 and 20) and a picture of aloo (turns 22-28).
+  - Her claims: 'Screen par game: left Recursive, right Explicit' (turn 3, no game mounted); 'screen par aloo dekho' (turns 23 and 25, while the board showed the table); then 'main is screen par nayi image nahi dikha sakti' (turn 29).
+  - Trace: `studio.rung_replaced` on 11 of 14 rows and `turn.speculation_miss` on 12 of 14, with no record of what was replaced or why.
+  - The next lesson, b08fe8a7 (14:06 UTC, 7 turns), repeats the table on both board pages.
+  - What the tables cannot show: what the phone displayed (the owner reports drawings over previous content), image load or fail, audio played, the mic mode, the prompts and raw outputs, client errors.

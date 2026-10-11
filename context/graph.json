@@ -20109,6 +20109,27 @@
    "at": "2026-10-11",
    "title": "Same server code (zero diff in server/shared/data/db/api/package files vs live 9a170c5): owner-5 visual slots 9/12 on the packaged tree (run alongside 3 other batteries and a browser journey) vs 12/12 on taxila.dev an hour later; slot failure is generation variance, not the release",
    "source": "inbox/r4-main-0940.json"
+  },
+  {
+   "id": "owner-full-tracking-20261011",
+   "kind": "constraint",
+   "at": "2026-10-11",
+   "title": "Owner 2026-10-11 ~14:10 UTC after testing release 11: record everything (what was shown, loaded or not loaded, what the user said and did, what the teacher said and showed, what the backend did) in extreme detail, so the owner can point at a moment and main can audit by itself; rated the app '1 out of 100'",
+   "source": "inbox/r4-main-1415.json"
+  },
+  {
+   "id": "ms-r4-owner-lesson-a95d2ff1",
+   "kind": "measurement",
+   "at": "2026-10-11",
+   "title": "Owner's lesson a95d2ff1 (c9 sequences, 13:47-13:52 UTC, 29 turns): 8 of 10 board pages open with the same 'Recursive rule | Explicit rule' table on skill s1 whatever the child asked (games, picture, aloo, a different subject); she claimed a game and an aloo picture on screen that were never mounted (3 mounts, all whiteboard); ASR heard 'recording rules' for 'recursive rules'; studio.rung_replaced on 11 of 14 trace rows with no detail",
+   "source": "inbox/r4-main-1415.json"
+  },
+  {
+   "id": "dc-r12-flight-recorder",
+   "kind": "decision",
+   "at": "2026-10-11",
+   "title": "Release 12: a flight recorder for every session. Tier 1 for every account: structured client and server events, no audio, keeping the public 'audio is never stored' promise. Tier 2 for the owner cohort (TAXILA_TRACE_FULL_FOR): rrweb DOM replay, mic and TTS audio, full model prompts and outputs, behind a visible REC chip. Queried by scripts/trace.mjs (timeline, replay PNG at a time, flags). Built by T-server (stream 3), T-client (stream 2) and T-voice (4B), with a root-cause pass by 4A; brief docs/design/round4/build/r12/TRACKING-BRIEF.md",
+   "source": "inbox/r4-main-1415.json"
   }
  ],
  "edges": [
@@ -32391,6 +32412,16 @@
    "src": "ms-r4-r11-visual-variance",
    "rel": "part_of",
    "dst": "ms-r4-rel11-live"
+  },
+  {
+   "src": "owner-full-tracking-20261011",
+   "rel": "constrains",
+   "dst": "dc-r12-flight-recorder"
+  },
+  {
+   "src": "dc-r12-flight-recorder",
+   "rel": "caused_by",
+   "dst": "ms-r4-owner-lesson-a95d2ff1"
   }
  ]
 }
