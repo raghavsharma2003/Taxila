@@ -2,11 +2,15 @@ import { createRoot } from "react-dom/client";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { routes } from "./app/routes.tsx";
 import { installBeacon, reportClientError } from "./app/beacon.ts";
+import { installTrace } from "./trace/index.ts";
 import "./styles/tokens.css";
 import "./styles/base.css";
 import "./styles/ui.css";
 import "./styles/app.css";
 
+// r12 flight recorder (dc-r12-flight-recorder): first, so every request, route, tap and error from here on is recorded;
+// it never throws and never changes what the app does (src/trace/index.ts)
+installTrace({ build: import.meta.env.VITE_BUILD_SHA as string | undefined });
 // errors from here on are reported (POST /api/client-error; W1-D eyes)
 installBeacon();
 
