@@ -295,7 +295,9 @@ function TopBar({ m, a, notMeWindow, phaseLine, wide }: { m: DeskModel; a: DeskP
   const closeMenu = useCallback(() => { setMenu(false); setFlagged(null); setNote(""); }, []);
   useEffect(() => {
     if (!menu) return;
-    const off = (e: MouseEvent) => { if (!(e.target as HTMLElement).closest?.(".dk-more")) closeMenu(); };
+    // the path as it was at dispatch: a tap that swaps the menu's content (Flag this moment → its note field) detaches the
+    // tapped node before this runs, and closest() on a detached node would read as a tap outside and close the menu
+    const off = (e: MouseEvent) => { if (!e.composedPath().some((n) => n instanceof Element && n.classList.contains("dk-more"))) closeMenu(); };
     document.addEventListener("click", off);
     return () => document.removeEventListener("click", off);
   }, [menu, closeMenu]);
@@ -332,7 +334,7 @@ function TopBar({ m, a, notMeWindow, phaseLine, wide }: { m: DeskModel; a: DeskP
               {rec && flagged !== null && (
                 <form className="dk-flagnote" onSubmit={(e) => { e.preventDefault(); flagNote(flagged, note); closeMenu(); }}>
                   <span className="dk-flagdone" role="status">{t("bar.flag_done")}</span>
-                  <input className="dk-input" value={note} onChange={(e) => setNote(e.target.value)} placeholder={t("bar.flag_note")} aria-label={t("bar.flag_note")} data-testid="flag-note" />
+                  <input className="dk-input" value={note} onChange={(e) => setNote(e.target.value)} placeholder={t("bar.flag_note")} aria-label={t("bar.flag_note")} data-testid="flag-note" autoFocus />
                   <button type="submit" className="dk-row" data-testid="flag-save">{note.trim() ? t("bar.flag_save") : t("bar.flag_skip")}</button>
                 </form>
               )}
