@@ -1,11 +1,78 @@
 {
   "nodes": [
-    {"id": "ms-r12dr-landscape-2026-10-11", "kind": "measurement", "title": "duplex research 2026-10-11 (docs/research/duplex-2026-10/LANDSCAPE.md, primary sources read today): Azure Voice Live supports hi-IN (multilingual input model, azure_semantic_vad_multilingual, MAI-Transcribe-2, hi-IN voices) and has server AEC with a Live-Reference mode for client playback, deep noise suppression and semantic end of turn. It is half-duplex with barge-in, and its filler-word false-barge-in filter is English-only. gpt-realtime and gpt-realtime-mini list Hindi; gpt-realtime-2.1(-regional) is deployable through Voice Live in centralindia. GPT-Live-1 is the only full-duplex model sold Direct on Azure ($3/h); on IndicFDB Hindi it replies in 0.18 s but takes the floor in ~38% of natural pauses. No open full-duplex model has usable Hindi with commercial weights (PersonaPlex and Moshi are English; Human-1 Hindi Moshi has no confirmed weights and 0.56/5 on interruption replies). CPU-runnable turn models today: Smart Turn v3 (BSD-2, Hindi 93.4% on its own test set)", "at": "2026-10-11"},
-    {"id": "ms-r12dr-personaplex-2026-10-11", "kind": "measurement", "title": "PersonaPlex-7B teardown 2026-10-11 (docs/research/duplex-2026-10/PERSONAPLEX.md): English-only (model card en; the Moshi tokenizer has no Devanagari). Code MIT; weights under the NVIDIA Open Model License (commercial OK, revocable, guardrail-circumvention termination). ~17 GB bf16 plus ~1.6 GB KV per session. Central India SKUs: NC24ads A100 v4 $5.14/h, NC40ads H100 v5 $9.77/h (Retail Prices API, ESTIMATE); no Container Apps serverless A100 in India. The reference server runs one session per process. A Hindi path starts from Human-1 plus PersonaPlex's prompt recipe; data, not compute, is the blocker. The inner-monologue text arrives with its audio, so a text safety predicate can only mute after the first syllable unless a hold buffer adds latency", "at": "2026-10-11"},
-    {"id": "open-r12dr-adopt-personaplex-ideas", "kind": "open", "title": "duplex research: ideas to adopt in our own engine without hosting a duplex model (PERSONAPLEX.md §5): (1) a small 80 ms frame turn / voice-activity-projection model trained on two-channel labels; (2) her own stream as an input (playback cross-correlation, VAD on the AEC residual, TTS word clock); (3) an Azure-only Hinglish synthetic dialogue factory with stitched turns, overlaps and echo; (4) a backchannel head with pre-rendered haan / achha capped near the human rate; (5) tutor role and safety probes in TaxilaFDB. The owner's no-new-features decision of 2026-10-10 holds until main says otherwise", "at": "2026-10-11"}
+    {
+      "id": "ms-r12dr-landscape-2026-10-11",
+      "kind": "measurement",
+      "title": "duplex research 2026-10-11 (docs/research/duplex-2026-10/LANDSCAPE.md, primary sources read today): Azure Voice Live supports hi-IN (multilingual input model, azure_semantic_vad_multilingual, MAI-Transcribe-2, hi-IN voices) and has server AEC with a Live-Reference mode for client playback, deep noise suppression and semantic end of turn. It is half-duplex with barge-in, and its filler-word false-barge-in filter is English-only. gpt-realtime and gpt-realtime-mini list Hindi; gpt-realtime-2.1(-regional) is deployable through Voice Live in centralindia. GPT-Live-1 is the only full-duplex model sold Direct on Azure ($3/h); on IndicFDB Hindi it replies in 0.18 s but takes the floor in ~38% of natural pauses. No open full-duplex model has usable Hindi with commercial weights (PersonaPlex and Moshi are English; Human-1 Hindi Moshi has no confirmed weights and 0.56/5 on interruption replies). CPU-runnable turn models today: Smart Turn v3 (BSD-2, Hindi 93.4% on its own test set)",
+      "at": "2026-10-11"
+    },
+    {
+      "id": "ms-r12dr-personaplex-2026-10-11",
+      "kind": "measurement",
+      "title": "PersonaPlex-7B teardown 2026-10-11 (docs/research/duplex-2026-10/PERSONAPLEX.md): English-only (model card en; the Moshi tokenizer has no Devanagari). Code MIT; weights under the NVIDIA Open Model License (commercial OK, revocable, guardrail-circumvention termination). ~17 GB bf16 plus ~1.6 GB KV per session. Central India SKUs: NC24ads A100 v4 $5.14/h, NC40ads H100 v5 $9.77/h (Retail Prices API, ESTIMATE); no Container Apps serverless A100 in India. The reference server runs one session per process. A Hindi path starts from Human-1 plus PersonaPlex's prompt recipe; data, not compute, is the blocker. The inner-monologue text arrives with its audio, so a text safety predicate can only mute after the first syllable unless a hold buffer adds latency",
+      "at": "2026-10-11"
+    },
+    {
+      "id": "open-r12dr-adopt-personaplex-ideas",
+      "kind": "open",
+      "title": "duplex research: ideas to adopt in our own engine without hosting a duplex model (PERSONAPLEX.md §5): (1) a small 80 ms frame turn / voice-activity-projection model trained on two-channel labels; (2) her own stream as an input (playback cross-correlation, VAD on the AEC residual, TTS word clock); (3) an Azure-only Hinglish synthetic dialogue factory with stitched turns, overlaps and echo; (4) a backchannel head with pre-rendered haan / achha capped near the human rate; (5) tutor role and safety probes in TaxilaFDB. The owner's no-new-features decision of 2026-10-10 holds until main says otherwise",
+      "at": "2026-10-11"
+    },
+    {
+      "id": "ms-r12dr-bakeoff-2026-10-11",
+      "kind": "measurement",
+      "title": "duplex bake-off 2026-10-11 (docs/research/duplex-2026-10/BAKEOFF.md; evals/duplex-2026-10; SIMULATED: 66 TaxilaFDB TEST scenarios, Azure TTS child-like voices, modelled phone loudspeaker at -6 dB under the child, 'clean' = -30 dB residue; no AEC3 for our arms). Echo false barge-in phone/clean: (a) cascade mic open 66/66 / 66/66; (b) duplex engine 46/66 / 3/66; (c) Voice Live gpt-realtime-2.1 with server AEC 0/66 / 0/66 (AEC+DNS off: 63/66); (d) gpt-realtime alone 64/66 / 66/66; (e) Voice Live Live-Reference AEC with OUR TTS as reference, create_response false, 0/66 / 0/66. True barge-in F7: (c) and (e) 12/12 (p50 616-675 ms), (b) clean 10/12. EOT p50: ~0.95-1.06 s for (a), (c), (d), (e); 13-15/34 thinking-pause cut-offs for each; (b) 5-7/34 but ~3.0 s (harness gap). Skeleton CER mean: Voice Live front end 0.27-0.37 (best), gpt-realtime 0.38-0.46 (its input transcript returns Urdu script/CJK on short Hindi), cascade phone 0.62. First audio p50: (c) 1.9 s, (d) 2.0 s. Lone 250 ms 'हाँ' unheard by Voice Live in 1/2 (e), 2/2 (c); not fixed by remove_filler_words false or VAD threshold 0.2-0.3",
+      "at": "2026-10-11"
+    },
+    {
+      "id": "ms-r12dr-continuers-2026-10-11",
+      "kind": "measurement",
+      "title": "continuer probe 2026-10-11 (36 TaxilaFDB F8 scenarios, 6 each of हम्म/अच्छा/हाँ हाँ/ओके/ठीक है/जी over her, phone path; simulated): false yields (c) Voice Live 17/36 (हम्म 6/6, ठीक है 6/6, ओके 3/6, अच्छा 2/6, हाँ हाँ 0/6, जी 0/6), (e) Voice Live front end 23/36, (b) duplex engine on the real D4 STT 25/36 clean (live ASR turns अच्छा into other words). Voice Live's filler filter is English-only. Its transcript arrives ~0.9 s after speech_started (p50 916, p90 974 ms, n=36), so duck-then-resume on our own Hindi continuer list is feasible",
+      "at": "2026-10-11"
+    },
+    {
+      "id": "ms-r12dr-smartturn-2026-10-11",
+      "kind": "measurement",
+      "title": "Smart Turn v3.2 (ONNX CPU, reference preprocessing) on the bake-off's child-like Hinglish TTS turns 2026-10-11: accuracy 34/72 (47 %), true ends complete 18/34, thinking pauses incomplete 16/38; CPU p50 69 ms (1 thread), 102 ms (default). At chance; confirms rj-smart-turn-off-the-shelf-child-hinglish (TTS falling contours are a confound)",
+      "at": "2026-10-11"
+    },
+    {
+      "id": "dc-r12dr-duplex-architecture",
+      "kind": "decision",
+      "title": "PROPOSED to main (docs/research/duplex-2026-10/RECOMMENDATION.md): commit to Voice Live as the acoustic FRONT END under our cascade. The client sends stereo (mic + what it actually played); Voice Live does Live-Reference AEC, deep noise suppression, azure_semantic_vad_multilingual and hi-IN/en-IN transcription with create_response false. Our duplex engine owns the floor (duck on speech_started, resume on our Hindi continuer list, re-ask on speech_started + empty transcript, decide-late merge for thinking pauses). Our Director writes and our safety predicate gates every word before our TTS speaks. Not (c)/(d): the model owns the floor and speaks before our predicate can gate, at ~$5/child-hour. Reverse if, on real phones and children: echo false barge-in > 5 % or true barge-in < 90 %; front-end bill > $1.5/child-hour; ASR > 5 CER points worse than gpt-live-transcribe; lone-word recall < 90 %; EOT +300 ms; a Direct S2S model offers text-before-audio gating; or Live-Reference AEC / Hindi VAD is withdrawn",
+      "at": "2026-10-11"
+    }
   ],
   "edges": [
-    {"src": "ms-r12dr-personaplex-2026-10-11", "rel": "part_of", "dst": "ms-r12dr-landscape-2026-10-11"},
-    {"src": "open-r12dr-adopt-personaplex-ideas", "rel": "part_of", "dst": "ms-r12dr-personaplex-2026-10-11"}
+    {
+      "src": "ms-r12dr-personaplex-2026-10-11",
+      "rel": "part_of",
+      "dst": "ms-r12dr-landscape-2026-10-11"
+    },
+    {
+      "src": "open-r12dr-adopt-personaplex-ideas",
+      "rel": "part_of",
+      "dst": "ms-r12dr-personaplex-2026-10-11"
+    },
+    {
+      "src": "ms-r12dr-continuers-2026-10-11",
+      "rel": "part_of",
+      "dst": "ms-r12dr-bakeoff-2026-10-11"
+    },
+    {
+      "src": "ms-r12dr-smartturn-2026-10-11",
+      "rel": "part_of",
+      "dst": "ms-r12dr-bakeoff-2026-10-11"
+    },
+    {
+      "src": "dc-r12dr-duplex-architecture",
+      "rel": "measured_by",
+      "dst": "ms-r12dr-bakeoff-2026-10-11"
+    },
+    {
+      "src": "dc-r12dr-duplex-architecture",
+      "rel": "measured_by",
+      "dst": "ms-r12dr-landscape-2026-10-11"
+    }
   ]
 }

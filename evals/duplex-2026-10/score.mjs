@@ -41,7 +41,7 @@ function cer(ref, hyp) {
 /** One run → { yields[], decisions[], transcripts[], firstAudio[], herSpan, shift, usage } on the run's own clock. */
 function normalise(run, meta) {
   const g = meta.gold;
-  if (run.arm === "cascade" || run.arm === "voicelive-ref") {
+  if (run.arm === "cascade" || run.arm.startsWith("voicelive-ref")) {
     const ev = run.events;
     return {
       shift: 0, herSpan: [g.herSpan.start, g.herSpan.end],
