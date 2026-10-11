@@ -25,7 +25,7 @@ export const DUPLEX_KEY = "tx.flag.duplex";
 // answer lands (cascadeLink startDuplex → setPushToTalk(false)).
 const CONFIG_TIMEOUT_MS = 8000;
 const CONFIG_TRIES = 2;
-import { vt } from "../voice/trace.ts";
+import { noteDuplexResolved, vt } from "../voice/trace.ts";
 
 const norm = (v: unknown): DuplexMode | null => (v === "1" || v === "on" ? "on" : v === "0" || v === "off" ? "off" : v === "shadow" ? "shadow" : null);
 
@@ -126,6 +126,7 @@ export async function resolveDuplexMode(fetcher?: typeof fetch): Promise<DuplexM
 /** r12 flight recorder: the resolved mode, which rule decided it, and what the server said (the "why did I tap" record). */
 function traced(mode: DuplexMode, source: string, dev: DuplexMode | null, srv: DuplexMode | null | undefined): DuplexMode {
   vt("mic.duplex", { mode, source, device: dev, server: srv === undefined ? "not_asked" : srv, build: buildDuplex(), asks: asks.slice(-CONFIG_TRIES) });
+  noteDuplexResolved(mode, source);
   return mode;
 }
 

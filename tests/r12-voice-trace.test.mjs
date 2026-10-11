@@ -6,7 +6,7 @@ import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { micModeWhy, SttTracer, unsureTokens, meanConfidence, setVoiceTraceSink, vt, VoiceLinkTrace, traceMicMode, fit, MAX_DATA_CHARS } from "../src/voice/trace.ts";
+import { noteDuplexResolved, micModeWhy, SttTracer, unsureTokens, meanConfidence, setVoiceTraceSink, vt, VoiceLinkTrace, traceMicMode, fit, MAX_DATA_CHARS } from "../src/voice/trace.ts";
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(HERE, "..");
@@ -48,6 +48,17 @@ test("traceMicMode records once per change", () => {
   assert.equal(modes.length, 2);
   assert.equal(modes[0].data.mode, "tap");
   assert.equal(modes[1].data.mode, "duplex");
+  setVoiceTraceSink(null);
+});
+
+test("mic.mode carries the resolved duplex mode when it arrives after the lesson's first mode (shadow, not off)", () => {
+  const c = capture();
+  traceMicMode({ older: true, wanted: "tap", headset: false, echoDemoted: false, duplexLive: false, transport: "webrtc", pushToTalk: true, ui: "t2" });
+  assert.ok(c.of("mic.mode").at(-1).data.reasons.includes("duplex_not_resolved_yet"));
+  noteDuplexResolved("shadow", "server_shadow");
+  const last = c.of("mic.mode").at(-1).data;
+  assert.ok(last.reasons.includes("duplex_shadow_only"));
+  assert.equal(last.duplexSource, "server_shadow");
   setVoiceTraceSink(null);
 });
 

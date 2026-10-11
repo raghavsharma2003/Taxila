@@ -1,0 +1,32 @@
+# r12 T-voice scripted turn: tap-tier1 (account plain, tier 1), 2026-10-11T14:39:17.152Z
+# said: "Mujhe lagta hai yeh recursive rule hai"
++     0 ms  mic.mode           mode=tap  reasons=["talk_pref_tap","no_headset_detected","echo_probe_not_built","duplex_not_resolved_yet"]
++  3125 ms  mic.state          state=tap  transport=webrtc
++  3132 ms  mic.duplex         mode=shadow  source=server_shadow
++  3132 ms  mic.mode           mode=tap  reasons=["talk_pref_tap","no_headset_detected","echo_probe_not_built","duplex_shadow_only"]
++  3132 ms  mic.state          state=open
++  3137 ms  tts.request        text=Namaste Kabir, main Asha, aapki AI teacher. Aaj fractions multiply karenge—cricket pitch ke do parts jaisa. Aapka favourite cricket shot kaunsa hai?
++  3310 ms  tts.start          msFromRequest=232
++  3582 ms  asr.config         
++  3781 ms  mic.state          state=transport  transport=webrtc
++  4551 ms  mic.duplex.start   mode=shadow  live=false  why=shadow_never_decides
++ 11572 ms  duplex.decision    mode=shadow  reasons=["wt1_ladder"]  action=SPEAK
++ 13485 ms  tts.end            status=completed  playedFully=true  msUnplayed=0
++ 15085 ms  vad.start          source=tap
++ 15681 ms  duplex.decision    mode=shadow  reasons=["repaired","child_voicing"]  action=YIELD
++ 16279 ms  vad.start          source=local
++ 16374 ms  vad.sustain        source=local
++ 16375 ms  asr.partial        text=Mujhe
++ 16742 ms  asr.partial        text=Mujhe lagta
++ 17151 ms  asr.partial        text=Mujhe lagta hai
++ 17523 ms  asr.partial        text=Mujhe lagta hai yeh
++ 17913 ms  asr.partial        text=Mujhe lagta hai yeh recursive
++ 18283 ms  asr.partial        text=Mujhe lagta hai yeh recursive rule
++ 18665 ms  asr.partial        text=Mujhe lagta hai yeh recursive rule hai
++ 20141 ms  vad.end            source=local
++ 20694 ms  vad.end            source=tap
++ 21351 ms  duplex.decision    mode=shadow  reasons=["backstop","lexical_horizon_unseen","silence_long_for_child"]  action=SPEAK
++ 21880 ms  asr.final          text=Mujhe lagta hai yeh recursive rule hai
++ 23564 ms  tts.request        text=Kabir, aapki baat poori clear nahi hui—please dobara kahiye: aap “recursive rule” ko fractions se kaise jod rahe hain?
++ 23866 ms  tts.start          msFromRequest=362
++ 31819 ms  tts.end            status=completed  playedFully=true  msUnplayed=0

@@ -1,0 +1,40 @@
+# r12 T-voice scripted turn: cohort-tier1 (account owner, tier 1), 2026-10-11T14:37:50.891Z
+# said: "Mujhe lagta hai yeh recursive rule hai"
++     0 ms  mic.mode           mode=tap  reasons=["not_older_family","talk_pref_tap","no_headset_detected","echo_probe_not_built","duplex_not_resolved_yet"]
++  3455 ms  mic.state          state=tap  transport=webrtc
++  3462 ms  mic.duplex         mode=on  source=server
++  3462 ms  mic.mode           mode=tap  reasons=["not_older_family","talk_pref_tap","no_headset_detected","echo_probe_not_built","duplex_not_live"]
++  3462 ms  mic.state          state=open
++  3469 ms  tts.request        text=Namaste Golu, main Asha, tumhari AI teacher. Aaj Grams aur kilograms padhenge. Tumhe cricket mein kya pasand hai?
++  6154 ms  asr.config         
++  6681 ms  mic.state          state=transport  transport=webrtc
++  6800 ms  tts.start          msFromRequest=3391
++  7436 ms  mic.mode           mode=tap  reasons=["not_older_family","talk_pref_tap","no_headset_detected","echo_probe_not_built"]  transport=webrtc
++  7436 ms  mic.state          state=hands_free  transport=webrtc
++  7437 ms  mic.mode           mode=duplex  reasons=[]  transport=webrtc
++  7438 ms  mic.duplex.start   mode=on  live=true
++ 14172 ms  tts.end            status=completed  playedFully=true  msUnplayed=0
++ 14477 ms  duplex.decision    mode=on  reasons=["wt1_ladder"]  action=SPEAK
++ 14477 ms  duplex.commit      mode=on  reason=wt1_nudge
++ 15643 ms  bargein            mode=on  step=engine_revoke
++ 15643 ms  duplex.decision    mode=on  reasons=["repaired","child_voicing"]  action=YIELD
++ 15643 ms  bargein            mode=on  step=engine_yield  reason=revoke
++ 15692 ms  vad.start          source=server
++ 16372 ms  asr.partial        text=Mujhe
++ 16678 ms  vad.start          source=local
++ 16723 ms  asr.partial        text=Mujhe lagta
++ 16803 ms  vad.sustain        source=local
++ 17119 ms  asr.partial        text=Mujhe lagta hai
++ 17486 ms  asr.partial        text=Mujhe lagta hai yeh
++ 17836 ms  asr.partial        text=Mujhe lagta hai yeh recursive
++ 18272 ms  asr.partial        text=Mujhe lagta hai yeh recursive rule
++ 18634 ms  asr.partial        text=Mujhe lagta hai yeh recursive rule hai
++ 19282 ms  asr.final          text=Mujhe lagta hai yeh recursive rule hai
++ 19351 ms  duplex.decision    mode=on  reasons=["prosody_continue","silence_long_for_child"]  action=SPEAK
++ 19351 ms  duplex.commit      mode=on  reason=turn_end
++ 19563 ms  vad.end            source=local
++ 22620 ms  tts.request        text=Golu, tumne “recursive rule” kaha—baat thodi adhuri sunai di. Weight ke baare mein phir se batao?
++ 22871 ms  tts.start          msFromRequest=350
++ 28398 ms  tts.end            status=completed  playedFully=true  msUnplayed=0
++ 35442 ms  duplex.decision    mode=on  reasons=["wt1_ladder","x_closed_no_value"]  action=SPEAK
++ 35442 ms  duplex.commit      mode=on  reason=wt1_nudge

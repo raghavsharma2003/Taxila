@@ -135,8 +135,9 @@ export function micModeWhy(i: MicModeInputs): MicModeWhy {
     if (i.echoDemoted) reasons.push("echo_demoted");
   }
   if (!i.duplexLive) {
-    if (i.duplex === "off" || i.duplex == null) reasons.push("duplex_off");
+    if (i.duplex === "off") reasons.push("duplex_off");
     else if (i.duplex === "shadow") reasons.push("duplex_shadow_only");
+    else if (i.duplex == null) reasons.push("duplex_not_resolved_yet");
     else reasons.push("duplex_not_live");
     if (i.duplexFallback) reasons.push(`duplex_fallback:${i.duplexFallback}`);
   }
@@ -147,13 +148,22 @@ export function micModeWhy(i: MicModeInputs): MicModeWhy {
 }
 
 let lastMode = "";
+let lastInputs: MicModeInputs | null = null;
+let resolved: { mode: "on" | "shadow" | "off"; source: string } | null = null;
+/** src/duplex/flags.ts: the duplex mode this lesson resolved to, and which rule decided it (mic.mode then carries it). */
+export const noteDuplexResolved = safe((mode: "on" | "shadow" | "off", source: string) => {
+  resolved = { mode, source };
+  if (lastInputs) traceMicMode(lastInputs);
+});
 /** Record mic.mode when it (or why) changed. */
-export const traceMicMode = safe((i: MicModeInputs) => {
+export const traceMicMode = safe((inputs: MicModeInputs) => {
+  lastInputs = inputs;
+  const i: MicModeInputs = inputs.duplex === undefined && resolved ? { ...inputs, duplex: resolved.mode } : inputs;
   const w = micModeWhy(i);
   const key = JSON.stringify([w.mode, w.reasons]);
   if (key === lastMode) return;
   lastMode = key;
-  vt("mic.mode", { mode: w.mode, reasons: w.reasons, ...w.inputs });
+  vt("mic.mode", { mode: w.mode, reasons: w.reasons, ...w.inputs, duplexSource: i.duplex === inputs.duplex ? null : resolved?.source ?? null });
 });
 
 // ───────────── transcripts: the realtime transcription events (pure parsing, tested in Node) ─────────────
@@ -354,6 +364,8 @@ export class VoiceLinkTrace {
     if (!fullOn() || !this.micClip) return;
     if (e.type === "input_audio_buffer.speech_started") this.micClip.start({ lessonId: this.lessonId, utterance: ++this.utterance, itemId: str(e.item_id), source: "server_vad" });
     else if (e.type === "input_audio_buffer.speech_stopped") this.micClip.stop({ itemId: str(e.item_id) });
+    // the final closes it too (a lane or a fake that never sends speech_stopped)
+    else if (e.type === "conversation.item.input_audio_transcription.completed" || e.type === "conversation.item.input_audio_transcription.failed") this.micClip.stop({ itemId: str(e.item_id), closedBy: "final" });
   });
 
   /** The transcription session config the link applied (model, language, prompt) — never a key. */
