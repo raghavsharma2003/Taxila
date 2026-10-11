@@ -3822,3 +3822,20 @@ The full-page sheets are taken after scrolling the page in steps and requiring e
 - `ms-r11-g1-parent-battery-2026-10-11` (2026-10-11): Parent Playwright battery (tests/e2e-design-b3-parent.mjs, unchanged, mocked /api, built SPA, n = 1 run each): base efc0e721 415/418, Volt calm 415/418; the same 3 failures on both (V-ONE generic activity, V-NEXT empty submit, V-NEXT wrong password: sign-in step, not parent CSS). Parent unit tests (ui-v2-claims, parent-state, reports-gate, r4-asha-ux, r4-asha-single-teacher) 52/52; UI lint suites 24/24; lint-ui 353 with 0 findings in src/parent.
 - `r11-k-pages-63` (undated): Release 11 K: every child-mode page in Volt by default for an account outside any cohort; 63 real pages (who, hello, home, world, hangar, ask, notebook, me, teacher, practice, lesson first screen x young/older x 360/412/1366) 0 floor findings (14/16 px, 44 px, contrast, no overflow, LOOK-1, AI-1); SAYS-1 parity 0 differ vs the cohort Kaksha on base
 - `ms-r11-s5-setup-shots-2026-10-11` (2026-10-11): Set-up and sign-in before/after, a production build against the stream's Neon TEST branch, headless Chromium, a fresh account per viewport (n=1 per viewport per side, 12 surfaces each): 0 page errors and 0 horizontal overflow before and after at 360x800, 412x915 and 1366x768. The promises hold gate top/bottom after: 653/713 at 360x800 (was 708/756), 633/693 at 412x915, 689/749 at 1366x768: above the fold everywhere.
+
+
+<!-- merged from inbox/r4-main-0940.json -->
+- `ms-r4-rel11-live` (2026-10-11): int/r4-rel11 556639e.
+  - Gate (deploy-azure --gate --dry-run, 1,582 s): 3,054 tests, 3,051 pass, 0 fail, 3 skipped; prompt budget PASS.
+  - Packaged tree (git archive minus docs/evals/tests/art, plus the gate's dist; local production server on the Neon TEST branch):
+    - r4-asha-setup-journey --hello via testdbrun (DATABASE_URL = TEST in the environment, which outranks --env-file; checked): 5 steps, 22 taps, 4 fields, first sound 21,864 ms on phone and 21,493 ms on laptop. Hello cards ai/picture/change/hi in Volt day (class 4), then /c/:id/lesson/new.
+    - w2i-safety alone: 39/39; leftover guardians 114 → 114.
+    - owner-5: 10/14. round2-content: 33/39. boards: 4/5.
+  - Deploy: ACR build, revision taxila-web--s556639e-41l9, canary w0 4/4, then 100%. s9a170c5-xl3g kept as previous; s8448c98-b3f2 deactivated.
+  - taxila.dev at 412x915, signed out: landing, /promises, /start/class, sign-in and /help all serve the Volt pages. Scrolling the landing, 5/5 images load.
+  - Live batteries on taxila.dev: owner-5-visual 14/14; round2-content 37/39 (only the known M item-bound mounts on c4-maths-ch05-t01 and c6-maths-ch07-t01); r4-content-boards 5/5; round3-conversation 27/27.
+  - Worker not redeployed: release 11 changes no server, shared, data, db or package file against 9a170c5, which is what taxila-worker and both Conductor jobs run.
+- `ms-r4-r11-visual-variance` (2026-10-11): owner-5-visual on byte-identical server code.
+  - Packaged tree: 9/12 visual requests filled. Two "Studio slot opened but never became an artifact" and one animation answered in words. It ran in parallel with round2-content, boards and a Playwright set-up journey against the same local server.
+  - taxila.dev, about an hour later, with the four live batteries in parallel against the Azure app: 12/12.
+  - Over releases 7-11 the live results are 12/14, 12/14, 12/14 and 14/14, so about 1 in 12 slots fails, varying from run to run. Read: one packaged run is too noisy to compare visual-slot rates across releases. Compare live runs, or run owner-5 alone.

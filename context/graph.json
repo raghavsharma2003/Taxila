@@ -20095,6 +20095,20 @@
    "at": "2026-10-11",
    "title": "Release 11 integration (int/r4-rel11): stream 2 site 56e7adf, stream 5 set-up 950d56c, G1 parent corner (cherry-picks of 4f20e1f 6ca3dde b9f58b5) + Volt play art a411034, K child app 8a752b9 (default on for every account, device keys versioned .r11). Kept out: G1's parked ITEM-ARENA patches (d1ad460). Next release: Volt day canvas palettes for the young family's play arts, the face window's cream ground, the parent sheet backdrop veil",
    "source": "inbox/r4-main-0830.json"
+  },
+  {
+   "id": "ms-r4-rel11-live",
+   "kind": "measurement",
+   "at": "2026-10-11",
+   "title": "Release 11 (556639e, Volt everywhere) live as taxila-web--s556639e-41l9 at ~09:15 UTC: gate 3,054 tests 3,051 pass 0 fail 3 skipped; packaged tree journey 5 steps to Hello in Volt day and lesson/new, w2i-safety 39/39 alone, owner-5 10/14, round2 33/39, boards 4/5; canary 4/4; taxila.dev owner-5 14/14, round2-content 37/39, boards 5/5, round3-conversation 27/27",
+   "source": "inbox/r4-main-0940.json"
+  },
+  {
+   "id": "ms-r4-r11-visual-variance",
+   "kind": "measurement",
+   "at": "2026-10-11",
+   "title": "Same server code (zero diff in server/shared/data/db/api/package files vs live 9a170c5): owner-5 visual slots 9/12 on the packaged tree (run alongside 3 other batteries and a browser journey) vs 12/12 on taxila.dev an hour later; slot failure is generation variance, not the release",
+   "source": "inbox/r4-main-0940.json"
   }
  ],
  "edges": [
@@ -32362,6 +32376,21 @@
    "src": "dc-r11-site-hero-real-captures",
    "rel": "measured_by",
    "dst": "m-r11-site-lcp"
+  },
+  {
+   "src": "ms-r4-rel11-live",
+   "rel": "part_of",
+   "dst": "dc-r4-volt-everywhere"
+  },
+  {
+   "src": "ms-r4-r11-visual-variance",
+   "rel": "part_of",
+   "dst": "ms-r4-visuals-1-in-12"
+  },
+  {
+   "src": "ms-r4-r11-visual-variance",
+   "rel": "part_of",
+   "dst": "ms-r4-rel11-live"
   }
  ]
 }
