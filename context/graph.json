@@ -20446,6 +20446,20 @@
    "at": "2026-10-11",
    "title": "Release 13.1: on a DATA error (SQLSTATE class 22/23) the trace writer halves the chunk until only the refused rows are left, which are dropped, counted (badRows) and named. A connection or timeout error still drops the chunk. Strings jsonb refuses (NUL, a lone surrogate from a cut mid-emoji) are replaced before buffering. Every failure is logged at most once a minute, and /api/health?trace=1 returns the counters (counts only). Reverse if: the counters show the loss is not a data error, and a different mechanism is found",
    "source": "inbox/r4-main-2135.json"
+  },
+  {
+   "id": "ms-r131-flush-wedge",
+   "kind": "measurement",
+   "at": "2026-10-11",
+   "title": "Root cause of the lost server rows, found with release 13.1's /api/health?trace=1 counters: after a tier-2 browser lesson they read buffered 84, written 85, failures 0, badRows 0, and stayed so. A later event made it 86, still with no flush. The writer was wedged. flushTrace's async body completes SYNCHRONOUSLY on an empty buffer, so its finally cleared state.flushing BEFORE the outer assignment stored the already-settled promise. Every later flush returned that stale promise. Proven in isolation and by a test that fails on the old code. Fixed in release 13.2: yield first, and clear the flag only if it is still its own promise",
+   "source": "inbox/r4-main-2225.json"
+  },
+  {
+   "id": "rj-r131-async-finally-before-assign",
+   "kind": "rejection",
+   "at": "2026-10-11",
+   "title": "`state.flushing = (async () => { … finally { state.flushing = null } })()` as an in-flight guard: when the body has no await on its path (an empty buffer), the finally runs before the assignment, and the guard is left holding a settled promise forever",
+   "source": "inbox/r4-main-2225.json"
   }
  ],
  "edges": [
@@ -32948,6 +32962,21 @@
    "src": "dc-r131-writer-split-and-scrub",
    "rel": "supersedes",
    "dst": "rj-r12-insert-all-or-nothing"
+  },
+  {
+   "src": "ms-r13-server-rows-lost-live",
+   "rel": "caused_by",
+   "dst": "ms-r131-flush-wedge"
+  },
+  {
+   "src": "rj-r131-async-finally-before-assign",
+   "rel": "caused_by",
+   "dst": "ms-r131-flush-wedge"
+  },
+  {
+   "src": "ms-r131-flush-wedge",
+   "rel": "measured_by",
+   "dst": "dc-r131-writer-split-and-scrub"
   }
  ]
 }

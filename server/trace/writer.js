@@ -150,7 +150,11 @@ async function insertSplit(rows) {
  */
 export function flushTrace() {
   if (state.flushing) return state.flushing;
-  state.flushing = (async () => {
+  const run = (async () => {
+    // release 13.2 (ms-r131-flush-wedge): yield once, so this body never completes synchronously. On an empty buffer it
+    // used to: its finally cleared state.flushing BEFORE the assignment below stored the (already settled) promise, and every
+    // later flushTrace() returned that stale promise: the server recorder wrote nothing again, silently, until a restart.
+    await null;
     let n = 0;
     try {
       // the drop counter is itself an event, written once the writer can write again
@@ -180,8 +184,9 @@ export function flushTrace() {
         }
       }
     } catch { /* never throws */ }
-    finally { state.flushing = null; if (state.buf.length) schedule(); }
+    finally { if (state.flushing === run) state.flushing = null; if (state.buf.length) schedule(); }
     return n;
   })();
-  return state.flushing;
+  state.flushing = run;
+  return run;
 }

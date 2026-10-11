@@ -4085,3 +4085,23 @@ The full-page sheets are taken after scrolling the page in steps and requiring e
   - Not reproduced here: the same tree on the Neon TEST branch, served by the packaged production server with the proof account at tier 2, recorded everything: 3 turns gave director.turn x3, classify, safety and db.write x3, srv x25 and model.call x18 with prompt blobs. Production runs DB_DRIVER=pg, and pg over TCP cannot connect from this container (timeout), so the pg path could not be reproduced.
   - A revision restart (ARM revisions/restart) did not bring the lesson rows back.
   - Release 13.1 makes the most likely mechanism impossible (dc-r131-writer-split-and-scrub) and makes it visible either way, through the /api/health?trace=1 counters and a log line for every failure, at most one a minute. The cause is confirmed or ruled out after deploy.
+
+
+<!-- merged from inbox/r4-main-2225.json -->
+- `ms-r131-flush-wedge` (2026-10-11, 22:11-22:25 UTC).
+  - Release 13.1 (03f101e) live as taxila-web--s03f101e-ip20, canary 4/4.
+  - Fresh revision, API probe (srvtrace-probe2): 22 rows at +6 s, 13 kinds including director.turn and model.call. Counters: written 65, failures 0, badRows 0.
+  - Tier-2 browser proof (r12-liveproof) on taxila.dev: the replay now reads the real Azure container end to end (8 rrweb chunks downloaded, replay-221435.png at 412x915), and the flag and its note are stored.
+  - But no director.turn or model.call for its lesson. The counters read buffered 84, written 85, failures 0, badRows 0, unchanged over 30 s. One more request made it buffered 86, still with no flush.
+  - So the writer was wedged, not refusing rows. The 13.1 split and scrub never fired.
+  - Cause, in server/trace/writer.js flushTrace: `state.flushing = (async () => { … while (state.buf.length) { … await … } … finally { state.flushing = null; … } })()`.
+    - On an empty buffer the async body has no await on its path, so it runs to the end synchronously, and its finally clears state.flushing before the outer assignment.
+    - The assignment then stores the already-settled promise, and `if (state.flushing) return state.flushing` returns it on every later call.
+    - The recorder writes nothing again and logs nothing, until the process restarts.
+    - An empty-buffer flush happens in the live race: an event recorded while a flush is in flight arms a timer, the in-flight flush drains that event too, and the timer then fires on an empty buffer. Production's pg inserts are slower than the local Neon HTTP ones, which widens the in-flight window.
+    - Release 13's silence (ms-r13-server-rows-lost-live) and the failed restart (the next lesson wedged it again) fit. It is likely also part of release 12's losses besides the FK poison.
+  - Proof:
+    - a 4-line Node reproduction of the pattern leaves state.flushing a stale promise;
+    - tests/r131-trace-writer.test.mjs 'a flush on an EMPTY buffer never wedges the writer' fails on 03f101e and passes on the fix;
+    - r12-trace-unit and r131 pass 17/17; r12-trace-db passes 6/6 on TEST.
+  - Fix (release 13.2): the body awaits once before anything else, and its finally clears state.flushing only if it still holds its own promise.

@@ -45,3 +45,27 @@ test("characters jsonb refuses are replaced before an event is buffered (a cut m
     assert.equal(written[0].data.text, "Shabash �");
   } finally { _setTraceDeps({ insert: null, off: null }); _resetTrace(); }
 });
+
+test("a flush on an EMPTY buffer never wedges the writer: later events are still written (ms-r131-flush-wedge)", async () => {
+  _resetTrace();
+  const written = [];
+  _setTraceDeps({ off: false, insert: async (rows) => { written.push(...rows); return rows.length; } });
+  try {
+    await flushTrace();          // nothing buffered: the timer firing after an in-flight flush already took everything
+    record("after-empty-flush", {});
+    await flushTrace();
+    assert.deepEqual(written.map((r) => r.kind), ["after-empty-flush"]);
+    // the live race: an event recorded while a flush is in flight is taken by that flush, then its own timer fires on an empty buffer
+    let release;
+    _setTraceDeps({ insert: (rows) => new Promise((r) => { release = () => { written.push(...rows); r(rows.length); }; }) });
+    record("a", {});
+    const inFlight = flushTrace();
+    record("b", {});             // arms a timer while the flush is in flight
+    await new Promise((r) => setTimeout(r, 0)); release(); await inFlight;
+    await flushTrace();           // what the timer does next: an empty-buffer flush
+    _setTraceDeps({ insert: async (rows) => { written.push(...rows); return rows.length; } });
+    record("c", {});
+    await flushTrace();
+    assert.ok(written.some((r) => r.kind === "c"), `written: ${written.map((r) => r.kind).join(",")}`);
+  } finally { _setTraceDeps({ insert: null, off: null }); _resetTrace(); }
+});

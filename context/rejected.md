@@ -2546,3 +2546,7 @@ The replay proof first gated on the share of differing pixels (<= 2 %). A replay
 
 <!-- merged from inbox/r4-main-2135.json -->
 - `rj-r13-silent-chunk-drop` (2026-10-11). Tried: release 12's trace writer inserted 400 rows per statement, dropped the whole chunk on any error, logged failures 1-3 and then every 50th, and exposed no counters. What broke: release 13 in production lost every lesson-flow server row with nothing in the logs (ms-r13-server-rows-lost-live). There was no way to tell from outside which row or error, if any, was to blame. Instead: split on data errors, scrub what jsonb refuses, log every failure at most once a minute with its kinds, and expose the counters.
+
+
+<!-- merged from inbox/r4-main-2225.json -->
+- `rj-r131-async-finally-before-assign` (2026-10-11). Tried: an in-flight guard written as `state.flushing = (async () => { …; finally { state.flushing = null } })()`. What broke: an async function runs synchronously until its first await. With an empty buffer there was none, so the finally cleared the guard before the assignment set it, and the guard held a settled promise forever. The production recorder wrote nothing and logged nothing (ms-r131-flush-wedge). Instead: start the body with `await null`, assign the promise to a const, and clear the guard only if it is still that promise. In-flight guards need a test of the empty case.
