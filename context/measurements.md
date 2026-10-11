@@ -4061,3 +4061,27 @@ The full-page sheets are taken after scrolling the page in steps and requiring e
     - turns 23, 25 and 27 describe aloo in words, with no screen claim.
     - The probe did not fire (the model did not produce either shape that run).
   - Open: open-r13-bare-pointing-on-request-turns.
+
+
+<!-- merged from inbox/r4-main-2135.json -->
+- `ms-r13-server-rows-lost-live` (2026-10-11, 21:13-21:40 UTC).
+  - Release 13 (fa6f5a9) went live as taxila-web--sfa6f5a9-glpk (canary 4/4). Worker taxila-worker--wfa6f5a9-qbq4 with both jobs.
+  - Tier-2 live proof (scratchpad r12-liveproof.mjs on taxila.dev):
+    - recorded and stored: /api/me tier 2, the REC chip, 3 typed turns, a flag plus its note (flag.note), 8 rrweb chunks and 4 TTS clips in the private container, and the replay PNG;
+    - the page's server request rows up to GET /api/child/map;
+    - after the account delete: 0 rows.
+    - Missing: every server row of the lesson itself (lesson start, turns, director.turn, model.call).
+  - API probe (scratchpad srvtrace-probe2.mjs: a fresh @taxila.test account, lesson start plus one turn, counts at +6, +30 and +60 s before cleanup): 0 rows for the account each time. The same probe on 12.1 at 19:27 found 13 kinds (ms-r121-live).
+  - Still written:
+    - unauthenticated GET /api/me (3 requests, 21:35:06);
+    - authed GET /api/me on a fresh account: 3 srv.req and 3 srv.res with its gid (scratchpad authrow.mjs).
+  - The last server rows before those were the canary's and the proof's signups at 21:13:49 and 21:14:36.
+  - No '[trace] write failed', 'dropped', 'failed', 'pool' or 'error' line from revision sfa6f5a9 in ContainerAppConsoleLogs_CL for the hour. The writer logs only failures 1-3 and every 50th.
+  - Ruled out:
+    - env var names: identical, 44 on 12.1 and on 13;
+    - the existence filter: it keeps a real guardian and child (read-only check);
+    - the recorder hooks in turn.js: intact;
+    - writer.js and db.js: unchanged since 12.1.
+  - Not reproduced here: the same tree on the Neon TEST branch, served by the packaged production server with the proof account at tier 2, recorded everything: 3 turns gave director.turn x3, classify, safety and db.write x3, srv x25 and model.call x18 with prompt blobs. Production runs DB_DRIVER=pg, and pg over TCP cannot connect from this container (timeout), so the pg path could not be reproduced.
+  - A revision restart (ARM revisions/restart) did not bring the lesson rows back.
+  - Release 13.1 makes the most likely mechanism impossible (dc-r131-writer-split-and-scrub) and makes it visible either way, through the /api/health?trace=1 counters and a log line for every failure, at most one a minute. The cause is confirmed or ruled out after deploy.

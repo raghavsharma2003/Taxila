@@ -2542,3 +2542,7 @@ The replay proof first gated on the share of differing pixels (<= 2 %). A replay
 
 <!-- merged from inbox/r4-main-2050.json -->
 - `rj-r13-word-overlap-after-board` (2026-10-11). Tried: judging her pointing line against the board that arrived, by overlap between her content words and the board's text. What broke: a board names things its own way ('Solid / Liquid / Gas' while she says 'ice, paani, water vapour'). Three legitimate lines in the packaged round2 run were unpointed, and two boards then failed the W6 timing re-gate because their lines got shorter after the board was timed to them. Instead: judge only the false-claim shapes the owner hit (a game over a board; a picture of a thing neither the board nor the kit has). Word overlap is not meaning.
+
+
+<!-- merged from inbox/r4-main-2135.json -->
+- `rj-r13-silent-chunk-drop` (2026-10-11). Tried: release 12's trace writer inserted 400 rows per statement, dropped the whole chunk on any error, logged failures 1-3 and then every 50th, and exposed no counters. What broke: release 13 in production lost every lesson-flow server row with nothing in the logs (ms-r13-server-rows-lost-live). There was no way to tell from outside which row or error, if any, was to blame. Instead: split on data errors, scrub what jsonb refuses, log every failure at most once a minute with its kinds, and expose the counters.

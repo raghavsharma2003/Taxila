@@ -20425,6 +20425,27 @@
    "at": "2026-10-11",
    "title": "Still open after release 13: on a turn that answers a visual request, a bare pointing line about a thing the board does not show ('Screen par potato dekhiye', no 'picture of' form) is not caught: the reply check stands aside for the piece in flight and the after-board check judges only the game and 'picture of X' shapes. Root fix: the board answers what the child asked for (4A r13 fix 1, RCA-1 todo)",
    "source": "inbox/r4-main-2050.json"
+  },
+  {
+   "id": "ms-r13-server-rows-lost-live",
+   "kind": "measurement",
+   "at": "2026-10-11",
+   "title": "Release 13 live (fa6f5a9, taxila-web--sfa6f5a9-glpk): the server recorder wrote NO lesson-flow rows. The API probe found 0 server events for its lesson at +6, +30 and +60 s (12.1: 13 kinds), the tier-2 browser proof found client events, blobs and request rows but no director.turn or model.call, and no '[trace] write failed' line appeared in Log Analytics. Lone authed and unauthenticated GETs were written. The same tree on the Neon TEST branch with the HTTP driver records everything, tier 2 included; production runs DB_DRIVER=pg, which this container cannot reach to reproduce",
+   "source": "inbox/r4-main-2135.json"
+  },
+  {
+   "id": "rj-r13-silent-chunk-drop",
+   "kind": "rejection",
+   "at": "2026-10-11",
+   "title": "A buffered writer that drops a whole failed chunk and logs only its first 3 failures per process: one refused row hides every other row of its chunk, and the failure goes unseen once the first three are spent",
+   "source": "inbox/r4-main-2135.json"
+  },
+  {
+   "id": "dc-r131-writer-split-and-scrub",
+   "kind": "decision",
+   "at": "2026-10-11",
+   "title": "Release 13.1: on a DATA error (SQLSTATE class 22/23) the trace writer halves the chunk until only the refused rows are left, which are dropped, counted (badRows) and named. A connection or timeout error still drops the chunk. Strings jsonb refuses (NUL, a lone surrogate from a cut mid-emoji) are replaced before buffering. Every failure is logged at most once a minute, and /api/health?trace=1 returns the counters (counts only). Reverse if: the counters show the loss is not a data error, and a different mechanism is found",
+   "source": "inbox/r4-main-2135.json"
   }
  ],
  "edges": [
@@ -32907,6 +32928,26 @@
    "src": "open-r13-bare-pointing-on-request-turns",
    "rel": "part_of",
    "dst": "ms-r13-claims-after-board"
+  },
+  {
+   "src": "ms-r13-server-rows-lost-live",
+   "rel": "part_of",
+   "dst": "dc-r12-flight-recorder"
+  },
+  {
+   "src": "rj-r13-silent-chunk-drop",
+   "rel": "caused_by",
+   "dst": "ms-r13-server-rows-lost-live"
+  },
+  {
+   "src": "dc-r131-writer-split-and-scrub",
+   "rel": "measured_by",
+   "dst": "ms-r13-server-rows-lost-live"
+  },
+  {
+   "src": "dc-r131-writer-split-and-scrub",
+   "rel": "supersedes",
+   "dst": "rj-r12-insert-all-or-nothing"
   }
  ]
 }

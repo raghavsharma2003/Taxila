@@ -5811,3 +5811,14 @@ text predicate (`rj-sr-raw-recall-98-target`).
   - Why: safety by predicate, not instruction. Telling the model not to claim the screen had already failed in the owner's lessons, and a code check against the mounted piece cannot be talked around.
   - Accepted together with main's integration fixes to the request lexicon (ms-r13-clear-board-adjective, ms-r13-meta-subjects). Neither changes the claim predicate.
   - Reversal: a battery or owner replay shows the predicate flagging legitimate pointing lines (the piece IS up and shows those words) on more than 1 in 20 pointing turns, or the repair leaves sentences that no longer say anything.
+
+
+<!-- merged from inbox/r4-main-2135.json -->
+- `dc-r131-writer-split-and-scrub` (2026-10-11).
+  - What: on a Postgres data or integrity error (SQLSTATE class 22 or 23, or the message), the trace writer halves the failed chunk until only refused rows are left. Those are dropped, counted (traceStats().badRows) and named in the log (kind plus error). A connection or timeout error drops the chunk as before, so a dead database never becomes hundreds of retries.
+  - record() replaces NUL and lone UTF-16 surrogates (left by any cut mid-emoji) with U+FFFD before buffering.
+  - Every failure is logged, at most once a minute after the first three, with the chunk's kinds.
+  - /api/health?trace=1 returns { buffered, dropped, written, failures, badRows }: counts only, never an event or an error text, because an error can quote a value.
+  - Why: a recorder that loses events silently is worse than none, because it reads as the truth.
+  - Tests: tests/r131-trace-writer.test.mjs (split, no split on connection errors, scrub), r12-trace-unit (the old behaviour kept).
+  - Reverse if: the live counters show the loss is not a data error. Then the mechanism is elsewhere and this release only made it visible.

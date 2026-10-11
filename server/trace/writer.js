@@ -22,7 +22,7 @@ const withDeadline = (p, ms) => new Promise((resolve, reject) => {
   Promise.resolve(p).then((v) => { clearTimeout(timer); resolve(v); }, (e) => { clearTimeout(timer); reject(e); });
 });
 
-const state = { buf: [], seq: 0, dropped: 0, reported: 0, timer: null, flushing: null, failures: 0, written: 0, insert: null, off: null };
+const state = { buf: [], seq: 0, dropped: 0, reported: 0, timer: null, flushing: null, failures: 0, written: 0, insert: null, off: null, badRows: 0, lastLogAt: 0 };
 
 // Under `node --test` (npm test runs every file in one process) the recorder is OFF unless TAXILA_TRACE=on: its background
 // flushes would otherwise call the database (fetch) inside unrelated tests that stub fetch or count queries. Tests of the
@@ -38,9 +38,23 @@ export function _setTraceDeps({ insert, off } = {}) {
 }
 export function _resetTrace() {
   if (state.timer) clearTimeout(state.timer);
-  Object.assign(state, { buf: [], dropped: 0, reported: 0, written: 0, failures: 0, timer: null, flushing: null });
+  Object.assign(state, { buf: [], dropped: 0, reported: 0, written: 0, failures: 0, timer: null, flushing: null, badRows: 0, lastLogAt: 0 });
 }
-export const traceStats = () => ({ buffered: state.buf.length, dropped: state.dropped, written: state.written, failures: state.failures });
+export const traceStats = () => ({ buffered: state.buf.length, dropped: state.dropped, written: state.written, failures: state.failures, badRows: state.badRows });
+
+// release 13.1 (ms-r13-server-rows-lost-live): characters Postgres jsonb refuses (NUL; a lone UTF-16 surrogate, which a cut
+// mid-emoji leaves) are replaced before an event is buffered, so one sliced string can never fail an insert
+const UNSTORABLE_SRC = "\\u0000|[\\ud800-\\udbff](?![\\udc00-\\udfff])|(?<![\\ud800-\\udbff])[\\udc00-\\udfff]";
+const HAS_UNSTORABLE = new RegExp(UNSTORABLE_SRC); // no /g: .test() keeps no lastIndex between strings
+const UNSTORABLE = new RegExp(UNSTORABLE_SRC, "g");
+export function scrubUnstorable(v, depth = 0) {
+  if (typeof v === "string") return HAS_UNSTORABLE.test(v) ? v.replace(UNSTORABLE, "\ufffd") : v;
+  if (depth > 10 || v == null || typeof v !== "object") return v;
+  if (Array.isArray(v)) return v.map((x) => scrubUnstorable(x, depth + 1));
+  const out = {};
+  for (const [k, x] of Object.entries(v)) out[k] = scrubUnstorable(x, depth + 1);
+  return out;
+}
 
 /**
  * Record one server (or worker) event. Synchronous, never throws, never awaits.
@@ -57,7 +71,8 @@ export function record(kind, data, o = {}) {
     const tier = o.tier === 2 ? 2 : 1;
     if (tier === 2 && (o.accountTier ?? c.tier ?? 1) < 2) return; // tier-2 detail only for the owner cohort
     if (state.buf.length >= MAX_BUFFER) { state.dropped++; return; }
-    const { data: d } = fit(data);
+    const { data: fitted } = fit(data);
+    const d = scrubUnstorable(fitted);
     state.buf.push({
       // no lesson and no page load: the guardian's own stream (signup, consent, /api/me, the parent corner), else "server"
       v: 1, sid: String(o.sid ?? c.sid ?? c.pid ?? (isUuid(o.gid ?? c.gid) ? `g:${o.gid ?? c.gid}` : "server")).slice(0, 80), pid: o.pid ?? c.pid ?? null,
@@ -105,6 +120,30 @@ export async function insertTraceRows(rows) {
   return Array.isArray(r) ? r.length : rows.length;
 }
 
+/** A Postgres data / integrity error (SQLSTATE class 22 or 23, or its message), as opposed to the database being away. */
+export const isDataError = (e) => /^2[23]/.test(String(e?.code ?? "")) || /invalid input|unicode|surrogate|violates|out of range|malformed|unsupported/i.test(String(e?.message ?? ""));
+/** Every failure is logged, at most one line a minute (the first three always), with the error and the chunk's kinds. */
+function logFailure(what, e, rows) {
+  const now = Date.now();
+  if (state.failures > 3 && now - state.lastLogAt < 60_000) return;
+  state.lastLogAt = now;
+  const kinds = [...new Set(rows.map((r) => r.kind))].slice(0, 12).join(",");
+  console.warn(`[trace] ${what}: ${String(e?.code ?? "")} ${String(e?.message ?? e).slice(0, 200)} (kinds ${kinds}; failures ${state.failures}, bad rows ${state.badRows})`);
+}
+/** Insert `rows`, halving on a data error until the refused rows stand alone; those are dropped and counted. Resolves the rows written. */
+async function insertSplit(rows) {
+  try {
+    const k = await withDeadline((state.insert ?? insertTraceRows)(rows), insertDeadline());
+    state.written += rows.length;
+    return k;
+  } catch (e) {
+    if (!isDataError(e)) { state.dropped += rows.length; logFailure(`write failed (${rows.length} events dropped)`, e, rows); return 0; }
+    if (rows.length === 1) { state.dropped++; state.badRows++; logFailure("row refused (1 event dropped)", e, rows); return 0; }
+    const mid = Math.ceil(rows.length / 2);
+    return (await insertSplit(rows.slice(0, mid))) + (await insertSplit(rows.slice(mid)));
+  }
+}
+
 /**
  * Write what is buffered. Concurrent calls share one in-flight flush. A failed insert drops that chunk (counted), so a
  * dead database cannot grow memory without bound. Resolves with the rows written. Never throws.
@@ -130,8 +169,13 @@ export function flushTrace() {
           n += await withDeadline(p, insertDeadline()); state.written += chunk.length;
         }
         catch (e) {
-          state.failures++; state.dropped += chunk.length;
-          if (state.failures <= 3 || state.failures % 50 === 0) console.warn(`[trace] write failed (${chunk.length} events dropped):`, String(e?.message ?? e).slice(0, 160));
+          state.failures++;
+          // release 13.1 (ms-r13-server-rows-lost-live): a DATA error (a row Postgres refuses) is one row's fault, never the
+          // chunk's: the chunk is split until only the refused rows are left, and those are dropped, counted and named. A
+          // connection or timeout error drops the chunk as before (a dead database must not turn into 800 retries).
+          if (isDataError(e)) { n += await insertSplit(chunk); continue; }
+          state.dropped += chunk.length;
+          logFailure(`write failed (${chunk.length} events dropped)`, e, chunk);
           break;
         }
       }
