@@ -30,3 +30,18 @@ test("a drawn board is still held to its words: the owner's 'board par aloo' ove
   assert.equal(screenProblem("Kiko, board par dekhiye: Recursive rule aur Explicit rule.", { chips: [], ...TABLE }, null), false);
   assert.equal(screenProblem("Screen par game: left Recursive, right Explicit.", { chips: [{ id: "x" }] }, { id: "rung-s1", engine: "explainer@1" }), true);
 });
+
+test("after the board arrives: only the owner's two false-claim shapes are judged (ms-r13-claims-after-board)", async () => {
+  const { boardClaimProblem, kitWordsOf } = await import("../server/director/say.js");
+  const mathsKit = kitWordsOf({ title: "Arithmetic progressions", skills: [{ title: "Recursive and explicit rules" }], items: [{ prompt_en: "Find the next term of 4, 7, 10" }] });
+  const evsKit = kitWordsOf({ title: "Water and its states", skills: [{ title: "Ice, water and water vapour" }], items: [{ prompt_en: "What does ice turn into when it melts?" }] });
+  const states = { studioSlot: { slotId: "s", intentId: "i", artifact: { kind: "whiteboard", script: { ops: ["Solid", "Liquid", "Gas"].map((text, i) => ({ id: `t${i}`, op: "text", text })) } } } };
+  // owner lesson a95d2ff1 turn 23, over the rules table, in a maths lesson
+  assert.equal(boardClaimProblem("Screen par aloo ka picture dekhiye: uski eyes se sprouts nikalte hain.", { chips: [], ...TABLE }, null, { kitWords: mathsKit }), true);
+  // turns 1 and 3: a game on a screen that shows the table
+  assert.equal(boardClaimProblem("Screen par game: left Recursive, right Explicit.", { chips: [], ...TABLE }, null, { kitWords: mathsKit }), true);
+  assert.equal(boardClaimProblem("Screen par game dekho: pehla card chuniye.", { chips: [], studioSlot: { slotId: "p", intentId: "j", artifact: { kind: "play" } } }, null, { kitWords: mathsKit }), false, "a play piece is up");
+  // the packaged round2 false positive: she names the states, the board labels them
+  assert.equal(boardClaimProblem("Screen par water-cycle dekhiye: ice, paani aur water vapour ke badlav par dhyaan dijiye.", { chips: [], ...states }, null, { kitWords: evsKit }), false);
+  assert.equal(boardClaimProblem("Screen par ice ki picture dekhiye: woh solid hai.", { chips: [], ...states }, null, { kitWords: evsKit }), false, "the lesson's own thing");
+});

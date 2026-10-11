@@ -209,6 +209,38 @@ export function screenClaimProblem(text, ui, module) {
   return false;
 }
 
+// ── release 13 integration (ms-r13-claims-after-board): the claim check run on the board that ACTUALLY arrived ──
+// Narrower than screenClaimProblem on purpose: word overlap with the board is a poor judge of a line drawn for it (the
+// board says "Solid / Liquid / Gas" while she says "ice, paani, water vapour": the packaged round2 run unpointed 3 such
+// lines and their re-timed boards then failed W6). Only the owner's two false-claim shapes are judged here.
+const PICTURE_OF = /([\p{L}]{2,20})\s+(?:ka|ki|ke|की|का|के)\s+(?:picture|photo|image|tasveer|chitra|तस्वीर|फोटो|चित्र)|\b(?:picture|photo|image)\s+of\s+(?:an?\s+|the\s+)?([\p{L}]{2,20})/iu;
+/** The stems a kit teaches with (title, skills, expectations, its items' prompts): what a lesson's own picture can name. */
+export function kitWordsOf(kit) {
+  const out = new Set();
+  const add = (x) => { for (const w of String(x ?? "").split(/[^\p{L}\p{N}]+/u)) if (w.length >= 2) out.add(stem(w)); };
+  add(kit?.title);
+  for (const k of kit?.skills ?? []) add(k?.title);
+  for (const e of kit?.expectations ?? []) add(e);
+  for (const i of (kit?.items ?? []).slice(0, 80)) { add(i?.prompt_en); add(i?.prompt_hi); }
+  return out;
+}
+/**
+ * true when a sentence pointing at the screen claims (1) a game while a board, not a play piece, is up, or (2) a picture
+ * of a thing named outside both the board and the lesson ("Screen par aloo ka picture dekhiye" over the rules table in a
+ * maths lesson: owner lesson a95d2ff1 turn 23). PURE.
+ */
+export function boardClaimProblem(text, ui, module, { kitWords = new Set() } = {}) {
+  const sentences = String(text ?? "").match(/[^.!?।]+[.!?।]*/g) ?? [];
+  const words = stageWords(ui, module);
+  for (const x of sentences.filter((y) => POINT_AT.test(y))) {
+    if (PLAY_CLAIM.test(x) && !playMounted(ui, module)) return true;
+    const m = x.match(PICTURE_OF);
+    const sub = m?.[1] ?? m?.[2];
+    if (sub && !CLAIM_STOP.has(sub.toLowerCase()) && !words.has(stem(sub)) && !kitWords.has(stem(sub))) return true;
+  }
+  return false;
+}
+
 /** "screen par … dekho:", "board pe dekhiye", "look at the screen:": the pointing phrase of a sentence that only LOOKS. */
 const POINTING = /\b(?:(?:screen|board)\s+(?:par|pe|mein|me)\s+|on\s+the\s+(?:screen|board)\s*,?\s*|स्क्रीन\s+पर\s+)((?:[\p{L}\p{N}]+\s+){0,3}?)(?:dekho|dekhiye|dekh\s+lo|dekhte\s+hain|look(?:\s+at\s+(?:it|this))?|देखो)\b\s*/iu;
 const LOOK_AT_SCREEN = /\b(?:look\s+at\s+the\s+(?:screen|board)|(?:screen|board)\s+(?:par|pe)\s+(?:dekho|dekhiye))\b\s*[:,—-]?\s*/iu;
