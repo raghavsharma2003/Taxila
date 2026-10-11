@@ -51,7 +51,7 @@ export function ClassStep() {
           </div>
         </fieldset>
       </section>
-      {!adding && <Link to="/start/student" className="t-meta block-link">I am a student</Link>}
+      {!adding && <Link to="/start/student" className="btn btn-secondary onb-ghost" data-testid="i-am-student">I am a student</Link>}
     </StepFrame>
   );
 }

@@ -44,6 +44,9 @@ test("the moments that face the child use her family look; the floors hold", () 
   for (const m of rules.matchAll(/(\d+)px\/[\d.]+ var\(--k-(sans|mono)\)|font-size: (\d+)px/g)) assert.ok(Number(m[1] ?? m[3]) >= 14, m[0]);
   // the decorative » is not part of the button's accessible name
   assert.match(rules, /content: "»" \/ ""/);
+  // "I am a student": a 48 px ghost button, same words, same destination (main's review)
+  assert.match(src("src/onboarding/steps/Class.tsx"), /<Link to="\/start\/student" className="btn btn-secondary onb-ghost" data-testid="i-am-student">I am a student<\/Link>/);
+  assert.match(rules, /\.onb-ghost \{[^}]*min-height: 48px/);
   // the title takes focus but draws no box
   assert.match(rules, /\.onb-title:focus-visible \{ outline: none/);
 });
