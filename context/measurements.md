@@ -3857,3 +3857,26 @@ The full-page sheets are taken after scrolling the page in steps and requiring e
   - No guardian row has that email.
   - 5 non-test guardians exist. The owner's test child 6fc3f68e ('Kiko', both of today's c9 lessons) belongs to a gmail.com guardian (prefix 5930482d, created 2026-10-04, 3 children, last lesson 2026-10-11 14:06 UTC). A second gmail.com guardian (prefix 8693f455) was created 2026-10-11 06:53 UTC, minutes after the owner's 06:49 'it all looks the same' screenshot.
   - So from release 8 to release 11 no owner-cohort feature reached the owner's sessions: Kaksha before release 11 made it the default, the school-day start, hands-free duplex, and grown-up Asha's lamp2 look. This also explains T-voice's WHY-TAP candidate (a): the duplex config answered 'not in cohort', so it was tap-to-talk.
+
+
+<!-- merged from inbox/r12-t-client.json -->
+## m-r12-tclient-replay-proof
+`tests/prod/r12-t-client-replay.mjs`, 2026-10-11, dev server, Playwright Chromium 412x915 DPR 1, reduced motion. Scripted lesson (real LessonRuntime, scripted Director) at tier 2: screenshots at 4 moments, then the rrweb recording rendered at the same Date.now(); plus a board page (Desk fixture work-beat). Differing pixels (grey diff > 32): 0, 0.054, 0, 0.123, 0.02 %; differing 32 px tiles (> 10 % differing pixels): 0, 0, 0, 2, 0. Pairs in docs/design/round4/build/r12/t-client/pair-*.png.
+
+## m-r12-tclient-budgets
+`tests/prod/r12-t-client-budget.mjs`, 2026-10-11, n = 3 interleaved rounds, SwiftShader GL (a lab proxy, not a phone). Tier 1: scripted lesson, 3 turns, CPU x4: the recorder's own time 0.33 % median, 0.41 % max of wall time; page TaskDuration with vs without +0.12 % median. Tier 2 rAF fps over 4 s: board 60.0-60.2 (60.4 without), Antariksh 3D 56.6-58.4 (58.4-60.1 without), rrweb running (about 16 canvas frames per window). Identity: no recorder vs a sabotaged tier-2 recorder: identical floor sequence, turn requests and visible text (REC chip excluded), no page error. Masking (`r12-t-client-masking.mjs`): 0 leaks of password, email, phone, PIN, plain text, bearer token or response token across tier-1 events and the rrweb stream.
+
+
+## Merged inbox entries (write-up from the entry text)
+- `ms-r12-tserver-budget-2026-10-11` (2026-10-11): Flight recorder server cost, in-process server, 3 lessons x 10 turns, real Azure, TAXILA_TRACE_PROFILE=1, US container, 2026-10-11: record() time inside a /api/lesson/turn request p50 0.69 / p95 1.62 / max 1.65 ms (n = 29, about 7 events per turn); every request p95 1.32 ms (n = 175). Flush serialisation about 0.11 ms per turn (21.6 KB of events per turn). Budget is 10 ms p95: met.
+- `ms-r12-tserver-hung-insert-2026-10-11` (2026-10-11): On a local production build (serve.mjs, Neon HTTP driver) one trace insert hung with no error, and every event after it was lost (1 of 6 turns recorded). Fix: an 8 s deadline per insert; the chunk counts as dropped and the writer moves on. The re-run recorded all 6 turns, 191 events, 0 dropped. Root cause of the hang not found (a stalled fetch through the proxy is suspected).
+- `ms-r12-tvoice-voice-turn-2026-10-11` (2026-10-11): r12 T-voice scripted voice turn (LOCAL production build, desktop Chromium fake mic, r4-timeline fake transcriber with fixed 750 ms, TEST accounts; not a phone, not a child; 2026-10-11). Cohort account: /api/duplex/config {duplex:'on', cohort:'owner'} in 46 ms; engine live 7.4 s after the lesson screen opened; mic.mode duplex with no headset; 38 voice events, 0 blobs at tier 1. Tier 2: 2 audio.tts.clip (117/105 KB) and 1 audio.mic.chunk (58 KB, webm/opus). Non-cohort: shadow, so tap, with reasons talk_pref_tap, no_headset_detected, echo_probe_not_built, duplex_shadow_only. Trace cost: 0.44 us per transcript delta, 6.6 us per final (Node 22)
+- `ms-r12-tvoice-owner-lessons-voice-2026-10-11` (2026-10-11): r12 T-voice, from the owner's two c9 lessons of 2026-10-11 (read-only RCA export): both ran the cascade lane. 16/17 child turns were spoken; 0/16 carry asr_conf (the live transcriber returns no logprobs, server/voice/stt.js); the talk mix marked 8/17 turns 'unclear'. No row records the talk mode (tap vs hands-free), so why the owner had to tap cannot be read from the database
+
+
+<!-- merged from inbox/r4-main-1630.json -->
+- `ms-r12-tvoice-owner-lessons-voice-2026-10-11` (T-voice, 2026-10-11). Method: read-only, from main's RCA export of the owner's two c9 lessons (docs/design/round4/build/r12/rca/owner-lessons-2026-10-11.json).
+  - Both lessons ran the cascade lane.
+  - 16 of 17 child turns were spoken, and 0 of those 16 carry asr_conf: the live transcriber returns no logprobs (server/voice/stt.js).
+  - The talk mix marked 8 of 17 turns 'unclear'.
+  - No row records the talk mode (tap vs hands-free), so why the owner had to tap could not be read from the database. The cause was found separately: ms-r4-owner-cohort-wrong-email.

@@ -5768,3 +5768,32 @@ text predicate (`rj-sr-raw-recall-98-target`).
   - Budgets: at most 10 ms p95 server time per turn and at most 2% client main thread in tier 1. A recorder failure never changes a lesson.
   - Access: scripts/trace.mjs (--recent, --session timeline, --replay --at to PNG, --flags) plus a 'Flag this moment' button for the owner.
   - Reverse if: the owner wants tier 2 for everyone (rewrite the public promise first), tier 1 measurably slows a turn, or storage cost outgrows the evidence.
+
+
+<!-- merged from inbox/r12-t-client.json -->
+## dc-r12-tclient-recorder
+`src/trace/**` is the client half of `dc-r12-flight-recorder`, built to `shared/trace.ts` (T-server, e376d62f). The bus stamps, masks (by key at any depth and by shape in free text) and caps every event, batches every 2 s under 256 KB, beacons at pagehide, sends with the page's original fetch, drops (counted) on failure and never throws; it times itself. The lesson is recorded from the Desk's model (state, card, chips, tray, answer, summary) and the stage's own render (kind, slot, mount, renderer events). Tier 2 (from `/api/me` trace.tier) adds lazy rrweb with canvas sampling, the REC chip and the owner's flag.
+**Reverse if:** the tier-1 budget is exceeded on a real phone, or the owner wants the recorder off for some accounts.
+
+## dc-r12-tclient-board-cleared-overlaid
+`StudioWhiteboard` records each page as `ui.render.stage` {page, scriptId, mode, ops, priorOps, previous: CLEARED|OVERLAID, texts}, and after it has drawn `ui.render.board` {visibleOps, earlierVisible, onScreen}. The second is read from the SVG (op groups with opacity > 0.05), so a page that piles onto an earlier one shows as OVERLAID even if the script says fresh.
+**Reverse if:** the board renderer changes its op markup (data-op / data-id), then update the DOM count.
+
+## dc-r12-tclient-replay-settled
+`scripts/trace-replay.mjs` uses rrweb's Replayer; at each moment it injects a style that jumps every CSS animation and transition to its end, and focuses the node named by the recorder's last `trace.focus` custom event. Without both, the proof's first runs lost the caption and the answer chip (opacity 0 at frame 0 of their entry animation) and the focused field's ring.
+**Reverse if:** an audit needs the in-between animation frame (pass --motion full and drop the settle style for that run).
+
+
+## Merged inbox entries (write-up from the entry text)
+- `dec-r12-tserver-one-writer` (2026-10-11): Server trace events go through ONE buffered writer (server/trace/writer.js). record() is synchronous: it masks, fits the event to 8 KB and buffers it. One jsonb multi-row insert per second. The buffer is capped at 5,000 events; past the cap, or on a failed or hung insert (deadline 8 s), events are dropped and counted, and the count is recorded as trace.dropped. It never throws or awaits on a request. Off under node --test unless TAXILA_TRACE=on; TAXILA_TRACE=off turns it off everywhere. Reverse if: the p95 recorder cost per turn exceeds 10 ms, or a lesson behaves differently with the recorder broken.
+- `dec-r12-tserver-identity-from-auth` (2026-10-11): Trace cid and gid come only from auth: requireGuardian, requireChild, loadTurnContext and the tts-stream ownership query fill a per-request AsyncLocalStorage store. Client batch events get a cid only when their sid is a lesson of the signed-in guardian. The sid is the lesson id, else the page-load id (x-taxila-pid), else g:<guardian>. Reverse if: never (the client is never trusted for identity).
+- `dec-r12-tserver-erasure` (2026-10-11): trace_event.cid and gid cascade from child and guardian (029_trace.sql), so DELETE /api/children and DELETE /api/account take trace rows in their own transaction. Rows keyed only by an erased lesson, and the blobs, are deleted after the commit, by ids and refs read before it. Retention runs nightly via ops.mjs --nightly: tier 1 after 30 days, tier 2 after 90, blobs first. Tested on Neon TEST (tests/r12-trace-db.run.mjs).
+- `dc-r12-tvoice-voice-events` (2026-10-11): r12 T-voice (2026-10-11): the voice events of the flight recorder come from src/voice/trace.ts. mic.mode carries tap|duplex with every gate that held. mic.duplex records the resolved duplex mode, its source and each /api/duplex/config answer. mic.duplex.start and duplex.fallback say why the engine is or is not live. The other events: vad.*, asr.partial (throttled 300 ms), asr.final (confidence, unsure words, ms from end of speech), tts.request/start/end/interrupt/error (played fully or not), bargein steps and duplex.decision. All are fire-and-forget and no-ops without a sink. Tier 2 only: audio.mic.chunk from the link's OWN mic stream and audio.tts.clip from her player's output; tier 1 never constructs a clip recorder. Reverse if: a measured turn slows (budget: <1 ms of voice tracing per turn) or the public 'never stored' promise changes
+
+
+<!-- merged from inbox/r4-main-1630.json -->
+- `dc-r12-integration` (2026-10-11): release 12 was merged in this order on base 0b8dc83: T-server first (it owns shared/trace.ts), then T-client, then T-voice.
+  - The only conflict was shared/trace.ts. T-server's later version adds kinds (studio.slot.refused, job.start/end, play.act, tts.first/end/failed), so it was taken whole.
+  - The patch-request commits on the client branches (src/main.tsx installTrace, package.json rrweb 2.1.7 as a lazy tier-2 chunk, src/lesson/cascadeLink.ts and LessonScreen.tsx voice hooks) came in with their merges.
+  - Release 13 (4A's RCA fixes, claude/r4-conversation d348414) shares server/brain/turn.js and server/studio/seam.js with the recorder's hooks. It ships after release 12 on its own gate, so the recorder is live while the owner tests the fixes.
+  - Reverse if: the release 12 gate or the packaged batteries fail on a recorder hook. Then drop that stream's merge, because the recorder must never change a lesson.

@@ -2521,3 +2521,8 @@ A lime (`--k-move`) brand mark in the header was tried and dropped: with the her
 
 <!-- merged from inbox/r4-main-1545.json -->
 - `rj-r4-cohort-by-assumed-email` (2026-10-11): tried: owner cohorts set from sha256 of the email the main session had in its own context, checked only by 'the live env contains that hash' (cohortcheck.mjs). What broke: nothing ever checked that a guardian with that email exists, or that it is the account the owner actually tests with. It isn't, so releases 8-11's owner-only features reached nobody, and the owner judged the app without them ('it all looks the same', then '1 out of 100'). Do instead: derive cohort hashes from the guardian rows the owner's own test sessions use, found by the child ids in the owner's screenshots and by recent non-test guardians. Then verify end to end that /api/me for that account reports the cohort flags.
+
+
+<!-- merged from inbox/r12-t-client.json -->
+## rj-r12-tclient-pixel-share-gate
+The replay proof first gated on the share of differing pixels (<= 2 %). A replay missing the caption line and the answer chip passed at 0.59 %. Replaced by a local gate: 32 px tiles, a tile differs when > 10 % of its pixels do, at most 4 such tiles (a focus ring the replayer cannot reproduce is 1-4).
