@@ -20,7 +20,20 @@
   }
  ],
  "edges": [
-  { "src": "dec-r12-tserver-erasure", "rel": "measured_by", "dst": "ms-r12-1-late-erased-event-fk-2026-10-11" },
-  { "src": "dec-r12-flight-recorder", "rel": "measured_by", "dst": "ms-r12-1-replay-proof-2026-10-11" }
+  {
+   "src": "dec-r12-tserver-erasure",
+   "rel": "measured_by",
+   "dst": "ms-r12-1-late-erased-event-fk-2026-10-11"
+  },
+  {
+   "src": "dec-r12-flight-recorder",
+   "rel": "measured_by",
+   "dst": "ms-r12-1-replay-proof-2026-10-11"
+  },
+  {
+   "src": "ms-r12-1-late-erased-event-fk-2026-10-11",
+   "rel": "part_of",
+   "dst": "ms-r12-trace-fk-poison"
+  }
  ]
 }

@@ -20326,6 +20326,63 @@
    "at": "2026-10-11",
    "title": "A test file that writes process.env at module top level (or sets it in a test body and deletes it only on the success path) in the one-process npm test: the write lands mid-run in whichever earlier file's test is executing when the import happens, so another file's test changes behaviour depending on import timing",
    "source": "inbox/r4-main-1900.json"
+  },
+  {
+   "id": "ms-r12-1-replay-proof-2026-10-11",
+   "kind": "measurement",
+   "title": "Release 12.1 replay proof, 2026-10-11 18:16-18:18 UTC, n = 1. Packaged production build on Neon TEST, with a tier-2 proof account (the only TAXILA_TRACE_FULL_FOR entry). Playwright Chromium at 412x915 opened /c/<child>/lesson/new, tapped 'Tap to hear Asha', and the lesson started (real Azure). scripts/trace.mjs --replay <child-prefix> --at <screenshot second> gathered 6 rrweb chunks and rendered one PNG. Against the real screenshot it differs in 0.0 % of pixels (grey difference > 32). This container has no storage key, so the blobs went to a local TAXILA_TRACE_BLOB_DIR, not the trace container. Evidence: docs/design/round4/build/r12/t-server/proof-*.",
+   "at": "2026-10-11",
+   "source": "inbox/r12-1-t-server.json"
+  },
+  {
+   "id": "ms-r12-1-late-erased-event-fk-2026-10-11",
+   "kind": "measurement",
+   "title": "Found by the 12.1 proof, and fixed. A trace event naming a guardian erased since it was recorded broke trace_event_gid_fkey (the DELETE /api/account request's own srv.res, flushed after the commit), and the writer dropped its whole chunk (up to 400 rows; 2 that time). insertTraceRows now skips only the rows whose child or guardian no longer exists. Tested on Neon TEST (tests/r12-trace-db.run.mjs).",
+   "at": "2026-10-11",
+   "source": "inbox/r12-1-t-server.json"
+  },
+  {
+   "id": "dec-r12-1-child-session-by-rid",
+   "kind": "decision",
+   "title": "trace.mjs --session <child-prefix> means every session of that child: its lesson ids, every sid its rows sit under, the page loads joined by request id, and g:<guardian>. The page loads are joined by request id because a Desk page's client events carry no cid: the client never names the child, and the server stamps cid only on its own request events. A client event shares its rid with the server's request event. Reverse if: the client sends x-taxila-pid and the server stamps it, so pages can be joined by pid directly.",
+   "at": "2026-10-11",
+   "source": "inbox/r12-1-t-server.json"
+  },
+  {
+   "id": "r4c-ms-r12-rca-owner-lessons",
+   "kind": "measurement",
+   "at": "2026-10-11",
+   "title": "r12 RCA of the owner release-11 lessons (a95d2ff1 29 turns, b08fe8a7 7 turns; export at 84bc6050). Board: 7 of 10 a95d2ff1 pages are the same s1 compare@1 table (fresh mode; the lesson-cached explainerFor model fill via board-first), whatever the child asked. Continue pages 3-5 land on earlier ops when replayed through the client rule (StudioWhiteboard priorFor): page 4 writes ? over page 3s 4 and +3. Speculation: 17 turns, 14 miss (median server_ms 2526), 1 hit (585), 2 not speculated (1555); the one hit is the only speculated turn whose understanding note carried no request. Screen guard G-SAY-1 checks only for tap targets: turn 3 Screen par game and turn 23 screen par aloo passed. Method: export replay + pure tests (tests/r12-rca.test.mjs). Write-up docs/design/round4/build/r12/rca/RCA.md",
+   "source": "inbox/r4-conversation.json"
+  },
+  {
+   "id": "r4c-dc-screen-claims-by-predicate",
+   "kind": "decision",
+   "at": "2026-10-11",
+   "status": "proposed",
+   "title": "Proposed for release 13 (main decides): a sentence that points at the screen or board is checked against what is mounted (a game needs a play piece; its content words must be words the mounted piece shows), and the screen repair drops only the pointing, never the content (r12/rca/patches/r13-fix-2-5-screen-claims.diff). Reversal: a battery shows false flags on legitimate pointing lines above a bar main sets.",
+   "source": "inbox/r4-conversation.json"
+  },
+  {
+   "id": "ms-r13-clear-board-adjective",
+   "kind": "measurement",
+   "at": "2026-10-11",
+   "title": "Release 13 review: 4A's clear-the-board request read the ADJECTIVE 'saaf/clear/khali' as the command. On a 19-line probe, 12 of 13 lines that are not asks (e.g. 'screen saaf nahi dikh raha', 'board khali hai', 'the screen is not clear') came back as clear_board, which wipes the board the child is trying to read; 'board pe jo likha hai mita do' was missed. Integration fix: a command only with a do-verb, no negation before the verb, no sound words in the gap; probe 19/19",
+   "source": "inbox/r4-main-2000.json"
+  },
+  {
+   "id": "ms-r13-meta-subjects",
+   "kind": "measurement",
+   "at": "2026-10-11",
+   "title": "Release 13 review: deictic and meta words became a 'subject' the child named ('is cheez', 'pichle wale', 'aaj ke topic'). Release 13 keeps that subject for 4 turns and answers a later picture ask with 'I cannot show <subject>'. Integration fix: one genericSubject() check on freeSubjectOf, the old TOPIC path and the offTopic store; aloo / cricket / dost kept",
+   "source": "inbox/r4-main-2000.json"
+  },
+  {
+   "id": "ms-r13-trace-integration",
+   "kind": "measurement",
+   "at": "2026-10-11",
+   "title": "Release 13 integration of the recorder tooling: T-server's trace.mjs --replay (gathers chunks from blobs) composed with T-client's trace-replay.mjs (--events, or a bare session); integration adds beacon chunks (no ref: rebuilt with traceBlobPath, that day or the next) and the flag's note (flag.note joined to flag.owner on pid + n). r12-trace-db 6/6 on TEST; a beacon unit test; a TEST-branch probe flag printed its note",
+   "source": "inbox/r4-main-2000.json"
   }
  ],
  "edges": [
@@ -32723,6 +32780,46 @@
    "src": "rj-test-env-at-import",
    "rel": "caused_by",
    "dst": "ms-r121-board-sync-env-leak"
+  },
+  {
+   "src": "dec-r12-tserver-erasure",
+   "rel": "measured_by",
+   "dst": "ms-r12-1-late-erased-event-fk-2026-10-11"
+  },
+  {
+   "src": "ms-r12-1-late-erased-event-fk-2026-10-11",
+   "rel": "part_of",
+   "dst": "ms-r12-trace-fk-poison"
+  },
+  {
+   "src": "r4c-dc-screen-claims-by-predicate",
+   "rel": "measured_by",
+   "dst": "r4c-ms-r12-rca-owner-lessons"
+  },
+  {
+   "src": "ms-r13-trace-integration",
+   "rel": "part_of",
+   "dst": "dc-r12-flight-recorder"
+  },
+  {
+   "src": "ms-r13-clear-board-adjective",
+   "rel": "part_of",
+   "dst": "dc-r12-integration"
+  },
+  {
+   "src": "ms-r13-meta-subjects",
+   "rel": "part_of",
+   "dst": "dc-r12-integration"
+  },
+  {
+   "src": "dc-r12-flight-recorder",
+   "rel": "measured_by",
+   "dst": "ms-r12-1-replay-proof-2026-10-11"
+  },
+  {
+   "src": "r4c-dc-screen-claims-by-predicate",
+   "rel": "part_of",
+   "dst": "dc-r12-integration"
   }
  ]
 }

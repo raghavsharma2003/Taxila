@@ -3936,7 +3936,7 @@ The full-page sheets are taken after scrolling the page in steps and requiring e
 
 
 <!-- merged from inbox/r4-main-1900.json -->
-- `ms-r121-board-sync-env-leak` (2026-10-11, 18:35-19:05 UTC).
+- `ms-r121-board-sync-env-leak` (2026-10-11, 18:30-18:55 UTC).
   - Symptom: the release 12.1 gate on int/r4-rel12.1 0e65392 ran 3,101 tests, 3,097 pass and 1 fail: tests/p4-content-unit.test.mjs:259 'board sync: the line plan wins inside the deadline; a slow line plan yields to a passing late speculative board', expected 'line', got 'code', duration 335 ms. The same test had failed once before in 4B's full-suite run. It passes alone.
   - Reading the code: server/stagecraft/board-sync.js plan() answers 'code' only once the sync deadline has passed (`left <= 0`, or the deadline sleep winning the race). The default deadline is 1900 ms, so a 335 ms 'code' answer means the deadline was about 300 ms.
   - Cause:
@@ -3954,3 +3954,54 @@ The full-page sheets are taken after scrolling the page in steps and requiring e
     - No assertion was loosened.
   - Result with the fix: both files pass alone (28/28 and 1/1). Under the same injected load, 3/3 runs pass, and test 852 now runs under the real 1900 ms default (657-673 ms per test, both halves).
   - Other top-level env writes in tests/*.test.mjs: forge-g1, forge-g1-serve and forge-g2 set FORGE_DB_CACHE/FORGE_BLOB off, a placeholder AZURE_OPENAI_*, and FORGE_PUBLIC_BASE. They point code away from real services, and no test asserts on their absence. Left as they are, and logged here.
+
+
+<!-- merged from inbox/r4-main-2000.json -->
+- `ms-r13-clear-board-adjective` (2026-10-11, 18:58-19:05 UTC). Method: requestOf from 4A's claude/r4-conversation d348414 (git archive of server/ + shared/), on 19 hand-written child lines: 6 real asks to clear the board and 13 lines that only describe the screen or the sound.
+  - 4A's version: 5 of 6 asks caught. Missed: 'board pe jo likha hai mita do' (the gap allowed 3 words).
+  - 12 of 13 non-asks came back as {type: 'clear_board', whole: true}:
+    - 'screen saaf nahi dikh raha' and 'board saaf nahi dikh raha didi': I cannot see it clearly;
+    - 'background mein noise hai, saaf nahi sunai de raha';
+    - 'screen clear nahi hai', 'mujhe board clear nahi samajh aaya', 'board pe likha hua saaf saaf dikh raha hai';
+    - 'screen pe kuch saaf nahi hai', 'board khali hai', 'screen khaali kyun hai', 'is it clear on the board', 'the screen is not clear'.
+    - clear_board is acted on at any length, so each of these would have erased the board the child was trying to read. That is the owner's 'what is on screen is wrong' class of failure, caused by the fix for another one.
+  - Cause: CLEAR_VERB took bare 'clear', 'saaf' and 'khali', which in Hinglish are as often the adjective as the command, and there was no negation check ('board mat hatao' would also have cleared).
+  - Integration fix (requests.js clearBoardAsk):
+    - 'clear', 'saaf' and 'khali' count only with a do-verb after them (karo, kar do, kijiye, kar sakti ho, and the Devanagari forms); hatao, mitao, erase and wipe are commands on their own;
+    - surface-then-verb allows up to 5 words between them, verb-then-surface up to 3, and 'kachra … verb' up to 6;
+    - English counts only verb-first ('clear the board', after start, punctuation, please or can you);
+    - a negation before the verb (mat, nahi, don't, मत, नहीं) is never a clear;
+    - a gap with a sound word (noise, awaaz, shor, mic) is never a clear.
+  - After: 6/6 asks and 0/13 non-asks. Two non-asks ('board pe likha hua saaf saaf dikh raha hai', 'is it clear on the board') now reach the older VISUAL rule as a diagram ask, which is the behaviour before release 13. Pinned in tests/r13-integration-requests.test.mjs.
+- `ms-r13-meta-subjects` (2026-10-11, 19:00-19:05 UTC). Same method, 21 lines.
+  - 4A's version: 'is cheez ke baare mein batao' gave topic 'is cheez', 'pichle wale ke baare mein batao' gave 'pichle wale', and 'aaj ke topic ke baare mein batao' gave 'ke topic'.
+  - The older TOPIC rule gave the same three; release 13 adds the harm. state.js keeps req.subject (or freeSubjectOf) as s.offTopic for 4 turns, and a picture ask then answers 'I cannot show you <subject>' (visualUnavailable), and change_topic offers only word ways in.
+  - Fix: genericSubject(sub), true when every word is generic, meta or pointing (is, iske, cheez, pichle, wale, topic, chapter, sawal, answer, aaj, and the Devanagari forms). It applies to freeSubjectOf, the older TOPIC path and the offTopic store.
+  - After: all three read null. 'aloo', 'आलू', 'cricket' and 'dost' are still subjects.
+- `ms-r13-trace-integration` (2026-10-11, 19:20-19:30 UTC).
+  - Composition:
+    - T-server's trace.mjs --replay resolves the session (every session of a child, pages joined by rid), downloads the rrweb chunks and calls T-client's trace-replay.mjs with --events <dir>. trace-replay keeps --events and adds its own bare-session path.
+    - The two fixes did not conflict. The one conflict, server/trace/writer.js, kept main's existence-filtered INSERT with RETURNING.
+  - Added at integration:
+    - gatherReplay also takes chunks marked beacon. Their path is rebuilt with server/trace/blob.js traceBlobPath, on the event's day and on the next day (the blob route dates the path by arrival). Before, `distinct on (ref)` with `data ? 'blob'` dropped them, and the beacon chunk holds a page's last seconds, which is often the moment the owner flags.
+    - --flags joins each flag.owner to its flag.note on (pid, data.n). The trace_flag view reads the note from the owner row, which never has one (T-client's report).
+  - Checks:
+    - tests/r12-trace-db.run.mjs 6/6 on the Neon TEST branch (TAXILA_DB=test, DATABASE_URL set to TEST in memory), including '--replay gathers its rrweb chunks';
+    - tests/r13-integration-trace.test.mjs: a ref chunk plus a beacon chunk that arrived after midnight are gathered, and a beacon that was never stored is reported missing;
+    - a probe flag.owner + flag.note inserted on TEST: `trace.mjs --flags` printed the note, and the probe rows were deleted.
+  - Not exercised here: the Azure blob GET. Both streams' proofs used TAXILA_TRACE_BLOB_DIR. The live proof after deploy is the first real read.
+
+
+## Merged inbox entries (write-up from the entry text)
+- `ms-r12-1-replay-proof-2026-10-11` (2026-10-11): Release 12.1 replay proof, 2026-10-11 18:16-18:18 UTC, n = 1. Packaged production build on Neon TEST, with a tier-2 proof account (the only TAXILA_TRACE_FULL_FOR entry). Playwright Chromium at 412x915 opened /c/<child>/lesson/new, tapped 'Tap to hear Asha', and the lesson started (real Azure). scripts/trace.mjs --replay <child-prefix> --at <screenshot second> gathered 6 rrweb chunks and rendered one PNG. Against the real screenshot it differs in 0.0 % of pixels (grey difference > 32). This container has no storage key, so the blobs went to a local TAXILA_TRACE_BLOB_DIR, not the trace container. Evidence: docs/design/round4/build/r12/t-server/proof-*.
+- `ms-r12-1-late-erased-event-fk-2026-10-11` (2026-10-11): Found by the 12.1 proof, and fixed. A trace event naming a guardian erased since it was recorded broke trace_event_gid_fkey (the DELETE /api/account request's own srv.res, flushed after the commit), and the writer dropped its whole chunk (up to 400 rows; 2 that time). insertTraceRows now skips only the rows whose child or guardian no longer exists. Tested on Neon TEST (tests/r12-trace-db.run.mjs).
+- `r4c-ms-r12-rca-owner-lessons` (2026-10-11): r12 RCA of the owner release-11 lessons (a95d2ff1 29 turns, b08fe8a7 7 turns; export at 84bc6050). Board: 7 of 10 a95d2ff1 pages are the same s1 compare@1 table (fresh mode; the lesson-cached explainerFor model fill via board-first), whatever the child asked. Continue pages 3-5 land on earlier ops when replayed through the client rule (StudioWhiteboard priorFor): page 4 writes ? over page 3s 4 and +3. Speculation: 17 turns, 14 miss (median server_ms 2526), 1 hit (585), 2 not speculated (1555); the one hit is the only speculated turn whose understanding note carried no request. Screen guard G-SAY-1 checks only for tap targets: turn 3 Screen par game and turn 23 screen par aloo passed. Method: export replay + pure tests (tests/r12-rca.test.mjs). Write-up docs/design/round4/build/r12/rca/RCA.md
+
+
+<!-- merged from inbox/r4-main-2010.json -->
+- `r4c-ms-r12-rca-owner-lessons` (2026-10-11, stream 4A; written up at merge by main).
+  - Data: the owner's two release-11 lessons, a95d2ff1 (29 turns) and b08fe8a7 (7 turns), from the read-only export at 84bc6050 (docs/design/round4/build/r12/rca/owner-lessons-2026-10-11.json). Method: the export replayed through pure tests (tests/r12-rca.test.mjs). Full write-up: docs/design/round4/build/r12/rca/RCA.md.
+  - The board: 7 of 10 a95d2ff1 pages are the same s1 compare@1 table, whatever the child asked. It was drawn fresh each time, from the lesson-cached explainerFor model fill through board-first. This is the owner's 'same visual again'.
+  - Continue pages 3-5, replayed through the client rule (StudioWhiteboard priorFor), land on earlier ops: page 4 writes ? over page 3's 4 and +3. This is the owner's 'drawn on top of the previous content'.
+  - Speculation: of 17 turns, 14 missed (median server_ms 2526), 1 hit (585) and 2 were not speculated (1555). The one hit is the only speculated turn whose understanding note carried no request.
+  - The screen guard G-SAY-1 checked only for tap targets, so turn 3's 'Screen par game' (no game mounted) and turn 23's 'screen par aloo' (a maths table on screen) passed. This is the owner's 'she claimed an image that was not there'.

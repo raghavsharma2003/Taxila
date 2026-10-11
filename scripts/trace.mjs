@@ -157,18 +157,30 @@ async function session(key) {
  */
 export async function gatherReplay(q, key, dir, get) {
   const { sids, pids, cids = [] } = await resolve(q, key);
-  const rows = await q(`select distinct on (data->'blob'->>'ref') t, seq, data from trace_event
-      where kind = 'rrweb.chunk' and data ? 'blob'
+  // a chunk sent by beacon at pagehide (the page's last seconds) carries no ref: the blob route stored it where
+  // traceBlobPath puts it, on the day it ARRIVED (that day or the next), so both are tried (T-client's rebuild)
+  const { traceBlobPath } = await import("../server/trace/blob.js");
+  const all = await q(`select sid, t, seq, data from trace_event
+      where kind = 'rrweb.chunk' and (data ? 'blob' or data->>'beacon' = 'true')
         and (sid = any($1::text[]) or (pid is not null and pid = any($2::text[])) or (cid is not null and cid = any($3::uuid[])))
-      order by data->'blob'->>'ref', t`, [sids, pids, cids]);
-  rows.sort((a, b) => new Date(a.t) - new Date(b.t));
+      order by t, seq`, [sids, pids, cids]);
+  const seen = new Set(), rows = [];
+  for (const r of all) {
+    const t = new Date(r.t).getTime();
+    const refs = r.data?.blob?.ref ? [r.data.blob.ref]
+      : [t, t + 86_400_000].map((at) => traceBlobPath({ sid: r.sid, src: "client", seq: r.data?.seq, ext: "json", t: at }));
+    if (seen.has(refs[0])) continue;
+    seen.add(refs[0]); rows.push({ ...r, refs });
+  }
   fs.mkdirSync(dir, { recursive: true });
   const files = [], missing = [];
   let href = null;
   for (const [i, r] of rows.entries()) {
-    const ref = r.data.blob.ref;
+    const ref = r.refs[0];
     try {
-      const buf = await get(ref);
+      let buf = null, err = null;
+      for (const at of r.refs) { try { buf = await get(at); break; } catch (e) { err = e; } }
+      if (!buf) throw err ?? new Error("not found");
       const evs = JSON.parse(buf.toString("utf8"));
       href ??= (Array.isArray(evs) ? evs : evs?.events ?? []).find((e) => e?.type === 4)?.data?.href ?? null;
       const f = path.join(dir, `${String(i).padStart(5, "0")}-${String(r.data.seq ?? r.seq)}.json`);
@@ -222,7 +234,11 @@ async function recent() {
 async function flags() {
   const q = await db();
   const since = arg("--since", new Date(Date.now() - 7 * 86_400_000).toISOString().slice(0, 10));
-  const rows = await q("select sid, pid, cid, t, turn, note from trace_flag where t >= $1::timestamptz order by t desc limit 200", [since]);
+  // the note arrives as its own flag.note event (same page, same n: src/trace/flag.ts), so it is joined here
+  const rows = await q(`select f.sid, f.pid, f.cid, f.t, f.turn, coalesce(f.note, n.note) as note from trace_flag f
+      left join lateral (select e.data->>'note' as note from trace_event e where e.kind = 'flag.note' and e.pid is not distinct from f.pid
+        and e.data->>'n' = f.data->>'n' order by e.t desc limit 1) n on true
+      where f.t >= $1::timestamptz order by f.t desc limit 200`, [since]);
   for (const r of rows) console.log(`★ ${new Date(r.t).toISOString().slice(0, 19)}Z  ${r.sid}${r.turn != null ? ` turn ${r.turn}` : ""}  "${cut(r.note ?? "", 160)}"\n   → node scripts/trace.mjs --session ${r.sid} --from ${new Date(new Date(r.t).getTime() - 60_000).toISOString().slice(11, 19)} --to ${new Date(new Date(r.t).getTime() + 60_000).toISOString().slice(11, 19)}`);
   if (!rows.length) console.log("(no flags)");
 }

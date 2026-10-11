@@ -38,7 +38,7 @@ import { explicitPace } from "../persona/pace.js";
 import { directorProposal } from "./proposal.js";
 import { p5Flag } from "../conversation/flags.js";
 import { unsafeChildPhrase } from "../conversation/screen.js";
-import { freeSubjectOf } from "./requests.js";
+import { freeSubjectOf, genericSubject } from "./requests.js";
 import { parkEntry, pushLater, recentParked, dueParked, serveLater } from "../conversation/policy.js";
 import { alsoReading, alsoQuestion, questionShaped, bareAck } from "../conversation/lexicon.js";
 import { intakeStart, intakeStep } from "./session/beat.js";
@@ -1287,7 +1287,7 @@ function decide(s, input, item) {
   // honestly about IT (owner lesson a95d2ff1 turns 18-24)
   if (p5Flag("R4CONV") && req && ["topic", "switch", "change_topic", "visual"].includes(req.type)) {
     const subject = req.subject ?? freeSubjectOf(input.text ?? "");
-    if (subject) s.offTopic = { subject: String(subject).slice(0, 30), turn: s.turn };
+    if (subject && !genericSubject(subject)) s.offTopic = { subject: String(subject).slice(0, 30), turn: s.turn };
   }
   // p5-interaction: what the UNDERSTAND note read alongside a graded answer (a parked question, a hedge, a check)
   if (p5Flag("STEER") && cls?.alsoPark) s.later = pushLater(s.later ?? [], parkEntry({ ...cls.alsoPark, turn: s.turn, itemOnTable: true }));

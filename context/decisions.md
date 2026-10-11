@@ -5797,3 +5797,17 @@ text predicate (`rj-sr-raw-recall-98-target`).
   - The patch-request commits on the client branches (src/main.tsx installTrace, package.json rrweb 2.1.7 as a lazy tier-2 chunk, src/lesson/cascadeLink.ts and LessonScreen.tsx voice hooks) came in with their merges.
   - Release 13 (4A's RCA fixes, claude/r4-conversation d348414) shares server/brain/turn.js and server/studio/seam.js with the recorder's hooks. It ships after release 12 on its own gate, so the recorder is live while the owner tests the fixes.
   - Reverse if: the release 12 gate or the packaged batteries fail on a recorder hook. Then drop that stream's merge, because the recorder must never change a lesson.
+
+
+## Merged inbox entries (write-up from the entry text)
+- `dec-r12-1-child-session-by-rid` (2026-10-11): trace.mjs --session <child-prefix> means every session of that child: its lesson ids, every sid its rows sit under, the page loads joined by request id, and g:<guardian>. The page loads are joined by request id because a Desk page's client events carry no cid: the client never names the child, and the server stamps cid only on its own request events. A client event shares its rid with the server's request event. Reverse if: the client sends x-taxila-pid and the server stamps it, so pages can be joined by pid directly.
+- `r4c-dc-screen-claims-by-predicate` (2026-10-11): Proposed for release 13 (main decides): a sentence that points at the screen or board is checked against what is mounted (a game needs a play piece; its content words must be words the mounted piece shows), and the screen repair drops only the pointing, never the content (r12/rca/patches/r13-fix-2-5-screen-claims.diff). Reversal: a battery shows false flags on legitimate pointing lines above a bar main sets.
+
+
+<!-- merged from inbox/r4-main-2010.json -->
+- `r4c-dc-screen-claims-by-predicate` (2026-10-11; proposed by 4A, ACCEPTED by main at the release 13 integration).
+  - A sentence that points at the screen or the board is checked against what is mounted. A game claim needs a play piece up, and the sentence's content words must be words the mounted piece shows.
+  - The screen repair removes only the pointing and keeps the content (unpointScreen), so 'Screen par seedhi dekho: 4, 7, 10.' becomes 'Seedhi: 4, 7, 10.'. Before, the whole sentence went, and with it the sequence the next question needed.
+  - Why: safety by predicate, not instruction. Telling the model not to claim the screen had already failed in the owner's lessons, and a code check against the mounted piece cannot be talked around.
+  - Accepted together with main's integration fixes to the request lexicon (ms-r13-clear-board-adjective, ms-r13-meta-subjects). Neither changes the claim predicate.
+  - Reversal: a battery or owner replay shows the predicate flagging legitimate pointing lines (the piece IS up and shows those words) on more than 1 in 20 pointing turns, or the repair leaves sentences that no longer say anything.
