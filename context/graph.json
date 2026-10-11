@@ -19945,6 +19945,13 @@
    "at": "2026-10-11",
    "title": "Across releases 7-9 on taxila.dev owner-5 scored 12/14 every time: each run one of 12 visual requests fails (a different request each run: the c7 fraction whiteboard twice, a diagram once), while round2-content varied 33-37/39 on the same failure types; a stable ~8% slot failure rate, not a release regression",
    "source": "inbox/r4-main-0010.json"
+  },
+  {
+   "id": "ms-r4-rel9-worker-jobs",
+   "kind": "measurement",
+   "at": "2026-10-11",
+   "title": "Release 9 worker: taxila-worker and the canary job reached 9a170c5 on 2026-10-11 ~00:20 UTC, but taxila-conductor-nightly stayed on c439bd7 until 06:05 UTC (first --jobs run: socket error; --jobs-only --from-tree retry: connect timeout to management.azure.com; third run Succeeded). No nightly fired on the old image after release 9 (next fire 22:40 UTC)",
+   "source": "inbox/r4-main-0610.json"
   }
  ],
  "edges": [
@@ -32115,6 +32122,11 @@
   },
   {
    "src": "ms-r4-visuals-1-in-12",
+   "rel": "part_of",
+   "dst": "ms-r4-rel9-live"
+  },
+  {
+   "src": "ms-r4-rel9-worker-jobs",
    "rel": "part_of",
    "dst": "ms-r4-rel9-live"
   }
