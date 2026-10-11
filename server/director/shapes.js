@@ -447,7 +447,7 @@ export const offerWaysOff = ({ subject }) => join(
 export const visualUnavailable = ({ subject }) => join(
   `they asked to see ${clean(subject) || "it"}: you cannot show a picture of it right now — say so plainly in a few words, never point at the screen or the board`,
   `then describe ${clean(subject) || "it"} in words they can picture (shape, colour, where it is found), two short sentences`,
-  "then one small question that brings them back to today's idea",
+  "then one small question that brings them back to today's idea; never send them to search for it elsewhere",
 );
 /** round 3 fix (experience B8): "yeh nahi padhna, X padhna hai": a real topic of their class, offered (never a stop question). */
 export const switchOffer = ({ title }) => join(
@@ -506,7 +506,9 @@ export const MUST_NOTE = Object.freeze({
   visual_animation: "never say there is no video or animation: if something on the screen moves, point at what moves; if not, show the movement in words, step by step, as it happens",
   // merged-tree owner-5 (whiteboard): "Whiteboard par 120 tickets ... samajhiye" named the board but never sent the eyes to it
   // release 13 (A): the honest floor for a picture nothing can make (r12 RCA failure 3)
-  visual_unavailable: "first, in a few words, that you cannot show that picture right now; never 'screen par' or 'board par' about it; then the words",
+  visual_unavailable: "first, in a few words, that you cannot show that picture right now; never 'screen par' or 'board par' about it, never send them to search for it or to another app; then the words",
+  // r12 RCA failure 4 (release-13 replay, turn 13: the board was cleared and she never said so)
+  clear_board: "first, in a few words, that the board is cleared now; never about noise, recording or the microphone",
   visual_diagram: "never say there is no picture, never draw with characters; if the screen has it, first send their eyes there (dekho / look) and say what to see; if not, paint it in words",
   // the hook after a no (out_of_bounds reengages 8/12: the decline came, the hook was the bare question again)
   // battery arm 3 (pooled, out_of_bounds 11 -> 7 of 23): "after the short no" read as curt ("lesson ke baad bhi nahi", "woh

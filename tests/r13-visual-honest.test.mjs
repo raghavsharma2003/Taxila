@@ -8,6 +8,7 @@ import { initLessonState, step } from "../server/director/state.js";
 import { findItem } from "../server/director/items.js";
 import { classifyFast, targetFor } from "../server/director/classify.js";
 import { requestOf, freeSubjectOf } from "../server/director/requests.js";
+import { whiteboardAskOf } from "../server/brain/propose.js";
 import { kit, CTX, cls } from "./fixtures/kit.mjs";
 
 const K = kit();
@@ -27,6 +28,8 @@ test("the child's subject is read in either script; generic words are not subjec
   assert.equal(freeSubjectOf("aloo ki photo dikhao"), "aloo");
   assert.equal(freeSubjectOf("मेरे को उसके आप कोई फोटो दिखाओ ना"), null);
   assert.equal(freeSubjectOf("अरे मेरे को सोचना नहीं है यार, मेरे को इमेज दिखाओ यार"), null);
+  // b08fe8a7 turn 4 (release-13 replay): "diagram" in Devanagari is the kind of picture, never a subject
+  assert.equal(freeSubjectOf("नहीं, मेरे को आप डायग्राम दिखाओ, मुझे देखना है डायग्राम।"), null);
   assert.deepEqual(requestOf(L18), { type: "topic", subject: "आलू", whole: false });
 });
 
@@ -43,6 +46,9 @@ test("A: 'Different subject' after aloo offers no picture; the picture chip gets
   assert.match(pic.move.shape, /cannot show a picture of it right now/);
   assert.doesNotMatch(pic.move.shape, /it is on the screen now/);
   assert.match(pic.move.must ?? "", /cannot show that picture/);
+  assert.match(pic.move.must ?? "", /never send them to search/);
+  // and no board is asked for on that turn (brain/propose.js)
+  assert.deepEqual(whiteboardAskOf({ beat: { id: "b", type: "explain" }, lane: "cascade", late: false, strained: false, move: pic.move }).proposals, []);
 });
 
 test("A: a picture of today's idea is unchanged (the kit's subject, or no subject)", () => {

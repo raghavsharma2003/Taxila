@@ -168,8 +168,10 @@ export function screenProblem(text, ui, module) {
 // Owner lesson a95d2ff1: "Screen par game: left Recursive, right Explicit" (turn 3, no game mounted) and "screen par aloo
 // dekho" / "board par aloo dekho" (turns 23, 25, a maths table on screen) passed, because G-SAY-1 asked only whether
 // there was something to TAP. A sentence that points at the screen or the board must name what is there.
-const POINT_AT = /\b(?:screen|board|whiteboard)\s+(?:par|pe|mein|me)\b|\bon\s+the\s+(?:screen|board)\b|\blook\s+at\s+the\s+(?:screen|board)\b|(?:स्क्रीन|बोर्ड)\s+(?:पर|में)/iu;
-const PLAY_CLAIM = /\b(?:game|games|khel|khelo|khelte|khelenge|activity|play)\b|गेम|खेल/iu;
+// any sentence that names the screen or the board points at it ("screen par", "screen ke four parts", "on the board"); the
+// owner replay of release 13 (2026-10-11, turn 3: "Game: screen ke four parts dekhiye") slipped the narrower par/pe form
+const POINT_AT = /\b(?:screen|whiteboard)\b|(?<!\b(?:cbse|icse|state|school|cricket|rbse|bihar|up)\s)\bboard\b(?!\s+(?:exams?|pariksha|games?|ke\s+exam))|स्क्रीन|(?<!(?:सीबीएसई|स्कूल)\s)बोर्ड(?!\s+(?:परीक्षा|एग्जाम))/iu;
+const PLAY_CLAIM = /\b(?:games?|khel\w*|activity|play\w*)\b|गेम|खेल/iu;
 const CLAIM_STOP = new Set("screen board whiteboard dekho dekhiye dekhte dekh look there here yahan wahan abhi tumhe tumhara aapko aapka dikh raha rahi kaunsa kaunsi kitne kitna batao bataiye socho phir pehle aage left right upar neeche game khel".split(" "));
 const stem = (w) => w.toLowerCase().normalize("NFKC").slice(0, 5);
 /** The words a mounted piece shows: a whiteboard's texts, the rung's texts and facts, the chips' labels. */
@@ -212,7 +214,11 @@ const LOOK_AT_SCREEN = /\b(?:look\s+at\s+the\s+(?:screen|board)|(?:screen|board)
 export function unpointScreen(sentence) {
   const s0 = String(sentence ?? "");
   if (ACT_WORDS.test(s0)) return null;
-  const s = s0.replace(POINTING, (_m, what) => (what ? `${what.trim()}: ` : "")).replace(LOOK_AT_SCREEN, "").replace(/:\s*:/, ":").replace(/^\s*[:,—-]\s*/, "").trim();
+  const s = s0.replace(POINTING, (_m, what) => (what ? `${what.trim()}: ` : "")).replace(LOOK_AT_SCREEN, "")
+    // any other pointing phrase ("screen ke four parts dekhiye", "on the board") and its look verb
+    .replace(/\b(?:on|at)\s+the\s+(?:screen|board)\b/giu, "").replace(/(?:\b(?:screen|whiteboard|board)\b|स्क्रीन|बोर्ड)\s+(?:ke|ki|ka|par|pe|mein|me|के|की|का|पर|में)\s+/giu, "")
+    .replace(/\b(?:dekhiye|dekho|dekh\s+lo|dekhte\s+hain|look)\b|देखो|देखिए/giu, "")
+    .replace(/\s+([,.;!?।:—-])/g, "$1").replace(/[;:]\s*([.!?।])/g, "$1").replace(/:\s*:/, ":").replace(/\s{2,}/g, " ").replace(/^\s*[:,—-]\s*/, "").trim();
   if (refersToScreen(s) || POINT_AT.test(s) || s.split(/\s+/).filter((w) => /[\p{L}\p{N}]/u.test(w)).length < 2) return null;
   return s[0].toUpperCase() + s.slice(1);
 }

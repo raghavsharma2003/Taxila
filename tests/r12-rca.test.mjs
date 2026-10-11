@@ -36,6 +36,10 @@ test("RCA-2: a claim about the screen is checked against what is mounted (turn 3
   // turns 23 and 25: the maths table on screen; nothing it shows is aloo
   assert.equal(screenProblem(line(23), { chips: [], studioSlot: { artifact: table } }, null), true, "'screen par aloo dekho' over a maths table");
   assert.equal(screenProblem(line(25), { studioSlot: { artifact: table } }, null), true, "'board par aloo dekho' over a maths table");
+  // the release-13 replay's turn 3 (2026-10-11): "screen ke" is pointing too
+  assert.equal(screenProblem("Game: screen ke four parts dekhiye—sequence, term, recursive, explicit. Pehla: next term kaise milega?", { chips: [{ id: "x", label: "Keep going" }] }, rung), true);
+  // the third replay's turn 3: the table framed as a game to play on screen
+  assert.equal(screenProblem("Chaliye screen par “spot the rule” kheliye: recursive rule mein previous term dekhiye. Pehle kaunsa column chunenge?", { studioSlot: { artifact: table } }, null), true);
   // and what stays allowed: pointing at what IS drawn
   assert.equal(screenProblem("Screen par dekho: Recursive rule left mein hai. Explicit rule kya karta hai?", { studioSlot: { artifact: table } }, null), false);
 });
@@ -49,6 +53,8 @@ test("RCA-3: an off-topic picture ask is remembered and answered honestly (turns
 test("RCA-4a: 'board clear karo … hatao' is a request the lesson can act on (turn 12)", () => {
   for (const said of [line(12), "board clear karo", "ye board hatao", "board saaf karo"]) {
     assert.equal(requestOf(said)?.type, "clear_board", said);
+    // whole: classifyFast acts only on whole requests (the release-13 replay's turn 13 lost it as a long turn)
+    assert.equal(requestOf(said)?.whole, true, said);
   }
 });
 
