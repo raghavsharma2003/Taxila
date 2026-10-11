@@ -114,7 +114,7 @@ export function ChildShell({ children }: { children?: ReactNode }) {
     "data-comfort": prefs.largeText ? "large" : undefined,
     lang: "en",
     // r4 Kaksha (K-P14): the Kaksha look on every child screen, only for the ui.kaksha cohort (nothing otherwise)
-    ...kakshaShellAttrs(ctx ? me : null, ctx?.family),
+    ...kakshaShellAttrs(ctx ? me : null, ctx?.family ?? null),
   };
 
   if (!ctx) {

@@ -333,6 +333,9 @@
 .me-row:first-child { border-top: 0; }
 .me-row--choice { flex-wrap: wrap; }
 .me-row--choice .seg { margin-left: auto; }
+/* release 11 (owner's 412 px shot: "Caption" cut): the label keeps a real width, so the choice wraps under it rather
+   than squeezing the label to a few letters */
+.me-row--choice .me-text { flex: 1 1 9rem; }
 .me-icon { flex: none; display: inline-flex; color: var(--nib); }
 .me-text { flex: 1; min-width: 0; display: flex; flex-direction: column; }
 .me-label { font-weight: 700; }

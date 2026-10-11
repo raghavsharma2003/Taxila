@@ -180,3 +180,58 @@
 /* ---------------------------------------------------------------- the lesson (Desk skin + Debrief) follows the look */
 .kx-lesson[data-klook="holo"] .dk[data-skin="kaksha"] :is(.dk-card, .dk-teacher, .dk-window) { border-radius: 22px; }
 .kx-lesson[data-klook="volt"][data-ktheme="dawn"] .dk[data-skin="kaksha"] .dk-card { border: 2.5px solid var(--k-ink); border-radius: 18px; box-shadow: 4px 4px 0 0 var(--k-ink); }
+
+/* ---------------------------------------------------------------- release 11 juice (dc-r4-volt-everywhere, inside
+   dc-r4-gamification-b: depth and feedback, never a count). The World's orbit and base panels get depth: two parallax
+   star layers drifting at different speeds, the planet's light, the child's ship on its own orbit, a horizon glow under
+   the base. All decoration (aria-hidden), behind the content; reduced motion stills it (kaksha.css's global rule). */
+.kx[data-klook] :is(.kx-orbit, .kx-settle) { overflow: hidden; isolation: isolate; }
+.kx[data-klook] :is(.kx-orbit, .kx-settle) > :is(canvas, svg) { z-index: 1; }
+.kx[data-klook] .kx-depth { position: absolute; inset: -20%; z-index: 0; pointer-events: none; }
+.kx[data-klook] .kx-depth--far {
+  background: radial-gradient(1px 1px at 12% 18%, var(--k-ink) 50%, transparent 51%) 0 0 / 120px 110px,
+    radial-gradient(1px 1px at 63% 72%, var(--k-ion) 50%, transparent 51%) 0 0 / 150px 130px,
+    radial-gradient(1px 1px at 38% 44%, var(--k-ink-2) 50%, transparent 51%) 0 0 / 90px 100px;
+  opacity: .55; animation: kx-drift 90s linear infinite;
+}
+.kx[data-klook] .kx-depth--near {
+  background: radial-gradient(1.6px 1.6px at 22% 30%, var(--k-ink) 50%, transparent 52%) 0 0 / 210px 190px,
+    radial-gradient(2px 2px at 78% 60%, var(--k-look) 50%, transparent 52%) 0 0 / 260px 230px;
+  opacity: .8; animation: kx-drift 40s linear infinite;
+}
+@keyframes kx-drift { to { transform: translate3d(-12%, 6%, 0); } }
+.kx[data-klook] .kx-planet-light { position: absolute; z-index: 0; left: 50%; top: 50%; width: 70%; aspect-ratio: 1; transform: translate(-50%, -50%);
+  border-radius: 50%; background: radial-gradient(closest-side, color-mix(in srgb, var(--k-ion) 34%, transparent), color-mix(in srgb, var(--k-her) 12%, transparent) 60%, transparent);
+  animation: kx-breathe-light 6s ease-in-out infinite; }
+@keyframes kx-breathe-light { 50% { opacity: .7; transform: translate(-50%, -50%) scale(1.06); } }
+.kx[data-klook] .kx-flyby { position: absolute; z-index: 2; left: 50%; top: 50%; width: 0; height: 0; animation: kx-orbit-ship 18s linear infinite; pointer-events: none; }
+.kx[data-klook] .kx-flyby svg { position: absolute; left: -9px; top: calc(-1 * min(34vh, 190px)); transform: rotate(90deg); filter: drop-shadow(0 0 6px var(--k-ship-trail)); }
+@keyframes kx-orbit-ship { from { transform: rotate(0deg) scaleY(.42); } to { transform: rotate(360deg) scaleY(.42); } }
+.kx:not([data-klook]) :is(.kx-depth, .kx-planet-light, .kx-flyby, .kx-horizon) { display: none; }
+.kx[data-klook] .kx-horizon { position: absolute; z-index: 0; left: -10%; right: -10%; bottom: -30%; height: 60%; border-radius: 50%;
+  background: radial-gradient(closest-side, color-mix(in srgb, var(--k-r-science) 30%, transparent), transparent); }
+.kx[data-klook][data-ktheme="dawn"] .kx-depth { opacity: .35; }
+
+/* Debrief: the earned moment, a real level moment for the idea (rays turning behind the badge, a ring that pulses
+   once, then the burst); it names the idea and what it builds, and counts nothing */
+.kx[data-klook] .kx-earn-rays { position: absolute; left: 50%; top: 56px; width: 260px; height: 260px; margin: -130px 0 0 -130px; z-index: 0; pointer-events: none;
+  background: repeating-conic-gradient(from 0deg, color-mix(in srgb, var(--k-secure) 22%, transparent) 0 8deg, transparent 8deg 22deg);
+  -webkit-mask: radial-gradient(closest-side, var(--k-ink) 40%, transparent); mask: radial-gradient(closest-side, var(--k-ink) 40%, transparent);
+  animation: kx-rays 14s linear infinite, kx-rays-in .8s var(--k-spring) both; }
+@keyframes kx-rays { to { rotate: 360deg; } }
+@keyframes kx-rays-in { from { scale: .2; opacity: 0; } }
+.kx[data-klook] .kx-earn > :not(.kx-earn-rays, .kx-earn-burst) { position: relative; z-index: 1; }
+.kx[data-klook] .kx-earn-badge { width: 76px; height: 76px; border-radius: 50%; box-shadow: 0 0 0 0 color-mix(in srgb, var(--k-secure) 60%, transparent);
+  animation: kx-pop .7s var(--k-spring) both .1s, kx-ring 1.4s ease-out .5s 2; }
+@keyframes kx-ring { to { box-shadow: 0 0 0 26px transparent; } }
+.kx[data-klook] .kx-earn-title { font-size: 28px; }
+
+/* ---------------------------------------------------------------- release 11: the play frame under the look. The game
+   chrome (src/play/play.css .pl-root) takes Kaksha's faces on every art direction, and its default paper ground takes the
+   look's tokens (the deliberate per-level art directions chalk / blueprint / raat keep their own grounds). The "you"
+   colour stays ui-v3's --volt (the one-volt law). Tokens only. */
+.kx[data-klook] .pl-root { --pl-font: var(--k-sans); --pl-display: var(--k-sans); --pl-mono: var(--k-mono); }
+.kx[data-klook] .pl-root:not([data-art="chalk"]):not([data-art="blueprint"]):not([data-art="raat"]) {
+  --pl-bg: var(--k-deep); --pl-bg2: var(--k-raise); --pl-ink: var(--k-ink); --pl-ink2: var(--k-ink-2); --pl-line: var(--k-line-2);
+  --pl-btn: var(--k-raise); --pl-btn-ink: var(--k-ink); --pl-accent: var(--k-ion);
+}
