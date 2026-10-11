@@ -28,3 +28,4 @@ export function installTrace(o: { build?: string; disabled?: boolean } = {}): vo
 }
 
 export { emit } from "./bus.ts";
+export { traceBlob } from "./tier2.ts";

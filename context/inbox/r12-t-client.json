@@ -1,0 +1,72 @@
+{
+ "nodes": [
+  {
+   "id": "dc-r12-tclient-recorder",
+   "kind": "decision",
+   "title": "The client flight recorder: one bus in src/trace (masked, capped, 2 s batches + pagehide beacon, never throws, self-timed), /api fetch/EventSource/WebSocket wrappers with X-Taxila-Rid, page hooks, and lesson events from the Desk's own model and the stage's own render",
+   "at": "2026-10-11"
+  },
+  {
+   "id": "dc-r12-tclient-board-cleared-overlaid",
+   "kind": "decision",
+   "title": "Every board page records CLEARED vs OVERLAID twice: from the script (mode, prior ops) and from the screen after drawing (visible op groups from earlier pages): the owner's 'drawn over the previous content' is answered from what was visible",
+   "at": "2026-10-11"
+  },
+  {
+   "id": "dc-r12-tclient-replay-settled",
+   "kind": "decision",
+   "title": "trace-replay renders each moment as the screen settled: CSS animations jumped to their end and the recorded focus applied (a paused rrweb replay otherwise shows just-inserted text at opacity 0)",
+   "at": "2026-10-11"
+  },
+  {
+   "id": "m-r12-tclient-replay-proof",
+   "kind": "measurement",
+   "title": "Replay vs Playwright screenshot, 5 moments (scripted lesson x4, a board page): differing pixels 0-0.123 %, differing 32 px tiles 0-2 (gate <= 4)",
+   "at": "2026-10-11"
+  },
+  {
+   "id": "m-r12-tclient-budgets",
+   "kind": "measurement",
+   "title": "Recorder budgets, dev server, n=3: tier 1 main-thread share 0.33 % median / 0.41 % max (budget 2 %); tier 2 board 60 fps, Antariksh 56.6-58.4 fps (>= 50); a sabotaged recorder leaves the scripted lesson identical; masking: 0 leaks",
+   "at": "2026-10-11"
+  },
+  {
+   "id": "rj-r12-tclient-pixel-share-gate",
+   "kind": "rejection",
+   "title": "Gating replay fidelity on the share of differing pixels: rejected, a replay that lost the caption and the answer chip still differed on only 0.6 % of pixels; the gate is local (32 px tiles with > 10 % differing pixels)",
+   "at": "2026-10-11"
+  }
+ ],
+ "edges": [
+  {
+   "src": "dc-r12-tclient-recorder",
+   "rel": "implements",
+   "dst": "dc-r12-flight-recorder"
+  },
+  {
+   "src": "dc-r12-tclient-board-cleared-overlaid",
+   "rel": "implements",
+   "dst": "dc-r12-flight-recorder"
+  },
+  {
+   "src": "dc-r12-tclient-replay-settled",
+   "rel": "implements",
+   "dst": "dc-r12-flight-recorder"
+  },
+  {
+   "src": "m-r12-tclient-replay-proof",
+   "rel": "measures",
+   "dst": "dc-r12-tclient-replay-settled"
+  },
+  {
+   "src": "m-r12-tclient-budgets",
+   "rel": "measures",
+   "dst": "dc-r12-tclient-recorder"
+  }
+ ],
+ "md": {
+  "decisions": "## dc-r12-tclient-recorder\n`src/trace/**` is the client half of `dc-r12-flight-recorder`, built to `shared/trace.ts` (T-server, e376d62f). The bus stamps, masks (by key at any depth and by shape in free text) and caps every event, batches every 2 s under 256 KB, beacons at pagehide, sends with the page's original fetch, drops (counted) on failure and never throws; it times itself. The lesson is recorded from the Desk's model (state, card, chips, tray, answer, summary) and the stage's own render (kind, slot, mount, renderer events). Tier 2 (from `/api/me` trace.tier) adds lazy rrweb with canvas sampling, the REC chip and the owner's flag.\n**Reverse if:** the tier-1 budget is exceeded on a real phone, or the owner wants the recorder off for some accounts.\n\n## dc-r12-tclient-board-cleared-overlaid\n`StudioWhiteboard` records each page as `ui.render.stage` {page, scriptId, mode, ops, priorOps, previous: CLEARED|OVERLAID, texts}, and after it has drawn `ui.render.board` {visibleOps, earlierVisible, onScreen}. The second is read from the SVG (op groups with opacity > 0.05), so a page that piles onto an earlier one shows as OVERLAID even if the script says fresh.\n**Reverse if:** the board renderer changes its op markup (data-op / data-id), then update the DOM count.\n\n## dc-r12-tclient-replay-settled\n`scripts/trace-replay.mjs` uses rrweb's Replayer; at each moment it injects a style that jumps every CSS animation and transition to its end, and focuses the node named by the recorder's last `trace.focus` custom event. Without both, the proof's first runs lost the caption and the answer chip (opacity 0 at frame 0 of their entry animation) and the focused field's ring.\n**Reverse if:** an audit needs the in-between animation frame (pass --motion full and drop the settle style for that run).\n",
+  "measurements": "## m-r12-tclient-replay-proof\n`tests/prod/r12-t-client-replay.mjs`, 2026-10-11, dev server, Playwright Chromium 412x915 DPR 1, reduced motion. Scripted lesson (real LessonRuntime, scripted Director) at tier 2: screenshots at 4 moments, then the rrweb recording rendered at the same Date.now(); plus a board page (Desk fixture work-beat). Differing pixels (grey diff > 32): 0, 0.054, 0, 0.123, 0.02 %; differing 32 px tiles (> 10 % differing pixels): 0, 0, 0, 2, 0. Pairs in docs/design/round4/build/r12/t-client/pair-*.png.\n\n## m-r12-tclient-budgets\n`tests/prod/r12-t-client-budget.mjs`, 2026-10-11, n = 3 interleaved rounds, SwiftShader GL (a lab proxy, not a phone). Tier 1: scripted lesson, 3 turns, CPU x4: the recorder's own time 0.33 % median, 0.41 % max of wall time; page TaskDuration with vs without +0.12 % median. Tier 2 rAF fps over 4 s: board 60.0-60.2 (60.4 without), Antariksh 3D 56.6-58.4 (58.4-60.1 without), rrweb running (about 16 canvas frames per window). Identity: no recorder vs a sabotaged tier-2 recorder: identical floor sequence, turn requests and visible text (REC chip excluded), no page error. Masking (`r12-t-client-masking.mjs`): 0 leaks of password, email, phone, PIN, plain text, bearer token or response token across tier-1 events and the rrweb stream.\n",
+  "rejected": "## rj-r12-tclient-pixel-share-gate\nThe replay proof first gated on the share of differing pixels (<= 2 %). A replay missing the caption line and the answer chip passed at 0.59 %. Replaced by a local gate: 32 px tiles, a tile differs when > 10 % of its pixels do, at most 4 such tiles (a focus ring the replayer cannot reproduce is 1-4).\n"
+ }
+}

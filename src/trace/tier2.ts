@@ -64,7 +64,14 @@ export async function startReplay(): Promise<void> {
       collectFonts: false,
       blockSelector: "[data-trace-block]",
     });
-    r.stop = () => { try { stopFn?.(); } catch { /* already stopped */ } };
+    // focus moved by the app's own code (the type row opening, a sheet) is not an rrweb interaction: record which node
+    // holds focus as a custom event, so the replay shows the same focus ring (scripts/trace-replay.mjs applies it)
+    // (read a moment later: a just-mounted field has no rrweb id until rrweb's mutation batch has serialized it)
+    const note = () => { try { const el = document.activeElement; const id = el && el !== document.body ? record.mirror.getId(el) : -1; record.addCustomEvent("trace.focus", { id }); } catch { /* replay detail only */ } };
+    const onFocus = () => { setTimeout(note, 60); };
+    addEventListener("focusin", onFocus, true);
+    addEventListener("focusout", onFocus, true);
+    r.stop = () => { try { stopFn?.(); removeEventListener("focusin", onFocus, true); removeEventListener("focusout", onFocus, true); } catch { /* already stopped */ } };
     emit("rrweb.start", { chunkMs: CHUNK_MS, canvasFps: 4 }, { tier: 2 });
     addEventListener("pagehide", () => { void cut(true); }, { once: true });
   } catch (e) {
@@ -91,4 +98,22 @@ export function installTier2(origFetch: typeof fetch): void {
   send = origFetch;
   onTier((t) => { if (t === 2) void startReplay(); else stopReplay(); });
   if (getTier() === 2) void startReplay();
+}
+
+/**
+ * T-voice's door for tier-2 audio (mic chunks, the TTS clips she played): upload the bytes to POST /api/trace/blob and
+ * record `kind` (audio.mic.chunk | audio.tts.clip) pointing at the blob. Tier 2 only: at tier 1 it does nothing (no
+ * audio is ever kept outside tier 2). Never throws; resolves false when nothing was kept.
+ */
+let blobSeq = 0;
+export async function traceBlob(kind: "audio.mic.chunk" | "audio.tts.clip" | (string & {}), bytes: Blob, o: { ext: string; data?: Record<string, unknown> }): Promise<boolean> {
+  try {
+    if (getTier() !== 2 || !send) return false;
+    const seq = ++blobSeq;
+    const q = new URLSearchParams({ sid: sid(), src: "client", seq: `b${seq}`, ext: o.ext, type: bytes.type || "application/octet-stream" });
+    const res = await send(`/api/trace/blob?${q}`, { method: "POST", credentials: "same-origin", headers: { "content-type": bytes.type || "application/octet-stream" }, body: bytes });
+    const ref = res.ok ? await res.json().catch(() => null) : null;
+    emit(kind, { ...(o.data ?? {}), bytes: bytes.size, ...(ref?.ref ? { blob: { ref: ref.ref, bytes: bytes.size, type: bytes.type } } : { failed: res.status }) }, { tier: 2 });
+    return !!ref?.ref;
+  } catch { return false; }
 }
