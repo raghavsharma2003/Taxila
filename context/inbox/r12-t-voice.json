@@ -1,0 +1,45 @@
+{
+  "nodes": [
+    {
+      "id": "dc-r12-tvoice-voice-events",
+      "kind": "decision",
+      "title": "r12 T-voice (2026-10-11): the voice events of the flight recorder come from src/voice/trace.ts. mic.mode carries tap|duplex with every gate that held. mic.duplex records the resolved duplex mode, its source and each /api/duplex/config answer. mic.duplex.start and duplex.fallback say why the engine is or is not live. The other events: vad.*, asr.partial (throttled 300 ms), asr.final (confidence, unsure words, ms from end of speech), tts.request/start/end/interrupt/error (played fully or not), bargein steps and duplex.decision. All are fire-and-forget and no-ops without a sink. Tier 2 only: audio.mic.chunk from the link's OWN mic stream and audio.tts.clip from her player's output; tier 1 never constructs a clip recorder. Reverse if: a measured turn slows (budget: <1 ms of voice tracing per turn) or the public 'never stored' promise changes",
+      "at": "2026-10-11"
+    },
+    {
+      "id": "ms-r12-tvoice-voice-turn-2026-10-11",
+      "kind": "measurement",
+      "title": "r12 T-voice scripted voice turn (LOCAL production build, desktop Chromium fake mic, r4-timeline fake transcriber with fixed 750 ms, TEST accounts; not a phone, not a child; 2026-10-11). Cohort account: /api/duplex/config {duplex:'on', cohort:'owner'} in 46 ms; engine live 7.4 s after the lesson screen opened; mic.mode duplex with no headset; 38 voice events, 0 blobs at tier 1. Tier 2: 2 audio.tts.clip (117/105 KB) and 1 audio.mic.chunk (58 KB, webm/opus). Non-cohort: shadow, so tap, with reasons talk_pref_tap, no_headset_detected, echo_probe_not_built, duplex_shadow_only. Trace cost: 0.44 us per transcript delta, 6.6 us per final (Node 22)",
+      "at": "2026-10-11"
+    },
+    {
+      "id": "ms-r12-tvoice-owner-lessons-voice-2026-10-11",
+      "kind": "measurement",
+      "title": "r12 T-voice, from the owner's two c9 lessons of 2026-10-11 (read-only RCA export): both ran the cascade lane. 16/17 child turns were spoken; 0/16 carry asr_conf (the live transcriber returns no logprobs, server/voice/stt.js); the talk mix marked 8/17 turns 'unclear'. No row records the talk mode (tap vs hands-free), so why the owner had to tap cannot be read from the database",
+      "at": "2026-10-11"
+    },
+    {
+      "id": "open-r12-tvoice-why-tap",
+      "kind": "open",
+      "title": "r12 T-voice: why the owner's Android phone ran tap-to-talk with the duplex cohort on. In code, hands-free on a loudspeaker comes only from the live duplex engine; the headset hint on the Me page belongs to the separate open-mic rule. Candidates, UNCONFIRMED: the cohort answered shadow (email mismatch, another account, two slow lookups); a tx.flag.duplex device key; an engine fallback on Android (no_frames / stt_unavailable); VITE_DUPLEX. Release 12's mic.duplex / mic.duplex.start / duplex.fallback events settle it on the owner's next lesson (WHY-TAP.md)",
+      "at": "2026-10-11"
+    }
+  ],
+  "edges": [
+    {
+      "src": "ms-r12-tvoice-voice-turn-2026-10-11",
+      "rel": "measured_by",
+      "dst": "dc-r12-tvoice-voice-events"
+    },
+    {
+      "src": "open-r12-tvoice-why-tap",
+      "rel": "part_of",
+      "dst": "dc-r12-tvoice-voice-events"
+    },
+    {
+      "src": "ms-r12-tvoice-owner-lessons-voice-2026-10-11",
+      "rel": "part_of",
+      "dst": "open-r12-tvoice-why-tap"
+    }
+  ]
+}
