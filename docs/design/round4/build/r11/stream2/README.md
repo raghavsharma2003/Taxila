@@ -22,6 +22,10 @@ The site is drawn in Volt night everywhere. That covers the landing (rebuilt fro
   - "No points, no streaks, no leaderboards" stays, as do the promises, price and "where we are", the FAQ and the
     helplines.
   - The AI disclosure and the helpline wording are unchanged.
+- **The game moves.** The Play section shows 7 s of real Antariksh play from the games harness's own recording
+  (`public/site/game-loop.webm`, 166 KB, muted, looping), with the still as its poster.
+  - It is below the fold only: it mounts when the frame nears the viewport and is never the LCP element.
+  - Reduced motion keeps the still.
 - **One lime element per screen state.** That element is K's chamfered CTA. The header Start is ink, and the brand mark
   is ink on void.
 - **`index.html`:**
@@ -39,12 +43,16 @@ it comes from adult-run harnesses; no child has used it.
 | pages × sizes (360x800, 412x915, 1366x768) | 18 views | 18 views |
 | views below a floor (overflow, text < 14 px, a missing helpline) | 3 (the landing has 13 px text at all 3 sizes) | **0** |
 | links or buttons under 44 px (inline links in sentences exempt) | not measured | **0** |
-| landing LCP, lab mid phone, n = 5, median / max | 5068 / 5112 ms (painted hero) | **4188 / 4224 ms** (`/site/desk.webp`, 25 KB) |
+| landing LCP, lab mid phone, n = 5, median / max | 5068 / 5112 ms (painted hero) | **4212 / 4332 ms** (`/site/desk.webp`, 25 KB; the game video is never the LCP element) |
+| landing media really loaded for a scrolling visitor (img complete + naturalWidth, video has frames) | 360/412: 3 of 4 (one image with no source) | **6 of 6 at 360, 412 and 1366** (5 captures + the game loop) |
 | landing bytes on first load | 863 KB | 733 KB |
 
 - Sheets:
   - `before-pages-*.webp` and `after-pages-*.webp`: every page's first screen at each size;
-  - `before-landing-full-*.webp` and `after-landing-full-*.webp`: the whole landing.
+  - `before-landing-full-*.webp` and `after-landing-full-*.webp`: the whole landing. These are re-shot the way a
+    visitor sees the page: the harness scrolls in steps, requires every image and video to have loaded, and only then
+    takes the full shot. A full-page shot that never scrolls leaves `loading=lazy` frames empty
+    (`rj-r4-fullpage-shot-lazy`); this pass's first sheets had that artifact.
 - Measurements: `*-site-measure.json` and `*-lcp.json`.
 - Harnesses:
   - `tests/prod/r11-site-sheets.mjs` (floors and sheets);

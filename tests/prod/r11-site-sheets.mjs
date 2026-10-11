@@ -51,9 +51,17 @@ try {
     });
     const vp = path.join(TMP, `${name}-${w}-vp.png`), full = path.join(TMP, `${name}-${w}-full.png`);
     await page.screenshot({ path: vp });
+    // a full-page shot never scrolls, so loading=lazy images below the fold never load in it (rj-r4-fullpage-shot-lazy):
+    // scroll as a visitor would, in steps, then require every image to have really loaded before the full shot
+    await page.evaluate(async () => { for (let y = 0; y < document.documentElement.scrollHeight; y += Math.round(innerHeight * 0.6)) { scrollTo(0, y); await new Promise((r) => setTimeout(r, 120)); } scrollTo(0, 0); });
+    await page.waitForFunction(() => [...document.images].every((i) => i.complete), null, { timeout: 15_000 }).catch(() => {});
+    m.images = await page.evaluate(() => [...document.images].map((i) => ({ src: i.currentSrc.replace(location.origin, ""), ok: i.complete && i.naturalWidth > 0 })));
+    await page.waitForFunction(() => [...document.querySelectorAll("video")].every((v) => v.readyState >= 2), null, { timeout: 15_000 }).catch(() => {});
+    m.videos = await page.evaluate(() => [...document.querySelectorAll("video")].map((v) => ({ src: v.currentSrc.replace(location.origin, ""), ok: v.readyState >= 2 && v.videoWidth > 0 })));
+    m.emptyImages = [...m.images, ...m.videos].filter((i) => !i.ok).map((i) => i.src);
     await page.screenshot({ path: full, fullPage: true });
     rows.push({ label: LABEL, page: name, size: `${w}x${h}`, ...m });
-    console.log(`${LABEL} ${name} ${w}x${h}: overflowX ${m.overflowX}, min text ${m.minText}px, small targets ${m.tinyTargets.length}, AI ${m.ai}, 1098 ${m.childline}, 14416 ${m.telemanas}`);
+    console.log(`${LABEL} ${name} ${w}x${h}: overflowX ${m.overflowX}, min text ${m.minText}px, small targets ${m.tinyTargets.length}, AI ${m.ai}, 1098 ${m.childline}, 14416 ${m.telemanas}, media ${m.images.length + m.videos.length - m.emptyImages.length}/${m.images.length + m.videos.length} loaded (${m.videos.length} video)${m.emptyImages.length ? " EMPTY " + m.emptyImages.join(",") : ""}`);
     await page.close();
   }
 } finally { await browser.close(); server.close(); }
@@ -80,5 +88,5 @@ for w,h in [(360,800),(412,915),(1366,768)]:
     full.save(f"{out}/{label}-landing-full-{w}x{h}.webp", "WEBP", quality=70, method=6)
 `, TMP, OUT, LABEL], { stdio: "inherit" });
 fs.writeFileSync(path.join(OUT, `${LABEL}-site-measure.json`), JSON.stringify({ at: new Date().toISOString(), dist: path.relative(process.cwd(), DIST) || DIST, rows }, null, 1));
-const bad = rows.filter((r) => r.overflowX > 0 || r.minText < 14 || !r.childline || !r.telemanas);
+const bad = rows.filter((r) => r.overflowX > 0 || r.minText < 14 || !r.childline || !r.telemanas || r.emptyImages.length);
 console.log(`${rows.length} views, ${bad.length} below a floor`);

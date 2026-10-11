@@ -75,7 +75,7 @@
 
 /* a capture in a HUD frame: corner brackets, a hairline, a mono tag */
 .sv-shot { position: relative; margin: 0; }
-.sv-shot img { display: block; width: 100%; height: auto; border: 1px solid var(--k-line-2); background: var(--k-deep);
+.sv-shot :is(img, video) { display: block; width: 100%; height: auto; border: 1px solid var(--k-line-2); background: var(--k-deep);
   box-shadow: 0 24px 60px -24px color-mix(in srgb, var(--k-void) 90%, transparent), 0 0 0 4px color-mix(in srgb, var(--k-ink) 4%, transparent); }
 .sv-shot-tag { margin-top: 8px; font: 500 14px/1 var(--k-mono); letter-spacing: .08em; color: var(--k-ink-3); }
 .sv-br { position: absolute; width: 16px; height: 16px; z-index: 2; border: solid var(--k-ion); pointer-events: none; }
