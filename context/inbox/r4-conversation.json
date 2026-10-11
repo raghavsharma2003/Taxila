@@ -1,0 +1,24 @@
+{
+ "nodes": [
+  {
+   "id": "r4c-ms-r12-rca-owner-lessons",
+   "kind": "measurement",
+   "at": "2026-10-11",
+   "title": "r12 RCA of the owner release-11 lessons (a95d2ff1 29 turns, b08fe8a7 7 turns; export at 84bc6050). Board: 7 of 10 a95d2ff1 pages are the same s1 compare@1 table (fresh mode; the lesson-cached explainerFor model fill via board-first), whatever the child asked. Continue pages 3-5 land on earlier ops when replayed through the client rule (StudioWhiteboard priorFor): page 4 writes ? over page 3s 4 and +3. Speculation: 17 turns, 14 miss (median server_ms 2526), 1 hit (585), 2 not speculated (1555); the one hit is the only speculated turn whose understanding note carried no request. Screen guard G-SAY-1 checks only for tap targets: turn 3 Screen par game and turn 23 screen par aloo passed. Method: export replay + pure tests (tests/r12-rca.test.mjs). Write-up docs/design/round4/build/r12/rca/RCA.md"
+  },
+  {
+   "id": "r4c-dc-screen-claims-by-predicate",
+   "kind": "decision",
+   "at": "2026-10-11",
+   "status": "proposed",
+   "title": "Proposed for release 13 (main decides): a sentence that points at the screen or board is checked against what is mounted (a game needs a play piece; its content words must be words the mounted piece shows), and the screen repair drops only the pointing, never the content (r12/rca/patches/r13-fix-2-5-screen-claims.diff). Reversal: a battery shows false flags on legitimate pointing lines above a bar main sets."
+  }
+ ],
+ "edges": [
+  {
+   "src": "r4c-dc-screen-claims-by-predicate",
+   "rel": "measured_by",
+   "dst": "r4c-ms-r12-rca-owner-lessons"
+  }
+ ]
+}
