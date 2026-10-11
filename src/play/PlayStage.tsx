@@ -8,6 +8,7 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import type { ArtId, Door, Lang, Moment, PlayActEnvelope, PlayLevel, PlayWorldFamily } from "../../shared/play.ts";
 import { FLOORS } from "../../shared/play.ts";
+import { shellLook, voltArt } from "./core/volt-art.ts";
 import { logicFor } from "./families/index.ts";
 import { viewFor } from "./families/views.ts";
 import { PlayController } from "./core/controller.ts";
@@ -74,7 +75,8 @@ export interface PlayStageProps {
 }
 
 export function PlayStage(props: PlayStageProps) {
-  const { level, art, lang } = props;
+  const { level, lang } = props;
+  const art = useMemo(() => voltArt(props.art, level.family, shellLook()), [props.art, level.family]);
   const rootRef = useRef<HTMLDivElement>(null);
   const worldRef = useRef<HTMLDivElement>(null);
   const viewRef = useRef<FamilyView | EngineView | null>(null);
