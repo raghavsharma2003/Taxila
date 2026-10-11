@@ -43,10 +43,24 @@ function sink(): VoiceTraceSink | null {
 /** Fire-and-forget: a recorder bug never reaches the lesson. */
 export function vt(kind: string, data: Record<string, unknown>, opts?: { tier?: TraceTier; turn?: number }): void {
   try {
-    sink()?.emit(kind, data, { tier: 1, ...opts });
+    const s = sink();
+    if (s) s.emit(kind, fit(data), { tier: 1, ...opts });
   } catch {
     /* the recorder never throws into a lesson */
   }
+}
+
+/** shared/trace.ts TRACE_MAX_DATA_BYTES is 8 KB: long strings are cut, and anything still too big keeps only its scalars. */
+export const MAX_DATA_CHARS = 7500;
+const MAX_STRING = 2000;
+export function fit(data: Record<string, unknown>): Record<string, unknown> {
+  if (JSON.stringify(data).length <= MAX_DATA_CHARS) return data;
+  const cut: Record<string, unknown> = {};
+  for (const [k, v] of Object.entries(data)) cut[k] = typeof v === "string" && v.length > MAX_STRING ? `${v.slice(0, MAX_STRING)}…[+${v.length - MAX_STRING}]` : v;
+  if (JSON.stringify(cut).length <= MAX_DATA_CHARS) return { ...cut, truncated: true };
+  const scalars: Record<string, unknown> = { truncated: true };
+  for (const [k, v] of Object.entries(cut)) if (v === null || typeof v !== "object") scalars[k] = v;
+  return scalars;
 }
 
 function fullOn(): boolean {
@@ -148,14 +162,15 @@ const obj = (v: unknown): Record<string, unknown> => (v && typeof v === "object"
 const str = (v: unknown): string => (typeof v === "string" ? v : "");
 
 /** Tokens the transcriber was least sure of (p < 0.6), so a mishearing ("recording" for "recursive") shows. */
-export function unsureTokens(logprobs: unknown, max = 8): { token: string; p: number }[] {
+export function unsureTokens(logprobs: unknown, max = 8): { word: string; p: number }[] {
   if (!Array.isArray(logprobs)) return [];
-  const out: { token: string; p: number }[] = [];
+  const out: { word: string; p: number }[] = [];
   for (const l of logprobs) {
     const o = obj(l);
     if (typeof o.logprob !== "number") continue;
     const p = Math.exp(o.logprob);
-    if (p < 0.6) out.push({ token: str(o.token), p: Math.round(p * 1000) / 1000 });
+    // "word", not "token": shared/trace.ts masks any key named token / key
+    if (p < 0.6) out.push({ word: str(o.token), p: Math.round(p * 1000) / 1000 });
   }
   return out.sort((a, b) => a.p - b.p).slice(0, max);
 }

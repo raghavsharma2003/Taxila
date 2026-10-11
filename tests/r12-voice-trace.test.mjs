@@ -6,7 +6,7 @@ import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { micModeWhy, SttTracer, unsureTokens, meanConfidence, setVoiceTraceSink, vt, VoiceLinkTrace, traceMicMode } from "../src/voice/trace.ts";
+import { micModeWhy, SttTracer, unsureTokens, meanConfidence, setVoiceTraceSink, vt, VoiceLinkTrace, traceMicMode, fit, MAX_DATA_CHARS } from "../src/voice/trace.ts";
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(HERE, "..");
@@ -73,7 +73,7 @@ test("asr: vad start/end, throttled partials, a final with confidence, the least
   assert.equal(f.msFromSpeechEnd, 400);
   assert.equal(f.msFromSpeechStart, 1300);
   assert.equal(f.language, "hi");
-  assert.deepEqual(f.unsure, [{ token: " recording", p: 0.31 }]);
+  assert.deepEqual(f.unsure, [{ word: " recording", p: 0.31 }]);
   assert.ok(f.confidence > 0.7 && f.confidence < 0.8);
   assert.deepEqual(f.alternatives, []);
   setVoiceTraceSink(null);
@@ -88,7 +88,7 @@ test("asr: a failed transcription is a final with failed: true", () => {
 });
 
 test("helpers: unsure tokens and mean confidence", () => {
-  assert.deepEqual(unsureTokens([{ token: "a", logprob: 0 }, { token: "b", logprob: Math.log(0.2) }]), [{ token: "b", p: 0.2 }]);
+  assert.deepEqual(unsureTokens([{ token: "a", logprob: 0 }, { token: "b", logprob: Math.log(0.2) }]), [{ word: "b", p: 0.2 }]);
   assert.equal(meanConfidence(undefined), null);
 });
 
@@ -161,6 +161,27 @@ test("tier 1: no clip recorder, no blob, no audio in any event; tier 2 records f
     else delete globalThis.navigator;
     setVoiceTraceSink(null);
   }
+});
+
+test("data fits the 8 KB event limit (shared/trace.ts): long text is cut, never dropped silently", () => {
+  const c = capture();
+  vt("tts.request", { replyId: "r", text: "x".repeat(20000), seq: 1 });
+  const d = c.of("tts.request")[0].data;
+  assert.ok(JSON.stringify(d).length <= MAX_DATA_CHARS);
+  assert.equal(d.truncated, true);
+  assert.equal(d.seq, 1);
+  assert.equal(fit({ a: 1 }).a, 1);
+  setVoiceTraceSink(null);
+});
+
+test("no voice event uses a key shared/trace.ts masks (token, key, …): the evidence would be erased", () => {
+  const c = capture();
+  const st = new SttTracer(() => 1);
+  st.handle({ type: "conversation.item.input_audio_transcription.completed", item_id: "a", transcript: "x", logprobs: [{ token: "x", logprob: -2 }] });
+  const MASKED = new Set(["password", "pin", "email", "phone", "otp", "token", "secret", "apikey", "api_key", "key", "authorization", "cookie"]);
+  const keys = (v, out = []) => { if (v && typeof v === "object") for (const [k, x] of Object.entries(v)) { out.push(k.toLowerCase()); keys(x, out); } return out; };
+  assert.deepEqual(keys(c.events.map((e) => e.data)).filter((k) => MASKED.has(k)), []);
+  setVoiceTraceSink(null);
 });
 
 test("the recorder never throws into a lesson: a sink that throws everywhere is swallowed", () => {
