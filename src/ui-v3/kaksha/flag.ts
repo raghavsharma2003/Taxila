@@ -5,7 +5,11 @@
 //
 // The one way out is per device: `?ui=classic` in any URL writes the device key below ("0"), once per page, and today's
 // classic child app renders on that device until `?ui=default` (or `?ui=kaksha`) clears it. No settings UI.
-export const UI_KAKSHA_KEY = "tx.flag.ui.kaksha";
+// Release 11: the device key is versioned, so every device starts on the shipped default (a device that tried
+// ?ui=classic under release 9's test guide would otherwise keep classic). The pre-release-11 key is ignored and removed
+// on first read; ?ui=classic / ?ui=default work exactly as before from then on.
+export const UI_KAKSHA_KEY = "tx.flag.ui.kaksha.r11";
+export const UI_KAKSHA_KEY_OLD = "tx.flag.ui.kaksha";
 
 export interface KakshaInputs {
   /** A dev build (import.meta.env.DEV). */
@@ -35,6 +39,11 @@ function isDev(): boolean {
 
 /** The device switch alone (after applying any ?ui= in the URL). */
 export function kakshaDevice(): boolean | null {
+  try {
+    if (typeof localStorage !== "undefined" && localStorage.getItem(UI_KAKSHA_KEY_OLD) !== null) localStorage.removeItem(UI_KAKSHA_KEY_OLD);
+  } catch {
+    /* storage blocked */
+  }
   applyUrlSwitch();
   try {
     const v = typeof localStorage !== "undefined" ? localStorage.getItem(UI_KAKSHA_KEY) : null;
