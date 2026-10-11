@@ -41,8 +41,9 @@ try {
       const texts = [...document.querySelectorAll("body *")].filter((e) => [...e.childNodes].some((n) => n.nodeType === 3 && n.textContent.trim()) && vis(e) && !e.closest(".sv-skip,.skip"));
       const minText = Math.min(...texts.map((e) => parseFloat(getComputedStyle(e).fontSize)));
       const small = texts.filter((e) => parseFloat(getComputedStyle(e).fontSize) < 14).map((e) => `${e.className || e.tagName}:${e.textContent.trim().slice(0, 20)}`).slice(0, 5);
-      const targets = [...document.querySelectorAll("a[href], button")].filter((e) => vis(e) && !e.closest(".sv-skip,.skip") && !e.closest("p,li:not(.sv-chip)") || (e.matches("a[href],button") && vis(e) && e.closest("nav,header,footer,.sv-helplines,.sv-hero-actions,.sv-actions,.sv-faq")));
-      const tiny = [...new Set(targets)].filter((e) => { const r = e.getBoundingClientRect(); return r.height < 44 && !e.closest(".sv-skip,.skip"); }).map((e) => `${e.className || e.tagName}:${e.textContent.trim().slice(0, 18)} ${Math.round(e.getBoundingClientRect().height)}px`).slice(0, 6);
+      // every visible link and button, except a link inside running text (an inline link in a sentence is exempt)
+      const targets = [...document.querySelectorAll("a[href], button")].filter((e) => vis(e) && !e.closest(".sv-skip,.skip") && !(e.closest("p, li") && getComputedStyle(e).display === "inline"));
+      const tiny = targets.filter((e) => e.getBoundingClientRect().height < 44).map((e) => `${e.className || e.tagName}:${e.textContent.trim().slice(0, 18)} ${Math.round(e.getBoundingClientRect().height)}px`).slice(0, 6);
       const body = document.body.innerText;
       const lime = getComputedStyle(document.querySelector(".kx") ?? document.body).getPropertyValue("--k-move").trim();
       const limeInView = lime ? [...document.querySelectorAll("body *")].filter((e) => { const r = e.getBoundingClientRect(); if (r.bottom < 0 || r.top > innerHeight || !vis(e)) return false; const cs = getComputedStyle(e); return cs.backgroundColor.replace(/\s/g, "") !== "rgba(0,0,0,0)" && cs.backgroundImage.includes("gradient") && e.classList.contains("kx-cta") || false; }).length : null;

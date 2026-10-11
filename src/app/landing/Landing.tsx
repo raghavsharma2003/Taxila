@@ -90,9 +90,16 @@ export default function Landing() {
         <section className="sv-hero" aria-labelledby="hero-h">
           <div className="sv-grid-bg" aria-hidden="true" />
           <div className="sv-wrap sv-hero-grid">
-            <div className="sv-hero-copy">
+            <div className="sv-hero-head">
               <p className="kx-label sv-eyebrow">Classes 1 to 9 · CBSE, NCERT, RBSE</p>
               <h1 id="hero-h" className="sv-h1">An AI teacher that <span className="sv-hl">talks</span>, <span className="sv-hl">draws</span> and <span className="sv-hl">plays</span>.</h1>
+            </div>
+            <div className="sv-hero-stage" aria-label="The Taxila app" role="group">
+              <Shot className="sv-shot--side sv-shot--l" src="/site/home.webp" alt="Taxila's home screen: the AI teacher Asha with her AI teacher label, Evening, Riya, and a big Start button" tag="// HOME" />
+              <Shot className="sv-shot--main" src="/site/desk.webp" eager alt="A live lesson: the AI teacher asks how many quarters make one half, and draws one half as two quarters on the board" tag="// LIVE LESSON" />
+              <Shot className="sv-shot--side sv-shot--r" src="/site/game.webp" alt="Antariksh, a space game: the child flies a ship to one third on a glowing number line" tag="// GAME" />
+            </div>
+            <div className="sv-hero-body">
               <p className="sv-sub">Live lessons by voice from your child's own school book, in English, Hindi or both. Your child always knows it's an AI, and you see what they really learned.</p>
               <div className="sv-hero-actions">
                 <PrimaryCta />
@@ -103,11 +110,6 @@ export default function Landing() {
                 <li><Icon name="shield" size={18} /> AI, and says so</li>
                 <li><Icon name="tick" size={18} /> Free set-up</li>
               </ul>
-            </div>
-            <div className="sv-hero-stage" aria-label="The Taxila app" role="group">
-              <Shot className="sv-shot--side sv-shot--l" src="/site/home.webp" alt="Taxila's home screen: the AI teacher Asha with her AI teacher label, Evening, Riya, and a big Start button" tag="// HOME" />
-              <Shot className="sv-shot--main" src="/site/desk.webp" eager alt="A live lesson: the AI teacher asks how many quarters make one half, and draws one half as two quarters on the board" tag="// LIVE LESSON" />
-              <Shot className="sv-shot--side sv-shot--r" src="/site/game.webp" alt="Antariksh, a space game: the child flies a ship to one third on a glowing number line" tag="// GAME" />
             </div>
           </div>
         </section>

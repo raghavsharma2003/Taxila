@@ -42,13 +42,13 @@
     repeating-linear-gradient(0deg, color-mix(in srgb, var(--k-ink) 5%, transparent) 0 1px, transparent 1px 44px),
     repeating-linear-gradient(90deg, color-mix(in srgb, var(--k-ink) 5%, transparent) 0 1px, transparent 1px 44px);
   -webkit-mask-image: radial-gradient(90% 70% at 60% 35%, var(--k-void) 0, transparent 75%); mask-image: radial-gradient(90% 70% at 60% 35%, var(--k-void) 0, transparent 75%); }
-.sv-hero-grid { position: relative; display: grid; gap: 28px; }
-.sv-eyebrow { margin-bottom: 14px; }
-.sv-h1 { font: 700 40px/1.02 var(--k-sans); letter-spacing: -.04em; }
+.sv-hero-grid { position: relative; display: grid; gap: 18px; }
+.sv-eyebrow { margin-bottom: 12px; }
+.sv-h1 { font: 700 36px/1.04 var(--k-sans); letter-spacing: -.04em; }
 .sv-hl:nth-child(1) { color: var(--k-ion); }
 .sv-hl:nth-child(2) { color: var(--k-secure); }
 .sv-hl:nth-child(3) { color: var(--k-look); }
-.sv-sub { margin-top: 16px !important; font-size: 17px; line-height: 1.5; color: var(--k-ink-2); max-width: 34em; }
+.sv-sub { font-size: 17px; line-height: 1.5; color: var(--k-ink-2); max-width: 34em; }
 .sv-hero-actions { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin-top: 22px; }
 .sv-hero-actions .kx-cta { margin-top: 0; }
 .sv-cta { min-height: 56px; padding: 0 24px; font-size: 17px; text-transform: uppercase; letter-spacing: .08em; }
@@ -60,12 +60,16 @@
 .sv-hud svg { color: var(--k-secure); }
 
 /* the stage: three real captures, the live lesson in front */
-.sv-hero-stage { position: relative; height: 470px; margin: 0 calc(-1 * var(--sv-gutter)); }
+/* phones: the captures come right under the headline, cropped to their top with a fade, so the product is on the
+   first screen and the CTA still sits above the fold at 360 x 800 */
+.sv-hero-stage { position: relative; height: 300px; margin: 0 calc(-1 * var(--sv-gutter)); overflow: hidden;
+  -webkit-mask-image: linear-gradient(180deg, var(--k-void) 78%, transparent); mask-image: linear-gradient(180deg, var(--k-void) 78%, transparent); }
 .sv-hero-stage::before { content: ""; position: absolute; left: 50%; top: 52%; width: 120%; height: 70%; transform: translate(-50%, -50%); pointer-events: none;
   background: radial-gradient(closest-side, color-mix(in srgb, var(--k-ion) 30%, transparent), color-mix(in srgb, var(--k-her) 14%, transparent) 55%, transparent); }
-.sv-hero-stage .sv-shot { position: absolute; top: 0; }
-.sv-shot--main { left: 50%; width: 206px; transform: translateX(-50%); z-index: 3; }
-.sv-shot--side { width: 158px; top: 44px !important; z-index: 1; opacity: .92; }
+.sv-hero-stage .sv-shot { position: absolute; top: 8px; }
+.sv-hero-stage .sv-shot-tag { display: none; }
+.sv-shot--main { left: 50%; width: 190px; transform: translateX(-50%); z-index: 3; }
+.sv-shot--side { width: 150px; top: 40px !important; z-index: 1; opacity: .92; }
 .sv-shot--l { left: 50%; transform: translateX(-118%) rotate(-7deg); }
 .sv-shot--r { left: 50%; transform: translateX(18%) rotate(7deg); }
 
@@ -81,16 +85,20 @@
 
 @media (min-width: 520px) {
   .sv-h1 { font-size: 48px; }
-  .sv-hero-stage { height: 560px; }
-  .sv-shot--main { width: 244px; }
-  .sv-shot--side { width: 186px; }
+  .sv-hero-stage { height: 420px; }
+  .sv-shot--main { width: 236px; }
+  .sv-shot--side { width: 182px; }
 }
 @media (min-width: 980px) {
   .sv-hero { padding: 56px 0 72px; }
-  .sv-hero-grid { grid-template-columns: 1.05fr 1fr; align-items: center; gap: 40px; }
+  .sv-hero-grid { grid-template-columns: 1.05fr 1fr; grid-template-rows: auto 1fr; column-gap: 40px; row-gap: 20px; align-items: start; }
+  .sv-hero-head { grid-column: 1; grid-row: 1; align-self: end; }
+  .sv-hero-body { grid-column: 1; grid-row: 2; }
+  .sv-hero-stage { grid-column: 2; grid-row: 1 / span 2; overflow: visible; -webkit-mask-image: none; mask-image: none; }
+  .sv-hero-stage .sv-shot-tag { display: block; }
   .sv-h1 { font-size: 64px; }
   .sv-sub { font-size: 19px; }
-  .sv-hero-stage { height: 680px; margin: 0; }
+  .sv-hero-stage { height: 640px; margin: 0; }
   .sv-shot--main { width: 296px; }
   .sv-shot--side { width: 226px; }
 }
