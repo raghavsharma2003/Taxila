@@ -8,7 +8,7 @@ const DEV = process.env.QA_DEV === "laptop" ? LAPTOP : PHONE;
 const TAG = `lesson-${DEV.name}-${process.env.QA_TAG || "run"}`;
 const acc = JSON.parse(fs.readFileSync(`${OUT}/accounts.json`, "utf8"))[process.env.QA_ACC || DEV.name];
 const browser = await launch({ wav: process.env.QA_WAV });
-const { ctx, page, log } = await open(browser, DEV, { init: process.env.QA_INIT ? new Function(process.env.QA_INIT) : undefined });
+const { ctx, page, log } = await open(browser, DEV, { init: process.env.QA_INIT ? new Function(`try { ${process.env.QA_INIT} } catch { /* the sandboxed module frame has no storage */ }`) : undefined });
 await ctx.addCookies(JSON.parse(fs.readFileSync(`${OUT}/state-${process.env.QA_ACC || DEV.name}.json`, "utf8")).cookies);
 // The fake mic loops its WAV per capture source: clone the app's own track (same source, same loop position, its own
 // `enabled`) and log speech onsets, so a "say" press lands in the silence just before the utterance.

@@ -21,7 +21,7 @@ Status: **FIXED** (on `claude/r5-qa`, verified by a repro script) · **OWNER** (
 
 | id | sev | status | owner | one line |
 |---|---|---|---|---|
-| D01 | P0 | OWNER | main (rel 14) | The class-time window is still live: after 21:30 IST lessons, Practice and even resuming are refused |
+| D01 | P0 | FIXED in rel 14 (+ copy here) | main | The class-time window is still live: after 21:30 IST lessons, Practice and even resuming are refused |
 | D02 | P0 | FIXED | QA (cascadeLink.ts, shared with main/duplex) | A spoken answer given before the transcription call is up is silently lost; floor stuck on "Listening…" |
 | D03 | P1 | FIXED | QA | Parent corner opens with no PIN when reopened within 10 min of a killed tab |
 | D04 | P1 | FIXED | QA | A tab open across a deploy dies on a stale lazy chunk (the owner's `err.resource /assets/Landing-*.js`) |
@@ -43,6 +43,8 @@ Status: **FIXED** (on `claude/r5-qa`, verified by a repro script) · **OWNER** (
 | D21 | P2 | FIXED | QA (UI) | At 00:20 the child home greets "Morning, Riya" |
 | D22 | P2 | OWNER | latency / main | Parent home sits on "Loading": `GET /api/parent/overview` 2.4 s for 975 B |
 | D23 | P1 | OWNER | main (safety review) | A disclosure that names a parent still gets "Talk to a grown-up at home" as the help screen's primary action |
+| D24 | P1 | OWNER | main (lesson runtime) | A reload or an accidental Back mid-lesson ends it; coming back starts a NEW lesson from the greeting |
+| D25 | P2 | OPEN | QA (UI) | Cold child home: the background grid alone, with no loading sign, until `/api/child/boot` answers (seen once, after a server restart) |
 | D19 | P2 | WONTFIX | QA (UI) | `GET /api/me` 401 logged as a console error on every signed-out landing and set-up load |
 
 ## Details
@@ -175,6 +177,19 @@ Tele-MANAS 14416"), and the help sheet opens at once (`ui.state sheet=help`, 3.0
 Suggest: when the disclosure names someone at home, lead with Childline 1098 and "a grown-up you trust (teacher)".
 **Shot:** `shots/lesson-laptop-safety-safety.png`. AI disclosure held: "kya tum sach mein insaan ho?" → "Nahi Aarav, main
 insaan nahi, AI teacher hoon." (n = 1 each).
+
+### D01 on release 14 (merged at c6bd8e5) · real clock 00:45-00:55 IST
+Child home "Evening, Riya. Just start." (no hours), Practice opens, a second lesson starts with no "Open now", and Controls
+says "The daily limit and lesson hours are off for now…" (this branch, `5df5b5c`: the controls response carries
+`dayLimits`, the plan `plan.limits`; the parent home says "Lessons open any time"; add-a-child no longer promises 06:30-21:30;
+"Open now for 1 hour" hides while the limits are off).
+
+### D24 · P1 · OWNER (main / lesson runtime) — a reload is a new lesson
+Class 4, at her turn, reload `/c/:cid/lesson/new` (what a refresh or an Android tab discard does): `POST /api/lesson/start`
+→ a new `lessonId` (8293d18b… → dc43fec1…) and "Namaste Riya, … aaj hum grams aur kilograms seekhenge" again. The URL stays
+`/lesson/new` after the start, and `pagehide` ends the lesson (`runtime.ts:1048` → `POST /api/lesson/end`), so neither the
+URL nor the home ("Just start") can bring the child back to where she was. Same after Android Back and returning.
+Suggest: `replaceState` to `/lesson/:lid` after the start, and let a pagehide within N seconds of a reload resume.
 
 ## Journeys that passed (pass 2)
 Homework chip tap and the voice homework question (session-first cohort); double-tap on Start → one `POST /api/lesson/start`
