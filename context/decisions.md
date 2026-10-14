@@ -5838,3 +5838,66 @@ text predicate (`rj-sr-raw-recall-98-target`).
 
 ## Merged inbox entries (write-up from the entry text)
 - `dc-r141-content-filter-by-category` (2026-10-14): 2026-10-14 main safety review. In the sim lab baseline the full helpline script played on non-distress in 4/32 lessons. In one, a child's maths answer ('6 aur 5... 30... 3,00,000?') got the Childline / Tele-MANAS script twice, because Azure's prompt filter blocked the reply call (guard content_filter) and every block failed CLOSED as a disclosure. Decision: an Azure content-filter block is a child-safety signal only when a HARM category fired (hate, sexual, violence, self_harm, or any category not on the list) or the categories cannot be read. server/azure.js filterCategories reads innererror.content_filter_result, choices[].content_filter_results, prompt_filter_results and Foundry's 'blocked by label' text, and nonHarmFilter is true only for a known, non-empty set within {jailbreak, indirect_attack, protected_material_text, protected_material_code}. When the block is non-harm: the reply gets one retry on the system prompt and this turn alone, then a neutral fallback line (guard content_filter_nonharm), never the helplines; the classifier treats it as a label outage and still runs the distress read; the distress read returns not-distress, because the predicate already read the words. A harm or unreadable block still fails closed exactly as before (tests/r5-filter-categories.test.mjs). Categories are recorded on model.call rows (filterCats). Reverse if: any disclosure is found that only a jailbreak-category block caught (search model.call filterCats=['jailbreak'] against incidents), or Azure starts labelling harm content as jailbreak.
+
+
+<!-- merged from inbox/r141-main.json -->
+## dc-r141-filter-probe-child-words (2026-10-14)
+**Decision.** A harm or unreadable content-filter block on the reply prompt fails closed only when the child's own words trip the filter.
+- One retry runs on the system prompt plus this turn alone.
+- Beside it, `childWordsTrip` probes the child's last 4 turns plus this one. The text is masked, it goes through the same reply deployment, and the prompt is minimal.
+- If the probe is blocked on harm, or the probe fails, the turn fails closed exactly as before.
+- If the probe is clear, the retry's reply is used. If the retry also failed, a neutral line is used.
+- Completion blocks (HTTP 200) are unchanged: the prompt with the child's words already passed.
+
+**Why.** The prompt mixes her lines, the history and the brief. A harm category fired on that mix for innocent words (p43 on text; three voice lessons). On the next turn the history re-tripped it, so the safeguard came back again.
+
+**Reverse if** a real disclosure is missed because the probe of the child's words passed while the full prompt was blocked.
+
+## dc-r141-help-lead (2026-10-14)
+**Decision.** The Help sheet leads with the helplines when the safeguard is about abuse or the child names home or family. Otherwise it leads with "a grown-up you trust". "At home" is gone from every surface.
+
+**Reverse if** helpline-lead sheets get fewer help taps than grown-up-lead sheets after real disclosures.
+
+## dc-r141-science-frame (2026-10-14)
+**Decision.** A science frame for self_harm hits: "without" + a necessity of life + a living subject, in one sentence, no "I" in it. Its own veto (harm or distress words anywhere in the turn) applies in place of the Day-0 veto. Food is excluded.
+
+The same commit adds recall for "mujhe nahi jeena", "मुझे अब नहीं जीना" and Roman "main zinda nahi reh sakta".
+
+**Reverse** the frame if a real miss traces to it.
+
+## dc-r141-safeguard-stay-line (2026-10-14)
+**Decision.** The stay turn's fallback is its own fixed line, never the first turn's line again.
+
+**Reverse if** it shows up where the model's line would have passed.
+
+
+<!-- round 5 stream entries (inbox r5-agent, r5-content, r5-latency, r5-qa), written up from their graph text at the 14.1 merge -->
+## r5a-dc-agent-harness-invariants (2026-10-14)
+Agent lane invariants are code, not prompt: (1) scanSafety and the classifier run first; incident, distress, a safeguard or the Director's goodbye wrap keep the Director's move; the relational floor or the child's goodbye re-plans through the Director and drops the agent's move; (2) the floor filter (floorViolations) runs on her line, a violation reverts the turn to the Director; (3) grading is code: the VERIFIED GRADE (classify.js against the key) and the harness read are facts in the event; a posed item must be one the harness offered (verified, kind gradable, key withheld); (4) silence (empty text, asr 0) never brings a new item, board, picture or end; (5) the board is drawn by code from her lines (shared whiteboard contract, <=24-char lines, <=6) and reported back as ON SCREEN; a line pointing at the screen with nothing up, or at words not on it, is unpointed; (6) on a spoken lane type/write asks are rewritten to speak; (7) per-lesson USD and token budgets throw; any throw, timeout or bad output leaves the Director's move standing (agent.fallbacks counted). Reverse if the sim lab shows an invariant blocking a better lesson more often than it saves one.
+
+## dc-r5-board-answers-the-ask (2026-10-14)
+Round 5, stream 2 (RCA-1): what the child asked to SEE rides on the whiteboard ask (intent.request: how, the thing named, the numbers named; requests.js visualAskOf, Director move.see, propose.js requestOfSee). Studio draws THAT: a ready-made board (board-first pick, speculative, the kit's code board, the template rung) is drawn for a request only when it answers it by code (studio/request.js answersRequest: the thing's words in either script / spelling, the child's numbers on a number line), the line planner is told the request and repaired once when it misses, and a number line with the child's numbers is drawn by code. A requested page is always a fresh page. Reverse if: the 40-ask battery (tests/prod/r5-board-asks.mjs) falls below 9/10 on two runs in a row, or the round2-content / owner-5 batteries regress on the same seeds
+
+## dc-r5-never-the-same-page (2026-10-14)
+Never the same page twice unasked: a new page whose texts equal the page already up is refused at every source (seam drawn(), the board-sync ladder, the line planner's not_again repair); a board KEPT on purpose (a continue that adds nothing) is the same board, not a new page, and is no longer written to the notebook twice. Reverse if: children ask for 'the same board again' and are refused (a 'phir se dikhao' request should pass the previous page as asked)
+
+## dc-r5-offkit-sketch (2026-10-14)
+A thing outside the kit that a plain labelled sketch can show ('aloo dikhao' in a maths lesson) is sketched on the board for the ask, honestly (no photo promised; her shape never points before it is there); release 13's 'cannot show it' floor stays for anything code's drawableSubject refuses (a person, body, brand, weapon, digits, more than 4 words, the child-safety predicates). Supersedes the release-13 (A) behaviour for drawable things (tests/r13-visual-honest.test.mjs updated). Reverse if: a sketch of an off-kit thing derails lessons in the sim lab (coherence) more than the words-only answer did
+
+## dc-r5-board-tools (2026-10-14)
+The Teacher agent's board and picture tools (server/studio/tools.js, server/studio/picture.js): board.show(spec: write | table | shapes | work | number_line | draw) / board.clear / screen.now / picture.get each return ScreenTruth computed from what actually mounted (words, texts, numbers, pageId, refused with checks). picture.get is a background job (gpt-image-2.5-flare low → gpt-image-2 → sunburst, fixed kid-safe template with the subject as its only slot, Content Safety image:analyze on the pixels, severity >= 2 or any error refuses), revealed on the Studio stream's early slot, at most 4 per lesson. Reverse if: the image lane's subscription-wide 4 RPM makes picture jobs fail more than 1 in 5 in the owner cohort (then a cached library first)
+
+## dec-r5-lat-boot-warm (2026-10-14)
+A replica does its one-time builds at boot (server/boot-warm.js): the stagecraft table before the port opens; the DB pool, the test-clock table, the chat endpoint's TLS and every teaching kit (sliced, one topic per event-loop turn) right after. No child's first lesson start pays a one-time build. Reverse if: boot time blocks a revision's readiness probe, or the kit warm's memory (+45 MB) matters on a smaller replica (then warm only the classes in use).
+
+## dec-r5-lat-note-race (2026-10-14)
+The understanding note races grok-4-1-fast-non-reasoning and taxila-fast (first usable note wins; TAXILA_UNDERSTAND_DEPLOY, a comma list; one name = no race). taxila-gpt6 timed out on the hot path and was no more accurate under the turn's cap. Reverse if: a note bake-off on the real cohort shows the race below taxila-gpt6-at-cap by more than 3 points, or the doubled note calls 429 a hot lane.
+
+## dec-r5-lat-reply-hedge (2026-10-14)
+The reply lane is a hedged request (server/azure.js hedged; TAXILA_REPLY_HEDGE_MS, default 2200 ms ~ taxila-fast p95, 0 = off): a reply still out at the hedge point gets an identical twin, the first answer wins, the other is aborted; a failure before it starts the twin at once (two attempts at most, as before); a content-filter block is never re-sent. Seen: an opening call hung to its 6 s timeout and paid a retry (start 7.9 s). Reverse if: the twin rate exceeds 10% of reply calls or a 429 on taxila-fast is traced to twins.
+
+## dec-r5-lat-continuer (2026-10-14)
+Main's decision (2026-10-14): a non-verbal continuer (हम्म / अच्छा / ओके; Hmm / Okay / I see) may be her first sound on a spoken turn with no echo, for the owner cohort only (TAXILA_ACK_CONTINUER_FOR) and only when the device asks (off on D5 until 4B's gate covers it). Decided after the turn's classify (its distress read) on the same words; never on a safeguard, a stop or goodbye, a typed or tapped answer; never two acks running, never the same continuer twice; no content words; held to >= 900 ms after the child stopped and dropped when her reply is first. Reverse if: the sim-lab voice rubric scores it robotic, or 'human' drops with it on.
+
+## dec-r5-lat-adpcm (2026-10-14)
+TTS frames type 5 = IMA ADPCM (4:1), negotiated by Accept `codec=adpcm`, asked for only on a slow link (effectiveType slow-2g / 2g / 3g, or Save-Data; ?tts=adpcm|pcm|auto per device); the client decodes it in the frame parser, so everything after it sees PCM. PCM stays the default (ADPCM is lossy). Reverse if: a listening check finds ADPCM speech unacceptable even on slow links, or an Opus encoder becomes available without a new dependency.

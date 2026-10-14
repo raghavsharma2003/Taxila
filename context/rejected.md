@@ -2550,3 +2550,16 @@ The replay proof first gated on the share of differing pixels (<= 2 %). A replay
 
 <!-- merged from inbox/r4-main-2225.json -->
 - `rj-r131-async-finally-before-assign` (2026-10-11). Tried: an in-flight guard written as `state.flushing = (async () => { …; finally { state.flushing = null } })()`. What broke: an async function runs synchronously until its first await. With an empty buffer there was none, so the finally cleared the guard before the assignment set it, and the guard held a settled promise forever. The production recorder wrote nothing and logged nothing (ms-r131-flush-wedge). Instead: start the body with `await null`, assign the promise to a const, and clear the guard only if it is still that promise. In-flight guards need a test of the empty case.
+
+
+<!-- merged from inbox/r5-qa.json -->
+## r5-qa-fake-mic-second-stream
+Tried (2026-10-14): finding the fake mic's loop position for QA spoken answers by opening a second getUserMedia stream in the page and timing speech onsets on it. What broke: Chromium plays the fake WAV loop per capture stream, so the second stream's onsets were unrelated to the app's; presses landed mid-phrase and ASR heard fragments ('किलो में क्या अंतर है?', 'करो'), which first looked like an app defect (clipped recording). The uploaded clip (4.56 s for a 4.3 s press, speech from 0 s) proved the app recorded everything. Replaced by dc-r5-qa-fake-mic-alignment (clone the app's own track). Reverse if: never; check uploaded clips whenever ASR looks truncated.
+
+
+<!-- round 5 stream entries (inbox r5-agent, r5-content, r5-latency, r5-qa), written up from their graph text at the 14.1 merge -->
+## rj-r5-strip-whole-pointing-sentences (2026-10-14)
+Taking pointing out of her line with director/say.js stripScreenRefs on request turns: it drops a sentence that is only pointing, and with it the number she explained ('Screen par number line dekhiye: 0 aur 1 ke beech 4 barabar hisse' → gone); the board drawn from her line then could not mark the child's 1/4 (W9 withheld it) and 3 of 6 number-line asks got no page. Replaced by studio/request.js unpointGently (only the pointing phrase goes)
+
+## rj-r5-parts-guard-on-named-asks (2026-10-14)
+Judging her 'parts' words against the module that was up BEFORE a named visual ask (brain/say.js screenContradiction): for 'number line pe 1/4 dikhao' she said '0 se 1 ke beech 4 barabar hisse' over the open question's 5-part engine and was cut to 'Woh 0 se kitna door hai?' (3 of 5 number-line asks). On a turn that answers a named ask the reply guards get no module (turn.js boardAnswersAsk); the board drawn for it is gated against her line (W8)
