@@ -63,7 +63,9 @@ export function AnswerDock({ m, a, micMeter, stripId, lit, setRef }:
   { m: DeskModel; a: DeskActions; micMeter?: Meter; stripId: StripId | null; lit: boolean; setRef?: (el: HTMLElement | null) => void }) {
   const young = m.family === "young";
   const yourTurn = m.floor === "your_turn" || m.floor === "yielding";
-  const held = !!stripId && HOLDS_ANSWER.has(stripId);
+  // r5 QA D16: "Your answer is saved" only when an answer is actually waiting (offline at her turn with nothing said
+  // showed it too); the strip itself still says what the network is doing
+  const held = !!stripId && HOLDS_ANSWER.has(stripId) && m.answer?.delivery === "not_sent";
   const word = held ? t("floor.held")
     : stateWord(m.floor, { teacher: m.teacher.name, thinkingLabel: m.thinkingLabel, // r4-latency patch 01: no seconds counter while she thinks; her face carries the wait (rj-symbolic-wait-indicator)
       seconds: null, lastOne: m.lastOne, tapToTalk: m.mic.tapToTalk });

@@ -35,11 +35,11 @@ Status: **FIXED** (on `claude/r5-qa`, verified by a repro script) · **OWNER** (
 | D12 | P1 | OWNER | latency / voice | Her audio is raw PCM (398-497 KB per line): on Slow 3G "Asha is talking" runs ~21 s past her last caption |
 | D13 | P1 | OWNER | latency | Lesson start is slow: tap Start → mic ready 5.4 s; `POST /api/lesson/start` 3.0-6.7 s; `GET /api/child/map` up to 6.6 s alone |
 | D14 | P2 | OWNER | conversation | Openers ask unrelated or odd things ("Tumne in words ko kahan dekha hai?", "Tum mujhe teacher bulaogi?", "favourite fruit") |
-| D15 | P2 | OPEN | QA (UI) | The "Tap the mic to talk, then tap Done." strip stays for the whole lesson, even after Talk worked and for a typing child |
-| D16 | P2 | OPEN | QA (UI) | Offline: the state word says "Your answer is saved" when the child had not answered |
+| D15 | P2 | FIXED | QA (UI) | The "Tap the mic to talk, then tap Done." strip stays for the whole lesson, even after Talk worked and for a typing child |
+| D16 | P2 | FIXED | QA (UI) | Offline: the state word says "Your answer is saved" when the child had not answered |
 | D17 | P2 | OPEN | QA (UI) | Phone in landscape: the dock is below the fold (inner scroll) and the face is a sliver |
-| D18 | P2 | OPEN | QA (UI) | Signed-out `/who` sends a returning parent into new-account set-up, not Sign in |
-| D19 | P2 | OPEN | QA (UI) | `GET /api/me` 401 logged as a console error on every signed-out landing and set-up load |
+| D18 | P2 | FIXED | QA (UI) | Signed-out `/who` sends a returning parent into new-account set-up, not Sign in |
+| D19 | P2 | WONTFIX | QA (UI) | `GET /api/me` 401 logged as a console error on every signed-out landing and set-up load |
 
 ## Details
 
@@ -137,16 +137,21 @@ same box, so read the p50 as an upper bound; the 3.1-3.9 s runs were idle. `GET 
 Seen in n = 14 lesson starts of the same topic: "Tumne in words ko kahan dekha hai?" (nothing on screen), "Tum mujhe teacher
 bulaogi?", "Tum kaisi ho?", "Tumhara favourite fruit / subject / number kaunsa hai?" in a Grams-and-kilograms lesson.
 
-### D15-D19 · P2 · OPEN (UI, this stream's next batch)
+### D15-D19 · P2 · UI (D15, D16, D18 fixed; D17 open; D19 won't fix)
 - **D15** The PTT coaching strip ("Tap the mic to talk, then tap Done. OK", ~90 px) stays after the child has talked
   successfully, and shows on the laptop for a child who types. Appears with the recording fallback (`ui.state strip=PTT`).
+  **Fixed** (`useDesk.ts`): the note announces a fall-back *from hands-free*, so a dock already on tap-to-talk never gets it,
+  and the child's first press clears it. Verified: no strip through a fallback on a class 4 lesson (n = 2).
 - **D16** Offline 12 s at her turn: state word "Your answer is saved" + "No internet. Your answers are saved." although no
-  answer was given. Recovery works ("Back online.").
+  answer was given. Recovery works ("Back online."). **Fixed** (`AnswerDock.tsx`): the held word only with a `not_sent`
+  answer; verified: offline 10 s at her turn keeps "Your turn" and the strip.
 - **D17** 876x393 landscape: `[data-testid=mic]` bottom 462 px > 393 px viewport; reachable only by an inner scroll; the
   teacher window shrinks to a sliver. **Shot:** `shots/lesson-phone-rot-rotated.png`.
 - **D18** Signed out, `/who` → `/start/class` (new account) rather than Sign in; a child screen correctly says "Please ask a
-  grown-up to sign in again".
-- **D19** `GET /api/me 401` → console error on each signed-out landing / set-up load.
+  grown-up to sign in again". **Fixed** (`Who.tsx`): a signed-out phone that remembers a learner goes to Sign in; a fresh
+  phone still starts set-up. Verified both.
+- **D19** `GET /api/me 401` → console error on each signed-out landing / set-up load. **Won't fix here:** skipping the read
+  when the `tx_in` hint cookie is absent would sign out any session older than that cookie; a console line is cheaper.
 
 ## Journeys that passed (pass 1)
 Set-up (5 steps, ~10-11 s scripted) on phone and laptop; Hello cards (greet, AI, picture, likes, say-hi skip); child home,
