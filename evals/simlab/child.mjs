@@ -79,7 +79,9 @@ export async function childTurn(p, heard, screen, turnNo, current) {
     { role: "system", content: `${cardText(p)}\n\n${OUTPUT_RULES.join("\n")}` },
     { role: "user", content: `LESSON SO FAR:\n${history || "(the lesson is just starting)"}\n\nSCREEN NOW:\n${screenText(screen, p.classLevel)}${now}\n\nThis is your child turn ${turnNo}. What do you do?${p.lang === "hindi" ? " (Your words go in Devanagari script, Hindi only.)" : p.lang === "english" ? " (Your words go in English.)" : ""}` },
   ];
-  const { json } = await askJson(MODELS.child, messages, { maxTokens: 700 });
+  let json;
+  try { ({ json } = await askJson(MODELS.child, messages, { maxTokens: 700 })); }
+  catch (e) { if (!/content_filter|HTTP 400/.test(String(e.message))) throw e; ({ json } = await askJson(MODELS.childFallback, messages, { maxTokens: 700 })); }
   const action = ["speak", "tap", "pad"].includes(json.action) ? json.action : "speak";
   const chip = action === "tap" ? screen.chips?.find((c) => c.id === json.chipId) : null;
   return {

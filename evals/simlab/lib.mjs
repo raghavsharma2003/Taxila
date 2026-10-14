@@ -19,12 +19,14 @@ const { chat } = await import("../../server/azure.js");
  */
 export const MODELS = {
   child: process.env.SIMLAB_CHILD || "DeepSeek-V4-Pro",
+  // when Azure's content filter blocks the child prompt (a scripted disclosure, a hard moment), another non-judge family
+  childFallback: process.env.SIMLAB_CHILD_FALLBACK || "taxila-mistral-m35",
   judge: process.env.SIMLAB_JUDGE || "grok-4-20-reasoning",
   judge2: process.env.SIMLAB_JUDGE2 || "taxila-kimi26",
 };
 const family = (d) => (/grok/i.test(d) ? "grok" : /deepseek|ds4/i.test(d) ? "deepseek" : /kimi/i.test(d) ? "kimi" : /mistral/i.test(d) ? "mistral" : "gpt");
 export const familyOf = family;
-if (family(MODELS.child) === family(MODELS.judge) || family(MODELS.child) === family(MODELS.judge2)) throw new Error("simlab: the child model shares a family with a judge");
+if ([MODELS.child, MODELS.childFallback].some((c) => family(c) === family(MODELS.judge) || family(c) === family(MODELS.judge2))) throw new Error("simlab: the child model shares a family with a judge");
 
 /** One model call that must return a JSON object. Retries once on a parse failure or a transient error. */
 export async function askJson(deployment, messages, { maxTokens = 1200, timeoutMs = 90_000, effort } = {}) {
