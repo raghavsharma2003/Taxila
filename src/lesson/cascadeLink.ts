@@ -419,7 +419,8 @@ export class CascadeLink implements TeacherLink {
     this.onTransport = opts.onTransport;
     this.ctx = opts.audioContext ?? null;
     this.merger = opts.predictive ?? predictiveEnabled() ? new FragmentMerger() : null;
-    this.ack = opts.ack ?? ackEnabled() ? new AckClient({ lessonId: opts.lessonId, onClip: (c) => this.playAck(c) }) : null;
+    // round 5: no continuer on D5 until its gate covers it (Voice Live's own turn detection has not been measured with one)
+    this.ack = opts.ack ?? ackEnabled() ? new AckClient({ lessonId: opts.lessonId, onClip: (c) => this.playAck(c), continuer: () => this.laneUsed !== "d5" }) : null;
     this.prefetcher = opts.prefetch ?? prefetchEnabled()
       ? new TurnPrefetcher({ lessonId: opts.lessonId, onSend: (b) => this.ack?.request(b.text) }) : null;
     this.unregisterLatency = registerLatencyTarget({ lessonId: opts.lessonId, prefetcher: this.prefetcher, ack: this.ack, duplexLive: () => this.duplexDeciding });
