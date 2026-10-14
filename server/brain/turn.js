@@ -519,7 +519,6 @@ export async function lessonTurn(req, body) {
       agentApplied = applyAgentTurn(agentNext, agentOut, { kit, childText, cls, card, lessonId: lesson.id });
       next = agentNext;
       r = { ...r, move: agentApplied.move, ui: agentApplied.ui, moduleCommands: [], state: next, end: agentApplied.end, hold: false };
-      if (agentOut.cleared) seamSafe("studio.clearBoard", () => (typeof studioSeam.clearBoard === "function" ? studioSeam.clearBoard(lesson.id) : null), null);
       mark("agent");
     } catch (e) {
       agentFallback = String(e?.code ?? e?.message ?? e).slice(0, 80);

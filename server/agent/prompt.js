@@ -8,6 +8,7 @@ import { AGENT_LIMITS } from "./flags.js";
 
 const LANG = { hinglish: "Hinglish (Hindi and English mixed the way Indian children speak, Roman script)", hindi: "simple Hindi (Roman script); name the lesson's ideas with Hindi words, an English term only as a short gloss after the Hindi one", english: "simple English" };
 
+const STRS = { type: "array", items: { type: "string" } };
 /** The output contract (strict json_schema): her spoken line and the actions the harness runs for her. */
 export const TURN_SCHEMA = {
   type: "object", additionalProperties: false,
@@ -16,7 +17,15 @@ export const TURN_SCHEMA = {
     intent: { type: "string", enum: ["greet", "hook", "explain", "worked_example", "practice", "probe", "reteach", "hint", "repair", "celebrate", "break", "wrap"] },
     say: { type: "string" },
     pose_item: { type: ["string", "null"] },
-    board: { type: "object", additionalProperties: false, required: ["action", "lines"], properties: { action: { type: "string", enum: ["keep", "show", "clear"] }, lines: { type: "array", items: { type: "string" } } } },
+    board: { type: "object", additionalProperties: false, required: ["action", "kind", "lines", "mark", "columns", "rows", "layout", "subject", "shapes"], properties: {
+      action: { type: "string", enum: ["keep", "show", "clear"] },
+      kind: { type: ["string", "null"], enum: ["write", "number_line", "table", "shapes", "work", "draw", null] },
+      lines: STRS, mark: STRS, columns: STRS, rows: { type: "array", items: STRS },
+      layout: { type: ["string", "null"], enum: ["column_add", "column_sub", "column_mul", "long_div", "fraction", "equation", null] },
+      subject: { type: ["string", "null"] },
+      shapes: { type: "array", items: { type: "object", additionalProperties: false, required: ["shape", "sides", "parts", "shaded", "label"], properties: {
+        shape: { type: "string", enum: ["circle", "square", "rect", "triangle", "polygon", "parts"] }, sides: { type: ["integer", "null"] }, parts: { type: ["integer", "null"] },
+        shaded: { type: ["integer", "null"] }, label: { type: ["string", "null"] } } } } } },
     picture: { type: ["string", "null"] },
     read: { type: "object", additionalProperties: false, required: ["skill", "level", "evidence"], properties: {
       skill: { type: ["string", "null"] }, level: { type: "string", enum: ["understood", "partly", "not", "unknown"] }, evidence: { type: "string" } } },
@@ -41,12 +50,12 @@ export function systemPrompt(ctx) {
     "- Show, do not only tell: when the idea has numbers, a shape, a comparison or steps, put them on the board (board show) as you explain; if they ask for a game or a picture you cannot make, say so in a few words and do the nearest real thing now (the board, or a quick spoken game with a question).",
     "- A claim like 'haan samajh gaya' is not evidence: one light, easy check question, warmly. 'Pata nahi': a smaller first step. Silence (no words): wait — ask the same thing again kindly, or check they can hear you; never new content, never a new topic.",
     "- Off topic or a personal share: a short warm reply in their spirit, then back to the lesson in one line. A request (a story, a game, a picture, slower, Hindi): honour it with what really exists now; if it cannot be made, say so plainly and do it in words.",
-    "- Keep a short PLAN (at most five steps) for this lesson and revise it as you learn about the child; return it every turn in `plan`.",
+    "- Keep a short PLAN (at most five steps, a few words each) for this lesson and revise it as you learn about the child; `plan` is the new plan when it changes, and an empty string when it does not.",
     "ACTIONS (the harness runs them and tells you the result next turn).",
     "- pose_item: to ask a practice question, give the id of ONE item from OFFERED ITEMS (never invent a question for grading); the card then shows its text, and you ask it in your words in `say`. Never say its answer. null when you ask nothing graded.",
-    `- board: "show" with at most ${AGENT_LIMITS.boardLines} short lines (labels, numbers, a tiny worked step; no sentences) to put them on the board now; "clear" to empty it; "keep" to leave it.`,
-    "- picture: a subject when they ask to SEE a real thing; the event will say whether a picture can be made (right now none can: say so honestly and describe it in words).",
-    "- read: your covert read of their understanding of one skill (understood / partly / not / unknown) with the evidence in a few words; it never contradicts the verified grade.",
+    `- board: "show" puts ONE new page up, replacing the last. kind "write": lines, at most ${AGENT_LIMITS.boardLines} short labels or numbers, no sentences; "number_line": mark, the values to mark; "table": columns and rows (at most 4 by 5); "shapes": circles, squares, triangles, polygons, or "parts" (a circle cut into equal parts, some shaded); "work": a layout (column_add, column_sub, column_mul, long_div, fraction, equation) and rows of digits; "draw": subject, one plain thing for a labelled sketch. Leave the other fields empty or null. Never put the answer to the open question on it. "clear" empties the board; "keep" leaves it. Next turn, ON SCREEN says what really went up; a refused page is not up.`,
+    "- picture: a subject when they ask to SEE a real thing (an animal, an object, a place). It takes about 15 seconds: say it is being made and describe it in words meanwhile. It is on the screen only after an event says content_ready; content_failed means say plainly it could not come. A game cannot be made yet: say so and play a quick spoken game instead.",
+    "- read: your covert read of their understanding of one skill (understood / partly / not / unknown) with the evidence in at most eight words; it never contradicts the verified grade.",
     "- end: true only when they want to stop for today, or the lesson's goal is met and they agree.",
     "TRUTH (these must hold every turn).",
     "- Never say anything is on the screen or the board unless it is in ON SCREEN or in the board lines you show this turn, and never describe dots, rows, shapes or pictures as visible unless they are there; never call anything a game unless a game is on screen.",
@@ -93,7 +102,7 @@ export function stateMessage({ state, kit, event, onScreen, lane }) {
     mis ? `known misconceptions:\n${mis}` : null,
     `OFFERED ITEMS (id | skill | kind | difficulty | question; answers are hidden from you):\n${offered || "(none left)"}`,
     `CARD NOW: ${card ? `${card.id}: ${clip(promptFor(card, ctx.lang), 200)}` : "no question on the card"}`,
-    `ON SCREEN: ${onScreen?.length ? onScreen.join(" | ") : "nothing (an empty board)"}`,
+    `ON SCREEN: ${typeof onScreen === "string" ? onScreen : onScreen?.length ? onScreen.join(" | ") : "nothing (an empty board)"}`,
     `LEARNER:\n${learner || "(no evidence yet)"}`,
     `YOUR PLAN: ${clip(a.plan, 600) || "(none yet: write one)"}`,
     `LAST TURNS:\n${turns || "(the lesson is starting)"}`,

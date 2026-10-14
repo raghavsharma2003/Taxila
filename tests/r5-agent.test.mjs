@@ -5,17 +5,32 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { agentTurn, applyAgentTurn, eventOf, gradeOf, earnedRead, AgentBudgetError } from "../server/agent/agent.js";
 import { laneFor, teacherMode } from "../server/agent/flags.js";
-import { boardScript } from "../server/agent/board.js";
+import { specOf } from "../server/agent/tools.js";
 import { systemPrompt, stateMessage, offeredItems, TURN_SCHEMA } from "../server/agent/prompt.js";
 import { kit, CTX, cls } from "./fixtures/kit.mjs";
 import { floorText } from "../server/compiler/floor.js";
 
 const K = kit();
-const base = (over = {}) => ({ intent: "explain", say: "Chalo, aaj hum fractions dekhte hain.", pose_item: null, board: { action: "keep", lines: [] },
+const KEEP = { action: "keep", kind: null, lines: [], mark: [], columns: [], rows: [], layout: null, subject: null, shapes: [] };
+const SHOW = (lines) => ({ ...KEEP, action: "show", kind: "write", lines });
+// stream 2's screen tools, stubbed: a write page goes up with its lines; nothing else is up until something is shown
+const fakeTools = () => {
+  const t = { calls: [], up: { ok: true, on: "nothing", words: "nothing is on the screen", texts: [], numbers: [] } };
+  return Object.assign(t, {
+    now: () => t.up,
+    show: async (lessonId, spec, o) => { t.calls.push(["show", spec, o]); if (spec.kind === "draw") return { ...t.up, ok: false, refused: { why: "cannot sketch", checks: ["subject"] } };
+      t.up = { ok: true, on: "board", words: `the board shows writing; written on it: ${spec.lines.join("; ")}`, texts: spec.lines, numbers: [], pageId: "p1" }; return t.up; },
+    clear: () => { t.calls.push(["clear"]); t.up = { ok: true, on: "nothing", words: "the board is empty", texts: [], numbers: [] }; return t.up; },
+    picture: (lessonId, subject) => { t.calls.push(["picture", subject]); return { ...t.up, ok: true, job: { id: "j1", etaMs: 15000 } }; },
+    slot: (lessonId, pageId) => ({ slotId: `${pageId}:slot`, intentId: pageId, state: "revealed" }),
+    news: () => [],
+  });
+};
+const base = (over = {}) => ({ intent: "explain", say: "Chalo, aaj hum fractions dekhte hain.", pose_item: null, board: KEEP,
   picture: null, read: { skill: null, level: "unknown", evidence: "" }, plan: "1. equal parts 2. compare", end: false, ...over });
 const stub = (json) => async (dep, messages, opts) => { stub.last = { dep, messages, opts }; return { json, usage: { prompt_tokens: 900, completion_tokens: 80 } }; };
 const ST = (over = {}) => ({ turn: 3, phase: "teach", ctx: { ...CTX, classLevel: 4 }, itemsDone: [], skipped: [], ...over });
-const run = (json, over = {}) => agentTurn({ state: ST(over.state), kit: K, event: "x", lessonId: "L1", chatFn: stub(json), ...over, state: ST(over.state) });
+const run = (json, over = {}) => agentTurn({ state: ST(over.state), kit: K, event: "x", lessonId: "L1", chatFn: stub(json), tools: fakeTools(), ...over, state: ST(over.state) });
 
 test("the lane: off wins, agent for all, the cohort by email or sha256", () => {
   assert.equal(laneFor({ email: "a@b.c" }, {}), "director");
@@ -53,7 +68,7 @@ test("a posed item must be an offered one; the card question closes her line", a
 });
 
 test("silence brings no new item, no board, no picture, no end", async () => {
-  const out = await run(base({ intent: "practice", pose_item: "i2", board: { action: "show", lines: ["1/2", "1/4"] }, picture: "roti", end: true }), { silent: true });
+  const out = await run(base({ intent: "practice", pose_item: "i2", board: SHOW(["1/2", "1/4"]), picture: "roti", end: true }), { silent: true });
   assert.equal(out.item, null); assert.equal(out.board, null); assert.equal(out.picture, null); assert.equal(out.end, false);
   // the same card question may be asked again
   const again = await run(base({ pose_item: "i2" }), { silent: true, state: { activeItemId: "i2" } });
@@ -65,8 +80,11 @@ test("channel truth: a spoken line never asks to type; screen truth: no board cl
   assert.ok(!/type kar/i.test(typed.say), typed.say);
   const claim = await run(base({ say: "Board par dekho, maine do roti banayi hain. Kaunsi badi hai?" }));
   assert.ok(!/board par dekho/i.test(claim.say), claim.say);
-  const shown = await run(base({ say: "Board par dekho: 1/2 aur 1/4. Kaunsa bada hai?", board: { action: "show", lines: ["1/2", "1/4"] } }));
-  assert.deepEqual(shown.board.shown, ["1/2", "1/4"]);
+  const tools = fakeTools();
+  const shown = await run(base({ say: "Board par dekho: 1/2 aur 1/4. Kaunsa bada hai?", board: SHOW(["1/2", "1/4"]) }), { tools });
+  assert.deepEqual(shown.board.texts, ["1/2", "1/4"]);
+  assert.equal(tools.calls[0][2].say, shown.say, "the page is gated against her line");
+  assert.equal(shown.slot.intentId, "p1", "the response carries the gated slot");
   assert.match(shown.say, /Board par dekho/);
 });
 
@@ -77,12 +95,20 @@ test("budgets throw (the Director then takes the turn); a bad output throws", as
   assert.ok(out.usage.tokens > 0);
 });
 
-test("the board: code-drawn, ≤ 24-char lines, a sentence refused, the cap holds", () => {
-  const b = boardScript(["1/2 > 1/3", "roti ke 2 barabar tukde", "a", "b", "c", "d", "e"], { lessonId: "L1", seq: 1, max: 6 });
-  assert.equal(b.ok, true);
-  assert.ok(b.shown.every((l) => [...l].length <= 24));
-  assert.ok(b.shown.length <= 6 && b.refused.length >= 1);
-  assert.equal(boardScript([], {}).ok, false);
+test("the board goes through stream 2's tools: a refused page is not up and her pointing is removed; a picture is a job", async () => {
+  const tools = fakeTools();
+  const r = await run(base({ say: "Board par dekho, ek roti hai. Kitne tukde hain?", board: { ...KEEP, action: "show", kind: "draw", subject: "roti" } }), { tools });
+  assert.equal(r.board, null);
+  assert.ok(!/board par dekho/i.test(r.say), r.say);
+  assert.ok(r.notes.some((n) => /board refused/.test(n)));
+  const p = await run(base({ say: "Main ek photo banwa rahi hoon.", picture: "elephant" }), { tools: fakeTools() });
+  assert.equal(p.picture.job.id, "j1");
+  assert.equal(specOf({ ...KEEP, kind: "number_line", mark: ["1/4"] }).mark[0], "1/4");
+  assert.equal(specOf({ ...KEEP, kind: "write", lines: [] }), null, "nothing to draw is no page");
+  // a picture's arrival is told to her in the next event
+  const t2 = fakeTools(); t2.news = () => ["content_ready: the screen shows a picture of an elephant"];
+  await run(base(), { tools: t2 });
+  assert.match(stub.last.messages[1].content, /EVENT: content_ready: the screen shows a picture of an elephant/);
 });
 
 test("the event carries the verified grade, never asks the model to grade", () => {
