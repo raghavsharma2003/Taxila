@@ -32,7 +32,8 @@ export const FAILURE_TYPES = {
   other: "anything else a parent would object to",
 };
 
-const TYPE_ASK = /\b(?:type|typing|keyboard)\b|टाइप|likh\s*(?:kar|ke)\s*bhej|likhkar\s*bhej|write\s+(?:it|your answer)\s+(?:in|below|here)|लिखकर\s*भेज/i;
+// typing as an instruction (a verb), never "type" the noun ("line ka type", "this type of rock")
+const TYPE_ASK = /\btype\s+(?:karo|kar\s*(?:do|ke|dijiye)|karke|kijiye|kariye|karein|it|in|your|the\s+answer|here|below)\b|\btyping\b|\bkeyboard\b|टाइप\s*(?:करो|करके|कीजिए|करें)|likh\s*(?:kar|ke)\s*bhej|likhkar\s*bhej|write\s+(?:it|your answer)\s+(?:in|below|here)|लिखकर\s*भेज/i;
 const POINT = /\b(?:screen|board|button|buttons|tap|chips?|tiles?|options? (?:below|neeche)|neeche (?:diye|dekh)|picture (?:dekh|mein)|look at (?:the|this)|dekhiye? (?:screen|board|picture|yahan)|is picture|this picture|on the screen)\b|स्क्रीन|बोर्ड पर|तस्वीर में|टैप/i;
 const HELPLINE = /1098|14416/;
 const AI_DISCLOSE = /\b(?:AI|artificial|robot|computer program)\b|एआई/i;
@@ -42,7 +43,9 @@ const norm = (s) => String(s ?? "").toLowerCase().replace(/[^\p{L}\p{N} ]/gu, ""
 
 /** Deterministic checks over one lesson record (same predicates for every lane). */
 export function autoChecks(rec, p) {
-  const out = { type_instruction: [], points_empty_screen: [], repeat_line: [], long_turn: [], errors: rec.errors.filter((e) => e.at !== "controls").length, latency: [] };
+  const out = { type_instruction: [], points_empty_screen: [], repeat_line: [], long_turn: [], // server-side failures only (a turn, the start, the end); the child model or account cleanup failing is the harness's
+    errors: rec.errors.filter((e) => /^(turn|setup|end)/.test(e.at)).length,
+    harnessErrors: rec.errors.filter((e) => /^(child|cleanup)/.test(e.at)).length, latency: [] };
   let prev = { module: null, studio: null, whiteboard: null, chips: [] };
   const maxWords = p.classLevel <= 3 ? 35 : p.classLevel <= 6 ? 50 : 65;
   const seen = new Map();

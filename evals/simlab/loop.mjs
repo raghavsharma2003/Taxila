@@ -8,7 +8,7 @@
 //
 // Each arm is a running server (evals/simlab/serve.mjs; the agent arm with TAXILA_TEACHER=agent). Same personas, same
 // order, for every arm and lane.
-import { mkdirSync, writeFileSync, readFileSync, readdirSync, existsSync } from "fs";
+import { mkdirSync, writeFileSync, readFileSync, readdirSync, existsSync, cpSync, rmSync } from "fs";
 import { join } from "path";
 import { execSync } from "child_process";
 import { ROOT, MODELS, pool } from "./lib.mjs";
@@ -26,7 +26,9 @@ const byId = new Map(PERSONAS.map((p) => [p.id, p]));
 const rejudge = arg("rejudge", null);
 const head = (() => { try { return execSync("git rev-parse --short HEAD", { cwd: ROOT }).toString().trim(); } catch { return "?"; } })();
 const runId = rejudge ? rejudge.split("/").filter(Boolean).pop() : arg("run-id", `${new Date().toISOString().slice(0, 16).replace(/[:T]/g, "-")}-${head}`);
-const OUT = rejudge ?? join(ROOT, "evals/simlab/results", runId);
+// a run is written in the scratch root (SIMLAB_WORK, default the OS tmp) and copied into results/ when it is complete
+const FINAL = rejudge ?? join(ROOT, "evals/simlab/results", runId);
+const OUT = rejudge ?? (flag("in-place") ? FINAL : join(process.env.SIMLAB_WORK || "/tmp", "simlab", runId));
 for (const d of ["records", "transcripts"]) mkdirSync(join(OUT, d), { recursive: true });
 
 const arms = Object.fromEntries((arg("arms", "director=http://127.0.0.1:8791")).split(",").map((s) => s.split("=")));
@@ -48,7 +50,12 @@ function spread(all, k) {
 
 const compact = (rec) => ({ ...rec, turns: rec.turns.map((t) => ({ ...t, ui: t.ui ? { ask: t.ui.ask, chips: t.ui.chips, tray: t.ui.tray, answerForm: t.ui.answerForm, verdict: t.ui.verdict, phase: t.ui.phase, studioSlot: t.ui.studioSlot ? { state: t.ui.studioSlot.state, kind: t.ui.studioSlot.artifact?.kind } : undefined } : undefined })) });
 
-const meta = { runId, head, date: new Date().toISOString(), arms, lanes, n: personas.length, turns, models: MODELS, note: arg("note", "") };
+let meta = { runId, head, date: new Date().toISOString(), arms, lanes, n: personas.length, turns, models: MODELS, note: arg("note", "") };
+// a re-run of some lessons into an existing run keeps that run's meta and logs the re-run
+if (existsSync(join(OUT, "meta.json"))) {
+  const old = JSON.parse(readFileSync(join(OUT, "meta.json"), "utf8"));
+  meta = rejudge ? old : { ...old, reruns: [...(old.reruns ?? []), { date: meta.date, head, personas: personas.map((p) => p.id), why: arg("note", "") }] };
+}
 if (!rejudge) writeFileSync(join(OUT, "meta.json"), JSON.stringify(meta, null, 1));
 
 let voice = null;
@@ -77,12 +84,19 @@ if (leftovers.length) writeFileSync(join(OUT, "LEFTOVER-ACCOUNTS.json"), JSON.st
 // 2. judge
 const recs = readdirSync(join(OUT, "records")).filter((f) => f.endsWith(".json")).map((f) => JSON.parse(readFileSync(join(OUT, "records", f), "utf8")));
 console.log(`judging ${recs.length} lessons with ${MODELS.judge}${useJudge2 ? ` + ${MODELS.judge2}` : ""}`);
+// --reuse-judged: keep the stored LLM judgments (scores.json) and recompute only the code checks and the report
+const prior = flag("reuse-judged") && existsSync(join(OUT, "scores.json"))
+  ? new Map(JSON.parse(readFileSync(join(OUT, "scores.json"), "utf8")).lessons.map((r) => [`${r.persona}/${r.arm}/${r.lane}`, r])) : new Map();
 const rows = await pool(recs, conc, async (rec) => {
   const p = byId.get(rec.persona);
   const row = { persona: rec.persona, arm: rec.arm, lane: rec.lane, turns: rec.turns.filter((t) => t.child).length, auto: autoChecks(rec, p),
     lines: Object.fromEntries(rec.turns.map((t) => [t.n, (t.teacher ?? "").slice(0, 160)])) };
-  try { row.judged = await judgeLesson(rec, p, MODELS.judge); } catch (e) { row.judgeError = String(e.message).slice(0, 200); }
-  if (useJudge2) { try { row.judged2 = await judgeLesson(rec, p, MODELS.judge2); } catch (e) { row.judge2Error = String(e.message).slice(0, 200); } }
+  const old = prior.get(`${rec.persona}/${rec.arm}/${rec.lane}`);
+  if (old?.judged) { row.judged = old.judged; row.judged2 = old.judged2; }
+  else {
+    try { row.judged = await judgeLesson(rec, p, MODELS.judge); } catch (e) { row.judgeError = String(e.message).slice(0, 200); }
+    if (useJudge2) { try { row.judged2 = await judgeLesson(rec, p, MODELS.judge2); } catch (e) { row.judge2Error = String(e.message).slice(0, 200); } }
+  }
   row.understanding = understandingScore(rec, p, row.judged);
   row.understanding2 = row.judged2 ? understandingScore(rec, p, row.judged2) : null;
   writeFileSync(join(OUT, "transcripts", `${rec.persona}--${rec.arm}--${rec.lane}.md`), transcriptMd(rec, p, row));
@@ -97,4 +111,5 @@ writeFileSync(join(OUT, "scores.json"), JSON.stringify({ meta, summary: sum, clu
 writeFileSync(join(OUT, "FAILURES.md"), md);
 console.log(md.split("## Failure clusters")[0]);
 console.log(clusters.map((c) => `${c.type}: ${c.lessons} lessons / ${c.instances}`).join("\n"));
-console.log(`\nwrote ${OUT}`);
+if (OUT !== FINAL) { mkdirSync(FINAL, { recursive: true }); cpSync(OUT, FINAL, { recursive: true }); }
+console.log(`\nwrote ${FINAL}`);
