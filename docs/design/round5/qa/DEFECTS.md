@@ -236,6 +236,8 @@ ek seb gol, laal…", and the board still draws "एक" as a label); D09 pass (
 **D08 re-test on d5c1c61 (n = 2): PASS** — no "एक" label, no invented fruit; she describes the lesson's own picture ("ek tarazu
 mein 1 kilogram ka packet, doosre mein 1000 gram ke chhote packets… Tum kya dekh rahi ho?"). New **D29 (P2, content)**: she says
 "dekho" and describes a balance while the board shows the "Change to grams → Compare weights → Find the heavier weight" flow.
+**D29 re-test on claude/r4-content@11ea0e2 (n = 2): PASS** — the board draws what she describes (["1 kg","1000 g","same
+weight"] / ["1 kg","1000 g","?"]).
 
 ### D30 · P1 · OWNER (main: lesson runtime; latency: TTS) — a failed first line leaves the lesson idle
 Pass 4, phone, class 4, lesson start: `tts.request cascade-1` → `POST /api/voice/tts-stream 502` after 11,659 ms (server:
