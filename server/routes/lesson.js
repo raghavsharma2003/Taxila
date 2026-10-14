@@ -39,7 +39,7 @@ import { sessionStartCtx, schoolPointerStmts } from "../director/session/start.j
 import { voicesigSeam } from "../voicesig/lesson.js";
 import { realtimeSeam } from "../voice/realtimeSession.js";
 import { fallbackReply, safeguardLine, scrubbed, textReply, words } from "../brain/say.js";
-import { clientInstructions, debugFor, floorIncidentStmt, kitFor, stageTurns, turnInsertStmt, withAsk } from "../brain/rows.js";
+import { clientInstructions, debugFor, floorIncidentStmt, kitFor, laneOf, stageTurns, turnInsertStmt, withAsk } from "../brain/rows.js";
 import { nextBeat, uiBeatOf } from "../brain/beat.js";
 import { momentOf } from "../brain/moment.js";
 import { expressiveSeam } from "../voice/expressive/seam.js";
@@ -130,10 +130,52 @@ async function openNow(req, res, body) {
 }
 
 /** @type {(req: any, res: any, body: import("../../shared/contracts").LessonStartRequest) => Promise<void>} */
+/**
+ * r5 QA D24: rejoin this child's open lesson (POST /api/lesson/start with resumeLessonId). Only a server-written lane
+ * (cascade / text: every reply is a stored turn) on the SAME lane as asked; the realtime lane's instructions are not
+ * rebuilt here, so it starts fresh. The pending page-hide end is cancelled; her last line is the "opening" (she says it
+ * again, from its stored turn), the screen is the last one the Director sent, and turnSeqFloor keeps a page that lost its
+ * outbox (another device) above every turn the server has acknowledged. → the start response, or null (start fresh).
+ */
+async function resumeLesson(child, body) {
+  const id = String(body.resumeLessonId ?? "");
+  if (!/^[0-9a-f-]{36}$/i.test(id)) return null;
+  const lesson = await one("select * from lesson where id = $1 and child_id = $2 and ended_at is null", [id, child.id]);
+  if (!lesson) return null;
+  const lane = laneOf(lesson.state?.mode);
+  if (lane === "voice" || lane !== laneOf(startModeOf(body.mode))) return null;
+  const claimed = await one("update lesson set state = state - 'pendingEndAt' where id = $1 and ended_at is null returning state", [id]);
+  if (!claimed) return null;
+  const state = claimed.state ?? {};
+  const [last, controls] = await Promise.all([
+    one("select seq, text from turn where lesson_id = $1 and speaker = 'teacher' order by seq desc limit 1", [id]),
+    one("select address from child_controls where child_id = $1", [child.id]).catch(() => null),
+  ]);
+  const topic = getTopic(state.session && state.topicId ? state.topicId : lesson.topic_id);
+  if (!topic) return null;
+  const teacher = teacherForLesson(child, state.ctx?.teacherId, state.ctx?.teacherName);
+  const address = resolveAddress({ classLevel: child.class_level, lang: child.language_pref, parent: controls?.address ?? null });
+  const turnSeqFloor = Math.max(0, ...(state.acks ?? []).map((a) => Number(a?.turnSeq) || 0));
+  console.info(`[lesson] resume ${id} turn=${state.turn ?? 0} floor=${turnSeqFloor}`);
+  return {
+    lessonId: id, topic: { id: topic.id, title: topic.title, chapter: topic.chapter.title },
+    teacher: teacherCard(teacher), moduleCommands: [], ui: state.lastUi ?? {}, address,
+    ...(last?.text ? { teacherOpening: last.text, teacherOpeningSeq: last.seq } : {}),
+    resumed: true, turnSeqFloor,
+  };
+}
+
 async function start(req, res, body) {
   const t0 = performance.now();
   const trace = [];
   const { guardian, child } = await requireChild(req, need(body, "childId").childId);
+  // r5 QA D24: a reload, a tab discard or the home's "continue" rejoins the open lesson instead of opening a new one
+  if (body.resumeLessonId) {
+    const resumed = await resumeLesson(child, body).catch((e) => { console.warn(`[lesson] resume refused: ${e.message}`); return null; });
+    if (resumed) return send(res, 201, resumed);
+  }
+  // marked page-hide ends whose timer a restart lost (D24): ended now, before this start reads the plan
+  await sweepPendingEnds(child.id).catch(() => {});
   // The parent's daily cap and lesson hours, and "Done for today", are promises (V2 §3.4, §6.3.3, §6.5.4): the plan
   // decides, here as on POST /api/lesson/request — a stale tab or a direct call cannot open a lesson past them. Read
   // alongside the consent and topic reads, checked before the kit read, any model call or write (planFor alone added
@@ -489,9 +531,13 @@ async function withPlanNext(did, child) {
 export const endedByPageHide = (req, body) => body?.reason === "pagehide"
   || /^text\/plain/i.test(String(req?.headers?.["content-type"] ?? ""));
 
-async function end(req, res, body) {
+/**
+ * End one lesson: claim the row, write the summary, the parent note and the memories, fold the held evidence, and run
+ * the Conductor's and the bond's lesson-end seams. → { status, body } (the route sends it; a deferred page-hide end
+ * runs it from a timer). `endedBy` is "client" or "pagehide".
+ */
+export async function endLesson({ lesson, guardian, child, endedBy = "client", debug = false }) {
   const trace = [];
-  const { lesson, guardian, child } = await loadLessonFor(req, need(body, "lessonId").lessonId);
   const teacher = teacherForLesson(child, lesson.state?.ctx?.teacherId, lesson.state?.ctx?.teacherName);
   // round 4 (session-first): a session's segments re-point the state at another topic inside this lesson; the summary,
   // the kit and the row's topic are the last segment's (director/session/segments.js)
@@ -500,13 +546,13 @@ async function end(req, res, body) {
   // "Next time" on the end summary is the ONE next-topic answer read NOW (after this lesson's evidence), the same the
   // home, Progress and the parent read (reports/truth.js nextTopicForPlan), never the sequence-next pinned at the start
   const did = async (st) => withPlanNext(lessonSummary(st, { topic: topicRow, teacher, rows: await engineRowsOf(child.id, lesson.id) }), child);
-  const already = async (row) => send(res, 200, { summary: row?.summary ?? null, parentNote: row?.parent_note ?? null, alreadyEnded: true, did: await did(row?.state ?? lesson.state) });
+  const already = async (row) => ({ status: 200, body: { summary: row?.summary ?? null, parentNote: row?.parent_note ?? null, alreadyEnded: true, did: await did(row?.state ?? lesson.state) } });
   if (lesson.ended_at) return already(lesson);
   // Claim the lesson BEFORE the slow summary: of two overlapping ends (a double tap, a retry on timeout) only
   // one gets the row back; the other writes nothing (sessions were once counted twice, memories duplicated).
   // The claim also closes the lesson to turns, so the facts below are final.
   const claimed = await one(`update lesson set ended_at = now(), state = jsonb_set(state, '{phase}', '"done"') || $2::jsonb
-    where id = $1 and ended_at is null returning state`, [lesson.id, endedByPageHide(req, body) ? { endedBy: "pagehide" } : {}]);
+    where id = $1 and ended_at is null returning state`, [lesson.id, endedBy === "pagehide" ? { endedBy: "pagehide" } : {}]);
   if (!claimed) return already(await one("select summary, parent_note, state from lesson where id = $1", [lesson.id]));
   const state = claimed.state;
   // ship5 p3-voicesig: the session's answering-pace baseline goes back to the child's rows (only under the parent's
@@ -584,19 +630,68 @@ async function end(req, res, body) {
   }
   // Seam (W1-D): the Conductor's lesson-end event lands with the lesson's record, after the caller's own writes (the
   // row-count check and the result indexes below read only `writes`).
-  const hookStmts = onLessonEnd({ child, lessonId: lesson.id, topicId, endedBy: endedByPageHide(req, body) ? "pagehide" : "client",
+  const hookStmts = onLessonEnd({ child, lessonId: lesson.id, topicId, endedBy,
     turns: state.turn ?? 0, startedAt: lesson.started_at ?? null, now: Date.now() });
   // Seam (W2-I, server/relational/seam.js): the bond's lesson-end rows (rel_state, rel_event, relational_note), appended
   // after the lesson's own writes and BEFORE the Conductor's (its ingest locks child_seq last). [] until W2-I fills it.
   const relEnd = seamSafe("relational.onLessonEnd", () => relationalSeam.onLessonEnd(child, { lessonId: lesson.id, childId: child.id,
-    endedBy: endedByPageHide(req, body) ? "pagehide" : "client", turns: state.turn ?? 0 }), []);
+    endedBy, turns: state.turn ?? 0 }), []);
   const relStmts = Array.isArray(relEnd) ? relEnd : [];
   const results = await tx([...writes, ...relStmts, ...hookStmts]);
   if (results.slice(0, writes.length).some((rows) => rows.length !== 1)) throw new Error("lesson end: a write did not land");
   await heldP;
   const relAt = canWrite(child, "kt") ? 1 : -1;
-  send(res, 200, { summary, parentNote, memoriesSaved: writes.filter((w) => /insert into memory/.test(w.text)).length, sessions: relAt > 0 ? results[relAt][0].sessions : null,
-    did: await did(state), ...(debugFor(req) ? { debug: { facts, timings: trace } } : {}) });
+  return { status: 200, body: { summary, parentNote, memoriesSaved: writes.filter((w) => /insert into memory/.test(w.text)).length, sessions: relAt > 0 ? results[relAt][0].sessions : null,
+    did: await did(state), ...(debug ? { debug: { facts, timings: trace } } : {}) } };
+}
+
+/**
+ * r5 QA D24: a page-hide is not always goodbye. A reload, an Android tab discard or a quick app switch fires it too, and
+ * ending the lesson then meant the child came back to a NEW lesson from the greeting. The page-hide end is deferred by
+ * PAGEHIDE_GRACE_MS: the lesson is marked (state.pendingEndAt) and ended by this same path when the grace runs out,
+ * unless a start resumes it first (resumeLessonId clears the mark). A process restart loses the timer; the next start
+ * or plan read of the child sweeps marked lessons past their grace (sweepPendingEnds). 0 = end at once (the old way).
+ */
+export const PAGEHIDE_GRACE_MS = Math.max(0, Number(process.env.TAXILA_PAGEHIDE_GRACE_MS ?? 120_000) || 0);
+
+/** End a deferred page-hide lesson if it is still marked with `stamp` (a resume or a later end clears or replaces it). */
+async function finishPendingEnd(lessonId, stamp) {
+  const lesson = await one("select * from lesson where id = $1", [lessonId]);
+  if (!lesson || lesson.ended_at || lesson.state?.pendingEndAt !== stamp) return;
+  const child = await one("select * from child where id = $1", [lesson.child_id]);
+  const guardian = child && await one("select id, email, name, locale from guardian where id = $1", [child.guardian_id]);
+  if (!child || !guardian) return;
+  await endLesson({ lesson, guardian, child, endedBy: "pagehide" });
+}
+
+function schedulePendingEnd(lessonId, stamp, ms = PAGEHIDE_GRACE_MS) {
+  const t = setTimeout(() => { finishPendingEnd(lessonId, stamp).catch((e) => console.warn(`[lesson] deferred end ${lessonId}: ${e.message}`)); }, ms);
+  t.unref?.();
+}
+
+/** The child's marked lessons whose grace is over (a timer lost to a restart): ended now, never blocking the caller. */
+export async function sweepPendingEnds(childId, now = Date.now()) {
+  if (!PAGEHIDE_GRACE_MS) return;
+  const rows = await q(`select id, state->>'pendingEndAt' as at from lesson where child_id = $1 and ended_at is null and state ? 'pendingEndAt'`, [childId]).catch(() => []);
+  for (const r of rows) {
+    const due = new Date(r.at).getTime() + PAGEHIDE_GRACE_MS;
+    if (Number.isFinite(due) && due <= now) await finishPendingEnd(r.id, r.at).catch((e) => console.warn(`[lesson] swept end ${r.id}: ${e.message}`));
+  }
+}
+
+async function end(req, res, body) {
+  const { lesson, guardian, child } = await loadLessonFor(req, need(body, "lessonId").lessonId);
+  const pagehide = endedByPageHide(req, body);
+  if (pagehide && PAGEHIDE_GRACE_MS > 0 && !lesson.ended_at) {
+    const stamp = new Date().toISOString();
+    const marked = await one(`update lesson set state = state || jsonb_build_object('pendingEndAt', $2::text) where id = $1 and ended_at is null returning id`, [lesson.id, stamp]);
+    if (marked) {
+      schedulePendingEnd(lesson.id, stamp);
+      return send(res, 202, { deferred: true, graceMs: PAGEHIDE_GRACE_MS });
+    }
+  }
+  const out = await endLesson({ lesson, guardian, child, endedBy: pagehide ? "pagehide" : "client", debug: !!debugFor(req) });
+  send(res, out.status, out.body);
 }
 
 /** GET /api/lesson/summary?lessonId= — the summary screen's data again (a reload, the "Show a grown-up" view). */

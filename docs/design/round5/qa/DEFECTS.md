@@ -43,7 +43,7 @@ Status: **FIXED** (on `claude/r5-qa`, verified by a repro script) · **OWNER** (
 | D21 | P2 | FIXED | QA (UI) | At 00:20 the child home greets "Morning, Riya" |
 | D22 | P2 | OWNER | latency / main | Parent home sits on "Loading": `GET /api/parent/overview` 2.4 s for 975 B |
 | D23 | P1 | OWNER | main (safety review) | A disclosure that names a parent still gets "Talk to a grown-up at home" as the help screen's primary action |
-| D24 | P1 | OWNER | main (lesson runtime) | A reload or an accidental Back mid-lesson ends it; coming back starts a NEW lesson from the greeting |
+| D24 | P1 | FIXED (QA, assigned by main) | lesson runtime + server/routes/lesson.js | A reload or an accidental Back mid-lesson ends it; coming back starts a NEW lesson from the greeting |
 | D25 | P2 | OPEN | QA (UI) | Cold child home: the background grid alone, with no loading sign, until `/api/child/boot` answers (seen once, after a server restart) |
 | D26 | P2 | FIXED | QA (UI) | After "Delete my account" the receipt page throws an uncaught `401` (a read still in flight for the gone account) |
 | D27 | P2 | FIXED | QA (UI) | A young child's Me screen offers "Type instead … You can always type", but Young lessons never type (tiles and Help only) |
@@ -210,6 +210,18 @@ Class 4, at her turn, reload `/c/:cid/lesson/new` (what a refresh or an Android 
 `/lesson/new` after the start, and `pagehide` ends the lesson (`runtime.ts:1048` → `POST /api/lesson/end`), so neither the
 URL nor the home ("Just start") can bring the child back to where she was. Same after Android Back and returning.
 Suggest: `replaceState` to `/lesson/:lid` after the start, and let a pagehide within N seconds of a reload resume.
+**Fixed (main assigned D24 to QA):**
+- the URL names the lesson once it starts (`useDesk.ts`, `history.replaceState`, so the route keyed by id never remounts);
+- `POST /api/lesson/start` with `resumeLessonId` rejoins this child's open lesson on the same server-written lane (cascade /
+  text): her last line is said again from its stored turn, the screen is the last one the Director sent, and `turnSeqFloor`
+  keeps another device's outbox above every acknowledged turn (`outbox.raiseFloor`); the realtime lane starts fresh;
+- a page-hide end is deferred `TAXILA_PAGEHIDE_GRACE_MS` (default 120 s): the lesson is marked `pendingEndAt` and ended by the
+  SAME end path (`endLesson`, split out of the route) when the grace runs out, unless a resume clears the mark; marked lessons
+  a restart orphaned are swept at the child's next start;
+- the Kaksha home's "continue" opens the open lesson (the classic home already linked it; the route ignored the id).
+Verified: `tests/e2e/qa-reload.mjs` PASS (same lessonId, `resumed: true`, her last line again, a fresh reply after); a full-page
+navigation away marked the lesson at 21:27:34 and the timer ended it at 21:29:35 (`endedBy: pagehide`, summary written);
+client-runtime, conductor-hooks, lesson-safety and outbox-late tests pass.
 
 ### Re-test of D07-D11 on claude/r4-content@e5b72300 (content stream's fixes), n = 1 each
 D07 improved (no static board; a spoken "weight game"); **D08 not fixed** (she invents an apple: "Iski photo yahan nahi hai;
@@ -258,6 +270,11 @@ picker now goes to Sign in, wrong password, sign in), `qa-gate-kill` PASS, `qa-s
 ("एक किलो में हजार ग्राम होते हैं" → "Bilkul Riya… 1 kilogram mein 1000 grams hote hain"), offline 10 s + background 5 s +
 a double tap on Talk + end. The bundle no longer contains "06:30 to 21:30". Hello's greeting clip is 13 s (the card moves on
 at 13.8 s; an earlier "did not move on in 10 s" flag was the harness's own timeout). New: D30.
+
+## Note: a load-sensitive budget test
+`tests/voice-expressive-plan.test.mjs` "budget: plan + align + compile ≤ 3 ms p99" failed once in a full run on this box (p95
+3.22 ms, p99 4.40 ms) with 4 test workers and 2 QA servers running; alone it passed 3/3. Not changed (main: keep the budget);
+on a loaded CI runner it can flake.
 
 ## Journeys that passed (pass 3)
 `tests/e2e/qa-interact.mjs`: a past lesson's Listen, the lesson card ("A short visit: not counted as a lesson"), "See Riya's

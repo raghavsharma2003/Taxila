@@ -56,6 +56,8 @@ export interface DeskContext {
   timing: number;
   variant: "lesson" | "practice" | "doubt";
   topicId?: string;
+  /** r5 QA D24: the open lesson this screen rejoins (the URL's /lesson/<id>); absent = a new lesson. */
+  resumeLessonId?: string;
   firstText?: string;
   /** Start as typed (practice / quiet mode / ?mode=text). */
   textOnly: boolean;
@@ -539,13 +541,13 @@ export function useDesk(runtime: LessonRuntime, bridge: UiBridge | null, ctx: De
     prewarmWhenIdle(enginesForTopic(ctx.topicId));
     setGate("starting");
     try {
-      await runtime.start(ctx.cid, m, ctx.topicId);
+      await runtime.start(ctx.cid, m, ctx.topicId, ctx.resumeLessonId);
     } catch {
       /* the failure lands in state.failure → T8 / T9 */
     } finally {
       setGate(null);
     }
-  }, [runtime, ctx.cid, ctx.textOnly, ctx.topicId]);
+  }, [runtime, ctx.cid, ctx.textOnly, ctx.topicId, ctx.resumeLessonId]);
   useEffect(() => {
     if (startedOnce.current || state.phase !== "idle") return;
     startedOnce.current = true;
@@ -556,6 +558,13 @@ export function useDesk(runtime: LessonRuntime, bridge: UiBridge | null, ctx: De
     if (active || ctx.textOnly) void start();
     else setGate("locked");
   }, [state.phase, start, ctx.textOnly]);
+  // r5 QA D24: once the lesson has an id, the address bar names it (replaceState, not a router navigation: the route is
+  // keyed by its id and would remount), so a reload or a restored tab rejoins THIS lesson
+  useEffect(() => {
+    if (ctx.variant !== "lesson" || !state.lessonId || typeof window === "undefined") return;
+    const want = window.location.pathname.replace(/\/lesson\/[^/]+$/, `/lesson/${state.lessonId}`);
+    if (want !== window.location.pathname) window.history.replaceState(window.history.state, "", want + window.location.search);
+  }, [ctx.variant, state.lessonId]);
   const sentFirst = useRef(false);
   useEffect(() => {
     if (state.phase === "live" && ctx.firstText && !sentFirst.current) {
