@@ -301,6 +301,9 @@ export class CascadeDuplex {
 
   replyEnded(): void { if (!this.closed) { this.tel.herEnd(this.now(), false); this.live.herEnd(); } }
   replyStopped(): void { if (!this.closed) { this.tel.herEnd(this.now(), true); this.live.herStopped(); } }
+  /** Her acknowledgement clip sounds / ended (release 14: gated like her line, so its echo never revokes a commit). */
+  ackAudible(): void { if (!this.closed && !this.fallbackReason) this.live.ackStart(); }
+  ackEnded(): void { if (!this.closed) this.live.ackEnd(); }
   /** The child typed or tapped. */
   screen(kind: "submit" | "choice_pick" | "type"): void { if (!this.closed) this.live.screen(kind); }
   /** The Director's turn ui (answer form, beat, hand-over), for the engine context of the next line. */

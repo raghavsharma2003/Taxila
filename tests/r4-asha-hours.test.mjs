@@ -10,14 +10,15 @@ import { startRefusal } from "../server/routes/lesson.js";
 import { defaultControls } from "../server/routes/parent.js";
 import { LIMITS_DEFAULT } from "../server/conductor/config.js";
 
-const night = { resumable: false, usedMin: 0, capMin: 30, doneToday: false, now: "23:10", from: "06:30", to: "21:30" };
+// round 5 (dc-r14-no-clock-gates): these rules hold only with TAXILA_DAY_LIMITS=on; the default is no clock gate at all
+const night = { resumable: false, usedMin: 0, capMin: 30, doneToday: false, now: "23:10", from: "06:30", to: "21:30", limits: true };
 
 test("the first lesson after set-up opens at any hour; the second waits for the hours", () => {
   assert.equal(homeStateOf({ ...night, anyLesson: false }), "first", "23:10, no lesson yet: the first lesson opens");
-  assert.equal(startRefusal(homeStateOf({ ...night, anyLesson: false }), "lesson"), null, "and the start route does not refuse it");
+  assert.equal(startRefusal(homeStateOf({ ...night, anyLesson: false }), "lesson", { limits: true }), null, "and the start route does not refuse it");
   assert.equal(homeStateOf({ ...night, now: "05:00", anyLesson: false }), "first", "before the window too");
   assert.equal(homeStateOf({ ...night, anyLesson: true }), "resting", "after the first lesson the hours hold");
-  assert.ok(startRefusal("resting", "lesson"), "a later lesson outside the hours is refused");
+  assert.ok(startRefusal("resting", "lesson", { limits: true }), "a later lesson outside the hours is refused");
   // the first lesson does not lift the other rules
   assert.equal(homeStateOf({ ...night, anyLesson: false, safetyHold: true }), "safety_hold", "a safety hold still wins");
   assert.equal(homeStateOf({ ...night, anyLesson: false, usedMin: 30 }), "capped", "the daily limit still holds");

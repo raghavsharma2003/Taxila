@@ -241,6 +241,9 @@ export class UiBridge {
     audio.onended = audio.onerror = () => this.stopReplay();
     void this.playerCtx?.resume().catch(() => {});
     this.store.set({ replaying: true });
+    // release 14 (D5 review, confirmed): this replay plays outside the link's audio graph, so the hands-free gate must be
+    // told: her replayed line is gated like her live one, or its loudspeaker echo is heard as the child
+    if (this.link instanceof CascadeLink) this.link.externalAudio(true);
     audio.play().catch(() => this.stopReplay());
     return true;
   }
@@ -253,6 +256,7 @@ export class UiBridge {
     }
     if (this.playerUrl) URL.revokeObjectURL(this.playerUrl);
     this.playerUrl = null;
+    if (this.state.replaying && this.link instanceof CascadeLink) this.link.externalAudio(false);
     if (this.state.replaying) this.store.set((st) => ({ replaying: false, replays: st.replays + 1 }));
   }
 

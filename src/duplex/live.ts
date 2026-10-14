@@ -423,10 +423,16 @@ export class DuplexLive {
   readonly d5 = { gatedFrames: 0, serverStarts: 0, preDucks: 0, preDuckReleases: 0, reasks: 0 };
   /** Release 14 half-duplex: transcription items that started over her line (her echo), dropped whole. */
   private echoItems = new Set<string>();
+  /**
+   * Release 14 (D5 review, confirmed): her acknowledgement clip ("छप्पन!" said back while she thinks) plays in the committed
+   * phase, before any reply, so `her` is null. Its loudspeaker echo opened a burst that revoked the child's committed answer
+   * and dropped her reply. The clip is now a gated window like her line (not her reply: no context, no hold release).
+   */
+  private ackSounding = false;
   /** Release 14: a tap or typed answer is waiting for her reply until this time (no engine SPEAK races it). */
   private screenHoldUntil = -Infinity;
   /** Release 14 counters (content-blind). */
-  readonly half = { gatedFrames: 0, echoItems: 0, blockedOps: 0, heldSpeaks: 0 };
+  readonly half = { gatedFrames: 0, echoItems: 0, blockedOps: 0, heldSpeaks: 0, droppedEmpty: 0 };
 
   constructor(o: DuplexLiveOptions) {
     this.o = o;
@@ -527,7 +533,7 @@ export class DuplexLive {
   private gatedFrame(t: number, rms: number, f0: number | null, herOutDb: number | null, micDb: number, herF0: number | null = null): void {
     this.ring.push([t, rms, f0]);
     while (this.ring.length && this.ring[0][0] < t - D5_RING_MS) this.ring.shift();
-    const herActive = (!!this.her && !this.herHalted) || t < this.herTailUntil;
+    const herActive = this.herActive(t);
     if (!herActive) {
       this.replay = null;
       this.quietDb.push(micDb);
@@ -630,7 +636,18 @@ export class DuplexLive {
   }
 
   /** Her line is playing, or its echo tail has not passed (D4 half-duplex / D5 gate). */
-  private herActive(t: number): boolean { return (!!this.her && !this.herHalted) || t < this.herTailUntil; }
+  private herActive(t: number): boolean { return (!!this.her && !this.herHalted) || this.ackSounding || t < this.herTailUntil; }
+
+  /** Her acknowledgement clip became audible / ended (the link's playAck). Gated like her line, plus its echo tail. */
+  ackStart(): void {
+    if (!this.live) return;
+    this.ackSounding = true;
+  }
+  ackEnd(): void {
+    if (!this.ackSounding) return;
+    this.ackSounding = false;
+    this.herTailUntil = Math.max(this.herTailUntil, this.now() + (this.o.halfDuplex ? HALF_DUPLEX_TAIL_MS : D5_HER_TAIL_MS));
+  }
 
   /**
    * Release 14, D4 half-duplex: true when this transcription event belongs to an item that started over her line (her own
@@ -867,6 +884,14 @@ export class DuplexLive {
     if (this.o.halfDuplex && ((c.op === "duck" && c.level < 1) || c.op === "yield") && this.herActive(this.now())) {
       this.half.blockedOps++;
       vt("duplex.half", { op: "blocked", what: c.op });
+      return;
+    }
+    // release 14 (D5 review, confirmed: a cough, the TV or her echo tail became an empty child turn and the Director taught
+    // the next step over it): on half-duplex D4 an engine SPEAK with no words is never a turn. Silence belongs to the
+    // floor's own re-ask timers; a mumble the ear could not read is re-asked by them too
+    if (this.o.halfDuplex && c.op === "speak" && !String(c.text ?? "").trim()) {
+      this.half.droppedEmpty++;
+      vt("duplex.half", { op: "drop_empty_speak", reason: c.reason ?? null });
       return;
     }
     // release 14: a tapped / typed answer is waiting for her reply: no engine turn races it
