@@ -29,6 +29,8 @@ import { vt } from "../voice/trace.ts";
 /** What the link exposes to the duplex (CascadeLink builds one; tests fake it). */
 export interface CascadeSurface {
   lessonId: string;
+  /** Round 5 half-duplex: true = the mic sends silence (her voice is in the room); optional (older links: no gate). */
+  micGate?(gated: boolean): void;
   /** Mic graph pieces (null when the lesson has no mic). */
   audio(): { ctx: AudioContext; stream: MediaStream; herOutput: AudioNode | null } | null;
   /** Her reply is sounding now (between teacher_audio_start and its end, not paused). */
@@ -86,6 +88,8 @@ export interface CascadeDuplexOptions {
   lane?: "d4" | "d5";
   /** D5: duck on a device burst before Voice Live confirms it (DuplexLiveOptions.preDuck). */
   preDuck?: boolean;
+  /** Round 5: D4 half-duplex (DuplexLiveOptions.halfDuplex); default HALF_DUPLEX_D4. */
+  halfDuplex?: boolean;
 }
 
 /** The default shadow sink: one beacon per lesson (text/plain, like /api/lesson/end; never throws, never awaited). */
@@ -101,7 +105,11 @@ export function beaconShadowSummary(summary: ShadowSummary, lessonId: string): v
 /** The server VAD silence while the engine decides: a backstop only (INTEGRATION.md §3, 1,500 ms). */
 export const DUPLEX_SERVER_VAD_MS = 1500;
 /** D5: Voice Live's semantic VAD silence while the engine decides (the bake-off ran 500 ms; BAKEOFF.md arm e). */
-export const D5_SERVER_VAD_MS = 500;
+export const D5_SERVER_VAD_MS = 250;
+/** Round 5 (BRIEF.md): D4 runs HALF-DUPLEX (the owner's phone: device AEC too weak, her voice heard as the child). */
+export const HALF_DUPLEX_D4 = true;
+/** Round 5: D5 ducks on a loud device burst before Voice Live confirms it (her stop <= 500 ms). */
+export const D5_PREDUCK_DEFAULT = true;
 /** No mic frame this long after start → the tap is dead: step aside (the shipped path needs no frames). */
 export const NO_FRAMES_MS = 3000;
 /** A reply that answers a revoked commit is dropped if it arrives within this long of the revoke. */
@@ -153,12 +161,13 @@ export class CascadeDuplex {
       dropReply: () => { this.dropUntil = this.now() + DROP_WINDOW_MS; },
       fallback: (reason: DuplexFallbackReason) => this.onFallback(reason),
       state: (st: { phase: FloorPhase }) => { this.phase = st.phase; this.push(); },
+      micGate: (gated: boolean) => this.s.micGate?.(gated),
     };
     this.live = new DuplexLive({
       // D5: no micro-commit probes (a forced commit cuts Voice Live's open item and returns it empty; its own 500 ms commit
       // already lands the final ~0.6 s after the child stops)
       lessonId: surface.lessonId, port, mode: o.mode, source: d5 ? "voicelive" : "live_transcribe", supportsCommit: !d5,
-      ...(d5 ? { vadGate: "server" as const, preDuck: o.preDuck ?? false } : {}),
+      ...(d5 ? { vadGate: "server" as const, preDuck: o.preDuck ?? D5_PREDUCK_DEFAULT, serverVadMs: D5_SERVER_VAD_MS } : { halfDuplex: o.halfDuplex ?? HALF_DUPLEX_D4 }),
       wrapEmit: o.face?.wrapEmit, onDetach: o.face?.detach, now: this.now, setInterval: o.setInterval, clearInterval: o.clearInterval,
       band: o.band,
       log: (row: ShadowRow) => { try { this.tel.row(row); } catch { /* telemetry never breaks the floor */ } o.log?.(row); },
@@ -210,6 +219,8 @@ export class CascadeDuplex {
    */
   onSttEvent(raw: unknown): boolean {
     if (this.closed || this.fallbackReason) return false;
+    // round 5 half-duplex: an item that began while her voice was audible is consumed whole (never a child event)
+    if (this.deciding && this.live.halfDrop(raw)) return true;
     this.live.stt(raw);
     const ev = (raw && typeof raw === "object" ? raw : {}) as { type?: unknown; transcript?: unknown };
     if (typeof ev.type === "string") this.tel.stt(this.now(), ev.type, typeof ev.transcript === "string" && ev.transcript.trim().length > 0);

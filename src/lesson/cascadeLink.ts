@@ -38,6 +38,9 @@ import type { CascadeDuplex, CascadeDuplexOptions, CascadeDuplexState } from "..
 import type { DuplexMode } from "../duplex/flags.ts";
 import { VoiceLinkTrace } from "../voice/trace.ts";
 
+/** Round 5: a spoken final this soon after a tapped / typed answer is never a second turn (the owner's chip race). */
+export const LINK_TAP_GUARD_MS = 3000;
+
 export type CascadeTransport = "webrtc" | "recording" | "typed";
 
 export interface TranscribeResult {
@@ -495,8 +498,12 @@ export class CascadeLink implements TeacherLink {
   /** The Director already used them to write the reply; nothing to apply on this transport. */
   applyInstructions(): void {}
 
+  /** Round 5: when the child last tapped or typed an answer (epoch ms). */
+  private typedAt = -Infinity;
+
   sendChild(text: string, opts: { chipId?: string } = {}): void {
     void this.ctx?.resume().catch(() => {}); // inside the child's tap: a user activation
+    this.typedAt = Date.now();
     this.duplex?.screen(opts.chipId ? "choice_pick" : "submit");
     this.interrupt();
     this.events.emit({ type: "child_final", text, startedAt: Date.now(), typed: true, chipId: opts.chipId });
@@ -744,6 +751,12 @@ export class CascadeLink implements TeacherLink {
   // ───────────── child side ─────────────
 
   private onChildEvent(e: LinkEvent): void {
+    // Round 5 (one turn at a time, BRIEF.md): within TAP_GUARD_MS of a tapped / typed answer a spoken final is not a second
+    // turn (the child reading the chip aloud, or her echo over the tap); it is traced and dropped
+    if (e.type === "child_final" && !e.typed && Date.now() - this.typedAt < LINK_TAP_GUARD_MS) {
+      this.vtrace.bargein("final_after_tap_dropped", { msAfterTap: Date.now() - this.typedAt });
+      return;
+    }
     // Round 3: an STT final that is only her echo of the acknowledgement (speaker → mic, missed by the AEC) is not a
     // child turn; the child speaking again stops a clip and refuses any pending one
     if (this.ack) {
@@ -1180,6 +1193,11 @@ export class CascadeLink implements TeacherLink {
     return {
       lessonId: this.lessonId,
       audio: () => (this.mic && this.ctx && !this.closed ? { ctx: this.ctx, stream: this.mic, herOutput: this.player?.output ?? null } : null),
+      micGate: (gated) => {
+        if (this.micGated === gated) return;
+        this.micGated = gated;
+        this.applyMic();
+      },
       herSounding: () => (!!this.current?.playing && !this.current.paused) || !!this.ackNow?.sounding,
       duck: (level) => this.player?.duck(level),
       pause: () => {
@@ -1213,6 +1231,7 @@ export class CascadeLink implements TeacherLink {
         // a fallback is today's path at once: the engine never left the call, so only the turn logic switches back
         if (s.fallback && this.duplex && !this.duplex.deciding) {
           this.player?.duck(1);
+          if (this.micGated) { this.micGated = false; this.applyMic(); } // the engine's gate never outlives the engine
           if (this.current?.paused) this.resumeReply(); // a reply the engine had paused carries on
         }
         this.onDuplex?.(s);
@@ -1368,6 +1387,14 @@ export class CascadeLink implements TeacherLink {
   }
 
   private setMicEnabled(on: boolean): void {
+    this.micWanted = on;
+    this.applyMic();
+  }
+  /** Round 5 half-duplex: the engine's gate (her voice in the room) ANDs with what the link itself wants. */
+  private micWanted = true;
+  private micGated = false;
+  private applyMic(): void {
+    const on = this.micWanted && !this.micGated;
     for (const t of this.mic?.getAudioTracks() ?? []) t.enabled = on;
   }
 }
