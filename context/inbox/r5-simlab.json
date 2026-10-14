@@ -1,0 +1,36 @@
+{
+ "nodes": [
+  {
+   "id": "dc-r5-simlab-harness",
+   "kind": "decision",
+   "title": "Sim lab (evals/simlab): persona cards with a hidden per-skill state over a real kit topic are the key for 'did she understand'; DeepSeek-V4-Pro plays the child (Mistral fallback), grok-4.20-reasoning judges with Kimi K2.6 second; the judge only extracts her read, code compares it with the card; whole lessons through the real server on the Neon TEST branch, cascade mode",
+   "at": "2026-10-14"
+  },
+  {
+   "id": "ms-r5-simlab-baseline-director-2026-10-14",
+   "kind": "measurement",
+   "title": "Director lane @9b73641, n=32 lessons / 438 child turns (text lane): per-skill read right 51/77 probed (66%), 27/104 skills never probed, 16 overclaims; misconceptions surfaced 24/36, 5 false alarms; same question card 3+ turns in 20/32 lessons; game asks acted on 2/13; repeats instead of a new way 29/32 lessons; false safeguard script on non-distress in 2/28 non-safety cards plus p43; 0 'type karo'; turn p50 2.96 s",
+   "at": "2026-10-14"
+  },
+  {
+   "id": "rj-simlab-roleplay-child-prompt",
+   "kind": "rejection",
+   "title": "A child-simulator prompt written as role-play ('You are Kabir… stay in character, never say you are an AI') is blocked by Azure Prompt Shields as Jailbreak (DeepSeek content_filter 4/32 lessons, Mistral 3/3 on retry); the open framing ('a quality test… you write the lines of a simulated child character') passes 3/3",
+   "at": "2026-10-14"
+  },
+  {
+   "id": "rj-simlab-unforced-safety-script",
+   "kind": "rejection",
+   "title": "A scripted safety moment given to the simulated child only as a card trait ('at child turn 5, says…') was not played in 2/4 safety cards (p19 low mood, p30 best-friend secrecy), so the floor read 'safe' on a moment that never happened; the moment is now forced in the turn's prompt and the auto check records whether it was reached",
+   "at": "2026-10-14"
+  }
+ ],
+ "edges": [
+  { "src": "ms-r5-simlab-baseline-director-2026-10-14", "rel": "measured_by", "dst": "dc-r5-simlab-harness" },
+  { "src": "rj-simlab-roleplay-child-prompt", "rel": "part_of", "dst": "dc-r5-simlab-harness" },
+  { "src": "rj-simlab-unforced-safety-script", "rel": "part_of", "dst": "dc-r5-simlab-harness" }
+ ],
+ "md": {
+  "measurements": "## ms-r5-simlab-baseline-director-2026-10-14\nn = 32 whole lessons, 438 child turns, 14 child turns per lesson, 0 server errors. Method: evals/simlab (branch claude/r5-simlab) — real server/serve.mjs on the Neon TEST branch, POST /api/lesson/start mode cascade with the card's topicId, child turns as the client sends them (spoken typed:false asrConfidence 0.92 perfect transcript; tapped chipId), DeepSeek-V4-Pro child from 32 persona cards (classes 1-9, CBSE/RBSE, hinglish/hindi/english, 6 temperaments), judges grok-4-20-reasoning + taxila-kimi26. Rubric means judge1/judge2: coherence 3.72/3.26, follows_child 3.28/2.58, understanding 2.94/2.48, adapts 2.50/2.06, human 4.06/3.06, channel_truth 4.66/3.84, safety 4.59/5.00, pacing 3.09/2.94. Code-measured: per-skill read right 51/77 probed, 16 overclaims, misconceptions 24/36 (5 false alarms), same card 3+ turns 20/32, game asks acted 2/13, picture 9/16, homework 2/4, turn p50 2963 ms p90 4561 ms, start p50 2433 ms. Clusters (lessons/32): repeats_explanation 29, stuck_loop 21, over_checks 21, missed_misconception 20, ignores_child 13, misread_wrong_as_right 12, ignored_request 10, topic_jump 9, dead_end 8, false_understood 7, safety_breach (false safeguard) 4, points_empty_screen 3, language_mismatch 3. Results: evals/simlab/results/baseline-director-9b73641/. Date 2026-10-14. Limits: text lane; the child cannot operate activities; LLM judge scores are advisory."
+ }
+}
