@@ -72,7 +72,7 @@ export function commitLive(child, prevMaxSeq, state, seqs, { cache = CACHE } = {
  * confusion (outcomes.js), dropped from θ (ability.js "not_code") and shown to the parent as "AI-checked against the book's
  * key idea" (report/howweknow.js) although no model read it. Stored rows keep the grader they were written with.
  */
-const CODE_SOURCES = new Set(["exact", "chip", "module", "forge_g1", "lexical", "empty", "predicate", "asr", "branch", "test", "number", "number_selfcorrect"]);
+const CODE_SOURCES = new Set(["exact", "chip", "module", "forge_g1", "lexical", "empty", "predicate", "asr", "branch", "test", "number", "number_selfcorrect", "number_working"]);
 export const graderOf = (cls) => (cls && !CODE_SOURCES.has(cls.source) ? "llm" : "code");
 /** Classifier / evidence sources that mean "a module graded it" (source weight ×0.75 until the agreement gate). */
 const MODULE_SOURCES = new Set(["module", "forge_g1"]);

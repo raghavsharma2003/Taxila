@@ -587,6 +587,13 @@ export function classifyFast({ target, childText, asrConfidence, typed, chipId, 
   const sameThing = kv != null && tailAgrees(target.key, text);
   const fixed = kv != null ? selfCorrected(text) : null;
   if (fixed != null) return Math.abs(fixed - kv) >= 1e-9 ? { result: null, flags, text, numericMismatch: true } : sameThing ? done("correct", "number_selfcorrect") : { result: null, flags, text, nounMismatch: true };
+  // round 5 (main; sim lab voice arm): working aloud ("तीस टाइम्स चालीस है, तीन टाइम्स चार बारह, दो जीरो बारह सौ") is graded
+  // on the LAST stated result; the operands said on the way are never the answer and never make it wrong
+  const working = kv != null && !denies && WORKING_ALOUD.test(text) ? numberPhrases(text, { split: true }) : null;
+  if (working && working.length >= 2) {
+    const last = working.at(-1);
+    return Math.abs(last - kv) >= 1e-9 ? { result: null, flags, text, numericMismatch: true } : sameThing ? done("correct", "number_working") : { result: null, flags, text, nounMismatch: true };
+  }
   if (kv != null && !denies && /[\p{N}\p{L}]/u.test(text)) {
     const ph = numberPhrases(text);
     if (ph && ph.length) {
@@ -604,6 +611,9 @@ export function classifyFast({ target, childText, asrConfidence, typed, chipId, 
     && (read.dontKnow && read.words <= 4 || read.asksForAnswer && read.words <= 8)) return done("no_evidence", "lexical");
   return { result: null, flags, text };
 }
+
+/** An operation said aloud: the child is working, and the last number is the result. */
+const WORKING_ALOUD = /(?:^|[^\p{L}])(?:times|into|multiplied|plus|minus|divided|guna|gunaa|jod|jodo|ghatao|bhag|equals|barabar)(?![\p{L}])|टाइम्स|गुणा|गुना|इंटू|प्लस|माइनस|जोड़|जोड|घटा|भाग|बराबर|[×x*+÷=]\s*\d/iu;
 
 /**
  * Do the child's words echo the item's own answer content as the same request type? True when the words ARE the key, an
