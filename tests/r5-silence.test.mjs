@@ -75,3 +75,14 @@ test("the session-first intake: silence never opens a segment (the 14 Oct jump)"
     }
   } finally { if (saved == null) delete process.env.TAXILA_SESSION_FIRST; else process.env.TAXILA_SESSION_FIRST = saved; }
 });
+
+test("voice lane: she never asks the child to draw (no drawing pad exists); her own drawing is untouched", async () => {
+  const { speakNotWrite } = await import("../server/brain/say.js");
+  assert.equal(speakNotWrite("Ab tum ek circle draw karo aur use 4 parts mein baanto."), "Ab tum ek circle mann mein socho aur use 4 parts mein baanto.");
+  assert.equal(speakNotWrite("Drawing banake dikhao!"), "Bolkar batao!");
+  assert.equal(speakNotWrite("Ise बनाकर दिखाओ"), "Ise बोलकर बताओ");
+  assert.equal(speakNotWrite("Draw it and show me."), "Picture it and tell me.");
+  assert.equal(speakNotWrite("Main board par draw karti hoon."), "Main board par draw karti hoon.");
+  assert.equal(speakNotWrite("Theek hai, homework ka question bhejo; hum use step by step karenge."), "Theek hai, homework ka question bolo; hum use step by step karenge.");
+  assert.equal(speakNotWrite("अपना सवाल भेजो"), "अपना सवाल बोलो");
+});

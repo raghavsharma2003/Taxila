@@ -787,13 +787,24 @@ const WRITE_TO_SAY = [
   [/\btype\s+(?:it\s+)?(?:and\s+send(?:\s+it)?|it\s+in|in\s+the\s+chat)\b/gi, "say it"],
   [/\btype\s+(?:karo|kar\s+do)\b/gi, "bolo"], [/\btype\s+(?:kijiye|kariye|kar\s+dijiye)\b/gi, "boliye"],
   [/\b(?:write|type)\s+(?:it|that|this|your\s+answer|the\s+answer)(?:\s+down)?\b/gi, "say it"], [/\bwrite\s+down\b/gi, "say"],
+  // round 5 (QA D20, session-first intake: "homework ka question bhejo" n=2/2 to a voice-first class 4 child): they say it
+  [/\b(question|sawaal|sawal|swaal|prashn|homework)\s+bhej\s*(?:o|do|dijiye)\b/gi, (m) => `${m.split(/\s+/)[0]} bolo`], [/(सवाल|प्रश्न|होमवर्क)\s*भेजो/g, (m) => `${m.split(/\s+/)[0].replace("भेजो", "")} बोलो`],
+  // round 5 (main, owner-5-visual V3.child_draws on the voice lane: after "animation dikhao na" she told the CHILD to draw
+  // it): no drawing pad exists in the lesson, so on a spoken lane the child pictures it and says it, never draws it
+  [/\b(?:draw|drawing|chitra|picture)\s+(?:bana\s*)?(?:kar|ke|bana)\s*(?:ke|kar)?\s+(?:dikhao|batao|bhejo)\b/gi, "bolkar batao"],
+  [/\b(?:bana|banaa)\s*(?:kar|ke)\s+(?:dikhao|bhejo)\b/gi, "bolkar batao"],
+  [/\b(?:draw|drawing|sketch)\s+(?:karo|kar\s+lo|kar\s+do|banao)\b/gi, "mann mein socho"], [/\b(?:draw|drawing|sketch)\s+(?:kijiye|kariye|banaiye)\b/gi, "mann mein sochiye"],
+  [/\b(?:chitra|tasveer|picture)\s+banao\b/gi, "tasveer socho"], [/\b(?:copy|kaagaz|kagaz|notebook)\s+(?:par|pe|mein)\s+bana(?:o|kar)\b/gi, "mann mein socho"],
+  [/(?:ड्रॉ|ड्रा|चित्र)\s*(?:करो|बनाओ)/g, "मन में सोचो"], [/बना\s*(?:कर|के)\s*(?:दिखाओ|भेजो)/g, "बोलकर बताओ"],
+  [/\bdraw\s+(it|this|that)\s+and\s+show\s+me\b/gi, (m) => m.replace(/draw/i, "picture").replace(/show/i, "tell")],
+  [/\b(?:can\s+you\s+|now\s+|please\s+)?draw\s+(?:it|this|that|a|an|the|one)\b/gi, (m) => m.replace(/draw/i, "picture")],
 ];
 export function speakNotWrite(reply, askEnd = null) {
   const r = String(reply ?? "");
   const ask = askEnd ? String(askEnd).trim() : "";
   const cut = ask && r.trim().endsWith(ask) ? r.trim().length - ask.length : r.length;
   let lead = r.slice(0, cut);
-  for (const [re, to] of WRITE_TO_SAY) lead = lead.replace(re, (m) => (m[0] === m[0].toUpperCase() ? to[0].toUpperCase() + to.slice(1) : to));
+  for (const [re, to] of WRITE_TO_SAY) lead = lead.replace(re, (m) => { const t = typeof to === "function" ? to(m) : to; return /^\p{Lu}/u.test(m) ? t[0].toUpperCase() + t.slice(1) : t; });
   return lead + r.slice(cut);
 }
 

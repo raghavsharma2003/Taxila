@@ -33,6 +33,8 @@ test("Hindi answers keep their vowel signs: a gender or chandrabindu misconcepti
   assert.notEqual(norm("लोमड़ी भागने लगा"), norm("लोमड़ी भागने लगी"));
   assert.notEqual(norm("चाद"), norm("चाँद"));
   assert.equal(norm("बर्फ़"), norm("बर्फ"), "the nukta is folded (ASR drops it)");
+  assert.equal(norm("चांद"), norm("चाँद"), "candrabindu and anusvara are free variants");
+  for (const [a, b] of [["हँसना", "हंसना"], ["पहुँचा", "पहुंचा"], ["गाँव", "गांव"], ["ब्रेकफॉस्ट", "ब्रेकफास्ट"], ["दुःख", "दुख"]]) assert.equal(norm(a), norm(b), `${a} = ${b}`);
 });
 
 test("a claim of understanding after an explanation gets ONE light check, not more teaching on trust", () => {
@@ -49,4 +51,25 @@ test("a claim of understanding after an explanation gets ONE light check, not mo
   assert.equal(K.items.find((i) => i.id === c.move.itemId)?.skillId, skill, "on the skill just explained");
   assert.match(c.move.shape, /light question/);
   assert.doesNotMatch(c.move.shape, /really understood\?/);
+});
+
+test("a bluff after skill 1's explanation, the light check answered right: skill 2 is still taught", () => {
+  // main's review of 2dcd117: bluffCheck ends the opening teach plan; that plan only ever teaches the kit's FIRST skill
+  // (fading.js teachPlanFor; every later skill gets its explain turn in poseNext when it is first introduced)
+  const K = kit();
+  const [s1, s2] = K.skills.map((s) => s.id);
+  const NE = cls("no_evidence");
+  const turn = (r, c, extra = {}) => step(r.state, { event: "turn", kit: K, cls: c, now: (r.state.turn + 1) * 20_000, ...extra });
+  let r = step(initLessonState({ topicId: K.topicId, kit: K, ctx: CTX, seed: 11, now: 0 }), { event: "start", kit: K, now: 0 });
+  while (!["explain", "worked_example"].includes(r.move.kind) && r.state.phase !== "practice") r = turn(r, NE);
+  assert.equal(r.move.skillId, s1);
+  r = turn(r, NE, { text: "haan haan samajh gaya" });
+  assert.equal(r.move.request, "light_check");
+  const moves = [];
+  for (let i = 0; i < 40 && r.state.phase !== "done" && r.state.phase !== "teachback"; i++) {
+    r = turn(r, r.state.activeItemId ? cls("correct") : NE, { text: r.state.activeItemId ? "answer" : "ok" });
+    moves.push(r.move);
+    if (r.move.kind === "explain" && r.move.skillId === s2) break;
+  }
+  assert.ok(moves.some((m) => m.kind === "explain" && m.skillId === s2), `skill 2 explained: ${moves.map((m) => `${m.kind}:${m.skillId ?? m.itemId ?? ""}`).join(" ")}`);
 });
