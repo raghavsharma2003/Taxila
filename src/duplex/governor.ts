@@ -33,6 +33,7 @@ import type {
 import {
   BACKSTOP_HOLD_PH, BACKSTOP_HOLD_STRETCH, CONTEXT, CUT_IN, FALLBACK, HOLD, HORIZON_ACOUSTIC_P, HORIZON_MS, OVERLAP, PAUSE_WAIT, RATE,
   REVOCABLE_MS, SAFETY, VERDICT, ACOUSTIC_FRESH_MS, FIRST_TEXT_P90, TURN_PACE, CLOSED_ELABORATION,
+ D5_UNHEARD_MIN_VOICED_MS,
 } from "./config.ts";
 import { exchangeOf, holdProfile, pauseClass, verdictAnchor, wordCount, YES_NO_MAX_WORDS } from "./engineRules.ts";
 import { overlapKind } from "./turnPolicy.ts";
@@ -392,7 +393,12 @@ export class Governor {
         if (sil >= bs) {
           const text = tick.transcript.text;
           const hardEnough = sil >= bs + 2000;
-          if ((text && (!unseen || hardEnough)) || (!text && hardEnough && c.turnVoicedMs >= 300)) {
+          // D5: a lone 250 ms "haan" can reach no transcript at all on Voice Live (BAKEOFF §2.6), so a shorter voiced turn
+          // with no words still ends (the empty commit is the Director's re-ask) instead of waiting for her silence nudge
+          // ...and once the ear has COVERED the burst and found no words (its empty final), the normal backstop decides
+          const d5 = tick.transcript.source === "voicelive";
+          const minVoiced = d5 ? D5_UNHEARD_MIN_VOICED_MS : 300;
+          if ((text && (!unseen || hardEnough)) || (!text && (hardEnough || (d5 && !unseen)) && c.turnVoicedMs >= minVoiced)) {
             const closed = tick.context.exchange === "closed_answer";
             // a repair still open (or no words): a verdict-free prompt, never an uptake of the abandoned value (law 3;
             // TaxilaFDB train: "आठ पैर … नहीं नहीं [छह dropped by the STT] पैर" got a verdict on 8 from the backstop, 3/40)

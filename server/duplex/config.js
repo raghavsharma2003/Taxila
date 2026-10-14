@@ -13,7 +13,13 @@
 // (TAXILA_DUPLEX=off) always wins: no cohort is ever live over it. The answer never reveals the list.
 // Presentation and turn-taking only: the safety floor (scanSafety + the model distress read on every committed turn, the AI
 // disclosure, the helplines) is identical on both sides of the switch.
+//
+// D5 (2026-10-11, dc-r12dr-duplex-architecture): the cohort's LANE. TAXILA_DUPLEX_LANE=d5 puts a cohort answer on lane D5
+// (Azure Voice Live as the ear through /api/duplex/voicelive; server/duplex/voicelive.js) when Voice Live is configured;
+// unset / d4 keeps the shipped D4 lane (gpt-live-transcribe over WebRTC). Only cohort answers ever carry { lane: "d5" }:
+// every other child keeps today's path. The client falls back to D4 whenever the D5 stream cannot open.
 import { createHash } from "node:crypto";
+import { voiceLiveConfig } from "./voicelive.js";
 
 export function duplexMode(env = process.env) {
   const v = String(env.TAXILA_DUPLEX ?? "").trim().toLowerCase();
@@ -41,6 +47,12 @@ export function inCohort(guardian, cohort) {
   return !!e && cohort.has(sha256(e));
 }
 
+/** The cohort's lane from the env: "d5" only when asked for AND Voice Live is configured; else "d4". Pure. */
+export function cohortLane(env = process.env) {
+  const v = String(env.TAXILA_DUPLEX_LANE ?? "").trim().toLowerCase();
+  return v === "d5" && voiceLiveConfig(env) ? "d5" : "d4";
+}
+
 /** How long the cohort lookup may take. round 3 fix (experience B9): 600 → 2,500 ms, and a lookup that runs out of time
  *  answers { retry: true } beside the global mode (the client asks again) instead of a silent "shadow" for the owner. */
 export const COHORT_LOOKUP_MS = 2500;
@@ -60,7 +72,7 @@ export async function modeFor(req, { env = process.env, lookup = null, timeoutMs
     const find = lookup ?? (async (r) => (await import("../auth.js")).requireGuardian(r));
     let timer;
     const g = await Promise.race([find(req), new Promise((_, rej) => { timer = setTimeout(() => rej(new Error("slow")), timeoutMs); })]).finally(() => clearTimeout(timer));
-    if (inCohort(g, cohort)) return { duplex: "on", cohort: "owner" };
+    if (inCohort(g, cohort)) return cohortLane(env) === "d5" ? { duplex: "on", cohort: "owner", lane: "d5" } : { duplex: "on", cohort: "owner" };
   } catch (e) {
     // not signed in, expired or the database is away: the global mode. Too slow to tell: the global mode AND retry (the
     // client asks once more; never a cohort by accident, never a silent shadow for the owner because Neon was slow)
