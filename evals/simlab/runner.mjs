@@ -33,6 +33,17 @@ function apiClient(base) {
   };
 }
 
+let sql = null;
+async function boardPages(lessonId) {
+  const url = process.env.DATABASE_URL ?? "";
+  if (!url.includes(process.env.SIMLAB_DB_HOST || "ep-winter-tooth")) return null; // never anything but the TEST branch
+  if (!sql) { const { neon } = await import("@neondatabase/serverless"); sql = neon(url); }
+  const exists = await sql.query("select to_regclass('public.board_page') is not null as ok");
+  if (!exists[0]?.ok) return null;
+  const rows = await sql.query("select seq, intent_id, beat, skill_id, script, created_at from board_page where lesson_id = $1 order by seq", [lessonId]);
+  return rows.map((r) => ({ seq: r.seq, intentId: r.intent_id, beat: r.beat, skillId: r.skill_id, at: new Date(r.created_at).toISOString(), board: boardText(r.script) }));
+}
+
 /** A whiteboard as a child would describe it: its shapes and the words written on it (never the raw script). */
 function boardText(script) {
   const ops = script?.ops ?? [];
@@ -130,11 +141,14 @@ export async function runLesson(p, { base, lane = "text", maxTurns = 14, voice =
       screen = nextScreen(screen, r);
       const teacher = r.teacherReply ?? "";
       if (teacher) heard.push({ who: "teacher", text: teacher });
-      rec.turns.push({ n, child: { action: c.action, say: c.say, chipId: c.chipId, chipLabel: c.chipLabel, private: c.private, sent: body.childText, ...(asr ? { asr } : {}) },
+      rec.turns.push({ n, at: new Date().toISOString(), child: { action: c.action, say: c.say, chipId: c.chipId, chipLabel: c.chipLabel, private: c.private, sent: body.childText, ...(asr ? { asr } : {}) },
         teacher, move: r.move?.kind ?? null, ui: r.ui, moduleCommands: r.moduleCommands ?? [], studio: r.studio ?? null, screen, end: !!r.end,
         speakNow: r.speakNow ?? null, reasons: reasonsOf(r), ms: r._ms });
       if (r.end) break;
     }
+    // the server's own record of every board page shown (stream 2's board_page): read now, before the account (and the
+    // lesson's rows, on delete cascade) is erased. TEST branch only; absent table → none.
+    rec.boardPages = await boardPages(s.lessonId).catch((err) => { rec.errors.push({ at: "board_page", msg: String(err.message).slice(0, 160) }); return null; });
     const e = await api("POST", "/api/lesson/end", { lessonId: s.lessonId }).catch((err) => { rec.errors.push({ at: "end", msg: err.message }); return null; });
     if (e) rec.end = { summary: e.summary, parentNote: e.parentNote, did: e.did, facts: e.debug?.facts ?? null };
   } catch (e) {

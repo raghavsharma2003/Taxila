@@ -28,6 +28,7 @@ export function transcriptMd(rec, p, j) {
     if (shown.length) L.push(`<sub>screen: ${shown.join(" · ")}</sub>`);
     L.push("");
   }
+  if (rec.boardPages?.length) L.push("## Board pages (server record)", "", ...rec.boardPages.map((pg) => `- page ${pg.seq}${pg.beat ? ` [${pg.beat}]` : ""} at ${pg.at.slice(11, 19)}: ${pg.board}`), "");
   if (rec.end) L.push("## Parent summary", "", rec.end.summary ?? "", "", rec.end.parentNote ?? "", "");
   if (j?.judged) {
     L.push(`## Judge (${j.judged.judge})`, "", `> ${j.judged.verdict ?? ""}`, "", "| check | score | turns | why |", "|---|---|---|---|");
@@ -67,7 +68,8 @@ export function summarise(rows) {
         misHeld: u.reduce((a, x) => a + x.misconceptionsHeld, 0), misDetected: u.reduce((a, x) => a + x.misconceptionsDetected, 0), falseAlarms: u.reduce((a, x) => a + x.falseAlarms, 0) },
       auto: { typeInstr: rs.filter((r) => r.auto.type_instruction.length).length, pointsEmpty: rs.filter((r) => r.auto.points_empty_screen.length).length,
         repeats: rs.filter((r) => r.auto.repeat_line.length).length, longTurns: rs.reduce((a, r) => a + r.auto.long_turn.length, 0),
-        withErrors: rs.filter((r) => r.auto.errors).length, latencyP50: mean(rs.map((r) => r.auto.latencyP50).filter(Boolean)) },
+        withErrors: rs.filter((r) => r.auto.errors).length,
+        boardPages: rs.reduce((a, r) => a + (r.auto.board?.pages ?? 0), 0), repeatPageLessons: rs.filter((r) => r.auto.board?.repeatPages?.length).length, latencyP50: mean(rs.map((r) => r.auto.latencyP50).filter(Boolean)) },
       turns: mean(rs.map((r) => r.turns)),
     };
   }
@@ -81,11 +83,11 @@ export function failuresMd(rows, meta) {
     `${meta.note ?? ""}`, "",
     `Server head \`${meta.head}\` · child ${meta.models.child} · judge ${meta.models.judge} (second judge ${meta.models.judge2}) · ${meta.date}`, "",
     "## Scores (judge 1 means, 1-5; n = lessons)", "",
-    `| arm/lane | n | ${RUBRIC.join(" | ")} | understanding read right | overclaimed | misconceptions found | false alarms | "type it" lessons | points at empty screen | repeat lines | errors | turn p50 ms |`,
-    `|---|---|${RUBRIC.map(() => "---").join("|")}|---|---|---|---|---|---|---|---|---|`];
+    `| arm/lane | n | ${RUBRIC.join(" | ")} | understanding read right | overclaimed | misconceptions found | false alarms | "type it" lessons | points at empty screen | repeat lines | board pages (lessons repeating one) | errors | turn p50 ms |`,
+    `|---|---|${RUBRIC.map(() => "---").join("|")}|---|---|---|---|---|---|---|---|---|---|`];
   for (const [k, s] of Object.entries(sum)) {
     const u = s.understanding;
-    L.push(`| ${k} | ${s.n} | ${RUBRIC.map((r) => f2(s.rubric[r])).join(" | ")} | ${u.agree}/${u.probed} probed (${pct(u.agree, u.probed)}); ${u.probed}/${u.skills} skills probed | ${u.overclaim} | ${u.misDetected}/${u.misHeld} | ${u.falseAlarms} | ${s.auto.typeInstr} | ${s.auto.pointsEmpty} | ${s.auto.repeats} | ${s.auto.withErrors} | ${s.auto.latencyP50 ? Math.round(s.auto.latencyP50) : "–"} |`);
+    L.push(`| ${k} | ${s.n} | ${RUBRIC.map((r) => f2(s.rubric[r])).join(" | ")} | ${u.agree}/${u.probed} probed (${pct(u.agree, u.probed)}); ${u.probed}/${u.skills} skills probed | ${u.overclaim} | ${u.misDetected}/${u.misHeld} | ${u.falseAlarms} | ${s.auto.typeInstr} | ${s.auto.pointsEmpty} | ${s.auto.repeats} | ${s.auto.boardPages} (${s.auto.repeatPageLessons}) | ${s.auto.withErrors} | ${s.auto.latencyP50 ? Math.round(s.auto.latencyP50) : "–"} |`);
   }
   L.push("", "Second judge means (agreement check): " + Object.entries(sum).map(([k, s]) => `${k}: ${RUBRIC.map((r) => `${r} ${f2(s.rubric2[r])}`).join(", ")}`).join(" · "), "");
   L.push("## Failure clusters", "", "Counted per lesson (a lesson with the failure) and per instance. Examples are the teacher's words with the turn number; transcripts are in `transcripts/`.", "");
