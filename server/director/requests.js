@@ -63,7 +63,8 @@ const EXAMPLE = /\b(?:example|udaharan|udahran|misal)\s*(?:do|dijiye|de\s+do|dik
 const STORY = /\b(?:story|kahani|kahaani)\s*(?:ki\s+tarah|jaisa|jaise|se|mein|me|sunao|batao|bana\s*ke|banake|form|wala|wali|please)?\b|\btell\s+(?:it\s+)?(?:as|like)\s+a\s+story\b/i;
 const SLOWER = /\b(?:slow(?:ly)?(?:\s+please)?|slower|dheere(?:\s+(?:bolo|boliye|se|please|batao|bataiye))?|dhire(?:\s+(?:bolo|boliye|se))?|aaram\s+se\s+(?:bolo|batao|samjhao)|too\s+fast|bahut\s+(?:tez|fast|jaldi)|itna\s+(?:tez|fast|jaldi)|jaldi\s+mat|ruk\s+ruk\s+ke|step\s+by\s+step)\b/i;
 const VISUAL = /\b(?:(?:show|draw|make)\s+(?:me\s+)?(?:a\s+|the\s+|it\s+|this\s+)?(?:diagram|picture|drawing|image|figure|graph|chart|model|it|this)|(?:diagram|picture|photo|image|drawing|chitra|tasveer|figure)\s+(?:dikhao|dikhaiye|banao|banaiye|bana\s+do|draw|show|please|chahiye|se\s+samjhao)|(?:draw|bana(?:\s+ke|kar)?)\s+(?:karke\s+)?(?:samjhao|dikhao|batao)|draw\s+(?:it|this|karo|kijiye)|whiteboard\s+(?:pe|par|per|mein|me|on)|(?:on|use)\s+the\s+(?:whiteboard|board)|board\s+(?:pe|par|per)\s+(?:bana|likh|dikha)\w*|can\s+you\s+(?:show|draw)|dikha\s+(?:ke|kar)\s+samjhao|dikhao\s+na)\b/i;
-const GAME = /\b(?:game|khel|activity)\s*(?:khelna|khelte|khelo|khel\s+sakte|chahiye|dikhao|karo|karna|please)?\b|\blet'?s\s+play\b|\bplay\s+a\s+game\b/i;
+// round 5 (QA D07, "मुझे एक गेम खेलना है" read as nothing): the Devanagari forms too (\b does not bound Devanagari)
+const GAME = /\b(?:game|khel|activity)\s*(?:khelna|khelte|khelo|khel\s+sakte|chahiye|dikhao|karo|karna|please)?\b|\blet'?s\s+play\b|\bplay\s+a\s+game\b|(?<![\p{L}\p{M}])(?:गेम|खेल)(?:ना|ते|ो|ें)?(?![\p{L}\p{M}])/iu;
 // round 4 (stream 4A, session-first (f)): the "go deeper" family beside "simpler": "aur batao", "tell me more", "go deeper",
 // "detail mein samjhao", "isme aur kya hota hai". The same idea one layer further (the why behind it, where it shows up, how it
 // links to what comes next), never a new skill and never "say it again". A harder QUESTION ("mushkil wala do", "too easy")
@@ -130,8 +131,12 @@ export function clearBoardAsk(text) {
     for (const m of t.matchAll(re)) if (!CLEAR_NEG.test(m[1] ?? "") && !CLEAR_NOISE.test(m[1] ?? "")) return true;
   }
   for (const m of t.matchAll(CLEAR_VERB_FIRST)) if (!CLEAR_NEG.test(` ${before(m.index)} `) && !CLEAR_NOISE.test(m[1] ?? "")) return true;
+  // round 5 (QA D09: "बोर्ड साफ करो" heard as "साफ करो।" drew a NEW board): a bare clear command as the whole turn ("saaf
+  // karo", "clear karo", "sab mita do", "इसे हटाओ") is about the board, the one thing on the stage it can mean
+  if (BARE_CLEAR.test(t.trim())) return true;
   return CLEAR_EN.test(t);
 }
+const BARE_CLEAR = new RegExp(`^(?:(?:please|plz|ab|abhi|jaldi|isko|ise|ye|yeh|woh|sab|sara|saara|poora|pura|इसे|इसको|ये|यह|सब|सारा|पूरा)\\s+){0,2}(?:${CLEAR_VERB})(?:\\s+(?:please|plz|na|na\\s+please))?[\\s.!।]*$`, "iu");
 
 // r12 RCA failure 3 / release 13 (A) (owner lesson a95d2ff1 turns 18-24: "मेरे को आलू के बारे में पढ़ना है", "आलू दिखाओ"): the
 // subject a child names, in either script, so the lesson can answer honestly about it. Generic words are not subjects.
@@ -171,7 +176,7 @@ const DRAW_RE = new RegExp(`(?<![\\p{L}])(?:${DRAW_VERB}|${DRAW_WORD})(?![\\p{L}
 const SHOW_RE = new RegExp(`(?<![\\p{L}])${SHOW_VERB}(?![\\p{L}])`, "iu");
 // the words before the first show/draw word (or "ka photo"/"ka diagram"), at most 4: the thing asked for
 const ASK_HEAD = new RegExp(`^(.*?)\\s+(?:(?:ka|ki|ke|का|की|के)\\s+)?(?:(?:${PIC_WORD}|${DRAW_WORD})\\s+)?(?:(?:${DRAW_VERB})(?:\\s+(?:karke|kar\\s+ke|karo|kijiye|kar\\s+do))?\\s+)?(?:${SHOW_VERB}|${DRAW_VERB}|${PIC_WORD}|${DRAW_WORD})(?![\\p{L}])`, "iu");
-const ASK_STOP = /^(?:kaise|kaisa|kya|kyun|kyon|kab|kahan|how|what|why|where|which|mujhe|muje|hume|humein|mere|please|plz|zara|jara|thoda|ek|aap|tum|didi|bhaiya|sir|ma'?am|teacher|ab|abhi|phir|fir|dobara|wapas|again|now|na|naa|yaar|bhi|bas|sirf|sab|sabhi|to|toh|so|ok|okay|achha|accha|haan|ji|draw|bana|banao|karke|kar|ke|se|me|mein|pe|par|on|in|of|the|a|an|me)$/iu;
+const ASK_STOP = /^(?:एक|इसकी|इसका|इसके|इसे|इसको|उसकी|उसका|उसके|यह|ये|वो|वह|मुझे|मेरे|कोई|ज़रा|जरा|थोड़ा|ज़रा|अब|फिर|और|kaise|kaisa|kya|kyun|kyon|kab|kahan|how|what|why|where|which|mujhe|muje|hume|humein|mere|please|plz|zara|jara|thoda|ek|aap|tum|didi|bhaiya|sir|ma'?am|teacher|ab|abhi|phir|fir|dobara|wapas|again|now|na|naa|yaar|bhi|bas|sirf|sab|sabhi|to|toh|so|ok|okay|achha|accha|haan|ji|draw|bana|banao|karke|kar|ke|se|me|mein|pe|par|on|in|of|the|a|an|me)$/iu;
 const SHOW_NOT_SUBJECT = /^(?:answer|jawab|score|result|marks|next|agla|aage|phir|fir|dobara|wapas|again|sab|sabhi|all|more|aur|baaki|baki|naya|new|number|numbers|sawal|sawaal|question|questions|example|examples|udaharan|game|games|khel|video|videos|animation|step|steps|tarika|tareeka|way|method|hint|hints)$/iu;
 /** The numbers a child names for a number line ("1 se 9", "23 plus 14", "1/4", "minus 3", "0.5"). PURE. */
 const numbersSaid = (t) => {

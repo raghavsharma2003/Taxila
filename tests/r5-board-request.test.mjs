@@ -137,3 +137,10 @@ test("unpointing keeps every word she explains, and never leaves 'X ka picture' 
   assert.equal(pictureSubjectOf("Screen par potato ka picture dekhiye"), "potato");
   assert.equal(pictureSubjectOf("Iska picture dekho"), null);
 });
+
+test("QA round 5 (D07, D08, D09): a Devanagari game ask, 'इसकी एक तस्वीर दिखाओ' with no thing named, a bare clear command", () => {
+  for (const said of ["मुझे एक गेम खेलना है", "गेम खेलना है."]) assert.equal(requestOf(said)?.kind, "game", said);
+  assert.deepEqual(requestOf("इसकी एक तस्वीर दिखाओ").see, { show: "picture" }, "'इसकी एक' names no thing: the picture of what is on the table");
+  for (const said of ["साफ करो।", "saaf karo", "clear karo", "sab mita do", "isko hatao"]) assert.equal(requestOf(said)?.type, "clear_board", said);
+  for (const said of ["साफ नहीं दिख रहा", "board mat hatao", "answer mitao mat"]) assert.notEqual(requestOf(said)?.type, "clear_board", said);
+});

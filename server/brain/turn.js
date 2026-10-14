@@ -630,6 +630,12 @@ export async function lessonTurn(req, body) {
     if (next.module?.id) { const id = next.module.id; r = { ...r, moduleCommands: [...r.moduleCommands.filter((c) => c.moduleId !== id), { op: "unmount", moduleId: id }] }; next.module = null; }
     next.wbBeat = undefined;
   }
+  // round 5 (QA D11: "negative numbers kya hote hain?" answered while the board still showed the fraction area model): a turn
+  // that answers the child's OWN other question, a detour or another topic, and asks for no new board, takes the old board
+  // down (it shows the idea the talk has left); the Director's module is its own and stays
+  const leftBoard = !late && !clearing && ["answer_q", "detour", "topic", "switch", "change_topic"].includes(String(r.move?.request ?? ""))
+    && !kernel.arb.accepted.some((p) => p.kind === "ask_whiteboard");
+  if (leftBoard) seamSafe("studio.clearBoard", () => (typeof studioSeam.clearBoard === "function" && studioSeam.boardUp?.(lesson.id) ? studioSeam.clearBoard(lesson.id) : null), null);
   let studioSlot = late || clearing ? null
     : seamSafe("studio.slotFor", () => (typeof studioSeam.slotFor === "function" ? studioSeam.slotFor(lesson.id, turnStudioOf(kernel.arb),
       { beat: kernel.beat?.type ?? null, tray: r.ui?.tray ?? null, safety: r.move.kind === "safeguard" || !!incident,

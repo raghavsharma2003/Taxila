@@ -1010,6 +1010,13 @@ export const studioSeam = {
     return rowOf(on.facts);
   },
 
+  /** round 5: is a board (not a game, not a picture) what the child sees now? */
+  boardUp(lessonId) {
+    const L = lessons.get(lessonId);
+    const on = L?.onScreen ? L.pieces.get(L.onScreen) : null;
+    return !!(on && on.kind === "whiteboard" && on.artifact && !on.retired && on.state !== "failed");
+  },
+
   /** Does Studio have something the child can act on right now (director/say.js screenHasTargets reads this)? */
   hasTargets(lessonId) {
     const L = lessons.get(lessonId);
