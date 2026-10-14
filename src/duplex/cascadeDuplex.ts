@@ -114,6 +114,37 @@ export const D5_PREDUCK_DEFAULT = true;
 export const NO_FRAMES_MS = 3000;
 /** A reply that answers a revoked commit is dropped if it arrives within this long of the revoke. */
 const DROP_WINDOW_MS = 8000;
+/**
+ * Release 14: D4 runs half-duplex unless this device asks for the full engine (`?duplexfull=1` once, or localStorage
+ * "tx.flag.duplexfull" = "1"; `?duplexfull=0` clears it). The owner's test switch for barge-in over a headset.
+ */
+export function fullDuplexForced(): boolean {
+  try {
+    if (typeof location !== "undefined") {
+      const v = new URLSearchParams(location.search).get("duplexfull");
+      if (v === "1") localStorage.setItem("tx.flag.duplexfull", "1");
+      else if (v === "0") localStorage.removeItem("tx.flag.duplexfull");
+    }
+    return typeof localStorage !== "undefined" && localStorage.getItem("tx.flag.duplexfull") === "1";
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Round 5: the half-duplex tail from this device. Her level is read at the player node, BEFORE the device's output buffer,
+ * so her sound leaves the speaker AudioContext.outputLatency later (Android: often 100-300 ms): tail = 250 ms of room +
+ * that latency, within 400-900 ms; unknown → HALF_DUPLEX_TAIL_MS (600).
+ */
+export function halfTail(surface: { audio(): { ctx: AudioContext } | null }): { halfTailMs?: number } {
+  try {
+    const lat = (surface.audio()?.ctx as (AudioContext & { outputLatency?: number }) | undefined)?.outputLatency;
+    if (typeof lat !== "number" || !Number.isFinite(lat) || lat <= 0) return {};
+    return { halfTailMs: Math.round(Math.max(400, Math.min(900, 250 + lat * 1000))) };
+  } catch {
+    return {};
+  }
+}
 
 export class CascadeDuplex {
   readonly mode: Exclude<DuplexMode, "off">;
@@ -167,7 +198,8 @@ export class CascadeDuplex {
       // D5: no micro-commit probes (a forced commit cuts Voice Live's open item and returns it empty; its own 500 ms commit
       // already lands the final ~0.6 s after the child stops)
       lessonId: surface.lessonId, port, mode: o.mode, source: d5 ? "voicelive" : "live_transcribe", supportsCommit: !d5,
-      ...(d5 ? { vadGate: "server" as const, preDuck: o.preDuck ?? D5_PREDUCK_DEFAULT, serverVadMs: D5_SERVER_VAD_MS } : { halfDuplex: o.halfDuplex ?? HALF_DUPLEX_D4 }),
+      // D4: half-duplex unless this device forced the full engine (?duplexfull=1, release 14); D5: the full engine
+      ...(d5 ? { vadGate: "server" as const, preDuck: o.preDuck ?? D5_PREDUCK_DEFAULT, serverVadMs: D5_SERVER_VAD_MS } : { halfDuplex: o.halfDuplex ?? (HALF_DUPLEX_D4 && o.mode === "on" && !fullDuplexForced()), ...halfTail(surface) }),
       wrapEmit: o.face?.wrapEmit, onDetach: o.face?.detach, now: this.now, setInterval: o.setInterval, clearInterval: o.clearInterval,
       band: o.band,
       log: (row: ShadowRow) => { try { this.tel.row(row); } catch { /* telemetry never breaks the floor */ } o.log?.(row); },
@@ -219,8 +251,8 @@ export class CascadeDuplex {
    */
   onSttEvent(raw: unknown): boolean {
     if (this.closed || this.fallbackReason) return false;
-    // round 5 half-duplex: an item that began while her voice was audible is consumed whole (never a child event)
-    if (this.deciding && this.live.halfDrop(raw)) return true;
+    // release 14 half-duplex: an item that started over her line is her echo; nothing of it reaches the link either
+    if (this.deciding && this.live.echoOnly(raw)) return true;
     this.live.stt(raw);
     const ev = (raw && typeof raw === "object" ? raw : {}) as { type?: unknown; transcript?: unknown };
     if (typeof ev.type === "string") this.tel.stt(this.now(), ev.type, typeof ev.transcript === "string" && ev.transcript.trim().length > 0);

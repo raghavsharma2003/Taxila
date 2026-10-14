@@ -512,6 +512,7 @@ export class CascadeLink implements TeacherLink {
   promptTeacher(reply?: TeacherReply): void {
     const text = reply?.text.trim();
     if (!text) return;
+    this.typedAt = -Infinity; // round 5: her reply to the tapped turn is here: that turn is answered, the guard lifts
     this.stopReply("cancelled", false);
     const id = `cascade-${++this.replySeq}`;
     // ship5 p1-duplex: the child went on after the engine committed (a revoke): the reply to that commit is never voiced
@@ -751,8 +752,8 @@ export class CascadeLink implements TeacherLink {
   // ───────────── child side ─────────────
 
   private onChildEvent(e: LinkEvent): void {
-    // Round 5 (one turn at a time, BRIEF.md): within TAP_GUARD_MS of a tapped / typed answer a spoken final is not a second
-    // turn (the child reading the chip aloud, or her echo over the tap); it is traced and dropped
+    // Round 5 (one turn at a time, BRIEF.md): within LINK_TAP_GUARD_MS of a tapped / typed answer, until her reply to it
+    // arrives, a spoken final is not a second turn (the child reading the chip aloud, or her echo over the tap): traced, dropped
     if (e.type === "child_final" && !e.typed && Date.now() - this.typedAt < LINK_TAP_GUARD_MS) {
       this.vtrace.bargein("final_after_tap_dropped", { msAfterTap: Date.now() - this.typedAt });
       return;

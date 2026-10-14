@@ -246,15 +246,15 @@ test("wrap language: 'Aaj ke liye bas itna' on a probe turn is removed in code; 
 // ───────────── the start refusal names its control; "Open now" opens the hours only (flows G1, smooth G8) ─────────────
 
 test("start refusal: practice and Ask pass a done day; the 409 names the control; open-now opens the hours, never the cap", () => {
-  assert.equal(startRefusal("done", "practice"), null);
-  assert.equal(startRefusal("done", "doubt"), null);
-  assert.ok(startRefusal("done", "lesson"));
-  assert.ok(startRefusal("done", undefined), "no purpose is a lesson");
-  assert.ok(startRefusal("resting", "practice"));
+  assert.equal(startRefusal("done", "practice", { limits: true }), null);
+  assert.equal(startRefusal("done", "doubt", { limits: true }), null);
+  assert.ok(startRefusal("done", "lesson", { limits: true }));
+  assert.ok(startRefusal("done", undefined, { limits: true }), "no purpose is a lesson");
+  assert.ok(startRefusal("resting", "practice", { limits: true }));
   assert.equal(refusalControl("resting"), "hours");
   assert.equal(refusalControl("capped"), "daily_limit");
   assert.equal(refusalControl("done"), "done");
-  const base = { resumable: false, usedMin: 0, capMin: 30, doneToday: false, now: "23:10", from: "07:00", to: "20:30", anyLesson: true };
+  const base = { resumable: false, usedMin: 0, capMin: 30, doneToday: false, now: "23:10", from: "07:00", to: "20:30", anyLesson: true, limits: true };
   assert.equal(homeStateOf(base), "resting");
   assert.equal(homeStateOf({ ...base, openNow: true }), "start");
   assert.equal(homeStateOf({ ...base, openNow: true, usedMin: 30 }), "capped", "the daily limit still holds");

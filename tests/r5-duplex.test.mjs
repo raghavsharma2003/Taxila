@@ -7,7 +7,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 
-import { DuplexLive, TAP_GUARD_MS, IN_FLIGHT_MAX_MS, HALF_TAIL_MS, D5_PREDUCK_LEVEL } from "../src/duplex/live.ts";
+import { DuplexLive, TAP_GUARD_MS, IN_FLIGHT_MAX_MS, HALF_DUPLEX_TAIL_MS, D5_PREDUCK_LEVEL } from "../src/duplex/live.ts";
 import { LevelMeter } from "../src/lesson/level.ts";
 
 function rig(opts) {
@@ -52,7 +52,7 @@ test("(c) a tapped answer holds the engine's turn for 3 s and until her reply st
   r.live.herEnd();
   r.live["handle"](speak(r.t + 10));
   assert.equal(commits(r.acts).length, 2, "her reply started: the next turn may go");
-  assert.ok(r.live.stats.held >= 2);
+  assert.ok((r.live.stats.held ?? 0) + r.live.half.heldSpeaks >= 2, "both holds are counted");
 });
 
 test("(c) one engine turn at a time: a second commit waits for her reply, a lost reply stops holding after the cap", () => {
@@ -89,22 +89,22 @@ test("(b) half-duplex: the mic is gated while her voice is audible and for the t
   const gate = r.acts.filter((a) => a[1] === "gate");
   assert.deepEqual(gate.map((g) => g[2]), [true], "gated once, still gated");
   // the transcriber had already started an item on her echo: dropped whole
-  assert.equal(r.live.halfDrop({ type: "input_audio_buffer.speech_started", item_id: "e1", audio_start_ms: 500 }), true);
+  assert.equal(r.live.echoOnly({ type: "input_audio_buffer.speech_started", item_id: "e1", audio_start_ms: 500 }), true);
   r.live.stt({ type: "conversation.item.input_audio_transcription.completed", item_id: "e1", transcript: "क्यों भाई" });
   r.live.herEnd();
-  r.run(3000 + HALF_TAIL_MS + 100, () => ({ rms: 0.001, f0: null, her: null }));
+  r.run(3000 + HALF_DUPLEX_TAIL_MS + 100, () => ({ rms: 0.001, f0: null, her: null }));
   assert.deepEqual(r.acts.filter((a) => a[1] === "gate").map((g) => g[2]), [true, false], "open again after the tail");
   r.run(8000, () => ({ rms: 0.001, f0: null, her: null }));
   assert.equal(r.acts.filter((a) => a[1] === "duck" || a[1] === "pause" || a[1] === "stop").length, 0, "no hush, no yield on her echo");
   assert.ok(!commits(r.acts).some((c) => c[2].includes("क्यों")), "her echo never became the child's turn");
-  assert.ok(r.live.stats.halfDropped >= 1);
+  assert.ok(r.live.half.echoItems >= 1);
 });
 
 test("(b) half-duplex: a micro-commit only with an open item (no commit_empty); an empty turn is never committed", () => {
   const r = rig({ halfDuplex: true });
   r.live["handle"]({ to: "stt", op: "commit", t: 100 });
   assert.equal(r.acts.filter((a) => a[1] === "probe").length, 0, "nothing open: no commit");
-  assert.equal(r.live.halfDrop({ type: "input_audio_buffer.speech_started", item_id: "c1", audio_start_ms: 200 }), false, "her voice is not in the room: a real item");
+  assert.equal(r.live.echoOnly({ type: "input_audio_buffer.speech_started", item_id: "c1", audio_start_ms: 200 }), false, "her voice is not in the room: a real item");
   r.live["handle"]({ to: "stt", op: "commit", t: 300 });
   assert.equal(r.acts.filter((a) => a[1] === "probe").length, 1);
   r.live["handle"](speak(900, "backstop_silence", ""));
