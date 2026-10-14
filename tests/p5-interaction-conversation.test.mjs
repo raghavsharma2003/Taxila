@@ -6,7 +6,7 @@ import assert from "node:assert/strict";
 import { readFileSync, readdirSync } from "node:fs";
 import { readIntent, P5_TYPES } from "../server/conversation/lexicon.js";
 import { requestFromNote, requestFromReading, applyNote, parkEntry, pushLater, recentParked, dueParked, serveLater, sameTopic, LATER_MAX } from "../server/conversation/policy.js";
-import { parseNote, understand, understandDeps, resetBreaker, inferLang, INTENTS } from "../server/conversation/understand.js";
+import { parseNote, understand, understandDeps, resetBreaker, understandDeploys, inferLang, INTENTS } from "../server/conversation/understand.js";
 import { sentences, tidy, isBare, repeatsEarlier, leadWithoutQuestion, jaccard } from "../server/conversation/guards.js";
 import { p5On, p5Flag, conv2Mode } from "../server/conversation/flags.js";
 
@@ -125,11 +125,34 @@ test("understand(): a usable note; a 429 opens the breaker (no calls for BREAKER
     t += 31_000;
     understandDeps.chat = async () => { calls++; return { json: { intent: "???" } }; };
     assert.equal(await understand({ said: "x y" }), null);
-    assert.equal(calls, before + 1);
+    assert.equal(calls, before + understandDeploys().length, "one call per raced deployment (r5-latency)");
     understandDeps.chat = async () => { throw new Error("boom"); };
     assert.equal(await understand({ said: "x y" }), null);
     assert.equal(await understand({ said: "   " }), null);
   } finally { Object.assign(understandDeps, real); resetBreaker(); }
+});
+
+test("understand() races its deployments: the first usable note wins; a failed or junk arm waits for the other; one 429 is not an outage", async () => {
+  const real = { ...understandDeps }, env = process.env.TAXILA_UNDERSTAND_DEPLOY;
+  const note = (intent) => ({ json: { intent, also: [], answer: "", topic: "", learning: false, in_bounds: true, lang_to: "", method: "", distress: false, confidence: 0.8 } });
+  const wait = (ms) => new Promise((r) => setTimeout(r, ms));
+  try {
+    resetBreaker();
+    assert.deepEqual(understandDeploys(), ["grok-4-1-fast-non-reasoning", "taxila-fast"], "the default race");
+    process.env.TAXILA_UNDERSTAND_DEPLOY = "slow,fast";
+    understandDeps.chat = async (dep) => { if (dep === "slow") { await wait(80); return note("joke"); } await wait(5); return note("small_talk"); };
+    assert.equal((await understand({ said: "haha" })).intent, "small_talk", "the faster arm wins");
+    understandDeps.chat = async (dep) => { if (dep === "fast") return { json: { intent: "???" } }; await wait(20); return note("joke"); };
+    assert.equal((await understand({ said: "haha" })).intent, "joke", "a junk note waits for the other arm");
+    understandDeps.chat = async (dep) => { if (dep === "fast") { const e = new Error("429"); e.status = 429; throw e; } await wait(10); return note("joke"); };
+    assert.equal((await understand({ said: "haha" })).intent, "joke");
+    assert.equal((await understand({ said: "haha again" })).intent, "joke", "one throttled arm does not open the breaker");
+    process.env.TAXILA_UNDERSTAND_DEPLOY = "taxila-gpt6";
+    assert.deepEqual(understandDeploys(), ["taxila-gpt6"], "one name = no race (before round 5)");
+  } finally {
+    Object.assign(understandDeps, real); resetBreaker();
+    if (env === undefined) delete process.env.TAXILA_UNDERSTAND_DEPLOY; else process.env.TAXILA_UNDERSTAND_DEPLOY = env;
+  }
 });
 
 test("the Later list: at most LATER_MAX open, no duplicate topic, return after the item / before the wrap, detour within 3 turns", () => {
