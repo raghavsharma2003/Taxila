@@ -272,3 +272,54 @@ test("ADPCM negotiation: only an explicit codec=adpcm on frames v2; the writer f
   w2.pcm(pcm);
   assert.equal(parseFrames(Buffer.concat(raw))[0].payload.length, pcm.length);
 });
+
+// ── the start's round-trip fold (POST /api/lesson/start-audio; src/lesson/ttsStream.ts postStartAudio) ──
+import { postStartAudio, takeFoldedAudio } from "../src/lesson/ttsStream.ts";
+import { frame as sframe } from "../server/voice/frames.js";
+
+test("start-audio: the start response resolves the call and her opening's audio is parked for the speech fetch by (lesson, seq)", async () => {
+  const realFetch = globalThis.fetch;
+  const out = { lessonId: "11111111-2222-3333-4444-555555555555", teacherOpeningSeq: 1, teacherOpening: "Namaste!", topic: { id: "t" } };
+  const pcm = Buffer.alloc(960, 7);
+  const body = Buffer.concat([sframe(SFRAME.header, { v: 2, audio: "follows", seq: 1 }), sframe(SFRAME.turn, out), sframe(SFRAME.pcm, pcm), sframe(SFRAME.end, { t: "end", status: "ok" })]);
+  const seen = [];
+  globalThis.fetch = async (url, init) => { seen.push([url, init.headers.accept]); return new Response(body, { status: 201, headers: { "content-type": "application/x-taxila-pcm-frames;v=2" } }); };
+  try {
+    const r = await postStartAudio({ childId: "c", mode: "cascade" });
+    assert.equal(r.lessonId, out.lessonId);
+    assert.equal(seen[0][0], "/api/lesson/start-audio");
+    assert.match(seen[0][1], /x-taxila-pcm-frames;v=2/);
+    const stream = takeFoldedAudio(out.lessonId, 1);
+    assert.ok(stream, "the opening's audio is parked");
+    const reader = stream.getReader(); let n = 0;
+    for (;;) { const { done, value } = await reader.read(); if (done) break; n += value.length; }
+    assert.equal(n, pcm.length);
+    assert.equal(takeFoldedAudio(out.lessonId, 1), null, "taken once");
+  } finally { globalThis.fetch = realFetch; }
+});
+
+test("the lesson API: start-audio by default; a server without the route (404) falls back to the plain start; ?startaudio=0 uses the plain start", async () => {
+  const realFetch = globalThis.fetch;
+  const calls = [];
+  globalThis.fetch = async (url) => { calls.push(url); if (url === "/api/lesson/start-audio") return new Response(JSON.stringify({ error: "no route POST /api/lesson/start-audio" }), { status: 404, headers: { "content-type": "application/json" } });
+    return new Response(JSON.stringify({ lessonId: "L", topic: {} }), { status: 201, headers: { "content-type": "application/json" } }); };
+  try {
+    const { httpLessonApi } = await import("../src/lesson/api.ts");
+    const r = await httpLessonApi.start({ childId: "c", mode: "cascade" });
+    assert.equal(r.lessonId, "L");
+    assert.deepEqual(calls, ["/api/lesson/start-audio", "/api/lesson/start"]);
+    const store = new Map([["tx.flag.latency.startAudio", "0"]]);
+    const realLS = globalThis.localStorage;
+    globalThis.localStorage = { getItem: (k) => store.get(k) ?? null, setItem: (k, v) => store.set(k, v), removeItem: (k) => store.delete(k) };
+    try { calls.length = 0; await httpLessonApi.start({ childId: "c", mode: "cascade" }); assert.deepEqual(calls, ["/api/lesson/start"]); }
+    finally { globalThis.localStorage = realLS; }
+  } finally { globalThis.fetch = realFetch; }
+});
+
+test("start-audio route: registered beside turn-audio and built on the start route's own function", () => {
+  const voice = readFileSync(new URL("../server/routes/voice.js", import.meta.url), "utf8");
+  assert.match(voice, /"POST \/api\/lesson\/start-audio": startAudio/);
+  assert.match(voice, /const \{ lessonStart \} = await import\("\.\/lesson\.js"\)/);
+  const lesson = readFileSync(new URL("../server/routes/lesson.js", import.meta.url), "utf8");
+  assert.match(lesson, /async function start\(req, res, body\) \{\n  const r = await lessonStart\(req, body\);\n  send\(res, 201, r\.body\);/);
+});

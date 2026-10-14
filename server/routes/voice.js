@@ -24,7 +24,7 @@ import { routes as featureRoutes } from "../voice/features.js";
 import { realtimeSeam } from "../voice/realtimeSession.js";
 import { seamSafe } from "../seam-safe.js";
 import { cascadeEngine, dhdVoiceFor, warnUnmeasuredOnce } from "../voice/voices.js";
-import { traceIdentify } from "../trace/context.js";
+import { traceIdentify, traceSet } from "../trace/context.js";
 import { record } from "../trace/writer.js";
 
 const VOICES = new Set(["alloy", "ash", "ballad", "coral", "echo", "fable", "nova", "onyx", "sage", "shimmer", "verse", "marin", "cedar"]);
@@ -390,6 +390,40 @@ async function turnAudio(req, res, body) {
   return streamParts(res, { entry: warm, t0, setupMs: Math.round(performance.now() - t0), framed: true, headersSent: true, codec });
 }
 
+// ───────────── POST /api/lesson/start-audio (r5-latency: the start's round-trip fold) ─────────────
+
+/**
+ * The lesson start and her opening line's audio on ONE response, as turn-audio does for a turn. Measured on a phone
+ * profile (evals/latency/start-phone.mjs, 2026-10-14, n = 30): tap -> her first sound p50 2619 ms, of which the second
+ * round trip (the start's response, then POST /api/voice/tts-stream, then its first byte) was ~0.4-0.5 s. It calls the
+ * start route's own function (server/routes/lesson.js lessonStart: every rule, refusal and write is the route's), then
+ * answers in framed TTS v2: a header ({audio: "follows" | "none"}), a `turn` frame carrying the LessonStartResponse, then
+ * the opening's audio from the prewarm the start began, then an end frame. A start with nothing to speak here (the realtime
+ * lane, a fixed safeguard line with no prewarm, another replica) ends with {audio: "none"} and the client speaks the
+ * opening by seq through /api/voice/tts-stream as before. Refusals (409 hours / cap, 403 consent) are the start's own JSON.
+ */
+async function startAudio(req, res, body) {
+  const t0 = performance.now();
+  const { lessonStart } = await import("./lesson.js");
+  const tokenHash = sessionTokenHash(req);
+  if (!tokenHash) throw unauthorized();
+  const { body: out } = await lessonStart(req, body);
+  traceSet({ sid: out?.lessonId }); // release 12 recorder: send() names the lesson for a JSON start; this response streams
+  const seq = out?.teacherOpeningSeq;
+  let warm = Number.isInteger(seq) ? prewarmTake(String(out.lessonId), seq, tokenHash) : null;
+  let audio = warm ? "follows" : "none";
+  if (warm && !allowSpeech(warm.guardianId)) { warm.abort.abort(); warm = null; audio = "rate_limited"; }
+  res.writeHead(201, { "content-type": FRAMES_CONTENT_TYPE, "x-start-ms": String(Math.round(performance.now() - t0)), "cache-control": "no-store" });
+  res.flushHeaders?.();
+  const codec = codecOf(req);
+  const w = frameWriter(res, true, { codec });
+  w.json(FRAME.header, { v: 2, audio, format: `pcm_s16le;rate=${PCM_RATE};channels=1`, ...(w.codec === "adpcm" ? { codec: "adpcm" } : {}), ...(warm ? { seq, sentences: warm.parts.length, prewarmedMs: Math.round(performance.now() - warm.at),
+    engine: warm.renders?.[0]?.engine ?? "oai" } : {}) });
+  w.json(FRAME.turn, out);
+  if (!warm) { w.json(FRAME.end, { t: "end", status: "ok", audio }); res.end(); return; }
+  return streamParts(res, { entry: warm, t0, setupMs: Math.round(performance.now() - t0), framed: true, headersSent: true, codec });
+}
+
 /**
  * The uptake prelude (TEACHER-BRAIN §5.4 L3, behind TAXILA_UPTAKE_PRELUDE=1 until HV-16): at receipt, synthesise the
  * child's key token in the lesson's voice into the MEMORY cache, so the prewarm's prelude job is a hit by the time the
@@ -423,6 +457,7 @@ export const routes = {
   "POST /api/voice/stt-token": sttToken,
   "POST /api/voice/transcribe": transcribe,
   "POST /api/voice/tts-stream": ttsStream,
+  "POST /api/lesson/start-audio": startAudio,
   // On-device child voice features + longitudinal trends (server/voice/features.js).
   ...featureRoutes,
 };

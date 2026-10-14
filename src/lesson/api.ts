@@ -8,7 +8,7 @@ import type {
   TurnRequest,
   TurnResponse,
 } from "../../shared/contracts.ts";
-import { postTurnAudio, turnAudioEnabled } from "./ttsStream.ts";
+import { postStartAudio, postTurnAudio, startAudioEnabled, turnAudioEnabled } from "./ttsStream.ts";
 
 export class ApiError extends Error {
   readonly status: number;
@@ -65,7 +65,11 @@ export interface LessonApi {
 export type LaneSwitchReason = "rate_limit" | "mint_refused" | "unavailable" | "content_filter";
 
 export const httpLessonApi: LessonApi = {
-  start: (req) => postJson("/api/lesson/start", req),
+  // r5-latency: the start and her opening's audio on one response (start-audio); a server without the route answers 404
+  // before anything was started, so the plain start runs then. ?startaudio=0 on a device turns it off.
+  start: (req) => (startAudioEnabled()
+    ? postStartAudio(req).catch((e: unknown) => (e instanceof ApiError && e.status === 404 ? postJson("/api/lesson/start", req) : Promise.reject(e)))
+    : postJson("/api/lesson/start", req)),
   // W2-G #7 round-trip fold: off by default (voice.turnAudio flag); same TurnResponse and the same ApiError mapping.
   turn: (req, signal) => (turnAudioEnabled() ? postTurnAudio(req, signal) : postJson("/api/lesson/turn", req, signal)),
   end: (lessonId) => postJson("/api/lesson/end", { lessonId }),

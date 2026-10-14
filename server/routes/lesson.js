@@ -129,6 +129,16 @@ async function openNow(req, res, body) {
 
 /** @type {(req: any, res: any, body: import("../../shared/contracts").LessonStartRequest) => Promise<void>} */
 async function start(req, res, body) {
+  const r = await lessonStart(req, body);
+  send(res, 201, r.body);
+}
+
+/**
+ * The lesson start (POST /api/lesson/start), as a function: r5-latency's POST /api/lesson/start-audio
+ * (server/routes/voice.js) folds the opening's audio onto the same response, so it calls this and streams after it.
+ * Every rule, refusal and write is the route's own. Resolves { body } (the LessonStartResponse, with debug locally).
+ */
+export async function lessonStart(req, body) {
   const t0 = performance.now();
   const trace = [];
   // r5-latency: where a start's time goes (debug response `timings`, and the stage profiler evals/latency/start-profile.mjs)
@@ -345,7 +355,7 @@ async function start(req, res, body) {
       ...(askRaw ? { askConsumed: true } : {}) }), address, moment: openingMoment,
     ...(teacherOpening ? { teacherOpening, teacherOpeningSeq } : {}),
   };
-  send(res, 201, debugFor(req) ? { ...out, debug: { move: r.move, kitVerified: kit.verified, timings: trace } } : out);
+  return { body: debugFor(req) ? { ...out, debug: { move: r.move, kitVerified: kit.verified, timings: trace } } : out };
 }
 
 // ───────────────────────────── POST /api/realtime/token ─────────────────────────────
