@@ -98,6 +98,14 @@ export interface CascadeLinkOptions {
   duplexFace?: { wrapEmit: (emit: (c: import("../duplex/host.ts").HostCommand) => void) => (c: import("../duplex/host.ts").HostCommand) => void; detach: () => void } | null;
   /** ship5 p1-duplex: extra engine options (tests inject the mic tap and timers). */
   duplexOptions?: Partial<Omit<CascadeDuplexOptions, "mode" | "face">>;
+  /**
+   * D5 (2026-10-11): the transcription lane resolver (src/duplex/flags.ts resolveDuplexLane). "d5" = Azure Voice Live is the
+   * ear through /api/duplex/voicelive (stereo mic + her played audio, server-side echo cancellation); "d4" or absent = the
+   * WebRTC transcription call, byte for byte. A D5 stream that cannot open falls back to D4 for the rest of the lesson.
+   */
+  duplexLane?: () => Promise<"d4" | "d5">;
+  /** D5: test seams for the stream (WebSocket, worklet URL, location). */
+  d5?: Partial<import("../duplex/d5Stream.ts").D5StreamDeps>;
 }
 
 /** Per-turn latency marks (epoch ms, client clock) for dev UIs and on-device measurement. */
@@ -363,6 +371,13 @@ export class CascadeLink implements TeacherLink {
   private unregisterLatency: (() => void) | null = null;
   private pc: RTCPeerConnection | null = null;
   private dc: RTCDataChannel | null = null;
+  /** D5: the Voice Live stream while it carries the lesson (null = the WebRTC call, or nothing yet). */
+  private d5: import("../duplex/d5Stream.ts").D5Stream | null = null;
+  private readonly duplexLane: Promise<"d4" | "d5">;
+  private readonly d5Deps: CascadeLinkOptions["d5"];
+  /** D5 refused or failed once in this lesson: every reconnect uses D4. */
+  private d5Off = false;
+  private laneUsed: "d4" | "d5" = "d4";
   private audioInput: Json = {};
   private transportKind: CascadeTransport = "webrtc";
   private callUp = false;
@@ -413,6 +428,8 @@ export class CascadeLink implements TeacherLink {
     this.duplexOptions = opts.duplexOptions;
     const dm = opts.duplex;
     if (dm) this.duplexMode = (typeof dm === "function" ? dm().catch((): DuplexMode => "on") : Promise.resolve(dm));
+    this.duplexLane = opts.duplexLane ? opts.duplexLane().catch((): "d4" => "d4") : Promise.resolve("d4");
+    this.d5Deps = opts.d5;
     this.vtrace = new VoiceLinkTrace({ lessonId: opts.lessonId, lane: "cascade" });
     this.protocol = new TranscriptionProtocol({
       emit: (e) => this.onChildEvent(e),
@@ -567,6 +584,7 @@ export class CascadeLink implements TeacherLink {
     playback.started.then((at) => {
       if (this.ackNow !== now) return;
       now.sounding = true;
+      this.duplex?.ackAudible();
       this.turn.ackAt = at;
       this.ack?.played(clip, at);
       // the face keeps its thinking face while she says it (src/face-puppet/knowledge.ts K2)
@@ -574,11 +592,21 @@ export class CascadeLink implements TeacherLink {
     }, () => {});
     const finish = () => {
       this.ack?.ended(Date.now());
+      if (now.sounding) this.duplex?.ackEnded();
       if (now.sounding) puppetBus.emit({ kind: "ack", phase: "end", at: typeof performance !== "undefined" ? performance.now() : Date.now() });
       if (this.ackNow === now) this.ackNow = null;
       done();
     };
     void playback.ended.then(finish, finish);
+  }
+
+  /**
+   * Release 14: her voice is playing from outside this link (UiBridge's "phir se" replay): the hands-free engine gates it
+   * like her acknowledgement clip, so its loudspeaker echo never becomes a child turn.
+   */
+  externalAudio(on: boolean): void {
+    if (on) this.duplex?.ackAudible();
+    else this.duplex?.ackEnded();
   }
 
   /** Stop a sounding clip now (the child spoke over it, the lesson closed, an interrupt). */
@@ -971,6 +999,19 @@ export class CascadeLink implements TeacherLink {
   }
 
   private async open(): Promise<void> {
+    if (!this.d5Off && (await this.duplexLane) === "d5") {
+      try {
+        await this.openD5();
+        return;
+      } catch (err) {
+        if (this.closed) throw err;
+        this.d5Off = true;
+        console.warn("cascade: the D5 stream could not open; using the transcription call (D4)", err);
+        this.vtrace.d5Closed("open_failed", { error: String((err as { message?: unknown })?.message ?? err).slice(0, 160) });
+      }
+    }
+    this.laneUsed = "d4";
+    this.vtrace.sttLaneOpened("d4", this.d5Off ? "d5_unavailable" : null);
     const tok = await this.fetchToken(this.lessonId);
     if (this.closed) throw new Error("the voice lesson was closed");
     this.audioInput = { ...obj(obj(obj(tok.session).audio).input) };
@@ -1051,6 +1092,59 @@ export class CascadeLink implements TeacherLink {
     else if (!this.duplex) void this.startDuplex();
   }
 
+  /**
+   * D5: the lesson's ear is Azure Voice Live through our server (src/duplex/d5Stream.ts). Its events take the same path
+   * as the call's data channel; everything after this (push-to-talk, the merger's VAD, the duplex engine) is unchanged.
+   */
+  private async openD5(): Promise<void> {
+    if (!this.mic || !this.ctx) throw new Error("d5: no mic");
+    const { D5Stream } = await import("../duplex/d5Stream.ts");
+    const workletUrl = this.d5Deps?.workletUrl ?? (await import("../duplex/d5Url.ts")).default;
+    const stream = new D5Stream({ ...this.d5Deps, workletUrl });
+    // Voice Live's semantic VAD stands where the call's server_vad stood: the link's VAD updates become its silence
+    this.audioInput = { transcription: { model: "azure-speech", language: "hi-IN,en-IN" }, turn_detection: { type: "server_vad", silence_duration_ms: PREDICTIVE_SILENCE_MS } };
+    await stream.start({
+      lessonId: this.lessonId,
+      ctx: this.ctx,
+      mic: this.mic,
+      herOutput: this.player?.output ?? null,
+      onEvent: (e) => this.onD5Event(e),
+      onFirstFrame: (t) => this.duplex?.audioOrigin(t),
+      onLost: (why) => {
+        if (this.d5 !== stream) return;
+        this.d5 = null;
+        this.callUp = false;
+        this.vtrace.d5Closed(why, { framesSent: stream.stats.framesSent, framesDropped: stream.stats.framesDropped });
+        void this.lost();
+      },
+    });
+    if (this.closed) {
+      stream.close();
+      throw new Error("the voice lesson was closed");
+    }
+    this.d5 = stream;
+    this.laneUsed = "d5";
+    this.vtrace.sttLaneOpened("d5");
+    this.vtrace.sttConfig(this.audioInput);
+    this.callUp = true;
+    if (this.pushToTalk) this.sendSession(null);
+    else if (this.merger) this.sendSession(this.audioInput.turn_detection);
+    if (this.duplex?.deciding) this.sendDuplexVad();
+    else if (!this.duplex) void this.startDuplex();
+  }
+
+  private onD5Event(e: Json): void {
+    try {
+      if (e.type === "d5.session") { this.vtrace.d5Session(e); return; }
+      if (e.type === "d5.closed") return; // the socket's close follows (onLost)
+      this.vtrace.sttEvent(e);
+      if (e.type === "error") this.onServerError(e);
+      else if (!this.duplex?.onSttEvent(e)) this.protocol.handle(e);
+    } catch (err) {
+      console.warn("cascade: bad d5 event", err);
+    }
+  }
+
   // ───────────── ship5 p1-duplex: the hands-free duplex engine ─────────────
 
   private async startDuplex(): Promise<void> {
@@ -1067,7 +1161,8 @@ export class CascadeLink implements TeacherLink {
     try {
       const { CascadeDuplex } = await import("../duplex/cascadeDuplex.ts");
       if (this.closed || this.duplex) return;
-      const d = new CascadeDuplex(this.duplexSurface(), { ...this.duplexOptions, mode, face: this.duplexFace ?? null });
+      const d = new CascadeDuplex(this.duplexSurface(), { ...this.duplexOptions, mode, face: this.duplexFace ?? null, lane: this.laneUsed });
+      if (this.laneUsed === "d5") d.audioOrigin(this.d5?.firstFrameAt ?? null);
       this.duplex = d;
       if (!(await d.start())) { this.vtrace.duplexStart(mode, false, `engine_fallback:${d.fallback ?? "unknown"}`); return; } // it already restored today's path and reported the fallback
       this.vtrace.duplexStart(mode, d.deciding, d.deciding ? null : mode === "shadow" ? "shadow_never_decides" : "not_deciding");
@@ -1202,10 +1297,14 @@ export class CascadeLink implements TeacherLink {
   }
 
   private send(event: Json): void {
+    if (this.d5) { this.d5.send(event); return; }
     if (this.dc?.readyState === "open") this.dc.send(JSON.stringify(event));
   }
 
   private teardownPeer(): void {
+    const d5 = this.d5;
+    this.d5 = null;
+    d5?.close();
     const { pc, dc } = this;
     this.pc = null;
     this.dc = null;

@@ -121,7 +121,7 @@ function sendFile(res, file, headers, req) {
   createReadStream(file).pipe(res);
 }
 
-http.createServer((req, res) => {
+const server = http.createServer((req, res) => {
   const path = decodeURIComponent((req.url || "/").split("?")[0]);
   if (path.startsWith("/api/")) return handle(req, res);
   if (path === "/" || path === "/index.html") return sendLanding(res, req);
@@ -139,7 +139,16 @@ http.createServer((req, res) => {
     return res.end("not found");
   }
   sendFile(res, join(ROOT, "index.html"), {}, req); // SPA fallback
-}).listen(PORT, () => {
+});
+// D5 (2026-10-11): the one WebSocket the app serves, the lane-D5 lesson stream to Azure Voice Live (server/duplex/d5route.js).
+// Anything else asking to upgrade is refused.
+server.on("upgrade", (req, socket, head) => {
+  const path = (req.url || "/").split("?")[0];
+  if (path !== "/api/duplex/voicelive") { socket.destroy(); return; }
+  socket.on("error", () => {});
+  import("./duplex/d5route.js").then((m) => m.handleD5Upgrade(req, socket, head)).catch(() => socket.destroy());
+});
+server.listen(PORT, () => {
   console.log(`taxila on :${PORT}`);
   if (process.env.TAXILA_PREWARM_BR !== "0") setTimeout(() => void prewarmBrotli().then((n) => n && console.log(`[serve] brotli q11 ready for ${n} files`)), 50);
 });
