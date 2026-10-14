@@ -230,7 +230,7 @@ export const topicAsked = ({ subject, teaching = false }) => join(
   `they asked to talk about ${subject}: say something real about ${subject} first (one or two lines, never 'later')`,
   teaching ? `then explain the same idea with a ${subject} example; end with one small question about it` : `then use ${subject} as the setting for the same question`,
 );
-const LANG_NAME = { hindi: "simple Hindi (Roman script when written)", english: "simple English", hinglish: "Hinglish" };
+const LANG_NAME = { hindi: "simple Hindi (Roman script when written; idea-words in Hindi, English only as a gloss)", english: "simple English", hinglish: "Hinglish" };
 /** "Hindi mein samjhao" / "English mein batao": the language changes now and stays (compile.js langPinned). */
 export const languageAsked = ({ lang, teaching = false }) => join(
   `they asked for ${LANG_NAME[lang] ?? lang}: from now on every turn in ${LANG_NAME[lang] ?? lang}, even if they reply in another language`,

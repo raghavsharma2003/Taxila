@@ -6,7 +6,7 @@ import { floorText } from "../compiler/floor.js";
 import { promptFor } from "../director/items.js";
 import { AGENT_LIMITS } from "./flags.js";
 
-const LANG = { hinglish: "Hinglish (Hindi and English mixed the way Indian children speak, Roman script)", hindi: "simple Hindi (Roman script)", english: "simple English" };
+const LANG = { hinglish: "Hinglish (Hindi and English mixed the way Indian children speak, Roman script)", hindi: "simple Hindi (Roman script); name the lesson's ideas with Hindi words, an English term only as a short gloss after the Hindi one", english: "simple English" };
 
 /** The output contract (strict json_schema): her spoken line and the actions the harness runs for her. */
 export const TURN_SCHEMA = {
