@@ -36,14 +36,15 @@ export type LoadMap = (cid: string) => Promise<MapLike | null>;
 // look new (a false "Now secure"), so an empty read is unknown here (null): the Debrief then shows no secure section.
 // r5 QA: the "before" read runs in a useState initializer, which React re-runs when a render is discarded (a lazy child
 // suspending), so every lesson start fetched the 189 KB map twice in parallel (2.7-3.2 s each, on the lesson's hot path).
-// One read per child is shared for SHARE_MS; the Debrief's "after" read comes minutes later and is fresh.
-const SHARE_MS = 10_000;
-const inflight = new Map<string, { at: number; p: Promise<MapLike | null> }>();
+// A read in flight is shared per child (no clock: it is dropped when it settles); the Debrief's "after" read comes
+// minutes later and is fresh.
+const inflight = new Map<string, Promise<MapLike | null>>();
 const loadChildMap: LoadMap = (cid) => {
   const hit = inflight.get(cid);
-  if (hit && Date.now() - hit.at < SHARE_MS) return hit.p;
+  if (hit) return hit;
   const p = getChildMap(cid, "sky").then((m) => (m.empty && !m.hidden ? null : (m as MapLike)), () => null);
-  inflight.set(cid, { at: Date.now(), p });
+  inflight.set(cid, p);
+  void p.finally(() => { if (inflight.get(cid) === p) inflight.delete(cid); });
   return p;
 };
 
