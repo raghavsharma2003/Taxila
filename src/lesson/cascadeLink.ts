@@ -600,6 +600,15 @@ export class CascadeLink implements TeacherLink {
     void playback.ended.then(finish, finish);
   }
 
+  /**
+   * Release 14: her voice is playing from outside this link (UiBridge's "phir se" replay): the hands-free engine gates it
+   * like her acknowledgement clip, so its loudspeaker echo never becomes a child turn.
+   */
+  externalAudio(on: boolean): void {
+    if (on) this.duplex?.ackAudible();
+    else this.duplex?.ackEnded();
+  }
+
   /** Stop a sounding clip now (the child spoke over it, the lesson closed, an interrupt). */
   private stopAck(): void {
     const a = this.ackNow;
