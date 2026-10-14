@@ -206,6 +206,11 @@ Class 4, at her turn, reload `/c/:cid/lesson/new` (what a refresh or an Android 
 URL nor the home ("Just start") can bring the child back to where she was. Same after Android Back and returning.
 Suggest: `replaceState` to `/lesson/:lid` after the start, and let a pagehide within N seconds of a reload resume.
 
+### Re-test of D07-D11 on claude/r4-content@e5b72300 (content stream's fixes), n = 1 each
+D07 improved (no static board; a spoken "weight game"); **D08 not fixed** (she invents an apple: "Iski photo yahan nahi hai;
+ek seb gol, laal…", and the board still draws "एक" as a label); D09 pass ("Board saaf hai", no new board); D11 not reproduced
+(she parked the detour and the board matched her words). Sent to the content stream.
+
 ## Journeys that passed (pass 2)
 Data and privacy on a throwaway account (`tests/e2e/qa-account.mjs`): Download everything after the password again →
 `taxila-export-2026-10-14.json` (1,619 B: exportedAt, account, consents, children); Delete my account (password, 2 s hold) →
