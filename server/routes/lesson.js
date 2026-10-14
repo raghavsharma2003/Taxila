@@ -18,7 +18,9 @@ import { skillsMapFor, snapshotFromKt, loadLive, dueForChecks } from "../learner
 import { misconceptionView } from "../learner/kt/misconception.js";
 import { beliefFor, planChecks, onTopicPlanned, consumeExpired, weaveExpire, BAND_BUDGET, bandOf } from "../comprehension/index.js";
 import { weaveStmts } from "../comprehension/store.js";
-import { scrubPii, scanSafety } from "../director/safety.js";
+import { scrubPii, scanSafety, floorViolations } from "../director/safety.js";
+import { laneFor } from "../agent/flags.js";
+import { agentTurn, eventOf, applyAgentTurn } from "../agent/agent.js";
 import { initLessonState, step, LIMITS, shortTitleOf } from "../director/state.js";
 import { resolveAddress } from "../director/register.js";
 import { instructionsFor, instructionsAfter } from "../compiler/instructions.js";
@@ -38,7 +40,7 @@ import { purposeSeam } from "../lesson/purpose.js";
 import { sessionStartCtx, schoolPointerStmts } from "../director/session/start.js";
 import { voicesigSeam } from "../voicesig/lesson.js";
 import { realtimeSeam } from "../voice/realtimeSession.js";
-import { fallbackReply, safeguardLine, scrubbed, textReply, words } from "../brain/say.js";
+import { fallbackReply, safeguardLine, scrubbed, textReply, words, floorContentOf } from "../brain/say.js";
 import { clientInstructions, debugFor, floorIncidentStmt, kitFor, stageTurns, turnInsertStmt, withAsk } from "../brain/rows.js";
 import { nextBeat, uiBeatOf } from "../brain/beat.js";
 import { momentOf } from "../brain/moment.js";
@@ -267,7 +269,25 @@ async function start(req, res, body) {
     rows = stageTurns(state, [{ speaker: "teacher", text: teacherOpening, meta: { move: r.move.kind, fixed: true } }]);
     teacherOpeningSeq = rows[0].seq;
   } else if (mode !== "voice") {
-    const opened = await textReply({ instructions, state, kit, childText: "", trace, ui: r.ui, module: state.module });
+    // round 5 (AGENT.md §3): the Teacher agent lane, decided once here and pinned for the lesson (server/agent/flags.js);
+    // the realtime voice lane keeps the Director (its model speaks for itself)
+    const lane = laneFor(guardian);
+    state.ctx = { ...state.ctx, teacher: lane };
+    let opened = null;
+    if (lane === "agent") {
+      try {
+        const out = await agentTurn({ state, kit, event: eventOf({ kind: "start" }), lessonId, lane: mode, trace });
+        const floor = floorViolations(out.say, { content: floorContentOf(out.item ?? null) });
+        if (floor.length) throw new Error(`agent opening broke the floor: ${floor.join(",")}`);
+        const applied = applyAgentTurn(state, out, { kit, childText: null, lessonId });
+        r.move = applied.move; r.ui = applied.ui; r.moduleCommands = [];
+        opened = { reply: out.say, floor: [] };
+      } catch (e) {
+        console.warn(`[agent] opening fell back to the Director: ${String(e?.message ?? e).slice(0, 160)}`);
+        state.agent = { ...(state.agent ?? {}), fallbacks: (state.agent?.fallbacks ?? 0) + 1 };
+      }
+    }
+    opened ??= await textReply({ instructions, state, kit, childText: "", trace, ui: r.ui, module: state.module });
     teacherOpening = opened.reply;
     openingFloor = opened.floor ?? [];
     if (openingFloor.length) state.correction = openingFloor;

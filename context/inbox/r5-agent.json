@@ -1,0 +1,24 @@
+{
+ "nodes": [
+  {
+   "id": "r5a-ms-agent-lane-first",
+   "kind": "measurement",
+   "at": "2026-10-14",
+   "title": "The Teacher agent lane runs end to end (server/agent/**, TAXILA_TEACHER=agent or the TAXILA_TEACHER_AGENT_FOR cohort; the lane is pinned at lesson start on state.ctx.teacher). One structured-output call per turn on taxila-gpt6 (strict json_schema: intent, say, pose_item, board, picture, read, plan, end); the harness runs and checks the actions. Smoke: 4 battery personas x 8 turns (classes 1-4) on a local server, TEST Neon branch, prod routing: 0 agent fallbacks, 0 HTTP errors; rubric D 18/21, A 10/10, O 9/9, T 32/32, F 32/32, C 32/32, judge-flagged 0/32 (n is tiny; this is a smoke, not the gate). Single-call latency in the earlier probe: gpt6 3.8 s, grok-4.1-fast 1.9 s, gpt-6.1-sol timed out at 9 s; non-streamed, so the 1.5 s first-sound bar needs stream 3's streaming. Unit invariants: tests/r5-agent.test.mjs (9 tests, stubbed model)."
+  },
+  {
+   "id": "r5a-dc-agent-harness-invariants",
+   "kind": "decision",
+   "at": "2026-10-14",
+   "status": "proposed",
+   "title": "Agent lane invariants are code, not prompt: (1) scanSafety and the classifier run first; incident, distress, a safeguard or the Director's goodbye wrap keep the Director's move; the relational floor or the child's goodbye re-plans through the Director and drops the agent's move; (2) the floor filter (floorViolations) runs on her line, a violation reverts the turn to the Director; (3) grading is code: the VERIFIED GRADE (classify.js against the key) and the harness read are facts in the event; a posed item must be one the harness offered (verified, kind gradable, key withheld); (4) silence (empty text, asr 0) never brings a new item, board, picture or end; (5) the board is drawn by code from her lines (shared whiteboard contract, <=24-char lines, <=6) and reported back as ON SCREEN; a line pointing at the screen with nothing up, or at words not on it, is unpointed; (6) on a spoken lane type/write asks are rewritten to speak; (7) per-lesson USD and token budgets throw; any throw, timeout or bad output leaves the Director's move standing (agent.fallbacks counted). Reverse if the sim lab shows an invariant blocking a better lesson more often than it saves one.",
+   "reversal": "sim-lab transcripts show an invariant blocking good teaching more often than preventing a defect"
+  },
+  {
+   "id": "r5a-open-agent-tools-missing",
+   "kind": "open",
+   "at": "2026-10-14",
+   "title": "Agent tools not yet real: picture/game (Forge jobs and content_ready events: today the prompt says none can be made and she says so honestly), memory.remember/recall, lesson.end parent record (the Director's wrap writes it), streaming speech (stream 3). The model bake-off (gpt-6.1-sol / gpt-6-sol / grok-4.1-fast) waits on the sim lab."
+  }
+ ]
+}

@@ -52,7 +52,7 @@ export const FAMILIES = Object.freeze({
   lane: ["voice", "cascade", "text"],
   // round 5: the covert comprehension read of the child's turn (server/director/read.js)
   read: ["understood", "partly", "not"],
-  turn: ["late", "module_only", "help", "replanned", "speculation_hit", "speculation_miss", "fallback_reply", "lane_resume", "lane_resume_revoice"],
+  turn: ["late", "module_only", "help", "replanned", "speculation_hit", "speculation_miss", "fallback_reply", "lane_resume", "lane_resume_revoice", "agent", "agent_fallback"],
   // component_error.<seam>: a seam call threw (seam-safe.js fell back); director: the move sent differs from the kernel's
   component_error: ["safety", "director", "comprehension", "relational", "studio", "vibe", "conductor", "moment", "signals", "expressive", "purpose",
     "realtime", "voicesig"],
