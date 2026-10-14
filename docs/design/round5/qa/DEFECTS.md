@@ -45,6 +45,7 @@ Status: **FIXED** (on `claude/r5-qa`, verified by a repro script) · **OWNER** (
 | D23 | P1 | OWNER | main (safety review) | A disclosure that names a parent still gets "Talk to a grown-up at home" as the help screen's primary action |
 | D24 | P1 | OWNER | main (lesson runtime) | A reload or an accidental Back mid-lesson ends it; coming back starts a NEW lesson from the greeting |
 | D25 | P2 | OPEN | QA (UI) | Cold child home: the background grid alone, with no loading sign, until `/api/child/boot` answers (seen once, after a server restart) |
+| D26 | P2 | OPEN | QA (UI) | After "Delete my account" the receipt page throws an uncaught `401` (a read still in flight for the gone account) |
 | D19 | P2 | WONTFIX | QA (UI) | `GET /api/me` 401 logged as a console error on every signed-out landing and set-up load |
 
 ## Details
@@ -192,6 +193,10 @@ URL nor the home ("Just start") can bring the child back to where she was. Same 
 Suggest: `replaceState` to `/lesson/:lid` after the start, and let a pagehide within N seconds of a reload resume.
 
 ## Journeys that passed (pass 2)
+Data and privacy on a throwaway account (`tests/e2e/qa-account.mjs`): Download everything after the password again →
+`taxila-export-2026-10-14.json` (1,619 B: exportedAt, account, consents, children); Delete my account (password, 2 s hold) →
+the receipt ("Your account is deleted … Backups … gone by Thu, 22 Oct … Receipt code"); the child URL then says "Please ask a
+grown-up to sign in again".
 Homework chip tap and the voice homework question (session-first cohort); double-tap on Start → one `POST /api/lesson/start`
 (201) and one lesson; laptop: the PIN gate and every corner page, Hello cards, every child screen.
 
