@@ -33,7 +33,7 @@ import type {
 import {
   BACKSTOP_HOLD_PH, BACKSTOP_HOLD_STRETCH, CONTEXT, CUT_IN, FALLBACK, HOLD, HORIZON_ACOUSTIC_P, HORIZON_MS, OVERLAP, PAUSE_WAIT, RATE,
   REVOCABLE_MS, SAFETY, VERDICT, ACOUSTIC_FRESH_MS, FIRST_TEXT_P90, TURN_PACE, CLOSED_ELABORATION,
- D5_UNHEARD_MIN_VOICED_MS,
+ D5_UNHEARD_MIN_VOICED_MS, D5_CLOSED_NO_VALUE_BACKSTOP_MS,
 } from "./config.ts";
 import { exchangeOf, holdProfile, pauseClass, verdictAnchor, wordCount, YES_NO_MAX_WORDS } from "./engineRules.ts";
 import { overlapKind } from "./turnPolicy.ts";
@@ -446,6 +446,12 @@ export class Governor {
     if (ex === "free" || ex === "question_to_her" || ex === "chit_chat") return Math.max(PAUSE_WAIT[pauseClass(tick)], this.paceMs());
     const { p50, p90 } = holdProfile(tick);
     let base = CONTEXT[ex].backstopMs(p50, p90, tick.markers.values.length > 0);
+    // round 5 (D5): Voice Live has committed and transcribed the item (its own VAD ended it, the final is in): a closed
+    // answer with words but no readable value (the ear misheard "नौ" as "न") gains nothing from 1.5 s more silence. The
+    // hold stretch below (word search, filler, repair, a held floor) still applies, so a child mid-search keeps the floor.
+    if (ex === "closed_answer" && tick.transcript.source === "voicelive" && !tick.markers.values.length && tick.transcript.text.trim() && tick.transcript.unseenVoicedMs <= HORIZON_MS) {
+      base = Math.min(base, D5_CLOSED_NO_VALUE_BACKSTOP_MS);
+    }
     // round 4 (OVERLAP-independent, config CLOSED_ELABORATION): a closed answer that runs past a short answer ("मुझे लगता है
     // डब्बे। मैं चार कॉर्नर। …") is an elaboration: its silence backstop is at least the free exchange's word-aware class wait,
     // not the 700 ms a bare "62" gets (real transcriber, 1,000 ms mid-sentence pauses: 2 of 12 closed-context sentences were

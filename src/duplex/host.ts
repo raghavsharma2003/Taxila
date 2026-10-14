@@ -99,6 +99,12 @@ export interface HostOptions {
   source: TranscriptView["source"];
   /** The STT accepts client commits (MAI, D4): the micro-commit probe is available. */
   supportsCommit: boolean;
+  /**
+   * Round 5 (D5): subtract her known words from the child's transcript (default true). False when the ear already removed
+   * her echo acoustically (Voice Live's reference AEC): text subtraction then only deletes the child's own repeats of her
+   * words ("आठ corners" after her "कितने corners" became "At", an empty turn and a re-ask).
+   */
+  echoText?: boolean;
   emit: (c: HostCommand) => void;
   engine?: DuplexEngine;
   model?: FloorModel | null;
@@ -193,7 +199,7 @@ export class EngineHost {
     this.flags = { ...DEFAULT_FLAGS, ...o.session.flags };
     this.engine = o.engine ?? createEngine({ flags: this.flags, model: o.model ?? null, supportsProbe: o.supportsCommit });
     this.governor = new Governor({ flags: this.flags, fallback: this.engine instanceof RulesEngine ? null : new RulesEngine({ supportsProbe: o.supportsCommit }), mode: o.governorMode });
-    this.fanin = new TurnTranscript({ source: o.source, filter: (text, meta) => this.echo.subtract(text, meta.t, this.fanin.lag.p90, meta.fromMs !== undefined && meta.toMs !== undefined ? { fromMs: meta.fromMs, toMs: meta.toMs } : null, meta.times ?? null) });
+    this.fanin = new TurnTranscript({ source: o.source, filter: o.echoText === false ? (text) => ({ text, removed: 0 }) as ReturnType<EchoSubtractor["subtract"]> : (text, meta) => this.echo.subtract(text, meta.t, this.fanin.lag.p90, meta.fromMs !== undefined && meta.toMs !== undefined ? { fromMs: meta.fromMs, toMs: meta.toMs } : null, meta.times ?? null) });
     this.safety = new PartialSafety(o.scan ? { scan: o.scan } : {});
     this.pace = { sessions: 0, holdPauseMs: null, answerGapMs: null, speechRateSylPerS: null, fillerRatePerMin: null, source: "band_default", strain: false };
     this.engine.reset(o.session);

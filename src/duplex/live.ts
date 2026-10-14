@@ -205,7 +205,7 @@ export const D5_UNHEARD_AFTER_MS = 1000;
 export const D5_PREDUCK_MARGIN_DB = 6;
 export const D5_PREDUCK_MS = 40;
 /** Round 5: a pre-duck frame's pitch must be this far (semitones) from her own output's pitch on the same hop. */
-export const D5_PREDUCK_PITCH_ST = 2.5;
+export const D5_PREDUCK_PITCH_ST = 1.5;
 /** Round 5: the pre-duck goes straight to the hush level (−26 dB): her stop <= 500 ms (BRIEF.md). */
 export const D5_PREDUCK_LEVEL = 0.05;
 /** D5 pre-duck: Voice Live has not confirmed the burst this long after the duck → her gain comes back. */
@@ -384,6 +384,9 @@ export class DuplexLive {
   private halfGated = false;
   private readonly echoItems = new Set<string>();
   private openItem: string | null = null;
+  /** Round 5 half-duplex: when the gate last opened, and when the transcriber last committed its buffer (client clock). */
+  private halfOpenedAt = -Infinity;
+  private lastServerCommitAt = -Infinity;
   /** D5: the Voice Live item whose speech is open (its speech_stopped closes the replay). */
   private serverSpeechItem: string | null = null;
   /**
@@ -415,6 +418,8 @@ export class DuplexLive {
     this.host = new EngineHost({
       session: { lessonId: o.lessonId, band: o.band ?? "B3", startedAt: this.now(), flags: { shadow: this.mode === "shadow", semantic: !!o.semantic, trained: false, cutIn: false, audioBackchannel: false, lexicalBackchannel: false } },
       source: o.source ?? "live_transcribe",
+      // D5: the ear removed her echo acoustically; subtracting her words from the text only deletes the child's repeats
+      ...(o.vadGate === "server" ? { echoText: false } : {}),
       supportsCommit: o.supportsCommit ?? true,
       emit: o.wrapEmit ? o.wrapEmit(emit) : emit,
       ...(o.semantic ? { semantic: o.semantic } : {}),
@@ -474,6 +479,7 @@ export class DuplexLive {
       const gated = t < this.halfUntil;
       if (gated !== this.halfGated) {
         this.halfGated = gated;
+        if (!gated) this.halfOpenedAt = t;
         if (this.mode === "on") { try { this.o.port.micGate?.(gated); } catch { /* the link's own */ } }
         vt("d5.decision", { op: gated ? "half_gate" : "half_open", reason: gated ? "her_voice_audible" : "her_voice_ended_plus_tail", lane: "d4" });
       }
@@ -557,7 +563,9 @@ export class DuplexLive {
     // tracker on a band-limited, clipped phone echo often locks to a harmonic)
     if (herF0) this.herF0s.push([t, herF0]);
     while (this.herF0s.length && this.herF0s[0][0] < t - 200) this.herF0s.shift();
-    const near = (a: number, b: number): boolean => { const st = 12 * Math.log2(a / b); return [-24, -19, -12, 0, 12, 19, 24].some((k) => Math.abs(st - k) < D5_PREDUCK_PITCH_ST); };
+    // measured on the owner variant (bake set, echo-only frames: mic f0 vs her f0 within 200 ms): 4,448 frames at 0 st, ~30 at
+    // each of ±12, a few dozen spread over ±9..11; children's frames spread −22..+18 st. So her pitch and its octaves only.
+    const near = (a: number, b: number): boolean => { const st = 12 * Math.log2(a / b); return [-12, 0, 12].some((k) => Math.abs(st - k) < D5_PREDUCK_PITCH_ST); };
     const notHerPitch = !!f0 && !this.herF0s.some(([, h]) => near(f0, h));
     if (micDb >= echoDb + D5_PREDUCK_MARGIN_DB && (f0 === null || notHerPitch)) {
       this.preDuckRun += 20;
@@ -601,6 +609,7 @@ export class DuplexLive {
       if (e.type === "conversation.item.input_audio_transcription.completed" || e.type === "conversation.item.input_audio_transcription.failed") this.echoItems.delete(item);
       return true;
     }
+    if (e.type === "input_audio_buffer.committed") this.lastServerCommitAt = this.now();
     if ((e.type === "conversation.item.input_audio_transcription.completed" || e.type === "input_audio_buffer.committed") && this.openItem === item) this.openItem = null;
     return false;
   }
@@ -785,7 +794,11 @@ export class DuplexLive {
     if (this.mode === "shadow") return;
     if (c.to === "stt") {
       // round 5 half-duplex: commit only what the transcriber is actually holding (no input_audio_buffer_commit_empty)
-      if (this.o.halfDuplex && this.openItem === null) { this.stats.probesSkipped = (this.stats.probesSkipped ?? 0) + 1; return; }
+      // ...or what the device heard the child say since the gate opened that no commit has taken yet (a lone "haan" the
+      // server VAD never opened an item for: the transcriber still holds that audio, so this commit is never empty)
+      const pk = this.host.peek();
+      const heldAudio = pk.lastOffsetAt !== null && pk.firstOnsetAt !== null && pk.firstOnsetAt >= this.halfOpenedAt && pk.lastOffsetAt > this.lastServerCommitAt;
+      if (this.o.halfDuplex && this.openItem === null && !heldAudio) { this.stats.probesSkipped = (this.stats.probesSkipped ?? 0) + 1; return; }
       port.sttCommit();
       return;
     }

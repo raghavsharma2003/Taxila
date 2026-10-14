@@ -281,7 +281,8 @@ test("CascadeLink on D5: no WebRTC call; Voice Live's events reach the engine; t
     const ws = FakeWS.all[0];
     assert.match(ws.url, /^wss:\/\/taxila\.dev\/api\/duplex\/voicelive\?lessonId=L1$/);
     const texts = ws.sent.filter((d) => typeof d === "string").map((d) => JSON.parse(d));
-    assert.ok(texts.some((m) => m.type === "vad" && m.silenceMs === 500), `the D5 silence: ${JSON.stringify(texts)}`);
+    const { D5_SERVER_VAD_MS } = await import("../src/duplex/cascadeDuplex.ts");
+    assert.ok(texts.some((m) => m.type === "vad" && m.silenceMs === D5_SERVER_VAD_MS), `the D5 silence: ${JSON.stringify(texts)}`);
     assert.equal(link.duplex.live.o.vadGate, "server");
     assert.equal(link.duplex.live.o.source, "voicelive");
     ws.server({ type: "input_audio_buffer.speech_started", item_id: "c1", audio_start_ms: 100 });

@@ -60,13 +60,15 @@ async function runCascade(x) {
 
 async function one(id) {
   const meta = JSON.parse(fs.readFileSync(path.join(BAKE, `${id}.json`), "utf8"));
-  const x = readS16(path.join(BAKE, `${id}.${VAR}.s16`));
+  let x = readS16(path.join(BAKE, `${id}.${VAR}.s16`));
   const t0 = Date.now();
   if (ARM === "cascade") {
     const ev = await runCascade(x);
     return { id, arm: ARM, variant: VAR, events: ev, ms: Date.now() - t0 };
   }
   const { DuplexLive } = await import(ROOT + "src/duplex/live.ts");
+  // round 5: + 6 s of the room's own noise after the stream (as arms-d5.mjs): a patient engine must get to decide
+  if (HALF || ARM_NAME) { const tail = 6 * SR, y = new Float32Array(x.length + tail); y.set(x); const bed = x.subarray(Math.max(0, x.length - SR)); for (let i = x.length; i < y.length; i++) y[i] = bed[(i - x.length) % bed.length] ?? 0; x = y; }
   const herX = readS16(path.join(BAKE, `${id}.her.s16`));
   // her playback level per stream frame (the device knows what it played): -inf outside her line
   const nF = Math.floor(x.length / HOP), outDb = new Array(nF).fill(-120);
