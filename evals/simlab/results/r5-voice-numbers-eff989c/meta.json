@@ -1,0 +1,21 @@
+{
+ "runId": "r5-voice-numbers-eff989c",
+ "head": "3dd77090",
+ "date": "2026-10-14T22:23:55.248Z",
+ "arms": {
+  "base": "http://127.0.0.1:8791",
+  "a4num": "http://127.0.0.1:8804"
+ },
+ "lanes": [
+  "voice"
+ ],
+ "n": 32,
+ "turns": 14,
+ "models": {
+  "child": "DeepSeek-V4-Pro",
+  "childFallback": "taxila-mistral-m35",
+  "judge": "grok-4-20-reasoning",
+  "judge2": "taxila-kimi26"
+ },
+ "note": "VOICE lane re-run for spoken-Hindi number grading: claude/r4-conversation @eff989c0 (one spoken-number reader; बारह सौ = 1200; fused hundreds; working aloud graded on the last result), Director lane, vs base 9b73641 at the same time; same 32 cards and method as r5-voice-base-vs-combo (before: correct verdicts 77 text → 51 voice)."
+}
