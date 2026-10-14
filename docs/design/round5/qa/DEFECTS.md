@@ -46,6 +46,7 @@ Status: **FIXED** (on `claude/r5-qa`, verified by a repro script) · **OWNER** (
 | D24 | P1 | OWNER | main (lesson runtime) | A reload or an accidental Back mid-lesson ends it; coming back starts a NEW lesson from the greeting |
 | D25 | P2 | OPEN | QA (UI) | Cold child home: the background grid alone, with no loading sign, until `/api/child/boot` answers (seen once, after a server restart) |
 | D26 | P2 | FIXED | QA (UI) | After "Delete my account" the receipt page throws an uncaught `401` (a read still in flight for the gone account) |
+| D27 | P2 | FIXED | QA (UI) | A young child's Me screen offers "Type instead … You can always type", but Young lessons never type (tiles and Help only) |
 | D19 | P2 | WONTFIX | QA (UI) | `GET /api/me` 401 logged as a console error on every signed-out landing and set-up load |
 
 ## Details
@@ -190,6 +191,13 @@ index.html's early `/api/child/boot` read throws the bare status; `src/app/boot.
 half, and the half nobody took (the shell saw "signed out" first) surfaced as `err.promise {"message":"401"}` — on every
 child URL opened with a stale `tx_in` cookie (seen after Delete my account). Both halves are now marked handled; a caller
 that takes one still sees the rejection. Verified: same visit, `pageerror` [] (was ["401"]).
+
+### D27 · P2 · FIXED — "Type instead" for a child who can never type
+Class 4 (Young family), Me → "Type instead: Lessons start with talking. You can always type." With it on, the lesson has no
+mic and no keyboard: the dock is Hear again + Help and the tray "Hear it again / Show me choices / Show me how" (by design,
+§6.3.4: a text-only Young lesson answers by tiles, the pad and Help), so the promise to type is false. Fixed (`Me.tsx`,
+`copy/en.ts`): Young see "Tap instead · Lessons start with talking. You can always tap." / "Lessons start with tapping. Asha
+still talks."; Older keep "Type instead".
 
 ### D24 · P1 · OWNER (main / lesson runtime) — a reload is a new lesson
 Class 4, at her turn, reload `/c/:cid/lesson/new` (what a refresh or an Android tab discard does): `POST /api/lesson/start`
