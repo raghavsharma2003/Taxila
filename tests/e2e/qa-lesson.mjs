@@ -55,7 +55,9 @@ if (process.env.QA_OPEN) {
   await sleep(2000);
   if (await btn(page, "OK").count()) { for (const d of "2580") await btn(page, d).first().click(); await btn(page, "OK").first().click(); await sleep(1500); }
   await page.evaluate(() => { history.pushState({}, "", location.pathname + location.search); dispatchEvent(new PopStateEvent("popstate")); });
-  await page.getByRole("button", { name: /Open now for 1 hour/ }).click();
+  // release 14: with the day limits off there is nothing to open (the button is hidden)
+  const openNow = page.getByRole("button", { name: /Open now for 1 hour/ });
+  if (await openNow.count()) await openNow.click(); else console.log(ts(), "no Open-now button (day limits off)");
   await sleep(1500);
   console.log(ts(), "opened lessons for an hour");
 }

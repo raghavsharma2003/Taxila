@@ -54,6 +54,9 @@ export const countsAsDone = (state) => !state?.abandoned && !state?.stoppedEarly
   && (state?.ctx?.purpose ?? "lesson") === "lesson"
   && ((Array.isArray(state?.did) && state.did.length > 0) || Number(state?.minutes) >= DONE_MIN_MINUTES);
 
+/** The parent's lesson hours, daily cap and "done for today" gate lessons only when TAXILA_DAY_LIMITS=on (round 5: off). */
+export const dayLimitsOn = () => process.env.TAXILA_DAY_LIMITS === "on";
+
 /** Lesson length shown on the card (V2 §3.4: Young 10-20 min, Older 20-30), never more than what is left today. */
 export const lessonMinutes = (classLevel, capRemaining) => Math.max(5, Math.min(Number(classLevel) <= 4 ? 15 : 25, capRemaining ?? Infinity));
 
@@ -67,8 +70,17 @@ export const lessonMinutes = (classLevel, capRemaining) => Math.max(5, Math.min(
  *   openNow?: boolean, safetyHold?: boolean, homework?: boolean, testWindow?: boolean }} a
  * @returns {import("../../shared/contracts").ChildHomeState}
  */
-export function homeStateOf({ resumable, usedMin, capMin, doneToday, now, from, to, anyLesson, openNow = false, safetyHold = false, homework = false, testWindow = false }) {
+export function homeStateOf({ resumable, usedMin, capMin, doneToday, now, from, to, anyLesson, openNow = false, safetyHold = false, homework = false, testWindow = false, limits = dayLimitsOn() }) {
   if (safetyHold) return "safety_hold";
+  // round 5 (owner, 2026-10-14: "remove the time frame for the class ... I am not even able to test after the time"):
+  // with the day limits off (the default) a lesson is always available: no lesson hours, no daily cap, no "done for today".
+  // Only the safety hold above still closes the home. dc-r14-no-clock-gates; TAXILA_DAY_LIMITS=on restores the rules below.
+  if (!limits) {
+    if (resumable) return "resume";
+    if (homework) return "homework";
+    if (testWindow && anyLesson) return "test_window";
+    return anyLesson ? "start" : "first";
+  }
   // openNow: the parent's "Open now for 1 hour" (child_controls.open_until, W1-A) opens the HOURS only; the cap and
   // "done for today" still hold.
   // round 4 (journey audit #11, main session 2026-10-10): a child's FIRST lesson always opens, whatever the hours: the
@@ -172,7 +184,7 @@ export async function planFor(child, guardian, now = new Date()) {
   const last = doneRows[0];
   return {
     state, homeState: legacyHome(state),
-    plan: { openLesson: state === "resume" ? open.id : null, window: { from: controls.from, to: controls.to }, openUntil: controls.openUntil },
+    plan: { openLesson: state === "resume" ? open.id : null, window: { from: controls.from, to: controls.to }, openUntil: controls.openUntil, limits: dayLimitsOn() },
     topic: state === "resume" ? null : topic,
     resume: state === "resume" ? { lessonId: open.id, ask: open.ask ?? null, topicTitle: getTopic(open.topic_id)?.title ?? "" } : null,
     // "Next time" on today's card is the plan's own next topic (the ONE next-topic function), never the sequence's next

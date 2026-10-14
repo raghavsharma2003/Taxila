@@ -378,7 +378,8 @@ export interface ChildPlanResponse {
   state: ChildHomeState;
   /** Legacy shape for src/child/day.ts: start/first/resume → "default", done/capped → "done", resting → "resting". */
   homeState: "default" | "done" | "resting";
-  plan: { openLesson: string | null; window: { from: string; to: string } };
+  /** limits: false while the hours and the daily limit gate nothing (round 5 default; TAXILA_DAY_LIMITS=on restores them). */
+  plan: { openLesson: string | null; window: { from: string; to: string }; limits?: boolean };
   topic: { id: string; title: string; shortTitle: string | null; chapter: string; subject: string; minutes: number } | null;
   /** The open lesson to resume (< 6 h, at least one child turn): its pinned question for the thumbnail. */
   resume: { lessonId: string; ask: string | null; topicTitle: string } | null;

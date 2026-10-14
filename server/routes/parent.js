@@ -522,7 +522,10 @@ export function mergeControls(current, body) {
 async function getControls(req, res) {
   const { child } = await requireParentChild(req, query(req).get("childId"));
   const row = await one("select * from child_controls where child_id = $1", [child.id]);
-  send(res, 200, { controls: controlsOut(row, child) });
+  // dayLimits: whether the hours and the daily limit gate anything (round 5: off unless TAXILA_DAY_LIMITS=on), so the
+  // corner never promises a window that does not exist (imported late: child.js imports this file)
+  const { dayLimitsOn } = await import("./child.js");
+  send(res, 200, { controls: controlsOut(row, child), dayLimits: dayLimitsOn() });
 }
 
 /**
@@ -666,7 +669,7 @@ async function nextOf(child, guardian) {
     const { planFor } = await import("./child.js");
     const p = await planFor(child, guardian);
     const topic = p.resume ? { title: p.resume.topicTitle, shortTitle: null } : p.topic ? { title: p.topic.title, shortTitle: p.topic.shortTitle } : null;
-    return { state: p.state, topic, window: p.plan.window, minutes: p.topic?.minutes ?? null };
+    return { state: p.state, topic, window: p.plan.window, limits: p.plan.limits !== false, minutes: p.topic?.minutes ?? null };
   } catch (e) {
     console.warn(`[parent] next lesson withheld: ${e.message}`);
     return null;

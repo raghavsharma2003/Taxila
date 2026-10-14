@@ -118,7 +118,8 @@ function TryAtHome({ d, cid, onHow }: { d: NonNullable<Overview["tryAtHome"]>; c
 
 function NextLesson({ d, name, cid }: { d: NonNullable<Overview["next"]>; name: string; cid: string }) {
   const topic = d.topic ? d.topic.shortTitle || d.topic.title : null;
-  const hours = `Lesson hours ${fmtClock(d.window.from)} to ${fmtClock(d.window.to)}`;
+  // round 5: no class-time window unless the server's day limits are on
+  const hours = d.limits === false ? "Lessons open any time" : `Lesson hours ${fmtClock(d.window.from)} to ${fmtClock(d.window.to)}`;
   const line = d.state === "resume" ? `${name} has a lesson to continue${topic ? `: ${topic}` : ""}.`
     : d.state === "done" ? `Done for today.${topic ? ` Next: ${topic}, tomorrow.` : ""}`
       : d.state === "capped" ? `That's today's time used.${topic ? ` Next: ${topic}, tomorrow.` : ""}`
