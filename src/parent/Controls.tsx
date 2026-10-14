@@ -241,12 +241,15 @@ export default function Controls() {
                 options={limitOpts.sort((a, b) => a - b).map((m) => ({ value: m, label: `${m} min` }))} />
               <p className="pa-effect">At the limit {T} finishes at the next natural stop. {T} never shows {name} a countdown.</p>
             </div>
+            {data?.dayLimits === false && (
+              <p className="pa-effect" data-testid="limits-off">{`The daily limit and lesson hours are off for now: ${name} can start a lesson at any time. What you choose here is kept for when they come back.`}</p>
+            )}
             <div className="pa-control">
               <h3 className="pa-h3">Lesson hours</h3>
               <HoursFields start={c.hoursStart} end={c.hoursEnd} onChange={(s, e) => patch({ hoursStart: s, hoursEnd: e })} />
-              <p className="pa-effect">Lessons open from {fmtClock(c.hoursStart)} to {fmtClock(c.hoursEnd)}. Outside these hours the home says when they open.</p>
+              {data?.dayLimits !== false && <p className="pa-effect">Lessons open from {fmtClock(c.hoursStart)} to {fmtClock(c.hoursEnd)}. Outside these hours the home says when they open.</p>}
             </div>
-            <OpenNow childId={current.id} name={name} onRelock={relock} />
+            {data?.dayLimits !== false && <OpenNow childId={current.id} name={name} onRelock={relock} />}
           </GroupCard>
           <GroupCard id="voice" title={`How ${T} speaks`} {...props("voice")}>
             <div className="pa-control">

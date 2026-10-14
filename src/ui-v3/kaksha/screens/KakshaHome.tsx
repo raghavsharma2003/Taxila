@@ -13,7 +13,8 @@ import { HomeView, type HomeViewProps } from "../views.tsx";
 
 export function greetingFor(d = new Date()): HomeViewProps["greeting"] {
   const h = d.getHours();
-  return h < 12 ? "morning" : h >= 17 ? "evening" : "day";
+  // r5 QA: 00:20 said "Morning, Riya"; until 04:00 (the learning day's start) it is still the evening
+  return h < 4 || h >= 17 ? "evening" : h < 12 ? "morning" : "day";
 }
 
 export function KakshaHome() {

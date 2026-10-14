@@ -184,7 +184,7 @@ export async function planFor(child, guardian, now = new Date()) {
   const last = doneRows[0];
   return {
     state, homeState: legacyHome(state),
-    plan: { openLesson: state === "resume" ? open.id : null, window: { from: controls.from, to: controls.to }, openUntil: controls.openUntil },
+    plan: { openLesson: state === "resume" ? open.id : null, window: { from: controls.from, to: controls.to }, openUntil: controls.openUntil, limits: dayLimitsOn() },
     topic: state === "resume" ? null : topic,
     resume: state === "resume" ? { lessonId: open.id, ask: open.ask ?? null, topicTitle: getTopic(open.topic_id)?.title ?? "" } : null,
     // "Next time" on today's card is the plan's own next topic (the ONE next-topic function), never the sequence's next

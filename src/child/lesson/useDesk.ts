@@ -194,6 +194,8 @@ export function useDesk(runtime: LessonRuntime, bridge: UiBridge | null, ctx: De
   const [retryAt, setRetryAt] = useState<number | null>(null);
   const [audioSinceCommit, setAudioSinceCommit] = useState(false);
   const troubleShown = useRef<StripId | null>(null);
+  /** The dock's tap-to-talk state as of the last render (read by the link-event handler below). */
+  const tapToTalkNow = useRef(false);
 
   useEffect(() => {
     return runtime.events.on((e) => {
@@ -201,8 +203,12 @@ export function useDesk(runtime: LessonRuntime, bridge: UiBridge | null, ctx: De
         const f = factOfLinkError(e.code);
         if (f === "tts") setFacts((x) => ({ ...x, tts: true }));
         else if (f === "stt_down") setFacts((x) => ({ ...x, sttDown: true }));
-        else if (f === "ptt") setFacts((x) => ({ ...x, ptt: true }));
+        // r5 QA D15: the note announces a fall-back FROM hands-free; a dock already on tap-to-talk has nothing to announce
+        else if (f === "ptt") { if (!tapToTalkNow.current) setFacts((x) => ({ ...x, ptt: true })); }
         else if (f === "no_mic") setFacts((x) => ({ ...x, noMic: true }));
+      } else if (e.type === "child_speech_start") {
+        // the child has just used the talk button: the "tap the mic, then Done" note has done its job
+        setFacts((x) => (x.ptt ? { ...x, ptt: false } : x));
       } else if (e.type === "teacher_audio_start") {
         setFacts((x) => (x.tts ? { ...x, tts: false } : x));
         setAudioSinceCommit(true);
@@ -380,6 +386,7 @@ export function useDesk(runtime: LessonRuntime, bridge: UiBridge | null, ctx: De
   const openMic = ctx.openMic || !!bs?.duplexLive;
   const pttOn = bs?.cascade ? bs.pushToTalk : state.pushToTalk;
   const tapToTalk = spoken && (state.phase === "live" ? pttOn || !openMic : !openMic);
+  tapToTalkNow.current = tapToTalk;
   const paused = sheet !== null;
   const ptt = useTapToTalk({
     enabled: state.phase === "live" && tapToTalk && !paused,
