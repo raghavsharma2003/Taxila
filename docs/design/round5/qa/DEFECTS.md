@@ -37,7 +37,7 @@ Status: **FIXED** (on `claude/r5-qa`, verified by a repro script) · **OWNER** (
 | D14 | P2 | OWNER | conversation | Openers ask unrelated or odd things ("Tumne in words ko kahan dekha hai?", "Tum mujhe teacher bulaogi?", "favourite fruit") |
 | D15 | P2 | FIXED | QA (UI) | The "Tap the mic to talk, then tap Done." strip stays for the whole lesson, even after Talk worked and for a typing child |
 | D16 | P2 | FIXED | QA (UI) | Offline: the state word says "Your answer is saved" when the child had not answered |
-| D17 | P2 | OPEN | QA (UI) | Phone in landscape: the dock is below the fold (inner scroll) and the face is a sliver |
+| D17 | P2 | FIXED (assigned by main) | QA (UI) | Phone in landscape: the dock is below the fold (inner scroll) and the face is a sliver |
 | D18 | P2 | FIXED | QA (UI) | Signed-out `/who` sends a returning parent into new-account set-up, not Sign in |
 | D20 | P2 | OWNER | conversation | Homework intake: "homework ka question bhejo" to a voice-first class 4 child (2/2); the card still says "Today's plan: Grams and kilograms" |
 | D21 | P2 | FIXED | QA (UI) | At 00:20 the child home greets "Morning, Riya" |
@@ -160,6 +160,12 @@ bulaogi?", "Tum kaisi ho?", "Tumhara favourite fruit / subject / number kaunsa h
   answer; verified: offline 10 s at her turn keeps "Your turn" and the strip.
 - **D17** 876x393 landscape: `[data-testid=mic]` bottom 462 px > 393 px viewport; reachable only by an inner scroll; the
   teacher window shrinks to a sliver. **Shot:** `shots/lesson-phone-rot-rotated.png`.
+  **Fixed** (`deskLayout.ts` `solveLandscape`, main assigned it): a sideways phone (wider than tall, under 520 dp tall, at
+  least 560 wide, no keyboard up) gets the two-column Desk compacted: 48 top bar, the window over a 2-line caption on the
+  left, the card and the dock (and the tray in Work) on the right; the card yields first, then the tray (to 104 dp, 80 while
+  a trouble strip shows), never the dock. `tests/r5-qa-landscape.test.mjs`: both columns sum to the screen and the dock ends
+  inside it at 876x393, 800x360 and 740x360, both families, Face and Work. Live at 876x393: Talk at 259-323 px (older) and
+  246-334 px (young) of 393, no scroll. **Shot:** `shots/lesson-phone-landscape-fixed.png`.
 - **D18** Signed out, `/who` → `/start/class` (new account) rather than Sign in; a child screen correctly says "Please ask a
   grown-up to sign in again". **Fixed** (`Who.tsx`): a signed-out phone that remembers a learner goes to Sign in; a fresh
   phone still starts set-up. Verified both.
