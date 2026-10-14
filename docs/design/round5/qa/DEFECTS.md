@@ -48,6 +48,7 @@ Status: **FIXED** (on `claude/r5-qa`, verified by a repro script) · **OWNER** (
 | D26 | P2 | FIXED | QA (UI) | After "Delete my account" the receipt page throws an uncaught `401` (a read still in flight for the gone account) |
 | D27 | P2 | FIXED | QA (UI) | A young child's Me screen offers "Type instead … You can always type", but Young lessons never type (tiles and Help only) |
 | D28 | P2 | FIXED | QA (UI) | Parent "This week" says "Asha will say hello the first time Riya opens Taxila" after Hello and many short lessons |
+| D29 | P2 | OWNER | content | Picture ask: she says "dekho" and describes a balance that the board does not draw (it shows the flow chart) |
 | D19 | P2 | WONTFIX | QA (UI) | `GET /api/me` 401 logged as a console error on every signed-out landing and set-up load |
 
 ## Details
@@ -211,6 +212,9 @@ Suggest: `replaceState` to `/lesson/:lid` after the start, and let a pagehide wi
 D07 improved (no static board; a spoken "weight game"); **D08 not fixed** (she invents an apple: "Iski photo yahan nahi hai;
 ek seb gol, laal…", and the board still draws "एक" as a label); D09 pass ("Board saaf hai", no new board); D11 not reproduced
 (she parked the detour and the board matched her words). Sent to the content stream.
+**D08 re-test on d5c1c61 (n = 2): PASS** — no "एक" label, no invented fruit; she describes the lesson's own picture ("ek tarazu
+mein 1 kilogram ka packet, doosre mein 1000 gram ke chhote packets… Tum kya dekh rahi ho?"). New **D29 (P2, content)**: she says
+"dekho" and describes a balance while the board shows the "Change to grams → Compare weights → Find the heavier weight" flow.
 
 ## Journeys that passed (pass 3)
 `tests/e2e/qa-interact.mjs`: a past lesson's Listen, the lesson card ("A short visit: not counted as a lesson"), "See Riya's
