@@ -702,7 +702,10 @@ export async function lessonTurn(req, body) {
     catch (e) { console.warn(`[studio] lost-picture truth left out of the compile: ${String(e?.message ?? e).slice(0, 80)}`); }
   }
   const picSee = !late && r.move?.request === "visual" && next.lastMove?.shape ? r.move?.see : null;
-  if (picSee?.subject && (picSee.show === "picture" || picSee.off) && r.move.kind !== "safeguard" && !incident && picturesFor(guardian)) {
+  // (never a picture of what the lesson itself teaches: "half ka picture" in a fractions lesson is the board's, a generated
+  // image carries no curriculum; battery iter10 c4-half. kitWordsOf stems: say.js, the first 5 letters)
+  const kitTeaches = (subject) => { const ks = kitWordsOf(kit); return String(subject).split(/[^\p{L}\p{N}]+/u).some((w) => w.length >= 2 && ks.has(w.toLowerCase().normalize("NFKC").slice(0, 5))); };
+  if (picSee?.subject && (picSee.show === "picture" || picSee.off) && !(!picSee.off && kitTeaches(picSee.subject)) && r.move.kind !== "safeguard" && !incident && picturesFor(guardian)) {
     const sh = String(next.lastMove.shape);
     const was = drawAsked({ subject: picSee.subject, show: picSee.show });
     const shapeFor = (photo) => (sh.includes(was) ? sh.replace(was, drawAsked({ subject: picSee.subject, show: picSee.show, photo })) : [sh, pictureNote({ subject: picSee.subject, photo })].join("; "));
