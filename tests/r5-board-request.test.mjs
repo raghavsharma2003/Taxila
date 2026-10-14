@@ -150,3 +150,20 @@ test("QA D08 re-run: 'एक' / 'ek' is never a subject (the board drew 'एक'
   for (const said of ["इसकी एक तस्वीर दिखाओ।", "एक तस्वीर दिखाओ", "koi ek photo dikhao", "ek photo dikhao"]) assert.equal(freeSubjectOf(said), null, said);
   assert.equal(freeSubjectOf("aloo dikhao"), "aloo");
 });
+
+test("sim lab round 5: the thing named is what follows the verbs (never the child's clause), and no page comes back later in the lesson", async () => {
+  assert.equal(requestOf("mere ghar mein aata hai thoda maggi dikhao").see.subject, "maggi", "p50 drew 'aata hai thoda maggi' on the board");
+  assert.equal(requestOf("mujhe na hathi dekhna hai dikhao").see.subject, "hathi");
+  assert.equal(requestOf("ek hathi draw karo").see.subject, "hathi");
+  const { shownBefore, pageSig } = await import("../server/studio/request.js");
+  const seen = new Set([pageSig(TABLE)]);
+  assert.equal(shownBefore({ ...TABLE, ops: [...TABLE.ops].reverse() }, { seen }), true, "p02: turn 5's page again at turn 8");
+  assert.equal(shownBefore(ALOO, { seen }), false);
+  assert.equal(shownBefore(ALOO, { avoid: ALOO }), true);
+});
+
+test("QA P2: a picture asked with no thing named is never answered by the lesson's ready-made board (only by one drawn from her line)", () => {
+  assert.equal(answersRequest(TABLE, { kind: "picture" }), false, "'तस्वीर दिखाओ' over the flow chart");
+  assert.equal(answersRequest(ALOO, { kind: "picture" }, { drawnFor: true }), true);
+  assert.equal(answersRequest(TABLE, { kind: "draw" }), true, "'isko draw karo' still takes the board of what is on the table");
+});

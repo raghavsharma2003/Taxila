@@ -14,7 +14,7 @@
 //   the whiteboard gate (qa/whiteboard.js) checks it (fits the stage, labels anchored, numbers from her line or the kit,
 //   arithmetic true, words hers or the book's, timed to her voice). One repair round with the failing check ids when the
 //   time budget allows; a script that fails is never drawn (the explainer template rung or her voice instead).
-import { answersRequest, samePage, plannerRequest, subjectWords, textsOf, freeAsked, askedNumbers } from "./request.js";
+import { answersRequest, samePage, shownBefore, plannerRequest, subjectWords, textsOf, freeAsked, askedNumbers } from "./request.js";
 import { chat, DEPLOY, usdOf, normUsage } from "../azure.js";
 import { archetype, validateParams, stringKeys, buildParams } from "./archetypes/index.js";
 import { gateWhiteboard, numbersIn, CHARS_PER_SEC, segmentsOf, segHitsBox, innerBox, withheldValues, partitionCounts } from "./qa/whiteboard.js";
@@ -427,7 +427,7 @@ export function expandOps(ops) {
  */
 export const WB_MAX_TOKENS = 1100;
 export const REPAIR_MIN_MS = 3000;
-export async function planWhiteboard(ask, { kit, prev, redact = [], deployment = process.env.STUDIO_WB_DEPLOY || "taxila-gpt6-luna", effort = "none", budgetMs = 7000, repairs = 1, trace, avoid = null } = {}) {
+export async function planWhiteboard(ask, { kit, prev, redact = [], deployment = process.env.STUDIO_WB_DEPLOY || "taxila-gpt6-luna", effort = "none", budgetMs = 7000, repairs = 1, trace, avoid = null, seen = null } = {}) {
   const t0 = performance.now();
   const ms = () => Math.round(performance.now() - t0);
   // child-free (LIVE-STUDIO §5.4): the child's name (her vocative, and any name the caller lists) never reaches the model
@@ -484,7 +484,7 @@ export async function planWhiteboard(ask, { kit, prev, redact = [], deployment =
       // round 5 (stream 2): a board that ignores the child's request, or is the page already up, is repaired once (a shape
       // note, not a line), then refused
       const missed = gate.pass && request && !answersRequest(gate.script, request, { drawnFor: true }) ? (request.kind === "number_line" ? "it has no number line (numwork number_line) and a number line was asked" : `nothing on it names or shows ${asked?.label ?? "what was asked"}`) : null;
-      const again = gate.pass && avoid && samePage(gate.script, avoid);
+      const again = gate.pass && shownBefore(gate.script, { avoid, seen });
       if (gate.pass && !missed && !again) return { ok: true, script: { ...gate.script, facts: gate.facts }, gate, ms: ms(), attempts, usage, usd: usdNow() };
       if (missed || again) { feedback = missed ? `asked: ${missed}; draw what was asked` : "not_again: this is the page that was already up; draw something new"; continue; }
       // W9 is the one failure the model cannot read from the check id: say what to do (a shape note, not a line)

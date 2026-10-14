@@ -177,6 +177,7 @@ const SHOW_RE = new RegExp(`(?<![\\p{L}])${SHOW_VERB}(?![\\p{L}])`, "iu");
 // the words before the first show/draw word (or "ka photo"/"ka diagram"), at most 4: the thing asked for
 const ASK_HEAD = new RegExp(`^(.*?)\\s+(?:(?:ka|ki|ke|का|की|के)\\s+)?(?:(?:${PIC_WORD}|${DRAW_WORD})\\s+)?(?:(?:${DRAW_VERB})(?:\\s+(?:karke|kar\\s+ke|karo|kijiye|kar\\s+do))?\\s+)?(?:${SHOW_VERB}|${DRAW_VERB}|${PIC_WORD}|${DRAW_WORD})(?![\\p{L}])`, "iu");
 const ASK_STOP = /^(?:एक|इसकी|इसका|इसके|इसे|इसको|उसकी|उसका|उसके|यह|ये|वो|वह|मुझे|मेरे|कोई|ज़रा|जरा|थोड़ा|ज़रा|अब|फिर|और|kaise|kaisa|kya|kyun|kyon|kab|kahan|how|what|why|where|which|mujhe|muje|hume|humein|mere|please|plz|zara|jara|thoda|ek|aap|tum|didi|bhaiya|sir|ma'?am|teacher|ab|abhi|phir|fir|dobara|wapas|again|now|na|naa|yaar|bhi|bas|sirf|sab|sabhi|to|toh|so|ok|okay|achha|accha|haan|ji|draw|bana|banao|karke|kar|ke|se|me|mein|pe|par|on|in|of|the|a|an|me)$/iu;
+const VERBISH = /^(?:hai|hain|ho|hoon|hun|hu|tha|thi|the|hoga|hogi|aata|aati|aate|jata|jati|jate|raha|rahi|rahe|kar|karo|karna|karte|karta|karti|kiya|kiye|diya|diye|liya|lena|dena|chahiye|chahta|chahti|sakta|sakti|sakte|lagta|lagti|pata|mila|mili|dekha|dekhi|bolo|batao|suna|is|are|was|were|am|want|wanna|like|need|have|has|can|could|show|see|है|हैं|था|थी|हो|आता|आती|जाता|रहा|रही|करो|करना|चाहिए|चाहता|चाहती|सकता|सकती|देखा|बताओ)$/iu;
 const SHOW_NOT_SUBJECT = /^(?:answer|jawab|score|result|marks|next|agla|aage|phir|fir|dobara|wapas|again|sab|sabhi|all|more|aur|baaki|baki|naya|new|number|numbers|sawal|sawaal|question|questions|example|examples|udaharan|game|games|khel|video|videos|animation|step|steps|tarika|tareeka|way|method|hint|hints)$/iu;
 /** The numbers a child names for a number line ("1 se 9", "23 plus 14", "1/4", "minus 3", "0.5"). PURE. */
 const numbersSaid = (t) => {
@@ -208,6 +209,13 @@ export function visualAskOf(text) {
   if (qi >= 0) words = words.slice(0, qi);
   while (words.length && (ASK_STOP.test(words[0]) || GENERIC.test(words[0]))) words.shift();
   while (words.length && (ASK_STOP.test(words.at(-1)) || /^(?:ka|ki|ke|का|की|के|ko|को)$/iu.test(words.at(-1)))) words.pop();
+  // sim lab p50 ("… aata hai thoda maggi dikhao" drew the child's own words "aata hai thoda maggi" on the board): the thing
+  // is what comes after the last verb / helper word, never the clause before it
+  const isVerb = (w) => VERBISH.test(w) || /^(?:dekhna|dekhni|dekhne|janna|jaanna|padhna|samajhna|देखना|जानना)$/iu.test(w);
+  const vi = words.map(isVerb).lastIndexOf(true);
+  // "… hathi dekhna hai dikhao": nothing after the verbs, the thing is before the first one
+  if (vi >= 0) words = vi + 1 < words.length ? words.slice(vi + 1) : words.slice(0, Math.max(0, words.findIndex(isVerb)));
+  while (words.length && (ASK_STOP.test(words[0]) || GENERIC.test(words[0]))) words.shift();
   words = words.slice(-4);
   const subject0 = words.join(" ").trim();
   const subject = subject0 && !genericSubject(subject0) && !words.every((w) => GENERIC.test(w) || ASK_STOP.test(w)) && !(words.length === 1 && SHOW_NOT_SUBJECT.test(words[0])) && !/\d/.test(subject0) ? subject0.slice(0, 40) : null;

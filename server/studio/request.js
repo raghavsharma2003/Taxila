@@ -92,7 +92,10 @@ export function answersRequest(script, request, { drawnFor = false } = {}) {
   // a number line with the numbers the child named on it ("1/4", "-3", "0.5"): a line of other numbers answers another question
   if (request.kind === "number_line") return hasNumberLine(script) && numbersOn(script, request.said);
   const words = subjectWords(request.subject);
-  if (!words.length) return true;
+  // a PICTURE asked with no thing named ("तस्वीर दिखाओ"): the lesson's ready-made flow chart is not a picture of anything she
+  // describes (QA, round 5: "Dekho: ek tarazu…" over "Change to grams / Compare weights"); only the board drawn from her
+  // own line answers it
+  if (!words.length) return request.kind !== "picture" || drawnFor;
   const all = textsOf(script).map(norm).join(" | ");
   return words.some((w) => all.includes(w));
 }
@@ -221,4 +224,12 @@ export function pictureSubjectOf(text) {
   const m = String(text ?? "").match(/([\p{L}]{2,20})\s+(?:ka|ki|ke|की|का|के)\s+(?:picture|photo|image|tasveer|chitra|sketch|drawing|तस्वीर|फोटो|चित्र)|\b(?:picture|photo|image|sketch|drawing)\s+of\s+(?:an?\s+|the\s+)?([\p{L}]{2,20})/iu);
   const w = (m?.[1] ?? m?.[2] ?? "").trim();
   return w && !/^(?:is|us|iss|uss|yeh|ye|woh|wo|this|that|it|ek|a|an|the|aap|tum)$/i.test(w) ? w : null;
+}
+
+/** Was this page shown before in the lesson (`seen`: the lesson's page signatures), or is it the page up now (`avoid`)?
+ * Round 5 sim lab: 19 of 40 whole lessons showed a page again later (p02 re-showed turn 5's page at turns 8-9). PURE. */
+export function shownBefore(script, { avoid = null, seen = null } = {}) {
+  if (samePage(script, avoid)) return true;
+  const sig = pageSig(script);
+  return !!sig && !!seen?.has?.(sig);
 }

@@ -633,7 +633,11 @@ export async function lessonTurn(req, body) {
   // round 5 (QA D11: "negative numbers kya hote hain?" answered while the board still showed the fraction area model): a turn
   // that answers the child's OWN other question, a detour or another topic, and asks for no new board, takes the old board
   // down (it shows the idea the talk has left); the Director's module is its own and stays
-  const leftBoard = !late && !clearing && ["answer_q", "detour", "topic", "switch", "change_topic"].includes(String(r.move?.request ?? ""))
+  // ... and (sim lab p07: "6n+4" talked over the old pattern's stars and "30th term is 92") a turn that moves to another
+  // item or skill with no new board takes down the board drawn for the old one
+  const upFor = !late && !clearing ? seamSafe("studio.boardFor", () => studioSeam.boardFor?.(lesson.id) ?? null, null) : null;
+  const movedOn = !!upFor && ((r.move?.itemId && upFor.itemId && r.move.itemId !== upFor.itemId) || (r.move?.skillId && upFor.skillId && r.move.skillId !== upFor.skillId));
+  const leftBoard = !late && !clearing && (movedOn || ["answer_q", "detour", "topic", "switch", "change_topic"].includes(String(r.move?.request ?? "")))
     && !kernel.arb.accepted.some((p) => p.kind === "ask_whiteboard");
   if (leftBoard) seamSafe("studio.clearBoard", () => (typeof studioSeam.clearBoard === "function" && studioSeam.boardUp?.(lesson.id) ? studioSeam.clearBoard(lesson.id) : null), null);
   let studioSlot = late || clearing ? null
@@ -864,7 +868,11 @@ export async function lessonTurn(req, body) {
     const seeReq = lineSubject ? { ...(seeReq0 ?? { kind: "picture" }), subject: lineSubject } : seeReq0;
     // ... and a visual ask with no board coming at all (none accepted, none on screen for it: owner replay turn 10, "Screen par
     // 4, 7, 10 dekhiye" over an empty tray) never points either
-    const nothingComing = r.move?.request === "visual" && !studioSlot && !playAsk && !keepEngineNow && !(next.module && r.ui?.tray === "module");
+    const stageEmpty = !studioSlot && !playAsk && !keepEngineNow && !(next.module && r.ui?.tray === "module") && !seamSafe("studio.boardUp", () => studioSeam.boardUp?.(lesson.id), false);
+    // (sim lab p22: "Can you point to one-third on the screen?" with nothing up, any turn: the child said "I see only a mic
+    // button"; with chips up "screen par" may mean the chips, so only a BOARD claim is taken out then)
+    const nothingComing = (r.move?.request === "visual" && stageEmpty)
+      || (stageEmpty && !!teacherReply && (r.ui?.chips?.length ? /\b(?:board|whiteboard)\b|बोर्ड/iu.test(teacherReply) : true));
     if (((seeReq && (seeReq.subject || seeReq.kind === "number_line" || seeReq.kind === "picture")) || nothingComing) && teacherReply && pointsAtStage(teacherReply)
       && !(studioSlot?.artifact?.kind === "whiteboard" && answersRequest(studioSlot.artifact.script, seeReq ?? null))) {
       const unpointed = seamSafe("say.unpointRequest", () => unpointGently(teacherReply), null);

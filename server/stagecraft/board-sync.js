@@ -18,7 +18,7 @@
 //   4. no code board passes: wait for the line planner up to its budget (the pre-ship5 behaviour), then a late speculative
 //      board; then nothing (the caller's template-rung fallback, else voice).
 // Kill switch TAXILA_BOARD_SYNC=0: plan() is exactly deps.planWhiteboard (the old path). Never throws.
-import { answersRequest, samePage, freeAsked, subjectWords, numberLineBoard, askedNumbers } from "../studio/request.js";
+import { answersRequest, samePage, shownBefore, freeAsked, subjectWords, numberLineBoard, askedNumbers } from "../studio/request.js";
 import { gateWhiteboard, withheldValues, numbersIn, partitionCounts } from "../studio/qa/whiteboard.js";
 import { speechMsOf, redactLine, WB_BOARD, sectorsForCutCircles } from "../studio/plan.js";
 import { explainerFor } from "../forge/explainer/lesson.js";
@@ -298,7 +298,7 @@ const settle = (p) => p.then((v) => ({ done: true, v }), () => ({ done: true, v:
  */
 export async function plan(ask, o) {
   const t0 = Date.now();
-  const startLine = () => settle(Promise.resolve().then(() => o.planWhiteboard(ask, { kit: o.kit, prev: o.prev, redact: o.redact, budgetMs: o.budgetMs, avoid: o.avoid })));
+  const startLine = () => settle(Promise.resolve().then(() => o.planWhiteboard(ask, { kit: o.kit, prev: o.prev, redact: o.redact, budgetMs: o.budgetMs, avoid: o.avoid, seen: o.seen })));
   if (!boardSyncOn()) return (await startLine()).v ?? { ok: false, script: null, usd: 0, why: "planner_error" };
   const prior = ask?.mode === "continue" ? (o.prev?.ops ?? []).filter((x) => x.op !== "erase") : [];
   const ctx = gateCtxFor(ask, { kit: o.kit, redact: o.redact, prior });
@@ -307,7 +307,7 @@ export async function plan(ask, o) {
   // asked for and is not the page already on the board; the line plan is told the request (plan.js) and is held to the same
   // "never the same page again"
   const request = ask?.intent?.request ?? null;
-  const fits = (r) => !!r?.script && answersRequest(r.script, request) && !samePage(r.script, o.avoid);
+  const fits = (r) => !!r?.script && answersRequest(r.script, request) && !shownBefore(r.script, { avoid: o.avoid, seen: o.seen });
   const takeSpecFit = (a, c) => { const r = takeSpec(a, c); return r && fits(r) ? r : null; };
   // 0. round 2 content, board-first: the board chosen at kernel time (its facts were in her line's content), re-gated on her
   // real line with the full gate (the seam takes it synchronously first; this is the same rung for any other caller)
@@ -337,7 +337,7 @@ export async function plan(ask, o) {
     const waits = [lineP.then((x) => ({ line: x })), sleep(left).then(() => ({ timeout: true }))];
     if (specE && !specE.result) waits.push(specE.promise.then(() => ({ spec: true })));
     const r = await Promise.race(waits);
-    if (r.line) { line = r.line.v; if (line?.ok && line.script && !samePage(line.script, o.avoid)) return { ...line, source: "line", syncMs: Date.now() - t0, specState: specState(ask) }; }
+    if (r.line) { line = r.line.v; if (line?.ok && line.script && !shownBefore(line.script, { avoid: o.avoid, seen: o.seen })) return { ...line, source: "line", syncMs: Date.now() - t0, specState: specState(ask) }; }
     if (r.spec || r.line) { const sp = takeSpecFit(ask, ctx); if (sp) { lineSpend(lineP, o); return tag(sp, "spec", { usd: sp.usd + (Number(line?.usd) || 0) }); } }
     if (r.timeout) break;
     if (r.line && (!specE || specE.result)) break;      // the line failed and nothing else is coming before the deadline
@@ -352,7 +352,7 @@ export async function plan(ask, o) {
   if (tpl) { if (!line) lineSpend(lineP, o); return tag(tpl, "template", { usd: Number(line?.usd) || 0, specState: specState(ask) }); }
   // 4. nothing on time: the line planner's own result whenever it lands (pre-ship5 behaviour), then a late spec board
   const fin = line ?? (await lineP).v;
-  if (fin?.ok && fin.script && !samePage(fin.script, o.avoid)) return { ...fin, source: "line", syncMs: Date.now() - t0, specState: specState(ask) };
+  if (fin?.ok && fin.script && !shownBefore(fin.script, { avoid: o.avoid, seen: o.seen })) return { ...fin, source: "line", syncMs: Date.now() - t0, specState: specState(ask) };
   if (specE && !specE.result) await Promise.race([specE.promise, sleep(Math.max(0, (o.budgetMs ?? 7000) - (Date.now() - t0)))]);
   const spec4 = takeSpecFit(ask, ctx);
   if (spec4) return tag(spec4, "spec", { usd: spec4.usd + (Number(fin?.usd) || 0) });
