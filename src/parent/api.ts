@@ -30,7 +30,7 @@ export interface Overview {
     firstTopic: TopicRef | null; profileKept: boolean };
   tryAtHome: { text: string; claimId: string | null; skillId?: string | null; generic?: boolean; cadence: "weekly"; period: string; pictures: string[] } | null;
   next: { state: "start" | "first" | "resume" | "done" | "capped" | "resting"; topic: { title: string; shortTitle: string | null } | null;
-    window: { from: string; to: string }; minutes: number | null } | null;
+    window: { from: string; to: string }; limits?: boolean; minutes: number | null } | null;
   alert: { at: string | null } | null;
   held: boolean;
   week: { lessons: number; minutes: number };
@@ -133,7 +133,7 @@ export const parentApi = {
   lessons: (childId: string) => getJson<{ lessons: LessonLine[] }>(`/api/parent/lessons?${qs({ childId })}`),
   lesson: (childId: string, lessonId: string) => getJson<LessonCardOut>(`/api/parent/lesson?${qs({ childId, lessonId })}`),
   syllabus: (childId: string) => getJson<SyllabusOut>(`/api/parent/syllabus?${qs({ childId })}`),
-  controls: (childId: string) => getJson<{ controls: ControlsT }>(`/api/parent/controls?${qs({ childId })}`),
+  controls: (childId: string) => getJson<{ controls: ControlsT; dayLimits?: boolean }>(`/api/parent/controls?${qs({ childId })}`),
   setControls: (childId: string, c: Partial<ControlsT>) => postJson<{ controls: ControlsT }>("/api/parent/controls", { childId, ...c }),
   madeFor: (childId: string) => getJson<{ items: import("../../shared/contracts.ts").MadeForItem[] }>(`/api/parent/made-for?${qs({ childId })}`),
   homeTask: (childId: string, at: { period: string } | { lessonId: string }, done: boolean) => postJson("/api/parent/hometask", { childId, ...at, done }),

@@ -2,7 +2,9 @@
 // face, her name with "AI teacher", one Start. No topic, no plan card, no tiles. The plan's server state decides the
 // CTA. The safety hold, offline and signed-out states render today's Home unchanged, so their copy, the help sheet
 // and the 1098 / 14416 floor stay exactly as integrated.
+import { useEffect } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
+import { preloadLessonRoute } from "../../../child/preload.ts";
 import { useChild } from "../../../child/ChildShell.tsx";
 import { usePlan } from "../../../child/plan.ts";
 import { artTierD } from "../../../child/art.tsx";
@@ -13,7 +15,8 @@ import { HomeView, type HomeViewProps } from "../views.tsx";
 
 export function greetingFor(d = new Date()): HomeViewProps["greeting"] {
   const h = d.getHours();
-  return h < 12 ? "morning" : h >= 17 ? "evening" : "day";
+  // r5 QA: 00:20 said "Morning, Riya"; until 04:00 (the learning day's start) it is still the evening
+  return h < 4 || h >= 17 ? "evening" : h < 12 ? "morning" : "day";
 }
 
 export function KakshaHome() {
@@ -21,6 +24,7 @@ export function KakshaHome() {
   const { plan } = usePlan(cid);
   const nav = useNavigate();
   const rec = useTeacher(child.teacher_id, band);
+  useEffect(() => preloadLessonRoute(), []); // r5-latency: the lesson's code loads while the home is idle
   if (!prefs.hello && !child.avatar) return <Navigate to={`/c/${cid}/hello`} replace />;
   if (plan.state === "safety_hold" || plan.state === "offline" || plan.signedOut) return <ClassicHome />;
   const face = artTierD() ? { form: "plate" as const, tier: "D" as const } : faceFormOf(prefs.face);

@@ -206,6 +206,54 @@ export function effortFor(deployment, effort) {
 }
 
 export async function chat(deployment, messages, opts = {}) {
+  const hedgeMs = Number(opts.hedgeMs) || 0;
+  if (!(hedgeMs > 0)) return chatOnce(deployment, messages, opts);
+  return hedged((signal) => chatOnce(deployment, messages, { ...opts, hedgeMs: 0, retries: 0, signal: linkSignals(opts.signal, signal) }), hedgeMs);
+}
+
+/** One AbortSignal that aborts when either does (the caller's, the hedge's). */
+function linkSignals(a, b) {
+  if (!a) return b;
+  const c = new AbortController();
+  const stop = () => c.abort();
+  if (a.aborted || b.aborted) c.abort();
+  a.addEventListener("abort", stop, { once: true }); b.addEventListener("abort", stop, { once: true });
+  return c.signal;
+}
+
+/**
+ * r5-latency: a HEDGED request (the tail-at-scale pattern). The call starts; if it has not answered after `ms`, an
+ * identical second call starts; the first usable answer wins and the other is aborted. A failure before the hedge starts
+ * it at once (the hedge is the retry: two attempts at most, as `retries: 1` was). A content-filter block is a signal, not
+ * an outage: it rejects at once (the caller's safeguarding path), never re-sent. Measured on the reply lane (taxila-fast,
+ * n = 86 turn calls, 2026-10-14): p50 1379 / p95 1907 / max 2476 ms; one opening call hung to its 6 s timeout and paid a
+ * retry (7.9 s start). Exported for tests.
+ * @template T @param {(signal: AbortSignal, i: number) => Promise<T>} run @param {number} ms @returns {Promise<T>}
+ */
+export function hedged(run, ms) {
+  return new Promise((resolve, reject) => {
+    const ctls = [];
+    let settled = false, pending = 0, launched = 0, firstErr = null, timer = null;
+    const finish = (fn, v, keep) => { settled = true; clearTimeout(timer); for (const c of ctls) if (c !== keep) c.abort(); fn(v); };
+    const launch = () => {
+      if (settled || launched >= 2) return;
+      const c = new AbortController(); ctls.push(c);
+      const i = launched++; pending++;
+      Promise.resolve().then(() => run(c.signal, i)).then((v) => { pending--; if (!settled) finish(resolve, v, c); }, (e) => {
+        pending--;
+        if (settled) return;
+        firstErr ??= e;
+        if (e?.code === CONTENT_FILTER) return finish(reject, e, null);
+        if (launched < 2) { clearTimeout(timer); return launch(); }
+        if (pending === 0) finish(reject, firstErr, null);
+      });
+    };
+    launch();
+    timer = setTimeout(launch, ms);
+  });
+}
+
+async function chatOnce(deployment, messages, opts = {}) {
   const reasoning = isReasoningFamily(deployment);
   const body = { model: deployment, messages, [reasoning ? "max_completion_tokens" : "max_tokens"]: opts.maxTokens ?? 400 };
   const effort = effortFor(deployment, opts.effort);

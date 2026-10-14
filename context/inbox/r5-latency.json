@@ -1,0 +1,120 @@
+{
+ "nodes": [
+  {
+   "id": "ms-r5-lat-first-start-loop-block-2026-10-14",
+   "kind": "measurement",
+   "title": "The first lesson start of a server process: the handler called res.end() at 2.4 s, but the bytes left at 4.05 s (in-process server, US container, Neon TEST, n = 3 fresh processes). A CPU profile names it: Studio's lesson-start prefetch built the stagecraft admissibility table (server/stagecraft/lesson.js productionCatalog: every catalogue record zod-validated and scanned, synchronously) and held the event loop for 1.3-1.6 s right after the response was written. Later starts in the same process: 5-20 ms outside the handler. Every first start after a deploy or scale-up paid it. Fix: server/boot-warm.js warmSync() builds it before the port opens (1.5-1.7 s at boot); the first start went from 4,218 to 2,652 ms (start through the first TTS byte, n = 1 each, same process shape).",
+   "at": "2026-10-14"
+  },
+  {
+   "id": "ms-r5-lat-map-kit-block-2026-10-14",
+   "kind": "measurement",
+   "title": "The home's first GET /api/child/map in a process normalised its class's kits synchronously (content/kits.js normalizeKit -> director/items.js revealsAnswer per item, ~3.4 ms per topic): 0.93 s on the event loop in a server CPU profile, issued by the client right beside the lesson start, which waited behind it (the start's plan read went from ~30 to 820 ms on that run). Fix: boot-warm warmKits() normalises all 830 topics after listen, one topic per event-loop turn (7.3 s in the background, +45 MB heap); a later kit read costs 0.04 ms.",
+   "at": "2026-10-14"
+  },
+  {
+   "id": "ms-r5-lat-start-stages-2026-10-14",
+   "kind": "measurement",
+   "title": "Lesson start stages on the server (evals/latency/start-profile.mjs, in-process, warm, prod routing, real Azure, US container -> eastus2 + Neon TEST, fresh child per start, n = 9 across runs): auth ~75 ms, the child reads ~50-150 ms, topic ~80 ms, the live / weave / bond reads ~150 ms, brief ~50 ms, the OPENING reply (taxila-fast) 1.2-1.6 s, the transaction ~55 ms; start p50 ~1.9-2.0 s, then the opening's first TTS byte ~0.3 s. The DB reads ran in three serial waves before the model call; now two (every read keyed only by the child starts right after auth).",
+   "at": "2026-10-14"
+  },
+  {
+   "id": "ms-r5-lat-note-race-2026-10-14",
+   "kind": "measurement",
+   "title": "The understanding note (conversation/understand.js) on the turn hot path. Bake-off rows re-scored (2026-10-04, n = 355, US -> eastus2): taxila-gpt6 is 93% uncapped but p50/p90 1810/2174 ms, and under the turn's 2.4 s cap 317/355 (89.3%); first usable note of grok-4-1-fast-nr | taxila-fast 313/355 (88.2%) at p50/p90 860/1188 ms; grok | luna 89.3% at 861/1256 (luna is reserved for the whiteboard). Live A/B (evals/relational-human/first-sound.mjs --prefetch --ack, prod routing, interleaved, n = 30 turns per arm): note wait p50/p90 716/1160 -> 176/489 ms; turns with no note (gpt6 timed out) 3 -> 0; server turn p50/p90 2241/4029 -> 2183/3445 ms; child stops -> first sound p50 4242 -> 4178 ms (delta -64, 90% CI [-563, +512]: the prefetch already overlapped most of the note).",
+   "at": "2026-10-14"
+  },
+  {
+   "id": "ms-r5-lat-phone-start-face-2026-10-14",
+   "kind": "measurement",
+   "title": "Tap Start -> her first sound on a phone profile (evals/latency/start-phone.mjs: packaged production build, prod routing, Neon TEST, real Azure, Playwright Chromium 393x876 touch DPR 2.75, CPU x4, 60 ms RTT; US container; headless = SwiftShader WebGL). With the puppet face (default): 3.9-5.7 s warm (n = 7); the start POST left 0.9-1.4 s after the tap and the page saw the response 1-3 s after its headers arrived (CDP: queueing 2-17 ms, server time = the server's own respond mark), because the main thread was 100% busy (CPU profile, mostly native '(program)' time: the face's WebGL frames in software). With ?puppet=0: 2.19 / 2.63 / 2.70 s (n = 3), POST at +0.2-0.3 s. Not a phone GPU; consistent with the owner's phone (studio/viewport 2.2-2.8 s on the client vs 13 ms on the server).",
+   "at": "2026-10-14"
+  },
+  {
+   "id": "dec-r5-lat-boot-warm",
+   "kind": "decision",
+   "title": "A replica does its one-time builds at boot (server/boot-warm.js): the stagecraft table before the port opens; the DB pool, the test-clock table, the chat endpoint's TLS and every teaching kit (sliced, one topic per event-loop turn) right after. No child's first lesson start pays a one-time build. Reverse if: boot time blocks a revision's readiness probe, or the kit warm's memory (+45 MB) matters on a smaller replica (then warm only the classes in use).",
+   "at": "2026-10-14"
+  },
+  {
+   "id": "dec-r5-lat-note-race",
+   "kind": "decision",
+   "title": "The understanding note races grok-4-1-fast-non-reasoning and taxila-fast (first usable note wins; TAXILA_UNDERSTAND_DEPLOY, a comma list; one name = no race). taxila-gpt6 timed out on the hot path and was no more accurate under the turn's cap. Reverse if: a note bake-off on the real cohort shows the race below taxila-gpt6-at-cap by more than 3 points, or the doubled note calls 429 a hot lane.",
+   "at": "2026-10-14"
+  },
+  {
+   "id": "dec-r5-lat-reply-hedge",
+   "kind": "decision",
+   "title": "The reply lane is a hedged request (server/azure.js hedged; TAXILA_REPLY_HEDGE_MS, default 2200 ms ~ taxila-fast p95, 0 = off): a reply still out at the hedge point gets an identical twin, the first answer wins, the other is aborted; a failure before it starts the twin at once (two attempts at most, as before); a content-filter block is never re-sent. Seen: an opening call hung to its 6 s timeout and paid a retry (start 7.9 s). Reverse if: the twin rate exceeds 10% of reply calls or a 429 on taxila-fast is traced to twins.",
+   "at": "2026-10-14"
+  },
+  {
+   "id": "ms-r5-lat-continuer-ab-2026-10-14",
+   "kind": "measurement",
+   "title": "The non-verbal continuer (owner cohort), evals/relational-human/first-sound.mjs --prefetch --ack [--continuer], prod routing, real Azure, US container, synthetic child, interleaved 2 rounds x 15 turns per arm: child stops -> her first sound p50/p90 4165/5567 (ack only, n = 27) vs 2938/5712 ms (ack + continuer, n = 30); delta p50 -1227 ms, 90% CI [-1651, -622]. Acks played 2/27 (echo) vs 14/30 (13 continuers: हम्म 6, अच्छा 5, ओके 2; one echo); 23 refusals were 'consecutive' (every other turn at most, by design). The continuer sounded at p50 2468 ms after the child stopped: the prefetch's stable partial at 1166 ms (US STT deltas) + classify (its distress read) and the 750 ms floor ~1.0 s. Not yet judged for naturalness (sim-lab voice rubric line pending).",
+   "at": "2026-10-14"
+  },
+  {
+   "id": "ms-r5-lat-adpcm-slow3g-2026-10-14",
+   "kind": "measurement",
+   "title": "TTS on Chrome Slow 3G (400 ms RTT, 400 kbit/s) + CPU x4, evals/latency/start-phone.mjs (packaged build, prod routing, TEST, ?puppet=0), the opening line, n = 5 per arm interleaved: PCM 462-544 KB on the wire, full transfer 20.0-22.8 s; IMA ADPCM 128-144 KB, 8.3-8.9 s (about real time for the line); tap -> first sound p50 4521 vs 4027 ms. Synthetic tone SNR 36 dB at 4:1. Chrome reports navigator.connection.effectiveType '3g' under Slow 3G emulation, so the device's automatic choice switches ADPCM on there.",
+   "at": "2026-10-14"
+  },
+  {
+   "id": "ms-r5-lat-agent-models-2026-10-14",
+   "kind": "measurement",
+   "title": "Agent-loop Teacher candidates, one streamed call with a compact lesson state, 7 tool schemas, 4 recent turns and the child's words (evals/latency/agent-models.mjs), n = 30 each interleaved, US container: first speakable clause p50/p90 gpt-6-sol (taxila-gpt6, effort none, chat) 1475/2416 ms; taxila-fast 1726/2552; gpt-6-astra (responses API, effort low) 2119/3129; gpt-6.1-sol (responses API, effort low) 3294/9461, whole call p50 6474; grok-4.1-fast spoke in only 9/30 calls (tool calls only). gpt-6.1-sol and gpt-6-astra reject function tools with reasoning on /chat/completions (400): they need /v1/responses.",
+   "at": "2026-10-14"
+  },
+  {
+   "id": "ms-r5-lat-parent-overview-cold-2026-10-14",
+   "kind": "measurement",
+   "title": "QA D22 (GET /api/parent/overview 2.4 s): in-process, US -> Neon TEST, the FIRST overview of a process 1431-1558 ms, later ones 414-488 ms (DB round trips). A CPU profile names the cold part: the parent report's language gate (reports/lexicon.js bannedHits): V8 compiles each Unicode-class regex on its first test (~0.7 s). Compiled at boot now: first overview 634 ms. GET /api/parent/syllabus 300 ms once kits are warm.",
+   "at": "2026-10-14"
+  },
+  {
+   "id": "dec-r5-lat-continuer",
+   "kind": "decision",
+   "title": "Main's decision (2026-10-14): a non-verbal continuer (हम्म / अच्छा / ओके; Hmm / Okay / I see) may be her first sound on a spoken turn with no echo, for the owner cohort only (TAXILA_ACK_CONTINUER_FOR) and only when the device asks (off on D5 until 4B's gate covers it). Decided after the turn's classify (its distress read) on the same words; never on a safeguard, a stop or goodbye, a typed or tapped answer; never two acks running, never the same continuer twice; no content words; held to >= 900 ms after the child stopped and dropped when her reply is first. Reverse if: the sim-lab voice rubric scores it robotic, or 'human' drops with it on.",
+   "at": "2026-10-14"
+  },
+  {
+   "id": "dec-r5-lat-adpcm",
+   "kind": "decision",
+   "title": "TTS frames type 5 = IMA ADPCM (4:1), negotiated by Accept `codec=adpcm`, asked for only on a slow link (effectiveType slow-2g / 2g / 3g, or Save-Data; ?tts=adpcm|pcm|auto per device); the client decodes it in the frame parser, so everything after it sees PCM. PCM stays the default (ADPCM is lossy). Reverse if: a listening check finds ADPCM speech unacceptable even on slow links, or an Opus encoder becomes available without a new dependency.",
+   "at": "2026-10-14"
+  }
+ ],
+ "edges": [
+  {
+   "src": "dec-r5-lat-boot-warm",
+   "rel": "measured_by",
+   "dst": "ms-r5-lat-first-start-loop-block-2026-10-14"
+  },
+  {
+   "src": "dec-r5-lat-boot-warm",
+   "rel": "measured_by",
+   "dst": "ms-r5-lat-map-kit-block-2026-10-14"
+  },
+  {
+   "src": "dec-r5-lat-note-race",
+   "rel": "measured_by",
+   "dst": "ms-r5-lat-note-race-2026-10-14"
+  },
+  {
+   "src": "dec-r5-lat-continuer",
+   "rel": "measured_by",
+   "dst": "ms-r5-lat-continuer-ab-2026-10-14"
+  },
+  {
+   "src": "dec-r5-lat-adpcm",
+   "rel": "measured_by",
+   "dst": "ms-r5-lat-adpcm-slow3g-2026-10-14"
+  },
+  {
+   "src": "dec-r5-lat-boot-warm",
+   "rel": "measured_by",
+   "dst": "ms-r5-lat-parent-overview-cold-2026-10-14"
+  }
+ ]
+}

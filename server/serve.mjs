@@ -5,6 +5,7 @@ import { createReadStream, existsSync, readFileSync, readdirSync, statSync } fro
 import { brotliCompress, brotliCompressSync, gzipSync, constants as Z } from "zlib";
 import { extname, join, normalize, resolve } from "path";
 import { handle } from "./index.js";
+import { warmSync, warmAsync } from "./boot-warm.js";
 
 // TAXILA_DIST serves another build (the production e2e builds with dev routes into a temp dir).
 const ROOT = process.env.TAXILA_DIST ? resolve(process.env.TAXILA_DIST) + "/" : new URL("../dist/", import.meta.url).pathname;
@@ -121,6 +122,11 @@ function sendFile(res, file, headers, req) {
   createReadStream(file).pipe(res);
 }
 
+// r5-latency: the one-time synchronous builds (the stagecraft table, ~1.6 s) run BEFORE the port opens, so the replica
+// takes no traffic until they are done and no child's first lesson start waits behind them (server/boot-warm.js)
+const warmed = await warmSync();
+if (Object.keys(warmed).length) console.log(`[serve] boot warm ${JSON.stringify(warmed)}`);
+
 const server = http.createServer((req, res) => {
   const path = decodeURIComponent((req.url || "/").split("?")[0]);
   if (path.startsWith("/api/")) return handle(req, res);
@@ -150,5 +156,6 @@ server.on("upgrade", (req, socket, head) => {
 });
 server.listen(PORT, () => {
   console.log(`taxila on :${PORT}`);
+  void warmAsync().then((w) => Object.keys(w).length && console.log(`[serve] warm connections ${JSON.stringify(w)}`));
   if (process.env.TAXILA_PREWARM_BR !== "0") setTimeout(() => void prewarmBrotli().then((n) => n && console.log(`[serve] brotli q11 ready for ${n} files`)), 50);
 });

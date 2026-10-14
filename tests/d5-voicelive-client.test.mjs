@@ -290,6 +290,9 @@ test("CascadeLink on D5: no WebRTC call; Voice Live's events reach the engine; t
     assert.ok(events.some((e) => e.type === "child_partial" && e.text === "बारह"), "the caption shows");
     link.duplex.live.o.port.sttCommit();
     assert.equal(ws.sent.at(-1), '{"type":"commit"}');
+    // round 5: no continuer on D5 until its gate covers it
+    assert.ok(link.ack, "the ack client is on");
+    assert.equal(link.ack.o.continuer(), false, "no continuer on D5");
   } finally { link.close(); env.restore(); }
 });
 
@@ -300,5 +303,6 @@ test("CascadeLink on D5: a refused stream falls back to the D4 call for the less
     assert.equal(env.pcs.length, 1, "the WebRTC call is up instead");
     assert.equal(states.at(-1)?.live, true);
     assert.equal(link.duplex.live.o.vadGate, undefined, "D4 engine options");
+    assert.equal(link.ack?.o.continuer(), true, "the D4 fallback keeps the continuer (server cohort decides)");
   } finally { link.close(); env.restore(); FakeWS.behaviour = FakeWS.up; }
 });

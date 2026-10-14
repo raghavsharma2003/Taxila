@@ -279,6 +279,11 @@ export interface TurnResponse {
    * client raises the Help sheet (runtime.ts flushOthers → LessonState.lateSafeguard) though the lesson stays closed.
    */
   late?: boolean;
+  /**
+   * round 5 (QA D23): on a safeguard move, the Help sheet's first action. "helpline": Childline 1098 leads (the safeguard is
+   * about abuse, or the child's words name home or someone at home); "grownup": a grown-up the child trusts leads.
+   */
+  helpLead?: "helpline" | "grownup";
   /** W2 seam (W2-E/W2-H): what Studio does on this turn (reveal / highlight / retire / setParam). Absent = nothing. */
   studio?: TurnStudio;
   /** W2 seam (W2-E): the turn's Moment for the voice layer and the face (TEACHER-BRAIN TB6). Absent until BR2. */
@@ -378,7 +383,8 @@ export interface ChildPlanResponse {
   state: ChildHomeState;
   /** Legacy shape for src/child/day.ts: start/first/resume → "default", done/capped → "done", resting → "resting". */
   homeState: "default" | "done" | "resting";
-  plan: { openLesson: string | null; window: { from: string; to: string } };
+  /** limits: false while the hours and the daily limit gate nothing (round 5 default; TAXILA_DAY_LIMITS=on restores them). */
+  plan: { openLesson: string | null; window: { from: string; to: string }; limits?: boolean };
   topic: { id: string; title: string; shortTitle: string | null; chapter: string; subject: string; minutes: number } | null;
   /** The open lesson to resume (< 6 h, at least one child turn): its pinned question for the thumbnail. */
   resume: { lessonId: string; ask: string | null; topicTitle: string } | null;

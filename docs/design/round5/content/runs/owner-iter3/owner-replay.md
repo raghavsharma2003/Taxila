@@ -1,0 +1,18 @@
+# Owner replay a95d2ff1: 4/7 asks answered; 7 pages, 5 table, 3 repeats, 0 bad pointing
+
+| seq | child | ask | answered | she says now | board drawn for the turn |
+|---|---|---|---|---|---|
+| 2 | Show me some games. | game | **no** | Game: “Next score.” Main bolungi 4, 7, 10; aap bataiye next score kya hoga, aur har baar kitne runs add hue? | Recursive rule · Explicit rule · First term · nth term · Term before · Position n · Step by step · Far-away terms |
+| 4 | ताईं |  |  | Kiko, aapka message thoda unclear hai—kripya “taiin” phir se bataiye ya apni baat poori kijiye। | — |
+| 6 | मैं कहने चाहता हूँ कोई दूसरा गेम खेलते हैं। | game | **no** | Bilkul, doosra game: “Rule Detective.” Main sequence dungi; aap decide kijiye rule first term se chal raha hai ya nth term se. Try: 2, 5, 8—kaunsa? | Recursive rule · Explicit rule · First term · nth term · Term before · Position n · Step by step · Far-away terms |
+| 8 | मैं समझा नहीं क्या गेम है? |  |  | Game mein sequence ke numbers dekhkar chhupa hua pattern dhoondhna hai: 2, 5, 8 mein har baar kitna badh raha hai? | Recursive rule · Explicit rule · First term · nth term · Term before · Position n · Step by step · Far-away terms |
+| 10 | मेरे को उसके आप कोई फोटो दिखाओ ना। और अगला नंबर आई थिंक सात होगा। नहीं नहीं क्या टकार मारी है हाँ हंड्रेड सात प्लस में कितना होता है? सोलह, सोलह होगा सोलह। और आप मुझे इमेज विमेज दिखाओ थोड़ा विज़ुअलाइज | photo | yes | Photo nahi dikha sakti, par visual sochiye: 2, phir 3 kadam aage 5, phir 3 kadam aage 8—agla number kya hoga? | — |
+| 12 | क्या बोल रहे हो, दुबारा बताओ? तेरे थोड़ा बैकग्राउंड क्लियर करो, ऐसे recording rules जो कचरा आ रहा है ना, हटाओ उसको |  |  | Board clear hai. Sequence 2, 5, 8 mein har term se agle term tak 3 add hota hai. Ab agla number batayiye. | — |
+| 14 | Thirteen |  |  | Aapne 8 ke baad 3 ghata diya; yahan har baar 3 jodna hai. Isliye 8 ke baad kya aayega? | Recursive rule · Explicit rule · First term · nth term · Term before · Position n · Step by step · Far-away terms |
+| 16 | सेवन के बाद थ्री जोड़ के आएगा टेन। टेन फॉर दस कदम |  |  | Aapne 7 mein 3 jodkar 10 paaya. Ab isi pattern ko lekar agle card par chaliye. Khaali jagah bhariye: a₃₀ = ___. | — |
+| 18 | मेरे को कुछ और पढ़ना है, मेरे को आलू के बारे में पढ़ना है। कुछ और पढ़ना है मेरे को। बहुत हो गया आपका अब |  |  | Bilkul, Aloo par padh sakte hain; aaj sequence nahi. Aap aloo ki kheti, poshan, ya history mein se kya chunenge? | — |
+| 20 | Different subject, different subject. |  |  | Theek hai, subject badalte hain: Science, English, Social Science, ya Computer—ek naam bol dijiye. | — |
+| 22 | [chip] Show me a picture | aloo | yes | Aloo zameen ke andar ugta hai: bhure rang ka, gol ya lamba, aur uski aankhen chhote gaddhe hote hain. Aap ismein kya dekhte hain? | आलू |
+| 24 | अरे नहीं दिख रहा कोई आलू दिखाओ भई आलू दिखाओ। | aloo | yes | Aloo ka simple sketch: brown gol kand, chhote dots uski aankhen, neeche patli jaden; aap bataiye, kaunsa hissa zameen ke andar hota hai? | दिख रहा कोई आलू |
+| 26 | अरे नहीं दिख रहा यार, कुछ भी नहीं दिख रहा ये रिकर्सिव rule explicit rule लिखा हुआ है। अब आलू दिखाओ आलू | aloo | yes | Recursive rule aur explicit rule ke labels hain; aloo nahi. Aap bataiye, aloo dekhne ke liye kya badalna hoga? | Recursive rule · Explicit rule · आलू |
+| 28 | अरे मेरे को सोचना नहीं है यार, मेरे को इमेज दिखाओ यार, मैं इमेज दिखाने के लिए बोल रहा हूँ, दिखा नहीं पा रही क्या? महंगी लौड़ी हो गया एक नंबर की | aloo | **no** | Kiko, gaali wali baat par main saath nahi dungi. Aaj ka challenge: ek hi sequence ko do tareekon se likha ja sakta hai. Khaali jagah bhariye: a₃₀ = ___. | — |

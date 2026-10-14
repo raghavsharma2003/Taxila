@@ -419,7 +419,8 @@ export class CascadeLink implements TeacherLink {
     this.onTransport = opts.onTransport;
     this.ctx = opts.audioContext ?? null;
     this.merger = opts.predictive ?? predictiveEnabled() ? new FragmentMerger() : null;
-    this.ack = opts.ack ?? ackEnabled() ? new AckClient({ lessonId: opts.lessonId, onClip: (c) => this.playAck(c) }) : null;
+    // round 5: no continuer on D5 until its gate covers it (Voice Live's own turn detection has not been measured with one)
+    this.ack = opts.ack ?? ackEnabled() ? new AckClient({ lessonId: opts.lessonId, onClip: (c) => this.playAck(c), continuer: () => this.laneUsed !== "d5" }) : null;
     this.prefetcher = opts.prefetch ?? prefetchEnabled()
       ? new TurnPrefetcher({ lessonId: opts.lessonId, onSend: (b) => this.ack?.request(b.text) }) : null;
     this.unregisterLatency = registerLatencyTarget({ lessonId: opts.lessonId, prefetcher: this.prefetcher, ack: this.ack, duplexLive: () => this.duplexDeciding });
@@ -657,10 +658,14 @@ export class CascadeLink implements TeacherLink {
     this.stopAck();
     this.ack?.onSpeech();
     this.prefetcher?.onSpeech();
-    if (this.transportKind === "webrtc") {
+    if (this.transportKind === "webrtc" && this.callUp) {
       this.protocol.talkStartedAt = at;
       this.setMicEnabled(true);
     } else {
+      // r5 QA: a press before the transcription call is up (it takes up to CHANNEL_OPEN_TIMEOUT_MS after the lesson opens,
+      // or a reconnect) records locally and uploads, as the fallback does: a commit to a channel that is not open was
+      // silently dropped, so the child's first answer vanished and the floor stayed on "Listening".
+      if (this.transportKind === "webrtc") this.setMicEnabled(true);
       this.startRecording(at);
     }
     this.events.emit({ type: "child_speech_start", at });
@@ -678,16 +683,22 @@ export class CascadeLink implements TeacherLink {
     // during speech (evals/latency/ptt-deltas.mjs: 8/8 had deltas before the commit; last delta p50 +711 ms, final +1,286 ms,
     // deltas = final 8/8), so the stable partial goes to the prefetch now instead of never (onQuiet was hands-free only).
     // The recording fallback has no partials: nothing to send.
-    if (this.transportKind === "webrtc") this.prefetcher?.onQuiet();
+    if (this.transportKind === "webrtc" && !this.recorder) this.prefetcher?.onQuiet();
     this.clearPttTail();
     this.pttTail = setTimeout(() => {
       this.pttTail = null;
       if (this.closed || this.talking) return;
-      if (this.transportKind === "webrtc") {
+      if (this.transportKind === "webrtc" && !this.recorder) {
         this.setMicEnabled(false);
         this.send({ type: "input_audio_buffer.commit" });
       } else {
+        const local = this.transportKind === "webrtc";
         this.finishRecording();
+        // a press recorded before the call came up: the call may have heard its tail; that audio is never committed
+        if (local) {
+          this.setMicEnabled(false);
+          if (this.callUp) this.send({ type: "input_audio_buffer.clear" });
+        }
       }
     }, PTT_TAIL_MS);
   }
@@ -760,6 +771,7 @@ export class CascadeLink implements TeacherLink {
     if (this.ack) {
       if (e.type === "child_final" && !e.typed && this.ack.isEchoNow(e.text)) { this.events.emit({ type: "child_silent" }); return; }
       if (e.type === "child_speech_start") { this.stopAck(); this.ack.onSpeech(); }
+      if (e.type === "child_speech_end") this.ack.speechEnded(e.at); // round 5: the continuer's ~900 ms clock
     }
     // Round 2 latency: the prefetcher reads the partials and the item's end (it never changes what the turn sends)
     if (this.prefetcher) {
@@ -1275,9 +1287,16 @@ export class CascadeLink implements TeacherLink {
   private useRecording(): void {
     // ship5 p1-duplex: no call, no engine: push-to-talk recording is today's fallback
     this.duplex?.degrade("stt_unavailable");
+    // r5 QA: a press already under way when the call fails (CHANNEL_OPEN_TIMEOUT_MS after the first tap) carries on as a
+    // recording; setPushToTalk resets `talking`, so without this the child's answer was never recorded and Done did nothing.
+    const pressing = this.talking;
     this.transportKind = "recording";
     this.pushToTalk = false;
     this.setPushToTalk(true);
+    if (pressing) {
+      this.talking = true;
+      if (!this.recorder) this.startRecording(this.protocol.talkStartedAt ?? Date.now());
+    }
     this.setMicEnabled(true); // the local VAD and the mic meter still listen; nothing is sent until a press
     this.onTransport?.("recording");
     this.events.emit({ type: "error", message: "hands-free listening is unavailable; hold the button to talk", fatal: false, code: "stt_fallback_ptt" });

@@ -17,14 +17,14 @@ import { take as prewarmTake, deliveryFor, speakingEntry, PASSTHROUGH } from "..
 import { renderParts, preludeRender } from "../voice/expressive/render.js";
 import { preludeTokenOk } from "../voice/expressive/prelude.js";
 import { edgeTrim, silence } from "../voice/expressive/pauses.js";
-import { FRAME, FRAMES_CONTENT_TYPE, frameWriter } from "../voice/frames.js";
+import { FRAME, FRAMES_CONTENT_TYPE, frameWriter, codecOf } from "../voice/frames.js";
 import { count } from "../voice/expressive/telemetry.js";
 import { spokenOptsForChild } from "../voice/spoken.js";
 import { routes as featureRoutes } from "../voice/features.js";
 import { realtimeSeam } from "../voice/realtimeSession.js";
 import { seamSafe } from "../seam-safe.js";
 import { cascadeEngine, dhdVoiceFor, warnUnmeasuredOnce } from "../voice/voices.js";
-import { traceIdentify } from "../trace/context.js";
+import { traceIdentify, traceSet } from "../trace/context.js";
 import { record } from "../trace/writer.js";
 
 const VOICES = new Set(["alloy", "ash", "ballad", "coral", "echo", "fable", "nova", "onyx", "sage", "shimmer", "verse", "marin", "cedar"]);
@@ -183,6 +183,7 @@ async function ttsStream(req, res, body) {
   if (!Number.isInteger(seq) || seq < 1) throw bad("invalid seq");
   if (!/^[0-9a-f-]{36}$/i.test(String(lessonId))) throw bad("invalid lessonId");
   const framed = wantsFrames(req);
+  const codec = framed ? codecOf(req) : "pcm"; // round 5 (QA D12): ADPCM on a slow link, when the device asks
   // This route is on the latency path (child stops → first audio), so it is ONE query, not requireChild's
   // chain (each round trip to Neon over HTTP is ~0.2-0.4 s): the turn joined to its lesson's child and to the
   // caller's session. The ownership check is the one requireChild makes (the child is this guardian's). An
@@ -195,7 +196,7 @@ async function ttsStream(req, res, body) {
   if (warm) {
     traceIdentify({ guardian: { id: warm.guardianId, email: null }, child: warm.childId ? { id: warm.childId } : undefined });
     if (!allowSpeech(warm.guardianId)) { warm.abort.abort(); throw new HttpError(429, "too many speech requests"); }
-    return streamParts(res, { entry: warm, t0, setupMs: Math.round(performance.now() - t0), prewarmed: Math.round(performance.now() - warm.at), framed });
+    return streamParts(res, { entry: warm, t0, setupMs: Math.round(performance.now() - t0), prewarmed: Math.round(performance.now() - warm.at), framed, codec });
   }
   // Driven from the session, so an expired session is a 401 before anything about the turn is revealed.
   const row = await one(`select s.guardian_id as session_guardian, t.text as turn_text, t.seq as turn_seq, l.state->'ctx'->>'teacherId' as lesson_teacher, l.state->'ctx'->>'teacherName' as lesson_teacher_name, (l.state ? 'laneSwitch') as lane_switched, c.*
@@ -222,7 +223,7 @@ async function ttsStream(req, res, body) {
   const abort = new AbortController();
   const entry = speakingEntry({ parts: r.parts, prelude: null, style, abort, lessonId });
   entry.startUpTo(LOOKAHEAD);
-  return streamParts(res, { entry, t0, setupMs: Math.round(performance.now() - t0), framed });
+  return streamParts(res, { entry, t0, setupMs: Math.round(performance.now() - t0), framed, codec });
 }
 
 /** Does the client take framed TTS v2? */
@@ -238,13 +239,13 @@ const PRELUDE_GAP_MS = 220;
  * part (sample-exact: the whiteboard's clause anchor), and an end frame. `headersSent` = the caller (turn-audio) already
  * wrote the HTTP head and its own frames.
  */
-async function streamParts(res, { entry, t0, setupMs, prewarmed, framed = false, headersSent = false }) {
+async function streamParts(res, { entry, t0, setupMs, prewarmed, framed = false, headersSent = false, codec = "pcm" }) {
   const { parts, jobs, abort } = entry;
   const realise = Array.isArray(entry.pauses) && entry.pauses.some((p) => p !== undefined);
   // The response's "close" (not the request's, which fires once the body is read) = the client went away.
   const onClose = () => { if (!res.writableEnded) abort.abort(); };
   res.on("close", onClose);
-  const out = frameWriter(res, framed);
+  const out = frameWriter(res, framed, { codec });
   let wrote = 0;
   let traced = "aborted"; // release 12 flight recorder: how this stream ended (tts.end)
   let headed = headersSent;
@@ -267,7 +268,7 @@ async function streamParts(res, { entry, t0, setupMs, prewarmed, framed = false,
     }
     if (!headerFramed) {
       headerFramed = true;
-      out.json(FRAME.header, { v: 2, format: `pcm_s16le;rate=${PCM_RATE};channels=1`, sentences: parts.length, firstMs: Math.round(performance.now() - t0), setupMs,
+      out.json(FRAME.header, { v: 2, format: `pcm_s16le;rate=${PCM_RATE};channels=1`, ...(out.codec === "adpcm" ? { codec: "adpcm" } : {}), sentences: parts.length, firstMs: Math.round(performance.now() - t0), setupMs,
         cache: jobs[0]?.cached ? "hit" : "miss", engine: entry.renders?.[0]?.engine ?? "oai", ...(prewarmed !== undefined ? { prewarmedMs: prewarmed } : {}) });
       record("tts.first", { sentences: parts.length, firstMs: Math.round(performance.now() - t0), setupMs,
         cache: jobs[0]?.cached ? "hit" : "miss", engine: entry.renders?.[0]?.engine ?? "oai", framed, ...(prewarmed !== undefined ? { prewarmedMs: prewarmed } : {}) });
@@ -379,13 +380,48 @@ async function turnAudio(req, res, body) {
   if (warm && !allowSpeech(warm.guardianId)) { warm.abort.abort(); warm = null; audio = "rate_limited"; }
   res.writeHead(200, { "content-type": FRAMES_CONTENT_TYPE, "x-turn-ms": String(Math.round(performance.now() - t0)), "cache-control": "no-store" });
   res.flushHeaders?.();
-  const w = frameWriter(res, true);
+  const codec = codecOf(req); // round 5 (QA D12)
+  const w = frameWriter(res, true, { codec });
   // the header first (does audio follow?), then the turn, so the client knows whether to wait for this response's audio
-  w.json(FRAME.header, { v: 2, audio, format: `pcm_s16le;rate=${PCM_RATE};channels=1`, ...(warm ? { seq, sentences: warm.parts.length, prewarmedMs: Math.round(performance.now() - warm.at),
+  w.json(FRAME.header, { v: 2, audio, format: `pcm_s16le;rate=${PCM_RATE};channels=1`, ...(w.codec === "adpcm" ? { codec: "adpcm" } : {}), ...(warm ? { seq, sentences: warm.parts.length, prewarmedMs: Math.round(performance.now() - warm.at),
     engine: warm.renders?.[0]?.engine ?? "oai" } : {}) });
   w.json(FRAME.turn, out);
   if (!warm) { w.json(FRAME.end, { t: "end", status: "ok", audio }); res.end(); return; }
-  return streamParts(res, { entry: warm, t0, setupMs: Math.round(performance.now() - t0), framed: true, headersSent: true });
+  return streamParts(res, { entry: warm, t0, setupMs: Math.round(performance.now() - t0), framed: true, headersSent: true, codec });
+}
+
+// ───────────── POST /api/lesson/start-audio (r5-latency: the start's round-trip fold) ─────────────
+
+/**
+ * The lesson start and her opening line's audio on ONE response, as turn-audio does for a turn. Measured on a phone
+ * profile (evals/latency/start-phone.mjs, 2026-10-14, n = 30): tap -> her first sound p50 2619 ms, of which the second
+ * round trip (the start's response, then POST /api/voice/tts-stream, then its first byte) was ~0.4-0.5 s. It calls the
+ * start route's own function (server/routes/lesson.js lessonStart: every rule, refusal and write is the route's), then
+ * answers in framed TTS v2: a header ({audio: "follows" | "none"}), a `turn` frame carrying the LessonStartResponse, then
+ * the opening's audio from the prewarm the start began, then an end frame. A start with nothing to speak here (the realtime
+ * lane, a fixed safeguard line with no prewarm, another replica) ends with {audio: "none"} and the client speaks the
+ * opening by seq through /api/voice/tts-stream as before. Refusals (409 hours / cap, 403 consent) are the start's own JSON.
+ */
+async function startAudio(req, res, body) {
+  const t0 = performance.now();
+  const { lessonStart } = await import("./lesson.js");
+  const tokenHash = sessionTokenHash(req);
+  if (!tokenHash) throw unauthorized();
+  const { body: out } = await lessonStart(req, body);
+  traceSet({ sid: out?.lessonId }); // release 12 recorder: send() names the lesson for a JSON start; this response streams
+  const seq = out?.teacherOpeningSeq;
+  let warm = Number.isInteger(seq) ? prewarmTake(String(out.lessonId), seq, tokenHash) : null;
+  let audio = warm ? "follows" : "none";
+  if (warm && !allowSpeech(warm.guardianId)) { warm.abort.abort(); warm = null; audio = "rate_limited"; }
+  res.writeHead(201, { "content-type": FRAMES_CONTENT_TYPE, "x-start-ms": String(Math.round(performance.now() - t0)), "cache-control": "no-store" });
+  res.flushHeaders?.();
+  const codec = codecOf(req);
+  const w = frameWriter(res, true, { codec });
+  w.json(FRAME.header, { v: 2, audio, format: `pcm_s16le;rate=${PCM_RATE};channels=1`, ...(w.codec === "adpcm" ? { codec: "adpcm" } : {}), ...(warm ? { seq, sentences: warm.parts.length, prewarmedMs: Math.round(performance.now() - warm.at),
+    engine: warm.renders?.[0]?.engine ?? "oai" } : {}) });
+  w.json(FRAME.turn, out);
+  if (!warm) { w.json(FRAME.end, { t: "end", status: "ok", audio }); res.end(); return; }
+  return streamParts(res, { entry: warm, t0, setupMs: Math.round(performance.now() - t0), framed: true, headersSent: true, codec });
 }
 
 /**
@@ -421,6 +457,7 @@ export const routes = {
   "POST /api/voice/stt-token": sttToken,
   "POST /api/voice/transcribe": transcribe,
   "POST /api/voice/tts-stream": ttsStream,
+  "POST /api/lesson/start-audio": startAudio,
   // On-device child voice features + longitudinal trends (server/voice/features.js).
   ...featureRoutes,
 };

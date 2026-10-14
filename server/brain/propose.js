@@ -106,6 +106,14 @@ export function proposalsOf({ r, relational, studioView, whiteboard, vibe }) {
   return [directorProposalOf(r), ...relationalProposals(relational), ...studioProposalsOf(studioView), ...(whiteboard ?? []), ...vibeProposalOf(vibe)];
 }
 
+/** The child's visual request as Studio reads it: { kind, subject?, said? } (shared/brain.ts StudioRequest), or null. PURE. */
+export function requestOfSee(see) {
+  if (!see || typeof see !== "object") return null;
+  const kind = ["number_line", "picture", "draw", "show"].includes(see.show) ? see.show : "show";
+  const subject = typeof see.subject === "string" && see.subject.trim() ? see.subject.trim().slice(0, 40) : null;
+  const said = Array.isArray(see.said) ? see.said.map(String).filter((x) => /^-?[\d./+]+$/.test(x)).slice(0, 6) : [];
+  return { kind, ...(subject ? { subject } : {}), ...(said.length ? { said } : {}), ...(see.off ? { offKit: true } : {}) };
+}
 const STUDIO_LANG = { hinglish: "hinglish", english: "en", hindi: "hi" };
 /**
  * The whiteboard ask for Studio (shared/brain.ts StudioAsk → server/studio/seam.js requestIntent, W2-H; the drawing-script
@@ -118,14 +126,21 @@ export function whiteboardIntentOf({ lessonId, turn, beat, next, kit, item, line
   const band = BANDS[next?.ctx?.classLevel]?.b4 ?? "B3"; // the one bands table (BUILD-PLAN §1.10)
   const mis = beat.type === "contrast" && next?.lastReteach?.turn === next?.turn ? next.lastReteach.misId ?? null : null;
   const skillId = next?.lastMove?.skillId ?? item?.skillId ?? kit?.skills?.[0]?.id ?? "";
+  // round 5 (stream 2, RCA-1): what the child asked to see (director/state.js move.see: how, the thing named, the numbers
+  // named), this turn only. Studio draws THAT; it is never the child's words, only the request's shape and subject.
+  // (state.js sets lastMove on every step, so a see from an earlier turn never rides on a later move)
+  // an example asked for ("ek example do") is drawn as her worked example, on a new page
+  const request = requestOfSee(next?.lastMove?.request === "visual" ? next.lastMove.see : null) ?? (next?.lastMove?.request === "example" ? { kind: "example" } : null);
   return {
     intent: {
       intentId: `${lessonId}:wb:${turn}`, lessonId, kind: "whiteboard", skillId, ...(item?.id ? { itemIds: [item.id] } : {}),
       need: mis ? "contrast_misconception" : "explain", ...(mis ? { misconceptionId: mis } : {}), beat: beat.type, neededAtMs: 0, priority: "on_cue",
       style: { band, lang: STUDIO_LANG[next?.ctx?.lang] ?? "hinglish", motion: band === "B1" ? "calm" : "lively" },
+      ...(request ? { request } : {}),
     },
     line: { lessonId, ...(line.teacherReplySeq != null ? { teacherReplySeq: line.teacherReplySeq } : {}), text: String(line.text ?? "") },
-    mode: next?.wbBeat === beat.id ? "continue" : "fresh",
+    // a page drawn for the child's request is a new page: it clears the board (never drawn over what was there)
+    mode: !request && next?.wbBeat === beat.id ? "continue" : "fresh",
     kit: { topicId: kit?.topicId ?? next?.topicId ?? "", ...(next?.kitHash ? { kitHash: next.kitHash } : {}),
       content: (next?.lastContent ?? []).map((x) => String(typeof x === "string" ? x : JSON.stringify(x))).slice(0, 8),
       ...(item ? { item: { id: item.id, prompt_en: item.prompt_en ?? "", prompt_hi: item.prompt_hi ?? "" } } : {}),

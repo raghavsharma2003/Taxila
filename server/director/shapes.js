@@ -266,6 +266,15 @@ export function askTruth(shape, visual, onScreen) {
   if (visual === "animation" || visual === "simulation") return s.replace(MOVING_CLAUSE, ASK_TRUTH.moving[k]);
   return s;
 }
+// round 5 (stream 2, the board): a thing the child named is being drawn on the board for this ask: say what it shows, in
+// words, and never point at the screen before it is there (the after-board check unpoints a line that does)
+export const VISUAL_DRAWING = "the board draws what they asked for beside your words: say in plain words what it shows (its parts, its numbers); never send their eyes to the screen or the board, never say it is already there, never that you cannot draw, never ask them to draw it";
+/** The same, for what they named: the thing, or the numbers on a number line (they asked for THOSE, not the question's). */
+export const visualDrawing = ({ subject, said, show } = {}) => join(
+  show === "number_line" && said?.length ? `they asked to see ${said.map((x) => String(x).replace(/[^0-9./+-]/g, "")).filter(Boolean).join(", ")} on a number line: say where ${said.length > 1 ? "they sit" : "it sits"} (between which whole numbers, how many equal parts)`
+    : subject ? `they asked to see ${clean(subject)}: say in plain words what it looks like` : "",
+  VISUAL_DRAWING,
+);
 export const VISUAL_NOT_YET = "nothing is on the screen this turn: show it in words with everyday things they can picture; never a drawing made of characters, never that you cannot draw, never ask them to draw it";
 
 
@@ -453,6 +462,16 @@ export const offerWaysOff = ({ subject }) => join(
 export const visualUnavailable = ({ subject }) => join(
   `they asked to see ${clean(subject) || "it"}: you cannot show a picture of it right now — say so plainly in a few words, never point at the screen or the board`,
   `then describe ${clean(subject) || "it"} in words they can picture (shape, colour, where it is found), two short sentences`,
+  "then one small question that brings them back to today's idea; never send them to search for it elsewhere",
+);
+/**
+ * round 5 (stream 2): they asked to see a thing outside today's kit that a plain sketch can show ("aloo dikhao"): the board
+ * sketches it while she speaks. A photo is never promised (no photo exists); the thing is given in words.
+ */
+export const drawAsked = ({ subject, show }) => join(
+  show === "picture" ? `they asked for a photo of ${clean(subject) || "it"}: there is no photo, say so in a few plain words; the board draws a simple sketch of it instead`
+    : `they asked to see ${clean(subject) || "it"}: the board draws a simple sketch of it`,
+  `describe ${clean(subject) || "it"} in words they can picture (shape, colour, where it is found), two short sentences; never send their eyes to the screen or the board`,
   "then one small question that brings them back to today's idea; never send them to search for it elsewhere",
 );
 /** round 3 fix (experience B8): "yeh nahi padhna, X padhna hai": a real topic of their class, offered (never a stop question). */
