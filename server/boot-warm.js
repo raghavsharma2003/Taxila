@@ -22,6 +22,14 @@ export async function warmSync() {
     const { productionCatalog, stagecraftMode } = await import("./stagecraft/lesson.js");
     if (stagecraftMode() !== "off") { productionCatalog(); out.stagecraftCatalog = Math.round(performance.now() - t); }
   } catch (e) { out.stagecraftCatalog = `failed: ${String(e?.message ?? e).slice(0, 80)}`; }
+  // the parent report's language gate (reports/lexicon.js): V8 compiles each of its Unicode-class regexes on its FIRST
+  // test, ~0.7 s for the first parent overview of a process (QA D22: 2.4 s; CPU profile 2026-10-14)
+  const t2 = performance.now();
+  try {
+    const { bannedHits, lockedHits, severeHits } = await import("./reports/lexicon.js");
+    for (const s of ["warm", "गर्म अभ्यास", "100% warm-up"]) { bannedHits(s); lockedHits(s); severeHits(s); }
+    out.reportLexicon = Math.round(performance.now() - t2);
+  } catch (e) { out.reportLexicon = `failed: ${String(e?.message ?? e).slice(0, 80)}`; }
   return out;
 }
 

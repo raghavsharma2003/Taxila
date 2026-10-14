@@ -44,6 +44,7 @@ test("boot warm: the stagecraft table is built once and kept (the first lesson s
   const { productionCatalog } = await import("../server/stagecraft/lesson.js");
   const w = await warmSync();
   assert.equal(typeof w.stagecraftCatalog, "number", JSON.stringify(w));
+  assert.equal(typeof w.reportLexicon, "number", "the parent report's lexicon regexes are compiled at boot (QA D22)");
   const t = performance.now();
   productionCatalog();
   assert.ok(performance.now() - t < 5, "memoised");
