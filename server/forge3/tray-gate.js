@@ -21,7 +21,9 @@
 //   skeleton    the skeleton certificate (certs/skeleton.json: every sampled instance of the archetype at that size)
 //   frame       a live verdict for the build (gate.js, cached on the piece) at the device's size; unjudged = not shown
 //               (the slot's skeleton, when certified, is shown instead)
-//   image       never (nothing produces one; an unknown kind is refused)
+//   image       round 5 (owner decision 14.2): a picture from the picture lane (server/studio/picture.js: moderated pixels, an
+//               inline JPEG / PNG) is contain-fit by src/studio/ImageRenderer.tsx and carries no text, so it fits any box the
+//               class has; any other image (a URL, another format) is refused
 //   module      the engine's certificate (certs/modules.json) at the device's size; explainer@1 carries a whiteboard
 //               script, judged by the whiteboard rule at the tray box
 //
@@ -234,6 +236,11 @@ export function certifyForTray(artifact, ctx = {}) {
         if (!v || v.unavailable) return out(false, "judge", "build not judged at the child's size");
         const ok = vp ? !!v.byViewport?.[vp] : !!v.pass;
         return out(ok, "judge", ok ? "judged at this size" : `judged: fails at ${vp}`);
+      }
+      case "image": {
+        if (!/^data:image\/(?:png|jpeg);base64,/.test(String(artifact.src ?? ""))) return out(false, "image", "not a picture-lane image");
+        const box = ctx.box ?? contractBox(vp, { young });
+        return out(!!box, "image", box ? "contain-fit, no text" : "no box for this class");
       }
       default:
         return out(false, "none", `no certificate rule for kind ${kind}`);

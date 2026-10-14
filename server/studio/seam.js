@@ -1015,7 +1015,8 @@ export const studioSeam = {
   boardFor(lessonId) {
     const L = lessons.get(lessonId);
     const on = L?.onScreen ? L.pieces.get(L.onScreen) : null;
-    return on && on.kind === "whiteboard" && on.artifact && !on.retired ? { skillId: on.skillId ?? null, itemId: on.itemId ?? null, turn: on.revealedTurn ?? null } : null;
+    // a picture the child asked for is taken down on the same rules as a board (turn.js leftBoard)
+    return on && ["whiteboard", "image"].includes(on.kind) && on.artifact && !on.retired ? { skillId: on.skillId ?? null, itemId: on.itemId ?? null, turn: on.revealedTurn ?? null } : null;
   },
 
   /** round 5: is a board (not a game, not a picture) what the child sees now? */
@@ -1038,13 +1039,13 @@ export const studioSeam = {
    * is the piece on screen). Its facts row names the thing, so her next line can point at it truthfully. Refused while a
    * safeguarding turn holds the lesson, the parent's Studio switch is off, or a game is in use. → the slot, or null.
    */
-  showImage(lessonId, { src, alt, subject, jobId }) {
+  showImage(lessonId, { src, alt, subject, jobId, itemId = null, skillId = null }) {
     const L = lessons.get(lessonId);
     if (!L || L.safety || L.studioControl === "off" || !/^data:image\/(?:png|jpeg);base64,/.test(String(src ?? ""))) return null;
     const on = L.onScreen ? L.pieces.get(L.onScreen) : null;
     if (on && VISIBLE.has(on.state) && !["whiteboard", "image"].includes(on.kind) && !on.grade?.complete) return null;
     const intentId = `${lessonId}:pic:${String(jobId ?? Date.now()).replace(/[^\w:.-]/g, "").slice(-24)}`;
-    const p = { intentId, slotId: `${intentId}:slot`, kind: "image", archetype: "image", source: "image", skillId: null, need: "explain", state: "revealed", retired: false,
+    const p = { intentId, slotId: `${intentId}:slot`, kind: "image", archetype: "image", source: "image", skillId, itemId, need: "explain", state: "revealed", retired: false,
       createdAt: Date.now(), revealedAt: Date.now(), revealedTurn: L.turn, artifact: { kind: "image", stage: { w: 1024, h: 1024 }, src, alt: String(alt ?? "").slice(0, 80) },
       facts: { kind: "image", archetype: "image", onScreen: { picture: String(subject ?? "").slice(0, 24) } } };
     if (on) retirePiece(L, on.intentId, "replaced");
