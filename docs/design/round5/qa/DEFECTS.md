@@ -49,6 +49,7 @@ Status: **FIXED** (on `claude/r5-qa`, verified by a repro script) · **OWNER** (
 | D27 | P2 | FIXED | QA (UI) | A young child's Me screen offers "Type instead … You can always type", but Young lessons never type (tiles and Help only) |
 | D28 | P2 | FIXED | QA (UI) | Parent "This week" says "Asha will say hello the first time Riya opens Taxila" after Hello and many short lessons |
 | D29 | P2 | OWNER | content | Picture ask: she says "dekho" and describes a balance that the board does not draw (it shows the flow chart) |
+| D30 | P1 | OWNER | main (runtime) / latency | Her first line's TTS fails (Azure `tts_stream network 15003ms` → 502) and the floor stays idle: no "Your turn", no retry, only "Sound didn't play… Play again" |
 | D19 | P2 | WONTFIX | QA (UI) | `GET /api/me` 401 logged as a console error on every signed-out landing and set-up load |
 
 ## Details
@@ -215,6 +216,22 @@ ek seb gol, laal…", and the board still draws "एक" as a label); D09 pass (
 **D08 re-test on d5c1c61 (n = 2): PASS** — no "एक" label, no invented fruit; she describes the lesson's own picture ("ek tarazu
 mein 1 kilogram ka packet, doosre mein 1000 gram ke chhote packets… Tum kya dekh rahi ho?"). New **D29 (P2, content)**: she says
 "dekho" and describes a balance while the board shows the "Change to grams → Compare weights → Find the heavier weight" flow.
+
+### D30 · P1 · OWNER (main: lesson runtime; latency: TTS) — a failed first line leaves the lesson idle
+Pass 4, phone, class 4, lesson start: `tts.request cascade-1` → `POST /api/voice/tts-stream 502` after 11,659 ms (server:
+`[azure] tts_stream gpt-4o-mini-tts network 15003ms`; 1 of ~40 lesson starts today) → `tts.error no_audio` → strip T5 "Sound
+didn't play. Read it on the card. Play again". The floor then stays `idle` (state word empty) for 30+ s: no "Your turn"
+until the child taps the mic. Expected: one server-side retry of the TTS call (it is idempotent) and, if that fails too, the
+floor moves to YOUR TURN with the card as the question, so the lesson goes on in text. Evidence in
+`ui.state floor=idle strip=T5` from 17.8 s to 66.2 s.
+
+## Journeys that passed (pass 4)
+Regression sweep on f2e9b9c (rel 14 merged): set-up phone + laptop, Hello, every child screen (Practice now opens after 21:30;
+Me says "Tap instead"), the parent gate and every corner page, family (add a child, who, switch, sign out → the signed-out
+picker now goes to Sign in, wrong password, sign in), `qa-gate-kill` PASS, `qa-stale` PASS, a spoken answer end to end
+("एक किलो में हजार ग्राम होते हैं" → "Bilkul Riya… 1 kilogram mein 1000 grams hote hain"), offline 10 s + background 5 s +
+a double tap on Talk + end. The bundle no longer contains "06:30 to 21:30". Hello's greeting clip is 13 s (the card moves on
+at 13.8 s; an earlier "did not move on in 10 s" flag was the harness's own timeout). New: D30.
 
 ## Journeys that passed (pass 3)
 `tests/e2e/qa-interact.mjs`: a past lesson's Listen, the lesson card ("A short visit: not counted as a lesson"), "See Riya's

@@ -19,8 +19,8 @@ for (let i = 0; i < 8 && page.url().includes("/hello"); i++) {
     const hear = page.locator("[data-testid=hello-hear]");
     if (await hear.count() && await hear.isEnabled()) await hear.click();
     // her clip plays, then the card moves on by itself (or Next while it plays)
-    for (let j = 0; j < 40 && (await page.locator("[data-testid=hello]").getAttribute("data-card")) === "greet"; j++) await sleep(250);
-    if ((await page.locator("[data-testid=hello]").getAttribute("data-card")) === "greet") console.log("DEFECT? greet card did not move on in 10 s");
+    for (let j = 0; j < 80 && (await page.locator("[data-testid=hello]").getAttribute("data-card")) === "greet"; j++) await sleep(250);
+    if ((await page.locator("[data-testid=hello]").getAttribute("data-card")) === "greet") console.log("DEFECT? greet card did not move on in 20 s");
   }
   else if (card === "ai") await page.locator("[data-testid=hello-gotit]").click();
   else if (card === "picture") { await page.locator(".avatar-btn").first().click(); await page.locator("[data-testid=hello-thatsme]").click(); }
