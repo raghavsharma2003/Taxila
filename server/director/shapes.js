@@ -374,6 +374,12 @@ export const breakYes = () => "they asked for a short break: agree warmly; the l
 export const repeatShort = () => "they did not catch it: the last point again, shorter and slower; nothing new";
 // r12 RCA failure 4 (owner lesson a95d2ff1 turn 12): the board is cleared because they asked; never about background noise
 export const boardCleared = () => "they asked to clear the board: it is cleared now; say so in a few words, never about noise or the microphone; carry on";
+// round 5: a claim of understanding gets a light check, warm and quick, never "did you really understand?"
+export const lightCheck = () => "they say they understood: great, one quick light question to try it out, warm and easy; never ask whether they really understood";
+// round 5 (owner 2026-10-14): silence is never a cue to move on
+export const silenceAgain = () => "they said nothing this time (the microphone heard no words): no rush; ask again kindly in a few words";
+export const sameStepAgain = () => "the same point as your last turn, said more simply; nothing new, no new topic, no new question";
+export const silenceCheck = () => "they have been quiet for a while: kindly check they can hear you, and offer to carry on or take a short break; nothing new, no lesson question";
 export const welcomeBack = () => "they are back after a moment away: welcome them back in two or three words, no goodbye and no fuss; carry on";
 export const levelHarder = () => "they asked for a harder one: take them at their word, a short warm line; the harder question";
 export const levelDeeper = () => "they asked to go deeper: take them at their word in a few warm words; the harder question on the same idea, a step further";

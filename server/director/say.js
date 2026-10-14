@@ -264,6 +264,8 @@ export function unpointScreen(sentence) {
 
 /** The line without the sentences that refer to the screen (null if nothing that hands the floor back is left): a sentence
  * that only points keeps its content in words (unpointScreen); one that asks the child to act on the screen goes. */
+/** Does the line point at the screen / board at all (agent lane: nothing is up, so any pointing is a false claim)? */
+export const pointsAtScreen = (text) => POINT_AT.test(String(text ?? ""));
 export function stripScreenRefs(text) {
   const sentences = String(text ?? "").match(/[^.!?।]+[.!?।]*\s*/g) ?? [];
   return sentences.map((s) => (refersToScreen(s) || POINT_AT.test(s) ? (unpointScreen(s) ? `${unpointScreen(s)} ` : "") : s)).join("").trim();

@@ -71,6 +71,8 @@ import { publishPerception } from "../latency/bus.js";
 import { parseVoice } from "../../src/play/core/voice.ts";
 // round 3 fix (experience B2 / B3): the visual ask's clause made true about the screen
 import { askTruth } from "../director/shapes.js";
+import { comprehensionRead } from "../director/read.js";
+import { agentTurn, eventOf, applyAgentTurn } from "../agent/agent.js";
 import { childTurnRow, clientInstructions, debugFor, floorIncidentStmt, incidentStmt, kitFor, laneOf, runTurnTx, stageTurns, turnInsertStmt, turnLane, withAsk, withSeamUi, withStudioSlot } from "./rows.js";
 import { traceIdentify, traceLesson } from "../trace/context.js";
 import { record } from "../trace/writer.js";
@@ -419,7 +421,8 @@ export async function lessonTurn(req, body) {
   const pre = classified && textLane && !late && !edited && !laneResume && !help && !moduleOnly && !moduleEvents.length && !body.chipId && childText
     ? adoptPrefetch(lesson.id, { fp: prefetchFingerprint({ lessonId: lesson.id, state: lesson.state, clsArgs, bargeIn: !!body.teacherInterrupted }), fast: classifyFast(clsArgs) })
     : null;
-  const P = pre ?? perceive(PERCEIVE_DEPS, { classified, clsArgs, state, target, planCtx, said, historyOf, textLane, late, help, childText, noteArgs });
+  // round 5: an agent-lane lesson never speculates Director replies (they would be thrown away)
+  const P = pre ?? perceive(PERCEIVE_DEPS, { classified, clsArgs, state, target, planCtx, said, historyOf, textLane: textLane && state.ctx?.teacher !== "agent", late, help, childText, noteArgs });
   const { now, fast, specs, noteP, noteT0, c2 } = P;
   if (pre) mark("prefetch_adopted");
   // round 3 (relational-human): a spoken child answer on a text lane: the ack route may hear it back once THIS classify (and
@@ -495,6 +498,33 @@ export async function lessonTurn(req, body) {
   let { evidence, writes, skillChanges, incident, r, instructions, skipped } = plan;
   mark("planned");
   let next = r.state;
+  // ── round 5 (docs/design/round5/AGENT.md): the Teacher agent lane. scanSafety and the classifier already ran on the
+  // child's words; a safeguard, a distress read, an incident or the Director's stop/goodbye wrap keep the Director's move.
+  // The agent's move replaces the Director's; any agent error, timeout or budget leaves the Director's move standing.
+  let agentOut = null, agentApplied = null, agentFallback = null;
+  const dirR = r, dirNext = next;
+  if (state.ctx?.teacher === "agent" && textLane && !late && !moduleOnly && !laneResume && !help && !incident && !cls?.flags?.distress
+    && !["safeguard", "wrap"].includes(r.move.kind) && !r.end) {
+    const card = state.activeItemId ? findItem(state, kit, state.activeItemId) : null;
+    const silentNow = !String(childText ?? "").trim() && !body.chipId && (cls?.source === "empty" || body.asrConfidence === 0);
+    const chipLabel = body.chipId ? (state.lastUi?.chips ?? []).find((c) => c.id === body.chipId)?.label ?? null : null;
+    try {
+      agentOut = await agentTurn({ state, kit, lessonId: lesson.id, lane: state.mode, trace, silent: silentNow,
+        event: eventOf({ kind: silentNow ? "silence" : "turn", childText, asrConfidence: body.asrConfidence, chipId: body.chipId, chipLabel, typed, cls, card, kit, lang: state.ctx?.lang }) });
+      // the Director's stepped state keeps its bookkeeping; the card and the phase are the agent's
+      const agentNext = structuredClone(next);
+      agentNext.activeItemId = state.activeItemId; agentNext.hintLevel = state.hintLevel; agentNext.phase = state.phase; agentNext.itemsDone = state.itemsDone;
+      agentApplied = applyAgentTurn(agentNext, agentOut, { kit, childText, cls, card, lessonId: lesson.id });
+      next = agentNext;
+      r = { ...r, move: agentApplied.move, ui: agentApplied.ui, moduleCommands: [], state: next, end: agentApplied.end, hold: false };
+      if (agentOut.cleared) seamSafe("studio.clearBoard", () => (typeof studioSeam.clearBoard === "function" ? studioSeam.clearBoard(lesson.id) : null), null);
+      mark("agent");
+    } catch (e) {
+      agentFallback = String(e?.code ?? e?.message ?? e).slice(0, 80);
+      console.warn(`[agent] turn fell back to the Director: ${String(e?.message ?? e).slice(0, 160)}`);
+      next.agent = { ...(next.agent ?? state.agent ?? {}), fallbacks: ((next.agent ?? state.agent)?.fallbacks ?? 0) + 1 };
+    }
+  }
   // Seam (W2-I, server/relational/seam.js): one RelationalDirective per turn (pure, ≤ 3 ms). null = no relational move, and
   // nothing below changes. W2-E's BR5 splits it into the kernel's authority ranks; until then only its face display rides
   // the ui (teacherAffect, never keyed to a correct verdict).
@@ -548,7 +578,10 @@ export async function lessonTurn(req, body) {
   const needRelease = relFx.release && !["wrap", "safeguard"].includes(r.move.kind);
   const needSafety = relFx.safety && r.move.kind !== "safeguard";
   if (needSafety) distressSrc.push("relational_floor");
-  if (needRelease || needSafety || relFx.overlay || relFx.callbackId || relFx.noticeId) {
+  // agent lane: the relational floor and the child's goodbye still re-plan through the Director (the agent's move is dropped);
+  // an overlay / callback / notice is a Director-compile matter and does not override the agent's own line
+  if (agentOut && (needRelease || needSafety)) { agentOut = null; agentApplied = null; agentFallback = "relational"; }
+  if (needRelease || needSafety || (!agentOut && (relFx.overlay || relFx.callbackId || relFx.noticeId))) {
     const relCls = needSafety ? { ...(cls ?? { outcome: "no_evidence", confidence: 1 }), source: cls?.source ?? "relational",
       flags: { ...(cls?.flags ?? fast?.flags ?? {}), distress: true, distressKind: cls?.flags?.distressKind ?? "relational_floor" } }
       : needRelease ? { ...(cls ?? { outcome: "no_evidence", confidence: 1, source: "relational" }), relRelease: true, flags: { ...(cls?.flags ?? fast?.flags ?? {}), wantsToStop: true } }
@@ -623,7 +656,7 @@ export async function lessonTurn(req, body) {
     if (next.module?.id) { const id = next.module.id; r = { ...r, moduleCommands: [...r.moduleCommands.filter((c) => c.moduleId !== id), { op: "unmount", moduleId: id }] }; next.module = null; }
     next.wbBeat = undefined;
   }
-  let studioSlot = late || clearing ? null
+  let studioSlot = agentApplied ? agentApplied.studioSlot : late || clearing ? null
     : seamSafe("studio.slotFor", () => (typeof studioSeam.slotFor === "function" ? studioSeam.slotFor(lesson.id, turnStudioOf(kernel.arb),
       { beat: kernel.beat?.type ?? null, tray: r.ui?.tray ?? null, safety: r.move.kind === "safeguard" || !!incident,
         asking: !!r.move.itemId && ASKING_MOVES.has(r.move.kind),
@@ -681,7 +714,17 @@ export async function lessonTurn(req, body) {
     speculation = specs.length ? { tried: specs.length, hit: !!hit, ...(hit?.exact ? { exact: true } : {}), ...(hit ? {} : { differs: await missReason(specs, key) }) } : undefined;
     if (hit) trace.push(...hit.trace.map((t) => ({ ...t, speculative: true })));
     let filtered, filteredSafeguard = false;
-    ({ reply: teacherReply, guard, filtered, floor: replyFloor = [] } = hit
+    // round 5: the agent's line, through the same floor predicate every reply passes; a line that breaks the floor is never
+    // sent: the Director's move and reply take the turn instead
+    const agentFloor = agentOut ? floorViolations(agentOut.say, { content: floorContentOf(agentOut.item ?? null) }) : [];
+    if (agentOut && agentFloor.length) {
+      agentFallback = `floor:${agentFloor.join(",")}`.slice(0, 80);
+      console.warn(`[agent] line broke the floor (${agentFloor.join(",")}): the Director takes the turn`);
+      r = dirR; next = dirNext; agentOut = null; agentApplied = null; studioSlot = null;
+    }
+    ({ reply: teacherReply, guard, filtered, floor: replyFloor = [] } = agentOut
+      ? { reply: agentOut.say, guard: { caught: [], rewritten: false, replaced: false, agent: agentOut.notes }, filtered: false, floor: [] }
+      : hit
       ? hit.result
       : await textReply({ instructions, state: next, kit, childText: said, trace, history: historyOf(next), verdict, ui: withStudioSlot(r.ui, studioSlot), module: next.module }));
     // The content filter blocked the reply call that carried the child's words: fail CLOSED. The turn is
@@ -879,6 +922,8 @@ export async function lessonTurn(req, body) {
       ...(lateSafeguard ? { teacherReply, teacherReplySeq } : {}), end: true, late: true }
     : {
       move: r.move, moduleCommands: r.moduleCommands,
+      // round 5: the covert comprehension read of the child's turn (server/director/read.js): what the Director acted on
+      ...(cls && !moduleOnly ? { read: comprehensionRead(cls, { childText, target }) } : {}),
       ui: withStudioSlot(withSeamUi(withAsk(r.ui, teacherReply, { ...uiVerdictOf(cls, target, state), ...(kernel.beat ? { beat: uiBeatOf(kernel.beat) } : {}) }), relational,
         { safety: r.move.kind === "safeguard" || !!incident }), studioSlot),
       ...(teacherReply ? { teacherReply, teacherReplySeq } : {}), ...(speakNow ? { speakNow } : {}), ...(r.end ? { end: true } : {}),
@@ -920,12 +965,13 @@ export async function lessonTurn(req, body) {
   const traceReasons = [`lane.${lane}`, ...(late ? ["turn.late"] : []), ...(moduleOnly ? ["turn.module_only"] : []),
           ...(help ? ["turn.help"] : []), ...(laneResume ? [revoice ? "turn.lane_resume_revoice" : "turn.lane_resume"] : []), ...(kernel.replanned ? ["turn.replanned"] : []), ...(kernel.wb.declined ? [kernel.wb.declined] : []),
           ...(speculation ? [speculation.hit ? "turn.speculation_hit" : "turn.speculation_miss"] : []), ...(pre ? ["turn.prefetch_adopted"] : []), ...(wbAcked ? ["studio.whiteboard_slot"] : []),
-          ...(rungReplaced ? ["studio.rung_replaced"] : []), ...studioReasons, ...releaseReasons,
+          ...(rungReplaced ? ["studio.rung_replaced"] : []), ...(agentOut ? ["turn.agent"] : agentFallback ? ["turn.agent_fallback"] : []), ...studioReasons, ...releaseReasons,
           ...comprehensionReasons({ cls, classified, help: !!help, uiVerdict: uiV, guard }), ...vsReasons,
           ...(guard?.caught?.includes("unavailable") ? ["turn.fallback_reply"] : []),
           // p5-interaction: what the turn was read as (intent / request ids only, never the child's words), the card cap,
           // an unverifiable module answer
           ...(noteReason ? [noteReason] : []), ...(cls?.request?.type ? [`request.${cls.request.type}`] : []),
+          ...(cls && !moduleOnly ? (() => { const rd = comprehensionRead(cls, { childText, target }).read; return rd ? [`read.${rd}`] : []; })() : []),
           ...(next.capped?.turn === next.turn ? [`p5.capped.${next.capped.how}`] : []), ...(moduleUnverified ? ["module.unverifiable"] : []),
           ...[...seamErrors].map((c) => `component_error.${c}`)];
   let seqs = [];
