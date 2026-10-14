@@ -298,13 +298,19 @@ test("start-audio: the start response resolves the call and her opening's audio 
   } finally { globalThis.fetch = realFetch; }
 });
 
-test("the lesson API: start-audio by default; a server without the route (404) falls back to the plain start; ?startaudio=0 uses the plain start", async () => {
+test("the lesson API: plain start by default; start-audio when the device opts in; a server without the route (404) falls back to the plain start; ?startaudio=0 uses the plain start", async () => {
   const realFetch = globalThis.fetch;
   const calls = [];
   globalThis.fetch = async (url) => { calls.push(url); if (url === "/api/lesson/start-audio") return new Response(JSON.stringify({ error: "no route POST /api/lesson/start-audio" }), { status: 404, headers: { "content-type": "application/json" } });
     return new Response(JSON.stringify({ lessonId: "L", topic: {} }), { status: 201, headers: { "content-type": "application/json" } }); };
   try {
     const { httpLessonApi } = await import("../src/lesson/api.ts");
+    // off by default (measured: no gain at 60 ms RTT): the plain start
+    calls.length = 0; await httpLessonApi.start({ childId: "c", mode: "cascade" }); assert.deepEqual(calls, ["/api/lesson/start"]);
+    calls.length = 0;
+    const onStore = new Map([["tx.flag.latency.startAudio", "1"]]);
+    const realLS0 = globalThis.localStorage;
+    globalThis.localStorage = { getItem: (k) => onStore.get(k) ?? null, setItem: (k, v) => onStore.set(k, v), removeItem: (k) => onStore.delete(k) };
     const r = await httpLessonApi.start({ childId: "c", mode: "cascade" });
     assert.equal(r.lessonId, "L");
     assert.deepEqual(calls, ["/api/lesson/start-audio", "/api/lesson/start"]);
@@ -323,6 +329,7 @@ test("the lesson API: start-audio by default; a server without the route (404) f
     globalThis.fetch = async (url) => { calls.push(url); return new Response(JSON.stringify({ error: "lesson hours", state: "closed" }), { status: 409, headers: { "content-type": "application/json" } }); };
     await assert.rejects(httpLessonApi.start({ childId: "c", mode: "cascade" }), (e) => e.status === 409);
     assert.deepEqual(calls, ["/api/lesson/start-audio"]);
+    globalThis.localStorage = realLS0;
   } finally { globalThis.fetch = realFetch; }
 });
 
@@ -358,4 +365,19 @@ test("speechStream: no headers within the deadline → one immediate retry that 
     const p = speechStream("x", { voice: "v", signal: ac.signal }); ac.abort();
     await assert.rejects(p); assert.equal(calls, 1, "the caller's abort is not retried");
   } finally { globalThis.fetch = realFetch; for (const k of Object.keys(process.env)) if (!(k in env)) delete process.env[k]; Object.assign(process.env, env); }
+});
+
+// ── QA D30 (client): her voice failed for a line → the floor still hands over (src/lesson/floor.ts) ──
+import { reduceFloor, INITIAL_FLOOR, FLOOR_TIMING } from "../src/lesson/floor.ts";
+
+test("the floor after a failed TTS: a line that hands over goes to YOUR TURN (the caption is the question); one that does not goes idle; the child speaking wins", () => {
+  const T = FLOOR_TIMING.young;
+  const asks = reduceFloor(INITIAL_FLOOR, { type: "ui", handover: "answer" }, 0, T);
+  assert.equal(reduceFloor(asks, { type: "teacher_audio_failed" }, 10, T).floor, "your_turn");
+  const thinking = { ...asks, floor: "thinking" };
+  assert.equal(reduceFloor(thinking, { type: "teacher_audio_failed" }, 10, T).floor, "your_turn");
+  const chain = reduceFloor(INITIAL_FLOOR, { type: "ui", handover: "chain" }, 0, T);
+  assert.equal(reduceFloor(chain, { type: "teacher_audio_failed" }, 10, T).floor, "idle");
+  const listening = { ...asks, floor: "listening" };
+  assert.equal(reduceFloor(listening, { type: "teacher_audio_failed" }, 10, T).floor, "listening");
 });

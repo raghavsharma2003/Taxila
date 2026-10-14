@@ -285,7 +285,12 @@ export function postStartAudio(req: LessonStartRequest, signal?: AbortSignal): P
 }
 
 export const START_AUDIO_KEY = "tx.flag.latency.startAudio";
-/** `?startaudio=1|0` (persisted) or localStorage; else VITE_START_AUDIO (default ON: "0" turns it off). */
+/**
+ * `?startaudio=1|0` (persisted) or localStorage; else VITE_START_AUDIO (default OFF: "1" turns it on). Measured on the phone
+ * profile (2026-10-14, quiet, n = 15 each): plain start p50 2481 vs start-audio 2642 ms (+161, 90% CI [-79, +281]): the
+ * saved round trip is ~60-120 ms at 60 ms RTT and the opening's synthesis dominates. Kept for high-RTT links, off until a
+ * phone in India shows a gain.
+ */
 export function startAudioEnabled(): boolean {
   try {
     if (typeof location !== "undefined") {
@@ -298,7 +303,7 @@ export function startAudioEnabled(): boolean {
   } catch {
     /* storage blocked */
   }
-  return (import.meta as { env?: Record<string, string> }).env?.VITE_START_AUDIO !== "0";
+  return (import.meta as { env?: Record<string, string> }).env?.VITE_START_AUDIO === "1";
 }
 
 /** A JSON-in, framed-out POST: the `turn` frame resolves the call; audio that follows is parked by (lesson, seq). */
