@@ -52,13 +52,15 @@ export interface HomeViewProps {
   whoTo?: string | null;
   opensAt?: string | null;
   greeting: "morning" | "day" | "evening";
+  /** r5 QA D24: the Start link continues an open lesson (its own line and label; still the same CTA). */
+  resuming?: boolean;
   go?: Go;
   floor?: TeacherFloor;
 }
 
 export function HomeView(p: HomeViewProps) {
   const greet = kt(p.greeting === "morning" ? "greetMorning" : p.greeting === "evening" ? "greetEvening" : "greetDay", { name: p.childName });
-  const sub = p.state === "done" ? kt("doneSub") : p.state === "capped" ? kt("cappedSub") : p.state === "resting" ? kt("restSub", { time: p.opensAt ?? "" }) : kt("openSub");
+  const sub = p.resuming && p.state === "start" ? kt("resumeSub") : p.state === "done" ? kt("doneSub") : p.state === "capped" ? kt("cappedSub") : p.state === "resting" ? kt("restSub", { time: p.opensAt ?? "" }) : kt("openSub");
   const cta = p.state === "start" || p.state === "done";
   return (
     <div className="kx-screen kx-home">
@@ -73,7 +75,14 @@ export function HomeView(p: HomeViewProps) {
         <section className="kx-home-copy" data-testid="primary-card" data-state={p.state}>
           <h1 className="kx-h1">{greet}</h1>
           <p className="kx-sub">{sub}</p>
-          {cta ? (
+          {cta && p.resuming ? (
+            // r5 QA D24: the same CTA continuing an open lesson; its accessible name still names her as an AI teacher
+            <A to={p.startTo} go={p.go} className="kx-cta kx-cut" testid="start-lesson" label={`${kt("continueCta")}, with ${p.teacher.name}, ${kt("aiTeacher")}`}>
+              <span className="kx-cta-sweep" aria-hidden="true" />
+              <Icon d={I.play} size={22} />
+              <span data-volt="">{kt("continueCta")}</span>
+            </A>
+          ) : cta ? (
             <A to={p.startTo} go={p.go} className="kx-cta kx-cut" testid="start-lesson" label={`${kt("start")}, with ${p.teacher.name}, ${kt("aiTeacher")}`}>
               <span className="kx-cta-sweep" aria-hidden="true" />
               <Icon d={I.play} size={22} />

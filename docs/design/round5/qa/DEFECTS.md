@@ -247,6 +247,15 @@ until the child taps the mic. Expected: one server-side retry of the TTS call (i
 floor moves to YOUR TURN with the card as the question, so the lesson goes on in text. Evidence in
 `ui.state floor=idle strip=T5` from 17.8 s to 66.2 s.
 
+## Pass 8 — on f931e01 (D24 + D17): one gap in D24, fixed
+Sweep clean (set-up phone + laptop + class 6, Hello + every child screen on both, the corner, family → Sign in, qa-interact,
+qa-gate-kill PASS, qa-reload PASS, a spoken answer, offline 8 s, landscape Talk at 286-374 px of 393). The gap: after leaving
+a lesson mid-way, the home still offered "Just start", whose tap opened a NEW lesson, although the server's plan said
+`resume` with the open lesson's id. Cause: `src/child/plan.ts` `RESUME_BY_ID = false` ("resume is shown as start until the
+lesson route can resume by id"), which D24 made possible. Fixed: `RESUME_BY_ID = true`; the Kaksha home says "Pick up where you
+left off." with a **Continue** CTA (its accessible name still "…, with Asha, AI teacher": K-AI lint), and the tap rejoins the
+lesson (verified: same lessonId, her last question back on the card).
+
 ## Pass 7 — class 6 typing on the phone, class 5 English by voice: one new P2 (fixed)
 - **D32 (P2, fixed)** Class 6 on the 393 px phone, Type: the field sits beside Send and Talk at ~160 px and the placeholder is
   cut to "Type your answ". Now the placeholder is "Your answer" (the accessible label stays "Type your answer"); verified on the
