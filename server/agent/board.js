@@ -2,6 +2,7 @@
 // shared whiteboard contract, so what the tool reports as mounted is exactly what the child sees (screen truth). Labels,
 // numbers and short terms only (a board line is ≤ 24 characters, never narration: shared/whiteboard.js textProblem).
 import { normalizeScript, textProblem, scriptFacts, LIMITS } from "../../shared/whiteboard.js";
+import { certifyForTray, viewportOf } from "../forge3/tray-gate.js";
 
 const W = 400, H = 300;
 
@@ -40,6 +41,11 @@ export function boardScript(lines, { lessonId, seq = 0, max = 6 } = {}) {
   if (!n.ok) return { ok: false, script: null, shown: [], refused: [...shown, ...refused] };
   const script = { ...n.script, scriptId: raw.scriptId, mode: "fresh", anchor: raw.anchor, line: raw.line };
   script.facts = scriptFacts(script, { kind: "diagram", archetype: "whiteboard" });
+  // the one tray gate (server/forge3/tray-gate.js, path "agent-board"): a board illegible at this child's tray never mounts,
+  // and then nothing is reported as on screen
+  const v = viewportOf(lessonId);
+  const cert = certifyForTray({ kind: "whiteboard", script }, { vp: v.vp, box: v.box, young: v.young });
+  if (!cert.ok) return { ok: false, script: null, shown: [], refused: [...shown, ...refused], why: cert.why };
   return { ok: true, script, shown, refused };
 }
 
