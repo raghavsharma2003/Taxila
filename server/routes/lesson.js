@@ -25,7 +25,7 @@ import { instructionsFor, instructionsAfter } from "../compiler/instructions.js"
 import { teacherFor, teacherForLesson, teacherCard } from "../compiler/characters/index.js";
 import { prewarm } from "../voice/prewarm.js";
 import { styleForChild } from "./voice.js";
-import { planFor } from "./child.js";
+import { planFor, dayLimitsOn } from "./child.js";
 import { requireParentIfPinSet, defaultControls, engineTick } from "./parent.js";
 import { forgeSeam } from "../forge/seam.js";
 import { talkReport } from "../director/talk.js";
@@ -93,10 +93,12 @@ const START_PURPOSES = new Set(["lesson", "practice", "doubt", "session"]);
  * refuses a lesson ("never one more") but lets Practice and Ask through (§6.3.3 done row: "Practise something").
  * @param {import("../../shared/contracts").ChildHomeState} state  @param {string | undefined} purpose
  */
-export function startRefusal(state, purpose) {
+export function startRefusal(state, purpose, { limits = dayLimitsOn() } = {}) {
   const p = START_PURPOSES.has(purpose) ? purpose : "lesson";
   // the Conductor's safety hold (STUDENT-FLOW §4.2) refuses every purpose: no lesson, no Practice, no Ask
   if (state === "safety_hold") return "lessons are paused for now";
+  // round 5 (owner 2026-10-14): the day limits are off by default, so a stale plan state never refuses a start either
+  if (!limits) return null;
   if (state === "capped") return "today's lesson time is used up";
   if (state === "resting") return "outside today's lesson hours";
   if (state === "done" && p === "lesson") return "today's lesson is done";
