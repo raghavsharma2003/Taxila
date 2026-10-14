@@ -29,14 +29,16 @@ export function KakshaHome() {
     plan.source === "loading" ? "loading" : plan.state === "capped" ? "capped" : plan.state === "resting" ? "resting" : plan.state === "done" ? "done" : "start";
   // Start sends NO topic (main 2026-10-10, audit #1): "Just start. Asha takes it from there." means the server decides,
   // and for the session-first cohort a plain start is the school-first intake (4A). The plan only decides the CTA state.
-  // r5 QA D24: an open lesson to continue is rejoined by its id (the classic home already linked it; the route now honours it)
-  const startTo = plan.state === "resume" && plan.resume?.lessonId ? `/c/${cid}/lesson/${encodeURIComponent(plan.resume.lessonId)}` : `/c/${cid}/lesson/new`;
+  const startTo = `/c/${cid}/lesson/new`;
+  // r5 QA D24: an open lesson to continue is rejoined by its id (still no topic: the classic home already linked it; the
+  // lesson route now honours the id)
+  const continueTo = plan.state === "resume" && plan.resume?.lessonId ? `/c/${cid}/lesson/${encodeURIComponent(plan.resume.lessonId)}` : null;
   return (
     <KakshaRoot family={family} reducedMotion={reducedMotion} screen="home">
       <div data-plan-state={plan.source === "loading" ? "loading" : plan.state} data-plan-source={plan.source}>
         <HomeView childName={child.first_name} family={family} reducedMotion={reducedMotion} state={state} greeting={greetingFor()}
           teacher={{ id: child.teacher_id, name: rec.name, band, form: face.form, tier: face.tier }}
-          startTo={startTo} worldTo={`/c/${cid}/map`} parentTo="/parent" whoTo={me.children.length >= 2 ? "/who" : null} opensAt={plan.opensAt} go={(to) => nav(to)} />
+          startTo={continueTo ?? startTo} worldTo={`/c/${cid}/map`} parentTo="/parent" whoTo={me.children.length >= 2 ? "/who" : null} opensAt={plan.opensAt} go={(to) => nav(to)} />
       </div>
     </KakshaRoot>
   );
