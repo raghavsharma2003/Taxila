@@ -51,6 +51,7 @@ Status: **FIXED** (on `claude/r5-qa`, verified by a repro script) · **OWNER** (
 | D29 | P2 | OWNER | content | Picture ask: she says "dekho" and describes a balance that the board does not draw (it shows the flow chart) |
 | D30 | P1 | OWNER | main (runtime) / latency | Her first line's TTS fails (Azure `tts_stream network 15003ms` → 502) and the floor stays idle: no "Your turn", no retry, only "Sound didn't play… Play again" |
 | D31 | P2 | OWNER | conversation | A child set up with "Hindi" (not the mix) gets Hinglish with English key words ("longer-shorter", "woh longer hai") |
+| D32 | P2 | FIXED | QA (UI) | Older child typing on a phone: the answer field is ~160 px and its placeholder reads "Type your answ" |
 | D19 | P2 | WONTFIX | QA (UI) | `GET /api/me` 401 logged as a console error on every signed-out landing and set-up load |
 
 ## Details
@@ -225,6 +226,12 @@ didn't play. Read it on the card. Play again". The floor then stays `idle` (stat
 until the child taps the mic. Expected: one server-side retry of the TTS call (it is idempotent) and, if that fails too, the
 floor moves to YOUR TURN with the card as the question, so the lesson goes on in text. Evidence in
 `ui.state floor=idle strip=T5` from 17.8 s to 66.2 s.
+
+## Pass 7 — class 6 typing on the phone, class 5 English by voice: one new P2 (fixed)
+- **D32 (P2, fixed)** Class 6 on the 393 px phone, Type: the field sits beside Send and Talk at ~160 px and the placeholder is
+  cut to "Type your answ". Now the placeholder is "Your answer" (the accessible label stays "Type your answer"); verified on the
+  phone shot. Class 6 "pata nahi yaar" → a fencing example for perimeter; Class 5 English, spoken "Yes, I understood. One
+  kilogram is one thousand grams." (ASR exact) → "Correct: 1 kilogram is 1000 grams…".
 
 ## Pass 6 — varied inputs (class 1 RBSE Hindi, class 9 CBSE English laptop): one new P2
 - **D31 (P2, conversation)** Class 1, RBSE, language "Hindi" (stored `language_pref: hindi`): "Namaste Meera beta, main Asha,

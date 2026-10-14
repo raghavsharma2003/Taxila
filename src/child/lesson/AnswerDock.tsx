@@ -176,7 +176,7 @@ function TypeRow({ young, onSend, onClose, onFocus, canClose, initial = "" }: { 
   }, []);
   return (
     <form className="dk-type" onSubmit={(e) => { e.preventDefault(); if (v.trim()) { onSend(v.trim()); setV(""); } }}>
-      <input ref={ref} className="dk-input" value={v} onChange={(e) => setV(e.target.value)} placeholder={t("dock.type_label")} aria-label={t("dock.type_label")}
+      <input ref={ref} className="dk-input" value={v} onChange={(e) => setV(e.target.value)} placeholder={t("dock.type_placeholder")} aria-label={t("dock.type_label")}
         onFocus={() => onFocus(true)} onBlur={() => onFocus(false)} enterKeyHint="send" autoComplete="off" inputMode={young ? "numeric" : "text"} data-testid="child-input" />
       <button type="submit" className="dk-btn dk-btn--primary" disabled={!v.trim()} data-testid="send"><Glyph name="send" size={20} />{t("dock.send")}</button>
       {canClose && (
