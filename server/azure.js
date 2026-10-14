@@ -316,7 +316,8 @@ export async function* sseEvents(body) {
  * @param {string} deployment
  * @param {{ role: string, content: string }[]} messages  system/developer first, then user
  * @param {{ api?: "chat" | "responses", effort?: string, maxTokens?: number, timeoutMs?: number, stallMs?: number,
- *   signal?: AbortSignal, onDelta?: (d: string, soFar: string) => void, quotaLane?: "hot" | "background", trace?: object[], kind?: string }} [opts]
+ *   signal?: AbortSignal, onDelta?: (d: string, soFar: string) => void, quotaLane?: "hot" | "background", trace?: object[], kind?: string,
+ *   schema?: object, schemaName?: string }} [opts]  schema: strict json_schema structured output (r5-latency), streamed as text
  * @returns {Promise<{ text: string, ttftMs: number | null, ms: number, usage: { in: number, cached: number, out: number, reasoning: number } | null, finishReason?: string, usd: number }>}
  */
 export async function chatStream(deployment, messages, opts = {}) {
@@ -342,9 +343,12 @@ export async function chatStream(deployment, messages, opts = {}) {
     const [sys, ...rest] = messages;
     body = { model: deployment, stream: true, max_output_tokens: maxTokens, ...(eff ? { reasoning: { effort: eff } } : {}),
       input: [{ role: "developer", content: sys?.content ?? "" }, ...rest.map((m) => ({ role: m.role, content: m.content }))] };
+    // r5-latency (4A's agent): structured output, streamed (the text deltas are the JSON; sayDeltasOf reads "say" from it)
+    if (opts.schema) body.text = { format: { type: "json_schema", name: opts.schemaName || "result", schema: opts.schema, strict: true } };
   } else {
     body = { model: deployment, stream: true, stream_options: { include_usage: true }, messages, [reasoning ? "max_completion_tokens" : "max_tokens"]: maxTokens };
     if (eff) body.reasoning_effort = eff;
+    if (opts.schema) body.response_format = { type: "json_schema", json_schema: { name: opts.schemaName || "result", strict: true, schema: opts.schema } };
   }
   const push = (d) => {
     if (!d) return;
