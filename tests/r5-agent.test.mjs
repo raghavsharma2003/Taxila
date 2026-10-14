@@ -3,7 +3,7 @@
 // brings no new content, the board is drawn by code and reported, a spoken line never asks to type, budgets throw. Pure.
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { agentTurn, applyAgentTurn, eventOf, gradeOf, earnedRead, AgentBudgetError } from "../server/agent/agent.js";
+import { agentTurn, applyAgentTurn, eventOf, gradeOf, earnedRead, withoutPraise, AgentBudgetError } from "../server/agent/agent.js";
 import { laneFor, teacherMode } from "../server/agent/flags.js";
 import { specOf } from "../server/agent/tools.js";
 import { systemPrompt, stateMessage, offeredItems, TURN_SCHEMA } from "../server/agent/prompt.js";
@@ -156,4 +156,22 @@ test("a misconception the child showed puts the item that tests it first, and th
   const first = offeredItems(next, K)[0];
   assert.equal(first.targetsMisconception, "c4-maths-ch05-t01-m1");
   assert.match(stateMessage({ state: next, kit: K, event: "x", onScreen: [], lane: "voice" }), /showed c4-maths-ch05-t01-m1/);
+});
+
+test("no praise on an answer the key says is wrong or partly right (sim lab misread_wrong_as_right); praise stays on a right one", async () => {
+  const line = "Haan, 60,000 sahi chuna. Ab socho, estimate exact kyun nahi hota?";
+  assert.equal((await run(base({ say: line }), { verdict: "wrong" })).say, "Ab socho, estimate exact kyun nahi hota?");
+  assert.equal((await run(base({ say: line }), { verdict: "partly" })).say, "Ab socho, estimate exact kyun nahi hota?");
+  assert.equal((await run(base({ say: line }), { verdict: "correct" })).say, line);
+  assert.equal(withoutPraise("Yes, tum got it. Eighteen is ten and eight extra."), "Eighteen is ten and eight extra.");
+  assert.equal(withoutPraise("Socho, sahi jawab kya hoga?"), "Socho, sahi jawab kya hoga?", "a question about the right answer is not praise");
+});
+
+test("a right answer with a wrong reason is partly in the learner record, never evidence for understood", async () => {
+  const next = ST();
+  const card = K.items.find((i) => i.id === "i3");
+  const o = await run(base({ read: { skill: card.skillId, level: "understood", evidence: "1/2" } }));
+  applyAgentTurn(next, o, { kit: K, childText: "1/2 kyunki 2 chhota hai", cls: { ...cls("correct"), reasonMisconceptionId: "c4-maths-ch05-t01-m1" }, card, lessonId: "L1" });
+  assert.deepEqual(next.agent.learner[card.skillId].grades, ["partly(c4-maths-ch05-t01-m1)"]);
+  assert.equal(next.agent.learner[card.skillId].read, "partly");
 });

@@ -511,7 +511,9 @@ export async function lessonTurn(req, body) {
     const silentNow = !String(childText ?? "").trim() && !body.chipId && (cls?.source === "empty" || body.asrConfidence === 0);
     const chipLabel = body.chipId ? (state.lastUi?.chips ?? []).find((c) => c.id === body.chipId)?.label ?? null : null;
     try {
-      agentOut = await agentTurn({ state, kit, lessonId: lesson.id, lane: state.mode, trace, silent: silentNow,
+      const verdict = card && cls ? (cls.outcome === "correct" && !cls.reasonMisconceptionId ? "correct" : cls.outcome === "correct" || cls.outcome === "partial" ? "partly"
+        : cls.outcome === "incorrect" || cls.outcome === "misconception" ? "wrong" : null) : null;
+      agentOut = await agentTurn({ state, kit, lessonId: lesson.id, lane: state.mode, trace, silent: silentNow, verdict,
         event: eventOf({ kind: silentNow ? "silence" : "turn", childText, asrConfidence: body.asrConfidence, chipId: body.chipId, chipLabel, typed, cls, card, kit, lang: state.ctx?.lang }) });
       // the Director's stepped state keeps its bookkeeping; the card and the phase are the agent's
       const agentNext = structuredClone(next);

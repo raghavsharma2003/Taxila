@@ -24,6 +24,8 @@ test("the ASR's fused hundreds: छेसो = छह सौ, and its kin in bot
   assert.deepEqual(numbersIn("तीन लाख एक हज़ार छेसो"), [301600]);
   for (const [w, v] of [["पाँचसो", 500], ["पांचसो", 500], ["सातसो", 700], ["आठसो", 800], ["नौसो", 900], ["दोसो", 200], ["तीनसो", 300], ["चारसो", 400],
     ["छह सो", 600], ["chheso", 600], ["paanchso", 500], ["teensau", 300]]) assert.equal(spokenNumber(w), v, w);
+  // the ASR's own spellings of the forties (sim lab voice re-run p43-c7 #9: "बालीस हज़ार" for 42,000)
+  for (const [w, v] of [["बालीस हज़ार", 42000], ["छयालीस", 46], ["चालिस", 40]]) assert.equal(spokenNumber(w), v, w);
   // a bare Roman "so" is English, never a hundred
   assert.equal(spokenNumber("paanch so"), 5);
 });

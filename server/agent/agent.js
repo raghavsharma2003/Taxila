@@ -57,12 +57,26 @@ export function eventOf({ kind, childText, asrConfidence, chipId, chipLabel, typ
 }
 
 /**
+ * Her line without praise of the child's answer: a sentence that opens on praise or calls the answer right is dropped, a
+ * leading "haan," is dropped. Used only when the verified grade is not "correct". PURE.
+ */
+const PRAISE = /(?:^|[^\p{L}])(?:bilkul\s+sahi|ekdum\s+sahi|sahi\s+(?:hai|jawab|chuna|chuni|kaha|kahi|bataya|batayi|socha|pakda|pakdi|laga|lagaya)|bahut\s+(?:accha|achha|achchha|badhiya)|shabaa?sh|well\s+done|great\s+(?:job|work)|very\s+good|good\s+job|perfect|excellent|correct|that'?s\s+right|(?:you\s+|tum(?:ne)?\s+)?got\s+it|sahi|wah|बिल्कुल\s*सही|सही|शाबाश)(?![\p{L}])/iu;
+const OPEN_YES = /^\s*(?:haan|haa|han|ha|yes|ji\s+haan|हाँ|हां)\s*[,!.]?\s*/iu;
+export function withoutPraise(say) {
+  const parts = String(say ?? "").match(/[^.!?।]+[.!?।]*\s*/g) ?? [];
+  const kept = parts.filter((p, i) => !(PRAISE.test(p) && !/[?？]/.test(p) && (i === 0 || p.split(/\s+/).length <= 10)));
+  let out = (kept.length ? kept : parts).join("").trim();
+  if (kept.length) out = out.replace(OPEN_YES, "");
+  return out ? out[0].toUpperCase() + out.slice(1) : String(say ?? "");
+}
+
+/**
  * One agent turn. → { say, intent, item, board: ScreenTruth | null (a page that went up), cleared, picture: ScreenTruth | null,
  *   screen: ScreenTruth (after her actions), slot, read, plan, end, usage, ms, notes[] }
  * Throws on a model error, a timeout, a bad output or a budget: the caller (brain/turn.js) then lets the Director lane take
  * the turn.
  */
-export async function agentTurn({ state, kit, event, silent = false, lessonId, lane = "voice", trace, chatFn = chat, tools = screenTools, now = Date.now() }) {
+export async function agentTurn({ state, kit, event, silent = false, verdict = null, lessonId, lane = "voice", trace, chatFn = chat, tools = screenTools, now = Date.now() }) {
   const a = state.agent ?? {};
   const usage = a.usage ?? { usd: 0, tokens: 0 };
   if (usage.usd >= AGENT_LIMITS.lessonUsd || usage.tokens >= AGENT_LIMITS.lessonTokens) throw new AgentBudgetError(`lesson budget spent (${usage.usd.toFixed(3)} USD, ${usage.tokens} tokens)`);
@@ -108,6 +122,9 @@ export async function agentTurn({ state, kit, event, silent = false, lessonId, l
     picture = t;
     notes.push(t?.ok && t.job ? `picture job ${clip(out.picture, 40)}` : `picture refused: ${clip(t?.refused?.why, 60)}`);
   }
+  // ── her line, held to the verified grade: no praise or "sahi" on an answer the key says is wrong or only partly right
+  // (sim lab d6f93e7: misread_wrong_as_right 19/64, "Haan, 60,000 sahi chuna" while the misconception was live) ──
+  if (verdict && verdict !== "correct") { const held = withoutPraise(say); if (held !== say) { say = held; notes.push(`praise removed (${verdict})`); } }
   // ── her line, checked against what is really up ──
   if (lane !== "text") { const spoken = speakNotWrite(say); if (spoken !== say) { say = spoken; notes.push("type/write rewritten to say"); } }
   const texts = screen?.on === "board" ? (screen.texts ?? []) : [];
@@ -140,7 +157,7 @@ const DEEP_KINDS = new Set(["why", "far_transfer", "near_transfer", "error_spot"
 export function earnedRead(level, graded) {
   if (level !== "understood") return level;
   const lastRight = graded.map((x) => x.g).lastIndexOf("correct");
-  if (lastRight < 0) return graded.length ? "not" : "partly";
+  if (lastRight < 0) return !graded.length || graded.some((x) => x.g.startsWith("partly")) ? "partly" : "not";
   if (graded.slice(lastRight + 1).some((x) => x.g !== "correct")) return "partly";
   const right = graded.filter((x) => x.g === "correct");
   const items = new Set(right.map((x) => x.item));
@@ -159,7 +176,7 @@ export function applyAgentTurn(next, out, { kit, childText = "", cls = null, car
   const learner = { ...(a.learner ?? {}) };
   if (card && cls) {
     const k = card.skillId;
-    const g = cls.outcome === "correct" ? "correct" : cls.outcome === "partial" ? "partly" : ["incorrect", "misconception"].includes(cls.outcome) ? (cls.misconceptionId ? `wrong(${cls.misconceptionId})` : "wrong") : null;
+    const g = cls.outcome === "correct" ? (cls.reasonMisconceptionId ? `partly(${cls.reasonMisconceptionId})` : "correct") : cls.outcome === "partial" ? "partly" : ["incorrect", "misconception"].includes(cls.outcome) ? (cls.misconceptionId ? `wrong(${cls.misconceptionId})` : "wrong") : null;
     if (g) learner[k] = { ...(learner[k] ?? {}), grades: [...(learner[k]?.grades ?? []), g].slice(-10),
       graded: [...(learner[k]?.graded ?? []), { item: card.id, kind: card.kind, g }].slice(-10),
       ...(cls.misconceptionId ? { misconceptions: [...new Set([...(learner[k]?.misconceptions ?? []), cls.misconceptionId])] } : {}) };
