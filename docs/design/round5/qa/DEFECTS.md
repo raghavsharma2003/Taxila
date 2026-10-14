@@ -247,6 +247,19 @@ until the child taps the mic. Expected: one server-side retry of the TTS call (i
 floor moves to YOUR TURN with the card as the question, so the lesson goes on in text. Evidence in
 `ui.state floor=idle strip=T5` from 17.8 s to 66.2 s.
 
+## Passes 9 and 10 — on 79e557a: nothing new (two consecutive clean passes)
+Both on fresh accounts, phone and laptop:
+- **Pass 9:** set-up (class 4 phone + laptop, class 6, class 9 English laptop); Hello + every child screen; the corner
+  (phone + laptop); family; qa-interact; qa-gate-kill PASS; qa-reload PASS; Continue after leaving (state `resume`, same
+  lessonId); Data and privacy (download, delete); qa-stale PASS; a spoken game ask (D07 as known: the content fix is not merged
+  here) + landscape (Talk 295-383 of 393 with a board); class 9 typed "Are you a real person?" → "No, Kabir—I'm an AI teacher,
+  not a person"; "I don't get it" → a new example; Slow 3G (her turn at 38 s, D12 as known).
+- **Pass 10:** class 2 English with the mic denied (no mic; Help → "Hear it again / Show me choices / Show me how"); class 8
+  RBSE Hinglish typed on the phone → a re-explanation (cricket wins as a percentage), pause → continue → end → "Session done"
+  with an honest parent summary; then the whole core sweep again (set-up, every child and corner screen on phone + laptop,
+  family, qa-interact, two tabs, qa-gate-kill PASS, qa-reload PASS, Continue, qa-stale PASS, Data and privacy).
+Seen again but already logged: odd openers (D14: "Ready to tell me your favourite colour?" in a two-digit addition lesson).
+
 ## Pass 8 — on f931e01 (D24 + D17): one gap in D24, fixed
 Sweep clean (set-up phone + laptop + class 6, Hello + every child screen on both, the corner, family → Sign in, qa-interact,
 qa-gate-kill PASS, qa-reload PASS, a spoken answer, offline 8 s, landscape Talk at 286-374 px of 393). The gap: after leaving
