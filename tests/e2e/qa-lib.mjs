@@ -74,7 +74,7 @@ export function dump(log, label) {
 }
 
 /** Sign a fresh parent up and create one child through the real /start set-up; returns { email, password, cid }. */
-export async function setup(page, { child = "Riya", cls = "Class 4", pin = "2580", label = "qa" } = {}) {
+export async function setup(page, { child = "Riya", cls = "Class 4", pin = "2580", label = "qa", board = "CBSE", lang = "Hindi and English mix" } = {}) {
   const email = `qa-r5-${label}-${Date.now()}-${Math.random().toString(36).slice(2, 6)}@taxila.test`;
   const password = `pw-${Date.now()}-Ab9`;
   const b = (n) => btn(page, n);
@@ -92,11 +92,11 @@ export async function setup(page, { child = "Riya", cls = "Class 4", pin = "2580
     last = path;
     seen.push(path);
     if (path === "/start/class") {
-      await b(cls).first().click(); await b("CBSE").first().click();
-      if (await b("Hindi and English mix").count()) await b("Hindi and English mix").first().click();
+      await b(cls).first().click(); await b(board).first().click();
+      if (await b(lang).count()) await b(lang).first().click();
       await b("Continue").first().click();
     } else if (path === "/start/meet") {
-      await b("Hindi and English mix").first().click(); await b("Continue").first().click();
+      await b(lang).first().click(); await b("Continue").first().click();
     } else if (path === "/start/promises") {
       const hold = page.getByRole("button", { name: /Hold to continue/ }).first();
       const bb = await hold.boundingBox();
