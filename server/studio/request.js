@@ -247,6 +247,25 @@ export function clockBoard(request, { scriptId = "clock", lessonId = "", spanMs 
   const durationMs = Math.max(...ops.map((o) => o.endMs)) + 200;
   return { v: 1, scriptId, line: { lessonId }, anchor: "line_audio_start", board: { w: 400, h: 300, ground: "chalk" }, mode: "fresh", durationMs, ops };
 }
+/**
+ * Round 5 (sim lab 709b6acb, the 13 lessons still flagged): a line that ASSUMES a visual with no screen word in it, said over
+ * an empty stage: "Table mein Baisakhi kis month mein dikh rahi hai?" (no table; the child: "screen pe toh kuch nahi dikh
+ * raha"), "Aap 3335 ko mark kijiye" (no number line), "Timeline picture: charter → Plassey" (nothing drawn). The visual noun
+ * goes, the content stays: "Baisakhi kis month mein dikh rahi hai?", "Aap 3335 kahan aayega, bataiye", "Timeline: …". PURE.
+ */
+const VISUAL_NOUN = "(?:table|chart|diagram|graph|timeline|number\\s+line|grid|picture|photo|tasveer|chitra|chitr|तालिका|चार्ट|चित्र|तस्वीर)";
+export function unassumeVisual(text) {
+  const before = String(text ?? "");
+  const s = before
+    .replace(new RegExp(`\\b(?:is|iss|us|uss|this|the|ye|yeh)?\\s*${VISUAL_NOUN}\\s+(?:mein|me|par|pe|per|में|पर)\\s+`, "giu"), "")
+    .replace(new RegExp(`\\b(?:on|in)\\s+the\\s+${VISUAL_NOUN}\\b\\s*,?\\s*`, "giu"), "")
+    .replace(new RegExp(`([\\p{L}]{2,20})\\s+${VISUAL_NOUN}\\s*:`, "giu"), "$1:")
+    .replace(/\bko\s+mark\s+(?:kijiye|kijie|kariye|karo|karein|karen|kar\s+do)\b/giu, "kahan aayega, bataiye")
+    .replace(/\bmark\s+(?:kijiye|kijie|kariye|karo|karein|karen|kar\s+do)\b/giu, "bataiye")
+    .replace(/\s+([,.;!?।:])/g, "$1").replace(/\s{2,}/g, " ").trim();
+  if (s === before.trim()) return before;
+  return s.replace(/(^|[.!?।]\s+)([a-z])/g, (_m, a, b) => a + b.toUpperCase());
+}
 /** Does her line say there is no game (honest), or announce one ("Chalo mirror line game")? PURE. */
 const GAME_WORD = /\b(?:game|games)\b|गेम/iu;
 const NO_GAME = /\b(?:game|games)\b.{0,40}?\b(?:nahi|nahin|not|isn't|no)\b|\b(?:no|koi|abhi)\b.{0,20}?\bgame\b.{0,20}?\b(?:nahi|nahin|ready nahi)\b|गेम.{0,30}?नहीं|\bno\s+game\b/iu;

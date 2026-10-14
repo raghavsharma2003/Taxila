@@ -118,3 +118,14 @@ test("'ghadi draw karo': the code clock passes the board gate against her line a
   assert.deepEqual(g.checks.filter((c) => !c.pass).map((c) => c.id), []);
   assert.equal(answersRequest(g.script, req), true);
 });
+
+test("sim lab 709b6acb: over an empty stage a line never assumes a visual (table / chart / timeline picture / mark kijiye)", async () => {
+  const { unassumeVisual, unpointGently, pointsAtStage } = await import("../server/studio/request.js");
+  assert.equal(unassumeVisual("Table mein Baisakhi kis month mein dikh rahi hai?"), "Baisakhi kis month mein dikh rahi hai?");
+  assert.equal(unassumeVisual("Aap 3335 ko mark kijiye."), "Aap 3335 kahan aayega, bataiye.");
+  assert.equal(unassumeVisual("Timeline picture: charter → Plassey → Buxar."), "Timeline: charter → Plassey → Buxar.");
+  assert.equal(unassumeVisual("Can you find 13 on the number line?"), "Can you find 13?");
+  assert.equal(unassumeVisual("Accha, ek table banate hain."), "Accha, ek table banate hain.", "a table she is making is not one assumed on screen");
+  const plain = unassumeVisual("Is chart mein dekho, 3 rows hain.");
+  assert.equal(pointsAtStage(plain) ? unpointGently(plain) : plain, "Dekho, 3 rows hain.", "a bare conversational \"dekho,\" stays");
+});
