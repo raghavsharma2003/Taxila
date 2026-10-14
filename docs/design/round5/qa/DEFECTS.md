@@ -225,6 +225,15 @@ until the child taps the mic. Expected: one server-side retry of the TTS call (i
 floor moves to YOUR TURN with the card as the question, so the lesson goes on in text. Evidence in
 `ui.state floor=idle strip=T5` from 17.8 s to 66.2 s.
 
+## Pass 5 — nothing new (first clean pass)
+Fresh accounts on f2e9b9c (local :8090): set-up phone + laptop and 3 more; Hello + every child screen on phone and laptop;
+parent gate + every corner page; family (add, who, switch, sign out → Sign in, wrong password, sign in); qa-interact; two tabs
+(B waits behind "Tap to hear", A keeps working); qa-gate-kill PASS; Data and privacy (download 2,193 B, delete, receipt; the
+child URL asks for sign-in; `pageerror` [] — D26 holds); spoken asks: game (D07 as known, content's fix not merged here),
+"बोर्ड साफ करो" → "Board saaf hai" (no new board), "मुझे नहीं पता, फिर से समझाओ ना" → a new concrete example (cheeni packet);
+Slow 3G (her turn at 36 s, D12 as known); class 7 laptop typed: AI disclosure ("Nahi Aarav, main insaan nahi—main ek AI
+teacher hoon") and the harm disclosure → 1098 / 14416 + help sheet (D23 as known).
+
 ## Journeys that passed (pass 4)
 Regression sweep on f2e9b9c (rel 14 merged): set-up phone + laptop, Hello, every child screen (Practice now opens after 21:30;
 Me says "Tap instead"), the parent gate and every corner page, family (add a child, who, switch, sign out → the signed-out
