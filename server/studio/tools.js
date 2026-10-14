@@ -14,6 +14,7 @@
 import { studioSeam, subscribe, _lesson } from "./seam.js";
 import { textsOf, numberLineBoard, answersRequest } from "./request.js";
 import { drawableSubject } from "../director/state.js";
+import { startPicture } from "./picture.js";
 
 const BOARD = { w: 400, h: 300 };
 const MAX_LINE = 24;
@@ -53,7 +54,7 @@ function truthOf(piece, extra = {}) {
     const texts = textsOf(a.script);
     return { ok: true, on: "board", words: describeScript(a.script), texts, numbers: nums(texts), pageId: piece.intentId, ...extra };
   }
-  if (a.kind === "image") return { ok: true, on: "picture", words: `the screen shows a picture of ${a.alt ?? piece.facts?.onScreen?.subject ?? "something"}`, texts: [], numbers: [], pageId: piece.intentId, ...extra };
+  if (a.kind === "image") return { ok: true, on: "picture", words: `the screen shows ${a.alt || `a picture of ${piece.facts?.onScreen?.picture ?? "something"}`}`, texts: [], numbers: [], pageId: piece.intentId, ...extra };
   return { ok: true, on: "game", words: `the screen shows ${piece.archetype ?? a.kind} for the child to use`, texts: [], numbers: [], pageId: piece.intentId, ...extra };
 }
 
@@ -188,4 +189,25 @@ export function boardClear(lessonId) {
   return { ok: true, on: "nothing", words: "the board is empty", texts: [], numbers: [] };
 }
 
+/**
+ * picture.get: a real picture of a thing, made in the background (~12-20 s), moderated, then put on the stage; or an honest
+ * "cannot" at once. → ScreenTruth now (the screen unchanged, `job` set; or `refused`); later `onEvent({ type:
+ * "content_ready", job, truth })` when it is up, or `{ type: "content_failed", job, why }`. The agent says it is being made
+ * and gives the thing in words meanwhile; it never says the picture is there before content_ready.
+ * @param {string} lessonId @param {string} subject @param {{ onEvent?: (e: any) => void }} [o]
+ */
+export function pictureGet(lessonId, subject, { onEvent = () => {} } = {}) {
+  const now = screenNow(lessonId);
+  const r = startPicture(lessonId, subject, {
+    reveal: (pic) => {
+      const slot = studioSeam.showImage(lessonId, pic);
+      try { onEvent(slot ? { type: "content_ready", job: pic.jobId, truth: screenNow(lessonId) } : { type: "content_failed", job: pic.jobId, why: "the stage is busy (a game in use) or Studio is off" }); } catch { /* the agent is gone */ }
+    },
+    fail: (why) => { try { onEvent({ type: "content_failed", job: r?.job?.id ?? null, why }); } catch { /* the agent is gone */ } },
+  });
+  if (!r.ok) return { ...now, ok: false, refused: { why: r.why, checks: [r.check] } };
+  return { ...now, ok: true, job: r.job, words: `${now.words}; a picture of ${String(subject).slice(0, 40)} is being made (about ${Math.round((r.job.etaMs || 0) / 1000)} s)` };
+}
+
 export const boardTools = { show: boardShow, clear: boardClear, now: screenNow };
+export const pictureTools = { get: pictureGet };

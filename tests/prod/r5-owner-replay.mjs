@@ -62,7 +62,8 @@ await withTestAccount(async ({ api }) => {
     const interactive = x.mounts.some((m) => m && !/^explainer@/.test(m)) || mounts.some((m) => m.kind !== "whiteboard" && new Date(m.revealed_at) >= x.at && (!rows[rows.indexOf(x) + 1] || new Date(m.revealed_at) < rows[rows.indexOf(x) + 1].at));
     const pointingBad = kind === "aloo" && POINT.test(x.reply ?? "") && !pts.some((t) => ALOO.test(t));
     let answered = null;
-    if (kind === "game") answered = interactive || (NO_GAME.test(x.reply ?? "") && !/\bgame\s*:/i.test(x.reply ?? ""));
+    // a game: a piece to play, or a game she runs in words (no screen claimed), or an honest "no game ready"
+    if (kind === "game") answered = interactive || !POINT.test(x.reply ?? "") || NO_GAME.test(x.reply ?? "");
     if (kind === "photo") answered = (x.pages ?? []).length > 0 || CANT.test(x.reply ?? "");
     if (kind === "aloo") answered = pts.some((t) => ALOO.test(t)) || (CANT.test(x.reply ?? "") && !POINT.test(x.reply ?? ""));
     if (pointingBad) answered = false;

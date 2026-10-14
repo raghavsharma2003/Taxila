@@ -210,7 +210,8 @@ export function slotOf(p, state = p.state) {
   if (p.source === "stagecraft") return stagecraft.stagecraftSlot(p, state);
   // round 3 forge: a play piece (server/forge3/live.js) is its PlayArtifact; the play server grades it from raw acts
   if (p.source === "play") return { slotId: p.slotId, intentId: p.intentId, state: state === "fallback_ready" ? "fallback_shown" : state, ...(p.artifact ? { artifact: p.artifact } : {}) };
-  const art = p.artifact?.kind === "whiteboard" ? p.artifact : p.kind === "whiteboard" ? undefined : artifactOf(p);
+  // round 5: a picture (studio/picture.js) is its own artifact, like a board
+  const art = p.artifact?.kind === "whiteboard" || p.artifact?.kind === "image" ? p.artifact : p.kind === "whiteboard" || p.kind === "image" ? undefined : artifactOf(p);
   const st = state === "fallback_ready" ? "fallback_shown" : state;
   return { slotId: p.slotId, intentId: p.intentId, state: st, ...(art ? { artifact: art } : {}) };
 }
@@ -795,7 +796,8 @@ export const studioSeam = {
     const on = L.onScreen ? L.pieces.get(L.onScreen) : null;
     const onPrev = L.onScreen ?? null;
     // (a piece the turn's accepted retire takes down does not hold the tray: the child asked for the board)
-    if (on && VISIBLE.has(on.state) && on.kind !== "whiteboard" && !on.grade?.complete && !(ask.replaces && ask.replaces === on.intentId)) return null;
+    // (a picture is looked at, never used: it never holds the tray against a board)
+    if (on && VISIBLE.has(on.state) && on.kind !== "whiteboard" && on.kind !== "image" && !on.grade?.complete && !(ask.replaces && ask.replaces === on.intentId)) return null;
     const intentId = String(ask.intent.intentId);
     if (L.pieces.has(intentId)) { const p = L.pieces.get(intentId); return { slotId: p.slotId, intentId, state: p.artifact ? "revealed" : "planning" }; }
     const p = { intentId, slotId: `${intentId}:slot`, kind: "whiteboard", archetype: "whiteboard", source: "whiteboard", skillId: ask.intent.skillId ?? null,
@@ -1013,6 +1015,31 @@ export const studioSeam = {
     const L = lessons.get(lessonId);
     const on = L?.onScreen ? L.pieces.get(L.onScreen) : null;
     return !!(on && VISIBLE.has(on.state) && on.kind !== "whiteboard");
+  },
+
+  /**
+   * round 5 (stream 2): a picture made for the child's ask (studio/picture.js, moderated before it gets here) goes on the
+   * stage NOW, on the Studio stream as an early slot (the Desk shows it until the next turn's ui, which carries it while it
+   * is the piece on screen). Its facts row names the thing, so her next line can point at it truthfully. Refused while a
+   * safeguarding turn holds the lesson, the parent's Studio switch is off, or a game is in use. → the slot, or null.
+   */
+  showImage(lessonId, { src, alt, subject, jobId }) {
+    const L = lessons.get(lessonId);
+    if (!L || L.safety || L.studioControl === "off" || !/^data:image\/(?:png|jpeg);base64,/.test(String(src ?? ""))) return null;
+    const on = L.onScreen ? L.pieces.get(L.onScreen) : null;
+    if (on && VISIBLE.has(on.state) && !["whiteboard", "image"].includes(on.kind) && !on.grade?.complete) return null;
+    const intentId = `${lessonId}:pic:${String(jobId ?? Date.now()).replace(/[^\w:.-]/g, "").slice(-24)}`;
+    const p = { intentId, slotId: `${intentId}:slot`, kind: "image", archetype: "image", source: "image", skillId: null, need: "explain", state: "revealed", retired: false,
+      createdAt: Date.now(), revealedAt: Date.now(), revealedTurn: L.turn, artifact: { kind: "image", stage: { w: 1024, h: 1024 }, src, alt: String(alt ?? "").slice(0, 80) },
+      facts: { kind: "image", archetype: "image", onScreen: { picture: String(subject ?? "").slice(0, 24) } } };
+    if (on) retirePiece(L, on.intentId, "replaced");
+    L.pieces.set(intentId, p);
+    L.onScreen = intentId;
+    L.wbPrev = null; L.wbUnder = [];
+    const slot = slotOf(p, "revealed");
+    push(L, { t: "slot", slot });
+    push(L, { t: "status", status: { state: "revealed", intentId, buildSha: "image", facts: p.facts } });
+    return slot;
   },
 
   /** release 13 (r12 RCA failure 4): the child asked to clear the board: what is on screen retires and the next board is

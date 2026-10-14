@@ -26,7 +26,7 @@ const SAME = [
   ["machli", "fish", "मछली"], ["gaay", "gai", "cow", "गाय"], ["haathi", "hathi", "elephant", "हाथी"], ["sher", "lion", "tiger", "शेर"],
   ["seb", "apple", "सेब"], ["kela", "banana", "केला"], ["tamatar", "tomato", "टमाटर"], ["pyaaz", "pyaz", "onion", "प्याज"],
   ["ghar", "house", "home", "घर"], ["bijli", "electricity", "बिजली"], ["batti", "bulb", "बल्ब"], ["dil", "heart", "दिल"],
-  ["disha", "direction", "directions", "दिशा"], ["uttar", "north"], ["dakshin", "south"], ["purab", "purv", "east"], ["pashchim", "west"],
+  ["disha", "direction", "directions", "दिशा", "north", "south", "east", "west", "uttar", "dakshin", "purab", "purv", "pashchim", "उत्तर", "दक्षिण", "पूर्व", "पश्चिम"],
 ];
 const SAME_OF = new Map(SAME.flatMap((g) => g.map((w) => [w, g])));
 
@@ -83,8 +83,11 @@ const hasNumberLine = (script) => {
  * ("isko draw karo") → any board does (it draws what is on the table). PURE.
  * @param {any} script @param {import("../../shared/studio").StudioRequest | null | undefined} request
  */
-export function answersRequest(script, request) {
+export function answersRequest(script, request, { drawnFor = false } = {}) {
   if (!request) return true;
+  // a board the line planner drew FOR this request ("phool ke parts", "plant ki life cycle") labels the parts (petal, sepal …)
+  // and may never write the whole's name: three labels or more answer a "parts / cycle / diagram" ask (never a ready-made one)
+  if (drawnFor && request.subject && norm(request.subject).split(/\s+/).some((w) => WEAK.has(w)) && new Set(textsOf(script).map(norm)).size >= 3) return true;
   if (!script?.ops?.length) return false;
   // a number line with the numbers the child named on it ("1/4", "-3", "0.5"): a line of other numbers answers another question
   if (request.kind === "number_line") return hasNumberLine(script) && numbersOn(script, request.said);
