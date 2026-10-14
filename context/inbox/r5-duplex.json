@@ -1,0 +1,73 @@
+{
+  "nodes": [
+    {
+      "id": "ms-r5-duplex-owner-harness-2026-10-14",
+      "kind": "measurement",
+      "at": "2026-10-14",
+      "title": "round 5 phone-echo harness (evals/duplex-2026-10/assemble.mjs variant 'owner', SIMULATED): the owner's Android loudspeaker as the phone-speaker path (300 Hz-5 kHz, soft clip, 60 ms delay, 120 ms room tail, -6 dB under the child) behind a WEAK device AEC: full echo for the first 500 ms of each of her lines (re-converging), then 10 dB ERLE [E]. Over 102 of her lines (66 TaxilaFDB TEST + 36 continuer scenarios) it reproduces the owner's failure on the old D4 engine: phantom child transcripts of her voice on 65/66 lines, echo yields 48/66, her own voice hushing her on 66/66 (r5-gate.mjs). Not a phone: real-device validation is the owner's recorder."
+    },
+    {
+      "id": "ms-r5-d5-owner-2026-10-14",
+      "kind": "measurement",
+      "at": "2026-10-14",
+      "title": "D5 on the owner harness (evals/duplex-2026-10/arms-d5.mjs: the shipped relay to Voice Live centralindia + the shipped DuplexLive D5 path, real time, TTS children; arm d5r5c): over 102 of her lines 0 phantom child transcripts, 0 phantom turns, 0 echo yields; barge-in noticed 12/12 with her stop (hush -26 dB or pause/stop) <= 500 ms on 11/12 (p50 59 ms, p90 247 ms) via the pitch-gated pre-duck; continuer false yields 0/46; thinking-pause cut-offs 0/34. Echo hushes (a pre-duck on her own echo) 6/102 at 6 dB / 40 ms; retuned OFFLINE to 12 dB / 80 ms (evals/duplex-2026-10/preduck-tune.mjs, IN-SAMPLE, same 102 lines): 0/102 owner, 0/102 phone, 1/102 clean, barge pre-duck <= 500 ms 11/12 on each. NOT MET: end-of-turn p50 1,480 ms (bar 900): closed answers p50 1,500 because Voice Live returned an EMPTY transcript for 5/14 short closed answers on this audio (the turn then ends on the re-ask backstop), open explanations p50 3,030 ms by design (teach-back patience; cut-offs 0/34)."
+    },
+    {
+      "id": "ms-r5-d4-half-duplex-owner-2026-10-14",
+      "kind": "measurement",
+      "at": "2026-10-14",
+      "title": "D4 half-duplex on the owner harness (arms-ours.mjs --half, real gpt-live-transcribe, arm d4h2) vs the old full-duplex D4 (d4full): phantom child transcripts 0/102 vs 65/66, phantom turns 0/102 vs 2/66, echo yields 0/102 vs 48/66, her voice hushed by her echo 0/102 vs 66/66; continuer false yields 0/46; barge-in 0/12 by design (no barge-in on the half-duplex lane); end-of-turn p50 1,560 ms, missed 3/34 (2 are hold_long by design); lone words noticed 1/8 (an empty turn is never committed on D4, so an unheard 'haan' waits for her silence nudge)."
+    },
+    {
+      "id": "dc-r5-d4-half-duplex",
+      "kind": "decision",
+      "at": "2026-10-14",
+      "title": "D4 (the fallback lane when D5 cannot open, and the live lane without D5) runs HALF-DUPLEX: while her line plays, her output is audible, or within the tail after either (250 ms + AudioContext.outputLatency within 400-900 ms, else 600), the mic track is disabled, the engine reads the room's quiet level, and any transcription item that starts in that window is dropped whole; micro-commits only for audio the transcriber holds (no commit_empty); an empty turn is never committed on D4. ?duplexfull=1 keeps the full engine on a device. Merged with main's release-14 implementation (337b09a). Reverse if: the owner's real-phone recorder shows a child's answer lost inside the tail more than 1 in 20 turns, or the device AEC is shown sufficient on the cohort's phones (then full-duplex D4 for headsets only)."
+    },
+    {
+      "id": "dc-r5-one-turn-at-a-time",
+      "kind": "decision",
+      "at": "2026-10-14",
+      "title": "One turn at a time on every lane: no engine turn while an engine-committed turn or a tapped / typed answer is waiting for her reply (cleared when her reply starts; a lost reply stops holding after 15 s), none within 3 s of a tap, and the link drops a spoken final within 3 s of a tap until her reply to it arrives. The safety floor (safeguard / safety cut-in) is never held. Reverse if: real sessions show a child's spoken correction right after a tap lost more than 1 in 20 times."
+    },
+    {
+      "id": "dc-r5-d5-preduck-pitch",
+      "kind": "decision",
+      "at": "2026-10-14",
+      "title": "D5 pre-duck ON by default, straight to the hush level (-26 dB), only for a burst 12 dB above her predicted echo for 80 ms with a pitch >= 1.5 semitones from her own output pitch and its octaves (her echo carries her pitch; measured: 4,448 echo frames at 0 st, ~30 at each of +-12). Voice Live silence 250 ms (decide-late in the engine). No text echo subtraction on D5 (the ear removed her echo acoustically; subtracting her words deleted a child's 'आठ corners'). Reverse if: the owner's recorder shows false pre-ducks on her own echo on more than 2 % of her lines, or barge-in pre-duck <= 500 ms falls below 80 % on real children."
+    },
+    {
+      "id": "open-r5-d5-asr-empties",
+      "kind": "open",
+      "at": "2026-10-14",
+      "title": "Voice Live's azure-speech (hi-IN,en-IN) returns EMPTY transcripts for some short child answers on the owner harness (5/14 closed answers: 'सात है ना', 'तीस दीदी', 'छह faces दीदी', 'चालीस square cm', 'हाँ'); hi-IN alone recovers some ('40', 'साथ है ना') but drops English words ('आठ corners'). This is what holds end-of-turn p50 at ~1.5 s for closed answers on D5. Next: gpt-4o-transcribe inside Voice Live, or a second ear for short bursts (the device-side clip to /api/voice/transcribe)."
+    }
+  ],
+  "edges": [
+    {
+      "src": "ms-r5-d5-owner-2026-10-14",
+      "rel": "part_of",
+      "dst": "ms-r5-duplex-owner-harness-2026-10-14"
+    },
+    {
+      "src": "ms-r5-d4-half-duplex-owner-2026-10-14",
+      "rel": "part_of",
+      "dst": "ms-r5-duplex-owner-harness-2026-10-14"
+    },
+    {
+      "src": "dc-r5-d4-half-duplex",
+      "rel": "measured_by",
+      "dst": "ms-r5-d4-half-duplex-owner-2026-10-14"
+    },
+    {
+      "src": "dc-r5-d5-preduck-pitch",
+      "rel": "measured_by",
+      "dst": "ms-r5-d5-owner-2026-10-14"
+    },
+    {
+      "src": "open-r5-d5-asr-empties",
+      "rel": "part_of",
+      "dst": "ms-r5-d5-owner-2026-10-14"
+    }
+  ]
+}
