@@ -34,7 +34,18 @@ export type LoadMap = (cid: string) => Promise<MapLike | null>;
 
 // getChildMap answers a failed read with an EMPTY map, never an error. An empty "before" would make every secure skill
 // look new (a false "Now secure"), so an empty read is unknown here (null): the Debrief then shows no secure section.
-const loadChildMap: LoadMap = (cid) => getChildMap(cid, "sky").then((m) => (m.empty && !m.hidden ? null : (m as MapLike)), () => null);
+// r5 QA: the "before" read runs in a useState initializer, which React re-runs when a render is discarded (a lazy child
+// suspending), so every lesson start fetched the 189 KB map twice in parallel (2.7-3.2 s each, on the lesson's hot path).
+// One read per child is shared for SHARE_MS; the Debrief's "after" read comes minutes later and is fresh.
+const SHARE_MS = 10_000;
+const inflight = new Map<string, { at: number; p: Promise<MapLike | null> }>();
+const loadChildMap: LoadMap = (cid) => {
+  const hit = inflight.get(cid);
+  if (hit && Date.now() - hit.at < SHARE_MS) return hit.p;
+  const p = getChildMap(cid, "sky").then((m) => (m.empty && !m.hidden ? null : (m as MapLike)), () => null);
+  inflight.set(cid, { at: Date.now(), p });
+  return p;
+};
 
 export interface KakshaLessonProps {
   cid: string;
