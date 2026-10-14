@@ -92,7 +92,7 @@ const rows = await pool(recs, conc, async (rec) => {
   const row = { persona: rec.persona, arm: rec.arm, lane: rec.lane, turns: rec.turns.filter((t) => t.child).length, auto: autoChecks(rec, p),
     lines: Object.fromEntries(rec.turns.map((t) => [t.n, (t.teacher ?? "").slice(0, 160)])) };
   const old = prior.get(`${rec.persona}/${rec.arm}/${rec.lane}`);
-  if (old?.judged) { row.judged = old.judged; row.judged2 = old.judged2; }
+  if (old?.judged && old.turns === row.turns) { row.judged = old.judged; row.judged2 = old.judged2; } // a re-run lesson is judged afresh
   else {
     try { row.judged = await judgeLesson(rec, p, MODELS.judge); } catch (e) { row.judgeError = String(e.message).slice(0, 200); }
     if (useJudge2) { try { row.judged2 = await judgeLesson(rec, p, MODELS.judge2); } catch (e) { row.judge2Error = String(e.message).slice(0, 200); } }
