@@ -39,6 +39,9 @@ Status: **FIXED** (on `claude/r5-qa`, verified by a repro script) · **OWNER** (
 | D16 | P2 | FIXED | QA (UI) | Offline: the state word says "Your answer is saved" when the child had not answered |
 | D17 | P2 | OPEN | QA (UI) | Phone in landscape: the dock is below the fold (inner scroll) and the face is a sliver |
 | D18 | P2 | FIXED | QA (UI) | Signed-out `/who` sends a returning parent into new-account set-up, not Sign in |
+| D20 | P2 | OWNER | conversation | Homework intake: "homework ka question bhejo" to a voice-first class 4 child (2/2); the card still says "Today's plan: Grams and kilograms" |
+| D21 | P2 | FIXED | QA (UI) | At 00:20 the child home greets "Morning, Riya" |
+| D22 | P2 | OWNER | latency / main | Parent home sits on "Loading": `GET /api/parent/overview` 2.4 s for 975 B |
 | D19 | P2 | WONTFIX | QA (UI) | `GET /api/me` 401 logged as a console error on every signed-out landing and set-up load |
 
 ## Details
@@ -152,6 +155,20 @@ bulaogi?", "Tum kaisi ho?", "Tumhara favourite fruit / subject / number kaunsa h
   phone still starts set-up. Verified both.
 - **D19** `GET /api/me 401` → console error on each signed-out landing / set-up load. **Won't fix here:** skipping the read
   when the `tx_in` hint cookie is absent would sign out any session older than that cookie; a console line is cheaper.
+
+### D20-D22 (pass 2)
+- **D20** Session-first cohort (`TAXILA_SESSION_FIRST_FOR` = the QA account, as production does for the owner), class 4:
+  intake "school mein aaj tumhare teacher ne kya padhaya?" with chips Test hai / Homework. Tap **Homework** → "Theek hai Riya,
+  homework ka question bhejo; hum use step by step karenge…" (n = 2/2 say "bhejo"). The voice follow-up works: "मेरा होमवर्क है,
+  500 ग्राम और आधा किलो में क्या अंतर है?" (ASR exact) → "500 gram aur aadha kilo ek hi matra hain…" (correct). The card
+  header meanwhile reads "TODAY'S PLAN · Grams and kilograms · Pehla question kaunsa hai?".
+- **D21** `greetingFor` (`KakshaHome.tsx`) said "morning" for 00:00-11:59. Fixed: until 04:00 it is still the evening.
+- **D22** Laptop parent corner: `GET /api/parent/overview` 2,396 ms (975 B), `GET /api/parent/syllabus` 1,249 ms; other
+  parent reads 0.3-0.6 s (n = 1, with the test suite running on the box).
+
+## Journeys that passed (pass 2)
+Homework chip tap and the voice homework question (session-first cohort); double-tap on Start → one `POST /api/lesson/start`
+(201) and one lesson; laptop: the PIN gate and every corner page, Hello cards, every child screen.
 
 ## Journeys that passed (pass 1)
 Set-up (5 steps, ~10-11 s scripted) on phone and laptop; Hello cards (greet, AI, picture, likes, say-hi skip); child home,
