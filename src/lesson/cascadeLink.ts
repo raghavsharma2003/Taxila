@@ -732,6 +732,7 @@ export class CascadeLink implements TeacherLink {
     if (this.ack) {
       if (e.type === "child_final" && !e.typed && this.ack.isEchoNow(e.text)) { this.events.emit({ type: "child_silent" }); return; }
       if (e.type === "child_speech_start") { this.stopAck(); this.ack.onSpeech(); }
+      if (e.type === "child_speech_end") this.ack.speechEnded(e.at); // round 5: the continuer's ~900 ms clock
     }
     // Round 2 latency: the prefetcher reads the partials and the item's end (it never changes what the turn sends)
     if (this.prefetcher) {
