@@ -29,7 +29,11 @@ export interface StudioIntent {
   style: { band: Band4; lang: StudioLang; interest?: string /* from an allowlist */;
            representation?: "concrete" | "pictorial" | "symbolic"; motion: "calm" | "lively" };
   childQuestion?: { normalised: string };          // only via the brain's paraphrase, PII-scrubbed; see §5.4
+  // round 5 (stream 2, RCA-1): what the child asked to SEE this turn (brain/propose.js requestOfSee): how, the thing named
+  // (a short noun phrase, code-gated), the numbers named for a number line. The board draws this; never the child's words.
+  request?: StudioRequest;
 }
+export interface StudioRequest { kind: "number_line" | "picture" | "draw" | "show" | "example"; subject?: string; said?: string[]; offKit?: boolean }
 
 // ───────────────────────────── plan, status, facts, records (§10) ─────────────────────────────
 export interface BuildPlan {

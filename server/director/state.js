@@ -996,12 +996,20 @@ function requestMove(s, input, item, req, labels) {
       // show it now and gives it in words; no board is asked for, nothing is said to be on the screen (fix 2 makes the claim
       // impossible either way). The image rung (r12/rca/IMAGE-RUNG.md) will lift this for subjects it can draw.
       const off = p5Flag("R4CONV") ? offSubject(req.subject, kit) ?? offTopicNow(s, kit) : null;
+      // round 5 (stream 2, the board): WHAT they asked to see rides on the move (move.see -> the whiteboard ask's request), so
+      // the board draws it. A thing outside the kit that a simple labelled sketch can show ("aloo dikhao") is sketched on
+      // the board, honestly: never claimed as a photo, never pointed at before it is there (drawableSubject: code, before any
+      // model). Anything else keeps release 13 (A): she says plainly she cannot show it and gives it in words.
+      const see = req.see ? { ...req.see, ...(off ? { subject: off, off: true } : {}) } : off ? { show: "show", subject: off, off: true } : null;
+      if (off && see && drawableSubject(off)) {
+        return plan("reteach", SH.drawAsked({ subject: off, show: see.show }), { skillId: currentSkillId(s, kit, item), representation: "diagram", visual: "diagram", request: "visual", see });
+      }
       if (off && !unsafeChildPhrase(off)) return plan("reteach", SH.visualUnavailable({ subject: off }), { skillId: currentSkillId(s, kit, item), request: "visual_unavailable" });
       // A picture on the stage (item 5): a re-teach move with the diagram representation, so planModule mounts the item's
       // engine as a show or the explainer@1 board (SHOW_MOVES), and the brain asks Studio for the whiteboard on any lane
       // (brain/propose.js whiteboardAskOf `requested`). A picture of the question on the table is help: it spends a rung.
       if (item && s.pendingWhy !== item.id) s.hintLevel = Math.min(3, s.hintLevel + 1);
-      return plan("reteach", SH.showVisual({ kind: req.kind }), { ...(item ? { item } : { skillId: currentSkillId(s, kit, item) }), representation: "diagram", visual: req.kind ?? "diagram", request: "visual" });
+      return plan("reteach", SH.showVisual({ kind: req.kind }), { ...(item ? { item } : { skillId: currentSkillId(s, kit, item) }), representation: "diagram", visual: req.kind ?? "diagram", request: "visual", ...(see ? { see } : {}) });
     }
     default: return p5Flag("STEER") ? p5RequestMove(s, input, item, req, labels) : null;
   }
@@ -1014,6 +1022,16 @@ const kitMentions = (kit, subject) => {
   const text = [...(kit?.skills ?? []).map((k) => k.title), ...(kit?.expectations ?? []), kit?.title ?? "",
     ...(kit?.items ?? []).slice(0, 60).flatMap((i) => [i.prompt_en, i.prompt_hi])].join(" ").toLowerCase().normalize("NFKC");
   return text.includes(w);
+};
+/**
+ * round 5 (stream 2): may a thing the child named outside the kit be sketched on the board? Code, before any model: a short
+ * noun phrase (at most 4 words, no digits), nothing the child-safety predicates flag, no person, body, brand or weapon
+ * word (r12/rca/IMAGE-RUNG.md §3's subject shape, for a board sketch). Doubt is no.
+ */
+const NOT_DRAWABLE = /\b(?:me|mujhe|meri|mera|mere|apni|apna|apne|my|myself|i|you|aap|tum|tumhari|tumhara|teri|tera|uski|uska|unki|ladki|ladka|girl|boy|man|woman|aadmi|aurat|person|people|log|face|chehra|body|sharir|nanga|nangi|kapde|bra|underwear|gun|bandook|knife|chaku|chaaku|blood|khoon|bomb|weapon|hathiyar|dead|maut|kill|maar|sex|kiss|logo|brand|selfie|ghar\s+ka\s+pata|address|phone|number)\b/iu;
+export const drawableSubject = (subject) => {
+  const w = String(subject ?? "").trim();
+  return !!w && w.split(/\s+/).length <= 4 && !/\d/.test(w) && !NOT_DRAWABLE.test(w) && !unsafeChildPhrase(w);
 };
 /** A request's subject when the kit does not teach it, else null. */
 const offSubject = (subject, kit) => (subject && !kitMentions(kit, subject) ? String(subject) : null);
@@ -1611,9 +1629,14 @@ export function step(prev, input) {
   if (backLead && p5Flag("STEER")) move.lead = [backLead, move.lead].filter(Boolean).join("; ").slice(0, 400);
   if (p.visual) {
     move.visual = p.visual;
+    // round 5 (stream 2): what they asked to see (brain/propose.js whiteboardIntentOf puts it on the board's ask)
+    if (p.see) move.see = p.see;
     // what is on the stage decides the words: point at it, or (nothing mounted) show it with things they know — never a
-    // text drawing, never "I can't draw", never "you draw it" (F16, the owner's session)
-    move.shape = join(move.shape, s.module?.id ? SH.VISUAL_ON_STAGE : SH.VISUAL_NOT_YET);
+    // text drawing, never "I can't draw", never "you draw it" (F16, the owner's session). round 5 (stream 2): a thing they
+    // NAMED (a subject, a number line, a photo) is drawn for this ask, so the piece mounted before it is not "it": her words
+    // say what it shows and never send their eyes to the screen ahead of it (open-r13-bare-pointing-on-request-turns)
+    const named = !!(p.see && (p.see.subject || p.see.show === "number_line" || p.see.show === "picture"));
+    move.shape = join(move.shape, named ? SH.visualDrawing(p.see) : s.module?.id ? SH.VISUAL_ON_STAGE : SH.VISUAL_NOT_YET);
     s.lastMove = move;
   }
   const ui = uiFor(s, p, move, item, input.kit);

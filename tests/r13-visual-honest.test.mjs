@@ -33,7 +33,10 @@ test("the child's subject is read in either script; generic words are not subjec
   assert.deepEqual(requestOf(L18), { type: "topic", subject: "आलू", whole: false });
 });
 
-test("A: 'Different subject' after aloo offers no picture; the picture chip gets the honest floor, nothing staged", () => {
+// round 5 (stream 2, the board; brief: "aloo dikhao" must be drawn): a thing outside the kit that a plain labelled sketch can
+// show is now sketched on the board for the ask, honestly (no photo promised, never pointed at before it is there); the floor
+// (A) stands for anything else (director/state.js drawableSubject; tests/r5-board-request.test.mjs)
+test("A → round 5: 'Different subject' after aloo offers no picture chip; the picture chip gets a board sketch of aloo, honestly", () => {
   let r = toTeach();
   r = turn(r, said(r, L18, { type: "change_topic", whole: true }), { text: L18 });   // turn 18 (trace: conv2.note.change_topic)
   assert.equal(r.state.offTopic?.subject, "आलू");
@@ -41,14 +44,14 @@ test("A: 'Different subject' after aloo offers no picture; the picture chip gets
   assert.ok(!(diff.ui.chips ?? []).some((c) => c.id === "req:visual"), "no 'Show me a picture' for a picture nothing can make");
   assert.match(diff.move.shape, /never offer a picture/);
   const pic = turn(diff, cls("no_evidence"), { chipId: "req:visual", text: "Show me a picture" });   // turn 22
-  assert.equal(pic.move.request, "visual_unavailable");
-  assert.equal(pic.move.visual, undefined, "no visual: no board is asked for, VISUAL_ON_STAGE is never added");
-  assert.match(pic.move.shape, /cannot show a picture of it right now/);
-  assert.doesNotMatch(pic.move.shape, /it is on the screen now/);
-  assert.match(pic.move.must ?? "", /cannot show that picture/);
-  assert.match(pic.move.must ?? "", /never send them to search/);
-  // and no board is asked for on that turn (brain/propose.js)
-  assert.deepEqual(whiteboardAskOf({ beat: { id: "b", type: "explain" }, lane: "cascade", late: false, strained: false, move: pic.move }).proposals, []);
+  assert.equal(pic.move.request, "visual");
+  assert.equal(pic.move.see?.subject, "आलू", "the board is told what to draw: the subject they named");
+  assert.equal(pic.move.see?.off, true);
+  assert.match(pic.move.shape, /board draws a simple sketch of it/);
+  assert.match(pic.move.shape, /never send their eyes to the screen or the board/);
+  assert.doesNotMatch(pic.move.shape, /it is on the screen now/, "never pointed at before it is there");
+  // and the board IS asked for on that turn (brain/propose.js), on any lane
+  assert.equal(whiteboardAskOf({ beat: { id: "b", type: "explain" }, lane: "cascade", late: false, strained: false, move: pic.move, requested: true }).proposals[0]?.kind, "ask_whiteboard");
 });
 
 test("A: a picture of today's idea is unchanged (the kit's subject, or no subject)", () => {
