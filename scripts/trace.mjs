@@ -80,8 +80,7 @@ export function lineFor(e) {
     case "net.res": s = `net ${d.method ?? ""} ${d.path ?? ""} ${d.status ?? ""} ${d.ms ?? ""}ms`; break;
     case "net.err": s = `NETWORK ERROR ${d.method ?? ""} ${d.path ?? ""} ${cut(d.error ?? d.message, 120)}`; break;
     case "err.js": case "err.promise": s = `CLIENT ERROR ${cut(d.message, 200)}${d.top ? ` at ${cut(d.top, 100)}` : ""}`; break;
-    // the server writer reports { dropped, total }; the client bus (src/trace/bus.ts) reports { events } (r5 QA: "DROPPED undefined")
-    case "trace.dropped": s = `RECORDER DROPPED ${d.dropped ?? d.events} events${d.total != null ? ` (total ${d.total})` : ""} (${e.src ?? "?"})`; break;
+    case "trace.dropped": s = `RECORDER DROPPED ${d.events ?? d.dropped} events${d.total != null ? ` (total ${d.total})` : ""}`; break;
     default:
       if (k.startsWith("studio.slot.")) { s = `studio slot ${k.slice(12)} ${d.kind ?? ""}${d.intentId ? ` intent=${cut(d.intentId, 40)}` : ""}${d.why ? ` why: ${cut(d.why, 160)}` : ""}${d.fallback ? ` fallback=${d.fallback}` : ""}`; break; }
       s = `${k} ${cut(j(d), 220)}`;

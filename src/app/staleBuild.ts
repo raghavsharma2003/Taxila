@@ -14,7 +14,7 @@ export function isChunkLoadError(err: unknown): boolean {
 }
 
 /** Reload once for a stale build; false when a reload was already tried moments ago (then the caller shows its error). */
-export function reloadForStaleBuild(): boolean {
+export function reloadForStaleBuild(beforeReload?: () => void): boolean {
   try {
     const last = Number(sessionStorage.getItem(KEY) || 0);
     if (Date.now() - last < RELOAD_WINDOW_MS) return false;
@@ -24,13 +24,14 @@ export function reloadForStaleBuild(): boolean {
     if ((window as { __txStaleReload?: boolean }).__txStaleReload) return false;
     (window as { __txStaleReload?: boolean }).__txStaleReload = true;
   }
+  try { beforeReload?.(); } catch { /* a report never stands in the way of the reload */ }
   location.reload();
   return true;
 }
 
 /** Vite's own signal for a failed dynamic import or preload: reload instead of letting the import reject. */
-export function installStaleBuildReload(): void {
+export function installStaleBuildReload(report?: (payload: unknown) => void): void {
   window.addEventListener("vite:preloadError", (e) => {
-    if (reloadForStaleBuild()) e.preventDefault();
+    if (reloadForStaleBuild(() => report?.((e as Event & { payload?: unknown }).payload))) e.preventDefault();
   });
 }

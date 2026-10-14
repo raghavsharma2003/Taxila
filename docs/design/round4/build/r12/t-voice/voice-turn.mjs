@@ -8,6 +8,7 @@
 //   node docs/design/round4/build/r12/t-voice/voice-turn.mjs <account> <name> [--child <key>] [--full] [--text "..."] [--expect-cohort] [--expect-tier2]
 //   cohort check only (any base, e.g. production after a deploy; the cookie is read from a file and never printed):
 //   node docs/design/round4/build/r12/t-voice/voice-turn.mjs --check-only --base https://<host> --cookie-file <file: tx_session=...> [--expect-cohort] [--expect-tier2]
+//   --real-bus: use the integrated build's recorder (T-client's bus) instead of the test-only page sink.
 //   --expect-cohort: GET /api/duplex/config must answer { duplex: "on", cohort: "owner" } (the duplex owner cohort);
 //   --expect-tier2:  GET /api/me must carry trace.tier === 2 (TAXILA_TRACE_FULL_FOR). Exit 1 on a mismatch.
 //   (servers: tests/prod/r4-timeline/README.md; the cohort is TAXILA_DUPLEX_LIVE_FOR=<owner account email>)
@@ -77,7 +78,10 @@ console.log(`# cohort check: ${JSON.stringify(cohortCheck)}`);
 const sid = `${name}-${Date.now() % 100000}`;
 await rv({ op: "open", sid, cookie: a.cookie, url: `/c/${cid}`, view: "phone360" });
 await sleep(5000);
-await rv({ op: "eval", sid, js: SINK });
+// --real-bus: the integrated build's own recorder (src/trace/**, T-client) is the sink; nothing is injected, and the events
+// go to /api/trace/batch (read them back with scripts/trace.mjs --session)
+const REAL = has("--real-bus");
+if (!REAL) await rv({ op: "eval", sid, js: SINK });
 // START (a tap at the button's centre: the Kaksha home's start button)
 let box = null;
 for (let i = 0; i < 30 && !box; i++) {
@@ -88,10 +92,14 @@ if (!box) throw new Error("no #start-lesson on the child home (onboarding not fi
 await rv({ op: "tap", sid, x: Math.round(box[0]), y: Math.round(box[1]), after: 12_000 });
 const said = await rv({ op: "say", sid, text: TEXT });
 await sleep(12_000);
-const dump = await rv({ op: "eval", sid, js: "JSON.stringify({ events: window.__vtr, blobs: window.__vtb, url: location.pathname })" });
+const dump = await rv({ op: "eval", sid, js: "JSON.stringify({ events: window.__vtr ?? [], blobs: window.__vtb ?? [], url: location.pathname })" });
+// the driver logs /api/lesson/start's response (with the lesson id) to run/<sid>.jsonl
+let lessonId = null;
+try { lessonId = [...readFileSync(join(H, "run", `${sid}.jsonl`), "utf8").matchAll(/"lessonId":"([0-9a-f-]{36})"/g)].at(-1)?.[1] ?? null; } catch { lessonId = null; }
+console.log(`# lessonId ${lessonId}`);
 await rv({ op: "close", sid });
 const d = JSON.parse(dump);
-const out = { run: name, account: acct, tier: FULL ? 2 : 1, cohortCheck, text: TEXT, at: new Date().toISOString(), lessonUrl: d.url, driverTimeline: said?.timeline ?? said?.tl ?? null, events: d.events, blobs: d.blobs };
+const out = { run: name, account: acct, tier: FULL ? 2 : 1, realBus: REAL, lessonId, cohortCheck, text: TEXT, at: new Date().toISOString(), lessonUrl: d.url, driverTimeline: said?.timeline ?? said?.tl ?? null, events: d.events, blobs: d.blobs };
 mkdirSync(join(HERE, "evidence"), { recursive: true });
 writeFileSync(join(HERE, "evidence", `run-${name}.json`), JSON.stringify(out, null, 1));
 const t0 = d.events[0]?.t ?? 0;
