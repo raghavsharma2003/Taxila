@@ -71,6 +71,7 @@ import { publishPerception } from "../latency/bus.js";
 import { parseVoice } from "../../src/play/core/voice.ts";
 // round 3 fix (experience B2 / B3): the visual ask's clause made true about the screen
 import { askTruth } from "../director/shapes.js";
+import { comprehensionRead } from "../director/read.js";
 import { childTurnRow, clientInstructions, debugFor, floorIncidentStmt, incidentStmt, kitFor, laneOf, runTurnTx, stageTurns, turnInsertStmt, turnLane, withAsk, withSeamUi, withStudioSlot } from "./rows.js";
 import { traceIdentify, traceLesson } from "../trace/context.js";
 import { record } from "../trace/writer.js";
@@ -879,6 +880,8 @@ export async function lessonTurn(req, body) {
       ...(lateSafeguard ? { teacherReply, teacherReplySeq } : {}), end: true, late: true }
     : {
       move: r.move, moduleCommands: r.moduleCommands,
+      // round 5: the covert comprehension read of the child's turn (server/director/read.js): what the Director acted on
+      ...(cls && !moduleOnly ? { read: comprehensionRead(cls, { childText, target }) } : {}),
       ui: withStudioSlot(withSeamUi(withAsk(r.ui, teacherReply, { ...uiVerdictOf(cls, target, state), ...(kernel.beat ? { beat: uiBeatOf(kernel.beat) } : {}) }), relational,
         { safety: r.move.kind === "safeguard" || !!incident }), studioSlot),
       ...(teacherReply ? { teacherReply, teacherReplySeq } : {}), ...(speakNow ? { speakNow } : {}), ...(r.end ? { end: true } : {}),
@@ -926,6 +929,7 @@ export async function lessonTurn(req, body) {
           // p5-interaction: what the turn was read as (intent / request ids only, never the child's words), the card cap,
           // an unverifiable module answer
           ...(noteReason ? [noteReason] : []), ...(cls?.request?.type ? [`request.${cls.request.type}`] : []),
+          ...(cls && !moduleOnly ? (() => { const rd = comprehensionRead(cls, { childText, target }).read; return rd ? [`read.${rd}`] : []; })() : []),
           ...(next.capped?.turn === next.turn ? [`p5.capped.${next.capped.how}`] : []), ...(moduleUnverified ? ["module.unverifiable"] : []),
           ...[...seamErrors].map((c) => `component_error.${c}`)];
   let seqs = [];

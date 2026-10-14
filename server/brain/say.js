@@ -768,6 +768,12 @@ function confirmsFirst(t) {
 const WRITE_TO_SAY = [
   [/\blikh\s+(?:kar|ke)\s+(?:bhejo|batao|dikhao)\b/gi, "bolkar batao"], [/\blikh\s+(?:kar|ke)\s+(?:bhejiye|bataiye|dikhaiye)\b/gi, "bolkar bataiye"],
   [/\blikh\s+do\b/gi, "bata do"], [/\blikh\s+dijiye\b/gi, "bata dijiye"], [/\blikhiye\b/gi, "bataiye"], [/\blikho\b/gi, "batao"],
+  // round 5 (owner 2026-10-14, phone, voice-first: "homework type karke bhejo" twice): the forms the first list missed
+  [/\btype\s+kar\s*ke\s+(?:bhejo|bhej\s+do|batao|send\s+karo|dikhao)\b/gi, "bolkar batao"], [/\btype\s+kar\s*ke\s+(?:bhejiye|bataiye|dikhaiye)\b/gi, "bolkar bataiye"],
+  [/\blikh\s*(?:kar|ke)\s*(?:bhejo|batao|dikhao)\b/gi, "bolkar batao"], [/\blikh\s*(?:kar|ke)\s*(?:bhejiye|bataiye|dikhaiye)\b/gi, "bolkar bataiye"],
+  [/\b(?:type|message)\s+(?:karna|karein|karenge|karo\s+na)\b/gi, "bolna"], [/\bmessage\s+(?:karo|kar\s+do|bhejo)\b/gi, "bolo"],
+  [/टाइप\s*(?:करके|कर\s*के)\s*(?:भेजो|बताओ|भेज\s*दो)/g, "बोलकर बताओ"], [/टाइप\s*(?:करो|कर\s*दो)/g, "बोलो"], [/लिख\s*(?:कर|के)\s*(?:भेजो|बताओ)/g, "बोलकर बताओ"],
+  [/\btype\s+(?:it\s+)?(?:and\s+send(?:\s+it)?|it\s+in|in\s+the\s+chat)\b/gi, "say it"],
   [/\btype\s+(?:karo|kar\s+do)\b/gi, "bolo"], [/\btype\s+(?:kijiye|kariye|kar\s+dijiye)\b/gi, "boliye"],
   [/\b(?:write|type)\s+(?:it|that|this|your\s+answer|the\s+answer)(?:\s+down)?\b/gi, "say it"], [/\bwrite\s+down\b/gi, "say"],
 ];
