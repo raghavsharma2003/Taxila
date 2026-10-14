@@ -5,10 +5,11 @@
 // Stopping is synchronous (every scheduled source is stopped and the fetch aborted), which is what makes
 // barge-in immediate. Pausing is too, but keeps the reply: the stream keeps arriving into the buffer and
 // resume() replays from just before where she was cut (a cough, the TV or a "hmm" must not eat her question).
-import type { TtsRequest, TurnRequest, TurnResponse } from "../../shared/contracts.ts";
+import type { LessonStartRequest, LessonStartResponse, TtsRequest, TurnRequest, TurnResponse } from "../../shared/contracts.ts";
 import { anchorPerfTime, isVisemeFrame, partPlayAt, puppetCut, puppetVisemes, type TtsVisemeFrame } from "../face-puppet/ttsBridge.ts";
 import { ApiError } from "./api.ts";
 import { markLineAudioStart } from "../modules/whiteboard/clock.ts";
+import { adpcmWanted, decodeAdpcm } from "./adpcm.ts";
 
 export const PCM_RATE = 24_000;
 /** Lead before the first chunk plays: absorbs network jitter between chunks without audible delay. */
@@ -103,7 +104,9 @@ export type SpeechStreamFetch = (req: TtsRequest, signal: AbortSignal, sink?: Cl
 // server frames only when asked (Accept below); an older server answers raw audio/pcm and the client reads it as before.
 
 export const FRAMES_ACCEPT = "application/x-taxila-pcm-frames;v=2";
-export const FRAME = { pcm: 0, event: 1, header: 2, turn: 3, end: 4 } as const;
+export const FRAME = { pcm: 0, event: 1, header: 2, turn: 3, end: 4, adpcm: 5 } as const;
+/** The Accept a TTS request sends: frames v2, plus `codec=adpcm` on a slow link (round 5, QA D12; ./adpcm.ts). */
+export const framesAccept = (): string => (adpcmWanted() ? `${FRAMES_ACCEPT};codec=adpcm` : FRAMES_ACCEPT);
 export interface TtsFrame {
   type: number;
   /** PCM bytes for type 0, the parsed JSON otherwise. */
@@ -150,6 +153,8 @@ export class FrameParser {
       const type = merged[i];
       const body = merged.subarray(i + 4, i + 4 + len);
       if (type === FRAME.pcm) out.push({ type, payload: body.slice() });
+      // round 5 (QA D12): an ADPCM frame becomes a PCM frame here, so nothing after the parser changes
+      else if (type === FRAME.adpcm) out.push({ type: FRAME.pcm, payload: decodeAdpcm(body) });
       else {
         try {
           out.push({ type, payload: JSON.parse(new TextDecoder().decode(body)) as Record<string, unknown> });
@@ -265,11 +270,43 @@ export function takeFoldedAudio(lessonId: string, seq: number, sink?: ClauseSink
 }
 
 /** POST /api/lesson/turn-audio → the TurnResponse; the reply's audio is parked for the link's speech fetch. */
-export async function postTurnAudio(req: TurnRequest, signal?: AbortSignal): Promise<TurnResponse> {
-  const res = await fetch("/api/lesson/turn-audio", {
+export function postTurnAudio(req: TurnRequest, signal?: AbortSignal): Promise<TurnResponse> {
+  return postFolded<TurnResponse>("/api/lesson/turn-audio", req, (t) => (Number.isInteger(t.teacherReplySeq) ? { lessonId: req.lessonId, seq: t.teacherReplySeq as number } : null), signal);
+}
+
+/**
+ * r5-latency: POST /api/lesson/start-audio → the LessonStartResponse; her opening's audio is parked for the link's speech
+ * fetch (the same fold as turn-audio: one round trip fewer before her first sound). A server without the route (404)
+ * answers nothing was started, so the caller falls back to POST /api/lesson/start.
+ */
+export function postStartAudio(req: LessonStartRequest, signal?: AbortSignal): Promise<LessonStartResponse> {
+  return postFolded<LessonStartResponse>("/api/lesson/start-audio", req,
+    (t) => (t.lessonId && Number.isInteger(t.teacherOpeningSeq) ? { lessonId: t.lessonId, seq: t.teacherOpeningSeq as number } : null), signal);
+}
+
+export const START_AUDIO_KEY = "tx.flag.latency.startAudio";
+/** `?startaudio=1|0` (persisted) or localStorage; else VITE_START_AUDIO (default ON: "0" turns it off). */
+export function startAudioEnabled(): boolean {
+  try {
+    if (typeof location !== "undefined") {
+      const v = new URLSearchParams(location.search).get("startaudio");
+      if (v === "1" || v === "0") localStorage.setItem(START_AUDIO_KEY, v);
+    }
+    const v = typeof localStorage !== "undefined" ? localStorage.getItem(START_AUDIO_KEY) : null;
+    if (v === "1") return true;
+    if (v === "0") return false;
+  } catch {
+    /* storage blocked */
+  }
+  return (import.meta as { env?: Record<string, string> }).env?.VITE_START_AUDIO !== "0";
+}
+
+/** A JSON-in, framed-out POST: the `turn` frame resolves the call; audio that follows is parked by (lesson, seq). */
+async function postFolded<T>(path: string, req: unknown, keyOf: (t: T) => { lessonId: string; seq: number } | null, signal?: AbortSignal): Promise<T> {
+  const res = await fetch(path, {
     method: "POST",
     credentials: "same-origin",
-    headers: { "content-type": "application/json", accept: FRAMES_ACCEPT },
+    headers: { "content-type": "application/json", accept: framesAccept() },
     body: JSON.stringify(req),
     signal,
   });
@@ -282,11 +319,11 @@ export async function postTurnAudio(req: TurnRequest, signal?: AbortSignal): Pro
       /* not JSON */
     }
     const msg = (data as { error?: unknown } | null)?.error;
-    throw new ApiError(res.status, typeof msg === "string" ? msg : `POST /api/lesson/turn-audio failed (${res.status})`, data);
+    throw new ApiError(res.status, typeof msg === "string" ? msg : `POST ${path} failed (${res.status})`, data);
   }
-  let resolveTurn!: (t: TurnResponse) => void;
+  let resolveTurn!: (t: T) => void;
   let rejectTurn!: (e: unknown) => void;
-  const turn = new Promise<TurnResponse>((a, b) => {
+  const turn = new Promise<T>((a, b) => {
     resolveTurn = a;
     rejectTurn = b;
   });
@@ -306,12 +343,13 @@ export async function postTurnAudio(req: TurnRequest, signal?: AbortSignal): Pro
           audioFollows = (f.payload as Record<string, unknown>).audio === "follows";
         } else if (f.type === FRAME.turn) {
           gotTurn = true;
-          const t = f.payload as unknown as TurnResponse;
-          if (Number.isInteger(t.teacherReplySeq)) {
-            ttsReq = { lessonId: req.lessonId, seq: t.teacherReplySeq as number };
+          const t = f.payload as unknown as T;
+          const key = keyOf(t);
+          if (key) {
+            ttsReq = { lessonId: key.lessonId, seq: key.seq };
             // parked only when this response carries the audio; else the link fetches it by seq as before
             if (audioFollows) {
-              const k = foldKey(req.lessonId, ttsReq.seq);
+              const k = foldKey(key.lessonId, key.seq);
               fold = { stream: readable, at: Date.now(), req: ttsReq, sink: null, pending: [], pendingV: [] };
               folded.set(k, fold);
               // nobody took it (the runtime chose not to speak): release the response
@@ -341,7 +379,7 @@ export async function postTurnAudio(req: TurnRequest, signal?: AbortSignal): Pro
           } else if (e) emit(e);
         }
       }
-      if (!gotTurn) rejectTurn(new ApiError(502, "turn-audio ended without a turn", null));
+      if (!gotTurn) rejectTurn(new ApiError(502, `${path} ended without a response`, null));
       await writer.close().catch(() => {});
     } catch (e) {
       if (!gotTurn) rejectTurn(e);
@@ -359,7 +397,7 @@ export const fetchSpeechStream: SpeechStreamFetch = async (req, signal, sink) =>
   const res = await fetch("/api/voice/tts-stream", {
     method: "POST",
     credentials: "same-origin",
-    headers: { "content-type": "application/json", accept: FRAMES_ACCEPT },
+    headers: { "content-type": "application/json", accept: framesAccept() },
     body: JSON.stringify(req),
     signal,
   });

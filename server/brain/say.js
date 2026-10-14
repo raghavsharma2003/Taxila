@@ -263,6 +263,8 @@ export const statementKey = (item) => !!item && (["why", "teachback"].includes(i
  * replaced by the question itself (content), or the leaking sentences are dropped, never shipped. A model
  * failure falls back (fallbackReply) instead of throwing.
  */
+/** r5-latency: the reply lane's hedge point (~p95 of taxila-fast replies, n = 86, 2026-10-14); 0 turns it off. */
+export const REPLY_HEDGE_MS = () => { const v = Number(process.env.TAXILA_REPLY_HEDGE_MS ?? 2200); return Number.isFinite(v) && v > 0 ? v : 0; };
 export async function textReply({ instructions, state, kit, childText, trace, history = state.recent.slice(0, -1), verdict = state.lastVerdict ?? "ungraded", ui = null, module = null }) {
   const item = state.lastMove?.itemId ? findItem(state, kit, state.lastMove.itemId) : null;
   const next = !item && TEACHING_MOVES.has(state.lastMove?.kind) ? upcomingItem(state, kit) : null;
@@ -410,7 +412,8 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
   ];
   const replyT0 = performance.now();
   // Replies take ~1-2 s (measured in evals/director-sim.mjs); a stuck call is cut at 6 s and retried once.
-  const ask = (msgs) => replyDeps.chat(DEPLOY.reply, msgs, { maxTokens: 220, effort: "none", timeoutMs: 6000, trace }).then((r) => r.text.trim());
+  // r5-latency: hedged (azure.js hedged): a call still out at REPLY_HEDGE_MS gets an identical twin, the first answer wins
+  const ask = (msgs) => replyDeps.chat(DEPLOY.reply, msgs, { maxTokens: 220, effort: "none", timeoutMs: 6000, trace, hedgeMs: REPLY_HEDGE_MS() }).then((r) => r.text.trim());
   let reply;
   const guardSlot = {};
   // The content filter blocking the reply call (the child's words are in it) is a safety signal, not an

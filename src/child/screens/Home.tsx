@@ -8,7 +8,7 @@
 // Rules (§3.4, §4.8, §8): no "one more" offer, no "come back tomorrow", no countdown, no streak, no counts; the home
 // looks the same after 1 day away or 30 (only her greeting may differ); she never "rests", "waits" or "misses" anyone.
 // No lamp anywhere on home: the Start button is the nib primary (the lamp is the lesson dock's alone, G-LAMP-1).
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, Navigate } from "react-router-dom";
 import type { DidCard, MadeForItem } from "../../../shared/contracts.ts";
 import { HelpSheet } from "../lesson/sheets/HelpSheet.tsx";
@@ -23,6 +23,7 @@ import { Icon, Picto } from "../pictos.tsx";
 import { practiceOffered, usePlan, type HomePlan } from "../plan.ts";
 import { SkyStar } from "../progress/StateShape.tsx";
 import { useChildMap } from "../useChildMap.ts";
+import { preloadLessonRoute } from "../preload.ts";
 
 /** The face form the child chose (Me → Teacher's face): Moving (live), Still picture (plate), Voice only (tier E). */
 export function faceFormOf(face: string): { form: "live" | "plate"; tier?: "D" | "E" } {
@@ -36,6 +37,8 @@ export function Home() {
   const { plan, reload } = usePlan(cid);
   const young = family === "young";
   const sky = useChildMap(cid, "sky", !young && plan.surfaces.map && plan.source !== "loading");
+  // r5-latency: the lesson's code loads while the home is idle, so the Start tap does not wait for it (../preload.ts)
+  useEffect(() => preloadLessonRoute(), []);
   // §3.13: "Later" never skips Hello or the AI disclosure. A child who has never met her goes there first.
   if (!prefs.hello && !child.avatar) return <Navigate to={`/c/${cid}/hello`} replace />;
 

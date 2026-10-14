@@ -16,6 +16,7 @@
 // Then STRAIGHT into lesson 1: no second start gate (the Desk carries none). Every label is English; what she says
 // is in the family's language.
 import { useEffect, useMemo, useRef, useState } from "react";
+import { preloadLessonRoute } from "../preload.ts";
 import { useNavigate } from "react-router-dom";
 import { Teacher } from "../../ui/teacher/Teacher.tsx";
 import { useTeacher } from "../../ui/teacher/useTeacher.ts";
@@ -52,6 +53,7 @@ export function Hello() {
   const { cid, child, band, family, lang, setPrefs, reducedMotion, refresh, me } = useChild();
   const nav = useNavigate();
   const young = family === "young";
+  useEffect(() => preloadLessonRoute(), []); // r5-latency: lesson 1's code loads while the child meets her
   const rec = useTeacher(child.teacher_id, band);
   const clip = useVoiceClip(helloClip(rec.id, lang));
   const parentPicks = useMemo(() => interestIds(child.interests), [child.interests]);

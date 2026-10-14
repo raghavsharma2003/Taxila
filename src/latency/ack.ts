@@ -14,6 +14,8 @@
 // Pure apart from the injected post / timers: tested in Node (tests/round3-relational-human-ack.test.mjs).
 
 export interface AckClip {
+  /** "echo" (the child's own answer said back) or "continuer" (round 5: a short non-verbal one, owner cohort only). */
+  kind?: "echo" | "continuer";
   phrase: string;
   token: string;
   /** s16le mono PCM at `rate`. */
@@ -28,13 +30,15 @@ export interface AckClip {
 }
 
 export interface AckResponse {
-  ack?: { phrase: string; token: string; pcm: string; rate: number; ms: number; turn: number; decidedMs?: number; shadow?: boolean };
+  ack?: { kind?: "echo" | "continuer"; phrase: string; token: string; pcm: string; rate: number; ms: number; turn: number; decidedMs?: number; shadow?: boolean };
 }
 
 export interface AckClientOptions {
   lessonId: string;
   /** POST /api/lesson/turn-ack; resolves null on a 204 / any failure. */
-  post?: (body: { lessonId: string; text: string }) => Promise<AckResponse | null>;
+  post?: (body: { lessonId: string; text: string; continuer?: boolean }) => Promise<AckResponse | null>;
+  /** Round 5: may this turn get a continuer (server-side owner cohort only)? Off on D5 until its gate covers it. Default: yes. */
+  continuer?: () => boolean;
   now?: () => number;
   /** Kill switch: false = never ask (the link behaves exactly as before). */
   enabled?: boolean;
@@ -53,6 +57,8 @@ export const REPLY_GAP_MS = 180;
 /** How long after a clip ended a matching STT final still counts as its echo. */
 export const ECHO_WINDOW_MS = 2500;
 export const ACK_KEY = "tx.flag.latency.ack";
+/** Round 5: a continuer never sounds sooner than this after the child stopped (a reply ready by then needs no ack). */
+export const CONTINUER_MIN_MS = 900;
 
 const norm = (s: string) => String(s ?? "").replace(/\s+/g, " ").trim();
 const words = (s: string) => norm(s).toLowerCase().normalize("NFC").split(/[^\p{L}\p{M}\p{N}]+/u).filter(Boolean);
@@ -91,7 +97,7 @@ const defaultDecode = (b64: string): Uint8Array => {
   return out;
 };
 
-const defaultPost = (body: { lessonId: string; text: string }): Promise<AckResponse | null> =>
+const defaultPost = (body: { lessonId: string; text: string; continuer?: boolean }): Promise<AckResponse | null> =>
   fetch("/api/lesson/turn-ack", { method: "POST", credentials: "same-origin", headers: { "content-type": "application/json" }, body: JSON.stringify(body) })
     .then((r) => (r.status === 200 ? (r.json() as Promise<AckResponse>) : null))
     .catch(() => null);
@@ -108,6 +114,8 @@ export class AckClient {
   private finalAt = 0;
   private ready: AckClip | null = null;
   private closedTurn = false;
+  private speechEndAt: number | null = null;
+  private holdTimer: ReturnType<typeof setTimeout> | null = null;
   /** The phrase that played last and when it ended (the echo guard). */
   private lastPlayed: { phrase: string; startedAt: number; endedAt: number | null } | null = null;
 
@@ -119,6 +127,7 @@ export class AckClient {
       enabled: opts.enabled ?? true,
       onClip: opts.onClip,
       decode: opts.decode ?? defaultDecode,
+      continuer: opts.continuer ?? (() => true),
     };
   }
 
@@ -131,12 +140,14 @@ export class AckClient {
     const gen = ++this.gen;
     const requestedAt = this.o.now();
     this.stats.asked++;
-    void this.o.post({ lessonId: this.o.lessonId, text: t }).then((r) => {
+    let cont = false;
+    try { cont = this.o.continuer(); } catch { /* no continuer */ }
+    void this.o.post({ lessonId: this.o.lessonId, text: t, ...(cont ? { continuer: true } : {}) }).then((r) => {
       if (gen !== this.gen) { if (r?.ack) this.stats.late++; return; }
       const a = r?.ack;
       if (!a?.pcm || a.shadow) { this.stats.refused++; return; }
       this.stats.arrived++;
-      this.ready = { phrase: a.phrase, token: a.token, pcm: this.o.decode(a.pcm), rate: a.rate, ms: a.ms, turn: a.turn, text: t, requestedAt, arrivedAt: this.o.now() };
+      this.ready = { kind: a.kind === "continuer" ? "continuer" : "echo", phrase: a.phrase, token: a.token, pcm: this.o.decode(a.pcm), rate: a.rate, ms: a.ms, turn: a.turn, text: t, requestedAt, arrivedAt: this.o.now() };
       this.tryPlay();
     }, () => {});
   }
@@ -158,6 +169,11 @@ export class AckClient {
     else this.tryPlay();
   }
 
+  /** The child stopped speaking (the VAD's end, or the press released): the continuer's clock starts here. */
+  speechEnded(at: number): void {
+    this.speechEndAt = at;
+  }
+
   /** The child is speaking again (a local onset / server speech_started): nothing pending may play. */
   onSpeech(): void {
     if (this.ready || this.asked) this.stats.interrupted += this.ready ? 1 : 0;
@@ -166,6 +182,7 @@ export class AckClient {
     this.asked = "";
     this.finalText = null;
     this.closedTurn = false;
+    this.speechEndAt = null;
   }
 
   /** Her reply is about to sound: no clip may START from now on for this turn. */
@@ -201,6 +218,17 @@ export class AckClient {
     if (!c || this.finalText === null || this.closedTurn) return;
     if (c.text !== this.finalText) { this.stats.mismatched++; this.ready = null; return; }
     if (this.o.now() - this.finalAt > MAX_AGE_MS) { this.stats.late++; this.ready = null; return; }
+    // round 5: a continuer waits until CONTINUER_MIN_MS after the child stopped; her reply starting first drops it
+    if (c.kind === "continuer") {
+      const due = (this.speechEndAt ?? this.finalAt) + CONTINUER_MIN_MS;
+      const wait = due - this.o.now();
+      if (wait > 0) {
+        if (this.holdTimer) clearTimeout(this.holdTimer);
+        const gen = this.gen;
+        this.holdTimer = setTimeout(() => { this.holdTimer = null; if (gen === this.gen) this.tryPlay(); }, wait);
+        return;
+      }
+    }
     this.ready = null;
     this.closedTurn = true; // one clip per child turn
     this.o.onClip?.(c);

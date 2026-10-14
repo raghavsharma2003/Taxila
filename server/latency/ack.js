@@ -23,6 +23,7 @@
 import { keyTokenOf } from "../brain/moment.js";
 import { preludeTokenOk } from "../voice/expressive/prelude.js";
 import { isNumberToken, norm } from "../signals/text.js";
+import { createHash } from "node:crypto";
 
 const GRADED = new Set(["correct", "incorrect", "partial", "misconception"]);
 
@@ -109,4 +110,59 @@ export function ackPlanOf(x) {
   const recent = (x.history ?? []).filter((t) => t < x.turn && x.turn - t < ACK_WINDOW);
   if (recent.length >= ACK_WINDOW_MAX) return { none: "window" };
   return { kind: "echo", token: a.token, phrase: ackPhraseOf(x.text, a.token, x.itemWords ?? x.vocab ?? []) };
+}
+
+// ───────────── round 5 (stream 3, main's decision 2026-10-14): the NON-VERBAL CONTINUER, owner cohort only ─────────────
+// When there is no echo (a non-answer, no closed-class token), a voice turn may still get a short continuer as her first
+// sound, so the child is not left in 2-4 s of silence while she thinks. Main's constraints, each a rule here:
+//   - the hard rule is the echo's: decided only after the turn's classify (its model distress read) on the SAME words, the
+//     predicate clean, no safeguard open, no duplex partial-safety, no content-filter block; the device plays it only when
+//     the final transcript equals the words it was decided on (src/latency/ack.ts);
+//   - never on a stop / goodbye, never on typed or tapped input (the device asks only on spoken words);
+//   - varied and sparse: never two acks on consecutive turns (echo or continuer), never the same continuer twice in a row;
+//   - in the child's register, and NO content words: nothing that pre-judges the answer ("sahi", "galat", "bahut badhiya",
+//     "haan"/"yes" read as agreement are not in the set);
+//   - owner cohort only (TAXILA_ACK_CONTINUER_FOR, the email-or-sha256 list shape of TAXILA_UI_KAKSHA), and only when the
+//     device asks for it (`continuer: true`; off on D5 until 4B's gate covers it);
+//   - the device holds it until ~900 ms after the child stopped and drops it if her reply is ready first (a fast reply
+//     needs no ack).
+
+export const CONTINUERS = Object.freeze({
+  // Devanagari for the Hindi / Hinglish voices (they say it right); an ellipsis keeps the prosody open, not final
+  hi: Object.freeze(["हम्म…", "अच्छा…", "ओके…"]),
+  en: Object.freeze(["Hmm…", "Okay…", "I see…"]),
+});
+const sha256 = (s) => createHash("sha256").update(s).digest("hex");
+/** The owner cohort for the continuer (TAXILA_ACK_CONTINUER_FOR). Pure given env. */
+export function continuerCohortHas(email, env = process.env) {
+  const e = String(email ?? "").trim().toLowerCase();
+  if (!e) return false;
+  for (const raw of String(env.TAXILA_ACK_CONTINUER_FOR ?? "").split(",")) {
+    const v = raw.trim().toLowerCase();
+    if (v && (v === sha256(e) || v === e)) return true;
+  }
+  return false;
+}
+/** The register the continuer is said in (the child's language preference). */
+export const continuerLangOf = (child) => (String(child?.language_pref ?? "").toLowerCase() === "english" ? "en" : "hi");
+/** The continuer to say on this turn: rotates with the turn, never the one said last. PURE. */
+export function continuerPhraseOf(lang, turn, last) {
+  const set = CONTINUERS[lang] ?? CONTINUERS.hi;
+  const pick = set[Math.abs(Number(turn) || 0) % set.length];
+  return pick !== last ? pick : set[(set.indexOf(pick) + 1) % set.length];
+}
+/**
+ * PURE. The continuer for a classified spoken turn, or { none: reason }. `history` = the lesson's earlier ack turns (echo
+ * or continuer), `last` = the continuer said last.
+ * @param {{ cls: any, predicateDistress?: boolean, safeguardOpen?: boolean, pendingSafety?: boolean, turn: number,
+ *   history?: number[], last?: string | null, lang: "hi" | "en" }} x
+ */
+export function continuerPlanOf(x) {
+  const c = x.cls;
+  if (!c) return { none: "unclassified" };
+  if (x.predicateDistress || c.flags?.distress || x.safeguardOpen || x.pendingSafety || c.source === "content_filter") return { none: "safety" };
+  if (c.flags?.wantsToStop || c.request?.type === "stop" || c.request?.type === "goodbye") return { none: "leaving" };
+  const prev = (x.history ?? []).filter((t) => t < x.turn).at(-1);
+  if (prev != null && x.turn - prev === 1) return { none: "consecutive" };
+  return { kind: "continuer", token: "", phrase: continuerPhraseOf(x.lang, x.turn, x.last ?? null) };
 }

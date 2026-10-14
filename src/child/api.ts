@@ -60,9 +60,32 @@ export function normaliseMap(data: unknown, mode: "garden" | "sky"): ChildMapRes
   return { mode: r.mode === "garden" || r.mode === "sky" ? r.mode : mode, hidden: false, subjects, skills, empty: r.empty === true || !touched };
 }
 
+/**
+ * r5-latency: ONE map read per child at a time. The owner's lesson start (2026-10-14, 56d898ce) fetched the 190-324 KB map
+ * three times in parallel beside the lesson start (the home's sky map, the Kaksha lesson's "before" snapshot, a remount);
+ * readers within MAP_SHARE_MS share the same response. Each caller keeps its own abort (an abort detaches that caller, the
+ * shared read goes on). The debrief's "after" read comes minutes later, so it is always fresh.
+ */
+const MAP_SHARE_MS = 5000;
+const mapReads = new Map<string, { at: number; p: Promise<unknown> }>();
+function sharedMapRaw(cid: string): Promise<unknown> {
+  const hit = mapReads.get(cid);
+  if (hit && Date.now() - hit.at < MAP_SHARE_MS) return hit.p;
+  const p = getJson<unknown>(`/api/child/map?childId=${encodeURIComponent(cid)}`);
+  mapReads.set(cid, { at: Date.now(), p });
+  p.catch(() => { if (mapReads.get(cid)?.p === p) mapReads.delete(cid); });
+  return p;
+}
+const detachable = <T,>(p: Promise<T>, signal?: AbortSignal): Promise<T> => (!signal ? p : new Promise<T>((resolve, reject) => {
+  const abort = () => reject(new DOMException("aborted", "AbortError"));
+  if (signal.aborted) return abort();
+  signal.addEventListener("abort", abort, { once: true });
+  p.then((v) => { signal.removeEventListener("abort", abort); resolve(v); }, (e) => { signal.removeEventListener("abort", abort); reject(e); });
+}));
+
 export async function getChildMap(cid: string, mode: "garden" | "sky", signal?: AbortSignal): Promise<ChildMapResponse> {
   try {
-    return normaliseMap(await getJson<unknown>(`/api/child/map?childId=${encodeURIComponent(cid)}`, signal), mode);
+    return normaliseMap(await detachable(sharedMapRaw(cid), signal), mode);
   } catch (e) {
     if (signal?.aborted) throw e;
     return normaliseMap(null, mode);
