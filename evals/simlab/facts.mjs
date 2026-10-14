@@ -51,9 +51,31 @@ const by = (arm) => {
       }
     }
   }
+  // agent lane (round 5): which lane each lesson really ran on, Director takeovers, cost, and the agent's own latency per turn
+  // (the @agent mark = ms from the turn's start to the agent's move; the teacher deployment's model calls)
+  const ag = { lessons: 0, fallbacks: 0, usd: 0, agentMs: [], teacherCallMs: [], timeouts: 0, read: { n: 0, agree: 0, over: 0, under: 0, skills: 0 } };
+  for (const r of rs) {
+    if (r.lane2?.teacher !== "agent") continue;
+    ag.lessons++;
+    ag.fallbacks += r.lane2.agent?.fallbacks ?? 0;
+    ag.usd += Number(r.lane2.agent?.usage?.usd ?? 0);
+    // the agent's OWN per-skill read (state.agent.learner) against the card's hidden truth at lesson end: no judge involved
+    const L = { not: 0, partly: 1, understood: 2 };
+    for (const [skill, v] of Object.entries(r.lane2.agent?.learner ?? {})) {
+      const truth = r.state?.[skill];
+      if (!truth || !(v?.read in L)) continue;
+      ag.read.n++; if (v.read === truth) ag.read.agree++; if (L[v.read] > L[truth]) ag.read.over++; if (L[v.read] < L[truth]) ag.read.under++;
+    }
+    ag.read.skills += Object.keys(r.state ?? {}).length;
+    for (const t of r.turns) for (const x of t.reasons?.timings ?? []) {
+      if (x.k === "@agent") ag.agentMs.push(x.ms);
+      if (x.d && x.d === (r.lane2.agent?.deployment ?? x.d) && /gpt6|grok|gpt61/.test(x.d) && x.k === "chat") { if (x.st === 200) ag.teacherCallMs.push(x.ms); else ag.timeouts++; }
+    }
+  }
   const p50 = (a) => { const s = [...a].sort((x, y) => x - y); return s.length ? s[Math.floor(s.length / 2)] : null; };
   const p90 = (a) => { const s = [...a].sort((x, y) => x - y); return s.length ? s[Math.floor(s.length * 0.9)] : null; };
-  return { ...f, sameCardMaxRun: undefined, startMsP50: p50(f.startMs), turnMsP50: p50(f.turnMs), turnMsP90: p90(f.turnMs), startMs: undefined, turnMs: undefined };
+  const agent = ag.lessons ? { lessons: ag.lessons, ownRead: ag.read, fallbacks: ag.fallbacks, usdPerLesson: +(ag.usd / ag.lessons).toFixed(4), agentMarkP50: p50(ag.agentMs), agentMarkP90: p90(ag.agentMs), teacherCallP50: p50(ag.teacherCallMs), teacherCallP90: p90(ag.teacherCallMs), nonOkCalls: ag.timeouts } : null;
+  return { ...f, agent, sameCardMaxRun: undefined, startMsP50: p50(f.startMs), turnMsP50: p50(f.turnMs), turnMsP90: p90(f.turnMs), startMs: undefined, turnMs: undefined };
 };
 const arms = [...new Set(recs.map((r) => `${r.arm}/${r.lane}`))];
 const out = Object.fromEntries(arms.map((a) => [a, by(a)]));
