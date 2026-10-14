@@ -60,22 +60,34 @@ export async function handleD5Upgrade(req, socket, head, deps = {}) {
   } catch (e) {
     return refuseUpgrade(socket, e instanceof HttpError ? e.status : 401, e instanceof HttpError ? e.message : "not signed in");
   }
+  // the browser gave up while we authorised (a reload, a lost network): accepting now would open an upstream nobody hears
+  if (socket.destroyed || socket.writable === false) return null;
   if (!allowD5(who.guardian.id)) return refuseUpgrade(socket, 429, "too many voice sessions; wait a minute");
   const cfg = voiceLiveConfig(env);
   const ws = acceptWebSocket(req, socket, head);
   live.set(who.guardian.id, (live.get(who.guardian.id) ?? 0) + 1);
   const openUpstream = deps.openUpstream ?? ((url, headers) => new WebSocket(url, { headers }));
-  const relay = new VoiceLiveRelay({
-    cfg,
-    client: { send: (t) => ws.send(t), close: (c, r) => ws.close(c, r) },
-    openUpstream,
-    onEnd: (s) => {
-      live.set(who.guardian.id, Math.max(0, (live.get(who.guardian.id) ?? 1) - 1));
-      // numbers only: never words, never audio, never the key
-      console.log(`[d5] stream ended ${s.reason} ms=${s.ms} frames=${s.framesIn} appends=${s.appends} events=${s.eventsOut} dropped=${s.dropped}`);
-    },
+  let relay;
+  try {
+    relay = new VoiceLiveRelay({
+      cfg,
+      client: { send: (t) => ws.send(t), close: (c, r) => ws.close(c, r) },
+      openUpstream,
+      onEnd: (s) => {
+        live.set(who.guardian.id, Math.max(0, (live.get(who.guardian.id) ?? 1) - 1));
+        // numbers only: never words, never audio, never the key
+        console.log(`[d5] stream ended ${s.reason} ms=${s.ms} frames=${s.framesIn} appends=${s.appends} events=${s.eventsOut} dropped=${s.dropped}`);
+      },
+    });
+  } catch {
+    live.set(who.guardian.id, Math.max(0, (live.get(who.guardian.id) ?? 1) - 1));
+    try { ws.close(1011, "relay_error"); } catch { /* gone */ }
+    return null;
+  }
+  // D5 review #1: nothing a client sends may throw out of the socket handler (an uncaught throw there ends the process)
+  ws.on("message", (data, binary) => {
+    try { if (binary) relay.clientBinary(data); else relay.clientText(data); } catch { relay.end(1011, "relay_error"); }
   });
-  ws.on("message", (data, binary) => (binary ? relay.clientBinary(data) : relay.clientText(data)));
   ws.on("close", () => relay.end(1000, "client_closed"));
   return relay;
 }

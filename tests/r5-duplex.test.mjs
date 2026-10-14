@@ -158,3 +158,70 @@ test("(c) the shipped path too: a spoken final within 3 s of a tapped answer is 
   assert.equal(events.filter((e) => e.type === "child_final").length, 2, "later, a spoken final is a turn again");
   link.close();
 });
+
+test("D5 review #3: her 'phir se' replay plays INTO the link's her-output node (D5's reference channel), gated as hers", async () => {
+  const { UiBridge } = await import("../src/lesson/uiBridge.ts");
+  const { CascadeLink } = await import("../src/lesson/cascadeLink.ts");
+  const saved = { Audio: globalThis.Audio, AudioContext: globalThis.AudioContext, c: URL.createObjectURL, r: URL.revokeObjectURL };
+  const node = (ctx) => ({ ctx, links: [], connect(n) { this.links.push(n); return n; }, disconnect() {} });
+  const mkCtx = () => { const c = { destination: null, sources: [], createMediaElementSource(el) { const s = node(c); s.el = el; c.sources.push(s); return s; }, createAnalyser() { return { ...node(c), fftSize: 1024, getFloatTimeDomainData: (b) => b.fill(0) }; }, resume: async () => {}, close: async () => { c.closed = true; } }; c.destination = node(c); return c; };
+  const own = [];
+  globalThis.Audio = class { constructor() { this.played = 0; } play() { this.played++; return Promise.resolve(); } pause() {} removeAttribute() {} };
+  globalThis.AudioContext = class { constructor() { const c = mkCtx(); own.push(c); return c; } };
+  URL.createObjectURL = () => "blob:x"; URL.revokeObjectURL = () => {};
+  try {
+    const linkCtx = mkCtx(), herOut = node(linkCtx);
+    const gate = [];
+    let up = true;
+    const link = Object.create(CascadeLink.prototype);
+    link.herOutput = () => (up ? { ctx: linkCtx, output: herOut } : null);
+    link.externalAudio = (on) => gate.push(on);
+    const b = new UiBridge();
+    b["link"] = link;
+    b["clips"] = [{ seq: 1, blob: new Blob(["x"]), ms: 500 }];
+    assert.equal(b.replay(), true);
+    assert.equal(linkCtx.sources.length, 1, "the element is a source in the LINK's context");
+    assert.deepEqual(linkCtx.sources[0].links.includes(herOut), true, "into her output (the D5 reference + her level)");
+    assert.equal(own.length, 0, "no private AudioContext beside the link");
+    assert.deepEqual(gate, [true], "the engine gates it as hers");
+    b.stopReplay();
+    assert.deepEqual(gate, [true, false]);
+    b.replay();
+    assert.equal(linkCtx.sources.length, 1, "the same element (bound once) replays again");
+    b.stopReplay();
+    // the link's graph is gone (closed): a new element on its own context, never a dead one
+    up = false;
+    b.replay();
+    assert.equal(own.length, 1);
+    b.dispose();
+    assert.equal(own[0].closed, true, "its own context closes; the link's never does");
+    assert.ok(!linkCtx.closed);
+  } finally {
+    globalThis.Audio = saved.Audio; globalThis.AudioContext = saved.AudioContext; URL.createObjectURL = saved.c; URL.revokeObjectURL = saved.r;
+  }
+});
+
+test("D5 review #4/#8: on D5 too, an item Voice Live opens on the ack clip's echo is dropped whole (no revoke, no turn); over her line it stays", () => {
+  const r = rig({ source: "voicelive", vadGate: "server", supportsCommit: false });
+  r.live.audioOrigin(0);
+  r.live.setUi({ answerForm: "number", beat: "check" });
+  r.live["handle"](speak(1000, "turn_end", "छप्पन"));
+  assert.equal(commits(r.acts).length, 1);
+  r.t = 1200;
+  r.live.ackStart();
+  r.run(1800, () => ({ rms: 0.1, f0: 210, her: -20 }));
+  r.live.ackEnd();
+  // Voice Live's weak-reference echo of "अच्छा": its item began inside the clip
+  const ev = { type: "input_audio_buffer.speech_started", item_id: "a1", audio_start_ms: 1300 - 200 };
+  assert.equal(r.live.echoOnly(ev), true, "the ack's echo item");
+  assert.equal(r.live.echoOnly({ type: "conversation.item.input_audio_transcription.completed", item_id: "a1", transcript: "अच्छा" }), true);
+  assert.equal(r.live.d5.ackEchoItems, 1);
+  r.run(4000, () => ({ rms: 0.001, f0: null, her: null }));
+  assert.equal(r.acts.filter((a) => a[1] === "drop").length, 0, "the committed answer is not revoked");
+  // the child later, her silent and the ack long over: a real item
+  assert.equal(r.live.echoOnly({ type: "input_audio_buffer.speech_started", item_id: "c1", audio_start_ms: 3500 }), false);
+  // over her LINE an item is how a barge-in reaches the engine: never dropped
+  r.live.herStart(HER);
+  r.live.ackStart();
+  assert.equal(r.live.echoOnly({ type: "input_audio_buffer.speech_started", item_id: "b1", audio_start_ms: r.t - 300 }), false);
+});

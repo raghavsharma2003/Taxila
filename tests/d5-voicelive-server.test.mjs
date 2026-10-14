@@ -261,6 +261,35 @@ test("d5route: refuses bad upgrades and other origins before any lookup; opens t
   assert.match(s4.text, /^HTTP\/1\.1 403/);
 });
 
+test("D5 review #1: a crafted vad silence never throws (it took the Node process down); a throw in dispatch ends only that stream", async () => {
+  const evil = '{"type":"vad","silenceMs":{"toString":1,"valueOf":1}}';
+  assert.throws(() => Number(JSON.parse(evil).silenceMs), TypeError, "the input that crashed");
+  assert.equal(fromClientText(evil).session.turn_detection.silence_duration_ms, fromClientText('{"type":"vad"}').session.turn_detection.silence_duration_ms);
+  assert.equal(fromClientText('{"type":"vad","silenceMs":"900"}').session.turn_detection.silence_duration_ms, fromClientText('{"type":"vad"}').session.turn_detection.silence_duration_ms, "a string is not a number");
+  // through the real socket handler: the crafted frame, then a dispatch that throws → the stream ends 1011, nothing escapes
+  const { env: _e, ...authorize } = deps();
+  const s = new FakeSocket();
+  const sent = [];
+  const up = { send: (m) => sent.push(JSON.parse(m)), close() {} };
+  const relay = await handleD5Upgrade(upgradeReq(), s, Buffer.alloc(0), { env: ENV, authorize, openUpstream: () => up });
+  up.onmessage({ data: JSON.stringify({ type: "session.created", session: {} }) });
+  up.onmessage({ data: JSON.stringify({ type: "session.updated", session: {} }) });
+  s.emit("data", clientFrame(0x1, evil));
+  assert.equal(relay.ended, false, "the crafted vad is just the default silence");
+  relay.clientText = () => { throw new Error("boom"); };
+  s.emit("data", clientFrame(0x1, '{"type":"commit"}'));
+  assert.equal(relay.ended, true, "a throw in dispatch ends this stream (relay_error), never the process");
+});
+
+test("D5 review: an upgrade the browser abandoned during authorisation opens no relay", async () => {
+  const { env: _e, ...authorize } = deps({ child: async () => { s.destroyed = true; return { guardian: { id: "g-abandon", email: "o@x" }, child: { id: "c1" } }; } });
+  const s = new FakeSocket();
+  let opened = 0;
+  const relay = await handleD5Upgrade(upgradeReq(), s, Buffer.alloc(0), { env: ENV, authorize, openUpstream: () => { opened++; return { send() {}, close() {} }; } });
+  assert.equal(relay, null);
+  assert.equal(opened, 0, "no upstream for a socket nobody holds");
+});
+
 test("d5route: a per-guardian open rate", () => {
   const t = 1_000_000;
   for (let i = 0; i < D5_OPENS_PER_MINUTE; i++) assert.equal(allowD5("rate-g", t + i), true);
@@ -326,3 +355,15 @@ test("integration: a real HTTP upgrade, Node's own WebSocket client, the relay t
 });
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
+test("D5 review: a stream whose browser stopped sending audio ends after D5_IDLE_MS (the slot is freed)", async () => {
+  const { D5_IDLE_MS } = await import("../server/duplex/voicelive.js");
+  let t = 0;
+  const f = fakeRelay({ now: () => t });
+  const idle = () => f.timers.at(-1);
+  t = D5_IDLE_MS / 3; f.relay.clientBinary(Buffer.alloc(D5_FRAME_BYTES)); idle().fn();
+  assert.equal(f.ended(), null, "audio is flowing");
+  t += D5_IDLE_MS; idle().fn();
+  assert.deepEqual(f.closed(), [1001, "client_idle"]);
+  assert.equal(f.ended().reason, "client_idle");
+});

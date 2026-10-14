@@ -19,7 +19,7 @@
  *
  * Hands-free: no press / release here; captions of every STT item inside one engine turn are folded onto ONE caption id.
  */
-import { DuplexLive, isQuotaError, type DuplexFallbackReason, type DuplexLiveOptions, type DuplexStats, type DuplexTurn, type TurnUi } from "./live.ts";
+import { DuplexLive, D5_HER_TAIL_MS, isQuotaError, type DuplexFallbackReason, type DuplexLiveOptions, type DuplexStats, type DuplexTurn, type TurnUi } from "./live.ts";
 import type { HostCommand, ShadowRow } from "./host.ts";
 import type { FloorPhase } from "./engine.ts";
 import type { DuplexMode } from "./flags.ts";
@@ -146,6 +146,18 @@ export function halfTail(surface: { audio(): { ctx: AudioContext } | null }): { 
   }
 }
 
+/**
+ * D5 review #6: her echo tail on D5 from this device: D5_HER_TAIL_MS of room reverb + the output buffer's latency (her level
+ * is read before it), within 300-900 ms; unknown → D5_HER_TAIL_MS + 200 (a typical Android output buffer).
+ */
+export function d5Tail(surface: { audio(): { ctx: AudioContext } | null }): { herTailMs: number } {
+  try {
+    const lat = (surface.audio()?.ctx as (AudioContext & { outputLatency?: number }) | undefined)?.outputLatency;
+    if (typeof lat === "number" && Number.isFinite(lat) && lat > 0) return { herTailMs: Math.round(Math.max(D5_HER_TAIL_MS, Math.min(900, D5_HER_TAIL_MS + lat * 1000))) };
+  } catch { /* unknown below */ }
+  return { herTailMs: D5_HER_TAIL_MS + 200 };
+}
+
 export class CascadeDuplex {
   readonly mode: Exclude<DuplexMode, "off">;
   readonly live: DuplexLive;
@@ -199,7 +211,7 @@ export class CascadeDuplex {
       // already lands the final ~0.6 s after the child stops)
       lessonId: surface.lessonId, port, mode: o.mode, source: d5 ? "voicelive" : "live_transcribe", supportsCommit: !d5,
       // D4: half-duplex unless this device forced the full engine (?duplexfull=1, release 14); D5: the full engine
-      ...(d5 ? { vadGate: "server" as const, preDuck: o.preDuck ?? D5_PREDUCK_DEFAULT, serverVadMs: D5_SERVER_VAD_MS } : { halfDuplex: o.halfDuplex ?? (HALF_DUPLEX_D4 && o.mode === "on" && !fullDuplexForced()), ...halfTail(surface) }),
+      ...(d5 ? { vadGate: "server" as const, preDuck: o.preDuck ?? D5_PREDUCK_DEFAULT, serverVadMs: D5_SERVER_VAD_MS, ...d5Tail(surface) } : { halfDuplex: o.halfDuplex ?? (HALF_DUPLEX_D4 && o.mode === "on" && !fullDuplexForced()), ...halfTail(surface) }),
       wrapEmit: o.face?.wrapEmit, onDetach: o.face?.detach, now: this.now, setInterval: o.setInterval, clearInterval: o.clearInterval,
       band: o.band,
       log: (row: ShadowRow) => { try { this.tel.row(row); } catch { /* telemetry never breaks the floor */ } o.log?.(row); },
@@ -214,6 +226,8 @@ export class CascadeDuplex {
 
   /** D5: the client time of the lane stream's first audio frame (exact audio-clock mapping for Voice Live's events). */
   audioOrigin(t: number | null): void { this.live.audioOrigin(t); }
+  /** D5 review #5: the stream's anchored audio clock (D5Stream.toClient). */
+  audioClock(fn: ((audioMs: number) => number | null) | null): void { this.live.audioClock(fn); }
 
   /** The engine decides the floor now (shadow never does). */
   get deciding(): boolean { return this.mode === "on" && this.live.live && !this.closed; }
