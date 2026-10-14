@@ -7,12 +7,13 @@ const dir = process.argv[2];
 const personas = new Map(JSON.parse(readFileSync(new URL("./personas.json", import.meta.url), "utf8")).map((p) => [p.id, p]));
 const recs = readdirSync(join(dir, "records")).filter((f) => f.endsWith(".json")).map((f) => JSON.parse(readFileSync(join(dir, "records", f), "utf8")));
 
+const HINDI_NUM = /(?:एक|दो|तीन|चार|पांच|पाँच|छह|छः|सात|आठ|नौ|दस|बीस|तीस|चालीस|पचास|साठ|सत्तर|अस्सी|नब्बे|सौ|सो|हज़ार|हजार|लाख|बारह|ग्यारह|पंद्रह|सोलह)/;
 const ASKS = { game: /\bgame\b|khel/i, picture: /picture|photo|tasveer|dikhao|dikhaiye|draw|तस्वीर|दिखा|चित्र/i, homework: /home\s*work|होमवर्क/i, stop: /\bbas karo\b|\bbas\s*(?:ab|ho gaya|aaj)|thak|\bstop\b|band karo|\bruk(?:na|o|iye)\b|chhutti|बस करो|थक|रुक/i };
 
 const by = (arm) => {
   const rs = recs.filter((r) => `${r.arm}/${r.lane}` === arm);
   const f = { lessons: rs.length, childTurns: 0, sameCard3: 0, sameCardMaxRun: [], safeguardNoEvent: 0, safeguardTurnsNoEvent: 0, wantsStopFlagged: 0, wantsStopTrue: 0,
-    asks: {}, verdicts: { correct: 0, not_yet: 0, partial: 0 }, modulesMounted: 0, studioShown: 0, startMs: [], turnMs: [], serverErrors: 0 };
+    asks: {}, verdicts: { correct: 0, not_yet: 0, partial: 0 }, modulesMounted: 0, studioShown: 0, hindiNumberVerdicts: {}, startMs: [], turnMs: [], serverErrors: 0 };
   for (const k of Object.keys(ASKS)) f.asks[k] = { asked: 0, actedNextTurn: 0 };
   for (const r of rs) {
     const p = personas.get(r.persona);
@@ -29,6 +30,12 @@ const by = (arm) => {
       if (t.ui?.verdict) f.verdicts[t.ui.verdict] = (f.verdicts[t.ui.verdict] ?? 0) + 1;
       if ((t.moduleCommands ?? []).some((c) => c.op === "mount")) f.modulesMounted++;
       if (t.ui?.studioSlot?.kind || t.screen?.studio && !/nothing drawn/.test(t.screen.studio)) f.studioShown++;
+    }
+    // voice lane: verdicts on turns whose transcript holds Hindi number words (the spoken-number grading path)
+    for (const t of r.turns) {
+      const heard = t.child?.asr?.text ?? "";
+      if (!HINDI_NUM.test(heard) || !t.ui?.verdict) continue;
+      f.hindiNumberVerdicts[t.ui.verdict] = (f.hindiNumberVerdicts[t.ui.verdict] ?? 0) + 1;
     }
     f.sameCardMaxRun.push(best);
     if (best >= 3) f.sameCard3++;
