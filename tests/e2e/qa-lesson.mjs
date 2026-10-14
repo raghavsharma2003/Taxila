@@ -51,10 +51,10 @@ const poll = (async () => {
 })();
 
 if (process.env.QA_OPEN) {
-  await page.goto(`${BASE}/parent/controls`);
+  await page.goto(`${BASE}/parent/controls?c=${acc.cid}`);
   await sleep(2000);
   if (await btn(page, "OK").count()) { for (const d of "2580") await btn(page, d).first().click(); await btn(page, "OK").first().click(); await sleep(1500); }
-  await page.evaluate(() => { history.pushState({}, "", "/parent/controls"); dispatchEvent(new PopStateEvent("popstate")); });
+  await page.evaluate(() => { history.pushState({}, "", location.pathname + location.search); dispatchEvent(new PopStateEvent("popstate")); });
   await page.getByRole("button", { name: /Open now for 1 hour/ }).click();
   await sleep(1500);
   console.log(ts(), "opened lessons for an hour");
