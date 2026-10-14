@@ -137,10 +137,10 @@ test("(a) D5 pre-duck: never on her own echo (her pitch, or an octave of it), fa
   // her echo 10 dB above the learned coupling (a weak device AEC re-converging), pitched at hers or its octave
   r.run(3000, (t) => ({ rms: 0.1, f0: t % 200 < 100 ? 210 : 420, her: -20, herF0: 210 }));
   assert.equal(r.live.d5.preDucks, 0, JSON.stringify(r.acts));
-  // a child over her: pitch 300 Hz (6 st from hers)
-  r.run(3400, () => ({ rms: 0.3, f0: 300, her: -20, herF0: 210 }));
+  // a child over her: pitch 300 Hz (6 st from hers), 14 dB above her echo (D5_PREDUCK_MARGIN_DB 12)
+  r.run(3400, () => ({ rms: 0.5, f0: 300, her: -20, herF0: 210 }));
   const d = r.acts.find((a) => a[1] === "duck" && a[2] === D5_PREDUCK_LEVEL);
-  assert.ok(d && d[0] - 3000 <= 100, `pre-duck within 100 ms: ${JSON.stringify(r.acts)}`);
+  assert.ok(d && d[0] - 3000 <= 120, `pre-duck within 120 ms: ${JSON.stringify(r.acts)}`);
   assert.equal(r.live.d5.preDucks, 1);
 });
 

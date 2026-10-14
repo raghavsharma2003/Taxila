@@ -153,6 +153,8 @@ export interface DuplexLiveOptions {
    * No barge-in on this lane: D5 is the full-duplex lane.
    */
   halfDuplex?: boolean;
+  /** Evals only: override the pre-duck constants (D5_PREDUCK_MARGIN_DB / _MS / _PITCH_ST) to tune them offline. */
+  preDuckTune?: { marginDb?: number; ms?: number; pitchSt?: number };
   /** D5: Voice Live's VAD silence (ms) — its audio_end_ms lands this much (+ ~90 ms) after the child's true end. */
   serverVadMs?: number;
   /** The STT accepts client commits mid-stream (live_transcribe does: M-D2, n=58). */
@@ -202,8 +204,13 @@ export const D5_VAD_END_PAD_MS = 590;
 /** D5: a burst Voice Live opened no item for this long after it ended is unheard (its speech_started lands ~0.6 s in). */
 export const D5_UNHEARD_AFTER_MS = 1000;
 /** D5 pre-duck: the device burst must stand this far above her predicted echo, for this long, with a pitch. */
-export const D5_PREDUCK_MARGIN_DB = 6;
-export const D5_PREDUCK_MS = 40;
+/**
+ * Round 5, tuned offline (evals/duplex-2026-10/preduck-tune.mjs, 102 of her lines x 3 acoustic variants, IN-SAMPLE): margin
+ * 6 dB / 40 ms pre-ducked her on her own echo on 6/102 owner-phone lines; 12 dB / 80 ms gives 0/102 owner, 0/102 phone,
+ * 1/102 clean, with 11/12 barge-ins still pre-ducked within 500 ms of the child's onset on each.
+ */
+export const D5_PREDUCK_MARGIN_DB = 12;
+export const D5_PREDUCK_MS = 80;
 /** Round 5: a pre-duck frame's pitch must be this far (semitones) from her own output's pitch on the same hop. */
 export const D5_PREDUCK_PITCH_ST = 1.5;
 /** Round 5: the pre-duck goes straight to the hush level (−26 dB): her stop <= 500 ms (BRIEF.md). */
@@ -565,13 +572,15 @@ export class DuplexLive {
     while (this.herF0s.length && this.herF0s[0][0] < t - 200) this.herF0s.shift();
     // measured on the owner variant (bake set, echo-only frames: mic f0 vs her f0 within 200 ms): 4,448 frames at 0 st, ~30 at
     // each of ±12, a few dozen spread over ±9..11; children's frames spread −22..+18 st. So her pitch and its octaves only.
-    const near = (a: number, b: number): boolean => { const st = 12 * Math.log2(a / b); return [-12, 0, 12].some((k) => Math.abs(st - k) < D5_PREDUCK_PITCH_ST); };
+    const tune = this.o.preDuckTune ?? {};
+    const pitchSt = tune.pitchSt ?? D5_PREDUCK_PITCH_ST;
+    const near = (a: number, b: number): boolean => { const st = 12 * Math.log2(a / b); return [-12, 0, 12].some((k) => Math.abs(st - k) < pitchSt); };
     const notHerPitch = !!f0 && !this.herF0s.some(([, h]) => near(f0, h));
-    if (micDb >= echoDb + D5_PREDUCK_MARGIN_DB && (f0 === null || notHerPitch)) {
+    if (micDb >= echoDb + (tune.marginDb ?? D5_PREDUCK_MARGIN_DB) && (f0 === null || notHerPitch)) {
       this.preDuckRun += 20;
       if (notHerPitch) this.preDuckF0 = true;
     } else { this.preDuckRun = 0; this.preDuckF0 = false; }
-    if (this.preDuckRun >= D5_PREDUCK_MS && this.preDuckF0 && this.hostDuck >= 1) {
+    if (this.preDuckRun >= (tune.ms ?? D5_PREDUCK_MS) && this.preDuckF0 && this.hostDuck >= 1) {
       this.preDuckAt = t;
       this.preDuckRun = 0;
       this.preDuckF0 = false;

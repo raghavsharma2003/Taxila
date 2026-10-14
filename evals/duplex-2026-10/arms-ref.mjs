@@ -6,7 +6,7 @@
 // word before it is heard. A speech_started is the barge-in signal our link would act on; a commit is the end of turn.
 // Open loop on the assembled audio (like arms-ours.mjs): mic = `<id>.phone.s16` (raw speaker echo, no device AEC) or
 // `<id>.clean.s16`. Real time.
-//   NODE_USE_ENV_PROXY=1 node --env-file=.env.local evals/duplex-2026-10/arms-ref.mjs --bake <dir> --variant phone [--model gpt-4.1-mini] [--conc 4] [--keep-fillers] [--only id,..]
+//   NODE_USE_ENV_PROXY=1 node --env-file=.env.local evals/duplex-2026-10/arms-ref.mjs --bake <dir> --variant phone [--model gpt-4.1-mini] [--conc 4] [--keep-fillers] [--only id,..] [--asr-model azure-speech|gpt-4o-transcribe|...] [--asr-lang hi-IN,en-IN|hi-IN|none]
 import fs from "node:fs";
 import path from "node:path";
 import { pool, loadEnv } from "../duplex-real/lib.mjs";
@@ -41,7 +41,7 @@ async function one(id) {
         input_audio_format: "pcm16", input_audio_sampling_rate: 16000,
         input_audio_echo_cancellation: { type: "server_echo_cancellation", reference_source: "client", channels: 2 },
         input_audio_noise_reduction: { type: "azure_deep_noise_suppression" },
-        input_audio_transcription: { model: "azure-speech", language: "hi-IN,en-IN" },
+        input_audio_transcription: { model: arg("--asr-model", "azure-speech"), ...(arg("--asr-lang", "hi-IN,en-IN") === "none" ? {} : { language: arg("--asr-lang", "hi-IN,en-IN") }) },
         turn_detection: { type: "azure_semantic_vad_multilingual", silence_duration_ms: 500, create_response: false, interrupt_response: false, remove_filler_words: FILLER, languages: ["hi", "en"], ...VADX },
       } }));
       else if (e.type === "session.updated") { clearTimeout(to); resolve(); }
