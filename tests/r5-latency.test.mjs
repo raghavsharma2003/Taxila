@@ -333,3 +333,29 @@ test("start-audio route: registered beside turn-audio and built on the start rou
   const lesson = readFileSync(new URL("../server/routes/lesson.js", import.meta.url), "utf8");
   assert.match(lesson, /async function start\(req, res, body\) \{\n  const r = await lessonStart\(req, body\);\n  send\(res, 201, r\.body\);/);
 });
+
+// ── QA D30: a TTS call that hangs before its headers is tried once more (server/voice/speech.js speechStream) ──
+test("speechStream: no headers within the deadline → one immediate retry that plays; a caller's abort or an HTTP error is never retried", async () => {
+  const realFetch = globalThis.fetch;
+  const env = { ...process.env };
+  process.env.AZURE_OPENAI_ENDPOINT ||= "https://example.invalid/openai/v1"; process.env.AZURE_OPENAI_API_KEY ||= "test-key";
+  process.env.TAXILA_TTS_HEADERS_MS = "60";
+  const { speechStream } = await import("../server/voice/speech.js");
+  let calls = 0;
+  try {
+    globalThis.fetch = (url, init) => { calls++; if (calls === 1) return new Promise((_, rej) => init.signal.addEventListener("abort", () => rej(Object.assign(new Error("aborted"), { name: "AbortError" })))); return Promise.resolve(new Response(new Uint8Array([1, 2, 3, 4]), { status: 200 })); };
+    const t0 = performance.now();
+    const { chunks } = await speechStream("Namaste!", { voice: "v" });
+    let n = 0; for await (const c of chunks) n += c.length;
+    assert.equal(n, 4); assert.equal(calls, 2);
+    assert.ok(performance.now() - t0 < 1000, "retried at the headers deadline, not after the 15 s timeout");
+    calls = 0;
+    globalThis.fetch = async () => { calls++; return new Response("bad", { status: 400 }); };
+    await assert.rejects(speechStream("x", { voice: "v" })); assert.equal(calls, 1, "an HTTP error is not retried");
+    calls = 0;
+    const ac = new AbortController();
+    globalThis.fetch = (url, init) => { calls++; return new Promise((_, rej) => init.signal.addEventListener("abort", () => rej(Object.assign(new Error("aborted"), { name: "AbortError" })))); };
+    const p = speechStream("x", { voice: "v", signal: ac.signal }); ac.abort();
+    await assert.rejects(p); assert.equal(calls, 1, "the caller's abort is not retried");
+  } finally { globalThis.fetch = realFetch; for (const k of Object.keys(process.env)) if (!(k in env)) delete process.env[k]; Object.assign(process.env, env); }
+});
