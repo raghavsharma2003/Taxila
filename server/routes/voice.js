@@ -17,7 +17,7 @@ import { take as prewarmTake, deliveryFor, speakingEntry, PASSTHROUGH } from "..
 import { renderParts, preludeRender } from "../voice/expressive/render.js";
 import { preludeTokenOk } from "../voice/expressive/prelude.js";
 import { edgeTrim, silence } from "../voice/expressive/pauses.js";
-import { FRAME, FRAMES_CONTENT_TYPE, frameWriter } from "../voice/frames.js";
+import { FRAME, FRAMES_CONTENT_TYPE, frameWriter, codecOf } from "../voice/frames.js";
 import { count } from "../voice/expressive/telemetry.js";
 import { spokenOptsForChild } from "../voice/spoken.js";
 import { routes as featureRoutes } from "../voice/features.js";
@@ -183,6 +183,7 @@ async function ttsStream(req, res, body) {
   if (!Number.isInteger(seq) || seq < 1) throw bad("invalid seq");
   if (!/^[0-9a-f-]{36}$/i.test(String(lessonId))) throw bad("invalid lessonId");
   const framed = wantsFrames(req);
+  const codec = framed ? codecOf(req) : "pcm"; // round 5 (QA D12): ADPCM on a slow link, when the device asks
   // This route is on the latency path (child stops → first audio), so it is ONE query, not requireChild's
   // chain (each round trip to Neon over HTTP is ~0.2-0.4 s): the turn joined to its lesson's child and to the
   // caller's session. The ownership check is the one requireChild makes (the child is this guardian's). An
@@ -195,7 +196,7 @@ async function ttsStream(req, res, body) {
   if (warm) {
     traceIdentify({ guardian: { id: warm.guardianId, email: null }, child: warm.childId ? { id: warm.childId } : undefined });
     if (!allowSpeech(warm.guardianId)) { warm.abort.abort(); throw new HttpError(429, "too many speech requests"); }
-    return streamParts(res, { entry: warm, t0, setupMs: Math.round(performance.now() - t0), prewarmed: Math.round(performance.now() - warm.at), framed });
+    return streamParts(res, { entry: warm, t0, setupMs: Math.round(performance.now() - t0), prewarmed: Math.round(performance.now() - warm.at), framed, codec });
   }
   // Driven from the session, so an expired session is a 401 before anything about the turn is revealed.
   const row = await one(`select s.guardian_id as session_guardian, t.text as turn_text, t.seq as turn_seq, l.state->'ctx'->>'teacherId' as lesson_teacher, l.state->'ctx'->>'teacherName' as lesson_teacher_name, (l.state ? 'laneSwitch') as lane_switched, c.*
@@ -222,7 +223,7 @@ async function ttsStream(req, res, body) {
   const abort = new AbortController();
   const entry = speakingEntry({ parts: r.parts, prelude: null, style, abort, lessonId });
   entry.startUpTo(LOOKAHEAD);
-  return streamParts(res, { entry, t0, setupMs: Math.round(performance.now() - t0), framed });
+  return streamParts(res, { entry, t0, setupMs: Math.round(performance.now() - t0), framed, codec });
 }
 
 /** Does the client take framed TTS v2? */
@@ -238,13 +239,13 @@ const PRELUDE_GAP_MS = 220;
  * part (sample-exact: the whiteboard's clause anchor), and an end frame. `headersSent` = the caller (turn-audio) already
  * wrote the HTTP head and its own frames.
  */
-async function streamParts(res, { entry, t0, setupMs, prewarmed, framed = false, headersSent = false }) {
+async function streamParts(res, { entry, t0, setupMs, prewarmed, framed = false, headersSent = false, codec = "pcm" }) {
   const { parts, jobs, abort } = entry;
   const realise = Array.isArray(entry.pauses) && entry.pauses.some((p) => p !== undefined);
   // The response's "close" (not the request's, which fires once the body is read) = the client went away.
   const onClose = () => { if (!res.writableEnded) abort.abort(); };
   res.on("close", onClose);
-  const out = frameWriter(res, framed);
+  const out = frameWriter(res, framed, { codec });
   let wrote = 0;
   let traced = "aborted"; // release 12 flight recorder: how this stream ended (tts.end)
   let headed = headersSent;
@@ -267,7 +268,7 @@ async function streamParts(res, { entry, t0, setupMs, prewarmed, framed = false,
     }
     if (!headerFramed) {
       headerFramed = true;
-      out.json(FRAME.header, { v: 2, format: `pcm_s16le;rate=${PCM_RATE};channels=1`, sentences: parts.length, firstMs: Math.round(performance.now() - t0), setupMs,
+      out.json(FRAME.header, { v: 2, format: `pcm_s16le;rate=${PCM_RATE};channels=1`, ...(out.codec === "adpcm" ? { codec: "adpcm" } : {}), sentences: parts.length, firstMs: Math.round(performance.now() - t0), setupMs,
         cache: jobs[0]?.cached ? "hit" : "miss", engine: entry.renders?.[0]?.engine ?? "oai", ...(prewarmed !== undefined ? { prewarmedMs: prewarmed } : {}) });
       record("tts.first", { sentences: parts.length, firstMs: Math.round(performance.now() - t0), setupMs,
         cache: jobs[0]?.cached ? "hit" : "miss", engine: entry.renders?.[0]?.engine ?? "oai", framed, ...(prewarmed !== undefined ? { prewarmedMs: prewarmed } : {}) });
@@ -379,13 +380,14 @@ async function turnAudio(req, res, body) {
   if (warm && !allowSpeech(warm.guardianId)) { warm.abort.abort(); warm = null; audio = "rate_limited"; }
   res.writeHead(200, { "content-type": FRAMES_CONTENT_TYPE, "x-turn-ms": String(Math.round(performance.now() - t0)), "cache-control": "no-store" });
   res.flushHeaders?.();
-  const w = frameWriter(res, true);
+  const codec = codecOf(req); // round 5 (QA D12)
+  const w = frameWriter(res, true, { codec });
   // the header first (does audio follow?), then the turn, so the client knows whether to wait for this response's audio
-  w.json(FRAME.header, { v: 2, audio, format: `pcm_s16le;rate=${PCM_RATE};channels=1`, ...(warm ? { seq, sentences: warm.parts.length, prewarmedMs: Math.round(performance.now() - warm.at),
+  w.json(FRAME.header, { v: 2, audio, format: `pcm_s16le;rate=${PCM_RATE};channels=1`, ...(w.codec === "adpcm" ? { codec: "adpcm" } : {}), ...(warm ? { seq, sentences: warm.parts.length, prewarmedMs: Math.round(performance.now() - warm.at),
     engine: warm.renders?.[0]?.engine ?? "oai" } : {}) });
   w.json(FRAME.turn, out);
   if (!warm) { w.json(FRAME.end, { t: "end", status: "ok", audio }); res.end(); return; }
-  return streamParts(res, { entry: warm, t0, setupMs: Math.round(performance.now() - t0), framed: true, headersSent: true });
+  return streamParts(res, { entry: warm, t0, setupMs: Math.round(performance.now() - t0), framed: true, headersSent: true, codec });
 }
 
 /**

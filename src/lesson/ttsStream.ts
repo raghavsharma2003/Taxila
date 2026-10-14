@@ -9,6 +9,7 @@ import type { TtsRequest, TurnRequest, TurnResponse } from "../../shared/contrac
 import { anchorPerfTime, isVisemeFrame, partPlayAt, puppetCut, puppetVisemes, type TtsVisemeFrame } from "../face-puppet/ttsBridge.ts";
 import { ApiError } from "./api.ts";
 import { markLineAudioStart } from "../modules/whiteboard/clock.ts";
+import { adpcmWanted, decodeAdpcm } from "./adpcm.ts";
 
 export const PCM_RATE = 24_000;
 /** Lead before the first chunk plays: absorbs network jitter between chunks without audible delay. */
@@ -103,7 +104,9 @@ export type SpeechStreamFetch = (req: TtsRequest, signal: AbortSignal, sink?: Cl
 // server frames only when asked (Accept below); an older server answers raw audio/pcm and the client reads it as before.
 
 export const FRAMES_ACCEPT = "application/x-taxila-pcm-frames;v=2";
-export const FRAME = { pcm: 0, event: 1, header: 2, turn: 3, end: 4 } as const;
+export const FRAME = { pcm: 0, event: 1, header: 2, turn: 3, end: 4, adpcm: 5 } as const;
+/** The Accept a TTS request sends: frames v2, plus `codec=adpcm` on a slow link (round 5, QA D12; ./adpcm.ts). */
+export const framesAccept = (): string => (adpcmWanted() ? `${FRAMES_ACCEPT};codec=adpcm` : FRAMES_ACCEPT);
 export interface TtsFrame {
   type: number;
   /** PCM bytes for type 0, the parsed JSON otherwise. */
@@ -150,6 +153,8 @@ export class FrameParser {
       const type = merged[i];
       const body = merged.subarray(i + 4, i + 4 + len);
       if (type === FRAME.pcm) out.push({ type, payload: body.slice() });
+      // round 5 (QA D12): an ADPCM frame becomes a PCM frame here, so nothing after the parser changes
+      else if (type === FRAME.adpcm) out.push({ type: FRAME.pcm, payload: decodeAdpcm(body) });
       else {
         try {
           out.push({ type, payload: JSON.parse(new TextDecoder().decode(body)) as Record<string, unknown> });
@@ -269,7 +274,7 @@ export async function postTurnAudio(req: TurnRequest, signal?: AbortSignal): Pro
   const res = await fetch("/api/lesson/turn-audio", {
     method: "POST",
     credentials: "same-origin",
-    headers: { "content-type": "application/json", accept: FRAMES_ACCEPT },
+    headers: { "content-type": "application/json", accept: framesAccept() },
     body: JSON.stringify(req),
     signal,
   });
@@ -359,7 +364,7 @@ export const fetchSpeechStream: SpeechStreamFetch = async (req, signal, sink) =>
   const res = await fetch("/api/voice/tts-stream", {
     method: "POST",
     credentials: "same-origin",
-    headers: { "content-type": "application/json", accept: FRAMES_ACCEPT },
+    headers: { "content-type": "application/json", accept: framesAccept() },
     body: JSON.stringify(req),
     signal,
   });
