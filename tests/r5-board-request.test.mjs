@@ -144,3 +144,9 @@ test("QA round 5 (D07, D08, D09): a Devanagari game ask, 'इसकी एक �
   for (const said of ["साफ करो।", "saaf karo", "clear karo", "sab mita do", "isko hatao"]) assert.equal(requestOf(said)?.type, "clear_board", said);
   for (const said of ["साफ नहीं दिख रहा", "board mat hatao", "answer mitao mat"]) assert.notEqual(requestOf(said)?.type, "clear_board", said);
 });
+
+test("QA D08 re-run: 'एक' / 'ek' is never a subject (the board drew 'एक' as a label and she invented an apple)", async () => {
+  const { freeSubjectOf } = await import("../server/director/requests.js");
+  for (const said of ["इसकी एक तस्वीर दिखाओ।", "एक तस्वीर दिखाओ", "koi ek photo dikhao", "ek photo dikhao"]) assert.equal(freeSubjectOf(said), null, said);
+  assert.equal(freeSubjectOf("aloo dikhao"), "aloo");
+});
