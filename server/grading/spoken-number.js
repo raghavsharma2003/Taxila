@@ -33,11 +33,22 @@ for (const [w, n] of Object.entries({ chhe: 6, che: 6, chah: 6, chheh: 6, chhah:
 const DEV = { "शून्य": 0, "एक": 1, "दो": 2, "तीन": 3, "चार": 4, "पाँच": 5, "पांच": 5, "छह": 6, "छः": 6, "सात": 7, "आठ": 8, "नौ": 9, "दस": 10, "ग्यारह": 11, "बारह": 12, "तेरह": 13,
   "चौदह": 14, "पंद्रह": 15, "सोलह": 16, "सत्रह": 17, "अठारह": 18, "उन्नीस": 19, "बीस": 20, "पच्चीस": 25, "तीस": 30, "चालीस": 40, "पचास": 50, "साठ": 60, "सत्तर": 70,
   "अस्सी": 80, "नब्बे": 90 };
+// round 5 (main, sim lab r5-voice-base-vs-combo: voice verdicts 77 → 51 correct): the rest of 1-99 as the ASR writes them,
+// spoken alternates, and English number words the ASR transliterates ("जीरो"). Keys are compared folded (devKey).
+const DEV_MORE = ("इक्कीस बाईस तेईस चौबीस पच्चीस छब्बीस सत्ताईस अट्ठाईस उनतीस तीस इकतीस बत्तीस तैंतीस चौंतीस पैंतीस छत्तीस सैंतीस अड़तीस उनतालीस चालीस " +
+  "इकतालीस बयालीस तैंतालीस चवालीस पैंतालीस छियालीस सैंतालीस अड़तालीस उनचास पचास इक्यावन बावन तिरपन चौवन पचपन छप्पन सत्तावन अट्ठावन उनसठ साठ " +
+  "इकसठ बासठ तिरसठ चौंसठ पैंसठ छियासठ सड़सठ अड़सठ उनहत्तर सत्तर इकहत्तर बहत्तर तिहत्तर चौहत्तर पचहत्तर छिहत्तर सतहत्तर अठहत्तर उनासी अस्सी " +
+  "इक्यासी बयासी तिरासी चौरासी पचासी छियासी सत्तासी अट्ठासी नवासी नब्बे इक्यानवे बानवे तिरानवे चौरानवे पचानवे छियानवे सत्तानवे अट्ठानवे निन्यानवे").split(" ");
+DEV_MORE.forEach((w, i) => { if (!(w in DEV)) DEV[w] = 21 + i; });
+Object.assign(DEV, { "छे": 6, "छै": 6, "जीरो": 0, "ज़ीरो": 0, "वन": 1, "टू": 2, "थ्री": 3, "फोर": 4, "फ़ोर": 4, "फाइव": 5, "सिक्स": 6, "सेवन": 7, "एट": 8, "नाइन": 9, "टेन": 10 });
+/** Devanagari spelling folded: the nukta dropped, candrabindu = anusvara (ASR writes either). */
+const devKey = (w) => w.normalize("NFD").replace(/\u093C/g, "").replace(/\u0901/g, "\u0902").normalize("NFC");
+const DEVK = new Map(Object.entries(DEV).map(([w, v]) => [devKey(w), v]));
 const SCALE = { hundred: 100, sau: 100, "सौ": 100, thousand: 1000, hazaar: 1000, hazar: 1000, hajar: 1000, "हज़ार": 1000, "हजार": 1000, lakh: 1e5, lac: 1e5, lakhs: 1e5,
   "लाख": 1e5, crore: 1e7, karod: 1e7, crores: 1e7, "करोड़": 1e7, million: 1e6 };
 const DEN = { half: 2, halves: 2, third: 3, thirds: 3, fourth: 4, fourths: 4, quarter: 4, quarters: 4, fifth: 5, fifths: 5, sixth: 6, sixths: 6, seventh: 7, sevenths: 7,
   eighth: 8, eighths: 8, ninth: 9, ninths: 9, tenth: 10, tenths: 10, twelfth: 12, twelfths: 12, chauthai: 4, tihai: 3 };
-const SPECIAL = { half: 0.5, aadha: 0.5, adha: 0.5, aadhi: 0.5, "आधा": 0.5, dedh: 1.5, derh: 1.5, "डेढ़": 1.5, dhai: 2.5, dhaai: 2.5, "ढाई": 2.5 };
+const SPECIAL = { half: 0.5, aadha: 0.5, adha: 0.5, aadhi: 0.5, "आधा": 0.5, dedh: 1.5, derh: 1.5, "डेढ़": 1.5, dhai: 2.5, dhaai: 2.5, "ढाई": 2.5, pav: 0.25, paav: 0.25, quarter: 0.25, "पाव": 0.25 };
 const PREFIX = { sawa: 0.25, savva: 0.25, saade: 0.5, sade: 0.5, saadhe: 0.5, sadhe: 0.5, paune: -0.25 };
 const SIGN = new Set(["minus", "negative", "ऋण"]);
 const JOIN = new Set(["and", "aur"]);
@@ -48,7 +59,8 @@ const WEAK = new Set(["do", "no", "das", "saath", "tees", "bees"]);
 function wordNum(w) {
   if (EN1.includes(w)) return { v: EN1.indexOf(w), k: "unit" };
   if (w in EN10) return { v: EN10[w], k: "tens" };
-  if (w in DEV) return { v: DEV[w], k: "unit" };
+  const dv = /[\u0900-\u097F]/.test(w) ? DEVK.get(devKey(w)) : undefined;
+  if (dv != null) return { v: dv, k: "unit" };
   const h = HI.get(fold(w));
   if (h != null && h !== 100) return { v: h, k: "unit", hi: true };
   return null;
@@ -80,12 +92,26 @@ export function plainNumberKey(answer) {
 }
 
 /**
+ * The ASR fuses a unit and "sau" (and writes sau as सो): "छेसो" = छह सौ, "पाँचसो", "chheso", "paanchso". A fused form, or a
+ * Devanagari unit word followed by a separate सो, is split back into "<unit> सौ" / "<unit> sau". (A bare Roman "so" is an
+ * English word and is never read as a hundred.)
+ */
+const DEV_UNITS = "एक|दो|तीन|चार|पाँच|पांच|छह|छः|छे|छै|सात|आठ|नौ|नो";
+const ROM_UNITS = "ek|do|teen|tin|char|chaar|paanch|panch|chhe|chhah|chheh|che|chah|saat|sat|aath|ath|nau";
+const FUSED_DEV = new RegExp(`(^|[^\\p{L}\\p{M}])(${DEV_UNITS})\\s?(?:सौ|सो)(?![\\p{L}\\p{M}])`, "gu");
+const FUSED_ROM = new RegExp(`(^|[^\\p{L}])(${ROM_UNITS})(?:sau|so|sow)(?![\\p{L}])`, "gu");
+function fuseHundreds(s) {
+  return s.replace(FUSED_DEV, (_, pre, u) => `${pre}${u === "छे" || u === "छै" ? "छह" : u === "नो" ? "नौ" : u} सौ`)
+    .replace(FUSED_ROM, (_, pre, u) => `${pre}${u} sau`);
+}
+
+/**
  * Every number phrase in a reply, in order (a self-correction or a hedge gives two), or null when a number phrase cannot
  * be read (an unknown word inside it, two units in a row, a zero denominator).
  * @param {unknown} raw @returns {number[] | null}
  */
-export function numberPhrases(raw) {
-  let s = String(raw ?? "").toLowerCase().normalize("NFC").replace(/[०-९]/g, (d) => String("०१२३४५६७८९".indexOf(d)))
+export function numberPhrases(raw, { split = false, lang = "mixed" } = {}) {
+  let s = fuseHundreds(String(raw ?? "").toLowerCase().normalize("NFC")).replace(/[०-९]/g, (d) => String("०१२३४५६७८९".indexOf(d)))
     .replace(/[−–—]/g, "-").replace(/₹|\brs\.?|\brupees?\b|\brupaye\b/g, " ")
     .replace(/(?<=\d),(?=\d)/g, "").replace(/(\p{L})-(?=\p{L})/gu, "$1 ");
   // digit fractions and mixed numbers first ("1 1/2", "3/4", "3 by 4", "3 upon 4"), then decimals
@@ -129,7 +155,7 @@ export function numberPhrases(raw) {
       continue;
     }
     if (t in PREFIX) { if (!close()) return null; open(); cur.prefix = PREFIX[t]; continue; }
-    if (t in SPECIAL && !(t === "half" && cur && cur.part !== null)) { if (!close()) return null; phrases.push(SPECIAL[t]); continue; }
+    if (t in SPECIAL && !((t === "half" || t === "quarter") && cur && cur.part !== null)) { if (!close()) return null; phrases.push(SPECIAL[t]); continue; }
     if (cur && t in DEN && cur.part !== null && cur.num === null) {           // "three fourths", "teen chauthai", "one half"
       const n = cur.total + cur.part; cur = null; phrases.push(n / DEN[t]); continue;
     }
@@ -142,12 +168,16 @@ export function numberPhrases(raw) {
       continue;
     }
     if (JOIN.has(t) && cur && cur.part !== null) continue;                   // "one hundred and twelve"
-    const w = wordNum(t);
+    const w0 = wordNum(t);
+    const w = w0 && lang === "en" && w0.hi ? null : w0;
     if (w && !(WEAK.has(t) && !cur && !(next && (next in SCALE || wordNum(next) || next in DEN || OVER.has(next))) && toks.length > 2)) {
       open();
-      if (w.k === "tens") { if (cur.last === "unit" || cur.last === "tens" || cur.last === "digits") return null; cur.part = (cur.last === "hundred" ? cur.part : 0) + w.v; cur.last = "tens"; continue; }
-      if (cur.last === "unit" || cur.last === "digits") return null;          // "two three", "teen chaar": not one number
-      if (cur.last === "tens") { if (w.v >= 10 || w.hi) return null; cur.part += w.v; cur.last = "unit"; continue; }
+      // two numbers back to back ("two three", "चार बारह"): not one number; null for the one-number reader, the start of a new
+      // phrase for split (working aloud: "तीन टाइम्स चार बारह")
+      const apart = () => { if (!split) return false; if (!close()) return false; open(); return true; };
+      if (w.k === "tens") { if ((cur.last === "unit" || cur.last === "tens" || cur.last === "digits") && !apart()) return null; cur.part = (cur.last === "hundred" ? cur.part : 0) + w.v; cur.last = "tens"; continue; }
+      if ((cur.last === "unit" || cur.last === "digits") && !apart()) return null;
+      if (cur.last === "tens") { if (w.v >= 10 || w.hi) { if (!apart()) return null; cur.part = w.v; cur.last = "unit"; continue; } cur.part += w.v; cur.last = "unit"; continue; }
       cur.part = (cur.last === "hundred" ? cur.part : 0) + w.v; cur.last = "unit";
       continue;
     }
