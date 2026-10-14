@@ -47,11 +47,74 @@
    "kind": "decision",
    "title": "The reply lane is a hedged request (server/azure.js hedged; TAXILA_REPLY_HEDGE_MS, default 2200 ms ~ taxila-fast p95, 0 = off): a reply still out at the hedge point gets an identical twin, the first answer wins, the other is aborted; a failure before it starts the twin at once (two attempts at most, as before); a content-filter block is never re-sent. Seen: an opening call hung to its 6 s timeout and paid a retry (start 7.9 s). Reverse if: the twin rate exceeds 10% of reply calls or a 429 on taxila-fast is traced to twins.",
    "at": "2026-10-14"
+  },
+  {
+   "id": "ms-r5-lat-continuer-ab-2026-10-14",
+   "kind": "measurement",
+   "title": "The non-verbal continuer (owner cohort), evals/relational-human/first-sound.mjs --prefetch --ack [--continuer], prod routing, real Azure, US container, synthetic child, interleaved 2 rounds x 15 turns per arm: child stops -> her first sound p50/p90 4165/5567 (ack only, n = 27) vs 2938/5712 ms (ack + continuer, n = 30); delta p50 -1227 ms, 90% CI [-1651, -622]. Acks played 2/27 (echo) vs 14/30 (13 continuers: हम्म 6, अच्छा 5, ओके 2; one echo); 23 refusals were 'consecutive' (every other turn at most, by design). The continuer sounded at p50 2468 ms after the child stopped: the prefetch's stable partial at 1166 ms (US STT deltas) + classify (its distress read) and the 750 ms floor ~1.0 s. Not yet judged for naturalness (sim-lab voice rubric line pending).",
+   "at": "2026-10-14"
+  },
+  {
+   "id": "ms-r5-lat-adpcm-slow3g-2026-10-14",
+   "kind": "measurement",
+   "title": "TTS on Chrome Slow 3G (400 ms RTT, 400 kbit/s) + CPU x4, evals/latency/start-phone.mjs (packaged build, prod routing, TEST, ?puppet=0), the opening line, n = 5 per arm interleaved: PCM 462-544 KB on the wire, full transfer 20.0-22.8 s; IMA ADPCM 128-144 KB, 8.3-8.9 s (about real time for the line); tap -> first sound p50 4521 vs 4027 ms. Synthetic tone SNR 36 dB at 4:1. Chrome reports navigator.connection.effectiveType '3g' under Slow 3G emulation, so the device's automatic choice switches ADPCM on there.",
+   "at": "2026-10-14"
+  },
+  {
+   "id": "ms-r5-lat-agent-models-2026-10-14",
+   "kind": "measurement",
+   "title": "Agent-loop Teacher candidates, one streamed call with a compact lesson state, 7 tool schemas, 4 recent turns and the child's words (evals/latency/agent-models.mjs), n = 30 each interleaved, US container: first speakable clause p50/p90 gpt-6-sol (taxila-gpt6, effort none, chat) 1475/2416 ms; taxila-fast 1726/2552; gpt-6-astra (responses API, effort low) 2119/3129; gpt-6.1-sol (responses API, effort low) 3294/9461, whole call p50 6474; grok-4.1-fast spoke in only 9/30 calls (tool calls only). gpt-6.1-sol and gpt-6-astra reject function tools with reasoning on /chat/completions (400): they need /v1/responses.",
+   "at": "2026-10-14"
+  },
+  {
+   "id": "ms-r5-lat-parent-overview-cold-2026-10-14",
+   "kind": "measurement",
+   "title": "QA D22 (GET /api/parent/overview 2.4 s): in-process, US -> Neon TEST, the FIRST overview of a process 1431-1558 ms, later ones 414-488 ms (DB round trips). A CPU profile names the cold part: the parent report's language gate (reports/lexicon.js bannedHits): V8 compiles each Unicode-class regex on its first test (~0.7 s). Compiled at boot now: first overview 634 ms. GET /api/parent/syllabus 300 ms once kits are warm.",
+   "at": "2026-10-14"
+  },
+  {
+   "id": "dec-r5-lat-continuer",
+   "kind": "decision",
+   "title": "Main's decision (2026-10-14): a non-verbal continuer (हम्म / अच्छा / ओके; Hmm / Okay / I see) may be her first sound on a spoken turn with no echo, for the owner cohort only (TAXILA_ACK_CONTINUER_FOR) and only when the device asks (off on D5 until 4B's gate covers it). Decided after the turn's classify (its distress read) on the same words; never on a safeguard, a stop or goodbye, a typed or tapped answer; never two acks running, never the same continuer twice; no content words; held to >= 900 ms after the child stopped and dropped when her reply is first. Reverse if: the sim-lab voice rubric scores it robotic, or 'human' drops with it on.",
+   "at": "2026-10-14"
+  },
+  {
+   "id": "dec-r5-lat-adpcm",
+   "kind": "decision",
+   "title": "TTS frames type 5 = IMA ADPCM (4:1), negotiated by Accept `codec=adpcm`, asked for only on a slow link (effectiveType slow-2g / 2g / 3g, or Save-Data; ?tts=adpcm|pcm|auto per device); the client decodes it in the frame parser, so everything after it sees PCM. PCM stays the default (ADPCM is lossy). Reverse if: a listening check finds ADPCM speech unacceptable even on slow links, or an Opus encoder becomes available without a new dependency.",
+   "at": "2026-10-14"
   }
  ],
  "edges": [
-  { "src": "dec-r5-lat-boot-warm", "rel": "measured_by", "dst": "ms-r5-lat-first-start-loop-block-2026-10-14" },
-  { "src": "dec-r5-lat-boot-warm", "rel": "measured_by", "dst": "ms-r5-lat-map-kit-block-2026-10-14" },
-  { "src": "dec-r5-lat-note-race", "rel": "measured_by", "dst": "ms-r5-lat-note-race-2026-10-14" }
+  {
+   "src": "dec-r5-lat-boot-warm",
+   "rel": "measured_by",
+   "dst": "ms-r5-lat-first-start-loop-block-2026-10-14"
+  },
+  {
+   "src": "dec-r5-lat-boot-warm",
+   "rel": "measured_by",
+   "dst": "ms-r5-lat-map-kit-block-2026-10-14"
+  },
+  {
+   "src": "dec-r5-lat-note-race",
+   "rel": "measured_by",
+   "dst": "ms-r5-lat-note-race-2026-10-14"
+  },
+  {
+   "src": "dec-r5-lat-continuer",
+   "rel": "measured_by",
+   "dst": "ms-r5-lat-continuer-ab-2026-10-14"
+  },
+  {
+   "src": "dec-r5-lat-adpcm",
+   "rel": "measured_by",
+   "dst": "ms-r5-lat-adpcm-slow3g-2026-10-14"
+  },
+  {
+   "src": "dec-r5-lat-boot-warm",
+   "rel": "measured_by",
+   "dst": "ms-r5-lat-parent-overview-cold-2026-10-14"
+  }
  ]
 }
