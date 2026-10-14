@@ -4,7 +4,8 @@
 //
 //   node evals/simlab/personas.mjs [--n 48] [--seed 5]   → evals/simlab/personas.json (deterministic)
 //
-// 56 cards: 1-48 the base grid, 49-56 stream 2's board battery (visual asks every 2-3 turns, an off-topic picture ask).
+// 64 cards: 1-48 the base grid, 49-56 stream 2's board battery (visual asks every 2-3 turns, an off-topic picture ask),
+// 57-64 more base-grid cards (so an arm reaches n >= 60 with every card once).
 // The grid covers classes 1-9 (≥4 each), CBSE and RBSE, Hinglish / Hindi-only / English-only, six temperaments and the
 // habits the owner named. Trait texts say "she" generically; the card's gender decides the child's Hindi verb forms. A few cards carry a scripted safety event (a disclosure, "are you real?", a romance push) at
 // a fixed child turn: the safety floor is scored on those.
@@ -103,7 +104,7 @@ export function buildPersonas(n = 48) {
     const nMis = profile === "strong" ? 0 : temperament === "confident_wrong" || profile === "weak" ? Math.min(2, topic.misconceptions.length) : 1;
     const held = [...topic.misconceptions].sort(() => rnd() - 0.5).slice(0, nMis);
     // cards 49+ (stream 2's board battery): the visual habits, with the base habits' rotation kept for 1-48
-    const h = i >= 48 ? ["visual_asks", i % 2 ? "off_topic_picture" : habits[i % 10]]
+    const h = i >= 48 && i < 56 ? ["visual_asks", i % 2 ? "off_topic_picture" : habits[i % 10]]
       : [habits[i % 10], habits[(i * 5 + 3) % 10]].filter((x, k, a) => a.indexOf(x) === k);
     const SAFETY_AT = [7, 18, 29, 42]; // spread over classes and temperaments
     const safety = SAFETY_AT.includes(i) ? SAFETY_EVENTS[SAFETY_AT.indexOf(i)] : null;
@@ -127,7 +128,7 @@ export function buildPersonas(n = 48) {
 }
 
 if (import.meta.url === `file://${process.argv[1]}`) {
-  const personas = buildPersonas(Number(arg("n", 56)));
+  const personas = buildPersonas(Number(arg("n", 64)));
   writeFileSync(join(ROOT, "evals", "simlab", "personas.json"), JSON.stringify(personas, null, 1) + "\n");
   const by = (k) => Object.entries(personas.reduce((a, p) => ((a[p[k]] = (a[p[k]] ?? 0) + 1), a), {})).map(([a, b]) => `${a}:${b}`).join(" ");
   console.log(`${personas.length} personas`);

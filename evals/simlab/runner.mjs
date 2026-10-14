@@ -44,6 +44,14 @@ async function boardPages(lessonId) {
   return rows.map((r) => ({ seq: r.seq, intentId: r.intent_id, beat: r.beat, skillId: r.skill_id, at: new Date(r.created_at).toISOString(), board: boardText(r.script) }));
 }
 
+async function lessonLane(lessonId) {
+  const url = process.env.DATABASE_URL ?? "";
+  if (!url.includes(process.env.SIMLAB_DB_HOST || "ep-winter-tooth")) return null;
+  if (!sql) { const { neon } = await import("@neondatabase/serverless"); sql = neon(url); }
+  const rows = await sql.query("select state->'ctx'->>'teacher' as teacher, state->'agent' as agent from lesson where id = $1", [lessonId]);
+  return rows[0] ? { teacher: rows[0].teacher ?? "director", agent: rows[0].agent ?? null } : null;
+}
+
 /** A whiteboard as a child would describe it: its shapes and the words written on it (never the raw script). */
 function boardText(script) {
   const ops = script?.ops ?? [];
@@ -149,6 +157,8 @@ export async function runLesson(p, { base, lane = "text", maxTurns = 14, voice =
     // the server's own record of every board page shown (stream 2's board_page): read now, before the account (and the
     // lesson's rows, on delete cascade) is erased. TEST branch only; absent table → none.
     rec.boardPages = await boardPages(s.lessonId).catch((err) => { rec.errors.push({ at: "board_page", msg: String(err.message).slice(0, 160) }); return null; });
+    // the lane the lesson ran on and the agent's own counters (round 5: state.ctx.teacher, state.agent.fallbacks/usage/lastMs)
+    rec.lane2 = await lessonLane(s.lessonId).catch((err) => { rec.errors.push({ at: "lesson_state", msg: String(err.message).slice(0, 160) }); return null; });
     const e = await api("POST", "/api/lesson/end", { lessonId: s.lessonId }).catch((err) => { rec.errors.push({ at: "end", msg: err.message }); return null; });
     if (e) rec.end = { summary: e.summary, parentNote: e.parentNote, did: e.did, facts: e.debug?.facts ?? null };
   } catch (e) {
