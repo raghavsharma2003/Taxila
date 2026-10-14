@@ -366,3 +366,18 @@ test("speechStream: no headers within the deadline → one immediate retry that 
     await assert.rejects(p); assert.equal(calls, 1, "the caller's abort is not retried");
   } finally { globalThis.fetch = realFetch; for (const k of Object.keys(process.env)) if (!(k in env)) delete process.env[k]; Object.assign(process.env, env); }
 });
+
+// ── QA D30 (client): her voice failed for a line → the floor still hands over (src/lesson/floor.ts) ──
+import { reduceFloor, INITIAL_FLOOR, FLOOR_TIMING } from "../src/lesson/floor.ts";
+
+test("the floor after a failed TTS: a line that hands over goes to YOUR TURN (the caption is the question); one that does not goes idle; the child speaking wins", () => {
+  const T = FLOOR_TIMING.young;
+  const asks = reduceFloor(INITIAL_FLOOR, { type: "ui", handover: "answer" }, 0, T);
+  assert.equal(reduceFloor(asks, { type: "teacher_audio_failed" }, 10, T).floor, "your_turn");
+  const thinking = { ...asks, floor: "thinking" };
+  assert.equal(reduceFloor(thinking, { type: "teacher_audio_failed" }, 10, T).floor, "your_turn");
+  const chain = reduceFloor(INITIAL_FLOOR, { type: "ui", handover: "chain" }, 0, T);
+  assert.equal(reduceFloor(chain, { type: "teacher_audio_failed" }, 10, T).floor, "idle");
+  const listening = { ...asks, floor: "listening" };
+  assert.equal(reduceFloor(listening, { type: "teacher_audio_failed" }, 10, T).floor, "listening");
+});
