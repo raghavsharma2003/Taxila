@@ -119,6 +119,22 @@ export async function agentTurn({ state, kit, event, silent = false, lessonId, l
 }
 
 /**
+ * The read the evidence allows (sim lab r5-agent-vs-director: 61 of 164 skill reads OVERclaimed, "understood" written from
+ * one correct answer). "understood" needs correct answers on two different items, or one on a why / transfer item, and no
+ * wrong answer after the last correct one; otherwise it is "partly" (with any right answer) or "not". Pure.
+ */
+const DEEP_KINDS = new Set(["why", "far_transfer", "near_transfer", "error_spot", "teachback", "predict"]);
+export function earnedRead(level, graded) {
+  if (level !== "understood") return level;
+  const lastRight = graded.map((x) => x.g).lastIndexOf("correct");
+  if (lastRight < 0) return graded.length ? "not" : "partly";
+  if (graded.slice(lastRight + 1).some((x) => x.g !== "correct")) return "partly";
+  const right = graded.filter((x) => x.g === "correct");
+  const items = new Set(right.map((x) => x.item));
+  return items.size >= 2 || right.some((x) => DEEP_KINDS.has(x.kind)) ? "understood" : "partly";
+}
+
+/**
  * Fold an agent turn into the lesson state the turn will store (the Director's `next`, so every bookkeeping field the turn
  * and the fallback lane read stays valid) and build the move / ui / studio slot the response carries.
  */
@@ -131,9 +147,15 @@ export function applyAgentTurn(next, out, { kit, childText = "", cls = null, car
   if (card && cls) {
     const k = card.skillId;
     const g = cls.outcome === "correct" ? "correct" : cls.outcome === "partial" ? "partly" : ["incorrect", "misconception"].includes(cls.outcome) ? (cls.misconceptionId ? `wrong(${cls.misconceptionId})` : "wrong") : null;
-    if (g) learner[k] = { ...(learner[k] ?? {}), grades: [...(learner[k]?.grades ?? []), g].slice(-10) };
+    if (g) learner[k] = { ...(learner[k] ?? {}), grades: [...(learner[k]?.grades ?? []), g].slice(-10),
+      graded: [...(learner[k]?.graded ?? []), { item: card.id, kind: card.kind, g }].slice(-10),
+      ...(cls.misconceptionId ? { misconceptions: [...new Set([...(learner[k]?.misconceptions ?? []), cls.misconceptionId])] } : {}) };
   }
-  if (out.read) learner[out.read.skill] = { ...(learner[out.read.skill] ?? {}), read: out.read.level, evidence: out.read.evidence };
+  if (out.read) {
+    const k = out.read.skill;
+    const level = earnedRead(out.read.level, learner[k]?.graded ?? []);
+    learner[k] = { ...(learner[k] ?? {}), read: level, evidence: out.read.evidence, ...(level !== out.read.level ? { claimed: out.read.level } : {}) };
+  }
   const screen = out.board ? { board: out.board.shown } : out.cleared ? { board: [] } : (a.screen ?? { board: [] });
   next.agent = {
     ...a, plan: out.plan || a.plan, turns: turns.slice(-24), learner, screen,

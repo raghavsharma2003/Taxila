@@ -3,7 +3,7 @@
 // brings no new content, the board is drawn by code and reported, a spoken line never asks to type, budgets throw. Pure.
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { agentTurn, applyAgentTurn, eventOf, gradeOf, AgentBudgetError } from "../server/agent/agent.js";
+import { agentTurn, applyAgentTurn, eventOf, gradeOf, earnedRead, AgentBudgetError } from "../server/agent/agent.js";
 import { laneFor, teacherMode } from "../server/agent/flags.js";
 import { boardScript } from "../server/agent/board.js";
 import { systemPrompt, stateMessage, offeredItems, TURN_SCHEMA } from "../server/agent/prompt.js";
@@ -107,4 +107,27 @@ test("apply: a posed item becomes the card; an answered card clears; end → don
   const o3 = await run(base({ intent: "wrap", say: "Aaj bas itna.", end: true }));
   const a3 = applyAgentTurn(next, o3, { kit: K, childText: "bye", lessonId: "L1" });
   assert.equal(next.phase, "done"); assert.equal(a3.end, true); assert.equal(a3.move.kind, "wrap");
+});
+
+test("understood is earned: two different items right, or a why / transfer item; one right answer is partly (sim lab overclaims)", () => {
+  const C = (item, kind = "practice", g = "correct") => ({ item, kind, g });
+  assert.equal(earnedRead("understood", [C("i1")]), "partly");
+  assert.equal(earnedRead("understood", [C("i1"), C("i1")]), "partly", "the same item twice is one piece of evidence");
+  assert.equal(earnedRead("understood", [C("i1"), C("i2")]), "understood");
+  assert.equal(earnedRead("understood", [C("i4", "near_transfer")]), "understood");
+  assert.equal(earnedRead("understood", [C("i1"), C("i2"), C("i3", "practice", "wrong")]), "partly", "a wrong answer after the last right one");
+  assert.equal(earnedRead("understood", [C("i1", "practice", "wrong")]), "not");
+  assert.equal(earnedRead("partly", []), "partly");
+});
+
+test("a misconception the child showed puts the item that tests it first, and the read is held to the evidence", async () => {
+  const next = ST();
+  const card = K.items.find((i) => i.id === "i1");
+  const o = await run(base({ intent: "reteach", say: "Socho, roti ke do tukde.", read: { skill: card.skillId, level: "understood", evidence: "said it" } }));
+  applyAgentTurn(next, o, { kit: K, childText: "1/3", cls: { ...cls("misconception"), misconceptionId: "c4-maths-ch05-t01-m1" }, card, lessonId: "L1" });
+  assert.equal(next.agent.learner[card.skillId].read, "not", "a wrong answer and no right one is not understood");
+  assert.equal(next.agent.learner[card.skillId].claimed, "understood");
+  const first = offeredItems(next, K)[0];
+  assert.equal(first.targetsMisconception, "c4-maths-ch05-t01-m1");
+  assert.match(stateMessage({ state: next, kit: K, event: "x", onScreen: [], lane: "voice" }), /showed c4-maths-ch05-t01-m1/);
 });
