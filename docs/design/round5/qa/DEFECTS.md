@@ -47,6 +47,7 @@ Status: **FIXED** (on `claude/r5-qa`, verified by a repro script) · **OWNER** (
 | D25 | P2 | OPEN | QA (UI) | Cold child home: the background grid alone, with no loading sign, until `/api/child/boot` answers (seen once, after a server restart) |
 | D26 | P2 | FIXED | QA (UI) | After "Delete my account" the receipt page throws an uncaught `401` (a read still in flight for the gone account) |
 | D27 | P2 | FIXED | QA (UI) | A young child's Me screen offers "Type instead … You can always type", but Young lessons never type (tiles and Help only) |
+| D28 | P2 | FIXED | QA (UI) | Parent "This week" says "Asha will say hello the first time Riya opens Taxila" after Hello and many short lessons |
 | D19 | P2 | WONTFIX | QA (UI) | `GET /api/me` 401 logged as a console error on every signed-out landing and set-up load |
 
 ## Details
@@ -210,6 +211,11 @@ Suggest: `replaceState` to `/lesson/:lid` after the start, and let a pagehide wi
 D07 improved (no static board; a spoken "weight game"); **D08 not fixed** (she invents an apple: "Iski photo yahan nahi hai;
 ek seb gol, laal…", and the board still draws "एक" as a label); D09 pass ("Board saaf hai", no new board); D11 not reproduced
 (she parked the detour and the board matched her words). Sent to the content stream.
+
+## Journeys that passed (pass 3)
+`tests/e2e/qa-interact.mjs`: a past lesson's Listen, the lesson card ("A short visit: not counted as a lesson"), "See Riya's
+week", change PIN (asks the account password first), Lock → /who, the child map → Hangar → Back; no console or page errors.
+Typed safety checks (D23 above). D28 found here (the hello line now shows only while `next.state` is "first").
 
 ## Journeys that passed (pass 2)
 Data and privacy on a throwaway account (`tests/e2e/qa-account.mjs`): Download everything after the password again →
