@@ -65,10 +65,11 @@ export interface LessonApi {
 export type LaneSwitchReason = "rate_limit" | "mint_refused" | "unavailable" | "content_filter";
 
 export const httpLessonApi: LessonApi = {
-  // r5-latency: the start and her opening's audio on one response (start-audio); a server without the route answers 404
-  // before anything was started, so the plain start runs then. ?startaudio=0 on a device turns it off.
+  // r5-latency: the start and her opening's audio on one response (start-audio). A server (or a test double) without the
+  // route answers 404 or a non-framed 2xx before anything was started, so the plain start runs then; a refusal (403 / 409)
+  // is the start's own and is not retried. ?startaudio=0 on a device turns it off.
   start: (req) => (startAudioEnabled()
-    ? postStartAudio(req).catch((e: unknown) => (e instanceof ApiError && e.status === 404 ? postJson("/api/lesson/start", req) : Promise.reject(e)))
+    ? postStartAudio(req).catch((e: unknown) => (e instanceof ApiError && (e.status === 404 || (e.status >= 200 && e.status < 300)) ? postJson("/api/lesson/start", req) : Promise.reject(e)))
     : postJson("/api/lesson/start", req)),
   // W2-G #7 round-trip fold: off by default (voice.turnAudio flag); same TurnResponse and the same ApiError mapping.
   turn: (req, signal) => (turnAudioEnabled() ? postTurnAudio(req, signal) : postJson("/api/lesson/turn", req, signal)),

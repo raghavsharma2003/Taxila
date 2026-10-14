@@ -313,6 +313,16 @@ test("the lesson API: start-audio by default; a server without the route (404) f
     globalThis.localStorage = { getItem: (k) => store.get(k) ?? null, setItem: (k, v) => store.set(k, v), removeItem: (k) => store.delete(k) };
     try { calls.length = 0; await httpLessonApi.start({ childId: "c", mode: "cascade" }); assert.deepEqual(calls, ["/api/lesson/start"]); }
     finally { globalThis.localStorage = realLS; }
+    // a test double that answers any route with 200 JSON: the plain start runs
+    calls.length = 0;
+    globalThis.fetch = async (url) => { calls.push(url); return new Response(JSON.stringify(url === "/api/lesson/start" ? { lessonId: "L2", topic: {} } : {}), { status: 200, headers: { "content-type": "application/json" } }); };
+    assert.equal((await httpLessonApi.start({ childId: "c", mode: "cascade" })).lessonId, "L2");
+    assert.deepEqual(calls, ["/api/lesson/start-audio", "/api/lesson/start"]);
+    // a refusal is the start's own: never retried on the plain route
+    calls.length = 0;
+    globalThis.fetch = async (url) => { calls.push(url); return new Response(JSON.stringify({ error: "lesson hours", state: "closed" }), { status: 409, headers: { "content-type": "application/json" } }); };
+    await assert.rejects(httpLessonApi.start({ childId: "c", mode: "cascade" }), (e) => e.status === 409);
+    assert.deepEqual(calls, ["/api/lesson/start-audio"]);
   } finally { globalThis.fetch = realFetch; }
 });
 
