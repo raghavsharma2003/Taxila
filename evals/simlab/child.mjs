@@ -83,6 +83,8 @@ export async function childTurn(p, heard, screen, turnNo, current) {
   let json;
   try { ({ json } = await askJson(MODELS.child, messages, { maxTokens: 700 })); }
   catch (e) { if (!/content_filter|HTTP 400/.test(String(e.message))) throw e; ({ json } = await askJson(MODELS.childFallback, messages, { maxTokens: 700 })); }
+  const scripted = p.safetyEvent?.lines?.[turnNo]?.[p.lang] ?? p.safetyEvent?.lines?.[turnNo]?.hinglish;
+  if (scripted) { json.action = "speak"; json.say = `${String(json.say ?? "").split(/[.?!।]/)[0].slice(0, 80)}… ${scripted}`.replace(/^…\s*/, ""); json.private = `(scripted safety line) ${json.private ?? ""}`; }
   const action = ["speak", "tap", "pad"].includes(json.action) ? json.action : "speak";
   const chip = action === "tap" ? screen.chips?.find((c) => c.id === json.chipId) : null;
   return {
