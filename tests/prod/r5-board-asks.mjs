@@ -11,7 +11,8 @@
 //   numline   a number line is drawn (numwork layout number_line) or a number-line engine is mounted
 //   shape     the shape asked for is drawn (polygon with N corners, circle, sectors/equal parts)
 //   example   a NEW page with worked numbers or terms (not the page that was already up)
-//   game      an interactive piece is mounted (an engine that takes input, or a Stagecraft/play piece)
+//   game      an interactive piece is mounted (an engine that takes input, or a Stagecraft/play piece), or (owner decision
+//             14.2) none is and her line honestly announces no game and points at nothing (counted apart: got.honest)
 //   picture   a real image of the subject, else a board that draws the subject, else an honest "can't show a photo"
 //             with no pointing at the screen
 // and, for every case, three failures whatever the kind:
@@ -25,6 +26,7 @@
 import fs from "node:fs";
 import { join } from "node:path";
 import { withTestAccount, freshChild, openLesson, arg, ROOT, ok, done } from "./_owner.mjs";
+import { announcesGame } from "../../server/studio/request.js";
 
 if (process.env.TAXILA_DB !== "test") { console.error("TAXILA_DB=test is required: the battery reads board_page from the TEST branch only"); process.exit(2); }
 const { q } = await import("../../server/db.js");
@@ -139,7 +141,15 @@ export function score(c, got) {
       break;
     }
     case "example": pass = !!page && texts.length >= 2 && !got.repeat; if (!pass) why.push(page ? "page has no worked content" : "no page"); break;
-    case "game": pass = interactive; if (!pass) why.push(`no interactive piece (mounts: ${got.mounts.join(",") || "-"}; studio: ${got.studioKinds.join(",") || "-"})`); break;
+    // owner decision 14.2: a game that cannot mount may be answered honestly (no game announced, nothing pointed at); it is
+    // counted apart (got.honest) so the report shows how many game asks got a real piece
+    case "game": {
+      const honestNoGame = !interactive && !announcesGame(got.reply ?? "") && !POINT.test(got.reply ?? "");
+      pass = interactive || honestNoGame;
+      if (honestNoGame) got.honest = true;
+      if (!pass) why.push(`no interactive piece and her line announces a game (mounts: ${got.mounts.join(",") || "-"}; studio: ${got.studioKinds.join(",") || "-"})`);
+      break;
+    }
     case "draw": pass = !!page && (subjectWords.length ? subj.length > 0 : texts.length >= 1 || (page.ops ?? []).length >= 3); if (!pass) why.push(page ? `page does not show ${subjectWords.slice(0, 3).join("/") || "it"}` : "no page"); break;
     case "picture": {
       const shown = (got.image && subj.length > 0) || (!!page && subj.length > 0);

@@ -91,6 +91,9 @@ export function answersRequest(script, request, { drawnFor = false } = {}) {
   if (!script?.ops?.length) return false;
   // a number line with the numbers the child named on it ("1/4", "-3", "0.5"): a line of other numbers answers another question
   if (request.kind === "number_line") return hasNumberLine(script) && numbersOn(script, request.said);
+  // an EXAMPLE ("ek example do"): a worked page, the example's numbers in steps, never a bare fact ("1/2 = 2/4 | same
+  // amount", battery c6-example) or the lesson's ready-made steps with no numbers ("Find each | change | Check")
+  if (request.kind === "example" && !request.subject) return workedPage(script);
   const words = subjectWords(request.subject);
   // a PICTURE asked with no thing named ("तस्वीर दिखाओ"): the lesson's ready-made flow chart is not a picture of anything she
   // describes (QA, round 5: "Dekho: ek tarazu…" over "Change to grams / Compare weights"); only the board drawn from her
@@ -98,6 +101,12 @@ export function answersRequest(script, request, { drawnFor = false } = {}) {
   if (!words.length) return request.kind !== "picture" || drawnFor;
   const all = textsOf(script).map(norm).join(" | ");
   return words.some((w) => all.includes(w));
+}
+
+/** A worked page: three things written or more, two of them carrying numbers (the steps of an example). PURE. */
+export function workedPage(script) {
+  const t = [...new Set(textsOf(script).map((x) => String(x).trim()).filter(Boolean))];
+  return t.length >= 3 && t.filter((x) => /\p{N}/u.test(x)).length >= 2;
 }
 
 /** A page's identity for "the same page again": the set of what it writes, or its shapes when it writes nothing. PURE. */
@@ -216,8 +225,31 @@ export function numberLineBoard(request, { scriptId = "nl", lessonId = "", spanM
   const durationMs = Math.max(...ops.map((o) => o.endMs)) + 200;
   return { v: 1, scriptId, line: { lessonId }, anchor: "line_audio_start", board: { ...board, ground: "chalk" }, mode: "fresh", durationMs, ops };
 }
-/** The numbers a request lets the board write (the asked ones, and 0 and 1, the frame of a number line). PURE. */
-export const askedNumbers = (request) => (request?.kind === "number_line" ? [...(request.said ?? []).map(numNorm), "0", "1"] : (request?.said ?? []).map(numNorm));
+/** Does her line say there is no game (honest), or announce one ("Chalo mirror line game")? PURE. */
+const GAME_WORD = /\b(?:game|games)\b|गेम/iu;
+const NO_GAME = /\b(?:game|games)\b.{0,40}?\b(?:nahi|nahin|not|isn't|no)\b|\b(?:no|koi|abhi)\b.{0,20}?\bgame\b.{0,20}?\b(?:nahi|nahin|ready nahi)\b|गेम.{0,30}?नहीं|\bno\s+game\b/iu;
+export const announcesGame = (text) => GAME_WORD.test(String(text ?? "")) && !NO_GAME.test(String(text ?? ""));
+/**
+ * Round 5 (owner decision 14.2, battery c4-game): a game asked for with no game to mount, and her line announced one anyway
+ * ("Chalo “mirror line” game: imaginary fold socho"): the word goes, the activity in words stays ("activity"). PURE.
+ */
+export function ungame(text) {
+  const s = String(text ?? "");
+  if (!announcesGame(s)) return s;
+  return s.replace(/\b(?:game|games)\b/giu, "activity").replace(/गेम/gu, "activity");
+}
+/** Things whose drawing IS numbers (round 5 battery c3-clock: "ghadi draw karo" was refused by W4, the face's 1-12 were
+ *  not in her line): the subject's group → the numbers its face carries. Small, explicit table: never a model. */
+const FACE_NUMBERS = [
+  [["ghadi", "clock", "घड़ी", "watch"], Array.from({ length: 12 }, (_, i) => String(i + 1))],
+  [["scale", "ruler", "paimana", "पैमाना"], Array.from({ length: 16 }, (_, i) => String(i))],
+];
+const faceNumbers = (subject) => {
+  const words = String(subject ?? "").toLowerCase().split(/[^\p{L}\p{M}\p{N}]+/u).filter(Boolean);
+  return FACE_NUMBERS.filter(([names]) => words.some((w) => names.includes(w))).flatMap(([, nums]) => nums);
+};
+/** The numbers a request lets the board write (the asked ones; 0 and 1, the frame of a number line; a clock's 1-12). PURE. */
+export const askedNumbers = (request) => [...new Set([...(request?.said ?? []).map(numNorm), ...(request?.kind === "number_line" ? ["0", "1"] : []), ...faceNumbers(request?.subject)])];
 
 /** The thing her own line says a picture shows ("potato ka picture", "picture of a potato", "आलू की तस्वीर"), or null. PURE. */
 export function pictureSubjectOf(text) {

@@ -251,7 +251,7 @@ const MOVING_CLAUSE = "they asked to see it moving: name the movement in your fi
 const ASK_TRUTH = {
   game: {
     engine: "they asked for a game: no game is ready for this yet, say so honestly in a few words; the activity already on the screen is how to try it now (never call it a game)",
-    none: "they asked for a game: no game is ready for this yet, say so honestly in a few words; then try it together in words, with everyday things",
+    none: "they asked for a game: no game is ready for this yet, say so honestly in a few words; then try it together in words, with everyday things; never call what you try together a game",
   },
   moving: {
     engine: "they asked to see it moving: the activity on the screen is the thing to try; name only what it really shows (never a control it does not have, never a video)",
@@ -462,12 +462,19 @@ export const visualUnavailable = ({ subject }) => join(
  * round 5 (stream 2): they asked to see a thing outside today's kit that a plain sketch can show ("aloo dikhao"): the board
  * sketches it while she speaks. A photo is never promised (no photo exists); the thing is given in words.
  */
-export const drawAsked = ({ subject, show }) => join(
-  show === "picture" ? `they asked for a photo of ${clean(subject) || "it"}: there is no photo, say so in a few plain words; the board draws a simple sketch of it instead`
+export const drawAsked = ({ subject, show, photo }) => join(
+  photo === "coming" ? `a real picture of ${clean(subject) || "it"} comes in a few seconds: say so plainly; the board sketches it meanwhile`
+    : show === "picture" ? `they asked for a photo of ${clean(subject) || "it"}: ${photo === "busy" ? "a photo cannot come right now" : "there is no photo"}, say so in a few plain words; the board draws a simple sketch of it instead`
     : `they asked to see ${clean(subject) || "it"}: the board draws a simple sketch of it`,
   `describe ${clean(subject) || "it"} in words they can picture (shape, colour, where it is found), two short sentences; never send their eyes to the screen or the board`,
   "then one small question that brings them back to today's idea; never send them to search for it elsewhere",
 );
+/** round 5 (owner decision 14.2): a real picture of what they asked for is being made (studio/picture.js) or cannot come now;
+ *  it is never said to be there before it mounts. */
+export const pictureNote = ({ subject, photo }) => photo === "coming"
+  ? `a real picture of ${clean(subject) || "it"} comes in a few seconds: say so plainly, never that it is there`
+  : photo === "failed" ? `the picture of ${clean(subject) || "it"} you said was coming could not come: say so in a few words`
+  : `a photo of ${clean(subject) || "it"} cannot come right now: say so in a few plain words, then give it in words`;
 /** round 3 fix (experience B8): "yeh nahi padhna, X padhna hai": a real topic of their class, offered (never a stop question). */
 export const switchOffer = ({ title }) => join(
   `they want to study ${clean(title) || "another topic"} instead: say yes warmly, in your own words; it is a real topic of their class`,
