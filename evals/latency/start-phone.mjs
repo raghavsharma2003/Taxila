@@ -87,6 +87,9 @@ try {
       userAgent: "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/154.0.0.0 Mobile Safari/537.36" });
     await ctx.addCookies([{ name: "tx_session", value: tok, url: BASE }]);
     await ctx.addInitScript(INIT);
+    // --storage k=v[,k=v]: device flags (localStorage) before the app boots, e.g. tx.flag.tts.codec=adpcm
+    const store = arg("--storage", "");
+    if (store) await ctx.addInitScript((pairs) => { try { for (const [k, v] of pairs) localStorage.setItem(k, v); } catch { /* */ } }, store.split(",").map((kv) => kv.split("=")));
     const page = await ctx.newPage();
     const cdp = await ctx.newCDPSession(page);
     await cdp.send("Emulation.setCPUThrottlingRate", { rate: CPU });
@@ -96,11 +99,12 @@ try {
     cdp.on("Network.requestWillBeSent", (e) => { if (/\/api\//.test(e.request.url)) netT.set(e.requestId, { path: new URL(e.request.url).pathname, sentAt: e.timestamp * 1000, conn: null }); });
     cdp.on("Network.responseReceived", (e) => {
       const r = netT.get(e.requestId); const tm = e.response.timing;
+      if (r) r.ctype = e.response.headers?.["content-type"] ?? e.response.headers?.["Content-Type"] ?? null;
       if (r && tm) Object.assign(r, { queuedMs: Math.round(tm.requestTime * 1000 - r.sentAt), stalledMs: Math.round(tm.sendStart), headersMs: Math.round(tm.receiveHeadersEnd - tm.sendEnd), conn: e.response.connectionId, proto: e.response.protocol });
     });
     // --down / --up in kbps (default a 4G-like 9 Mbps / 3 Mbps; Chrome's "Slow 3G" is --rtt 400 --down 400 --up 400)
     await cdp.send("Network.emulateNetworkConditions", { offline: false, latency: RTT, downloadThroughput: Number(arg("--down", 9000)) * 1000 / 8, uploadThroughput: Number(arg("--up", 3000)) * 1000 / 8 });
-    cdp.on("Network.loadingFinished", (e) => { const r = netT.get(e.requestId); if (r) r.bytes = e.encodedDataLength; });
+    cdp.on("Network.loadingFinished", (e) => { const r = netT.get(e.requestId); if (r) { r.bytes = e.encodedDataLength; r.doneMs = Math.round(e.timestamp * 1000 - r.sentAt); } });
     let row = { i, kid };
     try {
       await page.goto(`${BASE}/c/${kid}${arg("--query", "") ? `?${arg("--query")}` : ""}`, { waitUntil: "commit", timeout: 120_000 });
@@ -126,7 +130,9 @@ try {
       row.startMarks = R.net.find((n) => n.path === "/api/lesson/start")?.marks ?? null;
       // the opening's audio: bytes on the wire and the full transfer (the stream ends after her last word)
       await page.waitForTimeout(Number(arg("--settle", 0)));
-      row.cdp = [...netT.values()].filter((r) => r.queuedMs != null).map((r) => ({ path: r.path, queued: r.queuedMs + r.stalledMs, server: r.headersMs, conn: r.conn, proto: r.proto, bytes: r.bytes ?? null }));
+      row.cdp = [...netT.values()].filter((r) => r.queuedMs != null).map((r) => ({ path: r.path, queued: r.queuedMs + r.stalledMs, server: r.headersMs, conn: r.conn, proto: r.proto, bytes: r.bytes ?? null, doneMs: r.doneMs ?? null }));
+      row.ttsEff = await page.evaluate(() => navigator.connection?.effectiveType ?? null).catch(() => null);
+      row.ttsDoneMs = row.cdp.find((c) => /tts-stream|turn-audio/.test(c.path))?.doneMs ?? null;
       row.ttsBytes = row.cdp.filter((c) => /tts-stream|turn-audio/.test(c.path)).reduce((a, c) => a + (c.bytes ?? 0), 0) || null;
       const cs = row.cdp.find((r) => r.path === "/api/lesson/start");
       row.startQueuedMs = cs?.queued ?? null;
@@ -138,7 +144,7 @@ try {
       await page.screenshot({ path: path.join(REPO, `node_modules/.r5-start-fail-${i}.png`) }).catch(() => {});
     }
     rows.push(row);
-    console.log(`[${i}] ${row.url ?? ""} first sound ${row.firstSoundMs ?? "—"} ms | start POST at +${row.startPostAt} took ${row.startMs} | tts at +${row.ttsAt} (${row.ttsHeadersMs}) ${row.error ?? ""}\n     server: ${row.startMarks ?? "-"}\n     cdp: ${(row.cdp ?? []).map((c) => `${c.path.replace("/api/", "")} q${c.queued} s${c.server} c${c.conn} ${c.proto}`).join(" | ")}`);
+    console.log(`[${i}] ${row.url ?? ""} first sound ${row.firstSoundMs ?? "—"} ms | start POST at +${row.startPostAt} took ${row.startMs} | tts at +${row.ttsAt} (${row.ttsHeadersMs}) tts ${row.ttsBytes ?? "-"} B in ${row.ttsDoneMs ?? "-"} ms eff=${row.ttsEff} ${row.error ?? ""}\n     server: ${row.startMarks ?? "-"}\n     cdp: ${(row.cdp ?? []).map((c) => `${c.path.replace("/api/", "")} q${c.queued} s${c.server} c${c.conn} ${c.proto}`).join(" | ")}`);
     await ctx.close();
   }
 } finally {
