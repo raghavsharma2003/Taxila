@@ -83,8 +83,9 @@ test("half-duplex: the child's own answer after her line still ends the turn on 
   assert.equal(c[2], "छप्पन");
 });
 
-test("screen hold: after a tapped answer no engine SPEAK commits until her reply to it starts", () => {
-  const r = rig({ halfDuplex: true });
+test("screen hold (every lane): after a tapped answer no engine SPEAK commits until her reply to it starts", () => {
+  // the full engine: on half-duplex the empty SPEAK below is already dropped by the no-words rule (tested further down)
+  const r = rig({});
   r.live.setUi({ answerForm: "number", beat: "check" });
   r.live.herStart("सात गुणा आठ कितना होता है?");
   r.run(2500, quiet);
@@ -107,4 +108,38 @@ test("screen hold: after a tapped answer no engine SPEAK commits until her reply
   r.live.stt({ type: "conversation.item.input_audio_transcription.completed", item_id: "c2", transcript: "छत्तीस" });
   r.run(16000, ans);
   assert.ok(commits(r.acts).some((c) => c[2] === "छत्तीस"), JSON.stringify(r.acts));
+});
+
+test("D5 review (confirmed): her acknowledgement clip's echo never revokes the child's committed answer", () => {
+  const r = rig({ halfDuplex: true });
+  r.live.setUi({ answerForm: "number", beat: "check" });
+  r.live.herStart("सात गुणा आठ कितना होता है?");
+  r.run(2500, quiet);
+  r.live.herEnd();
+  const ans = (t) => (t >= 3200 && t < 3800 ? { rms: 0.3, f0: 290, her: null } : quiet());
+  r.run(3500, ans);
+  r.live.stt({ type: "input_audio_buffer.speech_started", item_id: "c1", audio_start_ms: 3200 });
+  r.run(4100, ans);
+  r.live.stt({ type: "conversation.item.input_audio_transcription.completed", item_id: "c1", transcript: "छप्पन" });
+  let t0 = null;
+  for (let u = 4200; u < 9000 && t0 === null; u += 100) { r.run(u, ans); if (commits(r.acts).length) t0 = r.t; }
+  assert.ok(t0, `committed: ${JSON.stringify(r.acts)}`);
+  // the ack clip plays and its loudspeaker echo comes back as loud as a child
+  r.live.ackStart();
+  r.run(t0 + 700, echo);
+  r.live.ackEnd();
+  r.run(t0 + 2500, quiet);
+  assert.equal(yields(r.acts).length, 0, `no revoke / stop over her own ack: ${JSON.stringify(r.acts)}`);
+  assert.equal(commits(r.acts).length, 1, "the answer is committed once");
+});
+
+test("D5 review (confirmed): on half-duplex a burst with no words (a cough, the TV) is never an empty child turn", () => {
+  const r = rig({ halfDuplex: true });
+  r.live.setUi({ beat: "explain" });
+  r.live.herStart("गुणा का मतलब है बार बार जोड़ना।");
+  r.run(2500, quiet);
+  r.live.herEnd();
+  const cough = (t) => (t >= 3400 && t < 3800 ? { rms: 0.3, f0: 180, her: null } : quiet());
+  r.run(15000, cough);
+  assert.equal(commits(r.acts).filter((c) => !c[2]).length, 0, JSON.stringify(r.acts));
 });

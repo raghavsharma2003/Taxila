@@ -584,6 +584,7 @@ export class CascadeLink implements TeacherLink {
     playback.started.then((at) => {
       if (this.ackNow !== now) return;
       now.sounding = true;
+      this.duplex?.ackAudible();
       this.turn.ackAt = at;
       this.ack?.played(clip, at);
       // the face keeps its thinking face while she says it (src/face-puppet/knowledge.ts K2)
@@ -591,6 +592,7 @@ export class CascadeLink implements TeacherLink {
     }, () => {});
     const finish = () => {
       this.ack?.ended(Date.now());
+      if (now.sounding) this.duplex?.ackEnded();
       if (now.sounding) puppetBus.emit({ kind: "ack", phase: "end", at: typeof performance !== "undefined" ? performance.now() : Date.now() });
       if (this.ackNow === now) this.ackNow = null;
       done();
