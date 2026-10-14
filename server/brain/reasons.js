@@ -64,7 +64,7 @@ export const FAMILIES = Object.freeze({
     "relational", "speculative", "none"],
   verdict: ["correct", "partial", "not_yet", "ungraded"],
   guard: ["replaced", "rewritten", "repaired", "leak", "drift", "nowhy", "flat", "script", "long", "units", "floor", "praise", "deny", "corrects",
-    "screen", "parts", "stage", "register", "ask", "twoq", "wrap", "content_filter", "unavailable"],
+    "screen", "parts", "stage", "register", "ask", "twoq", "wrap", "content_filter", "content_filter_nonharm", "unavailable"],
   // release.check_in_given: the stop phrase got its single check-in (OWNER-RESET #7); release.goodbye_wrap: the lesson ended
   release: ["goodbye", "check_in", "check_in_given", "goodbye_wrap"],
   // ship5 p3-voicesig (server/voicesig/lesson.js): the knowledge state voice timing read on this turn (named for what it

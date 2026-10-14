@@ -3,7 +3,7 @@
 // breaks, praise/verdict agreement, the screen, register, script, length and the turn's shape. Moved out of
 // server/routes/lesson.js unchanged by W2-E BR1 (BUILD-PLAN W2-E #2); the lesson start and the turn both call it.
 import { safetyOpeningFor, safetyModeOf } from "../relational/openings.js";
-import { chat, DEPLOY, isContentFilter } from "../azure.js";
+import { chat, DEPLOY, isContentFilter, nonHarmFilter } from "../azure.js";
 import { floorViolations, scrubPii } from "../director/safety.js";
 import { upcomingItem, hintShapeWords } from "../director/state.js";
 import { findItem, promptFor, revealsAnswer, posesItem, handsBack, asksWhy, stripRungLabel } from "../director/items.js";
@@ -450,7 +450,18 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
     // the child's words had passed the predicate and the model distress read. A block on the PROMPT (HTTP 400: the child's
     // words are in it) and a second completion block still fail CLOSED, as before.
     let again = null;
-    if (isContentFilter(e) && e.status === 200) {
+    // round 5 (sim lab baseline, main safety review): a block whose categories are KNOWN and are only prompt-injection or
+    // copyright detectors ("jailbreak": a child's maths answer, "6 aur 5... 30... 3,00,000?") is not a child-safety signal.
+    // One retry on the system prompt and this turn only (the history may carry what tripped it); if that is blocked too, a
+    // neutral fallback line, never the helplines. Harm categories (sexual, self_harm, violence, hate) and unreadable blocks
+    // still fail CLOSED below, exactly as before.
+    if (isContentFilter(e) && nonHarmFilter(e)) {
+      console.warn(`[lesson] reply blocked by a non-harm filter (${e.filterCats.join(",")}): one retry on this turn alone`);
+      const lone = [messages[0], messages[messages.length - 1], ...(lastNotes ? [{ role: "system", content: lastNotes }] : [])];
+      try { again = await ask(lone); } catch (e2) { if (isContentFilter(e2) && !nonHarmFilter(e2)) e = e2; }
+      if (!again && !(isContentFilter(e) && !nonHarmFilter(e))) return { reply: fallbackReply(state, item), guard: { caught: ["content_filter_nonharm"], rewritten: false, replaced: true } };
+    }
+    if (!again && isContentFilter(e) && e.status === 200 && !nonHarmFilter(e)) {
       console.warn("[lesson] reply completion blocked by the content filter: one fresh reply");
       // main safety review: if the fresh reply fails for any other reason (a timeout, a 5xx), the ORIGINAL block stands
       // and the turn fails closed; only a second filter block replaces it (same outcome)
