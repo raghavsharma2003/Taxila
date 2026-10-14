@@ -115,3 +115,27 @@ test("speakStreamed: the floor gate runs on each clause BEFORE synthesis; a bloc
   assert.deepEqual(log, ["synth:Pehli baat theek hai."], "the blocked clause never reached TTS");
   assert.deepEqual(r.stopped, { why: "floor:never", clause: "Yeh line block hogi." });
 });
+
+test("child map: parallel readers share ONE request per child; an aborted reader detaches; a failed read is not kept", async () => {
+  const realFetch = globalThis.fetch;
+  let calls = 0, fail = false;
+  globalThis.fetch = async (url) => { calls++; await wait(20); if (fail) return new Response("boom", { status: 500 }); return new Response(JSON.stringify({ mode: "sky", subjects: [] }), { status: 200, headers: { "content-type": "application/json" } }); };
+  try {
+    const { getChildMap } = await import("../src/child/api.ts");
+    const cid = `kid-${Math.random()}`;
+    const ac = new AbortController();
+    const a = getChildMap(cid, "sky"), b = getChildMap(cid, "garden"), c = getChildMap(cid, "sky", ac.signal);
+    ac.abort();
+    await assert.rejects(c);
+    const [ma, mb] = await Promise.all([a, b]);
+    assert.equal(calls, 1, "one request for three readers");
+    assert.equal(ma.mode, "sky"); assert.equal(mb.mode, "sky", "the server's mode wins, as before");
+    fail = true;
+    const other = `kid-${Math.random()}`;
+    await getChildMap(other, "sky");
+    await wait(5);
+    fail = false;
+    await getChildMap(other, "sky");
+    assert.equal(calls, 3, "a failed read is re-asked, never served from the share");
+  } finally { globalThis.fetch = realFetch; }
+});
