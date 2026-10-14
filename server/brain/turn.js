@@ -22,7 +22,7 @@ import { newLearnerState, fuseEvidence, beliefFor, noteOutcome, auditRow, weaveE
 import { facetStmts, probeLogStmt, reteachStmt, gradeAuditStmt, weaveEnqueueStmt } from "../comprehension/store.js";
 import { gradeLater, settledGrade, finalEvent, awaitGrade, forgetGrade, pregrade } from "../comprehension/later.js";
 import { classify, classifyFast, targetFor, helpOf } from "../director/classify.js";
-import { scanSafety, floorViolations } from "../director/safety.js";
+import { scanSafety, floorViolations, helpLeadOf } from "../director/safety.js";
 import { step, evidenceFrom, upcomingItem } from "../director/state.js";
 import { noteModuleEvents, moduleAnswerOf } from "../director/modules.js";
 import { findItem, promptFor, revealsAnswer, whyKey, norm as normAnswer } from "../director/items.js";
@@ -980,12 +980,15 @@ export async function lessonTurn(req, body) {
   const speakNow = textLane || late ? undefined
     : r.move.kind === "safeguard" && !prev.safeguard ? "interrupt"
       : moduleOnly && !r.hold ? "when_free" : undefined;
+  // round 5 (QA D23): the Help sheet's first action. The helplines when the safeguard is about abuse or the child's words
+  // name home or someone at home (never "talk to a grown-up at home" to a child who just said the danger is at home).
+  const helpLeadNow = () => helpLeadOf({ kind: cls?.flags?.distressKind ?? next.safeguard?.kind ?? null, text: childText ?? "" });
   /** @type {import("../../shared/contracts").TurnResponse} */
   const outCore = late
     // the lesson stays closed: the answer is in, nothing more is said — except the safeguarding line after a disclosure
     ? { move: lateSafeguard ? { ...r.move, kind: "safeguard" } : r.move, moduleCommands: [],
       ui: withAsk(r.ui, lateSafeguard ? teacherReply : null, uiVerdictOf(cls, target, state)),
-      ...(lateSafeguard ? { teacherReply, teacherReplySeq } : {}), end: true, late: true }
+      ...(lateSafeguard ? { teacherReply, teacherReplySeq, helpLead: helpLeadNow() } : {}), end: true, late: true }
     : {
       move: r.move, moduleCommands: r.moduleCommands,
       // round 5: the covert comprehension read of the child's turn (server/director/read.js): what the Director acted on
@@ -993,6 +996,7 @@ export async function lessonTurn(req, body) {
       ui: withStudioSlot(withSeamUi(withAsk(r.ui, teacherReply, { ...uiVerdictOf(cls, target, state), ...(kernel.beat ? { beat: uiBeatOf(kernel.beat) } : {}) }), relational,
         { safety: r.move.kind === "safeguard" || !!incident }), studioSlot),
       ...(teacherReply ? { teacherReply, teacherReplySeq } : {}), ...(speakNow ? { speakNow } : {}), ...(r.end ? { end: true } : {}),
+      ...(r.move.kind === "safeguard" ? { helpLead: helpLeadNow() } : {}),
       // round 3 fix (experience B8): the child chose "Start <topic>": the client starts that lesson when this one closes
       ...(r.end && next.switchTo ? { switchTo: String(next.switchTo) } : {}),
       // W2 seams: what Studio does on this turn (W2-H proposes through statusFacts; W2-E's kernel arbitrates from BR1) and the

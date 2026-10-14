@@ -367,6 +367,18 @@ function scanUncached(t) {
   return { distress: false, kind: null, pass: null, via: null };
 }
 
+// round 5 (QA D23, main safety review): a disclosure that names home or someone at home ("mujhe ghar pe bahut dar lagta hai,
+// papa roz maarte hain") must not be answered by a help screen whose first action is "talk to a grown-up at home". The
+// help sheet leads with the helplines when the safeguard is about abuse, or the child's words name home or family; else it
+// leads with a grown-up the child trusts. A wide net on purpose: a false hit only reorders the buttons.
+const HOME_NAMED = /(?<![\p{L}\p{M}])(?:ghar|gharwale|gharwaale|home|house|family|parents?|papa|pappa|mummy|mumma|mammi|mummi|maa|mom|mum|mother|dad|daddy|father|pitaji|mataji|mata\s+ji|step\s*(?:father|mother|dad|mom|mum)|sautela|sauteli|bhai|bhaiya|bhaiyya|brother|didi|sister|chacha|chachi|mama|mami|dada|dadi|nana|nani|uncle|aunty|auntie|घर|घरवाले|पापा|मम्मी|माँ|मां|माता|पिताजी|पिता|भाई|भैया|दीदी|बहन|चाचा|चाची|मामा|मामी|दादा|दादी|नाना|नानी|अंकल|आंटी|सौतेला|सौतेली)(?![\p{L}\p{M}])/iu;
+
+/** Does a safeguarding turn name home or someone at home? (the Help sheet's lead: QA D23) */
+export const homeNamed = (text) => typeof text === "string" && HOME_NAMED.test(text);
+
+/** The Help sheet's first action for a safeguard: the helplines (abuse, or home named) or a grown-up the child trusts. */
+export const helpLeadOf = ({ kind = null, text = "" } = {}) => (kind === "abuse" || homeNamed(text) ? "helpline" : "grownup");
+
 /** @returns {{ distress: boolean, kind: "self_harm"|"abuse"|"fear"|null }} */
 export function scanSafety(text) {
   const { distress, kind } = scanSafetyDetail(text);
