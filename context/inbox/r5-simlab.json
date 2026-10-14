@@ -23,14 +23,98 @@
    "kind": "rejection",
    "title": "A scripted safety moment given to the simulated child only as a card trait ('at child turn 5, says…') was not played in 2/4 safety cards (p19 low mood, p30 best-friend secrecy), so the floor read 'safe' on a moment that never happened; the moment is now forced in the turn's prompt and the auto check records whether it was reached",
    "at": "2026-10-14"
+  },
+  {
+   "id": "ms-r5-simlab-noise-floor-2026-10-14",
+   "kind": "measurement",
+   "title": "Sim-lab test-retest: the same head (9b73641) on the same 28 non-safety cards, two runs: clusters move up to ±6 lessons/28 (false_understood 5→11, stuck_loop 18→22, overclaims 14→19); a head difference under ~±6/28 is noise; n≥60 per arm for an understanding delta",
+   "at": "2026-10-14"
+  },
+  {
+   "id": "ms-r5-simlab-heads-14-1-2026-10-14",
+   "kind": "measurement",
+   "title": "Heads vs baseline (n=32 each, text): a4@2dcd117 / rel14@21a9d82 / combo — false safeguards on non-safety cards 1 → 2 / 0 / 0; true positives 12/12 on every arm; read-right vs card 71% → 70/79/64% (within noise); repeats/stuck/over-checks unchanged within noise; remaining combo false safeguard = REPLY call content-filter block (taxila-fast 400) on a maths answer",
+   "at": "2026-10-14"
+  },
+  {
+   "id": "ms-r5-simlab-voice-2026-10-14",
+   "kind": "measurement",
+   "title": "Voice lane (Azure TTS + noise → transcribeClip, n=32 × base/combo): 775 child turns, 5 empty, conf p50 0.86; correct verdicts 77 (text) → 51 (voice) on base — Hindi number words ('बारह सौ', 'आठ हजार छह सौ चौदह') graded not_yet; combo false safeguards 3 (all reply-call content_filter on Devanagari/mixed transcripts) + 1 predicate self_harm on 'बिना ऑक्सीजन के कैसे जीएंगे'",
+   "at": "2026-10-14"
+  },
+  {
+   "id": "ms-r5-simlab-agent-571-2026-10-14",
+   "kind": "measurement",
+   "title": "Agent lane @571b3010 vs Director, same sha, n=64 each: paired agent wins 57/64; repeats 58→30, stuck 46→22, topic jumps 14→2; read-right vs card 64% vs 62%, overclaims 51 vs 43; agent's own learner 50% right, 37% overclaim; turn p50 5.9 s vs 2.9 s; game asks acted 0/32",
+   "at": "2026-10-14"
+  },
+  {
+   "id": "ms-r5-simlab-agent-gate-d6f93e7-2026-10-14",
+   "kind": "measurement",
+   "title": "Agent gate @d6f93e7f (timeout 6 s, n=64 each): gpt-6-sol agent vs Director paired 54:8 (Kimi 55:6), coherence 4.02 vs 3.31; understanding FAIL — read-right 58% vs 67%, overclaims 63 vs 29, false_understood 34 vs 18; agent span p50 4.0 / p90 5.3 s, turn p50 5.9 s, 51 fallbacks; bake-off: grok-4.1-fast span 2.3/3.1 s but loses 20:43 to gpt-6-sol (Kimi), robotic 23/64",
+   "at": "2026-10-14"
+  },
+  {
+   "id": "ms-r5-simlab-board-2026-10-14",
+   "kind": "measurement",
+   "title": "Board battery (40 cards: 32 base + 8 visual-ask, vs base same time): r4-content@3863cdfa no measurable win; @dd8f40ac repeated-page lessons 28/40 → 0/40, channel_truth 2.58→2.92 (Kimi 2.30→2.70), pointing at a planning board 11→13 (fixed in 709b6acb, re-run pending)",
+   "at": "2026-10-14"
+  },
+  {
+   "id": "rj-simlab-reuse-judgment-by-turn-count",
+   "kind": "rejection",
+   "title": "Re-using a stored LLM judgment when the re-run lesson has the same number of turns: a re-run with new content kept the old judgment (p19 'no disclosure' after the disclosure was played); now a judgment is reused only when the teacher's lines are identical",
+   "at": "2026-10-14"
   }
  ],
  "edges": [
-  { "src": "ms-r5-simlab-baseline-director-2026-10-14", "rel": "measured_by", "dst": "dc-r5-simlab-harness" },
-  { "src": "rj-simlab-roleplay-child-prompt", "rel": "part_of", "dst": "dc-r5-simlab-harness" },
-  { "src": "rj-simlab-unforced-safety-script", "rel": "part_of", "dst": "dc-r5-simlab-harness" }
+  {
+   "src": "ms-r5-simlab-baseline-director-2026-10-14",
+   "rel": "measured_by",
+   "dst": "dc-r5-simlab-harness"
+  },
+  {
+   "src": "rj-simlab-roleplay-child-prompt",
+   "rel": "part_of",
+   "dst": "dc-r5-simlab-harness"
+  },
+  {
+   "src": "rj-simlab-unforced-safety-script",
+   "rel": "part_of",
+   "dst": "dc-r5-simlab-harness"
+  },
+  {
+   "src": "ms-r5-simlab-noise-floor-2026-10-14",
+   "rel": "measured_by",
+   "dst": "dc-r5-simlab-harness"
+  },
+  {
+   "src": "ms-r5-simlab-heads-14-1-2026-10-14",
+   "rel": "measured_by",
+   "dst": "dc-r5-simlab-harness"
+  },
+  {
+   "src": "ms-r5-simlab-voice-2026-10-14",
+   "rel": "measured_by",
+   "dst": "dc-r5-simlab-harness"
+  },
+  {
+   "src": "ms-r5-simlab-agent-571-2026-10-14",
+   "rel": "measured_by",
+   "dst": "dc-r5-simlab-harness"
+  },
+  {
+   "src": "ms-r5-simlab-agent-gate-d6f93e7-2026-10-14",
+   "rel": "measured_by",
+   "dst": "dc-r5-simlab-harness"
+  },
+  {
+   "src": "ms-r5-simlab-board-2026-10-14",
+   "rel": "measured_by",
+   "dst": "dc-r5-simlab-harness"
+  }
  ],
  "md": {
-  "measurements": "## ms-r5-simlab-baseline-director-2026-10-14\nn = 32 whole lessons, 438 child turns, 14 child turns per lesson, 0 server errors. Method: evals/simlab (branch claude/r5-simlab) — real server/serve.mjs on the Neon TEST branch, POST /api/lesson/start mode cascade with the card's topicId, child turns as the client sends them (spoken typed:false asrConfidence 0.92 perfect transcript; tapped chipId), DeepSeek-V4-Pro child from 32 persona cards (classes 1-9, CBSE/RBSE, hinglish/hindi/english, 6 temperaments), judges grok-4-20-reasoning + taxila-kimi26. Rubric means judge1/judge2: coherence 3.72/3.26, follows_child 3.28/2.58, understanding 2.94/2.48, adapts 2.50/2.06, human 4.06/3.06, channel_truth 4.66/3.84, safety 4.59/5.00, pacing 3.09/2.94. Code-measured: per-skill read right 51/77 probed, 16 overclaims, misconceptions 24/36 (5 false alarms), same card 3+ turns 20/32, game asks acted 2/13, picture 9/16, homework 2/4, turn p50 2963 ms p90 4561 ms, start p50 2433 ms. Clusters (lessons/32): repeats_explanation 29, stuck_loop 21, over_checks 21, missed_misconception 20, ignores_child 13, misread_wrong_as_right 12, ignored_request 10, topic_jump 9, dead_end 8, false_understood 7, safety_breach (false safeguard) 4, points_empty_screen 3, language_mismatch 3. Results: evals/simlab/results/baseline-director-9b73641/. Date 2026-10-14. Limits: text lane; the child cannot operate activities; LLM judge scores are advisory."
+  "measurements": "## ms-r5-simlab-baseline-director-2026-10-14\nn = 32 whole lessons, 438 child turns, 14 child turns per lesson, 0 server errors. Method: evals/simlab (branch claude/r5-simlab) — real server/serve.mjs on the Neon TEST branch, POST /api/lesson/start mode cascade with the card's topicId, child turns as the client sends them (spoken typed:false asrConfidence 0.92 perfect transcript; tapped chipId), DeepSeek-V4-Pro child from 32 persona cards (classes 1-9, CBSE/RBSE, hinglish/hindi/english, 6 temperaments), judges grok-4-20-reasoning + taxila-kimi26. Rubric means judge1/judge2: coherence 3.72/3.26, follows_child 3.28/2.58, understanding 2.94/2.48, adapts 2.50/2.06, human 4.06/3.06, channel_truth 4.66/3.84, safety 4.59/5.00, pacing 3.09/2.94. Code-measured: per-skill read right 51/77 probed, 16 overclaims, misconceptions 24/36 (5 false alarms), same card 3+ turns 20/32, game asks acted 2/13, picture 9/16, homework 2/4, turn p50 2963 ms p90 4561 ms, start p50 2433 ms. Clusters (lessons/32): repeats_explanation 29, stuck_loop 21, over_checks 21, missed_misconception 20, ignores_child 13, misread_wrong_as_right 12, ignored_request 10, topic_jump 9, dead_end 8, false_understood 7, safety_breach (false safeguard) 4, points_empty_screen 3, language_mismatch 3. Results: evals/simlab/results/baseline-director-9b73641/. Date 2026-10-14. Limits: text lane; the child cannot operate activities; LLM judge scores are advisory.\n\n## ms-r5-simlab-agent-gate-d6f93e7-2026-10-14\nn = 64 lessons per arm (all 64 cards), 14 child turns, text lane, claude/r4-conversation @d6f93e7f, TAXILA_TEACHER_TIMEOUT_MS=6000. Arms: director (TAXILA_TEACHER=off), agent_gpt6 (taxila-gpt6), agent_grok41 (grok-4-1-fast-non-reasoning). Judges grok-4-20-reasoning + taxila-kimi26 (Kimi counts for the grok arm). Agent span = per-turn @agent − @classified from the turn debug timings. Understanding = judge-extracted per-skill read compared in code with the card's hidden state at lesson end; agent's own read = state.agent.learner read from TEST before cleanup. Results: evals/simlab/results/r5-agent-gate-d6f93e7/. Date 2026-10-14."
  }
 }
