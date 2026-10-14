@@ -267,3 +267,62 @@ test("d5route: a per-guardian open rate", () => {
   assert.equal(allowD5("rate-g", t + 100), false);
   assert.equal(allowD5("rate-g", t + 61_000), true, "a minute later");
 });
+
+// ───────────────────────────── integration: a real socket, a real client ─────────────────────────────
+
+test("integration: a real HTTP upgrade, Node's own WebSocket client, the relay to a fake Voice Live and back", async () => {
+  const http = await import("node:http");
+  const upstream = { sent: [] };
+  const openUpstream = () => {
+    const up = { readyState: 1, send: (m) => upstream.sent.push(JSON.parse(m)), close: () => { up.readyState = 3; } };
+    upstream.ws = up;
+    // Voice Live's handshake: created → (our session.update) → updated
+    setTimeout(() => up.onmessage({ data: JSON.stringify({ type: "session.created", session: {} }) }), 5);
+    setTimeout(() => up.onmessage({ data: JSON.stringify({ type: "session.updated", session: { input_audio_echo_cancellation: { type: "server_echo_cancellation", reference_source: "client", channels: 2 }, input_audio_noise_reduction: { type: "azure_deep_noise_suppression" } } }) }), 15);
+    return up;
+  };
+  const { env: _e, ...authorize } = deps();
+  const server = http.createServer((_q, s) => { s.statusCode = 404; s.end(); });
+  server.on("upgrade", (req, socket, head) => { void handleD5Upgrade(req, socket, head, { env: ENV, authorize, openUpstream }); });
+  await new Promise((r) => server.listen(0, "127.0.0.1", r));
+  const { port } = server.address();
+  try {
+    const ws = new WebSocket(`ws://127.0.0.1:${port}/api/duplex/voicelive?lessonId=${LESSON}`);
+    ws.binaryType = "arraybuffer";
+    const got = [];
+    await new Promise((resolve, reject) => {
+      const to = setTimeout(() => reject(new Error("no session")), 3000);
+      ws.onmessage = (m) => { const e = JSON.parse(m.data); got.push(e); if (e.type === "d5.session" && e.phase === "updated") { clearTimeout(to); resolve(); } };
+      ws.onerror = () => { clearTimeout(to); reject(new Error("socket error")); };
+    });
+    assert.equal(got.at(-1).aec.reference, "client");
+    // 3 stereo frames (one oversized message, then a small one) and a commit
+    ws.send(new Uint8Array(D5_FRAME_BYTES * 2));
+    ws.send(new Uint8Array(D5_FRAME_BYTES));
+    ws.send(JSON.stringify({ type: "commit" }));
+    ws.send(JSON.stringify({ type: "response.create" }));
+    await sleep(50);
+    const appends = upstream.sent.filter((m) => m.type === "input_audio_buffer.append");
+    assert.equal(appends.length, 1);
+    assert.equal(Buffer.from(appends[0].audio, "base64").length, D5_FRAME_BYTES * 2);
+    assert.equal(upstream.sent.filter((m) => m.type === "input_audio_buffer.commit").length, 1);
+    assert.equal(upstream.sent.filter((m) => m.type === "response.create").length, 0);
+    // events down
+    upstream.ws.onmessage({ data: JSON.stringify({ type: "input_audio_buffer.speech_started", item_id: "i9", audio_start_ms: 40 }) });
+    upstream.ws.onmessage({ data: JSON.stringify({ type: "response.audio.delta", delta: "AAAA" }) });
+    upstream.ws.onmessage({ data: JSON.stringify({ type: "conversation.item.input_audio_transcription.completed", item_id: "i9", transcript: "छप्पन" }) });
+    await sleep(50);
+    const types = got.map((e) => e.type);
+    assert.ok(types.includes("input_audio_buffer.speech_started"));
+    assert.ok(types.includes("conversation.item.input_audio_transcription.completed"));
+    assert.ok(!types.includes("response.audio.delta"));
+    // the browser leaves: the upstream closes
+    const closed = new Promise((r) => { ws.onclose = r; });
+    ws.close();
+    await closed;
+    await sleep(30);
+    assert.equal(upstream.ws.readyState, 3);
+  } finally { server.close(); }
+});
+
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));

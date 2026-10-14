@@ -786,12 +786,16 @@ function traceDuplex(c: HostCommand, mode: string): void {
     const acted = mode !== "shadow";
     if (c.to === "log") {
       const r = c.row as { action?: string; reasons?: string[]; phase?: string; detail?: unknown; t?: number };
-      if (r.action && TRACE_ACTIONS.has(r.action)) vt("duplex.decision", { action: r.action, reasons: r.reasons ?? [], phase: r.phase ?? null, detail: r.detail ?? null, mode, acted });
+      // ...and the continuer call (she keeps talking / resumes: the decision a "haan" over her line gets)
+      if (r.action && (TRACE_ACTIONS.has(r.action) || (r.action === "KEEP_TALKING" && String(r.detail ?? "") === "keep:continuer"))) vt("duplex.decision", { action: r.action, reasons: r.reasons ?? [], phase: r.phase ?? null, detail: r.detail ?? null, mode, acted });
     } else if (c.to === "think" && c.op === "revoke") vt("bargein", { step: "engine_revoke", mode, acted });
     else if (c.to === "voice") {
       if (c.op === "yield") vt("bargein", { step: "engine_yield", reason: c.reason ?? null, resumable: !!c.resumable, mode, acted });
       else if (c.op === "resume") vt("bargein", { step: "engine_resume", mode, acted });
       else if (c.op === "duck" && c.level <= 0.06) vt("bargein", { step: "engine_hush", level: c.level, mode, acted });
+      // D5 (2026-10-11): every gain change is auditable — the reflex duck at a burst's onset and its release
+      else if (c.op === "duck") vt("bargein", { step: "engine_duck", level: c.level, reason: "onset_over_her", mode, acted });
+      else if (c.op === "unduck") vt("bargein", { step: "engine_unduck", reason: "burst_released_or_continuer", mode, acted });
       else if (c.op === "speak" || c.op === "cut_in") vt("duplex.commit", { op: c.op, reason: c.reason ?? null, mode, acted });
     }
   } catch {
