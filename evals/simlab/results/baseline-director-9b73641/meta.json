@@ -15,5 +15,18 @@
   "judge": "grok-4-20-reasoning",
   "judge2": "taxila-kimi26"
  },
- "note": "BASELINE: the current Director lane (cascade mode, text lane: perfect transcripts) on base claude/blissful-mayer-icwe2j @ 9b73641, local server on the Neon TEST branch."
+ "note": "BASELINE: the current Director lane (cascade mode, text lane: perfect transcripts) on base claude/blissful-mayer-icwe2j @ 9b73641, local server on the Neon TEST branch.",
+ "reruns": [
+  {
+   "date": "2026-10-14T18:03:16.557Z",
+   "head": "3bfd3da7",
+   "personas": [
+    "p11-c2-maths-anxious",
+    "p15-c6-science-confident_wrong",
+    "p20-c2-hindi-bored",
+    "p31-c4-evs-shy"
+   ],
+   "why": "re-run: the child model (DeepSeek) was blocked by the content filter mid-lesson; now falls back to Mistral"
+  }
+ ]
 }
