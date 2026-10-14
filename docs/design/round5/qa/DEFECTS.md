@@ -45,7 +45,7 @@ Status: **FIXED** (on `claude/r5-qa`, verified by a repro script) · **OWNER** (
 | D23 | P1 | OWNER | main (safety review) | A disclosure that names a parent still gets "Talk to a grown-up at home" as the help screen's primary action |
 | D24 | P1 | OWNER | main (lesson runtime) | A reload or an accidental Back mid-lesson ends it; coming back starts a NEW lesson from the greeting |
 | D25 | P2 | OPEN | QA (UI) | Cold child home: the background grid alone, with no loading sign, until `/api/child/boot` answers (seen once, after a server restart) |
-| D26 | P2 | OPEN | QA (UI) | After "Delete my account" the receipt page throws an uncaught `401` (a read still in flight for the gone account) |
+| D26 | P2 | FIXED | QA (UI) | After "Delete my account" the receipt page throws an uncaught `401` (a read still in flight for the gone account) |
 | D19 | P2 | WONTFIX | QA (UI) | `GET /api/me` 401 logged as a console error on every signed-out landing and set-up load |
 
 ## Details
@@ -184,6 +184,12 @@ Child home "Evening, Riya. Just start." (no hours), Practice opens, a second les
 says "The daily limit and lesson hours are off for now…" (this branch, `5df5b5c`: the controls response carries
 `dayLimits`, the plan `plan.limits`; the parent home says "Lessons open any time"; add-a-child no longer promises 06:30-21:30;
 "Open now for 1 hour" hides while the limits are off).
+
+### D26 · P2 · FIXED — an unhandled "401" on a signed-out child URL
+index.html's early `/api/child/boot` read throws the bare status; `src/app/boot.ts` split it into a `me` half and a `plan`
+half, and the half nobody took (the shell saw "signed out" first) surfaced as `err.promise {"message":"401"}` — on every
+child URL opened with a stale `tx_in` cookie (seen after Delete my account). Both halves are now marked handled; a caller
+that takes one still sees the rejection. Verified: same visit, `pageerror` [] (was ["401"]).
 
 ### D24 · P1 · OWNER (main / lesson runtime) — a reload is a new lesson
 Class 4, at her turn, reload `/c/:cid/lesson/new` (what a refresh or an Android tab discard does): `POST /api/lesson/start`
