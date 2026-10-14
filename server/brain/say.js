@@ -219,8 +219,27 @@ export function safeguardLine(ctx = {}, { kind = null } = {}) {
   const q = open.mode === "en" ? CHECK_Q.en : CHECK_Q[open.mode][ctx.address === "aap" ? "aap" : "tum"];
   return `${open.text} ${q}`;
 }
+// round 5 (sim lab voice lane; persona p19): the safeguard's STAY turn (the episode's second turn: "stay with them and keep
+// listening") whose model line broke a guard fell back to the FIRST turn's fixed line, word for word ("Aapne mujhe batakar
+// bilkul sahi kiya..." twice in a row, after the child had answered). The stay turn has its own fixed line: she is here,
+// no hurry, both helplines named (the floor's requirement), and a door left open instead of the same question again.
+const STAY = {
+  en: { tum: "I'm right here, and there's no hurry. If anything is worrying you, a grown-up you trust can help, and you can call Childline 1098 or Tele-MANAS 14416 any time. You can tell me whatever you want to.",
+    aap: "I'm right here, and there's no hurry. If anything is worrying you, a grown-up you trust can help, and you can call Childline 1098 or Tele-MANAS 14416 any time. You can tell me whatever you want to." },
+  hinglish: { tum: "Main yahin hoon, koi jaldi nahi hai. Agar koi baat pareshan kar rahi ho, toh jis bade par bharosa ho woh madad kar sakte hain, aur Childline 1098 ya Tele-MANAS 14416 pe kabhi bhi call kar sakte ho. Jo mann ho, mujhe bata sakte ho.",
+    aap: "Main yahin hoon, koi jaldi nahi hai. Agar koi baat pareshan kar rahi ho, toh jis bade par bharosa ho woh madad kar sakte hain, aur Childline 1098 ya Tele-MANAS 14416 pe kabhi bhi call kar sakte hain. Jo mann ho, mujhe bata sakte hain." },
+  hi: { tum: "मैं यहीं हूँ, कोई जल्दी नहीं है। अगर कोई बात परेशान कर रही हो, तो जिस बड़े पर भरोसा हो वे मदद कर सकते हैं, और चाइल्डलाइन 1098 या टेली-मानस 14416 पर कभी भी फ़ोन कर सकते हो। जो मन हो, मुझे बता सकते हो।",
+    aap: "मैं यहीं हूँ, कोई जल्दी नहीं है। अगर कोई बात परेशान कर रही हो, तो जिस बड़े पर भरोसा हो वे मदद कर सकते हैं, और चाइल्डलाइन 1098 या टेली-मानस 14416 पर कभी भी फ़ोन कर सकते हैं। जो मन हो, मुझे बता सकते हैं।" },
+};
+/** The fixed line for the safeguard's stay turn (never the first turn's line again). Exported for tests. */
+export function safeguardStayLine(ctx = {}) {
+  const mode = safetyModeOf(ctx.lang);
+  return STAY[mode === "en" ? "en" : mode === "hi" ? "hi" : "hinglish"][ctx.address === "aap" ? "aap" : "tum"];
+}
 export function fallbackReply(state, item) {
-  if (state.lastMove?.kind === "safeguard") return safeguardLine(state.ctx, { kind: state.safeguard?.kind ?? null });
+  if (state.lastMove?.kind === "safeguard") {
+    return (state.safeguard?.calm ?? 0) >= 1 ? safeguardStayLine(state.ctx) : safeguardLine(state.ctx, { kind: state.safeguard?.kind ?? null });
+  }
   const lang = state.ctx.lang;
   const kind = state.lastMove?.kind;
   // round 2 safety floor: a check-in the model could not write is the fixed offer of the choices (stop named), never
