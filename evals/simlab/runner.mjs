@@ -90,6 +90,8 @@ function reasonsOf(r) {
     classification: d.classification ? { outcome: d.classification.outcome, confidence: d.classification.confidence, flags: Object.entries(d.classification.flags ?? {}).filter(([, v]) => v).map(([k, v]) => (v === true ? k : `${k}:${v}`)) , misconceptionId: d.classification.misconceptionId ?? null } : null,
     item: pickItem, probe: d.probe ?? null, kt: d.kt ?? [], skills: d.skills ?? {}, flagged: d.flagged ?? {},
     guard: d.guard ?? null, note: d.note ? { nonAnswer: d.note.nonAnswer, intent: d.note.intent } : null,
+    // the turn's timing marks and model calls (kind, deployment, ms): per-turn agent latency for the bake-off
+    timings: (d.timings ?? []).filter((x) => x.deployment || /^@(agent|replied|classified|kernel)/.test(x.kind)).map((x) => ({ k: x.kind, ...(x.deployment ? { d: x.deployment, st: x.status } : {}), ms: x.ms })),
     ...(d.agent ? { agent: d.agent } : {}), ...(d.tools ? { tools: d.tools } : {}), ...(d.lane ? { lane: d.lane } : {}),
   };
 }
