@@ -18,7 +18,7 @@
 //   4. no code board passes: wait for the line planner up to its budget (the pre-ship5 behaviour), then a late speculative
 //      board; then nothing (the caller's template-rung fallback, else voice).
 // Kill switch TAXILA_BOARD_SYNC=0: plan() is exactly deps.planWhiteboard (the old path). Never throws.
-import { answersRequest, samePage, shownBefore, freeAsked, subjectWords, numberLineBoard, askedNumbers } from "../studio/request.js";
+import { answersRequest, samePage, shownBefore, freeAsked, subjectWords, numberLineBoard, askedNumbers, faceDrawing } from "../studio/request.js";
 import { gateWhiteboard, withheldValues, numbersIn, partitionCounts } from "../studio/qa/whiteboard.js";
 import { speechMsOf, redactLine, WB_BOARD, sectorsForCutCircles } from "../studio/plan.js";
 import { explainerFor } from "../forge/explainer/lesson.js";
@@ -97,7 +97,7 @@ export function gateCtxFor(ask, { kit, redact = [], prior = [] } = {}) {
   if (request?.subject) kitForGate.expectations.push(request.subject, ...subjectWords(request.subject));
   if (request?.said?.length) kitForGate.expectations.push(...request.said);
   return { reply: text, kit: kitForGate, band: ask?.intent?.style?.band ?? "B3", speechMs: speechMsOf(spoken), banned: redact, prior, withhold,
-    ...(request ? { extraNumbers: askedNumbers(request) } : {}) };
+    ...(request ? { extraNumbers: askedNumbers(request), face: faceDrawing(request) } : {}) };
 }
 
 /** Scale a script's op times to a new spoken length (k clamped 0.5-2), first op no later than 800 ms. Shape only. */

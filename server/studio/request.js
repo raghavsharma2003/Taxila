@@ -248,6 +248,8 @@ const faceNumbers = (subject) => {
   const words = String(subject ?? "").toLowerCase().split(/[^\p{L}\p{M}\p{N}]+/u).filter(Boolean);
   return FACE_NUMBERS.filter(([names]) => words.some((w) => names.includes(w))).flatMap(([, nums]) => nums);
 };
+/** Is the asked thing one whose drawing is a face of numbers (a clock: its hands are radii, not cuts of a whole)? PURE. */
+export const faceDrawing = (request) => faceNumbers(request?.subject).length > 0;
 /** The numbers a request lets the board write (the asked ones; 0 and 1, the frame of a number line; a clock's 1-12). PURE. */
 export const askedNumbers = (request) => [...new Set([...(request?.said ?? []).map(numNorm), ...(request?.kind === "number_line" ? ["0", "1"] : []), ...faceNumbers(request?.subject)])];
 

@@ -92,3 +92,16 @@ test("14.2 persistent misses: a clock's 1-12 may be written, a game is never ann
   assert.equal(workedPage(page("4 tukde, 2 khaaye", "2/4", "= 1/2")), true);
   assert.equal(answersRequest(page("1/2 = 2/4", "same amount"), { kind: "example" }), false);
 });
+
+test("a clock's hands are radii, not cuts of a whole: W8 lets them through only for a face drawing", async () => {
+  const { gateWhiteboard } = await import("../server/studio/qa/whiteboard.js");
+  const clock = { v: 1, scriptId: "t-clock", line: { lessonId: "x" }, anchor: "line_audio_start", board: { w: 400, h: 300 }, mode: "fresh", durationMs: 3000,
+    ops: [{ id: "c", op: "circle", c: [200, 150], r: 100, startMs: 0, endMs: 800 },
+      { id: "h", op: "line", from: [200, 150], to: [200, 75], startMs: 900, endMs: 1300 },
+      { id: "m", op: "line", from: [200, 150], to: [270, 150], startMs: 1400, endMs: 1800 },
+      { id: "t", op: "text", at: [200, 66], text: "12", size: "m", startMs: 1900, endMs: 2100 }] };
+  const ctx = { reply: "Ghadi gol hoti hai: upar 12, chhota hand ghante batata hai, bada hand minute.", speechMs: 6000 };
+  const w8 = (g) => g.checks.find((c) => c.id === "W8.counts_match_line");
+  assert.equal(w8(gateWhiteboard(clock, ctx)).pass, false, "without the ask, a circle cut from its centre is refused (unchanged)");
+  assert.equal(w8(gateWhiteboard(clock, { ...ctx, face: true })).pass, true);
+});
