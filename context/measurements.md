@@ -3911,3 +3911,210 @@ The full-page sheets are taken after scrolling the page in steps and requiring e
   - r4-content-boards: 3/5 when run in parallel with the other two batteries (3 slots unfilled, plus the known 1/52 W4 contradiction); 5/5 when re-run alone. Read: load variance, not the recorder. The recorder's studio and board hooks are synchronous, inside `record()`'s own try/catch, and read only optional properties.
   - The batteries' own sessions left no trace rows, because each deletes its test account at the end and the trace rows cascade: the erasure path, seen working.
   - Journey: 5 steps, 22 taps, first sound at 21.7 s (phone) and 21.5 s (laptop). Hello in Volt day, then /c/:id/lesson/new. `trace.mjs --session` showed 83 and 72 client events per page load: route, dev.info, labelled taps, net with status and ms, mic mode tap, desk state, card, tray, media mounts, and a perf.longtask of 901 ms on Hello.
+
+
+<!-- merged from inbox/r4-main-1830.json -->
+- `ms-r12-live` (2026-10-11, 18:00-18:15 UTC).
+  - Deploy: int/r4-rel12 23ac84d. Gate: 3,101 tests, 3,098 pass, 0 fail, 3 skipped. It is the third gate: the first fell to ms-r12-health-test-driver-memo; the second passed, and then the PIN fix (ms-r12-pin-taps-recorded) re-ran it.
+  - Before deploying: migration 029 applied to production, and the private container 'trace' created in taxilaforge.
+  - deploy-azure.mjs --set TAXILA_TRACE_FULL_FOR (the owner's two gmail guardians plus r12-recorder-proof@taxila.test) and the four owner cohorts (+ the gmail guardians). The first attempt failed 'fetch failed' at ARM before any change; the second went through. Canary w0 4/4. Live taxila-web--s23ac84d-oyjl; s9a170c5 deactivated, s556639e kept.
+  - Read-only check of the live template: all five cohort variables hold 2/2 of the owner's gmail hashes.
+  - Worker: deploy-worker.mjs --jobs puts taxila-worker--w23ac84d-yibj and both jobs on 23ac84d.
+  - Live tier-2 proof (scratchpad r12-liveproof.mjs: a Playwright lesson on taxila.dev, 412x915, with the audio-unlock tapped, three typed turns, a flag; the account was then deleted).
+    - /api/me trace.tier 2. REC chip shown.
+    - Recorded: ui.state 23, net.req/res 21, ui.render.stage 15, ui.tap 9, rrweb.chunk 9 (9 blobs), ui.media 6, ui.render.card 5, audio.tts.clip 4 (4 blobs), tts.request/start/end 4 each, ui.render.board 3, mic.mode 3, flag.owner 1, and more. No blob failures.
+    - After DELETE /api/account: 0 trace rows for the child.
+    - Missing: every server-side event. See ms-r12-trace-fk-poison.
+    - trace.mjs bugs found, sent to T-server/T-client: --replay calls trace-replay.mjs without --events; --session <child prefix> misses the child's page sessions; one srv line renders 'undefined'.
+- `ms-r12-trace-fk-poison` (2026-10-11 18:15-18:30 UTC).
+  - Probe: an API-only lesson on production (a fresh @taxila.test account, one turn, 6 s wait). trace_event held 0 rows for its guardian, lesson or child. All accounts together had 2 srv.req, 2 srv.res and 1 trace.dropped in the last 10 min.
+  - trace.dropped rows since the deploy: totals of 6-38 events dropped per flush.
+  - Log Analytics (taxila-logs, ContainerAppConsoleLogs_CL, '[trace]'): 'write failed (6 events dropped): insert or update on table "trace_event" violates foreign key constraint "trace_event_cid_fkey"'.
+  - Cause: server/trace/writer.js inserts a chunk of up to ROWS_PER_INSERT events from every session in one statement. The canary smoke (every 15 min), the batteries and the proofs delete their accounts; events still buffered for those children then violate the FK, and the writer drops the whole chunk, real sessions included.
+  - Fix (release 12.1): the INSERT ... SELECT keeps only rows whose cid and gid still exist (or are null), and RETURNING counts what was written. Nothing of a deleted child is written after its delete, which matches the erasure promise.
+  - tests/r12-trace-db.run.mjs test 5, on Neon TEST: a chunk with a ghost child and a ghost guardian among 4 rows writes the other 2. It fails on the old writer with the exact production error, and passes on the fix.
+
+
+<!-- merged from inbox/r4-main-1900.json -->
+- `ms-r121-board-sync-env-leak` (2026-10-11, 18:30-18:55 UTC).
+  - Symptom: the release 12.1 gate on int/r4-rel12.1 0e65392 ran 3,101 tests, 3,097 pass and 1 fail: tests/p4-content-unit.test.mjs:259 'board sync: the line plan wins inside the deadline; a slow line plan yields to a passing late speculative board', expected 'line', got 'code', duration 335 ms. The same test had failed once before in 4B's full-suite run. It passes alone.
+  - Reading the code: server/stagecraft/board-sync.js plan() answers 'code' only once the sync deadline has passed (`left <= 0`, or the deadline sleep winning the race). The default deadline is 1900 ms, so a 335 ms 'code' answer means the deadline was about 300 ms.
+  - Cause:
+    - tests/ship5-review-board-fallback.test.mjs sets `process.env.TAXILA_BOARD_SYNC_MS = "300"` at module top level and never restores it.
+    - npm test is `node --test tests/`, which resolves to tests/index.js: one process that imports every *.test.mjs in sorted order. node:test starts running a file's tests while later files are still importing.
+    - So the 's…' file's import lands while 'p4…' tests are running. From then on, every test in the process runs with the 300 ms deadline.
+    - Test 852's first half (a 20 ms line plan 'inside the default deadline') ran with 280 ms of margin instead of 1880 ms. In that window plan() also synchronously computes the code board (the full W0-W9 gate) before the race starts. Under full-suite load, that and the timers took past 300 ms.
+  - Probe: the old p4 and ship5 files, imported in one process in suite order, with a line logged at test 852:
+    - `TAXILA_BOARD_SYNC_MS=300 deadline=300 source=line syncMs=54`;
+    - with the event loop blocked 120 ms at a time (a stand-in for load), syncMs was 302-329 ms in 3/3 runs. The line still won, but past the deadline.
+  - The failure itself did not reproduce outside the full suite. It needs the synchronous code-board compute to run about 280 ms or more, which an injected loop block cannot cause. The evidence for it is the gate's 335 ms duration together with the code path.
+  - Fix (tests only, no product code):
+    - ship5-review-board-fallback sets the 300 ms deadline inside its test body and restores the previous value in finally.
+    - p4-content-unit gets `withSyncMs(ms, fn)`: each board-sync test sets its own deadline (undefined means the production default) and restores it in finally, even when an assertion fails. The kill-switch test restores TAXILA_BOARD_SYNC the same way.
+    - No assertion was loosened.
+  - Result with the fix: both files pass alone (28/28 and 1/1). Under the same injected load, 3/3 runs pass, and test 852 now runs under the real 1900 ms default (657-673 ms per test, both halves).
+  - Other top-level env writes in tests/*.test.mjs: forge-g1, forge-g1-serve and forge-g2 set FORGE_DB_CACHE/FORGE_BLOB off, a placeholder AZURE_OPENAI_*, and FORGE_PUBLIC_BASE. They point code away from real services, and no test asserts on their absence. Left as they are, and logged here.
+
+
+<!-- merged from inbox/r4-main-2000.json -->
+- `ms-r13-clear-board-adjective` (2026-10-11, 18:58-19:05 UTC). Method: requestOf from 4A's claude/r4-conversation d348414 (git archive of server/ + shared/), on 19 hand-written child lines: 6 real asks to clear the board and 13 lines that only describe the screen or the sound.
+  - 4A's version: 5 of 6 asks caught. Missed: 'board pe jo likha hai mita do' (the gap allowed 3 words).
+  - 12 of 13 non-asks came back as {type: 'clear_board', whole: true}:
+    - 'screen saaf nahi dikh raha' and 'board saaf nahi dikh raha didi': I cannot see it clearly;
+    - 'background mein noise hai, saaf nahi sunai de raha';
+    - 'screen clear nahi hai', 'mujhe board clear nahi samajh aaya', 'board pe likha hua saaf saaf dikh raha hai';
+    - 'screen pe kuch saaf nahi hai', 'board khali hai', 'screen khaali kyun hai', 'is it clear on the board', 'the screen is not clear'.
+    - clear_board is acted on at any length, so each of these would have erased the board the child was trying to read. That is the owner's 'what is on screen is wrong' class of failure, caused by the fix for another one.
+  - Cause: CLEAR_VERB took bare 'clear', 'saaf' and 'khali', which in Hinglish are as often the adjective as the command, and there was no negation check ('board mat hatao' would also have cleared).
+  - Integration fix (requests.js clearBoardAsk):
+    - 'clear', 'saaf' and 'khali' count only with a do-verb after them (karo, kar do, kijiye, kar sakti ho, and the Devanagari forms); hatao, mitao, erase and wipe are commands on their own;
+    - surface-then-verb allows up to 5 words between them, verb-then-surface up to 3, and 'kachra … verb' up to 6;
+    - English counts only verb-first ('clear the board', after start, punctuation, please or can you);
+    - a negation before the verb (mat, nahi, don't, मत, नहीं) is never a clear;
+    - a gap with a sound word (noise, awaaz, shor, mic) is never a clear.
+  - After: 6/6 asks and 0/13 non-asks. Two non-asks ('board pe likha hua saaf saaf dikh raha hai', 'is it clear on the board') now reach the older VISUAL rule as a diagram ask, which is the behaviour before release 13. Pinned in tests/r13-integration-requests.test.mjs.
+- `ms-r13-meta-subjects` (2026-10-11, 19:00-19:05 UTC). Same method, 21 lines.
+  - 4A's version: 'is cheez ke baare mein batao' gave topic 'is cheez', 'pichle wale ke baare mein batao' gave 'pichle wale', and 'aaj ke topic ke baare mein batao' gave 'ke topic'.
+  - The older TOPIC rule gave the same three; release 13 adds the harm. state.js keeps req.subject (or freeSubjectOf) as s.offTopic for 4 turns, and a picture ask then answers 'I cannot show you <subject>' (visualUnavailable), and change_topic offers only word ways in.
+  - Fix: genericSubject(sub), true when every word is generic, meta or pointing (is, iske, cheez, pichle, wale, topic, chapter, sawal, answer, aaj, and the Devanagari forms). It applies to freeSubjectOf, the older TOPIC path and the offTopic store.
+  - After: all three read null. 'aloo', 'आलू', 'cricket' and 'dost' are still subjects.
+- `ms-r13-trace-integration` (2026-10-11, 19:20-19:30 UTC).
+  - Composition:
+    - T-server's trace.mjs --replay resolves the session (every session of a child, pages joined by rid), downloads the rrweb chunks and calls T-client's trace-replay.mjs with --events <dir>. trace-replay keeps --events and adds its own bare-session path.
+    - The two fixes did not conflict. The one conflict, server/trace/writer.js, kept main's existence-filtered INSERT with RETURNING.
+  - Added at integration:
+    - gatherReplay also takes chunks marked beacon. Their path is rebuilt with server/trace/blob.js traceBlobPath, on the event's day and on the next day (the blob route dates the path by arrival). Before, `distinct on (ref)` with `data ? 'blob'` dropped them, and the beacon chunk holds a page's last seconds, which is often the moment the owner flags.
+    - --flags joins each flag.owner to its flag.note on (pid, data.n). The trace_flag view reads the note from the owner row, which never has one (T-client's report).
+  - Checks:
+    - tests/r12-trace-db.run.mjs 6/6 on the Neon TEST branch (TAXILA_DB=test, DATABASE_URL set to TEST in memory), including '--replay gathers its rrweb chunks';
+    - tests/r13-integration-trace.test.mjs: a ref chunk plus a beacon chunk that arrived after midnight are gathered, and a beacon that was never stored is reported missing;
+    - a probe flag.owner + flag.note inserted on TEST: `trace.mjs --flags` printed the note, and the probe rows were deleted.
+  - Not exercised here: the Azure blob GET. Both streams' proofs used TAXILA_TRACE_BLOB_DIR. The live proof after deploy is the first real read.
+
+
+## Merged inbox entries (write-up from the entry text)
+- `ms-r12-1-replay-proof-2026-10-11` (2026-10-11): Release 12.1 replay proof, 2026-10-11 18:16-18:18 UTC, n = 1. Packaged production build on Neon TEST, with a tier-2 proof account (the only TAXILA_TRACE_FULL_FOR entry). Playwright Chromium at 412x915 opened /c/<child>/lesson/new, tapped 'Tap to hear Asha', and the lesson started (real Azure). scripts/trace.mjs --replay <child-prefix> --at <screenshot second> gathered 6 rrweb chunks and rendered one PNG. Against the real screenshot it differs in 0.0 % of pixels (grey difference > 32). This container has no storage key, so the blobs went to a local TAXILA_TRACE_BLOB_DIR, not the trace container. Evidence: docs/design/round4/build/r12/t-server/proof-*.
+- `ms-r12-1-late-erased-event-fk-2026-10-11` (2026-10-11): Found by the 12.1 proof, and fixed. A trace event naming a guardian erased since it was recorded broke trace_event_gid_fkey (the DELETE /api/account request's own srv.res, flushed after the commit), and the writer dropped its whole chunk (up to 400 rows; 2 that time). insertTraceRows now skips only the rows whose child or guardian no longer exists. Tested on Neon TEST (tests/r12-trace-db.run.mjs).
+- `r4c-ms-r12-rca-owner-lessons` (2026-10-11): r12 RCA of the owner release-11 lessons (a95d2ff1 29 turns, b08fe8a7 7 turns; export at 84bc6050). Board: 7 of 10 a95d2ff1 pages are the same s1 compare@1 table (fresh mode; the lesson-cached explainerFor model fill via board-first), whatever the child asked. Continue pages 3-5 land on earlier ops when replayed through the client rule (StudioWhiteboard priorFor): page 4 writes ? over page 3s 4 and +3. Speculation: 17 turns, 14 miss (median server_ms 2526), 1 hit (585), 2 not speculated (1555); the one hit is the only speculated turn whose understanding note carried no request. Screen guard G-SAY-1 checks only for tap targets: turn 3 Screen par game and turn 23 screen par aloo passed. Method: export replay + pure tests (tests/r12-rca.test.mjs). Write-up docs/design/round4/build/r12/rca/RCA.md
+
+
+<!-- merged from inbox/r4-main-2010.json -->
+- `r4c-ms-r12-rca-owner-lessons` (2026-10-11, stream 4A; written up at merge by main).
+  - Data: the owner's two release-11 lessons, a95d2ff1 (29 turns) and b08fe8a7 (7 turns), from the read-only export at 84bc6050 (docs/design/round4/build/r12/rca/owner-lessons-2026-10-11.json). Method: the export replayed through pure tests (tests/r12-rca.test.mjs). Full write-up: docs/design/round4/build/r12/rca/RCA.md.
+  - The board: 7 of 10 a95d2ff1 pages are the same s1 compare@1 table, whatever the child asked. It was drawn fresh each time, from the lesson-cached explainerFor model fill through board-first. This is the owner's 'same visual again'.
+  - Continue pages 3-5, replayed through the client rule (StudioWhiteboard priorFor), land on earlier ops: page 4 writes ? over page 3's 4 and +3. This is the owner's 'drawn on top of the previous content'.
+  - Speculation: of 17 turns, 14 missed (median server_ms 2526), 1 hit (585) and 2 were not speculated (1555). The one hit is the only speculated turn whose understanding note carried no request.
+  - The screen guard G-SAY-1 checked only for tap targets, so turn 3's 'Screen par game' (no game mounted) and turn 23's 'screen par aloo' (a maths table on screen) passed. This is the owner's 'she claimed an image that was not there'.
+
+
+<!-- merged from inbox/r4-main-1930.json -->
+- `ms-r121-live` (2026-10-11, 19:22-19:30 UTC).
+  - Gate on int/r4-rel12.1 bf17b06: 3,101 tests, 3,098 pass, 0 fail, 3 skipped (the board-sync test passed in 223 ms; ms-r121-board-sync-env-leak). Prompt budget PASS. Stamp 19:22:25Z.
+  - Deploy: base fast-forwarded to bf17b06, then deploy-azure.mjs. The ACR build succeeded; revision taxila-web--sbf17b06-nhv3 at 0% canary passed w0-smoke 4/4, then went to 100%. s23ac84d-oyjl is kept as previous, s556639e deactivated. 260 s, first attempt.
+  - Live server recorder, measured with scratchpad srvtrace-probe.mjs: an API-only @taxila.test account, one lesson start and one turn on https://taxila.dev, then trace_event grouped by kind, then the account deleted.
+    - Lesson events: model.call 4, srv.req 2, srv.res 2, safety.scan 1, classify.verdict 1, director.turn 1, board.page 1, studio.slot.revealed 1, studio.rung_replaced 1, db.write 1.
+    - Guardian stream: srv.req 3, srv.res 3, model.call 1.
+    - The same probe on release 12 (ms-r12-trace-fk-poison) found 0 server events for its lesson.
+  - trace.dropped since 19:24Z: 0 rows. The probe's and the canary's own rows were erased with their accounts, as designed.
+  - Not yet re-proven live on 12.1: the tier-2 client replay from the real Azure container (release 13 carries the tooling fixes; the live proof runs after it).
+
+
+<!-- merged from inbox/r4-main-2020.json -->
+- `ms-r13-claims-in-flight` (2026-10-11, 20:00-20:40 UTC). Method: the packaged release 13 tree (5faa5b6; git archive minus docs/evals/tests/art, plus the gate's dist), local production server on the Neon TEST branch, owner-5-visual and round2-content in parallel. Release 12's packaged run (ms-r12-packaged-checks) is the baseline.
+  - Before:
+    - owner-5: 8/14 (release 12: 12/14). Visual requests 7/12 (release 12: 11/12): picture typed and spoken, draw typed, animation typed and spoken, all V2.no_reference ('something is on the stage but her words never point at it').
+    - round2-content: 29/39 (release 12: 35/39). New failures: picture x2, draw, game x2 and animation x2, all 'her words do not point at it'; R request→piece p90 4775 ms.
+  - Lines that shipped: 'Aarav, number line: 0 se 1 tak 5 barabar gaps…' (the pointing was taken out) and 'Ishaan, kuch move nahi ho raha; words mein…' (the rewrite, told the screen claim was false, said nothing moves).
+  - Cause:
+    - 4A's screenClaimProblem flagged any pointing sentence whose content words were not among stageWords(ui, module), and also when stageWords was EMPTY.
+    - On the turn that answers a visual request, the requested whiteboard is planned against her real line (board-sync) and acked after the reply, and a play piece lands 3-5 s later. So when the guard runs, the slot holds no artifact and stageWords is empty.
+    - The same happens with a mounted interactive engine (number line, strips), whose labels the guard cannot read.
+    - The guard then rewrote the line and stripped or unpointed the screen reference.
+  - Fix (server/director/say.js, server/brain/say.js):
+    - screenProblem(…, { coming }) skips the claim check when this turn's move answers a visual request (lastMove.request 'visual' with lastMove.visual);
+    - the content-word check runs only when the stage is KNOWN: a whiteboard artifact or an explainer@1 rung (a drawn script, known even with no text), or a script on the module or artifact. Otherwise a claim passes, as before release 13.
+  - Still caught: the owner's 'screen par aloo dekho' over the rules table, and 'Screen par game' with no play piece and nothing coming (tests/r13-integration-claims.test.mjs; r12-rca and r13-visual-honest all pass, plus 2 documented todos).
+  - After: After the fix, on the same packaged tree: owner-5 12/14 (visuals 11/12; the one failure is release 12's known V3.child_draws), round2-content 36/39 (the 3 failures are item-bound mount checks, as in release 12), boards 3/5 then 5/5 alone (n = 2; release 12: 3/5 in parallel, 5/5 alone), safety w2i 39/39, journey 5 steps / 22 taps / first sound 21.9 s phone, 20.9 s laptop. The one unfilled board in boards run 1 (c7-maths-ch08-t01, 'Screen par rectangle dekhiye', slot failed) is the residual risk of letting a line point at a piece in flight: the same topic's board failed in release 12 too; open.
+
+
+<!-- merged from inbox/r4-main-2050.json -->
+- `ms-r13-claims-after-board` (2026-10-11, 20:00-21:00 UTC). Method: the packaged release 13 tree, local production server on Neon TEST; the owner replay (tests/prod/owner-replay-r12.mjs --lesson a95d2ff1: the child's exact 15 turns, chip as chip); owner-5-visual and round2-content in parallel; a console probe in the PACKAGED copy only, logging each firing of the new check.
+  - Replay 1, with the in-flight allowance only:
+    - turn 23 (chip 'Show me a picture'): 'Screen par aloo ka picture dekhiye: uski eyes se sprouts nikalte hain', over the rules table;
+    - turn 3 ("Show me some games"): 'Screen par game: Recursive ya Explicit choose kijiye', over the table, with no play piece.
+    - That is the owner's exact complaint. The board drawn for the request was the s1 table again (4A r13 fix 1, unbuilt), so the reply check had stood aside for a piece that did not show what she said.
+  - Change (server/brain/turn.js, server/director/say.js):
+    - after the whiteboard ack, which carries a board-first board in the same response, and before the TTS prewarm, her line is re-checked against the board that arrived;
+    - on a hit it is unpointed (stripScreenRefs: content kept), and the staged turn row, state.recent and the delivery plan get the new text;
+    - the guard records claim_after_board.
+  - Replay 3 (probe on, generic word-overlap check): the check fired on 2 turns. 'Screen par game: left Recursive, right Explicit…' became 'Compare game: left Recursive, right Explicit…'; 'Screen par potato dekhiye: …' lost its pointing.
+  - The generic check cost elsewhere (rj-r13-word-overlap-after-board): round2-content fell to 33/39 (3 draw and animation lines unpointed, 2 boards failing W6.timing after their lines shortened).
+  - Narrowed (boardClaimProblem + kitWordsOf): only (1) a game claimed while a board, not a play piece, is up, and (2) a picture of a thing ('X ka picture', 'picture of X') that neither the board's words nor the lesson's kit has.
+  - Final packaged run:
+    - owner-5 14/14, visual requests 12/12 (release 12: 12/14);
+    - round2-content 36/39, the 3 failures being item-bound mount checks as in release 12;
+    - boards 5/5 alone (51 boards, 0 contradictions, 0 unfilled), safety w2i 39/39, journey 5 steps / 22 taps / first sound 21.9 s phone, 20.9 s laptop (run before this change; the journey path has no board ack).
+  - Final replay (n = 1; her lines are model-written, so a replay shows code behaviour on the same child turns):
+    - turn 3 points at 'Recursive rule', which is on the board;
+    - turn 11: 'Photo nahi dikha sakti, par visual sochiye: 3, 6, 9, 12…';
+    - turn 13: 'Board clear hai.', and the board is cleared;
+    - turns 23, 25 and 27 describe aloo in words, with no screen claim.
+    - The probe did not fire (the model did not produce either shape that run).
+  - Open: open-r13-bare-pointing-on-request-turns.
+
+
+<!-- merged from inbox/r4-main-2135.json -->
+- `ms-r13-server-rows-lost-live` (2026-10-11, 21:13-21:40 UTC).
+  - Release 13 (fa6f5a9) went live as taxila-web--sfa6f5a9-glpk (canary 4/4). Worker taxila-worker--wfa6f5a9-qbq4 with both jobs.
+  - Tier-2 live proof (scratchpad r12-liveproof.mjs on taxila.dev):
+    - recorded and stored: /api/me tier 2, the REC chip, 3 typed turns, a flag plus its note (flag.note), 8 rrweb chunks and 4 TTS clips in the private container, and the replay PNG;
+    - the page's server request rows up to GET /api/child/map;
+    - after the account delete: 0 rows.
+    - Missing: every server row of the lesson itself (lesson start, turns, director.turn, model.call).
+  - API probe (scratchpad srvtrace-probe2.mjs: a fresh @taxila.test account, lesson start plus one turn, counts at +6, +30 and +60 s before cleanup): 0 rows for the account each time. The same probe on 12.1 at 19:27 found 13 kinds (ms-r121-live).
+  - Still written:
+    - unauthenticated GET /api/me (3 requests, 21:35:06);
+    - authed GET /api/me on a fresh account: 3 srv.req and 3 srv.res with its gid (scratchpad authrow.mjs).
+  - The last server rows before those were the canary's and the proof's signups at 21:13:49 and 21:14:36.
+  - No '[trace] write failed', 'dropped', 'failed', 'pool' or 'error' line from revision sfa6f5a9 in ContainerAppConsoleLogs_CL for the hour. The writer logs only failures 1-3 and every 50th.
+  - Ruled out:
+    - env var names: identical, 44 on 12.1 and on 13;
+    - the existence filter: it keeps a real guardian and child (read-only check);
+    - the recorder hooks in turn.js: intact;
+    - writer.js and db.js: unchanged since 12.1.
+  - Not reproduced here: the same tree on the Neon TEST branch, served by the packaged production server with the proof account at tier 2, recorded everything: 3 turns gave director.turn x3, classify, safety and db.write x3, srv x25 and model.call x18 with prompt blobs. Production runs DB_DRIVER=pg, and pg over TCP cannot connect from this container (timeout), so the pg path could not be reproduced.
+  - A revision restart (ARM revisions/restart) did not bring the lesson rows back.
+  - Release 13.1 makes the most likely mechanism impossible (dc-r131-writer-split-and-scrub) and makes it visible either way, through the /api/health?trace=1 counters and a log line for every failure, at most one a minute. The cause is confirmed or ruled out after deploy.
+
+
+<!-- merged from inbox/r4-main-2225.json -->
+- `ms-r131-flush-wedge` (2026-10-11, 22:11-22:25 UTC).
+  - Release 13.1 (03f101e) live as taxila-web--s03f101e-ip20, canary 4/4.
+  - Fresh revision, API probe (srvtrace-probe2): 22 rows at +6 s, 13 kinds including director.turn and model.call. Counters: written 65, failures 0, badRows 0.
+  - Tier-2 browser proof (r12-liveproof) on taxila.dev: the replay now reads the real Azure container end to end (8 rrweb chunks downloaded, replay-221435.png at 412x915), and the flag and its note are stored.
+  - But no director.turn or model.call for its lesson. The counters read buffered 84, written 85, failures 0, badRows 0, unchanged over 30 s. One more request made it buffered 86, still with no flush.
+  - So the writer was wedged, not refusing rows. The 13.1 split and scrub never fired.
+  - Cause, in server/trace/writer.js flushTrace: `state.flushing = (async () => { … while (state.buf.length) { … await … } … finally { state.flushing = null; … } })()`.
+    - On an empty buffer the async body has no await on its path, so it runs to the end synchronously, and its finally clears state.flushing before the outer assignment.
+    - The assignment then stores the already-settled promise, and `if (state.flushing) return state.flushing` returns it on every later call.
+    - The recorder writes nothing again and logs nothing, until the process restarts.
+    - An empty-buffer flush happens in the live race: an event recorded while a flush is in flight arms a timer, the in-flight flush drains that event too, and the timer then fires on an empty buffer. Production's pg inserts are slower than the local Neon HTTP ones, which widens the in-flight window.
+    - Release 13's silence (ms-r13-server-rows-lost-live) and the failed restart (the next lesson wedged it again) fit. It is likely also part of release 12's losses besides the FK poison.
+  - Proof:
+    - a 4-line Node reproduction of the pattern leaves state.flushing a stale promise;
+    - tests/r131-trace-writer.test.mjs 'a flush on an EMPTY buffer never wedges the writer' fails on 03f101e and passes on the fix;
+    - r12-trace-unit and r131 pass 17/17; r12-trace-db passes 6/6 on TEST.
+  - Fix (release 13.2): the body awaits once before anything else, and its finally clears state.flushing only if it still holds its own promise.
+
+
+<!-- merged from inbox/r4-main-2300.json -->
+- `ms-r132-live` (2026-10-11, 22:45-23:00 UTC).
+  - Gate on 3cd45e8: 3,129 tests, 3,124 pass, 0 fail, 3 skipped, 2 todo. The dry run's ARM plan call hit 'fetch failed' after the gate; the stamp was written.
+  - Deploy: the first attempt hit 'fetch failed' (transient ARM), the second went through. Canary 4/4, then live taxila-web--s3cd45e8-ychf. Worker taxila-worker--w3cd45e8-6ufy with both jobs.
+  - Tier-2 live proof (scratchpad r12-liveproof.mjs on taxila.dev, 412x915, three typed turns, a flag with a note):
+    - /api/me tier 2; the REC chip; no page errors;
+    - every event kind above, plus net.req/res x22, ui.render.* (stage x10, card x5, tray x4, board x2), ui.tap x10, mic.mode x3 and vad.start/sustain;
+    - trace.mjs --replay: 8 chunks downloaded from the private 'trace' container and replay-225614.png rendered; by eye it shows the same card, REC chip and controls as the real screenshot;
+    - 0 rows after DELETE /api/account.
+  - Writer counters: buffered 2, then 0; written 146; failures 0; badRows 0, over 12 s.
+  - Evidence: docs/design/round4/build/r13/evidence/ (r132-liveproof-result.json, r132-replay-225614.png, r132-screen-flagged.png, r13-owner-replay-a95d2ff1.md).

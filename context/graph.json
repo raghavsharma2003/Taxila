@@ -20291,6 +20291,182 @@
    "at": "2026-10-11",
    "title": "Release 12 packaged tree (2af8cfc on the Neon TEST branch): owner-5 12/14, round2-content 35/39, boards 3/5 when run beside the other two batteries but 5/5 alone, the journey 5 steps to Hello then lesson/new with the recorder capturing 72-83 client events per page load (routes, labelled taps, requests with status and ms, mic mode, Desk state, card, tray, media)",
    "source": "inbox/r4-main-1740.json"
+  },
+  {
+   "id": "ms-r12-live",
+   "kind": "measurement",
+   "at": "2026-10-11",
+   "title": "Release 12 (23ac84d, the flight recorder) live as taxila-web--s23ac84d-oyjl (canary 4/4; s556639e kept), worker taxila-worker--w23ac84d-yibj with both Conductor jobs on 23ac84d; gate 3,101 tests 3,098 pass 0 fail; live tier-2 proof account: /api/me trace.tier 2, REC chip, 9 rrweb chunks and 4 TTS clips in the private blob container, a ★ flag, 0 rows left after the account delete",
+   "source": "inbox/r4-main-1830.json"
+  },
+  {
+   "id": "ms-r12-trace-fk-poison",
+   "kind": "measurement",
+   "at": "2026-10-11",
+   "title": "Release 12 live: the server recorder lost most of its events. trace_event_cid_fkey failed whenever a buffered chunk held an event of an account deleted meanwhile (the canary every 15 min, batteries, proofs), dropping the WHOLE chunk (trace.dropped totals 6-38 per flush; a probe lesson's server events: 0). Fixed in release 12.1: the insert writes only rows whose child and guardian exist",
+   "source": "inbox/r4-main-1830.json"
+  },
+  {
+   "id": "rj-r12-insert-all-or-nothing",
+   "kind": "rejection",
+   "at": "2026-10-11",
+   "title": "One INSERT for a chunk of trace events from many sessions with FK columns to child/guardian: a single row of a just-deleted account fails the statement and the writer drops every session's events in that chunk",
+   "source": "inbox/r4-main-1830.json"
+  },
+  {
+   "id": "ms-r121-board-sync-env-leak",
+   "kind": "measurement",
+   "at": "2026-10-11",
+   "title": "Release 12.1's gate failed one test, p4-content-unit 'board sync: the line plan wins inside the deadline' ('code' !== 'line', 335 ms). Cause: ship5-review-board-fallback.test.mjs set TAXILA_BOARD_SYNC_MS=300 at module top level and never restored it, and the one-process suite imports later files while earlier files' tests run, so the test that claims the 1900 ms default ran under 300 ms (probe on the old files: deadline=300). Fixed: both files set the deadline inside the test and restore it in finally",
+   "source": "inbox/r4-main-1900.json"
+  },
+  {
+   "id": "rj-test-env-at-import",
+   "kind": "rejection",
+   "at": "2026-10-11",
+   "title": "A test file that writes process.env at module top level (or sets it in a test body and deletes it only on the success path) in the one-process npm test: the write lands mid-run in whichever earlier file's test is executing when the import happens, so another file's test changes behaviour depending on import timing",
+   "source": "inbox/r4-main-1900.json"
+  },
+  {
+   "id": "ms-r12-1-replay-proof-2026-10-11",
+   "kind": "measurement",
+   "title": "Release 12.1 replay proof, 2026-10-11 18:16-18:18 UTC, n = 1. Packaged production build on Neon TEST, with a tier-2 proof account (the only TAXILA_TRACE_FULL_FOR entry). Playwright Chromium at 412x915 opened /c/<child>/lesson/new, tapped 'Tap to hear Asha', and the lesson started (real Azure). scripts/trace.mjs --replay <child-prefix> --at <screenshot second> gathered 6 rrweb chunks and rendered one PNG. Against the real screenshot it differs in 0.0 % of pixels (grey difference > 32). This container has no storage key, so the blobs went to a local TAXILA_TRACE_BLOB_DIR, not the trace container. Evidence: docs/design/round4/build/r12/t-server/proof-*.",
+   "at": "2026-10-11",
+   "source": "inbox/r12-1-t-server.json"
+  },
+  {
+   "id": "ms-r12-1-late-erased-event-fk-2026-10-11",
+   "kind": "measurement",
+   "title": "Found by the 12.1 proof, and fixed. A trace event naming a guardian erased since it was recorded broke trace_event_gid_fkey (the DELETE /api/account request's own srv.res, flushed after the commit), and the writer dropped its whole chunk (up to 400 rows; 2 that time). insertTraceRows now skips only the rows whose child or guardian no longer exists. Tested on Neon TEST (tests/r12-trace-db.run.mjs).",
+   "at": "2026-10-11",
+   "source": "inbox/r12-1-t-server.json"
+  },
+  {
+   "id": "dec-r12-1-child-session-by-rid",
+   "kind": "decision",
+   "title": "trace.mjs --session <child-prefix> means every session of that child: its lesson ids, every sid its rows sit under, the page loads joined by request id, and g:<guardian>. The page loads are joined by request id because a Desk page's client events carry no cid: the client never names the child, and the server stamps cid only on its own request events. A client event shares its rid with the server's request event. Reverse if: the client sends x-taxila-pid and the server stamps it, so pages can be joined by pid directly.",
+   "at": "2026-10-11",
+   "source": "inbox/r12-1-t-server.json"
+  },
+  {
+   "id": "r4c-ms-r12-rca-owner-lessons",
+   "kind": "measurement",
+   "at": "2026-10-11",
+   "title": "r12 RCA of the owner release-11 lessons (a95d2ff1 29 turns, b08fe8a7 7 turns; export at 84bc6050). Board: 7 of 10 a95d2ff1 pages are the same s1 compare@1 table (fresh mode; the lesson-cached explainerFor model fill via board-first), whatever the child asked. Continue pages 3-5 land on earlier ops when replayed through the client rule (StudioWhiteboard priorFor): page 4 writes ? over page 3s 4 and +3. Speculation: 17 turns, 14 miss (median server_ms 2526), 1 hit (585), 2 not speculated (1555); the one hit is the only speculated turn whose understanding note carried no request. Screen guard G-SAY-1 checks only for tap targets: turn 3 Screen par game and turn 23 screen par aloo passed. Method: export replay + pure tests (tests/r12-rca.test.mjs). Write-up docs/design/round4/build/r12/rca/RCA.md",
+   "source": "inbox/r4-conversation.json"
+  },
+  {
+   "id": "r4c-dc-screen-claims-by-predicate",
+   "kind": "decision",
+   "at": "2026-10-11",
+   "status": "proposed",
+   "title": "Proposed for release 13 (main decides): a sentence that points at the screen or board is checked against what is mounted (a game needs a play piece; its content words must be words the mounted piece shows), and the screen repair drops only the pointing, never the content (r12/rca/patches/r13-fix-2-5-screen-claims.diff). Reversal: a battery shows false flags on legitimate pointing lines above a bar main sets.",
+   "source": "inbox/r4-conversation.json"
+  },
+  {
+   "id": "ms-r13-clear-board-adjective",
+   "kind": "measurement",
+   "at": "2026-10-11",
+   "title": "Release 13 review: 4A's clear-the-board request read the ADJECTIVE 'saaf/clear/khali' as the command. On a 19-line probe, 12 of 13 lines that are not asks (e.g. 'screen saaf nahi dikh raha', 'board khali hai', 'the screen is not clear') came back as clear_board, which wipes the board the child is trying to read; 'board pe jo likha hai mita do' was missed. Integration fix: a command only with a do-verb, no negation before the verb, no sound words in the gap; probe 19/19",
+   "source": "inbox/r4-main-2000.json"
+  },
+  {
+   "id": "ms-r13-meta-subjects",
+   "kind": "measurement",
+   "at": "2026-10-11",
+   "title": "Release 13 review: deictic and meta words became a 'subject' the child named ('is cheez', 'pichle wale', 'aaj ke topic'). Release 13 keeps that subject for 4 turns and answers a later picture ask with 'I cannot show <subject>'. Integration fix: one genericSubject() check on freeSubjectOf, the old TOPIC path and the offTopic store; aloo / cricket / dost kept",
+   "source": "inbox/r4-main-2000.json"
+  },
+  {
+   "id": "ms-r13-trace-integration",
+   "kind": "measurement",
+   "at": "2026-10-11",
+   "title": "Release 13 integration of the recorder tooling: T-server's trace.mjs --replay (gathers chunks from blobs) composed with T-client's trace-replay.mjs (--events, or a bare session); integration adds beacon chunks (no ref: rebuilt with traceBlobPath, that day or the next) and the flag's note (flag.note joined to flag.owner on pid + n). r12-trace-db 6/6 on TEST; a beacon unit test; a TEST-branch probe flag printed its note",
+   "source": "inbox/r4-main-2000.json"
+  },
+  {
+   "id": "ms-r121-live",
+   "kind": "measurement",
+   "at": "2026-10-11",
+   "title": "Release 12.1 (bf17b06) live as taxila-web--sbf17b06-nhv3 (canary 4/4; s23ac84d kept). The server recorder now writes: a live API probe lesson recorded 13 server event kinds (director.turn, model.call x4, safety.scan, classify.verdict, board.page, studio.slot.revealed, studio.rung_replaced, db.write, srv.req/res) where release 12 recorded 0; trace.dropped 0 since the switch",
+   "source": "inbox/r4-main-1930.json"
+  },
+  {
+   "id": "ms-r13-claims-in-flight",
+   "kind": "measurement",
+   "at": "2026-10-11",
+   "title": "Release 13's screen-claim predicate, on the packaged tree, flagged legitimate pointing: owner-5 fell from 12/14 to 8/14 (visuals 11/12 to 7/12) and round2-content from 35/39 to 29/39 against release 12, every new failure V2.no_reference. The requested piece is in flight when her line is checked (stageWords empty), and an interactive engine's labels are unreadable. Fixed: the predicate stands aside for this turn's requested visual and for engines; drawn boards are still held to their words. After the fix, on the same packaged tree: owner-5 12/14 (visuals 11/12; the one failure is release 12's known V3.child_draws), round2-content 36/39 (the 3 failures are item-bound mount checks, as in release 12), boards 3/5 then 5/5 alone (n = 2; release 12: 3/5 in parallel, 5/5 alone), safety w2i 39/39, journey 5 steps / 22 taps / first sound 21.9 s phone, 20.9 s laptop. The one unfilled board in boards run 1 (c7-maths-ch08-t01, 'Screen par rectangle dekhiye', slot failed) is the residual risk of letting a line point at a piece in flight: the same topic's board failed in release 12 too; open.",
+   "source": "inbox/r4-main-2020.json"
+  },
+  {
+   "id": "rj-r13-claim-check-before-the-piece",
+   "kind": "rejection",
+   "at": "2026-10-11",
+   "title": "Checking a 'look at the screen' sentence against the stage's words at reply time, for the turn that brings the piece: the board is planned against her line (board-sync) and a game lands seconds later, so the stage is empty when the check runs and every pointing sentence reads as a false claim",
+   "source": "inbox/r4-main-2020.json"
+  },
+  {
+   "id": "ms-r13-claims-after-board",
+   "kind": "measurement",
+   "at": "2026-10-11",
+   "title": "Release 13 integration, the owner replay (a95d2ff1 on the packaged tree, TEST): with only the in-flight allowance, turn 23 shipped 'Screen par aloo ka picture dekhiye' and turn 3 'Screen par game' over the rules table (the board drawn for the request was the table again: 4A fix 1, unbuilt). Added: her line is re-checked against the board that actually arrived (the board-first ack, before prewarm) for the owner's two false-claim shapes only, and unpointed. Final packaged run: owner-5 14/14, round2-content 36/39, replay honest on every turn the owner flagged",
+   "source": "inbox/r4-main-2050.json"
+  },
+  {
+   "id": "rj-r13-word-overlap-after-board",
+   "kind": "rejection",
+   "at": "2026-10-11",
+   "title": "Re-checking her line against the arrived board by word overlap: the board labels in its own words ('Solid / Liquid / Gas' while she says 'ice, paani, water vapour'), so 3 legitimate lines were unpointed in round2, and the shortened lines then failed their boards' W6 timing re-gate (2 boards)",
+   "source": "inbox/r4-main-2050.json"
+  },
+  {
+   "id": "open-r13-bare-pointing-on-request-turns",
+   "kind": "open",
+   "at": "2026-10-11",
+   "title": "Still open after release 13: on a turn that answers a visual request, a bare pointing line about a thing the board does not show ('Screen par potato dekhiye', no 'picture of' form) is not caught: the reply check stands aside for the piece in flight and the after-board check judges only the game and 'picture of X' shapes. Root fix: the board answers what the child asked for (4A r13 fix 1, RCA-1 todo)",
+   "source": "inbox/r4-main-2050.json"
+  },
+  {
+   "id": "ms-r13-server-rows-lost-live",
+   "kind": "measurement",
+   "at": "2026-10-11",
+   "title": "Release 13 live (fa6f5a9, taxila-web--sfa6f5a9-glpk): the server recorder wrote NO lesson-flow rows. The API probe found 0 server events for its lesson at +6, +30 and +60 s (12.1: 13 kinds), the tier-2 browser proof found client events, blobs and request rows but no director.turn or model.call, and no '[trace] write failed' line appeared in Log Analytics. Lone authed and unauthenticated GETs were written. The same tree on the Neon TEST branch with the HTTP driver records everything, tier 2 included; production runs DB_DRIVER=pg, which this container cannot reach to reproduce",
+   "source": "inbox/r4-main-2135.json"
+  },
+  {
+   "id": "rj-r13-silent-chunk-drop",
+   "kind": "rejection",
+   "at": "2026-10-11",
+   "title": "A buffered writer that drops a whole failed chunk and logs only its first 3 failures per process: one refused row hides every other row of its chunk, and the failure goes unseen once the first three are spent",
+   "source": "inbox/r4-main-2135.json"
+  },
+  {
+   "id": "dc-r131-writer-split-and-scrub",
+   "kind": "decision",
+   "at": "2026-10-11",
+   "title": "Release 13.1: on a DATA error (SQLSTATE class 22/23) the trace writer halves the chunk until only the refused rows are left, which are dropped, counted (badRows) and named. A connection or timeout error still drops the chunk. Strings jsonb refuses (NUL, a lone surrogate from a cut mid-emoji) are replaced before buffering. Every failure is logged at most once a minute, and /api/health?trace=1 returns the counters (counts only). Reverse if: the counters show the loss is not a data error, and a different mechanism is found",
+   "source": "inbox/r4-main-2135.json"
+  },
+  {
+   "id": "ms-r131-flush-wedge",
+   "kind": "measurement",
+   "at": "2026-10-11",
+   "title": "Root cause of the lost server rows, found with release 13.1's /api/health?trace=1 counters: after a tier-2 browser lesson they read buffered 84, written 85, failures 0, badRows 0, and stayed so. A later event made it 86, still with no flush. The writer was wedged. flushTrace's async body completes SYNCHRONOUSLY on an empty buffer, so its finally cleared state.flushing BEFORE the outer assignment stored the already-settled promise. Every later flush returned that stale promise. Proven in isolation and by a test that fails on the old code. Fixed in release 13.2: yield first, and clear the flag only if it is still its own promise",
+   "source": "inbox/r4-main-2225.json"
+  },
+  {
+   "id": "rj-r131-async-finally-before-assign",
+   "kind": "rejection",
+   "at": "2026-10-11",
+   "title": "`state.flushing = (async () => { … finally { state.flushing = null } })()` as an in-flight guard: when the body has no await on its path (an empty buffer), the finally runs before the assignment, and the guard is left holding a settled promise forever",
+   "source": "inbox/r4-main-2225.json"
+  },
+  {
+   "id": "ms-r132-live",
+   "kind": "measurement",
+   "at": "2026-10-11",
+   "title": "Release 13.2 (3cd45e8) live as taxila-web--s3cd45e8-ychf plus worker w3cd45e8-6ufy. The full recorder works end to end on the tier-2 browser lesson that wedged 13.1. Server: director.turn, classify.verdict, safety.scan and db.write x3, model.call x20 with prompt blobs, studio.slot.revealed x3, studio.slot.failed x1, board.page x3, tts first/end, srv x25. Client: events, 8 rrweb chunks, 4 TTS clips, a flag and its note. Replay rendered from the real Azure container. Writer counters drain (buffered 0, written 146, failures 0); 0 rows after the account delete",
+   "source": "inbox/r4-main-2300.json"
   }
  ],
  "edges": [
@@ -32663,6 +32839,161 @@
    "src": "ms-r12-packaged-checks",
    "rel": "part_of",
    "dst": "dc-r12-integration"
+  },
+  {
+   "src": "ms-r12-live",
+   "rel": "part_of",
+   "dst": "dc-r12-flight-recorder"
+  },
+  {
+   "src": "ms-r12-trace-fk-poison",
+   "rel": "part_of",
+   "dst": "ms-r12-live"
+  },
+  {
+   "src": "rj-r12-insert-all-or-nothing",
+   "rel": "caused_by",
+   "dst": "ms-r12-trace-fk-poison"
+  },
+  {
+   "src": "ms-r121-board-sync-env-leak",
+   "rel": "part_of",
+   "dst": "dc-r12-integration"
+  },
+  {
+   "src": "rj-test-env-at-import",
+   "rel": "caused_by",
+   "dst": "ms-r121-board-sync-env-leak"
+  },
+  {
+   "src": "dec-r12-tserver-erasure",
+   "rel": "measured_by",
+   "dst": "ms-r12-1-late-erased-event-fk-2026-10-11"
+  },
+  {
+   "src": "ms-r12-1-late-erased-event-fk-2026-10-11",
+   "rel": "part_of",
+   "dst": "ms-r12-trace-fk-poison"
+  },
+  {
+   "src": "r4c-dc-screen-claims-by-predicate",
+   "rel": "measured_by",
+   "dst": "r4c-ms-r12-rca-owner-lessons"
+  },
+  {
+   "src": "ms-r13-trace-integration",
+   "rel": "part_of",
+   "dst": "dc-r12-flight-recorder"
+  },
+  {
+   "src": "ms-r13-clear-board-adjective",
+   "rel": "part_of",
+   "dst": "dc-r12-integration"
+  },
+  {
+   "src": "ms-r13-meta-subjects",
+   "rel": "part_of",
+   "dst": "dc-r12-integration"
+  },
+  {
+   "src": "dc-r12-flight-recorder",
+   "rel": "measured_by",
+   "dst": "ms-r12-1-replay-proof-2026-10-11"
+  },
+  {
+   "src": "r4c-dc-screen-claims-by-predicate",
+   "rel": "part_of",
+   "dst": "dc-r12-integration"
+  },
+  {
+   "src": "ms-r121-live",
+   "rel": "part_of",
+   "dst": "dc-r12-flight-recorder"
+  },
+  {
+   "src": "ms-r121-live",
+   "rel": "supersedes",
+   "dst": "ms-r12-trace-fk-poison"
+  },
+  {
+   "src": "ms-r13-claims-in-flight",
+   "rel": "part_of",
+   "dst": "dc-r12-integration"
+  },
+  {
+   "src": "ms-r13-claims-in-flight",
+   "rel": "measured_by",
+   "dst": "r4c-dc-screen-claims-by-predicate"
+  },
+  {
+   "src": "rj-r13-claim-check-before-the-piece",
+   "rel": "caused_by",
+   "dst": "ms-r13-claims-in-flight"
+  },
+  {
+   "src": "ms-r13-claims-after-board",
+   "rel": "part_of",
+   "dst": "dc-r12-integration"
+  },
+  {
+   "src": "ms-r13-claims-after-board",
+   "rel": "supersedes",
+   "dst": "ms-r13-claims-in-flight"
+  },
+  {
+   "src": "rj-r13-word-overlap-after-board",
+   "rel": "caused_by",
+   "dst": "ms-r13-claims-after-board"
+  },
+  {
+   "src": "open-r13-bare-pointing-on-request-turns",
+   "rel": "part_of",
+   "dst": "ms-r13-claims-after-board"
+  },
+  {
+   "src": "ms-r13-server-rows-lost-live",
+   "rel": "part_of",
+   "dst": "dc-r12-flight-recorder"
+  },
+  {
+   "src": "rj-r13-silent-chunk-drop",
+   "rel": "caused_by",
+   "dst": "ms-r13-server-rows-lost-live"
+  },
+  {
+   "src": "dc-r131-writer-split-and-scrub",
+   "rel": "measured_by",
+   "dst": "ms-r13-server-rows-lost-live"
+  },
+  {
+   "src": "dc-r131-writer-split-and-scrub",
+   "rel": "supersedes",
+   "dst": "rj-r12-insert-all-or-nothing"
+  },
+  {
+   "src": "ms-r13-server-rows-lost-live",
+   "rel": "caused_by",
+   "dst": "ms-r131-flush-wedge"
+  },
+  {
+   "src": "rj-r131-async-finally-before-assign",
+   "rel": "caused_by",
+   "dst": "ms-r131-flush-wedge"
+  },
+  {
+   "src": "ms-r131-flush-wedge",
+   "rel": "measured_by",
+   "dst": "dc-r131-writer-split-and-scrub"
+  },
+  {
+   "src": "ms-r132-live",
+   "rel": "part_of",
+   "dst": "dc-r12-flight-recorder"
+  },
+  {
+   "src": "ms-r132-live",
+   "rel": "supersedes",
+   "dst": "ms-r13-server-rows-lost-live"
   }
  ]
 }

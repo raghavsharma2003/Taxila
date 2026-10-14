@@ -1,0 +1,48 @@
+{
+  "nodes": [
+    {
+      "id": "ms-r13-claims-after-board",
+      "kind": "measurement",
+      "at": "2026-10-11",
+      "title": "Release 13 integration, the owner replay (a95d2ff1 on the packaged tree, TEST): with only the in-flight allowance, turn 23 shipped 'Screen par aloo ka picture dekhiye' and turn 3 'Screen par game' over the rules table (the board drawn for the request was the table again: 4A fix 1, unbuilt). Added: her line is re-checked against the board that actually arrived (the board-first ack, before prewarm) for the owner's two false-claim shapes only, and unpointed. Final packaged run: owner-5 14/14, round2-content 36/39, replay honest on every turn the owner flagged"
+    },
+    {
+      "id": "rj-r13-word-overlap-after-board",
+      "kind": "rejection",
+      "at": "2026-10-11",
+      "title": "Re-checking her line against the arrived board by word overlap: the board labels in its own words ('Solid / Liquid / Gas' while she says 'ice, paani, water vapour'), so 3 legitimate lines were unpointed in round2, and the shortened lines then failed their boards' W6 timing re-gate (2 boards)"
+    },
+    {
+      "id": "open-r13-bare-pointing-on-request-turns",
+      "kind": "open",
+      "at": "2026-10-11",
+      "title": "Still open after release 13: on a turn that answers a visual request, a bare pointing line about a thing the board does not show ('Screen par potato dekhiye', no 'picture of' form) is not caught: the reply check stands aside for the piece in flight and the after-board check judges only the game and 'picture of X' shapes. Root fix: the board answers what the child asked for (4A r13 fix 1, RCA-1 todo)"
+    }
+  ],
+  "edges": [
+    {
+      "src": "ms-r13-claims-after-board",
+      "rel": "part_of",
+      "dst": "dc-r12-integration"
+    },
+    {
+      "src": "ms-r13-claims-after-board",
+      "rel": "supersedes",
+      "dst": "ms-r13-claims-in-flight"
+    },
+    {
+      "src": "rj-r13-word-overlap-after-board",
+      "rel": "caused_by",
+      "dst": "ms-r13-claims-after-board"
+    },
+    {
+      "src": "open-r13-bare-pointing-on-request-turns",
+      "rel": "part_of",
+      "dst": "ms-r13-claims-after-board"
+    }
+  ],
+  "md": {
+    "measurements": "- `ms-r13-claims-after-board` (2026-10-11, 20:00-21:00 UTC). Method: the packaged release 13 tree, local production server on Neon TEST; the owner replay (tests/prod/owner-replay-r12.mjs --lesson a95d2ff1: the child's exact 15 turns, chip as chip); owner-5-visual and round2-content in parallel; a console probe in the PACKAGED copy only, logging each firing of the new check.\n  - Replay 1, with the in-flight allowance only:\n    - turn 23 (chip 'Show me a picture'): 'Screen par aloo ka picture dekhiye: uski eyes se sprouts nikalte hain', over the rules table;\n    - turn 3 (\"Show me some games\"): 'Screen par game: Recursive ya Explicit choose kijiye', over the table, with no play piece.\n    - That is the owner's exact complaint. The board drawn for the request was the s1 table again (4A r13 fix 1, unbuilt), so the reply check had stood aside for a piece that did not show what she said.\n  - Change (server/brain/turn.js, server/director/say.js):\n    - after the whiteboard ack, which carries a board-first board in the same response, and before the TTS prewarm, her line is re-checked against the board that arrived;\n    - on a hit it is unpointed (stripScreenRefs: content kept), and the staged turn row, state.recent and the delivery plan get the new text;\n    - the guard records claim_after_board.\n  - Replay 3 (probe on, generic word-overlap check): the check fired on 2 turns. 'Screen par game: left Recursive, right Explicit…' became 'Compare game: left Recursive, right Explicit…'; 'Screen par potato dekhiye: …' lost its pointing.\n  - The generic check cost elsewhere (rj-r13-word-overlap-after-board): round2-content fell to 33/39 (3 draw and animation lines unpointed, 2 boards failing W6.timing after their lines shortened).\n  - Narrowed (boardClaimProblem + kitWordsOf): only (1) a game claimed while a board, not a play piece, is up, and (2) a picture of a thing ('X ka picture', 'picture of X') that neither the board's words nor the lesson's kit has.\n  - Final packaged run:\n    - owner-5 14/14, visual requests 12/12 (release 12: 12/14);\n    - round2-content 36/39, the 3 failures being item-bound mount checks as in release 12;\n    - boards 5/5 alone (51 boards, 0 contradictions, 0 unfilled), safety w2i 39/39, journey 5 steps / 22 taps / first sound 21.9 s phone, 20.9 s laptop (run before this change; the journey path has no board ack).\n  - Final replay (n = 1; her lines are model-written, so a replay shows code behaviour on the same child turns):\n    - turn 3 points at 'Recursive rule', which is on the board;\n    - turn 11: 'Photo nahi dikha sakti, par visual sochiye: 3, 6, 9, 12…';\n    - turn 13: 'Board clear hai.', and the board is cleared;\n    - turns 23, 25 and 27 describe aloo in words, with no screen claim.\n    - The probe did not fire (the model did not produce either shape that run).\n  - Open: open-r13-bare-pointing-on-request-turns.",
+    "rejected": "- `rj-r13-word-overlap-after-board` (2026-10-11). Tried: judging her pointing line against the board that arrived, by overlap between her content words and the board's text. What broke: a board names things its own way ('Solid / Liquid / Gas' while she says 'ice, paani, water vapour'). Three legitimate lines in the packaged round2 run were unpointed, and two boards then failed the W6 timing re-gate because their lines got shorter after the board was timed to them. Instead: judge only the false-claim shapes the owner hit (a game over a board; a picture of a thing neither the board nor the kit has). Word overlap is not meaning."
+  }
+}

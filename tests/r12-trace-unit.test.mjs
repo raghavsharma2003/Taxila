@@ -207,3 +207,21 @@ test("EventSource ids ride the query (_rid / _pid) when no header can; audio blo
   assert.equal(traceBlobPath({ sid: "lesson-1", src: "client", seq: "b3", ext: "webm", t }), "2026-10-11/lesson-1/client-b3.webm");
   assert.equal(traceBlobPath({ sid: "lesson-1", src: "client", seq: 7, ext: "json", t }), "2026-10-11/lesson-1/client-7.json");
 });
+
+test("an event too big to fit keeps its own small fields: srv.res never renders as '← undefined undefined undefinedms'", async () => {
+  const huge = { route: "GET /api/parent/report", status: 200, ms: 41,
+    body: { weeks: Array.from({ length: 150 }, (_, i) => ({ i, notes: Array.from({ length: 30 }, () => ({ s: "ek do teen ".repeat(8) })) })) } };
+  const a = fit(huge);
+  assert.ok(Buffer.byteLength(JSON.stringify(a.data)) <= TRACE_MAX_DATA_BYTES);
+  assert.deepEqual([a.data.route, a.data.status, a.data.ms, a.truncated], ["GET /api/parent/report", 200, 41, true]);
+  const wide = { route: "GET /api/x", status: 500, ms: 7, body: Object.fromEntries(Array.from({ length: 3000 }, (_, i) => [`k${i}`, "v ".repeat(20)])) };
+  const b = fit(wide);
+  assert.deepEqual([b.data.route, b.data.status, b.data.ms, b.data._truncated], ["GET /api/x", 500, 7, true]);
+  const { lineFor } = await import("../scripts/trace.mjs");
+  const t = Date.UTC(2026, 9, 11, 12);
+  assert.match(lineFor({ kind: "srv.res", src: "server", t, data: b.data }), /← GET \/api\/x 500 7ms \(body cut\)/);
+  const bare = lineFor({ kind: "srv.res", src: "server", t, data: { _truncated: true } });
+  assert.doesNotMatch(bare, /undefined/);
+  assert.doesNotMatch(lineFor({ kind: "srv.req", src: "server", t, data: {} }), /undefined/);
+  assert.match(lineFor({ kind: "tts.end", src: "server", t, data: { status: "ok", bytes: 9600, ms: 800, engines: ["dhd"] } }), /audio stream ok 9600 bytes/);
+});

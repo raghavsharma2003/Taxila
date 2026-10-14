@@ -19,7 +19,8 @@ if (q.get("trace") !== "off") {
   const realFetch = window.fetch.bind(window);
   window.fetch = ((input: RequestInfo | URL, init?: RequestInit) => {
     const u = typeof input === "string" ? input : input instanceof URL ? input.href : input.url;
-    if (u.includes("/api/trace/")) {
+    // &real=1: the trace endpoints are the real API's (the vite proxy's :8790; the TEST end-to-end replay proof)
+    if (u.includes("/api/trace/") && !q.get("real")) {
       if (q.get("sabotage")) return Promise.reject(new Error("sabotaged send"));
       w.__traceSent!++;
       const blob = u.includes("/api/trace/blob");
@@ -28,7 +29,7 @@ if (q.get("trace") !== "off") {
     return realFetch(input, init);
   }) as typeof fetch;
   installTrace({ build: "dev-harness" });
-  if (q.get("tier") === "2") setTier(2);
+  if (q.get("tier") === "2" && !q.get("real")) setTier(2); // real: the server's batch response says the tier
   setSink((e) => {
     if (q.get("sabotage")) throw new Error("sabotaged sink");
     w.__traceEvents!.push(e);

@@ -21,7 +21,7 @@ const maskString = (s) => s.replace(EMAIL, "[email]").replace(BEARER, "$1 [maske
  * A masked deep copy: masked keys → "[masked]", strings scrubbed of emails / bearer tokens / long key-like runs, strings over
  * `maxStr` cut with a marker, arrays over 200 items cut, depth capped. Never throws (returns a marker on a cycle or error).
  */
-export function mask(value, { maxStr = 4000, depth = 0 } = {}) {
+export function mask(value, { maxStr = 4000, maxArr = 200, depth = 0 } = {}) {
   try {
     if (value == null || typeof value === "number" || typeof value === "boolean") return value;
     if (typeof value === "string") { const m = maskString(value); return m.length > maxStr ? `${m.slice(0, maxStr)}…[+${m.length - maxStr}]` : m; }
@@ -30,12 +30,12 @@ export function mask(value, { maxStr = 4000, depth = 0 } = {}) {
     if (depth > 8) return "[depth]";
     if (Buffer.isBuffer(value) || value instanceof Uint8Array) return `[bytes ${value.length}]`;
     if (Array.isArray(value)) {
-      const out = value.slice(0, 200).map((v) => mask(v, { maxStr, depth: depth + 1 }));
-      if (value.length > 200) out.push(`[+${value.length - 200} items]`);
+      const out = value.slice(0, maxArr).map((v) => mask(v, { maxStr, maxArr, depth: depth + 1 }));
+      if (value.length > maxArr) out.push(`[+${value.length - maxArr} items]`);
       return out;
     }
     const out = {};
-    for (const [k, v] of Object.entries(value)) out[k] = isMaskedKey(k) ? "[masked]" : mask(v, { maxStr, depth: depth + 1 });
+    for (const [k, v] of Object.entries(value)) out[k] = isMaskedKey(k) ? "[masked]" : mask(v, { maxStr, maxArr, depth: depth + 1 });
     return out;
   } catch { return "[unrecordable]"; }
 }
@@ -50,11 +50,22 @@ export function fit(data, max = TRACE_MAX_DATA_BYTES) {
   let d = mask(data ?? {});
   let n = bytesOf(d);
   if (n <= max) return { data: d, bytes: n, truncated: false };
-  for (const maxStr of [1500, 500, 160]) {
-    d = mask(data ?? {}, { maxStr });
+  // strings cut harder, then long arrays (a list response) cut to their first items
+  for (const [maxStr, maxArr] of [[1500, 200], [500, 200], [160, 200], [160, 20], [120, 5]]) {
+    d = mask(data ?? {}, { maxStr, maxArr });
     n = bytesOf(d);
     if (n <= max) return { data: { ...d, _truncated: true }, bytes: n, truncated: true };
   }
   const json = JSON.stringify(d) ?? "";
-  return { data: { _truncated: true, bytes: n, keys: d && typeof d === "object" ? Object.keys(d).slice(0, 40) : [], preview: json.slice(0, max - 600) }, bytes: max, truncated: true };
+  // the event's own small fields survive (srv.res's route / status / ms when only its body is huge: a session's last line
+  // once read "← undefined undefined undefinedms"); the rest is a preview
+  const keep = {};
+  if (d && typeof d === "object" && !Array.isArray(d)) {
+    for (const [k, v] of Object.entries(d).slice(0, 40)) {
+      if (v == null || typeof v === "number" || typeof v === "boolean") keep[k] = v;
+      else if (typeof v === "string") keep[k] = v.length > 200 ? `${v.slice(0, 199)}…` : v;
+    }
+  }
+  const head = { _truncated: true, bytes: n, keys: d && typeof d === "object" ? Object.keys(d).slice(0, 40) : [], ...keep };
+  return { data: { ...head, preview: json.slice(0, Math.max(200, max - 600 - bytesOf(head))) }, bytes: max, truncated: true };
 }

@@ -27,7 +27,7 @@ import { step, evidenceFrom, upcomingItem } from "../director/state.js";
 import { noteModuleEvents, moduleAnswerOf } from "../director/modules.js";
 import { findItem, promptFor, revealsAnswer, whyKey, norm as normAnswer } from "../director/items.js";
 import { registerBroken } from "../director/register.js";
-import { verdictFor, uiVerdict, askText, refersToScreen, wrongAnswersOf } from "../director/say.js";
+import { verdictFor, uiVerdict, askText, refersToScreen, wrongAnswersOf, boardClaimProblem, kitWordsOf, stripScreenRefs } from "../director/say.js";
 import { mixedUnitComparison } from "../director/units.js";
 import { instructionsFor, instructionsAfter } from "../compiler/instructions.js";
 import { prewarm, drop as dropPrewarm } from "../voice/prewarm.js";
@@ -615,7 +615,15 @@ export async function lessonTurn(req, body) {
   // the piece already on screen (it stays in the tray across turns until retired). Known BEFORE the reply, so the reply
   // guard counts it as a screen target (director/say.js screenHasTargets reads ui.studioSlot). A whiteboard ack below
   // replaces it. null = nothing from Studio (the pre-seam turn).
-  let studioSlot = late ? null
+  // release 13 (r12 RCA failure 4): the child asked to clear the board ("board saaf karo", director/requests.js clear_board):
+  // whatever Studio shows retires, a template rung is unmounted, and the next board starts fresh (nothing is drawn this turn)
+  const clearing = !late && r.move?.clear === "board";
+  if (clearing) {
+    seamSafe("studio.clearBoard", () => (typeof studioSeam.clearBoard === "function" ? studioSeam.clearBoard(lesson.id) : null), null);
+    if (next.module?.id) { const id = next.module.id; r = { ...r, moduleCommands: [...r.moduleCommands.filter((c) => c.moduleId !== id), { op: "unmount", moduleId: id }] }; next.module = null; }
+    next.wbBeat = undefined;
+  }
+  let studioSlot = late || clearing ? null
     : seamSafe("studio.slotFor", () => (typeof studioSeam.slotFor === "function" ? studioSeam.slotFor(lesson.id, turnStudioOf(kernel.arb),
       { beat: kernel.beat?.type ?? null, tray: r.ui?.tray ?? null, safety: r.move.kind === "safeguard" || !!incident,
         asking: !!r.move.itemId && ASKING_MOVES.has(r.move.kind),
@@ -794,6 +802,26 @@ export async function lessonTurn(req, body) {
         moment = momentNow();
       } else studioReasons.push("studio_rejected.declined_by_studio");
     } else if (ask) studioReasons.push("studio_rejected.no_reply");
+    // release 13 integration (ms-r13-claims-after-board): the reply's claim check stands aside for the piece this turn brings
+    // (it is not drawn yet when the reply is checked). A board-first board IS drawn at the ack, so before a word is spoken her
+    // line's pointing is checked against the board that will actually be up, for the owner's two false-claim shapes only
+    // (a game over a board; a picture of a thing neither the board nor the lesson has: owner replay of a95d2ff1, turn 23
+    // "Screen par aloo ka picture dekhiye" over the rules table); such a line is unpointed, its content kept, and the
+    // staged row says what she will say.
+    if (wbAcked && studioSlot?.artifact && teacherReply && !r.move?.clear
+      && seamSafe("say.claimAfterBoard", () => boardClaimProblem(teacherReply, withStudioSlot(r.ui, studioSlot), next.module, { kitWords: kitWordsOf(kit) }), false)) {
+      const unpointed = seamSafe("say.unpointAfterBoard", () => stripScreenRefs(teacherReply), null);
+      if (unpointed && unpointed !== teacherReply) {
+        teacherReply = unpointed;
+        const row = staged.find((x) => x.seq === teacherReplySeq);
+        if (row) { row.text = unpointed; row.meta = { ...(row.meta ?? {}), guard: [...new Set([...(row.meta?.guard ?? []), "claim_after_board"])] }; }
+        const last = next.recent?.[next.recent.length - 1];
+        if (last?.who === "teacher") next.recent = [...next.recent.slice(0, -1), { ...last, text: unpointed.slice(0, 400) }];
+        guard = { ...guard, caught: [...new Set([...(guard?.caught ?? []), "claim_after_board"])], replaced: true };
+        studioReasons.push("say.claim_after_board");
+        delivery = seamSafe("expressive.planDelivery", () => expressiveSeam.planDelivery(moment, teacherReply), delivery);
+      }
+    }
     if (state.mode === "cascade" || state.mode === "text") {
       prewarmed = prewarm({ lessonId: lesson.id, seq: teacherReplySeq, text: teacherReply, tokenHash: sessionTokenHash(req), guardianId: guardian.id, style: styleForChild(child, undefined, state.ctx?.teacherId, state.ctx?.teacherName, { laneSwitched: !!state.laneSwitch }),
         ...(delivery ? { delivery } : {}) });

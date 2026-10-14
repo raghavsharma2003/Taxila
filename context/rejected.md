@@ -2526,3 +2526,27 @@ A lime (`--k-move`) brand mark in the header was tried and dropped: with the her
 <!-- merged from inbox/r12-t-client.json -->
 ## rj-r12-tclient-pixel-share-gate
 The replay proof first gated on the share of differing pixels (<= 2 %). A replay missing the caption line and the answer chip passed at 0.59 %. Replaced by a local gate: 32 px tiles, a tile differs when > 10 % of its pixels do, at most 4 such tiles (a focus ring the replayer cannot reproduce is 1-4).
+
+
+<!-- merged from inbox/r4-main-1830.json -->
+- `rj-r12-insert-all-or-nothing` (2026-10-11). Tried: the release 12 trace writer batched events from all sessions into one INSERT into a table whose cid and gid have foreign keys with ON DELETE CASCADE. What broke: account deletions are routine in production (the canary every 15 min, the batteries). Any buffered event of a just-deleted child failed the whole statement, and the writer, built to drop a failed chunk rather than grow memory, threw away every other session's events in it. The live server recorded almost nothing. Instead: filter on existence inside the statement (INSERT ... SELECT ... WHERE cid IS NULL OR EXISTS ...). A test now pins a mixed chunk.
+
+
+<!-- merged from inbox/r4-main-1900.json -->
+- `rj-test-env-at-import` (2026-10-11). Tried: ship5-review-board-fallback.test.mjs configured the board-sync deadline with a module-level `process.env.TAXILA_BOARD_SYNC_MS = "300"`, and p4's board-sync tests set the same variable in their bodies and deleted it only on their success path. What broke: npm test runs all files in one process and imports later files while earlier tests run. The module-level write landed mid-run, and p4's 'default deadline' test ran at 300 ms and failed under full-suite load (ms-r121-board-sync-env-leak). Instead: a test sets the environment it needs inside its own body and restores the previous value in `finally`. A test that describes a default sets that default explicitly (p4's `withSyncMs(undefined, …)`).
+
+
+<!-- merged from inbox/r4-main-2020.json -->
+- `rj-r13-claim-check-before-the-piece` (2026-10-11). Tried: release 13 checked every 'screen par … dekho' sentence against the words of what was mounted when the reply was written, including the turn that brings the piece the child asked for. What broke: that piece is drawn in sync with her line or lands seconds after it, so the stage was empty at check time. Every pointing sentence counted as a false claim and was rewritten or unpointed, and owner-5's visual requests fell from 11/12 to 7/12 (ms-r13-claims-in-flight). Instead: a claim is checked only against a stage that is already there and readable (a drawn board). The piece this turn brings is the slot-failure path's concern. A predicate needs the state it judges to exist when it runs; one built from the owner's lessons was never run on the request turns, which a battery would have caught.
+
+
+<!-- merged from inbox/r4-main-2050.json -->
+- `rj-r13-word-overlap-after-board` (2026-10-11). Tried: judging her pointing line against the board that arrived, by overlap between her content words and the board's text. What broke: a board names things its own way ('Solid / Liquid / Gas' while she says 'ice, paani, water vapour'). Three legitimate lines in the packaged round2 run were unpointed, and two boards then failed the W6 timing re-gate because their lines got shorter after the board was timed to them. Instead: judge only the false-claim shapes the owner hit (a game over a board; a picture of a thing neither the board nor the kit has). Word overlap is not meaning.
+
+
+<!-- merged from inbox/r4-main-2135.json -->
+- `rj-r13-silent-chunk-drop` (2026-10-11). Tried: release 12's trace writer inserted 400 rows per statement, dropped the whole chunk on any error, logged failures 1-3 and then every 50th, and exposed no counters. What broke: release 13 in production lost every lesson-flow server row with nothing in the logs (ms-r13-server-rows-lost-live). There was no way to tell from outside which row or error, if any, was to blame. Instead: split on data errors, scrub what jsonb refuses, log every failure at most once a minute with its kinds, and expose the counters.
+
+
+<!-- merged from inbox/r4-main-2225.json -->
+- `rj-r131-async-finally-before-assign` (2026-10-11). Tried: an in-flight guard written as `state.flushing = (async () => { …; finally { state.flushing = null } })()`. What broke: an async function runs synchronously until its first await. With an empty buffer there was none, so the finally cleared the guard before the assignment set it, and the guard held a settled promise forever. The production recorder wrote nothing and logged nothing (ms-r131-flush-wedge). Instead: start the body with `await null`, assign the promise to a const, and clear the guard only if it is still that promise. In-flight guards need a test of the empty case.

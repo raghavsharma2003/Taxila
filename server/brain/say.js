@@ -354,7 +354,7 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
     praiseOf(t) === "praise" && "praise",
     praiseOf(t) === "contradicts" && "deny",
     right && correctsRight(t, right) && "corrects",
-    screenProblem(t, ui, module) && "screen",
+    screenProblem(t, ui, module, { coming: !!state.lastMove?.visual && state.lastMove?.request === "visual" }) && "screen",
     // W2-B #1: the line names parts the mounted module does not show (she said quarters over fifths). Her OWN words only:
     // the kit's posed question is verified content (W2-E: the replay showed the predicate flagging a verified question
     // that names halves/quarters/eighths beside a 1/2-only predict screen, which cost a rewrite and her lead-in).

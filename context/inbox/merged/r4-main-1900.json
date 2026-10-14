@@ -1,28 +1,32 @@
 {
   "nodes": [
     {
-      "id": "owner-core-over-avatar-20261010",
-      "kind": "constraint",
-      "at": "2026-10-10",
-      "title": "Owner 2026-10-10 ~19:00 UTC: the avatar (grown-up Asha) is an add-on to build later; the main product is the tutor described earlier (gamified app, games and content built on the go, understanding detection, a human-like tutor with a bond, 'just start the session, she asks what happened at school today and handles everything'); focus there; asked where product design, UI/UX, user flow and journey stand"
+      "id": "ms-r121-board-sync-env-leak",
+      "kind": "measurement",
+      "at": "2026-10-11",
+      "title": "Release 12.1's gate failed one test, p4-content-unit 'board sync: the line plan wins inside the deadline' ('code' !== 'line', 335 ms). Cause: ship5-review-board-fallback.test.mjs set TAXILA_BOARD_SYNC_MS=300 at module top level and never restored it, and the one-process suite imports later files while earlier files' tests run, so the test that claims the 1900 ms default ran under 300 ms (probe on the old files: deadline=300). Fixed: both files set the deadline inside the test and restore it in finally"
     },
     {
-      "id": "dc-r4-merge-order-core-first",
-      "kind": "decision",
-      "at": "2026-10-10",
-      "title": "Merge order after the owner's directive: stream 2 fix + safety release 6, then G1, then Kaksha K0-K3 (ui.kaksha on for the owner's account), then 4A's batch (conversation quality, session-first owner cohort), then G2, 4B, 3, and 5b (avatar) last; avatar work on hold; stream 5 reassigned to an end-to-end journey audit"
+      "id": "rj-test-env-at-import",
+      "kind": "rejection",
+      "at": "2026-10-11",
+      "title": "A test file that writes process.env at module top level (or sets it in a test body and deletes it only on the success path) in the one-process npm test: the write lands mid-run in whichever earlier file's test is executing when the import happens, so another file's test changes behaviour depending on import timing"
     }
   ],
   "edges": [
     {
-      "src": "owner-core-over-avatar-20261010",
-      "rel": "constrains",
-      "dst": "dc-r4-merge-order-core-first"
+      "src": "ms-r121-board-sync-env-leak",
+      "rel": "part_of",
+      "dst": "dc-r12-integration"
+    },
+    {
+      "src": "rj-test-env-at-import",
+      "rel": "caused_by",
+      "dst": "ms-r121-board-sync-env-leak"
     }
   ],
   "md": {
-    "decisions": "- `dc-r4-merge-order-core-first` (2026-10-10): after the owner's directive (owner-core-over-avatar-20261010) the merge order becomes: stream 2's packaging fix with safety release 6; G1 (games core, which K2 depends on); Kaksha K0-K3 with ui.kaksha on for the owner's account only; 4A's batch (patch 14, protegeNotChild, 13-shadow, the leak fix, K-P11, TAXILA_ACK_CLOSE off, a session-first owner cohort); G2; 4B; 3; 5b last. Grown-up Asha for the owner's account waits until they ask again; avatar work (r8 bilabial wiring, the lamp2 blend) is on hold; stream 5 runs an observation-only end-to-end journey audit (today's app and Kaksha + session-first) scored against the owner's vision. Reverse if: the owner asks for the avatar again, or the audit shows a different core gap should lead.",
-    "measurements": "",
-    "rejected": ""
+    "measurements": "- `ms-r121-board-sync-env-leak` (2026-10-11, 18:35-19:05 UTC).\n  - Symptom: the release 12.1 gate on int/r4-rel12.1 0e65392 ran 3,101 tests, 3,097 pass and 1 fail: tests/p4-content-unit.test.mjs:259 'board sync: the line plan wins inside the deadline; a slow line plan yields to a passing late speculative board', expected 'line', got 'code', duration 335 ms. The same test had failed once before in 4B's full-suite run. It passes alone.\n  - Reading the code: server/stagecraft/board-sync.js plan() answers 'code' only once the sync deadline has passed (`left <= 0`, or the deadline sleep winning the race). The default deadline is 1900 ms, so a 335 ms 'code' answer means the deadline was about 300 ms.\n  - Cause:\n    - tests/ship5-review-board-fallback.test.mjs sets `process.env.TAXILA_BOARD_SYNC_MS = \"300\"` at module top level and never restores it.\n    - npm test is `node --test tests/`, which resolves to tests/index.js: one process that imports every *.test.mjs in sorted order. node:test starts running a file's tests while later files are still importing.\n    - So the 's…' file's import lands while 'p4…' tests are running. From then on, every test in the process runs with the 300 ms deadline.\n    - Test 852's first half (a 20 ms line plan 'inside the default deadline') ran with 280 ms of margin instead of 1880 ms. In that window plan() also synchronously computes the code board (the full W0-W9 gate) before the race starts. Under full-suite load, that and the timers took past 300 ms.\n  - Probe: the old p4 and ship5 files, imported in one process in suite order, with a line logged at test 852:\n    - `TAXILA_BOARD_SYNC_MS=300 deadline=300 source=line syncMs=54`;\n    - with the event loop blocked 120 ms at a time (a stand-in for load), syncMs was 302-329 ms in 3/3 runs. The line still won, but past the deadline.\n  - The failure itself did not reproduce outside the full suite. It needs the synchronous code-board compute to run about 280 ms or more, which an injected loop block cannot cause. The evidence for it is the gate's 335 ms duration together with the code path.\n  - Fix (tests only, no product code):\n    - ship5-review-board-fallback sets the 300 ms deadline inside its test body and restores the previous value in finally.\n    - p4-content-unit gets `withSyncMs(ms, fn)`: each board-sync test sets its own deadline (undefined means the production default) and restores it in finally, even when an assertion fails. The kill-switch test restores TAXILA_BOARD_SYNC the same way.\n    - No assertion was loosened.\n  - Result with the fix: both files pass alone (28/28 and 1/1). Under the same injected load, 3/3 runs pass, and test 852 now runs under the real 1900 ms default (657-673 ms per test, both halves).\n  - Other top-level env writes in tests/*.test.mjs: forge-g1, forge-g1-serve and forge-g2 set FORGE_DB_CACHE/FORGE_BLOB off, a placeholder AZURE_OPENAI_*, and FORGE_PUBLIC_BASE. They point code away from real services, and no test asserts on their absence. Left as they are, and logged here.",
+    "rejected": "- `rj-test-env-at-import` (2026-10-11). Tried: ship5-review-board-fallback.test.mjs configured the board-sync deadline with a module-level `process.env.TAXILA_BOARD_SYNC_MS = \"300\"`, and p4's board-sync tests set the same variable in their bodies and deleted it only on their success path. What broke: npm test runs all files in one process and imports later files while earlier tests run. The module-level write landed mid-run, and p4's 'default deadline' test ran at 300 ms and failed under full-suite load (ms-r121-board-sync-env-leak). Instead: a test sets the environment it needs inside its own body and restores the previous value in `finally`. A test that describes a default sets that default explicitly (p4's `withSyncMs(undefined, …)`)."
   }
 }

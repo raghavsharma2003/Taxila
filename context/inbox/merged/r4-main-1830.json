@@ -1,0 +1,43 @@
+{
+  "nodes": [
+    {
+      "id": "ms-r12-live",
+      "kind": "measurement",
+      "at": "2026-10-11",
+      "title": "Release 12 (23ac84d, the flight recorder) live as taxila-web--s23ac84d-oyjl (canary 4/4; s556639e kept), worker taxila-worker--w23ac84d-yibj with both Conductor jobs on 23ac84d; gate 3,101 tests 3,098 pass 0 fail; live tier-2 proof account: /api/me trace.tier 2, REC chip, 9 rrweb chunks and 4 TTS clips in the private blob container, a ★ flag, 0 rows left after the account delete"
+    },
+    {
+      "id": "ms-r12-trace-fk-poison",
+      "kind": "measurement",
+      "at": "2026-10-11",
+      "title": "Release 12 live: the server recorder lost most of its events. trace_event_cid_fkey failed whenever a buffered chunk held an event of an account deleted meanwhile (the canary every 15 min, batteries, proofs), dropping the WHOLE chunk (trace.dropped totals 6-38 per flush; a probe lesson's server events: 0). Fixed in release 12.1: the insert writes only rows whose child and guardian exist"
+    },
+    {
+      "id": "rj-r12-insert-all-or-nothing",
+      "kind": "rejection",
+      "at": "2026-10-11",
+      "title": "One INSERT for a chunk of trace events from many sessions with FK columns to child/guardian: a single row of a just-deleted account fails the statement and the writer drops every session's events in that chunk"
+    }
+  ],
+  "edges": [
+    {
+      "src": "ms-r12-live",
+      "rel": "part_of",
+      "dst": "dc-r12-flight-recorder"
+    },
+    {
+      "src": "ms-r12-trace-fk-poison",
+      "rel": "part_of",
+      "dst": "ms-r12-live"
+    },
+    {
+      "src": "rj-r12-insert-all-or-nothing",
+      "rel": "caused_by",
+      "dst": "ms-r12-trace-fk-poison"
+    }
+  ],
+  "md": {
+    "measurements": "- `ms-r12-live` (2026-10-11, 18:00-18:15 UTC).\n  - Deploy: int/r4-rel12 23ac84d. Gate: 3,101 tests, 3,098 pass, 0 fail, 3 skipped. It is the third gate: the first fell to ms-r12-health-test-driver-memo; the second passed, and then the PIN fix (ms-r12-pin-taps-recorded) re-ran it.\n  - Before deploying: migration 029 applied to production, and the private container 'trace' created in taxilaforge.\n  - deploy-azure.mjs --set TAXILA_TRACE_FULL_FOR (the owner's two gmail guardians plus r12-recorder-proof@taxila.test) and the four owner cohorts (+ the gmail guardians). The first attempt failed 'fetch failed' at ARM before any change; the second went through. Canary w0 4/4. Live taxila-web--s23ac84d-oyjl; s9a170c5 deactivated, s556639e kept.\n  - Read-only check of the live template: all five cohort variables hold 2/2 of the owner's gmail hashes.\n  - Worker: deploy-worker.mjs --jobs puts taxila-worker--w23ac84d-yibj and both jobs on 23ac84d.\n  - Live tier-2 proof (scratchpad r12-liveproof.mjs: a Playwright lesson on taxila.dev, 412x915, with the audio-unlock tapped, three typed turns, a flag; the account was then deleted).\n    - /api/me trace.tier 2. REC chip shown.\n    - Recorded: ui.state 23, net.req/res 21, ui.render.stage 15, ui.tap 9, rrweb.chunk 9 (9 blobs), ui.media 6, ui.render.card 5, audio.tts.clip 4 (4 blobs), tts.request/start/end 4 each, ui.render.board 3, mic.mode 3, flag.owner 1, and more. No blob failures.\n    - After DELETE /api/account: 0 trace rows for the child.\n    - Missing: every server-side event. See ms-r12-trace-fk-poison.\n    - trace.mjs bugs found, sent to T-server/T-client: --replay calls trace-replay.mjs without --events; --session <child prefix> misses the child's page sessions; one srv line renders 'undefined'.\n- `ms-r12-trace-fk-poison` (2026-10-11 18:15-18:30 UTC).\n  - Probe: an API-only lesson on production (a fresh @taxila.test account, one turn, 6 s wait). trace_event held 0 rows for its guardian, lesson or child. All accounts together had 2 srv.req, 2 srv.res and 1 trace.dropped in the last 10 min.\n  - trace.dropped rows since the deploy: totals of 6-38 events dropped per flush.\n  - Log Analytics (taxila-logs, ContainerAppConsoleLogs_CL, '[trace]'): 'write failed (6 events dropped): insert or update on table \"trace_event\" violates foreign key constraint \"trace_event_cid_fkey\"'.\n  - Cause: server/trace/writer.js inserts a chunk of up to ROWS_PER_INSERT events from every session in one statement. The canary smoke (every 15 min), the batteries and the proofs delete their accounts; events still buffered for those children then violate the FK, and the writer drops the whole chunk, real sessions included.\n  - Fix (release 12.1): the INSERT ... SELECT keeps only rows whose cid and gid still exist (or are null), and RETURNING counts what was written. Nothing of a deleted child is written after its delete, which matches the erasure promise.\n  - tests/r12-trace-db.run.mjs test 5, on Neon TEST: a chunk with a ghost child and a ghost guardian among 4 rows writes the other 2. It fails on the old writer with the exact production error, and passes on the fix.",
+    "rejected": "- `rj-r12-insert-all-or-nothing` (2026-10-11). Tried: the release 12 trace writer batched events from all sessions into one INSERT into a table whose cid and gid have foreign keys with ON DELETE CASCADE. What broke: account deletions are routine in production (the canary every 15 min, the batteries). Any buffered event of a just-deleted child failed the whole statement, and the writer, built to drop a failed chunk rather than grow memory, threw away every other session's events in it. The live server recorded almost nothing. Instead: filter on existence inside the statement (INSERT ... SELECT ... WHERE cid IS NULL OR EXISTS ...). A test now pins a mixed chunk."
+  }
+}

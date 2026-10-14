@@ -13,7 +13,7 @@ import * as account from "./routes/account.js";
 import { realNow, runRequestClock } from "./comprehension/testclock.js";
 // release 12 flight recorder (server/trace): one trace store per request, srv.req / srv.res at the end of it.
 import { runTrace, ridOf, pidOf, isUuid } from "./trace/context.js";
-import { record } from "./trace/writer.js";
+import { record, traceStats } from "./trace/writer.js";
 
 const REVISION = process.env.CONTAINER_APP_REVISION || null;
 /** The operator key (a Container App secret, deploy-azure.mjs SECRET_ENV): fresh health numbers, the forced 500. */
@@ -65,6 +65,8 @@ async function health(req, res) {
     out.db = r.ok ? "ok" : "down";
     if (!r.ok) return send(res, 503, { ...out, ok: false });
   }
+  // release 13.1: the server recorder's counters (counts only: never an event, never an error text)
+  if (url.searchParams.get("trace") === "1") out.trace = traceStats();
   if (url.searchParams.get("db") === "1") {
     const key = OPS_KEY();
     out.dbMs = await dbMs(!!key && req.headers?.["x-taxila-health"] === key);

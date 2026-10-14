@@ -10,7 +10,7 @@ const BEATS = ["arrive", "warmup", "hook", "explain", "worked_example", "contras
   "reflect", "recap", "wrap", "break", "safeguard"];
 // p5-interaction request types (director/requests.js, conversation/lexicon.js + policy.js, state.js P5_REQUESTS). Listed
 // here rather than imported so this module stays pure and dependency-free.
-const REQUEST_TYPES = ["another", "example", "story", "slower", "visual", "language", "topic", "change_topic", "break", "stop", "goodbye",
+const REQUEST_TYPES = ["another", "example", "story", "slower", "visual", "language", "topic", "change_topic", "break", "stop", "goodbye", "clear_board",
   "continue", "confused", "thinking", "choices", "why", "how", "clarify", "repeat", "back", "skip", "know", "harder", "easier", "boredom",
   "frustration", "identity", "uptake", "decline", "answer_q", "adapt", "adopt", "adult", "park", "detour", "hold_checkin", "ask_invite", "unclear",
   // round 3 fix: a closed voice-grammar command to the play piece on screen (adversarial B2), and a named subject to study
@@ -46,7 +46,7 @@ export const FAMILIES = Object.freeze({
   // but Studio's slotFor held it (the tray is the Director's, or the beat moved on), so it is not revealed this turn;
   // declined_by_studio: requestIntent answered null (an interactive piece is mid-use, safety, Studio switched off)
   studio_rejected: ["strained", "safety", "attention", "closing_move", "late", "no_reply", "not_explain", "voice_lane", "reveal_ready", "held",
-    "declined_by_studio"],
+    "declined_by_studio", "cleared"],
   signal: ["answer", "question_curious", "question_clarify", "chit_chat", "idk_not_known", "idk_cant_recall", "frustration_words", "pride_words",
     "meta_slow", "meta_break", "humour", "personal_share"],
   lane: ["voice", "cascade", "text"],

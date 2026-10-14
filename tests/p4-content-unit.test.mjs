@@ -246,6 +246,14 @@ const okScript = (n = 3, durationMs = 3000) => ({ v: 1, scriptId: "s", line: { l
   ops: Array.from({ length: n }, (_, i) => ({ id: `r${i}`, op: "rect", at: [20 + i * 120, 120], w: 100, h: 60, startMs: 200 + i * 700, endMs: 600 + i * 700 })) });
 const askFor = (id, text, content = ["Three boxes side by side for the plan."]) => ({ intent: { intentId: id, lessonId: "L", kind: "whiteboard", style: { band: "B3" } }, line: { lessonId: "L", text }, mode: "fresh", kit: { topicId: T, content } });
 const delay = (ms, v) => new Promise((r) => setTimeout(() => r(v), ms));
+// each board-sync test owns its deadline (undefined = the production default) and restores the previous value even when
+// an assertion fails: npm test runs every file in one process, so an env write left behind (or made by another file at
+// import, mid-run) changes the deadline under the next test (ms-r121-board-sync-env-leak)
+async function withSyncMs(ms, fn) {
+  const prev = process.env.TAXILA_BOARD_SYNC_MS;
+  if (ms === undefined) delete process.env.TAXILA_BOARD_SYNC_MS; else process.env.TAXILA_BOARD_SYNC_MS = String(ms);
+  try { return await fn(); } finally { if (prev === undefined) delete process.env.TAXILA_BOARD_SYNC_MS; else process.env.TAXILA_BOARD_SYNC_MS = prev; }
+}
 test("board sync: a speculative board that passes against her real line is shown at once and no line plan is paid for", async () => {
   let lineCalls = 0;
   const planner = async (ask) => { if (/Three boxes side by side/.test(ask.line.text)) return { ok: true, script: okScript(), usd: 0.0003 }; lineCalls++; return { ok: false, usd: 0.0003 }; };
@@ -258,40 +266,42 @@ test("board sync: a speculative board that passes against her real line is shown
 });
 test("board sync: the line plan wins inside the deadline; a slow line plan yields to a passing late speculative board", async () => {
   const fast = async () => ({ ok: true, script: okScript(), usd: 0 });
-  const r = await boardSync.plan(askFor("bs-2", "Teen boxes."), { kit, planWhiteboard: async (a) => (await delay(20), fast(a)) });
-  assert.equal(r.source, "line");
-  process.env.TAXILA_BOARD_SYNC_MS = "300";
-  const ask = askFor("bs-3", "Teen boxes.");
-  boardSync.prepare(ask, { kit, planWhiteboard: async () => (await delay(150), { ok: true, script: okScript(), usd: 0 }) });
-  const r2 = await boardSync.plan(ask, { kit, planWhiteboard: async () => (await delay(2000), { ok: true, script: okScript(), usd: 0 }) });
-  assert.equal(r2.source, "spec"); assert.ok(r2.syncMs < 900, `synced at ${r2.syncMs} ms`);
-  delete process.env.TAXILA_BOARD_SYNC_MS;
+  const r = await withSyncMs(undefined, () => boardSync.plan(askFor("bs-2", "Teen boxes."), { kit, planWhiteboard: async (a) => (await delay(20), fast(a)) }));
+  assert.equal(r.source, "line", `a 20 ms line plan inside the default ${boardSync.BOARD_SYNC_MS()} ms deadline (answered by ${r.source} at ${r.syncMs} ms)`);
+  await withSyncMs(300, async () => {
+    const ask = askFor("bs-3", "Teen boxes.");
+    boardSync.prepare(ask, { kit, planWhiteboard: async () => (await delay(150), { ok: true, script: okScript(), usd: 0 }) });
+    const r2 = await boardSync.plan(ask, { kit, planWhiteboard: async () => (await delay(2000), { ok: true, script: okScript(), usd: 0 }) });
+    assert.equal(r2.source, "spec"); assert.ok(r2.syncMs < 900, `synced at ${r2.syncMs} ms`);
+  });
 });
 test("board sync: nothing by the deadline and no code board → the line plan whenever it lands (the pre-ship5 path)", async () => {
-  process.env.TAXILA_BOARD_SYNC_MS = "300";
-  const r = await boardSync.plan(askFor("bs-4", "Teen boxes."), { kit: null, planWhiteboard: async () => (await delay(500), { ok: true, script: okScript(), usd: 0 }) });
-  assert.equal(r.source, "line"); assert.ok(r.syncMs >= 450);
-  delete process.env.TAXILA_BOARD_SYNC_MS;
+  await withSyncMs(300, async () => {
+    const r = await boardSync.plan(askFor("bs-4", "Teen boxes."), { kit: null, planWhiteboard: async () => (await delay(500), { ok: true, script: okScript(), usd: 0 }) });
+    assert.equal(r.source, "line"); assert.ok(r.syncMs >= 450);
+  });
 });
 test("board sync: the code board answers at the deadline when its re-gate against her line passes", async () => {
-  process.env.TAXILA_BOARD_SYNC_MS = "300";
   const sci = kitTopicAny("c7-science-ch01-t01");
   const ask = { intent: { intentId: "bs-5", lessonId: "L", kind: "whiteboard", style: { band: "B3" } }, line: { lessonId: "L", text: "Plants apna khana khud banate hain, sunlight aur water se." }, mode: "fresh", kit: { topicId: "c7-science-ch01-t01", content: [] } };
-  const r = await boardSync.plan(ask, { kit: sci && (await import("../server/content/kits.js")).kitFromFile((await import("../server/content/curriculum.js")).getTopic("c7-science-ch01-t01")), planWhiteboard: async () => (await delay(3000), { ok: false, usd: 0 }) });
-  assert.equal(r.ok, true); assert.equal(r.source, "code"); assert.ok(r.syncMs < 1200, `code board at ${r.syncMs} ms`);
-  assert.equal(r.script.anchor, "line_audio_start");
-  delete process.env.TAXILA_BOARD_SYNC_MS;
+  const sciKit = sci && (await import("../server/content/kits.js")).kitFromFile((await import("../server/content/curriculum.js")).getTopic("c7-science-ch01-t01"));
+  await withSyncMs(300, async () => {
+    const r = await boardSync.plan(ask, { kit: sciKit, planWhiteboard: async () => (await delay(3000), { ok: false, usd: 0 }) });
+    assert.equal(r.ok, true); assert.equal(r.source, "code"); assert.ok(r.syncMs < 1200, `code board at ${r.syncMs} ms`);
+    assert.equal(r.script.anchor, "line_audio_start");
+  });
 });
 test("board sync: a speculative board whose counts disagree with her line is refused by the re-gate; the kill switch is the old planner", async () => {
   const circle = { ...okScript(0), ops: [{ id: "c", op: "circle", c: [200, 150], r: 80, startMs: 100, endMs: 600 }, ...[0, 1, 2].map((i) => ({ id: `p${i}`, op: "sector", c: [200, 150], r: 80, fromDeg: i * 120, toDeg: (i + 1) * 120, startMs: 700 + i * 200, endMs: 900 + i * 200 }))] };
   const ask = askFor("bs-6", "Isko 4 equal parts mein baanto.", ["A circle cut into 3 equal parts."]);
   const ctx = boardSync.gateCtxFor(ask, { kit });
   assert.equal(boardSync.regate(circle, ask, ctx).ok, false, "3 sectors while she says 4");
+  const prevOn = process.env.TAXILA_BOARD_SYNC;
   process.env.TAXILA_BOARD_SYNC = "0";
-  let called = 0;
-  const r = await boardSync.plan(askFor("bs-7", "x"), { kit, planWhiteboard: async () => { called++; return { ok: false, why: "x" }; } });
+  let called = 0, r;
+  try { r = await boardSync.plan(askFor("bs-7", "x"), { kit, planWhiteboard: async () => { called++; return { ok: false, why: "x" }; } }); }
+  finally { if (prevOn === undefined) delete process.env.TAXILA_BOARD_SYNC; else process.env.TAXILA_BOARD_SYNC = prevOn; }
   assert.equal(called, 1); assert.equal(r.source, undefined);
-  delete process.env.TAXILA_BOARD_SYNC;
   const rt = boardSync.retime(okScript(3, 3000), 3000, 6000);
   assert.equal(rt.ops[1].startMs, 1800);
 });
@@ -351,15 +361,13 @@ test("board asks: a piece on stage steps down so the whiteboard can draw on her 
 });
 
 test("board sync: the Director's template rung, re-timed to her line, answers at the deadline when it passes; as the last rung it is still re-timed", async () => {
-  process.env.TAXILA_BOARD_SYNC_MS = "300";
   const tpl = { ...okScript(3, 9000), ops: okScript(3, 9000).ops.map((o, i) => ({ ...o, startMs: 500 + i * 2500, endMs: 900 + i * 2500 })) };
   const ask = askFor("bs-8", "Dekho, teen boxes ek line mein.", []);
-  const r = await boardSync.plan(ask, { kit: null, fallbackScript: tpl, planWhiteboard: async () => (await delay(2000), { ok: false, usd: 0 }) });
+  const r = await withSyncMs(300, () => boardSync.plan(ask, { kit: null, fallbackScript: tpl, planWhiteboard: async () => (await delay(2000), { ok: false, usd: 0 }) }));
   assert.equal(r.source, "template"); assert.ok(r.syncMs < 1200);
   assert.ok(Math.max(...r.script.ops.map((o) => o.endMs)) < 9000, "re-timed to her (shorter) line");
   const rt = boardSync.retimeToLine(tpl, "Dekho, teen boxes.");
   assert.ok(rt.durationMs < tpl.durationMs);
-  delete process.env.TAXILA_BOARD_SYNC_MS;
 });
 
 test("board sync: an unused speculative board of the same lesson serves the next fresh line when it passes against it (once)", async () => {

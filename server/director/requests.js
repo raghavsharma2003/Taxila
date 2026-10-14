@@ -104,6 +104,58 @@ const wordCount = (t) => t.split(/\s+/).filter(Boolean).length;
  *   subject?: string, lang?: "hindi"|"english"|"hinglish", kind?: "diagram"|"game"|"animation", whole: boolean }}
  *   whole: the turn is ONLY the request (no attempt alongside it), so it may be acted on with no classifier call.
  */
+// r12 RCA failure 4 (owner lesson a95d2ff1 turn 12: "थोड़ा बैकग्राउंड क्लियर करो … recursive rules जो कचरा आ रहा है, हटाओ
+// उसको", answered "background noise main control nahi kar sakti"): clearing the board is a request of its own. The surface
+// word (board / screen / background / whiteboard / what is written on it) near a clear verb, either order, both scripts.
+const SURFACE = "(?:board|whiteboard|white\\s+board|screen|background|backgound|bekgraund|बोर्ड|व्हाइटबोर्ड|स्क्रीन|बैकग्राउंड|बैकग्राऊंड)";
+// release 13 integration (ms-r13-clear-board-adjective): "saaf" / "clear" / "khali" are also ADJECTIVES ("screen saaf nahi
+// dikh raha" = I can't see it clearly, "board khali hai", "the screen is not clear"), and the first cut read 12 of 13 such
+// lines as "clear the board". They are a command only with a do-verb after them (karo, kar do, kijiye, kar sakti ho);
+// hatao / mitao / erase / wipe are commands on their own. A negation before the verb ("board mat hatao") and a gap about
+// sound ("background noise hatao": the microphone, not the board) are never a clear.
+const DO = "(?:karo|kardo|kariye|karein|kijiye|kijie|kar\\s+(?:do|dijiye|dijie|dena|doge|dogi|denge|lo|lijiye|sakti|sakte|sakta)|करो|कर\\s+दो|कर\\s+दीजिए|करिए|कीजिए|कर\\s+सकती|कर\\s+सकते)";
+const CLEAR_VERB = `(?:(?:clear|saaf|saf|khali|khaali|क्लियर|साफ़|साफ|खाली)\\s+${DO}|hatao|hata\\s+do|hatado|hata\\s+dijiye|hataiye|mitao|mita\\s+do|mitado|mita\\s+dijiye|mitaiye|erase|wipe|हटाओ|हटा\\s+दो|हटाइए|हटा\\s+दीजिए|मिटाओ|मिटा\\s+दो|मिटाइए|मिटा\\s+दीजिए)`;
+const CLEAR_NEG = /(?:^|\s)(?:mat|nahi|nahin|nhi|na|naa|don'?t|dont|not|never|मत|नहीं|ना)(?=\s|[,.!?।]|$)/iu;
+const CLEAR_NOISE = /noise|awaa?z|aawaa?z|shor|sound|\bmic\b|आवाज़?|शोर/iu;
+const CLEAR_SURFACE_FIRST = new RegExp(`${SURFACE}((?:\\s+\\S+){0,5}?)\\s+${CLEAR_VERB}`, "giu");
+const CLEAR_VERB_FIRST = new RegExp(`${CLEAR_VERB}((?:\\s+\\S+){0,3}?)\\s+${SURFACE}`, "giu");
+const CLEAR_KACHRA = new RegExp(`(?:kachra|कचरा)((?:\\s+\\S+){0,6}?)\\s+${CLEAR_VERB}`, "giu");
+const CLEAR_EN = new RegExp(`(?:^|[,.!?।]\\s*|\\b(?:please|plz|pls|can\\s+you|could\\s+you|will\\s+you|ma'?am|didi|sir|bhaiya|now|just|ok|okay)\\s+)(?:clear|erase|wipe|clean)\\s+(?:up\\s+|off\\s+)?(?:the\\s+|this\\s+|that\\s+|my\\s+|your\\s+)?(?:whole\\s+)?${SURFACE}`, "iu");
+/** "board clear karo", "ye board hatao", "थोड़ा बैकग्राउंड क्लियर करो", "jo kachra aa raha hai hatao", "clear the board": the
+ * child asks for the board to be cleared. Never "screen saaf nahi dikh raha", "board khali hai", "board mat hatao". PURE. */
+export function clearBoardAsk(text) {
+  const t = String(text ?? "");
+  const before = (i) => t.slice(0, i).trim().split(/\s+/).pop() ?? "";
+  for (const re of [CLEAR_SURFACE_FIRST, CLEAR_KACHRA]) {
+    for (const m of t.matchAll(re)) if (!CLEAR_NEG.test(m[1] ?? "") && !CLEAR_NOISE.test(m[1] ?? "")) return true;
+  }
+  for (const m of t.matchAll(CLEAR_VERB_FIRST)) if (!CLEAR_NEG.test(` ${before(m.index)} `) && !CLEAR_NOISE.test(m[1] ?? "")) return true;
+  return CLEAR_EN.test(t);
+}
+
+// r12 RCA failure 3 / release 13 (A) (owner lesson a95d2ff1 turns 18-24: "मेरे को आलू के बारे में पढ़ना है", "आलू दिखाओ"): the
+// subject a child names, in either script, so the lesson can answer honestly about it. Generic words are not subjects.
+// release 13 integration (ms-r13-meta-subjects): the meta and pointing words a child uses for TODAY's work ('is cheez', 'pichle
+// wale', 'aaj ke topic') are never a subject named outside it
+const GENERIC = /^(?:diagram|picture|photo|image|images|drawing|game|games|video|kuch|koi|kuchh|ye|yeh|is|isko|use|usko|woh|wo|iss|us|uss|iske|uske|inke|unke|isme|usme|ismein|usmein|cheez|chiz|cheej|chij|pichle|pichla|pichli|pichhle|agle|agla|agli|wale|wala|wali|waala|waale|topic|chapter|lesson|sawal|sawaal|question|questions|answer|jawab|concept|aaj|abhi|mujhe|mere|mera|aap|tum|visualization|visualisation|chitra|tasveer|board|screen|chart|graph|model|animation|figure|sketch|map|table|ko|ka|ki|ke|ne|se|mein|me|par|pe|डायग्राम|डायग्रम|ड्रॉइंग|ड्राइंग|चित्र|ग्राफ|चार्ट|मॉडल|एनिमेशन|टेबल|को|का|की|के|ने|से|में|पर|इमेज|फोटो|पिक्चर|तस्वीर|गेम|वीडियो|कुछ|कोई|ये|यह|इसको|उसको|उसके|इसके|इसकी|उसकी|चीज़|चीज|पिछले|पिछला|अगले|अगला|वाले|वाला|वाली|सवाल|जवाब|टॉपिक|चैप्टर|आज|अभी|मुझे|मेरे|मेरा|आप|तुम)$/iu;
+/** A subject made only of generic, meta or pointing words ("is cheez", "aaj ke topic"): not a subject. PURE. */
+export const genericSubject = (sub) => { const w = String(sub ?? "").trim().split(/\s+/).filter(Boolean); return !w.length || w.every((x) => GENERIC.test(x)); };
+const LEAD_WORDS = /^(?:(?:mere|mujhe|hume|humein|hamein|ko|ka|ki|ek|mera|meri|please|plz|bhai|bhaiya|yaar|didi|मेरे|मुझे|हमें|को|का|की|एक|मेरा|मेरी|भई|यार)\s+)+/iu;
+const STUDY_SUBJECT = /([\p{L}\p{M}\p{N} ]{2,40}?)\s+(?:ke|ki|के|की)\s+(?:baare|bare|बारे)\s+(?:mein|me|main|में)\s+(?:padh|पढ़|baat|बात|bata|बता|sikh|सीख|jaan|जान|dekh|देख)/u;
+const SHOW_SUBJECT = /(?:^|[\s,.!?।])([\p{L}\p{M}]{2,20})\s+(?:(?:ki|ka|ke|की|का|के)\s+)?(?:(?:photo|picture|image|tasveer|फोटो|पिक्चर|इमेज|तस्वीर)\s+)?(?:dikhao|dikhaiye|dikha\s+do|दिखाओ|दिखाइए|दिखा\s+दो)/u;
+const lastWords = (x, n = 2) => x.trim().split(/\s+/).slice(-n).join(" ");
+/** The free subject a child's turn names ("aloo ke baare mein padhna hai", "आलू दिखाओ"), or null. PURE. */
+export function freeSubjectOf(text) {
+  const t = String(text ?? "").normalize("NFKC");
+  for (const re of [STUDY_SUBJECT, SHOW_SUBJECT]) {
+    const m = t.match(re);
+    if (!m) continue;
+    const sub = lastWords(m[1].replace(LEAD_WORDS, "").trim(), re === STUDY_SUBJECT ? 2 : 1).replace(LEAD_WORDS, "").trim();
+    if (sub && !GENERIC.test(sub) && !sub.split(/\s+/).every((w) => GENERIC.test(w))) return sub.slice(0, 30);
+  }
+  return null;
+}
+
 export function requestOf(text) {
   const raw = T(text);
   if (!raw) return null;
@@ -113,6 +165,14 @@ export function requestOf(text) {
   const t = core(raw) || raw;
   const n = wordCount(t);
   const whole = !attemptLike(t) && n <= 12;
+  // the board is a surface, not an answer: clearing it is honoured at any length, never inside a numeric attempt
+  // (never ahead of a goodbye or a stop: leaving always wins)
+  if (!attemptLike(t) && clearBoardAsk(t) && !GOODBYE.test(t) && !STOP.test(t) && stopKind(text) !== "end_request") return { type: "clear_board", whole: true };   // a command to the screen, never an answer: acted on at any length
+  // release 13 (A): "X ke baare mein padhna hai" names a subject at any length (a long, upset turn is still that ask)
+  if (!attemptLike(t) && !GOODBYE.test(t) && !STOP.test(t) && STUDY_SUBJECT.test(String(text ?? "").normalize("NFKC"))) {
+    const subject = freeSubjectOf(text);
+    if (subject) return { type: "topic", subject, whole };
+  }
   // a turn of mostly answer words with a request tacked on is an answer (the request is ignored, the answer graded)
   if (!whole && n > 16) return null;
   // Leaving now beats everything (NEVER MANIPULATE): never read as a stop to check in on, nor a break.
@@ -133,7 +193,10 @@ export function requestOf(text) {
     const lang = LANG.hinglish.test(t) ? "hinglish" : LANG.english.test(t) ? "english" : LANG.hindi.test(t) ? "hindi" : null;
     if (lang) return { type: "language", lang, whole };
   }
-  if (VISUAL.test(t) || (whole && /^(?:diagram|picture|drawing|draw)\b/.test(t))) return { type: "visual", kind: "diagram", whole };
+  if (VISUAL.test(t) || (whole && /^(?:diagram|picture|drawing|draw)\b/.test(t))) {
+    const subject = freeSubjectOf(text);
+    return { type: "visual", kind: "diagram", whole, ...(subject ? { subject } : {}) };
+  }
   if (whole && ANIMATION.test(t)) return { type: "visual", kind: "animation", whole };
   if (whole && GAME.test(t) && !/\b(?:game\s+(?:mein|me)\s+\d)/.test(t)) return { type: "visual", kind: "game", whole };
   if (whole && STORY.test(t)) return { type: "story", whole };
@@ -144,7 +207,7 @@ export function requestOf(text) {
   if (whole) {
     const m = t.match(TOPIC);
     const subject = (m?.[1] ?? m?.[2] ?? "").replace(/^(?:the|a|an|is|us|mujhe|humein|hume)\s+/i, "").trim();
-    if (subject && !/^(?:this|it|that|yeh|ye|is|isko|lesson|question|sawal|sawaal)$/.test(subject)) return { type: "topic", subject: subject.slice(0, 30), whole };
+    if (subject && !/^(?:this|it|that|yeh|ye|is|isko|lesson|question|sawal|sawaal)$/.test(subject) && !genericSubject(subject)) return { type: "topic", subject: subject.slice(0, 30), whole };
   }
   return null;
 }
