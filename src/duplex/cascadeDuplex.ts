@@ -106,6 +106,22 @@ export const D5_SERVER_VAD_MS = 500;
 export const NO_FRAMES_MS = 3000;
 /** A reply that answers a revoked commit is dropped if it arrives within this long of the revoke. */
 const DROP_WINDOW_MS = 8000;
+/**
+ * Release 14: D4 runs half-duplex unless this device asks for the full engine (`?duplexfull=1` once, or localStorage
+ * "tx.flag.duplexfull" = "1"; `?duplexfull=0` clears it). The owner's test switch for barge-in over a headset.
+ */
+export function fullDuplexForced(): boolean {
+  try {
+    if (typeof location !== "undefined") {
+      const v = new URLSearchParams(location.search).get("duplexfull");
+      if (v === "1") localStorage.setItem("tx.flag.duplexfull", "1");
+      else if (v === "0") localStorage.removeItem("tx.flag.duplexfull");
+    }
+    return typeof localStorage !== "undefined" && localStorage.getItem("tx.flag.duplexfull") === "1";
+  } catch {
+    return false;
+  }
+}
 
 export class CascadeDuplex {
   readonly mode: Exclude<DuplexMode, "off">;
@@ -158,7 +174,7 @@ export class CascadeDuplex {
       // D5: no micro-commit probes (a forced commit cuts Voice Live's open item and returns it empty; its own 500 ms commit
       // already lands the final ~0.6 s after the child stops)
       lessonId: surface.lessonId, port, mode: o.mode, source: d5 ? "voicelive" : "live_transcribe", supportsCommit: !d5,
-      ...(d5 ? { vadGate: "server" as const, preDuck: o.preDuck ?? false } : {}),
+      ...(d5 ? { vadGate: "server" as const, preDuck: o.preDuck ?? false } : { halfDuplex: o.mode === "on" && !fullDuplexForced() }),
       wrapEmit: o.face?.wrapEmit, onDetach: o.face?.detach, now: this.now, setInterval: o.setInterval, clearInterval: o.clearInterval,
       band: o.band,
       log: (row: ShadowRow) => { try { this.tel.row(row); } catch { /* telemetry never breaks the floor */ } o.log?.(row); },
@@ -210,6 +226,8 @@ export class CascadeDuplex {
    */
   onSttEvent(raw: unknown): boolean {
     if (this.closed || this.fallbackReason) return false;
+    // release 14 half-duplex: an item that started over her line is her echo; nothing of it reaches the link either
+    if (this.deciding && this.live.echoOnly(raw)) return true;
     this.live.stt(raw);
     const ev = (raw && typeof raw === "object" ? raw : {}) as { type?: unknown; transcript?: unknown };
     if (typeof ev.type === "string") this.tel.stt(this.now(), ev.type, typeof ev.transcript === "string" && ev.transcript.trim().length > 0);

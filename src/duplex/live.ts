@@ -134,6 +134,14 @@ export interface DuplexLiveOptions {
    */
   vadGate?: "device" | "server";
   /**
+   * Release 14 (owner's phone lessons 3a7da0ad / 56d898ce, 2026-10-12/14: her loudspeaker voice came back through the mic,
+   * was transcribed as the child, hushed and yielded her mid-line): D4 runs HALF-DUPLEX on the live lane. While her line
+   * plays (and HALF_DUPLEX_TAIL_MS after it) the engine reads the room's quiet level instead of the mic, every transcription
+   * item that STARTS in that window is her echo and is dropped whole (no caption, no final, no turn), and she is never
+   * ducked or yielded. The child cannot talk over her on D4; D5 (Voice Live's echo canceller) is the lane that can.
+   */
+  halfDuplex?: boolean;
+  /**
    * D5: duck her at once on a loud device burst over her line, before Voice Live confirms it (~0.6 s later); released after
    * D5_PREDUCK_RELEASE_MS if Voice Live never does. Off by default (measured in evals/duplex-2026-10/arms-d5.mjs).
    */
@@ -164,6 +172,13 @@ export type EngineHostSemantic = NonNullable<ConstructorParameters<typeof Engine
 const MS_PER_CHAR = 70;
 /** D5: her echo tail after her line ends (the room rings, the phone's output buffer drains): still gated. */
 export const D5_HER_TAIL_MS = 300;
+/** Release 14, D4 half-duplex: her echo tail (the phone's output buffer plus the WebRTC uplink), still gated. */
+export const HALF_DUPLEX_TAIL_MS = 600;
+/**
+ * Release 14 (owner lesson 56d898ce: speak:backstop_silence 0.4 s after the reply to a tapped chip arrived, so two turns raced):
+ * after a tap or typed answer no engine SPEAK commits until her reply to it starts, or this long if it never does.
+ */
+export const SCREEN_REPLY_HOLD_MS = 15000;
 /** D5: device frames kept for the delayed replay, and the confirm delay assumed when Voice Live gives no audio time. */
 export const D5_RING_MS = 2000;
 export const D5_DEFAULT_SHIFT_MS = 600;
@@ -372,6 +387,12 @@ export class DuplexLive {
   private hostDuck = 1;
   /** D5 counters (content-blind): gated frames, pre-ducks, releases, re-asks. */
   readonly d5 = { gatedFrames: 0, serverStarts: 0, preDucks: 0, preDuckReleases: 0, reasks: 0 };
+  /** Release 14 half-duplex: transcription items that started over her line (her echo), dropped whole. */
+  private echoItems = new Set<string>();
+  /** Release 14: a tap or typed answer is waiting for her reply until this time (no engine SPEAK races it). */
+  private screenHoldUntil = -Infinity;
+  /** Release 14 counters (content-blind). */
+  readonly half = { gatedFrames: 0, echoItems: 0, blockedOps: 0, heldSpeaks: 0 };
 
   constructor(o: DuplexLiveOptions) {
     this.o = o;
@@ -435,6 +456,19 @@ export class DuplexLive {
     // not voicing" never learned a strong echo path, because her own echo above the -30 dB prior read as the child voicing
     if (herSounding) this.echo.push(micDb, herOutDb);
     if (this.o.vadGate === "server") return this.gatedFrame(t, rms, f0, herOutDb, micDb);
+    if (this.o.halfDuplex) {
+      if (this.herActive(t)) {
+        this.half.gatedFrames++;
+        const q = this.quietLevelDb();
+        this.guard(() => {
+          if (this.her) this.host.herEvent({ kind: "level", t, db: herOutDb === null ? null : herOutDb + this.echo.db });
+          this.host.frame(t, Math.pow(10, q / 20), null);
+        });
+        return;
+      }
+      this.quietDb.push(micDb);
+      if (this.quietDb.length > 250) this.quietDb.shift();
+    }
     this.guard(() => {
       if (this.her) this.host.herEvent({ kind: "level", t, db: herOutDb === null ? null : herOutDb + this.echo.db });
       this.host.frame(t, rms, f0);
@@ -525,12 +559,40 @@ export class DuplexLive {
   /** One realtime transcription event (the link's data channel). Errors are the link's to read (isQuotaError → degrade). */
   stt(raw: unknown): void {
     if (!this.live) return;
+    if (this.echoOnly(raw)) return;
     const ev = this.tap.map(raw, this.now());
     if (this.o.vadGate === "server") this.serverVad(raw, ev);
     if (!ev) return;
     this.stats.sttEvents++;
     if (ev.type === "final" || ev.type === "partial") this.lastItemId = ev.itemId;
     this.guard(() => this.host.stt(ev));
+  }
+
+  /** Her line is playing, or its echo tail has not passed (D4 half-duplex / D5 gate). */
+  private herActive(t: number): boolean { return (!!this.her && !this.herHalted) || t < this.herTailUntil; }
+
+  /**
+   * Release 14, D4 half-duplex: true when this transcription event belongs to an item that started over her line (her own
+   * voice from the loudspeaker). The item is dropped whole: its partials, final or failure never reach the engine, the
+   * caption or the Director. CascadeDuplex consumes the same events (isEcho).
+   */
+  echoOnly(raw: unknown): boolean {
+    if (!this.o.halfDuplex) return false;
+    const e = (raw && typeof raw === "object" ? raw : {}) as Record<string, unknown>;
+    const item = typeof e.item_id === "string" ? e.item_id : null;
+    if (!item) return false;
+    if (e.type === "input_audio_buffer.speech_started") {
+      if (!this.herActive(this.now())) return false;
+      if (!this.echoItems.has(item)) {
+        this.echoItems.add(item);
+        this.half.echoItems++;
+        vt("duplex.half", { op: "echo_item", itemId: item, herPlaying: !!this.her && !this.herHalted });
+      }
+      return true;
+    }
+    if (!this.echoItems.has(item)) return false;
+    if (e.type === "conversation.item.input_audio_transcription.completed" || e.type === "conversation.item.input_audio_transcription.failed") this.echoItems.delete(item);
+    return true;
   }
 
   /** D5: Voice Live's VAD edges open and close the gate (it hears the child after its echo canceller). */
@@ -614,6 +676,7 @@ export class DuplexLive {
     this.her = { id, text, startedAt: t, heardChars: 0, turnId: opts.turnId ?? null, act };
     this.herHalted = false;
     this.pendingTurn = null;
+    this.screenHoldUntil = -Infinity;
     this.guard(() => {
       if (!opts.resumeOf) this.host.context(contextFromUi(ui, text, this.o.band), t);
       this.host.herEvent({ kind: "start", t, utteranceId: id, text, act, handsOver, msPerChar: MS_PER_CHAR });
@@ -626,7 +689,7 @@ export class DuplexLive {
     if (!this.live || !this.her) return;
     const id = this.her.id;
     this.her = null;
-    this.herTailUntil = this.now() + D5_HER_TAIL_MS;
+    this.herTailUntil = this.now() + (this.o.halfDuplex ? HALF_DUPLEX_TAIL_MS : D5_HER_TAIL_MS);
     this.guard(() => this.host.herEvent({ kind: "end", t: this.now(), utteranceId: id }));
   }
 
@@ -635,13 +698,16 @@ export class DuplexLive {
     if (!this.live || !this.her) return;
     const id = this.her.id;
     this.herHalted = true;
-    this.herTailUntil = this.now() + D5_HER_TAIL_MS;
+    this.herTailUntil = this.now() + (this.o.halfDuplex ? HALF_DUPLEX_TAIL_MS : D5_HER_TAIL_MS);
     this.guard(() => this.host.herEvent({ kind: "stopped", t: this.now(), utteranceId: id }));
   }
 
   /** The child typed or tapped (a screen act): the engine's screen stream. */
   screen(kind: "submit" | "choice_pick" | "type"): void {
     if (!this.live) return;
+    // a sent answer (not keystrokes): her reply to it is on its way, so the engine's silence backstop must not commit a
+    // second turn over it (release 14)
+    if (kind !== "type") this.screenHoldUntil = this.now() + SCREEN_REPLY_HOLD_MS;
     this.guard(() => this.host.screen({ kind, at: this.now() } as Parameters<EngineHost["screen"]>[0]));
   }
 
@@ -699,6 +765,18 @@ export class DuplexLive {
       return;
     }
     // to: voice
+    // release 14 half-duplex (D4): she is never ducked or yielded over her own line; the child talks once she is done
+    if (this.o.halfDuplex && ((c.op === "duck" && c.level < 1) || c.op === "yield") && this.herActive(this.now())) {
+      this.half.blockedOps++;
+      vt("duplex.half", { op: "blocked", what: c.op });
+      return;
+    }
+    // release 14: a tapped / typed answer is waiting for her reply: no engine turn races it
+    if (c.op === "speak" && this.now() < this.screenHoldUntil) {
+      this.half.heldSpeaks++;
+      vt("duplex.half", { op: "held_speak", reason: c.reason ?? null });
+      return;
+    }
     switch (c.op) {
       case "duck": this.hostDuck = c.level; this.preDuckAt = null; port.duck(c.level); return;
       case "unduck": this.hostDuck = 1; this.preDuckAt = null; port.duck(1); return;
