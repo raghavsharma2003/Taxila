@@ -3,7 +3,7 @@
 // listed option the reply matches; code turns that into an outcome). Deterministic paths run first
 // (chips, module answers, exact key match, low ASR, lexical don't-know), so the model is only asked
 // when the bytes cannot decide.
-import { chat, DEPLOY, isReasoningFamily, isContentFilter } from "../azure.js";
+import { chat, DEPLOY, isReasoningFamily, isContentFilter, nonHarmFilter } from "../azure.js";
 import { readUtterance } from "../learner/affect.js";
 import { scanSafety, wantsToStop, scrubPii, readability } from "./safety.js";
 import { whyKey, norm as normAnswer, posesItem, revealsAnswer } from "./items.js";
@@ -184,7 +184,7 @@ function systemPrompt(target, classLevel) {
     `You label one reply from an Indian school child (class ${classLevel}) in a live lesson. You never grade freely and never judge quality: you only say which listed option the reply matches.`,
     "The child may speak Hindi, English or Hinglish, in Roman or Devanagari script. Number words count (aadha = 1/2, ek tihai = 1/3, teen = 3, 'teen wala' = the one with 3). Transcripts come from speech recognition and can have small errors.",
     "If what the teacher last said asked a DIFFERENT question from the one listed, and the reply answers that other question, label it no_attempt: it is not evidence about the listed question.",
-    "distress: true ONLY for signs the child is unsafe, hurt, abused, frightened, very sad, or may harm themself — never for ordinary frustration with a question.",
+    "distress: true ONLY for signs the child is unsafe, hurt, abused, frightened of a person, a place or what is happening to them, very sad, or may harm themself — never for ordinary frustration or worry about the lesson itself (scared of numbers, a question, a test or getting it wrong: the teacher reassures).",
     "asks_for_answer: they ask to be told the answer. wants_to_stop: they say they want to stop or leave now (NOT a request to change topic, explain differently, go slower, see a picture or take a break). off_topic: the reply is about something unrelated to the lesson.",
   ];
   if (target.mode === "none" && target.misconceptions.length) {
@@ -372,7 +372,7 @@ const DISTRESS_SCHEMA = { type: "object", additionalProperties: false, required:
 async function distressCheck(text, classLevel, trace) {
   try {
     const messages = [
-      { role: "system", content: `A reply from an Indian school child (class ${classLevel}) in a lesson, in Hindi, English or Hinglish; the transcript may be misheard. distress: true ONLY for signs the child is unsafe, hurt, abused, frightened, very sad, or may harm themself — never for ordinary frustration with a question.` },
+      { role: "system", content: `A reply from an Indian school child (class ${classLevel}) in a lesson, in Hindi, English or Hinglish; the transcript may be misheard. distress: true ONLY for signs the child is unsafe, hurt, abused, frightened of a person, a place or what is happening to them, very sad, or may harm themself — never for ordinary frustration or worry about the lesson itself (scared of numbers, a question, a test or getting it wrong: the teacher reassures).` },
       // direct identifiers masked before the child's words reach the model (decision scrub-pii-cued)
       { role: "user", content: scrubPii(text).text },
     ];
@@ -385,6 +385,9 @@ async function distressCheck(text, classLevel, trace) {
     return !!json?.distress;
   } catch (e) {
     // The content filter blocking a child's words is itself a strong distress signal: fail CLOSED.
+    // round 5 (main safety review): a block whose known categories are only prompt-injection / copyright detectors is not a
+    // distress signal (the predicate already read these words); any harm category or an unreadable block still fails CLOSED
+    if (isContentFilter(e) && nonHarmFilter(e)) { console.warn(`[classify] distress check blocked by a non-harm filter (${e.filterCats.join(",")}): not distress`); return false; }
     if (isContentFilter(e)) { console.warn("[classify] distress check blocked by the content filter: treated as distress"); return true; }
     console.warn("[classify] distress check unavailable:", e.message);
     return false;
@@ -723,7 +726,9 @@ async function classifyModel(args, target, text, flags, trace, done, fast = {}) 
   } catch (e) {
     // The content filter blocked the child's turn: fail CLOSED to the safeguarding protocol (never "safe",
     // never a normal reply). No second model call — the same words would be blocked again.
-    if (isContentFilter(e)) return filtered();
+    // round 5: a non-harm block (jailbreak / protected material only) is an outage of the labels, not a disclosure: the
+    // distress backup below still runs on the words (and is itself fail-closed on any harm block)
+    if (isContentFilter(e) && !nonHarmFilter(e)) return filtered();
     console.warn("[classify] model unavailable (classify and fallback):", e.message);
     // A classifier outage costs one turn of evidence, never the lesson.
     flags.distress = flags.distress || await distressCheck(text, classLevel, trace);

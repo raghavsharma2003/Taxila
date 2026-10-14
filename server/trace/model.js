@@ -45,7 +45,7 @@ export function recordModelCall(m) {
     const data = { kind: m.kind, deployment: m.deployment, lane: m.quotaLane ?? m.lane ?? null, status: m.status, ms: m.ms,
       ...(m.attempt ? { attempt: m.attempt } : {}), ...(m.tokens ? { tokens: m.tokens } : {}), ...(m.ttftMs != null ? { ttftMs: m.ttftMs } : {}),
       promptId: promptId(msgs), promptSha: json ? sha(json) : null, promptMsgs: Array.isArray(msgs) ? msgs.length : null,
-      output: text ?? null, ...(m.error ? { error: m.error } : {}) };
+      output: text ?? null, ...(m.error ? { error: m.error } : {}), ...(Array.isArray(m.filterCats) ? { filterCats: m.filterCats } : {}) };
     const c = traceCtx();
     if ((c?.tier ?? 1) >= 2 && traceBlobConfigured() && m.body) {
       const path = traceBlobPath({ sid: c?.sid ?? "server", src: "server", seq: `${Date.now()}${++blobSeq}`, ext: "json" });
