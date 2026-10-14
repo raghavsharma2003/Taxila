@@ -1,0 +1,32 @@
+{
+  "nodes": [
+    {
+      "id": "ms-r14-owner-phone-lessons-d4-echo",
+      "kind": "measurement",
+      "title": "2026-10-14, flight recorder, n=2 owner lessons (3a7da0ad 2026-10-12 06:23 UTC; 56d898ce 2026-10-14 16:23 UTC), both on an Android 10 phone (Chrome 154, 393x876, loudspeaker, getUserMedia echoCancellation=true). Both ended after 2 turns with the same chain on lane D4 (cascade, WebRTC gpt-live-transcribe, server_vad): her own voice re-entered the mic and was transcribed as the child (3 phantom finals in 3a7da0ad, e.g. 'क्यों भाई'); 3 empty finals per lesson with asr.error input_audio_buffer_commit_empty; the engine HUSHed on short_burst at level 0.05 and YIELDed (sustained_voice / revoke) on her echo, so she cut herself off mid-line (2 and 1 'she was interrupted'); speak:backstop_silence fired 0.4 s after the reply to the child's tapped 'Homework' chip arrived, so a second turn raced the first; and twice she asked a voice-first phone child to 'type karke bhejo' the homework. Server: lesson/start 5.4 s, turns 2.8-3.4 s, one taxila-gpt6 classify timeout at 2.4 s on the hot path. Method: scripts/trace.mjs --session on the production trace_event rows. The owner's verdict on 2026-10-14: 'everything is broken'.",
+      "at": "2026-10-14"
+    },
+    {
+      "id": "dc-r14-no-clock-gates",
+      "kind": "decision",
+      "title": "2026-10-14 owner: 'remove the time frame for the class, that is nonsense, I am not even able to test after the time'. Decision: the parent's lesson hours, the daily cap and 'done for today' (never one more) gate nothing by default: homeStateOf returns start / first / resume / homework / test_window, and startRefusal refuses only the Conductor's safety hold. TAXILA_DAY_LIMITS=on restores the round-4 rules unchanged (the tests pin both modes). The parent screens still show the saved hours and minutes; the Conductor still plans windows (they no longer refuse anything). Reverse if: real families onboard and parents ask for limits, then bring them back as an opt-in parent control that is off by default, never as a default that blocks a tester.",
+      "at": "2026-10-14"
+    },
+    {
+      "id": "dc-r14-stale-chunk-reload-once",
+      "kind": "decision",
+      "title": "2026-10-14: a tab opened before a deploy asks for lazy chunks the new build no longer has (owner tab 2026-10-13: err.resource /assets/Landing-*.js, then a dead page). src/main.tsx reloads the page once on vite:preloadError (at most one reload a minute, keyed in sessionStorage; a beacon records it), so the tab picks up the new index.html. Reverse if: chunk reloads loop or hide a real build error (the beacon count makes that visible), then keep the previous build's assets for one deploy instead.",
+      "at": "2026-10-14"
+    },
+    {
+      "id": "dc-r5-parallel-streams",
+      "kind": "decision",
+      "title": "2026-10-14 owner: 'test everything and keep iterating until perfection... launch many workflows... behave autonomously'. Decision: round 5 runs as five cloud sessions with a measured bar each (docs/design/round5/BRIEF.md): 4B duplex (D5 to the phone-loudspeaker bar plus a half-duplex D4 fallback), 4A conversation and covert comprehension (>=85% agreement with blind labels, simulated-child battery), stream 2 board (draws what was asked >=9/10), stream 3 latency (Start to first sound p50 <=2.5 s; end of turn to first sound p50 <=1.5 s), and a new QA break-it session (claude/r5-qa) that drives every screen on a phone profile until two passes find nothing new. Main integrates, gates and deploys, and runs adversarial review workflows on each head. Reverse if: integration cost exceeds the parallel gain (two merges in a row needing rework), or the cloud credit runs out.",
+      "at": "2026-10-14"
+    }
+  ],
+  "edges": [
+    { "src": "ms-r14-owner-phone-lessons-d4-echo", "rel": "caused_by", "dst": "dc-r5-parallel-streams" },
+    { "src": "dc-r5-parallel-streams", "rel": "inherits", "dst": "dc-r4-parallel-cloud-sessions" }
+  ]
+}

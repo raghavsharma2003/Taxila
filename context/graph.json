@@ -20467,6 +20467,90 @@
    "at": "2026-10-11",
    "title": "Release 13.2 (3cd45e8) live as taxila-web--s3cd45e8-ychf plus worker w3cd45e8-6ufy. The full recorder works end to end on the tier-2 browser lesson that wedged 13.1. Server: director.turn, classify.verdict, safety.scan and db.write x3, model.call x20 with prompt blobs, studio.slot.revealed x3, studio.slot.failed x1, board.page x3, tts first/end, srv x25. Client: events, 8 rrweb chunks, 4 TTS clips, a flag and its note. Replay rendered from the real Azure container. Writer counters drain (buffered 0, written 146, failures 0); 0 rows after the account delete",
    "source": "inbox/r4-main-2300.json"
+  },
+  {
+   "id": "ms-r12dr-landscape-2026-10-11",
+   "kind": "measurement",
+   "title": "duplex research 2026-10-11 (docs/research/duplex-2026-10/LANDSCAPE.md, primary sources read today): Azure Voice Live supports hi-IN (multilingual input model, azure_semantic_vad_multilingual, MAI-Transcribe-2, hi-IN voices) and has server AEC with a Live-Reference mode for client playback, deep noise suppression and semantic end of turn. It is half-duplex with barge-in, and its filler-word false-barge-in filter is English-only. gpt-realtime and gpt-realtime-mini list Hindi; gpt-realtime-2.1(-regional) is deployable through Voice Live in centralindia. GPT-Live-1 is the only full-duplex model sold Direct on Azure ($3/h); on IndicFDB Hindi it replies in 0.18 s but takes the floor in ~38% of natural pauses. No open full-duplex model has usable Hindi with commercial weights (PersonaPlex and Moshi are English; Human-1 Hindi Moshi has no confirmed weights and 0.56/5 on interruption replies). CPU-runnable turn models today: Smart Turn v3 (BSD-2, Hindi 93.4% on its own test set)",
+   "at": "2026-10-11",
+   "source": "inbox/r12-duplex-research.json"
+  },
+  {
+   "id": "ms-r12dr-personaplex-2026-10-11",
+   "kind": "measurement",
+   "title": "PersonaPlex-7B teardown 2026-10-11 (docs/research/duplex-2026-10/PERSONAPLEX.md): English-only (model card en; the Moshi tokenizer has no Devanagari). Code MIT; weights under the NVIDIA Open Model License (commercial OK, revocable, guardrail-circumvention termination). ~17 GB bf16 plus ~1.6 GB KV per session. Central India SKUs: NC24ads A100 v4 $5.14/h, NC40ads H100 v5 $9.77/h (Retail Prices API, ESTIMATE); no Container Apps serverless A100 in India. The reference server runs one session per process. A Hindi path starts from Human-1 plus PersonaPlex's prompt recipe; data, not compute, is the blocker. The inner-monologue text arrives with its audio, so a text safety predicate can only mute after the first syllable unless a hold buffer adds latency",
+   "at": "2026-10-11",
+   "source": "inbox/r12-duplex-research.json"
+  },
+  {
+   "id": "open-r12dr-adopt-personaplex-ideas",
+   "kind": "open",
+   "title": "duplex research: ideas to adopt in our own engine without hosting a duplex model (PERSONAPLEX.md §5): (1) a small 80 ms frame turn / voice-activity-projection model trained on two-channel labels; (2) her own stream as an input (playback cross-correlation, VAD on the AEC residual, TTS word clock); (3) an Azure-only Hinglish synthetic dialogue factory with stitched turns, overlaps and echo; (4) a backchannel head with pre-rendered haan / achha capped near the human rate; (5) tutor role and safety probes in TaxilaFDB. The owner's no-new-features decision of 2026-10-10 holds until main says otherwise",
+   "at": "2026-10-11",
+   "source": "inbox/r12-duplex-research.json"
+  },
+  {
+   "id": "ms-r12dr-bakeoff-2026-10-11",
+   "kind": "measurement",
+   "title": "duplex bake-off 2026-10-11 (docs/research/duplex-2026-10/BAKEOFF.md; evals/duplex-2026-10; SIMULATED: 66 TaxilaFDB TEST scenarios, Azure TTS child-like voices, modelled phone loudspeaker at -6 dB under the child, 'clean' = -30 dB residue; no AEC3 for our arms). Echo false barge-in phone/clean: (a) cascade mic open 66/66 / 66/66; (b) duplex engine 46/66 / 3/66; (c) Voice Live gpt-realtime-2.1 with server AEC 0/66 / 0/66 (AEC+DNS off: 63/66); (d) gpt-realtime alone 64/66 / 66/66; (e) Voice Live Live-Reference AEC with OUR TTS as reference, create_response false, 0/66 / 0/66. True barge-in F7: (c) and (e) 12/12 (p50 616-675 ms), (b) clean 10/12. EOT p50: ~0.95-1.06 s for (a), (c), (d), (e); 13-15/34 thinking-pause cut-offs for each; (b) 5-7/34 but ~3.0 s (harness gap). Skeleton CER mean: Voice Live front end 0.27-0.37 (best), gpt-realtime 0.38-0.46 (its input transcript returns Urdu script/CJK on short Hindi), cascade phone 0.62. First audio p50: (c) 1.9 s, (d) 2.0 s. Lone 250 ms 'हाँ' unheard by Voice Live in 1/2 (e), 2/2 (c); not fixed by remove_filler_words false or VAD threshold 0.2-0.3",
+   "at": "2026-10-11",
+   "source": "inbox/r12-duplex-research.json"
+  },
+  {
+   "id": "ms-r12dr-continuers-2026-10-11",
+   "kind": "measurement",
+   "title": "continuer probe 2026-10-11 (36 TaxilaFDB F8 scenarios, 6 each of हम्म/अच्छा/हाँ हाँ/ओके/ठीक है/जी over her, phone path; simulated): false yields (c) Voice Live 17/36 (हम्म 6/6, ठीक है 6/6, ओके 3/6, अच्छा 2/6, हाँ हाँ 0/6, जी 0/6), (e) Voice Live front end 23/36, (b) duplex engine on the real D4 STT 25/36 clean (live ASR turns अच्छा into other words). Voice Live's filler filter is English-only. Its transcript arrives ~0.9 s after speech_started (p50 916, p90 974 ms, n=36), so duck-then-resume on our own Hindi continuer list is feasible",
+   "at": "2026-10-11",
+   "source": "inbox/r12-duplex-research.json"
+  },
+  {
+   "id": "ms-r12dr-smartturn-2026-10-11",
+   "kind": "measurement",
+   "title": "Smart Turn v3.2 (ONNX CPU, reference preprocessing) on the bake-off's child-like Hinglish TTS turns 2026-10-11: accuracy 34/72 (47 %), true ends complete 18/34, thinking pauses incomplete 16/38; CPU p50 69 ms (1 thread), 102 ms (default). At chance; confirms rj-smart-turn-off-the-shelf-child-hinglish (TTS falling contours are a confound)",
+   "at": "2026-10-11",
+   "source": "inbox/r12-duplex-research.json"
+  },
+  {
+   "id": "dc-r12dr-duplex-architecture",
+   "kind": "decision",
+   "title": "PROPOSED to main (docs/research/duplex-2026-10/RECOMMENDATION.md): commit to Voice Live as the acoustic FRONT END under our cascade. The client sends stereo (mic + what it actually played); Voice Live does Live-Reference AEC, deep noise suppression, azure_semantic_vad_multilingual and hi-IN/en-IN transcription with create_response false. Our duplex engine owns the floor (duck on speech_started, resume on our Hindi continuer list, re-ask on speech_started + empty transcript, decide-late merge for thinking pauses). Our Director writes and our safety predicate gates every word before our TTS speaks. Not (c)/(d): the model owns the floor and speaks before our predicate can gate, at ~$5/child-hour. Reverse if, on real phones and children: echo false barge-in > 5 % or true barge-in < 90 %; front-end bill > $1.5/child-hour; ASR > 5 CER points worse than gpt-live-transcribe; lone-word recall < 90 %; EOT +300 ms; a Direct S2S model offers text-before-audio gating; or Live-Reference AEC / Hindi VAD is withdrawn",
+   "at": "2026-10-11",
+   "source": "inbox/r12-duplex-research.json"
+  },
+  {
+   "id": "ms-r12dr-voice-cost-per-minute-2026-10-11",
+   "kind": "measurement",
+   "title": "voice cost per conversation-minute 2026-10-11 (BAKEOFF.md §5b, evals/duplex-2026-10/cost-per-minute.mjs). Unit prices are from the Azure Retail Prices API: serviceName 'Foundry Tools' / 'Foundry Models' / 'Voice'. ACS PSTN per-minute rates are not in the API ($1 placeholder units); they come from the ACS pricing page and rates CSV. Enterprise call, 50/50 talk, 4 turns/min, AI only: (e) Voice Live front end + cascade $0.027; (a) cascade S1 + 5.6 terra + HD TTS $0.035; (a') budget $0.024; (b) $0.052; Voice Live Pro gpt-realtime-2.1 native $0.088, with Azure HD voice $0.040; gpt-realtime-2.1-mini $0.026; GPT-Live-1 $0.050 ('Live 1 Gl Unit' $3/h, now verified). US inbound geo $0.0085 + ACS streaming $0.004/min. India: no ACS numbers; Direct Routing $0.004/min + an Indian carrier. Child-hour re-priced with the same meters: (a) $0.59-1.84, (e) $0.86-1.38. This SUPERSEDES the Rs28 ($0.29) cascade figure in mk-azure-voice-cost-per-hour, which is too low: HD TTS for 30 min of her speech alone is $0.59",
+   "at": "2026-10-11",
+   "source": "inbox/r12-duplex-research.json"
+  },
+  {
+   "id": "ms-r14-owner-phone-lessons-d4-echo",
+   "kind": "measurement",
+   "title": "2026-10-14, flight recorder, n=2 owner lessons (3a7da0ad 2026-10-12 06:23 UTC; 56d898ce 2026-10-14 16:23 UTC), both on an Android 10 phone (Chrome 154, 393x876, loudspeaker, getUserMedia echoCancellation=true). Both ended after 2 turns with the same chain on lane D4 (cascade, WebRTC gpt-live-transcribe, server_vad): her own voice re-entered the mic and was transcribed as the child (3 phantom finals in 3a7da0ad, e.g. 'क्यों भाई'); 3 empty finals per lesson with asr.error input_audio_buffer_commit_empty; the engine HUSHed on short_burst at level 0.05 and YIELDed (sustained_voice / revoke) on her echo, so she cut herself off mid-line (2 and 1 'she was interrupted'); speak:backstop_silence fired 0.4 s after the reply to the child's tapped 'Homework' chip arrived, so a second turn raced the first; and twice she asked a voice-first phone child to 'type karke bhejo' the homework. Server: lesson/start 5.4 s, turns 2.8-3.4 s, one taxila-gpt6 classify timeout at 2.4 s on the hot path. Method: scripts/trace.mjs --session on the production trace_event rows. The owner's verdict on 2026-10-14: 'everything is broken'.",
+   "at": "2026-10-14",
+   "source": "inbox/r14-main.json"
+  },
+  {
+   "id": "dc-r14-no-clock-gates",
+   "kind": "decision",
+   "title": "2026-10-14 owner: 'remove the time frame for the class, that is nonsense, I am not even able to test after the time'. Decision: the parent's lesson hours, the daily cap and 'done for today' (never one more) gate nothing by default: homeStateOf returns start / first / resume / homework / test_window, and startRefusal refuses only the Conductor's safety hold. TAXILA_DAY_LIMITS=on restores the round-4 rules unchanged (the tests pin both modes). The parent screens still show the saved hours and minutes; the Conductor still plans windows (they no longer refuse anything). Reverse if: real families onboard and parents ask for limits, then bring them back as an opt-in parent control that is off by default, never as a default that blocks a tester.",
+   "at": "2026-10-14",
+   "source": "inbox/r14-main.json"
+  },
+  {
+   "id": "dc-r14-stale-chunk-reload-once",
+   "kind": "decision",
+   "title": "2026-10-14: a tab opened before a deploy asks for lazy chunks the new build no longer has (owner tab 2026-10-13: err.resource /assets/Landing-*.js, then a dead page). src/main.tsx reloads the page once on vite:preloadError (at most one reload a minute, keyed in sessionStorage; a beacon records it), so the tab picks up the new index.html. Reverse if: chunk reloads loop or hide a real build error (the beacon count makes that visible), then keep the previous build's assets for one deploy instead.",
+   "at": "2026-10-14",
+   "source": "inbox/r14-main.json"
+  },
+  {
+   "id": "dc-r5-parallel-streams",
+   "kind": "decision",
+   "title": "2026-10-14 owner: 'test everything and keep iterating until perfection... launch many workflows... behave autonomously'. Decision: round 5 runs as five cloud sessions with a measured bar each (docs/design/round5/BRIEF.md): 4B duplex (D5 to the phone-loudspeaker bar plus a half-duplex D4 fallback), 4A conversation and covert comprehension (>=85% agreement with blind labels, simulated-child battery), stream 2 board (draws what was asked >=9/10), stream 3 latency (Start to first sound p50 <=2.5 s; end of turn to first sound p50 <=1.5 s), and a new QA break-it session (claude/r5-qa) that drives every screen on a phone profile until two passes find nothing new. Main integrates, gates and deploys, and runs adversarial review workflows on each head. Reverse if: integration cost exceeds the parallel gain (two merges in a row needing rework), or the cloud credit runs out.",
+   "at": "2026-10-14",
+   "source": "inbox/r14-main.json"
   }
  ],
  "edges": [
@@ -32994,6 +33078,56 @@
    "src": "ms-r132-live",
    "rel": "supersedes",
    "dst": "ms-r13-server-rows-lost-live"
+  },
+  {
+   "src": "ms-r12dr-personaplex-2026-10-11",
+   "rel": "part_of",
+   "dst": "ms-r12dr-landscape-2026-10-11"
+  },
+  {
+   "src": "open-r12dr-adopt-personaplex-ideas",
+   "rel": "part_of",
+   "dst": "ms-r12dr-personaplex-2026-10-11"
+  },
+  {
+   "src": "ms-r12dr-continuers-2026-10-11",
+   "rel": "part_of",
+   "dst": "ms-r12dr-bakeoff-2026-10-11"
+  },
+  {
+   "src": "ms-r12dr-smartturn-2026-10-11",
+   "rel": "part_of",
+   "dst": "ms-r12dr-bakeoff-2026-10-11"
+  },
+  {
+   "src": "dc-r12dr-duplex-architecture",
+   "rel": "measured_by",
+   "dst": "ms-r12dr-bakeoff-2026-10-11"
+  },
+  {
+   "src": "dc-r12dr-duplex-architecture",
+   "rel": "measured_by",
+   "dst": "ms-r12dr-landscape-2026-10-11"
+  },
+  {
+   "src": "ms-r12dr-voice-cost-per-minute-2026-10-11",
+   "rel": "supersedes",
+   "dst": "mk-azure-voice-cost-per-hour"
+  },
+  {
+   "src": "ms-r12dr-voice-cost-per-minute-2026-10-11",
+   "rel": "part_of",
+   "dst": "ms-r12dr-bakeoff-2026-10-11"
+  },
+  {
+   "src": "ms-r14-owner-phone-lessons-d4-echo",
+   "rel": "caused_by",
+   "dst": "dc-r5-parallel-streams"
+  },
+  {
+   "src": "dc-r5-parallel-streams",
+   "rel": "inherits",
+   "dst": "dc-r4-parallel-cloud-sessions"
   }
  ]
 }
