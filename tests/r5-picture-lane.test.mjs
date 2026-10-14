@@ -105,3 +105,16 @@ test("a clock's hands are radii, not cuts of a whole: W8 lets them through only 
   assert.equal(w8(gateWhiteboard(clock, ctx)).pass, false, "without the ask, a circle cut from its centre is refused (unchanged)");
   assert.equal(w8(gateWhiteboard(clock, { ...ctx, face: true })).pass, true);
 });
+
+test("'ghadi draw karo': the code clock passes the board gate against her line and answers the ask", async () => {
+  const { clockBoard, answersRequest, askedNumbers } = await import("../server/studio/request.js");
+  const { gateWhiteboard } = await import("../server/studio/qa/whiteboard.js");
+  const req = { kind: "draw", subject: "ghadi" };
+  const sc = clockBoard(req, { spanMs: 7000 });
+  assert.ok(sc);
+  assert.equal(clockBoard({ kind: "draw", subject: "aloo" }), null);
+  const reply = "Ghadi gol hoti hai: 1 se 12 tak numbers; chhoti sui ghante batati hai, badi sui minute. Upar 12 hai, neeche 6.";
+  const g = gateWhiteboard(sc, { reply, speechMs: 7000, extraNumbers: askedNumbers(req), face: true });
+  assert.deepEqual(g.checks.filter((c) => !c.pass).map((c) => c.id), []);
+  assert.equal(answersRequest(g.script, req), true);
+});

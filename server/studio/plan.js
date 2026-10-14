@@ -483,7 +483,7 @@ export async function planWhiteboard(ask, { kit, prev, redact = [], deployment =
       gate.fixes = fit.fixes;
       // round 5 (stream 2): a board that ignores the child's request, or is the page already up, is repaired once (a shape
       // note, not a line), then refused
-      const missed = gate.pass && request && !answersRequest(gate.script, request, { drawnFor: true }) ? (request.kind === "number_line" ? "it has no number line (numwork number_line) and a number line was asked" : `nothing on it names or shows ${asked?.label ?? "what was asked"}`) : null;
+      const missed = gate.pass && request && !answersRequest(gate.script, request, { drawnFor: true }) ? (request.kind === "number_line" ? "it has no number line (numwork number_line) and a number line was asked" : request.kind === "example" ? "it is not her example worked: write each number she says, one step under the last, ? for what she asks" : `nothing on it names or shows ${asked?.label ?? "what was asked"}`) : null;
       const again = gate.pass && shownBefore(gate.script, { avoid, seen });
       if (gate.pass && !missed && !again) return { ok: true, script: { ...gate.script, facts: gate.facts }, gate, ms: ms(), attempts, usage, usd: usdNow() };
       if (missed || again) { feedback = missed ? `asked: ${missed}; draw what was asked` : "not_again: this is the page that was already up; draw something new"; continue; }

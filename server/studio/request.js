@@ -94,6 +94,8 @@ export function answersRequest(script, request, { drawnFor = false } = {}) {
   // an EXAMPLE ("ek example do"): a worked page, the example's numbers in steps, never a bare fact ("1/2 = 2/4 | same
   // amount", battery c6-example) or the lesson's ready-made steps with no numbers ("Find each | change | Check")
   if (request.kind === "example" && !request.subject) return workedPage(script);
+  // a clock asked for: a circle with its 12 and its 6 is one (the code clock writes no name: request.js clockBoard)
+  if (faceDrawing(request) && script.ops.some((o) => o?.op === "circle" && Number(o.r) >= 30) && ["12", "6"].every((n) => textsOf(script).includes(n))) return true;
   const words = subjectWords(request.subject);
   // a PICTURE asked with no thing named ("तस्वीर दिखाओ"): the lesson's ready-made flow chart is not a picture of anything she
   // describes (QA, round 5: "Dekho: ek tarazu…" over "Change to grams / Compare weights"); only the board drawn from her
@@ -224,6 +226,26 @@ export function numberLineBoard(request, { scriptId = "nl", lessonId = "", spanM
   });
   const durationMs = Math.max(...ops.map((o) => o.endMs)) + 200;
   return { v: 1, scriptId, line: { lessonId }, anchor: "line_audio_start", board: { ...board, ground: "chalk" }, mode: "fresh", durationMs, ops };
+}
+/**
+ * Round 5 (owner decision 14.2, battery c3-clock "ghadi draw karo"): a clock face drawn by code, gated like any board: its
+ * circle, 1-12 inside the rim, a centre dot and two hands at ten past ten (no time is written; the hands are radii, W8 face).
+ * The line planner's clocks failed W2 (twelve numbers over each other). null unless a clock was asked for. PURE.
+ */
+export function clockBoard(request, { scriptId = "clock", lessonId = "", spanMs = 3000 } = {}) {
+  const words = String(request?.subject ?? "").toLowerCase().split(/[^\p{L}\p{M}\p{N}]+/u);
+  if (!words.some((w) => FACE_NUMBERS[0][0].includes(w))) return null;
+  const c = [200, 150], R = 112, rN = 88;
+  const beat = Math.max(150, Math.min(900, (Number(spanMs) || 3000) * 0.75 / 16));
+  const T = (i, n = 1) => ({ startMs: 300 + Math.round(i * beat), endMs: 300 + Math.round(i * beat + Math.max(150, beat * 0.85) * n) });
+  const at = (deg, r) => [Math.round(c[0] + r * Math.sin((deg * Math.PI) / 180)), Math.round(c[1] - r * Math.cos((deg * Math.PI) / 180))];
+  const ops = [{ id: "face", op: "circle", c, r: R, weight: 2, ...T(0, 2) }];
+  for (let h = 1; h <= 12; h++) { const [x, y] = at(h * 30, rN); ops.push({ id: `n${h}`, op: "text", at: [x, y + 6], text: String(h), size: "s", align: "middle", ...T(2 + h * 0.8) }); }
+  ops.push({ id: "hour", op: "line", from: c, to: at(305, 48), weight: 3, ink: "accent", ...T(13) });
+  ops.push({ id: "minute", op: "line", from: c, to: at(60, 70), weight: 2, ...T(14) });
+  ops.push({ id: "pin", op: "circle", c, r: 4, fill: "ink", ...T(15) });
+  const durationMs = Math.max(...ops.map((o) => o.endMs)) + 200;
+  return { v: 1, scriptId, line: { lessonId }, anchor: "line_audio_start", board: { w: 400, h: 300, ground: "chalk" }, mode: "fresh", durationMs, ops };
 }
 /** Does her line say there is no game (honest), or announce one ("Chalo mirror line game")? PURE. */
 const GAME_WORD = /\b(?:game|games)\b|गेम/iu;

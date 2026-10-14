@@ -18,7 +18,7 @@
 //   4. no code board passes: wait for the line planner up to its budget (the pre-ship5 behaviour), then a late speculative
 //      board; then nothing (the caller's template-rung fallback, else voice).
 // Kill switch TAXILA_BOARD_SYNC=0: plan() is exactly deps.planWhiteboard (the old path). Never throws.
-import { answersRequest, samePage, shownBefore, freeAsked, subjectWords, numberLineBoard, askedNumbers, faceDrawing } from "../studio/request.js";
+import { answersRequest, samePage, shownBefore, freeAsked, subjectWords, numberLineBoard, clockBoard, askedNumbers, faceDrawing } from "../studio/request.js";
 import { gateWhiteboard, withheldValues, numbersIn, partitionCounts } from "../studio/qa/whiteboard.js";
 import { speechMsOf, redactLine, WB_BOARD, sectorsForCutCircles } from "../studio/plan.js";
 import { explainerFor } from "../forge/explainer/lesson.js";
@@ -320,10 +320,12 @@ export async function plan(ask, o) {
   // the code board is computed now (pure, ~ms) so the deadline never waits on it
   // round 5: a number line the child asked for, with their numbers, is drawn by code (request.js numberLineBoard), gated
   // like any board; it is the code rung for that ask (the kit's own board never answers "number line pe 1/4 dikhao")
-  const nl0 = request?.kind === "number_line" ? numberLineBoard(request, { scriptId: String(ask?.intent?.intentId ?? "nl"), lessonId: ask?.line?.lessonId ?? "", spanMs: ctx.speechMs }) : null;
+  // ... and a clock asked for ("ghadi draw karo") is drawn by code too (request.js clockBoard)
+  const nl0 = request?.kind === "number_line" ? numberLineBoard(request, { scriptId: String(ask?.intent?.intentId ?? "nl"), lessonId: ask?.line?.lessonId ?? "", spanMs: ctx.speechMs })
+    : request?.subject ? clockBoard(request, { scriptId: String(ask?.intent?.intentId ?? "clock"), lessonId: ask?.line?.lessonId ?? "", spanMs: ctx.speechMs }) : null;
   const nl = nl0 ? regate(retime(nl0, nl0.durationMs, ctx.speechMs), ask, ctx) : null;
-  const code0 = nl?.ok ? { ...nl, template: "number_line", by: "request" } : codeBoard(ask, { kit: o.kit, lessonId: ask?.line?.lessonId, band: ctx.band }, ctx);
-  if (nl0 && !nl?.ok) console.info(`[studio] number line refused ${(nl?.gate?.checks ?? []).filter((c) => !c.pass).map((c) => c.id).join(",")}`);
+  const code0 = nl?.ok ? { ...nl, template: request.kind === "number_line" ? "number_line" : "clock", by: "request" } : codeBoard(ask, { kit: o.kit, lessonId: ask?.line?.lessonId, band: ctx.band }, ctx);
+  if (nl0 && !nl?.ok) console.info(`[studio] ${request?.kind === "number_line" ? "number line" : "clock"} refused ${(nl?.gate?.checks ?? []).filter((c) => !c.pass).map((c) => c.id).join(",")}`);
   const code = fits(code0) ? code0 : null;
   // 2. until the sync deadline: the first of the line plan (if it passes) or the speculative board (if it lands and passes)
   // ship5 fixer (experience B1, V3.3 "a child's request is answered on stage within 3 s p90"): when the CHILD asked for
@@ -356,6 +358,12 @@ export async function plan(ask, o) {
   if (specE && !specE.result) await Promise.race([specE.promise, sleep(Math.max(0, (o.budgetMs ?? 7000) - (Date.now() - t0)))]);
   const spec4 = takeSpecFit(ask, ctx);
   if (spec4) return tag(spec4, "spec", { usd: spec4.usd + (Number(fin?.usd) || 0) });
+  // an EXAMPLE asked and no worked page came (the line plan failed or ran out of time): the lesson's own ready-made page,
+  // when it is not a page already shown, beats an empty board (round 5 battery iter9: c1 / c6 "ek example do" got none)
+  if (request?.kind === "example") {
+    const loose = [code0, tpl0].find((r) => r?.script && r.ok !== false && !shownBefore(r.script, { avoid: o.avoid, seen: o.seen }));
+    if (loose) return tag(loose, loose === code0 ? "code" : "template", { usd: Number(fin?.usd) || 0, specState: specState(ask), loose: true });
+  }
   return { ...(fin ?? { ok: false, script: null, usd: 0, why: "planner_error" }), source: "none", syncMs: Date.now() - t0 };
 }
 /** A line plan that lost the race still costs: its spend is reported when it lands (the breaker and the caps count it). */
