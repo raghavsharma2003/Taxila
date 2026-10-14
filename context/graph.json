@@ -20551,6 +20551,20 @@
    "title": "2026-10-14 owner: 'test everything and keep iterating until perfection... launch many workflows... behave autonomously'. Decision: round 5 runs as five cloud sessions with a measured bar each (docs/design/round5/BRIEF.md): 4B duplex (D5 to the phone-loudspeaker bar plus a half-duplex D4 fallback), 4A conversation and covert comprehension (>=85% agreement with blind labels, simulated-child battery), stream 2 board (draws what was asked >=9/10), stream 3 latency (Start to first sound p50 <=2.5 s; end of turn to first sound p50 <=1.5 s), and a new QA break-it session (claude/r5-qa) that drives every screen on a phone profile until two passes find nothing new. Main integrates, gates and deploys, and runs adversarial review workflows on each head. Reverse if: integration cost exceeds the parallel gain (two merges in a row needing rework), or the cloud credit runs out.",
    "at": "2026-10-14",
    "source": "inbox/r14-main.json"
+  },
+  {
+   "id": "dc-r5-llm-orchestrated-teacher",
+   "kind": "decision",
+   "title": "2026-10-14 owner: the lessons do random things (topic jumps, 'type it' with no keyboard, no grasp of whether the child understood); ONE strong LLM must control the whole journey like Claude Code (dynamic, follows the child, launches parallel agents for content), nothing driven by hard-coded flow, the strongest Azure model for the main loop and cheaper models for defined purposes. Decision: the Teacher becomes an agent loop on one strong Azure Direct model (sim-lab bake-off: gpt-6.1-sol / gpt-6-sol / grok-4.1-fast). Every lesson event is a message; it answers with streamed speech and tool calls (board.show/clear returning the screen truth, picture/game jobs through Forge in parallel, item.next and answer.check on the verified keys, learner.note/read for the covert comprehension read, memory under consent, lesson.end). The harness keeps as CODE: the child-safety floor (scanSafety before the agent sees input, the floor filter before TTS, the safeguard path), screen truth against tool results, one turn at a time, budgets; the Director becomes the fallback lane and a tool source. This revises, for the agent lane only, the round-1 stance that the server-side Director decides the move (the inherited laws stay: a model never grades, safety by predicate, shapes not lines, must-fire rules last). Built behind TAXILA_TEACHER=agent for the owner cohort (4A). Gate: the sim lab (AI child with a hidden knowledge state vs the teacher, a cross-family judge) shows the agent lane beating the current lane over n >= 60 lessons and holding child-stop to first-sound p50 <= 1.5 s. Reverse if: after 3 sim-lab iterations the agent still loses on coherence or understanding, or no Azure model holds first-sound p50 <= 2 s; then the Director stays the main lane and the agent plans and builds content only. Design: docs/design/round5/AGENT.md.",
+   "at": "2026-10-14",
+   "source": "inbox/r5-main-agent.json"
+  },
+  {
+   "id": "dc-r5-simlab-is-the-gate",
+   "kind": "decision",
+   "title": "2026-10-14 owner: 'start the whole session, an AI talks to another AI, read the transcript, try different cases, loop'. Decision: a sim lab (session claude/r5-simlab, evals/simlab/**) runs whole lessons through the real server with an Azure model playing a child from a persona card (class, language mix, temperament, habits, ASR noise, and a HIDDEN knowledge state with planted kit misconceptions). A judge from a different model family scores coherence, follows-the-child, understanding against the hidden state (the card is the key, so it is measured, not opined), adapts, human, channel truth, safety floor, pacing, citing turns. It is the gate for both lanes; every iteration is published as before/after with n and transcripts. Reverse if: judge scores disagree with the owner's own lesson verdicts on the same transcripts (then recalibrate the rubric on owner-labelled lessons before trusting it).",
+   "at": "2026-10-14",
+   "source": "inbox/r5-main-agent.json"
   }
  ],
  "edges": [
@@ -33128,6 +33142,21 @@
    "src": "dc-r5-parallel-streams",
    "rel": "inherits",
    "dst": "dc-r4-parallel-cloud-sessions"
+  },
+  {
+   "src": "dc-r5-simlab-is-the-gate",
+   "rel": "constrains",
+   "dst": "dc-r5-llm-orchestrated-teacher"
+  },
+  {
+   "src": "dc-r5-llm-orchestrated-teacher",
+   "rel": "caused_by",
+   "dst": "ms-r14-owner-phone-lessons-d4-echo"
+  },
+  {
+   "src": "dc-r5-llm-orchestrated-teacher",
+   "rel": "part_of",
+   "dst": "dc-r5-parallel-streams"
   }
  ]
 }
