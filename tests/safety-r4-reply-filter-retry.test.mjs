@@ -37,12 +37,15 @@ test("two completion blocks in a row fail closed, as before", async () => {
   assert.equal((await run(r)).filtered, true);
 });
 
-test("a PROMPT block (the child's words are in it) fails closed at once, with no retry", async () => {
+// round 5 (sim lab p43, main safety review) supersedes "at once, with no retry": a prompt block now probes the child's own
+// words alone (tests/r5-filter-categories.test.mjs); when THEY trip the filter the turn still fails closed, as here.
+test("a PROMPT block whose child's words also trip the filter fails closed", async () => {
   const r = lesson();
-  let calls = 0;
-  replyDeps.chat = async () => { calls++; throw promptBlock(); };
+  let calls = 0, probes = 0;
+  replyDeps.chat = async (_d, _m, o) => { calls++; if (o?.purpose === "filter_probe") probes++; throw promptBlock(); };
   assert.equal((await run(r)).filtered, true);
-  assert.equal(calls, 1);
+  assert.equal(probes, 1);
+  assert.equal(calls, 3, "the block, one retry on this turn alone, one probe");
 });
 
 test("main review: a completion block, then a NON-filter failure on the fresh reply, still fails closed", async () => {

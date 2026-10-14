@@ -72,6 +72,32 @@ export const scrubbed = (t) => scrubPii(t).text;
 /** The reply model call, injectable for tests of the guards (tests/lesson-truth.test.mjs); production uses azure.js. */
 export const replyDeps = { chat };
 
+/**
+ * round 5 (sim lab p43, main safety review): do the CHILD'S OWN WORDS trip the content filter? The reply prompt carries the
+ * system brief, her earlier lines and the history as well, and a harm category can fire on that mix: the reply prompt for
+ * "6 aur 5... 30... 3,00,000?" came back `sexual` (TEST lesson 2af743d2, turn 4) while the classifier and the labeller
+ * passed the same words, and the child got the helpline script. The probe sends the child's recent words alone (masked as
+ * the reply saw them, joined so a disclosure spread over several turns is judged whole) through the reply deployment, so
+ * the same filter policy judges them. "harm": a harm or unreadable block; "clear": passed (or only an injection / copyright
+ * detector fired); "unknown": the probe itself failed, which the caller treats as harm (it could not be cleared).
+ * @returns {Promise<"harm"|"clear"|"unknown">}
+ */
+export async function childWordsTrip(words, { trace } = {}) {
+  if (!words) return "clear";
+  try {
+    await replyDeps.chat(DEPLOY.reply, [{ role: "system", content: "Answer with one word: ok" }, { role: "user", content: words }],
+      { maxTokens: 16, effort: "none", timeoutMs: 4000, retries: 1, trace, purpose: "filter_probe" });
+    return "clear";
+  } catch (e) {
+    if (isContentFilter(e)) return nonHarmFilter(e) ? "clear" : "harm";
+    return "unknown";
+  }
+}
+
+/** The child's words a filter probe judges: their last few turns and this one, masked, newest last. */
+export const probeWords = (history, childText) =>
+  [...history.filter((t) => t.who !== "teacher").slice(-4).map((t) => t.text), childText].filter((t) => typeof t === "string" && t.trim()).map(scrubbed).join("\n");
+
 /** Keep whole sentences up to `max` words (last-resort guard after one rewrite failed). */
 export function trimToWords(text, max) {
   const parts = p5Flag("GUARDS") ? sentences(text) : String(text).match(/[^.!?।]+[.!?।]*\s*/g) ?? [text];
@@ -458,11 +484,35 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
     // One retry on the system prompt and this turn only (the history may carry what tripped it); if that is blocked too, a
     // neutral fallback line, never the helplines. Harm categories (sexual, self_harm, violence, hate) and unreadable blocks
     // still fail CLOSED below, exactly as before.
+    const neutral = (code) => ({ reply: fallbackReply(state, item), guard: { caught: [code], rewritten: false, replaced: true } });
+    const lone = [messages[0], messages[messages.length - 1], ...(lastNotes ? [{ role: "system", content: lastNotes }] : [])];
+    let triedLone = false;
     if (isContentFilter(e) && nonHarmFilter(e)) {
       console.warn(`[lesson] reply blocked by a non-harm filter (${e.filterCats.join(",")}): one retry on this turn alone`);
-      const lone = [messages[0], messages[messages.length - 1], ...(lastNotes ? [{ role: "system", content: lastNotes }] : [])];
+      triedLone = true;
       try { again = await ask(lone); } catch (e2) { if (isContentFilter(e2) && !nonHarmFilter(e2)) e = e2; }
-      if (!again && !(isContentFilter(e) && !nonHarmFilter(e))) return { reply: fallbackReply(state, item), guard: { caught: ["content_filter_nonharm"], rewritten: false, replaced: true } };
+      if (!again && !(isContentFilter(e) && !nonHarmFilter(e))) return neutral("content_filter_nonharm");
+    }
+    // round 5 (sim lab p43, main safety review): a HARM (or unreadable) block on the PROMPT is the filter judging the whole
+    // mix (the brief, her lines, the history, the child's words), not the child. The safeguard fires only when the CHILD'S
+    // OWN WORDS trip it: a probe of their recent words alone (childWordsTrip) runs beside one retry on this turn alone. The
+    // probe blocked on a harm category, or failing for any reason, fails CLOSED exactly as before, whatever the retry did.
+    // A clear probe: the retry's reply if it came back, else a neutral line, never the helplines. The completion block
+    // (HTTP 200, below) is unchanged: there the prompt with the child's words already passed.
+    if (!again && isContentFilter(e) && !nonHarmFilter(e) && e.status !== 200) {
+      const cats = (e.filterCats ?? []).join(",") || "unreadable";
+      const [retry, probe] = await Promise.all([
+        triedLone ? null : ask(lone).catch(() => null),
+        childWordsTrip(probeWords(history, childText), { trace }),
+      ]);
+      if (probe !== "clear") {
+        console.warn(`[lesson] reply prompt blocked (${cats}); the child's own words ${probe === "harm" ? "trip the filter" : "could not be cleared"}: fail closed`);
+        return blocked();
+      }
+      console.warn(`[lesson] reply prompt blocked (${cats}) but the child's own words pass: ${retry ? "the retry on this turn alone" : "a neutral line"}`);
+      if (!retry) return neutral("content_filter_context");
+      again = retry;
+      guardSlot.filter = "context";
     }
     if (!again && isContentFilter(e) && e.status === 200 && !nonHarmFilter(e)) {
       console.warn("[lesson] reply completion blocked by the content filter: one fresh reply");
@@ -472,13 +522,14 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
     }
     if (again) reply = again;
     else {
+      if (isContentFilter(e) && nonHarmFilter(e)) return neutral("content_filter_nonharm");
       if (isContentFilter(e)) { console.warn("[lesson] reply blocked by the content filter"); return blocked(); }
       console.warn("[lesson] reply unavailable, falling back:", e.message);
       return { reply: fallbackReply(state, item), guard: { caught: ["unavailable"], rewritten: false, replaced: true } };
     }
   }
   let found = problems(reply);
-  const guard = { caught: found, rewritten: false, replaced: false, ...(found.length ? { firstDraft: reply } : {}), ...(guardSlot.used ? { leadSlot: true } : {}) };
+  const guard = { caught: found, rewritten: false, replaced: false, ...(found.length ? { firstDraft: reply } : {}), ...(guardSlot.used ? { leadSlot: true } : {}), ...(guardSlot.filter ? { filter: guardSlot.filter } : {}) };
   // r4-latency (TAXILA_TTS_FIRST_SENTENCE, SHADOW): can the draft's first TTS sentence be LOCKED now — could it start speaking
   // while the rest of the turn is still being guarded or rewritten? Locked only when it passes every per-sentence guard on its
   // own, names nothing on the screen (the child would still see the last turn's), asks nothing, and the minimal turn

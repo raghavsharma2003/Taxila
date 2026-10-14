@@ -66,13 +66,13 @@ describe("reply filter categories (round 5)", () => {
     assert.doesNotMatch(out.reply, /1098|14416|Childline|चाइल्डलाइन/);
   });
 
-  test("a harm category, or an unreadable block, still fails CLOSED at once (no retry)", async () => {
+  test("a harm category, or an unreadable block, whose CHILD'S WORDS also trip the filter: fails CLOSED", async () => {
     for (const cats of [["sexual"], ["self_harm"], ["jailbreak", "violence"], []]) {
       const r = lesson();
-      let calls = 0;
-      replyDeps.chat = async () => { calls++; throw block(cats); };
+      const probes = [];
+      replyDeps.chat = async (_d, msgs, o) => { if (o?.purpose === "filter_probe") probes.push(msgs); throw block(cats); };
       assert.equal((await run(r)).filtered, true, JSON.stringify(cats));
-      assert.equal(calls, 1, JSON.stringify(cats));
+      assert.equal(probes.length, 1, JSON.stringify(cats));
     }
   });
 
@@ -81,5 +81,72 @@ describe("reply filter categories (round 5)", () => {
     let calls = 0;
     replyDeps.chat = async () => { calls++; throw block(calls === 1 ? ["jailbreak"] : ["sexual"]); };
     assert.equal((await run(r)).filtered, true);
+  });
+
+  // round 5 (sim lab p43, TEST lesson 2af743d2 turn 4): the REPLY prompt came back `sexual` on a maths answer while the
+  // classifier and the labeller passed the same words. The safeguard fires only when the child's own words trip the filter.
+  const hist = [{ who: "teacher", text: "Screen par 6000 aur 50 dekhiye" }, { who: "child", text: "chaar zero honge?" }];
+  const probeOf = (o) => o?.purpose === "filter_probe";
+
+  test("p43: a harm block on the reply prompt, the child's words pass the probe, the retry on this turn alone answers", async () => {
+    const r = lesson();
+    const calls = [];
+    replyDeps.chat = async (_d, msgs, o) => {
+      calls.push({ probe: probeOf(o), n: msgs.length, user: msgs.filter((m) => m.role === "user").map((m) => m.content).join(" | ") });
+      if (probeOf(o)) return { text: "ok" };
+      if (calls.filter((c) => !c.probe).length === 1) throw block(["sexual"]);
+      return { text: said };
+    };
+    const out = await run(r, hist);
+    assert.notEqual(out.filtered, true, JSON.stringify(out.guard));
+    assert.equal(out.reply, said);
+    assert.equal(out.guard.filter, "context");
+    const probe = calls.find((c) => c.probe), retry = calls.filter((c) => !c.probe)[1];
+    assert.ok(probe, "the child's words were probed");
+    assert.match(probe.user, /chaar zero honge\?/, "the probe judges their recent turns too");
+    assert.match(probe.user, /3,00,000/, "and this turn");
+    assert.doesNotMatch(probe.user, /Screen par/, "never her lines");
+    assert.equal(probe.n, 2, "the child's words alone, with a one-line instruction");
+    assert.ok(retry.n < calls[0].n, "the retry drops the history");
+  });
+
+  test("p43: a harm block, the retry blocked too, the probe clear: a neutral line, never the helplines", async () => {
+    const r = lesson();
+    replyDeps.chat = async (_d, _m, o) => { if (probeOf(o)) return { text: "ok" }; throw block(["sexual"]); };
+    const out = await run(r, hist);
+    assert.notEqual(out.filtered, true);
+    assert.deepEqual(out.guard.caught, ["content_filter_context"]);
+    assert.doesNotMatch(out.reply, /1098|14416|Childline|चाइल्डलाइन/);
+  });
+
+  test("a harm block whose probe is blocked on harm fails CLOSED even when the retry answered", async () => {
+    const r = lesson();
+    let n = 0;
+    replyDeps.chat = async (_d, _m, o) => { if (probeOf(o)) throw block(["sexual"]); if (++n === 1) throw block(["sexual"]); return { text: said }; };
+    assert.equal((await run(r, hist)).filtered, true);
+  });
+
+  test("a probe that fails for any other reason (a timeout, a 5xx) fails CLOSED: the words could not be cleared", async () => {
+    const r = lesson();
+    let n = 0;
+    replyDeps.chat = async (_d, _m, o) => { if (probeOf(o)) throw new AzureError("chat taxila-fast timeout", 504, "timeout"); if (++n === 1) throw block(["violence"]); return { text: said }; };
+    assert.equal((await run(r, hist)).filtered, true);
+  });
+
+  test("a probe blocked only by an injection detector counts as clear", async () => {
+    const r = lesson();
+    let n = 0;
+    replyDeps.chat = async (_d, _m, o) => { if (probeOf(o)) throw block(["jailbreak"]); if (++n === 1) throw block(["hate"]); return { text: said }; };
+    const out = await run(r, hist);
+    assert.notEqual(out.filtered, true);
+    assert.equal(out.reply, said);
+  });
+
+  test("a COMPLETION block (HTTP 200) is unchanged: one fresh reply, a second block fails closed, no probe", async () => {
+    const r = lesson();
+    let probes = 0;
+    replyDeps.chat = async (_d, _m, o) => { if (probeOf(o)) probes++; throw block(["sexual"], 200); };
+    assert.equal((await run(r, hist)).filtered, true);
+    assert.equal(probes, 0);
   });
 });
