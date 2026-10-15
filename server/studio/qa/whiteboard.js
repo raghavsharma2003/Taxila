@@ -300,7 +300,8 @@ export function namedShapeMissing(reply, ops, { asked = false } = {}) {
   const has = new Set();
   for (const o of ops ?? []) {
     if (o.op === "rect") has.add("rectangle").add(Math.abs((o.w ?? 0) - (o.h ?? 0)) <= 2 ? "square" : "rectangle");
-    if (o.op === "circle" || o.op === "ellipse" || o.op === "sector") has.add("circle");
+    // (a dot marking a point on a number line is not a shape: QA pass 14 run a20930e5, a number line refused for "rectangle")
+    if ((o.op === "circle" && Number(o.r ?? 0) >= 12) || o.op === "ellipse" || o.op === "sector") has.add("circle");
     if (o.op === "polygon" && Array.isArray(o.points)) {
       if (o.points.length === 3) has.add("triangle");
       if (rightAngled(o.points)) has.add("rectangle").add("square");

@@ -167,3 +167,15 @@ test("QA pass 14 W17: her line's own numbers (50, 30) under a library board that
   assert.ok(failing(gateWhiteboard(sc([["3", "×", "160", "=", "480", "metres"]]), { reply: line, kit, speechMs: 5000 })).includes("W17.her_numbers"));
   assert.ok(!failing(gateWhiteboard(sc([["50", "+", "30", "+", "50", "+", "30", "=", "?"]]), { reply: line, kit, speechMs: 5000 })).includes("W17.her_numbers"));
 });
+
+test("QA pass 14 (a20930e5): a number line asked for under a line that names a rectangle is drawn (its point dots are not shapes, W15), from her numbers", async () => {
+  const boardSync = await import("../server/stagecraft/board-sync.js");
+  const fs = await import("node:fs");
+  const kit = JSON.parse(fs.readFileSync("data/kits/c6-maths.json", "utf8")).topics.find((t) => t.topicId === "c6-maths-ch06-t01");
+  const line = "Kabir, number line dekho: 0 se 50, phir 30, phir 50, phir 30. Rectangle ke chaar sides ka total kitna hoga?";
+  const ask = { intent: { intentId: "L:wb:9", lessonId: "L", kind: "whiteboard", beat: "explain", style: { band: "B3" }, request: { kind: "number_line" } }, requested: true,
+    line: { lessonId: "L", text: line }, mode: "fresh", kit: { topicId: kit.topicId, content: [] } };
+  const r = await boardSync.plan(ask, { kit, planWhiteboard: async () => ({ ok: false, usd: 0 }) });
+  assert.equal(r.ok, true);
+  assert.equal(r.template, "number_line");
+});
