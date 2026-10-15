@@ -257,6 +257,9 @@ const VISUAL_NOUN = "(?:table|chart|diagram|drawing|graph|timeline|number\\s+lin
 export function unassumeVisual(text) {
   const before = String(text ?? "");
   const s = before
+    // "Yeh timeline aapke liye seedhi line mein dikh rahi hai" over nothing (sim lab 4ae682b3 p51, five turns running): a
+    // visual noun said to be SEEN is said to BE
+    .replace(new RegExp(`(\\b${VISUAL_NOUN}\\b[^.?!।]{0,60}?)\\s+(?:dikh|dikhai\\s+de|dikhayi\\s+de)\\s+(?:rahi|raha|rahe)\\s+hai\\b`, "giu"), "$1 hai")
     // "aapke saamne number line hai: …" (sim lab 24175dbe p51) over nothing: she asks them to picture it
     .replace(new RegExp(`\\b(?:aapke|tumhare|tere|apne)\\s+saamne\\s+(?:ek\\s+)?(${VISUAL_NOUN})\\s+hai\\b`, "giu"), "socho, ek $1 hai")
     .replace(new RegExp(`\\b(?:is|iss|us|uss|this|the|ye|yeh)?\\s*${VISUAL_NOUN}\\s+(?:mein|me|par|pe|per|में|पर)\\s+`, "giu"), "")
