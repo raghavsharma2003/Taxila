@@ -231,3 +231,23 @@ test("no game for the topic: no promise of one this turn or later; the state tel
   assert.equal(later.say, "Chalo bolkar ek game khelte hain: 2 aur 2?");
   assert.equal(withoutGamePromise("Game ready hai? Nahi abhi."), "Nahi abhi.");
 });
+
+test("streamed: her words reach speakStreamed clause by clause through the gate; praise on a wrong answer and pointing at an empty screen are dropped; the card question is the tail", async () => {
+  const { speakStreamed } = await import("../server/latency/speech-stream.js");
+  const { clauseGate } = await import("../server/agent/agent.js");
+  const json = JSON.stringify(base({ say: "Bahut accha! Screen par dekho, do roti hain. Socho, ek roti ke 2 barabar tukde hon. Ab ek chhota sawaal.", pose_item: "i1", intent: "practice" }));
+  const streamFn = async (dep, messages, o) => { for (let i = 0; i < json.length; i += 7) { o.onDelta(json.slice(i, i + 7)); await new Promise((r) => setImmediate(r)); } return { text: json, usage: { in: 900, out: 80 } }; };
+  let speech = null;
+  const onSay = (deltas, gate) => { speech = speakStreamed({ deltas, gate, synth: async function* (c) { yield Buffer.from(c); }, emit: () => {} }); };
+  const out = await run(base(), { streamFn, onSay, verdict: "wrong" });
+  const sp = await speech;
+  assert.deepEqual(sp.spoken, ["Socho, ek roti ke 2 barabar tukde hon.", "Ab ek chhota sawaal."]);
+  assert.equal(out.streamed, true);
+  assert.ok(out.tail, "the card question the code appended is the tail to speak");
+  assert.ok(typeof out.firstSayMs === "number");
+  // the gate on its own: a floor break stops, a type ask is rewritten, the harness's words are dropped
+  const g = clauseGate({ verdict: "correct", screen: { on: "nothing" }, lane: "voice" });
+  assert.equal(g("Apna jawab type karke bhejo.", []).clause, "Apna jawab bolkar batao.");
+  assert.equal(g("Card ka check isse match nahi hua.", []).skip, true);
+  assert.equal(g("Bahut badhiya, sahi jawab!", []).ok, true);
+});

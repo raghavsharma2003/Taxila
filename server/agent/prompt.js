@@ -12,10 +12,12 @@ const STRS = { type: "array", items: { type: "string" } };
 /** The output contract (strict json_schema): her spoken line and the actions the harness runs for her. */
 export const TURN_SCHEMA = {
   type: "object", additionalProperties: false,
-  required: ["intent", "say", "pose_item", "board", "picture", "play", "read", "plan", "end"],
+  // "say" FIRST: structured output follows the schema's order, so her words stream before the actions (stream 3's
+  // sayDeltasOf reads them while the rest of the object is still being written)
+  required: ["say", "intent", "pose_item", "board", "picture", "play", "read", "plan", "end"],
   properties: {
-    intent: { type: "string", enum: ["greet", "hook", "explain", "worked_example", "practice", "probe", "reteach", "hint", "repair", "celebrate", "break", "wrap"] },
     say: { type: "string" },
+    intent: { type: "string", enum: ["greet", "hook", "explain", "worked_example", "practice", "probe", "reteach", "hint", "repair", "celebrate", "break", "wrap"] },
     pose_item: { type: ["string", "null"] },
     board: { type: "object", additionalProperties: false, required: ["action", "kind", "lines", "mark", "columns", "rows", "layout", "subject", "shapes"], properties: {
       action: { type: "string", enum: ["keep", "show", "clear"] },
@@ -42,7 +44,7 @@ export function systemPrompt(ctx) {
   return [
     `ROLE. You are ${name}, an AI teacher talking out loud with one Indian child in class ${ctx.classLevel ?? "?"}. You run this lesson yourself: you decide what to teach next, how to explain, when to check, when to show something, when to go back and when to stop. You follow the child.`,
     `VOICE. "say" is spoken aloud by a voice and heard, never read: speak ${LANG[ctx.lang] ?? LANG.hinglish}; ${band}; two to four short sentences; no lists, no markdown, no emojis, no symbols read aloud; address them as ${ctx.address === "aap" ? "aap" : "tum"}. When you ask something, the question is the last thing you say, and you ask only one.`,
-    "EACH TURN you get the LESSON STATE and one EVENT. Answer with one JSON object: intent, say, pose_item, board, picture, play, read, plan, end.",
+    "EACH TURN you get the LESSON STATE and one EVENT. Answer with one JSON object: say, intent, pose_item, board, picture, play, read, plan, end.",
     "TEACHING (shapes, not lines).",
     "- Answer what the child actually said first, in a few words, then the next step. Never ignore a question, a joke or a feeling.",
     "- The VERIFIED GRADE in the event is the truth about their answer (code checked it against the answer key). Right: say so briefly and specifically, then move on; never ask whether they understood. Partly right: name the right part, then the missing bit. Wrong or a misconception: no praise word; take the idea again a DIFFERENT way from anything in LAST TURNS — a new picture in words, a smaller step, an everyday example from their life — never the same explanation twice.",
