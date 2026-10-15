@@ -59,8 +59,8 @@ Status: **FIXED** (on `claude/r5-qa`, verified by a repro script) · **OWNER** (
 | D37 | P2 | FIXED | main (server plan, 0eaa3ef8) + QA (client) | Home offers CONTINUE "Pick up where you left off" for a lesson the server will not resume (after a disclosure, or after the 2 min grace while Home sat open), then starts a new one |
 | D38 | P2 | OWNER | conversation | A class 6 child (aap by class default) is addressed with tum in Hinglish replies ("Kabir—tumne khud perimeter ka meaning bata diya") |
 | D39 | P1 (14.4) | OWNER | stream 2 (one predicate: reply rewrite + board) | Her line states the open item's key ("0 se 160 metres tak … boundary distance kitna hai?") and the number line draws 0 … 160 |
-| D40 | P2 | OWNER | main / conversation (safety continuer) | After a model-opened safeguard, "Main already bol diya na" safeguards again (Help sheet) instead of reading as fine |
-| D41 | P2 | OWNER | conversation | After a safeguard, "Can we do the lesson now?" gets mixed-language chips ("Show me a picture / Tell it as a story / Play a game / Lesson par wapas") and an English reply for a Hinglish child |
+| D40 | P2 | WAI (re-tested) | main | After a model-opened safeguard, "Main already bol diya na" safeguards again (Help sheet) instead of reading as fine |
+| D41 | P2 | OWNER (14.4) | 4A | After a safeguard, "Can we do the lesson now?" gets mixed-language chips ("Show me a picture / Tell it as a story / Play a game / Lesson par wapas") and an English reply for a Hinglish child |
 | D42 | P2 | OWNER | stream 2 + client | A Studio page closes when the next reply carries `tray: none`, even when that reply still talks about it ("isi rectangle ka perimeter…") |
 | D19 | P2 | WONTFIX | QA (UI) | `GET /api/me` 401 logged as a console error on every signed-out landing and set-up load |
 
@@ -284,6 +284,12 @@ Fresh TEST accounts: class 6 Hinglish (boards), class 6 Hinglish (safeguard), cl
 - **D40 (P2):** "Main already bol diya na" after the safeguard → move safeguard again, the Help sheet re-opens. Her line:
   "Aapne pehle hi bata diya tha—main repeat kar baithi, sorry Aarav. Abhi us trusted adult ke paas rahiye; … Childline 1098
   ya Tele-MANAS 14416…". Expected (main): it reads as fine.
+  - Main's triage: the line has no "fine" phrase, so this is the normal stay turn; works as designed.
+  - Re-test on TEST with main's full sentences:
+    - "Main theek hoon, par yeh sawaal phir se? Main already bol diya na" → a gentle resume ("Aapne bataya ki aap theek
+      hain—sorry, maine wahi baat phir poochhi. Ab rectangle ke chaaron sides jodte hain…"), but move `reteach` and NO chips;
+    - "main theek hoon, pehle hi bata diya na" → move repair, "Theek hai Aarav, aapne bata diya—main maan rahi hoon. Ab
+      lesson carry on karein ya aaj stop karein?" with the chips "Aage padhte hain / Aaj ke liye bas".
 - **D41 (P2):** "Can we do the lesson now?" → chips "Show me a picture / Tell it as a story / Play a game / Lesson par wapas"
   (English with one Hinglish), and her reply switches to English for a Hinglish child.
 - **D42 (P2), stream 2's question "does a Studio page stay when the next response has no slot?" — no:**
