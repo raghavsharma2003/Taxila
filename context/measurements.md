@@ -4424,3 +4424,10 @@ Out-of-sample continuer check: 32 cards not used for tuning, plus p30's re-run. 
 - **14.3.2 is live:** s7c86981-rx7j at 100%, with 14.3.1 kept for rollback.
 - Gate: 3,416 pass / 0 fail. Canary smoke 4/4.
 - It wasn't checked live with a safeguard, because that would write a production incident. The TEST and sim lab checks are queued for the next session.
+
+
+<!-- merged from inbox/r1432final-main.json -->
+## ms-r1432-qa-test (2026-10-15)
+
+- 14.3.2 verified on TEST: 5/5 low-mood lines safeguarded, two of them caught by the new words-only read.
+- 0/3 boredom lines safeguarded.
