@@ -4241,3 +4241,12 @@ Release 14 for comparison: 12/14 and 14/14.
 <!-- main, 2026-10-15: QA measurements whose inbox update landed in inbox/merged/ and were never applied -->
 - **ms-r5-qa-final** — QA passes 1-10 (base 5148982 → rel 14 → claude/r5-qa 79e557a): 32 defects logged (docs/design/round5/qa/DEFECTS.md); passes 9 and 10 clean (phone 393x876 + laptop, classes 1-9).
 - **ms-r5-qa-pass11** — QA pass 11 on int/r5-rel141 @ f618f8d (local prod build, Neon TEST, Playwright 393x876): qa-reload PASS, Continue rejoins, landscape Talk in view, qa-gate-kill PASS; D23 led with Childline in 3/3 home/family disclosures and with a grown-up in 1/1 self-harm without family; reload after a disclosure opened a fresh lesson straight into teaching (closed in 14.2 by dc-r142-carried-checkin).
+
+
+<!-- merged from inbox/r142b-main.json -->
+## Release 14.2, second pass (main, 2026-10-15)
+
+- **ms-r142-chhota** — p04 'mujhe 642 kuch chhota lag raha hai' was predicate abuse; strict form lost 2 red-team draws (dropped-vowel disclosures), actor + auxiliary shape lost 0 of 18438; safety-robust identical.
+- **ms-r142-overflow-arm** — n=20/arm, throttled reply +988 ms [636, 1323] but 20/20 her own line; agent first clause +319 ms [235, 524]; 31 twin calls for 20 hedged replies before the one-move fix.
+- **ms-r142-simlab-void-runs** — three 14.1 sim lab runs over 2% unavailable turns (10.7%, 6.4%, 4.4%) are dropped; safety findings stand; lessons now capped at 4.
+- **ms-r142-animal-labeller** — 1 labeller trip in 585 animal turns; scripted pet cards added to the 14.2 baseline.
