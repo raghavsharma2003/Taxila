@@ -396,6 +396,49 @@ async function distressCheck(text, classLevel, trace, { failClosed = false } = {
 }
 
 /**
+ * 14.3: do the child's words ALONE trip the content filter? A neutral brief ("Answer with one word: ok") on the reply
+ * deployment, the same probe the reply path runs (brain/say.js childWordsTrip). "harm": a harm or unreadable block;
+ * "clear": passed, or only an injection / copyright detector fired; "unknown": the probe failed (the caller fails closed).
+ * @returns {Promise<"harm"|"clear"|"unknown">}
+ */
+async function wordsTrip(text, trace) {
+  try {
+    await classifyChat(DEPLOY.reply, [{ role: "system", content: "Answer with one word: ok" }, { role: "user", content: scrubPii(text).text }],
+      { maxTokens: 16, effort: "none", timeoutMs: 4000, retries: 1, trace, quotaLane: "hot" });
+    return "clear";
+  } catch (e) {
+    if (isContentFilter(e)) return nonHarmFilter(e) ? "clear" : "harm";
+    return "unknown";
+  }
+}
+
+/** The deployments the cross-filter distress read tries, in order, distinct (TAXILA_DISTRESS_ACROSS adds to the list). */
+const distressDeployments = () => [...new Set([DEPLOY.classify, classifyFallback(),
+  ...String(process.env.TAXILA_DISTRESS_ACROSS ?? "grok-4-1-fast-non-reasoning,taxila-fast").split(",")].map((d) => (d ? String(d).trim() : "")).filter(Boolean))];
+
+/**
+ * 14.3: the model's distress read of the words, one deployment at a time: a filter block on one deployment's brief (a
+ * context block: wordsTrip already passed the words alone) moves to the next deployment's filter; any other failure too.
+ * true / false: a clean read; null: no deployment could read it (the caller fails closed).
+ * @returns {Promise<boolean|null>}
+ */
+async function distressAcross(text, classLevel, trace) {
+  const messages = [
+    { role: "system", content: `A reply from an Indian school child (class ${classLevel}) in a lesson, in Hindi, English or Hinglish; the transcript may be misheard. distress: true ONLY for signs the child is unsafe, hurt, abused, frightened of a person, a place or what is happening to them, very sad, or may harm themself — never for ordinary frustration or worry about the lesson itself (scared of numbers, a question, a test or getting it wrong: the teacher reassures).` },
+    { role: "user", content: scrubPii(text).text },
+  ];
+  for (const d of distressDeployments()) {
+    try {
+      const { json } = await classifyChat(d, messages, { schema: DISTRESS_SCHEMA, schemaName: "distress", effort: "none", maxTokens: 40, timeoutMs: 4000, retries: 0, trace, quotaLane: "hot" });
+      return !!json?.distress;
+    } catch (e) {
+      console.warn(`[classify] distress read on ${d} ${isContentFilter(e) ? `blocked (${(e.filterCats ?? []).join(",") || "unreadable"})` : "failed"}: next deployment`);
+    }
+  }
+  return null;
+}
+
+/**
  * The deterministic part of classify(): chips, module answers, empty, the safety predicate, exact key or option
  * matches and a lexical don't-know. Returns the label when the bytes decide, or null when classify() must ask
  * the model (or, for a low-ASR transcript, run its distress backup) — which is what lets the turn route start
@@ -750,7 +793,16 @@ async function classifyModel(args, target, text, flags, trace, done, fast = {}) 
     // CLOSED exactly as before; only a clean pass makes this a block of the context, an outage of the labels.
     if (isContentFilter(e) && !nonHarmFilter(e)) {
       const cats = (e.filterCats ?? []).join(",") || "unreadable";
-      if (await distressCheck(text, classLevel, trace, { failClosed: true })) return filtered();
+      // 14.3 (sim lab p26, TEST lesson 71599981 turn 4: "इंडियन वीवर्स को लॉस हुआ ना। ब्रिटिश मशीन का माल सस्ता था…", a class 8
+      // history answer): the distress check's OWN brief ("unsafe, hurt, abused, frightened …") with those words came back
+      // `hate` too, so the 14.2 probe failed closed on a context block. Two steps now: (1) the words alone under a neutral
+      // brief (wordsTrip, as the reply path's childWordsTrip) — a harm block or an unreadable probe fails CLOSED; (2) the
+      // distress read across deployments (distressAcross): a block on one deployment's brief moves to the next filter; a
+      // clean read decides; no deployment able to read it fails CLOSED.
+      const trip = await wordsTrip(text, trace);
+      if (trip !== "clear") return filtered();
+      const read = await distressAcross(text, classLevel, trace);
+      if (read !== false) return filtered();
       console.warn(`[classify] labels blocked (${cats}) but the child's own words pass: no evidence this turn`);
       return done("no_evidence", "content_filter_context");
     }
