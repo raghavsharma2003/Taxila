@@ -84,6 +84,7 @@ async function askedBoard(ack, asked) {
 }
 import { comprehensionRead } from "../director/read.js";
 import { agentTurn, eventOf, applyAgentTurn, specWasteOf } from "../agent/agent.js";
+import { supersedable, editMissed, restoredState, liveWithout, supersedeStmts, undoStmt, orphanCacheStmts } from "./supersede.js";
 import { childTurnRow, clientInstructions, debugFor, floorIncidentStmt, incidentStmt, kitFor, laneOf, runTurnTx, stageTurns, turnInsertStmt, turnLane, withAsk, withSeamUi, withStudioSlot } from "./rows.js";
 import { traceIdentify, traceLesson } from "../trace/context.js";
 import { record } from "../trace/writer.js";
@@ -248,11 +249,24 @@ export async function lessonTurn(req, body, hooks = {}) {
     }
     throw forbidden("core_tutoring consent withdrawn");
   }
-  if (replay) return replayResponse(lesson, lesson.state, replay, edited ? { editLanded: true } : {});
+  // Round 5 truth bar (server/brain/supersede.js): an edit of the lesson's LATEST landed turn supersedes it — restored from
+  // the snapshot taken when it committed, graded on the edited words; an edit after a later turn landed is too late.
+  let undo = null;
+  if (replay && edited && supersedable(lesson.state, turnSeq)) {
+    const u = await one("select turn_seq, turn, prev, ids from lesson_undo where lesson_id = $1", [lesson.id]).catch(() => null);
+    if (u && Number(u.turn_seq) === turnSeq && Number(u.turn) === Number(lesson.state.turn)) undo = { turn: Number(u.turn), prev: u.prev, ids: u.ids ?? {}, current: lesson.state };
+  }
+  if (replay && !undo) {
+    if (edited && editMissed(lesson.state, turnSeq)) {
+      console.info(`[lesson] edit missed ${lesson.id} turnSeq=${turnSeq}: a later turn already landed`);
+      q("update brain_trace set reasons = reasons || '{turn.edit_missed}'::text[] where lesson_id = $1 and turn = $2", [lesson.id, Number(lesson.state.turn)]).catch(() => {});
+    }
+    return replayResponse(lesson, lesson.state, replay, edited ? { editLanded: true } : {});
+  }
   // "Fix" (edited: the same turnSeq, corrected words) REPLACES an attempt still in flight: the mark makes that attempt
   // lose its commit (its guard checks state.supersede), so only the corrected answer is counted. One statement: it
   // refuses when the first attempt landed meanwhile (then the landed response is replayed).
-  if (edited) {
+  if (edited && !undo) {
     const marked = await one(`update lesson set state = jsonb_set(state, '{supersede}', to_jsonb($2::int))
         where id = $1 and (ended_at is null or $3::boolean)
           and not coalesce(state->'acks' @> jsonb_build_array(jsonb_build_object('turnSeq', $2::int)), false) returning id`, [lesson.id, turnSeq, late]);
@@ -263,7 +277,7 @@ export async function lessonTurn(req, body, hooks = {}) {
       throw new HttpError(409, "lesson has ended");
     }
   }
-  const prev = lesson.state;
+  const prev = undo ? restoredState(undo.prev, undo.current) : lesson.state;
   const state = structuredClone(prev);
   delete state.supersede;
   // This spoken turn's on-device voice features (TurnRequest.voiceFeatures): stored and z-scored against the
@@ -276,7 +290,11 @@ export async function lessonTurn(req, body, hooks = {}) {
   voiceP.then((v) => { voiceNow = v; }, () => {});
   // The child's folded learner state (kt_evidence rows after the cached seq: one indexed read, in parallel with
   // the kit and the classifier, shared by the real plan and every speculative one).
-  const liveP = loadLive(child);
+  // a supersede plans on the ledger WITHOUT the original's events, and writes its caches as a diff against the cached
+  // fold that still has them (cachedP), so everything the original moved is rewritten
+  const cachedP = undo ? (evictLive(child.id), loadLive(child)) : null;
+  cachedP?.catch(() => {});
+  const liveP = undo ? liveWithout(child, (undo.ids.kt ?? []).map(String)) : loadLive(child);
   liveP.catch(() => {});
   // The 016 tables (brain_trace, decision_record): probed once per process, beside the kit read (trace.js tableReady).
   const tablesP = Promise.all([tableReady("brain_trace", q), tableReady("decision_record", q), columnReady("brain_trace", "misconception_id", q)]);
@@ -337,7 +355,8 @@ export async function lessonTurn(req, body, hooks = {}) {
     // 18/18) and the relational families correct on the next turn (the fixed opening is the client's, safetyStrings.ts)
     ...(state.lastMove?.kind === "safeguard" && safetyPreface(teacherText) ? ["meta_talk"] : []),
     ...relationalViolations(teacherText, { content: floorContentOf(activeItem), gender: characterForState(state)?.pronouns?.subject === "he" ? "m" : "f" })] : [];
-  if (teacherText) {
+  // a supersede: her heard line was stored with the superseded turn (it WAS said); only the child's row is new
+  if (teacherText && !undo) {
     turnRows.push({ speaker: "teacher", text: teacherText,
       meta: { interrupted: !!body.teacherInterrupted, ...(leaked ? { answerLeak: true } : {}), ...(spoils ? { spoils } : {}),
         // the realtime model wrote this turn itself: a mixed-unit comparison is flagged for review (it cannot be unsaid)
@@ -408,7 +427,7 @@ export async function lessonTurn(req, body, hooks = {}) {
       item: activeItem ?? null, line: { text: "" } })), false);
   }
   // A resume turn plans as a module-only turn with no events: the Director holds (the last move and UI stand).
-  const planCtx = { kit, child, lesson, activeItem, moduleOnly: moduleOnly || laneResume, moduleEvents, playTokens, chipId: body.chipId, answer: help ? "" : answer, leaked, live: liveP, carried,
+  const planCtx = { kit, child, lesson, activeItem, moduleOnly: moduleOnly || laneResume, moduleEvents, playTokens, chipId: body.chipId, answer: help ? "" : answer, leaked, live: liveP, ...(cachedP ? { diffBase: cachedP } : {}), carried,
     childText, typed, asrConfidence: body.asrConfidence, bargeIn: !!body.teacherInterrupted, ...(studioView ? { studio: studioView } : {}),
     ...(moduleUnverified ? { moduleUnverified: true } : {}) };
   // A module-only turn or a help request stored no child row, so the whole recent transcript is history.
@@ -1175,7 +1194,7 @@ export async function lessonTurn(req, body, hooks = {}) {
   const releaseReasons = [...(r.move.kind === "wrap" && (relFx.release || cls?.flags?.wantsToStop) ? ["release.goodbye_wrap"] : []),
     ...(next.stopAsked === next.turn && r.move.kind !== "wrap" ? ["release.check_in_given"] : [])];
   // the turn's reason codes: the brain_trace row and the flight recorder's director.turn carry the same list
-  const traceReasons = [`lane.${lane}`, ...(late ? ["turn.late"] : []), ...(moduleOnly ? ["turn.module_only"] : []),
+  const traceReasons = [`lane.${lane}`, ...(late ? ["turn.late"] : []), ...(undo ? ["turn.superseded_edit"] : []), ...(moduleOnly ? ["turn.module_only"] : []),
           ...(help ? ["turn.help"] : []), ...(laneResume ? [revoice ? "turn.lane_resume_revoice" : "turn.lane_resume"] : []), ...(kernel.replanned ? ["turn.replanned"] : []), ...(kernel.wb.declined ? [kernel.wb.declined] : []),
           ...(speculation ? [speculation.hit ? "turn.speculation_hit" : "turn.speculation_miss"] : []), ...(pre ? ["turn.prefetch_adopted"] : []), ...(wbAcked ? ["studio.whiteboard_slot"] : []),
           ...(rungReplaced ? ["studio.rung_replaced"] : []), ...(agentOut ? ["turn.agent"] : agentFallback ? ["turn.agent_fallback"] : []), ...studioReasons, ...releaseReasons,
@@ -1190,7 +1209,13 @@ export async function lessonTurn(req, body, hooks = {}) {
   let seqs = [];
   try {
     ({ seqs } = await runTurnTx(child, [
-      guardStmt(`${guardSql}${notSuperseded} returning id`, [lesson.id, next, prev.turn, ...(notSuperseded ? [turnSeq] : [])]),
+      guardStmt(`${guardSql}${notSuperseded} returning id`, [lesson.id, next, undo ? undo.turn : prev.turn, ...(notSuperseded ? [turnSeq] : [])]),
+      // the superseded turn's rows move to the archives / are labelled, before this turn's own writes
+      ...(undo ? supersedeStmts({ childId: child.id, lessonId: lesson.id, turnSeq, turn: undo.turn, ids: undo.ids })
+        .filter((x) => !x.layer || canWrite(child, x.layer)) : []),
+      // the snapshot this turn can be superseded from (its turnSeq; a late answer is never edited)
+      ...(turnSeq != null && !late ? [undoStmt({ lessonId: lesson.id, turnSeq, turn: next.turn, prev,
+        ids: { kt: (plan.events ?? []).map((e) => e.id), rows: staged.filter((x) => x.speaker !== "teacher").map((x) => x.seq) } })] : []),
       // Text lane: the child cut off the latest stored teacher line; mark that row rather than storing it again.
       ...(textLane && body.teacherInterrupted ? [{ text: `update turn set meta = meta || '{"interrupted": true}'::jsonb
            where id = (select id from turn where lesson_id = $1 and speaker = 'teacher' order by seq desc limit 1) returning id`, params: [lesson.id] }] : []),
@@ -1251,7 +1276,7 @@ export async function lessonTurn(req, body, hooks = {}) {
   if (turnStudio) seamSafe("studio.onReveal", () => studioSeam.onReveal({ lessonId: lesson.id, childId: child.id, turn: next.turn, studio: turnStudio }), null);
   // The online fold is the cache only if our inserts got the next seqs (no interleaved writer); else replay next turn.
   const learner = plan.learner;
-  if (canWrite(child, "kt")) commitLive(child, learner.before.maxSeq, learner.after, seqs);
+  if (canWrite(child, "kt") && !undo) commitLive(child, learner.before.maxSeq, learner.after, seqs);
   else evictLive(child.id);
   for (const x of carried) forgetGrade(x.event.id);
   launchGrades(next);
@@ -1395,6 +1420,9 @@ export async function planTurn(base, cls, c) {
   const now = c.now;
   const live = c.live ? await c.live : { state: newLearnerState({ childId: child.id, classLevel: child.class_level ?? 5 }), maxSeq: 0 };
   const before = live.state;
+  // supersede (server/brain/supersede.js): the cache writes diff against the CACHED fold (it still has the original's
+  // events), not the fold this turn was planned on; otherwise `before` is both
+  const wb = c.diffBase ? (await c.diffBase).state : before;
   const ev0 = { lessonId: lesson.id, startedAt: lesson.started_at, now, childSeq, evidence, cls, prev: state, kit, activeItem, moduleOnly,
     asrConf: c.typed ? null : (typeof c.asrConfidence === "number" ? c.asrConfidence : null), gaming: discount < 1,
     leaked: !!(c.leaked || (activeItem && state.spoiled?.includes(activeItem.id))), chipId: c.chipId,
@@ -1462,11 +1490,13 @@ export async function planTurn(base, cls, c) {
     // the verdict log the parent corner and the lesson-end facts read (001 evidence), as before
     for (const ev of evidence) writes.push(evidenceStmt(child.id, lesson.id, ev, { lessonId: lesson.id, seq: childSeq }, child));
     // the event source and its cached fold (kt_evidence, kt_skill_state, kt_misconception, kt_ability*)
-    for (const st of ledgerStmts(child, before.ledger, after.ledger, events)) writes.push(/^with ins as \(insert into kt_evidence/.test(st.text) ? { ...st, ktEvidence: true } : st);
+    for (const st of ledgerStmts(child, wb.ledger, after.ledger, events)) writes.push(/^with ins as \(insert into kt_evidence/.test(st.text) ? { ...st, ktEvidence: true } : st);
     // the 001 projection of every skill the fold changed, and the facet cache of every belief that moved
-    const changed = Object.keys(after.ledger.skills).filter((id) => JSON.stringify(before.ledger.skills[id]) !== JSON.stringify(after.ledger.skills[id])).sort();
+    const changed = Object.keys(after.ledger.skills).filter((id) => JSON.stringify(wb.ledger.skills[id]) !== JSON.stringify(after.ledger.skills[id])).sort();
     for (const id of changed) writes.push(skillStateStmt(child.id, legacySkillState(after.ledger.skills[id], now), child));
-    const facetMoved = Object.keys(after.comp.skills).filter((id) => JSON.stringify(before.comp.skills[id]) !== JSON.stringify(after.comp.skills[id])).sort();
+    const facetMoved = Object.keys(after.comp.skills).filter((id) => JSON.stringify(wb.comp.skills[id]) !== JSON.stringify(after.comp.skills[id])).sort();
+    // a supersede: cache rows only the superseded turn created are removed (the fold without it has no such skill)
+    if (c.diffBase) writes.push(...orphanCacheStmts(child.id, wb, after));
     writes.push(...facetStmts(child, facetMoved.map((id) => beliefFor(id, { ...after, now }))));
     // a probe asked this turn (probe_log), an engine re-teach decision (reteach_attempts)
     if (next.pendingProbe && next.pendingProbe !== state.pendingProbe && next.pendingProbe.shapeId && next.pendingProbe.skillId) {

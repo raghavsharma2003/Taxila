@@ -356,6 +356,12 @@ async function writeCorrection(ev, results, q) {
   if (!child || !canWrite(child, "kt")) return false;
   const live = await loadLive(child);
   if (live.state.ledger.seen[corr.id] !== undefined || live.state.comp.seen[corr.id]) return false;
+  // round 5 (server/brain/supersede.js): the event this verdict corrects was superseded by the child's own edit (its row
+  // moved to kt_evidence_superseded): the verdict is about words that no longer count — dropped, traced
+  if (live.state.ledger.seen[ev.id] === undefined && !live.state.comp.seen[ev.id]) {
+    console.info(`[later] verdict for ${ev.id} dropped: its event is no longer live (superseded)`);
+    return false;
+  }
   const after = fuseEvidence(live.state, [corr], LIVE_FOLD_CTX);
   const now = Date.now();
   const stmts = W.ledgerStmts(child, live.state.ledger, after.ledger, [corr]);
