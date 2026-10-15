@@ -13,6 +13,8 @@ const recs = readdirSync(join(dir, "records")).filter((f) => f.endsWith(".json")
 // deictic pointing only (2183c32d review: a topic noun — "number line par jumps karenge", "drawing pasand hai?", "next
 // picture se continue karenge", "football dekhte hain" — is not her pointing at the stage)
 const POINT = /\b(?:screen|board|picture|photo|drawing|diagram|chart|number line|timeline|table)\s+(?:par|pe|mein|me|ke (?:left|right|upar|neeche|flow))\b|\bdekh(?:o|iye|iyega|iyenge)\b|\blook at\b|\bon the (?:screen|board)\b|\bin the picture\b|स्क्रीन (?:पर|में)|बोर्ड पर|तस्वीर में|चित्र में|देखो|देखिए/i;
+// a screen noun in the pointing (her line names the stage); a bare "dekho / dekhiye" alone can also mean "consider" (stream 2)
+const NOUN_POINT = /\b(?:screen|board|picture|photo|drawing|diagram|chart|number line|timeline|table)\s+(?:par|pe|mein|me|ke (?:left|right|upar|neeche|flow))\b|\bon the (?:screen|board)\b|\bin the picture\b|स्क्रीन (?:पर|में)|बोर्ड पर|तस्वीर में|चित्र में/i;
 const ID_KEY = /\b(?:left|right|row|col|step|item|node|box|label|top|bottom|stage|part)\d+\b/i;
 const STOP = new Set("this that with from have what your kya hai hain aur yeh woh isko usko mein par kaise kitne kitna abhi phir karo dekho dekhiye board screen".split(" "));
 const words = (s) => new Set(String(s ?? "").toLowerCase().normalize("NFKC").split(/[^\p{L}\p{N}]+/u).filter((w) => (w.length >= 4 || /^\p{N}+$/u.test(w)) && !STOP.has(w)));
@@ -24,7 +26,7 @@ const out = {};
 for (const r of recs) {
   const arm = `${String(r.arm).replace(/_\d+$/, "")}/${r.lane}`;
   const f = (out[arm] ??= { lessons: 0, turns: 0, repeatPageLessons: 0, repeatPages: 0, newPages: 0, unsyncedPages: 0, idKeyLines: 0, idKeyLessons: 0,
-    pointsAtNothing: 0, pointsAtPlanning: 0, pointsLessons: 0, examples: { unsynced: [], idKeys: [], points: [] } });
+    pointsAtNothing: 0, pointsAtPlanning: 0, pointsLessons: 0, pointsNoun: 0, pointsBareDekho: 0, examples: { unsynced: [], idKeys: [], points: [] } });
   f.lessons++;
   const pages = (r.boardPages ?? []).map((pg) => pg.board);
   const dup = pages.filter((b, i) => b && pages.indexOf(b) !== i).length;
@@ -43,6 +45,7 @@ for (const r of recs) {
     if (ID_KEY.test(t.teacher)) { f.idKeyLines++; idHit = true; if (f.examples.idKeys.length < 4) f.examples.idKeys.push(`${r.persona}#${t.n}: ${t.teacher.slice(0, 120)}`); }
     if (POINT.test(t.teacher) && !shown(s)) {
       if (planning(s)) f.pointsAtPlanning++; else f.pointsAtNothing++;
+      if (NOUN_POINT.test(t.teacher)) f.pointsNoun++; else f.pointsBareDekho++;
       ptHit = true;
       if (f.examples.points.length < 4) f.examples.points.push(`${r.persona}#${t.n}${planning(s) ? " (planning)" : ""}: ${t.teacher.slice(0, 110)}`);
     }
