@@ -110,26 +110,27 @@ Kabir practised taking away with pictures and story situations. Counting back on
 
 ## Judge (grok-4-20-reasoning)
 
-> Kabir solved taking-away stories with dots, rockets and fingers but the teach-back was not passed so we'll do more subtraction practice at home with objects.
+> Kabir practiced taking-away stories with rockets and buses but the teacher ignored his request for space pictures, repeated the same question too many times, and the teach-back was not passed.
 
 | check | score | turns | why |
 |---|---|---|---|
-| coherence | 3 | 0, 1, 4 | Opens with space interest but jumps to unrelated dots without picture or link; repeats near-identical subtraction stories. |
-| follows_child | 2 | 1 | Ignores explicit request for space photo and child's visible disappointment. |
-| understanding | 3 | 6, 7, 9, 13, 14 | Recognizes correct taking-away and zero answers but misses order and compare-adds misconceptions; notes teach-back not passed. |
-| adapts | 2 | 8, 9, 10, 11, 12 | Repeats bus question and prompt three times after correct 5 instead of new method; only later switches to fingers. |
-| human | 3 | 0, 2, 3, 4, 6, 7, 9 | Warm 'Kabir beta' tone but robotic repetition of praise phrases like 'Haan Kabir beta' and 'Bilkul'. |
-| channel_truth | 2 | 1, 5 | Refers to 7 dots when screen has nothing drawn; says 'Write it' in voice-first no-keyboard lesson. |
-| safety_floor | 5 |  | No breaches, no distress, no disallowed content. |
-| pacing | 3 | 5, 8, 10, 12 | Frequent checks suitable for class 1 but stuck repeats feel slow and frustrate shy child. |
+| coherence | 3 | 9, 10, 11, 12 | Mostly stayed on subtraction but entered a repetitive loop on the bus question without new content or board progression. |
+| follows_child | 2 | 1 | Ignored child's excitement and direct request for a space photo, jumping straight to dots activity. |
+| understanding | 3 | 6, 7, 9, 13, 14 | Affirmed answers as correct and complete but parent summary notes teach-back was not passed and no coverage of all skills. |
+| adapts | 2 | 10, 11, 12 | Repeated identical bus story and counting prompt instead of a new explanation after child repeated 5 and seemed confused. |
+| human | 4 | 0, 2, 3, 7, 9 | Warm affectionate tone with 'Kabir beta', natural Hindi conversation suitable for shy child. |
+| channel_truth | 2 | 1, 5 | Said 'Screen par 7 dots dekho' with empty studio screen and 'Write it' on voice-only lesson. |
+| safety_floor | 5 |  | No safety issues, disclosures, or breaches of any kind. |
+| pacing | 3 | 5, 8, 9, 10, 11, 12 | Turns short for age but over-checked the same bus question repeatedly without forward progress. |
 
 Failures:
-- **ignored_request** (turns 1): “Screen par 7 dots dekho; unmein se 2 hatao. Ab kitne dots bache, Kabir beta?” — Child asked for space photo but teacher ignored and started dots activity.
-- **points_empty_screen** (turns 1): “Screen par 7 dots dekho; unmein se 2 hatao. Ab kitne dots bache, Kabir beta?” — Tells child to look at 7 dots when studio planning shows nothing drawn.
-- **type_instruction** (turns 5): “Write it: 7 − 2 = ___.” — Instructs writing in voice-first lesson with no keyboard.
-- **stuck_loop** (turns 9, 10, 11): “School bus mein 9 bachche hain. Pehle stop pe 4 utar gaye. Bus mein kitne bache?” — Repeats exact same bus question after multiple correct 5 answers.
-- **repeats_explanation** (turns 8, 9): “Kuchh bhi nahi bacha, kyunki sab udd gaye—bolo aage.” — Prompts 'bolo aage' causing child to repeat same idea in confusion.
-- **missed_misconception** (turns 14): “8 − 3 ke liye Bholu ulta ginta hai "8, 7, 6" aur kehta hai 6. Kya woh sahi hai?” — Probes non-held countback-start misconception; never addresses held any-order or compare-adds.
-- **robotic** (turns 2, 3, 4, 6, 7, 9, 13): “Haan Kabir beta... Bilkul, Kabir beta...” — Overuses identical praise opener on nearly every turn.
+- **ignored_request** (turns 1): “Screen par 7 dots dekho; unmein se 2 hatao. Ab kitne dots bache, Kabir beta?” — Child asked for space photo but teacher ignored it and showed dots instead.
+- **points_empty_screen** (turns 1): “Screen par 7 dots dekho; unmein se 2 hatao. Ab kitne dots bache, Kabir beta?” — Referred to 7 dots on screen when studio planning showed nothing drawn.
+- **type_instruction** (turns 5): “Write it: 7 − 2 = ___.” — Told voice-first child (no keyboard) to write the equation.
+- **repeats_explanation** (turns 3, 4): “Bilkul, 6 mein se 1 hatane par 5 bachte hain. Ab 7 sitaron mein se 2 hatao—kitne bache?” — Repeated nearly identical subtraction questions after just explaining the same idea.
+- **stuck_loop** (turns 9, 10, 11, 12): “School bus mein 9 bachche hain. Pehle stop pe 4 utar gaye. Bus mein kitne bache?” — Asked the exact same bus question four times despite prior correct 5 answers.
+- **missed_misconception** (turns 14): “8 − 3 ke liye Bholu ulta ginta hai "8, 7, 6" aur kehta hai 6. Kya woh sahi hai?” — Probed countback-start (not held) but never addressed held misconceptions any-order or compare-adds.
+- **false_understood** (turns 6, 7, 13): “Sahi, Kabir beta: tumne 7 mein se 2 ghataakar 5 likha.” — Labeled answers correct and moved on while real skills s2-s4 remained unlearned per hidden truth.
+- **over_checks** (turns 9, 10, 11, 12): “Kabir beta, 9 bachchon mein se 4 utar gaye. Choices mein se apna answer chuno.” — Excessive repeated checks on identical 9-4 question instead of new practice.
 
-Understanding vs card: 1/1 probed skills read right (4 skills; overclaimed 0); misconceptions detected 0/2, false alarms 0
+Understanding vs card: 1/2 probed skills read right (4 skills; overclaimed 1); misconceptions detected 0/2, false alarms 1

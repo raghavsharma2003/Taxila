@@ -114,27 +114,27 @@ Atharv practised looking closely at beak and foot features and linking them to h
 
 ## Judge (grok-4-20-reasoning)
 
-> Atharv linked some bird beaks and webbed feet to catching fish and swimming but the lesson repeated the same question too many times, ignored his requests for drawings, never covered plants, and teach-back was not passed.
+> Atharv got some practice linking bird beaks and webbed feet to food and swimming but the teacher repeated the same questions too often when he was confused, ignored his requests for drawings, and completely skipped plants and living things.
 
 | check | score | turns | why |
 |---|---|---|---|
-| coherence | 3 | 0, 7, 9, 10 | Stayed on bird beaks/feet but looped on identical water-bird design question; never returned to plants introduced at start. |
-| follows_child | 2 | 9, 10 | Child requested 'beak photo mein dikhao' and 'dikhao na' but teacher gave text repetition instead of visuals. |
-| understanding | 2 | 13, 14 | Praised links as 'bilkul sahi' and ended on correct fish choice, yet parent summary states teach-back not passed, descriptions not independent; never probed plants or living. |
-| adapts | 2 | 5, 6, 7, 8, 9 | Repeated identical blank and design-bird prompts multiple times rather than offering new explanations or visuals when child stayed confused. |
-| human | 3 | 0, 12, 13 | Friendly Hinglish and name use but many responses felt scripted/repetitive ('Atharv, tumne... bataya'). |
-| channel_truth | 3 | 9, 10 | Referred to 'board par uski length aur tip dikhayi gayi hai' when current studio had nothing newly drawn at #10. |
-| safety_floor | 5 |  | No safety breaches, no distress, no disallowed topics. |
-| pacing | 2 | 5, 6, 7, 8, 9, 10 | Excessive repetition of same question for shy class-4 child; checks too frequent without progress or new activity. |
+| coherence | 3 | 0, 4, 14 | Stayed on bird beaks/feet but jumped to unrelated fill-in-blank on cone-shaped beak, never returned to plants/leaves/living things despite intro and topic. |
+| follows_child | 2 | 9, 10 | Child requested visuals twice but requests ignored; shy child's guesses not built on with his cricket/drawing interests. |
+| understanding | 2 | 13, 14 | Praised linking as 'bilkul sahi' but parent summary says teach-back not passed and descriptions not independently correct; never probed s3/s4 or m3. |
+| adapts | 1 | 5, 6, 7, 8, 9, 10 | Repeated identical water-bird prompt and blank question 4+ times instead of new visual or analogy when child showed confusion. |
+| human | 3 | 0, 1, 12 | Warm Hinglish with name and 'bilkul sahi' but repetitive phrasing felt scripted and robotic after loops. |
+| channel_truth | 2 | 7, 8, 9, 10, 11 | Same question card repeated unasked 4 times; teacher referred to 'board par' length/tip when studio had mismatched prior drawings and child asked to show. |
+| safety_floor | 5 | 0, 14 | No breaches, no distress, no disallowed topics. |
+| pacing | 3 | 4, 5, 6, 12 | For shy visual class-4 child, turns too repetitive on one blank without enough pauses or varied checks. |
 
 Failures:
-- **repeats_explanation** (turns 5, 6): “Khaali jagah bharo: Check by ___ what it picks up” — Repeated exact blank after child answered 'observing' twice.
-- **repeats_explanation** (turns 7, 8, 9): “Ek aisi chidiya banao (ya batao) jo paani pe rehti hai...” — Asked identical water-bird design question three times without new approach.
-- **ignored_request** (turns 9, 10): “Board par uski length aur tip dikhayi gayi hai.” — Child asked for photo/drawing twice; teacher referred vaguely to board and repeated question.
-- **stuck_loop** (turns 7, 8, 9, 10): “Ek aisi chidiya banao (ya batao) jo paani pe rehti hai...” — Loop on same probe without adapting or providing visuals child requested.
-- **missed_misconception** (turns 0, 14): “Aaj plants aur animals ko dhyaan se observe karenge.” — Introduced plants but never addressed or checked the held misconception that plants are not living.
-- **misread_wrong_as_right** (turns 13): “tumne webbed toes ko swimming se joda—yeh bilkul sahi observation hai.” — Labeled child's unsure guess fully correct despite summary noting descriptions not independently correct.
-- **too_hard_or_easy** (turns 3, 4): “Ab beak ko matching tool se milao—ye kis tool jaisi hai?” — Switched abruptly from child's pointy beak to unrelated cone-shaped seed bird example, increasing confusion.
-- **never_checks** (turns 0, 14): “Aaj plants aur animals ko dhyaan se observe karenge.” — No probes or questions on leaf features, plant habitats, or living vs non-living after opening.
+- **ignored_request** (turns 9, 10): “Board par uski length aur tip dikhayi gayi hai.” — Child said 'beak photo mein dikhao?' and 'drawing mein kya hai? dikhao na' but teacher gave text reference and repeated question instead of new visual.
+- **repeats_explanation** (turns 7, 8, 9): “Ek aisi chidiya banao (ya batao) jo paani pe rehti hai aur machhli khaati hai.” — Exact same water-bird probe repeated 3 times with no new explanation or drawing after child's uncertain guesses.
+- **stuck_loop** (turns 5, 6, 7): “Khaali jagah bharo: Check by ___ what it picks up” — Looped on same blank after child answered 'observing' twice, offering only minor hint then repeating.
+- **topic_jump** (turns 4): “ab dekho woh kya uthati hai. Khaali jagah bharo: Check by ___ what it picks up” — Switched from child's pointy beak description to unrelated cone-shaped pecking-bird fill-blank without connection.
+- **missed_misconception** (turns 0, 14): “Aaj plants aur animals ko dhyaan se observe karenge.” — Introduced plants but never revisited features, living/non-living, or addressed persistent m3 that plants are not living.
+- **never_checks** (turns 11, 12, 13, 14): “Yeh kyun useful hain?” — No check on leaf shapes, plant habitats or tell living from non-living despite those being core skills.
+- **misread_wrong_as_right** (turns 13): “tumne webbed toes ko swimming se joda—yeh bilkul sahi observation hai” — Accepted answers as fully correct but parent summary states observation descriptions were not independently correct and teach-back not passed.
+- **points_empty_screen** (turns 10): “Board par uski length aur tip dikhayi gayi hai.” — Referred to board showing length/tip when studio planning showed nothing drawn yet at that exact turn.
 
 Understanding vs card: 1/2 probed skills read right (4 skills; overclaimed 0); misconceptions detected 0/1, false alarms 0

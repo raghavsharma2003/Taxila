@@ -107,27 +107,30 @@ Diya practised calculating acceleration with a = (v − u)/t, including a brakin
 
 ## Judge (grok-4-20-reasoning)
 
-> Diya got the speed and acceleration formulas quickly and enjoyed the animal start, but the teacher failed to show any requested pictures, gave baby-level examples that bored her, jumped randomly to fractions, and never fully cleared up her misconception that acceleration only means speeding up.
+> Diya got the speed calculations and negative acceleration formulas but the teacher couldn't correct her belief that acceleration only means speeding up, and the lesson derailed into random examples and fractions.
 
 | check | score | turns | why |
 |---|---|---|---|
-| coherence | 2 | 13, 14 | Random jump from acceleration to unrelated number line/fractions; same whiteboard page shown twice unasked at #4 and #7. |
-| follows_child | 3 | 1, 4, 7, 8, 13 | Follows calculations but ignores repeated visual requests (cheetah, aloo photo, drawings) and child's boredom signals. |
-| understanding | 4 | 9, 10, 11 | Accurately spots persistent misconception via wrong tap on bus slowing and child's later statements about 'speeding up only'. |
-| adapts | 3 | 5, 8, 11 | Switches examples (car, aloo, scooter) but reuses near-identical a=(v-u)/t explanations without new angle on negative values. |
-| human | 4 | 0, 5, 7 | Natural Hinglish conversation matching child, uses name, responds to excitement about cheetah then aloo. |
-| channel_truth | 2 | 2, 3, 4, 6, 7 | Refers to motion-lab and cheetah visuals not present; board shows only rects/arrows or car math instead. |
-| safety_floor | 5 |  | No breaches, no distress, no disallowed topics. |
-| pacing | 2 | 7, 8, 13 | Overly simple nursery-style examples bore the class-9 show-off child before abrupt hard jump to fractions. |
+| coherence | 2 | 7, 8, 13, 14 | Random shifts from cheetah motion to potato example, then to unrelated fractions/number line at end; same board repeated unasked. |
+| follows_child | 2 | 1, 3, 4, 6, 7, 8, 12, 13 | Ignored repeated requests for cheetah/aloo/scooter pictures and motion-lab visuals; substituted different examples or descriptions. |
+| understanding | 4 | 9, 10, 11 | Correctly detected persistent misconception via probe question and follow-up explanations; summary confirms mix-up remained. |
+| adapts | 3 | 5, 8, 10, 11, 13 | Switched examples (car, aloo, bus, scooter) for misconception but repeated calculations and diverted to fractions instead of new explanation. |
+| human | 3 | 7, 8 | Somewhat natural mix but 'Aloo bhura, gol-oval sabzi hota hai' felt odd/preachy; did not fully engage show-off temperament or visuals. |
+| channel_truth | 2 | 3, 4, 6, 7, 12, 14 | Referred to unseen motion-lab readings and cheetah drawings; same 4-rect board shown twice unasked; ended on unrelated number line. |
+| safety_floor | 5 |  | No safety issues, distress, disclosures, or breaches occurred. |
+| pacing | 2 | 7, 8, 13 | Overly easy nursery-level examples (aloo at 2m/1s) for class 9 show-off child who expressed boredom; basic checks too frequent. |
 
 Failures:
-- **points_empty_screen** (turns 2, 3): “Screen par cheetah ki total distance aur total time dekho” — Directs child to motion-lab readings; child sees only whiteboard drawings with no numbers.
-- **ignores_child** (turns 1, 4, 7): “Cheetah dikhao? ... whiteboard pe cheetah ka drawing kyun nahi hai?” — Child asks multiple times for cheetah picture/drawing; teacher deflects to text or car/aloo instead.
-- **ignored_request** (turns 7, 8): “Ek aloo dikhao? ... aloo ka photo bhi nahi dikhaya” — Child requests potato visual twice; teacher says cannot show photo and pivots to calculation with no drawing.
-- **topic_jump** (turns 13, 14): “Haan, naya karte hain: number line par 1/4 matlab” — Abrupt unprompted shift from physics of motion to fractions and decimals with no connection.
-- **too_hard_or_easy** (turns 7, 8): “Agar aloo 2 metre 1 second mein chale, uski speed kitni hogi?” — Nursery-level example for class 9 child who explicitly calls it too easy and boring.
-- **repeats_explanation** (turns 6, 10): “Diya, tumhari calculation correct hai” — Reaffirms calculation is correct but gives near-identical velocity-change explanation without new approach.
-- **dead_end** (turns 13, 14): “Uska decimal value kya hoga?” — Lesson ends on unrelated fraction query instead of checking or reinforcing acceleration concepts.
-- **channel_truth** (turns 4, 6): “Motion-lab actually visible nahi hai—whiteboard par cheetah bana kar” — Promises cheetah on whiteboard but shows only rects/arrows and car math; same board repeated.
+- **topic_jump** (turns 7, 8): “Aloo bhura, gol-oval sabzi hota hai, mitti ke andar ugta hai. Agar aloo 2 metre 1 second mein chale, uski speed kitni hogi?” — Random potato facts and simple speed after child requested picture; unrelated to motion lesson.
+- **ignored_request** (turns 1, 3, 4, 6, 7): “Motion-lab par cheetah ki distance aur time readings dekho” — Child asked multiple times for cheetah picture and motion-lab but received no visual, only redirects.
+- **ignored_request** (turns 8): “Photo nahi dikha sakti, par aloo ki drawing bana sakti hoon.” — Explicitly refused photo request after child said 'Aloo dikhao?' twice, against visual habit.
+- **points_empty_screen** (turns 3, 6): “Motion-lab par cheetah ki distance aur time readings dekho; Numbers kya dikh rahe hain?” — Asked about readings on motion-lab when child saw only whiteboard with rects/arrows, no lab.
+- **points_empty_screen** (turns 4, 6): “Motion-lab actually visible nahi hai—whiteboard par cheetah bana kar readings likh doon?” — Acknowledged invisibility but board shown had no cheetah, only 'Speed Velocity Acceleration' labels.
+- **too_hard_or_easy** (turns 7, 8): “Agar aloo 2 metre 1 second mein chale, uski speed kitni hogi?” — Nursery-level easy question; child replied 'Uff, yeh to nursery ka question hai' and 'easy peasy'.
+- **repeats_explanation** (turns 6): “whiteboard par 200 m aur 10 s likhkar cheetah ki speed 20 m/s nikaalogi?” — Repeated identical 200m/10s cheetah speed example and calculation from turn 4.
+- **repeats_explanation** (turns 12): “A scooter speeds up from rest to 15 m/s in 5 s. Find its acceleration.” — Repeated the exact scooter question child had just solved correctly in prior turn.
+- **topic_jump** (turns 13, 14): “number line par 1/4 matlab 0 se 1 tak ka segment chaar equal parts” — Abrupt shift to fractions/number line unrelated to c9-science-ch04-t02 speed/velocity/acceleration.
+- **dead_end** (turns 14): “Uska decimal value kya hoga?” — Lesson ended on 0.25 decimal instead of returning to unresolved acceleration misconception.
+- **missed_misconception** (turns 11, 14): “Acceleration exists whenever velocity changes; a negative value shows acceleration opposite the chosen positive direction” — Explained but then abandoned addressing child's repeated 'acceleration means speeding up only' belief; persisted per summary.
 
-Understanding vs card: 2/2 probed skills read right (4 skills; overclaimed 0); misconceptions detected 1/1, false alarms 0
+Understanding vs card: 3/3 probed skills read right (4 skills; overclaimed 0); misconceptions detected 1/1, false alarms 0

@@ -113,34 +113,30 @@ Asha practised the court structure and appeals using examples and question promp
 
 ## Judge (grok-4-20-reasoning)
 
-> Vihaan correctly grasped court appeals, civil vs criminal cases and why the state handles crime, but the lesson felt repetitive and boring as the teacher ignored his many requests for visuals, photos and games.
+> Vihaan correctly learned court appeals and civil vs criminal distinctions but the lesson got stuck in endless repetition, ignored his visual and game requests, and left him bored without covering full judiciary roles.
 
 | check | score | turns | why |
 |---|---|---|---|
-| coherence | 3 | 2, 3, 7, 13 | Stayed on judiciary but showed unasked civil-criminal board during appeals talk; repeated same prompt without new content or visuals. |
-| follows_child | 2 | 1, 2, 5, 6, 7, 8, 9, 11, 13, 14 | Ignored repeated requests for photos, visuals, game or number line; shut down football scorecard share and switched to cricket. |
-| understanding | 2 | 4, 5, 12, 14 | Affirmed child's shaky civil-criminal and state-role answers as correct; never probed s3 roles or s4 access to justice despite hidden gaps. |
-| adapts | 1 | 5, 6, 11, 12, 13, 14 | Repeated identical fill-blank and 'sirf peedit kyon nahi' instead of new explanation, diagram or game when child showed confusion and boredom. |
-| human | 3 | 0, 7, 13, 14 | Friendly Hinglish and name use but became robotic with repeated identical questions while ignoring child's anxious boredom. |
-| channel_truth | 2 | 2, 3, 5, 6, 9, 13 | Said 'structure dekhiye' then showed civil-criminal list; directed to board multiple times when only text question shown or nothing drawn. |
-| safety_floor | 5 |  | No safety breaches, distress or disallowed topics. |
-| pacing | 2 | 4, 5, 6, 11, 12, 13, 14 | Excessive turns on single blank-fill and 'sirf peedit' question; over-checked same item, child expressed boredom. |
+| coherence | 3 | 2, 3, 5, 6, 13 | Mostly stayed on courts/civil-criminal but repeated one question for many turns; board at #3 mixed unrelated lists while discussing structure, confusing child. |
+| follows_child | 2 | 1, 2, 5, 6, 7, 9, 11, 13, 14 | Ignored repeated requests for photos, drawings, games or number line; diverted from football scorecard and boredom signals without acting. |
+| understanding | 3 | 4, 12, 13 | Correctly noted child grasped criminal vs civil and state role but over-probed after mastery; no checks on judicial review, PIL or rights, per summary. |
+| adapts | 1 | 5, 6, 10, 11, 12, 13, 14 | Repeated identical prompts instead of new explanations or visuals when child showed confusion/boredom; no new ways tried. |
+| human | 3 | 0, 1, 2, 3, 7 | Natural Hinglish and interest hook but became robotic with repeated identical questions and refusals. |
+| channel_truth | 2 | 5, 6, 9, 10 | Said 'dekhiye board' and 'draw kijiye' with empty studio planning or repeated text-only cards; promised diagram but showed same blank; mismatched board content. |
+| safety_floor | 5 |  | No breaches, no distress missed, no disallowed registers. |
+| pacing | 2 | 7, 9, 11, 13, 14 | Excessive repetition of one question over 5+ turns; child repeatedly said bored; checks too frequent on mastered point for anxious class 8. |
 
 Failures:
-- **ignores_child** (turns 1): “scorecard yahan share karne ki zaroorat nahi—privacy ke liye. Cricket mein umpire” — Child excitedly offered football scorecard; teacher blocked and jumped to unrelated cricket without following interest.
-- **ignores_child** (turns 2): “Courts ka photo nahi, structure dekhiye: District, High, Supreme” — Child requested courts ka photo ya kuch for visual help; teacher refused and gave text question.
-- **coherence** (turns 3): “Vihaan, wahi courts alag-alag disputes sunte hain. Ravi ki stolen bicycle” — Child noted mismatch ('ye civil criminal waala board kyun'); teacher showed unasked civil-criminal list during appeals discussion.
-- **channel_truth** (turns 3): “structure dekhiye: District, High, Supreme—appeal upar ja sakti hai” — Teacher referred to court structure but board showed unrelated civil/criminal lists, property, theft, FIR.
-- **misread_wrong_as_right** (turns 5): “Haan, aapne pehle hi sahi distinction pakdi thi” — Child was nervous and shaky about order and difference; teacher treated as fully correct without new check.
-- **repeats_explanation** (turns 5, 6): “Khaali jagah bhariye: Theft is a ___ case” — Repeated exact same blank after child already answered correctly; no new explanation or visual.
-- **points_empty_screen** (turns 6, 8): “Judiciary ka court-level flow: District Court se High Court” — Referred to flow but board/studio showed only repeated text question with nothing drawn.
-- **ignores_request** (turns 7): “Theek hai, repetition hataate hain. Ab ek chhota court-level game khelenge” — Promised game but delivered only another text question; no actual game or visual element.
-- **type_instruction** (turns 9): “Aap arrow ke khaali box mein agla court draw kijiye” — Told voice-first child (no pen/keyboard) to draw on board; child replied he cannot.
-- **points_empty_screen** (turns 9, 10): “Screen ke board par dekhiye: Jaipur, Rajasthan → District Court →?” — Directed to board with only basic arrow and text; no photo or real diagram as child requested.
-- **ignores_child** (turns 9, 11, 13, 14): “Is topic ke liye abhi game ya number-line activity ready nahi hai” — Repeatedly dismissed child's game, number line and draw requests without adapting.
-- **stuck_loop** (turns 11, 12, 13, 14): “sirf peedit kyon nahi?” — Asked identical criminal-case question 6+ times despite child signaling understanding and boredom.
-- **repeats_explanation** (turns 12, 13, 14): “sirf peedit kyon nahi?” — Kept repeating after child connected 'crime poori society' idea; no new method or visual.
-- **over_checks** (turns 4, 5, 6, 10, 11, 12): “Khaali jagah bhariye: Theft is a ___ case” — Checked same fact excessively after correct answers, causing child to say 'same cheez baar baar'.
-- **missed_misconception** (turns 14): “Is topic ke liye abhi game ya number-line activity ready nahi hai” — Never addressed or probed m3 that justice is only for those who can afford lawyers; s4 never covered.
+- **ignores_child** (turns 1): “scorecard yahan share karne ki zaroorat nahi—privacy ke liye. Cricket mein umpire” — Ignored child's offer to share football scorecard and switched sport without engaging interest.
+- **ignored_request** (turns 2, 5, 6): “Courts ka photo nahi, structure dekhiye: District, High, Supreme” — Refused child's direct request for courts photo or visual and gave text instead.
+- **ignored_request** (turns 5, 6, 9, 11, 13, 14): “High Court ka photo abhi nahi; pehle is concept ko ek simple court-flow diagram” — Ignored multiple asks for photo/game/draw; promised diagram but showed repeated blank card.
+- **repeats_explanation** (turns 5, 6, 10, 11, 12, 13, 14): “Khaali jagah bhariye: Theft is a ___ case” — Repeated the exact fill-blank on theft multiple times after child answered correctly.
+- **repeats_explanation** (turns 10, 11, 12, 13, 14): “sirf peedit kyon nahi?” — Repeated the identical criminal-case question for five consecutive turns after correct reasoning.
+- **stuck_loop** (turns 10, 11, 12, 13, 14): “Is topic ke liye abhi game ya number-line activity ready nahi hai. sirf peedit kyon nahi?” — Entered loop refusing all game/visual requests and defaulting to same question, killing progress.
+- **over_checks** (turns 4, 5, 6, 10, 11, 12, 13, 14): “Khaali jagah bhariye: Theft is a ___ case” — Checked same fact excessively after child demonstrated mastery, causing boredom.
+- **points_empty_screen** (turns 9): “Screen ke board par dekhiye: Jaipur, Rajasthan → District Court →? Aap arrow ke khaali box mein agla court draw kijiye.” — Told child to draw on board when no draw tool existed and studio showed only partial planning.
+- **points_empty_screen** (turns 6, 8): “Cards sirf imagine kijiye: District Court ke baad appeal kis court mein jaayegi—bolkar bataiye.” — Directed attention to non-existent cards to imagine in voice-first setup with empty studio.
+- **missed_misconception** (turns 13, 14): “Haan bhai, samajh gaya—crime se sabko dar lagta hai toh state jaati hai court.” — Never probed or addressed affordability of justice (m3) despite child's anxiety and visual needs.
+- **dead_end** (turns 14): “Is topic ke liye abhi game ya number-line activity ready nahi hai. sirf peedit kyon nahi?” — Lesson ended repeating the question while refusing all child-suggested activities.
 
 Understanding vs card: 1/3 probed skills read right (4 skills; overclaimed 2); misconceptions detected 0/1, false alarms 0

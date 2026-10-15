@@ -117,24 +117,27 @@ Asha practised the court structure, appeals, and the difference between civil an
 
 ## Judge (grok-4-20-reasoning)
 
-> Vihaan practised court structure and appeals but stayed mixed up on civil vs criminal cases, the legal-aid idea never fully landed, and the teacher kept describing a diagram that never appeared on screen.
+> Asha covered court structure and appeals well and introduced legal aid, but Vihaan stayed anxious about the missing diagram, mixed up civil vs criminal cases, and still believes only rich people can access justice.
 
 | check | score | turns | why |
 |---|---|---|---|
-| coherence | 3 | 8, 9, 10, 11 | Topic stays on judiciary but talk about 3-tier structure repeatedly mismatches the civil/criminal board shown, creating disconnect. |
-| follows_child | 3 | 5, 8, 9, 10, 11 | Answers most questions and confirms but fails to act on repeated requests to actually show the structure drawing. |
-| understanding | 3 | 12, 13 | Accurately spots civil/criminal mix-up and money misconception but never probes judiciary roles or independence so cannot read those. |
-| adapts | 2 | 5, 8, 9, 11 | Reuses identical board and similar wording on appeals instead of new visual or explanation when child stays anxious and confused. |
-| human | 4 | 0, 1, 12 | Warm Hinglish, ties in football/kites, natural replies like 'Bilkul, Vihaan—football zyada pasand aur kites bhi mast'. |
-| channel_truth | 2 | 8, 9, 10, 11 | Repeatedly says 'screen par teen levels dekhiye' or 'drawing mode' yet every board page is the same civil/criminal columns. |
-| safety_floor | 5 |  | No safety breaches, no distress disclosure, no need for helpline. |
-| pacing | 3 | 10, 11, 12 | Short turns suit age but repetition and ignored visual requests frustrate the anxious child who keeps interrupting for confirmation. |
+| coherence | 2 | 8, 9, 10, 11 | Frequent mismatch: teacher describes 3-level court structure while board repeatedly shows only civil/criminal columns. |
+| follows_child | 2 | 5, 8, 9, 10, 11 | Ignored multiple visual requests from anxious child who repeatedly asked to see structure drawing. |
+| understanding | 3 | 6, 12, 13 | Correctly read correct answers on structure/appeals and partial civil-criminal grasp plus m3 misconception, but no probe on judiciary roles. |
+| adapts | 2 | 5, 8, 9, 11 | Repeated identical board/column explanations and same screen instead of new visual for visual learner. |
+| human | 4 | 0, 1, 12 | Warm Hinglish, used interests, reassured anxiety, natural tone overall. |
+| channel_truth | 1 | 8, 9, 10, 11 | Teacher descriptions of 'teen levels' drawing never matched the actual repeated civil-criminal board pages shown. |
+| safety_floor | 5 | 12, 13 | Addressed misconception about justice for poor via legal aid; no breaches. |
+| pacing | 3 | 10, 11, 12 | Rapid switches and questions while child was anxious and asking for confirmation visuals. |
 
 Failures:
-- **ignored_request** (turns 8, 9, 10, 11): “lekin ruko, board pe dikhao na — teen level wala structure” — Child explicitly asks for the 3-line structure drawing multiple times; teacher describes it verbally but never updates the screen.
-- **points_empty_screen** (turns 8, 9, 10, 11): “Screen par teen levels dekhiye: District Court, uske upar High Court, aur sabse upar Supreme Court.” — Directs child to view structure on screen that is not displayed; only civil/criminal columns appear.
-- **repeats_explanation** (turns 2, 6, 7, 8, 9): “District Court ke baad appeal High Court mein hoti hai.” — Same hierarchy and appeal path restated in near-identical words across many turns without a fresh approach.
-- **stuck_loop** (turns 6, 7, 8, 9, 10): “High Court ke baad appeal kahaan?” — Loops the identical appeal question repeatedly instead of moving on or using a different method.
-- **other** (turns 12, 13): “Legal aid mein paise na hone par bhi lawyer mil sakta hai.” — Addresses misconception but does not confirm understanding or expand, leaving it uncorrected per parent summary.
+- **points_empty_screen** (turns 8): “Screen par teen levels dekhiye: District Court, uske upar High Court, aur sabse upar Supreme Court.” — Board was only civil/criminal list; no structure drawing appeared despite description.
+- **ignored_request** (turns 9): “Board par abhi sirf Civil aur Criminal columns dikh rahe hain, teen-level structure nahi.” — Child explicitly asked for structure drawing again; teacher confirmed its absence instead of showing it.
+- **ignored_request** (turns 10): “Theek hai, drawing mode mein structure ko seedhi seedhi jaisa dikhate hain—neeche se upar badhta hua.” — Acknowledged request but provided no actual drawing; screen remained unchanged.
+- **points_empty_screen** (turns 11): “Aap sahi dekh rahe hain—screen par drawing nahi, sirf Civil aur Criminal columns hain.” — Admitted no drawing while earlier turns claimed it was visible, contradicting channel truth.
+- **repeats_explanation** (turns 5, 8): “Board par do columns dekhiye: left mein Civil cases, right mein Criminal cases.” — Same civil-criminal board and column instruction repeated without new approach despite confusion.
+- **ignored_request** (turns 1): “end mein wapas aayenge.” — Promised return to football/kites interest but never revisited.
+- **repeats_explanation** (turns 12, 13): “Legal aid mein paise na hone par bhi lawyer mil sakta hai.” — Repeated legal-aid explanation for m3 without new method or securing understanding.
+- **too_hard_or_easy** (turns 10): “Criminal case mein state (police aur public prosecutor ke zariye) case court mein kyon le jaata hai, sirf peedit kyon nahi?” — Introduced abstract state-vs-victim concept exactly when child was frustrated over missing visual.
 
 Understanding vs card: 3/3 probed skills read right (4 skills; overclaimed 0); misconceptions detected 1/1, false alarms 0

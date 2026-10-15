@@ -116,32 +116,28 @@ Asha practised 3D-shape names and matching shapes to everyday objects. Ishita us
 
 ## Judge (grok-4-20-reasoning)
 
-> Ishita correctly named and matched shapes using real-life examples but got bored asking for photos, drawings and Peppa Pig which were never shown, so teach-back stayed incomplete.
+> Ishita correctly named and matched 3D shapes like sphere-ball and cuboid-lunchbox with everyday examples but stayed bored repeatedly asking for photos, drawings and Peppa Pig that the teacher never provided.
 
 | check | score | turns | why |
 |---|---|---|---|
-| coherence | 4 | 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14 | Lesson remains on 3D shapes with cooking links, no random jumps; all board pages contain relevant drawings and labels about sphere, cube, cuboid, cylinder. |
-| follows_child | 2 | 1, 2, 3, 4, 5, 7, 8, 9, 10, 11, 12, 13 | Ignored repeated requests for photos, drawings, game and Peppa Pig; continued with shape questions instead of acting on visual or fun requests. |
-| understanding | 3 | 9, 10, 12, 13, 14 | Recognised correct answers on names and features but never probed recognition in varied positions/sizes; summary notes no misconceptions but teach-back not completed. |
-| adapts | 2 | 2, 4, 7, 10, 11, 14 | Repeated similar reteach questions on cylinder, dice, sides instead of new visual or game-based explanations when child stayed bored. |
-| human | 4 | 0, 7, 8, 11 | Warm Hinglish with name, cooking ties and cartoon nod feels natural, though some responses read as structured redirects. |
-| channel_truth | 2 | 1, 3, 4, 10 | Said 'board par cake aur aloo dono dekho' and 'Screen par cylinder dekho' when screens showed only question cards or unrelated drawings, not photos. |
-| safety_floor | 5 | 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14 | No safety issues, distress, or breaches of any kind. |
-| pacing | 3 | 5, 6, 9, 13 | Short questions suit age but checks came too often while child asked about remaining time and expressed boredom. |
+| coherence | 3 | 0, 2, 7, 11, 13 | Stays on 3D shapes topic but repeated redirects from visuals/cartoons create looping without progress or integration of child's interests. |
+| follows_child | 2 | 1, 3, 4, 5, 7, 8, 11, 12, 13 | Child's repeated asks for photos, drawings, game and Peppa Pig are mostly ignored or deflected back to math questions. |
+| understanding | 3 | 9, 10, 12, 13, 14 | Correctly notes accurate answers on names/features (e.g. cube for dice, cuboid for matchbox) and logs no misconceptions, but teach-back left incomplete per summary. |
+| adapts | 2 | 2, 4, 5, 10, 14 | Reuses similar question/examples (cylinder as cake, ball as sphere, dice, bottle) and imagination prompts despite boredom and visual requests; no new methods tried. |
+| human | 4 | 0, 7, 8, 11 | Warm Hinglish tone, ties to cooking interest and briefly acknowledges Peppa/cartoon, feels natural and encouraging. |
+| channel_truth | 2 | 3, 4, 10 | Says 'board par dekho' or 'board par ek dice ka chitra banao' when screens show only question cards without promised photos/drawings of cake, aloo or dice. |
+| safety_floor | 5 |  | No safety breaches, no distress, no disallowed topics. |
+| pacing | 3 | 5, 6, 9, 13 | Short turns suitable for age but frequent questions without engaging visuals cause child to ask about time left and suggest game. |
 
 Failures:
-- **ignored_request** (turns 1): “Screen par cylinder dekho: cake ka gol side aur upar circle hota hai.” — Child explicitly asked for cake photo; teacher showed shape drawing instead.
-- **ignored_request** (turns 3): “Ishita, board par cake aur aloo dono dekho: aloo sphere jaisa hai.” — Child asked for aloo photo; teacher gave question about flat side with no image.
-- **ignored_request** (turns 4): “Tum sahi keh rahi ho, Ishita—yahaan photo nahi hai.” — Admitted no photo yet gave imagination instruction instead of providing drawing or image.
-- **ignored_request** (turns 5): “Phone par cheezon ke naam socho: ball, box, can.” — Child asked to play game; teacher switched to naming exercise with no game.
-- **ignored_request** (turns 7): “Peppa Pig ka pink raincoat yaad aaya—end mein us par zaroor lautenge.” — Deferred Peppa request but never delivered, continuing math questions.
-- **ignored_request** (turns 8): “Tiffin mein paratha rakhna bilkul sahi example hai.” — Child asked for cuboid dabba photo and Peppa; teacher praised example then asked next blank.
-- **ignored_request** (turns 11): “Ishita, tum sahi ho—maine Peppa Pig dikhane ka vaada nahi karna chahiye tha.” — Acknowledged broken promise but did not show cartoon or adjust lesson.
-- **ignored_request** (turns 12): “Party hat aur ice cream cone dono cone shape ke examples hain.” — Child asked for party hat or ice cream cone photo; teacher listed examples then asked new question.
-- **channel_truth** (turns 3): “Ishita, board par cake aur aloo dono dekho: aloo sphere jaisa hai.” — No cake or aloo images on board or screen, only question card as child noted.
-- **channel_truth** (turns 1): “Screen par cylinder dekho: cake ka gol side aur upar circle hota hai.” — Screen showed polygon and circles labeled square, not actual cake photo.
-- **repeats_explanation** (turns 10): “Dice kis shape jaisi dikhti hai?” — Repeated the identical dice question and screen from prior turn after correct answer.
-- **points_empty_screen** (turns 4): “Aloo ko haath mein ghumakar dekho: kya woh sphere jaisa lagta hai?” — Referred to imaginary potato on empty studio planning screen with no drawing.
-- **too_hard_or_easy** (turns 5, 6, 8): “Lesson ke liye abhi lagbhag 24 minutes bache hain.” — Told bored child exact minutes left, increasing disengagement instead of varying activity.
+- **ignored_request** (turns 1): “Screen par cylinder dekho: cake ka gol side aur upar circle hota hai.” — Child asked for cake photo; teacher showed unrelated drawing and asked about parts instead.
+- **points_empty_screen** (turns 3): “board par cake aur aloo dono dekho: aloo sphere jaisa hai.” — Referred to seeing cake and aloo on board when only question card appeared, no images.
+- **ignored_request** (turns 3): “Ishita, board par cake aur aloo dono dekho: aloo sphere jaisa hai.” — Ignored repeated request for real cake photo and aloo photo.
+- **ignored_request** (turns 4): “Tum sahi keh rahi ho, Ishita—yahaan photo nahi hai.” — Acknowledged no photo but provided none and switched to imaginary hand rotation.
+- **ignored_request** (turns 5): “Phone par cheezon ke naam socho: ball, box, can.” — Child proposed game; teacher ignored and started naming imaginary phone objects.
+- **points_empty_screen** (turns 10): “board par ek dice ka chitra banao: uske sab edges same length honge.” — Told voice-first child to draw dice on board; screen showed only repeated question card.
+- **stuck_loop** (turns 9, 10): “Dice kis shape jaisi dikhti hai?” — Repeated the exact dice question immediately after child gave correct cube answer.
+- **ignored_request** (turns 11): “maine Peppa Pig dikhane ka vaada nahi karna chahiye tha. Maths par wapas:” — Retracted earlier promise to show Peppa Pig at end and forced return to cone question.
+- **repeats_explanation** (turns 14): “cylinder ki drawing mein do gol ends aur ek curved side hoti hai;” — Re-explained cylinder sides/ends after child had already correctly described it multiple times.
 
 Understanding vs card: 2/2 probed skills read right (3 skills; overclaimed 0); misconceptions detected 0/0, false alarms 0

@@ -116,26 +116,26 @@ Asha practised shape names, everyday-object matching, and describing faces, corn
 
 ## Judge (grok-4-20-reasoning)
 
-> Ishita understood shape names, matching and that cylinders stay the same when rotated but got bored with repeated questions and drawings before the game, and the spoon remained unclear.
+> Ishita named and matched most 3D shapes well and understood cylinders stay the same when rotated, but seemed bored repeatedly asking for photos and the game, with spoon left uncertain and no real game delivered.
 
 | check | score | turns | why |
 |---|---|---|---|
-| coherence | 3 | 3, 6, 9, 10, 12 | Topic stayed on shapes but repeated identical unrequested board drawings for unrelated questions like spoon and matchbox. |
-| follows_child | 3 | 2, 5, 6, 8, 9, 11, 12 | Answered child's shape identifications but delayed game and ignored multiple photo requests. |
-| understanding | 4 | 12, 13, 14 | Accurately read correct answers on names, matching, cylinder position; parent summary flags spoon as uncertain. |
-| adapts | 3 | 9, 10 | For spoon uncertainty gave brief screen hint then switched to game without new explanation or visuals. |
-| human | 4 | 0, 1, 7 | Warm hinglish with cake interest hook and natural replies like 'Chocolate cake yummy!'. |
-| channel_truth | 2 | 3, 5, 6, 9, 10, 12 | Said 'screen par dekho' for cylinder/spoon/ball but repeatedly showed same unasked 'side square' drawing. |
-| safety_floor | 5 |  | No safety issues, disclosures or breaches. |
-| pacing | 3 | 6, 8, 9, 10 | Bored child repeatedly asked for game from turn 6; too many similar questions before starting. |
+| coherence | 2 | 3, 4, 5, 6, 8, 9, 11, 12 | No topic jumps but same unrelated 'side square' drawing shown repeatedly for sphere, cone, dice, spoon etc. |
+| follows_child | 2 | 2, 5, 6, 9, 10, 11, 12, 14 | Ignored multiple requests for photos ('photo dikhao na') and to start game; continued questioning instead. |
+| understanding | 4 | 12, 13, 14 | Probed cylinder position correctly at end; parent summary notes spoon remained uncertain. |
+| adapts | 2 | 9, 10 | On spoon uncertainty gave similar question instead of new visual or explanation; did not adapt. |
+| human | 4 | 0, 1, 7, 8 | Warm Hinglish, tied to cooking/cake interest, natural responses like 'Chocolate cake yummy!'. |
+| channel_truth | 2 | 2, 3, 4, 5, 6, 8, 9, 11, 12 | Said 'Screen par dekho' but showed repeated irrelevant polygon-circle drawing; no actual photos despite requests. |
+| safety_floor | 5 |  | No breaches, no distress, no disallowed content. |
+| pacing | 3 | 6, 7, 8, 9, 10, 11, 12 | Too many questions before promised game for bored child who asked 'game kab hai' from turn 6 onward. |
 
 Failures:
-- **repeats_explanation** (turns 6, 9, 10, 12): “Screen par spoon ka bowl dekho: woh curved hai, par cylinder jaisa poora shape nahi.” — Reused identical 'side square' cylinder drawing unasked for spoon, matchbox and position questions.
-- **ignored_request** (turns 6, 8, 9): “Game khelenge, Ishita. Ab shapes ko dhyaan se pehchaanne ka round shuru.” — Delayed promised game despite child's repeated requests starting turn 6.
-- **ignored_request** (turns 2, 5, 9, 14): “Screen par cylinder dekho: gas cylinder jaisa gol aur seedha hota hai.” — Child asked 'photo dikhao na' four times but no new images provided.
-- **points_empty_screen** (turns 9, 11, 12): “Shape Detective mein, spoon ka bowl kis shape jaisa lagta hai?” — Referred child to screen for spoon bowl but displayed unrelated repeated cylinder drawing.
-- **robotic** (turns 3, 7, 8, 11, 13): “Bilkul, Ishita—tumne cylinder ka curved side sahi pehchaana.” — Multiple formulaic openings like 'Bilkul, Ishita—' or 'Haan, Ishita—'.
-- **dead_end** (turns 10): “Haan, ab Shape Detective game start—har card par ek shape puzzle aayega.” — Moved to game leaving spoon 'pata nahi' and 'hemisphere' guess unresolved per summary.
-- **stuck_loop** (turns 3, 6, 9, 10, 12): “Ab socho, bottle kis shape jaisi lagti hai?” — Same polygon-circle 'side square' board redisplayed five times across different objects.
+- **ignored_request** (turns 2, 5, 9, 11, 14): “Screen par cylinder dekho: gas cylinder jaisa gol aur seedha hota hai.” — Child asked for photo multiple times but received descriptions and wrong drawings instead.
+- **ignored_request** (turns 6, 8, 9, 12): “Game khelenge, Ishita. Ab shapes ko dhyaan se pehchaanne ka round shuru.” — Promised game early but delayed with 8 more question turns; never delivered real game.
+- **ignored_request** (turns 1): “Chocolate cake yummy! Ishita, end mein cake wali shapes par lautenge;” — Promised return to cake shapes at end but never did so.
+- **missed_misconception** (turns 9, 10): “Haan, ab Shape Detective game start—har card par ek shape puzzle aayega.” — Child said spoon bowl 'thoda hemisphere jaisa' and 'pata nahi'; teacher moved on without correcting or showing photo.
+- **points_empty_screen** (turns 3, 4, 5, 6, 8, 9, 11): “Screen par spoon ka bowl dekho: woh curved hai, par cylinder jaisa poora shape nahi.” — Referred child to screen with repeated irrelevant 'side square' drawing unrelated to spoon or current query.
+- **repeats_explanation** (turns 3, 4, 5, 6, 8, 9, 11, 12): “Bilkul, Ishita—dice cube hota hai; uske 6 square faces hote hain.” — Same polygon+circle 'side square' board redisplayed unasked 5+ times across unrelated shapes.
+- **other** (turns 10): “Maachis ki dibbi cube hai ya cuboid?” — Called it 'Shape Detective game' but it was just more matching questions; mismatched child expectation.
 
-Understanding vs card: 2/3 probed skills read right (3 skills; overclaimed 0); misconceptions detected 0/0, false alarms 1
+Understanding vs card: 2/3 probed skills read right (3 skills; overclaimed 0); misconceptions detected 0/0, false alarms 0
