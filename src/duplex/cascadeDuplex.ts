@@ -358,7 +358,16 @@ export class CascadeDuplex {
     this.s.emitChild({ type: "child_partial", itemId: this.turnItems[0], text: joined });
   }
 
+  /** Round 5 truth bar: her reply to the latest committed closed-value turn must not sound before this (null: no hold). */
+  private verdictHold: number | null = null;
+  /** The hold for the reply about to play, if still in the future (CascadeLink waits for it before her first sound). */
+  verdictHoldUntil(): number | null {
+    if (this.closed || this.fallbackReason || this.mode !== "on" || this.verdictHold === null) return null;
+    return this.verdictHold > this.now() ? this.verdictHold : null;
+  }
+
   private commit(turn: DuplexTurn): void {
+    this.verdictHold = turn.verdictHoldUntil ?? null;
     const itemId = this.turnItems[0] ?? turn.itemId;
     this.turnItems = [];
     this.itemText.clear();

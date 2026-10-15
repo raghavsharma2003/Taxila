@@ -83,6 +83,24 @@
       "kind": "measurement",
       "at": "2026-10-15",
       "title": "The measured end-of-turn FLOOR on lane D5 (main accepted 2026-10-15: 1,100 ms is the number we report; 900 is not reachable with this ear). Anatomy, owner harness d5v200, 34 after-her turns: ear floor ~730 ms (Voice Live speech_stopped ≈ 200 ms silence + ~460 ms event latency, final +60-80 ms, no partials) → fastest commits 730-750; empty finals re-ask at ~1,100 (final + 300); word search and short explanations ~1,080 (designed patience); open explanations ~3.0 s by design (12/34). EOT p50 1,100, p90 3,400; closed answers 920."
+    },
+    {
+      "id": "ms-r5-truth-bar-stress-2026-10-15",
+      "kind": "measurement",
+      "at": "2026-10-15",
+      "title": "Round 5 truth bar, self-repair stress set (evals/duplex-2026-10/stretch-repair.mjs: the 5 self-repair scenarios, repair pause 1.5/2.0/2.5/3.0 s = 20 turns, live Voice Live owner variant, code 7ec0cdc6). The engine commits the wrong value ~760 ms after it ends (730-860) and the child's correction revokes it 10-90 ms after its onset (20/20). With R = commit → her first audible word, a verdict on the abandoned value is heard (no hold) in 15/10/5/0 of 20 at R = 1.0/1.5/2.0/2.7 s; with the verdict hold (VERDICT_HOLD_MS 2,500 after the value end) 5/5/5/0, the 5 being exactly the 3.0 s pauses (beyond the hold). Cost of the hold (first-sound delay, 10 closed-value turns of the bake set, d5v200 commits): R 1.0 s p50 700 / max 780 ms (8/10 delayed); 1.5 s p50 200 / max 280 (8/10); 2.0 s and 2.7 s 0 (0/10). Condition 2 (the revoked turn must not land on the server as its own graded turn) is NOT covered by the hold: with the turn response at commit + R − 0.6 s, the turn lands before the correction in 20/15/10/5 of 20 at R = 1.0/1.5/2.0/2.7 s; an outbox edit after landing replays (editLanded) instead of superseding."
+    },
+    {
+      "id": "dc-r5-verdict-hold-2500",
+      "kind": "decision",
+      "at": "2026-10-15",
+      "title": "Her reply to a closed answer carrying a value never SOUNDS before the value's end + 2,500 ms (VERDICT_HOLD_MS; the engine's G7 stamp + 500, carried on the commit as verdictHoldUntil, enforced by CascadeLink on both the promptTeacher and early-audio paths by holding the stream's hand-over; the speech request still goes out at once; the ack clip is not held; a correction during the hold revokes and stops the reply). Main 2026-10-15, G = 2,500. Measured: ms-r5-truth-bar-stress-2026-10-15. Reversal: if the measured first-sound cost at the then-current R exceeds ~250 ms on closed-value turns, revisit G with data."
+    },
+    {
+      "id": "rj-r5-unenforced-verdict-gate-cited",
+      "kind": "rejection",
+      "at": "2026-10-15",
+      "title": "REJECTED claim (4B, 2026-10-15): \"her verdict cannot sound before value end + VERDICT.delayMs\" was cited as the protection against a verdict on an abandoned value. The gate was computed (governor G7 verdictNotBefore) and emitted on the speak command but NOTHING enforced it (live.ts / cascadeDuplex / the link never read it). Lesson: a computed gate is not a protection until a test shows the sound waiting for it. Now enforced: dc-r5-verdict-hold-2500."
     }
   ],
   "edges": [
@@ -145,6 +163,16 @@
       "src": "ms-r5-d5-mai-tx2-stream-southindia-2026-10-15",
       "rel": "part_of",
       "dst": "ms-r5-d5-eot-steps-2026-10-15"
+    },
+    {
+      "src": "dc-r5-verdict-hold-2500",
+      "rel": "measured_by",
+      "dst": "ms-r5-truth-bar-stress-2026-10-15"
+    },
+    {
+      "src": "rj-r5-unenforced-verdict-gate-cited",
+      "rel": "superseded_by",
+      "dst": "dc-r5-verdict-hold-2500"
     }
   ]
 }

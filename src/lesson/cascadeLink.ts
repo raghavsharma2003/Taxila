@@ -553,7 +553,8 @@ export class CascadeLink implements TeacherLink {
     void this.ctx?.resume().catch(() => {});
     // round 3 integration: the speech request goes out synchronously, exactly as before, when no acknowledgement is sounding
     // (tests/voice-cascade.test.mjs pins it); only a sounding clip makes the reply's audio wait for it (ackGate)
-    const playback = this.player.play((signal, sink) => (this.ackNow
+    const hold = this.verdictHold();
+    const playback = this.player.play((signal, sink) => this.heldUntil(hold, signal, this.ackNow
       ? this.ackGate().then(() => this.speech({ lessonId: this.lessonId, seq }, signal, sink))
       : this.speech({ lessonId: this.lessonId, seq }, signal, sink)), { req: { lessonId: this.lessonId, seq } });
     const cur: CurrentReply = { id, text, playback, playing: false, paused: null };
@@ -578,6 +579,26 @@ export class CascadeLink implements TeacherLink {
       if (this.current !== cur) return;
       this.finishReply(cur, status);
     });
+  }
+
+  /** Round 5 truth bar: the hold on her reply's first sound for the engine's latest closed-value commit (null: none). */
+  private verdictHold(): number | null {
+    return this.duplexDeciding ? (this.duplex?.verdictHoldUntil() ?? null) : null;
+  }
+
+  /**
+   * Deliver her reply's audio no earlier than `until` (epoch ms). The speech request itself goes out at once (its latency
+   * is not added); only the stream's hand-over to the player waits. A child correction during the wait revokes the turn:
+   * the engine stops the reply (the signal aborts) and nothing of it sounds.
+   */
+  private heldUntil<T>(until: number | null, signal: AbortSignal | undefined, p: Promise<T>): Promise<T> {
+    const wait = until === null ? 0 : until - Date.now();
+    if (wait <= 0) return p;
+    this.vtrace.bargein("verdict_hold", { ms: Math.round(wait) });
+    return Promise.all([p, new Promise<void>((resolve, reject) => {
+      const t = setTimeout(resolve, wait);
+      signal?.addEventListener("abort", () => { clearTimeout(t); reject(new DOMException("aborted", "AbortError")); }, { once: true });
+    })]).then(([v]) => v);
   }
 
   /** Her line's audio ended: the error (when it failed), the duplex engine's view, then the reply's end events. */
@@ -607,7 +628,8 @@ export class CascadeLink implements TeacherLink {
     this.ack?.replyStarting();
     this.events.emit({ type: "response_start", responseId: id, at: Date.now() });
     void this.ctx?.resume().catch(() => {});
-    const playback = this.player.play(async () => stream, { req: { lessonId: this.lessonId, seq: -1 } });
+    const hold = this.verdictHold();
+    const playback = this.player.play((signal) => this.heldUntil(hold, signal, Promise.resolve(stream)), { req: { lessonId: this.lessonId, seq: -1 } });
     const cur: CurrentReply = { id, text: "", playback, playing: false, paused: null, early: { adopted: false, ended: null } };
     this.current = cur;
     playback.started.then(
