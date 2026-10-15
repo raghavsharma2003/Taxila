@@ -294,7 +294,7 @@ const rightAngled = (pts) => pts.length === 4 && pts.every((p, i) => {
   const dot = v1[0] * v2[0] + v1[1] * v2[1], n = Math.hypot(...v1) * Math.hypot(...v2) || 1;
   return Math.abs(dot / n) < 0.09;
 });
-export function namedShapeMissing(reply, ops) {
+export function namedShapeMissing(reply, ops, { asked = false } = {}) {
   const named = SHAPE_NAMES.filter(([, re]) => re.test(String(reply ?? ""))).map(([k]) => k);
   if (!named.length) return [];
   const has = new Set();
@@ -307,7 +307,9 @@ export function namedShapeMissing(reply, ops) {
       has.add("polygon");
     }
   }
-  if (!has.size) return [];   // nothing closed is drawn (a number line, words): not this check's
+  // nothing closed is drawn (a number line, words): not this check's, unless the child ASKED to see it (QA pass 13, lesson
+  // 42f725b7: "picture dikhao", her line "board par rectangle bana hai" over a formula board with no rectangle at all)
+  if (!has.size && !asked) return [];
   return named.filter((k) => !has.has(k) && !(k === "square" && has.has("rectangle"))).map((k) => `${k} named, not drawn`);
 }
 /** The straight segments a script draws that words must not sit on: lines, arrow shafts, box edges. */
@@ -522,7 +524,7 @@ export function gateWhiteboard(raw, ctx) {
   add("W13.fractions_agree", fracs.length === 0, fracs.slice(0, 2));
   // W15 (QA pass 12 D36, prod 14.2 94ddbba2: she described a 50 x 30 m rectangle, the board drew a trapezoid): a shape her
   // line names is drawn as that shape, when the board draws any closed shape at all
-  const misShaped = namedShapeMissing(ctx.reply, ops);
+  const misShaped = namedShapeMissing(ctx.reply, ops, { asked: !!ctx.asked });
   add("W15.named_shape_drawn", misShaped.length === 0, misShaped);
   // W14 is ADVISORY (logged, never blocks): over 234 real boards it flagged 69, with false refusals across languages (a
   // Hinglish line "paani garam hokar upar jaata hai" under an English "evaporates" board shares no word but is on topic)

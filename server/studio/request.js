@@ -323,7 +323,18 @@ export function unassumeVisual(text) {
  */
 export const refersToBoard = (text) => /\b(?:screen|board|whiteboard|picture|drawing|diagram|dekh\w*|look\w*|see)\b|स्क्रीन|बोर्ड|देख|तस्वीर|चित्र/iu.test(String(text ?? ""));
 /** The fixed pointer put before her line when an asked-for board is being drawn and she never points at it. PURE. */
-export const boardPointer = (lang) => (lang === "english" ? "Look at the board: " : lang === "hindi" ? "बोर्ड पर देखो: " : "Board par dekho: ");
+// (QA pass 13: an English-preference child's Hinglish line got "Look at the board: Kabir, number line imagine karo…": the
+// pointer is in the language of HER line, not the child's setting: Devanagari, else English only for a line with no Hindi word)
+const HINDI_WORD = /\b(?:hai|hain|karo|kijiye|kariye|ke|ka|ki|ko|se|par|pe|mein|aur|kya|kitna|kitne|nahi|nahin|yeh|ye|dekho|dekhiye|socho|bataiye|batao|hoga|hogi)\b/iu;
+export const boardPointer = (lang, line = "") => {
+  const t = String(line ?? "");
+  if (/[\u0900-\u097F]/u.test(t)) return "बोर्ड पर देखो: ";
+  if (t) return HINDI_WORD.test(t) ? "Board par dekho: " : "Look at the board: ";
+  return lang === "english" ? "Look at the board: " : lang === "hindi" ? "बोर्ड पर देखो: " : "Board par dekho: ";
+};
+/** The board she should send them to IS coming, and her line says to picture it ("number line imagine karo"): see it instead. PURE. */
+export const seeNotImagine = (text) => String(text ?? "")
+  .replace(/\bimagine\s+(kijiye|kariye|karein|karen)\b/giu, "dekhiye").replace(/\bimagine\s+karo\b/giu, "dekho").replace(/\bimagine\b(?=\s+(?:the|a|an|this)\b)/giu, "look at");
 /** Does her line say there is no game (honest), or announce one ("Chalo mirror line game")? PURE. */
 const GAME_WORD = /\b(?:game|games)\b|गेम/iu;
 const NO_GAME = /\b(?:game|games)\b.{0,40}?\b(?:nahi|nahin|not|isn't|no)\b|\b(?:no|koi|abhi)\b.{0,20}?\bgame\b.{0,20}?\b(?:nahi|nahin|ready nahi)\b|गेम.{0,30}?नहीं|\bno\s+game\b/iu;

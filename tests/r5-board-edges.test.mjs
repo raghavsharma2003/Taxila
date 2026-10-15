@@ -121,3 +121,22 @@ test("14.3 (main: a game ask mounts the topic's engine): 'mujhe game khelna hai'
   const open = openItemOf(r.state, kit, null);
   if (open) assert.ok(!leaksOpenItem({ facts: moduleFacts(m), ops: [] }, open));
 });
+
+test("QA pass 13: the pointer is in the language of HER line (an English-pref child's Hinglish line got 'Look at the board:'), and a line told to imagine the board that is coming sees it instead", async () => {
+  const { boardPointer, seeNotImagine, refersToBoard } = await import("../server/studio/request.js");
+  assert.equal(boardPointer("english", "Kabir, number line par 50 metre se 30 metre tak nahi"), "Board par dekho: ");
+  assert.equal(boardPointer("english", "Here the sides are 5 and 3."), "Look at the board: ");
+  assert.equal(boardPointer("hinglish", "यह एक आयत है"), "बोर्ड पर देखो: ");
+  const seen = seeNotImagine("Kabir, number line imagine karo: 0 se 50 m");
+  assert.equal(seen, "Kabir, number line dekho: 0 se 50 m");
+  assert.ok(refersToBoard(seen));
+});
+
+test("QA pass 13 (lesson 42f725b7): an ASKED board under a line that names a rectangle must draw one, even when it draws no closed shape at all (a formula board)", async () => {
+  const { namedShapeMissing } = await import("../server/studio/qa/whiteboard.js");
+  const line = "Dekho, board par rectangle bana hai: do sides 50 metres aur do sides 30 metres.";
+  const formula = [{ op: "text", at: [40, 60], text: "? × ( length + breadth )" }];
+  assert.deepEqual(namedShapeMissing(line, formula), [], "not asked: a words-only board is not this check's");
+  assert.deepEqual(namedShapeMissing(line, formula, { asked: true }), ["rectangle named, not drawn"]);
+  assert.deepEqual(namedShapeMissing(line, [{ op: "rect", at: [20, 20], w: 200, h: 120 }], { asked: true }), []);
+});

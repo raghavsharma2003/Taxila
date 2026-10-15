@@ -28,7 +28,7 @@ import { noteModuleEvents, moduleAnswerOf } from "../director/modules.js";
 import { findItem, promptFor, revealsAnswer, whyKey, norm as normAnswer } from "../director/items.js";
 import { registerBroken } from "../director/register.js";
 import { verdictFor, uiVerdict, askText, refersToScreen, wrongAnswersOf, boardClaimProblem, kitWordsOf, stripScreenRefs } from "../director/say.js";
-import { answersRequest, pointsAtStage, unpointGently, pictureSubjectOf, announcesGame, ungame, unassumeVisual, refersToBoard, boardPointer } from "../studio/request.js";
+import { answersRequest, pointsAtStage, unpointGently, pictureSubjectOf, announcesGame, ungame, unassumeVisual, refersToBoard, boardPointer, seeNotImagine } from "../studio/request.js";
 import { drawableSubject } from "../director/state.js";
 import { mixedUnitComparison } from "../director/units.js";
 import { instructionsFor, instructionsAfter } from "../compiler/instructions.js";
@@ -1018,7 +1018,8 @@ export async function lessonTurn(req, body, hooks = {}) {
     // drawn for this turn and her line never sends them to it: one fixed pointer goes before it (code, never a model; never
     // on a safeguarding turn). When no board answers the ask, the claim check above has already taken pointing out.
     if (!safetyWords && askedBoardComing && teacherReply && !refersToBoard(teacherReply)) {
-      const fixed = boardPointer(next.ctx?.lang) + teacherReply;
+      const seen = seeNotImagine(teacherReply);
+      const fixed = refersToBoard(seen) ? seen : boardPointer(next.ctx?.lang, teacherReply) + teacherReply;
       teacherReply = fixed;
       const row = staged.find((x) => x.seq === teacherReplySeq);
       if (row) { row.text = fixed; row.meta = { ...(row.meta ?? {}), guard: [...new Set([...(row.meta?.guard ?? []), "point_asked_board"])] }; }

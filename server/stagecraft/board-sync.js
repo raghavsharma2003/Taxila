@@ -97,7 +97,7 @@ export function gateCtxFor(ask, { kit, redact = [], prior = [] } = {}) {
   if (request?.subject) kitForGate.expectations.push(request.subject, ...subjectWords(request.subject));
   if (request?.said?.length) kitForGate.expectations.push(...request.said);
   return { reply: text, kit: kitForGate, band: ask?.intent?.style?.band ?? "B3", speechMs: speechMsOf(spoken), banned: redact, prior, withhold,
-    ...(request ? { extraNumbers: askedNumbers(request), face: faceDrawing(request) } : {}) };
+    ...(request ? { extraNumbers: askedNumbers(request), face: faceDrawing(request), asked: true } : {}) };
 }
 
 /** Scale a script's op times to a new spoken length (k clamped 0.5-2), first op no later than 800 ms. Shape only. */
