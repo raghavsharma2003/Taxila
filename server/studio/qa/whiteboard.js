@@ -553,7 +553,9 @@ export function gateWhiteboard(raw, ctx) {
   // W17 (QA pass 14, lessons 98bdb9a8 / 548f22f0 / a08613d3: her line "50 m, 30 m, 50 m, 30 m … Total kitna?", the library
   // board "3 × 160 = 480 metres": her answer, other maths, none of her numbers): a line with two or more numbers of its own
   // gets a board that writes at least one of them whenever it writes numbers (a drawn face, a clock, is its own)
-  const hers = new Set(numbersIn(ctx.reply));
+  // (her numbers are the ones she WROTE as digits: "four sides" is a count, and the library board's "4 × side" shared that
+  // 4 with her and passed while writing none of her 50 / 30: QA's exact board, catalogue c6-maths-ch06-t01 beat 6)
+  const hers = new Set(numbersIn((String(ctx.reply ?? "").match(/\d[\d,]*(?:\.\d+)?(?:\s*\/\s*\d+)?/g) ?? []).join(" ")));
   const boardNums = [...new Set(per.flatMap((p) => p.nums))];
   const notHers = !ctx.face && hers.size >= 2 && boardNums.length > 0 && !boardNums.some((n) => hers.has(n));
   add("W17.her_numbers", !notHers, notHers ? { hers: [...hers].slice(0, 6), board: boardNums.slice(0, 6) } : []);

@@ -179,3 +179,17 @@ test("QA pass 14 (a20930e5): a number line asked for under a line that names a r
   assert.equal(r.ok, true);
   assert.equal(r.template, "number_line");
 });
+
+test("QA pass 14 (main's ask 1): the EXACT library board ('3 × 160 = 480 metres', '4 × side', catalogue c6-maths-ch06-t01 beat 6) under her '50 m, 30 m, 50 m, 30 m … Total kitna?' is refused by W17 (her 'four sides' is a count, not her number), whatever kit numbers W4 allows", async () => {
+  const fs = await import("node:fs");
+  const { gateWhiteboard, withheldValues } = await import("../server/studio/qa/whiteboard.js");
+  const kit = JSON.parse(fs.readFileSync("data/kits/c6-maths.json", "utf8")).topics.find((t) => t.topicId === "c6-maths-ch06-t01");
+  const rec = JSON.parse(fs.readFileSync("data/studio-catalogue/topics/c6-maths-ch06-t01.json", "utf8"));
+  const beat = rec.whiteboard.beats.find((b) => (b.script?.ops ?? []).some((o) => o.op === "numwork" && o.rows.flat().includes("480")));
+  assert.ok(beat, "the board QA saw is in the catalogue");
+  const line = "Kabir, rectangle ki four sides—50 m, 30 m, 50 m, 30 m. Inhe jodkar perimeter milega. Total kitna?";
+  const g = gateWhiteboard({ ...beat.script, line: { lessonId: "L" } }, { reply: line, kit, speechMs: 9500, withhold: withheldValues(kit, { line }) });
+  const failing = g.checks.filter((c) => !c.pass).map((c) => c.id);
+  assert.ok(failing.includes("W17.her_numbers"), failing.join(","));
+  assert.ok(!failing.includes("W4.numbers_from_truth"), "W4 alone passes it: 160 and 480 are kit numbers");
+});
