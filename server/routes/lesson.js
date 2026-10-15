@@ -32,6 +32,7 @@ import { requireParentIfPinSet, defaultControls, engineTick } from "./parent.js"
 import { forgeSeam } from "../forge/seam.js";
 import { talkReport } from "../director/talk.js";
 import { onLessonStart, onLessonEnd } from "../conductor/hooks.js";
+import { takeAgentSpec, settleAgentSpec } from "../latency/agentSpec.js";
 import { loadSessionContext, EMPTY_SESSION_CONTEXT } from "../comprehension/session.js";
 import { seamSafe } from "../seam-safe.js";
 import { studioSeam } from "../studio/seam.js";
@@ -788,7 +789,15 @@ async function summaryRead(req, res) {
 
 /** POST /api/lesson/turn: a thin adapter over the Brain's turn handler (every refusal is a thrown HttpError). */
 async function turn(req, res, body) {
-  send(res, 200, await lessonTurn(req, body));
+  // round 5 (stream 3): her model call speculated on this turn's prefetch, for a plain spoken turn; agentTurn adopts it only on
+  // identical inputs, and whatever happens it is aborted when the turn is done (a no-op once adopted and finished)
+  // the take may wait for the same classify the turn adopts, so the turn never waits on it: the spec lands on `hooks` when
+  // handed over (turn.js reads it only after its own classify); whatever happens it is settled (logged, aborted) at the end
+  const hooks = {};
+  const specP = !body?.typed && !body?.chipId ? takeAgentSpec(body?.lessonId, body?.childText).catch(() => null) : null;
+  specP?.then((s) => { if (s) hooks.agentSpec = s; });
+  try { send(res, 200, await lessonTurn(req, body, hooks)); }
+  finally { if (specP) settleAgentSpec(body?.lessonId, await specP); }
 }
 
 export const routes = {
