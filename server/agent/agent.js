@@ -21,6 +21,9 @@ import { comprehensionRead } from "../director/read.js";
 import { systemPrompt, stateMessage, offeredItems, TURN_SCHEMA } from "./prompt.js";
 import { screenTools, specOf } from "./tools.js";
 import { teacherDeployment, AGENT_LIMITS } from "./flags.js";
+// stream 2's ONE "does this page share content with her line" (studio/request.js syncedWithLine, d6f0bb51: their gate refuses
+// a new page by it). Until a tree carries it the stale-page clear below is off; never a second definition (main, 14.3).
+import * as studioRequest from "../studio/request.js";
 
 export class AgentBudgetError extends Error { constructor(m) { super(m); this.code = "agent_budget"; } }
 
@@ -128,13 +131,6 @@ export function withoutInternals(say) {
   return kept.length && kept.length !== parts.length ? kept.join("").trim() : String(say ?? "");
 }
 
-const WORDS = (t) => new Set(String(t ?? "").toLowerCase().split(/[^\p{L}\p{N}]+/u).filter((w) => w.length >= 3 || /^\d+$/.test(w)));
-/** Does the page on screen share a content word (or a number) with the item she is posing? PURE. */
-export function sharesWords(texts, item) {
-  const page = WORDS(texts.join(" "));
-  return [...WORDS([item?.prompt_en, item?.prompt_hi, item?.prompt].filter(Boolean).join(" "))].some((w) => page.has(w));
-}
-
 /** An async queue of the model's raw JSON deltas (pushed by chatStream's onDelta, read by sayDeltasOf). */
 function deltaQueue() {
   const buf = []; let done = false, wake = null;
@@ -182,7 +178,7 @@ export function clauseGate({ verdict = null, learner = {}, noGame = false, scree
  * Throws on a model error, a timeout, a bad output or a budget: the caller (brain/turn.js) then lets the Director lane take
  * the turn.
  */
-export async function agentTurn({ state, kit, event, silent = false, verdict = null, lessonId, lane = "voice", child = null, trace, chatFn = chat, streamFn = chatStream, onSay = null, tools = screenTools, now = Date.now() }) {
+export async function agentTurn({ state, kit, event, silent = false, verdict = null, lessonId, lane = "voice", child = null, trace, chatFn = chat, streamFn = chatStream, onSay = null, tools = screenTools, synced = studioRequest.syncedWithLine ?? null, now = Date.now() }) {
   const a = state.agent ?? {};
   const usage = a.usage ?? { usd: 0, tokens: 0 };
   if (usage.usd >= AGENT_LIMITS.lessonUsd || usage.tokens >= AGENT_LIMITS.lessonTokens) throw new AgentBudgetError(`lesson budget spent (${usage.usd.toFixed(3)} USD, ${usage.tokens} tokens)`);
@@ -270,9 +266,11 @@ export async function agentTurn({ state, kit, event, silent = false, verdict = n
   if (!(picture?.ok && picture.job) && !(out.board?.action === "show" && out.board.kind === "draw" && unconfirmed && !silent)) {
     const held = withoutPicturePromise(say); if (held !== say) { say = held; notes.push("picture promise removed"); }
   }
-  // a new question with no page of its own: a page up from earlier that shares no content word with it is cleared, so the
+  // a new question with no page of its own: a page up from earlier that shares nothing with her line and the question (stream
+  // 2's syncedWithLine, the test their gate refuses a new page by) is cleared, so the
   // screen never shows one thing while she asks about another (sim lab 7740135: a stale page under a new question, 20+ /64)
-  if (!silent && item && item.id !== state.activeItemId && (!out.board || out.board.action === "keep") && !game && screen?.on === "board" && !sharesWords(screen.texts ?? [], item)) {
+  if (!silent && item && item.id !== state.activeItemId && (!out.board || out.board.action === "keep") && !game && screen?.on === "board" && synced
+    && !synced({ ops: (screen.texts ?? []).map((text) => ({ op: "text", text })) }, `${say} ${promptFor(item, state.ctx?.lang ?? "hinglish") ?? item.prompt_en ?? ""}`)) {
     try { screen = tools.clear(lessonId); cleared = true; notes.push("stale page cleared"); } catch { /* the page stays */ }
   }
   // ── her line, held to the verified grade: no praise or "sahi" on an answer the key says is wrong or only partly right

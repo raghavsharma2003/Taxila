@@ -309,16 +309,24 @@ test("no promise of a picture that is not being made; a job that started keeps i
   assert.equal(g("ek tukda kya kehlata hai?").clause, "ek tukda kya kehlata hai?");
 });
 
-test("a new question with no page of its own clears an earlier page that shares nothing with it; a related page stays (sim lab 7740135)", async () => {
+test("a new question with no page of its own clears an earlier page that shares nothing with her line and the question (stream 2's matcher); a related page stays (sim lab 7740135)", async () => {
   const up = (texts) => { const t = fakeTools(); t.up = { ok: true, on: "board", words: `written on it: ${texts.join("; ")}`, texts, numbers: [], pageId: "p0" }; return t; };
+  // stream 2's syncedWithLine stands in here as a stub with its contract: (script, line) → does the page share content with the line
+  const seen = [];
+  const synced = (script, line) => { seen.push(line); const w = (x) => new Set(String(x).toLowerCase().split(/[^\p{L}\p{N}]+/u).filter((y) => y.length >= 4 || /^\d+$/.test(y)));
+    const lw = w(line); return [...w(script.ops.map((o) => o.text).join(" "))].some((y) => lw.has(y)); };
   const stale = up(["Ghaas → Hiran → Sher"]);
-  const a = await run(base({ intent: "practice", say: "Ab ek naya sawaal.", pose_item: "i3" }), { tools: stale, state: { activeItemId: "i1" } });
+  const a = await run(base({ intent: "practice", say: "Ab ek naya sawaal.", pose_item: "i3" }), { tools: stale, synced, state: { activeItemId: "i1" } });
   assert.deepEqual(stale.calls.map((c) => c[0]), ["clear"]);
   assert.equal(a.cleared, true);
+  assert.match(seen[0], /naya sawaal.*1\/2/, "her line and the question are the line it is matched against");
   const related = up(["1/2 aur 1/3", "kaun bada?"]);
-  await run(base({ intent: "practice", say: "Ab ek naya sawaal.", pose_item: "i3" }), { tools: related, state: { activeItemId: "i1" } });
+  await run(base({ intent: "practice", say: "Ab ek naya sawaal.", pose_item: "i3" }), { tools: related, synced, state: { activeItemId: "i1" } });
   assert.deepEqual(related.calls, [], "a page with the question's numbers stays");
   const same = up(["Ghaas → Hiran → Sher"]);
-  await run(base({ intent: "practice", say: "Phir se socho.", pose_item: "i1" }), { tools: same, state: { activeItemId: "i1" } });
+  await run(base({ intent: "practice", say: "Phir se socho.", pose_item: "i1" }), { tools: same, synced, state: { activeItemId: "i1" } });
   assert.deepEqual(same.calls, [], "the same question keeps its page");
+  const noMatcher = up(["Ghaas → Hiran → Sher"]);
+  await run(base({ intent: "practice", say: "Ab ek naya sawaal.", pose_item: "i3" }), { tools: noMatcher, synced: null, state: { activeItemId: "i1" } });
+  assert.deepEqual(noMatcher.calls, [], "no matcher in the tree: nothing is cleared");
 });
