@@ -102,4 +102,19 @@ describe("check-in after a recent safeguarding incident (test branch)", { skip: 
       await call("/api/lesson/end", { method: "POST", body: { lessonId: s.body.lessonId } });
     }
   });
+
+  // r5 QA D37 (14.3): the home never offers Continue for a lesson the server will not resume (an open safeguarding episode)
+  test("a lesson parked inside an open safeguarding episode is not offered as Continue; the same lesson without one is", async () => {
+    for (const open of [true, false]) {
+      const kid = await newChild(open ? "Ira" : "Dev");
+      const lid = (await one(`insert into lesson (child_id, topic_id, state) values ($1, 'c4-maths-ch05-t01', $2) returning id`,
+        [kid, { mode: "cascade", turn: 2, safeguard: open ? { calm: 0, asked: false, kind: "self_harm" } : null }])).id;
+      await q(`insert into turn (lesson_id, seq, speaker, text) values ($1, 1, 'teacher', 'hello'), ($1, 2, 'child', 'haan')`, [lid]);
+      const plan = await call(`/api/child/plan?childId=${kid}`);
+      assert.equal(plan.status, 200, JSON.stringify(plan.body));
+      if (open) assert.notEqual(plan.body.state, "resume", "an open episode: the server refuses the resume, so the home must not offer it");
+      else assert.equal(plan.body.state, "resume", "control: the same lesson with no episode is resumable");
+      await q("update lesson set ended_at = now() where id = $1", [lid]);
+    }
+  });
 });
