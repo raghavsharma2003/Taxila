@@ -52,9 +52,7 @@ export function eventOf({ kind, childText, asrConfidence, chipId, chipLabel, typ
   if (kind === "silence") return "silence: the microphone heard no words this turn (they may be thinking, away, or the sound was not them). Do not move on.";
   const parts = [];
   if (chipId) parts.push(`the child tapped a button: "${clip(chipLabel ?? chipId, 60)}"`);
-  // the recognition's confidence only when it is LOW (stream 3: a prefetched turn never knows the final's number, so a number
-  // in her event would make every speculation miss; an unsure turn should hear the final words anyway)
-  if (childText) parts.push(`the child ${typed ? "typed" : typeof asrConfidence === "number" && asrConfidence < ASR_UNSURE ? "said (speech recognition unsure)" : "said"}: "${clip(childText, 400)}"`);
+  if (childText) parts.push(`the child ${typed ? "typed" : `said (speech recognition confidence ${typeof asrConfidence === "number" ? asrConfidence.toFixed(2) : "?"})`}: "${clip(childText, 400)}"`);
   if (card) {
     const g = gradeOf(cls, card, kit);
     if (g) parts.push(`VERIFIED GRADE of their answer to the card question ${card.id} ("${clip(promptFor(card, lang), 120)}"): ${g}`);
@@ -97,7 +95,6 @@ export function withoutMastery(say, learner) {
   return kept.length && kept.length !== parts.length ? kept.join("").trim() : String(say ?? "");
 }
 
-const ASR_UNSURE = 0.8;
 /** The child's own words in the event text, or "". PURE. */
 const childWordsOf = (event) => (String(event ?? "").match(/the child (?:said|typed|tapped)[^"]*"([^"]*)"/) ?? [])[1] ?? "";
 /** The child asks to play (their words in the event). */

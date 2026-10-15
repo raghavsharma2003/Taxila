@@ -374,15 +374,12 @@ test("speculation (stream 3): her call starts on the prefetched turn with no too
   assert.equal(out2.speculation, "dropped");
   assert.equal(stub.last.messages[1].content.includes("ek tihai"), true, "the turn made its own call on its own inputs");
   // the waste is recorded apart from the lesson budget: a finished call brings its tokens, a cut one counts as cut
-  const { specWasteOf, eventOf } = await import("../server/agent/agent.js");
+  const { specWasteOf } = await import("../server/agent/agent.js");
   assert.deepEqual(specWasteOf(null, { usage: { in: 900, out: 80 }, dep: "taxila-gpt6" }).tokens, 980);
   assert.deepEqual(specWasteOf({ dropped: 1, cut: 0, tokens: 980, usd: 0.002 }, { usage: null }), { dropped: 2, cut: 1, tokens: 980, usd: 0.002 });
   const nx = ST(); applyAgentTurn(nx, { ...out2 }, { kit: K, childText: "ek tihai", lessonId: "L1" });
   assert.equal(nx.agent.specWaste.dropped, 1);
   assert.equal(nx.agent.usage.tokens, out2.usage.tokens, "the lesson budget counts only the call the turn used");
-  // the event names the recognition's confidence only when it is low (a prefetch never knows the final's number)
-  assert.match(eventOf({ kind: "turn", childText: "aadha", asrConfidence: 0.93 }), /the child said: "aadha"/);
-  assert.match(eventOf({ kind: "turn", childText: "aadha", asrConfidence: 0.6 }), /the child said \(speech recognition unsure\): "aadha"/);
   // a game ask is never speculated (its lookup is an action); silence neither
   assert.equal(agentSpeculate({ state: ST(), kit: K, event: 'the child said (speech recognition confidence 0.9): "game khelna hai"', lessonId: "L1", tools: { ...fakeTools(), game: async () => ({ ok: false }) }, streamFn }), null);
   assert.equal(agentSpeculate({ state: ST(), kit: K, event: EV, silent: true, lessonId: "L1", tools: fakeTools(), streamFn }), null);
