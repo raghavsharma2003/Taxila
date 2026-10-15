@@ -62,6 +62,7 @@ Status: **FIXED** (on `claude/r5-qa`, verified by a repro script) · **OWNER** (
 | D40 | P2 | WAI (re-tested) | main | After a model-opened safeguard, "Main already bol diya na" safeguards again (Help sheet) instead of reading as fine |
 | D41 | P2 | OWNER (14.4) | 4A | After a safeguard, "Can we do the lesson now?" gets mixed-language chips ("Show me a picture / Tell it as a story / Play a game / Lesson par wapas") and an English reply for a Hinglish child |
 | D42 | P2 | OWNER | stream 2 + client | A Studio page closes when the next reply carries `tray: none`, even when that reply still talks about it ("isi rectangle ka perimeter…") |
+| D43 | P2 | OWNER | stream 2 | After the D42 fix the picture board stays into the NEXT item: "Ab square ki har side 8 metre ho…" with the old "rectangle" board up |
 | D19 | P2 | WONTFIX | QA (UI) | `GET /api/me` 401 logged as a console error on every signed-out landing and set-up load |
 
 ## Details
@@ -256,6 +257,22 @@ didn't play. Read it on the card. Play again". The floor then stays `idle` (stat
 until the child taps the mic. Expected: one server-side retry of the TTS call (it is idempotent) and, if that fails too, the
 floor moves to YOUR TURN with the card as the question, so the lesson goes on in text. Evidence in
 `ui.state floor=idle strip=T5` from 17.8 s to 66.2 s.
+
+## 14.4 board pass — claude/r4-content 94b2c0fe (repaired catalogue e65dd5f7), local TEST, class 6
+- **"picture dikhao" on 6 topics: pass.** No cut words, no answer on the board, and each board matches her line.
+  - Lessons: maths perimeter 08cddc87, maths ch02 452dfcc0, science ch02 95b4d30d, science ch04 108831b9, sst ch03 41e72f82,
+    english ch02 d432fa0f.
+  - Boards: "P = ? × (L + B)" with "length / breadth / closed shape", line segment vs ray, shrubs vs trees, magnetic vs
+    non-magnetic, mountains / plateaus / plains, honest praise vs flattery.
+  - Shots: `shots/p14-picture-6topics-a.png`, `shots/p14-picture-numberline-b.png`.
+- **Number line ×3:** b7857fe8 and f93e1a73 draw 0-50 with 30 marked and do not state the answer.
+  - **D39 still open on the line:** fa2f04e7 "number line par 0 se 160 tak poora boundary-distance dikhega … Aap 160 par
+    ungli rakhenge?" (the board was refused, so no 160 is drawn, but she says it). 1/3.
+- **D42: fixed.** The picture board stays across the next turn 3/3 (d4aa3f0b, 0f285ca6, e737d1a4).
+- **D43 (P2, new):** the board now also stays into the NEXT item.
+  - d4aa3f0b: the card asks "Ab square ki har side 8 metre ho, perimeter batayiye" while the board still shows the
+    labelled "rectangle" (e737d1a4 the same).
+  - Shot: `shots/p14-stale-board.png`.
 
 ## Pass 13 — final 14.3 (int/r5-rel143 @ 9a30285d), local TEST, phone 393x876
 Fresh TEST accounts: class 6 Hinglish (boards), class 6 Hinglish (safeguard), class 2 Hinglish (spoken maths).
