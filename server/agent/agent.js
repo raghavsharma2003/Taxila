@@ -24,6 +24,7 @@ import { teacherDeployment, AGENT_LIMITS } from "./flags.js";
 // stream 2's ONE "does this page share content with her line" (studio/request.js syncedWithLine, d6f0bb51: their gate refuses
 // a new page by it). Until a tree carries it the stale-page clear below is off; never a second definition (main, 14.3).
 import * as studioRequest from "../studio/request.js";
+import { visualAskOf } from "../director/requests.js";
 
 export class AgentBudgetError extends Error { constructor(m) { super(m); this.code = "agent_budget"; } }
 
@@ -93,6 +94,8 @@ export function withoutMastery(say, learner) {
   return kept.length && kept.length !== parts.length ? kept.join("").trim() : String(say ?? "");
 }
 
+/** The child's own words in the event text, or "". PURE. */
+const childWordsOf = (event) => (String(event ?? "").match(/the child (?:said|typed|tapped)[^"]*"([^"]*)"/) ?? [])[1] ?? "";
 /** The child asks to play (their words in the event). */
 const GAME_ASK = /(?:the child (?:said|typed|tapped)[^"]*")[^"]*(?:\bgame|\bkhel|\bplay\b|गेम|खेल)/iu;
 const GAME_PROMISE = /(?:game|games|khel\w*|गेम|खेल)[^.!?।]*(?:taiyaar|tayyar|taiyar|ready|bana\s*(?:rahi|ti|ungi)|banaa\s*rahi|la\s*rahi|laa\s*rahi|aayega|aayegi|aa\s*raha|aa\s*rahi|shuru\s*kar|start|khelte\s+hain|khelenge|coming|getting)|(?:taiyaar|tayyar|ready|bana\s*rahi)[^.!?।]*(?:game|khel)/iu;
@@ -270,6 +273,7 @@ export async function agentTurn({ state, kit, event, silent = false, verdict = n
   // 2's syncedWithLine, the test their gate refuses a new page by) is cleared, so the
   // screen never shows one thing while she asks about another (sim lab 7740135: a stale page under a new question, 20+ /64)
   if (!silent && item && item.id !== state.activeItemId && (!out.board || out.board.action === "keep") && !game && screen?.on === "board" && synced
+    && !(screen.pageId && screen.pageId === a.askedPageId) && !visualAskOf(childWordsOf(event))
     && !synced({ ops: (screen.texts ?? []).map((text) => ({ op: "text", text })) }, `${say} ${promptFor(item, state.ctx?.lang ?? "hinglish") ?? item.prompt_en ?? ""}`)) {
     try { screen = tools.clear(lessonId); cleared = true; notes.push("stale page cleared"); } catch { /* the page stays */ }
   }
@@ -377,6 +381,8 @@ export function applyAgentTurn(next, out, { kit, childText = "", cls = null, car
     skill: out.item?.skillId ?? a.skill ?? kit.skills?.[0]?.id,
     boards: (a.boards ?? 0) + (out.board ? 1 : 0), pictures: (a.pictures ?? 0) + (out.picture?.job ? 1 : 0),
     ...(out.gameRefused || a.noGame ? { noGame: true } : {}),
+    // a page that went up when the child asked to SEE something is theirs: the stale-page clear never takes it (stream 2)
+    ...(out.board?.pageId && childText && visualAskOf(childText) ? { askedPageId: out.board.pageId } : {}),
     usage: { usd: +((a.usage?.usd ?? 0) + out.usage.usd).toFixed(5), tokens: (a.usage?.tokens ?? 0) + out.usage.tokens },
     lastMs: out.ms, notes: out.notes,
   };

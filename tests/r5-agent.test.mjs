@@ -329,4 +329,15 @@ test("a new question with no page of its own clears an earlier page that shares 
   const noMatcher = up(["Ghaas → Hiran → Sher"]);
   await run(base({ intent: "practice", say: "Ab ek naya sawaal.", pose_item: "i3" }), { tools: noMatcher, synced: null, state: { activeItemId: "i1" } });
   assert.deepEqual(noMatcher.calls, [], "no matcher in the tree: nothing is cleared");
+  // a page the child asked to SEE is theirs (stream 2: the request exemption lives in seam.js, not in the matcher)
+  const asked = up(["Ghaas → Hiran → Sher"]);
+  await run(base({ intent: "practice", say: "Ab ek naya sawaal.", pose_item: "i3" }), { tools: asked, synced, state: { activeItemId: "i1", agent: { askedPageId: "p0" } } });
+  assert.deepEqual(asked.calls, [], "the child's own page stays");
+  const askingNow = up(["Ghaas → Hiran → Sher"]);
+  await run(base({ intent: "practice", say: "Ab ek naya sawaal.", pose_item: "i3" }), { tools: askingNow, synced, event: 'the child said (speech recognition confidence 0.9): "board pe likh ke dikhao"', state: { activeItemId: "i1" } });
+  assert.deepEqual(askingNow.calls, [], "a child asking to see this turn: nothing is cleared");
+  // and the page that goes up on a see-ask is remembered as theirs
+  const next = ST({ activeItemId: "i1" });
+  applyAgentTurn(next, { say: "Yeh lo.", intent: "explain", item: null, board: { ok: true, on: "board", texts: ["x"], pageId: "p9" }, screen: { on: "board", texts: ["x"] }, usage: { usd: 0, tokens: 0 }, notes: [], read: null }, { kit: K, childText: "board pe likh ke dikhao", lessonId: "L1" });
+  assert.equal(next.agent.askedPageId, "p9");
 });
