@@ -6042,3 +6042,22 @@ TTS frames type 5 = IMA ADPCM (4:1), negotiated by Accept `codec=adpcm`, asked f
 - **What:** a production number about children counts only rows whose sid is a real lesson. sid 'server' rows are scripts, tests and background jobs.
 - **Why:** see ms-r143-prod-trace-origin. The overflow lane and the TEST routing stand on the arm and on the shared limits, not on a throttled child.
 - **Reversal:** a background path that legitimately records child-facing calls with sid 'server'.
+
+
+<!-- merged from inbox/r143f-main.json -->
+## dc-r143-model-reread-same-episode (2026-10-15)
+
+- **What:** inside a model-opened episode, a further model-only distress read is a hold turn, never the opening again. It keeps the helplines, withdraws any resume offer, and never releases on that turn.
+- **Why:** see ms-r143-release-not-firing (545cbf6e). The predicate's families, the relational floor and a carried check-in still restart the full script.
+- **Reversal:** a run where a child whose distress only the model reads gets a weaker answer than the opening, or where the hold loops and children leave more often.
+
+## dc-r143-labeller-kind-model (2026-10-15)
+
+- **What:** the label call's distress read sets kind 'model', as on every other model path.
+- **Why:** a kind-null episode never took the release. The predicate always sets its family first.
+- **Reversal:** a predicate path that can return distress with kind null.
+
+## dc-r143-fine-asked-again (2026-10-15)
+
+- **What:** a clause made only of an asked-again complaint is set aside for the contrast and leftover-negation checks. Carry-on reads canonical spellings and English nouns only inside an ask.
+- **Reversal:** a disclosure that reads fine via asked_again, or real carry-on asks missed often.

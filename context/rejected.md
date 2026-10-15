@@ -2607,3 +2607,17 @@ Judging her 'parts' words against the module that was up BEFORE a named visual a
 - **Tried:** the release gate ran npm test with production's DATABASE_URL in its environment.
 - **What broke:** stubbed model calls were written into the production trace (639 rows in 3 days) and misread as production throttling.
 - **Fix:** gateEnv runs the gate in CI's environment, with no database URL.
+
+
+<!-- merged from inbox/r143f-main.json -->
+## rj-r143-reread-climbs-to-resume (2026-10-15)
+
+- **Tried:** the prepared patch treated a model re-read inside a model-opened episode like an ordinary turn: calm went up, and the second re-read offered the resume.
+- **What broke (review):** a child who keeps disclosing to the model alone would be offered the lesson while still being read as distressed.
+- **Fix:** a re-read holds (calm 1, offer withdrawn) and never releases or offers the resume on that turn.
+
+## rj-r143-bare-lesson-carry (2026-10-15)
+
+- **Tried:** fixing the carry-on spelling by adding a bare canonical "leson".
+- **What broke:** on the TEST trace it read "lesson band karein?" (shall we stop?), "lesson boring hai" and "kitna time aur hai lesson mein?" as asks to carry on. Straight back into the lesson after a stop request breaks NEVER MANIPULATE.
+- **Fix:** the English nouns count only inside an ask; stop, tiredness and time-left words keep the chips.

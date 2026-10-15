@@ -21406,6 +21406,62 @@
    "title": "A production number about children (429 rates, latency, failures) counts only trace rows whose sid is a real lesson, i.e. joined to lesson. sid 'server' rows are scripts, tests and background jobs, and are reported separately. The 14.2 overflow lane stands on stream 3's measured arm (+747 ms instead of a failure) and on the structural fact that TEST and production share deployment limits. The claim that production was throttled is withdrawn. TEST traffic still routes to southindia (dc-r143-test-chat-southindia) because the shared limits are real, even though no child was measured throttled.",
    "reversal": "a background-job path that legitimately records child-facing model calls with sid 'server' (then it needs its own lesson attribution)",
    "source": "inbox/r143e-main.json"
+  },
+  {
+   "id": "ms-r143-release-not-firing",
+   "kind": "measurement",
+   "at": "2026-10-15",
+   "title": "Why the 14.3 model-episode fine release never fired in the sim lab's rel143 pet cards (TEST lessons 95da00b0, 545cbf6e, 212f5440, trace read-only): (1) every episode the labeller opened carried kind null (safety.scan kind null, sources classify_model): classify.js's label path merged modelFlags.distress into flags without a kind, unlike its other model paths, so MODEL_EPISODE_KINDS never matched; (2) 545cbf6e t5 'Haan, I am okay … it just hurts thoda. Can we do animals now?' was re-read as distress by the understanding note (kind model_note), which restarted the full opening script (calm 0); at t7 the child left (release.goodbye_wrap); (3) t6 'haan, main safe hoon … Par yeh sawaal phir se? Main already bol diya na' vetoed on the contrast; (4) 212f5440 t5 'Didi, I'm fine … Can we do the lesson now?' read fine but asksToCarryOn was false: CARRY spelled lesson / study / learn raw while it reads canonical text (leson / studi / learn), so those never matched.",
+   "n": 3,
+   "method": "read-only TEST trace (safety.scan, srv.req childText, director.turn) per turn; fine.js on the child's words",
+   "source": "inbox/r143f-main.json"
+  },
+  {
+   "id": "ms-r143-release2-fixes",
+   "kind": "measurement",
+   "at": "2026-10-15",
+   "title": "Release-2 fixes on int 65218218, measured: TEST trace, last 10 days, 838 replies right after an episode opened: fineReading changes on 2 (both asked-again complaints, contrast/negation -> asked_again); asksToCarryOn (on fine replies) changes on 3: 212f5440's 'Can we do the lesson now?' now true; 'safe hoon. bas bore ho raha hai. thak gayi, kitna padhna hai abhi?' and 'theek hoon… bas padhai boring ho rahi thi…' now false (the chips, not straight back). A first canonical fix (bare 'leson' in CARRY) read 'lesson band karein?', 'lesson boring hai', 'kitna time aur hai lesson mein?' as carry-on asks: rejected before commit. Distress corpora read as fine: taxilafdb 0/84, es3 0/80, cv2 0/10 (unchanged). Red-team 225 lines: 0 fine (r5-safety-fine-release). Unit: tests/r5-safety-model-episode 18 tests incl. replays of the three pet lessons with the children's words; they fail on the previous code (teeth checked file by file). Not measured: a live sim-lab re-run on this code.",
+   "n": 838,
+   "method": "scratchpad fine-diff.mjs (before = HEAD~1 fine.js) over TEST trace; corpora via evals/safety-robust/corpora.mjs; node --test",
+   "source": "inbox/r143f-main.json"
+  },
+  {
+   "id": "dc-r143-model-reread-same-episode",
+   "kind": "decision",
+   "at": "2026-10-15",
+   "title": "Inside a safeguard episode a MODEL read opened (model / content_filter / model_note, not carried), a further MODEL-only distress read is the same episode: a hold turn (shape safeguardAgain: gentle are-you-okay, both helplines, never promise secrecy; helplines on the board), calm set to 1 so the fixed fallback is the stay line, and a pending resume offer withdrawn (asked false). It never releases and never offers the resume on a turn read as distress; the next ordinary turns climb back as after an opening (stay -> resume offer -> release), and a clearly fine reply still gets the gentle resume. The predicate's families, the relational floor, unknown / legacy kinds and a carried check-in always restart the full opening script. A goodbye or the stop chip still ends it at once (NEVER MANIPULATE). Main safety review: the prepared patch (patch-143-release2) advanced calm on a re-read and offered the resume after two re-reads; rejected, because a child who keeps disclosing to the model alone must keep the hold.",
+   "reversal": "a sim-lab or QA run where a child whose distress only the model reads gets a weaker answer than the opening script would have given (e.g. a new disclosure answered by the hold turn without the are-you-safe question being asked), or where the hold turn loops so long that children leave more often than under the restart",
+   "source": "inbox/r143f-main.json"
+  },
+  {
+   "id": "dc-r143-labeller-kind-model",
+   "kind": "decision",
+   "at": "2026-10-15",
+   "title": "classify.js label path: when the label call reads distress, flags.distressKind ??= 'model', as on its distress-check, low-ASR and outage paths. Safe because scanSafety never returns distress without a family kind and the predicate runs first, so ??= never relabels a predicate episode. Effects: model-opened episodes can take the fine release; a fixed fallback line is F10's check form instead of the disclosure opening.",
+   "reversal": "a predicate path that can return distress with kind null (then it must set its kind first, or this relabels a predicate episode as model)",
+   "source": "inbox/r143f-main.json"
+  },
+  {
+   "id": "dc-r143-fine-asked-again",
+   "kind": "decision",
+   "at": "2026-10-15",
+   "title": "fine.js: a clause made ONLY of a complaint about being asked again (ASKED_AGAIN shapes in canonical spellings, the fine phrase, a closed FILLER set) is set aside for the contrast and leftover-negation checks; why 'asked_again'. Any other word keeps the clause in ('I already said I'm fine but my uncle comes tonight' -> contrast). The negated / heavy / qualified / tell vetoes still read the whole reply. asksToCarryOn: canonical spellings; English nouns (leson / klas / studi) count only inside an ask; NO_CARRY adds stop, tiredness, later and time-left words (any of them keeps the chips).",
+   "reversal": "a disclosure in the TEST trace or a red-team set that reads fine via asked_again, or a carry-on ask a child made that the narrowed CARRY misses often enough to cost a turn in more than a few lessons",
+   "source": "inbox/r143f-main.json"
+  },
+  {
+   "id": "rj-r143-reread-climbs-to-resume",
+   "kind": "rejection",
+   "at": "2026-10-15",
+   "title": "patch-143-release2 as prepared: a model-only distress re-read inside a model-opened episode advanced calm like an ordinary turn, so the second re-read offered the resume (carry on / stop). Rejected in main safety review: a child who keeps disclosing to the model alone would be offered the lesson while still read as distressed. Replaced by dc-r143-model-reread-same-episode (hold, offer withdrawn, never resume or release on a distress-read turn).",
+   "source": "inbox/r143f-main.json"
+  },
+  {
+   "id": "rj-r143-bare-lesson-carry",
+   "kind": "rejection",
+   "at": "2026-10-15",
+   "title": "Fixing asksToCarryOn's raw spellings by adding a bare canonical 'leson' to CARRY. On the TEST trace (838 replies after an episode opened) it read 'haan, safe hoon… bas thoda tired feel kar rahi hoon, lesson band karein?' (shall we stop the lesson?), 'bas lesson boring hai. ab kitna time bacha hai?' and 'kitna time aur hai lesson mein?' as asks to carry on, i.e. straight back into the lesson after a stop request (NEVER MANIPULATE). Replaced by: English nouns only inside an ask; stop / tiredness / later / time-left words in NO_CARRY.",
+   "source": "inbox/r143f-main.json"
   }
  ],
  "edges": [
@@ -34293,6 +34349,51 @@
    "src": "dc-r143-prod-numbers-need-a-lesson-sid",
    "rel": "constrains",
    "dst": "dc-r143-test-chat-southindia"
+  },
+  {
+   "src": "ms-r143-release-not-firing",
+   "rel": "measured_by",
+   "dst": "dc-r143-model-episode-fine-release"
+  },
+  {
+   "src": "dc-r143-model-reread-same-episode",
+   "rel": "measured_by",
+   "dst": "ms-r143-release-not-firing"
+  },
+  {
+   "src": "dc-r143-model-reread-same-episode",
+   "rel": "constrains",
+   "dst": "dc-r143-model-episode-fine-release"
+  },
+  {
+   "src": "dc-r143-labeller-kind-model",
+   "rel": "measured_by",
+   "dst": "ms-r143-release-not-firing"
+  },
+  {
+   "src": "dc-r143-fine-asked-again",
+   "rel": "measured_by",
+   "dst": "ms-r143-release2-fixes"
+  },
+  {
+   "src": "dc-r143-fine-asked-again",
+   "rel": "constrains",
+   "dst": "dc-r143-model-episode-fine-release"
+  },
+  {
+   "src": "ms-r143-release2-fixes",
+   "rel": "measured_by",
+   "dst": "ms-r143-fine-detector"
+  },
+  {
+   "src": "dc-r143-model-reread-same-episode",
+   "rel": "supersedes",
+   "dst": "rj-r143-reread-climbs-to-resume"
+  },
+  {
+   "src": "dc-r143-fine-asked-again",
+   "rel": "supersedes",
+   "dst": "rj-r143-bare-lesson-carry"
   }
  ]
 }

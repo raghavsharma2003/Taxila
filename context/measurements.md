@@ -4321,3 +4321,21 @@ TEST child turns (n=3481): romance hits went from 6 to 11. The 5 added were all 
 - All 95 429s are sid 'server'; none belongs to a child's lesson.
 - The 06 UTC 429s were the main loop's own repro scripts. The 10:48 burst was the 14.3 gate's tests, written to production.
 - **"Production was throttled" is withdrawn.**
+
+
+<!-- merged from inbox/r143f-main.json -->
+## ms-r143-release-not-firing (2026-10-15)
+
+Why the model-episode fine release never fired in the sim lab's rel143 pet cards (3 TEST lessons, trace read-only):
+
+- The labeller opened every episode with kind null, so the release's kind check never matched.
+- 545cbf6e: the understanding note re-read "I am okay … it just hurts thoda" as distress and restarted the full opening; the child left two turns later.
+- "Par yeh sawaal phir se? Main already bol diya na" vetoed on the contrast.
+- "Can we do the lesson now?" never read as a carry-on ask: the pattern spelled lesson / study / learn raw over canonical text.
+
+## ms-r143-release2-fixes (2026-10-15)
+
+- TEST trace, 838 replies right after an episode opened: the fine reading changes on 2 (both asked-again complaints); carry-on changes on 3 (212f5440's ask now straight back; two bored / tired replies now the chips).
+- Distress corpora read as fine: 0/84, 0/80, 0/10, unchanged. Red-team: 0/225.
+- 18 unit tests including replays of the three lessons; they fail on the previous code.
+- **Not measured:** a live sim-lab re-run on this code.
