@@ -19,7 +19,8 @@
 //
 // Pieces are INVISIBLE until revealed on the teacher's cue: statusFacts proposes a reveal (the kernel may refuse it), the
 // committed turn's onReveal records it, and slotFor gives the turn's UiDirectives.studioSlot so the Work tray shows it.
-import { answersRequest, samePage, shownBefore, pageSig, syncedWithLine } from "./request.js";
+import { answersRequest, samePage, shownBefore, pageSig, syncedWithLine, textsOf } from "./request.js";
+import { numbersIn as boardNumbersIn } from "./qa/whiteboard.js";
 import { ORDINAL } from "../director/modules.js";
 import { seamSafe } from "../seam-safe.js";
 import { normalizeScript, scriptFacts } from "../../shared/whiteboard.js";
@@ -264,6 +265,15 @@ export const gateRefusals = () => refusals.slice();
  * The slot of a piece IF its artifact is certified at the device's class, else null. A frame that is not judged at this
  * size falls back to its skeleton-as-activity when the skeleton is certified (the same params and words; host-graded).
  */
+/** 14.4 (main's release blocker on D42): a board re-sent on a LATER turn (kept, or the late asked board) was gated when drawn,
+ *  before the item now open existed: one that writes a value withheld now (the open item's key, whiteboard.js withheldValues)
+ *  is not sent again. */
+const writesWithheld = (script, withhold) => {
+  const vals = (withhold ?? []).map(String).filter(Boolean);
+  if (!vals.length) return false;
+  const on = new Set(boardNumbersIn(textsOf(script).join(" ")));
+  return vals.some((v) => on.has(v) || [...boardNumbersIn(v)].some((n) => on.has(n)));
+};
 function gatedSlot(L, p, state = p.state, where = "slot") {
   const slot = slotOf(p, state);
   if (!slot?.artifact) return slot; // nothing drawn yet (a whiteboard planning): no pixels
@@ -1072,21 +1082,23 @@ export const studioSeam = {
    * "aapne chaaron sides jodkar 160 metre nikala. Ab isi rectangle ka perimeter…"): the board on screen goes on the response
    * again when her line still shares a word or a number with it (request.js syncedWithLine). Never a revealing slot.
    */
-  keepBoardSlot(lessonId, line) {
+  keepBoardSlot(lessonId, line, withhold = []) {
     const L = lessons.get(lessonId);
     const on = L?.onScreen ? L.pieces.get(L.onScreen) : null;
     if (!on || on.kind !== "whiteboard" || !on.artifact?.script || on.retired || !VISIBLE.has(on.state) || L.safety) return null;
     if (!syncedWithLine(on.artifact.script, line)) return null;
+    if (writesWithheld(on.artifact.script, withhold)) return null;
     const g = gatedSlot(L, on, on.state, "on_screen");
     if (g) L.shown = { intentId: on.intentId, revealing: false };
     return g;
   },
 
   /** 14.4: the slot of THIS piece when it is the board / picture on screen now (the late asked board her next line points at). */
-  onScreenSlot(lessonId, intentId) {
+  onScreenSlot(lessonId, intentId, withhold = []) {
     const L = lessons.get(lessonId);
     const on = L?.onScreen && L.onScreen === intentId ? L.pieces.get(intentId) : null;
     if (!on || !["whiteboard", "image"].includes(on.kind) || !on.artifact || on.retired || !VISIBLE.has(on.state) || L.safety) return null;
+    if (on.kind === "whiteboard" && writesWithheld(on.artifact.script, withhold)) return null;
     const g = gatedSlot(L, on, on.state, "on_screen");
     if (g) L.shown = { intentId: on.intentId, revealing: false };
     return g;

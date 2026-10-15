@@ -26,6 +26,7 @@ import { scanSafety, floorViolations, helpLeadOf } from "../director/safety.js";
 import { step, evidenceFrom, upcomingItem } from "../director/state.js";
 import { noteModuleEvents, moduleAnswerOf } from "../director/modules.js";
 import { findItem, promptFor, revealsAnswer, whyKey, norm as normAnswer } from "../director/items.js";
+import { withheldValues } from "../studio/qa/whiteboard.js";
 import { registerBroken } from "../director/register.js";
 import { verdictFor, uiVerdict, askText, refersToScreen, wrongAnswersOf, boardClaimProblem, kitWordsOf, stripScreenRefs } from "../director/say.js";
 import { answersRequest, pointsAtStage, unpointGently, pictureSubjectOf, announcesGame, ungame, unassumeVisual, refersToBoard, boardPointer, seeNotImagine, stayOnScreen, selfAnswer, unanswer } from "../studio/request.js";
@@ -1074,10 +1075,14 @@ export async function lessonTurn(req, body, hooks = {}) {
     // 14.4 (main): the board the child asked for landed AFTER a line that could not point at it (it was still being drawn,
     // her words stayed off the screen): her NEXT line points at it once (the same fixed pointer, in her line's language),
     // and the board goes on that response. Remembered for two turns at most; never on a safeguarding turn.
+    // (main's release blocker on D42: a board re-sent on a later turn never carries the key of the item open NOW; a key her
+    // own line says stays hers, the pinned W9 design)
+    const openNow = seamSafe("say.openItem", () => findItem(next, kit, r.move?.itemId ?? next.activeItemId), null);
+    const heldNow = openNow ? seamSafe("say.withheld", () => withheldValues({ items: [openNow] }, { itemId: openNow.id, line: teacherReply ?? "" }).values, []) : [];
     const lateAsk = next.lateBoard && next.lateBoard.turn < next.turn ? next.lateBoard : null;
     if (next.lateBoard && (!lateAsk || next.turn - next.lateBoard.turn > 2)) delete next.lateBoard;
     if (lateAsk && !late && !safetyWords && teacherReply && !studioSlot) {
-      const slot = seamSafe("studio.onScreenSlot", () => (typeof studioSeam.onScreenSlot === "function" ? studioSeam.onScreenSlot(lesson.id, lateAsk.intentId) : null), null);
+      const slot = seamSafe("studio.onScreenSlot", () => (typeof studioSeam.onScreenSlot === "function" ? studioSeam.onScreenSlot(lesson.id, lateAsk.intentId, heldNow) : null), null);
       if (slot) {
         delete next.lateBoard;
         studioSlot = slot; studioReasons.push("studio.late_board_shown");
@@ -1101,7 +1106,7 @@ export async function lessonTurn(req, body, hooks = {}) {
     // 14.4 (QA D42): the board already on screen stays on the response while her line still talks about it (no new slot this
     // turn, the board not taken down, the Director's tray free): the client closes a page a response does not carry
     if (!studioSlot && !leftBoard && !late && !agentApplied && !safetyWords && teacherReply && (!r.ui?.tray || r.ui.tray === "none") && !(r.ui?.chips?.length)) {
-      const kept = seamSafe("studio.keepBoardSlot", () => (typeof studioSeam.keepBoardSlot === "function" ? studioSeam.keepBoardSlot(lesson.id, teacherReply) : null), null);
+      const kept = seamSafe("studio.keepBoardSlot", () => (typeof studioSeam.keepBoardSlot === "function" ? studioSeam.keepBoardSlot(lesson.id, teacherReply, heldNow) : null), null);
       if (kept) { studioSlot = kept; studioReasons.push("studio.board_kept"); }
     }
     // round 5 (sim lab 709b6acb): over an empty stage, a line that ASSUMES a visual without a screen word ("Table mein

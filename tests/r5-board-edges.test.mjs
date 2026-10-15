@@ -292,3 +292,31 @@ test("14.4 (main): a late asked board her line could not point at is the next tu
   L.safety = true;
   assert.equal(studioSeam.onScreenSlot(id, "ask-1"), null, "never after a safeguard");
 });
+
+test("14.4 (main's release blocker on D42): a board re-sent on a later turn (kept, or the late asked board) never carries the OPEN item's key, and nothing is re-sent after a safeguard", async () => {
+  const seam = await import("../server/studio/seam.js");
+  const { withheldValues } = await import("../server/studio/qa/whiteboard.js");
+  const { studioSeam } = seam;
+  const id = "L-d42-key";
+  seam.subscribe(id, () => {});
+  const L = seam._lesson(id);
+  const script = { v: 1, scriptId: "s", line: { lessonId: id }, anchor: "line_audio_start", board: { w: 677, h: 423, ground: "chalk" }, mode: "fresh", durationMs: 2000,
+    ops: [{ id: "r", op: "rect", startMs: 0, endMs: 800, at: [120, 100], w: 300, h: 180 }, { id: "n", op: "text", startMs: 800, endMs: 1400, at: [270, 320], text: "rectangle 160 m", size: "m" }] };
+  L.pieces.set("wb-1", { intentId: "wb-1", slotId: "slot-1", kind: "whiteboard", state: "revealed", artifact: { kind: "whiteboard", script }, revealedTurn: 1 });
+  L.onScreen = "wb-1";
+  const line = "Ab is rectangle ka perimeter kitna hoga?";
+  const item = { id: "q-160", prompt_en: "A field is 50 m by 30 m. What is its perimeter?", answer: "160 m" };
+  const held = withheldValues({ items: [item] }, { itemId: item.id, line }).values;
+  assert.ok(held.includes("160"));
+  // (b) an item whose key is 160 is open now: the board that writes 160 is not re-sent, on either path
+  assert.equal(studioSeam.keepBoardSlot(id, line, held), null);
+  assert.equal(studioSeam.onScreenSlot(id, "wb-1", held), null);
+  // with no such item open it is (the board itself is not the problem)
+  assert.ok(studioSeam.keepBoardSlot(id, line, []));
+  // a key her own line says is hers (the pinned W9 design): nothing withheld, the board stays
+  assert.deepEqual(withheldValues({ items: [item] }, { itemId: item.id, line: "Perimeter 160 m aaya. Ab is rectangle ka area?" }).values, []);
+  // (a) after a safeguard nothing is re-sent, even when her line shares words with the board
+  studioSeam.onSafety(id);
+  assert.equal(studioSeam.keepBoardSlot(id, line, []), null);
+  assert.equal(studioSeam.onScreenSlot(id, "wb-1", []), null);
+});
