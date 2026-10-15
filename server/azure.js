@@ -3,7 +3,7 @@
 // goes in `model`; the key goes in the `api-key` header. Every call is timed and logged (kind, deployment, status, ms, tokens) — never the
 // key and never the payload, because payloads carry children's words.
 
-import { EndpointConfigError, laneEndpoint, laneKey, realtimeLane } from "./endpoints.js";
+import { EndpointConfigError, laneEndpoint, laneKey, realtimeLane, resolveLane } from "./endpoints.js";
 import { admit, settle } from "./lanes.js";
 import { recordModelCall } from "./trace/model.js";
 
@@ -103,6 +103,20 @@ const asAzure = (fn) => { try { return fn(); } catch (e) { throw e instanceof En
  * use realtimeLane(session) for that, so the base matches the account that minted the key.
  */
 export function endpoint(lane = "CHAT") { return asAzure(() => laneEndpoint(lane)); }
+/**
+ * round 5 (14.2): the lane a 429 on `deployment` moves to, or null. TEST lesson 5d18d152 and production at 06 UTC on
+ * 2026-10-15 (51 of 361 taxila-fast calls) were throttled by load sharing the eastus2 deployment, and a throttled reply is
+ * the fallback line the child hears. A CHAT call whose deployment has a twin on the overflow account
+ * (AZURE_OPENAI_ENDPOINT_OVERFLOW + its key; TAXILA_OVERFLOW_DEPLOYMENTS, comma-separated, names the twins, checked by
+ * scripts/deploy-azure.mjs) moves there for its one retry, at once, instead of waiting on the deployment that said no.
+ * The twin is slower (southindia GlobalStandard +349 ms TTFT p50, india-ai-lanes-eastus2) but answers.
+ */
+export function overflowFor(lane, deployment) {
+  if (lane !== "CHAT") return null;
+  const names = String(process.env.TAXILA_OVERFLOW_DEPLOYMENTS || "").split(",").map((x) => x.trim()).filter(Boolean);
+  if (!names.includes(deployment)) return null;
+  try { return resolveLane("OVERFLOW").override ? "OVERFLOW" : null; } catch { return null; }
+}
 function apiKey(lane = "CHAT") { return asAzure(() => laneKey(lane)); }
 export { realtimeLane };
 
@@ -126,11 +140,13 @@ function log(entry, trace) {
  * @returns {Promise<any>} parsed JSON, or a Buffer when `binary`.
  */
 async function post(kind, deployment, path, body, { timeoutMs = DEFAULT_TIMEOUT_MS, trace, binary = false, retries = 1, signal, lane = "CHAT", quotaLane } = {}) {
+  let overflowed = false;
   for (let attempt = 0; ; attempt++) {
     // Quota lanes (server/lanes.js, W2-E): a background call may wait for its bucket; a hot call never waits. The seam is a
     // no-op (admit → undefined) until W2-E fills it. `quotaLane` is separate from `lane`, which selects the endpoint.
+    // the quota lanes protect the SHARED deployment's hot traffic; an overflow attempt is on another account (never paused)
     let wait;
-    try { wait = admit({ quotaLane, deployment, kind }); } catch (e) { console.warn("[azure] lanes.admit failed:", e?.message); }
+    try { wait = lane === "OVERFLOW" ? null : admit({ quotaLane, deployment, kind }); } catch (e) { console.warn("[azure] lanes.admit failed:", e?.message); }
     if (wait) await Promise.resolve(wait).catch(() => {});
     const t0 = performance.now();
     const ctl = new AbortController();
@@ -169,13 +185,17 @@ async function post(kind, deployment, path, body, { timeoutMs = DEFAULT_TIMEOUT_
     recordModelCall({ kind, deployment, lane, quotaLane, status: status || err?.code || "error", ms: Math.round(performance.now() - t0), attempt,
       tokens: usage ? { in: usage.prompt_tokens ?? usage.input_tokens, out: usage.completion_tokens ?? usage.output_tokens } : undefined,
       body, out: binary ? null : out, error: err ? String(err.message).slice(0, 200) : undefined, ...(err?.filterCats ? { filterCats: err.filterCats } : {}) });
-    try {
+    if (lane !== "OVERFLOW") try {
       settle({ quotaLane, deployment, kind, status: status || err?.code || "error",
         usage: usage ? { in: usage.prompt_tokens ?? usage.input_tokens, out: usage.completion_tokens ?? usage.output_tokens } : undefined });
     } catch (e) { console.warn("[azure] lanes.settle failed:", e?.message); }
     if (!err) return out;
+    // a 429 with a twin on the overflow account: the retry goes there at once (one move per call; with retries: 0 it is
+    // still the one extra call, since a 429 answers in milliseconds and the twin is the only way this call can answer)
+    const over = status === 429 && !overflowed && attempt <= retries ? overflowFor(lane, deployment) : null;
+    if (over) { overflowed = true; lane = over; continue; }
     const retryable = status === 0 || status === 429 || status >= 500;
-    if (attempt >= retries || !retryable) throw err;
+    if (attempt >= Math.max(retries, overflowed ? 1 : 0) || !retryable) throw err;
     await sleep(RETRY_DELAY_MS);
   }
 }
@@ -354,9 +374,9 @@ export async function* sseEvents(body) {
 export async function chatStream(deployment, messages, opts = {}) {
   const { api = "chat", effort, maxTokens = 16_000, timeoutMs = 300_000, stallMs = 20_000, signal, onDelta, quotaLane = "background", trace } = opts;
   const kind = opts.kind ?? (api === "responses" ? "responses_stream" : "chat_stream");
-  const lane = api === "responses" ? "RESPONSES" : "CHAT";
+  const lane = opts.overflowLane ?? (api === "responses" ? "RESPONSES" : "CHAT");
   let wait;
-  try { wait = admit({ quotaLane, deployment, kind }); } catch (e) { console.warn("[azure] lanes.admit failed:", e?.message); }
+  try { wait = opts.overflowLane ? null : admit({ quotaLane, deployment, kind }); } catch (e) { console.warn("[azure] lanes.admit failed:", e?.message); }
   if (wait) await Promise.resolve(wait).catch(() => {});
   const t0 = performance.now();
   const ctl = new AbortController();
@@ -438,8 +458,11 @@ export async function chatStream(deployment, messages, opts = {}) {
   log({ kind, deployment, status: status && !err ? status : err?.code || status || "error", ms, tokens: usage ? { in: usage.in, out: usage.out } : undefined }, trace);
   recordModelCall({ kind, deployment, lane, quotaLane, status: status && !err ? status : err?.code || status || "error", ms, ttftMs,
     tokens: usage ? { in: usage.in, out: usage.out } : undefined, body, text, error: err ? String(err.message).slice(0, 200) : undefined, ...(err?.filterCats ? { filterCats: err.filterCats } : {}) });
-  try { settle({ quotaLane, deployment, kind, status: err ? (err.status || err.code) : status, usage: usage ? { in: usage.in, out: usage.out } : undefined }); }
+  if (!opts.overflowLane) try { settle({ quotaLane, deployment, kind, status: err ? (err.status || err.code) : status, usage: usage ? { in: usage.in, out: usage.out } : undefined }); }
   catch (e) { console.warn("[azure] lanes.settle failed:", e?.message); }
+  // round 5 (14.2): a 429 arrives before any delta, so the stream restarts whole on the deployment's overflow twin (overflowFor)
+  const over = err && status === 429 && !text && !opts.overflowLane && !signal?.aborted ? overflowFor(lane, deployment) : null;
+  if (over) return chatStream(deployment, messages, { ...opts, overflowLane: over });
   if (err) {
     // a cancelled or failed stream is still billed for what it generated: estimate (≈ 4 chars per input token, 3.5 per
     // output token; reasoning tokens unknown) so spend caps never count a cancelled race arm as free
