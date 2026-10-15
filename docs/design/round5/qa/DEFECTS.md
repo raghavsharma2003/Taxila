@@ -253,6 +253,11 @@ until the child taps the mic. Expected: one server-side retry of the TTS call (i
 floor moves to YOUR TURN with the card as the question, so the lesson goes on in text. Evidence in
 `ui.state floor=idle strip=T5` from 17.8 s to 66.2 s.
 
+## Live 14.2 check (production a978ae2, 1 lesson, account deleted afterwards)
+- Lesson e004dc46-3bac-4159-ba37-f85d93a31b5a, "picture dikhao" (class 6): live still draws the D36 trapezoid labelled
+  "boundary" while she says "rectangle… length 50 m, breadth 30 m". It does not draw the "3 × 160 = 480" board, so that
+  answer leak is new in 14.3 (it came in with 3e2a2cf2). Shot: `shots/p13-live142-picture.png`.
+
 ## Re-test of stream 2's fixes — claude/r4-content 3e2a2cf2 (local TEST, class 6, typed)
 - **"picture dikhao" ×3: FAIL (P1, stream 2).** The "breadt" formula is gone; instead the same canned board appears 3/3 and
   stays (lessons 98bdb9a8, 548f22f0, a08613d3): "3 × 160 = 480 metres", a square, "? × side", a tilted square.
