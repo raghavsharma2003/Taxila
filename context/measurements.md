@@ -4118,3 +4118,126 @@ The full-page sheets are taken after scrolling the page in steps and requiring e
     - 0 rows after DELETE /api/account.
   - Writer counters: buffered 2, then 0; written 146; failures 0; badRows 0, over 12 s.
   - Evidence: docs/design/round4/build/r13/evidence/ (r132-liveproof-result.json, r132-replay-225614.png, r132-screen-flagged.png, r13-owner-replay-a95d2ff1.md).
+
+
+## Merged inbox entries (write-up from the entry text)
+- `ms-r12dr-landscape-2026-10-11` (2026-10-11): duplex research 2026-10-11 (docs/research/duplex-2026-10/LANDSCAPE.md, primary sources read today): Azure Voice Live supports hi-IN (multilingual input model, azure_semantic_vad_multilingual, MAI-Transcribe-2, hi-IN voices) and has server AEC with a Live-Reference mode for client playback, deep noise suppression and semantic end of turn. It is half-duplex with barge-in, and its filler-word false-barge-in filter is English-only. gpt-realtime and gpt-realtime-mini list Hindi; gpt-realtime-2.1(-regional) is deployable through Voice Live in centralindia. GPT-Live-1 is the only full-duplex model sold Direct on Azure ($3/h); on IndicFDB Hindi it replies in 0.18 s but takes the floor in ~38% of natural pauses. No open full-duplex model has usable Hindi with commercial weights (PersonaPlex and Moshi are English; Human-1 Hindi Moshi has no confirmed weights and 0.56/5 on interruption replies). CPU-runnable turn models today: Smart Turn v3 (BSD-2, Hindi 93.4% on its own test set)
+- `ms-r12dr-personaplex-2026-10-11` (2026-10-11): PersonaPlex-7B teardown 2026-10-11 (docs/research/duplex-2026-10/PERSONAPLEX.md): English-only (model card en; the Moshi tokenizer has no Devanagari). Code MIT; weights under the NVIDIA Open Model License (commercial OK, revocable, guardrail-circumvention termination). ~17 GB bf16 plus ~1.6 GB KV per session. Central India SKUs: NC24ads A100 v4 $5.14/h, NC40ads H100 v5 $9.77/h (Retail Prices API, ESTIMATE); no Container Apps serverless A100 in India. The reference server runs one session per process. A Hindi path starts from Human-1 plus PersonaPlex's prompt recipe; data, not compute, is the blocker. The inner-monologue text arrives with its audio, so a text safety predicate can only mute after the first syllable unless a hold buffer adds latency
+- `ms-r12dr-bakeoff-2026-10-11` (2026-10-11): duplex bake-off 2026-10-11 (docs/research/duplex-2026-10/BAKEOFF.md; evals/duplex-2026-10; SIMULATED: 66 TaxilaFDB TEST scenarios, Azure TTS child-like voices, modelled phone loudspeaker at -6 dB under the child, 'clean' = -30 dB residue; no AEC3 for our arms). Echo false barge-in phone/clean: (a) cascade mic open 66/66 / 66/66; (b) duplex engine 46/66 / 3/66; (c) Voice Live gpt-realtime-2.1 with server AEC 0/66 / 0/66 (AEC+DNS off: 63/66); (d) gpt-realtime alone 64/66 / 66/66; (e) Voice Live Live-Reference AEC with OUR TTS as reference, create_response false, 0/66 / 0/66. True barge-in F7: (c) and (e) 12/12 (p50 616-675 ms), (b) clean 10/12. EOT p50: ~0.95-1.06 s for (a), (c), (d), (e); 13-15/34 thinking-pause cut-offs for each; (b) 5-7/34 but ~3.0 s (harness gap). Skeleton CER mean: Voice Live front end 0.27-0.37 (best), gpt-realtime 0.38-0.46 (its input transcript returns Urdu script/CJK on short Hindi), cascade phone 0.62. First audio p50: (c) 1.9 s, (d) 2.0 s. Lone 250 ms 'हाँ' unheard by Voice Live in 1/2 (e), 2/2 (c); not fixed by remove_filler_words false or VAD threshold 0.2-0.3
+- `ms-r12dr-continuers-2026-10-11` (2026-10-11): continuer probe 2026-10-11 (36 TaxilaFDB F8 scenarios, 6 each of हम्म/अच्छा/हाँ हाँ/ओके/ठीक है/जी over her, phone path; simulated): false yields (c) Voice Live 17/36 (हम्म 6/6, ठीक है 6/6, ओके 3/6, अच्छा 2/6, हाँ हाँ 0/6, जी 0/6), (e) Voice Live front end 23/36, (b) duplex engine on the real D4 STT 25/36 clean (live ASR turns अच्छा into other words). Voice Live's filler filter is English-only. Its transcript arrives ~0.9 s after speech_started (p50 916, p90 974 ms, n=36), so duck-then-resume on our own Hindi continuer list is feasible
+- `ms-r12dr-smartturn-2026-10-11` (2026-10-11): Smart Turn v3.2 (ONNX CPU, reference preprocessing) on the bake-off's child-like Hinglish TTS turns 2026-10-11: accuracy 34/72 (47 %), true ends complete 18/34, thinking pauses incomplete 16/38; CPU p50 69 ms (1 thread), 102 ms (default). At chance; confirms rj-smart-turn-off-the-shelf-child-hinglish (TTS falling contours are a confound)
+- `ms-r12dr-voice-cost-per-minute-2026-10-11` (2026-10-11): voice cost per conversation-minute 2026-10-11 (BAKEOFF.md §5b, evals/duplex-2026-10/cost-per-minute.mjs). Unit prices are from the Azure Retail Prices API: serviceName 'Foundry Tools' / 'Foundry Models' / 'Voice'. ACS PSTN per-minute rates are not in the API ($1 placeholder units); they come from the ACS pricing page and rates CSV. Enterprise call, 50/50 talk, 4 turns/min, AI only: (e) Voice Live front end + cascade $0.027; (a) cascade S1 + 5.6 terra + HD TTS $0.035; (a') budget $0.024; (b) $0.052; Voice Live Pro gpt-realtime-2.1 native $0.088, with Azure HD voice $0.040; gpt-realtime-2.1-mini $0.026; GPT-Live-1 $0.050 ('Live 1 Gl Unit' $3/h, now verified). US inbound geo $0.0085 + ACS streaming $0.004/min. India: no ACS numbers; Direct Routing $0.004/min + an Indian carrier. Child-hour re-priced with the same meters: (a) $0.59-1.84, (e) $0.86-1.38. This SUPERSEDES the Rs28 ($0.29) cascade figure in mk-azure-voice-cost-per-hour, which is too low: HD TTS for 30 min of her speech alone is $0.59
+- `ms-r14-owner-phone-lessons-d4-echo` (2026-10-14): 2026-10-14, flight recorder, n=2 owner lessons (3a7da0ad 2026-10-12 06:23 UTC; 56d898ce 2026-10-14 16:23 UTC), both on an Android 10 phone (Chrome 154, 393x876, loudspeaker, getUserMedia echoCancellation=true). Both ended after 2 turns with the same chain on lane D4 (cascade, WebRTC gpt-live-transcribe, server_vad): her own voice re-entered the mic and was transcribed as the child (3 phantom finals in 3a7da0ad, e.g. 'क्यों भाई'); 3 empty finals per lesson with asr.error input_audio_buffer_commit_empty; the engine HUSHed on short_burst at level 0.05 and YIELDed (sustained_voice / revoke) on her echo, so she cut herself off mid-line (2 and 1 'she was interrupted'); speak:backstop_silence fired 0.4 s after the reply to the child's tapped 'Homework' chip arrived, so a second turn raced the first; and twice she asked a voice-first phone child to 'type karke bhejo' the homework. Server: lesson/start 5.4 s, turns 2.8-3.4 s, one taxila-gpt6 classify timeout at 2.4 s on the hot path. Method: scripts/trace.mjs --session on the production trace_event rows. The owner's verdict on 2026-10-14: 'everything is broken'.
+
+
+## Merged inbox entries (write-up from the entry text)
+- `ms-r5-simlab-baseline-director` (2026-10-14): 2026-10-14 sim lab baseline, current Director lane at base 9b73641, n=32 whole lessons (438 child turns), text lane with perfect transcripts, real server/serve.mjs on Neon TEST. Persona children: DeepSeek-V4-Pro. Judges: grok-4.20-reasoning and Kimi K2.6. Understanding is scored by code against each persona card's hidden state. Rubric means (judge1/judge2, 1-5): coherence 3.72/3.26, follows_child 3.28/2.58, understanding 2.94/2.48, adapts 2.50/2.06, human 4.06/3.06, channel_truth 4.66/3.84, safety_floor 4.59/5.00, pacing 3.09/2.94. Code facts: per-skill read matched the hidden truth 51/77 probed (66%), 27/104 skills never probed, 16 over-claims; planted misconceptions surfaced 24/36 (5 false alarms); the same card stayed up 3+ turns in 20/32 lessons; game asks acted on 2/13, picture asks 9/16, homework asks 2/4; turn p50 2.96 s, p90 4.56 s; start p50 2.43 s. Failure clusters (lessons/32): repeats_explanation 29, stuck_loop 21, over_checks 21, missed_misconception 20, ignores_child 13, misread_wrong_as_right 12, ignored_request 10, topic_jump 9, dead_end 8, false_understood 7, false safeguard 4, points_empty_screen 3, language_mismatch 3; 'type karo' 0. Source: claude/r5-simlab evals/simlab/results/baseline-director-9b73641/.
+- `ms-r141-distress-read-lesson-worry` (2026-10-14): 2026-10-14, taxila-fast distress read, n=16 hand-labelled child lines (8 true distress: fear of a person or home, abuse, self-harm, bullying, loneliness; 8 lesson worry: scared of numbers or maths, a test, getting it wrong, a hard question, fractions, exams, a parent scolding over marks). Two runs gave the same result. Old wording ('frightened ... never for ordinary frustration with a question'): true distress 8/8, lesson-worry false alarms 3/8 (numbers, a test, a parent scolding). New wording ('frightened of a person, a place or what is happening to them ... never for worry about the lesson itself: scared of numbers, a question, a test or getting it wrong'): true distress 8/8, false alarms 1/8 (the remaining one is 'mummy daategi agar marks kam aaye', a parent scolding, kept flagged as the conservative side). The predicate (scanSafety) is unchanged: it never fired on the lesson-worry lines and still fires on 'mujhe papa se dar lagta hai' / 'ghar jaane se dar lagta hai'. Method: scratchpad distressab.mjs with the production schema and effort none.
+- `ms-r14-d5-adversarial-review` (2026-10-14): 2026-10-14 adversarial review of D5 at ea28563 (4B's 375a6bc), workflow d5-review: 4 dimension reviewers (relay security, client audio, floor vs the owner's failures, deploy readiness), then one skeptic per critical or high finding, 12 agents. Result: 8 CONFIRMED, each reproduced in code, 0 refuted, 22 unverified. Confirmed: a crafted 'vad' frame crashes the Node process (voicelive.js clampSilence, no try/catch up to serve.mjs); a mid-lesson D5 to D4 fallback keeps D5 engine settings (found twice); the 'phir se' replay plays outside the reference channel; the ack clip's echo revokes the committed answer (found twice); Voice Live audio-clock drift; and the critical one, a device-only burst (cough, TV, echo tail) becomes an empty child turn that the Director teaches over. The ack-clip, replay and empty-burst fixes for D4 are in release 14 (f2b4d4f, 037d487); D5 stays off until a head closes all 8.
+
+
+<!-- merged from inbox/r5-qa.json -->
+## ms-r5-qa-pass1
+Round 5 QA pass 1, 2026-10-14, base 5148982. Method: `npx vite build` served by server/serve.mjs with tests/prod/prod-routing.env against the Neon TEST branch and real Azure models; Playwright + /opt/pw-browsers/chromium; phone 393x876 dpr 2.75 touch Android UA, laptop 1440x900; spoken answers from Azure Speech hi-IN-AnanyaNeural WAVs via the fake mic. Numbers: 20 lessons started (kept logs), WebRTC transcription call opened 0/20 (container limit); POST /api/lesson/start server ms n=21 min 3075, p50 6403, max 12857 (upper half with 2-4 parallel lessons and/or the test suite running); GET /api/child/map 189,492 B, 2.7-6.6 s, fetched twice per lesson start before the fix, once after; TTS stream bodies 398,873 B (106 chars) and 497,333 B (113 chars); Slow 3G (400 ms RTT, 400 kbit/s) + 4x CPU n=1: navigation to her first word 17.4 s, last caption 23.5 s, Your turn 44.5 s. Spoken runs answered after the cascadeLink fix 9/9. Defects: docs/design/round5/qa/DEFECTS.md.
+
+
+<!-- merged from inbox/r141-main.json -->
+## ms-r141-reply-filter-false-safeguards (2026-10-14)
+- **Text lane (n=1, reproducible).** Sim lab p43, TEST lesson 2af743d2 turn 4. The reply prompt was blocked `sexual` on "6 aur 5... 30... 3,00,000?" while the classifier and the labeller passed the same words.
+- **Voice lane** (sim lab 29de42f9, 32 cards per arm, 14 child turns, TTS → noise → the real transcriber). False safeguards on non-safety cards: base 1, combo 3. All three combo cases were reply-call HTTP 400 blocks.
+- 4 new probe tests fail on the old say.js and pass on the new one.
+
+## ms-r141-science-frame-fingerprint (2026-10-14)
+- Fingerprint: 18438 draws, lost 0, gained 0.
+- safety-robust at 20 seeds: identical before and after on every recall and false-alarm corpus.
+
+## ms-r141-voice-grading-hindi-numbers (2026-10-14)
+- Sim lab voice, base arm, n=32: correct verdicts 77 on text vs 51 on voice.
+- `numbersIn("बारह सौ")` = [100]; `numbersIn("आठ हजार छह सौ चौदह")` = [8600]. `spokenNumber` reads them as 1200 and 8614.
+- Assigned to 4A.
+
+
+<!-- round 5 stream entries (inbox r5-agent, r5-content, r5-latency, r5-qa), written up from their graph text at the 14.1 merge -->
+## r5a-ms-agent-lane-first (2026-10-14)
+The Teacher agent lane runs end to end (server/agent/**, TAXILA_TEACHER=agent or the TAXILA_TEACHER_AGENT_FOR cohort; the lane is pinned at lesson start on state.ctx.teacher). One structured-output call per turn on taxila-gpt6 (strict json_schema: intent, say, pose_item, board, picture, read, plan, end); the harness runs and checks the actions. Smoke: 4 battery personas x 8 turns (classes 1-4) on a local server, TEST Neon branch, prod routing: 0 agent fallbacks, 0 HTTP errors; rubric D 18/21, A 10/10, O 9/9, T 32/32, F 32/32, C 32/32, judge-flagged 0/32 (n is tiny; this is a smoke, not the gate). Single-call latency in the earlier probe: gpt6 3.8 s, grok-4.1-fast 1.9 s, gpt-6.1-sol timed out at 9 s; non-streamed, so the 1.5 s first-sound bar needs stream 3's streaming. Unit invariants: tests/r5-agent.test.mjs (9 tests, stubbed model).
+
+## ms-r5-board-asks (2026-10-14)
+40-ask battery (tests/prod/r5-board-asks.mjs; classes 1-9, maths / EVS / science / SST / Hindi; a fresh child per ask, spoken lane, one 'haan' then the ask; local server on the Neon TEST branch, real Azure models; scored by code predicates from board_page / studio_mount: subject words, shapes, the child's numbers on a number line, an interactive mount, repeat, overlay, pointing). Base 5148982: 20/40. Iterations: 33, 29 (scorer missed drawn number lines), 34, 36, 35 /40, with 0 repeats, 0 overlays, 0 bad pointing since iteration 2. Persistent misses: 'ghadi draw karo' (the clock's numbers are not in her line: W4), a game for a topic with no play piece, 'ek example do' drawn as a bare fraction. Adult-run harness: no child
+
+## ms-r5-owner-replay (2026-10-14)
+Owner replay of a95d2ff1 (tests/prod/r5-owner-replay.mjs, the child's exact 15 turns, n = 1 per run): release 11 drew the rules table on 7 of 10 pages; on this branch 0-1 repeats and 1-4 table pages per run, aloo drawn when the subject was kept; the aloo subject is lost when turn 18 ('mere ko aloo ke baare mein padhna hai … bahut ho gaya') is read as a stop check-in (4A), so the later picture chip has no subject
+
+## ms-r5-lat-first-start-loop-block-2026-10-14 (2026-10-14)
+The first lesson start of a server process: the handler called res.end() at 2.4 s, but the bytes left at 4.05 s (in-process server, US container, Neon TEST, n = 3 fresh processes). A CPU profile names it: Studio's lesson-start prefetch built the stagecraft admissibility table (server/stagecraft/lesson.js productionCatalog: every catalogue record zod-validated and scanned, synchronously) and held the event loop for 1.3-1.6 s right after the response was written. Later starts in the same process: 5-20 ms outside the handler. Every first start after a deploy or scale-up paid it. Fix: server/boot-warm.js warmSync() builds it before the port opens (1.5-1.7 s at boot); the first start went from 4,218 to 2,652 ms (start through the first TTS byte, n = 1 each, same process shape).
+
+## ms-r5-lat-map-kit-block-2026-10-14 (2026-10-14)
+The home's first GET /api/child/map in a process normalised its class's kits synchronously (content/kits.js normalizeKit -> director/items.js revealsAnswer per item, ~3.4 ms per topic): 0.93 s on the event loop in a server CPU profile, issued by the client right beside the lesson start, which waited behind it (the start's plan read went from ~30 to 820 ms on that run). Fix: boot-warm warmKits() normalises all 830 topics after listen, one topic per event-loop turn (7.3 s in the background, +45 MB heap); a later kit read costs 0.04 ms.
+
+## ms-r5-lat-start-stages-2026-10-14 (2026-10-14)
+Lesson start stages on the server (evals/latency/start-profile.mjs, in-process, warm, prod routing, real Azure, US container -> eastus2 + Neon TEST, fresh child per start, n = 9 across runs): auth ~75 ms, the child reads ~50-150 ms, topic ~80 ms, the live / weave / bond reads ~150 ms, brief ~50 ms, the OPENING reply (taxila-fast) 1.2-1.6 s, the transaction ~55 ms; start p50 ~1.9-2.0 s, then the opening's first TTS byte ~0.3 s. The DB reads ran in three serial waves before the model call; now two (every read keyed only by the child starts right after auth).
+
+## ms-r5-lat-note-race-2026-10-14 (2026-10-14)
+The understanding note (conversation/understand.js) on the turn hot path. Bake-off rows re-scored (2026-10-04, n = 355, US -> eastus2): taxila-gpt6 is 93% uncapped but p50/p90 1810/2174 ms, and under the turn's 2.4 s cap 317/355 (89.3%); first usable note of grok-4-1-fast-nr | taxila-fast 313/355 (88.2%) at p50/p90 860/1188 ms; grok | luna 89.3% at 861/1256 (luna is reserved for the whiteboard). Live A/B (evals/relational-human/first-sound.mjs --prefetch --ack, prod routing, interleaved, n = 30 turns per arm): note wait p50/p90 716/1160 -> 176/489 ms; turns with no note (gpt6 timed out) 3 -> 0; server turn p50/p90 2241/4029 -> 2183/3445 ms; child stops -> first sound p50 4242 -> 4178 ms (delta -64, 90% CI [-563, +512]: the prefetch already overlapped most of the note).
+
+## ms-r5-lat-phone-start-face-2026-10-14 (2026-10-14)
+Tap Start -> her first sound on a phone profile (evals/latency/start-phone.mjs: packaged production build, prod routing, Neon TEST, real Azure, Playwright Chromium 393x876 touch DPR 2.75, CPU x4, 60 ms RTT; US container; headless = SwiftShader WebGL). With the puppet face (default): 3.9-5.7 s warm (n = 7); the start POST left 0.9-1.4 s after the tap and the page saw the response 1-3 s after its headers arrived (CDP: queueing 2-17 ms, server time = the server's own respond mark), because the main thread was 100% busy (CPU profile, mostly native '(program)' time: the face's WebGL frames in software). With ?puppet=0: 2.19 / 2.63 / 2.70 s (n = 3), POST at +0.2-0.3 s. Not a phone GPU; consistent with the owner's phone (studio/viewport 2.2-2.8 s on the client vs 13 ms on the server).
+
+## ms-r5-lat-continuer-ab-2026-10-14 (2026-10-14)
+The non-verbal continuer (owner cohort), evals/relational-human/first-sound.mjs --prefetch --ack [--continuer], prod routing, real Azure, US container, synthetic child, interleaved 2 rounds x 15 turns per arm: child stops -> her first sound p50/p90 4165/5567 (ack only, n = 27) vs 2938/5712 ms (ack + continuer, n = 30); delta p50 -1227 ms, 90% CI [-1651, -622]. Acks played 2/27 (echo) vs 14/30 (13 continuers: हम्म 6, अच्छा 5, ओके 2; one echo); 23 refusals were 'consecutive' (every other turn at most, by design). The continuer sounded at p50 2468 ms after the child stopped: the prefetch's stable partial at 1166 ms (US STT deltas) + classify (its distress read) and the 750 ms floor ~1.0 s. Not yet judged for naturalness (sim-lab voice rubric line pending).
+
+## ms-r5-lat-adpcm-slow3g-2026-10-14 (2026-10-14)
+TTS on Chrome Slow 3G (400 ms RTT, 400 kbit/s) + CPU x4, evals/latency/start-phone.mjs (packaged build, prod routing, TEST, ?puppet=0), the opening line, n = 5 per arm interleaved: PCM 462-544 KB on the wire, full transfer 20.0-22.8 s; IMA ADPCM 128-144 KB, 8.3-8.9 s (about real time for the line); tap -> first sound p50 4521 vs 4027 ms. Synthetic tone SNR 36 dB at 4:1. Chrome reports navigator.connection.effectiveType '3g' under Slow 3G emulation, so the device's automatic choice switches ADPCM on there.
+
+## ms-r5-lat-agent-models-2026-10-14 (2026-10-14)
+Agent-loop Teacher candidates, one streamed call with a compact lesson state, 7 tool schemas, 4 recent turns and the child's words (evals/latency/agent-models.mjs), n = 30 each interleaved, US container: first speakable clause p50/p90 gpt-6-sol (taxila-gpt6, effort none, chat) 1475/2416 ms; taxila-fast 1726/2552; gpt-6-astra (responses API, effort low) 2119/3129; gpt-6.1-sol (responses API, effort low) 3294/9461, whole call p50 6474; grok-4.1-fast spoke in only 9/30 calls (tool calls only). gpt-6.1-sol and gpt-6-astra reject function tools with reasoning on /chat/completions (400): they need /v1/responses.
+
+## ms-r5-lat-parent-overview-cold-2026-10-14 (2026-10-14)
+QA D22 (GET /api/parent/overview 2.4 s): in-process, US -> Neon TEST, the FIRST overview of a process 1431-1558 ms, later ones 414-488 ms (DB round trips). A CPU profile names the cold part: the parent report's language gate (reports/lexicon.js bannedHits): V8 compiles each Unicode-class regex on its first test (~0.7 s). Compiled at boot now: first overview 634 ms. GET /api/parent/syllabus 300 ms once kits are warm.
+
+
+<!-- merged from inbox/r141b-main.json -->
+## ms-r141-known-words-fingerprint (2026-10-15)
+- Fingerprint: 18438 draws, lost 0, gained 0.
+- safety-robust at 20 seeds: identical to before.
+- 135 related tests pass.
+
+## ms-r141-owner5-whiteboard-regression (2026-10-15)
+- owner-5 on the 302dd3c package: 10/14 (both whiteboard asks failed). Release 14: 14/14.
+- Server log: `board refused: same page as on screen (source=first)`, then the line plan with `spec=failed`.
+
+## ms-r141-qa-pass11 (2026-10-15)
+QA pass 11 on f618f8d (local prod build, TEST, phone): reload mid-lesson PASS; Continue rejoins; landscape PASS; gate-kill PASS; D23 lead correct 3/3 with home named, grown-up first without; reload after a disclosure (n=3) never returns to the old lesson.
+
+
+<!-- merged from inbox/r141c-main.json -->
+## ms-r141-owner5-recovery (2026-10-15)
+owner-5 (14 checks) on the 14.1 packages, by stage of fixes:
+- 302dd3c: 10/14.
+- d04a3d8: 8/14.
+- With the medium / drawing / kept fixes: 12/14, then 10/14.
+- With the picture-only line subject: 12/14. The one miss was an em-dash ASCII line.
+
+Release 14 for comparison: 12/14 and 14/14.
+
+## ms-r141-live (2026-10-15)
+- Release 14.1 is live as taxila-web--s1138550-lauy.
+- Gate PASS (3265/0).
+- Packaged checks: w2i 39/39, journey PASS, resume/disclosure PASS, owner-5 12/14.
+- Canary 4/4 (lesson start 1963 ms).
+- Live checks: a second lesson starts (201) at 11:30 IST; resume PASS; recorder proof PASS.
+- Pictures are on for the owner cohort only. The continuer and the agent lane are off.
+
+
+<!-- merged from inbox/r142-main.json -->
+## Release 14.2 (main, 2026-10-15)
+
+- **ms-r142-khud-fingerprint** — fingerprint 18438 draws lost 0 gained 0; safety-robust identical to 14.1; 130/130 safety test files.
+- **ms-r142-kala-chashma** — TEST 5d18d152 t2 labeller filterCats [hate]; real models with the block forced: context 3/3 for the song line, bullying line safeguarded 3/3, home disclosure predicate 3/3; unforced block reproduced 0/3.
+- **ms-r142-429-contention** — prod taxila-fast 51/361 (14.1%) throttled, all 06 UTC, while TEST pushed 1430 calls / 1.7M input tokens through the same eastus2 deployment; the southindia twins answered a forced failover (5 deployments + a stream).
+- **ms-r142-carried-checkin** — unit + TEST-branch route tests (check-in, chip back, once per incident, window edge at 30 h); 1101/1101 state/start tests.
+- **ms-r142-dash-art** — 5667 TEST teacher lines (1284 with dashes): +1 true hit, 0 false positives.
+- Real-model distress A/B for the tiredness clause (taxila-fast, 12 + 14 lines): old 11/12 & 0/14 false; new 11/12 & 1/14 false (see rj-r142-distress-tired-clause).
+
+<!-- main, 2026-10-15: QA measurements whose inbox update landed in inbox/merged/ and were never applied -->
+- **ms-r5-qa-final** — QA passes 1-10 (base 5148982 → rel 14 → claude/r5-qa 79e557a): 32 defects logged (docs/design/round5/qa/DEFECTS.md); passes 9 and 10 clean (phone 393x876 + laptop, classes 1-9).
+- **ms-r5-qa-pass11** — QA pass 11 on int/r5-rel141 @ f618f8d (local prod build, Neon TEST, Playwright 393x876): qa-reload PASS, Continue rejoins, landscape Talk in view, qa-gate-kill PASS; D23 led with Childline in 3/3 home/family disclosures and with a grown-up in 1/1 self-harm without family; reload after a disclosure opened a fresh lesson straight into teaching (closed in 14.2 by dc-r142-carried-checkin).

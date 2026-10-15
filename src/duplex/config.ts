@@ -271,10 +271,13 @@ export const OVERLAP = {
 /**
  * When the FIRST words of a fresh voiced burst arrive after its onset, per source (p90). A resumable yield with no words yet
  * resumes only after this (+ 300 ms): before it, "no text" means "not transcribed yet", not "nothing said".
- * live_transcribe [T] M-D2 first delta after onset p90 2,048 ms (n=28); mai_stream [T] STT-v3 first partial 2.58-3.2 s;
+ * live_transcribe [T] M-D2 first delta after onset p90 2,048 ms (n=28); voicelive [E] finals only, ~1.0 s after the child's end
+ * (BAKEOFF.md §3) plus a short answer's length; mai_stream [T] STT-v3 first partial 2.58-3.2 s;
  * nemotron [E] one 320 ms chunk + 452 ms text-complete p90 rounded.
  */
-export const FIRST_TEXT_P90: Record<string, Ms> = { live_transcribe: 2048, mai_stream: 3200, nemotron: 800, sim: 2000, other: 2500 };
+/** D5: the shortest voiced turn with no words that still ends on the backstop (a lone "haan" is ~250 ms; D4 keeps 300). */
+export const D5_UNHEARD_MIN_VOICED_MS = 150;
+export const FIRST_TEXT_P90: Record<string, Ms> = { live_transcribe: 2048, mai_stream: 3200, nemotron: 800, voicelive: 2000, sim: 2000, other: 2500 };
 
 /** Fail patient (G10): no engine decision for this long → stage A rules; a stage A fault → today's silence policy. */
 export const FALLBACK = { staleMs: 500 as Ms, silenceMs: 900 as Ms };

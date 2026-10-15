@@ -28,6 +28,9 @@ export const SOURCE_LAG = {
   mai_stream: { p50: 1200, p90: 1600 },
   // Nemotron-3.5: text complete 254 / 452 ms after speech end on the GPU host [T, STT-v3]
   nemotron: { p50: 254, p90: 452 },
+  // D5 Azure Voice Live (azure-speech hi-IN/en-IN, finals only, semantic VAD 500 ms): child end → final p50 1,007 ms
+  // (continuer probe n=36, BAKEOFF.md §3) [T]; p90 [E]
+  voicelive: { p50: 1000, p90: 1500 },
   sim: { p50: 700, p90: 1400 },
   other: { p50: 900, p90: 1600 },
 };

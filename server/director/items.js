@@ -428,7 +428,13 @@ export function canonicalFractions(t) {
     .replace(/\b(quarter|chauthai|paav|pav)\b/g, "1/4")
     .replace(/\bpaune\b/g, "3/4");
 }
-export const norm = (s) => canonicalFractions(String(s || "").toLowerCase().replace(/[“”"'’`]/g, "").replace(/[^\p{L}\p{N}/.\s-]/gu, " ").replace(/\s+/g, " ").trim());
+// round 5 (stream 4A, comprehension eval held-out set): the letter class dropped every combining mark (\p{M}), so a
+// Devanagari word kept only its consonants and "हरा घास" equalled the key "हरी घास", "चाद" equalled "चाँद", "लगा" equalled
+// "लगी": a Hindi grammar misconception was graded as the key. Marks are kept; only the nukta (which ASR drops or adds
+// at will: "बर्फ़" / "बर्फ") is folded.
+// free variation folded (ASR and children write either): nukta dropped, candrabindu ँ = anusvara ं (चाँद = चांद), the loanword
+// o ॉ = ा (ब्रेकफॉस्ट = ब्रेकफास्ट), the loanword e ॅ = े, visarga dropped (दुःख = दुख); the grammatical matras (ा / ी, gender) stay
+export const norm = (s) => canonicalFractions(String(s || "").normalize("NFC").toLowerCase().replace(/[“”"'’`]/g, "").replace(/\u093C/g, "").replace(/\u0901/g, "\u0902").replace(/\u0949/g, "\u093E").replace(/\u0911/g, "\u0906").replace(/\u0945/g, "\u0947").replace(/\u0903/g, "").replace(/[^\p{L}\p{M}\p{N}/.\s-]/gu, " ").replace(/\s+/g, " ").trim());
 const VERDICT = new Set(["bada", "badi", "bade", "zyada", "jyada", "bigger", "larger", "greater", "more", "chhota", "chhoti", "smaller",
   "less", "kam", "sahi", "correct", "right", "answer", "jawab", "uttar", "hota", "hoti", "equals", "is"]);
 function containsTerm(text, term) {

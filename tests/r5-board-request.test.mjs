@@ -167,3 +167,20 @@ test("QA P2: a picture asked with no thing named is never answered by the lesson
   assert.equal(answersRequest(ALOO, { kind: "picture" }, { drawnFor: true }), true);
   assert.equal(answersRequest(TABLE, { kind: "draw" }), true, "'isko draw karo' still takes the board of what is on the table");
 });
+
+// round 5 merge (main; owner-5 battery on 14.1, 8/14 where release 14 was 14/14): "whiteboard pe bana ke samjhao" was read as
+// a request to draw a WHITEBOARD (no board writes that word, so nothing could answer it), and "picture dikhao" with no thing
+// named could only be answered by a board drawn from her line (slow, often refused), so the stage stayed empty.
+test("owner-5 regression: the medium is never the subject; a real drawing answers a picture ask that names nothing", async () => {
+  for (const t of ["whiteboard pe bana ke samjhao", "board pe bana ke dikhao", "screen pe dikhao na", "व्हाइटबोर्ड पर बना के समझाओ"]) {
+    const see = requestOf(t)?.see ?? null;
+    assert.ok(!see?.subject, `${t}: ${JSON.stringify(see)}`);
+  }
+  assert.equal(requestOf("aloo whiteboard pe draw karo").see?.subject, "aloo");
+  const { isDrawing } = await import("../server/studio/request.js");
+  assert.equal(isDrawing(NL(["0", "1/4", "1"])), true);
+  assert.equal(isDrawing(ALOO), true);
+  assert.equal(isDrawing(TABLE), false);
+  assert.equal(answersRequest(NL(["0", "1/4", "1"]), { kind: "picture" }), true, "a number line answers 'picture dikhao' (release 14 did)");
+  assert.equal(answersRequest(TABLE, { kind: "picture" }), false, "a page of text boxes never answers it (QA P2)");
+});

@@ -39,6 +39,7 @@ import { directorProposal } from "./proposal.js";
 import { p5Flag } from "../conversation/flags.js";
 import { unsafeChildPhrase } from "../conversation/screen.js";
 import { freeSubjectOf, genericSubject } from "./requests.js";
+import { claimsToUnderstand } from "./read.js";
 import { parkEntry, pushLater, recentParked, dueParked, serveLater } from "../conversation/policy.js";
 import { alsoReading, alsoQuestion, questionShaped, bareAck } from "../conversation/lexicon.js";
 import { intakeStart, intakeStep } from "./session/beat.js";
@@ -264,8 +265,32 @@ export function reinitForSegment(s, kit, now, decision) {
  * to decide()'s safeguard, unchanged). When the intake decides, the session opens its first segment: on another topic the
  * state is re-pointed at that topic's verified kit (reinitForSegment); the move is the one-line agenda, no item, no stage.
  */
+/** Is this turn silence: no words, no chip, no answer, no activity (the duplex backstop commits "" with asrConfidence 0)? */
+export const isSilentTurn = (input) => input?.event === "turn" && !input.branch && typeof input.text === "string" && !input.text.trim()
+  && (input.cls?.source === "empty" || input.silent === true) && !input.chipId
+  && (input.answer == null || input.answer === "") && !input.cls?.flags?.distress && !input.cls?.request && !input.cls?.help;
+
+/** The silence hold (round 5): the same step again, gently; never new content, never a new topic. */
+function silentTurn(s, input, item) {
+  if (!p5Flag("R4CONV") || !isSilentTurn(input) || s.phase === "done" || s.safeguard || ["wrap", "safeguard"].includes(s.lastMove?.kind)) return null;
+  s.quiet = (s.quiet ?? 0) + 1;
+  const labels = chipLabels();
+  if (s.quiet >= 3) {
+    s.quiet = 0;
+    return { ...plan("break", SH.silenceCheck(), { chips: [{ id: "stop:continue", label: labels.go }, { id: "break:rest", label: labels.rest }, { id: "stop:end", label: labels.stop }] }), silent: true };
+  }
+  if (item) return { ...plan(moveKindFor(item), SH.pose({ item, prefix: SH.silenceAgain() }), { item, probe: probeFor(item), chips: optionChips(item) }), silent: true };
+  const last = s.lastMove;
+  if (!last?.kind) return null;
+  // the intake, a teaching step, a break: what she said last, again and simpler (never the next step)
+  return { ...plan(last.kind, join(SH.silenceAgain(), SH.sameStepAgain()), { ...(last.skillId ? { skillId: last.skillId } : {}), content: s.lastContent ?? [],
+    ...(last.intake ? { intake: true } : {}), ...(s.lastUi?.chips?.length ? { chips: s.lastUi.chips } : {}) }), silent: true };
+}
+
 function sessionIntake(s, input, now) {
   if (!s.intake || s.intake.stage === "done" || input.branch || input.event === "module") return null;
+  // a start that checks in first (decide(): `carried`) has no intake: the check-in, then the lesson
+  if (input.event === "start" && input.carried) { s.intake = { ...s.intake, stage: "done" }; return null; }
   if (input.event === "start") return plan("intake", s.intakeOpen?.shape ?? "", { chips: s.intakeOpen?.chips, intake: true });
   if (input.cls?.flags?.distress || s.safeguard) { s.intake = { ...s.intake, stage: "done" }; return null; }
   const prior = s.session?.prior ?? {};
@@ -1032,6 +1057,32 @@ function teachAgainPlan(s, kit, how) {
 }
 
 /** The hardest not-yet-done practice item of a skill (difficulty, then the queue's order), or null. */
+/** The easiest unasked practice item of a skill (a light check), or null. */
+function easiestFor(s, kit, skillId) {
+  const done = new Set([...s.itemsDone, ...s.skipped, s.activeItemId]);
+  const KINDS = new Set(["practice", "near_transfer", "retrieval"]);
+  return kit.items.filter((i) => i.skillId === skillId && !done.has(i.id) && KINDS.has(i.kind))
+    .sort((a, b) => (a.difficulty ?? 0) - (b.difficulty ?? 0))[0] ?? null;
+}
+
+/**
+ * round 5 (owner 2026-10-14: "the understood-or-not concept"): "haan haan samajh gaya" right after an explanation is a claim,
+ * not evidence (director/read.js reads it `partly`). Once per skill it gets a LIGHT check — the easiest question of that
+ * skill, posed warmly, never "did you really understand?" — instead of more teaching on trust. A right answer counts and the
+ * lesson moves on; a wrong one takes the usual path (hints, a different way).
+ */
+function bluffCheck(s, input) {
+  if (!p5Flag("R4CONV") || input.event !== "turn" || !claimsToUnderstand(input.text) || !["explain", "worked_example", "reteach"].includes(s.lastMove?.kind) || s.lastMove?.itemId) return null;
+  const sk = s.lastMove.skillId;
+  if (!sk || (s.bluffChecked ?? []).includes(sk)) return null;
+  const easy = easiestFor(s, input.kit, sk);
+  if (!easy) return null;
+  s.bluffChecked = [...(s.bluffChecked ?? []), sk];
+  if (!s.introduced.includes(sk)) s.introduced.push(sk);
+  s.teachIdx = s.teachPlan.length; s.phase = "practice";
+  return { ...poseNext(s, input, SH.lightCheck(), easy), request: "light_check" };
+}
+
 function hardestFor(s, kit, skillId) {
   const done = new Set([...s.itemsDone, ...s.skipped, s.activeItemId]);
   const KINDS = new Set(["practice", "near_transfer", "far_transfer", "contrast", "predict", "translate_rep"]);
@@ -1249,6 +1300,15 @@ function decide(s, input, item) {
   // `kind`: what raised it (the predicate's family, or model / content_filter / relational_floor) — only the wording of a
   // fallback line reads it (brain/say.js fallbackReply, F10); the hold itself is the same for every trigger.
   if (flags.distress) { s.safeguard = { calm: 0, asked: false, kind: flags.distressKind ?? null }; s.safeguardedAt ??= s.turn; return plan("safeguard", SH.safeguard(), { whiteboard: HELPLINES }); }
+  // round 5 (14.2, main safety review; QA pass 11, n=3: after a self-harm disclosure the next lesson opened straight into
+  // teaching): a start within hours of a safeguarding incident (the route passes `carried`) opens on a calm check-in, the
+  // helplines on the board, a carry-on and a stop chip. The episode is already asked, so the child's next ordinary words
+  // go gently back to the lesson, and distress in them is the full safeguard, as on every turn. Discreet by design: it
+  // names nothing that was said, nor that anything was (whoever is in the room may be who it was about).
+  if (input.event === "start" && input.carried) {
+    s.safeguard = { calm: 1, asked: true, kind: input.carried.kind ?? null, carried: true };
+    return plan("safeguard", SH.carriedCheckIn(), { whiteboard: HELPLINES, chips: [{ id: "safe:continue", label: labels.cont }, { id: "safe:stop", label: labels.stop }] });
+  }
   if (s.safeguard) {
     // RELATIONAL-OS I-7 / AT-B6 (AT-B1 first run: 9/10 goodbyes right after a disclosure ended at once): a goodbye during
     // the safeguard gets ONE check-in before release when the relational policy asks for it; the stop chip always ends it
@@ -1348,7 +1408,7 @@ function decide(s, input, item) {
   }
   switch (s.phase) {
     case "warmup": return warmup(s, input, item);
-    case "teach": return ackHold(s, input) ?? teach(s, input);
+    case "teach": return ackHold(s, input) ?? bluffCheck(s, input) ?? teach(s, input);
     case "practice": return practice(s, input, item);
     case "teachback": return teachback(s, input);
     default: return toWrap(s, {});
@@ -1493,9 +1553,13 @@ export function step(prev, input) {
       s.probeSess = markAsked(s.probeSess, { skillId: t.skillId, shapeId: null, facet: "M", mandatory: true, reason: t.reason }, s.comp?.[t.skillId]?.belief ?? null);
     }
   }
-  // round 4 (session-first): the intake beat runs before the Director's own decision while it is open
-  let p = sessionIntake(s, input, now);
+  // round 5 (owner 2026-10-14: an empty backstop turn made her jump to "grams aur kilograms"): a turn with no words, no
+  // chip and no answer is silence. It never advances anything — not the intake, not the teaching, not the item: she waits
+  // and gently asks again, the same thing, and after three quiet turns checks they can hear her. Any words reset it.
+  let p = silentTurn(s, input, active);
+  if (!p) p = sessionIntake(s, input, now);
   if (!p) p = reacting ? moduleReaction(s, input, active) : decide(s, input, active);
+  if (!p?.silent) s.quiet = 0;
   if (p && !input.branch && p5Flag("CARDCAP")) p = capPlan(s, input, p);
   if (!p) {
     return { state: s, move: s.lastMove, moduleCommands: [], ui: s.lastUi ?? { status: "your_turn" }, end: s.phase === "done", hold: true, ...describe(s, input.kit) };

@@ -291,6 +291,7 @@ export const TRAY_PATHS = Object.freeze([
   { id: "explainer", gate: "server/director/modules.js", calls: ["certifyModule"], covers: "explainer@1 module (its script at the tray box); the Studio whiteboard fallback goes through studio-stream" },
   { id: "whiteboard", gate: "server/studio/seam.js", calls: ["certifyForTray"], covers: "seam.requestIntent: board-first, kept, board-sync, template fallback" },
   { id: "play", gate: "server/forge3/live.js", calls: ["certifyForTray"], covers: "buildLive → composeAsk → slotFor (also gated in studio-slot)" },
+  { id: "agent-board", gate: "server/studio/seam.js", calls: ["certifyForTray"], covers: "the Teacher agent's board.show (round 5 agent lane): server/agent/tools.js → studio/tools.js boardShow → seam.requestIntent, whose drawn() certifies before the page is set; the response slot is slotSnapshot (gatedSlot)" },
   { id: "forge-g2-made-for", gate: null, calls: [], covers: "NO tray path: g2/serve.js mountFor has no live caller and `g2:*` ids are not ENGINES (modules.js mountable refuses them); the Made for you shelf lists studio_mount rows and mounts nothing" },
 ]);
 

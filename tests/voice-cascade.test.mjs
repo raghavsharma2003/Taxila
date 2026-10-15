@@ -686,3 +686,53 @@ test("resumePoint: backs up to the last gap between words, else 0.3 s", () => {
   assert.ok(p >= 1540 && p <= 1600, String(p));
   assert.equal(resumePoint(new Float32Array(3000).fill(0.3), 2200, rate), 1900);
 });
+
+test("CascadeLink (r5-latency): the agent's streamed words play BEFORE the turn arrives; her line's end waits for the turn, which adopts it (caption = the turn's line, no second fetch)", async () => {
+  const env = installBrowserFakes();
+  const levels = { mic: new LevelMeter(), teacher: new LevelMeter() };
+  const reqs = [];
+  const link = new CascadeLink({ lessonId: "L-early", levels, speech: (req, s) => { reqs.push(req); return pcmStream(5)(req, s); }, transcribe: async () => ({ text: "" }) });
+  const events = [];
+  link.on((e) => events.push(e));
+  const { postTurnAudio } = await import("../src/lesson/ttsStream.ts");
+  const { frame, FRAME } = await import("../server/voice/frames.js");
+  const realFetch = globalThis.fetch;
+  try {
+    await link.connect();
+    await flush();
+    events.length = 0;
+    // a turn-audio response that starts her words, then (later) the turn frame
+    let release;
+    const turnGate = new Promise((r) => { release = r; });
+    const pcm = Buffer.alloc(2400, 3);
+    globalThis.fetch = async () => new Response(new ReadableStream({
+      async start(c) {
+        c.enqueue(frame(FRAME.header, { v: 2, audio: "streaming" }));
+        c.enqueue(frame(FRAME.event, { t: "say", i: 0, text: "Achha, socho." }));
+        c.enqueue(frame(FRAME.pcm, pcm));
+        await turnGate;
+        c.enqueue(frame(FRAME.turn, { lessonId: "L-early", teacherReply: "Achha, socho. 1/3 bada hai ya 1/5?", teacherReplySeq: 9, agentStream: { tail: "", firstSayMs: 800 } }));
+        c.enqueue(frame(FRAME.end, { t: "end", status: "ok" }));
+        c.close();
+      },
+    }), { status: 200, headers: { "content-type": "application/x-taxila-pcm-frames;v=2" } });
+    const turnP = postTurnAudio({ lessonId: "L-early", text: "pata nahi" });
+    await sleep(400);
+    const before = events.map((e) => e.type);
+    assert.deepEqual(before.slice(0, 3), ["response_start", "teacher_delta", "teacher_audio_start"], before.join(","));
+    assert.ok(!before.includes("teacher_audio_end") && !before.includes("response_done"), "her line's end waits for the turn (its hand-over decides the floor)");
+    release();
+    const turn = await turnP;
+    link.promptTeacher({ text: turn.teacherReply, seq: turn.teacherReplySeq });
+    await sleep(50);
+    assert.deepEqual(reqs, [], "the streamed words are never fetched again by seq");
+    const after = events.slice(before.length).map((e) => e.type);
+    assert.deepEqual(after, ["teacher_done", "teacher_audio_end", "response_done"], after.join(","));
+    assert.equal(events.find((e) => e.type === "teacher_done").text, "Achha, socho. 1/3 bada hai ya 1/5?");
+    assert.equal(events.at(-1).status, "completed");
+  } finally {
+    globalThis.fetch = realFetch;
+    link.close();
+    env.restore();
+  }
+});

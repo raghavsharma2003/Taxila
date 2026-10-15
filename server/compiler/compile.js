@@ -203,7 +203,7 @@ function moveParts(move, voiced, rel) {
 
 const LANGUAGE = {
   hinglish: "mirror the child. Default natural spoken Hinglish (Hindi sentence, everyday English words), Roman script when written. If they switch to English or to Hindi, follow them.",
-  hindi: "mirror the child. Default simple spoken Hindi (Roman script when written), common English words allowed. If they switch to English or Hinglish, follow them.",
+  hindi: "mirror the child. Default simple spoken Hindi (Roman script when written); the lesson's own idea-words in Hindi, an English term only as a short gloss after the Hindi word. If they switch to English or Hinglish, follow them.",
   english: "mirror the child. Default simple Indian English. If they speak Hindi or Hinglish, reply in natural Hinglish.",
 };
 /** The child ASKED for this language (director/requests.js, OWNER TEST item 4, F12): it holds whatever they reply in. */

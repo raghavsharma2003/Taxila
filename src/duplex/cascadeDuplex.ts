@@ -78,6 +78,14 @@ export interface CascadeDuplexOptions {
    * Omitted = a beacon to POST /api/duplex/shadow when a browser is present; null = off (tests, a device override).
    */
   shadowSink?: ((summary: ShadowSummary, lessonId: string) => void) | null;
+  /**
+   * D5 (2026-10-11): the transcription lane under the engine. "d5" = Azure Voice Live (server/duplex/voicelive.js): source
+   * "voicelive", its VAD gates bursts over her line (DuplexLiveOptions.vadGate), and its silence stays at D5_SERVER_VAD_MS
+   * (its finals land ~0.1 s after its own commit, so the engine's decide-late merge, not a long backstop, holds pauses).
+   */
+  lane?: "d4" | "d5";
+  /** D5: duck on a device burst before Voice Live confirms it (DuplexLiveOptions.preDuck). */
+  preDuck?: boolean;
 }
 
 /** The default shadow sink: one beacon per lesson (text/plain, like /api/lesson/end; never throws, never awaited). */
@@ -92,10 +100,28 @@ export function beaconShadowSummary(summary: ShadowSummary, lessonId: string): v
 
 /** The server VAD silence while the engine decides: a backstop only (INTEGRATION.md §3, 1,500 ms). */
 export const DUPLEX_SERVER_VAD_MS = 1500;
+/** D5: Voice Live's semantic VAD silence while the engine decides (the bake-off ran 500 ms; BAKEOFF.md arm e). */
+export const D5_SERVER_VAD_MS = 500;
 /** No mic frame this long after start → the tap is dead: step aside (the shipped path needs no frames). */
 export const NO_FRAMES_MS = 3000;
 /** A reply that answers a revoked commit is dropped if it arrives within this long of the revoke. */
 const DROP_WINDOW_MS = 8000;
+/**
+ * Release 14: D4 runs half-duplex unless this device asks for the full engine (`?duplexfull=1` once, or localStorage
+ * "tx.flag.duplexfull" = "1"; `?duplexfull=0` clears it). The owner's test switch for barge-in over a headset.
+ */
+export function fullDuplexForced(): boolean {
+  try {
+    if (typeof location !== "undefined") {
+      const v = new URLSearchParams(location.search).get("duplexfull");
+      if (v === "1") localStorage.setItem("tx.flag.duplexfull", "1");
+      else if (v === "0") localStorage.removeItem("tx.flag.duplexfull");
+    }
+    return typeof localStorage !== "undefined" && localStorage.getItem("tx.flag.duplexfull") === "1";
+  } catch {
+    return false;
+  }
+}
 
 export class CascadeDuplex {
   readonly mode: Exclude<DuplexMode, "off">;
@@ -123,7 +149,8 @@ export class CascadeDuplex {
     this.mode = o.mode;
     this.now = o.now ?? (() => Date.now());
     this.later = o.setTimeout ?? ((fn, ms) => setTimeout(fn, ms));
-    this.tel = new ShadowTelemetry({ mode: o.mode, band: o.band ?? null, lane: "live_transcribe" });
+    const d5 = o.lane === "d5";
+    this.tel = new ShadowTelemetry({ mode: o.mode, band: o.band ?? null, lane: d5 ? "voicelive" : "live_transcribe" });
     const port = {
       duck: (level: number) => this.s.duck(level),
       pause: () => {
@@ -144,7 +171,10 @@ export class CascadeDuplex {
       state: (st: { phase: FloorPhase }) => { this.phase = st.phase; this.push(); },
     };
     this.live = new DuplexLive({
-      lessonId: surface.lessonId, port, mode: o.mode, source: "live_transcribe", supportsCommit: true,
+      // D5: no micro-commit probes (a forced commit cuts Voice Live's open item and returns it empty; its own 500 ms commit
+      // already lands the final ~0.6 s after the child stops)
+      lessonId: surface.lessonId, port, mode: o.mode, source: d5 ? "voicelive" : "live_transcribe", supportsCommit: !d5,
+      ...(d5 ? { vadGate: "server" as const, preDuck: o.preDuck ?? false } : { halfDuplex: o.mode === "on" && !fullDuplexForced() }),
       wrapEmit: o.face?.wrapEmit, onDetach: o.face?.detach, now: this.now, setInterval: o.setInterval, clearInterval: o.clearInterval,
       band: o.band,
       log: (row: ShadowRow) => { try { this.tel.row(row); } catch { /* telemetry never breaks the floor */ } o.log?.(row); },
@@ -156,6 +186,9 @@ export class CascadeDuplex {
       frame(t, rms, f0, herOutDb);
     };
   }
+
+  /** D5: the client time of the lane stream's first audio frame (exact audio-clock mapping for Voice Live's events). */
+  audioOrigin(t: number | null): void { this.live.audioOrigin(t); }
 
   /** The engine decides the floor now (shadow never does). */
   get deciding(): boolean { return this.mode === "on" && this.live.live && !this.closed; }
@@ -177,7 +210,7 @@ export class CascadeDuplex {
       return false;
     }
     if (this.closed) { this.stopTap?.(); this.stopTap = null; return false; }
-    if (this.mode === "on") { this.s.setServerVad(DUPLEX_SERVER_VAD_MS); this.vadSet = true; }
+    if (this.mode === "on") { this.s.setServerVad(this.o.lane === "d5" ? D5_SERVER_VAD_MS : DUPLEX_SERVER_VAD_MS); this.vadSet = true; }
     this.live.start();
     const framesAt = this.live.stats.frames;
     this.later(() => {
@@ -193,6 +226,8 @@ export class CascadeDuplex {
    */
   onSttEvent(raw: unknown): boolean {
     if (this.closed || this.fallbackReason) return false;
+    // release 14 half-duplex: an item that started over her line is her echo; nothing of it reaches the link either
+    if (this.deciding && this.live.echoOnly(raw)) return true;
     this.live.stt(raw);
     const ev = (raw && typeof raw === "object" ? raw : {}) as { type?: unknown; transcript?: unknown };
     if (typeof ev.type === "string") this.tel.stt(this.now(), ev.type, typeof ev.transcript === "string" && ev.transcript.trim().length > 0);
@@ -241,6 +276,9 @@ export class CascadeDuplex {
 
   replyEnded(): void { if (!this.closed) { this.tel.herEnd(this.now(), false); this.live.herEnd(); } }
   replyStopped(): void { if (!this.closed) { this.tel.herEnd(this.now(), true); this.live.herStopped(); } }
+  /** Her acknowledgement clip sounds / ended (release 14: gated like her line, so its echo never revokes a commit). */
+  ackAudible(): void { if (!this.closed && !this.fallbackReason) this.live.ackStart(); }
+  ackEnded(): void { if (!this.closed) this.live.ackEnd(); }
   /** The child typed or tapped. */
   screen(kind: "submit" | "choice_pick" | "type"): void { if (!this.closed) this.live.screen(kind); }
   /** The Director's turn ui (answer form, beat, hand-over), for the engine context of the next line. */

@@ -1,0 +1,292 @@
+{
+ "summary": {
+  "label": "slow3g-pcm",
+  "root": "working tree",
+  "cold": false,
+  "rtt": 400,
+  "cpu": 4,
+  "n": 1,
+  "ok": 1,
+  "at": "2026-10-14T19:39:51.915Z",
+  "firstSound": {
+   "p50": 4443,
+   "p90": 4443
+  },
+  "startPostAt": {
+   "p50": 192
+  },
+  "startMs": {
+   "p50": 2234,
+   "p90": 2234
+  },
+  "ttsAt": {
+   "p50": 2681
+  }
+ },
+ "rows": [
+  {
+   "i": 0,
+   "kid": "cad2a3d5-be73-49fc-9273-f19241c686dc",
+   "url": "/c/cad2a3d5-be73-49fc-9273-f19241c686dc?puppet=0",
+   "firstSoundMs": 4443,
+   "net": [
+    {
+     "path": "/api/lesson/start",
+     "m": "POST",
+     "at": 192,
+     "ms": 2234,
+     "status": 201
+    },
+    {
+     "path": "/api/trace/batch",
+     "m": "POST",
+     "at": 260,
+     "ms": 548,
+     "status": 200
+    },
+    {
+     "path": "/api/child/map",
+     "m": "GET",
+     "at": 727,
+     "ms": 413,
+     "status": 200
+    },
+    {
+     "path": "/api/trace/batch",
+     "m": "POST",
+     "at": 2247,
+     "ms": 573,
+     "status": 200
+    },
+    {
+     "path": "/api/voice/stt-token",
+     "m": "POST",
+     "at": 2610,
+     "ms": 478,
+     "status": 200
+    },
+    {
+     "path": "/api/voice/tts-stream",
+     "m": "POST",
+     "at": 2681,
+     "ms": 947,
+     "status": 200
+    },
+    {
+     "path": "/api/studio/viewport",
+     "m": "POST",
+     "at": 2718,
+     "ms": 1331,
+     "status": 200
+    },
+    {
+     "path": "/api/trace/batch",
+     "m": "POST",
+     "at": 4251,
+     "ms": null,
+     "status": null
+    }
+   ],
+   "startPostAt": 192,
+   "startMs": 2234,
+   "startMarks": "auth@88 reads1@136 topic@157 plan@281 kit@281 reads2@348 warmup@350 reads3@350 state@376 taxila-fast@1601 opening@2080 tx@2142 respond@2148",
+   "cdp": [
+    {
+     "path": "/api/me",
+     "queued": 6,
+     "server": 442,
+     "conn": 21,
+     "proto": "http/1.1",
+     "bytes": 959,
+     "doneMs": 450
+    },
+    {
+     "path": "/api/parent/lock",
+     "queued": 2,
+     "server": 480,
+     "conn": 31,
+     "proto": "http/1.1",
+     "bytes": 207,
+     "doneMs": 503
+    },
+    {
+     "path": "/api/duplex/config",
+     "queued": 2,
+     "server": 432,
+     "conn": 21,
+     "proto": "http/1.1",
+     "bytes": 254,
+     "doneMs": 437
+    },
+    {
+     "path": "/api/trace/batch",
+     "queued": 2,
+     "server": 419,
+     "conn": 31,
+     "proto": "http/1.1",
+     "bytes": 258,
+     "doneMs": 495
+    },
+    {
+     "path": "/api/child/plan",
+     "queued": 2,
+     "server": 458,
+     "conn": 31,
+     "proto": "http/1.1",
+     "bytes": 1000,
+     "doneMs": 465
+    },
+    {
+     "path": "/api/trace/batch",
+     "queued": 58,
+     "server": 477,
+     "conn": 37,
+     "proto": "http/1.1",
+     "bytes": 258,
+     "doneMs": 599
+    },
+    {
+     "path": "/api/trace/batch",
+     "queued": 2,
+     "server": 450,
+     "conn": 37,
+     "proto": "http/1.1",
+     "bytes": 258,
+     "doneMs": 461
+    },
+    {
+     "path": "/api/lesson/start",
+     "queued": 2,
+     "server": 2220,
+     "conn": 291,
+     "proto": "http/1.1",
+     "bytes": 2038,
+     "doneMs": 2322
+    },
+    {
+     "path": "/api/trace/batch",
+     "queued": 5,
+     "server": 480,
+     "conn": 297,
+     "proto": "http/1.1",
+     "bytes": 258,
+     "doneMs": 545
+    },
+    {
+     "path": "/api/child/map",
+     "queued": 2,
+     "server": 403,
+     "conn": 21,
+     "proto": "http/1.1",
+     "bytes": 189692,
+     "doneMs": 10876
+    },
+    {
+     "path": "/api/trace/batch",
+     "queued": 2,
+     "server": 539,
+     "conn": 49,
+     "proto": "http/1.1",
+     "bytes": 258,
+     "doneMs": 566
+    },
+    {
+     "path": "/api/studio/stream",
+     "queued": 2,
+     "server": 432,
+     "conn": 291,
+     "proto": "http/1.1",
+     "bytes": null,
+     "doneMs": null
+    },
+    {
+     "path": "/api/voice/stt-token",
+     "queued": 4,
+     "server": 449,
+     "conn": 37,
+     "proto": "http/1.1",
+     "bytes": 873,
+     "doneMs": 474
+    },
+    {
+     "path": "/api/voice/tts-stream",
+     "queued": 404,
+     "server": 510,
+     "conn": 37,
+     "proto": "http/1.1",
+     "bytes": 522073,
+     "doneMs": 21583
+    },
+    {
+     "path": "/api/studio/viewport",
+     "queued": 788,
+     "server": 510,
+     "conn": 49,
+     "proto": "http/1.1",
+     "bytes": 223,
+     "doneMs": 1328
+    },
+    {
+     "path": "/api/trace/batch",
+     "queued": 962,
+     "server": 479,
+     "conn": 49,
+     "proto": "http/1.1",
+     "bytes": 259,
+     "doneMs": 1619
+    },
+    {
+     "path": "/api/voicesig/config",
+     "queued": 2,
+     "server": 489,
+     "conn": 55,
+     "proto": "http/1.1",
+     "bytes": 298,
+     "doneMs": 492
+    },
+    {
+     "path": "/api/trace/batch",
+     "queued": 3,
+     "server": 481,
+     "conn": 49,
+     "proto": "http/1.1",
+     "bytes": 258,
+     "doneMs": 496
+    },
+    {
+     "path": "/api/trace/batch",
+     "queued": 2037,
+     "server": 480,
+     "conn": 473,
+     "proto": "http/1.1",
+     "bytes": 258,
+     "doneMs": 2538
+    },
+    {
+     "path": "/api/trace/batch",
+     "queued": 3,
+     "server": 480,
+     "conn": 473,
+     "proto": "http/1.1",
+     "bytes": 258,
+     "doneMs": 517
+    },
+    {
+     "path": "/api/trace/batch",
+     "queued": 3,
+     "server": 450,
+     "conn": 485,
+     "proto": "http/1.1",
+     "bytes": 258,
+     "doneMs": 477
+    }
+   ],
+   "ttsEff": "3g",
+   "ttsDoneMs": 21583,
+   "ttsBytes": 522073,
+   "startQueuedMs": 2,
+   "ttsAt": 2681,
+   "ttsHeadersMs": 947
+  }
+ ]
+}

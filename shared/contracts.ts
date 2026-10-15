@@ -260,6 +260,9 @@ export interface TurnResponse {
    * old instructions); "when_free": speak if nobody holds the floor (a reaction to a module milestone).
    */
   speakNow?: "interrupt" | "when_free";
+  /** Round 5 agent lane, streamed (turn-audio): the text to speak after her streamed words (the card's question the code
+   *  appended), and ms from the agent call's start to her first words. Absent when nothing streamed. */
+  agentStream?: { tail: string | null; firstSayMs: number | null };
   end?: boolean;
   /** round 3 fix (experience B8): the child chose "Start <topic>" on a switch offer: the client starts that lesson next. */
   switchTo?: string;
@@ -279,6 +282,11 @@ export interface TurnResponse {
    * client raises the Help sheet (runtime.ts flushOthers → LessonState.lateSafeguard) though the lesson stays closed.
    */
   late?: boolean;
+  /**
+   * round 5 (QA D23): on a safeguard move, the Help sheet's first action. "helpline": Childline 1098 leads (the safeguard is
+   * about abuse, or the child's words name home or someone at home); "grownup": a grown-up the child trusts leads.
+   */
+  helpLead?: "helpline" | "grownup";
   /** W2 seam (W2-E/W2-H): what Studio does on this turn (reveal / highlight / retire / setParam). Absent = nothing. */
   studio?: TurnStudio;
   /** W2 seam (W2-E): the turn's Moment for the voice layer and the face (TEACHER-BRAIN TB6). Absent until BR2. */
@@ -322,6 +330,11 @@ export interface LessonStartRequest {
    * matching topic (server/lesson/purpose.js routeAsk) and titles it by the question. ≤ 500 characters are read.
    */
   firstText?: string;
+  /**
+   * r5 QA D24: rejoin this open lesson (a reload, a tab discard, the home's "continue"). Honoured only for this child's
+   * open lesson on the same server-written lane (cascade / text); otherwise the start opens a new lesson as before.
+   */
+  resumeLessonId?: string;
 }
 /** 409 from POST /api/lesson/start when the plan does not allow a lesson now (daily cap, lesson hours, done). */
 export interface LessonStartRefused { error: string; state: ChildHomeState; opensAt: string | null; capRemaining: number }
@@ -334,6 +347,12 @@ export interface LessonStartResponse {
   moduleCommands: ModuleCommand[]; ui: UiDirectives;
   /** Text lane: the teacher's opening line, stored as teacher turn `teacherOpeningSeq`. */
   teacherOpening?: string; teacherOpeningSeq?: number;
+  /** D24: this is the open lesson rejoined (teacherOpening is her last line, said again). */
+  resumed?: boolean;
+  /** D24: the highest turnSeq the server has acknowledged; a page's outbox numbers its next turn above it. */
+  turnSeqFloor?: number;
+  /** 14.2: a start that opens on the check-in after a recent safeguarding incident: which help the Help sheet leads with. */
+  helpLead?: "helpline" | "grownup";
 }
 /** One "What you did today" card (V2 §6.3.5): the child's own answer, with a tick only if the key verified it. */
 export interface DidCard {
@@ -378,7 +397,8 @@ export interface ChildPlanResponse {
   state: ChildHomeState;
   /** Legacy shape for src/child/day.ts: start/first/resume → "default", done/capped → "done", resting → "resting". */
   homeState: "default" | "done" | "resting";
-  plan: { openLesson: string | null; window: { from: string; to: string } };
+  /** limits: false while the hours and the daily limit gate nothing (round 5 default; TAXILA_DAY_LIMITS=on restores them). */
+  plan: { openLesson: string | null; window: { from: string; to: string }; limits?: boolean };
   topic: { id: string; title: string; shortTitle: string | null; chapter: string; subject: string; minutes: number } | null;
   /** The open lesson to resume (< 6 h, at least one child turn): its pinned question for the thumbnail. */
   resume: { lessonId: string; ask: string | null; topicTitle: string } | null;

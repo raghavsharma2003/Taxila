@@ -150,12 +150,21 @@ export function micModeWhy(i: MicModeInputs): MicModeWhy {
 let lastMode = "";
 let lastInputs: MicModeInputs | null = null;
 let resolved: { mode: "on" | "shadow" | "off"; source: string } | null = null;
+/** D5: the transcription lane this lesson runs on ("d4" WebRTC transcription, "d5" Voice Live ear), once known. */
+let sttLane: string | null = null;
 /** Tests: forget the per-page mic-mode memory (the last mode, inputs and resolved duplex mode). */
 export function resetVoiceTraceState(): void {
   lastMode = "";
   lastInputs = null;
   resolved = null;
+  sttLane = null;
 }
+/** D5: the link's transcription lane is known (or changed: a D5 fallback to D4); mic.mode then carries it. */
+export const noteSttLane = safe((lane: string) => {
+  if (sttLane === lane) return;
+  sttLane = lane;
+  if (lastInputs) traceMicMode(lastInputs);
+});
 /** src/duplex/flags.ts: the duplex mode this lesson resolved to, and which rule decided it (mic.mode then carries it). */
 export const noteDuplexResolved = safe((mode: "on" | "shadow" | "off", source: string) => {
   resolved = { mode, source };
@@ -166,10 +175,10 @@ export const traceMicMode = safe((inputs: MicModeInputs) => {
   lastInputs = inputs;
   const i: MicModeInputs = inputs.duplex === undefined && resolved ? { ...inputs, duplex: resolved.mode } : inputs;
   const w = micModeWhy(i);
-  const key = JSON.stringify([w.mode, w.reasons]);
+  const key = JSON.stringify([w.mode, w.reasons, sttLane]);
   if (key === lastMode) return;
   lastMode = key;
-  vt("mic.mode", { mode: w.mode, reasons: w.reasons, ...w.inputs, duplexSource: i.duplex === inputs.duplex ? null : resolved?.source ?? null });
+  vt("mic.mode", { mode: w.mode, reasons: w.reasons, ...w.inputs, duplexSource: i.duplex === inputs.duplex ? null : resolved?.source ?? null, sttLane });
 });
 
 // ───────────── transcripts: the realtime transcription events (pure parsing, tested in Node) ─────────────
@@ -208,6 +217,8 @@ export class SttTracer {
   private lastStoppedAt: number | null = null;
   /** The transcription session's configuration, once known (model, language, prompt length). */
   config: Record<string, unknown> = {};
+  /** Whose VAD the vad.* events are: "server" (D4 transcription call) or "voicelive" (D5, after Voice Live's AEC). */
+  vadSource = "server";
 
   constructor(now: () => number = Date.now) {
     this.now = now;
@@ -222,12 +233,12 @@ export class SttTracer {
     switch (type) {
       case "input_audio_buffer.speech_started":
         if (itemId) this.started.set(itemId, at);
-        vt("vad.start", { source: "server", itemId, audioStartMs: e.audio_start_ms ?? null });
+        vt("vad.start", { source: this.vadSource, itemId, audioStartMs: e.audio_start_ms ?? null });
         return;
       case "input_audio_buffer.speech_stopped":
         if (itemId) this.stopped.set(itemId, at);
         this.lastStoppedAt = at;
-        vt("vad.end", { source: "server", itemId, audioEndMs: e.audio_end_ms ?? null, speechMs: itemId && this.started.has(itemId) ? at - this.started.get(itemId)! : null });
+        vt("vad.end", { source: this.vadSource, itemId, audioEndMs: e.audio_end_ms ?? null, speechMs: itemId && this.started.has(itemId) ? at - this.started.get(itemId)! : null });
         return;
       case "conversation.item.input_audio_transcription.delta": {
         const p = this.partial.get(itemId) ?? { text: "", at, sentAt: 0, pending: false };
@@ -401,7 +412,26 @@ export class VoiceLinkTrace {
 
   /** The duplex engine's start in this lesson: live (deciding the floor, hands-free) or not, and why not. */
   duplexStart = safe((mode: string, live: boolean, why: string | null) => {
-    vt("mic.duplex.start", { mode, live, why, lane: this.lane });
+    vt("mic.duplex.start", { mode, live, why, lane: this.lane, sttLane: this.sttLane });
+  });
+
+  /** D5: which transcription lane the link opened ("d4" | "d5"), and why D5 was not used when it was offered. */
+  private sttLane: string | null = null;
+  sttLaneOpened = safe((lane: string, why: string | null = null) => {
+    this.sttLane = lane;
+    this.stt.vadSource = lane === "d5" ? "voicelive" : "server";
+    vt("mic.lane", { lane, why, opened: true });
+    noteSttLane(lane);
+  });
+
+  /** D5: Voice Live's session status as it configured it (echo cancellation, noise suppression, VAD, ASR): no audio. */
+  d5Session = safe((e: Record<string, unknown>) => {
+    vt("d5.session", { phase: e.phase ?? null, aec: e.aec ?? null, dns: e.dns ?? null, vad: e.vad ?? null, asr: e.asr ?? null, rate: e.rate ?? null });
+  });
+
+  /** D5: the stream ended or could not open (the link reconnects, else falls back to D4). Numbers and codes only. */
+  d5Closed = safe((why: string, stats: Record<string, unknown> = {}) => {
+    vt("d5.closed", { why, ...stats });
   });
 
   /** The link's push-to-talk state changed (what the child has to do now). */

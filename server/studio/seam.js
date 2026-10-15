@@ -930,6 +930,15 @@ export const studioSeam = {
     }
     const first = boardFirst.takePreselected(ask, boardSync.gateCtxFor(ask, { kit: L.kit ?? undefined, redact: L.redact ?? [], prior: [] }));
     if (first && drawn(first)) return { slotId: p.slotId, intentId, state: "revealed", artifact: p.artifact };
+    // round 5 merge (main; owner-5 battery on 14.1, 2/2 "whiteboard pe bana ke samjhao" after the same page was drawn): the
+    // board-first page was refused ONLY because it is the page on screen now. Her line was written from that page, so it is
+    // KEPT (no second notebook entry; it redraws beside her line, as a kept continue does) instead of a slow line plan that
+    // left her nothing to point at and the slot failed. Never for an ask for an EXAMPLE: there the same page is the repeat
+    // the never-the-same-page rule exists to stop.
+    if (first?.script && onPage && request && request.kind !== "example" && shownBefore(dress(first.script), { avoid: onPage }) && drawn({ ...first, source: "kept" })) {
+      console.info("[studio] board-first page is the page on screen: kept");
+      return { slotId: p.slotId, intentId, state: "revealed", artifact: p.artifact };
+    }
     { const st = boardFirst.pickState(ask); if (st !== "none") console.info(`[studio] board-first ${st} topic=${String(ask?.kit?.topicId ?? "").slice(0, 40)} beat=${ask?.intent?.beat ?? "-"}`); }
     // a CONTINUED board: the board on screen, re-gated on her new line, stays up NOW (her row named it); the continuation
     // plan below still runs and replaces it when it lands (the same slot's {t:"script"}), else the kept board stays.

@@ -35,6 +35,10 @@ export const W1A = {
   "me.type.title": "Type instead",
   "me.type.on": "Lessons start with typing and tapping. {T} still talks.",
   "me.type.off": "Lessons start with talking. You can always type.",
+  // r5 QA: a Young lesson never types (§6.3.4: tiles, the pad and Help), so their switch says tap
+  "me.tap.title": "Tap instead",
+  "me.tap.on": "Lessons start with tapping. {T} still talks.",
+  "me.tap.off": "Lessons start with talking. You can always tap.",
   // parent Controls
   "controls.type.title": "Tap and type only",
   "controls.type.on": "On this phone, {name}'s lessons start with typing and tapping. {T} still talks.",

@@ -142,18 +142,18 @@ test("made-for feed rows → items only when they can be shown honestly", () => 
 
 const base = { resumable: false, usedMin: 0, capMin: 30, doneToday: false, now: "10:00", from: "07:00", to: "20:30", anyLesson: true };
 test("homeStateOf: the safety hold first; homework and the test window inside the hours; never keyed to time away (F7)", () => {
-  assert.equal(homeStateOf({ ...base, safetyHold: true, resumable: true }), "safety_hold");
-  assert.equal(homeStateOf({ ...base, safetyHold: true, now: "23:00" }), "safety_hold");
-  assert.equal(homeStateOf({ ...base, homework: true }), "homework");
-  assert.equal(homeStateOf({ ...base, homework: true, doneToday: true }), "done", "homework never reopens a finished day");
-  assert.equal(homeStateOf({ ...base, homework: true, now: "22:00" }), "resting");
-  assert.equal(homeStateOf({ ...base, testWindow: true }), "test_window");
-  assert.equal(homeStateOf({ ...base, testWindow: true, anyLesson: false }), "first", "lesson 1 is lesson 1, test or not");
-  assert.equal(homeStateOf({ ...base, testWindow: true, homework: true }), "homework");
-  assert.equal(homeStateOf(base), "start");
+  assert.equal(homeStateOf({ ...base, limits: true, safetyHold: true, resumable: true }), "safety_hold");
+  assert.equal(homeStateOf({ ...base, limits: true, safetyHold: true, now: "23:00" }), "safety_hold");
+  assert.equal(homeStateOf({ ...base, limits: true, homework: true }), "homework");
+  assert.equal(homeStateOf({ ...base, limits: true, homework: true, doneToday: true }), "done", "homework never reopens a finished day");
+  assert.equal(homeStateOf({ ...base, limits: true, homework: true, now: "22:00" }), "resting");
+  assert.equal(homeStateOf({ ...base, limits: true, testWindow: true }), "test_window");
+  assert.equal(homeStateOf({ ...base, limits: true, testWindow: true, anyLesson: false }), "first", "lesson 1 is lesson 1, test or not");
+  assert.equal(homeStateOf({ ...base, limits: true, testWindow: true, homework: true }), "homework");
+  assert.equal(homeStateOf({ ...base, limits: true }), "start");
   assert.equal(legacyHome("safety_hold"), "resting");
   // F7: the inputs carry no "days away"; 1 day and 30 days give the same state for the same plan facts
-  assert.equal(homeStateOf({ ...base }), homeStateOf({ ...base }));
+  assert.equal(homeStateOf({ ...base, limits: true }), homeStateOf({ ...base, limits: true }));
 });
 
 const PLAN = { state: "start", homeState: "default", plan: { openLesson: null, window: { from: "07:00", to: "20:30" } },

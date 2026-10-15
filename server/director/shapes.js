@@ -230,7 +230,7 @@ export const topicAsked = ({ subject, teaching = false }) => join(
   `they asked to talk about ${subject}: say something real about ${subject} first (one or two lines, never 'later')`,
   teaching ? `then explain the same idea with a ${subject} example; end with one small question about it` : `then use ${subject} as the setting for the same question`,
 );
-const LANG_NAME = { hindi: "simple Hindi (Roman script when written)", english: "simple English", hinglish: "Hinglish" };
+const LANG_NAME = { hindi: "simple Hindi (Roman script when written; idea-words in Hindi, English only as a gloss)", english: "simple English", hinglish: "Hinglish" };
 /** "Hindi mein samjhao" / "English mein batao": the language changes now and stays (compile.js langPinned). */
 export const languageAsked = ({ lang, teaching = false }) => join(
   `they asked for ${LANG_NAME[lang] ?? lang}: from now on every turn in ${LANG_NAME[lang] ?? lang}, even if they reply in another language`,
@@ -313,6 +313,7 @@ export const safeguard = () => join(
   "share Childline 1098 (free, 24x7, for children) and Tele-MANAS 14416",
   "never promise secrecy; stay with them",
 );
+export const carriedCheckIn = () => "a fresh start soon after a hard moment: greet them warmly and check calmly how they are today; a trusted grown-up and Childline 1098 / Tele-MANAS 14416 are there any time; they can start slowly or stop for today, either is fine; never name or hint at anything said before; no lesson content yet";
 export const safeguardStay = () => "stay with them and keep listening; no lesson content; a trusted adult and Childline 1098 again if needed";
 export const resumeAfterSafeguard = () => "gently ask whether they want to carry on with the lesson or stop for today — either is fine";
 
@@ -383,6 +384,12 @@ export const breakYes = () => "they asked for a short break: agree warmly; the l
 export const repeatShort = () => "they did not catch it: the last point again, shorter and slower; nothing new";
 // r12 RCA failure 4 (owner lesson a95d2ff1 turn 12): the board is cleared because they asked; never about background noise
 export const boardCleared = () => "they asked to clear the board: it is cleared now; say so in a few words, never about noise or the microphone; carry on";
+// round 5: a claim of understanding gets a light check, warm and quick, never "did you really understand?"
+export const lightCheck = () => "they say they understood: great, one quick light question to try it out, warm and easy; never ask whether they really understood";
+// round 5 (owner 2026-10-14): silence is never a cue to move on
+export const silenceAgain = () => "they said nothing this time (the microphone heard no words): no rush; ask again kindly in a few words";
+export const sameStepAgain = () => "the same point as your last turn, said more simply; nothing new, no new topic, no new question";
+export const silenceCheck = () => "they have been quiet for a while: kindly check they can hear you, and offer to carry on or take a short break; nothing new, no lesson question";
 export const welcomeBack = () => "they are back after a moment away: welcome them back in two or three words, no goodbye and no fuss; carry on";
 export const levelHarder = () => "they asked for a harder one: take them at their word, a short warm line; the harder question";
 export const levelDeeper = () => "they asked to go deeper: take them at their word in a few warm words; the harder question on the same idea, a step further";

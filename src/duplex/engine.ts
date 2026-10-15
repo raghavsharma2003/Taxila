@@ -219,7 +219,7 @@ export interface TranscriptView {
   coverageEndMs: Ms | null;
   /** THE LEXICAL HORIZON: child voiced ms after coverageEndMs. Lexical evidence is about an old prefix while this is large. */
   unseenVoicedMs: Ms;
-  source: "mai_stream" | "nemotron" | "live_transcribe" | "sim" | "other";
+  source: "mai_stream" | "nemotron" | "live_transcribe" | "voicelive" | "sim" | "other";
   /** Running p50 of (text arrival − audio covered) for this source this session. */
   lagMsEstimate: Ms;
   /** FNV-1a of the normalised text (server/duplex/understand.js textHash): the draft/speculation identity key. */
