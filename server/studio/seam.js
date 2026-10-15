@@ -1094,7 +1094,7 @@ export const studioSeam = {
    * "aapne chaaron sides jodkar 160 metre nikala. Ab isi rectangle ka perimeter…"): the board on screen goes on the response
    * again when her line still shares a word or a number with it (request.js syncedWithLine). Never a revealing slot.
    */
-  keepBoardSlot(lessonId, line, withhold = [], move = {}) {
+  keepBoardSlot(lessonId, line, withhold = null, move = {}) {   // withhold omitted: null, fail closed (main)
     const L = lessons.get(lessonId);
     const on = L?.onScreen ? L.pieces.get(L.onScreen) : null;
     if (!on || on.kind !== "whiteboard" || !on.artifact?.script || on.retired || !VISIBLE.has(on.state) || L.safety) return null;
@@ -1119,7 +1119,7 @@ export const studioSeam = {
   },
 
   /** 14.4: the slot of THIS piece when it is the board / picture on screen now (the late asked board her next line points at). */
-  onScreenSlot(lessonId, intentId, withhold = [], move = {}) {
+  onScreenSlot(lessonId, intentId, withhold = null, move = {}) {   // withhold omitted: null, fail closed (main)
     const L = lessons.get(lessonId);
     const on = L?.onScreen && L.onScreen === intentId ? L.pieces.get(intentId) : null;
     if (!on || !["whiteboard", "image"].includes(on.kind) || !on.artifact || on.retired || !VISIBLE.has(on.state) || L.safety) return null;

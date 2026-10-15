@@ -272,9 +272,9 @@ test("14.4 (QA D42, safety-adjacent): the board on screen stays on the response 
       { id: "b", op: "text", startMs: 1400, endMs: 2000, at: [440, 190], text: "30 m", size: "m" }, { id: "t", op: "text", startMs: 1400, endMs: 2000, at: [270, 320], text: "rectangle", size: "m" }] };
   L.pieces.set("wb-1", { intentId: "wb-1", slotId: "slot-1", kind: "whiteboard", state: "revealed", artifact: { kind: "whiteboard", script }, revealedTurn: 1 });
   L.onScreen = "wb-1";
-  const kept = studioSeam.keepBoardSlot(id, "Bilkul, Ishaan— aapne chaaron sides jodkar 160 metre nikala. Ab isi rectangle ka perimeter formula se nikaalo?");
+  const kept = studioSeam.keepBoardSlot(id, "Bilkul, Ishaan— aapne chaaron sides jodkar 160 metre nikala. Ab isi rectangle ka perimeter formula se nikaalo?", []);
   assert.equal(kept?.intentId ?? kept?.slotId ? true : false, true, JSON.stringify(kept));
-  assert.equal(studioSeam.keepBoardSlot(id, "Shabaash! Ab ek naya sawaal: tumhara favourite rang kaunsa hai?"), null);
+  assert.equal(studioSeam.keepBoardSlot(id, "Shabaash! Ab ek naya sawaal: tumhara favourite rang kaunsa hai?", []), null);
 });
 
 test("14.4 (main): a late asked board her line could not point at is the next turn's board: onScreenSlot gives THAT piece's slot only while it is on screen, never after a safeguard", async () => {
@@ -287,10 +287,13 @@ test("14.4 (main): a late asked board her line could not point at is the next tu
     ops: [{ id: "r", op: "rect", startMs: 0, endMs: 800, at: [120, 100], w: 300, h: 180 }] };
   L.pieces.set("ask-1", { intentId: "ask-1", slotId: "slot-a", kind: "whiteboard", state: "revealed", artifact: { kind: "whiteboard", script }, revealedTurn: 2 });
   L.onScreen = "ask-1";
-  assert.ok(studioSeam.onScreenSlot(id, "ask-1"), "the late board, on screen");
-  assert.equal(studioSeam.onScreenSlot(id, "other"), null, "another piece's id");
+  assert.ok(studioSeam.onScreenSlot(id, "ask-1", []), "the late board, on screen");
+  // (main) the withheld values omitted: null, fail closed, on both paths
+  assert.equal(studioSeam.onScreenSlot(id, "ask-1"), null, "withhold omitted: not re-sent");
+  assert.equal(studioSeam.keepBoardSlot(id, "rectangle"), null, "withhold omitted: not kept");
+  assert.equal(studioSeam.onScreenSlot(id, "other", []), null, "another piece's id");
   L.safety = true;
-  assert.equal(studioSeam.onScreenSlot(id, "ask-1"), null, "never after a safeguard");
+  assert.equal(studioSeam.onScreenSlot(id, "ask-1", []), null, "never after a safeguard");
 });
 
 test("14.4 (main's release blocker on D42): a board re-sent on a later turn (kept, or the late asked board) never carries the OPEN item's key, and nothing is re-sent after a safeguard", async () => {
