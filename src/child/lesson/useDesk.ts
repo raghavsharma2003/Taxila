@@ -343,6 +343,8 @@ export function useDesk(runtime: LessonRuntime, bridge: UiBridge | null, ctx: De
   // drop Type for "tap_in_tray" (W1-A item 4; flows G2: an unknown engine left an empty tray and no way to answer).
   const liveModule = modulesMounted.length > 0 && !moduleFailed;
   const chips = ui.chips ?? [];
+  // r5 QA pass 12 (main's review): a safeguard turn or the check-in (safe:* chips) offers no lesson help (Hint, Help).
+  const safeguardTurn = state.move?.kind === "safeguard" || chips.some((c) => /^safe:/.test(String(c.id ?? ""))) || (ui as { beat?: { type?: string } }).beat?.type === "safeguard";
   const wb = ui.whiteboard?.value ? ui.whiteboard : null;
   // The voice the child can use right now (no mic, or speech recognition down → tap and type only).
   const spoken = !ctx.textOnly && bs?.transport !== "typed" && !facts.noMic;
@@ -726,7 +728,8 @@ export function useDesk(runtime: LessonRuntime, bridge: UiBridge | null, ctx: De
     thinkingSince: !young && commitAt !== null && (floor === "thinking" || floor === "heard") ? commitAt : null,
     thinkingLabel: !!beats?.thinkingLabel || (floor === "thinking" && commitAt === null),
     mic: { available: spoken, talking: ptt.talking, drain: ptt.drain, tapToTalk },
-    showHelp: young && (yt.tapOptions || tokens.tapOptionsS === null || voiceDown),
+    showHelp: young && !safeguardTurn && (yt.tapOptions || tokens.tapOptionsS === null || voiceDown),
+    safeguard: safeguardTurn,
     // one Send on screen (flows G15): while the NumberPad (its own Send) is open in the tray, the type row is closed
     typing: (typing || (!spoken && !young)) && !(tray && geometryOut === "work" && tray.kind === "pad"),
     captionsOn,

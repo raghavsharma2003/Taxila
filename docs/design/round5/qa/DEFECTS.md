@@ -56,7 +56,7 @@ Status: **FIXED** (on `claude/r5-qa`, verified by a repro script) · **OWNER** (
 | D34 | P1 | FIXED (safety review: main) | QA (client) | The check-in after a disclosure never shows its helpline board ("Childline 1098 · Tele-MANAS 14416"): the Carry on / Stop chips take the tray |
 | D35 | P1 | OWNER | content / board (studio) | "number line pe dikhao": a board comes up at 2.6 s and is gone before her line ends; no number line stays, and her line tells the child to "dikhaiye" |
 | D36 | P2 | OWNER | content / board (studio) | "picture dikhao": she describes a 50 m × 30 m rectangle, the board draws a trapezoid with a clipped "bounda" label; "ghadi draw karo": a clock with "?" for 2, 4 and 7 while she says it has 1 to 12 |
-| D37 | P2 | OWNER | main (server plan) + QA (client) | Home offers CONTINUE "Pick up where you left off" for a lesson the server will not resume (after a disclosure, or after the 2 min grace while Home sat open), then starts a new one |
+| D37 | P2 | FIXED | main (server plan, 0eaa3ef8) + QA (client) | Home offers CONTINUE "Pick up where you left off" for a lesson the server will not resume (after a disclosure, or after the 2 min grace while Home sat open), then starts a new one |
 | D38 | P2 | OWNER | conversation | A class 6 child (aap by class default) is addressed with tum in Hinglish replies ("Kabir—tumne khud perimeter ka meaning bata diya") |
 | D19 | P2 | WONTFIX | QA (UI) | `GET /api/me` 401 logged as a console error on every signed-out landing and set-up load |
 
@@ -252,6 +252,21 @@ didn't play. Read it on the card. Play again". The floor then stays `idle` (stat
 until the child taps the mic. Expected: one server-side retry of the TTS call (it is idempotent) and, if that fails too, the
 floor moves to YOUR TURN with the card as the question, so the lesson goes on in text. Evidence in
 `ui.state floor=idle strip=T5` from 17.8 s to 66.2 s.
+
+## After pass 12 — on int/r5-rel143 (local TEST)
+- **D37, client half (fixed):** Home re-reads its plan when the page comes back into view or on focus, and 125 s after a
+  "resume" read (`src/child/plan.ts`). Verified on TEST:
+  - Back, then wait 135 s → Home shows START (it showed CONTINUE before the fix), and Start opens a new lesson.
+  - Back, then Continue within the grace → the same lesson, `resumed`.
+- **Hint during the check-in (main's review item, fixed):** a safeguard move, `safe:*` chips or the safeguard beat hide
+  Older's Hint and Young's Help (`useDesk.ts` `safeguardTurn`, `AnswerDock.tsx`). Verified on TEST (English check-in):
+  - no Hint while the check-in is up, and Hint is back after Carry on;
+  - main's server half of D37 shows too: after a disclosure and Back, Home offers Start (not Continue) for the parked
+    lesson.
+- Gate: every file except engines-browser together, 3275 pass, 2 timing flakes in untouched files; engines-browser alone
+  60/60.
+  - learner-order "fold … is cheap": 3/3 pass alone.
+  - p3-voicesig "never delay the turn": fails 1 in 3 even alone.
 
 ## Pass 12 — 14.2 (production a978ae27 + TEST on a local a978ae2 build)
 Production: fresh `@taxila.test` accounts (class 4 phone, class 6), no disclosures on production, both accounts deleted after
