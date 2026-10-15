@@ -21669,6 +21669,29 @@
    "at": "2026-10-15",
    "title": "Considered: run the second distress read only when the relational signals flag a low mood (loneliness, goodbye distress). What breaks: 'sab bekaar lagta hai' alone carries no relational signal, and it is the line the label call missed 0/6; any trigger narrower than every model-labelled turn reintroduces the miss.",
    "source": "inbox/r1432-main.json"
+  },
+  {
+   "id": "ms-r1432-live",
+   "kind": "measurement",
+   "at": "2026-10-15",
+   "n": 1,
+   "method": "deploy-azure via scratchpad deploy-143.mjs from int/r5-rel143 @7c869811; /api/health",
+   "title": "Release 14.3.2 live: taxila-web--s7c86981-rx7j (image 7c86981) at 100% from ~16:25 UTC; s3a18c0e-xvg1 (14.3.1) kept as previous. Gate on 7c86981: npm test 3416 pass / 0 fail, prompt budget PASS, no new migrations; canary smoke 4/4. Contents: the words-only distress read beside the label call (dc-r1432-distress-beside). Not checked live by design: a safeguard on production writes an incident (QA's TEST re-run and the sim lab's 32-card false-safeguard run are queued for the next session).",
+   "source": "inbox/r1432live-main.json"
+  },
+  {
+   "id": "open-r1432-next-session",
+   "kind": "open",
+   "at": "2026-10-15",
+   "title": "Handover at the owner's usage limit (2026-10-15 ~16:30 UTC). Live: 14.3.2 (7c86981). Next session: (1) verify 14.3.2 on TEST (QA's 6148384f sequence + low-mood / boredom lines) and the sim lab's 32 regular cards + TP cards for classify_words false safeguards; (2) after a day, run docs/design/round5/results/latency/ack-cohort-query.sql read-only on prod, real lesson sids only, aggregated rows to stream 3; (3) integrate 14.4 on int (stream 2 86570734 + its revealsAnswer unit-key head; 4A 316994c8 + D41; 4B 0c3967a7/60610ba4, verdict hold only with first-sound cost ≤ 250 ms p50 at today's R; stream 3 3b1e317d); notes in the main loop's r144-notes and docs/design/round5/r144-integration-notes.md; (4) key rotation needs the owner's answer (it cuts off the other agent holding the credentials file).",
+   "source": "inbox/r1432live-main.json"
+  },
+  {
+   "id": "rj-r144-tray-certificate-cited-as-content-gate",
+   "kind": "rejection",
+   "at": "2026-10-15",
+   "title": "Main's safety review of stream 2's D42 keepBoardSlot (94b2c0fe) passed it on 'a kept board goes through gatedSlot against the current gate ctx, so an item opened later cannot have its key ride the kept page'. False: gatedSlot runs certifyForTray, the tray / legibility certificate; a whiteboard's content is gated only when drawn. Stream 2's test reproduced it ('rectangle 160 m' re-sent while an item keyed 160 was open). Fixed in 205df090 / a853362c / 86570734 (withheld values of the item open now, fail closed). Lesson (as rj-r5-unenforced-verdict-gate-cited): a gate is not a protection until a test shows the content refused; a reviewer names the test, not the function.",
+   "source": "inbox/r1432rj-main.json"
   }
  ],
  "edges": [
@@ -34701,6 +34724,16 @@
    "src": "ms-r1431-live",
    "rel": "measured_by",
    "dst": "dc-r1431-completion-block-probe"
+  },
+  {
+   "src": "ms-r1432-live",
+   "rel": "measured_by",
+   "dst": "dc-r1432-distress-beside"
+  },
+  {
+   "src": "rj-r144-tray-certificate-cited-as-content-gate",
+   "rel": "part_of",
+   "dst": "open-r1432-next-session"
   }
  ]
 }

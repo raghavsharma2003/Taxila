@@ -4416,3 +4416,11 @@ Out-of-sample continuer check: 32 cards not used for tuning, plus p30's re-run. 
 
 - **False alarms:** the second read flagged 4/2,000 ordinary lines on grok and 3/2,000 on taxila-fast. All were lesson talk.
 - **Turn time:** on grok it added p50 0 ms / p90 150 ms. On taxila-fast it added p50 268 ms / p90 542 ms.
+
+
+<!-- merged from inbox/r1432live-main.json -->
+## ms-r1432-live (2026-10-15)
+
+- **14.3.2 is live:** s7c86981-rx7j at 100%, with 14.3.1 kept for rollback.
+- Gate: 3,416 pass / 0 fail. Canary smoke 4/4.
+- It wasn't checked live with a safeguard, because that would write a production incident. The TEST and sim lab checks are queued for the next session.

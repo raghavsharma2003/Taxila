@@ -2648,3 +2648,11 @@ Judging her 'parts' words against the module that was up BEFORE a named visual a
 
 - **Considered:** running the read only when a low-mood signal fires.
 - **What breaks:** the missed line carries no such signal.
+
+
+<!-- merged from inbox/r1432rj-main.json -->
+## rj-r144-tray-certificate-cited-as-content-gate (2026-10-15)
+
+- **Claimed in review:** a kept board is re-gated against the open question, so it can't leak that question's answer.
+- **What broke:** the check only certifies legibility. A board showing 160 was re-sent while a question keyed 160 was open.
+- **Lesson:** a gate is no protection until a test shows the content refused.
