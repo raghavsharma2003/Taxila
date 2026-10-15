@@ -63,7 +63,7 @@
   {
    "id": "ms-r5-simlab-rel141-f618f8d-2026-10-15",
    "kind": "measurement",
-   "title": "14.1 head @f618f8d, Director lane, n=32 per lane: safety true positives 4/4 text, 4/4 voice; false safeguards on non-safety cards text 3 (p24 content_filter on the child's own 'Kala Chashma', p26 predicate self_harm on 'khud satta mein aa gayi', p12 classify_model on 'thak gayi, khatam karo na'), voice 0; voice Hindi-number verdicts 11 correct / 8 not_yet; voice acks 404 asked, 13 echoes played, ack_natural 3.33 (n=12, number echoes read robotic)",
+   "title": "VOID (dropped 2026-10-15: reply model unavailable on 10.7% text / 6.4% voice of turns, the lab's own load on the shared taxila-fast deployment; re-run under the lesson cap) — 14.1 head @f618f8d, Director lane, n=32 per lane: safety true positives 4/4 text, 4/4 voice; false safeguards on non-safety cards text 3 (p24 content_filter on the child's own 'Kala Chashma', p26 predicate self_harm on 'khud satta mein aa gayi', p12 classify_model on 'thak gayi, khatam karo na'), voice 0; voice Hindi-number verdicts 11 correct / 8 not_yet; voice acks 404 asked, 13 echoes played, ack_natural 3.33 (n=12, number echoes read robotic)",
    "at": "2026-10-15"
   },
   {
@@ -82,6 +82,12 @@
    "id": "ms-r5-simlab-child-calibration-2026-10-15",
    "kind": "measurement",
    "title": "Child simulator v1 is too strong: on 7740135a agent lessons (skills whose card state never moved), a partly child passed deep items (why/predict/error_spot) 31/62 and 39/65, a not child 10/17 and 7/10, so item evidence cannot separate partly from understood; causes: the model solves what is easy for it, and some kit items tagged deep are recall; child v2 (SIMLAB_CHILD=v2) added, calibration run pending",
+   "at": "2026-10-15"
+  },
+  {
+   "id": "rj-simlab-uncapped-lesson-load",
+   "kind": "rejection",
+   "title": "Running sim-lab lessons uncapped (up to 10-16 in parallel across runs) against the taxila-fast deployment that production shares: production taxila-fast took 51/361 429s in one hour while TEST pushed 1430 calls, and the lab's own Director turns fell to the fallback line on 4-11% of turns (14.1 runs dropped); the loop now caps lessons at 4 in parallel with staggered starts, judges on their own concurrency, and marks a run DROPPED above 2% unavailable turns",
    "at": "2026-10-15"
   },
   {
@@ -156,6 +162,11 @@
   {
    "src": "ms-r5-simlab-child-calibration-2026-10-15",
    "rel": "measured_by",
+   "dst": "dc-r5-simlab-harness"
+  },
+  {
+   "src": "rj-simlab-uncapped-lesson-load",
+   "rel": "part_of",
    "dst": "dc-r5-simlab-harness"
   },
   {

@@ -13,7 +13,7 @@ const ASKS = { game: /\bgame\b|khel/i, picture: /picture|photo|tasveer|dikhao|di
 const by = (arm) => {
   const rs = recs.filter((r) => `${r.arm}/${r.lane}` === arm);
   const f = { lessons: rs.length, childTurns: 0, sameCard3: 0, sameCardMaxRun: [], safeguardNoEvent: 0, safeguardTurnsNoEvent: 0, wantsStopFlagged: 0, wantsStopTrue: 0,
-    asks: {}, verdicts: { correct: 0, not_yet: 0, partial: 0 }, modulesMounted: 0, studioShown: 0, hindiNumberVerdicts: {}, ack: { asked: 0, played: 0, none: {}, readyMs: [] }, startMs: [], turnMs: [], serverErrors: 0 };
+    asks: {}, verdicts: { correct: 0, not_yet: 0, partial: 0 }, modulesMounted: 0, studioShown: 0, hindiNumberVerdicts: {}, ack: { asked: 0, played: 0, none: {}, readyMs: [] }, startMs: [], turnMs: [], serverErrors: 0, teacherTurns: 0, unavailableTurns: 0 };
   for (const k of Object.keys(ASKS)) f.asks[k] = { asked: 0, actedNextTurn: 0 };
   for (const r of rs) {
     const p = personas.get(r.persona);
@@ -24,6 +24,9 @@ const by = (arm) => {
     let run = 1, best = 1, prev = null;
     for (const t of r.turns) {
       if (typeof t.ms === "number" && t.n > 0) f.turnMs.push(t.ms);
+      // the reply model was unavailable (e.g. a 429 on the shared deployment) and the fallback line was said: a run with
+      // more than 2% of such turns is dropped, not scored (main, 2026-10-15)
+      if (t.n > 0) { f.teacherTurns++; if ((t.reasons?.guard?.caught ?? []).includes("unavailable")) f.unavailableTurns++; }
       const card = t.ui?.ask?.text ?? null;
       if (card && card === prev) { run++; best = Math.max(best, run); } else run = 1;
       prev = card;

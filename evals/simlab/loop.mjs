@@ -45,7 +45,12 @@ const lanes = arg("lanes", "text").split(",");
 const only = arg("only", null)?.split(",");
 const n = Number(arg("n", 30));
 const personas = (only ? PERSONAS.filter((p) => only.some((o) => p.id.startsWith(o))) : spread(PERSONAS, n));
-const conc = Number(arg("conc", 6));
+// TEST and production share the taxila-fast deployment (same TPM): lessons in parallel are capped (main, 2026-10-15:
+// ≤4, starts staggered) so a lab run never throttles a live lesson. Judging calls only the judge deployments.
+const MAX_LESSONS = Number(process.env.SIMLAB_MAX_LESSONS || 4);
+const conc = Math.min(Number(arg("conc", 4)), MAX_LESSONS);
+const judgeConc = Number(arg("judge-conc", 8));
+const STAGGER_MS = 8000;
 const turns = Number(arg("turns", 14));
 const useJudge2 = !flag("no-judge2");
 
@@ -76,9 +81,11 @@ for (const p of personas) for (const [arm, base] of Object.entries(arms)) for (c
 const recFile = (j) => join(OUT, "records", `${j.p.id}--${j.arm}--${j.lane}.json`);
 if (!rejudge) {
   console.log(`simlab ${runId}: ${jobs.length} lessons (${personas.length} personas × ${Object.keys(arms).length} arms × ${lanes.length} lanes), conc ${conc}`);
-  let done = 0;
+  let done = 0, started = 0;
   await pool(jobs, conc, async (j) => {
     if (existsSync(recFile(j)) && flag("resume")) return;
+    const k = started++;
+    if (k < conc) await new Promise((r) => setTimeout(r, k * STAGGER_MS)); // the first wave starts staggered, not as one burst
     const rec = await runLesson(j.p, { base: j.base, lane: j.lane, maxTurns: turns, voice, ack: flag("ack") && j.lane === "voice",
       ...(arg("email-key", null) ? { emailKey: `${j.arm}-${arg("email-key")}`, tag: "simlab" } : {}) });
     rec.arm = j.arm;
@@ -97,7 +104,7 @@ console.log(`judging ${recs.length} lessons with ${MODELS.judge}${useJudge2 ? ` 
 // --reuse-judged: keep the stored LLM judgments (scores.json) and recompute only the code checks and the report
 const prior = flag("reuse-judged") && existsSync(join(OUT, "scores.json"))
   ? new Map(JSON.parse(readFileSync(join(OUT, "scores.json"), "utf8")).lessons.map((r) => [`${r.persona}/${r.arm}/${r.lane}`, r])) : new Map();
-const rows = await pool(recs, conc, async (rec) => {
+const rows = await pool(recs, judgeConc, async (rec) => {
   const p = byId.get(rec.persona);
   const row = { persona: rec.persona, arm: rec.arm, lane: rec.lane, turns: rec.turns.filter((t) => t.child).length, auto: autoChecks(rec, p),
     lines: Object.fromEntries(rec.turns.map((t) => [t.n, (t.teacher ?? "").slice(0, 160)])) };
@@ -116,7 +123,18 @@ const rows = await pool(recs, conc, async (rec) => {
 console.log("");
 
 // 3. report
-const { md, sum, clusters } = failuresMd(rows, meta);
+// an arm whose reply model was unavailable on more than 2% of turns (the fallback line was said) is not scored
+const unavailable = {};
+for (const r of recs) {
+  const k = `${r.arm}/${r.lane}`;
+  const u = (unavailable[k] ??= { turns: 0, unavailable: 0 });
+  for (const t of r.turns) if (t.n > 0 && t.teacher != null) { u.turns++; if ((t.reasons?.guard?.caught ?? []).includes("unavailable")) u.unavailable++; }
+}
+const dropped = Object.entries(unavailable).filter(([, u]) => u.turns && u.unavailable / u.turns > 0.02).map(([k, u]) => `${k} ${u.unavailable}/${u.turns}`);
+meta.unavailable = unavailable;
+if (dropped.length) meta.dropped = dropped;
+const { md: md0, sum, clusters } = failuresMd(rows, meta);
+const md = dropped.length ? `> **DROPPED — not to be scored.** The reply model was unavailable (fallback line) on more than 2% of turns: ${dropped.join("; ")}. Re-run under the lesson cap.\n\n${md0}` : md0;
 writeFileSync(join(OUT, "scores.json"), JSON.stringify({ meta, summary: sum, clusters: clusters.map((c) => ({ type: c.type, lessons: c.lessons, instances: c.instances })), lessons: rows }, null, 1));
 writeFileSync(join(OUT, "FAILURES.md"), md);
 console.log(md.split("## Failure clusters")[0]);

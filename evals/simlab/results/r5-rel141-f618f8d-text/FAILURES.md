@@ -1,3 +1,5 @@
+> **DROPPED — not to be scored (2026-10-15).** The reply model was unavailable (guard.unavailable, the fallback line) on 47/439 (10.7%) of teacher turns, above the 2% limit: the lab ran up to 10 lessons in parallel against the taxila-fast deployment production shares, and its 429s reached these lessons. Kept only as a record; re-run under the lesson cap (≤4).
+
 # Sim lab r5-rel141-f618f8d-text — failures
 
 14.1 head int/r5-rel141 @f618f8d, Director lane, text, same 32 baseline cards; before = baseline-director-9b73641 and r5-heads rel14/combo.

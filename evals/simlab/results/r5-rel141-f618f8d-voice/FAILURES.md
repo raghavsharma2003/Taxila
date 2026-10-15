@@ -1,3 +1,5 @@
+> **DROPPED — not to be scored (2026-10-15).** The reply model was unavailable (guard.unavailable, the fallback line) on 28/440 (6.4%) of teacher turns, above the 2% limit: the lab ran up to 10 lessons in parallel against the taxila-fast deployment production shares, and its 429s reached these lessons. Kept only as a record; re-run under the lesson cap (≤4).
+
 # Sim lab r5-rel141-f618f8d-voice — failures
 
 14.1 head int/r5-rel141 @f618f8d, Director lane, VOICE (TTS → transcribeClip → server) with the device's turn-ack ask (continuer:true) and TAXILA_ACK_CONTINUER_FOR naming every test email; same 32 cards; before = r5-voice-base-vs-combo.
