@@ -38,3 +38,23 @@ test("the code path grades a spoken Devanagari fraction against a 1/2 key; a wro
   for (const t of ["एक बटा दो", "एक बता दो"]) assert.equal(classifyFast({ target, childText: t, asrConfidence: 0.9, typed: false, lang: "hindi" }).result?.outcome, "correct", t);
   assert.notEqual(classifyFast({ target, childText: "एक बटा तीन", asrConfidence: 0.9, typed: false, lang: "hindi" }).result?.outcome, "correct");
 });
+
+// 4B's shared fixture (tests/fixtures/spoken-fractions.json, the same file the engine's valuesOf and duplex/understand.js
+// valuesIn test against): the grader reads every case to the same values ('a/b' as a / b). The grader keeps one extra rule
+// of its own: 'एक' in running Hindi is still 1 ("मेरे ख्याल से एक"); only 'एक बार' with words after it is "once".
+test("the grader agrees with 4B's shared spoken-fractions fixture on every case", async () => {
+  const fs = await import("node:fs");
+  const { cases } = JSON.parse(fs.readFileSync(new URL("./fixtures/spoken-fractions.json", import.meta.url), "utf8"));
+  assert.ok(cases.length >= 30);
+  const val = (s) => { const [a, b] = s.split("/"); return b ? +a / +b : +a; };
+  const bad = cases.filter((c) => { const got = numberPhrases(c.text, { split: true }); const want = c.values.map(val);
+    return !got || got.length !== want.length || got.some((v, i) => Math.abs(v - want[i]) > 1e-9); })
+    .map((c) => `${c.text} → ${JSON.stringify(numberPhrases(c.text, { split: true }))}, want ${JSON.stringify(c.values)}`);
+  assert.deepEqual(bad, []);
+});
+
+test("a digit numerator before an OVER word keeps the fraction; 'एक बार' with words after it is once, not 1", () => {
+  for (const [t, want] of [["2 बता दो", [1]], ["2 over 5", [0.4]], ["x equals 1.5 over 9", [1.5 / 9]], ["एक बार और दिखा दो", []],
+    ["ek baar mummy ne bataya", []], ["मेरे ख्याल से एक", [1]], ["एक बार", [1]], ["corner ek baar? toh 5 aur 5", [5, 5]]])
+    assert.deepEqual(numberPhrases(t, { split: true }), want, t);
+});

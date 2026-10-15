@@ -65,6 +65,8 @@ const OVER = new Set(["by", "upon", "bata", "over", "बटा", "बता"]);
 const DO_VERB_STEMS = new Set(["बता", "समझा", "दिखा", "सुना", "कर", "दे", "लिख", "बोल", "सिखा", "बना"]);
 /** "do" and "no" are English words too: a number only next to another number word. */
 const WEAK = new Set(["do", "no", "das", "saath", "tees", "bees"]);
+const ONE_TIME = new Set(["एक", "ek"]);
+const TIME_WORD = new Set(["बार", "baar", "bar"]);
 
 function wordNum(w) {
   if (EN1.includes(w)) return { v: EN1.indexOf(w), k: "unit" };
@@ -175,9 +177,13 @@ export function numberPhrases(raw, { split = false, lang = "mixed" } = {}) {
       const neg = t.startsWith("-");
       const v = Math.abs(Number(t));
       if (cur && cur.part === null && !cur.total && (cur.sign === -1 || cur.prefix)) { cur.part = v; if (neg) cur.sign = -1; continue; }
+      // the digit denominator of an open fraction ("2 over 5", "1.5 over 9")
+      if (cur && cur.num !== null && cur.part === null && !cur.total) { cur.part = v; if (!(next && next in SCALE)) { if (!close()) return null; } continue; }
       if (!close()) return null;
       open(); cur.part = v; cur.last = "digits"; if (neg) cur.sign = -1;
-      if (!(next && next in SCALE)) { if (!close()) return null; }
+      // "2 बता दो": a digit numerator stays open for an OVER word with a number after it (4B's shared fixture)
+      const after = toks[i + 2];
+      if (!(next && (next in SCALE || (OVER.has(next) && after && (wordNum(after) || /^\d/.test(after)))))) { if (!close()) return null; }
       continue;
     }
     if (SIGN.has(t) && next && (/^\d/.test(next) || wordNum(next) || next in SPECIAL)) { if (!close()) return null; open(); cur.sign = -1; continue; }
@@ -191,6 +197,8 @@ export function numberPhrases(raw, { split = false, lang = "mixed" } = {}) {
       i = j - 1; if (!close()) return null;
       continue;
     }
+    // "एक बार और दिखा दो" (once more): एक बार with words after it is "once", not a value; a reply that ends "एक बार" keeps 1
+    if (ONE_TIME.has(t) && TIME_WORD.has(next) && toks[i + 2]) { if (!close()) return null; i++; continue; }
     if (t in PREFIX) { if (!close()) return null; open(); cur.prefix = PREFIX[t]; continue; }
     if (t in SPECIAL && !((t === "half" || t === "quarter") && cur && cur.part !== null)) { if (!close()) return null; phrases.push(SPECIAL[t]); continue; }
     if (cur && t in DEN && cur.part !== null && cur.num === null) {           // "three fourths", "teen chauthai", "one half"
