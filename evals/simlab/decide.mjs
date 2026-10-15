@@ -40,14 +40,21 @@ export function asksItem(askText, item) {
 }
 
 /** Does the child's answer say the item's key (or an accepted form)? */
+// Hinglish connectives read as their English key words ("north aur south" is the key "north and south")
+const CONNECT = (s) => s.replace(/\b(?:aur|or)\b/g, "and").replace(/\bya\b/g, "or");
+// a long worked key ("… average speed = 120/3 = 40 km/h") ends in its answer: that last number counts as the key too
+const finalNumber = (k) => { const ns = norm(k).match(/\d+(?:\.\d+)?/g); return ns && norm(k).split(" ").length > 3 ? ns[ns.length - 1] : null; };
+
 export function saysKey(text, item) {
-  const t = norm(text);
+  const t = CONNECT(norm(text));
   if (!t || !item) return false;
   const tw = t.split(" ");
+  const fin = finalNumber(item.answer);
+  if (fin && tw.includes(fin)) return true; // decided-1 leak: "40 km/h" said against a long worked key
   // a one-token key ("70", "5n", "हाँ") matches a whole token, however short; a longer key matches as a whole-word phrase
   // (smoke r5-decided-smoke-rel142: "5n?" slipped through when short keys were skipped)
   for (const k of [item.answer, ...(item.acceptable ?? [])].filter((x) => x != null && String(x).trim())) {
-    const nk = norm(k);
+    const nk = CONNECT(norm(k));
     if (!nk) continue;
     if (!nk.includes(" ")) { if (tw.includes(nk)) return true; continue; }
     if ((` ${t} `).includes(` ${nk} `)) return true;
