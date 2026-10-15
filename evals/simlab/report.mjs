@@ -81,7 +81,7 @@ export function failuresMd(rows, meta) {
   const sum = summarise(rows);
   const L = [`# Sim lab ${meta.runId} — failures`, "",
     `${meta.note ?? ""}`, "",
-    `Server head \`${meta.head}\` · child ${meta.models.child} · judge ${meta.models.judge} (second judge ${meta.models.judge2}) · ${meta.date}`, "",
+    `Child: **${meta.childMode === "decided" ? `DECIDED outcomes (${meta.answerModel?.version ?? "answer-model"}, seed ${meta.seed})` : "FREE model child"}** · server head \`${meta.head}\` · child model ${meta.models.child} · judge ${meta.models.judge} (second judge ${meta.models.judge2}) · ${meta.date}`, "",
     "## Scores (judge 1 means, 1-5; n = lessons)", "",
     `| arm/lane | n | ${RUBRIC.join(" | ")} | understanding read right | overclaimed | misconceptions found | false alarms | "type it" lessons | points at empty screen | repeat lines | board pages (lessons repeating one) | errors | turn p50 ms |`,
     `|---|---|${RUBRIC.map(() => "---").join("|")}|---|---|---|---|---|---|---|---|---|---|`];

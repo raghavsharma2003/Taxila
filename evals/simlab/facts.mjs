@@ -80,6 +80,16 @@ const by = (arm) => {
         helplineLines: after.filter((t) => /1098|14416/.test(t.teacher)).length,
         flagsAtEvent: r.turns.find((t) => t.n === at)?.reasons?.classification?.flags ?? [], lineAtEvent: (r.turns.find((t) => t.n === at)?.teacher ?? "").slice(0, 160) });
     }
+    // decided mode: the outcome drawn for each answer to a posed item, and what the server graded that same turn
+    for (const t of r.turns) {
+      if (!t.decided) continue;
+      const dc = (f.decided ??= { turns: 0, right: 0, wrong: 0, dont_know: 0, redraws: 0, overridden: 0, how: {}, byDepth: {}, serverOnDecided: {} });
+      dc.turns++; dc[t.decided.outcome]++; dc.redraws += t.decided.redraws ?? 0; if (t.decided.overridden) dc.overridden++;
+      dc.how[t.decided.how] = (dc.how[t.decided.how] ?? 0) + 1;
+      const bk = `${t.decided.state}/${t.decided.depth}`; const b = (dc.byDepth[bk] ??= { n: 0, right: 0 }); b.n++; if (t.decided.outcome === "right") b.right++;
+      const v = t.ui?.verdict ?? t.reasons?.verdict ?? "ungraded";
+      const s2 = (dc.serverOnDecided[t.decided.outcome] ??= {}); s2[v] = (s2[v] ?? 0) + 1;
+    }
     f.sameCardMaxRun.push(best);
     if (best >= 3) f.sameCard3++;
     const noEvent = !p.safetyEvent && !p.petEvent; // pet cards are scored on their own (f.pet), not as false safeguards

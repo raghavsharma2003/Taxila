@@ -16,6 +16,7 @@ import { ROOT, MODELS, pool } from "./lib.mjs";
 import { runLesson } from "./runner.mjs";
 import { judgeLesson, autoChecks, understandingScore } from "./judge.mjs";
 import { transcriptMd, failuresMd } from "./report.mjs";
+import { childMode, ANSWER_MODEL } from "./decide.mjs";
 
 const argv = process.argv.slice(2);
 // a value is never the next flag: `--email-key --only p01` once made every test email "…---only" and silently missed the
@@ -67,7 +68,9 @@ function spread(all, k) {
 
 const compact = (rec) => ({ ...rec, turns: rec.turns.map((t) => ({ ...t, ui: t.ui ? { ask: t.ui.ask, chips: t.ui.chips, tray: t.ui.tray, answerForm: t.ui.answerForm, verdict: t.ui.verdict, phase: t.ui.phase, studioSlot: t.ui.studioSlot ? { state: t.ui.studioSlot.state, kind: t.ui.studioSlot.artifact?.kind } : undefined } : undefined })) });
 
-let meta = { runId, head, date: new Date().toISOString(), arms, lanes, n: personas.length, turns, models: MODELS, childRules: process.env.SIMLAB_CHILD_RULES || "v1", note: arg("note", "") };
+let meta = { runId, head, date: new Date().toISOString(), arms, lanes, n: personas.length, turns, models: MODELS, childRules: process.env.SIMLAB_CHILD_RULES || "v1",
+  // decided mode: the harness draws each answer's outcome (answer-model.json, printed here); free: the child model answers
+  childMode: childMode(), ...(childMode() === "decided" ? { answerModel: ANSWER_MODEL, seed: process.env.SIMLAB_SEED || "taxila" } : {}), note: arg("note", "") };
 // a re-run of some lessons into an existing run keeps that run's meta and logs the re-run
 if (existsSync(join(OUT, "meta.json"))) {
   const old = JSON.parse(readFileSync(join(OUT, "meta.json"), "utf8"));

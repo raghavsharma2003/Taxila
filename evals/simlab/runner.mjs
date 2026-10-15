@@ -7,6 +7,7 @@
 // Lanes: "text" sends the child's words as a perfect transcript. "voice" speaks them with Azure TTS and sends the real
 // transcriber's output (voice.mjs) — the words the server sees are the ASR's, the card's words are kept beside them.
 import { childTurn } from "./child.mjs";
+import { childMode, kitItem, asksItem, decide, decisionText, saysKey, DONT_KNOW_LINE } from "./decide.mjs";
 
 const STEP = { not: 0, partly: 1, understood: 2 };
 const NAME = ["not", "partly", "understood"];
@@ -69,6 +70,24 @@ async function lessonLane(lessonId) {
   if (!sql) { const { neon } = await import("@neondatabase/serverless"); sql = neon(url); }
   const rows = await sql.query("select state->'ctx'->>'teacher' as teacher, state->'agent' as agent from lesson where id = $1", [lessonId]);
   return rows[0] ? { teacher: rows[0].teacher ?? "director", agent: rows[0].agent ?? null } : null;
+}
+
+/** The lesson's active kit item (TEST branch only): which item a reworded Director card is posing. */
+async function activeItemId(lessonId) {
+  const url = process.env.DATABASE_URL ?? "";
+  if (!url.includes(process.env.SIMLAB_DB_HOST || "ep-winter-tooth")) return null;
+  if (!sql) { const { neon } = await import("@neondatabase/serverless"); sql = neon(url); }
+  const rows = await sql.query("select state->>'activeItemId' as id from lesson where id = $1", [lessonId]);
+  return rows[0]?.id ?? null;
+}
+
+/** Decided mode: the kit item the card on screen poses now — the agent names it (ask.itemId), the Director's active item
+ *  counts only when its card plausibly asks it (shared words or every number of the item). */
+async function posedItem(ask, lessonId) {
+  if (!ask?.text) return null;
+  if (ask.itemId) { const it = kitItem(ask.itemId); return it ? { item: it, how: "ask.itemId" } : null; }
+  const it = kitItem(await activeItemId(lessonId).catch(() => null));
+  return it && asksItem(ask.text, it) ? { item: it, how: "activeItemId" } : null;
 }
 
 /** A whiteboard as a child would describe it: its shapes and the words written on it (never the raw script). */
@@ -143,6 +162,8 @@ export async function runLesson(p, { base, lane = "text", maxTurns = 14, voice =
     rec.start = { ms: s._ms, topic: s.topic, teacher: s.teacher?.name, address: s.address ?? null };
     rec.lessonId = s.lessonId; // TEST lesson id, so a turn can be traced server-side (never a child or account id)
     let screen = nextScreen({}, s);
+    const decided = childMode() === "decided";
+    let posed = decided ? await posedItem(s.ui?.ask, s.lessonId) : null;
     const heard = [];
     if (s.teacherOpening) heard.push({ who: "teacher", text: s.teacherOpening });
     rec.turns.push({ n: 0, teacher: s.teacherOpening ?? "", ui: s.ui, moduleCommands: s.moduleCommands ?? [], screen, move: s.debug?.move?.kind ?? null, reasons: s.debug ? { move: s.debug.move } : null, ms: s._ms });
@@ -150,7 +171,22 @@ export async function runLesson(p, { base, lane = "text", maxTurns = 14, voice =
     for (let n = 1; n <= maxTurns; n++) {
       const cur = Object.entries(rec.state).map(([k, v]) => `${k}=${v}`).join(", ") + (rec.misconceptionsHeld.length ? `; still holds ${rec.misconceptionsHeld.join(", ")}` : "; holds no misconception now");
       let c;
-      try { c = await childTurn(p, heard, screen, n, cur); } catch (e) { rec.errors.push({ at: `child ${n}`, msg: String(e.message).slice(0, 200) }); break; }
+      // decided mode: the outcome of an answer to a posed item is drawn here (answer-model.json), the child only writes it
+      const d = posed ? decide(p, rec.state, rec.misconceptionsHeld, posed.item, n) : null;
+      const note = d ? decisionText(d, posed.item) : null;
+      try { c = await childTurn(p, heard, screen, n, cur, note); } catch (e) { rec.errors.push({ at: `child ${n}`, msg: String(e.message).slice(0, 200) }); break; }
+      if (d) {
+        d.how = posed.how; d.redraws = 0;
+        // the model may never override a decided wrong / don't-know: an answer that says the key is re-drawn once, then replaced
+        while (d.outcome !== "right" && saysKey(c.chipLabel ?? c.say, posed.item) && d.redraws < 1) {
+          d.redraws++;
+          try { c = await childTurn(p, heard, screen, n, cur, `${note} IMPORTANT: the last attempt said the right answer; this answer must NOT be right.`); } catch { break; }
+        }
+        if (d.outcome !== "right" && saysKey(c.chipLabel ?? c.say, posed.item)) {
+          d.overridden = true;
+          c = { ...c, action: "speak", chipId: null, chipLabel: null, say: DONT_KNOW_LINE[p.lang] ?? DONT_KNOW_LINE.hinglish };
+        }
+      }
       // the card's learning: one step per logged event, never two
       for (const l of c.learned) {
         const from = STEP[rec.state[l.skillId]], to = Math.min(STEP[l.to], from + 1);
@@ -183,7 +219,8 @@ export async function runLesson(p, { base, lane = "text", maxTurns = 14, voice =
       if (teacher) heard.push({ who: "teacher", text: teacher });
       rec.turns.push({ n, at: new Date().toISOString(), child: { action: c.action, say: c.say, chipId: c.chipId, chipLabel: c.chipLabel, private: c.private, sent: body.childText, ...(asr ? { asr } : {}) },
         teacher, move: r.move?.kind ?? null, ui: r.ui, moduleCommands: r.moduleCommands ?? [], studio: r.studio ?? null, screen, end: !!r.end,
-        speakNow: r.speakNow ?? null, reasons: reasonsOf(r), ms: r._ms, ...(ackRes ? { ack: ackRes } : {}) });
+        speakNow: r.speakNow ?? null, reasons: reasonsOf(r), ms: r._ms, ...(ackRes ? { ack: ackRes } : {}), ...(d ? { decided: d } : {}) });
+      posed = decided ? await posedItem(r.ui?.ask, s.lessonId) : null;
       if (r.end) break;
     }
     // the server's own record of every board page shown (stream 2's board_page): read now, before the account (and the
