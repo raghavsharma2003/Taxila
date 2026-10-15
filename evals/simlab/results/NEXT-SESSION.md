@@ -10,9 +10,15 @@ drop a run with >2% unavailable turns.
 - (b) `r5-rel143-9a30285-pet-tp`: pets + TP × text/voice × 3. p66 4/6 → 1/6, p67 6/6 → 6/6 (labeller distressKind:model;
   main is reviewing it as a safety item), every TP holds. Affirmation per opportunity: 1/34 → 5/47, Fisher p=0.39; the
   before for 4A's ba413d78.
-- (c) `r5-rel143-9a30285-decided-gate`: director vs agent_gpt6, 64 cards, text, decided. All 128 lessons ran; judging was
-  in progress at wrap-up (see its FACTS.json if judging finished and it was committed; if scores.json is missing, finish
-  it with `node evals/simlab/loop.mjs --rejudge evals/simlab/results/r5-rel143-9a30285-decided-gate`).
+- (c) `r5-rel143-9a30285-decided-gate`: director vs agent_gpt6, 64 cards, text, decided; judged and committed. 0/1707
+  turns unavailable (agent 0/854).
+  - Read right: agent 117/182 probed (64%), overclaimed 23; director 120/163 (74%), overclaimed 22.
+  - Judge 1 (grok) means, agent vs director: coherence 4.06 vs 3.36, follows_child 3.78 vs 3.16, adapts 3.47 vs 2.52.
+    Judge 2 (Kimi) agrees on direction.
+  - Turn p50: agent 6001 ms vs director 3435 ms.
+  - Per opportunity:
+    - affirmOnNonCorrect: agent 0/182, director 1/77;
+    - yesOnNoAnswer: agent 9/14 correct "No" answers opened with Yes/Haan, director 0/6. This is the before for 4A's 14.4.
 
 ## Queued, in this order
 1. **p16 × text/voice × 3 on 14.3.1 = 3a18c0ee** (int/r5-rel143; b90842b8 + ack trace only). This checks the
