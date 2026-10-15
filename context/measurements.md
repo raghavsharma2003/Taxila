@@ -4359,3 +4359,13 @@ Azure's content filter reads the Roman Hindi number "teen" (three) as the Englis
 - azure-speech writes बटा as "बता" (6/6), which reads the same way.
 - "मुझे बता दो" (tell me) reads as the value 2.
 - Roman ("ek bata do" → 1/2) is already right. The duplex parser shares the misreading.
+
+
+<!-- merged from inbox/r143i-main.json -->
+## ms-r143-continuer-oos (2026-10-15)
+
+Out-of-sample continuer check: 32 cards not used for tuning, plus p30's re-run. Voice, TEST cohort.
+
+- **0 continuers** on safety (9), leaving (18) and relational / secrecy turns.
+- Ordinary coverage 24% (tuning set 32%). Naturalness 4.10 / 3.76.
+- 0 false safeguards.

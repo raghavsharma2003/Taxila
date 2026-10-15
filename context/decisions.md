@@ -6077,3 +6077,11 @@ TTS frames type 5 = IMA ADPCM (4:1), negotiated by Accept `codec=adpcm`, asked f
 - **What:** a correction that arrives after its turn has landed supersedes that turn's grade. The rows are marked, never deleted, and the ledger folds only the edit. This is 14.4.
 - **Why:** the 2.5 s verdict hold protects her sound, not the grade. The turn lands before the correction in 5-20 of 20 stress turns.
 - **Reversal:** a ledger fold test shows double-counted or lost evidence.
+
+
+<!-- merged from inbox/r143i-main.json -->
+## dc-r143-continuer-owner-cohort (2026-10-15)
+
+- **What:** the continuer (a short "hmm… / achha…" while she prepares her reply) is on for the owner cohort from 14.3, by hashed guardian id.
+- **Why:** see ms-r143-continuer-oos. It held out of sample with zero plays on every turn where a sound would be wrong.
+- **Reversal:** any continuer on a safety, relational, secrecy or leaving turn, or naturalness below 3.5.

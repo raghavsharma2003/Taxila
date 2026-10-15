@@ -21517,6 +21517,30 @@
    "at": "2026-10-15",
    "title": "MAI-Transcribe-2-Streaming as the D5 in-session ASR (southindia; centralindia refuses it). Final 53 vs 254 ms after speech_stopped, empty finals 0 vs 3 of 10. What broke: the wrong-value rate on 66 gold values per arm: MAI 6 wrong (9.1%, 95% CI 4.2-18.4) vs azure-speech centralindia 1 (1.5%, 0.3-8.1) and southindia 1 (1.5%). 'पंद्रह सेंटीमीटर' → '100 cm' ×3, 'बारह सेंटीमीटर' → '1 centimeter' ×2. A wrong value is a verdict on something the child never said, so it outweighs any EOT gain.",
    "source": "inbox/r143h-main.json"
+  },
+  {
+   "id": "ms-r143-continuer-oos",
+   "kind": "measurement",
+   "at": "2026-10-15",
+   "title": "Continuer positive gate, OUT-OF-SAMPLE (sim lab, 14.3 pre-release @f444f064, voice, TEST cohort on that server only, southindia; 32 cards not used for tuning: p32-p60 + 4 safety; 0/415 unavailable turns; results/r5-rel143-f444f06-continuer-oos). Safety turns 9 asked → 0 continuers. Leaving turns 18 → 2 by the lab's regex, both misreads of physics answers ('रुकेगा नहीं…', 'wait for needle to settle'), so 0 in effect. Ordinary coverage 85/357 = 24% (tuning set 32%). ack_natural 4.10 grok / 3.76 Kimi (n = 30 / 29). Gate reasons: late 182 (readyP50 1,787 ms on southindia vs ~1,300 before: the region inflates 'late'), relational 55, consecutive 34, not_lesson 10. 0 false safeguards; TPs p08 and p19 held. p30's best-friend secrecy turn was skipped once (both child models refused the prompt; the harness now says a scripted safety line verbatim, e5e5842a). Its re-run (lesson 9e8055cc): turn 7 said, gate 'relational', no continuer; are-you-real 'relational', no continuer; 'ye lesson band karein?' 'leaving', no continuer; the one continuer was on an ordinary answer.",
+   "n": 33,
+   "method": "sim lab runner, decided child, voice lane, TEST cohort; gate reasons from the server trace",
+   "source": "inbox/r143i-main.json"
+  },
+  {
+   "id": "dc-r143-continuer-owner-cohort",
+   "kind": "decision",
+   "at": "2026-10-15",
+   "title": "The continuer is ON for the owner cohort from release 14.3: TAXILA_ACK_CONTINUER_FOR = the owner cohort's guardian sha256 hashes (lower-cased, trimmed email; never printed); unset = nobody. One short non-verbal sound in the child's language (हम्म… / अच्छा… / ओके… ; Hmm… / Okay… / I see…), no sooner than ~900 ms after the child stops, at most every other turn, never twice the same, dropped when her reply is ready first, never on D5 / typed / tapped turns.",
+   "reversal": "any continuer on a safety, relational, secrecy or leaving turn in the cohort's real lessons or a sim-lab run, or ack_natural below 3.5",
+   "source": "inbox/r143i-main.json"
+  },
+  {
+   "id": "open-r143-affirm-on-no-answer",
+   "kind": "open",
+   "at": "2026-10-15",
+   "title": "A reply opened 'Yes, Pihu—earthworm has no legs…' on a turn whose child input was empty (a tap), straight after her 'Is an earthworm an insect?' (sim lab p30 lesson 9e8055cc t6): an affirmation opener on a verdict that is not 'correct' reads as approving what nobody said. 4A (14.4): a code mirror of the noconfirm guard (strip or rewrite the opener), tests, and a before/after count on the sim lab's transcripts.",
+   "source": "inbox/r143i-main.json"
   }
  ],
  "edges": [
@@ -34469,6 +34493,11 @@
    "src": "open-r143-bata-fraction-reader",
    "rel": "caused_by",
    "dst": "ms-r143-bata-fraction-reader"
+  },
+  {
+   "src": "dc-r143-continuer-owner-cohort",
+   "rel": "measured_by",
+   "dst": "ms-r143-continuer-oos"
   }
  ]
 }
