@@ -1,0 +1,161 @@
+{
+ "method": "blind 3-image questionnaire (ref still, 8 moments, 6 consecutive frames); prompt verbatim",
+ "prompt": "Three images.\nImage 1: a character design, a single approved illustration.\nImage 2: eight numbered frames (1-8, reading order) taken from a 15-second animation of a character, rendered live in a small app window.\nImage 3: six numbered consecutive frames (1-6, reading order, 1/15 s apart) from the same animation.\nJudge strictly, from what is drawn. Answer every item.\n1. same_person: is the animated character (images 2 and 3) the same person as image 1, drawn in the same style? true/false.\n2. childish: does the animated character read as childish (a child, or a toddler-cartoon look) rather than an adult? true/false.\n3. uncanny: is anything uncanny (dead or misaligned eyes, rubbery or melting mouth, warped features, a face that seems to slide over the head)? true/false.\n4. moving_photo: does the animation read like a photograph or a still painting being warped (\"a moving photo\", a deepfake), rather than a drawn character that is animated? true/false.\n5. premium: how premium and production-quality is the animation, 1-5 (5 = top-tier studio quality, 3 = acceptable, 1 = broken or cheap).\n6. defects: list visible rendering defects with image and frame number (seams or cut lines, smears, texture swimming, a pop or jump between consecutive frames, broken teeth or mouth interior, eye errors, hair or jewellery breaking up). Empty string if none.\n7. reads_as: for each frame of image 2, what the character is doing, in 2-6 words.\n8. apparent_age: an age range for the character in image 2.\n9. one_fix: the single change that would most improve the animation.\nReply JSON only: {\"same_person\":bool,\"childish\":bool,\"uncanny\":bool,\"moving_photo\":bool,\"premium\":n,\"defects\":\"\",\"reads_as\":{\"1\":\"\",\"2\":\"\",\"3\":\"\",\"4\":\"\",\"5\":\"\",\"6\":\"\",\"7\":\"\",\"8\":\"\"},\"apparent_age\":\"\",\"one_fix\":\"\"}",
+ "inputs": {
+  "ref": "/tmp/claude-0/-home-user-Taxila/4f5bd6cc-5f93-53a8-934d-4a29dc9ad564/scratchpad/l2/judge/ref-r8.png",
+  "moments": "/tmp/claude-0/-home-user-Taxila/4f5bd6cc-5f93-53a8-934d-4a29dc9ad564/scratchpad/l2/judge/r8-moments.png",
+  "seq": "/tmp/claude-0/-home-user-Taxila/4f5bd6cc-5f93-53a8-934d-4a29dc9ad564/scratchpad/l2/judge/r8-seq.png"
+ },
+ "runs": [
+  {
+   "model": "taxila-brain",
+   "rep": 1,
+   "date": "2026-10-10T10:27:30.661Z",
+   "answer": {
+    "same_person": true,
+    "childish": false,
+    "uncanny": false,
+    "moving_photo": false,
+    "premium": 4,
+    "defects": "",
+    "reads_as": {
+     "1": "smiling at viewer",
+     "2": "speaking with open mouth",
+     "3": "speaking cheerfully",
+     "4": "holding a gentle smile",
+     "5": "tilting head while speaking",
+     "6": "looking upward thoughtfully",
+     "7": "smiling warmly forward",
+     "8": "glancing to the side"
+    },
+    "apparent_age": "20-30 years",
+    "one_fix": "Improve mouth articulation and lip-sync for more natural speech."
+   },
+   "usage": {
+    "completion_tokens": 482,
+    "completion_tokens_details": {
+     "accepted_prediction_tokens": 0,
+     "audio_tokens": 0,
+     "reasoning_tokens": 356,
+     "rejected_prediction_tokens": 0
+    },
+    "latency_checkpoint": {
+     "engine_tbt_ms": 10,
+     "engine_ttft_ms": 1074,
+     "engine_ttlt_ms": 5711,
+     "pre_inference_ms": 814,
+     "service_tbt_ms": 10,
+     "service_ttft_ms": 2287,
+     "service_ttlt_ms": 6903,
+     "user_visible_ttft_ms": 1473
+    },
+    "prompt_tokens": 3504,
+    "prompt_tokens_details": {
+     "audio_tokens": 0,
+     "cached_tokens": 0
+    },
+    "total_tokens": 3986
+   }
+  },
+  {
+   "model": "taxila-brain",
+   "rep": 0,
+   "date": "2026-10-10T10:27:32.245Z",
+   "answer": {
+    "same_person": true,
+    "childish": false,
+    "uncanny": false,
+    "moving_photo": false,
+    "premium": 4,
+    "defects": "Image 3, frames 3-6: teeth and mouth-interior shapes fluctuate slightly between consecutive frames.",
+    "reads_as": {
+     "1": "smiling at viewer",
+     "2": "speaking to viewer",
+     "3": "speaking cheerfully",
+     "4": "pausing with slight smile",
+     "5": "speaking with head tilted",
+     "6": "looking upward thoughtfully",
+     "7": "smiling warmly",
+     "8": "glancing to her right"
+    },
+    "apparent_age": "20-30",
+    "one_fix": "Stabilize the teeth and mouth-interior shapes during speech for smoother lip-sync."
+   },
+   "usage": {
+    "completion_tokens": 664,
+    "completion_tokens_details": {
+     "accepted_prediction_tokens": 0,
+     "audio_tokens": 0,
+     "reasoning_tokens": 512,
+     "rejected_prediction_tokens": 0
+    },
+    "latency_checkpoint": {
+     "engine_tbt_ms": 10,
+     "engine_ttft_ms": 850,
+     "engine_ttlt_ms": 7690,
+     "pre_inference_ms": 583,
+     "service_tbt_ms": 10,
+     "service_ttft_ms": 1750,
+     "service_ttlt_ms": 8585,
+     "user_visible_ttft_ms": 1166
+    },
+    "prompt_tokens": 3504,
+    "prompt_tokens_details": {
+     "audio_tokens": 0,
+     "cached_tokens": 0
+    },
+    "total_tokens": 4168
+   }
+  },
+  {
+   "model": "taxila-brain",
+   "rep": 2,
+   "date": "2026-10-10T10:27:35.625Z",
+   "answer": {
+    "same_person": true,
+    "childish": false,
+    "uncanny": false,
+    "moving_photo": false,
+    "premium": 3,
+    "defects": "Image 3, frames 1-6: mouth interior and tooth shapes flicker between consecutive frames, especially the small white patch at the right corner and the abrupt switches between dark open mouth and broad tooth band.",
+    "reads_as": {
+     "1": "smiling at viewer",
+     "2": "speaking to viewer",
+     "3": "speaking with open mouth",
+     "4": "smiling calmly",
+     "5": "tilting head while speaking",
+     "6": "glancing upward thoughtfully",
+     "7": "smiling at viewer",
+     "8": "looking right and smiling"
+    },
+    "apparent_age": "20-30",
+    "one_fix": "Use a more stable mouth rig so the teeth and mouth interior transition smoothly without flickering or changing shape abruptly."
+   },
+   "usage": {
+    "completion_tokens": 893,
+    "completion_tokens_details": {
+     "accepted_prediction_tokens": 0,
+     "audio_tokens": 0,
+     "reasoning_tokens": 709,
+     "rejected_prediction_tokens": 0
+    },
+    "latency_checkpoint": {
+     "engine_tbt_ms": 12,
+     "engine_ttft_ms": 869,
+     "engine_ttlt_ms": 11342,
+     "pre_inference_ms": 440,
+     "service_tbt_ms": 12,
+     "service_ttft_ms": 1621,
+     "service_ttlt_ms": 12082,
+     "user_visible_ttft_ms": 1181
+    },
+    "prompt_tokens": 3504,
+    "prompt_tokens_details": {
+     "audio_tokens": 0,
+     "cached_tokens": 0
+    },
+    "total_tokens": 4397
+   }
+  }
+ ]
+}
