@@ -12,7 +12,7 @@
 import { mkdirSync, writeFileSync, readFileSync, readdirSync, existsSync, cpSync, rmSync } from "fs";
 import { join } from "path";
 import { execSync } from "child_process";
-import { ROOT, MODELS, pool } from "./lib.mjs";
+import { ROOT, MODELS, REGION, pool } from "./lib.mjs";
 import { runLesson } from "./runner.mjs";
 import { judgeLesson, autoChecks, understandingScore } from "./judge.mjs";
 import { transcriptMd, failuresMd } from "./report.mjs";
@@ -68,7 +68,7 @@ function spread(all, k) {
 
 const compact = (rec) => ({ ...rec, turns: rec.turns.map((t) => ({ ...t, ui: t.ui ? { ask: t.ui.ask, chips: t.ui.chips, tray: t.ui.tray, answerForm: t.ui.answerForm, verdict: t.ui.verdict, phase: t.ui.phase, studioSlot: t.ui.studioSlot ? { state: t.ui.studioSlot.state, kind: t.ui.studioSlot.artifact?.kind } : undefined } : undefined })) });
 
-let meta = { runId, head, date: new Date().toISOString(), arms, lanes, n: personas.length, turns, models: MODELS, childRules: process.env.SIMLAB_CHILD_RULES || "v1",
+let meta = { runId, head, date: new Date().toISOString(), arms, lanes, n: personas.length, turns, models: MODELS, childRules: process.env.SIMLAB_CHILD_RULES || "v1", region: REGION,
   // decided mode: the harness draws each answer's outcome (answer-model.json, printed here); free: the child model answers
   childMode: childMode(), ...(childMode() === "decided" ? { answerModel: ANSWER_MODEL, seed: process.env.SIMLAB_SEED || "taxila" } : {}), note: arg("note", "") };
 // a re-run of some lessons into an existing run keeps that run's meta and logs the re-run

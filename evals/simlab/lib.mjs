@@ -7,6 +7,13 @@ for (const line of readFileSync(ROOT + ".env.local", "utf8").split("\n")) {
   const m = line.match(/^([A-Z0-9_]+)\s*=\s*(.*)$/);
   if (m && !process.env[m[1]]) process.env[m[1]] = m[2].replace(/^"(.*)"$/, "$1");
 }
+// The lab's own calls (child, judges) go to the southindia account with its TEST servers (evals/simlab/serve.mjs), so
+// production keeps eastus2 to itself; SIMLAB_CHAT_REGION=primary opts back out.
+export const REGION = process.env.SIMLAB_CHAT_REGION || (process.env.SOUTHINDIA_OPENAI_KEY ? "southindia" : "primary");
+if (REGION === "southindia") for (const lane of ["CHAT", "RESPONSES"]) {
+  process.env[`AZURE_OPENAI_ENDPOINT_${lane}`] = process.env.SOUTHINDIA_OPENAI_ENDPOINT;
+  process.env[`AZURE_OPENAI_API_KEY_${lane}`] = process.env.SOUTHINDIA_OPENAI_KEY;
+}
 // server/azure.js logs one line per call; the lab's own progress lines are what matter on stdout.
 if (!process.env.SIMLAB_VERBOSE) console.info = () => {};
 
