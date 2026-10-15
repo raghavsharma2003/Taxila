@@ -51,7 +51,7 @@ test("the prompt: the floor is the last section; keys are never shown; schema is
   assert.equal(TURN_SCHEMA.additionalProperties, false);
   // an unverified item (solver disagrees) and a non-gradable kind are never offered
   const ids = offeredItems(ST(), K, 20).map((i) => i.id);
-  assert.ok(!ids.includes("bad")); assert.ok(!ids.includes("i5")); assert.ok(!ids.includes("i8"));
+  assert.ok(!ids.includes("bad")); assert.ok(!ids.includes("i8"), "a teachback is never a card item"); assert.ok(ids.includes("i5"), "a why item is (round 5: deep evidence)");
 });
 
 test("a posed item must be an offered one; the card question closes her line", async () => {
@@ -212,7 +212,7 @@ test("she never voices the harness: the card's check, the grade, the key (sim la
 test("a skill that needs deep evidence offers only its deep items; no mastery claim the record does not hold (sim lab 35c0b7c)", async () => {
   const st = ST({ agent: { learner: { "c4-maths-ch05-t01-s2": { graded: [{ item: "i7", kind: "practice", g: "correct" }] } }, skill: "c4-maths-ch05-t01-s2" } });
   const s2 = offeredItems(st, K, 20).filter((i) => i.skillId === "c4-maths-ch05-t01-s2");
-  assert.ok(s2.length && s2.every((i) => ["contrast", "near_transfer", "error_spot", "far_transfer", "predict", "translate_rep"].includes(i.kind)), s2.map((i) => i.kind).join());
+  assert.ok(s2.length && s2.every((i) => ["contrast", "near_transfer", "error_spot", "far_transfer", "predict", "translate_rep", "why"].includes(i.kind)), s2.map((i) => i.kind).join());
   const wrap = "Aaj tumne fractions compare karna sikh liya! Kal phir milte hain.";
   assert.equal(withoutMastery(wrap, { s2: { read: "partly" } }), "Kal phir milte hain.");
   assert.equal(withoutMastery(wrap, { s2: { read: "understood" } }), wrap);
@@ -250,4 +250,21 @@ test("streamed: her words reach speakStreamed clause by clause through the gate;
   assert.equal(g("Apna jawab type karke bhejo.", []).clause, "Apna jawab bolkar batao.");
   assert.equal(g("Card ka check isse match nahi hua.", []).skip, true);
   assert.equal(g("Bahut badhiya, sahi jawab!", []).ok, true);
+});
+
+test("a why question in the child's own words is offered as deep evidence; easy-only partly is marked not yet tested deeply (sim lab 71a6b11)", async () => {
+  const st = ST({ agent: { learner: { "c4-maths-ch05-t01-s2": { graded: [{ item: "i7", kind: "practice", g: "correct" }] } }, skill: "c4-maths-ch05-t01-s2" } });
+  assert.ok(offeredItems(st, K, 20).some((i) => i.kind === "why"), "why items are offered");
+  const next = ST();
+  const card = K.items.find((i) => i.id === "i7");
+  const o = await run(base({ read: { skill: card.skillId, level: "understood", evidence: "right" } }));
+  applyAgentTurn(next, o, { kit: K, childText: "1/4", cls: cls("correct"), card, lessonId: "L1" });
+  assert.equal(next.agent.learner[card.skillId].read, "partly");
+  assert.equal(next.agent.learner[card.skillId].depth, "untested");
+  assert.match(stateMessage({ state: next, kit: K, event: "x", onScreen: "nothing", lane: "voice" }), /not yet tested on a why/);
+  const why = K.items.find((i) => i.id === "i5");
+  const o2 = await run(base({ read: { skill: why.skillId, level: "understood", evidence: "explained why" } }));
+  applyAgentTurn(next, o2, { kit: K, childText: "kam tukde matlab bada tukda", cls: cls("correct"), card: why, lessonId: "L1" });
+  assert.equal(next.agent.learner[why.skillId].read, "understood", "a right why plus a right plain answer");
+  assert.equal(next.agent.learner[why.skillId].depth, undefined);
 });

@@ -49,7 +49,7 @@ export function systemPrompt(ctx) {
     "- Answer what the child actually said first, in a few words, then the next step. Never ignore a question, a joke or a feeling.",
     "- The VERIFIED GRADE in the event is the truth about their answer (code checked it against the answer key). Right: say so briefly and specifically, then move on; never ask whether they understood. Partly right: name the right part, then the missing bit. Wrong or a misconception: no praise word; take the idea again a DIFFERENT way from anything in LAST TURNS — a new picture in words, a smaller step, an everyday example from their life — never the same explanation twice.",
     "- A misconception named in the grade: say back what they think, then put it next to a case where it breaks (their own numbers, or the item that tests it) and let them see the difference; never call that answer close or nearly right.",
-    "- Right answers on easy questions are not understanding: your read is understood only after a right answer on a contrast, transfer, error-spot or predict question plus another right answer; until then it is partly, and the next question you pose is that kind. A quick confident right answer: one word of praise and straight on to something harder; no check question after it, and never ask the same thing twice.",
+    "- Right answers on easy questions are not understanding: your read is understood only after a right answer on a why, contrast, transfer, error-spot or predict question plus another right answer; until then it is partly, and the next question you pose is that kind. A quick confident right answer: one word of praise and straight on to something harder; no check question after it, and never ask the same thing twice.",
     "- Show, do not only tell: when the idea has numbers, a shape, a comparison or steps, put them on the board (board show) as you explain; if they ask for a game or a picture you cannot make, say so in a few words and do the nearest real thing now (the board, or a quick spoken game with a question).",
     "- A claim like 'haan samajh gaya' is not evidence: one light, easy check question, warmly. 'Pata nahi': a smaller first step. Silence (no words): wait — ask the same thing again kindly, or check they can hear you; never new content, never a new topic.",
     "- Off topic or a personal share: a short warm reply in their spirit, then back to the lesson in one line. A request (a story, a game, a picture, slower, Hindi): honour it with what really exists now; if it cannot be made, say so plainly and do it in words.",
@@ -74,7 +74,9 @@ export function systemPrompt(ctx) {
 /** Items to offer this turn: the active skill's unasked items (easiest first), the next skill's, and a misconception check. */
 export function offeredItems(state, kit, limit = AGENT_LIMITS.offerItems) {
   const done = new Set([...(state.itemsDone ?? []), ...(state.skipped ?? []), ...(state.agent?.posed ?? [])]);
-  const KINDS = new Set(["practice", "near_transfer", "far_transfer", "retrieval", "contrast", "predict", "error_spot", "translate_rep"]);
+  // "why" (the child's reason in their own words, graded by the classifier against the item's verified reasoning) is the
+  // deep evidence most kit skills have (sim lab 71a6b11: the deep item rarely came in 14 turns; option b)
+  const KINDS = new Set(["practice", "near_transfer", "far_transfer", "retrieval", "contrast", "predict", "error_spot", "translate_rep", "why"]);
   const skillOrder = (kit.skills ?? []).map((s) => s.id);
   const cur = state.agent?.skill ?? skillOrder[0];
   // a misconception the child has shown comes first: an item that targets it is the contrast she should pose next (sim lab:
@@ -82,7 +84,7 @@ export function offeredItems(state, kit, limit = AGENT_LIMITS.offerItems) {
   const shown = new Set(Object.values(state.agent?.learner ?? {}).flatMap((v) => v.misconceptions ?? []));
   // a skill with a right plain answer and no right deep one: its deep item (contrast / transfer / error-spot / predict) next,
   // the only evidence that separates understood from partly (agent.js earnedRead)
-  const DEEP = new Set(["contrast", "near_transfer", "far_transfer", "error_spot", "predict", "translate_rep"]);
+  const DEEP = new Set(["contrast", "near_transfer", "far_transfer", "error_spot", "predict", "translate_rep", "why"]);
   const needsDeep = new Set(Object.entries(state.agent?.learner ?? {}).filter(([, v]) => (v.graded ?? []).some((x) => x.g === "correct")
     && !(v.graded ?? []).some((x) => x.g === "correct" && DEEP.has(x.kind))).map(([k]) => k));
   const rank = (i) => (i.targetsMisconception && shown.has(i.targetsMisconception) ? -100 : 0) + (needsDeep.has(i.skillId) && DEEP.has(i.kind) ? -50 : 0)
@@ -106,7 +108,7 @@ export function stateMessage({ state, kit, event, onScreen, lane }) {
   const mis = (kit.misconceptions ?? []).slice(0, 6).map((m) => `${m.id}: ${clip(m.belief, 120)}`).join("\n");
   const offered = offeredItems(state, kit).map((i) => `${i.id} | ${i.skillId} | ${i.kind} | d${i.difficulty ?? "?"}${i.targetsMisconception ? ` | tests ${i.targetsMisconception}` : ""} | ${clip(promptFor(i, ctx.lang), 180)}`).join("\n");
   const card = state.activeItemId ? (kit.items ?? []).find((i) => i.id === state.activeItemId) : null;
-  const learner = Object.entries(a.learner ?? {}).map(([sk, v]) => `${sk}: grades [${(v.grades ?? []).slice(-6).join(", ")}]; your read ${v.read ?? "unknown"}${v.claimed ? ` (you said ${v.claimed}; the evidence does not show it yet)` : ""}${v.evidence ? ` (${clip(v.evidence, 80)})` : ""}${v.misconceptions?.length ? `; showed ${v.misconceptions.join(", ")}` : ""}`).join("\n");
+  const learner = Object.entries(a.learner ?? {}).map(([sk, v]) => `${sk}: grades [${(v.grades ?? []).slice(-6).join(", ")}]; your read ${v.read ?? "unknown"}${v.depth === "untested" ? " (right on easy questions, not yet tested on a why or transfer question)" : ""}${v.claimed ? ` (you said ${v.claimed}; the evidence does not show it yet)` : ""}${v.evidence ? ` (${clip(v.evidence, 80)})` : ""}${v.misconceptions?.length ? `; showed ${v.misconceptions.join(", ")}` : ""}`).join("\n");
   const turns = (a.turns ?? []).slice(-AGENT_LIMITS.recentTurns).map((t) => `${t.who === "teacher" ? "YOU" : "CHILD"}: ${clip(t.text, 300) || "(no words)"}`).join("\n");
   return [
     `LESSON STATE`,

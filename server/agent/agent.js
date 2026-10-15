@@ -304,9 +304,14 @@ export function applyAgentTurn(next, out, { kit, childText = "", cls = null, car
   }
   if (out.read) {
     const k = out.read.skill;
-    const deepAvailable = (kit.items ?? []).some((i) => i.skillId === k && DEEP_KINDS.has(i.kind) && i.kind !== "why" && i.kind !== "teachback");
+    const deepAvailable = (kit.items ?? []).some((i) => i.skillId === k && DEEP_KINDS.has(i.kind) && i.kind !== "teachback");
     const level = earnedRead(out.read.level, learner[k]?.graded ?? [], { deepAvailable });
-    learner[k] = { ...(learner[k] ?? {}), read: level, evidence: out.read.evidence, ...(level !== out.read.level ? { claimed: out.read.level } : {}) };
+    // honest at the end of a lesson (sim lab 71a6b11): "partly" from right easy answers with no deep question asked yet is
+    // not the "partly" of a child who got the deep one wrong
+    const g = learner[k]?.graded ?? [];
+    const untested = level === "partly" && g.some((x) => x.g === "correct") && !g.some((x) => DEEP_KINDS.has(x.kind));
+    const { depth: _d, ...rest } = learner[k] ?? {};
+    learner[k] = { ...rest, read: level, evidence: out.read.evidence, ...(level !== out.read.level ? { claimed: out.read.level } : {}), ...(untested ? { depth: "untested" } : {}) };
   }
   const screen = out.screen ? { on: out.screen.on, words: clip(out.screen.words, 300), texts: (out.screen.texts ?? []).slice(0, 12) } : (a.screen ?? { on: "nothing", words: "nothing is on the screen", texts: [] });
   next.agent = {
