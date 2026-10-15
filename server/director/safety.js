@@ -113,6 +113,11 @@ const FAMILIES = {
     /(?<![\p{L}\p{M}])(?:(?:mujhe|mereko|mujhko|main|mai)\s+(?:bas\s+)?(?:marna|mar\s+jaa?na)\s+(?:hai|h|he|hain)|marna\s+(?:hai|h)\s+(?:mujhe|mereko|mujhko)|(?:main|mai)\s+mar\s+jaa?(?:u|un|oon|aun)|rah(?:u|uu|oo)n?\s+ya\s+naa?\s+rah(?:u|uu|oo)n?|(?:main|mai)\s+(?:hoon|hun|hu)\s+ya\s+(?:nahi+n?|na|naa)|(?:jeene|jine)\s+ka\s+(?:mann|man|mnn)\s+nahi+n?)(?![\p{L}\p{M}])/iu,
     /\bi\s+hate\s+(?:my\s+life|myself|being\s+alive|living)\b|\b(?:no|nothing\s+to)\s+(?:reason|point)\s+(?:to|in)\s+(?:live|living)\b|\b(?:i\s+)?(?:want|wanna)\s+to\s+be\s+dead\b/i,
     /((?:मुझे|मैं)\s+(?:बस\s+)?मरना\s+है|रहूं\s+या\s+न\s+रहूं|मैं\s+हूं\s+या\s+नहीं|जीने\s+का\s+मन\s+नहीं)/,
+    // round 5 (main safety review, sim lab voice lane): the commonest word orders of "I don't want to live" were not carried:
+    // "mujhe nahi jeena", "मुझे अब नहीं जीना", "ab jeena nahi", and the Roman "main zinda nahi reh sakta" (the Devanagari
+    // form already fired through the lexicon).
+    /(?<![\p{L}\p{M}])(?:(?:mujhe|mereko|mujhko|main|mai|ab)\s+(?:ab\s+|aur\s+|bilkul\s+)?(?:nahi+n?|nhi|na)\s+jee?na|(?:nahi+n?|nhi)\s+jee?na\s+(?:hai|h|he|mujhe|ab)|(?:mujhe|mereko|mujhko|ab)\s+(?:ab\s+|aur\s+)?jee?na\s+nahi+n?|(?:main|mai)\s+(?:ab\s+|aur\s+|aise\s+|ab\s+aur\s+)?(?:zinda|jinda)\s+nahi+n?\s+(?:reh|rah)\s*(?:sakta|sakti|paunga|paungi|paaunga|paaungi|unga|ungi|na\s+chaht\w*))(?![\p{L}\p{M}])/iu,
+    /((?:मुझे|मुझको|अब|मैं)\s+(?:अब\s+|और\s+)?(?:नहीं|ना|न)\s+जीना|नहीं\s+जीना\s+(?:है|मुझे|अब)|मैं\s+(?:अब\s+|और\s+|ऐसे\s+)?(?:जिंदा|जिन्दा)\s+नहीं\s+रह\s*(?:सकता|सकती|पाऊंगा|पाऊंगी|पाउंगा|पाउंगी|ूंगा|ूंगी))/,
   ],
   abuse: [
     // A named actor keeps idioms out ("beats me" = no idea; "it hurts me" = a sore arm).
@@ -232,6 +237,46 @@ const TOUCH_WORD = /(?<![\p{L}\p{M}])(?:chhua|chua|chhuaa|chhoo\w*|chhu\w*|touch
 /** A push, slap, kick or punch (never "maar" / "beat", which also mean "defeat" in a game). Patch request 12, amended. */
 const PHYSICAL_HIT = /(?<![\p{L}\p{M}])(?:dhakk[aeo]|dhaka|thappad|thapad|thappar|laat|lath|ghoons[aeo]|ghus[aeo]|push(?:ed|es|ing)?|shov(?:e|ed|es|ing)|slap(?:s|ped|ping)?|kick(?:s|ed|ing)?|punch(?:es|ed|ing)?|धक्क[ाे]|थप्पड़|थप्पड|लात|घूँस[ाे]|घूंस[ाे])(?![\p{L}\p{M}])/iu;
 const FIRST_PERSON_OBJECT = /(?<![\p{L}\p{M}])(?:mujhe|mujhko|mereko|me|i)(?![\p{L}\p{M}])/iu;
+// round 5 (sim lab voice lane, TEST lesson a599ae9a, class 7 science): "ऑक्सिजन बिना तो कोई भी एनिमल्स जिंदा नहीं रह
+// सकता" (no animal can stay alive without oxygen) read as self_harm and the child got the helpline script twice, in a lesson
+// about why animals need oxygen. A living thing that cannot live WITHOUT a necessity of life is a science fact: the frame
+// needs all three (without + a necessity + a living subject) in one sentence, no "I" in that sentence, and no harm or
+// distress word anywhere in the turn (its own veto: "zinda", "kyunki", "really" are how the science is said, so the Day-0
+// veto would keep every Roman-letter science line firing). Food is not a necessity here: "bina khane ke" can be neglect.
+const NECESSITY_BINA = /(?<![\p{L}\p{M}])(?:bina|binaa|without|बिना)(?![\p{L}\p{M}])/iu;
+const NECESSITY_THING = /(?<![\p{L}\p{M}])(?:oxygen|oxijan|oxyjan|aksijan|o2|ऑक्सीजन|ऑक्सिजन|आक्सीजन|ऑक्सीज़न|ओक्सीजन|hawa|hava|air|हवा|vayu|वायु|paani|pani|water|jal|पानी|जल|dhoop|dhup|sunlight|light|roshni|prakash|धूप|रोशनी|प्रकाश|carbon\s*dioxide|co2|कार्बन|nutrients?|poshak|पोषक|energy|urja|ऊर्जा|saans|sans|सांस|साँस)(?![\p{L}\p{M}])/iu;
+const LIVING_SUBJECT = /(?<![\p{L}\p{M}])(?:animals?|janwar|jaanwar|janwaron|जानवर|जानवरों|एनिमल्स|एनिमल|plants?|paudhe|paudha|paudhon|पौधे|पौधा|पौधों|पेड़|पेड|ped|trees?|insaan|insan|इंसान|humans?|log|लोग|jeev|jeev\s+jantu|जीव|living\s+things?|organisms?|koi\s+bhi|कोई\s+भी|koi|कोई|fish|machhli|machli|मछली|cells?|कोशिका|hum|हम|we|everyone|sab|सब|birds?|पक्षी|chidiya|चिड़िया|चिडिया|they|ve|वे|वो)(?![\p{L}\p{M}])/iu;
+const FIRST_SINGULAR = /(?<![\p{L}\p{M}])(?:main|mai|i|i'm|im|mujhe|mujhko|mereko|मैं|मै|मुझे|मुझको)(?![\p{L}\p{M}])/iu;
+const NECESSITY_VETO = /(?<![\p{L}\p{M}])(?:khud\s+ko|myself|suicid\w*|pills?|zeher|zehar|poison|chhat|roof|jump\w*|blood|khoon|akela|akeli|alone|lonely|udaas|udas|sad|darr?|scared|afraid|marna\s+chaht\w*|mar\s+jaa?na|hurt\w*|dard|खुद\s+को|ज़हर|जहर|छत|ख़ून|खून|अकेला|अकेली|उदास|डर|दर्द|मरना\s+चाहत\w*|मर\s+जाना)(?![\p{L}\p{M}])/iu;
+/** One sentence that says a living thing cannot live without a necessity of life (and is not about "I"). */
+const necessitySentence = (s) => NECESSITY_BINA.test(s) && NECESSITY_THING.test(s) && LIVING_SUBJECT.test(s) && !FIRST_SINGULAR.test(s);
+/** The sentence of `t` (marks . ! ? । ; and new lines, never a comma) that holds `span`, or null. */
+function sentenceOf(t, span) {
+  const i = span ? t.indexOf(span) : -1;
+  if (i < 0) return null;
+  const marks = /[.!?।;\n]/g;
+  let start = 0, end = t.length, m;
+  while ((m = marks.exec(t))) { if (m.index < i) start = m.index + 1; else if (m.index >= i + span.length) { end = m.index; break; } }
+  return t.slice(start, end);
+}
+/** A self_harm hit inside a science sentence about the necessities of life (see NECESSITY_* above). */
+function scienceFrame(t, span) {
+  if (NECESSITY_VETO.test(t)) return false;
+  const s = sentenceOf(t, span);
+  return !!s && necessitySentence(s);
+}
+/** For the passes that only say THAT the turn hit (fuzzy, lexicon): every sentence that hits alone is a science sentence. */
+function scienceOnly(kind, t, scan) {
+  if (kind !== "self_harm" || NECESSITY_VETO.test(t)) return false;
+  let hits = 0;
+  for (const s of t.split(/[.!?।;\n]+/)) {
+    if (!s.trim() || !scan(s).distress) continue;
+    hits += 1;
+    if (!necessitySentence(s)) return false;
+  }
+  return hits > 0;
+}
+
 /** The clause of `t` around [a, b): from the last clause mark before a to the first after b. */
 function clauseOf(t, a, b) {
   const marks = /[.!?।;,\n]/g;
@@ -244,6 +289,7 @@ function clauseOf(t, a, b) {
  * PURE. Exported for tests (tests/safety-guard-frames.test.mjs).
  */
 export function guardFrameOf(kind, t, span, clause) {
+  if (kind === "self_harm" && span !== t && scienceFrame(t, span)) return "science";
   if (GUARD_VETO.test(t)) return null;
   // a story never explains an abuse hit whose object is the child ("kahani sunate waqt chacha ne mujhe chhua aur bola")
   const childHit = kind === "abuse" && (FIRST_PERSON_OBJECT.test(span) || /(?<![\p{L}\p{M}])se\s+(?:maar|mar|peet|pit)/iu.test(span));
@@ -358,14 +404,26 @@ function scanUncached(t) {
   // the Day-0 guard frames hold for the second pass too (a line the frames set aside in pass 1 must not come back as a
   // fuzzy / lexicon reading of the same words); same veto, the whole turn as the clause
   const f = fuzzyScan(t, { wakeOk: wakeClauseFires });
-  if (f.distress && !guardFrameOf(f.kind, t, t, t)) return { distress: true, kind: f.kind, pass: 2, via: `fuzzy:${f.shape}` };
+  if (f.distress && !guardFrameOf(f.kind, t, t, t) && !scienceOnly(f.kind, t, (s) => fuzzyScan(s, { wakeOk: wakeClauseFires }))) return { distress: true, kind: f.kind, pass: 2, via: `fuzzy:${f.shape}` };
   // verify-A red team (2026-10-05): the canonical lexicon (server/safety/lexicon.js) — phrasings neither the families nor the
   // fuzzy shapes carried ("khud ko khatam", "mere bina sab khush", "kapde utarne ko bolte", "nobody cares if i die"), each
   // written once over the script-agnostic canonical reading with the one-edit garble rule
   const x = lexiconScan(t);
-  if (x.distress && !guardFrameOf(x.kind, t, t, t)) return { distress: true, kind: x.kind, pass: 2, via: `lexicon:${x.shape}` };
+  if (x.distress && !guardFrameOf(x.kind, t, t, t) && !scienceOnly(x.kind, t, lexiconScan)) return { distress: true, kind: x.kind, pass: 2, via: `lexicon:${x.shape}` };
   return { distress: false, kind: null, pass: null, via: null };
 }
+
+// round 5 (QA D23, main safety review): a disclosure that names home or someone at home ("mujhe ghar pe bahut dar lagta hai,
+// papa roz maarte hain") must not be answered by a help screen whose first action is "talk to a grown-up at home". The
+// help sheet leads with the helplines when the safeguard is about abuse, or the child's words name home or family; else it
+// leads with a grown-up the child trusts. A wide net on purpose: a false hit only reorders the buttons.
+const HOME_NAMED = /(?<![\p{L}\p{M}])(?:ghar|gharwale|gharwaale|home|house|family|parents?|papa|pappa|mummy|mumma|mammi|mummi|maa|mom|mum|mother|dad|daddy|father|pitaji|mataji|mata\s+ji|step\s*(?:father|mother|dad|mom|mum)|sautela|sauteli|bhai|bhaiya|bhaiyya|brother|didi|sister|chacha|chachi|mama|mami|dada|dadi|nana|nani|uncle|aunty|auntie|घर|घरवाले|पापा|मम्मी|माँ|मां|माता|पिताजी|पिता|भाई|भैया|दीदी|बहन|चाचा|चाची|मामा|मामी|दादा|दादी|नाना|नानी|अंकल|आंटी|सौतेला|सौतेली)(?![\p{L}\p{M}])/iu;
+
+/** Does a safeguarding turn name home or someone at home? (the Help sheet's lead: QA D23) */
+export const homeNamed = (text) => typeof text === "string" && HOME_NAMED.test(text);
+
+/** The Help sheet's first action for a safeguard: the helplines (abuse, or home named) or a grown-up the child trusts. */
+export const helpLeadOf = ({ kind = null, text = "" } = {}) => (kind === "abuse" || homeNamed(text) ? "helpline" : "grownup");
 
 /** @returns {{ distress: boolean, kind: "self_harm"|"abuse"|"fear"|null }} */
 export function scanSafety(text) {

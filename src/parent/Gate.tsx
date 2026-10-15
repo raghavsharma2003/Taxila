@@ -46,6 +46,8 @@ const GATED_PATH = /^\/(parent(\/|$)|start\/(child|controls|consent|handover|abo
 const ADD_PATH = /^\/start\/(class|meet)(\/|$)/;
 export const staysUnlocked = (pathname: string, search: string) => GATED_PATH.test(pathname) || (ADD_PATH.test(pathname) && /[?&]add=1(&|$)/.test(search));
 let pendingLock: number | null = null;
+/** Set once the corner opened in this page load (by a PIN here); only then may a later gate mount trust the server's unlock. */
+let openedThisLoad = false;
 
 /**
  * Lock on every exit (ds-parent-gate-lock-on-exit): unmount (Back, Brand link, navigation to /who or a child
@@ -109,7 +111,14 @@ export function Gate({ children }: { children: ReactNode }) {
     return !g.hasPin ? { k: "set" } : g.unlocked ? { k: "open" } : g.lockedUntil ? { k: "wait", until: g.lockedUntil } : { k: "locked" };
   };
   const check = useCallback(() => {
-    parentApi.pin().then((g) => {
+    parentApi.pin().then(async (g) => {
+      // A fresh page load never inherits an unlock (r5 QA D-gate): the unlock lives on the server for UNLOCK_MIN and is
+      // cleared by the pagehide beacon, which never fires when Android kills the tab, so reopening /parent minutes later
+      // walked straight in without the PIN. Within one load, moves between gated screens keep it (the gate stays mounted).
+      if (g.unlocked && !openedThisLoad) {
+        await parentApi.lock().catch(() => {});
+        g = { ...g, unlocked: false, unlockedUntil: null };
+      }
       const p = fromState(g);
       setPhase(p.k === "locked" && sp.get("forgot") === "1" ? { k: "forgot" } : p);
     }, (e) => {
@@ -119,7 +128,10 @@ export function Gate({ children }: { children: ReactNode }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   useEffect(check, [check]);
-  useEffect(() => { writeStore(WAS_OPEN, phase.k === "open" ? true : relocked || null, "session"); }, [phase.k, relocked]);
+  useEffect(() => {
+    if (phase.k === "open") openedThisLoad = true;
+    writeStore(WAS_OPEN, phase.k === "open" ? true : relocked || null, "session");
+  }, [phase.k, relocked]);
 
   const relock = useCallback(() => {
     setMsg(null); setResetKey((k) => k + 1);

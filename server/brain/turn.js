@@ -22,12 +22,14 @@ import { newLearnerState, fuseEvidence, beliefFor, noteOutcome, auditRow, weaveE
 import { facetStmts, probeLogStmt, reteachStmt, gradeAuditStmt, weaveEnqueueStmt } from "../comprehension/store.js";
 import { gradeLater, settledGrade, finalEvent, awaitGrade, forgetGrade, pregrade } from "../comprehension/later.js";
 import { classify, classifyFast, targetFor, helpOf } from "../director/classify.js";
-import { scanSafety, floorViolations } from "../director/safety.js";
+import { scanSafety, floorViolations, helpLeadOf } from "../director/safety.js";
 import { step, evidenceFrom, upcomingItem } from "../director/state.js";
 import { noteModuleEvents, moduleAnswerOf } from "../director/modules.js";
 import { findItem, promptFor, revealsAnswer, whyKey, norm as normAnswer } from "../director/items.js";
 import { registerBroken } from "../director/register.js";
 import { verdictFor, uiVerdict, askText, refersToScreen, wrongAnswersOf, boardClaimProblem, kitWordsOf, stripScreenRefs } from "../director/say.js";
+import { answersRequest, pointsAtStage, unpointGently, pictureSubjectOf, announcesGame, ungame } from "../studio/request.js";
+import { drawableSubject } from "../director/state.js";
 import { mixedUnitComparison } from "../director/units.js";
 import { instructionsFor, instructionsAfter } from "../compiler/instructions.js";
 import { prewarm, drop as dropPrewarm } from "../voice/prewarm.js";
@@ -43,7 +45,7 @@ import { relationalSeam } from "../relational/seam.js";
 import { expressiveSeam } from "../voice/expressive/seam.js";
 import { fallbackReply, floorContentOf, safeguardLine, scrubbed, textReply } from "./say.js";
 import { arbitrate } from "./kernel.js";
-import { proposalsOf, turnStudioOf, whiteboardAskOf, whiteboardIntentOf, RUNG_ENGINE } from "./propose.js";
+import { proposalsOf, turnStudioOf, whiteboardAskOf, whiteboardIntentOf, requestOfSee, RUNG_ENGINE } from "./propose.js";
 import { INTERACTIVE_ASKS } from "../forge3/compose.js";
 
 /** round 3 forge: the child asked to play / see it move and an engine (not the template rung) is in the tray: keep it. */
@@ -70,7 +72,10 @@ import { publishPerception } from "../latency/bus.js";
 // round 3 fix (adversarial B2): the play piece's own closed voice grammar (pure, no DOM)
 import { parseVoice } from "../../src/play/core/voice.ts";
 // round 3 fix (experience B2 / B3): the visual ask's clause made true about the screen
-import { askTruth } from "../director/shapes.js";
+import { askTruth, VISUAL_ON_STAGE, VISUAL_NOT_YET, drawAsked, pictureNote } from "../director/shapes.js";
+import { picturesFor, startPicture, takeFailedPicture } from "../studio/picture.js";
+import { comprehensionRead } from "../director/read.js";
+import { agentTurn, eventOf, applyAgentTurn } from "../agent/agent.js";
 import { childTurnRow, clientInstructions, debugFor, floorIncidentStmt, incidentStmt, kitFor, laneOf, runTurnTx, stageTurns, turnInsertStmt, turnLane, withAsk, withSeamUi, withStudioSlot } from "./rows.js";
 import { traceIdentify, traceLesson } from "../trace/context.js";
 import { record } from "../trace/writer.js";
@@ -191,7 +196,12 @@ export async function replayResponse(lesson, state, replay, extra = {}) {
  * body; every refusal is a thrown HttpError, exactly as the route answered before BR1).
  * @type {(req: any, body: import("../../shared/contracts").TurnRequest) => Promise<import("../../shared/contracts").TurnResponse>}
  */
-export async function lessonTurn(req, body) {
+/**
+ * @param {{ onAgentSay?: (deltas: AsyncIterable<string>, gate: Function) => void }} [hooks] round 5 (stream 3's turn-audio):
+ *   on the agent lane her words stream to the caller as they are written, with the per-clause gate (server/agent/agent.js
+ *   clauseGate); the response then carries agentStream { tail, firstSayMs } so the caller speaks the card question after them
+ */
+export async function lessonTurn(req, body, hooks = {}) {
   const t0 = performance.now();
   const trace = [];
   // W2-E fixer (TB12): a seam that throws falls back (seam-safe.js) AND leaves a component_error.<component> code on the
@@ -419,7 +429,8 @@ export async function lessonTurn(req, body) {
   const pre = classified && textLane && !late && !edited && !laneResume && !help && !moduleOnly && !moduleEvents.length && !body.chipId && childText
     ? adoptPrefetch(lesson.id, { fp: prefetchFingerprint({ lessonId: lesson.id, state: lesson.state, clsArgs, bargeIn: !!body.teacherInterrupted }), fast: classifyFast(clsArgs) })
     : null;
-  const P = pre ?? perceive(PERCEIVE_DEPS, { classified, clsArgs, state, target, planCtx, said, historyOf, textLane, late, help, childText, noteArgs });
+  // round 5: an agent-lane lesson never speculates Director replies (they would be thrown away)
+  const P = pre ?? perceive(PERCEIVE_DEPS, { classified, clsArgs, state, target, planCtx, said, historyOf, textLane: textLane && state.ctx?.teacher !== "agent", late, help, childText, noteArgs });
   const { now, fast, specs, noteP, noteT0, c2 } = P;
   if (pre) mark("prefetch_adopted");
   // round 3 (relational-human): a spoken child answer on a text lane: the ack route may hear it back once THIS classify (and
@@ -495,6 +506,35 @@ export async function lessonTurn(req, body) {
   let { evidence, writes, skillChanges, incident, r, instructions, skipped } = plan;
   mark("planned");
   let next = r.state;
+  // ── round 5 (docs/design/round5/AGENT.md): the Teacher agent lane. scanSafety and the classifier already ran on the
+  // child's words; a safeguard, a distress read, an incident or the Director's stop/goodbye wrap keep the Director's move.
+  // The agent's move replaces the Director's; any agent error, timeout or budget leaves the Director's move standing.
+  let agentOut = null, agentApplied = null, agentFallback = null;
+  const dirR = r, dirNext = next;
+  if (state.ctx?.teacher === "agent" && textLane && !late && !moduleOnly && !laneResume && !help && !incident && !cls?.flags?.distress
+    && !["safeguard", "wrap"].includes(r.move.kind) && !r.end) {
+    const card = state.activeItemId ? findItem(state, kit, state.activeItemId) : null;
+    const silentNow = !String(childText ?? "").trim() && !body.chipId && (cls?.source === "empty" || body.asrConfidence === 0);
+    const chipLabel = body.chipId ? (state.lastUi?.chips ?? []).find((c) => c.id === body.chipId)?.label ?? null : null;
+    try {
+      const verdict = card && cls ? (cls.outcome === "correct" && !cls.reasonMisconceptionId ? "correct" : cls.outcome === "correct" || cls.outcome === "partial" ? "partly"
+        : cls.outcome === "incorrect" || cls.outcome === "misconception" ? "wrong" : null) : null;
+      agentOut = await agentTurn({ state, kit, lessonId: lesson.id, lane: state.mode, trace, silent: silentNow, verdict, child,
+        ...(typeof hooks?.onAgentSay === "function" && !silentNow ? { onSay: hooks.onAgentSay } : {}),
+        event: eventOf({ kind: silentNow ? "silence" : "turn", childText, asrConfidence: body.asrConfidence, chipId: body.chipId, chipLabel, typed, cls, card, kit, lang: state.ctx?.lang }) });
+      // the Director's stepped state keeps its bookkeeping; the card and the phase are the agent's
+      const agentNext = structuredClone(next);
+      agentNext.activeItemId = state.activeItemId; agentNext.hintLevel = state.hintLevel; agentNext.phase = state.phase; agentNext.itemsDone = state.itemsDone;
+      agentApplied = applyAgentTurn(agentNext, agentOut, { kit, childText, cls, card, lessonId: lesson.id });
+      next = agentNext;
+      r = { ...r, move: agentApplied.move, ui: agentApplied.ui, moduleCommands: [], state: next, end: agentApplied.end, hold: false };
+      mark("agent");
+    } catch (e) {
+      agentFallback = String(e?.code ?? e?.message ?? e).slice(0, 80);
+      console.warn(`[agent] turn fell back to the Director: ${String(e?.message ?? e).slice(0, 160)}`);
+      next.agent = { ...(next.agent ?? state.agent ?? {}), fallbacks: ((next.agent ?? state.agent)?.fallbacks ?? 0) + 1 };
+    }
+  }
   // Seam (W2-I, server/relational/seam.js): one RelationalDirective per turn (pure, ≤ 3 ms). null = no relational move, and
   // nothing below changes. W2-E's BR5 splits it into the kernel's authority ranks; until then only its face display rides
   // the ui (teacherAffect, never keyed to a correct verdict).
@@ -533,7 +573,12 @@ export async function lessonTurn(req, body) {
     // board), so it stays and no board replaces it; a picture / diagram ask still gets the board.
     const keepEngine = keepEngineNow;
     const rungMounted = r.ui?.tray === "module" && (next.module?.engine === RUNG_ENGINE || (!!r.move?.visual && !!next.module && !keepEngine));
-    const wb = whiteboardAskOf({ beat, lane, late, strained: frustrationLoop(next.affect ?? initialAffect()), move: r.move, studioView: late ? null : studioView, rungMounted, requested: !!r.move?.visual && !keepEngine && !playAsk });
+    // round 5 (stream 2): a GAME asked for with no game to give (no play piece admitted, no engine to keep) gets no board: a
+    // static page is not a game, and the owner's lesson a95d2ff1 got the same rules table for "Show me some games" and again
+    // for "koi dusra game"; she says honestly no game is ready (shapes.js askTruth) and the screen stays as it was
+    const noGame = String(r.move?.visual ?? "") === "game" && !playAsk && !keepEngine;
+    const wb = noGame ? { proposals: [], declined: "studio_rejected.no_game_piece" }
+      : whiteboardAskOf({ beat, lane, late, strained: frustrationLoop(next.affect ?? initialAffect()), move: r.move, studioView: late ? null : studioView, rungMounted, requested: !!r.move?.visual && !keepEngine && !playAsk });
     const t1 = performance.now();
     const proposals = proposalsOf({ r, relational, studioView: late ? null : studioView, whiteboard: wb.proposals, vibe: next.vibe });
     const arb = arbitrate(proposals);
@@ -548,7 +593,10 @@ export async function lessonTurn(req, body) {
   const needRelease = relFx.release && !["wrap", "safeguard"].includes(r.move.kind);
   const needSafety = relFx.safety && r.move.kind !== "safeguard";
   if (needSafety) distressSrc.push("relational_floor");
-  if (needRelease || needSafety || relFx.overlay || relFx.callbackId || relFx.noticeId) {
+  // agent lane: the relational floor and the child's goodbye still re-plan through the Director (the agent's move is dropped);
+  // an overlay / callback / notice is a Director-compile matter and does not override the agent's own line
+  if (agentOut && (needRelease || needSafety)) { agentOut = null; agentApplied = null; agentFallback = "relational"; }
+  if (needRelease || needSafety || (!agentOut && (relFx.overlay || relFx.callbackId || relFx.noticeId))) {
     const relCls = needSafety ? { ...(cls ?? { outcome: "no_evidence", confidence: 1 }), source: cls?.source ?? "relational",
       flags: { ...(cls?.flags ?? fast?.flags ?? {}), distress: true, distressKind: cls?.flags?.distressKind ?? "relational_floor" } }
       : needRelease ? { ...(cls ?? { outcome: "no_evidence", confidence: 1, source: "relational" }), relRelease: true, flags: { ...(cls?.flags ?? fast?.flags ?? {}), wantsToStop: true } }
@@ -623,7 +671,18 @@ export async function lessonTurn(req, body) {
     if (next.module?.id) { const id = next.module.id; r = { ...r, moduleCommands: [...r.moduleCommands.filter((c) => c.moduleId !== id), { op: "unmount", moduleId: id }] }; next.module = null; }
     next.wbBeat = undefined;
   }
-  let studioSlot = late || clearing ? null
+  // round 5 (QA D11: "negative numbers kya hote hain?" answered while the board still showed the fraction area model): a turn
+  // that answers the child's OWN other question, a detour or another topic, and asks for no new board, takes the old board
+  // down (it shows the idea the talk has left); the Director's module is its own and stays
+  // ... and (sim lab p07: "6n+4" talked over the old pattern's stars and "30th term is 92") a turn that moves to another
+  // item or skill with no new board takes down the board drawn for the old one
+  const upFor = !agentApplied && !late && !clearing ? seamSafe("studio.boardFor", () => studioSeam.boardFor?.(lesson.id) ?? null, null) : null;
+  const movedOn = !!upFor && ((r.move?.itemId && upFor.itemId && r.move.itemId !== upFor.itemId) || (r.move?.skillId && upFor.skillId && r.move.skillId !== upFor.skillId));
+  const leftBoard = !agentApplied && !late && !clearing && (movedOn || ["answer_q", "detour", "topic", "switch", "change_topic"].includes(String(r.move?.request ?? "")))
+    && !kernel.arb.accepted.some((p) => p.kind === "ask_whiteboard");
+  if (leftBoard) seamSafe("studio.clearBoard", () => (typeof studioSeam.clearBoard === "function" && (upFor || studioSeam.boardUp?.(lesson.id)) ? studioSeam.clearBoard(lesson.id) : null), null);
+  // round 5 merge: on the agent lane the agent drew (or did not draw) its own board; the Director-lane board rules stand aside
+  let studioSlot = agentApplied ? agentApplied.studioSlot : late || clearing ? null
     : seamSafe("studio.slotFor", () => (typeof studioSeam.slotFor === "function" ? studioSeam.slotFor(lesson.id, turnStudioOf(kernel.arb),
       { beat: kernel.beat?.type ?? null, tray: r.ui?.tray ?? null, safety: r.move.kind === "safeguard" || !!incident,
         asking: !!r.move.itemId && ASKING_MOVES.has(r.move.kind),
@@ -641,6 +700,16 @@ export async function lessonTurn(req, body) {
     next.module = null;
     if (Array.isArray(next.lastContent)) next.lastContent = next.lastContent.filter((l) => !(typeof l === "string" && l.startsWith(FACTS_ROW_PREFIX)));
   }
+  // round 5 (stream 2): a game asked for with no game to give: the Director's template rung (the lesson's board) is not a game
+  // either, and the owner replay of a95d2ff1 had her say "Screen par Recursive aur Explicit dekhiye—game" over it. A rung
+  // MOUNTED this turn for the ask is taken back (a rung already up stays), and its facts row leaves her content.
+  if (!late && kernel.wb.declined === "studio_rejected.no_game_piece" && next.module?.engine === RUNG_ENGINE
+    && r.moduleCommands.some((c) => c.op === "mount" && c.moduleId === next.module.id)) {
+    const id = next.module.id;
+    r = { ...r, moduleCommands: r.moduleCommands.filter((c) => c.moduleId !== id) };
+    next.module = null;
+    if (Array.isArray(next.lastContent)) next.lastContent = next.lastContent.filter((l) => !(typeof l === "string" && l.startsWith(FACTS_ROW_PREFIX)));
+  }
   // Seam (W2-H fixer): the Studio facts row for THIS turn's reply comes from the slot the turn actually shows (after the
   // kernel and slotFor), never from the pre-arbitration view: a refused or held reveal, or a piece hidden by the
   // Director's tray, puts nothing on the row (AT-7: her line names only on-screen values). The row replaces last turn's,
@@ -654,11 +723,43 @@ export async function lessonTurn(req, body) {
   // round 3 fix (experience B2 / B3): a game / moving ask this turn could not answer with a play piece: her move says what is
   // really on the screen (the engine kept, or nothing that moves), never "game mode on" over a number pad
   if (!late && INTERACTIVE_ASKS.has(String(r.move?.visual ?? "")) && studioSlot?.artifact?.kind !== "play" && next.lastMove?.shape) {
-    const fixed = askTruth(next.lastMove.shape, String(r.move.visual), keepEngineNow ? "engine" : "none");
+    // round 5: with the template rung taken back (no game, above) nothing is on the screen for this ask: never "point at it"
+    const shape0 = kernel.wb.declined === "studio_rejected.no_game_piece" && !next.module ? String(next.lastMove.shape).replace(VISUAL_ON_STAGE, VISUAL_NOT_YET) : next.lastMove.shape;
+    const fixed = askTruth(shape0, String(r.move.visual), keepEngineNow ? "engine" : "none");
     if (fixed !== next.lastMove.shape) {
       next.lastMove = { ...next.lastMove, shape: fixed };
       try { instructions = instructionsFor(next, kit); } catch (e) { console.warn(`[studio] visual-ask truth left out of the compile: ${String(e?.message ?? e).slice(0, 80)}`); }
     }
+  }
+  // round 5 (owner decision 14.2): a REAL picture of what they asked to see, for the picture cohort (studio/picture.js
+  // picturesFor): a photo ask, or a thing outside the kit the board sketches. The sketch and her "it is being made" go up now,
+  // the picture reveals on the Studio stream when it passes moderation (~15 s); a full lesson budget or a busy lane is said
+  // honestly ("cannot come right now"). Her line never says it is there: it is not, this turn.
+  // ... and a picture she said was coming that failed (generation, moderation) is owned up to on the next turn, once
+  // (round 5 merge: the agent lane has its own picture tool, picture.get; the Director-lane picture rules stand aside there)
+  const lostPic = !agentApplied && !late && next.lastMove?.shape && r.move.kind !== "safeguard" && !incident ? takeFailedPicture(lesson.id) : null;
+  if (lostPic) {
+    const shape = [String(next.lastMove.shape), pictureNote({ subject: lostPic, photo: "failed" })].join("; ");
+    try { instructions = instructionsFor({ ...next, lastMove: { ...next.lastMove, shape } }, kit); next.lastMove = { ...next.lastMove, shape }; }
+    catch (e) { console.warn(`[studio] lost-picture truth left out of the compile: ${String(e?.message ?? e).slice(0, 80)}`); }
+  }
+  const picSee = !agentApplied && !late && r.move?.request === "visual" && next.lastMove?.shape ? r.move?.see : null;
+  // (never a picture of what the lesson itself teaches: "half ka picture" in a fractions lesson is the board's, a generated
+  // image carries no curriculum; battery iter10 c4-half. kitWordsOf stems: say.js, the first 5 letters)
+  const kitTeaches = (subject) => { const ks = kitWordsOf(kit); return String(subject).split(/[^\p{L}\p{N}]+/u).some((w) => w.length >= 2 && ks.has(w.toLowerCase().normalize("NFKC").slice(0, 5))); };
+  if (picSee?.subject && (picSee.show === "picture" || picSee.off) && !(!picSee.off && kitTeaches(picSee.subject)) && r.move.kind !== "safeguard" && !incident && picturesFor(guardian)) {
+    const sh = String(next.lastMove.shape);
+    const was = drawAsked({ subject: picSee.subject, show: picSee.show });
+    const shapeFor = (photo) => (sh.includes(was) ? sh.replace(was, drawAsked({ subject: picSee.subject, show: picSee.show, photo })) : [sh, pictureNote({ subject: picSee.subject, photo })].join("; "));
+    // her words first: a picture is started only when "it is coming" fits her instructions (a budget gate throws), so she
+    // never says "no photo" while one arrives
+    const compiled = (photo) => { try { return instructionsFor({ ...next, lastMove: { ...next.lastMove, shape: shapeFor(photo), picture: photo } }, kit); } catch (e) { console.warn(`[studio] picture truth left out of the compile: ${String(e?.message ?? e).slice(0, 80)}`); return null; } };
+    const coming = compiled("coming");
+    const started = coming ? seamSafe("studio.picture", () => startPicture(lesson.id, picSee.subject, {
+      reveal: (pic) => seamSafe("studio.showImage", () => studioSeam.showImage?.(lesson.id, { ...pic, itemId: r.move?.itemId ?? null, skillId: r.move?.skillId ?? null }), null) }), null) : null;
+    const photo = started?.ok ? "coming" : started && started.check !== "subject" ? "busy" : null;
+    const ins = photo === "coming" ? coming : photo ? compiled(photo) : null;
+    if (photo && ins) { next.lastMove = { ...next.lastMove, shape: shapeFor(photo), picture: photo }; instructions = ins; }
   }
   // Studio's actions for this turn as they reach the child: the kernel's accepted ones, minus a reveal Studio's slotFor held
   // (the tray is the Director's this turn, or the beat moved on). A reveal with no slot would mark a piece revealed, write
@@ -681,9 +782,19 @@ export async function lessonTurn(req, body) {
     speculation = specs.length ? { tried: specs.length, hit: !!hit, ...(hit?.exact ? { exact: true } : {}), ...(hit ? {} : { differs: await missReason(specs, key) }) } : undefined;
     if (hit) trace.push(...hit.trace.map((t) => ({ ...t, speculative: true })));
     let filtered, filteredSafeguard = false;
-    ({ reply: teacherReply, guard, filtered, floor: replyFloor = [] } = hit
+    // round 5: the agent's line, through the same floor predicate every reply passes; a line that breaks the floor is never
+    // sent: the Director's move and reply take the turn instead
+    const agentFloor = agentOut ? floorViolations(agentOut.say, { content: floorContentOf(agentOut.item ?? null) }) : [];
+    if (agentOut && agentFloor.length) {
+      agentFallback = `floor:${agentFloor.join(",")}`.slice(0, 80);
+      console.warn(`[agent] line broke the floor (${agentFloor.join(",")}): the Director takes the turn`);
+      r = dirR; next = dirNext; agentOut = null; agentApplied = null; studioSlot = null;
+    }
+    ({ reply: teacherReply, guard, filtered, floor: replyFloor = [] } = agentOut
+      ? { reply: agentOut.say, guard: { caught: [], rewritten: false, replaced: false, agent: agentOut.notes }, filtered: false, floor: [] }
+      : hit
       ? hit.result
-      : await textReply({ instructions, state: next, kit, childText: said, trace, history: historyOf(next), verdict, ui: withStudioSlot(r.ui, studioSlot), module: next.module }));
+      : await textReply({ instructions, state: next, kit, childText: said, trace, history: historyOf(next), verdict, ui: withStudioSlot(r.ui, studioSlot), module: boardAnswersAsk(r.move) ? null : next.module }));
     // The content filter blocked the reply call that carried the child's words: fail CLOSED. The turn is
     // re-planned as a disclosure (safeguard move, incident row) and the fixed helpline line is sent, with no
     // further model call on the same words.
@@ -768,9 +879,15 @@ export async function lessonTurn(req, body) {
     const ask = kernel.arb.accepted.find((p) => p.kind === "ask_whiteboard");
     // a picture the child asked for is drawn even when the guard replaced her words (owner-truth patch 09, F16)
     if (ask && teacherReply && (!guard?.replaced || r.move?.visual)) {
+      // round 5 (stream 2): a visual ask that named no thing ("Show me a picture", "photo dikhao") whose answer, in her own
+      // line, is a picture OF a thing ("Aloo ka picture: brown skin, gol shape") asks the board for THAT thing (code-gated:
+      // drawableSubject), so the page and her words meet; owner replay of a95d2ff1 turn 22 drew the rules table under it
+      const wbAsk = whiteboardIntentOf({ lessonId: lesson.id, turn: next.turn, beat: kernel.beat ?? { id: "visual", type: "explain" }, next, kit,
+        item: next.lastMove?.itemId ? findItem(next, kit, next.lastMove.itemId) : null, line: { text: teacherReply, teacherReplySeq } });
+      const lineThing = r.move?.request === "visual" && !wbAsk.intent.request?.subject && r.move?.visual !== "game" ? pictureSubjectOf(teacherReply) : null;
+      if (lineThing && drawableSubject(lineThing)) { wbAsk.intent = { ...wbAsk.intent, request: { kind: "picture", subject: lineThing } }; wbAsk.mode = "fresh"; }
       const ack = seamSafe("studio.requestIntent", () => (typeof studioSeam.requestIntent === "function"
-        ? studioSeam.requestIntent({ ...whiteboardIntentOf({ lessonId: lesson.id, turn: next.turn, beat: kernel.beat ?? { id: "visual", type: "explain" }, next, kit,
-          item: next.lastMove?.itemId ? findItem(next, kit, next.lastMove.itemId) : null, line: { text: teacherReply, teacherReplySeq } }),
+        ? studioSeam.requestIntent({ ...wbAsk,
           // W2 integration: the template board it replaces rides along as the slot's fallback, so a live board that fails
           // the drawing gate shows the guarded template (W2-B, open-item safe) instead of an empty stage
           ...(ask.payload?.replacesRung && next.module?.engine === RUNG_ENGINE && next.module?.params?.script ? { fallback: { script: next.module.params.script } } : {}),
@@ -819,6 +936,53 @@ export async function lessonTurn(req, body) {
         if (last?.who === "teacher") next.recent = [...next.recent.slice(0, -1), { ...last, text: unpointed.slice(0, 400) }];
         guard = { ...guard, caught: [...new Set([...(guard?.caught ?? []), "claim_after_board"])], replaced: true };
         studioReasons.push("say.claim_after_board");
+        delivery = seamSafe("expressive.planDelivery", () => expressiveSeam.planDelivery(moment, teacherReply), delivery);
+      }
+    }
+    // round 5 (owner decision 14.2, battery c4-game): a game asked for and none mounts: her line never announces one ("Chalo
+    // mirror line game:" over an empty tray); the word goes, the activity she gives in words stays (studio/request.js ungame)
+    if (kernel.wb.declined === "studio_rejected.no_game_piece" && studioSlot?.artifact?.kind !== "play" && teacherReply && announcesGame(teacherReply)) {
+      const fixed = ungame(teacherReply);
+      if (fixed !== teacherReply) {
+        teacherReply = fixed;
+        const row = staged.find((x) => x.seq === teacherReplySeq);
+        if (row) { row.text = fixed; row.meta = { ...(row.meta ?? {}), guard: [...new Set([...(row.meta?.guard ?? []), "claim_game"])] }; }
+        const last = next.recent?.[next.recent.length - 1];
+        if (last?.who === "teacher") next.recent = [...next.recent.slice(0, -1), { ...last, text: fixed.slice(0, 400) }];
+        guard = { ...guard, caught: [...new Set([...(guard?.caught ?? []), "claim_game"])], replaced: true };
+        studioReasons.push("say.claim_game");
+        delivery = seamSafe("expressive.planDelivery", () => expressiveSeam.planDelivery(moment, teacherReply), delivery);
+      }
+    }
+    // round 5 (stream 2, open-r13-bare-pointing-on-request-turns): on a turn that answers what the child asked to SEE (a thing
+    // named, a number line, a photo), her line may point at the screen only when the page up at the ack shows it; any other
+    // pointing ("Screen par vegetables dekho" over a food table after "aloo dikhao") is taken out, its content kept in words.
+    // The board drawn later for the ask is told the request (Studio), so the words and the page meet without the pointer.
+    // (a visual ask with no thing named, e.g. the "Show me a picture" chip: the thing HER line says the picture shows is held
+    // to the same rule; owner replay of a95d2ff1, turn 22: "Screen par potato ka picture dekhiye" over "a₃₀ = ___")
+    const seeReq0 = r.move?.request === "visual" ? requestOfSee(r.move?.see) : null;
+    const lineSubject = r.move?.request === "visual" && !seeReq0?.subject && teacherReply ? pictureSubjectOf(teacherReply) : null;
+    const seeReq = lineSubject ? { ...(seeReq0 ?? { kind: "picture" }), subject: lineSubject } : seeReq0;
+    // ... and a visual ask with no board coming at all (none accepted, none on screen for it: owner replay turn 10, "Screen par
+    // 4, 7, 10 dekhiye" over an empty tray) never points either
+    // (sim lab dd8f40ac: a board still PLANNING is not on the stage: "Can you point to 13 on screen?" while it was being
+    // drawn, the child on a phone: "screen pe only mic hai"; a slot with no artifact yet counts as empty)
+    const stageEmpty = !studioSlot?.artifact && !playAsk && !keepEngineNow && !(next.module && r.ui?.tray === "module") && !seamSafe("studio.boardUp", () => studioSeam.boardUp?.(lesson.id), false);
+    // (sim lab p22: "Can you point to one-third on the screen?" with nothing up, any turn: the child said "I see only a mic
+    // button"; with chips up "screen par" may mean the chips, so only a BOARD claim is taken out then)
+    const nothingComing = (r.move?.request === "visual" && stageEmpty)
+      || (stageEmpty && !!teacherReply && (r.ui?.chips?.length ? /\b(?:board|whiteboard)\b|बोर्ड/iu.test(teacherReply) : true));
+    if (((seeReq && (seeReq.subject || seeReq.kind === "number_line" || seeReq.kind === "picture")) || nothingComing) && teacherReply && pointsAtStage(teacherReply)
+      && !(studioSlot?.artifact?.kind === "whiteboard" && answersRequest(studioSlot.artifact.script, seeReq ?? null))) {
+      const unpointed = seamSafe("say.unpointRequest", () => unpointGently(teacherReply), null);
+      if (unpointed && unpointed !== teacherReply) {
+        teacherReply = unpointed;
+        const row = staged.find((x) => x.seq === teacherReplySeq);
+        if (row) { row.text = unpointed; row.meta = { ...(row.meta ?? {}), guard: [...new Set([...(row.meta?.guard ?? []), "claim_request"])] }; }
+        const last = next.recent?.[next.recent.length - 1];
+        if (last?.who === "teacher") next.recent = [...next.recent.slice(0, -1), { ...last, text: unpointed.slice(0, 400) }];
+        guard = { ...guard, caught: [...new Set([...(guard?.caught ?? []), "claim_request"])], replaced: true };
+        studioReasons.push("say.claim_request");
         delivery = seamSafe("expressive.planDelivery", () => expressiveSeam.planDelivery(moment, teacherReply), delivery);
       }
     }
@@ -871,17 +1035,26 @@ export async function lessonTurn(req, body) {
   const speakNow = textLane || late ? undefined
     : r.move.kind === "safeguard" && !prev.safeguard ? "interrupt"
       : moduleOnly && !r.hold ? "when_free" : undefined;
+  // round 5 (QA D23): the Help sheet's first action. The helplines when the safeguard is about abuse or the child's words
+  // name home or someone at home (never "talk to a grown-up at home" to a child who just said the danger is at home).
+  const helpLeadNow = () => helpLeadOf({ kind: cls?.flags?.distressKind ?? next.safeguard?.kind ?? null, text: childText ?? "" });
   /** @type {import("../../shared/contracts").TurnResponse} */
   const outCore = late
     // the lesson stays closed: the answer is in, nothing more is said — except the safeguarding line after a disclosure
     ? { move: lateSafeguard ? { ...r.move, kind: "safeguard" } : r.move, moduleCommands: [],
       ui: withAsk(r.ui, lateSafeguard ? teacherReply : null, uiVerdictOf(cls, target, state)),
-      ...(lateSafeguard ? { teacherReply, teacherReplySeq } : {}), end: true, late: true }
+      ...(lateSafeguard ? { teacherReply, teacherReplySeq, helpLead: helpLeadNow() } : {}), end: true, late: true }
     : {
       move: r.move, moduleCommands: r.moduleCommands,
+      // round 5: the covert comprehension read of the child's turn (server/director/read.js): what the Director acted on
+      ...(cls && !moduleOnly ? { read: comprehensionRead(cls, { childText, target }) } : {}),
+      // round 5 (agent lane, streamed): what the caller speaks after her streamed words (the card's question, when the code
+      // appended it), and when her first words came; absent = nothing was streamed or the Director took the turn
+      ...(agentOut?.streamed ? { agentStream: { tail: agentOut.tail ?? null, firstSayMs: agentOut.firstSayMs ?? null } } : {}),
       ui: withStudioSlot(withSeamUi(withAsk(r.ui, teacherReply, { ...uiVerdictOf(cls, target, state), ...(kernel.beat ? { beat: uiBeatOf(kernel.beat) } : {}) }), relational,
         { safety: r.move.kind === "safeguard" || !!incident }), studioSlot),
       ...(teacherReply ? { teacherReply, teacherReplySeq } : {}), ...(speakNow ? { speakNow } : {}), ...(r.end ? { end: true } : {}),
+      ...(r.move.kind === "safeguard" ? { helpLead: helpLeadNow() } : {}),
       // round 3 fix (experience B8): the child chose "Start <topic>": the client starts that lesson when this one closes
       ...(r.end && next.switchTo ? { switchTo: String(next.switchTo) } : {}),
       // W2 seams: what Studio does on this turn (W2-H proposes through statusFacts; W2-E's kernel arbitrates from BR1) and the
@@ -920,12 +1093,13 @@ export async function lessonTurn(req, body) {
   const traceReasons = [`lane.${lane}`, ...(late ? ["turn.late"] : []), ...(moduleOnly ? ["turn.module_only"] : []),
           ...(help ? ["turn.help"] : []), ...(laneResume ? [revoice ? "turn.lane_resume_revoice" : "turn.lane_resume"] : []), ...(kernel.replanned ? ["turn.replanned"] : []), ...(kernel.wb.declined ? [kernel.wb.declined] : []),
           ...(speculation ? [speculation.hit ? "turn.speculation_hit" : "turn.speculation_miss"] : []), ...(pre ? ["turn.prefetch_adopted"] : []), ...(wbAcked ? ["studio.whiteboard_slot"] : []),
-          ...(rungReplaced ? ["studio.rung_replaced"] : []), ...studioReasons, ...releaseReasons,
+          ...(rungReplaced ? ["studio.rung_replaced"] : []), ...(agentOut ? ["turn.agent"] : agentFallback ? ["turn.agent_fallback"] : []), ...studioReasons, ...releaseReasons,
           ...comprehensionReasons({ cls, classified, help: !!help, uiVerdict: uiV, guard }), ...vsReasons,
           ...(guard?.caught?.includes("unavailable") ? ["turn.fallback_reply"] : []),
           // p5-interaction: what the turn was read as (intent / request ids only, never the child's words), the card cap,
           // an unverifiable module answer
           ...(noteReason ? [noteReason] : []), ...(cls?.request?.type ? [`request.${cls.request.type}`] : []),
+          ...(cls && !moduleOnly ? (() => { const rd = comprehensionRead(cls, { childText, target }).read; return rd ? [`read.${rd}`] : []; })() : []),
           ...(next.capped?.turn === next.turn ? [`p5.capped.${next.capped.how}`] : []), ...(moduleUnverified ? ["module.unverifiable"] : []),
           ...[...seamErrors].map((c) => `component_error.${c}`)];
   let seqs = [];
@@ -1337,7 +1511,7 @@ export function speculate(state, target, flags, planCtx, { said, historyOf }, { 
       return {
         key: replyKey(next, planCtx.kit, plan.r, plan.instructions, said, history), trace,
         result: (() => {
-          const r = textReply({ instructions: plan.instructions, state: next, kit: planCtx.kit, childText: said, trace, history, ui: plan.r.ui, module: next.module });
+          const r = textReply({ instructions: plan.instructions, state: next, kit: planCtx.kit, childText: said, trace, history, ui: plan.r.ui, module: boardAnswersAsk(plan.r.move) ? null : next.module });
           r.catch(() => {});
           return r;
         })(),
@@ -1429,6 +1603,14 @@ export async function missReason(specs, key) {
 const PERCEIVE_DEPS = { classifyFast, classify, understand, speculate, planTurn: specPlan, replyKey, textReply, conv2Mode };
 /** round 3 fix (adversarial B2): is a play piece up? The Studio slot showed one last turn (state.playOn, set below), or the
  *  last move answered the child's game ask (the piece is coming up on this turn's screen). */
+/**
+ * round 5 (stream 2): this move answers a thing the child NAMED to see (a subject, a number line with their numbers, a photo):
+ * the board drawn for it is what the child will look at, not the module that was up before the ask, so her words about
+ * parts and numbers are not judged against that module (measured: "0 se 1 ke beech 4 barabar hisse" for "number line pe 1/4
+ * dikhao" was cut as "parts the screen does not show" against the open question's 5-part engine, leaving "Woh 0 se kitna door
+ * hai?"). The board itself is gated against her line (W8 counts) and checked against the request (studio/request.js). PURE.
+ */
+export const boardAnswersAsk = (move) => !!(move?.request === "visual" && move.see && (move.see.subject || move.see.show === "number_line" || move.see.show === "picture"));
 export const playIsUp = (state) => !!state?.playOn || state?.lastMove?.visual === "game";
 
 /** CONVERSATION-V2 §4.4: the longest a non-answer turn waits on the UNDERSTAND note from its start (gpt-6-sol p90 2174 ms). */

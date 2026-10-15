@@ -64,6 +64,37 @@ export function bodyIsContentFilter(text) {
     || j?.choices?.some?.((c) => c?.finish_reason === CONTENT_FILTER) || /content management policy|content_filter/i.test(String(e.message ?? ""));
 }
 
+/**
+ * Round 5 (sim lab baseline, 4/32 lessons): which filter categories fired, lower-case ("jailbreak", "sexual", ...), from an
+ * error or response body; [] when none can be read. A Prompt Shields "jailbreak" read on a child's maths answer
+ * ("6 aur 5... 30... 3,00,000?") played the full helpline script twice. The categories decide whether a block is a child-safety
+ * signal at all (nonHarmFilter); an unreadable block stays a safety signal.
+ */
+export function filterCategories(text) {
+  let j = null;
+  try { j = typeof text === "string" ? JSON.parse(text) : text; } catch { j = null; }
+  const out = new Set();
+  const take = (r) => {
+    if (!r || typeof r !== "object") return;
+    for (const [k, v] of Object.entries(r)) if (v && typeof v === "object" && (v.filtered === true || (v.detected === true && v.filtered !== false))) out.add(k.toLowerCase());
+  };
+  take(j?.error?.innererror?.content_filter_result);
+  take(j?.error?.innererror?.content_filter_results);
+  for (const c of Array.isArray(j?.choices) ? j.choices : []) take(c?.content_filter_results);
+  for (const p of Array.isArray(j?.prompt_filter_results) ? j.prompt_filter_results : []) take(p?.content_filter_results);
+  const m = /blocked by label '([^']+)'/i.exec(typeof text === "string" ? text : "");
+  if (m) out.add(m[1].trim().toLowerCase().replace(/\s+/g, "_"));
+  return [...out];
+}
+/** Filter categories that are not about harm to or from a child (prompt-injection and copyright detectors). */
+export const NON_HARM_FILTERS = new Set(["jailbreak", "indirect_attack", "protected_material_text", "protected_material_code"]);
+/**
+ * True only when the block's categories are KNOWN and none is a harm category (hate, sexual, violence, self_harm, or any
+ * other). Unknown or empty → false: the caller fails closed exactly as before.
+ */
+export const nonHarmFilter = (e) => Array.isArray(e?.filterCats) && e.filterCats.length > 0 && e.filterCats.every((c) => NON_HARM_FILTERS.has(c));
+const withCats = (err, body) => { if (err && err.code === CONTENT_FILTER) err.filterCats = filterCategories(body); return err; };
+
 /** A config error from server/endpoints.js surfaces as an AzureError, as the old inline env reads did. */
 const asAzure = (fn) => { try { return fn(); } catch (e) { throw e instanceof EndpointConfigError ? new AzureError(e.message, 0, "config") : e; } };
 /**
@@ -121,7 +152,7 @@ async function post(kind, deployment, path, body, { timeoutMs = DEFAULT_TIMEOUT_
         usage = out?.usage;
       } else {
         const body = await res.text();
-        err = new AzureError(`${kind} ${deployment} HTTP ${status}: ${excerpt(body)}`, status, bodyIsContentFilter(body) ? CONTENT_FILTER : "");
+        err = withCats(new AzureError(`${kind} ${deployment} HTTP ${status}: ${excerpt(body)}`, status, bodyIsContentFilter(body) ? CONTENT_FILTER : ""), body);
       }
     } catch (e) {
       err = e?.name === "AbortError"
@@ -137,7 +168,7 @@ async function post(kind, deployment, path, body, { timeoutMs = DEFAULT_TIMEOUT_
     // release 12 flight recorder: model.call (server/trace/model.js; never throws, never awaits)
     recordModelCall({ kind, deployment, lane, quotaLane, status: status || err?.code || "error", ms: Math.round(performance.now() - t0), attempt,
       tokens: usage ? { in: usage.prompt_tokens ?? usage.input_tokens, out: usage.completion_tokens ?? usage.output_tokens } : undefined,
-      body, out: binary ? null : out, error: err ? String(err.message).slice(0, 200) : undefined });
+      body, out: binary ? null : out, error: err ? String(err.message).slice(0, 200) : undefined, ...(err?.filterCats ? { filterCats: err.filterCats } : {}) });
     try {
       settle({ quotaLane, deployment, kind, status: status || err?.code || "error",
         usage: usage ? { in: usage.prompt_tokens ?? usage.input_tokens, out: usage.completion_tokens ?? usage.output_tokens } : undefined });
@@ -238,7 +269,7 @@ async function chatOnce(deployment, messages, opts = {}) {
   const text = choice?.message?.content ?? "";
   const finishReason = choice?.finish_reason;
   // A filtered completion is never an answer (empty or partial content): it surfaces as a content_filter error.
-  if (finishReason === CONTENT_FILTER) throw new AzureError(`chat ${deployment} completion blocked by the content filter`, 200, CONTENT_FILTER);
+  if (finishReason === CONTENT_FILTER) throw withCats(new AzureError(`chat ${deployment} completion blocked by the content filter`, 200, CONTENT_FILTER), j);
   if (opts.json && !opts.schema) {
     if (finishReason === "length") throw new AzureError(`chat ${deployment} JSON truncated at max tokens`, 200, "truncated");
     try { return { text, json: JSON.parse(text), finishReason, usage: j?.usage }; }
@@ -363,7 +394,7 @@ export async function chatStream(deployment, messages, opts = {}) {
     status = res.status;
     if (!res.ok) {
       const t = await res.text();
-      err = new AzureError(`${kind} ${deployment} HTTP ${status}: ${excerpt(t)}`, status, bodyIsContentFilter(t) ? CONTENT_FILTER : "");
+      err = withCats(new AzureError(`${kind} ${deployment} HTTP ${status}: ${excerpt(t)}`, status, bodyIsContentFilter(t) ? CONTENT_FILTER : ""), t);
     } else {
       let events = 0;
       for await (const ev of sseEvents(res.body)) {
@@ -406,7 +437,7 @@ export async function chatStream(deployment, messages, opts = {}) {
   const ms = Math.round(performance.now() - t0);
   log({ kind, deployment, status: status && !err ? status : err?.code || status || "error", ms, tokens: usage ? { in: usage.in, out: usage.out } : undefined }, trace);
   recordModelCall({ kind, deployment, lane, quotaLane, status: status && !err ? status : err?.code || status || "error", ms, ttftMs,
-    tokens: usage ? { in: usage.in, out: usage.out } : undefined, body, text, error: err ? String(err.message).slice(0, 200) : undefined });
+    tokens: usage ? { in: usage.in, out: usage.out } : undefined, body, text, error: err ? String(err.message).slice(0, 200) : undefined, ...(err?.filterCats ? { filterCats: err.filterCats } : {}) });
   try { settle({ quotaLane, deployment, kind, status: err ? (err.status || err.code) : status, usage: usage ? { in: usage.in, out: usage.out } : undefined }); }
   catch (e) { console.warn("[azure] lanes.settle failed:", e?.message); }
   if (err) {

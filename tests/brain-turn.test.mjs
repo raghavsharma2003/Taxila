@@ -46,6 +46,7 @@ test("the turn is deterministic, and every turn answers, traces once, and carrie
         assert.equal(t.out.moment.teacherAffect.display, "calm_steady");
         assert.equal(t.out.moment.safety, true);
         assert.equal(t.out.studio, undefined, "nothing from Studio on a safeguarding turn");
+        assert.ok(["helpline", "grownup"].includes(t.out.helpLead), "a safeguarding turn tells the Help sheet what leads (QA D23)");
       }
     }
   }
@@ -164,6 +165,7 @@ test("G-AUTHORITY on the real turn: a true goodbye ends the lesson that turn; a 
     assert.equal(t.out.move.kind, "safeguard", "the disclosure outranks the goodbye");
     assert.ok(/1098/.test(t.out.teacherReply) && /14416/.test(t.out.teacherReply), "both helplines");
     assert.notEqual(t.out.end, true, "the lesson is not ended on a disclosure");
+    assert.equal(t.out.helpLead, "helpline", "papa named: the helplines lead the Help sheet (QA D23)");
   }
 });
 

@@ -18,6 +18,10 @@ function split() {
   x!.__txBoot = null;
   bootMe = b.p.then((r) => r.me);
   bootPlan = { cid: b.cid, p: b.p.then((r) => r.plan) };
+  // r5 QA D26: a half never taken (the shell saw "signed out" first) must not surface as an unhandled rejection ("401");
+  // whoever takes one still gets the rejection from the promise itself
+  bootMe.catch(() => {});
+  bootPlan.p.catch(() => {});
 }
 
 /** GET /api/me started early (or the boot's `me`), once; null when none was started. */

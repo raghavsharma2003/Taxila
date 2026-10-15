@@ -76,6 +76,8 @@ export function comprehensionReasons({ cls, classified, help = false, uiVerdict 
   if (guard) {
     for (const k of ["replaced", "rewritten", "repaired"]) if (guard[k]) out.push(`guard.${k}`);
     for (const c of guard.caught ?? []) out.push(`guard.${c}`);
+    // round 5: the reply prompt was filter-blocked, the child's own words passed the probe, and the retry on this turn alone answered
+    if (guard.filter === "context") out.push("guard.content_filter_context");
   }
   return out;
 }

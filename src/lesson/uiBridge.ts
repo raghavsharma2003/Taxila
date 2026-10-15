@@ -23,7 +23,7 @@ import { TextLink } from "./textLink.ts";
 import { fetchSpeechStream, PCM_RATE } from "./ttsStream.ts";
 // ship5 p1-duplex: the hands-free duplex mode (ON by default; kill switch: ?duplex=0, TAXILA_DUPLEX=0, VITE_DUPLEX=0) and
 // the face seam it drives (FACE-BRIDGE.md).
-import { resolveDuplexMode } from "../duplex/flags.ts";
+import { resolveDuplexMode, resolveDuplexLane } from "../duplex/flags.ts";
 import { puppetDuplexDetach, withPuppet } from "../face-puppet/duplexBridge.ts";
 
 /** §2.5.1 home state; the client never computes it, it only carries what the server answered. */
@@ -140,6 +140,7 @@ export class UiBridge {
           speech: this.cachingStream,
           onTransport: (transport) => this.store.set({ transport }),
           duplex: () => resolveDuplexMode(),
+          duplexLane: () => resolveDuplexLane(),
           duplexFace: { wrapEmit: withPuppet, detach: puppetDuplexDetach },
           onDuplex: (d) => {
             if (this.link !== cascade) return;
@@ -240,6 +241,9 @@ export class UiBridge {
     audio.onended = audio.onerror = () => this.stopReplay();
     void this.playerCtx?.resume().catch(() => {});
     this.store.set({ replaying: true });
+    // release 14 (D5 review, confirmed): this replay plays outside the link's audio graph, so the hands-free gate must be
+    // told: her replayed line is gated like her live one, or its loudspeaker echo is heard as the child
+    if (this.link instanceof CascadeLink) this.link.externalAudio(true);
     audio.play().catch(() => this.stopReplay());
     return true;
   }
@@ -252,6 +256,7 @@ export class UiBridge {
     }
     if (this.playerUrl) URL.revokeObjectURL(this.playerUrl);
     this.playerUrl = null;
+    if (this.state.replaying && this.link instanceof CascadeLink) this.link.externalAudio(false);
     if (this.state.replaying) this.store.set((st) => ({ replaying: false, replays: st.replays + 1 }));
   }
 

@@ -306,8 +306,23 @@ test("summary: cards come from the graded turns — verified right answers first
 
 // ───────────── (3) child plan and map ─────────────
 
-test("plan: one home state, in precedence order", () => {
-  const base = { resumable: false, usedMin: 0, capMin: 30, doneToday: false, now: "17:00", from: "07:00", to: "20:30", anyLesson: true };
+test("round 5: with the day limits off (the default) a lesson is always available; only a safety hold closes the home", () => {
+  const late = { resumable: false, usedMin: 90, capMin: 30, doneToday: true, now: "23:40", from: "07:00", to: "20:30", anyLesson: true };
+  assert.equal(homeStateOf({ ...late, limits: false }), "start", "after the hours, past the cap, a lesson already done today");
+  assert.equal(homeStateOf({ ...late, limits: false, resumable: true }), "resume");
+  assert.equal(homeStateOf({ ...late, limits: false, anyLesson: false }), "first");
+  assert.equal(homeStateOf({ ...late, limits: false, safetyHold: true }), "safety_hold");
+  assert.equal(homeStateOf({ ...late, limits: true }), "capped", "TAXILA_DAY_LIMITS=on restores the rules");
+  for (const st of ["resting", "capped", "done"]) for (const p of [undefined, "lesson", "practice", "doubt"]) assert.equal(startRefusal(st, p, { limits: false }), null, `${st} ${p}`);
+  assert.ok(startRefusal("safety_hold", "lesson", { limits: false }), "the safety hold still refuses");
+  const prev = process.env.TAXILA_DAY_LIMITS;
+  delete process.env.TAXILA_DAY_LIMITS;
+  try { assert.equal(homeStateOf(late), "start", "off unless the env says on"); assert.equal(startRefusal("resting", "lesson"), null); }
+  finally { if (prev === undefined) delete process.env.TAXILA_DAY_LIMITS; else process.env.TAXILA_DAY_LIMITS = prev; }
+});
+
+test("plan: one home state, in precedence order (day limits on: TAXILA_DAY_LIMITS=on)", () => {
+  const base = { resumable: false, usedMin: 0, capMin: 30, doneToday: false, now: "17:00", from: "07:00", to: "20:30", anyLesson: true, limits: true };
   assert.equal(homeStateOf(base), "start");
   assert.equal(homeStateOf({ ...base, anyLesson: false }), "first");
   assert.equal(homeStateOf({ ...base, resumable: true }), "resume");
@@ -321,15 +336,15 @@ test("plan: one home state, in precedence order", () => {
 });
 
 test("start: the plan's limits are enforced, not advice; done lets only Practice / Ask through", () => {
-  for (const st of ["start", "first", "resume"]) assert.equal(startRefusal(st, undefined), null, st);
+  for (const st of ["start", "first", "resume"]) assert.equal(startRefusal(st, undefined, { limits: true }), null, st);
   for (const p of [undefined, "lesson", "practice", "doubt", "anything"]) {
-    assert.ok(startRefusal("capped", p), `capped refuses ${p}`);
-    assert.ok(startRefusal("resting", p), `resting refuses ${p}`);
+    assert.ok(startRefusal("capped", p, { limits: true }), `capped refuses ${p}`);
+    assert.ok(startRefusal("resting", p, { limits: true }), `resting refuses ${p}`);
   }
-  assert.ok(startRefusal("done", undefined), "never 'one more' lesson");
-  assert.ok(startRefusal("done", "bogus"), "an unknown purpose is a lesson");
-  assert.equal(startRefusal("done", "practice"), null, "§6.3.3 done: 'Practise something'");
-  assert.equal(startRefusal("done", "doubt"), null);
+  assert.ok(startRefusal("done", undefined, { limits: true }), "never 'one more' lesson");
+  assert.ok(startRefusal("done", "bogus", { limits: true }), "an unknown purpose is a lesson");
+  assert.equal(startRefusal("done", "practice", { limits: true }), null, "§6.3.3 done: 'Practise something'");
+  assert.equal(startRefusal("done", "doubt", { limits: true }), null);
 });
 
 test("plan: an accidental or crashed lesson (nothing graded, a few minutes) is not 'Done for today'", () => {

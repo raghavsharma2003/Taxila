@@ -107,6 +107,8 @@ export interface DeskModel {
   layout: DeskLayout;
   /** Help sheet: "Back to the lesson" appears after 10 s. */
   helpBackVisible: boolean;
+  /** round 5 (QA D23): the Help sheet's first action (the helplines when the danger may be at home). */
+  helpLead?: "helpline" | "grownup";
   reducedMotion: boolean;
   /** dev / tests: a deterministic plate instead of the live 3D head. */
   faceForm: "live" | "plate";

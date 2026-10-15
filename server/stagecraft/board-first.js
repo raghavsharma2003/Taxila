@@ -19,6 +19,7 @@
 //      is shown at once (no deadline wait). A fail falls through to the existing ladder (spec, line plan, code, template)
 //      exactly as before, so this can only add boards, never remove one.
 // Kill switch TAXILA_BOARD_FIRST=0: nothing is preselected and nothing changes.
+import { answersRequest, samePage, shownBefore } from "../studio/request.js";
 import { gateCtxFor, regate, retime, withSectors, predictedLineOf } from "./board-sync.js";
 import { speechMsOf, WB_BOARD } from "../studio/plan.js";
 import { explainerFor } from "../forge/explainer/lesson.js";
@@ -94,7 +95,7 @@ function candidates(ask, kit, lessonId, band, predicted) {
  * @param {any} ask whiteboardIntentOf(...) with an empty line
  * @param {{ kit?: any, redact?: string[], now?: number }} o
  */
-export function preselect(ask, { kit, redact = [], now = Date.now(), certify = null, pictureFirst = false } = {}) {
+export function preselect(ask, { kit, redact = [], now = Date.now(), certify = null, pictureFirst = false, avoid = null, seen = null } = {}) {
   try {
     if (!boardFirstOn() || !kit) return null;
     const id = String(ask?.intent?.intentId ?? "");
@@ -112,7 +113,11 @@ export function preselect(ask, { kit, redact = [], now = Date.now(), certify = n
     const band = ctx.band ?? "B3";
     // round 4 content (beat board): a skill's first board opens on a picture when one passes
     const cands = candidates(a2, kit, ask?.line?.lessonId ?? ask?.intent?.lessonId, band, predicted);
+    // round 5 (stream 2, RCA-1): a ready-made board is picked only when it shows what the child asked for, and never when
+    // it is the page already on the board (the owner's lesson a95d2ff1: one cached table on 7 of 10 pages, whatever was asked)
+    const request = ask?.intent?.request ?? null;
     for (const c of pictureFirst ? preferPicture(cands) : cands) {
+      if (!answersRequest(c.script, request) || shownBefore(c.script, { avoid, seen })) continue;
       const s = withSectors(retime(c.script, Math.max(800, Number(c.script.durationMs) || 0), ctx.speechMs), ctx.reply);
       // round 4 content: a board the child's device cannot show legibly (server/forge3/tray-gate.js) is never preselected:
       // her line is written from this board's facts row, so it must be one that will reach the stage

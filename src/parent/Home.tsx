@@ -65,7 +65,8 @@ function ThisWeek({ d, name, cid, teacherName }: { d: Overview; name: string; ci
           <div className="pa-empty">
             <Art id="states/lessons-empty-parent" className="pa-empty-art" fallback={<span />} />
             <p className="pa-headline">{HOME.none(name)}</p>
-            <p className="pa-muted">{teacherName} will say hello the first time {name} opens Taxila.</p>
+            {/* r5 QA: only before any lesson (a child with short, uncounted visits has met her already) */}
+            {(!d.next || d.next.state === "first") && <p className="pa-muted">{teacherName} will say hello the first time {name} opens Taxila.</p>}
           </div>
         ) : kind === "too_early" ? <p className="pa-headline">{HOME.too_early}</p>
           : kind === "quiet" || h.kind === "quiet" ? <p className="pa-headline">{HOME.quiet}</p>
@@ -118,7 +119,8 @@ function TryAtHome({ d, cid, onHow }: { d: NonNullable<Overview["tryAtHome"]>; c
 
 function NextLesson({ d, name, cid }: { d: NonNullable<Overview["next"]>; name: string; cid: string }) {
   const topic = d.topic ? d.topic.shortTitle || d.topic.title : null;
-  const hours = `Lesson hours ${fmtClock(d.window.from)} to ${fmtClock(d.window.to)}`;
+  // round 5: no class-time window unless the server's day limits are on
+  const hours = d.limits === false ? "Lessons open any time" : `Lesson hours ${fmtClock(d.window.from)} to ${fmtClock(d.window.to)}`;
   const line = d.state === "resume" ? `${name} has a lesson to continue${topic ? `: ${topic}` : ""}.`
     : d.state === "done" ? `Done for today.${topic ? ` Next: ${topic}, tomorrow.` : ""}`
       : d.state === "capped" ? `That's today's time used.${topic ? ` Next: ${topic}, tomorrow.` : ""}`

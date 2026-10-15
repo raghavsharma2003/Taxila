@@ -267,6 +267,12 @@ export class Outbox {
     for (const r of await prev.all().catch(() => [] as OutboxRecord[])) await next.put(r);
   }
 
+  /** r5 QA D24: a rejoined lesson's turns are numbered above every turnSeq the server has acknowledged (another device's
+   *  outbox, or one whose store was cleared, would otherwise reuse a key and get an old turn's reply back). */
+  raiseFloor(lessonId: string, floor: number): void {
+    if (Number.isFinite(floor) && floor > (this.seqs.get(lessonId) ?? 0)) this.seqs.set(lessonId, Math.floor(floor));
+  }
+
   /** The next turnSeq for a lesson: above anything this outbox handed out AND anything held in the store, so a
    *  reloaded page (a new Outbox, seq back at 0) never overwrites a held record of the same lesson. */
   async reserve(lessonId: string): Promise<number> {

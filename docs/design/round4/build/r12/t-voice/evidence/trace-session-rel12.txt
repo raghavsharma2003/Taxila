@@ -1,0 +1,148 @@
+# scripts/trace.mjs --session 86cf709d-5aa3-44ca-941d-79894b535b79 (TEST, local production build of a scratch integration: claude/r4-duplex c58dc405 + claude/r4-latency c4f156a4 + claude/r4-content 62e3716b, shared/trace.ts from T-server; owner test account in TAXILA_DUPLEX_LIVE_FOR and TAXILA_TRACE_FULL_FOR; Chromium fake mic + r4-timeline fake transcriber; not a phone, not a child). Tier-2 blobs show failed:503 = 'trace storage not configured' (no blob storage in this sandbox).
+session 86cf709d-5aa3-44ca-941d-79894b535b79  sids=86cf709d-5aa3-44ca-941d-79894b535b79  events=166  2026-10-11T16:43:10.098Z → 2026-10-11T16:44:50.765Z
+flags ★ 0  errors/failures ⚠ 0  turns 1
+16:43:10.098 [client] route /c/a32e3cdb-41c1-4c80-99ef-e9ed027346fd
+16:43:10.104 [client] dev.info {"ua":"Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/141.0.7390.37 Safari/537.36","dpr":2,"lang":"en-US@posix","_mono":363,"cores":4,"touch":1,"screen":{"h":800,"w":360},"memoryGB…
+16:43:10.147 [client] net GET /api/me 200 455ms
+16:43:10.148 [client] net GET /api/duplex/config 200 196ms
+16:43:10.151 [client] net POST /api/parent/lock 200 134ms
+16:43:10.177 [client] net GET /api/face/config 200 30ms
+16:43:10.199 [client] rrweb.start {"_mono":1116,"chunkMs":10000,"canvasFps":4}
+16:43:10.199 [client] ui.media {"h":0,"w":0,"tag":"iframe","_mono":1116,"phase":"mount"}
+16:43:10.199 [client] ui.media {"h":0,"w":0,"tag":"iframe","_mono":1116,"phase":"mount"}
+16:43:10.285 [client] ui.media {"h":800,"w":360,"tag":"canvas","_mono":1201,"phase":"mount"}
+16:43:10.326 [client] ui.media {"h":324,"w":277,"tag":"canvas","_mono":1441,"phase":"mount"}
+16:43:10.380 [client] perf.longtask {"at":2470,"ms":540,"_mono":3026}
+16:43:10.403 [client] net GET /api/child/plan?childId=a32e3cdb-41c1-4c80-99ef-e9ed027346fd 200 1779ms
+16:43:11.148 [server] ← POST /api/parent/lock 200 92ms
+16:43:11.155 [client] perf.longtask {"at":1940,"ms":286,"_mono":2270}
+16:43:11.458 [server] ← GET /api/me 200 432ms
+16:43:11.499 [client] perf.longtask {"at":3250,"ms":794,"_mono":4146}
+16:43:11.662 [server] ← GET /api/duplex/config 200 193ms
+16:43:11.855 [server] ← GET /api/face/config 200 4ms
+16:43:13.119 [server] ← GET /api/child/plan 200 1263ms
+16:43:13.219 [client] tap  "Start, with Asha, AI teacher"
+16:43:13.224 [client] route /c/a32e3cdb-41c1-4c80-99ef-e9ed027346fd/lesson/new
+16:43:14.044 [client] perf.lcp {"t":1360,"el":"img","url":"/face-puppet/r8/rest-medium.webp","_mono":6441}
+16:43:14.310 [client] mic mode tap
+16:43:14.339 [client] desk {"mic":{"talking":false,"available":true,"tapToTalk":true},"gate":null,"_mono":6737,"floor":"idle","phase":null,"sheet":null,"strip":null,"layout":"phone","typing":false,"offline":false,"summary":false,"answerForm":"words"}
+16:43:14.340 [client] SCREEN card ""
+16:43:14.340 [client] ui.render.tray {"_mono":6737,"empty":true}
+16:43:14.342 [client] desk {"mic":{"talking":false,"available":true,"tapToTalk":true},"gate":"starting","_mono":6739,"floor":"idle","phase":null,"sheet":null,"strip":null,"layout":"phone","typing":false,"offline":false,"summary":false,"answerForm":"words"}
+16:43:14.367 [client] ui.media {"h":2,"w":2,"src":"/modules.html","tag":"iframe","_mono":6764,"phase":"mount"}
+16:43:14.625 [client] ui.media {"h":365,"w":326,"tag":"canvas","zone":"teacher","_mono":7023,"phase":"mount","testid":"teacher-window"}
+16:43:15.390 [client] perf.longtask {"at":7301,"ms":473,"_mono":7788}
+16:43:17.627 [client] perf.longtask {"at":7999,"ms":1774,"_mono":9776}
+16:43:17.823 [client] net GET /api/child/map?childId=a32e3cdb-41c1-4c80-99ef-e9ed027346fd 200 3025ms
+16:43:19.266 [server] ← undefined undefined undefinedms
+16:43:20.635 [client] mic.state {"lane":"cascade","_mono":11013,"state":"tap","transport":"webrtc","pushToTalk":true}
+16:43:20.645 [client] net.sse {"path":"/api/studio/stream","_mono":11023,"phase":"open-request"}
+16:43:20.645 [client] trace.session {"to":"86cf709d-5aa3-44ca-941d-79894b535b79","from":"dd19c816-3579-491d-866b-3f1a202a85ab","_mono":11024,"lesson":true}
+16:43:20.667 [client] mic.duplex {"asks":[{"ms":200,"retry":false,"cohort":"owner","duplex":"on","status":200}],"mode":"on","_mono":11045,"build":"on","device":null,"server":"on","source":"server"}
+16:43:20.667 [client] mic mode tap
+16:43:20.669 [client] mic.state {"lane":"cascade","_mono":11048,"label":"MediaStreamAudioDestinationNode","state":"open","ctxRate":44100,"sampleRate":48000,"autoGainControl":null,"echoCancellation":null,"noiseSuppression":null}
+16:43:20.678 [client] she will say "Namaste Golu, main Asha, tumhari AI teacher hoon. Aaj Grams aur kilograms padhenge. Tumhe cricket pasand hai?"
+16:43:20.694 [client] desk {"mic":{"talking":false,"available":true,"tapToTalk":true},"gate":"starting","_mono":11072,"floor":"idle","phase":"warmup","sheet":null,"strip":null,"layout":"phone","typing":false,"offline":false,"summary":false,"answerForm":"words"}
+16:43:20.694 [client] SCREEN card "Tumhe cricket pasand hai?"
+16:43:20.714 [client] net POST /api/lesson/start 201 4053ms
+16:43:20.871 [client] desk {"mic":{"talking":false,"available":true,"tapToTalk":true},"gate":null,"_mono":11250,"floor":"idle","phase":"warmup","sheet":null,"strip":null,"layout":"phone","typing":false,"offline":false,"summary":false,"answerForm":"words"}
+16:43:21.035 [server] model taxila-fast chat 200 1549ms in=1018 out=36 prompt="WHO YOU ARE: Asha — the child calls you Asha didi - an AI t…" sha=f9eeba29353941de
+            → "Namaste Golu, main Asha, tumhari AI teacher hoon. Aaj Grams aur kilograms padhenge. Tumhe cricket pasand hai?"
+16:43:23.518 [client] rrweb.chunk {"to":1791737001386,"seq":1,"from":1791736991674,"_mono":13896,"bytes":473177,"events":56,"failed":503}
+16:43:23.559 [client] net POST /api/studio/viewport 200 2610ms
+16:43:23.613 [client] net.sse {"path":"/api/studio/stream","_mono":13992,"phase":"open"}
+16:43:23.614 [client] rrweb.chunk {"to":1791737001849,"seq":2,"from":1791737001644,"_mono":13993,"bytes":22242,"events":4,"failed":503}
+16:43:24.382 [server] ← POST /api/lesson/start 201 7037ms
+16:43:24.537 [server] ← POST /api/studio/viewport 200 42ms
+16:43:25.032 [client] net GET /api/voicesig/config 200 83ms
+16:43:25.039 [server] ← GET /api/voicesig/config 200 1ms
+16:43:25.271 [server] ← POST /api/voice/stt-token 200 803ms
+16:43:25.332 [client] asr.config {"lane":"cascade","_mono":14956,"model":"taxila-live-transcribe","language":null,"promptChars":187,"turnDetection":"server_vad"}
+16:43:25.336 [client] net POST /api/voice/stt-token 200 3699ms
+16:43:25.871 [client] mic.state {"why":null,"lane":"cascade","_mono":15494,"state":"transport","transport":"webrtc"}
+16:43:25.912 [server] model taxila-fast chat 200 1446ms in=225 out=27 prompt="task: pick skin, hook and decor for a short practice activi…" sha=a93186b19193f0d7
+            → "{"skin":"cricket","hook":"cricket.scorer","decor":"obj.ball"}"
+16:43:26.008 [client] she starts speaking
+16:43:26.014 [client] desk {"mic":{"talking":false,"available":true,"tapToTalk":true},"gate":null,"_mono":15631,"floor":"speaking","phase":"warmup","sheet":null,"strip":null,"layout":"phone","typing":false,"offline":false,"summary":false,"answerForm":"words"}
+16:43:26.080 [server] tts.first {"cache":"miss","engine":"dhd","framed":true,"firstMs":1600,"setupMs":1,"sentences":3,"prewarmedMs":3171}
+16:43:29.771 [server] she finished 5290ms
+16:43:29.772 [server] ← POST /api/voice/tts-stream 200 5291ms
+16:43:30.126 [client] net POST /api/voice/tts-stream 200 4433ms
+16:43:30.388 [client] mic mode tap
+16:43:30.388 [client] mic.state {"lane":"cascade","_mono":20005,"state":"hands_free","transport":"webrtc","pushToTalk":false}
+16:43:30.391 [client] mic mode duplex
+16:43:30.391 [client] desk {"mic":{"talking":false,"available":true,"tapToTalk":false},"gate":null,"_mono":20007,"floor":"speaking","phase":"warmup","sheet":null,"strip":null,"layout":"phone","typing":false,"offline":false,"summary":false,"answerForm":"words"}
+16:43:30.391 [client] mic.duplex.start {"why":null,"lane":"cascade","live":true,"mode":"on","_mono":20008}
+16:43:31.733 [client] rrweb.chunk {"to":1791737011529,"seq":3,"from":1791737001983,"_mono":21349,"bytes":559248,"events":42,"failed":503}
+16:43:34.725 [client] she finished
+16:43:34.731 [client] desk {"mic":{"talking":false,"available":true,"tapToTalk":false},"gate":null,"_mono":24347,"floor":"your_turn","phase":"warmup","sheet":null,"strip":null,"layout":"phone","typing":false,"offline":false,"summary":false,"answerForm":"words"}
+16:43:34.964 [client] audio.tts.clip {"ms":8800,"seq":1,"type":"audio/webm;codecs=opus","_mono":24580,"bytes":107833,"failed":503,"status":"completed","replyId":"cascade-1","lessonId":"86cf709d-5aa3-44ca-941d-79894b535b79"}
+16:43:37.526 [client] duplex.decision {"mode":"on","_mono":27142,"acted":true,"phase":"committed","action":"SPEAK","detail":"speak:wt1_nudge:prompt","reasons":["wt1_ladder"]}
+16:43:37.526 [client] duplex.commit {"op":"speak","mode":"on","_mono":27142,"acted":true,"reason":"wt1_nudge"}
+16:43:41.739 [client] rrweb.chunk {"to":1791737021553,"seq":4,"from":1791737011869,"_mono":31356,"bytes":588236,"events":38,"failed":503}
+16:43:51.665 [client] rrweb.chunk {"to":1791737031681,"seq":5,"from":1791737021838,"_mono":41282,"bytes":613369,"events":38,"failed":503}
+16:44:01.782 [client] rrweb.chunk {"to":1791737041712,"seq":6,"from":1791737031943,"_mono":51399,"bytes":611106,"events":37,"failed":503}
+16:44:10.823 [client] perf.memory {"_mono":60439,"usedMB":32,"limitMB":3586}
+16:44:11.605 [client] rrweb.chunk {"to":1791737051624,"seq":7,"from":1791737041996,"_mono":61221,"bytes":597445,"events":36,"failed":503}
+16:44:21.696 [client] rrweb.chunk {"to":1791737061720,"seq":8,"from":1791737051899,"_mono":71312,"bytes":622458,"events":37,"failed":503}
+16:44:31.675 [client] rrweb.chunk {"to":1791737071604,"seq":9,"from":1791737061970,"_mono":81292,"bytes":605993,"events":36,"failed":503}
+16:44:35.830 [client] vad.start {"_mono":85446,"itemId":"it1","source":"server","audioStartMs":85220}
+16:44:35.835 [client] desk {"mic":{"talking":false,"available":true,"tapToTalk":false},"gate":null,"_mono":85452,"floor":"listening","phase":"warmup","sheet":null,"strip":null,"layout":"phone","typing":false,"offline":false,"summary":false,"answerForm":"words"}
+16:44:36.094 [client] vad.start {"_mono":85711,"source":"local","herPlaying":false}
+16:44:36.211 [client] vad.sustain {"_mono":85827,"source":"local","herPlaying":false}
+16:44:36.545 [client] child (partial) "Mujhe"
+16:44:36.938 [client] child (partial) "Mujhe lagta"
+16:44:37.655 [client] child (partial) "Mujhe lagta hai yeh"
+16:44:38.061 [client] child (partial) "Mujhe lagta hai yeh recursive"
+16:44:38.406 [client] child (partial) "Mujhe lagta hai yeh recursive rule"
+16:44:38.556 [client] net POST /api/lesson/turn-prefetch 202 369ms
+16:44:38.558 [client] vad.end {"_mono":89470,"source":"local","herPlaying":false}
+16:44:38.572 [client] net POST /api/lesson/turn-ack 204 172ms
+16:44:38.600 [client] net.req {"body":{"duplex":{"cutInReason":null,"engineSummary":{"engine":"stage-a/live","reasons":["turn_end"],"pComplete":[],"decidedAfterEndMs":1397},"safetyPending":null,"transcriptHash":"1c8de591"},"turnSeq":1,"lessonId":"86…
+16:44:38.628 [client] audio.mic.chunk {"ms":3724,"type":"audio/webm;codecs=opus","_mono":89540,"bytes":57203,"failed":503,"itemId":"it1","source":"server_vad","closedBy":"final","lessonId":"86cf709d-5aa3-44ca-941d-79894b535b79","utterance":1}
+16:44:38.865 [client] child (partial) "Mujhe lagta hai yeh recursive rule hai"
+16:44:39.138 [client] child said "Mujhe lagta hai yeh recursive rule hai"
+16:44:39.298 [client] duplex.decision {"mode":"on","_mono":89253,"acted":true,"phase":"committed","action":"SPEAK","detail":"speak:turn_end:body","reasons":["prosody_continue","silence_long_for_child"]}
+16:44:39.298 [client] duplex.commit {"op":"speak","mode":"on","_mono":89253,"acted":true,"reason":"turn_end"}
+16:44:39.307 [client] ui.answer {"form":"spoken","text":"Mujhe lagta hai yeh recursive rule hai","_mono":89262,"verdict":null,"delivery":"sending","withHelp":false}
+16:44:39.657 [client] net POST /api/studio/viewport 200 435ms
+16:44:39.811 [server t1] ← POST /api/lesson/turn-ack 204 111ms
+16:44:40.064 [server t1] ← POST /api/lesson/turn-prefetch 202 360ms
+16:44:40.067 [server t1] CHILD → "Mujhe lagta hai yeh recursive rule hai" (POST /api/lesson/turn)
+16:44:40.435 [server] ← POST /api/studio/viewport 200 360ms
+16:44:40.998 [client] rrweb.chunk {"to":1791737081559,"seq":10,"from":1791737071888,"_mono":91290,"bytes":586531,"events":38,"failed":503}
+16:44:41.535 [server t1] model grok-4-1-fast-non-reasoning chat 200 1475ms in=596 out=28 prompt="You label one reply from an Indian school child (class 4) i…" sha=d7f3d34f15e54f64
+            → "{"belief":"none","off_topic":true,"distress":false,"asks_for_answer":false,"wants_to_stop":false}"
+16:44:41.829 [server t1] model taxila-gpt6 chat 200 1797ms in=1112 out=43 prompt="You read ONE turn from an Indian school child (class 1-9) i…" sha=491a8a20bb194b49
+            → "{"intent":"noise","also":[],"answer":"","topic":"","learning":false,"in_bounds":true,"lang_to":"","method":"","distress":false,"confidence":0.83}"
+16:44:41.926 [server t1] model taxila-fast chat 200 1739ms in=1111 out=42 prompt="WHO YOU ARE: Asha — the child calls you Asha didi - an AI t…" sha=c6f07e1f79a106bf
+            → "Golu, “recursive rule” patterns mein hota hai; aaj hum weight compare karenge. Kirana mein 1 kilogram chawal ya 500 grams? Tum kya loge?"
+16:44:42.966 [server t1] model taxila-fast chat 200 1088ms in=1057 out=38 prompt="WHO YOU ARE: Asha — the child calls you Asha didi - an AI t…" sha=361ec867607c118e
+            → "Golu, tumne “recursive rule” kaha—baat thodi adhuri reh gayi. Kya tum apna poora thought phir se bataoge?"
+16:44:43.481 [client] she starts speaking
+16:44:43.498 [client] desk {"mic":{"talking":false,"available":true,"tapToTalk":false},"gate":null,"_mono":93981,"floor":"speaking","phase":"warmup","sheet":null,"strip":null,"layout":"phone","typing":false,"offline":false,"summary":false,"answerForm":"words"}
+16:44:43.519 [client] net POST /api/lesson/turn 200 4203ms
+16:44:43.566 [client] net POST /api/studio/viewport 200 79ms
+16:44:43.642 [client] she will say "Golu, tumne kya kaha, thoda saaf bolo—kaunsa rule recursive lag raha hai?"
+16:44:43.647 [client] SCREEN card "Golu, tumne kya kaha, thoda saaf bolo—kaunsa rule recursive lag raha hai?"
+16:44:43.985 [server t1] model taxila-fast chat 200 1018ms in=1057 out=25 prompt="WHO YOU ARE: Asha — the child calls you Asha didi - an AI t…" sha=361ec867607c118e
+            → "Golu, tumne kya kaha, thoda saaf bolo—kaunsa rule recursive lag raha hai?"
+16:44:44.083 [server t1] TURN 1 move=repair beat=arrive
+            she says: "Golu, tumne kya kaha, thoda saaf bolo—kaunsa rule recursive lag raha hai?"
+            accepted: move,knobs
+            speculation miss: ["instructions+lastMove+verdict [spec: - topic: Grams and kilograms (class 4 maths) · phase teach · turn 1 · minute 1.4 || real: - topic: Grams and kilograms (class 4 maths) · phase warmup · turn 1 · minute 1.4]"]
+            reasons: lane.cascade turn.speculation_miss turn.prefetch_adopted cls.no_evidence cls_source.model verdict.ungraded vs.none conv2.note.noise request.unclear
+16:44:44.083 [server t1] speculation miss (1): ["instructions+lastMove+verdict [spec: - topic: Grams and kilograms (class 4 maths) · phase teach · turn 1 · minute 1.4 || real: - topic: Grams and kilograms (class 4 maths) · phase warmup · turn 1 · minute 1.4]"]
+16:44:44.083 [server t1] classify no_evidence via model verdict=ungraded
+16:44:44.083 [server t1] safety distress=false
+16:44:44.083 [server t1] db.write {"seqs":0,"turn":1,"table":"turn","lessonId":"86cf709d-5aa3-44ca-941d-79894b535b79","brainTrace":true}
+16:44:44.085 [server t1] ← POST /api/lesson/turn 200 4017ms
+16:44:44.480 [server] tts.first {"cache":"miss","engine":"dhd","framed":true,"firstMs":134,"setupMs":1,"sentences":1,"prewarmedMs":326}
+16:44:44.552 [server] ← POST /api/studio/viewport 200 45ms
+16:44:44.826 [client] net POST /api/voice/tts-stream 200 159ms
+16:44:45.911 [server] she finished 1565ms
+16:44:45.912 [server] ← POST /api/voice/tts-stream 200 1566ms
+16:44:48.805 [client] she finished
+16:44:48.811 [client] desk {"mic":{"talking":false,"available":true,"tapToTalk":false},"gate":null,"_mono":99373,"floor":"your_turn","phase":"warmup","sheet":null,"strip":null,"layout":"phone","typing":false,"offline":false,"summary":false,"answerForm":"words"}
+16:44:49.007 [client] audio.tts.clip {"ms":5487,"seq":3,"type":"audio/webm;codecs=opus","_mono":99570,"bytes":83665,"failed":503,"status":"completed","replyId":"cascade-2","lessonId":"86cf709d-5aa3-44ca-941d-79894b535b79"}
+16:44:50.765 [client] rrweb.chunk {"to":1791737091613,"seq":11,"from":1791737081887,"_mono":101327,"bytes":591990,"events":44,"failed":503}

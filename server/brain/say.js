@@ -3,7 +3,7 @@
 // breaks, praise/verdict agreement, the screen, register, script, length and the turn's shape. Moved out of
 // server/routes/lesson.js unchanged by W2-E BR1 (BUILD-PLAN W2-E #2); the lesson start and the turn both call it.
 import { safetyOpeningFor, safetyModeOf } from "../relational/openings.js";
-import { chat, DEPLOY, isContentFilter } from "../azure.js";
+import { chat, DEPLOY, isContentFilter, nonHarmFilter } from "../azure.js";
 import { floorViolations, scrubPii } from "../director/safety.js";
 import { upcomingItem, hintShapeWords } from "../director/state.js";
 import { findItem, promptFor, revealsAnswer, posesItem, handsBack, asksWhy, stripRungLabel } from "../director/items.js";
@@ -71,6 +71,32 @@ export const scrubbed = (t) => scrubPii(t).text;
 
 /** The reply model call, injectable for tests of the guards (tests/lesson-truth.test.mjs); production uses azure.js. */
 export const replyDeps = { chat };
+
+/**
+ * round 5 (sim lab p43, main safety review): do the CHILD'S OWN WORDS trip the content filter? The reply prompt carries the
+ * system brief, her earlier lines and the history as well, and a harm category can fire on that mix: the reply prompt for
+ * "6 aur 5... 30... 3,00,000?" came back `sexual` (TEST lesson 2af743d2, turn 4) while the classifier and the labeller
+ * passed the same words, and the child got the helpline script. The probe sends the child's recent words alone (masked as
+ * the reply saw them, joined so a disclosure spread over several turns is judged whole) through the reply deployment, so
+ * the same filter policy judges them. "harm": a harm or unreadable block; "clear": passed (or only an injection / copyright
+ * detector fired); "unknown": the probe itself failed, which the caller treats as harm (it could not be cleared).
+ * @returns {Promise<"harm"|"clear"|"unknown">}
+ */
+export async function childWordsTrip(words, { trace } = {}) {
+  if (!words) return "clear";
+  try {
+    await replyDeps.chat(DEPLOY.reply, [{ role: "system", content: "Answer with one word: ok" }, { role: "user", content: words }],
+      { maxTokens: 16, effort: "none", timeoutMs: 4000, retries: 1, trace, purpose: "filter_probe" });
+    return "clear";
+  } catch (e) {
+    if (isContentFilter(e)) return nonHarmFilter(e) ? "clear" : "harm";
+    return "unknown";
+  }
+}
+
+/** The child's words a filter probe judges: their last few turns and this one, masked, newest last. */
+export const probeWords = (history, childText) =>
+  [...history.filter((t) => t.who !== "teacher").slice(-4).map((t) => t.text), childText].filter((t) => typeof t === "string" && t.trim()).map(scrubbed).join("\n");
 
 /** Keep whole sentences up to `max` words (last-resort guard after one rewrite failed). */
 export function trimToWords(text, max) {
@@ -193,8 +219,27 @@ export function safeguardLine(ctx = {}, { kind = null } = {}) {
   const q = open.mode === "en" ? CHECK_Q.en : CHECK_Q[open.mode][ctx.address === "aap" ? "aap" : "tum"];
   return `${open.text} ${q}`;
 }
+// round 5 (sim lab voice lane; persona p19): the safeguard's STAY turn (the episode's second turn: "stay with them and keep
+// listening") whose model line broke a guard fell back to the FIRST turn's fixed line, word for word ("Aapne mujhe batakar
+// bilkul sahi kiya..." twice in a row, after the child had answered). The stay turn has its own fixed line: she is here,
+// no hurry, both helplines named (the floor's requirement), and a door left open instead of the same question again.
+const STAY = {
+  en: { tum: "I'm right here, and there's no hurry. If anything is worrying you, a grown-up you trust can help, and you can call Childline 1098 or Tele-MANAS 14416 any time. You can tell me whatever you want to.",
+    aap: "I'm right here, and there's no hurry. If anything is worrying you, a grown-up you trust can help, and you can call Childline 1098 or Tele-MANAS 14416 any time. You can tell me whatever you want to." },
+  hinglish: { tum: "Main yahin hoon, koi jaldi nahi hai. Agar koi baat pareshan kar rahi ho, toh jis bade par bharosa ho woh madad kar sakte hain, aur Childline 1098 ya Tele-MANAS 14416 pe kabhi bhi call kar sakte ho. Jo mann ho, mujhe bata sakte ho.",
+    aap: "Main yahin hoon, koi jaldi nahi hai. Agar koi baat pareshan kar rahi ho, toh jis bade par bharosa ho woh madad kar sakte hain, aur Childline 1098 ya Tele-MANAS 14416 pe kabhi bhi call kar sakte hain. Jo mann ho, mujhe bata sakte hain." },
+  hi: { tum: "मैं यहीं हूँ, कोई जल्दी नहीं है। अगर कोई बात परेशान कर रही हो, तो जिस बड़े पर भरोसा हो वे मदद कर सकते हैं, और चाइल्डलाइन 1098 या टेली-मानस 14416 पर कभी भी फ़ोन कर सकते हो। जो मन हो, मुझे बता सकते हो।",
+    aap: "मैं यहीं हूँ, कोई जल्दी नहीं है। अगर कोई बात परेशान कर रही हो, तो जिस बड़े पर भरोसा हो वे मदद कर सकते हैं, और चाइल्डलाइन 1098 या टेली-मानस 14416 पर कभी भी फ़ोन कर सकते हैं। जो मन हो, मुझे बता सकते हैं।" },
+};
+/** The fixed line for the safeguard's stay turn (never the first turn's line again). Exported for tests. */
+export function safeguardStayLine(ctx = {}) {
+  const mode = safetyModeOf(ctx.lang);
+  return STAY[mode === "en" ? "en" : mode === "hi" ? "hi" : "hinglish"][ctx.address === "aap" ? "aap" : "tum"];
+}
 export function fallbackReply(state, item) {
-  if (state.lastMove?.kind === "safeguard") return safeguardLine(state.ctx, { kind: state.safeguard?.kind ?? null });
+  if (state.lastMove?.kind === "safeguard") {
+    return (state.safeguard?.calm ?? 0) >= 1 ? safeguardStayLine(state.ctx) : safeguardLine(state.ctx, { kind: state.safeguard?.kind ?? null });
+  }
   const lang = state.ctx.lang;
   const kind = state.lastMove?.kind;
   // round 2 safety floor: a check-in the model could not write is the fixed offer of the choices (stop named), never
@@ -453,7 +498,42 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
     // the child's words had passed the predicate and the model distress read. A block on the PROMPT (HTTP 400: the child's
     // words are in it) and a second completion block still fail CLOSED, as before.
     let again = null;
-    if (isContentFilter(e) && e.status === 200) {
+    // round 5 (sim lab baseline, main safety review): a block whose categories are KNOWN and are only prompt-injection or
+    // copyright detectors ("jailbreak": a child's maths answer, "6 aur 5... 30... 3,00,000?") is not a child-safety signal.
+    // One retry on the system prompt and this turn only (the history may carry what tripped it); if that is blocked too, a
+    // neutral fallback line, never the helplines. Harm categories (sexual, self_harm, violence, hate) and unreadable blocks
+    // still fail CLOSED below, exactly as before.
+    const neutral = (code) => ({ reply: fallbackReply(state, item), guard: { caught: [code], rewritten: false, replaced: true } });
+    const lone = [messages[0], messages[messages.length - 1], ...(lastNotes ? [{ role: "system", content: lastNotes }] : [])];
+    let triedLone = false;
+    if (isContentFilter(e) && nonHarmFilter(e)) {
+      console.warn(`[lesson] reply blocked by a non-harm filter (${e.filterCats.join(",")}): one retry on this turn alone`);
+      triedLone = true;
+      try { again = await ask(lone); } catch (e2) { if (isContentFilter(e2) && !nonHarmFilter(e2)) e = e2; }
+      if (!again && !(isContentFilter(e) && !nonHarmFilter(e))) return neutral("content_filter_nonharm");
+    }
+    // round 5 (sim lab p43, main safety review): a HARM (or unreadable) block on the PROMPT is the filter judging the whole
+    // mix (the brief, her lines, the history, the child's words), not the child. The safeguard fires only when the CHILD'S
+    // OWN WORDS trip it: a probe of their recent words alone (childWordsTrip) runs beside one retry on this turn alone. The
+    // probe blocked on a harm category, or failing for any reason, fails CLOSED exactly as before, whatever the retry did.
+    // A clear probe: the retry's reply if it came back, else a neutral line, never the helplines. The completion block
+    // (HTTP 200, below) is unchanged: there the prompt with the child's words already passed.
+    if (!again && isContentFilter(e) && !nonHarmFilter(e) && e.status !== 200) {
+      const cats = (e.filterCats ?? []).join(",") || "unreadable";
+      const [retry, probe] = await Promise.all([
+        triedLone ? null : ask(lone).catch(() => null),
+        childWordsTrip(probeWords(history, childText), { trace }),
+      ]);
+      if (probe !== "clear") {
+        console.warn(`[lesson] reply prompt blocked (${cats}); the child's own words ${probe === "harm" ? "trip the filter" : "could not be cleared"}: fail closed`);
+        return blocked();
+      }
+      console.warn(`[lesson] reply prompt blocked (${cats}) but the child's own words pass: ${retry ? "the retry on this turn alone" : "a neutral line"}`);
+      if (!retry) return neutral("content_filter_context");
+      again = retry;
+      guardSlot.filter = "context";
+    }
+    if (!again && isContentFilter(e) && e.status === 200 && !nonHarmFilter(e)) {
       console.warn("[lesson] reply completion blocked by the content filter: one fresh reply");
       // main safety review: if the fresh reply fails for any other reason (a timeout, a 5xx), the ORIGINAL block stands
       // and the turn fails closed; only a second filter block replaces it (same outcome)
@@ -461,13 +541,14 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
     }
     if (again) reply = again;
     else {
+      if (isContentFilter(e) && nonHarmFilter(e)) return neutral("content_filter_nonharm");
       if (isContentFilter(e)) { console.warn("[lesson] reply blocked by the content filter"); return blocked(); }
       console.warn("[lesson] reply unavailable, falling back:", e.message);
       return { reply: fallbackReply(state, item), guard: { caught: ["unavailable"], rewritten: false, replaced: true } };
     }
   }
   let found = problems(reply);
-  const guard = { caught: found, rewritten: false, replaced: false, ...(found.length ? { firstDraft: reply } : {}), ...(guardSlot.used ? { leadSlot: true } : {}) };
+  const guard = { caught: found, rewritten: false, replaced: false, ...(found.length ? { firstDraft: reply } : {}), ...(guardSlot.used ? { leadSlot: true } : {}), ...(guardSlot.filter ? { filter: guardSlot.filter } : {}) };
   // r4-latency (TAXILA_TTS_FIRST_SENTENCE, SHADOW): can the draft's first TTS sentence be LOCKED now — could it start speaking
   // while the rest of the turn is still being guarded or rewritten? Locked only when it passes every per-sentence guard on its
   // own, names nothing on the screen (the child would still see the last turn's), asks nothing, and the minimal turn
@@ -771,15 +852,32 @@ function confirmsFirst(t) {
 const WRITE_TO_SAY = [
   [/\blikh\s+(?:kar|ke)\s+(?:bhejo|batao|dikhao)\b/gi, "bolkar batao"], [/\blikh\s+(?:kar|ke)\s+(?:bhejiye|bataiye|dikhaiye)\b/gi, "bolkar bataiye"],
   [/\blikh\s+do\b/gi, "bata do"], [/\blikh\s+dijiye\b/gi, "bata dijiye"], [/\blikhiye\b/gi, "bataiye"], [/\blikho\b/gi, "batao"],
+  // round 5 (owner 2026-10-14, phone, voice-first: "homework type karke bhejo" twice): the forms the first list missed
+  [/\btype\s+kar\s*ke\s+(?:bhejo|bhej\s+do|batao|send\s+karo|dikhao)\b/gi, "bolkar batao"], [/\btype\s+kar\s*ke\s+(?:bhejiye|bataiye|dikhaiye)\b/gi, "bolkar bataiye"],
+  [/\blikh\s*(?:kar|ke)\s*(?:bhejo|batao|dikhao)\b/gi, "bolkar batao"], [/\blikh\s*(?:kar|ke)\s*(?:bhejiye|bataiye|dikhaiye)\b/gi, "bolkar bataiye"],
+  [/\b(?:type|message)\s+(?:karna|karein|karenge|karo\s+na)\b/gi, "bolna"], [/\bmessage\s+(?:karo|kar\s+do|bhejo)\b/gi, "bolo"],
+  [/टाइप\s*(?:करके|कर\s*के)\s*(?:भेजो|बताओ|भेज\s*दो)/g, "बोलकर बताओ"], [/टाइप\s*(?:करो|कर\s*दो)/g, "बोलो"], [/लिख\s*(?:कर|के)\s*(?:भेजो|बताओ)/g, "बोलकर बताओ"],
+  [/\btype\s+(?:it\s+)?(?:and\s+send(?:\s+it)?|it\s+in|in\s+the\s+chat)\b/gi, "say it"],
   [/\btype\s+(?:karo|kar\s+do)\b/gi, "bolo"], [/\btype\s+(?:kijiye|kariye|kar\s+dijiye)\b/gi, "boliye"],
   [/\b(?:write|type)\s+(?:it|that|this|your\s+answer|the\s+answer)(?:\s+down)?\b/gi, "say it"], [/\bwrite\s+down\b/gi, "say"],
+  // round 5 (QA D20, session-first intake: "homework ka question bhejo" n=2/2 to a voice-first class 4 child): they say it
+  [/\b(question|sawaal|sawal|swaal|prashn|homework)\s+bhej\s*(?:o|do|dijiye)\b/gi, (m) => `${m.split(/\s+/)[0]} bolo`], [/(सवाल|प्रश्न|होमवर्क)\s*भेजो/g, (m) => `${m.split(/\s+/)[0].replace("भेजो", "")} बोलो`],
+  // round 5 (main, owner-5-visual V3.child_draws on the voice lane: after "animation dikhao na" she told the CHILD to draw
+  // it): no drawing pad exists in the lesson, so on a spoken lane the child pictures it and says it, never draws it
+  [/\b(?:draw|drawing|chitra|picture)\s+(?:bana\s*)?(?:kar|ke|bana)\s*(?:ke|kar)?\s+(?:dikhao|batao|bhejo)\b/gi, "bolkar batao"],
+  [/\b(?:bana|banaa)\s*(?:kar|ke)\s+(?:dikhao|bhejo)\b/gi, "bolkar batao"],
+  [/\b(?:draw|drawing|sketch)\s+(?:karo|kar\s+lo|kar\s+do|banao)\b/gi, "mann mein socho"], [/\b(?:draw|drawing|sketch)\s+(?:kijiye|kariye|banaiye)\b/gi, "mann mein sochiye"],
+  [/\b(?:chitra|tasveer|picture)\s+banao\b/gi, "tasveer socho"], [/\b(?:copy|kaagaz|kagaz|notebook)\s+(?:par|pe|mein)\s+bana(?:o|kar)\b/gi, "mann mein socho"],
+  [/(?:ड्रॉ|ड्रा|चित्र)\s*(?:करो|बनाओ)/g, "मन में सोचो"], [/बना\s*(?:कर|के)\s*(?:दिखाओ|भेजो)/g, "बोलकर बताओ"],
+  [/\bdraw\s+(it|this|that)\s+and\s+show\s+me\b/gi, (m) => m.replace(/draw/i, "picture").replace(/show/i, "tell")],
+  [/\b(?:can\s+you\s+|now\s+|please\s+)?draw\s+(?:it|this|that|a|an|the|one)\b/gi, (m) => m.replace(/draw/i, "picture")],
 ];
 export function speakNotWrite(reply, askEnd = null) {
   const r = String(reply ?? "");
   const ask = askEnd ? String(askEnd).trim() : "";
   const cut = ask && r.trim().endsWith(ask) ? r.trim().length - ask.length : r.length;
   let lead = r.slice(0, cut);
-  for (const [re, to] of WRITE_TO_SAY) lead = lead.replace(re, (m) => (m[0] === m[0].toUpperCase() ? to[0].toUpperCase() + to.slice(1) : to));
+  for (const [re, to] of WRITE_TO_SAY) lead = lead.replace(re, (m) => { const t = typeof to === "function" ? to(m) : to; return /^\p{Lu}/u.test(m) ? t[0].toUpperCase() + t.slice(1) : t; });
   return lead + r.slice(cut);
 }
 
