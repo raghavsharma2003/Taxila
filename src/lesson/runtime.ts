@@ -79,6 +79,8 @@ export interface LessonState {
   /** When a held answer for an EARLIER, page-hide-closed lesson came back as a disclosure (TurnResponse.late with a
    *  safeguard move): the Desk raises the Help sheet with the helplines, though that lesson stays closed. */
   lateSafeguard: number | null;
+  /** round 5 (QA D23): the Help sheet's first action; once "helpline" in a lesson, it stays "helpline". */
+  helpLead: "helpline" | "grownup" | null;
   /**
    * The Director's pace knobs (TurnResponse.pace; W2-C emits them, W2-D carries them): the YOUR TURN nudge timer reads
    * waitNudgeSec, the realtime lane's server VAD reads endpointSilenceMs (never below the minted 900 ms, at most 1200). null until a turn sends them.
@@ -190,6 +192,7 @@ const initialState = (mode: LessonMode = "voice"): LessonState => ({
   replySeq: null,
   replyText: null,
   lateSafeguard: null,
+  helpLead: null,
   pace: null,
   laneSwitch: null,
 });
@@ -311,7 +314,7 @@ export class LessonRuntime {
       if (s.resumed && s.turnSeqFloor) this.outbox.raiseFloor(s.lessonId, s.turnSeqFloor);
       // Ended or unmounted while starting: the server opened a lesson nobody will run.
       if (gen !== this.generation) return this.closeQuietly(lessonId);
-      this.store.set({ lessonId: s.lessonId, topic: s.topic, teacher: s.teacher });
+      this.store.set((st) => ({ lessonId: s.lessonId, topic: s.topic, teacher: s.teacher, ...(s.helpLead ? { helpLead: leadOf(st.helpLead, s.helpLead) } : {}) }));
       const link = this.createLink(mode, { lessonId: s.lessonId, voice: s.teacher.voice, levels: this.levels, api: this.api, ...(cascade ? { cascade } : {}) });
       this.link = link;
       this.unlisten = link.on((e) => this.onLinkEvent(e));
@@ -472,7 +475,7 @@ export class LessonRuntime {
             const r = await this.outbox.resend(rec.key, id, (req, signal) => this.api.turn(req, signal));
             sent = true;
             // Safety by predicate: a late answer that was a disclosure still reaches the helplines.
-            if (r?.late && (r.move?.kind === "safeguard" || r.teacherReply)) this.store.set({ lateSafeguard: Date.now() });
+            if (r?.late && (r.move?.kind === "safeguard" || r.teacherReply)) this.store.set((s) => ({ lateSafeguard: Date.now(), helpLead: leadOf(s.helpLead, r.helpLead) }));
           } catch (err) {
             const cause = err instanceof OutboxHeld ? err.cause : err;
             const status = cause instanceof ApiError ? cause.status : undefined;
@@ -830,7 +833,8 @@ export class LessonRuntime {
     if (r.teacherReplySeq !== undefined || r.teacherReply) this.store.set({ replySeq: r.teacherReplySeq ?? null, replyText: r.teacherReply ?? null });
     if (!moduleOnly) this.faceTurn++;
     this.applyUi(r.ui ?? {});
-    this.store.set((s) => ({ move: r.move ?? null, debug: r.debug ?? null, error: null, failure: s.failure?.kind === "send" ? null : s.failure }));
+    this.store.set((s) => ({ move: r.move ?? null, debug: r.debug ?? null, error: null, failure: s.failure?.kind === "send" ? null : s.failure,
+      ...(r.helpLead ? { helpLead: leadOf(s.helpLead, r.helpLead) } : {}) }));
     this.deferred = null; // a newer Director answer supersedes a reaction still waiting for the floor
 
     if (link.mode === "text") {
@@ -1168,6 +1172,11 @@ export class LessonRuntime {
 }
 
 /** A start refused by the realtime lane for quota: the token route answered 503 { fallback: "cascade" }. */
+/** round 5 (QA D23): the Help sheet's lead is sticky within a lesson: once the helplines led, they keep leading. */
+function leadOf(was: LessonState["helpLead"], now: TurnResponse["helpLead"]): LessonState["helpLead"] {
+  return was === "helpline" || now === "helpline" ? "helpline" : now ?? was;
+}
+
 function isLaneFallback(err: unknown): boolean {
   return err instanceof ApiError && err.status === 503 && (err.body as { fallback?: unknown } | null)?.fallback === "cascade";
 }

@@ -27,7 +27,7 @@ export const intakeRecognise = ({ a, b }) => `they cannot recall it: one light t
 /** The intake is decided: receive what they said in a few words; the agenda in ONE spoken line built from the decided segment
  *  (what comes now, then a short look back); one two-way choice of order at most; never a list of topics. */
 export const intakeAgenda = ({ purpose }) => {
-  const now = { child_request: "what they asked for", test_revise: "getting ready for the test", homework: "their homework, step by step, never doing it for them",
+  const now = { child_request: "what they asked for", test_revise: "getting ready for the test", homework: "their homework, step by step, never doing it for them; first ask them to read the question aloud to you (they speak — never ask them to type or write it)",
     school_continue: "carrying on from what their teacher did", school_reteach: "today's class idea again, a new way in", review: "a quick look back at an earlier idea",
     level_path: "the next idea on their path", explore: "a short look at what they asked about", foundation: "a short foundation step first, then today's class idea" }[purpose] ?? "today's idea";
   return `receive their words in a few of yours; the agenda in one short spoken line: ${now}; at most one two-way choice of order (an example first or a try first); never a list of topics`;

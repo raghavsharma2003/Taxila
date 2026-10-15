@@ -732,6 +732,7 @@ export function useDesk(runtime: LessonRuntime, bridge: UiBridge | null, ctx: De
     lights: ended && state.phase === "ended" ? "up" : "down",
     layout: finalLayout,
     helpBackVisible,
+    helpLead: state.helpLead ?? "grownup",
     reducedMotion: ctx.reducedMotion,
     faceForm: ctx.faceForm,
     lampBreath: floor === "your_turn" ? (young && yt.glowStrong ? 2 : 1) : 0,

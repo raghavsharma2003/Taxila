@@ -399,7 +399,7 @@ export function Help() {
         <section className="pa-card" aria-labelledby="pa-worry-h" id="alert">
           <h2 id="pa-worry-h" className="pa-h2">When a child says something worrying</h2>
           <ul className="pa-steps">
-            <li>{T} stops the lesson at once and shows {name} the helplines and "Talk to a grown-up at home".</li>
+            <li>{T} stops the lesson at once and shows {name} the helplines and "Talk to a grown-up you trust".</li>
             <li>{T} never asks {name} to explain, and never keeps it a secret from you.</li>
             <li>Taxila's safeguarding team is told, and a person looks at what happened. If they need to reach you, they will.</li>
             <li>Lessons may pause while they look. {name} sees a calm screen with the helplines, never a warning.</li>

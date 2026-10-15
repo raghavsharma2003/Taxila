@@ -126,7 +126,7 @@ export const EN = {
   // safety help sheet (§6.4.9). Helpline numbers re-verified at launch [M: re-verify].
   "help.title": "You're not in trouble.",
   "help.sub": "You can talk to someone.",
-  "help.grownup": "Talk to a grown-up at home",
+  "help.grownup": "Talk to a grown-up you trust",
   "help.childline": "Call Childline 1098",
   "help.telemanas": "Call Tele-MANAS 14416",
   "help.back": "Back to the lesson",

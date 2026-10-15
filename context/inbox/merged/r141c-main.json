@@ -1,0 +1,51 @@
+{
+ "nodes": [
+  {
+   "id": "dc-r141-see-ask-medium-and-drawing",
+   "kind": "decision",
+   "at": "2026-10-15",
+   "title": "Visual asks: (1) where it is drawn (whiteboard, board, screen, slate, Devanagari forms) is never the thing to draw ('whiteboard pe bana ke samjhao' was a request to draw a WHITEBOARD); (2) a picture asked with no thing named may be answered by a ready-made board that IS a drawing (number line, circle, ellipse, sector, stroke, line), never by a page of text boxes (QA P2 holds); (3) a see-ask that is not an example may be answered by the page on screen (board-first picks it, the seam keeps it); (4) only a PICTURE ask with no thing named takes its subject from her line. Reverse (2) if the sim lab or QA sees a ready-made drawing that does not show what her line says it shows; (3) if repeated pages rise above 0/40 on the board battery."
+  },
+  {
+   "id": "ms-r141-owner5-recovery",
+   "kind": "measurement",
+   "at": "2026-10-15",
+   "title": "owner-5 visual battery (14 checks, TEST, real Azure, adult-run) on the 14.1 packages: 302dd3c 10/14; d04a3d8 8/14 (both whiteboard asks and both picture asks); with the medium / drawing / kept fixes 12/14 then 10/14 (whiteboard: board up, pointing stripped); with the picture-only line subject 12/14 (the one miss an em-dash ASCII number line in her typed reply, V3.ascii). Release 14 package: 12/14 then 14/14."
+  },
+  {
+   "id": "open-r141-ascii-em-dash",
+   "kind": "open",
+   "at": "2026-10-15",
+   "title": "The reply guard's TEXT_ART (director/say.js) does not match an em-dash number line ('0 —|—|—|—|— 1'): it matches ASCII hyphens only. 14.2: add em/en-dash with pipe runs; she must never draw in words (it is read aloud on the spoken lane)."
+  },
+  {
+   "id": "open-r142-safety-fp-khud-garble",
+   "kind": "open",
+   "at": "2026-10-15",
+   "title": "The lexicon's khud_ko_kaata reads garbled verbs after 'khud' with no 'ko': 'maine khud bata diya' (I told it myself), 'khud satta mein aa gayi' (took power herself, sim lab p26), 'main khud gaata hoon' fire self_harm on production too. 14.2 (main safety review): no garbled verb in that slot without 'ko', recall checked on the fingerprint. Also: 'thak gayi, khatam karo na' read as distress by the classifier (sim lab p12): tiredness / wanting to stop is the stop path, not distress."
+  },
+  {
+   "id": "open-r142-continuer-positive-gate",
+   "kind": "open",
+   "at": "2026-10-15",
+   "title": "Sim lab 4237dc9e (voice, cohort on, n=16): the continuer played 'Okay…' / 'अच्छा…' right after a best-friend-secrecy line and a romance push (reads as agreement). The gate keyed on distress only. Stream 3 (14.2): a positive gate (only an ordinary lesson turn; never on the predicate, relational signals, offTopic, wantsToStop, goodbye or a safeguard/floor move). 14.1 ships with the continuer OFF for everyone, the owner included."
+  },
+  {
+   "id": "ms-r141-live",
+   "kind": "measurement",
+   "at": "2026-10-15",
+   "title": "Release 14.1 LIVE: taxila-web--s1138550-lauy (image 1138550), 2026-10-15 ~06:00 UTC. Gate PASS 1138550 (3265 pass, 0 fail; an earlier run's 2 water-cycle browser timeouts were CPU contention from a parallel battery: 60/60 alone, clean on the re-run). Packaged 1138550 (TEST): w2i-safety 39/39 alone; set-up journey phone + laptop PASS; resume + disclosure check PASS (after a disclosure: a new lesson, helpLead helpline); owner-5 12/14. Canary w0-smoke 4/4 (lesson start 1963 ms). Live on taxila.dev: no-clock-gates second lesson 201 at 11:30 IST; resume PASS (same lesson, last line again, fresh reply); recorder proof tier 2, REC chip, flag, rrweb, board, tts, account deleted. Pictures on for the owner cohort (TAXILA_PICTURES_FOR, a Container App secret copied from the duplex cohort, value never printed); the continuer OFF for everyone (sim lab safety finding); the agent lane OFF."
+  }
+ ],
+ "edges": [
+  {
+   "src": "dc-r141-see-ask-medium-and-drawing",
+   "rel": "measured_by",
+   "dst": "ms-r141-owner5-recovery"
+  }
+ ],
+ "md": {
+  "decisions": "## dc-r141-see-ask-medium-and-drawing (2026-10-15)\n**Decision.** Four rules for visual asks:\n1. The place it is drawn (whiteboard, board, screen) is never the thing to draw.\n2. A picture asked with no thing named may be answered by a ready-made board that is a drawing, never by a page of text boxes.\n3. A see-ask that is not an example may be answered by the page already on screen; it is kept, not refused.\n4. Only a picture ask takes its subject from her line.\n\n**Why.** On the 14.1 packages, owner-5 dropped from release 14's 14/14 to 8/14, with empty stages and her pointing stripped.\n\n**Reverse if** a ready-made drawing does not show what her line says, or if repeated pages rise above 0/40.",
+  "measurements": "## ms-r141-owner5-recovery (2026-10-15)\nowner-5 (14 checks) on the 14.1 packages, by stage of fixes:\n- 302dd3c: 10/14.\n- d04a3d8: 8/14.\n- With the medium / drawing / kept fixes: 12/14, then 10/14.\n- With the picture-only line subject: 12/14. The one miss was an em-dash ASCII line.\n\nRelease 14 for comparison: 12/14 and 14/14.\n\n## ms-r141-live (2026-10-15)\n- Release 14.1 is live as taxila-web--s1138550-lauy.\n- Gate PASS (3265/0).\n- Packaged checks: w2i 39/39, journey PASS, resume/disclosure PASS, owner-5 12/14.\n- Canary 4/4 (lesson start 1963 ms).\n- Live checks: a second lesson starts (201) at 11:30 IST; resume PASS; recorder proof PASS.\n- Pictures are on for the owner cohort only. The continuer and the agent lane are off."
+ }
+}

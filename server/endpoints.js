@@ -19,7 +19,9 @@
 //
 // Everything is read lazily per call (env loaded after import — dev server, tests — still applies).
 
-export const LANES = /** @type {const} */ (["CHAT", "REALTIME", "TRANSCRIBE", "TTS", "IMAGE", "RESPONSES", "SAFETY"]);
+// OVERFLOW (round 5, 14.2): the account a CHAT call moves to on a 429 when its deployment has a twin there
+// (server/azure.js overflowFor; TAXILA_OVERFLOW_DEPLOYMENTS names the twins). Unset: no overflow, as before.
+export const LANES = /** @type {const} */ (["CHAT", "REALTIME", "TRANSCRIBE", "TTS", "IMAGE", "RESPONSES", "SAFETY", "OVERFLOW"]);
 
 export class EndpointConfigError extends Error {
   constructor(message) { super(message); this.status = 0; this.code = "config"; }

@@ -7,8 +7,15 @@
 //   2 header  JSON: {v: 2, format, sentences, firstMs?, engine, cache?, prewarmedMs?, seq?}
 //   3 turn    JSON: the TurnResponse (POST /api/lesson/turn-audio only), always the first frame there
 //   4 end     JSON: {t: "end", status: "ok" | "cut" | "empty", audio?: "none" | "rate_limited", bytes?, ms?}
+//   5 adpcm   round 5 (QA D12): IMA ADPCM in place of type 0, only when the request's Accept carries `codec=adpcm` (a slow
+//             link): [predictor i16 BE][step index u8][0][nibbles] (server/voice/adpcm.js); the header says `codec: "adpcm"`.
+//             The client decodes it back to PCM inside readFrames, so nothing after the parser changes.
+import { adpcmEncoder, adpcmDecode } from "./adpcm.js";
+
 export const FRAMES_CONTENT_TYPE = "application/x-taxila-pcm-frames;v=2";
-export const FRAME = Object.freeze({ pcm: 0, event: 1, header: 2, turn: 3, end: 4 });
+export const FRAME = Object.freeze({ pcm: 0, event: 1, header: 2, turn: 3, end: 4, adpcm: 5 });
+/** The audio codec a framed request asked for: "adpcm" when its Accept says `codec=adpcm`, else "pcm". */
+export const codecOf = (req) => (/x-taxila-pcm-frames[^,]*codec=adpcm/i.test(String(req?.headers?.accept ?? "")) ? "adpcm" : "pcm");
 export const MAX_FRAME = 0xffffff;
 
 /** One frame as a Buffer. */
@@ -25,10 +32,13 @@ export function frame(type, payload) {
  * A writer over `res`: pcm(chunk) and json(type, obj) return res.write()'s backpressure flag. Unframed (an old client):
  * pcm writes the raw bytes and json frames are dropped.
  */
-export function frameWriter(res, framed) {
+export function frameWriter(res, framed, { codec = "pcm" } = {}) {
+  const enc = framed && codec === "adpcm" ? adpcmEncoder() : null;
   return {
+    codec: enc ? "adpcm" : "pcm",
     pcm(chunk) {
       if (!framed) return res.write(chunk);
+      if (enc) { const p = enc.write(chunk); return p ? res.write(frame(FRAME.adpcm, p)) : true; }
       let ok = true;
       for (let i = 0; i < chunk.length; i += MAX_FRAME) ok = res.write(frame(FRAME.pcm, chunk.subarray(i, i + MAX_FRAME))) && ok;
       return ok;
@@ -46,7 +56,8 @@ export function parseFrames(buf) {
     const len = buf.readUIntBE(i + 1, 3);
     if (i + 4 + len > buf.length) break;
     const body = buf.subarray(i + 4, i + 4 + len);
-    out.push({ type, payload: type === FRAME.pcm ? body : JSON.parse(body.toString("utf8")) });
+    out.push(type === FRAME.adpcm ? { type: FRAME.pcm, payload: adpcmDecode(body), adpcm: body.length }
+      : { type, payload: type === FRAME.pcm ? body : JSON.parse(body.toString("utf8")) });
     i += 4 + len;
   }
   return out;

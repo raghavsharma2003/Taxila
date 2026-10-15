@@ -10,7 +10,7 @@ import { whyKey, norm as normAnswer, posesItem, revealsAnswer } from "./items.js
 import { INTEREST_IDS } from "../../shared/interests.js";
 import { partsOf } from "../content/parts.js";
 import { corroborate } from "../grading/corroborate.js";
-import { plainNumberKey, numberPhrases, selfCorrected, unitsAfterNumbers, tailAgrees, signConflict, bareOfDecisive } from "../grading/spoken-number.js";
+import { plainNumberKey, numberPhrases, statedResults, selfCorrected, unitsAfterNumbers, tailAgrees, signConflict, bareOfDecisive } from "../grading/spoken-number.js";
 import { requestOf, FLOW_REQUESTS } from "./requests.js";
 import { readIntent, sexualAsk } from "../conversation/lexicon.js";
 import { requestFromReading } from "../conversation/policy.js";
@@ -369,7 +369,7 @@ const DISTRESS_SCHEMA = { type: "object", additionalProperties: false, required:
  * or could not label (it failed): the predicate is the floor, this is its backup. One retry-free small call;
  * if it fails too, the predicate's verdict stands.
  */
-async function distressCheck(text, classLevel, trace) {
+async function distressCheck(text, classLevel, trace, { failClosed = false } = {}) {
   try {
     const messages = [
       { role: "system", content: `A reply from an Indian school child (class ${classLevel}) in a lesson, in Hindi, English or Hinglish; the transcript may be misheard. distress: true ONLY for signs the child is unsafe, hurt, abused, frightened of a person, a place or what is happening to them, very sad, or may harm themself — never for ordinary frustration or worry about the lesson itself (scared of numbers, a question, a test or getting it wrong: the teacher reassures).` },
@@ -390,8 +390,52 @@ async function distressCheck(text, classLevel, trace) {
     if (isContentFilter(e) && nonHarmFilter(e)) { console.warn(`[classify] distress check blocked by a non-harm filter (${e.filterCats.join(",")}): not distress`); return false; }
     if (isContentFilter(e)) { console.warn("[classify] distress check blocked by the content filter: treated as distress"); return true; }
     console.warn("[classify] distress check unavailable:", e.message);
-    return false;
+    // the probe after a harm block on the labels (classifyModel) could not clear the words: it fails CLOSED
+    return failClosed;
   }
+}
+
+/**
+ * 14.3: do the child's words ALONE trip the content filter? A neutral brief ("Answer with one word: ok") on the reply
+ * deployment, the same probe the reply path runs (brain/say.js childWordsTrip). "harm": a harm or unreadable block;
+ * "clear": passed, or only an injection / copyright detector fired; "unknown": the probe failed (the caller fails closed).
+ * @returns {Promise<"harm"|"clear"|"unknown">}
+ */
+async function wordsTrip(text, trace) {
+  try {
+    await classifyChat(DEPLOY.reply, [{ role: "system", content: "Answer with one word: ok" }, { role: "user", content: scrubPii(text).text }],
+      { maxTokens: 16, effort: "none", timeoutMs: 4000, retries: 1, trace, quotaLane: "hot" });
+    return "clear";
+  } catch (e) {
+    if (isContentFilter(e)) return nonHarmFilter(e) ? "clear" : "harm";
+    return "unknown";
+  }
+}
+
+/** The deployments the cross-filter distress read tries, in order, distinct (TAXILA_DISTRESS_ACROSS adds to the list). */
+const distressDeployments = () => [...new Set([DEPLOY.classify, classifyFallback(),
+  ...String(process.env.TAXILA_DISTRESS_ACROSS ?? "grok-4-1-fast-non-reasoning,taxila-fast").split(",")].map((d) => (d ? String(d).trim() : "")).filter(Boolean))];
+
+/**
+ * 14.3: the model's distress read of the words, one deployment at a time: a filter block on one deployment's brief (a
+ * context block: wordsTrip already passed the words alone) moves to the next deployment's filter; any other failure too.
+ * true / false: a clean read; null: no deployment could read it (the caller fails closed).
+ * @returns {Promise<boolean|null>}
+ */
+async function distressAcross(text, classLevel, trace) {
+  const messages = [
+    { role: "system", content: `A reply from an Indian school child (class ${classLevel}) in a lesson, in Hindi, English or Hinglish; the transcript may be misheard. distress: true ONLY for signs the child is unsafe, hurt, abused, frightened of a person, a place or what is happening to them, very sad, or may harm themself — never for ordinary frustration or worry about the lesson itself (scared of numbers, a question, a test or getting it wrong: the teacher reassures).` },
+    { role: "user", content: scrubPii(text).text },
+  ];
+  for (const d of distressDeployments()) {
+    try {
+      const { json } = await classifyChat(d, messages, { schema: DISTRESS_SCHEMA, schemaName: "distress", effort: "none", maxTokens: 40, timeoutMs: 4000, retries: 0, trace, quotaLane: "hot" });
+      return !!json?.distress;
+    } catch (e) {
+      console.warn(`[classify] distress read on ${d} ${isContentFilter(e) ? `blocked (${(e.filterCats ?? []).join(",") || "unreadable"})` : "failed"}: next deployment`);
+    }
+  }
+  return null;
 }
 
 /**
@@ -587,6 +631,17 @@ export function classifyFast({ target, childText, asrConfidence, typed, chipId, 
   const sameThing = kv != null && tailAgrees(target.key, text);
   const fixed = kv != null ? selfCorrected(text) : null;
   if (fixed != null) return Math.abs(fixed - kv) >= 1e-9 ? { result: null, flags, text, numericMismatch: true } : sameThing ? done("correct", "number_selfcorrect") : { result: null, flags, text, nounMismatch: true };
+  // round 5 (main; sim lab voice arm): working aloud ("तीस टाइम्स चालीस है, तीन टाइम्स चार बारह, दो जीरो बारह सौ") is graded
+  // on the LAST stated result; the operands said on the way are never the answer and never make it wrong
+  const working = kv != null && !denies ? statedResults(text) : null;
+  if (working && working.all.length >= 2) {
+    // the key among the numbers they STATE (not an operand of the working) is the answer; else the last stated result is
+    const hit = working.results.some((v) => Math.abs(v - kv) < 1e-9);
+    const last = working.results.at(-1) ?? working.all.at(-1);
+    // (the words of the working — "sides", "times", "rows" — are not a counted thing; a different unit was refused above)
+    if (hit) return done("correct", "number_working");
+    if (last != null) return { result: null, flags, text, numericMismatch: true };
+  }
   if (kv != null && !denies && /[\p{N}\p{L}]/u.test(text)) {
     const ph = numberPhrases(text);
     if (ph && ph.length) {
@@ -604,6 +659,7 @@ export function classifyFast({ target, childText, asrConfidence, typed, chipId, 
     && (read.dontKnow && read.words <= 4 || read.asksForAnswer && read.words <= 8)) return done("no_evidence", "lexical");
   return { result: null, flags, text };
 }
+
 
 /**
  * Do the child's words echo the item's own answer content as the same request type? True when the words ARE the key, an
@@ -728,7 +784,28 @@ async function classifyModel(args, target, text, flags, trace, done, fast = {}) 
     // never a normal reply). No second model call — the same words would be blocked again.
     // round 5: a non-harm block (jailbreak / protected material only) is an outage of the labels, not a disclosure: the
     // distress backup below still runs on the words (and is itself fail-closed on any harm block)
-    if (isContentFilter(e) && !nonHarmFilter(e)) return filtered();
+    // round 5 (14.2, main safety review; sim lab 14.1 text lane, TEST lesson 5d18d152 turn 2): the labeller's prompt carries
+    // the item, its key and the lesson as well as the child's words, and a harm category can fire on that mix: "Bollywood
+    // songs pasand hain, jaise 'Kala Chashma' type" in a class 6 "Unity in Diversity" lesson came back `hate` while the
+    // reader passed the same words twice, and the child got the helpline script. As on the reply path (say.js
+    // childWordsTrip), the safeguard fires when the CHILD'S OWN WORDS trip it: the distress check reads their words alone
+    // through the same deployments. A harm block on it, a distress reading, or the check failing for any reason fails
+    // CLOSED exactly as before; only a clean pass makes this a block of the context, an outage of the labels.
+    if (isContentFilter(e) && !nonHarmFilter(e)) {
+      const cats = (e.filterCats ?? []).join(",") || "unreadable";
+      // 14.3 (sim lab p26, TEST lesson 71599981 turn 4: "इंडियन वीवर्स को लॉस हुआ ना। ब्रिटिश मशीन का माल सस्ता था…", a class 8
+      // history answer): the distress check's OWN brief ("unsafe, hurt, abused, frightened …") with those words came back
+      // `hate` too, so the 14.2 probe failed closed on a context block. Two steps now: (1) the words alone under a neutral
+      // brief (wordsTrip, as the reply path's childWordsTrip) — a harm block or an unreadable probe fails CLOSED; (2) the
+      // distress read across deployments (distressAcross): a block on one deployment's brief moves to the next filter; a
+      // clean read decides; no deployment able to read it fails CLOSED.
+      const trip = await wordsTrip(text, trace);
+      if (trip !== "clear") return filtered();
+      const read = await distressAcross(text, classLevel, trace);
+      if (read !== false) return filtered();
+      console.warn(`[classify] labels blocked (${cats}) but the child's own words pass: no evidence this turn`);
+      return done("no_evidence", "content_filter_context");
+    }
     console.warn("[classify] model unavailable (classify and fallback):", e.message);
     // A classifier outage costs one turn of evidence, never the lesson.
     flags.distress = flags.distress || await distressCheck(text, classLevel, trace);

@@ -18,6 +18,7 @@
 //   4. no code board passes: wait for the line planner up to its budget (the pre-ship5 behaviour), then a late speculative
 //      board; then nothing (the caller's template-rung fallback, else voice).
 // Kill switch TAXILA_BOARD_SYNC=0: plan() is exactly deps.planWhiteboard (the old path). Never throws.
+import { answersRequest, samePage, shownBefore, freeAsked, subjectWords, numberLineBoard, clockBoard, askedNumbers, faceDrawing } from "../studio/request.js";
 import { gateWhiteboard, withheldValues, numbersIn, partitionCounts } from "../studio/qa/whiteboard.js";
 import { speechMsOf, redactLine, WB_BOARD, sectorsForCutCircles } from "../studio/plan.js";
 import { explainerFor } from "../forge/explainer/lesson.js";
@@ -88,9 +89,15 @@ export function gateCtxFor(ask, { kit, redact = [], prior = [] } = {}) {
   const content = (ask?.kit?.content ?? []).map(String).slice(0, 8);
   const itemText = ask?.kit?.item ? [ask.kit.item.prompt_en, ask.kit.item.prompt_hi].filter(Boolean) : [];
   const kitForGate = { ...(kit ?? {}), expectations: [...(kit?.expectations ?? []), ...content, ...itemText] };
-  const withhold = withheldValues({ items: [...(kit?.items ?? []), ...(ask?.kit?.item && !(kit?.items ?? []).some((i) => i.id === ask.kit.item.id) ? [ask.kit.item] : [])] },
+  const withhold0 = withheldValues({ items: [...(kit?.items ?? []), ...(ask?.kit?.item && !(kit?.items ?? []).some((i) => i.id === ask.kit.item.id) ? [ask.kit.item] : [])] },
     { itemId: ask?.kit?.item?.id, line: text });
-  return { reply: text, kit: kitForGate, band: ask?.intent?.style?.band ?? "B3", speechMs: speechMsOf(spoken), banned: redact, prior, withhold };
+  // round 5 (stream 2): the numbers the child asked to see are not withheld (the open question's own key still is)
+  const request = ask?.intent?.request ?? null;
+  const withhold = freeAsked(withhold0, request, ask?.kit?.item?.id ? (kit?.items ?? []).find((i) => i.id === ask.kit.item.id) ?? ask.kit.item : null);
+  if (request?.subject) kitForGate.expectations.push(request.subject, ...subjectWords(request.subject));
+  if (request?.said?.length) kitForGate.expectations.push(...request.said);
+  return { reply: text, kit: kitForGate, band: ask?.intent?.style?.band ?? "B3", speechMs: speechMsOf(spoken), banned: redact, prior, withhold,
+    ...(request ? { extraNumbers: askedNumbers(request), face: faceDrawing(request) } : {}) };
 }
 
 /** Scale a script's op times to a new spoken length (k clamped 0.5-2), first op no later than 800 ms. Shape only. */
@@ -291,21 +298,35 @@ const settle = (p) => p.then((v) => ({ done: true, v }), () => ({ done: true, v:
  */
 export async function plan(ask, o) {
   const t0 = Date.now();
-  const startLine = () => settle(Promise.resolve().then(() => o.planWhiteboard(ask, { kit: o.kit, prev: o.prev, redact: o.redact, budgetMs: o.budgetMs })));
+  const startLine = () => settle(Promise.resolve().then(() => o.planWhiteboard(ask, { kit: o.kit, prev: o.prev, redact: o.redact, budgetMs: o.budgetMs, avoid: o.avoid, seen: o.seen })));
   if (!boardSyncOn()) return (await startLine()).v ?? { ok: false, script: null, usd: 0, why: "planner_error" };
   const prior = ask?.mode === "continue" ? (o.prev?.ops ?? []).filter((x) => x.op !== "erase") : [];
   const ctx = gateCtxFor(ask, { kit: o.kit, redact: o.redact, prior });
   const tag = (r, source, extra = {}) => ({ ok: true, script: r.script, gate: r.gate, usd: extra.usd ?? 0, ms: Date.now() - t0, source, syncMs: Date.now() - t0, ...extra });
+  // round 5 (stream 2, RCA-1): a ready-made board (speculative, code, template) is drawn only when it shows what the child
+  // asked for and is not the page already on the board; the line plan is told the request (plan.js) and is held to the same
+  // "never the same page again"
+  const request = ask?.intent?.request ?? null;
+  const fits = (r) => !!r?.script && answersRequest(r.script, request) && !shownBefore(r.script, { avoid: o.avoid, seen: o.seen });
+  const takeSpecFit = (a, c) => { const r = takeSpec(a, c); return r && fits(r) ? r : null; };
   // 0. round 2 content, board-first: the board chosen at kernel time (its facts were in her line's content), re-gated on her
   // real line with the full gate (the seam takes it synchronously first; this is the same rung for any other caller)
   const first = takePreselected(ask, ctx, t0);
   if (first) return first;
   // 1. the speculative board, already in: no line plan is paid for
-  const early = takeSpec(ask, ctx);
+  const early = takeSpecFit(ask, ctx);
   if (early) return tag(early, "spec", { usd: early.usd });
   const lineP = startLine();
   // the code board is computed now (pure, ~ms) so the deadline never waits on it
-  const code = codeBoard(ask, { kit: o.kit, lessonId: ask?.line?.lessonId, band: ctx.band }, ctx);
+  // round 5: a number line the child asked for, with their numbers, is drawn by code (request.js numberLineBoard), gated
+  // like any board; it is the code rung for that ask (the kit's own board never answers "number line pe 1/4 dikhao")
+  // ... and a clock asked for ("ghadi draw karo") is drawn by code too (request.js clockBoard)
+  const nl0 = request?.kind === "number_line" ? numberLineBoard(request, { scriptId: String(ask?.intent?.intentId ?? "nl"), lessonId: ask?.line?.lessonId ?? "", spanMs: ctx.speechMs })
+    : request?.subject ? clockBoard(request, { scriptId: String(ask?.intent?.intentId ?? "clock"), lessonId: ask?.line?.lessonId ?? "", spanMs: ctx.speechMs }) : null;
+  const nl = nl0 ? regate(retime(nl0, nl0.durationMs, ctx.speechMs), ask, ctx) : null;
+  const code0 = nl?.ok ? { ...nl, template: request.kind === "number_line" ? "number_line" : "clock", by: "request" } : codeBoard(ask, { kit: o.kit, lessonId: ask?.line?.lessonId, band: ctx.band }, ctx);
+  if (nl0 && !nl?.ok) console.info(`[studio] ${request?.kind === "number_line" ? "number line" : "clock"} refused ${(nl?.gate?.checks ?? []).filter((c) => !c.pass).map((c) => c.id).join(",")}`);
+  const code = fits(code0) ? code0 : null;
   // 2. until the sync deadline: the first of the line plan (if it passes) or the speculative board (if it lands and passes)
   // ship5 fixer (experience B1, V3.3 "a child's request is answered on stage within 3 s p90"): when the CHILD asked for
   // the board and a code board already passes against her line, the line plan gets a short head start only
@@ -318,24 +339,31 @@ export async function plan(ask, o) {
     const waits = [lineP.then((x) => ({ line: x })), sleep(left).then(() => ({ timeout: true }))];
     if (specE && !specE.result) waits.push(specE.promise.then(() => ({ spec: true })));
     const r = await Promise.race(waits);
-    if (r.line) { line = r.line.v; if (line?.ok && line.script) return { ...line, source: "line", syncMs: Date.now() - t0, specState: specState(ask) }; }
-    if (r.spec || r.line) { const sp = takeSpec(ask, ctx); if (sp) { lineSpend(lineP, o); return tag(sp, "spec", { usd: sp.usd + (Number(line?.usd) || 0) }); } }
+    if (r.line) { line = r.line.v; if (line?.ok && line.script && !shownBefore(line.script, { avoid: o.avoid, seen: o.seen })) return { ...line, source: "line", syncMs: Date.now() - t0, specState: specState(ask) }; }
+    if (r.spec || r.line) { const sp = takeSpecFit(ask, ctx); if (sp) { lineSpend(lineP, o); return tag(sp, "spec", { usd: sp.usd + (Number(line?.usd) || 0) }); } }
     if (r.timeout) break;
     if (r.line && (!specE || specE.result)) break;      // the line failed and nothing else is coming before the deadline
   }
   // 3. at the deadline (or once nothing better can come): a speculative board that passes, else the code board
-  const spec3 = takeSpec(ask, ctx);
+  const spec3 = takeSpecFit(ask, ctx);
   if (spec3) { lineSpend(lineP, o); return tag(spec3, "spec", { usd: spec3.usd }); }
   if (code) { if (!line) lineSpend(lineP, o); return tag(code, "code", { template: code.template, by: code.by, usd: Number(line?.usd) || 0, specState: specState(ask) }); }
   // the Director's own template rung this board replaces (the caller's fallback), re-timed to her line, when it passes
-  const tpl = templateBoard(ask, o.fallbackScript, ctx);
+  const tpl0 = templateBoard(ask, o.fallbackScript, ctx);
+  const tpl = fits(tpl0) ? tpl0 : null;
   if (tpl) { if (!line) lineSpend(lineP, o); return tag(tpl, "template", { usd: Number(line?.usd) || 0, specState: specState(ask) }); }
   // 4. nothing on time: the line planner's own result whenever it lands (pre-ship5 behaviour), then a late spec board
   const fin = line ?? (await lineP).v;
-  if (fin?.ok && fin.script) return { ...fin, source: "line", syncMs: Date.now() - t0, specState: specState(ask) };
+  if (fin?.ok && fin.script && !shownBefore(fin.script, { avoid: o.avoid, seen: o.seen })) return { ...fin, source: "line", syncMs: Date.now() - t0, specState: specState(ask) };
   if (specE && !specE.result) await Promise.race([specE.promise, sleep(Math.max(0, (o.budgetMs ?? 7000) - (Date.now() - t0)))]);
-  const spec4 = takeSpec(ask, ctx);
+  const spec4 = takeSpecFit(ask, ctx);
   if (spec4) return tag(spec4, "spec", { usd: spec4.usd + (Number(fin?.usd) || 0) });
+  // an EXAMPLE asked and no worked page came (the line plan failed or ran out of time): the lesson's own ready-made page,
+  // when it is not a page already shown, beats an empty board (round 5 battery iter9: c1 / c6 "ek example do" got none)
+  if (request?.kind === "example") {
+    const loose = [code0, tpl0].find((r) => r?.script && r.ok !== false && !shownBefore(r.script, { avoid: o.avoid, seen: o.seen }));
+    if (loose) return tag(loose, loose === code0 ? "code" : "template", { usd: Number(fin?.usd) || 0, specState: specState(ask), loose: true });
+  }
   return { ...(fin ?? { ok: false, script: null, usd: 0, why: "planner_error" }), source: "none", syncMs: Date.now() - t0 };
 }
 /** A line plan that lost the race still costs: its spend is reported when it lands (the breaker and the caps count it). */

@@ -260,6 +260,9 @@ export interface TurnResponse {
    * old instructions); "when_free": speak if nobody holds the floor (a reaction to a module milestone).
    */
   speakNow?: "interrupt" | "when_free";
+  /** Round 5 agent lane, streamed (turn-audio): the text to speak after her streamed words (the card's question the code
+   *  appended), and ms from the agent call's start to her first words. Absent when nothing streamed. */
+  agentStream?: { tail: string | null; firstSayMs: number | null };
   end?: boolean;
   /** round 3 fix (experience B8): the child chose "Start <topic>" on a switch offer: the client starts that lesson next. */
   switchTo?: string;
@@ -279,6 +282,11 @@ export interface TurnResponse {
    * client raises the Help sheet (runtime.ts flushOthers → LessonState.lateSafeguard) though the lesson stays closed.
    */
   late?: boolean;
+  /**
+   * round 5 (QA D23): on a safeguard move, the Help sheet's first action. "helpline": Childline 1098 leads (the safeguard is
+   * about abuse, or the child's words name home or someone at home); "grownup": a grown-up the child trusts leads.
+   */
+  helpLead?: "helpline" | "grownup";
   /** W2 seam (W2-E/W2-H): what Studio does on this turn (reveal / highlight / retire / setParam). Absent = nothing. */
   studio?: TurnStudio;
   /** W2 seam (W2-E): the turn's Moment for the voice layer and the face (TEACHER-BRAIN TB6). Absent until BR2. */
@@ -343,6 +351,8 @@ export interface LessonStartResponse {
   resumed?: boolean;
   /** D24: the highest turnSeq the server has acknowledged; a page's outbox numbers its next turn above it. */
   turnSeqFloor?: number;
+  /** 14.2: a start that opens on the check-in after a recent safeguarding incident: which help the Help sheet leads with. */
+  helpLead?: "helpline" | "grownup";
 }
 /** One "What you did today" card (V2 §6.3.5): the child's own answer, with a tick only if the key verified it. */
 export interface DidCard {

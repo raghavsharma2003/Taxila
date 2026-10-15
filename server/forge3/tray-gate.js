@@ -21,7 +21,9 @@
 //   skeleton    the skeleton certificate (certs/skeleton.json: every sampled instance of the archetype at that size)
 //   frame       a live verdict for the build (gate.js, cached on the piece) at the device's size; unjudged = not shown
 //               (the slot's skeleton, when certified, is shown instead)
-//   image       never (nothing produces one; an unknown kind is refused)
+//   image       round 5 (owner decision 14.2): a picture from the picture lane (server/studio/picture.js: moderated pixels, an
+//               inline JPEG / PNG) is contain-fit by src/studio/ImageRenderer.tsx and carries no text, so it fits any box the
+//               class has; any other image (a URL, another format) is refused
 //   module      the engine's certificate (certs/modules.json) at the device's size; explainer@1 carries a whiteboard
 //               script, judged by the whiteboard rule at the tray box
 //
@@ -235,6 +237,11 @@ export function certifyForTray(artifact, ctx = {}) {
         const ok = vp ? !!v.byViewport?.[vp] : !!v.pass;
         return out(ok, "judge", ok ? "judged at this size" : `judged: fails at ${vp}`);
       }
+      case "image": {
+        if (!/^data:image\/(?:png|jpeg);base64,/.test(String(artifact.src ?? ""))) return out(false, "image", "not a picture-lane image");
+        const box = ctx.box ?? contractBox(vp, { young });
+        return out(!!box, "image", box ? "contain-fit, no text" : "no box for this class");
+      }
       default:
         return out(false, "none", `no certificate rule for kind ${kind}`);
     }
@@ -284,6 +291,7 @@ export const TRAY_PATHS = Object.freeze([
   { id: "explainer", gate: "server/director/modules.js", calls: ["certifyModule"], covers: "explainer@1 module (its script at the tray box); the Studio whiteboard fallback goes through studio-stream" },
   { id: "whiteboard", gate: "server/studio/seam.js", calls: ["certifyForTray"], covers: "seam.requestIntent: board-first, kept, board-sync, template fallback" },
   { id: "play", gate: "server/forge3/live.js", calls: ["certifyForTray"], covers: "buildLive → composeAsk → slotFor (also gated in studio-slot)" },
+  { id: "agent-board", gate: "server/studio/seam.js", calls: ["certifyForTray"], covers: "the Teacher agent's board.show (round 5 agent lane): server/agent/tools.js → studio/tools.js boardShow → seam.requestIntent, whose drawn() certifies before the page is set; the response slot is slotSnapshot (gatedSlot)" },
   { id: "forge-g2-made-for", gate: null, calls: [], covers: "NO tray path: g2/serve.js mountFor has no live caller and `g2:*` ids are not ENGINES (modules.js mountable refuses them); the Made for you shelf lists studio_mount rows and mounts nothing" },
 ]);
 

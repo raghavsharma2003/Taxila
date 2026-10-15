@@ -18,7 +18,9 @@ import { skillsMapFor, snapshotFromKt, loadLive, dueForChecks } from "../learner
 import { misconceptionView } from "../learner/kt/misconception.js";
 import { beliefFor, planChecks, onTopicPlanned, consumeExpired, weaveExpire, BAND_BUDGET, bandOf } from "../comprehension/index.js";
 import { weaveStmts } from "../comprehension/store.js";
-import { scrubPii, scanSafety } from "../director/safety.js";
+import { scrubPii, scanSafety, floorViolations, helpLeadOf } from "../director/safety.js";
+import { laneFor } from "../agent/flags.js";
+import { agentTurn, eventOf, applyAgentTurn } from "../agent/agent.js";
 import { initLessonState, step, LIMITS, shortTitleOf } from "../director/state.js";
 import { resolveAddress } from "../director/register.js";
 import { instructionsFor, instructionsAfter } from "../compiler/instructions.js";
@@ -38,7 +40,7 @@ import { purposeSeam } from "../lesson/purpose.js";
 import { sessionStartCtx, schoolPointerStmts } from "../director/session/start.js";
 import { voicesigSeam } from "../voicesig/lesson.js";
 import { realtimeSeam } from "../voice/realtimeSession.js";
-import { fallbackReply, safeguardLine, scrubbed, textReply, words } from "../brain/say.js";
+import { fallbackReply, safeguardLine, carriedCheckInLine, scrubbed, textReply, words, floorContentOf } from "../brain/say.js";
 import { clientInstructions, debugFor, floorIncidentStmt, kitFor, laneOf, stageTurns, turnInsertStmt, withAsk } from "../brain/rows.js";
 import { nextBeat, uiBeatOf } from "../brain/beat.js";
 import { momentOf } from "../brain/moment.js";
@@ -137,13 +139,18 @@ async function openNow(req, res, body) {
  * again, from its stored turn), the screen is the last one the Director sent, and turnSeqFloor keeps a page that lost its
  * outbox (another device) above every turn the server has acknowledged. → the start response, or null (start fresh).
  */
-async function resumeLesson(child, body) {
+async function resumeLesson(child, guardian, body) {
   const id = String(body.resumeLessonId ?? "");
   if (!/^[0-9a-f-]{36}$/i.test(id)) return null;
   const lesson = await one("select * from lesson where id = $1 and child_id = $2 and ended_at is null", [id, child.id]);
   if (!lesson) return null;
   const lane = laneOf(lesson.state?.mode);
   if (lane === "voice" || lane !== laneOf(startModeOf(body.mode))) return null;
+  // main safety review (14.1 merge): never back into an open safeguarding episode (the Help sheet is raised by the
+  // safeguard MOVE, and a resume replays no move), and never past a safety hold: the plain start applies startRefusal
+  // (safety_hold refuses everything), so the child gets the hold, as the home shows it
+  if (lesson.state?.safeguard) return null;
+  if (startRefusal((await planFor(child, guardian))?.state, body.purpose) === "lessons are paused for now") return null;
   const claimed = await one("update lesson set state = state - 'pendingEndAt' where id = $1 and ended_at is null returning state", [id]);
   if (!claimed) return null;
   const state = claimed.state ?? {};
@@ -166,13 +173,29 @@ async function resumeLesson(child, body) {
 }
 
 async function start(req, res, body) {
+  const r = await lessonStart(req, body);
+  send(res, 201, r.body);
+}
+
+/**
+ * The lesson start (POST /api/lesson/start), as a function: r5-latency's POST /api/lesson/start-audio
+ * (server/routes/voice.js) folds the opening's audio onto the same response, so it calls this and streams after it.
+ * Every rule, refusal and write is the route's own. Resolves { body } (the LessonStartResponse, with debug locally).
+ */
+/** round 5 (14.2): how recent a safeguarding incident makes the next start a check-in (TAXILA_CARRIED_CHECKIN_HOURS, default 24). */
+const carriedHours = () => { const h = Number(process.env.TAXILA_CARRIED_CHECKIN_HOURS ?? 24); return Number.isFinite(h) && h > 0 ? Math.min(168, Math.round(h)) : 24; };
+
+export async function lessonStart(req, body) {
   const t0 = performance.now();
   const trace = [];
+  // r5-latency: where a start's time goes (debug response `timings`, and the stage profiler evals/latency/start-profile.mjs)
+  const mark = (name) => trace.push({ kind: `@${name}`, ms: Math.round(performance.now() - t0) });
   const { guardian, child } = await requireChild(req, need(body, "childId").childId);
+  mark("auth");
   // r5 QA D24: a reload, a tab discard or the home's "continue" rejoins the open lesson instead of opening a new one
   if (body.resumeLessonId) {
-    const resumed = await resumeLesson(child, body).catch((e) => { console.warn(`[lesson] resume refused: ${e.message}`); return null; });
-    if (resumed) return send(res, 201, resumed);
+    const resumed = await resumeLesson(child, guardian, body).catch((e) => { console.warn(`[lesson] resume refused: ${e.message}`); return null; });
+    if (resumed) return { body: resumed };
   }
   // marked page-hide ends whose timer a restart lost (D24): ended now, before this start reads the plan
   await sweepPendingEnds(child.id).catch(() => {});
@@ -181,9 +204,26 @@ async function start(req, res, body) {
   // alongside the consent and topic reads, checked before the kit read, any model call or write (planFor alone added
   // ~50 ms median on the Neon test branch, n = 12, before it was overlapped).
   const planP = planFor(child, guardian);
-  planP.catch(() => {}); // awaited below; never an unhandled rejection if an earlier check throws first
+  // r5-latency: every read keyed only by the child starts NOW, beside the plan and consent reads; they used to wait in
+  // three serial waves (the topic, then the live ledger / weave / bond, then the brief) before the opening's model call.
+  // Reads only: a refused start below still wrote nothing. Each is awaited where it was used.
+  const early = (p) => { p.catch(() => {}); return p; }; // awaited below; never an unhandled rejection if a check throws first
+  const memoryP = early(hasConsent(guardian.id, child.id, "memory"));
+  const nextTopicP = body.topicId ? null : early(nextTopicOf(child));
+  const liveP = early(loadLive(child));
+  const weaveP = early(q("select * from weave_queue where child_id = $1 and status in ('queued','hosted')", [child.id]).catch(() => []));
+  // Seam (W2-I, server/relational/seam.js): the bond snapshot, read once per lesson; null until W2-I fills it.
+  const bondP = early(Promise.resolve(seamSafe("relational.snapshot", () => relationalSeam.snapshot(child.id, { classLevel: child.class_level, lang: child.language_pref }), null)));
+  const brief0P = early(memoryP.then((memory) => buildChildBrief(child, { memory })));
+  // round 5 (14.2): a safeguarding incident within the last hours: this lesson opens on a calm check-in (state.js, `carried`)
+  // once per incident: a lesson that already opened on the check-in for it (ctx.checkedInFor) is enough
+  const carriedP = early(one(`select i.id, i.detail->>'family' as family from incident i where i.child_id = $1 and i.kind = 'safeguarding'
+    and i.at > now() - make_interval(hours => $2::int)
+    and not exists (select 1 from lesson l where l.child_id = $1 and l.started_at >= i.at and l.state->'ctx'->>'checkedInFor' = i.id::text)
+    order by i.at desc limit 1`, [child.id, carriedHours()]).catch(() => null));
+  planP.catch(() => {});
   const [core, memory, controls, lastLesson, vsb0] = await Promise.all([
-    hasConsent(guardian.id, child.id, "core_tutoring"), hasConsent(guardian.id, child.id, "memory"),
+    hasConsent(guardian.id, child.id, "core_tutoring"), memoryP,
     one("select address from child_controls where child_id = $1", [child.id]).catch(() => null),
     // the name the teacher had in the child's last lesson: a new one (the child renamed her, or picked another
     // teacher) is re-introduced at the greeting, still as their AI teacher (director/shapes.js greet)
@@ -192,6 +232,7 @@ async function start(req, res, body) {
     // else an empty session one). Never throws; undefined when voicesig is switched off.
     voicesigSeam.startRows({ q, hasConsent, guardianId: guardian.id, childId: child.id }),
   ]);
+  mark("reads1");
   if (!core) throw forbidden("core_tutoring consent is required before a lesson");
   // round 4 (4A patch request 10b, main safety review): a start with no mode (or an unknown one) lands on the CASCADE lane,
   // the lane with the strongest floor (the server writes every reply); the realtime lane needs an explicit mode: "voice"
@@ -204,25 +245,31 @@ async function start(req, res, body) {
     : null;
   const routed = asked?.topicId ? getTopic(asked.topicId) : null;
   // no topic: the ONE next-topic answer (reports/truth.js), so a start inside a school test window revises its subject
-  const topic = routed ?? (body.topicId ? getTopic(body.topicId) : await nextTopicOf(child));
+  const topic = routed ?? (body.topicId ? getTopic(body.topicId) : await (nextTopicP ?? nextTopicOf(child)));
+  mark("topic");
   if (!topic) throw bad(body.topicId ? `unknown topic ${body.topicId}` : "no topic available for this class");
   // before getKit: a topic with no kit would otherwise be generated (a model call) for a refused start
   const dayPlan = await planP;
+  mark("plan");
   const refusal = startRefusal(dayPlan.state, body.purpose);
   // The refusal names the control that refused (the parent's lesson hours or daily limit, or today's lesson done) and the
   // hours window, so the child's screen can say which and when (BUILD-PLAN W1-A item 2; smooth G8).
   if (refusal) throw new HttpError(409, refusal, { state: dayPlan.state, opensAt: dayPlan.opensAt, capRemaining: dayPlan.capRemaining,
     control: refusalControl(dayPlan.state), window: dayPlan.plan?.window ?? null });
   const kit = await getKit(topic.id, { trace });
+  mark("kit");
   if (!kit) throw new HttpError(503, "no teaching content is available for this topic yet");
   // Every later request of this lesson reads back exactly this kit (kitFor).
   const now = Date.now();
-  const [, live, weaveRows, sessionCtx, bond] = await Promise.all([pinKit(kit), loadLive(child),
-    q("select * from weave_queue where child_id = $1 and status in ('queued','hosted')", [child.id]).catch(() => []),
+  // the kit's reads start together (r5-latency: history and stuck used to wait for the warm-up items)
+  const historyP = early(loadRecentOutcomes(child.id, kit.skills.map((s) => s.id)));
+  // W2-C review: items stuck on in recent lessons (rung 4 / left after don't-knows) route the guidance ladder; never evidence
+  const stuckP = early(loadRecentStuck(child.id, kit.skills.map((s) => s.id)));
+  const [, live, weaveRows, sessionCtx, bond] = await Promise.all([pinKit(kit), liveP, weaveP,
     // Seam (W1-C): what the child's record says this lesson must know (re-teach attempts, fluency, arm posteriors).
     loadSessionContext(child.id, { skillIds: kit.skills.map((s) => s.id), now }).catch(() => EMPTY_SESSION_CONTEXT),
-    // Seam (W2-I, server/relational/seam.js): the bond snapshot, read once per lesson; null until W2-I fills it.
-    seamSafe("relational.snapshot", () => relationalSeam.snapshot(child.id, { classLevel: child.class_level, lang: child.language_pref }), null)]);
+    bondP]);
+  mark("reads2");
   const ledger = live.state.ledger;
   // Session openers (INTEGRATION.md §4): the ledger's due skills AND every learned skill ≥ 20 h past its anchor with
   // no delayed pass, plus weave entries that expired unhosted; then this topic is planned against the weave queue.
@@ -235,12 +282,12 @@ async function start(req, res, body) {
   // Seam (no-op): a hosted woven sub-step goes to the item generator (kit isomorph or Forge ModuleRequest.want.subSkill).
   forgeSeam.wovenSubStep(hosted[0] ?? null);
   const warmupItems = await warmupItemsFor(checks.openers, { ledger });
+  mark("warmup");
   const skillIds = [...new Set([...kit.skills.map((s) => s.id), ...warmupItems.map((w) => w.skillId)])];
-  const [history, brief0, stuck] = await Promise.all([loadRecentOutcomes(child.id, kit.skills.map((s) => s.id)), buildChildBrief(child, { memory }),
-    // W2-C review: items stuck on in recent lessons (rung 4 / left after don't-knows) route the guidance ladder; never evidence
-    loadRecentStuck(child.id, kit.skills.map((s) => s.id))]);
+  const [history, brief0, stuck] = await Promise.all([historyP, brief0P, stuckP]);
   // The interests the parent picked reach the teacher only under "Remember what {child} likes" (the memory consent;
   // V2 §3.2 step 5: "No" → no interests in examples), and only as short plain labels (they are interpolated).
+  mark("reads3");
   const interests = memory ? lessonInterests(brief0.interests) : [];
   const brief = { ...brief0, interests };
   // aap / tum: the parent's controls, then the class default (G-REG-1; V2 §3.3 step 4). Never the request body.
@@ -290,18 +337,22 @@ async function start(req, res, body) {
       ...(bond?.stage ? { bondStage: bond.stage } : {}),
     },
   });
+  const recent = askSafety.distress ? null : await carriedP;
+  const carried = recent ? { kind: recent.family ?? null, incidentId: String(recent.id) } : null;
   const first = askSafety.distress
     ? step(state0, { event: "start", kit, now, cls: { outcome: "no_evidence", confidence: 1, source: "predicate",
       flags: { dontKnow: false, asksForAnswer: false, minimal: false, offTopic: false, distress: true, distressKind: askSafety.kind, wantsToStop: false } } })
-    : step(state0, { event: "start", kit, now });
+    : step(state0, { event: "start", kit, now, ...(carried ? { carried } : {}) });
   const { r, instructions } = instructionsAfter({ ...first, state: { ...first.state, brief, mode, kitVerified: kit.verified, kitHash: kit.hash } }, kit, now);
   const state = r.state;
   if (vsb0) state.vsb = vsb0;
+  if (carried && r.move.kind === "safeguard") state.ctx = { ...state.ctx, checkedInFor: carried.incidentId };
   // W2-E: the opening's beat (ui.beat; the client's end-of-turn thresholds read it) and its Moment for the voice layer.
   state.beat = nextBeat(undefined, r.move, state);
   const openingMoment = momentOf({ move: r.move, verdict: "ungraded", engagement: "warming", relational: null, ctx: state.ctx, turn: state.turn ?? 0,
     safety: r.move.kind === "safeguard", lane: mode === "voice" ? "voice" : mode === "cascade" ? "cascade" : "text" });
 
+  mark("state");
   let teacherOpening, teacherOpeningSeq, rows = [], openingFloor = [];
   if (mode !== "voice" && askSafety.distress) {
     // A disclosure as an Ask's first words: the fixed safeguarding line (both helplines, the child's language and
@@ -310,14 +361,38 @@ async function start(req, res, body) {
     teacherOpening = safeguardLine(state.ctx);
     rows = stageTurns(state, [{ speaker: "teacher", text: teacherOpening, meta: { move: r.move.kind, fixed: true } }]);
     teacherOpeningSeq = rows[0].seq;
+  } else if (mode !== "voice" && carried && r.move.kind === "safeguard") {
+    // the check-in after a recent incident: a fixed line too, never a model draft that might open on the topic
+    teacherOpening = carriedCheckInLine(state.ctx);
+    rows = stageTurns(state, [{ speaker: "teacher", text: teacherOpening, meta: { move: r.move.kind, fixed: true, carried: true } }]);
+    teacherOpeningSeq = rows[0].seq;
   } else if (mode !== "voice") {
-    const opened = await textReply({ instructions, state, kit, childText: "", trace, ui: r.ui, module: state.module });
+    // round 5 (AGENT.md §3): the Teacher agent lane, decided once here and pinned for the lesson (server/agent/flags.js);
+    // the realtime voice lane keeps the Director (its model speaks for itself)
+    const lane = laneFor(guardian);
+    state.ctx = { ...state.ctx, teacher: lane };
+    let opened = null;
+    if (lane === "agent") {
+      try {
+        const out = await agentTurn({ state, kit, event: eventOf({ kind: "start" }), lessonId, lane: mode, trace });
+        const floor = floorViolations(out.say, { content: floorContentOf(out.item ?? null) });
+        if (floor.length) throw new Error(`agent opening broke the floor: ${floor.join(",")}`);
+        const applied = applyAgentTurn(state, out, { kit, childText: null, lessonId });
+        r.move = applied.move; r.ui = applied.ui; r.moduleCommands = [];
+        opened = { reply: out.say, floor: [] };
+      } catch (e) {
+        console.warn(`[agent] opening fell back to the Director: ${String(e?.message ?? e).slice(0, 160)}`);
+        state.agent = { ...(state.agent ?? {}), fallbacks: (state.agent?.fallbacks ?? 0) + 1 };
+      }
+    }
+    opened ??= await textReply({ instructions, state, kit, childText: "", trace, ui: r.ui, module: state.module });
     teacherOpening = opened.reply;
     openingFloor = opened.floor ?? [];
     if (openingFloor.length) state.correction = openingFloor;
     rows = stageTurns(state, [{ speaker: "teacher", text: teacherOpening, meta: { move: r.move.kind, ...(openingFloor.length ? { floor: openingFloor } : {}) } }]);
     teacherOpeningSeq = rows[0].seq;
   }
+  mark("opening");
   const openingIncident = teacherOpeningSeq ? floorIncidentStmt(child.id, lessonId, teacherOpeningSeq, openingFloor, mode) : null;
   // The lesson and its opening turn land together, or not at all.
   const [, created] = await tx([
@@ -338,6 +413,7 @@ async function start(req, res, body) {
     ...onLessonStart({ child, lessonId, topicId: topic.id, purpose, mode, now }),
   ]);
   if (created.length !== 1) throw new Error("lesson insert did not land");
+  mark("tx");
   // Seam (W1-B): warm the Forge fills this lesson may need; fire-and-forget, never the start's error.
   try {
     Promise.resolve(forgeSeam.prefetchLessonFills({ child, lessonId, topicId: topic.id, kit, lang: child.language_pref, band, mode }))
@@ -353,6 +429,7 @@ async function start(req, res, body) {
     prewarm({ lessonId, seq: teacherOpeningSeq, text: teacherOpening, tokenHash: sessionTokenHash(req), guardianId: guardian.id, style: styleForChild(child, undefined, state.ctx?.teacherId, state.ctx?.teacherName),
       ...(delivery ? { delivery } : {}) });
   }
+  mark("respond");
   console.info(`[lesson] start ${lessonId} topic=${topic.id} kit=${kit.verified ? "verified" : "mini"} ${Math.round(performance.now() - t0)}ms`);
   /** @type {import("../../shared/contracts").LessonStartResponse} */
   const out = {
@@ -363,8 +440,10 @@ async function start(req, res, body) {
       // card and does NOT send them again as a turn (W2-C review: the same question was explained twice)
       ...(askRaw ? { askConsumed: true } : {}) }), address, moment: openingMoment,
     ...(teacherOpening ? { teacherOpening, teacherOpeningSeq } : {}),
+    // the check-in's Help sheet leads as the incident's family asks (helpLeadOf: abuse → the helpline first)
+    ...(carried && r.move.kind === "safeguard" ? { helpLead: helpLeadOf({ kind: carried.kind }) } : {}),
   };
-  send(res, 201, debugFor(req) ? { ...out, debug: { move: r.move, kitVerified: kit.verified, timings: trace } } : out);
+  return { body: debugFor(req) ? { ...out, debug: { move: r.move, kitVerified: kit.verified, timings: trace } } : out };
 }
 
 // ───────────────────────────── POST /api/realtime/token ─────────────────────────────

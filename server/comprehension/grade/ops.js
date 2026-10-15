@@ -1,7 +1,7 @@
 // Code grading operators (COMPREHENSION-ENGINE.md §4.2) and the label → outcome maps for the closed-label LLM
 // operators. Grading is classification against verified kit keys, never free grading (CE5).
 import { outcomeIndex } from "../../learner/kt/outcomes.js";
-import { numberPhrases } from "../../grading/spoken-number.js";
+import { matchNumber } from "./numbers.js";
 import { tokens } from "./span.js";
 
 /**
@@ -14,11 +14,10 @@ const DENY = /(?:^|[^\p{L}])(?:not|nahi|nahin|nhi|no|galat|wrong|isn'?t)(?![\p{L
 export function rKey(text, key, o = {}) {
   if (typeof key === "number" || (typeof key === "string" && /^-?\d+(\.\d+)?$/.test(key))) {
     // the ONE number reader (server/grading/spoken-number.js); the child's answer is the last number phrase
-    // ("3... nahi, 4"), a reply with no readable number is NA, never wrong
-    const ph = numberPhrases(text);
-    if (!ph || !ph.length) return "NA";
-    const k = Number(key), tol = Math.max(o.tol ?? 1e-9, (o.relTol ?? 0) * Math.abs(k));
-    return Math.abs(ph.at(-1) - k) <= tol ? "correct" : "wrong";
+    // ("3... nahi, 4"), a reply with no readable number is NA, never wrong; split: working aloud ("तीन टाइम्स चार बारह")
+    // is several phrases and the last one is the answer (round 5, main: voice verdicts)
+    const m = matchNumber(text, Number(key), { tol: o.tol ?? 1e-9, relTol: o.relTol ?? 0 });
+    return m;
   }
   const t = tokens(text);
   if (!t.length) return "NA";

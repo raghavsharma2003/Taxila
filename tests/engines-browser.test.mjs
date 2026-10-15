@@ -59,7 +59,10 @@ before(async () => {
   // (Chromium ≥ 141 words it "Refused to connect to 'ws://…' because it violates")
   const devNoise = /favicon|(Connecting to|Refused to connect to) 'ws:\/\/(localhost|127\.0\.0\.1)[^']*'( because it)? violates|\[vite\]/;
   page.on("console", (m) => { if (m.type() === "error" && !devNoise.test(m.text())) consoleErrors.push(m.text()); });
-  await page.goto(`${base}tests/fixtures/engine-harness.html`);
+  // npm test imports every suite into ONE process (tests/index.js), so the dev server transforms this page while later
+  // suites load and run beside it: 24 s of the default 30 s on a 4-core container, 44-46 s after its restart. This is a
+  // ROOT hook: a timeout here failed every later test in the run (2,000+). The page's own checks keep their waits.
+  await page.goto(`${base}tests/fixtures/engine-harness.html`, { timeout: 120_000 });
 });
 after(async () => {
   await browser?.close();

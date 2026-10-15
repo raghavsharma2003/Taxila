@@ -28,7 +28,7 @@ import { pickCallback } from "./memory.js";
 export const SHAPES = Object.freeze({
   release_warm: "they are leaving: one short warm close in their language; no question, no teaser, no next-time hook, no guilt; the lesson ends here",
   release_with_boundary: "they are leaving: one short warm close; no promise to keep anything from grown-ups; no question, no hook; the lesson ends here",
-  checkin_before_release: "they are leaving after something hard: one gentle check that they are okay and that a grown-up at home is near; no helpline unless harm words; then let them go",
+  checkin_before_release: "they are leaving after something hard: one gentle check that they are okay and that a grown-up they trust is near; no helpline unless harm words; then let them go",
   checkin_point_out: "they do not want her to go and feel alone: one gentle check-in; point to a person at home they can be with now; no helpline unless harm words; no promise to stay",
   warmth_receive: "they offered warmth: receive it kindly in a few words, turn it to the work you are doing together, and to a person in their life; never return love, missing, forever or only-theirs",
   permanence_anchor: "they asked for forever: kind and honest; an AI teacher for their lessons; no promise of always or never leaving; then the work",
