@@ -516,14 +516,19 @@ export class LessonRuntime {
     this.store.set({ phase: "ended", connection: "closed", pendingTurns: 0 });
   }
 
-  /** Component unmount: release the link and timers, and close a running lesson on the server. */
+  /**
+   * Component unmount: release the link and timers, and close a running lesson on the server. r5 QA pass 12: leaving
+   * in-app (Android Back, Home) ended the lesson at once while Home still offered "Continue", which then opened a NEW
+   * lesson. Unmount now closes like a page-hide (the beacon end, deferred by the server's grace), so Continue within
+   * the grace rejoins the same lesson; the End button still ends at once through end().
+   */
   dispose(): void {
     if (typeof window !== "undefined") window.removeEventListener("online", this.onOnline);
     const { lessonId, phase } = this.state;
     if (phase !== "live" && phase !== "starting") return this.teardown();
     const pending = this.chain;
     this.teardown();
-    if (phase === "live" && lessonId) void this.drained(pending).then(() => this.closeQuietly(lessonId));
+    if (phase === "live" && lessonId) void this.drained(pending).then(() => this.closeOnServer(lessonId, true).catch(() => {}));
     this.store.set({ phase: "ended", connection: "closed", pendingTurns: 0 });
   }
 
