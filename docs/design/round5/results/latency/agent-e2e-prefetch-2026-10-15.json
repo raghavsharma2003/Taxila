@@ -1,0 +1,995 @@
+{
+ "method": {
+  "date": "2026-10-15T09:07:28.816Z",
+  "label": "agent-prefetch",
+  "turns": 12,
+  "classLevel": 4,
+  "base": "in-process",
+  "host": "vm",
+  "prefetch": true,
+  "turnAudio": true,
+  "classify": "grok-4-1-fast-non-reasoning",
+  "stt": "taxila-live-transcribe",
+  "note": "synthetic child speech (gpt-4o-mini-tts ×1.2 pitch); WebSocket transcription from this host to eastus2; sound = first byte + 60 ms lead + 50 ms NOMINAL output latency"
+ },
+ "summary": {
+  "endpoint": {
+   "n": 12,
+   "p50": 1081,
+   "p90": 1142,
+   "min": 1014,
+   "max": 1170
+  },
+  "stt": {
+   "n": 12,
+   "p50": 479,
+   "p90": 556,
+   "min": 425,
+   "max": 753
+  },
+  "lastDeltaAfterEnd": {
+   "n": 12,
+   "p50": 818,
+   "p90": 865,
+   "min": 701,
+   "max": 1165
+  },
+  "prefetchAfterEnd": {
+   "n": 12,
+   "p50": 1067,
+   "p90": 1114,
+   "min": 950,
+   "max": 1416
+  },
+  "ackReadyAfterEnd": {
+   "n": 3,
+   "p50": 2285,
+   "p90": 2939,
+   "min": 2164,
+   "max": 2939
+  },
+  "turnAfterEnd": {
+   "n": 12,
+   "p50": 1573,
+   "p90": 1699,
+   "min": 1465,
+   "max": 1828
+  },
+  "director": {
+   "n": 12,
+   "p50": 3916,
+   "p90": 6623,
+   "min": 2636,
+   "max": 7865
+  },
+  "tts": {
+   "n": 12,
+   "p50": -1403,
+   "p90": -658,
+   "min": -1783,
+   "max": 308
+  },
+  "total": {
+   "n": 12,
+   "p50": 4020,
+   "p90": 6347,
+   "min": 3635,
+   "max": 9707
+  },
+  "sound": {
+   "n": 12,
+   "p50": 4130,
+   "p90": 6457,
+   "min": 3745,
+   "max": 9817
+  },
+  "serverMs": {
+   "n": 12,
+   "p50": 3527,
+   "p90": 6615,
+   "min": 2372,
+   "max": 7859
+  },
+  "directorNonAnswer": {
+   "n": 8,
+   "p50": 3916,
+   "p90": 6623,
+   "min": 2945,
+   "max": 7865
+  },
+  "directorAnswer": {
+   "n": 4,
+   "p50": 3937,
+   "p90": 4681,
+   "min": 2636,
+   "max": 4681
+  },
+  "speculation": {
+   "hit": 0,
+   "of": 10
+  },
+  "deltaEqualsFinal": {
+   "yes": 12,
+   "of": 12
+  },
+  "prefetchAdopted": {
+   "yes": 12,
+   "of": 12,
+   "sent": 24,
+   "accepted": 24,
+   "missingRoute": 0,
+   "failed": 0
+  },
+  "nonAnswerTurns": 8,
+  "ack": {
+   "echo": 3,
+   "of": 12,
+   "reasons": {
+    "not_an_answer": 7,
+    "echo": 3,
+    "consecutive": 1,
+    "unclassified": 1
+   }
+  },
+  "firstSoundWithAck": {
+   "n": 12,
+   "p50": 3999,
+   "p90": 6347,
+   "min": 2164,
+   "max": 9707
+  }
+ },
+ "rows": [
+  {
+   "said": "Woh line edge hai, kinara.",
+   "asked": "c4-maths-ch01-t01-i02",
+   "heard": "वो लाइन एज है किनारा।",
+   "deltaText": "वो लाइन एज है किनारा।",
+   "deltaEqualsFinal": true,
+   "conf": null,
+   "move": "practice",
+   "reply": "Haan, do faces jahan milte hain, woh line edge hai. Ab sticks se cube ka dhaancha socho: sticks edges hain aur clay ki goliyan corners. Kitni sticks aur kitni goliyan chahiye?",
+   "endpoint": 1142,
+   "stt": 556,
+   "lastDeltaAfterEnd": 1165,
+   "prefetchAfterEnd": 1416,
+   "ack": {
+    "none": "not_an_answer",
+    "waitedMs": 1027,
+    "shadow": true
+   },
+   "ackReadyAfterEnd": null,
+   "prefetchCount": 2,
+   "deltaTimesAfterEnd": [
+    -886,
+    -493,
+    -307,
+    -108,
+    1138,
+    1155,
+    1165
+   ],
+   "prefetchTimes": [
+    401,
+    1416
+   ],
+   "prefetchTextEqualsFinal": true,
+   "turnAfterEnd": 1699,
+   "director": 4248,
+   "tts": -1570,
+   "total": 4376,
+   "sound": 4486,
+   "cls": "no_evidence/model",
+   "speculation": "miss",
+   "specTried": 3,
+   "specDiffers": [
+    "instructions+lastMove+hintLevel+verdict [spec: - hint ladder: rung 1 of 4 used (pump → hint → prompt → assertion); the key may be said only at rung 4 || real: - hint ladder: rung 0 of 4 used (pump → hint → prompt → assertion); the key may be said only at rung 4]",
+    "lastMove",
+    "instructions+lastMove+pendingWhy+verdict [spec: - the question they just answered RIGHT: \"Dabbe pe ungli wahan chalao jahan do faces milte hain. Woh line face hai, edge || real: - the question (content — pose as written, in their language): \"Dabbe pe ungli wahan chalao jahan do faces milte hain. W]"
+   ],
+   "prefetched": true,
+   "prefetchMiss": null,
+   "prefetchAheadMs": 281,
+   "note": {
+    "nonAnswer": true,
+    "intent": "answer_correct",
+    "waitedMs": 320,
+    "parallel": null
+   },
+   "serverMs": 3633,
+   "marks": {
+    "ctx": 40,
+    "kit": 42,
+    "prefetch_adopted": 50,
+    "classified": 796,
+    "noted": 1115,
+    "planned": 1119,
+    "agent": 3531,
+    "kernel": 3541,
+    "replied": 3579,
+    "stored": 3633
+   },
+   "ttsPrewarmedMs": null,
+   "engine": null,
+   "guard": ""
+  },
+  {
+   "said": "Aath sticks chahiye.",
+   "asked": "c4-maths-ch01-t01-i09",
+   "heard": "स्टिक्स चाहिए।",
+   "deltaText": "स्टिक्स चाहिए।",
+   "deltaEqualsFinal": true,
+   "conf": null,
+   "move": "hint",
+   "reply": "Haan, sticks chahiye. Kitni, yeh saath mein ginte hain: upar wale chaukore dhaanche mein chaar sticks hain. Neeche wale mein bhi kitni sticks hongi?",
+   "endpoint": 1093,
+   "stt": 482,
+   "lastDeltaAfterEnd": 701,
+   "prefetchAfterEnd": 950,
+   "ack": {
+    "none": "not_an_answer",
+    "waitedMs": 1126,
+    "shadow": true
+   },
+   "ackReadyAfterEnd": null,
+   "prefetchCount": 2,
+   "deltaTimesAfterEnd": [
+    231,
+    247,
+    692,
+    701
+   ],
+   "prefetchTimes": [
+    497,
+    950
+   ],
+   "prefetchTextEqualsFinal": true,
+   "turnAfterEnd": 1576,
+   "director": 2945,
+   "tts": -746,
+   "total": 3775,
+   "sound": 3885,
+   "cls": "no_evidence/model",
+   "speculation": "miss",
+   "specTried": 3,
+   "specDiffers": [
+    "instructions+lastMove+hintLevel+verdict [spec: - hint ladder: rung 1 of 4 used (pump → hint → prompt → assertion); the key may be said only at rung 4 || real: - hint ladder: rung 0 of 4 used (pump → hint → prompt → assertion); the key may be said only at rung 4]",
+    "lastMove",
+    "instructions+lastMove+pendingWhy+verdict [spec: - the question they just answered RIGHT: \"Chalo sticks aur clay ki goliyon se cube ka dhaancha banate hain. Sticks edges || real: - the question (content — pose as written, in their language): \"Chalo sticks aur clay ki goliyon se cube ka dhaancha ban]"
+   ],
+   "prefetched": true,
+   "prefetchMiss": null,
+   "prefetchAheadMs": 592,
+   "note": {
+    "nonAnswer": true,
+    "intent": "answer_partial",
+    "waitedMs": 0,
+    "parallel": null
+   },
+   "serverMs": 2743,
+   "marks": {
+    "ctx": 41,
+    "kit": 42,
+    "prefetch_adopted": 47,
+    "classified": 581,
+    "noted": 582,
+    "planned": 585,
+    "agent": 2687,
+    "kernel": 2689,
+    "replied": 2693,
+    "stored": 2743
+   },
+   "ttsPrewarmedMs": null,
+   "engine": null,
+   "guard": ""
+  },
+  {
+   "said": "Aath sticks chahiye.",
+   "asked": "c4-maths-ch01-t01-i09",
+   "heard": "आठ स्टिक्स चाहिए।",
+   "deltaText": "आठ स्टिक्स चाहिए।",
+   "deltaEqualsFinal": true,
+   "conf": null,
+   "move": "hint",
+   "reply": "Tumne aath sticks boli. Upar chaar aur neeche chaar se aath hoti hain, par dono ko jodne wali sticks bhi chahiye. Har upar wale kone se neeche ek stick lagegi; aisi kitni sticks lagengi?",
+   "endpoint": 1081,
+   "stt": 425,
+   "lastDeltaAfterEnd": 797,
+   "prefetchAfterEnd": 1046,
+   "ack": {
+    "kind": "echo",
+    "token": "आठ",
+    "waitedMs": 1161,
+    "shadow": true
+   },
+   "ackReadyAfterEnd": 2285,
+   "prefetchCount": 2,
+   "deltaTimesAfterEnd": [
+    -27,
+    373,
+    381,
+    782,
+    797
+   ],
+   "prefetchTimes": [
+    631,
+    1046
+   ],
+   "prefetchTextEqualsFinal": true,
+   "turnAfterEnd": 1507,
+   "director": 3937,
+   "tts": -1617,
+   "total": 3827,
+   "sound": 3937,
+   "cls": "incorrect/model",
+   "speculation": "miss",
+   "specTried": 3,
+   "specDiffers": [
+    "lastMove+hintLevel",
+    "instructions+lastMove+verdict+chips [spec: - hint ladder: rung 0 of 4 used (pump → hint → prompt → assertion); the key may be said only at rung 4 || real: - hint ladder: rung 1 of 4 used (pump → hint → prompt → assertion); the key may be said only at rung 4]",
+    "instructions+lastMove+pendingWhy+verdict [spec: - the question they just answered RIGHT: \"Chalo sticks aur clay ki goliyon se cube ka dhaancha banate hain. Sticks edges || real: - the question (content — pose as written, in their language): \"Chalo sticks aur clay ki goliyon se cube ka dhaancha ban]"
+   ],
+   "prefetched": true,
+   "prefetchMiss": null,
+   "prefetchAheadMs": 461,
+   "note": {
+    "nonAnswer": false,
+    "intent": "answer_wrong",
+    "waitedMs": 75,
+    "parallel": null
+   },
+   "serverMs": 3221,
+   "marks": {
+    "ctx": 37,
+    "kit": 37,
+    "prefetch_adopted": 53,
+    "classified": 678,
+    "noted": 753,
+    "planned": 758,
+    "agent": 3126,
+    "kernel": 3132,
+    "replied": 3140,
+    "stored": 3221
+   },
+   "ttsPrewarmedMs": null,
+   "engine": null,
+   "guard": ""
+  },
+  {
+   "said": "Baarah sticks aur aath goliyan.",
+   "asked": "c4-maths-ch01-t01-i09",
+   "heard": "बारह स्टिक्स और आठ गोलियाँ।",
+   "deltaText": "बारह स्टिक्स और आठ गोलियाँ।",
+   "deltaEqualsFinal": true,
+   "conf": null,
+   "move": "practice",
+   "reply": "Haan, baarah sticks edges ke liye aur aath goliyan corners ke liye. Ab dice aur maachis ki dibbi socho. Kisme zyada edges hain?",
+   "endpoint": 1170,
+   "stt": 487,
+   "lastDeltaAfterEnd": 795,
+   "prefetchAfterEnd": 1045,
+   "ack": {
+    "none": "consecutive",
+    "waitedMs": 993,
+    "shadow": true
+   },
+   "ackReadyAfterEnd": null,
+   "prefetchCount": 2,
+   "deltaTimesAfterEnd": [
+    -1435,
+    -1059,
+    -1059,
+    -492,
+    103,
+    772,
+    784,
+    795
+   ],
+   "prefetchTimes": [
+    400,
+    1045
+   ],
+   "prefetchTextEqualsFinal": true,
+   "turnAfterEnd": 1657,
+   "director": 2636,
+   "tts": -658,
+   "total": 3635,
+   "sound": 3745,
+   "cls": "correct/model",
+   "speculation": "miss",
+   "specTried": 3,
+   "specDiffers": [
+    "instructions+lastMove+hintLevel+verdict+module [spec: - the question (content — pose as written, in their language): \"Chalo sticks aur clay ki goliyon se cube ka dhaancha ban || real: - on screen now (values to use when you point at the screen; never what is hidden): parts · use watch only · whole 3D sh]",
+    "instructions+lastMove+verdict+chips+module [spec: - the question (content — pose as written, in their language): \"Chalo sticks aur clay ki goliyon se cube ka dhaancha ban || real: - on screen now (values to use when you point at the screen; never what is hidden): parts · use watch only · whole 3D sh]",
+    "lastMove"
+   ],
+   "prefetched": true,
+   "prefetchMiss": null,
+   "prefetchAheadMs": 593,
+   "note": {
+    "nonAnswer": false,
+    "intent": null,
+    "waitedMs": 2,
+    "parallel": null
+   },
+   "serverMs": 2372,
+   "marks": {
+    "ctx": 70,
+    "kit": 70,
+    "prefetch_adopted": 76,
+    "classified": 476,
+    "noted": 477,
+    "planned": 486,
+    "agent": 2270,
+    "kernel": 2276,
+    "replied": 2282,
+    "stored": 2372
+   },
+   "ttsPrewarmedMs": null,
+   "engine": null,
+   "guard": ""
+  },
+  {
+   "said": "Dono mein barabar, baarah baarah edges hain.",
+   "asked": "c4-maths-ch01-t01-i06",
+   "heard": "दोनों में बराबर। बारह बारह एजेस हैं।",
+   "deltaText": "दोनों में बराबर। बारह बारह एजेस हैं।",
+   "deltaEqualsFinal": true,
+   "conf": null,
+   "move": "probe",
+   "reply": "Tumne kaha dono mein barabar, baarah baarah edges. Cube ki tarah cuboid mein bhi upar chaar, neeche chaar, aur jodne wali chaar edges hoti hain. Ab tiffin box socho: usmein kitni edges aur kitne corners hain?",
+   "endpoint": 1078,
+   "stt": 446,
+   "lastDeltaAfterEnd": 818,
+   "prefetchAfterEnd": 1067,
+   "ack": {
+    "none": "not_an_answer",
+    "waitedMs": 969,
+    "shadow": true
+   },
+   "ackReadyAfterEnd": null,
+   "prefetchCount": 2,
+   "deltaTimesAfterEnd": [
+    -91,
+    -88,
+    40,
+    64,
+    605,
+    605,
+    807,
+    818
+   ],
+   "prefetchTimes": [
+    401,
+    1067
+   ],
+   "prefetchTextEqualsFinal": true,
+   "turnAfterEnd": 1524,
+   "director": 3816,
+   "tts": -1424,
+   "total": 3916,
+   "sound": 4026,
+   "cls": "no_evidence/model",
+   "speculation": "miss",
+   "specTried": 3,
+   "specDiffers": [
+    "instructions+lastMove+hintLevel+verdict [spec: - hint ladder: rung 1 of 4 used (pump → hint → prompt → assertion); the key may be said only at rung 4 || real: - hint ladder: rung 0 of 4 used (pump → hint → prompt → assertion); the key may be said only at rung 4]",
+    "lastMove",
+    "instructions+lastMove+pendingWhy+verdict+module [spec: - the question they just answered RIGHT: \"Dice ek cube hai aur maachis ki dibbi ek cuboid. Kisme zyada edges hain?\" (the || real: - the question (content — pose as written, in their language): \"Dice ek cube hai aur maachis ki dibbi ek cuboid. Kisme z]"
+   ],
+   "prefetched": true,
+   "prefetchMiss": null,
+   "prefetchAheadMs": 455,
+   "note": {
+    "nonAnswer": true,
+    "intent": "answer_correct",
+    "waitedMs": 226,
+    "parallel": null
+   },
+   "serverMs": 3060,
+   "marks": {
+    "ctx": 75,
+    "kit": 76,
+    "prefetch_adopted": 81,
+    "classified": 594,
+    "noted": 820,
+    "planned": 823,
+    "agent": 2880,
+    "kernel": 2883,
+    "replied": 2887,
+    "stored": 3060
+   },
+   "ttsPrewarmedMs": null,
+   "engine": null,
+   "guard": ""
+  },
+  {
+   "said": "Bas aise hi pata tha.",
+   "asked": "c4-maths-ch01-t01-i07",
+   "heard": "बस ऐसे ही पता था।",
+   "deltaText": "बस ऐसे ही पता था।",
+   "deltaEqualsFinal": true,
+   "conf": null,
+   "move": "hint",
+   "reply": "Achha, tumhe pehle se yaad tha. Tiffin ke upar chaar aur neeche chaar kone socho; dono ko jodne wali edges bhi hain. Tiffin box mein kitni edges aur kitne corners hain?",
+   "endpoint": 1074,
+   "stt": 753,
+   "lastDeltaAfterEnd": 841,
+   "prefetchAfterEnd": 1091,
+   "ack": {
+    "none": "not_an_answer",
+    "waitedMs": 1145,
+    "shadow": true
+   },
+   "ackReadyAfterEnd": null,
+   "prefetchCount": 2,
+   "deltaTimesAfterEnd": [
+    -556,
+    54,
+    227,
+    640,
+    829,
+    841
+   ],
+   "prefetchTimes": [
+    478,
+    1091
+   ],
+   "prefetchTextEqualsFinal": true,
+   "turnAfterEnd": 1828,
+   "director": 3469,
+   "tts": -1214,
+   "total": 4083,
+   "sound": 4193,
+   "cls": "no_evidence/model",
+   "speculation": "miss",
+   "specTried": 3,
+   "specDiffers": [
+    "instructions+lastMove+hintLevel+verdict [spec: - hint ladder: rung 1 of 4 used (pump → hint → prompt → assertion); the key may be said only at rung 4 || real: - hint ladder: rung 0 of 4 used (pump → hint → prompt → assertion); the key may be said only at rung 4]",
+    "lastMove",
+    "instructions+lastMove+upcoming+verdict+module [spec: - the question (content — pose as written, in their language): \"Cube shape ke stage prop par teen edges ek point par mil || real: - the question (content — pose as written, in their language): \"Tumhara tiffin box ek cuboid hai. Iske kitne edges aur k]"
+   ],
+   "prefetched": true,
+   "prefetchMiss": null,
+   "prefetchAheadMs": 733,
+   "note": {
+    "nonAnswer": true,
+    "intent": "backchannel",
+    "waitedMs": 0,
+    "parallel": null
+   },
+   "serverMs": 2714,
+   "marks": {
+    "ctx": 72,
+    "kit": 73,
+    "prefetch_adopted": 83,
+    "classified": 495,
+    "noted": 496,
+    "planned": 499,
+    "agent": 2621,
+    "kernel": 2629,
+    "replied": 2635,
+    "stored": 2714
+   },
+   "ttsPrewarmedMs": null,
+   "engine": null,
+   "guard": ""
+  },
+  {
+   "said": "Baarah edges aur aath corners.",
+   "asked": "c4-maths-ch01-t01-i07",
+   "heard": "बारह एजेस और आठ कॉर्नर्स।",
+   "deltaText": "बारह एजेस और आठ कॉर्नर्स।",
+   "deltaEqualsFinal": true,
+   "conf": null,
+   "move": "probe",
+   "reply": "Haan, tiffin box mein baarah edges aur aath corners hain. Ab photo mein top, front aur right faces dikhte hain. Batao, kitne faces chhupe hue hain?",
+   "endpoint": 1105,
+   "stt": 468,
+   "lastDeltaAfterEnd": 865,
+   "prefetchAfterEnd": 1114,
+   "ack": {
+    "kind": "echo",
+    "token": "आठ",
+    "waitedMs": 930,
+    "shadow": true
+   },
+   "ackReadyAfterEnd": 2164,
+   "prefetchCount": 2,
+   "deltaTimesAfterEnd": [
+    -1483,
+    -1471,
+    -840,
+    20,
+    832,
+    838,
+    854,
+    865
+   ],
+   "prefetchTimes": [
+    402,
+    1114
+   ],
+   "prefetchTextEqualsFinal": true,
+   "turnAfterEnd": 1573,
+   "director": 3813,
+   "tts": -1431,
+   "total": 3956,
+   "sound": 4066,
+   "cls": "correct/model",
+   "speculation": "miss",
+   "specTried": 3,
+   "specDiffers": [
+    "instructions+lastMove+hintLevel+verdict+module [spec: - the question (content — pose as written, in their language): \"Tumhara tiffin box ek cuboid hai. Iske kitne edges aur k || real: - the question (content — pose as written, in their language): \"Cube shape ke stage prop par teen edges ek point par mil]",
+    "instructions+lastMove+verdict+module [spec: - the question (content — pose as written, in their language): \"Tumhara tiffin box ek cuboid hai. Iske kitne edges aur k || real: - the question (content — pose as written, in their language): \"Cube shape ke stage prop par teen edges ek point par mil]",
+    "lastMove+upcoming"
+   ],
+   "prefetched": true,
+   "prefetchMiss": null,
+   "prefetchAheadMs": 441,
+   "note": {
+    "nonAnswer": false,
+    "intent": null,
+    "waitedMs": 10,
+    "parallel": null
+   },
+   "serverMs": 3058,
+   "marks": {
+    "ctx": 71,
+    "kit": 71,
+    "prefetch_adopted": 80,
+    "classified": 567,
+    "noted": 577,
+    "planned": 583,
+    "agent": 2995,
+    "kernel": 2999,
+    "replied": 3003,
+    "stored": 3058
+   },
+   "ttsPrewarmedMs": null,
+   "engine": null,
+   "guard": ""
+  },
+  {
+   "said": "Bas aise hi pata tha.",
+   "asked": "c4-maths-ch01-t01-rl-o2",
+   "heard": "पास ऐसे ही पता था।",
+   "deltaText": "पास ऐसे ही पता था।",
+   "deltaEqualsFinal": true,
+   "conf": null,
+   "move": "hint",
+   "reply": "Achha, tumhe pehle se yaad tha. Is baar photo mein dikhne wale faces se chhupe faces dhoondte hain: upar dikhta hai, neeche chhupa hai. Front ke opposite kaunsa face chhupa hoga?",
+   "endpoint": 1111,
+   "stt": 517,
+   "lastDeltaAfterEnd": 854,
+   "prefetchAfterEnd": 1103,
+   "ack": {
+    "none": "not_an_answer",
+    "waitedMs": 837,
+    "shadow": true
+   },
+   "ackReadyAfterEnd": null,
+   "prefetchCount": 2,
+   "deltaTimesAfterEnd": [
+    -397,
+    -9,
+    207,
+    610,
+    841,
+    854
+   ],
+   "prefetchTimes": [
+    457,
+    1103
+   ],
+   "prefetchTextEqualsFinal": true,
+   "turnAfterEnd": 1629,
+   "director": 3536,
+   "tts": -1145,
+   "total": 4020,
+   "sound": 4130,
+   "cls": "no_evidence/model",
+   "speculation": "miss",
+   "specTried": 3,
+   "specDiffers": [
+    "instructions+lastMove+hintLevel+verdict [spec: - hint ladder: rung 1 of 4 used (pump → hint → prompt → assertion); the key may be said only at rung 4 || real: - hint ladder: rung 0 of 4 used (pump → hint → prompt → assertion); the key may be said only at rung 4]",
+    "lastMove",
+    "instructions+lastMove+upcoming+verdict [spec: - the question (content — pose as written, in their language): \"Cube shape ke stage prop par teen edges ek point par mil || real: - the question (content — pose as written, in their language): \"Ek band cuboid parcel ki photo mein top, front aur right]"
+   ],
+   "prefetched": true,
+   "prefetchMiss": null,
+   "prefetchAheadMs": 504,
+   "note": {
+    "nonAnswer": true,
+    "intent": "answer_partial",
+    "waitedMs": 81,
+    "parallel": null
+   },
+   "serverMs": 3527,
+   "marks": {
+    "ctx": 69,
+    "kit": 70,
+    "prefetch_adopted": 75,
+    "classified": 409,
+    "noted": 490,
+    "planned": 493,
+    "agent": 3435,
+    "kernel": 3437,
+    "replied": 3444,
+    "stored": 3527
+   },
+   "ttsPrewarmedMs": null,
+   "engine": null,
+   "guard": ""
+  },
+  {
+   "said": "Mujhe lagta hai तीन.",
+   "asked": "c4-maths-ch01-t01-rl-o2",
+   "heard": "मुझे लगता है तीन।",
+   "deltaText": "मुझे लगता है तीन।",
+   "deltaEqualsFinal": true,
+   "conf": null,
+   "move": "practice",
+   "reply": "Haan, teen faces chhupe hain: neeche, peeche aur left. Photo mein teen dikhte hain, par dabbe ke baaki teen bhi hote hain. Ab agar cube ki drawing mein nau edges dikhein, toh kitni edges chhupi hongi?",
+   "endpoint": 1014,
+   "stt": 452,
+   "lastDeltaAfterEnd": 764,
+   "prefetchAfterEnd": 1014,
+   "ack": {
+    "kind": "echo",
+    "token": "तीन",
+    "waitedMs": 1830,
+    "shadow": true
+   },
+   "ackReadyAfterEnd": 2939,
+   "prefetchCount": 2,
+   "deltaTimesAfterEnd": [
+    -857,
+    -649,
+    -452,
+    741,
+    764
+   ],
+   "prefetchTimes": [
+    401,
+    1014
+   ],
+   "prefetchTextEqualsFinal": true,
+   "turnAfterEnd": 1465,
+   "director": 4681,
+   "tts": -1403,
+   "total": 4743,
+   "sound": 4853,
+   "cls": "correct/model",
+   "speculation": "miss",
+   "specTried": 3,
+   "specDiffers": [
+    "instructions+lastMove+hintLevel+verdict [spec: - the question (content — pose as written, in their language): \"Ek band cuboid parcel ki photo mein top, front aur right || real: - the question (content — pose as written, in their language): \"Cube shape ke stage prop par teen edges ek point par mil]",
+    "instructions+lastMove+verdict+chips [spec: - the question (content — pose as written, in their language): \"Ek band cuboid parcel ki photo mein top, front aur right || real: - the question (content — pose as written, in their language): \"Cube shape ke stage prop par teen edges ek point par mil]",
+    "instructions+lastMove+upcoming [spec: - shape (a note, not words to say): confirm specifically: name the exact thing they got right, no ability words; pose th || real: - shape (a note, not words to say): confirm specifically: name the exact thing they got right, no ability words; pose th]"
+   ],
+   "prefetched": true,
+   "prefetchMiss": null,
+   "prefetchAheadMs": 452,
+   "note": {
+    "nonAnswer": false,
+    "intent": "answer_hedged",
+    "waitedMs": 8,
+    "parallel": null
+   },
+   "serverMs": 4003,
+   "marks": {
+    "ctx": 71,
+    "kit": 72,
+    "prefetch_adopted": 80,
+    "classified": 1451,
+    "noted": 1459,
+    "planned": 1465,
+    "agent": 3938,
+    "kernel": 3939,
+    "replied": 3943,
+    "stored": 4003
+   },
+   "ttsPrewarmedMs": null,
+   "engine": null,
+   "guard": ""
+  },
+  {
+   "said": "Mujhe nahi pata, ek baar aur batao na.",
+   "asked": "c4-maths-ch01-t01-rl-h2",
+   "heard": "मुझे नहीं पता। एक बार और बताओ ना।",
+   "deltaText": "मुझे नहीं पता। एक बार और बताओ ना।",
+   "deltaEqualsFinal": true,
+   "conf": null,
+   "move": "hint",
+   "reply": "Theek hai, ek baar aur chhote steps mein. Cube mein kul baarah edges hoti hain; drawing mein nau dikh rahi hain. Baarah mein se nau hatao, kitni chhupi edges bachti hain?",
+   "endpoint": 1051,
+   "stt": 479,
+   "lastDeltaAfterEnd": 803,
+   "prefetchAfterEnd": 1052,
+   "ack": {
+    "none": "not_an_answer",
+    "waitedMs": 481,
+    "shadow": true
+   },
+   "ackReadyAfterEnd": null,
+   "prefetchCount": 2,
+   "deltaTimesAfterEnd": [
+    -1818,
+    -424,
+    -215,
+    258,
+    566,
+    608,
+    766,
+    803
+   ],
+   "prefetchTimes": [
+    507,
+    1052
+   ],
+   "prefetchTextEqualsFinal": true,
+   "turnAfterEnd": 1530,
+   "director": 3916,
+   "tts": -1447,
+   "total": 3999,
+   "sound": 4109,
+   "cls": "no_evidence/request",
+   "speculation": "none",
+   "specTried": null,
+   "prefetched": true,
+   "prefetchMiss": null,
+   "prefetchAheadMs": 407,
+   "note": null,
+   "serverMs": 3911,
+   "marks": {
+    "ctx": 66,
+    "kit": 67,
+    "prefetch_adopted": 82,
+    "classified": 141,
+    "planned": 157,
+    "agent": 3814,
+    "kernel": 3820,
+    "replied": 3822,
+    "stored": 3911
+   },
+   "ttsPrewarmedMs": null,
+   "engine": null,
+   "guard": ""
+  },
+  {
+   "said": "Mujhe nahi pata, ek baar aur batao na.",
+   "asked": "c4-maths-ch01-t01-rl-h2",
+   "heard": "मुझे नहीं पता। एक बार और बताओ ना।",
+   "deltaText": "मुझे नहीं पता। एक बार और बताओ ना।",
+   "deltaEqualsFinal": true,
+   "conf": null,
+   "move": "probe",
+   "reply": "Chalo objects se sochte hain: cube ki sabhi edges ko ek-ek karke count karo, phir jo dikh rahi hain unhe alag rakho. Dice ek cube hai aur maachis ki dibbi ek cuboid. Kisme zyada edges hain?",
+   "endpoint": 1080,
+   "stt": 454,
+   "lastDeltaAfterEnd": 818,
+   "prefetchAfterEnd": 1068,
+   "ack": {
+    "none": "not_an_answer",
+    "waitedMs": 599,
+    "shadow": true
+   },
+   "ackReadyAfterEnd": null,
+   "prefetchCount": 2,
+   "deltaTimesAfterEnd": [
+    -1395,
+    -360,
+    -226,
+    187,
+    602,
+    602,
+    790,
+    818
+   ],
+   "prefetchTimes": [
+    438,
+    1068
+   ],
+   "prefetchTextEqualsFinal": true,
+   "turnAfterEnd": 1534,
+   "director": 7865,
+   "tts": 308,
+   "total": 9707,
+   "sound": 9817,
+   "cls": "no_evidence/request",
+   "speculation": "none",
+   "specTried": null,
+   "prefetched": true,
+   "prefetchMiss": null,
+   "prefetchAheadMs": 469,
+   "note": null,
+   "serverMs": 7859,
+   "marks": {
+    "ctx": 71,
+    "kit": 72,
+    "prefetch_adopted": 81,
+    "classified": 205,
+    "planned": 211,
+    "kernel": 6217,
+    "replied": 7777,
+    "stored": 7858
+   },
+   "ttsPrewarmedMs": null,
+   "engine": null,
+   "guard": ""
+  },
+  {
+   "said": "Bas aise hi pata tha.",
+   "asked": "c4-maths-ch01-t01-i06",
+   "heard": "बस ऐसे ही पता था।",
+   "deltaText": "बस ऐसे ही पता था।",
+   "deltaEqualsFinal": true,
+   "conf": null,
+   "move": "probe",
+   "reply": "Achha, tumhe yaad tha. Par dice aur maachis ki dibbi ko compare karke dekhte hain: dono ke upar chaar, neeche chaar, aur beech mein chaar edges hain. Kisme zyada edges hain, ya dono mein barabar?",
+   "endpoint": 1068,
+   "stt": 439,
+   "lastDeltaAfterEnd": 732,
+   "prefetchAfterEnd": 980,
+   "ack": {
+    "none": "unclassified",
+    "waitedMs": 3000,
+    "shadow": true
+   },
+   "ackReadyAfterEnd": null,
+   "prefetchCount": 2,
+   "deltaTimesAfterEnd": [
+    -872,
+    -225,
+    -67,
+    527,
+    719,
+    732
+   ],
+   "prefetchTimes": [
+    401,
+    980
+   ],
+   "prefetchTextEqualsFinal": true,
+   "turnAfterEnd": 1507,
+   "director": 6623,
+   "tts": -1783,
+   "total": 6347,
+   "sound": 6457,
+   "cls": "no_evidence/model",
+   "speculation": "miss",
+   "specTried": 3,
+   "specDiffers": [
+    "instructions+lastMove+hintLevel+verdict [spec: - hint ladder: rung 1 of 4 used (pump → hint → prompt → assertion); the key may be said only at rung 4 || real: - hint ladder: rung 0 of 4 used (pump → hint → prompt → assertion); the key may be said only at rung 4]",
+    "lastMove",
+    "instructions+lastMove+pendingWhy+verdict [spec: - the question they just answered RIGHT: \"Dice ek cube hai aur maachis ki dibbi ek cuboid. Kisme zyada edges hain?\" (the || real: - the question (content — pose as written, in their language): \"Dice ek cube hai aur maachis ki dibbi ek cuboid. Kisme z]"
+   ],
+   "prefetched": true,
+   "prefetchMiss": null,
+   "prefetchAheadMs": 529,
+   "note": {
+    "nonAnswer": true,
+    "intent": "dont_know",
+    "waitedMs": 0,
+    "parallel": null
+   },
+   "serverMs": 6615,
+   "marks": {
+    "ctx": 71,
+    "kit": 71,
+    "prefetch_adopted": 80,
+    "classified": 3139,
+    "noted": 3139,
+    "planned": 3145,
+    "agent": 6421,
+    "kernel": 6423,
+    "replied": 6437,
+    "stored": 6615
+   },
+   "ttsPrewarmedMs": null,
+   "engine": null,
+   "guard": ""
+  }
+ ]
+}

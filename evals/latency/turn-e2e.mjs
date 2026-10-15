@@ -257,7 +257,8 @@ async function readFirst(res, framed) {
       if (buf.length < 4 + len) break;
       const body = buf.subarray(4, 4 + len);
       buf = buf.subarray(4 + len);
-      if (type === 0) { if (!first && body.length) first = performance.now(); bytes += body.length; }
+      // pcm (0) or ADPCM (5): either is her first sound
+      if (type === 0 || type === 5) { if (!first && body.length) first = performance.now(); bytes += body.length; }
       else if (type === 3) { turn = JSON.parse(body.toString("utf8")); turnAt = performance.now(); }
       else if (type === 2 && !header) header = JSON.parse(body.toString("utf8"));
     }
@@ -315,7 +316,9 @@ try {
       const got = await readFirst(res, true);
       r = got.turn;
       replyAt = got.turnAt;
-      if (got.header?.audio !== "follows" && r?.teacherReplySeq) tts = await ttsFirst(s.lessonId, r.teacherReplySeq);
+      // "follows": the reply's audio after the turn frame; "streaming" (the agent lane, stream 3's turn-audio): her clauses
+      // BEFORE the turn frame, so tts can be negative (first sound before the turn's JSON). Anything else: the separate stream.
+      if (!["follows", "streaming"].includes(got.header?.audio) && r?.teacherReplySeq) tts = await ttsFirst(s.lessonId, r.teacherReplySeq);
       else tts = { firstAt: got.first, prewarmedMs: got.header?.prewarmedMs ?? null, engine: got.header?.engine ?? null, bytes: got.bytes };
     } else {
       r = await api("POST", "/api/lesson/turn", body);

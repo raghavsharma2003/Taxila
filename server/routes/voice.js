@@ -5,6 +5,7 @@
 // The child's turn itself goes through POST /api/lesson/turn like a text-lane turn: the Director writes the
 // reply there (one compile() for every lane), and the client speaks it through tts-stream by seq.
 // Like /api/tts, nothing here speaks free text: only lines the Director stored for that lesson.
+import { takeAgentSpec, settleAgentSpec } from "../latency/agentSpec.js";
 import { one } from "../db.js";
 import { requireChild, hasConsent, sessionTokenHash } from "../auth.js";
 import { AzureError, endpoint, mintRealtimeSecret, realtimeLane } from "../azure.js";
@@ -377,16 +378,26 @@ async function turnAudio(req, res, body) {
   // at her first clause (header {audio: "streaming"}, then {t: "say"} events and audio), and the turn frame follows when
   // the turn has committed. Errors before that first byte are the turn route's own JSON, as before.
   const early = streamingSay(req, res, body, t0);
+  // round 5 (stream 3): her call speculated on this turn's prefetch (server/latency/agentSpec.js); adopted by agentTurn only
+  // on identical inputs, aborted when the turn is done either way (a no-op once adopted and finished)
+  // the take may wait for the same classify the turn adopts: the turn never waits on it (the spec lands on `hooks` when it is
+  // handed over; turn.js reads hooks.agentSpec only after its own classify, so a late hand-over is simply unused and aborted)
+  const hooks = { onAgentSay: early.onAgentSay };
+  const specP = !body?.typed && !body?.chipId ? Promise.resolve((turnAudioDeps.takeAgentSpec ?? takeAgentSpec)(body?.lessonId, body?.childText)).catch(() => null) : null;
+  specP?.then((s) => { if (s) hooks.agentSpec = s; });
+  const settleSpec = async (why) => settleAgentSpec(body?.lessonId, await specP, why);
   let out;
   try {
-    out = await lessonTurn(req, body, { onAgentSay: early.onAgentSay });
+    out = await lessonTurn(req, body, hooks);
   } catch (e) {
+    await settleSpec("turn failed");
     if (!early.opened) throw e;
     await early.done().catch(() => {});
     early.w.json(FRAME.end, { t: "end", status: "error", error: e instanceof HttpError ? e.message : "turn failed" });
     res.end();
     return;
   }
+  await settleSpec("turn done");
   if (early.opened) return early.finish(out);
   const lessonId = String(body.lessonId);
   const seq = out?.teacherReplySeq;
@@ -414,7 +425,7 @@ async function turnAudio(req, res, body) {
  * in full after what was already said. The caption is always out.teacherReply.
  */
 /** Tests only: the turn, the voice style and the synthesis behind streamed turn-audio (null = production). */
-export const turnAudioDeps = { lessonTurn: null, style: null, synth: null };
+export const turnAudioDeps = { lessonTurn: null, style: null, synth: null, takeAgentSpec: null };
 export { turnAudio as _turnAudio };
 
 function streamingSay(req, res, body, t0) {

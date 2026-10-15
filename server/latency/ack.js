@@ -26,6 +26,7 @@ import { isNumberToken, norm } from "../signals/text.js";
 import { createHash } from "node:crypto";
 import { scanSafety, normForMatch } from "../director/safety.js";
 import { signalsOf } from "../relational/signals.js";
+import { numberPhrases, WORKING_ALOUD } from "../grading/spoken-number.js";
 
 const GRADED = new Set(["correct", "incorrect", "partial", "misconception"]);
 
@@ -173,11 +174,13 @@ const NOT_LESSON_SOURCES = new Set(["content_filter", "asr", "request", "chip", 
 const NEVER_SRC = [
   // romance, companion, exclusivity
   "girl ?friend", "boy ?friend", "gf", "bf", "crush", "date", "dating", "marry", "married", "shaadi", "shadi", "kiss", "love", "lovely", "pyaar", "pyar",
-  "jaan", "jaanu", "janu", "baby", "babu", "cute", "beautiful", "pretty", "sundar", "handsome", "sexy", "hot", "pasand", "like you", "miss you",
+  "jaan", "jaanu", "janu", "baby", "babu", "cute", "beautiful", "pretty", "sundar", "handsome", "sexy", "hot", "like you", "miss you", "love you",
   "best ?friend", "bestie", "friend", "dost", "dosti", "only you", "just you", "sirf (?:tum|aap|tu|tumhi|aap hi)", "bas (?:tum|aap)", "forever", "hamesha",
   "always", "promise", "never leave", "mat jao", "chhod",
   "गर्लफ्रेंड", "बॉयफ्रेंड", "गर्ल फ्रेंड", "बॉय फ्रेंड", "क्रश", "डेट", "शादी", "किस", "प्यार", "प्रेम", "लव", "जान", "जानू", "बेबी", "क्यूट", "सुंदर", "सुन्दर",
-  "खूबसूरत", "पसंद", "दोस्त", "दोस्ती", "फ्रेंड", "बेस्ट", "सिर्फ", "सिर्फ़", "केवल", "हमेशा", "वादा", "प्रॉमिस", "मत जाओ", "छोड़",
+  "खूबसूरत", "दोस्त", "दोस्ती", "फ्रेंड", "बेस्ट", "सिर्फ", "सिर्फ़", "केवल", "हमेशा", "वादा", "प्रॉमिस", "मत जाओ", "छोड़",
+  "(?:aap|tum|tu|you|u|aapko|tumko|tumhe|tumhein|tujhe|आप|तुम|तू|आपको|तुमको|तुम्हें|तुझे)\\s+(?:[^\\s]+\\s+){0,3}(?:pasand|पसंद|like|love)",
+  "(?:pasand|पसंद)\\s+(?:[^\\s]+\\s+){0,2}(?:aap|tum|you|आप|तुम|ho|हो)",
   // secrecy
   "secret", "secretly", "don'?t tell", "dont tell", "do not tell", "mat batana", "mat bolna", "kisi ko (?:mat|na|nahi)", "chupke", "chhupa", "raaz", "raz",
   "सीक्रेट", "राज", "राज़", "मत बताना", "मत बोलना", "किसी को", "छुपा", "चुपके",
@@ -189,35 +192,56 @@ const NEVER_SRC = [
   "gadha", "gadhi", "bakwas", "bekaar", "bekar", "ganda", "gandi", "chup", "nafrat", "kutta", "kutti", "ullu",
   "पागल", "बेवकूफ", "बुद्धू", "गधा", "गधी", "बकवास", "बेकार", "गंदा", "गंदी", "चुप", "नफरत", "कुत्ता", "उल्लू", "बोरिंग",
   // tired, time left, stopping, leaving, sleep
-  "tired", "sleepy", "sleep", "thak", "thaka", "thaki", "thak gaya", "thak gayi", "neend", "so ?jaun", "time", "kitna (?:time|der|samay)", "kab (?:tak|khatam)",
-  "khatam", "khatm", "band karo", "stop", "quit", "bye", "go home", "jaana", "jana hai", "break", "chhutti", "minute", "minutes",
-  "थक", "थकी", "थका", "थक गई", "थक गया", "नींद", "सोना", "टाइम", "समय", "कितना", "कब तक", "खत्म", "ख़त्म", "बंद", "बाय", "ब्रेक", "छुट्टी", "मिनट",
-  // talk TO HER about her (small talk, identity, "do you like…", "aap kaise ho"): her reply is the relational lane's. Costs a
-  // continuer on "can you explain…" too (a request: none anyway) and on "how do you add…" (accepted: one silence). An address
-  // term alone ("pata nahi didi") is not talk about her and stays allowed
-  "you", "your", "yours", "u", "ur", "aap", "aapka", "aapki", "aapke", "aapne", "aapko", "aapse", "tum", "tumhara", "tumhari", "tumhare", "tumne", "tumko",
-  "tumse", "tujhe", "tujhse", "tu", "tera", "teri", "tere",
-  "आप", "आपका", "आपकी", "आपके", "आपने", "आपको", "आपसे", "तुम", "तुम्हारा", "तुम्हारी", "तुम्हारे", "तुमने", "तुमको", "तुमसे", "तुझे", "तू", "तेरा", "तेरी",
+  "tired", "sleepy", "sleep", "thak", "thaka", "thaki", "thak gaya", "thak gayi", "neend", "so ?jaun", "kitna (?:time|der|samay)", "kitne (?:minute|min)", "kab (?:tak|khatam)",
+  "khatam", "khatm", "band karo", "stop", "quit", "bye", "go home", "jaana", "jana hai", "break", "chhutti",
+  "थक", "थकी", "थका", "थक गई", "थक गया", "नींद", "सोना", "कितना (?:टाइम|समय|देर|बचा|बाकी)", "कितने मिनट", "टाइम बचा", "कब तक", "खत्म", "ख़त्म", "बंद", "बाय", "ब्रेक", "छुट्टी",
   // out of bounds, games and screens, someone else at the device
   "ghost", "bhoot", "bhut", "horror", "darawn[a-z]*", "dara[a-z]*", "gaali", "gali", "galiyan", "bad word", "dirty", "kill", "kills", "pubg", "bgmi", "free ?fire",
-  "minecraft", "roblox", "youtube", "insta", "instagram", "movie", "film", "match", "cricket", "essay", "homework", "nobody is listening", "koi nahi dekh[a-z]*",
-  "father", "mother", "his", "her", "beta", "beti", "bhai", "behen", "exam", "tension", "pareshan[a-z]*", "test",
-  "भूत", "डरावन[\u0900-\u097F]*", "गाली", "गालियां", "मूवी", "फिल्म", "मैच", "क्रिकेट", "होमवर्क", "बेटा", "बेटी", "भाई", "बहन", "परेशान[\u0900-\u097F]*", "टेंशन",
+  "insta", "instagram", "essay", "homework", "nobody is listening", "koi nahi dekh[a-z]*",
+  "father", "mother", "his", "her", "beta", "beti", "bhai", "behen", "exam", "tension", "pareshan[a-z]*",
+  "भूत", "डरावन[\u0900-\u097F]*", "गाली", "गालियां", "होमवर्क", "बेटा", "बेटी", "भाई", "बहन", "परेशान[\u0900-\u097F]*", "टेंशन",
   // boredom, giving up (the stems: "chhodo", "thak gayi", "छोड़ो")
   "longer", "maza", "mazaa", "meh", "brb", "pause", "give up", "chhod[a-z]*", "chod[a-z]*", "thak[a-z]*", "bor[a-z]*", "neend[a-z]*",
   "छोड[\u0900-\u097F]*", "थक[\u0900-\u097F]*", "मज़ा", "मजा", "बोर[\u0900-\u097F]*",
   "kitna (?:padhna|bacha|baaki|baki|aur)", "aur kitna", "interesting", "nahi hoga", "nahin hoga", "nahi ho payega", "can'?t do (?:it|this)",
-  "paani", "pani", "water", "toilet", "bathroom", "washroom", "virat", "rohit", "dhoni",
+  "paani", "pani", "water", "toilet", "bathroom", "washroom",
   "कितना पढ़ना", "और कितना", "नहीं होगा", "पानी", "टॉयलेट",
+  // the child's own results (a personal share, even with numbers in it: "i got 9 out of 10 in my maths test")
+  "(?:my|mera|meri|mere|मेरा|मेरी|मेरे)\\s+(?:[^\\s]+\\s+){0,2}(?:test|exam|marks|result|report card|rank|टेस्ट|परीक्षा|एग्जाम|मार्क्स|रिजल्ट)",
+  "marks", "got \\S+ out of", "मार्क्स", "नंबर आए", "number aaye", "number aye",
   // the personal: home, family, feelings (the relational lane's, never a "hmm")
   "mummy", "mumma", "mom", "papa", "dad", "ghar", "home", "sad", "cry", "rona", "dukhi", "udaas", "udas", "dar", "scared", "akela", "akeli", "alone", "lonely",
   "मम्मी", "मां", "माँ", "पापा", "घर", "दुखी", "उदास", "रोना", "डर", "अकेला", "अकेली",
 ];
 // the sources meet the child's words in normForMatch form (NFKC, lower case, nukta and chandrabindu folded)
 const foldSrc = (s) => s.normalize("NFKC").toLowerCase().replace(/\u093C/g, "").replace(/\u0901/g, "\u0902");
+/**
+ * SOFT words (main 2026-10-15, sim lab 14.2: ordinary turns got a continuer 35/376 vs 63/174, interest talk and answers
+ * refused): talk to her (aap / tum / you), time and minutes, screens and sport. They refuse only a turn that is NOT
+ * lesson-shaped ("aapne pehle bhi poocha", "pachaas minute", "tum 3 bolo" keep it; "aap kaise ho", "do you like pizza" do not).
+ */
+const SOFT_SRC = [
+  "time", "minute", "minutes", "kitna", "kitni", "kitne", "टाइम", "समय", "मिनट", "कितना", "कितनी", "कितने",
+  "minecraft", "roblox", "youtube", "movie", "film", "match", "cricket", "virat", "rohit", "dhoni", "test",
+  "मूवी", "फिल्म", "मैच", "क्रिकेट",
+];
+/** Talk TO HER: excused only by lesson words or working aloud, never by a bare number ("aapne Pushpa 2 dekhi?"). */
+const TO_HER_SRC = [
+  // talk TO HER about her (small talk, identity, "do you like…", "aap kaise ho"): her reply is the relational lane's. Costs a
+  // continuer on "can you explain…" too (a request: none anyway) and on "how do you add…" (accepted: one silence). An address
+  // term alone ("pata nahi didi") is not talk about her and stays allowed
+  "you", "your", "yours", "u", "ur", "aap", "aapka", "aapki", "aapke", "aapne", "aapko", "aapse", "tum", "tumhara", "tumhari", "tumhare", "tumne", "tumko",
+  "tumse", "tujhe", "tujhse", "tu", "tera", "teri", "tere",
+  "आप", "आपका", "आपकी", "आपके", "आपने", "आपको", "आपसे", "तुम", "तुम्हारा", "तुम्हारी", "तुम्हारे", "तुमने", "तुमको", "तुमसे", "तुझे", "तू", "तेरा", "तेरी",
+];
+const TO_HER = new RegExp(`(?<![\\p{L}\\p{M}\\p{N}])(?:${TO_HER_SRC.map(foldSrc).join("|")})(?![\\p{L}\\p{M}\\p{N}])`, "u");
+const SOFT = new RegExp(`(?<![\\p{L}\\p{M}\\p{N}])(?:${SOFT_SRC.map(foldSrc).join("|")})(?![\\p{L}\\p{M}\\p{N}])`, "u");
 const NEVER = new RegExp(`(?<![\\p{L}\\p{M}\\p{N}])(?:${NEVER_SRC.map(foldSrc).join("|")})(?![\\p{L}\\p{M}\\p{N}])`, "u");
 /** Words that make a turn lesson-shaped when the reading is no-evidence: a don't-know, a clarifying question, working aloud. */
-const LESSON_SHAPE_SRC = String.raw`pata nahi|pata nahin|nahi pata|nahin pata|maloom nahi|malum nahi|yaad nahi|i don'?t know|dont know|not sure|no idea|matlab|samajh|samjha|samjhi|samjhe|kaise|kyun|kyon|kyu|kya hai|kya hota|what is|what does|how do|how many|why|means|meaning|explain|again|phir se|dobara|hint|example|udaharan|sawal|sawaal|question|answer|jawab|javab|ganit|maths|math|plus|minus|times|divide|multiply|guna|bhag|jod|ghata|fraction|bhinn|number|sankhya|shape|aakar|side|corner|kona|पता नहीं|नहीं पता|याद नहीं|मतलब|समझ|कैसे|क्यों|क्या है|क्या होता|फिर से|दोबारा|सवाल|जवाब|उत्तर|गुणा|भाग|जोड़|घटा|भिन्न|संख्या|आकार|कोना`;
+const LESSON_SHAPE_SRC = String.raw`pata nahi|pata nahin|nahi pata|nahin pata|maloom nahi|malum nahi|yaad nahi|i don'?t know|dont know|not sure|no idea|matlab|samajh|samjha|samjhi|samjhe|sawal|sawaal|question|answer|jawab|javab|ganit|maths|math|plus|minus|times|divide|multiply|guna|bhag|jod|ghata|fractions?|bhinn|number|sankhya|shape|aakar|side|corner|kona|count|counting|ginti|gin[a-z]*|group|groups|maybe|shayad|lagta|i think|poocha|puchha|pucha|पता नहीं|नहीं पता|याद नहीं|मतलब|समझ|सवाल|जवाब|उत्तर|गुणा|भाग|जोड़|घटा|भिन्न|संख्या|आकार|कोना|काउंट|गिन[\u0900-\u097F]*|गिनती|ग्रुप|शायद|लगता|पूछा|टाइम्स|प्लस|माइनस`;
+/** Question and request words: lesson-shaped on their own, never enough to excuse talk TO HER ("aap kaise ho?", "what's your name again?"). */
+const QUESTION_SRC = String.raw`means|meaning|explain|again|phir se|dobara|hint|example|udaharan|फिर से|दोबारा|kaise|kyun|kyon|kyu|kya hai|kya hota|what is|what does|how do|how many|why|कैसे|क्यों|क्या है|क्या होता`;
+const QUESTION = new RegExp(`(?<![\\p{L}\\p{M}])(?:${foldSrc(QUESTION_SRC)})(?![\\p{L}\\p{M}])`, "u");
 const LESSON_SHAPE = new RegExp(`(?<![\\p{L}\\p{M}])(?:${foldSrc(LESSON_SHAPE_SRC)})(?![\\p{L}\\p{M}])`, "u");
 
 /**
@@ -236,6 +260,14 @@ export function lessonTurnOf(text, cls) {
   if (sig.some((s) => !LESSON_SIGNALS.has(s.kind))) return { none: "relational" };
   const n = normForMatch(t);
   if (NEVER.test(n)) return { none: "relational" };
+  // lesson-shaped words: a digit, a spoken number other than "ek" ("ek minute" is a filler; पचास, जीरो, सौ count), working
+  // aloud, a don't-know, a lesson question
+  const nums = /\d/.test(n) ? null : numberPhrases(t);
+  const lessonish = /\d/.test(n) || !!nums?.some((v) => v !== 1) || WORKING_ALOUD.test(t) || LESSON_SHAPE.test(n);
+  const toHer = TO_HER.test(n);
+  if (toHer && !(WORKING_ALOUD.test(t) || LESSON_SHAPE.test(n))) return { none: "relational" };
+  const soft = toHer || SOFT.test(n);
+  if (soft && !lessonish) return { none: "relational" };
   if (cls === undefined) return { ok: true };
   if (!cls) return { none: "unclassified" };
   const f = cls.flags ?? {};
@@ -244,8 +276,9 @@ export function lessonTurnOf(text, cls) {
   if (cls.request || NOT_LESSON_SOURCES.has(cls.source)) return { none: "not_lesson" };
   if (f.offTopic || f.metaBreak || f.frustrationWords || f.humour) return { none: "off_topic" };
   if (cls.signals && (!LESSON_ACTS.has(cls.signals.act) || cls.signals.personalShare)) return { none: "off_topic" };
-  // the positive half: graded, a don't-know or an ask for the answer, or lesson-shaped words
-  if (GRADED.has(cls.outcome) || f.dontKnow || f.asksForAnswer || /\d/.test(n) || LESSON_SHAPE.test(n)) return { ok: true };
+  // the positive half: graded, a don't-know or an ask for the answer, lesson-shaped words, or (main 2026-10-15) a clean
+  // reading of words with nothing soft in them: her own "what do you like?" answered ("मुझे batting बहुत पसंद है")
+  if (GRADED.has(cls.outcome) || f.dontKnow || f.asksForAnswer || lessonish || QUESTION.test(n) || !soft) return { ok: true };
   return { none: "not_lesson" };
 }
 
