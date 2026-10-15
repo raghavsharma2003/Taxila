@@ -15,7 +15,7 @@ import { chat, chatStream, usdOf, normUsage } from "../azure.js";
 import { sayDeltasOf } from "../latency/speech-stream.js";
 import { floorViolations } from "../director/safety.js";
 import { screenClaimProblem, stripScreenRefs, pointsAtScreen } from "../director/say.js";
-import { speakNotWrite } from "../brain/say.js";
+import { speakNotWrite, affirmOpenerFix } from "../brain/say.js";
 import { promptFor, plainEvidence } from "../director/items.js";
 import { comprehensionRead } from "../director/read.js";
 import { systemPrompt, stateMessage, offeredItems, TURN_SCHEMA } from "./prompt.js";
@@ -154,7 +154,7 @@ const kitContentOf = (kit) => [kit.title, ...(kit.expectations ?? []), ...(kit.i
  * rewritten to say. Nothing on screen is known to be new while she speaks, so a clause pointing at the screen is dropped
  * unless something is already up. PURE given its inputs.
  */
-export function clauseGate({ verdict = null, learner = {}, noGame = false, screen = null, lane = "voice", content = "" } = {}) {
+export function clauseGate({ verdict = null, learner = {}, noGame = false, screen = null, lane = "voice", content = "", answer = "", lang = "hinglish" } = {}) {
   const up = screen && screen.on && screen.on !== "nothing";
   const understood = Object.values(learner ?? {}).some((v) => v.read === "understood");
   let first = true;
@@ -162,7 +162,13 @@ export function clauseGate({ verdict = null, learner = {}, noGame = false, scree
     const said = [...spoken, clause].join(" ");
     if (floorViolations(said, { content }).length) return { ok: false, why: "floor" };
     let c = String(clause ?? "");
-    if (first) { first = false; if (verdict && verdict !== "correct") c = c.replace(OPEN_YES, ""); }
+    if (first) {
+      first = false;
+      if (verdict && verdict !== "correct") c = c.replace(OPEN_YES, "");
+      // 14.4 (open-r143-affirm-on-no-answer, case b): a right answer that said No is never met with a bare Yes; the caption
+      // gets the same rewrite in brain/turn.js, this is the streamed audio's first clause
+      else if (verdict === "correct") c = affirmOpenerFix(c, { verdict: "correct", answer, lang }).text;
+    }
     if (lane !== "text") c = speakNotWrite(c);
     const q = /[?？]\s*$/.test(c.trim());
     if (verdict && verdict !== "correct" && PRAISE.test(c) && !q) return { ok: true, skip: true };
@@ -274,7 +280,7 @@ export async function agentTurn({ state, kit, event, silent = false, verdict = n
     const q = adopted ? null : deltaQueue();
     const sayIter = sayDeltasOf(adopted ? adopted.replay() : q.iter());
     const tap = (async function* () { for await (const d of sayIter) { if (firstSayMs == null) firstSayMs = Date.now() - t0; yield d; } })();
-    try { onSay(tap, clauseGate({ verdict, learner: a.learner ?? {}, noGame: !!a.noGame, screen: before, lane, content: kitContentOf(kit) })); } catch { /* the caller's speech path is its own */ }
+    try { onSay(tap, clauseGate({ verdict, learner: a.learner ?? {}, noGame: !!a.noGame, screen: before, lane, content: kitContentOf(kit), answer: childWordsOf(event), lang: state.ctx?.lang ?? "hinglish" })); } catch { /* the caller's speech path is its own */ }
     try {
       const r = adopted ? await adopted.done : await streamFn(dep, messages, { ...opts, onDelta: (d) => q.push(d) });
       q?.end();
