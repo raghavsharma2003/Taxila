@@ -947,7 +947,7 @@ export const studioSeam = {
     const keptNow = kept0 && drawn({ ok: true, script: kept0, source: "kept", syncMs: 0 }) ? kept0 : null;
     // ship5 p4-content board sync: the speculative board (prepareWhiteboard), the line plan raced against the sync deadline,
     // then the kit's code board, all re-gated against her line (TAXILA_BOARD_SYNC=0: exactly deps.planWhiteboard)
-    boardSync.plan(ask, { kit: L.kit ?? undefined, prev, avoid: ask.mode === "continue" ? null : onPage, seen: L.wbSeen, redact: L.redact, budgetMs: STUDIO_LIMITS.wbBudgetMs, planWhiteboard: deps.planWhiteboard, fallbackScript,
+    const ladder = boardSync.plan(ask, { kit: L.kit ?? undefined, prev, avoid: ask.mode === "continue" ? null : onPage, seen: L.wbSeen, redact: L.redact, budgetMs: STUDIO_LIMITS.wbBudgetMs, planWhiteboard: deps.planWhiteboard, fallbackScript,
       onLateSpend: (usd) => { try { breaker.spend(usd); } catch { /* accounting never breaks a lesson */ } L.wbUsdPending = (L.wbUsdPending ?? 0) + usd; } })
       .then((r) => {
         // spend: every board counts toward the global breaker and the child's caps, drawn or not (W2-F fixer)
@@ -964,7 +964,10 @@ export const studioSeam = {
         }
       })
       .catch(() => { if (!keptNow) showFallbackOrFail(); });
-    return keptNow ? { slotId: p.slotId, intentId, state: "revealed", artifact: p.artifact } : { slotId: p.slotId, intentId, state: "planning" };
+    // round 5 (14.3, owner-5): `ready` resolves to the revealed slot once the ladder has drawn a board (or null), so a turn that
+    // answers the CHILD's ask can wait a moment and carry the board on its own response (drawn before her line refers to it)
+    const ready = ladder.then(() => (!p.retired && p.state === "revealed" && p.artifact ? { slotId: p.slotId, intentId, state: "revealed", artifact: p.artifact } : null), () => null);
+    return keptNow ? { slotId: p.slotId, intentId, state: "revealed", artifact: p.artifact } : { slotId: p.slotId, intentId, state: "planning", ready };
   },
 
   /**

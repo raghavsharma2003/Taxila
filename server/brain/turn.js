@@ -74,6 +74,14 @@ import { parseVoice } from "../../src/play/core/voice.ts";
 // round 3 fix (experience B2 / B3): the visual ask's clause made true about the screen
 import { askTruth, VISUAL_ON_STAGE, VISUAL_NOT_YET, drawAsked, pictureNote } from "../director/shapes.js";
 import { picturesFor, startPicture, takeFailedPicture } from "../studio/picture.js";
+/** How long a turn answering the child's visual ask waits for the board being drawn for it (the code board lands in ~0.6 s). */
+const ASKED_BOARD_WAIT_MS = Number(process.env.TAXILA_ASKED_BOARD_WAIT_MS || 1500);
+/** The ack, or the revealed slot when the board drawn for the child's ask lands within ASKED_BOARD_WAIT_MS (seam `ready`). */
+async function askedBoard(ack, asked) {
+  if (!asked || ack?.artifact || typeof ack?.ready?.then !== "function") return ack;
+  const got = await Promise.race([ack.ready.catch(() => null), new Promise((res) => setTimeout(() => res(null), ASKED_BOARD_WAIT_MS))]);
+  return got?.artifact ? got : ack;
+}
 import { comprehensionRead } from "../director/read.js";
 import { agentTurn, eventOf, applyAgentTurn } from "../agent/agent.js";
 import { childTurnRow, clientInstructions, debugFor, floorIncidentStmt, incidentStmt, kitFor, laneOf, runTurnTx, stageTurns, turnInsertStmt, turnLane, withAsk, withSeamUi, withStudioSlot } from "./rows.js";
@@ -897,7 +905,11 @@ export async function lessonTurn(req, body, hooks = {}) {
         : null), null);
       if (ack?.slotId && ack?.intentId) {
         // round 2 content: a board-first board is drawn at the ack: the slot carries it on this response (no poll, no wait)
-        studioSlot = { slotId: String(ack.slotId), intentId: String(ack.intentId), state: ack.state ?? "planning", ...(ack.artifact ? { artifact: ack.artifact } : {}) };
+        // round 5 (14.3, owner-5 on 14.2: board-first refused, the code board drawn ~0.6-1.9 s after her line, "picture dikhao"
+        // with nothing to point at): on a turn answering the CHILD's ask the turn waits a moment for the board being drawn, so
+        // it rides THIS response, drawn before her line refers to it (a slow line plan still lands on the stream, as before)
+        const ack2 = await askedBoard(ack, !!ask.payload?.requested && r.move?.request === "visual");
+        studioSlot = { slotId: String(ack2.slotId), intentId: String(ack2.intentId), state: ack2.state ?? "planning", ...(ack2.artifact ? { artifact: ack2.artifact } : {}) };
         wbAcked = true;
         next.wbBeat = kernel.beat?.id;
         // The live board IS the explanation surface: the Director's template rung (explainer@1) is not mounted beside it
@@ -1048,7 +1060,7 @@ export async function lessonTurn(req, body, hooks = {}) {
           item: next.lastMove?.itemId ? findItem(next, kit, next.lastMove.itemId) : null, line: { text: line } }), requested: true,
           ...(turnStudioNow()?.retire ? { replaces: String(turnStudioNow().retire) } : {}) })
         : null), null);
-      if (ack?.slotId && ack?.intentId) { studioSlot = { slotId: String(ack.slotId), intentId: String(ack.intentId), state: ack.state ?? "planning", ...(ack.artifact ? { artifact: ack.artifact } : {}) }; wbAcked = true; moment = null; }
+      if (ack?.slotId && ack?.intentId) { const ack2 = await askedBoard(ack, r.move?.request === "visual"); studioSlot = { slotId: String(ack2.slotId), intentId: String(ack2.intentId), state: ack2.state ?? "planning", ...(ack2.artifact ? { artifact: ack2.artifact } : {}) }; wbAcked = true; moment = null; }
     }
   }
   // A late answer (the page-hide beacon already closed the lesson) that was a disclosure still gets the fixed
