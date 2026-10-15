@@ -935,7 +935,10 @@ export async function lessonTurn(req, body) {
     }
     // round 5 (owner decision 14.2, battery c4-game): a game asked for and none mounts: her line never announces one ("Chalo
     // mirror line game:" over an empty tray); the word goes, the activity she gives in words stays (studio/request.js ungame)
-    if (kernel.wb.declined === "studio_rejected.no_game_piece" && studioSlot?.artifact?.kind !== "play" && teacherReply && announcesGame(teacherReply)) {
+    // main safety review (14.2 merge): the stage-claim rewrites below never touch a safeguarding turn's words (a fixed
+    // line, or her line under the safeguard brief): "number ko dekhiye" must never become "imagine kijiye" there
+    const safetyWords = filteredSafeguard || r.move?.kind === "safeguard";
+    if (!safetyWords && kernel.wb.declined === "studio_rejected.no_game_piece" && studioSlot?.artifact?.kind !== "play" && teacherReply && announcesGame(teacherReply)) {
       const fixed = ungame(teacherReply);
       if (fixed !== teacherReply) {
         teacherReply = fixed;
@@ -969,7 +972,7 @@ export async function lessonTurn(req, body) {
     // button"; with chips up "screen par" may mean the chips, so only a BOARD claim is taken out then)
     const nothingComing = (r.move?.request === "visual" && stageEmpty)
       || (stageEmpty && !!teacherReply && (r.ui?.chips?.length ? /\b(?:board|whiteboard)\b|बोर्ड/iu.test(teacherReply) : true));
-    if (((seeReq && (seeReq.subject || seeReq.kind === "number_line" || seeReq.kind === "picture")) || nothingComing) && teacherReply && pointsAtStage(teacherReply)
+    if (!safetyWords && ((seeReq && (seeReq.subject || seeReq.kind === "number_line" || seeReq.kind === "picture")) || nothingComing) && teacherReply && pointsAtStage(teacherReply)
       && !(studioSlot?.artifact?.kind === "whiteboard" && answersRequest(studioSlot.artifact.script, seeReq ?? null))) {
       const unpointed = seamSafe("say.unpointRequest", () => unpointGently(teacherReply), null);
       if (unpointed && unpointed !== teacherReply) {
@@ -986,7 +989,7 @@ export async function lessonTurn(req, body) {
     // round 5 (sim lab 709b6acb): over an empty stage, a line that ASSUMES a visual without a screen word ("Table mein
     // Baisakhi kis month mein dikh rahi hai?", "3335 ko mark kijiye", "Timeline picture: …") loses the visual noun, its
     // content kept (studio/request.js unassumeVisual), then any pointing left ("Dekho, …") as above
-    if (stageEmpty && teacherReply) {
+    if (!safetyWords && stageEmpty && teacherReply) {
       const plain = seamSafe("say.unassumeVisual", () => unassumeVisual(teacherReply), null);
       const fixed = plain && plain !== teacherReply ? (pointsAtStage(plain) ? unpointGently(plain) : plain) : null;
       if (fixed && fixed !== teacherReply) {
