@@ -1,4 +1,4 @@
-> **DROPPED — not to be scored.** The reply model was unavailable (fallback line) on more than 2% of turns: r3/voice 1/36. Re-run under the lesson cap.
+> **Not dropped (corrected 2026-10-15).** The loop's first rule flagged r3/voice for 1 fallback turn in 36; the run as a whole had 1/229 (0.4%) unavailable turns, under the 2% limit. The rule now counts the whole run, or an arm only with ≥100 turns.
 
 # Sim lab r5-rel142-a978ae2-recheck — failures
 

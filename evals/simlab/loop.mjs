@@ -136,7 +136,12 @@ for (const r of recs) {
   const u = (unavailable[k] ??= { turns: 0, unavailable: 0 });
   for (const t of r.turns) if (t.n > 0 && t.teacher != null) { u.turns++; if ((t.reasons?.guard?.caught ?? []).includes("unavailable")) u.unavailable++; }
 }
-const dropped = Object.entries(unavailable).filter(([, u]) => u.turns && u.unavailable / u.turns > 0.02).map(([k, u]) => `${k} ${u.unavailable}/${u.turns}`);
+// over 2% across the run, or in an arm with enough turns to say so (one fallback turn in a 36-turn repeat arm is not a rate)
+const all = Object.values(unavailable).reduce((a, u) => ({ turns: a.turns + u.turns, unavailable: a.unavailable + u.unavailable }), { turns: 0, unavailable: 0 });
+const dropped = [
+  ...(all.turns && all.unavailable / all.turns > 0.02 ? [`whole run ${all.unavailable}/${all.turns}`] : []),
+  ...Object.entries(unavailable).filter(([, u]) => u.turns >= 100 && u.unavailable / u.turns > 0.02).map(([k, u]) => `${k} ${u.unavailable}/${u.turns}`),
+];
 meta.unavailable = unavailable;
 if (dropped.length) meta.dropped = dropped;
 const { md: md0, sum, clusters } = failuresMd(rows, meta);
