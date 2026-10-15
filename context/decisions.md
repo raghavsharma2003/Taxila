@@ -6101,3 +6101,11 @@ TTS frames type 5 = IMA ADPCM (4:1), negotiated by Accept `codec=adpcm`, asked f
 - **What:** when HER reply is blocked twice, the child's own words are probed. If they are clear she says a neutral line, never the helplines. If they trip the filter, or the probe cannot run, it fails closed as before.
 - **Why:** see ms-r1431-completion-block-safeguards. A block on her own output is not a child-safety signal, which is already the rule for blocked prompts since 14.2.
 - **Reversal:** a disclosure whose only signal was her blocked reply, with the child's words probing clear.
+
+
+<!-- merged from inbox/r1431b-main.json -->
+## dc-r143-animal-scare-unchanged (2026-10-15)
+
+- **What:** no change to the distress brief or the opening for the monkey-chase card.
+- **Why:** the scripted line says the child was very scared, which the brief is meant to catch. Organic animal stories trip it on 1 in 585 turns, and the hold now ends in 1-2 turns. A model-only read keeps the disclosure opening because that read also catches disclosures the predicate misses. Over-answering a monkey costs one heavy turn; under-answering a disclosure costs the child.
+- **Reversal:** such safeguards reach 1 per 100 lessons (free-child sim lab, or production real lessons), or an owner or parent reports one. Then measure a narrow carve-out on the distress battery before shipping it.
