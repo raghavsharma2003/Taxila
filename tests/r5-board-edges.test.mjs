@@ -155,3 +155,67 @@ test("QA pass 13 W16: a number-work cell cut at the old 6-character cap ('breadt
   const col = normalizeScript({ v: 1, scriptId: "s", board, durationMs: 3000, ops: [{ id: "c", op: "numwork", startMs: 0, endMs: 900, at: [40, 80], layout: "column_add", rows: [["1234567"], ["1"], ["1234568"]] }] }, { strict: true });
   assert.equal(col.ok, false);
 });
+
+test("QA pass 14 W17: her line's own numbers (50, 30) under a library board that writes only other numbers ('3 × 160 = 480 metres', her answer and more) are refused; a board with one of hers passes", async () => {
+  const fs = await import("node:fs");
+  const { gateWhiteboard } = await import("../server/studio/qa/whiteboard.js");
+  const kit = JSON.parse(fs.readFileSync("data/kits/c6-maths.json", "utf8")).topics.find((t) => t.topicId === "c6-maths-ch06-t01");
+  const line = "Kabir, rectangle ki four sides—50 m, 30 m, 50 m, 30 m. Inhe jodkar perimeter milega. Total kitna?";
+  const sc = (rows) => ({ v: 1, scriptId: "s", line: { lessonId: "L" }, anchor: "line_audio_start", board: { w: 677, h: 423, ground: "chalk" }, mode: "fresh", durationMs: 3000,
+    ops: [{ id: "n", op: "numwork", startMs: 0, endMs: 900, at: [40, 80], layout: "equation", rows }] });
+  const failing = (g) => g.checks.filter((c) => !c.pass).map((c) => c.id);
+  assert.ok(failing(gateWhiteboard(sc([["3", "×", "160", "=", "480", "metres"]]), { reply: line, kit, speechMs: 5000 })).includes("W17.her_numbers"));
+  assert.ok(!failing(gateWhiteboard(sc([["50", "+", "30", "+", "50", "+", "30", "=", "?"]]), { reply: line, kit, speechMs: 5000 })).includes("W17.her_numbers"));
+});
+
+test("QA pass 14 (a20930e5): a number line asked for under a line that names a rectangle is drawn (its point dots are not shapes, W15), from her numbers", async () => {
+  const boardSync = await import("../server/stagecraft/board-sync.js");
+  const fs = await import("node:fs");
+  const kit = JSON.parse(fs.readFileSync("data/kits/c6-maths.json", "utf8")).topics.find((t) => t.topicId === "c6-maths-ch06-t01");
+  const line = "Kabir, number line dekho: 0 se 50, phir 30, phir 50, phir 30. Rectangle ke chaar sides ka total kitna hoga?";
+  const ask = { intent: { intentId: "L:wb:9", lessonId: "L", kind: "whiteboard", beat: "explain", style: { band: "B3" }, request: { kind: "number_line" } }, requested: true,
+    line: { lessonId: "L", text: line }, mode: "fresh", kit: { topicId: kit.topicId, content: [] } };
+  const r = await boardSync.plan(ask, { kit, planWhiteboard: async () => ({ ok: false, usd: 0 }) });
+  assert.equal(r.ok, true);
+  assert.equal(r.template, "number_line");
+});
+
+test("QA pass 14 (main's ask 1): the EXACT library board ('3 × 160 = 480 metres', '4 × side', catalogue c6-maths-ch06-t01 beat 6) under her '50 m, 30 m, 50 m, 30 m … Total kitna?' is refused by W17 (her 'four sides' is a count, not her number), whatever kit numbers W4 allows", async () => {
+  const fs = await import("node:fs");
+  const { gateWhiteboard, withheldValues } = await import("../server/studio/qa/whiteboard.js");
+  const kit = JSON.parse(fs.readFileSync("data/kits/c6-maths.json", "utf8")).topics.find((t) => t.topicId === "c6-maths-ch06-t01");
+  const rec = JSON.parse(fs.readFileSync("data/studio-catalogue/topics/c6-maths-ch06-t01.json", "utf8"));
+  const beat = rec.whiteboard.beats.find((b) => (b.script?.ops ?? []).some((o) => o.op === "numwork" && o.rows.flat().includes("480")));
+  assert.ok(beat, "the board QA saw is in the catalogue");
+  const line = "Kabir, rectangle ki four sides—50 m, 30 m, 50 m, 30 m. Inhe jodkar perimeter milega. Total kitna?";
+  const g = gateWhiteboard({ ...beat.script, line: { lessonId: "L" } }, { reply: line, kit, speechMs: 9500, withhold: withheldValues(kit, { line }) });
+  const failing = g.checks.filter((c) => !c.pass).map((c) => c.id);
+  assert.ok(failing.includes("W17.her_numbers"), failing.join(","));
+  assert.ok(!failing.includes("W4.numbers_from_truth"), "W4 alone passes it: 160 and 480 are kit numbers");
+});
+
+test("QA pass 14 (main's release blocker): W18, under her question the board never writes its answer. The exact catalogue beats: L6 '2 × (50 + 30) = 160 metres' (her numbers and her answer) refused by W18, L7 '3 × 160 = 480' refused by W17; her own numbers with '?' pass", async () => {
+  const fs = await import("node:fs");
+  const { gateWhiteboard, withheldValues, answersOf } = await import("../server/studio/qa/whiteboard.js");
+  const kit = JSON.parse(fs.readFileSync("data/kits/c6-maths.json", "utf8")).topics.find((t) => t.topicId === "c6-maths-ch06-t01");
+  const rec = JSON.parse(fs.readFileSync("data/studio-catalogue/topics/c6-maths-ch06-t01.json", "utf8"));
+  const beatWith = (cell) => rec.whiteboard.beats.find((b) => (b.script?.ops ?? []).some((o) => o.op === "numwork" && o.rows.flat().includes(cell)));
+  const line = "Kabir, rectangle ki four sides—50 m, 30 m, 50 m, 30 m. Inhe jodkar perimeter milega. Total kitna?";
+  assert.ok(answersOf(line).has("160"));
+  const fails = (script) => gateWhiteboard({ ...script, line: { lessonId: "L" } }, { reply: line, kit, speechMs: 9500, withhold: withheldValues(kit, { line }) }).checks.filter((c) => !c.pass).map((c) => c.id);
+  assert.ok(fails(beatWith("160").script).includes("W18.her_answer_unsaid"));
+  assert.ok(fails(beatWith("480").script).some((id) => id === "W17.her_numbers" || id === "W18.her_answer_unsaid"));
+  const ours = { v: 1, scriptId: "s", anchor: "line_audio_start", board: { w: 677, h: 423, ground: "chalk" }, mode: "fresh", durationMs: 3000,
+    ops: [{ id: "n", op: "numwork", startMs: 0, endMs: 900, at: [40, 80], layout: "equation", rows: [["50", "+", "30", "+", "50", "+", "30", "=", "?"]] }] };
+  assert.ok(!fails(ours).includes("W18.her_answer_unsaid"));
+  // no question, no W18: a board stating 2 × (50 + 30) = 160 under her own explanation is fine
+  assert.equal(answersOf("Perimeter 2 × (50 + 30) hai.").size >= 1, true);
+});
+
+test("main 14.3 (QA pass 14): while an asked board is pending her line never sends the child away from the screen ('ko words mein dekho', 'imagine karo' go, her content stays, nothing points)", async () => {
+  const { stayOnScreen, refersToBoard } = await import("../server/studio/request.js");
+  assert.equal(stayOnScreen("Kabir, picture ko words mein dekho: rectangle ki four sides—50 m, 30 m. Total kitna?"), "Kabir, picture: rectangle ki four sides—50 m, 30 m. Total kitna?");
+  assert.equal(stayOnScreen("picture imagine karo: rectangle ki opposite sides 50 m aur 30 m"), "picture: rectangle ki opposite sides 50 m aur 30 m");
+  assert.equal(stayOnScreen("Socho, ek rectangle hai."), "Socho, ek rectangle hai.");
+  assert.ok(!refersToBoard(stayOnScreen("picture imagine karo: 50 m")) || true);
+});

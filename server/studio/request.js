@@ -335,6 +335,14 @@ export const boardPointer = (lang, line = "") => {
 /** The board she should send them to IS coming, and her line says to picture it ("number line imagine karo"): see it instead. PURE. */
 export const seeNotImagine = (text) => String(text ?? "")
   .replace(/\bimagine\s+(kijiye|kariye|karein|karen)\b/giu, "dekhiye").replace(/\bimagine\s+karo\b/giu, "dekho").replace(/\bimagine\b(?=\s+(?:the|a|an|this)\b)/giu, "look at");
+/** main 14.3 (QA pass 14, 98bdb9a8 / 548f22f0: "picture ko words mein dekho", "picture imagine karo" while the board the
+ *  child asked for was still being drawn, and it then landed): while an asked board is pending her line never sends the
+ *  child away from the screen. The send-away phrase goes, her content stays; nothing points at a board not yet there. PURE. */
+export const stayOnScreen = (text) => String(text ?? "")
+  .replace(/\s+ko\s+(?:words|shabdon)\s+(?:mein|me|se)\s+(?:dekho|dekhiye|samjho|samjhiye|suno|sochiye|socho)\b/giu, "")
+  .replace(/\s+(?:words|shabdon)\s+(?:mein|me)\s+(?:dekho|dekhiye|samjho|samjhiye|suno)\b/giu, "")
+  .replace(/\s+imagine\s+(?:karo|kijiye|kariye|karein|karen)\b/giu, "")
+  .replace(/\s+([,:;.!?])/g, "$1").replace(/\s{2,}/g, " ").trim();
 /** Does her line say there is no game (honest), or announce one ("Chalo mirror line game")? PURE. */
 const GAME_WORD = /\b(?:game|games)\b|गेम/iu;
 const NO_GAME = /\b(?:game|games)\b.{0,40}?\b(?:nahi|nahin|not|isn't|no)\b|\b(?:no|koi|abhi)\b.{0,20}?\bgame\b.{0,20}?\b(?:nahi|nahin|ready nahi)\b|गेम.{0,30}?नहीं|\bno\s+game\b/iu;

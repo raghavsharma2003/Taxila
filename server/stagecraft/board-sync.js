@@ -97,7 +97,7 @@ export function gateCtxFor(ask, { kit, redact = [], prior = [] } = {}) {
   if (request?.subject) kitForGate.expectations.push(request.subject, ...subjectWords(request.subject));
   if (request?.said?.length) kitForGate.expectations.push(...request.said);
   return { reply: text, kit: kitForGate, band: ask?.intent?.style?.band ?? "B3", speechMs: speechMsOf(spoken), banned: redact, prior, withhold,
-    ...(request ? { extraNumbers: askedNumbers(request), face: faceDrawing(request), asked: true } : {}) };
+    ...(request ? { extraNumbers: askedNumbers(request), face: faceDrawing(request), asked: request.kind !== "number_line" && !faceDrawing(request) } : {}) };
 }
 
 /** Scale a script's op times to a new spoken length (k clamped 0.5-2), first op no later than 800 ms. Shape only. */
@@ -167,8 +167,10 @@ export function regate(script, ask, ctx) {
   // production round3-forge run were W9-only refusals, each leaving the slot empty (2026-10-10).
   for (let k = 0; k < 3 && !g.pass; k++) {
     const failing = g.checks.filter((c) => !c.pass);
-    if (!failing.length || failing.some((c) => c.id !== "W9.no_reveal")) break;
-    const masked = maskReveals(g.script ?? raw, failing[0].detail ?? []);
+    // (W18, her own question's answer, is masked the same way: its detail is the number, written as a reveal of every op)
+    if (!failing.length || failing.some((c) => c.id !== "W9.no_reveal" && c.id !== "W18.her_answer_unsaid")) break;
+    const reveals = failing.flatMap((c) => (c.id === "W9.no_reveal" ? c.detail ?? [] : (c.detail ?? []).flatMap((n) => (g.script ?? raw).ops.map((o) => `${o.id}: ${n} = answer ${n}`))));
+    const masked = maskReveals(g.script ?? raw, reveals);
     if (!masked) break;
     g = gateWhiteboard({ ...masked, facts: undefined }, ctx);
   }

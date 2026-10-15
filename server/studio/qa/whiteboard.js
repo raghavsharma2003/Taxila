@@ -300,7 +300,8 @@ export function namedShapeMissing(reply, ops, { asked = false } = {}) {
   const has = new Set();
   for (const o of ops ?? []) {
     if (o.op === "rect") has.add("rectangle").add(Math.abs((o.w ?? 0) - (o.h ?? 0)) <= 2 ? "square" : "rectangle");
-    if (o.op === "circle" || o.op === "ellipse" || o.op === "sector") has.add("circle");
+    // (a dot marking a point on a number line is not a shape: QA pass 14 run a20930e5, a number line refused for "rectangle")
+    if ((o.op === "circle" && Number(o.r ?? 0) >= 12) || o.op === "ellipse" || o.op === "sector") has.add("circle");
     if (o.op === "polygon" && Array.isArray(o.points)) {
       if (o.points.length === 3) has.add("triangle");
       if (rightAngled(o.points)) has.add("rectangle").add("square");
@@ -315,19 +316,44 @@ export function namedShapeMissing(reply, ops, { asked = false } = {}) {
 /** Number-work cells cut mid-word ("breadt" for breadth): the last word of a 6-character cell that a longer word of her
  *  line or the kit begins, and that is not itself one of their words. PURE. */
 export function cutCells(ops, ctx = {}) {
-  const words = new Set((`${ctx.reply ?? ""} ${ctx.kit ? JSON.stringify(ctx.kit) : ""}`.toLowerCase().match(/\p{L}+/gu) ?? []));
+  const words = new Set((`${ctx.reply ?? ""} ${ctx.kit ? JSON.stringify(ctx.kit) : ""}`.toLowerCase().match(/[\p{L}\p{M}]+/gu) ?? []));
   const out = [];
   for (const o of ops ?? []) {
     if (o.op !== "numwork") continue;
     for (const c of (o.rows ?? []).flat()) {
       const cell = String(c ?? "");
-      if (cell.length !== 6 || !/\p{L}$/u.test(cell)) continue;
-      const last = (cell.toLowerCase().match(/\p{L}+$/u) ?? [""])[0];
+      if (cell.length !== 6 || !/[\p{L}\p{M}]$/u.test(cell)) continue;
+      const last = (cell.toLowerCase().match(/[\p{L}\p{M}]+$/u) ?? [""])[0];
       if (last.length < 1 || words.has(last)) continue;
       // a word whose only longer forms are its plural ("minute" / "minutes") is whole
       const full = [...words].find((w) => w.length > last.length && w.startsWith(last) && !/^(?:s|es)$/.test(w.slice(last.length)));
       if (full && (last.length >= 3 || cell.includes(" "))) out.push(`${o.id}: "${cell}" (${full})`);
     }
+  }
+  return out;
+}
+/** What a question over her own written numbers asks for: their total (with repeats: four sides), the total of the distinct
+ *  ones, and with exactly two numbers 2 × (a + b), a × b, a − b; minus any number her line already says. PURE. */
+export function answersOf(line) {
+  const all = (String(line ?? "").match(/\d+(?:\.\d+)?/g) ?? []).map(Number).filter((x) => Number.isFinite(x));
+  const said = new Set(numbersIn(String(line ?? "")));
+  const uniq = [...new Set(all)].slice(0, 6);
+  if (uniq.length < 2) return new Set();
+  const out = new Set();
+  const add = (x) => { if (Number.isFinite(x) && x > 0) { const t = canon(String(Math.round(x * 1000) / 1000)); if (!said.has(t)) out.add(t); } };
+  // only what her question's own words ask for ("3 equal groups, each with 5 dots … how many in one group?" asks 5, never
+  // the 15 the board counts; "can 2, 3 and 8 make a triangle?" asks no sum): the operation is read from her words
+  const t = String(line ?? "").toLowerCase();
+  const sums = /\b(?:jod\w*|total|sum|plus|add\w*|kul|milakar|altogether|in all)\b|\+/u.test(t);
+  const perim = /\b(?:perimeter|boundary|parimap|around|chaaron\s+taraf)\b|परिमाप/u.test(t);
+  const prod = /\b(?:guna|times|multiply|multiplied|product|area|kshetrafal)\b|[×*]|क्षेत्रफल/u.test(t);
+  const diff = /\b(?:minus|ghata\w*|difference|kam|bach\w*|left|subtract\w*|antar)\b|−/u.test(t);
+  if (sums || perim) { add(all.reduce((a, b) => a + b, 0)); add(uniq.reduce((a, b) => a + b, 0)); }
+  if (uniq.length === 2) {
+    const [a, b] = uniq;
+    if (perim) add(2 * (a + b));
+    if (prod) add(a * b);
+    if (diff) add(Math.abs(a - b));
   }
   return out;
 }
@@ -549,6 +575,26 @@ export function gateWhiteboard(raw, ctx) {
   // normalizer's old 6-character cap, proved by a longer word of her line or the kit that it begins, never a word itself
   const cuts = cutCells(ops, ctx);
   add("W16.no_cut_words", cuts.length === 0, cuts.slice(0, 4));
+  // W17 (QA pass 14, lessons 98bdb9a8 / 548f22f0 / a08613d3: her line "50 m, 30 m, 50 m, 30 m … Total kitna?", the library
+  // board "3 × 160 = 480 metres": her answer, other maths, none of her numbers): a line with two or more numbers of its own
+  // gets a board that writes at least one of them whenever it writes numbers (a drawn face, a clock, is its own)
+  // (her numbers are the ones she WROTE as digits: "four sides" is a count, and the library board's "4 × side" shared that
+  // 4 with her and passed while writing none of her 50 / 30: QA's exact board, catalogue c6-maths-ch06-t01 beat 6)
+  const hers = new Set(numbersIn((String(ctx.reply ?? "").match(/\d[\d,]*(?:\.\d+)?(?:\s*\/\s*\d+)?/g) ?? []).join(" ")));
+  // (the board's numbers read as her line's are: "4,113" is 4113)
+  const boardNums = [...new Set(numbersIn(per.flatMap((p) => p.nums).join(" ")))];
+  // ... and a board whose every number her line says, in digits or in words ("five equal gaps" over a 5), is hers too
+  const saidAll = new Set(numbersIn(ctx.reply));
+  const notHers = !ctx.face && hers.size >= 2 && boardNums.length > 0 && !boardNums.some((n) => hers.has(n)) && !boardNums.every((n) => saidAll.has(n));
+  add("W17.her_numbers", !notHers, notHers ? { hers: [...hers].slice(0, 6), board: boardNums.slice(0, 6) } : []);
+  // W18 (QA pass 14, main's release blocker: catalogue c6-maths-ch06-t01 beat L6 "2 × (50 + 30) = 160 metres" under her
+  // "50 m, 30 m, 50 m, 30 m … Total kitna?"): when her line ASKS, the board never writes what her question asks for, i.e.
+  // the result of plain arithmetic on her own numbers (their total, 2 × (a + b), a product, a difference) that her line
+  // does not already say. The open kit item's key stays W9's.
+  const asks = !ctx.face && /\?/.test(String(ctx.reply ?? ""));
+  const herAnswers = asks ? answersOf(String(ctx.reply ?? "")) : new Set();
+  const told = [...herAnswers].filter((n) => boardNums.includes(n));
+  add("W18.her_answer_unsaid", told.length === 0, told.slice(0, 3));
   // W14 is ADVISORY (logged, never blocks): over 234 real boards it flagged 69, with false refusals across languages (a
   // Hinglish line "paani garam hokar upar jaata hai" under an English "evaporates" board shares no word but is on topic)
   const off = boardOffLine(ctx.reply, ops, ctx.itemText ?? "");
