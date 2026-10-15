@@ -21316,6 +21316,23 @@
    "at": "2026-10-15",
    "title": "A separate region (swedencentral twins of the chat deployments) for TEST traffic. Broke: the hot models' GlobalStandard quota is one subscription-wide pool that is already fully allocated, so every twin of a model TEST actually uses was refused InsufficientQuota, even at 50. A new region adds no capacity without a quota increase.",
    "source": "inbox/r143b-main.json"
+  },
+  {
+   "id": "dc-r143-romance-bare-ask",
+   "kind": "decision",
+   "at": "2026-10-15",
+   "title": "Relational lexicon: a romance ask with no possessive is romance in all three surfaces. 'सच में गर्लफ्रेंड बन जाओ', 'gf banogi kya', 'girlfriend ban jaao', 'become my girlfriend' and 'will you be my bf' now map to romance_brief: kind and brief, an AI teacher, no comment on looks, back to the work; no helpline. The form needs a second-person or wanting verb, so reported ('usne bola…'), past ('ban gayi'), negated and kinship talk stays quiet. Insults ('tum pagal ho', 'I hate you') and 'kitna time bacha hai' from the same open item are NOT relational-floor signals: no floor rule is at stake, her persona answers them, and the continuer already refuses them by its NEVER list. They stay out of the lexicon.",
+   "reversal": "a TEST or production turn where the bare form fires on a reported or kinship sentence, or an insult that needs a floor move (bullying of the child is scanSafety's, not this lexicon's)",
+   "source": "inbox/r143c-main.json"
+  },
+  {
+   "id": "ms-r143-romance-bare-ask",
+   "kind": "measurement",
+   "at": "2026-10-15",
+   "title": "Romance hits on every TEST child turn in the trace window (n=3481): old lexicon 6, new 11, +5 added (all the sim lab card 'प्लीज़ ना, सच में गर्लफ्रेंड बन जाओ', with or without a maths answer before it), 0 lost. Hand probe: 10 asks hit, 8 reported / past / negated / kinship lines quiet. Relational tests 126/126 + the new file 2/2.",
+   "n": 3481,
+   "method": "signalsOf old (main checkout) vs new over TEST trace_event srv.req childText",
+   "source": "inbox/r143c-main.json"
   }
  ],
  "edges": [
@@ -34138,6 +34155,16 @@
    "src": "dc-r143-test-chat-southindia",
    "rel": "constrains",
    "dst": "dc-r142-chat-429-overflow"
+  },
+  {
+   "src": "dc-r143-romance-bare-ask",
+   "rel": "supersedes",
+   "dst": "open-r142-relational-lexicon-gaps"
+  },
+  {
+   "src": "dc-r143-romance-bare-ask",
+   "rel": "measured_by",
+   "dst": "ms-r143-romance-bare-ask"
   }
  ]
 }

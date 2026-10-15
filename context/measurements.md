@@ -4295,3 +4295,9 @@ GlobalStandard quota reads the same in 7 regions:
 - grok-4-1-fast and DeepSeek-V4-Pro: 1000 of 1000
 
 swedencentral twins were refused InsufficientQuota even at 50. The southindia smoke returned 6/6 200.
+
+
+<!-- merged from inbox/r143c-main.json -->
+## ms-r143-romance-bare-ask (2026-10-15)
+
+TEST child turns (n=3481): romance hits went from 6 to 11. The 5 added were all the sim lab card; 0 were lost.

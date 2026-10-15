@@ -6010,3 +6010,17 @@ TTS frames type 5 = IMA ADPCM (4:1), negotiated by Accept `codec=adpcm`, asked f
 
 - production overflow failing on southindia while TEST runs, or
 - eastus2 throttling that persists with TEST off it.
+
+
+<!-- merged from inbox/r143c-main.json -->
+## dc-r143-romance-bare-ask (2026-10-15)
+
+**What:** a romance ask with no possessive ("सच में गर्लफ्रेंड बन जाओ", "gf banogi kya", "become my girlfriend") is romance and gets romance_brief, with no helpline.
+
+**Scope:**
+
+- The form needs a second-person or wanting verb.
+- Reported, past, negated and kinship talk stays quiet.
+- Insults and time questions stay out of the lexicon: no floor rule is at stake.
+
+**Reversal:** a firing on reported or kinship talk.
