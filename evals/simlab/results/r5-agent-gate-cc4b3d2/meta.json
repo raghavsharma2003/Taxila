@@ -1,0 +1,21 @@
+{
+ "runId": "r5-agent-gate-cc4b3d2",
+ "head": "92bd46bd",
+ "date": "2026-10-15T04:05:03.804Z",
+ "arms": {
+  "director": "http://127.0.0.1:8817",
+  "agent_gpt6": "http://127.0.0.1:8818"
+ },
+ "lanes": [
+  "text"
+ ],
+ "n": 64,
+ "turns": 14,
+ "models": {
+  "child": "DeepSeek-V4-Pro",
+  "childFallback": "taxila-mistral-m35",
+  "judge": "grok-4-20-reasoning",
+  "judge2": "taxila-kimi26"
+ },
+ "note": "AGENT GATE on 4A head claude/r4-conversation @cc4b3d26 (71a6b11f + when the game tool finds none, game promises removed in code and agent.noGame steers to a spoken game; board: what she says now goes to the instant kinds, draw only for real objects): director (off) vs agent_gpt6, TAXILA_PICTURES=all, all 64 cards, text lane, 14 child turns, conc 6 (71a6b11f ran at conc 10) to separate model latency from endpoint load."
+}
