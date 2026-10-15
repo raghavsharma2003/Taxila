@@ -1071,6 +1071,12 @@ export async function lessonTurn(req, body, hooks = {}) {
         delivery = seamSafe("expressive.planDelivery", () => expressiveSeam.planDelivery(moment, teacherReply), delivery);
       }
     }
+    // 14.4 (QA D42): the board already on screen stays on the response while her line still talks about it (no new slot this
+    // turn, the board not taken down, the Director's tray free): the client closes a page a response does not carry
+    if (!studioSlot && !leftBoard && !late && !agentApplied && !safetyWords && teacherReply && (!r.ui?.tray || r.ui.tray === "none") && !(r.ui?.chips?.length)) {
+      const kept = seamSafe("studio.keepBoardSlot", () => (typeof studioSeam.keepBoardSlot === "function" ? studioSeam.keepBoardSlot(lesson.id, teacherReply) : null), null);
+      if (kept) { studioSlot = kept; studioReasons.push("studio.board_kept"); }
+    }
     // round 5 (sim lab 709b6acb): over an empty stage, a line that ASSUMES a visual without a screen word ("Table mein
     // Baisakhi kis month mein dikh rahi hai?", "3335 ko mark kijiye", "Timeline picture: …") loses the visual noun, its
     // content kept (studio/request.js unassumeVisual), then any pointing left ("Dekho, …") as above

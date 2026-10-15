@@ -259,3 +259,20 @@ test("main 14.4: the self-answered predicate stays quiet on a teacher who confir
   assert.equal(selfAnswer("Haan, 7 aur 3 milkar 10 bante hain. Ab 10 fingers se 7 hatao—kitni fingers bachengi?"), null);
   assert.equal(selfAnswer("Screen par do numbers: 2 aur 15. Addition karke result 17 aata hai. Aap bataiye, 2 plus 15 kitna?")?.answer, "17");
 });
+
+test("14.4 (QA D42): the board on screen stays on the response while her line still talks about it; another line lets it go", async () => {
+  const seam = await import("../server/studio/seam.js");
+  const { studioSeam } = seam;
+  const id = "L-d42";
+  seam.subscribe(id, () => {});                    // the lesson's Studio state
+  const L = seam._lesson(id);
+  assert.ok(L, "lesson state");
+  const script = { v: 1, scriptId: "s", line: { lessonId: id }, anchor: "line_audio_start", board: { w: 677, h: 423, ground: "chalk" }, mode: "fresh", durationMs: 2000,
+    ops: [{ id: "r", op: "rect", startMs: 0, endMs: 800, at: [120, 100], w: 300, h: 180 }, { id: "a", op: "text", startMs: 800, endMs: 1400, at: [270, 90], text: "50 m", size: "m" },
+      { id: "b", op: "text", startMs: 1400, endMs: 2000, at: [440, 190], text: "30 m", size: "m" }, { id: "t", op: "text", startMs: 1400, endMs: 2000, at: [270, 320], text: "rectangle", size: "m" }] };
+  L.pieces.set("wb-1", { intentId: "wb-1", slotId: "slot-1", kind: "whiteboard", state: "revealed", artifact: { kind: "whiteboard", script }, revealedTurn: 1 });
+  L.onScreen = "wb-1";
+  const kept = studioSeam.keepBoardSlot(id, "Bilkul, Ishaan— aapne chaaron sides jodkar 160 metre nikala. Ab isi rectangle ka perimeter formula se nikaalo?");
+  assert.equal(kept?.intentId ?? kept?.slotId ? true : false, true, JSON.stringify(kept));
+  assert.equal(studioSeam.keepBoardSlot(id, "Shabaash! Ab ek naya sawaal: tumhara favourite rang kaunsa hai?"), null);
+});

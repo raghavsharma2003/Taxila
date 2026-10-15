@@ -1066,6 +1066,22 @@ export const studioSeam = {
     return on && ["whiteboard", "image"].includes(on.kind) && on.artifact && !on.retired ? { skillId: on.skillId ?? null, itemId: on.itemId ?? null, turn: on.revealedTurn ?? null } : null;
   },
 
+  /**
+   * 14.4 (QA D42, TEST c667c262 / ff19f258: the picture board was up, the next turn's response carried no slot (slotFor never
+   * re-sends a whiteboard) with the Director's tray "none", and the page closed while her line still talked about it,
+   * "aapne chaaron sides jodkar 160 metre nikala. Ab isi rectangle ka perimeter…"): the board on screen goes on the response
+   * again when her line still shares a word or a number with it (request.js syncedWithLine). Never a revealing slot.
+   */
+  keepBoardSlot(lessonId, line) {
+    const L = lessons.get(lessonId);
+    const on = L?.onScreen ? L.pieces.get(L.onScreen) : null;
+    if (!on || on.kind !== "whiteboard" || !on.artifact?.script || on.retired || !VISIBLE.has(on.state) || L.safety) return null;
+    if (!syncedWithLine(on.artifact.script, line)) return null;
+    const g = gatedSlot(L, on, on.state, "on_screen");
+    if (g) L.shown = { intentId: on.intentId, revealing: false };
+    return g;
+  },
+
   /** round 5: is a board (not a game, not a picture) what the child sees now? */
   boardUp(lessonId) {
     const L = lessons.get(lessonId);
