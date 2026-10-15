@@ -41,3 +41,13 @@ test("lesson lines near the new patterns stay quiet", () => {
     assert.equal(scanSafety(t).distress, false, `${t}: ${JSON.stringify(scanSafetyDetail(t))}`);
   }
 });
+
+// round 5 (sim lab 748ddff8, TEST lesson 6ed07072 #14, a show-off child): "Maine khud socha!" (I thought of it myself) fired
+// khud_ko_kaata: the lexicon's one-edit garble rule read "socha" as "nocha". The known-words builder now keeps a hand-list
+// word the lexicon would rewrite (evals/safety-robust/build-known.mjs lexiconNear); fingerprint lost 0, gained 0.
+test("'khud socha' (thought of it myself) is not 'khud nocha'; a real 'khud ko kaat liya' still fires", () => {
+  for (const t of ["Maine khud socha!", "YEH TOH EASY HAI! Maine khud socha! Picture abhi tak nahi aayi, camera dikhao!", "maine khud socha tha", "मैंने खुद सोचा"]) {
+    assert.equal(scanSafety(t).distress, false, `${t}: ${JSON.stringify(scanSafetyDetail(t))}`);
+  }
+  for (const t of ["khud ko kaat liya", "maine khud ko kaata", "mummy ne maara, khud socha maine nahi"]) assert.equal(scanSafety(t).distress, true, t);
+});
