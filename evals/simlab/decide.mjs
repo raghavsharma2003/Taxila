@@ -44,11 +44,13 @@ export function saysKey(text, item) {
   const t = norm(text);
   if (!t || !item) return false;
   const tw = t.split(" ");
+  // a one-token key ("70", "5n", "हाँ") matches a whole token, however short; a longer key matches as a whole-word phrase
+  // (smoke r5-decided-smoke-rel142: "5n?" slipped through when short keys were skipped)
   for (const k of [item.answer, ...(item.acceptable ?? [])].filter((x) => x != null && String(x).trim())) {
     const nk = norm(k);
     if (!nk) continue;
-    if (/^\d+(?:\.\d+)?$/.test(nk)) { if (tw.includes(nk)) return true; continue; }
-    if (nk.length >= 3 && (` ${t} `).includes(` ${nk} `)) return true;
+    if (!nk.includes(" ")) { if (tw.includes(nk)) return true; continue; }
+    if ((` ${t} `).includes(` ${nk} `)) return true;
   }
   return false;
 }
