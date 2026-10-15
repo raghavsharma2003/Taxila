@@ -967,7 +967,9 @@ export const studioSeam = {
     // round 5 (14.3, owner-5): `ready` resolves to the revealed slot once the ladder has drawn a board (or null), so a turn that
     // answers the CHILD's ask can wait a moment and carry the board on its own response (drawn before her line refers to it)
     const ready = ladder.then(() => (!p.retired && p.state === "revealed" && p.artifact ? { slotId: p.slotId, intentId, state: "revealed", artifact: p.artifact } : null), () => null);
-    return keptNow ? { slotId: p.slotId, intentId, state: "revealed", artifact: p.artifact } : { slotId: p.slotId, intentId, state: "planning", ready };
+    if (keptNow) return { slotId: p.slotId, intentId, state: "revealed", artifact: p.artifact };
+    // non-enumerable: the ack's contract shape (studio-contracts) and its JSON never carry it; server-side callers read it
+    return Object.defineProperty({ slotId: p.slotId, intentId, state: "planning" }, "ready", { value: ready, enumerable: false });
   },
 
   /**
