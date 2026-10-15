@@ -271,7 +271,20 @@ export function takeFoldedAudio(lessonId: string, seq: number, sink?: ClauseSink
 
 /** POST /api/lesson/turn-audio → the TurnResponse; the reply's audio is parked for the link's speech fetch. */
 export function postTurnAudio(req: TurnRequest, signal?: AbortSignal): Promise<TurnResponse> {
-  return postFolded<TurnResponse>("/api/lesson/turn-audio", req, (t) => (Number.isInteger(t.teacherReplySeq) ? { lessonId: req.lessonId, seq: t.teacherReplySeq as number } : null), signal);
+  return postFolded<TurnResponse>("/api/lesson/turn-audio", req, (t) => (Number.isInteger(t.teacherReplySeq) ? { lessonId: req.lessonId, seq: t.teacherReplySeq as number } : null), signal, req.lessonId);
+}
+
+/**
+ * r5-latency (the agent lane's streamed speech): a turn-audio response may start with her words BEFORE the turn
+ * (header {audio: "streaming"}, {t: "say"} text events, audio), then the turn frame, then the rest of her line. The lesson's
+ * link registers here to play that audio the moment it starts; it adopts it when the turn arrives (promptTeacher). With
+ * no link registered, the whole audio is parked by the turn's seq exactly as before.
+ */
+export interface EarlySay { say(text: string): void }
+const earlyAudio = new Map<string, (stream: ReadableStream<Uint8Array>) => EarlySay | null>();
+export function registerEarlyAudio(lessonId: string, fn: (stream: ReadableStream<Uint8Array>) => EarlySay | null): () => void {
+  earlyAudio.set(lessonId, fn);
+  return () => { if (earlyAudio.get(lessonId) === fn) earlyAudio.delete(lessonId); };
 }
 
 /**
@@ -307,7 +320,7 @@ export function startAudioEnabled(): boolean {
 }
 
 /** A JSON-in, framed-out POST: the `turn` frame resolves the call; audio that follows is parked by (lesson, seq). */
-async function postFolded<T>(path: string, req: unknown, keyOf: (t: T) => { lessonId: string; seq: number } | null, signal?: AbortSignal): Promise<T> {
+async function postFolded<T>(path: string, req: unknown, keyOf: (t: T) => { lessonId: string; seq: number } | null, signal?: AbortSignal, lessonId?: string): Promise<T> {
   const res = await fetch(path, {
     method: "POST",
     credentials: "same-origin",
@@ -341,19 +354,26 @@ async function postFolded<T>(path: string, req: unknown, keyOf: (t: T) => { less
   let fold: Fold | null = null;
   let gotTurn = false;
   let audioFollows = false;
+  let streaming = false;
+  let early: EarlySay | null = null;
   void (async () => {
     try {
       for await (const f of readFrames(body)) {
         if (f.type === FRAME.header && !gotTurn) {
-          audioFollows = (f.payload as Record<string, unknown>).audio === "follows";
+          const audio = (f.payload as Record<string, unknown>).audio;
+          audioFollows = audio === "follows" || audio === "streaming";
+          if (audio === "streaming") {
+            streaming = true;
+            try { early = (lessonId && earlyAudio.get(lessonId)?.(readable)) || null; } catch { early = null; }
+          }
         } else if (f.type === FRAME.turn) {
           gotTurn = true;
           const t = f.payload as unknown as T;
           const key = keyOf(t);
           if (key) {
             ttsReq = { lessonId: key.lessonId, seq: key.seq };
-            // parked only when this response carries the audio; else the link fetches it by seq as before
-            if (audioFollows) {
+            // parked only when this response carries the audio and no link took it early; else fetched by seq as before
+            if (audioFollows && !early) {
               const k = foldKey(key.lessonId, key.seq);
               fold = { stream: readable, at: Date.now(), req: ttsReq, sink: null, pending: [], pendingV: [] };
               folded.set(k, fold);
@@ -369,7 +389,13 @@ async function postFolded<T>(path: string, req: unknown, keyOf: (t: T) => { less
           }
           resolveTurn(t);
         } else if (f.type === FRAME.pcm) {
-          await writer.write(f.payload as Uint8Array);
+          // streamed words before the turn with nobody playing them yet: queue them (an await would hold the turn frame
+          // behind audio nobody reads until the turn parks it)
+          const w = writer.write(f.payload as Uint8Array);
+          if (streaming && !early && !gotTurn) w.catch(() => {});
+          else await w;
+        } else if (f.type === FRAME.event && (f.payload as Record<string, unknown>).t === "say") {
+          try { early?.say(String((f.payload as Record<string, unknown>).text ?? "")); } catch { /* captions only */ }
         } else if (ttsReq) {
           const e = eventOf(ttsReq, f);
           if (e?.kind === "end" && (e.data.audio === "none" || e.data.audio === "rate_limited")) folded.delete(foldKey(ttsReq.lessonId, ttsReq.seq));

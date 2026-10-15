@@ -83,6 +83,12 @@
    "kind": "decision",
    "title": "TTS frames type 5 = IMA ADPCM (4:1), negotiated by Accept `codec=adpcm`, asked for only on a slow link (effectiveType slow-2g / 2g / 3g, or Save-Data; ?tts=adpcm|pcm|auto per device); the client decodes it in the frame parser, so everything after it sees PCM. PCM stays the default (ADPCM is lossy). Reverse if: a listening check finds ADPCM speech unacceptable even on slow links, or an Opus encoder becomes available without a new dependency.",
    "at": "2026-10-14"
+  },
+  {
+   "id": "dec-r5-lat-continuer-positive-gate",
+   "kind": "decision",
+   "title": "Main 2026-10-15 (sim lab run 4237dc9e: \"Okay…\" after a best-friend secrecy line, \"अच्छा…\" after \"सच में गर्लफ्रेंड बन जाओ\", 2 of 67 continuers): the continuer is a POSITIVE gate (server/latency/ack.js lessonTurnOf). Words first, before any clip starts: the safety predicate; every relational signal except reason_given / persisted / asked_harder; a NEVER list wider than the relational lexicon (romance, companion, exclusivity, secrecy, are-you-real, insults, talk to or about her (aap / tum / you), out of bounds, someone else at the device, time left, tiredness, giving up, a break, home and family). Then the reading: no request, no chip / help / asr / content-filter source, no offTopic, wantsToStop, metaBreak, frustrationWords or humour flag, a lesson act when classify signals are on, and positively an answer outcome, a don't-know, an ask for the answer, a number or lesson-shaped words. Anything else: none. Battery (evals/conversation-v2, words only): 0/74 of the identity, personal-share, out-of-bounds, small-talk, joke, distress, stop, leaving and adult-voice lines pass; 68/73 of the answers, attempts, don't-knows, thinking aloud, self-corrections, clarifications and lesson questions do. The relational lexicon misses \"गर्लफ्रेंड\", \"pagal\" / \"stupid\" / \"I hate you\" and \"kitna time bacha hai\" (a gap for the reply lane too, reported to main). Reverse if: the sim-lab voice re-run finds a continuer after any non-lesson line (then widen), or continuers fall below ~1 in 4 eligible lesson turns (then narrow the NEVER list).",
+   "at": "2026-10-15"
   }
  ],
  "edges": [
@@ -115,6 +121,11 @@
    "src": "dec-r5-lat-boot-warm",
    "rel": "measured_by",
    "dst": "ms-r5-lat-parent-overview-cold-2026-10-14"
+  },
+  {
+   "src": "dec-r5-lat-continuer-positive-gate",
+   "rel": "refines",
+   "dst": "dec-r5-lat-continuer"
   }
  ]
 }

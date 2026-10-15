@@ -18,7 +18,7 @@ import { skillsMapFor, snapshotFromKt, loadLive, dueForChecks } from "../learner
 import { misconceptionView } from "../learner/kt/misconception.js";
 import { beliefFor, planChecks, onTopicPlanned, consumeExpired, weaveExpire, BAND_BUDGET, bandOf } from "../comprehension/index.js";
 import { weaveStmts } from "../comprehension/store.js";
-import { scrubPii, scanSafety, floorViolations } from "../director/safety.js";
+import { scrubPii, scanSafety, floorViolations, helpLeadOf } from "../director/safety.js";
 import { laneFor } from "../agent/flags.js";
 import { agentTurn, eventOf, applyAgentTurn } from "../agent/agent.js";
 import { initLessonState, step, LIMITS, shortTitleOf } from "../director/state.js";
@@ -40,7 +40,7 @@ import { purposeSeam } from "../lesson/purpose.js";
 import { sessionStartCtx, schoolPointerStmts } from "../director/session/start.js";
 import { voicesigSeam } from "../voicesig/lesson.js";
 import { realtimeSeam } from "../voice/realtimeSession.js";
-import { fallbackReply, safeguardLine, scrubbed, textReply, words, floorContentOf } from "../brain/say.js";
+import { fallbackReply, safeguardLine, carriedCheckInLine, scrubbed, textReply, words, floorContentOf } from "../brain/say.js";
 import { clientInstructions, debugFor, floorIncidentStmt, kitFor, laneOf, stageTurns, turnInsertStmt, withAsk } from "../brain/rows.js";
 import { nextBeat, uiBeatOf } from "../brain/beat.js";
 import { momentOf } from "../brain/moment.js";
@@ -182,6 +182,9 @@ async function start(req, res, body) {
  * (server/routes/voice.js) folds the opening's audio onto the same response, so it calls this and streams after it.
  * Every rule, refusal and write is the route's own. Resolves { body } (the LessonStartResponse, with debug locally).
  */
+/** round 5 (14.2): how recent a safeguarding incident makes the next start a check-in (TAXILA_CARRIED_CHECKIN_HOURS, default 24). */
+const carriedHours = () => { const h = Number(process.env.TAXILA_CARRIED_CHECKIN_HOURS ?? 24); return Number.isFinite(h) && h > 0 ? Math.min(168, Math.round(h)) : 24; };
+
 export async function lessonStart(req, body) {
   const t0 = performance.now();
   const trace = [];
@@ -212,6 +215,12 @@ export async function lessonStart(req, body) {
   // Seam (W2-I, server/relational/seam.js): the bond snapshot, read once per lesson; null until W2-I fills it.
   const bondP = early(Promise.resolve(seamSafe("relational.snapshot", () => relationalSeam.snapshot(child.id, { classLevel: child.class_level, lang: child.language_pref }), null)));
   const brief0P = early(memoryP.then((memory) => buildChildBrief(child, { memory })));
+  // round 5 (14.2): a safeguarding incident within the last hours: this lesson opens on a calm check-in (state.js, `carried`)
+  // once per incident: a lesson that already opened on the check-in for it (ctx.checkedInFor) is enough
+  const carriedP = early(one(`select i.id, i.detail->>'family' as family from incident i where i.child_id = $1 and i.kind = 'safeguarding'
+    and i.at > now() - make_interval(hours => $2::int)
+    and not exists (select 1 from lesson l where l.child_id = $1 and l.started_at >= i.at and l.state->'ctx'->>'checkedInFor' = i.id::text)
+    order by i.at desc limit 1`, [child.id, carriedHours()]).catch(() => null));
   planP.catch(() => {});
   const [core, memory, controls, lastLesson, vsb0] = await Promise.all([
     hasConsent(guardian.id, child.id, "core_tutoring"), memoryP,
@@ -328,13 +337,16 @@ export async function lessonStart(req, body) {
       ...(bond?.stage ? { bondStage: bond.stage } : {}),
     },
   });
+  const recent = askSafety.distress ? null : await carriedP;
+  const carried = recent ? { kind: recent.family ?? null, incidentId: String(recent.id) } : null;
   const first = askSafety.distress
     ? step(state0, { event: "start", kit, now, cls: { outcome: "no_evidence", confidence: 1, source: "predicate",
       flags: { dontKnow: false, asksForAnswer: false, minimal: false, offTopic: false, distress: true, distressKind: askSafety.kind, wantsToStop: false } } })
-    : step(state0, { event: "start", kit, now });
+    : step(state0, { event: "start", kit, now, ...(carried ? { carried } : {}) });
   const { r, instructions } = instructionsAfter({ ...first, state: { ...first.state, brief, mode, kitVerified: kit.verified, kitHash: kit.hash } }, kit, now);
   const state = r.state;
   if (vsb0) state.vsb = vsb0;
+  if (carried && r.move.kind === "safeguard") state.ctx = { ...state.ctx, checkedInFor: carried.incidentId };
   // W2-E: the opening's beat (ui.beat; the client's end-of-turn thresholds read it) and its Moment for the voice layer.
   state.beat = nextBeat(undefined, r.move, state);
   const openingMoment = momentOf({ move: r.move, verdict: "ungraded", engagement: "warming", relational: null, ctx: state.ctx, turn: state.turn ?? 0,
@@ -348,6 +360,11 @@ export async function lessonStart(req, body) {
     // karenge…" before the helpline).
     teacherOpening = safeguardLine(state.ctx);
     rows = stageTurns(state, [{ speaker: "teacher", text: teacherOpening, meta: { move: r.move.kind, fixed: true } }]);
+    teacherOpeningSeq = rows[0].seq;
+  } else if (mode !== "voice" && carried && r.move.kind === "safeguard") {
+    // the check-in after a recent incident: a fixed line too, never a model draft that might open on the topic
+    teacherOpening = carriedCheckInLine(state.ctx);
+    rows = stageTurns(state, [{ speaker: "teacher", text: teacherOpening, meta: { move: r.move.kind, fixed: true, carried: true } }]);
     teacherOpeningSeq = rows[0].seq;
   } else if (mode !== "voice") {
     // round 5 (AGENT.md §3): the Teacher agent lane, decided once here and pinned for the lesson (server/agent/flags.js);
@@ -424,6 +441,8 @@ export async function lessonStart(req, body) {
       // card and does NOT send them again as a turn (W2-C review: the same question was explained twice)
       ...(askRaw ? { askConsumed: true } : {}) }), address, moment: openingMoment,
     ...(teacherOpening ? { teacherOpening, teacherOpeningSeq } : {}),
+    // the check-in's Help sheet leads as the incident's family asks (helpLeadOf: abuse → the helpline first)
+    ...(carried && r.move.kind === "safeguard" ? { helpLead: helpLeadOf({ kind: carried.kind }) } : {}),
   };
   return { body: debugFor(req) ? { ...out, debug: { move: r.move, kitVerified: kit.verified, timings: trace } } : out };
 }

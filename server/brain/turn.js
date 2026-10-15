@@ -28,7 +28,7 @@ import { noteModuleEvents, moduleAnswerOf } from "../director/modules.js";
 import { findItem, promptFor, revealsAnswer, whyKey, norm as normAnswer } from "../director/items.js";
 import { registerBroken } from "../director/register.js";
 import { verdictFor, uiVerdict, askText, refersToScreen, wrongAnswersOf, boardClaimProblem, kitWordsOf, stripScreenRefs } from "../director/say.js";
-import { answersRequest, pointsAtStage, unpointGently, pictureSubjectOf, announcesGame, ungame } from "../studio/request.js";
+import { answersRequest, pointsAtStage, unpointGently, pictureSubjectOf, announcesGame, ungame, unassumeVisual } from "../studio/request.js";
 import { drawableSubject } from "../director/state.js";
 import { mixedUnitComparison } from "../director/units.js";
 import { instructionsFor, instructionsAfter } from "../compiler/instructions.js";
@@ -949,7 +949,10 @@ export async function lessonTurn(req, body, hooks = {}) {
     }
     // round 5 (owner decision 14.2, battery c4-game): a game asked for and none mounts: her line never announces one ("Chalo
     // mirror line game:" over an empty tray); the word goes, the activity she gives in words stays (studio/request.js ungame)
-    if (kernel.wb.declined === "studio_rejected.no_game_piece" && studioSlot?.artifact?.kind !== "play" && teacherReply && announcesGame(teacherReply)) {
+    // main safety review (14.2 merge): the stage-claim rewrites below never touch a safeguarding turn's words (a fixed
+    // line, or her line under the safeguard brief): "number ko dekhiye" must never become "imagine kijiye" there
+    const safetyWords = filteredSafeguard || r.move?.kind === "safeguard";
+    if (!safetyWords && kernel.wb.declined === "studio_rejected.no_game_piece" && studioSlot?.artifact?.kind !== "play" && teacherReply && announcesGame(teacherReply)) {
       const fixed = ungame(teacherReply);
       if (fixed !== teacherReply) {
         teacherReply = fixed;
@@ -983,7 +986,7 @@ export async function lessonTurn(req, body, hooks = {}) {
     // button"; with chips up "screen par" may mean the chips, so only a BOARD claim is taken out then)
     const nothingComing = (r.move?.request === "visual" && stageEmpty)
       || (stageEmpty && !!teacherReply && (r.ui?.chips?.length ? /\b(?:board|whiteboard)\b|बोर्ड/iu.test(teacherReply) : true));
-    if (((seeReq && (seeReq.subject || seeReq.kind === "number_line" || seeReq.kind === "picture")) || nothingComing) && teacherReply && pointsAtStage(teacherReply)
+    if (!safetyWords && ((seeReq && (seeReq.subject || seeReq.kind === "number_line" || seeReq.kind === "picture")) || nothingComing) && teacherReply && pointsAtStage(teacherReply)
       && !(studioSlot?.artifact?.kind === "whiteboard" && answersRequest(studioSlot.artifact.script, seeReq ?? null))) {
       const unpointed = seamSafe("say.unpointRequest", () => unpointGently(teacherReply), null);
       if (unpointed && unpointed !== teacherReply) {
@@ -994,6 +997,23 @@ export async function lessonTurn(req, body, hooks = {}) {
         if (last?.who === "teacher") next.recent = [...next.recent.slice(0, -1), { ...last, text: unpointed.slice(0, 400) }];
         guard = { ...guard, caught: [...new Set([...(guard?.caught ?? []), "claim_request"])], replaced: true };
         studioReasons.push("say.claim_request");
+        delivery = seamSafe("expressive.planDelivery", () => expressiveSeam.planDelivery(moment, teacherReply), delivery);
+      }
+    }
+    // round 5 (sim lab 709b6acb): over an empty stage, a line that ASSUMES a visual without a screen word ("Table mein
+    // Baisakhi kis month mein dikh rahi hai?", "3335 ko mark kijiye", "Timeline picture: …") loses the visual noun, its
+    // content kept (studio/request.js unassumeVisual), then any pointing left ("Dekho, …") as above
+    if (!safetyWords && stageEmpty && teacherReply) {
+      const plain = seamSafe("say.unassumeVisual", () => unassumeVisual(teacherReply), null);
+      const fixed = plain && plain !== teacherReply ? (pointsAtStage(plain) ? unpointGently(plain) : plain) : null;
+      if (fixed && fixed !== teacherReply) {
+        teacherReply = fixed;
+        const row = staged.find((x) => x.seq === teacherReplySeq);
+        if (row) { row.text = fixed; row.meta = { ...(row.meta ?? {}), guard: [...new Set([...(row.meta?.guard ?? []), "claim_visual"])] }; }
+        const last = next.recent?.[next.recent.length - 1];
+        if (last?.who === "teacher") next.recent = [...next.recent.slice(0, -1), { ...last, text: fixed.slice(0, 400) }];
+        guard = { ...guard, caught: [...new Set([...(guard?.caught ?? []), "claim_visual"])], replaced: true };
+        studioReasons.push("say.claim_visual");
         delivery = seamSafe("expressive.planDelivery", () => expressiveSeam.planDelivery(moment, teacherReply), delivery);
       }
     }
@@ -1522,7 +1542,7 @@ export function speculate(state, target, flags, planCtx, { said, historyOf }, { 
       return {
         key: replyKey(next, planCtx.kit, plan.r, plan.instructions, said, history), trace,
         result: (() => {
-          const r = textReply({ instructions: plan.instructions, state: next, kit: planCtx.kit, childText: said, trace, history, ui: plan.r.ui, module: boardAnswersAsk(plan.r.move) ? null : next.module });
+          const r = textReply({ instructions: plan.instructions, state: next, kit: planCtx.kit, childText: said, trace, history, ui: plan.r.ui, module: boardAnswersAsk(plan.r.move) ? null : next.module, overflow: false });
           r.catch(() => {});
           return r;
         })(),

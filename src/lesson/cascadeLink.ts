@@ -23,7 +23,9 @@ import { postJson } from "./api.ts";
 import { createLevelAnalyser } from "./level.ts";
 import type { LinkEvent, LinkLevels, MicTap, TeacherLink, TeacherReply } from "./link.ts";
 import { Emitter } from "./store.ts";
-import { fetchSpeechStream, PcmStreamPlayer, type SpeechStreamFetch, type StreamPlayback } from "./ttsStream.ts";
+import { fetchSpeechStream, PcmStreamPlayer, registerEarlyAudio, type EarlySay, type SpeechStreamFetch, type StreamPlayback } from "./ttsStream.ts";
+/** r5-latency: how long her streamed line's end waits for its turn to arrive (then the reply ends as if adopted). */
+const EARLY_HOLD_MS = 10_000;
 import { MicVad } from "./vad.ts";
 import { FragmentMerger, PREDICTIVE_SILENCE_MS, predictiveEnabled, resumeCeilingMs, turnContext, type TurnFinal } from "./turnModel.ts";
 // Round 2 latency: the stable partial transcript goes to POST /api/lesson/turn-prefetch the moment the child is quiet
@@ -328,6 +330,11 @@ interface CurrentReply {
   playing: boolean;
   /** Paused by a barge-in that the transcript has not yet decided. */
   paused: null | { by: "local" | "server"; at: number };
+  /**
+   * r5-latency: her words streamed BEFORE the turn arrived (turn-audio's agent lane; ttsStream registerEarlyAudio). Not
+   * adopted yet = the turn (its ui, hand-over, caption) has not come: her line's end is held until it does.
+   */
+  early?: { adopted: boolean; ended: "completed" | "stopped" | "failed" | null };
 }
 
 export class CascadeLink implements TeacherLink {
@@ -382,6 +389,7 @@ export class CascadeLink implements TeacherLink {
   private transportKind: CascadeTransport = "webrtc";
   private callUp = false;
   private closed = false;
+  private unEarly: (() => void) | null = null;
   private reconnecting = false;
   private pushToTalk = false;
   private talking = false;
@@ -408,6 +416,8 @@ export class CascadeLink implements TeacherLink {
 
   constructor(opts: CascadeLinkOptions) {
     this.lessonId = opts.lessonId;
+    // r5-latency: play the agent's streamed words the moment a turn-audio response starts them (adopted at promptTeacher)
+    this.unEarly = registerEarlyAudio(opts.lessonId, (stream) => this.playEarly(stream));
     this.levels = opts.levels;
     this.fetchToken = opts.fetchToken ?? defaultToken;
     this.speech = opts.speech ?? fetchSpeechStream;
@@ -506,6 +516,9 @@ export class CascadeLink implements TeacherLink {
   promptTeacher(reply?: TeacherReply): void {
     const text = reply?.text.trim();
     if (!text) return;
+    // r5-latency: her words are already sounding from the turn's own response: adopt them, never fetch them again
+    const pending = this.current;
+    if (pending?.early && !pending.early.adopted) return this.adoptEarly(pending, text);
     this.stopReply("cancelled", false);
     const id = `cascade-${++this.replySeq}`;
     // ship5 p1-duplex: the child went on after the engine committed (a revoke): the reply to that commit is never voiced
@@ -555,13 +568,75 @@ export class CascadeLink implements TeacherLink {
     );
     void playback.ended.then((status) => {
       if (this.current !== cur) return;
-      if (status === "failed") {
-        this.events.emit({ type: "error", message: "the teacher's voice is unavailable; showing text only", fatal: false, code: "tts_failed" });
-      }
-      if (status === "completed") this.duplex?.replyEnded();
-      else this.duplex?.replyStopped();
-      this.stopReply(status === "stopped" ? "cancelled" : status, false);
+      this.finishReply(cur, status);
     });
+  }
+
+  /** Her line's audio ended: the error (when it failed), the duplex engine's view, then the reply's end events. */
+  private finishReply(cur: CurrentReply, status: "completed" | "stopped" | "failed"): void {
+    if (this.current !== cur) return;
+    if (status === "failed") {
+      this.events.emit({ type: "error", message: "the teacher's voice is unavailable; showing text only", fatal: false, code: "tts_failed" });
+    }
+    if (status === "completed") this.duplex?.replyEnded();
+    else this.duplex?.replyStopped();
+    this.stopReply(status === "stopped" ? "cancelled" : status, false);
+  }
+
+  /**
+   * r5-latency (the agent lane's streamed speech): a turn-audio response started her words before its turn frame. They
+   * play now; the caption grows with each clause; the turn's arrival (promptTeacher) adopts this reply. Never while the
+   * child is speaking (the response's audio is then parked by seq and played as before).
+   */
+  private playEarly(stream: ReadableStream<Uint8Array>): EarlySay | null {
+    if (this.closed || !this.player || this.talking) return null;
+    this.stopReply("cancelled", false);
+    const id = `cascade-${++this.replySeq}`;
+    this.turn.replyAt = Date.now();
+    this.ack?.replyStarting();
+    this.events.emit({ type: "response_start", responseId: id, at: Date.now() });
+    void this.ctx?.resume().catch(() => {});
+    const playback = this.player.play(async () => stream, { req: { lessonId: this.lessonId, seq: -1 } });
+    const cur: CurrentReply = { id, text: "", playback, playing: false, paused: null, early: { adopted: false, ended: null } };
+    this.current = cur;
+    playback.started.then(
+      (at) => {
+        if (this.current !== cur || cur.paused) return;
+        cur.playing = true;
+        this.turn.firstAudioAt = at;
+        this.recordTiming();
+        this.events.emit({ type: "teacher_audio_start" });
+      },
+      () => {},
+    );
+    void playback.ended.then((status) => {
+      if (this.current !== cur || !cur.early) return;
+      if (cur.early.adopted) return this.finishReply(cur, status);
+      // the turn has not come: her line's end waits for it (its hand-over decides the floor), at most EARLY_HOLD_MS
+      cur.early.ended = status;
+      setTimeout(() => { if (this.current === cur && cur.early && !cur.early.adopted) { cur.early.adopted = true; this.finishReply(cur, status); } }, EARLY_HOLD_MS);
+    });
+    return {
+      say: (text: string) => {
+        const t = text.trim();
+        if (this.current !== cur || !t) return;
+        this.events.emit({ type: "teacher_delta", responseId: id, delta: cur.text ? ` ${t}` : t });
+        cur.text = cur.text ? `${cur.text} ${t}` : t;
+      },
+    };
+  }
+
+  /** The turn arrived for a reply already sounding: its caption is the turn's own line; a held end is released. */
+  private adoptEarly(cur: CurrentReply, text: string): void {
+    if (!cur.early) return;
+    cur.early.adopted = true;
+    cur.text = text;
+    this.events.emit({ type: "teacher_done", responseId: cur.id, text });
+    if (cur.playing && this.duplex) {
+      this.duplex.setUi(turnContext());
+      this.duplex.replyAudible(text);
+    }
+    if (cur.early.ended) this.finishReply(cur, cur.early.ended);
   }
 
   interrupt(): void {
@@ -705,6 +780,7 @@ export class CascadeLink implements TeacherLink {
 
   close(): void {
     if (this.closed) return;
+    this.unEarly?.();
     this.vtrace.close();
     // turn.predictive: a held fragment is delivered before teardown, never dropped (it can be a disclosure)
     this.clearMergeTimer();

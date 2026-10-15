@@ -231,6 +231,24 @@ const STAY = {
   hi: { tum: "मैं यहीं हूँ, कोई जल्दी नहीं है। अगर कोई बात परेशान कर रही हो, तो जिस बड़े पर भरोसा हो वे मदद कर सकते हैं, और चाइल्डलाइन 1098 या टेली-मानस 14416 पर कभी भी फ़ोन कर सकते हो। जो मन हो, मुझे बता सकते हो।",
     aap: "मैं यहीं हूँ, कोई जल्दी नहीं है। अगर कोई बात परेशान कर रही हो, तो जिस बड़े पर भरोसा हो वे मदद कर सकते हैं, और चाइल्डलाइन 1098 या टेली-मानस 14416 पर कभी भी फ़ोन कर सकते हैं। जो मन हो, मुझे बता सकते हैं।" },
 };
+// round 5 (14.2): the check-in a lesson opens on when it starts within hours of a safeguarding incident (state.js decide,
+// `carried`). Fixed, like every safeguarding line. Discreet: no word of what was said or that anything was; both
+// helplines; the choice to start slowly or stop. {name} is the child's first name.
+const CARRIED = {
+  en: { tum: "Hi {name}! Before we start: how are you feeling today? If anything ever worries you, a grown-up you trust can help, and you can call Childline 1098 or Tele-MANAS 14416 any time. Shall we start slowly, or stop for today? Either is fine.",
+    aap: "Hi {name}! Before we start: how are you feeling today? If anything ever worries you, a grown-up you trust can help, and you can call Childline 1098 or Tele-MANAS 14416 any time. Shall we start slowly, or stop for today? Either is fine." },
+  hinglish: { tum: "Namaste {name}! Shuru karne se pehle ek baat: aaj mann kaisa hai? Agar kabhi koi baat pareshan kare, toh jis bade par bharosa ho woh madad kar sakte hain, aur Childline 1098 ya Tele-MANAS 14416 pe kabhi bhi call kar sakte ho. Dheere se shuru karein, ya aaj ke liye bas? Dono theek hain.",
+    aap: "Namaste {name}! Shuru karne se pehle ek baat: aaj mann kaisa hai? Agar kabhi koi baat pareshan kare, toh jis bade par bharosa ho woh madad kar sakte hain, aur Childline 1098 ya Tele-MANAS 14416 pe kabhi bhi call kar sakte hain. Dheere se shuru karein, ya aaj ke liye bas? Dono theek hain." },
+  hi: { tum: "नमस्ते {name}! शुरू करने से पहले एक बात: आज मन कैसा है? अगर कभी कोई बात परेशान करे, तो जिस बड़े पर भरोसा हो वे मदद कर सकते हैं, और चाइल्डलाइन 1098 या टेली-मानस 14416 पर कभी भी फ़ोन कर सकते हो। धीरे से शुरू करें, या आज के लिए बस? दोनों ठीक हैं।",
+    aap: "नमस्ते {name}! शुरू करने से पहले एक बात: आज मन कैसा है? अगर कभी कोई बात परेशान करे, तो जिस बड़े पर भरोसा हो वे मदद कर सकते हैं, और चाइल्डलाइन 1098 या टेली-मानस 14416 पर कभी भी फ़ोन कर सकते हैं। धीरे से शुरू करें, या आज के लिए बस? दोनों ठीक हैं।" },
+};
+/** The fixed check-in a lesson opens on after a recent safeguarding incident. Exported for tests. */
+export function carriedCheckInLine(ctx = {}) {
+  const mode = safetyModeOf(ctx.lang);
+  const line = CARRIED[mode === "en" ? "en" : mode === "hi" ? "hi" : "hinglish"][ctx.address === "aap" ? "aap" : "tum"];
+  const name = String(ctx.firstName ?? "").trim().split(/\s+/)[0] ?? "";
+  return name ? line.replace("{name}", name) : line.replace(" {name}!", "!").replace(" {name}", "");
+}
 /** The fixed line for the safeguard's stay turn (never the first turn's line again). Exported for tests. */
 export function safeguardStayLine(ctx = {}) {
   const mode = safetyModeOf(ctx.lang);
@@ -310,7 +328,7 @@ export const statementKey = (item) => !!item && (["why", "teachback"].includes(i
  */
 /** r5-latency: the reply lane's hedge point (~p95 of taxila-fast replies, n = 86, 2026-10-14); 0 turns it off. */
 export const REPLY_HEDGE_MS = () => { const v = Number(process.env.TAXILA_REPLY_HEDGE_MS ?? 2200); return Number.isFinite(v) && v > 0 ? v : 0; };
-export async function textReply({ instructions, state, kit, childText, trace, history = state.recent.slice(0, -1), verdict = state.lastVerdict ?? "ungraded", ui = null, module = null }) {
+export async function textReply({ instructions, state, kit, childText, trace, history = state.recent.slice(0, -1), verdict = state.lastVerdict ?? "ungraded", ui = null, module = null, overflow = true }) {
   const item = state.lastMove?.itemId ? findItem(state, kit, state.lastMove.itemId) : null;
   const next = !item && TEACHING_MOVES.has(state.lastMove?.kind) ? upcomingItem(state, kit) : null;
   const ahead = next && !statementKey(next) ? next : null;
@@ -458,7 +476,8 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
   const replyT0 = performance.now();
   // Replies take ~1-2 s (measured in evals/director-sim.mjs); a stuck call is cut at 6 s and retried once.
   // r5-latency: hedged (azure.js hedged): a call still out at REPLY_HEDGE_MS gets an identical twin, the first answer wins
-  const ask = (msgs) => replyDeps.chat(DEPLOY.reply, msgs, { maxTokens: 220, effort: "none", timeoutMs: 6000, trace, hedgeMs: REPLY_HEDGE_MS() }).then((r) => r.text.trim());
+  // overflow: false for a speculative bet (brain/turn.js speculate): a throttled bet just loses, the real reply still moves
+  const ask = (msgs) => replyDeps.chat(DEPLOY.reply, msgs, { maxTokens: 220, effort: "none", timeoutMs: 6000, trace, hedgeMs: REPLY_HEDGE_MS(), ...(overflow ? {} : { overflow: false }) }).then((r) => r.text.trim());
   let reply;
   const guardSlot = {};
   // The content filter blocking the reply call (the child's words are in it) is a safety signal, not an

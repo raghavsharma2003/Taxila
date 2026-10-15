@@ -12,8 +12,9 @@ import { bad, need, notFound, forbidden, unauthorized, HttpError } from "../http
 import { teacherFor, teacherForLesson } from "../compiler/characters/index.js";
 import { allowSpeech, MAX_TTS_CHARS, DEFAULT_VOICE } from "./tts.js";
 import { ageBandOf, sttPrompt, sttSession } from "../voice/stt.js";
-import { PCM_RATE, speakChunk, speechStyle, transcribeClip } from "../voice/speech.js";
+import { PCM_RATE, speakChunk, speechStyle, transcribeClip, voiceLane } from "../voice/speech.js";
 import { take as prewarmTake, deliveryFor, speakingEntry, PASSTHROUGH } from "../voice/prewarm.js";
+import { speakStreamed } from "../latency/speech-stream.js";
 import { renderParts, preludeRender } from "../voice/expressive/render.js";
 import { preludeTokenOk } from "../voice/expressive/prelude.js";
 import { edgeTrim, silence } from "../voice/expressive/pauses.js";
@@ -368,11 +369,25 @@ async function streamParts(res, { entry, t0, setupMs, prewarmed, framed = false,
  */
 async function turnAudio(req, res, body) {
   const t0 = performance.now();
-  const { lessonTurn } = await import("../brain/turn.js");
+  const lessonTurn = turnAudioDeps.lessonTurn ?? (await import("../brain/turn.js")).lessonTurn;
   const tokenHash = sessionTokenHash(req);
   if (!tokenHash) throw unauthorized();
-  warmPrelude(req, body, tokenHash);
-  const out = await lessonTurn(req, body);
+  if (!turnAudioDeps.lessonTurn) warmPrelude(req, body, tokenHash);
+  // r5-latency (4A's agent lane): her words stream to TTS clause by clause WHILE the agent writes them; the response opens
+  // at her first clause (header {audio: "streaming"}, then {t: "say"} events and audio), and the turn frame follows when
+  // the turn has committed. Errors before that first byte are the turn route's own JSON, as before.
+  const early = streamingSay(req, res, body, t0);
+  let out;
+  try {
+    out = await lessonTurn(req, body, { onAgentSay: early.onAgentSay });
+  } catch (e) {
+    if (!early.opened) throw e;
+    await early.done().catch(() => {});
+    early.w.json(FRAME.end, { t: "end", status: "error", error: e instanceof HttpError ? e.message : "turn failed" });
+    res.end();
+    return;
+  }
+  if (early.opened) return early.finish(out);
   const lessonId = String(body.lessonId);
   const seq = out?.teacherReplySeq;
   let warm = Number.isInteger(seq) && !out.late ? prewarmTake(lessonId, seq, tokenHash) : null;
@@ -388,6 +403,74 @@ async function turnAudio(req, res, body) {
   w.json(FRAME.turn, out);
   if (!warm) { w.json(FRAME.end, { t: "end", status: "ok", audio }); res.end(); return; }
   return streamParts(res, { entry: warm, t0, setupMs: Math.round(performance.now() - t0), framed: true, headersSent: true, codec });
+}
+
+/**
+ * r5-latency: the streamed-speech half of turn-audio (server/latency/speech-stream.js speakStreamed). onAgentSay(deltas,
+ * gate) is what the agent lane (server/agent, 4A) calls when its model call starts: the response opens, every clause the
+ * gate passes is synthesised (the child's style, the lesson's voice lane) while the next is written. finish(out) writes the
+ * turn frame once the turn committed, then the rest: the code-appended card question (out.agentStream.tail), or, on a
+ * fallback (no agentStream: the agent timed out or broke the floor, the Director wrote the reply), the Director's reply
+ * in full after what was already said. The caption is always out.teacherReply.
+ */
+/** Tests only: the turn, the voice style and the synthesis behind streamed turn-audio (null = production). */
+export const turnAudioDeps = { lessonTurn: null, style: null, synth: null };
+export { turnAudio as _turnAudio };
+
+function streamingSay(req, res, body, t0) {
+  const lessonId = String(body.lessonId ?? "");
+  let w = null, spoke = null, ctl = new AbortController();
+  res.on?.("close", () => { if (!res.writableEnded) ctl.abort(); });
+  // the child's voice style: one read beside the turn (the turn route's own rows are not exposed to this route)
+  let styleP = null;
+  const style = () => (styleP ??= turnAudioDeps.style ? Promise.resolve(turnAudioDeps.style()) : one(`select c.*, l.state->'ctx'->>'teacherId' as lesson_teacher, l.state->'ctx'->>'teacherName' as lesson_teacher_name,
+      (l.state ? 'laneSwitch') as lane_switched from lesson l join child c on c.id = l.child_id where l.id = $1`, [lessonId])
+    .then((row) => styleForChild(row, undefined, row?.lesson_teacher, row?.lesson_teacher_name ?? undefined, { laneSwitched: !!row?.lane_switched })));
+  const synth = turnAudioDeps.synth ?? async function* (clause, signal) {
+    const job = speakChunk(clause, await style(), signal, undefined, voiceLane(lessonId));
+    yield* job.read();
+  };
+  const open = () => {
+    if (w) return w;
+    res.writeHead(200, { "content-type": FRAMES_CONTENT_TYPE, "cache-control": "no-store" });
+    res.flushHeaders?.();
+    w = frameWriter(res, true, { codec: codecOf(req) });
+    w.json(FRAME.header, { v: 2, audio: "streaming", format: `pcm_s16le;rate=${PCM_RATE};channels=1`, ...(w.codec === "adpcm" ? { codec: "adpcm" } : {}) });
+    return w;
+  };
+  const say = (clauses, signal) => speakStreamed({ deltas: (async function* () { for (const c of clauses) yield `${c} `; })(), synth, signal,
+    emit: (e) => (e.type === "clause" ? w.json(FRAME.event, { t: "say", i: e.i, text: e.text }) : (w.pcm(e.chunk) ? undefined : writable(res))) });
+  const self = {
+    get opened() { return !!w; },
+    get w() { return w; },
+    onAgentSay(deltas, gate) {
+      if (spoke || ctl.signal.aborted) return;
+      open();
+      // the agent lane is reached only when the predicate, the classifier and the distress read were clean (4A)
+      spoke = speakStreamed({ deltas, gate, before: Promise.resolve({ ok: true }), synth, signal: ctl.signal,
+        emit: (e) => (e.type === "clause" ? w.json(FRAME.event, { t: "say", i: e.i, text: e.text }) : (w.pcm(e.chunk) ? undefined : writable(res))) });
+      spoke.catch((err) => console.warn("[voice] streamed say failed:", String(err?.message ?? err).slice(0, 120)));
+    },
+    done: () => spoke ?? Promise.resolve(null),
+    async finish(out) {
+      const r = await self.done().catch(() => null);
+      w.json(FRAME.turn, out);
+      try {
+        if (out?.agentStream) {
+          const tail = String(out.agentStream.tail ?? "").trim();
+          if (tail && !ctl.signal.aborted) await say([tail], ctl.signal);
+        } else if (out?.teacherReply && !ctl.signal.aborted) {
+          // a fallback: the Director's reply follows whatever of hers was already said
+          await say([String(out.teacherReply)], ctl.signal);
+        }
+        w.json(FRAME.end, { t: "end", status: "ok", streamed: true, clauses: r?.spoken?.length ?? 0, firstAudioMs: r?.firstAudioMs ?? null, ms: Math.round(performance.now() - t0) });
+      } catch (e) {
+        w.json(FRAME.end, { t: "end", status: "cut", error: String(e?.message ?? e).slice(0, 80) });
+      }
+      res.end();
+    },
+  };
+  return self;
 }
 
 // ───────────── POST /api/lesson/start-audio (r5-latency: the start's round-trip fold) ─────────────

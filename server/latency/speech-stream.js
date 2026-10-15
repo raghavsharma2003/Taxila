@@ -98,7 +98,8 @@ export async function speakStreamed(o) {
         if (stopped || ctl.signal.aborted) return;
         const g = o.gate ? o.gate(clause, spoken) : { ok: true };
         if (!g?.ok) { text += (text ? " " : "") + clause; stopped = { why: g?.why ?? "floor", clause }; return; }
-        // 4A: the gate may DROP a clause (praise on a wrong answer, the harness's own words, a promise of what is not up)
+        // 4A: {ok: true, skip: true} drops ONE clause (praise on a wrong answer, the harness's own words, an unearned mastery
+        // claim, a game promise, a point at an empty screen) and her line goes on
         if (g?.skip) return;
         // the gate may REWRITE a clause (4A: speakNotWrite turns "type it" into "say it"); the rewrite is what she says
         if (typeof g.clause === "string" && g.clause.trim()) clause = g.clause.trim();

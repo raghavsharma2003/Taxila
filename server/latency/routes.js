@@ -18,7 +18,7 @@ import { conv2Mode, p5Flag } from "../conversation/flags.js";
 import { applyNote, withAnswerMods } from "../conversation/policy.js";
 import { loadLive } from "../learner/live.js";
 import { perceive, fingerprint, putPrefetch, allowPrefetch, exactSpecOn } from "./perceive.js";
-import { ackOf, ackPlanOf, answerTokenOf, ackPhraseOf, ACK_FLOOR_MS, ACK_AT_MS, continuerPlanOf, continuerPhraseOf, continuerLangOf, continuerCohortHas } from "./ack.js";
+import { ackOf, ackPlanOf, answerTokenOf, ackPhraseOf, ACK_FLOOR_MS, ACK_AT_MS, continuerPlanOf, continuerPhraseOf, continuerLangOf, continuerCohortHas, lessonTurnOf } from "./ack.js";
 import { scanSafety } from "../director/safety.js";
 // round 3 (relational-human): the perception bus (the turn and the prefetch say "classify is running on these words") and
 // the played acknowledgement (POST /api/lesson/turn-ack below)
@@ -181,8 +181,11 @@ export async function ackDecision(d, x) {
   const names = [child?.first_name].filter(Boolean);
   const token = answerTokenOf(text);
   const echoable = !!token && preludeTokenOk(token, { names, vocab });
-  // round 5: no echo, but the owner cohort's device asked for a continuer (server/latency/ack.js continuerPlanOf)
-  if (!echoable && !x.continuer) return { none: token ? "token_screen" : "no_token" };
+  // round 5: no echo, but the owner cohort's device asked for a continuer (server/latency/ack.js continuerPlanOf). Its
+  // positive gate's lexical half first: words that are not an ordinary lesson turn never get one (nor its clip started).
+  const lexical = x.continuer ? lessonTurnOf(text) : null;
+  if (lexical?.none) x = { ...x, continuer: false };
+  if (!echoable && !x.continuer) return { none: lexical?.none ?? (token ? "token_screen" : "no_token") };
   const turn = (state?.turn ?? 0) + 1;
   const hist0c = d.continuerLast ?? continuerLast;
   const cPhrase = x.continuer ? continuerPhraseOf(continuerLangOf(child), turn, hist0c.get(String(lessonId)) ?? null) : null;
@@ -222,7 +225,7 @@ export async function ackDecision(d, x) {
   let clip = audioP;
   // round 5: no echo for this turn (a non-answer, the window) → the continuer, on the owner cohort's request only
   if (!plan.phrase && x.continuer && !["safety", "leaving", "consecutive", "unclassified"].includes(plan.none)) {
-    plan = continuerPlanOf({ ...gates, lang: continuerLangOf(child), last: hist0c.get(String(lessonId)) ?? null });
+    plan = continuerPlanOf({ ...gates, text, lang: continuerLangOf(child), last: hist0c.get(String(lessonId)) ?? null });
     if (plan.phrase && plan.phrase !== phrase) clip = cAudioP ?? (style ? d.ackAudio(plan.phrase, style) : Promise.resolve(null));
   }
   if (!plan.phrase) return { none: plan.none ?? "refused" };

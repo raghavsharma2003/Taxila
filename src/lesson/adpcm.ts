@@ -37,7 +37,8 @@ export function decodeAdpcm(payload: Uint8Array): Uint8Array {
 export const CODEC_KEY = "tx.flag.tts.codec";
 /**
  * Ask for ADPCM? `?tts=adpcm|pcm|auto` (persisted to this device) wins; else only on a slow link: the Network Information
- * API's effectiveType slow-2g / 2g / 3g, or Save-Data. Unknown (Safari, Firefox): PCM, as before.
+ * API's effectiveType slow-2g / 2g / 3g, or Save-Data. Unknown (Safari, Firefox): PCM, as before. Read per TTS request, so a
+ * link that changes speed mid-lesson changes codec from the next line on (each line's frames are one codec).
  */
 export function adpcmWanted(): boolean {
   try {

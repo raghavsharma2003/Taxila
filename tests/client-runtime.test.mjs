@@ -741,6 +741,19 @@ test("runtime: a new lesson starts with no modules, whichever way the last one w
   assert.deepEqual(rt.modules.mounted(), [], "start() never replays the old lesson's modules");
 });
 
+test("runtime: an in-app exit (unmount) closes by the beacon end, so the server's grace keeps Continue honest", async () => {
+  const api = fakeApi();
+  const beacons = [];
+  api.endBeacon = (id) => { beacons.push(id); return Promise.resolve(); };
+  const rt = new LessonRuntime({ api, timers: fakeTimers(), createLink: (m, ctx) => new FakeLink(m, ctx.levels) });
+  await rt.start("child-1", "text");
+  rt.dispose();
+  await flush();
+  assert.deepEqual(beacons, ["L1"]);
+  assert.deepEqual(api.calls.end, [], "not the immediate JSON end");
+  assert.equal(rt.state.phase, "ended");
+});
+
 test("runtime: a page-hide ends the lesson by beacon; a refused beacon leaves it open for a later way out", async () => {
   const prevWindow = globalThis.window;
   globalThis.window = new EventTarget();

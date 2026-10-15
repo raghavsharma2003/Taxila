@@ -56,7 +56,7 @@ export function brainTraceStmt(t) {
  * @param {{ cls: any, classified: boolean, help?: boolean, uiVerdict?: string|null, guard?: { caught?: string[], replaced?: boolean, rewritten?: boolean, repaired?: boolean } | null }} x
  */
 export function comprehensionReasons({ cls, classified, help = false, uiVerdict = null, guard = null }) {
-  const BYTES = new Set(["exact", "lexical", "echo", "empty", "chip", "predicate", "module", "asr", "content_filter", "error", "help", "relational", "speculative"]);
+  const BYTES = new Set(["exact", "lexical", "echo", "empty", "chip", "predicate", "module", "asr", "content_filter", "content_filter_context", "error", "help", "relational", "speculative"]);
   const out = [];
   if (cls) {
     out.push(`cls.${cls.outcome ?? "none"}`);
