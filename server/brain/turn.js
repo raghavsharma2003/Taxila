@@ -733,7 +733,9 @@ export async function lessonTurn(req, body, hooks = {}) {
   if (!late && INTERACTIVE_ASKS.has(String(r.move?.visual ?? "")) && studioSlot?.artifact?.kind !== "play" && next.lastMove?.shape) {
     // round 5: with the template rung taken back (no game, above) nothing is on the screen for this ask: never "point at it"
     const shape0 = kernel.wb.declined === "studio_rejected.no_game_piece" && !next.module ? String(next.lastMove.shape).replace(VISUAL_ON_STAGE, VISUAL_NOT_YET) : next.lastMove.shape;
-    const fixed = askTruth(shape0, String(r.move.visual), keepEngineNow ? "engine" : "none");
+    // (14.3: the lesson's own activity shown for the ask, a skeleton / library / frame piece, is "the activity on the screen")
+    const lessonPieceUp = ["skeleton", "stagecraft", "frame"].includes(String(studioSlot?.artifact?.kind ?? ""));
+    const fixed = askTruth(shape0, String(r.move.visual), keepEngineNow || lessonPieceUp ? "engine" : "none");
     if (fixed !== next.lastMove.shape) {
       next.lastMove = { ...next.lastMove, shape: fixed };
       try { instructions = instructionsFor(next, kit); } catch (e) { console.warn(`[studio] visual-ask truth left out of the compile: ${String(e?.message ?? e).slice(0, 80)}`); }

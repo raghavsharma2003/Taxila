@@ -62,3 +62,22 @@ test("a new page that shares nothing with her line is not drawn (sim lab boardfa
   assert.equal(syncedWithLine({ ops: [{ id: "c", op: "circle", c: [0, 0], r: 40 }] }, "kuch bhi"), true, "a page that writes nothing is not judged");
   assert.equal(syncedWithLine(pg("Half = 1/2"), ""), true, "no line known: not judged");
 });
+
+test("14.3 game ask with no play piece: the lesson's own prepared activity for the skill is shown (never a board, never a diagram)", async () => {
+  const { _lessonPieceForAsk, candidateIntents } = await import("../server/studio/seam.js");
+  const { archetype } = await import("../server/studio/archetypes/index.js");
+  const kits = JSON.parse(fs.readFileSync(new URL("../data/kits/c7-maths.json", import.meta.url), "utf8"));
+  const kit = kits.topics.find((t) => t.topicId === "c7-maths-ch08-t01");
+  const cands = candidateIntents({ lessonId: "L-g1", kit, topicId: kit.topicId, child: { class_level: 7 } });
+  const pieces = new Map();
+  for (const c of cands) pieces.set(c.intent.intentId, { intentId: c.intent.intentId, slotId: `${c.intent.intentId}:slot`, kind: archetype(c.archetype).kind, archetype: c.archetype,
+    params: c.params, skillId: c.intent.skillId, state: "fallback_ready", source: "skeleton", retired: false });
+  const L = { lessonId: "L-g1", pieces, turn: 3, subs: new Set(), redact: [] };
+  const got = _lessonPieceForAsk(L, { visual: "game", skillId: kit.skills[0].id });
+  assert.ok(got, "c7 multiplying fractions: the prefetched activity answers the game ask");
+  assert.equal(got.kind, "lesson_piece");
+  assert.ok(["game", "simulation"].includes(archetype(got.archetype).kind), got.archetype);
+  assert.equal(L.pendingPlay.intentId, got.intentId, "shown on this turn like a play piece");
+  const none = { lessonId: "L-g2", pieces: new Map([...pieces].filter(([, p]) => !["game", "simulation"].includes(p.kind))), turn: 3, subs: new Set(), redact: [] };
+  assert.equal(_lessonPieceForAsk(none, { visual: "game" }), null, "no doable piece: honest talk, as before");
+});

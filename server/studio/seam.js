@@ -154,6 +154,31 @@ const isVisible = (p) => VISIBLE.has(p.state) || (p.kind === "whiteboard" && p.a
 /** A piece the Brain may reveal now: ready (a passed or library build), or a skeleton-as-activity. */
 const isRevealable = (p) => !p.retired && p.kind !== "whiteboard" && (p.state === "ready" || p.state === "fallback_ready");
 
+/**
+ * Main 14.3 (prod: "mujhe game khelna hai" in c7-maths-ch08-t01, studio_rejected.no_game_piece 3 of 3 live runs, while the
+ * same lesson had prefetched its fraction-shading activity): a game / simulation ask that play coverage cannot answer gets the
+ * LESSON's own interactive piece, prepared at lesson start (an archetype the child can act on: kind game or simulation), for
+ * the skill when it says one, certified at the device's box; shown on this turn exactly like a play piece (pendingPlay).
+ * → the composeAsk answer, or null (honest talk, as before). Synchronous, in memory.
+ */
+const DOABLE_KINDS = new Set(["game", "simulation"]);
+/** Tests only. */
+export const _lessonPieceForAsk = (L, x) => lessonPieceForAsk(L, x);
+function lessonPieceForAsk(L, x) {
+  const cands = [...L.pieces.values()].filter((p) => isRevealable(p) && p.source !== "play" && DOABLE_KINDS.has(p.kind) && !p.retired
+    && (!x?.skillId || !p.skillId || p.skillId === x.skillId))
+    .sort((a, b) => (Number(b.skillId === x?.skillId) - Number(a.skillId === x?.skillId)) || (Number(b.state === "ready") - Number(a.state === "ready")));
+  for (const p of cands) {
+    const g = gatedSlot(L, p, p.source === "skeleton" ? "fallback_ready" : "revealed", "ask");
+    if (!g) continue;
+    p.requested = true;
+    L.pendingPlay = { intentId: p.intentId, turn: L.turn };
+    if (process.env.TAXILA_EARLY_PIECE !== "0") { push(L, { t: "slot", slot: g, early: true }); L.pendingPlay.early = true; }
+    return { kind: "lesson_piece", intentId: p.intentId, archetype: p.archetype, ms: 0 };
+  }
+  return null;
+}
+
 /** The StudioStatus of a piece (shared/studio.ts), for the Brain and the wire. */
 export function statusOf(p) {
   switch (p.state) {
@@ -616,7 +641,7 @@ export const studioSeam = {
       if (!child?.id) return null;
       const r = await buildLive({ ask: x.visual, lessonId, child: { id: child.id, class_level: child.class_level, language_pref: child.language_pref },
         skillId: x.skillId ?? null, topicId: x.topicId ?? L.topicId ?? null, vp: x.vp ?? viewportOf(lessonId).vp, lesson: L.forge3 ?? null }, { q: deps.q ?? undefined });
-      if (!r) return null;
+      if (!r) return lessonPieceForAsk(L, x);
       L.forge3 = r.lesson;
       const n = [...L.pieces.values()].filter((p) => p.source === "play").length + 1;
       const intentId = `${lessonId}:play:${n}`;
@@ -656,7 +681,8 @@ export const studioSeam = {
     const pendRec = L.pendingPlay;
     const pend = pendRec && pendRec.turn === L.turn ? L.pieces.get(pendRec.intentId) : null;
     L.pendingPlay = null;
-    const pendSlot = pend && !L.safety && hint?.visualRequest && pend.state === "ready" ? gatedSlot(L, pend, "revealed", "play") : null;
+    const pendSlot = pend && !L.safety && hint?.visualRequest && (pend.state === "ready" || pend.state === "fallback_ready")
+      ? gatedSlot(L, pend, pend.source === "skeleton" ? "fallback_ready" : "revealed", "play") : null;
     // a piece shown early that this turn does not show leaves the stage again (never a stale piece under her line)
     if (pendRec?.early && !pendSlot) push(L, { t: "retract", intentId: pendRec.intentId });
     if (pendSlot) {
