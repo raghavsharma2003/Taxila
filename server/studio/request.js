@@ -342,6 +342,7 @@ export const stayOnScreen = (text) => String(text ?? "")
   .replace(/\s+ko\s+(?:words|shabdon)\s+(?:mein|me|se)\s+(?:dekho|dekhiye|samjho|samjhiye|suno|sochiye|socho)\b/giu, "")
   .replace(/\s+(?:words|shabdon)\s+(?:mein|me)\s+(?:dekho|dekhiye|samjho|samjhiye|suno)\b/giu, "")
   .replace(/\s+imagine\s+(?:karo|kijiye|kariye|karein|karen)\b/giu, "")
+  .replace(/\bimagine\s+(?=(?:a|an|the|this|ek)\b)/giu, "")
   .replace(/\s+([,:;.!?])/g, "$1").replace(/\s{2,}/g, " ").trim();
 /** Does her line say there is no game (honest), or announce one ("Chalo mirror line game")? PURE. */
 const GAME_WORD = /\b(?:game|games)\b|गेम/iu;

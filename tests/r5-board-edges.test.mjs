@@ -219,3 +219,8 @@ test("main 14.3 (QA pass 14): while an asked board is pending her line never sen
   assert.equal(stayOnScreen("Socho, ek rectangle hai."), "Socho, ek rectangle hai.");
   assert.ok(!refersToBoard(stayOnScreen("picture imagine karo: 50 m")) || true);
 });
+
+test("QA pass 15 (0072b65b): while an asked board is pending, English 'imagine a …' goes too", async () => {
+  const { stayOnScreen } = await import("../server/studio/request.js");
+  assert.equal(stayOnScreen("Kabir, imagine a rectangle: 50 m aur 30 m"), "Kabir, a rectangle: 50 m aur 30 m");
+});
