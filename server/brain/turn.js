@@ -987,7 +987,10 @@ export async function lessonTurn(req, body, hooks = {}) {
     // drawn, the child on a phone: "screen pe only mic hai"; a slot with no artifact yet counts as empty)
     // ... except a board the CHILD asked for that is being drawn for this turn: it lands while she speaks, and owner-5 requires
     // her to point at it (spoken "whiteboard pe bana ke samjhao" lost its "screen par … dekhiye" to this rule: V2.no_reference)
-    const askedBoardComing = !!studioSlot && r.move?.request === "visual" && wbAcked;
+    // main 14.3 (the honesty floor, prod 2001d8cc: "Dekhiye … dikh rahe hain?" over a slot that then failed): only a board
+    // that is ON this response counts (the turn waited for it: askedBoard); a board still being drawn is not on the stage, so
+    // her pointing goes and no pointer is added
+    const askedBoardComing = !!studioSlot?.artifact && r.move?.request === "visual" && wbAcked;
     const stageEmpty = !studioSlot?.artifact && !askedBoardComing && !playAsk && !keepEngineNow && !(next.module && r.ui?.tray === "module") && !seamSafe("studio.boardUp", () => studioSeam.boardUp?.(lesson.id), false);
     // (sim lab p22: "Can you point to one-third on the screen?" with nothing up, any turn: the child said "I see only a mic
     // button"; with chips up "screen par" may mean the chips, so only a BOARD claim is taken out then)
