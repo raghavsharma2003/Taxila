@@ -6069,3 +6069,11 @@ TTS frames type 5 = IMA ADPCM (4:1), negotiated by Accept `codec=adpcm`, asked f
 - **What:** the copy a safety-relevant model call reads (the classifier and its distress reads, the reply prompt and its probe, the understanding note) writes the Hindi number "teen" as "3". "a teen" / "my teen sister" stay as said. The predicate and every code check read the raw words.
 - **Why:** see ms-r143-teen-filter-collision: a quarter of TEST's content-filter safeguards were children doing sums.
 - **Reversal:** a disclosure where "teen" carried the only harm signal the predicate and the distress reads miss.
+
+
+<!-- merged from inbox/r143h-main.json -->
+## dc-r143-edit-supersedes-landed-grade (2026-10-15)
+
+- **What:** a correction that arrives after its turn has landed supersedes that turn's grade. The rows are marked, never deleted, and the ledger folds only the edit. This is 14.4.
+- **Why:** the 2.5 s verdict hold protects her sound, not the grade. The turn lands before the correction in 5-20 of 20 stress turns.
+- **Reversal:** a ledger fold test shows double-counted or lost evidence.

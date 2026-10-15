@@ -2621,3 +2621,10 @@ Judging her 'parts' words against the module that was up BEFORE a named visual a
 - **Tried:** fixing the carry-on spelling by adding a bare canonical "leson".
 - **What broke:** on the TEST trace it read "lesson band karein?" (shall we stop?), "lesson boring hai" and "kitna time aur hai lesson mein?" as asks to carry on. Straight back into the lesson after a stop request breaks NEVER MANIPULATE.
 - **Fix:** the English nouns count only inside an ask; stop, tiredness and time-left words keep the chips.
+
+
+<!-- merged from inbox/r143h-main.json -->
+## rj-r143-mai-tx2-streaming (2026-10-15)
+
+- **Tried:** MAI-Transcribe-2-Streaming as the D5 speech recogniser. It is faster, with fewer empty finals.
+- **What broke:** it reads values wrong 9.1% of the time (6 of 66), vs 1.5% for today's azure-speech. A wrong value is a verdict on something the child never said.

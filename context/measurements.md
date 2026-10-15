@@ -4350,3 +4350,12 @@ Azure's content filter reads the Roman Hindi number "teen" (three) as the Englis
 - Ordinary sums trip it on their own: "teen guna teen nau", "do aur teen paanch", "teen aur teen chhe", "teen saal ka bhai". The same words with the digit pass.
 - TEST trace, 10 days: 13 of 52 content-filter safeguards (25%) were plain maths with "teen". Most of the other 39 were context blocks whose words probe clear alone.
 - No line in the 399-line distress corpora contains the word.
+
+
+<!-- merged from inbox/r143h-main.json -->
+## ms-r143-bata-fraction-reader (2026-10-15)
+
+- The grader's number reader reads "एक बटा दो" (one over two) as the numbers 1 and 2. A correct Devanagari fraction answer earns no evidence and she re-asks.
+- azure-speech writes बटा as "बता" (6/6), which reads the same way.
+- "मुझे बता दो" (tell me) reads as the value 2.
+- Roman ("ek bata do" → 1/2) is already right. The duplex parser shares the misreading.

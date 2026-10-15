@@ -21486,6 +21486,37 @@
    "at": "2026-10-15",
    "title": "The kits' Roman Hinglish (prompt_hi, hints, her pinned asks) can carry the same collisions ('teen' and others) into the reply's system brief, where filterSafe is not applied (her reply must keep the kit's wording). A block there is a context block (neutral line, not the script) but still costs the turn. To do: probe every kit string with 'teen' (and a list of other English-colliding Hinglish words) under the reply probe brief offline, and count the blocks; decide per string.",
    "source": "inbox/r143g-main.json"
+  },
+  {
+   "id": "ms-r143-bata-fraction-reader",
+   "kind": "measurement",
+   "at": "2026-10-15",
+   "title": "Devanagari fraction words in the grader's number reader (server/grading/spoken-number.js numberPhrases), found by 4B on the duplex parser and confirmed on the grader: 'एक बटा दो' → [1,2] and 'एक बता दो' (azure-speech writes बटा as बता, 6/6 of 4B's fraction answers) → [1,2]; 'मुझे बता दो' ('tell me') → [2]; '2 बता दो' → [2,2]. Roman is right: 'ek bata do' → 0.5, 'teen bata chaar' → 0.75, 'mujhe bata do' → []. Through classify with the model label stubbed as the key, on a 1/2 key: 'एक बटा दो' and 'एक बता दो' → no_evidence (number_hedge): a correct Devanagari fraction answer earns nothing and she re-asks; '1/2', 'ek bata do', 'aadha' → correct (exact). 'मुझे बता दो' → incorrect (numeric_mismatch) only when the label is the key; a realistic label (no_attempt / asks_for_answer) keeps it no_evidence. The duplex parser (src/duplex/numerals.ts valuesOf, server/duplex/understand.js valuesIn) shares the misreading.",
+   "n": 10,
+   "method": "numberPhrases on 10 phrases; classify with a stubbed label on 6 phrases (scratchpad bata-probe.mjs, bata-grade.mjs)",
+   "source": "inbox/r143h-main.json"
+  },
+  {
+   "id": "open-r143-bata-fraction-reader",
+   "kind": "open",
+   "at": "2026-10-15",
+   "title": "14.4: one rule set for Devanagari fractions in every number reader. '<n> बटा <n>' is a fraction; '<n> बता <n>' (the ASR spelling) is one only between two number words; Devanagari 'दो' right after a verb stem (बता, समझा, दिखा, सुना, कर, दे, लिख, बोल, सिखा, बना; not घटा / जोड़) is the verb unless that fraction claims it. Shared cases in tests/fixtures/spoken-fractions.json. 4B owns the client numerals.ts and server/duplex/understand.js; 4A owns server/grading/spoken-number.js. Measure classify over every fraction-key item × the Devanagari spoken forms of its key, before and after.",
+   "source": "inbox/r143h-main.json"
+  },
+  {
+   "id": "dc-r143-edit-supersedes-landed-grade",
+   "kind": "decision",
+   "at": "2026-10-15",
+   "title": "14.4 (4B's self-repair stress set): the verdict hold (G = 2,500 ms, 3899db79) delays her sound, not the turn's POST, so at R = 1.0 / 1.5 / 2.0 / 2.7 s a turn lands before the child's correction in 20 / 15 / 10 / 5 of 20, and the server grades the abandoned value. An edited re-send (same turnSeq, edited:true) arriving after its turn landed SUPERSEDES that turn's grade. The original classifier and evidence rows are marked superseded (never deleted), the edit is graded as the turn, and the ledger folds only the edit. A turn whose next turn has already landed is not re-graded; it is logged as a missed edit. Not option (b), holding the POST, which would cost ~1.7 s of first sound. The verdict hold ships in 14.4 after QA on a device, since at today's R it protects 0/20 more.",
+   "reversal": "superseding re-grades lead to double-counted or lost evidence in the ledger (a fold test fails), or missed edits stay common after the hold",
+   "source": "inbox/r143h-main.json"
+  },
+  {
+   "id": "rj-r143-mai-tx2-streaming",
+   "kind": "rejection",
+   "at": "2026-10-15",
+   "title": "MAI-Transcribe-2-Streaming as the D5 in-session ASR (southindia; centralindia refuses it). Final 53 vs 254 ms after speech_stopped, empty finals 0 vs 3 of 10. What broke: the wrong-value rate on 66 gold values per arm: MAI 6 wrong (9.1%, 95% CI 4.2-18.4) vs azure-speech centralindia 1 (1.5%, 0.3-8.1) and southindia 1 (1.5%). 'पंद्रह सेंटीमीटर' → '100 cm' ×3, 'बारह सेंटीमीटर' → '1 centimeter' ×2. A wrong value is a verdict on something the child never said, so it outweighs any EOT gain.",
+   "source": "inbox/r143h-main.json"
   }
  ],
  "edges": [
@@ -34433,6 +34464,11 @@
    "src": "dc-r143-teen-as-digit",
    "rel": "constrains",
    "dst": "dc-r142-classify-filter-context"
+  },
+  {
+   "src": "open-r143-bata-fraction-reader",
+   "rel": "caused_by",
+   "dst": "ms-r143-bata-fraction-reader"
   }
  ]
 }
