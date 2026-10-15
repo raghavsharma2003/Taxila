@@ -41,6 +41,12 @@
       "kind": "decision",
       "at": "2026-10-15",
       "title": "A page-hide no longer ends a lesson at once: POST /api/lesson/end with the pagehide flag marks state.pendingEndAt and the same end path (endLesson) runs after TAXILA_PAGEHIDE_GRACE_MS (120 s); POST /api/lesson/start {resumeLessonId} rejoins the open lesson (cascade/text) and cancels it. Measured: marked 21:27:34, ended 21:29:35 (endedBy pagehide, summary written); qa-reload PASS. Reverse if lessons are found ended late enough to miss a report or a cap (the grace is one env var; 0 restores the immediate end)."
+    },
+    {
+      "id": "ms-r5-qa-pass11",
+      "kind": "measurement",
+      "at": "2026-10-15",
+      "title": "Round 5 QA pass 11 on int/r5-rel141 @ f618f8d (local prod build, Neon TEST, Playwright phone 393x876): qa-reload PASS, Continue rejoins the same lesson, landscape Talk in the viewport, qa-gate-kill PASS. D23: typed home/family disclosures led the Help sheet with Childline 1098 in 3/3; a self-harm line with no family named led with a trusted grown-up (1/1, as designed). Reload right after a disclosure: 3/3 got a NEW lesson (resumeLessonId sent, not resumed), never the old one; but the new lesson opens straight into ordinary teaching with no hold or check-in (flagged to the safety owner)."
     }
   ],
   "edges": [],
