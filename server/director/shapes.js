@@ -268,7 +268,9 @@ export function askTruth(shape, visual, onScreen) {
 }
 // round 5 (stream 2, the board): a thing the child named is being drawn on the board for this ask: say what it shows, in
 // words, and never point at the screen before it is there (the after-board check unpoints a line that does)
-export const VISUAL_DRAWING = "the board draws what they asked for beside your words: say in plain words what it shows (its parts, its numbers); never send their eyes to the screen or the board, never say it is already there, never that you cannot draw, never ask them to draw it";
+// (round 5, owner-5 on 14.2 a978ae27: "never send their eyes to the screen" left "picture dikhao" with no pointing word, V2.no_reference;
+// the asked board is drawn while she speaks, and turn.js unpoints her line when none answers the ask)
+export const VISUAL_DRAWING = "the board draws what they asked for while you speak: send their eyes to it once, in a few words, then say in plain words what it shows (its parts, its numbers); never say it is already finished, never that you cannot draw, never ask them to draw it";
 /** The same, for what they named: the thing, or the numbers on a number line (they asked for THOSE, not the question's). */
 export const visualDrawing = ({ subject, said, show } = {}) => join(
   show === "number_line" && said?.length ? `they asked to see ${said.map((x) => String(x).replace(/[^0-9./+-]/g, "")).filter(Boolean).join(", ")} on a number line: say where ${said.length > 1 ? "they sit" : "it sits"} (between which whole numbers, how many equal parts)`
