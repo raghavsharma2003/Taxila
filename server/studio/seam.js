@@ -276,6 +276,14 @@ const writesWithheld = (script, withhold) => {
   const on = new Set(boardNumbersIn(textsOf(script).join(" ")));
   return vals.some((v) => on.has(v) || [...boardNumbersIn(v)].some((n) => on.has(n)));
 };
+/** main 14.4 (QA D43): a board is never kept across an item change: the item it was drawn for, or (drawn with no item) its
+ *  skill, must be what the move asks now. */
+const movedFrom = (p, move) => {
+  const item = move?.itemId ?? null, skill = move?.skillId ?? null;
+  if (p.itemId && item && p.itemId !== item) return true;
+  if (!p.itemId && p.skillId && skill && p.skillId !== skill) return true;
+  return false;
+};
 function gatedSlot(L, p, state = p.state, where = "slot") {
   const slot = slotOf(p, state);
   if (!slot?.artifact) return slot; // nothing drawn yet (a whiteboard planning): no pixels
@@ -1086,10 +1094,11 @@ export const studioSeam = {
    * "aapne chaaron sides jodkar 160 metre nikala. Ab isi rectangle ka perimeter…"): the board on screen goes on the response
    * again when her line still shares a word or a number with it (request.js syncedWithLine). Never a revealing slot.
    */
-  keepBoardSlot(lessonId, line, withhold = []) {
+  keepBoardSlot(lessonId, line, withhold = [], move = {}) {
     const L = lessons.get(lessonId);
     const on = L?.onScreen ? L.pieces.get(L.onScreen) : null;
     if (!on || on.kind !== "whiteboard" || !on.artifact?.script || on.retired || !VISIBLE.has(on.state) || L.safety) return null;
+    if (movedFrom(on, move)) return null;
     if (!syncedWithLine(on.artifact.script, line)) return null;
     // QA D43: her LAST sentence brings a number the board does not show ("Ab square ki har side 8 metre ho, perimeter
     // batayiye" under the 50 x 30 rectangle): that is a new problem, and the old page goes
@@ -1110,11 +1119,12 @@ export const studioSeam = {
   },
 
   /** 14.4: the slot of THIS piece when it is the board / picture on screen now (the late asked board her next line points at). */
-  onScreenSlot(lessonId, intentId, withhold = []) {
+  onScreenSlot(lessonId, intentId, withhold = [], move = {}) {
     const L = lessons.get(lessonId);
     const on = L?.onScreen && L.onScreen === intentId ? L.pieces.get(intentId) : null;
     if (!on || !["whiteboard", "image"].includes(on.kind) || !on.artifact || on.retired || !VISIBLE.has(on.state) || L.safety) return null;
     if (on.kind === "whiteboard" && (!Array.isArray(withhold) || writesWithheld(on.artifact.script, withhold))) return null;   // fail closed
+    if (movedFrom(on, move)) return null;
     const g = gatedSlot(L, on, on.state, "on_screen");
     if (g) L.shown = { intentId: on.intentId, revealing: false };
     return g;

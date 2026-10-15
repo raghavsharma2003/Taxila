@@ -372,3 +372,25 @@ test("QA pass 16 (TEST fa2f04e7): a question that NAMES the answer of her line's
   assert.equal(selfAnswer("Haan, 3 bachti hain: 5 cheezon mein se 2 hatao, phir bachi cheezein gino. 7 mein se 2 hatao?", {}), null);
   assert.equal(selfAnswer("Bilkul, 94 se 100 tak 6 ka jump hai. Ab 30 ka partner socho—100 banane ko kitna jodenge?", {}), null);
 });
+
+test("main 14.4 (QA D43): a board is never kept or late-shown across an item change (its item, or for a board drawn with no item its skill, against the move's); a unit is no shared word", async () => {
+  const seam = await import("../server/studio/seam.js");
+  const { syncedWithLine } = await import("../server/studio/request.js");
+  const { studioSeam } = seam;
+  const id = "L-d43-item";
+  seam.subscribe(id, () => {});
+  const L = seam._lesson(id);
+  const script = { v: 1, scriptId: "s", line: { lessonId: id }, anchor: "line_audio_start", board: { w: 677, h: 423, ground: "chalk" }, mode: "fresh", durationMs: 2000,
+    ops: [{ id: "r", op: "rect", startMs: 0, endMs: 800, at: [120, 100], w: 300, h: 180 }, { id: "t", op: "text", startMs: 800, endMs: 1400, at: [270, 320], text: "rectangle perimeter", size: "m" }] };
+  L.pieces.set("wb-1", { intentId: "wb-1", slotId: "slot-1", kind: "whiteboard", state: "revealed", artifact: { kind: "whiteboard", script }, revealedTurn: 1, itemId: "q-rect", skillId: "s-perim" });
+  L.onScreen = "wb-1";
+  const line = "Ab isi rectangle ka perimeter formula se nikaalo?";
+  assert.ok(studioSeam.keepBoardSlot(id, line, [], { itemId: "q-rect", skillId: "s-perim" }), "same item: kept");
+  assert.equal(studioSeam.keepBoardSlot(id, line, [], { itemId: "q-square", skillId: "s-perim" }), null, "another item: goes");
+  assert.equal(studioSeam.onScreenSlot(id, "wb-1", [], { itemId: "q-square" }), null);
+  L.pieces.get("wb-1").itemId = null;
+  assert.equal(studioSeam.keepBoardSlot(id, line, [], { skillId: "s-area" }), null, "drawn with no item: another skill goes");
+  assert.ok(studioSeam.keepBoardSlot(id, line, [], { skillId: "s-perim" }), "drawn with no item: the same skill stays");
+  // a unit is no shared idea
+  assert.equal(syncedWithLine({ ops: [{ op: "text", text: "50 metre" }] }, "Har side 8 metre hai."), false);
+});

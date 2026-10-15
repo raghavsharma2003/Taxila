@@ -1097,7 +1097,7 @@ export async function lessonTurn(req, body, hooks = {}) {
     const lateAsk = next.lateBoard && next.lateBoard.turn < next.turn ? next.lateBoard : null;
     if (next.lateBoard && (!lateAsk || next.turn - next.lateBoard.turn > 2)) delete next.lateBoard;
     if (lateAsk && !late && !itemMoved && !safetyWords && teacherReply && !studioSlot) {
-      const slot = seamSafe("studio.onScreenSlot", () => (typeof studioSeam.onScreenSlot === "function" ? studioSeam.onScreenSlot(lesson.id, lateAsk.intentId, heldNow) : null), null);
+      const slot = seamSafe("studio.onScreenSlot", () => (typeof studioSeam.onScreenSlot === "function" ? studioSeam.onScreenSlot(lesson.id, lateAsk.intentId, heldNow, { itemId: r.move?.itemId ?? null, skillId: r.move?.skillId ?? null }) : null), null);
       if (slot) {
         delete next.lateBoard;
         studioSlot = slot; studioReasons.push("studio.late_board_shown");
@@ -1121,7 +1121,7 @@ export async function lessonTurn(req, body, hooks = {}) {
     // 14.4 (QA D42): the board already on screen stays on the response while her line still talks about it (no new slot this
     // turn, the board not taken down, the Director's tray free): the client closes a page a response does not carry
     if (!studioSlot && !leftBoard && !itemMoved && !late && !agentApplied && !safetyWords && teacherReply && (!r.ui?.tray || r.ui.tray === "none") && !(r.ui?.chips?.length)) {
-      const kept = seamSafe("studio.keepBoardSlot", () => (typeof studioSeam.keepBoardSlot === "function" ? studioSeam.keepBoardSlot(lesson.id, teacherReply, heldNow) : null), null);
+      const kept = seamSafe("studio.keepBoardSlot", () => (typeof studioSeam.keepBoardSlot === "function" ? studioSeam.keepBoardSlot(lesson.id, teacherReply, heldNow, { itemId: r.move?.itemId ?? null, skillId: r.move?.skillId ?? null }) : null), null);
       if (kept) { studioSlot = kept; studioReasons.push("studio.board_kept"); }
     }
     // round 5 (sim lab 709b6acb): over an empty stage, a line that ASSUMES a visual without a screen word ("Table mein

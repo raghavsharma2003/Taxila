@@ -118,7 +118,10 @@ export function answersRequest(script, request, { drawnFor = false } = {}) {
  * counts with (evals/simlab/boardfacts.mjs). A page that writes nothing (shapes only), or a turn whose line is not known,
  * is not judged. PURE.
  */
-const SYNC_STOP = new Set("this that with from have what your kya hai hain aur yeh woh isko usko mein par kaise kitne kitna abhi phir karo dekho dekhiye board screen".split(" "));
+// (main 14.4, QA D43: a unit or a filler word is no shared idea: "metre" kept the rectangle board under the square's problem)
+const SYNC_STOP = new Set(("this that with from have what your kya hai hain aur yeh woh isko usko mein par kaise kitne kitna abhi phir karo dekho dekhiye board screen "
+  + "metre metres meter meters centimetre centimetres centimeter kilometre kilometres gram grams kilogram kilograms litre litres liter millilitre "
+  + "minute minutes second seconds hour hours rupee rupees unit units bataiye batayiye batao shabaash bilkul achha accha").split(" "));
 // a number said in words is its digits ("teen chauthai" is the board's 3/4)
 const NUM_WORDS = { ek: ["1"], one: ["1"], do: ["2"], two: ["2"], teen: ["3"], three: ["3"], chaar: ["4"], char: ["4"], four: ["4"],
   paanch: ["5"], panch: ["5"], five: ["5"], chhe: ["6"], che: ["6"], six: ["6"], saat: ["7"], seven: ["7"], aath: ["8"], eight: ["8"],
