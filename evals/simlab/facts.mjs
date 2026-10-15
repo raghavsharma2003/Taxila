@@ -67,7 +67,7 @@ const by = (arm) => {
   }
   // agent lane (round 5): which lane each lesson really ran on, Director takeovers, cost, and the agent's own latency per turn
   // (the @agent mark = ms from the turn's start to the agent's move; the teacher deployment's model calls)
-  const ag = { lessons: 0, fallbacks: 0, usd: 0, agentMs: [], teacherCallMs: [], timeouts: 0, read: { n: 0, agree: 0, over: 0, under: 0, skills: 0 }, claimed: { n: 0, agree: 0, over: 0, heldBack: 0 } };
+  const ag = { lessons: 0, fallbacks: 0, usd: 0, agentMs: [], teacherCallMs: [], timeouts: 0, read: { n: 0, agree: 0, over: 0, under: 0, skills: 0 }, claimed: { n: 0, agree: 0, over: 0, heldBack: 0 }, matrix: {} };
   for (const r of rs) {
     if (r.lane2?.teacher !== "agent") continue;
     ag.lessons++;
@@ -81,6 +81,10 @@ const by = (arm) => {
       ag.read.n++; if (v.read === truth) ag.read.agree++; if (L[v.read] > L[truth]) ag.read.over++; if (L[v.read] < L[truth]) ag.read.under++;
       // b185d509+: .claimed is what the model said before the code's evidence rule held it back
       if (v.claimed in L) { ag.claimed.n++; if (v.claimed === truth) ag.claimed.agree++; if (L[v.claimed] > L[truth]) ag.claimed.over++; if (v.claimed !== v.read) ag.claimed.heldBack++; }
+      // 7740135a+: a partly built only from right easy answers carries depth "untested"; its own read→truth row, so the
+      // card's understood children who never met a deep question show there and not as plain underclaims
+      const key = `${v.read}${v.depth === "untested" ? "(untested)" : ""}→${truth}`;
+      ag.matrix[key] = (ag.matrix[key] ?? 0) + 1;
     }
     ag.read.skills += Object.keys(r.state ?? {}).length;
     for (const t of r.turns) for (const x of t.reasons?.timings ?? []) {
@@ -91,7 +95,7 @@ const by = (arm) => {
   const p50 = (a) => { const s = [...a].sort((x, y) => x - y); return s.length ? s[Math.floor(s.length / 2)] : null; };
   const p90 = (a) => { const s = [...a].sort((x, y) => x - y); return s.length ? s[Math.floor(s.length * 0.9)] : null; };
   if (f.ack.asked) { const r = [...f.ack.readyMs].sort((a, b) => a - b); f.ack.readyP50 = r[Math.floor(r.length / 2)] ?? null; } delete f.ack.readyMs;
-  const agent = ag.lessons ? { lessons: ag.lessons, ownRead: ag.read, claimed: ag.claimed, fallbacks: ag.fallbacks, usdPerLesson: +(ag.usd / ag.lessons).toFixed(4), agentMarkP50: p50(ag.agentMs), agentMarkP90: p90(ag.agentMs), teacherCallP50: p50(ag.teacherCallMs), teacherCallP90: p90(ag.teacherCallMs), nonOkCalls: ag.timeouts } : null;
+  const agent = ag.lessons ? { lessons: ag.lessons, ownRead: ag.read, readTruth: ag.matrix, claimed: ag.claimed, fallbacks: ag.fallbacks, usdPerLesson: +(ag.usd / ag.lessons).toFixed(4), agentMarkP50: p50(ag.agentMs), agentMarkP90: p90(ag.agentMs), teacherCallP50: p50(ag.teacherCallMs), teacherCallP90: p90(ag.teacherCallMs), nonOkCalls: ag.timeouts } : null;
   return { ...f, agent, sameCardMaxRun: undefined, startMsP50: p50(f.startMs), turnMsP50: p50(f.turnMs), turnMsP90: p90(f.turnMs), startMs: undefined, turnMs: undefined };
 };
 const arms = [...new Set(recs.map((r) => `${r.arm}/${r.lane}`))];
