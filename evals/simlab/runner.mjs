@@ -57,7 +57,11 @@ function boardText(script) {
   const ops = script?.ops ?? [];
   const texts = ops.filter((o) => o.text).map((o) => o.text);
   const shapes = Object.entries(ops.filter((o) => !o.text).reduce((m, o) => ((m[o.op] = (m[o.op] ?? 0) + 1), m), {})).map(([k, v]) => `${v} ${k}`);
-  return `${script?.card?.kind ? `(${script.card.kind} card) ` : ""}drawing with ${shapes.join(", ") || "no shapes"}; written: ${texts.map((t) => `"${t}"`).join(" ") || "nothing"}`.slice(0, 400);
+  // a text-only page is a written board, never "a drawing with no shapes" (the judge read that as an empty screen)
+  const written = texts.map((t) => `"${t}"`).join(" ");
+  const kind = script?.card?.kind ? `(${script.card.kind} card) ` : "";
+  if (!shapes.length) return `${kind}${written ? `written board: ${written}` : "blank board"}`.slice(0, 400);
+  return `${kind}drawing with ${shapes.join(", ")}${written ? `; written: ${written}` : ""}`.slice(0, 400);
 }
 
 /** The screen as the child sees it after a response (carried across turns: an activity stays until unmounted). */

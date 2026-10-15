@@ -84,6 +84,9 @@ export function autoChecks(rec, p) {
   return out;
 }
 
+/** Records written before the board-wording fix said "drawing with no shapes; written: …" for a text-only page. */
+const boardWords = (x) => String(x ?? "").replace(/drawing with no shapes; written: nothing/g, "blank board").replace(/drawing with no shapes; written: /g, "written board: ");
+
 function transcriptFor(rec) {
   const lines = [];
   for (const t of rec.turns) {
@@ -94,14 +97,14 @@ function transcriptFor(rec) {
     }
     if (t.error) { lines.push(`#${t.n} SERVER ERROR ${t.error}`); continue; }
     const s = t.screen ?? {};
-    const shown = [s.ask && `question card "${s.ask}"`, s.chips?.length && `buttons ${s.chips.map((c) => `"${c.label}"`).join(" ")}`, s.whiteboard && `board ${s.whiteboard}`, s.module && `activity ${s.module}`, s.studio && `studio ${s.studio}`].filter(Boolean).join("; ");
+    const shown = [s.ask && `question card "${s.ask}"`, s.chips?.length && `buttons ${s.chips.map((c) => `"${c.label}"`).join(" ")}`, s.whiteboard && `board ${s.whiteboard}`, s.module && `activity ${s.module}`, s.studio && `studio ${boardWords(s.studio)}`].filter(Boolean).join("; ");
     const why = t.reasons?.classification ? ` server-read: ${t.reasons.classification.outcome}${t.reasons.verdict ? `/${t.reasons.verdict}` : ""}${t.reasons.classification.flags?.length ? ` flags ${t.reasons.classification.flags.join(",")}` : ""}` : "";
     lines.push(`#${t.n} TEACHER [${t.move ?? "?"}]${why}: ${t.teacher}`);
     lines.push(`#${t.n} SCREEN: ${shown || "nothing (face only)"}`);
   }
   if (rec.boardPages?.length) {
     lines.push("", "BOARD PAGES (the server's own record of every board shown; #turn = the child turn whose reply drew it):");
-    for (const pg of rec.boardPages) lines.push(`page ${pg.seq} @#${pageTurn(rec, pg)}${pg.beat ? ` [${pg.beat}]` : ""}: ${pg.board}`);
+    for (const pg of rec.boardPages) lines.push(`page ${pg.seq} @#${pageTurn(rec, pg)}${pg.beat ? ` [${pg.beat}]` : ""}: ${boardWords(pg.board)}`);
   } else if (rec.boardPages) lines.push("", "BOARD PAGES: none were drawn in this lesson.");
   return lines.join("\n");
 }
