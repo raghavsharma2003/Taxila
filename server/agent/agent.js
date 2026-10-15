@@ -174,7 +174,8 @@ export async function agentTurn({ state, kit, event, silent = false, verdict = n
   const messages = [{ role: "system", content: systemPrompt(ctx) }, { role: "user", content: stateMessage({ state, kit, event: ev, onScreen: before.words, lane }) }];
   const dep = teacherDeployment();
   const t0 = Date.now();
-  const opts = { schema: TURN_SCHEMA, schemaName: "teacher_turn", effort: process.env.TAXILA_TEACHER_EFFORT || "low", maxTokens: AGENT_LIMITS.maxOutTokens, timeoutMs: AGENT_LIMITS.turnTimeoutMs, retries: 0, quotaLane: "hot", trace };
+  // effort none by default (sim lab 7740135, n=64 per arm: judges tie none vs low 29:30 / 31:29, rubric within noise, dead ends 4 vs 13, about 1 s faster at p50, fallbacks 14 vs 43)
+  const opts = { schema: TURN_SCHEMA, schemaName: "teacher_turn", effort: process.env.TAXILA_TEACHER_EFFORT || "none", maxTokens: AGENT_LIMITS.maxOutTokens, timeoutMs: AGENT_LIMITS.turnTimeoutMs, retries: 0, quotaLane: "hot", trace };
   let res, firstSayMs = null;
   if (typeof onSay === "function") {
     // streamed (AGENT.md §1 Latency; stream 3's speech-stream.js): her words go to the caller as they are written (say is the
