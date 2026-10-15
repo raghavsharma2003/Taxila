@@ -45,7 +45,7 @@ export function clauseSplitter({ minWords = 4, maxChars = 180 } = {}) {
  * @param {{
  *   deltas: AsyncIterable<string>,
  *   before?: Promise<{ ok: boolean, why?: string }>,
- *   gate?: (clause: string, spoken: string[]) => { ok: boolean, why?: string, clause?: string },  (clause: a rewrite to say instead)
+ *   gate?: (clause: string, spoken: string[]) => { ok: boolean, why?: string, clause?: string, skip?: boolean },  (clause: a rewrite to say instead; skip: drop this clause)
  *   synth: (clause: string, signal: AbortSignal) => AsyncIterable<Buffer|Uint8Array>,
  *   emit: (e: { type: "clause", i: number, text: string } | { type: "audio", i: number, chunk: Buffer|Uint8Array }) => void | Promise<void>,
  *   signal?: AbortSignal, lookahead?: number, now?: () => number, split?: ReturnType<typeof clauseSplitter>,
@@ -98,6 +98,9 @@ export async function speakStreamed(o) {
         if (stopped || ctl.signal.aborted) return;
         const g = o.gate ? o.gate(clause, spoken) : { ok: true };
         if (!g?.ok) { text += (text ? " " : "") + clause; stopped = { why: g?.why ?? "floor", clause }; return; }
+        // 4A: {ok: true, skip: true} drops ONE clause (praise on a wrong answer, an unearned mastery claim, a game promise,
+        // a point at an empty screen) and her line goes on
+        if (g?.skip) return;
         // the gate may REWRITE a clause (4A: speakNotWrite turns "type it" into "say it"); the rewrite is what she says
         if (typeof g.clause === "string" && g.clause.trim()) clause = g.clause.trim();
         text += (text ? " " : "") + clause;
