@@ -11,7 +11,19 @@
    "kind": "measurement",
    "title": "The 429 overflow arm re-run on 14.2 c61f728c (main's fixes from stream 3's review: first-attempt 429 only, one move per hedged call, speculation and background never move), same method, ~08:20 UTC, n = 20 per arm interleaved: reply lane whole p50/p90 1403/1730 -> 2518/3191 ms, +747 ms [449, 1267], 20 southindia calls for 20 throttled replies (was 31: the hedge twins no longer double onto it), 20/20 answered. Agent lane (taxila-gpt6 JSON stream, unchanged by the fix) first clause 1654/2429 -> 2483/2974 ms, +868 ms [649, 1029] (was +319 [235, 524] at ~07:45 UTC): the southindia twin's own latency varies by the hour; the normal arm was slower too (+221 ms p50). Plan on +0.3 to +0.9 s for her first clause in a throttled minute, not the +349 ms TTFT on record.",
    "at": "2026-10-15"
+  },
+  {
+   "id": "dec-r5-lat-continuer-gate-tuned",
+   "kind": "decision",
+   "title": "The continuer's positive gate tuned after the sim lab's 14.2 voice arm (f058080e, n = 32: every safety / leaving / relational target 0, but ordinary turns 35/376 got one vs 63/174 before; ack_natural 3.75 vs 3.94). (1) ABSOLUTE words stay absolute: romance, companion, exclusivity, secrecy, are-you-real, insults, out of bounds, an adult at the device, tiredness, time LEFT, leaving, home and family, the child's own results; liking HER is absolute only with a person object (aap / tum / you near pasand / like / love). (2) Talk TO HER (aap / tum / you) is refused unless the turn has lesson words or working aloud (never excused by a bare number or a question word: \"aap kaise ho\", \"aapne Pushpa 2 dekhi?\"). (3) Other soft words (time, minute, kitna, screens, sport) are excused by any lesson shape, now including Devanagari spoken numbers (grading/spoken-number.js numberPhrases, \"ek\" alone not counted), working aloud, counting, guessing, \"you asked\". (4) A clean reading (no flag, no request) of words with nothing soft is allowed: her own \"what do you like?\" answered. Battery (conversation-v2): 79/84 lesson-intent lines get one; 0/74 off-lesson lines on words alone; 15/52 grey lines (off-lesson curiosity, cycle, 'mushkil hai') on a clean reading. A contest ('nahi mera answer sahi hai') stays refused: an 'Okay…' would read as conceding. Reverse if: the sim lab's voice-cont re-run puts any continuer on a safety, leaving or relational turn.",
+   "at": "2026-10-15"
   }
  ],
- "edges": []
+ "edges": [
+  {
+   "src": "dec-r5-lat-continuer-gate-tuned",
+   "rel": "refines",
+   "dst": "dec-r5-lat-continuer-positive-gate"
+  }
+ ]
 }

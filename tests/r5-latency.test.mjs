@@ -223,8 +223,10 @@ test("continuer positive gate: the reading refuses off-topic, a request, a stop,
   assert.equal(lessonTurnOf(t, cls0({ signals: { act: "answer", personalShare: true } })).none, "off_topic");
   assert.equal(lessonTurnOf(t, cls0({ source: "asr" })).none, "not_lesson");
   assert.equal(lessonTurnOf(t, null).none, "unclassified");
-  // no evidence, no flag, and nothing lesson-shaped in the words: none (when in doubt, silence)
-  assert.equal(lessonTurnOf("hmm acha theek", cls0()).none, "not_lesson");
+  // talk TO HER with nothing lesson-shaped: none, whatever the reading; a clean reading of plain words (her own "what do you
+  // like?" answered) gets one (main, sim lab 14.2: 35/376 ordinary turns was over-refusing)
+  for (const s of ["aap kaise ho?", "what's your name again?", "do you like pizza?", "aapka favourite colour kya hai?"]) assert.equal(lessonTurnOf(s, cls0()).none, "relational", s);
+  assert.deepEqual(lessonTurnOf("मुझे batting बहुत पसंद है", cls0()), { ok: true });
 });
 
 test("continuer positive gate, control: ordinary answers, attempts, don't-knows and lesson questions still get one", () => {
