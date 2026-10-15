@@ -326,7 +326,12 @@ const STAGE = /(?:^|[\s(—-])(?:whiteboard|board|ask|shape|move|note|key|ladder
 // ship5 review (experience B2, owner-5 V3.ascii): a text "diagram" — a run of shape glyphs ("●●●●● ●●●●●"), box drawing or
 // ASCII rules — is markup too: on the spoken lane it is read aloud, and a picture belongs on the board, never in her words.
 const ART_GLYPH = "●○◯◉■□▪▫▲△▼▽◆◇★☆•◦✓✔✗✘⬤⚫⚪🔴🔵🟢🟡🟠🟣🟤⬛⬜🟥🟦🟩🟨";
-export const TEXT_ART = new RegExp(`(?:[${ART_GLYPH}][\\s,]*){3,}|[\\u2500-\\u257F\\u2580-\\u259F]{2,}|[-=~*+|]{4,}|-{2,}>|<-{2,}`, "gu");
+// round 5 (14.2; owner-5 visual battery: "0 —|—|—|—|— 1" was read out as a number line): the em / en dash art too, as runs of a
+// dash and a pipe, two or more dashes in a row, spaced dash runs, and dash arrows. One dash in a sentence ("Great — ab
+// batao?", "bajenge—alag sur") is prose and stays.
+const DASH = "\\u2012-\\u2015";
+export const TEXT_ART = new RegExp(`(?:[${ART_GLYPH}][\\s,]*){3,}|[\\u2500-\\u257F\\u2580-\\u259F]{2,}|[-=~*+|]{4,}|-{2,}>|<-{2,}`
+  + `|(?:[-${DASH}]\\s*\\|\\s*){2,}[-${DASH}]?|(?:\\|\\s*[-${DASH}]+\\s*){2,}\\|?|[${DASH}]{2,}|(?:[${DASH}]\\s+){2,}[${DASH}]|[-${DASH}]+>|<[-${DASH}]+`, "gu");
 // ship5 fixer (experience B1 / owner-5 V3.cant_draw): "main nayi picture nahi dikha sakta" — she never says she cannot
 // show or draw (the board draws; F16, the owner's session). The sentence is removed; the rest of the turn stands.
 const CANT_SHOW = /\b(i can'?t|i cannot|i am not able to|i'm not able to|main|mai|mein)\s+(?:\w+\s+){0,4}(?:draw|show|bana|dikha)\w*\s+(?:nahi|nahin)\s+(?:sakta|sakti|sakte|paunga|paungi|paati|paata)\b|\b(i can'?t|i cannot|i'm not able to|i am not able to)\s+(?:\w+\s+){0,3}(?:draw|show|make)\b|\b(?:dikha|bana|draw\s+kar|show\s+kar)\s+nahi\s+(?:sakta|sakti|sakte|paunga|paungi|payenge|paati|paata)\b|\b(?:main|mai)\s+(?:\w+\s+){0,4}nahi\s+(?:\w+\s+){0,2}(?:dikha|bana)\s+(?:sakta|sakti)\b/i;
