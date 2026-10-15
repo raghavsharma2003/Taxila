@@ -62,6 +62,31 @@ const TELLS = re("ghar|home|haus|distrakt\\w*|dimag|man nahi|man nahin|akele|chu
 // any negation left once the fine phrase itself is taken out keeps the hold ("mann nahi karta", "acha nahi lagta",
 // "kuch aur nahi karna"); a Hinglish tag "na" counts too: precision over recall
 const NEGATION = re("nahi|nahin|nai|na|not|nt|dont|didnt|doesnt|never|mat|no");
+// 14.3 (sim lab rel143 pet cards): "I already said I'm fine" complains about being ASKED again, and its "par" / "na" are about
+// the question ("Main theek hoon, par yeh sawaal phir se? Main already bol diya na" vetoed on the contrast). A clause made
+// ONLY of such a complaint (its words, the fine phrase, a closed set of fillers) is set aside for the contrast and the
+// leftover-negation checks; any other word keeps the clause in ("I already said I'm fine but my uncle comes tonight"
+// keeps its contrast). The negated / heavy / qualified / tell vetoes still read the whole reply. Never "it keeps
+// happening": baar baar alone is not it. Canonical spellings (canonReading: already → alreadi, why → vhi, sawaal → saval).
+const ASKED_AGAIN = [
+  "(?:alreadi|pehle hi|pehle) (?:told|said|tel[a-z]*|bol[a-z]*|bata[a-z]*|kah[a-z]*|keh[a-z]*)",
+  "(?:i|maine|mene) (?:alreadi )?(?:told|said)(?: (?:you|u|it))? alreadi",
+  "(?:maine|mene) (?:bola|boli|bataya|kaha|bol diya|bata diya|keh diya|kah diya)",
+  "(?:bol|bata|keh|kah) (?:diya|di|dia|chuka|chuki|chuke)",
+  "(?:yeh|ye|this|vahi|same) (?:saval|kuestion) (?:fir|again)", "(?:saval|kuestion) again", "fir se (?:puch|saval)[a-z]*",
+  "(?:kitni|kitne) (?:bar|times) (?:puch|bol|bata)[a-z]*",
+  "(?:vhi|kyun|kyu|kyon) (?:are you |do you |ap |tum )?(?:asking|ask|puch[a-z]*)(?: me| mujhse| mujhe)?(?: again| fir se| fir)?",
+  "(?:asking|ask|asked) (?:me )?again",
+].map((s) => new RegExp(`${W}(?:${s})${E}`, "g"));
+const FILLER = new Set(("main mai maine mene i you u me mujhe mujhse ap tum it that na to toh hi se fir again alreadi par pr but yeh ye this " +
+  "vahi same han ji are yar re hai tha thi hun ho kyun kyu kyon vhi do ok okay diya di dia chuka chuki chuke").split(" "));
+const complaintOnly = (cl) => {
+  if (!ASKED_AGAIN.some((r) => { r.lastIndex = 0; return r.test(cl); })) return false;
+  let left = cl;
+  for (const r of ASKED_AGAIN) { r.lastIndex = 0; left = left.replace(r, " "); }
+  for (const r of FINE) left = left.replace(new RegExp(r.source, "g"), " ");
+  return left.split(" ").filter(Boolean).every((t) => FILLER.has(t));
+};
 const MAX_TOKENS = 40;
 
 /**
@@ -81,23 +106,35 @@ export function fineReading(text) {
     return rest;
   });
   if (firstClause < 0) return { fine: false, why: "no_fine" };
-  const rest = rests.join(" ");
+  const kept = clauses.map((cl) => !complaintOnly(cl));
+  const rest = rests.filter((_, i) => kept[i]).join(" ");
   if (NEGATED.some((r) => r.test(c))) return { fine: false, why: "negated" };
   if (HEAVY.test(c)) return { fine: false, why: "heavy" };
   if (QUALIFIED.test(c)) return { fine: false, why: "qualified" };
   if (TELLS.test(c)) return { fine: false, why: "tell" };
-  if (CONTRAST.test(clauses.slice(firstClause).join(" "))) return { fine: false, why: "contrast" };
+  if (CONTRAST.test(clauses.filter((_, i) => i >= firstClause && kept[i]).join(" "))) return { fine: false, why: "contrast" };
   if (NEGATION.test(rest)) return { fine: false, why: "negation" };
-  return { fine: true, why: "fine" };
+  return { fine: true, why: kept.every(Boolean) ? "fine" : "asked_again" };
 }
 export const clearlyFine = (text) => fineReading(text).fine;
 
-// asking to carry on: "ab padhai karein", "lets continue", "aage chalein", "chalo padhte hain"; never "padhna nahi hai"
+// asking to carry on: "ab padhai karein", "lets continue", "aage chalein", "chalo padhte hain"; never "padhna nahi hai".
+// Canonical spellings (14.3: "lesson" / "study" / "learn" read as leson / studi / learn, so the raw spellings here never
+// matched: TEST 212f5440 "I'm fine … Can we do the lesson now?" kept the hold a turn). The English nouns count only inside
+// an ask ("do the lesson", "lets study"): a bare "lesson" is also "lesson band karein?", "lesson boring hai", "kitna time
+// aur hai lesson mein?" (TEST trace, all after an episode opened).
 const CARRY = re([
-  "padhai|padhna|padhen|padhein|padhte|padhenge|padho|padhiye|padh lete|study|lesson|klas|kontinue|kari on",
-  "age (?:badh|chal|kar)[a-z]*|lets (?:go on|go|study|lern|kontinue)|chalo (?:age|padh[a-z]*|shuru[a-z]*)|shuru (?:karen|karein|karo|kijiye)",
+  "padhai|padhna|padhen|padhein|padhte|padhenge|padho|padhiye|padh lete|kontinue|kari on",
+  "(?:do|start|resume|bak to|go bak to|kontinue|kari on with|go on with) (?:the |our |my |this )?(?:leson|klas)",
+  "(?:leson|klas) (?:kontinue|shuru|karen|karein|karte|kare)[a-z]*",
+  "age (?:badh|chal|kar)[a-z]*|lets (?:go on|go|studi|learn|kontinue|do the leson)|chalo (?:age|padh[a-z]*|shuru[a-z]*)|shuru (?:karen|karein|karo|kijiye)",
 ].join("|"));
-const NO_CARRY = re("(?:padhai|padhna|padh[a-z]*|study|lesson|klas)(?: [a-z]+){0,2} (?:nahi|nahin|nai|mat)|(?:nahi|nahin|nai|mat|dont|not|no) (?:[a-z]+ ){0,1}(?:padh[a-z]*|study|lesson|klas)|stop|bas karo|band karo|khatam karo");
+// a refusal, a stop, tiredness or a wish to be done keeps the gentle resume (the chips decide): never straight back
+const NO_CARRY = re([
+  "(?:padhai|padhna|padh[a-z]*|studi|leson|klas)(?: [a-z]+){0,2} (?:nahi|nahin|nai|mat)|(?:nahi|nahin|nai|mat|dont|not|no) (?:[a-z]+ ){0,2}(?:padh[a-z]*|studi|leson|klas)",
+  "stop|end|finish|bas kar[a-z]*|band kar[a-z]*|kardo band|khatam|rok[a-z]*|chod[a-z]*|bad men|bad mein|kal|tomorov|later",
+  "boring|tired|thak[a-z]*|nind|slip[a-z]*|kitna time|kitni der|time bacha|hov long|hov much time",
+].join("|"));
 /** Whether the same reply asks to carry on with the lesson (the continue chip, said in words). */
 export function asksToCarryOn(text) {
   const c = canonReading(text);

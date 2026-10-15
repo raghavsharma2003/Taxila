@@ -757,6 +757,10 @@ async function classifyModel(args, target, text, flags, trace, done, fast = {}) 
       label.outcome = "incorrect"; label.overridden = "bare_wrong_number"; modelFlags.offTopic = false; modelFlags.dontKnow = false;
     }
     for (const k of Object.keys(modelFlags)) flags[k] = flags[k] || modelFlags[k];
+    // 14.3 (sim lab rel143 pet cards: every episode the labeller opened had kind null, so it read as an unknown trigger: no
+    // early release, and the vetted disclosure opening instead of F10's check line): the label call's distress is a MODEL
+    // read, as on every other model path here. The predicate's family, when it fired, was set first and stays.
+    if (modelFlags.distress && flags.distress) flags.distressKind ??= "model";
     const signals = signalsOn() ? parseSignals(json) : null;
     if (signals) Object.assign(flags, signalFlags(signals));
     // `fallback`: the fallback deployment answered (brain_trace cls_source.fallback); the label is a model label either way
