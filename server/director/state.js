@@ -20,7 +20,7 @@
 import { stopKind, signalsOf } from "../relational/signals.js";
 import * as SH from "./shapes.js";
 import { readFileSync } from "fs";
-import { buildPracticeQueue, findItem, isomorphicFor, probeFor, promptFor, optionsSpoken, selectNext, anchorOf, whyKey, PROBE_WEIGHT, revealsAnswer, choicesFor, stripRungLabel } from "./items.js";
+import { buildPracticeQueue, findItem, isomorphicFor, probeFor, evidenceProbeFor, promptFor, optionsSpoken, selectNext, anchorOf, whyKey, PROBE_WEIGHT, revealsAnswer, choicesFor, stripRungLabel } from "./items.js";
 import { registerNote } from "./register.js";
 import { askText } from "./say.js";
 import { getTopic, findTopic } from "../content/curriculum.js";
@@ -1973,7 +1973,8 @@ export function evidenceFrom(s, cls, kit, { leaked = false, discount = 1 } = {})
   const item = findItem(s, kit, s.activeItemId);
   if (!item || s.hintLevel >= 4) return [];
   const why = s.pendingWhy === item.id;
-  const probe = why ? "P2" : probeFor(item);
+  const asked = why ? "P2" : probeFor(item);
+  const probe = why ? "P2" : evidenceProbeFor(item);
   const kitFactor = (item.kitVerified ?? kit.verified) ? 1 : 0.5;
   let w = PROBE_WEIGHT[probe] * kitFactor * discount;
   // Young children often cannot verbalise what they do understand: a missed "why" is weak evidence.
@@ -1983,7 +1984,8 @@ export function evidenceFrom(s, cls, kit, { leaked = false, discount = 1 } = {})
   const hintsUsed = leaked || s.spoiled?.includes(item.id) ? 4 : item.fade ? Math.max(1, s.hintLevel) : s.hintLevel;
   const rows = [{ skillId: item.skillId, itemId: item.id, probe, outcome: cls.outcome, ...mis, hintsUsed, weight: round2(w) }];
   // A reason volunteered with an unaided correct answer is a why-probe (P2) the child ran on themself.
-  if (probe !== "P2" && cls.outcome === "correct" && hintsUsed === 0 && cls.reason) {
+  // (a why-kind item's answer IS its reason: a deep: false one must not come back as a volunteered why)
+  if (asked !== "P2" && cls.outcome === "correct" && hintsUsed === 0 && cls.reason) {
     rows.push({
       skillId: item.skillId, itemId: item.id, probe: "P2", outcome: cls.reason === "right" ? "correct" : "misconception",
       ...(cls.reasonMisconceptionId ? { misconceptionId: cls.reasonMisconceptionId } : {}), hintsUsed: 0, weight: round2(PROBE_WEIGHT.P2 * kitFactor * discount),

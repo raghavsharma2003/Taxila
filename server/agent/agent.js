@@ -16,7 +16,7 @@ import { sayDeltasOf } from "../latency/speech-stream.js";
 import { floorViolations } from "../director/safety.js";
 import { screenClaimProblem, stripScreenRefs, pointsAtScreen } from "../director/say.js";
 import { speakNotWrite } from "../brain/say.js";
-import { promptFor } from "../director/items.js";
+import { promptFor, plainEvidence } from "../director/items.js";
 import { comprehensionRead } from "../director/read.js";
 import { systemPrompt, stateMessage, offeredItems, TURN_SCHEMA } from "./prompt.js";
 import { screenTools, specOf } from "./tools.js";
@@ -393,6 +393,8 @@ export async function agentTurn({ state, kit, event, silent = false, verdict = n
  * deep right one; an early miss does not cap it. Anything right short of that is "partly". PURE.
  */
 export const DEEP_KINDS = new Set(["contrast", "near_transfer", "far_transfer", "error_spot", "predict", "why", "teachback", "translate_rep"]);
+/** A graded answer that is deep evidence: a deep kind, and not an item the deep-kind audit marked plain (deep: false). */
+const deepEntry = (x) => DEEP_KINDS.has(x.kind) && !x.plain;
 export function earnedRead(level, graded, { deepAvailable = true } = {}) {
   if (level !== "understood") return level;
   const right = graded.map((x, i) => ({ ...x, i })).filter((x) => x.g === "correct");
@@ -402,11 +404,11 @@ export function earnedRead(level, graded, { deepAvailable = true } = {}) {
   const lastMiss = graded.map((x) => x.g !== "correct").lastIndexOf(true);
   if (lastMiss >= 0) {
     const after = graded.slice(lastMiss + 1);
-    if (after.length < 3 || (deepAvailable && !after.some((x) => DEEP_KINDS.has(x.kind)))) return "partly";
+    if (after.length < 3 || (deepAvailable && !after.some(deepEntry))) return "partly";
   }
   // a skill whose kit has no deep item (about 1 in 10): two different items right and nothing missed after
   if (!deepAvailable) return new Set(right.map((x) => x.item)).size >= 2 && !graded.slice(right.at(-1).i + 1).some((x) => x.g !== "correct") ? "understood" : "partly";
-  const deep = right.filter((x) => DEEP_KINDS.has(x.kind));
+  const deep = right.filter(deepEntry);
   if (!deep.length) return "partly";
   const lastDeep = deep.at(-1).i;
   if (graded.slice(lastDeep + 1).some((x) => x.g !== "correct")) return "partly";
@@ -420,7 +422,7 @@ function withEvidenceRead(e) {
   const g = e?.graded ?? [];
   const level = evidenceRead(g, { bar: READ_BAR });
   if (!level) return e;
-  const untested = level === "partly" && g.some((x) => x.g === "correct") && !g.some((x) => DEEP_KINDS.has(x.kind));
+  const untested = level === "partly" && g.some((x) => x.g === "correct") && !g.some(deepEntry);
   const { depth: _d, ...rest } = e;
   return { ...rest, read: level, ...(untested ? { depth: "untested" } : {}) };
 }
@@ -439,7 +441,7 @@ export function applyAgentTurn(next, out, { kit, childText = "", cls = null, car
     const k = card.skillId;
     const g = cls.outcome === "correct" ? (cls.reasonMisconceptionId ? `partly(${cls.reasonMisconceptionId})` : "correct") : cls.outcome === "partial" ? "partly" : ["incorrect", "misconception"].includes(cls.outcome) ? (cls.misconceptionId ? `wrong(${cls.misconceptionId})` : "wrong") : null;
     if (g) learner[k] = { ...(learner[k] ?? {}), grades: [...(learner[k]?.grades ?? []), g].slice(-10),
-      graded: [...(learner[k]?.graded ?? []), { item: card.id, kind: card.kind, g }].slice(-10),
+      graded: [...(learner[k]?.graded ?? []), { item: card.id, kind: card.kind, g, ...(plainEvidence(card) ? { plain: true } : {}) }].slice(-10),
       ...(cls.misconceptionId ? { misconceptions: [...new Set([...(learner[k]?.misconceptions ?? []), cls.misconceptionId])] } : {}) };
     // the read follows the graded answers on EVERY graded turn, not only when the model names one (sim lab e46a281c decided
     // truth, 164 skill reads: the stored model-turn read agreed 44% / over 10%; the evidence read on every grade 53% / 9%)
@@ -447,14 +449,14 @@ export function applyAgentTurn(next, out, { kit, childText = "", cls = null, car
   }
   if (out.read) {
     const k = out.read.skill;
-    const deepAvailable = (kit.items ?? []).some((i) => i.skillId === k && DEEP_KINDS.has(i.kind) && i.kind !== "teachback");
+    const deepAvailable = (kit.items ?? []).some((i) => i.skillId === k && DEEP_KINDS.has(i.kind) && i.kind !== "teachback" && !plainEvidence(i));
     const graded = learner[k]?.graded ?? [];
     // graded answers decide the read; with none, the model's claim is held to the old evidence rule (never understood)
     const level = graded.length ? evidenceRead(graded, { bar: READ_BAR }) : earnedRead(out.read.level, graded, { deepAvailable });
     // honest at the end of a lesson (sim lab 71a6b11): "partly" from right easy answers with no deep question asked yet is
     // not the "partly" of a child who got the deep one wrong
     const g = learner[k]?.graded ?? [];
-    const untested = level === "partly" && g.some((x) => x.g === "correct") && !g.some((x) => DEEP_KINDS.has(x.kind));
+    const untested = level === "partly" && g.some((x) => x.g === "correct") && !g.some(deepEntry);
     const { depth: _d, ...rest } = learner[k] ?? {};
     learner[k] = { ...rest, read: level, evidence: out.read.evidence, ...(level !== out.read.level ? { claimed: out.read.level } : {}), ...(untested ? { depth: "untested" } : {}) };
   }
