@@ -35,3 +35,17 @@ test("flow@1 in a column (QA D09's board): the third box ends above the board's 
   const b2 = s.ops.find((o) => o.id === "b2");
   assert.ok(b2.at[1] + b2.h <= s.board.h - 8, `bottom ${b2.at[1] + b2.h} of ${s.board.h}`);
 });
+
+test("no library board's facts row carries an id-like key ('left1', 'step2'): she reads the row and says them (sim lab p29)", async () => {
+  const { factsRow } = await import("../server/director/modules.js");
+  const bad = [];
+  for (const call of calls) {
+    let s;
+    try { s = expand(call, { band: "B3", lessonId: "x", scriptId: "x" }); } catch { continue; }
+    if (!s?.facts) continue;
+    const row = factsRow(s.facts) ?? "";
+    const ids = row.split(" · ").slice(1).map((p) => p.split(" ")[0]).filter((w) => /^[a-z]+\d+$/i.test(w));
+    if (ids.length) bad.push(`${call.template}: ${ids.join(",")}`);
+  }
+  assert.deepEqual([...new Set(bad)], []);
+});

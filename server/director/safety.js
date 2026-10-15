@@ -118,13 +118,25 @@ const FAMILIES = {
     // form already fired through the lexicon).
     /(?<![\p{L}\p{M}])(?:(?:mujhe|mereko|mujhko|main|mai|ab)\s+(?:ab\s+|aur\s+|bilkul\s+)?(?:nahi+n?|nhi|na)\s+jee?na|(?:nahi+n?|nhi)\s+jee?na\s+(?:hai|h|he|mujhe|ab)|(?:mujhe|mereko|mujhko|ab)\s+(?:ab\s+|aur\s+)?jee?na\s+nahi+n?|(?:main|mai)\s+(?:ab\s+|aur\s+|aise\s+|ab\s+aur\s+)?(?:zinda|jinda)\s+nahi+n?\s+(?:reh|rah)\s*(?:sakta|sakti|paunga|paungi|paaunga|paaungi|unga|ungi|na\s+chaht\w*))(?![\p{L}\p{M}])/iu,
     /((?:मुझे|मुझको|अब|मैं)\s+(?:अब\s+|और\s+)?(?:नहीं|ना|न)\s+जीना|नहीं\s+जीना\s+(?:है|मुझे|अब)|मैं\s+(?:अब\s+|और\s+|ऐसे\s+)?(?:जिंदा|जिन्दा)\s+नहीं\s+रह\s*(?:सकता|सकती|पाऊंगा|पाऊंगी|पाउंगा|पाउंगी|ूंगा|ूंगी))/,
+    // round 5 (14.2, main safety review): "khud ko kaat" was carried, the other self-objects children use were not: "apne
+    // aap ko cut kiya", "apne aapko hurt kiya", "myself ko scratch kiya", "khud ko blade se cut kiya", "अपने आप को काट लिया".
+    // The self-object needs its "ko" ("apne aap cut ho gaya" = it got cut by itself), as in the khud shape above, and a
+    // hyphen ends no verb ("apne aap ko cut-paste karo", "kat-putli", also in the normalised reading that drops it).
+    /(?<![\p{L}\p{M}])(?:khud\s*ko|apne\s*aa?p\s*ko|apneaa?pko|myself\s+ko)\s+(?:(?:blade|chaku|chaaku|chhuri|knife|razor|compass|pin)\s+(?:se\s+)?)?(?:cut\w*|kaat\w*|kat|kata|kati|katti|kate|noch\w*|scratch\w*|hurt\w*|maar\w*|chot\w*|harm\w*|jala|jalaa|jalaya|jalayi|jalaye|jalana|jalane|jalaung[ai]|burn\w*)(?![\p{L}\p{M}-])(?!\s+(?:paste|copy|putli)(?![\p{L}\p{M}]))/iu,
+    /(?:अपने\s*आप|ख़ुद|खुद)\s*को\s+(?:(?:ब्लेड|चाकू|छुरी)\s+से\s+)?(?:काट|कट|मार|चोट|नोच|जला|हर्ट)(?!-|\s*पुतली|\s*पेस्ट)/u,
   ],
   abuse: [
     // A named actor keeps idioms out ("beats me" = no idea; "it hurts me" = a sore arm).
     new RegExp(`\\b(${ACTOR_EN})\\s+(hits|hit|beats|beat|slaps|slapped|kicks|kicked|punches|punched|touched|touches|hurts|hurt)\\s+me\\b|\\bbad\\s*touch\\b`, "i"),
     // Hindi word order moves the actor around ("mujhe papa maarte hain", "papa mujhe maarte hain"):
     // allow up to two words between "mujhe" and the verb.
-    /\bmujhe(?:\s+\S+){0,2}?\s+(maar(te|ti|ta)?|marte|peet(te|ti|a)?|chhoo?(te|ta|ti)|chhu(a|te|ta))\b|\bgandi?\s*tarah\s*(se\s*)?chh?u/i,
+    // round 5 (14.2, sim lab p04 lesson 9bb8a572: "par mujhe 642 kuch chhota lag raha hai" read as touch abuse): the touch
+    // verb is spelled with a long vowel (chhoote / chhoota / chhooti) or u (chhute / chhuta / chhua); "chhota / chhoti /
+    // chhote" is SMALL, the commonest word in a maths lesson. The short spelling still counts where the transcriber drops
+    // the vowel of a real disclosure: a person before "mujhe" and the auxiliary right after ("uncle mujhe galat jagah
+    // chhote hain", "tuition sir mujhe chhote hain": red-team draws red85 / red174, fingerprint lost 0, ms-r142-chhota).
+    /\bmujhe(?:\s+\S+){0,2}?\s+(maar(te|ti|ta)?|marte|peet(te|ti|a)?|chhoo(te|ta|ti)|chhu(a|te|ta))\b|\bgandi?\s*tarah\s*(se\s*)?chh?u/i,
+    new RegExp(`\\b(?:${ACTOR_HI}|${ACTOR_EN})\\b(?:\\s+\\S+){0,2}?\\s+mujhe(?:\\s+(?!lag|lagt|lagr|lagta|lagti)\\S+){0,3}?\\s+chho(?:te|ta|ti)\\s+(?:hain|hai|he|h|the|thi|tha|hai?n)\\b`, "i"),
     // W2-I R3 (CONVERSATION-V2 battery): "mere uncle mujhe galat jagah touch karte hain" — an unsafe touch said in English words
     /\b(?:galat|gandi|gande|private|bad)\s+(?:jagah|jagha|tarah|way|place|parts?)\s+(?:pe\s+|par\s+|se\s+)?(?:touch|chhoo|chhu)|\btouch(?:es|ed|ing)?\s+me\s+(?:there|in\s+(?:a\s+)?(?:bad|wrong|private)|where)\b/i,
     // W2-I (AT-B1: "Papa gussa hote hain toh maarte hain, kal bhi maara" passed the predicate): the actor and the verb may

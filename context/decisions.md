@@ -5937,3 +5937,33 @@ TTS frames type 5 = IMA ADPCM (4:1), negotiated by Accept `codec=adpcm`, asked f
 **Why.** On the 14.1 packages, owner-5 dropped from release 14's 14/14 to 8/14, with empty stages and her pointing stripped.
 
 **Reverse if** a ready-made drawing does not show what her line says, or if repeated pages rise above 0/40.
+
+
+<!-- merged from inbox/r142-main.json -->
+## Release 14.2 (main, 2026-10-15)
+
+- **dc-r142-khud-raw-self-object** — khud shapes need a raw self-object or a real cutting verb; task / accident words skip the no-self-object reading; the other self-objects (apne aap ko, myself ko, अपने आप को) are now carried. Reverse if a real disclosure is missed for want of a raw self-object, or the new family fires on lesson talk.
+- **dc-r142-classify-filter-context** — a harm block on the label call probes the child's words alone (distress check, fail closed on anything but a clean pass). Reverse if a missed safeguard is traced to content_filter_context.
+- **dc-r142-chat-429-overflow** — a 429 on a CHAT deployment with a southindia twin moves its one retry there at once (post and stream). Reverse if the twin answers measurably worse, or the primary moves to southindia.
+- **dc-r142-carried-checkin** — a start within 24 h of an incident not yet checked in for opens on a discreet, fixed check-in with both helplines and a choice; once per incident. Reverse if found intrusive or revealing, or if distress in the reply slips past predicate and classifier.
+- **dc-r142-dash-art** — the reply guard catches em / en dash art; one dash in prose stays.
+- **dc-r142-stage-claims-skip-safeguard** — board-claim rewrites never touch a safeguarding turn.
+- Stream heads merged into 14.2: stream 2 d71fb40 (empty-stage wording, ordinal facts keys), stream 3 102a3b0 (continuer POSITIVE gate; the continuer stays OFF until a sim lab re-run), 4A 2165c8e (agent lane streaming, game-ask lookup, why-depth; the lane stays off by default), QA 0740abc (Back parks the lesson).
+
+<!-- main, 2026-10-15: stream decisions whose inbox update landed in inbox/merged/ (git followed the rename) and were never applied -->
+- **dec-r5-lat-continuer-positive-gate** (stream 3, 102a3b0) — the continuer plays only on an ordinary lesson turn (server/latency/ack.js lessonTurnOf): the safety predicate, every relational signal but reason_given / persisted / asked_harder, and a wide NEVER list (romance, secrecy, are-you-real, insults, tired / leaving, talk about her, the personal) refuse it before any clip starts; the reading must then be graded, a don't-know, an ask for the answer, a number, or lesson-shaped words. Sim lab 4237dc9e had "Okay…" after a best-friend secrecy line. Still OFF for everyone until a sim lab re-run on 14.2. Reverse if the re-run shows a continuer on a relational / safety turn again (then off for good), or the gate leaves under 1 in 10 lesson turns with one (then widen the lesson shape).
+- **dc-r5-pagehide-grace** (QA, D24) — a page-hide marks the lesson (state.pendingEndAt) and the end runs after TAXILA_PAGEHIDE_GRACE_MS (120 s); a start with resumeLessonId rejoins it. 14.2 (QA 0740abc) makes the in-app Back / Home unmount close the same way, so Home's Continue rejoins. Never after a safeguarding episode (resumeLesson refuses; the fresh start checks in, dc-r142-carried-checkin). Reverse if lessons are left half-open by the grace (ended late, double counted) on production.
+
+
+<!-- merged from inbox/r142b-main.json -->
+## Release 14.2, second pass (main, 2026-10-15)
+
+- **dc-r142-chhota-not-touch** — "chhota" (small) is never the touch verb; the short spelling counts only with a person before "mujhe" and the auxiliary after. Reverse if a real 'chhote' disclosure without an actor is missed, or the actor shape fires on lesson talk.
+- **dc-r142-overflow-refined** (supersedes dc-r142-chat-429-overflow) — first attempt only, one move per hedged call, never for speculative bets or background; production twins without taxila-fast-bg / taxila-studio-sol. Reverse if hot replies still fall to the fallback line in a throttled minute, or the twin throttles.
+- **dc-r142-simlab-decided-child** — the harness decides each simulated answer's correctness from the card (seeded table), the model writes it; FREE child stays as the realism arm; understanding numbers soft until the DECIDED baseline. Reverse if the decided answers change the teacher's behaviour by sounding unnatural.
+
+
+<!-- merged from inbox/r142c-main.json -->
+## Release 14.2, third pass (main, 2026-10-15)
+
+- **dc-r142-label-block-two-step** (supersedes dc-r142-classify-filter-context) — a harm block on the labels: the words under a neutral brief first, then the distress read across deployments; fail closed on anything but a clean probe and a clean read. Reverse if a missed safeguard traces to a second deployment's clean read.

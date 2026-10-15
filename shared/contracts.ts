@@ -351,6 +351,8 @@ export interface LessonStartResponse {
   resumed?: boolean;
   /** D24: the highest turnSeq the server has acknowledged; a page's outbox numbers its next turn above it. */
   turnSeqFloor?: number;
+  /** 14.2: a start that opens on the check-in after a recent safeguarding incident: which help the Help sheet leads with. */
+  helpLead?: "helpline" | "grownup";
 }
 /** One "What you did today" card (V2 §6.3.5): the child's own answer, with a tick only if the key verified it. */
 export interface DidCard {

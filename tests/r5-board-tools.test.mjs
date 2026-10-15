@@ -88,3 +88,13 @@ test("picture.get: a real picture job, moderated before it reaches the child; 'c
   assert.equal(pictureGet(id, "aloo", { onEvent: () => {} }).job.etaMs, 0, "a picture already made is shown again at once");
   _resetPictures();
 });
+
+test("a write line too long for the board wraps at a word, never cut mid-word (4A, sim lab p18-c9 'testable ide')", async () => {
+  const { wrapWords } = await import("../server/studio/tools.js");
+  const sc = scriptForSpec({ kind: "write", lines: ["A hypothesis is a testable idea about the world", "Half = 1/2"] });
+  const texts = sc.ops.map((o) => o.text);
+  assert.deepEqual(texts, ["A hypothesis is a", "testable idea about the", "world", "Half = 1/2"]);
+  const words = "A hypothesis is a testable idea about the world Half = 1/2".split(" ");
+  assert.deepEqual(texts.join(" ").split(" "), words, "every word whole");
+  assert.deepEqual(wrapWords("Supercalifragilisticexpialidocious"), ["Supercalifragilisticexpi"], "only a word longer than a line is cut");
+});

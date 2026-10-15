@@ -314,7 +314,7 @@ export class LessonRuntime {
       if (s.resumed && s.turnSeqFloor) this.outbox.raiseFloor(s.lessonId, s.turnSeqFloor);
       // Ended or unmounted while starting: the server opened a lesson nobody will run.
       if (gen !== this.generation) return this.closeQuietly(lessonId);
-      this.store.set({ lessonId: s.lessonId, topic: s.topic, teacher: s.teacher });
+      this.store.set((st) => ({ lessonId: s.lessonId, topic: s.topic, teacher: s.teacher, ...(s.helpLead ? { helpLead: leadOf(st.helpLead, s.helpLead) } : {}) }));
       const link = this.createLink(mode, { lessonId: s.lessonId, voice: s.teacher.voice, levels: this.levels, api: this.api, ...(cascade ? { cascade } : {}) });
       this.link = link;
       this.unlisten = link.on((e) => this.onLinkEvent(e));
@@ -519,14 +519,19 @@ export class LessonRuntime {
     this.store.set({ phase: "ended", connection: "closed", pendingTurns: 0 });
   }
 
-  /** Component unmount: release the link and timers, and close a running lesson on the server. */
+  /**
+   * Component unmount: release the link and timers, and close a running lesson on the server. r5 QA pass 12: leaving
+   * in-app (Android Back, Home) ended the lesson at once while Home still offered "Continue", which then opened a NEW
+   * lesson. Unmount now closes like a page-hide (the beacon end, deferred by the server's grace), so Continue within
+   * the grace rejoins the same lesson; the End button still ends at once through end().
+   */
   dispose(): void {
     if (typeof window !== "undefined") window.removeEventListener("online", this.onOnline);
     const { lessonId, phase } = this.state;
     if (phase !== "live" && phase !== "starting") return this.teardown();
     const pending = this.chain;
     this.teardown();
-    if (phase === "live" && lessonId) void this.drained(pending).then(() => this.closeQuietly(lessonId));
+    if (phase === "live" && lessonId) void this.drained(pending).then(() => this.closeOnServer(lessonId, true).catch(() => {}));
     this.store.set({ phase: "ended", connection: "closed", pendingTurns: 0 });
   }
 

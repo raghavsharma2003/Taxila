@@ -16,6 +16,14 @@ const LINES = {
   "hinglish-homework": ["hi-IN-AnanyaNeural", "hi-IN", "मेरा होमवर्क है, पांच सौ ग्राम और आधा किलो में क्या अंतर है"],
   "hi-thousand": ["hi-IN-AnanyaNeural", "hi-IN", "एक किलो में हज़ार ग्राम होते हैं"],
   "en-yes": ["en-US-AnaNeural", "en-US", "Yes, I understood. One kilogram is one thousand grams."],
+  // pass 12 (14.1): board asks and spoken Hindi numbers
+  "hi-pic-dikhao": ["hi-IN-AnanyaNeural", "hi-IN", "पिक्चर दिखाओ"],
+  "hi-wb-samjhao": ["hi-IN-AnanyaNeural", "hi-IN", "व्हाइटबोर्ड पे बना के समझाओ"],
+  "hi-example": ["hi-IN-AnanyaNeural", "hi-IN", "एक एग्ज़ाम्पल दो"],
+  "hi-ghadi": ["hi-IN-AnanyaNeural", "hi-IN", "घड़ी ड्रॉ करो"],
+  "hi-1200": ["hi-IN-AnanyaNeural", "hi-IN", "बारह सौ"],
+  "hi-8614": ["hi-IN-AnanyaNeural", "hi-IN", "आठ हजार छह सौ चौदह"],
+  "hi-working": ["hi-IN-AnanyaNeural", "hi-IN", "पहले एक किलो मतलब हज़ार ग्राम, फिर दो सौ ग्राम और जोड़े, तो बारह सौ ग्राम"],
 };
 const TAIL = Number(process.env.TAIL || 8);
 for (const [name, [voice, lang, text]] of Object.entries(LINES)) {

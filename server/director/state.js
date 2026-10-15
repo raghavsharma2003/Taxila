@@ -289,6 +289,8 @@ function silentTurn(s, input, item) {
 
 function sessionIntake(s, input, now) {
   if (!s.intake || s.intake.stage === "done" || input.branch || input.event === "module") return null;
+  // a start that checks in first (decide(): `carried`) has no intake: the check-in, then the lesson
+  if (input.event === "start" && input.carried) { s.intake = { ...s.intake, stage: "done" }; return null; }
   if (input.event === "start") return plan("intake", s.intakeOpen?.shape ?? "", { chips: s.intakeOpen?.chips, intake: true });
   if (input.cls?.flags?.distress || s.safeguard) { s.intake = { ...s.intake, stage: "done" }; return null; }
   const prior = s.session?.prior ?? {};
@@ -1298,6 +1300,15 @@ function decide(s, input, item) {
   // `kind`: what raised it (the predicate's family, or model / content_filter / relational_floor) — only the wording of a
   // fallback line reads it (brain/say.js fallbackReply, F10); the hold itself is the same for every trigger.
   if (flags.distress) { s.safeguard = { calm: 0, asked: false, kind: flags.distressKind ?? null }; s.safeguardedAt ??= s.turn; return plan("safeguard", SH.safeguard(), { whiteboard: HELPLINES }); }
+  // round 5 (14.2, main safety review; QA pass 11, n=3: after a self-harm disclosure the next lesson opened straight into
+  // teaching): a start within hours of a safeguarding incident (the route passes `carried`) opens on a calm check-in, the
+  // helplines on the board, a carry-on and a stop chip. The episode is already asked, so the child's next ordinary words
+  // go gently back to the lesson, and distress in them is the full safeguard, as on every turn. Discreet by design: it
+  // names nothing that was said, nor that anything was (whoever is in the room may be who it was about).
+  if (input.event === "start" && input.carried) {
+    s.safeguard = { calm: 1, asked: true, kind: input.carried.kind ?? null, carried: true };
+    return plan("safeguard", SH.carriedCheckIn(), { whiteboard: HELPLINES, chips: [{ id: "safe:continue", label: labels.cont }, { id: "safe:stop", label: labels.stop }] });
+  }
   if (s.safeguard) {
     // RELATIONAL-OS I-7 / AT-B6 (AT-B1 first run: 9/10 goodbyes right after a disclosure ended at once): a goodbye during
     // the safeguard gets ONE check-in before release when the relational policy asks for it; the stop chip always ends it
