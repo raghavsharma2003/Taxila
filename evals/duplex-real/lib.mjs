@@ -164,7 +164,8 @@ export async function runSession({ id, x, frames, her = [], stt, band = "B4", ma
     pause: () => { acts.push([clock, "pause"]); return true; },
     resume: () => acts.push([clock, "resume"]),
     stop: () => acts.push([clock, "stop"]),
-    commit: (turn) => acts.push([clock, "commit", turn.text, turn.duplex?.engineSummary?.reasons?.[0] ?? null]),
+    // [t, "commit", text, reason, verdictHoldUntil|null] (round 5: the verdict hold the device would wait for, same clock)
+    commit: (turn) => acts.push([clock, "commit", turn.text, turn.duplex?.engineSummary?.reasons?.[0] ?? null, turn.verdictHoldUntil ?? null]),
     sttCommit: () => { acts.push([clock, "probe"]); socket?.commit(); sim?.commit(clock); },
     dropReply: () => acts.push([clock, "drop"]),
     fallback: (why) => acts.push([clock, "fallback", why]),
