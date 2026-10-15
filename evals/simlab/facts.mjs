@@ -67,7 +67,7 @@ const by = (arm) => {
   }
   // agent lane (round 5): which lane each lesson really ran on, Director takeovers, cost, and the agent's own latency per turn
   // (the @agent mark = ms from the turn's start to the agent's move; the teacher deployment's model calls)
-  const ag = { lessons: 0, fallbacks: 0, usd: 0, agentMs: [], classifiedMs: [], teacherCallMs: [], timeouts: 0, boardPendingTurns: 0, read: { n: 0, agree: 0, over: 0, under: 0, skills: 0 }, claimed: { n: 0, agree: 0, over: 0, heldBack: 0 }, matrix: {} };
+  const ag = { lessons: 0, fallbacks: 0, usd: 0, agentMs: [], classifiedMs: [], teacherCallMs: [], timeouts: 0, boardPendingTurns: 0, calib: {}, read: { n: 0, agree: 0, over: 0, under: 0, skills: 0 }, claimed: { n: 0, agree: 0, over: 0, heldBack: 0 }, matrix: {} };
   for (const r of rs) {
     if (r.lane2?.teacher !== "agent") continue;
     ag.lessons++;
@@ -87,6 +87,19 @@ const by = (arm) => {
       ag.matrix[key] = (ag.matrix[key] ?? 0) + 1;
     }
     ag.read.skills += Object.keys(r.state ?? {}).length;
+    // child calibration: the server's grade on each item by the card's state and the item's kind, on skills whose state
+    // never moved in the lesson (so the truth is constant). A partly child should rarely pass a deep item.
+    const p = personas.get(r.persona);
+    const moved = new Set((r.learning ?? []).map((l) => l.skillId));
+    const DEEP = new Set(["why", "predict", "error_spot"]);
+    for (const [skill, v] of Object.entries(r.lane2.agent?.learner ?? {})) {
+      const st = p?.skills.find((s) => s.id === skill)?.state;
+      if (!st || moved.has(skill)) continue;
+      for (const g of v.graded ?? []) {
+        const c = (ag.calib[`${st}/${DEEP.has(g.kind) ? "deep" : "plain"}`] ??= { n: 0, correct: 0 });
+        c.n++; if (g.g === "correct") c.correct++;
+      }
+    }
     for (const t of r.turns) {
       // the teacher's call is the chat row AFTER the @classified mark (before it: the distress read, classify and note calls,
       // one of them on grok, so a deployment-name match mixed them in)
@@ -103,7 +116,7 @@ const by = (arm) => {
   const p50 = (a) => { const s = [...a].sort((x, y) => x - y); return s.length ? s[Math.floor(s.length / 2)] : null; };
   const p90 = (a) => { const s = [...a].sort((x, y) => x - y); return s.length ? s[Math.floor(s.length * 0.9)] : null; };
   if (f.ack.asked) { const r = [...f.ack.readyMs].sort((a, b) => a - b); f.ack.readyP50 = r[Math.floor(r.length / 2)] ?? null; } delete f.ack.readyMs;
-  const agent = ag.lessons ? { lessons: ag.lessons, ownRead: ag.read, readTruth: ag.matrix, claimed: ag.claimed, fallbacks: ag.fallbacks, usdPerLesson: +(ag.usd / ag.lessons).toFixed(4), agentMarkP50: p50(ag.agentMs), agentMarkP90: p90(ag.agentMs), classifiedP50: p50(ag.classifiedMs), classifiedP90: p90(ag.classifiedMs), teacherCallP50: p50(ag.teacherCallMs), teacherCallP90: p90(ag.teacherCallMs), nonOkCalls: ag.timeouts, boardPendingTurns: ag.boardPendingTurns } : null;
+  const agent = ag.lessons ? { lessons: ag.lessons, ownRead: ag.read, readTruth: ag.matrix, childCalibration: ag.calib, claimed: ag.claimed, fallbacks: ag.fallbacks, usdPerLesson: +(ag.usd / ag.lessons).toFixed(4), agentMarkP50: p50(ag.agentMs), agentMarkP90: p90(ag.agentMs), classifiedP50: p50(ag.classifiedMs), classifiedP90: p90(ag.classifiedMs), teacherCallP50: p50(ag.teacherCallMs), teacherCallP90: p90(ag.teacherCallMs), nonOkCalls: ag.timeouts, boardPendingTurns: ag.boardPendingTurns } : null;
   return { ...f, agent, sameCardMaxRun: undefined, startMsP50: p50(f.startMs), turnMsP50: p50(f.turnMs), turnMsP90: p90(f.turnMs), startMs: undefined, turnMs: undefined };
 };
 const arms = [...new Set(recs.map((r) => `${r.arm}/${r.lane}`))];

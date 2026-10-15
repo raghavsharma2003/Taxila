@@ -59,7 +59,7 @@ function spread(all, k) {
 
 const compact = (rec) => ({ ...rec, turns: rec.turns.map((t) => ({ ...t, ui: t.ui ? { ask: t.ui.ask, chips: t.ui.chips, tray: t.ui.tray, answerForm: t.ui.answerForm, verdict: t.ui.verdict, phase: t.ui.phase, studioSlot: t.ui.studioSlot ? { state: t.ui.studioSlot.state, kind: t.ui.studioSlot.artifact?.kind } : undefined } : undefined })) });
 
-let meta = { runId, head, date: new Date().toISOString(), arms, lanes, n: personas.length, turns, models: MODELS, note: arg("note", "") };
+let meta = { runId, head, date: new Date().toISOString(), arms, lanes, n: personas.length, turns, models: MODELS, child: process.env.SIMLAB_CHILD || "v1", note: arg("note", "") };
 // a re-run of some lessons into an existing run keeps that run's meta and logs the re-run
 if (existsSync(join(OUT, "meta.json"))) {
   const old = JSON.parse(readFileSync(join(OUT, "meta.json"), "utf8"));
