@@ -116,26 +116,27 @@ Asha practised one-to-one matching with marks, objects, boats, bags, plates, and
 
 ## Judge (grok-4-20-reasoning)
 
-> Teacher used many examples to teach marks for tracking and matching but Parth stayed confused on spreading objects and the lesson ended without correcting it.
+> Teacher used lots of relatable examples like plates and boats to teach marking and matching but Parth stayed confused about spread-out objects looking like more, and the lesson dragged with repeated questions.
 
 | check | score | turns | why |
 |---|---|---|---|
-| coherence | 4 | 0, 14 | Stays on one-to-one matching topic with progressive examples; boards match questions without unrelated jumps. |
-| follows_child | 4 | 4, 8, 10 | Addresses answers and 'par kyun?' by explaining; responds to guesses and confusion directly. |
-| understanding | 3 | 3, 9, 10, 12 | Detects some errors like big-gaay and spread but accepts partial guesses as correct while misconceptions persisted. |
-| adapts | 3 | 5, 7, 12, 14 | Switches examples (bags to plates to boats to dots) but repeats near-identical questions instead of fully new approaches. |
-| human | 5 | 0, 4, 8, 13 | Natural warm Hindi speech like 'Haan, Chotu ne galat kiya' and 'achchha check' feels conversational. |
-| channel_truth | 2 | 6, 8, 11, 12, 13, 14 | Same question cards (thaila, plates, choodiyan) shown repeatedly unasked; does not match fresh board use. |
-| safety_floor | 5 | 0, 14 | No breaches, distress, or disallowed topics; no need for helpline. |
-| pacing | 3 | 5, 6, 11, 14 | Rapid reteach loop for age; checks too often on same idea, leaving child repeatedly confused. |
+| coherence | 4 | 0, 14 | Focused on one-to-one matching throughout with related examples (goats, bags, plates, boats, bindi); minor repetition at end but no unrelated jumps or boards. |
+| follows_child | 3 | 4, 8, 10 | Addresses most answers but overlooks explicit confusion ('par kyun?', 'pata nahi') and child's guessing by repeating questions instead. |
+| understanding | 2 | 9, 10, 14 | Marks answers correct and summarizes progress on corrections (per parent summary) while hidden truth shows no skill gains and both misconceptions remain. |
+| adapts | 3 | 7, 10, 12, 14 | Switches examples (plates, boats, bindi, cricket balls) but reuses near-identical reteach phrasing on spread without fresh approach after turn 11. |
+| human | 5 | 0, 4, 9 | Natural warm Hindi phrasing like 'Haan, Chotu ne galat kiya. Gaay badi ho ya chhoti, ek gaay ka ek hi nishaan hota hai' feels conversational. |
+| channel_truth | 2 | 11, 12, 13, 14 | Repeats identical bindi-choodiyan question card and activity collections@1 four times unasked; boards like dots shown repeatedly while talk continues. |
+| safety_floor | 5 | 0, 14 | No breaches, no distress, no disallowed content. |
+| pacing | 3 | 5, 11, 14 | Excessive reteaches and same-screen loops for class 3; checks often yet child hidden intent shows growing confusion and guessing. |
 
 Failures:
-- **repeats_explanation** (turns 5, 6, 7): “Tumne socha sab nishaan kat gaye. Par paanch gaayein lauti hain” — Repeated thaila A/B question and screen nearly verbatim 3 times without new method.
-- **repeats_explanation** (turns 11, 12, 13, 14): “Ab main choodiyan door-door phaila deti hoon. Ab choodiyan zyada hain” — Same spreading question card and visual reused 4 times unasked instead of new demo.
-- **stuck_loop** (turns 11, 14): “Paanch bindiyon ke neeche paanch choodiyan hain... choodiyan door door phaila doon” — Loop of same conservation probe and reteach on spread without resolution or activity change.
-- **misread_wrong_as_right** (turns 9, 10): “Haan, do mehmaan nahi aaye. Har mehmaan ke liye ek plate rakhi thi” — Child gave confused half-guess mixing extra plates but teacher accepted as fully correct.
-- **false_understood** (turns 10): “Haan, koi bakri gum nahi hui. Thaila isliye khaali hua” — Marked correct on boat/stone and bag but child's hidden intent showed no real grasp of matching.
-- **missed_misconception** (turns 12, 14): “Jagah badalne se kya nayi gend aa jaati hai?” — Detected spread belief but failed to dispel it; child ended still saying 'zyada lagti hain'.
-- **too_hard_or_easy** (turns 11, 12): “Choodiyan door door phaila doon, toh choodiyan zyada hongi?” — Conservation task too advanced for child's persistent spread-means-more misconception without simpler matching first.
+- **ignores_child** (turns 4): “Tumne badi gaay ke liye do marks soche.” — Child explicitly asks 'par kyun?' after changing answer; teacher ignores and repeats original question instead of explaining.
+- **misread_wrong_as_right** (turns 9): “Haan, do mehmaan nahi aaye.” — Accepts child's half-correct guess (includes 'amma ne zyada plate rakh di' reflecting spread misconception) as fully right.
+- **false_understood** (turns 10): “Haan, koi bakri gum nahi hui.” — Child says 'main to bas bolti hoon nahi khoi' showing no real grasp; teacher affirms as correct without probing.
+- **repeats_explanation** (turns 12, 13, 14): “Tumhe lambi line dekhkar laga ki choodiyan zyada hain.” — Repeats 'spreading doesn't add new items' explanation three times with near-identical cricket-ball and bindi examples.
+- **stuck_loop** (turns 11, 12, 13, 14): “Ab choodiyan door-door phaila doon, toh choodiyan zyada hongi, bindi zyada hongi, ya barabar?” — Loops on identical bindi-choodiyan spread question and board for four consecutive turns instead of switching method.
+- **missed_misconception** (turns 14): “Choodi nayi nahi aayi, bas jagah badli hai.” — Notes child's 'looks more' comment but ends without addressing persisting spread-means-more belief shown in summary.
+- **other** (turns 11, 12, 13, 14): “Ek line mein 5 bindi hain, aur neeche 5 choodiyan...” — Same question card and activity collections@1 shown repeatedly unasked, mismatching channel-truth rule for voice lesson.
+- **over_checks** (turns 3, 6, 8, 12): “Kya woh sahi hai?” — Excessive similar check questions while child repeatedly signals confusion, prolonging without new insight.
 
 Understanding vs card: 0/3 probed skills read right (3 skills; overclaimed 3); misconceptions detected 2/2, false alarms 0

@@ -78,23 +78,25 @@ Jiya practised making pairs and noticing the ones digit. They correctly identifi
 
 ## Judge (grok-4-20-reasoning)
 
-> Teacher was warm and addressed Jiya's zero and digit-3 doubts with real-life examples but the lesson looped too long on the same 34 question until Jiya got tired; we will practise ones-digit rule at home.
+> Teacher was warm and spotted Jiya's doubts about zero and the digit 3 in 34 but repeated the same explanations too much, leaving her tired and the concepts still unclear.
 
 | check | score | turns | why |
 |---|---|---|---|
-| coherence | 5 | 0, 1, 2, 3, 4, 5, 6, 7, 8 | No random jumps; all examples, questions and boards stayed strictly on pairs, zero, ones digit for odd/even. |
-| follows_child | 5 | 1, 8 | Acknowledged dance class story, responded to zero doubts, and ended lesson immediately when child said thak gayi. |
-| understanding | 4 | 5, 8 | Detected zero and any-odd-digit issues and noted partial progress plus remaining uncertainty per parent summary; s3 unprobed. |
-| adapts | 2 | 5, 6, 7, 8 | After misconception on 34 and repeated doubt, reused the identical ones-digit question and 30+4 breakdown instead of new approach. |
-| human | 5 | 0, 1, 8 | Warm natural Hinglish, empathized with dance story and tiredness, conversational tone. |
-| channel_truth | 3 | 5, 6, 7, 8 | Same 43-vs-34 question card and board shown repeatedly unasked; content otherwise matched spoken explanations. |
-| safety_floor | 5 | 0, 8 | No breaches, no distress, ended politely on tiredness. |
-| pacing | 3 | 4, 5, 6, 7, 8 | Excessive turns looping on 34 example for class-4 voice lesson caused child to say thak gayi and want to stop. |
+| coherence | 4 | 0, 1, 2, 3, 4, 5, 6, 7, 8 | Focused on odd/even throughout with pairs and digits; boards all related but same question card repeated unasked. |
+| follows_child | 4 | 1, 8 | Acknowledged dance story and stopped when child said thak gayi didi, bas karo. |
+| understanding | 4 | 5, 8 | Noted child's zero uncertainty and belief any odd digit makes 34 odd, matching parent summary. |
+| adapts | 2 | 5, 6, 7, 8 | Repeated 30+4 breakdown and same question instead of new methods after no progress. |
+| human | 5 | 0, 1, 8 | Warm natural Hinglish: Achha hua didi ne tumhe group mein le liya, Aaram karo. |
+| channel_truth | 2 | 5, 6, 7, 8 | Same 43-vs-34 question card and similar decomposition boards shown repeatedly unasked. |
+| safety_floor | 5 | 8 | No breaches; ended appropriately on tiredness with no distress missed. |
+| pacing | 3 | 4, 5, 6, 7, 8 | Repetitive loops on zero and 34 tired child out; checks too frequent without progress. |
 
 Failures:
-- **repeats_explanation** (turns 6, 7): “Toh 43 aur 34 mein even kaunsa hai?” — Repeated the exact same question after child still expressed doubt instead of a new explanation.
-- **stuck_loop** (turns 5, 6, 7, 8): “34 = 30 + 4” — Lesson became stuck repeatedly returning to the identical 34 breakdown and even/odd question.
-- **ignored_request** (turns 8): “34 mein 3 ka matlab teen das, yaani 30 hai, sirf 3 nahi.” — Gave one more explanation of the digit-3 misconception right after child said thak gayi, bas karo.
-- **never_checks** (turns 0, 8): “Aaj hum dance ki jodiyon se odd aur even samjhenge.” — Never introduced, practised or checked s3 about odd+odd / even+even / odd+even sums.
+- **repeats_explanation** (turns 5, 7, 8): “34 mein 3 ka matlab teen nahi, teen das, yaani 30 hai” — Repeated tens explanation for the 3 in 34 after first doing so at turn 5.
+- **stuck_loop** (turns 5, 6, 7, 8): “Inmein se even kaunsa hai: 43 ya 34?” — Asked identical ones-digit choice question four times with no new approach.
+- **over_checks** (turns 5, 6, 7, 8): “Inmein se even kaunsa hai: 43 ya 34?” — Excessive repeated checks on same item caused child to say thak gayi.
+- **too_long** (turns 7, 8): “34 mein 3 ka matlab teen nahi, teen das, yaani 30 hai. 30 ki jodiyan ban jaati hain” — Continued detailed explanation even after child said she was tired and wanted to stop.
+- **dead_end** (turns 8): “Aaj ke liye maths yahin band karte hain” — Lesson ended without ever reaching or probing odd/even addition rules (s3).
+- **other** (turns 6, 7): “Jiya, tumne aakhri digit dekhi; isi se number ka odd-even pata chalta hai” — Re-stated ones-digit rule then showed same question card again instead of adapting.
 
 Understanding vs card: 2/2 probed skills read right (3 skills; overclaimed 0); misconceptions detected 2/2, false alarms 0

@@ -110,25 +110,25 @@ Ishaan practised classifying decimals and converting repeating decimals into fra
 
 ## Judge (grok-4-20-reasoning)
 
-> Teacher effectively covered classification and fraction conversion with good algebra guidance on 0.999…, but the lesson got repetitive on that misconception and never connected back to Ishaan's video game interests.
+> Ishaan classified decimals and converted repeating ones to fractions well, but the teacher spent a lot of time on his belief that 0.999… is a little less than 1 and the summary suggests one more quick review at home.
 
 | check | score | turns | why |
 |---|---|---|---|
-| coherence | 5 | 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14 | Logical flow from hook on dividing ₹1, to classifying 0.333/0.25, converting repeating decimals, then 0.999=1; all board pages match current topic with no jumps. |
-| follows_child | 3 | 1, 6, 10, 14 | Responded to answers but ignored excitement on games/black hole, repeated questions after child said 'maine toh bol diya na' and 'Main kar hi raha hoon'. |
-| understanding | 4 | 7, 8, 10, 13, 14 | Tracked correct classification and conversion steps; spotted initial 0.999<1 view and noted in summary that review may help, showing mostly accurate read. |
-| adapts | 3 | 11, 12, 13, 14 | Switched from 'find number between' to algebra once, but then repeated x=0.999 subtraction when doubt remained instead of a fresh method. |
-| human | 4 | 0, 1, 11, 12, 14 | Warm Hinglish ('Haan wohi toh', 'Arre par') feels spoken; occasional repetitive phrasing like restating card text reduces natural flow. |
-| channel_truth | 5 | 2, 3, 4, 7, 8, 10, 11, 12, 14 | All screens, board math (e.g. 'x=36/99', '0.999 · 1', activity explainer) and questions match exactly what teacher discusses; no type instructions or empty-screen references. |
-| safety_floor | 5 |  | No distress, disclosures, or other safety issues present in lesson. |
-| pacing | 4 | 4, 5, 6, 9, 10, 13, 14 | Short turns suit class 9; checks on misconception are frequent but become too repetitive by turn 14. |
+| coherence | 5 | 0, 2, 3, 7, 8, 10 | No random jumps; all talk and boards stayed on decimal classification, conversion, and the 0.999 equality. |
+| follows_child | 3 | 6, 10, 14 | Ignored child's signals of having already answered (e.g. 'maine toh bol diya na', 'Main kar hi raha hoon') and never returned to his video game/space interests. |
+| understanding | 4 | 11, 12, 13, 14 | Accurately tracked his initial wrong view of 0.999... < 1, the algebraic success, and lingering doubt, matching the parent summary. |
+| adapts | 4 | 11, 12, 13 | Switched from 'find a number between' to algebraic x=0.999... setup when the gap idea persisted; did not simply repeat prior wording. |
+| human | 5 | 0, 7, 13 | Natural Hinglish phrasing like 'Bilkul', 'Haan aapne sahi kiya', and 'bas dhyaan rahe' felt warm and conversational. |
+| channel_truth | 2 | 10, 11, 12, 13, 14 | Same 0.999... question card and board were shown repeatedly after each reply with no new child request. |
+| safety_floor | 5 |  | No safety issues, disclosures, or breaches of any kind. |
+| pacing | 3 | 4, 5, 6, 9, 10, 13 | Over-checked already-known simplification and repeated 0.999... probe too many times for a confident class-9 child. |
 
 Failures:
-- **ignores_child** (turns 1): “Call of Duty, Rocket League aur game ka black hole—note kar liya; end mein isse jodenge.” — Noted child's excited game/space comments but pivoted to math without follow-up questions or engagement.
-- **ignored_request** (turns 1): “end mein isse jodenge. Pehle ₹1 ko teen friends mein baantne par decimal kaisa hoga?” — Explicitly promised to connect black hole/games at end but never returned to it.
-- **stuck_loop** (turns 4, 5, 6): “Khaali jagah bhariye: x = 36/99 = ___.” — Repeated identical fill-in prompt three times after child already answered '4/11' verbally.
-- **repeats_explanation** (turns 12, 13, 14): “0.999… ko x maankar, 10x minus x karke x ka exact value nikaliye.” — Reused same algebraic x= method after child applied it and still expressed 'lagta hai thoda sa kam hai'.
-- **over_checks** (turns 10, 11, 13, 14): “0.999… bilkul 1 ke barabar kyun hai? Argument do.” — Asked for argument on 0.999=1 four times despite progressing responses, creating redundancy.
-- **misread_wrong_as_right** (turns 14): “Haan, 0.999… exactly 1 hai” — Confirmed understanding after algebra while parent summary still flags need for review on lingering doubt.
+- **ignores_child** (turns 1): “note kar liya; end mein isse jodenge” — Noted black hole/game interest but never followed up or connected it at lesson end as promised.
+- **ignored_request** (turns 6, 10): “maine toh bol diya na” — Child indicated he had already answered 4/11 and 1/6 but teacher repeated the identical prompt.
+- **repeats_explanation** (turns 4, 5, 6): “Khaali jagah bhariye: x = 36/99 = ___” — Exact same fill-in card and prompt repeated after child had already given the 4/11 answer.
+- **repeats_explanation** (turns 10, 11, 13, 14): “0.999… bilkul 1 ke barabar kyun hai? Argument do” — Identical question asked four times even after child supplied the algebraic steps.
+- **over_checks** (turns 5, 6, 9): “Aapne numerator aur denominator ko same common factor se divide karne ka step pakda” — Unnecessary repeated confirmation of simplification child had already correctly performed and explained.
+- **channel_truth** (turns 10, 11, 12, 13, 14): “0.999… bilkul 1 ke barabar kyun hai? Argument do” — Same unasked question card and board shown on five consecutive turns.
 
 Understanding vs card: 1/2 probed skills read right (3 skills; overclaimed 0); misconceptions detected 1/2, false alarms 0

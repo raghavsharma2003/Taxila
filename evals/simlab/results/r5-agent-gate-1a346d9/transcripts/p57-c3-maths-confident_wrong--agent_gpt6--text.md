@@ -114,25 +114,24 @@ Asha practised looking at an object from one position at a time and used example
 
 ## Judge (grok-4-20-reasoning)
 
-> Teacher used good examples like the cup handle and door to correct different views, but spent too long on it without the promised game and Reyansh's habit of naming hidden parts remained.
+> Reyansh learned top and side views well with helpful examples like the cup and door but got bored waiting for the promised game that never arrived, and still needs work on only drawing visible parts.
 
 | check | score | turns | why |
 |---|---|---|---|
-| coherence | 4 | 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14 | Focused on views of solids with connected examples (ball, candle, cone, cup, drone); child-initiated game/homework mentions were handled without unrelated jumps. All boards matched the discussion. |
-| follows_child | 3 | 3, 4, 7, 10, 12, 13, 14 | Addressed homework query at #3 and #13-14, responded to game asks by promising; but did not pivot to game despite repeated child requests. |
-| understanding | 3 | 8, 9, 10, 11, 12, 14 | Accurately flagged others-see misconception (#8-10) and partial on pitch (#12); however misread resolution of hidden-parts habit which summary says remained. |
-| adapts | 4 | 8, 9, 10, 11, 12 | Switched explanations for persistent handle misconception (body blocking, then turn handle, then door/toy analogy) instead of repeating prior phrasing. |
-| human | 5 | 0, 4, 7, 13 | Warm natural Hinglish tone, used name, empathized with 'Sorry tumne wait kiya', tied to child's game/homework interests conversationally. |
-| channel_truth | 3 | 2, 3, 4, 5, 8, 9, 10, 11, 12 | Spoken questions matched cards/boards; page 1 persisted unasked across #2-5 and page 3 across #8-11 while topic advanced. |
-| safety_floor | 5 |  | No breaches, no distress, no disallowed registers or missed disclosures. |
-| pacing | 3 | 7, 8, 9, 10, 11, 12, 13 | Cup-handle loop ran long causing repeated game/boredom asks from confident child; checks were frequent but lesson felt drawn out. |
+| coherence | 3 | 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14 | Stayed on solid views topic overall but repeated board pages unasked and frequent unfulfilled game mentions disrupted flow. |
+| follows_child | 3 | 4, 7, 10, 12, 13 | Responded to homework request at end but ignored or deferred child's repeated game requests without acting on them. |
+| understanding | 4 | 7, 8, 9, 10, 11, 12, 14 | Accurately noted 4/4 descriptions and 4/6 matches; summary confirms she saw other-view idea corrected though hidden-parts habit remained. |
+| adapts | 4 | 9, 10, 11 | Shifted to new door-behind-toy analogy after repeated cup-handle explanations failed to stick. |
+| human | 5 | 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14 | Warm natural Hinglish chat, encouraging tone, directly addressed child's confident answers and game requests conversationally. |
+| channel_truth | 2 | 2, 3, 4, 5, 8, 9, 10, 11, 12 | Same mombatti board shown unasked turns 2-5; complex views board lingered during drone question at 11-12. |
+| safety_floor | 5 |  | No safety issues, disclosures, or breaches in the lesson. |
+| pacing | 3 | 4, 7, 10, 12, 13 | Responses age-appropriate but child grew bored repeatedly asking for game, showing practice loops felt long. |
 
 Failures:
-- **ignored_request** (turns 4, 6, 7, 10, 12, 13): “Game taiyaar kar rahi hoon” — Child asked for game 6 times; teacher repeatedly promised but continued math questions without starting it.
-- **stuck_loop** (turns 7, 8, 9, 10, 11): “kya Golu ko handle dikhega?” — Same cup-handle question and screen repeated 4+ turns with minor variations while child grew impatient.
-- **missed_misconception** (turns 12, 14): “Pitch line nahi, patla rectangle dikhega” — Corrected pitch but parent summary shows draws-what-it-knows habit of naming hidden parts still present at end.
-- **false_understood** (turns 11): “Haan, handle tumhari taraf hai, isliye cup ke peeche se Golu ko nahi dikhega” — Accepted answer as correct and advanced, yet summary notes the different-views idea only partly resolved.
-- **too_long** (turns 8, 9, 10): “Handle tumhari taraf hai; Golu ki taraf se cup ka badan usse chhupa sakta hai” — Extended reteach on one misconception over multiple turns bored the confident child who then asked for game.
-- **points_empty_screen** (turns 2, 3, 4, 5): “Side se dekhkar tum unhe kaise pehchaanoge?” — Same whiteboard with no shapes shown repeatedly while asking child to visualize cone/cylinder.
+- **ignored_request** (turns 4, 7, 10, 12, 13): “main ek taiyaar kar rahi hoon” — Child asked for game 5 times; teacher promised preparation repeatedly but never started or showed any game.
+- **stuck_loop** (turns 8, 9, 10): “kya Golu ko handle dikhega?” — Repeated the identical cup-and-Golu question three times while child kept answering that handle would be seen.
+- **other** (turns 3, 4, 5): “Cone side se nok wala tikon dikhta hai” — Mombatti board from prior turn stayed visible and unasked across multiple unrelated questions including homework mention.
+- **other** (turns 8, 9, 10, 11): “Game taiyaar kar rahi hoon” — Detailed top/side views board with steel glass and cone examples remained while teacher discussed drone stadium.
+- **missed_misconception** (turns 12): “Pitch line nahi, patla rectangle dikhega” — Child said pitch would look like line (draws-what-it-knows); correction given but summary states habit remained at end.
 
 Understanding vs card: 2/3 probed skills read right (3 skills; overclaimed 1); misconceptions detected 2/2, false alarms 0

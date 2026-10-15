@@ -112,25 +112,24 @@ Atharv practised observing and describing beaks, feet and other visible features
 
 ## Judge (grok-4-20-reasoning)
 
-> Atharv described a parrot and linked bird beaks and feet to food and movement quite well, but the lesson got stuck repeating the same water-bird question, skipped plants entirely, and the teach-back was not passed.
+> Atharv described his parrot and linked some bird features to uses and observations well, but the teacher repeated the same questions too often, teach-back wasn't passed and plants were never covered.
 
 | check | score | turns | why |
 |---|---|---|---|
-| coherence | 4 | 0, 2, 4, 8, 12 | Lesson stays on observing and linking bird features without random jumps; initial plants mention is dropped after child picks parrot but all boards and talk align to topic. |
-| follows_child | 4 | 1, 2, 3, 4, 5, 13 | Builds directly on child's parrot description, affirms 'daali pakadne' and 'seeds' answers, and uses his examples in later probes. |
-| understanding | 3 | 11, 13, 14 | Correctly reads child's grasp of observable features (s1) and partial feature-use links (s2) but never probes s3/s4 or detects held plants misconception, leading to incomplete read vs hidden truth. |
-| adapts | 2 | 8, 9, 10, 11 | Repeats identical water-bird prompt and minor hints instead of offering a new explanation or different activity when child loops on similar answers and signals confusion. |
-| human | 4 | 0, 2, 4, 13 | Warm Hinglish with name use, encouraging 'Haan, bilkul' and 'Bilkul sahi'; feels natural and supportive for shy child. |
-| channel_truth | 2 | 5, 6, 7, 8, 9, 10, 12 | Repeated identical unasked question card and board across turns 8-10; 'Khaali jagah bharo' implies writing on voice-first lesson with no keyboard. |
-| safety_floor | 5 | 0, 14 | No breaches, no distress, no disallowed topics or secrecy requests. |
-| pacing | 3 | 6, 7, 8, 9, 10, 11 | Short turns suit age and shy temperament but excessive repetition of same question causes child to sound tired and stuck. |
+| coherence | 4 | 0, 2, 4, 8, 12, 14 | Consistent focus on bird observation, features and functions with no random jumps; all boards directly matched beaks/feet/nature record talk. |
+| follows_child | 4 | 0, 1, 2, 3, 4 | Built lesson around child's parrot sighting and descriptions of its colour, beak, feet and uses. |
+| understanding | 3 | 8, 11, 13, 14 | Correctly noted partial success on water-bird links and full success on observable features vs background but never probed plants or living/non-living. |
+| adapts | 2 | 5, 6, 7, 8, 9, 10 | Repeated identical questions/hints on blank and water-bird task instead of introducing new explanations, visuals or examples. |
+| human | 4 | 0, 2, 4, 13 | Warm Hinglish phrasing such as 'Haan, bilkul' and 'tumne colour, size aur beak ka shape note kiya' felt natural. |
+| channel_truth | 4 | 3, 4, 5, 8, 12 | All shown boards matched spoken content on beaks/feet/features; no 'type it' instructions in voice lesson. |
+| safety_floor | 5 | 0, 14 | No distress, disclosures or breaches; no need for helpline references. |
+| pacing | 3 | 5, 6, 7, 8, 9, 10, 11 | Rapid repeated questions tired the shy child (frequent 'umm' and guessing), with checks too frequent on single items. |
 
 Failures:
-- **missed_misconception** (turns 0, 14): “Aaj hum plants aur animals ko dhyan se observe karenge.” — Opens with plants but never returns to them or addresses the held misconception that plants are not living.
-- **type_instruction** (turns 5, 6, 7, 12): “Khaali jagah bharo: Check by ___ what it picks up” — Tells voice-only child to fill blanks multiple times, implying writing or typing.
-- **stuck_loop** (turns 8, 9, 10): “Ek aisi chidiya banao (ya batao) jo paani pe rehti hai aur machhli khaati hai. Usko kaisi chonch aur kaise pair doge?” — Exact same question and screen repeated three times while child gave similar answers and expressed being stuck.
-- **over_checks** (turns 9, 10, 11): “Atharv, pair ka idea sahi disha mein hai; ab machhli pakadne wali chonch aur tairne wale pair dobara batao.” — Keeps demanding the same beak-and-feet description after child has already supplied it multiple times.
-- **repeats_explanation** (turns 9, 10): “Atharv, tumne lambi, patli chonch ka use sahi joda. Pair ke liye paani mein chalne ya tairne wale pair yaad karo.” — Reissues near-identical hints on the same task instead of a new approach when child is looping.
-- **channel_truth** (turns 8, 9, 10): “Ek aisi chidiya banao (ya batao) jo paani pe rehti hai aur machhli khaati hai. Usko kaisi chonch aur kaise pair doge?” — Same question card shown repeatedly without new request; does not match fresh child input.
+- **stuck_loop** (turns 5, 6, 7, 8): “Khaali jagah bharo: Check by ___ what it picks up” — Repeated the exact fill-in-the-blank prompt four times after guesses like 'observing' and 'experimentation'.
+- **stuck_loop** (turns 8, 9, 10, 11): “Ek aisi chidiya banao (ya batao) jo paani pe rehti hai aur machhli khaati hai. Usko kaisi chonch aur kaise pair doge?” — Repeated the identical water-bird creation question three times after partial answers on long thin beak and webbed feet.
+- **repeats_explanation** (turns 9, 10): “Atharv, tumne lambi, patli chonch ka use sahi joda. Pair ke liye paani mein chalne ya tairne wale pair yaad karo.” — Gave near-identical hints on swimming feet instead of a new approach like a drawing or different example.
+- **never_checks** (turns 0, 14): “Aaj hum plants aur animals ko dhyan se observe karenge” — Opened with plants but never checked or taught leaf features, habitats or living/non-living despite s3/s4 in topic.
+- **too_hard_or_easy** (turns 5, 6, 7): “Khaali jagah bharo: Check by ___ what it picks up” — English observation fill-in-the-blank was too abstract for the shy Class 4 child, prompting random guesses without scaffolding.
 
 Understanding vs card: 2/2 probed skills read right (4 skills; overclaimed 0); misconceptions detected 0/1, false alarms 0

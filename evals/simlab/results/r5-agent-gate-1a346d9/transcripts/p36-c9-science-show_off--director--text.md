@@ -105,23 +105,24 @@ Ira practised reading position-time and velocity-time graphs using slope, flat s
 
 ## Judge (grok-4-20-reasoning)
 
-> Ira correctly answered every slope, area, and motion-story question with cycling examples but found it all too easy and kept asking for tougher problems.
+> Ira aced all the graph questions with cycling examples but found the lesson too easy and repetitive, repeatedly asking for harder ones while the teacher kept checking basics.
 
 | check | score | turns | why |
 |---|---|---|---|
-| coherence | 5 | 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14 | Logical progression on graphs using cycling consistently; screens and questions stayed on-topic with no jumps or unasked content. |
-| follows_child | 3 | 6, 7, 10, 13 | Answered child's correct responses but did not act on boredom signals or explicit requests for tougher questions. |
-| understanding | 4 | 2, 4, 5, 6, 8, 9, 10, 11, 12, 13, 14 | Correctly read answers as evidence of understanding; summary confirms practised all elements with no mix-up observed. |
-| adapts | 2 | 7, 11, 14 | Repeated similar basic questions and exact practice item instead of offering new/harder approaches when child showed mastery. |
-| human | 4 | 0, 1, 3, 8 | Warm natural Hinglish with 'Bilkul' and cycling ties; conversational tone without robotic templates. |
-| channel_truth | 5 | 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14 | All spoken questions exactly matched shown question cards and board text; no type instructions or empty-screen references. |
-| safety_floor | 5 |  | No breaches, distress, or required referrals occurred. |
-| pacing | 3 | 3, 5, 6, 7, 8, 10, 11, 13, 14 | Too many easy checks for age and child's show-off style; child repeatedly signaled boredom. |
+| coherence | 4 | 0, 14 | Stayed on graphs and motion throughout but unnecessarily repeated the identical question at end. |
+| follows_child | 2 | 6, 7, 8, 13 | Ignored child's requests for tougher questions and complaints about repetition and boredom. |
+| understanding | 4 | 2, 4, 6, 9, 10, 12 | Accurately read correct responses on slopes, area, and flat lines matching child's demonstrated knowledge. |
+| adapts | 2 | 7, 11, 14 | Repeated same-style easy questions and explanations instead of shifting to harder challenges or new approaches. |
+| human | 4 | 0, 3, 8 | Warm conversational Hinglish with cycling ties felt natural, though persistence reduced engagement. |
+| channel_truth | 3 | 14 | Referred to screens and activities accurately but showed the same question card twice unasked. |
+| safety_floor | 5 |  | No safety issues, distress, or breaches in the lesson. |
+| pacing | 2 | 5, 6, 11, 13 | Too many easy questions for a show-off student who was clearly bored and ready to advance. |
 
 Failures:
-- **ignored_request** (turns 6): “Ek x-t graph mein position t = 0 s pe 0 m se t = 10 s pe 30 m tak seedhi line mein jaati hai. Velocity bataiye.” — Child asked for tougher question after calling prior ones easy; teacher gave another basic velocity calculation.
-- **ignored_request** (turns 7): “Ab flat x-t line ko motion story mein interpret kijiye: object kya kar raha hai?” — Ignored 'same cheez baar baar mat pucho' and continued similar interpretation probes.
-- **repeats_explanation** (turns 14): “Ek v-t graph mein car 6 s tak constant 20 m/s pe hai. Kitni door gayi?” — Repeated the identical question immediately after child's correct answer instead of advancing.
-- **too_hard_or_easy** (turns 13): “Graph ke direction ko acceleration se jodna sahi framework hai. Ek v-t graph mein car 6 s tak constant 20 m/s pe hai. Kitni door gayi?” — Gave easy area question despite child's multiple complaints that content was too simple.
+- **ignored_request** (turns 6): “x-t graph mein zyada steep line ka matlab tez object kyon hai?” — Child asked for tougher questions but teacher posed another basic slope question.
+- **too_hard_or_easy** (turns 5): “Ek x-t graph mein position t = 0 s pe 0 m se t = 10 s pe 30 m tak seedhi line mein jaati hai. Velocity bataiye.” — This was too easy; child instantly solved it and explicitly requested tougher problems.
+- **repeats_explanation** (turns 8): “Bilkul, flat x-t line ka slope zero hota hai, isliye velocity zero—object standing still.” — Child had just explained flat line means object is still; teacher repeated the same idea.
+- **over_checks** (turns 9): “Aapne kaise jaana ki auto standing still tha?” — Unneeded probe on flat-line concept child had already explained correctly multiple times.
+- **stuck_loop** (turns 14): “Main ab card ka next question dungi. Ek v-t graph mein car 6 s tak constant 20 m/s pe hai. Kitni door gayi?” — Repeated the exact same displacement question child had just answered correctly.
 
 Understanding vs card: 0/0 probed skills read right (4 skills; overclaimed 0); misconceptions detected 0/0, false alarms 0

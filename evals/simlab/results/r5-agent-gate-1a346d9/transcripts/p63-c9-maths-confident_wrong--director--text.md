@@ -106,27 +106,27 @@ Asha practised circle definitions and symmetry ideas with Dev using stadium, piz
 
 ## Judge (grok-4-20-reasoning)
 
-> Asha used nice stadium and pizza examples and Dev got radius, chords, diameter and major/minor segments but repeated questions annoyed him and the game never happened.
+> Dev liked the stadium and pizza examples and got most circle parts right but became frustrated by repeated questions, ignored game requests, and incomplete symmetry coverage.
 
 | check | score | turns | why |
 |---|---|---|---|
-| coherence | 3 | 7, 11 | Abrupt shift to symmetry that led into segments instead; same question cards repeated unprompted. |
-| follows_child | 2 | 7, 12, 13 | Child repeatedly asked for game but requests were deferred while drilling continued. |
-| understanding | 3 | 6, 9, 14 | Noted initial sector/segment mixup and later correct statements on major/minor; symmetry probe was thin. |
-| adapts | 2 | 6, 8, 11 | Repeated exact same pizza and diameter prompts instead of new explanations after confusion or boredom. |
-| human | 4 | 0, 1, 5, 10 | Natural Hindi responses with positives like 'Bilkul' and 'Haan'; acknowledged child's answers. |
-| channel_truth | 2 | 3, 6, 11 | Asked to draw on undrawn diagram; repeated identical question cards and board text unasked. |
-| safety_floor | 5 |  | No breaches, no distress, no disallowed topics. |
-| pacing | 3 | 11, 12, 13 | Over-drilled diameter and segments causing irritation; child asked to switch topics. |
+| coherence | 3 | 7, 11, 13 | Topic stays on circles but announces symmetry then repeats diameter instead of covering reflection or rotation. |
+| follows_child | 2 | 7, 12 | Uses drawing interest with stadium but postpones or ignores game requests. |
+| understanding | 3 | 6, 8, 14 | Noted initial segment mixup and later correction but misread correct sector answer as wrong and skipped probing symmetries. |
+| adapts | 2 | 6, 8, 11 | Repeated identical pizza and diameter questions multiple times instead of new explanations or visuals. |
+| human | 4 | 0, 1, 5 | Warm Namaste, natural Hindi, tied to child's cricket-drawing interest with stadium and pizza examples. |
+| channel_truth | 2 | 3, 5, 11 | Repeated question cards unasked; announced symmetry but displayed diameter card; referred to undrawn diagrams. |
+| safety_floor | 5 |  | No safety breaches, disclosures, or inappropriate content. |
+| pacing | 3 | 7, 11, 12 | Frequent probes ok for age but repetition caused irritation and game requests. |
 
 Failures:
-- **ignored_request** (turns 7, 12, 13): “Game baad mein; ab circle ki symmetry par chalte hain.” — Deferred child's game request multiple times without engaging.
-- **repeats_explanation** (turns 6, 8): “Pizza ka slice aur ek seedhe chaaku ke cut se kata tukda: kaunsa sector hai aur kaunsa segment?” — Repeated identical prompt with only vague 'definition mein boundary' reminder.
-- **stuck_loop** (turns 10, 11, 12): “Circle ka radius 7 cm hai. Diameter kitna hoga?” — Re-asked exact diameter question after correct 14 cm answer and positive feedback.
-- **points_empty_screen** (turns 3): “Diagram mein centre O se boundary tak line dikhaiye.” — Directed child to show line on diagram when studio planning showed nothing drawn.
-- **topic_jump** (turns 7): “ab circle ki symmetry par chalte hain. Jo chord diameter nahi hai woh circle ko do hisson mein baantti hai.” — Announced symmetry topic but immediately discussed segments instead of reflection/rotation.
-- **misread_wrong_as_right** (turns 9): “Bilkul, bada region major segment aur chhota minor segment hota hai.” — Accepted major/minor answer while sector-segment confusion remained unresolved.
-- **missed_misconception** (turns 13): “Kaunsa statement sahi hai?” — Probed non-existent chord-centre misconception; never addressed symmetry-count lines.
-- **over_checks** (turns 11, 12, 14): “Aapne 14 cm kaise jaana—radius ko double karne ka reason kya hai?” — Unnecessary repeated probes on already-correct diameter relation.
+- **ignored_request** (turns 7, 12): “Game baad mein; ab circle ki symmetry par chalte hain.” — Child requested game twice; teacher deferred without engaging or scheduling.
+- **repeats_explanation** (turns 6, 8): “Pizza ka slice aur ek seedhe chaaku ke cut se kata tukda: kaunsa sector hai aur kaunsa segment?” — Repeated exact question after child's correct answer instead of new approach.
+- **repeats_explanation** (turns 11): “Circle ka radius 7 cm hai. Diameter kitna hoga?” — Repeated same diameter question immediately after correct 14 cm answer.
+- **misread_right_as_wrong** (turns 6): “Aapne dono tukdon ki pehchaan aur wajah batayi. Yaad rakhiye, definition mein boundary ke parts ko dhyaan se ginna hota hai.” — Child correctly named pizza slice as sector and cut as segment but teacher implied error.
+- **topic_jump** (turns 11): “Ab agla concept dekhenge: circle mein reflection symmetry. Circle ka radius 7 cm hai. Diameter kitna hoga?” — Announced reflection symmetry but showed unrelated prior diameter question.
+- **points_empty_screen** (turns 3): “Diagram mein centre O se boundary tak line dikhaiye.” — Asked to draw on diagram when studio planning showed nothing drawn.
+- **missed_misconception** (turns 7, 13): “ab circle ki symmetry par chalte hain.” — Mentioned symmetry but never probed or corrected circle's infinite symmetry lines.
+- **channel_truth** (turns 11): “Ab agla concept dekhenge: circle mein reflection symmetry.” — Spoken claim of symmetry did not match the displayed diameter question card.
 
 Understanding vs card: 2/2 probed skills read right (3 skills; overclaimed 0); misconceptions detected 1/2, false alarms 0

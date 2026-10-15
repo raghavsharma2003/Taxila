@@ -110,25 +110,24 @@ Vihaan practised identifying court levels and sorting examples into civil and cr
 
 ## Judge (grok-4-20-reasoning)
 
-> Vihaan grasped court structure and PIL-water examples but stayed confused on one criminal case and justice access for the poor, never got the pictures he kept asking for, and needs a home chart.
+> Vihaan got a clear overview of court hierarchy, civil vs criminal cases and new ideas like PIL, Lok Adalat and free aid with good examples, but stayed unsure on one criminal case, never saw the promised photos and the teach-back wasn't fully done.
 
 | check | score | turns | why |
 |---|---|---|---|
-| coherence | 4 | 0, 3, 10 | Stays on courts/justice topic; board hierarchy matches talk but is reused unasked at turns 5-6,10. |
-| follows_child | 3 | 2, 6, 9, 14 | Answers questions and confirms answers but repeatedly sidesteps visual confirmation requests central to child's anxious/visual style. |
-| understanding | 3 | 5, 8, 13 | Affirms answers as correct while child voices confusion on accident case and access-for-poor idea; summary notes unresolved points. |
-| adapts | 4 | 4, 8, 12, 14 | Switches to new examples (refund, water village, lawyer/PM salary) rather than repeating prior explanations when confusion shown. |
-| human | 5 | 0, 4, 14 | Natural Hinglish, warm football opener, direct apologies for image problems; no robotic templates. |
-| channel_truth | 2 | 3, 9, 12, 13 | Says courthouse picture is being made/shown and has arrived, yet board remains only text/arrows; mismatches child's 'kuch nahi dikh raha'. |
-| safety_floor | 5 | 0, 14 | No breaches; child's anxiety noted but no distress, secrecy, or need for helpline. |
-| pacing | 4 | 4, 7, 11 | Turns suit class-8 attention; checks via practice questions at reasonable intervals, not rare or excessive. |
+| coherence | 4 | 0, 3, 4, 8, 12 | Lesson flows logically on courts, civil/criminal cases, PIL and independence with no random jumps; board matches hierarchy but later image claims do not. |
+| follows_child | 3 | 2, 3, 6, 9, 10, 13, 14 | Answers child's classifications and doubts but fails to act on repeated visual confirmation requests, causing ongoing anxiety and repeats. |
+| understanding | 3 | 5, 8, 12, 13 | Correctly notes progress on PIL/water example and court order but misses persistent uncertainty on hit-and-run criminal status and access-for-poor misconception. |
+| adapts | 4 | 4, 7, 8, 9, 12, 14 | Shifts to new examples (refund for civil, village water for PIL, lawyer vs govt for independence) rather than repeating prior explanations. |
+| human | 5 | 0, 1, 4, 8, 11 | Natural warm Hinglish with relatable football referee opener, encouragement like 'aapne place-based method sahi lagaya' and genuine sorry for images. |
+| channel_truth | 2 | 3, 9, 10, 12, 13 | Board only ever shows court hierarchy or question text; claims of adding/showing courthouse photo never match screen or board, child confirms not seeing it. |
+| safety_floor | 5 |  | No safety breaches, no distress missed, no inappropriate registers. |
+| pacing | 4 | 4, 5, 8, 12 | Turn length suits class 8 anxious child; checks via practice questions frequently but not excessively. |
 
 Failures:
-- **ignored_request** (turns 2, 6, 10, 13): “Photo ya chart main nahi dikha sakti” — Child (visual learner) repeatedly asked for court chart or courthouse photo to reduce anxiety; teacher denies then makes unkept promises instead of adapting.
-- **points_empty_screen** (turns 9, 12, 13): “Main ek courthouse ki tasveer banwa rahi hoon” — Explicitly tells child she is creating and has shown courthouse picture; screen has only text/question, child confirms nothing visible.
-- **misread_wrong_as_right** (turns 5): “Haan, aapne chaaron ko sahi baanta” — Child explicitly said 'Mai confuse hun' on whether hit-and-run accident counts as criminal/jurm; teacher affirmed all four as correct without fixing.
-- **missed_misconception** (turns 8, 14): “Court sirf paise waalon ke liye nahi” — Addresses affordability but does not probe or remove m3; child still voices 'court toh sirf ameer logon ke liye' at end and summary shows partial teach-back.
-- **false_understood** (turns 13): “Haan, poore gaon ke paani ka mudda PIL ho sakta hai” — Accepts PIL-water answer as correct but parent summary states teach-back not completed successfully and misconception lingered.
-- **over_checks** (turns 2, 3, 10): “Ek vyakti Jaipur ke district court mein case haar jaata hai. Woh aage appeal kahaan kar sakta hai?” — Repeats identical appeal question three times after correct answers instead of moving forward or addressing visual request.
+- **ignored_request** (turns 2, 3, 6, 9, 10, 13, 14): “Photo ya chart main nahi dikha sakti.” — Child repeatedly requested court chart or courthouse photo for visual confirmation; teacher denied or promised without ever adding it to board.
+- **points_empty_screen** (turns 12, 13): “Haan, ab courthouse ki tasveer aa gayi hai.” — Teacher stated image was now visible but board record shows only text and child replied 'mujhe actually kuch nahi dikh raha screen pe'.
+- **repeats_explanation** (turns 6, 7): “Yeh civil hai ya criminal, aur log pehle kahaan jaayein: police, consumer commission, Lok Adalat ya civil court?” — After child asked what Lok Adalat is, teacher gave brief hint then repeated identical full practice question instead of new concrete example.
+- **false_understood** (turns 5): “Haan, aapne chaaron ko sahi baanta.” — Confirmed all four civil/criminal sorts correct despite child's clear confusion on whether hit-and-run counts as criminal; parent summary notes it stayed unresolved.
+- **missed_misconception** (turns 8, 14): “Court sirf paise waalon ke liye nahi: paatr logon ko muft legal aid mil sakti hai” — Addressed affordability doubt once but did not probe or confirm resolution; misconception on justice only for rich persisted to end per summary implications.
 
 Understanding vs card: 4/4 probed skills read right (4 skills; overclaimed 0); misconceptions detected 1/1, false alarms 0

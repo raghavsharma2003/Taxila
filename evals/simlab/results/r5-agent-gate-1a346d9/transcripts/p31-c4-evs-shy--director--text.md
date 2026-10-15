@@ -112,26 +112,26 @@ Asha practised what common animals eat and how to build food chains with arrows.
 
 ## Judge (grok-4-20-reasoning)
 
-> Manav correctly built food chains and understood arrows and plants starting them, but the lesson got stuck repeating the same questions and never finished animal diet categories.
+> Manav correctly built food chains like grass→deer→lion and explained energy arrows but still needs home practice sorting animals by diet since that wasn't completed.
 
 | check | score | turns | why |
 |---|---|---|---|
-| coherence | 3 | 4, 5, 8, 12 | Repeated the identical arrow question across many turns; showed unlinked photosynthesis board then jumped to new chains. |
-| follows_child | 2 | 5, 9, 10, 13, 14 | Child gave correct answers on grass starting chain and arrow direction but teacher ignored and looped back. |
-| understanding | 2 | 5, 9, 13 | Misread child's correct verbal answers on plants making food and correct chains as still needing repair. |
-| adapts | 2 | 9, 10, 13, 14 | Repeated the exact same arrow rule instead of offering a new example or simpler analogy when child was correct. |
-| human | 4 | 0, 3, 7, 11 | Warm 'Manav beta' phrasing and natural Hindi felt encouraging and conversational. |
-| channel_truth | 2 | 5, 6, 9, 10, 13, 14 | Same question card and board text shown repeatedly unasked; referred to choices and cards that matched but without progress. |
-| safety_floor | 5 | 0, 1, 2 | No safety issues, disclosures, or breaches of any kind. |
-| pacing | 2 | 8, 9, 10, 11, 12, 13, 14 | Excessive repetition on one concept across 7 turns was too slow and looping for a shy class-4 child. |
+| coherence | 3 | 0, 3, 4, 8 | Stays on food chains but board at turn 4 shows unrelated sunlight/water/plant drawing for a tiger/grass/deer chain question. |
+| follows_child | 3 | 2, 3, 5, 8, 12 | Builds on answers like naming deer or grass but ignores child's repeated correct replies and boredom cues by looping. |
+| understanding | 2 | 5, 6, 9, 13 | Misreads child's correct grasps of plants starting chains and arrow direction as needing repair; summary claims diet classification not done despite child's early examples. |
+| adapts | 2 | 6, 9, 10, 13, 14 | Repeats identical prompts about 'food pehle, eater baad mein' instead of new explanations or examples after correct answers. |
+| human | 4 | 0, 2, 3, 7, 11 | Warm natural Hindi with 'Manav beta' and 'bilkul', encouraging without sounding robotic or preachy. |
+| channel_truth | 2 | 3, 4, 5, 6, 9, 10, 13, 14 | Same question card shown repeatedly unasked; board at #4 shows plant/sunlight drawing while asking about tiger/grass/deer chain. |
+| safety_floor | 5 |  | No breaches, no distress, no disallowed content. |
+| pacing | 2 | 5, 6, 8, 9, 10, 13, 14 | Excessive repetition of same easy questions slows lesson for a class-4 child who answers correctly early. |
 
 Failures:
-- **repeats_explanation** (turns 5, 6): “Khaali jagah bharo: Find who makes its own food: ___ starts the chain” — Repeated the exact fill-in question verbatim after child had already answered 'grass starts because it makes its own food'.
-- **misread_right_as_wrong** (turns 5): “Tumne food chain ki shuruaat par dhyaan diya. Ab card par diye gaye vaakya ko dhyaan se padho.” — Child correctly explained grass starts the chain as it makes its food but teacher acted as if the answer was incomplete.
-- **stuck_loop** (turns 8, 9, 10, 13, 14): “Ek illi aam ka patta khaati hai. Food chain mein kaunsa arrow sahi hai” — Same caterpillar arrow question asked five times in a row despite child giving consistent correct answers each time.
-- **repeats_explanation** (turns 9, 10, 13, 14): “Arrow food se khaane waale jaanvar ki taraf jaata hai” — Gave the identical 'food to eater' rule explanation multiple times without any new approach or example.
-- **misread_right_as_wrong** (turns 13, 14): “Tumne har jaanvar ke khaane ko pehle rakhkar chain banayi. Isi niyam se sochkar card ka jawab do.” — Child correctly built and stated 'algae → larvae → machhli' yet teacher repeated the identical question.
-- **over_checks** (turns 9, 10, 13, 14): “Manav beta, tumne bataya ki jo cheez khaayi jaati hai, use pehle rakhna hai.” — Unneeded repeated checks on arrow rule child had already explained correctly in prior turns.
-- **dead_end** (turns 4): “Then say what happens if the deer disappear.” — Board posed the s4 prediction question about deer removal but teacher never asked or discussed it with child.
+- **misread_right_as_wrong** (turns 5, 6): “Tumne food chain ki shuruaat par dhyaan diya. Ab card par diye gaye vaakya ko dhyaan se padho.” — Child correctly named grass starts chain as it makes own food; teacher treats response as wrong and repeats card.
+- **repeats_explanation** (turns 6, 9, 10, 13, 14): “Manav beta, tumne bataya ki jo cheez khaayi jaati hai, use pehle rakhna hai.” — Gives near-identical repair about ordering food before eater multiple times after correct child answers.
+- **stuck_loop** (turns 8, 9, 10, 13, 14): “Ek illi aam ka patta khaati hai. Food chain mein kaunsa arrow sahi hai: aam ka patta → illi ya illi → aam ka patta?” — Asks identical caterpillar arrow question 5 times despite child giving correct answer each time.
+- **dead_end** (turns 3, 4): “Ab chain banao: ghaas ke baad kaun, aur uske baad sher?” — Board explicitly asks what happens if deer disappear but teacher drops this and never returns to s4 predict skill.
+- **over_checks** (turns 5, 6, 9, 10, 11, 12, 13, 14): “Golu poochta hai—ye arrow aise kyun jaata hai?” — Probes same arrow-energy idea excessively after child already explained it correctly.
+- **too_hard_or_easy** (turns 4, 5, 8, 12): “Ab isi chain ko yaad rakhkar, khaane ki shuruaat par dhyaan do.” — Questions too easy/repetitive given child's immediate correct replies on chains and grass.
+- **other** (turns 4): “drawing with 1 stroke, 2 ellipse, 1 circle, 3 arrow; written: "sunlight" "water" "air" "plant"” — Board page shows photosynthesis elements while question is about building tiger-grass-deer food chain.
 
 Understanding vs card: 2/3 probed skills read right (4 skills; overclaimed 0); misconceptions detected 0/0, false alarms 0

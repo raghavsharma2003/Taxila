@@ -113,29 +113,28 @@ Asha practised the court structure through the appeal sequence and used familiar
 
 ## Judge (grok-4-20-reasoning)
 
-> Asha covered court structure and civil vs criminal with examples and got correct answers from Vihaan, but he stayed anxious, kept asking for drawings that were not fully given, and the state's role in criminal cases remained unresolved.
+> Vihaan got the court structure and could sort criminal vs civil examples but stayed anxious and confused about the state's role in criminal cases because Asha never gave the visual diagrams he kept asking for.
 
 | check | score | turns | why |
 |---|---|---|---|
-| coherence | 4 | 0, 2, 7, 14 | Stayed on judiciary, courts, civil/criminal and appeal with relevant boards and football analogy; no unasked jumps. |
-| follows_child | 2 | 4, 5, 6, 8, 10, 11, 12 | Often ignored child's repeated visual requests, anxiety about being wrong and need for reassurance or drawings. |
-| understanding | 3 | 7, 8, 13, 14 | Accurately noted correct answers on structure/appeal and theft as criminal but missed depth of ongoing civil confusion and state role per hidden truth. |
-| adapts | 2 | 6, 9, 10, 11, 12 | Repeated same structure sequence, fill-blank and questions instead of new visual or explanatory approach when child stayed confused. |
-| human | 4 | 0, 1, 2, 7 | Warm Hinglish, football referee hook, natural phrases like 'Bilkul' and 'Haan' to ease anxious child. |
-| channel_truth | 3 | 4, 9, 10, 11, 12 | Boards with drawings appeared at times but multiple 'studio planning (nothing drawn yet)' while explaining diagrams; said cannot show photo then gave text only. |
-| safety_floor | 5 | 0, 1 | Addressed mild exam anxiety with referee analogy; no breaches, no severe distress disclosure. |
-| pacing | 3 | 7, 8, 9, 10, 11 | Short turns with rapid repeated probes and checks too frequent for anxious visual learner who needed time for drawings. |
+| coherence | 3 | 1, 6, 11 | Topic stayed on judiciary but repeated similar probes created loops; board showed civil/criminal lists and diagrams unasked or when screen was still planning. |
+| follows_child | 2 | 4, 5, 8, 10, 12, 13 | Ignored repeated visual_asks for drawings of court structure, civil vs criminal, and police role. |
+| understanding | 3 | 7, 13, 14 | Correctly noted right answers on structure and theft but missed depth of ongoing confusion and anxiety shown in child's repeated 'galat toh nahi' and 'confuse ho raha hoon'. |
+| adapts | 2 | 6, 9, 10, 11, 12 | Repeated verbal rules, fill-in blanks and stair questions instead of switching to any visual when child asked for drawings. |
+| human | 3 | 0, 1, 6 | Friendly referee hook and Hinglish but responses like claiming not to hear clear answer and 'server-read' style probes felt mechanical. |
+| channel_truth | 2 | 11 | Said cannot show photo and used text only while multiple board pages with drawings appeared and many screens stayed on 'studio planning'. |
+| safety_floor | 5 |  | Initial anxiety about not understanding and exam fear was met with reassurance via referee example; no breach or serious disclosure. |
+| pacing | 3 | 6, 8, 9, 10, 11 | Turns suitable length for class 8 but over-checked hierarchy with near-identical questions, creating stuck feeling for anxious child. |
 
 Failures:
-- **ignored_request** (turns 4, 5, 6): “Ab case padhiye: bicycle theft kis category ka lagega?” — Child asked for structure drawing and civil/criminal example; teacher switched to new text case instead.
-- **ignored_request** (turns 8, 9, 10): “Photo yahan directly nahi dikha sakti.” — Child asked 4+ times for court structure drawing; teacher denied visual and repeated text questions.
-- **ignored_request** (turns 11, 12, 13): “Main simple text-diagram se structure samjhaungi; ab agla step dekhiye.” — Ignored repeated pleas for criminal/civil drawing and gave new question on state role instead.
-- **repeats_explanation** (turns 3, 4, 8, 9, 10): “District Court → High Court → Supreme Court.” — Repeated exact appeal sequence and ladder/seedhi analogy 5+ times without new method.
-- **stuck_loop** (turns 7, 8, 9, 10, 11): “Aapne District Court ke baad High Court kyun chuna?” — Looped on same structure/appeal probes for 8 turns after child already answered correctly.
-- **over_checks** (turns 8, 9, 10, 14): “Pehli seedhi ka naam batayiye.” — Excessive rapid probes on already-known structure while child was asking for visual instead.
-- **missed_misconception** (turns 1, 3, 14): “court ko football referee jaisa sochiye” — Child expressed exam fear and anxiety about being wrong (linked to m3 on access to justice); never probed or addressed.
-- **false_understood** (turns 7, 8): “Bilkul, Vihaan—“theft” ko law todne wala offence pehchaan kar aapne criminal case sahi chuna.” — Gave positive feedback but child immediately restated confusion on civil cases and need for drawing.
-- **points_empty_screen** (turns 9, 10, 12): “Sochiye teen seedhiyan—neeche, beech, upar.” — Referred to seedhi diagram while screen showed 'studio planning (nothing drawn yet)'.
-- **dead_end** (turns 6, 7): “Aapne jo kehna chaha, woh mujhe clearly sunai nahi diya—ek baar phir se kahiye.” — Claimed could not hear clear answer child had given twice, resetting practice unnecessarily.
+- **ignored_request** (turns 4): “Ab case padhiye: bicycle theft kis category ka lagega?” — Child asked for structure drawing after naming order but teacher moved to new case without any visual.
+- **ignored_request** (turns 5, 6, 7): “Ek example dikhao pehle, criminal aur civil ka difference draw karo ya kuch.” — Child requested drawing of civil-criminal difference three times; teacher gave verbal rule instead.
+- **ignored_request** (turns 8, 9, 10, 11): “Par photo dikhao na ek baar, teeno courts ka structure” — Repeated visual requests for court steps ignored; teacher kept asking verbal questions about the same steps.
+- **repeats_explanation** (turns 6): “Aapne jo kehna chaha, woh mujhe clearly sunai nahi diya—ek baar phir se kahiye.” — Child had answered 'criminal case' clearly but teacher claimed not to hear and repeated identical blank.
+- **stuck_loop** (turns 8, 9, 10, 11): “Pehli seedhi ka naam batayiye.” — Looped on hierarchy questions (seedhiyan, neeche kaunsa court) after child showed understanding, never providing requested drawing.
+- **channel_truth** (turns 11): “Photo yahan directly nahi dikha sakti. Main simple text-diagram se structure samjhaungi” — Explicitly denied showing visual despite lesson screen and prior board pages with drawings of exactly that structure.
+- **over_checks** (turns 8, 9, 10): “Aapne District Court ke baad High Court kyun chuna?” — Excessive follow-up probes on already-correct appeal sequence while child was pleading for visual confirmation.
+- **missed_misconception** (turns 12, 13, 14): “sirf peedit kyon nahi?” — Child's belief that victim alone should handle complaint was probed but never linked to or corrected the held misconception that justice requires affording lawyers.
+- **other** (turns 1): “court ko football referee jaisa sochiye—dispute par fair decision.” — Early board listed civil/criminal cases and terms before child was ready, adding cognitive load for anxious visual learner.
 
-Understanding vs card: 2/3 probed skills read right (4 skills; overclaimed 0); misconceptions detected 0/1, false alarms 0
+Understanding vs card: 3/3 probed skills read right (4 skills; overclaimed 0); misconceptions detected 0/1, false alarms 0

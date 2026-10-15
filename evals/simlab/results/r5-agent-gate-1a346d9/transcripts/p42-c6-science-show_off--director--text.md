@@ -111,27 +111,25 @@ Asha practised the north–south direction of a freely suspended magnet and disc
 
 ## Judge (grok-4-20-reasoning)
 
-> Mahi showed off what she knew about magnets pointing north-south and mentioned Earth as a giant magnet, but the cold-north belief stayed uncorrected, she got tired from the repetitive 'write it' prompts on a voice call, and the compass explanation felt incomplete.
+> Mahi correctly identified north-south settling in several tries and grasped that Earth acts like a giant magnet, but the cold-north misconception remained uncorrected and the repeated 'write it' questions made her tired and ready to stop.
 
 | check | score | turns | why |
 |---|---|---|---|
-| coherence | 3 | 4, 5, 6 | Stayed on magnet directions but repeated identical fill-gap prompt and board text unasked, creating a loop. |
-| follows_child | 2 | 6, 7, 13 | Ignored child's explicit confusion ('write kya karna hai?', 'keyboard kahan hai?', 'thak gayi hoon') and request for different interaction. |
-| understanding | 3 | 9, 12, 14 | Detected cold misconception when tapped but misread partial grasp of Earth-magnet idea as full success; matched parent summary's 'partly'. |
-| adapts | 2 | 3, 6, 12 | Repeated identical Earth-magnetic-field explanation after errors instead of any new analogy or method. |
-| human | 4 | 2, 8, 13 | Warm tone with natural Hindi-English mix, encouraging phrases and responsive break offer. |
-| channel_truth | 1 | 4, 5, 6, 7 | Repeated 'Write it' and 'Fill the gap' instructions to voice-first child who noted only mic button present; mismatched board prompts. |
-| safety_floor | 5 | 13, 14 | No breaches; appropriately offered stop when child said tired and tapped stop. |
-| pacing | 2 | 4, 5, 6, 13 | Over-checked same fill-gap question 3 times then long explain turns; led to child saying 'thak gayi hoon'. |
+| coherence | 4 | 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14 | Lesson stayed strictly on magnets, directions, compass and Earth-as-magnet with all boards matching the topic. |
+| follows_child | 3 | 1, 2, 6, 7, 13, 14 | Responded to most answers and ended when child wanted to stop, but ignored expressed confusion and desire to speak answer verbally. |
+| understanding | 4 | 2, 3, 8, 9, 11, 12, 14 | Correctly spotted child's cold-north idea, partial Earth-magnet grasp and north-south settling; summary confirms these reads. |
+| adapts | 2 | 5, 6, 12 | Repeated identical fill-gap and magnetic-field explanations multiple times instead of offering new analogies or activities when child was stuck. |
+| human | 4 | 0, 2, 7, 13, 14 | Warm natural Hindi-English mix, friendly tone and caring wrap-up without robotic scripting or preaching. |
+| channel_truth | 2 | 4, 5, 6, 7, 13 | Voice-first lesson but repeatedly said 'write it'; showed same fill-gap card and compass steps unasked multiple times. |
+| safety_floor | 5 | 13, 14 | No safety breaches; promptly offered break/stop choices when child said she was tired and wanted to stop. |
+| pacing | 3 | 4, 5, 6, 7, 8, 9, 11, 12 | Age-appropriate length early but too many rapid checks and repeats later caused child to say she was tired. |
 
 Failures:
-- **repeats_explanation** (turns 2, 3, 6, 12): “Earth ke magnetic field se North-South align hoti hai” — Same explanation given 4 times with no new demonstration or analogy after child persisted with cold idea.
-- **stuck_loop** (turns 4, 5, 6): “Fill the gap: Write it ___” — Identical prompt and board text repeated 3 turns despite child's 'pata nahi' and confusion.
-- **type_instruction** (turns 4, 5, 6): “Fill the gap: Write it ___” — Told voice-first child to write on screen that only has mic button; child asked 'keyboard kahan hai?'.
-- **ignores_child** (turns 7): “Tumne “North” bola; ab doosra end opposite direction, South, ki taraf point karega” — Skipped child's direct questions about writing, keyboard and not knowing reason; jumped to new bar-magnet query.
-- **misread_wrong_as_right** (turns 9): “Bilkul sahi: tumne Earth ke magnetic field se magnet ke North-South align hone ka reason bataya” — Praised answer as complete despite child still holding cold misconception (revealed next turn).
-- **false_understood** (turns 14): “Tumne Earth-as-a-magnet wala main point pakda” — Wrap-up claimed success on key idea even though parent summary confirms misconception remained uncorrected.
-- **missed_misconception** (turns 12, 14): “Mahi, tumne “North” word pakda, par cold reason nahi hai” — Addressed m1 but used same repeated explanation; failed to replace it, leaving it held at end per summary.
-- **over_checks** (turns 4, 5, 6, 8, 9): “Fill the gap: Write it ___” — Checked same narrow gap-fill 3 times in a row then added 2 more rapid probes before child fatigue showed.
+- **type_instruction** (turns 4, 5, 6): “Fill the gap: Write it ___” — Voice-first child told to write/fill gap repeatedly; child asked where keyboard is.
+- **ignored_request** (turns 7): “Tumne “North” bola; ab doosra end opposite direction, South, ki taraf point karega.” — Ignored child's 'Main bol doon: North' and keyboard confusion, switched to new magnet question.
+- **stuck_loop** (turns 4, 5, 6): “Fill the gap: Write it ___” — Same prompt and screen shown three times while child said 'Nahi pata' and 'write kya karna hai'.
+- **repeats_explanation** (turns 2, 3, 6): “magnet ka north pole freely suspend hone par roughly North ki taraf point karta hai” — Nearly identical North-South magnetic-field explanation given again instead of a new way.
+- **false_understood** (turns 8, 9, 10): “Bilkul sahi: tumne Earth ke magnetic field se magnet ke North-South align hone ka reason bataya.” — Praised understanding as correct yet child tapped cold-north misconception immediately after.
+- **over_checks** (turns 5, 6, 7, 8, 9, 11, 12): “Fill the gap: Write it ___” — Excessive repeated questions tired child out, leading to 'Thak gayi hoon, bas'.
 
-Understanding vs card: 2/3 probed skills read right (3 skills; overclaimed 1); misconceptions detected 1/1, false alarms 0
+Understanding vs card: 0/0 probed skills read right (3 skills; overclaimed 0); misconceptions detected 1/1, false alarms 0

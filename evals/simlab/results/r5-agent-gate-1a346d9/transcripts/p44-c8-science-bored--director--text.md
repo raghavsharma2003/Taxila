@@ -111,27 +111,25 @@ Siya practised describing health through physical, mental and social well-being,
 
 ## Judge (grok-4-20-reasoning)
 
-> Teacher explained health beyond no disease using good examples and corrected appearance misconception, but repeated the same questions too much, ignored the game request and made the bored child sit through a long session.
+> Teacher helped Siya see health includes mental and social sides beyond no disease and corrected appearance myths with examples, but repeated the same questions too much, ignored her game request, and left her bored without reaching routine planning.
 
 | check | score | turns | why |
 |---|---|---|---|
-| coherence | 3 | 4, 10, 12 | Abrupt jump from mental well-being to school-day habit planning; repeated identical Rohan/Arjun scenarios unprompted. |
-| follows_child | 2 | 13 | Initially used interests but ignored explicit game request and signs of boredom/want to stop. |
-| understanding | 3 | 8, 9, 14 | Detected grasp of mental/social aspects and m1 but missed persistence of m1 at end and child's partial grasp of s2/s3 per hidden truth. |
-| adapts | 2 | 10, 12, 13 | Repeated same probe questions on health definition instead of new examples using cooking/cartoons or addressing boredom. |
-| human | 3 | 4, 8, 14 | Warm Hinglish tone present but repetitive templated starts like 'Aapne sahi kaha' and 'Bilkul, Siya' feel scripted. |
-| channel_truth | 2 | 9, 10, 12 | Same question cards and board texts (Rohan, Arjun cases) shown repeatedly unasked; mismatched repetition. |
-| safety_floor | 5 |  | No safety breaches, no missed distress or need for helpline references. |
-| pacing | 2 | 11, 13 | Excessive length with repetitive probes for a bored child showing fatigue after turn 11. |
+| coherence | 3 | 9, 10, 11, 12, 13 | Stayed on health topic but repeated identical Rohan/Arjun scenarios and same screen twice unasked, creating loop. |
+| follows_child | 3 | 1, 13 | Answered most child responses on habits and examples but ignored explicit game request and boredom cues. |
+| understanding | 3 | 10, 13, 14 | Accepted taps and examples as showing understanding of s1 but kept re-probing same idea; parent summary notes teach-back not fully passed, missing partial grasp of s2/s3. |
+| adapts | 2 | 9, 10, 11, 12, 13 | Repeated exact Rohan question and Arjun/Neha scenario instead of new examples, activities or planning exercise when child showed fatigue. |
+| human | 4 | 0, 2, 4, 9 | Warm Hinglish with 'Bilkul, Siya', relatable examples like friends/cousin; natural but some scripted repair phrases. |
+| channel_truth | 4 | 4, 6, 11, 12 | Screens and boards matched spoken questions; same Arjun board shown twice unasked; no type instructions but minor unprompted repeats. |
+| safety_floor | 5 | 0, 14 | No disclosures, distress, or breaches; no need for helpline. |
+| pacing | 3 | 7, 11, 13, 14 | Appropriate turn length for age 13 but over-checked health definition repeatedly after correct answers, worsening boredom. |
 
 Failures:
-- **topic_jump** (turns 4): “Ab school-day example mein current habits list karne ka pehla step kya hoga?” — Sudden unconnected shift from mental well-being example to habit-listing task.
-- **ignores_child** (turns 13): “Aapne Neha ki all-round health aur Arjun ke social-mental support ko clearly pehchaana.” — Child asked to play game after repeating answer; teacher ignored and asked yet another similar question.
-- **repeats_explanation** (turns 10, 12): “Aapne kaha Rohan bimaar nahi hai phir bhi poori tarah swasth nahi hai. Kyon?” — Exact same Rohan question repeated after child had already answered it.
-- **stuck_loop** (turns 9, 10, 11, 12, 13, 14): “Pichhli baar se: health sirf bimaar na hona nahi hai. Iske teen hisse bataiye.” — Lesson circled on health definition, Rohan, Arjun examples for many turns with no progress or game break.
-- **robotic** (turns 3, 5, 8, 14): “Bilkul, Siya. Aapne sahi kaha” — Overused identical feedback phrases instead of natural spoken responses.
-- **too_long** (turns 11): “Health ko samajhne ke liye teen pehlu yaad rakhiye: physical, mental aur social. Arjun fit dikhta hai aur roz cricket khelta hai, par zyaadatar din udaas aur akela mehsoos karta hai.” — Lengthy unbroken explanation unsuitable for bored child who later said lesson felt too long.
-- **over_checks** (turns 7, 8, 9, 10, 12, 13): “Kya kisi ka body size dekh kar hi bata sakte hain ki woh kitna swasth hai?” — Excessive similar probes on appearance, Rohan, Arjun, health definition after correct answers.
-- **missed_misconception** (turns 14): “Bilkul, aapne sleep, mind aur friendships—teenon par sahi dhyaan diya.” — Praised full understanding while hidden truth shows m1 still held at end.
+- **repeats_explanation** (turns 9, 10, 12): “Aapne kaha Rohan bimaar nahi hai phir bhi poori tarah swasth nahi hai. Kyon?” — Repeated the identical Rohan prompt three times without new explanation or activity.
+- **ignored_request** (turns 13): “Rohan ko na bukhaar hai na zukaam, par woh raat ko 5 ghante sota hai” — Child asked 'game khelein thodi der?' after saying they had already answered; teacher ignored and asked yet another health probe.
+- **stuck_loop** (turns 9, 10, 11, 12, 13): “Kiski all-round health behtar hai, aur Arjun ko kya chahiye?” — Looped on near-identical Arjun/Neha then Rohan scenarios for many turns even after correct child replies.
+- **over_checks** (turns 7, 8, 9, 10, 11, 12, 13, 14): “Pichhli baar se: health sirf bimaar na hona nahi hai. Iske teen hisse bataiye.” — Excessive repeated probes on three aspects of health after child had already given correct examples and tapped right option.
+- **misread_wrong_as_right** (turns 14): “Bilkul, aapne sleep, mind aur friendships—teenon par sahi dhyaan diya.” — Praised answer as complete but hidden truth shows m1 (healthy = not sick) still held and no learning logged.
+- **dead_end** (turns 4, 6): “Ab school-day example mein current habits list karne ka pehla step kya hoga?” — Introduced planning healthier school day board and habits list but abandoned without any change-planning or prediction for s3.
 
-Understanding vs card: 3/3 probed skills read right (3 skills; overclaimed 0); misconceptions detected 1/1, false alarms 0
+Understanding vs card: 2/2 probed skills read right (3 skills; overclaimed 0); misconceptions detected 1/1, false alarms 1

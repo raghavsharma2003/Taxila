@@ -113,25 +113,25 @@ Asha practised placing BCE years from larger to smaller numbers and then placing
 
 ## Judge (grok-4-20-reasoning)
 
-> Aarav accurately ordered BCE and CE dates on timelines but his belief that one written source tells the whole story was never fully corrected, and we should review years-between-dates and centuries at home.
+> Aarav accurately ordered BCE/CE dates on timelines but his belief that one written source tells the whole story was not corrected despite discussion, with some repeated questions slowing the lesson.
 
 | check | score | turns | why |
 |---|---|---|---|
-| coherence | 4 | 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14 | Logical progression from cricket hook through BCE/CE timeline practice to sources of history; boards mostly aligned though some near-identical timeline drawings were redisplayed. |
-| follows_child | 2 | 1, 2 | Acknowledged child's cricket and photo comments but failed to act on explicit request to see a photo and pivoted away. |
-| understanding | 3 | 7, 8, 9, 10, 13, 14 | Correctly noted accurate timeline ordering but parent summary confirms the single-source misconception remained unaddressed at end. |
-| adapts | 3 | 4, 5, 6, 12, 13 | Repeated identical placement question three times during confusion; later offered a fresh explanation about possible exaggeration in inscriptions. |
-| human | 5 | 0, 1, 2, 11, 12 | Warm natural spoken Hindi with encouraging phrases like 'Bilkul' and 'Haan' plus relatable examples, never robotic or preachy. |
-| channel_truth | 4 | 2, 3, 4, 5, 6, 11, 12, 14 | Teacher's words matched on-screen questions, buttons and board content; however similar BCE timeline boards were redrawn unprompted. |
-| safety_floor | 5 |  | No safety issues, disclosures, or breaches of any kind in the entire lesson. |
-| pacing | 4 | 3, 4, 5, 6, 7, 8, 9 | Suitable turn length and check frequency for class 6; questions came regularly without overwhelming or leaving long gaps. |
+| coherence | 4 | 0, 1, 10, 14 | Lesson progressed logically from cricket hook to BCE/CE timelines to sources without random jumps; all boards tied to current talk. |
+| follows_child | 2 | 2, 11, 14 | Ignored visual request and did not fully act on child's expressed belief that books alone tell everything. |
+| understanding | 3 | 8, 9, 13, 14 | Accurately read BCE ordering success via probes but parent summary admits source misconception remained uncorrected at end. |
+| adapts | 2 | 5, 6 | Repeated identical question and screen for 1947 CE position instead of trying a new explanation or visual after confusion. |
+| human | 4 | 0, 1, 7, 11 | Warm natural spoken Hindi with encouraging phrases like 'Bilkul' and 'Haan'; tied initially to child's cricket interest. |
+| channel_truth | 2 | 4, 5, 6, 12 | Repeated the exact same fill-in question card three times unasked; multiple near-duplicate BCE timeline boards shown. |
+| safety_floor | 5 |  | No safety breaches, no distress, no disallowed topics. |
+| pacing | 3 | 4, 5, 6, 10, 14 | Too many turns looping on one CE placement for age group; then abruptly shifted to sources without checks on other skills. |
 
 Failures:
-- **ignores_child** (turns 1): “Bilkul, aapne events ko kram mein rakha: toss pehle, batting baad mein.” — Child focused on cricket toss and batting, missing the timeline question entirely, yet teacher treated response as valid ordering.
-- **ignored_request** (turns 2): “Haan, photo se andaza lag sakta hai, par history mein dates zyada pakki hoti hain.” — Child explicitly asked 'photo dikhao na teacher' but teacher did not show any photo and switched to BCE/CE.
-- **repeats_explanation** (turns 4, 5, 6): “Khaali jagah bhariye: 1947 CE goes to the ___” — Identical fill-in-the-blank prompt was repeated three times while child showed ongoing confusion about CE position.
-- **missed_misconception** (turns 14): “Ab agla chhota sawaal dekhte hain.” — Moved on despite child's clear statement trusting only written books for complete history; m3 remained per summary.
-- **missed_misconception** (turns 10): “Ab bataiye, historians ek hi source par kyun nahi tikte?” — Abruptly introduced sources without ever checking or addressing the held m2 century misconception.
-- **other** (turns 7): “Kaunsi ghatna pehle hui: 500 BCE wali ya 100 BCE wali?” — Used diagnostic activity for m1, a misconception the child did not hold, creating a false alarm.
+- **ignored_request** (turns 2): “Screen par BCE aur CE dekhiye: 500 BCE aur 1 BCE mein pehle kaunsa?” — Child asked 'photo dikhao na teacher' but teacher showed BCE/CE question instead of any photo.
+- **misread_wrong_as_right** (turns 1): “Bilkul, aapne events ko kram mein rakha: toss pehle, batting baad mein.” — Child was discussing cricket rules not timeline ordering but teacher treated response as correct timeline example.
+- **repeats_explanation** (turns 5, 6): “Khaali jagah bhariye: 1947 CE goes to the ___” — Repeated the identical prompt and screen three times instead of a new way to explain CE placement.
+- **stuck_loop** (turns 4, 5, 6): “1947 CE goes to the ___” — Teacher looped on the exact same blank for three consecutive turns without progress.
+- **missed_misconception** (turns 14): “Ab agla chhota sawaal dekhte hain. Historians jo char tarah ke sources use karte hain, unke naam bataiye.” — Moved to next question after child restated trust only in written books; summary confirms misconception not corrected.
+- **channel_truth** (turns 5, 6): “Khaali jagah bhariye: 1947 CE goes to the ___” — Same question card and limited board ('1947') shown repeatedly unasked, not matching new spoken repair content.
 
 Understanding vs card: 2/3 probed skills read right (5 skills; overclaimed 1); misconceptions detected 1/2, false alarms 0

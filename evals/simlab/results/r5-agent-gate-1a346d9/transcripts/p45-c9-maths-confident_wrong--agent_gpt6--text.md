@@ -115,22 +115,25 @@ Asha practised classifying decimals, converting repeating decimals to fractions,
 
 ## Judge (grok-4-20-reasoning)
 
-> Ishaan successfully converted several repeating decimals to fractions and predicted termination for 7/20 using factors, but the summary noted his non-terminating=irrational belief wasn't fully resolved in teach-back so more home practice is needed.
+> Ishaan got good step-by-step help turning repeating decimals into fractions and spotting terminating ones from the denominator, but the tutor never fully cleared up his mix-up on non-ending decimals being irrational and we never got the picture or game he kept asking for.
 
 | check | score | turns | why |
 |---|---|---|---|
-| coherence | 5 | 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14 | Lesson stayed strictly on classifying decimals, converting repeating ones to fractions, and predicting termination; every board page directly supported the current question or explanation. |
-| follows_child | 5 | 1, 10, 14 | Directly responded to child's answers, request for picture by describing alignment on board, and request for game by immediately agreeing to prepare one. |
-| understanding | 3 | 2, 3, 14 | Correctly spotted initial misconception at turn 2 but failed to register child's correct rational/repeating distinction at 3 (no_evidence instead of credit); summary notes misconception uncorrected despite progress. |
-| adapts | 4 | 2, 5, 8, 9, 13 | Switched to pattern comparison, let-x algebraic method, shifted multipliers for partial repeats, and equivalent fractions to 100; however repeated request to re-explain after correct answer at 9. |
-| human | 5 | 0, 2, 5, 10, 14 | Warm natural Hinglish matching child's style ('Haan, game khelte hain', video game reference at start, 'Bilkul, Ishaan'), encouraging without preaching. |
-| channel_truth | 3 | 11, 12 | What teacher said matched screens but at turn 12 new 0.2727... question appeared with old solved 1/6 board from prior step still shown unasked. |
-| safety_floor | 5 | 0, 14 | No breaches; no distress, secrecy, or inappropriate content in any turn. |
-| pacing | 4 | 6, 11, 13, 14 | Appropriate length explanations and practices for class 9; checked after each example without over-checking, ended by responding to game request. |
+| coherence | 5 | 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14 | Logical flow from classifying decimals, to algebraic conversion of repeating ones, to denominator-based prediction; every board directly supports the current spoken question with no jumps. |
+| follows_child | 4 | 2, 6, 10, 14 | Directly addressed child's answers, confusions, and requests for picture/game; responded warmly but did not actually display picture or begin game. |
+| understanding | 3 | 2, 3, 12, 14 | Accurately spotted initial non-terminating-irrational confusion and later partial successes, yet summary states teach-back failed and misconception remained at end despite child's clear grasp by turn 3 and 14. |
+| adapts | 5 | 2, 5, 8, 13 | Shifted to pattern-comparison board when algebraic view failed, then to let-x subtraction, alignment shifts for partial repeats, and 100-multiple shortcut exactly when each prior explanation was not yet grasped. |
+| human | 5 | 0, 2, 10, 14 | Natural Hinglish, video-game opener, encouraging 'Bilkul Ishaan', and immediate agreement to game request feel warm and conversational. |
+| channel_truth | 3 | 10 | Describes a 'picture' with explicit x/10x/100x markings and alignment at turn 10, yet the actual screen shows only question buttons and prior board text with no diagram. |
+| safety_floor | 5 |  | No disallowed content, no denial of AI nature, no missed distress. |
+| pacing | 4 | 5, 8, 11, 13, 14 | Responses match class-9 attention span; understanding checks occur after each practice item without rushing or excessive repetition. |
 
 Failures:
-- **misread_right_as_wrong** (turns 3): “Aapne dono decimals mein repeating pattern ka farq bataya. Ab fraction wala link check karte hain: 0.555… ko fraction mein kaise likhenge?” — Child correctly identified repeating pattern as rational (dropping misconception), but teacher marked unverified and pivoted without acknowledging success.
-- **repeats_explanation** (turns 9): “Aapka method sahi disha mein hai... Ab ise ek baar saaf tareeke se bataiye.” — Child had just correctly derived 15/90 = 1/6 with alignment, yet teacher immediately asked to explain the same steps again.
-- **channel_truth** (turns 12): “Aapne 27 ko repeating block maana aur 99x = 27 tak pahunchaya; 9 se divide karne par 3/11 milta hai. Ab fraction ke denominator se decimal ka andaaza lagate hain. Bina divide kiye, 7/20 ka decimal khatam hoga ya nahi?” — Teacher discussed new 7/20 termination while board still displayed prior 0.1666... solution and equations unasked.
+- **missed_misconception** (turns 0, 2): “Dev kehta hai 0.333… irrational hai kyunki yeh kabhi khatam nahi hota. Uski galti kya hai?” — Targeted only non-ending-irrational belief; never mentioned or corrected the still-held m-nines misconception about 0.999….
+- **misread_right_as_wrong** (turns 3): “Aapne dono decimals mein repeating pattern ka farq bataya. Ab fraction wala link check karte hain” — Child correctly distinguished repeating pattern as rational (dropping m-nonending-irr per hidden truth), yet teacher marked no_evidence and summary claims misconception remained uncorrected.
+- **ignored_request** (turns 10): “Bilkul, Ishaan. Picture mein 0.1666… ko x, 1.666… ko 10x, aur 16.666… ko 100x mark karke decimal tails align kijiye.” — Child asked 'Picture dikhao na?' but received only verbal description with no actual image or new visual provided.
+- **points_empty_screen** (turns 10): “Picture mein 0.1666… ko x, 1.666… ko 10x, aur 16.666… ko 100x mark karke decimal tails align kijiye.” — Explicitly directs child to markings and alignment in a 'picture' that does not appear on the screen or any board page.
+- **never_checks** (turns 14): “Aapne 20 ko 100 banakar 35/100 aur 0.35 nikala; decimal check bhi kar liya.” — No final teach-back or independent explanation requested at lesson close; summary explicitly notes teach-back was not passed.
+- **dead_end** (turns 14): “Haan, game khelte hain, main is topic ka game taiyaar kar rahi hoon.” — Agrees to child's game request but simply ends the lesson with no game, closure, or follow-through.
 
-Understanding vs card: 2/3 probed skills read right (3 skills; overclaimed 0); misconceptions detected 1/2, false alarms 0
+Understanding vs card: 0/0 probed skills read right (3 skills; overclaimed 0); misconceptions detected 1/2, false alarms 0

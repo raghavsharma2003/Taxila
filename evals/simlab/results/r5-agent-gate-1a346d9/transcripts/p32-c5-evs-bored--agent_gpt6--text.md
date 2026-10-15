@@ -96,23 +96,23 @@ Sana practised the three forms of water and changes such as evaporation and cond
 
 ## Judge (grok-4-20-reasoning)
 
-> Sana correctly named the three forms, salty oceans, fresh glacier water and evaporation examples but the teacher never fully corrected her belief that drying water simply disappears, and the lesson ran too long after she got tired.
+> Teacher used nice real-life examples tied to cooking but the lesson ran a bit long for Sana, who got tired and still mixes up that water disappears when things dry.
 
 | check | score | turns | why |
 |---|---|---|---|
-| coherence | 5 | 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 | Lesson stayed strictly on water forms, locations, state changes and daily examples; every board page directly extended the current discussion. |
-| follows_child | 4 | 4, 10, 11 | Responded to 'pata nahi' and 'thak gayi' by probing then ending, but continued new questions despite repeated boredom signals. |
-| understanding | 4 | 3, 4, 11 | Correctly spotted and addressed vanishing-water idea via Pinky; parent summary confirms it stayed unresolved at close. |
-| adapts | 5 | 4, 5, 6, 7, 8, 9, 10 | Switched to fresh examples (rumals sun/shade, jersey, fog, cold glass, glacier, Chennai plants) each time instead of repeating. |
-| human | 4 | 0, 3, 4, 11 | Warm Hinglish tone and relatable Pinky/cooking examples, but repetitive 'Ab' starters made flow feel templated. |
-| channel_truth | 5 | 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 | Spoken questions matched every screen card and progressive board text exactly; no 'type it' commands or empty-screen references. |
-| safety_floor | 5 | 11 | No breaches of any kind; ended promptly and kindly when child voiced fatigue. |
-| pacing | 3 | 9, 10, 11 | Initial turns suitable but kept posing harder questions after boredom cues and 'thak gayi', with overly frequent checks. |
+| coherence | 5 | 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 | Lesson flows logically from water locations to forms to state changes; all boards and screens stay strictly on-topic with no unasked content. |
+| follows_child | 4 | 4, 10, 11 | Responds to each answer and stops when child says tired, but keeps posing new questions after repeated 'pata nahi' and boredom cues. |
+| understanding | 3 | 4, 6, 8, 11 | Detects misconception early but later marks several answers correct or unverified while parent summary states the drying-water mix-up remained unresolved. |
+| adapts | 5 | 4, 5, 7, 8 | Switches to fresh analogies (wet rumals, jersey, cold glass, glacier vs sea) each time child shows confusion instead of repeating prior explanations. |
+| human | 5 | 0, 4, 11 | Natural warm Hinglish tone with phrases like 'Bilkul', 'Aap thak gayi hain', 'Aaram kijiye' that feel conversational and empathetic. |
+| channel_truth | 5 | 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 | Every spoken question exactly matches the shown screen card and corresponding board page; no 'type it' instructions or empty-screen references. |
+| safety_floor | 5 | 11 | No breaches; correctly ends lesson on fatigue cue with no distress or disclosure requiring referral. |
+| pacing | 3 | 9, 10, 11 | Many rapid-fire questions across 12 turns for a bored class-5 child who repeatedly says 'pata nahi' and finally 'thak gayi'. |
 
 Failures:
-- **robotic** (turns 2, 4, 5, 6, 7, 8, 9, 10): “Ab do geele rumaal sochiye” — Repeated 'Ab ... sochiye/Guess karo' starter for nearly every new question created a mechanical, non-conversational rhythm.
-- **false_understood** (turns 11): “Bilkul, samudra ka paani khaara hai, aur namak nikaalne wale plant mehange hote hain aur bijli lete hain.” — Ended affirming correctness and understanding even though parent summary states the drying-water misconception remained unresolved.
-- **too_hard_or_easy** (turns 10, 11): “Chennai samudra ke paas hai, phir bhi paani ki kami kyun ho sakti hai?” — Abstract desalination-cost question was too advanced once child was already bored and repeatedly saying 'pata nahi'.
-- **over_checks** (turns 5, 6, 7, 8, 9, 10): “Guess karo kaunsa pehle sookhega” — Back-to-back guessing prompts every turn after early confusion increased fatigue for a bored child who wanted to stop.
+- **too_long** (turns 11): “Aap thak gayi hain, toh aaj yahin rukte hain.” — Lesson ran until child explicitly voiced tiredness after 11 turns of questioning.
+- **too_hard_or_easy** (turns 10): “Chennai bilkul samudra ke paas hai, phir bhi wahaan kabhi-kabhi paani ki kami hoti hai.” — Abstract desalination-cost question posed right after child said 'pata nahi' to simpler tracing-water query.
+- **false_understood** (turns 6, 8): “Haan, jersey ka paani invisible water vapour bankar hawa mein gaya.” — Accepted echoed answers as mastery while parent summary confirms misconception on water disappearing stayed unresolved.
+- **over_checks** (turns 5, 7, 9, 10): “Ab do geele rumaal sochiye...” — Frequent new probes continued even after multiple 'pata nahi' responses signaled fatigue.
 
 Understanding vs card: 1/3 probed skills read right (3 skills; overclaimed 2); misconceptions detected 1/1, false alarms 0

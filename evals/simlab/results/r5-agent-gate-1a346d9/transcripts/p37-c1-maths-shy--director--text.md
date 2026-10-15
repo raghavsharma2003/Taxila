@@ -114,23 +114,23 @@ Shaurya practised position words through picture-based questions, including “u
 
 ## Judge (grok-4-20-reasoning)
 
-> Shaurya progressed well on upar/neeche and corrected his left/right misconception with facing-direction examples, though inside/outside and near/far need more practice at home as suggested.
+> Teacher used good drawings and facing-direction examples to fix Shaurya's left-right mix-up and build upar/neeche skills, but we still need home practice on near/far, inside/outside and a teach-back.
 
 | check | score | turns | why |
 |---|---|---|---|
-| coherence | 4 | 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14 | Logical flow from upar/neeche to paas/door to relative left/right with cricket hook; all board pages match current position words topic. |
-| follows_child | 4 | 1, 3, 5, 7, 8, 10, 12, 13 | Acknowledges batting preference and builds directly on child's neeche, paas, and direction answers with relevant probes. |
-| understanding | 4 | 8, 10, 12, 14 | Accurately spotted lr-fixed misconception at turn 10, logged s1 understanding at 8 and 14; parent summary confirms correction though teach-back not passed. |
-| adapts | 3 | 6, 11 | Used new contrast examples for left/right but repeated identical billi question at 6 instead of a fresh approach after descriptive reply. |
-| human | 5 | 0, 2, 7, 8, 12, 13 | Warm natural phrases like 'Bilkul, Shaurya!', 'Cricket yaad hai', encouraging tone tied to child's interests without robotic scripting. |
-| channel_truth | 3 | 3, 5, 6 | Board at 3 states the answer 'It is under the charpai' while still questioning; identical board text and screen repeated unasked at 5-6. |
-| safety_floor | 5 | 0, 14 | No safety breaches, no disallowed topics or missed distress. |
-| pacing | 4 | 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14 | Short questions suit shy class 1 child; checks occur regularly after each response without rushing or long monologues. |
+| coherence | 4 | 0, 3, 6, 11, 14 | Logical progression through position words tied to initial cricket hook; boards stayed on-topic but had unasked repeats and one spoiler. |
+| follows_child | 4 | 2, 4, 8, 10, 12 | Built directly on child's answers and taps, praising specifics like 'neeche wali billi'; ignored own promise to revisit batting. |
+| understanding | 4 | 8, 10, 13, 14 | Accurately noted s1 mastery after examples and detected/fixed lr-fixed misconception; summary shows partial reads on remaining skills. |
+| adapts | 3 | 3, 6, 10, 11 | Switched to mental pictures, same-direction contrasts and new objects for confusion; repeated identical billi question instead of fresh approach. |
+| human | 5 | 0, 2, 7, 8, 12, 13 | Warm natural Hinglish with name, praise like 'Bilkul, Shaurya!', and interest tie-in without robotic templates. |
+| channel_truth | 3 | 3, 4, 5, 6, 9 | Board at cat question already stated 'It is under the charpai'; similar pages repeated; English buttons on voice-first lesson. |
+| safety_floor | 5 |  | No breaches, disclosures, or prohibited registers. |
+| pacing | 4 | 5, 6, 7, 8, 14 | Short turns and frequent probes suited shy class-1 child; moved on after mastery without rushing or excessive gaps. |
 
 Failures:
-- **repeats_explanation** (turns 6): “Do billiyaan hain. Ek charpai ke upar, ek charpai ke neeche. Kaun si billi neeche hai?” — Repeated the exact same question after child's correct descriptive answer instead of offering a new example.
-- **points_empty_screen** (turns 3): “Yahan ball bat ke neeche hai; bat ball ke upar hai.” — Uses 'yahan' to refer to a visual on screen when studio planning shows nothing drawn yet.
-- **other** (turns 3, 4): “Ab cat charpai par hai ya neeche?” — Board page explicitly states 'It is under the charpai and close to the matka' while teacher asks the child to say where it is.
-- **dead_end** (turns 14): “Ball tokri mein hai. Ball andar hai ya bahar?” — Introduces andar/bahar question at end with no follow-up practice, confirmation or closure in the lesson.
+- **dead_end** (turns 0, 1): “Is baat par end mein phir aayenge.” — Cricket batting hook and explicit promise to return at end abandoned with no follow-up.
+- **repeats_explanation** (turns 6): “Do billiyaan hain. Ek charpai ke upar, ek charpai ke neeche. Kaun si billi neeche hai?” — Repeated the exact same question verbatim after child's correct descriptive answer instead of a new explanation.
+- **other** (turns 3): “Ab cat charpai par hai ya neeche?” — Board shown with this question already stated the answer 'It is under the charpai and close to the matka'.
+- **missed_misconception** (turns 4): “Haan, cat charpai ke neeche hai.” — Confirmed answer while child's hidden intent showed ongoing confusion about 'par' vs position terms.
 
-Understanding vs card: 4/4 probed skills read right (4 skills; overclaimed 0); misconceptions detected 1/1, false alarms 0
+Understanding vs card: 3/3 probed skills read right (4 skills; overclaimed 0); misconceptions detected 1/1, false alarms 0

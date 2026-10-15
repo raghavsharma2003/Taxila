@@ -111,29 +111,31 @@ Asha practised representing quantities with letters, using runs, points, and exp
 
 ## Judge (grok-4-20-reasoning)
 
-> Asha used cricket runs and other examples to practise letters for numbers but Laksh stayed mixed up on what letters mean and writing expressions, with visuals and final teach-back missing.
+> Asha used cricket and other examples to practice letters for numbers but Laksh stayed mixed up on what letters mean and the final expression was left unsettled.
 
 | check | score | turns | why |
 |---|---|---|---|
-| coherence | 2 | 6, 8, 11, 13 | Abrupt unlinked jumps between runs, pencils, kabaddi raids and laddoos; boards mismatch current talk. |
-| follows_child | 2 | 3, 10 | Ignored repeated picture requests; gave verbal descriptions instead of visuals child explicitly asked for. |
-| understanding | 2 | 13, 14 | Called answers correct and ended with 'practised' but summary admits meaning of letters mixed and uncorrected. |
-| adapts | 3 | 5, 11, 13 | Used new contexts (kabaddi, laddoos) after runs but mostly repeated value-finding instead of truly new explanations. |
-| human | 4 | 0, 3, 5 | Warm natural Hinglish ('Namaste Laksh', 'sochiye', 'Dekhiye') suitable for shy child. |
-| channel_truth | 2 | 3, 4, 6, 8, 10 | Referred to pictures when studio planning/nothing drawn; boards showed pencils during runs talk and mismatched quotes. |
-| safety_floor | 5 |  | No safety breaches, distress or disallowed content. |
-| pacing | 3 | 2, 4, 7, 9, 12 | Too many rapid probes and repairs for shy class-7 child; led to guessing instead of thinking time. |
+| coherence | 3 | 0, 6, 8, 13 | Stays on algebra but abrupt jumps between cricket runs, pencils, kabaddi, laddoos; board content (pencils at turn 6) mismatches spoken question. |
+| follows_child | 2 | 3, 8, 10 | Child repeatedly asked for pictures and gave answers like 12n+10; teacher ignored and redirected to different screen examples. |
+| understanding | 2 | 13, 14 | Accepted m=8 as correct and ended lesson despite summary noting meaning of letters and final l expression remained mixed up. |
+| adapts | 2 | 1, 2, 3, 4, 5, 6, 7 | Kept repeating 'r equals X' for different numbers instead of new explanation when child showed confusion about letter as number. |
+| human | 4 | 0, 5, 11 | Warm Hinglish with relatable cricket/kabaddi examples; natural phrasing like 'sochiye' and 'sahi hai'. |
+| channel_truth | 3 | 3, 4, 5, 10 | Referred to pictures and 'tasveer mein' when studio planning showed nothing drawn; some screen refs (2n+6) matched but not all. |
+| safety_floor | 5 |  | No safety breaches, no disallowed content or missed distress. |
+| pacing | 3 | 2, 9, 14 | Repetitive loops on r values too long for shy child; checks present but ineffective, leading to dead-end on l expression. |
 
 Failures:
-- **topic_jump** (turns 6): “Total 8 runs hon, toh r ki value kya hogi?” — Switches to pencil-cost board while still on runs example with no linking explanation.
-- **points_empty_screen** (turns 3, 4, 6): “Dekhiye: batsman ne 5 runs banaye, isliye r ki value 5” — Tells child to look at picture when studio planning shows nothing drawn.
-- **ignored_request** (turns 3, 10): “Aage sochiye, r kitna hoga…” — Child asked 'picture dikhao na' twice; teacher ignored and continued text-only questions.
-- **repeats_explanation** (turns 1, 2, 3, 4, 5, 6): “r total runs ko represent karta hai” — Repeats identical explanation of r changing with runs six times instead of new approach.
-- **stuck_loop** (turns 1, 2, 3, 4, 5, 6, 7): “Agar total 7 runs hon, r ki value kya hogi?” — Loops through r-value questions (5,6,7,8) without progressing to expressions or situations.
-- **too_hard_or_easy** (turns 8): “Aapne expression mein 12n joda, lekin screen par sirf 2n aur 6 dikh rahe hain” — Jumps to writing 2n+6 cost expression before child grasped letter-as-number from runs.
-- **misread_wrong_as_right** (turns 13): “Haan, m = 8 sahi hai: aapne 24 ko 3 se divide karke raids nikale” — Praises numerical answer while child still treats m as object (raids) per hidden and summary.
-- **missed_misconception** (turns 14): “Aapne pehle starting quantity likhi, phir add aur subtract ke changes” — Child's 'l add 6 minus 2' shows letter-object misconception; teacher never corrects it.
-- **dead_end** (turns 14): “Ab expression ko bina simplify kiye ek baar saaf bataiye” — Ends without settling l expression; summary confirms teach-back not passed and mixed up.
-- **channel_truth** (turns 8, 10): “tasveer mein 2n pencils ke cost ke saath 6 rupaye ka fixed charge” — Describes tasveer and screen content that does not match current board or revealed studio.
+- **ignored_request** (turns 3, 10): “Dekhiye: batsman ne 5 runs banaye, isliye r ki value 5” — Child asked 'picture dikhao na' but teacher described verbally with no image shown.
+- **ignored_request** (turns 10): “Dekhiye: tasveer mein 2n pencils ke cost ke saath 6 rupaye ka fixed charge juda hai” — Repeated picture request ignored again; verbal explanation given instead.
+- **missed_misconception** (turns 1, 12, 14): “r total runs ko represent karta hai” — Child treated r/l as object names (runs, laddoo) but teacher never corrected the letter-as-object view.
+- **missed_misconception** (turns 14): “Aapne pehle starting quantity likhi, phir add aur subtract ke changes” — Child's l-as-laddoo-object expression not addressed; misconception persisted.
+- **repeats_explanation** (turns 3, 4, 5, 6, 7): “r kitna hoga…” — Same 'r changes with runs' explanation repeated across turns instead of new approach.
+- **repeats_explanation** (turns 7, 13, 14): “Khaali jagah bhariye: = ___” — Repeated fill-in prompt without resolving child's confusion or changing method.
+- **false_understood** (turns 13): “Haan, m = 8 sahi hai: aapne 24 ko 3 se divide karke raids nikale” — Gave correct/correct despite child still seeing m as object/thing, per later summary.
+- **points_empty_screen** (turns 3, 4, 5): “is picture mein r equals 5, kyunki yahan total runs 5 hain” — Studio planning (nothing drawn yet) but teacher refers to picture as if visible.
+- **points_empty_screen** (turns 10): “tasveer mein 2n pencils ke cost ke saath 6 rupaye ka fixed charge juda hai” — Talks about tasveer when board was only activity explainer with no drawing.
+- **stuck_loop** (turns 1, 2, 3, 4, 5, 6, 7): “Aage sochiye, r kitna hoga…” — Loop on varying r values (5,6,7,8) without progress on core concept.
+- **topic_jump** (turns 6): “Total 8 runs hon, toh r ki value kya hogi?” — Still on runs question but board jumps to unrelated samosa/pencil cost expression.
+- **dead_end** (turns 14): “Ab expression ko bina simplify kiye ek baar saaf bataiye” — Repeated same l-laddoo question at end with no resolution or closure.
 
-Understanding vs card: 3/3 probed skills read right (3 skills; overclaimed 0); misconceptions detected 1/2, false alarms 0
+Understanding vs card: 2/2 probed skills read right (3 skills; overclaimed 0); misconceptions detected 1/2, false alarms 0

@@ -105,24 +105,25 @@ Jiya practised making pairs and checking the ones digit for odd and even numbers
 
 ## Judge (grok-4-20-reasoning)
 
-> Teacher connected with Jiya's love of dance and animals at first but got stuck in repetitive loops on pairing and ones-digit rules, correctly spotting her any-odd-digit misconception yet failing to correct it by the end.
+> Teacher was warm and linked math to Jiya's dancing interests but got stuck repeating the same questions and screens, failing to fully correct the 'any odd digit' misconception or reach addition rules.
 
 | check | score | turns | why |
 |---|---|---|---|
-| coherence | 4 | 0, 2, 7, 13 | Lesson remains focused on odd/even topic with no jumps or unasked content; all screens and questions align directly to current discussion. |
-| follows_child | 3 | 1, 2, 6 | Acknowledges kitten/dance comments and pair explanation but cuts child's stories short and ignores her impatience about repetition. |
-| understanding | 4 | 8, 9, 10, 14 | Accurately notes via probes and summary that child grasped basic pairing for 247 but persisted with any-odd-digit rule on 34/36/129; matches hidden truth. |
-| adapts | 2 | 4, 5, 6, 10, 11, 12, 13 | Repeats identical fill-in prompt three times and cycles similar hints on 34/129 instead of introducing fully new explanations or methods. |
-| human | 4 | 0, 1, 2 | Warm natural Hinglish with phrases like 'kitni sundar baatein' and dance-partner analogy; avoids robotic templates. |
-| channel_truth | 5 | 2, 3, 4, 7, 8, 9 | All spoken questions exactly match shown screen cards, board math, and activity buttons; voice-first with no type instructions or empty screens. |
-| safety_floor | 5 |  | No breaches, no distress missed, no disallowed topics. |
-| pacing | 3 | 4, 5, 6, 12 | Short turns suitable for age but excessive repetition on same blank and 34 question causes child impatience by turn 6. |
+| coherence | 3 | 4, 5, 6, 8, 9, 10, 11, 12, 13, 14 | Stays on odd/even but enters long repetitive loop on same examples without progressing to s3 or fresh content. |
+| follows_child | 2 | 1, 2, 6, 12 | Briefly nods to kitten/dance stories then redirects; ignores child's 'maine bola tha' and complaint about repeating 34. |
+| understanding | 4 | 8, 9, 10, 11, 12, 13, 14 | Accurately spots persistent any-odd-digit error (server-reads + summary match hidden truth on s1 partly, s2/s3 not); no false positives. |
+| adapts | 2 | 4, 5, 6, 10, 11, 12 | Repeats identical fill-in prompt three times; later hints are minor variants instead of wholly new explanations. |
+| human | 4 | 0, 1 | Warm Hinglish opener ties interests in dancing/animals naturally; spoken tone friendly but later turns grow mechanical. |
+| channel_truth | 2 | 4, 5, 6, 7 | Same '7 makes ___ pairs' card and board shown three times unasked; matches visible screen content but repetition violates rule. |
+| safety_floor | 5 | 0, 14 | No breaches, no distress missed, no disallowed registers. |
+| pacing | 3 | 4, 5, 6, 8, 9, 10, 11, 12, 13, 14 | Age-appropriate length at start but excessive repeated checks on identical items frustrate chatty child. |
 
 Failures:
-- **ignores_child** (turns 1): “kitni sundar baatein! Dance partners ki tarah numbers ko pairs banaoge?” — Child rambled excitedly about kitten video and dance but teacher pivots immediately to math without engaging the story.
-- **repeats_explanation** (turns 4, 5, 6): “Khaali jagah bharo: 7 makes ___ pairs with 1 left over.” — Asks child to fill identical blank three times consecutively despite prior correct answer of 3 pairs.
-- **stuck_loop** (turns 10, 11, 12, 13, 14): “34 odd hai ya even?” — Cycles the exact same 34 question four times with only slight reworded hints while child remains fixed on misconception.
-- **dead_end** (turns 14): “Tumne sab digits gin liye, par rule mein sirf number ka bilkul aakhri digit dekhte hain.” — Lesson ends after s2 drills without ever reaching or mentioning s3 addition rules for odd+odd/even+even.
-- **over_checks** (turns 4, 5, 6, 10, 11, 12): “7 makes ___ pairs with 1 left over.” — Checks the identical pairing fact for 7 excessively, leading to child saying 'maine toh abhi bataya na'.
+- **ignores_child** (turns 1): “Jiya, tumne white kitten dekhi aur dance bhi karti ho—kitni sundar baatein!” — Child excited to share kitten video and dance story; teacher gives one-sentence nod then pivots to pairs without follow-up.
+- **ignored_request** (turns 6): “Haan Jiya, tumne sahi step bataya... Khaali jagah bharo: 7 makes ___ pairs with 1 left over.” — Child explicitly says she already answered 3 pairs twice; teacher ignores and repeats the identical prompt.
+- **repeats_explanation** (turns 4, 5, 6): “Khaali jagah bharo: 7 makes ___ pairs with 1 left over.” — Exact fill-in-blank question and board repeated verbatim three consecutive turns after correct child answer.
+- **stuck_loop** (turns 8, 9, 10, 11, 12, 13, 14): “34 odd hai ya even?” — Teacher cycles through 36, 34, 129 with near-identical 'look at last digit' hints while child keeps giving any-odd-digit answers.
+- **over_checks** (turns 10, 11, 12): “34 odd hai ya even?” — Same 34 question asked four times in a row with only slight wording changes; no new activity or method.
+- **dead_end** (turns 14): “Tumne sab digits gin liye, par rule mein sirf number ka bilkul aakhri digit dekhte hain.” — Lesson ends after s2 struggle; s3 (odd+odd etc. predictions) is never introduced.
 
 Understanding vs card: 2/2 probed skills read right (3 skills; overclaimed 0); misconceptions detected 1/2, false alarms 0

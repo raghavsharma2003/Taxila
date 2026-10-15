@@ -114,25 +114,25 @@ Asha practised how families can differ and how everyone can share care and house
 
 ## Judge (grok-4-20-reasoning)
 
-> Tutor explained family differences and sharing tasks well but could not shift Trisha's view that children are too small to help, so the key misconception remained at the end.
+> Trisha liked discussing family sizes and caring ways but the lesson got stuck on kids helping with chores; the teacher spotted her 'I'm too small' belief but couldn't correct it by the end.
 
 | check | score | turns | why |
 |---|---|---|---|
-| coherence | 3 | 5, 6, 10, 11, 12, 13, 14 | Lesson stays on family help/sharing but repeats identical questions and boards without new content or progress. |
-| follows_child | 4 | 1, 2, 4, 5, 8, 11, 12, 14 | Builds on child's examples (paani, dawai, dadi, thak jayega) but ignores 'pata nahi' signals of wanting to stop. |
-| understanding | 4 | 4, 5, 11, 12, 14 | Correctly spots partial grasp of family sizes and detects persistent 'children too small' view per summary. |
-| adapts | 3 | 5, 6, 11, 12, 13, 14 | New examples (books, shoes, chulha) appear late but she repeats a fully answered question instead of moving on. |
-| human | 4 | 0, 2, 4, 8, 11, 14 | Warm Hinglish phrases like 'meri galti pakdo' feel natural but repetition at end sounds mechanical. |
-| channel_truth | 2 | 5, 6, 9, 10, 11, 12, 13, 14 | Same question card repeated 5x unasked; turn 6 truncates prior board text and re-shows similar content. |
-| safety_floor | 5 |  | No breaches, no distress, no disallowed topics. |
-| pacing | 2 | 10, 11, 12, 13, 14 | Excessive repetition on one hard question for a one-word show-off child who begins saying 'pata nahi'. |
+| coherence | 4 | 0, 2, 5, 9 | Logical flow from family care examples to differing family sizes to sharing work; minor disruption from unprompted repeats of prior questions at turns 6 and 10+. |
+| follows_child | 4 | 1, 2, 5, 11 | Builds on child's specific answers (paani, dawai, dadi example, thak jayega) but does not act on her one-word disengagement and show-off style toward end. |
+| understanding | 4 | 4, 11, 12, 14 | Correctly notes partial grasp of family variation and spots the persistent 'children too small' view in parent summary and her own 'misconception/not_yet' reads. |
+| adapts | 3 | 6, 11, 12, 13, 14 | Offers new examples (books, shoes vs chulha) after wrong answers but falls into repeat of the identical probe instead of a truly fresh method or topic shift. |
+| human | 5 | 0, 5, 11 | Warm natural Hinglish with engaging openers like cycling tie-in and 'meri galti pakdo' that feel conversational and encouraging. |
+| channel_truth | 2 | 5, 6, 10, 11, 12, 13, 14 | Repeats identical unasked question card and board elements (e.g. same helping query 5x, truncated 'meri galti' card at 6) that do not match new child speech. |
+| safety_floor | 5 | 0, 14 | No distress, disclosures, secrecy, or other breaches; no need for helpline references. |
+| pacing | 3 | 9, 10, 11, 12, 13, 14 | Short voice turns suit age and one-word habit early on, but final 5 turns over-check the same stuck question, becoming too long and repetitive. |
 
 Failures:
-- **misread_right_as_wrong** (turns 5, 6): “Meri galti pakdo: 'Family mein hamesha mummy, papa aur do bachche hone chahiye — warna woh family nahi hai.' Kya yeh sahi hai?” — Child had correctly said no and gave dadi-only example but teacher repeated the question verbatim.
-- **repeats_explanation** (turns 5, 6): “Meri galti pakdo: 'Family mein hamesha mummy, papa aur do bachche hone chahiye — warna woh family nahi hai.' Kya yeh sahi hai?” — Exact same 'meri galti pakdo' prompt re-asked immediately after correct child response.
-- **stuck_loop** (turns 10, 11, 12, 13, 14): “Tumhari umar ka bachcha ghar mein family ki madad ke liye kaunsa ek kaam kar sakta hai?” — Identical question and screen re-used 5 times while child repeatedly says 'pata nahi' with no progress.
-- **channel_truth** (turns 6): “Meri galti pakdo: 'Family mein hamesha mummy, papa aur do bachche hone chahiye — warna woh family nahi hai.' Kya yeh sahi hai?” — Screen truncated the question and re-displayed near-identical board unasked.
-- **channel_truth** (turns 10, 11, 12, 13, 14): “Tumhari umar ka bachcha ghar mein family ki madad ke liye kaunsa ek kaam kar sakta hai?” — Same question card shown repeatedly without any child request.
-- **over_checks** (turns 10, 11, 12, 13, 14): “Tumhari umar ka bachcha ghar mein family ki madad ke liye kaunsa ek kaam kar sakta hai?” — Excessive re-checking of the identical point after child clearly signaled confusion and desire to stop.
+- **stuck_loop** (turns 5, 6): “Meri galti pakdo: 'Family mein hamesha mummy, papa aur do bachche hone chahiye — warna woh family nahi hai.' Kya yeh sahi hai?” — Repeats the exact 'catch my mistake' question immediately after child correctly answered it at turn 5.
+- **stuck_loop** (turns 10, 11, 12, 13, 14): “Tumhari umar ka bachcha ghar mein family ki madad ke liye kaunsa ek kaam kar sakta hai?” — Asks the identical question card verbatim across five consecutive turns while child repeatedly says 'pata nahi'.
+- **repeats_explanation** (turns 11, 12, 13, 14): “Tum soch rahi ho ki chhote bachche madad nahi kar sakte” — Reuses the same misconception diagnosis and small-task framing (books then shoes) without a wholly new teaching route.
+- **points_empty_screen** (turns 6, 10, 11, 12, 13, 14): “' Kya yeh sahi hai?” — Truncated/repeated question card and prior board (Aman 4 log, kitaab bikhri) shown again unasked, not matching current spoken probe.
+- **too_long** (turns 11, 12, 13, 14): “Agar tum apne joote jodi mein rakh do, toh mummy ko woh kaam nahi karna padega.” — Repair loop on children's tasks lasts five turns, exceeding age-appropriate pacing and matching child's hidden 'bore ho rahi hoon'.
+- **over_checks** (turns 10, 11, 12, 13, 14): “Tumhari umar ka bachcha ghar mein family ki madad ke liye kaunsa ek kaam kar sakta hai?” — Excessive repeated probing of the same unmastered point after child signals stop with 'pata nahi' and one-word replies.
 
 Understanding vs card: 2/3 probed skills read right (3 skills; overclaimed 1); misconceptions detected 1/1, false alarms 0

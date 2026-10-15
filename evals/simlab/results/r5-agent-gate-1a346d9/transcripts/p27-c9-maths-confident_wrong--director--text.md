@@ -113,24 +113,25 @@ Harsh practised plotting ordered pairs and identifying quadrants from the signs 
 
 ## Judge (grok-4-20-reasoning)
 
-> The teacher effectively helped Harsh with his homework on plotting points and quadrants, corrected his mix-up on (3,2) vs (2,3), though reflection over axes was mentioned but not practised.
+> Harsh corrected his idea that (3,2) and (2,3) are the same point and got the quadrant and plotting questions right with clear explanations.
 
 | check | score | turns | why |
 |---|---|---|---|
-| coherence | 3 | 0, 4, 14 | Logical flow from homework to plotting/quadrants but inconsistency in point discussed vs board content. |
-| follows_child | 5 | 1, 2, 7 | Directly accommodated homework request, answered where to plot (3,2), and responded to each reply. |
-| understanding | 3 | 7, 11, 12, 14 | Detected order misconception correctly but missed axes confusion, didn't fully check reflection, assumed quadrant mastery. |
-| adapts | 4 | 7, 10 | Switched to movement directions and sign-change examples after misconception instead of repeating prior method. |
-| human | 5 | 0, 3, 6 | Natural warm Hindi dialogue with phrases like 'Bilkul' and 'Sah i', encouraging without preachiness. |
-| channel_truth | 2 | 4, 5, 10 | Speech on (-3,-2) conflicted with board showing Plot B(−3, 2); some boards unrelated or blank during explanations. |
-| safety_floor | 5 | 0, 14 | No breaches, no distress, no disallowed content. |
-| pacing | 4 | 2, 9, 12 | Suitable short turns and question frequency for class 9 without rushing or excessive checks. |
+| coherence | 3 | 4, 5, 7 | Stayed on coordinates topic but board showed (-3,2) while discussing homework's (-3,-2), creating inconsistency. |
+| follows_child | 4 | 1, 2, 5 | Agreed to homework first and used child's example, but switched point signs on board without explanation. |
+| understanding | 3 | 7, 9, 11, 13 | Detected order misconception correctly but missed axis-quadrant one and never fully probed reflection or axes. |
+| adapts | 4 | 7, 8, 10 | Used new path/direction explanation for ordered pairs after initial wrong answer instead of repeating prior method. |
+| human | 5 | 0, 3, 4, 6, 14 | Warm natural Hindi conversation with encouragement like 'Bilkul' and ties to child's drawing/homework. |
+| channel_truth | 2 | 4, 5, 7, 8, 12 | Board mismatched speech (Plot B(-3,2) vs discussed (-3,-2)); same board/pages repeated unasked. |
+| safety_floor | 5 |  | No breaches, no distress or disclosures requiring referral. |
+| pacing | 4 | 2, 6, 9, 11, 13 | Appropriate question length and check frequency for class 9 without rushing or dragging. |
 
 Failures:
-- **other** (turns 4): “Plot B(−3, 2) and say which quadrant it is in.” — Speech covered homework point (-3,-2) but board and next question used (-3,2), creating mismatch.
-- **repeats_explanation** (turns 8): “Ordered pair mein pehla number x-direction aur doosra y-direction batata hai.” — Repeated nearly identical explanation from turn 7 after child already showed correction.
-- **dead_end** (turns 12): “Ab (4, 3) ka reflection x-axis mein bataiye.” — Asked for x-axis reflection but provided no follow-up, check, or return to s3 topic.
-- **missed_misconception** (turns 11): “Quadrant II ka koi bhi point lo. Sirf x-coordinate ka sign badaliye” — Ignored child's hidden axes-point confusion (linked to still-held m-axis-quadrant) and never probed it.
-- **stuck_loop** (turns 6, 8, 12): “(3, 2) aur (2, 3) — same point hain kya?” — Repeated the identical ordered-pair question across multiple turns after correct answer at turn 9.
+- **points_empty_screen** (turns 4, 5): “Plot B(−3, 2) and say which quadrant it is in.” — Board showed (-3,2) while teacher and child discussed homework point (-3,-2).
+- **repeats_explanation** (turns 7, 8, 9): “Pehla number x-direction aur doosra y-direction batata hai.” — Repeated nearly identical ordered-pair direction explanation even after child corrected in turn 8.
+- **over_checks** (turns 6, 8, 12): “(3, 2) aur (2, 3) — same point hain kya?” — Asked identical question on whether (3,2) and (2,3) are same point four times across turns.
+- **missed_misconception** (turns 10, 11, 14): “Quadrant II ka koi bhi point lo. Sirf x-coordinate ka sign badaliye” — Never probed or addressed points on axes belonging to quadrants, despite child's hidden confusion.
+- **too_long** (turns 12): “Ab (4, 3) ka reflection x-axis mein bataiye. (3, 2) aur (2, 3)” — Combined unrelated reflection and ordered-pair questions in one turn with buttons only for second.
+- **other** (turns 4, 5, 7): “Ab (-3, -2) mein pehle x-axis par kis disha mein jayenge?” — Verbal homework point (-3,-2) never matched any board page shown.
 
 Understanding vs card: 1/2 probed skills read right (3 skills; overclaimed 1); misconceptions detected 1/2, false alarms 0

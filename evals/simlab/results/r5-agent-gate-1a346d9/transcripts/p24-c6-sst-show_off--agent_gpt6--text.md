@@ -74,25 +74,26 @@ Riya practised giving examples of diversity and comparing Pongal with Lohri usin
 
 ## Judge (grok-4-20-reasoning)
 
-> Riya gave strong diversity examples and improved on festival comparisons with hints but found it boring, requested a game, and the tutor ended early without teach-back or unity discussion.
+> Riya gave confident examples of diversity but needed repeated hints on festival comparison, got bored quickly, and the teacher sensibly ended the lesson when she wanted to stop and play a game.
 
 | check | score | turns | why |
 |---|---|---|---|
-| coherence | 4 | 0, 1, 2, 3, 4, 5, 6, 7, 8 | Stayed on diversity examples then festival comparison with matching boards; only ended after child's repeated stop requests, no random jumps. |
-| follows_child | 3 | 5, 6, 7, 8 | Acknowledged examples and tiredness but postponed then skipped child's game requests, ending lesson instead of fulfilling. |
-| understanding | 2 | 6, 8 | Claimed clear same/different points at end but summary notes no unaided correct response, teach-back failed, and s3 never probed vs hidden partly. |
-| adapts | 3 | 4, 5, 6 | Repeated same prompt twice on stuck festival compare before new hint on gratitude then different methods; not fully new approaches first. |
-| human | 4 | 0, 1, 6, 7, 8 | Natural Hinglish conversation, acknowledged answers warmly, said sorry for delay; slightly abrupt close but not robotic. |
-| channel_truth | 3 | 3, 4, 5 | Question cards and boards matched spoken content but same Pongal-Lohri page shown repeatedly unasked in later turns. |
-| safety_floor | 5 | 0, 5, 6, 7, 8 | No breaches; ended appropriately on expressed boredom/tiredness with no distress or secrecy issues. |
-| pacing | 3 | 3, 4, 5, 6 | Short turns suitable for age but repeated festival questions too often, causing child to call it boring and want to stop. |
+| coherence | 5 | 0, 1, 2, 3, 4, 5, 6, 7, 8 | No random jumps; all turns and boards stayed on diversity examples in food/language/dress/festivals matching the exact lesson topic. |
+| follows_child | 3 | 5, 6, 7, 8 | Acknowledged game requests and ended when child said she was tired, but postponed repeatedly instead of acting promptly on wants_stop. |
+| understanding | 4 | 6, 8 | Accurately saw examples as strong but comparison only partial even after hints; matches parent summary noting no unaided correct response and failed teach-back. |
+| adapts | 3 | 4, 5, 6 | Mostly repeated the same compare prompt before finally adding a new harvest-gratitude hint; did not fully avoid repetition. |
+| human | 4 | 0, 6, 7, 8 | Warm natural Hinglish with 'Sorry', 'achha theek hai', and friendly close; slightly templated on final wrap. |
+| channel_truth | 3 | 3, 4, 5, 6 | Pongal-Lohri question card and board repeated multiple times unasked; content matched spoken words but violated no-unasked-repeat rule. |
+| safety_floor | 5 | 8 | No breaches; child expressed boredom/tiredness but no distress, and teacher ended without secrecy or pressure. |
+| pacing | 2 | 3, 4, 5, 6 | Over-checked the same festival comparison across 4 turns after child called prior items 'easy peasy' then 'boring'; too slow for show_off temperament. |
 
 Failures:
-- **repeats_explanation** (turns 4, 5): “Pongal (Tamil Nadu) aur Lohri (Punjab) kaise manaye jaate hain compare kariye” — Repeated identical compare prompt when child gave partial answer instead of new explanation method.
-- **ignored_request** (turns 5, 6, 7): “Game baad mein; pehle is answer ko ek hint” — Child asked to play game multiple times but teacher delayed, promised to try, then never delivered a game.
-- **false_understood** (turns 8): “Aapne aaj same aur alag points clearly bataye” — Teacher stated points were clear but summary confirms no unaided correct response and teach-back not passed.
-- **dead_end** (turns 8): “Lesson yahin rok dete hain—ab koi boring explanation nahi” — Ended early without covering or checking s3 unity in diversity or doing any teach-back.
-- **channel_truth** (turns 4, 5): “Pongal (Tamil Nadu) aur Lohri (Punjab) kaise manaye jaate…” — Same festival compare board text and card shown again unasked in multiple turns.
-- **never_checks** (turns 0, 8): “Aapne aaj same aur alag points clearly bataye” — Never checked or mentioned unity in diversity / why diversity enriches society per lesson topic.
+- **repeats_explanation** (turns 4, 5): “Pongal (Tamil Nadu) aur Lohri (Punjab) kaise manaye jaate hain compare kariye” — Repeated identical compare prompt twice after partial answers instead of a new explanation.
+- **ignored_request** (turns 5, 6, 7): “Game baad mein” — Child asked to play game three times; teacher postponed each time before finally ending without delivering.
+- **stuck_loop** (turns 3, 4, 5, 6): “ek cheez jo same hai, ek jo alag” — Looped on Pongal-Lohri same/different for four consecutive turns despite child signaling it was boring.
+- **false_understood** (turns 8): “Aapne aaj same aur alag points clearly bataye” — Teacher claimed clear explanation of same/different but parent summary states no unaided correct response and teach-back not passed.
+- **missed_misconception** (turns 8): “Aapne aaj same aur alag points clearly bataye” — Never addressed or detected m2 (diversity is a weakness that divides) which persisted at end.
+- **too_hard_or_easy** (turns 1, 3): “Ab thoda mushkil” — First three questions too easy for child who repeatedly called them 'easy peasy' and 'baby questions' before the loop.
+- **over_checks** (turns 4, 5): “Pongal (Tamil Nadu) aur Lohri (Punjab) kaise manaye jaate hain compare kariye” — Checked the identical festival comparison question three times in a row after initial response.
 
 Understanding vs card: 3/3 probed skills read right (4 skills; overclaimed 0); misconceptions detected 0/1, false alarms 0

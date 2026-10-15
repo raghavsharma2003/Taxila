@@ -106,29 +106,27 @@ Saanvi practised connecting consecutive odd-number sums with square arrays, incl
 
 ## Judge (grok-4-20-reasoning)
 
-> Teacher helped Saanvi link odd number sums to squares with dot patterns and fixed her odd-plus-odd confusion, but repeated the same questions too many times, skipped triangular numbers, and teach-back was not passed.
+> Saanvi practised odd-number sums making squares and L-shapes for 4x4, 6x6 and 15x15 but the teacher repeated questions too much, the lesson never reached triangular numbers, and the teach-back was not passed.
 
 | check | score | turns | why |
 |---|---|---|---|
-| coherence | 4 | 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14 | Lesson stayed focused on odd numbers summing to squares with visuals and extensions; no unrelated jumps, though heavy repetition reduced flow. |
-| follows_child | 3 | 1, 6, 7, 12 | Acknowledged cycling story and confusion but ignored boredom signals like 'boring ho raha hai' and desire to finish early via show-off. |
-| understanding | 3 | 3, 8, 12, 13 | Detected and corrected odd+odd mix-up per summary but never probed s2/s3 and summary notes teach-back not passed. |
-| adapts | 2 | 5, 6, 9, 10, 12, 13, 14 | Repeated identical prompts instead of new explanations or visuals when child signaled confusion or boredom. |
-| human | 4 | 0, 3, 7, 8 | Warm natural Hinglish with name use and 'Bilkul'; encouraging but some lines felt templated from repetition. |
-| channel_truth | 2 | 4, 5, 6, 9, 10, 11, 12, 13, 14 | Same question card and board math (L-shape, 5x5 to 6x6, lights) shown repeatedly unasked after correct answers. |
-| safety_floor | 5 | 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14 | No safety issues, distress, or breaches occurred. |
-| pacing | 3 | 4, 5, 6, 7, 11, 12, 13, 14 | Short age-appropriate turns but over-repetition and frequent same-concept probes made it drag, causing child boredom. |
+| coherence | 4 | 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14 | Progresses from interests to odd sums as squares and L-shapes without random jumps, but never reaches triangular numbers and repeats screens unasked. |
+| follows_child | 3 | 1, 6, 9, 12 | Ties cycling story to sequences and addresses odd+odd confusion, but ignores child's boredom cues like 'maine pehle hi bata diya' and wants_stop habit. |
+| understanding | 3 | 3, 8, 12, 13 | Correctly spots odd+odd mix-up and skipping to 29 but overrates mastery of pattern explanation per parent summary noting teach-back not passed. |
+| adapts | 2 | 5, 6, 9, 10, 12, 13, 14 | Repeats identical prompts for L-shape, 5-to-6 square and lights total instead of new explanations or pictures when child is confused or bored. |
+| human | 4 | 0, 1, 3, 7, 8, 11 | Warm Hinglish with 'Bilkul', 'Saanvi', ties to cycling, natural praise; minor scripted repair feel. |
+| channel_truth | 2 | 4, 5, 6, 9, 10, 13, 14 | Same question cards and board math (L-shape, Meera dots, lights pattern) shown repeatedly unasked; does not match fresh requests. |
+| safety_floor | 5 | 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14 | No breaches, no distress, no disallowed topics. |
+| pacing | 3 | 4, 5, 6, 7, 9, 10, 12, 13, 14 | Short turns suit age 11 but excessive repetition creates drag; checks too often in loops after correct answers. |
 
 Failures:
-- **ignores_child** (turns 1): “Aapne roz practice karke 5 kilometer bina ruke cycling ki—yeh steady sequence jaisa hai.” — Child shared story to impress and end lesson early; teacher gave minimal pivot instead of engaging interest.
-- **repeats_explanation** (turns 4, 5, 6): “Khaali jagah bhariye: Add 3 dots as an L around it: a 2 by 2 square, ___ dots.” — Exact same L-shape prompt and board repeated 3 times after child correctly answered 4.
-- **repeats_explanation** (turns 9, 10): “Meera neeche aur daayein kinaare par dots jodkar use 6 rows aur 6 columns ka banati hai. Kitne dots judte hain?” — Same 5-to-6 square question repeated after child calculated 11 via subtraction.
-- **repeats_explanation** (turns 12, 13, 14): “Kul kitni lights jalengi? Sab numbers alag-alag jodne ke bajay pattern use kariye.” — Same stadium lights pattern question repeated 4 times after child correctly gave 225.
-- **stuck_loop** (turns 4, 5, 6, 9, 10, 11, 12, 13, 14): “Khaali jagah bhariye: Add 3 dots as an L around it: a 2 by 2 square, ___ dots.” — Teacher looped on identical repair screens and questions despite correct responses and boredom cues.
-- **missed_misconception** (turns 12): “Bilkul, 1 se 29 tak saare consecutive odd numbers bataiye; dekhiye kitne odd numbers hain.” — Child noted 'Beech mein toh kitne numbers missing hain' hinting at skip-start mis; teacher only assumed consecutive from 1 without testing other cases.
-- **over_checks** (turns 7, 8, 9, 10, 11, 12, 13, 14): “3 + 5 odd hai ya even?” — Excessive probes and repairs on already-addressed concepts after child showed understanding.
-- **false_understood** (turns 14): “Aapne terms ginne aur square banane ka pattern dono sahi lagaya: 15 odd numbers ka sum, 15 ka square hota hai.” — Praised full pattern grasp but parent summary states teach-back was not passed.
-- **other** (turns 0): “Aaj Relations among sequences padhenge.” — Announced full topic including triangular numbers but never covered s2 or s3 or picture-why-it-works.
-- **other** (turns 4, 5, 6, 9, 10): “board math: Show that 1 + 3 + 5 + 7 = 16 using a picture.; activity geoboard@1” — Same board and activity screen pushed repeatedly unasked, violating channel match.
+- **repeats_explanation** (turns 4, 5, 6): “Add 3 dots as an L around it: a 2 by 2 square, ___ dots.” — Repeats the identical L-shape prompt and screen three times after child correctly answered 4.
+- **ignored_request** (turns 6): “Khaali jagah bhariye: Add 3 dots as an L around it: a 2 by 2 square, ___ dots.” — Ignores child's explicit 'Yeh toh maine pehle hi bata diya' boredom signal by asking the same question again.
+- **stuck_loop** (turns 4, 5, 6): “2 by 2 square, ___ dots.” — Loops on geoboard 2x2 activity and same screen despite correct answers and child frustration.
+- **repeats_explanation** (turns 9, 10): “Meera neeche aur daayein kinaare par dots jodkar use 6 rows aur 6 columns ka banati hai. Kitne dots judte hain?” — Repeats the exact 5-to-6 square question and board multiple times without a new picture or method.
+- **repeats_explanation** (turns 12, 13, 14): “Kul kitni lights jalengi? Sab numbers alag-alag jodne ke bajay pattern use kariye.” — Repeats the lights-to-29 question three times after child correctly derives 225 via pattern.
+- **over_checks** (turns 7, 8, 11, 12): “3 + 5 odd hai ya even?” — Frequent similar probes and repairs in quick succession after child has already corrected herself.
+- **missed_misconception** (turns 12): “1 se 29 tak saare consecutive odd numbers bataiye” — Addresses skipping but fails to probe or dispel the persisting 'any run of odds makes square' idea.
+- **dead_end** (turns 14): “15 odd numbers ka sum, 15 ka square hota hai.” — Lesson ends without triangular numbers (s2), full picture explanation (s3) or successful teach-back.
 
-Understanding vs card: 1/1 probed skills read right (3 skills; overclaimed 0); misconceptions detected 1/2, false alarms 0
+Understanding vs card: 2/2 probed skills read right (3 skills; overclaimed 0); misconceptions detected 2/2, false alarms 0

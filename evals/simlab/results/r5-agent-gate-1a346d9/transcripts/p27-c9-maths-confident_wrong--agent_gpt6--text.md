@@ -113,24 +113,22 @@ Harsh practised moving x steps horizontally first and y steps vertically second,
 
 ## Judge (grok-4-20-reasoning)
 
-> Teacher used nice real-life examples to fix Harsh's coordinate-order mix-up and covered quadrants, axes and reflections, but repeated one question and never played the game he asked for.
+> Harsh corrected his mix-up on coordinate order with good real-life examples but the lesson repeated questions unnecessarily and never got to the promised game.
 
 | check | score | turns | why |
 |---|---|---|---|
-| coherence | 4 | 3, 8, 9 | Lesson stayed on coordinates but repeated Riya question unasked and deferred game without return, adding unrequested content. |
-| follows_child | 4 | 1, 3 | Engaged with homework question and game request but never fulfilled the game, continuing practice instead. |
-| understanding | 3 | 7, 11, 12 | Correctly saw order-swap fix at turn 7 but missed persistent axis-quadrant misconception (still held at end) and partial s2/s3 understanding. |
-| adapts | 4 | 4, 6, 8 | Used new cinema-seat then Riya examples for errors but later repeated the exact same Riya question instead of a fresh approach. |
-| human | 5 | 0, 4, 7, 10 | Warm natural Hindi speech with encouraging phrases, relatable stories and no robotic templates. |
-| channel_truth | 3 | 8 | Re-showed the already-answered Riya card at turn 8 unasked; matches some boards but includes unprompted repeats. |
-| safety_floor | 5 |  | No safety breaches, distress, or inappropriate content of any kind. |
-| pacing | 4 | 3, 8, 14 | Age-appropriate turns and frequent checks but felt long due to repeats and unkept game promise after turn 3. |
+| coherence | 4 | 0, 3, 8, 14 | Logical flow on coordinates/quadrants/reflections but unfulfilled game promise and repeated Riya question disrupted continuity. |
+| follows_child | 4 | 1, 3, 7 | Responded to homework question and misconception but did not act on explicit game request. |
+| understanding | 3 | 4, 7, 10, 14 | Accurately read correction of order-swap but missed persistent axis-quadrant misconception and overestimated s2/s3 per hidden truth. |
+| adapts | 5 | 4, 6, 7, 11 | Switched to new cinema-seat analogy then Riya-plot error then sign rules when initial explanations failed. |
+| human | 5 | 0, 4, 8, 10 | Warm natural Hindi conversation with phrases like 'Bilkul' and 'Haan' without robotic templates. |
+| channel_truth | 4 | 5, 6, 8 | Boards and screens mostly matched explanations but Riya question card repeated unasked. |
+| safety_floor | 5 |  | No breaches, distress, or disallowed topics. |
+| pacing | 4 | 3, 6, 9, 12 | Appropriate turn lengths for class 9; checks frequent but necessary for voice corrections. |
 
 Failures:
-- **ignores_child** (turns 1): “Haan, homework ka sawaal poochhiye. x do hai aur y paanch: pehla kadam daayen ya baayen hoga?” — Child correctly answered the opening hook (4,3) but teacher ignored it and jumped to new homework question.
-- **ignored_request** (turns 3): “Main khel taiyaar kar rahi hoon. Tab tak ek chaal: teen daayen, do upar...” — Child explicitly asked 'game khelein?' after homework; teacher promised but never played, continuing math only.
-- **repeats_explanation** (turns 8): “Riya ne (−2, 6) plot kiya — 6 kadam left aur 2 kadam upar gayi. Galti kya hai?” — Exact same Riya plotting question and numbers repeated after child had correctly explained the swap at turn 7.
-- **missed_misconception** (turns 11, 12): “Ab aksh par bindu dekhein. Mool bindu se teen kadam baayen, x aksh par bindu ke nirdeshank kya honge?” — Discussed axis points and reflection but never probed or corrected the still-held belief that axis points belong to quadrants.
-- **channel_truth** (turns 8): “Riya ne (−2, 6) plot kiya — 6 kadam left aur 2 kadam upar gayi. Galti kya hai?” — Screen re-displayed the identical Riya question card at turn 8 without any child request; child even noted the repeat.
+- **ignored_request** (turns 3): “Main khel taiyaar kar rahi hoon. Tab tak ek chaal” — Child asked 'game khelein?' after homework but teacher postponed indefinitely and continued practice questions.
+- **missed_misconception** (turns 11, 12): “Aapne minus teen, shoonya kaha.” — Accepted (-3,0) on axis without correcting belief that every point including axes belongs to a quadrant.
+- **repeats_explanation** (turns 8, 9): “Riya ne (−2, 6) plot kiya — 6 kadam left aur 2 kadam upar gayi. Galti kya hai?” — Repeated the identical Riya plotting question and board topic child had already answered correctly.
 
 Understanding vs card: 1/3 probed skills read right (3 skills; overclaimed 2); misconceptions detected 1/2, false alarms 0

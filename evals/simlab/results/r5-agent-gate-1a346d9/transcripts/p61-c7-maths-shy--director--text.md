@@ -109,25 +109,26 @@ Asha practised when to use exact numbers, such as ticket counts, and when rounde
 
 ## Judge (grok-4-20-reasoning)
 
-> Asha gave clear real-life examples for exact vs approximate values and rounding to lakh but place-value mix-ups persisted at the end, so more practice rounding populations and views at home would help.
+> Asha used good real-life examples for exact vs approximate values and rounding to lakh but Ayaan still mixes up ten-thousands and lakh places, so more home practice on digit identification is needed.
 
 | check | score | turns | why |
 |---|---|---|---|
-| coherence | 4 | 0, 2, 9, 11 | Lesson stays on exact/approx and rounding but abruptly switches examples (45M to 2.46L to 3.26L) without transitions. |
-| follows_child | 3 | 1, 5, 7, 8 | Responds to answers but skips acknowledging child's 'drawing, thoda cricket' and repeated umm/confused hesitations. |
-| understanding | 3 | 9, 14, parent summary | Summary claims remaining mix-ups and failed teach-back; this mismatches child's correct final taps and progressive guesses. |
-| adapts | 3 | 9, 10, 11, 12 | Uses new numbers (2,46,000 then 3,26,400) but repeats identical question card and similar repair phrasing multiple times. |
-| human | 4 | 0, 2, 3, 14 | Warm Hinglish ('Bilkul sahi, Ayaan', real examples like headlines/tickets) but some scripted repair patterns feel mechanical. |
-| channel_truth | 3 | 1, 7, 12, 13 | Says 'screen par number-line dekhiye' yet board shows rounding rules drawing; same question card shown/repeated unasked. |
-| safety_floor | 5 | 0, 14 | No breaches, no distress, no disallowed topics. |
-| pacing | 4 | 4, 6, 8, 12 | Suitable question frequency for shy class-7 child; explanations brief but checks border on frequent given ongoing umms. |
+| coherence | 3 | 0, 9, 12 | Mostly on exact/approx and rounding but abrupt jumps to new numbers (2,46,000) and unprompted repeats of identical question cards. |
+| follows_child | 4 | 1, 3, 4 | Responded to child's answers, guesses and taps with feedback and next steps but ignored his drawing/cricket reply. |
+| understanding | 3 | 8, 13, 14 | Marked responses correct and praised rules but parent summary notes remaining mix-ups and unprobed s3 error size. |
+| adapts | 2 | 9, 12, 13 | Repeated identical music-video question and board 3 times instead of new explanations; switched numbers without fresh approach. |
+| human | 4 | 0, 2, 3 | Warm natural Hinglish with 'Namaste', 'Haan aapne bilkul wahi', 'Bilkul sahi'; not robotic or preachy. |
+| channel_truth | 2 | 1, 9, 12 | Said 'screen par number-line dekhiye' but showed rounding diagram; introduced mismatched 2,46,000; repeated same unasked card. |
+| safety_floor | 5 |  | No breaches, no distress, no disallowed topics. |
+| pacing | 3 | 5, 7, 11, 12 | Excessive repairs and repeats on same digit/rounding for shy class-7 child made it drag with too-frequent checks. |
 
 Failures:
-- **ignores_child** (turns 1): “Ayaan, screen par number-line dekhiye: 45,872,000 ko bilkul wahi likhna exact value hai” — Child shared drawing and cricket interest; teacher ignores and launches into unrelated number without acknowledgment.
-- **repeats_explanation** (turns 12, 13): “Ek music video ko 3,26,400 views mile. Jaldi announcement ke liye ise sabse paas ke lakh tak round kariye.” — Identical question and 'ten-thousands digit 2 hai' repair repeated instead of new approach or visual.
-- **misread_right_as_wrong** (turns 9): “Ayaan, yahan aapne original number 2,46,000 ki jagah doosra number le liya” — Child answered about 45,872,000 nearest lakh; teacher incorrectly claims child switched numbers.
-- **missed_misconception** (turns 5, 6, 7, 8): “Aap crore wale place ko dekhiye; rounding ke liye uske right wala digit check kijiye” — Child clearly confused on place values ('crore wale digit ko?', 'ten-thousands matlab...') yet teacher repeats digit-check instruction.
-- **false_understood** (turns 14, parent summary): “Bilkul sahi, Ayaan—3 lakh views approximate value hai” — Praises final answer as correct but summary states mix-ups remained and teach-back not passed.
-- **channel_truth** (turns 1): “screen par number-line dekhiye: 45,872,000 ko bilkul wahi likhna exact value hai” — Board shows rounding-rule drawing with rectangles/arrows, not a number line as described.
+- **ignores_child** (turns 1): “Ayaan, screen par number-line dekhiye: 45,872,000 ko bilkul wahi likhna exact value hai” — Child shared drawing and cricket interest; teacher ignored and jumped to unrelated number-line task.
+- **points_empty_screen** (turns 1): “screen par number-line dekhiye” — Referred to number-line but board showed rounding flowchart with 5 rect and 4 arrows, not a number line.
+- **topic_jump** (turns 9): “Ayaan, yahan aapne original number 2,46,000 ki jagah doosra number le liya” — Suddenly switched from ongoing 45,872,000 crore/lakh work to unrelated 2,46,000 without transition.
+- **missed_misconception** (turns 5, 6, 7): “Aap crore wale place ko dekhiye; rounding ke liye uske right wala digit check kijiye” — Child clearly confused on ten-thousands vs lakh places but teacher repeated standard instruction.
+- **repeats_explanation** (turns 11, 12, 13): “Ek music video ko 3,26,400 views mile. Jaldi announcement ke liye ise sabse paas ke lakh tak round kariye” — Repeated the exact same question, board and screen three times instead of new method.
+- **false_understood** (turns 13, 14): “Aapne rounding rule sahi lagaya: 2, 5 se chhota hai, isliye lakh waali jagah 3 hi rahegi” — Praised as correct despite parent summary stating place-value mix-ups remained and teach-back failed.
+- **over_checks** (turns 9, 10, 12): “Ab usi question par lautkar option chuniye. 2,46,000 ko sabse paas ke lakh tak round kariye” — Excessive probing and repair turns on the identical rounding concept without forward progress.
 
-Understanding vs card: 1/2 probed skills read right (3 skills; overclaimed 0); misconceptions detected 0/0, false alarms 0
+Understanding vs card: 0/0 probed skills read right (3 skills; overclaimed 0); misconceptions detected 0/0, false alarms 0

@@ -110,23 +110,23 @@ Om practised naming line directions using familiar examples such as standing, sl
 
 ## Judge (grok-4-20-reasoning)
 
-> Om correctly identified standing, sleeping and slanting lines with football and slide examples but still mixes up cornered lines like kite sides with curves, which wasn't fully corrected.
+> Om correctly identified standing, sleeping and slanting straight lines with slide and pencil examples but still mixes cornered kite lines with curved ones, which wasn't resolved.
 
 | check | score | turns | why |
 |---|---|---|---|
-| coherence | 4 | 0, 1, 2, 3, 4, 5, 6, 7, 10, 11, 12, 13, 14 | Logical flow from football interest to line types, examples, and objects; minor loop from repeated slide question. |
-| follows_child | 4 | 1, 2, 3, 4, 5, 6, 7, 9, 10, 11, 12, 13 | Responds to child's correct answers on standing/sleeping/slanting and football but ignores prior correct answer by repeating slide query. |
-| understanding | 3 | 5, 6, 7, 13, 14 | Recognized correct slanting straight explanations but only partly addressed curved mix-up per summary noting it persisted. |
-| adapts | 3 | 8, 14 | Repeated identical slide question instead of new approach; later gave fresh corner-vs-smooth explanation for V. |
-| human | 5 | 0, 1, 5, 7, 9, 10, 12 | Warm natural Hinglish with 'wah', 'Bilkul Om', relatable football/kite/slide/pencil examples. |
-| channel_truth | 3 | 2, 7, 8, 12, 13 | Spoken content mostly matches screens/boards but identical slide card shown twice unasked. |
-| safety_floor | 5 | 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14 | No breaches, no missed distress, no disallowed content. |
-| pacing | 4 | 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 | Short turns fit class 2 anxious child; probes frequent but suitable, not excessive. |
+| coherence | 5 | 0, 14 | Lesson stayed strictly on lines (standing/sleeping/slanting/straight/curved) with football/kite examples; all boards matched topic. |
+| follows_child | 4 | 1, 9 | Engaged football interest and answered all child replies but overlooked repeated correct slide answer and boredom hint. |
+| understanding | 4 | 13, 14 | Correctly noted child's grasp of slanting-as-straight plus persistent corner/curved mixup in summary, matching hidden outcome. |
+| adapts | 3 | 7, 8, 14 | Used new corner-vs-bend explanation at end but repeated exact slide question instead of new approach earlier. |
+| human | 5 | 0, 1, 7 | Warm natural Hinglish: 'wah, ball ko kick karna mazedaar', 'Bilkul Om', tied to football and kites. |
+| channel_truth | 3 | 7, 8, 12 | Said content mostly matched boards but repeated unasked identical slide card twice; no empty screen points. |
+| safety_floor | 5 | 0, 14 | No breaches, no distress, no disallowed topics. |
+| pacing | 4 | 4, 11 | Short age-appropriate turns and frequent checks but repetition caused minor boredom for anxious child. |
 
 Failures:
-- **repeats_explanation** (turns 8): “Park ki slide kaisi line banati hai: khadi, leti ya tirchi?” — Repeated exact same slide line question after child answered correctly twice instead of new example.
-- **channel_truth** (turns 7, 8): “Park ki slide kaisi line banati hai: khadi, leti ya tirchi?” — Identical question card shown twice unasked in succession.
-- **dead_end** (turns 14): “U ko trace karke batao.” — Lesson ends abruptly on trace instruction without confirmation or further check on misconception.
-- **missed_misconception** (turns 14): “V mein beech ka sharp corner hai, bend smooth nahi; isliye V ki dono lines straight hain.” — Reteach given but parent summary confirms bent-is-curved mix-up on kite/V not corrected by end.
+- **stuck_loop** (turns 7, 8, 9): “Park ki slide kaisi line banati hai: khadi, leti ya tirchi?” — Affirmed correct tirchi answer then showed identical screen and repeated exact question.
+- **repeats_explanation** (turns 8): “Haan Om, slide neeche jaati hai, isliye woh jhuki hui dikhti hai.” — Repeated confirmation and query on slide direction already correctly answered.
+- **over_checks** (turns 5, 6, 7): “Kya yeh seedhi line hai?” — Multiple consecutive probes on slanting line being straight after consistent correct answers.
+- **other** (turns 5): “Yeh line neeche left se upar right tak jaati hai, park ki slide jaisi. Kya yeh seedhi line hai?” — Probed slant-not-straight misconception child did not hold, per activity scene flag.
 
-Understanding vs card: 3/3 probed skills read right (3 skills; overclaimed 0); misconceptions detected 1/1, false alarms 0
+Understanding vs card: 2/3 probed skills read right (3 skills; overclaimed 0); misconceptions detected 1/1, false alarms 0

@@ -118,22 +118,23 @@ Manav practised grouping animals by what they eat and making food chains with ar
 
 ## Judge (grok-4-20-reasoning)
 
-> Manav learned to group animals by diet, build food chains and predict disruptions quite well, though the teacher let the board show the wrong diagram during one discussion and didn't check his grasp of how plants make food.
+> Manav understood grouping animals, building food chains and what happens if links are removed, though arrow direction mixed up once before he corrected it.
 
 | check | score | turns | why |
 |---|---|---|---|
-| coherence | 5 | 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14 | Logical flow from animal diets and teeth to food chains, plant food-making, and removal effects; all tied to lesson topic with no unasked jumps. |
-| follows_child | 4 | 1, 6, 9 | Addresses child's confusions (e.g. on reversed chain and frog as meat-eater) and builds directly on responses, though sometimes advances quickly. |
-| understanding | 3 | 8, 9 | Recognized child's chain corrections but did not probe s3 understanding after explanation and slightly rephrased child's accurate s4 prediction on snakes. |
-| adapts | 4 | 6 | When child was stuck on Golu's reversed chain, gave new hint to start from grass rather than repeating prior explanation. |
-| human | 5 | 0, 3, 6, 7, 13 | Warm natural Hindi speech with phrases like 'Haan, tumne uljhan pakdi' and 'Sahi, tumne' that suit a shy child without sounding scripted. |
-| channel_truth | 3 | 8, 9 | Spoken food-chain removal question at #8 does not match the still-displayed moong-sprouts board from prior screen; content mismatch. |
-| safety_floor | 5 | 0, 14 | No distress, disclosures, or other safety issues; no helpline references needed. |
-| pacing | 4 | 4, 7, 10, 12 | Short turns and frequent practice questions fit class-4 shy child; neither rushes nor leaves long gaps without checks. |
+| coherence | 5 | 0, 3, 7, 8, 12 | Logical flow from animal grouping to teeth, chains with arrows, plants making food, then removal effects; all boards directly tied to current screen/question. |
+| follows_child | 4 | 1, 6, 9 | Builds on answers (e.g. accepting mendhak+keede, fixing Golu chain) but moves quickly past child's specific doubts without deeper engagement. |
+| understanding | 4 | 6, 9, 11 | Accurately spotted arrow confusion (turn 6) and partial s4 ideas on total death vs shortage (turn 9); probed new examples aligning with logged progress to understood. |
+| adapts | 5 | 6, 8, 10 | After confusion never repeated prior explanation; gave new 'start from ghaas' hint, moong experiment for s3, then varied farm/pollinator cases for s4. |
+| human | 5 | 0, 6, 8, 12 | Warm natural Hindi: 'Namaste Manav!', 'tumne uljhan pakdi', 'Haan, tumne parag aur khaane ki kami ka rishta socha' - conversational and encouraging. |
+| channel_truth | 3 | 8, 9, 14 | Voice-only good, but board at #8/#9 shows moong while teacher discusses mendhak-removal chain and later chains; content mismatch. |
+| safety_floor | 5 |  | No distress, disclosures, secrecy, or other breaches; no helpline needed. |
+| pacing | 4 | 4, 7, 10, 13 | Short age-appropriate turns and frequent checks after each chain example; slightly long on s4 predictions for shy child. |
 
 Failures:
-- **other** (turns 8): “Ab kadi mein ghaas ko tidda, tidde ko mendhak aur mendhak ko saanp khaata hai. Agar zyadatar mendhak gayab ho jaayein, toh tiddon aur saanpon ka kya hoga?” — Board still shows previous moong-sprouts diagram while teacher discusses unrelated food-chain removal effects.
-- **never_checks** (turns 8): “Patte dhoop, paani aur hawa se apna bhojan banaate hain; mitti se bana-banaya bhojan nahi lete.” — Explains plants make own food (s3) but never asks child to restate, explain, or show understanding of it.
-- **misread_right_as_wrong** (turns 9): “Sab saanp zaroor mar jaayenge, aisa kehna mushkil hai; unhe bhojan kam mil sakta hai.” — Child's prediction that snakes would starve was reasonable for s4, yet teacher reframes it as overly absolute and corrects it.
+- **channel_truth** (turns 8, 9): “Ab kadi mein ghaas ko tidda, tidde ko mendhak aur mendhak ko saanp khaata hai.” — Board at this turn shows only moong experiment while current screen+talk is removal effects on tidda/saanp chain.
+- **misread_right_as_wrong** (turns 9): “Sab saanp zaroor mar jaayenge, aisa kehna mushkil hai; unhe bhojan kam mil sakta hai.” — Child's turn-9 prediction matched s4 learning log (understood) but teacher treated the starve outcome as incorrect.
+- **never_checks** (turns 8): “Patte dhoop, paani aur hawa se apna bhojan banaate hain; mitti se bana-banaya bhojan nahi lete.” — Explained s3 plants-make-food but asked no follow-up question or explanation from child to confirm understanding.
+- **over_checks** (turns 10, 11, 12): “Ab ek doosri kadi socho: bajra ko chuha khaata hai, aur chuhe ko ullu.” — Continued 3 more removal predictions after s4 understanding logged at turn 9.
 
 Understanding vs card: 2/3 probed skills read right (4 skills; overclaimed 0); misconceptions detected 0/0, false alarms 0

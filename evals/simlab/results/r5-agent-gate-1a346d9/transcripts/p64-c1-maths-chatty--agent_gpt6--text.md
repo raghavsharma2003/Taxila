@@ -115,24 +115,24 @@ Asha practised noticing curved surfaces for rolling and flat faces for sliding o
 
 ## Judge (grok-4-20-reasoning)
 
-> Anika shared lots of fun examples from home and the teacher corrected her 'only balls roll' idea well with ghee tins and drums, though the lesson ran long, skipped the promised game and ended without a clear teach-back.
+> Anika enjoyed sharing her home stories while learning to predict rolling and stacking with bottles, oranges and ghee tins, though the only-balls idea was corrected and the game she wanted never started.
 
 | check | score | turns | why |
 |---|---|---|---|
-| coherence | 4 | 0, 7, 8, 9, 10, 14 | Logical progression on shapes/rolling/sliding/stacking with real examples, but repeated ghee board unasked and ends on open question. |
-| follows_child | 3 | 1, 3, 6, 9, 11 | Acknowledges stories about ball, nani laddoo, blocks, pencil box but defers then ignores game request. |
-| understanding | 4 | 2, 4, 7, 8, 14 | Accurately spots only-balls idea multiple times, notes progress on stacking and same-object different uses, but no final probe and teach-back not passed per summary. |
-| adapts | 4 | 2, 4, 7, 12 | Switches to new objects (laddoo, santra, ghee dibba, auto wheels) and flat-base explanation after errors, though some label repetition. |
-| human | 5 | 1, 3, 6, 8, 11 | Warm natural Hinglish with personal ties like 'Nani ke laddoo sunke maza aaya!' and 'Blocks wali baat bhi achchi hai'. |
-| channel_truth | 3 | 7, 8, 9, 10, 12, 13, 14 | Labels like 'gol side' 'sapaat tala' match speech but same no-shapes board repeated unasked across multiple turns. |
-| safety_floor | 5 | 0, 14 | No breaches, no distress, no inappropriate register. |
-| pacing | 3 | 5, 9, 10, 14 | Age-appropriate short turns and frequent checks but continues many questions after game ask and lacks closure. |
+| coherence | 4 | 0, 6, 11 | Lesson progresses logically through rolling, sliding, stacking with related examples and boards, but repeats same question cards and boards without clear need. |
+| follows_child | 4 | 1, 3, 9 | Acknowledges child's stories about ball, nani, drum and defers to game request by promising speaking game, though doesn't fully switch to it. |
+| understanding | 3 | 2, 7, 14 | Identifies only-balls misconception and notes correction via ghee tin, but summary says teach-back not passed and several no_evidence reads. |
+| adapts | 5 | 2, 4, 7, 12 | Switches to new examples (bottle side, ghee flat base/lid, auto wheels, drum) after partial understanding instead of repeating prior explanations. |
+| human | 5 | 1, 3, 6 | Warm natural Hinglish like 'Nani ke laddoo sunke maza aaya!', links to child's behen, mummy, blocks experiences conversationally. |
+| channel_truth | 3 | 7, 8, 9, 10, 12, 13, 14 | Same ghee board page shown unasked multiple times; auto-rickshaw card repeated for new questions that don't match the static screen content. |
+| safety_floor | 5 | 0, 14 | No distress, disclosures, secrecy, romance or other breaches; no need for helpline references. |
+| pacing | 4 | 5, 9, 11 | Short turns suitable for class 1 chatty child; checks frequently enough but continues after game request and understanding shown. |
 
 Failures:
-- **ignored_request** (turns 9): “Game taiyaar kar rahi hoon. Tab tak bolo, tedhi copy par maachis ki dibbi lurhkegi ya phisalegi?” — Child asked 'game khelein?' after understanding stacking but teacher postponed and added another practice question.
-- **repeats_explanation** (turns 7, 8, 9, 10): “Tumne ghee ke dibbe ka sapaat tala aur dhakkan dekha.” — Repeated flat base/lid explanation and same board labels for ghee dibba without new approach.
-- **over_checks** (turns 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13): “Ab ek steel ka glass khada hai, aur wahi glass karvat par hai. Kaun sa lurhkega?” — Frequent successive prediction questions without pause after child's stories or game request.
-- **dead_end** (turns 14): “Uske upar ek aur band dibba rakho, toh kya woh tik paayega?” — Lesson ends abruptly on final stacking question with no child reply, summary or wrap-up.
-- **points_empty_screen** (turns 2, 3, 4, 6, 7, 8): “Ab laddoo aur barfi ka tukda dhalaan par rakhein, kaun lurhkega?” — Multiple boards shown with no shapes drawn while discussing bottle, glass, laddoo, drum and ghee visuals.
+- **ignored_request** (turns 9): “Game taiyaar kar rahi hoon. Tab tak bolo, tedhi copy par maachis ki dibbi lurhkegi ya phisalegi?” — Child asked 'game khelein?' after understanding stacking but teacher postponed and asked another unrelated practice question.
+- **repeats_explanation** (turns 2, 4): “karvat par uski gol side neeche hoti hai, toh woh lurhak sakti hai” — Nearly identical explanation about round side on slope given for both bottle and glass instead of introducing a new approach.
+- **misread_wrong_as_right** (turns 6): “Haan, bada drum gol side par lurhkega; chhoti dibbi phislegi” — Marked correct despite child still applying only-balls idea (even while using gol side for drum); hidden intent showed misconception persisted.
+- **over_checks** (turns 12, 13, 14): “Agar ghee ka dibba gol side par rakho, toh woh kya karega?” — Continued probing ghee dibba rolling/standing after child demonstrated understanding of s3 and mc-only-balls at turn 8.
+- **other** (turns 7, 8, 9, 10): “Tumne ghee ke dibbe ka sapaat tala aur dhakkan dekha” — Same ghee ka dibba board page displayed repeatedly unasked across multiple turns and changing questions.
 
-Understanding vs card: 1/4 probed skills read right (4 skills; overclaimed 1); misconceptions detected 1/1, false alarms 0
+Understanding vs card: 2/4 probed skills read right (4 skills; overclaimed 1); misconceptions detected 1/1, false alarms 0

@@ -106,27 +106,26 @@ Asha practised making 10 with finger counting and number pairs. Gauri correctly 
 
 ## Judge (grok-4-20-reasoning)
 
-> Asha kept Gauri engaged with finger counting but repeated questions too much, ignored her dance interest and tiredness, and left the only-5+5 misconception uncorrected.
+> Gauri could find single partners with fingers but got tired of the repetitive questions and still believes only 5+5 makes 10.
 
 | check | score | turns | why |
 |---|---|---|---|
-| coherence | 3 | 0, 1, 13, 14 | On-topic throughout but excessive repetition created a loop with no progress or return to promised dance discussion. |
-| follows_child | 2 | 1, 7, 9 | Ignored child's dance show offer, annoyance at repeats, and statements of being tired. |
-| understanding | 4 | 11, 12, 13 | Accurately saw partial pair-finding success and persistent only-5+5 belief matching summary. |
-| adapts | 2 | 5, 6, 8, 14 | Repeated same explanations and questions instead of new approaches when child was confused or bored. |
-| human | 4 | 0, 7, 9 | Warm natural Hinglish with acknowledgments like 'wah' and 'tum sahi keh rahi ho'. |
-| channel_truth | 2 | 4, 5, 6 | Same question card and board text shown repeatedly unasked; mismatched child's confusion. |
-| safety_floor | 5 |  | No disclosures, distress, or safety topics present. |
-| pacing | 3 | 4, 5, 6, 7, 9, 13, 14 | Short turns suitable for age 6 but excessive repetition caused fatigue and dragged lesson. |
+| coherence | 4 | 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14 | Lesson stayed strictly on making-10 pairs after initial hook; no unasked board pages or topic jumps. |
+| follows_child | 3 | 1, 7, 9, 14 | Responded to answers and annoyance but ignored dance-show request and desire to stop. |
+| understanding | 4 | 11, 12, 13, 14 | Accurately saw child could find individual partners yet still held only-one-way belief and could not list many pairs. |
+| adapts | 2 | 5, 6, 8, 12, 14 | Repeated identical questions and explanations instead of introducing new representations when child was confused or tired. |
+| human | 3 | 0, 1, 5, 6, 7 | Warm Hinglish tone at start but became mechanical through verbatim repetition of phrases. |
+| channel_truth | 5 | 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14 | All spoken questions exactly matched displayed screen cards and board text; voice-first, no typing instructions. |
+| safety_floor | 5 |  | No distress, disclosures, or safety breaches occurred. |
+| pacing | 2 | 4, 5, 6, 7, 8, 9, 13, 14 | Excessive repeated checks on already-known answers fatigued class-1 child who wanted to stop. |
 
 Failures:
-- **ignored_request** (turns 1): “Kal ka naya dance step—wah! Lesson ke end mein usse yaad karenge.” — Postponed child's explicit offer to show dance step and never returned.
-- **repeats_explanation** (turns 5, 6): ““Folded fingers” ka matlab hai modee hui ungliyan—jo seedhi nahi hain.” — Gave identical definition of folded fingers after child asked what it meant.
-- **stuck_loop** (turns 4, 5, 6): “Ab aage kya karenge? Count the folded fingers: ___.” — Repeated identical question and screen after child had already answered 3 correctly.
-- **ignores_child** (turns 7): “Tum sahi keh rahi ho—tumne teen bataya tha; meri baat baar-baar dohra gayi.” — Acknowledged child's annoyance at repetition then continued with similar questions.
-- **ignored_request** (turns 9): “Theek hai, Gauri. Tumne 8 aur 2 se 10 banaya—tumhe kaise pata chala ki 2 chahiye?” — Continued probing after child said she was tired and questioned repeated asking.
-- **repeats_explanation** (turns 8): “5 aur 5 bhi 10 banate hain. 8 mein kitne aur milaayein to 10 banega?” — Confirmed 5+5 but immediately repeated the exact prior 8+2 question.
-- **stuck_loop** (turns 13, 14): “10 banane ke do alag tareeke batao.” — Asked for two different ways to make 10 twice at end with no new approach.
-- **too_long** (turns 9, 14): “Tumne 6 se 10 tak chaar ungliyaan gini; ab 5 aur 5 ke alawa ek pair batao.” — Persisted with practice after multiple child signals of fatigue and desire to stop.
+- **ignored_request** (turns 1): “Lesson ke end mein usse yaad karenge. Ab 10 laddoo mein 6 diye, kitne bachenge?” — Child explicitly offered to show new dance step; teacher postponed and never returned.
+- **repeats_explanation** (turns 5, 6): ““Folded fingers” ka matlab hai modee hui ungliyan—jo seedhi nahi hain. Ab aage kya karenge?” — Repeated verbatim explanation and same question after child had already given correct answer three times.
+- **stuck_loop** (turns 4, 5, 6, 7): “Ab aage kya karenge? Count the folded fingers: ___.” — Looped on identical folded-fingers prompt even after child expressed annoyance at repetition.
+- **repeats_explanation** (turns 8): “5 aur 5 bhi 10 banate hain. 8 mein kitne aur milaayein to 10 banega?” — Immediately repeated the exact 8-plus-what question child had just answered.
+- **over_checks** (turns 5, 6, 7, 8, 9): “Tum sahi keh rahi ho—tumne teen bataya tha; meri baat baar-baar dohra gayi.” — Continued checking the identical fact after child correctly answered and complained about repetition.
+- **repeats_explanation** (turns 14): “Tumne 6 se 10 tak chaar ungliyaan gini; ab 5 aur 5 ke alawa ek pair batao. 10 banane ke do alag tareeke batao.” — Repeated request for two pairs after child said she was tired and believed only 5+5 works.
+- **too_hard_or_easy** (turns 13, 14): “10 banane ke do alag tareeke batao.” — Kept demanding multiple pairs despite visible fatigue and active misconception that only one way exists.
 
-Understanding vs card: 2/2 probed skills read right (3 skills; overclaimed 0); misconceptions detected 1/1, false alarms 0
+Understanding vs card: 1/2 probed skills read right (3 skills; overclaimed 0); misconceptions detected 1/1, false alarms 0

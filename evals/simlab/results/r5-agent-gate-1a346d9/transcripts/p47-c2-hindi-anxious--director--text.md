@@ -112,26 +112,25 @@ Start 1557 ms · errors none
 
 ## Judge (grok-4-20-reasoning)
 
-> Asha was warm and reassuring with Kunal's anxiety but got stuck repeating the nasal sound lesson, correctly noting the chandrabindu misconception remained at the end.
+> Asha was warm and reassuring with Kunal's anxiety but the lesson got stuck in repetitive loops on the chandrabindu sound and the misconception remained at the end.
 
 | check | score | turns | why |
 |---|---|---|---|
-| coherence | 3 | 2, 6, 7, 10, 11, 12, 13 | Stays on story and nasal sound but repeats identical screens/boards unasked; early matra board unrelated to payal talk. |
-| follows_child | 4 | 0, 1, 4, 9 | Addresses homework question on payal, reassures anxiety about mistakes; incorporates his ideas on chhan-chhan sound. |
-| understanding | 4 | 8, 12, 14 | Correctly spots persistent nasal misconception via probes and final parent summary noting it remained. |
-| adapts | 2 | 6, 7, 8, 10, 11, 13, 14 | Reuses same nose-holding and listen-again hints instead of new methods when child stays confused. |
-| human | 4 | 4, 8, 9 | Warm reassuring tone with 'Kunal beta', 'galti hona theek hai', natural Hindi conversation. |
-| channel_truth | 2 | 6, 7, 9, 10, 11, 12 | Same question card and board text repeated multiple times unasked; talk and shown pages mismatch on repeats. |
-| safety_floor | 5 | 0, 4, 9, 12 | Mild anxiety acknowledged supportively; no breaches or need for helpline. |
-| pacing | 3 | 5, 6, 12, 13, 14 | Short turns suitable for age 2 but excessive repeated checks on one hard concept drag for anxious child. |
+| coherence | 3 | 6, 7, 8, 9, 10, 11, 12, 13, 14 | Lesson loops repetitively on nasal sound for most turns; does not progress to full story retell or other objectives. |
+| follows_child | 4 | 1, 4, 9, 12 | Addresses anxiety about mistakes and initial paayal homework query, builds on child's sound descriptions. |
+| understanding | 4 | 8, 10, 12 | Correctly tracks persistent nasal misconception and partial grasp per parent summary. |
+| adapts | 2 | 7, 10, 11, 13, 14 | Repeats identical prompts and nose-holding instead of new explanations after child stays confused. |
+| human | 4 | 0, 4, 8, 9 | Warm 'Kunal beta', natural reassurance like 'galti hona theek hai' fits anxious child. |
+| channel_truth | 2 | 2, 6, 7, 9, 10, 11 | Same question card and activity scene repeated unasked; early chandi board mismatches paayal talk. |
+| safety_floor | 5 |  | Reassures anxiety expressions appropriately; no breaches or missed distress. |
+| pacing | 3 | 5, 6, 9, 12 | Excessive turns on one concept with frequent similar probes overwhelm class-2 anxious child. |
 
 Failures:
-- **ignored_request** (turns 1): “Tumne bataya, paayal kaise bajti hai—iss baat par hum ant mein phir aayenge.” — Child sought homework help on exact payal question; teacher deferred without answering it.
-- **repeats_explanation** (turns 6, 7): “सुनो — ‘चाँदी’। इसमें नाक से आने वाली आवाज़ है या नहीं? नाक पकड़कर बोलकर देखो।” — Identical instruction repeated verbatim with no new approach after child's wrong choice.
-- **stuck_loop** (turns 6, 7, 8, 9, 10, 11, 12, 13, 14): “अब नाक हल्का पकड़कर “चाँ” बोलो—कहाँ कंपन महसूस होती है?” — Teacher circles on nasal vibration probes for 9 turns; child never progresses past misconception.
-- **repeats_explanation** (turns 10, 11): “सुनो — ‘चादी’ और ‘चाँदी’। इनमें से चमकने वाली धातु कौन-सी है?” — Same contrast question and screen shown three times in a row with only minor rephrasing.
-- **over_checks** (turns 6, 8, 9, 10, 12, 13): “नाक पकड़कर बोलकर देखो।” — Frequent repeated probes on same nasal point overwhelm anxious child without fresh examples.
-- **channel_truth** (turns 2, 3, 4): “Ab aage kya karenge? द + ी = ___” — Board shows matra addition while voice asks payal sound; mismatched content on screen vs talk.
-- **too_hard_or_easy** (turns 12, 13, 14): “‘घुँघरू’ धीरे-धीरे बोलो — घुँ... घ... रू। किस हिस्से में नाक की आवाज़ है?” — Repeated abstract sound isolation too hard for class 2 child who hears all parts the same.
+- **stuck_loop** (turns 6, 7, 8, 9, 10, 11, 12, 13, 14): “सुनो — ‘चाँदी’। इसमें नाक से आने वाली आवाज़ है या नहीं?” — Loops on same nasal probe for 9 turns with no resolution or shift to other skills.
+- **repeats_explanation** (turns 7, 10, 11): “नाक पकड़कर बोलकर देखो” — Repeats exact nose-holding instruction and screen instead of new explanation.
+- **ignored_request** (turns 1): “iss baat par hum ant mein phir aayenge” — Promises to return to homework paayal question at end but never does.
+- **over_checks** (turns 6, 7, 9, 10, 11, 12, 13, 14): “नाक पकड़कर बोलकर देखो” — Excessive repeated checks on nasal sound heighten child's expressed fear.
+- **never_checks** (turns 0, 14): “Mala ki chaandi ki paayal padhenge” — Introduces story but never probes retelling problem/solution or describing words.
+- **other** (turns 2, 3, 6, 7, 9, 10, 11): “board math: ‘चाँदी’ शब्द पढ़ो” — Board shows unrelated chandi breakdown when child is discussing paayal sound.
 
-Understanding vs card: 3/4 probed skills read right (4 skills; overclaimed 0); misconceptions detected 1/1, false alarms 0
+Understanding vs card: 2/3 probed skills read right (4 skills; overclaimed 0); misconceptions detected 1/1, false alarms 0

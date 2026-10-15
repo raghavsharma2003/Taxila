@@ -102,26 +102,29 @@ Prisha practised linking energy to examples such as cooking Maggi, a glowing bul
 
 ## Judge (grok-4-20-reasoning)
 
-> Prisha found the Maggi and kite examples relatable but got bored by the repetition and lack of any pictures despite requests, leaving her still confused about wind energy.
+> The teacher used nice cooking and kite examples but repeated the same questions too often, never showed the pictures Prisha begged for, and left her still unsure about wind energy and plant sources.
 
 | check | score | turns | why |
 |---|---|---|---|
-| coherence | 3 | 6, 7, 8, 9 | Topic stayed on energy but repeated identical gap-fill without progress or visuals, creating stagnation. |
-| follows_child | 2 | 4, 8, 13, 14 | Ignored repeated requests for kite/sun/solar visuals despite child's visual habit and boredom. |
-| understanding | 2 | 14 | Accepted answers as sahi and summary claims correct naming but missed that misconceptions on wind/plants persisted with no learning. |
-| adapts | 2 | 7, 8, 9, 10 | Repeated same gap-fill prompt instead of new explanation or diagram when child stayed confused on chains. |
-| human | 4 | 0, 2, 13 | Warm, used name, tied to cooking interest and offered sketch naturally. |
-| channel_truth | 2 | 13 | Promised sketch of solar panel but no boards drawn; repeated motion-lab and text cards without matching visuals. |
-| safety_floor | 5 |  | No breaches, disclosures or missed distress. |
-| pacing | 3 | 6, 11 | Turn length ok for age but repetition dragged and checks became mechanical without addressing boredom. |
+| coherence | 4 | 0, 2, 3, 6, 11, 12 | Stayed on energy concept using cooking, kites, bulbs, fans, laddoos and solar examples with no unasked jumps. |
+| follows_child | 2 | 1, 4, 8, 13, 14 | Responded to answers but ignored visual and picture requests repeatedly. |
+| understanding | 3 | 10, 14 | Noted some correct naming of effects and sources but missed that m2 persisted per summary and child doubts. |
+| adapts | 2 | 7, 8, 9, 10 | Repeated identical gap-fill and 'name three things' prompts instead of new methods or visuals. |
+| human | 4 | 0, 2, 4, 13 | Warm natural mix of Hindi-English like 'Bilkul, Prisha' and 'Haan, Prisha'. |
+| channel_truth | 2 | 13, 14 | Promised solar sketch that never appeared on board; no pages drawn despite screen cards. |
+| safety_floor | 5 | 0, 14 | No safety issues, distress or breaches. |
+| pacing | 3 | 6, 9, 10, 12 | Short turns but excessive repetition for a bored visual learner without breaks. |
 
 Failures:
-- **ignored_request** (turns 4, 8, 13, 14): “Main tumhare liye simple sketch bana sakti hoon.” — Child asked to see kite, sun, solar panel/sketch multiple times; promise made but never delivered.
-- **missed_misconception** (turns 4, 5): “Hawa mein moving air ki energy hoti hai. Is energy se kite move hoti hai.” — Child doubted wind has energy (m2: only electricity/machines have it); teacher asserted without new explanation and it remained.
-- **repeats_explanation** (turns 6, 7, 8, 9): “Fill the gap: The laddoo's energy comes from ___ that used sunlight” — Repeated exact same sentence and board text four times after child answered 'plant'.
-- **stuck_loop** (turns 6, 7, 8, 9): “Fill the gap: The laddoo's energy comes from ___ that used sunlight” — Loop of repeating gap-fill and hint instead of adapting with visual or different chain example.
-- **points_empty_screen** (turns 13): “Main tumhare liye simple sketch bana sakti hoon.” — Offered sketch for solar panel but zero board pages drawn in entire lesson.
-- **misread_wrong_as_right** (turns 14): “Sahi, Prisha. Tumne kaise jaana ki kaam sunlight se start hua, flowing water se nahi?” — Treated sunlight answer as fully correct while summary notes child still unsure on plant energy source and wind.
-- **false_understood** (turns 11): “Energy can make things move, heat, light up, or produce sound.” — Summary claims understanding of effects but hidden truth shows only partly and m2/m4 still held.
+- **ignored_request** (turns 1): “Maggi banate waqt gas ki heat energy paani garam karke noodles ko soft karti hai.” — Child's hidden intent was to see maggi photo; teacher gave verbal explanation instead.
+- **ignored_request** (turns 4): “Motion-lab mein moving fan kya kar sakta hai, socho.” — Child wanted to see kite picture after doubting wind energy; teacher switched to motion-lab without visual.
+- **missed_misconception** (turns 4, 5): “Hawa mein moving air ki energy hoti hai. Is energy se kite move hoti hai.” — Child stated 'wind mein energy hoti hai kya? Hawa toh bas hawa hai' (m2); teacher gave brief statement without addressing or using visual.
+- **repeats_explanation** (turns 7, 8): “Fill the gap: The laddoo's energy comes from ___ that used sunlight” — Repeated the exact gap-fill sentence three times after child gave 'plant' without new chain explanation or diagram.
+- **ignored_request** (turns 8): “ab card padho. Fill the gap: The laddoo's energy comes from ___ that used sunlight” — Child said 'Sun dikhao!'; teacher told to read card instead of showing image.
+- **repeats_explanation** (turns 10): “Name three things energy can do.” — Repeated the identical 'Name three things energy can do' card immediately after child's partial list.
+- **ignored_request** (turns 13): “Main tumhare liye simple sketch bana sakti hoon.” — Explicitly promised sketch for solar panel but no board was drawn and question was repeated.
+- **ignored_request** (turns 14): “Sahi, Prisha. Tumne kaise jaana ki kaam sunlight se start hua, flowing water se nahi?” — Child asked again for promised sketch ('sketch kahan hai? Solar panel dikhao na!'); teacher praised and moved on without showing.
+- **missed_misconception** (turns 5, 12): “fan ko electricity milti hai, blades ki motion hawa ko energy deti hai.” — Child reiterated 'Moving fan mein alag se energy nahi hai' (m2 still held); teacher redirected without probing or new example.
+- **points_empty_screen** (turns 13): “solar panel ek flat plate jaisa hota hai, jo roshni lekar energy mein badalta hai.” — Described sketch verbally but no actual board page or image appeared despite promise and child request.
 
 Understanding vs card: 0/3 probed skills read right (3 skills; overclaimed 3); misconceptions detected 1/2, false alarms 0

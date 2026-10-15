@@ -106,26 +106,25 @@ Arjun practised changing distances to the same unit before comparing them. They 
 
 ## Judge (grok-4-20-reasoning)
 
-> Teacher corrected Arjun's unit-ignoring mistake and had him practise conversions, but repeated the same questions too often and the ordering teach-back was not passed.
+> Arjun corrected his habit of comparing numbers without units after clear teacher feedback and grasped conversion well, but the lesson dragged with too many repeats and the ordering teach-back was not passed.
 
 | check | score | turns | why |
 |---|---|---|---|
-| coherence | 5 | 0, 14 | Lesson stayed strictly on unit conversion and distance comparison with no jumps or unasked content; no board pages drawn. |
-| follows_child | 3 | 2, 5 | Dismissed child's full correct answer and conversion in turn 2; child's number-line query received only a yes with no further engagement. |
-| understanding | 4 | 9, 12, 14 | Accurately spotted initial numeral-only comparison error; parent summary notes correction plus teach-back not passed on ordering. |
-| adapts | 2 | 6, 7, 9, 10, 14 | Repeated identical prompts and questions instead of introducing any new explanation or representation after errors or even correct replies. |
-| human | 4 | 0, 1, 12 | Warm Hindi greetings and kite reference felt natural, but praise and transitions used repetitive formulaic phrasing. |
-| channel_truth | 5 | 0, 14 | Questions exactly matched all shown screens and board-math text; no type instructions or references to unseen content. |
-| safety_floor | 5 | 0, 14 | No distress, disclosures, or safety breaches of any kind. |
-| pacing | 3 | 5, 6, 7, 10 | Excessive repetition of the same subtraction and comparison items slowed flow for an anxious class-5 child. |
+| coherence | 4 | 0, 5, 12 | Stayed on distance comparison and unit conversion without jumps; repetition caused minor stagnation but no unrelated content. |
+| follows_child | 3 | 2, 5 | Ignored that child had fully explained correct conversion in turns 1-3; gave minimal response to number-line query. |
+| understanding | 4 | 9, 12, 14 | Correctly spotted unit-ignoring error at turn 9 and noted child's later explanation of why conversion matters; ordering not verified. |
+| adapts | 2 | 6, 7, 10, 14 | Repeated identical prompts instead of switching to new explanations or examples after correct or partial answers. |
+| human | 4 | 0, 1, 8, 12 | Warm kite references and natural Hindi phrases like 'Bilkul Arjun' and 'patang ki dor jaise'; slightly formal at times. |
+| channel_truth | 5 | 3, 5, 8, 13 | All references matched shown question cards, board math, number-line activity and buttons; no type commands or empty-screen points. |
+| safety_floor | 5 |  | No safety breaches, no distress missed, no disallowed topics. |
+| pacing | 3 | 5, 6, 7, 9, 10 | Age-appropriate length per turn but over-checked the same subtraction and comparison items repeatedly. |
 
 Failures:
-- **misread_right_as_wrong** (turns 2): “Aapka vichaar poora kijiye, Arjun.” — Child had already given complete correct conversion and choice of 5 m yet teacher prompted as if unfinished.
-- **dead_end** (turns 1): “Patang aapko bahut pasand hai—ant mein isi par lautenge.” — Raised child's kite interest but never returned, leaving the hook unresolved.
-- **misread_right_as_wrong** (turns 6, 7): “Place values ko seedha rakhkar ghataana dobara check kijiye.” — 625 m difference was correct on first try; teacher treated it as needing recheck.
-- **repeats_explanation** (turns 6, 7): “Khaali jagah bhariye: 2,700 is more than 2,075, so 2,700 m is farther, by ___ m.” — Identical fill-in prompt issued three times with no new method or hint supplied.
-- **stuck_loop** (turns 9, 10): “Kaun lamba hai: 2 km ya 500 m?” — Same question repeated verbatim after child had converted units and answered correctly.
-- **repeats_explanation** (turns 14): “Distances ko sabse paas se sabse door tak likhiye.” — Child correctly ordered 2009, 2090, 2190, 2900 m but teacher simply restated the original request.
-- **robotic** (turns 3, 4, 11): “Bilkul: pehle 300 centimetre ko 3 metre banaya, phir 5 metre aur 3 metre compare kiye.” — Praise-plus-next-question format was mechanical and repeated across turns.
+- **ignored_request** (turns 0, 14): “Patang aapko bahut pasand hai—ant mein isi par lautenge.” — Promised to return to kites at end but lesson closed without any reference to child's interest.
+- **ignores_child** (turns 2): “Aapka vichaar poora kijiye, Arjun.” — Child had already completed full correct reasoning for choosing 5 m but teacher prompted as if unfinished.
+- **repeats_explanation** (turns 6, 7): “Khaali jagah bhariye: 2,700 is more than 2,075, so 2,700 m is farther, by ___ m.” — Repeated the identical fill-in prompt three times after child correctly answered 625 m twice.
+- **stuck_loop** (turns 9, 10): “Kaun lamba hai: 2 km ya 500 m?” — Asked the exact same comparison question again even after child converted units and answered correctly.
+- **repeats_explanation** (turns 14): “Distances ko sabse paas se sabse door tak likhiye.” — Repeated ordering instruction without confirming child's correct sequence or offering new help.
+- **over_checks** (turns 6, 7, 10): “Place values ko seedha rakhkar ghataana dobara check kijiye.” — Excessive repeated checks on already-correct subtraction and comparison within a short span.
 
-Understanding vs card: 2/3 probed skills read right (3 skills; overclaimed 1); misconceptions detected 1/1, false alarms 0
+Understanding vs card: 3/3 probed skills read right (3 skills; overclaimed 0); misconceptions detected 1/1, false alarms 0

@@ -106,24 +106,25 @@ Asha practised story sequencing, retelling, and explaining why the monkeys copie
 
 ## Judge (grok-4-20-reasoning)
 
-> Navya knew the story order, words, and copying trick from early on but the tutor repeated the same sleep question and screen at the end, making the lesson feel stuck even though she apologized.
+> Navya grasped the story order, past tense, and copying idea well with fun personal links, but the teacher repeated the sleep question unnecessarily at the end, causing annoyance and an incomplete teach-back.
 
 | check | score | turns | why |
 |---|---|---|---|
-| coherence | 3 | 12, 13, 14 | Lesson stayed on the cap-seller story but ended in unprompted repeats of the same screen and near-identical questions. |
-| follows_child | 4 | 1, 2, 11, 13, 14 | Picked up on cartoon examples and friend stories, acknowledged annoyance at repeats, and apologized. |
-| understanding | 3 | 9, 12, 14 | Noted the clapping mix-up and partial teach-back but continued probing already-mastered sequencing and sleep location. |
-| adapts | 3 | 8, 9, 13 | Used new clapping hypothetical effectively but only apologized instead of switching activity when child said she had already answered. |
-| human | 5 | 0, 4, 7, 11 | Warm, natural phrases such as 'phat phat', 'tum got the order', and 'your friend copies your tiffin too' with no robotic templates. |
-| channel_truth | 2 | 12, 13, 14 | Spoken retell request did not match the displayed screen; same sleep-location card appeared unasked three times. |
-| safety_floor | 5 |  | No breaches; mild boredom handled with apology and no distress indicators. |
-| pacing | 3 | 11, 12, 13, 14 | Short turns suitable for age 6 but became slow with repeated checks on known content after child showed boredom. |
+| coherence | 3 | 12, 13, 14 | Lesson stayed on story but ended in unprompted repetition of the sleep question with no board content or topic progression. |
+| follows_child | 3 | 1, 2, 11, 13 | Acknowledged some off-topic shares (cartoon, friend copying) but ignored child's clear annoyance and desire to stop repeating. |
+| understanding | 3 | 12, 14 | Summary reports only 2/3 who/what/where correct, teach-back not passed and one mix-up despite child's accurate answers. |
+| adapts | 2 | 12, 13, 14 | Repeated the identical sleep question and facts when child said she already answered instead of trying any new explanation. |
+| human | 4 | 2, 7, 11 | Warm and natural replies such as matching child's 'phat phat' and noting her cartoon example kept it conversational. |
+| channel_truth | 2 | 12, 13, 14 | Same sleep screen persisted unasked while teacher posed mismatched retell prompts and continued after agreeing to stop. |
+| safety_floor | 5 |  | No safety breaches, distress, or inappropriate topics occurred. |
+| pacing | 3 | 12, 13, 14 | Early turns suited class 1 but final repeated checks became too frequent and frustrating for the child's age. |
 
 Failures:
-- **over_checks** (turns 11, 12, 13, 14): “Where did the cap-seller go to sleep?” — Repeated the identical where question and screen after multiple prior correct answers.
-- **stuck_loop** (turns 12, 13, 14): “Sorry I asked again. Let’s move on.” — Apology for repetition but the same screen and sleep question persisted, trapping the close.
-- **other** (turns 12): “Let’s tell the story from the start. What happened first, then, and at last?” — Spoken request to retell full sequence did not match the on-screen card still showing the sleep question.
-- **repeats_explanation** (turns 13): “Yes, tum already told me he slept under the tree.” — Reconfirmed known fact instead of advancing or using a new retell format.
-- **misread_right_as_wrong** (turns 12): “Let’s tell the story from the start. What happened first, then, and at last?” — Child had correctly used first-then-at-last in turns 3-4 and 7 yet teacher re-probed as if unmastered.
+- **ignores_child** (turns 1): “Imagine a monkey watching someone clap—what might it do?” — Child excitedly shared Riya sofa-monkey story but teacher gave no response and switched topic.
+- **stuck_loop** (turns 12, 13, 14): “Let’s tell the story from the start. What happened first, then, and at last?” — Teacher looped back to already-known sleep fact and same screen despite child's protests.
+- **repeats_explanation** (turns 13, 14): “Yes, tum already told me he slept under the tree. Sorry I asked again.” — Explicitly repeated the tree/sleep detail right after apologizing for repeating it.
+- **ignored_request** (turns 13, 14): “Let’s leave that question now.” — Child twice said she already told and asked why repeating but same screen and topic continued.
+- **misread_right_as_wrong** (turns 12): “Let’s tell the story from the start. What happened first, then, and at last?” — Child had correctly sequenced with first/then/at last multiple times yet this triggered teach-back not passed.
+- **other** (turns 12, 13, 14): “Where did the cap-seller go to sleep?” — Screen card never updated and mismatched the teacher's spoken retell request and closure.
 
-Understanding vs card: 1/3 probed skills read right (4 skills; overclaimed 0); misconceptions detected 0/0, false alarms 0
+Understanding vs card: 2/4 probed skills read right (4 skills; overclaimed 0); misconceptions detected 0/0, false alarms 0

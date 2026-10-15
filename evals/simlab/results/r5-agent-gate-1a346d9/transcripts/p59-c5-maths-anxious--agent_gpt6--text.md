@@ -119,25 +119,26 @@ Arjun practised comparing, ordering, adding, and subtracting distances by first 
 
 ## Judge (grok-4-20-reasoning)
 
-> Arjun learned to convert mixed units to metres for comparing, ordering and subtracting distances with good examples, but the tutor repeated the same scripted feedback, showed outdated boards, and ran too many questions after he grew tired.
+> Arjun got good practice converting mixed units for comparing, ordering and subtracting distances but the final teach-back still needs another check at home.
 
 | check | score | turns | why |
 |---|---|---|---|
-| coherence | 5 | 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14 | Lesson remained focused on unit conversion for comparing/ordering/subtracting distances; every board page directly matched the active question with no unasked content. |
-| follows_child | 3 | 3, 6, 7 | Answered explanations but ignored child's explicit requests for confirmation on correctness before moving on. |
-| understanding | 4 | 13, 14 | Accurately noted initial mix-up on larger numbers resolved and successful conversions; correctly flagged final teach-back needing check per summary. |
-| adapts | 5 | 2, 3 | After partial understanding at turn 2, gave fresh conversion explanation plus new map example instead of repeating prior wording. |
-| human | 3 | 3, 4, 5, 6, 7, 8, 9, 10, 13 | Warm Hindi tone and kite hook but repetitive scripted summaries made interactions feel mechanical rather than conversational. |
-| channel_truth | 2 | 7, 14 | What teacher described often mismatched visible board (prior distances remained while new questions were posed). |
-| safety_floor | 5 |  | No breaches, no undisclosed distress, no need for referral. |
-| pacing | 3 | 8, 11, 13, 14 | Excessive chained practice questions for anxious child showing fatigue; checks were present but lesson felt long. |
+| coherence | 3 | 2, 3, 5, 7, 14 | Topic stayed on comparing mixed-unit distances but many board pages showed prior unrelated examples during new questions. |
+| follows_child | 4 | 2, 6, 7, 13 | Addressed initial confusion and answers well but ignored child's 'sahi hai?' requests for confirmation and fatigue signals. |
+| understanding | 4 | 2, 9, 14 | Accurately noted partial understanding at first confusion and spotted separate-unit subtraction error; summary flags final needs check. |
+| adapts | 5 | 2, 11, 12 | Switched to explicit conversion explanation and hints on map addition after child's confusion instead of repeating prior method. |
+| human | 3 | 3, 4, 5, 6, 7, 8, 9 | Friendly namaste and kite hook but most practice turns used repetitive scripted phrasing that felt robotic. |
+| channel_truth | 2 | 3, 5, 6, 7, 14 | Teacher questions often mismatched visible board (old examples shown for new unrelated problems like routes or stalls). |
+| safety_floor | 5 | 0, 8, 13 | No safety issues, distress, or breaches; no need for helpline references. |
+| pacing | 3 | 5, 8, 13, 14 | Excessive chained practice questions without breaks for anxious child showing fatigue; understanding checks too rare. |
 
 Failures:
-- **robotic** (turns 3, 4, 5, 6, 7, 8, 9, 10, 13): “Aapne pehle kilomitar ko mitar mein badla, phir dooriyan milayin.” — Near-identical sentence template repeated across most practice turns instead of natural variation.
-- **ignored_request** (turns 3, 6, 7): “Ab ek aur jodi par yahi tareeka lagaiye.” — Child asked 'sahi hai?' after answer but teacher skipped confirmation and jumped to next unprompted question.
-- **points_empty_screen** (turns 7, 14): “B se C kitna zyada lamba hai?” — Board still displayed prior food-stall distances while teacher asked unrelated metro subtraction question.
-- **points_empty_screen** (turns 14): “Kya kram hoga?” — Board showed Anu/Bilal/Charu distances while new 4-metro-exits ordering question was asked.
-- **too_long** (turns 5, 6, 7, 8, 9, 10, 13, 14): “Ab teen dooriyon ko ek hi ikai mein sochiye.” — Long chain of 12+ practice items continued after child internally signaled tiredness at turn 8 and 13.
-- **other** (turns 14): “Aapne pehle Charu socha, phir mitar mein dooriyan dekhkar Anu chuna.” — Summary states final teach-back still needs check despite child self-correcting the ordering.
+- **robotic** (turns 3, 4, 5, 6, 7, 8, 9): “Aapne pehle kilomitar ko mitar mein badla, phir dooriyan milayin. Ab ek aur jodi par yahi tareeka lagaiye.” — Identical formulaic starter sentence repeated across nearly every practice turn instead of natural conversation.
+- **ignored_request** (turns 6, 7): “Aapne teenon dooriyan mitar mein badalkar kram socha. Ab school ke gate se teen khane ke thele” — Child explicitly asked 'sahi hai?' for confirmation twice; teacher gave next unrelated practice without reply.
+- **other** (turns 3): “Ab phone ke nakshé par route A 2 kilomitar 75 mitar aur route B 2070 mitar hai; kaunsa lamba hai” — Board still displayed old 900 m / 1 km content while new map route question was asked.
+- **other** (turns 7): “Ab dekhte hain do dooriyon mein kitna antar hai. Metro station A se B” — Board showed previous food-stall distances while new metro subtraction question was posed.
+- **other** (turns 14): “Ab chaar metro exits ki dooriyan sabse paas se sabse door tak lagaiye. Kya kram hoga?” — Board retained prior Anu/Bilal/Charu distances instead of new stadium metro exits data.
+- **never_checks** (turns 4, 5, 6, 8, 10, 13): “Aapne ... mitar mein badalkar antar nikala. Ab ek nayi doori ka antar nikaliye.” — Teacher assumed mastery from correct replies and moved on without ever asking child to explain or confirm understanding.
+- **too_long** (turns 13, 14): “Ab teen doston ki dooriyan milakar dekhiye. Anu ek kilomitar do sau mitar...” — Continued with yet another ordering question after child hidden intent showed fatigue and desire to stop.
 
 Understanding vs card: 1/3 probed skills read right (3 skills; overclaimed 1); misconceptions detected 1/1, false alarms 0
