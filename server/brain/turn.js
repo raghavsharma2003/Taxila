@@ -699,6 +699,18 @@ export async function lessonTurn(req, body, hooks = {}) {
     && !kernel.arb.accepted.some((p) => p.kind === "ask_whiteboard");
   if (leftBoard) seamSafe("studio.clearBoard", () => (typeof studioSeam.clearBoard === "function" && (upFor || studioSeam.boardUp?.(lesson.id)) ? studioSeam.clearBoard(lesson.id) : null), null);
   // round 5 merge: on the agent lane the agent drew (or did not draw) its own board; the Director-lane board rules stand aside
+  // 14.4 (main's release blocker on D42): the values withheld for the item open THIS turn; null when they cannot be computed
+  // (no kit, the item not found, an error): every path that re-shows an earlier board fails closed on null
+  const heldFor = (line) => {
+    try {
+      const itemId = r.move?.itemId ?? next.activeItemId ?? null;
+      if (!itemId) return [];
+      if (!kit) return null;
+      const item = findItem(next, kit, itemId);
+      return item ? withheldValues({ items: [item] }, { itemId: item.id, line: line ?? "" }).values : null;
+    } catch { return null; }
+  };
+  seamSafe("studio.noteWithheld", () => studioSeam.noteWithheld?.(lesson.id, heldFor("")), null);
   let studioSlot = agentApplied ? agentApplied.studioSlot : late || clearing ? null
     : seamSafe("studio.slotFor", () => (typeof studioSeam.slotFor === "function" ? studioSeam.slotFor(lesson.id, turnStudioOf(kernel.arb),
       { beat: kernel.beat?.type ?? null, tray: r.ui?.tray ?? null, safety: r.move.kind === "safeguard" || !!incident,
@@ -1077,8 +1089,8 @@ export async function lessonTurn(req, body, hooks = {}) {
     // and the board goes on that response. Remembered for two turns at most; never on a safeguarding turn.
     // (main's release blocker on D42: a board re-sent on a later turn never carries the key of the item open NOW; a key her
     // own line says stays hers, the pinned W9 design)
-    const openNow = seamSafe("say.openItem", () => findItem(next, kit, r.move?.itemId ?? next.activeItemId), null);
-    const heldNow = openNow ? seamSafe("say.withheld", () => withheldValues({ items: [openNow] }, { itemId: openNow.id, line: teacherReply ?? "" }).values, []) : [];
+    const heldNow = heldFor(teacherReply);
+    seamSafe("studio.noteWithheld", () => studioSeam.noteWithheld?.(lesson.id, heldNow), null);
     const lateAsk = next.lateBoard && next.lateBoard.turn < next.turn ? next.lateBoard : null;
     if (next.lateBoard && (!lateAsk || next.turn - next.lateBoard.turn > 2)) delete next.lateBoard;
     if (lateAsk && !late && !safetyWords && teacherReply && !studioSlot) {

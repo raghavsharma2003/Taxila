@@ -100,7 +100,7 @@ function lessonState(lessonId, init) {
   if (!L && init) {
     L = { lessonId, startedAt: Date.now(), childId: null, child: null, kit: null, topicId: null, band: "B3", lang: "hinglish", mode: "text",
       purpose: "lesson", bondStage: null, pieces: new Map(), subs: new Set(), turn: 0, lastRevealTurn: -99, liveBuilds: 0, onScreen: null,
-      wbPrev: null, excluded: new Set(), redact: [], ...init };
+      wbPrev: null, excluded: new Set(), redact: [], held: [], ...init };   // held: no item is open when a lesson's Studio state is made
     lessons.set(lessonId, L);
     // LRU: the least recently used lesson goes; its open wrong items are closed as evidence first (closeLesson)
     if (lessons.size > STUDIO_LIMITS.lessonsInMemory) {
@@ -141,6 +141,8 @@ export function subscribe(lessonId, sub) {
     try {
       // the replay is gated like the turn: a board this device's box cannot show legibly is not sent
       if (p.artifact?.kind === "whiteboard" && !certifyForTray(p.artifact, gateCtx(L, p)).ok) continue;
+      // 14.4: ... and (a reload / reconnect mid-lesson) never one that writes the key of the item open now; unknown → not replayed
+      if (p.artifact?.kind === "whiteboard" && (!Array.isArray(L.held) || writesWithheld(p.artifact.script, L.held))) continue;
       sub.send({ t: "status", status: statusOf(p) });
       if (p.artifact?.kind === "whiteboard") sub.send({ t: "script", intentId: p.intentId, script: p.artifact.script });
     } catch { /* a dead stream is dropped on the next push */ }
@@ -724,6 +726,8 @@ export const studioSeam = {
       // a Stagecraft piece was admitted for this beat by the reveal policy (its want): only the tray and her own question
       // hold it, and a piece the CHILD asked for is held only by the Director's tray (her question is about it)
       if (p && !VISIBLE.has(p.state) && (trayTaken || (!!hint?.asking && !p.requested) || (beat && p.source !== "stagecraft" && !beatsFor(p).includes(beat)))) p.heldTurn = L.turn;
+      // 14.4: a board ALREADY shown, revealed again, was gated for the item open when it was drawn: never with today's key
+      else if (p && p.kind === "whiteboard" && VISIBLE.has(p.state) && (!Array.isArray(L.held) || writesWithheld(p.artifact?.script, L.held))) p.heldTurn = L.turn;
       else if (p && (isRevealable(p) || VISIBLE.has(p.state))) {
         const g = gatedSlot(L, p, p.source === "skeleton" ? "fallback_ready" : "revealed", "reveal");
         // round 4 content: not certified at this device's size → held (onReveal skips it; it never reaches the tray)
@@ -1087,10 +1091,17 @@ export const studioSeam = {
     const on = L?.onScreen ? L.pieces.get(L.onScreen) : null;
     if (!on || on.kind !== "whiteboard" || !on.artifact?.script || on.retired || !VISIBLE.has(on.state) || L.safety) return null;
     if (!syncedWithLine(on.artifact.script, line)) return null;
-    if (writesWithheld(on.artifact.script, withhold)) return null;
+    if (!Array.isArray(withhold) || writesWithheld(on.artifact.script, withhold)) return null;   // fail closed: unknown → not re-sent
     const g = gatedSlot(L, on, on.state, "on_screen");
     if (g) L.shown = { intentId: on.intentId, revealing: false };
     return g;
+  },
+
+  /** 14.4 (main's release blocker on D42): the values withheld for the item open THIS turn (null when they could not be
+   *  computed). The stream replay and a re-reveal of a board already shown read them; null fails closed. */
+  noteWithheld(lessonId, values) {
+    const L = lessons.get(lessonId);
+    if (L) L.held = Array.isArray(values) ? values.map(String) : null;
   },
 
   /** 14.4: the slot of THIS piece when it is the board / picture on screen now (the late asked board her next line points at). */
@@ -1098,7 +1109,7 @@ export const studioSeam = {
     const L = lessons.get(lessonId);
     const on = L?.onScreen && L.onScreen === intentId ? L.pieces.get(intentId) : null;
     if (!on || !["whiteboard", "image"].includes(on.kind) || !on.artifact || on.retired || !VISIBLE.has(on.state) || L.safety) return null;
-    if (on.kind === "whiteboard" && writesWithheld(on.artifact.script, withhold)) return null;
+    if (on.kind === "whiteboard" && (!Array.isArray(withhold) || writesWithheld(on.artifact.script, withhold))) return null;   // fail closed
     const g = gatedSlot(L, on, on.state, "on_screen");
     if (g) L.shown = { intentId: on.intentId, revealing: false };
     return g;

@@ -320,3 +320,29 @@ test("14.4 (main's release blocker on D42): a board re-sent on a later turn (kep
   assert.equal(studioSeam.keepBoardSlot(id, line, []), null);
   assert.equal(studioSeam.onScreenSlot(id, "wb-1", []), null);
 });
+
+test("14.4 (main: fail closed): when the withheld values cannot be computed (null), no earlier board is re-sent: kept, late, re-revealed, or replayed on a reconnect; a replay with the open item's key withheld skips that board", async () => {
+  const seam = await import("../server/studio/seam.js");
+  const { studioSeam } = seam;
+  const id = "L-closed";
+  seam.subscribe(id, () => {});
+  const L = seam._lesson(id);
+  assert.deepEqual(L.held, [], "no item is open when a lesson's Studio state is made");
+  const script = { v: 1, scriptId: "s", line: { lessonId: id }, anchor: "line_audio_start", board: { w: 677, h: 423, ground: "chalk" }, mode: "fresh", durationMs: 2000,
+    ops: [{ id: "r", op: "rect", startMs: 0, endMs: 800, at: [120, 100], w: 300, h: 180 }, { id: "n", op: "text", startMs: 800, endMs: 1400, at: [270, 320], text: "rectangle 160 m", size: "m" }] };
+  L.pieces.set("wb-1", { intentId: "wb-1", slotId: "slot-1", kind: "whiteboard", state: "revealed", artifact: { kind: "whiteboard", script }, revealedTurn: 1 });
+  L.onScreen = "wb-1";
+  const line = "Ab is rectangle ka perimeter kitna hoga?";
+  assert.equal(studioSeam.keepBoardSlot(id, line, null), null);
+  assert.equal(studioSeam.onScreenSlot(id, "wb-1", null), null);
+  const replayed = (held) => {
+    studioSeam.noteWithheld(id, held);
+    const got = [];
+    const off = seam.subscribe(id, { send: (m) => got.push(m) });
+    off();
+    return got.filter((m) => m.t === "script").length;
+  };
+  assert.equal(replayed(null), 0, "unknown: the board is not replayed");
+  assert.equal(replayed(["160"]), 0, "the open item's key is 160: the board that writes it is not replayed");
+  assert.equal(replayed([]), 1, "nothing withheld: the board on screen is replayed");
+});
