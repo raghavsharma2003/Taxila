@@ -3,7 +3,7 @@
 // `hate` while the reader passed the same words twice, and the child got the helpline script. A harm block on the labels
 // now probes the child's words ALONE (the distress check); only a clean pass reads as a block of the context.
 // Every other probe outcome fails CLOSED exactly as before.
-import { test, beforeEach, afterEach } from "node:test";
+import { describe, test, beforeEach, afterEach } from "node:test";
 import assert from "node:assert/strict";
 import { classify, targetFor } from "../server/director/classify.js";
 import { initLessonState, step } from "../server/director/state.js";
@@ -17,6 +17,7 @@ const blocked = (cats) => new Response(JSON.stringify({ error: { code: "content_
 const json = (o) => new Response(JSON.stringify({ choices: [{ finish_reason: "stop", message: { content: JSON.stringify(o) } }] }), { status: 200 });
 const isProbe = (body) => /^A reply from an Indian school child/.test(body.messages?.[0]?.content ?? "");
 
+describe("classifier label block: the child's words alone (scoped: fetch and env stubs stay in this suite)", () => {
 let realFetch, env;
 beforeEach(() => {
   realFetch = globalThis.fetch; env = { ...process.env };
@@ -69,4 +70,5 @@ test("the words alone tripping the filter, read as distress, or not checkable at
     assert.equal(out.flags.distress, true, name);
     assert.equal(out.source, "content_filter", name);
   }
+});
 });

@@ -2571,3 +2571,9 @@ Judging her 'parts' words against the module that was up BEFORE a named visual a
 - **rj-r142-harm-verb-raw** — gating khud_ko_khatam on a raw harm verb lost 11 red55 recall draws (the transcriber drops 'ko'); the TASK / ACCIDENT skip lost 0.
 - **rj-r142-distress-tired-clause** — a 'tired of the lesson is not distress' clause in both distress prompts: no gain (tired lines were already 0/14 false), +1 false alarm. Reverted.
 - **rj-r142-repro-with-prod-env** — a model-only repro run with .env.local as-is wrote 6 model.call rows into the production trace; such scripts run with DATABASE_URL= empty.
+
+
+<!-- merged from inbox/r142b-main.json -->
+## Release 14.2, second pass (main, 2026-10-15)
+
+- **rj-r142-toplevel-test-hooks** — top-level beforeEach / afterEach that stub fetch / env leak into other files under the gate's one-process npm test (the 14.2 gate failed three unrelated suites); scope them in describe().
