@@ -5924,3 +5924,16 @@ TTS frames type 5 = IMA ADPCM (4:1), negotiated by Accept `codec=adpcm`, asked f
 **Why.** A resume replays no move, so the Help sheet would not open.
 
 **Reverse only** with a resume that re-raises the Help sheet from the saved state.
+
+
+<!-- merged from inbox/r141c-main.json -->
+## dc-r141-see-ask-medium-and-drawing (2026-10-15)
+**Decision.** Four rules for visual asks:
+1. The place it is drawn (whiteboard, board, screen) is never the thing to draw.
+2. A picture asked with no thing named may be answered by a ready-made board that is a drawing, never by a page of text boxes.
+3. A see-ask that is not an example may be answered by the page already on screen; it is kept, not refused.
+4. Only a picture ask takes its subject from her line.
+
+**Why.** On the 14.1 packages, owner-5 dropped from release 14's 14/14 to 8/14, with empty stages and her pointing stripped.
+
+**Reverse if** a ready-made drawing does not show what her line says, or if repeated pages rise above 0/40.

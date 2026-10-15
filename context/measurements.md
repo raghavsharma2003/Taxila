@@ -4207,3 +4207,22 @@ QA D22 (GET /api/parent/overview 2.4 s): in-process, US -> Neon TEST, the FIRST 
 
 ## ms-r141-qa-pass11 (2026-10-15)
 QA pass 11 on f618f8d (local prod build, TEST, phone): reload mid-lesson PASS; Continue rejoins; landscape PASS; gate-kill PASS; D23 lead correct 3/3 with home named, grown-up first without; reload after a disclosure (n=3) never returns to the old lesson.
+
+
+<!-- merged from inbox/r141c-main.json -->
+## ms-r141-owner5-recovery (2026-10-15)
+owner-5 (14 checks) on the 14.1 packages, by stage of fixes:
+- 302dd3c: 10/14.
+- d04a3d8: 8/14.
+- With the medium / drawing / kept fixes: 12/14, then 10/14.
+- With the picture-only line subject: 12/14. The one miss was an em-dash ASCII line.
+
+Release 14 for comparison: 12/14 and 14/14.
+
+## ms-r141-live (2026-10-15)
+- Release 14.1 is live as taxila-web--s1138550-lauy.
+- Gate PASS (3265/0).
+- Packaged checks: w2i 39/39, journey PASS, resume/disclosure PASS, owner-5 12/14.
+- Canary 4/4 (lesson start 1963 ms).
+- Live checks: a second lesson starts (201) at 11:30 IST; resume PASS; recorder proof PASS.
+- Pictures are on for the owner cohort only. The continuer and the agent lane are off.
