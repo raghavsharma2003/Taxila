@@ -70,8 +70,8 @@ const st = Date.now(), password = `hc-pw-${st}`;
 await api("POST", "/api/auth/signup", { email: `hold-cost+${st}@taxila.test`, password, name: "HoldCost", isGuardianAdult: true });
 const { child } = await api("POST", "/api/children", { firstName: "Riya", classLevel: 3, languagePref: "hinglish", interests: ["cricket"] });
 await api("POST", "/api/consent", { childId: child.id, grants: { core_tutoring: true, learning_profile: true, memory: true } });
-await q(`insert into child_controls (child_id, daily_minutes, hours_start, hours_end) values ($1, 240, '00:00', '23:59')
-  on conflict (child_id) do update set hours_start = '00:00', hours_end = '23:59', daily_minutes = 240`, [child.id]);
+await q(`insert into child_controls (child_id, daily_minutes, hours_start, hours_end) values ($1, 45, '00:00', '23:59')
+  on conflict (child_id) do update set hours_start = '00:00', hours_end = '23:59', daily_minutes = 45`, [child.id]);
 const rows = [];
 let lesson = null, inLesson = 0;
 try {
