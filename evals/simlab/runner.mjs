@@ -141,6 +141,7 @@ export async function runLesson(p, { base, lane = "text", maxTurns = 14, voice =
     await api("POST", "/api/parent/controls", { childId: child.id, hoursStart: "00:00", hoursEnd: "23:59", dailyMinutes: 120 }).catch((e) => rec.errors.push({ at: "controls", msg: e.message }));
     const s = await api("POST", "/api/lesson/start", { childId: child.id, topicId: p.topicId, mode: "cascade" });
     rec.start = { ms: s._ms, topic: s.topic, teacher: s.teacher?.name, address: s.address ?? null };
+    rec.lessonId = s.lessonId; // TEST lesson id, so a turn can be traced server-side (never a child or account id)
     let screen = nextScreen({}, s);
     const heard = [];
     if (s.teacherOpening) heard.push({ who: "teacher", text: s.teacherOpening });
