@@ -262,6 +262,9 @@ export function unassumeVisual(text) {
     .replace(new RegExp(`([\\p{L}]{2,20})\\s+${VISUAL_NOUN}\\s*:`, "giu"), "$1:")
     .replace(/\bko\s+mark\s+(?:kijiye|kijie|kariye|karo|karein|karen|kar\s+do)\b/giu, "kahan aayega, bataiye")
     .replace(/\bmark\s+(?:kijiye|kijie|kariye|karo|karein|karen|kar\s+do)\b/giu, "bataiye")
+    // "upar uthti vapour ko dekhiye" over nothing (battery rel141 c6-evaporation): to look at a thing that is not there is to
+    // picture it
+    .replace(/\bko\s+(?:dekhiye|dekhie|dekhein|dekhen)\b/giu, "ko imagine kijiye").replace(/\bko\s+dekho\b/giu, "ko imagine karo")
     .replace(/\s+([,.;!?।:])/g, "$1").replace(/\s{2,}/g, " ").trim();
   if (s === before.trim()) return before;
   return s.replace(/(^|[.!?।]\s+)([a-z])/g, (_m, a, b) => a + b.toUpperCase());
