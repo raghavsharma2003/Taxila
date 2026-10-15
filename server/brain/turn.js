@@ -511,6 +511,9 @@ export async function lessonTurn(req, body, hooks = {}) {
   // The agent's move replaces the Director's; any agent error, timeout or budget leaves the Director's move standing.
   let agentOut = null, agentApplied = null, agentFallback = null;
   const dirR = r, dirNext = next;
+  // a speculated call (stream 3, hooks.agentSpec: her call started on the prefetched turn) the agent lane does not take this
+  // turn (a safeguard, a distress read, an incident, a wrap, the Director lane) is aborted unspoken
+  const dropSpec = (why) => { try { if (hooks?.agentSpec && !hooks.agentSpec.aborted) hooks.agentSpec.abort?.(why); } catch { /* never fails a turn */ } };
   if (state.ctx?.teacher === "agent" && textLane && !late && !moduleOnly && !laneResume && !help && !incident && !cls?.flags?.distress
     && !["safeguard", "wrap"].includes(r.move.kind) && !r.end) {
     const card = state.activeItemId ? findItem(state, kit, state.activeItemId) : null;
@@ -521,6 +524,7 @@ export async function lessonTurn(req, body, hooks = {}) {
         : cls.outcome === "incorrect" || cls.outcome === "misconception" ? "wrong" : null) : null;
       agentOut = await agentTurn({ state, kit, lessonId: lesson.id, lane: state.mode, trace, silent: silentNow, verdict, child,
         ...(typeof hooks?.onAgentSay === "function" && !silentNow ? { onSay: hooks.onAgentSay } : {}),
+        ...(hooks?.agentSpec ? { spec: hooks.agentSpec } : {}),
         event: eventOf({ kind: silentNow ? "silence" : "turn", childText, asrConfidence: body.asrConfidence, chipId: body.chipId, chipLabel, typed, cls, card, kit, lang: state.ctx?.lang }) });
       // the Director's stepped state keeps its bookkeeping; the card and the phase are the agent's
       const agentNext = structuredClone(next);
@@ -535,6 +539,7 @@ export async function lessonTurn(req, body, hooks = {}) {
       next.agent = { ...(next.agent ?? state.agent ?? {}), fallbacks: ((next.agent ?? state.agent)?.fallbacks ?? 0) + 1 };
     }
   }
+  if (!agentOut) dropSpec(agentFallback ? "agent fell back" : "not an agent turn");
   // Seam (W2-I, server/relational/seam.js): one RelationalDirective per turn (pure, ≤ 3 ms). null = no relational move, and
   // nothing below changes. W2-E's BR5 splits it into the kernel's authority ranks; until then only its face display rides
   // the ui (teacherAffect, never keyed to a correct verdict).

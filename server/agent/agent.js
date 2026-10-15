@@ -25,6 +25,7 @@ import { teacherDeployment, AGENT_LIMITS } from "./flags.js";
 // a new page by it). Until a tree carries it the stale-page clear below is off; never a second definition (main, 14.3).
 import * as studioRequest from "../studio/request.js";
 import { visualAskOf } from "../director/requests.js";
+import { createHash } from "node:crypto";
 
 export class AgentBudgetError extends Error { constructor(m) { super(m); this.code = "agent_budget"; } }
 
@@ -176,19 +177,65 @@ export function clauseGate({ verdict = null, learner = {}, noGame = false, scree
 }
 
 /**
+ * Her model call's inputs, built ONE way for a real turn and for a speculation (stream 3): the messages, the deployment,
+ * the options and `key`, a digest of all three, so a turn can prove a speculated call saw exactly what it would have sent.
+ * `news` are the event lines code puts before the child's (content_ready / content_failed, the GAME line). PURE.
+ */
+export function agentCallOf({ state, kit, event, lane = "voice", onScreen = "nothing is on the screen", news = [] }) {
+  const ctx = { ...state.ctx, classLevel: state.ctx?.classLevel };
+  const ev = news.length ? `${news.join(". ")}. ${event}` : event;
+  const messages = [{ role: "system", content: systemPrompt(ctx) }, { role: "user", content: stateMessage({ state, kit, event: ev, onScreen, lane }) }];
+  const dep = teacherDeployment();
+  // effort none by default (sim lab 7740135, n=64 per arm: judges tie none vs low 29:30 / 31:29, rubric within noise, dead ends 4 vs 13, about 1 s faster at p50, fallbacks 14 vs 43)
+  const opts = { schema: TURN_SCHEMA, schemaName: "teacher_turn", effort: process.env.TAXILA_TEACHER_EFFORT || "none", maxTokens: AGENT_LIMITS.maxOutTokens, timeoutMs: AGENT_LIMITS.turnTimeoutMs, retries: 0, quotaLane: "hot" };
+  const key = createHash("sha256").update(JSON.stringify({ dep, effort: opts.effort, maxTokens: opts.maxTokens, messages })).digest("hex").slice(0, 24);
+  return { messages, dep, opts, key };
+}
+
+/**
+ * Start her model call on a PREFETCHED turn (stream 3's perception cache: the transcript is stable, its classify has settled,
+ * the distress read was clean) so the real turn can adopt it: agentTurn({ spec }) uses it only when its own agentCallOf key
+ * is the same, else aborts it. NO tool runs here and nothing is drained: the screen is read, the content news is PEEKED; a
+ * turn whose words ask for a game is not speculated (its lookup is an action). The call's raw deltas are held, unspoken,
+ * until the turn replays them. → { key, done: Promise<{ text, usage }>, replay(): AsyncIterable<string>, abort(why), aborted,
+ * startedAt } | null (not speculable). Never throws; a failed call rejects `done` and the turn falls back to its own call.
+ */
+export function agentSpeculate({ state, kit, event, silent = false, lessonId, lane = "voice", tools = screenTools, streamFn = chatStream, now = Date.now }) {
+  const a = state.agent ?? {};
+  const usage = a.usage ?? { usd: 0, tokens: 0 };
+  if (silent || usage.usd >= AGENT_LIMITS.lessonUsd || usage.tokens >= AGENT_LIMITS.lessonTokens) return null;
+  if (!a.noGame && tools.game && GAME_ASK.test(String(event ?? ""))) return null;
+  let before, news;
+  try { before = tools.now(lessonId) ?? { on: "nothing", words: "nothing is on the screen" }; news = tools.peek?.(lessonId) ?? []; } catch { return null; }
+  const { messages, dep, opts, key } = agentCallOf({ state, kit, event, lane, onScreen: before.words, news });
+  const ctl = new AbortController();
+  const buf = []; let ended = false; const waiters = new Set();
+  const wake = () => { for (const w of waiters) w(); waiters.clear(); };
+  const done = streamFn(dep, messages, { ...opts, signal: ctl.signal, onDelta: (d) => { buf.push(d); wake(); } })
+    .finally(() => { ended = true; wake(); });
+  done.catch(() => {});
+  const spec = {
+    key, done, startedAt: now(), aborted: false,
+    abort(why = "aborted") { if (spec.aborted) return; spec.aborted = why; ctl.abort(); },
+    // every delta from the first, then the live ones, to the end of the call (one reader: the adopting turn)
+    async *replay() { let i = 0; for (;;) { if (i < buf.length) { yield buf[i++]; continue; } if (ended) return; await new Promise((r) => waiters.add(r)); } },
+  };
+  return spec;
+}
+
+/**
  * One agent turn. → { say, intent, item, board: ScreenTruth | null (a page that went up), cleared, picture: ScreenTruth | null,
  *   screen: ScreenTruth (after her actions), slot, read, plan, end, usage, ms, notes[] }
  * Throws on a model error, a timeout, a bad output or a budget: the caller (brain/turn.js) then lets the Director lane take
  * the turn.
  */
-export async function agentTurn({ state, kit, event, silent = false, verdict = null, lessonId, lane = "voice", child = null, trace, chatFn = chat, streamFn = chatStream, onSay = null, tools = screenTools, synced = studioRequest.syncedWithLine ?? null, now = Date.now() }) {
+export async function agentTurn({ state, kit, event, silent = false, verdict = null, lessonId, lane = "voice", child = null, trace, chatFn = chat, streamFn = chatStream, onSay = null, tools = screenTools, synced = studioRequest.syncedWithLine ?? null, spec = null, now = Date.now() }) {
   const a = state.agent ?? {};
   const usage = a.usage ?? { usd: 0, tokens: 0 };
   if (usage.usd >= AGENT_LIMITS.lessonUsd || usage.tokens >= AGENT_LIMITS.lessonTokens) throw new AgentBudgetError(`lesson budget spent (${usage.usd.toFixed(3)} USD, ${usage.tokens} tokens)`);
   const before = (() => { try { return tools.now(lessonId); } catch { return null; } })() ?? { on: "nothing", words: "nothing is on the screen", texts: [] };
   const news = (() => { try { return tools.news?.(lessonId) ?? []; } catch { return []; } })();
   const offered = offeredItems(state, kit);
-  const ctx = { ...state.ctx, classLevel: state.ctx?.classLevel };
   // the child asks to play: the game is looked for BEFORE she speaks (code, ~0.3 s), so her line can say what is true this
   // turn — a game is up, or none exists and she offers a spoken one (sim lab cc4b3d2: 14 no-game lessons, 2 spoken offers)
   let pre = null;
@@ -198,25 +245,28 @@ export async function agentTurn({ state, kit, event, silent = false, verdict = n
   }
   const gameNews = pre ? (pre.ok ? `GAME: a game for this skill is now on the screen (${clip(pre.words, 120)}); tell them to play it`
     : "GAME: no game exists for this topic (the harness looked); say so in a few words and play a quick spoken game with them now") : null;
-  const ev = [...news, ...(gameNews ? [gameNews] : [])].length ? `${[...news, ...(gameNews ? [gameNews] : [])].join(". ")}. ${event}` : event;
-  const messages = [{ role: "system", content: systemPrompt(ctx) }, { role: "user", content: stateMessage({ state, kit, event: ev, onScreen: before.words, lane }) }];
-  const dep = teacherDeployment();
+  const { messages, dep, opts: callOpts, key } = agentCallOf({ state, kit, event, lane, onScreen: before.words, news: [...news, ...(gameNews ? [gameNews] : [])] });
+  const opts = { ...callOpts, trace };
   const t0 = Date.now();
-  // effort none by default (sim lab 7740135, n=64 per arm: judges tie none vs low 29:30 / 31:29, rubric within noise, dead ends 4 vs 13, about 1 s faster at p50, fallbacks 14 vs 43)
-  const opts = { schema: TURN_SCHEMA, schemaName: "teacher_turn", effort: process.env.TAXILA_TEACHER_EFFORT || "none", maxTokens: AGENT_LIMITS.maxOutTokens, timeoutMs: AGENT_LIMITS.turnTimeoutMs, retries: 0, quotaLane: "hot", trace };
+  // a speculation (stream 3: her call started on the PREFETCHED turn) is adopted only when it saw exactly these inputs
+  const adopted = spec && spec.key === key && !spec.aborted ? spec : null;
+  if (spec && !adopted) spec.abort?.("inputs differ");
   let res, firstSayMs = null;
   if (typeof onSay === "function") {
     // streamed (AGENT.md §1 Latency; stream 3's speech-stream.js): her words go to the caller as they are written (say is the
     // first field), each clause through clauseGate; the actions are run when the whole object has come
-    const q = deltaQueue();
-    let sayIter = sayDeltasOf(q.iter());
+    const q = adopted ? null : deltaQueue();
+    const sayIter = sayDeltasOf(adopted ? adopted.replay() : q.iter());
     const tap = (async function* () { for await (const d of sayIter) { if (firstSayMs == null) firstSayMs = Date.now() - t0; yield d; } })();
     try { onSay(tap, clauseGate({ verdict, learner: a.learner ?? {}, noGame: !!a.noGame, screen: before, lane, content: kitContentOf(kit) })); } catch { /* the caller's speech path is its own */ }
     try {
-      const r = await streamFn(dep, messages, { ...opts, onDelta: (d) => q.push(d) });
-      q.end();
+      const r = adopted ? await adopted.done : await streamFn(dep, messages, { ...opts, onDelta: (d) => q.push(d) });
+      q?.end();
       res = { json: (() => { try { return JSON.parse(r.text); } catch { return null; } })(), usage: r.usage };
-    } catch (e) { q.end(); throw e; }
+    } catch (e) { q?.end(); throw e; }
+  } else if (adopted) {
+    const r = await adopted.done;
+    res = { json: (() => { try { return JSON.parse(r.text); } catch { return null; } })(), usage: r.usage };
   } else res = await chatFn(dep, messages, opts);
   const ms = Date.now() - t0;
   const out = res?.json;
@@ -224,6 +274,8 @@ export async function agentTurn({ state, kit, event, silent = false, verdict = n
   const u = normUsage(res.usage) ?? { in: 0, out: 0 };
   const turnUsd = (() => { try { return usdOf(dep, u) ?? 0; } catch { return 0; } })();
   const notes = [];
+  if (adopted) notes.push(`speculation adopted (${Math.max(0, t0 - adopted.startedAt)} ms ahead)`);
+  else if (spec) notes.push(`speculation dropped: ${spec.aborted || "inputs differ"}`);
   // ── actions, checked ──
   let item = null;
   if (out.pose_item) {
@@ -310,7 +362,7 @@ export async function agentTurn({ state, kit, event, silent = false, verdict = n
   const slot = game?.slot ?? (board?.pageId ? (() => { try { return tools.slot?.(lessonId, board.pageId) ?? null; } catch { return null; } })() : null);
   return {
     ...(typeof onSay === "function" ? { streamed: true, firstSayMs, tail: appended } : {}),
-    say, intent: MOVE_OF[out.intent] ?? "explain", item, board, cleared, picture, game, gameRefused, screen, slot,
+    say, intent: MOVE_OF[out.intent] ?? "explain", item, board, cleared, picture, game, gameRefused, screen, slot, speculation: adopted ? "adopted" : spec ? "dropped" : null,
     read: out.read?.skill && out.read.level !== "unknown" ? { skill: clip(out.read.skill, 80), level: out.read.level, evidence: clip(out.read.evidence, 160) } : null,
     plan: clip(out.plan, 700), end: !!out.end && !silent, usage: { usd: turnUsd, tokens: (u.in ?? 0) + (u.out ?? 0) }, ms, notes, deployment: dep, at: now,
   };

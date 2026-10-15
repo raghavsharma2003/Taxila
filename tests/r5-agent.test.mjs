@@ -341,3 +341,39 @@ test("a new question with no page of its own clears an earlier page that shares 
   applyAgentTurn(next, { say: "Yeh lo.", intent: "explain", item: null, board: { ok: true, on: "board", texts: ["x"], pageId: "p9" }, screen: { on: "board", texts: ["x"] }, usage: { usd: 0, tokens: 0 }, notes: [], read: null }, { kit: K, childText: "board pe likh ke dikhao", lessonId: "L1" });
   assert.equal(next.agent.askedPageId, "p9");
 });
+
+test("speculation (stream 3): her call starts on the prefetched turn with no tool run and nothing drained; the turn adopts it only on the same inputs, else aborts it and calls again", async () => {
+  const { speakStreamed } = await import("../server/latency/speech-stream.js");
+  const { agentSpeculate, agentCallOf } = await import("../server/agent/agent.js");
+  const EV = 'the child said (speech recognition confidence 0.92): "aadha"';
+  // the key: same inputs → same key; a different event → a different key
+  assert.equal(agentCallOf({ state: ST(), kit: K, event: EV }).key, agentCallOf({ state: ST(), kit: K, event: EV }).key);
+  assert.notEqual(agentCallOf({ state: ST(), kit: K, event: EV }).key, agentCallOf({ state: ST(), kit: K, event: EV.replace("0.92", "0.81") }).key);
+  const json = JSON.stringify(base({ say: "Haan, aadha. Ab ek chhota sawaal.", pose_item: "i1", intent: "practice", board: SHOW(["1/2"]) }));
+  let calls = 0;
+  const streamFn = async (dep, messages, o) => { calls++; for (let i = 0; i < json.length; i += 9) { if (o.signal?.aborted) throw Object.assign(new Error("cancelled"), { code: "cancelled" }); o.onDelta(json.slice(i, i + 9)); await new Promise((r) => setImmediate(r)); } return { text: json, usage: { in: 900, out: 80 } }; };
+  const tools = fakeTools();
+  tools.peek = () => []; let drained = 0; tools.news = () => { drained++; return []; };
+  const spec = agentSpeculate({ state: ST(), kit: K, event: EV, lessonId: "L1", tools, streamFn });
+  assert.ok(spec && spec.key);
+  await spec.done;
+  assert.deepEqual(tools.calls, [], "no tool ran while speculating");
+  assert.equal(drained, 0, "the content news is peeked, not drained");
+  // adopted: no second call; her words replay into the speech path; the actions run now
+  let speech = null;
+  const onSay = (deltas, gate) => { speech = speakStreamed({ deltas, gate, synth: async function* (c) { yield Buffer.from(c); }, emit: () => {} }); };
+  const out = await agentTurn({ state: ST(), kit: K, event: EV, lessonId: "L1", verdict: "correct", tools, streamFn, onSay, spec });
+  assert.equal(calls, 1, "the turn did not call the model again");
+  assert.equal(out.speculation, "adopted");
+  assert.deepEqual((await speech).spoken, ["Haan, aadha.", "Ab ek chhota sawaal."]);
+  assert.deepEqual(tools.calls.map((c) => c[0]), ["show"], "the board went up at adoption, not before");
+  // different inputs: aborted, and the turn makes its own call
+  const spec2 = agentSpeculate({ state: ST(), kit: K, event: EV, lessonId: "L1", tools: fakeTools(), streamFn });
+  const out2 = await agentTurn({ state: ST(), kit: K, event: EV.replace("aadha", "ek tihai"), lessonId: "L1", verdict: "wrong", tools: fakeTools(), streamFn, chatFn: stub(JSON.parse(json)), spec: spec2 });
+  assert.ok(spec2.aborted);
+  assert.equal(out2.speculation, "dropped");
+  assert.equal(stub.last.messages[1].content.includes("ek tihai"), true, "the turn made its own call on its own inputs");
+  // a game ask is never speculated (its lookup is an action); silence neither
+  assert.equal(agentSpeculate({ state: ST(), kit: K, event: 'the child said (speech recognition confidence 0.9): "game khelna hai"', lessonId: "L1", tools: { ...fakeTools(), game: async () => ({ ok: false }) }, streamFn }), null);
+  assert.equal(agentSpeculate({ state: ST(), kit: K, event: EV, silent: true, lessonId: "L1", tools: fakeTools(), streamFn }), null);
+});
