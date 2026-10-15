@@ -88,6 +88,14 @@ export function withoutMastery(say, learner) {
   return kept.length && kept.length !== parts.length ? kept.join("").trim() : String(say ?? "");
 }
 
+const GAME_PROMISE = /(?:game|games|khel\w*|गेम|खेल)[^.!?।]*(?:taiyaar|tayyar|taiyar|ready|bana\s*(?:rahi|ti|ungi)|banaa\s*rahi|la\s*rahi|laa\s*rahi|aayega|aayegi|aa\s*raha|aa\s*rahi|shuru\s*kar|start|khelte\s+hain|khelenge|coming|getting)|(?:taiyaar|tayyar|ready|bana\s*rahi)[^.!?।]*(?:game|khel)/iu;
+/** Her line without a promise of a game that will not come (a spoken game, "bolkar", stays). PURE. */
+export function withoutGamePromise(say) {
+  const parts = String(say ?? "").match(/[^.!?।]+[.!?।]*\s*/g) ?? [];
+  const kept = parts.filter((p) => !(GAME_PROMISE.test(p) && !/bolkar|spoken|words\s+mein|zubani/i.test(p)));
+  return kept.length && kept.length !== parts.length ? kept.join("").trim() : String(say ?? "");
+}
+
 const INTERNALS = /(?:^|[^\p{L}])(?:card\s+(?:ka|ke|ki|par|pe)\s+(?:check|jaanch|jawab|answer)|card'?s\s+check|check\s+(?:isse|se)\s+match|match\s+nahi\s+hua|verified\s+grade|the\s+grade|grade\s+(?:ne|mein|says)|harness|answer\s+key|key\s+(?:se|ke\s+saath)\s+match|system\s+(?:ne|says|ke\s+hisaab)|the\s+checker|checker\s+(?:ne|says))(?![\p{L}])/iu;
 /** Her line without sentences that voice the harness (the card's check, the grade, the key). PURE. */
 export function withoutInternals(say) {
@@ -129,7 +137,9 @@ export async function agentTurn({ state, kit, event, silent = false, verdict = n
     if (!item) notes.push(`refused pose_item ${clip(out.pose_item, 60)}: not an offered item`);
   }
   let say = clip(out.say, AGENT_LIMITS.sayMaxChars);
-  let board = null, cleared = false, picture = null, game = null, screen = before, unconfirmed = false;
+  let board = null, cleared = false, picture = null, game = null, screen = before, unconfirmed = false, gameRefused = false;
+  // a lesson whose topic has no game: she was told so, and any promise of one is removed (not only on a play turn)
+  if (a.noGame) { const held = withoutGamePromise(say); if (held !== say) { say = held; notes.push("game promise removed"); } }
   if (silent) {
     // silence never brings new content: the same question at most, no new board, no picture
     if (item && item.id !== state.activeItemId) { notes.push("silence: new item dropped"); item = null; }
@@ -146,7 +156,12 @@ export async function agentTurn({ state, kit, event, silent = false, verdict = n
   if (!silent && out.play && tools.game) {
     const g = await Promise.resolve().then(() => tools.game(lessonId, { skillId: item?.skillId ?? a.skill ?? "", topicId: kit.topicId ?? "", child }))
       .catch((e) => ({ ok: false, refused: { why: String(e?.message ?? e).slice(0, 60) } }));
-    if (g?.ok) { game = g; screen = g; notes.push(`game up ${clip(g.game?.family, 30)}`); } else { unconfirmed = true; notes.push(`game refused: ${clip(g?.refused?.why, 60)}`); }
+    if (g?.ok) { game = g; screen = g; notes.push(`game up ${clip(g.game?.family, 30)}`); }
+    else {
+      unconfirmed = true; gameRefused = true; notes.push(`game refused: ${clip(g?.refused?.why, 60)}`);
+      // sim lab 1a346d9 (p29, p33: "game taiyaar kar rahi hoon" turn after turn, no game ever came): no promise of a game
+      const held = withoutGamePromise(say); if (held !== say) { say = held; notes.push("game promise removed"); }
+    }
   }
   if (out.picture && !silent) unconfirmed = true;
   if (!silent && out.picture) {
@@ -183,7 +198,7 @@ export async function agentTurn({ state, kit, event, silent = false, verdict = n
   }
   const slot = game?.slot ?? (board?.pageId ? (() => { try { return tools.slot?.(lessonId, board.pageId) ?? null; } catch { return null; } })() : null);
   return {
-    say, intent: MOVE_OF[out.intent] ?? "explain", item, board, cleared, picture, game, screen, slot,
+    say, intent: MOVE_OF[out.intent] ?? "explain", item, board, cleared, picture, game, gameRefused, screen, slot,
     read: out.read?.skill && out.read.level !== "unknown" ? { skill: clip(out.read.skill, 80), level: out.read.level, evidence: clip(out.read.evidence, 160) } : null,
     plan: clip(out.plan, 700), end: !!out.end && !silent, usage: { usd: turnUsd, tokens: (u.in ?? 0) + (u.out ?? 0) }, ms, notes, deployment: dep, at: now,
   };
@@ -241,6 +256,7 @@ export function applyAgentTurn(next, out, { kit, childText = "", cls = null, car
     posed: out.item ? [...new Set([...(a.posed ?? []), out.item.id])] : (a.posed ?? []),
     skill: out.item?.skillId ?? a.skill ?? kit.skills?.[0]?.id,
     boards: (a.boards ?? 0) + (out.board ? 1 : 0), pictures: (a.pictures ?? 0) + (out.picture?.job ? 1 : 0),
+    ...(out.gameRefused || a.noGame ? { noGame: true } : {}),
     usage: { usd: +((a.usage?.usd ?? 0) + out.usage.usd).toFixed(5), tokens: (a.usage?.tokens ?? 0) + out.usage.tokens },
     lastMs: out.ms, notes: out.notes,
   };

@@ -3,7 +3,7 @@
 // brings no new content, the board is drawn by code and reported, a spoken line never asks to type, budgets throw. Pure.
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { agentTurn, applyAgentTurn, eventOf, gradeOf, earnedRead, withoutPraise, withoutInternals, withoutMastery, AgentBudgetError } from "../server/agent/agent.js";
+import { agentTurn, applyAgentTurn, eventOf, gradeOf, earnedRead, withoutPraise, withoutInternals, withoutMastery, withoutGamePromise, AgentBudgetError } from "../server/agent/agent.js";
 import { laneFor, teacherMode } from "../server/agent/flags.js";
 import { specOf } from "../server/agent/tools.js";
 import { systemPrompt, stateMessage, offeredItems, TURN_SCHEMA } from "../server/agent/prompt.js";
@@ -217,4 +217,17 @@ test("a skill that needs deep evidence offers only its deep items; no mastery cl
   assert.equal(withoutMastery(wrap, { s2: { read: "partly" } }), "Kal phir milte hain.");
   assert.equal(withoutMastery(wrap, { s2: { read: "understood" } }), wrap);
   assert.equal(withoutMastery("Kya tum samajh gaye ho?", {}), "Kya tum samajh gaye ho?", "a question is not a claim");
+});
+
+test("no game for the topic: no promise of one this turn or later; the state tells her (sim lab 1a346d9 p29, p33)", async () => {
+  const none = fakeTools(); none.game = async () => ({ ok: false, refused: { why: "no game exists for this yet" } });
+  const r = await run(base({ say: "Ab thoda game khelte hain. Main line wala game taiyaar kar rahi hoon. A ki sides kaisi hain?", play: true }), { tools: none });
+  assert.equal(r.say, "A ki sides kaisi hain?");
+  const next = ST();
+  applyAgentTurn(next, r, { kit: K, childText: "game khelna hai", lessonId: "L1" });
+  assert.equal(next.agent.noGame, true);
+  assert.match(stateMessage({ state: next, kit: K, event: "x", onScreen: "nothing", lane: "voice" }), /GAMES: no game exists/);
+  const later = await run(base({ say: "Game abhi aa raha hai! Chalo bolkar ek game khelte hain: 2 aur 2?" }), { state: { agent: { noGame: true } } });
+  assert.equal(later.say, "Chalo bolkar ek game khelte hain: 2 aur 2?");
+  assert.equal(withoutGamePromise("Game ready hai? Nahi abhi."), "Nahi abhi.");
 });
