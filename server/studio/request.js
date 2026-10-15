@@ -375,6 +375,8 @@ function saResults(all, ops, pairs = false) {
   }
   return out;
 }
+/** A number stated AS a result: next to a result word, or the end of a range ("0 se 160"). */
+const saAsResult = (r) => { const esc = String(r).replace(".", "\\."); return new RegExp(`(?:=|equals|result|total|kul|answer|jawab)\\W{0,4}${esc}(?![\\d.])|(?<![\\d.])${esc}\\s*(?:[^\\s\\d]+\\s+){0,2}(?:aata|aati|milta|milti|hota|hoti|bach\\w*|banta|bante)\\b|\\d+\\s+se\\s+${esc}(?![\\d.])`, "iu"); };
 /** → { answer, question, source } when her line states, before its numeric question, what that question asks; else null */
 export function selfAnswer(line, { recent = [], worked = "", child = [] } = {}) {
   const s = String(line ?? "");
@@ -383,10 +385,22 @@ export function selfAnswer(line, { recent = [], worked = "", child = [] } = {}) 
   const qStart = Math.max(s.lastIndexOf(".", qEnd - 1), s.lastIndexOf("!", qEnd - 1), s.lastIndexOf("।", qEnd - 1), s.lastIndexOf(":", qEnd - 1)) + 1;
   const question = s.slice(qStart, qEnd + 1), before = s.slice(0, qStart);
   const t = question.toLowerCase();
-  const ops = Object.fromEntries(Object.entries(SA_OPS).map(([k, re]) => [k, re.test(t)]));
-  if (!Object.values(ops).some(Boolean)) return null;
   // a why / how question asks for a reason, not the number ("3 − 5 kyun nahi?")
   if (/\b(?:kyun|kyon|kaise|why|how)\b/u.test(t)) return null;
+  // QA pass 16 (TEST fa2f04e7): the question NAMES the answer of her line's own sum ("0 se 160 tak … 50 aur 30 sides ke steps
+  // milkar perimeter banta hai. Aap 160 par ungli rakhenge?"): the operation from the whole line, the operands her line's
+  // other numbers, the result one the question itself carries
+  const lineOps = Object.fromEntries(Object.entries(SA_OPS).map(([k, re]) => [k, re.test(s.toLowerCase())]));
+  const childNums = new Set(child.slice(-2).flatMap((c) => saNums(c)).map(saFmt));
+  const qOps = Object.values(SA_OPS).some((re) => re.test(t)) || /\b(?:hatao|hataiye|jodo|jodiye|jodenge|jodoge|ghatao|guna)\b/u.test(t);
+  const qNums = [...new Set(saNums(question).map(saFmt))];
+  for (const q of qNums.length === 1 && !qOps ? qNums : []) {
+    if (childNums.has(q) || !Object.values(lineOps).some(Boolean)) continue;
+    const others = saNums(before).filter((x) => saFmt(x) !== q);
+    if (others.length >= 2 && saResults(others, lineOps, true).has(q) && saAsResult(q).test(before)) return { answer: q, question, source: "named" };
+  }
+  const ops = Object.fromEntries(Object.entries(SA_OPS).map(([k, re]) => [k, re.test(t)]));
+  if (!Object.values(ops).some(Boolean)) return null;
   const said = new Set(saNums(before).map(saFmt));
   if (!said.size) return null;
   const qn = saNums(question);
@@ -404,9 +418,7 @@ export function selfAnswer(line, { recent = [], worked = "", child = [] } = {}) 
     // the worked example, the answer counts only when her line states it bare, without that source's operands
     if ((src.startsWith("recent") || src === "worked") && [...new Set(all.map(saFmt))].filter((x) => beforeNums.has(x) && x !== r).length >= 1) continue;
     // stated AS a result, never as an operand of another sum: next to a result word, or the end of a range ("0 se 160")
-    const esc = r.replace(".", "\\.");
-    const asResult = new RegExp(`(?:=|equals|result|total|kul|answer|jawab)\\W{0,4}${esc}(?![\\d.])|(?<![\\d.])${esc}\\s*(?:[^\\s\\d]+\\s+){0,2}(?:aata|aati|milta|milti|hota|hoti|bach\\w*|banta|bante)\\b|\\d+\\s+se\\s+${esc}(?![\\d.])`, "iu");
-    if (!asResult.test(before)) continue;
+    if (!saAsResult(r).test(before)) continue;
     return { answer: r, question, source: src };
   }
   return null;
@@ -415,12 +427,15 @@ export function selfAnswer(line, { recent = [], worked = "", child = [] } = {}) 
 export function unanswer(line, hit) {
   const s = String(line ?? ""), q = s.lastIndexOf(hit.question.trim());
   if (q < 0) return s;
-  const before = s.slice(0, q), rest = s.slice(q);
+  const before = s.slice(0, q);
+  let rest = s.slice(q);
   const parts = before.split(/(?<=[.,:;—!।])/u);
   const re = new RegExp(`(?<![\\d.])${hit.answer.replace(".", "\\.")}(?![\\d.])`);
   const i = parts.findIndex((p) => re.test(p));
   if (i < 0) return s;
   const kept = parts.filter((_, j) => j !== i).join("");
+  // the question that names it asks for it instead ("Aap 160 par ungli rakhenge?" → "Aap kis number par ungli rakhenge?")
+  if (hit.source === "named") rest = rest.replace(new RegExp(`(?<![\\d.])${hit.answer.replace(".", "\\.")}(?![\\d.])`), "kis number");
   return (kept.replace(/[,:;—]\s*$/u, ".").replace(/\s+([.,:;!?])/g, "$1").replace(/([.:;,])\s*\./g, ".").replace(/\s{2,}/g, " ").trim() + " " + rest.trim()).replace(/\s{2,}/g, " ").trim();
 }
 /** Does her line say there is no game (honest), or announce one ("Chalo mirror line game")? PURE. */

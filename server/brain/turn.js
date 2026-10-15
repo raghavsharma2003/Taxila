@@ -1090,10 +1090,13 @@ export async function lessonTurn(req, body, hooks = {}) {
     // (main's release blocker on D42: a board re-sent on a later turn never carries the key of the item open NOW; a key her
     // own line says stays hers, the pinned W9 design)
     const heldNow = heldFor(teacherReply);
+    // QA D43 (TEST d4aa3f0b / e737d1a4: the rectangle board stayed under "Ab square ki har side 8 metre ho, perimeter
+    // batayiye"): a turn that moves to another item keeps no earlier board, however many words the new item shares with it
+    const itemMoved = !!r.move?.itemId && r.move.itemId !== (prev?.activeItemId ?? null);
     seamSafe("studio.noteWithheld", () => studioSeam.noteWithheld?.(lesson.id, heldNow), null);
     const lateAsk = next.lateBoard && next.lateBoard.turn < next.turn ? next.lateBoard : null;
     if (next.lateBoard && (!lateAsk || next.turn - next.lateBoard.turn > 2)) delete next.lateBoard;
-    if (lateAsk && !late && !safetyWords && teacherReply && !studioSlot) {
+    if (lateAsk && !late && !itemMoved && !safetyWords && teacherReply && !studioSlot) {
       const slot = seamSafe("studio.onScreenSlot", () => (typeof studioSeam.onScreenSlot === "function" ? studioSeam.onScreenSlot(lesson.id, lateAsk.intentId, heldNow) : null), null);
       if (slot) {
         delete next.lateBoard;
@@ -1117,7 +1120,7 @@ export async function lessonTurn(req, body, hooks = {}) {
     }
     // 14.4 (QA D42): the board already on screen stays on the response while her line still talks about it (no new slot this
     // turn, the board not taken down, the Director's tray free): the client closes a page a response does not carry
-    if (!studioSlot && !leftBoard && !late && !agentApplied && !safetyWords && teacherReply && (!r.ui?.tray || r.ui.tray === "none") && !(r.ui?.chips?.length)) {
+    if (!studioSlot && !leftBoard && !itemMoved && !late && !agentApplied && !safetyWords && teacherReply && (!r.ui?.tray || r.ui.tray === "none") && !(r.ui?.chips?.length)) {
       const kept = seamSafe("studio.keepBoardSlot", () => (typeof studioSeam.keepBoardSlot === "function" ? studioSeam.keepBoardSlot(lesson.id, teacherReply, heldNow) : null), null);
       if (kept) { studioSlot = kept; studioReasons.push("studio.board_kept"); }
     }

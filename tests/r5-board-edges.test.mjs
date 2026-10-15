@@ -346,3 +346,29 @@ test("14.4 (main: fail closed): when the withheld values cannot be computed (nul
   assert.equal(replayed(["160"]), 0, "the open item's key is 160: the board that writes it is not replayed");
   assert.equal(replayed([]), 1, "nothing withheld: the board on screen is replayed");
 });
+
+test("QA D43 (TEST d4aa3f0b / e737d1a4): a kept board goes when her last sentence brings a number it does not show (a new problem), and stays for 'isi rectangle' (D42)", async () => {
+  const seam = await import("../server/studio/seam.js");
+  const { studioSeam } = seam;
+  const id = "L-d43";
+  seam.subscribe(id, () => {});
+  const L = seam._lesson(id);
+  const script = { v: 1, scriptId: "s", line: { lessonId: id }, anchor: "line_audio_start", board: { w: 677, h: 423, ground: "chalk" }, mode: "fresh", durationMs: 2000,
+    ops: [{ id: "r", op: "rect", startMs: 0, endMs: 800, at: [120, 100], w: 300, h: 180 }, { id: "a", op: "text", startMs: 800, endMs: 1400, at: [270, 90], text: "50 m", size: "m" },
+      { id: "b", op: "text", startMs: 1400, endMs: 2000, at: [440, 190], text: "30 m", size: "m" }, { id: "t", op: "text", startMs: 1400, endMs: 2000, at: [270, 320], text: "rectangle perimeter", size: "m" }] };
+  L.pieces.set("wb-1", { intentId: "wb-1", slotId: "slot-1", kind: "whiteboard", state: "revealed", artifact: { kind: "whiteboard", script }, revealedTurn: 1 });
+  L.onScreen = "wb-1";
+  assert.ok(studioSeam.keepBoardSlot(id, "Bilkul, Ishaan— aapne chaaron sides jodkar 160 metre nikala. Ab isi rectangle ka perimeter formula se nikaalo?", []));
+  assert.equal(studioSeam.keepBoardSlot(id, "Shabaash, 160 metre. Ab square ki har side 8 metre ho, perimeter batayiye?", []), null);
+});
+
+test("QA pass 16 (TEST fa2f04e7): a question that NAMES the answer of her line's own sum is self-answered; the rewrite asks for it instead", async () => {
+  const { selfAnswer, unanswer } = await import("../server/studio/request.js");
+  const line = "Dekhiye, number line par 0 se 160 tak poora boundary-distance dikhega; 50 aur 30 sides ke steps milkar perimeter banta hai. Aap 160 par ungli rakhenge?";
+  const hit = selfAnswer(line, {});
+  assert.equal(hit?.answer, "160");
+  assert.equal(unanswer(line, hit), "Dekhiye, 50 aur 30 sides ke steps milkar perimeter banta hai. Aap kis number par ungli rakhenge?");
+  // quiet: a question with its own operation or other numbers ("7 mein se 2 hatao?", "100 banane ko kitna jodenge?")
+  assert.equal(selfAnswer("Haan, 3 bachti hain: 5 cheezon mein se 2 hatao, phir bachi cheezein gino. 7 mein se 2 hatao?", {}), null);
+  assert.equal(selfAnswer("Bilkul, 94 se 100 tak 6 ka jump hai. Ab 30 ka partner socho—100 banane ko kitna jodenge?", {}), null);
+});

@@ -1091,6 +1091,11 @@ export const studioSeam = {
     const on = L?.onScreen ? L.pieces.get(L.onScreen) : null;
     if (!on || on.kind !== "whiteboard" || !on.artifact?.script || on.retired || !VISIBLE.has(on.state) || L.safety) return null;
     if (!syncedWithLine(on.artifact.script, line)) return null;
+    // QA D43: her LAST sentence brings a number the board does not show ("Ab square ki har side 8 metre ho, perimeter
+    // batayiye" under the 50 x 30 rectangle): that is a new problem, and the old page goes
+    const last = String(line ?? "").trim().split(/(?<=[.!?।])\s+/u).filter(Boolean).pop() ?? "";
+    const onBoard = new Set(boardNumbersIn(textsOf(on.artifact.script).join(" ")));
+    if ([...boardNumbersIn(last)].some((n) => !onBoard.has(n))) return null;
     if (!Array.isArray(withhold) || writesWithheld(on.artifact.script, withhold)) return null;   // fail closed: unknown → not re-sent
     const g = gatedSlot(L, on, on.state, "on_screen");
     if (g) L.shown = { intentId: on.intentId, revealing: false };
