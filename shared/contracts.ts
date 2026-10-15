@@ -327,6 +327,11 @@ export interface LessonStartRequest {
    * matching topic (server/lesson/purpose.js routeAsk) and titles it by the question. ≤ 500 characters are read.
    */
   firstText?: string;
+  /**
+   * r5 QA D24: rejoin this open lesson (a reload, a tab discard, the home's "continue"). Honoured only for this child's
+   * open lesson on the same server-written lane (cascade / text); otherwise the start opens a new lesson as before.
+   */
+  resumeLessonId?: string;
 }
 /** 409 from POST /api/lesson/start when the plan does not allow a lesson now (daily cap, lesson hours, done). */
 export interface LessonStartRefused { error: string; state: ChildHomeState; opensAt: string | null; capRemaining: number }
@@ -339,6 +344,10 @@ export interface LessonStartResponse {
   moduleCommands: ModuleCommand[]; ui: UiDirectives;
   /** Text lane: the teacher's opening line, stored as teacher turn `teacherOpeningSeq`. */
   teacherOpening?: string; teacherOpeningSeq?: number;
+  /** D24: this is the open lesson rejoined (teacherOpening is her last line, said again). */
+  resumed?: boolean;
+  /** D24: the highest turnSeq the server has acknowledged; a page's outbox numbers its next turn above it. */
+  turnSeqFloor?: number;
 }
 /** One "What you did today" card (V2 §6.3.5): the child's own answer, with a tick only if the key verified it. */
 export interface DidCard {

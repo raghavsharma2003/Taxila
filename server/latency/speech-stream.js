@@ -45,7 +45,7 @@ export function clauseSplitter({ minWords = 4, maxChars = 180 } = {}) {
  * @param {{
  *   deltas: AsyncIterable<string>,
  *   before?: Promise<{ ok: boolean, why?: string }>,
- *   gate?: (clause: string, spoken: string[]) => { ok: boolean, why?: string },
+ *   gate?: (clause: string, spoken: string[]) => { ok: boolean, why?: string, clause?: string },  (clause: a rewrite to say instead)
  *   synth: (clause: string, signal: AbortSignal) => AsyncIterable<Buffer|Uint8Array>,
  *   emit: (e: { type: "clause", i: number, text: string } | { type: "audio", i: number, chunk: Buffer|Uint8Array }) => void | Promise<void>,
  *   signal?: AbortSignal, lookahead?: number, now?: () => number, split?: ReturnType<typeof clauseSplitter>,
@@ -93,11 +93,14 @@ export async function speakStreamed(o) {
   ctl.signal.addEventListener("abort", () => { wakeProducer?.(); wakeConsumer?.(); }, { once: true });
   const producer = (async () => {
     try {
-      const take = async (clause) => {
+      const take = async (clause0) => {
+        let clause = clause0;
         if (stopped || ctl.signal.aborted) return;
-        text += (text ? " " : "") + clause;
         const g = o.gate ? o.gate(clause, spoken) : { ok: true };
-        if (!g?.ok) { stopped = { why: g?.why ?? "floor", clause }; return; }
+        if (!g?.ok) { text += (text ? " " : "") + clause; stopped = { why: g?.why ?? "floor", clause }; return; }
+        // the gate may REWRITE a clause (4A: speakNotWrite turns "type it" into "say it"); the rewrite is what she says
+        if (typeof g.clause === "string" && g.clause.trim()) clause = g.clause.trim();
+        text += (text ? " " : "") + clause;
         if (firstClauseMs == null) firstClauseMs = Math.round(now() - t0);
         while (queue.length > lookahead && !stopped && !ctl.signal.aborted) await new Promise((r) => { wakeProducer = r; });
         queue.push({ clause, job: job(clause) });
@@ -135,4 +138,38 @@ export async function speakStreamed(o) {
     o.signal?.removeEventListener?.("abort", onAbort);
   }
   return { spoken, text, stopped, firstClauseMs, firstAudioMs };
+}
+
+/**
+ * The agent's structured reply streamed as JSON with "say" FIRST (4A, server/agent/agent.js): the text of the "say" string
+ * as it arrives, as deltas (JSON escapes decoded), ending at its closing quote. Feed it the raw JSON deltas; the rest of
+ * the object (the actions) is the caller's once the whole JSON has come.
+ * @param {AsyncIterable<string>} jsonDeltas @param {string} [key]
+ * @returns {AsyncIterable<string>}
+ */
+export async function* sayDeltasOf(jsonDeltas, key = "say") {
+  let buf = "", state = "seek", esc = false, uni = "";
+  const opener = new RegExp(`"${key}"\\s*:\\s*"`);
+  for await (const d of jsonDeltas) {
+    buf += d;
+    if (state === "seek") {
+      const m = opener.exec(buf);
+      if (!m) { if (buf.length > 4096) buf = buf.slice(-64); continue; }
+      buf = buf.slice(m.index + m[0].length);
+      state = "in";
+    }
+    if (state !== "in") continue;
+    let out = "", i = 0;
+    for (; i < buf.length; i++) {
+      const c = buf[i];
+      if (uni) { uni += c; if (uni.length === 5) { out += String.fromCharCode(parseInt(uni.slice(1), 16)); uni = ""; } continue; }
+      if (esc) { esc = false; if (c === "u") { uni = "u"; continue; } out += ({ n: "\n", t: "\t", r: "", b: "", f: "" })[c] ?? c; continue; }
+      if (c === "\\") { esc = true; continue; }
+      if (c === '"') { state = "done"; break; }
+      out += c;
+    }
+    buf = "";
+    if (out) yield out;
+    if (state === "done") return;
+  }
 }

@@ -14,7 +14,7 @@
 //   the whiteboard gate (qa/whiteboard.js) checks it (fits the stage, labels anchored, numbers from her line or the kit,
 //   arithmetic true, words hers or the book's, timed to her voice). One repair round with the failing check ids when the
 //   time budget allows; a script that fails is never drawn (the explainer template rung or her voice instead).
-import { answersRequest, samePage, shownBefore, plannerRequest, subjectWords, textsOf, freeAsked, askedNumbers } from "./request.js";
+import { answersRequest, samePage, shownBefore, plannerRequest, subjectWords, textsOf, freeAsked, askedNumbers, faceDrawing } from "./request.js";
 import { chat, DEPLOY, usdOf, normUsage } from "../azure.js";
 import { archetype, validateParams, stringKeys, buildParams } from "./archetypes/index.js";
 import { gateWhiteboard, numbersIn, CHARS_PER_SEC, segmentsOf, segHitsBox, innerBox, withheldValues, partitionCounts } from "./qa/whiteboard.js";
@@ -479,11 +479,11 @@ export async function planWhiteboard(ask, { kit, prev, redact = [], deployment =
       const raw = { v: 1, scriptId: ask.intent?.intentId ?? "wb", line: { lessonId: ask.line?.lessonId ?? "", ...(ask.line?.teacherReplySeq != null ? { teacherReplySeq: ask.line.teacherReplySeq } : {}) },
         anchor: "line_audio_start", board: { ...WB_BOARD, ground: "chalk" }, mode: ask.mode === "continue" ? "continue" : "fresh",
         durationMs: Math.max(...ops.map((o) => Number(o.endMs) || 0)), ops };
-      gate = gateWhiteboard(raw, { reply: text, kit: kitForGate, band, speechMs, banned: redact, prior, withhold, ...(request ? { extraNumbers: askedNumbers(request) } : {}) });
+      gate = gateWhiteboard(raw, { reply: text, kit: kitForGate, band, speechMs, banned: redact, prior, withhold, ...(request ? { extraNumbers: askedNumbers(request), face: faceDrawing(request) } : {}) });
       gate.fixes = fit.fixes;
       // round 5 (stream 2): a board that ignores the child's request, or is the page already up, is repaired once (a shape
       // note, not a line), then refused
-      const missed = gate.pass && request && !answersRequest(gate.script, request, { drawnFor: true }) ? (request.kind === "number_line" ? "it has no number line (numwork number_line) and a number line was asked" : `nothing on it names or shows ${asked?.label ?? "what was asked"}`) : null;
+      const missed = gate.pass && request && !answersRequest(gate.script, request, { drawnFor: true }) ? (request.kind === "number_line" ? "it has no number line (numwork number_line) and a number line was asked" : request.kind === "example" ? "it is not her example worked: write each number she says, one step under the last, ? for what she asks" : `nothing on it names or shows ${asked?.label ?? "what was asked"}`) : null;
       const again = gate.pass && shownBefore(gate.script, { avoid, seen });
       if (gate.pass && !missed && !again) return { ok: true, script: { ...gate.script, facts: gate.facts }, gate, ms: ms(), attempts, usage, usd: usdNow() };
       if (missed || again) { feedback = missed ? `asked: ${missed}; draw what was asked` : "not_again: this is the page that was already up; draw something new"; continue; }

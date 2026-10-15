@@ -324,14 +324,15 @@ function flow(c, tl) {
   if (!Array.isArray(steps) || steps.length < 2 || steps.length > 6 || !steps.every(fitsLabel)) return { error: "steps" };
   const n = steps.length;
   // Layout, first that fits every label: one row left to right (≤ 3 steps); one column top to bottom (≤ 3); two columns
-  // read top to bottom, then the next column (4-6). Boxes are sized to the board, never to the text.
+  // read top to bottom, then the next column (4-6). Boxes are sized to the board, never to the text. The last box ends 16
+  // units above the board's bottom (QA round 5 D09: at 300 its stroke was cut at the phone stage's bottom edge).
   const rowW = 340 / n - 18;
   const layout = n <= 3 && steps.every((t) => canFit(t, rowW - 10)) ? "row" : n <= 3 ? "col" : "two";
   const perCol = layout === "two" ? Math.ceil(n / 2) : n;
   const bw = layout === "row" ? rowW : layout === "col" ? 240 : 160;
   const bh = layout === "row" ? 64 : Math.min(58, 250 / perCol - 18);
   const pos = steps.map((_, i) => layout === "row" ? [30 + i * (bw + 18) + bw / 2, 150]
-    : [layout === "col" ? 200 : i < perCol ? 105 : 295, 30 + bh / 2 + (i % perCol) * ((270 - bh) / Math.max(1, perCol - 1))]);
+    : [layout === "col" ? 200 : i < perCol ? 105 : 295, 30 + bh / 2 + (i % perCol) * ((254 - bh) / Math.max(1, perCol - 1))]);
   for (let i = 0; i < n; i++) {
     const [x, y] = pos[i];
     if (i > 0) {

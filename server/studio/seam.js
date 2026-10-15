@@ -923,6 +923,15 @@ export const studioSeam = {
     }
     const first = boardFirst.takePreselected(ask, boardSync.gateCtxFor(ask, { kit: L.kit ?? undefined, redact: L.redact ?? [], prior: [] }));
     if (first && drawn(first)) return { slotId: p.slotId, intentId, state: "revealed", artifact: p.artifact };
+    // round 5 merge (main; owner-5 battery on 14.1, 2/2 "whiteboard pe bana ke samjhao" after the same page was drawn): the
+    // board-first page was refused ONLY because it is the page on screen now. Her line was written from that page, so it is
+    // KEPT (no second notebook entry; it redraws beside her line, as a kept continue does) instead of a slow line plan that
+    // left her nothing to point at and the slot failed. Never for an ask for an EXAMPLE: there the same page is the repeat
+    // the never-the-same-page rule exists to stop.
+    if (first?.script && onPage && request?.kind !== "example" && shownBefore(dress(first.script), { avoid: onPage }) && drawn({ ...first, source: "kept" })) {
+      console.info("[studio] board-first page is the page on screen: kept");
+      return { slotId: p.slotId, intentId, state: "revealed", artifact: p.artifact };
+    }
     { const st = boardFirst.pickState(ask); if (st !== "none") console.info(`[studio] board-first ${st} topic=${String(ask?.kit?.topicId ?? "").slice(0, 40)} beat=${ask?.intent?.beat ?? "-"}`); }
     // a CONTINUED board: the board on screen, re-gated on her new line, stays up NOW (her row named it); the continuation
     // plan below still runs and replaces it when it lands (the same slot's {t:"script"}), else the kept board stays.
@@ -1015,7 +1024,8 @@ export const studioSeam = {
   boardFor(lessonId) {
     const L = lessons.get(lessonId);
     const on = L?.onScreen ? L.pieces.get(L.onScreen) : null;
-    return on && on.kind === "whiteboard" && on.artifact && !on.retired ? { skillId: on.skillId ?? null, itemId: on.itemId ?? null, turn: on.revealedTurn ?? null } : null;
+    // a picture the child asked for is taken down on the same rules as a board (turn.js leftBoard)
+    return on && ["whiteboard", "image"].includes(on.kind) && on.artifact && !on.retired ? { skillId: on.skillId ?? null, itemId: on.itemId ?? null, turn: on.revealedTurn ?? null } : null;
   },
 
   /** round 5: is a board (not a game, not a picture) what the child sees now? */
@@ -1038,13 +1048,13 @@ export const studioSeam = {
    * is the piece on screen). Its facts row names the thing, so her next line can point at it truthfully. Refused while a
    * safeguarding turn holds the lesson, the parent's Studio switch is off, or a game is in use. → the slot, or null.
    */
-  showImage(lessonId, { src, alt, subject, jobId }) {
+  showImage(lessonId, { src, alt, subject, jobId, itemId = null, skillId = null }) {
     const L = lessons.get(lessonId);
     if (!L || L.safety || L.studioControl === "off" || !/^data:image\/(?:png|jpeg);base64,/.test(String(src ?? ""))) return null;
     const on = L.onScreen ? L.pieces.get(L.onScreen) : null;
     if (on && VISIBLE.has(on.state) && !["whiteboard", "image"].includes(on.kind) && !on.grade?.complete) return null;
     const intentId = `${lessonId}:pic:${String(jobId ?? Date.now()).replace(/[^\w:.-]/g, "").slice(-24)}`;
-    const p = { intentId, slotId: `${intentId}:slot`, kind: "image", archetype: "image", source: "image", skillId: null, need: "explain", state: "revealed", retired: false,
+    const p = { intentId, slotId: `${intentId}:slot`, kind: "image", archetype: "image", source: "image", skillId, itemId, need: "explain", state: "revealed", retired: false,
       createdAt: Date.now(), revealedAt: Date.now(), revealedTurn: L.turn, artifact: { kind: "image", stage: { w: 1024, h: 1024 }, src, alt: String(alt ?? "").slice(0, 80) },
       facts: { kind: "image", archetype: "image", onScreen: { picture: String(subject ?? "").slice(0, 24) } } };
     if (on) retirePiece(L, on.intentId, "replaced");

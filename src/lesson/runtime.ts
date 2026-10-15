@@ -295,7 +295,7 @@ export class LessonRuntime {
     return this.store.get();
   }
 
-  async start(childId: string, startMode: StartMode = "voice", topicId?: string): Promise<void> {
+  async start(childId: string, startMode: StartMode = "voice", topicId?: string, resumeLessonId?: string): Promise<void> {
     if (this.state.phase === "starting" || this.state.phase === "live") throw new Error("a lesson is already running");
     const cascade = startMode === "cascade";
     const mode: LessonMode = cascade ? "text" : startMode;
@@ -308,8 +308,10 @@ export class LessonRuntime {
     this.store.set({ phase: "starting", connection: "connecting" });
     let lessonId: string | null = null;
     try {
-      const s = await this.api.start({ childId, topicId, mode: startMode });
+      const s = await this.api.start({ childId, topicId, mode: startMode, ...(resumeLessonId ? { resumeLessonId } : {}) });
       lessonId = s.lessonId;
+      // r5 QA D24: a rejoined lesson numbers its next turns above everything the server already acknowledged
+      if (s.resumed && s.turnSeqFloor) this.outbox.raiseFloor(s.lessonId, s.turnSeqFloor);
       // Ended or unmounted while starting: the server opened a lesson nobody will run.
       if (gen !== this.generation) return this.closeQuietly(lessonId);
       this.store.set({ lessonId: s.lessonId, topic: s.topic, teacher: s.teacher });

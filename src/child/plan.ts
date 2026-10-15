@@ -67,8 +67,9 @@ function writeCache(cid: string, c: Cached): void {
 
 const ALL_SURFACES = { map: true, notebook: true, resume: true };
 
-/** The lesson route cannot reopen a lesson by id yet (src/child/screens/Practice.tsx LessonRoute → a new lesson). */
-export const RESUME_BY_ID = false;
+/** r5 QA D24: the lesson route reopens a lesson by id (POST /api/lesson/start {resumeLessonId}; the cascade and text lanes
+ *  every home start uses), so "Continue" is true now. */
+export const RESUME_BY_ID = true;
 
 /** Server response → the home's plan. Pure (unit-tested). */
 export function fromServer(r: ChildPlanResponse): HomePlan {

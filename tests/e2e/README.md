@@ -25,6 +25,9 @@ and run with `--test-concurrency=4` (at full concurrency the vite dev-server fix
 | `qa-lesson.mjs` | a live lesson with a timeline every 300 ms and a `QA_SCRIPT` of actions (see the file head); `QA_WAV` = the fake mic; `say` presses just before the WAV's next utterance; `QA_OPEN=1` opens lessons for an hour from Controls; `QA_SLOW=1` = Slow 3G + 4x CPU; `QA_DENY=1` = mic refused |
 | `qa-twotabs.mjs` | one child's lesson in two tabs |
 | `qa-gate-kill.mjs` | D03 repro: corner reopened after a killed tab must show the PIN (PASS/FAIL) |
+| `qa-reload.mjs` | D24: a reload at her turn rejoins the same lesson (PASS/FAIL); `QA_ACC` an older child |
+| `qa-interact.mjs` | pass 3: Listen, the lesson card, See {child}'s week, change PIN, Lock, map → Hangar |
+| `qa-account.mjs` | Data and privacy on a throwaway account: download, delete, what the child URL shows after |
 | `qa-stale.mjs` | D04 repro: a tab across a deploy must recover by itself (PASS/FAIL); needs `QA_STALE_DIST` = the served copy |
 
 Child-voice WAVs: `node --env-file=.env.local evals/qa/make-wavs.mjs <dir>` (Azure Speech, hi-IN-AnanyaNeural).

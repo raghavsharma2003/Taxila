@@ -28,7 +28,7 @@ import { noteModuleEvents, moduleAnswerOf } from "../director/modules.js";
 import { findItem, promptFor, revealsAnswer, whyKey, norm as normAnswer } from "../director/items.js";
 import { registerBroken } from "../director/register.js";
 import { verdictFor, uiVerdict, askText, refersToScreen, wrongAnswersOf, boardClaimProblem, kitWordsOf, stripScreenRefs } from "../director/say.js";
-import { answersRequest, pointsAtStage, unpointGently, pictureSubjectOf } from "../studio/request.js";
+import { answersRequest, pointsAtStage, unpointGently, pictureSubjectOf, announcesGame, ungame } from "../studio/request.js";
 import { drawableSubject } from "../director/state.js";
 import { mixedUnitComparison } from "../director/units.js";
 import { instructionsFor, instructionsAfter } from "../compiler/instructions.js";
@@ -72,7 +72,8 @@ import { publishPerception } from "../latency/bus.js";
 // round 3 fix (adversarial B2): the play piece's own closed voice grammar (pure, no DOM)
 import { parseVoice } from "../../src/play/core/voice.ts";
 // round 3 fix (experience B2 / B3): the visual ask's clause made true about the screen
-import { askTruth, VISUAL_ON_STAGE, VISUAL_NOT_YET } from "../director/shapes.js";
+import { askTruth, VISUAL_ON_STAGE, VISUAL_NOT_YET, drawAsked, pictureNote } from "../director/shapes.js";
+import { picturesFor, startPicture, takeFailedPicture } from "../studio/picture.js";
 import { comprehensionRead } from "../director/read.js";
 import { agentTurn, eventOf, applyAgentTurn } from "../agent/agent.js";
 import { childTurnRow, clientInstructions, debugFor, floorIncidentStmt, incidentStmt, kitFor, laneOf, runTurnTx, stageTurns, turnInsertStmt, turnLane, withAsk, withSeamUi, withStudioSlot } from "./rows.js";
@@ -673,7 +674,7 @@ export async function lessonTurn(req, body) {
   const movedOn = !!upFor && ((r.move?.itemId && upFor.itemId && r.move.itemId !== upFor.itemId) || (r.move?.skillId && upFor.skillId && r.move.skillId !== upFor.skillId));
   const leftBoard = !agentApplied && !late && !clearing && (movedOn || ["answer_q", "detour", "topic", "switch", "change_topic"].includes(String(r.move?.request ?? "")))
     && !kernel.arb.accepted.some((p) => p.kind === "ask_whiteboard");
-  if (leftBoard) seamSafe("studio.clearBoard", () => (typeof studioSeam.clearBoard === "function" && studioSeam.boardUp?.(lesson.id) ? studioSeam.clearBoard(lesson.id) : null), null);
+  if (leftBoard) seamSafe("studio.clearBoard", () => (typeof studioSeam.clearBoard === "function" && (upFor || studioSeam.boardUp?.(lesson.id)) ? studioSeam.clearBoard(lesson.id) : null), null);
   // round 5 merge: on the agent lane the agent drew (or did not draw) its own board; the Director-lane board rules stand aside
   let studioSlot = agentApplied ? agentApplied.studioSlot : late || clearing ? null
     : seamSafe("studio.slotFor", () => (typeof studioSeam.slotFor === "function" ? studioSeam.slotFor(lesson.id, turnStudioOf(kernel.arb),
@@ -723,6 +724,36 @@ export async function lessonTurn(req, body) {
       next.lastMove = { ...next.lastMove, shape: fixed };
       try { instructions = instructionsFor(next, kit); } catch (e) { console.warn(`[studio] visual-ask truth left out of the compile: ${String(e?.message ?? e).slice(0, 80)}`); }
     }
+  }
+  // round 5 (owner decision 14.2): a REAL picture of what they asked to see, for the picture cohort (studio/picture.js
+  // picturesFor): a photo ask, or a thing outside the kit the board sketches. The sketch and her "it is being made" go up now,
+  // the picture reveals on the Studio stream when it passes moderation (~15 s); a full lesson budget or a busy lane is said
+  // honestly ("cannot come right now"). Her line never says it is there: it is not, this turn.
+  // ... and a picture she said was coming that failed (generation, moderation) is owned up to on the next turn, once
+  // (round 5 merge: the agent lane has its own picture tool, picture.get; the Director-lane picture rules stand aside there)
+  const lostPic = !agentApplied && !late && next.lastMove?.shape && r.move.kind !== "safeguard" && !incident ? takeFailedPicture(lesson.id) : null;
+  if (lostPic) {
+    const shape = [String(next.lastMove.shape), pictureNote({ subject: lostPic, photo: "failed" })].join("; ");
+    try { instructions = instructionsFor({ ...next, lastMove: { ...next.lastMove, shape } }, kit); next.lastMove = { ...next.lastMove, shape }; }
+    catch (e) { console.warn(`[studio] lost-picture truth left out of the compile: ${String(e?.message ?? e).slice(0, 80)}`); }
+  }
+  const picSee = !agentApplied && !late && r.move?.request === "visual" && next.lastMove?.shape ? r.move?.see : null;
+  // (never a picture of what the lesson itself teaches: "half ka picture" in a fractions lesson is the board's, a generated
+  // image carries no curriculum; battery iter10 c4-half. kitWordsOf stems: say.js, the first 5 letters)
+  const kitTeaches = (subject) => { const ks = kitWordsOf(kit); return String(subject).split(/[^\p{L}\p{N}]+/u).some((w) => w.length >= 2 && ks.has(w.toLowerCase().normalize("NFKC").slice(0, 5))); };
+  if (picSee?.subject && (picSee.show === "picture" || picSee.off) && !(!picSee.off && kitTeaches(picSee.subject)) && r.move.kind !== "safeguard" && !incident && picturesFor(guardian)) {
+    const sh = String(next.lastMove.shape);
+    const was = drawAsked({ subject: picSee.subject, show: picSee.show });
+    const shapeFor = (photo) => (sh.includes(was) ? sh.replace(was, drawAsked({ subject: picSee.subject, show: picSee.show, photo })) : [sh, pictureNote({ subject: picSee.subject, photo })].join("; "));
+    // her words first: a picture is started only when "it is coming" fits her instructions (a budget gate throws), so she
+    // never says "no photo" while one arrives
+    const compiled = (photo) => { try { return instructionsFor({ ...next, lastMove: { ...next.lastMove, shape: shapeFor(photo), picture: photo } }, kit); } catch (e) { console.warn(`[studio] picture truth left out of the compile: ${String(e?.message ?? e).slice(0, 80)}`); return null; } };
+    const coming = compiled("coming");
+    const started = coming ? seamSafe("studio.picture", () => startPicture(lesson.id, picSee.subject, {
+      reveal: (pic) => seamSafe("studio.showImage", () => studioSeam.showImage?.(lesson.id, { ...pic, itemId: r.move?.itemId ?? null, skillId: r.move?.skillId ?? null }), null) }), null) : null;
+    const photo = started?.ok ? "coming" : started && started.check !== "subject" ? "busy" : null;
+    const ins = photo === "coming" ? coming : photo ? compiled(photo) : null;
+    if (photo && ins) { next.lastMove = { ...next.lastMove, shape: shapeFor(photo), picture: photo }; instructions = ins; }
   }
   // Studio's actions for this turn as they reach the child: the kernel's accepted ones, minus a reveal Studio's slotFor held
   // (the tray is the Director's this turn, or the beat moved on). A reveal with no slot would mark a piece revealed, write
@@ -902,6 +933,21 @@ export async function lessonTurn(req, body) {
         delivery = seamSafe("expressive.planDelivery", () => expressiveSeam.planDelivery(moment, teacherReply), delivery);
       }
     }
+    // round 5 (owner decision 14.2, battery c4-game): a game asked for and none mounts: her line never announces one ("Chalo
+    // mirror line game:" over an empty tray); the word goes, the activity she gives in words stays (studio/request.js ungame)
+    if (kernel.wb.declined === "studio_rejected.no_game_piece" && studioSlot?.artifact?.kind !== "play" && teacherReply && announcesGame(teacherReply)) {
+      const fixed = ungame(teacherReply);
+      if (fixed !== teacherReply) {
+        teacherReply = fixed;
+        const row = staged.find((x) => x.seq === teacherReplySeq);
+        if (row) { row.text = fixed; row.meta = { ...(row.meta ?? {}), guard: [...new Set([...(row.meta?.guard ?? []), "claim_game"])] }; }
+        const last = next.recent?.[next.recent.length - 1];
+        if (last?.who === "teacher") next.recent = [...next.recent.slice(0, -1), { ...last, text: fixed.slice(0, 400) }];
+        guard = { ...guard, caught: [...new Set([...(guard?.caught ?? []), "claim_game"])], replaced: true };
+        studioReasons.push("say.claim_game");
+        delivery = seamSafe("expressive.planDelivery", () => expressiveSeam.planDelivery(moment, teacherReply), delivery);
+      }
+    }
     // round 5 (stream 2, open-r13-bare-pointing-on-request-turns): on a turn that answers what the child asked to SEE (a thing
     // named, a number line, a photo), her line may point at the screen only when the page up at the ack shows it; any other
     // pointing ("Screen par vegetables dekho" over a food table after "aloo dikhao") is taken out, its content kept in words.
@@ -913,7 +959,9 @@ export async function lessonTurn(req, body) {
     const seeReq = lineSubject ? { ...(seeReq0 ?? { kind: "picture" }), subject: lineSubject } : seeReq0;
     // ... and a visual ask with no board coming at all (none accepted, none on screen for it: owner replay turn 10, "Screen par
     // 4, 7, 10 dekhiye" over an empty tray) never points either
-    const stageEmpty = !studioSlot && !playAsk && !keepEngineNow && !(next.module && r.ui?.tray === "module") && !seamSafe("studio.boardUp", () => studioSeam.boardUp?.(lesson.id), false);
+    // (sim lab dd8f40ac: a board still PLANNING is not on the stage: "Can you point to 13 on screen?" while it was being
+    // drawn, the child on a phone: "screen pe only mic hai"; a slot with no artifact yet counts as empty)
+    const stageEmpty = !studioSlot?.artifact && !playAsk && !keepEngineNow && !(next.module && r.ui?.tray === "module") && !seamSafe("studio.boardUp", () => studioSeam.boardUp?.(lesson.id), false);
     // (sim lab p22: "Can you point to one-third on the screen?" with nothing up, any turn: the child said "I see only a mic
     // button"; with chips up "screen par" may mean the chips, so only a BOARD claim is taken out then)
     const nothingComing = (r.move?.request === "visual" && stageEmpty)

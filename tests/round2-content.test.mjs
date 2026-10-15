@@ -230,3 +230,31 @@ describe("fractions@1 name / of (patch 05: w1b-mounts, 3 maths lessons with no i
     assert.equal(recheckEngineAnswer(of, { value: { kind: "fr.of", value: "five" }, correct: true }).unverifiable, true, "an unreadable act is no evidence, never the claim");
   });
 });
+
+// round 5 merge (main; owner-5 battery on 14.1: "whiteboard pe bana ke samjhao" right after the same page was drawn, 2/2 a
+// failed slot and nothing she could point at): board-first's page refused only because it is the page on screen is KEPT.
+describe("round 5 merge: the board-first page that is already on screen is kept, not failed", () => {
+  before(() => { seam._setDeps({ planWhiteboard: async () => ({ ok: false, usd: 0 }), q: async () => [], writeEvidence: async () => ({ written: true }) }); });
+  const open = (id) => { const kit = kitOf(C4); seam.studioSeam.prefetch({ lessonId: id, purpose: "practice", kit, topicId: C4, child: { id: `child-${id}`, class_level: 4, language_pref: "hinglish" } }); return kit; };
+  it("the same page asked again (draw it on the board) stays up, revealed", { skip: SEAM_PATCHED ? false : "patch 03-studio-seam-first.diff not applied" }, () => {
+    const id = "r5k-1"; open(id);
+    const a = c4Ask(`${id}:wb:4`);
+    seam.studioSeam.preselectWhiteboard(a);
+    assert.equal(seam.studioSeam.requestIntent({ ...a, line: { ...a.line, text: GOOD } }).state, "revealed");
+    const b = c4Ask(`${id}:wb:5`);
+    seam.studioSeam.preselectWhiteboard(b);
+    const ack = seam.studioSeam.requestIntent({ ...b, line: { ...b.line, text: GOOD } });
+    assert.equal(ack.state, "revealed", "the page on screen is kept for her line, never a failed slot");
+    assert.equal(ack.artifact?.kind, "whiteboard");
+  });
+  it("an ask for an EXAMPLE never gets the same page back (the repeat the rule stops)", { skip: SEAM_PATCHED ? false : "patch 03-studio-seam-first.diff not applied" }, () => {
+    const id = "r5k-2"; open(id);
+    const a = c4Ask(`${id}:wb:4`);
+    seam.studioSeam.preselectWhiteboard(a);
+    seam.studioSeam.requestIntent({ ...a, line: { ...a.line, text: GOOD } });
+    const b0 = c4Ask(`${id}:wb:5`);
+    const b = { ...b0, intent: { ...b0.intent, request: { kind: "example" } } };
+    seam.studioSeam.preselectWhiteboard(b);
+    assert.notEqual(seam.studioSeam.requestIntent({ ...b, line: { ...b.line, text: GOOD } }).state, "revealed");
+  });
+});
