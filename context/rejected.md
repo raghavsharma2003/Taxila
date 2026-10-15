@@ -2592,3 +2592,10 @@ Judging her 'parts' words against the module that was up BEFORE a named visual a
 - **Tried:** a fine reading with only negation / contrast / harm vetoes.
 - **What broke:** it released 77 of 189 replies, including home-avoidance replies ("थोड़ा ठीक हूँ, बस घर जाने का मन नहीं करता", "safe hu abhi… ghar pe nahi hoon") and "mujhe distract karna hai". It also matched across a sentence break.
 - **Fix:** qualified and time-bound vetoes, home and distraction tells, leftover negation, and matching one clause at a time. 44 of 189 now read as fine, all benign.
+
+
+<!-- merged from inbox/r143b-main.json -->
+## rj-r143-test-region-twins (2026-10-15)
+
+- **Tried:** swedencentral twins of the chat deployments, so TEST traffic gets its own capacity.
+- **What broke:** the quota is one subscription-wide pool that is already allocated, so every hot twin was refused InsufficientQuota. The 8 low-use twins that succeeded were deleted again.

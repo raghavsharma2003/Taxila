@@ -5992,3 +5992,21 @@ TTS frames type 5 = IMA ADPCM (4:1), negotiated by Accept `codec=adpcm`, asked f
 - Predicate episodes keep the hold, because children minimise after real disclosures.
 
 **Reversal:** a missed safeguard traced to a model episode that stepped back, or any red-team or corpus disclosure that reads as fine.
+
+
+<!-- merged from inbox/r143b-main.json -->
+## dc-r143-test-chat-southindia (2026-10-15)
+
+**What:**
+
+- TEST traffic (the sim lab, QA, the main loop's batteries) routes CHAT + RESPONSES to the southindia account, so eastus2 serves production alone.
+- southindia carries TEST plus production's rare 429 overflow.
+- taxila-mistral-m35 was added on southindia.
+- TAXILA_TEST_ON_PRIMARY=1 opts a run back onto eastus2.
+
+**Why:** a separate region is impossible, because GlobalStandard quota is subscription-wide (ms-r143-global-quota).
+
+**Reversal:**
+
+- production overflow failing on southindia while TEST runs, or
+- eastus2 throttling that persists with TEST off it.

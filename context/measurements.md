@@ -4283,3 +4283,15 @@ Release 14 for comparison: 12/14 and 14/14.
   - TEST replies after a model-opened episode: 44 of 189, all benign by reading.
 - 16 real-model resume lines: 0 floor violations.
 - Tests: 12/12 new; 844/844 in the safeguard-related subset; prompt budget PASS.
+
+
+<!-- merged from inbox/r143b-main.json -->
+## ms-r143-global-quota (2026-10-15)
+
+GlobalStandard quota reads the same in 7 regions:
+
+- gpt-5.6-luna / sol / terra: 2000 of 1000
+- gpt-6-sol / luna: 1000 of 1000
+- grok-4-1-fast and DeepSeek-V4-Pro: 1000 of 1000
+
+swedencentral twins were refused InsufficientQuota even at 50. The southindia smoke returned 6/6 200.
