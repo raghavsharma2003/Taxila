@@ -549,6 +549,13 @@ export function gateWhiteboard(raw, ctx) {
   // normalizer's old 6-character cap, proved by a longer word of her line or the kit that it begins, never a word itself
   const cuts = cutCells(ops, ctx);
   add("W16.no_cut_words", cuts.length === 0, cuts.slice(0, 4));
+  // W17 (QA pass 14, lessons 98bdb9a8 / 548f22f0 / a08613d3: her line "50 m, 30 m, 50 m, 30 m … Total kitna?", the library
+  // board "3 × 160 = 480 metres": her answer, other maths, none of her numbers): a line with two or more numbers of its own
+  // gets a board that writes at least one of them whenever it writes numbers (a drawn face, a clock, is its own)
+  const hers = new Set(numbersIn(ctx.reply));
+  const boardNums = [...new Set(per.flatMap((p) => p.nums))];
+  const notHers = !ctx.face && hers.size >= 2 && boardNums.length > 0 && !boardNums.some((n) => hers.has(n));
+  add("W17.her_numbers", !notHers, notHers ? { hers: [...hers].slice(0, 6), board: boardNums.slice(0, 6) } : []);
   // W14 is ADVISORY (logged, never blocks): over 234 real boards it flagged 69, with false refusals across languages (a
   // Hinglish line "paani garam hokar upar jaata hai" under an English "evaporates" board shares no word but is on topic)
   const off = boardOffLine(ctx.reply, ops, ctx.itemText ?? "");

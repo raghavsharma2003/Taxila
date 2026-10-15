@@ -155,3 +155,15 @@ test("QA pass 13 W16: a number-work cell cut at the old 6-character cap ('breadt
   const col = normalizeScript({ v: 1, scriptId: "s", board, durationMs: 3000, ops: [{ id: "c", op: "numwork", startMs: 0, endMs: 900, at: [40, 80], layout: "column_add", rows: [["1234567"], ["1"], ["1234568"]] }] }, { strict: true });
   assert.equal(col.ok, false);
 });
+
+test("QA pass 14 W17: her line's own numbers (50, 30) under a library board that writes only other numbers ('3 × 160 = 480 metres', her answer and more) are refused; a board with one of hers passes", async () => {
+  const fs = await import("node:fs");
+  const { gateWhiteboard } = await import("../server/studio/qa/whiteboard.js");
+  const kit = JSON.parse(fs.readFileSync("data/kits/c6-maths.json", "utf8")).topics.find((t) => t.topicId === "c6-maths-ch06-t01");
+  const line = "Kabir, rectangle ki four sides—50 m, 30 m, 50 m, 30 m. Inhe jodkar perimeter milega. Total kitna?";
+  const sc = (rows) => ({ v: 1, scriptId: "s", line: { lessonId: "L" }, anchor: "line_audio_start", board: { w: 677, h: 423, ground: "chalk" }, mode: "fresh", durationMs: 3000,
+    ops: [{ id: "n", op: "numwork", startMs: 0, endMs: 900, at: [40, 80], layout: "equation", rows }] });
+  const failing = (g) => g.checks.filter((c) => !c.pass).map((c) => c.id);
+  assert.ok(failing(gateWhiteboard(sc([["3", "×", "160", "=", "480", "metres"]]), { reply: line, kit, speechMs: 5000 })).includes("W17.her_numbers"));
+  assert.ok(!failing(gateWhiteboard(sc([["50", "+", "30", "+", "50", "+", "30", "=", "?"]]), { reply: line, kit, speechMs: 5000 })).includes("W17.her_numbers"));
+});
