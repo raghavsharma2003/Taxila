@@ -26,6 +26,7 @@ import { teacherDeployment, AGENT_LIMITS } from "./flags.js";
 import * as studioRequest from "../studio/request.js";
 import { visualAskOf } from "../director/requests.js";
 import { createHash } from "node:crypto";
+import { evidenceRead } from "./read.js";
 
 export class AgentBudgetError extends Error { constructor(m) { super(m); this.code = "agent_budget"; } }
 
@@ -413,6 +414,17 @@ export function earnedRead(level, graded, { deepAvailable = true } = {}) {
   return others.length ? "understood" : "partly";
 }
 
+const READ_BAR = 0.8;
+/** A learner entry with its read set from its graded answers (and "untested" when only plain items were right). PURE. */
+function withEvidenceRead(e) {
+  const g = e?.graded ?? [];
+  const level = evidenceRead(g, { bar: READ_BAR });
+  if (!level) return e;
+  const untested = level === "partly" && g.some((x) => x.g === "correct") && !g.some((x) => DEEP_KINDS.has(x.kind));
+  const { depth: _d, ...rest } = e;
+  return { ...rest, read: level, ...(untested ? { depth: "untested" } : {}) };
+}
+
 /**
  * Fold an agent turn into the lesson state the turn will store (the Director's `next`, so every bookkeeping field the turn
  * and the fallback lane read stays valid) and build the move / ui / studio slot the response carries.
@@ -429,11 +441,16 @@ export function applyAgentTurn(next, out, { kit, childText = "", cls = null, car
     if (g) learner[k] = { ...(learner[k] ?? {}), grades: [...(learner[k]?.grades ?? []), g].slice(-10),
       graded: [...(learner[k]?.graded ?? []), { item: card.id, kind: card.kind, g }].slice(-10),
       ...(cls.misconceptionId ? { misconceptions: [...new Set([...(learner[k]?.misconceptions ?? []), cls.misconceptionId])] } : {}) };
+    // the read follows the graded answers on EVERY graded turn, not only when the model names one (sim lab e46a281c decided
+    // truth, 164 skill reads: the stored model-turn read agreed 44% / over 10%; the evidence read on every grade 53% / 9%)
+    if (g) learner[k] = withEvidenceRead(learner[k]);
   }
   if (out.read) {
     const k = out.read.skill;
     const deepAvailable = (kit.items ?? []).some((i) => i.skillId === k && DEEP_KINDS.has(i.kind) && i.kind !== "teachback");
-    const level = earnedRead(out.read.level, learner[k]?.graded ?? [], { deepAvailable });
+    const graded = learner[k]?.graded ?? [];
+    // graded answers decide the read; with none, the model's claim is held to the old evidence rule (never understood)
+    const level = graded.length ? evidenceRead(graded, { bar: READ_BAR }) : earnedRead(out.read.level, graded, { deepAvailable });
     // honest at the end of a lesson (sim lab 71a6b11): "partly" from right easy answers with no deep question asked yet is
     // not the "partly" of a child who got the deep one wrong
     const g = learner[k]?.graded ?? [];
