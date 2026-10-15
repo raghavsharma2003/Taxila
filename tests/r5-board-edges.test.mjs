@@ -102,3 +102,22 @@ test("QA pass 12 D35: 'number line pe dikhao' with no numbers named draws HER li
   assert.ok(sc);
   assert.deepEqual(gateWhiteboard(sc, { reply: line, speechMs: 5000 }).checks.filter((c) => !c.pass).map((c) => c.id), []);
 });
+
+test("14.3 (main: a game ask mounts the topic's engine): 'mujhe game khelna hai' at the first teaching turn mounts c7-maths-ch08-t01's engine, unbound, never stating the open item's key", async () => {
+  const fs = await import("node:fs");
+  const { initLessonState, step } = await import("../server/director/state.js");
+  const { requestOf } = await import("../server/director/requests.js");
+  const { openItemOf, moduleFacts } = await import("../server/director/modules.js");
+  const { leaksOpenItem } = await import("../server/forge/explainer/guard.js");
+  const kit = JSON.parse(fs.readFileSync("data/kits/c7-maths.json", "utf8")).topics.find((t) => t.topicId === "c7-maths-ch08-t01");
+  const ctx = { sessionId: "ga-t", classLevel: 7, firstName: "Kabir", teacherName: "Arjun", teacherId: "arjun", protege: { name: "Golu", what: "a pretend baby elephant" },
+    ageBand: "10-15", lang: "hinglish", interests: ["cricket"], address: "aap", firstMeeting: true, hasCallback: false, topicTitle: kit.title, nextTitle: "x", purpose: "lesson" };
+  let r = step(initLessonState({ topicId: kit.topicId, kit, ctx, seed: 7, now: 0 }), { event: "start", kit, now: 0 });
+  r = step(r.state, { event: "turn", kit, cls: { outcome: "no_evidence", confidence: 1, flags: {}, source: "request", request: requestOf("mujhe game khelna hai") }, now: 20_000, text: "mujhe game khelna hai" });
+  const m = r.state.module;
+  assert.equal(r.ui.tray, "module");
+  assert.ok(m && m.engine !== "explainer@1", `an engine, not the board rung (got ${m?.engine})`);
+  assert.equal(m.itemId ?? null, null, "unbound: graded nothing");
+  const open = openItemOf(r.state, kit, null);
+  if (open) assert.ok(!leaksOpenItem({ facts: moduleFacts(m), ops: [] }, open));
+});
