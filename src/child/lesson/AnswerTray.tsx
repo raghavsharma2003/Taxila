@@ -25,6 +25,7 @@ export function AnswerTray({ tray, floor, young, actions, slash, comma }:
       aria-label={t(tray.kind === "tiles" ? "tray.choices" : "tray.activity")} data-testid="tray">
       <div className="dk-tray-body" inert={showing ? true : undefined}>
         <div className="dk-answer-surface" hidden={!!overlay} data-testid="answer-surface">
+          {tray.kind === "tiles" && tray.board?.lines[0]?.text ? <p className="dk-tray-note" data-testid="board">{tray.board.lines[0].text}</p> : null}
           {tray.kind === "tiles" && tray.tiles?.length ? (
             <PictureTiles tiles={tray.tiles} young={young} onPick={actions.pickTile} disabled={showing} />
           ) : tray.kind === "pad" ? (
