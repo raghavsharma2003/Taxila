@@ -4301,3 +4301,13 @@ swedencentral twins were refused InsufficientQuota even at 50. The southindia sm
 ## ms-r143-romance-bare-ask (2026-10-15)
 
 TEST child turns (n=3481): romance hits went from 6 to 11. The 5 added were all the sim lab card; 0 were lost.
+
+
+<!-- merged from inbox/r143d-main.json -->
+## ms-r143-qa-pass12 (2026-10-15)
+
+- QA pass 12 on 14.2:
+  - the disclosure, check-in, resume and safety lines passed;
+  - production boards came up in 2.5-3.1 s;
+  - defects D34-D38.
+- TEST address audit: aap/Hinglish 0 slips in 195 lessons; English 365 of 1569 lines carry tum marks.

@@ -6024,3 +6024,13 @@ TTS frames type 5 = IMA ADPCM (4:1), negotiated by Accept `codec=adpcm`, asked f
 - Insults and time questions stay out of the lexicon: no floor rule is at stake.
 
 **Reversal:** a firing on reported or kinship talk.
+
+
+<!-- merged from inbox/r143d-main.json -->
+## 14.3 QA pass 12 fixes (main, 2026-10-15)
+
+- **dc-r143-checkin-board-tiles.** The check-in's helplines now show above its choices, but only beside the safe: chips.
+- **dc-r143-home-no-resume-into-episode.** Home no longer offers Continue for a lesson inside an open safeguarding episode.
+- **dc-r143-chips-in-childs-language.** Chips are in Hinglish / Hindi / English. A typed "stop for today" now reads as a stop.
+- **dc-r143-codeswitch-address.** An English lesson's code-switched tum line is held to aap (the parent's setting or the class default) by the closed lexicon, with no model call.
+- **dc-r143-trace-endpoint-lane.** model.call carries endpoint OVERFLOW.
