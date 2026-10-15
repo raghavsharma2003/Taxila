@@ -10,11 +10,13 @@ export const ANSWER_MODEL = JSON.parse(readFileSync(join(ROOT, "evals/simlab/ans
 export const childMode = () => (process.env.SIMLAB_CHILD_MODE === "decided" ? "decided" : "free");
 
 const kits = new Map();
+// the kits of the tree under test (SIMLAB_KIT_ROOT = that checkout; default this repo)
+const KIT_ROOT = process.env.SIMLAB_KIT_ROOT || ROOT;
 /** The kit item by id (c3-maths-ch03-t02-i01 → data/kits/c3-maths.json), or null. */
 export function kitItem(itemId) {
   const m = String(itemId ?? "").match(/^c(\d+)-([a-z]+)-/);
   if (!m) return null;
-  const f = join(ROOT, "data", "kits", `c${m[1]}-${m[2]}.json`);
+  const f = join(KIT_ROOT, "data", "kits", `c${m[1]}-${m[2]}.json`);
   if (!kits.has(f)) { try { kits.set(f, JSON.parse(readFileSync(f, "utf8"))); } catch { kits.set(f, null); } }
   const kit = kits.get(f);
   for (const t of kit?.topics ?? []) { const it = t.items.find((i) => i.id === itemId); if (it) return { ...it, topic: t }; }
@@ -74,11 +76,20 @@ function rng(key) {
  * The outcome of the child's answer to a posed item: { itemId, kind, depth, state, outcome: right|wrong|dont_know,
  * misconception?: {id, belief, signs} }. `state` is the card's state for the item's skill now (after logged learning).
  */
-export function decide(p, state, held, item, n, seed = process.env.SIMLAB_SEED || "taxila") {
-  const depth = ANSWER_MODEL.deepKinds.includes(item.kind) ? "deep" : "plain";
+// the kit deep-kind audit's marks (4A, 14.4): items the audit read as recall / one-step. An AUDIT-AWARE child answers them on
+// the plain row; a kind-only child by their kind, as before (SIMLAB_DEEP_MARKS = the marks file, arms opt in per run)
+export const DEEP_MARKS = (() => {
+  if (!process.env.SIMLAB_DEEP_MARKS) return null;
+  const j = JSON.parse(readFileSync(process.env.SIMLAB_DEEP_MARKS, "utf8"));
+  return new Set(Array.isArray(j) ? j : j.items ?? []);
+})();
+
+export function decide(p, state, held, item, n, seed = process.env.SIMLAB_SEED || "taxila", auditAware = false) {
+  const marked = !!DEEP_MARKS?.has(item.id);
+  const depth = ANSWER_MODEL.deepKinds.includes(item.kind) && !(auditAware && marked) ? "deep" : "plain";
   const st = state[item.skillId] ?? "not";
   const r = rng(`${seed}|${p.id}|${n}|${item.id}`);
-  const base = { itemId: item.id, skillId: item.skillId, kind: item.kind, depth, state: st };
+  const base = { itemId: item.id, skillId: item.skillId, kind: item.kind, depth, state: st, ...(DEEP_MARKS ? { marked } : {}) };
   if (r() < ANSWER_MODEL.pCorrect[st][depth]) return { ...base, outcome: "right" };
   const heldMs = p.misconceptions.filter((m) => held.includes(m.id));
   const targeted = heldMs.find((m) => m.id === item.targetsMisconception);

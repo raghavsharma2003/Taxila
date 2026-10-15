@@ -143,7 +143,7 @@ function reasonsOf(r) {
  * @param {object} p persona card
  * @param {{ base: string, lane: "text"|"voice", maxTurns: number, voice?: object, tag?: string }} opts
  */
-export async function runLesson(p, { base, lane = "text", maxTurns = 14, voice = null, tag = "simlab", emailKey = null, ack = false }) {
+export async function runLesson(p, { base, lane = "text", maxTurns = 14, voice = null, tag = "simlab", emailKey = null, ack = false, auditAware = false }) {
   const api = apiClient(base);
   const st = Date.now(), rnd = Math.random().toString(36).slice(2, 8);
   // emailKey: a deterministic address, so a server's cohort list (e.g. TAXILA_ACK_CONTINUER_FOR) can name it in advance
@@ -172,7 +172,7 @@ export async function runLesson(p, { base, lane = "text", maxTurns = 14, voice =
       const cur = Object.entries(rec.state).map(([k, v]) => `${k}=${v}`).join(", ") + (rec.misconceptionsHeld.length ? `; still holds ${rec.misconceptionsHeld.join(", ")}` : "; holds no misconception now");
       let c;
       // decided mode: the outcome of an answer to a posed item is drawn here (answer-model.json), the child only writes it
-      const d = posed ? decide(p, rec.state, rec.misconceptionsHeld, posed.item, n) : null;
+      const d = posed ? decide(p, rec.state, rec.misconceptionsHeld, posed.item, n, undefined, auditAware) : null;
       const note = d ? decisionText(d, posed.item) : null;
       try { c = await childTurn(p, heard, screen, n, cur, note); } catch (e) { rec.errors.push({ at: `child ${n}`, msg: String(e.message).slice(0, 200) }); break; }
       if (d) {

@@ -54,6 +54,8 @@ const personas = (only ? PERSONAS.filter((p) => only.some((o) => p.id.startsWith
 const MAX_LESSONS = Number(process.env.SIMLAB_MAX_LESSONS || 4);
 const conc = Math.min(Number(arg("conc", 4)), MAX_LESSONS);
 const judgeConc = Number(arg("judge-conc", 8));
+// --audit-aware-arms a,b: in decided mode these arms' child answers the deep-marks items (SIMLAB_DEEP_MARKS) on the plain row
+const auditArms = arg("audit-aware-arms", "").split(",").filter(Boolean);
 const STAGGER_MS = 8000;
 const turns = Number(arg("turns", 14));
 const useJudge2 = !flag("no-judge2");
@@ -70,7 +72,7 @@ const compact = (rec) => ({ ...rec, turns: rec.turns.map((t) => ({ ...t, ui: t.u
 
 let meta = { runId, head, date: new Date().toISOString(), arms, lanes, n: personas.length, turns, models: MODELS, childRules: process.env.SIMLAB_CHILD_RULES || "v1", region: REGION,
   // decided mode: the harness draws each answer's outcome (answer-model.json, printed here); free: the child model answers
-  childMode: childMode(), ...(childMode() === "decided" ? { answerModel: ANSWER_MODEL, seed: process.env.SIMLAB_SEED || "taxila" } : {}), note: arg("note", "") };
+  childMode: childMode(), ...(childMode() === "decided" ? { answerModel: ANSWER_MODEL, seed: process.env.SIMLAB_SEED || "taxila", kitRoot: process.env.SIMLAB_KIT_ROOT || "this repo", ...(process.env.SIMLAB_DEEP_MARKS ? { deepMarks: process.env.SIMLAB_DEEP_MARKS.split("/").pop(), auditAwareArms: arg("audit-aware-arms", "") } : {}) } : {}), note: arg("note", "") };
 // a re-run of some lessons into an existing run keeps that run's meta and logs the re-run
 if (existsSync(join(OUT, "meta.json"))) {
   const old = JSON.parse(readFileSync(join(OUT, "meta.json"), "utf8"));
@@ -92,7 +94,7 @@ if (!rejudge) {
     if (existsSync(recFile(j)) && flag("resume")) return;
     const k = started++;
     if (k < conc) await new Promise((r) => setTimeout(r, k * STAGGER_MS)); // the first wave starts staggered, not as one burst
-    const rec = await runLesson(j.p, { base: j.base, lane: j.lane, maxTurns: turns, voice, ack: flag("ack") && j.lane === "voice",
+    const rec = await runLesson(j.p, { base: j.base, lane: j.lane, maxTurns: turns, voice, ack: flag("ack") && j.lane === "voice", auditAware: auditArms.includes(j.arm),
       ...(arg("email-key", null) ? { emailKey: `${j.arm}-${arg("email-key")}`, tag: "simlab" } : {}) });
     rec.arm = j.arm;
     writeFileSync(recFile(j), JSON.stringify(compact(rec)));
