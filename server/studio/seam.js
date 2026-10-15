@@ -857,7 +857,7 @@ export const studioSeam = {
       const tg = shown1 ? certifyForTray({ kind: "whiteboard", script: shown1 }, gateCtx(L, p)) : null;
       if (tg && !tg.ok) noteRefusal(L, p, tg, "template");
       // ... and the template rung is held to the same sync with her line as any new page (sim lab boardfacts)
-      const shown = tg?.ok && (ask?.intent?.request || syncedWithLine(shown1, ask?.line?.text)) ? shown1 : null;
+      const shown = tg?.ok && (ask?.requested || ask?.intent?.request || syncedWithLine(shown1, ask?.line?.text)) ? shown1 : null;
       if (tg?.ok && !shown) console.info("[studio] template board refused: shares nothing with her line");
       if (shown) {
         p.artifact = { kind: "whiteboard", stage: { w: shown.board.w, h: shown.board.h }, script: shown };
@@ -880,7 +880,7 @@ export const studioSeam = {
       // round 5 (sim lab boardfacts): a new page about something her line never mentions is not drawn (request.js syncedWithLine)
       // (a page drawn for what the CHILD asked to see is held to the ask, answersRequest, not to her line's words: battery
       // iter11 lost 3 such asks, "baraf / bhaap" vs "Ice / Steam", a Devanagari story page under her romanised line)
-      if (r.source !== "kept" && !ask?.intent?.request && !syncedWithLine(r.script, ask?.line?.text)) { console.info(`[studio] board refused: shares nothing with her line (source=${r.source ?? "line"})`); return false; }
+      if (r.source !== "kept" && !ask?.requested && !ask?.intent?.request && !syncedWithLine(r.script, ask?.line?.text)) { console.info(`[studio] board refused: shares nothing with her line (source=${r.source ?? "line"})`); return false; }
       // round 4 content: the ONE gate before the board reaches the stage (the device's box, the client's own fit)
       const g = certifyForTray({ kind: "whiteboard", script: r.script }, gateCtx(L, p));
       if (!g.ok) { noteRefusal(L, p, g, `board:${r.source ?? "line"}`); return false; }

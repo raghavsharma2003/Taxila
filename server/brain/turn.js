@@ -973,7 +973,10 @@ export async function lessonTurn(req, body, hooks = {}) {
     // 4, 7, 10 dekhiye" over an empty tray) never points either
     // (sim lab dd8f40ac: a board still PLANNING is not on the stage: "Can you point to 13 on screen?" while it was being
     // drawn, the child on a phone: "screen pe only mic hai"; a slot with no artifact yet counts as empty)
-    const stageEmpty = !studioSlot?.artifact && !playAsk && !keepEngineNow && !(next.module && r.ui?.tray === "module") && !seamSafe("studio.boardUp", () => studioSeam.boardUp?.(lesson.id), false);
+    // ... except a board the CHILD asked for that is being drawn for this turn: it lands while she speaks, and owner-5 requires
+    // her to point at it (spoken "whiteboard pe bana ke samjhao" lost its "screen par … dekhiye" to this rule: V2.no_reference)
+    const askedBoardComing = !!studioSlot && r.move?.request === "visual" && wbAcked;
+    const stageEmpty = !studioSlot?.artifact && !askedBoardComing && !playAsk && !keepEngineNow && !(next.module && r.ui?.tray === "module") && !seamSafe("studio.boardUp", () => studioSeam.boardUp?.(lesson.id), false);
     // (sim lab p22: "Can you point to one-third on the screen?" with nothing up, any turn: the child said "I see only a mic
     // button"; with chips up "screen par" may mean the chips, so only a BOARD claim is taken out then)
     const nothingComing = (r.move?.request === "visual" && stageEmpty)
