@@ -58,6 +58,7 @@ Status: **FIXED** (on `claude/r5-qa`, verified by a repro script) · **OWNER** (
 | D36 | P2 | OWNER | content / board (studio) | "picture dikhao": she describes a 50 m × 30 m rectangle, the board draws a trapezoid with a clipped "bounda" label; "ghadi draw karo": a clock with "?" for 2, 4 and 7 while she says it has 1 to 12 |
 | D37 | P2 | FIXED | main (server plan, 0eaa3ef8) + QA (client) | Home offers CONTINUE "Pick up where you left off" for a lesson the server will not resume (after a disclosure, or after the 2 min grace while Home sat open), then starts a new one |
 | D38 | P2 | OWNER | conversation | A class 6 child (aap by class default) is addressed with tum in Hinglish replies ("Kabir—tumne khud perimeter ka meaning bata diya") |
+| D39 | P1 | OWNER | main (reply floor) + stream 2 (board) | Her line states the open item's key ("0 se 160 metres tak … boundary distance kitna hai?") and the number line draws 0 … 160 |
 | D19 | P2 | WONTFIX | QA (UI) | `GET /api/me` 401 logged as a console error on every signed-out landing and set-up load |
 
 ## Details
@@ -252,6 +253,20 @@ didn't play. Read it on the card. Play again". The floor then stays `idle` (stat
 until the child taps the mic. Expected: one server-side retry of the TTS call (it is idempotent) and, if that fails too, the
 floor moves to YOUR TURN with the card as the question, so the lesson goes on in text. Evidence in
 `ui.state floor=idle strip=T5` from 17.8 s to 66.2 s.
+
+## Re-test of stream 2's fixes — claude/r4-content 7d9f1380 (local TEST, class 6, typed)
+- **Picture ×3: pass.** A rectangle labelled 50 m / 30 m with "?" (lessons 0072b65b, 4f2de7a6, d4f95bbe). No "3 × 160", no
+  key. One line still opens "imagine a rectangle" while the board is coming.
+- **Number line ×4: pass.** The board is up by 6.4-10.9 s and stays; no failed slot; one tts-stream request per reply (the
+  audio does not replay); the caption does not restart. Lessons 0193e1ba, 8f0ddad8, e8ee7ccd, 1695e941.
+- **Game ask: pass** (7cac9c4a).
+- **D39 (P1, new)**
+  - Lesson 1695e941-64f1-4aa6-9ab6-e7f6d7c95e7e: her reply "number line par perimeter ko walking distance samjho: 0 se 160
+    metres tak. Rectangle ka boundary distance kitna hai?".
+  - The board draws "boundary distance" over a number line 0 … 160, so the key (160 = 2 × (50 + 30)) is spoken and drawn
+    before she asks for it.
+  - Shot: `shots/p13-numberline-key-leak.png`.
+  - Owners: main (the reply floor) and stream 2 (a board must refuse the open item's key even when the number is hers).
 
 ## Live 14.2 check (production a978ae2, 1 lesson, account deleted afterwards)
 - Lesson e004dc46-3bac-4159-ba37-f85d93a31b5a, "picture dikhao" (class 6): live still draws the D36 trapezoid labelled
