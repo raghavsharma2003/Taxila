@@ -137,7 +137,7 @@ export function AnswerDock({ m, a, micMeter, stripId, lit, setRef }:
     ) : side("dock.type", "keyboard", () => a.setTyping(true), "type");
     body = (
       <div className="dk-dock-row">
-        {side("dock.hint", "lightbulb", a.openHint, "hint")}
+        {m.safeguard ? <span className="dk-side dk-side--empty" aria-hidden="true" /> : side("dock.hint", "lightbulb", a.openHint, "hint")}
         {m.answerForm === "tap_in_tray" || m.answerForm === "draw" ? (mic ? <span className="dk-mic-unlit">{mic}</span> : <span className="dk-dock-gap" />) : mic ?? <span className="dk-dock-gap" />}
         {m.answerForm === "choice" || m.answerForm === "tap_in_tray" || m.answerForm === "read_aloud" ? <span className="dk-side dk-side--empty" aria-hidden="true" /> : typeBtn}
       </div>

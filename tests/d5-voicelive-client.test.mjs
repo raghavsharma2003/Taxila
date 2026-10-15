@@ -181,23 +181,53 @@ test("D5 gate: with her silent the device frames drive the engine as on D4 (a tu
   assert.equal(r.live.d5.gatedFrames > 0, true);
 });
 
-test("D5: a spoken turn Voice Live never heard (no item at all) is the Director's re-ask (asrConfidence 0)", () => {
-  const r = rig({ source: "voicelive", vadGate: "server", supportsCommit: false });
+// D5 review #6 (CRITICAL): an empty turn on D5 only from Voice Live's own item; a burst only the device heard is never a turn
+function afterQuestion(opts = {}) {
+  const r = rig({ source: "voicelive", vadGate: "server", supportsCommit: false, ...opts });
+  r.live.audioOrigin(0);
   r.live.setUi({ answerForm: "number", beat: "check" });
   r.live.herStart("सात गुणा आठ कितना होता है?");
   r.run(2500, () => ({ rms: 0.001, f0: null, her: -20 }));
   r.live.herEnd();
-  // a lone short "haan" Voice Live never heard: device voicing, no transcript at all
-  const frameAt = (t) => (t >= 3000 && t < 3260 ? { rms: 0.3, f0: 290, her: null } : { rms: 0.001, f0: null, her: null });
-  // no probes on D5; Voice Live opens no item for the burst: 1 s after it the engine hears an empty final over it
-  r.run(15000, frameAt);
+  return r;
+}
+const burst = (from, to) => (t) => (t >= from && t < to ? { rms: 0.3, f0: 290, her: null } : { rms: 0.001, f0: null, her: null });
+
+test("D5 #6: a burst only the device heard (Voice Live opened no item) is never a child turn; the floor returns and the next answer is clean", () => {
+  const r = afterQuestion();
+  r.run(15000, burst(3000, 3260));
   assert.equal(r.acts.filter((a) => a[1] === "probe").length, 0, "no micro-commit probes on D5");
-  const c = r.acts.find((a) => a[1] === "commit");
-  assert.ok(c, `the engine still ends the turn: ${JSON.stringify(r.acts)}`);
-  assert.equal(c[2], "");
-  assert.ok(c[0] - 3260 <= 2500, `the re-ask comes at the closed backstop, not +2 s: ${c[0] - 3260} ms after the burst`);
-  assert.ok(r.live.d5.reasks >= 1);
+  assert.equal(r.acts.filter((a) => a[1] === "commit").length, 0, `no empty turn from a device-only burst: ${JSON.stringify(r.acts)}`);
+  // the child then answers and Voice Live hears it: that answer is the turn, alone
+  const f = burst(16000, 16600);
+  r.run(16700, f);
+  r.live.stt({ type: "input_audio_buffer.speech_started", item_id: "v9", audio_start_ms: 16000 - 210 });
+  r.run(17200, f);
+  r.live.stt({ type: "input_audio_buffer.speech_stopped", item_id: "v9", audio_end_ms: 16600 + 596 });
+  r.live.stt({ type: "conversation.item.input_audio_transcription.completed", item_id: "v9", transcript: "छप्पन" });
+  r.run(20000, f);
+  assert.deepEqual(r.acts.filter((a) => a[1] === "commit").map((c) => c[2]), ["छप्पन"]);
 });
+
+for (const ending of ["failed", "empty"]) {
+  test(`D5 #6: Voice Live opened an item and its final was ${ending}: the ear covered the burst → the Director's re-ask (an empty turn)`, () => {
+    const r = afterQuestion();
+    const f = burst(3000, 3260);
+    r.run(3700, f);
+    r.live.stt({ type: "input_audio_buffer.speech_started", item_id: "v3", audio_start_ms: 3000 - 210 });
+    r.run(4000, f);
+    r.live.stt({ type: "input_audio_buffer.speech_stopped", item_id: "v3", audio_end_ms: 3260 + 340 });
+    r.live.stt(ending === "failed"
+      ? { type: "conversation.item.input_audio_transcription.failed", item_id: "v3", error: { message: "x" } }
+      : { type: "conversation.item.input_audio_transcription.completed", item_id: "v3", transcript: "" });
+    r.run(15000, f);
+    const c = r.acts.filter((a) => a[1] === "commit");
+    assert.equal(c.length, 1, JSON.stringify(r.acts));
+    assert.equal(c[0][2], "");
+    assert.ok(c[0][0] - 3260 <= 2500, `at the closed backstop: ${c[0][0] - 3260} ms after the burst`);
+    assert.ok(r.live.d5.reasks >= 1);
+  });
+}
 
 // ───────────────────────────── lane resolution ─────────────────────────────
 
@@ -281,7 +311,8 @@ test("CascadeLink on D5: no WebRTC call; Voice Live's events reach the engine; t
     const ws = FakeWS.all[0];
     assert.match(ws.url, /^wss:\/\/taxila\.dev\/api\/duplex\/voicelive\?lessonId=L1$/);
     const texts = ws.sent.filter((d) => typeof d === "string").map((d) => JSON.parse(d));
-    assert.ok(texts.some((m) => m.type === "vad" && m.silenceMs === 500), `the D5 silence: ${JSON.stringify(texts)}`);
+    const { D5_SERVER_VAD_MS } = await import("../src/duplex/cascadeDuplex.ts");
+    assert.ok(texts.some((m) => m.type === "vad" && m.silenceMs === D5_SERVER_VAD_MS), `the D5 silence: ${JSON.stringify(texts)}`);
     assert.equal(link.duplex.live.o.vadGate, "server");
     assert.equal(link.duplex.live.o.source, "voicelive");
     ws.server({ type: "input_audio_buffer.speech_started", item_id: "c1", audio_start_ms: 100 });
@@ -305,4 +336,150 @@ test("CascadeLink on D5: a refused stream falls back to the D4 call for the less
     assert.equal(link.duplex.live.o.vadGate, undefined, "D4 engine options");
     assert.equal(link.ack?.o.continuer(), true, "the D4 fallback keeps the continuer (server cohort decides)");
   } finally { link.close(); env.restore(); FakeWS.behaviour = FakeWS.up; }
+});
+
+test("D5 review #2/#7: D5 lost mid-lesson and the reconnect lands on D4 → the engine is REBUILT for D4 (no D5 settings on a D4 call)", async () => {
+  FakeWS.behaviour = FakeWS.up;
+  const { env, link, states } = await d5Link();
+  try {
+    const d5Engine = link.duplex;
+    assert.equal(d5Engine.live.o.vadGate, "server");
+    // her gain ducked and the mic gated by the D5 engine: none of it may outlive it
+    link.player?.duck(0.2);
+    link["micGated"] = true;
+    FakeWS.behaviour = FakeWS.refuse;
+    FakeWS.all[0].readyState = 3;
+    FakeWS.all[0].onclose?.({ code: 1006 });
+    for (const t0 = Date.now(); Date.now() - t0 < 5000 && !(link.duplex && link.duplex !== d5Engine && states.at(-1)?.live);) await sleep(10);
+    assert.equal(env.pcs.length, 1, "the D4 call is up");
+    assert.notEqual(link.duplex, d5Engine, "a new engine");
+    assert.equal(d5Engine.closed, true, "the D5 engine is closed");
+    assert.equal(link.duplex.live.o.vadGate, undefined, "no server-VAD gate on D4");
+    assert.equal(link.duplex.live.o.source, "live_transcribe");
+    assert.equal(link.duplex.live.o.supportsCommit, true);
+    assert.equal(link["duplexLaneBuilt"], "d4");
+  } finally { link.close(); env.restore(); FakeWS.behaviour = FakeWS.up; }
+});
+
+test("D5 review #5: Voice Live's audio clock is anchored across dropped frames and capture gaps (no drift)", async () => {
+  const wf = installWorkletFakes();
+  FakeWS.behaviour = FakeWS.up;
+  let now = 10_000;
+  try {
+    const s = new D5Stream({ WebSocket: FakeWS, workletUrl: "/d5.js", location: { protocol: "https:", host: "taxila.dev" }, now: () => now });
+    await s.start({ lessonId: "L1", ctx: fakeCtx(), mic: {}, herOutput: null, onEvent: () => {}, onLost: () => {} });
+    const node = wf.nodes.find((n) => n.name === "taxila-d5-stereo");
+    // the AudioContext clock starts at 2.0 s; each chunk arrives 25 ms after its capture began (one chunk + 5 ms)
+    const ctx0 = 2.0, wall0 = 10_000 - 2000;
+    const post = (k) => { const t = ctx0 + k * 0.02; now = wall0 + t * 1000 + 25; node.port.onmessage({ data: { t, pcm: new Int16Array(640).buffer } }); };
+    for (let k = 0; k < 50; k++) post(k); // 1 s sent: audio 0..1000 ms
+    assert.equal(s.anchorCount, 1);
+    // client time of audio 500 ms = capture at ctx 2.5 s
+    assert.equal(Math.round(s.toClient(500)), Math.round(wall0 + 2500 + 5));
+    // a stalled uplink drops 10 chunks (200 ms of capture never reach Voice Live)
+    FakeWS.last.bufferedAmount = 1 << 20;
+    for (let k = 50; k < 60; k++) post(k);
+    FakeWS.last.bufferedAmount = 0;
+    for (let k = 60; k < 110; k++) post(k);
+    // the context suspended for 3 s
+    for (let k = 260; k < 300; k++) post(k);
+    assert.equal(s.anchorCount, 3, "one anchor per discontinuity");
+    // Voice Live's audio 1500 ms is the 25th chunk after the drop: capture chunk 60 + 25 = 85
+    assert.equal(Math.round(s.toClient(1500)), Math.round(wall0 + (ctx0 + 85 * 0.02) * 1000 + 5));
+    // audio 2100 ms is chunk 260 + 5 (after the suspend); the naive origin + 2100 would be ~3.2 s early
+    assert.equal(Math.round(s.toClient(2100)), Math.round(wall0 + (ctx0 + 265 * 0.02) * 1000 + 5));
+    // the engine reads Voice Live's events through this clock
+    const live = new DuplexLive({ lessonId: "t", port: { duck() {}, pause: () => true, resume() {}, stop() {}, commit() {}, sttCommit() {}, dropReply() {}, fallback() {}, state() {} }, now: () => now, setInterval: () => 1, clearInterval: () => {}, source: "voicelive", vadGate: "server" });
+    live.audioOrigin(s.firstFrameAt);
+    live.audioClock((ms) => s.toClient(ms));
+    assert.equal(live["tap"].fromAudio(2100), s.toClient(2100));
+    s.close();
+  } finally { wf.restore(); }
+});
+
+test("r5 merge: her EARLY reply (turn-audio, before its text) is announced to the engine at first sound; a revoked turn's reply is parked, not voiced", async () => {
+  FakeWS.behaviour = FakeWS.up;
+  const { env, link } = await d5Link();
+  try {
+    const live = link.duplex.live;
+    const pcmStream = () => new ReadableStream({ start(c) { c.enqueue(new Uint8Array(24000 * 2 * 0.5)); c.close(); } });
+    // the engine just saw the child go on after its commit: the reply to that commit must not play
+    link.duplex["dropUntil"] = Date.now() + 5000;
+    assert.equal(link["playEarly"](pcmStream()), null, "parked");
+    assert.equal(link.duplex.replyDropPending(), true, "not consumed: promptTeacher still drops it");
+    link.duplex["dropUntil"] = 0;
+    const say = link["playEarly"](pcmStream());
+    assert.ok(say);
+    say.say("आठ गुणा सात।");
+    for (const t0 = Date.now(); Date.now() - t0 < 2000 && !live["her"];) await sleep(10);
+    assert.ok(live["her"], "the engine knows she is speaking before her turn's text arrives");
+    assert.equal(live["her"].text, "आठ गुणा सात।");
+    const id = live["her"].id;
+    link.promptTeacher({ text: "आठ गुणा सात छप्पन होता है। अब बताओ, नौ गुणा सात?" });
+    assert.equal(live["her"]?.id, id, "adoption does not restart her (the overlap epoch stays)");
+    // the whole line reached the engine: its closing question hands the floor over at her end
+    assert.equal(live["host"]["her"].text, "आठ गुणा सात छप्पन होता है। अब बताओ, नौ गुणा सात?");
+    assert.equal(live["host"]["her"].handsOver, true, "hand-over read from the whole line");
+  } finally { link.close(); env.restore(); }
+});
+
+test("D5 EOT step 1: a closed answer whose covering final carries its value commits AT that final (not ~400 ms later)", () => {
+  const r = afterQuestion();
+  const f = burst(3000, 3600);
+  r.run(3700, f);
+  r.live.stt({ type: "input_audio_buffer.speech_started", item_id: "v1", audio_start_ms: 3000 - 210 });
+  r.run(4300, f);
+  r.live.stt({ type: "input_audio_buffer.speech_stopped", item_id: "v1", audio_end_ms: 3600 + 340 });
+  r.live.stt({ type: "conversation.item.input_audio_transcription.completed", item_id: "v1", transcript: "8 कॉर्नर्स होते हैं" });
+  const finalAt = r.t;
+  r.run(8000, f);
+  const c = r.acts.find((a) => a[1] === "commit");
+  assert.ok(c, JSON.stringify(r.acts));
+  assert.ok(c[0] - finalAt <= 120, `at the final: ${c[0] - finalAt} ms after it`);
+});
+
+test("D5 EOT step 2: an empty final on a closed question re-asks D5_EMPTY_FINAL_REASK_MS after it", async () => {
+  const { D5_EMPTY_FINAL_REASK_MS } = await import("../src/duplex/config.ts");
+  const r = afterQuestion();
+  const f = burst(3000, 3260);
+  r.run(3700, f);
+  r.live.stt({ type: "input_audio_buffer.speech_started", item_id: "v3", audio_start_ms: 3000 - 210 });
+  r.run(4060, f);
+  r.live.stt({ type: "input_audio_buffer.speech_stopped", item_id: "v3", audio_end_ms: 3260 + 340 });
+  r.live.stt({ type: "conversation.item.input_audio_transcription.completed", item_id: "v3", transcript: "" });
+  const finalAt = r.t;
+  r.run(8000, f);
+  const c = r.acts.find((a) => a[1] === "commit");
+  assert.ok(c && c[2] === "", JSON.stringify(r.acts));
+  const after = c[0] - finalAt;
+  assert.ok(after >= D5_EMPTY_FINAL_REASK_MS - 20 && after <= D5_EMPTY_FINAL_REASK_MS + 120, `${after} ms after the empty final`);
+});
+
+test("D5 review follow-up: an idle-closed stream (no audio >30 s: phone locked) reconnects only once audio can flow, then cleanly", async () => {
+  FakeWS.behaviour = FakeWS.up;
+  const { env, link } = await d5Link();
+  try {
+    const ctx = link["ctx"];
+    const listeners = new Set();
+    ctx.state = "suspended";
+    ctx.addEventListener = (k, fn) => { if (k === "statechange") listeners.add(fn); };
+    ctx.removeEventListener = (k, fn) => { if (k === "statechange") listeners.delete(fn); };
+    const engine = link.duplex;
+    const first = FakeWS.all.at(-1);
+    // the server ends the idle stream: its reason, then the close
+    first.server({ type: "d5.closed", reason: "client_idle" });
+    first.readyState = 3;
+    first.onclose?.({ code: 1001 });
+    await sleep(1500);
+    assert.equal(FakeWS.all.at(-1), first, "no reconnect while the context is suspended (it would idle out again)");
+    assert.ok(listeners.size >= 1, "waiting for the context to run");
+    // the child comes back: the context runs again
+    ctx.state = "running";
+    for (const fn of [...listeners]) fn();
+    for (const t0 = Date.now(); Date.now() - t0 < 4000 && !(FakeWS.all.at(-1) !== first && link["d5"]);) await sleep(10);
+    assert.notEqual(FakeWS.all.at(-1), first, "one new stream");
+    assert.equal(FakeWS.all.length, 2, "exactly one reconnect");
+    assert.equal(listeners.size, 0, "the wait is cleared");
+    assert.equal(link.duplex, engine, "the same lane: the engine is kept");
+  } finally { link.close(); env.restore(); }
 });

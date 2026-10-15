@@ -5,7 +5,7 @@
 // when the bytes cannot decide.
 import { chat, DEPLOY, isReasoningFamily, isContentFilter, nonHarmFilter } from "../azure.js";
 import { readUtterance } from "../learner/affect.js";
-import { scanSafety, wantsToStop, scrubPii, readability } from "./safety.js";
+import { scanSafety, wantsToStop, scrubPii, filterSafe, readability } from "./safety.js";
 import { whyKey, norm as normAnswer, posesItem, revealsAnswer } from "./items.js";
 import { INTEREST_IDS } from "../../shared/interests.js";
 import { partsOf } from "../content/parts.js";
@@ -373,8 +373,8 @@ async function distressCheck(text, classLevel, trace, { failClosed = false } = {
   try {
     const messages = [
       { role: "system", content: `A reply from an Indian school child (class ${classLevel}) in a lesson, in Hindi, English or Hinglish; the transcript may be misheard. distress: true ONLY for signs the child is unsafe, hurt, abused, frightened of a person, a place or what is happening to them, very sad, or may harm themself — never for ordinary frustration or worry about the lesson itself (scared of numbers, a question, a test or getting it wrong: the teacher reassures).` },
-      // direct identifiers masked before the child's words reach the model (decision scrub-pii-cued)
-      { role: "user", content: scrubPii(text).text },
+      // direct identifiers masked before the child's words reach the model (decision scrub-pii-cued); "teen" as 3 (filterSafe)
+      { role: "user", content: filterSafe(scrubPii(text).text) },
     ];
     const opts = { schema: DISTRESS_SCHEMA, schemaName: "distress", effort: "none", maxTokens: 40, timeoutMs: 4000, retries: 0, trace, quotaLane: "hot" };
     // W2-E fixer: in an outage the backup must not fail open to the predicate alone (MODEL-ROUTER §0: passive-ideation
@@ -403,7 +403,7 @@ async function distressCheck(text, classLevel, trace, { failClosed = false } = {
  */
 async function wordsTrip(text, trace) {
   try {
-    await classifyChat(DEPLOY.reply, [{ role: "system", content: "Answer with one word: ok" }, { role: "user", content: scrubPii(text).text }],
+    await classifyChat(DEPLOY.reply, [{ role: "system", content: "Answer with one word: ok" }, { role: "user", content: filterSafe(scrubPii(text).text) }],
       { maxTokens: 16, effort: "none", timeoutMs: 4000, retries: 1, trace, quotaLane: "hot" });
     return "clear";
   } catch (e) {
@@ -425,7 +425,7 @@ const distressDeployments = () => [...new Set([DEPLOY.classify, classifyFallback
 async function distressAcross(text, classLevel, trace) {
   const messages = [
     { role: "system", content: `A reply from an Indian school child (class ${classLevel}) in a lesson, in Hindi, English or Hinglish; the transcript may be misheard. distress: true ONLY for signs the child is unsafe, hurt, abused, frightened of a person, a place or what is happening to them, very sad, or may harm themself — never for ordinary frustration or worry about the lesson itself (scared of numbers, a question, a test or getting it wrong: the teacher reassures).` },
-    { role: "user", content: scrubPii(text).text },
+    { role: "user", content: filterSafe(scrubPii(text).text) },
   ];
   for (const d of distressDeployments()) {
     try {
@@ -736,7 +736,8 @@ async function classifyModel(args, target, text, flags, trace, done, fast = {}) 
   const messages = [
     { role: "system", content: systemPrompt(target, classLevel) },
     // the bytes decided nothing (classifyFast); the model gets the child's words with direct identifiers masked
-    { role: "user", content: userPrompt(target, scrubPii(text).text, heard) },
+    // the whole user prompt as a model reads it (the item's Hinglish, the key, her last line, the child's words): filterSafe
+    { role: "user", content: filterSafe(userPrompt(target, scrubPii(text).text, heard)) },
   ];
   const opts = { schema: schemaFor(target), schemaName: `classify_${target.mode}`,
     effort: target.mode === "none" ? "none" : "low", maxTokens: target.mode === "none" ? 120 : 900, timeoutMs: 7000, trace, quotaLane: "hot" };
@@ -757,6 +758,10 @@ async function classifyModel(args, target, text, flags, trace, done, fast = {}) 
       label.outcome = "incorrect"; label.overridden = "bare_wrong_number"; modelFlags.offTopic = false; modelFlags.dontKnow = false;
     }
     for (const k of Object.keys(modelFlags)) flags[k] = flags[k] || modelFlags[k];
+    // 14.3 (sim lab rel143 pet cards: every episode the labeller opened had kind null, so it read as an unknown trigger: no
+    // early release, and the vetted disclosure opening instead of F10's check line): the label call's distress is a MODEL
+    // read, as on every other model path here. The predicate's family, when it fired, was set first and stays.
+    if (modelFlags.distress && flags.distress) flags.distressKind ??= "model";
     const signals = signalsOn() ? parseSignals(json) : null;
     if (signals) Object.assign(flags, signalFlags(signals));
     // `fallback`: the fallback deployment answered (brain_trace cls_source.fallback); the label is a model label either way

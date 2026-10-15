@@ -1,0 +1,29 @@
+{
+ "nodes": [
+  {
+   "id": "r5a-ms-agent-overclaims-offline",
+   "kind": "measurement",
+   "at": "2026-10-15",
+   "title": "Agent-lane overclaims (main's cohort condition 1), measured OFFLINE on the 64 sim-lab cc4b3d2 transcripts per arm: the end summary regenerated with the shipped writer prompt (endMessages), then judged by the gate's judge 1 (grok-4-20-reasoning) and scored by the gate's understandingScore. Agent with the old summary 62-66 overclaims (two re-judges; the gate had 64). Agent with each skill's check in the facts (her earned read) 45. Agent with the check and the stricter read rule (a miss is recovered by three right after it, one deep) 37, agreement 111/185 probed. Director, its summary regenerated the same way, 30 (agreement 124/170); its gate summary re-judged 34 (the gate had 35). Of the agent's 37, about 30 are the record matching her own read: 19 'understood' and 11 'partly' on simulated children whose truth is lower and who answered deep items right (the child-simulator leakage the sim lab is fixing with --child v2). Her in-lesson words are unchanged in this method, so a live gate on the new head is the real measure."
+  },
+  {
+   "id": "r5a-ms-agent-first-clause-route",
+   "kind": "measurement",
+   "at": "2026-10-15",
+   "title": "Agent lane first clause in a real lesson (main's cohort condition 2): POST /api/lesson/turn-audio on a local server (int/r5-rel142 + 4A head, TAXILA_TEACHER=agent, TAXILA_TEACHER_EFFORT=none), 3 topics (classes 3-5), n=24 child turns, all 24 streamed. From the agent call's start (the header frame) to her first clause event: p50 1540 ms, p90 1808 ms. From the request to the first PCM byte: p50 3679 ms, p90 5011 ms, of which about 1.77 s (p50) is the turn before the agent call (classify and planning). taxila-gpt6 time to first token p50 about 1.5 s with 2.19k of about 3.4k prompt tokens cached. The child's speech end to the request (endpoint and STT) adds about 1.4 s on top."
+  },
+  {
+   "id": "r5a-ms-agent-safety-probe",
+   "kind": "measurement",
+   "at": "2026-10-15",
+   "title": "Agent-lane safety probe (main's cohort condition 3; tests/prod/agent-safety-probe.mjs): 8 scripted lessons, 29 child turns on the agent lane, TEST Neon branch. Disclosures mid-lesson in Hinglish, English and Hindi, passive ideation and a grooming-shaped disclosure with secrecy: every one got the Director's safeguard move (no agent turn), the vetted opening, Childline 1098 and Tele-MANAS 14416 digit-exact; AI-denial, romance, marriage, exclusivity and secrecy asks: every reply floor-clean. On int/r5-rel142 + 4A head 81/81; the lesson after a disclosure opens on the 14.2 carried check-in, never on her. On the 4A head alone (no 14.2) the in-lesson checks pass and the next lesson opens on her (no check-in exists there)."
+  },
+  {
+   "id": "r5a-dc-agent-record-check",
+   "kind": "decision",
+   "at": "2026-10-15",
+   "status": "proposed",
+   "title": "On the agent lane the end record (summary and parent note) words each skill only as far as her earned read: lessonFacts carries a per-skill check (shown / practised, not yet checked with a why or new-situation question / partly / still building) and the writer's last rule bounds the wording. Her read holds 'understood' after a miss until three right answers follow it, one deep. The agent opening never takes a safeguard move or an open episode. Reversal: a live gate where the agent's overclaims stay above the Director's with the record already matching her read (then the read rule, not the wording, needs the next look), or a parent-facing review that finds the 'practised, still to check' wording discouraging."
+  }
+ ]
+}

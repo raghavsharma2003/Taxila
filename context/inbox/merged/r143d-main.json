@@ -1,0 +1,59 @@
+{
+ "nodes": [
+  {
+   "id": "dc-r143-checkin-board-tiles",
+   "kind": "decision",
+   "at": "2026-10-15",
+   "title": "QA D34 (P1): the carried check-in's helplines ('Childline 1098 · Tele-MANAS 14416') were never on screen. The check-in is a warmup move with chips, so the tiles took the tray, and a board shows only in teach / practice. QA's client fix (useDesk / AnswerTray / desk.css) puts the text line above the choices. Main safety review narrowed it to the safeguarding choices only (a chip id starting safe:), so no other text board lands above a practice item's tiles.",
+   "reversal": "a check-in screenshot without both numbers on screen, or a non-safety tiles tray showing a board line"
+  },
+  {
+   "id": "dc-r143-home-no-resume-into-episode",
+   "kind": "decision",
+   "at": "2026-10-15",
+   "title": "QA D37: Home's plan (child.js) offers Continue only for a lesson the server will resume. A lesson parked inside an open safeguarding episode (state.safeguard set) is refused by resumeLesson, so Home now reads safeguard_open and does not offer it. Before, it said CONTINUE and a new lesson started instead. Route test on the TEST branch, with a control: the same lesson with no episode is offered.",
+   "reversal": "resumeLesson's refusal conditions change without child.js following (the two must stay one rule)"
+  },
+  {
+   "id": "dc-r143-chips-in-childs-language",
+   "kind": "decision",
+   "at": "2026-10-15",
+   "title": "The Director's chips are the child's own words, so they are in the child's language. Hinglish: 'Aage padhte hain' / 'Aaj ke liye bas' / 'Thoda aasaan wala'. Hindi: Devanagari. English as before. Ids are unchanged; every stop label reads as a stop (stopKind end_request). The English stop phrase 'stop for today', typed by a child, now reads as a stop too, anchored to the start of its clause ('the bus will stop for today' does not).",
+   "reversal": "a harness or client path that keys on a chip LABEL rather than its id breaks"
+  },
+  {
+   "id": "dc-r143-codeswitch-address",
+   "kind": "decision",
+   "at": "2026-10-15",
+   "title": "QA D38: an English lesson has no address (resolveAddress → null; nothing in the prompt), but she mirrors a child who types Hinglish, and the code-switched lines used tum for a class 6 child whose parent set aap. The lesson now carries ctx.mixAddress (codeSwitchAddress: the parent's setting, else the class default). The reply guard holds a code-switched tum line to aap with the closed tum → aap lexicon and no model call (a register-only problem used to cost a rewrite). A tum mixAddress is never enforced: an aap to a younger child is not wrong.",
+   "reversal": "toAap mangling a code-switched line (then fall back to the rewrite), or English-lesson latency rising"
+  },
+  {
+   "id": "dc-r143-trace-endpoint-lane",
+   "kind": "decision",
+   "at": "2026-10-15",
+   "title": "model.call trace rows carry `endpoint` (the account lane) when it is not CHAT. An overflowed call reads endpoint = 'OVERFLOW' directly; before, `lane` held the quota lane ('hot'), so moves could only be inferred (stream 3's finding).",
+   "reversal": "none expected; it is an added field"
+  },
+  {
+   "id": "ms-r143-qa-pass12",
+   "kind": "measurement",
+   "at": "2026-10-15",
+   "title": "QA pass 12 on 14.2 (production a978ae27 + TEST):\n- PASS: disclosure → Back → Continue, 5 runs (resume refused, check-in opens, helpLead helpline, carry-on continues, a new disclosure checks in again 3/3); the check-in in aap / tum / Hindi / English; Back within 2 min rejoins and after 135 s starts fresh; quiet lines 4/4 and must-safeguard lines 2/2 on TEST; production picture / whiteboard / clock boards up in 2.5-3.1 s, with 'dekhiye' only while up; no dash art in 5 replies; spoken 'आठ हजार छह सौ चौदह' echoed as 8,614.\n- Defects: D34 (P1, board missing on the check-in), D35 (P1, number-line board withdrawn at 7.5 s), D36 (rectangle drawn as a trapezoid; clock numerals shown as '?'), D37 (Continue offered for a refused resume), D38 (tum in a code-switched English lesson); English chips for Hindi children.\n- TEST address audit, 7 days: aap/Hinglish lessons 0 of 195 with a slip; English lessons 365 of 1569 teacher lines carry tum marks.",
+   "n": 5,
+   "method": "QA session browser runs on production + TEST, plus a read-only TEST turn-table audit"
+  }
+ ],
+ "edges": [
+  { "src": "dc-r143-checkin-board-tiles", "rel": "constrains", "dst": "dc-r142-carried-checkin" },
+  { "src": "dc-r143-checkin-board-tiles", "rel": "measured_by", "dst": "ms-r143-qa-pass12" },
+  { "src": "dc-r143-home-no-resume-into-episode", "rel": "measured_by", "dst": "ms-r143-qa-pass12" },
+  { "src": "dc-r143-chips-in-childs-language", "rel": "measured_by", "dst": "ms-r143-qa-pass12" },
+  { "src": "dc-r143-codeswitch-address", "rel": "measured_by", "dst": "ms-r143-qa-pass12" },
+  { "src": "dc-r143-trace-endpoint-lane", "rel": "constrains", "dst": "dc-r142-chat-429-overflow" }
+ ],
+ "md": {
+  "decisions": "## 14.3 QA pass 12 fixes (main, 2026-10-15)\n\n- **dc-r143-checkin-board-tiles.** The check-in's helplines now show above its choices, but only beside the safe: chips.\n- **dc-r143-home-no-resume-into-episode.** Home no longer offers Continue for a lesson inside an open safeguarding episode.\n- **dc-r143-chips-in-childs-language.** Chips are in Hinglish / Hindi / English. A typed \"stop for today\" now reads as a stop.\n- **dc-r143-codeswitch-address.** An English lesson's code-switched tum line is held to aap (the parent's setting or the class default) by the closed lexicon, with no model call.\n- **dc-r143-trace-endpoint-lane.** model.call carries endpoint OVERFLOW.",
+  "measurements": "## ms-r143-qa-pass12 (2026-10-15)\n\n- QA pass 12 on 14.2:\n  - the disclosure, check-in, resume and safety lines passed;\n  - production boards came up in 2.5-3.1 s;\n  - defects D34-D38.\n- TEST address audit: aap/Hinglish 0 slips in 195 lessons; English 365 of 1569 lines carry tum marks."
+ }
+}

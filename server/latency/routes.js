@@ -7,7 +7,9 @@
 // The same gates as the turn, in the same order (loadTurnContext: auth, the child's guardian, core_tutoring consent): with
 // consent withdrawn the words never reach a model. An ended lesson, a typed lane, an empty text, or a rate-limited lesson
 // is a 204 and nothing runs. Always fire-and-forget for the client: any failure is a 204, never an error the child sees.
-import { loadTurnContext, specPlan, replyKey, speculate, carriedFrom, earlierExchanges, NOTE_WAIT_MS } from "../brain/turn.js";
+import { loadTurnContext, specPlan, replyKey, speculate, carriedFrom, earlierExchanges, NOTE_WAIT_MS, settleWithin } from "../brain/turn.js";
+import { agentSpeculate, eventOf } from "../agent/agent.js";
+import { startAgentSpec } from "./agentSpec.js";
 import { textReply, scrubbed } from "../brain/say.js";
 import { kitFor, stageTurns, childTurnRow, turnLane } from "../brain/rows.js";
 import { classify, classifyFast, targetFor } from "../director/classify.js";
@@ -40,6 +42,8 @@ export const prefetchOn = (env = process.env) => !/^(off|0|false|no)$/i.test(Str
 // (the note, the answer's own words), so an EXACT reply started here has the key the turn will compute (perceive.js rule 5)
 export const PERCEIVE_DEPS = Object.freeze({ classifyFast, classify, understand, speculate, planTurn: specPlan, replyKey, textReply, conv2Mode,
   applyNote, withAnswerMods, steerOn: () => p5Flag("STEER"), noteWaitMs: NOTE_WAIT_MS });
+
+const AGENT_SPEC_DEPS = Object.freeze({ agentSpeculate, eventOf, settleWithin, noteWaitMs: NOTE_WAIT_MS });
 
 const none = (res, why) => { res.statusCode = 204; res.setHeader("x-prefetch", why); res.setHeader("cache-control", "no-store"); res.end(); };
 
@@ -84,10 +88,14 @@ async function turnPrefetch(req, res, body) {
   const live = loadLive(child);
   live.catch(() => {});
   x.planCtx.live = live;
-  const P = perceive(PERCEIVE_DEPS, { ...x, classified: true, textLane, late: false, help: null, childText: text, exact: exactSpecOn() });
+  // an agent-lane lesson never speculates Director replies (turn.js does the same: they would be thrown away)
+  const agentLane = lesson.state?.ctx?.teacher === "agent";
+  const P = perceive(PERCEIVE_DEPS, { ...x, classified: true, textLane: textLane && !agentLane, late: false, help: null, childText: text, exact: exactSpecOn() });
   putPrefetch(lesson.id, { fp: fingerprint({ lessonId: lesson.id, state: lesson.state, clsArgs: x.clsArgs, bargeIn }), P, trace, text: text.length });
   // round 3: the ack route waits on THIS classify (no model call of its own)
   publishPerception(lesson.id, { text, clsP: P.clsP, source: "prefetch", turn: (lesson.state?.turn ?? 0) + 1, specs: P.specs });
+  // round 5: on the agent lane, her model call starts on these words once their classify settles clean (./agentSpec.js)
+  if (agentLane) startAgentSpec(AGENT_SPEC_DEPS, { lesson, state: x.state, kit, text, P }).catch(() => {});
   // the reply will need the speech socket within ~1-2 s: open it now if this replica has none (no-op when warm or not DragonHD)
   import("../voice/azureTtsWs.js").then((m) => m.prewarmDhdWs?.()).catch(() => {});
   // SHADOW ack (server/latency/ack.js): with { wantAck: true } the response waits for classify (its model distress read) and

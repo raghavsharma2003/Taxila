@@ -24,6 +24,8 @@ export function specOf(board) {
   return null;
 }
 
+const newsLine = (e) => (e.type === "content_ready" ? `content_ready: ${e.truth?.words ?? "the picture is now on the screen"}` : `content_failed: the picture could not be shown (${String(e.why ?? "").slice(0, 60)})`);
+
 /** The real tools (tests pass their own). */
 export const screenTools = {
   now: (lessonId) => screenNow(lessonId),
@@ -42,11 +44,13 @@ export const screenTools = {
   clear: (lessonId) => boardClear(lessonId),
   picture: (lessonId, subject) => pictureGet(lessonId, subject, { onEvent: (e) => say(lessonId, e) }),
   slot: (lessonId, pageId) => (pageId ? slotSnapshot(lessonId, pageId) : null),
+  /** the same, NOT drained (a speculated call reads them; the turn that adopts it drains them) */
+  peek: (lessonId) => (pending.get(lessonId) ?? []).map(newsLine),
   /** content events since her last turn, as event text; drained */
   news: (lessonId) => {
     const q = pending.get(lessonId) ?? [];
     pending.delete(lessonId);
-    return q.map((e) => (e.type === "content_ready" ? `content_ready: ${e.truth?.words ?? "the picture is now on the screen"}` : `content_failed: the picture could not be shown (${String(e.why ?? "").slice(0, 60)})`));
+    return q.map(newsLine);
   },
 };
 export const _pushContentEvent = say;

@@ -135,13 +135,16 @@ test("apply: a posed item becomes the card; an answered card clears; end → don
   assert.equal(next.phase, "done"); assert.equal(a3.end, true); assert.equal(a3.move.kind, "wrap");
 });
 
-test("understood is earned on a DEEP kind plus another right answer; two plain items are partly; an early miss does not cap it (sim lab b185d50)", () => {
+test("understood is earned on a DEEP kind plus another right answer; two plain items are partly; a miss is recovered by three right after it, one deep (sim lab b185d50; cc4b3d2 overclaims)", () => {
   const C = (item, kind = "practice", g = "correct") => ({ item, kind, g });
   assert.equal(earnedRead("understood", [C("i1")]), "partly");
   assert.equal(earnedRead("understood", [C("i1"), C("i2")]), "partly", "two plain items right: a partly child does that a quarter of the time");
   assert.equal(earnedRead("understood", [C("i1"), C("i4", "near_transfer")]), "understood");
   assert.equal(earnedRead("understood", [C("i4", "near_transfer")]), "partly", "one deep item alone");
-  assert.equal(earnedRead("understood", [C("i1", "practice", "wrong"), C("i2"), C("i3", "contrast")]), "understood", "an early miss does not cap it");
+  assert.equal(earnedRead("understood", [C("i1", "practice", "wrong"), C("i2"), C("i3", "contrast")]), "partly", "two right after a miss: not yet recovered");
+  assert.equal(earnedRead("understood", [C("i1", "practice", "wrong"), C("i2"), C("i3", "contrast"), C("i5")]), "understood", "three right after the miss, one deep");
+  assert.equal(earnedRead("understood", [C("i1", "practice", "partly"), C("i2"), C("i5"), C("i6")]), "partly", "three plain right after a miss: no deep one");
+  assert.equal(earnedRead("understood", [C("i1", "practice", "wrong"), C("i2"), C("i3")], { deepAvailable: false }), "partly", "no deep item in the kit: still three after the miss");
   assert.equal(earnedRead("understood", [C("i2"), C("i3", "contrast"), C("i7", "practice", "wrong")]), "partly", "a miss after the deep right one");
   assert.equal(earnedRead("understood", [C("i1", "practice", "wrong")]), "not");
   assert.equal(earnedRead("partly", []), "partly");
@@ -284,4 +287,120 @@ test("a game ask is looked up BEFORE she speaks: up → she is told it is on scr
   const t3 = fakeTools(); let n3 = 0; t3.game = async () => { n3++; return { ok: false }; };
   await run(base(), { tools: t3, event: 'the child said (speech recognition confidence 0.90): "1/2"' });
   assert.equal(n3, 0);
+});
+
+test("no promise of a picture that is not being made; a job that started keeps it; honest not-yet stays (sim lab 7740135 effort none)", async () => {
+  const { withoutPicturePromise, clauseGate } = await import("../server/agent/agent.js");
+  assert.equal(withoutPicturePromise("Is fraction ki picture bana rahi hoon; tab tak sochiye, sau tukde kitne honge?"), "Sochiye, sau tukde kitne honge?");
+  assert.equal(withoutPicturePromise("Haan tum, I’ll request a picture of a real circular track; it may take a moment. Constant speed is not zero acceleration."), "Constant speed is not zero acceleration.");
+  assert.equal(withoutPicturePromise("Main ab liti battery ka sketch banwati hoon."), "Main ab liti battery ka sketch banwati hoon.", "nothing else left: the line stands (the Director's checks still apply)");
+  assert.equal(withoutPicturePromise("Sorry, battery ka sketch abhi nahi aaya. Ek sawaal?"), "Sorry, battery ka sketch abhi nahi aaya. Ek sawaal?");
+  assert.equal(withoutPicturePromise("Board par likha hai: aadha."), "Board par likha hai: aadha.");
+  // the model promises without asking the tool: removed; asks the tool and the job starts: kept
+  const promise = "Roti ki photo banwa rahi hoon; tab tak socho, ek tukda kya kehlata hai?";
+  const none = await run(base({ say: promise }));
+  assert.ok(!/photo/i.test(none.say), none.say);
+  assert.match(none.say, /^Socho, ek tukda/);
+  const job = await run(base({ say: promise, picture: "roti" }));
+  assert.match(job.say, /photo banwa rahi hoon/);
+  // streamed: she speaks before the tool runs, so no clause promises a picture
+  const g = clauseGate({ verdict: "correct", screen: { on: "board" }, lane: "voice" });
+  assert.deepEqual(g("Roti ki photo banwa rahi hoon,"), { ok: true, skip: true });
+  assert.equal(g("ek tukda kya kehlata hai?").clause, "ek tukda kya kehlata hai?");
+});
+
+test("a new question with no page of its own clears an earlier page that shares nothing with her line and the question (stream 2's matcher); a related page stays (sim lab 7740135)", async () => {
+  const up = (texts) => { const t = fakeTools(); t.up = { ok: true, on: "board", words: `written on it: ${texts.join("; ")}`, texts, numbers: [], pageId: "p0" }; return t; };
+  // stream 2's syncedWithLine stands in here as a stub with its contract: (script, line) → does the page share content with the line
+  const seen = [];
+  const synced = (script, line) => { seen.push(line); const w = (x) => new Set(String(x).toLowerCase().split(/[^\p{L}\p{N}]+/u).filter((y) => y.length >= 4 || /^\d+$/.test(y)));
+    const lw = w(line); return [...w(script.ops.map((o) => o.text).join(" "))].some((y) => lw.has(y)); };
+  const stale = up(["Ghaas → Hiran → Sher"]);
+  const a = await run(base({ intent: "practice", say: "Ab ek naya sawaal.", pose_item: "i3" }), { tools: stale, synced, state: { activeItemId: "i1" } });
+  assert.deepEqual(stale.calls.map((c) => c[0]), ["clear"]);
+  assert.equal(a.cleared, true);
+  assert.match(seen[0], /naya sawaal.*1\/2/, "her line and the question are the line it is matched against");
+  const related = up(["1/2 aur 1/3", "kaun bada?"]);
+  await run(base({ intent: "practice", say: "Ab ek naya sawaal.", pose_item: "i3" }), { tools: related, synced, state: { activeItemId: "i1" } });
+  assert.deepEqual(related.calls, [], "a page with the question's numbers stays");
+  const same = up(["Ghaas → Hiran → Sher"]);
+  await run(base({ intent: "practice", say: "Phir se socho.", pose_item: "i1" }), { tools: same, synced, state: { activeItemId: "i1" } });
+  assert.deepEqual(same.calls, [], "the same question keeps its page");
+  const noMatcher = up(["Ghaas → Hiran → Sher"]);
+  await run(base({ intent: "practice", say: "Ab ek naya sawaal.", pose_item: "i3" }), { tools: noMatcher, synced: null, state: { activeItemId: "i1" } });
+  assert.deepEqual(noMatcher.calls, [], "no matcher in the tree: nothing is cleared");
+  // a page the child asked to SEE is theirs (stream 2: the request exemption lives in seam.js, not in the matcher)
+  const asked = up(["Ghaas → Hiran → Sher"]);
+  await run(base({ intent: "practice", say: "Ab ek naya sawaal.", pose_item: "i3" }), { tools: asked, synced, state: { activeItemId: "i1", agent: { askedPageId: "p0" } } });
+  assert.deepEqual(asked.calls, [], "the child's own page stays");
+  const askingNow = up(["Ghaas → Hiran → Sher"]);
+  await run(base({ intent: "practice", say: "Ab ek naya sawaal.", pose_item: "i3" }), { tools: askingNow, synced, event: 'the child said (speech recognition confidence 0.9): "board pe likh ke dikhao"', state: { activeItemId: "i1" } });
+  assert.deepEqual(askingNow.calls, [], "a child asking to see this turn: nothing is cleared");
+  // and the page that goes up on a see-ask is remembered as theirs
+  const next = ST({ activeItemId: "i1" });
+  applyAgentTurn(next, { say: "Yeh lo.", intent: "explain", item: null, board: { ok: true, on: "board", texts: ["x"], pageId: "p9" }, screen: { on: "board", texts: ["x"] }, usage: { usd: 0, tokens: 0 }, notes: [], read: null }, { kit: K, childText: "board pe likh ke dikhao", lessonId: "L1" });
+  assert.equal(next.agent.askedPageId, "p9");
+});
+
+test("speculation (stream 3): her call starts on the prefetched turn with no tool run and nothing drained; the turn adopts it only on the same inputs, else aborts it and calls again", async () => {
+  const { speakStreamed } = await import("../server/latency/speech-stream.js");
+  const { agentSpeculate, agentCallOf } = await import("../server/agent/agent.js");
+  const EV = 'the child said (speech recognition confidence 0.92): "aadha"';
+  // the key: same inputs → same key; a different event → a different key
+  assert.equal(agentCallOf({ state: ST(), kit: K, event: EV }).key, agentCallOf({ state: ST(), kit: K, event: EV }).key);
+  assert.notEqual(agentCallOf({ state: ST(), kit: K, event: EV }).key, agentCallOf({ state: ST(), kit: K, event: EV.replace("0.92", "0.81") }).key);
+  const json = JSON.stringify(base({ say: "Haan, aadha. Ab ek chhota sawaal.", pose_item: "i1", intent: "practice", board: SHOW(["1/2"]) }));
+  let calls = 0;
+  const streamFn = async (dep, messages, o) => { calls++; for (let i = 0; i < json.length; i += 9) { if (o.signal?.aborted) throw Object.assign(new Error("cancelled"), { code: "cancelled" }); o.onDelta(json.slice(i, i + 9)); await new Promise((r) => setImmediate(r)); } return { text: json, usage: { in: 900, out: 80 } }; };
+  const tools = fakeTools();
+  tools.peek = () => []; let drained = 0; tools.news = () => { drained++; return []; };
+  const spec = agentSpeculate({ state: ST(), kit: K, event: EV, lessonId: "L1", tools, streamFn });
+  assert.ok(spec && spec.key);
+  await spec.done;
+  assert.deepEqual(tools.calls, [], "no tool ran while speculating");
+  assert.equal(drained, 0, "the content news is peeked, not drained");
+  // adopted: no second call; her words replay into the speech path; the actions run now
+  let speech = null;
+  const onSay = (deltas, gate) => { speech = speakStreamed({ deltas, gate, synth: async function* (c) { yield Buffer.from(c); }, emit: () => {} }); };
+  const out = await agentTurn({ state: ST(), kit: K, event: EV, lessonId: "L1", verdict: "correct", tools, streamFn, onSay, spec });
+  assert.equal(calls, 1, "the turn did not call the model again");
+  assert.equal(out.speculation, "adopted");
+  assert.deepEqual((await speech).spoken, ["Haan, aadha.", "Ab ek chhota sawaal."]);
+  assert.deepEqual(tools.calls.map((c) => c[0]), ["show"], "the board went up at adoption, not before");
+  // different inputs: aborted, and the turn makes its own call
+  const spec2 = agentSpeculate({ state: ST(), kit: K, event: EV, lessonId: "L1", tools: fakeTools(), streamFn });
+  const out2 = await agentTurn({ state: ST(), kit: K, event: EV.replace("aadha", "ek tihai"), lessonId: "L1", verdict: "wrong", tools: fakeTools(), streamFn, chatFn: stub(JSON.parse(json)), spec: spec2 });
+  assert.ok(spec2.aborted);
+  assert.equal(out2.speculation, "dropped");
+  assert.equal(stub.last.messages[1].content.includes("ek tihai"), true, "the turn made its own call on its own inputs");
+  // the waste is recorded apart from the lesson budget: a finished call brings its tokens, a cut one counts as cut
+  const { specWasteOf } = await import("../server/agent/agent.js");
+  assert.deepEqual(specWasteOf(null, { usage: { in: 900, out: 80 }, dep: "taxila-gpt6" }).tokens, 980);
+  assert.deepEqual(specWasteOf({ dropped: 1, cut: 0, tokens: 980, usd: 0.002 }, { usage: null }), { dropped: 2, cut: 1, tokens: 980, usd: 0.002 });
+  const nx = ST(); applyAgentTurn(nx, { ...out2 }, { kit: K, childText: "ek tihai", lessonId: "L1" });
+  assert.equal(nx.agent.specWaste.dropped, 1);
+  assert.equal(nx.agent.usage.tokens, out2.usage.tokens, "the lesson budget counts only the call the turn used");
+  // a game ask is never speculated (its lookup is an action); silence neither
+  assert.equal(agentSpeculate({ state: ST(), kit: K, event: 'the child said (speech recognition confidence 0.9): "game khelna hai"', lessonId: "L1", tools: { ...fakeTools(), game: async () => ({ ok: false }) }, streamFn }), null);
+  assert.equal(agentSpeculate({ state: ST(), kit: K, event: EV, silent: true, lessonId: "L1", tools: fakeTools(), streamFn }), null);
+});
+
+test("the read follows the graded answers on every graded turn, not only when the model names one (sim lab e46a281c decided truth)", async () => {
+  const s1 = K.items.find((i) => i.id === "i1").skillId, s2 = K.items.find((i) => i.id === "i3").skillId;
+  const step = async (next, card, outcome) => {
+    const o = await run(base({ say: "Theek hai.", read: { skill: null, level: "unknown", evidence: "" } }));
+    applyAgentTurn(next, o, { kit: K, childText: "x", cls: cls(outcome), card, lessonId: "L1" });
+  };
+  const next = ST();
+  await step(next, K.items.find((i) => i.id === "i1"), "correct");
+  assert.equal(next.agent.learner[s1].read, "partly", "one plain right is not understood");
+  assert.equal(next.agent.learner[s1].depth, "untested");
+  await step(next, K.items.find((i) => i.id === "i3"), "incorrect");
+  assert.equal(next.agent.learner[s2].read, "not", "a miss with nothing else reads not");
+  // a skill answered right on a why and a contrast item reads understood, with no read from the model at all
+  const n2 = ST();
+  await step(n2, K.items.find((i) => i.id === "i3"), "correct");
+  await step(n2, K.items.find((i) => i.id === "i5"), "correct");
+  await step(n2, K.items.find((i) => i.id === "i6"), "correct");
+  assert.equal(n2.agent.learner[s2].read, "understood");
 });
