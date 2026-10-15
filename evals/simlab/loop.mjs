@@ -18,7 +18,15 @@ import { judgeLesson, autoChecks, understandingScore } from "./judge.mjs";
 import { transcriptMd, failuresMd } from "./report.mjs";
 
 const argv = process.argv.slice(2);
-const arg = (k, d) => { const i = argv.indexOf(`--${k}`); return i >= 0 ? argv[i + 1] : d; };
+// a value is never the next flag: `--email-key --only p01` once made every test email "…---only" and silently missed the
+// server's cohort list (0 continuers on r5-rel141-f618f8d-voice)
+const arg = (k, d) => {
+  const i = argv.indexOf(`--${k}`);
+  if (i < 0) return d;
+  const v = argv[i + 1];
+  if (v == null || v.startsWith("--")) throw new Error(`--${k} needs a value`);
+  return v;
+};
 const flag = (k) => argv.includes(`--${k}`);
 
 const PERSONAS = JSON.parse(readFileSync(join(ROOT, "evals/simlab/personas.json"), "utf8"));
