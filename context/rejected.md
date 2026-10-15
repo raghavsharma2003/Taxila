@@ -2563,3 +2563,11 @@ Taking pointing out of her line with director/say.js stripScreenRefs on request 
 
 ## rj-r5-parts-guard-on-named-asks (2026-10-14)
 Judging her 'parts' words against the module that was up BEFORE a named visual ask (brain/say.js screenContradiction): for 'number line pe 1/4 dikhao' she said '0 se 1 ke beech 4 barabar hisse' over the open question's 5-part engine and was cut to 'Woh 0 se kitna door hai?' (3 of 5 number-line asks). On a turn that answers a named ask the reply guards get no module (turn.js boardAnswersAsk); the board drawn for it is gated against her line (W8)
+
+
+<!-- merged from inbox/r142-main.json -->
+## Release 14.2 (main, 2026-10-15)
+
+- **rj-r142-harm-verb-raw** — gating khud_ko_khatam on a raw harm verb lost 11 red55 recall draws (the transcriber drops 'ko'); the TASK / ACCIDENT skip lost 0.
+- **rj-r142-distress-tired-clause** — a 'tired of the lesson is not distress' clause in both distress prompts: no gain (tired lines were already 0/14 false), +1 false alarm. Reverted.
+- **rj-r142-repro-with-prod-env** — a model-only repro run with .env.local as-is wrote 6 model.call rows into the production trace; such scripts run with DATABASE_URL= empty.
