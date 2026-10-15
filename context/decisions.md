@@ -6034,3 +6034,11 @@ TTS frames type 5 = IMA ADPCM (4:1), negotiated by Accept `codec=adpcm`, asked f
 - **dc-r143-chips-in-childs-language.** Chips are in Hinglish / Hindi / English. A typed "stop for today" now reads as a stop.
 - **dc-r143-codeswitch-address.** An English lesson's code-switched tum line is held to aap (the parent's setting or the class default) by the closed lexicon, with no model call.
 - **dc-r143-trace-endpoint-lane.** model.call carries endpoint OVERFLOW.
+
+
+<!-- merged from inbox/r143e-main.json -->
+## dc-r143-prod-numbers-need-a-lesson-sid (2026-10-15)
+
+- **What:** a production number about children counts only rows whose sid is a real lesson. sid 'server' rows are scripts, tests and background jobs.
+- **Why:** see ms-r143-prod-trace-origin. The overflow lane and the TEST routing stand on the arm and on the shared limits, not on a throttled child.
+- **Reversal:** a background path that legitimately records child-facing calls with sid 'server'.

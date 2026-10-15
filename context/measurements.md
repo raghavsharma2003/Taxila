@@ -4311,3 +4311,13 @@ TEST child turns (n=3481): romance hits went from 6 to 11. The 5 added were all 
   - production boards came up in 2.5-3.1 s;
   - defects D34-D38.
 - TEST address audit: aap/Hinglish 0 slips in 195 lessons; English 365 of 1569 lines carry tum marks.
+
+
+<!-- merged from inbox/r143e-main.json -->
+## ms-r143-prod-trace-origin (2026-10-15), correcting ms-r142-429-contention
+
+- Production model.call rows over 3 days: 941. 933 have sid 'server', 6 are real lessons, 2 other.
+- Of the 933 server rows, 639 took ≤ 2 ms (test stubs).
+- All 95 429s are sid 'server'; none belongs to a child's lesson.
+- The 06 UTC 429s were the main loop's own repro scripts. The 10:48 burst was the 14.3 gate's tests, written to production.
+- **"Production was throttled" is withdrawn.**

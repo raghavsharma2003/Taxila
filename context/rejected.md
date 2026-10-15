@@ -2599,3 +2599,11 @@ Judging her 'parts' words against the module that was up BEFORE a named visual a
 
 - **Tried:** swedencentral twins of the chat deployments, so TEST traffic gets its own capacity.
 - **What broke:** the quota is one subscription-wide pool that is already allocated, so every hot twin was refused InsufficientQuota. The 8 low-use twins that succeeded were deleted again.
+
+
+<!-- merged from inbox/r143e-main.json -->
+## rj-r143-gate-wrote-prod-trace (2026-10-15)
+
+- **Tried:** the release gate ran npm test with production's DATABASE_URL in its environment.
+- **What broke:** stubbed model calls were written into the production trace (639 rows in 3 days) and misread as production throttling.
+- **Fix:** gateEnv runs the gate in CI's environment, with no database URL.
