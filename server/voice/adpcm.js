@@ -51,7 +51,7 @@ export function adpcmEncoder() {
 
 /** Decode one frame payload → PCM s16le bytes. (The server's own reference; the device has src/lesson/adpcm.ts.) */
 export function adpcmDecode(payload) {
-  let pred = payload.readInt16BE(0), index = payload[2];
+  let pred = payload.readInt16BE(0), index = Math.min(88, payload[2]); // clamped as the device's decoder does
   const n = (payload.length - 4) * 2;
   const out = Buffer.alloc(n * 2);
   for (let i = 0; i < n; i++) {
