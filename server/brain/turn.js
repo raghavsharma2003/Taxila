@@ -982,7 +982,9 @@ export async function lessonTurn(req, body, hooks = {}) {
     const nothingComing = (r.move?.request === "visual" && stageEmpty)
       || (stageEmpty && !!teacherReply && (r.ui?.chips?.length ? /\b(?:board|whiteboard)\b|बोर्ड/iu.test(teacherReply) : true));
     if (!safetyWords && ((seeReq && (seeReq.subject || seeReq.kind === "number_line" || seeReq.kind === "picture")) || nothingComing) && teacherReply && pointsAtStage(teacherReply)
-      && !(studioSlot?.artifact?.kind === "whiteboard" && answersRequest(studioSlot.artifact.script, seeReq ?? null))) {
+      && !(studioSlot?.artifact?.kind === "whiteboard" && answersRequest(studioSlot.artifact.script, seeReq ?? null))
+      // ... nor while the board drawn FOR this ask is still being drawn (owner-5: her pointing stays, the board lands as she speaks)
+      && !askedBoardComing) {
       const unpointed = seamSafe("say.unpointRequest", () => unpointGently(teacherReply), null);
       if (unpointed && unpointed !== teacherReply) {
         teacherReply = unpointed;
