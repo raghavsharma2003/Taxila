@@ -26,6 +26,9 @@ const SAME = [
   ["machli", "fish", "मछली"], ["gaay", "gai", "cow", "गाय"], ["haathi", "hathi", "elephant", "हाथी"], ["sher", "lion", "tiger", "शेर"],
   ["seb", "apple", "सेब"], ["kela", "banana", "केला"], ["tamatar", "tomato", "टमाटर"], ["pyaaz", "pyaz", "onion", "प्याज"],
   ["ghar", "house", "home", "घर"], ["bijli", "electricity", "बिजली"], ["batti", "bulb", "बल्ब"], ["dil", "heart", "दिल"],
+  ["bhinn", "bhinna", "fraction", "fractions", "भिन्न"], ["sankhya", "number", "numbers", "संख्या"], ["bhaag", "divide", "division", "भाग"],
+  ["guna", "multiply", "multiplication", "गुणा"], ["jod", "add", "addition", "जोड़"], ["ghatav", "subtract", "subtraction", "घटाव"],
+  ["rekha", "line", "lines", "रेखा"], ["kon", "angle", "angles", "कोण"], ["kshetrafal", "area", "क्षेत्रफल"], ["parimap", "perimeter", "परिमाप"],
   ["disha", "direction", "directions", "दिशा", "north", "south", "east", "west", "uttar", "dakshin", "purab", "purv", "pashchim", "उत्तर", "दक्षिण", "पूर्व", "पश्चिम"],
 ];
 const SAME_OF = new Map(SAME.flatMap((g) => g.map((w) => [w, g])));
@@ -120,6 +123,8 @@ const NUM_WORDS = { ek: ["1"], one: ["1"], do: ["2"], two: ["2"], teen: ["3"], t
   quarter: ["4"], quarters: ["4"], tihai: ["3"], third: ["3"], thirds: ["3"], "एक": ["1"], "दो": ["2"], "तीन": ["3"], "चार": ["4"], "आधा": ["1", "2"] };
 const syncWords = (s) => new Set(String(s ?? "").toLowerCase().normalize("NFKC").split(/[^\p{L}\p{M}\p{N}]+/u)
   .flatMap((w) => NUM_WORDS[w] ?? [w])
+  // a word and its other-language name are one word ("भिन्न" in her line, "fraction" on the board): the SAME table above
+  .flatMap((w) => (SAME_OF.has(w) ? [w, SAME_OF.get(w)[0]] : [w]))
   .filter((w) => (w.length >= 4 || /^\p{N}+$/u.test(w)) && !SYNC_STOP.has(w)).map((w) => (/^\p{N}+$/u.test(w) ? w : w.slice(0, 5))));
 export function syncedWithLine(script, line) {
   const text = String(line ?? "").trim();

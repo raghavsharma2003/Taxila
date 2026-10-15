@@ -56,6 +56,8 @@ test("a new page that shares nothing with her line is not drawn (sim lab boardfa
   assert.equal(syncedWithLine(pg("Write six thousand forty-two in numbers"), "Ab 345 mein hundreds place ka digit kaunsa hai?"), false);
   assert.equal(syncedWithLine(pg("Pencil = ₹5", "3 pencils = ?"), "Cricket mein 4 overs mein 24 runs bane."), false);
   assert.equal(syncedWithLine(pg("3/4"), "Dekho, teen chauthai matlab chaar mein se teen hisse."), true, "a number said in words is its digits");
+  assert.equal(syncedWithLine(pg("Fraction", "3/8"), "भिन्न का मतलब है पूरे का हिस्सा।"), true, "her Hindi name for the thing, the board's English (main, 14.3)");
+  assert.equal(syncedWithLine(pg("Equivalent fractions"), "Barabar bhinn ek hi hissa dikhate hain."), true);
   assert.equal(syncedWithLine(pg("Standing line", "Sleeping line"), "Upar-neeche jaane wali line standing line hoti hai."), true);
   assert.equal(syncedWithLine({ ops: [{ id: "c", op: "circle", c: [0, 0], r: 40 }] }, "kuch bhi"), true, "a page that writes nothing is not judged");
   assert.equal(syncedWithLine(pg("Half = 1/2"), ""), true, "no line known: not judged");
