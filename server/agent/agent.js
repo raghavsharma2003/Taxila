@@ -289,6 +289,13 @@ export function earnedRead(level, graded, { deepAvailable = true } = {}) {
   if (level !== "understood") return level;
   const right = graded.map((x, i) => ({ ...x, i })).filter((x) => x.g === "correct");
   if (!right.length) return !graded.length || graded.some((x) => x.g.startsWith("partly")) ? "partly" : "not";
+  // a miss this lesson is recovered only by three right answers after it, one of them deep (main's cohort condition 1,
+  // overclaims; sim lab gates cc4b3d2, 7740135, 71a6b11, e26d16e: this drops 21 unearned "understood" reads for 7 true ones)
+  const lastMiss = graded.map((x) => x.g !== "correct").lastIndexOf(true);
+  if (lastMiss >= 0) {
+    const after = graded.slice(lastMiss + 1);
+    if (after.length < 3 || (deepAvailable && !after.some((x) => DEEP_KINDS.has(x.kind)))) return "partly";
+  }
   // a skill whose kit has no deep item (about 1 in 10): two different items right and nothing missed after
   if (!deepAvailable) return new Set(right.map((x) => x.item)).size >= 2 && !graded.slice(right.at(-1).i + 1).some((x) => x.g !== "correct") ? "understood" : "partly";
   const deep = right.filter((x) => DEEP_KINDS.has(x.kind));

@@ -135,13 +135,16 @@ test("apply: a posed item becomes the card; an answered card clears; end → don
   assert.equal(next.phase, "done"); assert.equal(a3.end, true); assert.equal(a3.move.kind, "wrap");
 });
 
-test("understood is earned on a DEEP kind plus another right answer; two plain items are partly; an early miss does not cap it (sim lab b185d50)", () => {
+test("understood is earned on a DEEP kind plus another right answer; two plain items are partly; a miss is recovered by three right after it, one deep (sim lab b185d50; cc4b3d2 overclaims)", () => {
   const C = (item, kind = "practice", g = "correct") => ({ item, kind, g });
   assert.equal(earnedRead("understood", [C("i1")]), "partly");
   assert.equal(earnedRead("understood", [C("i1"), C("i2")]), "partly", "two plain items right: a partly child does that a quarter of the time");
   assert.equal(earnedRead("understood", [C("i1"), C("i4", "near_transfer")]), "understood");
   assert.equal(earnedRead("understood", [C("i4", "near_transfer")]), "partly", "one deep item alone");
-  assert.equal(earnedRead("understood", [C("i1", "practice", "wrong"), C("i2"), C("i3", "contrast")]), "understood", "an early miss does not cap it");
+  assert.equal(earnedRead("understood", [C("i1", "practice", "wrong"), C("i2"), C("i3", "contrast")]), "partly", "two right after a miss: not yet recovered");
+  assert.equal(earnedRead("understood", [C("i1", "practice", "wrong"), C("i2"), C("i3", "contrast"), C("i5")]), "understood", "three right after the miss, one deep");
+  assert.equal(earnedRead("understood", [C("i1", "practice", "partly"), C("i2"), C("i5"), C("i6")]), "partly", "three plain right after a miss: no deep one");
+  assert.equal(earnedRead("understood", [C("i1", "practice", "wrong"), C("i2"), C("i3")], { deepAvailable: false }), "partly", "no deep item in the kit: still three after the miss");
   assert.equal(earnedRead("understood", [C("i2"), C("i3", "contrast"), C("i7", "practice", "wrong")]), "partly", "a miss after the deep right one");
   assert.equal(earnedRead("understood", [C("i1", "practice", "wrong")]), "not");
   assert.equal(earnedRead("partly", []), "partly");
