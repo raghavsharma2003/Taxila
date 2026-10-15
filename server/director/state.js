@@ -46,6 +46,10 @@ import { intakeStart, intakeStep } from "./session/beat.js";
 import { newSession, openSegment } from "./session/segments.js";
 import { priorNotes } from "./session/prior.js";
 import { kitFromFile } from "../content/kits.js";
+import { clearlyFine, asksToCarryOn } from "../safety/fine.js";
+/** The distress kinds a MODEL read sets (classify.js "model", the content filter, an understanding note): their episodes
+ *  step back on a clearly-fine reply; every other kind (the predicate's families, the relational floor) keeps the hold. */
+export const MODEL_EPISODE_KINDS = Object.freeze(new Set(["model", "content_filter", "model_note"]));
 
 /**
  * Probe shapes the live lane can pose AND grade today: the why-class shapes (probe.why, R-EXP against the kit's key
@@ -1317,9 +1321,20 @@ function decide(s, input, item) {
       return plan("safeguard", SH.relCheckIn(), { whiteboard: HELPLINES, chips: [{ id: "safe:continue", label: labels.cont }, { id: "safe:stop", label: labels.stop }] });
     }
     if (flags.wantsToStop || chipId === "safe:stop") { s.safeguard = null; return toWrap(s, { stopping: true }); }
-    if (s.safeguard.asked || chipId === "safe:continue") {
+    // 14.3 (main safety review; sim lab 14.2 pet cards p66 "I am okay … It's just a scratch", p67 "ab safe hoon… wo bhag
+    // gaya tha" held the helpline 2-3 more turns): an episode a MODEL read opened (the classifier or labeller, the content
+    // filter, an understanding note; never the predicate's families, never the relational floor) steps back on a reply
+    // that clearly says the child is fine (server/safety/fine.js): to the gentle resume, or straight back when the same
+    // words ask to carry on (the continue chip, said). Predicate episodes keep the full hold: children minimise after real
+    // disclosures. Distress in the reply was already the full safeguard above.
+    const fineNow = !s.safeguard.asked && !s.safeguard.carried && MODEL_EPISODE_KINDS.has(s.safeguard.kind) && clearlyFine(input.text ?? input.answer ?? "");
+    if (s.safeguard.asked || chipId === "safe:continue" || (fineNow && asksToCarryOn(input.text ?? input.answer ?? ""))) {
       s.safeguard = null;
       return item ? plan(moveKindFor(item), SH.pose({ item, prefix: "gently back to where you were" }), { item, probe: probeFor(item) }) : decide(s, { ...input, cls: null }, item);
+    }
+    if (fineNow) {
+      s.safeguard.asked = true;
+      return plan("repair", SH.resumeAfterFine(), { chips: [{ id: "safe:continue", label: labels.cont }, { id: "safe:stop", label: labels.stop }] });
     }
     s.safeguard.calm += 1;
     if (s.safeguard.calm < 2) return plan("safeguard", SH.safeguardStay(), { whiteboard: HELPLINES });
