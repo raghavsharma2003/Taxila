@@ -28,7 +28,7 @@ import { noteModuleEvents, moduleAnswerOf } from "../director/modules.js";
 import { findItem, promptFor, revealsAnswer, whyKey, norm as normAnswer } from "../director/items.js";
 import { registerBroken } from "../director/register.js";
 import { verdictFor, uiVerdict, askText, refersToScreen, wrongAnswersOf, boardClaimProblem, kitWordsOf, stripScreenRefs } from "../director/say.js";
-import { answersRequest, pointsAtStage, unpointGently, pictureSubjectOf, announcesGame, ungame, unassumeVisual } from "../studio/request.js";
+import { answersRequest, pointsAtStage, unpointGently, pictureSubjectOf, announcesGame, ungame, unassumeVisual, refersToBoard, boardPointer } from "../studio/request.js";
 import { drawableSubject } from "../director/state.js";
 import { mixedUnitComparison } from "../director/units.js";
 import { instructionsFor, instructionsAfter } from "../compiler/instructions.js";
@@ -996,6 +996,20 @@ export async function lessonTurn(req, body, hooks = {}) {
         studioReasons.push("say.claim_request");
         delivery = seamSafe("expressive.planDelivery", () => expressiveSeam.planDelivery(moment, teacherReply), delivery);
       }
+    }
+    // round 5 (14.3, owner-5 on 14.2: "picture dikhao" typed + spoken V2.no_reference): the board the child asked for is being
+    // drawn for this turn and her line never sends them to it: one fixed pointer goes before it (code, never a model; never
+    // on a safeguarding turn). When no board answers the ask, the claim check above has already taken pointing out.
+    if (!safetyWords && askedBoardComing && teacherReply && !refersToBoard(teacherReply)) {
+      const fixed = boardPointer(next.ctx?.lang) + teacherReply;
+      teacherReply = fixed;
+      const row = staged.find((x) => x.seq === teacherReplySeq);
+      if (row) { row.text = fixed; row.meta = { ...(row.meta ?? {}), guard: [...new Set([...(row.meta?.guard ?? []), "point_asked_board"])] }; }
+      const last = next.recent?.[next.recent.length - 1];
+      if (last?.who === "teacher") next.recent = [...next.recent.slice(0, -1), { ...last, text: fixed.slice(0, 400) }];
+      guard = { ...guard, caught: [...new Set([...(guard?.caught ?? []), "point_asked_board"])], replaced: true };
+      studioReasons.push("say.point_asked_board");
+      delivery = seamSafe("expressive.planDelivery", () => expressiveSeam.planDelivery(moment, teacherReply), delivery);
     }
     // round 5 (sim lab 709b6acb): over an empty stage, a line that ASSUMES a visual without a screen word ("Table mein
     // Baisakhi kis month mein dikh rahi hai?", "3335 ko mark kijiye", "Timeline picture: …") loses the visual noun, its

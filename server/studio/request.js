@@ -313,6 +313,14 @@ export function unassumeVisual(text) {
   if (s === before.trim()) return before;
   return s.replace(/(^|[.!?।]\s+)([a-z])/g, (_m, a, b) => a + b.toUpperCase());
 }
+/**
+ * Round 5 (14.3, owner-5 on 14.2 a978ae27: "picture dikhao" answered with "0 se 1 tak paanch barabar gaps hain…" and no word
+ * sending the child to the board that was being drawn for it, V2.no_reference). Does her line send their eyes anywhere on
+ * the stage? PURE.
+ */
+export const refersToBoard = (text) => /\b(?:screen|board|whiteboard|picture|drawing|diagram|dekh\w*|look\w*|see)\b|स्क्रीन|बोर्ड|देख|तस्वीर|चित्र/iu.test(String(text ?? ""));
+/** The fixed pointer put before her line when an asked-for board is being drawn and she never points at it. PURE. */
+export const boardPointer = (lang) => (lang === "english" ? "Look at the board: " : lang === "hindi" ? "बोर्ड पर देखो: " : "Board par dekho: ");
 /** Does her line say there is no game (honest), or announce one ("Chalo mirror line game")? PURE. */
 const GAME_WORD = /\b(?:game|games)\b|गेम/iu;
 const NO_GAME = /\b(?:game|games)\b.{0,40}?\b(?:nahi|nahin|not|isn't|no)\b|\b(?:no|koi|abhi)\b.{0,20}?\bgame\b.{0,20}?\b(?:nahi|nahin|ready nahi)\b|गेम.{0,30}?नहीं|\bno\s+game\b/iu;
