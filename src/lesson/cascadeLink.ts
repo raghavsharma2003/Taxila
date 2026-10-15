@@ -822,6 +822,7 @@ export class CascadeLink implements TeacherLink {
     this.unregisterLatency = null;
     this.duplex?.close();
     this.duplex = null;
+    this.idleWait?.stop();
     this.clearMergeTimer();
     this.clearPttTail();
     this.clearBargeTimers();
@@ -1238,7 +1239,11 @@ export class CascadeLink implements TeacherLink {
         this.d5 = null;
         this.callUp = false;
         this.vtrace.d5Closed(why, { framesSent: stream.stats.framesSent, framesDropped: stream.stats.framesDropped });
-        void this.lost();
+        // D5 review follow-up: the server ended an IDLE stream (no audio for 30 s: the phone locked, the tab in the
+        // background, the context suspended). Reconnecting now would open a session that idles out again, every 30 s,
+        // for as long as the lesson is away; reconnect once audio can flow again (context running, page visible)
+        if (why === "closed_client_idle" && !this.audioCanFlow()) this.reconnectWhenAudible();
+        else void this.lost();
       },
     });
     if (this.closed) {
@@ -1278,6 +1283,36 @@ export class CascadeLink implements TeacherLink {
   }
   /** The lane the running engine was built for. */
   private duplexLaneBuilt: "d4" | "d5" | null = null;
+
+  /** The page can send audio now: its AudioContext runs and the document is visible. */
+  private audioCanFlow(): boolean {
+    const visible = typeof document === "undefined" || document.visibilityState !== "hidden";
+    return !!this.ctx && this.ctx.state === "running" && visible;
+  }
+
+  /** After an idle close: reconnect on the first sign audio flows again (statechange, visibilitychange, or a 5 s check). */
+  private reconnectWhenAudible(): void {
+    if (this.idleWait) return;
+    const ctx = this.ctx;
+    const check = () => {
+      if (this.closed) return stop();
+      if (!this.audioCanFlow()) return;
+      stop();
+      void this.lost();
+    };
+    const timer = setInterval(check, 5000);
+    const stop = () => {
+      clearInterval(timer);
+      try { ctx?.removeEventListener?.("statechange", check); } catch { /* gone */ }
+      try { if (typeof document !== "undefined") document.removeEventListener("visibilitychange", check); } catch { /* gone */ }
+      this.idleWait = null;
+    };
+    try { ctx?.addEventListener?.("statechange", check); } catch { /* no events: the timer checks */ }
+    try { if (typeof document !== "undefined") document.addEventListener("visibilitychange", check); } catch { /* no document */ }
+    this.idleWait = { stop };
+    this.vtrace.d5Closed("idle_wait", {});
+  }
+  private idleWait: { stop: () => void } | null = null;
 
   private onD5Event(e: Json): void {
     try {

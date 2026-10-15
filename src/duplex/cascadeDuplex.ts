@@ -104,8 +104,12 @@ export function beaconShadowSummary(summary: ShadowSummary, lessonId: string): v
 
 /** The server VAD silence while the engine decides: a backstop only (INTEGRATION.md §3, 1,500 ms). */
 export const DUPLEX_SERVER_VAD_MS = 1500;
-/** D5: Voice Live's semantic VAD silence while the engine decides (the bake-off ran 500 ms; BAKEOFF.md arm e). */
-export const D5_SERVER_VAD_MS = 250;
+/**
+ * D5: Voice Live's semantic VAD silence while the engine decides (the bake-off ran 500 ms; BAKEOFF.md arm e). Round 5 EOT
+ * step 3: 250 → 200 on the owner harness (same 34 after-her turns, live): EOT p50 1,130 → 1,100, closed answers 1,100 →
+ * 920; thinking-pause cut-offs 1/34 → 1/34, self-corrections cut 0 new, values changed 0 new; echo / barge bars unchanged.
+ */
+export const D5_SERVER_VAD_MS = 200;
 /** Round 5 (BRIEF.md): D4 runs HALF-DUPLEX (the owner's phone: device AEC too weak, her voice heard as the child). */
 export const HALF_DUPLEX_D4 = true;
 /** Round 5: D5 ducks on a loud device burst before Voice Live confirms it (her stop <= 500 ms). */

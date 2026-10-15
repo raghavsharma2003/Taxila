@@ -53,6 +53,36 @@
       "kind": "decision",
       "at": "2026-10-14",
       "title": "D5 posts an empty child turn ONLY when Voice Live itself opened an item and returned an empty or failed final over the burst (the ear covered it). A burst only the device heard (her echo through a weak device AEC, a door, a cough Voice Live ignored) never becomes a turn: after the ear's slowest final it returns the floor unspoken. Cost: a lone haan Voice Live never opens an item for is unheard (1/34 after-her turns on the owner harness). Reversal: if owner-cohort recordings show real children unheard this way more than 1 in 20 closed answers AND their device bursts are distinguishable from echo (pitch / level vs her output), re-admit those bursts as re-asks."
+    },
+    {
+      "id": "ms-r5-d5-eot-steps-2026-10-15",
+      "kind": "measurement",
+      "at": "2026-10-15",
+      "title": "D5 end-of-turn steps on the owner harness (evals/duplex-2026-10/arms-d5.mjs, eot-replay.mjs; 34 after-her turns, 102 of her lines). Method: a live baseline that records Voice Live audio times (d5r11), REPLAYED through the old code (rpB: identical to live on every bar, so the replay is faithful) and the new code (rpA, steps 1+2), then a live run with Voice Live silence 200 (d5v200, step 3) on the same scenarios. EOT p50: 1,500 (rpB) → 1,130 (steps 1+2) → 1,100 (step 3); closed answers (F1) 1,480 → 1,100 → 920; p90 3,620 → 3,620 → 3,400. Main's conditions, every arm: turns whose child words went on after the first commit 10/34 in rpB = 10/34 rpA = 10/34 d5v200 (the same pre-existing turns: F5 word-search / hold scenarios and two self-repairs; none new); first-commit value changed 3 = 3 = 3 (same turns, none new); thinking-pause cut-offs 1/34 = 1/34 = 1/34; re-asks 5 / 5 / 4, re-asks with child speech starting within 600 ms 0 (NOTE: the bake children do not speak after their answer, so this count cannot fail here; it needs the owner cohort recordings). Unchanged in every arm: phantom transcripts 0/102, phantom turns 0/102, echo yields 0/102, echo hushes 0/102, barge-in 12/12, stop <=500 ms 11/12 (p50 80), continuer false yields 0/46, missed 3/34, lone words 5/8. Anatomy (d5v200): only 6 of 34 turns <= 900 ms: the ear floor is ~730 ms (Voice Live speech_stopped ≈ 200 ms silence + ~460 ms event latency, final +60-80 ms, no partials from azure-speech); empties re-ask ~1,100 (final + 300); word-search and short explanations wait ~1,080 by design; open explanations ~3.0 s by design (12/34). Verdict: the 900 ms p50 bar is NOT reachable on lane D5 with this ear without cutting the designed patience (word search, teach-back) or re-asking on top of the child."
+    },
+    {
+      "id": "dc-r5-d5-eot-at-the-final",
+      "kind": "decision",
+      "at": "2026-10-15",
+      "title": "D5 closed answers commit at Voice Live's covering final when it carries a value (D5_CLOSED_AT_FINAL_MS 600 floor; never over a hold stretch or the child's own pace); an empty final re-asks 300 ms after it (D5_EMPTY_FINAL_REASK_MS); Voice Live silence 250 → 200 (D5_SERVER_VAD_MS). Measured: ms-r5-d5-eot-steps-2026-10-15. Reversal: owner-cohort recordings show a self-correction cut, a changed value, or a re-ask with the child starting within 600 ms, at a rate above the pre-change engine on the same recordings."
+    },
+    {
+      "id": "ms-r5-d5-mai-transcribe-2026-10-15",
+      "kind": "measurement",
+      "at": "2026-10-15",
+      "title": "EOT step 4, MAI-Transcribe inside Voice Live (centralindia, api 2026-07-15), small n. Session probe: every MAI model refuses two locales (\"MAI Transcribe supports at most one locale\": the earlier trials hung in their retries on this, not a timeout of the model); mai-transcribe-2-streaming is \"not supported in this region\" (centralindia), so no partials are available; mai-transcribe-2 opens with no locale (multilingual) or hi-IN. Owner variant, 5 closed answers (3 where azure-speech returned EMPTY), Voice Live silence 200, same audio: mai-transcribe-2 returned words on all 3 empties (\"तीस दीदी\" right, value 30; \"सात है ना\" → \"साथ है ना\" and \"छह faces दीदी\" → \"Chair faces DD\": the value lost), and its finals land 250-410 ms LATER than azure-speech (speech_stopped the same ±45 ms). For end of turn that is worse: every closed answer +~300 ms, and 2 of 3 recovered empties still carry no value. Not adopted for EOT; noted for comprehension recall (fewer empty turns) if the value misreads can be handled."
+    },
+    {
+      "id": "ms-r5-d5-mai-tx2-stream-southindia-2026-10-15",
+      "kind": "measurement",
+      "at": "2026-10-15",
+      "title": "MAI-Transcribe-2-Streaming (southindia account taxila-ai-southindia; Microsoft first-party, sold direct by Azure) as Voice Live's in-session ASR. It is offered by Voice Live in southindia (not centralindia); locale none (multilingual) or a 2-letter code (\"hi\"), never \"hi-IN\". Owner variant, Voice Live silence 200, gpt-4.1-mini session, the same 10 closed answers (n=10, small by capacity 10), azure-speech in the same region as control: final after Voice Live speech_stopped p50 53 ms (MAI) vs 254 ms (azure-speech); empty finals 0/10 vs 3/10; partial deltas 0 vs 0 (no partials from either, so no decide-before-speech_stopped). Values right 7/10 vs 7/10, but MAI read one value WRONG (\"पंद्रह सेंटीमीटर\" → \"100 cm.\"; azure-speech \"15 सेंटीमीटर\") and lost two (\"सात\"→\"साथ\", \"छह\"→\"Chair\") where azure-speech returned empty. A wrong value is a truth risk (a verdict on a value the child never said), an empty is a re-ask: not adopted at this n; deciding number = the wrong-value rate at n >= 40 per ASR."
+    },
+    {
+      "id": "ms-r5-d5-eot-floor-2026-10-15",
+      "kind": "measurement",
+      "at": "2026-10-15",
+      "title": "The measured end-of-turn FLOOR on lane D5 (main accepted 2026-10-15: 1,100 ms is the number we report; 900 is not reachable with this ear). Anatomy, owner harness d5v200, 34 after-her turns: ear floor ~730 ms (Voice Live speech_stopped ≈ 200 ms silence + ~460 ms event latency, final +60-80 ms, no partials) → fastest commits 730-750; empty finals re-ask at ~1,100 (final + 300); word search and short explanations ~1,080 (designed patience); open explanations ~3.0 s by design (12/34). EOT p50 1,100, p90 3,400; closed answers 920."
     }
   ],
   "edges": [
@@ -90,6 +120,31 @@
       "src": "dc-r5-d5-empty-turn-only-from-the-ear",
       "rel": "measured_by",
       "dst": "ms-r5-d5-owner-review-fixes-2026-10-14"
+    },
+    {
+      "src": "dc-r5-d5-eot-at-the-final",
+      "rel": "measured_by",
+      "dst": "ms-r5-d5-eot-steps-2026-10-15"
+    },
+    {
+      "src": "ms-r5-d5-eot-steps-2026-10-15",
+      "rel": "part_of",
+      "dst": "ms-r5-duplex-owner-harness-2026-10-14"
+    },
+    {
+      "src": "ms-r5-d5-mai-transcribe-2026-10-15",
+      "rel": "part_of",
+      "dst": "ms-r5-d5-eot-steps-2026-10-15"
+    },
+    {
+      "src": "ms-r5-d5-eot-floor-2026-10-15",
+      "rel": "part_of",
+      "dst": "ms-r5-d5-eot-steps-2026-10-15"
+    },
+    {
+      "src": "ms-r5-d5-mai-tx2-stream-southindia-2026-10-15",
+      "rel": "part_of",
+      "dst": "ms-r5-d5-eot-steps-2026-10-15"
     }
   ]
 }
