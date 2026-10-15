@@ -422,3 +422,35 @@ test("r5 merge: her EARLY reply (turn-audio, before its text) is announced to th
     assert.equal(live["host"]["her"].handsOver, true, "hand-over read from the whole line");
   } finally { link.close(); env.restore(); }
 });
+
+test("D5 EOT step 1: a closed answer whose covering final carries its value commits AT that final (not ~400 ms later)", () => {
+  const r = afterQuestion();
+  const f = burst(3000, 3600);
+  r.run(3700, f);
+  r.live.stt({ type: "input_audio_buffer.speech_started", item_id: "v1", audio_start_ms: 3000 - 210 });
+  r.run(4300, f);
+  r.live.stt({ type: "input_audio_buffer.speech_stopped", item_id: "v1", audio_end_ms: 3600 + 340 });
+  r.live.stt({ type: "conversation.item.input_audio_transcription.completed", item_id: "v1", transcript: "8 कॉर्नर्स होते हैं" });
+  const finalAt = r.t;
+  r.run(8000, f);
+  const c = r.acts.find((a) => a[1] === "commit");
+  assert.ok(c, JSON.stringify(r.acts));
+  assert.ok(c[0] - finalAt <= 120, `at the final: ${c[0] - finalAt} ms after it`);
+});
+
+test("D5 EOT step 2: an empty final on a closed question re-asks D5_EMPTY_FINAL_REASK_MS after it", async () => {
+  const { D5_EMPTY_FINAL_REASK_MS } = await import("../src/duplex/config.ts");
+  const r = afterQuestion();
+  const f = burst(3000, 3260);
+  r.run(3700, f);
+  r.live.stt({ type: "input_audio_buffer.speech_started", item_id: "v3", audio_start_ms: 3000 - 210 });
+  r.run(4060, f);
+  r.live.stt({ type: "input_audio_buffer.speech_stopped", item_id: "v3", audio_end_ms: 3260 + 340 });
+  r.live.stt({ type: "conversation.item.input_audio_transcription.completed", item_id: "v3", transcript: "" });
+  const finalAt = r.t;
+  r.run(8000, f);
+  const c = r.acts.find((a) => a[1] === "commit");
+  assert.ok(c && c[2] === "", JSON.stringify(r.acts));
+  const after = c[0] - finalAt;
+  assert.ok(after >= D5_EMPTY_FINAL_REASK_MS - 20 && after <= D5_EMPTY_FINAL_REASK_MS + 120, `${after} ms after the empty final`);
+});

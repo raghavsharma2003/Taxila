@@ -18,9 +18,14 @@ const BAKE = arg("--bake"), VAR = arg("--variant", "phone"), CONC = Number(arg("
 const PREDUCK = !process.argv.includes("--no-preduck");
 const ARM = arg("--arm-name", PREDUCK ? "d5" : "d5-nopreduck");
 const ONLY = arg("--only") ? new Set(arg("--only").split(",")) : null;
+// round 5 EOT: --replay <arm> feeds that arm's RECORDED Voice Live events (with their audio times, d5r11 on) back at their
+// recorded times through today's engine, no network: before/after on the same ear output. --out-arm names the result.
+const REPLAY = arg("--replay");
+// round 5 EOT step 3: Voice Live's VAD silence for this run (default: the shipped D5_SERVER_VAD_MS)
+const SERVER_VAD = arg("--server-vad") ? Number(arg("--server-vad")) : null;
 const SR = 16000, HOP = 320;
 const TAIL_MS = 6000;
-loadEnv();
+if (!REPLAY) loadEnv();
 
 const readS16 = (f) => { const b = fs.readFileSync(f); const x = new Float32Array(b.length / 2); for (let i = 0; i < x.length; i++) x[i] = b.readInt16LE(i * 2) / 32768; return x; };
 
@@ -63,7 +68,7 @@ async function openD5(herX, herOff, onEvent) {
     openUpstream: (url, headers) => new WebSocket(url, { headers }),
   });
   await Promise.race([up, new Promise((_, rej) => setTimeout(() => rej(new Error(`d5 session timeout ${closedWhy ?? ""}`)), 25000))]);
-  relay.clientText(JSON.stringify({ type: "vad", silenceMs: D5_SERVER_VAD_MS }));
+  relay.clientText(JSON.stringify({ type: "vad", silenceMs: SERVER_VAD ?? D5_SERVER_VAD_MS }));
   return {
     lane: "D5", model: cfg.model, region: "centralindia", errors,
     append(block, frameIdx) {
@@ -79,6 +84,21 @@ async function openD5(herX, herOff, onEvent) {
     commit() { relay.clientText(JSON.stringify({ type: "commit" })); },
     close() { relay.end(1000, "done"); },
   };
+}
+
+/** A recorded run's Voice Live events, as the relay delivered them (audio times restored), for --replay. */
+function recorded(id) {
+  const run = JSON.parse(fs.readFileSync(path.join(BAKE, "runs", `${REPLAY}.${VAR}.${id}.json`), "utf8"));
+  if (run.stt.some((e) => e.type === "input_audio_buffer.speech_started") && !run.stt.some((e) => e.a0 !== undefined)) throw new Error(`${REPLAY}: no audio times recorded (d5r11 or later)`);
+  return run.stt.filter((e) => !String(e.type).startsWith("d5.")).map((e) => {
+    const raw = { type: e.type };
+    if (e.item) raw.item_id = e.item;
+    if (e.type.endsWith(".delta")) raw.delta = e.text ?? "";
+    if (e.type.endsWith(".completed")) raw.transcript = e.text ?? "";
+    if (e.a0 !== undefined) raw.audio_start_ms = e.a0;
+    if (e.a1 !== undefined) raw.audio_end_ms = e.a1;
+    return { t: e.t, raw };
+  });
 }
 
 async function one(id) {
@@ -106,11 +126,12 @@ async function one(id) {
   class D5Live extends DuplexLive { constructor(o) { super(o); liveRef = this; this.audioOrigin(0); } }
   const r = await runSession({
     id: `d5-${id}-${VAR}`, x, frames: fr, her, band: "B2", DuplexLive: D5Live, floorDb: null,
-    stt: { open: (onEvent) => openD5(herX, herOff, onEvent) },
-    liveOptions: { source: "voicelive", vadGate: "server", preDuck: PREDUCK, supportsCommit: false, serverVadMs: (await import(ROOT + "src/duplex/cascadeDuplex.ts")).D5_SERVER_VAD_MS },
+    stt: REPLAY ? { replay: recorded(id) } : { open: (onEvent) => openD5(herX, herOff, onEvent) },
+    ...(REPLAY ? { realtime: false } : {}),
+    liveOptions: { source: "voicelive", vadGate: "server", preDuck: PREDUCK, supportsCommit: false, serverVadMs: SERVER_VAD ?? (await import(ROOT + "src/duplex/cascadeDuplex.ts")).D5_SERVER_VAD_MS },
   });
   return { id, arm: ARM, variant: VAR, acts: r.acts, phases: r.phases, logs: r.logs.filter((l) => l[1] === "YIELD" || l[1] === "SPEAK" || l[1] === "HUSH"),
-    stt: r.sttLog.map((s) => ({ t: s.t, type: s.raw.type, item: s.raw.item_id, text: s.raw.transcript ?? s.raw.delta ?? null })), errors: r.errors, d5: liveRef?.d5 ?? null, ms: Date.now() - t0 };
+    stt: r.sttLog.map((s) => ({ t: s.t, type: s.raw.type, item: s.raw.item_id, text: s.raw.transcript ?? s.raw.delta ?? null, ...(s.raw.audio_start_ms !== undefined ? { a0: s.raw.audio_start_ms } : {}), ...(s.raw.audio_end_ms !== undefined ? { a1: s.raw.audio_end_ms } : {}) })), firstFrameAt: r.firstFrameAt ?? null, errors: r.errors, d5: liveRef?.d5 ?? null, ms: Date.now() - t0 };
 }
 
 if (import.meta.url === `file://${process.argv[1]}`) {
