@@ -193,3 +193,21 @@ test("QA pass 14 (main's ask 1): the EXACT library board ('3 × 160 = 480 metres
   assert.ok(failing.includes("W17.her_numbers"), failing.join(","));
   assert.ok(!failing.includes("W4.numbers_from_truth"), "W4 alone passes it: 160 and 480 are kit numbers");
 });
+
+test("QA pass 14 (main's release blocker): W18, under her question the board never writes its answer. The exact catalogue beats: L6 '2 × (50 + 30) = 160 metres' (her numbers and her answer) refused by W18, L7 '3 × 160 = 480' refused by W17; her own numbers with '?' pass", async () => {
+  const fs = await import("node:fs");
+  const { gateWhiteboard, withheldValues, answersOf } = await import("../server/studio/qa/whiteboard.js");
+  const kit = JSON.parse(fs.readFileSync("data/kits/c6-maths.json", "utf8")).topics.find((t) => t.topicId === "c6-maths-ch06-t01");
+  const rec = JSON.parse(fs.readFileSync("data/studio-catalogue/topics/c6-maths-ch06-t01.json", "utf8"));
+  const beatWith = (cell) => rec.whiteboard.beats.find((b) => (b.script?.ops ?? []).some((o) => o.op === "numwork" && o.rows.flat().includes(cell)));
+  const line = "Kabir, rectangle ki four sides—50 m, 30 m, 50 m, 30 m. Inhe jodkar perimeter milega. Total kitna?";
+  assert.ok(answersOf(line).has("160"));
+  const fails = (script) => gateWhiteboard({ ...script, line: { lessonId: "L" } }, { reply: line, kit, speechMs: 9500, withhold: withheldValues(kit, { line }) }).checks.filter((c) => !c.pass).map((c) => c.id);
+  assert.ok(fails(beatWith("160").script).includes("W18.her_answer_unsaid"));
+  assert.ok(fails(beatWith("480").script).some((id) => id === "W17.her_numbers" || id === "W18.her_answer_unsaid"));
+  const ours = { v: 1, scriptId: "s", anchor: "line_audio_start", board: { w: 677, h: 423, ground: "chalk" }, mode: "fresh", durationMs: 3000,
+    ops: [{ id: "n", op: "numwork", startMs: 0, endMs: 900, at: [40, 80], layout: "equation", rows: [["50", "+", "30", "+", "50", "+", "30", "=", "?"]] }] };
+  assert.ok(!fails(ours).includes("W18.her_answer_unsaid"));
+  // no question, no W18: a board stating 2 × (50 + 30) = 160 under her own explanation is fine
+  assert.equal(answersOf("Perimeter 2 × (50 + 30) hai.").size >= 1, true);
+});

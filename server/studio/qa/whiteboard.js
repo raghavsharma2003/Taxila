@@ -332,6 +332,23 @@ export function cutCells(ops, ctx = {}) {
   }
   return out;
 }
+/** What a question over her own written numbers asks for: their total (with repeats: four sides), the total of the distinct
+ *  ones, and for each pair a + b, 2 × (a + b), a × b, a − b; minus any number her line already says. PURE. */
+export function answersOf(line) {
+  const all = (String(line ?? "").match(/\d+(?:\.\d+)?/g) ?? []).map(Number).filter((x) => Number.isFinite(x));
+  const said = new Set(numbersIn(String(line ?? "")));
+  const uniq = [...new Set(all)].slice(0, 6);
+  if (uniq.length < 2) return new Set();
+  const out = new Set();
+  const add = (x) => { if (Number.isFinite(x) && x > 0) { const t = canon(String(Math.round(x * 1000) / 1000)); if (!said.has(t)) out.add(t); } };
+  add(all.reduce((a, b) => a + b, 0));
+  add(uniq.reduce((a, b) => a + b, 0));
+  for (let i = 0; i < uniq.length; i++) for (let j = i + 1; j < uniq.length; j++) {
+    const [a, b] = [uniq[i], uniq[j]];
+    add(a + b); add(2 * (a + b)); add(a * b); add(Math.abs(a - b));
+  }
+  return out;
+}
 /** The straight segments a script draws that words must not sit on: lines, arrow shafts, box edges. */
 export function segmentsOf(ops) {
   const segs = [];
@@ -559,6 +576,14 @@ export function gateWhiteboard(raw, ctx) {
   const boardNums = [...new Set(per.flatMap((p) => p.nums))];
   const notHers = !ctx.face && hers.size >= 2 && boardNums.length > 0 && !boardNums.some((n) => hers.has(n));
   add("W17.her_numbers", !notHers, notHers ? { hers: [...hers].slice(0, 6), board: boardNums.slice(0, 6) } : []);
+  // W18 (QA pass 14, main's release blocker: catalogue c6-maths-ch06-t01 beat L6 "2 × (50 + 30) = 160 metres" under her
+  // "50 m, 30 m, 50 m, 30 m … Total kitna?"): when her line ASKS, the board never writes what her question asks for, i.e.
+  // the result of plain arithmetic on her own numbers (their total, 2 × (a + b), a product, a difference) that her line
+  // does not already say. The open kit item's key stays W9's.
+  const asks = !ctx.face && /\?/.test(String(ctx.reply ?? ""));
+  const herAnswers = asks ? answersOf(String(ctx.reply ?? "")) : new Set();
+  const told = [...herAnswers].filter((n) => boardNums.includes(n));
+  add("W18.her_answer_unsaid", told.length === 0, told.slice(0, 3));
   // W14 is ADVISORY (logged, never blocks): over 234 real boards it flagged 69, with false refusals across languages (a
   // Hinglish line "paani garam hokar upar jaata hai" under an English "evaporates" board shares no word but is on topic)
   const off = boardOffLine(ctx.reply, ops, ctx.itemText ?? "");
