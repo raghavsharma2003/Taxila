@@ -668,8 +668,9 @@ export function useDesk(runtime: LessonRuntime, bridge: UiBridge | null, ctx: De
         tiles: chips,
         // r5 QA pass 12: a text board beside choices (the safeguarding check-in: "Childline 1098 · Tele-MANAS 14416" with
         // Carry on / Stop for today) lost its line, because the tiles take the tray and a board shows only in teach /
-        // practice. The tiles tray now carries the text line above the choices (AnswerTray).
-        board: (trayKind === "board" || (trayKind === "tiles" && wb?.kind === "text")) && wb ? {
+        // practice. The tiles tray now carries the text line above the choices (AnswerTray). Main safety review (14.3): only
+        // beside the safeguarding choices (safe:continue / safe:stop), so no other text board lands above a practice item's tiles.
+        board: (trayKind === "board" || (trayKind === "tiles" && wb?.kind === "text" && chips.some((c) => /^safe:/.test(String(c.id ?? ""))))) && wb ? {
           lines: [{ text: wb.value, kind: wb.kind }],
           chalked: beats?.chalk || floor === "speaking" ? item.answer?.text ?? null : null,
           mark: item.answer?.verdict === "correct" ? "tick" : item.answer?.verdict === "not_yet" ? "underline" : null,
