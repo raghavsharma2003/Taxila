@@ -995,7 +995,9 @@ export async function lessonTurn(req, body, hooks = {}) {
     // round 5 (sim lab 709b6acb): over an empty stage, a line that ASSUMES a visual without a screen word ("Table mein
     // Baisakhi kis month mein dikh rahi hai?", "3335 ko mark kijiye", "Timeline picture: …") loses the visual noun, its
     // content kept (studio/request.js unassumeVisual), then any pointing left ("Dekho, …") as above
-    if (!safetyWords && stageEmpty && teacherReply) {
+    // (never on a turn the child asked to SEE: there "imagine it" in place of a picture is the owner's F16 failure, and the
+    // pointing above is the rule; owner-5 visual battery, criterion 3)
+    if (!safetyWords && stageEmpty && teacherReply && r.move?.request !== "visual") {
       const plain = seamSafe("say.unassumeVisual", () => unassumeVisual(teacherReply), null);
       const fixed = plain && plain !== teacherReply ? (pointsAtStage(plain) ? unpointGently(plain) : plain) : null;
       if (fixed && fixed !== teacherReply) {
