@@ -422,3 +422,64 @@ test("r5 merge: her EARLY reply (turn-audio, before its text) is announced to th
     assert.equal(live["host"]["her"].handsOver, true, "hand-over read from the whole line");
   } finally { link.close(); env.restore(); }
 });
+
+test("D5 EOT step 1: a closed answer whose covering final carries its value commits AT that final (not ~400 ms later)", () => {
+  const r = afterQuestion();
+  const f = burst(3000, 3600);
+  r.run(3700, f);
+  r.live.stt({ type: "input_audio_buffer.speech_started", item_id: "v1", audio_start_ms: 3000 - 210 });
+  r.run(4300, f);
+  r.live.stt({ type: "input_audio_buffer.speech_stopped", item_id: "v1", audio_end_ms: 3600 + 340 });
+  r.live.stt({ type: "conversation.item.input_audio_transcription.completed", item_id: "v1", transcript: "8 कॉर्नर्स होते हैं" });
+  const finalAt = r.t;
+  r.run(8000, f);
+  const c = r.acts.find((a) => a[1] === "commit");
+  assert.ok(c, JSON.stringify(r.acts));
+  assert.ok(c[0] - finalAt <= 120, `at the final: ${c[0] - finalAt} ms after it`);
+});
+
+test("D5 EOT step 2: an empty final on a closed question re-asks D5_EMPTY_FINAL_REASK_MS after it", async () => {
+  const { D5_EMPTY_FINAL_REASK_MS } = await import("../src/duplex/config.ts");
+  const r = afterQuestion();
+  const f = burst(3000, 3260);
+  r.run(3700, f);
+  r.live.stt({ type: "input_audio_buffer.speech_started", item_id: "v3", audio_start_ms: 3000 - 210 });
+  r.run(4060, f);
+  r.live.stt({ type: "input_audio_buffer.speech_stopped", item_id: "v3", audio_end_ms: 3260 + 340 });
+  r.live.stt({ type: "conversation.item.input_audio_transcription.completed", item_id: "v3", transcript: "" });
+  const finalAt = r.t;
+  r.run(8000, f);
+  const c = r.acts.find((a) => a[1] === "commit");
+  assert.ok(c && c[2] === "", JSON.stringify(r.acts));
+  const after = c[0] - finalAt;
+  assert.ok(after >= D5_EMPTY_FINAL_REASK_MS - 20 && after <= D5_EMPTY_FINAL_REASK_MS + 120, `${after} ms after the empty final`);
+});
+
+test("D5 review follow-up: an idle-closed stream (no audio >30 s: phone locked) reconnects only once audio can flow, then cleanly", async () => {
+  FakeWS.behaviour = FakeWS.up;
+  const { env, link } = await d5Link();
+  try {
+    const ctx = link["ctx"];
+    const listeners = new Set();
+    ctx.state = "suspended";
+    ctx.addEventListener = (k, fn) => { if (k === "statechange") listeners.add(fn); };
+    ctx.removeEventListener = (k, fn) => { if (k === "statechange") listeners.delete(fn); };
+    const engine = link.duplex;
+    const first = FakeWS.all.at(-1);
+    // the server ends the idle stream: its reason, then the close
+    first.server({ type: "d5.closed", reason: "client_idle" });
+    first.readyState = 3;
+    first.onclose?.({ code: 1001 });
+    await sleep(1500);
+    assert.equal(FakeWS.all.at(-1), first, "no reconnect while the context is suspended (it would idle out again)");
+    assert.ok(listeners.size >= 1, "waiting for the context to run");
+    // the child comes back: the context runs again
+    ctx.state = "running";
+    for (const fn of [...listeners]) fn();
+    for (const t0 = Date.now(); Date.now() - t0 < 4000 && !(FakeWS.all.at(-1) !== first && link["d5"]);) await sleep(10);
+    assert.notEqual(FakeWS.all.at(-1), first, "one new stream");
+    assert.equal(FakeWS.all.length, 2, "exactly one reconnect");
+    assert.equal(listeners.size, 0, "the wait is cleared");
+    assert.equal(link.duplex, engine, "the same lane: the engine is kept");
+  } finally { link.close(); env.restore(); }
+});

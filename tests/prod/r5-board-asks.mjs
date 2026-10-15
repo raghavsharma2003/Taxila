@@ -73,6 +73,8 @@ export const CASES = [
   { id: "c7-numline-dec", cls: 7, topic: "c7-maths-ch03-t03", ask: "number line pe 0.5 dikhao", kind: "numline", nums: ["0.5"] },
   { id: "c7-eclipse", cls: 7, topic: "c7-science-ch12-t03", ask: "solar eclipse ka picture dikhao", kind: "picture", words: W("sun", "moon", "earth", "surya", "chand", "prithvi", "eclipse", "grahan") },
   { id: "c7-game", cls: 7, topic: "c7-maths-ch06-t01", ask: "koi game khilao", kind: "game" },
+  // main 14.3: prod c7-maths-ch08-t01 "mujhe game khelna hai" got no_game_piece 3 of 3 (no play coverage; the lesson had its activity)
+  { id: "c7-game-frac", cls: 7, topic: "c7-maths-ch08-t01", ask: "mujhe game khelna hai", kind: "game" },
   { id: "c8-cell", cls: 8, topic: "c8-science-ch02-t01", ask: "cell ka diagram banao", kind: "draw", words: W("cell", "nucleus", "membrane", "cytoplasm", "koshika") },
   { id: "c8-square", cls: 8, topic: "c8-maths-ch01-t01", ask: "isko draw karke samjhao", kind: "draw" },
   { id: "c8-example", cls: 8, topic: "c8-maths-ch08-t02", ask: "ek example do na", kind: "example" },
@@ -121,7 +123,7 @@ export function score(c, got) {
   const subj = subjectWords.length ? hits(texts, subjectWords) : [];
   // an interactive piece: a Director engine the child acts on (every engine but the static explainer board) or a Studio play /
   // Stagecraft piece
-  const interactive = got.mounts.some((m) => m && !/^explainer@/.test(m)) || got.studioKinds.some((k) => /stagecraft|play|frame|game/.test(k));
+  const interactive = got.mounts.some((m) => m && !/^explainer@/.test(m)) || got.studioKinds.some((k) => /stagecraft|play|frame|game|skeleton/.test(k));
   let pass = false;
   switch (c.kind) {
     case "numline": {

@@ -1311,7 +1311,15 @@ function decide(s, input, item) {
   // 1. Safety before anything else — the predicate or the classifier, either one.
   // `kind`: what raised it (the predicate's family, or model / content_filter / relational_floor) — only the wording of a
   // fallback line reads it (brain/say.js fallbackReply, F10); the hold itself is the same for every trigger.
-  if (flags.distress) { s.safeguard = { calm: 0, asked: false, kind: flags.distressKind ?? null }; s.safeguardedAt ??= s.turn; return plan("safeguard", SH.safeguard(), { whiteboard: HELPLINES }); }
+  // 14.3 (main safety review; sim lab rel143 p66 r3: "I am okay … it just hurts thoda" re-read as distress by the
+  // understanding note restarted the full opening script twice and the child left the lesson): inside an episode a MODEL
+  // read opened, a further MODEL-only distress read is the same episode, never a new opening. It holds on the stay turn
+  // (no lesson, the helplines on the board, a gentle are-you-okay) and never releases or offers the resume: a pending
+  // offer is withdrawn, and the next turns climb back as after an opening. The predicate's families, the relational
+  // floor and a carried check-in always restart the full script.
+  const sameEpisode = !!(flags.distress && s.safeguard && !s.safeguard.carried && MODEL_EPISODE_KINDS.has(s.safeguard.kind)
+    && MODEL_EPISODE_KINDS.has(flags.distressKind ?? ""));
+  if (flags.distress && !sameEpisode) { s.safeguard = { calm: 0, asked: false, kind: flags.distressKind ?? null }; s.safeguardedAt ??= s.turn; return plan("safeguard", SH.safeguard(), { whiteboard: HELPLINES }); }
   // round 5 (14.2, main safety review; QA pass 11, n=3: after a self-harm disclosure the next lesson opened straight into
   // teaching): a start within hours of a safeguarding incident (the route passes `carried`) opens on a calm check-in, the
   // helplines on the board, a carry-on and a stop chip. The episode is already asked, so the child's next ordinary words
@@ -1329,6 +1337,8 @@ function decide(s, input, item) {
       return plan("safeguard", SH.relCheckIn(), { whiteboard: HELPLINES, chips: [{ id: "safe:continue", label: labels.cont }, { id: "safe:stop", label: labels.stop }] });
     }
     if (flags.wantsToStop || chipId === "safe:stop") { s.safeguard = null; return toWrap(s, { stopping: true }); }
+    // calm 1, not 0: the fixed fallback for this turn is the stay line, never the opening's again (say.js fallbackReply)
+    if (sameEpisode) { s.safeguard.calm = 1; s.safeguard.asked = false; return plan("safeguard", SH.safeguardAgain(), { whiteboard: HELPLINES }); }
     // 14.3 (main safety review; sim lab 14.2 pet cards p66 "I am okay … It's just a scratch", p67 "ab safe hoon… wo bhag
     // gaya tha" held the helpline 2-3 more turns): an episode a MODEL read opened (the classifier or labeller, the content
     // filter, an understanding note; never the predicate's families, never the relational floor) steps back on a reply

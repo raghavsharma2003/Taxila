@@ -33,7 +33,7 @@ import type {
 import {
   BACKSTOP_HOLD_PH, BACKSTOP_HOLD_STRETCH, CONTEXT, CUT_IN, FALLBACK, HOLD, HORIZON_ACOUSTIC_P, HORIZON_MS, OVERLAP, PAUSE_WAIT, RATE,
   REVOCABLE_MS, SAFETY, VERDICT, ACOUSTIC_FRESH_MS, FIRST_TEXT_P90, TURN_PACE, CLOSED_ELABORATION,
- D5_UNHEARD_MIN_VOICED_MS, D5_CLOSED_NO_VALUE_BACKSTOP_MS,
+ D5_UNHEARD_MIN_VOICED_MS, D5_CLOSED_NO_VALUE_BACKSTOP_MS, D5_CLOSED_AT_FINAL_MS, D5_EMPTY_FINAL_REASK_MS,
 } from "./config.ts";
 import { exchangeOf, holdProfile, pauseClass, verdictAnchor, wordCount, YES_NO_MAX_WORDS } from "./engineRules.ts";
 import { overlapKind } from "./turnPolicy.ts";
@@ -463,6 +463,15 @@ export class Governor {
     // hold stretch below (word search, filler, repair, a held floor) still applies, so a child mid-search keeps the floor.
     if (ex === "closed_answer" && tick.transcript.source === "voicelive" && !tick.markers.values.length && tick.transcript.text.trim() && tick.transcript.unseenVoicedMs <= HORIZON_MS) {
       base = Math.min(base, D5_CLOSED_NO_VALUE_BACKSTOP_MS);
+    }
+    // round 5 EOT (D5), the ear covered the whole burst and its final is in: (1) a closed answer carrying a value commits at
+    // that final (floored; a hold stretch or the child's own pace still wins); (2) an EMPTY final re-asks
+    // D5_EMPTY_FINAL_REASK_MS after it arrived
+    if (ex === "closed_answer" && tick.transcript.source === "voicelive" && tick.transcript.unseenVoicedMs <= HORIZON_MS && !this.stretch(tick)) {
+      if (tick.transcript.isFinal && tick.markers.values.length && tick.transcript.text.trim()) return Math.max(Math.min(base, D5_CLOSED_AT_FINAL_MS), this.paceMs());
+      // an empty final is not "isFinal" text (no words), but it is what covered the burst: its arrival (updatedAt) is the clock
+      const sil = tick.child.silenceRunMs;
+      if (!tick.transcript.text.trim() && sil !== null) return Math.min(base, Math.max(0, sil - (tick.t - tick.transcript.updatedAt)) + D5_EMPTY_FINAL_REASK_MS);
     }
     // round 4 (OVERLAP-independent, config CLOSED_ELABORATION): a closed answer that runs past a short answer ("मुझे लगता है
     // डब्बे। मैं चार कॉर्नर। …") is an elaboration: its silence backstop is at least the free exchange's word-aware class wait,

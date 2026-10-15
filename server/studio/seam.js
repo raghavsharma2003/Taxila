@@ -19,7 +19,7 @@
 //
 // Pieces are INVISIBLE until revealed on the teacher's cue: statusFacts proposes a reveal (the kernel may refuse it), the
 // committed turn's onReveal records it, and slotFor gives the turn's UiDirectives.studioSlot so the Work tray shows it.
-import { answersRequest, samePage, shownBefore, pageSig } from "./request.js";
+import { answersRequest, samePage, shownBefore, pageSig, syncedWithLine } from "./request.js";
 import { ORDINAL } from "../director/modules.js";
 import { seamSafe } from "../seam-safe.js";
 import { normalizeScript, scriptFacts } from "../../shared/whiteboard.js";
@@ -153,6 +153,31 @@ const VISIBLE = new Set(["revealed", "in_use"]);
 const isVisible = (p) => VISIBLE.has(p.state) || (p.kind === "whiteboard" && p.artifact && p.state !== "retired");
 /** A piece the Brain may reveal now: ready (a passed or library build), or a skeleton-as-activity. */
 const isRevealable = (p) => !p.retired && p.kind !== "whiteboard" && (p.state === "ready" || p.state === "fallback_ready");
+
+/**
+ * Main 14.3 (prod: "mujhe game khelna hai" in c7-maths-ch08-t01, studio_rejected.no_game_piece 3 of 3 live runs, while the
+ * same lesson had prefetched its fraction-shading activity): a game / simulation ask that play coverage cannot answer gets the
+ * LESSON's own interactive piece, prepared at lesson start (an archetype the child can act on: kind game or simulation), for
+ * the skill when it says one, certified at the device's box; shown on this turn exactly like a play piece (pendingPlay).
+ * → the composeAsk answer, or null (honest talk, as before). Synchronous, in memory.
+ */
+const DOABLE_KINDS = new Set(["game", "simulation"]);
+/** Tests only. */
+export const _lessonPieceForAsk = (L, x) => lessonPieceForAsk(L, x);
+function lessonPieceForAsk(L, x) {
+  const cands = [...L.pieces.values()].filter((p) => isRevealable(p) && p.source !== "play" && DOABLE_KINDS.has(p.kind) && !p.retired
+    && (!x?.skillId || !p.skillId || p.skillId === x.skillId))
+    .sort((a, b) => (Number(b.skillId === x?.skillId) - Number(a.skillId === x?.skillId)) || (Number(b.state === "ready") - Number(a.state === "ready")));
+  for (const p of cands) {
+    const g = gatedSlot(L, p, p.source === "skeleton" ? "fallback_ready" : "revealed", "ask");
+    if (!g) continue;
+    p.requested = true;
+    L.pendingPlay = { intentId: p.intentId, turn: L.turn };
+    if (process.env.TAXILA_EARLY_PIECE !== "0") { push(L, { t: "slot", slot: g, early: true }); L.pendingPlay.early = true; }
+    return { kind: "lesson_piece", intentId: p.intentId, archetype: p.archetype, ms: 0 };
+  }
+  return null;
+}
 
 /** The StudioStatus of a piece (shared/studio.ts), for the Brain and the wire. */
 export function statusOf(p) {
@@ -616,7 +641,7 @@ export const studioSeam = {
       if (!child?.id) return null;
       const r = await buildLive({ ask: x.visual, lessonId, child: { id: child.id, class_level: child.class_level, language_pref: child.language_pref },
         skillId: x.skillId ?? null, topicId: x.topicId ?? L.topicId ?? null, vp: x.vp ?? viewportOf(lessonId).vp, lesson: L.forge3 ?? null }, { q: deps.q ?? undefined });
-      if (!r) return null;
+      if (!r) return lessonPieceForAsk(L, x);
       L.forge3 = r.lesson;
       const n = [...L.pieces.values()].filter((p) => p.source === "play").length + 1;
       const intentId = `${lessonId}:play:${n}`;
@@ -656,7 +681,8 @@ export const studioSeam = {
     const pendRec = L.pendingPlay;
     const pend = pendRec && pendRec.turn === L.turn ? L.pieces.get(pendRec.intentId) : null;
     L.pendingPlay = null;
-    const pendSlot = pend && !L.safety && hint?.visualRequest && pend.state === "ready" ? gatedSlot(L, pend, "revealed", "play") : null;
+    const pendSlot = pend && !L.safety && hint?.visualRequest && (pend.state === "ready" || pend.state === "fallback_ready")
+      ? gatedSlot(L, pend, pend.source === "skeleton" ? "fallback_ready" : "revealed", "play") : null;
     // a piece shown early that this turn does not show leaves the stage again (never a stale piece under her line)
     if (pendRec?.early && !pendSlot) push(L, { t: "retract", intentId: pendRec.intentId });
     if (pendSlot) {
@@ -856,7 +882,9 @@ export const studioSeam = {
       // round 4 content: the template is pixels too: certified at the device's box or not shown
       const tg = shown1 ? certifyForTray({ kind: "whiteboard", script: shown1 }, gateCtx(L, p)) : null;
       if (tg && !tg.ok) noteRefusal(L, p, tg, "template");
-      const shown = tg?.ok ? shown1 : null;
+      // ... and the template rung is held to the same sync with her line as any new page (sim lab boardfacts)
+      const shown = tg?.ok && (ask?.requested || ask?.intent?.request || syncedWithLine(shown1, ask?.line?.text)) ? shown1 : null;
+      if (tg?.ok && !shown) console.info("[studio] template board refused: shares nothing with her line");
       if (shown) {
         p.artifact = { kind: "whiteboard", stage: { w: shown.board.w, h: shown.board.h }, script: shown };
         // a board, never an interactive piece (brain/propose.js reads kind/archetype "whiteboard" as not holding attention)
@@ -875,6 +903,10 @@ export const studioSeam = {
       if (!r?.script) return false;
       // round 5 (stream 2): never the same page twice in a row (a kept board is the same board on purpose, not a new page)
       if (r.source !== "kept" && shownBefore(r.script, { avoid: onPage, seen: L.wbSeen })) { console.info(`[studio] board refused: same page as on screen (source=${r.source ?? "line"})`); return false; }
+      // round 5 (sim lab boardfacts): a new page about something her line never mentions is not drawn (request.js syncedWithLine)
+      // (a page drawn for what the CHILD asked to see is held to the ask, answersRequest, not to her line's words: battery
+      // iter11 lost 3 such asks, "baraf / bhaap" vs "Ice / Steam", a Devanagari story page under her romanised line)
+      if (r.source !== "kept" && !ask?.requested && !ask?.intent?.request && !syncedWithLine(r.script, ask?.line?.text)) { console.info(`[studio] board refused: shares nothing with her line (source=${r.source ?? "line"})`); return false; }
       // round 4 content: the ONE gate before the board reaches the stage (the device's box, the client's own fit)
       const g = certifyForTray({ kind: "whiteboard", script: r.script }, gateCtx(L, p));
       if (!g.ok) { noteRefusal(L, p, g, `board:${r.source ?? "line"}`); return false; }
@@ -941,7 +973,7 @@ export const studioSeam = {
     const keptNow = kept0 && drawn({ ok: true, script: kept0, source: "kept", syncMs: 0 }) ? kept0 : null;
     // ship5 p4-content board sync: the speculative board (prepareWhiteboard), the line plan raced against the sync deadline,
     // then the kit's code board, all re-gated against her line (TAXILA_BOARD_SYNC=0: exactly deps.planWhiteboard)
-    boardSync.plan(ask, { kit: L.kit ?? undefined, prev, avoid: ask.mode === "continue" ? null : onPage, seen: L.wbSeen, redact: L.redact, budgetMs: STUDIO_LIMITS.wbBudgetMs, planWhiteboard: deps.planWhiteboard, fallbackScript,
+    const ladder = boardSync.plan(ask, { kit: L.kit ?? undefined, prev, avoid: ask.mode === "continue" ? null : onPage, seen: L.wbSeen, redact: L.redact, budgetMs: STUDIO_LIMITS.wbBudgetMs, planWhiteboard: deps.planWhiteboard, fallbackScript,
       onLateSpend: (usd) => { try { breaker.spend(usd); } catch { /* accounting never breaks a lesson */ } L.wbUsdPending = (L.wbUsdPending ?? 0) + usd; } })
       .then((r) => {
         // spend: every board counts toward the global breaker and the child's caps, drawn or not (W2-F fixer)
@@ -958,7 +990,12 @@ export const studioSeam = {
         }
       })
       .catch(() => { if (!keptNow) showFallbackOrFail(); });
-    return keptNow ? { slotId: p.slotId, intentId, state: "revealed", artifact: p.artifact } : { slotId: p.slotId, intentId, state: "planning" };
+    // round 5 (14.3, owner-5): `ready` resolves to the revealed slot once the ladder has drawn a board (or null), so a turn that
+    // answers the CHILD's ask can wait a moment and carry the board on its own response (drawn before her line refers to it)
+    const ready = ladder.then(() => (!p.retired && p.state === "revealed" && p.artifact ? { slotId: p.slotId, intentId, state: "revealed", artifact: p.artifact } : null), () => null);
+    if (keptNow) return { slotId: p.slotId, intentId, state: "revealed", artifact: p.artifact };
+    // non-enumerable: the ack's contract shape (studio-contracts) and its JSON never carry it; server-side callers read it
+    return Object.defineProperty({ slotId: p.slotId, intentId, state: "planning" }, "ready", { value: ready, enumerable: false });
   },
 
   /**

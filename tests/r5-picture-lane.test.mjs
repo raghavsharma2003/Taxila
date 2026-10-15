@@ -133,3 +133,14 @@ test("sim lab 709b6acb: over an empty stage a line never assumes a visual (table
   const plain = unassumeVisual("Is chart mein dekho, 3 rows hain.");
   assert.equal(pointsAtStage(plain) ? unpointGently(plain) : plain, "Dekho, 3 rows hain.", "a bare conversational \"dekho,\" stays");
 });
+
+test("14.3 owner-5: a line that never sends the child to the board being drawn for their ask gets one fixed pointer (code)", async () => {
+  const { refersToBoard, boardPointer } = await import("../server/studio/request.js");
+  assert.equal(refersToBoard("0 se 1 tak paanch barabar gaps hain; 2/5 doosre gap par hai."), false);
+  assert.equal(refersToBoard("Aarav, picture mein 0 se 1 tak 5 equal parts hain."), true);
+  assert.equal(refersToBoard("Screen par rectangle dekhiye."), true);
+  assert.equal(refersToBoard("बोर्ड पर देखो, पाँच हिस्से हैं।"), true);
+  assert.equal(boardPointer("hinglish"), "Board par dekho: ");
+  assert.equal(boardPointer("english"), "Look at the board: ");
+  assert.equal(boardPointer("hindi"), "बोर्ड पर देखो: ");
+});

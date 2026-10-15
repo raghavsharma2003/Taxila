@@ -6034,3 +6034,70 @@ TTS frames type 5 = IMA ADPCM (4:1), negotiated by Accept `codec=adpcm`, asked f
 - **dc-r143-chips-in-childs-language.** Chips are in Hinglish / Hindi / English. A typed "stop for today" now reads as a stop.
 - **dc-r143-codeswitch-address.** An English lesson's code-switched tum line is held to aap (the parent's setting or the class default) by the closed lexicon, with no model call.
 - **dc-r143-trace-endpoint-lane.** model.call carries endpoint OVERFLOW.
+
+
+<!-- merged from inbox/r143e-main.json -->
+## dc-r143-prod-numbers-need-a-lesson-sid (2026-10-15)
+
+- **What:** a production number about children counts only rows whose sid is a real lesson. sid 'server' rows are scripts, tests and background jobs.
+- **Why:** see ms-r143-prod-trace-origin. The overflow lane and the TEST routing stand on the arm and on the shared limits, not on a throttled child.
+- **Reversal:** a background path that legitimately records child-facing calls with sid 'server'.
+
+
+<!-- merged from inbox/r143f-main.json -->
+## dc-r143-model-reread-same-episode (2026-10-15)
+
+- **What:** inside a model-opened episode, a further model-only distress read is a hold turn, never the opening again. It keeps the helplines, withdraws any resume offer, and never releases on that turn.
+- **Why:** see ms-r143-release-not-firing (545cbf6e). The predicate's families, the relational floor and a carried check-in still restart the full script.
+- **Reversal:** a run where a child whose distress only the model reads gets a weaker answer than the opening, or where the hold loops and children leave more often.
+
+## dc-r143-labeller-kind-model (2026-10-15)
+
+- **What:** the label call's distress read sets kind 'model', as on every other model path.
+- **Why:** a kind-null episode never took the release. The predicate always sets its family first.
+- **Reversal:** a predicate path that can return distress with kind null.
+
+## dc-r143-fine-asked-again (2026-10-15)
+
+- **What:** a clause made only of an asked-again complaint is set aside for the contrast and leftover-negation checks. Carry-on reads canonical spellings and English nouns only inside an ask.
+- **Reversal:** a disclosure that reads fine via asked_again, or real carry-on asks missed often.
+
+
+<!-- merged from inbox/r143g-main.json -->
+## dc-r143-teen-as-digit (2026-10-15)
+
+- **What:** the copy a safety-relevant model call reads (the classifier and its distress reads, the reply prompt and its probe, the understanding note) writes the Hindi number "teen" as "3". "a teen" / "my teen sister" stay as said. The predicate and every code check read the raw words.
+- **Why:** see ms-r143-teen-filter-collision: a quarter of TEST's content-filter safeguards were children doing sums.
+- **Reversal:** a disclosure where "teen" carried the only harm signal the predicate and the distress reads miss.
+
+
+<!-- merged from inbox/r143h-main.json -->
+## dc-r143-edit-supersedes-landed-grade (2026-10-15)
+
+- **What:** a correction that arrives after its turn has landed supersedes that turn's grade. The rows are marked, never deleted, and the ledger folds only the edit. This is 14.4.
+- **Why:** the 2.5 s verdict hold protects her sound, not the grade. The turn lands before the correction in 5-20 of 20 stress turns.
+- **Reversal:** a ledger fold test shows double-counted or lost evidence.
+
+
+<!-- merged from inbox/r143i-main.json -->
+## dc-r143-continuer-owner-cohort (2026-10-15)
+
+- **What:** the continuer (a short "hmm… / achha…" while she prepares her reply) is on for the owner cohort from 14.3, by hashed guardian id.
+- **Why:** see ms-r143-continuer-oos. It held out of sample with zero plays on every turn where a sound would be wrong.
+- **Reversal:** any continuer on a safety, relational, secrecy or leaving turn, or naturalness below 3.5.
+
+
+<!-- merged from inbox/r143j-main.json -->
+## dc-r143-edit-full-undo (2026-10-15)
+
+- **What:** a correction that arrives after its turn has landed gets a full undo. The pre-turn snapshot lives in its own one-row-per-lesson table. The abandoned grade's rows move to archive tables, so no reader can bring them back. Background writers check the evidence is still live first. This is 14.4.
+- **Why:** posting the correction as the next turn grades it against the wrong question whenever the lesson has already moved on.
+- **Reversal:** the snapshot costs more than 20 ms p95 per turn, or such corrections turn out too rare to justify it.
+
+
+<!-- merged from inbox/r1431-main.json -->
+## dc-r1431-completion-block-probe (2026-10-15)
+
+- **What:** when HER reply is blocked twice, the child's own words are probed. If they are clear she says a neutral line, never the helplines. If they trip the filter, or the probe cannot run, it fails closed as before.
+- **Why:** see ms-r1431-completion-block-safeguards. A block on her own output is not a child-safety signal, which is already the rule for blocked prompts since 14.2.
+- **Reversal:** a disclosure whose only signal was her blocked reply, with the child's words probing clear.

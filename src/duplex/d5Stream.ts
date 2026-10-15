@@ -88,6 +88,8 @@ export class D5Stream {
   private closed = false;
   private up = false;
   private firstFrame: ((t: number) => void) | null = null;
+  /** The reason the server gave in its d5.closed (null until then). */
+  closedReason: string | null = null;
   /** Client time of the first frame sent (null until then). */
   firstFrameAt: number | null = null;
   /**
@@ -132,7 +134,8 @@ export class D5Stream {
       ws.onerror = () => done(new Error("d5: socket error"));
       ws.onclose = (e) => {
         if (!settled) return done(new Error(`d5: refused (${e?.code ?? "?"})`));
-        this.lost(o, `closed_${e?.code ?? "?"}`);
+        // the server said why before it closed (d5.closed): e.g. "client_idle" when no audio reached it for 30 s
+        this.lost(o, this.closedReason ? `closed_${this.closedReason}` : `closed_${e?.code ?? "?"}`);
       };
       ws.onmessage = (m) => {
         let e: D5Json;
@@ -142,6 +145,7 @@ export class D5Stream {
           this.session = e;
           if (e.phase === "updated") done();
         } else if (e.type === "d5.closed") {
+          this.closedReason = String(e.reason ?? "").slice(0, 40) || null;
           if (!settled) done(new Error(`d5: closed (${String(e.reason ?? "")})`));
         }
         try { o.onEvent(e); } catch { /* the link logs its own errors */ }

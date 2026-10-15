@@ -2599,3 +2599,40 @@ Judging her 'parts' words against the module that was up BEFORE a named visual a
 
 - **Tried:** swedencentral twins of the chat deployments, so TEST traffic gets its own capacity.
 - **What broke:** the quota is one subscription-wide pool that is already allocated, so every hot twin was refused InsufficientQuota. The 8 low-use twins that succeeded were deleted again.
+
+
+<!-- merged from inbox/r143e-main.json -->
+## rj-r143-gate-wrote-prod-trace (2026-10-15)
+
+- **Tried:** the release gate ran npm test with production's DATABASE_URL in its environment.
+- **What broke:** stubbed model calls were written into the production trace (639 rows in 3 days) and misread as production throttling.
+- **Fix:** gateEnv runs the gate in CI's environment, with no database URL.
+
+
+<!-- merged from inbox/r143f-main.json -->
+## rj-r143-reread-climbs-to-resume (2026-10-15)
+
+- **Tried:** the prepared patch treated a model re-read inside a model-opened episode like an ordinary turn: calm went up, and the second re-read offered the resume.
+- **What broke (review):** a child who keeps disclosing to the model alone would be offered the lesson while still being read as distressed.
+- **Fix:** a re-read holds (calm 1, offer withdrawn) and never releases or offers the resume on that turn.
+
+## rj-r143-bare-lesson-carry (2026-10-15)
+
+- **Tried:** fixing the carry-on spelling by adding a bare canonical "leson".
+- **What broke:** on the TEST trace it read "lesson band karein?" (shall we stop?), "lesson boring hai" and "kitna time aur hai lesson mein?" as asks to carry on. Straight back into the lesson after a stop request breaks NEVER MANIPULATE.
+- **Fix:** the English nouns count only inside an ask; stop, tiredness and time-left words keep the chips.
+
+
+<!-- merged from inbox/r143h-main.json -->
+## rj-r143-mai-tx2-streaming (2026-10-15)
+
+- **Tried:** MAI-Transcribe-2-Streaming as the D5 speech recogniser. It is faster, with fewer empty finals.
+- **What broke:** it reads values wrong 9.1% of the time (6 of 66), vs 1.5% for today's azure-speech. A wrong value is a verdict on something the child never said.
+
+
+<!-- merged from inbox/r143j-main.json -->
+## rj-r143-supersede-flag-column (2026-10-15)
+
+- **Tried (proposal):** a superseded_by flag on the evidence tables, filtered by every reader.
+- **What breaks:** about 10 readers today. Any one that misses the filter, now or later, silently brings back the abandoned grade.
+- **Instead:** move superseded rows to archive tables.

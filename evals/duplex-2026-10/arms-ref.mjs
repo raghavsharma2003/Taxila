@@ -6,7 +6,7 @@
 // word before it is heard. A speech_started is the barge-in signal our link would act on; a commit is the end of turn.
 // Open loop on the assembled audio (like arms-ours.mjs): mic = `<id>.phone.s16` (raw speaker echo, no device AEC) or
 // `<id>.clean.s16`. Real time.
-//   NODE_USE_ENV_PROXY=1 node --env-file=.env.local evals/duplex-2026-10/arms-ref.mjs --bake <dir> --variant phone [--model gpt-4.1-mini] [--conc 4] [--keep-fillers] [--only id,..] [--asr-model azure-speech|gpt-4o-transcribe|...] [--asr-lang hi-IN,en-IN|hi-IN|none]
+//   NODE_USE_ENV_PROXY=1 node --env-file=.env.local evals/duplex-2026-10/arms-ref.mjs --bake <dir> --variant phone [--model gpt-4.1-mini] [--conc 4] [--keep-fillers] [--only id,..] [--asr-model azure-speech|gpt-4o-transcribe|...] [--asr-lang hi-IN,en-IN|hi-IN|none] [--region centralindia|southindia]
 import fs from "node:fs";
 import path from "node:path";
 import { pool, loadEnv } from "../duplex-real/lib.mjs";
@@ -26,8 +26,10 @@ async function one(id) {
   const mic = readS16(path.join(BAKE, `${id}.${VAR}.s16`));
   const her = readS16(path.join(BAKE, `${id}.her.s16`));
   const herOff = Math.round((meta.herAtMs * SR) / 1000);
-  const host = new URL(process.env.AZURE_AI_CENTRALINDIA_ENDPOINT).host;
-  const ws = new WebSocket(`wss://${host}/voice-live/realtime?api-version=2026-07-15&model=${encodeURIComponent(MODEL)}`, { headers: { "api-key": process.env.AZURE_AI_CENTRALINDIA_KEY } });
+  // round 5: --region southindia (MAI-Transcribe-2-Streaming is offered in Voice Live there, not in centralindia)
+  const R = arg("--region", "centralindia").toUpperCase();
+  const host = new URL(process.env[`AZURE_AI_${R}_ENDPOINT`]).host;
+  const ws = new WebSocket(`wss://${host}/voice-live/realtime?api-version=2026-07-15&model=${encodeURIComponent(MODEL)}`, { headers: { "api-key": process.env[`AZURE_AI_${R}_KEY`] } });
   const ev = [];
   let t0 = 0;
   await new Promise((resolve, reject) => {

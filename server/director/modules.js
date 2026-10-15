@@ -91,7 +91,7 @@ function mountable(s, plan) {
  * topic's engine instead (unbound: graded nothing; the engine checks the shape itself), only from the topic's own words.
  */
 const INTERACTIVE_VISUALS = new Set(["game", "animation", "simulation"]);
-function interactiveDefault(s, kit, lang, ageBand) {
+function interactiveDefault(s, kit, lang, ageBand, open = null) {
   const engine = TOPIC_MAP[kit?.topicId];
   if (!engine || !ENGINES[engine]) return null;
   const words = [kit?.title, ...(kit?.skills ?? []).map((k) => k.title ?? k.name ?? "")].join(" ").toLowerCase();
@@ -103,8 +103,17 @@ function interactiveDefault(s, kit, lang, ageBand) {
     const places = /6-digit|lakh/.test(words) && !/5-/.test(words) ? 6 : /5-|5 digit|ten thousand|thousands/.test(words) ? 5 : /4-|4 digit|thousand/.test(words) ? 4 : 3;
     params = { mode: "build", value: [0, 0, 0, 345, 4506, 45236, 345216][places], places };
   }
-  if (!params) return null;
-  return mountable(s, { engine, params: { ...params, topicId: kit.topicId, lang }, goal: undefined, bindItem: false, itemId: null, predict: false, ageBand });
+  if (params) return mountable(s, { engine, params: { ...params, topicId: kit.topicId, lang }, goal: undefined, bindItem: false, itemId: null, predict: false, ageBand });
+  // 14.3 (main: "a game ask mounts the topic's engine when it has one"): the topic engine's activity from the kit's OWN items,
+  // unbound (graded nothing), another item first (a parallel task), the open item last, and none whose visible values state
+  // the open item's key. Measured on the Director's pure plan (scripts/game-ask-director.mjs): the worked-example show has
+  // no engine plan, so 58 of 124 engine topics fell to the board for "mujhe game khelna hai".
+  const items = (kit?.items ?? []).filter((x) => x && x.id !== open?.id);
+  for (const it of [...items, ...(open ? [open] : [])].slice(0, 12)) {
+    const plan = mountable(s, unbind(planEngine({ kit, item: it, lang, mode: "show", topicMap: TOPIC_MAP, ageBand })));
+    if (plan && !(open && leaksOpenItem({ facts: moduleFacts({ id: "probe", engine: plan.engine, params: plan.params }), ops: [] }, open))) return plan;
+  }
+  return null;
 }
 
 /** A bound plan shown on a teaching move: the same activity, answers graded nothing. */
@@ -154,7 +163,7 @@ function planModuleInner(s, { kit, item, move, lang, band, representation }) {
     // an engine show whose visible values state the open item's key (a number line ending on it) is skipped too
     if (plan && !(open && leaksOpenItem({ facts: moduleFacts({ id: "probe", engine: plan.engine, params: plan.params }), ops: [] }, open))) return apply(plan);
     // round 4 content: an interactive ask gets the topic engine's open task before the board rung
-    const free = INTERACTIVE_VISUALS.has(String(move.visual ?? "")) ? interactiveDefault(s, kit, lang, ageBand) : null;
+    const free = INTERACTIVE_VISUALS.has(String(move.visual ?? "")) ? interactiveDefault(s, kit, lang, ageBand, open) : null;
     if (free && !(open && leaksOpenItem({ facts: moduleFacts({ id: "probe", engine: free.engine, params: free.params }), ops: [] }, open))) return apply(free);
     // rungs 4-5: the board explanation / diagram (code pick from the same text, the topic library, the lesson's fill)
     // never-an-answer (W2-B fixer, blocker 1): the item the child is still answering is OPEN; the board drawn for it

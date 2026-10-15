@@ -4311,3 +4311,79 @@ TEST child turns (n=3481): romance hits went from 6 to 11. The 5 added were all 
   - production boards came up in 2.5-3.1 s;
   - defects D34-D38.
 - TEST address audit: aap/Hinglish 0 slips in 195 lessons; English 365 of 1569 lines carry tum marks.
+
+
+<!-- merged from inbox/r143e-main.json -->
+## ms-r143-prod-trace-origin (2026-10-15), correcting ms-r142-429-contention
+
+- Production model.call rows over 3 days: 941. 933 have sid 'server', 6 are real lessons, 2 other.
+- Of the 933 server rows, 639 took ≤ 2 ms (test stubs).
+- All 95 429s are sid 'server'; none belongs to a child's lesson.
+- The 06 UTC 429s were the main loop's own repro scripts. The 10:48 burst was the 14.3 gate's tests, written to production.
+- **"Production was throttled" is withdrawn.**
+
+
+<!-- merged from inbox/r143f-main.json -->
+## ms-r143-release-not-firing (2026-10-15)
+
+Why the model-episode fine release never fired in the sim lab's rel143 pet cards (3 TEST lessons, trace read-only):
+
+- The labeller opened every episode with kind null, so the release's kind check never matched.
+- 545cbf6e: the understanding note re-read "I am okay … it just hurts thoda" as distress and restarted the full opening; the child left two turns later.
+- "Par yeh sawaal phir se? Main already bol diya na" vetoed on the contrast.
+- "Can we do the lesson now?" never read as a carry-on ask: the pattern spelled lesson / study / learn raw over canonical text.
+
+## ms-r143-release2-fixes (2026-10-15)
+
+- TEST trace, 838 replies right after an episode opened: the fine reading changes on 2 (both asked-again complaints); carry-on changes on 3 (212f5440's ask now straight back; two bored / tired replies now the chips).
+- Distress corpora read as fine: 0/84, 0/80, 0/10, unchanged. Red-team: 0/225.
+- 18 unit tests including replays of the three lessons; they fail on the previous code.
+- **Not measured:** a live sim-lab re-run on this code.
+
+
+<!-- merged from inbox/r143g-main.json -->
+## ms-r143-teen-filter-collision (2026-10-15)
+
+Azure's content filter reads the Roman Hindi number "teen" (three) as the English word.
+
+- The sim lab's p11 safeguard (class 2 maths): the child's OWN words tripped `sexual` when probed alone (3/3).
+- Ordinary sums trip it on their own: "teen guna teen nau", "do aur teen paanch", "teen aur teen chhe", "teen saal ka bhai". The same words with the digit pass.
+- TEST trace, 10 days: 13 of 52 content-filter safeguards (25%) were plain maths with "teen". Most of the other 39 were context blocks whose words probe clear alone.
+- No line in the 399-line distress corpora contains the word.
+
+
+<!-- merged from inbox/r143h-main.json -->
+## ms-r143-bata-fraction-reader (2026-10-15)
+
+- The grader's number reader reads "एक बटा दो" (one over two) as the numbers 1 and 2. A correct Devanagari fraction answer earns no evidence and she re-asks.
+- azure-speech writes बटा as "बता" (6/6), which reads the same way.
+- "मुझे बता दो" (tell me) reads as the value 2.
+- Roman ("ek bata do" → 1/2) is already right. The duplex parser shares the misreading.
+
+
+<!-- merged from inbox/r143i-main.json -->
+## ms-r143-continuer-oos (2026-10-15)
+
+Out-of-sample continuer check: 32 cards not used for tuning, plus p30's re-run. Voice, TEST cohort.
+
+- **0 continuers** on safety (9), leaving (18) and relational / secrecy turns.
+- Ordinary coverage 24% (tuning set 32%). Naturalness 4.10 / 3.76.
+- 0 false safeguards.
+
+
+<!-- merged from inbox/r143j-main.json -->
+## ms-r143-live (2026-10-15)
+
+- **14.3 is live:** taxila-web--s9a30285-gtg7 (image 9a30285) at 100%. 14.2 is kept for rollback.
+- Gate: 3404 pass / 0 fail. Canary smoke 4/4.
+- Live proof: 0 page errors. The picture ask showed the area model with every value masked '?'. The test account was deleted with 0 trace rows left.
+- The continuer is on for the owner cohort, as a secret holding the existing owner list; the value was never printed.
+- Two deploy attempts failed on the network before any write; the third succeeded.
+
+
+<!-- merged from inbox/r1431-main.json -->
+## ms-r1431-completion-block-safeguards (2026-10-15)
+
+- On TEST over 10 days, 41 turns failed closed because Azure's filter blocked HER reply.
+- Re-probing the child's own words: 38 clear, 3 trip the filter. All 41 are ordinary lesson talk (sums, graphite and nitrogen, tired, roti dough).
+- The sim lab's 14.3 run: 'teen' 0/6 and 'thak gayi' 0/6 safeguards, p16 1/6 (her reply about chips packets was blocked).

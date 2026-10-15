@@ -4,7 +4,7 @@
 // server/routes/lesson.js unchanged by W2-E BR1 (BUILD-PLAN W2-E #2); the lesson start and the turn both call it.
 import { safetyOpeningFor, safetyModeOf } from "../relational/openings.js";
 import { chat, DEPLOY, isContentFilter, nonHarmFilter } from "../azure.js";
-import { floorViolations, scrubPii } from "../director/safety.js";
+import { floorViolations, scrubPii, filterSafe } from "../director/safety.js";
 import { upcomingItem, hintShapeWords } from "../director/state.js";
 import { findItem, promptFor, revealsAnswer, posesItem, handsBack, asksWhy, stripRungLabel } from "../director/items.js";
 import { TURN_WORDS, FLOOR_FIX } from "../compiler/compile.js";
@@ -68,6 +68,8 @@ export function floorContentOf(item) {
 
 /** A child's words on their way to a model: direct identifiers masked (scrubPii; decision scrub-pii-cued). */
 export const scrubbed = (t) => scrubPii(t).text;
+/** The copy a reply-side model call reads: scrubbed, and the Hindi number "teen" as 3 (safety.js filterSafe). */
+export const forModel = (t) => filterSafe(scrubbed(t));
 
 /** The reply model call, injectable for tests of the guards (tests/lesson-truth.test.mjs); production uses azure.js. */
 export const replyDeps = { chat };
@@ -96,7 +98,7 @@ export async function childWordsTrip(words, { trace } = {}) {
 
 /** The child's words a filter probe judges: their last few turns and this one, masked, newest last. */
 export const probeWords = (history, childText) =>
-  [...history.filter((t) => t.who !== "teacher").slice(-4).map((t) => t.text), childText].filter((t) => typeof t === "string" && t.trim()).map(scrubbed).join("\n");
+  [...history.filter((t) => t.who !== "teacher").slice(-4).map((t) => t.text), childText].filter((t) => typeof t === "string" && t.trim()).map(forModel).join("\n");
 
 /** Keep whole sentences up to `max` words (last-resort guard after one rewrite failed). */
 export function trimToWords(text, max) {
@@ -472,8 +474,8 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
     // Every turn reaches the reply model with direct identifiers masked (scrubPii), history and this turn alike.
     // Teacher turns too: on the voice lane her transcript came from a model that heard the child's audio unmasked,
     // so it can repeat a phone number, school or address back.
-    ...history.map((t) => ({ role: t.who === "teacher" ? "assistant" : "user", content: scrubbed(t.text) })),
-    { role: "user", content: childText ? scrubbed(childText) : "(the child has joined the lesson and is listening)" },
+    ...history.map((t) => ({ role: t.who === "teacher" ? "assistant" : "user", content: forModel(t.text) })),
+    { role: "user", content: childText ? forModel(childText) : "(the child has joined the lesson and is listening)" },
   ];
   const replyT0 = performance.now();
   // Replies take ~1-2 s (measured in evals/director-sim.mjs); a stuck call is cut at 6 s and retried once.
@@ -563,6 +565,18 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
     if (again) reply = again;
     else {
       if (isContentFilter(e) && nonHarmFilter(e)) return neutral("content_filter_nonharm");
+      // 14.3.1 (main safety review; sim lab rel143 p16 r2, TEST 955a17b7 t12): HER OWN reply about chips packets and nitrogen
+      // was blocked on completion twice. The prompt with the child's words had passed and the classifier read the answer
+      // correct, yet the turn failed closed to the helpline script, and the lesson held helplines two more turns. A block on
+      // HER completion is a safeguard only when the child's own words trip the filter (the 14.2 prompt-side rule): a clear
+      // probe gives a neutral line, never the helplines; a harm or unreadable probe fails CLOSED exactly as before.
+      if (isContentFilter(e) && e.status === 200) {
+        const probe = await childWordsTrip(probeWords(history, childText), { trace });
+        if (probe === "clear") {
+          console.warn("[lesson] her reply was blocked on completion but the child's own words pass: a neutral line");
+          return neutral("content_filter_output");
+        }
+      }
       if (isContentFilter(e)) { console.warn("[lesson] reply blocked by the content filter"); return blocked(); }
       console.warn("[lesson] reply unavailable, falling back:", e.message);
       return { reply: fallbackReply(state, item), guard: { caught: ["unavailable"], rewritten: false, replaced: true } };
