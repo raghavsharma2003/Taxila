@@ -43,7 +43,8 @@ export const EN = {
   ],
   romance: [
     "(?:i have|i got|i've got) a crush", "crush on (?:you|u|someone|a (?:boy|girl))", `${YOU_ARE} my (?:crush|girlfriend|boyfriend|gf|bf|valentine)`,
-    "be my (?:girlfriend|boyfriend|gf|bf|valentine|wife|husband)", "(?:will|would|can|could) you (?:date|marry|go out with|kiss) me",
+    "be my (?:girlfriend|boyfriend|gf|bf|valentine|wife|husband)", "become my (?:girlfriend|boyfriend|gf|bf|wife|husband)",
+    "(?:will|would|can|could) (?:you|u) be (?:a |my )?(?:girlfriend|boyfriend|gf|bf)", "(?:will|would|can|could) you (?:date|marry|go out with|kiss) me",
     "(?:date|marry) (?:me|you)", "(?:are|r) (?:you|u) (?:single|married|dating)", "do you love me", "i like like you",
     `(?:are you|${YOU_ARE}|you look|you sound) (?:so |very |really |super )?(?:cute|pretty|beautiful|handsome|hot|sexy|gorgeous)`,
     "what do you look like", "send (?:me )?(?:a )?kiss", "dating (?:me|you|someone|anyone)", "go on a date",
