@@ -20,7 +20,12 @@ afterEach(() => {
 });
 const ok = (text = "ok") => new Response(JSON.stringify({ choices: [{ finish_reason: "stop", message: { content: text } }], usage: { prompt_tokens: 3, completion_tokens: 1 } }), { status: 200 });
 const tooMany = () => new Response(JSON.stringify({ error: { code: "429", message: "Your requests to gpt-5.6-luna for taxila-fast in eastus2 have exceeded token rate limit." } }), { status: 429 });
-const stub = (fn) => { globalThis.fetch = async (url, init) => { const c = { host: new URL(url).host.split(".")[0], key: init.headers["api-key"] }; calls.push(c); return fn(c, calls.length); }; };
+// only this suite's fake hosts: anything else (the trace writer's database driver in the gate's one process) goes out as it would
+const stub = (fn) => { globalThis.fetch = async (url, init) => {
+  const host = new URL(url).host;
+  if (!host.endsWith(".example.test")) return realFetch(url, init);
+  const c = { host: host.split(".")[0], key: init.headers["api-key"] }; calls.push(c); return fn(c, calls.length);
+}; };
 const M = [{ role: "user", content: "x" }];
 
 test("overflowFor: CHAT lane, a named twin and a configured account only", () => {
