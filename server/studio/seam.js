@@ -20,6 +20,7 @@
 // Pieces are INVISIBLE until revealed on the teacher's cue: statusFacts proposes a reveal (the kernel may refuse it), the
 // committed turn's onReveal records it, and slotFor gives the turn's UiDirectives.studioSlot so the Work tray shows it.
 import { answersRequest, samePage, shownBefore, pageSig } from "./request.js";
+import { ORDINAL } from "../director/modules.js";
 import { seamSafe } from "../seam-safe.js";
 import { normalizeScript, scriptFacts } from "../../shared/whiteboard.js";
 import { decide as routerDecide, revealable, breaker } from "./router.js";
@@ -1304,7 +1305,7 @@ const ROW_MAX = 360;
 function rowOf(f) {
   if (!f?.archetype) return null;
   let row = STUDIO_ROW_PREFIX + f.archetype;
-  for (const [k, v] of Object.entries(f.onScreen ?? {})) { const part = `${k} ${v}`; if (row.length + part.length + 3 > ROW_MAX) break; row += ` · ${part}`; }
+  for (const [k, v] of Object.entries(f.onScreen ?? {})) { const part = `${k.replace(/([a-z])([A-Z])/g, "$1 $2").replace(/^([a-z]+)(\d{1,2})$/i, (_m, w, n) => `${ORDINAL[Number(n)] ?? n} ${w}`).toLowerCase()} ${v}`; if (row.length + part.length + 3 > ROW_MAX) break; row += ` · ${part}`; }
   return row;
 }
 /** Is this content line a Studio facts row (and not a module's)? The turn strips a stale one before adding this turn's. */
