@@ -149,19 +149,26 @@ export async function agentTurn({ state, kit, event, silent = false, verdict = n
 }
 
 /**
- * The read the evidence allows (sim lab r5-agent-vs-director: 61 of 164 skill reads OVERclaimed, "understood" written from
- * one correct answer). "understood" needs correct answers on two different items, or one on a why / transfer item, and no
- * wrong answer after the last correct one; otherwise it is "partly" (with any right answer) or "not". Pure.
+ * The read the evidence allows (sim lab: r5-agent-vs-director 571b301 had 61/164 overclaims; the two-item rule of b185d50 let
+ * a "partly" child through about a quarter of the time, two plain items right in a row, and capped real understanders who
+ * missed one early). The kinds separate the states: a partly child gets the plain version right about half the time and
+ * cannot do the contrast / transfer / error-spot / predict / why kinds. So "understood" needs a right answer on one of those
+ * DEEP kinds plus another right answer (a plain item, or a second deep item), and no wrong or partly answer after the last
+ * deep right one; an early miss does not cap it. Anything right short of that is "partly". PURE.
  */
-const DEEP_KINDS = new Set(["why", "far_transfer", "near_transfer", "error_spot", "teachback", "predict"]);
-export function earnedRead(level, graded) {
+export const DEEP_KINDS = new Set(["contrast", "near_transfer", "far_transfer", "error_spot", "predict", "why", "teachback", "translate_rep"]);
+export function earnedRead(level, graded, { deepAvailable = true } = {}) {
   if (level !== "understood") return level;
-  const lastRight = graded.map((x) => x.g).lastIndexOf("correct");
-  if (lastRight < 0) return !graded.length || graded.some((x) => x.g.startsWith("partly")) ? "partly" : "not";
-  if (graded.slice(lastRight + 1).some((x) => x.g !== "correct")) return "partly";
-  const right = graded.filter((x) => x.g === "correct");
-  const items = new Set(right.map((x) => x.item));
-  return items.size >= 2 || right.some((x) => DEEP_KINDS.has(x.kind)) ? "understood" : "partly";
+  const right = graded.map((x, i) => ({ ...x, i })).filter((x) => x.g === "correct");
+  if (!right.length) return !graded.length || graded.some((x) => x.g.startsWith("partly")) ? "partly" : "not";
+  // a skill whose kit has no deep item (about 1 in 10): two different items right and nothing missed after
+  if (!deepAvailable) return new Set(right.map((x) => x.item)).size >= 2 && !graded.slice(right.at(-1).i + 1).some((x) => x.g !== "correct") ? "understood" : "partly";
+  const deep = right.filter((x) => DEEP_KINDS.has(x.kind));
+  if (!deep.length) return "partly";
+  const lastDeep = deep.at(-1).i;
+  if (graded.slice(lastDeep + 1).some((x) => x.g !== "correct")) return "partly";
+  const others = right.filter((x) => x.item !== deep.at(-1).item);
+  return others.length ? "understood" : "partly";
 }
 
 /**
@@ -183,7 +190,8 @@ export function applyAgentTurn(next, out, { kit, childText = "", cls = null, car
   }
   if (out.read) {
     const k = out.read.skill;
-    const level = earnedRead(out.read.level, learner[k]?.graded ?? []);
+    const deepAvailable = (kit.items ?? []).some((i) => i.skillId === k && DEEP_KINDS.has(i.kind) && i.kind !== "why" && i.kind !== "teachback");
+    const level = earnedRead(out.read.level, learner[k]?.graded ?? [], { deepAvailable });
     learner[k] = { ...(learner[k] ?? {}), read: level, evidence: out.read.evidence, ...(level !== out.read.level ? { claimed: out.read.level } : {}) };
   }
   const screen = out.screen ? { on: out.screen.on, words: clip(out.screen.words, 300), texts: (out.screen.texts ?? []).slice(0, 12) } : (a.screen ?? { on: "nothing", words: "nothing is on the screen", texts: [] });

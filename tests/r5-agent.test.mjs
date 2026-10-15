@@ -135,15 +135,19 @@ test("apply: a posed item becomes the card; an answered card clears; end → don
   assert.equal(next.phase, "done"); assert.equal(a3.end, true); assert.equal(a3.move.kind, "wrap");
 });
 
-test("understood is earned: two different items right, or a why / transfer item; one right answer is partly (sim lab overclaims)", () => {
+test("understood is earned on a DEEP kind plus another right answer; two plain items are partly; an early miss does not cap it (sim lab b185d50)", () => {
   const C = (item, kind = "practice", g = "correct") => ({ item, kind, g });
   assert.equal(earnedRead("understood", [C("i1")]), "partly");
-  assert.equal(earnedRead("understood", [C("i1"), C("i1")]), "partly", "the same item twice is one piece of evidence");
-  assert.equal(earnedRead("understood", [C("i1"), C("i2")]), "understood");
-  assert.equal(earnedRead("understood", [C("i4", "near_transfer")]), "understood");
-  assert.equal(earnedRead("understood", [C("i1"), C("i2"), C("i3", "practice", "wrong")]), "partly", "a wrong answer after the last right one");
+  assert.equal(earnedRead("understood", [C("i1"), C("i2")]), "partly", "two plain items right: a partly child does that a quarter of the time");
+  assert.equal(earnedRead("understood", [C("i1"), C("i4", "near_transfer")]), "understood");
+  assert.equal(earnedRead("understood", [C("i4", "near_transfer")]), "partly", "one deep item alone");
+  assert.equal(earnedRead("understood", [C("i1", "practice", "wrong"), C("i2"), C("i3", "contrast")]), "understood", "an early miss does not cap it");
+  assert.equal(earnedRead("understood", [C("i2"), C("i3", "contrast"), C("i7", "practice", "wrong")]), "partly", "a miss after the deep right one");
   assert.equal(earnedRead("understood", [C("i1", "practice", "wrong")]), "not");
   assert.equal(earnedRead("partly", []), "partly");
+  // a skill whose kit has no deep item: two different items right
+  assert.equal(earnedRead("understood", [C("i1"), C("i2")], { deepAvailable: false }), "understood");
+  assert.equal(earnedRead("understood", [C("i1"), C("i1")], { deepAvailable: false }), "partly");
 });
 
 test("a misconception the child showed puts the item that tests it first, and the read is held to the evidence", async () => {
@@ -174,4 +178,11 @@ test("a right answer with a wrong reason is partly in the learner record, never 
   applyAgentTurn(next, o, { kit: K, childText: "1/2 kyunki 2 chhota hai", cls: { ...cls("correct"), reasonMisconceptionId: "c4-maths-ch05-t01-m1" }, card, lessonId: "L1" });
   assert.deepEqual(next.agent.learner[card.skillId].grades, ["partly(c4-maths-ch05-t01-m1)"]);
   assert.equal(next.agent.learner[card.skillId].read, "partly");
+});
+
+test("after a right plain answer, that skill's deep item is offered first (the evidence that separates understood from partly)", () => {
+  const st = ST({ agent: { learner: { "c4-maths-ch05-t01-s2": { graded: [{ item: "i7", kind: "practice", g: "correct" }] } }, skill: "c4-maths-ch05-t01-s1" } });
+  const first = offeredItems(st, K)[0];
+  assert.equal(first.skillId, "c4-maths-ch05-t01-s2");
+  assert.ok(["contrast", "near_transfer", "error_spot"].includes(first.kind), first.kind);
 });

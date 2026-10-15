@@ -46,7 +46,7 @@ export function systemPrompt(ctx) {
     "- Answer what the child actually said first, in a few words, then the next step. Never ignore a question, a joke or a feeling.",
     "- The VERIFIED GRADE in the event is the truth about their answer (code checked it against the answer key). Right: say so briefly and specifically, then move on; never ask whether they understood. Partly right: name the right part, then the missing bit. Wrong or a misconception: no praise word; take the idea again a DIFFERENT way from anything in LAST TURNS — a new picture in words, a smaller step, an everyday example from their life — never the same explanation twice.",
     "- A misconception named in the grade: say back what they think, then put it next to a case where it breaks (their own numbers, or the item that tests it) and let them see the difference; never call that answer close or nearly right.",
-    "- One right answer is not understanding: your read is understood only after right answers on two different questions, or on a why / transfer question. A quick confident right answer: one word of praise and straight on to something harder; no check question after it, and never ask the same thing twice.",
+    "- Right answers on easy questions are not understanding: your read is understood only after a right answer on a contrast, transfer, error-spot or predict question plus another right answer; until then it is partly, and the next question you pose is that kind. A quick confident right answer: one word of praise and straight on to something harder; no check question after it, and never ask the same thing twice.",
     "- Show, do not only tell: when the idea has numbers, a shape, a comparison or steps, put them on the board (board show) as you explain; if they ask for a game or a picture you cannot make, say so in a few words and do the nearest real thing now (the board, or a quick spoken game with a question).",
     "- A claim like 'haan samajh gaya' is not evidence: one light, easy check question, warmly. 'Pata nahi': a smaller first step. Silence (no words): wait — ask the same thing again kindly, or check they can hear you; never new content, never a new topic.",
     "- Off topic or a personal share: a short warm reply in their spirit, then back to the lesson in one line. A request (a story, a game, a picture, slower, Hindi): honour it with what really exists now; if it cannot be made, say so plainly and do it in words.",
@@ -75,7 +75,12 @@ export function offeredItems(state, kit, limit = AGENT_LIMITS.offerItems) {
   // a misconception the child has shown comes first: an item that targets it is the contrast she should pose next (sim lab:
   // missed_misconception 35/64, the kit's ids were in context and never tested)
   const shown = new Set(Object.values(state.agent?.learner ?? {}).flatMap((v) => v.misconceptions ?? []));
-  const rank = (i) => (i.targetsMisconception && shown.has(i.targetsMisconception) ? -100 : 0)
+  // a skill with a right plain answer and no right deep one: its deep item (contrast / transfer / error-spot / predict) next,
+  // the only evidence that separates understood from partly (agent.js earnedRead)
+  const DEEP = new Set(["contrast", "near_transfer", "far_transfer", "error_spot", "predict", "translate_rep"]);
+  const needsDeep = new Set(Object.entries(state.agent?.learner ?? {}).filter(([, v]) => (v.graded ?? []).some((x) => x.g === "correct")
+    && !(v.graded ?? []).some((x) => x.g === "correct" && DEEP.has(x.kind))).map(([k]) => k));
+  const rank = (i) => (i.targetsMisconception && shown.has(i.targetsMisconception) ? -100 : 0) + (needsDeep.has(i.skillId) && DEEP.has(i.kind) ? -50 : 0)
     + (i.skillId === cur ? 0 : skillOrder.indexOf(i.skillId) > skillOrder.indexOf(cur) ? 1 : 2) * 10 + (i.difficulty ?? 2);
   return (kit.items ?? []).filter((i) => !done.has(i.id) && KINDS.has(i.kind)).sort((a, b) => rank(a) - rank(b)).slice(0, limit);
 }
