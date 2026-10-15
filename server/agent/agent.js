@@ -79,6 +79,14 @@ export function withoutShowClaims(say) {
   return out || stripScreenRefs(say) || String(say ?? "");
 }
 
+const INTERNALS = /(?:^|[^\p{L}])(?:card\s+(?:ka|ke|ki|par|pe)\s+(?:check|jaanch|jawab|answer)|card'?s\s+check|check\s+(?:isse|se)\s+match|match\s+nahi\s+hua|verified\s+grade|the\s+grade|grade\s+(?:ne|mein|says)|harness|answer\s+key|key\s+(?:se|ke\s+saath)\s+match|system\s+(?:ne|says|ke\s+hisaab)|the\s+checker|checker\s+(?:ne|says))(?![\p{L}])/iu;
+/** Her line without sentences that voice the harness (the card's check, the grade, the key). PURE. */
+export function withoutInternals(say) {
+  const parts = String(say ?? "").match(/[^.!?।]+[.!?।]*\s*/g) ?? [];
+  const kept = parts.filter((p) => !INTERNALS.test(p));
+  return kept.length && kept.length !== parts.length ? kept.join("").trim() : String(say ?? "");
+}
+
 /**
  * One agent turn. → { say, intent, item, board: ScreenTruth | null (a page that went up), cleared, picture: ScreenTruth | null,
  *   screen: ScreenTruth (after her actions), slot, read, plan, end, usage, ms, notes[] }
@@ -140,6 +148,9 @@ export async function agentTurn({ state, kit, event, silent = false, verdict = n
   // ── her line, held to the verified grade: no praise or "sahi" on an answer the key says is wrong or only partly right
   // (sim lab d6f93e7: misread_wrong_as_right 19/64, "Haan, 60,000 sahi chuna" while the misconception was live) ──
   if (verdict && verdict !== "correct") { const held = withoutPraise(say); if (held !== say) { say = held; notes.push(`praise removed (${verdict})`); } }
+  // ── never the machinery: the card's check, the grade, the key, the harness are the harness's words, not hers (sim lab
+  // 3cf7cdc p08 #1: "Card ka check isse match nahi hua") ──
+  { const held = withoutInternals(say); if (held !== say) { say = held; notes.push("internals removed"); } }
   // ── her line, checked against what is really up ──
   if (lane !== "text") { const spoken = speakNotWrite(say); if (spoken !== say) { say = spoken; notes.push("type/write rewritten to say"); } }
   const texts = screen?.on === "board" ? (screen.texts ?? []) : [];

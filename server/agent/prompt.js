@@ -64,7 +64,7 @@ export function systemPrompt(ctx) {
     "- Never say anything is on the screen or the board unless it is in ON SCREEN or in the board lines you show this turn, and never describe dots, rows, shapes or pictures as visible unless they are there; never call anything a game unless a game is on screen.",
     "- When they have said yes to stopping or to a plan, do it; never ask the same thing again.",
     "- This is a spoken lesson on a phone: never ask them to type, write or send a message; they speak (or tap a button the screen shows).",
-    "- Never claim to remember things not in LAST TURNS or the state. Never grade by yourself: only the verified grade decides right or wrong.",
+    "- Never claim to remember things not in LAST TURNS or the state. Never grade by yourself: only the verified grade decides right or wrong. Never mention the grade, the card's check, the answer key or anything about how answers are checked: say what is right or not in your own teacher's words.",
     floorText(),
   ].join("\n");
 }

@@ -10,7 +10,7 @@ import { whyKey, norm as normAnswer, posesItem, revealsAnswer } from "./items.js
 import { INTEREST_IDS } from "../../shared/interests.js";
 import { partsOf } from "../content/parts.js";
 import { corroborate } from "../grading/corroborate.js";
-import { plainNumberKey, numberPhrases, selfCorrected, unitsAfterNumbers, tailAgrees, signConflict, bareOfDecisive } from "../grading/spoken-number.js";
+import { plainNumberKey, numberPhrases, statedResults, selfCorrected, unitsAfterNumbers, tailAgrees, signConflict, bareOfDecisive } from "../grading/spoken-number.js";
 import { requestOf, FLOW_REQUESTS } from "./requests.js";
 import { readIntent, sexualAsk } from "../conversation/lexicon.js";
 import { requestFromReading } from "../conversation/policy.js";
@@ -589,10 +589,14 @@ export function classifyFast({ target, childText, asrConfidence, typed, chipId, 
   if (fixed != null) return Math.abs(fixed - kv) >= 1e-9 ? { result: null, flags, text, numericMismatch: true } : sameThing ? done("correct", "number_selfcorrect") : { result: null, flags, text, nounMismatch: true };
   // round 5 (main; sim lab voice arm): working aloud ("तीस टाइम्स चालीस है, तीन टाइम्स चार बारह, दो जीरो बारह सौ") is graded
   // on the LAST stated result; the operands said on the way are never the answer and never make it wrong
-  const working = kv != null && !denies && WORKING_ALOUD.test(text) ? numberPhrases(text, { split: true }) : null;
-  if (working && working.length >= 2) {
-    const last = working.at(-1);
-    return Math.abs(last - kv) >= 1e-9 ? { result: null, flags, text, numericMismatch: true } : sameThing ? done("correct", "number_working") : { result: null, flags, text, nounMismatch: true };
+  const working = kv != null && !denies ? statedResults(text) : null;
+  if (working && working.all.length >= 2) {
+    // the key among the numbers they STATE (not an operand of the working) is the answer; else the last stated result is
+    const hit = working.results.some((v) => Math.abs(v - kv) < 1e-9);
+    const last = working.results.at(-1) ?? working.all.at(-1);
+    // (the words of the working — "sides", "times", "rows" — are not a counted thing; a different unit was refused above)
+    if (hit) return done("correct", "number_working");
+    if (last != null) return { result: null, flags, text, numericMismatch: true };
   }
   if (kv != null && !denies && /[\p{N}\p{L}]/u.test(text)) {
     const ph = numberPhrases(text);
@@ -612,8 +616,6 @@ export function classifyFast({ target, childText, asrConfidence, typed, chipId, 
   return { result: null, flags, text };
 }
 
-/** An operation said aloud: the child is working, and the last number is the result. */
-const WORKING_ALOUD = /(?:^|[^\p{L}])(?:times|into|multiplied|plus|minus|divided|guna|gunaa|jod|jodo|ghatao|bhag|equals|barabar)(?![\p{L}])|टाइम्स|गुणा|गुना|इंटू|प्लस|माइनस|जोड़|जोड|घटा|भाग|बराबर|[×x*+÷=]\s*\d/iu;
 
 /**
  * Do the child's words echo the item's own answer content as the same request type? True when the words ARE the key, an

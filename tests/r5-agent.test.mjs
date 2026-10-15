@@ -3,7 +3,7 @@
 // brings no new content, the board is drawn by code and reported, a spoken line never asks to type, budgets throw. Pure.
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { agentTurn, applyAgentTurn, eventOf, gradeOf, earnedRead, withoutPraise, AgentBudgetError } from "../server/agent/agent.js";
+import { agentTurn, applyAgentTurn, eventOf, gradeOf, earnedRead, withoutPraise, withoutInternals, AgentBudgetError } from "../server/agent/agent.js";
 import { laneFor, teacherMode } from "../server/agent/flags.js";
 import { specOf } from "../server/agent/tools.js";
 import { systemPrompt, stateMessage, offeredItems, TURN_SCHEMA } from "../server/agent/prompt.js";
@@ -200,4 +200,11 @@ test("a page asked for this turn that is not up (refused or still drawing) is ne
   const no = await run(base({ say: "Dekho, game screen par aa gaya. Ab ek paheli suno: 2 aur 3 kitne?", play: true }), { tools: none });
   assert.equal(no.say, "Ab ek paheli suno: 2 aur 3 kitne?");
   assert.ok(no.notes.some((n) => /game refused/.test(n)));
+});
+
+test("she never voices the harness: the card's check, the grade, the key (sim lab 3cf7cdc p08 #1)", async () => {
+  const line = "Aapne chaar equal sides ke liye 6 times 4 bola. Card ka check isse match nahi hua. Ek baar phir batao, perimeter kitna hai?";
+  assert.equal(withoutInternals(line), "Aapne chaar equal sides ke liye 6 times 4 bola. Ek baar phir batao, perimeter kitna hai?");
+  assert.equal((await run(base({ say: line }))).say, "Aapne chaar equal sides ke liye 6 times 4 bola. Ek baar phir batao, perimeter kitna hai?");
+  assert.equal(withoutInternals("Chalo card ka sawaal dekhte hain?"), "Chalo card ka sawaal dekhte hain?");
 });

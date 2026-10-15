@@ -110,6 +110,33 @@ function fuseHundreds(s) {
     .replace(FUSED_ROM, (_, pre, u) => `${pre}${u} sau`);
 }
 
+/** An operation said aloud (the child is working): "times", "guna", "टाइम्स", "+", … */
+export const WORKING_ALOUD = /(?:^|[^\p{L}])(?:times|into|multiplied|plus|minus|divided|guna|gunaa|jod|jodo|ghatao|bhag|equals|barabar)(?![\p{L}])|टाइम्स|गुणा|गुना|इंटू|प्लस|माइनस|जोड़|जोड|घटा|भाग|बराबर|[×*+÷=]\s*\d|\d\s*x\s*\d/iu;
+const OPERATOR = /(?:^|(?<=[^\p{L}]))(?:times|into|multiplied(?:\s+by)?|plus|minus|divided(?:\s+by)?|guna|gunaa|jodo|jod|ghatao|bhag)(?![\p{L}])|टाइम्स|गुणा|गुना|इंटू|प्लस|माइनस|जोड़|जोड|घटा|भाग|[×*+÷]|(?<=\d\s*)x(?=\s*\d)/giu;
+/**
+ * Working aloud: the numbers a child STATES as results, apart from the operands of the operations they say. A number right
+ * before or right after an operation word is an operand ("6 times 4", "तीन टाइम्स चार"); every other number is a stated
+ * result, whether it comes first ("24 cm hoga... 6 times 4", sim lab 3cf7cdc p08 #1) or last ("… दो जीरो बारह सौ").
+ * → { results: number[], all: number[] } when an operation is said, else null. PURE.
+ */
+export function statedResults(raw) {
+  const text = String(raw ?? "");
+  if (!WORKING_ALOUD.test(text)) return null;
+  const chunks = text.split(OPERATOR);
+  if (chunks.length < 2) { const all = numberPhrases(text, { split: true }) ?? []; return { results: all, all }; }
+  const results = [], all = [];
+  chunks.forEach((c, i) => {
+    const ph = numberPhrases(c, { split: true }) ?? [];
+    all.push(...ph);
+    ph.forEach((v, j) => {
+      const operandBefore = j === ph.length - 1 && i < chunks.length - 1;   // "6" in "6 times"
+      const operandAfter = j === 0 && i > 0;                                // "4" in "times 4"
+      if (!operandBefore && !operandAfter) results.push(v);
+    });
+  });
+  return { results, all };
+}
+
 /**
  * Every number phrase in a reply, in order (a self-correction or a hedge gives two), or null when a number phrase cannot
  * be read (an unknown word inside it, two units in a row, a zero denominator).
