@@ -38,6 +38,15 @@ export const LATE_VIA = "late";
 const LESSON_ID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 /** The lesson an event id belongs to (`${lessonId}:${seq}:${k}`), or null. */
 export const lessonOfEvent = (evId) => { const l = String(evId ?? "").split(":")[0]; return LESSON_ID.test(l) ? l : null; };
+/** The child turn row an event came from (`<lessonId>:<childSeq>:<k>`, learner/live.js), else null. */
+export const turnSeqOfEvent = (evId) => { const n = Number(String(evId ?? "").split(":")[1]); return lessonOfEvent(evId) && Number.isInteger(n) ? n : null; };
+
+/** A verdict about words the child's own edit superseded is dropped: logged, and the lesson's latest trace row says so. */
+async function traceDropped(q, lessonId, evId) {
+  console.info(`[later] verdict for ${evId} dropped: its turn was superseded by the child's edit`);
+  await q(`update brain_trace set reasons = reasons || '{turn.verdict_dropped}'::text[]
+      where lesson_id = $1 and turn = (select (state->>'turn')::int from lesson where id = $1)`, [lessonId]).catch(() => {});
+}
 
 // ───────────── persistence (injectable for tests; the default is the app's database) ─────────────
 
@@ -50,11 +59,18 @@ async function dbStore() {
   return {
     /** The verdict landed: write it; returns { fallback: bool } (the turn already folded without it). M0: nothing. */
     async persist(evId, lessonId, results) {
+      // round 5 (server/brain/supersede.js): never for an event of a turn the child's own edit superseded
+      const seq = turnSeqOfEvent(evId);
       const rows = await q(`insert into pending_grade (event_id, lesson_id, results, settled_at)
           select $1, l.id, $3::jsonb, now() from lesson l join child c on c.id = l.child_id
           where l.id = $2 and coalesce(c.legal_mode, 'M1') <> 'M0'
+            and not exists (select 1 from turn t where t.lesson_id = l.id and t.seq = $4::int and t.meta ? 'superseded')
         on conflict (event_id) do update set results = excluded.results, settled_at = excluded.settled_at
-        returning fallback_at is not null as fallback, corrected_at is not null as corrected`, [evId, lessonId, JSON.stringify(results)]);
+        returning fallback_at is not null as fallback, corrected_at is not null as corrected`, [evId, lessonId, JSON.stringify(results), seq]);
+      if (!rows.length && seq != null && (await q("select 1 from turn where lesson_id = $1 and seq = $2 and meta ? 'superseded'", [lessonId, seq])).length) {
+        await traceDropped(q, lessonId, evId);
+        return { fallback: false, written: false, dropped: true };
+      }
       return { fallback: !!rows[0]?.fallback && !rows[0]?.corrected, written: rows.length > 0 };
     },
     /** The turn folds these without a verdict: claim the fallback; returns the verdicts that landed meanwhile. */
@@ -359,7 +375,8 @@ async function writeCorrection(ev, results, q) {
   // round 5 (server/brain/supersede.js): the event this verdict corrects was superseded by the child's own edit (its row
   // moved to kt_evidence_superseded): the verdict is about words that no longer count — dropped, traced
   if (live.state.ledger.seen[ev.id] === undefined && !live.state.comp.seen[ev.id]) {
-    console.info(`[later] verdict for ${ev.id} dropped: its event is no longer live (superseded)`);
+    const lessonId = lessonOfEvent(ev.id) ?? ev.sessionId;
+    if (lessonId) await traceDropped(q, lessonId, ev.id);
     return false;
   }
   const after = fuseEvidence(live.state, [corr], LIVE_FOLD_CTX);

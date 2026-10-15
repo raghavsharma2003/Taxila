@@ -7,8 +7,9 @@
 //   the edit       restores that state, plans the turn on the EDITED words against the learner ledger folded WITHOUT the
 //                  original's kt events, and writes its caches as a diff against the CURRENT cached fold (which still has
 //                  them), so every skill / misconception / facet the original moved is rewritten
-//   the original   its kt_evidence, evidence and brain_trace rows MOVE to the *_superseded archives in the same
-//                  transaction (never deleted; no live reader can resurrect them); its turn rows stay, labelled
+//   the original   its kt_evidence, evidence, brain_trace, grade_audit, probe_log and weave_queue rows MOVE to the
+//                  *_superseded archives in the same transaction (never deleted, never flagged: no live reader can
+//                  resurrect them); its turn rows stay, labelled
 //
 // A later turn already landed → no re-grade (the edit came too late to be the turn): the landed response is replayed and
 // the trace row says turn.edit_missed. A second edit of the same turn → replayed (idempotent).
@@ -16,6 +17,13 @@ import { q as dbq } from "../db.js";
 import { fuseEvidence, newLearnerState } from "../comprehension/index.js";
 import { eventFromRow } from "../learner/model.js";
 import { LIVE_FOLD_CTX } from "../learner/live.js";
+
+/**
+ * The switch (main: off until it ships, with the latency work that brings R below ~2.2 s or in 14.5, then default-on
+ * once the sim lab has run it at a modelled fast R). Off: no undo row is written and an edit after its turn landed is
+ * replayed, as before.
+ */
+export const editUndoOn = () => process.env.TAXILA_EDIT_UNDO === "1";
 
 /** The edit may supersede: `turnSeq` is the lesson's latest landed turn and it was not itself an edit. Pure. */
 export function supersedable(state, turnSeq) {
@@ -51,7 +59,10 @@ export async function liveWithout(child, ktIds, { q = dbq } = {}) {
 /** The supersession key every archived row carries. */
 export const supersededBy = (lessonId, turnSeq) => `${lessonId}:${turnSeq}`;
 
-/** The snapshot for this committed turn (session layer: lesson state, not learner data). */
+/**
+ * The snapshot for this committed turn (session layer: lesson state, not learner data). Goes BEFORE the turn's writes:
+ * the tracked inserts (trackedForUndo) add their ids to it.
+ */
 export function undoStmt({ lessonId, turnSeq, turn, prev, ids }) {
   const p = structuredClone(prev);
   delete p.supersede;
@@ -63,14 +74,43 @@ export function undoStmt({ lessonId, turnSeq, turn, prev, ids }) {
   };
 }
 
+/** The turn's comprehension rows whose identity ids the undo row collects (the table → its key in lesson_undo.ids). */
+export const UNDO_TRACKED = Object.freeze({ grade_audit: "audit", probe_log: "probe", weave_queue: "weave" });
+
+/**
+ * A turn write into a tracked table, made to record the ids it inserted in the lesson's undo row (written earlier in the
+ * same transaction): `with ins as (<insert> returning id) update lesson_undo …`. An insert that inserted nothing (on
+ * conflict do nothing) records nothing. Any other statement is returned unchanged. Pure.
+ */
+export function trackedForUndo(st, lessonId) {
+  const m = /^\s*insert into (\w+)\b/.exec(st?.text ?? "");
+  const key = m && UNDO_TRACKED[m[1]];
+  if (!key || /\breturning\b/i.test(st.text)) return st;
+  const n = st.params.length + 1;
+  return {
+    ...st,
+    text: `with ins as (${st.text} returning id)
+           update lesson_undo set ids = jsonb_set(ids, '{${key}}', coalesce(ids->'${key}', '[]'::jsonb) || coalesce((select jsonb_agg(id) from ins), '[]'::jsonb))
+           where lesson_id = $${n}`,
+    params: [...st.params, lessonId],
+  };
+}
+
 /**
  * The superseded turn's rows, moved / labelled, for the edit's ONE transaction (before its own writes). `ids` is the
- * lesson_undo row's: { kt: kt_evidence ids, rows: the turn rows' seqs }.
+ * lesson_undo row's: { kt: kt_evidence ids, rows: the turn rows' seqs, audit / probe / weave: comprehension row ids }.
  */
 export function supersedeStmts({ childId, lessonId, turnSeq, turn, ids }) {
   const by = supersededBy(lessonId, turnSeq);
   const kt = (ids?.kt ?? []).map(String), rows = (ids?.rows ?? []).map(Number);
+  // grade_audit / probe_log / weave_queue: the same rule (MOVE, never flag); history tables, no learner layer
+  const comp = Object.entries(UNDO_TRACKED).map(([table, key]) => ({
+    text: `with moved as (delete from ${table} where child_id = $1 and id = any($2::bigint[]) returning *)
+             insert into ${table}_superseded select moved.*, $3::text, now() from moved`,
+    params: [childId, (ids?.[key] ?? []).map(Number), by],
+  }));
   return [
+    ...comp,
     { text: `with moved as (delete from kt_evidence where child_id = $1 and id = any($2::text[]) returning *)
              insert into kt_evidence_superseded select moved.*, $3::text, now() from moved`, params: [childId, kt, by], layer: "kt" },
     { text: `with moved as (delete from evidence where lesson_id = $1 and turn_id in (select id from turn where lesson_id = $1 and seq = any($2::int[])) returning *)

@@ -84,7 +84,7 @@ async function askedBoard(ack, asked) {
 }
 import { comprehensionRead } from "../director/read.js";
 import { agentTurn, eventOf, applyAgentTurn, specWasteOf } from "../agent/agent.js";
-import { supersedable, editMissed, restoredState, liveWithout, supersedeStmts, undoStmt, orphanCacheStmts } from "./supersede.js";
+import { supersedable, editMissed, restoredState, liveWithout, supersedeStmts, undoStmt, orphanCacheStmts, trackedForUndo, editUndoOn } from "./supersede.js";
 import { childTurnRow, clientInstructions, debugFor, floorIncidentStmt, incidentStmt, kitFor, laneOf, runTurnTx, stageTurns, turnInsertStmt, turnLane, withAsk, withSeamUi, withStudioSlot } from "./rows.js";
 import { traceIdentify, traceLesson } from "../trace/context.js";
 import { record } from "../trace/writer.js";
@@ -251,13 +251,15 @@ export async function lessonTurn(req, body, hooks = {}) {
   }
   // Round 5 truth bar (server/brain/supersede.js): an edit of the lesson's LATEST landed turn supersedes it — restored from
   // the snapshot taken when it committed, graded on the edited words; an edit after a later turn landed is too late.
+  // Off until main switches it on (TAXILA_EDIT_UNDO=1, ships with the latency work or 14.5), and never without 030's table.
+  const undoP = editUndoOn() ? tableReady("lesson_undo", q) : Promise.resolve(false);
   let undo = null;
-  if (replay && edited && supersedable(lesson.state, turnSeq)) {
+  if (replay && edited && supersedable(lesson.state, turnSeq) && await undoP) {
     const u = await one("select turn_seq, turn, prev, ids from lesson_undo where lesson_id = $1", [lesson.id]).catch(() => null);
     if (u && Number(u.turn_seq) === turnSeq && Number(u.turn) === Number(lesson.state.turn)) undo = { turn: Number(u.turn), prev: u.prev, ids: u.ids ?? {}, current: lesson.state };
   }
   if (replay && !undo) {
-    if (edited && editMissed(lesson.state, turnSeq)) {
+    if (edited && editMissed(lesson.state, turnSeq) && await undoP) {
       console.info(`[lesson] edit missed ${lesson.id} turnSeq=${turnSeq}: a later turn already landed`);
       q("update brain_trace set reasons = reasons || '{turn.edit_missed}'::text[] where lesson_id = $1 and turn = $2", [lesson.id, Number(lesson.state.turn)]).catch(() => {});
     }
@@ -1189,6 +1191,8 @@ export async function lessonTurn(req, body, hooks = {}) {
     : "update lesson set state = $2 where id = $1 and ended_at is null and (state->>'turn')::int = $3";
   const notSuperseded = turnSeq != null && !edited ? " and coalesce((state->>'supersede')::int, -1) <> $4" : "";
   const [traceOk, decisionOk, traceIdsOk] = await tablesP;
+  // the snapshot this turn can be superseded from (its turnSeq; a late answer is never edited)
+  const undoRow = turnSeq != null && !late && await undoP;
   // The comprehension trail and the release path as codes (owner priority 1; G-AUTHORITY), for the trace row.
   const uiV = late ? null : uiVerdictOf(cls, target, state).verdict ?? null;
   const releaseReasons = [...(r.move.kind === "wrap" && (relFx.release || cls?.flags?.wantsToStop) ? ["release.goodbye_wrap"] : []),
@@ -1214,14 +1218,15 @@ export async function lessonTurn(req, body, hooks = {}) {
       ...(undo ? supersedeStmts({ childId: child.id, lessonId: lesson.id, turnSeq, turn: undo.turn, ids: undo.ids })
         .filter((x) => !x.layer || canWrite(child, x.layer)) : []),
       // the snapshot this turn can be superseded from (its turnSeq; a late answer is never edited)
-      ...(turnSeq != null && !late ? [undoStmt({ lessonId: lesson.id, turnSeq, turn: next.turn, prev,
+      ...(undoRow ? [undoStmt({ lessonId: lesson.id, turnSeq, turn: next.turn, prev,
         ids: { kt: (plan.events ?? []).map((e) => e.id), rows: staged.filter((x) => x.speaker !== "teacher").map((x) => x.seq) } })] : []),
       // Text lane: the child cut off the latest stored teacher line; mark that row rather than storing it again.
       ...(textLane && body.teacherInterrupted ? [{ text: `update turn set meta = meta || '{"interrupted": true}'::jsonb
            where id = (select id from turn where lesson_id = $1 and speaker = 'teacher' order by seq desc limit 1) returning id`, params: [lesson.id] }] : []),
       turnInsertStmt(lesson.id, staged),
       ...floorIncidents,
-      ...writes,
+      // with an undo row: the comprehension rows this turn inserts record their ids in it (a later edit moves them)
+      ...(undoRow ? writes.map((x) => trackedForUndo(x, lesson.id)) : writes),
       // The Brain's record of this turn (TB12) and of a chosen re-teach arm (RT-ARM), when the 016 tables exist.
       ...(traceOk ? [brainTraceStmt({ lessonId: lesson.id, turn: next.turn, lane, move: r.move.kind, beat: kernel.beat?.type ?? null,
         inputsHash: inputsHashOf({ prev: state, cls, move: r.move, itemId: r.move.itemId ?? null, kitHash: state.kitHash ?? null, lane }),

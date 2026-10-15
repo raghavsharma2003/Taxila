@@ -5,7 +5,7 @@
 // Round 5 truth bar (main 2026-10-15, server/brain/supersede.js): an edited re-send of the lesson's latest landed turn
 // supersedes it — one grade, the edit's, on the ORIGINAL item; the original's evidence moved to the archives; the cached
 // fold equals a fresh fold of the live ledger; a verdict for a superseded event is dropped; an edit after a later turn
-// landed is missed (no re-grade, traced); a second edit is a replay.
+// landed is missed (no re-grade, traced); a second edit is a replay; every archive holds exactly the original's rows.
 import { after, before, describe, test } from "node:test";
 import assert from "node:assert/strict";
 import http from "http";
@@ -13,6 +13,7 @@ import { existsSync, readFileSync } from "fs";
 import { createHash, randomUUID } from "crypto";
 
 for (const k of Object.keys(process.env)) if (/^AZURE_|ENDPOINT$|_KEY$/.test(k)) delete process.env[k];
+process.env.TAXILA_EDIT_UNDO = "1"; // the switch (off by default until main ships it)
 const envFile = new URL("../.env.local", import.meta.url);
 const fromEnvFile = (name) => (existsSync(envFile) ? (readFileSync(envFile, "utf8").split("\n").find((l) => l.startsWith(name + "=")) || "").slice(name.length + 1).replace(/^"(.*)"$/, "$1") : "");
 const hostOf = (u) => { try { return new URL(u).hostname.replace(/-pooler\./, "."); } catch { return ""; } };
@@ -146,6 +147,9 @@ describe("r5 edit supersede (test branch)", { skip: SKIP, concurrency: false, ti
     await gradeLater(ev, { childText: "x", targets: [{ id: "t1", textEn: "x" }] }, { grade });
     await new Promise((r) => setTimeout(r, 1500));
     assert.equal((await q("select 1 from kt_evidence where child_id = $1 and id like $2", [kid, `${orig.id}:late%`])).length, 0, "no correction for a superseded event");
+    assert.equal((await one("select results from pending_grade where event_id = $1", [orig.id])).results, null, "its verdict is not even written");
+    const trd = await one("select reasons from brain_trace where lesson_id = $1 and turn = 1", [L.lessonId]);
+    assert.ok(trd.reasons.includes("turn.verdict_dropped"), JSON.stringify(trd.reasons));
     // control: the same verdict for a LIVE event is applied as a correction (the child then answers right: an event)
     await L.turn("4", { turnSeq: 2 });
     const [cur] = await live(kid);
@@ -173,6 +177,50 @@ describe("r5 edit supersede (test branch)", { skip: SKIP, concurrency: false, ti
       await foldAgrees(kid);
     }
     assert.equal((await archived(kid)).length, 3, "every original verdict archived");
+  });
+
+  test("nothing lost, nothing duplicated: every *_superseded table holds exactly the original's rows, and none of them is still live", async () => {
+    const kid = await newChild(); await controls(kid);
+    const child = { id: kid, legal_mode: "M1" };
+    const S = await import("../server/comprehension/store.js");
+    const { trackedForUndo } = await import("../server/brain/supersede.js");
+    const L = await lesson(kid, "c3-maths-ch08-t01-i02");
+    // a decoy turn first: its rows must stay live
+    await L.turn("4", { turnSeq: 1 });
+    const comp = (tag) => [
+      S.probeLogStmt(child, L.lessonId, { skillId: `sk-${tag}`, shapeId: "why", facet: "U", mandatory: false, reason: "test", testWeight: 1 }),
+      S.gradeAuditStmt(child, { session_id: L.lessonId, skill_id: `sk-${tag}`, shape_id: "why", op: "R-EXP", grader_version: "t", model: null, target_id: "t1", label: "present", span: null, span_ok: true, lang: "en", ms: 1 }),
+      S.weaveEnqueueStmt(child, { skillId: `sk-${tag}`, anchorAt: new Date().toISOString(), earliestAt: new Date().toISOString(), dueAt: new Date(Date.now() + 864e5).toISOString() }),
+    ];
+    for (const st of comp("decoy")) await q(st.text, st.params);
+    await L.pose("c3-maths-ch08-t01-i08"); // key 2
+    let r = await L.turn("2", { turnSeq: 2, ask: "c3-maths-ch08-t01-i08" }); // right: the episode closes (a kt event)
+    assert.equal(r.status, 200, JSON.stringify(r.body));
+    // the landed turn's comprehension rows, written as the turn writes them (tracked into its undo row)
+    for (const st of comp("orig")) { const t = trackedForUndo(st, L.lessonId); assert.notEqual(t, st); await q(t.text, t.params); }
+    const undo = await one("select ids from lesson_undo where lesson_id = $1", [L.lessonId]);
+    const want = {
+      kt_evidence: undo.ids.kt.map(String).sort(),
+      evidence: (await q("select e.id::text as id from evidence e join turn t on t.id = e.turn_id where t.lesson_id = $1 and t.seq = any($2::int[])", [L.lessonId, undo.ids.rows])).map((x) => x.id).sort(),
+      brain_trace: (await q("select id::text as id from brain_trace where lesson_id = $1 and turn = 2", [L.lessonId])).map((x) => x.id).sort(),
+      grade_audit: undo.ids.audit.map(String).sort(), probe_log: undo.ids.probe.map(String).sort(), weave_queue: undo.ids.weave.map(String).sort(),
+    };
+    for (const [t, ids] of Object.entries(want)) assert.ok(ids.length >= 1, `${t}: the landed turn wrote its rows`);
+    r = await L.turn("3", { turnSeq: 2, edited: true, retried: true, ask: "c3-maths-ch08-t01-i08" });
+    assert.equal(r.status, 200, JSON.stringify(r.body));
+    assert.ok(!r.body.duplicate, "re-graded");
+    const by = `${L.lessonId}:2`;
+    for (const [t, ids] of Object.entries(want)) {
+      const arch = (await q(`select id::text as id from ${t}_superseded where superseded_by = $1 order by id`, [by])).map((x) => x.id).sort();
+      assert.deepEqual(arch, ids, `${t}_superseded holds exactly the original's rows`);
+      assert.equal((await q(`select 1 from ${t} where id::text = any($1::text[])`, [ids])).length, 0, `${t}: none of them is still live`);
+    }
+    // the decoy turn's rows (turn 1) were not touched
+    assert.equal((await q("select 1 from probe_log where child_id = $1 and skill_id = 'sk-decoy'", [kid])).length, 1);
+    assert.equal((await q("select 1 from grade_audit where child_id = $1 and skill_id = 'sk-decoy'", [kid])).length, 1);
+    assert.equal((await q("select 1 from weave_queue where child_id = $1 and skill_id = 'sk-decoy'", [kid])).length, 1);
+    assert.deepEqual(await verdicts(kid), ["c3-maths-ch08-t01-i02:correct", "c3-maths-ch08-t01-i08:incorrect"]);
+    await foldAgrees(kid);
   });
 
   test("an edit after a LATER turn landed is missed: no re-grade, the response replayed, the trace says so", async () => {
