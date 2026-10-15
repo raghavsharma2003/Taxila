@@ -384,3 +384,23 @@ test("speculation (stream 3): her call starts on the prefetched turn with no too
   assert.equal(agentSpeculate({ state: ST(), kit: K, event: 'the child said (speech recognition confidence 0.9): "game khelna hai"', lessonId: "L1", tools: { ...fakeTools(), game: async () => ({ ok: false }) }, streamFn }), null);
   assert.equal(agentSpeculate({ state: ST(), kit: K, event: EV, silent: true, lessonId: "L1", tools: fakeTools(), streamFn }), null);
 });
+
+test("the read follows the graded answers on every graded turn, not only when the model names one (sim lab e46a281c decided truth)", async () => {
+  const s1 = K.items.find((i) => i.id === "i1").skillId, s2 = K.items.find((i) => i.id === "i3").skillId;
+  const step = async (next, card, outcome) => {
+    const o = await run(base({ say: "Theek hai.", read: { skill: null, level: "unknown", evidence: "" } }));
+    applyAgentTurn(next, o, { kit: K, childText: "x", cls: cls(outcome), card, lessonId: "L1" });
+  };
+  const next = ST();
+  await step(next, K.items.find((i) => i.id === "i1"), "correct");
+  assert.equal(next.agent.learner[s1].read, "partly", "one plain right is not understood");
+  assert.equal(next.agent.learner[s1].depth, "untested");
+  await step(next, K.items.find((i) => i.id === "i3"), "incorrect");
+  assert.equal(next.agent.learner[s2].read, "not", "a miss with nothing else reads not");
+  // a skill answered right on a why and a contrast item reads understood, with no read from the model at all
+  const n2 = ST();
+  await step(n2, K.items.find((i) => i.id === "i3"), "correct");
+  await step(n2, K.items.find((i) => i.id === "i5"), "correct");
+  await step(n2, K.items.find((i) => i.id === "i6"), "correct");
+  assert.equal(n2.agent.learner[s2].read, "understood");
+});
