@@ -321,7 +321,11 @@ export async function plan(ask, o) {
   // round 5: a number line the child asked for, with their numbers, is drawn by code (request.js numberLineBoard), gated
   // like any board; it is the code rung for that ask (the kit's own board never answers "number line pe 1/4 dikhao")
   // ... and a clock asked for ("ghadi draw karo") is drawn by code too (request.js clockBoard)
-  const nl0 = request?.kind === "number_line" ? numberLineBoard(request, { scriptId: String(ask?.intent?.intentId ?? "nl"), lessonId: ask?.line?.lessonId ?? "", spanMs: ctx.speechMs })
+  // QA pass 12 D35 (prod b8fb4ee2, TEST f10fcd57: "number line pe dikhao" named no numbers, so no code line; the line plan
+  // failed ~1 in 2 and the slot went "failed" under her "… dikhaiye"): with none asked, the numbers HER line says are drawn
+  const lineNumbers = (String(ask?.line?.text ?? "").match(/-?\d+(?:\.\d+)?(?:\/\d+)?/g) ?? []).filter((x, i, a) => a.indexOf(x) === i).slice(0, 4);
+  const nlRequest = request?.kind === "number_line" && !request.said?.length && lineNumbers.length ? { ...request, said: lineNumbers } : request;
+  const nl0 = request?.kind === "number_line" ? numberLineBoard(nlRequest, { scriptId: String(ask?.intent?.intentId ?? "nl"), lessonId: ask?.line?.lessonId ?? "", spanMs: ctx.speechMs })
     : request?.subject ? clockBoard(request, { scriptId: String(ask?.intent?.intentId ?? "clock"), lessonId: ask?.line?.lessonId ?? "", spanMs: ctx.speechMs }) : null;
   const nl = nl0 ? regate(retime(nl0, nl0.durationMs, ctx.speechMs), ask, ctx) : null;
   const code0 = nl?.ok ? { ...nl, template: request.kind === "number_line" ? "number_line" : "clock", by: "request" } : codeBoard(ask, { kit: o.kit, lessonId: ask?.line?.lessonId, band: ctx.band }, ctx);

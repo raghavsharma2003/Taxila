@@ -92,3 +92,13 @@ test("QA pass 12 D36: a clock's face numerals are givens (only the open key is w
   assert.deepEqual(namedShapeMissing("आयत की लंबाई 50 m", [{ op: "polygon", points: [[0, 0], [100, 0], [100, 50], [0, 50]] }]), []);
   assert.deepEqual(namedShapeMissing("Number line par 0 se 50.", [{ op: "line", from: [0, 0], to: [100, 0] }]), [], "no closed shape: not judged");
 });
+
+test("QA pass 12 D35: 'number line pe dikhao' with no numbers named draws HER line's numbers by code (the line plan failed ~1 in 2)", async () => {
+  const { numberLineBoard } = await import("../server/studio/request.js");
+  const { gateWhiteboard } = await import("../server/studio/qa/whiteboard.js");
+  const line = "0 se 50 m aur phir 30 m ke steps dikhaiye: boundary ka agla hissa kitna hoga?";
+  const nums = (line.match(/-?\d+(?:\.\d+)?(?:\/\d+)?/g) ?? []).filter((x, i, a) => a.indexOf(x) === i).slice(0, 4);
+  const sc = numberLineBoard({ kind: "number_line", said: nums }, { spanMs: 5000 });
+  assert.ok(sc);
+  assert.deepEqual(gateWhiteboard(sc, { reply: line, speechMs: 5000 }).checks.filter((c) => !c.pass).map((c) => c.id), []);
+});
