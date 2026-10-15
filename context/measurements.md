@@ -4193,3 +4193,17 @@ Agent-loop Teacher candidates, one streamed call with a compact lesson state, 7 
 
 ## ms-r5-lat-parent-overview-cold-2026-10-14 (2026-10-14)
 QA D22 (GET /api/parent/overview 2.4 s): in-process, US -> Neon TEST, the FIRST overview of a process 1431-1558 ms, later ones 414-488 ms (DB round trips). A CPU profile names the cold part: the parent report's language gate (reports/lexicon.js bannedHits): V8 compiles each Unicode-class regex on its first test (~0.7 s). Compiled at boot now: first overview 634 ms. GET /api/parent/syllabus 300 ms once kits are warm.
+
+
+<!-- merged from inbox/r141b-main.json -->
+## ms-r141-known-words-fingerprint (2026-10-15)
+- Fingerprint: 18438 draws, lost 0, gained 0.
+- safety-robust at 20 seeds: identical to before.
+- 135 related tests pass.
+
+## ms-r141-owner5-whiteboard-regression (2026-10-15)
+- owner-5 on the 302dd3c package: 10/14 (both whiteboard asks failed). Release 14: 14/14.
+- Server log: `board refused: same page as on screen (source=first)`, then the line plan with `spec=failed`.
+
+## ms-r141-qa-pass11 (2026-10-15)
+QA pass 11 on f618f8d (local prod build, TEST, phone): reload mid-lesson PASS; Continue rejoins; landscape PASS; gate-kill PASS; D23 lead correct 3/3 with home named, grown-up first without; reload after a disclosure (n=3) never returns to the old lesson.

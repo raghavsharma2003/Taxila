@@ -5901,3 +5901,26 @@ Main's decision (2026-10-14): a non-verbal continuer (हम्म / अच्�
 
 ## dec-r5-lat-adpcm (2026-10-14)
 TTS frames type 5 = IMA ADPCM (4:1), negotiated by Accept `codec=adpcm`, asked for only on a slow link (effectiveType slow-2g / 2g / 3g, or Save-Data; ?tts=adpcm|pcm|auto per device); the client decodes it in the frame parser, so everything after it sees PCM. PCM stays the default (ADPCM is lossy). Reverse if: a listening check finds ADPCM speech unacceptable even on slow links, or an Opus encoder becomes available without a new dependency.
+
+
+<!-- merged from inbox/r141b-main.json -->
+## dc-r141-known-words-lexicon-near (2026-10-15)
+**Decision.** The known-words builder also keeps hand-list words that the lexicon's one-edit garble rule would rewrite. The soch- family is added.
+
+**Why.** "Maine khud socha" (I thought of it myself) was read as "khud nocha" (scratched myself) and fired the helplines in a science lesson.
+
+**Reverse if** a real garbled disclosure is missed because one of the 33 new known words blocked its rewrite.
+
+## dc-r141-board-kept-same-page (2026-10-15)
+**Decision.** When board-first's page is refused only because it is already on screen, it is kept and the slot is revealed. This never applies to an ask for an example.
+
+**Why.** owner-5: 2 of 2 "whiteboard pe bana ke samjhao" asks ended in a failed slot after stream 2's never-the-same-page rule.
+
+**Reverse if** repeated pages rise above 0/40 on stream 2's board battery.
+
+## dc-r141-resume-not-into-safeguard (2026-10-15)
+**Decision.** No resume into an open safeguarding episode, and none past a safety hold. The plain start runs instead.
+
+**Why.** A resume replays no move, so the Help sheet would not open.
+
+**Reverse only** with a resume that re-raises the Help sheet from the saved state.
