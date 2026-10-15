@@ -19,7 +19,7 @@
 //
 // Pieces are INVISIBLE until revealed on the teacher's cue: statusFacts proposes a reveal (the kernel may refuse it), the
 // committed turn's onReveal records it, and slotFor gives the turn's UiDirectives.studioSlot so the Work tray shows it.
-import { answersRequest, samePage, shownBefore, pageSig } from "./request.js";
+import { answersRequest, samePage, shownBefore, pageSig, syncedWithLine } from "./request.js";
 import { ORDINAL } from "../director/modules.js";
 import { seamSafe } from "../seam-safe.js";
 import { normalizeScript, scriptFacts } from "../../shared/whiteboard.js";
@@ -856,7 +856,9 @@ export const studioSeam = {
       // round 4 content: the template is pixels too: certified at the device's box or not shown
       const tg = shown1 ? certifyForTray({ kind: "whiteboard", script: shown1 }, gateCtx(L, p)) : null;
       if (tg && !tg.ok) noteRefusal(L, p, tg, "template");
-      const shown = tg?.ok ? shown1 : null;
+      // ... and the template rung is held to the same sync with her line as any new page (sim lab boardfacts)
+      const shown = tg?.ok && syncedWithLine(shown1, ask?.line?.text) ? shown1 : null;
+      if (tg?.ok && !shown) console.info("[studio] template board refused: shares nothing with her line");
       if (shown) {
         p.artifact = { kind: "whiteboard", stage: { w: shown.board.w, h: shown.board.h }, script: shown };
         // a board, never an interactive piece (brain/propose.js reads kind/archetype "whiteboard" as not holding attention)
@@ -875,6 +877,8 @@ export const studioSeam = {
       if (!r?.script) return false;
       // round 5 (stream 2): never the same page twice in a row (a kept board is the same board on purpose, not a new page)
       if (r.source !== "kept" && shownBefore(r.script, { avoid: onPage, seen: L.wbSeen })) { console.info(`[studio] board refused: same page as on screen (source=${r.source ?? "line"})`); return false; }
+      // round 5 (sim lab boardfacts): a new page about something her line never mentions is not drawn (request.js syncedWithLine)
+      if (r.source !== "kept" && !syncedWithLine(r.script, ask?.line?.text)) { console.info(`[studio] board refused: shares nothing with her line (source=${r.source ?? "line"})`); return false; }
       // round 4 content: the ONE gate before the board reaches the stage (the device's box, the client's own fit)
       const g = certifyForTray({ kind: "whiteboard", script: r.script }, gateCtx(L, p));
       if (!g.ok) { noteRefusal(L, p, g, `board:${r.source ?? "line"}`); return false; }

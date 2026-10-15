@@ -105,6 +105,32 @@ export function answersRequest(script, request, { drawnFor = false } = {}) {
   return words.some((w) => all.includes(w));
 }
 
+/**
+ * Round 5 (sim lab boardfacts, 709b A/A: 29-39 of ~260 new pages): a NEW page whose writing shares no content word (4+
+ * letters, by its first 5 letters) and no number with her line is about something else ("Write 'six thousand forty-two'" up
+ * while she asks "345 mein hundreds place ka digit?"; p25 pencil costs under cricket runs). The same predicate the sim lab
+ * counts with (evals/simlab/boardfacts.mjs). A page that writes nothing (shapes only), or a turn whose line is not known,
+ * is not judged. PURE.
+ */
+const SYNC_STOP = new Set("this that with from have what your kya hai hain aur yeh woh isko usko mein par kaise kitne kitna abhi phir karo dekho dekhiye board screen".split(" "));
+// a number said in words is its digits ("teen chauthai" is the board's 3/4)
+const NUM_WORDS = { ek: ["1"], one: ["1"], do: ["2"], two: ["2"], teen: ["3"], three: ["3"], chaar: ["4"], char: ["4"], four: ["4"],
+  paanch: ["5"], panch: ["5"], five: ["5"], chhe: ["6"], che: ["6"], six: ["6"], saat: ["7"], seven: ["7"], aath: ["8"], eight: ["8"],
+  nau: ["9"], nine: ["9"], das: ["10"], ten: ["10"], aadha: ["1", "2"], aadhi: ["1", "2"], half: ["1", "2"], chauthai: ["4"],
+  quarter: ["4"], quarters: ["4"], tihai: ["3"], third: ["3"], thirds: ["3"], "एक": ["1"], "दो": ["2"], "तीन": ["3"], "चार": ["4"], "आधा": ["1", "2"] };
+const syncWords = (s) => new Set(String(s ?? "").toLowerCase().normalize("NFKC").split(/[^\p{L}\p{M}\p{N}]+/u)
+  .flatMap((w) => NUM_WORDS[w] ?? [w])
+  .filter((w) => (w.length >= 4 || /^\p{N}+$/u.test(w)) && !SYNC_STOP.has(w)).map((w) => (/^\p{N}+$/u.test(w) ? w : w.slice(0, 5))));
+export function syncedWithLine(script, line) {
+  const text = String(line ?? "").trim();
+  const page = textsOf(script).join(" ");
+  if (!text || !page.trim()) return true;
+  const pw = syncWords(page);
+  if (!pw.size) return true;
+  const lw = syncWords(text);
+  return [...pw].some((w) => lw.has(w));
+}
+
 /** A worked page: three things written or more, two of them carrying numbers (the steps of an example). PURE. */
 export function workedPage(script) {
   const t = [...new Set(textsOf(script).map((x) => String(x).trim()).filter(Boolean))];
