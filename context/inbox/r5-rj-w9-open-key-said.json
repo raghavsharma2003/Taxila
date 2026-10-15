@@ -1,0 +1,11 @@
+{
+ "nodes": [
+  {
+   "id": "rj-r5-w9-open-key-withheld-when-said",
+   "kind": "rejection",
+   "at": "2026-10-15",
+   "title": "Round 5 (QA pass 15, TEST 1695e941): withholding the open item's key from the board even when her line says it (whiteboard.js withheldValues). Rejected: it broke the pinned design in tests/studio-qa.test.mjs 'W9 no reveal … a value she says herself': 'she said it: the board only repeats her', and the MCQ options she reads aloud are hers to draw; and 1695e941 had no item open (activeItemId null, warmup), so it would not have fixed the case anyway. The fix is the self-answered-question predicate (studio/request.js selfAnswer): her line loses the clause that states its own question's answer, and the board never draws it (W18 ctx.answers). Reversal: only if a measured leak needs a key withheld that she says, and then without breaking said-is-hers."
+  }
+ ],
+ "edges": []
+}

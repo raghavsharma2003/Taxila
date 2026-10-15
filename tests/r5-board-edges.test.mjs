@@ -224,3 +224,38 @@ test("QA pass 15 (0072b65b): while an asked board is pending, English 'imagine a
   const { stayOnScreen } = await import("../server/studio/request.js");
   assert.equal(stayOnScreen("Kabir, imagine a rectangle: 50 m aur 30 m"), "Kabir, a rectangle: 50 m aur 30 m");
 });
+
+test("main 14.4 (QA pass 15, TEST 1695e941, no item open): her line states its own question's answer ('0 se 160 metres tak … boundary distance kitna hai?', 160 = the worked example's 2 × (50 + 30)): her line loses that clause, and the number line from her numbers never runs to 160", async () => {
+  const fs = await import("node:fs");
+  const boardSync = await import("../server/stagecraft/board-sync.js");
+  const { selfAnswer, unanswer, textsOf } = await import("../server/studio/request.js");
+  const kit = JSON.parse(fs.readFileSync("data/kits/c6-maths.json", "utf8")).topics.find((t) => t.topicId === "c6-maths-ch06-t01");
+  const line = "Kabir, number line par perimeter ko walking distance samjho: 0 se 160 metres tak. Rectangle ka boundary distance kitna hai?";
+  const hit = selfAnswer(line, { worked: kit.workedExample.problem });
+  assert.equal(hit?.answer, "160");
+  assert.equal(unanswer(line, hit), "Kabir, number line par perimeter ko walking distance samjho. Rectangle ka boundary distance kitna hai?");
+  const ask = { intent: { intentId: "L:wb:16", lessonId: "L", kind: "whiteboard", beat: "explain", style: { band: "B3" }, request: { kind: "number_line" } }, requested: true,
+    line: { lessonId: "L", text: line }, mode: "fresh", kit: { topicId: kit.topicId, content: [] } };
+  // the line plan (the model) draws her numbers, 0 … 160, as it did on TEST: whatever rung answers, 160 is never on the board
+  const ruled = { v: 1, scriptId: "s", line: { lessonId: "L" }, anchor: "line_audio_start", board: { w: 677, h: 423, ground: "chalk" }, mode: "fresh", durationMs: 6000,
+    ops: [{ id: "nl", op: "numwork", startMs: 0, endMs: 2500, at: [60, 200], layout: "number_line", range: [0, 160], rows: [["0", "160"]] },
+      { id: "t", op: "text", startMs: 2600, endMs: 3400, at: [300, 120], text: "boundary distance", size: "m" }] };
+  const plan = await import("../server/studio/plan.js");
+  plan._setChat(async () => ({ json: { ops: ruled.ops.map(({ startMs, endMs, ...o }) => ({ ...o, t: [startMs, endMs] })) }, usage: {} }));
+  try {
+    for (const planWhiteboard of [async () => ({ ok: false, usd: 0 }), plan.planWhiteboard]) {
+      const r = await boardSync.plan(ask, { kit, planWhiteboard });
+      const written = r?.ok && r?.script ? [...textsOf(r.script)].join(" ") : "";
+      assert.ok(!/(^|[^\d])160($|[^\d])/.test(written), `the board wrote: ${written}`);
+    }
+  } finally { plan._setChat(null); }
+});
+
+test("main 14.4: the self-answered predicate stays quiet on a teacher who confirms the child's answer, recaps a solved sum, counts back, or asks why", async () => {
+  const { selfAnswer } = await import("../server/studio/request.js");
+  assert.equal(selfAnswer("Haan, 7 mein se 2 ghatakar tumne 5 likha. Taar pe 6 chidiya baithi hain. Agar saari 6 udd jaayein, to kitni bachengi?", { recent: ["7 mein se 2 hatao, kitne bache?"], child: ["5"] }), null);
+  assert.equal(selfAnswer("Haan, 9 mein se 4 peeche gino: 8, 7, 6, 5. Bus mein kitne bache?", { recent: ["9 bachche the, 4 utre."] }), null);
+  assert.equal(selfAnswer("Haan Kabir beta, 5 − 3 kar sakte ho. Tumne 5 toffiyan gin kar 3 hataayi—2 bachi. Ab batao, 3 − 5 kyun nahi?"), null);
+  assert.equal(selfAnswer("Haan, 7 aur 3 milkar 10 bante hain. Ab 10 fingers se 7 hatao—kitni fingers bachengi?"), null);
+  assert.equal(selfAnswer("Screen par do numbers: 2 aur 15. Addition karke result 17 aata hai. Aap bataiye, 2 plus 15 kitna?")?.answer, "17");
+});

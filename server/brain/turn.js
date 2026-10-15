@@ -28,7 +28,7 @@ import { noteModuleEvents, moduleAnswerOf } from "../director/modules.js";
 import { findItem, promptFor, revealsAnswer, whyKey, norm as normAnswer } from "../director/items.js";
 import { registerBroken } from "../director/register.js";
 import { verdictFor, uiVerdict, askText, refersToScreen, wrongAnswersOf, boardClaimProblem, kitWordsOf, stripScreenRefs } from "../director/say.js";
-import { answersRequest, pointsAtStage, unpointGently, pictureSubjectOf, announcesGame, ungame, unassumeVisual, refersToBoard, boardPointer, seeNotImagine, stayOnScreen } from "../studio/request.js";
+import { answersRequest, pointsAtStage, unpointGently, pictureSubjectOf, announcesGame, ungame, unassumeVisual, refersToBoard, boardPointer, seeNotImagine, stayOnScreen, selfAnswer, unanswer } from "../studio/request.js";
 import { drawableSubject } from "../director/state.js";
 import { mixedUnitComparison } from "../director/units.js";
 import { instructionsFor, instructionsAfter } from "../compiler/instructions.js";
@@ -1041,6 +1041,25 @@ export async function lessonTurn(req, body, hooks = {}) {
         if (last?.who === "teacher") next.recent = [...next.recent.slice(0, -1), { ...last, text: fixed.slice(0, 400) }];
         guard = { ...guard, caught: [...new Set([...(guard?.caught ?? []), "stay_on_screen"])], replaced: true };
         studioReasons.push("say.stay_on_screen");
+        delivery = seamSafe("expressive.planDelivery", () => expressiveSeam.planDelivery(moment, teacherReply), delivery);
+      }
+    }
+    // main 14.4 (QA pass 15, TEST 1695e941): her line states the answer of its own numeric question before asking it ("0 se
+    // 160 metres tak. Rectangle ka boundary distance kitna hai?"): the clause that states it goes, the question stays (code,
+    // studio/request.js selfAnswer; never on a safeguarding turn)
+    if (!safetyWords && teacherReply) {
+      const said = (next.recent ?? []).slice(0, -1);
+      const hit = seamSafe("say.selfAnswer", () => selfAnswer(teacherReply, { recent: said.filter((x) => x.who === "teacher").map((x) => String(x.text ?? "")),
+        child: said.filter((x) => x.who === "child").map((x) => String(x.text ?? "")), worked: String(kit?.workedExample?.problem ?? "") }), null);
+      const fixed = hit ? seamSafe("say.unanswer", () => unanswer(teacherReply, hit), null) : null;
+      if (fixed && fixed !== teacherReply) {
+        teacherReply = fixed;
+        const row = staged.find((x) => x.seq === teacherReplySeq);
+        if (row) { row.text = fixed; row.meta = { ...(row.meta ?? {}), guard: [...new Set([...(row.meta?.guard ?? []), "self_answer"])] }; }
+        const last = next.recent?.[next.recent.length - 1];
+        if (last?.who === "teacher") next.recent = [...next.recent.slice(0, -1), { ...last, text: fixed.slice(0, 400) }];
+        guard = { ...guard, caught: [...new Set([...(guard?.caught ?? []), "self_answer"])], replaced: true };
+        studioReasons.push("say.self_answer");
         delivery = seamSafe("expressive.planDelivery", () => expressiveSeam.planDelivery(moment, teacherReply), delivery);
       }
     }
