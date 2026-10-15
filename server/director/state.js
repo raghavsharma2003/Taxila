@@ -369,9 +369,12 @@ const moveKindFor = (item) => (item.kind === "practice" ? "practice" : item.kind
 // was offered "Carry on" / "Stop for today" on the check-in). The stop label keeps "bas" / "aaj ke liye" so the stop reading
 // and the harnesses that find the stop chip by its words still hold; the ids are what the Director reads.
 const CHIP_LABELS = Object.freeze({
-  english: { easier: "An easier one", rest: "Short break", go: "Keep going", cont: "Carry on", stop: "Stop for today", back: "Back to the lesson" },
-  hinglish: { easier: "Thoda aasaan wala", rest: "Chhota break", go: "Aage chalte hain", cont: "Aage padhte hain", stop: "Aaj ke liye bas", back: "Lesson par wapas" },
-  hindi: { easier: "थोड़ा आसान वाला", rest: "छोटा ब्रेक", go: "आगे चलते हैं", cont: "आगे पढ़ते हैं", stop: "आज के लिए बस", back: "पाठ पर वापस" },
+  english: { easier: "An easier one", rest: "Short break", go: "Keep going", cont: "Carry on", stop: "Stop for today", back: "Back to the lesson",
+    visual: "Show me a picture", story: "Tell it as a story", game: "Play a game" },
+  hinglish: { easier: "Thoda aasaan wala", rest: "Chhota break", go: "Aage chalte hain", cont: "Aage padhte hain", stop: "Aaj ke liye bas", back: "Lesson par wapas",
+    visual: "Picture dikhao", story: "Kahani mein batao", game: "Game khelte hain" },
+  hindi: { easier: "थोड़ा आसान वाला", rest: "छोटा ब्रेक", go: "आगे चलते हैं", cont: "आगे पढ़ते हैं", stop: "आज के लिए बस", back: "पाठ पर वापस",
+    visual: "तस्वीर दिखाओ", story: "कहानी में बताओ", game: "गेम खेलते हैं" },
 });
 export function chipLabels(lang) {
   return CHIP_LABELS[lang] ?? CHIP_LABELS.english;
@@ -1053,9 +1056,10 @@ const offSubject = (subject, kit) => (subject && !kitMentions(kit, subject) ? St
 const offTopicNow = (s, kit) => (s.offTopic && s.turn - s.offTopic.turn <= 4 ? offSubject(s.offTopic.subject, kit) : null);
 
 const TEACH_KINDS = new Set(["hook", "explain", "worked_example", "reteach"]);
-/** The ways-in chips (UI chrome, English): a picture, a story, a game, or back to the lesson. */
-const waysChips = (labels) => [{ id: "req:visual", label: "Show me a picture" }, { id: "req:story", label: "Tell it as a story" },
-  { id: "req:game", label: "Play a game" }, { id: "stop:continue", label: labels.back }];
+/** The ways-in chips (the child's words, in her language; r5 QA D41): a picture, a story, a game, or back to the lesson.
+ * The Director reads the ids; a label spoken aloud reads as the same request (director/requests.js). */
+const waysChips = (labels) => [{ id: "req:visual", label: labels.visual }, { id: "req:story", label: labels.story },
+  { id: "req:game", label: labels.game }, { id: "stop:continue", label: labels.back }];
 /** The request types p5-interaction adds (conversation/lexicon.js readings and the UNDERSTAND note, via policy.js). */
 export const P5_REQUESTS = new Set(["clarify", "repeat", "back", "skip", "know", "harder", "easier", "boredom", "frustration", "thinking", "identity",
   "uptake", "decline", "answer_q", "adapt", "adopt", "adult", "park", "detour", "stop", "hold_checkin", "ask_invite", "unclear", "play_act"]);
