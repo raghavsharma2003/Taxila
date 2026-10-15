@@ -200,6 +200,20 @@ export function agentCallOf({ state, kit, event, lane = "voice", onScreen = "not
  * until the turn replays them. → { key, done: Promise<{ text, usage }>, replay(): AsyncIterable<string>, abort(why), aborted,
  * startedAt } | null (not speculable). Never throws; a failed call rejects `done` and the turn falls back to its own call.
  */
+/**
+ * A speculation the turn did not use, added to the lesson's waste record (stream 3: kept apart from the lesson budget, shown
+ * next to the hit rate): { dropped, cut, tokens, usd } — a call that had finished brings its exact usage, one cut mid-way
+ * counts as cut. PURE.
+ */
+export function specWasteOf(prev, spec) {
+  const w = { dropped: 0, cut: 0, tokens: 0, usd: 0, ...(prev ?? {}) };
+  if (!spec) return w;
+  w.dropped += 1;
+  if (spec.usage) { w.tokens += (spec.usage.in ?? 0) + (spec.usage.out ?? 0); w.usd = +(w.usd + ((() => { try { return usdOf(spec.dep, spec.usage) ?? 0; } catch { return 0; } })())).toFixed(5); }
+  else w.cut += 1;
+  return w;
+}
+
 export function agentSpeculate({ state, kit, event, silent = false, lessonId, lane = "voice", tools = screenTools, streamFn = chatStream, now = Date.now }) {
   const a = state.agent ?? {};
   const usage = a.usage ?? { usd: 0, tokens: 0 };
@@ -212,6 +226,7 @@ export function agentSpeculate({ state, kit, event, silent = false, lessonId, la
   const buf = []; let ended = false; const waiters = new Set();
   const wake = () => { for (const w of waiters) w(); waiters.clear(); };
   const done = streamFn(dep, messages, { ...opts, signal: ctl.signal, onDelta: (d) => { buf.push(d); wake(); } })
+    .then((r) => { spec.usage = normUsage(r?.usage) ?? null; spec.dep = dep; return r; })
     .finally(() => { ended = true; wake(); });
   done.catch(() => {});
   const spec = {
@@ -362,7 +377,7 @@ export async function agentTurn({ state, kit, event, silent = false, verdict = n
   const slot = game?.slot ?? (board?.pageId ? (() => { try { return tools.slot?.(lessonId, board.pageId) ?? null; } catch { return null; } })() : null);
   return {
     ...(typeof onSay === "function" ? { streamed: true, firstSayMs, tail: appended } : {}),
-    say, intent: MOVE_OF[out.intent] ?? "explain", item, board, cleared, picture, game, gameRefused, screen, slot, speculation: adopted ? "adopted" : spec ? "dropped" : null,
+    say, intent: MOVE_OF[out.intent] ?? "explain", item, board, cleared, picture, game, gameRefused, screen, slot, speculation: adopted ? "adopted" : spec ? "dropped" : null, ...(spec && !adopted ? { droppedSpec: spec } : {}),
     read: out.read?.skill && out.read.level !== "unknown" ? { skill: clip(out.read.skill, 80), level: out.read.level, evidence: clip(out.read.evidence, 160) } : null,
     plan: clip(out.plan, 700), end: !!out.end && !silent, usage: { usd: turnUsd, tokens: (u.in ?? 0) + (u.out ?? 0) }, ms, notes, deployment: dep, at: now,
   };
@@ -433,6 +448,7 @@ export function applyAgentTurn(next, out, { kit, childText = "", cls = null, car
     skill: out.item?.skillId ?? a.skill ?? kit.skills?.[0]?.id,
     boards: (a.boards ?? 0) + (out.board ? 1 : 0), pictures: (a.pictures ?? 0) + (out.picture?.job ? 1 : 0),
     ...(out.gameRefused || a.noGame ? { noGame: true } : {}),
+    ...(out.droppedSpec ? { specWaste: specWasteOf(a.specWaste, out.droppedSpec) } : {}),
     // a page that went up when the child asked to SEE something is theirs: the stale-page clear never takes it (stream 2)
     ...(out.board?.pageId && childText && visualAskOf(childText) ? { askedPageId: out.board.pageId } : {}),
     usage: { usd: +((a.usage?.usd ?? 0) + out.usage.usd).toFixed(5), tokens: (a.usage?.tokens ?? 0) + out.usage.tokens },

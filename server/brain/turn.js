@@ -75,7 +75,7 @@ import { parseVoice } from "../../src/play/core/voice.ts";
 import { askTruth, VISUAL_ON_STAGE, VISUAL_NOT_YET, drawAsked, pictureNote } from "../director/shapes.js";
 import { picturesFor, startPicture, takeFailedPicture } from "../studio/picture.js";
 import { comprehensionRead } from "../director/read.js";
-import { agentTurn, eventOf, applyAgentTurn } from "../agent/agent.js";
+import { agentTurn, eventOf, applyAgentTurn, specWasteOf } from "../agent/agent.js";
 import { childTurnRow, clientInstructions, debugFor, floorIncidentStmt, incidentStmt, kitFor, laneOf, runTurnTx, stageTurns, turnInsertStmt, turnLane, withAsk, withSeamUi, withStudioSlot } from "./rows.js";
 import { traceIdentify, traceLesson } from "../trace/context.js";
 import { record } from "../trace/writer.js";
@@ -539,7 +539,10 @@ export async function lessonTurn(req, body, hooks = {}) {
       next.agent = { ...(next.agent ?? state.agent ?? {}), fallbacks: ((next.agent ?? state.agent)?.fallbacks ?? 0) + 1 };
     }
   }
-  if (!agentOut) dropSpec(agentFallback ? "agent fell back" : "not an agent turn");
+  if (!agentOut && hooks?.agentSpec) {
+    dropSpec(agentFallback ? "agent fell back" : "not an agent turn");
+    next.agent = { ...(next.agent ?? state.agent ?? {}), specWaste: specWasteOf((next.agent ?? state.agent)?.specWaste, hooks.agentSpec) };
+  }
   // Seam (W2-I, server/relational/seam.js): one RelationalDirective per turn (pure, ≤ 3 ms). null = no relational move, and
   // nothing below changes. W2-E's BR5 splits it into the kernel's authority ranks; until then only its face display rides
   // the ui (teacherAffect, never keyed to a correct verdict).
