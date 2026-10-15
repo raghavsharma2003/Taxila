@@ -13,6 +13,18 @@
    "title": "No affirmation that approves what nobody said (open-r143-affirm-on-no-answer; brain/say.js affirmOpenerFix on every lane's final reply, never a safeguard). (a) not_yet / partial verdict or truly empty input: the leading affirmation goes; (b) a right answer that opens No / nahi / नहीं: a bare Yes / Haan / हाँ opener becomes Right / Sahi / सही. Same function over the sim lab's transcripts: 14.2 decided Director 860 turns 1 stripped, 0 left; e46a281 decided 1,698 turns 3 polarity rewrites, 0 left; f444f064 continuer OOS 415 turns 0 (a 'Right-align' opener is not an affirmation); p30 re-run 1 polarity rewrite ('Yes, Pihu—earthworm has no legs' -> 'Right, Pihu—…'). Not covered: the polarity case on the agent lane's streamed first clause."
   },
   {
+   "id": "rj-r144-wordtoks-keep-marks",
+   "kind": "rejection",
+   "at": "2026-10-15",
+   "title": "Keeping Devanagari vowel signs (\\p{M}) in spoken-number.js wordToks so 'बटा' tokenises whole (4A, 14.4 spoken fractions): it moved 206 of 2,008 sim-lab Devanagari tail verdicts that had nothing to do with fractions, e.g. 'पाँच मीटर' for '5 m' true -> false. Replaced by reading a spoken Devanagari fraction as one number before tokenising (DEVA_FRACTION), which moved only the 2 fraction lines."
+  },
+  {
+   "id": "rj-r144-ignore-devanagari-tail",
+   "kind": "rejection",
+   "at": "2026-10-15",
+   "title": "Fixing the keep-marks side effect by having tailAgrees ignore a Devanagari tail entirely (4A, 14.4 spoken fractions): it moved 832 of 2,008 sim-lab Devanagari tail verdicts the other way (contradicting tails stopped vetoing). Replaced by DEVA_FRACTION with wordToks unchanged (2 moved, both fraction lines false -> true, 0 unit readings moved)."
+  },
+  {
    "id": "dc-r144-deep-marks-switch",
    "kind": "decision",
    "at": "2026-10-15",
