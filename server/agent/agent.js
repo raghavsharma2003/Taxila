@@ -70,13 +70,22 @@ export function withoutPraise(say) {
   return out ? out[0].toUpperCase() + out.slice(1) : String(say ?? "");
 }
 
+/** Her line without pointing at the screen or promising a show that is not up (a refused or pending page, a picture job). */
+const SHOW_CLAIM = /(?:^|[^\p{L}])(?:dekho|dekhiye|dekhna|look|see\s+(?:the|this|here)|here\s+(?:it\s+is|is)|yeh\s+raha|ye\s+raha|dikhati\s+hoon|dikhaati\s+hoon|dikha\s+rahi|dikhaungi|dikhaoongi|bana\s+rahi|banati\s+hoon|draw\s+kar\s*(?:ti|rahi)|let\s+me\s+(?:show|draw)|i(?:'ll|\s+will)\s+(?:show|draw))(?![\p{L}])|screen|board|स्क्रीन|बोर्ड|देखो/iu;
+export function withoutShowClaims(say) {
+  const parts = String(say ?? "").match(/[^.!?।]+[.!?।]*\s*/g) ?? [];
+  const kept = parts.filter((p) => !(SHOW_CLAIM.test(p) && !/[?？]\s*$/.test(p.trim())));
+  const out = kept.join("").trim();
+  return out || stripScreenRefs(say) || String(say ?? "");
+}
+
 /**
  * One agent turn. → { say, intent, item, board: ScreenTruth | null (a page that went up), cleared, picture: ScreenTruth | null,
  *   screen: ScreenTruth (after her actions), slot, read, plan, end, usage, ms, notes[] }
  * Throws on a model error, a timeout, a bad output or a budget: the caller (brain/turn.js) then lets the Director lane take
  * the turn.
  */
-export async function agentTurn({ state, kit, event, silent = false, verdict = null, lessonId, lane = "voice", trace, chatFn = chat, tools = screenTools, now = Date.now() }) {
+export async function agentTurn({ state, kit, event, silent = false, verdict = null, lessonId, lane = "voice", child = null, trace, chatFn = chat, tools = screenTools, now = Date.now() }) {
   const a = state.agent ?? {};
   const usage = a.usage ?? { usd: 0, tokens: 0 };
   if (usage.usd >= AGENT_LIMITS.lessonUsd || usage.tokens >= AGENT_LIMITS.lessonTokens) throw new AgentBudgetError(`lesson budget spent (${usage.usd.toFixed(3)} USD, ${usage.tokens} tokens)`);
@@ -103,7 +112,7 @@ export async function agentTurn({ state, kit, event, silent = false, verdict = n
     if (!item) notes.push(`refused pose_item ${clip(out.pose_item, 60)}: not an offered item`);
   }
   let say = clip(out.say, AGENT_LIMITS.sayMaxChars);
-  let board = null, cleared = false, picture = null, screen = before;
+  let board = null, cleared = false, picture = null, game = null, screen = before, unconfirmed = false;
   if (silent) {
     // silence never brings new content: the same question at most, no new board, no picture
     if (item && item.id !== state.activeItemId) { notes.push("silence: new item dropped"); item = null; }
@@ -114,9 +123,15 @@ export async function agentTurn({ state, kit, event, silent = false, verdict = n
     else {
       const t = await Promise.resolve().then(() => tools.show(lessonId, spec, { say, skillId: item?.skillId ?? a.skill ?? "", topicId: kit.topicId ?? "", lang: state.ctx?.lang ?? "hinglish" }))
         .catch((e) => ({ ok: false, refused: { why: String(e?.message ?? e).slice(0, 80), checks: ["error"] } }));
-      if (t?.ok && !t.refused && t.on !== "nothing") { board = t; screen = t; } else notes.push(`board refused: ${clip(t?.refused?.why, 80)}`);
+      if (t?.ok && !t.refused && t.on !== "nothing") { board = t; screen = t; } else { unconfirmed = true; notes.push(`board ${t?.pending ? "pending" : "refused"}: ${clip(t?.refused?.why, 80)}`); }
     }
   } else if (out.board?.action === "clear") { try { screen = tools.clear(lessonId); cleared = true; } catch { /* the board stays */ } }
+  if (!silent && out.play && tools.game) {
+    const g = await Promise.resolve().then(() => tools.game(lessonId, { skillId: item?.skillId ?? a.skill ?? "", topicId: kit.topicId ?? "", child }))
+      .catch((e) => ({ ok: false, refused: { why: String(e?.message ?? e).slice(0, 60) } }));
+    if (g?.ok) { game = g; screen = g; notes.push(`game up ${clip(g.game?.family, 30)}`); } else { unconfirmed = true; notes.push(`game refused: ${clip(g?.refused?.why, 60)}`); }
+  }
+  if (out.picture && !silent) unconfirmed = true;
   if (!silent && out.picture) {
     const t = (() => { try { return tools.picture(lessonId, clip(out.picture, 40)); } catch (e) { return { ok: false, refused: { why: String(e?.message ?? e).slice(0, 60) } }; } })();
     picture = t;
@@ -129,6 +144,9 @@ export async function agentTurn({ state, kit, event, silent = false, verdict = n
   if (lane !== "text") { const spoken = speakNotWrite(say); if (spoken !== say) { say = spoken; notes.push("type/write rewritten to say"); } }
   const texts = screen?.on === "board" ? (screen.texts ?? []) : [];
   const ui = texts.length ? { studioSlot: { artifact: { kind: "whiteboard", script: { ops: texts.map((t) => ({ op: "text", text: t })) } } } } : {};
+  // something she asked to show this turn that did not go up (refused, still being drawn, a picture job): her line may not
+  // point at the screen or promise it is there (sim lab 748ddff: points_empty_screen 23/64, "dono andaaze dikhati hoon")
+  if (unconfirmed && !board && !game) { const held = withoutShowClaims(say); if (held !== say) { say = held; notes.push("unconfirmed show unpointed"); } }
   if (!screen || screen.on === "nothing" ? pointsAtScreen(say) : screen.on === "board" && screenClaimProblem(say, ui, null)) {
     const fixed = stripScreenRefs(say);
     notes.push("screen claim unpointed");
@@ -140,9 +158,9 @@ export async function agentTurn({ state, kit, event, silent = false, verdict = n
     say = `${say} ${promptFor(item, state.ctx?.lang)}`.trim();
     notes.push("card question appended");
   }
-  const slot = board?.pageId ? (() => { try { return tools.slot?.(lessonId, board.pageId) ?? null; } catch { return null; } })() : null;
+  const slot = game?.slot ?? (board?.pageId ? (() => { try { return tools.slot?.(lessonId, board.pageId) ?? null; } catch { return null; } })() : null);
   return {
-    say, intent: MOVE_OF[out.intent] ?? "explain", item, board, cleared, picture, screen, slot,
+    say, intent: MOVE_OF[out.intent] ?? "explain", item, board, cleared, picture, game, screen, slot,
     read: out.read?.skill && out.read.level !== "unknown" ? { skill: clip(out.read.skill, 80), level: out.read.level, evidence: clip(out.read.evidence, 160) } : null,
     plan: clip(out.plan, 700), end: !!out.end && !silent, usage: { usd: turnUsd, tokens: (u.in ?? 0) + (u.out ?? 0) }, ms, notes, deployment: dep, at: now,
   };

@@ -186,3 +186,18 @@ test("after a right plain answer, that skill's deep item is offered first (the e
   assert.equal(first.skillId, "c4-maths-ch05-t01-s2");
   assert.ok(["contrast", "near_transfer", "error_spot"].includes(first.kind), first.kind);
 });
+
+test("a page asked for this turn that is not up (refused or still drawing) is never pointed at or promised; a game is a real piece or an honest not-yet", async () => {
+  const tools = fakeTools();
+  const r = await run(base({ say: "Main dono andaaze dikhati hoon. Dekho, ek gola neeche hai. Kaunsa bada hai?", board: { ...KEEP, action: "show", kind: "draw", subject: "two estimates" } }), { tools });
+  assert.equal(r.board, null);
+  assert.equal(r.say, "Kaunsa bada hai?");
+  const g = fakeTools();
+  g.game = async () => ({ ok: true, on: "game", words: "the screen shows play:catch/count for the child to use", texts: [], slot: { slotId: "g:slot", intentId: "g", state: "revealed" }, game: { family: "catch" } });
+  const ok = await run(base({ say: "Chalo, ek game khelte hain!", play: true }), { tools: g });
+  assert.equal(ok.slot.intentId, "g"); assert.equal(ok.screen.on, "game"); assert.equal(ok.say, "Chalo, ek game khelte hain!");
+  const none = fakeTools(); none.game = async () => ({ ok: false, refused: { why: "no game exists for this yet" } });
+  const no = await run(base({ say: "Dekho, game screen par aa gaya. Ab ek paheli suno: 2 aur 3 kitne?", play: true }), { tools: none });
+  assert.equal(no.say, "Ab ek paheli suno: 2 aur 3 kitne?");
+  assert.ok(no.notes.some((n) => /game refused/.test(n)));
+});

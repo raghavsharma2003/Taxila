@@ -3,7 +3,7 @@
 // say is on the screen. A picture is a background job: its content_ready / content_failed arrives between turns and is
 // handed to her as part of the next event, never assumed.
 import { boardShow, boardClear, screenNow, pictureGet } from "../studio/tools.js";
-import { slotSnapshot } from "../studio/seam.js";
+import { slotSnapshot, studioSeam } from "../studio/seam.js";
 
 const KINDS = new Set(["write", "number_line", "table", "shapes", "work", "draw"]);
 const pending = new Map();   // lessonId → content events not yet told to her
@@ -27,7 +27,18 @@ export function specOf(board) {
 /** The real tools (tests pass their own). */
 export const screenTools = {
   now: (lessonId) => screenNow(lessonId),
-  show: (lessonId, spec, o) => boardShow(lessonId, spec, { ...o, timeoutMs: spec.kind === "draw" ? 4500 : 2500 }),
+  // a sketch (kind draw) is a planner job of several seconds: it is started and never awaited (sim lab 748ddff: board
+  // round-trips pushed turns past the timeout); what mounts is ON SCREEN next turn. Code kinds settle at once.
+  show: (lessonId, spec, o) => (spec.kind === "draw"
+    ? (boardShow(lessonId, spec, { ...o, timeoutMs: 9000 }).catch(() => null), Promise.resolve({ ok: false, pending: true, refused: { why: "the sketch is being drawn", checks: ["pending"] } }))
+    : boardShow(lessonId, spec, { ...o, timeoutMs: 1500 })),
+  /** game.start: a real play piece for the skill (the Director lane's forge3 path, studio seam composeAsk), or null. */
+  game: async (lessonId, { skillId, topicId, child }) => {
+    const r = await studioSeam.composeAsk(lessonId, { visual: "game", skillId: skillId || null, topicId: topicId || null, child });
+    if (!r) return { ok: false, refused: { why: "no game exists for this yet", checks: ["coverage"] } };
+    const slot = studioSeam.slotFor(lessonId, null, { visualRequest: true });
+    return slot ? { ...screenNow(lessonId), ok: true, slot, game: r } : { ok: false, refused: { why: "the game could not be shown", checks: ["gate"] } };
+  },
   clear: (lessonId) => boardClear(lessonId),
   picture: (lessonId, subject) => pictureGet(lessonId, subject, { onEvent: (e) => say(lessonId, e) }),
   slot: (lessonId, pageId) => (pageId ? slotSnapshot(lessonId, pageId) : null),
