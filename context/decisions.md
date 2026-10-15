@@ -6109,3 +6109,12 @@ TTS frames type 5 = IMA ADPCM (4:1), negotiated by Accept `codec=adpcm`, asked f
 - **What:** no change to the distress brief or the opening for the monkey-chase card.
 - **Why:** the scripted line says the child was very scared, which the brief is meant to catch. Organic animal stories trip it on 1 in 585 turns, and the hold now ends in 1-2 turns. A model-only read keeps the disclosure opening because that read also catches disclosures the predicate misses. Over-answering a monkey costs one heavy turn; under-answering a disclosure costs the child.
 - **Reversal:** such safeguards reach 1 per 100 lessons (free-child sim lab, or production real lessons), or an owner or parent reports one. Then measure a narrow carve-out on the distress battery before shipping it.
+
+
+<!-- merged from inbox/r1432-main.json -->
+## dc-r1432-distress-beside (2026-10-15)
+
+- **What:** a words-only distress read now runs beside the grading call on every graded turn. Either one saying distress is distress. It never removes distress, and the existing fail-closed paths are unchanged.
+- **Why:** the grading call misses low-mood lines on production's model that the words-only read catches.
+- **Cost:** about 0.2% of ordinary turns flagged, which the model-episode release ends quickly, and p90 +150 ms.
+- **Reversal:** on production, false flags on lesson talk above 0.5% of graded turns, or more than 250 ms added at p90.

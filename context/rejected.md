@@ -2636,3 +2636,15 @@ Judging her 'parts' words against the module that was up BEFORE a named visual a
 - **Tried (proposal):** a superseded_by flag on the evidence tables, filtered by every reader.
 - **What breaks:** about 10 readers today. Any one that misses the filter, now or later, silently brings back the abandoned grade.
 - **Instead:** move superseded rows to archive tables.
+
+
+<!-- merged from inbox/r1432-main.json -->
+## rj-r1432-beside-on-taxila-fast (2026-10-15)
+
+- **Tried:** the second read on taxila-fast, for model diversity.
+- **What broke:** it added p50 268 ms / p90 542 ms to the turn.
+
+## rj-r1432-beside-on-relational-trigger (2026-10-15)
+
+- **Considered:** running the read only when a low-mood signal fires.
+- **What breaks:** the missed line carries no such signal.
