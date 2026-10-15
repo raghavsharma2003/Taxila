@@ -67,7 +67,7 @@ const by = (arm) => {
   }
   // agent lane (round 5): which lane each lesson really ran on, Director takeovers, cost, and the agent's own latency per turn
   // (the @agent mark = ms from the turn's start to the agent's move; the teacher deployment's model calls)
-  const ag = { lessons: 0, fallbacks: 0, usd: 0, agentMs: [], teacherCallMs: [], timeouts: 0, read: { n: 0, agree: 0, over: 0, under: 0, skills: 0 }, claimed: { n: 0, agree: 0, over: 0, heldBack: 0 }, matrix: {} };
+  const ag = { lessons: 0, fallbacks: 0, usd: 0, agentMs: [], classifiedMs: [], teacherCallMs: [], timeouts: 0, boardPendingTurns: 0, read: { n: 0, agree: 0, over: 0, under: 0, skills: 0 }, claimed: { n: 0, agree: 0, over: 0, heldBack: 0 }, matrix: {} };
   for (const r of rs) {
     if (r.lane2?.teacher !== "agent") continue;
     ag.lessons++;
@@ -87,15 +87,23 @@ const by = (arm) => {
       ag.matrix[key] = (ag.matrix[key] ?? 0) + 1;
     }
     ag.read.skills += Object.keys(r.state ?? {}).length;
-    for (const t of r.turns) for (const x of t.reasons?.timings ?? []) {
-      if (x.k === "@agent") ag.agentMs.push(x.ms);
-      if (x.d && x.d === (r.lane2.agent?.deployment ?? x.d) && /gpt6|grok|gpt61/.test(x.d) && x.k === "chat") { if (x.st === 200) ag.teacherCallMs.push(x.ms); else ag.timeouts++; }
+    for (const t of r.turns) {
+      // the teacher's call is the chat row AFTER the @classified mark (before it: the distress read, classify and note calls,
+      // one of them on grok, so a deployment-name match mixed them in)
+      let classified = false;
+      for (const x of t.reasons?.timings ?? []) {
+        if (x.k === "@classified") { classified = true; ag.classifiedMs.push(x.ms); }
+        if (x.k === "@agent") ag.agentMs.push(x.ms);
+        if (classified && x.k === "chat" && x.d) { if (x.st === 200) ag.teacherCallMs.push(x.ms); else ag.timeouts++; }
+      }
+      // a draw-kind page still being drawn when her line was sent (its slot reaches the text runner a turn late)
+      if ((t.reasons?.guard?.agent ?? []).some((n) => /board pending/i.test(String(n)))) ag.boardPendingTurns++;
     }
   }
   const p50 = (a) => { const s = [...a].sort((x, y) => x - y); return s.length ? s[Math.floor(s.length / 2)] : null; };
   const p90 = (a) => { const s = [...a].sort((x, y) => x - y); return s.length ? s[Math.floor(s.length * 0.9)] : null; };
   if (f.ack.asked) { const r = [...f.ack.readyMs].sort((a, b) => a - b); f.ack.readyP50 = r[Math.floor(r.length / 2)] ?? null; } delete f.ack.readyMs;
-  const agent = ag.lessons ? { lessons: ag.lessons, ownRead: ag.read, readTruth: ag.matrix, claimed: ag.claimed, fallbacks: ag.fallbacks, usdPerLesson: +(ag.usd / ag.lessons).toFixed(4), agentMarkP50: p50(ag.agentMs), agentMarkP90: p90(ag.agentMs), teacherCallP50: p50(ag.teacherCallMs), teacherCallP90: p90(ag.teacherCallMs), nonOkCalls: ag.timeouts } : null;
+  const agent = ag.lessons ? { lessons: ag.lessons, ownRead: ag.read, readTruth: ag.matrix, claimed: ag.claimed, fallbacks: ag.fallbacks, usdPerLesson: +(ag.usd / ag.lessons).toFixed(4), agentMarkP50: p50(ag.agentMs), agentMarkP90: p90(ag.agentMs), classifiedP50: p50(ag.classifiedMs), classifiedP90: p90(ag.classifiedMs), teacherCallP50: p50(ag.teacherCallMs), teacherCallP90: p90(ag.teacherCallMs), nonOkCalls: ag.timeouts, boardPendingTurns: ag.boardPendingTurns } : null;
   return { ...f, agent, sameCardMaxRun: undefined, startMsP50: p50(f.startMs), turnMsP50: p50(f.turnMs), turnMsP90: p90(f.turnMs), startMs: undefined, turnMs: undefined };
 };
 const arms = [...new Set(recs.map((r) => `${r.arm}/${r.lane}`))];
