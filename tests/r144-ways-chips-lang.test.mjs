@@ -65,3 +65,12 @@ test("the Hinglish language rule keeps Hinglish through an English line; a langu
   assert.doesNotMatch(hinglish, /switch to English[^.]*follow them/);
   assert.match(sys("english", true), /they asked for simple English/);
 });
+
+// 14.4 (main): a question word about THIS story is a question about its content, not a request to be taught as a story.
+// Measured: the 3,162 sim-lab child lines (225 records) move 0 (1 read as a story request before, 11 mention kahani / story).
+test("a question about this story stays a question; a story request stays a request", () => {
+  for (const t of ["is kahani mein raja kaun hai", "yeh kahani kab ki hai", "iss story mein kya hua", "who is the king in this story",
+    "what happens in this story", "इस कहानी में राजा कौन है"]) assert.notEqual(requestOf(t)?.type, "story", t);
+  for (const t of ["ek kahani sunao", "kahani batao na", "Kahani mein batao", "story ki tarah batao", "tell it as a story", "kahani sunao",
+    "kahani shuru karein?", "कहानी सुनाओ"]) assert.equal(requestOf(t)?.type, "story", t);
+});
