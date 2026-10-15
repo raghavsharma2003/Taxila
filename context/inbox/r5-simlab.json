@@ -87,7 +87,7 @@
   {
    "id": "rj-simlab-uncapped-lesson-load",
    "kind": "rejection",
-   "title": "Running sim-lab lessons uncapped (up to 10-16 in parallel across runs) against the taxila-fast deployment that production shares: production taxila-fast took 51/361 429s in one hour while TEST pushed 1430 calls, and the lab's own Director turns fell to the fallback line on 4-11% of turns (14.1 runs dropped); the loop now caps lessons at 4 in parallel with staggered starts, judges on their own concurrency, and marks a run DROPPED above 2% unavailable turns",
+   "title": "Running sim-lab lessons uncapped (up to 10-16 in parallel across runs) against the taxila-fast deployment that production shares: the lab's own Director turns fell to the fallback line on 4-11% of turns (measured; 14.1 runs dropped). The production-impact figure first given (51/361 429s at 06 UTC) was later traced to main's own scripts and gate stubs, not children's lessons (ms-r143-prod-trace-origin), so no child impact was measured; TEST chat now runs on the southindia account for the structural reason (shared quota) (14.1 runs dropped); the loop now caps lessons at 4 in parallel with staggered starts, judges on their own concurrency, and marks a run DROPPED above 2% unavailable turns",
    "at": "2026-10-15"
   },
   {
