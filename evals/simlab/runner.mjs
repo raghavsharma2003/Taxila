@@ -218,7 +218,8 @@ export async function runLesson(p, { base, lane = "text", maxTurns = 14, voice =
       const teacher = r.teacherReply ?? "";
       if (teacher) heard.push({ who: "teacher", text: teacher });
       rec.turns.push({ n, at: new Date().toISOString(), child: { action: c.action, say: c.say, chipId: c.chipId, chipLabel: c.chipLabel, private: c.private, sent: body.childText, ...(asr ? { asr } : {}) },
-        teacher, move: r.move?.kind ?? null, ui: r.ui, moduleCommands: r.moduleCommands ?? [], studio: r.studio ?? null, screen, end: !!r.end,
+        // move.request / move.visual: what the server read the child as asking to see (stream 2's honesty-floor scope)
+        teacher, move: r.move?.kind ?? null, moveAsk: r.move ? { request: r.move.request ?? null, visual: r.move.visual ?? null } : null, ui: r.ui, moduleCommands: r.moduleCommands ?? [], studio: r.studio ?? null, screen, end: !!r.end,
         speakNow: r.speakNow ?? null, reasons: reasonsOf(r), ms: r._ms, ...(ackRes ? { ack: ackRes } : {}), ...(d ? { decided: d } : {}) });
       posed = decided ? await posedItem(r.ui?.ask, s.lessonId) : null;
       if (r.end) break;
