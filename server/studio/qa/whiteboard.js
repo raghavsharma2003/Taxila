@@ -341,11 +341,20 @@ export function answersOf(line) {
   if (uniq.length < 2) return new Set();
   const out = new Set();
   const add = (x) => { if (Number.isFinite(x) && x > 0) { const t = canon(String(Math.round(x * 1000) / 1000)); if (!said.has(t)) out.add(t); } };
-  add(all.reduce((a, b) => a + b, 0));
-  add(uniq.reduce((a, b) => a + b, 0));
-  // two numbers: what a question over them asks (a + b, the perimeter 2 × (a + b), the area a × b, a − b); over three or
-  // more only the totals (a pair's sum is a step, not the answer: "can 2, 3 and 8 make a triangle?" over "2 + 3 = 5")
-  if (uniq.length === 2) { const [a, b] = uniq; add(2 * (a + b)); add(a * b); add(Math.abs(a - b)); }
+  // only what her question's own words ask for ("3 equal groups, each with 5 dots … how many in one group?" asks 5, never
+  // the 15 the board counts; "can 2, 3 and 8 make a triangle?" asks no sum): the operation is read from her words
+  const t = String(line ?? "").toLowerCase();
+  const sums = /\b(?:jod\w*|total|sum|plus|add\w*|kul|milakar|altogether|in all)\b|\+/u.test(t);
+  const perim = /\b(?:perimeter|boundary|parimap|around|chaaron\s+taraf)\b|परिमाप/u.test(t);
+  const prod = /\b(?:guna|times|multiply|multiplied|product|area|kshetrafal)\b|[×*]|क्षेत्रफल/u.test(t);
+  const diff = /\b(?:minus|ghata\w*|difference|kam|bach\w*|left|subtract\w*|antar)\b|−/u.test(t);
+  if (sums || perim) { add(all.reduce((a, b) => a + b, 0)); add(uniq.reduce((a, b) => a + b, 0)); }
+  if (uniq.length === 2) {
+    const [a, b] = uniq;
+    if (perim) add(2 * (a + b));
+    if (prod) add(a * b);
+    if (diff) add(Math.abs(a - b));
+  }
   return out;
 }
 /** The straight segments a script draws that words must not sit on: lines, arrow shafts, box edges. */
