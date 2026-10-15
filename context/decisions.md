@@ -5967,3 +5967,121 @@ TTS frames type 5 = IMA ADPCM (4:1), negotiated by Accept `codec=adpcm`, asked f
 ## Release 14.2, third pass (main, 2026-10-15)
 
 - **dc-r142-label-block-two-step** (supersedes dc-r142-classify-filter-context) — a harm block on the labels: the words under a neutral brief first, then the distress read across deployments; fail closed on anything but a clean probe and a clean read. Reverse if a missed safeguard traces to a second deployment's clean read.
+
+
+<!-- merged from inbox/r143-main.json -->
+## dc-r143-model-episode-fine-release (2026-10-15)
+
+**What:** a safeguard episode that a MODEL read opened (the classifier, the content filter, an understanding note) steps back once the child's reply clearly says they are fine.
+
+- It goes to the gentle resume, with carry-on / stop chips.
+- If the same reply asks to carry on, it goes straight back to the lesson.
+- Episodes opened by the predicate's families, the relational floor and carried check-ins keep the full hold.
+
+**How "fine" is read:** server/safety/fine.js, precision first. It reads one clause at a time. Vetoes:
+
+- a negated, qualified or time-bound fine;
+- a contrast after it;
+- any negation left over;
+- fear, hurt or harm words;
+- home or distraction tells.
+
+**Why:**
+
+- The sim lab's pet cards held the helpline 2-3 turns after "I am okay … just a scratch" and "ab safe hoon".
+- Predicate episodes keep the hold, because children minimise after real disclosures.
+
+**Reversal:** a missed safeguard traced to a model episode that stepped back, or any red-team or corpus disclosure that reads as fine.
+
+
+<!-- merged from inbox/r143b-main.json -->
+## dc-r143-test-chat-southindia (2026-10-15)
+
+**What:**
+
+- TEST traffic (the sim lab, QA, the main loop's batteries) routes CHAT + RESPONSES to the southindia account, so eastus2 serves production alone.
+- southindia carries TEST plus production's rare 429 overflow.
+- taxila-mistral-m35 was added on southindia.
+- TAXILA_TEST_ON_PRIMARY=1 opts a run back onto eastus2.
+
+**Why:** a separate region is impossible, because GlobalStandard quota is subscription-wide (ms-r143-global-quota).
+
+**Reversal:**
+
+- production overflow failing on southindia while TEST runs, or
+- eastus2 throttling that persists with TEST off it.
+
+
+<!-- merged from inbox/r143c-main.json -->
+## dc-r143-romance-bare-ask (2026-10-15)
+
+**What:** a romance ask with no possessive ("सच में गर्लफ्रेंड बन जाओ", "gf banogi kya", "become my girlfriend") is romance and gets romance_brief, with no helpline.
+
+**Scope:**
+
+- The form needs a second-person or wanting verb.
+- Reported, past, negated and kinship talk stays quiet.
+- Insults and time questions stay out of the lexicon: no floor rule is at stake.
+
+**Reversal:** a firing on reported or kinship talk.
+
+
+<!-- merged from inbox/r143d-main.json -->
+## 14.3 QA pass 12 fixes (main, 2026-10-15)
+
+- **dc-r143-checkin-board-tiles.** The check-in's helplines now show above its choices, but only beside the safe: chips.
+- **dc-r143-home-no-resume-into-episode.** Home no longer offers Continue for a lesson inside an open safeguarding episode.
+- **dc-r143-chips-in-childs-language.** Chips are in Hinglish / Hindi / English. A typed "stop for today" now reads as a stop.
+- **dc-r143-codeswitch-address.** An English lesson's code-switched tum line is held to aap (the parent's setting or the class default) by the closed lexicon, with no model call.
+- **dc-r143-trace-endpoint-lane.** model.call carries endpoint OVERFLOW.
+
+
+<!-- merged from inbox/r143e-main.json -->
+## dc-r143-prod-numbers-need-a-lesson-sid (2026-10-15)
+
+- **What:** a production number about children counts only rows whose sid is a real lesson. sid 'server' rows are scripts, tests and background jobs.
+- **Why:** see ms-r143-prod-trace-origin. The overflow lane and the TEST routing stand on the arm and on the shared limits, not on a throttled child.
+- **Reversal:** a background path that legitimately records child-facing calls with sid 'server'.
+
+
+<!-- merged from inbox/r143f-main.json -->
+## dc-r143-model-reread-same-episode (2026-10-15)
+
+- **What:** inside a model-opened episode, a further model-only distress read is a hold turn, never the opening again. It keeps the helplines, withdraws any resume offer, and never releases on that turn.
+- **Why:** see ms-r143-release-not-firing (545cbf6e). The predicate's families, the relational floor and a carried check-in still restart the full script.
+- **Reversal:** a run where a child whose distress only the model reads gets a weaker answer than the opening, or where the hold loops and children leave more often.
+
+## dc-r143-labeller-kind-model (2026-10-15)
+
+- **What:** the label call's distress read sets kind 'model', as on every other model path.
+- **Why:** a kind-null episode never took the release. The predicate always sets its family first.
+- **Reversal:** a predicate path that can return distress with kind null.
+
+## dc-r143-fine-asked-again (2026-10-15)
+
+- **What:** a clause made only of an asked-again complaint is set aside for the contrast and leftover-negation checks. Carry-on reads canonical spellings and English nouns only inside an ask.
+- **Reversal:** a disclosure that reads fine via asked_again, or real carry-on asks missed often.
+
+
+<!-- merged from inbox/r143g-main.json -->
+## dc-r143-teen-as-digit (2026-10-15)
+
+- **What:** the copy a safety-relevant model call reads (the classifier and its distress reads, the reply prompt and its probe, the understanding note) writes the Hindi number "teen" as "3". "a teen" / "my teen sister" stay as said. The predicate and every code check read the raw words.
+- **Why:** see ms-r143-teen-filter-collision: a quarter of TEST's content-filter safeguards were children doing sums.
+- **Reversal:** a disclosure where "teen" carried the only harm signal the predicate and the distress reads miss.
+
+
+<!-- merged from inbox/r143h-main.json -->
+## dc-r143-edit-supersedes-landed-grade (2026-10-15)
+
+- **What:** a correction that arrives after its turn has landed supersedes that turn's grade. The rows are marked, never deleted, and the ledger folds only the edit. This is 14.4.
+- **Why:** the 2.5 s verdict hold protects her sound, not the grade. The turn lands before the correction in 5-20 of 20 stress turns.
+- **Reversal:** a ledger fold test shows double-counted or lost evidence.
+
+
+<!-- merged from inbox/r143i-main.json -->
+## dc-r143-continuer-owner-cohort (2026-10-15)
+
+- **What:** the continuer (a short "hmm… / achha…" while she prepares her reply) is on for the owner cohort from 14.3, by hashed guardian id.
+- **Why:** see ms-r143-continuer-oos. It held out of sample with zero plays on every turn where a sound would be wrong.
+- **Reversal:** any continuer on a safety, relational, secrecy or leaving turn, or naturalness below 3.5.

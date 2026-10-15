@@ -252,7 +252,7 @@ const WB_SYSTEM = [
   "  every op: id (short, unique), op, t; optional ink: chalk | accent | mark | good | soft (chalk = default); fill takes the same ink names.",
   "sizes code gives number work (plan room for it): column ops 22 units per digit column + 22, 35 per row; fraction 35 wide per token, 75 tall;",
   "  number_line 48 wide per tick label (at least 160), 50 tall; a text of n characters is about 0.6 x size x n wide.",
-  "rules: draw only what her line says (its numbers, its words) or the kit facts given; text is a label, a number or a short term (at most 24 characters, at most 4 words), never a sentence;",
+  "rules: draw what her line says, in her numbers and her words; facts (when given) only fill in what her line leaves out, never replace her numbers; text is a label, a number or a short term (at most 24 characters, at most 4 words), never a sentence;",
   "  draw the situation she says is true NOW (\"here\" / \"yahan\"); a wrong or what-if case only when she contrasts it, smaller and marked;",
   "  never write a person's name; the first op starts by t = 800;",
   "  every label has `to`; no two texts overlap; no text sits on a line or a box edge; arithmetic written on the board is correct;",
@@ -437,9 +437,17 @@ export async function planWhiteboard(ask, { kit, prev, redact = [], deployment =
   const speechMs = speechMsOf(spoken);
   const request = ask?.intent?.request ?? null;
   const asked = plannerRequest(request);
-  const content = (ask.kit?.content ?? []).map(String).slice(0, 8);
+  // (never a facts row "on screen now …": it describes ANOTHER piece, e.g. the explainer@1 rung this board replaces, whose
+  // kit worked example "1/2 x 3/4 = 3/8" prod 2001d8cc's drafts redrew under her "3/5 x 2/3")
+  const content = (ask.kit?.content ?? []).map(String).filter((l) => !/^on screen now\b/i.test(l)).slice(0, 8);
   const itemText = ask.kit?.item ? [ask.kit.item.prompt_en, ask.kit.item.prompt_hi].filter(Boolean) : [];
-  const facts = { numbers: [...new Set([...numbersIn(text), ...numbersIn(content.join(" ")), ...numbersIn(itemText.join(" "))])].slice(0, 24), content: content.slice(0, 6) };
+  // main 14.3 (prod 2001d8cc: her line "3/5 x 2/3, 15 parts, 6 marked", three drafts drew the kit's worked example "1/2 x 3/4 =
+  // 3/8"): kit sentences given as facts are recited as the board (the recitation law). When her line carries its own numbers
+  // the kit is a truth CHECK only (the gate's kitForGate below), never content handed to the model
+  const lineNums = [...numbersIn(text)];
+  const ownNumbers = lineNums.length >= 1;
+  const facts = ownNumbers ? { numbers: [...new Set(lineNums)].slice(0, 24) }
+    : { numbers: [...new Set([...numbersIn(content.join(" ")), ...numbersIn(itemText.join(" "))])].slice(0, 24), content: content.slice(0, 6) };
   const band = ask.intent?.style?.band ?? "B3";
   const user = {
     line: text, clauses: clausesOf(text), speechMs, facts, band, pace: band === "B1" || band === "B2" ? "slower strokes, bigger shapes" : "normal",
@@ -479,12 +487,16 @@ export async function planWhiteboard(ask, { kit, prev, redact = [], deployment =
       const raw = { v: 1, scriptId: ask.intent?.intentId ?? "wb", line: { lessonId: ask.line?.lessonId ?? "", ...(ask.line?.teacherReplySeq != null ? { teacherReplySeq: ask.line.teacherReplySeq } : {}) },
         anchor: "line_audio_start", board: { ...WB_BOARD, ground: "chalk" }, mode: ask.mode === "continue" ? "continue" : "fresh",
         durationMs: Math.max(...ops.map((o) => Number(o.endMs) || 0)), ops };
-      gate = gateWhiteboard(raw, { reply: text, kit: kitForGate, band, speechMs, banned: redact, prior, withhold, ...(request ? { extraNumbers: askedNumbers(request), face: faceDrawing(request) } : {}) });
+      gate = gateWhiteboard(raw, { reply: text, kit: kitForGate, band, speechMs, banned: redact, prior, withhold, ...(request ? { extraNumbers: askedNumbers(request), face: faceDrawing(request), asked: request.kind !== "number_line" && !faceDrawing(request) } : {}) });
       gate.fixes = fit.fixes;
       // round 5 (stream 2): a board that ignores the child's request, or is the page already up, is repaired once (a shape
       // note, not a line), then refused
       const missed = gate.pass && request && !answersRequest(gate.script, request, { drawnFor: true }) ? (request.kind === "number_line" ? "it has no number line (numwork number_line) and a number line was asked" : request.kind === "example" ? "it is not her example worked: write each number she says, one step under the last, ? for what she asks" : `nothing on it names or shows ${asked?.label ?? "what was asked"}`) : null;
       const again = gate.pass && shownBefore(gate.script, { avoid, seen });
+      // ... and a board that writes numbers, none of them hers, when her line says two or more: another example recited
+      const boardNums = [...numbersIn(textsOf(gate.script ?? { ops: [] }).join(" "))];
+      const notHers = gate.pass && !missed && new Set(lineNums).size >= 2 && boardNums.length > 0 && !boardNums.some((n) => lineNums.includes(n));
+      if (notHers) { feedback = `not_her_numbers: her line says ${[...new Set(lineNums)].slice(0, 6).join(", ")}; the board wrote ${[...new Set(boardNums)].slice(0, 6).join(", ")}. Draw HER numbers`; continue; }
       if (gate.pass && !missed && !again) return { ok: true, script: { ...gate.script, facts: gate.facts }, gate, ms: ms(), attempts, usage, usd: usdNow() };
       if (missed || again) { feedback = missed ? `asked: ${missed}; draw what was asked` : "not_again: this is the page that was already up; draw something new"; continue; }
       // W9 is the one failure the model cannot read from the check id: say what to do (a shape note, not a line)

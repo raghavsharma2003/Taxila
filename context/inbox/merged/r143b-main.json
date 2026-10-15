@@ -1,0 +1,36 @@
+{
+ "nodes": [
+  {
+   "id": "dc-r143-test-chat-southindia",
+   "kind": "decision",
+   "at": "2026-10-15",
+   "title": "TEST traffic (the sim lab, QA, the main loop's package batteries via scratchpad pkgserve.mjs / testenvrun.mjs) routes its CHAT and RESPONSES lanes to the southindia account (AZURE_OPENAI_ENDPOINT_CHAT / _RESPONSES + the southindia key). eastus2 then serves production alone. southindia carries TEST plus production's 429 overflow, which should be rare once TEST is off eastus2. TTS / transcribe / realtime stay on the primary. taxila-mistral-m35 was added on southindia so every chat name the server calls exists there. TAXILA_TEST_ON_PRIMARY=1 opts a run back onto eastus2 (latency work that must match production).",
+   "reversal": "moved production calls measured failing on southindia while TEST runs (then TEST gets its own deployments once quota allows), or eastus2 throttling that persists with TEST off it (then the cause was never TEST)"
+  },
+  {
+   "id": "ms-r143-global-quota",
+   "kind": "measurement",
+   "at": "2026-10-15",
+   "title": "GlobalStandard quota for the hot chat models is subscription-wide, not per region: locations/*/usages reads the same in eastus2, southindia, swedencentral, westus3, polandcentral, uaenorth and centralindia: gpt-5.6-luna / sol / terra 2000 of 1000, gpt-6-sol / luna 1000 of 1000, grok-4-1-fast-non-reasoning and DeepSeek-V4-Pro 1000 of 1000. Twins on taxila-ai-swc were refused InsufficientQuota even at capacity 50 (taxila-fast, taxila-brain, grok-4-1-fast-non-reasoning, DeepSeek-V4-Pro / -Flash, taxila-gpt6, taxila-gpt6-luna, gpt-5.6-terra, taxila-fast-bg, taxila-studio-sol, taxila-kimi-code, grok-4-20-non-reasoning). The 8 low-use twins that did succeed were deleted again. southindia smoke through the TEST runner: taxila-fast, grok-4-1-fast-non-reasoning, DeepSeek-V4-Pro, taxila-gpt6-luna, taxila-mistral-m35 and taxila-brain all 200.",
+   "n": 7,
+   "method": "ARM Microsoft.CognitiveServices/locations/{loc}/usages + deployment PUTs on taxila-ai-swc + a TEST-runner chat smoke"
+  },
+  {
+   "id": "rj-r143-test-region-twins",
+   "kind": "rejection",
+   "at": "2026-10-15",
+   "title": "A separate region (swedencentral twins of the chat deployments) for TEST traffic. Broke: the hot models' GlobalStandard quota is one subscription-wide pool that is already fully allocated, so every twin of a model TEST actually uses was refused InsufficientQuota, even at 50. A new region adds no capacity without a quota increase."
+  }
+ ],
+ "edges": [
+  { "src": "dc-r143-test-chat-southindia", "rel": "supersedes", "dst": "open-r142-test-traffic-shares-prod-quota" },
+  { "src": "dc-r143-test-chat-southindia", "rel": "measured_by", "dst": "ms-r143-global-quota" },
+  { "src": "rj-r143-test-region-twins", "rel": "part_of", "dst": "dc-r143-test-chat-southindia" },
+  { "src": "dc-r143-test-chat-southindia", "rel": "constrains", "dst": "dc-r142-chat-429-overflow" }
+ ],
+ "md": {
+  "decisions": "## dc-r143-test-chat-southindia (2026-10-15)\n\n**What:**\n\n- TEST traffic (the sim lab, QA, the main loop's batteries) routes CHAT + RESPONSES to the southindia account, so eastus2 serves production alone.\n- southindia carries TEST plus production's rare 429 overflow.\n- taxila-mistral-m35 was added on southindia.\n- TAXILA_TEST_ON_PRIMARY=1 opts a run back onto eastus2.\n\n**Why:** a separate region is impossible, because GlobalStandard quota is subscription-wide (ms-r143-global-quota).\n\n**Reversal:**\n\n- production overflow failing on southindia while TEST runs, or\n- eastus2 throttling that persists with TEST off it.",
+  "measurements": "## ms-r143-global-quota (2026-10-15)\n\nGlobalStandard quota reads the same in 7 regions:\n\n- gpt-5.6-luna / sol / terra: 2000 of 1000\n- gpt-6-sol / luna: 1000 of 1000\n- grok-4-1-fast and DeepSeek-V4-Pro: 1000 of 1000\n\nswedencentral twins were refused InsufficientQuota even at 50. The southindia smoke returned 6/6 200.",
+  "rejected": "## rj-r143-test-region-twins (2026-10-15)\n\n- **Tried:** swedencentral twins of the chat deployments, so TEST traffic gets its own capacity.\n- **What broke:** the quota is one subscription-wide pool that is already allocated, so every hot twin was refused InsufficientQuota. The 8 low-use twins that succeeded were deleted again."
+ }
+}

@@ -2577,3 +2577,54 @@ Judging her 'parts' words against the module that was up BEFORE a named visual a
 ## Release 14.2, second pass (main, 2026-10-15)
 
 - **rj-r142-toplevel-test-hooks** — top-level beforeEach / afterEach that stub fetch / env leak into other files under the gate's one-process npm test (the 14.2 gate failed three unrelated suites); scope them in describe().
+
+
+<!-- merged from inbox/r142d-main.json -->
+## rj-r142-fixed-wait-harness (2026-10-15)
+- Tried: a fixed 14 s wait between typed turns in r12-liveproof.
+- Broke: her 12.3 s reteach line, plus about 3 s to first sound, outlasted the wait. Type shows only on the child's turn, so turn 2 timed out (2/3) and read as a product failure.
+- Fix: wait (up to 45 s) for Type to be visible before each turn. Result 3/3.
+
+
+<!-- merged from inbox/r143-main.json -->
+## rj-r143-loose-fine (2026-10-15)
+
+- **Tried:** a fine reading with only negation / contrast / harm vetoes.
+- **What broke:** it released 77 of 189 replies, including home-avoidance replies ("थोड़ा ठीक हूँ, बस घर जाने का मन नहीं करता", "safe hu abhi… ghar pe nahi hoon") and "mujhe distract karna hai". It also matched across a sentence break.
+- **Fix:** qualified and time-bound vetoes, home and distraction tells, leftover negation, and matching one clause at a time. 44 of 189 now read as fine, all benign.
+
+
+<!-- merged from inbox/r143b-main.json -->
+## rj-r143-test-region-twins (2026-10-15)
+
+- **Tried:** swedencentral twins of the chat deployments, so TEST traffic gets its own capacity.
+- **What broke:** the quota is one subscription-wide pool that is already allocated, so every hot twin was refused InsufficientQuota. The 8 low-use twins that succeeded were deleted again.
+
+
+<!-- merged from inbox/r143e-main.json -->
+## rj-r143-gate-wrote-prod-trace (2026-10-15)
+
+- **Tried:** the release gate ran npm test with production's DATABASE_URL in its environment.
+- **What broke:** stubbed model calls were written into the production trace (639 rows in 3 days) and misread as production throttling.
+- **Fix:** gateEnv runs the gate in CI's environment, with no database URL.
+
+
+<!-- merged from inbox/r143f-main.json -->
+## rj-r143-reread-climbs-to-resume (2026-10-15)
+
+- **Tried:** the prepared patch treated a model re-read inside a model-opened episode like an ordinary turn: calm went up, and the second re-read offered the resume.
+- **What broke (review):** a child who keeps disclosing to the model alone would be offered the lesson while still being read as distressed.
+- **Fix:** a re-read holds (calm 1, offer withdrawn) and never releases or offers the resume on that turn.
+
+## rj-r143-bare-lesson-carry (2026-10-15)
+
+- **Tried:** fixing the carry-on spelling by adding a bare canonical "leson".
+- **What broke:** on the TEST trace it read "lesson band karein?" (shall we stop?), "lesson boring hai" and "kitna time aur hai lesson mein?" as asks to carry on. Straight back into the lesson after a stop request breaks NEVER MANIPULATE.
+- **Fix:** the English nouns count only inside an ask; stop, tiredness and time-left words keep the chips.
+
+
+<!-- merged from inbox/r143h-main.json -->
+## rj-r143-mai-tx2-streaming (2026-10-15)
+
+- **Tried:** MAI-Transcribe-2-Streaming as the D5 speech recogniser. It is faster, with fewer empty finals.
+- **What broke:** it reads values wrong 9.1% of the time (6 of 66), vs 1.5% for today's azure-speech. A wrong value is a verdict on something the child never said.

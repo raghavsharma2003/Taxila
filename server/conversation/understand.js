@@ -15,7 +15,7 @@
 // A content-filter block on the NOTE is not a distress signal here: classify() already ran the child's words through the
 // filter and the predicate (the floor never depends on this call; a note's distress is OR-ed in, never subtracted).
 import { chat, isContentFilter } from "../azure.js";
-import { scrubPii } from "../director/safety.js";
+import { scrubPii, filterSafe } from "../director/safety.js";
 
 export const INTENTS = Object.freeze([
   "answer_correct", "answer_wrong", "answer_partial", "answer_hedged", "thinking_aloud", "self_correction", "dont_know", "ask_for_answer",
@@ -152,7 +152,8 @@ export async function understand(ctx) {
   if (t0 < openUntil) return null;
   const said = scrubPii(String(ctx.said ?? "")).text;
   if (!said.trim()) return null;
-  const messages = [{ role: "system", content: SYSTEM }, { role: "user", content: userPrompt({ ...ctx, said }) }];
+  // "teen" as 3 in the copy the model reads (safety.js filterSafe); parseNote keeps the raw words
+  const messages = [{ role: "system", content: SYSTEM }, { role: "user", content: filterSafe(userPrompt({ ...ctx, said })) }];
   const deps = understandDeploys();
   const one = async (dep) => {
     const r = await understandDeps.chat(dep, messages, { json: true, maxTokens: 160, effort: "none", timeoutMs: ctx.timeoutMs ?? 2400,

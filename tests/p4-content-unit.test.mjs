@@ -270,7 +270,7 @@ test("board sync: the line plan wins inside the deadline; a slow line plan yield
   assert.equal(r.source, "line", `a 20 ms line plan inside the default ${boardSync.BOARD_SYNC_MS()} ms deadline (answered by ${r.source} at ${r.syncMs} ms)`);
   await withSyncMs(300, async () => {
     const ask = askFor("bs-3", "Teen boxes.");
-    boardSync.prepare(ask, { kit, planWhiteboard: async () => (await delay(150), { ok: true, script: okScript(), usd: 0 }) });
+    boardSync.prepare(ask, { kit, planWhiteboard: async () => (await delay(30), { ok: true, script: okScript(), usd: 0 }) });
     const r2 = await boardSync.plan(ask, { kit, planWhiteboard: async () => (await delay(2000), { ok: true, script: okScript(), usd: 0 }) });
     assert.equal(r2.source, "spec"); assert.ok(r2.syncMs < 900, `synced at ${r2.syncMs} ms`);
   });

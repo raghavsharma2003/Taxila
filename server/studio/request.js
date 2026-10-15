@@ -26,6 +26,9 @@ const SAME = [
   ["machli", "fish", "मछली"], ["gaay", "gai", "cow", "गाय"], ["haathi", "hathi", "elephant", "हाथी"], ["sher", "lion", "tiger", "शेर"],
   ["seb", "apple", "सेब"], ["kela", "banana", "केला"], ["tamatar", "tomato", "टमाटर"], ["pyaaz", "pyaz", "onion", "प्याज"],
   ["ghar", "house", "home", "घर"], ["bijli", "electricity", "बिजली"], ["batti", "bulb", "बल्ब"], ["dil", "heart", "दिल"],
+  ["bhinn", "bhinna", "fraction", "fractions", "भिन्न"], ["sankhya", "number", "numbers", "संख्या"], ["bhaag", "divide", "division", "भाग"],
+  ["guna", "multiply", "multiplication", "गुणा"], ["jod", "add", "addition", "जोड़"], ["ghatav", "subtract", "subtraction", "घटाव"],
+  ["rekha", "line", "lines", "रेखा"], ["kon", "angle", "angles", "कोण"], ["kshetrafal", "area", "क्षेत्रफल"], ["parimap", "perimeter", "परिमाप"],
   ["disha", "direction", "directions", "दिशा", "north", "south", "east", "west", "uttar", "dakshin", "purab", "purv", "pashchim", "उत्तर", "दक्षिण", "पूर्व", "पश्चिम"],
 ];
 const SAME_OF = new Map(SAME.flatMap((g) => g.map((w) => [w, g])));
@@ -108,6 +111,34 @@ export function answersRequest(script, request, { drawnFor = false } = {}) {
   return words.some((w) => all.includes(w));
 }
 
+/**
+ * Round 5 (sim lab boardfacts, 709b A/A: 29-39 of ~260 new pages): a NEW page whose writing shares no content word (4+
+ * letters, by its first 5 letters) and no number with her line is about something else ("Write 'six thousand forty-two'" up
+ * while she asks "345 mein hundreds place ka digit?"; p25 pencil costs under cricket runs). The same predicate the sim lab
+ * counts with (evals/simlab/boardfacts.mjs). A page that writes nothing (shapes only), or a turn whose line is not known,
+ * is not judged. PURE.
+ */
+const SYNC_STOP = new Set("this that with from have what your kya hai hain aur yeh woh isko usko mein par kaise kitne kitna abhi phir karo dekho dekhiye board screen".split(" "));
+// a number said in words is its digits ("teen chauthai" is the board's 3/4)
+const NUM_WORDS = { ek: ["1"], one: ["1"], do: ["2"], two: ["2"], teen: ["3"], three: ["3"], chaar: ["4"], char: ["4"], four: ["4"],
+  paanch: ["5"], panch: ["5"], five: ["5"], chhe: ["6"], che: ["6"], six: ["6"], saat: ["7"], seven: ["7"], aath: ["8"], eight: ["8"],
+  nau: ["9"], nine: ["9"], das: ["10"], ten: ["10"], aadha: ["1", "2"], aadhi: ["1", "2"], half: ["1", "2"], chauthai: ["4"],
+  quarter: ["4"], quarters: ["4"], tihai: ["3"], third: ["3"], thirds: ["3"], "एक": ["1"], "दो": ["2"], "तीन": ["3"], "चार": ["4"], "आधा": ["1", "2"] };
+const syncWords = (s) => new Set(String(s ?? "").toLowerCase().normalize("NFKC").split(/[^\p{L}\p{M}\p{N}]+/u)
+  .flatMap((w) => NUM_WORDS[w] ?? [w])
+  // a word and its other-language name are one word ("भिन्न" in her line, "fraction" on the board): the SAME table above
+  .flatMap((w) => (SAME_OF.has(w) ? [w, SAME_OF.get(w)[0]] : [w]))
+  .filter((w) => (w.length >= 4 || /^\p{N}+$/u.test(w)) && !SYNC_STOP.has(w)).map((w) => (/^\p{N}+$/u.test(w) ? w : w.slice(0, 5))));
+export function syncedWithLine(script, line) {
+  const text = String(line ?? "").trim();
+  const page = textsOf(script).join(" ");
+  if (!text || !page.trim()) return true;
+  const pw = syncWords(page);
+  if (!pw.size) return true;
+  const lw = syncWords(text);
+  return [...pw].some((w) => lw.has(w));
+}
+
 /** A board that draws something (a figure or a number line), not only text boxes. PURE. */
 export function isDrawing(script) {
   return (script?.ops ?? []).some((o) => ["circle", "ellipse", "sector", "stroke", "line", "x", "polygon", "path"].includes(o?.op) || (o?.op === "numwork" && o?.layout === "number_line"));
@@ -181,7 +212,10 @@ export function unpointGently(text) {
  * child asking "number line pe 3/4 dikhao" while 3/4 is the answer still works it out). PURE.
  */
 export function freeAsked(withhold, request, openItem) {
-  const said = (request?.said ?? []).map(numNorm).filter(Boolean);
+  // QA pass 12 D36 (prod 14.2 c90ad692, "ghadi draw karo": the clock showed "?" for 2, 4 and 7 while she said 1 to 12): every
+  // number the ASK itself carries is a given, not an answer (the numbers they said, a clock's face numerals, a number line's
+  // 0 and 1); only the open item's own key stays withheld
+  const said = askedNumbers(request).map(numNorm).filter(Boolean);
   if (!withhold?.values?.length || !said.length) return withhold;
   const keys = new Set([openItem?.answer, ...(openItem?.acceptable ?? [])].filter((x) => x != null).map(numNorm));
   return { ...withhold, values: withhold.values.filter((v) => !said.includes(numNorm(v)) || keys.has(numNorm(v))) };
@@ -282,6 +316,33 @@ export function unassumeVisual(text) {
   if (s === before.trim()) return before;
   return s.replace(/(^|[.!?।]\s+)([a-z])/g, (_m, a, b) => a + b.toUpperCase());
 }
+/**
+ * Round 5 (14.3, owner-5 on 14.2 a978ae27: "picture dikhao" answered with "0 se 1 tak paanch barabar gaps hain…" and no word
+ * sending the child to the board that was being drawn for it, V2.no_reference). Does her line send their eyes anywhere on
+ * the stage? PURE.
+ */
+export const refersToBoard = (text) => /\b(?:screen|board|whiteboard|picture|drawing|diagram|dekh\w*|look\w*|see)\b|स्क्रीन|बोर्ड|देख|तस्वीर|चित्र/iu.test(String(text ?? ""));
+/** The fixed pointer put before her line when an asked-for board is being drawn and she never points at it. PURE. */
+// (QA pass 13: an English-preference child's Hinglish line got "Look at the board: Kabir, number line imagine karo…": the
+// pointer is in the language of HER line, not the child's setting: Devanagari, else English only for a line with no Hindi word)
+const HINDI_WORD = /\b(?:hai|hain|karo|kijiye|kariye|ke|ka|ki|ko|se|par|pe|mein|aur|kya|kitna|kitne|nahi|nahin|yeh|ye|dekho|dekhiye|socho|bataiye|batao|hoga|hogi)\b/iu;
+export const boardPointer = (lang, line = "") => {
+  const t = String(line ?? "");
+  if (/[\u0900-\u097F]/u.test(t)) return "बोर्ड पर देखो: ";
+  if (t) return HINDI_WORD.test(t) ? "Board par dekho: " : "Look at the board: ";
+  return lang === "english" ? "Look at the board: " : lang === "hindi" ? "बोर्ड पर देखो: " : "Board par dekho: ";
+};
+/** The board she should send them to IS coming, and her line says to picture it ("number line imagine karo"): see it instead. PURE. */
+export const seeNotImagine = (text) => String(text ?? "")
+  .replace(/\bimagine\s+(kijiye|kariye|karein|karen)\b/giu, "dekhiye").replace(/\bimagine\s+karo\b/giu, "dekho").replace(/\bimagine\b(?=\s+(?:the|a|an|this)\b)/giu, "look at");
+/** main 14.3 (QA pass 14, 98bdb9a8 / 548f22f0: "picture ko words mein dekho", "picture imagine karo" while the board the
+ *  child asked for was still being drawn, and it then landed): while an asked board is pending her line never sends the
+ *  child away from the screen. The send-away phrase goes, her content stays; nothing points at a board not yet there. PURE. */
+export const stayOnScreen = (text) => String(text ?? "")
+  .replace(/\s+ko\s+(?:words|shabdon)\s+(?:mein|me|se)\s+(?:dekho|dekhiye|samjho|samjhiye|suno|sochiye|socho)\b/giu, "")
+  .replace(/\s+(?:words|shabdon)\s+(?:mein|me)\s+(?:dekho|dekhiye|samjho|samjhiye|suno)\b/giu, "")
+  .replace(/\s+imagine\s+(?:karo|kijiye|kariye|karein|karen)\b/giu, "")
+  .replace(/\s+([,:;.!?])/g, "$1").replace(/\s{2,}/g, " ").trim();
 /** Does her line say there is no game (honest), or announce one ("Chalo mirror line game")? PURE. */
 const GAME_WORD = /\b(?:game|games)\b|गेम/iu;
 const NO_GAME = /\b(?:game|games)\b.{0,40}?\b(?:nahi|nahin|not|isn't|no)\b|\b(?:no|koi|abhi)\b.{0,20}?\bgame\b.{0,20}?\b(?:nahi|nahin|ready nahi)\b|गेम.{0,30}?नहीं|\bno\s+game\b/iu;
