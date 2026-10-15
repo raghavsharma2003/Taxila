@@ -13,6 +13,7 @@
 //   - an STT final that is only her echo of the clip (the speaker → mic path the AEC missed) is not a child turn (isAckEcho).
 // Pure apart from the injected post / timers: tested in Node (tests/round3-relational-human-ack.test.mjs).
 
+import { emit } from "../trace/bus.ts";
 export interface AckClip {
   /** "echo" (the child's own answer said back) or "continuer" (round 5: a short non-verbal one, owner cohort only). */
   kind?: "echo" | "continuer";
@@ -119,6 +120,18 @@ export class AckClient {
   /** The phrase that played last and when it ended (the echo guard). */
   private lastPlayed: { phrase: string; startedAt: number; endedAt: number | null } | null = null;
 
+  /**
+   * Round 5 (main, 14.3): what became of a decided clip, one `ack.outcome` trace event, CODES ONLY (kind, outcome, timing;
+   * never the phrase, never the child's words). Read beside the server's `ack.decision` rows on the lesson's sid.
+   */
+  private outcome(kind: "echo" | "continuer" | undefined, outcome: "played" | "late" | "mismatched" | "reply_first" | "interrupted", c?: AckClip | null): void {
+    try {
+      const stopAt = this.speechEndAt ?? (this.finalAt || null);
+      emit("ack.outcome", { kind: kind ?? "echo", outcome, ...(outcome === "played" && stopAt != null ? { afterStopMs: Math.round(this.o.now() - stopAt) } : {}),
+        ...(c ? { arrivedAfterAskMs: Math.round(c.arrivedAt - c.requestedAt) } : {}) });
+    } catch { /* the recorder never breaks a turn */ }
+  }
+
   constructor(opts: AckClientOptions) {
     this.o = {
       lessonId: opts.lessonId,
@@ -159,7 +172,7 @@ export class AckClient {
     this.finalAt = this.o.now();
     if (this.asked && t !== this.asked) {
       // the final words differ from the partial it was asked on: that decision does not hold; ask on the final words
-      if (this.ready) this.stats.mismatched++;
+      if (this.ready) { this.stats.mismatched++; this.outcome(this.ready.kind, "mismatched", this.ready); }
       this.ready = null;
       this.asked = "";
       this.request(t);
@@ -177,6 +190,7 @@ export class AckClient {
   /** The child is speaking again (a local onset / server speech_started): nothing pending may play. */
   onSpeech(): void {
     if (this.ready || this.asked) this.stats.interrupted += this.ready ? 1 : 0;
+    if (this.ready) this.outcome(this.ready.kind, "interrupted", this.ready);
     this.gen++;
     this.ready = null;
     this.asked = "";
@@ -187,6 +201,8 @@ export class AckClient {
 
   /** Her reply is about to sound: no clip may START from now on for this turn. */
   replyStarting(): void {
+    // her reply is first: a decided clip that never sounded (a continuer still held, or one not yet allowed to play)
+    if (this.ready) this.outcome(this.ready.kind, "reply_first", this.ready);
     this.gen++;
     this.ready = null;
     this.closedTurn = true;
@@ -195,6 +211,7 @@ export class AckClient {
   /** A new child turn begins (the next speech): the closed flag is cleared by onSpeech. */
   played(clip: AckClip, startedAt: number): void {
     this.stats.played++;
+    this.outcome(clip.kind ?? "echo", "played", clip);
     this.lastPlayed = { phrase: clip.phrase, startedAt, endedAt: null };
   }
 
@@ -216,8 +233,8 @@ export class AckClient {
   private tryPlay(): void {
     const c = this.ready;
     if (!c || this.finalText === null || this.closedTurn) return;
-    if (c.text !== this.finalText) { this.stats.mismatched++; this.ready = null; return; }
-    if (this.o.now() - this.finalAt > MAX_AGE_MS) { this.stats.late++; this.ready = null; return; }
+    if (c.text !== this.finalText) { this.stats.mismatched++; this.outcome(c.kind ?? "echo", "mismatched", c); this.ready = null; return; }
+    if (this.o.now() - this.finalAt > MAX_AGE_MS) { this.stats.late++; this.outcome(c.kind ?? "echo", "late", c); this.ready = null; return; }
     // round 5: a continuer waits until CONTINUER_MIN_MS after the child stopped; her reply starting first drops it
     if (c.kind === "continuer") {
       const due = (this.speechEndAt ?? this.finalAt) + CONTINUER_MIN_MS;

@@ -664,3 +664,74 @@ test("agent speculation: a turn that arrives while its own words' classify is st
   assert.ok(Date.now() - t0 < 200);
   __agentSpec.clear();
 }));
+
+// ── round 5 (main, 14.3): the ack outcome on the device, one code-only trace event per decided clip ──
+import { start as traceStart, stop as traceStop, setSink, setSession } from "../src/trace/bus.ts";
+
+test("the device records what became of each decided clip: played (with its delay after the child stopped) or reply_first, codes only", async () => {
+  const seen = [];
+  traceStart(async () => new Response("{}", { status: 200 }));
+  setSink((e) => { if (e.kind === "ack.outcome") seen.push(e); });
+  setSession("L-out");
+  try {
+    let t = 50_000;
+    const mk = (kind) => new AckClient({ lessonId: "L-out", now: () => t, decode: (b) => Buffer.from(b, "base64"), onClip: () => {},
+      post: async () => ({ ack: { kind, phrase: kind === "echo" ? "teen…" : "हम्म…", token: kind === "echo" ? "teen" : "", pcm: Buffer.from("x").toString("base64"), rate: 24000, ms: 300, turn: 2 } }) });
+    // an echo that plays
+    const a = mk("echo");
+    a.speechEnded(t);
+    t += 200; a.onFinal("teen");
+    await wait(5);
+    a.played({ kind: "echo", phrase: "teen…" }, t);
+    // a continuer that her reply beats (held to CONTINUER_MIN_MS, the reply starts first)
+    const b = mk("continuer");
+    b.speechEnded(t);
+    t += 100; b.onFinal("pata nahi");
+    await wait(5);
+    b.replyStarting();
+    assert.deepEqual(seen.map((e) => e.data.outcome), ["played", "reply_first"]);
+    assert.equal(seen[0].data.kind, "echo");
+    assert.equal(seen[0].data.afterStopMs, 200);
+    assert.equal(seen[1].data.kind, "continuer");
+    for (const e of seen) assert.doesNotMatch(JSON.stringify(e.data), /teen|pata|हम्म/, "never the phrase or the child's words");
+    assert.equal(seen[0].sid, "L-out", "keyed to the lesson");
+  } finally { setSink(null); setSession(null); traceStop(); }
+});
+
+// ── 14.3.1 (main): the `ack.decision` trace row, codes only, closed sets, one per path ──
+import { ackDecisionRow, ACK_KINDS, ACK_NONE_REASONS } from "../server/latency/routes.js";
+
+test("ack.decision: every path of the real decision yields a row of closed codes, and never the child's words, the phrase or the token", async () => {
+  __ack.clear();
+  const paths = [
+    // [text, cls, extra x, expected key:value]
+    ["pata nahi", cls0({ flags: { dontKnow: true } }), { continuer: true }, ["kind", "continuer"]],
+    ["main mar jaana chahta hoon", cls0(), { continuer: true }, ["none", "safety"]],
+    ["pata nahi", cls0(), {}, ["none", "no_token"]],
+    ["You are my best friend, only you. Don't tell", cls0(), { continuer: true }, ["none", "relational"]],
+    ["mujhe accha nahi lag raha", cls0({ flags: { distress: true } }), { continuer: true }, ["none", "safety"]],
+    ["bye didi", cls0({ flags: { wantsToStop: true } }), { continuer: true }, ["none", "leaving"]],
+  ];
+  const lines = [];
+  for (const [text, c, x, [k, v]] of paths) {
+    const { d } = ackDeps(c);
+    const r = await ackDecision(d, ackX(text, { ...x, lessonId: `L-row-${lines.length}` }));
+    const row = ackDecisionRow(r, { continuerAsked: !!x.continuer, cohort: !!x.continuer, ms: 812.7 });
+    assert.equal(row[k], v, `${text}: ${JSON.stringify(row)}`);
+    const json = JSON.stringify(row);
+    lines.push(json);
+    for (const w of text.split(/\s+/).filter((s) => s.length > 2)) assert.ok(!json.includes(w), `"${w}" leaked into ${json}`);
+    if (r.ack) { assert.ok(!json.includes(r.ack.phrase)); if (r.ack.token) assert.ok(!json.includes(r.ack.token)); }
+    assert.ok(row.kind === undefined || ACK_KINDS.includes(row.kind));
+    assert.ok(row.none === undefined || ACK_NONE_REASONS.includes(row.none));
+    assert.deepEqual(Object.keys(row).filter((key) => !["kind", "none", "decidedMs", "shadow", "audio", "continuerAsked", "cohort", "ms"].includes(key)), [], json);
+  }
+  // an echo's row: its phrase and token are the child's own word, and never reach the row
+  const echoRow = ackDecisionRow({ ack: { kind: "echo", phrase: "chhe…", token: "chhe", decidedMs: 640, turn: 3 }, pcm: Buffer.from("x") }, { continuerAsked: false, cohort: false });
+  assert.equal(echoRow.kind, "echo");
+  assert.ok(!JSON.stringify(echoRow).includes("chhe"));
+  // the route's own refusals, and anything unknown, stay inside the closed set
+  for (const why of ["ended", "lane", "rate", "late", "no_audio", "window", "consecutive", "filtered", "no_perception"]) assert.equal(ackDecisionRow({ none: why }).none, why);
+  assert.equal(ackDecisionRow({ none: "the child said something" }).none, "other");
+  assert.equal(ackDecisionRow({ ack: { kind: "mystery", phrase: "x" } }).kind, "other");
+});
