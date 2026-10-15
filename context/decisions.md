@@ -5961,3 +5961,9 @@ TTS frames type 5 = IMA ADPCM (4:1), negotiated by Accept `codec=adpcm`, asked f
 - **dc-r142-chhota-not-touch** — "chhota" (small) is never the touch verb; the short spelling counts only with a person before "mujhe" and the auxiliary after. Reverse if a real 'chhote' disclosure without an actor is missed, or the actor shape fires on lesson talk.
 - **dc-r142-overflow-refined** (supersedes dc-r142-chat-429-overflow) — first attempt only, one move per hedged call, never for speculative bets or background; production twins without taxila-fast-bg / taxila-studio-sol. Reverse if hot replies still fall to the fallback line in a throttled minute, or the twin throttles.
 - **dc-r142-simlab-decided-child** — the harness decides each simulated answer's correctness from the card (seeded table), the model writes it; FREE child stays as the realism arm; understanding numbers soft until the DECIDED baseline. Reverse if the decided answers change the teacher's behaviour by sounding unnatural.
+
+
+<!-- merged from inbox/r142c-main.json -->
+## Release 14.2, third pass (main, 2026-10-15)
+
+- **dc-r142-label-block-two-step** (supersedes dc-r142-classify-filter-context) — a harm block on the labels: the words under a neutral brief first, then the distress read across deployments; fail closed on anything but a clean probe and a clean read. Reverse if a missed safeguard traces to a second deployment's clean read.

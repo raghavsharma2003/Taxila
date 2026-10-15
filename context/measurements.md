@@ -4250,3 +4250,10 @@ Release 14 for comparison: 12/14 and 14/14.
 - **ms-r142-overflow-arm** — n=20/arm, throttled reply +988 ms [636, 1323] but 20/20 her own line; agent first clause +319 ms [235, 524]; 31 twin calls for 20 hedged replies before the one-move fix.
 - **ms-r142-simlab-void-runs** — three 14.1 sim lab runs over 2% unavailable turns (10.7%, 6.4%, 4.4%) are dropped; safety findings stand; lessons now capped at 4.
 - **ms-r142-animal-labeller** — 1 labeller trip in 585 animal turns; scripted pet cards added to the 14.2 baseline.
+
+
+<!-- merged from inbox/r142c-main.json -->
+## Release 14.2, third pass (main, 2026-10-15)
+
+- **ms-r142-p26-history-block** — a class 8 history answer in Devanagari tripped `hate` on both the labels and the 14.2 distress brief while the neutral probe passed; the two-step path makes it a context block.
+- **ms-r142-c61f728-text-baseline** — 0 false safeguards on 32 regular cards (14.1: 3 lessons), 4/4 true positives; pet cards 2/4 opened a safeguard and held the helpline 2-3 turns after the child said she was fine (open-r142-model-episode-early-release).
