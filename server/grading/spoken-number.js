@@ -57,7 +57,12 @@ const SPECIAL = { half: 0.5, aadha: 0.5, adha: 0.5, aadhi: 0.5, "आधा": 0.5
 const PREFIX = { sawa: 0.25, savva: 0.25, saade: 0.5, sade: 0.5, saadhe: 0.5, sadhe: 0.5, paune: -0.25 };
 const SIGN = new Set(["minus", "negative", "ऋण"]);
 const JOIN = new Set(["and", "aur"]);
-const OVER = new Set(["by", "upon", "bata", "over"]);
+// "बटा" is the Devanagari "bata"; azure-speech also writes it "बता" (4B: 6/6), which is a fraction only BETWEEN two numbers
+// (the OVER branch below already asks for a number on each side)
+const OVER = new Set(["by", "upon", "bata", "over", "बटा", "बता"]);
+// main 14.4 (4B's finding): a Devanagari "दो" right after a verb stem is the verb ("मुझे बता दो", "समझा दो"), not 2 — unless a
+// fraction claims it as its denominator ("एक बता दो"). Not घटा / जोड़: "घटा दो" there is arithmetic on a number said before.
+const DO_VERB_STEMS = new Set(["बता", "समझा", "दिखा", "सुना", "कर", "दे", "लिख", "बोल", "सिखा", "बना"]);
 /** "do" and "no" are English words too: a number only next to another number word. */
 const WEAK = new Set(["do", "no", "das", "saath", "tees", "bees"]);
 
@@ -148,7 +153,7 @@ export function numberPhrases(raw, { split = false, lang = "mixed" } = {}) {
     .replace(/(?<=\d),(?=\d)/g, "").replace(/(\p{L})-(?=\p{L})/gu, "$1 ");
   // digit fractions and mixed numbers first ("1 1/2", "3/4", "3 by 4", "3 upon 4"), then decimals
   s = s.replace(/(\d+)\s+(\d+)\s*\/\s*(\d+)/g, (_, w, n, d) => (+d ? ` #${+w + +n / +d}# ` : " #NaN# "))
-    .replace(/(-?\d+(?:\.\d+)?)\s*(?:\/|\bby\b|\bupon\b|\bbata\b)\s*(\d+(?:\.\d+)?)/g, (_, n, d) => (+d ? ` #${+n / +d}# ` : " #NaN# "));
+    .replace(/(-?\d+(?:\.\d+)?)\s*(?:\/|\bby\b|\bupon\b|\bbata\b|बटा|बता)\s*(\d+(?:\.\d+)?)/g, (_, n, d) => (+d ? ` #${+n / +d}# ` : " #NaN# "));
   const toks = s.split(/[^\p{L}\p{M}\p{N}#.\-]+/u).map((t) => t.replace(/^[.\-]+(?=\D)|[.\-]+$/g, "").replace(/^\.(?=\d)/, "0.")).filter(Boolean);
   const phrases = [];   // each: number
   let cur = null;        // { total, part, last, sign, prefix, num }
@@ -200,6 +205,7 @@ export function numberPhrases(raw, { split = false, lang = "mixed" } = {}) {
       continue;
     }
     if (JOIN.has(t) && cur && cur.part !== null) continue;                   // "one hundred and twelve"
+    if (t === "दो" && DO_VERB_STEMS.has(toks[i - 1]) && !(cur && cur.num !== null)) { if (!close()) return null; continue; }
     const w0 = wordNum(t);
     const w = w0 && lang === "en" && w0.hi ? null : w0;
     if (w && !(WEAK.has(t) && !cur && !(next && (next in SCALE || wordNum(next) || next in DEN || OVER.has(next))) && toks.length > 2)) {
@@ -272,7 +278,7 @@ const FILL = new Set(("hai hain he h ho hoga hogi honge hota hoti hote tha thi j
 const TEMP = { c: "°c", celsius: "°c", centigrade: "°c", f: "°f", fahrenheit: "°f" };
 const canonWord = (w) => { const x = sing(w); return LEN[x] ?? OTHER[x] ?? TEMP[x] ?? x.replace(/(?:ies)$/, "y").replace(/(?:es|s)$/, (m) => (x.length > 3 ? "" : m)); };
 const wordToks = (raw) => String(raw ?? "").toLowerCase().normalize("NFC").replace(/[०-९]/g, (d) => String("०१२३४५६७८९".indexOf(d)))
-  .replace(/(\d)([a-z°²³])/g, "$1 $2").replace(/°/g, " deg ").replace(/[²]/g, " sq ").replace(/[³]/g, " cu ").replace(/[^\p{L}\p{N}.\/-]+/gu, " ")
+  .replace(/(\d)([a-z°²³])/g, "$1 $2").replace(/°/g, " deg ").replace(/[²]/g, " sq ").replace(/[³]/g, " cu ").replace(/[^\p{L}\p{M}\p{N}.\/-]+/gu, " ")
   .split(/\s+/).map((t) => t.replace(/^[.]+|[.]+$/g, "")).filter(Boolean);
 const isNumTok = (t) => /\d/.test(t) || wordNum(t) != null || t in SCALE || t in SPECIAL || t in PREFIX || t in DEN || SIGN.has(t) || t === "point" || OVER.has(t);
 /** Content words after the first number in `raw`, canonical. */
