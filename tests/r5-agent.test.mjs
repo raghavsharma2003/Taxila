@@ -268,3 +268,20 @@ test("a why question in the child's own words is offered as deep evidence; easy-
   assert.equal(next.agent.learner[why.skillId].read, "understood", "a right why plus a right plain answer");
   assert.equal(next.agent.learner[why.skillId].depth, undefined);
 });
+
+test("a game ask is looked up BEFORE she speaks: up → she is told it is on screen; none → she is told to offer a spoken game (sim lab cc4b3d2)", async () => {
+  const t = fakeTools(); let looked = 0;
+  t.game = async () => { looked++; return { ok: false, refused: { why: "no game exists for this yet" } }; };
+  const r = await run(base({ say: "Is topic ka game abhi nahi hai. Chalo bolkar ek game: main number bolungi, tum agla bolo. 5?" }), { tools: t, event: 'the child said (speech recognition confidence 0.90): "game khelna hai"' });
+  assert.equal(looked, 1);
+  assert.match(stub.last.messages[1].content, /GAME: no game exists for this topic/);
+  assert.equal(r.gameRefused, true);
+  const up = fakeTools(); up.game = async () => ({ ok: true, on: "game", words: "the screen shows play:catch for the child to use", texts: [], slot: { slotId: "g:slot", intentId: "g", state: "revealed" }, game: { family: "catch" } });
+  const r2 = await run(base({ say: "Game screen par hai, khelo!" }), { tools: up, event: 'the child said (speech recognition confidence 0.90): "mujhe game khelna hai"' });
+  assert.match(stub.last.messages[1].content, /GAME: a game for this skill is now on the screen/);
+  assert.equal(r2.slot.intentId, "g"); assert.equal(r2.say, "Game screen par hai, khelo!");
+  // no game ask: no lookup
+  const t3 = fakeTools(); let n3 = 0; t3.game = async () => { n3++; return { ok: false }; };
+  await run(base(), { tools: t3, event: 'the child said (speech recognition confidence 0.90): "1/2"' });
+  assert.equal(n3, 0);
+});

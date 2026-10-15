@@ -90,6 +90,8 @@ export function withoutMastery(say, learner) {
   return kept.length && kept.length !== parts.length ? kept.join("").trim() : String(say ?? "");
 }
 
+/** The child asks to play (their words in the event). */
+const GAME_ASK = /(?:the child (?:said|typed|tapped)[^"]*")[^"]*(?:\bgame|\bkhel|\bplay\b|गेम|खेल)/iu;
 const GAME_PROMISE = /(?:game|games|khel\w*|गेम|खेल)[^.!?।]*(?:taiyaar|tayyar|taiyar|ready|bana\s*(?:rahi|ti|ungi)|banaa\s*rahi|la\s*rahi|laa\s*rahi|aayega|aayegi|aa\s*raha|aa\s*rahi|shuru\s*kar|start|khelte\s+hain|khelenge|coming|getting)|(?:taiyaar|tayyar|ready|bana\s*rahi)[^.!?।]*(?:game|khel)/iu;
 /** Her line without a promise of a game that will not come (a spoken game, "bolkar", stays). PURE. */
 export function withoutGamePromise(say) {
@@ -159,7 +161,16 @@ export async function agentTurn({ state, kit, event, silent = false, verdict = n
   const news = (() => { try { return tools.news?.(lessonId) ?? []; } catch { return []; } })();
   const offered = offeredItems(state, kit);
   const ctx = { ...state.ctx, classLevel: state.ctx?.classLevel };
-  const ev = news.length ? `${news.join(". ")}. ${event}` : event;
+  // the child asks to play: the game is looked for BEFORE she speaks (code, ~0.3 s), so her line can say what is true this
+  // turn — a game is up, or none exists and she offers a spoken one (sim lab cc4b3d2: 14 no-game lessons, 2 spoken offers)
+  let pre = null;
+  if (!silent && !a.noGame && tools.game && GAME_ASK.test(String(event ?? ""))) {
+    pre = await Promise.resolve().then(() => tools.game(lessonId, { skillId: a.skill ?? kit.skills?.[0]?.id ?? "", topicId: kit.topicId ?? "", child }))
+      .catch((e) => ({ ok: false, refused: { why: String(e?.message ?? e).slice(0, 60) } }));
+  }
+  const gameNews = pre ? (pre.ok ? `GAME: a game for this skill is now on the screen (${clip(pre.words, 120)}); tell them to play it`
+    : "GAME: no game exists for this topic (the harness looked); say so in a few words and play a quick spoken game with them now") : null;
+  const ev = [...news, ...(gameNews ? [gameNews] : [])].length ? `${[...news, ...(gameNews ? [gameNews] : [])].join(". ")}. ${event}` : event;
   const messages = [{ role: "system", content: systemPrompt(ctx) }, { role: "user", content: stateMessage({ state, kit, event: ev, onScreen: before.words, lane }) }];
   const dep = teacherDeployment();
   const t0 = Date.now();
@@ -207,7 +218,10 @@ export async function agentTurn({ state, kit, event, silent = false, verdict = n
       if (t?.ok && !t.refused && t.on !== "nothing") { board = t; screen = t; } else { unconfirmed = true; notes.push(`board ${t?.pending ? "pending" : "refused"}: ${clip(t?.refused?.why, 80)}`); }
     }
   } else if (out.board?.action === "clear") { try { screen = tools.clear(lessonId); cleared = true; } catch { /* the board stays */ } }
-  if (!silent && out.play && tools.game) {
+  if (pre) {
+    if (pre.ok) { game = pre; screen = pre; notes.push(`game up ${clip(pre.game?.family, 30)}`); }
+    else { gameRefused = true; notes.push(`game refused: ${clip(pre.refused?.why, 60)}`); const held = withoutGamePromise(say); if (held !== say) { say = held; notes.push("game promise removed"); } }
+  } else if (!silent && out.play && tools.game) {
     const g = await Promise.resolve().then(() => tools.game(lessonId, { skillId: item?.skillId ?? a.skill ?? "", topicId: kit.topicId ?? "", child }))
       .catch((e) => ({ ok: false, refused: { why: String(e?.message ?? e).slice(0, 60) } }));
     if (g?.ok) { game = g; screen = g; notes.push(`game up ${clip(g.game?.family, 30)}`); }
