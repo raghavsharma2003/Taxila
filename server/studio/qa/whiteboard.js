@@ -316,14 +316,14 @@ export function namedShapeMissing(reply, ops, { asked = false } = {}) {
 /** Number-work cells cut mid-word ("breadt" for breadth): the last word of a 6-character cell that a longer word of her
  *  line or the kit begins, and that is not itself one of their words. PURE. */
 export function cutCells(ops, ctx = {}) {
-  const words = new Set((`${ctx.reply ?? ""} ${ctx.kit ? JSON.stringify(ctx.kit) : ""}`.toLowerCase().match(/\p{L}+/gu) ?? []));
+  const words = new Set((`${ctx.reply ?? ""} ${ctx.kit ? JSON.stringify(ctx.kit) : ""}`.toLowerCase().match(/[\p{L}\p{M}]+/gu) ?? []));
   const out = [];
   for (const o of ops ?? []) {
     if (o.op !== "numwork") continue;
     for (const c of (o.rows ?? []).flat()) {
       const cell = String(c ?? "");
-      if (cell.length !== 6 || !/\p{L}$/u.test(cell)) continue;
-      const last = (cell.toLowerCase().match(/\p{L}+$/u) ?? [""])[0];
+      if (cell.length !== 6 || !/[\p{L}\p{M}]$/u.test(cell)) continue;
+      const last = (cell.toLowerCase().match(/[\p{L}\p{M}]+$/u) ?? [""])[0];
       if (last.length < 1 || words.has(last)) continue;
       // a word whose only longer forms are its plural ("minute" / "minutes") is whole
       const full = [...words].find((w) => w.length > last.length && w.startsWith(last) && !/^(?:s|es)$/.test(w.slice(last.length)));
