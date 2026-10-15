@@ -437,7 +437,9 @@ export async function planWhiteboard(ask, { kit, prev, redact = [], deployment =
   const speechMs = speechMsOf(spoken);
   const request = ask?.intent?.request ?? null;
   const asked = plannerRequest(request);
-  const content = (ask.kit?.content ?? []).map(String).slice(0, 8);
+  // (never a facts row "on screen now …": it describes ANOTHER piece, e.g. the explainer@1 rung this board replaces, whose
+  // kit worked example "1/2 x 3/4 = 3/8" prod 2001d8cc's drafts redrew under her "3/5 x 2/3")
+  const content = (ask.kit?.content ?? []).map(String).filter((l) => !/^on screen now\b/i.test(l)).slice(0, 8);
   const itemText = ask.kit?.item ? [ask.kit.item.prompt_en, ask.kit.item.prompt_hi].filter(Boolean) : [];
   // main 14.3 (prod 2001d8cc: her line "3/5 x 2/3, 15 parts, 6 marked", three drafts drew the kit's worked example "1/2 x 3/4 =
   // 3/8"): kit sentences given as facts are recited as the board (the recitation law). When her line carries its own numbers
