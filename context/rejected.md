@@ -2584,3 +2584,11 @@ Judging her 'parts' words against the module that was up BEFORE a named visual a
 - Tried: a fixed 14 s wait between typed turns in r12-liveproof.
 - Broke: her 12.3 s reteach line, plus about 3 s to first sound, outlasted the wait. Type shows only on the child's turn, so turn 2 timed out (2/3) and read as a product failure.
 - Fix: wait (up to 45 s) for Type to be visible before each turn. Result 3/3.
+
+
+<!-- merged from inbox/r143-main.json -->
+## rj-r143-loose-fine (2026-10-15)
+
+- **Tried:** a fine reading with only negation / contrast / harm vetoes.
+- **What broke:** it released 77 of 189 replies, including home-avoidance replies ("थोड़ा ठीक हूँ, बस घर जाने का मन नहीं करता", "safe hu abhi… ghar pe nahi hoon") and "mujhe distract karna hai". It also matched across a sentence break.
+- **Fix:** qualified and time-bound vetoes, home and distraction tells, leftover negation, and matching one clause at a time. 44 of 189 now read as fine, all benign.

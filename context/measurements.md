@@ -4272,3 +4272,14 @@ Release 14 for comparison: 12/14 and 14/14.
   - luna drafts drew the kit example (1/2 x 3/4) instead of her numbers (3/5 x 2/3 = 6/15): 3/4 drafts, plus one 3278 ms timeout. The template was refused too.
   - She said "Dekhiye … kitne marked parts dikh rahe hain?" to an empty board.
 - **ms-r142-live-game-request**: "mujhe game khelna hai" got no_game_piece on 3/3 runs (14.1, 14.2 x2). claim_game rewrote her line to a spoken activity. Forge's fraction game, built at lesson start, was not admitted.
+
+
+<!-- merged from inbox/r143-main.json -->
+## ms-r143-fine-detector (2026-10-15)
+
+- Read as clearly fine:
+  - red-team lines: 0 of 352;
+  - corpus disclosures: 0 of 174;
+  - TEST replies after a model-opened episode: 44 of 189, all benign by reading.
+- 16 real-model resume lines: 0 floor violations.
+- Tests: 12/12 new; 844/844 in the safeguard-related subset; prompt budget PASS.

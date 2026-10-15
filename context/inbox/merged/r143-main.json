@@ -1,0 +1,36 @@
+{
+ "nodes": [
+  {
+   "id": "dc-r143-model-episode-fine-release",
+   "kind": "decision",
+   "at": "2026-10-15",
+   "title": "A safeguard episode opened by a MODEL read (distressKind model / content_filter / model_note) steps back on a reply that clearly says the child is fine (server/safety/fine.js): to the gentle resume with carry-on / stop chips (shape resumeAfterFine), or straight back to the lesson when the same words ask to carry on. One turn of the stay is skipped; the helplines were on the safeguard turn and the incident row is unchanged, so the next lesson within 24 h still opens on the carried check-in. Predicate families, the relational floor, duplex partials, unknown kinds and carried check-ins keep the shipped hold. 'Clearly fine' is precision-first: matched one clause at a time over the canonical reading, vetoed by a negated, qualified or time-bound fine ('abhi safe hoon'), a contrast after it, any leftover negation (the Hinglish tag 'na' included), and fear / hurt / harm / home / distraction words.",
+   "reversal": "any missed safeguard traced to a model-opened episode that stepped back on a 'fine' reply (then: model episodes keep the full hold again), or a red-team / corpus disclosure that reads as clearly fine"
+  },
+  {
+   "id": "ms-r143-fine-detector",
+   "kind": "measurement",
+   "at": "2026-10-15",
+   "title": "fine.js read as 'clearly fine': 0 of 352 red-team lines (REDTEAM_* distress and quiet sets); 0 of 174 corpus disclosures (taxilafdb 84, es3 80, conversation_v2 10). On the TEST trace (2026-10-14 17:29 to 2026-10-15 10:00 UTC), the child reply right after an episode opened: model kinds 44 of 189 read as fine, every one benign by reading (bored, tired, 'game khelein?', 'haan… safe hoon'); other kinds 31 of 270 would read as fine but keep the hold. Real-model resume lines (taxila-fast, text lane, 16): warm, short, ask carry on or stop, 0 floor violations. Tests: r5-safety-fine-release 12/12; 65 safeguard-related test files in one process 844/844; prompt budget PASS.",
+   "n": 189,
+   "method": "fine.js over the red-team data and corpora + TEST trace_event safety.scan -> next srv.req childText + real-model textReply with DATABASE_URL empty"
+  },
+  {
+   "id": "rj-r143-loose-fine",
+   "kind": "rejection",
+   "at": "2026-10-15",
+   "title": "A first 'fine' reading with only negation / contrast / harm vetoes read 77 of 189 TEST replies after a model-opened episode as fine. That included 'हाँ, थोड़ा ठीक हूँ, बस घर जाने का मन नहीं करता' (a bit okay, just don't feel like going home), 'safe hu abhi… ghar pe nahi hoon' and 'abhi safe hoon… mujhe distract karna hai', which are classic tells after a real disclosure. It also matched 'abhi thik hai' across a sentence break. Fixed with qualified / time-bound vetoes, home and distraction tells, leftover-negation and per-clause matching (77 -> 44, all benign)."
+  }
+ ],
+ "edges": [
+  { "src": "dc-r143-model-episode-fine-release", "rel": "supersedes", "dst": "open-r142-model-episode-early-release" },
+  { "src": "dc-r143-model-episode-fine-release", "rel": "measured_by", "dst": "ms-r143-fine-detector" },
+  { "src": "rj-r143-loose-fine", "rel": "part_of", "dst": "dc-r143-model-episode-fine-release" },
+  { "src": "dc-r143-model-episode-fine-release", "rel": "constrains", "dst": "dc-r142-carried-checkin" }
+ ],
+ "md": {
+  "decisions": "## dc-r143-model-episode-fine-release (2026-10-15)\n\n**What:** a safeguard episode that a MODEL read opened (the classifier, the content filter, an understanding note) steps back once the child's reply clearly says they are fine.\n\n- It goes to the gentle resume, with carry-on / stop chips.\n- If the same reply asks to carry on, it goes straight back to the lesson.\n- Episodes opened by the predicate's families, the relational floor and carried check-ins keep the full hold.\n\n**How \"fine\" is read:** server/safety/fine.js, precision first. It reads one clause at a time. Vetoes:\n\n- a negated, qualified or time-bound fine;\n- a contrast after it;\n- any negation left over;\n- fear, hurt or harm words;\n- home or distraction tells.\n\n**Why:**\n\n- The sim lab's pet cards held the helpline 2-3 turns after \"I am okay … just a scratch\" and \"ab safe hoon\".\n- Predicate episodes keep the hold, because children minimise after real disclosures.\n\n**Reversal:** a missed safeguard traced to a model episode that stepped back, or any red-team or corpus disclosure that reads as fine.",
+  "measurements": "## ms-r143-fine-detector (2026-10-15)\n\n- Read as clearly fine:\n  - red-team lines: 0 of 352;\n  - corpus disclosures: 0 of 174;\n  - TEST replies after a model-opened episode: 44 of 189, all benign by reading.\n- 16 real-model resume lines: 0 floor violations.\n- Tests: 12/12 new; 844/844 in the safeguard-related subset; prompt budget PASS.",
+  "rejected": "## rj-r143-loose-fine (2026-10-15)\n\n- **Tried:** a fine reading with only negation / contrast / harm vetoes.\n- **What broke:** it released 77 of 189 replies, including home-avoidance replies (\"थोड़ा ठीक हूँ, बस घर जाने का मन नहीं करता\", \"safe hu abhi… ghar pe nahi hoon\") and \"mujhe distract karna hai\". It also matched across a sentence break.\n- **Fix:** qualified and time-bound vetoes, home and distraction tells, leftover negation, and matching one clause at a time. 44 of 189 now read as fine, all benign."
+ }
+}

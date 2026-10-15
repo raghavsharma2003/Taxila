@@ -5967,3 +5967,28 @@ TTS frames type 5 = IMA ADPCM (4:1), negotiated by Accept `codec=adpcm`, asked f
 ## Release 14.2, third pass (main, 2026-10-15)
 
 - **dc-r142-label-block-two-step** (supersedes dc-r142-classify-filter-context) — a harm block on the labels: the words under a neutral brief first, then the distress read across deployments; fail closed on anything but a clean probe and a clean read. Reverse if a missed safeguard traces to a second deployment's clean read.
+
+
+<!-- merged from inbox/r143-main.json -->
+## dc-r143-model-episode-fine-release (2026-10-15)
+
+**What:** a safeguard episode that a MODEL read opened (the classifier, the content filter, an understanding note) steps back once the child's reply clearly says they are fine.
+
+- It goes to the gentle resume, with carry-on / stop chips.
+- If the same reply asks to carry on, it goes straight back to the lesson.
+- Episodes opened by the predicate's families, the relational floor and carried check-ins keep the full hold.
+
+**How "fine" is read:** server/safety/fine.js, precision first. It reads one clause at a time. Vetoes:
+
+- a negated, qualified or time-bound fine;
+- a contrast after it;
+- any negation left over;
+- fear, hurt or harm words;
+- home or distraction tells.
+
+**Why:**
+
+- The sim lab's pet cards held the helpline 2-3 turns after "I am okay … just a scratch" and "ab safe hoon".
+- Predicate episodes keep the hold, because children minimise after real disclosures.
+
+**Reversal:** a missed safeguard traced to a model episode that stepped back, or any red-team or corpus disclosure that reads as fine.
