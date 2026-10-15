@@ -2577,3 +2577,25 @@ Judging her 'parts' words against the module that was up BEFORE a named visual a
 ## Release 14.2, second pass (main, 2026-10-15)
 
 - **rj-r142-toplevel-test-hooks** — top-level beforeEach / afterEach that stub fetch / env leak into other files under the gate's one-process npm test (the 14.2 gate failed three unrelated suites); scope them in describe().
+
+
+<!-- merged from inbox/r142d-main.json -->
+## rj-r142-fixed-wait-harness (2026-10-15)
+- Tried: a fixed 14 s wait between typed turns in r12-liveproof.
+- Broke: her 12.3 s reteach line, plus about 3 s to first sound, outlasted the wait. Type shows only on the child's turn, so turn 2 timed out (2/3) and read as a product failure.
+- Fix: wait (up to 45 s) for Type to be visible before each turn. Result 3/3.
+
+
+<!-- merged from inbox/r143-main.json -->
+## rj-r143-loose-fine (2026-10-15)
+
+- **Tried:** a fine reading with only negation / contrast / harm vetoes.
+- **What broke:** it released 77 of 189 replies, including home-avoidance replies ("थोड़ा ठीक हूँ, बस घर जाने का मन नहीं करता", "safe hu abhi… ghar pe nahi hoon") and "mujhe distract karna hai". It also matched across a sentence break.
+- **Fix:** qualified and time-bound vetoes, home and distraction tells, leftover negation, and matching one clause at a time. 44 of 189 now read as fine, all benign.
+
+
+<!-- merged from inbox/r143b-main.json -->
+## rj-r143-test-region-twins (2026-10-15)
+
+- **Tried:** swedencentral twins of the chat deployments, so TEST traffic gets its own capacity.
+- **What broke:** the quota is one subscription-wide pool that is already allocated, so every hot twin was refused InsufficientQuota. The 8 low-use twins that succeeded were deleted again.

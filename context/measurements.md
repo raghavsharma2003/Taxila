@@ -4257,3 +4257,57 @@ Release 14 for comparison: 12/14 and 14/14.
 
 - **ms-r142-p26-history-block** — a class 8 history answer in Devanagari tripped `hate` on both the labels and the 14.2 distress brief while the neutral probe passed; the two-step path makes it a context block.
 - **ms-r142-c61f728-text-baseline** — 0 false safeguards on 32 regular cards (14.1: 3 lessons), 4/4 true positives; pet cards 2/4 opened a safeguard and held the helpline 2-3 turns after the child said she was fine (open-r142-model-episode-early-release).
+
+
+<!-- merged from inbox/r142d-main.json -->
+## Release 14.2 live (main, 2026-10-15)
+
+- **ms-r142-live**: taxila-web--sa978ae2-hanh (a978ae2) serves 100%; previous s1138550-lauy.
+  - Canary 4/4 (start 1696 ms).
+  - The overflow env and secret names are on the live revision.
+  - Hours check: lesson 2 starts 201 at 15:11 IST. Resume PASS (no disclosure).
+  - Recorder proof 3/3 typed (after the harness fix), deleted, 0 trace rows.
+  - Packaged: w2i 38/39, journey OK, resume PASS, owner-5 10/14.
+- **ms-r142-live-board-pointing**: turn-1 picture request across 5 live proofs. The board failed in 14.1 and in 14.2 run 2.
+  - luna drafts drew the kit example (1/2 x 3/4) instead of her numbers (3/5 x 2/3 = 6/15): 3/4 drafts, plus one 3278 ms timeout. The template was refused too.
+  - She said "Dekhiye … kitne marked parts dikh rahe hain?" to an empty board.
+- **ms-r142-live-game-request**: "mujhe game khelna hai" got no_game_piece on 3/3 runs (14.1, 14.2 x2). claim_game rewrote her line to a spoken activity. Forge's fraction game, built at lesson start, was not admitted.
+
+
+<!-- merged from inbox/r143-main.json -->
+## ms-r143-fine-detector (2026-10-15)
+
+- Read as clearly fine:
+  - red-team lines: 0 of 352;
+  - corpus disclosures: 0 of 174;
+  - TEST replies after a model-opened episode: 44 of 189, all benign by reading.
+- 16 real-model resume lines: 0 floor violations.
+- Tests: 12/12 new; 844/844 in the safeguard-related subset; prompt budget PASS.
+
+
+<!-- merged from inbox/r143b-main.json -->
+## ms-r143-global-quota (2026-10-15)
+
+GlobalStandard quota reads the same in 7 regions:
+
+- gpt-5.6-luna / sol / terra: 2000 of 1000
+- gpt-6-sol / luna: 1000 of 1000
+- grok-4-1-fast and DeepSeek-V4-Pro: 1000 of 1000
+
+swedencentral twins were refused InsufficientQuota even at 50. The southindia smoke returned 6/6 200.
+
+
+<!-- merged from inbox/r143c-main.json -->
+## ms-r143-romance-bare-ask (2026-10-15)
+
+TEST child turns (n=3481): romance hits went from 6 to 11. The 5 added were all the sim lab card; 0 were lost.
+
+
+<!-- merged from inbox/r143d-main.json -->
+## ms-r143-qa-pass12 (2026-10-15)
+
+- QA pass 12 on 14.2:
+  - the disclosure, check-in, resume and safety lines passed;
+  - production boards came up in 2.5-3.1 s;
+  - defects D34-D38.
+- TEST address audit: aap/Hinglish 0 slips in 195 lessons; English 365 of 1569 lines carry tum marks.

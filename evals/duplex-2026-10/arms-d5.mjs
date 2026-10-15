@@ -7,15 +7,16 @@
 // = her played line (assemble.mjs `<id>.her.s16` at her stream position). Open loop like arms-ours (her audio is not cut
 // by a yield; the yield is scored). Scored by score.mjs as arm "d5" (engine acts, like the duplex arm).
 // The turn context is what the Director's turn ui carries (uiOf below), not the harness shortcut arms-ours used.
-//   NODE_USE_ENV_PROXY=1 node --env-file=.env.local evals/duplex-2026-10/arms-d5.mjs --bake <dir> --variant phone [--preduck] [--conc 4] [--only id,..] [--arm-name d5]
+//   NODE_USE_ENV_PROXY=1 node --env-file=.env.local evals/duplex-2026-10/arms-d5.mjs --bake <dir> --variant phone|clean|owner [--no-preduck] [--conc 4] [--only id,..] [--arm-name d5]
 import fs from "node:fs";
 import path from "node:path";
 import { ROOT, framesOf, runSession, pool, loadEnv } from "../duplex-real/lib.mjs";
 
 const arg = (n, d) => { const i = process.argv.indexOf(n); return i > 0 ? process.argv[i + 1] : d; };
 const BAKE = arg("--bake"), VAR = arg("--variant", "phone"), CONC = Number(arg("--conc", 4));
-const PREDUCK = process.argv.includes("--preduck");
-const ARM = arg("--arm-name", PREDUCK ? "d5-preduck" : "d5");
+// round 5: the pre-duck is on by default (CascadeDuplex D5_PREDUCK_DEFAULT); --no-preduck measures without it
+const PREDUCK = !process.argv.includes("--no-preduck");
+const ARM = arg("--arm-name", PREDUCK ? "d5" : "d5-nopreduck");
 const ONLY = arg("--only") ? new Set(arg("--only").split(",")) : null;
 const SR = 16000, HOP = 320;
 const TAIL_MS = 6000;
@@ -95,14 +96,18 @@ async function one(id) {
   const nF = Math.floor(x.length / HOP), outDb = new Array(nF).fill(-120);
   for (let f = 0; f < nF; f++) { let s = 0; for (let k = 0; k < HOP; k++) { const j = f * HOP + k - herOff; const v = j >= 0 && j < herX.length ? herX[j] : 0; s += v * v; } outDb[f] = 10 * Math.log10(s / HOP + 1e-12); }
   const fr = framesOf(x);
-  const her = [{ start: meta.gold.herSpan.start, end: meta.gold.herSpan.end, text: meta.herText, outDb, ui: uiOf(meta.ctx) }];
+  // her played line on the stream clock: its pitch per frame (the device reads it off the player, liveTap.ts)
+  const herAligned = new Float32Array(x.length);
+  for (let i = 0; i < herX.length; i++) { const j = i + herOff; if (j >= 0 && j < x.length) herAligned[j] = herX[i]; }
+  const outF0 = framesOf(herAligned).f0;
+  const her = [{ start: meta.gold.herSpan.start, end: meta.gold.herSpan.end, text: meta.herText, outDb, outF0, ui: uiOf(meta.ctx) }];
   let liveRef = null;
   // the stream's audio clock starts with the first appended frame, which runSession sends at session time 0
   class D5Live extends DuplexLive { constructor(o) { super(o); liveRef = this; this.audioOrigin(0); } }
   const r = await runSession({
     id: `d5-${id}-${VAR}`, x, frames: fr, her, band: "B2", DuplexLive: D5Live, floorDb: null,
     stt: { open: (onEvent) => openD5(herX, herOff, onEvent) },
-    liveOptions: { source: "voicelive", vadGate: "server", preDuck: PREDUCK, supportsCommit: false },
+    liveOptions: { source: "voicelive", vadGate: "server", preDuck: PREDUCK, supportsCommit: false, serverVadMs: (await import(ROOT + "src/duplex/cascadeDuplex.ts")).D5_SERVER_VAD_MS },
   });
   return { id, arm: ARM, variant: VAR, acts: r.acts, phases: r.phases, logs: r.logs.filter((l) => l[1] === "YIELD" || l[1] === "SPEAK" || l[1] === "HUSH"),
     stt: r.sttLog.map((s) => ({ t: s.t, type: s.raw.type, item: s.raw.item_id, text: s.raw.transcript ?? s.raw.delta ?? null })), errors: r.errors, d5: liveRef?.d5 ?? null, ms: Date.now() - t0 };

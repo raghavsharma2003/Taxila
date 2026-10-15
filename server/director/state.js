@@ -46,6 +46,10 @@ import { intakeStart, intakeStep } from "./session/beat.js";
 import { newSession, openSegment } from "./session/segments.js";
 import { priorNotes } from "./session/prior.js";
 import { kitFromFile } from "../content/kits.js";
+import { clearlyFine, asksToCarryOn } from "../safety/fine.js";
+/** The distress kinds a MODEL read sets (classify.js "model", the content filter, an understanding note): their episodes
+ *  step back on a clearly-fine reply; every other kind (the predicate's families, the relational floor) keeps the hold. */
+export const MODEL_EPISODE_KINDS = Object.freeze(new Set(["model", "content_filter", "model_note"]));
 
 /**
  * Probe shapes the live lane can pose AND grade today: the why-class shapes (probe.why, R-EXP against the kit's key
@@ -274,7 +278,7 @@ export const isSilentTurn = (input) => input?.event === "turn" && !input.branch 
 function silentTurn(s, input, item) {
   if (!p5Flag("R4CONV") || !isSilentTurn(input) || s.phase === "done" || s.safeguard || ["wrap", "safeguard"].includes(s.lastMove?.kind)) return null;
   s.quiet = (s.quiet ?? 0) + 1;
-  const labels = chipLabels();
+  const labels = chipLabels(s.ctx?.lang);
   if (s.quiet >= 3) {
     s.quiet = 0;
     return { ...plan("break", SH.silenceCheck(), { chips: [{ id: "stop:continue", label: labels.go }, { id: "break:rest", label: labels.rest }, { id: "stop:end", label: labels.stop }] }), silent: true };
@@ -361,8 +365,16 @@ const rungShapeOf = (item, rung) => (item.rungShapes ?? item.hints ?? [])[rung -
 const moveKindFor = (item) => (item.kind === "practice" ? "practice" : item.kind === "retrieval" ? "retrieval" : "probe");
 
 /** Chip labels are UI chrome: English in every lesson language (owner directive; PRODUCT-DESIGN-V2 §0.10, §5.3). */
-function chipLabels() {
-  return { easier: "An easier one", rest: "Short break", go: "Keep going", cont: "Carry on", stop: "Stop for today", back: "Back to the lesson" };
+// r5 QA pass 12 (14.3): the chips are the CHILD's words, so they are in the child's language (a Hindi or class-4 Hinglish child
+// was offered "Carry on" / "Stop for today" on the check-in). The stop label keeps "bas" / "aaj ke liye" so the stop reading
+// and the harnesses that find the stop chip by its words still hold; the ids are what the Director reads.
+const CHIP_LABELS = Object.freeze({
+  english: { easier: "An easier one", rest: "Short break", go: "Keep going", cont: "Carry on", stop: "Stop for today", back: "Back to the lesson" },
+  hinglish: { easier: "Thoda aasaan wala", rest: "Chhota break", go: "Aage chalte hain", cont: "Aage padhte hain", stop: "Aaj ke liye bas", back: "Lesson par wapas" },
+  hindi: { easier: "थोड़ा आसान वाला", rest: "छोटा ब्रेक", go: "आगे चलते हैं", cont: "आगे पढ़ते हैं", stop: "आज के लिए बस", back: "पाठ पर वापस" },
+});
+export function chipLabels(lang) {
+  return CHIP_LABELS[lang] ?? CHIP_LABELS.english;
 }
 const optionChips = (item) => (item?.diagnostic && item.options.length <= 4
   ? item.options.map((o, i) => ({ id: `opt:${i}`, label: o.text.slice(0, 40) })) : undefined);
@@ -1295,7 +1307,7 @@ function toWrap(s, { prefix, stopping = false }) {
 function decide(s, input, item) {
   const { cls, chipId } = input;
   const flags = cls?.flags ?? {};
-  const labels = chipLabels();
+  const labels = chipLabels(s.ctx?.lang);
   // 1. Safety before anything else — the predicate or the classifier, either one.
   // `kind`: what raised it (the predicate's family, or model / content_filter / relational_floor) — only the wording of a
   // fallback line reads it (brain/say.js fallbackReply, F10); the hold itself is the same for every trigger.
@@ -1317,9 +1329,20 @@ function decide(s, input, item) {
       return plan("safeguard", SH.relCheckIn(), { whiteboard: HELPLINES, chips: [{ id: "safe:continue", label: labels.cont }, { id: "safe:stop", label: labels.stop }] });
     }
     if (flags.wantsToStop || chipId === "safe:stop") { s.safeguard = null; return toWrap(s, { stopping: true }); }
-    if (s.safeguard.asked || chipId === "safe:continue") {
+    // 14.3 (main safety review; sim lab 14.2 pet cards p66 "I am okay … It's just a scratch", p67 "ab safe hoon… wo bhag
+    // gaya tha" held the helpline 2-3 more turns): an episode a MODEL read opened (the classifier or labeller, the content
+    // filter, an understanding note; never the predicate's families, never the relational floor) steps back on a reply
+    // that clearly says the child is fine (server/safety/fine.js): to the gentle resume, or straight back when the same
+    // words ask to carry on (the continue chip, said). Predicate episodes keep the full hold: children minimise after real
+    // disclosures. Distress in the reply was already the full safeguard above.
+    const fineNow = !s.safeguard.asked && !s.safeguard.carried && MODEL_EPISODE_KINDS.has(s.safeguard.kind) && clearlyFine(input.text ?? input.answer ?? "");
+    if (s.safeguard.asked || chipId === "safe:continue" || (fineNow && asksToCarryOn(input.text ?? input.answer ?? ""))) {
       s.safeguard = null;
       return item ? plan(moveKindFor(item), SH.pose({ item, prefix: "gently back to where you were" }), { item, probe: probeFor(item) }) : decide(s, { ...input, cls: null }, item);
+    }
+    if (fineNow) {
+      s.safeguard.asked = true;
+      return plan("repair", SH.resumeAfterFine(), { chips: [{ id: "safe:continue", label: labels.cont }, { id: "safe:stop", label: labels.stop }] });
     }
     s.safeguard.calm += 1;
     if (s.safeguard.calm < 2) return plan("safeguard", SH.safeguardStay(), { whiteboard: HELPLINES });

@@ -352,7 +352,9 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
   // A comparison across kinds of quantity (45,000 fans vs 4,500 km) in the teacher's OWN words; the kit's posed
   // question is verified content and is not judged here.
   const own = (t) => (item ? String(t).split(promptFor(item, lang)).join(" ") : String(t));
-  const address = state.ctx.address;
+  // r5 QA D38 (14.3): an English lesson (no address) holds a code-switched Hinglish line to the parent's / class address
+  // (aap only: a code-switched "aap" to a younger child is not wrong, and is never worth a rewrite's second)
+  const address = state.ctx.address ?? (state.ctx.mixAddress === "aap" ? "aap" : null);
   const kindNow = state.lastMove?.kind;
   // The floor's NEVER rules on the teacher's own words (director/safety.js; verified kit content is not judged).
   const floorContent = floorContentOf(item);
@@ -589,6 +591,12 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
       found = [];
       guard.repaired = true;
     }
+  }
+  // r5 QA D38: an English lesson's code-switched line in tum forms is held to aap by the closed tum → aap lexicon, without a
+  // model call; the rewrite below runs only if the register is still broken or something else is
+  if (found.includes("register") && !state.ctx.address && address === "aap") {
+    const fixed = toAap(reply);
+    if (!registerBroken(fixed, address)) { reply = fixed; guard.repaired = true; found = problems(reply); }
   }
   if (found.length) {
     const asked = G && ["example", "story", "another"].includes(state.lastMove?.request);

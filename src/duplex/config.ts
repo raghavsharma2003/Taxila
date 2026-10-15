@@ -277,6 +277,8 @@ export const OVERLAP = {
  */
 /** D5: the shortest voiced turn with no words that still ends on the backstop (a lone "haan" is ~250 ms; D4 keeps 300). */
 export const D5_UNHEARD_MIN_VOICED_MS = 150;
+/** Round 5 (D5): a closed answer with words but no readable value ends at this silence once Voice Live's final is in (else 1.5 s). */
+export const D5_CLOSED_NO_VALUE_BACKSTOP_MS = 900;
 export const FIRST_TEXT_P90: Record<string, Ms> = { live_transcribe: 2048, mai_stream: 3200, nemotron: 800, voicelive: 2000, sim: 2000, other: 2500 };
 
 /** Fail patient (G10): no engine decision for this long → stage A rules; a stage A fault → today's silence policy. */
