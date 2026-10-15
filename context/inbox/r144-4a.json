@@ -1,0 +1,23 @@
+{
+ "nodes": [
+  {
+   "id": "ms-r144-spoken-fractions",
+   "kind": "measurement",
+   "at": "2026-10-15",
+   "title": "Spoken Devanagari fractions earn evidence (4A, main's 14.4 item from 4B's finding). classify() over the 52 fraction-key kit items x 4 Devanagari spoken forms of the key ('<n> बटा <d>', '<n> बता <d>', '+ होगा', 'मेरे ख्याल से +'): correct 0/208 before, 208/208 after (156 by the code number path). Wrong forms (n/(d+1), (n+1)/d, d/n, and 'मुझे बता दो' on every item): 0/208 credited before and after; 'मुझे बता दो' no evidence 52/52. Three changes: spoken-number.js reads बटा / बता as OVER (बता only between two numbers) and a Devanagari दो after a verb stem as the verb unless a fraction claims it; learner/affect.js no longer reads '<n> बता दो' as asking for the answer; tailAgrees reads a spoken Devanagari fraction as the number itself. Side-effect check (main): tailAgrees and unitsAfterNumbers old vs new over 2,008 Devanagari sim-lab child lines x their item keys: only the 2 fraction lines moved; 0 unit readings moved. A first version that kept vowel signs in wordToks moved 206 (then 832) other Devanagari tail verdicts and was replaced."
+  },
+  {
+   "id": "ms-r144-affirm-opener",
+   "kind": "measurement",
+   "at": "2026-10-15",
+   "title": "No affirmation that approves what nobody said (open-r143-affirm-on-no-answer; brain/say.js affirmOpenerFix on every lane's final reply, never a safeguard). (a) not_yet / partial verdict or truly empty input: the leading affirmation goes; (b) a right answer that opens No / nahi / नहीं: a bare Yes / Haan / हाँ opener becomes Right / Sahi / सही. Same function over the sim lab's transcripts: 14.2 decided Director 860 turns 1 stripped, 0 left; e46a281 decided 1,698 turns 3 polarity rewrites, 0 left; f444f064 continuer OOS 415 turns 0 (a 'Right-align' opener is not an affirmation); p30 re-run 1 polarity rewrite ('Yes, Pihu—earthworm has no legs' -> 'Right, Pihu—…'). Not covered: the polarity case on the agent lane's streamed first clause."
+  },
+  {
+   "id": "dc-r144-deep-marks-switch",
+   "kind": "decision",
+   "at": "2026-10-15",
+   "status": "proposed",
+   "title": "The deep-kind audit's 1,927 marks are measured before they are applied: TAXILA_KIT_DEEP_MARKS=1 (off by default) loads data/kits/deep-marks-2026-10-15.json as deep: false through the kit loader; the patch itself (main's deep-kind-fix, items.js plainEvidence) is applied on claude/r4-conversation and changes nothing while no kit carries deep: false. The sim lab's 2x2 (marks off/on x a kind-only / audit-aware decided child) decides. Reversal: on apply, write the marks into the kits (evals/kit-deep-kinds/apply.mjs --write) and remove the switch and the list; on reject, remove both and keep the patch's code inert."
+  }
+ ]
+}

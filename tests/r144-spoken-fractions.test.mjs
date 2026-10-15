@@ -24,10 +24,12 @@ test("'एक बता दो' is a fraction, not a request for the answer; '�
   assert.equal(readUtterance("दीदी बता दो ना").asksForAnswer, true);
 });
 
-test("the tail check keeps Devanagari vowel signs: a fraction agrees with its key, another noun does not", () => {
+test("the tail check reads a spoken Devanagari fraction as the number itself; no other Devanagari tail verdict moves", () => {
   assert.equal(tailAgrees("1/2", "एक बटा दो"), true);
   assert.equal(tailAgrees("1/2", "एक बता दो"), true);
-  assert.equal(tailAgrees("3 edges", "तीन कोने"), false);
+  assert.equal(tailAgrees("1/2", "एक बटा दो किताबें"), false, "a noun after the fraction is still judged");
+  // main's check: over 2,008 Devanagari sim-lab lines x their item keys only the two fraction lines moved; these keep today's verdict
+  for (const [t, k] of [["तीन कोने", "3 corners"], ["पाँच मीटर", "5 m"], ["दो किलो", "2 kg"]]) assert.equal(tailAgrees(k, t), true, t);
 });
 
 test("the code path grades a spoken Devanagari fraction against a 1/2 key; a wrong one is not credited", () => {

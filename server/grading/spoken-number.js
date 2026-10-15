@@ -278,7 +278,7 @@ const FILL = new Set(("hai hain he h ho hoga hogi honge hota hoti hote tha thi j
 const TEMP = { c: "°c", celsius: "°c", centigrade: "°c", f: "°f", fahrenheit: "°f" };
 const canonWord = (w) => { const x = sing(w); return LEN[x] ?? OTHER[x] ?? TEMP[x] ?? x.replace(/(?:ies)$/, "y").replace(/(?:es|s)$/, (m) => (x.length > 3 ? "" : m)); };
 const wordToks = (raw) => String(raw ?? "").toLowerCase().normalize("NFC").replace(/[०-९]/g, (d) => String("०१२३४५६७८९".indexOf(d)))
-  .replace(/(\d)([a-z°²³])/g, "$1 $2").replace(/°/g, " deg ").replace(/[²]/g, " sq ").replace(/[³]/g, " cu ").replace(/[^\p{L}\p{M}\p{N}.\/-]+/gu, " ")
+  .replace(/(\d)([a-z°²³])/g, "$1 $2").replace(/°/g, " deg ").replace(/[²]/g, " sq ").replace(/[³]/g, " cu ").replace(/[^\p{L}\p{N}.\/-]+/gu, " ")
   .split(/\s+/).map((t) => t.replace(/^[.]+|[.]+$/g, "")).filter(Boolean);
 const isNumTok = (t) => /\d/.test(t) || wordNum(t) != null || t in SCALE || t in SPECIAL || t in PREFIX || t in DEN || SIGN.has(t) || t === "point" || OVER.has(t);
 /** Content words after the first number in `raw`, canonical. */
@@ -288,9 +288,13 @@ function wordsAfterNumber(raw) {
   if (i < 0) return [];
   return toks.slice(i + 1).filter((t) => !isNumTok(t) && !FILL.has(t)).map(canonWord);
 }
+const DEVA_NUM = "(?:\\d+|एक|दो|तीन|चार|पाँच|पांच|छह|छः|छे|सात|आठ|नौ|दस|ग्यारह|बारह|तेरह|चौदह|पंद्रह|सोलह|सत्रह|अठारह|उन्नीस|बीस)";
+const DEVA_FRACTION = new RegExp(`${DEVA_NUM}\\s+(?:बटा|बता)\\s+${DEVA_NUM}(?=\\s|$|[.,!?।])`, "gu");
 /** Does the child's reply name only things the key names? true when nothing is said after the number. */
 export function tailAgrees(key, text) {
-  const kt = new Set(wordsAfterNumber(key)), ct = wordsAfterNumber(text);
+  // round 5 (14.4): a spoken Devanagari fraction ("एक बटा दो", "तीन बता चार") is the number itself, never words after it.
+  // Removed before the old tokens are read, so no other Devanagari tail verdict moves (main's check: 2,007 sim-lab lines)
+  const kt = new Set(wordsAfterNumber(key)), ct = wordsAfterNumber(String(text ?? "").replace(DEVA_FRACTION, " 1 "));
   return ct.every((w) => kt.has(w));
 }
 
