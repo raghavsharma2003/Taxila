@@ -11,7 +11,9 @@
 //   - channel truth: on a spoken lane her words never ask the child to type or write (brain/say.js speakNotWrite);
 //   - silence never brings new content: on a silent event no new item, no new board, no picture;
 //   - budgets: per-turn time and per-lesson tokens and cost; over a budget the turn throws and the Director lane takes it.
-import { chat, usdOf, normUsage } from "../azure.js";
+import { chat, chatStream, usdOf, normUsage } from "../azure.js";
+import { sayDeltasOf } from "../latency/speech-stream.js";
+import { floorViolations } from "../director/safety.js";
 import { screenClaimProblem, stripScreenRefs, pointsAtScreen } from "../director/say.js";
 import { speakNotWrite } from "../brain/say.js";
 import { promptFor } from "../director/items.js";
@@ -88,6 +90,16 @@ export function withoutMastery(say, learner) {
   return kept.length && kept.length !== parts.length ? kept.join("").trim() : String(say ?? "");
 }
 
+/** The child asks to play (their words in the event). */
+const GAME_ASK = /(?:the child (?:said|typed|tapped)[^"]*")[^"]*(?:\bgame|\bkhel|\bplay\b|गेम|खेल)/iu;
+const GAME_PROMISE = /(?:game|games|khel\w*|गेम|खेल)[^.!?।]*(?:taiyaar|tayyar|taiyar|ready|bana\s*(?:rahi|ti|ungi)|banaa\s*rahi|la\s*rahi|laa\s*rahi|aayega|aayegi|aa\s*raha|aa\s*rahi|shuru\s*kar|start|khelte\s+hain|khelenge|coming|getting)|(?:taiyaar|tayyar|ready|bana\s*rahi)[^.!?।]*(?:game|khel)/iu;
+/** Her line without a promise of a game that will not come (a spoken game, "bolkar", stays). PURE. */
+export function withoutGamePromise(say) {
+  const parts = String(say ?? "").match(/[^.!?।]+[.!?।]*\s*/g) ?? [];
+  const kept = parts.filter((p) => !(GAME_PROMISE.test(p) && !/bolkar|spoken|words\s+mein|zubani/i.test(p)));
+  return kept.length && kept.length !== parts.length ? kept.join("").trim() : String(say ?? "");
+}
+
 const INTERNALS = /(?:^|[^\p{L}])(?:card\s+(?:ka|ke|ki|par|pe)\s+(?:check|jaanch|jawab|answer)|card'?s\s+check|check\s+(?:isse|se)\s+match|match\s+nahi\s+hua|verified\s+grade|the\s+grade|grade\s+(?:ne|mein|says)|harness|answer\s+key|key\s+(?:se|ke\s+saath)\s+match|system\s+(?:ne|says|ke\s+hisaab)|the\s+checker|checker\s+(?:ne|says))(?![\p{L}])/iu;
 /** Her line without sentences that voice the harness (the card's check, the grade, the key). PURE. */
 export function withoutInternals(say) {
@@ -96,13 +108,52 @@ export function withoutInternals(say) {
   return kept.length && kept.length !== parts.length ? kept.join("").trim() : String(say ?? "");
 }
 
+/** An async queue of the model's raw JSON deltas (pushed by chatStream's onDelta, read by sayDeltasOf). */
+function deltaQueue() {
+  const buf = []; let done = false, wake = null;
+  return {
+    push(d) { buf.push(d); wake?.(); },
+    end() { done = true; wake?.(); },
+    async *iter() { for (;;) { if (buf.length) { yield buf.shift(); continue; } if (done) return; await new Promise((r) => { wake = r; }); wake = null; } },
+  };
+}
+const kitContentOf = (kit) => [kit.title, ...(kit.expectations ?? []), ...(kit.items ?? []).map((i) => i.prompt_en)].filter(Boolean).join(" ").slice(0, 4000);
+
+/**
+ * The per-clause gate for her STREAMED words (stream 3's speakStreamed calls it on every clause before TTS): the same
+ * harness checks her whole line gets, applied while she is still speaking. A floor violation stops the speech (the turn
+ * then takes the Director's safe line); a clause that only the harness's checks reject is dropped; a type/write ask is
+ * rewritten to say. Nothing on screen is known to be new while she speaks, so a clause pointing at the screen is dropped
+ * unless something is already up. PURE given its inputs.
+ */
+export function clauseGate({ verdict = null, learner = {}, noGame = false, screen = null, lane = "voice", content = "" } = {}) {
+  const up = screen && screen.on && screen.on !== "nothing";
+  const understood = Object.values(learner ?? {}).some((v) => v.read === "understood");
+  let first = true;
+  return (clause, spoken = []) => {
+    const said = [...spoken, clause].join(" ");
+    if (floorViolations(said, { content }).length) return { ok: false, why: "floor" };
+    let c = String(clause ?? "");
+    if (first) { first = false; if (verdict && verdict !== "correct") c = c.replace(OPEN_YES, ""); }
+    if (lane !== "text") c = speakNotWrite(c);
+    const q = /[?？]\s*$/.test(c.trim());
+    if (verdict && verdict !== "correct" && PRAISE.test(c) && !q) return { ok: true, skip: true };
+    if (INTERNALS.test(c)) return { ok: true, skip: true };
+    if (!understood && MASTERY.test(c) && !q) return { ok: true, skip: true };
+    if (noGame && GAME_PROMISE.test(c) && !/bolkar|spoken|zubani/i.test(c)) return { ok: true, skip: true };
+    if (!up && (pointsAtScreen(c) || SHOW_CLAIM.test(c)) && !q) return { ok: true, skip: true };
+    if (!c.trim()) return { ok: true, skip: true };
+    return { ok: true, clause: c };
+  };
+}
+
 /**
  * One agent turn. → { say, intent, item, board: ScreenTruth | null (a page that went up), cleared, picture: ScreenTruth | null,
  *   screen: ScreenTruth (after her actions), slot, read, plan, end, usage, ms, notes[] }
  * Throws on a model error, a timeout, a bad output or a budget: the caller (brain/turn.js) then lets the Director lane take
  * the turn.
  */
-export async function agentTurn({ state, kit, event, silent = false, verdict = null, lessonId, lane = "voice", child = null, trace, chatFn = chat, tools = screenTools, now = Date.now() }) {
+export async function agentTurn({ state, kit, event, silent = false, verdict = null, lessonId, lane = "voice", child = null, trace, chatFn = chat, streamFn = chatStream, onSay = null, tools = screenTools, now = Date.now() }) {
   const a = state.agent ?? {};
   const usage = a.usage ?? { usd: 0, tokens: 0 };
   if (usage.usd >= AGENT_LIMITS.lessonUsd || usage.tokens >= AGENT_LIMITS.lessonTokens) throw new AgentBudgetError(`lesson budget spent (${usage.usd.toFixed(3)} USD, ${usage.tokens} tokens)`);
@@ -110,12 +161,34 @@ export async function agentTurn({ state, kit, event, silent = false, verdict = n
   const news = (() => { try { return tools.news?.(lessonId) ?? []; } catch { return []; } })();
   const offered = offeredItems(state, kit);
   const ctx = { ...state.ctx, classLevel: state.ctx?.classLevel };
-  const ev = news.length ? `${news.join(". ")}. ${event}` : event;
+  // the child asks to play: the game is looked for BEFORE she speaks (code, ~0.3 s), so her line can say what is true this
+  // turn — a game is up, or none exists and she offers a spoken one (sim lab cc4b3d2: 14 no-game lessons, 2 spoken offers)
+  let pre = null;
+  if (!silent && !a.noGame && tools.game && GAME_ASK.test(String(event ?? ""))) {
+    pre = await Promise.resolve().then(() => tools.game(lessonId, { skillId: a.skill ?? kit.skills?.[0]?.id ?? "", topicId: kit.topicId ?? "", child }))
+      .catch((e) => ({ ok: false, refused: { why: String(e?.message ?? e).slice(0, 60) } }));
+  }
+  const gameNews = pre ? (pre.ok ? `GAME: a game for this skill is now on the screen (${clip(pre.words, 120)}); tell them to play it`
+    : "GAME: no game exists for this topic (the harness looked); say so in a few words and play a quick spoken game with them now") : null;
+  const ev = [...news, ...(gameNews ? [gameNews] : [])].length ? `${[...news, ...(gameNews ? [gameNews] : [])].join(". ")}. ${event}` : event;
   const messages = [{ role: "system", content: systemPrompt(ctx) }, { role: "user", content: stateMessage({ state, kit, event: ev, onScreen: before.words, lane }) }];
   const dep = teacherDeployment();
   const t0 = Date.now();
-  const res = await chatFn(dep, messages, { schema: TURN_SCHEMA, schemaName: "teacher_turn", effort: "low", maxTokens: AGENT_LIMITS.maxOutTokens,
-    timeoutMs: AGENT_LIMITS.turnTimeoutMs, retries: 0, quotaLane: "hot", trace });
+  const opts = { schema: TURN_SCHEMA, schemaName: "teacher_turn", effort: process.env.TAXILA_TEACHER_EFFORT || "low", maxTokens: AGENT_LIMITS.maxOutTokens, timeoutMs: AGENT_LIMITS.turnTimeoutMs, retries: 0, quotaLane: "hot", trace };
+  let res, firstSayMs = null;
+  if (typeof onSay === "function") {
+    // streamed (AGENT.md §1 Latency; stream 3's speech-stream.js): her words go to the caller as they are written (say is the
+    // first field), each clause through clauseGate; the actions are run when the whole object has come
+    const q = deltaQueue();
+    let sayIter = sayDeltasOf(q.iter());
+    const tap = (async function* () { for await (const d of sayIter) { if (firstSayMs == null) firstSayMs = Date.now() - t0; yield d; } })();
+    try { onSay(tap, clauseGate({ verdict, learner: a.learner ?? {}, noGame: !!a.noGame, screen: before, lane, content: kitContentOf(kit) })); } catch { /* the caller's speech path is its own */ }
+    try {
+      const r = await streamFn(dep, messages, { ...opts, onDelta: (d) => q.push(d) });
+      q.end();
+      res = { json: (() => { try { return JSON.parse(r.text); } catch { return null; } })(), usage: r.usage };
+    } catch (e) { q.end(); throw e; }
+  } else res = await chatFn(dep, messages, opts);
   const ms = Date.now() - t0;
   const out = res?.json;
   if (!out || typeof out.say !== "string" || !out.say.trim()) throw new Error("agent: no line");
@@ -129,7 +202,9 @@ export async function agentTurn({ state, kit, event, silent = false, verdict = n
     if (!item) notes.push(`refused pose_item ${clip(out.pose_item, 60)}: not an offered item`);
   }
   let say = clip(out.say, AGENT_LIMITS.sayMaxChars);
-  let board = null, cleared = false, picture = null, game = null, screen = before, unconfirmed = false;
+  let board = null, cleared = false, picture = null, game = null, screen = before, unconfirmed = false, gameRefused = false;
+  // a lesson whose topic has no game: she was told so, and any promise of one is removed (not only on a play turn)
+  if (a.noGame) { const held = withoutGamePromise(say); if (held !== say) { say = held; notes.push("game promise removed"); } }
   if (silent) {
     // silence never brings new content: the same question at most, no new board, no picture
     if (item && item.id !== state.activeItemId) { notes.push("silence: new item dropped"); item = null; }
@@ -143,10 +218,18 @@ export async function agentTurn({ state, kit, event, silent = false, verdict = n
       if (t?.ok && !t.refused && t.on !== "nothing") { board = t; screen = t; } else { unconfirmed = true; notes.push(`board ${t?.pending ? "pending" : "refused"}: ${clip(t?.refused?.why, 80)}`); }
     }
   } else if (out.board?.action === "clear") { try { screen = tools.clear(lessonId); cleared = true; } catch { /* the board stays */ } }
-  if (!silent && out.play && tools.game) {
+  if (pre) {
+    if (pre.ok) { game = pre; screen = pre; notes.push(`game up ${clip(pre.game?.family, 30)}`); }
+    else { gameRefused = true; notes.push(`game refused: ${clip(pre.refused?.why, 60)}`); const held = withoutGamePromise(say); if (held !== say) { say = held; notes.push("game promise removed"); } }
+  } else if (!silent && out.play && tools.game) {
     const g = await Promise.resolve().then(() => tools.game(lessonId, { skillId: item?.skillId ?? a.skill ?? "", topicId: kit.topicId ?? "", child }))
       .catch((e) => ({ ok: false, refused: { why: String(e?.message ?? e).slice(0, 60) } }));
-    if (g?.ok) { game = g; screen = g; notes.push(`game up ${clip(g.game?.family, 30)}`); } else { unconfirmed = true; notes.push(`game refused: ${clip(g?.refused?.why, 60)}`); }
+    if (g?.ok) { game = g; screen = g; notes.push(`game up ${clip(g.game?.family, 30)}`); }
+    else {
+      unconfirmed = true; gameRefused = true; notes.push(`game refused: ${clip(g?.refused?.why, 60)}`);
+      // sim lab 1a346d9 (p29, p33: "game taiyaar kar rahi hoon" turn after turn, no game ever came): no promise of a game
+      const held = withoutGamePromise(say); if (held !== say) { say = held; notes.push("game promise removed"); }
+    }
   }
   if (out.picture && !silent) unconfirmed = true;
   if (!silent && out.picture) {
@@ -176,14 +259,18 @@ export async function agentTurn({ state, kit, event, silent = false, verdict = n
     say = fixed || say.replace(/\b(?:screen|board)\s+(?:par|pe|mein)\s+/gi, "");
   }
   const lastSentence = (say.match(/[^.!?।]+[.!?।]*\s*$/) ?? [say])[0];
+  let appended = null;
   if (item && !/[?？]/.test(say) && !ASKS.test(lastSentence)) {
-    // the card question is asked aloud in her words; if her line ended elsewhere, the card's question closes it
-    say = `${say} ${promptFor(item, state.ctx?.lang)}`.trim();
+    // the card question is asked aloud in her words; if her line ended elsewhere, the card's question closes it (streamed:
+    // the caller speaks it after her streamed words, as `tail`)
+    appended = promptFor(item, state.ctx?.lang);
+    say = `${say} ${appended}`.trim();
     notes.push("card question appended");
   }
   const slot = game?.slot ?? (board?.pageId ? (() => { try { return tools.slot?.(lessonId, board.pageId) ?? null; } catch { return null; } })() : null);
   return {
-    say, intent: MOVE_OF[out.intent] ?? "explain", item, board, cleared, picture, game, screen, slot,
+    ...(typeof onSay === "function" ? { streamed: true, firstSayMs, tail: appended } : {}),
+    say, intent: MOVE_OF[out.intent] ?? "explain", item, board, cleared, picture, game, gameRefused, screen, slot,
     read: out.read?.skill && out.read.level !== "unknown" ? { skill: clip(out.read.skill, 80), level: out.read.level, evidence: clip(out.read.evidence, 160) } : null,
     plan: clip(out.plan, 700), end: !!out.end && !silent, usage: { usd: turnUsd, tokens: (u.in ?? 0) + (u.out ?? 0) }, ms, notes, deployment: dep, at: now,
   };
@@ -231,9 +318,14 @@ export function applyAgentTurn(next, out, { kit, childText = "", cls = null, car
   }
   if (out.read) {
     const k = out.read.skill;
-    const deepAvailable = (kit.items ?? []).some((i) => i.skillId === k && DEEP_KINDS.has(i.kind) && i.kind !== "why" && i.kind !== "teachback");
+    const deepAvailable = (kit.items ?? []).some((i) => i.skillId === k && DEEP_KINDS.has(i.kind) && i.kind !== "teachback");
     const level = earnedRead(out.read.level, learner[k]?.graded ?? [], { deepAvailable });
-    learner[k] = { ...(learner[k] ?? {}), read: level, evidence: out.read.evidence, ...(level !== out.read.level ? { claimed: out.read.level } : {}) };
+    // honest at the end of a lesson (sim lab 71a6b11): "partly" from right easy answers with no deep question asked yet is
+    // not the "partly" of a child who got the deep one wrong
+    const g = learner[k]?.graded ?? [];
+    const untested = level === "partly" && g.some((x) => x.g === "correct") && !g.some((x) => DEEP_KINDS.has(x.kind));
+    const { depth: _d, ...rest } = learner[k] ?? {};
+    learner[k] = { ...rest, read: level, evidence: out.read.evidence, ...(level !== out.read.level ? { claimed: out.read.level } : {}), ...(untested ? { depth: "untested" } : {}) };
   }
   const screen = out.screen ? { on: out.screen.on, words: clip(out.screen.words, 300), texts: (out.screen.texts ?? []).slice(0, 12) } : (a.screen ?? { on: "nothing", words: "nothing is on the screen", texts: [] });
   next.agent = {
@@ -241,6 +333,7 @@ export function applyAgentTurn(next, out, { kit, childText = "", cls = null, car
     posed: out.item ? [...new Set([...(a.posed ?? []), out.item.id])] : (a.posed ?? []),
     skill: out.item?.skillId ?? a.skill ?? kit.skills?.[0]?.id,
     boards: (a.boards ?? 0) + (out.board ? 1 : 0), pictures: (a.pictures ?? 0) + (out.picture?.job ? 1 : 0),
+    ...(out.gameRefused || a.noGame ? { noGame: true } : {}),
     usage: { usd: +((a.usage?.usd ?? 0) + out.usage.usd).toFixed(5), tokens: (a.usage?.tokens ?? 0) + out.usage.tokens },
     lastMs: out.ms, notes: out.notes,
   };

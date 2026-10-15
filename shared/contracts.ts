@@ -260,6 +260,9 @@ export interface TurnResponse {
    * old instructions); "when_free": speak if nobody holds the floor (a reaction to a module milestone).
    */
   speakNow?: "interrupt" | "when_free";
+  /** Round 5 agent lane, streamed (turn-audio): the text to speak after her streamed words (the card's question the code
+   *  appended), and ms from the agent call's start to her first words. Absent when nothing streamed. */
+  agentStream?: { tail: string | null; firstSayMs: number | null };
   end?: boolean;
   /** round 3 fix (experience B8): the child chose "Start <topic>" on a switch offer: the client starts that lesson next. */
   switchTo?: string;

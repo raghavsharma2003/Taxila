@@ -196,7 +196,12 @@ export async function replayResponse(lesson, state, replay, extra = {}) {
  * body; every refusal is a thrown HttpError, exactly as the route answered before BR1).
  * @type {(req: any, body: import("../../shared/contracts").TurnRequest) => Promise<import("../../shared/contracts").TurnResponse>}
  */
-export async function lessonTurn(req, body) {
+/**
+ * @param {{ onAgentSay?: (deltas: AsyncIterable<string>, gate: Function) => void }} [hooks] round 5 (stream 3's turn-audio):
+ *   on the agent lane her words stream to the caller as they are written, with the per-clause gate (server/agent/agent.js
+ *   clauseGate); the response then carries agentStream { tail, firstSayMs } so the caller speaks the card question after them
+ */
+export async function lessonTurn(req, body, hooks = {}) {
   const t0 = performance.now();
   const trace = [];
   // W2-E fixer (TB12): a seam that throws falls back (seam-safe.js) AND leaves a component_error.<component> code on the
@@ -515,6 +520,7 @@ export async function lessonTurn(req, body) {
       const verdict = card && cls ? (cls.outcome === "correct" && !cls.reasonMisconceptionId ? "correct" : cls.outcome === "correct" || cls.outcome === "partial" ? "partly"
         : cls.outcome === "incorrect" || cls.outcome === "misconception" ? "wrong" : null) : null;
       agentOut = await agentTurn({ state, kit, lessonId: lesson.id, lane: state.mode, trace, silent: silentNow, verdict, child,
+        ...(typeof hooks?.onAgentSay === "function" && !silentNow ? { onSay: hooks.onAgentSay } : {}),
         event: eventOf({ kind: silentNow ? "silence" : "turn", childText, asrConfidence: body.asrConfidence, chipId: body.chipId, chipLabel, typed, cls, card, kit, lang: state.ctx?.lang }) });
       // the Director's stepped state keeps its bookkeeping; the card and the phase are the agent's
       const agentNext = structuredClone(next);
@@ -1065,6 +1071,9 @@ export async function lessonTurn(req, body) {
       move: r.move, moduleCommands: r.moduleCommands,
       // round 5: the covert comprehension read of the child's turn (server/director/read.js): what the Director acted on
       ...(cls && !moduleOnly ? { read: comprehensionRead(cls, { childText, target }) } : {}),
+      // round 5 (agent lane, streamed): what the caller speaks after her streamed words (the card's question, when the code
+      // appended it), and when her first words came; absent = nothing was streamed or the Director took the turn
+      ...(agentOut?.streamed ? { agentStream: { tail: agentOut.tail ?? null, firstSayMs: agentOut.firstSayMs ?? null } } : {}),
       ui: withStudioSlot(withSeamUi(withAsk(r.ui, teacherReply, { ...uiVerdictOf(cls, target, state), ...(kernel.beat ? { beat: uiBeatOf(kernel.beat) } : {}) }), relational,
         { safety: r.move.kind === "safeguard" || !!incident }), studioSlot),
       ...(teacherReply ? { teacherReply, teacherReplySeq } : {}), ...(speakNow ? { speakNow } : {}), ...(r.end ? { end: true } : {}),

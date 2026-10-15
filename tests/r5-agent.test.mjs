@@ -3,7 +3,7 @@
 // brings no new content, the board is drawn by code and reported, a spoken line never asks to type, budgets throw. Pure.
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { agentTurn, applyAgentTurn, eventOf, gradeOf, earnedRead, withoutPraise, withoutInternals, withoutMastery, AgentBudgetError } from "../server/agent/agent.js";
+import { agentTurn, applyAgentTurn, eventOf, gradeOf, earnedRead, withoutPraise, withoutInternals, withoutMastery, withoutGamePromise, AgentBudgetError } from "../server/agent/agent.js";
 import { laneFor, teacherMode } from "../server/agent/flags.js";
 import { specOf } from "../server/agent/tools.js";
 import { systemPrompt, stateMessage, offeredItems, TURN_SCHEMA } from "../server/agent/prompt.js";
@@ -51,7 +51,7 @@ test("the prompt: the floor is the last section; keys are never shown; schema is
   assert.equal(TURN_SCHEMA.additionalProperties, false);
   // an unverified item (solver disagrees) and a non-gradable kind are never offered
   const ids = offeredItems(ST(), K, 20).map((i) => i.id);
-  assert.ok(!ids.includes("bad")); assert.ok(!ids.includes("i5")); assert.ok(!ids.includes("i8"));
+  assert.ok(!ids.includes("bad")); assert.ok(!ids.includes("i8"), "a teachback is never a card item"); assert.ok(ids.includes("i5"), "a why item is (round 5: deep evidence)");
 });
 
 test("a posed item must be an offered one; the card question closes her line", async () => {
@@ -212,9 +212,76 @@ test("she never voices the harness: the card's check, the grade, the key (sim la
 test("a skill that needs deep evidence offers only its deep items; no mastery claim the record does not hold (sim lab 35c0b7c)", async () => {
   const st = ST({ agent: { learner: { "c4-maths-ch05-t01-s2": { graded: [{ item: "i7", kind: "practice", g: "correct" }] } }, skill: "c4-maths-ch05-t01-s2" } });
   const s2 = offeredItems(st, K, 20).filter((i) => i.skillId === "c4-maths-ch05-t01-s2");
-  assert.ok(s2.length && s2.every((i) => ["contrast", "near_transfer", "error_spot", "far_transfer", "predict", "translate_rep"].includes(i.kind)), s2.map((i) => i.kind).join());
+  assert.ok(s2.length && s2.every((i) => ["contrast", "near_transfer", "error_spot", "far_transfer", "predict", "translate_rep", "why"].includes(i.kind)), s2.map((i) => i.kind).join());
   const wrap = "Aaj tumne fractions compare karna sikh liya! Kal phir milte hain.";
   assert.equal(withoutMastery(wrap, { s2: { read: "partly" } }), "Kal phir milte hain.");
   assert.equal(withoutMastery(wrap, { s2: { read: "understood" } }), wrap);
   assert.equal(withoutMastery("Kya tum samajh gaye ho?", {}), "Kya tum samajh gaye ho?", "a question is not a claim");
+});
+
+test("no game for the topic: no promise of one this turn or later; the state tells her (sim lab 1a346d9 p29, p33)", async () => {
+  const none = fakeTools(); none.game = async () => ({ ok: false, refused: { why: "no game exists for this yet" } });
+  const r = await run(base({ say: "Ab thoda game khelte hain. Main line wala game taiyaar kar rahi hoon. A ki sides kaisi hain?", play: true }), { tools: none });
+  assert.equal(r.say, "A ki sides kaisi hain?");
+  const next = ST();
+  applyAgentTurn(next, r, { kit: K, childText: "game khelna hai", lessonId: "L1" });
+  assert.equal(next.agent.noGame, true);
+  assert.match(stateMessage({ state: next, kit: K, event: "x", onScreen: "nothing", lane: "voice" }), /GAMES: no game exists/);
+  const later = await run(base({ say: "Game abhi aa raha hai! Chalo bolkar ek game khelte hain: 2 aur 2?" }), { state: { agent: { noGame: true } } });
+  assert.equal(later.say, "Chalo bolkar ek game khelte hain: 2 aur 2?");
+  assert.equal(withoutGamePromise("Game ready hai? Nahi abhi."), "Nahi abhi.");
+});
+
+test("streamed: her words reach speakStreamed clause by clause through the gate; praise on a wrong answer and pointing at an empty screen are dropped; the card question is the tail", async () => {
+  const { speakStreamed } = await import("../server/latency/speech-stream.js");
+  const { clauseGate } = await import("../server/agent/agent.js");
+  const json = JSON.stringify(base({ say: "Bahut accha! Screen par dekho, do roti hain. Socho, ek roti ke 2 barabar tukde hon. Ab ek chhota sawaal.", pose_item: "i1", intent: "practice" }));
+  const streamFn = async (dep, messages, o) => { for (let i = 0; i < json.length; i += 7) { o.onDelta(json.slice(i, i + 7)); await new Promise((r) => setImmediate(r)); } return { text: json, usage: { in: 900, out: 80 } }; };
+  let speech = null;
+  const onSay = (deltas, gate) => { speech = speakStreamed({ deltas, gate, synth: async function* (c) { yield Buffer.from(c); }, emit: () => {} }); };
+  const out = await run(base(), { streamFn, onSay, verdict: "wrong" });
+  const sp = await speech;
+  assert.deepEqual(sp.spoken, ["Socho, ek roti ke 2 barabar tukde hon.", "Ab ek chhota sawaal."]);
+  assert.equal(out.streamed, true);
+  assert.ok(out.tail, "the card question the code appended is the tail to speak");
+  assert.ok(typeof out.firstSayMs === "number");
+  // the gate on its own: a floor break stops, a type ask is rewritten, the harness's words are dropped
+  const g = clauseGate({ verdict: "correct", screen: { on: "nothing" }, lane: "voice" });
+  assert.equal(g("Apna jawab type karke bhejo.", []).clause, "Apna jawab bolkar batao.");
+  assert.equal(g("Card ka check isse match nahi hua.", []).skip, true);
+  assert.equal(g("Bahut badhiya, sahi jawab!", []).ok, true);
+});
+
+test("a why question in the child's own words is offered as deep evidence; easy-only partly is marked not yet tested deeply (sim lab 71a6b11)", async () => {
+  const st = ST({ agent: { learner: { "c4-maths-ch05-t01-s2": { graded: [{ item: "i7", kind: "practice", g: "correct" }] } }, skill: "c4-maths-ch05-t01-s2" } });
+  assert.ok(offeredItems(st, K, 20).some((i) => i.kind === "why"), "why items are offered");
+  const next = ST();
+  const card = K.items.find((i) => i.id === "i7");
+  const o = await run(base({ read: { skill: card.skillId, level: "understood", evidence: "right" } }));
+  applyAgentTurn(next, o, { kit: K, childText: "1/4", cls: cls("correct"), card, lessonId: "L1" });
+  assert.equal(next.agent.learner[card.skillId].read, "partly");
+  assert.equal(next.agent.learner[card.skillId].depth, "untested");
+  assert.match(stateMessage({ state: next, kit: K, event: "x", onScreen: "nothing", lane: "voice" }), /not yet tested on a why/);
+  const why = K.items.find((i) => i.id === "i5");
+  const o2 = await run(base({ read: { skill: why.skillId, level: "understood", evidence: "explained why" } }));
+  applyAgentTurn(next, o2, { kit: K, childText: "kam tukde matlab bada tukda", cls: cls("correct"), card: why, lessonId: "L1" });
+  assert.equal(next.agent.learner[why.skillId].read, "understood", "a right why plus a right plain answer");
+  assert.equal(next.agent.learner[why.skillId].depth, undefined);
+});
+
+test("a game ask is looked up BEFORE she speaks: up → she is told it is on screen; none → she is told to offer a spoken game (sim lab cc4b3d2)", async () => {
+  const t = fakeTools(); let looked = 0;
+  t.game = async () => { looked++; return { ok: false, refused: { why: "no game exists for this yet" } }; };
+  const r = await run(base({ say: "Is topic ka game abhi nahi hai. Chalo bolkar ek game: main number bolungi, tum agla bolo. 5?" }), { tools: t, event: 'the child said (speech recognition confidence 0.90): "game khelna hai"' });
+  assert.equal(looked, 1);
+  assert.match(stub.last.messages[1].content, /GAME: no game exists for this topic/);
+  assert.equal(r.gameRefused, true);
+  const up = fakeTools(); up.game = async () => ({ ok: true, on: "game", words: "the screen shows play:catch for the child to use", texts: [], slot: { slotId: "g:slot", intentId: "g", state: "revealed" }, game: { family: "catch" } });
+  const r2 = await run(base({ say: "Game screen par hai, khelo!" }), { tools: up, event: 'the child said (speech recognition confidence 0.90): "mujhe game khelna hai"' });
+  assert.match(stub.last.messages[1].content, /GAME: a game for this skill is now on the screen/);
+  assert.equal(r2.slot.intentId, "g"); assert.equal(r2.say, "Game screen par hai, khelo!");
+  // no game ask: no lookup
+  const t3 = fakeTools(); let n3 = 0; t3.game = async () => { n3++; return { ok: false }; };
+  await run(base(), { tools: t3, event: 'the child said (speech recognition confidence 0.90): "1/2"' });
+  assert.equal(n3, 0);
 });
