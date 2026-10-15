@@ -81,3 +81,14 @@ test("14.3 game ask with no play piece: the lesson's own prepared activity for t
   const none = { lessonId: "L-g2", pieces: new Map([...pieces].filter(([, p]) => !["game", "simulation"].includes(p.kind))), turn: 3, subs: new Set(), redact: [] };
   assert.equal(_lessonPieceForAsk(none, { visual: "game" }), null, "no doable piece: honest talk, as before");
 });
+
+test("QA pass 12 D36: a clock's face numerals are givens (only the open key is withheld); a named rectangle is drawn as one (W15)", async () => {
+  const { freeAsked } = await import("../server/studio/request.js");
+  const { namedShapeMissing } = await import("../server/studio/qa/whiteboard.js");
+  assert.deepEqual(freeAsked({ values: ["2", "4", "7", "9"], phrases: [] }, { kind: "draw", subject: "ghadi" }, { answer: "9" }).values, ["9"]);
+  const trapezoid = [{ op: "polygon", points: [[80, 200], [320, 200], [280, 80], [120, 80]] }];
+  assert.deepEqual(namedShapeMissing("Rectangle ki length 50 m aur breadth 30 m hai.", trapezoid), ["rectangle named, not drawn"]);
+  assert.deepEqual(namedShapeMissing("Rectangle ki length 50 m.", [{ op: "rect", at: [80, 80], w: 240, h: 120 }]), []);
+  assert.deepEqual(namedShapeMissing("आयत की लंबाई 50 m", [{ op: "polygon", points: [[0, 0], [100, 0], [100, 50], [0, 50]] }]), []);
+  assert.deepEqual(namedShapeMissing("Number line par 0 se 50.", [{ op: "line", from: [0, 0], to: [100, 0] }]), [], "no closed shape: not judged");
+});

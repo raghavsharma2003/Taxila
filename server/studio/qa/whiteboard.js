@@ -280,6 +280,36 @@ function circleCutByLines(ops) {
   }
   return out;
 }
+/** The closed shapes a line names (rectangle / square / triangle / circle, English, Hinglish, Devanagari) that the board, which
+ *  draws some closed shape, never draws. A 4-point polygon counts as a rectangle only when its corners are right angles. PURE. */
+const SHAPE_NAMES = [
+  ["rectangle", /\b(?:rectangle|rectangular|aayat|aayatakar)\b|आयत/iu],
+  ["square", /\b(?:square|varg|vargakar)\b|वर्ग/iu],
+  ["triangle", /\b(?:triangle|tribhuj|trikon)\b|त्रिभुज/iu],
+  ["circle", /\b(?:circle|gola|vritt|vrutt)\b|वृत्त/iu],
+];
+const rightAngled = (pts) => pts.length === 4 && pts.every((p, i) => {
+  const a = pts[(i + 3) % 4], c = pts[(i + 1) % 4];
+  const v1 = [a[0] - p[0], a[1] - p[1]], v2 = [c[0] - p[0], c[1] - p[1]];
+  const dot = v1[0] * v2[0] + v1[1] * v2[1], n = Math.hypot(...v1) * Math.hypot(...v2) || 1;
+  return Math.abs(dot / n) < 0.09;
+});
+export function namedShapeMissing(reply, ops) {
+  const named = SHAPE_NAMES.filter(([, re]) => re.test(String(reply ?? ""))).map(([k]) => k);
+  if (!named.length) return [];
+  const has = new Set();
+  for (const o of ops ?? []) {
+    if (o.op === "rect") has.add("rectangle").add(Math.abs((o.w ?? 0) - (o.h ?? 0)) <= 2 ? "square" : "rectangle");
+    if (o.op === "circle" || o.op === "ellipse" || o.op === "sector") has.add("circle");
+    if (o.op === "polygon" && Array.isArray(o.points)) {
+      if (o.points.length === 3) has.add("triangle");
+      if (rightAngled(o.points)) has.add("rectangle").add("square");
+      has.add("polygon");
+    }
+  }
+  if (!has.size) return [];   // nothing closed is drawn (a number line, words): not this check's
+  return named.filter((k) => !has.has(k) && !(k === "square" && has.has("rectangle"))).map((k) => `${k} named, not drawn`);
+}
 /** The straight segments a script draws that words must not sit on: lines, arrow shafts, box edges. */
 export function segmentsOf(ops) {
   const segs = [];
@@ -490,6 +520,10 @@ export function gateWhiteboard(raw, ctx) {
   add("W12.no_next_step_reveal", nextStep.length === 0, nextStep.slice(0, 2));
   const fracs = fractionsDisagree(ctx.reply, ops);
   add("W13.fractions_agree", fracs.length === 0, fracs.slice(0, 2));
+  // W15 (QA pass 12 D36, prod 14.2 94ddbba2: she described a 50 x 30 m rectangle, the board drew a trapezoid): a shape her
+  // line names is drawn as that shape, when the board draws any closed shape at all
+  const misShaped = namedShapeMissing(ctx.reply, ops);
+  add("W15.named_shape_drawn", misShaped.length === 0, misShaped);
   // W14 is ADVISORY (logged, never blocks): over 234 real boards it flagged 69, with false refusals across languages (a
   // Hinglish line "paani garam hokar upar jaata hai" under an English "evaporates" board shares no word but is on topic)
   const off = boardOffLine(ctx.reply, ops, ctx.itemText ?? "");

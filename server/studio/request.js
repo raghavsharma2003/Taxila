@@ -212,7 +212,10 @@ export function unpointGently(text) {
  * child asking "number line pe 3/4 dikhao" while 3/4 is the answer still works it out). PURE.
  */
 export function freeAsked(withhold, request, openItem) {
-  const said = (request?.said ?? []).map(numNorm).filter(Boolean);
+  // QA pass 12 D36 (prod 14.2 c90ad692, "ghadi draw karo": the clock showed "?" for 2, 4 and 7 while she said 1 to 12): every
+  // number the ASK itself carries is a given, not an answer (the numbers they said, a clock's face numerals, a number line's
+  // 0 and 1); only the open item's own key stays withheld
+  const said = askedNumbers(request).map(numNorm).filter(Boolean);
   if (!withhold?.values?.length || !said.length) return withhold;
   const keys = new Set([openItem?.answer, ...(openItem?.acceptable ?? [])].filter((x) => x != null).map(numNorm));
   return { ...withhold, values: withhold.values.filter((v) => !said.includes(numNorm(v)) || keys.has(numNorm(v))) };
