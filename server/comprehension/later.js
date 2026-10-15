@@ -373,10 +373,10 @@ async function writeCorrection(ev, results, q) {
   const live = await loadLive(child);
   if (live.state.ledger.seen[corr.id] !== undefined || live.state.comp.seen[corr.id]) return false;
   // round 5 (server/brain/supersede.js): the event this verdict corrects was superseded by the child's own edit (its row
-  // moved to kt_evidence_superseded): the verdict is about words that no longer count — dropped, traced
-  if (live.state.ledger.seen[ev.id] === undefined && !live.state.comp.seen[ev.id]) {
-    const lessonId = lessonOfEvent(ev.id) ?? ev.sessionId;
-    if (lessonId) await traceDropped(q, lessonId, ev.id);
+  // moved to kt_evidence_superseded, its turn row labelled): the verdict is about words that no longer count — dropped, traced
+  const seq = turnSeqOfEvent(ev.id);
+  if (lessonId && seq != null && (await q("select 1 from turn where lesson_id = $1 and seq = $2 and meta ? 'superseded'", [lessonId, seq])).length) {
+    await traceDropped(q, lessonId, ev.id);
     return false;
   }
   const after = fuseEvidence(live.state, [corr], LIVE_FOLD_CTX);
