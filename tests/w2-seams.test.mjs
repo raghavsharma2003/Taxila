@@ -80,7 +80,8 @@ test("lesson.js keeps every W2 call site, each guarded by seamSafe", () => {
   // azure.js: the quota lane is its own option (lane already selects the endpoint), and both lane hooks are guarded
   const azure = read("server/azure.js");
   assert.ok(/import \{ admit, settle \} from "\.\/lanes\.js"/.test(azure));
-  assert.ok(/lane = "CHAT", quotaLane \}/.test(azure));
+  // (14.2: azure.js post() gained overflow / overflowOnce options after quotaLane; the quota lane is still its own option)
+  assert.ok(/lane = "CHAT", quotaLane[,\s}]/.test(azure));
 });
 
 test("the W2 contracts exist with the agreed shapes", () => {
