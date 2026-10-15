@@ -263,6 +263,10 @@ floor moves to YOUR TURN with the card as the question, so the lesson goes on in
   - Shot: `shots/p13-picture-leak.png`.
 - **Number line ×2: 1/2.** Lesson 04876186 passes ("Board par dekho:" in Hinglish, a 0-4 line stays). Lesson 7cb84bc9 ends
   with no board, and "dekho number line par…" was spoken before the tray was up: D35's vanish is back.
+  - Studio capture (4 more runs on 3e2a2cf2): the board stays in 2. In the other 2 (414955cb, a20930e5) the turn's slot is
+    "planning" and the only stream message is `{t:"status", state:"failed", fallback:"voice"}` at about 9.5-10 s.
+  - The tray drops, and her WHOLE line is spoken again from "Kabir,", still containing "number line dekho": the
+    stripping of pointing words does not reach the voice fallback. Sent to stream 2.
 - **Game ask: pass.** "mujhe game khelna hai" (73984dd1) mounts the rectangle-floor fence activity (Build / Break / Undo /
   Check), and her line points at it.
 
