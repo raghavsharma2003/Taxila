@@ -231,6 +231,24 @@ const STAY = {
   hi: { tum: "मैं यहीं हूँ, कोई जल्दी नहीं है। अगर कोई बात परेशान कर रही हो, तो जिस बड़े पर भरोसा हो वे मदद कर सकते हैं, और चाइल्डलाइन 1098 या टेली-मानस 14416 पर कभी भी फ़ोन कर सकते हो। जो मन हो, मुझे बता सकते हो।",
     aap: "मैं यहीं हूँ, कोई जल्दी नहीं है। अगर कोई बात परेशान कर रही हो, तो जिस बड़े पर भरोसा हो वे मदद कर सकते हैं, और चाइल्डलाइन 1098 या टेली-मानस 14416 पर कभी भी फ़ोन कर सकते हैं। जो मन हो, मुझे बता सकते हैं।" },
 };
+// round 5 (14.2): the check-in a lesson opens on when it starts within hours of a safeguarding incident (state.js decide,
+// `carried`). Fixed, like every safeguarding line. Discreet: no word of what was said or that anything was; both
+// helplines; the choice to start slowly or stop. {name} is the child's first name.
+const CARRIED = {
+  en: { tum: "Hi {name}! Before we start: how are you feeling today? If anything ever worries you, a grown-up you trust can help, and you can call Childline 1098 or Tele-MANAS 14416 any time. Shall we start slowly, or stop for today? Either is fine.",
+    aap: "Hi {name}! Before we start: how are you feeling today? If anything ever worries you, a grown-up you trust can help, and you can call Childline 1098 or Tele-MANAS 14416 any time. Shall we start slowly, or stop for today? Either is fine." },
+  hinglish: { tum: "Namaste {name}! Shuru karne se pehle ek baat: aaj mann kaisa hai? Agar kabhi koi baat pareshan kare, toh jis bade par bharosa ho woh madad kar sakte hain, aur Childline 1098 ya Tele-MANAS 14416 pe kabhi bhi call kar sakte ho. Dheere se shuru karein, ya aaj ke liye bas? Dono theek hain.",
+    aap: "Namaste {name}! Shuru karne se pehle ek baat: aaj mann kaisa hai? Agar kabhi koi baat pareshan kare, toh jis bade par bharosa ho woh madad kar sakte hain, aur Childline 1098 ya Tele-MANAS 14416 pe kabhi bhi call kar sakte hain. Dheere se shuru karein, ya aaj ke liye bas? Dono theek hain." },
+  hi: { tum: "नमस्ते {name}! शुरू करने से पहले एक बात: आज मन कैसा है? अगर कभी कोई बात परेशान करे, तो जिस बड़े पर भरोसा हो वे मदद कर सकते हैं, और चाइल्डलाइन 1098 या टेली-मानस 14416 पर कभी भी फ़ोन कर सकते हो। धीरे से शुरू करें, या आज के लिए बस? दोनों ठीक हैं।",
+    aap: "नमस्ते {name}! शुरू करने से पहले एक बात: आज मन कैसा है? अगर कभी कोई बात परेशान करे, तो जिस बड़े पर भरोसा हो वे मदद कर सकते हैं, और चाइल्डलाइन 1098 या टेली-मानस 14416 पर कभी भी फ़ोन कर सकते हैं। धीरे से शुरू करें, या आज के लिए बस? दोनों ठीक हैं।" },
+};
+/** The fixed check-in a lesson opens on after a recent safeguarding incident. Exported for tests. */
+export function carriedCheckInLine(ctx = {}) {
+  const mode = safetyModeOf(ctx.lang);
+  const line = CARRIED[mode === "en" ? "en" : mode === "hi" ? "hi" : "hinglish"][ctx.address === "aap" ? "aap" : "tum"];
+  const name = String(ctx.firstName ?? "").trim().split(/\s+/)[0] ?? "";
+  return name ? line.replace("{name}", name) : line.replace(" {name}!", "!").replace(" {name}", "");
+}
 /** The fixed line for the safeguard's stay turn (never the first turn's line again). Exported for tests. */
 export function safeguardStayLine(ctx = {}) {
   const mode = safetyModeOf(ctx.lang);

@@ -314,7 +314,7 @@ export class LessonRuntime {
       if (s.resumed && s.turnSeqFloor) this.outbox.raiseFloor(s.lessonId, s.turnSeqFloor);
       // Ended or unmounted while starting: the server opened a lesson nobody will run.
       if (gen !== this.generation) return this.closeQuietly(lessonId);
-      this.store.set({ lessonId: s.lessonId, topic: s.topic, teacher: s.teacher });
+      this.store.set((st) => ({ lessonId: s.lessonId, topic: s.topic, teacher: s.teacher, ...(s.helpLead ? { helpLead: leadOf(st.helpLead, s.helpLead) } : {}) }));
       const link = this.createLink(mode, { lessonId: s.lessonId, voice: s.teacher.voice, levels: this.levels, api: this.api, ...(cascade ? { cascade } : {}) });
       this.link = link;
       this.unlisten = link.on((e) => this.onLinkEvent(e));
