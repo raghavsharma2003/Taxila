@@ -90,6 +90,17 @@ export class D5Stream {
   private firstFrame: ((t: number) => void) | null = null;
   /** Client time of the first frame sent (null until then). */
   firstFrameAt: number | null = null;
+  /**
+   * D5 review #5: Voice Live's audio clock counts the audio it RECEIVED, so a dropped frame (a stalled uplink) or a gap in
+   * the capture (the context suspended, a worklet hiccup) shifts every later audio_start_ms against the wall clock. Each
+   * discontinuity starts an anchor: { audio ms sent before it, the capture time of its first frame (AudioContext ms) }.
+   */
+  private anchors: { a: number; ctxMs: number }[] = [];
+  private audioMs = 0;
+  private lastCtxMs: number | null = null;
+  private droppedSinceAnchor = false;
+  /** AudioContext ms → client ms: the smallest (arrival − capture end) seen (best-case post latency), so never late. */
+  private ctxOffset: number | null = null;
   private readonly d: D5StreamDeps;
 
   constructor(deps: D5StreamDeps) {
@@ -150,7 +161,7 @@ export class D5Stream {
     await ctx.audioWorklet.addModule(this.d.workletUrl);
     const node = new AudioWorkletNode(ctx, "taxila-d5-stereo", { numberOfInputs: 2, numberOfOutputs: 1, channelCount: 1, channelCountMode: "explicit" });
     this.node = node;
-    node.port.onmessage = (e: MessageEvent<{ t: number; pcm: ArrayBuffer }>) => this.frame(e.data.pcm);
+    node.port.onmessage = (e: MessageEvent<{ t: number; pcm: ArrayBuffer }>) => this.frame(e.data.pcm, e.data.t);
     const src = ctx.createMediaStreamSource(o.mic);
     src.connect(node, 0, 0);
     this.nodes.push(src, node);
@@ -170,17 +181,37 @@ export class D5Stream {
     if (out) out.connect(this.node, 0, 1);
   }
 
-  private frame(pcm: ArrayBuffer): void {
+  private frame(pcm: ArrayBuffer, t?: number): void {
     const ws = this.ws;
     if (!ws || ws.readyState !== 1 || this.closed) return;
-    if (ws.bufferedAmount > D5_MAX_BUFFERED_BYTES) { this.stats.framesDropped++; return; }
+    if (ws.bufferedAmount > D5_MAX_BUFFERED_BYTES) { this.stats.framesDropped++; this.droppedSinceAnchor = true; return; }
+    const now = (this.d.now ?? Date.now)();
+    const frameMs = (pcm.byteLength / 4 / 16000) * 1000; // interleaved stereo PCM16 at 16 kHz
+    // the chunk's capture time on the AudioContext clock (the worklet's), else its arrival less one chunk
+    const ctxMs = typeof t === "number" && Number.isFinite(t) ? t * 1000 : now - frameMs;
+    const off = now - (ctxMs + frameMs); // it can go out only once its last sample was captured
+    this.ctxOffset = this.ctxOffset === null ? off : Math.min(this.ctxOffset, off);
+    const gap = this.lastCtxMs !== null && Math.abs(ctxMs - (this.lastCtxMs + frameMs)) > frameMs / 2;
+    if (!this.anchors.length || gap || this.droppedSinceAnchor) this.anchors.push({ a: this.audioMs, ctxMs });
+    this.droppedSinceAnchor = false;
+    this.lastCtxMs = ctxMs;
     ws.send(pcm);
+    this.audioMs += frameMs;
     if (this.stats.framesSent++ === 0) {
-      // the chunk was captured ~20 ms before it was posted: its first sample is the server's audio time 0
-      this.firstFrameAt = (this.d.now ?? Date.now)() - 20;
+      // its first sample is the server's audio time 0
+      this.firstFrameAt = ctxMs + this.ctxOffset;
       try { this.firstFrame?.(this.firstFrameAt); } catch { /* the link's own */ }
     }
   }
+
+  /** D5 review #5: a Voice Live audio time (ms) → the client clock, across dropped frames and capture gaps. Null before audio. */
+  toClient(audioMs: number): number | null {
+    if (!this.anchors.length || this.ctxOffset === null || !Number.isFinite(audioMs)) return null;
+    let k = this.anchors[0];
+    for (const x of this.anchors) { if (x.a <= audioMs) k = x; else break; }
+    return k.ctxMs + (audioMs - k.a) + this.ctxOffset;
+  }
+  get anchorCount(): number { return this.anchors.length; }
 
   /** A D4 data-channel event (micro-commit, session.update with the VAD silence); anything else is dropped. */
   send(event: D5Json): void {

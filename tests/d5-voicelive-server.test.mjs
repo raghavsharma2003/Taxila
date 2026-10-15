@@ -261,9 +261,109 @@ test("d5route: refuses bad upgrades and other origins before any lookup; opens t
   assert.match(s4.text, /^HTTP\/1\.1 403/);
 });
 
+test("D5 review #1: a crafted vad silence never throws (it took the Node process down); a throw in dispatch ends only that stream", async () => {
+  const evil = '{"type":"vad","silenceMs":{"toString":1,"valueOf":1}}';
+  assert.throws(() => Number(JSON.parse(evil).silenceMs), TypeError, "the input that crashed");
+  assert.equal(fromClientText(evil).session.turn_detection.silence_duration_ms, fromClientText('{"type":"vad"}').session.turn_detection.silence_duration_ms);
+  assert.equal(fromClientText('{"type":"vad","silenceMs":"900"}').session.turn_detection.silence_duration_ms, fromClientText('{"type":"vad"}').session.turn_detection.silence_duration_ms, "a string is not a number");
+  // through the real socket handler: the crafted frame, then a dispatch that throws → the stream ends 1011, nothing escapes
+  const { env: _e, ...authorize } = deps();
+  const s = new FakeSocket();
+  const sent = [];
+  const up = { send: (m) => sent.push(JSON.parse(m)), close() {} };
+  const relay = await handleD5Upgrade(upgradeReq(), s, Buffer.alloc(0), { env: ENV, authorize, openUpstream: () => up });
+  up.onmessage({ data: JSON.stringify({ type: "session.created", session: {} }) });
+  up.onmessage({ data: JSON.stringify({ type: "session.updated", session: {} }) });
+  s.emit("data", clientFrame(0x1, evil));
+  assert.equal(relay.ended, false, "the crafted vad is just the default silence");
+  relay.clientText = () => { throw new Error("boom"); };
+  s.emit("data", clientFrame(0x1, '{"type":"commit"}'));
+  assert.equal(relay.ended, true, "a throw in dispatch ends this stream (relay_error), never the process");
+});
+
+test("D5 review: an upgrade the browser abandoned during authorisation opens no relay", async () => {
+  const { env: _e, ...authorize } = deps({ child: async () => { s.destroyed = true; return { guardian: { id: "g-abandon", email: "o@x" }, child: { id: "c1" } }; } });
+  const s = new FakeSocket();
+  let opened = 0;
+  const relay = await handleD5Upgrade(upgradeReq(), s, Buffer.alloc(0), { env: ENV, authorize, openUpstream: () => { opened++; return { send() {}, close() {} }; } });
+  assert.equal(relay, null);
+  assert.equal(opened, 0, "no upstream for a socket nobody holds");
+});
+
 test("d5route: a per-guardian open rate", () => {
   const t = 1_000_000;
   for (let i = 0; i < D5_OPENS_PER_MINUTE; i++) assert.equal(allowD5("rate-g", t + i), true);
   assert.equal(allowD5("rate-g", t + 100), false);
   assert.equal(allowD5("rate-g", t + 61_000), true, "a minute later");
+});
+
+// ───────────────────────────── integration: a real socket, a real client ─────────────────────────────
+
+test("integration: a real HTTP upgrade, Node's own WebSocket client, the relay to a fake Voice Live and back", async () => {
+  const http = await import("node:http");
+  const upstream = { sent: [] };
+  const openUpstream = () => {
+    const up = { readyState: 1, send: (m) => upstream.sent.push(JSON.parse(m)), close: () => { up.readyState = 3; } };
+    upstream.ws = up;
+    // Voice Live's handshake: created → (our session.update) → updated
+    setTimeout(() => up.onmessage({ data: JSON.stringify({ type: "session.created", session: {} }) }), 5);
+    setTimeout(() => up.onmessage({ data: JSON.stringify({ type: "session.updated", session: { input_audio_echo_cancellation: { type: "server_echo_cancellation", reference_source: "client", channels: 2 }, input_audio_noise_reduction: { type: "azure_deep_noise_suppression" } } }) }), 15);
+    return up;
+  };
+  const { env: _e, ...authorize } = deps();
+  const server = http.createServer((_q, s) => { s.statusCode = 404; s.end(); });
+  server.on("upgrade", (req, socket, head) => { void handleD5Upgrade(req, socket, head, { env: ENV, authorize, openUpstream }); });
+  await new Promise((r) => server.listen(0, "127.0.0.1", r));
+  const { port } = server.address();
+  try {
+    const ws = new WebSocket(`ws://127.0.0.1:${port}/api/duplex/voicelive?lessonId=${LESSON}`);
+    ws.binaryType = "arraybuffer";
+    const got = [];
+    await new Promise((resolve, reject) => {
+      const to = setTimeout(() => reject(new Error("no session")), 3000);
+      ws.onmessage = (m) => { const e = JSON.parse(m.data); got.push(e); if (e.type === "d5.session" && e.phase === "updated") { clearTimeout(to); resolve(); } };
+      ws.onerror = () => { clearTimeout(to); reject(new Error("socket error")); };
+    });
+    assert.equal(got.at(-1).aec.reference, "client");
+    // 3 stereo frames (one oversized message, then a small one) and a commit
+    ws.send(new Uint8Array(D5_FRAME_BYTES * 2));
+    ws.send(new Uint8Array(D5_FRAME_BYTES));
+    ws.send(JSON.stringify({ type: "commit" }));
+    ws.send(JSON.stringify({ type: "response.create" }));
+    await sleep(50);
+    const appends = upstream.sent.filter((m) => m.type === "input_audio_buffer.append");
+    assert.equal(appends.length, 1);
+    assert.equal(Buffer.from(appends[0].audio, "base64").length, D5_FRAME_BYTES * 2);
+    assert.equal(upstream.sent.filter((m) => m.type === "input_audio_buffer.commit").length, 1);
+    assert.equal(upstream.sent.filter((m) => m.type === "response.create").length, 0);
+    // events down
+    upstream.ws.onmessage({ data: JSON.stringify({ type: "input_audio_buffer.speech_started", item_id: "i9", audio_start_ms: 40 }) });
+    upstream.ws.onmessage({ data: JSON.stringify({ type: "response.audio.delta", delta: "AAAA" }) });
+    upstream.ws.onmessage({ data: JSON.stringify({ type: "conversation.item.input_audio_transcription.completed", item_id: "i9", transcript: "छप्पन" }) });
+    await sleep(50);
+    const types = got.map((e) => e.type);
+    assert.ok(types.includes("input_audio_buffer.speech_started"));
+    assert.ok(types.includes("conversation.item.input_audio_transcription.completed"));
+    assert.ok(!types.includes("response.audio.delta"));
+    // the browser leaves: the upstream closes
+    const closed = new Promise((r) => { ws.onclose = r; });
+    ws.close();
+    await closed;
+    await sleep(30);
+    assert.equal(upstream.ws.readyState, 3);
+  } finally { server.close(); }
+});
+
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
+test("D5 review: a stream whose browser stopped sending audio ends after D5_IDLE_MS (the slot is freed)", async () => {
+  const { D5_IDLE_MS } = await import("../server/duplex/voicelive.js");
+  let t = 0;
+  const f = fakeRelay({ now: () => t });
+  const idle = () => f.timers.at(-1);
+  t = D5_IDLE_MS / 3; f.relay.clientBinary(Buffer.alloc(D5_FRAME_BYTES)); idle().fn();
+  assert.equal(f.ended(), null, "audio is flowing");
+  t += D5_IDLE_MS; idle().fn();
+  assert.deepEqual(f.closed(), [1001, "client_idle"]);
+  assert.equal(f.ended().reason, "client_idle");
 });

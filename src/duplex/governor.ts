@@ -33,7 +33,7 @@ import type {
 import {
   BACKSTOP_HOLD_PH, BACKSTOP_HOLD_STRETCH, CONTEXT, CUT_IN, FALLBACK, HOLD, HORIZON_ACOUSTIC_P, HORIZON_MS, OVERLAP, PAUSE_WAIT, RATE,
   REVOCABLE_MS, SAFETY, VERDICT, ACOUSTIC_FRESH_MS, FIRST_TEXT_P90, TURN_PACE, CLOSED_ELABORATION,
- D5_UNHEARD_MIN_VOICED_MS,
+ D5_UNHEARD_MIN_VOICED_MS, D5_CLOSED_NO_VALUE_BACKSTOP_MS,
 } from "./config.ts";
 import { exchangeOf, holdProfile, pauseClass, verdictAnchor, wordCount, YES_NO_MAX_WORDS } from "./engineRules.ts";
 import { overlapKind } from "./turnPolicy.ts";
@@ -115,6 +115,8 @@ export class Governor {
   private pose: string | null = null;
   private quarantined = false;
   private childSpoke = false;
+  /** D5 review #6: the phase a child turn opened from (a device-only burst returns there). */
+  private childFrom: FloorPhase | null = null;
   /** The transcript a hold was granted on (G3 grants once per text). */
   private holdGrantedHash: string | null = null;
   /** The onset of an overlap that was judged a continuer: its words fold into the turn if a later read yields (fold-in). */
@@ -200,7 +202,7 @@ export class Governor {
         // ship5 fixer (experience B3/B4): after a granted hold the child's next words are a NEW turn: the hold phrase ("ruko
         // ruko didi ek second") was floor control, and folding it in sent "ruko ruko didi ek second aur batao na" as one turn
         else if (this.phase === "hold_requested") { this.beginTurn(o.t, o.at); this.go("child_turn", o.t); }
-        else if (this.phase === "handover" || this.phase === "idle") this.go("child_turn", o.t);
+        else if (this.phase === "handover" || this.phase === "idle") { this.childFrom = this.phase; this.go("child_turn", o.t); }
         break;
       case "context":
         if (!HER_FLOOR.has(this.phase) && this.phase !== "committed") {
@@ -396,15 +398,25 @@ export class Governor {
           // D5: a lone 250 ms "haan" can reach no transcript at all on Voice Live (BAKEOFF §2.6), so a shorter voiced turn
           // with no words still ends (the empty commit is the Director's re-ask) instead of waiting for her silence nudge
           // ...and once the ear has COVERED the burst and found no words (its empty final), the normal backstop decides
+          // D5 review #6: on D5 BOTH no-text arms need the ear to have covered the burst (Voice Live's own empty or failed
+          // final over it; an acoustic vouch is not the ear). A burst only the device heard (her echo through a weak device
+          // AEC, a door) never becomes an empty child turn: after the ear's slowest final it returns the floor, unspoken
           const d5 = tick.transcript.source === "voicelive";
           const minVoiced = d5 ? D5_UNHEARD_MIN_VOICED_MS : 300;
-          if ((text && (!unseen || hardEnough)) || (!text && (hardEnough || (d5 && !unseen)) && c.turnVoicedMs >= minVoiced)) {
+          const earCovered = tick.transcript.unseenVoicedMs <= HORIZON_MS;
+          if ((text && (!unseen || hardEnough)) || (!text && (d5 ? earCovered : hardEnough) && c.turnVoicedMs >= minVoiced)) {
             const closed = tick.context.exchange === "closed_answer";
             // a repair still open (or no words): a verdict-free prompt, never an uptake of the abandoned value (law 3;
             // TaxilaFDB train: "आठ पैर … नहीं नहीं [छह dropped by the STT] पैर" got a verdict on 8 from the backstop, 3/40)
             // unreadable newest words (another script): a verdict-free prompt to say it again, never an uptake of them
             const fs = m.repairOpen || !text || m.unreadable ? "prompt" : closed && m.values.length ? "uptake" : "body";
             veto("SPEAK", "backstop", { action: "SPEAK", reason: "backstop_silence", firstSound: fs, verdictNotBefore: null });
+          } else if (d5 && !text && !earCovered && sil >= bs + 2000 + (FIRST_TEXT_P90.voicelive ?? 2000)) {
+            this.beginTurn(t, null);
+            this.go(this.childFrom ?? "idle", t);
+            this.childSpoke = false;
+            d = { ...d, action: "HOLD", detail: { action: "HOLD", reason: "uncertain" }, reasons: ["x_device_only_burst", ...d.reasons] };
+            return this.finish(tick, d);
           }
         }
       }
@@ -446,6 +458,12 @@ export class Governor {
     if (ex === "free" || ex === "question_to_her" || ex === "chit_chat") return Math.max(PAUSE_WAIT[pauseClass(tick)], this.paceMs());
     const { p50, p90 } = holdProfile(tick);
     let base = CONTEXT[ex].backstopMs(p50, p90, tick.markers.values.length > 0);
+    // round 5 (D5): Voice Live has committed and transcribed the item (its own VAD ended it, the final is in): a closed
+    // answer with words but no readable value (the ear misheard "नौ" as "न") gains nothing from 1.5 s more silence. The
+    // hold stretch below (word search, filler, repair, a held floor) still applies, so a child mid-search keeps the floor.
+    if (ex === "closed_answer" && tick.transcript.source === "voicelive" && !tick.markers.values.length && tick.transcript.text.trim() && tick.transcript.unseenVoicedMs <= HORIZON_MS) {
+      base = Math.min(base, D5_CLOSED_NO_VALUE_BACKSTOP_MS);
+    }
     // round 4 (OVERLAP-independent, config CLOSED_ELABORATION): a closed answer that runs past a short answer ("मुझे लगता है
     // डब्बे। मैं चार कॉर्नर। …") is an elaboration: its silence backstop is at least the free exchange's word-aware class wait,
     // not the 700 ms a bare "62" gets (real transcriber, 1,000 ms mid-sentence pauses: 2 of 12 closed-context sentences were

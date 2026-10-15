@@ -21,6 +21,8 @@ export const D5_FRAME_BYTES = 1280;
 export const D5_FRAMES_PER_APPEND = 2;
 /** A lesson stream may not outlive this (billing guard; a lesson is ≤ 40 min). */
 export const D5_MAX_SESSION_MS = 90 * 60_000;
+/** A stream whose browser sent no audio this long is gone (a backgrounded tab, a half-open socket): end it, free the slot. */
+export const D5_IDLE_MS = 30_000;
 /** Client VAD silence bounds (the engine's backstop asks for 1,500 ms; the bake-off ran 500). */
 export const D5_SILENCE_MIN_MS = 200;
 export const D5_SILENCE_MAX_MS = 3000;
@@ -65,7 +67,9 @@ export function turnDetection(silenceMs) {
   return { type: "azure_semantic_vad_multilingual", silence_duration_ms: clampSilence(silenceMs), create_response: false, interrupt_response: false, remove_filler_words: false, languages: ["hi", "en"] };
 }
 
-const clampSilence = (ms) => Math.max(D5_SILENCE_MIN_MS, Math.min(D5_SILENCE_MAX_MS, Math.round(Number(ms) || D5_DEFAULT_SILENCE_MS)));
+// D5 review #1: only a finite number is a silence; anything else a client sends (an object whose toString / valueOf are not
+// functions threw in Number() and took the Node process down) is the default. Never coerces.
+const clampSilence = (ms) => Math.max(D5_SILENCE_MIN_MS, Math.min(D5_SILENCE_MAX_MS, Math.round(typeof ms === "number" && Number.isFinite(ms) ? ms : D5_DEFAULT_SILENCE_MS)));
 
 const PASS = new Set([
   "input_audio_buffer.speech_started",
@@ -124,7 +128,7 @@ export function fromClientText(text, { silenceMs } = {}) {
   try { m = JSON.parse(String(text)); } catch { return null; }
   if (!m || typeof m !== "object") return null;
   if (m.type === "commit") return { type: "input_audio_buffer.commit" };
-  if (m.type === "vad") return { type: "session.update", session: { turn_detection: turnDetection(m.silenceMs ?? silenceMs) } };
+  if (m.type === "vad") return { type: "session.update", session: { turn_detection: turnDetection(typeof m.silenceMs === "number" && Number.isFinite(m.silenceMs) ? m.silenceMs : silenceMs) } };
   return null;
 }
 
@@ -148,10 +152,17 @@ export class VoiceLiveRelay {
     this.stats = { framesIn: 0, bytesIn: 0, appends: 0, eventsOut: 0, dropped: 0, startedAt: now() };
     this.up = openUpstream(voiceLiveUrl(cfg), { "api-key": cfg.key });
     this.up.onopen = () => {};
-    this.up.onmessage = (m) => this.upstreamMessage(m?.data);
+    this.up.onmessage = (m) => { try { this.upstreamMessage(m?.data); } catch { this.end(1011, "relay_error"); } };
     this.up.onerror = () => this.end(1011, "upstream_error");
     this.up.onclose = () => this.end(1011, "upstream_closed");
     this.limit = setTimer(() => this.end(1000, "max_session"), maxSessionMs);
+    this.lastIn = now();
+    const idle = () => {
+      if (this.ended) return;
+      if (this.now() - this.lastIn >= D5_IDLE_MS) this.end(1001, "client_idle");
+      else this.idle = setTimer(idle, D5_IDLE_MS / 3);
+    };
+    this.idle = setTimer(idle, D5_IDLE_MS / 3);
   }
 
   upstreamMessage(data) {
@@ -179,6 +190,7 @@ export class VoiceLiveRelay {
   /** One binary message from the browser: whole 20 ms stereo frames (a partial tail is dropped, never misaligned). */
   clientBinary(buf) {
     if (this.ended) return;
+    this.lastIn = this.now();
     const b = Buffer.isBuffer(buf) ? buf : Buffer.from(buf);
     const whole = b.length - (b.length % D5_FRAME_BYTES);
     if (whole !== b.length) this.stats.dropped++;
@@ -208,7 +220,11 @@ export class VoiceLiveRelay {
     const m = fromClientText(text, { silenceMs: this.silenceMs });
     if (!m) { this.stats.dropped++; return; }
     if (m.type === "session.update") this.silenceMs = m.session.turn_detection.silence_duration_ms;
-    if (!this.ready) { this.queue.push(m); return; }
+    if (!this.ready) {
+      this.queue.push(m);
+      if (this.queue.length > 50) { this.queue.shift(); this.stats.dropped++; }
+      return;
+    }
     this.upSend(m);
   }
 
@@ -216,6 +232,7 @@ export class VoiceLiveRelay {
     if (this.ended) return;
     this.ended = true;
     this.clearTimer(this.limit);
+    this.clearTimer(this.idle);
     try { this.client.send(JSON.stringify({ type: "d5.closed", reason })); } catch { /* gone */ }
     try { this.client.close(code, reason); } catch { /* gone */ }
     try { this.up.close(); } catch { /* gone */ }

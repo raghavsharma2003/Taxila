@@ -83,6 +83,11 @@ export interface ShadowRow {
 export type HerEvent =
   /** Her utterance became audible. `words` = TTS word boundaries on the session clock (seam S14), else text + msPerChar. */
   | { kind: "start"; t: Ms; utteranceId: string; text: string; act: HerAct; handsOver: boolean; msPerChar?: number; words?: WordTiming[]; outputDb?: number | null }
+  /**
+   * Her line's full text arrived after she became audible (r5: the early turn-audio reply starts on its first clauses).
+   * Updates what she is saying, its act and hand-over, and the words the echo filter expects; never a new overlap epoch.
+   */
+  | { kind: "text"; t: Ms; utteranceId: string; text: string; act: HerAct; handsOver: boolean; msPerChar?: number }
   /** The verdict-bearing part of the reply started playing (after the uptake). */
   | { kind: "verdict"; t: Ms }
   /** She played to the end. */
@@ -99,6 +104,12 @@ export interface HostOptions {
   source: TranscriptView["source"];
   /** The STT accepts client commits (MAI, D4): the micro-commit probe is available. */
   supportsCommit: boolean;
+  /**
+   * Round 5 (D5): subtract her known words from the child's transcript (default true). False when the ear already removed
+   * her echo acoustically (Voice Live's reference AEC): text subtraction then only deletes the child's own repeats of her
+   * words ("आठ corners" after her "कितने corners" became "At", an empty turn and a re-ask).
+   */
+  echoText?: boolean;
   emit: (c: HostCommand) => void;
   engine?: DuplexEngine;
   model?: FloorModel | null;
@@ -193,7 +204,7 @@ export class EngineHost {
     this.flags = { ...DEFAULT_FLAGS, ...o.session.flags };
     this.engine = o.engine ?? createEngine({ flags: this.flags, model: o.model ?? null, supportsProbe: o.supportsCommit });
     this.governor = new Governor({ flags: this.flags, fallback: this.engine instanceof RulesEngine ? null : new RulesEngine({ supportsProbe: o.supportsCommit }), mode: o.governorMode });
-    this.fanin = new TurnTranscript({ source: o.source, filter: (text, meta) => this.echo.subtract(text, meta.t, this.fanin.lag.p90, meta.fromMs !== undefined && meta.toMs !== undefined ? { fromMs: meta.fromMs, toMs: meta.toMs } : null, meta.times ?? null) });
+    this.fanin = new TurnTranscript({ source: o.source, filter: o.echoText === false ? (text) => ({ text, removed: 0 }) as ReturnType<EchoSubtractor["subtract"]> : (text, meta) => this.echo.subtract(text, meta.t, this.fanin.lag.p90, meta.fromMs !== undefined && meta.toMs !== undefined ? { fromMs: meta.fromMs, toMs: meta.toMs } : null, meta.times ?? null) });
     this.safety = new PartialSafety(o.scan ? { scan: o.scan } : {});
     this.pace = { sessions: 0, holdPauseMs: null, answerGapMs: null, speechRateSylPerS: null, fillerRatePerMin: null, source: "band_default", strain: false };
     this.engine.reset(o.session);
@@ -342,6 +353,14 @@ export class EngineHost {
         this.safety.begin(ev.t, { carry: !this.safeguardSpoken });
         this.applyEvents(this.governor.observe({ kind: "her_start", t: ev.t, utteranceId: ev.utteranceId }), ev.t);
         this.step("her_playback", ev.t);
+        break;
+      }
+      case "text": {
+        if (!this.her.speaking || this.her.utteranceId !== ev.utteranceId) break;
+        const words = estimateWords(ev.text, this.her.startedAt, ev.msPerChar ?? 70);
+        const had = this.her.words?.length ?? 0;
+        if (words.length > had) this.echo.heard(ev.utteranceId, words.slice(had));
+        this.her = { ...this.her, text: ev.text, words, boundaries: clauseEnds(ev.text, words), act: ev.act, handsOver: ev.handsOver };
         break;
       }
       case "verdict":

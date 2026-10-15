@@ -7,6 +7,10 @@
 //   phone  the same + her voice played through a PHONE LOUDSPEAKER and back into the mic with NO echo canceller: a small
 //          speaker (300 Hz - 5 kHz band-pass, soft clipping), 60 ms device path delay, a 120 ms room tail, at COUPLING_DB
 //          under the child's active-speech level. This is the case that made the owner tap.
+//   owner  round 5 (docs/design/round5/BRIEF.md): the OWNER'S phone. The same loudspeaker path and coupling as `phone`, behind
+//          a WEAK device echo canceller (Android 10, Chrome, echoCancellation=true "is not enough on this phone"): no
+//          suppression for the first OWNER_CONVERGE_MS of each of her lines (the canceller re-converging), then OWNER_ERLE_DB.
+//          The owner's recorder shows her words transcribed as the child, so the residue reaches the ASR: this models it [E].
 // The realtime arms (Voice Live, gpt-realtime) do not use her DragonHD audio from here: they hear THEIR OWN output through
 // the same speaker model, closed loop (bakeoff.mjs), so a server echo canceller has its true reference.
 // Simulated: TTS child-like voices, a modelled speaker path. Not children, not a phone.
@@ -18,6 +22,8 @@ import { buildStream } from "../duplex/taxilafdb/mix.mjs";
 import { loadScenarios, pcmPath, SR } from "../duplex/taxilafdb/render.mjs";
 
 export const COUPLING_DB = -6;
+export const OWNER_CONVERGE_MS = 500;
+export const OWNER_ERLE_DB = 10;
 const dbToLin = (db) => Math.pow(10, db / 20);
 
 /** Biquad band-pass section (RBJ cookbook). */
@@ -89,6 +95,16 @@ if (import.meta.url === `file://${process.argv[1]}`) {
     for (let i = 0; i < echo.length; i++) { const j = o + i; if (j >= 0 && j < phone.length) phone[j] += echo[i] * dbToLin(COUPLING_DB); }
     fs.writeFileSync(path.join(out, `${id}.clean.s16`), s16(s.pcm));
     fs.writeFileSync(path.join(out, `${id}.phone.s16`), s16(phone));
+    // owner: the phone echo through a weak device AEC (full echo while it converges, then OWNER_ERLE_DB less)
+    const owner = s.pcm.slice();
+    const conv = Math.round((OWNER_CONVERGE_MS * SR) / 1000), erle = dbToLin(-OWNER_ERLE_DB), ramp = Math.round(0.1 * SR);
+    for (let i = 0; i < echo.length; i++) {
+      const j = o + i;
+      if (j < 0 || j >= owner.length) continue;
+      const g = i < conv ? 1 : i < conv + ramp ? 1 + ((erle - 1) * (i - conv)) / ramp : erle;
+      owner[j] += echo[i] * dbToLin(COUPLING_DB) * g;
+    }
+    fs.writeFileSync(path.join(out, `${id}.owner.s16`), s16(owner));
     fs.writeFileSync(path.join(out, `${id}.her.s16`), s16(herPcm.map((v) => v * herGain)));
     // the child-only track (child + overlays + noise, her residue off): the realtime arms place it against THEIR voice
     const solo = buildStream({ ...sc, gold: { ...sc.gold, echoDb: -300 } }, rec, manifest, "clean");

@@ -264,10 +264,7 @@ export class UiBridge {
     this.holdSpeech(false);
     this.stopReplay();
     this.detachLink();
-    this.replayLevel.detach();
-    void this.playerCtx?.close().catch(() => {});
-    this.playerCtx = null;
-    this.player = null;
+    this.releasePlayer();
   }
 
   // ───────────── ring buffer ─────────────
@@ -422,18 +419,53 @@ export class UiBridge {
   }
 
   private ensurePlayer(): HTMLAudioElement {
-    if (this.player) return this.player;
+    // D5 review #3: on a cascade link her replay plays INTO the link's audio graph (her output): D5's reference channel
+    // then carries it (Voice Live's echo canceller removes it from the mic) and the engine reads its level as hers. An
+    // element binds to one AudioContext for life, so a new link (or none) gets a new element.
+    const via = this.link instanceof CascadeLink ? this.link.herOutput() : null;
+    const viaLink = via ? this.link : null;
+    if (this.player && this.playerVia === viaLink) return this.player;
+    this.releasePlayer();
     const audio = new Audio();
     this.player = audio;
     try {
-      this.playerCtx = new AudioContext();
-      const src = this.playerCtx.createMediaElementSource(audio);
-      src.connect(this.playerCtx.destination);
-      this.replayLevel.attach(createLevelAnalyser(this.playerCtx, src));
+      if (via) {
+        const src = via.ctx.createMediaElementSource(audio);
+        src.connect(via.output);
+        this.playerCtx = via.ctx;
+        this.playerVia = viaLink;
+        this.replayLevel.attach(createLevelAnalyser(via.ctx, src));
+      } else {
+        const ctx = new AudioContext();
+        this.playerCtx = ctx;
+        this.playerOwnsCtx = true;
+        const src = ctx.createMediaElementSource(audio);
+        src.connect(ctx.destination);
+        this.replayLevel.attach(createLevelAnalyser(ctx, src));
+      }
     } catch {
+      if (this.playerOwnsCtx) void this.playerCtx?.close().catch(() => {});
       this.playerCtx = null; // plays without lip-sync
+      this.playerOwnsCtx = false;
+      this.playerVia = null;
     }
     return audio;
+  }
+  /** The link whose audio graph the replay element plays into (null: its own context). */
+  private playerVia: TeacherLink | null = null;
+  private playerOwnsCtx = false;
+  private releasePlayer(): void {
+    if (this.player) {
+      this.player.onended = this.player.onerror = null;
+      this.player.pause();
+      this.player.removeAttribute("src");
+    }
+    this.replayLevel.detach();
+    if (this.playerOwnsCtx) void this.playerCtx?.close().catch(() => {});
+    this.playerCtx = null;
+    this.playerOwnsCtx = false;
+    this.playerVia = null;
+    this.player = null;
   }
 }
 
