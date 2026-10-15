@@ -451,7 +451,7 @@ export async function lessonTurn(req, body, hooks = {}) {
   // r4-latency (main-session ask): WHICH stage set the distress flag, as codes only (never the child's words), so a false
   // safeguard can be attributed from the log line and debug.distress. First source wins; later ones are appended.
   const distressSrc = [];
-  if (cls?.flags?.distress) distressSrc.push(cls.source === "predicate" ? "predicate" : cls.source === "content_filter" ? "content_filter" : "classify_model");
+  if (cls?.flags?.distress) distressSrc.push(cls.source === "predicate" ? "predicate" : cls.source === "content_filter" ? "content_filter" : cls.distressBy === "words" ? "classify_words" : "classify_model");
   if (pre) trace.push(...pre.prefetch.trace.map((t) => ({ ...t, prefetched: true })));
   mark("classified");
   let noteReason = null, noteDebug = null;
@@ -1312,7 +1312,7 @@ export async function lessonTurn(req, body, hooks = {}) {
  *  client sent, is reported as "other", so no free text reaches the log. */
 const KIND_CODE = /^[a-z][a-z0-9_]{0,31}$/;
 /**
- * r4-latency: the turn's distress attribution, codes only: { sources: ["predicate" | "classify_model" | "understand_note" |
+ * r4-latency: the turn's distress attribution, codes only: { sources: ["predicate" | "classify_model" | "classify_words" | "understand_note" |
  * "duplex_pending" | "relational_floor" | "content_filter" | "episode_open"], kind }, or null on a turn with no distress and
  * no safeguarding move. "episode_open" = the move is a safeguard only because an earlier turn opened the episode.
  */

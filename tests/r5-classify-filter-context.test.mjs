@@ -22,6 +22,8 @@ const json = (o) => new Response(JSON.stringify({ choices: [{ finish_reason: "st
 const kindOf = (body) => {
   const sys = body.messages?.[0]?.content ?? "";
   if (sys === "Answer with one word: ok") return "probe";
+  // 14.3.2: the words-only read beside the labels (its own suite: r5-safety-distress-beside); on a label block it is not read
+  if (body.response_format?.json_schema?.name === "distress_beside") return `beside@${body.model}`;
   if (/^A reply from an Indian school child/.test(sys)) return `distress@${body.model}`;
   return "labels";
 };
@@ -56,7 +58,7 @@ const run = async (responses, text = TEXT) => {
     return r ? r(body) : new Response("no stub", { status: 500 });
   };
   const out = await classify({ target: targetFor(s, K, findItem(s, K, s.activeItemId)), childText: text, typed: false, asrConfidence: 0.92, classLevel: 6 });
-  return { out, seen };
+  return { out, seen: seen.filter((k) => !k.startsWith("beside@")) };
 };
 
 test("words that pass alone, read clean: a context block, no evidence, no safeguard", async () => {
