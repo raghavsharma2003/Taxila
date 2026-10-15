@@ -59,7 +59,7 @@ export function systemPrompt(ctx) {
     "- play: true when they ask for a game or to play. The harness tries a real game for this skill; ON SCREEN next turn says if one went up. This turn, say you are getting one ready (never that it is there); if none comes, offer a quick spoken game.",
     "- Anything you show this turn is not up until ON SCREEN says so: never say dekho, look, here it is, or describe it as on the screen in the same line that asks for it.",
     "- read: your covert read of their understanding of one skill (understood / partly / not / unknown) with the evidence in at most eight words; it never contradicts the verified grade.",
-    "- end: true only when they want to stop for today, or the lesson's goal is met and they agree.",
+    "- end: true only when they want to stop for today, or the lesson's goal is met and they agree. Closing, name what they practised and what is still growing; say a skill is learnt only if LEARNER reads it understood.",
     "TRUTH (these must hold every turn).",
     "- Never say anything is on the screen or the board unless it is in ON SCREEN or in the board lines you show this turn, and never describe dots, rows, shapes or pictures as visible unless they are there; never call anything a game unless a game is on screen.",
     "- When they have said yes to stopping or to a plan, do it; never ask the same thing again.",
@@ -85,7 +85,12 @@ export function offeredItems(state, kit, limit = AGENT_LIMITS.offerItems) {
     && !(v.graded ?? []).some((x) => x.g === "correct" && DEEP.has(x.kind))).map(([k]) => k));
   const rank = (i) => (i.targetsMisconception && shown.has(i.targetsMisconception) ? -100 : 0) + (needsDeep.has(i.skillId) && DEEP.has(i.kind) ? -50 : 0)
     + (i.skillId === cur ? 0 : skillOrder.indexOf(i.skillId) > skillOrder.indexOf(cur) ? 1 : 2) * 10 + (i.difficulty ?? 2);
-  return (kit.items ?? []).filter((i) => !done.has(i.id) && KINDS.has(i.kind)).sort((a, b) => rank(a) - rank(b)).slice(0, limit);
+  const open = (kit.items ?? []).filter((i) => !done.has(i.id) && KINDS.has(i.kind));
+  // sim lab 35c0b7c (44 understood skills held at partly: the deep item never came): a skill that needs deep evidence offers
+  // ONLY its deep items while it has one left, so the next question she poses on it is the one that can show understanding
+  const deepLeft = new Set(open.filter((i) => needsDeep.has(i.skillId) && DEEP.has(i.kind)).map((i) => i.skillId));
+  return open.filter((i) => !(deepLeft.has(i.skillId) && !DEEP.has(i.kind) && !(i.targetsMisconception && shown.has(i.targetsMisconception))))
+    .sort((a, b) => rank(a) - rank(b)).slice(0, limit);
 }
 
 const clip = (s, n) => String(s ?? "").replace(/\s+/g, " ").trim().slice(0, n);

@@ -3,7 +3,7 @@
 // brings no new content, the board is drawn by code and reported, a spoken line never asks to type, budgets throw. Pure.
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { agentTurn, applyAgentTurn, eventOf, gradeOf, earnedRead, withoutPraise, withoutInternals, AgentBudgetError } from "../server/agent/agent.js";
+import { agentTurn, applyAgentTurn, eventOf, gradeOf, earnedRead, withoutPraise, withoutInternals, withoutMastery, AgentBudgetError } from "../server/agent/agent.js";
 import { laneFor, teacherMode } from "../server/agent/flags.js";
 import { specOf } from "../server/agent/tools.js";
 import { systemPrompt, stateMessage, offeredItems, TURN_SCHEMA } from "../server/agent/prompt.js";
@@ -207,4 +207,14 @@ test("she never voices the harness: the card's check, the grade, the key (sim la
   assert.equal(withoutInternals(line), "Aapne chaar equal sides ke liye 6 times 4 bola. Ek baar phir batao, perimeter kitna hai?");
   assert.equal((await run(base({ say: line }))).say, "Aapne chaar equal sides ke liye 6 times 4 bola. Ek baar phir batao, perimeter kitna hai?");
   assert.equal(withoutInternals("Chalo card ka sawaal dekhte hain?"), "Chalo card ka sawaal dekhte hain?");
+});
+
+test("a skill that needs deep evidence offers only its deep items; no mastery claim the record does not hold (sim lab 35c0b7c)", async () => {
+  const st = ST({ agent: { learner: { "c4-maths-ch05-t01-s2": { graded: [{ item: "i7", kind: "practice", g: "correct" }] } }, skill: "c4-maths-ch05-t01-s2" } });
+  const s2 = offeredItems(st, K, 20).filter((i) => i.skillId === "c4-maths-ch05-t01-s2");
+  assert.ok(s2.length && s2.every((i) => ["contrast", "near_transfer", "error_spot", "far_transfer", "predict", "translate_rep"].includes(i.kind)), s2.map((i) => i.kind).join());
+  const wrap = "Aaj tumne fractions compare karna sikh liya! Kal phir milte hain.";
+  assert.equal(withoutMastery(wrap, { s2: { read: "partly" } }), "Kal phir milte hain.");
+  assert.equal(withoutMastery(wrap, { s2: { read: "understood" } }), wrap);
+  assert.equal(withoutMastery("Kya tum samajh gaye ho?", {}), "Kya tum samajh gaye ho?", "a question is not a claim");
 });

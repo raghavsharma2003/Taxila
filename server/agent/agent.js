@@ -79,6 +79,15 @@ export function withoutShowClaims(say) {
   return out || stripScreenRefs(say) || String(say ?? "");
 }
 
+const MASTERY = /(?:^|[^\p{L}])(?:sikh\s+(?:liya|li|gaye|gayi|gaya)|seekh\s+(?:liya|li|gaye|gayi|gaya)|samajh\s+(?:gaye|gayi|gaya|liya|li)\s+(?:ho|hain|hai|ho\s+tum|aap)|pakka\s+ho\s+gaya|master\s+kar|you(?:'ve|\s+have)?\s+(?:learn(?:ed|t)|mastered|got\s+the\s+hang)|you\s+(?:now\s+)?(?:know|understand)\s+(?:how|this|it)|ab\s+(?:tum|aap)\s+(?:jaante|jaanti|samajhte|samajhti)\s+ho|सीख\s*(?:लिया|ली|गए|गई)|समझ\s*(?:गए|गई|गया))(?![\p{L}])/iu;
+/** Her line without a claim that the child has learnt it, unless the learner record holds some skill understood. PURE. */
+export function withoutMastery(say, learner) {
+  if (Object.values(learner ?? {}).some((v) => v.read === "understood")) return String(say ?? "");
+  const parts = String(say ?? "").match(/[^.!?।]+[.!?।]*\s*/g) ?? [];
+  const kept = parts.filter((p) => !(MASTERY.test(p) && !/[?？]\s*$/.test(p.trim())));
+  return kept.length && kept.length !== parts.length ? kept.join("").trim() : String(say ?? "");
+}
+
 const INTERNALS = /(?:^|[^\p{L}])(?:card\s+(?:ka|ke|ki|par|pe)\s+(?:check|jaanch|jawab|answer)|card'?s\s+check|check\s+(?:isse|se)\s+match|match\s+nahi\s+hua|verified\s+grade|the\s+grade|grade\s+(?:ne|mein|says)|harness|answer\s+key|key\s+(?:se|ke\s+saath)\s+match|system\s+(?:ne|says|ke\s+hisaab)|the\s+checker|checker\s+(?:ne|says))(?![\p{L}])/iu;
 /** Her line without sentences that voice the harness (the card's check, the grade, the key). PURE. */
 export function withoutInternals(say) {
@@ -148,6 +157,9 @@ export async function agentTurn({ state, kit, event, silent = false, verdict = n
   // ── her line, held to the verified grade: no praise or "sahi" on an answer the key says is wrong or only partly right
   // (sim lab d6f93e7: misread_wrong_as_right 19/64, "Haan, 60,000 sahi chuna" while the misconception was live) ──
   if (verdict && verdict !== "correct") { const held = withoutPraise(say); if (held !== say) { say = held; notes.push(`praise removed (${verdict})`); } }
+  // ── no mastery claim the record does not hold (sim lab 35c0b7c: "Tumne … sikh liya" for skills held at partly; the judge
+  // reads her words, the parent reads her summary) ──
+  { const held = withoutMastery(say, a.learner ?? {}); if (held !== say) { say = held; notes.push("mastery claim removed"); } }
   // ── never the machinery: the card's check, the grade, the key, the harness are the harness's words, not hers (sim lab
   // 3cf7cdc p08 #1: "Card ka check isse match nahi hua") ──
   { const held = withoutInternals(say); if (held !== say) { say = held; notes.push("internals removed"); } }
