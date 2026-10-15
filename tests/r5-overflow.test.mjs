@@ -1,11 +1,12 @@
 // round 5 (14.2): a 429 on a CHAT deployment with a twin on the overflow account moves its one retry there at once
 // (server/azure.js overflowFor). TEST lesson 5d18d152 and production at 06 UTC on 2026-10-15 (51 of 361 taxila-fast calls)
 // were throttled by load sharing the eastus2 deployment, and a throttled reply is the fallback line the child hears.
-import { test, beforeEach, afterEach } from "node:test";
+import { describe, test, beforeEach, afterEach } from "node:test";
 import assert from "node:assert/strict";
 import { chat, chatStream, overflowFor, isContentFilter } from "../server/azure.js";
 
 const PRIMARY = "https://primary.example.test/openai/v1", OVER = "https://overflow.example.test/openai/v1";
+describe("429 overflow (scoped: the fetch and env stubs never leak into other files run in one process)", () => {
 let realFetch, env, calls;
 beforeEach(() => {
   realFetch = globalThis.fetch; env = { ...process.env }; calls = [];
@@ -73,4 +74,5 @@ test("chatStream: a 429 (before any delta) restarts the stream whole on the twin
   stub(() => tooMany());
   await assert.rejects(chatStream("taxila-fast", [{ role: "system", content: "s" }, ...M], { quotaLane: "hot" }), (e) => e.status === 429);
   assert.equal(calls.length, 2, "one restart, no more");
+});
 });
