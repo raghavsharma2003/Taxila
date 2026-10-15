@@ -79,14 +79,18 @@ test("fold never mutates its input (copy-on-write) and one online event on a lon
   for (let i = 0; i < 20; i++) L = fold(L, events.map((e) => ({ ...e, id: `${e.id}-${i}`, sessionId: `${e.sessionId}-${i}` })));
   const frozen = canonical(L);
   const one = { ...events[0], id: "probe-one", sessionId: L.session.sessionId };
-  const t0 = performance.now();
   const N = 50;
-  for (let i = 0; i < N; i++) fold(L, [{ ...one, id: `probe-${i}` }]);
-  const ms = (performance.now() - t0) / N;
+  // best of 5 batches, each against a whole-ledger structuredClone timed in the SAME run: the guard is the ratio, so a
+  // loaded machine slows both sides alike (14.3: the gate's one-process run measured 4.35 ms against the old absolute 4 ms
+  // while the code was unchanged; alone it is ≈ 1.8 ms)
+  const best = (fn) => { let b = Infinity; for (let r = 0; r < 5; r++) { const t0 = performance.now(); fn(); b = Math.min(b, (performance.now() - t0) / N); } return b; };
+  const ms = best(() => { for (let i = 0; i < N; i++) fold(L, [{ ...one, id: `probe-${i}` }]); });
+  const cloneMs = best(() => { for (let i = 0; i < N; i++) structuredClone(L); });
   assert.equal(canonical(L), frozen, "the input ledger is untouched");
   assert.ok(Object.keys(L.seen).length > 4000, `${Object.keys(L.seen).length} events`);
   // measured 2026-10-02 on this 4,800-event ledger: 6.7 ms/event with a whole-ledger structuredClone, ≈ 1.8 ms
   // with copy-on-write (what remains is the flat copy of the complete `seen`; the spec's KT step budget is
-  // < 1 ms, so this is a regression guard, not the budget)
-  assert.ok(ms < 4, `one online event took ${ms.toFixed(2)} ms`);
+  // < 1 ms, so this is a regression guard, not the budget). Measured 2026-10-15, 12 runs alone: fold / bare whole-ledger clone
+  // 0.58-1.16 (GC noise); a fold that clones the whole ledger again costs clone + work ≈ 1.8-2.2 × a clone: 1.5 splits them
+  assert.ok(ms < cloneMs * 1.5, `one online event took ${ms.toFixed(2)} ms, a whole-ledger clone ${cloneMs.toFixed(2)} ms`);
 });

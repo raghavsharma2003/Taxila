@@ -28,7 +28,7 @@ import { noteModuleEvents, moduleAnswerOf } from "../director/modules.js";
 import { findItem, promptFor, revealsAnswer, whyKey, norm as normAnswer } from "../director/items.js";
 import { registerBroken } from "../director/register.js";
 import { verdictFor, uiVerdict, askText, refersToScreen, wrongAnswersOf, boardClaimProblem, kitWordsOf, stripScreenRefs } from "../director/say.js";
-import { answersRequest, pointsAtStage, unpointGently, pictureSubjectOf, announcesGame, ungame, unassumeVisual } from "../studio/request.js";
+import { answersRequest, pointsAtStage, unpointGently, pictureSubjectOf, announcesGame, ungame, unassumeVisual, refersToBoard, boardPointer, seeNotImagine, stayOnScreen } from "../studio/request.js";
 import { drawableSubject } from "../director/state.js";
 import { mixedUnitComparison } from "../director/units.js";
 import { instructionsFor, instructionsAfter } from "../compiler/instructions.js";
@@ -74,6 +74,14 @@ import { parseVoice } from "../../src/play/core/voice.ts";
 // round 3 fix (experience B2 / B3): the visual ask's clause made true about the screen
 import { askTruth, VISUAL_ON_STAGE, VISUAL_NOT_YET, drawAsked, pictureNote } from "../director/shapes.js";
 import { picturesFor, startPicture, takeFailedPicture } from "../studio/picture.js";
+/** How long a turn answering the child's visual ask waits for the board being drawn for it (the code board lands in ~0.6 s). */
+const ASKED_BOARD_WAIT_MS = Number(process.env.TAXILA_ASKED_BOARD_WAIT_MS || 1500);
+/** The ack, or the revealed slot when the board drawn for the child's ask lands within ASKED_BOARD_WAIT_MS (seam `ready`). */
+async function askedBoard(ack, asked) {
+  if (!asked || ack?.artifact || typeof ack?.ready?.then !== "function") return ack;
+  const got = await Promise.race([ack.ready.catch(() => null), new Promise((res) => setTimeout(() => res(null), ASKED_BOARD_WAIT_MS))]);
+  return got?.artifact ? got : ack;
+}
 import { comprehensionRead } from "../director/read.js";
 import { agentTurn, eventOf, applyAgentTurn, specWasteOf } from "../agent/agent.js";
 import { childTurnRow, clientInstructions, debugFor, floorIncidentStmt, incidentStmt, kitFor, laneOf, runTurnTx, stageTurns, turnInsertStmt, turnLane, withAsk, withSeamUi, withStudioSlot } from "./rows.js";
@@ -733,7 +741,9 @@ export async function lessonTurn(req, body, hooks = {}) {
   if (!late && INTERACTIVE_ASKS.has(String(r.move?.visual ?? "")) && studioSlot?.artifact?.kind !== "play" && next.lastMove?.shape) {
     // round 5: with the template rung taken back (no game, above) nothing is on the screen for this ask: never "point at it"
     const shape0 = kernel.wb.declined === "studio_rejected.no_game_piece" && !next.module ? String(next.lastMove.shape).replace(VISUAL_ON_STAGE, VISUAL_NOT_YET) : next.lastMove.shape;
-    const fixed = askTruth(shape0, String(r.move.visual), keepEngineNow ? "engine" : "none");
+    // (14.3: the lesson's own activity shown for the ask, a skeleton / library / frame piece, is "the activity on the screen")
+    const lessonPieceUp = ["skeleton", "stagecraft", "frame"].includes(String(studioSlot?.artifact?.kind ?? ""));
+    const fixed = askTruth(shape0, String(r.move.visual), keepEngineNow || lessonPieceUp ? "engine" : "none");
     if (fixed !== next.lastMove.shape) {
       next.lastMove = { ...next.lastMove, shape: fixed };
       try { instructions = instructionsFor(next, kit); } catch (e) { console.warn(`[studio] visual-ask truth left out of the compile: ${String(e?.message ?? e).slice(0, 80)}`); }
@@ -914,7 +924,11 @@ export async function lessonTurn(req, body, hooks = {}) {
         : null), null);
       if (ack?.slotId && ack?.intentId) {
         // round 2 content: a board-first board is drawn at the ack: the slot carries it on this response (no poll, no wait)
-        studioSlot = { slotId: String(ack.slotId), intentId: String(ack.intentId), state: ack.state ?? "planning", ...(ack.artifact ? { artifact: ack.artifact } : {}) };
+        // round 5 (14.3, owner-5 on 14.2: board-first refused, the code board drawn ~0.6-1.9 s after her line, "picture dikhao"
+        // with nothing to point at): on a turn answering the CHILD's ask the turn waits a moment for the board being drawn, so
+        // it rides THIS response, drawn before her line refers to it (a slow line plan still lands on the stream, as before)
+        const ack2 = await askedBoard(ack, !!ask.payload?.requested && r.move?.request === "visual");
+        studioSlot = { slotId: String(ack2.slotId), intentId: String(ack2.intentId), state: ack2.state ?? "planning", ...(ack2.artifact ? { artifact: ack2.artifact } : {}) };
         wbAcked = true;
         next.wbBeat = kernel.beat?.id;
         // The live board IS the explanation surface: the Director's template rung (explainer@1) is not mounted beside it
@@ -990,13 +1004,21 @@ export async function lessonTurn(req, body, hooks = {}) {
     // 4, 7, 10 dekhiye" over an empty tray) never points either
     // (sim lab dd8f40ac: a board still PLANNING is not on the stage: "Can you point to 13 on screen?" while it was being
     // drawn, the child on a phone: "screen pe only mic hai"; a slot with no artifact yet counts as empty)
-    const stageEmpty = !studioSlot?.artifact && !playAsk && !keepEngineNow && !(next.module && r.ui?.tray === "module") && !seamSafe("studio.boardUp", () => studioSeam.boardUp?.(lesson.id), false);
+    // ... except a board the CHILD asked for that is being drawn for this turn: it lands while she speaks, and owner-5 requires
+    // her to point at it (spoken "whiteboard pe bana ke samjhao" lost its "screen par … dekhiye" to this rule: V2.no_reference)
+    // main 14.3 (the honesty floor, prod 2001d8cc: "Dekhiye … dikh rahe hain?" over a slot that then failed): only a board
+    // that is ON this response counts (the turn waited for it: askedBoard); a board still being drawn is not on the stage, so
+    // her pointing goes and no pointer is added
+    const askedBoardComing = !!studioSlot?.artifact && r.move?.request === "visual" && wbAcked;
+    const stageEmpty = !studioSlot?.artifact && !askedBoardComing && !playAsk && !keepEngineNow && !(next.module && r.ui?.tray === "module") && !seamSafe("studio.boardUp", () => studioSeam.boardUp?.(lesson.id), false);
     // (sim lab p22: "Can you point to one-third on the screen?" with nothing up, any turn: the child said "I see only a mic
     // button"; with chips up "screen par" may mean the chips, so only a BOARD claim is taken out then)
     const nothingComing = (r.move?.request === "visual" && stageEmpty)
       || (stageEmpty && !!teacherReply && (r.ui?.chips?.length ? /\b(?:board|whiteboard)\b|बोर्ड/iu.test(teacherReply) : true));
     if (!safetyWords && ((seeReq && (seeReq.subject || seeReq.kind === "number_line" || seeReq.kind === "picture")) || nothingComing) && teacherReply && pointsAtStage(teacherReply)
-      && !(studioSlot?.artifact?.kind === "whiteboard" && answersRequest(studioSlot.artifact.script, seeReq ?? null))) {
+      && !(studioSlot?.artifact?.kind === "whiteboard" && answersRequest(studioSlot.artifact.script, seeReq ?? null))
+      // ... nor while the board drawn FOR this ask is still being drawn (owner-5: her pointing stays, the board lands as she speaks)
+      && !askedBoardComing) {
       const unpointed = seamSafe("say.unpointRequest", () => unpointGently(teacherReply), null);
       if (unpointed && unpointed !== teacherReply) {
         teacherReply = unpointed;
@@ -1009,10 +1031,42 @@ export async function lessonTurn(req, body, hooks = {}) {
         delivery = seamSafe("expressive.planDelivery", () => expressiveSeam.planDelivery(moment, teacherReply), delivery);
       }
     }
+    // round 5 (14.3, owner-5 on 14.2: "picture dikhao" typed + spoken V2.no_reference): the board the child asked for is being
+    // drawn for this turn and her line never sends them to it: one fixed pointer goes before it (code, never a model; never
+    // on a safeguarding turn). When no board answers the ask, the claim check above has already taken pointing out.
+    if (!safetyWords && askedBoardComing && teacherReply && !refersToBoard(teacherReply)) {
+      const seen = seeNotImagine(teacherReply);
+      const fixed = refersToBoard(seen) ? seen : boardPointer(next.ctx?.lang, teacherReply) + teacherReply;
+      teacherReply = fixed;
+      const row = staged.find((x) => x.seq === teacherReplySeq);
+      if (row) { row.text = fixed; row.meta = { ...(row.meta ?? {}), guard: [...new Set([...(row.meta?.guard ?? []), "point_asked_board"])] }; }
+      const last = next.recent?.[next.recent.length - 1];
+      if (last?.who === "teacher") next.recent = [...next.recent.slice(0, -1), { ...last, text: fixed.slice(0, 400) }];
+      guard = { ...guard, caught: [...new Set([...(guard?.caught ?? []), "point_asked_board"])], replaced: true };
+      studioReasons.push("say.point_asked_board");
+      delivery = seamSafe("expressive.planDelivery", () => expressiveSeam.planDelivery(moment, teacherReply), delivery);
+    }
+    // main 14.3 (QA pass 14): the board the child asked for is still being drawn (acknowledged, not yet on the response):
+    // her line never sends them away from the screen ("picture ko words mein dekho", "imagine karo"); the board lands
+    if (!safetyWords && r.move?.request === "visual" && wbAcked && !studioSlot?.artifact && teacherReply) {
+      const fixed = seamSafe("say.stayOnScreen", () => stayOnScreen(teacherReply), null);
+      if (fixed && fixed !== teacherReply) {
+        teacherReply = fixed;
+        const row = staged.find((x) => x.seq === teacherReplySeq);
+        if (row) { row.text = fixed; row.meta = { ...(row.meta ?? {}), guard: [...new Set([...(row.meta?.guard ?? []), "stay_on_screen"])] }; }
+        const last = next.recent?.[next.recent.length - 1];
+        if (last?.who === "teacher") next.recent = [...next.recent.slice(0, -1), { ...last, text: fixed.slice(0, 400) }];
+        guard = { ...guard, caught: [...new Set([...(guard?.caught ?? []), "stay_on_screen"])], replaced: true };
+        studioReasons.push("say.stay_on_screen");
+        delivery = seamSafe("expressive.planDelivery", () => expressiveSeam.planDelivery(moment, teacherReply), delivery);
+      }
+    }
     // round 5 (sim lab 709b6acb): over an empty stage, a line that ASSUMES a visual without a screen word ("Table mein
     // Baisakhi kis month mein dikh rahi hai?", "3335 ko mark kijiye", "Timeline picture: …") loses the visual noun, its
     // content kept (studio/request.js unassumeVisual), then any pointing left ("Dekho, …") as above
-    if (!safetyWords && stageEmpty && teacherReply) {
+    // (never on a turn the child asked to SEE: there "imagine it" in place of a picture is the owner's F16 failure, and the
+    // pointing above is the rule; owner-5 visual battery, criterion 3)
+    if (!safetyWords && stageEmpty && teacherReply && r.move?.request !== "visual") {
       const plain = seamSafe("say.unassumeVisual", () => unassumeVisual(teacherReply), null);
       const fixed = plain && plain !== teacherReply ? (pointsAtStage(plain) ? unpointGently(plain) : plain) : null;
       if (fixed && fixed !== teacherReply) {
@@ -1044,7 +1098,7 @@ export async function lessonTurn(req, body, hooks = {}) {
           item: next.lastMove?.itemId ? findItem(next, kit, next.lastMove.itemId) : null, line: { text: line } }), requested: true,
           ...(turnStudioNow()?.retire ? { replaces: String(turnStudioNow().retire) } : {}) })
         : null), null);
-      if (ack?.slotId && ack?.intentId) { studioSlot = { slotId: String(ack.slotId), intentId: String(ack.intentId), state: ack.state ?? "planning", ...(ack.artifact ? { artifact: ack.artifact } : {}) }; wbAcked = true; moment = null; }
+      if (ack?.slotId && ack?.intentId) { const ack2 = await askedBoard(ack, r.move?.request === "visual"); studioSlot = { slotId: String(ack2.slotId), intentId: String(ack2.intentId), state: ack2.state ?? "planning", ...(ack2.artifact ? { artifact: ack2.artifact } : {}) }; wbAcked = true; moment = null; }
     }
   }
   // A late answer (the page-hide beacon already closed the lesson) that was a disclosure still gets the fixed

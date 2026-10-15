@@ -268,7 +268,9 @@ export function askTruth(shape, visual, onScreen) {
 }
 // round 5 (stream 2, the board): a thing the child named is being drawn on the board for this ask: say what it shows, in
 // words, and never point at the screen before it is there (the after-board check unpoints a line that does)
-export const VISUAL_DRAWING = "the board draws what they asked for beside your words: say in plain words what it shows (its parts, its numbers); never send their eyes to the screen or the board, never say it is already there, never that you cannot draw, never ask them to draw it";
+// (round 5, owner-5 on 14.2 a978ae27: "never send their eyes to the screen" left "picture dikhao" with no pointing word, V2.no_reference;
+// the asked board is drawn while she speaks, and turn.js unpoints her line when none answers the ask)
+export const VISUAL_DRAWING = "the board draws what they asked for while you speak: send their eyes to it once, in a few words, then say in plain words what it shows (its parts, its numbers); never say it is already finished, never that you cannot draw, never ask them to draw it";
 /** The same, for what they named: the thing, or the numbers on a number line (they asked for THOSE, not the question's). */
 export const visualDrawing = ({ subject, said, show } = {}) => join(
   show === "number_line" && said?.length ? `they asked to see ${said.map((x) => String(x).replace(/[^0-9./+-]/g, "")).filter(Boolean).join(", ")} on a number line: say where ${said.length > 1 ? "they sit" : "it sits"} (between which whole numbers, how many equal parts)`
@@ -315,7 +317,10 @@ export const safeguard = () => join(
 );
 export const carriedCheckIn = () => "a fresh start soon after a hard moment: greet them warmly and check calmly how they are today; a trusted grown-up and Childline 1098 / Tele-MANAS 14416 are there any time; they can start slowly or stop for today, either is fine; never name or hint at anything said before; no lesson content yet";
 export const safeguardStay = () => "stay with them and keep listening; no lesson content; a trusted adult and Childline 1098 again if needed";
+/** A further model read of distress inside the same model-opened episode (state.js decide): hold, never the opening again. */
+export const safeguardAgain = () => "they may still be upset: stay with them, gently ask if they are okay right now, no lesson content; a trusted grown-up and Childline 1098 / Tele-MANAS 14416 are there any time; never promise secrecy; do not repeat your earlier words";
 export const resumeAfterSafeguard = () => "gently ask whether they want to carry on with the lesson or stop for today — either is fine";
+export const resumeAfterFine = () => "they say they are okay: take their word warmly in a few words, no fuss and no lesson content yet; they can tell you or a trusted grown-up any time; then ask whether to carry on with the lesson or stop for today — either is fine";
 
 export const teachback = ({ protege }) => join(
   `${protege.name} (${protege.what}) wants to learn today's idea`,

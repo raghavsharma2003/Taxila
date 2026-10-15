@@ -1,0 +1,46 @@
+{
+ "nodes": [
+  {
+   "id": "ms-r5-lat-overflow-arm-2026-10-15",
+   "kind": "measurement",
+   "title": "What the child hears in a throttled minute, 14.2's 429 overflow (2c2273f on f058080e; evals/latency/overflow-arm.mjs): the eastus2 host stubbed to an instant 429, the southindia twin answering for real, US container, interleaved, n = 20 per arm, paired deltas with bootstrap 90% CIs. Reply lane (taxila-fast, the 2.2 s hedge), whole reply p50/p90 1219/1577 -> 2315/3170 ms, +988 ms [636, 1323], 20/20 answered (before 14.2: the fallback line); 31 southindia calls for 20 replies (11 hedge twins doubled onto the overflow; main removing). Agent lane (taxila-gpt6 JSON stream, say first): first speakable clause 1433/1925 -> 1795/2540 ms, +319 ms [235, 524]; whole call 1758/2481 -> 2248/2842, +459 ms [97, 673]; one overflow call each.",
+   "at": "2026-10-15"
+  },
+  {
+   "id": "ms-r5-lat-overflow-arm-c61f728c-2026-10-15",
+   "kind": "measurement",
+   "title": "The 429 overflow arm re-run on 14.2 c61f728c (main's fixes from stream 3's review: first-attempt 429 only, one move per hedged call, speculation and background never move), same method, ~08:20 UTC, n = 20 per arm interleaved: reply lane whole p50/p90 1403/1730 -> 2518/3191 ms, +747 ms [449, 1267], 20 southindia calls for 20 throttled replies (was 31: the hedge twins no longer double onto it), 20/20 answered. Agent lane (taxila-gpt6 JSON stream, unchanged by the fix) first clause 1654/2429 -> 2483/2974 ms, +868 ms [649, 1029] (was +319 [235, 524] at ~07:45 UTC): the southindia twin's own latency varies by the hour; the normal arm was slower too (+221 ms p50). Plan on +0.3 to +0.9 s for her first clause in a throttled minute, not the +349 ms TTFT on record.",
+   "at": "2026-10-15"
+  },
+  {
+   "id": "dec-r5-lat-continuer-gate-tuned",
+   "kind": "decision",
+   "title": "The continuer's positive gate tuned after the sim lab's 14.2 voice arm (f058080e, n = 32: every safety / leaving / relational target 0, but ordinary turns 35/376 got one vs 63/174 before; ack_natural 3.75 vs 3.94). (1) ABSOLUTE words stay absolute: romance, companion, exclusivity, secrecy, are-you-real, insults, out of bounds, an adult at the device, tiredness, time LEFT, leaving, home and family, the child's own results; liking HER is absolute only with a person object (aap / tum / you near pasand / like / love). (2) Talk TO HER (aap / tum / you) is refused unless the turn has lesson words or working aloud (never excused by a bare number or a question word: \"aap kaise ho\", \"aapne Pushpa 2 dekhi?\"). (3) Other soft words (time, minute, kitna, screens, sport) are excused by any lesson shape, now including Devanagari spoken numbers (grading/spoken-number.js numberPhrases, \"ek\" alone not counted), working aloud, counting, guessing, \"you asked\". (4) A clean reading (no flag, no request) of words with nothing soft is allowed: her own \"what do you like?\" answered. Battery (conversation-v2): 79/84 lesson-intent lines get one; 0/74 off-lesson lines on words alone; 15/52 grey lines (off-lesson curiosity, cycle, 'mushkil hai') on a clean reading. A contest ('nahi mera answer sahi hai') stays refused: an 'Okay…' would read as conceding. Reverse if: the sim lab's voice-cont re-run puts any continuer on a safety, leaving or relational turn.",
+   "at": "2026-10-15"
+  },
+  {
+   "id": "ms-r5-lat-agent-spec-probe-2026-10-15",
+   "kind": "measurement",
+   "title": "The agent lane's speculated call (stream 3's server/latency/agentSpec.js on 4A's agentSpeculate / agentCallOf key, 93334bd8): her model call started on the device prefetch once its classify (and the understanding note) settled clean, adopted by the turn only on an identical input key. turn-e2e --turn-audio --prefetch, prod routing, TEST, effort none, class 4, n = 10 turns: adopted 7/7 speculable turns (3 were requests: not speculated), 0 wrong adoptions, 0 spoken drafts; but it started only 0-81 ms ahead of the turn's own call. The prefetch leads the turn by ~0.3-0.6 s and its classify takes about as long, so both reach 'classify settled' together. Before the take waited for a pending start of the same words, 7/8 turns missed (the turn arrived while the last prefetch's classify was still settling). A turn whose deltas changed started two calls, one wasted.",
+   "at": "2026-10-15"
+  },
+  {
+   "id": "dec-r5-lat-agent-spec-off",
+   "kind": "decision",
+   "title": "The agent lane's speculated call ships OFF (TAXILA_AGENT_SPEC=on to enable): the mechanism is correct (7/7 adopted, never a wrong or spoken draft) but saves ~0 ms at the measured prefetch lead and costs an extra model call on turns whose deltas change. Reverse if: the prefetch's lead over the turn grows past classify's time (e.g. a slower STT completion or an earlier stable partial), measured as speculation 'ahead' >= 300 ms at p50.",
+   "at": "2026-10-15"
+  }
+ ],
+ "edges": [
+  {
+   "src": "dec-r5-lat-continuer-gate-tuned",
+   "rel": "refines",
+   "dst": "dec-r5-lat-continuer-positive-gate"
+  },
+  {
+   "src": "dec-r5-lat-agent-spec-off",
+   "rel": "measured_by",
+   "dst": "ms-r5-lat-agent-spec-probe-2026-10-15"
+  }
+ ]
+}

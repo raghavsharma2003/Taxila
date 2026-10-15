@@ -19,7 +19,7 @@
  *
  * Hands-free: no press / release here; captions of every STT item inside one engine turn are folded onto ONE caption id.
  */
-import { DuplexLive, isQuotaError, type DuplexFallbackReason, type DuplexLiveOptions, type DuplexStats, type DuplexTurn, type TurnUi } from "./live.ts";
+import { DuplexLive, D5_HER_TAIL_MS, isQuotaError, type DuplexFallbackReason, type DuplexLiveOptions, type DuplexStats, type DuplexTurn, type TurnUi } from "./live.ts";
 import type { HostCommand, ShadowRow } from "./host.ts";
 import type { FloorPhase } from "./engine.ts";
 import type { DuplexMode } from "./flags.ts";
@@ -29,6 +29,8 @@ import { vt } from "../voice/trace.ts";
 /** What the link exposes to the duplex (CascadeLink builds one; tests fake it). */
 export interface CascadeSurface {
   lessonId: string;
+  /** Round 5 half-duplex: true = the mic sends silence (her voice is in the room); optional (older links: no gate). */
+  micGate?(gated: boolean): void;
   /** Mic graph pieces (null when the lesson has no mic). */
   audio(): { ctx: AudioContext; stream: MediaStream; herOutput: AudioNode | null } | null;
   /** Her reply is sounding now (between teacher_audio_start and its end, not paused). */
@@ -86,6 +88,8 @@ export interface CascadeDuplexOptions {
   lane?: "d4" | "d5";
   /** D5: duck on a device burst before Voice Live confirms it (DuplexLiveOptions.preDuck). */
   preDuck?: boolean;
+  /** Round 5: D4 half-duplex (DuplexLiveOptions.halfDuplex); default HALF_DUPLEX_D4. */
+  halfDuplex?: boolean;
 }
 
 /** The default shadow sink: one beacon per lesson (text/plain, like /api/lesson/end; never throws, never awaited). */
@@ -100,8 +104,16 @@ export function beaconShadowSummary(summary: ShadowSummary, lessonId: string): v
 
 /** The server VAD silence while the engine decides: a backstop only (INTEGRATION.md §3, 1,500 ms). */
 export const DUPLEX_SERVER_VAD_MS = 1500;
-/** D5: Voice Live's semantic VAD silence while the engine decides (the bake-off ran 500 ms; BAKEOFF.md arm e). */
-export const D5_SERVER_VAD_MS = 500;
+/**
+ * D5: Voice Live's semantic VAD silence while the engine decides (the bake-off ran 500 ms; BAKEOFF.md arm e). Round 5 EOT
+ * step 3: 250 → 200 on the owner harness (same 34 after-her turns, live): EOT p50 1,130 → 1,100, closed answers 1,100 →
+ * 920; thinking-pause cut-offs 1/34 → 1/34, self-corrections cut 0 new, values changed 0 new; echo / barge bars unchanged.
+ */
+export const D5_SERVER_VAD_MS = 200;
+/** Round 5 (BRIEF.md): D4 runs HALF-DUPLEX (the owner's phone: device AEC too weak, her voice heard as the child). */
+export const HALF_DUPLEX_D4 = true;
+/** Round 5: D5 ducks on a loud device burst before Voice Live confirms it (her stop <= 500 ms). */
+export const D5_PREDUCK_DEFAULT = true;
 /** No mic frame this long after start → the tap is dead: step aside (the shipped path needs no frames). */
 export const NO_FRAMES_MS = 3000;
 /** A reply that answers a revoked commit is dropped if it arrives within this long of the revoke. */
@@ -121,6 +133,33 @@ export function fullDuplexForced(): boolean {
   } catch {
     return false;
   }
+}
+
+/**
+ * Round 5: the half-duplex tail from this device. Her level is read at the player node, BEFORE the device's output buffer,
+ * so her sound leaves the speaker AudioContext.outputLatency later (Android: often 100-300 ms): tail = 250 ms of room +
+ * that latency, within 400-900 ms; unknown → HALF_DUPLEX_TAIL_MS (600).
+ */
+export function halfTail(surface: { audio(): { ctx: AudioContext } | null }): { halfTailMs?: number } {
+  try {
+    const lat = (surface.audio()?.ctx as (AudioContext & { outputLatency?: number }) | undefined)?.outputLatency;
+    if (typeof lat !== "number" || !Number.isFinite(lat) || lat <= 0) return {};
+    return { halfTailMs: Math.round(Math.max(400, Math.min(900, 250 + lat * 1000))) };
+  } catch {
+    return {};
+  }
+}
+
+/**
+ * D5 review #6: her echo tail on D5 from this device: D5_HER_TAIL_MS of room reverb + the output buffer's latency (her level
+ * is read before it), within 300-900 ms; unknown → D5_HER_TAIL_MS + 200 (a typical Android output buffer).
+ */
+export function d5Tail(surface: { audio(): { ctx: AudioContext } | null }): { herTailMs: number } {
+  try {
+    const lat = (surface.audio()?.ctx as (AudioContext & { outputLatency?: number }) | undefined)?.outputLatency;
+    if (typeof lat === "number" && Number.isFinite(lat) && lat > 0) return { herTailMs: Math.round(Math.max(D5_HER_TAIL_MS, Math.min(900, D5_HER_TAIL_MS + lat * 1000))) };
+  } catch { /* unknown below */ }
+  return { herTailMs: D5_HER_TAIL_MS + 200 };
 }
 
 export class CascadeDuplex {
@@ -169,12 +208,14 @@ export class CascadeDuplex {
       dropReply: () => { this.dropUntil = this.now() + DROP_WINDOW_MS; },
       fallback: (reason: DuplexFallbackReason) => this.onFallback(reason),
       state: (st: { phase: FloorPhase }) => { this.phase = st.phase; this.push(); },
+      micGate: (gated: boolean) => this.s.micGate?.(gated),
     };
     this.live = new DuplexLive({
       // D5: no micro-commit probes (a forced commit cuts Voice Live's open item and returns it empty; its own 500 ms commit
       // already lands the final ~0.6 s after the child stops)
       lessonId: surface.lessonId, port, mode: o.mode, source: d5 ? "voicelive" : "live_transcribe", supportsCommit: !d5,
-      ...(d5 ? { vadGate: "server" as const, preDuck: o.preDuck ?? false } : { halfDuplex: o.mode === "on" && !fullDuplexForced() }),
+      // D4: half-duplex unless this device forced the full engine (?duplexfull=1, release 14); D5: the full engine
+      ...(d5 ? { vadGate: "server" as const, preDuck: o.preDuck ?? D5_PREDUCK_DEFAULT, serverVadMs: D5_SERVER_VAD_MS, ...d5Tail(surface) } : { halfDuplex: o.halfDuplex ?? (HALF_DUPLEX_D4 && o.mode === "on" && !fullDuplexForced()), ...halfTail(surface) }),
       wrapEmit: o.face?.wrapEmit, onDetach: o.face?.detach, now: this.now, setInterval: o.setInterval, clearInterval: o.clearInterval,
       band: o.band,
       log: (row: ShadowRow) => { try { this.tel.row(row); } catch { /* telemetry never breaks the floor */ } o.log?.(row); },
@@ -189,6 +230,8 @@ export class CascadeDuplex {
 
   /** D5: the client time of the lane stream's first audio frame (exact audio-clock mapping for Voice Live's events). */
   audioOrigin(t: number | null): void { this.live.audioOrigin(t); }
+  /** D5 review #5: the stream's anchored audio clock (D5Stream.toClient). */
+  audioClock(fn: ((audioMs: number) => number | null) | null): void { this.live.audioClock(fn); }
 
   /** The engine decides the floor now (shadow never does). */
   get deciding(): boolean { return this.mode === "on" && this.live.live && !this.closed; }
@@ -268,12 +311,18 @@ export class CascadeDuplex {
   }
 
   /** A reply is about to play: false = it answers a revoked commit (drop it without sound). */
+  /** shouldDropReply without consuming it (the early-audio path parks such a reply for promptTeacher to drop). */
+  replyDropPending(): boolean {
+    return !this.closed && !this.fallbackReason && this.mode === "on" && this.now() < this.dropUntil;
+  }
   shouldDropReply(): boolean {
     if (this.closed || this.fallbackReason || this.mode !== "on") return false;
     if (this.now() < this.dropUntil) { this.dropUntil = 0; return true; }
     return false;
   }
 
+  /** Her sounding reply's full text arrived (an early reply announced on its first clauses). */
+  replyText(text: string): void { if (!this.closed && !this.fallbackReason) this.live.herText(text); }
   replyEnded(): void { if (!this.closed) { this.tel.herEnd(this.now(), false); this.live.herEnd(); } }
   replyStopped(): void { if (!this.closed) { this.tel.herEnd(this.now(), true); this.live.herStopped(); } }
   /** Her acknowledgement clip sounds / ended (release 14: gated like her line, so its echo never revokes a commit). */

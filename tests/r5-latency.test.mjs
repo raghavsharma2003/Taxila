@@ -223,8 +223,10 @@ test("continuer positive gate: the reading refuses off-topic, a request, a stop,
   assert.equal(lessonTurnOf(t, cls0({ signals: { act: "answer", personalShare: true } })).none, "off_topic");
   assert.equal(lessonTurnOf(t, cls0({ source: "asr" })).none, "not_lesson");
   assert.equal(lessonTurnOf(t, null).none, "unclassified");
-  // no evidence, no flag, and nothing lesson-shaped in the words: none (when in doubt, silence)
-  assert.equal(lessonTurnOf("hmm acha theek", cls0()).none, "not_lesson");
+  // talk TO HER with nothing lesson-shaped: none, whatever the reading; a clean reading of plain words (her own "what do you
+  // like?" answered) gets one (main, sim lab 14.2: 35/376 ordinary turns was over-refusing)
+  for (const s of ["aap kaise ho?", "what's your name again?", "do you like pizza?", "aapka favourite colour kya hai?"]) assert.equal(lessonTurnOf(s, cls0()).none, "relational", s);
+  assert.deepEqual(lessonTurnOf("मुझे batting बहुत पसंद है", cls0()), { ok: true });
 });
 
 test("continuer positive gate, control: ordinary answers, attempts, don't-knows and lesson questions still get one", () => {
@@ -551,3 +553,114 @@ test("turn-audio: a fallback (no agentStream) speaks the Director's reply after 
     assert.ok(r3.writableEnded);
   } finally { Object.assign(turnAudioDeps, { lessonTurn: null, style: null, synth: null }); }
 });
+
+// ── round 5 (main + 4A, 2026-10-15): the agent lane's speculated call on the prefetch (server/latency/agentSpec.js) ──
+import { speculable, startAgentSpec, takeAgentSpec, __agentSpec } from "../server/latency/agentSpec.js";
+
+const agentState = (over = {}) => ({ ctx: { teacher: "agent", lang: "hinglish" }, mode: "cascade", turn: 4, activeItemId: null, ...over });
+const plainCls = (over = {}) => ({ outcome: "incorrect", confidence: 1, source: "model", flags: { distress: false }, ...over });
+function fakeSpec(key = "k1") {
+  const s = { key, aborted: false, abort(why) { if (!s.aborted) s.aborted = why || "aborted"; }, done: Promise.resolve({ text: "{}" }), startedAt: 0, async *replay() {} };
+  return s;
+}
+const specDeps = (spec, calls = []) => ({
+  agentSpeculate: (a) => { calls.push(a); return spec; }, eventOf: (e) => `event:${e.childText}:${e.cls?.outcome}`,
+  settleWithin: async (p, ms) => (ms > 0 ? p : null), noteWaitMs: 50,
+});
+
+/** These tests exercise the mechanism (production default: off); the switch is scoped to each test (one process runs every suite). */
+const specOn = (fn) => async () => { const was = process.env.TAXILA_AGENT_SPEC; process.env.TAXILA_AGENT_SPEC = "on";
+  try { await fn(); } finally { if (was === undefined) delete process.env.TAXILA_AGENT_SPEC; else process.env.TAXILA_AGENT_SPEC = was; } };
+test("agent speculation: only a clean, plain, classified prefetch on an agent lesson is speculable", () => {
+  const ok = { state: agentState(), text: "1/5 bada hai", cls: plainCls() };
+  assert.deepEqual(speculable(ok), { ok: true });
+  assert.equal(speculable({ ...ok, state: agentState({ ctx: { teacher: "director" } }) }).none, "lane");
+  assert.equal(speculable({ ...ok, cls: null }).none, "unclassified");
+  assert.equal(speculable({ ...ok, state: agentState({ safeguard: { open: true } }) }).none, "safeguard");
+  assert.equal(speculable({ ...ok, text: "main mar jaana chahta hoon" }).none, "predicate");
+  assert.equal(speculable({ ...ok, cls: plainCls({ flags: { distress: true } }) }).none, "distress");
+  assert.equal(speculable({ ...ok, cls: plainCls({ flags: { wantsToStop: true } }) }).none, "leaving");
+  assert.equal(speculable({ ...ok, cls: plainCls({ request: { type: "visual" } }) }).none, "not_plain");
+  for (const source of ["content_filter", "predicate", "asr", "chip", "help"]) assert.equal(speculable({ ...ok, cls: plainCls({ source }) }).none, "not_plain", source);
+});
+
+test("agent speculation: started once its classify settles; the turn with the SAME words takes it once; other words abort it unspoken", specOn(async () => {
+  __agentSpec.clear();
+  const lesson = { id: "L-spec", state: agentState() };
+  const spec = fakeSpec(), calls = [];
+  const r = await startAgentSpec(specDeps(spec, calls), { lesson, state: agentState(), kit: {}, text: "1/5 bada hai", P: { clsP: Promise.resolve(plainCls()) } });
+  assert.equal(r.started, true);
+  assert.equal(calls.length, 1);
+  assert.equal(calls[0].event, "event:1/5 bada hai:incorrect", "the event is built from the prefetched words and their verdict");
+  assert.equal(calls[0].lessonId, "L-spec");
+  assert.equal(await takeAgentSpec("L-spec", "  1/5 bada hai "), spec, "same words (trimmed): handed over");
+  assert.equal(await takeAgentSpec("L-spec", "1/5 bada hai"), null, "handed over once");
+  assert.equal(spec.aborted, false, "a handed-over spec is the turn's to adopt or abort");
+  const spec2 = fakeSpec("k2");
+  await startAgentSpec(specDeps(spec2), { lesson, state: agentState(), kit: {}, text: "1/3 bada hai", P: { clsP: Promise.resolve(plainCls()) } });
+  assert.equal(await takeAgentSpec("L-spec", "1/3 bada hai hai na"), null, "the final words differ: not handed over");
+  assert.match(String(spec2.aborted), /words differ/);
+}));
+
+test("agent speculation: a distress read, a request or a newer prefetch never leaves a draft that could speak", specOn(async () => {
+  __agentSpec.clear();
+  const lesson = { id: "L-spec2", state: agentState() };
+  const a = fakeSpec("a");
+  await startAgentSpec(specDeps(a), { lesson, state: agentState(), kit: {}, text: "teen", P: { clsP: Promise.resolve(plainCls()) } });
+  const b = fakeSpec("b");
+  await startAgentSpec(specDeps(b), { lesson, state: agentState(), kit: {}, text: "teen hai", P: { clsP: Promise.resolve(plainCls()) } });
+  assert.equal(a.aborted, "a newer prefetch");
+  // the next prefetch's classify reads distress: the held draft is dropped, nothing new starts
+  const calls = [];
+  const r = await startAgentSpec(specDeps(fakeSpec("c"), calls), { lesson, state: agentState(), kit: {}, text: "mujhe sab bekaar lagta hai", P: { clsP: Promise.resolve(plainCls({ flags: { distress: true } })) } });
+  assert.equal(r.none, "distress");
+  assert.equal(calls.length, 0);
+  assert.match(String(b.aborted), /distress/);
+  assert.equal(await takeAgentSpec("L-spec2", "teen hai"), null);
+  // the understanding note turning a clean classify into distress also stops it
+  const calls2 = [];
+  const r2 = await startAgentSpec({ ...specDeps(fakeSpec("d"), calls2) }, { lesson, state: agentState(), kit: {}, text: "pata nahi",
+    P: { clsP: Promise.resolve(plainCls({ outcome: "no_evidence" })), noteP: Promise.resolve({ intent: "distress", distress: true }), noteT0: performance.now(), c2: "on" } });
+  assert.equal(r2.none, "distress", JSON.stringify(r2));
+  assert.equal(calls2.length, 0);
+  // off switch
+  // off unless switched on
+  delete process.env.TAXILA_AGENT_SPEC;
+  assert.equal((await startAgentSpec(specDeps(fakeSpec()), { lesson, state: agentState(), kit: {}, text: "x", P: { clsP: Promise.resolve(plainCls()) } })).none, "off");
+}));
+
+test("turn-audio hands the held speculation to the turn and aborts it when the turn is done", async () => {
+  const spec = fakeSpec("t");
+  let got = null;
+  Object.assign(turnAudioDeps, { style: () => ({}), synth: async function* () {}, takeAgentSpec: (id, text) => (id === "L-ta2" && text === "chaar" ? spec : null),
+    lessonTurn: async (req, body, o) => { await wait(5); got = o.agentSpec; return { teacherReply: "Achha.", teacherReplySeq: 3 }; } });
+  try {
+    const res = fakeRes();
+    await _turnAudio(fakeReq(), res, { lessonId: "L-ta2", childText: "chaar" });
+    assert.equal(got, spec);
+    assert.equal(spec.aborted, "turn done");
+    got = null;
+    const res2 = fakeRes();
+    await _turnAudio(fakeReq(), res2, { lessonId: "L-ta2", childText: "chaar", typed: true });
+    assert.equal(got, undefined, "a typed turn never takes a spoken speculation");
+  } finally { Object.assign(turnAudioDeps, { lessonTurn: null, style: null, synth: null, takeAgentSpec: null }); }
+});
+
+test("agent speculation: a turn that arrives while its own words' classify is still settling waits for that start, then takes it", specOn(async () => {
+  __agentSpec.clear();
+  const lesson = { id: "L-spec3", state: agentState() };
+  const spec = fakeSpec("late");
+  let settle;
+  const clsP = new Promise((r) => { settle = r; });
+  startAgentSpec(specDeps(spec), { lesson, state: agentState(), kit: {}, text: "paanch", P: { clsP } });
+  const taking = takeAgentSpec("L-spec3", "paanch");
+  await wait(20);
+  settle(plainCls());
+  assert.equal(await taking, spec);
+  // other words never wait
+  startAgentSpec(specDeps(fakeSpec("x")), { lesson, state: agentState(), kit: {}, text: "chhe", P: { clsP: new Promise(() => {}) } });
+  const t0 = Date.now();
+  assert.equal(await takeAgentSpec("L-spec3", "saat"), null);
+  assert.ok(Date.now() - t0 < 200);
+  __agentSpec.clear();
+}));

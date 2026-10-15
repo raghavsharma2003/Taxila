@@ -1,7 +1,7 @@
 // Types for shared/whiteboard.js (the whiteboard script's one implementation; the script TYPES are shared/studio.ts).
 import type { StudioFacts, WbOp, WhiteboardScript } from "./studio.ts";
 
-export const LIMITS: Readonly<{ maxOps: number; maxPointsPerStroke: number; maxTextChars: number; maxDurationMs: number; minBoard: number; maxBoard: number; maxNumRows: number; maxNumCols: number; maxCellChars: number }>;
+export const LIMITS: Readonly<{ maxOps: number; maxPointsPerStroke: number; maxTextChars: number; maxDurationMs: number; minBoard: number; maxBoard: number; maxNumRows: number; maxNumCols: number; maxCellChars: number; maxWordCellChars: number }>;
 export const OPS: readonly string[];
 export const INKS: readonly string[];
 export const GROUNDS: readonly string[];

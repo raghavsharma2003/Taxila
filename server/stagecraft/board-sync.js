@@ -97,7 +97,7 @@ export function gateCtxFor(ask, { kit, redact = [], prior = [] } = {}) {
   if (request?.subject) kitForGate.expectations.push(request.subject, ...subjectWords(request.subject));
   if (request?.said?.length) kitForGate.expectations.push(...request.said);
   return { reply: text, kit: kitForGate, band: ask?.intent?.style?.band ?? "B3", speechMs: speechMsOf(spoken), banned: redact, prior, withhold,
-    ...(request ? { extraNumbers: askedNumbers(request), face: faceDrawing(request) } : {}) };
+    ...(request ? { extraNumbers: askedNumbers(request), face: faceDrawing(request), asked: request.kind !== "number_line" && !faceDrawing(request) } : {}) };
 }
 
 /** Scale a script's op times to a new spoken length (k clamped 0.5-2), first op no later than 800 ms. Shape only. */
@@ -167,8 +167,10 @@ export function regate(script, ask, ctx) {
   // production round3-forge run were W9-only refusals, each leaving the slot empty (2026-10-10).
   for (let k = 0; k < 3 && !g.pass; k++) {
     const failing = g.checks.filter((c) => !c.pass);
-    if (!failing.length || failing.some((c) => c.id !== "W9.no_reveal")) break;
-    const masked = maskReveals(g.script ?? raw, failing[0].detail ?? []);
+    // (W18, her own question's answer, is masked the same way: its detail is the number, written as a reveal of every op)
+    if (!failing.length || failing.some((c) => c.id !== "W9.no_reveal" && c.id !== "W18.her_answer_unsaid")) break;
+    const reveals = failing.flatMap((c) => (c.id === "W9.no_reveal" ? c.detail ?? [] : (c.detail ?? []).flatMap((n) => (g.script ?? raw).ops.map((o) => `${o.id}: ${n} = answer ${n}`))));
+    const masked = maskReveals(g.script ?? raw, reveals);
     if (!masked) break;
     g = gateWhiteboard({ ...masked, facts: undefined }, ctx);
   }
@@ -321,7 +323,11 @@ export async function plan(ask, o) {
   // round 5: a number line the child asked for, with their numbers, is drawn by code (request.js numberLineBoard), gated
   // like any board; it is the code rung for that ask (the kit's own board never answers "number line pe 1/4 dikhao")
   // ... and a clock asked for ("ghadi draw karo") is drawn by code too (request.js clockBoard)
-  const nl0 = request?.kind === "number_line" ? numberLineBoard(request, { scriptId: String(ask?.intent?.intentId ?? "nl"), lessonId: ask?.line?.lessonId ?? "", spanMs: ctx.speechMs })
+  // QA pass 12 D35 (prod b8fb4ee2, TEST f10fcd57: "number line pe dikhao" named no numbers, so no code line; the line plan
+  // failed ~1 in 2 and the slot went "failed" under her "… dikhaiye"): with none asked, the numbers HER line says are drawn
+  const lineNumbers = (String(ask?.line?.text ?? "").match(/-?\d+(?:\.\d+)?(?:\/\d+)?/g) ?? []).filter((x, i, a) => a.indexOf(x) === i).slice(0, 4);
+  const nlRequest = request?.kind === "number_line" && !request.said?.length && lineNumbers.length ? { ...request, said: lineNumbers } : request;
+  const nl0 = request?.kind === "number_line" ? numberLineBoard(nlRequest, { scriptId: String(ask?.intent?.intentId ?? "nl"), lessonId: ask?.line?.lessonId ?? "", spanMs: ctx.speechMs })
     : request?.subject ? clockBoard(request, { scriptId: String(ask?.intent?.intentId ?? "clock"), lessonId: ask?.line?.lessonId ?? "", spanMs: ctx.speechMs }) : null;
   const nl = nl0 ? regate(retime(nl0, nl0.durationMs, ctx.speechMs), ask, ctx) : null;
   const code0 = nl?.ok ? { ...nl, template: request.kind === "number_line" ? "number_line" : "clock", by: "request" } : codeBoard(ask, { kit: o.kit, lessonId: ask?.line?.lessonId, band: ctx.band }, ctx);

@@ -80,6 +80,56 @@ test("chatStream: a 429 (before any delta) restarts the stream whole on the twin
   await assert.rejects(chatStream("taxila-fast", [{ role: "system", content: "s" }, ...M], { quotaLane: "hot" }), (e) => e.status === 429);
   assert.equal(calls.length, 2, "one restart, no more");
 });
+
+// 4B (duplex): the engine's draft launcher (server/duplex/launch.js) on chatStream's overflow restart — a cancelled draft
+// never restarts, a draft cancelled on the twin stops there, and the handle's text is the twin's only (drafts never speak
+// themselves; the race manager voices at most one ready draft)
+test("duplex drafts: a draft cancelled before the 429 lands never restarts on the twin", async () => {
+  const { azureLauncher } = await import("../server/duplex/launch.js");
+  let h;
+  stub((c) => { if (c.host === "primary") { h.abort(); return tooMany(); } return ok(); });
+  h = azureLauncher({ deployment: "taxila-fast", messagesFor: () => [{ role: "system", content: "s" }, ...M] })({}, 0);
+  const r = await h.promise;
+  assert.deepEqual(calls.map((c) => c.host), ["primary"], "no twin for a cancelled draft");
+  assert.ok(r.error, "the draft ended in error (cancelled)");
+  assert.equal(r.text, "");
+});
+
+test("duplex drafts: a draft cancelled while streaming on the twin stops there (the same signal), its text the twin's only", async () => {
+  const { azureLauncher } = await import("../server/duplex/launch.js");
+  const enc = new TextEncoder();
+  let h;
+  stub((c) => {
+    if (c.host === "primary") return tooMany();
+    // the twin streams one delta, then hangs until the draft is cancelled
+    const body = new ReadableStream({ start(ctl) {
+      ctl.enqueue(enc.encode(`data: ${JSON.stringify({ choices: [{ delta: { content: "आठ" } }] })}\n\n`));
+      setTimeout(() => h.abort(), 20);
+    } });
+    return new Response(body, { status: 200, headers: { "content-type": "text/event-stream" } });
+  });
+  // fetch's own abort: cancel the hanging body when the signal fires
+  const inner = globalThis.fetch;
+  globalThis.fetch = async (url, init) => {
+    const res = await inner(url, init);
+    if (!res.body) return res;
+    const reader = res.body.getReader();
+    const body = new ReadableStream({
+      start(ctl) { init.signal?.addEventListener("abort", () => { reader.cancel().catch(() => {}); ctl.error(Object.assign(new Error("aborted"), { name: "AbortError" })); }, { once: true }); },
+      async pull(ctl) { const { value, done } = await reader.read(); if (done) ctl.close(); else ctl.enqueue(value); },
+    });
+    return new Response(body, { status: res.status, headers: res.headers });
+  };
+  h = azureLauncher({ deployment: "taxila-fast", messagesFor: () => [{ role: "system", content: "s" }, ...M] })({}, 0);
+  const t0 = Date.now();
+  const r = await h.promise;
+  assert.ok(Date.now() - t0 < 2000, "the cancel reached the twin's stream");
+  assert.deepEqual(calls.map((c) => c.host), ["primary", "overflow"], "one restart, none after the cancel");
+  assert.ok(r.error);
+  assert.equal(r.text, "आठ", "only the twin's words");
+  assert.ok(r.ttftMs !== undefined, "first delta timed (from the draft's start: includes the failed 429 attempt)");
+});
+
 test("stream 3's review: a 5xx then a 429 never makes a third call (only the first attempt's 429 moves)", async () => {
   stub((_c, n) => (n === 1 ? new Response("upstream", { status: 503 }) : tooMany()));
   await assert.rejects(chat("taxila-fast", M), (e) => e.status === 429);

@@ -169,7 +169,10 @@ export async function runSession({ id, x, frames, her = [], stt, band = "B4", ma
     dropReply: () => acts.push([clock, "drop"]),
     fallback: (why) => acts.push([clock, "fallback", why]),
     state: (st) => { if (phases.at(-1)?.[1] !== st.phase) phases.push([clock, st.phase]); },
+    // round 5 half-duplex: the gated mic sends silence to the transcriber (the link disables the track)
+    micGate: (g) => { acts.push([clock, "gate", g]); micGated = g; },
   };
+  let micGated = false;
   // the semantic estimator on the session clock: a cached Azure answer delivered after its own measured latency
   const semPending = [];
   const semFn = semantic ? (req) => new Promise((resolve) => {
@@ -223,7 +226,7 @@ export async function runSession({ id, x, frames, her = [], stt, band = "B4", ma
       if (fired) for (let k = 0; k < 4; k++) await null; // let the host's .then apply the estimate on this frame
     }
     if (!replay) {
-      socket.append(x.subarray(i * HOP, (i + 1) * HOP), i);
+      socket.append(micGated ? new Float32Array(HOP) : x.subarray(i * HOP, (i + 1) * HOP), i);
       while (pending.length) deliver(pending.shift());
     } else if (sim) {
       for (const ev of sim.tick(tf)) simRaw(ev);
@@ -234,9 +237,10 @@ export async function runSession({ id, x, frames, her = [], stt, band = "B4", ma
     if (herLive && tf >= herLive.end) { live.herEnd(); herLive = null; }
     if (!herLive && hi < herSorted.length && tf >= herSorted[hi].start) { herLive = herSorted[hi++]; live.setUi(herLive.ui ?? {}); live.herStart(herLive.text); }
     const herOut = herLive ? (herLive.outDb ? (herLive.outDb[i] ?? null) : -20) : null;
+    const herF0 = herLive?.outF0 ? (herLive.outF0[i] ?? null) : null;
     const masked = mask?.[i] === 1;
     const db = masked ? floorDb : frames.db[i];
-    live.frame(tf, Math.pow(10, db / 20), masked ? null : frames.f0[i], herOut !== null && herOut > -60 ? herOut : null);
+    live.frame(tf, Math.pow(10, db / 20), masked ? null : frames.f0[i], herOut !== null && herOut > -60 ? herOut : null, herOut !== null && herOut > -60 ? herF0 : null);
     if (i % 5 === 4 && interval) interval();
   }
   // drain: let late finals arrive (2 s of wall time on a live socket)

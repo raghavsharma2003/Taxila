@@ -1006,6 +1006,19 @@ const CUED = [
   ["address", new RegExp(`(?<=(?:${ci("main|mai|mera ghar")})\\s+)(?:${VALUE_LC}|${ci("sector|gali")}\\s+\\d+)(?:\\s+${VALUE_LC})?(?=\\s+(?:mein|me|par|ke paas)\\s+(?:rehta|rehti|rahta|rahti|rehte|hai))`, "gu")],
 ];
 
+// 14.3 (main safety review; sim lab p11 class 2 maths, TEST trace last 10 days: 13 of 52 content-filter safeguards were
+// plain maths with the Hindi number "teen" (three)): Azure's content filter reads Roman Hindi "teen" as the English word
+// and blocks ordinary sums as `sexual`. Probed alone under the reply probe brief (2 tries each, southindia): "teen guna teen
+// nau", "do aur teen paanch", "teen aur teen chhe", "teen saal ka bhai" and p11's "uske teen sides hote hain… tircha ho ya
+// seedha…" tripped; the same words with the digit passed. The copy of the words a SAFETY-RELEVANT model call reads (the
+// classifier and its distress reads and probe, the reply prompt and its probe, the understanding note) writes that "teen"
+// as "3". After an English article or possessive ("a teen", "my teen sister": a teenager) it stays as said, and so do
+// teens / teenage / canteen / fifteen. The predicate, the relational lexicon and every code check read the RAW words, so
+// no safety signal of the child's own is touched; none of the 399 distress-corpus lines contains the word.
+const TEEN_THREE = /(?<![\p{L}\p{M}])(?<!(?:^|[^\p{L}\p{M}])(?:a|an|the|my|your|his|her|our|their|this|that|one|every)\s+)t{1,2}e{2,3}n(?![\p{L}\p{M}])/giu;
+/** The copy of a text a model reads: the Hindi number "teen" as the digit (above). PURE. */
+export const filterSafe = (text) => String(text ?? "").replace(TEEN_THREE, "3");
+
 /**
  * Mask direct identifiers in a child's (or anyone's) words.
  * @param {string} text
