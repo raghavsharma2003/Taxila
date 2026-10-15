@@ -43,7 +43,7 @@ import { isBoardFirstRow } from "../stagecraft/board-first.js";
 import { stagecraftPointFor } from "../stagecraft/kernel-point.js";   // STAGECRAFT P4 (ship5 p4-content): null unless the lesson runs a host
 import { relationalSeam } from "../relational/seam.js";
 import { expressiveSeam } from "../voice/expressive/seam.js";
-import { fallbackReply, floorContentOf, safeguardLine, scrubbed, textReply } from "./say.js";
+import { affirmOpenerFix, fallbackReply, floorContentOf, safeguardLine, scrubbed, textReply } from "./say.js";
 import { arbitrate } from "./kernel.js";
 import { proposalsOf, turnStudioOf, whiteboardAskOf, whiteboardIntentOf, requestOfSee, RUNG_ENGINE } from "./propose.js";
 import { INTERACTIVE_ASKS } from "../forge3/compose.js";
@@ -851,6 +851,15 @@ export async function lessonTurn(req, body, hooks = {}) {
     // teacher hoon" from a male sheet is swapped before it is stored or spoken; deterministic, one word).
     const selfGender = characterForState(next)?.pronouns?.subject === "he" ? "m" : "f";
     teacherReply = repairSelfGender(teacherReply, selfGender);
+    // round 5 (14.4, open-r143-affirm-on-no-answer): no opener of agreement on a not-yet / partly-right answer or on no input,
+    // and never a bare Yes before a right answer that said No (brain/say.js affirmOpenerFix; every lane, never a safeguard)
+    if (teacherReply && r.move.kind !== "safeguard") {
+      const tapped = body.chipId ? (state.lastUi?.chips ?? []).find((c) => c.id === body.chipId)?.label ?? "" : "";
+      const af = affirmOpenerFix(teacherReply, { verdict: cls ? uiVerdictOf(cls, target, state).verdict ?? null : null,
+        empty: !String(childText ?? "").trim() && !body.chipId && !moduleOnly, answer: String(childText ?? "").trim() || tapped,
+        name: next.ctx?.firstName ?? null, lang: next.ctx?.lang ?? "hinglish" });
+      if (af.fix) teacherReply = af.text;
+    }
     // round 3 (relational-human): a past-reference she can back (the callback this turn carried, or this lesson's own words:
     // server/relational/memory.js claimProblem) is no memory_claim; one she cannot back is, whatever the regexes saw; a
     // promise to remember always is
