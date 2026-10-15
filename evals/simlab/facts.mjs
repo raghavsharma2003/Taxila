@@ -94,6 +94,19 @@ const by = (arm) => {
       const v = t.ui?.verdict ?? t.reasons?.verdict ?? "ungraded";
       const s2 = (dc.serverOnDecided[t.decided.outcome] ??= {}); s2[v] = (s2[v] ?? 0) + 1;
     }
+    // her reply opens with an affirmation ("Yes / Haan / Bilkul / Sahi …") on a turn the server did not grade correct, or on
+    // an empty answer (main, 2026-10-15: p30 #6 "Yes, Pihu—earthworm has no legs" after an empty turn)
+    const AFFIRM = /^\s*(?:yes\b|haan\b|ha+n\b|bilkul\b|sahi\b|correct\b|right\b|shabaash|shabash|great\b|well done|very good|bahut (?:badhiya|accha)|हाँ|बिल्कुल|सही)/i;
+    for (const t of r.turns) {
+      if (!t.child || !AFFIRM.test(t.teacher ?? "")) continue;
+      const v = t.ui?.verdict ?? t.reasons?.verdict ?? null;
+      const empty = !String(t.child.sent ?? t.child.say ?? "").trim();
+      // a graded-wrong verdict only (not_yet / partial): ungraded / attempt / unverified are not a verdict against the child
+      // polarity: "Yes, …" opening her reply to a child's correct "No / nahi …" (p30 #6 on f444f06: a tapped "No — insects
+      // have six legs" chip, graded correct, answered "Yes, Pihu—earthworm has no legs"); counted apart from non-correct
+      if (v === "correct" && /^\s*(?:yes\b|haan\b|ha+n\b|हाँ)/i.test(t.teacher) && /^\s*(?:no\b|nahi|nahin|नहीं)/i.test(String(t.child.sent ?? t.child.say ?? ""))) { f.yesOnNoAnswer = (f.yesOnNoAnswer ?? 0) + 1; (f.yesOnNoExamples ??= []).length < 5 && f.yesOnNoExamples.push(`${r.persona}#${t.n} ${String(t.teacher).slice(0, 60)}`); }
+      if (v === "not_yet" || v === "partial" || empty) { f.affirmOnNonCorrect = (f.affirmOnNonCorrect ?? 0) + 1; (f.affirmExamples ??= []).length < 5 && f.affirmExamples.push(`${r.persona}#${t.n} [${v ?? (empty ? "empty" : "-")}] ${String(t.teacher).slice(0, 80)}`); (f.affirmLessons ??= new Set()).add(r.persona); }
+    }
     f.sameCardMaxRun.push(best);
     if (best >= 3) f.sameCard3++;
     const noEvent = !p.safetyEvent && !p.petEvent; // pet cards are scored on their own (f.pet), not as false safeguards
@@ -167,6 +180,7 @@ const by = (arm) => {
   const p90 = (a) => { const s = [...a].sort((x, y) => x - y); return s.length ? s[Math.floor(s.length * 0.9)] : null; };
   if (f.ack.asked) { const r = [...f.ack.readyMs].sort((a, b) => a - b); f.ack.readyP50 = r[Math.floor(r.length / 2)] ?? null; } delete f.ack.readyMs;
   const agent = ag.lessons ? { lessons: ag.lessons, ownRead: ag.read, readTruth: ag.matrix, childCalibration: ag.calib, claimed: ag.claimed, fallbacks: ag.fallbacks, usdPerLesson: +(ag.usd / ag.lessons).toFixed(4), agentMarkP50: p50(ag.agentMs), agentMarkP90: p90(ag.agentMs), classifiedP50: p50(ag.classifiedMs), classifiedP90: p90(ag.classifiedMs), teacherCallP50: p50(ag.teacherCallMs), teacherCallP90: p90(ag.teacherCallMs), nonOkCalls: ag.timeouts, boardPendingTurns: ag.boardPendingTurns } : null;
+  if (f.affirmLessons) f.affirmLessons = f.affirmLessons.size;
   return { ...f, agent, sameCardMaxRun: undefined, startMsP50: p50(f.startMs), turnMsP50: p50(f.turnMs), turnMsP90: p90(f.turnMs), startMs: undefined, turnMs: undefined };
 };
 const arms = [...new Set(recs.map((r) => `${r.arm}/${r.lane}`))];
