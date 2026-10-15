@@ -253,6 +253,16 @@ until the child taps the mic. Expected: one server-side retry of the TTS call (i
 floor moves to YOUR TURN with the card as the question, so the lesson goes on in text. Evidence in
 `ui.state floor=idle strip=T5` from 17.8 s to 66.2 s.
 
+## Re-test of stream 2's fixes — claude/r4-content 2183c32d (local TEST, class 6, typed)
+- **D35, fixed:** "number line pe dikhao" 3/3. The board is up by 4.3-8.1 s and stays; it is drawn from her numbers; she
+  never points first (lessons 6de269a3, 69a03162, e8683f7d).
+- **D36, clock fixed:** all 12 numerals (lesson 9c9ad38f).
+- **D36, picture still open:** lesson 42f725b7-a0c2-4571-a07e-02dfe6a171e2.
+  - She says "board par rectangle bana hai: do sides 50 metres aur do sides 30 metres".
+  - The board shows "? × ( length + breadt )" and a struck-through "length + breadt": no rectangle, and the word is clipped.
+  - Shot: `shots/p12-picture-formula.png`.
+- **New P2 (stream 2):** 2 of 3 number-line replies open with the English "Look at the board:" in front of a Hinglish line.
+
 ## After pass 12 — on int/r5-rel143 (local TEST)
 - **D37, client half (fixed):** Home re-reads its plan when the page comes back into view or on focus, and 125 s after a
   "resume" read (`src/child/plan.ts`). Verified on TEST:
