@@ -29,6 +29,24 @@
    "kind": "decision",
    "title": "The agent lane's speculated call ships OFF (TAXILA_AGENT_SPEC=on to enable): the mechanism is correct (7/7 adopted, never a wrong or spoken draft) but saves ~0 ms at the measured prefetch lead and costs an extra model call on turns whose deltas change. Reverse if: the prefetch's lead over the turn grows past classify's time (e.g. a slower STT completion or an earlier stable partial), measured as speculation 'ahead' >= 300 ms at p50.",
    "at": "2026-10-15"
+  },
+  {
+   "id": "dec-r5-lat-ack-trace",
+   "kind": "decision",
+   "title": "14.3.1 (main merged 69542351): the acknowledgement is visible in the flight recorder, codes only. Server: one `ack.decision` row per decision on a lesson (sid = the lesson), built by the pure ackDecisionRow (server/latency/routes.js): kind echo | continuer, or none = one of 21 closed gate reasons (anything else 'other'), decidedMs, shadow, audio, continuerAsked, cohort, ms; never the child's words, the phrase or the echo's token; tier 1, no blob. Device: one `ack.outcome` per decided clip (played | reply_first | late | mismatched | interrupted, afterStopMs). docs/design/round5/results/latency/ack-cohort-query.sql reads them over real-lesson sids only. Why: with the continuer on for the owner cohort, a continuer on a safety turn could not be seen in production. Reverse if: a row is ever found carrying words (then fix the builder, do not drop the trace).",
+   "at": "2026-10-15"
+  },
+  {
+   "id": "ms-r5-lat-continuer-relational-refusals-2026-10-15",
+   "kind": "measurement",
+   "title": "The 44 'relational' continuer refusals on ordinary turns in the sim lab's 63bf58d6 voice arm, each attributed offline: 17 right (time left, tired, stop, bored + game ask, are-you-real, best friend + secret, girlfriend, talk to or complaints about her), 4 reason_given mixed with tired / contest / share (right), about 16 lesson content hitting a word meant for something else (paani/water x5, ghar x3, 'oxygen chhodte', 'empty nahi hoga', 'maza aata hai', 'rabbit is so cute', 'staff thak jaayenge', 'mummy bolti hain', 'poora insaan', Minecraft), 3 not reproducible offline (the transcript differs from the scripted line). The third pass (main agreed, AFTER the owner cohort's day on this gate): paani only as a break, ghar soft, chhod / nahi hoga / thak first-person or giving-up only, maza only with nahi, cute only with a person object; each with a test pair (the over-refused line passes, the meant line still refuses); romance / secrecy / are-you-real untouched; then a fresh sim-lab arm. Expected ~12 of 44 recovered.",
+   "at": "2026-10-15"
+  },
+  {
+   "id": "ms-r5-lat-voicesig-flake-2026-10-15",
+   "kind": "measurement",
+   "title": "tests/p3-voicesig-client 'never delay the turn' failed 1 in 3 alone and under every loaded gate. Not a product delay: its < 200 ms bound timed the harness's speak() (synthesising ~6 s of frames: 169-252 ms on a loaded 4-core container), while the child's final -> the turn request took 2-4 ms. Fixed (3b1e317d, queued for 14.4) to prove ORDER: the slow detector's run is held open by the test and the turn must already be sent while it is pending. Spread: whole file 10/10 alone; under 3 CPU-busy loops the old version failed 4/8 runs, the new one 0/8; full gate 3375/0.",
+   "at": "2026-10-15"
   }
  ],
  "edges": [
@@ -41,6 +59,11 @@
    "src": "dec-r5-lat-agent-spec-off",
    "rel": "measured_by",
    "dst": "ms-r5-lat-agent-spec-probe-2026-10-15"
+  },
+  {
+   "src": "dec-r5-lat-continuer-gate-tuned",
+   "rel": "measured_by",
+   "dst": "ms-r5-lat-continuer-relational-refusals-2026-10-15"
   }
  ]
 }
