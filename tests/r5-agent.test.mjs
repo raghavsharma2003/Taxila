@@ -288,3 +288,37 @@ test("a game ask is looked up BEFORE she speaks: up → she is told it is on scr
   await run(base(), { tools: t3, event: 'the child said (speech recognition confidence 0.90): "1/2"' });
   assert.equal(n3, 0);
 });
+
+test("no promise of a picture that is not being made; a job that started keeps it; honest not-yet stays (sim lab 7740135 effort none)", async () => {
+  const { withoutPicturePromise, clauseGate } = await import("../server/agent/agent.js");
+  assert.equal(withoutPicturePromise("Is fraction ki picture bana rahi hoon; tab tak sochiye, sau tukde kitne honge?"), "Sochiye, sau tukde kitne honge?");
+  assert.equal(withoutPicturePromise("Haan tum, I’ll request a picture of a real circular track; it may take a moment. Constant speed is not zero acceleration."), "Constant speed is not zero acceleration.");
+  assert.equal(withoutPicturePromise("Main ab liti battery ka sketch banwati hoon."), "Main ab liti battery ka sketch banwati hoon.", "nothing else left: the line stands (the Director's checks still apply)");
+  assert.equal(withoutPicturePromise("Sorry, battery ka sketch abhi nahi aaya. Ek sawaal?"), "Sorry, battery ka sketch abhi nahi aaya. Ek sawaal?");
+  assert.equal(withoutPicturePromise("Board par likha hai: aadha."), "Board par likha hai: aadha.");
+  // the model promises without asking the tool: removed; asks the tool and the job starts: kept
+  const promise = "Roti ki photo banwa rahi hoon; tab tak socho, ek tukda kya kehlata hai?";
+  const none = await run(base({ say: promise }));
+  assert.ok(!/photo/i.test(none.say), none.say);
+  assert.match(none.say, /^Socho, ek tukda/);
+  const job = await run(base({ say: promise, picture: "roti" }));
+  assert.match(job.say, /photo banwa rahi hoon/);
+  // streamed: she speaks before the tool runs, so no clause promises a picture
+  const g = clauseGate({ verdict: "correct", screen: { on: "board" }, lane: "voice" });
+  assert.deepEqual(g("Roti ki photo banwa rahi hoon,"), { ok: true, skip: true });
+  assert.equal(g("ek tukda kya kehlata hai?").clause, "ek tukda kya kehlata hai?");
+});
+
+test("a new question with no page of its own clears an earlier page that shares nothing with it; a related page stays (sim lab 7740135)", async () => {
+  const up = (texts) => { const t = fakeTools(); t.up = { ok: true, on: "board", words: `written on it: ${texts.join("; ")}`, texts, numbers: [], pageId: "p0" }; return t; };
+  const stale = up(["Ghaas → Hiran → Sher"]);
+  const a = await run(base({ intent: "practice", say: "Ab ek naya sawaal.", pose_item: "i3" }), { tools: stale, state: { activeItemId: "i1" } });
+  assert.deepEqual(stale.calls.map((c) => c[0]), ["clear"]);
+  assert.equal(a.cleared, true);
+  const related = up(["1/2 aur 1/3", "kaun bada?"]);
+  await run(base({ intent: "practice", say: "Ab ek naya sawaal.", pose_item: "i3" }), { tools: related, state: { activeItemId: "i1" } });
+  assert.deepEqual(related.calls, [], "a page with the question's numbers stays");
+  const same = up(["Ghaas → Hiran → Sher"]);
+  await run(base({ intent: "practice", say: "Phir se socho.", pose_item: "i1" }), { tools: same, state: { activeItemId: "i1" } });
+  assert.deepEqual(same.calls, [], "the same question keeps its page");
+});

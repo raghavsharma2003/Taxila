@@ -100,12 +100,39 @@ export function withoutGamePromise(say) {
   return kept.length && kept.length !== parts.length ? kept.join("").trim() : String(say ?? "");
 }
 
+const PICTURE_PROMISE = /(?:photo|foto|tasveer|tasvir|picture|image|sketch|chitra|drawing|फ़ोटो|फोटो|तस्वीर|चित्र)[^.!?।]*(?:banwa|banva|banaa?\s*(?:rahi|raha|ti|ungi|oongi|deti)|ban\s*(?:rahi|raha|jaay?egi|jayegi)|la\s*rahi|laa\s*rahi|mangwa|request|making|make|bring|get\s+you|aayegi|aa\s*rahi|aa\s*jaayegi|bhej)|(?:banwa|banva|mangwa|request|i(?:'ll|\s+will)\s+(?:make|draw|get|bring)|i'?m\s+making|let\s+me\s+(?:make|get))[^.!?।]*(?:photo|foto|tasveer|tasvir|picture|image|sketch|chitra|drawing|फोटो|तस्वीर)/iu;
+const WAIT_ONLY = /^(?:it\s+(?:may|will|might)\s+take\s+a\s+(?:moment|minute|few\s+seconds)|(?:ismein|isme|banne\s+mein|usmein)?\s*(?:thoda|kuch)\s+(?:waqt|samay|pal|der)\s+(?:lagega|lagegi|lagenge))[.!।;]*$/iu;
+const NOT_PROMISE = /(?:^|[^\p{L}])(?:nahi|nahin|nahīn|not|couldn'?t|can'?t|cannot|sorry|नहीं)(?![\p{L}])/iu;
+/**
+ * Her line without a promise of a picture or sketch that is not being made (sim lab 7740135 effort none: "photo banwa rahi
+ * hoon" and "battery ka sketch banwati hoon" turn after turn, nothing ever came; most of those turns started no job). An
+ * honest "abhi nahi aaya, sorry" stays. PURE.
+ */
+export function withoutPicturePromise(say) {
+  const text = String(say ?? "");
+  const parts = text.match(/[^.!?।;]+[.!?।;]*\s*/g) ?? [];
+  let cut = false;
+  const kept = parts.filter((p) => { const drop = PICTURE_PROMISE.test(p) && !NOT_PROMISE.test(p); cut ||= drop; return !drop; })
+    .filter((p) => !(cut && WAIT_ONLY.test(p.trim())));
+  if (!cut || !kept.length) return text;
+  const out = kept.join("").replace(/(^|[.!?।;]\s*)(?:(?:tab\s+tak(?:\s+ke\s+liye)?|meanwhile)[,\s]+)?(\p{L})/giu, (m, lead, c, at) => (at === 0 || /tab|meanwhile/i.test(m) ? `${lead}${c.toUpperCase()}` : `${lead}${c}`))
+    .trim().replace(/;\s*$/, ".");
+  return out || text;
+}
+
 const INTERNALS = /(?:^|[^\p{L}])(?:card\s+(?:ka|ke|ki|par|pe)\s+(?:check|jaanch|jawab|answer)|card'?s\s+check|check\s+(?:isse|se)\s+match|match\s+nahi\s+hua|verified\s+grade|the\s+grade|grade\s+(?:ne|mein|says)|harness|answer\s+key|key\s+(?:se|ke\s+saath)\s+match|system\s+(?:ne|says|ke\s+hisaab)|the\s+checker|checker\s+(?:ne|says))(?![\p{L}])/iu;
 /** Her line without sentences that voice the harness (the card's check, the grade, the key). PURE. */
 export function withoutInternals(say) {
   const parts = String(say ?? "").match(/[^.!?।]+[.!?।]*\s*/g) ?? [];
   const kept = parts.filter((p) => !INTERNALS.test(p));
   return kept.length && kept.length !== parts.length ? kept.join("").trim() : String(say ?? "");
+}
+
+const WORDS = (t) => new Set(String(t ?? "").toLowerCase().split(/[^\p{L}\p{N}]+/u).filter((w) => w.length >= 3 || /^\d+$/.test(w)));
+/** Does the page on screen share a content word (or a number) with the item she is posing? PURE. */
+export function sharesWords(texts, item) {
+  const page = WORDS(texts.join(" "));
+  return [...WORDS([item?.prompt_en, item?.prompt_hi, item?.prompt].filter(Boolean).join(" "))].some((w) => page.has(w));
 }
 
 /** An async queue of the model's raw JSON deltas (pushed by chatStream's onDelta, read by sayDeltasOf). */
@@ -141,6 +168,8 @@ export function clauseGate({ verdict = null, learner = {}, noGame = false, scree
     if (INTERNALS.test(c)) return { ok: true, skip: true };
     if (!understood && MASTERY.test(c) && !q) return { ok: true, skip: true };
     if (noGame && GAME_PROMISE.test(c) && !/bolkar|spoken|zubani/i.test(c)) return { ok: true, skip: true };
+    // she speaks before her actions run: whether a picture job starts is not known yet, so no clause promises one
+    if (PICTURE_PROMISE.test(c) && !NOT_PROMISE.test(c) && !q) return { ok: true, skip: true };
     if (!up && (pointsAtScreen(c) || SHOW_CLAIM.test(c)) && !q) return { ok: true, skip: true };
     if (!c.trim()) return { ok: true, skip: true };
     return { ok: true, clause: c };
@@ -237,6 +266,14 @@ export async function agentTurn({ state, kit, event, silent = false, verdict = n
     const t = (() => { try { return tools.picture(lessonId, clip(out.picture, 40)); } catch (e) { return { ok: false, refused: { why: String(e?.message ?? e).slice(0, 60) } }; } })();
     picture = t;
     notes.push(t?.ok && t.job ? `picture job ${clip(out.picture, 40)}` : `picture refused: ${clip(t?.refused?.why, 60)}`);
+  }
+  if (!(picture?.ok && picture.job) && !(out.board?.action === "show" && out.board.kind === "draw" && unconfirmed && !silent)) {
+    const held = withoutPicturePromise(say); if (held !== say) { say = held; notes.push("picture promise removed"); }
+  }
+  // a new question with no page of its own: a page up from earlier that shares no content word with it is cleared, so the
+  // screen never shows one thing while she asks about another (sim lab 7740135: a stale page under a new question, 20+ /64)
+  if (!silent && item && item.id !== state.activeItemId && (!out.board || out.board.action === "keep") && !game && screen?.on === "board" && !sharesWords(screen.texts ?? [], item)) {
+    try { screen = tools.clear(lessonId); cleared = true; notes.push("stale page cleared"); } catch { /* the page stays */ }
   }
   // ── her line, held to the verified grade: no praise or "sahi" on an answer the key says is wrong or only partly right
   // (sim lab d6f93e7: misread_wrong_as_right 19/64, "Haan, 60,000 sahi chuna" while the misconception was live) ──
