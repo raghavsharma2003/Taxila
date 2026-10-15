@@ -367,3 +367,24 @@ test("D5 review: a stream whose browser stopped sending audio ends after D5_IDLE
   assert.deepEqual(f.closed(), [1001, "client_idle"]);
   assert.equal(f.ended().reason, "client_idle");
 });
+
+test("D5 review follow-up: an idle-ended stream frees its guardian slot (no stale allowD5 count); the resumed reconnect opens", async () => {
+  const { D5_CONCURRENT_PER_GUARDIAN } = await import("../server/duplex/d5route.js");
+  const { env: _e, ...authorize } = deps({ child: async () => ({ guardian: { id: "g-idle", email: "o@x" }, child: { id: "c1" } }) });
+  const open = async () => { const s = new FakeSocket(); const r = await handleD5Upgrade(upgradeReq(), s, Buffer.alloc(0), { env: ENV, authorize, openUpstream: () => ({ send() {}, close() {} }) }); return { s, r }; };
+  const live = [];
+  for (let i = 0; i < D5_CONCURRENT_PER_GUARDIAN; i++) live.push(await open());
+  assert.ok(live.every((x) => x.r instanceof VoiceLiveRelay));
+  const refused = await open();
+  assert.match(refused.s.text, /^HTTP\/1\.1 429/, "at the concurrent cap");
+  // the paused lesson's stream ends on client_idle (the relay's own idle path), then the client's socket closes too
+  live[0].r.end(1001, "client_idle");
+  live[0].s.emit("close");
+  const back = await open();
+  assert.ok(back.r instanceof VoiceLiveRelay, "the reconnect on resume is allowed: the idle stream's slot was freed exactly once");
+  for (const x of [live[1], back]) x.r.end(1000, "test");
+  // and nothing went negative: two more fit again
+  const a = await open(), b = await open();
+  assert.ok(a.r instanceof VoiceLiveRelay && b.r instanceof VoiceLiveRelay);
+  a.r.end(1000, "t"); b.r.end(1000, "t");
+});

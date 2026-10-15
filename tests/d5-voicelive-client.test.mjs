@@ -454,3 +454,32 @@ test("D5 EOT step 2: an empty final on a closed question re-asks D5_EMPTY_FINAL_
   const after = c[0] - finalAt;
   assert.ok(after >= D5_EMPTY_FINAL_REASK_MS - 20 && after <= D5_EMPTY_FINAL_REASK_MS + 120, `${after} ms after the empty final`);
 });
+
+test("D5 review follow-up: an idle-closed stream (no audio >30 s: phone locked) reconnects only once audio can flow, then cleanly", async () => {
+  FakeWS.behaviour = FakeWS.up;
+  const { env, link } = await d5Link();
+  try {
+    const ctx = link["ctx"];
+    const listeners = new Set();
+    ctx.state = "suspended";
+    ctx.addEventListener = (k, fn) => { if (k === "statechange") listeners.add(fn); };
+    ctx.removeEventListener = (k, fn) => { if (k === "statechange") listeners.delete(fn); };
+    const engine = link.duplex;
+    const first = FakeWS.all.at(-1);
+    // the server ends the idle stream: its reason, then the close
+    first.server({ type: "d5.closed", reason: "client_idle" });
+    first.readyState = 3;
+    first.onclose?.({ code: 1001 });
+    await sleep(1500);
+    assert.equal(FakeWS.all.at(-1), first, "no reconnect while the context is suspended (it would idle out again)");
+    assert.ok(listeners.size >= 1, "waiting for the context to run");
+    // the child comes back: the context runs again
+    ctx.state = "running";
+    for (const fn of [...listeners]) fn();
+    for (const t0 = Date.now(); Date.now() - t0 < 4000 && !(FakeWS.all.at(-1) !== first && link["d5"]);) await sleep(10);
+    assert.notEqual(FakeWS.all.at(-1), first, "one new stream");
+    assert.equal(FakeWS.all.length, 2, "exactly one reconnect");
+    assert.equal(listeners.size, 0, "the wait is cleared");
+    assert.equal(link.duplex, engine, "the same lane: the engine is kept");
+  } finally { link.close(); env.restore(); }
+});

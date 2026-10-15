@@ -71,6 +71,18 @@
       "kind": "measurement",
       "at": "2026-10-15",
       "title": "EOT step 4, MAI-Transcribe inside Voice Live (centralindia, api 2026-07-15), small n. Session probe: every MAI model refuses two locales (\"MAI Transcribe supports at most one locale\": the earlier trials hung in their retries on this, not a timeout of the model); mai-transcribe-2-streaming is \"not supported in this region\" (centralindia), so no partials are available; mai-transcribe-2 opens with no locale (multilingual) or hi-IN. Owner variant, 5 closed answers (3 where azure-speech returned EMPTY), Voice Live silence 200, same audio: mai-transcribe-2 returned words on all 3 empties (\"तीस दीदी\" right, value 30; \"सात है ना\" → \"साथ है ना\" and \"छह faces दीदी\" → \"Chair faces DD\": the value lost), and its finals land 250-410 ms LATER than azure-speech (speech_stopped the same ±45 ms). For end of turn that is worse: every closed answer +~300 ms, and 2 of 3 recovered empties still carry no value. Not adopted for EOT; noted for comprehension recall (fewer empty turns) if the value misreads can be handled."
+    },
+    {
+      "id": "ms-r5-d5-mai-tx2-stream-southindia-2026-10-15",
+      "kind": "measurement",
+      "at": "2026-10-15",
+      "title": "MAI-Transcribe-2-Streaming (southindia account taxila-ai-southindia; Microsoft first-party, sold direct by Azure) as Voice Live's in-session ASR. It is offered by Voice Live in southindia (not centralindia); locale none (multilingual) or a 2-letter code (\"hi\"), never \"hi-IN\". Owner variant, Voice Live silence 200, gpt-4.1-mini session, the same 10 closed answers (n=10, small by capacity 10), azure-speech in the same region as control: final after Voice Live speech_stopped p50 53 ms (MAI) vs 254 ms (azure-speech); empty finals 0/10 vs 3/10; partial deltas 0 vs 0 (no partials from either, so no decide-before-speech_stopped). Values right 7/10 vs 7/10, but MAI read one value WRONG (\"पंद्रह सेंटीमीटर\" → \"100 cm.\"; azure-speech \"15 सेंटीमीटर\") and lost two (\"सात\"→\"साथ\", \"छह\"→\"Chair\") where azure-speech returned empty. A wrong value is a truth risk (a verdict on a value the child never said), an empty is a re-ask: not adopted at this n; deciding number = the wrong-value rate at n >= 40 per ASR."
+    },
+    {
+      "id": "ms-r5-d5-eot-floor-2026-10-15",
+      "kind": "measurement",
+      "at": "2026-10-15",
+      "title": "The measured end-of-turn FLOOR on lane D5 (main accepted 2026-10-15: 1,100 ms is the number we report; 900 is not reachable with this ear). Anatomy, owner harness d5v200, 34 after-her turns: ear floor ~730 ms (Voice Live speech_stopped ≈ 200 ms silence + ~460 ms event latency, final +60-80 ms, no partials) → fastest commits 730-750; empty finals re-ask at ~1,100 (final + 300); word search and short explanations ~1,080 (designed patience); open explanations ~3.0 s by design (12/34). EOT p50 1,100, p90 3,400; closed answers 920."
     }
   ],
   "edges": [
@@ -121,6 +133,16 @@
     },
     {
       "src": "ms-r5-d5-mai-transcribe-2026-10-15",
+      "rel": "part_of",
+      "dst": "ms-r5-d5-eot-steps-2026-10-15"
+    },
+    {
+      "src": "ms-r5-d5-eot-floor-2026-10-15",
+      "rel": "part_of",
+      "dst": "ms-r5-d5-eot-steps-2026-10-15"
+    },
+    {
+      "src": "ms-r5-d5-mai-tx2-stream-southindia-2026-10-15",
       "rel": "part_of",
       "dst": "ms-r5-d5-eot-steps-2026-10-15"
     }
