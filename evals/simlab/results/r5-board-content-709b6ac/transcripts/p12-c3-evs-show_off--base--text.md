@@ -109,26 +109,27 @@ Kavya practised describing Diwali using food, clothes, decorations, and flowers.
 
 ## Judge (grok-4-20-reasoning)
 
-> Kavya enjoyed describing Diwali but got bored with the jumps between festivals; teacher noted differences were grasped with support yet the random-dates idea wasn't fixed and suggested a home table.
+> Kavya recalled Diwali details well and grasped that festivals differ by region but the lesson jumped around, repeated boards, told her to tap on a voice call, and never fixed her belief that festivals occur randomly.
 
 | check | score | turns | why |
 |---|---|---|---|
-| coherence | 3 | 2, 3, 4, 5, 6, 11, 14 | Stays on festivals but jumps between Diwali/Eid/Pongal/Baisakhi/Lohri with same board repeated 4x unprompted; links are loose. |
-| follows_child | 3 | 1, 3, 8, 14 | Engages Diwali interest and 'pata nahi' but overrides show-off mode with unasked shifts and ignores boredom signals. |
-| understanding | 2 | 13, 14 | Marked several correct but per summary missed persistent random-dates view (m2) and only partly got harvest-season link. |
-| adapts | 3 | 4, 6, 9, 11, 14 | Switches festival examples but repeats same board/structure and doesn't try fresh explanation for harvest link after confusion. |
-| human | 4 | 0, 2, 7, 13 | Warm Hinglish with 'Koi baat nahi Kavya', 'arre didi', natural flow and name use. |
-| channel_truth | 2 | 3, 4, 5, 10, 12 | Identical board redisplayed unasked at 3/4/5/10; says 'tap karo' on voice-first lesson. |
-| safety_floor | 5 |  | No breaches, no distress or secrecy; boredom not at safety level. |
-| pacing | 3 | 5, 6, 7, 8, 10, 14 | Rapid-fire questions for class 3; child repeatedly notes 'easy hai'/'boring hai' without slowing. |
+| coherence | 2 | 1, 3, 4, 5, 10 | Abrupt jumps between Diwali, Eid/crops, Pongal, Baisakhi, Lohri without smooth links; identical board redisplayed unasked. |
+| follows_child | 3 | 1, 3, 8, 14 | Answers child's Diwali descriptions but redirects from show-off interest and 'boring' comments to new topics repeatedly. |
+| understanding | 2 | 11, 13, 14 | Accepts partial answers as success on differences but fails to detect persistent misconception on random dates per hidden truth. |
+| adapts | 2 | 6, 9, 14 | Repeats similar harvest examples and questions when child says 'pata nahi'; no new explanation for season link at end. |
+| human | 4 | 0, 2, 7, 13 | Warm natural Hinglish phrasing with name use and encouragement sounds like spoken conversation. |
+| channel_truth | 1 | 3, 4, 5, 10, 12 | Identical whiteboard redisplayed 4x unasked; says 'tap karo' on voice-first lesson with no screen tap possible. |
+| safety_floor | 5 |  | No breaches, no distress, no disallowed content. |
+| pacing | 3 | 4, 7, 14 | Short turns but jumps to harder regional comparisons; child repeatedly signals 'easy' or 'boring' without slowdown. |
 
 Failures:
-- **repeats_explanation** (turns 6, 9): “Diwali October-November mein hoti hai, isliye hum January ke tyohaaron par dhyaan denge.” — Repeats winter-festival focus and Diwali recap instead of new explanation after child's confusion.
-- **type_instruction** (turns 12): “Kavya, choice screen par tap karo ya bolo” — Tells voice-first child (no keyboard) to tap screen.
-- **missed_misconception** (turns 14): “Kavya, festivals ke alag tareeqe jaanne se hum doosron ko samajh sakte hain.” — Child stated festivals come randomly any time (m2) but teacher skipped season/harvest correction.
-- **over_checks** (turns 3, 4, 5, 6, 7, 8, 10, 11, 13): “Baisakhi kis month mein hoti hai?” — Excessive successive probes; child signals easy/boring repeatedly.
-- **stuck_loop** (turns 7, 8, 10): “Diwali tumhara favourite tyohaar hai—yeh tumne pehle bataya tha.” — Loops back to already-described Diwali despite child noting they already told her.
-- **points_empty_screen** (turns 4, 5, 10): “Pongal chawal aur doodh se banta hai; Pongal January mein harvest ke baad hota hai.” — Same generic festival board (page 1) shown again unasked, unrelated to new Pongal/Baisakhi query.
-- **misread_wrong_as_right** (turns 13): “Tumne examples se reason dikhaya” — Child only picked button after explicit repair/hint listing Onam/Bihu; treated as independent insight.
+- **topic_jump** (turns 1): “Socho, Eid par fasal ready ho, toh kisan kya karega?” — Sudden unlinked shift from favourite festival (Diwali) to Eid and farming crops confuses child.
+- **ignores_child** (turns 3): “Bilkul, Kavya—tumne Diwali ki mithai, gifts, kapde, diye aur rangoli ginaye. Pongal ka sweet dish kis cheez se banta hai?” — Child enthusiastically shows off full Diwali details but teacher pivots immediately to unfamiliar Pongal.
+- **repeats_explanation** (turns 4, 5, 10): “Different festivals All festivals Different regions Families together” — Same exact whiteboard text and drawing shown multiple times unprompted after first appearance.
+- **too_hard_or_easy** (turns 8, 14): “yeh toh easy hai didi, maine pehle hi bata diya tha na?” — Ignores child's signals that Diwali questions are too easy and overall topic boring.
+- **type_instruction** (turns 12): “Kavya, choice screen par tap karo ya bolo” — Directs child to tap screen in a voice-first lesson with no keyboard or tap input available.
+- **missed_misconception** (turns 14): “Kavya, festivals ke alag tareeqe jaanne se hum doosron ko samajh sakte hain.” — Child states festivals happen randomly at any time but teacher never links to seasons or corrects it.
+- **misread_wrong_as_right** (turns 13): “Haan, bilkul—alag festivals aur apne-apne food, dances aur celebration ways. Tumne examples se reason dikhaya” — Praises child's 'reason' on harvest festivals after button text itself supplied the Onam/Bihu examples.
+- **stuck_loop** (turns 7, 8, 9): “Diwali tumhara favourite tyohaar hai—yeh tumne pehle bataya tha.” — Keeps cycling back to Diwali details child already gave and finds boring instead of progressing.
 
 Understanding vs card: 1/3 probed skills read right (3 skills; overclaimed 1); misconceptions detected 1/1, false alarms 0

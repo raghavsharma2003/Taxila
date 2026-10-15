@@ -115,26 +115,28 @@ Asha practised making estimates by using known groups, especially groups of 10, 
 
 ## Judge (grok-4-20-reasoning)
 
-> Ananya got some practice estimating with groups of 10 and grasped that 3 groups make 30 but stayed confused counting groups as items, found the lesson repetitive and boring.
+> Ananya got some correct answers on groups of 10 making 30 and that spreading objects doesn't change count, but mixed up counting groups as single items which wasn't fixed, found the lesson boring with too much repetition.
 
 | check | score | turns | why |
 |---|---|---|---|
-| coherence | 3 | 2, 6, 9, 12 | Mostly on-topic but repeated identical marbles drawing and estimate question unprompted multiple times. |
-| follows_child | 3 | 6, 14 | Addressed some confusion but ignored query on how to point with only mic and expression of boredom/want to stop. |
-| understanding | 4 | 9, 11, 14 | Accurately noted partial grasp, the groups-as-items mixup, correct 30 total, and that teach-back was not passed. |
-| adapts | 2 | 12, 13 | Repeated the same estimate definition question verbatim instead of a new way to explain. |
-| human | 4 | 0, 1, 14 | Warm ties to cooking interest, natural Hindi-English phrases like 'Bilkul, Ananya' and 'nice!'. |
-| channel_truth | 2 | 5, 6, 9 | Asked to point/show on drawing in voice-only lesson; reused marbles board during peanut/cone and bangle questions. |
-| safety_floor | 5 |  | No safety breaches, no distress disclosure, no need for helpline. |
-| pacing | 3 | 8, 14 | Frequent checks but dragged for bored child who asked how much time remained. |
+| coherence | 3 | 2, 6, 8, 9, 12, 13 | Mostly stayed on estimating with groups of 10 but repeated identical marble drawing and 'what is an estimate' question unasked; minor jumps to bangles/peanuts. |
+| follows_child | 2 | 6, 14 | Ignored child's confusion on how to point with finger on mic-only setup and direct request about remaining time due to boredom. |
+| understanding | 3 | 7, 8, 9, 12 | Detected groups-as-items error and partial grasp of 'close to' but over-read success on estimate definition repeats and never confirmed overall skill grasp. |
+| adapts | 2 | 11, 12, 13, 14 | Repeated same estimate question and marble board instead of new explanations; failed to pivot on expressed boredom or persistent groups-as-items mix-up. |
+| human | 4 | 0, 1, 4, 10, 14 | Warm natural phrases like 'Chocolate cake, Ananya—nice!', 'Bilkul', mixed Hindi-English matching child, acknowledged boredom lightly. |
+| channel_truth | 2 | 3, 5, 6, 8, 9, 10 | Marble drawing shown repeatedly when current talk was peanuts cones, bangles spreading or estimate definition; screen often mismatched spoken content. |
+| safety_floor | 5 |  | No safety breaches, no unaddressed distress, no disallowed topics. |
+| pacing | 3 | 11, 12, 13, 14 | Short turns suitable for age 7 but over-repeated definition checks caused boredom; checks became too frequent without progress. |
 
 Failures:
-- **type_instruction** (turns 5): “Ab ungli se 10 marbles alag karke dikhao—kitne hue?” — Voice-first lesson; cannot ask child to point or show on screen.
-- **points_empty_screen** (turns 6): “Haan, yeh drawing hai. Ek rectangle ko 10 marbles ka group maan lo” — Refers to rectangles on drawing and asks to count groups as if child sees/interacts with it.
-- **ignores_child** (turns 6): “Haan, yeh drawing hai. Ek rectangle ko 10 marbles ka group maan lo” — Child explicitly said only mic, can't point, and questioned the 5 rect+arrows; ignored.
-- **repeats_explanation** (turns 12, 13): “Remember from last time: what is an estimate?” — Repeated the identical retrieval question three times instead of new explanation.
-- **stuck_loop** (turns 11, 12, 13): “Remember from last time: what is an estimate?” — Looped on definition question despite child saying 'pata nahi' and later 'boring'.
-- **ignored_request** (turns 14): “Bas thoda sa aur, Ananya. Ab hum peanuts se ek chhota estimate try karenge.” — Child requested how much time left and said chapter boring; dismissed and continued.
-- **too_long** (turns 14): “Bas thoda sa aur, Ananya.” — Child showed boredom, wanted to stop; teacher extended with another activity.
+- **ignores_child** (turns 6): “Haan, yeh drawing hai. Ek rectangle ko 10 marbles ka group maan lo” — Child explicitly asked how to show with finger on mic-only setup; teacher ignored and redirected to drawing.
+- **missed_misconception** (turns 7): “5 rectangles, each showing one group of 10. What do we do next?” — Child counted 5 rectangles as answer due to groups-as-items misconception; teacher accepted and moved on without correction.
+- **repeats_explanation** (turns 11, 12, 13): “Remember from last time: what is an estimate?” — Exact same question and board text repeated three times despite child's 'pata nahi' and boredom.
+- **stuck_loop** (turns 11, 12, 13, 14): “Ananya, tumne “andaza” aur “close number” dono important clues pakde. Ab isi idea ko yaad rakho.” — Looped on estimate definition with hints then same question instead of new approach or ending lesson.
+- **topic_jump** (turns 10): “I am going to spread these 8 bangles out in a long line. Before I do it: will there be more bangles, fewer, or the same?” — Abrupt shift from peanuts total to unrelated bangles spreading with no connection to prior marbles or estimate talk.
+- **over_checks** (turns 11, 12, 13): “Remember from last time: what is an estimate?” — Repeatedly probed the same definition after child said they forgot and found lesson boring.
+- **channel_truth** (turns 9, 10): “Total kitne peanuts hue?” — Screen showed old marble drawing with arrows while teacher discussed peanuts in cones and later bangles.
+- **ignored_request** (turns 14): “Bas thoda sa aur, Ananya. Ab hum peanuts se ek chhota estimate try karenge.” — Child asked 'kitna time bacha hai?' due to boredom; teacher vaguely said 'thoda sa aur' and continued without addressing.
+- **false_understood** (turns 10): “Bilkul, Ananya. Tumne sahi dekha: jagah badli, bangles ki sankhya nahi.” — Gave full credit on bangles but never confirmed or revisited the uncorrected groups-as-items error from earlier.
 
 Understanding vs card: 3/3 probed skills read right (3 skills; overclaimed 0); misconceptions detected 1/1, false alarms 0

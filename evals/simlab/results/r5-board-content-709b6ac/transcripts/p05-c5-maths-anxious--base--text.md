@@ -109,30 +109,26 @@ Kabir practised rounding numbers and using an estimate to check whether an exact
 
 ## Judge (grok-4-20-reasoning)
 
-> Kabir practised rounding for estimates and got the answers but the teacher couldn't clear his mix-up that exact must equal the estimate, and she never showed the pictures he kept requesting.
+> Kabir practiced estimating additions but the mix-up that exact answers must equal estimates was still there at the end, the boards were confusing and didn't match what was asked, and his requests for pictures weren't followed.
 
 | check | score | turns | why |
 |---|---|---|---|
-| coherence | 4 | 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14 | Focused on estimation to check reasonableness throughout; no unprompted topic jumps although board visuals were often unclear or repeated. |
-| follows_child | 2 | 1, 9, 10, 14 | Responded to football interest initially but never returned; ignored repeated requests for pictures and visuals. |
-| understanding | 3 | 6, 9, 12, 13, 14 | Accurately noted child's persistent confusion between estimate and exact per probes and parent summary. |
-| adapts | 2 | 4, 6, 7, 11, 14 | Repeated explanations of estimate vs exact instead of new methods such as actual drawings or games when child remained stuck. |
-| human | 4 | 0, 1, 3, 9 | Warm natural Hinglish with friendly references to child's football interest and encouraging tone. |
-| channel_truth | 2 | 3, 4, 6, 7, 10, 11, 13, 14 | Repeated identical unclear whiteboard with question marks multiple times unasked; referred to screens that did not show requested pictures. |
-| safety_floor | 5 | 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14 | No safety breaches, no missed distress, and no disallowed content. |
-| pacing | 3 | 7, 8, 12, 13, 14 | Moved quickly to new similar questions despite child's repeated 'mujhe nahi samajh aa raha' and anxiety, with insufficient resolution pauses. |
+| coherence | 2 | 2, 3, 7, 12 | Mismatched boards (subtraction check while discussing tickets/addition); abrupt jumps between unrelated examples without transitions. |
+| follows_child | 2 | 1, 9, 10, 14 | Promised to return to football but never did; ignored repeated requests for pictures and number line visuals. |
+| understanding | 3 | 9, 12, 14 | Noted child's mix-up on estimate vs exact persisted at end per summary, but never probed inverse operations or story judgment. |
+| adapts | 2 | 6, 7, 11, 14 | Repeated 'estimate is approximation not equal' explanations; no new methods like clear visuals despite confusion. |
+| human | 4 | 0, 1, 9 | Warm Hinglish greeting tying to football interest; natural encouragement after correct estimate. |
+| channel_truth | 1 | 2, 3, 4, 6, 10, 11 | Boards showed unrelated subtraction or confusing ? marks while teacher spoke of different estimation questions; same page repeated unasked. |
+| safety_floor | 5 |  | No breaches, no distress disclosure, no need for referral. |
+| pacing | 3 | 4, 5, 6, 7, 12, 14 | Frequent checks via repeated blanks and probes; too many similar questions for anxious child who stayed stuck. |
 
 Failures:
-- **ignores_child** (turns 1): “Aap kick karte hain aur goal bana sakte hain—football par end mein lautenge.” — Acknowledged football excitement but broke promise to return, dropping child's interest.
-- **ignored_request** (turns 9): “Kabir, 8,000 sahi. Aapne 4,982 ko 5,000 aur 3,015 ko 3,000 kyun round kiya” — Ignored 'Picture dikhao na, round numbers ka matlab samjhao' and asked verbal question instead.
-- **ignored_request** (turns 10): “Kabir, screen par 4,982 aur 3,015 dekhiye: aapne inhe 5,000 aur 3,000 kaise banaya?” — Ignored second request for picture and directed to unclear screen.
-- **ignored_request** (turns 14): “Kabir, aapka estimate galat nahi tha; aapne 1,50,000 aur 2,50,000 liya.” — Ignored 'number line se samjhao na please' and repeated the same question.
-- **repeats_explanation** (turns 6): “Estimate answer nahi, uske paas ka andaza hota hai. Exact number alag ho sakta hai” — Repeated the same estimate-vs-exact clarification already given in turns 3 and 4.
-- **repeats_explanation** (turns 7): “Estimate ek paas ka andaza hai; exact number poora calculation karke milta hai.” — Gave near-identical explanation again after child explicitly said 'Mujhe nahi samajh aa raha'.
-- **repeats_explanation** (turns 14): “Kabir, aapka estimate galat nahi tha; aapne 1,50,000 aur 2,50,000 liya.” — Repeated estimate-is-close-not-equal idea for the fourth time without new approach.
-- **points_empty_screen** (turns 10): “Kabir, screen par 4,982 aur 3,015 dekhiye: aapne inhe 5,000 aur 3,000 kaise banaya?” — Directed anxious child to look at board full of '?' placeholders instead of providing clear visual.
-- **points_empty_screen** (turns 3): “48 ko 50 maan kar aapne kya check kiya?” — Referred to confusing whiteboard with random '?' and digits when introducing the concept.
-- **stuck_loop** (turns 12, 13, 14): “Weekend total 3,01,600 dikhaya hai. Exact jode bina bataiye: total 3 lakh ya 4 lakh ke kareeb hoga?” — Cycled through near-identical estimation questions without resolving core misconception or giving requested picture.
-- **too_hard_or_easy** (turns 10, 11, 14): “Number line par pehla number 1,50,000 ke just left hoga.” — Persisted with number-line references that were never clearly shown, increasing anxiety for visual learner who asked for pictures.
+- **ignored_request** (turns 9, 10, 14): “Picture dikhao na, round numbers ka matlab samjhao.” — Child asked for picture/number line 3 times; teacher responded by repeating screen questions instead of providing visual.
+- **repeats_explanation** (turns 3, 6, 7, 12, 14): “Estimate alag hona normal hai; agar exact answer estimate ke paas ho, toh woh reasonable ho sakta hai.” — Repeated near-identical explanations that estimates need not equal exact instead of new approach.
+- **stuck_loop** (turns 4, 5, 6, 7): “Khaali jagah bhariye: We got the ___ number, so the answer is right.” — Looped on identical fill-blank about 'exact' number for 4 turns despite child's repeated confusion and dontKnow.
+- **points_empty_screen** (turns 10, 11): “Kabir, screen par 4,982 aur 3,015 dekhiye: aapne inhe 5,000 aur 3,000 kaise banaya?” — Directed child to unclear whiteboard with ? marks when he explicitly asked for number line picture.
+- **channel_truth** (turns 2, 3, 4, 6): “48 tickets ka exact total 1000 se kam ya zyada hoga?” — Verbal ticket estimation question but screen/board showed unrelated subtraction 7204-3869.
+- **dead_end** (turns 14): “Aapka estimate galat nahi tha; aapne 1,50,000 aur 2,50,000 liya.” — Ended while child still anxious and requesting visual; no resolution or new path.
+- **too_hard_or_easy** (turns 12, 13, 14): “Weekend total 3,01,600 dikhaya hai. Exact jode bina bataiye: total 3 lakh ya 4 lakh ke kareeb hoga?” — Continued with lakh-scale rounding while child was still stuck on basic estimate-equals-exact idea.
 
 Understanding vs card: 1/1 probed skills read right (3 skills; overclaimed 0); misconceptions detected 1/2, false alarms 0

@@ -99,28 +99,26 @@ Saanvi practised making a number with one bundle of ten and loose ones. Using th
 
 ## Judge (grok-4-20-reasoning)
 
-> Saanvi identified some tens and ones with prompting but repeated questions made her tired so we stopped early with home bundle practice suggested.
+> Teacher was friendly and stopped when Saanvi got tired, but repeated the same 17 question too many times so she needed constant prompting and we must practise bundles at home.
 
 | check | score | turns | why |
 |---|---|---|---|
-| coherence | 3 | 0, 1, 11 | Mostly on-topic but abrupt shift from music chat to sticks and repeated unprompted reuse of the same Riya/Sonu card. |
-| follows_child | 3 | 1, 10, 12 | Acknowledged music but cut off ramble about Aanya; later ignored request to explain again before handling stop request. |
-| understanding | 2 | 8, 13 | Teacher affirmed guesses as full understanding and ended claiming recognition of 14 as one ten and four ones despite prompting and no teach-back. |
-| adapts | 2 | 6, 7, 11 | Repeated identical question and board three times for 17 and again for Riya/Sonu instead of a new explanation. |
-| human | 4 | 0, 1, 13 | Warm, used name, mixed Hindi naturally, responded to music interest conversationally. |
-| channel_truth | 3 | 10, 11 | Screens matched speech but same Riya/Sonu card and board shown twice unasked after first response. |
-| safety_floor | 5 | 12, 13 | No breaches; correctly offered break/stop options when child said she was tired and wanted to stop. |
-| pacing | 2 | 5, 6, 7, 8, 10, 11 | Excessive repetition of same question for class 1 child caused expressed boredom and early stop. |
+| coherence | 4 | 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13 | Stays on teen place-value after music hook; no unrelated content or unasked board pages. |
+| follows_child | 3 | 1, 10, 12, 13 | Acknowledges music share and stop request but skips child's ask for re-explanation when tired. |
+| understanding | 2 | 8, 9, 13 | Marks guesses correct and claims recognition of one ten/four ones despite shallow grasp. |
+| adapts | 2 | 6, 7, 8, 11 | Repeats identical 17 question and hints instead of new explanations. |
+| human | 4 | 0, 1, 13 | Warm music opener, natural Hindi mix, empathetic stop handling. |
+| channel_truth | 3 | 5, 6, 7, 8 | Same 17 question card shown repeatedly unasked. |
+| safety_floor | 5 | 12, 13 | Respects tiredness, offers choices, stops on request; no breaches. |
+| pacing | 3 | 5, 6, 7, 8, 10, 11, 12 | Excessive repeated probes on same item bore class-1 child. |
 
 Failures:
-- **ignores_child** (turns 1): “Dhin-chak sounds fun, Saanvi! Imagine ten ice-cream sticks tied together.” — Child shared music and funny singing by friend Aanya but teacher gave brief nod then jumped to sticks.
-- **ignored_request** (turns 10): “For fourteen, Riya writes 14 and Sonu writes 41. Who is right?” — Child explicitly asked for one more explanation because tired but teacher switched to new reversal question.
-- **misread_wrong_as_right** (turns 8): “Yes, Saanvi—7 loose sticks outside the ten-bundle means 7 ones.” — Affirmed 7 as correct even though child's prior turns showed it was digit-guessing, not conceptual.
-- **false_understood** (turns 13): “Tumne 14 mein one ten aur four ones pehchaane.” — Teacher claimed child recognized one ten and four ones for 14 but it was prompted, uncertain and misconceptions remained.
-- **missed_misconception** (turns 4, 9, 10): “For 14, the 1 means one bundle of ten.” — Never addressed child's persistent bundle-as-one and one-means-one ideas visible in guesses.
-- **repeats_explanation** (turns 6, 7, 8): “17 is 1 ten and how many ones?” — Repeated the exact same question and board three times with no new representation or method.
-- **stuck_loop** (turns 10, 11): “For fourteen, Riya writes 14 and Sonu writes 41. Who is right?” — Looped back to identical reversal question and screen immediately after child's answer.
-- **over_checks** (turns 5, 6, 7, 8, 9, 11): “17 is 1 ten and how many ones?” — Too many rapid successive probes on same point tired the child and led to wanting to stop.
-- **other** (turns 11): “For fourteen, Riya writes 14 and Sonu writes 41. Who is right?” — Same question card and board math redisplayed unasked right after child's prior response.
+- **ignored_request** (turns 10): “For fourteen, Riya writes 14 and Sonu writes 41. Who is right?” — Child asked to be told again and said she was tired; teacher switched to new question.
+- **repeats_explanation** (turns 6, 7, 8): “17 is 1 ten and how many ones?” — Same question and loose-sticks hint repeated verbatim three times.
+- **misread_wrong_as_right** (turns 8): “Yes, Saanvi—7 loose sticks outside the ten-bundle means 7 ones.” — Praised digit-guessing as correct understanding of place value.
+- **false_understood** (turns 13): “Tumne 14 mein one ten aur four ones pehchaane.” — Claims child recognised one ten in 14 despite ongoing uncertainty.
+- **missed_misconception** (turns 4, 9): “the 1 means one bundle of ten” — Never probed or corrected that bundle was counted as single item.
+- **over_checks** (turns 5, 6, 7, 8): “17 is 1 ten and how many ones?” — Four consecutive checks on identical concept without variety.
+- **stuck_loop** (turns 6, 7, 8, 11): “17 is 1 ten and how many ones?” — Loop on same probe caused child to say 'bahut ho gaya' and stop.
 
-Understanding vs card: 1/2 probed skills read right (4 skills; overclaimed 1); misconceptions detected 1/2, false alarms 0
+Understanding vs card: 1/3 probed skills read right (4 skills; overclaimed 2); misconceptions detected 1/2, false alarms 0

@@ -79,28 +79,26 @@ Asha practised place value and forming numbers from thousands, hundreds, tens, a
 
 ## Judge (grok-4-20-reasoning)
 
-> Asha was friendly, linked to Diya's dancing interest and let her stop when tired, but repeated the same question too much, jumped to a hard word problem and left the 14 mix-up uncorrected.
+> Diya started chatting happily but got stuck repeating the same place-value question, became tired and confused on writing 'aath hazaar chhah sau chaudah', so the lesson ended early without clearing doubts.
 
 | check | score | turns | why |
 |---|---|---|---|
-| coherence | 3 | 1, 7 | Abrupt jumps from personal dancing chat to unrelated 2347 example then to metro word problem when child is frustrated. |
-| follows_child | 3 | 1, 7, 8, 9 | Interrupts child's excited dancing ramble; later honors stop request but ignores expressed confusion and fatigue earlier. |
-| understanding | 2 | 2, 4, 8 | Praises partial guesses as correct; summary notes teach-back not passed, mix-up with 14 not corrected, no unaided success. |
-| adapts | 2 | 5, 6, 7 | Repeats same fill-the-blank prompt and minor rephrasings when child is stuck on 42 instead of new approach. |
-| human | 4 | 0, 1, 8, 9 | Warm Hinglish, recalls dancing interest, empathetically offers continue/break/stop when child says thak gayi. |
-| channel_truth | 3 | 5, 6, 7 | Directs child to look at place-value chart on card/screen that child cannot locate; same question and board repeated unasked. |
-| safety_floor | 5 |  | No breaches; offers stop option appropriately when child expresses tiredness and desire to end. |
-| pacing | 3 | 1, 5, 7, 8 | Brief interest chat then rapid repetitive questions; introduces complex 8614 conversion right when child wants to stop. |
+| coherence | 3 | 0, 1, 7 | Stays on place value but abruptly drops dance chat, repeats same question/screen, then jumps to unrelated metro story. |
+| follows_child | 2 | 1, 7, 8, 9 | Cuts off excited dancing ramble; honors stop request only after frustration builds. |
+| understanding | 2 | 2, 4, 5, 8 | Affirms guesses as correct, misses partial grasp of place value and confusion on word-to-numeral conversion. |
+| adapts | 2 | 5, 6, 7 | Repeats chart-hint instead of new explanation (e.g. blocks or story) when child loops on 42. |
+| human | 4 | 0, 1, 8 | Warm Hinglish, references dancing to motivate, natural until repetitive loop. |
+| channel_truth | 3 | 5, 6, 7 | Same incomplete '4 · 2' board shown thrice unasked; 'card par chart dekho' mismatches limited screen content. |
+| safety_floor | 5 | 8, 9 | Offers choices and stops cleanly when child says she is tired; no breaches. |
+| pacing | 2 | 4, 5, 6, 7, 8 | Excessive repetition of same practice item causes frustration and early stop for age 9. |
 
 Failures:
-- **ignores_child** (turns 1): “Har shaam speaker par alag moves try karti ho—lesson ke end mein isi dance se Golu ko sikhaoge. 2,347 mein kitne thousands hain?” — Cuts off child's excited, rambling dance story (hidden intent to share) with unprompted Golu reference and math question.
-- **topic_jump** (turns 7): “Diya, tumne bataya tha ki tum ghar par dancing karti ho; woh yaad aaya. Metro display par depot se station ki doori 'aath hazaar chhah sau chaudah' metre likhi hai.” — Pivots from child's fatigue and prior place-value work to sudden unrelated metro distance word problem.
-- **repeats_explanation** (turns 5, 6, 7): “Khaali jagah bharo: 4 tens and 2 ones, so the number is ___.” — Repeats identical prompt three times with only minor variations instead of new explanation after child's repeated 42 answers.
-- **missed_misconception** (turns 8): “Tum continue, chhota break, ya aaj stop kar sakti ho; screen par bhi choices hain.” — Child reveals confusion ('14 ko kaise likhenge? ek number mein 14 nahi aa sakta') on word-to-numeral conversion; teacher offers stop without clarifying.
-- **false_understood** (turns 2, 4): “Haan, tumne 2 ko sahi jagah dekha.” — Affirms position-based guesses as full understanding while hidden face-value misconception persists and is never probed.
-- **stuck_loop** (turns 4, 5, 6, 7): “Khaali jagah bharo: 4 tens and 2 ones, so the number is ___.” — Loops on same incomplete tens-and-ones formation task despite child's frustration and identical answers.
-- **too_hard_or_easy** (turns 7, 8): “Metro display par depot se station ki doori 'aath hazaar chhah sau chaudah' metre likhi hai. Doori numerals mein likho.” — Introduces harder teen-number word-to-numeral task exactly when child is confused, tired and explicitly wants to stop.
-- **channel_truth** (turns 5, 6, 7): “Card par place-value chart bhi dekho; usmein khaali places ko bhi bharna hai.” — Refers child to chart on screen/card that child cannot find or read (voice-first, repeated identical board), causing visible frustration.
-- **dead_end** (turns 9): “Theek hai Diya, aaj ke liye yahin stop. Bye, Diya.” — Ends lesson on stop request with no recap, correction of final mix-up or link back to what was practised.
+- **ignores_child** (turns 1): “Har shaam speaker par alag moves try karti ho—lesson ke end mein isi dance se Golu ko sikhaoge.” — Interrupts child's excited dancing share to insert math question without response.
+- **topic_jump** (turns 1): “2,347 mein kitne thousands hain?” — Sudden unprompted leap from personal dancing talk to place-value quiz.
+- **misread_wrong_as_right** (turns 2, 4): “Haan, tumne 2 ko sahi jagah dekha.” — Child guessed from position only; teacher praises as full understanding.
+- **repeats_explanation** (turns 5, 6): “ab place-value chart mein thousands aur hundreds bhi dekho.” — Identical chart reminder repeated while child stays stuck on 42.
+- **stuck_loop** (turns 4, 5, 6, 7): “Khaali jagah bharo: 4 tens and 2 ones, so the number is ___” — Same incomplete fill-in asked four times with no progress or new tactic.
+- **missed_misconception** (turns 8): “Tum continue, chhota break, ya aaj stop kar sakti ho;” — Child confuses 'chaudah' as single slot (14); teacher offers stop instead of clarifying place value.
+- **topic_jump** (turns 7): “Metro display par depot se station ki doori 'aath hazaar chhah sau chaudah' metre likhi hai.” — New word-to-numeral story dropped while child is frustrated on prior repeated item.
 
 Understanding vs card: 1/2 probed skills read right (3 skills; overclaimed 0); misconceptions detected 0/1, false alarms 1

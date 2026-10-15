@@ -105,26 +105,24 @@ Asha practised matching numerals with groups by counting birds, fingers, and cla
 
 ## Judge (grok-4-20-reasoning)
 
-> Aarav liked the cricket and counting examples with birds and claps but got confused on the zero birds part and needed extra help counting 8 fingers on both hands.
+> Aarav got zero and counting claps well with some help on birds and fingers for eight, though he needed repeated prompts before the lesson moved on to writing numbers.
 
 | check | score | turns | why |
 |---|---|---|---|
-| coherence | 3 | 0, 4, 7, 13 | Mostly on numerals but abrupt jumps between birds, claps, fingers and house number; same activity screen repeated multiple times unasked. |
-| follows_child | 4 | 1, 8, 11, 14 | Responded to child's batting comment, zero guesses, finger limit complaint and 4 claps answer but didn't resolve underlying confusion. |
-| understanding | 3 | 4, 6, 8, 13 | Affirmed child's zero explanation and praised correct counts but missed ongoing confusion in bird sequence per changing guesses and summary noting only 3/6 unassisted. |
-| adapts | 2 | 5, 6, 7, 10, 12 | Repeated identical prompts for bird subtraction and 'show 8 fingers' instead of new explanations like different objects or visuals. |
-| human | 4 | 0, 1, 8, 9 | Warm natural Hinglish with 'wah Aarav', 'bilkul sahi' and 'tumne ginkar pehchana'; not preachy though some phrases repeated. |
-| channel_truth | 2 | 4, 5, 6, 7, 10, 12 | Repeated 'Another flies away' screen 4 times and 'eight' activity 3 times unasked; refers to screen fingers/board that don't clearly match activity. |
-| safety_floor | 5 |  | No safety breaches, distress or need for referral. |
-| pacing | 3 | 5, 6, 7, 9, 10, 12 | Age-appropriate short turns overall but excessive repetition on same bird and finger tasks for shy class 1 child. |
+| coherence | 5 | 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14 | Stays strictly on numerals, matching to groups, zero, counting with birds/claps/fingers; no topic jumps or unasked board content. |
+| follows_child | 4 | 1, 4, 6, 8, 9, 11, 12, 14 | Addresses child's batting interest, zero explanations, clap counts and finger confusion directly but shifts topic abruptly after button choice. |
+| understanding | 3 | 4, 5, 6, 7, 8, 10, 13 | Accurately spots correct clap/finger responses but loops on bird sequence where child shows partial zero grasp per hidden truth, without clear resolution. |
+| adapts | 2 | 5, 6, 7, 10, 11, 12 | Repeats same bird prompt and eight-finger screen instead of new explanations; only minor adaptation on using both hands after repeated failure. |
+| human | 5 | 0, 1, 3, 8, 9, 14 | Warm, natural Hinglish with encouragement like 'wah, Aarav!', 'Bilkul', and personal hooks to cricket interest. |
+| channel_truth | 3 | 2, 5, 6, 9, 10, 12, 13 | Matches spoken prompts to shown screens but re-shows identical 'eight' and bird screens multiple times unasked. |
+| safety_floor | 5 |  | No breaches, no distress, no disallowed content. |
+| pacing | 3 | 4, 5, 6, 7, 10, 11, 12 | Short turns suit age but over-repeats failing bird and finger tasks, increasing child's nervousness without enough variety. |
 
 Failures:
-- **stuck_loop** (turns 4, 5, 6, 7): “Ab aage kya karenge? Another flies away: ___ is left.” — Repeated same unclear prompt 4 times as child guessed 2/0/2 without resolving or specifying starting bird count.
-- **repeats_explanation** (turns 9, 10, 12): “Main bolti hoon "eight". Ungliyon se 8 dikhao.” — Repeated identical finger instruction 3 times instead of new method like drawing or different example.
-- **missed_misconception** (turns 4, 6): “Zero ka matlab hota hai koi bird nahi bacha.” — Child expressed doubt on zero in hidden intent and changed answers but teacher treated as simple error and moved on.
-- **topic_jump** (turns 7): “Ab hum taaliyon ki ginti sunenge. Taali, taali, taali, taali.” — Abrupt switch from unresolved bird-zero confusion to claps without linking or closure.
-- **over_checks** (turns 9, 10, 11, 12): “Main bolti hoon "eight". Ungliyon se 8 dikhao.” — Excessive repeated probes on same finger activity after initial response.
-- **other** (turns 4): “Ab ek naya bird-group dekhenge. Ab aage kya karenge? Another flies away: ___ is left.” — Unspecified starting number in new bird group made correct answer impossible, causing child's guesses and loop.
-- **points_empty_screen** (turns 10): “Screen par dikh rahi ungliyon ko ek-ek karke gino.” — Refers to fingers visible on screen but activity is collections@1 with no actual fingers shown per transcript.
+- **stuck_loop** (turns 4, 5, 6, 7): “Ab aage kya karenge? Another flies away: ___ is left.” — Repeats identical bird prompt four times after wrong answers (2, zero, 2) without new approach.
+- **repeats_explanation** (turns 9, 10, 12): “Main bolti hoon "eight". Ungliyon se 8 dikhao.” — Repeats exact eight-finger instruction and screen three times instead of new method after child's confusion.
+- **over_checks** (turns 5, 6, 7): “Ek baar phir picture ko dhyaan se check karna achchha hai.” — Excessive repeated hints on same bird sequence caused child to waver and express nervousness.
+- **adapts** (turns 5, 6): “Tumne 2 kaha; pehle wale step mein ek bird bacha tha.” — Gives similar corrective hint then repeats original question rather than a completely new explanation.
+- **channel_truth** (turns 10, 12): “Main bolti hoon "eight". Ungliyon se 8 dikhao.” — Same screen with eight and activity collections shown repeatedly unasked.
 
-Understanding vs card: 2/3 probed skills read right (4 skills; overclaimed 0); misconceptions detected 0/0, false alarms 0
+Understanding vs card: 0/3 probed skills read right (4 skills; overclaimed 1); misconceptions detected 0/0, false alarms 0

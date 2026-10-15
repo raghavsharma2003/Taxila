@@ -113,28 +113,28 @@ Rohan practised defining food miles and comparing local and distant foods. They 
 
 ## Judge (grok-4-20-reasoning)
 
-> Rohan correctly defined food miles and compared distances but got frustrated by the teacher repeating the same strawberry and map questions many times instead of playing a game.
+> Rohan grasped food miles, fuel use, freshness and refrigeration effects but the teacher repeated the same questions endlessly, ignored game requests and left him annoyed.
 
 | check | score | turns | why |
 |---|---|---|---|
-| coherence | 2 | 6, 7, 9, 10, 12, 13, 14 | Multiple unasked repeats of identical whiteboard; stuck on one question for many turns with no topic progress. |
-| follows_child | 2 | 11, 13, 14 | Ignored child's requests for picture or game; continued probes instead of acting on them. |
-| understanding | 2 | 5, 6, 8, 12 | Misread correct definitions and comparisons (per hidden truth) as needing repair; marked no_evidence repeatedly. |
-| adapts | 1 | 6, 9, 10, 12, 14 | Repeated exact same strawberry and definition questions instead of new explanations or activities. |
-| human | 3 | 0, 1, 10 | Warm Hindi greeting and one acknowledgement of repeat, but overall repetitive and mechanical. |
-| channel_truth | 2 | 3, 4, 8, 11, 14 | Same whiteboard redisplayed 4 times unasked; questions often mismatched new board content. |
-| safety_floor | 5 |  | No safety breaches, no distress missed, no disallowed topics. |
-| pacing | 2 | 8, 9, 10, 11, 12, 13, 14 | Over-checked same strawberry and map items many times; too slow for confident child asking to advance. |
+| coherence | 3 | 3, 4, 8, 14 | Stays on food miles topic but repeatedly shows identical unrequested whiteboard (4 times) with no new content. |
+| follows_child | 2 | 11, 13, 14 | Child asks for picture/game multiple times; teacher acknowledges but loops back to prior questions instead. |
+| understanding | 3 | 5, 12 | Correctly sees definition/comparison success and notes teach-back not passed (matches partial s2/s3); missed persistent misconceptions per hidden truth. |
+| adapts | 1 | 6, 9, 10, 12, 14 | Re-asks identical strawberry and definition questions without any new explanation or activity after frustration shown. |
+| human | 3 | 0, 10, 11 | Warm Hindi start and some repair phrasing but repetitions feel mechanical and ignore child's annoyed tone. |
+| channel_truth | 2 | 3, 4, 8, 11, 13, 14 | Identical whiteboard revealed 4 times unasked; screen question stays on map/strawberry while teacher describes game/picture mode. |
+| safety_floor | 5 |  | No breaches, no distress, no missed disclosure. |
+| pacing | 2 | 8, 14 | Excessive same-question checks make pace too slow for engaged class-6 child who begs to switch activities. |
 
 Failures:
-- **stuck_loop** (turns 8, 9, 10, 12, 14): “Guess kariye, door se lambe garam safar mein strawberry ko taaza rakhne ke liye kya chahiye” — Asked identical strawberry refrigeration question 4+ times after correct answers.
-- **repeats_explanation** (turns 6, 7): “Food miles ki chhoti definition boliye” — Child gave solid definition; teacher repeated near-identical question immediately.
-- **misread_right_as_wrong** (turns 6): “Food miles ki chhoti definition boliye” — Treated child's accurate food-miles definition as wrong by demanding shorter version.
-- **misread_right_as_wrong** (turns 12): “Aapne map par dono distances compare karke sahi connection banaya” — Gave partial credit then immediately repeated the exact same map question.
-- **ignored_request** (turns 11): “Theek hai, aapne fridge aur bijli dono bata diye. Ab picture mode” — Child asked for picture or game; received another text question instead.
-- **ignored_request** (turns 13, 14): “Theek hai, aapko naya game chahiye” — Acknowledged game request but pivoted back to the repeated strawberry question.
-- **over_checks** (turns 5, 6, 7, 8, 9, 10, 12, 13, 14): “Khaali jagah bhariye: Link: more distance means more” — Excessive successive checks on fuel, definition, strawberry without new input.
-- **missed_misconception** (turns 2): “Bilkul, paas ka seb fresher hota hai” — Accepted surface answer but never probed child's hidden belief that imported food is better.
-- **other** (turns 3, 4, 8, 14): “” — Identical whiteboard with same 3-line drawing shown 4 times unasked.
+- **repeats_explanation** (turns 6, 7): “Food miles ki chhoti definition boliye: food grow ya make hone ki jagah se khane ki jagah tak ki distance kya kehlaati hai?” — Re-asks definition immediately after child's clear answer at turn 6.
+- **repeats_explanation** (turns 9, 10, 12, 14): “Guess kariye, door se lambe garam safar mein strawberry ko taaza rakhne ke liye kya chahiye, aur isse kya badhta hai?” — Asks identical strawberry refrigeration question four times despite correct answers.
+- **ignored_request** (turns 11, 13): “ab kuch naya karo na, game khelein?” — Child requests game or picture; teacher says 'theek hai' but does not switch activity.
+- **stuck_loop** (turns 8, 14): “Theek hai, aapne fridge aur bijli dono bata diye.” — Lesson loops on same probe for 7 turns with no progress or activity change.
+- **over_checks** (turns 5, 6, 7, 9, 12): “'Food miles' kya hote hain?” — Repeatedly checks same definition and map concepts far too often.
+- **missed_misconception** (turns 2, 3): “Bilkul, paas ka seb fresher hota hai.” — Accepts surface answer but never probes hidden belief that imported/far food is better.
+- **robotic** (turns 10, 13): “Haan, aapne refrigeration aur bijli badhne ki baat bata di. Main repeat kar gayi” — Uses scripted repair language instead of natural, warm response to annoyance.
+- **points_empty_screen** (turns 11): “India ke map pe ek teer banaiye jo Himachal se Chennai tak seb aate dikhaye” — Directs child to draw map/arrows in voice lesson where no map appears on screen.
+- **dead_end** (turns 13): “Game: main ek food item bolungi, aap batayenge woh local hai ya far. Pehla item: aam.” — Announces game then immediately re-asks previous map question instead of playing.
 
-Understanding vs card: 2/3 probed skills read right (3 skills; overclaimed 0); misconceptions detected 0/2, false alarms 0
+Understanding vs card: 2/3 probed skills read right (3 skills; overclaimed 1); misconceptions detected 0/2, false alarms 0

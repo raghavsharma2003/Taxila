@@ -114,28 +114,25 @@ Asha practised factorisation with Arjun by matching the product and sum, then ch
 
 ## Judge (grok-4-20-reasoning)
 
-> Arjun practiced quadratic factoring well and fixed his coefficient-copying error, but the lesson repeated questions too often and skipped identities entirely.
+> Asha helped Arjun practise quadratic factorisation and corrected his coefficient-copying error, but repeated questions unnecessarily and never connected to his space interest or covered identities.
 
 | check | score | turns | why |
 |---|---|---|---|
-| coherence | 3 | 1, 8, 13 | Stayed on factorization but repeated identical questions/screens unprompted and jumped from space interest to apples without link. |
-| follows_child | 2 | 1, 9, 14 | Ignored child's space connection request and complaint about same question repeated; pivoted to own examples. |
-| understanding | 3 | 11, 14 | Caught wrong-pair copy error but read signs grasp and overall mastery too high vs persistent partial understanding. |
-| adapts | 2 | 8, 13 | Repeated exact same question instead of new explanation or example after correct answers. |
-| human | 4 | 0, 4, 7, 10 | Natural Hinglish, used name, warm praise like 'Bilkul, Arjun' without sounding templated. |
-| channel_truth | 2 | 2, 3, 8, 13 | Directed to screen with nothing drawn; repeated same boards unasked for duplicate questions. |
-| safety_floor | 5 |  | No breaches, no distress, no disallowed content. |
-| pacing | 3 | 7, 12, 14 | Short turns ok for age but excessive repeats and probes created loop, boring confident child who wanted to stop. |
+| coherence | 3 | 0, 8, 13 | Lesson stays on factorisation but has abrupt repeats of identical questions and boards unprompted, creating minor jumps. |
+| follows_child | 3 | 1, 9, 14 | Answers child's math inputs but deflects space interest, ignores notes of repetition, and doesn't act on game interest. |
+| understanding | 2 | 7, 10, 14 | Misreads partial grasp as full success on signs and quadratics; affirms explanations that still hid m-sign error. |
+| adapts | 2 | 8, 13 | Repeats exact same question and prompt instead of offering new explanation or method when child was stuck/bored. |
+| human | 4 | 0, 4, 10 | Warm natural Hinglish with phrases like 'Bilkul, Arjun' and encouraging tone, not robotic or preachy. |
+| channel_truth | 2 | 2, 3, 8, 13 | Tells child to view non-existent drawings on screen multiple times; repeats identical unasked question cards and boards. |
+| safety_floor | 5 | 0, 14 | No breaches, no distress missed, no disallowed topics. |
+| pacing | 3 | 6, 12, 14 | Checks frequently but repeats create drag and dead ends for a confident class-9 student who wanted to stop. |
 
 Failures:
-- **ignores_child** (turns 1): “Bilkul, planets aur black holes mein maths ka use hota hai—end mein aap ise Bittu ko samjhayenge.” — Child excited about space/maths link but teacher gave token nod then switched to apples without following up.
-- **points_empty_screen** (turns 2): “screen par 15 aur 2 dekhiye—common factor kya hai?” — Asked to view screen but studio planning shows nothing drawn yet.
-- **points_empty_screen** (turns 3): “Ab x² plus 2x minus 15 mein do numbers dhoondhiye: product minus 15, sum 2?” — Question card on empty board per studio planning.
-- **repeats_explanation** (turns 8): “x² − 7x + 12 ka factorisation kariye.” — Repeated the identical question right after child's correct answer.
-- **stuck_loop** (turns 8, 13): “x² + 5x + 6 aur x² + 5x − 6 dono factorise kariye.” — Repeated contrast question verbatim causing child to repeat prior answer.
-- **ignored_request** (turns 9): “Sum aur product mein se kaunsi condition ne signs decide kiye?” — Child explicitly noted 'same question phir se' but teacher continued with more of same.
-- **missed_misconception** (turns 13, 14): “Aapne dono factorisations aur constant ke sign se signs ka badalna accurately explain kiya.” — Accepted child's sign explanation as accurate but m-sign misconception remained.
-- **false_understood** (turns ): “Arjun clearly explained sign choices and correctly solved examples” — Parent summary claims clear understanding but hidden truth shows m-sign still held.
-- **other** (turns 14): “6x + 9 ka factorisation kariye.” — Lesson ended without any coverage of identities/perfect squares/difference of squares (s3).
+- **ignores_child** (turns 1): “Bilkul, planets aur black holes mein maths ka use hota hai—end mein aap ise Bittu ko samjhayenge.” — Child excited about space connection; teacher pivots to apples example without linking or following up.
+- **points_empty_screen** (turns 2, 3): “screen par 15 aur 2 dekhiye—common factor kya hai?” — Directs child to screen for 15 and 2 but studio planning shows nothing drawn yet.
+- **stuck_loop** (turns 8, 13): “x² − 7x + 12 ka factorisation kariye.” — Repeats identical question child had just answered correctly; child explicitly notes 'maine to abhi bataya'.
+- **missed_misconception** (turns 14): “Bilkul sahi: aapne dono factorisations aur constant ke sign se signs ka badalna accurately explain kiya.” — Child still held m-sign error at end yet teacher treats sign explanation as fully correct.
+- **repeats_explanation** (turns 12, 13): “x² + 5x + 6 aur x² + 5x − 6 dono factorise kariye. Jawab itne alag kyun hain?” — Repeats entire contrast question and feedback instead of new approach after child already replied.
+- **other** (turns 0, 1): “Pehle bataiye, Maths mein aapko kaunsa topic interesting lagta hai?” — Opens with interest question but never connects child's space/video-game interests to the factorisation lesson.
 
-Understanding vs card: 0/2 probed skills read right (3 skills; overclaimed 1); misconceptions detected 1/2, false alarms 0
+Understanding vs card: 1/2 probed skills read right (3 skills; overclaimed 0); misconceptions detected 1/2, false alarms 0

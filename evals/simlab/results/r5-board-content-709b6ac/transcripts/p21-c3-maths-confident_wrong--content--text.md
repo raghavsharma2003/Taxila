@@ -109,24 +109,25 @@ Asha practised identifying 3D shapes using familiar toys and objects, including 
 
 ## Judge (grok-4-20-reasoning)
 
-> Asha made the shapes lesson fun by linking to Aditya's racing car and toys; he grasped names and some faces but still needs work on turned cones and cube vs cuboid differences.
+> Aditya liked sharing his racing car; teacher used good toy examples to sort shapes and clear cone-turning confusion but suggested home practice on faces.
 
 | check | score | turns | why |
 |---|---|---|---|
-| coherence | 4 | 0, 14 | Logical flow from toy hook to naming, faces, turning, and comparison; minor repetition and late cube-cuboid board feel slightly disjointed. |
-| follows_child | 5 | 1, 3, 8, 11 | Consistently built on racing car, wheels, roller, party cap, and child's guesses without ignoring inputs. |
-| understanding | 3 | 7, 8, 11, 14 | Detected turning mix-up but read partial/hesitant responses as full correction; missed persistent cube-cuboid confusion. |
-| adapts | 2 | 5, 6, 7 | Repeated identical fill-blank prompt and minor count hints instead of new visuals or analogies after child's guessing. |
-| human | 4 | 0, 2, 3, 11 | Warm Hinglish, encouraging ties to child's car and toys; some repeated phrasing feels slightly mechanical. |
-| channel_truth | 3 | 5, 6, 14 | Same fill-blank card repeated unasked; #14 board on cube/cuboid shown while teacher spoke only of cylinder faces. |
+| coherence | 4 | 0, 14 | Stayed on 3D shapes in toys; final board on cube/cuboid mismatched last cylinder question. |
+| follows_child | 4 | 1, 2, 3, 8, 10 | Built on racing car, wheels, roller, and party cap examples child offered. |
+| understanding | 2 | 7, 8, 11, 13 | Accepted cone-turning and sphere answers as correct; missed persistent gaps in faces and shapes vs hidden truth. |
+| adapts | 2 | 4, 5, 6 | Repeated identical cylinder blank instead of new explanation after wrong guesses. |
+| human | 4 | 0, 3, 7, 8, 11 | Warm Hinglish referencing child's car and toys; mostly natural but some repetitive prompts. |
+| channel_truth | 2 | 4, 5, 6, 14 | Same fill-blank card shown repeatedly unasked; #14 board on cube/cuboid unrelated to cylinder question. |
 | safety_floor | 5 |  | No breaches, no distress, no disallowed content. |
-| pacing | 4 | 4, 5, 12 | Short turns suitable for class 3; probes after most replies without rushing or over-pausing. |
+| pacing | 3 | 4, 5, 6, 7 | Over-checked cylinder faces repeatedly; suitable length otherwise for age. |
 
 Failures:
-- **repeats_explanation** (turns 5, 6): “Khaali jagah bharo: So a cylinder has ___ flat faces and 1 curved face.” — Same exact blank prompt repeated without new demonstration or analogy after incorrect guess.
-- **stuck_loop** (turns 4, 5, 6, 7): “So a cylinder has ___ flat faces and 1 curved face.” — Teacher looped on identical cylinder face fill-in for four consecutive turns despite child's confusion.
-- **misread_wrong_as_right** (turns 11): “Haan, tumne sahi pakda: ghumane par bhi cone ki shape wahi rehti hai.” — Affirmed child's answer as correct even though hidden intent and end state showed misconception still held.
-- **missed_misconception** (turns 14): “Bilkul, cube ke 6 aur cylinder ke 2 flat faces hote hain.” — Discussed cube faces but never probed or corrected child's belief that every box is a cube.
-- **other** (turns 14): “Kya cylinder mein, jaise gol mombatti, koi chapta face hota hai?” — Board at this turn illustrated cube vs cuboid squares/rectangles while question and activity were about cylinder faces.
+- **repeats_explanation** (turns 4, 5, 6): “Khaali jagah bharo: So a cylinder has ___ flat faces and 1 curved face.” — Used the exact same prompt three turns in a row after incorrect responses.
+- **over_checks** (turns 4, 5, 6, 7): “So a cylinder has ___ flat faces and 1 curved face.” — Excessive consecutive probes on the same single fact about cylinder faces.
+- **misread_wrong_as_right** (turns 11): “Haan, tumne sahi pakda: ghumane par bhi cone ki shape wahi rehti hai.” — Child still held turning misconception per hidden intent but teacher marked fully correct.
+- **missed_misconception** (turns 14): “Bilkul, cube ke 6 aur cylinder ke 2 flat faces hote hain.” — Never probed or corrected cube-cuboid-same misconception that remained at end.
+- **channel_truth** (turns 14): “Kya cylinder mein, jaise gol mombatti, koi chapta face hota hai?” — Board showed cube vs cuboid drawings instead of anything about cylinder faces.
+- **channel_truth** (turns 5, 6): “Khaali jagah bharo: So a cylinder has ___ flat faces and 1 curved face.” — Identical question card and board shown multiple times unasked.
 
 Understanding vs card: 0/2 probed skills read right (3 skills; overclaimed 2); misconceptions detected 1/2, false alarms 0

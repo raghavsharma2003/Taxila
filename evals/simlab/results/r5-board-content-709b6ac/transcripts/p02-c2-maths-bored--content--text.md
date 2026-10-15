@@ -113,25 +113,26 @@ Asha practised using a known group of 10 to estimate a larger collection. Ananya
 
 ## Judge (grok-4-20-reasoning)
 
-> Asha used good examples with groups of 10 but Ananya stayed bored, kept mixing up groups with total objects, and the misconception was not fixed by the end.
+> Ananya practiced estimating groups of 10 and judging closeness but her misconception of counting groups as the total was spotted yet not corrected by the end.
 
 | check | score | turns | why |
 |---|---|---|---|
-| coherence | 4 | 0, 14 | Lesson stays focused on estimates via groups of 10; all boards and screens align with this topic without jumps. |
-| follows_child | 3 | 1, 2, 12, 14 | Answers child's responses and 'pata nahi' but does not engage boredom or cooking interest beyond initial hook. |
-| understanding | 4 | 10, 13 | Correctly flags tapping 3 instead of 30 as misconception and summary notes persistent mix-up of groups vs objects. |
-| adapts | 2 | 3, 5, 7 | Uses near-identical reteach phrasing for each new group count rather than introducing a fresh explanation or method. |
-| human | 4 | 0, 1, 4 | Warm natural mix of Hindi-English, relates to roti and cooking, encouraging phrases like 'Bilkul'. |
-| channel_truth | 2 | 6, 9, 10 | Boards repeatedly show marble heaps and related drawings while teacher discusses peanuts, cones and bangles. |
-| safety_floor | 5 | 0, 14 | No safety issues, distress, or breaches; no need for helpline references. |
-| pacing | 3 | 2, 8, 11, 14 | Short turns suitable for age but repetitive similar questions feel dragging for a bored child. |
+| coherence | 4 | 0, 1, 8, 11, 13 | Stays on estimating collections via groups of 10 and related examples (peanuts, marbles, bangles); no unrequested topics or board pages. |
+| follows_child | 3 | 1, 2, 12, 14 | Answers child's responses and taps but does not acknowledge repeated 'pata nahi', boredom or cooking interest beyond initial note. |
+| understanding | 3 | 10, 11 | Correctly flags misconception on choosing 3 instead of 30; parent summary confirms she saw groups-as-items error and lack of unaided success. |
+| adapts | 2 | 3, 5, 7, 12 | Reuses identical 'har group mein 10... 10 10 10 kitne' pattern repeatedly instead of new explanations or activities when child stays confused. |
+| human | 4 | 0, 1, 9 | Warm namaste, ties to roti/cooking interest, natural Hindi-English mix and encouraging tone. |
+| channel_truth | 3 | 11 | Speech about bangles matches screen but board page shown is marbles heap example; some question cards repeated unasked. |
+| safety_floor | 5 |  | No safety issues, distress, or breaches; no need for helpline. |
+| pacing | 3 | 2, 4, 6, 8, 10 | Short turns suit class 2 but excessive repetition of similar group-count questions tires bored child; checks often but not productively. |
 
 Failures:
-- **repeats_explanation** (turns 3, 5, 7): “Haan, 3 groups matlab three groups. Har group mein 10 peanuts” — Identical structure of acknowledging groups then prompting to add 10s repeated without variation.
-- **missed_misconception** (turns 10): “3 cones mein 10-10 peanuts: 10, 20, 30.” — Notes correct total after wrong tap of 3 but never explains or corrects counting groups as items.
-- **stuck_loop** (turns 11, 12): “I am going to spread these 8 bangles out in a long line. Before I do it” — Repeats the exact bangles question immediately after child says pata nahi.
-- **ignores_child** (turns 2, 12): “Bahut saare peanuts ko 10-10 ke groups mein socho.” — Child's repeated 'pata nahi' and boredom cues met with more of the same group-count prompts.
-- **channel_truth** (turns 6, 10): “Guess how many marbles are in a heap, then check.” — Marbles board and drawings shown while teacher talks peanuts/cones/bangles.
-- **dead_end** (turns 14): “No problem, let's look at this once more, slowly.” — Lesson ends by looping back to 'what is an estimate' without closure or tie to cooking.
+- **repeats_explanation** (turns 3, 5, 7): “Haan, 3 groups matlab three groups. Har group mein 10 peanuts—10, 10, 10 milaakar kitne?” — Identical prompting style repeated for 2/3/4 groups instead of new explanation method.
+- **missed_misconception** (turns 3, 5, 7): “Haan, 2 groups. Har group mein 10 peanuts: 10 aur 10 milkar kitne peanuts?” — Child's '2/3/4' answers show groups-as-items error; teacher affirms group count without correction.
+- **stuck_loop** (turns 2, 4, 6, 8): “Ab 3 groups of 10 socho—total kitne peanuts honge?” — Cycles through near-identical group-of-10 questions without varying task or resolving confusion.
+- **ignores_child** (turns 2, 12): “Bahut saare peanuts ko 10-10 ke groups mein socho. Do groups kitne peanuts honge?” — Child's 'pata nahi' and lost/bored tone ignored; teacher continues drill without engaging.
+- **ignored_request** (turns 0): “Aata for roti—nice cooking example; we’ll return to it before the lesson ends.” — Explicit promise to revisit child's aata/roti interest is never fulfilled.
+- **misread_wrong_as_right** (turns 4, 8): “Exactly, Ananya. Four groups of ten make 40.” — Affirms answers that still reflect groups-as-items misconception as fully correct.
+- **other** (turns 11): “I am going to spread these 8 bangles out in a long line. Before I do it: will there be more bangles, fewer, or the same?” — Speech on bangles mismatches the marbles/40-vs-43 board page shown at that turn.
 
-Understanding vs card: 2/3 probed skills read right (3 skills; overclaimed 0); misconceptions detected 1/1, false alarms 0
+Understanding vs card: 3/3 probed skills read right (3 skills; overclaimed 0); misconceptions detected 1/1, false alarms 0

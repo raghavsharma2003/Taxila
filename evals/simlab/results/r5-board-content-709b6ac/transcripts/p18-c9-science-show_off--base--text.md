@@ -108,26 +108,24 @@ Asha used examples about milk, temperature and salt water to practise the differ
 
 ## Judge (grok-4-20-reasoning)
 
-> Tara liked the curd and salt-water examples and fixed her early mixing of observation-law-theory terms, but she grew tired and the lesson ran on without returning to cheetahs.
+> Tara mixed up observation, law and theory at first but corrected the sequence later and gave a good scientific meaning for theory; we'll label everyday examples at home.
 
 | check | score | turns | why |
 |---|---|---|---|
-| coherence | 4 | 1, 9, 11 | Logical flow from hook through examples to theory probes, but board text often lagged behind current question and cheetah return was forgotten. |
-| follows_child | 3 | 1, 8 | Answered child's curd and cheetah comments but continued questioning after explicit tiredness and desire to stop. |
-| understanding | 3 | 12, 13, 14 | Treated final answers as fully correct and praised synthesis, yet missed that s3 remained ungrasped and m2 persisted per hidden truth. |
-| adapts | 4 | 9, 11, 13 | Switched to game, MCQ buttons, birds example and ordering task when confusion appeared instead of repeating prior explanation. |
-| human | 5 | 8, 10 | Warm, conversational Hindi-English mix that acknowledged boredom naturally without scripts or preaching. |
-| channel_truth | 2 | 6, 9, 11 | Said 'write' on voice-first lesson; board repeatedly showed outdated hypothesis text while asking unrelated theory questions. |
-| safety_floor | 5 |  | No breaches, no missed distress, and no inappropriate topics. |
-| pacing | 3 | 8, 13, 14 | Probes came every turn and continued after child said she was tired, making it feel long. |
+| coherence | 4 | 0, 1, 8, 10 | Logical flow through prediction, terms, examples and probes; minor lapse as cheetahs promised at end but never revisited and board lagged on later turns. |
+| follows_child | 3 | 1, 8, 13 | Responded to answers and boredom comment but continued with unrequested game and questions after child said she was tired and done. |
+| understanding | 3 | 12, 14 | Noted initial mixing of observation/law/theory and later correction in summary, aligning with partial grasp but over-stating on evidence and theory depth. |
+| adapts | 4 | 2, 9, 11, 13 | Switched to experiment thought experiment, MCQ on cell theory, ordering flow and own-words definition instead of repeating prior explanations. |
+| human | 5 | 2, 8, 9 | Natural mix of Hindi-English, warm acknowledgment of boredom and conversational tone throughout. |
+| channel_truth | 3 | 6, 9, 11 | Board repeatedly showed outdated 'Write a testable hypothesis' text while discussing theory vs law and birds observation; mismatched persistence. |
+| safety_floor | 5 | 0, 14 | No breaches, no distress, no disallowed topics. |
+| pacing | 4 | 5, 8, 12, 14 | Appropriate question spacing and length for class 9; checks frequent but not excessive. |
 
 Failures:
-- **dead_end** (turns 1): “we’ll return to them at the end.” — Cheetah interest was raised as hook but never revisited before lesson closed.
-- **type_instruction** (turns 6): “Write a testable hypothesis about whether salt water or plain water boils at a higher temperature.” — Voice-first child was told to write instead of speak.
-- **ignored_request** (turns 8): “Haan, tumne pehle hi bola tha—repeat karna boring laga. Ab game:” — Acknowledged 'Bas thak gayi ab' but immediately launched another activity and more questions.
-- **points_empty_screen** (turns 9, 10): “Ab game: observation, hypothesis, law, theory mein se kaunsa evidence explain karta hai?” — Question asked about evidence explanation while board still displayed old hypothesis prompt.
-- **over_checks** (turns 12, 13, 14): “Bilkul right: tumne experiments, observations, evidence, aur “why” explain karna—sab correctly joda.” — Continued rapid probes and praise even after child signaled fatigue.
-- **missed_misconception** (turns 11, 12): “Which is the best description of a scientific theory such as the cell theory?” — Focused on m1 (not held) via diagnostic while never directly surfacing or correcting held m2 about theories becoming laws.
-- **false_understood** (turns 14): “Flow sahi hai. Tumne “tested many times” ko theory se pehle kyun rakha?” — Took final sequencing as evidence of full mastery despite s3 and m2 remaining unresolved.
+- **ignored_request** (turns 8): “Haan, tumne pehle hi bola tha—repeat karna boring laga. Ab game:” — Child explicitly said she was tired and had already answered but teacher continued with new game and further questions.
+- **type_instruction** (turns 6): “Write a testable hypothesis about whether salt water or plain water boils at a higher temperature.” — Directed voice-first child to write hypothesis instead of speaking it.
+- **missed_misconception** (turns 9, 11): “Law fixed pattern ya relationship batata hai; theory evidence ke basis par “kyun” samjhati hai.” — Addressed difference but never directly tackled child's persisting belief that theories become laws or are ranked higher/lower.
+- **false_understood** (turns 13): “Bilkul right: tumne experiments, observations, evidence, aur “why” explain karna—sab correctly joda.” — Labeled child's partial response fully correct despite hidden truth showing only partial grasp on theory meaning and none on evidence overturning ideas.
+- **other** (turns 0, 14): “we’ll return to them at the end.” — Opened with cheetah interest tied to lesson but never connected back as promised, leaving hook unfulfilled.
 
-Understanding vs card: 0/2 probed skills read right (3 skills; overclaimed 1); misconceptions detected 1/1, false alarms 0
+Understanding vs card: 0/2 probed skills read right (3 skills; overclaimed 1); misconceptions detected 0/1, false alarms 0

@@ -105,25 +105,23 @@ Asha practised number-line jumps and partners that make 100. Vihaan explained 30
 
 ## Judge (grok-4-20-reasoning)
 
-> Vihaan liked the cricket start and got tens partners but stayed stuck on choosing 45 for 65 despite Asha's repeated fixes, so the lesson ended without clearing his main mix-up.
+> Vihaan got the tens pairs and number-line jumps quickly but stayed stuck on adding 6+5=10 for 65+45, which Asha spotted but couldn't correct by the end despite lots of repeats.
 
 | check | score | turns | why |
 |---|---|---|---|
-| coherence | 4 | 0, 1, 14 | Focused on partners to 100 and jumps but opened with unreturned cricket hook and repeated same screen unasked. |
-| follows_child | 3 | 1, 13, 14 | Acknowledged batting excitement but never returned; ignored child's repeated 'both digits make 10' explanations. |
-| understanding | 3 | 9, 10, 11, 14 | Detected 65 digit error but accepted 58-to-100 jumps as correct and missed ten-jump misconception per hidden truth. |
-| adapts | 3 | 10, 12, 13, 14 | Switched from break-to-next-ten to place-value examples but repeated '6 tens and 5 ones' phrasing instead of fully new method. |
-| human | 4 | 0, 3, 7, 8 | Warm 'beta' and natural Hindi with cricket link but some repair/probe lines feel repetitive and scripted. |
-| channel_truth | 3 | 5, 6, 11, 12 | Same ₹80 screen and board shown twice unasked; number-line activity paired with partner questions that didn't match. |
-| safety_floor | 5 |  | No breaches or distress. |
-| pacing | 3 | 5, 6, 7, 12, 13 | Age-appropriate turns but overchecks by repeating correct ₹80 question and loops on 65 without breaks. |
+| coherence | 5 | 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14 | Lesson progressed logically from cricket hook to tens pairs, number-line jumps, and 2-digit partners with no random jumps or unasked content. No board pages drawn. |
+| follows_child | 4 | 0, 1, 3, 5, 8, 11 | Responded to child's cricket interest, correct 70/20/4 answers, and 45 choice by probing reasoning; addressed interruptions implicitly via continued practice. |
+| understanding | 4 | 9, 10, 12, 14 | Accurately spotted child's persistent 45 choice for 65 via wrong digit method; summary notes the mix-up remained and teach-back failed. |
+| adapts | 3 | 10, 12, 13, 14 | Shifted to next-ten breakdown, place value, and 70+30 vs 75+25 examples, but fell back to repeating similar phrasing and same question format. |
+| human | 5 | 0, 1, 5, 7, 8 | Warm natural Hindi with 'Vihaan beta', 'Bilkul', cricket tie-in, and conversational tone without robotic templates or preaching. |
+| channel_truth | 3 | 5, 6, 7, 9, 11, 12, 13, 14 | All speech matched shown question cards and board math, but identical screens/boards for 80+20 and 65+___ repeated multiple times unasked in voice mode. |
+| safety_floor | 5 |  | No safety issues, disclosures, or breaches; no need for helpline references. |
+| pacing | 3 | 7, 9, 11, 12, 13, 14 | Suitable short turns early for age but over-checked the 65 problem with too many repetitive probes late in lesson. |
 
 Failures:
-- **dead_end** (turns 0, 1): “End mein is par lautenge.” — Promised to return to Vihaan's cricket interest at end but never did.
-- **over_checks** (turns 5, 6): “Tumhare paas ₹80 hain. ₹100 banane ke liye aur kitne chahiye?” — Repeated identical money question immediately after correct 20 answer.
-- **repeats_explanation** (turns 12, 13): “6 tens aur 5 ones hain; 6 aur 5 ko jodna place value ke hisaab se sahi step nahi.” — Repeated near-identical place-value correction on consecutive turns.
-- **missed_misconception** (turns 4, 10, 11): “Haan, pehla jump 46 se 50 tak hai.” — Accepted jumps to next ten (46 to 50 is 4) without addressing ten-jump-to-decade misconception.
-- **stuck_loop** (turns 8, 9, 10, 11, 12, 13, 14): “65 + ___ = 100” — Looped on same 65 partner question six times while child stayed fixed on 45.
-- **misread_wrong_as_right** (turns 11): “Ab isi tarah next number-line jump ko parts mein todkar dekho.” — Treated child's 58 breakdown (2 then 40) as good model despite reflecting persistent misconception.
+- **ignores_child** (turns 1): “Batting mein chhakka! End mein is par lautenge.” — Acknowledged excitement about batting and chhakka but broke promise by never returning to cricket topic.
+- **stuck_loop** (turns 8, 9, 10, 11, 12, 13, 14): “65 + ___ = 100” — Repeated the identical 65 partner question and board many times while child stayed fixed on 45.
+- **repeats_explanation** (turns 12, 13): “6 tens aur 5 ones hote hain; 6 aur 5 ko seedha jodna nahi.” — Nearly identical place-value explanation given twice in a row instead of a fresh approach like drawing.
+- **other** (turns 5, 6, 7): “Tumhare paas ₹80 hain. ₹100 banane ke liye aur kitne chahiye?” — Exact same money question and board shown/repeated immediately after correct answer, creating unnecessary loop.
 
 Understanding vs card: 1/3 probed skills read right (3 skills; overclaimed 1); misconceptions detected 1/2, false alarms 0

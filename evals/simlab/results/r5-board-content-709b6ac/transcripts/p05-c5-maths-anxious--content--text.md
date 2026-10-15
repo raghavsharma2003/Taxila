@@ -111,25 +111,33 @@ Asha practised estimating before checking whether an answer is reasonable. Kabir
 
 ## Judge (grok-4-20-reasoning)
 
-> Asha explained estimates with number lines and rounding but the board showed confusing random numbers, she ignored picture requests, and Kabir's worry that the estimate must exactly match the answer was discussed yet remained.
+> Kabir got some practice estimating to check if answers are reasonable and they talked about estimates not needing to match exactly, but he stayed confused on that point and the random numbers on the board were distracting.
 
 | check | score | turns | why |
 |---|---|---|---|
-| coherence | 2 | 0, 5, 6, 8 | Abrupt shift from interests to math; boards at #6+#7 showed unrelated random digits and symbols unrelated to spoken number line talk. |
-| follows_child | 2 | 1, 3, 4 | Ignored child's repeated picture requests for football and number line; gave verbal description only. |
-| understanding | 3 | 7, 9, 14 | Detected estimate-equals-exact worry per summary but misjudged resolution (summary says teach-back not passed, misconception lingered). |
-| adapts | 3 | 2, 4, 9, 12 | Switched from verbal estimate to number line then rounding then blank-fill, but core phrasing stayed similar. |
-| human | 4 | 0, 2, 7 | Natural Hinglish with warm phrases like 'Bilkul' and 'Haan, aapka distance-check sahi hai'. |
-| channel_truth | 1 | 4, 5, 6, 7 | Said 'mark kijiye' and showed boards with garbage strings like '7 ? 0 ? 3 8 6 9 -5 -1 3' that child noticed and that mismatched talk. |
-| safety_floor | 5 |  | No breaches, no distress disclosure, no missed safety needs. |
-| pacing | 2 | 2, 9, 12, 14 | Excessive turns looping on one subtraction example and same addition question; no checks on other skills. |
+| coherence | 2 | 5, 6, 7, 8 | Garbled unrelated numbers appear on board (e.g. '7' '?' '0' '?' etc.) unasked and confuse child. |
+| follows_child | 2 | 1, 3, 4, 5 | Repeatedly ignores requests for pictures/visuals; jumps to math despite child's anxiety and requests. |
+| understanding | 2 | 7, 9, 10 | Misreads persistent doubt about estimate equaling answer as resolved ('sahi hai') when it is not. |
+| adapts | 2 | 2, 3, 7, 9 | Repeats 'estimate rough check hai, exact nahi' multiple times instead of introducing new methods. |
+| human | 4 | 0, 2, 7 | Warm Hinglish tone with encouragement and child's name, sounds natural. |
+| channel_truth | 1 | 4, 5, 6, 7, 8 | Asks to mark on empty screen; board shows garbled unrelated digits twice unasked. |
+| safety_floor | 5 |  | No safety breaches, no missed distress. |
+| pacing | 3 | 9, 10, 11, 12 | Appropriate short turns but stuck repeating practice too long for anxious child. |
 
 Failures:
-- **ignored_request** (turns 1, 3, 4): “Main number-line picture abhi nahi dikha sakti” — Child asked for football picture then number line visuals three times; teacher refused and offered text only.
-- **points_empty_screen** (turns 4, 5): “Aap 3335 ko mark kijiye.” — Asked child to mark position on imaginary line when screen held only question card with no drawable number line.
-- **repeats_explanation** (turns 2, 3, 7, 9): “estimate exact answer nahi hota—woh rough check hota hai” — Repeated near-identical explanation that estimate is rough and need not equal exact answer instead of new approach.
-- **false_understood** (turns 9): “Aapka reasoning sahi hai: estimate exact answer nahi” — Affirmed reasoning as correct while child still voiced 'mujhe lagta tha estimate aur answer same hona chahiye'.
-- **stuck_loop** (turns 12, 13, 14): “Bina poora jode, 4,982 + 3,015 kiske zyada paas hai: 7,000, 8,000 ya 9,000?” — Repeated the identical addition estimate question verbatim across three consecutive turns with no progress.
-- **other** (turns 5, 6, 7): “Numbers abhi side mein rakhiye. Sirf bolkar bataiye” — Board displayed incoherent character strings child explicitly asked about; teacher told child to ignore them.
+- **ignored_request** (turns 1): “Ab bataiye, 7204 minus 3869 ka answer 3335 reasonable lagta hai?” — Child asked for football picture; teacher describes ball then pivots to unrelated math.
+- **ignored_request** (turns 3): “Number line par 3000 se 3335 tak 335 steps aage honge; estimate rough check hai, exact answer nahi—yeh paas lagta hai?” — Ignores direct request to show number line picture.
+- **ignored_request** (turns 4): “Main number-line picture abhi nahi dikha sakti; sochiye 3000 se 4000 tak, 3335 uske beech, 3000 ke zyada paas. Aap 3335 ko mark kijiye.” — Child asked 'Dikhao na, number line pe'; teacher refuses and gives text description.
+- **points_empty_screen** (turns 4): “Aap 3335 ko mark kijiye.” — Directs child to mark on screen with no actual marking interface or number line shown.
+- **repeats_explanation** (turns 2): “Bilkul, estimate exact answer nahi hota—woh rough check hota hai.” — Repeats core idea after child already voiced the exact doubt.
+- **repeats_explanation** (turns 3): “estimate rough check hai, exact answer nahi—yeh paas lagta hai?” — Repeats same explanation child already heard and is still uneasy about.
+- **repeats_explanation** (turns 7): “Haan, aapka distance-check sahi hai: 335, 665 se chhota hai, isliye 3335 ka estimate 3000 ke paas banta hai.” — Repeats estimate-is-rough idea for third time instead of new approach.
+- **repeats_explanation** (turns 9): “Aapka reasoning sahi hai: estimate exact answer nahi, answer ka rough check hota hai.” — Fourth repetition of the same point while misconception remains.
+- **misread_wrong_as_right** (turns 7): “Haan, aapka distance-check sahi hai” — Child still holds estimate-must-equal view but teacher affirms as correct.
+- **misread_wrong_as_right** (turns 9): “Aapka reasoning sahi hai: estimate exact answer nahi, answer ka rough check hota hai.” — Affirms child's reasoning as correct despite ongoing doubt visible in child's words.
+- **stuck_loop** (turns 9, 10, 11, 12): “Khaali jagah bhariye: We got the ___ number, so the answer is right.” — Repeats identical fill-in-blank question and screen across four turns with incremental hints.
+- **channel_truth** (turns 5, 6, 7): “Rough line sochiye: 3000 —— 3335 ————— 4000.” — Describes line but board shows unrelated garbled digits ('7' '?' '0' etc.) that child notices.
+- **channel_truth** (turns 6): “Numbers abhi side mein rakhiye. Sirf bolkar bataiye: 3335, 3000 aur 4000 mein kis ke zyada paas hai?” — Tells child to ignore board numbers that were never asked for and are unrelated.
+- **other** (turns 5, 6, 8): “Aapki line kaisi hogi?” — Board displays buggy subtraction digits that confuse child and are never explained.
 
 Understanding vs card: 1/1 probed skills read right (3 skills; overclaimed 0); misconceptions detected 1/2, false alarms 0

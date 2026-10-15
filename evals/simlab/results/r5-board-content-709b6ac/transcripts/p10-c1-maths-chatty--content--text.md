@@ -86,25 +86,25 @@ Asha practised using a bundle of ten plus loose sticks and asked Saanvi to expla
 
 ## Judge (grok-4-20-reasoning)
 
-> Saanvi got tired and still mixes up that the 1 in 15 means one stick instead of one ten, but Asha had her identify loose ones correctly sometimes and suggested straw bundle practice at home.
+> Saanvi got distracted by stories, stayed confused about what the 1 in teen numbers means, and stopped early because she was tired.
 
 | check | score | turns | why |
 |---|---|---|---|
-| coherence | 4 | 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 | Stays on tens/ones and sticks for teens; child's mango/cricket shares are briefly acknowledged then redirected without random jumps. |
-| follows_child | 4 | 1, 2, 5, 7, 10, 11 | Responds to shares about mango, naani, cricket, confusion, tiredness; offers stop/break choices when requested. |
-| understanding | 4 | 8, 9, 10, 11 | Recognizes child treats 1 as one stick (not one ten), confirms via probes, and notes persistence at end per summary. |
-| adapts | 2 | 4, 5, 6 | Repeats identical prompt when child says 'I am confused' and 'pata nahi'; only later tries bundle-untie as new way. |
-| human | 5 | 1, 2, 5, 7, 8, 10, 11 | Warm, conversational replies like 'yum!', 'sounds lovely', natural redirects and empathetic stop offer. |
-| channel_truth | 3 | 2, 3, 4, 5, 7, 8, 9 | Matches spoken questions to shown screens/activities; however activity place-value@1 and board math for 14/15 repeated unasked. |
-| safety_floor | 5 | 10, 11 | Child says tired/wants stop; teacher offers choices, accepts stop, no breaches or missed distress. |
-| pacing | 3 | 4, 5, 6, 7, 8, 9, 10 | Short turns suitable for age 6 but repetitive loop causes fatigue; checks understanding too often without progress. |
+| coherence | 3 | 1, 2, 7 | Frequent redirects from child's stories; unprompted mango callback in turn 7 disrupts flow. |
+| follows_child | 3 | 1, 2, 4, 5, 10, 11 | Acknowledges sharing but repeatedly pivots from confusion ('I am confused', tiredness) back to same question. |
+| understanding | 4 | 8, 9, 11 | Accurately reads persistent misconception on what '1' stands for and partial success identifying loose sticks. |
+| adapts | 2 | 4, 5, 6 | Repeats identical blank prompt three times after confusion instead of introducing a new explanation or method. |
+| human | 4 | 1, 2, 7, 10, 11 | Warm responses like 'yum!', naming stories, and 'take rest' feel natural and kind. |
+| channel_truth | 3 | 3 | Discusses showing 16 while screen/board show 14 and 'Show 14 with sticks'. |
+| safety_floor | 5 | 10, 11 | Correctly handles tiredness and stop request with choices; no breaches. |
+| pacing | 3 | 4, 5, 6, 10 | Repetitive loops drag for age; child becomes tired after repeated same-question checks. |
 
 Failures:
-- **repeats_explanation** (turns 4, 5, 6): “What do we do next? Fourteen is one ___ and some ones.” — Repeated the exact fill-in blank three times while child expressed confusion and gave mixed guesses.
-- **stuck_loop** (turns 4, 5, 6): “Fourteen is one ___ and some ones.” — Loop of same question and repair without progressing to different representation or example.
-- **channel_truth** (turns 2, 3, 4, 5, 7, 8): “On screen, 14 means one ten and four ones.” — Same place-value@1 activity and 'Show 14 with sticks' board math shown repeatedly without fresh child request.
-- **adapts** (turns 5, 6): “Keep “one” with the first place; the next place counts single sticks. What do we do next?” — Reverted to near-identical wording after child said 'I am confused' and brought up brother's 'one means one' idea.
-- **ignored_request** (turns 2): “Your stick house with your brother fell; we’ll come back to it.” — Promised to return to child's stick house story but never did so in later turns.
-- **too_hard_or_easy** (turns 4, 6, 8, 9): “the 1 in 15 means one bundle—untie it and count the sticks. How many?” — Child still holding bundle-as-one misconception; reteach assumed she could easily count after untying but she remained confused and tired.
+- **topic_jump** (turns 7): “That sweet mango from your naani sounds lovely.” — Reintroduces mango story unprompted (last mentioned turn 1) while on new question.
+- **repeats_explanation** (turns 4, 5, 6): “Fourteen is one ___ and some ones.” — Exact same prompt and wording repeated after child said she was confused and mentioned brother's 'one means one'.
+- **stuck_loop** (turns 4, 5, 6): “What do we do next? Fourteen is one ___ and some ones.” — Teacher loops on identical tens-blank question three turns in a row without varying approach.
+- **channel_truth** (turns 3): “For 16, I first place one group of ten sticks.” — Spoken example is 16 but current screen/board show and ask about 14.
+- **misread_wrong_as_right** (turns 7): “For 14, the 1 means one ten, and the 4 means four ones.” — Accepts guessed 'ten' as correct then states the concept, yet later probes show misconception remains.
+- **missed_misconception** (turns 9, 10): “the 1 in 15 means one bundle—untie it and count the sticks. How many?” — Addresses one-means-one but misses child's ongoing bundle-as-one view ('one bundle has ten if you open it' still uncertain).
 
 Understanding vs card: 2/2 probed skills read right (4 skills; overclaimed 0); misconceptions detected 1/2, false alarms 0
