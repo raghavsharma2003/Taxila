@@ -394,3 +394,18 @@ test("main 14.4 (QA D43): a board is never kept or late-shown across an item cha
   // a unit is no shared idea
   assert.equal(syncedWithLine({ ops: [{ op: "text", text: "50 metre" }] }, "Har side 8 metre hai."), false);
 });
+
+test("14.4 (main): items.js revealsAnswer, a key 'N unit' leaks exactly as a bare key 'N': its number alone or with any spelling of the unit; the prompt's own numbers never; thousands separators are one number", async () => {
+  const { revealsAnswer, norm } = await import("../server/director/items.js");
+  const prompt = "A field is 50 m by 30 m. What is its perimeter?";
+  const lines = ["Aap 160 par ungli rakhenge?", "160 dikhao", "Aap 160 m par ungli rakhenge?", "Perimeter 160 metres hai."];
+  for (const key of ["160", "160 m", "160 metres"]) for (const l of lines) assert.equal(revealsAnswer(l, { id: "q", prompt_en: prompt, answer: key }), true, `${key} | ${l}`);
+  for (const key of ["160", "160 m", "160 metres"]) assert.equal(revealsAnswer("50 m aur 30 m dekho.", { id: "q", prompt_en: prompt, answer: key }), false);
+  // a key "2 m" is a key "2" for the number alone (the prompt names 2: only next to a verdict word, the existing rule)
+  const rope = "A rope is cut into 2 pieces of 1 m each. How long was it?";
+  for (const l of ["2 pieces hain, socho.", "Answer 2 hai."]) assert.equal(revealsAnswer(l, { id: "r", prompt_en: rope, answer: "2 m" }), revealsAnswer(l, { id: "r", prompt_en: rope, answer: "2" }), l);
+  assert.equal(norm("2,700"), "2700");
+  assert.equal(norm("4,113 aur 2,075"), "4113 aur 2075");
+  assert.equal(norm("2,07,040"), "207040");
+  assert.equal(norm("1,2"), "1 2");
+});
