@@ -295,6 +295,11 @@ English, class 4 Hinglish (tum, spoken disclosure from a TEST-only WAV).
     restarts in the caption; the final screen has no board. Her line is "0 se 50 m tak length aur phir 50 se 80 m tak
     breadth dikhaiye—boundary ka agla hissa kitna hoga?", which asks the child to show it.
   - Shot: `shots/p12-numberline-gone.png`.
+  - Reproduced on TEST (local 14.2), 1 of 2 runs (lesson f10fcd57-839a-43d0-91cd-de7bbb86d5e8):
+    - turn 200 at 5.9 s with `ui.tray "studio"` and a slot in state "planning";
+    - the only Studio stream message, at 10.25 s, is `{t:"status", state:"failed", fallback:"voice"}`;
+    - the tray drops at 10.4 s, while her line still says "dikhaiye".
+  - No second turn response and no retract. Sent to stream 2.
 - **D36 (P2, content / board)**
   - Lesson 94ddbba2-4cd3-4c70-932d-b10d15ee72ea: "picture dikhao" → she says "rectangle … length 50 m, breadth 30 m", and
     the board draws a trapezoid with a clipped "bounda" label (`shots/p12-picture-trapezoid.png`).
