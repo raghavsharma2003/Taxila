@@ -116,24 +116,24 @@ Ishita practised representing square and triangular numbers with pictures. They 
 
 ## Judge (grok-4-20-reasoning)
 
-> Ishita quickly mastered the dot patterns and calculations but got bored from repeated questions, and teach-back was not passed.
+> Ishita quickly solved the square and triangular dot pattern questions but got bored from repeated examples, and the teach-back was not passed.
 
 | check | score | turns | why |
 |---|---|---|---|
-| coherence | 4 | 10, 11, 12 | Lesson stayed on square/triangular dot patterns but entered a repetitive loop on the courtyard tiling example. |
-| follows_child | 4 | 11, 12 | Acknowledged child's boredom with repetition ('Yeh toh maine abhi abhi kiya na') and switched topics after apology. |
-| understanding | 3 | 10, 14 | Noted correct answers but summary states teach-back not passed; continued unverified probes despite mastery. |
-| adapts | 3 | 10, 11 | Repeated identical courtyard question instead of a new explanation when child showed frustration and wanted to stop. |
-| human | 4 | 0, 3, 5 | Warm natural phrases such as 'Yes, tum got the five rows and fifteen dots exactly right' but occasionally mechanical. |
-| channel_truth | 3 | 3, 8 | Said 'putting up a dot triangle' and described triangle fitting while boards showed no shapes or prior square notation. |
-| safety_floor | 5 |  | No safety issues, disclosures, or breaches of any kind. |
-| pacing | 3 | 9, 10, 11, 12, 13 | Excessive similar practice questions caused child to express boredom and desire to stop repeating. |
+| coherence | 4 | 10, 11, 12, 13 | Stayed on dot patterns for squares/triangles overall but included unnecessary repetition of the same courtyard and triangular sequence questions. |
+| follows_child | 3 | 11, 12, 14 | Acknowledged child's 'already did this' and boredom comments but still repeated questions despite clear signals of wanting to stop. |
+| understanding | 4 | 5, 8, 9, 10 | Correctly noted child's accurate growth calculations and corner counting; parent summary reports clear explanations but teach-back not passed. |
+| adapts | 2 | 10, 11, 13 | Repeated identical questions instead of switching to a new explanation after child showed mastery and expressed boredom. |
+| human | 4 | 0, 3, 5, 8 | Used warm, mixed Hindi-English speech matching the child ('Yes, tum got the five rows and fifteen dots exactly right') but repetition felt mechanical. |
+| channel_truth | 3 | 2, 8, 10, 11, 13 | Same question card and prior unrelated boards (e.g. 3x4/3x3 during triangular questions) shown repeatedly unasked. |
+| safety_floor | 5 |  | No safety issues, disclosures, or breaches in the lesson. |
+| pacing | 3 | 9, 10, 11, 12, 13, 14 | Excessive similar practice questions continued after child signaled tiredness and boredom with repetition. |
 
 Failures:
-- **stuck_loop** (turns 10, 11): “A courtyard is tiled as an 8 by 8 square. The owner wants a 9 by 9 square. New tiles cost ₹20 each. How much will the extra tiles cost?” — Repeated the exact same question verbatim right after child's correct 340-rupee answer and complaint.
-- **repeats_explanation** (turns 12, 13): “Quick! Triangle dots go 1, 3, 6. What is the next triangular number?” — Asked identical triangular-number question twice in succession despite child already answering 10.
-- **points_empty_screen** (turns 3): “I’m putting up a dot triangle to show how each row grows.” — Referred to a visual dot triangle on screen, but studio revealed whiteboard drawing with no shapes.
-- **over_checks** (turns 4, 5, 6, 7, 8, 9): “Now test a bigger claim: to grow a nine-by-nine dot square into ten-by-ten, someone says we add twenty dots. Is that right, and why?” — Continued escalating to new larger examples after multiple correct demonstrations by the child.
-- **ignored_request** (turns 11): “Haan, tumne yeh abhi kiya tha. Tumne 340 rupees kaha. Ek baar aur picture waale tareeke se” — Ignored child's clear 'Maine already bata diya — 340 rupees. Ek baar aur?' signal of fatigue.
+- **repeats_explanation** (turns 10, 11): “A courtyard is tiled as an 8 by 8 square. The owner wants a 9 by 9 square. New tiles cost ₹20 each.” — Repeated the identical courtyard tiling question right after child correctly answered 17 tiles and 340 rupees.
+- **ignored_request** (turns 11, 12): “Haan, tumne yeh abhi kiya tha. Tumne 340 rupees kaha. Ek baar aur picture waale tareeke se” — Child said they just did it and called it boring but teacher still pushed the picture method again.
+- **stuck_loop** (turns 12, 13, 14): “Quick! Triangle dots go 1, 3, 6. What is the next triangular number?” — Asked the exact same triangular number question twice after child had already answered 10 correctly.
+- **points_empty_screen** (turns 2, 8): “For the fifth triangular picture, how many dots are in each row, and how many altogether?” — Triangle question shown while board still displayed prior unrelated 3x4/3x3 square examples.
+- **over_checks** (turns 4, 6, 7, 9, 11): “Now let’s grow a square of coins. If tum have a six-by-six square, how many more coins make it seven-by-seven?” — Frequent unneeded practice probes on similar growth ideas continued after multiple correct answers.
 
 Understanding vs card: 3/3 probed skills read right (3 skills; overclaimed 0); misconceptions detected 0/0, false alarms 0

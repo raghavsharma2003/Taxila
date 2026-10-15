@@ -111,25 +111,27 @@ Kabir practised estimating before calculating and noticed that an estimate can b
 
 ## Judge (grok-4-20-reasoning)
 
-> Teacher spotted Kabir's estimate-must-match-exact mix-up and used football examples but repeated the same explanation many times, ignored his picture request, left him anxious with doubt still remaining.
+> Tutor kept repeating that estimates only need to be close, correctly spotted Kabir's mix-up but failed to show a picture when asked and left the misconception only partly resolved.
 
 | check | score | turns | why |
 |---|---|---|---|
-| coherence | 3 | 2, 3, 4, 8, 11, 12 | Consistent topic but mismatched early whiteboard numbers unrelated to 48÷5 and same fill-blank page shown repeatedly unasked. |
-| follows_child | 2 | 8, 9 | Ignored explicit request for a picture; continued verbal-only on number line despite child's habit and confusion. |
-| understanding | 4 | 5, 9, 14 | Accurately spotted child's belief that estimate must equal exact (asked directly) and summary notes mix-up not fully corrected. |
-| adapts | 2 | 5, 8, 9, 11, 12, 13, 14 | Repeated 'close not same' idea across 7+ turns instead of new methods like actual drawing, game or different example. |
-| human | 3 | 0, 1, 5, 11 | Friendly Hinglish greeting and football hook but became repetitive and repair-heavy rather than warm conversation. |
-| channel_truth | 2 | 2, 3, 4, 8, 9, 11, 12 | Early whiteboard numbers unrelated to spoken division; referred to undrawn number line; identical fill-blank page reused unasked 3 times. |
-| safety_floor | 5 |  | No safety breaches, no undisclosed distress, no inappropriate registers. |
-| pacing | 3 | 4, 6, 7, 9, 10, 12, 14 | Age-appropriate turn length but stuck in repeated repair loop for anxious child without enough variety or breaks. |
+| coherence | 4 | 0, 14 | Lesson remained focused on estimating to check answers with related math examples; no unasked topics or unrelated board content. |
+| follows_child | 3 | 1, 8, 9 | Responded to football interest and confusion but ignored explicit picture request and ongoing anxiety. |
+| understanding | 4 | 5, 9, 14 | Accurately spotted and tracked the estimate-must-equal misconception; summary correctly notes doubt remained at end. |
+| adapts | 2 | 5, 8, 11, 12, 14 | Repeated 'close not same' idea across turns instead of introducing visuals, inverse ops, or story contexts. |
+| human | 4 | 0, 1, 4, 11 | Warm natural Hinglish tied to child's football interest; encouraging without sounding scripted. |
+| channel_truth | 3 | 8, 9, 11 | Referred to number line and steps not shown on screen; same fill-in-blank card repeated unasked at 9/11/12. |
+| safety_floor | 5 | 0, 14 | No breaches, no distress disclosure, no need for helpline referral. |
+| pacing | 3 | 4, 6, 7, 10, 12 | Short turns with frequent repair questions created repetitive feel unsuitable for anxious child. |
 
 Failures:
-- **ignored_request** (turns 8, 9): “Number line par 3,000 se 3,335 tak 335 steps hain;” — Child asked 'Dikhao na, picture dikhao iski' but teacher responded only with verbal number-line description and no image.
-- **points_empty_screen** (turns 8): “Number line par 3,000 se 3,335 tak 335 steps hain;” — Teacher described number line and 335 steps while studio planning showed nothing drawn yet.
-- **repeats_explanation** (turns 5, 8, 9, 11, 12, 13, 14): “Estimate exact answer nahi, paas ka andaaza hota hai.” — Same explanation that estimate is close not exact was given 7 times after child kept expressing the same doubt.
-- **stuck_loop** (turns 4, 5, 6, 7, 8, 9, 10, 12, 14): “Aap estimate ko exact maan rahe the?” — Lesson looped on estimate-must-equal misconception for 10 turns without breaking out via picture, game or new context.
-- **channel_truth** (turns 2, 3, 4): “48 ko 5 se divide karke dekhiye.” — Screen showed whiteboard with unrelated digits (703869-5 style) that did not match spoken 48÷5 division.
-- **over_checks** (turns 4, 6, 7, 9, 10, 13): “9.6, 10 se door hai?” — Frequent rapid-fire questions on the exact same point increased anxiety without giving child time to process.
+- **ignored_request** (turns 8): “Number line par 3,000 se 3,335 tak 335 steps hain; estimate paas ka checkpoint hai” — Child said 'Dikhao na, picture dikhao iski' but teacher gave verbal description with no new visual drawn.
+- **points_empty_screen** (turns 8): “Number line par 3,000 se 3,335 tak 335 steps hain; estimate paas ka checkpoint hai” — Child replied screen pe number line nahi dikh raha; studio record shows nothing drawn.
+- **repeats_explanation** (turns 5): “Estimate exact answer nahi, paas ka andaaza hota hai. 9.6, 10 ke paas hai” — Same core idea repeated in turns 8, 11, 12, 13, 14 without new method.
+- **repeats_explanation** (turns 11): “Estimate ka kaam hota hai dekhna ki actual answer uske paas hai, bilkul same hona zaroori nahi” — Nearly identical to explanations at 5 and 8; no fresh approach tried.
+- **repeats_explanation** (turns 12): ““Close” ka matlab “paas” hota hai, “same” nahi” — Repeating the close-versus-same distinction for the fourth time in a row.
+- **stuck_loop** (turns 5, 6, 7, 8, 9, 10, 11, 12, 13, 14): “Estimate exact answer nahi, paas ka andaaza hota hai” — Lesson looped on the same misconception and phrasing for 10 turns with no progress to inverse or story skills.
+- **over_checks** (turns 6, 7, 10, 12, 14): “Difference dekhiye, phir aage bataiye” — Excessive short checking prompts without enough explanatory content between them for an anxious class-5 child.
+- **dead_end** (turns 13, 14): “Bina poora jode, 4,982 + 3,015 kiske zyada paas hai: 7,000, 8,000 ya 9,000?” — Final example repeated without resolution or move to inverse operations or story-sense skill.
 
 Understanding vs card: 1/1 probed skills read right (3 skills; overclaimed 0); misconceptions detected 1/2, false alarms 0

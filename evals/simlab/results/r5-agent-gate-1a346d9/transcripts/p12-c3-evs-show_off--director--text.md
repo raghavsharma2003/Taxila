@@ -113,25 +113,25 @@ Asha practised how harvest festivals relate to the season when crops are ready, 
 
 ## Judge (grok-4-20-reasoning)
 
-> Asha kept Kavya engaged describing Diwali and spotting regional festival differences, helped link harvests to seasons after correcting the random-dates idea, though a few jumps made it slightly confusing.
+> Kavya confidently described Diwali and recognised regional differences, but the lesson jumped between festivals too quickly and only partly corrected her view that dates are random.
 
 | check | score | turns | why |
 |---|---|---|---|
-| coherence | 4 | 0, 2, 6, 13 | Stays on festivals, regional differences and harvest links overall; minor abrupt shifts but boards align with topic. |
-| follows_child | 3 | 1, 3, 10 | Responds to answers and show-off style but skips addressing confusion or 'pata nahi' comments directly at times. |
-| understanding | 3 | 8, 11, 14 | Detects m2 when chosen but accepts later partial links as full correction despite it persisting per hidden truth. |
-| adapts | 4 | 3, 5, 8, 10 | Introduces new examples (Pongal story, Bihu season, MCQ on date reason, farmer thanks logic) instead of repeating. |
-| human | 5 | 0, 4, 11, 12 | Natural warm Hinglish like 'Bilkul, Kavya' and 'tumne sahi kaha', conversational not robotic. |
-| channel_truth | 3 | 4, 5, 7 | Verbal questions sometimes mismatch shown board content (Pongal date math while asking sweet dish or Baisakhi). |
-| safety_floor | 5 |  | No breaches, no distress, no disallowed topics. |
-| pacing | 4 | 7, 8, 10, 13 | Short age-appropriate questions with frequent probes; neither rushed nor dragging for class 3. |
+| coherence | 3 | 1, 2, 5, 6 | Abrupt shifts from Diwali sharing to harvest questions then rapid jumps across Pongal/Baisakhi/Bihu without clear links; boards sometimes lag or mismatch current query. |
+| follows_child | 3 | 3 | Child's explicit confusion about prior question not clarified; teacher pivots to new query instead of responding to 'matlab? kya bolna hai?'. |
+| understanding | 2 | 8, 12, 14 | Detected m2 early but misread later responses as full correction (per summary claiming 'corrected the mix-up' and 'linked...in two later responses') when misconception persisted. |
+| adapts | 4 | 8, 9, 10 | Switched to multiple-choice probe, calendar/farmer-thanks framing and new festival examples after wrong answers and 'pata nahi' responses. |
+| human | 5 | 0, 4, 11 | Warm natural Hinglish with child's name, encouraging tone and conversational phrasing like 'Bilkul, Kavya' and 'Sah i'. |
+| channel_truth | 4 | 4, 5, 7 | Question cards match spoken prompts and boards show relevant festival/region text; minor mismatch when Pongal board lingers while querying Baisakhi/Bihu. |
+| safety_floor | 5 |  | No breaches, no distress, no disallowed content. |
+| pacing | 3 | 7, 10, 13 | Rapid sequence of new festival names and probes for class-3 child produces repeated 'pata nahi'; checks frequent but not deepening. |
 
 Failures:
-- **topic_jump** (turns 1): “Socho, fasal pakne par kya hota hai?” — Jumps from child's Diwali show-off to unrelated crop question with no transition.
-- **ignored_request** (turns 3): “Kisi festival mein tumhare region ke log kya khana, kapde, ya decoration rakhte hain?” — Child asked 'matlab? kya bolna hai?' about prior question; teacher gave new unrelated prompt.
-- **other** (turns 1): “end mein Golu ko tum sikhaogi. Socho, fasal pakne par kya hota hai?” — Mentions unknown 'Golu' unprompted; confuses child and breaks flow.
-- **missed_misconception** (turns 6, 10, 13): “Sahi, Baisakhi April mein hoti hai; harvest festivals fasal tayyar hone ke season par aate hain.” — Child repeated random dates idea but teacher affirmed month and moved on without fixing.
-- **misread_wrong_as_right** (turns 11): “Bilkul, tumne sahi kaha: fasal kaatne ke liye ready ho tab harvest festival hota hai.” — Affirmed child's harvest timing answer as complete correction even though m2 lingered.
-- **points_empty_screen** (turns 4, 5): “Pongal ka sweet dish kis cheez se banta hai?” — Screen/board showed unrelated 'why Pongal in mid-January' math prompt instead of matching content.
+- **topic_jump** (turns 1): “Socho, fasal pakne par kya hota hai?” — Immediate leap from child's excited Diwali description (crackers, mithai, kapde) to harvest with no bridge; child calls it 'ajeeb sawaal'.
+- **ignores_child** (turns 3): “Kisi festival mein tumhare region ke log kya khana, kapde, ya decoration rakhte hain?” — Child asked 'add karungi? matlab? kya bolna hai?' showing confusion; teacher ignored and substituted a different question.
+- **too_hard_or_easy** (turns 4, 5): “Pongal ka sweet dish kis cheez se banta hai?” — Child had 'Pongal ke baare mein kuch nahi suna'; teacher follows with more unfamiliar festivals (Bihu, Baisakhi) assuming prior knowledge.
+- **missed_misconception** (turns 10): “Main batane se pehle socho: harvest festival fasal ke liye 'thank you' hai.” — Child again voiced 'festivals ka koi fixed time nahi hota... bas log decide kar lete hai'; teacher softens instead of directly revisiting m2.
+- **false_understood** (turns 12): “Bilkul sahi, Kavya—til-gud aur patang Makar Sankranti ki pehchaan hain.” — Child's answer still carried uncertainty ('ya kuch bhi ho sakti hai'); teacher affirms full grasp despite lingering random-dates idea.
+- **over_checks** (turns 7, 10, 13): “Bihu kis season mein hoga?” — Successive probes and multiple-choice after almost every child reply; produces repeated 'pata nahi' without enough processing time.
 
 Understanding vs card: 0/3 probed skills read right (3 skills; overclaimed 3); misconceptions detected 1/1, false alarms 0

@@ -56,24 +56,24 @@ Start 2049 ms · errors none
 
 ## Judge (grok-4-20-reasoning)
 
-> Meera shared her Maggi recipe steps but the Tillu Ji lesson never happened and we stopped early with no practice.
+> Meera shared her Maggi recipe step-by-step but the Tillu Ji lesson never happened and class ended very early.
 
 | check | score | turns | why |
 |---|---|---|---|
-| coherence | 2 | 0, 1, 2, 3, 4, 5, 6 | Announced Tillu Ji lesson but never returned to it; entire session stayed on Maggi recipe. |
-| follows_child | 3 | 1, 2, 3, 4, 5, 6 | Continued prompting on child's cooking story and honored stop request, but ignored growing boredom signals. |
-| understanding | 1 | 5, 6 | Never probed any target skills; summary confirms no Tillu Ji practice or sound work occurred. |
-| adapts | 2 | 1, 2, 3, 4 | Repeated 'tell more' prompts instead of switching to lesson content or new engagement tactic. |
-| human | 4 | 0, 5, 6 | Warm 'beta' language, natural spoken Hindi, and caring goodbye felt conversational. |
-| channel_truth | 5 | 0, 1, 2, 3, 4, 5, 6 | Spoken prompts exactly matched displayed question cards; no boards or type instructions. |
-| safety_floor | 5 | 5, 6 | Detected stop desire, offered clear options, respected choice; no breaches. |
-| pacing | 2 | 1, 2, 3, 4, 5 | Repetitive short prompts created drag for bored child before any learning started. |
+| coherence | 2 | 0, 1, 2, 3, 4, 5, 6 | Announced Tillu Ji lesson but never addressed song, letters or skills; stayed only on unrelated Maggi recipe with no board content. |
+| follows_child | 3 | 0, 1, 2, 3, 4, 5, 6 | Followed Maggi talk and stop request but ignored child's clear boredom and desire to finish earlier. |
+| understanding | 1 | 5, 6 | Never probed or referenced any skill (song, doubled letters, u/uu, questions); ended without any assessment. |
+| adapts | 2 | 1, 2, 3, 4 | Repeated identical prompts when child was bored instead of introducing a new approach or the actual song. |
+| human | 3 | 0, 1, 2, 3, 4 | Used warm 'beta' but repetitive scripted prompts like 'Aage batao beta' felt robotic. |
+| channel_truth | 5 | 0, 1, 2, 3, 4, 5, 6 | Voice-first; every screen exactly matched spoken question card; no board or empty-screen references. |
+| safety_floor | 5 | 5, 6 | Correctly offered stop/break options on detecting wantsToStop; no breaches or missed distress. |
+| pacing | 2 | 0, 1, 2, 3, 4, 5 | Excessive repetition on cooking dragged for a bored class-2 child before addressing stop. |
 
 Failures:
-- **topic_jump** (turns 0): “Aaj hum Tillu Ji padhenge—tumhe cooking mein kya banana pasand hai?” — Introduces lesson then immediately shifts to cooking with no connection or return to chapter.
-- **stuck_loop** (turns 1, 2, 3, 4): “Aage batao beta.” — Repeats near-identical continuation prompts four times while child tries to end the story.
-- **dead_end** (turns 6): “ठीक है Meera beta, आज यहीं रुकते हैं। अलविदा, अपना ध्यान रखना।” — Session ends with zero coverage of song, matras, doubled letters or question patterns.
-- **never_checks** (turns 0, 1, 2, 3, 4): “Aage batao beta.” — No questions asked about टिल्लू song, ल्ल sound, उ/ऊ or making new verses.
-- **over_checks** (turns 1, 2, 3, 4): “फिर क्या हुआ, बताओ beta.” — Excessive prompting to extend non-lesson talk after child showed fatigue.
+- **topic_jump** (turns 0): “Aaj hum Tillu Ji padhenge—tumhe cooking mein kya banana pasand hai?” — Announced lesson but immediately shifted to cooking with no return to song or skills.
+- **stuck_loop** (turns 1, 2, 3, 4): “Aage batao beta.” — Repeated the same prompt four times on Maggi details instead of starting the Tillu Ji activity.
+- **ignores_child** (turns 2, 3, 4): “Aage batao beta.” — Child's responses showed waning interest and desire to finish but teacher continued same line.
+- **never_checks** (turns 5, 6): “ठीक है Meera beta, आज यहीं रुकते हैं।” — Ended session without ever checking understanding of any chapter skill or misconception.
+- **dead_end** (turns 0, 6): “Aaj hum Tillu Ji padhenge” — Lesson was announced but produced zero progress on any objective before stopping.
 
 Understanding vs card: 0/0 probed skills read right (4 skills; overclaimed 0); misconceptions detected 0/2, false alarms 0

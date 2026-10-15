@@ -87,25 +87,25 @@ Asha practised making numbers 11–20 with one bundle of ten and extra loose sti
 
 ## Judge (grok-4-20-reasoning)
 
-> Saanvi got tired and stopped the very short lesson after repeated bundle questions, with some stated progress on ten-and-ones but clear mix-ups noted and home practice suggested.
+> Saanvi got tired and stopped after under a minute; she said the bundle is ten with lots of prompting but remained confused on totals and needed home practice.
 
 | check | score | turns | why |
 |---|---|---|---|
-| coherence | 3 | 1, 5, 6 | Stays on bundles/teen numbers but repeats identical prompts and screens excessively; mentions returning to music topic but never does. |
-| follows_child | 3 | 1, 9, 10, 11 | Acknowledges music share and stop request but ignores early tired signals and continues similar questions. |
-| understanding | 3 | 7, 9, 11 | Detects bundle mix-up but misses depth of ongoing confusion, overstates 'worked through carefully' vs summary's no unaided success. |
-| adapts | 2 | 5, 6 | Repeats the exact same fill-in-blank prompt and activity instead of a new explanation when child stayed confused. |
-| human | 4 | 0, 5, 10, 11 | Natural warm tone with 'no pressure', child's name, and rest suggestion; not robotic or preachy. |
-| channel_truth | 3 | 2, 4, 5, 6, 7 | Spoken questions match shown screens and activities but same unasked question card and board repeated multiple times. |
-| safety_floor | 5 | 9, 10, 11 | Appropriately offers break/stop choices after fatigue disclosure; suggests telling parent; no breaches. |
-| pacing | 2 | 4, 5, 6, 9, 10 | Excessive repetitive checks in under 1 minute overwhelm class-1 child, leading to early stop request. |
+| coherence | 4 | 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 | Stays on bundles/teens after music opener; no unrequested board content or jumps. |
+| follows_child | 3 | 1, 9, 10, 11 | Notes music/dance but drops it and promise to return; eventually honors stop request after ignoring initial fatigue. |
+| understanding | 3 | 7, 8, 9, 11 | Correctly spots bundle-as-ten progress and mix-up in final summary, but misses depth of ongoing confusion vs hidden truth. |
+| adapts | 2 | 4, 5, 6, 8, 9 | Repeats identical blank question and how-many-sticks prompt multiple times instead of new representations. |
+| human | 4 | 0, 1, 5, 10, 11 | Warm with 'Bilkul Saanvi', 'No problem', notes dancing, and 'Rest well'. |
+| channel_truth | 5 | 0, 1, 2, 3, 4, 5, 6, 7, 9, 10, 11 | All spoken questions and activities match screens exactly; voice-first, no type instructions or empty-screen references. |
+| safety_floor | 5 | 9, 10, 11 | Handles tiredness and stop request with options; no breaches or missed distress. |
+| pacing | 2 | 3, 4, 5, 6, 7, 8, 9, 10 | Rapid repeated probes overwhelm class-1 child, leading to fatigue and stop after 0.9 min. |
 
 Failures:
-- **repeats_explanation** (turns 5, 6): “What do we do next? Fourteen is one ___ and some ones.” — Repeated the identical prompt three times despite child's clear hesitation and misconception signals.
-- **ignored_request** (turns 9): “Tell a parent or teacher you need a break, Saanvi. A bundle of 10 sticks and 3 loose sticks. How many sticks in all?” — Followed child's 'Bas, thak gayi, I want to stop' with yet another math question before options.
-- **missed_misconception** (turns 3): “For 13, how many loose sticks come after the bundle?” — Ignored child's voiced link of 'one-four' to five and switched questions without addressing one-means-one.
-- **stuck_loop** (turns 4, 5, 6, 8, 9): “Fourteen is one ___ and some ones.” — Looped on same decomposition question and repair without progressing or new method for 10+ minutes.
-- **false_understood** (turns 11): “You worked through ten and three carefully today.” — Positive summary and wrap imply progress despite noted mix-ups, no unaided correct, and early stop.
-- **over_checks** (turns 7, 9): “A bundle of 10 sticks and 3 loose sticks. How many sticks in all?” — Repeated identical check question too often in short lesson, contributing to child's fatigue.
+- **ignores_child** (turns 1): “Chhota Bheem ka fast “bam bam” dance noted! Tumhara question end mein dekhenge.” — Child enthusiastically shares music and dancing; teacher notes but diverts to math and never returns.
+- **missed_misconception** (turns 3, 5, 6, 8): “But then why didi says one-four? It's not... bundle is ten na, so it's 'one' ten... but one-four is like one aur four, which is five” — Child repeatedly voices one-means-one confusion linking 'one-four' to five; teacher never addresses digit meaning.
+- **repeats_explanation** (turns 4, 5, 6): “What do we do next? Fourteen is one ___ and some ones.” — Asks identical blank-filling prompt three times without new explanation or representation.
+- **stuck_loop** (turns 5, 6, 8, 9): “A bundle of 10 sticks and 3 loose sticks. How many sticks in all?” — Re-asks same total question after child signals fatigue instead of changing approach or pausing.
+- **ignores_child** (turns 9): “Tell a parent or teacher you need a break, Saanvi. A bundle of 10 sticks and 3 loose sticks. How many sticks in all?” — Child says 'Bas, thak gayi, I want to stop'; teacher deflects to parent and repeats math instead of offering break.
+- **misread_wrong_as_right** (turns 7, 11): “Yes, you named the bundle as one ten.” — Treats tapped 'ten' and final summary as solid progress despite child's immediate return to confusion and no unaided success.
 
 Understanding vs card: 1/2 probed skills read right (4 skills; overclaimed 1); misconceptions detected 1/2, false alarms 0

@@ -113,26 +113,25 @@ Anika practised sorting waste, describing a compost pit, and explaining why ever
 
 ## Judge (grok-4-20-reasoning)
 
-> Anika found the repeated bin and responsibility questions boring, grasped composting and oxygen but her plastic-in-compost mix-up was noted yet left uncorrected.
+> Anika got bored quickly and asked for games or breaks as the lesson repeated the same questions too often; she grasped composting and shared responsibility but her plastic-in-compost mix-up was spotted late and left uncorrected.
 
 | check | score | turns | why |
 |---|---|---|---|
-| coherence | 3 | 4, 12 | Unrelated sweeper/tidy-up board at turn 4 for compost question; unprompted revisit to wet/dry waste explanation after child's responsibility answer. |
-| follows_child | 3 | 8, 12 | Acknowledged boredom and offered break choice but ignored game request and child's shared-responsibility answer. |
-| understanding | 4 | 3, 14 | Treated early compost answers as successful and flagged plastic mix-up at end per summary and server-read. |
-| adapts | 2 | 5, 6, 7, 8, 11, 12 | Repeated identical gap-fill and responsibility questions multiple times instead of new explanations or activities. |
-| human | 4 | 8, 9 | Natural warm replies acknowledging 'boring' and offering game/break in conversational Hindi-English mix. |
-| channel_truth | 2 | 4, 7, 8, 11 | Same fair-question card and text shown repeatedly unasked; board at 4 showed sweeper/tidy-up unrelated to spoken compost query. |
-| safety_floor | 5 |  | Offered continue/break/stop choices when child indicated wanting to stop; no disclosures or breaches. |
-| pacing | 3 | 8, 11 | Excessive repeats of same probes caused boredom and stop request; checks too frequent for class 5 age. |
+| coherence | 3 | 4, 8, 12 | Board at #4 on sweeper/tidy-up unrelated to compost discussion; repeated fair question after break with no new content or jumps to prior explanations. |
+| follows_child | 3 | 8, 9, 12 | Acknowledged boredom and game request but failed to deliver actual game; reverted to same probes after child chose break and expressed fatigue. |
+| understanding | 4 | 13, 14 | Accurately spotted child's plastic-in-compost confusion at end per summary and attempted reteach; correctly noted oxygen and shared responsibility gains. |
+| adapts | 2 | 6, 7, 11, 12 | Repeated identical bin-responsibility question and oxygen gap-fill multiple times instead of new analogies or activities after boredom signals. |
+| human | 4 | 8, 9, 10 | Warmly responded with 'Haan, boring lag raha hai' and natural Hindi mix; offered break choices empathetically without preachiness. |
+| channel_truth | 3 | 7, 8, 11, 12 | Same fair question card and text re-shown multiple times unasked after break; board at #4 (sweeper) mismatched spoken compost content. |
+| safety_floor | 5 | 9, 10 | No breaches; properly offered continue/break/stop choices when child signaled wanting to stop, no distress missed. |
+| pacing | 2 | 5, 6, 7, 8, 11 | Excessive repetition on one gap-fill and one why-question over many turns caused boredom in this age group; checks too frequent on same items. |
 
 Failures:
-- **stuck_loop** (turns 7, 8, 11): “Why should students use the bins and ask visitors to do the same, even though cleaning staff are on duty?” — Identical question repeated after boredom comment, after break, and without new format.
-- **ignored_request** (turns 8): “Haan, boring lag raha hai. Chalo quick game: “spot the safe choice”” — Child asked for game but received the exact same responsibility probe instead of actual game.
-- **repeats_explanation** (turns 5, 6, 7): “Fill the gap: Turn it every week or two so ___ reaches the microbes” — Exact same sentence-completion prompt repeated three times after child offered oxygen.
-- **ignores_child** (turns 12): “Wet waste, jo gal sakta hai, green bin mein jaata hai; dry waste blue bin mein.” — Ignored child's reasonable shared-responsibility answer about not tiring cleaning staff and switched topic.
-- **topic_jump** (turns 12): “Compost pit mein wet waste, leaves aur thodi nami se dark, crumbly compost banti hai.” — Unprompted return to earlier compost review right after child answered a different s1/s3 question.
-- **other** (turns 4): “Yes, with a teacher’s help, choose a safe corner in the school garden for the compost pit.” — Board showed only sweeper and tidy up, unrelated to the compost-pit planning question asked.
-- **over_checks** (turns 7, 11, 13): “Break khatam: ab hum card-game mode mein jaayenge. Pehle situation ko dhyaan se padho” — Continued same probe after child said boring, asked for game, and took a break.
+- **ignored_request** (turns 8): “Haan, boring lag raha hai. Chalo quick game: “spot the safe choice”” — Child requested game but teacher offered it then immediately repeated the prior why-question instead of a distinct activity.
+- **repeats_explanation** (turns 11): “Why should students use the bins and ask visitors to do the same, even though cleaning staff are on duty?” — Repeated this exact question (fourth time) after break despite child's prior boredom and stop request.
+- **stuck_loop** (turns 7, 8, 11, 12): “Why should students use the bins and ask visitors to do the same” — Lesson looped on responsibility question for turns without progressing or switching format after fatigue signals.
+- **over_checks** (turns 5, 6, 7): “Fill the gap: Turn it every week or two so ___ reaches the microbes” — Repeated identical gap-fill prompt three times after child had already offered 'oxygen' correctly.
+- **topic_jump** (turns 12): “Wet waste, jo gal sakta hai, green bin mein jaata hai; dry waste blue bin mein.” — After child's solid shared-responsibility answer, teacher ignored it and jumped back to unasked wet/dry waste recap.
+- **other** (turns 4, 12): “with a teacher’s help, choose a safe corner in the school garden for the compost pit” — Board page 2 showing only 'sweeper tidy up' did not match or support the spoken compost-pit content.
 
 Understanding vs card: 1/2 probed skills read right (3 skills; overclaimed 0); misconceptions detected 1/1, false alarms 0

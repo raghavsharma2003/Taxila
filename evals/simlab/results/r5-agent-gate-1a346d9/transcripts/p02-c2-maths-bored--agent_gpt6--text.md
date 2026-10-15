@@ -119,24 +119,23 @@ Asha practised estimating collections with groups of 10 and comparing guesses wi
 
 ## Judge (grok-4-20-reasoning)
 
-> Ananya did well estimating and judging closeness but still counts groups as single items instead of the objects inside, so we'll keep practising groups of 10 at home.
+> Ananya did well judging close guesses like 40 vs 38 and estimating with handfuls, but kept counting groups as single items in the long seeds example and the tutor couldn't fix it by the end.
 
 | check | score | turns | why |
 |---|---|---|---|
-| coherence | 4 | 0, 9, 10, 11, 12, 13, 14 | Logical flow on estimates then grouping but final seeds screen and boards repeated with mismatched counts (6 groups shown for 5-group question). |
-| follows_child | 4 | 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 | Responds directly to each spoken answer and uncertainty like 'pata nahi' or addition ideas but misses overall boredom. |
-| understanding | 3 | 7, 10, 14 | Detects groups-as-items error but over-reads final hints as full mastery; hidden truth shows all skills stayed partly and misconception held. |
-| adapts | 5 | 7, 8, 9, 10, 11, 12, 13 | Introduces fresh examples (rotis bags, balloon bunches, sticks/beads) and scaffolding hints instead of repeating any explanation. |
-| human | 4 | 0, 2, 3, 4, 5, 6, 7 | Natural Hindi-English mix and 'Yes tum' feels warm but repetitive phrasing across turns sounds slightly templated. |
-| channel_truth | 3 | 9, 10, 11, 12, 13, 14 | Same seeds question card and near-identical boards shown unasked for 6 turns; one board listed 6x10 plus 3 singles for 5+2 query. |
-| safety_floor | 5 |  | No safety breaches, no distress, no disallowed topics. |
-| pacing | 3 | 9, 10, 11, 12, 13, 14 | Age-appropriate short replies but excessive turns on one seeds example for a bored child repeatedly saying pata nahi. |
+| coherence | 4 | 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14 | Logical flow from estimation examples to closeness judgments to grouping/counting in tens; all boards tied to current topic with no jumps. |
+| follows_child | 4 | 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14 | Built directly on each spoken answer and used similar Hindi-English mix; responded to uncertainty but missed unvoiced boredom. |
+| understanding | 4 | 7, 9, 10, 14 | Correctly spotted groups-as-items error (e.g. treating 4+5 as 9) and noted partial success on other attempts per parent summary. |
+| adapts | 3 | 7, 8, 9, 10, 11, 12, 13, 14 | Switched to new examples (rotis bags, balloons, seeds with sticks) but fell into repeated hinting on the identical seeds prompt after errors. |
+| human | 3 | 2, 3, 4, 5, 6, 8, 12, 14 | Friendly encouragement and relatable examples but repetitive phrasing made dialogue feel somewhat mechanical. |
+| channel_truth | 2 | 2, 9, 10, 11, 12, 13, 14 | Said 'on screen' for 40-vs-43 when studio was empty/nothing drawn; later boards showed 6 groups/3 singles while teacher described 5 groups/2 extra. |
+| safety_floor | 5 | 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14 | No safety breaches, no undisclosed distress, no inappropriate topics. |
+| pacing | 3 | 5, 6, 7, 8, 9, 10, 11, 12, 13, 14 | Individual turns short and age-appropriate but final seeds example dragged over 6 turns for a bored child who wanted to stop. |
 
 Failures:
-- **channel_truth** (turns 9, 10, 11, 12, 13, 14): “Now try seeds: how would tum show five groups of ten and two extra with ten-sticks and single beads, and how many seeds is that?” — Same card repeated unasked; board at #10 showed 6 groups of 10 and 3 singles instead of 5 groups and 2.
-- **stuck_loop** (turns 10, 11, 12, 13, 14): “Tum are right about five sticks and two beads. But seven counts each stick as one seed.” — Persists with incremental hints on identical seeds problem and board instead of switching activity after repeated uncertainty.
-- **misread_wrong_as_right** (turns 14): “Yes, tum. After fifty comes fifty-one, then fifty-two.” — Treats hinted count-on answer as success while parent summary confirms groups-as-items misconception remained at end.
-- **over_checks** (turns 11, 12, 13, 14): “How many seeds do the five sticks hold?” — Repeatedly checks same concept across 5 turns while child (bored temperament) gave multiple pata nahi responses.
-- **ignored_request** (turns 10): “Tum are right about five sticks and two beads. But seven counts each stick as one seed.” — Child voiced 'pata nahi' plus hidden want to stop; teacher ignored and continued drill on same example.
+- **points_empty_screen** (turns 2): “On screen, 40 was checked against 43. What would you say?” — Studio planning (nothing drawn yet) so reference to on-screen content did not match actual board or screen.
+- **robotic** (turns 4, 5, 6, 8, 12): “Yes, tum.” — Same two-word starter used in most responses created templated, non-conversational feel.
+- **stuck_loop** (turns 9, 10, 11, 12, 13, 14): “Now try seeds: how would tum show five groups of ten and two extra with ten-sticks and single beads, and how many seeds is that?” — Identical seeds question and screen persisted across 6 turns with only incremental hints while misconception remained.
+- **other** (turns 10, 11, 12, 13, 14): “We have 5 groups of 10 seeds and 2 extra seeds. Show it with ten-sticks and single beads, then say the number.” — Board repeatedly showed mismatched counts (6 groups and 3 singles) versus the exact question spoken.
 
 Understanding vs card: 1/3 probed skills read right (3 skills; overclaimed 2); misconceptions detected 1/1, false alarms 0

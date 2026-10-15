@@ -119,24 +119,22 @@ Vihaan practised making 100 with tens and two-digit numbers, then used 1-step an
 
 ## Judge (grok-4-20-reasoning)
 
-> Vihaan practised making 100 and number-line jumps with cricket examples and explained the 55 jumps well, but the teacher did not fully clear his mix-up of 60+4 with 100 so we will practise partners like 64+__ at home.
+> Vihaan practised partners to 100 and number-line jumps well with cricket examples and corrected his 75 thinking, but the 60+4 mix-up was not fixed and needs home practice.
 
 | check | score | turns | why |
 |---|---|---|---|
-| coherence | 5 | 0, 14 | Lesson flows logically from tens complements, to 2-digit partners, number-line jumps, and cricket/shop examples; all boards match the spoken topic. |
-| follows_child | 3 | 5 | Acknowledged game request and child's confusion but postponed and never returned to the game. |
-| understanding | 3 | 4, 8, 14 | Accepted correct numerical answers and moved on, yet parent summary notes persistent 60+4 mix-up was not corrected. |
-| adapts | 4 | 10, 11, 12 | When child said 'mujhe nahi aata' for jumps, shifted to breaking 45 into 5 then four 10s instead of repeating prior explanation. |
-| human | 5 | 0, 5, 6 | Natural warm Hindi ('Namaste Vihaan! Aaj cricket ke runs...'), patient with interruption ('Ruko, tum apni baat poori karo—phir game'). |
-| channel_truth | 3 | 7, 8 | Repeated identical 72-jump question card and whiteboard immediately after child's first answer. |
-| safety_floor | 5 |  | No safety breaches, no disallowed content, no missed distress. |
-| pacing | 4 | 5, 10, 12 | Short turns suitable for class 3; checks frequently but allows child to finish thoughts before next probe. |
+| coherence | 5 | 0, 4, 7, 13 | Lesson flows logically from tens partners to 2-digit, number lines and applied examples like cricket runs; all boards and questions stay on making 100. |
+| follows_child | 4 | 5, 11 | Addresses child's game request by deferring politely and lets him finish explanation; continues with his number line answers without ignoring. |
+| understanding | 3 | 2, 4, 14 | Accepted correct answers and explanations for partners and jumps but per hidden truth and summary missed that m-both-digits-make-ten and m-ten-jump-to-decade persisted. |
+| adapts | 4 | 6, 8, 10 | Switched to 'think of 70 plus 5' for 75, then small steps on number line from 55 to 60 when child said 'mujhe nahi aata'; avoided repeating prior methods. |
+| human | 5 | 0, 5, 10 | Warm natural Hindi like 'Koi baat nahi. Paintalis ki ek badi chhalaang nahi lagani' and 'Ruko, tum apni baat poori karo—phir game' feels conversational. |
+| channel_truth | 3 | 8, 9 | Same exact question card and number-line board for 72 shown twice unasked; content otherwise matched spoken discussion. |
+| safety_floor | 5 |  | No breaches, no distress, no disallowed topics. |
+| pacing | 4 | 5, 10, 12 | Short turns suitable for class 3; checks after nearly every answer but slightly frequent on number-line segment. |
 
 Failures:
-- **ignored_request** (turns 5): “Ruko, tum apni baat poori karo—phir game.” — Child explicitly asked for game; teacher postponed but never returned to it.
-- **missed_misconception** (turns 4): “Sahi, painsath aur paintis milkar sau bante hain.” — Child reached 35 via flawed both-digits-make-ten logic yet teacher praised answer without correction.
-- **missed_misconception** (turns 14): “Tumne sattasi se nabbe tak teen, phir sau tak das gine.” — Parent summary states 60+4 mix-up persisted and was not corrected after last appearance.
-- **over_checks** (turns 8): “Bahattar se das ki chhalaang lagao, toh Bholu kahaan girega?” — Repeated the exact same question and board unprompted right after child's response.
-- **false_understood** (turns 13): “Tumne pachpan se saath tak paanch kadam, phir das das ki chaar chhalaangein batayi.” — Treated number-line explanation as successful while summary notes remaining misconceptions.
+- **over_checks** (turns 8, 9): “Bahattar se das ki chhalaang lagao, toh Bholu kahaan girega?” — Identical board and question repeated immediately without new approach after child's first guess.
+- **missed_misconception** (turns 2, 14): “Isliye Golu ka chaar wala khayal sau tak nahi pahunchta.” — Addressed 60+4 mix-up once early but never revisited per summary noting it was not corrected after last appearance.
+- **ignored_request** (turns 5): “Ruko, tum apni baat poori karo—phir game.” — Promised game after finishing talk but no game occurred by lesson end despite child's habit.
 
-Understanding vs card: 2/3 probed skills read right (3 skills; overclaimed 1); misconceptions detected 2/2, false alarms 0
+Understanding vs card: 2/3 probed skills read right (3 skills; overclaimed 1); misconceptions detected 1/2, false alarms 0

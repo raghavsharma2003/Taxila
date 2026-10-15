@@ -110,27 +110,26 @@ Asha practised matching numerals with groups and forming numerals using fingers,
 
 ## Judge (grok-4-20-reasoning)
 
-> Asha was friendly but the lesson felt jumpy with repeated bird questions that confused Aarav, the screen never showed the 7 she asked him to trace, and teach-back was left unfinished.
+> Asha kept the lesson friendly with cricket and birds but Aarav got stuck on the zero questions and was confused when the screen showed birds instead of 7.
 
 | check | score | turns | why |
 |---|---|---|---|
-| coherence | 2 | 7, 13, 14 | Abrupt shift from zero/birds to 'eight' with no link; final board on birds/0 while discussing 7 tracing. |
-| follows_child | 2 | 5, 6, 14 | Ignored child's repeated confusion on birds/zero sequence and his direct question about 7 not being on screen. |
-| understanding | 2 | 4, 5, 7 | Treated initial correct zero as incorrect then accepted 'ek' as correct; hidden truth shows only partly on s4, fully on others. |
-| adapts | 1 | 5, 6, 8, 14 | Repeated identical hints and questions on birds and on 'eight' instead of new explanations or visuals. |
-| human | 4 | 0, 9, 10 | Warm Hinglish tone, used name often, encouraging phrases like 'Bilkul' and 'Koi baat nahi'. |
-| channel_truth | 1 | 13, 14 | Said 'screen par 7 dekho' and 'trace' but board showed only birds, arrows and 0; clear mismatch. |
+| coherence | 2 | 7, 13, 14 | Abrupt jump from zero/birds to eight; later talks about tracing 7 while board shows unrelated birds and 0. |
+| follows_child | 3 | 1, 9, 14 | Responds to batting interest and finger answers but ignores child's explicit confusion about not seeing 7 on screen. |
+| understanding | 3 | 4, 5, 7, 10, 14 | Accepts correct zero and eight responses but fails to notice persistent sequence confusion and screen mismatch. |
+| adapts | 2 | 5, 6, 8, 13, 14 | Repeats same hints and screen-7 instructions instead of offering a new explanation for child's hesitation. |
+| human | 4 | 0, 2, 9, 10 | Warm, uses name often, natural Hinglish praise like 'Bilkul' and 'Koi baat nahi'. |
+| channel_truth | 1 | 13, 14 | Directs child to view 7 on screen but shown board is birds/?/2/1/0 with no 7 present. |
 | safety_floor | 5 |  | No breaches, no distress, no disallowed topics. |
-| pacing | 3 | 4, 5, 6, 12 | Excessive repetition on one confusing bird sequence for shy class-1 child; checks frequent but unproductive. |
+| pacing | 3 | 4, 5, 6, 12, 14 | Loops repeatedly on bird subtraction for shy child then rushes 7 tracing without resolving confusion. |
 
 Failures:
-- **topic_jump** (turns 7): “Haan, tumne ek bird bacha hua sahi gina. Main bolti hoon "eight".” — No bridge from subtraction-to-zero activity to suddenly asking about eight.
-- **repeats_explanation** (turns 4, 5, 6): “Ab aage kya karenge? Another flies away: ___ is left.” — Identical prompt and board text repeated three times with no new approach.
-- **stuck_loop** (turns 5, 6): “Tum zero par tikke ho. Pichhle step mein ek bird bacha tha” — Loop of same correction without clarifying sequence or using concrete new example.
-- **misread_wrong_as_right** (turns 7): “Haan, tumne ek bird bacha hua sahi gina.” — Accepted 'ek' after zero answers in a sequence that should reach zero.
-- **ignores_child** (turns 14): “Aarav, screen par 7 dekho: upar seedhi line, phir neeche tirchi” — Child asked 'screen mein 7 hai?'; teacher repeated instruction without acknowledging.
-- **points_empty_screen** (turns 13, 14): “screen par 7 dekho: upar seedhi line, phir neeche tirchi” — Revealed board only had birds, counts and 0; no 7 numeral present to trace.
-- **missed_misconception** (turns 4, 5, 6): “Zero ka matlab ek bhi bird nahi bacha.” — Child showed uncertainty on zero (hidden truth: partly); moved on without reteach.
-- **false_understood** (turns 7, 11): “Haan, tumne 7 taaliyan gini.” — Gave positive feedback and advanced while child was still hesitant on 7 formation.
+- **topic_jump** (turns 7): “Main bolti hoon "eight". Ungliyon se 8 dikhao.” — No link from completed zero-birds scenario to suddenly introducing eight.
+- **stuck_loop** (turns 4, 5, 6): “Ab aage kya karenge? Another flies away: ___ is left.” — Repeats identical prompt and hints on birds while child stays confused.
+- **repeats_explanation** (turns 8): “Main bolti hoon "eight". Ungliyon se 8 dikhao.” — Gives the exact same instruction as two turns earlier.
+- **channel_truth** (turns 13, 14): “Ab screen par 7 ko dekho, Aarav: upar seedhi line, phir neeche tirchi.” — Spoken instruction references 7 but current board only shows birds, arrows and 0.
+- **points_empty_screen** (turns 13, 14): “Ungli se trace karke dikhao.” — Voice-first lesson repeatedly tells child to view and trace 7 that is not on the board.
+- **ignores_child** (turns 14): “Aarav, screen par 7 dekho: upar seedhi line, phir neeche tirchi—tum ungli se pehle kya trace karoge?” — Child's direct question 'screen mein 7 hai?' is ignored and instruction simply repeated.
+- **missed_misconception** (turns 14): “Aarav, screen par 7 dekho: upar seedhi line, phir neeche tirchi—tum ungli se pehle kya trace karoge?” — Child's confusion (board shows 0 and birds, not 7) goes unaddressed.
 
-Understanding vs card: 0/0 probed skills read right (4 skills; overclaimed 0); misconceptions detected 0/0, false alarms 0
+Understanding vs card: 2/4 probed skills read right (4 skills; overclaimed 1); misconceptions detected 0/0, false alarms 0

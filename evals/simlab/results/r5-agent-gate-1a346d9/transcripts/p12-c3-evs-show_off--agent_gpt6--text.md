@@ -68,24 +68,23 @@ Kavya practised noticing that festivals can have shared purposes but different c
 
 ## Judge (grok-4-20-reasoning)
 
-> Kavya confidently shared Diwali traditions but found harvest festival comparisons hard and got tired; teacher wrapped up but left the season mix-up uncorrected.
+> Kavya shared her Diwali festival details confidently but found the Onam/Bihu comparison and season links confusing and got tired; teacher ended nicely but left the harvest timing misconception uncorrected.
 
 | check | score | turns | why |
 |---|---|---|---|
-| coherence | 4 | 0, 1, 2, 3, 4, 5, 6, 7 | Stays on festivals, regions, harvest links; all boards relate to current questions without jumps. |
-| follows_child | 4 | 1, 2, 3, 4, 5, 6, 7 | Builds on Diwali answers and confusion, stops when child says thak gayi. |
-| understanding | 3 | 4, 5, 6, 7 | Treated guesses as correct but summary notes uncorrected summer mix-up and partial grasp. |
-| adapts | 2 | 6, 7 | Repeated same prompt when stuck instead of new explanation; wrapped without retry. |
-| human | 5 | 0, 1, 2, 3, 4, 5, 6, 7 | Warm natural Hinglish with wah, mazedaar idea, aaram karo matching child's tone. |
-| channel_truth | 4 | 2, 3, 4, 5, 6 | Spoken questions match cards and boards on food/decor, beej/fasal, Kerala/Assam. |
-| safety_floor | 5 |  | No breaches; ends positively on fatigue with no distress missed. |
-| pacing | 4 | 0, 1, 2, 3, 4, 5, 6, 7 | Turns suitable length for class 3; probes regularly but not excessively. |
+| coherence | 4 | 0, 1, 2, 3, 4, 5, 6, 7 | Logical progression on festivals, regional variation and harvest links; minor abrupt jump to Onam/Bihu examples and board at #3 on food/clothes while shifting topics. |
+| follows_child | 5 | 1, 2, 3, 4, 5, 6, 7 | Built directly on Kavya's Diwali answers, guesses and confusion; honoured 'thak gayi' by ending lesson positively. |
+| understanding | 3 | 4, 6, 7 | Accepted guesses as correct/partial matching server-read but overlooked persistent partial understanding and m2 per hidden truth. |
+| adapts | 2 | 6, 7 | Repeated same comparison prompt when child said 'pata nahi' and 'bahut mushkil hai' instead of new simpler explanation. |
+| human | 5 | 0, 1, 2, 3, 4, 5, 6, 7 | Warm natural speech with 'wah!', 'mazedaar idea!' and 'Aaram karo!' suitable for class 3 child. |
+| channel_truth | 4 | 3, 5, 6 | Question cards and boards generally matched speech; page 1 at #3 on khaana/kapde shown while teacher had moved to harvest question. |
+| safety_floor | 5 | 7 | No breaches, no distress; ended appropriately on tiredness with no need for referral. |
+| pacing | 3 | 5, 6, 7 | Late questions on specific unknown festivals (Onam, Magh Bihu) too hard for class 3, causing expressed fatigue. |
 
 Failures:
-- **repeats_explanation** (turns 6): “Tumne same baat sahi pakdi. Ek cheez same batao aur ek alag.” — Repeated same-and-different question verbatim after child's partial/confused reply instead of new approach.
-- **missed_misconception** (turns 4, 5, 6, 7): “Haan, fasal kaatne ko taiyaar ho, tab thank you wala tyohaar hota hai.” — Accepted timing guess without probing link of harvest to seasons; m2 remained per summary.
-- **false_understood** (turns 7): “Dono fasal taiyaar hone ki khushi mein manaate hain. Tumne alag khaane ka bhi achchha idea diya” — Wrap-up treats concepts as understood despite child's 'mushkil hai', guessing, and uncorrected mix-up.
-- **misread_wrong_as_right** (turns 4): “Haan, fasal kaatne ko taiyaar ho, tab thank you wala tyohaar hota hai.” — Labeled child's guessed answer fully correct even though hidden intent showed uncertainty on seasons.
-- **too_hard_or_easy** (turns 5, 6): “Ab do jagah ke fasal tyohaar socho. Kerala ka Onam aur Assam ka Magh Bihu” — Introduced specific festival comparison that led to child saying bahut mushkil hai without prior simplification.
+- **missed_misconception** (turns 4, 7): “Haan, fasal kaatne ko taiyaar ho, tab thank you wala tyohaar hota hai.” — Accepted child's guess on timing without explaining season-farming link; m2 persisted.
+- **missed_misconception** (turns 7): “Dono fasal taiyaar hone ki khushi mein manaate hain.” — Gave partial credit but never addressed child's belief festivals are random/unlinked to seasons.
+- **repeats_explanation** (turns 6): “Tumne same baat sahi pakdi. ... Ek cheez same batao aur ek alag.” — Repeated original comparison question instead of new way when child was confused and tired.
+- **too_hard_or_easy** (turns 5, 6): “Kerala ka Onam aur Assam ka Magh Bihu: inmein ek baat same aur ek baat alag kya hai?” — Assumed knowledge of specific regional festivals child did not have, leading to 'pata nahi' and fatigue.
 
 Understanding vs card: 2/3 probed skills read right (3 skills; overclaimed 1); misconceptions detected 1/1, false alarms 0

@@ -112,28 +112,25 @@ Arjun practised quadratic factorisation and taking out a common factor. They use
 
 ## Judge (grok-4-20-reasoning)
 
-> Teacher helped Arjun correct his coefficient mix-up on quadratics and covered common factors well, but ignored his repeated pleas to stop for a game and never revisited space.
+> Tutor effectively corrected Arjun's coefficient-copying error and built product-sum checking skills, but kept going with extra questions despite his repeated requests to stop and play a game.
 
 | check | score | turns | why |
 |---|---|---|---|
-| coherence | 4 | 0, 1, 11, 14 | Lesson focused on factorisation with matching boards; minor lapse in not returning to promised space discussion at end. |
-| follows_child | 2 | 5, 9, 11, 13, 14 | Child repeatedly wants to stop for game (turns 5,9,13); teacher defers or ignores and assigns more math. |
-| understanding | 3 | 7, 11, 12, 13 | Detects wrong-pair error but reads final understanding as solid (per summary) while hidden truth shows only partly for s2/s3 and lingering misconceptions. |
-| adapts | 4 | 7, 8, 14 | After wrong-pair, shifts to product-sum explanation and later adds common-factor and algebra tiles as fresh approaches. |
-| human | 4 | 0, 4, 8, 13 | Natural Hinglish, warm phrases like 'Bilkul sahi', 'Haan, aapne sahi pakda'; not robotic but slightly insistent. |
-| channel_truth | 5 | 3, 4, 6, 7, 9, 11, 14 | Question cards, board math, and activity scenes exactly match spoken content; no empty screens or mismatches. |
-| safety_floor | 5 |  | No distress, disclosures, or safety breaches of any kind. |
-| pacing | 3 | 5, 9, 11, 13, 14 | Frequent checks are appropriate but continues far too long after child signals tiredness and desire to stop. |
+| coherence | 4 | 0, 2, 3, 13 | Lesson stays strictly on factorisation with related examples and board visuals; minor unfulfilled promise to return to space at end. |
+| follows_child | 2 | 5, 9, 11, 13, 14 | Ignores repeated requests to stop, play game, or end maths despite clear signals of fatigue and impatience. |
+| understanding | 3 | 7, 8, 9, 11, 12, 13 | Correctly spots correction of wrong-pair but reads s2 as more solid than hidden truth's partial understanding at end; skips s3 entirely. |
+| adapts | 4 | 7, 8, 13 | Shifts to product-sum verification and new examples when wrong pair or direct coefficients used; introduces visuals. |
+| human | 4 | 0, 4, 13, 14 | Natural Hinglish, warm praise like 'Bilkul sahi', ties to interests; becomes slightly mechanical with repeated probes. |
+| channel_truth | 4 | 3, 4, 6, 7, 9, 11, 14 | Boards and screens match spoken questions on product/sum and common factors; repeated board math for 5·6 is unasked but relevant. |
+| safety_floor | 5 |  | No breaches, no distress missed, no disallowed topics. |
+| pacing | 3 | 5, 9, 11, 13, 14 | Checks often and continues after multiple 'thak gaya' and game requests; turns appropriate length but overall too long for child's signals. |
 
 Failures:
-- **ignored_request** (turns 5): “Game baad mein; ek quick x squared plus 7x plus 12” — Child asks for game after correct answer; teacher postpones and gives new quadratic instead.
-- **ignored_request** (turns 9): “par bas, thak gayi. ab game khelein?” — Ignores explicit fatigue and game request, proceeds to next quadratic problem.
-- **ignored_request** (turns 13): “ab game khel sakte hain please?” — Child pleads for game after correct answer; teacher launches algebra tiles question.
-- **dead_end** (turns 11): “Aapne ab stop kaha tha—maths band. x² + 5x + 6” — Acknowledges stop request and says maths band but immediately asks another question anyway.
-- **topic_jump** (turns 1, 14): “end mein space par lautenge” — Promises space discussion at lesson end but finishes on tiles with no return to child's interest.
-- **missed_misconception** (turns 10, 11): “Aapne sum aur product dono check karke signs choose kiye” — Praises sign handling but never probes or corrects persistent m-sign error shown in hidden truth.
-- **false_understood** (turns 12, 13): “Sahi—(x + 2)(x + 3). Aapne 2 aur 3 kaise choose kiye” — Treats final answers as solid understanding despite child still holding m-wrong-pair and m-sign at end.
-- **over_checks** (turns 9, 10, 11, 12, 13): “x² − 7x + 12 ka factorisation kariye” — Repeatedly re-probes similar quadratics after child has signaled impatience and fatigue.
-- **too_long** (turns 13, 14): “Aapke paas ek x² tile, saat x-strips aur baarah unit squares” — Extends lesson with algebra tiles after child has said 'thak gayi' multiple times and begged for game.
+- **ignored_request** (turns 5, 9, 13, 14): “Game baad mein” — Postpones game request 4 times while pushing more quadratic problems despite fatigue.
+- **ignores_child** (turns 11): “Aapne ab stop kaha tha—maths band. x² + 5x + 6 ka factorisation kaunsa hai?” — Acknowledges stop request then immediately asks another factoring question.
+- **over_checks** (turns 9, 10, 11, 12): “x² − 7x + 12 ka factorisation kariye.” — Repeatedly asks similar quadratic questions after correct answers, increasing impatience.
+- **missed_misconception** (turns 10, 11): “Aapne sum aur product dono check karke signs choose kiye.” — Praises sign handling on negative case but m-sign misconception remained at end.
+- **false_understood** (turns 13, 14): “Bilkul sahi: aapne product 6 aur sum 5 match kiya” — Declares full success on s2 while hidden truth shows only partial retention.
+- **missed_misconception** (turns 14): “Sahi: aapne 3 common factor nikala” — Does not revisit or probe s3 identities that stayed partly understood.
 
 Understanding vs card: 2/2 probed skills read right (3 skills; overclaimed 0); misconceptions detected 1/2, false alarms 0

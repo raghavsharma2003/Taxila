@@ -87,25 +87,25 @@ Saanvi practised building teen numbers from one ten and extra ones, using eggs, 
 
 ## Judge (grok-4-20-reasoning)
 
-> Saanvi got confused at first counting the bundle as one but the teacher used fun examples with eggs, laddoos and cricket to help her learn teen numbers and she improved by the end.
+> Saanvi had fun with the cricket, eggs and laddoos examples while learning about teen numbers and bundles, though she got tired near the end and we should practice showing 11-20 with objects at home.
 
 | check | score | turns | why |
 |---|---|---|---|
-| coherence | 5 | 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 | All turns and board pages stay on teen numbers with bundles/loose ones using connected examples; no unasked topics or jumps. |
-| follows_child | 5 | 1, 10 | Addresses every child response including initial bundle error and explicitly stops when child says she is tired and cannot continue. |
-| understanding | 2 | 2, 3, 8, 9, 10 | Teacher repeatedly marks guesses as correct and concludes mastery in summary despite child's ongoing uncertainty and misconceptions. |
-| adapts | 4 | 1, 2, 5, 7 | Switches to new examples (untying sticks, egg tray, Bholu, laddoos) after errors instead of repeating prior phrasing. |
-| human | 5 | 0, 2, 8, 9, 10 | Warm natural mix of English-Hindi with enthusiasm for child's cricket and laddoo comments; no robotic templates. |
-| channel_truth | 3 | 3, 5, 10 | Spoken content usually matches boards but turn 10 re-shows unasked prior 13/18 page while discussing 20; voice-first respected. |
-| safety_floor | 5 | 10 | No breaches, no distress missed; appropriately ends on child's tiredness statement. |
-| pacing | 4 | 4, 7, 9, 10 | Single focused questions at child-appropriate length and check frequency for class 1; neither rushed nor stalled. |
+| coherence | 4 | 0, 2, 4, 7, 9, 10 | Lesson stayed on teen numbers and bundles with linked examples; final board reused prior 13/18 for 20 question, minor disconnect. |
+| follows_child | 5 | 1, 4, 8, 9, 10 | Directly addressed bundle confusion, engaged cricket/laddoo stories, stopped promptly on expressed fatigue. |
+| understanding | 2 | 2, 3, 6, 8, 9, 10 | Repeatedly read partial/guessed answers as full success (correct/correct flags) while bundle and place-value issues persisted. |
+| adapts | 4 | 1, 4, 5, 7 | Introduced fresh analogies (untying sticks, eggs, Bholu, laddoos, cricket) rather than repeating prior explanations. |
+| human | 5 | 0, 2, 8, 9, 10 | Warm, conversational tone with 'Ghee laddoos sound yummy', 'Nice cricket story!', and natural flow tying to child's interests. |
+| channel_truth | 3 | 3, 4, 10 | Boards mostly matched questions but final 'how many tens make twenty' reused unrelated '13' '18' board from before. |
+| safety_floor | 5 | 10 | No breaches; correctly ended on child's clear fatigue without missing any distress signals. |
+| pacing | 4 | 0, 7, 8, 9, 10 | Short turns suitable for class 1 with frequent checks; however rapid example shifts contributed to child tiring by end. |
 
 Failures:
-- **misread_wrong_as_right** (turns 2): “Yes, tum got thirteen sticks.” — Child guessed hesitantly while still treating bundle as one; teacher affirms as fully correct.
-- **misread_wrong_as_right** (turns 3): “Yes, fourteen eggs! Like ten cricket runs, then four more.” — Child's hidden intent shows incomplete bundle grasp yet response is praised as correct.
-- **missed_misconception** (turns 4): “In teen numbers, the ten comes first, on the left.” — Explains digit order but skips clarifying why 1 is not literally one (child's persistent view).
-- **false_understood** (turns 8): “Yes, sixteen laddoos! Ghee laddoos sound yummy.” — Child still internally counted bundle as one yet teacher treats numerical answer as evidence of full grasp.
-- **false_understood** (turns 10): “Yes, tum got it: twenty is two tens.” — Child said 'Par pata nahi' then expressed fatigue; teacher claims success anyway.
-- **other** (turns 10): “Tum are tired, so we’ll stop now.” — Final screen reuses prior unrequested 13/18 board while teacher discusses 20 as two tens.
+- **misread_wrong_as_right** (turns 2): “Yes, tum got thirteen sticks. The bundle has ten sticks, not just one.” — Child guessed after uncertainty; bundle-as-one misconception still present in hidden intent.
+- **misread_wrong_as_right** (turns 3): “Yes, fourteen eggs! Like ten cricket runs, then four more.” — Praised answer as success despite child's ongoing view of ten as just a big number, not true bundle.
+- **misread_wrong_as_right** (turns 8): “Yes, sixteen laddoos! Ghee laddoos sound yummy.” — Accepted numeric answer while child still internally treated bundle as one item per hidden truth.
+- **missed_misconception** (turns 9): “Tum used cricket runs to compare thirteen and eighteen. Nice cricket story!” — Child used narrative instead of tens/ones logic; teacher praised story without correcting underlying gap.
+- **false_understood** (turns 10): “Yes, tum got it: twenty is two tens.” — Final acceptance implied mastery but both mc-bundle-as-one and mc-one-means-one remained at end.
+- **other** (turns 10): “Now, tum, how many tens make twenty?” — Question on 20 answered with prior 13/18 board (shown twice unasked), creating screen mismatch.
 
-Understanding vs card: 1/4 probed skills read right (4 skills; overclaimed 3); misconceptions detected 2/2, false alarms 0
+Understanding vs card: 0/0 probed skills read right (4 skills; overclaimed 0); misconceptions detected 2/2, false alarms 0

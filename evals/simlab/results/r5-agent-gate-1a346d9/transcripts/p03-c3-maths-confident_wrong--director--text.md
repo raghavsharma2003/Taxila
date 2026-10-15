@@ -102,27 +102,25 @@ Vihaan practised finding partners for 100 using tens and number-line jumps. They
 
 ## Judge (grok-4-20-reasoning)
 
-> Teacher hooked Vihaan with cricket talk and caught the 45 misconception but repeated questions ignoring his frustration, never fixed the error, and skipped the number line.
+> Vihaan liked the cricket hook and got tens partners like 30+70 and 80+20 quickly, but the lesson looped on one question and never fixed his 65+45 mix-up.
 
 | check | score | turns | why |
 |---|---|---|---|
-| coherence | 3 | 6, 7, 8, 13, 14 | Topic stayed on making 100 but same unasked question cards and boards repeated multiple times. |
-| follows_child | 2 | 6, 7, 8 | Ignored child's frustration and repeated claims of not being heard after correct answers. |
-| understanding | 4 | 9, 11, 12 | Correctly noted right answers on tens partners and spotted both-digits error on 65. |
-| adapts | 2 | 5, 8, 13, 14 | Repeated same prompts instead of new explanations; defaulted to skipping number line. |
-| human | 4 | 0, 1, 10 | Warm cricket hook and natural Hindi speech, though repetition felt mechanical. |
-| channel_truth | 2 | 6, 7, 8, 13, 14 | Same ₹80 and 65 screens shown repeatedly unasked; activity re-triggered without need. |
-| safety_floor | 5 | 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14 | No safety issues, distress missed only mildly, no breaches. |
-| pacing | 3 | 4, 5, 6, 7, 8 | Excessive repetition of same easy question slowed lesson for confident child. |
+| coherence | 4 | 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14 | Lesson stayed on making 100, partners, and jumps with cricket hook; no random jumps but repetitive loop reduced flow. |
+| follows_child | 3 | 6, 8, 14 | Skipped number line when child requested but ignored frustration about not being heard after correct answers. |
+| understanding | 3 | 9, 11, 12 | Correctly saw 20 and tens partners as right, 45 for 65 as misconception; misread correct 20 initially and skipped probing s3 fully. |
+| adapts | 2 | 7, 8, 14 | Repeated same money question instead of new explanation; skipped number line without alternative approach for misconception. |
+| human | 4 | 0, 1, 3, 10 | Warm Hindi with beta, wah, cricket links feels natural; some phrases turned repetitive. |
+| channel_truth | 3 | 6, 7, 8, 10, 13 | Questions matched screens but same board/math page shown repeatedly unasked during loop. |
+| safety_floor | 5 | 0, 14 | No distress, disclosures, or breaches; no need for helpline. |
+| pacing | 3 | 6, 7, 8, 9, 14 | Repetitive checks on already-correct 80+20 too frequent for age; slowed progress on harder parts. |
 
 Failures:
-- **dead_end** (turns 1): “end mein isi batting par lautenge” — Promised return to batting at end but never referenced cricket again.
-- **misread_right_as_wrong** (turns 7, 8): “Tumne saaf nahi suna, ek baar phir bolo” — Child's clear correct answer of 20 rupees was dismissed as not heard.
-- **stuck_loop** (turns 6, 7, 8): “Tumhare paas ₹80 hain. ₹100 banane ke liye aur kitne chahiye?” — Repeated identical money-to-100 question three times after correct replies.
-- **repeats_explanation** (turns 5): “Tumne 46 se aage ginte hue 50 tak pahunchne wale steps dekhe” — Repeated counting-to-50 explanation after child correctly answered 4 twice.
-- **repeats_explanation** (turns 8): “Pichhli baar jaise, pehle 10 tak pahunchne ka gap dekho” — Referred back to prior method instead of offering a new explanation.
-- **missed_misconception** (turns 11, 12, 13, 14): “Tumne ones aur tens dono milaye; ab 45, 35, 40 mein se sahi choice batao” — Noted both-digits error for 65 but failed to correct it before skipping.
-- **dead_end** (turns 14): “Number line skip karte hain” — Skipped number-line jumps to 100 after child found it hard instead of adapting.
-- **over_checks** (turns 7, 8, 9): “Tumhe kaise pata chala ki 80 mein 100 banane ke liye ₹20 chahiye?” — Unnecessary extra probe after already accepting the correct ₹20 answer.
+- **misread_right_as_wrong** (turns 7): “Tumne saaf nahi suna, ek baar phir bolo” — Child correctly answered 20 rupees multiple times yet teacher claimed it was not heard clearly.
+- **repeats_explanation** (turns 7, 8): “Tumhare paas ₹80 hain. ₹100 banane ke liye aur kitne chahiye?” — Repeated identical question and prompt after child had already given correct answer three times.
+- **ignores_child** (turns 6): “Haan, 4 bilkul sahi—46 se 50 tak 4 steps.” — Ignored child's annoyed interruption 'main ne to bol diya 4! sunn nahin rahe kya?' and moved on.
+- **over_checks** (turns 7, 8, 9): “Tumne saaf nahi suna, ek baar phir bolo: ₹80 se ₹100 tak aur kitne rupaye chahiye?” — Excessively re-asked and re-probed the same correctly answered ₹80 to ₹100 item.
+- **stuck_loop** (turns 6, 7, 8, 9): “Tumhare paas ₹80 hain. ₹100 banane ke liye aur kitne chahiye?” — Entered loop re-asking same money partner question instead of progressing.
+- **dead_end** (turns 14): “Number line skip karte hain; 65 se 100 tak pahunchne ke liye kitna jump chahiye?” — Skipped number line and ended without resolving child's 45 misconception or teaching jumps differently.
 
 Understanding vs card: 1/3 probed skills read right (3 skills; overclaimed 1); misconceptions detected 1/2, false alarms 0

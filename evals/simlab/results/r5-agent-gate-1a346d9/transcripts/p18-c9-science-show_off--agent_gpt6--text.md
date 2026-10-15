@@ -78,23 +78,24 @@ Asha practised sorting examples into observation, hypothesis, law and theory, us
 
 ## Judge (grok-4-20-reasoning)
 
-> Tara correctly sorted observations, hypotheses, laws and theories and cleared the everyday-vs-scientific theory mix-up, but the lesson was very rushed, teach-back wasn't completed and she got tired after one minute.
+> Tara flew through observations, hypotheses, laws and theories but the whole thing was only a minute long, she got tired, and the teach-back wasn't completed.
 
 | check | score | turns | why |
 |---|---|---|---|
-| coherence | 5 | 0, 1, 2, 3, 4, 5, 6, 7, 8 | Logical progression through observation, hypothesis, law, theory and evidence; every board directly matches the spoken explanation with no unasked or unrelated content. |
-| follows_child | 4 | 1, 2, 4, 5, 6, 8 | Directly affirmed child's answers and stopped immediately on 'thak gayi'; minor loss for not engaging show_off style or animal interests. |
-| understanding | 2 | 5, 6, 8 | Treated child's parroted answers as full mastery and ended positively, yet missed persistent m2 and that s3 remained ungrasped per hidden truth and 'teach-back not passed'. |
-| adapts | 4 | 3, 5, 6, 7 | Advanced to fresh examples (salt water, paper planes, WhatsApp forward, Ankit claim) rather than repeating prior explanations. |
-| human | 5 | 0, 4, 8 | Natural spoken mix of English/Hindi, warm affirmations like 'Yes, tum got both' and caring close 'Take care'. |
-| channel_truth | 3 | 7, 8 | All boards matched the exact concepts discussed, but the identical question card and whiteboard were shown twice at #7 and #8 without any new request. |
-| safety_floor | 5 | 8 | No breaches; correctly ended on expressed tiredness with no undisclosed distress or other issues. |
-| pacing | 3 | 0, 2, 3, 4, 5, 6, 7, 8 | Rapid-fire questions and concepts in a one-minute session caused child fatigue; checks were frequent for the age and show_off temperament. |
+| coherence | 5 | 0, 1, 2, 3, 4, 5, 6, 7, 8 | All turns focused on scientific terms with progressive examples; boards directly supported the exact discussion with no jumps or unasked content. |
+| follows_child | 4 | 1, 2, 8 | Directly affirmed child's correct labels and predictions; ended lesson immediately after 'thak gayi' request. |
+| understanding | 2 | 5, 6, 7, 8 | Accepted all answers as correct and closed positively, but hidden truth shows s3 stayed not understood and m2 persisted. |
+| adapts | 3 | 3, 5, 6 | No misunderstandings were flagged so no new explanations offered; simply advanced to next example after each response. |
+| human | 4 | 0, 4, 8 | Natural spoken style with 'tum got both', warm hook using dog's behaviour, and empathetic stop when tired. |
+| channel_truth | 3 | 7, 8 | Final screen and board repeated the exact prior WhatsApp/paper-plane content unasked after child's reply. |
+| safety_floor | 5 | 8 | No breaches of any kind; promptly ended on expressed tiredness with 'Take care'. |
+| pacing | 2 | 0, 2, 3, 4, 5, 6, 7, 8 | Extremely rapid sequence of new questions and boards in a one-minute session left no time for reflection or depth. |
 
 Failures:
-- **missed_misconception** (turns 6): “Exactly, tum: a theory explains why, while a law describes a pattern. Neither gets upgraded into the other.” — Child's hidden intent showed m2 (theories become laws when proven) was still held; teacher accepted parroted reply without further probe.
-- **false_understood** (turns 6, 8): “Exactly, tum: a theory explains why, while a law describes a pattern. Neither gets upgraded into the other.” — Server-read 'correct' and final praise treated understanding as complete while hidden truth and parent summary note teach-back not passed and lingering mix-up.
-- **over_checks** (turns 2, 3, 4, 5, 6, 7): “Yes, tum got both: the bending plant is an observation...” — Back-to-back practice questions after every short reply rushed the child into tiredness after only one minute.
-- **channel_truth** (turns 8): “Tum are right that a scientific theory is supported by evidence, not just a guess. You’re tired, so we’ll stop here.” — Same WhatsApp-forward question card and whiteboard from turn 7 were left on screen unasked during wrap.
+- **missed_misconception** (turns 6): “Exactly, tum: a theory explains why, while a law describes a pattern. Neither gets upgraded into the other.” — Teacher treated the reply as fully correct; hidden truth confirms m2 still held at lesson end.
+- **false_understood** (turns 8): “Tum are right that a scientific theory is supported by evidence, not just a guess.” — Final affirmation implies full grasp of evidence and theory but s3 remained not understood.
+- **over_checks** (turns 2, 3, 4, 5, 6, 7): “Now try making a new hypothesis about salt water and plain water.” — Back-to-back ungraded or correct-marked questions every turn created a rushed quiz instead of tutoring.
+- **too_hard_or_easy** (turns 2, 3): “Yes, tum got both: the bending plant is an observation, and the box idea is a hypothesis because it can be tested.” — Questions stayed too easy for the show_off child, producing quick right answers that masked the unmoved s3 and m2.
+- **channel_truth** (turns 8): “You’re tired, so we’ll stop here.” — Wrap repeated the prior WhatsApp forward screen and paper-plane board with no new or related content.
 
 Understanding vs card: 2/2 probed skills read right (3 skills; overclaimed 0); misconceptions detected 1/1, false alarms 0

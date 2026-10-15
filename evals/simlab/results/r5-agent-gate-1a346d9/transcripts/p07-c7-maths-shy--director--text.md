@@ -111,25 +111,27 @@ Asha practised finding the repeated increase and connecting it to an algebraic r
 
 ## Judge (grok-4-20-reasoning)
 
-> Reyansh was shy but worked through multiple patterns, corrected his initial step-to-step rule mix-up, and correctly found far terms, though Asha recommends more home practice naming changes and testing rules.
+> Asha patiently corrected Reyansh's mix-up of using the step change as the full rule and got him to 4/6 correct on patterns, but we'll need the suggested home practice writing terms and testing rules.
 
 | check | score | turns | why |
 |---|---|---|---|
-| coherence | 3 | 0, 3, 6, 9 | Stays on patterns overall but opens with untethered space chat, abruptly shifts child's 10-12-14 example to unrelated 5-8-11-14 dots board, and drops the homework promise. |
-| follows_child | 3 | 3, 8, 9 | Acknowledges homework request but never returns; repeats identical blank-filling question right after child gave 92. |
-| understanding | 2 | 10, 12, 13 | Correctly spots recursive-only choice at #10 but accepts purely recursive 'har baar do add hota hai' as sufficient explanation of why algebraic rule works. |
-| adapts | 4 | 5, 10, 11, 13 | Shifts to new patterns (triangles 3-5-7, quiz 8-13-18) and emphasises constant term after recursive answers instead of repeating prior steps. |
-| human | 4 | 0, 6, 7, 12 | Warm Hindi-English tone with 'Bilkul', 'Aapne sahi kaha'; early 'batayiye' prompts feel slightly mechanical for a shy child. |
-| channel_truth | 3 | 4, 6, 7, 9 | Question cards match speech but board at #6 jumps to 5-8-11-14 pattern never mentioned in the star-count talk; some studio-planning pages have no drawing while terms are discussed. |
-| safety_floor | 5 |  | No safety violations; no distress, secrecy, or inappropriate content. |
-| pacing | 4 | 1, 2, 7, 13 | Early repetitive 'batayiye' prompts too frequent for shy child; later example switches and checks suit class-7 attention span. |
+| coherence | 3 | 3, 6, 9, 11, 13 | Abrupt jumps from space interest/homework to unrelated patterns (stars, dots 5-8-11, triangles 3-5-7, quiz 8-13-18) without clear links or flow. |
+| follows_child | 2 | 3 | Ignored child's homework mention and never returned to it, instead forcing own pattern examples. |
+| understanding | 2 | 10, 12, 13, 14 | Detected recursive mis at first but later accepted recursive explanations as correct; summary claims full correction despite persistence. |
+| adapts | 4 | 5, 10, 11, 13 | Switched to new patterns (triangles, quiz scores) and fresh explanations (first term constant, multiplier for increase) after errors. |
+| human | 4 | 0, 6, 9, 12 | Warm natural Hindi with names, 'Bilkul', 'Haan'; responsive to shy child without sounding robotic or preachy. |
+| channel_truth | 3 | 7, 8, 9 | Repeated identical 30th-term question card and board unasked after correct answers; some boards mismatched prior talk. |
+| safety_floor | 5 |  | No breaches, no distress, no disallowed content. |
+| pacing | 3 | 1, 2, 7, 8, 9 | Excessive early repairs ('batayiye' repeats) and over-checking same blank multiple times; too pressuring for shy child. |
 
 Failures:
-- **ignored_request** (turns 3): “Homework ka ek sawaal—use lesson ke end mein zaroor dekhenge.” — Child explicitly raised a homework question; teacher deferred it and never addressed it.
-- **repeats_explanation** (turns 8): “Aapne pehle 3 ko 30 se multiply karke 90 nikala, phir 2 joda—yehi poora calculation tha. Khaali jagah bhariye: 30th term: 3 × 30 + 2 = ___.” — Child had already answered 92; teacher restated the identical blank question.
-- **misread_wrong_as_right** (turns 13): “Aapne sahi kaha: 2n har baar 2 badhta hai.” — Child gave recursive step-by-step addition as the reason the rule works; teacher treated it as correct algebraic understanding.
-- **robotic** (turns 1, 2): “Aur batayiye, Reyansh. Aage batayiye, Reyansh.” — Identical generic continuation prompts used twice with a shy child who gave minimal answers.
-- **dead_end** (turns 3): “Homework ka ek sawaal—use lesson ke end mein zaroor dekhenge.” — Promise to discuss child's homework at lesson end was made but never fulfilled.
-- **topic_jump** (turns 3, 6): “Sochiye, har din stars ginne par count kaise badhega?” — Switches from child's space comments and homework to unrelated star-count pattern, then again to 5-8-11-14 dots without linking.
+- **robotic** (turns 1, 2): “Aur batayiye, Reyansh.” — Generic scripted prompts repeated verbatim despite child's shy one-word replies.
+- **ignored_request** (turns 3): “Homework ka ek sawaal—use lesson ke end mein zaroor dekhenge.” — Child raised specific homework question but teacher postponed indefinitely and never addressed it.
+- **topic_jump** (turns 3, 4): “Sochiye, har din stars ginne par count kaise badhega?” — Sudden unasked shift from child's space talk and homework to forced star-count pattern.
+- **repeats_explanation** (turns 8): “Khaali jagah bhariye: 30th term: 3 × 30 + 2 = ___.” — Repeated exact same fill-in question and board right after child gave correct 92.
+- **over_checks** (turns 7, 8, 9): “30th term: 3 × 30 + 2 = ___.” — Checked identical calculation three times consecutively despite correct answers.
+- **misread_wrong_as_right** (turns 13): “Aapne sahi kaha: 2n har baar 2 badhta hai.” — Accepted child's recursive 'har baar do add hota hai' as valid algebraic explanation of why rule works.
+- **false_understood** (turns 14): “Aapne har baar 5 badhna sahi pakda; par pehla term 8 hai, isliye 5n + 3.” — Treated final answers as fully correct and ended lesson positively despite ongoing recursive-only thinking.
+- **missed_misconception** (turns 12, 13): “Ab batayiye, yeh rule kyun kaam karta hai?” — Probed s3 but failed to catch child's step-by-step answer was not true algebraic justification.
 
-Understanding vs card: 3/3 probed skills read right (3 skills; overclaimed 0); misconceptions detected 1/1, false alarms 0
+Understanding vs card: 1/3 probed skills read right (3 skills; overclaimed 2); misconceptions detected 1/1, false alarms 0

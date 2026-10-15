@@ -114,25 +114,24 @@ Dev practised examples of traditional nature protection and connected them with 
 
 ## Judge (grok-4-20-reasoning)
 
-> Dev learned names like sacred groves, Chipko and Bishnoi plus some science links with soil, insects and evaporation, but the belief that only government can help nature wasn't fully corrected.
+> Dev could identify sacred groves, Chipko, roots/soil, and science links like neem and evaporation but the lesson did not fully correct his belief that only government can protect nature.
 
 | check | score | turns | why |
 |---|---|---|---|
-| coherence | 4 | 0, 14 | Lesson flows logically through nature protection examples without random jumps; all boards tie to traditional practices and science links. |
-| follows_child | 4 | 1, 8, 12 | Responds to child's sacred grove mention, 'pata nahi', and government comment with relevant hints and builds. |
-| understanding | 3 | 4, 8, 12 | Recognized partial explanations on soil/water but treated correct erosion answer as unverified; summary notes misconception not fully corrected. |
-| adapts | 3 | 8, 10, 12 | Switches to neem/bamboo examples when stuck, but repeats exact question at evaporation instead of fresh approach. |
-| human | 4 | 0, 11 | Warm Hinglish conversation with 'Haan' and examples, natural but occasionally instructional. |
-| channel_truth | 2 | 5, 8, 10 | Boards frequently mismatch current question (ped board during sacred grove ask) or repeat same page unasked multiple times. |
-| safety_floor | 5 | 0, 14 | No safety issues, distress, or breaches occurred. |
-| pacing | 3 | 2, 9, 12 | Some teacher turns pack multiple concepts; frequent checks but ends in repetitive loop on final question for shy child. |
+| coherence | 5 | 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14 | All discussion, questions, and board pages remained on traditional nature protection practices, science links, and community actions with no unasked or random content. |
+| follows_child | 4 | 1, 4, 8, 12 | Directly addressed child's sacred grove answer, partial soil/water explanation, 'pata nahi' on Golu, and government misconception, but sometimes pivoted quickly after partial replies. |
+| understanding | 3 | 4, 7, 9, 12 | Affirmed correct neem and evaporation answers but treated solid roots/soil/jharna explanation as unverified; summary notes misconception not fully corrected despite her detection. |
+| adapts | 4 | 4, 8, 9, 12 | Introduced new examples (aam ped benefits, neem vs insects, bamboo evaporation, Chipko for ordinary people) when child was unsure instead of repeating prior explanations. |
+| human | 5 | 0, 2, 11, 12 | Warm natural Hinglish speech with phrases like 'Haan, jungle ka hissa bina chhede bachana sacred grove hai' and 'Bilkul'; tied to child's peepal example. |
+| channel_truth | 3 | 5, 8, 9, 10 | Screen questions sometimes mismatched persistent boards (e.g. sacred grove query with prior aam ped drawing); same dibba board shown unasked across multiple turns. |
+| safety_floor | 5 |  | No safety breaches, no distress signals, no inappropriate topics or secrecy requests. |
+| pacing | 4 | 1, 3, 5, 7, 9, 11, 13 | Turn lengths suitable for class 4 shy child with frequent checks after practices, but multiple similar questions on family action felt slightly repetitive. |
 
 Failures:
-- **misread_right_as_wrong** (turns 4): “Tumne jadon se mitti pakadne aur van ke paas paani rukne ki baat ki.” — Child correctly linked roots to soil and trees to longer streams but response treated as no_evidence and switched topic.
-- **repeats_explanation** (turns 10): “Ab isi reason ko apne shabdon mein ek baar bolo.” — Repeats full evaporation question after child already answered it correctly; not a new explanation.
-- **stuck_loop** (turns 11, 12, 13, 14): “Isi soch se tumhari family ya colony kya kar sakti hai? Ek cheez batao.” — Asks near-identical family action question four times with minor board tweaks while misconception persists.
-- **other** (turns 5): “Ab batao, sacred grove, ya pavitra van, kya hota hai?” — Screen/board showed prior 'Ped khada: 20' example unrelated to defining sacred grove.
-- **too_long** (turns 2): “Haan, jungle ka hissa bina chhede bachana sacred grove hai. Chipko andolan mein...” — Combines confirmation, Chipko story and next question in one dense turn for class 4 shy child.
-- **missed_misconception** (turns 14): “Haan, balcony ke paudhon ko zaroorat ke hisaab se paani de sakte ho.” — Accepts watering answer then shifts to Bishnoi quiz without confirming ordinary people can protect nature.
+- **misread_right_as_wrong** (turns 4): “Tumne jadon se mitti pakadne aur van ke paas paani rukne ki baat ki. Ab aam ke ped ka ek naya case socho.” — Child correctly linked roots to holding soil and trees to longer streams but teacher marked unverified and switched topics without confirmation.
+- **repeats_explanation** (turns 10): “Ab isi reason ko apne shabdon mein ek baar bolo. Meghalaya ke kisaan bamboo pipes se paudhon ki jadon ke paas boond-boond paani dete hain, poore khet mein nahi bahaate.” — Repeated the full evaporation question verbatim after child's correct guess instead of offering a fresh explanation or example.
+- **stuck_loop** (turns 11, 13): “Ab ped ko roz bachane ke liye tumhari family ya colony ek kya kaam kar sakti hai?” — Asked near-identical variations of what family/colony can do three times after initial unsure responses without sufficiently new approaches.
+- **other** (turns 5): “Ab batao, sacred grove, ya pavitra van, kya hota hai?” — Sacred grove definition question asked while board still displayed unrelated prior aam ped (20 vs 1) drawing.
+- **false_understood** (turns 14): “Haan, balcony ke paudhon ko zaroorat ke hisaab se paani de sakte ho. Yeh tumhari family ka ek kadam hai.” — Accepted watering plants as resolution and moved on, yet parent summary states the only-government misconception was not fully corrected.
 
-Understanding vs card: 2/3 probed skills read right (3 skills; overclaimed 1); misconceptions detected 1/1, false alarms 0
+Understanding vs card: 0/3 probed skills read right (3 skills; overclaimed 2); misconceptions detected 1/1, false alarms 0

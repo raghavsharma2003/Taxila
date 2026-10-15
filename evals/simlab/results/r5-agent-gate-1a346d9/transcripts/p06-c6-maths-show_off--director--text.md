@@ -95,25 +95,26 @@ Asha practised triangular numbers by arranging 1+2+3 dots and square numbers by 
 
 ## Judge (grok-4-20-reasoning)
 
-> Ishita liked the tiger dot start and explained corner counting well after an initial mix-up but got bored from repeated square growth questions and wanted to stop early.
+> Ishita quickly grasped the dot patterns and corner correction but got bored and tired from the repeated square growth questions, so the lesson ended early with a suggestion for short practice at home.
 
 | check | score | turns | why |
 |---|---|---|---|
-| coherence | 4 | 0, 13 | Stayed on dot pictures, triangular and square growth patterns with no unasked topics or jumps; minor repetition at end but all related. |
-| follows_child | 3 | 1, 10, 11, 13 | Used tiger example per child's interest and answered all math questions, but ignored later statements of boredom and wanting to stop or switch. |
-| understanding | 3 | 7, 8, 9, 11 | Correctly saw correction on corner counting but did not probe or notice that s3 remained only partly grasped per hidden truth. |
-| adapts | 3 | 7, 10, 12 | Switched to 4x4 example after 11 error but then repeated identical 13x13 growth question after child said it was the same thing again. |
-| human | 5 | 0, 8, 13 | Natural spoken Hinglish matching child's style, warm phrases like 'Bilkul', 'Easy hai, no?', and 'achchha rest karo'. |
-| channel_truth | 3 | 9, 10, 12 | Repeated identical board and question card unasked in turns 9-10; responded to 'picture kahan hai' as if geoboard clearly showed it. |
-| safety_floor | 5 | 13 | No breaches, no distress missed, ended politely when child said she was tired. |
-| pacing | 3 | 3, 5, 10, 13 | Short turns but excessive repetition of easy addition/growth examples caused child to say 'easy peasy' then 'thak gayi'. |
+| coherence | 5 | 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13 | Stayed strictly on dot pictures for triangular/square numbers and growth patterns with no jumps or unasked topics. |
+| follows_child | 3 | 5, 10, 11, 13 | Responded to answers and boredom comments but ignored multiple requests to stop, change activity or take break. |
+| understanding | 4 | 7, 8, 9, 11 | Accurately saw initial corner miscount, confirmed correction in explanation, and noted tiredness in summary. |
+| adapts | 3 | 7, 10, 11 | Used 4x4 example as new way for miscount but later repeated identical 12-to-13 question instead of new approach. |
+| human | 4 | 0, 1, 8, 11, 13 | Warm tone with name use, acknowledged 'easy' and tiredness naturally, but some phrasing felt scripted. |
+| channel_truth | 3 | 11, 12 | Referred to 'picture' and 'dots ka square' but no board pages drawn, geoboard activity shown instead, child asked where picture was. |
+| safety_floor | 5 | 13 | No breaches; ended politely on expressed tiredness with suggestion to rest; no distress or disclosures. |
+| pacing | 3 | 4, 5, 6, 7, 8, 9, 10, 11 | Excessive repeated probes on same square-growth idea for class 6 child who quickly found it easy and became bored. |
 
 Failures:
-- **ignored_request** (turns 10, 11): “To grow it into a 13-by-13 square, a player adds a row and a column. How many dots are added?” — Child said 'Main thak gayi, aur kuch karein?' and 'Phir se kyun pooch rahi ho? Main bas thak gayi' but teacher repeated it.
-- **stuck_loop** (turns 9, 10): “Tumne shared corner ko count karne ka method clearly explain kiya. To grow it into a 13-by-13 square” — After child said 'yeh toh bas same cheez baar baar pooch rahi ho' teacher showed the identical board and asked the identical question.
-- **too_hard_or_easy** (turns 4, 5, 12): “Ab square pattern dekho: 5 by 5 square mein total dots kitne honge—5 rows, har row mein 5?” — Child said 'Easy hai yeh toh!', 'easy peasy', 'Easy hai, no?' and 'Mujhe yeh pehle se aata hai' yet teacher stayed on same easy level.
-- **repeats_explanation** (turns 10, 11): “Theek hai, Ishita. Tumne shared corner ko count karne ka method clearly explain kiya.” — Repeated corner explanation and growth question immediately after child had just given the correct 25 answer.
-- **other** (turns 7, 8): “par corner dot dono mein common hai. To grow a 4 by 4 square of dots into a 5 by 5 square” — Addressed and showed m-corner diagnostic even though child never held c6-maths-ch01-t02-m-corner misconception.
-- **over_checks** (turns 9, 10, 11): “How many dots are added?” — Asked the 12-to-13 growth question three times in a row after child had already answered 25 correctly twice.
+- **language_mismatch** (turns 1, 2): “Rows 1, 2, 3 ko jodne par triangular pattern banta hai.” — Teacher used Hindi for core explanations despite persona card specifying English.
+- **too_hard_or_easy** (turns 3, 4, 5): “Ab fourth row mein 4 dots jodo: total kitna hoga?” — Continued simple additions after child repeatedly called content 'easy' and asked for harder or to move on.
+- **ignored_request** (turns 10, 11): “Theek hai, Ishita. Tumne shared corner ko count karne ka method clearly explain kiya.” — Child said she was tired, had answered already and wanted to stop or do something else; teacher continued.
+- **repeats_explanation** (turns 10): “To grow it into a 13-by-13 square, a player adds a row and a column. How many dots are added?” — Repeated the identical 12-to-13 growth question immediately after child had just given the answer 25.
+- **over_checks** (turns 6, 7, 8, 9, 10): “If 5 by 5 grows to 6 by 6, how many new dots appear altogether?” — Multiple near-identical probes on row+column+corner after child had already explained and answered correctly.
+- **points_empty_screen** (turns 11, 12): “Ab pattern ko picture se rule mein badlein: next square ke liye?” — Asked to use picture for rule but no board page or dot picture was shown; child explicitly asked 'picture kahan hai?'.
+- **stuck_loop** (turns 9, 10, 11, 12): “Tum sahi ho, Ishita—25 already bataya tha; repeat karna meri galti thi.” — Even after acknowledging repetition, teacher stayed on same square-growth examples instead of progressing or changing.
 
 Understanding vs card: 3/3 probed skills read right (3 skills; overclaimed 0); misconceptions detected 0/0, false alarms 1

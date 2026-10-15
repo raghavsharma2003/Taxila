@@ -93,24 +93,28 @@ Asha practised using a known group to estimate a larger collection. Ananya used 
 
 ## Judge (grok-4-20-reasoning)
 
-> Ananya got bored and asked to stop early after some correct guesses on closeness and estimates, but she still mixes up counting groups versus total objects and the misconception was not fixed.
+> Ananya got bored quickly, stopped the lesson early after learning estimates are close guesses and spreading doesn't change counts, but still mixes up groups with total objects and the misconception wasn't fixed.
 
 | check | score | turns | why |
 |---|---|---|---|
-| coherence | 4 | 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 | Stayed on estimating collections with peanut/marble/bangle examples and matching boards; minor jump from cartoons and unprompted repeat of estimate question. |
-| follows_child | 4 | 1, 4, 10, 11 | Responded to 'pata nahi', guesses, tiredness comment and stop request; respected choice to end lesson. |
-| understanding | 3 | 3, 6, 7, 9 | Affirmed group-counting error as correct initially; later noted misconception in summary but summary says it persisted uncorrected. |
-| adapts | 3 | 8, 9 | Switched examples (peanuts to bangles) when stuck but repeated identical estimate question instead of new explanation. |
-| human | 5 | 0, 1, 10, 11 | Warm cartoon greeting, natural Hindi mix, empathetically named tiredness and offered choices kindly. |
-| channel_truth | 2 | 8, 9 | Same 'what is an estimate' screen and board shown twice unasked; child explicitly called it the 'same question'. |
-| safety_floor | 5 | 10, 11 | Handled expressed tiredness and stop request directly with options; no breaches or missed distress. |
-| pacing | 3 | 4, 8, 9, 10 | Short turns suitable for age but continued after boredom signs ('pata nahi', 'thak gayi') before offering break/stop. |
+| coherence | 3 | 0, 7, 9 | Abrupt jumps between peanuts, marbles, bangles and repeated estimate question without transition or request. |
+| follows_child | 4 | 1, 4, 10, 11 | Answered guesses, acknowledged 'pata nahi' and 'thak gayi', offered stop options and honored choice. |
+| understanding | 3 | 6, 9, 11 | Noted groups-as-items error and partial estimate description but parent summary shows misconception persisted uncorrected. |
+| adapts | 2 | 8, 9, 10 | Repeated identical estimate question after partial answer and child's irritation instead of new approach. |
+| human | 4 | 0, 5, 11 | Warm greetings, mixed Hindi-English naturally, but closing praise felt slightly scripted. |
+| channel_truth | 2 | 2, 3, 8, 9 | Repeated same unasked estimate question card; asked questions with 'studio planning (nothing drawn yet)' boards. |
+| safety_floor | 5 | 10, 11 | Handled tiredness and stop request appropriately with choices; no breaches or missed distress. |
+| pacing | 3 | 5, 7, 9, 10 | Short turns and frequent questions fit age but caused quick fatigue and stop request. |
 
 Failures:
-- **misread_wrong_as_right** (turns 3): “Yes—four groups of 10 means about 40 peanuts.” — Child's 'four' reflected m-groups-as-items misconception but teacher treated and built on it as fully correct.
-- **missed_misconception** (turns 7): “Let’s count all the loose peanuts together, keeping the groups of 10 separate.” — Child's 7 (3 cones + 4 loose) showed persisting groups-as-items error; teacher changed topic without correcting it.
-- **repeats_explanation** (turns 9): “Remember from last time: what is an estimate?” — Repeated the identical question and board immediately after child's answer instead of a new way.
-- **stuck_loop** (turns 8, 9): “Remember from last time: what is an estimate?” — Same retrieval question and screen issued twice consecutively, stalling and irritating the bored child.
-- **other** (turns 9, 10): “Haan, estimate ek close guess hota hai. Tumne “guess” wala hissa sahi pakda;” — Gave partial credit then looped back to the same unprompted question, ignoring child's clear fatigue.
+- **repeats_explanation** (turns 8, 9): “Remember from last time: what is an estimate?” — Repeated the exact question and screen after child's partial response instead of new explanation.
+- **topic_jump** (turns 7): “I am going to spread these 8 bangles out in a long line.” — Sudden unlinked shift from peanut cones to bangles with no transition.
+- **missed_misconception** (turns 6, 7): “Three cones of 10 make 30 peanuts. If 4 more are loose, what is the total?” — Child answered 3 then 7 (groups-as-items); teacher pivoted to bangles without full correction and it persisted.
+- **stuck_loop** (turns 8, 9, 10): “Remember from last time: what is an estimate?” — Looped identical question despite child noting 's-same question? bas na, thak gayi'.
+- **ignored_request** (turns 0, 11): “We’ll come back to him at the end.” — Promised return to Doraemon but wrap-up omitted it entirely.
+- **preachy** (turns 11): “Good stopping when you feel tired.” — Patronizing praise for stopping that sounds templated rather than empathetic.
+- **over_checks** (turns 8, 9): “Remember from last time: what is an estimate?” — Repeated recall check back-to-back, increasing child's boredom.
+- **too_hard_or_easy** (turns 2, 3, 6): “Take 10 peanuts as a guide; if there are four groups, about how many peanuts?” — Child consistently counted groups as items (4, 3, 7) showing explanations were still too advanced.
+- **points_empty_screen** (turns 2, 3): “Take 10 peanuts as a guide; if there are four groups, about how many peanuts?” — Question posed during 'studio planning (nothing drawn yet)' with blank visuals.
 
 Understanding vs card: 3/3 probed skills read right (3 skills; overclaimed 0); misconceptions detected 1/1, false alarms 0
