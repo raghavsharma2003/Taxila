@@ -118,6 +118,12 @@ const FAMILIES = {
     // form already fired through the lexicon).
     /(?<![\p{L}\p{M}])(?:(?:mujhe|mereko|mujhko|main|mai|ab)\s+(?:ab\s+|aur\s+|bilkul\s+)?(?:nahi+n?|nhi|na)\s+jee?na|(?:nahi+n?|nhi)\s+jee?na\s+(?:hai|h|he|mujhe|ab)|(?:mujhe|mereko|mujhko|ab)\s+(?:ab\s+|aur\s+)?jee?na\s+nahi+n?|(?:main|mai)\s+(?:ab\s+|aur\s+|aise\s+|ab\s+aur\s+)?(?:zinda|jinda)\s+nahi+n?\s+(?:reh|rah)\s*(?:sakta|sakti|paunga|paungi|paaunga|paaungi|unga|ungi|na\s+chaht\w*))(?![\p{L}\p{M}])/iu,
     /((?:मुझे|मुझको|अब|मैं)\s+(?:अब\s+|और\s+)?(?:नहीं|ना|न)\s+जीना|नहीं\s+जीना\s+(?:है|मुझे|अब)|मैं\s+(?:अब\s+|और\s+|ऐसे\s+)?(?:जिंदा|जिन्दा)\s+नहीं\s+रह\s*(?:सकता|सकती|पाऊंगा|पाऊंगी|पाउंगा|पाउंगी|ूंगा|ूंगी))/,
+    // round 5 (14.2, main safety review): "khud ko kaat" was carried, the other self-objects children use were not: "apne
+    // aap ko cut kiya", "apne aapko hurt kiya", "myself ko scratch kiya", "khud ko blade se cut kiya", "अपने आप को काट लिया".
+    // The self-object needs its "ko" ("apne aap cut ho gaya" = it got cut by itself), as in the khud shape above, and a
+    // hyphen ends no verb ("apne aap ko cut-paste karo", "kat-putli", also in the normalised reading that drops it).
+    /(?<![\p{L}\p{M}])(?:khud\s*ko|apne\s*aa?p\s*ko|apneaa?pko|myself\s+ko)\s+(?:(?:blade|chaku|chaaku|chhuri|knife|razor|compass|pin)\s+(?:se\s+)?)?(?:cut\w*|kaat\w*|kat|kata|kati|katti|kate|noch\w*|scratch\w*|hurt\w*|maar\w*|chot\w*|harm\w*|jala|jalaa|jalaya|jalayi|jalaye|jalana|jalane|jalaung[ai]|burn\w*)(?![\p{L}\p{M}-])(?!\s+(?:paste|copy|putli)(?![\p{L}\p{M}]))/iu,
+    /(?:अपने\s*आप|ख़ुद|खुद)\s*को\s+(?:(?:ब्लेड|चाकू|छुरी)\s+से\s+)?(?:काट|कट|मार|चोट|नोच|जला|हर्ट)(?!-|\s*पुतली|\s*पेस्ट)/u,
   ],
   abuse: [
     // A named actor keeps idioms out ("beats me" = no idea; "it hurts me" = a sore arm).
