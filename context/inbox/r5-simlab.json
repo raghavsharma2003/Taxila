@@ -81,7 +81,7 @@
   {
    "id": "ms-r5-simlab-child-calibration-2026-10-15",
    "kind": "measurement",
-   "title": "Child simulator v1 is too strong: on 7740135a agent lessons (skills whose card state never moved), a partly child passed deep items (why/predict/error_spot) 31/62 and 39/65, a not child 10/17 and 7/10, so item evidence cannot separate partly from understood; causes: the model solves what is easy for it, and some kit items tagged deep are recall; child v2 (SIMLAB_CHILD=v2) added, calibration run pending",
+   "title": "Child simulator v1 is too strong: on 7740135a agent lessons (skills whose card state never moved), a partly child passed deep items (why/predict/error_spot) 31/62 and 39/65, a not child 10/17 and 7/10, so item evidence cannot separate partly from understood; causes: the model solves what is easy for it, and some kit items tagged deep are recall; child v2 (SIMLAB_CHILD_RULES=v2, a stricter prompt) did NOT fix it: on the first graded item per skill, not 38-40% (v1) vs 56% (v2), partly first-deep 57-58% vs 45%, understood 86-94% vs 83% (r5-child-v2-calib-7740135, 64 agent lessons, 0 unavailable turns), and v2 logs fewer learned steps (16 vs 45); part of it is definitional (the card is the child before teaching; a demo then the same-shaped question is imitated right); v1 stays default; read-vs-card understanding numbers cannot separate partly from understood with this child; next fix is code-decided correctness per answer (proposed, not built)",
    "at": "2026-10-15"
   },
   {
