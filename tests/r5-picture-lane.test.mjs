@@ -126,6 +126,8 @@ test("sim lab 709b6acb: over an empty stage a line never assumes a visual (table
   assert.equal(unassumeVisual("Timeline picture: charter → Plassey → Buxar."), "Timeline: charter → Plassey → Buxar.");
   assert.equal(unassumeVisual("Can you find 13 on the number line?"), "Can you find 13?");
   assert.equal(unassumeVisual("Garam surface aur upar uthti vapour ko dekhiye."), "Garam surface aur upar uthti vapour ko imagine kijiye.");
+  assert.equal(unassumeVisual("Aarav, aapke saamne number line hai: left 500 BCE, phir 1 BCE."), "Aarav, socho, ek number line hai: left 500 BCE, phir 1 BCE.");
+  assert.equal(unassumeVisual("Drawing mein label karo: petal aur sepal."), "Label karo: petal aur sepal.");
   assert.equal(unassumeVisual("Accha, ek table banate hain."), "Accha, ek table banate hain.", "a table she is making is not one assumed on screen");
   const plain = unassumeVisual("Is chart mein dekho, 3 rows hain.");
   assert.equal(pointsAtStage(plain) ? unpointGently(plain) : plain, "Dekho, 3 rows hain.", "a bare conversational \"dekho,\" stays");

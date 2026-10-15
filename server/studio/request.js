@@ -253,10 +253,12 @@ export function clockBoard(request, { scriptId = "clock", lessonId = "", spanMs 
  * raha"), "Aap 3335 ko mark kijiye" (no number line), "Timeline picture: charter → Plassey" (nothing drawn). The visual noun
  * goes, the content stays: "Baisakhi kis month mein dikh rahi hai?", "Aap 3335 kahan aayega, bataiye", "Timeline: …". PURE.
  */
-const VISUAL_NOUN = "(?:table|chart|diagram|graph|timeline|number\\s+line|grid|picture|photo|tasveer|chitra|chitr|तालिका|चार्ट|चित्र|तस्वीर)";
+const VISUAL_NOUN = "(?:table|chart|diagram|drawing|graph|timeline|number\\s+line|grid|picture|photo|tasveer|chitra|chitr|तालिका|चार्ट|चित्र|तस्वीर)";
 export function unassumeVisual(text) {
   const before = String(text ?? "");
   const s = before
+    // "aapke saamne number line hai: …" (sim lab 24175dbe p51) over nothing: she asks them to picture it
+    .replace(new RegExp(`\\b(?:aapke|tumhare|tere|apne)\\s+saamne\\s+(?:ek\\s+)?(${VISUAL_NOUN})\\s+hai\\b`, "giu"), "socho, ek $1 hai")
     .replace(new RegExp(`\\b(?:is|iss|us|uss|this|the|ye|yeh)?\\s*${VISUAL_NOUN}\\s+(?:mein|me|par|pe|per|में|पर)\\s+`, "giu"), "")
     .replace(new RegExp(`\\b(?:on|in)\\s+the\\s+${VISUAL_NOUN}\\b\\s*,?\\s*`, "giu"), "")
     .replace(new RegExp(`([\\p{L}]{2,20})\\s+${VISUAL_NOUN}\\s*:`, "giu"), "$1:")
