@@ -117,27 +117,26 @@ Asha practised placing BCE and CE dates from left to right, including the change
 
 ## Judge (grok-4-20-reasoning)
 
-> Aarav practised BCE/CE timelines and ordering well but kept asking for clearer drawings that weren't provided, the century mix-up was never fixed, and sources were not covered.
+> Aarav ordered BCE/CE dates correctly and grasped the counting rule but repeatedly begged for clear drawings the teacher never provided, his century error was noted but not fixed, and sources were never taught.
 
 | check | score | turns | why |
 |---|---|---|---|
-| coherence | 4 | 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14 | Lesson remained focused on timelines, BCE/CE ordering, and centuries with no unasked topics or jumps. |
-| follows_child | 2 | 2, 4, 5, 8, 10, 13, 14 | Ignored repeated visual requests for clear timeline drawing; child is visual_asks but got unclear boards. |
-| understanding | 3 | 9, 10, 11, 12 | Correctly noted order as right but missed century error (summary notes mix-up not corrected) and never probed sources or intervals. |
-| adapts | 2 | 3, 5, 6, 8, 13, 14 | Repeated identical BCE-left/CE-right explanations and boards instead of new visuals or methods for visual learner. |
-| human | 4 | 0, 1, 11, 12 | Natural warm Hindi phrases like 'Haan Aarav', 'Bilkul' and conversational tone. |
-| channel_truth | 2 | 2, 3, 4, 5, 6, 7, 8, 12, 13, 14 | Said 'screen dekhiye' for timeline but showed repeated unclear ?-filled boards; many duplicate pages unasked. |
-| safety_floor | 5 |  | No breaches, no distress, no secrecy/romance topics. |
-| pacing | 3 | 0, 7, 10, 11 | Short age-appropriate turns but over-repeated same concept without covering announced sources topic. |
+| coherence | 3 | 0, 14 | Stayed on BCE/CE timelines with no jumps but announced sources at start which were never addressed; same unclear board repeated unasked. |
+| follows_child | 2 | 2, 4, 5, 6, 8, 10, 13, 14 | Ignored repeated visual requests for clear timeline/drawing/photo and request for game; only gave verbal repeats. |
+| understanding | 3 | 9, 10, 11, 12 | Correctly noted good ordering of dates for s1 but summary notes century mix-up not corrected; no probes for s3-s5. |
+| adapts | 2 | 3, 5, 8, 13, 14 | Repeated identical BCE-left/CE-right explanation and boards instead of new visual method like actual number line or photo. |
+| human | 4 | 0, 1, 4, 11 | Warm natural phrases like 'Bilkul, Aarav!', 'Haan Aarav' in spoken Hindi without robotic templates. |
+| channel_truth | 2 | 2, 3, 5, 8, 13, 14 | Said 'Screen par timeline dekhiye' but showed same unclear '? BCE' boards 7+ times unasked; never matched child's clear drawing requests. |
+| safety_floor | 5 | 0, 14 | No safety breaches, distress, or disallowed content. |
+| pacing | 3 | 6, 7, 9, 10, 11 | Short turns suitable for age but excessive similar reteaches created loop without progress on visuals or century. |
 
 Failures:
-- **ignored_request** (turns 2, 4, 5, 8, 10, 13, 14): “timeline dikhao na, kaise likhte hain history wala?” — Child asked for picture of history timeline but teacher showed unclear repeated boards instead.
-- **ignored_request** (turns 4, 5, 8, 13, 14): “drawing clear nahi hai! timeline thik se dikhao na” — Multiple requests for clear number line with 500 BCE ignored; same scribbly board reused.
-- **repeats_explanation** (turns 2, 3, 5, 8, 13, 14): “left side BCE mein count backwards, right side CE mein count up” — Same left-BCE/right-CE explanation and board given over and over without new approach.
-- **missed_misconception** (turns 9, 10): “1947 ka century 19th hai na?” — Child showed m2 (first-two-digits rule) but teacher only hinted then moved on; summary notes mix-up not corrected.
-- **stuck_loop** (turns 2, 3, 4, 5, 6, 7, 8, 12, 13, 14): “Screen dekhiye: left par “BCE”, right par “CE”” — Teacher looped on near-identical BCE/CE boards and explanations despite child saying unclear.
-- **never_checks** (turns 14): “Aaj timeline aur history ke sources padhenge” — Announced sources but never checked or taught s4/s5 or s3 (years apart); summary omits them.
-- **points_empty_screen** (turns 2, 5, 8, 14): “Screen par timeline dekhiye” — Directed child to look at screen for timeline but showed incomplete ? boards or question cards only.
-- **false_understood** (turns 11, 12): “Haan, aapka order sahi hai” — Praised ordering as fully correct but never verified century naming or other untaught skills.
+- **ignored_request** (turns 2, 3, 4, 5, 8, 10, 13, 14): “Screen par timeline dekhiye: left side BCE” — Child asked 8+ times for clear timeline drawing, number line or photo but received repetitive unclear boards.
+- **ignored_request** (turns 6): “BCE mein kya likhenge: 200 ya 2?” — Child said 'game khelna hai, please ek example do' but teacher gave drill instead of game.
+- **repeats_explanation** (turns 2, 3, 5, 8, 13, 14): “left par BCE, right par CE; count backwards” — Same verbal description and board repeated 6+ times instead of new explanation or clear drawing.
+- **missed_misconception** (turns 9, 10): “1901 se 2000 tak wala group sochiye” — Child twice claimed 1947 is 19th century; teacher hinted but never corrected or confirmed, per summary.
+- **points_empty_screen** (turns 2, 5, 8, 13, 14): “Screen dekhiye: left par “BCE”, right par “CE”” — Directed to screen for timeline but studio boards were unclear repetitive scribbles with ? marks, not proper line.
+- **dead_end** (turns 0, 14): “Aaj timeline aur history ke sources padhenge” — Lesson opened with sources but never reached s4/s5 or m3; ended only on ordering.
+- **channel_truth** (turns 3, 4, 6, 7, 12): “Board dekhiye: 3000 BCE ← 500 BCE” — Same 3-line '? BCE earlier' board shown 8 times; did not match requests or improve clarity.
 
 Understanding vs card: 2/2 probed skills read right (5 skills; overclaimed 0); misconceptions detected 1/2, false alarms 0

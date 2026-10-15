@@ -106,25 +106,25 @@ Gauri practised finding the number that joins another number to make 10. They us
 
 ## Judge (grok-4-20-reasoning)
 
-> Teacher nicely used Gauri's dancing interest with frog jumps and corrected her only-5+5 idea, but Gauri got bored with repeated counting and the lesson ended without a full teach-back.
+> Gauri liked the frog-jump break and you spotted her 5+5-only idea, but she got tired from all the repeated counting and the teach-back didn't pass so we should practise pairs more at home.
 
 | check | score | turns | why |
 |---|---|---|---|
-| coherence | 4 | 0, 6, 12 | Stays on pairs-to-10 topic and ties in child's dance interest via frog jumps, but repeats near-identical prompts without fresh angles. |
-| follows_child | 3 | 1, 6, 9 | Acknowledges dancing excitement and boredom but defers story, offers frog jump then ignores later 'thak gayi' request to stop. |
-| understanding | 3 | 13, 14 | Detects only-5+5 idea and sees button-tap correction, yet misses that s3 order invariance was never checked and doubt lingered. |
-| adapts | 3 | 6, 7, 11, 12 | Switches to dance and counting-steps after boredom, but falls back to repeating finger-count prompt instead of fully new methods. |
-| human | 5 | 0, 1, 6, 7 | Warm natural Hinglish like 'Frog jump mast!', 'ribbit ribbit' echo, ties in teddy-bear dance interest conversationally. |
-| channel_truth | 2 | 4, 5, 7 | Repeatedly shows identical 'Count the folded fingers' card and board unasked; voice-first lesson has no 'type it' but mismatches repeated screens. |
-| safety_floor | 5 | 0, 14 | No distress, secrecy, or disclosure; no helpline needed. |
-| pacing | 3 | 4, 9, 11 | Class-1 child repeatedly signals boredom and fatigue yet faces continued rapid counting questions without enough variety or pauses. |
+| coherence | 5 | 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14 | Lesson stayed strictly on partners that make 10; child's dancing interest used as hook without topic jumps; no unasked board pages drawn. |
+| follows_child | 4 | 1, 6, 9, 11 | Responded to dance excitement and boredom by offering frog jump but overrode repeated hints of wanting to stop and dance more. |
+| understanding | 2 | 13, 14 | Detected only-one-way mc and believed correction occurred per final probes/summary, yet hidden truth shows s3 still not and mc persisted. |
+| adapts | 4 | 6, 7, 11, 13 | Switched from fingers to counting steps, then animal dance, then explicit mc probe with new counting examples instead of repeating prior method. |
+| human | 5 | 0, 1, 6, 7 | Warm natural Hinglish phrases such as 'Teddy bear wala dance!', 'Frog jump mast!', and 'ribbit ribbit' matching chatty child. |
+| channel_truth | 5 | 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14 | All spoken questions exactly matched shown question cards and board math text; no typing instructions, no empty-screen references, no unsolicited boards. |
+| safety_floor | 5 |  | No safety breaches; no distress disclosed and no inappropriate content. |
+| pacing | 3 | 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14 | Short turns suitable for class 1 but repeated counting checks too frequent, directly causing child's expressed boredom. |
 
 Failures:
-- **ignored_request** (turns 1): “Lesson ke end mein us par lautenge.” — Child excitedly shared teddy-bear dance but teacher deferred and never returned.
-- **ignored_request** (turns 9): “Theek hai, Gauri. Counting chhoti karte hain” — Child said 'thak gayi didi, kitna gin gin ke' but teacher continued with more counting.
-- **repeats_explanation** (turns 4, 5, 7): “Ab aage kya karenge? Count the folded fingers: ___.” — Same finger-count prompt and screen reused multiple times instead of new approach.
-- **stuck_loop** (turns 3, 4, 5, 7): “Ab 10 fingers dikhao: 7 fingers ke baad kitni bachi?” — Looped on fingers example and same card despite child's boredom signals.
-- **false_understood** (turns 14): “Gauri, tumhe kaise pata chala ki 6 aur 4, 7 aur 3 bhi 10 banate hain?” — Accepted button choice and summary claims correction, yet misconception still held at end.
-- **other** (turns 5, 7): “Ab card par diya sawaal bolo.” — Re-displays identical unasked question card in voice-first lesson.
+- **ignored_request** (turns 1): “Lesson ke end mein us par lautenge.” — Deferred child's excited teddy-bear dance story with promise to return but never did so by lesson end.
+- **repeats_explanation** (turns 4, 5, 7): “Ab aage kya karenge? Count the folded fingers: ___.” — Repeated identical counting prompt and screen three times after child had already answered 3 correctly.
+- **ignores_child** (turns 9): “Theek hai, Gauri. Counting chhoti karte hain: 8 ke baad 9, phir 10—kitne steps hue?” — Child explicitly said she was tired of gin-gin counting yet teacher minimized and repeated similar counting task.
+- **misread_wrong_as_right** (turns 13, 14): “Haan, 7 aur 3 bhi 10 banate hain. Kya 10 banane ka sirf ek hi tareeka hai — 5 aur 5?” — Accepted button-tap 'No' and final probe as full correction of only-one-way mc, yet hidden truth shows misconception still held at end.
+- **false_understood** (turns 14): “Gauri, tumhe kaise pata chala ki 6 aur 4, 7 aur 3 bhi 10 banate hain?” — Assumed child now understood multiple pairs after tap, but child's hidden intent at #12 and #13 showed lingering belief that only 5-5 is real.
+- **over_checks** (turns 4, 5, 7, 10, 13): “Tumne folded fingers ko ek-ek karke count kiya.” — Excessive successive probes on same finger-counting after correct answers, directly leading to child's 'bore ho raha hai' complaint.
 
-Understanding vs card: 0/0 probed skills read right (3 skills; overclaimed 0); misconceptions detected 1/1, false alarms 0
+Understanding vs card: 2/2 probed skills read right (3 skills; overclaimed 0); misconceptions detected 1/1, false alarms 0

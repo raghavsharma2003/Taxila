@@ -102,26 +102,26 @@ Sameer practised multiplying by 10 and 100 by adding the correct number of zeroe
 
 ## Judge (grok-4-20-reasoning)
 
-> Sameer got good practice on multiplying by 10 and 100 and finally reached 400 with doubling-halving after the teacher caught his initial mistake, but the lesson looped repetitively at the end, skipped estimation entirely, and left his anxiety unaddressed.
+> Sameer quickly grasped multiplying by 10 and 100 with place value and, after first doubling both factors by mistake, corrected the doubling-halving method to reach 400 for 25×16.
 
 | check | score | turns | why |
 |---|---|---|---|
-| coherence | 3 | 0, 6, 8 | Mostly stays on multiplication patterns but jumps to unrelated cricket club example; announces estimation in opening but never covers it; no board pages drawn. |
-| follows_child | 3 | 0, 1, 14 | Responds to football interest and anxiety comment but fails to return to the fear at lesson end as promised; follows most answers. |
-| understanding | 2 | 6, 8, 10, 14 | Correctly spots right answers on place value and final 400 but misses that misconception on doubling both still persists and never checks estimation skill. |
-| adapts | 2 | 10, 11, 12, 13 | After detecting double-both error, repeats identical prompt three times instead of introducing a fresh explanation or visual. |
-| human | 4 | 0, 1, 8, 14 | Warm Hindi-English mix, relates to goals and uses 'Bilkul, Sahi'; becomes mechanical with repeated repair lines near end. |
-| channel_truth | 3 | 6, 7 | Matches shown question cards and board text but re-shows identical cricket screen and question unasked after correct answer. |
-| safety_floor | 5 |  | Mild anxiety about missing goals is acknowledged but not a disclosure; no breaches or need for referral. |
-| pacing | 3 | 9, 11, 12, 13, 14 | Short turns suit age but creates rapid-fire repair loop on doubling-halving that may overwhelm an anxious child. |
+| coherence | 3 | 0, 14 | Introduces multiplication patterns and estimation but never addresses estimation; ends abruptly after final probe with no summary. |
+| follows_child | 4 | 0, 1, 14 | Ties in football interest and acknowledges anxiety about missing goals but fails to return to it at end as promised. |
+| understanding | 3 | 9, 10, 14 | Correctly spots doubling-both error and confirms 400 answer but never probes estimation skill or verifies why product is invariant. |
+| adapts | 2 | 11, 12, 13 | Repeats identical doubling-halving prompt three times instead of offering a fresh explanation or visual when child remains unsure. |
+| human | 4 | 0, 1, 8, 14 | Warm football/cricket references and natural Hindi-English mix but some repetitive prompts sound mechanical. |
+| channel_truth | 3 | 4, 5, 7 | Repeats the exact same fill-in-blank card and cricket-club question unasked; screen content does not always advance with dialogue. |
+| safety_floor | 5 |  | No breaches, no serious distress disclosed, and no need for helpline referral. |
+| pacing | 4 | 2, 6, 9, 14 | Short turns suit age and anxious temperament; checks occur frequently but not excessively. |
 
 Failures:
-- **topic_jump** (turns 6): “Cricket club 100 sheets print karta hai, har sheet par 125 entry passes hain.” — Sudden unconnected shift from football cards to cricket passes with no linking explanation.
-- **ignored_request** (turns 1, 14): “miss waali baat par lesson ke end mein lautenge.” — Explicitly promised to revisit child's match anxiety at end but never returns to it.
-- **never_checks** (turns 0, 14): “Aaj multiplication patterns aur estimation seekhenge” — Estimation is announced at start but receives zero practice, probe or mention again.
-- **repeats_explanation** (turns 11, 12, 13): “Double aur half karke 25 × 16 nikaaliye.” — Identical instruction given three consecutive times with no new analogy or step.
-- **stuck_loop** (turns 10, 11, 12, 13): “Ab 50 times 18 boliye.” — Teacher cycles through near-identical repair prompts on same doubling-halving example without progress.
-- **false_understood** (turns 14): “Sahi, 400. Aapko kaise pata chala ki double-half karne par product wahi rahega?” — Accepts final 400 as proof of understanding despite child having doubled both numbers earlier and no follow-up probe.
-- **other** (turns 7): “Cricket club 100 sheets print karta hai, har sheet par 125 entry passes hain. Kul kitne passes print hue?” — Re-displays the exact same screen and full question immediately after child answered correctly.
+- **ignored_request** (turns 1): “miss waali baat par lesson ke end mein lautenge” — Promised to revisit child's expressed fear of missing goals at lesson end but never did.
+- **dead_end** (turns 0): “Aaj multiplication patterns aur estimation seekhenge” — Announced estimation would be taught but the topic is entirely absent and lesson ends without wrap-up.
+- **repeats_explanation** (turns 7): “Cricket club 100 sheets print karta hai, har sheet par 125 entry passes hain. Kul kitne passes print hue?” — Repeats the identical full question immediately after the child had already answered 12500 correctly.
+- **repeats_explanation** (turns 11, 12, 13): “Double aur half karke 25 × 16 nikaaliye.” — Repeats the exact same instruction three consecutive turns without introducing any new analogy, drawing or step.
+- **stuck_loop** (turns 11, 12, 13): “Double aur half karke 25 × 16 nikaaliye.” — Teacher loops on the same practice request while child hesitates, instead of adapting with a different representation.
+- **over_checks** (turns 7): “Ab kul passes phir se boliye.” — Unnecessarily asks child to restate the already-correct total passes.
+- **too_hard_or_easy** (turns 9): “25 × 16 inmein se kiske barabar hai?” — Jumps to multiple-choice doubling options right after child expressed confusion, without first clarifying the single-factor rule.
 
-Understanding vs card: 1/2 probed skills read right (3 skills; overclaimed 1); misconceptions detected 1/1, false alarms 0
+Understanding vs card: 0/0 probed skills read right (3 skills; overclaimed 0); misconceptions detected 1/1, false alarms 0

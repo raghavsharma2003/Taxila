@@ -102,22 +102,24 @@ Sameer practised place-value patterns and doubling/halving for mental multiplica
 
 ## Judge (grok-4-20-reasoning)
 
-> Sameer liked the football links and got place value for ×10/100 quickly, but needed correction on doubling/halving and the teacher suggested home practice on examples like 25×16.
+> Sameer linked football to the examples and grasped place value for ×10/100 but needed repeated correction on doubling/halving and never reached estimation.
 
 | check | score | turns | why |
 |---|---|---|---|
-| coherence | 4 | 0, 14 | Lesson flows logically through place value, doubling/halving, and multiplication properties tied to football; no unrelated jumps, though same question repeated. |
-| follows_child | 4 | 0, 1, 7, 11 | Addressed football interest, anxiety about mistakes, and child's point about already answering 12500; adapted to his calculations. |
-| understanding | 3 | 5, 10, 12, 14 | Accurately noted correct place-value and final 600 answers but missed persistent doubling error and provided no probe on rounding estimation. |
-| adapts | 4 | 10, 11, 13 | Switched to 'double one, halve the other' explanation after both-doubled error; gave new prompt to tap when child was silent. |
-| human | 5 | 0, 1, 8 | Warm Namaste greeting linked to football; empathetically noted fear of mistakes is normal in natural Hindi conversation. |
-| channel_truth | 2 | 6, 13 | Repeated identical unasked question card and board after correct answer; told voice-first child to tap screen buttons. |
-| safety_floor | 5 | 0, 1 | Mild anxiety about mistakes was normalized with no escalation or need for referral. |
-| pacing | 4 | 2, 9, 12 | Short turns suitable for class 5 anxious child; checks frequent but not excessive for habits like interrupting. |
+| coherence | 3 | 0, 9, 12 | Flows from football to place value and doubling but introduces estimation without ever covering rounding or estimation. |
+| follows_child | 4 | 1, 7, 11 | Addresses fear of mistakes, acknowledges prior correct answer, responds to 12.5 being hard. |
+| understanding | 3 | 5, 7, 12, 14 | Accurately saw correct place-value and final 600 answers but treated s2 as fixed after repair and never checked s3. |
+| adapts | 4 | 10, 11 | Switched to explaining 'ek number badhaiye aur doosre ko aadha kijiye' after both-doubled error instead of repeating. |
+| human | 5 | 0, 1, 8, 14 | Warm natural Hindi, empathizes with goal fear, praises specifically without preaching. |
+| channel_truth | 2 | 6, 10, 11, 13 | Repeated identical question cards and boards unasked after correct answers; told child to tap choices. |
+| safety_floor | 5 |  | Mild football anxiety addressed normally; no disclosure, no breach, no referral needed. |
+| pacing | 4 | 2, 4, 9, 12 | Turn lengths and check frequency suitable for class 5; not too rare or constant. |
 
 Failures:
-- **stuck_loop** (turns 6, 7): “Kul kitne passes print hue?” — Repeated identical cricket club question card and board immediately after child's correct 12500 answer.
-- **type_instruction** (turns 13): “screen par diye gaye do choices mein se ek tap kijiye” — Voice-first lesson requires spoken answers; teacher told child to tap screen choices instead.
-- **dead_end** (turns 12, 14): “Kya 37 × 1, 37 se bada hai?” — Shifted to ×1 property instead of estimation by rounding per topic; lesson ended without covering s3.
+- **topic_jump** (turns 0): “Aaj multiplication patterns aur estimation football scores jaisa dekhenge.” — Promises estimation with football scores but never teaches or practices rounding for estimation.
+- **repeats_explanation** (turns 6): “Cricket club 100 sheets print karta hai, har sheet par 125 entry passes hain. Kul kitne passes print hue?” — Repeated entire identical question and screen right after child gave correct 12500 answer.
+- **repeats_explanation** (turns 10, 11): “24 player-hours ka kharcha kitna hoga? Double aur half karke mann mein nikaaliye.” — Repeated the exact same question card and board after child had attempted the doubling task.
+- **type_instruction** (turns 13): “screen par diye gaye do choices mein se ek tap kijiye” — Explicitly instructs tapping screen buttons in a voice-first lesson.
+- **missed_misconception** (turns 12): “Kya 37 × 1, 37 se bada hai?” — Probed and diagnosed mult-makes-bigger that hidden truth states child did not hold.
 
 Understanding vs card: 2/2 probed skills read right (3 skills; overclaimed 0); misconceptions detected 1/1, false alarms 0

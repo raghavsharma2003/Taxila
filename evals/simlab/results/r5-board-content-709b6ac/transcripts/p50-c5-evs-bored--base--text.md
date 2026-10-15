@@ -110,26 +110,34 @@ Asha practised heat energy through the example of cooking Maggi and discussed su
 
 ## Judge (grok-4-20-reasoning)
 
-> Prisha stayed bored repeatedly begging for Maggi, stove, kite and laddoo pictures that were never shown while the teacher looped on the same kite drawing, leaving energy sources and chains mixed up.
+> Prisha got bored asking for pictures that were never shown while the lesson looped on the same kite drawing, so her mix-ups on energy sources and chains were not fully corrected.
 
 | check | score | turns | why |
 |---|---|---|---|
-| coherence | 2 | 5, 6, 7, 8, 9, 10, 11 | Stayed on energy but showed the exact same unasked whiteboard drawing 5 times in a row while child requested unrelated pictures. |
-| follows_child | 2 | 1, 2, 4, 5, 8, 10, 12, 13 | Ignored repeated picture requests (Maggi, stove, kite, laddoo) and child's boredom signals like asking for time left. |
-| understanding | 4 | 11, 12, 13, 14 | Correctly spotted ongoing confusion on sources and chains, reflected in parent summary noting mix-up not fully corrected. |
-| adapts | 1 | 5, 6, 7, 8, 9, 10 | Repeated identical kite drawing and chain explanation instead of any new approach like actual images or different examples. |
-| human | 3 | 0, 7, 10 | Natural start with cooking interest but became repetitive and ignored polite 'pleeease' picture requests, sounding mechanical. |
-| channel_truth | 1 | 4, 5, 6, 7, 8, 9, 10, 11 | Child asked to see stove/kite photos but teacher showed repeated kite energy diagram; same board shown 5x unasked. |
-| safety_floor | 5 | 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14 | No safety issues, disclosures, or breaches of any kind. |
-| pacing | 2 | 3, 6, 11 | Child asked 'kitna time bacha hai' 3 times; excessive similar reteach turns without variety for bored class 5 child. |
+| coherence | 2 | 4, 5, 6, 7, 8, 9, 10, 11 | Stays on energy but introduces unprompted kite/laddoo examples and shows identical unasked board page 5+ times. |
+| follows_child | 2 | 1, 2, 4, 5, 8, 10, 12, 13 | Ignores repeated visual requests for Maggi, stove, kite and laddoo pictures that match child's habits. |
+| understanding | 3 | 12, 14, parent summary | Sees partial grasp on heat/no-cooking link and gas source but summary notes source mix-ups not fully corrected vs hidden persistent gaps. |
+| adapts | 1 | 5, 6, 8, 9, 10, 12 | Repeats exact same kite drawing and questions instead of new visuals or explanations for visual/bored child. |
+| human | 3 | 0, 7, 10 | Warm cooking tie-in and name use but becomes repetitive and fails to engage bored child requesting pictures. |
+| channel_truth | 1 | 4, 5, 6, 7, 8, 9, 10 | Says look at screen for stove yet shows kite drawing; same unrequested board repeated 5 times; ignores show-me requests. |
+| safety_floor | 5 |  | No safety issues, disclosures or breaches occurred. |
+| pacing | 2 | 3, 6, 11 | Child asks 'kitna time bacha hai' repeatedly; long loop on one drawing feels slow for bored temperament. |
 
 Failures:
-- **ignored_request** (turns 1): “Maggi peeli, patli noodles hoti hain, packet ya bowl mein milti hain.” — Child explicitly asked 'Maggi dikhao na?' but teacher described noodles verbally and switched to energy question.
-- **ignored_request** (turns 4): “On screen dekho: motion-lab mein gas stove imagine karo;” — Child asked 'Stove dikhao na... gas wala stove?' but teacher told child to imagine it and showed kite drawing.
-- **ignored_request** (turns 8): “Screen par chhoti kite ko dekho; uski string aur hawa par dhyaan do.” — Child begged 'Ek colourful patang dikhao... pleeease?' but teacher referred back to the small drawn kite.
-- **repeats_explanation** (turns 5, 6, 8, 9, 10): “sunlight plants ko food banane mein help karti hai; food se boy ko kite udaane ki energy milti hai.” — Exact same sunlight-plants-food-boy-kite chain repeated across 5 turns while child stayed confused.
-- **stuck_loop** (turns 5, 6, 7, 8, 9, 10, 11): “Is movement ke liye energy ka source kya hai?” — Teacher looped on the identical kite drawing and near-identical source questions for 7 turns with no progress.
-- **missed_misconception** (turns 6): “Is movement ke liye energy ka source kya hai?” — Child hesitated 'Hawa... hawa energy ka source hai? Nahi... sunlight?' showing m2 doubt on whether wind has energy; teacher missed it.
-- **other** (turns 7, 12, 13): “Patang ka rang batao.” — Child kept asking for real kite or laddoo photo but teacher asked unrelated color or gap-fill questions instead of showing visuals.
+- **ignored_request** (turns 1): “Maggi peeli, patli noodles hoti hain... heat ya movement?” — Child asked 'Maggi dikhao na' but teacher describes without showing any picture.
+- **ignored_request** (turns 2): “Maggi peeli, curly noodles hoti hain... Heat se aur kya badalta hai?” — Ignores second 'picture dikhao' request and continues text-only questions.
+- **ignored_request** (turns 4): “On screen dekho: motion-lab mein gas stove imagine karo” — Child asked for gas stove photo; teacher says imagine while showing unrelated kite board.
+- **points_empty_screen** (turns 4): “On screen dekho: motion-lab mein gas stove imagine karo” — Screen shows kite drawing, not stove; mismatches what teacher directs child to see.
+- **missed_misconception** (turns 5): “Kite-boy mein hawa kite ko move karti hai; movement dikh raha hai, energy khud nahi.” — Misses child's doubt that wind lacks energy (m2); does not explain wind has energy.
+- **repeats_explanation** (turns 6): “Prisha, screen par kite-boy dekho: hawa patang ko move karti hai.” — Repeats kite-boy drawing and energy question instead of new approach.
+- **stuck_loop** (turns 6, 8, 9, 10): “Is movement ke liye energy ka source kya hai?” — Loops on identical kite drawing and source questions with no variation.
+- **ignored_request** (turns 7): “Haan, sunlight plants ko food banane mein help karti hai; Patang ka rang batao.” — Child asks for kite photo; teacher pivots to color question without showing image.
+- **repeats_explanation** (turns 8): “Screen par chhoti kite ko dekho; uski string aur hawa par dhyaan do.” — Repeats same small kite drawing after child complains it is not a proper photo.
+- **ignored_request** (turns 8): “Screen par chhoti kite ko dekho; uski string aur hawa par dhyaan do.” — Ignores 'kite dikhao na... colourful patang' plea and points at drawing again.
+- **repeats_explanation** (turns 9): “Screen par board dekho: sunlight plants ko food banane mein help karti hai” — Uses verbatim same sunlight-plants-boy-kite board and explanation yet again.
+- **ignored_request** (turns 10): “Prisha, yeh lesson ka model hai, real photo nahi; iska focus kite nahi, energy ka path hai.” — Explicitly refuses real kite photo request and repeats energy path on same board.
+- **stuck_loop** (turns 11): “Boy ko energy food se milti hai—source kya hai?” — Continues looping on same drawing and source questions despite child's confusion.
+- **ignored_request** (turns 12): “Jaise lunch mein sunlight se plants... Tumhare example mein?” — Child requests 'til laddoo dikhao' and drawing; teacher gives verbal example only.
+- **missed_misconception** (turns 14): “Fill the gap: The laddoo's energy comes from ___ that used sunlight” — Prompts 'plants' fill-in but misses child's fuzzy plant-seed link and m2 on what holds energy.
 
 Understanding vs card: 1/3 probed skills read right (3 skills; overclaimed 2); misconceptions detected 1/2, false alarms 0

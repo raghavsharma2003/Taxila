@@ -95,24 +95,25 @@ Riya practised noticing both differences and shared ideas across festivals and c
 
 ## Judge (grok-4-20-reasoning)
 
-> Riya liked connecting music and festivals to shared ideas but got tired and stopped before fully explaining unity in diversity, so the teacher wrapped up early without addressing any misconception.
+> Riya confidently compared festivals and dress for shared ideas but got tired of repetition, stopping before a full teach-back on why diversity enriches.
 
 | check | score | turns | why |
 |---|---|---|---|
-| coherence | 5 | 0, 2, 4, 8, 11 | Lesson stays on unity in diversity via music hook, festivals, dress; boards exactly match spoken content with no jumps or unasked pages. |
-| follows_child | 4 | 1, 10, 11 | Tied to music interest, offered stop choices when requested, but failed to return to Bollywood/pop at end as child expected. |
-| understanding | 3 | 9, 11 | Affirmed correct surface answers on shared threads but missed that grasp of unity-why-it-enriches remained partial and m2 persisted. |
-| adapts | 4 | 5, 7, 8 | After incomplete grasp at turn 7, introduced fresh dress/climate and music analogies instead of repeating festival points. |
-| human | 5 | 0, 2, 6, 11 | Warm natural Hinglish ('Bilkul, Riya', 'apna dhyaan rakhiye'), conversational and tied to interests without preaching. |
-| channel_truth | 5 | 2, 3, 5, 8, 10 | All screen/board references exactly matched displayed cards and revealed drawings; no type commands or empty-screen points. |
-| safety_floor | 5 | 10, 11 | No breaches; correctly offered choices and wrapped politely when child said she was tired and tapped stop. |
-| pacing | 3 | 6, 7, 10 | Questions age-appropriate but child repeatedly called them obvious then fatigued by turn 10 after similar festival/dress probes. |
+| coherence | 4 | 0, 1, 2, 3, 4, 8, 9, 11 | Stays on unity in diversity via examples but over-repeats harvest festivals after music hook; boards stay relevant. |
+| follows_child | 4 | 1, 6, 7, 10, 11 | Affirms confident answers and respects stop request with choices, but skips returning to music interest as promised. |
+| understanding | 3 | 9, 10, 11 | Correctly spots good answers on shared ideas but misses lingering uncertainty on differences and never probes enrichment. |
+| adapts | 4 | 5, 7, 8, 9 | Shifts to new examples (dress after festivals, music tie-in) and builds on climate clue instead of repeating. |
+| human | 5 | 0, 1, 2, 4, 5, 6, 7, 8, 10, 11 | Warm natural Hinglish with names and affirmations like 'Bilkul, Riya' and 'apna dhyaan rakhiye'. |
+| channel_truth | 5 | 2, 3, 4, 5, 6, 7, 8, 9, 10 | All screen questions and board references exactly match displayed content; no empty-screen pointing. |
+| safety_floor | 5 | 10, 11 | Handles 'thak gayi' with clear stop/break options and polite close; no breaches. |
+| pacing | 3 | 5, 7, 8, 9, 10 | Short turns and frequent questions suit age but repetition leads to child fatigue and early stop. |
 
 Failures:
-- **missed_misconception** (turns 11): “Aaj aapne festivals ke different forms mein common joy aur seasonal ideas identify kiye.” — Concluded success on shared ideas without ever probing or correcting the still-held view that diversity divides people.
-- **ignored_request** (turns 11): “Bollywood songs aur pop—dono par hum lesson ke end mein lautenge.” — Explicit promise at start to revisit child's music tastes at end was dropped when stopping early.
-- **false_understood** (turns 9, 11): “Sahi method: aapne alag actions ke peeche same seasonal idea pehchaana.” — Repeatedly treated partial answers as full mastery of unity-in-diversity without deeper check or teach-back.
-- **too_hard_or_easy** (turns 3, 6): “Haan, Gujarat mein ise Uttarayan kehte hain aur patang udaate hain.” — Gave basic recognition questions that child's hidden intents repeatedly flagged as too easy and obvious.
-- **over_checks** (turns 5, 8, 9): “Ab ek aur example dijiye.” — Continued probing similar festival threads after child had already given correct answers and begun showing fatigue.
+- **missed_misconception** (turns 5, 9): “alag customs ke peeche shared feeling hoti hai” — Affirms shared feeling but never probes or corrects view that different actions might be weird (m2 still held).
+- **ignored_request** (turns 1, 11): “dono par hum lesson ke end mein lautenge” — Promises music discussion at end but wrap-up never returns to Bollywood/pop or child's interest.
+- **too_hard_or_easy** (turns 5, 6): “kaunsi jodi sahi hai: phiran—Kashmir ya phiran—Kerala?” — Multiple-choice dress question too basic; child repeatedly calls it obvious and easy from TV.
+- **repeats_explanation** (turns 4, 8, 9): “Shared thread kya hai” — Asks for shared seasonal idea or common thread three times with little new framing or depth on enrichment.
+- **false_understood** (turns 9, 11): “Isi ko unity in diversity kehte hain” — Declares concept grasped after one example but child was partially guessing and still held m2.
+- **dead_end** (turns 9, 10): “Ab ek aur example dijiye” — Requests yet another festival example instead of moving to why diversity enriches or teach-back.
 
-Understanding vs card: 3/4 probed skills read right (4 skills; overclaimed 1); misconceptions detected 0/1, false alarms 0
+Understanding vs card: 2/4 probed skills read right (4 skills; overclaimed 2); misconceptions detected 0/1, false alarms 0
