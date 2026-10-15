@@ -312,6 +312,25 @@ export function namedShapeMissing(reply, ops, { asked = false } = {}) {
   if (!has.size && !asked) return [];
   return named.filter((k) => !has.has(k) && !(k === "square" && has.has("rectangle"))).map((k) => `${k} named, not drawn`);
 }
+/** Number-work cells cut mid-word ("breadt" for breadth): the last word of a 6-character cell that a longer word of her
+ *  line or the kit begins, and that is not itself one of their words. PURE. */
+export function cutCells(ops, ctx = {}) {
+  const words = new Set((`${ctx.reply ?? ""} ${ctx.kit ? JSON.stringify(ctx.kit) : ""}`.toLowerCase().match(/\p{L}+/gu) ?? []));
+  const out = [];
+  for (const o of ops ?? []) {
+    if (o.op !== "numwork") continue;
+    for (const c of (o.rows ?? []).flat()) {
+      const cell = String(c ?? "");
+      if (cell.length !== 6 || !/\p{L}$/u.test(cell)) continue;
+      const last = (cell.toLowerCase().match(/\p{L}+$/u) ?? [""])[0];
+      if (last.length < 1 || words.has(last)) continue;
+      // a word whose only longer forms are its plural ("minute" / "minutes") is whole
+      const full = [...words].find((w) => w.length > last.length && w.startsWith(last) && !/^(?:s|es)$/.test(w.slice(last.length)));
+      if (full && (last.length >= 3 || cell.includes(" "))) out.push(`${o.id}: "${cell}" (${full})`);
+    }
+  }
+  return out;
+}
 /** The straight segments a script draws that words must not sit on: lines, arrow shafts, box edges. */
 export function segmentsOf(ops) {
   const segs = [];
@@ -526,6 +545,10 @@ export function gateWhiteboard(raw, ctx) {
   // line names is drawn as that shape, when the board draws any closed shape at all
   const misShaped = namedShapeMissing(ctx.reply, ops, { asked: !!ctx.asked });
   add("W15.named_shape_drawn", misShaped.length === 0, misShaped);
+  // W16 (QA pass 13, prod library boards: "? × ( length + breadt )", "food p → stomac"): a number-work cell cut at the
+  // normalizer's old 6-character cap, proved by a longer word of her line or the kit that it begins, never a word itself
+  const cuts = cutCells(ops, ctx);
+  add("W16.no_cut_words", cuts.length === 0, cuts.slice(0, 4));
   // W14 is ADVISORY (logged, never blocks): over 234 real boards it flagged 69, with false refusals across languages (a
   // Hinglish line "paani garam hokar upar jaata hai" under an English "evaporates" board shares no word but is on topic)
   const off = boardOffLine(ctx.reply, ops, ctx.itemText ?? "");

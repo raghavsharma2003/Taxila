@@ -140,3 +140,18 @@ test("QA pass 13 (lesson 42f725b7): an ASKED board under a line that names a rec
   assert.deepEqual(namedShapeMissing(line, formula, { asked: true }), ["rectangle named, not drawn"]);
   assert.deepEqual(namedShapeMissing(line, [{ op: "rect", at: [20, 20], w: 200, h: 120 }], { asked: true }), []);
 });
+
+test("QA pass 13 W16: a number-work cell cut at the old 6-character cap ('breadt') is refused when a word of her line or the kit proves the cut; whole words and plurals stay", async () => {
+  const { cutCells } = await import("../server/studio/qa/whiteboard.js");
+  const { normalizeScript } = await import("../shared/whiteboard.js");
+  const qa = [{ id: "formula", op: "numwork", rows: [["?", "×", "(", "length", "+", "breadt", ")"]] }];
+  assert.deepEqual(cutCells(qa, { reply: "length aur breadth ko jodo" }), ['formula: "breadt" (breadth)']);
+  assert.deepEqual(cutCells([{ id: "a", op: "numwork", rows: [["length", "minute", "number"]] }], { reply: "length, minutes, number" }), []);
+  // the normalizer no longer cuts silently: an equation word fits (one line of text), a column cell over 6 is an error
+  const board = { w: 677, h: 423, ground: "chalk" };
+  const eq = normalizeScript({ v: 1, scriptId: "s", board, durationMs: 3000, ops: [{ id: "e", op: "numwork", startMs: 0, endMs: 900, at: [40, 80], layout: "equation", rows: [["2", "×", "(", "length", "+", "breadth", ")"]] }] }, { strict: true });
+  assert.equal(eq.ok, true, JSON.stringify(eq.errors));
+  assert.equal(eq.script.ops[0].rows[0][5], "breadth");
+  const col = normalizeScript({ v: 1, scriptId: "s", board, durationMs: 3000, ops: [{ id: "c", op: "numwork", startMs: 0, endMs: 900, at: [40, 80], layout: "column_add", rows: [["1234567"], ["1"], ["1234568"]] }] }, { strict: true });
+  assert.equal(col.ok, false);
+});
