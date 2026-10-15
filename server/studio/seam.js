@@ -928,7 +928,7 @@ export const studioSeam = {
     // KEPT (no second notebook entry; it redraws beside her line, as a kept continue does) instead of a slow line plan that
     // left her nothing to point at and the slot failed. Never for an ask for an EXAMPLE: there the same page is the repeat
     // the never-the-same-page rule exists to stop.
-    if (first?.script && onPage && request?.kind !== "example" && shownBefore(dress(first.script), { avoid: onPage }) && drawn({ ...first, source: "kept" })) {
+    if (first?.script && onPage && request && request.kind !== "example" && shownBefore(dress(first.script), { avoid: onPage }) && drawn({ ...first, source: "kept" })) {
       console.info("[studio] board-first page is the page on screen: kept");
       return { slotId: p.slotId, intentId, state: "revealed", artifact: p.artifact };
     }

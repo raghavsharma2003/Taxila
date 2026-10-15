@@ -241,7 +241,8 @@ describe("round 5 merge: the board-first page that is already on screen is kept,
     const a = c4Ask(`${id}:wb:4`);
     seam.studioSeam.preselectWhiteboard(a);
     assert.equal(seam.studioSeam.requestIntent({ ...a, line: { ...a.line, text: GOOD } }).state, "revealed");
-    const b = c4Ask(`${id}:wb:5`);
+    const b0 = c4Ask(`${id}:wb:5`);
+    const b = { ...b0, intent: { ...b0.intent, request: { kind: "draw" } } };
     seam.studioSeam.preselectWhiteboard(b);
     const ack = seam.studioSeam.requestIntent({ ...b, line: { ...b.line, text: GOOD } });
     assert.equal(ack.state, "revealed", "the page on screen is kept for her line, never a failed slot");
@@ -256,5 +257,27 @@ describe("round 5 merge: the board-first page that is already on screen is kept,
     const b = { ...b0, intent: { ...b0.intent, request: { kind: "example" } } };
     seam.studioSeam.preselectWhiteboard(b);
     assert.notEqual(seam.studioSeam.requestIntent({ ...b, line: { ...b.line, text: GOOD } }).state, "revealed");
+  });
+});
+
+const { samePage: samePageOf } = await import("../server/studio/request.js");
+describe("round 5 merge: board-first picks the page on screen for a see-ask (owner-5 'whiteboard pe bana ke samjhao')", () => {
+  before(() => { seam._setDeps({ planWhiteboard: async () => ({ ok: false, usd: 0 }), q: async () => [], writeEvidence: async () => ({ written: true }) }); });
+  const open = (id) => { const kit = kitOf(C4); seam.studioSeam.prefetch({ lessonId: id, purpose: "practice", kit, topicId: C4, child: { id: `child-${id}`, class_level: 4, language_pref: "hinglish" } }); return kit; };
+  it("a draw ask over the page on screen preselects it and keeps it; no ask, or an example, never repeats it", { skip: SEAM_PATCHED ? false : "patch 03-studio-seam-first.diff not applied" }, () => {
+    for (const [i, request, mayRepeat] of [[1, { kind: "draw" }, true], [2, null, false], [3, { kind: "example" }, false]]) {
+      const id = `r5p-${i}`; open(id);
+      const a = c4Ask(`${id}:wb:4`);
+      seam.studioSeam.preselectWhiteboard(a);
+      const first = seam.studioSeam.requestIntent({ ...a, line: { ...a.line, text: GOOD } });
+      assert.equal(first.state, "revealed");
+      const b0 = c4Ask(`${id}:wb:5`);
+      const b = request ? { ...b0, intent: { ...b0.intent, request } } : b0;
+      const row = seam.studioSeam.preselectWhiteboard(b);
+      const ack = row ? seam.studioSeam.requestIntent({ ...b, line: { ...b.line, text: GOOD } }) : null;
+      const repeated = ack?.state === "revealed" && samePageOf(ack.artifact.script, first.artifact.script);
+      if (mayRepeat) assert.equal(ack?.state, "revealed", "a draw ask over the page on screen is answered at once (kept)");
+      else assert.equal(repeated, false, `never the page on screen again for ${JSON.stringify(request)} (row ${!!row}, ack ${ack?.state})`);
+    }
   });
 });

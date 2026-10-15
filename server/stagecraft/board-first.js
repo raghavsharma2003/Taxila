@@ -117,7 +117,12 @@ export function preselect(ask, { kit, redact = [], now = Date.now(), certify = n
     // it is the page already on the board (the owner's lesson a95d2ff1: one cached table on 7 of 10 pages, whatever was asked)
     const request = ask?.intent?.request ?? null;
     for (const c of pictureFirst ? preferPicture(cands) : cands) {
-      if (!answersRequest(c.script, request) || shownBefore(c.script, { avoid, seen })) continue;
+      if (!answersRequest(c.script, request)) continue;
+      // round 5 merge (main; owner-5 on 14.1): the child asks to SEE it ("whiteboard pe bana ke samjhao") and the page that
+      // answers it is the one on screen NOW: it is picked, her line is written from it, and the seam KEEPS it (studio/seam.js
+      // requestIntent). Never for an example (the same page is the repeat), never a page from earlier in the lesson.
+      const onScreenAnswer = !!request && request.kind !== "example" && !!avoid && samePage(c.script, avoid);
+      if (!onScreenAnswer && shownBefore(c.script, { avoid, seen })) continue;
       const s = withSectors(retime(c.script, Math.max(800, Number(c.script.durationMs) || 0), ctx.speechMs), ctx.reply);
       // round 4 content: a board the child's device cannot show legibly (server/forge3/tray-gate.js) is never preselected:
       // her line is written from this board's facts row, so it must be one that will reach the stage
