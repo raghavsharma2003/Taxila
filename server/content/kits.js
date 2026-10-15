@@ -54,10 +54,13 @@ export const kitHash = (kit) => createHash("sha256").update(JSON.stringify({ ...
 // 14.4 measurement switch (main: measure the deep-kind audit's marks on the sim lab's decided child before applying them):
 // with TAXILA_KIT_DEEP_MARKS=1 the audit's 1,927 items (data/kits/deep-marks-2026-10-15.json) load as deep: false.
 // Off by default: no kit changes. On apply the marks are written into the kits and this switch goes.
-let deepMarks;
+let deepMarks, deepMarksOn = null;
+/** Tests only: switch the marks on or off for this process without the environment (null = read the env again). */
+export const _deepMarksForTests = (on) => { deepMarksOn = on; };
 const deepMarked = (id) => {
-  if (process.env.TAXILA_KIT_DEEP_MARKS !== "1") return false;
-  deepMarks ??= new Set(JSON.parse(readFileSync(new URL("deep-marks-2026-10-15.json", DEFAULT_DIR), "utf8")).items);
+  if (!(deepMarksOn ?? process.env.TAXILA_KIT_DEEP_MARKS === "1")) return false;
+  // a tree without the list (a test's copy of server/) has no marks, never an error
+  deepMarks ??= (() => { try { return new Set(JSON.parse(readFileSync(new URL("deep-marks-2026-10-15.json", DEFAULT_DIR), "utf8")).items); } catch { return new Set(); } })();
   return deepMarks.has(id);
 };
 
