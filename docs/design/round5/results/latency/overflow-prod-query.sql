@@ -4,12 +4,15 @@
 -- followed, in the same request (rid) or session (sid) within 15 s, by the next call of the same deployment and kind (the move;
 -- moved_failed counts a move that 429'd or failed again on southindia).
 -- :since / :until = the window (e.g. the 14.2 rollout instant and now). Run against production by the main loop only.
+-- Children only: every row's sid must be a lesson id; ms <= 2 rows (stubs, instant local failures) never enter a percentile.
 
 with calls as (
   select id, sid, rid, t, data->>'deployment' as dep, data->>'kind' as kind, data->>'status' as status,
          nullif(data->>'ms', '')::int as ms, nullif(data->>'ttftMs', '')::int as ttft, coalesce((data->>'attempt')::int, 0) as attempt
-  from trace_event
-  where kind = 'model.call' and t >= :since and t < :until
+  from trace_event e
+  where e.kind = 'model.call' and e.t >= :since and e.t < :until
+    -- a number about CHILDREN only (main, dc-r143-prod-numbers-need-a-lesson-sid): the row's session is a real lesson
+    and exists (select 1 from lesson l where l.id::text = e.sid)
 ),
 throttled as (select * from calls where status = '429'),
 moved as (
@@ -27,12 +30,16 @@ select
   round(100.0 * (select count(*) from throttled) / nullif((select count(*) from calls), 0), 2) as pct_429,
   (select count(*) from moved where status = '200')                         as moved_answered,
   (select count(*) from moved where status <> '200')                        as moved_failed,
-  (select percentile_cont(0.5) within group (order by ms) from moved where status = '200')  as moved_ms_p50,
-  (select percentile_cont(0.95) within group (order by ms) from moved where status = '200') as moved_ms_p95,
-  (select percentile_cont(0.5) within group (order by c.ms) from calls c where c.status = '200'
+  (select percentile_cont(0.5) within group (order by ms) from moved where status = '200' and ms > 2)  as moved_ms_p50,
+  (select percentile_cont(0.95) within group (order by ms) from moved where status = '200' and ms > 2) as moved_ms_p95,
+  (select percentile_cont(0.5) within group (order by c.ms) from calls c where c.status = '200' and c.ms > 2
      and not exists (select 1 from moved m where m.answer_id = c.id))      as unmoved_ms_p50,
-  (select percentile_cont(0.95) within group (order by c.ms) from calls c where c.status = '200'
-     and not exists (select 1 from moved m where m.answer_id = c.id))      as unmoved_ms_p95;
+  (select percentile_cont(0.95) within group (order by c.ms) from calls c where c.status = '200' and c.ms > 2
+     and not exists (select 1 from moved m where m.answer_id = c.id))      as unmoved_ms_p95,
+  -- beside it, never mixed in: rows with no lesson (sid 'server': scripts, gates, ops jobs)
+  (select count(*) from trace_event e where e.kind = 'model.call' and e.t >= :since and e.t < :until and e.sid = 'server') as server_sid_calls,
+  (select count(*) from trace_event e where e.kind = 'model.call' and e.t >= :since and e.t < :until and e.sid = 'server'
+     and e.data->>'status' = '429')                                        as server_sid_429;
 -- Per deployment: add "group by dep" to the moved / calls selects. Compare the same query on a window BEFORE the rollout
 -- for the 429 rate before vs after (the overflow does not lower the primary's 429 count; it turns a 429 into an answer).
 
@@ -42,8 +49,9 @@ select
 -- `select ... from calls_raw where data->>'endpoint' = 'OVERFLOW'`.
 with calls as (
   select id, sid, rid, t, data->>'deployment' as dep, data->>'kind' as kind, data->>'status' as status, nullif(data->>'ms', '')::int as ms
-  from trace_event
-  where kind = 'model.call' and t >= :since and t < :until
+  from trace_event e
+  where e.kind = 'model.call' and e.t >= :since and e.t < :until
+    and exists (select 1 from lesson l where l.id::text = e.sid)
 ),
 throttled as (select * from calls where status = '429'),
 moved as (
@@ -60,7 +68,7 @@ select date_bin(interval '5 minutes', at, timestamptz '2026-01-01') as bucket,
        count(*) filter (where status = '200')     as moved_answered,
        count(*) filter (where status <> '200')    as moved_failed,
        count(*) filter (where status = '429')     as moved_429_on_overflow,
-       percentile_cont(0.5) within group (order by ms) filter (where status = '200') as moved_ms_p50
+       percentile_cont(0.5) within group (order by ms) filter (where status = '200' and ms > 2) as moved_ms_p50
 from moved
 group by 1
 order by 1;
