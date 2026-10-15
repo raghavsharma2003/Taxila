@@ -234,6 +234,15 @@ async function checkLaneDeployments(env) {
     deps.set(host, set); return set;
   };
   const missing = [];
+  // round 5 (14.2): every overflow twin (server/azure.js overflowFor) must exist on the OVERFLOW lane's account
+  const overflow = String(env.TAXILA_OVERFLOW_DEPLOYMENTS || "").split(",").map((x) => x.trim()).filter(Boolean);
+  if (overflow.length && !resolveLane("OVERFLOW", env).override) missing.push(`TAXILA_OVERFLOW_DEPLOYMENTS is set but AZURE_OPENAI_ENDPOINT_OVERFLOW is not`);
+  else for (const name of overflow) {
+    const host = new URL(resolveLane("OVERFLOW", env).endpoint).host.toLowerCase();
+    const set = await depsOf(host);
+    if (!set) missing.push(`overflow ${name} (no account for ${host} in this subscription)`);
+    else if (!set.has(name)) missing.push(`overflow ${name} (not deployed on ${host.split(".")[0]})`);
+  }
   for (const [k, name] of Object.entries(names)) for (const L of laneOf(k)) {
     const host = new URL(resolveLane(L, env).endpoint).host.toLowerCase();
     const set = await depsOf(host);
@@ -241,7 +250,7 @@ async function checkLaneDeployments(env) {
     else if (!set.has(name)) missing.push(`${k}=${name} (lane ${L}: not deployed on ${host.split(".")[0]})`);
   }
   if (missing.length) throw new Error(`lane check: ${missing.join("; ")}. Refusing to deploy.`);
-  return Object.keys(names).length;
+  return Object.keys(names).length + overflow.length;
 }
 
 /**

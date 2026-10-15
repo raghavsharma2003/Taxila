@@ -307,6 +307,10 @@ export class CascadeDuplex {
   }
 
   /** A reply is about to play: false = it answers a revoked commit (drop it without sound). */
+  /** shouldDropReply without consuming it (the early-audio path parks such a reply for promptTeacher to drop). */
+  replyDropPending(): boolean {
+    return !this.closed && !this.fallbackReason && this.mode === "on" && this.now() < this.dropUntil;
+  }
   shouldDropReply(): boolean {
     if (this.closed || this.fallbackReason || this.mode !== "on") return false;
     if (this.now() < this.dropUntil) { this.dropUntil = 0; return true; }

@@ -63,7 +63,8 @@ const EXAMPLE = /\b(?:example|udaharan|udahran|misal)\s*(?:do|dijiye|de\s+do|dik
 const STORY = /\b(?:story|kahani|kahaani)\s*(?:ki\s+tarah|jaisa|jaise|se|mein|me|sunao|batao|bana\s*ke|banake|form|wala|wali|please)?\b|\btell\s+(?:it\s+)?(?:as|like)\s+a\s+story\b/i;
 const SLOWER = /\b(?:slow(?:ly)?(?:\s+please)?|slower|dheere(?:\s+(?:bolo|boliye|se|please|batao|bataiye))?|dhire(?:\s+(?:bolo|boliye|se))?|aaram\s+se\s+(?:bolo|batao|samjhao)|too\s+fast|bahut\s+(?:tez|fast|jaldi)|itna\s+(?:tez|fast|jaldi)|jaldi\s+mat|ruk\s+ruk\s+ke|step\s+by\s+step)\b/i;
 const VISUAL = /\b(?:(?:show|draw|make)\s+(?:me\s+)?(?:a\s+|the\s+|it\s+|this\s+)?(?:diagram|picture|drawing|image|figure|graph|chart|model|it|this)|(?:diagram|picture|photo|image|drawing|chitra|tasveer|figure)\s+(?:dikhao|dikhaiye|banao|banaiye|bana\s+do|draw|show|please|chahiye|se\s+samjhao)|(?:draw|bana(?:\s+ke|kar)?)\s+(?:karke\s+)?(?:samjhao|dikhao|batao)|draw\s+(?:it|this|karo|kijiye)|whiteboard\s+(?:pe|par|per|mein|me|on)|(?:on|use)\s+the\s+(?:whiteboard|board)|board\s+(?:pe|par|per)\s+(?:bana|likh|dikha)\w*|can\s+you\s+(?:show|draw)|dikha\s+(?:ke|kar)\s+samjhao|dikhao\s+na)\b/i;
-const GAME = /\b(?:game|khel|activity)\s*(?:khelna|khelte|khelo|khel\s+sakte|chahiye|dikhao|karo|karna|please)?\b|\blet'?s\s+play\b|\bplay\s+a\s+game\b/i;
+// round 5 (QA D07, "मुझे एक गेम खेलना है" read as nothing): the Devanagari forms too (\b does not bound Devanagari)
+const GAME = /\b(?:game|khel|activity)\s*(?:khelna|khelte|khelo|khel\s+sakte|chahiye|dikhao|karo|karna|please)?\b|\blet'?s\s+play\b|\bplay\s+a\s+game\b|(?<![\p{L}\p{M}])(?:गेम|खेल)(?:ना|ते|ो|ें)?(?![\p{L}\p{M}])/iu;
 // round 4 (stream 4A, session-first (f)): the "go deeper" family beside "simpler": "aur batao", "tell me more", "go deeper",
 // "detail mein samjhao", "isme aur kya hota hai". The same idea one layer further (the why behind it, where it shows up, how it
 // links to what comes next), never a new skill and never "say it again". A harder QUESTION ("mushkil wala do", "too easy")
@@ -130,14 +131,18 @@ export function clearBoardAsk(text) {
     for (const m of t.matchAll(re)) if (!CLEAR_NEG.test(m[1] ?? "") && !CLEAR_NOISE.test(m[1] ?? "")) return true;
   }
   for (const m of t.matchAll(CLEAR_VERB_FIRST)) if (!CLEAR_NEG.test(` ${before(m.index)} `) && !CLEAR_NOISE.test(m[1] ?? "")) return true;
+  // round 5 (QA D09: "बोर्ड साफ करो" heard as "साफ करो।" drew a NEW board): a bare clear command as the whole turn ("saaf
+  // karo", "clear karo", "sab mita do", "इसे हटाओ") is about the board, the one thing on the stage it can mean
+  if (BARE_CLEAR.test(t.trim())) return true;
   return CLEAR_EN.test(t);
 }
+const BARE_CLEAR = new RegExp(`^(?:(?:please|plz|ab|abhi|jaldi|isko|ise|ye|yeh|woh|sab|sara|saara|poora|pura|इसे|इसको|ये|यह|सब|सारा|पूरा)\\s+){0,2}(?:${CLEAR_VERB})(?:\\s+(?:please|plz|na|na\\s+please))?[\\s.!।]*$`, "iu");
 
 // r12 RCA failure 3 / release 13 (A) (owner lesson a95d2ff1 turns 18-24: "मेरे को आलू के बारे में पढ़ना है", "आलू दिखाओ"): the
 // subject a child names, in either script, so the lesson can answer honestly about it. Generic words are not subjects.
 // release 13 integration (ms-r13-meta-subjects): the meta and pointing words a child uses for TODAY's work ('is cheez', 'pichle
 // wale', 'aaj ke topic') are never a subject named outside it
-const GENERIC = /^(?:diagram|picture|photo|image|images|drawing|game|games|video|kuch|koi|kuchh|ye|yeh|is|isko|use|usko|woh|wo|iss|us|uss|iske|uske|inke|unke|isme|usme|ismein|usmein|cheez|chiz|cheej|chij|pichle|pichla|pichli|pichhle|agle|agla|agli|wale|wala|wali|waala|waale|topic|chapter|lesson|sawal|sawaal|question|questions|answer|jawab|concept|aaj|abhi|mujhe|mere|mera|aap|tum|visualization|visualisation|chitra|tasveer|board|screen|chart|graph|model|animation|figure|sketch|map|table|ko|ka|ki|ke|ne|se|mein|me|par|pe|डायग्राम|डायग्रम|ड्रॉइंग|ड्राइंग|चित्र|ग्राफ|चार्ट|मॉडल|एनिमेशन|टेबल|को|का|की|के|ने|से|में|पर|इमेज|फोटो|पिक्चर|तस्वीर|गेम|वीडियो|कुछ|कोई|ये|यह|इसको|उसको|उसके|इसके|इसकी|उसकी|चीज़|चीज|पिछले|पिछला|अगले|अगला|वाले|वाला|वाली|सवाल|जवाब|टॉपिक|चैप्टर|आज|अभी|मुझे|मेरे|मेरा|आप|तुम)$/iu;
+const GENERIC = /^(?:ek|एक|zara|jara|ज़रा|जरा|thoda|thodi|थोड़ा|थोड़ी|diagram|picture|photo|image|images|drawing|game|games|video|kuch|koi|kuchh|ye|yeh|is|isko|use|usko|woh|wo|iss|us|uss|iske|uske|inke|unke|isme|usme|ismein|usmein|cheez|chiz|cheej|chij|pichle|pichla|pichli|pichhle|agle|agla|agli|wale|wala|wali|waala|waale|topic|chapter|lesson|sawal|sawaal|question|questions|answer|jawab|concept|aaj|abhi|mujhe|mere|mera|aap|tum|visualization|visualisation|chitra|tasveer|board|screen|whiteboard|blackboard|smartboard|slate|व्हाइटबोर्ड|ब्लैकबोर्ड|बोर्ड|स्क्रीन|chart|graph|model|animation|figure|sketch|map|table|ko|ka|ki|ke|ne|se|mein|me|par|pe|डायग्राम|डायग्रम|ड्रॉइंग|ड्राइंग|चित्र|ग्राफ|चार्ट|मॉडल|एनिमेशन|टेबल|को|का|की|के|ने|से|में|पर|इमेज|फोटो|पिक्चर|तस्वीर|गेम|वीडियो|कुछ|कोई|ये|यह|इसको|उसको|उसके|इसके|इसकी|उसकी|चीज़|चीज|पिछले|पिछला|अगले|अगला|वाले|वाला|वाली|सवाल|जवाब|टॉपिक|चैप्टर|आज|अभी|मुझे|मेरे|मेरा|आप|तुम)$/iu;
 /** A subject made only of generic, meta or pointing words ("is cheez", "aaj ke topic"): not a subject. PURE. */
 export const genericSubject = (sub) => { const w = String(sub ?? "").trim().split(/\s+/).filter(Boolean); return !w.length || w.every((x) => GENERIC.test(x)); };
 const LEAD_WORDS = /^(?:(?:mere|mujhe|hume|humein|hamein|ko|ka|ki|ek|mera|meri|please|plz|bhai|bhaiya|yaar|didi|मेरे|मुझे|हमें|को|का|की|एक|मेरा|मेरी|भई|यार)\s+)+/iu;
@@ -154,6 +159,73 @@ export function freeSubjectOf(text) {
     if (sub && !GENERIC.test(sub) && !sub.split(/\s+/).every((w) => GENERIC.test(w))) return sub.slice(0, 30);
   }
   return null;
+}
+
+// round 5 (stream 2, the board): WHAT the child asked to see rides on the ask, so the board can draw it (r12 RCA failure 1:
+// 7 of 10 pages of the owner's lesson a95d2ff1 were one cached table whatever was asked). The asks heard there and in the
+// round-5 brief: "aloo dikhao", "photo dikhao", "isko draw karo", "number line pe dikhao", "X ka diagram banao",
+// "chidiya ki chonch ki photo dikhao". `show` is how (a picture, a number line, a drawing, or a bare "X dikhao"),
+// `subject` the thing named (never a pointing or meta word), `said` the numbers named for a number line.
+const NUMLINE = /\bnumber\s*-?\s*line\b|\bnumberline\b|\bsankhya\s+rekha\b|संख्या\s*रेखा|नंबर\s*लाइन/iu;
+const PIC_WORD = "(?:photo|photos|foto|picture|pictures|pic|image|images|tasveer|tasvir|tasveeren|chitra|फोटो|पिक्चर|तस्वीर|इमेज|चित्र)";
+const DRAW_WORD = "(?:diagram|drawing|sketch|डायग्राम|ड्राइंग)";
+const SHOW_VERB = "(?:dikhao|dikhaao|dikhaiye|dikhayiye|dikha\\s+do|dikha\\s+dijiye|dikhana|dikha\\s+sakti|dikha\\s+sakte|show(?:\\s+me)?|दिखाओ|दिखाइए|दिखा\\s+दो|दिखा\\s+दीजिए)";
+const DRAW_VERB = "(?:draw|bana(?:o|iye|ao|\\s+do|\\s+dijiye|\\s+ke|\\s+kar|kar|ke)?|sketch|बनाओ|बनाइए|बना\\s+दो|ड्रा)";
+const PIC_RE = new RegExp(`(?<![\\p{L}])${PIC_WORD}(?![\\p{L}])`, "iu");
+const DRAW_RE = new RegExp(`(?<![\\p{L}])(?:${DRAW_VERB}|${DRAW_WORD})(?![\\p{L}])`, "iu");
+const SHOW_RE = new RegExp(`(?<![\\p{L}])${SHOW_VERB}(?![\\p{L}])`, "iu");
+// the words before the first show/draw word (or "ka photo"/"ka diagram"), at most 4: the thing asked for
+const ASK_HEAD = new RegExp(`^(.*?)\\s+(?:(?:ka|ki|ke|का|की|के)\\s+)?(?:(?:${PIC_WORD}|${DRAW_WORD})\\s+)?(?:(?:${DRAW_VERB})(?:\\s+(?:karke|kar\\s+ke|karo|kijiye|kar\\s+do))?\\s+)?(?:${SHOW_VERB}|${DRAW_VERB}|${PIC_WORD}|${DRAW_WORD})(?![\\p{L}])`, "iu");
+const ASK_STOP = /^(?:एक|इसकी|इसका|इसके|इसे|इसको|उसकी|उसका|उसके|यह|ये|वो|वह|मुझे|मेरे|कोई|ज़रा|जरा|थोड़ा|ज़रा|अब|फिर|और|kaise|kaisa|kya|kyun|kyon|kab|kahan|how|what|why|where|which|mujhe|muje|hume|humein|mere|please|plz|zara|jara|thoda|ek|aap|tum|didi|bhaiya|sir|ma'?am|teacher|ab|abhi|phir|fir|dobara|wapas|again|now|na|naa|yaar|bhi|bas|sirf|sab|sabhi|to|toh|so|ok|okay|achha|accha|haan|ji|draw|bana|banao|karke|kar|ke|se|me|mein|pe|par|on|in|of|the|a|an|me)$/iu;
+const VERBISH = /^(?:hai|hain|ho|hoon|hun|hu|tha|thi|the|hoga|hogi|aata|aati|aate|jata|jati|jate|raha|rahi|rahe|kar|karo|karna|karte|karta|karti|kiya|kiye|diya|diye|liya|lena|dena|chahiye|chahta|chahti|sakta|sakti|sakte|lagta|lagti|pata|mila|mili|dekha|dekhi|bolo|batao|suna|is|are|was|were|am|want|wanna|like|need|have|has|can|could|show|see|है|हैं|था|थी|हो|आता|आती|जाता|रहा|रही|करो|करना|चाहिए|चाहता|चाहती|सकता|सकती|देखा|बताओ)$/iu;
+const SHOW_NOT_SUBJECT = /^(?:answer|jawab|score|result|marks|next|agla|aage|phir|fir|dobara|wapas|again|sab|sabhi|all|more|aur|baaki|baki|naya|new|number|numbers|sawal|sawaal|question|questions|example|examples|udaharan|game|games|khel|video|videos|animation|step|steps|tarika|tareeka|way|method|hint|hints)$/iu;
+/** The numbers a child names for a number line ("1 se 9", "23 plus 14", "1/4", "minus 3", "0.5"). PURE. */
+const numbersSaid = (t) => {
+  const s = String(t ?? "").replace(/\bminus\s+(?=\d)/gi, "-").replace(/\bplus\b/gi, "+");
+  return [...s.matchAll(/-?\d+(?:\.\d+)?(?:\s*\/\s*\d+)?/g)].map((m) => m[0].replace(/\s+/g, "")).slice(0, 6);
+};
+/**
+ * PURE. What a child's turn asks to SEE, or null: { show: "number_line" | "picture" | "draw" | "show", subject?, said? }.
+ * "aloo dikhao" → { show: "show", subject: "aloo" }; "sikke ki photo dikhao" → { show: "picture", subject: "sikke" };
+ * "number line pe 1/4 dikhao" → { show: "number_line", said: ["1/4"] }; "isko draw karo" → { show: "draw" } (no subject:
+ * the thing on the table); "ek example do", "game khelna hai", "answer dikhao" → null (not a thing to see).
+ */
+export function visualAskOf(text) {
+  const raw = String(text ?? "").normalize("NFKC");
+  const t = T(raw);
+  if (!t) return null;
+  const numberLine = NUMLINE.test(t);
+  const pic = PIC_RE.test(t), draw = DRAW_RE.test(t), show = SHOW_RE.test(t);
+  if (!numberLine && !pic && !draw && !show) return null;
+  if (numberLine) { const said = numbersSaid(t); return { show: "number_line", ...(said.length ? { said } : {}) }; }
+  // English: "a picture of a potato", "draw a triangle", "show me the moon"
+  const en = core(t).match(/\b(?:picture|photo|image|drawing|diagram|sketch)\s+of\s+(?:a|an|the|some)?\s*([\p{L} ]{2,40}?)\s*(?:please|plz|na)?[?.!]*$/iu)
+    ?? core(t).match(/^(?:can\s+you\s+|please\s+)?(?:draw|show)\s+(?:me\s+)?(?:a|an|the|some)\s+([\p{L} ]{2,40}?)\s*(?:please|plz)?[?.!]*$/iu);
+  const m = en ? [null, en[1]] : core(t).match(ASK_HEAD);
+  let words = (m?.[1] ?? "").replace(/[?!.,;:"“”'()]/g, " ").split(/\s+/).filter(Boolean);
+  // cut at a question word ("shadow kaise banta hai draw karke dikhao" asks for a shadow), then drop lead/filler words; a
+  // question word first ("kaise karte hain dikhao") names no thing
+  const qi = words.findIndex((w) => /^(?:kaise|kaisa|kyun|kyon|kab|kahan|how|why|when|where)$/i.test(w));
+  if (qi >= 0) words = words.slice(0, qi);
+  while (words.length && (ASK_STOP.test(words[0]) || GENERIC.test(words[0]))) words.shift();
+  while (words.length && (ASK_STOP.test(words.at(-1)) || /^(?:ka|ki|ke|का|की|के|ko|को)$/iu.test(words.at(-1)))) words.pop();
+  // sim lab p50 ("… aata hai thoda maggi dikhao" drew the child's own words "aata hai thoda maggi" on the board): the thing
+  // is what comes after the last verb / helper word, never the clause before it
+  const isVerb = (w) => VERBISH.test(w) || /^(?:dekhna|dekhni|dekhne|janna|jaanna|padhna|samajhna|देखना|जानना)$/iu.test(w);
+  const vi = words.map(isVerb).lastIndexOf(true);
+  // "… hathi dekhna hai dikhao": nothing after the verbs, the thing is before the first one
+  if (vi >= 0) words = vi + 1 < words.length ? words.slice(vi + 1) : words.slice(0, Math.max(0, words.findIndex(isVerb)));
+  while (words.length && (ASK_STOP.test(words[0]) || GENERIC.test(words[0]))) words.shift();
+  // round 5 merge (main): where it is drawn is never part of what is drawn ("aloo whiteboard pe draw karo" → aloo)
+  words = words.filter((w) => !/^(?:whiteboard|blackboard|smartboard|board|screen|slate|व्हाइटबोर्ड|ब्लैकबोर्ड|बोर्ड|स्क्रीन)$/iu.test(w));
+  while (words.length && (ASK_STOP.test(words.at(-1)) || /^(?:ka|ki|ke|का|की|के|ko|को|pe|par|पे|पर)$/iu.test(words.at(-1)))) words.pop();
+  words = words.slice(-4);
+  const subject0 = words.join(" ").trim();
+  const subject = subject0 && !genericSubject(subject0) && !words.every((w) => GENERIC.test(w) || ASK_STOP.test(w)) && !(words.length === 1 && SHOW_NOT_SUBJECT.test(words[0])) && !/\d/.test(subject0) ? subject0.slice(0, 40) : null;
+  const kind = pic ? "picture" : draw ? "draw" : "show";
+  // a bare "X dikhao" is a visual ask only when X is a thing ("aloo dikhao"), never "answer dikhao" / "phir se dikhao"
+  if (kind === "show" && !subject) return null;
+  return { show: kind, ...(subject ? { subject } : {}) };
 }
 
 export function requestOf(text) {
@@ -193,9 +265,13 @@ export function requestOf(text) {
     const lang = LANG.hinglish.test(t) ? "hinglish" : LANG.english.test(t) ? "english" : LANG.hindi.test(t) ? "hindi" : null;
     if (lang) return { type: "language", lang, whole };
   }
-  if (VISUAL.test(t) || (whole && /^(?:diagram|picture|drawing|draw)\b/.test(t))) {
-    const subject = freeSubjectOf(text);
-    return { type: "visual", kind: "diagram", whole, ...(subject ? { subject } : {}) };
+  // round 5 (stream 2): what the child asked to see (visualAskOf) rides on the request; "aloo dikhao" and "number line pe
+  // 1/4 dikhao" were not requests at all before (a bare "X dikhao", a number line with numbers in it)
+  const seeAsk = n <= 12 && !GAME.test(t) && !ANIMATION.test(t) && !EXAMPLE.test(t) ? visualAskOf(text) : null;
+  if (VISUAL.test(t) || (whole && /^(?:diagram|picture|drawing|draw)\b/.test(t)) || (seeAsk && (seeAsk.show === "number_line" || seeAsk.subject || seeAsk.show !== "show"))) {
+    // the ask's own subject when it names one; no fall back to freeSubjectOf for a see-ask ("diagram bana ke dikhao" is not "bana")
+    const subject = seeAsk ? seeAsk.subject : freeSubjectOf(text);
+    return { type: "visual", kind: "diagram", whole: whole || !!seeAsk, ...(subject ? { subject } : {}), ...(seeAsk ? { see: seeAsk } : {}) };
   }
   if (whole && ANIMATION.test(t)) return { type: "visual", kind: "animation", whole };
   if (whole && GAME.test(t) && !/\b(?:game\s+(?:mein|me)\s+\d)/.test(t)) return { type: "visual", kind: "game", whole };

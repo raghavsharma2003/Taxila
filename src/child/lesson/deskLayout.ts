@@ -114,7 +114,56 @@ export function solveDesk(i: DeskInput): DeskLayout {
   const fs = Math.max(1, i.fontScale ?? 1);
   const wide = i.width >= WIDE_MIN_WIDTH && i.width > i.height && i.height >= 520;
   if (wide) return solveWide(i, fs);
+  // r5 QA D17: a phone turned sideways (876 x 393) ran the portrait solver with `overflow`, and Talk sat below the fold
+  // behind an inner scroll. Short landscape gets the two columns compacted, with the dock always inside the screen.
+  if (i.width > i.height && i.height < 520 && i.width >= LANDSCAPE_MIN_WIDTH && !i.keyboard) return solveLandscape(i, fs);
   return solvePhone(i, fs);
+}
+
+/** The narrowest sideways screen that gets the compact two-column Desk (a 360-wide phone turned is 640+ wide). */
+export const LANDSCAPE_MIN_WIDTH = 560;
+/** In compact landscape the tray may be shorter than its portrait minimum (the screen is 393 dp tall). */
+export const LANDSCAPE_TRAY_MIN = 104;
+/** ...and while a (temporary) trouble strip shows, down to this, so the dock still never leaves the screen. */
+export const LANDSCAPE_TRAY_MIN_STRIP = 80;
+
+/**
+ * PURE. The compact landscape Desk (r5 QA D17): the wide grid with a 48 top bar, 16 gutters, the window in the left column
+ * above a 2-line caption, and on the right the card, the tray (Work) and the dock. The dock is never pushed off the screen:
+ * the card yields first (to its floor), then the tray (to LANDSCAPE_TRAY_MIN); past that `overflow` says the Desk scrolls.
+ */
+function solveLandscape(i: DeskInput, fs: number): DeskLayout {
+  const { width: w, height: h, geometry } = i;
+  const top = 48, gutter = 16, gap = 16;
+  const leftW = Math.min(320, Math.round((w - 2 * gutter - gap) * 0.36));
+  const rightW = w - 2 * gutter - gap - leftW;
+  const H = h - top;
+  const label = 28, gapA = 4, gapB = 4;
+  const caption = Math.round(56 * fs);
+  const window = Math.max(FACE_MIN[i.family], Math.min(leftW, H - label - gapA - caption - gapB - 8));
+  const leftPad = Math.max(0, H - window - label - gapA - caption - gapB);
+  const dock = Math.round((i.family === "young" ? 120 : 112) + 44 * (fs - 1));
+  const strip = stripOf(i);
+  let right: WideZones["right"];
+  let overflow = false;
+  if (geometry === "work") {
+    const card = i.play ? 0 : Math.max(Math.round(64 * fs), Math.min(need(i.cardNeed), Math.round(96 * fs)));
+    const g = i.play ? 0 : 8;
+    const tray = H - card - g - 8 - strip - dock - 8;
+    overflow = tray < (strip > 0 ? LANDSCAPE_TRAY_MIN_STRIP : LANDSCAPE_TRAY_MIN);
+    right = { padTop: 0, card, gapA: g, tray: Math.max(0, tray), gapB: 8, strip, dock, pad: 8 };
+  } else {
+    const card = Math.max(Math.round(88 * fs), need(i.cardNeed));
+    const fit = Math.max(Math.round(72 * fs), Math.min(card, H - 8 - strip - dock - 8));
+    const free = H - fit - 8 - strip - dock;
+    overflow = free < 0;
+    const padTop = Math.max(0, Math.floor(free / 2));
+    right = { padTop, card: fit, gapA: 8, tray: 0, gapB: 0, strip, dock, pad: Math.max(0, free - padTop) };
+  }
+  const padTop = Math.floor(leftPad / 2);
+  const wz: WideZones = { top, gutter, gap, leftW, rightW, left: { padTop, window, gapA, caption, gapB, label, pad: leftPad - padTop }, right };
+  const rTotal = top + right.padTop + right.card + right.gapA + right.tray + right.gapB + right.strip + right.dock + right.pad;
+  return { kind: "wide", geometry, keyboard: false, phone: null, wide: wz, speechFace: 0, overflow, total: rTotal };
 }
 
 function solvePhone(i: DeskInput, fs: number): DeskLayout {

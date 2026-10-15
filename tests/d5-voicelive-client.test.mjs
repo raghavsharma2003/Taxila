@@ -321,6 +321,9 @@ test("CascadeLink on D5: no WebRTC call; Voice Live's events reach the engine; t
     assert.ok(events.some((e) => e.type === "child_partial" && e.text === "बारह"), "the caption shows");
     link.duplex.live.o.port.sttCommit();
     assert.equal(ws.sent.at(-1), '{"type":"commit"}');
+    // round 5: no continuer on D5 until its gate covers it
+    assert.ok(link.ack, "the ack client is on");
+    assert.equal(link.ack.o.continuer(), false, "no continuer on D5");
   } finally { link.close(); env.restore(); }
 });
 
@@ -331,6 +334,7 @@ test("CascadeLink on D5: a refused stream falls back to the D4 call for the less
     assert.equal(env.pcs.length, 1, "the WebRTC call is up instead");
     assert.equal(states.at(-1)?.live, true);
     assert.equal(link.duplex.live.o.vadGate, undefined, "D4 engine options");
+    assert.equal(link.ack?.o.continuer(), true, "the D4 fallback keeps the continuer (server cohort decides)");
   } finally { link.close(); env.restore(); FakeWS.behaviour = FakeWS.up; }
 });
 
@@ -391,4 +395,27 @@ test("D5 review #5: Voice Live's audio clock is anchored across dropped frames a
     assert.equal(live["tap"].fromAudio(2100), s.toClient(2100));
     s.close();
   } finally { wf.restore(); }
+});
+
+test("r5 merge: her EARLY reply (turn-audio, before its text) is announced to the engine at first sound; a revoked turn's reply is parked, not voiced", async () => {
+  FakeWS.behaviour = FakeWS.up;
+  const { env, link } = await d5Link();
+  try {
+    const live = link.duplex.live;
+    const pcmStream = () => new ReadableStream({ start(c) { c.enqueue(new Uint8Array(24000 * 2 * 0.5)); c.close(); } });
+    // the engine just saw the child go on after its commit: the reply to that commit must not play
+    link.duplex["dropUntil"] = Date.now() + 5000;
+    assert.equal(link["playEarly"](pcmStream()), null, "parked");
+    assert.equal(link.duplex.replyDropPending(), true, "not consumed: promptTeacher still drops it");
+    link.duplex["dropUntil"] = 0;
+    const say = link["playEarly"](pcmStream());
+    assert.ok(say);
+    say.say("आठ गुणा सात।");
+    for (const t0 = Date.now(); Date.now() - t0 < 2000 && !live["her"];) await sleep(10);
+    assert.ok(live["her"], "the engine knows she is speaking before her turn's text arrives");
+    assert.equal(live["her"].text, "आठ गुणा सात।");
+    const id = live["her"].id;
+    link.promptTeacher({ text: "आठ गुणा सात छप्पन होता है। अब बताओ, नौ गुणा सात?" });
+    assert.equal(live["her"]?.id, id, "adoption does not restart her (the overlap epoch stays)");
+  } finally { link.close(); env.restore(); }
 });

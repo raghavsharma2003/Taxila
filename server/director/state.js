@@ -39,6 +39,7 @@ import { directorProposal } from "./proposal.js";
 import { p5Flag } from "../conversation/flags.js";
 import { unsafeChildPhrase } from "../conversation/screen.js";
 import { freeSubjectOf, genericSubject } from "./requests.js";
+import { claimsToUnderstand } from "./read.js";
 import { parkEntry, pushLater, recentParked, dueParked, serveLater } from "../conversation/policy.js";
 import { alsoReading, alsoQuestion, questionShaped, bareAck } from "../conversation/lexicon.js";
 import { intakeStart, intakeStep } from "./session/beat.js";
@@ -264,8 +265,32 @@ export function reinitForSegment(s, kit, now, decision) {
  * to decide()'s safeguard, unchanged). When the intake decides, the session opens its first segment: on another topic the
  * state is re-pointed at that topic's verified kit (reinitForSegment); the move is the one-line agenda, no item, no stage.
  */
+/** Is this turn silence: no words, no chip, no answer, no activity (the duplex backstop commits "" with asrConfidence 0)? */
+export const isSilentTurn = (input) => input?.event === "turn" && !input.branch && typeof input.text === "string" && !input.text.trim()
+  && (input.cls?.source === "empty" || input.silent === true) && !input.chipId
+  && (input.answer == null || input.answer === "") && !input.cls?.flags?.distress && !input.cls?.request && !input.cls?.help;
+
+/** The silence hold (round 5): the same step again, gently; never new content, never a new topic. */
+function silentTurn(s, input, item) {
+  if (!p5Flag("R4CONV") || !isSilentTurn(input) || s.phase === "done" || s.safeguard || ["wrap", "safeguard"].includes(s.lastMove?.kind)) return null;
+  s.quiet = (s.quiet ?? 0) + 1;
+  const labels = chipLabels();
+  if (s.quiet >= 3) {
+    s.quiet = 0;
+    return { ...plan("break", SH.silenceCheck(), { chips: [{ id: "stop:continue", label: labels.go }, { id: "break:rest", label: labels.rest }, { id: "stop:end", label: labels.stop }] }), silent: true };
+  }
+  if (item) return { ...plan(moveKindFor(item), SH.pose({ item, prefix: SH.silenceAgain() }), { item, probe: probeFor(item), chips: optionChips(item) }), silent: true };
+  const last = s.lastMove;
+  if (!last?.kind) return null;
+  // the intake, a teaching step, a break: what she said last, again and simpler (never the next step)
+  return { ...plan(last.kind, join(SH.silenceAgain(), SH.sameStepAgain()), { ...(last.skillId ? { skillId: last.skillId } : {}), content: s.lastContent ?? [],
+    ...(last.intake ? { intake: true } : {}), ...(s.lastUi?.chips?.length ? { chips: s.lastUi.chips } : {}) }), silent: true };
+}
+
 function sessionIntake(s, input, now) {
   if (!s.intake || s.intake.stage === "done" || input.branch || input.event === "module") return null;
+  // a start that checks in first (decide(): `carried`) has no intake: the check-in, then the lesson
+  if (input.event === "start" && input.carried) { s.intake = { ...s.intake, stage: "done" }; return null; }
   if (input.event === "start") return plan("intake", s.intakeOpen?.shape ?? "", { chips: s.intakeOpen?.chips, intake: true });
   if (input.cls?.flags?.distress || s.safeguard) { s.intake = { ...s.intake, stage: "done" }; return null; }
   const prior = s.session?.prior ?? {};
@@ -973,12 +998,20 @@ function requestMove(s, input, item, req, labels) {
       // show it now and gives it in words; no board is asked for, nothing is said to be on the screen (fix 2 makes the claim
       // impossible either way). The image rung (r12/rca/IMAGE-RUNG.md) will lift this for subjects it can draw.
       const off = p5Flag("R4CONV") ? offSubject(req.subject, kit) ?? offTopicNow(s, kit) : null;
+      // round 5 (stream 2, the board): WHAT they asked to see rides on the move (move.see -> the whiteboard ask's request), so
+      // the board draws it. A thing outside the kit that a simple labelled sketch can show ("aloo dikhao") is sketched on
+      // the board, honestly: never claimed as a photo, never pointed at before it is there (drawableSubject: code, before any
+      // model). Anything else keeps release 13 (A): she says plainly she cannot show it and gives it in words.
+      const see = req.see ? { ...req.see, ...(off ? { subject: off, off: true } : {}) } : off ? { show: "show", subject: off, off: true } : null;
+      if (off && see && drawableSubject(off)) {
+        return plan("reteach", SH.drawAsked({ subject: off, show: see.show }), { skillId: currentSkillId(s, kit, item), representation: "diagram", visual: "diagram", request: "visual", see });
+      }
       if (off && !unsafeChildPhrase(off)) return plan("reteach", SH.visualUnavailable({ subject: off }), { skillId: currentSkillId(s, kit, item), request: "visual_unavailable" });
       // A picture on the stage (item 5): a re-teach move with the diagram representation, so planModule mounts the item's
       // engine as a show or the explainer@1 board (SHOW_MOVES), and the brain asks Studio for the whiteboard on any lane
       // (brain/propose.js whiteboardAskOf `requested`). A picture of the question on the table is help: it spends a rung.
       if (item && s.pendingWhy !== item.id) s.hintLevel = Math.min(3, s.hintLevel + 1);
-      return plan("reteach", SH.showVisual({ kind: req.kind }), { ...(item ? { item } : { skillId: currentSkillId(s, kit, item) }), representation: "diagram", visual: req.kind ?? "diagram", request: "visual" });
+      return plan("reteach", SH.showVisual({ kind: req.kind }), { ...(item ? { item } : { skillId: currentSkillId(s, kit, item) }), representation: "diagram", visual: req.kind ?? "diagram", request: "visual", ...(see ? { see } : {}) });
     }
     default: return p5Flag("STEER") ? p5RequestMove(s, input, item, req, labels) : null;
   }
@@ -991,6 +1024,16 @@ const kitMentions = (kit, subject) => {
   const text = [...(kit?.skills ?? []).map((k) => k.title), ...(kit?.expectations ?? []), kit?.title ?? "",
     ...(kit?.items ?? []).slice(0, 60).flatMap((i) => [i.prompt_en, i.prompt_hi])].join(" ").toLowerCase().normalize("NFKC");
   return text.includes(w);
+};
+/**
+ * round 5 (stream 2): may a thing the child named outside the kit be sketched on the board? Code, before any model: a short
+ * noun phrase (at most 4 words, no digits), nothing the child-safety predicates flag, no person, body, brand or weapon
+ * word (r12/rca/IMAGE-RUNG.md §3's subject shape, for a board sketch). Doubt is no.
+ */
+const NOT_DRAWABLE = /\b(?:me|mujhe|meri|mera|mere|apni|apna|apne|my|myself|i|you|aap|tum|tumhari|tumhara|teri|tera|uski|uska|unki|ladki|ladka|girl|boy|man|woman|aadmi|aurat|person|people|log|face|chehra|body|sharir|nanga|nangi|kapde|bra|underwear|gun|bandook|knife|chaku|chaaku|blood|khoon|bomb|weapon|hathiyar|dead|maut|kill|maar|sex|kiss|logo|brand|selfie|ghar\s+ka\s+pata|address|phone|number)\b/iu;
+export const drawableSubject = (subject) => {
+  const w = String(subject ?? "").trim();
+  return !!w && w.split(/\s+/).length <= 4 && !/\d/.test(w) && !NOT_DRAWABLE.test(w) && !unsafeChildPhrase(w);
 };
 /** A request's subject when the kit does not teach it, else null. */
 const offSubject = (subject, kit) => (subject && !kitMentions(kit, subject) ? String(subject) : null);
@@ -1014,6 +1057,32 @@ function teachAgainPlan(s, kit, how) {
 }
 
 /** The hardest not-yet-done practice item of a skill (difficulty, then the queue's order), or null. */
+/** The easiest unasked practice item of a skill (a light check), or null. */
+function easiestFor(s, kit, skillId) {
+  const done = new Set([...s.itemsDone, ...s.skipped, s.activeItemId]);
+  const KINDS = new Set(["practice", "near_transfer", "retrieval"]);
+  return kit.items.filter((i) => i.skillId === skillId && !done.has(i.id) && KINDS.has(i.kind))
+    .sort((a, b) => (a.difficulty ?? 0) - (b.difficulty ?? 0))[0] ?? null;
+}
+
+/**
+ * round 5 (owner 2026-10-14: "the understood-or-not concept"): "haan haan samajh gaya" right after an explanation is a claim,
+ * not evidence (director/read.js reads it `partly`). Once per skill it gets a LIGHT check — the easiest question of that
+ * skill, posed warmly, never "did you really understand?" — instead of more teaching on trust. A right answer counts and the
+ * lesson moves on; a wrong one takes the usual path (hints, a different way).
+ */
+function bluffCheck(s, input) {
+  if (!p5Flag("R4CONV") || input.event !== "turn" || !claimsToUnderstand(input.text) || !["explain", "worked_example", "reteach"].includes(s.lastMove?.kind) || s.lastMove?.itemId) return null;
+  const sk = s.lastMove.skillId;
+  if (!sk || (s.bluffChecked ?? []).includes(sk)) return null;
+  const easy = easiestFor(s, input.kit, sk);
+  if (!easy) return null;
+  s.bluffChecked = [...(s.bluffChecked ?? []), sk];
+  if (!s.introduced.includes(sk)) s.introduced.push(sk);
+  s.teachIdx = s.teachPlan.length; s.phase = "practice";
+  return { ...poseNext(s, input, SH.lightCheck(), easy), request: "light_check" };
+}
+
 function hardestFor(s, kit, skillId) {
   const done = new Set([...s.itemsDone, ...s.skipped, s.activeItemId]);
   const KINDS = new Set(["practice", "near_transfer", "far_transfer", "contrast", "predict", "translate_rep"]);
@@ -1231,6 +1300,15 @@ function decide(s, input, item) {
   // `kind`: what raised it (the predicate's family, or model / content_filter / relational_floor) — only the wording of a
   // fallback line reads it (brain/say.js fallbackReply, F10); the hold itself is the same for every trigger.
   if (flags.distress) { s.safeguard = { calm: 0, asked: false, kind: flags.distressKind ?? null }; s.safeguardedAt ??= s.turn; return plan("safeguard", SH.safeguard(), { whiteboard: HELPLINES }); }
+  // round 5 (14.2, main safety review; QA pass 11, n=3: after a self-harm disclosure the next lesson opened straight into
+  // teaching): a start within hours of a safeguarding incident (the route passes `carried`) opens on a calm check-in, the
+  // helplines on the board, a carry-on and a stop chip. The episode is already asked, so the child's next ordinary words
+  // go gently back to the lesson, and distress in them is the full safeguard, as on every turn. Discreet by design: it
+  // names nothing that was said, nor that anything was (whoever is in the room may be who it was about).
+  if (input.event === "start" && input.carried) {
+    s.safeguard = { calm: 1, asked: true, kind: input.carried.kind ?? null, carried: true };
+    return plan("safeguard", SH.carriedCheckIn(), { whiteboard: HELPLINES, chips: [{ id: "safe:continue", label: labels.cont }, { id: "safe:stop", label: labels.stop }] });
+  }
   if (s.safeguard) {
     // RELATIONAL-OS I-7 / AT-B6 (AT-B1 first run: 9/10 goodbyes right after a disclosure ended at once): a goodbye during
     // the safeguard gets ONE check-in before release when the relational policy asks for it; the stop chip always ends it
@@ -1330,7 +1408,7 @@ function decide(s, input, item) {
   }
   switch (s.phase) {
     case "warmup": return warmup(s, input, item);
-    case "teach": return ackHold(s, input) ?? teach(s, input);
+    case "teach": return ackHold(s, input) ?? bluffCheck(s, input) ?? teach(s, input);
     case "practice": return practice(s, input, item);
     case "teachback": return teachback(s, input);
     default: return toWrap(s, {});
@@ -1475,9 +1553,13 @@ export function step(prev, input) {
       s.probeSess = markAsked(s.probeSess, { skillId: t.skillId, shapeId: null, facet: "M", mandatory: true, reason: t.reason }, s.comp?.[t.skillId]?.belief ?? null);
     }
   }
-  // round 4 (session-first): the intake beat runs before the Director's own decision while it is open
-  let p = sessionIntake(s, input, now);
+  // round 5 (owner 2026-10-14: an empty backstop turn made her jump to "grams aur kilograms"): a turn with no words, no
+  // chip and no answer is silence. It never advances anything — not the intake, not the teaching, not the item: she waits
+  // and gently asks again, the same thing, and after three quiet turns checks they can hear her. Any words reset it.
+  let p = silentTurn(s, input, active);
+  if (!p) p = sessionIntake(s, input, now);
   if (!p) p = reacting ? moduleReaction(s, input, active) : decide(s, input, active);
+  if (!p?.silent) s.quiet = 0;
   if (p && !input.branch && p5Flag("CARDCAP")) p = capPlan(s, input, p);
   if (!p) {
     return { state: s, move: s.lastMove, moduleCommands: [], ui: s.lastUi ?? { status: "your_turn" }, end: s.phase === "done", hold: true, ...describe(s, input.kit) };
@@ -1558,9 +1640,14 @@ export function step(prev, input) {
   if (backLead && p5Flag("STEER")) move.lead = [backLead, move.lead].filter(Boolean).join("; ").slice(0, 400);
   if (p.visual) {
     move.visual = p.visual;
+    // round 5 (stream 2): what they asked to see (brain/propose.js whiteboardIntentOf puts it on the board's ask)
+    if (p.see) move.see = p.see;
     // what is on the stage decides the words: point at it, or (nothing mounted) show it with things they know — never a
-    // text drawing, never "I can't draw", never "you draw it" (F16, the owner's session)
-    move.shape = join(move.shape, s.module?.id ? SH.VISUAL_ON_STAGE : SH.VISUAL_NOT_YET);
+    // text drawing, never "I can't draw", never "you draw it" (F16, the owner's session). round 5 (stream 2): a thing they
+    // NAMED (a subject, a number line, a photo) is drawn for this ask, so the piece mounted before it is not "it": her words
+    // say what it shows and never send their eyes to the screen ahead of it (open-r13-bare-pointing-on-request-turns)
+    const named = !!(p.see && (p.see.subject || p.see.show === "number_line" || p.see.show === "picture"));
+    move.shape = join(move.shape, named ? SH.visualDrawing(p.see) : s.module?.id ? SH.VISUAL_ON_STAGE : SH.VISUAL_NOT_YET);
     s.lastMove = move;
   }
   const ui = uiFor(s, p, move, item, input.kit);

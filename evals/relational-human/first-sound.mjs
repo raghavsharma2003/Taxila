@@ -42,6 +42,9 @@ const SAVE = arg("--save");
 const BASE_ARG = arg("--base");
 const PREFETCH = argv.includes("--prefetch");
 const ACK = argv.includes("--ack");
+/** r5-latency: the non-verbal continuer (owner cohort; the account this run signs up is put on TAXILA_ACK_CONTINUER_FOR). */
+const CONTINUER = argv.includes("--continuer");
+const CONTINUER_MIN_MS = 900;
 /** r4-latency: the device's round-trip fold (POST /api/lesson/turn-audio: the turn and her audio on one response). */
 const TURN_AUDIO = argv.includes("--turn-audio");
 const LABEL = arg("--label", "");
@@ -365,7 +368,7 @@ async function turnAudio(api, body, keep) {
 /** POST /api/lesson/turn-ack: { at (ms perf), status, ack } — the device asks once per distinct text. */
 function askAck(api, lessonId, text) {
   const t = performance.now();
-  return hfetch(base + "/api/lesson/turn-ack", { method: "POST", headers: { "content-type": "application/json", cookie: api.cookie() }, body: JSON.stringify({ lessonId, text }) })
+  return hfetch(base + "/api/lesson/turn-ack", { method: "POST", headers: { "content-type": "application/json", cookie: api.cookie() }, body: JSON.stringify({ lessonId, text, ...(CONTINUER ? { continuer: true } : {}) }) })
     .then(async (r) => ({ text, askedAt: t, at: performance.now(), status: r.status, why: r.headers.get("x-prefetch"), ack: r.status === 200 ? (await r.json()).ack : null }))
     .catch((e) => ({ text, askedAt: t, at: performance.now(), status: 0, why: String(e?.message ?? e).slice(0, 60), ack: null }));
 }
@@ -380,6 +383,7 @@ async function lesson(L, rows = []) {
     const st = Date.now(), rnd = Math.random().toString(36).slice(2, 8);
     password = `r3rh-pw-${st}-${rnd}`;
     await api("POST", "/api/auth/signup", { email: `r3rh+${st}${rnd}@taxila.test`, password, name: "Latency", isGuardianAdult: true });
+    if (CONTINUER) process.env.TAXILA_ACK_CONTINUER_FOR = [process.env.TAXILA_ACK_CONTINUER_FOR, `r3rh+${st}${rnd}@taxila.test`].filter(Boolean).join(",");
     ({ child: { id: childId } } = await api("POST", "/api/children", { firstName: "Aarav", classLevel: CLASS, languagePref: "hinglish", interests: ["cricket"] }));
     await api("POST", "/api/consent", { childId, grants: { core_tutoring: true, learning_profile: true, memory: true } });
     await api("POST", "/api/parent/controls", { childId, hoursStart: "00:00", hoursEnd: "23:59", dailyMinutes: 120 });
@@ -442,7 +446,8 @@ async function lesson(L, rows = []) {
       const finalAt = heard.finalAt;
       let ackPlayAt = null, ackEnd = null;
       if (usable) {
-        const startAt = Math.max(usable.at, finalAt);
+        // a continuer never sounds sooner than CONTINUER_MIN_MS after the child stopped (src/latency/ack.ts)
+        const startAt = Math.max(usable.at, finalAt, usable.ack.kind === "continuer" ? heard.speechEndAt + CONTINUER_MIN_MS : 0);
         if (startAt < tts.firstAt && startAt - finalAt <= ACK_MAX_AGE_MS) { ackPlayAt = startAt; ackEnd = startAt + START_LEAD_MS + usable.ack.ms; }
       }
       const replySoundAt = ackEnd !== null ? Math.max(tts.firstAt, ackEnd + Math.min(ACK_REPLY_GAP_MS, ACK_HOLD_MAX_MS)) : tts.firstAt;
@@ -459,7 +464,7 @@ async function lesson(L, rows = []) {
         replyFirstByte: Math.round(tts.firstAt - end),
         // what the child hears
         ackStatus: ackRes.map((a) => (a.ack ? `ack:${a.ack.phrase}` : `${a.status}:${a.why ?? ""}`)),
-        ackPhrase: usable?.ack?.phrase ?? null, ackReadyAfterEnd: usable ? Math.round(usable.at - end) : null, ackDecidedMs: usable?.ack?.decidedMs ?? null,
+        ackPhrase: usable?.ack?.phrase ?? null, ackKind: usable?.ack?.kind ?? null, ackReadyAfterEnd: usable ? Math.round(usable.at - end) : null, ackDecidedMs: usable?.ack?.decidedMs ?? null,
         ackPlayed: ackPlayAt !== null, ackSoundAfterEnd: ackPlayAt !== null ? Math.round(ackPlayAt - end) + START_LEAD_MS + OUTPUT_LATENCY_MS : null,
         ackClipMs: usable?.ack?.ms ?? null,
         replySound: Math.round(replySoundAt - end) + START_LEAD_MS + OUTPUT_LATENCY_MS,

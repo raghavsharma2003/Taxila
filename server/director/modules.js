@@ -302,12 +302,15 @@ export function moduleFacts(m) {
   return { kind: KIND[m.engine] ?? "simulation", archetype: m.engine, onScreen, ...(m.itemId ? { itemId: m.itemId } : {}) };
 }
 
+/** A facts key's position as a word ("step2" → "second step"): a glued id ("left1") read on the row is said to the child as
+ *  a name (sim lab p29), and a bare digit ("step 2") would read as a value on the row. */
+export const ORDINAL = [null, "first", "second", "third", "fourth", "fifth", "sixth", "seventh", "eighth", "ninth", "tenth", "eleventh", "twelfth"];
 export const FACTS_ROW_PREFIX = "on screen now (values to use when you point at the screen; never what is hidden): ";
 const FACTS_ROW_MAX = 360;
 /** StudioFacts → one telegraphic row ("engine · name value · …"): values, never a sentence she could recite. */
 export function factsRow(f) {
   if (!f) return null;
-  const parts = [f.archetype.replace(/@\d+$/, ""), ...Object.entries(f.onScreen).map(([k, v]) => `${k.replace(/([a-z])([A-Z])/g, "$1 $2").toLowerCase()} ${v}`)];
+  const parts = [f.archetype.replace(/@\d+$/, ""), ...Object.entries(f.onScreen).map(([k, v]) => `${k.replace(/([a-z])([A-Z])/g, "$1 $2").replace(/^([a-z]+)(\d{1,2})$/i, (_m, w, n) => `${ORDINAL[Number(n)] ?? n} ${w}`).toLowerCase()} ${v}`)];
   // whole entries only: a value is never cut in half (a half value on the row is a wrong value)
   let row = FACTS_ROW_PREFIX + parts[0];
   for (const p of parts.slice(1)) { if (row.length + p.length + 3 > FACTS_ROW_MAX) break; row += ` · ${p}`; }

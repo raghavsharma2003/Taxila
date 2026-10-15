@@ -367,7 +367,7 @@ export function revealsOf(ops, per, byId, texts, withhold) {
 
 /**
  * @param {unknown} raw the model's script (already expanded to WhiteboardScript shape)
- * @param {{ reply: string, kit?: any, band?: string, speechMs?: number, extraNumbers?: string[], extraWords?: string[], banned?: string[], prior?: any[],
+ * @param {{ reply: string, kit?: any, band?: string, speechMs?: number, extraNumbers?: string[], face?: boolean, extraWords?: string[], banned?: string[], prior?: any[],
  *   withhold?: { values: string[], words?: string[] } | string[] }} ctx
  *   prior: the previous board's ops when this script continues it (mode "continue"): new words must not land on them
  *   withhold: answers the board must not show (withheldValues(kit, { itemId, line })); W9
@@ -469,7 +469,8 @@ export function gateWhiteboard(raw, ctx) {
   // (owner-5 on prod 2026-10-06: the kit's own equal-groups board of 15 dots was refused against exactly that line)
   const okCount = (n) => said.has(n) || lineNums.has(n) || [...said].some((a) => [...said, ...lineNums].some((b) => a * b === n));
   const badCount = said.size ? fams.filter((f) => !okCount(f.n)).map((f) => `${f.kind} x${f.n}`) : [];
-  const cut = circleCutByLines(ops);
+  // (a clock's hands run from its centre: ctx.face, the asked thing is a face of numbers, studio/request.js faceDrawing)
+  const cut = ctx.face ? [] : circleCutByLines(ops);
   add("W8.counts_match_line", badCount.length === 0 && cut.length === 0, { said: [...said], families: fams.map((f) => `${f.kind} x${f.n}`), bad: badCount, cutByLines: cut });
   // W2b words clear of lines: no text or label box crossed by a drawn line, arrow or box edge (legibility at 360 dp)
   const crossed = textsCrossed(ops, byId);

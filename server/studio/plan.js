@@ -14,6 +14,7 @@
 //   the whiteboard gate (qa/whiteboard.js) checks it (fits the stage, labels anchored, numbers from her line or the kit,
 //   arithmetic true, words hers or the book's, timed to her voice). One repair round with the failing check ids when the
 //   time budget allows; a script that fails is never drawn (the explainer template rung or her voice instead).
+import { answersRequest, samePage, shownBefore, plannerRequest, subjectWords, textsOf, freeAsked, askedNumbers, faceDrawing } from "./request.js";
 import { chat, DEPLOY, usdOf, normUsage } from "../azure.js";
 import { archetype, validateParams, stringKeys, buildParams } from "./archetypes/index.js";
 import { gateWhiteboard, numbersIn, CHARS_PER_SEC, segmentsOf, segHitsBox, innerBox, withheldValues, partitionCounts } from "./qa/whiteboard.js";
@@ -258,6 +259,9 @@ const WB_SYSTEM = [
   "  a whole in N equal parts: N sectors of 360/N degrees for a round whole (never lines across a circle), N equal rects side by side for a bar or for N groups; N is her number;",
   "  4-16 ops; the drawing follows her words in order and is spread across the whole line; nothing is drawn after her line ends;",
   "  nothing to draw (pure talk, a feeling, a question with no picture): return {\"ops\": []}.",
+  // round 5 (stream 2, RCA-1): the child's request is drawn even when her line only says it in words
+  "asked (when given): the child asked to SEE this; the board draws it, never something else: a sketch of the thing named, built from simple shapes and labelled with its name (label = asked.label);",
+  "  a number line asked: one numwork number_line with the numbers asked marked on it; never return no ops for an ask, never the board that was up before it.",
   // last on purpose (position is mechanism): the child must answer what she asks, so the board never does
   "a line that asks the child something: draw the setup only (the givens, an empty box or ? where the answer goes); never a result cell, a filled answer, a jump landing on it or its mark on a number line.",
 ].join("\n");
@@ -423,7 +427,7 @@ export function expandOps(ops) {
  */
 export const WB_MAX_TOKENS = 1100;
 export const REPAIR_MIN_MS = 3000;
-export async function planWhiteboard(ask, { kit, prev, redact = [], deployment = process.env.STUDIO_WB_DEPLOY || "taxila-gpt6-luna", effort = "none", budgetMs = 7000, repairs = 1, trace } = {}) {
+export async function planWhiteboard(ask, { kit, prev, redact = [], deployment = process.env.STUDIO_WB_DEPLOY || "taxila-gpt6-luna", effort = "none", budgetMs = 7000, repairs = 1, trace, avoid = null, seen = null } = {}) {
   const t0 = performance.now();
   const ms = () => Math.round(performance.now() - t0);
   // child-free (LIVE-STUDIO §5.4): the child's name (her vocative, and any name the caller lists) never reaches the model
@@ -431,6 +435,8 @@ export async function planWhiteboard(ask, { kit, prev, redact = [], deployment =
   const text = redactLine(spoken, redact);
   if (!text) return { ok: false, script: null, gate: null, ms: ms(), attempts: 0, usage: [], usd: 0, why: "no_line" };
   const speechMs = speechMsOf(spoken);
+  const request = ask?.intent?.request ?? null;
+  const asked = plannerRequest(request);
   const content = (ask.kit?.content ?? []).map(String).slice(0, 8);
   const itemText = ask.kit?.item ? [ask.kit.item.prompt_en, ask.kit.item.prompt_hi].filter(Boolean) : [];
   const facts = { numbers: [...new Set([...numbersIn(text), ...numbersIn(content.join(" ")), ...numbersIn(itemText.join(" "))])].slice(0, 24), content: content.slice(0, 6) };
@@ -438,15 +444,21 @@ export async function planWhiteboard(ask, { kit, prev, redact = [], deployment =
   const user = {
     line: text, clauses: clausesOf(text), speechMs, facts, band, pace: band === "B1" || band === "B2" ? "slower strokes, bigger shapes" : "normal",
     ...(ask.mode === "continue" && prev?.ops?.length ? { previous_board: prev.ops.slice(-12).map((o) => ({ id: o.id, op: o.op, ...(o.text ? { text: o.text } : {}) })), mode: "continue: draw beside what is already there, ids must be new" } : {}),
+    // round 5 (stream 2, RCA-1): what the child asked to see (never their words), and the page that was up (never again)
+    ...(asked ? { asked } : {}),
+    ...(asked && avoid?.ops?.length ? { not_again: textsOf(avoid).slice(0, 10) } : {}),
   };
   const usage = [];
   const usdNow = () => +usage.reduce((s, u) => s + usdOf(deployment, normUsage(u)), 0).toFixed(6);
   let feedback = null, gate = null, attempts = 0;
-  const kitForGate = { ...(kit ?? {}), expectations: [...(kit?.expectations ?? []), ...content, ...itemText] };
+  // round 5: the thing the child asked to see is a fact of this board (its name and equivalents may be written on it)
+  const kitForGate = { ...(kit ?? {}), expectations: [...(kit?.expectations ?? []), ...content, ...itemText, ...(request?.subject ? [request.subject, ...subjectWords(request.subject)] : []), ...(request?.said ?? [])] };
   // W9: what the board must not show (the asked item's answer, every other item's answer), unless she says it here.
   // From the kit the seam holds (L.kit, the verified kit) — the ask's item names which one is being asked.
-  const withhold = withheldValues({ items: [...(kit?.items ?? []), ...(ask.kit?.item && !(kit?.items ?? []).some((i) => i.id === ask.kit.item.id) ? [ask.kit.item] : [])] },
+  const withhold0 = withheldValues({ items: [...(kit?.items ?? []), ...(ask.kit?.item && !(kit?.items ?? []).some((i) => i.id === ask.kit.item.id) ? [ask.kit.item] : [])] },
     { itemId: ask.kit?.item?.id, line: text });
+  // round 5 (stream 2): the numbers the child asked to see are not withheld (the open question's own key still is)
+  const withhold = freeAsked(withhold0, request, ask.kit?.item?.id ? (kit?.items ?? []).find((i) => i.id === ask.kit.item.id) ?? ask.kit.item : null);
   const counts = partitionCounts(text);
   for (let round = 0; round <= repairs; round++) {
     const left = budgetMs - ms();
@@ -461,13 +473,20 @@ export async function planWhiteboard(ask, { kit, prev, redact = [], deployment =
       const prior = ask.mode === "continue" ? (prev?.ops ?? []).filter((o) => o.op !== "erase") : [];
       const fit = fitOps(expandOps(r.json?.ops), WB_BOARD, 6, prior, counts);
       const ops = fit.ops;
+      // round 5: an ask the child made is never "nothing to draw": one repair round says what was asked
+      if (!ops.length && asked && round < repairs) { feedback = `asked: no ops returned; draw ${asked.draw}`; continue; }
       if (!ops.length) return { ok: false, empty: true, script: null, gate: null, ms: ms(), attempts, usage, usd: usdNow(), why: "nothing_to_draw" };
       const raw = { v: 1, scriptId: ask.intent?.intentId ?? "wb", line: { lessonId: ask.line?.lessonId ?? "", ...(ask.line?.teacherReplySeq != null ? { teacherReplySeq: ask.line.teacherReplySeq } : {}) },
         anchor: "line_audio_start", board: { ...WB_BOARD, ground: "chalk" }, mode: ask.mode === "continue" ? "continue" : "fresh",
         durationMs: Math.max(...ops.map((o) => Number(o.endMs) || 0)), ops };
-      gate = gateWhiteboard(raw, { reply: text, kit: kitForGate, band, speechMs, banned: redact, prior, withhold });
+      gate = gateWhiteboard(raw, { reply: text, kit: kitForGate, band, speechMs, banned: redact, prior, withhold, ...(request ? { extraNumbers: askedNumbers(request), face: faceDrawing(request) } : {}) });
       gate.fixes = fit.fixes;
-      if (gate.pass) return { ok: true, script: { ...gate.script, facts: gate.facts }, gate, ms: ms(), attempts, usage, usd: usdNow() };
+      // round 5 (stream 2): a board that ignores the child's request, or is the page already up, is repaired once (a shape
+      // note, not a line), then refused
+      const missed = gate.pass && request && !answersRequest(gate.script, request, { drawnFor: true }) ? (request.kind === "number_line" ? "it has no number line (numwork number_line) and a number line was asked" : request.kind === "example" ? "it is not her example worked: write each number she says, one step under the last, ? for what she asks" : `nothing on it names or shows ${asked?.label ?? "what was asked"}`) : null;
+      const again = gate.pass && shownBefore(gate.script, { avoid, seen });
+      if (gate.pass && !missed && !again) return { ok: true, script: { ...gate.script, facts: gate.facts }, gate, ms: ms(), attempts, usage, usd: usdNow() };
+      if (missed || again) { feedback = missed ? `asked: ${missed}; draw what was asked` : "not_again: this is the page that was already up; draw something new"; continue; }
       // W9 is the one failure the model cannot read from the check id: say what to do (a shape note, not a line)
       feedback = gate.checks.filter((c) => !c.pass).map((c) => (c.id === "W9.no_reveal"
         ? `W9.no_reveal: the board shows the answer to what she asks (${(c.detail ?? []).map((d) => String(d).split(":")[1]?.trim()).filter(Boolean).slice(0, 3).join(", ")}): remove that result, write ? or an empty box in its place, mark no position for it`

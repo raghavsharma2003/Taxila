@@ -18,14 +18,18 @@ const RUNG = { id: "rung-s1", engine: "explainer@1" };          // the Director'
 const BOARD_SLOT = { studioSlot: { slotId: "s", intentId: "i", artifact: { kind: "whiteboard" } } };
 const TABLE_LABELS = "Recursive rule | Explicit rule | First term | Nth term";
 
-test("RCA-1: the whiteboard ask carries what the child asked to see (turns 2, 10, 22: a game, a photo, aloo)", { todo: "r13 fix 1" }, () => {
-  // state as on turn 11 of a95d2ff1: a visual request, skill s1, the same explain beat; the child asked for aloo
-  const next = { ctx: { classLevel: 9, lang: "hinglish" }, lastMove: { kind: "reteach", skillId: "c9-maths-ch08-t01-s1", visual: "diagram", request: "visual" },
+test("RCA-1: the whiteboard ask carries what the child asked to see (turns 2, 10, 22: a game, a photo, aloo)", () => {
+  // state as on turn 11 of a95d2ff1: a visual request, skill s1, the same explain beat; the child asked for aloo (round 5,
+  // stream 2: the Director's move carries what was asked as move.see, from requestOf's reading of "आलू दिखाओ")
+  const see = requestOf("आलू दिखाओ").see;
+  const next = { ctx: { classLevel: 9, lang: "hinglish" }, lastMove: { kind: "reteach", skillId: "c9-maths-ch08-t01-s1", visual: "diagram", request: "visual", see: { ...see, off: true } },
     lastContent: [], wbBeat: "b6-explain", topicId: "c9-maths-ch08-t01" };
   const ask = whiteboardIntentOf({ lessonId: "L", turn: 11, beat: { id: "b6-explain", type: "explain" }, next, kit: { topicId: "c9-maths-ch08-t01", skills: [] }, item: null,
     line: { text: line(23), teacherReplySeq: 23 } });
   // today: nothing about the child's ask reaches Studio, so every board on s1 is the lesson's cached compare@1 table
   assert.ok(ask.intent.request, "the intent names the child's request (kind + subject), so the board can answer it or decline it");
+  assert.equal(ask.intent.request.subject, "आलू");
+  assert.equal(ask.mode, "fresh", "a page drawn for a request is a new page, even on the same beat");
 });
 
 test("RCA-2: a claim about the screen is checked against what is mounted (turn 3 'game', turns 23/25 'aloo')", () => {

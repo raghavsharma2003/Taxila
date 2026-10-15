@@ -50,7 +50,9 @@ export const FAMILIES = Object.freeze({
   signal: ["answer", "question_curious", "question_clarify", "chit_chat", "idk_not_known", "idk_cant_recall", "frustration_words", "pride_words",
     "meta_slow", "meta_break", "humour", "personal_share"],
   lane: ["voice", "cascade", "text"],
-  turn: ["late", "module_only", "help", "replanned", "speculation_hit", "speculation_miss", "fallback_reply", "lane_resume", "lane_resume_revoice"],
+  // round 5: the covert comprehension read of the child's turn (server/director/read.js)
+  read: ["understood", "partly", "not"],
+  turn: ["late", "module_only", "help", "replanned", "speculation_hit", "speculation_miss", "fallback_reply", "lane_resume", "lane_resume_revoice", "agent", "agent_fallback"],
   // component_error.<seam>: a seam call threw (seam-safe.js fell back); director: the move sent differs from the kernel's
   component_error: ["safety", "director", "comprehension", "relational", "studio", "vibe", "conductor", "moment", "signals", "expressive", "purpose",
     "realtime", "voicesig"],
@@ -58,11 +60,11 @@ export const FAMILIES = Object.freeze({
   // is answered from brain_trace rows alone): the classifier's outcome, where it came from, the verdict the child saw and
   // what the reply guard did to her words. Codes only, never words.
   cls: ["correct", "incorrect", "partial", "misconception", "dont_know", "no_evidence", "unclear", "no_attempt", "help", "none"],
-  cls_source: ["model", "fallback", "error", "asr", "content_filter", "bytes", "module", "help", "chip", "exact", "lexical", "echo", "empty", "predicate",
+  cls_source: ["model", "fallback", "error", "asr", "content_filter", "content_filter_context", "bytes", "module", "help", "chip", "exact", "lexical", "echo", "empty", "predicate",
     "relational", "speculative", "none"],
   verdict: ["correct", "partial", "not_yet", "ungraded"],
   guard: ["replaced", "rewritten", "repaired", "leak", "drift", "nowhy", "flat", "script", "long", "units", "floor", "praise", "deny", "corrects",
-    "screen", "parts", "stage", "register", "ask", "twoq", "wrap", "content_filter", "unavailable"],
+    "screen", "parts", "stage", "register", "ask", "twoq", "wrap", "content_filter", "content_filter_nonharm", "content_filter_context", "unavailable"],
   // release.check_in_given: the stop phrase got its single check-in (OWNER-RESET #7); release.goodbye_wrap: the lesson ended
   release: ["goodbye", "check_in", "check_in_given", "goodbye_wrap"],
   // ship5 p3-voicesig (server/voicesig/lesson.js): the knowledge state voice timing read on this turn (named for what it

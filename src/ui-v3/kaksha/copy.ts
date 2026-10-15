@@ -14,6 +14,9 @@ const K = (en: string, hinglish: string, hi: string): Row => ({ en, hinglish, hi
 
 export const KX = {
   start: K("Start", "Shuru karo", "शुरू करो"),
+  // r5 QA D24: an open lesson is continued, not restarted
+  continueCta: K("Continue", "Aage chalo", "आगे चलो"),
+  resumeSub: K("Pick up where you left off.", "Jahan ruke the, wahin se chalo.", "जहाँ रुके थे, वहीं से चलो।"),
   continueIt: K("Continue", "Wahin se", "वहीं से"),
   greetMorning: K("Morning, {name}.", "Good morning, {name}.", "सुप्रभात, {name}।"),
   greetDay: K("Hi, {name}.", "Hi, {name}.", "नमस्ते, {name}।"),
