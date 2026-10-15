@@ -417,5 +417,8 @@ test("r5 merge: her EARLY reply (turn-audio, before its text) is announced to th
     const id = live["her"].id;
     link.promptTeacher({ text: "आठ गुणा सात छप्पन होता है। अब बताओ, नौ गुणा सात?" });
     assert.equal(live["her"]?.id, id, "adoption does not restart her (the overlap epoch stays)");
+    // the whole line reached the engine: its closing question hands the floor over at her end
+    assert.equal(live["host"]["her"].text, "आठ गुणा सात छप्पन होता है। अब बताओ, नौ गुणा सात?");
+    assert.equal(live["host"]["her"].handsOver, true, "hand-over read from the whole line");
   } finally { link.close(); env.restore(); }
 });

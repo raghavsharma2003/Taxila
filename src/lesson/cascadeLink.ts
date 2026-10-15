@@ -653,6 +653,10 @@ export class CascadeLink implements TeacherLink {
     if (cur.playing && this.duplex && !cur.early.announced) {
       this.duplex.setUi(turnContext());
       this.duplex.replyAudible(text);
+    } else if (this.duplex && cur.early.announced) {
+      // announced on its first clauses: the whole line now (its closing question decides handover vs idle at her end)
+      this.duplex.setUi(turnContext());
+      this.duplex.replyText(text);
     }
     if (cur.early.ended) this.finishReply(cur, cur.early.ended);
   }

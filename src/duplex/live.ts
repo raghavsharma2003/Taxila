@@ -793,6 +793,19 @@ export class DuplexLive {
     return true;
   }
 
+  /**
+   * Her line's full text, after herStart began it on its first clauses (the early turn-audio reply): the engine reads her
+   * act and hand-over from the whole line (a closing question decides handover vs idle at her end). Same utterance.
+   */
+  herText(text: string): void {
+    if (!this.live || !this.her || this.herHalted || text === this.her.text) return;
+    const act = herActOf(text, this.ui);
+    const handsOver = handsOverOf(text, this.ui);
+    this.her = { ...this.her, text, act };
+    const id = this.her.id;
+    this.guard(() => this.host.herEvent({ kind: "text", t: this.now(), utteranceId: id, text, act, handsOver, msPerChar: MS_PER_CHAR }));
+  }
+
   /** Her line played to the end. */
   herEnd(): void {
     if (!this.live || !this.her) return;

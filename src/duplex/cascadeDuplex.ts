@@ -317,6 +317,8 @@ export class CascadeDuplex {
     return false;
   }
 
+  /** Her sounding reply's full text arrived (an early reply announced on its first clauses). */
+  replyText(text: string): void { if (!this.closed && !this.fallbackReason) this.live.herText(text); }
   replyEnded(): void { if (!this.closed) { this.tel.herEnd(this.now(), false); this.live.herEnd(); } }
   replyStopped(): void { if (!this.closed) { this.tel.herEnd(this.now(), true); this.live.herStopped(); } }
   /** Her acknowledgement clip sounds / ended (release 14: gated like her line, so its echo never revokes a commit). */
