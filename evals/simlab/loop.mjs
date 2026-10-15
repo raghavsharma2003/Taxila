@@ -44,7 +44,10 @@ const arms = Object.fromEntries((arg("arms", "director=http://127.0.0.1:8791")).
 const lanes = arg("lanes", "text").split(",");
 const only = arg("only", null)?.split(",");
 const n = Number(arg("n", 30));
-const personas = (only ? PERSONAS.filter((p) => only.some((o) => p.id.startsWith(o))) : spread(PERSONAS, n));
+// --also p65,p66: cards added on top of the --n spread (e.g. main's pet-incident cards in a baseline run)
+const also = arg("also", null)?.split(",") ?? [];
+const personas = (only ? PERSONAS.filter((p) => only.some((o) => p.id.startsWith(o))) : spread(PERSONAS.filter((p) => !p.petEvent), n))
+  .concat(also.length ? PERSONAS.filter((p) => also.some((o) => p.id.startsWith(o))) : []);
 // TEST and production share the taxila-fast deployment (same TPM): lessons in parallel are capped (main, 2026-10-15:
 // ≤4, starts staggered) so a lab run never throttles a live lesson. Judging calls only the judge deployments.
 const MAX_LESSONS = Number(process.env.SIMLAB_MAX_LESSONS || 4);
