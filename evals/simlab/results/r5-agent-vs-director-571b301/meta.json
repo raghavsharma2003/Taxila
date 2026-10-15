@@ -1,0 +1,21 @@
+{
+ "runId": "r5-agent-vs-director-571b301",
+ "head": "ca0ff0ac",
+ "date": "2026-10-14T20:18:08.663Z",
+ "arms": {
+  "director": "http://127.0.0.1:8796",
+  "agent": "http://127.0.0.1:8797"
+ },
+ "lanes": [
+  "text"
+ ],
+ "n": 64,
+ "turns": 14,
+ "models": {
+  "child": "DeepSeek-V4-Pro",
+  "childFallback": "taxila-mistral-m35",
+  "judge": "grok-4-20-reasoning",
+  "judge2": "taxila-kimi26"
+ },
+ "note": "4A's agent lane vs the Director lane, SAME sha claude/r4-conversation @571b3010 (TAXILA_TEACHER=agent, teacher taxila-gpt6, vs TAXILA_TEACHER=off), all 64 cards (n=64 per arm), text lane, 14 child turns. Lesson state (ctx.teacher, agent.fallbacks/usage/lastMs) read from TEST before cleanup."
+}

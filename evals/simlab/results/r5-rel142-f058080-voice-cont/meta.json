@@ -1,0 +1,21 @@
+{
+ "runId": "r5-rel142-f058080-voice-cont",
+ "head": "162908fa",
+ "date": "2026-10-15T07:54:25.857Z",
+ "arms": {
+  "rel142v": "http://127.0.0.1:8821"
+ },
+ "lanes": [
+  "voice"
+ ],
+ "n": 32,
+ "turns": 14,
+ "models": {
+  "child": "DeepSeek-V4-Pro",
+  "childFallback": "taxila-mistral-m35",
+  "judge": "grok-4-20-reasoning",
+  "judge2": "taxila-kimi26"
+ },
+ "childRules": "v1",
+ "note": "Release 14.2 @f058080e (int/r5-rel142), Director lane, VOICE (TTS → transcribeClip → server) with the device's turn-ack ask (continuer:true); the TEST cohort (all 32 cards' test guardians) in TAXILA_ACK_CONTINUER_FOR on this TEST server only; stream 3's positive continuer gate 102a3b0. Report: continuers on safety / relational / leaving turns (target 0) and the share of ordinary turns. Lessons capped at 4."
+}

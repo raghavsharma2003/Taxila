@@ -1,0 +1,22 @@
+{
+ "runId": "r5-agent-gate-d6f93e7",
+ "head": "29de42f9",
+ "date": "2026-10-14T21:00:39.380Z",
+ "arms": {
+  "director": "http://127.0.0.1:8801",
+  "agent_gpt6": "http://127.0.0.1:8802",
+  "agent_grok41": "http://127.0.0.1:8803"
+ },
+ "lanes": [
+  "text"
+ ],
+ "n": 64,
+ "turns": 14,
+ "models": {
+  "child": "DeepSeek-V4-Pro",
+  "childFallback": "taxila-mistral-m35",
+  "judge": "grok-4-20-reasoning",
+  "judge2": "taxila-kimi26"
+ },
+ "note": "AGENT GATE + Teacher bake-off on 4A head claude/r4-conversation @d6f93e7f: director (TAXILA_TEACHER=off) vs agent_gpt6 (TAXILA_TEACHER=agent, taxila-gpt6 = gpt-6-sol) vs agent_grok41 (grok-4-1-fast-non-reasoning), TAXILA_TEACHER_TIMEOUT_MS=6000, all 64 cards, text lane, 14 child turns. For the grok arm the Kimi judge is the one that counts (Grok judge = same family)."
+}

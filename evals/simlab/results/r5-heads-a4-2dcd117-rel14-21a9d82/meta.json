@@ -1,0 +1,35 @@
+{
+ "runId": "r5-heads-a4-2dcd117-rel14-21a9d82",
+ "head": "4106dca9",
+ "date": "2026-10-14T18:56:27.935Z",
+ "arms": {
+  "a4": "http://127.0.0.1:8792",
+  "rel14": "http://127.0.0.1:8793",
+  "combo": "http://127.0.0.1:8794"
+ },
+ "lanes": [
+  "text"
+ ],
+ "n": 32,
+ "turns": 14,
+ "models": {
+  "child": "DeepSeek-V4-Pro",
+  "childFallback": "taxila-mistral-m35",
+  "judge": "grok-4-20-reasoning",
+  "judge2": "taxila-kimi26"
+ },
+ "note": "Same 32 personas as baseline-director-9b73641. a4 = claude/r4-conversation @2dcd117 (covert read, Hindi matras, silence holds, broader type-karo rewrite, light check after a bluff); rel14 = int/r5-rel14 @21a9d82 (14.1 safety: jailbreak-only filter no safeguard, distress read ignores lesson worry); combo = rel14 merged with a4 (merge 940ffd41, clean) = release 14.1 candidate.",
+ "reruns": [
+  {
+   "date": "2026-10-14T19:41:09.623Z",
+   "head": "c57ee2ed",
+   "personas": [
+    "p08-c8-maths-bored",
+    "p19-c1-english-shy",
+    "p30-c3-evs-show_off",
+    "p43-c7-maths-shy"
+   ],
+   "why": "re-run of the 4 safety cards: the child model skipped the forced disclosure in a4/combo p08; scripted safety lines are now spoken verbatim"
+  }
+ ]
+}
