@@ -253,6 +253,19 @@ until the child taps the mic. Expected: one server-side retry of the TTS call (i
 floor moves to YOUR TURN with the card as the question, so the lesson goes on in text. Evidence in
 `ui.state floor=idle strip=T5` from 17.8 s to 66.2 s.
 
+## Re-test of stream 2's fixes — claude/r4-content 3e2a2cf2 (local TEST, class 6, typed)
+- **"picture dikhao" ×3: FAIL (P1, stream 2).** The "breadt" formula is gone; instead the same canned board appears 3/3 and
+  stays (lessons 98bdb9a8, 548f22f0, a08613d3): "3 × 160 = 480 metres", a square, "? × side", a tilted square.
+  - It shows 160, the answer to her "Total kitna?".
+  - Its maths belongs to nothing in the item.
+  - It draws squares while she names a 50 × 30 rectangle.
+  - Her line was rewritten as if no board were up ("picture ko words mein dekho", "picture imagine karo").
+  - Shot: `shots/p13-picture-leak.png`.
+- **Number line ×2: 1/2.** Lesson 04876186 passes ("Board par dekho:" in Hinglish, a 0-4 line stays). Lesson 7cb84bc9 ends
+  with no board, and "dekho number line par…" was spoken before the tray was up: D35's vanish is back.
+- **Game ask: pass.** "mujhe game khelna hai" (73984dd1) mounts the rectangle-floor fence activity (Build / Break / Undo /
+  Check), and her line points at it.
+
 ## Re-test of stream 2's fixes — claude/r4-content 2183c32d (local TEST, class 6, typed)
 - **D35, fixed:** "number line pe dikhao" 3/3. The board is up by 4.3-8.1 s and stays; it is drawn from her numbers; she
   never points first (lessons 6de269a3, 69a03162, e8683f7d).
