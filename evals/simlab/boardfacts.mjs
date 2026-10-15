@@ -10,12 +10,14 @@ import { join } from "path";
 const dir = process.argv[2];
 const recs = readdirSync(join(dir, "records")).filter((f) => f.endsWith(".json")).map((f) => JSON.parse(readFileSync(join(dir, "records", f), "utf8")));
 
-const POINT = /\b(?:screen|board|dekho|dekhiye|dekhte|dekh rahe|table mein|picture|drawing|diagram|chart|number line|timeline)\b|स्क्रीन|बोर्ड|देखो|देखिए|तस्वीर|चित्र/i;
+// deictic pointing only (2183c32d review: a topic noun — "number line par jumps karenge", "drawing pasand hai?", "next
+// picture se continue karenge", "football dekhte hain" — is not her pointing at the stage)
+const POINT = /\b(?:screen|board|picture|photo|drawing|diagram|chart|number line|timeline|table)\s+(?:par|pe|mein|me|ke (?:left|right|upar|neeche|flow))\b|\bdekh(?:o|iye|iyega|iyenge)\b|\blook at\b|\bon the (?:screen|board)\b|\bin the picture\b|स्क्रीन (?:पर|में)|बोर्ड पर|तस्वीर में|चित्र में|देखो|देखिए/i;
 const ID_KEY = /\b(?:left|right|row|col|step|item|node|box|label|top|bottom|stage|part)\d+\b/i;
 const STOP = new Set("this that with from have what your kya hai hain aur yeh woh isko usko mein par kaise kitne kitna abhi phir karo dekho dekhiye board screen".split(" "));
 const words = (s) => new Set(String(s ?? "").toLowerCase().normalize("NFKC").split(/[^\p{L}\p{N}]+/u).filter((w) => (w.length >= 4 || /^\p{N}+$/u.test(w)) && !STOP.has(w)));
 const boardOf = (s) => s?.whiteboard ?? (s?.studio && !/nothing drawn/.test(s.studio) ? s.studio : null);
-const shown = (s) => !!(s?.module || boardOf(s));
+const shown = (s) => !!(s?.module || boardOf(s) || (s?.chips && s.chips.length)); // choice tiles / chips on screen are something shown
 const planning = (s) => !!s?.studio && /nothing drawn|planning|pending/i.test(s.studio) && !s.whiteboard;
 
 const out = {};
