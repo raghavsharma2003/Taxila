@@ -398,7 +398,18 @@ function compare(c, tl) {
       if (!writeFit(tl, t, 20 + i * 190 + colW / 2, 100 + r * 52, colW - 8, {}, { id: `c${i}${r}`, ms: 480, gap: i ? 60 : 220, size: itemSize })) return { error: `item_too_wide:${i}.${r}` };
     }
   }
-  return { facts: { left: left.title, right: right.title, rows, ...Object.fromEntries(left.items.map((t, r) => [`left${r + 1}`, t])), ...Object.fromEntries(right.items.map((t, r) => [`right${r + 1}`, t])) } };
+  // each column as its title and its items (sim lab 4ae682b3 p29: keys "left1" / "left2" on the facts row were spoken to the
+  // child as names: "Screen par left1 standing line…", "Ab left2 ko imagine karo")
+  const lists = (side, items) => {
+    const out = {}; let k = 0, cur = "";
+    for (const t of items) {
+      if (cur && cur.length + 2 + t.length > 40) { out[`${side}${k ? "More" : "Items"}`] = cur; k++; cur = ""; }
+      cur = cur ? `${cur}, ${t}` : t;
+    }
+    if (cur && k < 2) out[`${side}${k ? "More" : "Items"}`] = cur;
+    return out;
+  };
+  return { facts: { left: left.title, right: right.title, rows, ...lists("left", left.items), ...lists("right", right.items) } };
 }
 
 function parts(c, tl) {

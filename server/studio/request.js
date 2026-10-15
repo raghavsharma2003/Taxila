@@ -255,6 +255,33 @@ export function clockBoard(request, { scriptId = "clock", lessonId = "", spanMs 
   const durationMs = Math.max(...ops.map((o) => o.endMs)) + 200;
   return { v: 1, scriptId, line: { lessonId }, anchor: "line_audio_start", board: { w: 400, h: 300, ground: "chalk" }, mode: "fresh", durationMs, ops };
 }
+/**
+ * Round 5 (sim lab 709b6acb, the 13 lessons still flagged): a line that ASSUMES a visual with no screen word in it, said over
+ * an empty stage: "Table mein Baisakhi kis month mein dikh rahi hai?" (no table; the child: "screen pe toh kuch nahi dikh
+ * raha"), "Aap 3335 ko mark kijiye" (no number line), "Timeline picture: charter → Plassey" (nothing drawn). The visual noun
+ * goes, the content stays: "Baisakhi kis month mein dikh rahi hai?", "Aap 3335 kahan aayega, bataiye", "Timeline: …". PURE.
+ */
+const VISUAL_NOUN = "(?:table|chart|diagram|drawing|graph|timeline|number\\s+line|grid|picture|photo|tasveer|chitra|chitr|तालिका|चार्ट|चित्र|तस्वीर)";
+export function unassumeVisual(text) {
+  const before = String(text ?? "");
+  const s = before
+    // "Yeh timeline aapke liye seedhi line mein dikh rahi hai" over nothing (sim lab 4ae682b3 p51, five turns running): a
+    // visual noun said to be SEEN is said to BE
+    .replace(new RegExp(`(\\b${VISUAL_NOUN}\\b[^.?!।]{0,60}?)\\s+(?:dikh|dikhai\\s+de|dikhayi\\s+de)\\s+(?:rahi|raha|rahe)\\s+hai\\b`, "giu"), "$1 hai")
+    // "aapke saamne number line hai: …" (sim lab 24175dbe p51) over nothing: she asks them to picture it
+    .replace(new RegExp(`\\b(?:aapke|tumhare|tere|apne)\\s+saamne\\s+(?:ek\\s+)?(${VISUAL_NOUN})\\s+hai\\b`, "giu"), "socho, ek $1 hai")
+    .replace(new RegExp(`\\b(?:is|iss|us|uss|this|the|ye|yeh)?\\s*${VISUAL_NOUN}\\s+(?:mein|me|par|pe|per|में|पर)\\s+`, "giu"), "")
+    .replace(new RegExp(`\\b(?:on|in)\\s+the\\s+${VISUAL_NOUN}\\b\\s*,?\\s*`, "giu"), "")
+    .replace(new RegExp(`([\\p{L}]{2,20})\\s+${VISUAL_NOUN}\\s*:`, "giu"), "$1:")
+    .replace(/\bko\s+mark\s+(?:kijiye|kijie|kariye|karo|karein|karen|kar\s+do)\b/giu, "kahan aayega, bataiye")
+    .replace(/\bmark\s+(?:kijiye|kijie|kariye|karo|karein|karen|kar\s+do)\b/giu, "bataiye")
+    // "upar uthti vapour ko dekhiye" over nothing (battery rel141 c6-evaporation): to look at a thing that is not there is to
+    // picture it
+    .replace(/\bko\s+(?:dekhiye|dekhie|dekhein|dekhen)\b/giu, "ko imagine kijiye").replace(/\bko\s+dekho\b/giu, "ko imagine karo")
+    .replace(/\s+([,.;!?।:])/g, "$1").replace(/\s{2,}/g, " ").trim();
+  if (s === before.trim()) return before;
+  return s.replace(/(^|[.!?।]\s+)([a-z])/g, (_m, a, b) => a + b.toUpperCase());
+}
 /** Does her line say there is no game (honest), or announce one ("Chalo mirror line game")? PURE. */
 const GAME_WORD = /\b(?:game|games)\b|गेम/iu;
 const NO_GAME = /\b(?:game|games)\b.{0,40}?\b(?:nahi|nahin|not|isn't|no)\b|\b(?:no|koi|abhi)\b.{0,20}?\bgame\b.{0,20}?\b(?:nahi|nahin|ready nahi)\b|गेम.{0,30}?नहीं|\bno\s+game\b/iu;

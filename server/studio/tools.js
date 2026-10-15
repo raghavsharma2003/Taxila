@@ -20,6 +20,19 @@ const BOARD = { w: 400, h: 300 };
 const MAX_LINE = 24;
 let n = 0;
 const clip = (s, k = MAX_LINE) => String(s ?? "").replace(/\s+/g, " ").trim().slice(0, k);
+/** A line as board lines of at most k characters, broken between words. PURE. */
+export function wrapWords(s, k = MAX_LINE) {
+  const out = [];
+  let cur = "";
+  for (const w of String(s ?? "").replace(/\s+/g, " ").trim().split(" ").filter(Boolean)) {
+    const word = w.slice(0, k);
+    if (!cur) cur = word;
+    else if (cur.length + 1 + word.length <= k) cur += ` ${word}`;
+    else { out.push(cur); cur = word; }
+  }
+  if (cur) out.push(cur);
+  return out;
+}
 const nums = (texts) => [...new Set(texts.flatMap((t) => String(t).replace(/[−–]/g, "-").match(/-?\d+(?:[./]\d+)?/g) ?? []))];
 
 /** One plain sentence of what a script shows (texts and shapes), for the agent. PURE. */
@@ -82,7 +95,9 @@ export function scriptForSpec(spec, { spanMs = 3000, scriptId = "tool" } = {}) {
   }
   const beat = (count) => Math.max(250, Math.min(1500, (spanMs * 0.75) / Math.max(1, count)));
   if (k === "write") {
-    const lines = (spec.lines ?? []).map((x) => clip(x)).filter(Boolean).slice(0, 6);
+    // a line too long for the board wraps at a word into the next line (4A, sim lab p18-c9: a cut "testable ide" reads as a
+    // typo); a single word longer than a line is the only thing ever cut. Six lines at most, as before.
+    const lines = (spec.lines ?? []).flatMap((x) => wrapWords(x)).filter(Boolean).slice(0, 6);
     if (!lines.length) return null;
     const b = beat(lines.length);
     return script(lines.map((text, i) => ({ id: `w${i}`, op: "text", at: [200, 50 + i * (220 / Math.max(1, lines.length - 1 || 1))], text, size: lines.length > 4 ? "s" : "m", align: "middle", ...T(i, b) })), scriptId);
