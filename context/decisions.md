@@ -6093,3 +6093,11 @@ TTS frames type 5 = IMA ADPCM (4:1), negotiated by Accept `codec=adpcm`, asked f
 - **What:** a correction that arrives after its turn has landed gets a full undo. The pre-turn snapshot lives in its own one-row-per-lesson table. The abandoned grade's rows move to archive tables, so no reader can bring them back. Background writers check the evidence is still live first. This is 14.4.
 - **Why:** posting the correction as the next turn grades it against the wrong question whenever the lesson has already moved on.
 - **Reversal:** the snapshot costs more than 20 ms p95 per turn, or such corrections turn out too rare to justify it.
+
+
+<!-- merged from inbox/r1431-main.json -->
+## dc-r1431-completion-block-probe (2026-10-15)
+
+- **What:** when HER reply is blocked twice, the child's own words are probed. If they are clear she says a neutral line, never the helplines. If they trip the filter, or the probe cannot run, it fails closed as before.
+- **Why:** see ms-r1431-completion-block-safeguards. A block on her own output is not a child-safety signal, which is already the rule for blocked prompts since 14.2.
+- **Reversal:** a disclosure whose only signal was her blocked reply, with the child's words probing clear.

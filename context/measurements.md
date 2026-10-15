@@ -4379,3 +4379,11 @@ Out-of-sample continuer check: 32 cards not used for tuning, plus p30's re-run. 
 - Live proof: 0 page errors. The picture ask showed the area model with every value masked '?'. The test account was deleted with 0 trace rows left.
 - The continuer is on for the owner cohort, as a secret holding the existing owner list; the value was never printed.
 - Two deploy attempts failed on the network before any write; the third succeeded.
+
+
+<!-- merged from inbox/r1431-main.json -->
+## ms-r1431-completion-block-safeguards (2026-10-15)
+
+- On TEST over 10 days, 41 turns failed closed because Azure's filter blocked HER reply.
+- Re-probing the child's own words: 38 clear, 3 trip the filter. All 41 are ordinary lesson talk (sums, graphite and nitrogen, tired, roti dough).
+- The sim lab's 14.3 run: 'teen' 0/6 and 'thak gayi' 0/6 safeguards, p16 1/6 (her reply about chips packets was blocked).

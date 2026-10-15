@@ -565,6 +565,18 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
     if (again) reply = again;
     else {
       if (isContentFilter(e) && nonHarmFilter(e)) return neutral("content_filter_nonharm");
+      // 14.3.1 (main safety review; sim lab rel143 p16 r2, TEST 955a17b7 t12): HER OWN reply about chips packets and nitrogen
+      // was blocked on completion twice. The prompt with the child's words had passed and the classifier read the answer
+      // correct, yet the turn failed closed to the helpline script, and the lesson held helplines two more turns. A block on
+      // HER completion is a safeguard only when the child's own words trip the filter (the 14.2 prompt-side rule): a clear
+      // probe gives a neutral line, never the helplines; a harm or unreadable probe fails CLOSED exactly as before.
+      if (isContentFilter(e) && e.status === 200) {
+        const probe = await childWordsTrip(probeWords(history, childText), { trace });
+        if (probe === "clear") {
+          console.warn("[lesson] her reply was blocked on completion but the child's own words pass: a neutral line");
+          return neutral("content_filter_output");
+        }
+      }
       if (isContentFilter(e)) { console.warn("[lesson] reply blocked by the content filter"); return blocked(); }
       console.warn("[lesson] reply unavailable, falling back:", e.message);
       return { reply: fallbackReply(state, item), guard: { caught: ["unavailable"], rewritten: false, replaced: true } };
