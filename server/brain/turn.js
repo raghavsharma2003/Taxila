@@ -1534,7 +1534,7 @@ export function speculate(state, target, flags, planCtx, { said, historyOf }, { 
       return {
         key: replyKey(next, planCtx.kit, plan.r, plan.instructions, said, history), trace,
         result: (() => {
-          const r = textReply({ instructions: plan.instructions, state: next, kit: planCtx.kit, childText: said, trace, history, ui: plan.r.ui, module: boardAnswersAsk(plan.r.move) ? null : next.module });
+          const r = textReply({ instructions: plan.instructions, state: next, kit: planCtx.kit, childText: said, trace, history, ui: plan.r.ui, module: boardAnswersAsk(plan.r.move) ? null : next.module, overflow: false });
           r.catch(() => {});
           return r;
         })(),

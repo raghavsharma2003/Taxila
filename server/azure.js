@@ -139,7 +139,7 @@ function log(entry, trace) {
  * `retries: 0` is for a backup call that must not double the latency of the path it rescues.
  * @returns {Promise<any>} parsed JSON, or a Buffer when `binary`.
  */
-async function post(kind, deployment, path, body, { timeoutMs = DEFAULT_TIMEOUT_MS, trace, binary = false, retries = 1, signal, lane = "CHAT", quotaLane } = {}) {
+async function post(kind, deployment, path, body, { timeoutMs = DEFAULT_TIMEOUT_MS, trace, binary = false, retries = 1, signal, lane = "CHAT", quotaLane, overflow = true, overflowOnce = null } = {}) {
   let overflowed = false;
   for (let attempt = 0; ; attempt++) {
     // Quota lanes (server/lanes.js, W2-E): a background call may wait for its bucket; a hot call never waits. The seam is a
@@ -191,9 +191,13 @@ async function post(kind, deployment, path, body, { timeoutMs = DEFAULT_TIMEOUT_
     } catch (e) { console.warn("[azure] lanes.settle failed:", e?.message); }
     if (!err) return out;
     // a 429 with a twin on the overflow account: the retry goes there at once (one move per call; with retries: 0 it is
-    // still the one extra call, since a 429 answers in milliseconds and the twin is the only way this call can answer)
-    const over = status === 429 && !overflowed && attempt <= retries ? overflowFor(lane, deployment) : null;
-    if (over) { overflowed = true; lane = over; continue; }
+    // still the one extra call, since a 429 answers in milliseconds and the twin is the only way this call can answer).
+    // stream 3's review (14.2): only the FIRST attempt's 429 moves (a timeout, then a 429, never makes a third call); a
+    // speculative bet (overflow: false) or background work never takes the overflow the hot reply needs; and the arms of
+    // one hedged call move at most once between them (overflowOnce), so a throttled reply puts one call on the twin, not two.
+    const over = status === 429 && !overflowed && attempt === 0 && overflow !== false && quotaLane !== "background" && !overflowOnce?.moved
+      ? overflowFor(lane, deployment) : null;
+    if (over) { overflowed = true; if (overflowOnce) overflowOnce.moved = true; lane = over; continue; }
     const retryable = status === 0 || status === 429 || status >= 500;
     if (attempt >= Math.max(retries, overflowed ? 1 : 0) || !retryable) throw err;
     await sleep(RETRY_DELAY_MS);
@@ -228,7 +232,8 @@ export function effortFor(deployment, effort) {
 export async function chat(deployment, messages, opts = {}) {
   const hedgeMs = Number(opts.hedgeMs) || 0;
   if (!(hedgeMs > 0)) return chatOnce(deployment, messages, opts);
-  return hedged((signal) => chatOnce(deployment, messages, { ...opts, hedgeMs: 0, retries: 0, signal: linkSignals(opts.signal, signal) }), hedgeMs);
+  const overflowOnce = { moved: false }; // the two arms share ONE overflow move (post())
+  return hedged((signal) => chatOnce(deployment, messages, { ...opts, hedgeMs: 0, retries: 0, overflowOnce, signal: linkSignals(opts.signal, signal) }), hedgeMs);
 }
 
 /** One AbortSignal that aborts when either does (the caller's, the hedge's). */
@@ -461,7 +466,8 @@ export async function chatStream(deployment, messages, opts = {}) {
   if (!opts.overflowLane) try { settle({ quotaLane, deployment, kind, status: err ? (err.status || err.code) : status, usage: usage ? { in: usage.in, out: usage.out } : undefined }); }
   catch (e) { console.warn("[azure] lanes.settle failed:", e?.message); }
   // round 5 (14.2): a 429 arrives before any delta, so the stream restarts whole on the deployment's overflow twin (overflowFor)
-  const over = err && status === 429 && !text && !opts.overflowLane && !signal?.aborted ? overflowFor(lane, deployment) : null;
+  const over = err && status === 429 && !text && !opts.overflowLane && !signal?.aborted && opts.overflow !== false && quotaLane !== "background"
+    ? overflowFor(lane, deployment) : null;
   if (over) return chatStream(deployment, messages, { ...opts, overflowLane: over });
   if (err) {
     // a cancelled or failed stream is still billed for what it generated: estimate (≈ 4 chars per input token, 3.5 per

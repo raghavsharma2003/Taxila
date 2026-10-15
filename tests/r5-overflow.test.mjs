@@ -1,11 +1,12 @@
 // round 5 (14.2): a 429 on a CHAT deployment with a twin on the overflow account moves its one retry there at once
 // (server/azure.js overflowFor). TEST lesson 5d18d152 and production at 06 UTC on 2026-10-15 (51 of 361 taxila-fast calls)
 // were throttled by load sharing the eastus2 deployment, and a throttled reply is the fallback line the child hears.
-import { test, beforeEach, afterEach } from "node:test";
+import { describe, test, beforeEach, afterEach } from "node:test";
 import assert from "node:assert/strict";
 import { chat, chatStream, overflowFor, isContentFilter } from "../server/azure.js";
 
 const PRIMARY = "https://primary.example.test/openai/v1", OVER = "https://overflow.example.test/openai/v1";
+describe("429 overflow (scoped: the fetch and env stubs never leak into other files run in one process)", () => {
 let realFetch, env, calls;
 beforeEach(() => {
   realFetch = globalThis.fetch; env = { ...process.env }; calls = [];
@@ -122,4 +123,33 @@ test("duplex drafts: a draft cancelled while streaming on the twin stops there (
   assert.ok(r.error);
   assert.equal(r.text, "आठ", "only the twin's words");
   assert.ok(r.ttftMs !== undefined, "first delta timed (from the draft's start: includes the failed 429 attempt)");
+});
+
+test("stream 3's review: a 5xx then a 429 never makes a third call (only the first attempt's 429 moves)", async () => {
+  stub((_c, n) => (n === 1 ? new Response("upstream", { status: 503 }) : tooMany()));
+  await assert.rejects(chat("taxila-fast", M), (e) => e.status === 429);
+  assert.deepEqual(calls.map((c) => c.host), ["primary", "primary"]);
+});
+
+test("stream 3's review: the arms of one hedged call move once between them (one twin call per throttled reply)", async () => {
+  stub(async (c) => {
+    if (c.host === "primary") return tooMany();
+    await new Promise((r) => setTimeout(r, 250)); // the twin is slower than the hedge
+    return ok("twin");
+  });
+  const r = await chat("taxila-fast", M, { hedgeMs: 60 });
+  assert.equal(r.text, "twin");
+  assert.equal(calls.filter((c) => c.host === "overflow").length, 1, JSON.stringify(calls));
+  assert.equal(calls.filter((c) => c.host === "primary").length, 2, "the hedge still tried the primary (it may have recovered)");
+});
+
+test("stream 3's review: a speculative bet (overflow: false) and background work never take the overflow", async () => {
+  stub(() => tooMany());
+  await assert.rejects(chat("taxila-fast", M, { overflow: false }), (e) => e.status === 429);
+  // background on a twin-listed deployment no hot lane shares (taxila-brain): lanes never queue it, so only the rule is tested
+  await assert.rejects(chat("taxila-brain", M, { quotaLane: "background" }), (e) => e.status === 429);
+  await assert.rejects(chatStream("taxila-brain", [{ role: "system", content: "s" }, ...M], { quotaLane: "background" }), (e) => e.status === 429);
+  await assert.rejects(chatStream("taxila-fast", [{ role: "system", content: "s" }, ...M], { quotaLane: "hot", overflow: false }), (e) => e.status === 429);
+  assert.equal(calls.filter((c) => c.host === "overflow").length, 0, JSON.stringify(calls));
+});
 });
