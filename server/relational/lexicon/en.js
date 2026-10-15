@@ -74,6 +74,8 @@ export const EN = {
     "^(?:(?:ok|okay|so|didi|ma'?am|sir|bhaiya|yaar) )*(?:i'?m|i am) done(?: now)?$",
     "i don'?t want to (?:study|learn|study anymore|continue)(?: anymore| now| today)?", "i don'?t want to do (?:this|maths|math)(?: anymore| now| today)?$",
     "enough for today", "that'?s enough(?: for today)?",
+    // 14.3: the stop chip's own words, typed ("Stop for today", "let's stop here for today")
+    "^(?:(?:ok|okay|so|please|didi|ma'?am|sir|let'?s|can we|could we) )*stop (?:here |now )?for today",
     "(?:the )?lesson is over", "no more (?:lesson|studying|study)", "^no more questions$", "^(?:can|could) we stop(?: now)?$", "^stop now$",
   ],
   goodbye_distress: [
