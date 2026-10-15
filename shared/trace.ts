@@ -82,6 +82,7 @@ export const TRACE_KINDS = {
     "mic.mode", "mic.state", "vad.start", "vad.end",
     "asr.partial", "asr.final",
     "tts.request", "tts.start", "tts.end", "tts.interrupt", "tts.error", "bargein",
+    "ack.outcome",
   ],
   server: [
     "srv.req", "srv.res",
@@ -92,6 +93,7 @@ export const TRACE_KINDS = {
     "board.page", "forge.job.start", "forge.job.end", "job.start", "job.end", "play.mount", "play.act", "play.outcome",
     "tts.first", "tts.end", "tts.failed",
     "safety.scan", "safety.hold", "classify.verdict",
+    "ack.decision",
     "db.write", "trace.dropped",
   ],
 } as const;
