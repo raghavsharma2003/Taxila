@@ -94,6 +94,8 @@ export interface DeskModel {
   mic: { available: boolean; talking: boolean; drain: number; tapToTalk: boolean };
   /** Young: the Help button appears after tapOptionsS; Older: Hint is always there. */
   showHelp: boolean;
+  /** A safeguard turn or the check-in (safe:* chips): no Hint or Help affordance. */
+  safeguard?: boolean;
   /** The typed field is open (Older Type, or a T3 / no-mic fallback). */
   typing: boolean;
   captionsOn: boolean;

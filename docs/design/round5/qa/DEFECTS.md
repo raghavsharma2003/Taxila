@@ -56,7 +56,7 @@ Status: **FIXED** (on `claude/r5-qa`, verified by a repro script) · **OWNER** (
 | D34 | P1 | FIXED (safety review: main) | QA (client) | The check-in after a disclosure never shows its helpline board ("Childline 1098 · Tele-MANAS 14416"): the Carry on / Stop chips take the tray |
 | D35 | P1 | OWNER | content / board (studio) | "number line pe dikhao": a board comes up at 2.6 s and is gone before her line ends; no number line stays, and her line tells the child to "dikhaiye" |
 | D36 | P2 | OWNER | content / board (studio) | "picture dikhao": she describes a 50 m × 30 m rectangle, the board draws a trapezoid with a clipped "bounda" label; "ghadi draw karo": a clock with "?" for 2, 4 and 7 while she says it has 1 to 12 |
-| D37 | P2 | OWNER | main (server plan) + QA (client) | Home offers CONTINUE "Pick up where you left off" for a lesson the server will not resume (after a disclosure, or after the 2 min grace while Home sat open), then starts a new one |
+| D37 | P2 | FIXED | main (server plan, 0eaa3ef8) + QA (client) | Home offers CONTINUE "Pick up where you left off" for a lesson the server will not resume (after a disclosure, or after the 2 min grace while Home sat open), then starts a new one |
 | D38 | P2 | OWNER | conversation | A class 6 child (aap by class default) is addressed with tum in Hinglish replies ("Kabir—tumne khud perimeter ka meaning bata diya") |
 | D19 | P2 | WONTFIX | QA (UI) | `GET /api/me` 401 logged as a console error on every signed-out landing and set-up load |
 
@@ -253,6 +253,31 @@ until the child taps the mic. Expected: one server-side retry of the TTS call (i
 floor moves to YOUR TURN with the card as the question, so the lesson goes on in text. Evidence in
 `ui.state floor=idle strip=T5` from 17.8 s to 66.2 s.
 
+## Re-test of stream 2's fixes — claude/r4-content 2183c32d (local TEST, class 6, typed)
+- **D35, fixed:** "number line pe dikhao" 3/3. The board is up by 4.3-8.1 s and stays; it is drawn from her numbers; she
+  never points first (lessons 6de269a3, 69a03162, e8683f7d).
+- **D36, clock fixed:** all 12 numerals (lesson 9c9ad38f).
+- **D36, picture still open:** lesson 42f725b7-a0c2-4571-a07e-02dfe6a171e2.
+  - She says "board par rectangle bana hai: do sides 50 metres aur do sides 30 metres".
+  - The board shows "? × ( length + breadt )" and a struck-through "length + breadt": no rectangle, and the word is clipped.
+  - Shot: `shots/p12-picture-formula.png`.
+- **New P2 (stream 2):** 2 of 3 number-line replies open with the English "Look at the board:" in front of a Hinglish line.
+
+## After pass 12 — on int/r5-rel143 (local TEST)
+- **D37, client half (fixed):** Home re-reads its plan when the page comes back into view or on focus, and 125 s after a
+  "resume" read (`src/child/plan.ts`). Verified on TEST:
+  - Back, then wait 135 s → Home shows START (it showed CONTINUE before the fix), and Start opens a new lesson.
+  - Back, then Continue within the grace → the same lesson, `resumed`.
+- **Hint during the check-in (main's review item, fixed):** a safeguard move, `safe:*` chips or the safeguard beat hide
+  Older's Hint and Young's Help (`useDesk.ts` `safeguardTurn`, `AnswerDock.tsx`). Verified on TEST (English check-in):
+  - no Hint while the check-in is up, and Hint is back after Carry on;
+  - main's server half of D37 shows too: after a disclosure and Back, Home offers Start (not Continue) for the parked
+    lesson.
+- Gate: every file except engines-browser together, 3275 pass, 2 timing flakes in untouched files; engines-browser alone
+  60/60.
+  - learner-order "fold … is cheap": 3/3 pass alone.
+  - p3-voicesig "never delay the turn": fails 1 in 3 even alone.
+
 ## Pass 12 — 14.2 (production a978ae27 + TEST on a local a978ae2 build)
 Production: fresh `@taxila.test` accounts (class 4 phone, class 6), no disclosures on production, both accounts deleted after
 the pass (receipt shown; the child URL then says "Please ask a grown-up to sign in again"; signing in again → 400).
@@ -295,6 +320,11 @@ English, class 4 Hinglish (tum, spoken disclosure from a TEST-only WAV).
     restarts in the caption; the final screen has no board. Her line is "0 se 50 m tak length aur phir 50 se 80 m tak
     breadth dikhaiye—boundary ka agla hissa kitna hoga?", which asks the child to show it.
   - Shot: `shots/p12-numberline-gone.png`.
+  - Reproduced on TEST (local 14.2), 1 of 2 runs (lesson f10fcd57-839a-43d0-91cd-de7bbb86d5e8):
+    - turn 200 at 5.9 s with `ui.tray "studio"` and a slot in state "planning";
+    - the only Studio stream message, at 10.25 s, is `{t:"status", state:"failed", fallback:"voice"}`;
+    - the tray drops at 10.4 s, while her line still says "dikhaiye".
+  - No second turn response and no retract. Sent to stream 2.
 - **D36 (P2, content / board)**
   - Lesson 94ddbba2-4cd3-4c70-932d-b10d15ee72ea: "picture dikhao" → she says "rectangle … length 50 m, breadth 30 m", and
     the board draws a trapezoid with a clipped "bounda" label (`shots/p12-picture-trapezoid.png`).
