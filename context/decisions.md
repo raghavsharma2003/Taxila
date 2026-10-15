@@ -6061,3 +6061,11 @@ TTS frames type 5 = IMA ADPCM (4:1), negotiated by Accept `codec=adpcm`, asked f
 
 - **What:** a clause made only of an asked-again complaint is set aside for the contrast and leftover-negation checks. Carry-on reads canonical spellings and English nouns only inside an ask.
 - **Reversal:** a disclosure that reads fine via asked_again, or real carry-on asks missed often.
+
+
+<!-- merged from inbox/r143g-main.json -->
+## dc-r143-teen-as-digit (2026-10-15)
+
+- **What:** the copy a safety-relevant model call reads (the classifier and its distress reads, the reply prompt and its probe, the understanding note) writes the Hindi number "teen" as "3". "a teen" / "my teen sister" stay as said. The predicate and every code check read the raw words.
+- **Why:** see ms-r143-teen-filter-collision: a quarter of TEST's content-filter safeguards were children doing sums.
+- **Reversal:** a disclosure where "teen" carried the only harm signal the predicate and the distress reads miss.

@@ -4339,3 +4339,14 @@ Why the model-episode fine release never fired in the sim lab's rel143 pet cards
 - Distress corpora read as fine: 0/84, 0/80, 0/10, unchanged. Red-team: 0/225.
 - 18 unit tests including replays of the three lessons; they fail on the previous code.
 - **Not measured:** a live sim-lab re-run on this code.
+
+
+<!-- merged from inbox/r143g-main.json -->
+## ms-r143-teen-filter-collision (2026-10-15)
+
+Azure's content filter reads the Roman Hindi number "teen" (three) as the English word.
+
+- The sim lab's p11 safeguard (class 2 maths): the child's OWN words tripped `sexual` when probed alone (3/3).
+- Ordinary sums trip it on their own: "teen guna teen nau", "do aur teen paanch", "teen aur teen chhe", "teen saal ka bhai". The same words with the digit pass.
+- TEST trace, 10 days: 13 of 52 content-filter safeguards (25%) were plain maths with "teen". Most of the other 39 were context blocks whose words probe clear alone.
+- No line in the 399-line distress corpora contains the word.
