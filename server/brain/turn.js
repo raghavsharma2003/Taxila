@@ -1071,6 +1071,33 @@ export async function lessonTurn(req, body, hooks = {}) {
         delivery = seamSafe("expressive.planDelivery", () => expressiveSeam.planDelivery(moment, teacherReply), delivery);
       }
     }
+    // 14.4 (main): the board the child asked for landed AFTER a line that could not point at it (it was still being drawn,
+    // her words stayed off the screen): her NEXT line points at it once (the same fixed pointer, in her line's language),
+    // and the board goes on that response. Remembered for two turns at most; never on a safeguarding turn.
+    const lateAsk = next.lateBoard && next.lateBoard.turn < next.turn ? next.lateBoard : null;
+    if (next.lateBoard && (!lateAsk || next.turn - next.lateBoard.turn > 2)) delete next.lateBoard;
+    if (lateAsk && !late && !safetyWords && teacherReply && !studioSlot) {
+      const slot = seamSafe("studio.onScreenSlot", () => (typeof studioSeam.onScreenSlot === "function" ? studioSeam.onScreenSlot(lesson.id, lateAsk.intentId) : null), null);
+      if (slot) {
+        delete next.lateBoard;
+        studioSlot = slot; studioReasons.push("studio.late_board_shown");
+        if (!refersToBoard(teacherReply)) {
+          const fixed = boardPointer(next.ctx?.lang, teacherReply) + teacherReply;
+          teacherReply = fixed;
+          const row = staged.find((x) => x.seq === teacherReplySeq);
+          if (row) { row.text = fixed; row.meta = { ...(row.meta ?? {}), guard: [...new Set([...(row.meta?.guard ?? []), "point_late_board"])] }; }
+          const lastR = next.recent?.[next.recent.length - 1];
+          if (lastR?.who === "teacher") next.recent = [...next.recent.slice(0, -1), { ...lastR, text: fixed.slice(0, 400) }];
+          guard = { ...guard, caught: [...new Set([...(guard?.caught ?? []), "point_late_board"])], replaced: true };
+          studioReasons.push("say.point_late_board");
+          delivery = seamSafe("expressive.planDelivery", () => expressiveSeam.planDelivery(moment, teacherReply), delivery);
+        }
+      }
+    }
+    // ... and THIS turn's asked board is still being drawn under a line that does not point at it: remembered for the next
+    if (!safetyWords && r.move?.request === "visual" && wbAcked && studioSlot?.intentId && !studioSlot?.artifact && teacherReply && !refersToBoard(teacherReply)) {
+      next.lateBoard = { intentId: String(studioSlot.intentId), turn: next.turn };
+    }
     // 14.4 (QA D42): the board already on screen stays on the response while her line still talks about it (no new slot this
     // turn, the board not taken down, the Director's tray free): the client closes a page a response does not carry
     if (!studioSlot && !leftBoard && !late && !agentApplied && !safetyWords && teacherReply && (!r.ui?.tray || r.ui.tray === "none") && !(r.ui?.chips?.length)) {

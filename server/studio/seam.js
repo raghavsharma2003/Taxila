@@ -1082,6 +1082,16 @@ export const studioSeam = {
     return g;
   },
 
+  /** 14.4: the slot of THIS piece when it is the board / picture on screen now (the late asked board her next line points at). */
+  onScreenSlot(lessonId, intentId) {
+    const L = lessons.get(lessonId);
+    const on = L?.onScreen && L.onScreen === intentId ? L.pieces.get(intentId) : null;
+    if (!on || !["whiteboard", "image"].includes(on.kind) || !on.artifact || on.retired || !VISIBLE.has(on.state) || L.safety) return null;
+    const g = gatedSlot(L, on, on.state, "on_screen");
+    if (g) L.shown = { intentId: on.intentId, revealing: false };
+    return g;
+  },
+
   /** round 5: is a board (not a game, not a picture) what the child sees now? */
   boardUp(lessonId) {
     const L = lessons.get(lessonId);

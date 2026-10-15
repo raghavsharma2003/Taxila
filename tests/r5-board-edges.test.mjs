@@ -260,7 +260,7 @@ test("main 14.4: the self-answered predicate stays quiet on a teacher who confir
   assert.equal(selfAnswer("Screen par do numbers: 2 aur 15. Addition karke result 17 aata hai. Aap bataiye, 2 plus 15 kitna?")?.answer, "17");
 });
 
-test("14.4 (QA D42): the board on screen stays on the response while her line still talks about it; another line lets it go", async () => {
+test("14.4 (QA D42, safety-adjacent): the board on screen stays on the response while her line still talks about it (never a revealing slot, never on a safety turn, text lane only); another line lets it go", async () => {
   const seam = await import("../server/studio/seam.js");
   const { studioSeam } = seam;
   const id = "L-d42";
@@ -275,4 +275,20 @@ test("14.4 (QA D42): the board on screen stays on the response while her line st
   const kept = studioSeam.keepBoardSlot(id, "Bilkul, Ishaan— aapne chaaron sides jodkar 160 metre nikala. Ab isi rectangle ka perimeter formula se nikaalo?");
   assert.equal(kept?.intentId ?? kept?.slotId ? true : false, true, JSON.stringify(kept));
   assert.equal(studioSeam.keepBoardSlot(id, "Shabaash! Ab ek naya sawaal: tumhara favourite rang kaunsa hai?"), null);
+});
+
+test("14.4 (main): a late asked board her line could not point at is the next turn's board: onScreenSlot gives THAT piece's slot only while it is on screen, never after a safeguard", async () => {
+  const seam = await import("../server/studio/seam.js");
+  const { studioSeam } = seam;
+  const id = "L-late";
+  seam.subscribe(id, () => {});
+  const L = seam._lesson(id);
+  const script = { v: 1, scriptId: "s", line: { lessonId: id }, anchor: "line_audio_start", board: { w: 677, h: 423, ground: "chalk" }, mode: "fresh", durationMs: 900,
+    ops: [{ id: "r", op: "rect", startMs: 0, endMs: 800, at: [120, 100], w: 300, h: 180 }] };
+  L.pieces.set("ask-1", { intentId: "ask-1", slotId: "slot-a", kind: "whiteboard", state: "revealed", artifact: { kind: "whiteboard", script }, revealedTurn: 2 });
+  L.onScreen = "ask-1";
+  assert.ok(studioSeam.onScreenSlot(id, "ask-1"), "the late board, on screen");
+  assert.equal(studioSeam.onScreenSlot(id, "other"), null, "another piece's id");
+  L.safety = true;
+  assert.equal(studioSeam.onScreenSlot(id, "ask-1"), null, "never after a safeguard");
 });
