@@ -65,6 +65,12 @@
       "kind": "decision",
       "at": "2026-10-15",
       "title": "D5 closed answers commit at Voice Live's covering final when it carries a value (D5_CLOSED_AT_FINAL_MS 600 floor; never over a hold stretch or the child's own pace); an empty final re-asks 300 ms after it (D5_EMPTY_FINAL_REASK_MS); Voice Live silence 250 → 200 (D5_SERVER_VAD_MS). Measured: ms-r5-d5-eot-steps-2026-10-15. Reversal: owner-cohort recordings show a self-correction cut, a changed value, or a re-ask with the child starting within 600 ms, at a rate above the pre-change engine on the same recordings."
+    },
+    {
+      "id": "ms-r5-d5-mai-transcribe-2026-10-15",
+      "kind": "measurement",
+      "at": "2026-10-15",
+      "title": "EOT step 4, MAI-Transcribe inside Voice Live (centralindia, api 2026-07-15), small n. Session probe: every MAI model refuses two locales (\"MAI Transcribe supports at most one locale\": the earlier trials hung in their retries on this, not a timeout of the model); mai-transcribe-2-streaming is \"not supported in this region\" (centralindia), so no partials are available; mai-transcribe-2 opens with no locale (multilingual) or hi-IN. Owner variant, 5 closed answers (3 where azure-speech returned EMPTY), Voice Live silence 200, same audio: mai-transcribe-2 returned words on all 3 empties (\"तीस दीदी\" right, value 30; \"सात है ना\" → \"साथ है ना\" and \"छह faces दीदी\" → \"Chair faces DD\": the value lost), and its finals land 250-410 ms LATER than azure-speech (speech_stopped the same ±45 ms). For end of turn that is worse: every closed answer +~300 ms, and 2 of 3 recovered empties still carry no value. Not adopted for EOT; noted for comprehension recall (fewer empty turns) if the value misreads can be handled."
     }
   ],
   "edges": [
@@ -112,6 +118,11 @@
       "src": "ms-r5-d5-eot-steps-2026-10-15",
       "rel": "part_of",
       "dst": "ms-r5-duplex-owner-harness-2026-10-14"
+    },
+    {
+      "src": "ms-r5-d5-mai-transcribe-2026-10-15",
+      "rel": "part_of",
+      "dst": "ms-r5-d5-eot-steps-2026-10-15"
     }
   ]
 }
