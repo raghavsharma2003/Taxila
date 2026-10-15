@@ -58,7 +58,7 @@ Status: **FIXED** (on `claude/r5-qa`, verified by a repro script) · **OWNER** (
 | D36 | P2 | OWNER | content / board (studio) | "picture dikhao": she describes a 50 m × 30 m rectangle, the board draws a trapezoid with a clipped "bounda" label; "ghadi draw karo": a clock with "?" for 2, 4 and 7 while she says it has 1 to 12 |
 | D37 | P2 | FIXED | main (server plan, 0eaa3ef8) + QA (client) | Home offers CONTINUE "Pick up where you left off" for a lesson the server will not resume (after a disclosure, or after the 2 min grace while Home sat open), then starts a new one |
 | D38 | P2 | OWNER | conversation | A class 6 child (aap by class default) is addressed with tum in Hinglish replies ("Kabir—tumne khud perimeter ka meaning bata diya") |
-| D39 | P1 | OWNER | main (reply floor) + stream 2 (board) | Her line states the open item's key ("0 se 160 metres tak … boundary distance kitna hai?") and the number line draws 0 … 160 |
+| D39 | P1 (14.4) | OWNER | stream 2 (one predicate: reply rewrite + board) | Her line states the open item's key ("0 se 160 metres tak … boundary distance kitna hai?") and the number line draws 0 … 160 |
 | D19 | P2 | WONTFIX | QA (UI) | `GET /api/me` 401 logged as a console error on every signed-out landing and set-up load |
 
 ## Details
@@ -266,7 +266,10 @@ floor moves to YOUR TURN with the card as the question, so the lesson goes on in
   - The board draws "boundary distance" over a number line 0 … 160, so the key (160 = 2 × (50 + 30)) is spoken and drawn
     before she asks for it.
   - Shot: `shots/p13-numberline-key-leak.png`.
-  - Owners: main (the reply floor) and stream 2 (a board must refuse the open item's key even when the number is hers).
+  - Main's triage: a reteach turn with no kit item pinned. 160 answers her OWN worked-example question, so the item-key
+    guard did not apply; the spoken half can occur on live today.
+  - Scheduled for 14.4, not a 14.3 blocker. Stream 2 owns both sides. Pass 13 counts number-line runs where her line
+    states the answer before asking.
 
 ## Live 14.2 check (production a978ae2, 1 lesson, account deleted afterwards)
 - Lesson e004dc46-3bac-4159-ba37-f85d93a31b5a, "picture dikhao" (class 6): live still draws the D36 trapezoid labelled
