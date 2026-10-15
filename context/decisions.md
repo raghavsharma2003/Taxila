@@ -6085,3 +6085,11 @@ TTS frames type 5 = IMA ADPCM (4:1), negotiated by Accept `codec=adpcm`, asked f
 - **What:** the continuer (a short "hmm… / achha…" while she prepares her reply) is on for the owner cohort from 14.3, by hashed guardian id.
 - **Why:** see ms-r143-continuer-oos. It held out of sample with zero plays on every turn where a sound would be wrong.
 - **Reversal:** any continuer on a safety, relational, secrecy or leaving turn, or naturalness below 3.5.
+
+
+<!-- merged from inbox/r143j-main.json -->
+## dc-r143-edit-full-undo (2026-10-15)
+
+- **What:** a correction that arrives after its turn has landed gets a full undo. The pre-turn snapshot lives in its own one-row-per-lesson table. The abandoned grade's rows move to archive tables, so no reader can bring them back. Background writers check the evidence is still live first. This is 14.4.
+- **Why:** posting the correction as the next turn grades it against the wrong question whenever the lesson has already moved on.
+- **Reversal:** the snapshot costs more than 20 ms p95 per turn, or such corrections turn out too rare to justify it.

@@ -2628,3 +2628,11 @@ Judging her 'parts' words against the module that was up BEFORE a named visual a
 
 - **Tried:** MAI-Transcribe-2-Streaming as the D5 speech recogniser. It is faster, with fewer empty finals.
 - **What broke:** it reads values wrong 9.1% of the time (6 of 66), vs 1.5% for today's azure-speech. A wrong value is a verdict on something the child never said.
+
+
+<!-- merged from inbox/r143j-main.json -->
+## rj-r143-supersede-flag-column (2026-10-15)
+
+- **Tried (proposal):** a superseded_by flag on the evidence tables, filtered by every reader.
+- **What breaks:** about 10 readers today. Any one that misses the filter, now or later, silently brings back the abandoned grade.
+- **Instead:** move superseded rows to archive tables.

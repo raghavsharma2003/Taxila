@@ -1,0 +1,53 @@
+{
+ "nodes": [
+  {
+   "id": "dc-r143-edit-full-undo",
+   "kind": "decision",
+   "at": "2026-10-15",
+   "title": "How an edit supersedes a landed turn (refines dc-r143-edit-supersedes-landed-grade, 14.4). FULL UNDO, not a correction event. (1) The pre-turn snapshot lives in a new one-row-per-lesson table lesson_undo (lesson_id pk, turn_seq, turn, prev jsonb, ids jsonb), overwritten in the same transaction as each committed turn with a turnSeq, never in lesson.state. (2) The original's evidence-bearing rows are MOVED to archive tables with identical columns plus superseded_by / superseded_at (evidence_superseded, kt_evidence_superseded, …) in the edit's transaction, so no reader needs a filter and no later re-fold can resurrect the abandoned grade. Turn rows stay with meta.superseded. (3) Async writers (blind grader, weave queue, grade_audit) write only while their evidence id is still live, else drop with a trace row. The Conductor gets a turn.superseded event. Misconception counters come from the restored prev plus the live ledger. (4) Only while state.lastAck.turnSeq is the edit's turnSeq; otherwise a turn.edit_missed trace row. Why not the correction event (post the edit as the next turn): when the abandoned value was right and the correction wrong, the Director has moved to the next item, so the edit would be graded against the wrong item or need a rewind anyway. Before building, measure how often a correction actually lands after its turn in voice lessons at today's R. Migration: 4B's DB and TEST only; production at main's deploy after review.",
+   "reversal": "the snapshot write costs > 20 ms p95 per turn, or the measured frequency of post-landing corrections is too low to justify the machinery (then the correction-event route with item pinning)"
+  },
+  {
+   "id": "rj-r143-supersede-flag-column",
+   "kind": "rejection",
+   "at": "2026-10-15",
+   "title": "Proposed: a nullable superseded_by column on evidence and kt_evidence, with every reader filtering it. What breaks: there are ~10 readers today (learner model full and incremental folds, relational seam ×2 and routes, comprehension session, reports check ×2, play start, forge learner view), and any reader missed now or written later resurrects the abandoned grade silently. Replaced by moving superseded rows to archive tables (dc-r143-edit-full-undo)."
+  },
+  {
+   "id": "open-r143-self-answered-question",
+   "kind": "open",
+   "at": "2026-10-15",
+   "title": "QA on 7d9f1380 (TEST 1695e941 t1, class 6 perimeter, 'number line pe dikhao', a reteach with no item pinned): her line 'number line par perimeter ko walking distance samjho: 0 se 160 metres tak. Rectangle ka boundary distance kitna hai?' stated the answer to her own worked-example question (50 × 30 field), then asked it, and the 14.3 code number line (a178bf94) drew 0…160 from her numbers. 1 of 4 number-line runs. The item-key leak guard (items.js revealsAnswer) never applied: no kit item is open. The spoken half is the model's own and can occur on live 14.2. 14.4, stream 2: one predicate (W18's operation reading, with operands from her line, her recent lines and the topic's worked-example facts) for (1) a reply rewrite when her line states the result of the question it ends with, and (2) a number line that never runs to that result. Tests on this line; before / after on the sim lab's transcripts."
+  },
+  {
+   "id": "ms-r143-live",
+   "kind": "measurement",
+   "at": "2026-10-15",
+   "title": "Release 14.3 live: taxila-web--s9a30285-gtg7 (image 9a30285, int/r5-rel143) at 100% from 13:53 UTC; taxila-web--sa978ae2-hanh (14.2) kept as `previous` (rollback: node scripts/deploy-azure.mjs --rollback); s1138550-lauy deactivated. Gate on 9a30285: tsc, vite, npm test 3404 pass / 0 fail / 3 skipped / 1 todo, prompt budget PASS. No new migrations. Canary smoke 4/4 (lesson start 201, text-lane opening, 2 turns with moves, lesson end 200, account deleted). /api/health reports sha 9a30285. Env: the 14.2 overflow lane unchanged (AZURE_OPENAI_ENDPOINT_OVERFLOW, TAXILA_OVERFLOW_DEPLOYMENTS, AZURE_OPENAI_API_KEY_OVERFLOW→secret); new TAXILA_ACK_CONTINUER_FOR→secret taxila-ack-continuer-for holding the owner cohort copied from TAXILA_DUPLEX_LIVE_FOR (3 entries, value never printed). Live proof (r12-liveproof, production, a dedicated @taxila.test account, Chromium): trace tier 2, REC chip, 3 typed turns, flag, 0 page errors, 238 session lines; the picture ask drew the fraction area model with every value '?' (02-after-1.png); the two 'studio slot failed' rows are the expected rung replacement and the typed board clear; account deleted, 0 trace rows after. Two deploy attempts failed on the network BEFORE any write (management.azure.com connect timeout; 'fetch failed' after the gate check); the third succeeded in 274 s.",
+   "n": 1,
+   "method": "deploy-azure via scratchpad deploy-143.mjs; /api/health; ARM read of env names; r12-liveproof on production"
+  }
+ ],
+ "edges": [
+  {
+   "src": "dc-r143-edit-full-undo",
+   "rel": "supersedes",
+   "dst": "dc-r143-edit-supersedes-landed-grade"
+  },
+  {
+   "src": "dc-r143-edit-full-undo",
+   "rel": "supersedes",
+   "dst": "rj-r143-supersede-flag-column"
+  },
+  {
+   "src": "ms-r143-live",
+   "rel": "measured_by",
+   "dst": "dc-r143-continuer-owner-cohort"
+  }
+ ],
+ "md": {
+  "decisions": "## dc-r143-edit-full-undo (2026-10-15)\n\n- **What:** a correction that arrives after its turn has landed gets a full undo. The pre-turn snapshot lives in its own one-row-per-lesson table. The abandoned grade's rows move to archive tables, so no reader can bring them back. Background writers check the evidence is still live first. This is 14.4.\n- **Why:** posting the correction as the next turn grades it against the wrong question whenever the lesson has already moved on.\n- **Reversal:** the snapshot costs more than 20 ms p95 per turn, or such corrections turn out too rare to justify it.",
+  "rejected": "## rj-r143-supersede-flag-column (2026-10-15)\n\n- **Tried (proposal):** a superseded_by flag on the evidence tables, filtered by every reader.\n- **What breaks:** about 10 readers today. Any one that misses the filter, now or later, silently brings back the abandoned grade.\n- **Instead:** move superseded rows to archive tables.",
+  "measurements": "## ms-r143-live (2026-10-15)\n\n- **14.3 is live:** taxila-web--s9a30285-gtg7 (image 9a30285) at 100%. 14.2 is kept for rollback.\n- Gate: 3404 pass / 0 fail. Canary smoke 4/4.\n- Live proof: 0 page errors. The picture ask showed the area model with every value masked '?'. The test account was deleted with 0 trace rows left.\n- The continuer is on for the owner cohort, as a secret holding the existing owner list; the value was never printed.\n- Two deploy attempts failed on the network before any write; the third succeeded."
+ }
+}

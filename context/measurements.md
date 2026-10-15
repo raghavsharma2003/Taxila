@@ -4369,3 +4369,13 @@ Out-of-sample continuer check: 32 cards not used for tuning, plus p30's re-run. 
 - **0 continuers** on safety (9), leaving (18) and relational / secrecy turns.
 - Ordinary coverage 24% (tuning set 32%). Naturalness 4.10 / 3.76.
 - 0 false safeguards.
+
+
+<!-- merged from inbox/r143j-main.json -->
+## ms-r143-live (2026-10-15)
+
+- **14.3 is live:** taxila-web--s9a30285-gtg7 (image 9a30285) at 100%. 14.2 is kept for rollback.
+- Gate: 3404 pass / 0 fail. Canary smoke 4/4.
+- Live proof: 0 page errors. The picture ask showed the area model with every value masked '?'. The test account was deleted with 0 trace rows left.
+- The continuer is on for the owner cohort, as a secret holding the existing owner list; the value was never printed.
+- Two deploy attempts failed on the network before any write; the third succeeded.
