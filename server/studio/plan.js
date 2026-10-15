@@ -14,7 +14,7 @@
 //   the whiteboard gate (qa/whiteboard.js) checks it (fits the stage, labels anchored, numbers from her line or the kit,
 //   arithmetic true, words hers or the book's, timed to her voice). One repair round with the failing check ids when the
 //   time budget allows; a script that fails is never drawn (the explainer template rung or her voice instead).
-import { answersRequest, samePage, shownBefore, plannerRequest, subjectWords, textsOf, freeAsked, askedNumbers, faceDrawing } from "./request.js";
+import { answersRequest, samePage, shownBefore, plannerRequest, subjectWords, textsOf, freeAsked, askedNumbers, faceDrawing, selfAnswer } from "./request.js";
 import { chat, DEPLOY, usdOf, normUsage } from "../azure.js";
 import { archetype, validateParams, stringKeys, buildParams } from "./archetypes/index.js";
 import { gateWhiteboard, numbersIn, CHARS_PER_SEC, segmentsOf, segHitsBox, innerBox, withheldValues, partitionCounts } from "./qa/whiteboard.js";
@@ -434,6 +434,8 @@ export async function planWhiteboard(ask, { kit, prev, redact = [], deployment =
   const spoken = String(ask?.line?.text ?? "").trim();
   const text = redactLine(spoken, redact);
   if (!text) return { ok: false, script: null, gate: null, ms: ms(), attempts: 0, usage: [], usd: 0, why: "no_line" };
+  // main 14.4: the answer her own question asks for, when her line already states it, is never drawn (W18; request.js selfAnswer)
+  const herAnswer = selfAnswer(spoken, { worked: String(kit?.workedExample?.problem ?? "") })?.answer ?? null;
   const speechMs = speechMsOf(spoken);
   const request = ask?.intent?.request ?? null;
   const asked = plannerRequest(request);
@@ -487,7 +489,7 @@ export async function planWhiteboard(ask, { kit, prev, redact = [], deployment =
       const raw = { v: 1, scriptId: ask.intent?.intentId ?? "wb", line: { lessonId: ask.line?.lessonId ?? "", ...(ask.line?.teacherReplySeq != null ? { teacherReplySeq: ask.line.teacherReplySeq } : {}) },
         anchor: "line_audio_start", board: { ...WB_BOARD, ground: "chalk" }, mode: ask.mode === "continue" ? "continue" : "fresh",
         durationMs: Math.max(...ops.map((o) => Number(o.endMs) || 0)), ops };
-      gate = gateWhiteboard(raw, { reply: text, kit: kitForGate, band, speechMs, banned: redact, prior, withhold, ...(request ? { extraNumbers: askedNumbers(request), face: faceDrawing(request), asked: request.kind !== "number_line" && !faceDrawing(request) } : {}) });
+      gate = gateWhiteboard(raw, { reply: text, kit: kitForGate, band, speechMs, banned: redact, prior, withhold, ...(herAnswer ? { answers: [herAnswer] } : {}), ...(request ? { extraNumbers: askedNumbers(request), face: faceDrawing(request), asked: request.kind !== "number_line" && !faceDrawing(request) } : {}) });
       gate.fixes = fit.fixes;
       // round 5 (stream 2): a board that ignores the child's request, or is the page already up, is repaired once (a shape
       // note, not a line), then refused
