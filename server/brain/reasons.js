@@ -60,7 +60,7 @@ export const FAMILIES = Object.freeze({
   // is answered from brain_trace rows alone): the classifier's outcome, where it came from, the verdict the child saw and
   // what the reply guard did to her words. Codes only, never words.
   cls: ["correct", "incorrect", "partial", "misconception", "dont_know", "no_evidence", "unclear", "no_attempt", "help", "none"],
-  cls_source: ["model", "fallback", "error", "asr", "content_filter", "bytes", "module", "help", "chip", "exact", "lexical", "echo", "empty", "predicate",
+  cls_source: ["model", "fallback", "error", "asr", "content_filter", "content_filter_context", "bytes", "module", "help", "chip", "exact", "lexical", "echo", "empty", "predicate",
     "relational", "speculative", "none"],
   verdict: ["correct", "partial", "not_yet", "ungraded"],
   guard: ["replaced", "rewritten", "repaired", "leak", "drift", "nowhy", "flat", "script", "long", "units", "floor", "praise", "deny", "corrects",

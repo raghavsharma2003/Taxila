@@ -369,7 +369,7 @@ const DISTRESS_SCHEMA = { type: "object", additionalProperties: false, required:
  * or could not label (it failed): the predicate is the floor, this is its backup. One retry-free small call;
  * if it fails too, the predicate's verdict stands.
  */
-async function distressCheck(text, classLevel, trace) {
+async function distressCheck(text, classLevel, trace, { failClosed = false } = {}) {
   try {
     const messages = [
       { role: "system", content: `A reply from an Indian school child (class ${classLevel}) in a lesson, in Hindi, English or Hinglish; the transcript may be misheard. distress: true ONLY for signs the child is unsafe, hurt, abused, frightened of a person, a place or what is happening to them, very sad, or may harm themself — never for ordinary frustration or worry about the lesson itself (scared of numbers, a question, a test or getting it wrong: the teacher reassures).` },
@@ -390,7 +390,8 @@ async function distressCheck(text, classLevel, trace) {
     if (isContentFilter(e) && nonHarmFilter(e)) { console.warn(`[classify] distress check blocked by a non-harm filter (${e.filterCats.join(",")}): not distress`); return false; }
     if (isContentFilter(e)) { console.warn("[classify] distress check blocked by the content filter: treated as distress"); return true; }
     console.warn("[classify] distress check unavailable:", e.message);
-    return false;
+    // the probe after a harm block on the labels (classifyModel) could not clear the words: it fails CLOSED
+    return failClosed;
   }
 }
 
@@ -740,7 +741,19 @@ async function classifyModel(args, target, text, flags, trace, done, fast = {}) 
     // never a normal reply). No second model call — the same words would be blocked again.
     // round 5: a non-harm block (jailbreak / protected material only) is an outage of the labels, not a disclosure: the
     // distress backup below still runs on the words (and is itself fail-closed on any harm block)
-    if (isContentFilter(e) && !nonHarmFilter(e)) return filtered();
+    // round 5 (14.2, main safety review; sim lab 14.1 text lane, TEST lesson 5d18d152 turn 2): the labeller's prompt carries
+    // the item, its key and the lesson as well as the child's words, and a harm category can fire on that mix: "Bollywood
+    // songs pasand hain, jaise 'Kala Chashma' type" in a class 6 "Unity in Diversity" lesson came back `hate` while the
+    // reader passed the same words twice, and the child got the helpline script. As on the reply path (say.js
+    // childWordsTrip), the safeguard fires when the CHILD'S OWN WORDS trip it: the distress check reads their words alone
+    // through the same deployments. A harm block on it, a distress reading, or the check failing for any reason fails
+    // CLOSED exactly as before; only a clean pass makes this a block of the context, an outage of the labels.
+    if (isContentFilter(e) && !nonHarmFilter(e)) {
+      const cats = (e.filterCats ?? []).join(",") || "unreadable";
+      if (await distressCheck(text, classLevel, trace, { failClosed: true })) return filtered();
+      console.warn(`[classify] labels blocked (${cats}) but the child's own words pass: no evidence this turn`);
+      return done("no_evidence", "content_filter_context");
+    }
     console.warn("[classify] model unavailable (classify and fallback):", e.message);
     // A classifier outage costs one turn of evidence, never the lesson.
     flags.distress = flags.distress || await distressCheck(text, classLevel, trace);
