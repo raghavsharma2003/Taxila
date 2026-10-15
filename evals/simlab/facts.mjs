@@ -13,7 +13,7 @@ const ASKS = { game: /\bgame\b|khel/i, picture: /picture|photo|tasveer|dikhao|di
 const by = (arm) => {
   const rs = recs.filter((r) => `${r.arm}/${r.lane}` === arm);
   const f = { lessons: rs.length, childTurns: 0, sameCard3: 0, sameCardMaxRun: [], safeguardNoEvent: 0, safeguardTurnsNoEvent: 0, wantsStopFlagged: 0, wantsStopTrue: 0,
-    asks: {}, verdicts: { correct: 0, not_yet: 0, partial: 0 }, modulesMounted: 0, studioShown: 0, hindiNumberVerdicts: {}, startMs: [], turnMs: [], serverErrors: 0 };
+    asks: {}, verdicts: { correct: 0, not_yet: 0, partial: 0 }, modulesMounted: 0, studioShown: 0, hindiNumberVerdicts: {}, ack: { asked: 0, played: 0, none: {}, readyMs: [] }, startMs: [], turnMs: [], serverErrors: 0 };
   for (const k of Object.keys(ASKS)) f.asks[k] = { asked: 0, actedNextTurn: 0 };
   for (const r of rs) {
     const p = personas.get(r.persona);
@@ -36,6 +36,13 @@ const by = (arm) => {
       const heard = t.child?.asr?.text ?? "";
       if (!HINDI_NUM.test(heard) || !t.ui?.verdict) continue;
       f.hindiNumberVerdicts[t.ui.verdict] = (f.hindiNumberVerdicts[t.ui.verdict] ?? 0) + 1;
+    }
+    // voice lane acks (POST /api/lesson/turn-ack beside a spoken turn): what came back and what the device would play
+    for (const t of r.turns) {
+      if (!t.ack) continue;
+      f.ack.asked++;
+      if (t.ack.phrase) { f.ack[t.ack.kind ?? "other"] = (f.ack[t.ack.kind ?? "other"] ?? 0) + 1; if (t.ack.played) { f.ack.played++; f.ack.readyMs.push(t.ack.readyMs); } }
+      else f.ack.none[t.ack.none] = (f.ack.none[t.ack.none] ?? 0) + 1;
     }
     f.sameCardMaxRun.push(best);
     if (best >= 3) f.sameCard3++;
@@ -83,6 +90,7 @@ const by = (arm) => {
   }
   const p50 = (a) => { const s = [...a].sort((x, y) => x - y); return s.length ? s[Math.floor(s.length / 2)] : null; };
   const p90 = (a) => { const s = [...a].sort((x, y) => x - y); return s.length ? s[Math.floor(s.length * 0.9)] : null; };
+  if (f.ack.asked) { const r = [...f.ack.readyMs].sort((a, b) => a - b); f.ack.readyP50 = r[Math.floor(r.length / 2)] ?? null; } delete f.ack.readyMs;
   const agent = ag.lessons ? { lessons: ag.lessons, ownRead: ag.read, claimed: ag.claimed, fallbacks: ag.fallbacks, usdPerLesson: +(ag.usd / ag.lessons).toFixed(4), agentMarkP50: p50(ag.agentMs), agentMarkP90: p90(ag.agentMs), teacherCallP50: p50(ag.teacherCallMs), teacherCallP90: p90(ag.teacherCallMs), nonOkCalls: ag.timeouts } : null;
   return { ...f, agent, sameCardMaxRun: undefined, startMsP50: p50(f.startMs), turnMsP50: p50(f.turnMs), turnMsP90: p90(f.turnMs), startMs: undefined, turnMs: undefined };
 };

@@ -4,7 +4,8 @@
 //
 //   NODE_USE_ENV_PROXY=1 node evals/simlab/loop.mjs --arms director=http://127.0.0.1:8791 [--arms ...,agent=http://127.0.0.1:8792]
 //       [--lanes text,voice] [--n 30] [--only p01,p05] [--turns 14] [--conc 6] [--run-id <id>] [--note "…"] [--no-judge2]
-//       [--rejudge <run-dir>]   (re-judge existing records with the current judge, e.g. a different judge model)
+//       [--ack] (voice lane: ask /api/lesson/turn-ack beside each spoken turn) [--email-key k] (deterministic test emails
+//       simlab+<persona>-<arm>-<k>@taxila.test, for a server cohort list) [--rejudge <run-dir>]   (re-judge existing records with the current judge, e.g. a different judge model)
 //
 // Each arm is a running server (evals/simlab/serve.mjs; the agent arm with TAXILA_TEACHER=agent). Same personas, same
 // order, for every arm and lane.
@@ -70,7 +71,8 @@ if (!rejudge) {
   let done = 0;
   await pool(jobs, conc, async (j) => {
     if (existsSync(recFile(j)) && flag("resume")) return;
-    const rec = await runLesson(j.p, { base: j.base, lane: j.lane, maxTurns: turns, voice });
+    const rec = await runLesson(j.p, { base: j.base, lane: j.lane, maxTurns: turns, voice, ack: flag("ack") && j.lane === "voice",
+      ...(arg("email-key", null) ? { emailKey: `${j.arm}-${arg("email-key")}`, tag: "simlab" } : {}) });
     rec.arm = j.arm;
     writeFileSync(recFile(j), JSON.stringify(compact(rec)));
     console.log(`[${++done}/${jobs.length}] ${j.p.id} ${j.arm}/${j.lane}: ${rec.turns.length - 1} turns, ${rec.errors.length} errors`);

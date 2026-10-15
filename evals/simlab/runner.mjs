@@ -13,7 +13,7 @@ const NAME = ["not", "partly", "understood"];
 
 function apiClient(base) {
   let cookie = "";
-  return async function api(method, path, body, expect = [200, 201]) {
+  const api = async function api(method, path, body, expect = [200, 201]) {
     const t = performance.now();
     let res, lastErr;
     for (let attempt = 0; attempt < 2; attempt++) {
@@ -31,6 +31,25 @@ function apiClient(base) {
     if (!expect.includes(res.status)) throw Object.assign(new Error(`${method} ${path} → ${res.status} ${JSON.stringify(j).slice(0, 300)}`), { status: res.status, body: j });
     return { ...j, _ms: ms, _status: res.status };
   };
+  api.cookie = () => cookie;
+  return api;
+}
+
+/**
+ * The device's ack ask (src/latency/ack.ts): POST /api/lesson/turn-ack beside a spoken turn, with the same words and
+ * continuer:true. 200 → { ack: { kind: echo|continuer, phrase, readyMs } }; 204 → the reason in x-prefetch. Audio is
+ * dropped at once (never stored).
+ */
+async function askAck(base, cookie, lessonId, text) {
+  const t0 = performance.now();
+  try {
+    const res = await fetch(base + "/api/lesson/turn-ack", { method: "POST", headers: { "content-type": "application/json", cookie },
+      body: JSON.stringify({ lessonId, text, continuer: true }), signal: AbortSignal.timeout(15_000) });
+    const ms = Math.round(performance.now() - t0);
+    if (res.status !== 200) return { none: res.headers.get("x-prefetch") ?? String(res.status), ms };
+    const j = await res.json();
+    return { kind: j.ack?.kind ?? null, phrase: j.ack?.phrase ?? null, readyMs: j.ack?.readyMs ?? ms, clipMs: j.ack?.ms ?? null, ms };
+  } catch (e) { return { none: `error:${String(e.message).slice(0, 40)}` }; }
 }
 
 let sql = null;
@@ -105,10 +124,11 @@ function reasonsOf(r) {
  * @param {object} p persona card
  * @param {{ base: string, lane: "text"|"voice", maxTurns: number, voice?: object, tag?: string }} opts
  */
-export async function runLesson(p, { base, lane = "text", maxTurns = 14, voice = null, tag = "simlab" }) {
+export async function runLesson(p, { base, lane = "text", maxTurns = 14, voice = null, tag = "simlab", emailKey = null, ack = false }) {
   const api = apiClient(base);
   const st = Date.now(), rnd = Math.random().toString(36).slice(2, 8);
-  const email = `${tag}+${p.id}-${st}${rnd}@taxila.test`, password = `sim-pw-${st}-${rnd}`;
+  // emailKey: a deterministic address, so a server's cohort list (e.g. TAXILA_ACK_CONTINUER_FOR) can name it in advance
+  const email = emailKey ? `${tag}+${p.id}-${emailKey}@taxila.test` : `${tag}+${p.id}-${st}${rnd}@taxila.test`, password = `sim-pw-${st}-${rnd}`;
   const rec = { persona: p.id, lane, startedAt: new Date().toISOString(), turns: [], errors: [], state: Object.fromEntries(p.skills.map((s) => [s.id, s.state])),
     misconceptionsHeld: p.misconceptions.map((m) => m.id), learning: [], end: null, start: null };
   let signedUp = false;
@@ -146,18 +166,23 @@ export async function runLesson(p, { base, lane = "text", maxTurns = 14, voice =
       } else Object.assign(body, { childText: c.say, asrConfidence: 0.92, typed: false });
       heard.push({ who: "child", text: c.chipLabel ?? c.say, tapped: c.action === "tap" });
       let r;
+      // the device asks for an ack on spoken words only, beside the turn (never on a tap or the pad)
+      const ackP = ack && !body.typed && body.childText ? askAck(base, api.cookie(), s.lessonId, body.childText) : null;
       try { r = await api("POST", "/api/lesson/turn", body, [200]); fails = 0; } catch (e) {
         rec.errors.push({ at: `turn ${n}`, status: e.status ?? 0, msg: String(e.message).slice(0, 300) });
         rec.turns.push({ n, child: { ...c, sent: body.childText, asr }, error: String(e.message).slice(0, 300) });
         if (++fails >= 2) break;
         continue;
       }
+      const ackRes = ackP ? await ackP : null;
+      // played as the device would: it arrived before her reply was ready (the reply's round trip)
+      if (ackRes && ackRes.phrase) ackRes.played = (ackRes.readyMs ?? Infinity) < r._ms;
       screen = nextScreen(screen, r);
       const teacher = r.teacherReply ?? "";
       if (teacher) heard.push({ who: "teacher", text: teacher });
       rec.turns.push({ n, at: new Date().toISOString(), child: { action: c.action, say: c.say, chipId: c.chipId, chipLabel: c.chipLabel, private: c.private, sent: body.childText, ...(asr ? { asr } : {}) },
         teacher, move: r.move?.kind ?? null, ui: r.ui, moduleCommands: r.moduleCommands ?? [], studio: r.studio ?? null, screen, end: !!r.end,
-        speakNow: r.speakNow ?? null, reasons: reasonsOf(r), ms: r._ms });
+        speakNow: r.speakNow ?? null, reasons: reasonsOf(r), ms: r._ms, ...(ackRes ? { ack: ackRes } : {}) });
       if (r.end) break;
     }
     // the server's own record of every board page shown (stream 2's board_page): read now, before the account (and the
