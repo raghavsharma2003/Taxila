@@ -52,6 +52,7 @@ Status: **FIXED** (on `claude/r5-qa`, verified by a repro script) · **OWNER** (
 | D30 | P1 | OWNER | main (runtime) / latency | Her first line's TTS fails (Azure `tts_stream network 15003ms` → 502) and the floor stays idle: no "Your turn", no retry, only "Sound didn't play… Play again" |
 | D31 | P2 | OWNER | conversation | A child set up with "Hindi" (not the mix) gets Hinglish with English key words ("longer-shorter", "woh longer hai") |
 | D32 | P2 | FIXED | QA (UI) | Older child typing on a phone: the answer field is ~160 px and its placeholder reads "Type your answ" |
+| D33 | P1 | FIXED | QA (client) | Back from a lesson ended it at once, yet Home offered "Continue", which then opened a NEW lesson (production 1138550) |
 | D19 | P2 | WONTFIX | QA (UI) | `GET /api/me` 401 logged as a console error on every signed-out landing and set-up load |
 
 ## Details
@@ -246,6 +247,23 @@ didn't play. Read it on the card. Play again". The floor then stays `idle` (stat
 until the child taps the mic. Expected: one server-side retry of the TTS call (it is idempotent) and, if that fails too, the
 floor moves to YOUR TURN with the card as the question, so the lesson goes on in text. Evidence in
 `ui.state floor=idle strip=T5` from 17.8 s to 66.2 s.
+
+## Pass 12 (first half) — production 1138550 (taxila.dev), fresh production test accounts (class 4 phone, class 6)
+- Reload mid-lesson on the real deploy: qa-reload (class 6) PASS. Continue after leaving by URL: same lesson, `resumed`.
+- **D33 (P1, fixed in 0740abc, merged to 14.2)**
+  - Steps: Home → Continue/Start → answer once → Android Back → Home → Continue.
+  - Expected: Continue rejoins the lesson it names.
+  - Actual on production (2/2: class 4 and class 6): Back unmounted the runtime, whose `dispose()` sent the immediate JSON
+    `/api/lesson/end` (200). Home still showed CONTINUE "Pick up where you left off" (its plan read raced the end), and
+    Continue sent `resumeLessonId=<old>` and got a NEW lesson (`start 201 → 38028861…`, not resumed).
+  - Fix: `src/lesson/runtime.ts` `dispose()` closes with the beacon end, which the server defers by
+    TAXILA_PAGEHIDE_GRACE_MS like a page hide; the End button still ends at once. Test in `tests/client-runtime.test.mjs`.
+  - Verified locally (TEST DB, 2/2): `end 202 deferred`, then Home CONTINUE → `start req=<lid> → <lid> resumed`.
+  - Note: Continue is offered only after the child's first turn (server `resumable` needs `child_turns > 0`); a Back
+    before any answer correctly shows Start.
+- Gate note: in the restarted container (4 CPUs) `node --test tests/` fails 2177 tests deterministically after test 40
+  (the engines-browser vite fixture's `page.goto` times out), at any concurrency and on the unchanged baseline. Every file
+  except engines-browser together: 3081 pass, 0 fail; engines-browser alone: 60/60.
 
 ## Pass 11 — on int/r5-rel141 @ f618f8d (local prod build, Neon TEST, phone 393x876): nothing new, D23 verified
 - **Reload in the middle of a lesson:** qa-reload (class 6) PASS. The URL names the lesson; the same lesson comes back
