@@ -22,7 +22,7 @@ import { scrubPii, scanSafety, floorViolations, helpLeadOf } from "../director/s
 import { laneFor } from "../agent/flags.js";
 import { agentTurn, eventOf, applyAgentTurn } from "../agent/agent.js";
 import { initLessonState, step, LIMITS, shortTitleOf } from "../director/state.js";
-import { resolveAddress } from "../director/register.js";
+import { resolveAddress, codeSwitchAddress } from "../director/register.js";
 import { instructionsFor, instructionsAfter } from "../compiler/instructions.js";
 import { teacherFor, teacherForLesson, teacherCard } from "../compiler/characters/index.js";
 import { prewarm } from "../voice/prewarm.js";
@@ -324,6 +324,8 @@ export async function lessonStart(req, body) {
       firstName: child.first_name, teacherName: teacher.name, teacherId: teacher.id, protege: teacher.protege,
       ...(lastLesson?.name && lastLesson.name !== teacher.name ? { renamed: true } : {}),
       ageBand: brief.ageBand, lang: child.language_pref, interests, address,
+      // r5 QA D38: an English lesson's code-switched lines are held to the parent's / class address (never in the prompt)
+      ...(address ? {} : { mixAddress: codeSwitchAddress({ classLevel: child.class_level, parent: controls?.address ?? null }) }),
       firstMeeting: brief.relationshipStage.startsWith("first_meeting"), hasCallback: brief.memoryCallbacks.length > 0,
       topicTitle: topic.title, nextTitle: nextTopic?.title,
       // selectReteach's record inputs (director/state.js engineReteach); absent until W1-C fills the seam
