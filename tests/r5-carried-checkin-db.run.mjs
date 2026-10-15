@@ -78,6 +78,17 @@ describe("check-in after a recent safeguarding incident (test branch)", { skip: 
     assert.equal((await stateOf(s.body.lessonId)).safeguard, null);
     assert.equal((await q("select 1 from incident where child_id = $1", [kid])).length, 1, "the check-in writes no incident of its own");
     await call("/api/lesson/end", { method: "POST", body: { lessonId: s.body.lessonId } });
+    // once per incident: the next lesson the same day opens as usual; a NEW incident checks in again
+    const again = await start(kid);
+    assert.equal(again.status, 201, JSON.stringify(again.body));
+    assert.ok(!(await stateOf(again.body.lessonId)).safeguard, "already checked in for this incident");
+    assert.ok(!again.body.helpLead);
+    await call("/api/lesson/end", { method: "POST", body: { lessonId: again.body.lessonId } });
+    await incident(kid, "self_harm", 0);
+    const fresh = await start(kid);
+    assert.equal((await stateOf(fresh.body.lessonId)).safeguard?.carried, true, "a new incident: a new check-in");
+    assert.equal(fresh.body.helpLead, "grownup");
+    await call("/api/lesson/end", { method: "POST", body: { lessonId: fresh.body.lessonId } });
   });
 
   test("no incident, or one older than the window (30 h): the ordinary opening", async () => {

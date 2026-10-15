@@ -216,8 +216,11 @@ export async function lessonStart(req, body) {
   const bondP = early(Promise.resolve(seamSafe("relational.snapshot", () => relationalSeam.snapshot(child.id, { classLevel: child.class_level, lang: child.language_pref }), null)));
   const brief0P = early(memoryP.then((memory) => buildChildBrief(child, { memory })));
   // round 5 (14.2): a safeguarding incident within the last hours: this lesson opens on a calm check-in (state.js, `carried`)
-  const carriedP = early(one(`select detail->>'family' as family from incident where child_id = $1 and kind = 'safeguarding'
-    and at > now() - make_interval(hours => $2::int) order by at desc limit 1`, [child.id, carriedHours()]).catch(() => null));
+  // once per incident: a lesson that already opened on the check-in for it (ctx.checkedInFor) is enough
+  const carriedP = early(one(`select i.id, i.detail->>'family' as family from incident i where i.child_id = $1 and i.kind = 'safeguarding'
+    and i.at > now() - make_interval(hours => $2::int)
+    and not exists (select 1 from lesson l where l.child_id = $1 and l.started_at >= i.at and l.state->'ctx'->>'checkedInFor' = i.id::text)
+    order by i.at desc limit 1`, [child.id, carriedHours()]).catch(() => null));
   planP.catch(() => {});
   const [core, memory, controls, lastLesson, vsb0] = await Promise.all([
     hasConsent(guardian.id, child.id, "core_tutoring"), memoryP,
@@ -335,7 +338,7 @@ export async function lessonStart(req, body) {
     },
   });
   const recent = askSafety.distress ? null : await carriedP;
-  const carried = recent ? { kind: recent.family ?? null } : null;
+  const carried = recent ? { kind: recent.family ?? null, incidentId: String(recent.id) } : null;
   const first = askSafety.distress
     ? step(state0, { event: "start", kit, now, cls: { outcome: "no_evidence", confidence: 1, source: "predicate",
       flags: { dontKnow: false, asksForAnswer: false, minimal: false, offTopic: false, distress: true, distressKind: askSafety.kind, wantsToStop: false } } })
@@ -343,6 +346,7 @@ export async function lessonStart(req, body) {
   const { r, instructions } = instructionsAfter({ ...first, state: { ...first.state, brief, mode, kitVerified: kit.verified, kitHash: kit.hash } }, kit, now);
   const state = r.state;
   if (vsb0) state.vsb = vsb0;
+  if (carried && r.move.kind === "safeguard") state.ctx = { ...state.ctx, checkedInFor: carried.incidentId };
   // W2-E: the opening's beat (ui.beat; the client's end-of-turn thresholds read it) and its Moment for the voice layer.
   state.beat = nextBeat(undefined, r.move, state);
   const openingMoment = momentOf({ move: r.move, verdict: "ungraded", engagement: "warming", relational: null, ctx: state.ctx, turn: state.turn ?? 0,
