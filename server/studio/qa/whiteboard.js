@@ -333,7 +333,7 @@ export function cutCells(ops, ctx = {}) {
   return out;
 }
 /** What a question over her own written numbers asks for: their total (with repeats: four sides), the total of the distinct
- *  ones, and for each pair a + b, 2 × (a + b), a × b, a − b; minus any number her line already says. PURE. */
+ *  ones, and with exactly two numbers 2 × (a + b), a × b, a − b; minus any number her line already says. PURE. */
 export function answersOf(line) {
   const all = (String(line ?? "").match(/\d+(?:\.\d+)?/g) ?? []).map(Number).filter((x) => Number.isFinite(x));
   const said = new Set(numbersIn(String(line ?? "")));
@@ -343,10 +343,9 @@ export function answersOf(line) {
   const add = (x) => { if (Number.isFinite(x) && x > 0) { const t = canon(String(Math.round(x * 1000) / 1000)); if (!said.has(t)) out.add(t); } };
   add(all.reduce((a, b) => a + b, 0));
   add(uniq.reduce((a, b) => a + b, 0));
-  for (let i = 0; i < uniq.length; i++) for (let j = i + 1; j < uniq.length; j++) {
-    const [a, b] = [uniq[i], uniq[j]];
-    add(a + b); add(2 * (a + b)); add(a * b); add(Math.abs(a - b));
-  }
+  // two numbers: what a question over them asks (a + b, the perimeter 2 × (a + b), the area a × b, a − b); over three or
+  // more only the totals (a pair's sum is a step, not the answer: "can 2, 3 and 8 make a triangle?" over "2 + 3 = 5")
+  if (uniq.length === 2) { const [a, b] = uniq; add(2 * (a + b)); add(a * b); add(Math.abs(a - b)); }
   return out;
 }
 /** The straight segments a script draws that words must not sit on: lines, arrow shafts, box edges. */
@@ -573,8 +572,11 @@ export function gateWhiteboard(raw, ctx) {
   // (her numbers are the ones she WROTE as digits: "four sides" is a count, and the library board's "4 × side" shared that
   // 4 with her and passed while writing none of her 50 / 30: QA's exact board, catalogue c6-maths-ch06-t01 beat 6)
   const hers = new Set(numbersIn((String(ctx.reply ?? "").match(/\d[\d,]*(?:\.\d+)?(?:\s*\/\s*\d+)?/g) ?? []).join(" ")));
-  const boardNums = [...new Set(per.flatMap((p) => p.nums))];
-  const notHers = !ctx.face && hers.size >= 2 && boardNums.length > 0 && !boardNums.some((n) => hers.has(n));
+  // (the board's numbers read as her line's are: "4,113" is 4113)
+  const boardNums = [...new Set(numbersIn(per.flatMap((p) => p.nums).join(" ")))];
+  // ... and a board whose every number her line says, in digits or in words ("five equal gaps" over a 5), is hers too
+  const saidAll = new Set(numbersIn(ctx.reply));
+  const notHers = !ctx.face && hers.size >= 2 && boardNums.length > 0 && !boardNums.some((n) => hers.has(n)) && !boardNums.every((n) => saidAll.has(n));
   add("W17.her_numbers", !notHers, notHers ? { hers: [...hers].slice(0, 6), board: boardNums.slice(0, 6) } : []);
   // W18 (QA pass 14, main's release blocker: catalogue c6-maths-ch06-t01 beat L6 "2 × (50 + 30) = 160 metres" under her
   // "50 m, 30 m, 50 m, 30 m … Total kitna?"): when her line ASKS, the board never writes what her question asks for, i.e.

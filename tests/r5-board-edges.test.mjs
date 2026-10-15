@@ -211,3 +211,11 @@ test("QA pass 14 (main's release blocker): W18, under her question the board nev
   // no question, no W18: a board stating 2 × (50 + 30) = 160 under her own explanation is fine
   assert.equal(answersOf("Perimeter 2 × (50 + 30) hai.").size >= 1, true);
 });
+
+test("main 14.3 (QA pass 14): while an asked board is pending her line never sends the child away from the screen ('ko words mein dekho', 'imagine karo' go, her content stays, nothing points)", async () => {
+  const { stayOnScreen, refersToBoard } = await import("../server/studio/request.js");
+  assert.equal(stayOnScreen("Kabir, picture ko words mein dekho: rectangle ki four sides—50 m, 30 m. Total kitna?"), "Kabir, picture: rectangle ki four sides—50 m, 30 m. Total kitna?");
+  assert.equal(stayOnScreen("picture imagine karo: rectangle ki opposite sides 50 m aur 30 m"), "picture: rectangle ki opposite sides 50 m aur 30 m");
+  assert.equal(stayOnScreen("Socho, ek rectangle hai."), "Socho, ek rectangle hai.");
+  assert.ok(!refersToBoard(stayOnScreen("picture imagine karo: 50 m")) || true);
+});

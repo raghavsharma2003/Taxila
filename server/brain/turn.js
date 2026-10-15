@@ -28,7 +28,7 @@ import { noteModuleEvents, moduleAnswerOf } from "../director/modules.js";
 import { findItem, promptFor, revealsAnswer, whyKey, norm as normAnswer } from "../director/items.js";
 import { registerBroken } from "../director/register.js";
 import { verdictFor, uiVerdict, askText, refersToScreen, wrongAnswersOf, boardClaimProblem, kitWordsOf, stripScreenRefs } from "../director/say.js";
-import { answersRequest, pointsAtStage, unpointGently, pictureSubjectOf, announcesGame, ungame, unassumeVisual, refersToBoard, boardPointer, seeNotImagine } from "../studio/request.js";
+import { answersRequest, pointsAtStage, unpointGently, pictureSubjectOf, announcesGame, ungame, unassumeVisual, refersToBoard, boardPointer, seeNotImagine, stayOnScreen } from "../studio/request.js";
 import { drawableSubject } from "../director/state.js";
 import { mixedUnitComparison } from "../director/units.js";
 import { instructionsFor, instructionsAfter } from "../compiler/instructions.js";
@@ -1028,6 +1028,21 @@ export async function lessonTurn(req, body, hooks = {}) {
       guard = { ...guard, caught: [...new Set([...(guard?.caught ?? []), "point_asked_board"])], replaced: true };
       studioReasons.push("say.point_asked_board");
       delivery = seamSafe("expressive.planDelivery", () => expressiveSeam.planDelivery(moment, teacherReply), delivery);
+    }
+    // main 14.3 (QA pass 14): the board the child asked for is still being drawn (acknowledged, not yet on the response):
+    // her line never sends them away from the screen ("picture ko words mein dekho", "imagine karo"); the board lands
+    if (!safetyWords && r.move?.request === "visual" && wbAcked && !studioSlot?.artifact && teacherReply) {
+      const fixed = seamSafe("say.stayOnScreen", () => stayOnScreen(teacherReply), null);
+      if (fixed && fixed !== teacherReply) {
+        teacherReply = fixed;
+        const row = staged.find((x) => x.seq === teacherReplySeq);
+        if (row) { row.text = fixed; row.meta = { ...(row.meta ?? {}), guard: [...new Set([...(row.meta?.guard ?? []), "stay_on_screen"])] }; }
+        const last = next.recent?.[next.recent.length - 1];
+        if (last?.who === "teacher") next.recent = [...next.recent.slice(0, -1), { ...last, text: fixed.slice(0, 400) }];
+        guard = { ...guard, caught: [...new Set([...(guard?.caught ?? []), "stay_on_screen"])], replaced: true };
+        studioReasons.push("say.stay_on_screen");
+        delivery = seamSafe("expressive.planDelivery", () => expressiveSeam.planDelivery(moment, teacherReply), delivery);
+      }
     }
     // round 5 (sim lab 709b6acb): over an empty stage, a line that ASSUMES a visual without a screen word ("Table mein
     // Baisakhi kis month mein dikh rahi hai?", "3335 ko mark kijiye", "Timeline picture: …") loses the visual noun, its
