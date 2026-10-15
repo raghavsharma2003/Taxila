@@ -1,0 +1,77 @@
+{
+ "nodes": [
+  {
+   "id": "ms-r142-live",
+   "kind": "measurement",
+   "at": "2026-10-15",
+   "title": "Release 14.2 live: taxila-web--sa978ae2-hanh (image a978ae2) at 100%, taxila-web--s1138550-lauy kept as previous. Gate PASS (stamp 09:25 UTC). Canary smoke 4/4 (lesson start 1696 ms, end 1899 ms). Overflow lane on the live revision, names checked: env AZURE_OPENAI_ENDPOINT_OVERFLOW, TAXILA_OVERFLOW_DEPLOYMENTS, AZURE_OPENAI_API_KEY_OVERFLOW -> secret azure-openai-api-key-overflow. Live checks: a second lesson starts (201) at 15:11 IST on narrow hours; resume PASS (--no-disclosure); recorder proof tier 2, flag, rrweb, board, tts, account deleted, 0 trace rows after. Typed 3/3 after a harness fix; the first run was 2/3 (rj-r142-fixed-wait-harness). Packaged before the deploy: w2i 38/39 (the leftover counter moved under concurrent sim lab sign-ups), journey OK, resume PASS, owner-5 10/14.",
+   "n": 1,
+   "method": "deploy-azure.mjs canary + r14-hourscheck + r141-resume-check + r12-liveproof on https://taxila.dev"
+  },
+  {
+   "id": "ms-r142-live-board-pointing",
+   "kind": "measurement",
+   "at": "2026-10-15",
+   "title": "The recorder proof's turn-1 'picture dikhao na' (class 7 multiplying fractions, warm-up) across live releases: board revealed in 13.2, 14 and 14.2 run 1; FAILED (fallback voice) in 14.1 (29c26043) and 14.2 run 2 (2001d8cc). In 2001d8cc, 3 of 4 taxila-gpt6-luna drafts returned 200 but drew the KIT's worked example ('1/2 x 3/4 = 3/8', 'Of = multiply') instead of her numbers (3/5 x 2/3 = 6/15, 15 parts, 6 marked). The 4th draft timed out at 3278 ms, and the gated template was refused too. Her spoken line still pointed at the board: 'Dekhiye: rectangle ke 15 equal parts hain ... Aapko kitne marked parts dikh rahe hain?' 14.2 run 1 also had 1 of 2 drafts drawing the kit example.",
+   "n": 5,
+   "method": "trace session view (scripts/trace.mjs --session) of 5 r12-liveproof runs"
+  },
+  {
+   "id": "ms-r142-live-game-request",
+   "kind": "measurement",
+   "at": "2026-10-15",
+   "title": "The recorder proof's turn-2 'mujhe game khelna hai': studio_rejected.no_game_piece in 14.1 and both 14.2 runs. guard.claim_game rewrote her line to a spoken 'fraction activity', so no false claim. Forge had built play strings ('Bhinn ko rang bharo') at lesson start, but no game piece was admitted about 35 s later. The child asked for a game and got talk. 14 (r14-liveproof) answered the same turn with a whiteboard.",
+   "n": 3,
+   "method": "trace session view of r12-liveproof runs"
+  },
+  {
+   "id": "open-r142-board-pointing-empty",
+   "kind": "open",
+   "at": "2026-10-15",
+   "title": "Honesty floor: her line points at the screen ('dekhiye', 'dikh rahe hain', 'board par', 'yahan') while the whiteboard slot later fails, so the child is told to look at an empty board. Two bars for 14.3 (stream 2): (a) when her line carries its own numbers, the board draws those numbers, and kit facts are a truth check, not content (WB_SYSTEM's 'or the kit facts given' acts as a phrase bank); (b) pointing words are spoken only when a board is on screen or certified to arrive before the clause, i.e. board-first or a line written without pointing."
+  },
+  {
+   "id": "open-r142-game-request-no-piece",
+   "kind": "open",
+   "at": "2026-10-15",
+   "title": "A typed game request in a class 7 fractions warm-up gets no game piece (no_game_piece) on 3 of 3 live runs, although Forge builds a fraction colouring game from lesson start. Find out whether the built game is unadmitted, not ready, or not matched to the request. The bar: a game request is answered with a game when one exists for the skill."
+  },
+  {
+   "id": "rj-r142-fixed-wait-harness",
+   "kind": "rejection",
+   "at": "2026-10-15",
+   "title": "A fixed 14 s wait between typed turns in the recorder live proof (r12-liveproof). 14.2's 12.3 s reteach line plus about 3 s to the first sound outlasted it: Type is shown only on the child's turn, so turn 2 timed out (typed 2/3) and looked like a product failure. Fix: wait up to 45 s for the Type button to be visible before each turn. After the fix: 3/3."
+  }
+ ],
+ "edges": [
+  {
+   "src": "ms-r142-live",
+   "rel": "supersedes",
+   "dst": "ms-r141-live"
+  },
+  {
+   "src": "open-r142-board-pointing-empty",
+   "rel": "measured_by",
+   "dst": "ms-r142-live-board-pointing"
+  },
+  {
+   "src": "open-r142-game-request-no-piece",
+   "rel": "measured_by",
+   "dst": "ms-r142-live-game-request"
+  },
+  {
+   "src": "open-r142-board-pointing-empty",
+   "rel": "constrains",
+   "dst": "dc-r5-board-answers-the-ask"
+  },
+  {
+   "src": "rj-r142-fixed-wait-harness",
+   "rel": "part_of",
+   "dst": "ms-r142-live"
+  }
+ ],
+ "md": {
+  "measurements": "## Release 14.2 live (main, 2026-10-15)\n\n- **ms-r142-live**: taxila-web--sa978ae2-hanh (a978ae2) serves 100%; previous s1138550-lauy.\n  - Canary 4/4 (start 1696 ms).\n  - The overflow env and secret names are on the live revision.\n  - Hours check: lesson 2 starts 201 at 15:11 IST. Resume PASS (no disclosure).\n  - Recorder proof 3/3 typed (after the harness fix), deleted, 0 trace rows.\n  - Packaged: w2i 38/39, journey OK, resume PASS, owner-5 10/14.\n- **ms-r142-live-board-pointing**: turn-1 picture request across 5 live proofs. The board failed in 14.1 and in 14.2 run 2.\n  - luna drafts drew the kit example (1/2 x 3/4) instead of her numbers (3/5 x 2/3 = 6/15): 3/4 drafts, plus one 3278 ms timeout. The template was refused too.\n  - She said \"Dekhiye … kitne marked parts dikh rahe hain?\" to an empty board.\n- **ms-r142-live-game-request**: \"mujhe game khelna hai\" got no_game_piece on 3/3 runs (14.1, 14.2 x2). claim_game rewrote her line to a spoken activity. Forge's fraction game, built at lesson start, was not admitted.",
+  "rejected": "## rj-r142-fixed-wait-harness (2026-10-15)\n- Tried: a fixed 14 s wait between typed turns in r12-liveproof.\n- Broke: her 12.3 s reteach line, plus about 3 s to first sound, outlasted the wait. Type shows only on the child's turn, so turn 2 timed out (2/3) and read as a product failure.\n- Fix: wait (up to 45 s) for Type to be visible before each turn. Result 3/3."
+ }
+}

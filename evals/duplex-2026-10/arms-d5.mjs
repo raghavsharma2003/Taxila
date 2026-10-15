@@ -7,19 +7,25 @@
 // = her played line (assemble.mjs `<id>.her.s16` at her stream position). Open loop like arms-ours (her audio is not cut
 // by a yield; the yield is scored). Scored by score.mjs as arm "d5" (engine acts, like the duplex arm).
 // The turn context is what the Director's turn ui carries (uiOf below), not the harness shortcut arms-ours used.
-//   NODE_USE_ENV_PROXY=1 node --env-file=.env.local evals/duplex-2026-10/arms-d5.mjs --bake <dir> --variant phone [--preduck] [--conc 4] [--only id,..] [--arm-name d5]
+//   NODE_USE_ENV_PROXY=1 node --env-file=.env.local evals/duplex-2026-10/arms-d5.mjs --bake <dir> --variant phone|clean|owner [--no-preduck] [--conc 4] [--only id,..] [--arm-name d5]
 import fs from "node:fs";
 import path from "node:path";
 import { ROOT, framesOf, runSession, pool, loadEnv } from "../duplex-real/lib.mjs";
 
 const arg = (n, d) => { const i = process.argv.indexOf(n); return i > 0 ? process.argv[i + 1] : d; };
 const BAKE = arg("--bake"), VAR = arg("--variant", "phone"), CONC = Number(arg("--conc", 4));
-const PREDUCK = process.argv.includes("--preduck");
-const ARM = arg("--arm-name", PREDUCK ? "d5-preduck" : "d5");
+// round 5: the pre-duck is on by default (CascadeDuplex D5_PREDUCK_DEFAULT); --no-preduck measures without it
+const PREDUCK = !process.argv.includes("--no-preduck");
+const ARM = arg("--arm-name", PREDUCK ? "d5" : "d5-nopreduck");
 const ONLY = arg("--only") ? new Set(arg("--only").split(",")) : null;
+// round 5 EOT: --replay <arm> feeds that arm's RECORDED Voice Live events (with their audio times, d5r11 on) back at their
+// recorded times through today's engine, no network: before/after on the same ear output. --out-arm names the result.
+const REPLAY = arg("--replay");
+// round 5 EOT step 3: Voice Live's VAD silence for this run (default: the shipped D5_SERVER_VAD_MS)
+const SERVER_VAD = arg("--server-vad") ? Number(arg("--server-vad")) : null;
 const SR = 16000, HOP = 320;
 const TAIL_MS = 6000;
-loadEnv();
+if (!REPLAY) loadEnv();
 
 const readS16 = (f) => { const b = fs.readFileSync(f); const x = new Float32Array(b.length / 2); for (let i = 0; i < x.length; i++) x[i] = b.readInt16LE(i * 2) / 32768; return x; };
 
@@ -62,7 +68,7 @@ async function openD5(herX, herOff, onEvent) {
     openUpstream: (url, headers) => new WebSocket(url, { headers }),
   });
   await Promise.race([up, new Promise((_, rej) => setTimeout(() => rej(new Error(`d5 session timeout ${closedWhy ?? ""}`)), 25000))]);
-  relay.clientText(JSON.stringify({ type: "vad", silenceMs: D5_SERVER_VAD_MS }));
+  relay.clientText(JSON.stringify({ type: "vad", silenceMs: SERVER_VAD ?? D5_SERVER_VAD_MS }));
   return {
     lane: "D5", model: cfg.model, region: "centralindia", errors,
     append(block, frameIdx) {
@@ -80,6 +86,21 @@ async function openD5(herX, herOff, onEvent) {
   };
 }
 
+/** A recorded run's Voice Live events, as the relay delivered them (audio times restored), for --replay. */
+function recorded(id) {
+  const run = JSON.parse(fs.readFileSync(path.join(BAKE, "runs", `${REPLAY}.${VAR}.${id}.json`), "utf8"));
+  if (run.stt.some((e) => e.type === "input_audio_buffer.speech_started") && !run.stt.some((e) => e.a0 !== undefined)) throw new Error(`${REPLAY}: no audio times recorded (d5r11 or later)`);
+  return run.stt.filter((e) => !String(e.type).startsWith("d5.")).map((e) => {
+    const raw = { type: e.type };
+    if (e.item) raw.item_id = e.item;
+    if (e.type.endsWith(".delta")) raw.delta = e.text ?? "";
+    if (e.type.endsWith(".completed")) raw.transcript = e.text ?? "";
+    if (e.a0 !== undefined) raw.audio_start_ms = e.a0;
+    if (e.a1 !== undefined) raw.audio_end_ms = e.a1;
+    return { t: e.t, raw };
+  });
+}
+
 async function one(id) {
   const meta = JSON.parse(fs.readFileSync(path.join(BAKE, `${id}.json`), "utf8"));
   // + TAIL_MS of the room's own noise after the stream: an engine that patiently waits out a teach-back must get to decide
@@ -95,17 +116,22 @@ async function one(id) {
   const nF = Math.floor(x.length / HOP), outDb = new Array(nF).fill(-120);
   for (let f = 0; f < nF; f++) { let s = 0; for (let k = 0; k < HOP; k++) { const j = f * HOP + k - herOff; const v = j >= 0 && j < herX.length ? herX[j] : 0; s += v * v; } outDb[f] = 10 * Math.log10(s / HOP + 1e-12); }
   const fr = framesOf(x);
-  const her = [{ start: meta.gold.herSpan.start, end: meta.gold.herSpan.end, text: meta.herText, outDb, ui: uiOf(meta.ctx) }];
+  // her played line on the stream clock: its pitch per frame (the device reads it off the player, liveTap.ts)
+  const herAligned = new Float32Array(x.length);
+  for (let i = 0; i < herX.length; i++) { const j = i + herOff; if (j >= 0 && j < x.length) herAligned[j] = herX[i]; }
+  const outF0 = framesOf(herAligned).f0;
+  const her = [{ start: meta.gold.herSpan.start, end: meta.gold.herSpan.end, text: meta.herText, outDb, outF0, ui: uiOf(meta.ctx) }];
   let liveRef = null;
   // the stream's audio clock starts with the first appended frame, which runSession sends at session time 0
   class D5Live extends DuplexLive { constructor(o) { super(o); liveRef = this; this.audioOrigin(0); } }
   const r = await runSession({
     id: `d5-${id}-${VAR}`, x, frames: fr, her, band: "B2", DuplexLive: D5Live, floorDb: null,
-    stt: { open: (onEvent) => openD5(herX, herOff, onEvent) },
-    liveOptions: { source: "voicelive", vadGate: "server", preDuck: PREDUCK, supportsCommit: false },
+    stt: REPLAY ? { replay: recorded(id) } : { open: (onEvent) => openD5(herX, herOff, onEvent) },
+    ...(REPLAY ? { realtime: false } : {}),
+    liveOptions: { source: "voicelive", vadGate: "server", preDuck: PREDUCK, supportsCommit: false, serverVadMs: SERVER_VAD ?? (await import(ROOT + "src/duplex/cascadeDuplex.ts")).D5_SERVER_VAD_MS },
   });
   return { id, arm: ARM, variant: VAR, acts: r.acts, phases: r.phases, logs: r.logs.filter((l) => l[1] === "YIELD" || l[1] === "SPEAK" || l[1] === "HUSH"),
-    stt: r.sttLog.map((s) => ({ t: s.t, type: s.raw.type, item: s.raw.item_id, text: s.raw.transcript ?? s.raw.delta ?? null })), errors: r.errors, d5: liveRef?.d5 ?? null, ms: Date.now() - t0 };
+    stt: r.sttLog.map((s) => ({ t: s.t, type: s.raw.type, item: s.raw.item_id, text: s.raw.transcript ?? s.raw.delta ?? null, ...(s.raw.audio_start_ms !== undefined ? { a0: s.raw.audio_start_ms } : {}), ...(s.raw.audio_end_ms !== undefined ? { a1: s.raw.audio_end_ms } : {}) })), firstFrameAt: r.firstFrameAt ?? null, errors: r.errors, d5: liveRef?.d5 ?? null, ms: Date.now() - t0 };
 }
 
 if (import.meta.url === `file://${process.argv[1]}`) {

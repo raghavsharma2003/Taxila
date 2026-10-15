@@ -43,6 +43,9 @@ export function recordModelCall(m) {
     const json = msgs ? JSON.stringify(msgs) : "";
     const text = m.text ?? outputTextOf(m.out);
     const data = { kind: m.kind, deployment: m.deployment, lane: m.quotaLane ?? m.lane ?? null, status: m.status, ms: m.ms,
+      // 14.3 (stream 3's prod query): the ACCOUNT lane when it is not the default CHAT one, so a call the 429 overflow moved
+      // reads `endpoint = 'OVERFLOW'` directly instead of being inferred (lane above is the quota lane: "hot" either way)
+      ...(m.lane && m.lane !== "CHAT" ? { endpoint: m.lane } : {}),
       ...(m.attempt ? { attempt: m.attempt } : {}), ...(m.tokens ? { tokens: m.tokens } : {}), ...(m.ttftMs != null ? { ttftMs: m.ttftMs } : {}),
       promptId: promptId(msgs), promptSha: json ? sha(json) : null, promptMsgs: Array.isArray(msgs) ? msgs.length : null,
       output: text ?? null, ...(m.error ? { error: m.error } : {}), ...(Array.isArray(m.filterCats) ? { filterCats: m.filterCats } : {}) };

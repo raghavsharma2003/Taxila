@@ -138,7 +138,22 @@ function memPut(key, pcm) {
  * the PCM body. The caller's `signal` aborts the upstream request (barge-in, client gone).
  * @returns {Promise<{ chunks: AsyncIterable<Uint8Array>, ttfbMs: number }>}
  */
-export async function speechStream(text, { voice, instructions, signal, timeoutMs = 15_000 }) {
+export async function speechStream(text, o) {
+  // r5-latency (QA D30): a call whose headers have not come within SPEECH_HEADERS_MS (normal: a few hundred ms), or that
+  // failed on the network, is tried ONCE more at once. Seen: a lesson's opening hung 15 s ("network 15003ms") and its
+  // first line never played. A caller's abort, an HTTP error or a content-filter block is never retried.
+  try {
+    return await speechStreamOnce(text, { ...o, headersMs: SPEECH_HEADERS_MS() });
+  } catch (e) {
+    if (o?.signal?.aborted || !(e instanceof AzureError) || (e.code !== "network" && e.code !== "headers_timeout")) throw e;
+    log("tts_stream", DEPLOY.tts, "retry", 0, ` after ${e.code}`);
+    return speechStreamOnce(text, { ...o, headersMs: SPEECH_HEADERS_MS() });
+  }
+}
+/** r5-latency (QA D30): the longest one TTS call may take to answer with headers before it is tried again. */
+export const SPEECH_HEADERS_MS = () => { const v = Number(process.env.TAXILA_TTS_HEADERS_MS ?? 4000); return Number.isFinite(v) && v > 0 ? v : 4000; };
+
+async function speechStreamOnce(text, { voice, instructions, signal, timeoutMs = 15_000, headersMs = 0 }) {
   const t0 = performance.now();
   // Already cancelled (a prewarm dropped, a barge-in) while a cache lookup ran: never start the request.
   if (signal?.aborted) throw new AzureError(`tts_stream ${DEPLOY.tts} aborted`, 0, "aborted");
@@ -148,17 +163,20 @@ export async function speechStream(text, { voice, instructions, signal, timeoutM
   const timer = setTimeout(() => ctl.abort(), timeoutMs);
   const body = { model: DEPLOY.tts, input: String(text).slice(0, 4000), voice, response_format: "pcm", stream_format: "audio" };
   if (instructions) body.instructions = instructions;
-  let res;
+  let res, headersLate = false;
+  const headersTimer = headersMs > 0 ? setTimeout(() => { headersLate = true; ctl.abort(); }, headersMs) : null;
   try {
     res = await fetch(endpoint("TTS") + "/audio/speech", {
       method: "POST", headers: { "api-key": apiKey("TTS"), "content-type": "application/json" }, body: JSON.stringify(body), signal: ctl.signal,
     });
   } catch (e) {
-    clearTimeout(timer);
+    clearTimeout(timer); clearTimeout(headersTimer);
     signal?.removeEventListener("abort", onAbort);
-    log("tts_stream", DEPLOY.tts, signal?.aborted ? "aborted" : "network", Math.round(performance.now() - t0));
-    throw new AzureError(`tts_stream ${DEPLOY.tts} ${signal?.aborted ? "aborted" : `network error: ${e?.message || e}`}`, 0, signal?.aborted ? "aborted" : "network");
+    const code = signal?.aborted ? "aborted" : headersLate ? "headers_timeout" : "network";
+    log("tts_stream", DEPLOY.tts, code, Math.round(performance.now() - t0));
+    throw new AzureError(`tts_stream ${DEPLOY.tts} ${signal?.aborted ? "aborted" : headersLate ? `no headers in ${headersMs} ms` : `network error: ${e?.message || e}`}`, 0, code);
   }
+  clearTimeout(headersTimer);
   if (!res.ok) {
     clearTimeout(timer);
     signal?.removeEventListener("abort", onAbort);

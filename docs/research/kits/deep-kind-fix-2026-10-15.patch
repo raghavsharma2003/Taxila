@@ -1,0 +1,296 @@
+diff -ruN a/data/kits/SCHEMA.md b/data/kits/SCHEMA.md
+--- a/data/kits/SCHEMA.md
++++ b/data/kits/SCHEMA.md
+@@ -28,6 +28,9 @@
+     hints: [string, string, string, string];   // pump → hint → prompt → assertion (shapes, short)
+     targetsMisconception?: string; // misconception id this item can surface
+     verified?: { solverAnswer: string; agrees: boolean; note?: string }  // filled by blind solver
++    deep?: false;                  // deep-kind audit: a deep-tagged item (error_spot / predict / why / contrast / transfer /
++                                   // translate_rep) that is recall, one step or read-off. Kind, key, grading and pose stay;
++                                   // its answer counts as PLAIN evidence (server/director/items.js plainEvidence)
+   }[];                             // 10-16 items per topic, covering ≥5 kinds
+   workedExample: { problem: string; steps: string[]; fadedVersion: string[] };  // fadedVersion has "___" blanks
+   formats: { primary: "F1"|"F2"|"F3"|"F4"|"F5"|"F6"|"F7"|"F8"; secondary: string[]; engineHints: string[] }; // engineHints: manipulative/sim kind names
+diff -ruN a/server/agent/agent.js b/server/agent/agent.js
+--- a/server/agent/agent.js
++++ b/server/agent/agent.js
+@@ -16,7 +16,7 @@
+ import { floorViolations } from "../director/safety.js";
+ import { screenClaimProblem, stripScreenRefs, pointsAtScreen } from "../director/say.js";
+ import { speakNotWrite } from "../brain/say.js";
+-import { promptFor } from "../director/items.js";
++import { promptFor, plainEvidence } from "../director/items.js";
+ import { comprehensionRead } from "../director/read.js";
+ import { systemPrompt, stateMessage, offeredItems, TURN_SCHEMA } from "./prompt.js";
+ import { screenTools, specOf } from "./tools.js";
+@@ -393,6 +393,8 @@
+  * deep right one; an early miss does not cap it. Anything right short of that is "partly". PURE.
+  */
+ export const DEEP_KINDS = new Set(["contrast", "near_transfer", "far_transfer", "error_spot", "predict", "why", "teachback", "translate_rep"]);
++/** A graded answer that is deep evidence: a deep kind, and not an item the deep-kind audit marked plain (deep: false). */
++const deepEntry = (x) => DEEP_KINDS.has(x.kind) && !x.plain;
+ export function earnedRead(level, graded, { deepAvailable = true } = {}) {
+   if (level !== "understood") return level;
+   const right = graded.map((x, i) => ({ ...x, i })).filter((x) => x.g === "correct");
+@@ -402,11 +404,11 @@
+   const lastMiss = graded.map((x) => x.g !== "correct").lastIndexOf(true);
+   if (lastMiss >= 0) {
+     const after = graded.slice(lastMiss + 1);
+-    if (after.length < 3 || (deepAvailable && !after.some((x) => DEEP_KINDS.has(x.kind)))) return "partly";
++    if (after.length < 3 || (deepAvailable && !after.some(deepEntry))) return "partly";
+   }
+   // a skill whose kit has no deep item (about 1 in 10): two different items right and nothing missed after
+   if (!deepAvailable) return new Set(right.map((x) => x.item)).size >= 2 && !graded.slice(right.at(-1).i + 1).some((x) => x.g !== "correct") ? "understood" : "partly";
+-  const deep = right.filter((x) => DEEP_KINDS.has(x.kind));
++  const deep = right.filter(deepEntry);
+   if (!deep.length) return "partly";
+   const lastDeep = deep.at(-1).i;
+   if (graded.slice(lastDeep + 1).some((x) => x.g !== "correct")) return "partly";
+@@ -420,7 +422,7 @@
+   const g = e?.graded ?? [];
+   const level = evidenceRead(g, { bar: READ_BAR });
+   if (!level) return e;
+-  const untested = level === "partly" && g.some((x) => x.g === "correct") && !g.some((x) => DEEP_KINDS.has(x.kind));
++  const untested = level === "partly" && g.some((x) => x.g === "correct") && !g.some(deepEntry);
+   const { depth: _d, ...rest } = e;
+   return { ...rest, read: level, ...(untested ? { depth: "untested" } : {}) };
+ }
+@@ -439,7 +441,7 @@
+     const k = card.skillId;
+     const g = cls.outcome === "correct" ? (cls.reasonMisconceptionId ? `partly(${cls.reasonMisconceptionId})` : "correct") : cls.outcome === "partial" ? "partly" : ["incorrect", "misconception"].includes(cls.outcome) ? (cls.misconceptionId ? `wrong(${cls.misconceptionId})` : "wrong") : null;
+     if (g) learner[k] = { ...(learner[k] ?? {}), grades: [...(learner[k]?.grades ?? []), g].slice(-10),
+-      graded: [...(learner[k]?.graded ?? []), { item: card.id, kind: card.kind, g }].slice(-10),
++      graded: [...(learner[k]?.graded ?? []), { item: card.id, kind: card.kind, g, ...(plainEvidence(card) ? { plain: true } : {}) }].slice(-10),
+       ...(cls.misconceptionId ? { misconceptions: [...new Set([...(learner[k]?.misconceptions ?? []), cls.misconceptionId])] } : {}) };
+     // the read follows the graded answers on EVERY graded turn, not only when the model names one (sim lab e46a281c decided
+     // truth, 164 skill reads: the stored model-turn read agreed 44% / over 10%; the evidence read on every grade 53% / 9%)
+@@ -447,14 +449,14 @@
+   }
+   if (out.read) {
+     const k = out.read.skill;
+-    const deepAvailable = (kit.items ?? []).some((i) => i.skillId === k && DEEP_KINDS.has(i.kind) && i.kind !== "teachback");
++    const deepAvailable = (kit.items ?? []).some((i) => i.skillId === k && DEEP_KINDS.has(i.kind) && i.kind !== "teachback" && !plainEvidence(i));
+     const graded = learner[k]?.graded ?? [];
+     // graded answers decide the read; with none, the model's claim is held to the old evidence rule (never understood)
+     const level = graded.length ? evidenceRead(graded, { bar: READ_BAR }) : earnedRead(out.read.level, graded, { deepAvailable });
+     // honest at the end of a lesson (sim lab 71a6b11): "partly" from right easy answers with no deep question asked yet is
+     // not the "partly" of a child who got the deep one wrong
+     const g = learner[k]?.graded ?? [];
+-    const untested = level === "partly" && g.some((x) => x.g === "correct") && !g.some((x) => DEEP_KINDS.has(x.kind));
++    const untested = level === "partly" && g.some((x) => x.g === "correct") && !g.some(deepEntry);
+     const { depth: _d, ...rest } = learner[k] ?? {};
+     learner[k] = { ...rest, read: level, evidence: out.read.evidence, ...(level !== out.read.level ? { claimed: out.read.level } : {}), ...(untested ? { depth: "untested" } : {}) };
+   }
+diff -ruN a/server/agent/prompt.js b/server/agent/prompt.js
+--- a/server/agent/prompt.js
++++ b/server/agent/prompt.js
+@@ -3,7 +3,7 @@
+ // friendly); each turn adds ONE compact state and the event. The safety floor is the compiled floor, verbatim
+ // (server/compiler/floor.js floorText: the same text every lane carries), and it is the last section.
+ import { floorText } from "../compiler/floor.js";
+-import { promptFor } from "../director/items.js";
++import { promptFor, plainEvidence } from "../director/items.js";
+ import { AGENT_LIMITS } from "./flags.js";
+ 
+ const LANG = { hinglish: "Hinglish (Hindi and English mixed the way Indian children speak, Roman script)", hindi: "simple Hindi (Roman script); name the lesson's ideas with Hindi words, an English term only as a short gloss after the Hindi one", english: "simple English" };
+@@ -85,15 +85,16 @@
+   // a skill with a right plain answer and no right deep one: its deep item (contrast / transfer / error-spot / predict) next,
+   // the only evidence that separates understood from partly (agent.js earnedRead)
+   const DEEP = new Set(["contrast", "near_transfer", "far_transfer", "error_spot", "predict", "translate_rep", "why"]);
++  const deepItem = (i) => DEEP.has(i.kind) && !plainEvidence(i);
+   const needsDeep = new Set(Object.entries(state.agent?.learner ?? {}).filter(([, v]) => (v.graded ?? []).some((x) => x.g === "correct")
+-    && !(v.graded ?? []).some((x) => x.g === "correct" && DEEP.has(x.kind))).map(([k]) => k));
+-  const rank = (i) => (i.targetsMisconception && shown.has(i.targetsMisconception) ? -100 : 0) + (needsDeep.has(i.skillId) && DEEP.has(i.kind) ? -50 : 0)
++    && !(v.graded ?? []).some((x) => x.g === "correct" && DEEP.has(x.kind) && !x.plain)).map(([k]) => k));
++  const rank = (i) => (i.targetsMisconception && shown.has(i.targetsMisconception) ? -100 : 0) + (needsDeep.has(i.skillId) && deepItem(i) ? -50 : 0)
+     + (i.skillId === cur ? 0 : skillOrder.indexOf(i.skillId) > skillOrder.indexOf(cur) ? 1 : 2) * 10 + (i.difficulty ?? 2);
+   const open = (kit.items ?? []).filter((i) => !done.has(i.id) && KINDS.has(i.kind));
+   // sim lab 35c0b7c (44 understood skills held at partly: the deep item never came): a skill that needs deep evidence offers
+   // ONLY its deep items while it has one left, so the next question she poses on it is the one that can show understanding
+-  const deepLeft = new Set(open.filter((i) => needsDeep.has(i.skillId) && DEEP.has(i.kind)).map((i) => i.skillId));
+-  return open.filter((i) => !(deepLeft.has(i.skillId) && !DEEP.has(i.kind) && !(i.targetsMisconception && shown.has(i.targetsMisconception))))
++  const deepLeft = new Set(open.filter((i) => needsDeep.has(i.skillId) && deepItem(i)).map((i) => i.skillId));
++  return open.filter((i) => !(deepLeft.has(i.skillId) && !deepItem(i) && !(i.targetsMisconception && shown.has(i.targetsMisconception))))
+     .sort((a, b) => rank(a) - rank(b)).slice(0, limit);
+ }
+ 
+diff -ruN a/server/agent/read.js b/server/agent/read.js
+--- a/server/agent/read.js
++++ b/server/agent/read.js
+@@ -29,7 +29,8 @@
+ export function posteriorOf(graded, { prior = PRIOR, learn = LEARN } = {}) {
+   let p = [...prior];
+   for (const x of graded ?? []) {
+-    const table = P[depthOf(x.kind)];
++    // a deep-tagged item the deep-kind audit marked plain (graded entry `plain`, kit item deep: false) weighs as plain
++    const table = P[x.plain ? "plain" : depthOf(x.kind)];
+     const o = outcomeOf(x.g);
+     p = LEVELS.map((s, i) => { const [c, pt] = table[s]; const like = o === 0 ? c : o === 1 ? pt : Math.max(0.02, 1 - c - pt); return p[i] * like; });
+     const z = p.reduce((a, b) => a + b, 0) || 1;
+diff -ruN a/server/content/kits.js b/server/content/kits.js
+--- a/server/content/kits.js
++++ b/server/content/kits.js
+@@ -97,6 +97,8 @@
+         // director/items.js itemGE() falls back to the difficulty proxy without them.
+         ...(Number.isFinite(Number(it.ge)) && it.ge !== null && it.ge !== "" ? { ge: Number(it.ge) } : {}),
+         ...(["recall", "apply", "reason", "transfer"].includes(it.demand) ? { demand: it.demand } : {}),
++        // deep-kind audit (director/items.js plainEvidence): a deep-tagged item whose answer is plain evidence
++        ...(it.deep === false ? { deep: false } : {}),
+         ...(it.verified ? { verified: it.verified } : {}),
+       };
+       item.hints = item.hints.map((h, rung) => {
+diff -ruN a/server/director/items.js b/server/director/items.js
+--- a/server/director/items.js
++++ b/server/director/items.js
+@@ -18,6 +18,15 @@
+ 
+ const DIAG_PREFIX = "diag:";
+ export const probeFor = (item) => (item.diagnostic ? "P7" : PROBE_FOR_KIND[item.kind] ?? "P15");
++/**
++ * Deep-kind audit (2026-10-15, docs/research/kits/DEEP-KIND-AUDIT.md): a deep-tagged item that two cross-family models read
++ * as recall, one step or read-off carries `deep: false`. Its kind, key, classifier target and pose stay; its ANSWER is plain
++ * evidence: item.open by the hint ladder (never a U / T facet probe, never a generative pass), and never the deep right answer
++ * agent.js earnedRead needs.
++ */
++export const plainEvidence = (item) => item?.deep === false;
++/** The probe an answer to this item is EVIDENCE as (probeFor is what is asked; they differ only for a deep: false item). */
++export const evidenceProbeFor = (item) => (plainEvidence(item) && !item.diagnostic ? "P15" : probeFor(item));
+ 
+ /** The prompt to pose, in the child's language (Hinglish/Hindi kits carry prompt_hi). */
+ export const promptFor = (item, lang) => (lang === "english" ? item.prompt_en : item.prompt_hi) || item.prompt_en;
+diff -ruN a/server/director/state.js b/server/director/state.js
+--- a/server/director/state.js
++++ b/server/director/state.js
+@@ -20,7 +20,7 @@
+ import { stopKind, signalsOf } from "../relational/signals.js";
+ import * as SH from "./shapes.js";
+ import { readFileSync } from "fs";
+-import { buildPracticeQueue, findItem, isomorphicFor, probeFor, promptFor, optionsSpoken, selectNext, anchorOf, whyKey, PROBE_WEIGHT, revealsAnswer, choicesFor, stripRungLabel } from "./items.js";
++import { buildPracticeQueue, findItem, isomorphicFor, probeFor, evidenceProbeFor, promptFor, optionsSpoken, selectNext, anchorOf, whyKey, PROBE_WEIGHT, revealsAnswer, choicesFor, stripRungLabel } from "./items.js";
+ import { registerNote } from "./register.js";
+ import { askText } from "./say.js";
+ import { getTopic, findTopic } from "../content/curriculum.js";
+@@ -2006,7 +2006,8 @@
+   const item = findItem(s, kit, s.activeItemId);
+   if (!item || s.hintLevel >= 4) return [];
+   const why = s.pendingWhy === item.id;
+-  const probe = why ? "P2" : probeFor(item);
++  const asked = why ? "P2" : probeFor(item);
++  const probe = why ? "P2" : evidenceProbeFor(item);
+   const kitFactor = (item.kitVerified ?? kit.verified) ? 1 : 0.5;
+   let w = PROBE_WEIGHT[probe] * kitFactor * discount;
+   // Young children often cannot verbalise what they do understand: a missed "why" is weak evidence.
+@@ -2016,7 +2017,8 @@
+   const hintsUsed = leaked || s.spoiled?.includes(item.id) ? 4 : item.fade ? Math.max(1, s.hintLevel) : s.hintLevel;
+   const rows = [{ skillId: item.skillId, itemId: item.id, probe, outcome: cls.outcome, ...mis, hintsUsed, weight: round2(w) }];
+   // A reason volunteered with an unaided correct answer is a why-probe (P2) the child ran on themself.
+-  if (probe !== "P2" && cls.outcome === "correct" && hintsUsed === 0 && cls.reason) {
++  // (a why-kind item's answer IS its reason: a deep: false one must not come back as a volunteered why)
++  if (asked !== "P2" && cls.outcome === "correct" && hintsUsed === 0 && cls.reason) {
+     rows.push({
+       skillId: item.skillId, itemId: item.id, probe: "P2", outcome: cls.reason === "right" ? "correct" : "misconception",
+       ...(cls.reasonMisconceptionId ? { misconceptionId: cls.reasonMisconceptionId } : {}), hintsUsed: 0, weight: round2(PROBE_WEIGHT.P2 * kitFactor * discount),
+diff -ruN a/shared/contracts.ts b/shared/contracts.ts
+--- a/shared/contracts.ts
++++ b/shared/contracts.ts
+@@ -17,6 +17,8 @@
+   prompt_en: string; prompt_hi: string; answer: string; acceptable: string[];
+   hints: [string, string, string, string]; targetsMisconception?: string;
+   verified?: { solverAnswer: string; agrees: boolean; note?: string };
++  /** Deep-kind audit: false = a deep-tagged item that is recall / one step / read-off; its answer is plain evidence (server/director/items.js plainEvidence). */
++  deep?: false;
+ }
+ export interface KitMisconception {
+   id: string; belief: string; signs: string[];
+diff -ruN a/tests/r143-kit-deep-false.test.mjs b/tests/r143-kit-deep-false.test.mjs
+--- a/tests/r143-kit-deep-false.test.mjs
++++ b/tests/r143-kit-deep-false.test.mjs
+@@ -0,0 +1,88 @@
++// Deep-kind audit (2026-10-15, docs/research/kits/DEEP-KIND-AUDIT.md): a deep-tagged kit item marked `deep: false` keeps its
++// kind, key, classifier target and pose, but its answer is plain evidence: item.open (no U / T facet, no generative pass) and
++// never the deep right answer agent.js earnedRead needs. Pure.
++import { test } from "node:test";
++import assert from "node:assert/strict";
++import { normalizeKit } from "../server/content/kits.js";
++import { evidenceFrom } from "../server/director/state.js";
++import { probeFor, evidenceProbeFor, plainEvidence } from "../server/director/items.js";
++import { answerEvents } from "../server/learner/live.js";
++import { earnedRead, applyAgentTurn } from "../server/agent/agent.js";
++import { offeredItems } from "../server/agent/prompt.js";
++import { posteriorOf, evidenceRead } from "../server/agent/read.js";
++import { targetFor } from "../server/director/classify.js";
++import { RAW_KIT, CTX, cls } from "./fixtures/kit.mjs";
++
++const kitWith = (marks) => { const raw = structuredClone(RAW_KIT); for (const it of raw.items) if (it.id in marks) it.deep = marks[it.id]; return normalizeKit(raw, { topicId: raw.topicId, verified: true }); };
++const S = (activeItemId, over = {}) => ({ phase: "practice", activeItemId, hintLevel: 0, skills: {}, ctx: { ...CTX }, ...over });
++
++test("the loader keeps deep: false and nothing else; kind, key and target are untouched", () => {
++  const K = kitWith({ i6: false, i4: "no", i5: true });
++  const i6 = K.items.find((i) => i.id === "i6");
++  assert.equal(i6.deep, false); assert.equal(i6.kind, "error_spot"); assert.equal(i6.answer, "1/3 is bigger");
++  assert.equal(K.items.find((i) => i.id === "i4").deep, undefined, "a non-false value is dropped");
++  assert.equal(K.items.find((i) => i.id === "i5").deep, undefined);
++  const plain = kitWith({}), t0 = targetFor(S("i5"), plain, plain.items.find((i) => i.id === "i5"));
++  const K5 = kitWith({ i5: false }), t1 = targetFor(S("i5"), K5, K5.items.find((i) => i.id === "i5"));
++  assert.deepEqual({ ...t1, item: undefined }, { ...t0, item: undefined }, "the classifier target (open grading of a why) is unchanged");
++  assert.equal(probeFor(i6), "P6", "what is ASKED (the pose's probe) is unchanged");
++  assert.equal(evidenceProbeFor(i6), "P15"); assert.ok(plainEvidence(i6));
++});
++
++test("evidence: a deep: false error_spot / why answer is P15; the unmarked one keeps its probe; no volunteered why on a why item", () => {
++  const K0 = kitWith({}), K1 = kitWith({ i6: false, i5: false });
++  assert.equal(evidenceFrom(S("i6"), cls("correct"), K0)[0].probe, "P6");
++  assert.equal(evidenceFrom(S("i6"), cls("correct"), K1)[0].probe, "P15");
++  const withReason = { ...cls("correct"), reason: "right" };
++  assert.deepEqual(evidenceFrom(S("i5"), withReason, K0).map((e) => e.probe), ["P2"]);
++  assert.deepEqual(evidenceFrom(S("i5"), withReason, K1).map((e) => e.probe), ["P15"], "the why item's answer is its reason: not a second probe.why");
++  assert.deepEqual(evidenceFrom(S("i6"), withReason, K1).map((e) => e.probe), ["P15", "P2"], "a reason volunteered on another kind still counts");
++  assert.deepEqual(evidenceFrom(S("i6", { pendingWhy: "i6" }), cls("correct"), K1).map((e) => e.probe), ["P2"], "the teacher's own why follow-up stays a why");
++});
++
++test("the KT event: item.open by the ladder, not probe.errorspot / probe.why (U facet, generative pass)", () => {
++  for (const [K, want] of [[kitWith({}), "probe.errorspot"], [kitWith({ i6: false }), "item.open"]]) {
++    const item = K.items.find((i) => i.id === "i6");
++    const s = S("i6");
++    const evidence = evidenceFrom(s, cls("correct"), K);
++    const a = answerEvents({ lessonId: "11111111-1111-1111-1111-111111111111", startedAt: 0, now: 1000, childSeq: 1, evidence, cls: { ...cls("correct"), source: "exact" }, prev: s, kit: K, activeItem: item });
++    assert.equal(a.events[0].cls, want);
++  }
++  const K5 = kitWith({ i5: false }), s5 = S("i5");
++  const a5 = answerEvents({ lessonId: "11111111-1111-1111-1111-111111111111", startedAt: 0, now: 1000, childSeq: 1, evidence: evidenceFrom(s5, cls("correct"), K5), cls: { ...cls("correct"), source: "exact" }, prev: s5, kit: K5, activeItem: K5.items.find((i) => i.id === "i5") });
++  assert.equal(a5.deferred.length, 0); assert.equal(a5.events[0].cls, "item.open");
++});
++
++test("agent lane: a plain right answer on a deep-tagged item is not the deep evidence understood needs", () => {
++  const C = (item, kind = "practice", g = "correct", plain) => ({ item, kind, g, ...(plain ? { plain: true } : {}) });
++  // the evidence read (read.js): a plain-marked error_spot weighs exactly as a practice item
++  assert.deepEqual(posteriorOf([C("i6", "error_spot", "correct", true)]), posteriorOf([C("i1")]));
++  assert.notDeepEqual(posteriorOf([C("i6", "error_spot")]), posteriorOf([C("i1")]));
++  // one practice right + one error_spot right clears the 0.8 bar; the same answers with the error_spot marked plain do not
++  assert.equal(evidenceRead([C("i7"), C("i6", "error_spot")], { bar: 0.8 }), "understood");
++  assert.equal(evidenceRead([C("i7"), C("i6", "error_spot", "correct", true)], { bar: 0.8 }), "partly");
++  // the earned rule (no graded answer yet / the model's claim): a plain entry is not the deep right answer
++  assert.equal(earnedRead("understood", [C("i1"), C("i6", "error_spot")]), "understood");
++  assert.equal(earnedRead("understood", [C("i1"), C("i6", "error_spot", "correct", true)]), "partly");
++  // applyAgentTurn records the mark on the graded entry, so every reader of `graded` sees it
++  const K = kitWith({ i6: false }), card = K.items.find((i) => i.id === "i6");
++  const mk = () => ({ phase: "practice", ctx: { ...CTX, classLevel: 4 }, itemsDone: [], skipped: [], agent: { learner: { [card.skillId]: { graded: [{ item: "i7", kind: "practice", g: "correct" }] } } } });
++  const out = { say: "Shabash.", intent: "practice", item: null, read: null, usage: { usd: 0, tokens: 0 }, ms: 1, notes: [] };
++  const n1 = mk(); applyAgentTurn(n1, out, { kit: K, childText: "1/3", cls: cls("correct"), card, lessonId: "L1" });
++  assert.equal(n1.agent.learner[card.skillId].graded.at(-1).plain, true);
++  assert.equal(n1.agent.learner[card.skillId].read, "partly");
++  assert.equal(n1.agent.learner[card.skillId].depth, "untested", "right only on plain evidence: untested, as for plain items");
++  const K0 = kitWith({}), card0 = K0.items.find((i) => i.id === "i6");
++  const n0 = mk(); applyAgentTurn(n0, out, { kit: K0, childText: "1/3", cls: cls("correct"), card: card0, lessonId: "L1" });
++  assert.equal(n0.agent.learner[card0.skillId].read, "understood", "unmarked: the deep item still counts as deep");
++});
++
++test("offered items: a skill that needs deep evidence is not narrowed to a deep: false item", () => {
++  const K = kitWith({ i3: false, i4: false, i6: false });
++  const st = { turn: 3, phase: "practice", ctx: { ...CTX, classLevel: 4 }, itemsDone: ["i7"], skipped: [], agent: { skill: "c4-maths-ch05-t01-s2", learner: { "c4-maths-ch05-t01-s2": { graded: [{ item: "i7", kind: "practice", g: "correct" }] } } } };
++  const s2 = offeredItems(st, K, 20).filter((i) => i.skillId === "c4-maths-ch05-t01-s2").map((i) => i.id);
++  assert.deepEqual(s2, ["i5"], "only the real deep item (the why) while it is left");
++  const K2 = kitWith({ i3: false, i4: false, i5: false, i6: false });
++  const s2b = offeredItems(st, K2, 20).filter((i) => i.skillId === "c4-maths-ch05-t01-s2").map((i) => i.id).sort();
++  assert.deepEqual(s2b, ["i3", "i4", "i5", "i6"], "no real deep item left: nothing is narrowed");
++});

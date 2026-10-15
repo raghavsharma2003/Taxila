@@ -1,0 +1,64 @@
+{
+  "nodes": [
+    {
+      "id": "dc-r5-board-answers-the-ask",
+      "kind": "decision",
+      "at": "2026-10-14",
+      "title": "Round 5, stream 2 (RCA-1): what the child asked to SEE rides on the whiteboard ask (intent.request: how, the thing named, the numbers named; requests.js visualAskOf, Director move.see, propose.js requestOfSee). Studio draws THAT: a ready-made board (board-first pick, speculative, the kit's code board, the template rung) is drawn for a request only when it answers it by code (studio/request.js answersRequest: the thing's words in either script / spelling, the child's numbers on a number line), the line planner is told the request and repaired once when it misses, and a number line with the child's numbers is drawn by code. A requested page is always a fresh page. Reverse if: the 40-ask battery (tests/prod/r5-board-asks.mjs) falls below 9/10 on two runs in a row, or the round2-content / owner-5 batteries regress on the same seeds"
+    },
+    {
+      "id": "dc-r5-never-the-same-page",
+      "kind": "decision",
+      "at": "2026-10-14",
+      "title": "Never the same page twice unasked: a new page whose texts equal the page already up is refused at every source (seam drawn(), the board-sync ladder, the line planner's not_again repair); a board KEPT on purpose (a continue that adds nothing) is the same board, not a new page, and is no longer written to the notebook twice. Reverse if: children ask for 'the same board again' and are refused (a 'phir se dikhao' request should pass the previous page as asked)"
+    },
+    {
+      "id": "dc-r5-offkit-sketch",
+      "kind": "decision",
+      "at": "2026-10-14",
+      "title": "A thing outside the kit that a plain labelled sketch can show ('aloo dikhao' in a maths lesson) is sketched on the board for the ask, honestly (no photo promised; her shape never points before it is there); release 13's 'cannot show it' floor stays for anything code's drawableSubject refuses (a person, body, brand, weapon, digits, more than 4 words, the child-safety predicates). Supersedes the release-13 (A) behaviour for drawable things (tests/r13-visual-honest.test.mjs updated). Reverse if: a sketch of an off-kit thing derails lessons in the sim lab (coherence) more than the words-only answer did"
+    },
+    {
+      "id": "dc-r5-board-tools",
+      "kind": "decision",
+      "at": "2026-10-14",
+      "title": "The Teacher agent's board and picture tools (server/studio/tools.js, server/studio/picture.js): board.show(spec: write | table | shapes | work | number_line | draw) / board.clear / screen.now / picture.get each return ScreenTruth computed from what actually mounted (words, texts, numbers, pageId, refused with checks). picture.get is a background job (gpt-image-2.5-flare low → gpt-image-2 → sunburst, fixed kid-safe template with the subject as its only slot, Content Safety image:analyze on the pixels, severity >= 2 or any error refuses), revealed on the Studio stream's early slot, at most 4 per lesson. Reverse if: the image lane's subscription-wide 4 RPM makes picture jobs fail more than 1 in 5 in the owner cohort (then a cached library first)"
+    },
+    {
+      "id": "rj-r5-strip-whole-pointing-sentences",
+      "kind": "rejection",
+      "at": "2026-10-14",
+      "title": "Taking pointing out of her line with director/say.js stripScreenRefs on request turns: it drops a sentence that is only pointing, and with it the number she explained ('Screen par number line dekhiye: 0 aur 1 ke beech 4 barabar hisse' → gone); the board drawn from her line then could not mark the child's 1/4 (W9 withheld it) and 3 of 6 number-line asks got no page. Replaced by studio/request.js unpointGently (only the pointing phrase goes)"
+    },
+    {
+      "id": "rj-r5-parts-guard-on-named-asks",
+      "kind": "rejection",
+      "at": "2026-10-14",
+      "title": "Judging her 'parts' words against the module that was up BEFORE a named visual ask (brain/say.js screenContradiction): for 'number line pe 1/4 dikhao' she said '0 se 1 ke beech 4 barabar hisse' over the open question's 5-part engine and was cut to 'Woh 0 se kitna door hai?' (3 of 5 number-line asks). On a turn that answers a named ask the reply guards get no module (turn.js boardAnswersAsk); the board drawn for it is gated against her line (W8)"
+    },
+    {
+      "id": "ms-r5-board-asks",
+      "kind": "measurement",
+      "at": "2026-10-14",
+      "title": "40-ask battery (tests/prod/r5-board-asks.mjs; classes 1-9, maths / EVS / science / SST / Hindi; a fresh child per ask, spoken lane, one 'haan' then the ask; local server on the Neon TEST branch, real Azure models; scored by code predicates from board_page / studio_mount: subject words, shapes, the child's numbers on a number line, an interactive mount, repeat, overlay, pointing). Base 5148982: 20/40. Iterations: 33, 29 (scorer missed drawn number lines), 34, 36, 35 /40, with 0 repeats, 0 overlays, 0 bad pointing since iteration 2. Persistent misses: 'ghadi draw karo' (the clock's numbers are not in her line: W4), a game for a topic with no play piece, 'ek example do' drawn as a bare fraction. Adult-run harness: no child"
+    },
+    {
+      "id": "ms-r5-owner-replay",
+      "kind": "measurement",
+      "at": "2026-10-14",
+      "title": "Owner replay of a95d2ff1 (tests/prod/r5-owner-replay.mjs, the child's exact 15 turns, n = 1 per run): release 11 drew the rules table on 7 of 10 pages; on this branch 0-1 repeats and 1-4 table pages per run, aloo drawn when the subject was kept; the aloo subject is lost when turn 18 ('mere ko aloo ke baare mein padhna hai … bahut ho gaya') is read as a stop check-in (4A), so the later picture chip has no subject"
+    },
+    {
+      "id": "dc-r5-picture-on-director-lane",
+      "kind": "decision",
+      "at": "2026-10-14",
+      "title": "Owner decision 14.2: a REAL picture on the Director lane for the picture cohort (studio/picture.js picturesFor: TAXILA_PICTURES = off | all | unset → TAXILA_PICTURES_FOR, guardian emails or their sha256, the duplex cohort pattern). A photo ask, or a thing outside the kit the board sketches, starts startPicture; the board sketch and her 'a real picture is being made, it comes in a few seconds' (shapes drawAsked photo:'coming' / pictureNote) go up at once and the picture reveals on the Studio stream after Content Safety passes (~15 s), replacing the sketch; it stays into the next turn (the tray gate now certifies a picture-lane image: inline JPEG / PNG, contain-fit, no text) and is taken down on the board's rules (turn.js leftBoard). The lane's limits: 4 per lesson, at most TAXILA_PICTURES_IN_FLIGHT (3) being made at once, a deployment that answers 429 rests 15-20 s while the chain moves on; a full lesson or a busy lane is said honestly ('a photo cannot come right now'), a picture is never said to be there before it mounts. Reverse if: picture jobs fail more than 1 in 5 in the cohort, or a revealed picture is judged off-subject by the owner more than 1 in 10"
+    },
+    {
+      "id": "dc-r5-persistent-misses-14-2",
+      "kind": "decision",
+      "at": "2026-10-14",
+      "title": "Owner decision 14.2, the battery's persistent misses: (1) a drawing whose face IS numbers ('ghadi draw karo': 1-12; a ruler 0-15) may write them (studio/request.js askedNumbers FACE_NUMBERS → W4 extraNumbers); (2) a game asked for with no game to mount: her line never announces one (turn.js claim_game: studio/request.js ungame turns 'game' into 'activity' when the line does not say there is none; the shape ends 'never call what you try together a game'); the battery counts an honest no-game turn as answered, apart (got.honest); (3) 'ek example do' is answered only by a WORKED page (3+ things written, 2+ with numbers: studio/request.js workedPage), so a ready-made bare fact ('1/2 = 2/4 | same amount') or number-less steps go to the line planner, which draws her example. Reverse if: the line planner's example pages fail the board gate more often than the ready-made pages they replace"
+    }
+  ]
+}

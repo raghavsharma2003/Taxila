@@ -88,7 +88,8 @@ export function Me() {
           <Switch id="words" label={t("wordsYoung")} on={prefs.captionsAlways} set={(v) => setPrefs({ captionsAlways: v })} icon={ic("captions", "picto/captions")} />
         )}
         {/* "Type instead" (W1-A item 9; flows G8): lessons start in the text lane (prefs.quiet); she still talks */}
-        <Switch id="type" label={tw("me.type.title")} note={prefs.quiet ? tw("me.type.on", { T: rec.name }) : tw("me.type.off")}
+        <Switch id="type" label={tw(older ? "me.type.title" : "me.tap.title")}
+          note={prefs.quiet ? tw(older ? "me.type.on" : "me.tap.on", { T: rec.name }) : tw(older ? "me.type.off" : "me.tap.off")}
           on={prefs.quiet} set={(v) => setPrefs({ quiet: v })} icon={ic("text", "picto/captions")} />
         <Switch id="sounds" label={older ? t("soundsOlder") : t("soundsYoung")} on={sounds} set={(v) => setPrefs({ sounds: v })}
           icon={ic("sound", sounds ? "picto/sound-on" : "picto/sound-off")} />

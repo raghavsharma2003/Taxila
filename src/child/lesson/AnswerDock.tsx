@@ -63,7 +63,9 @@ export function AnswerDock({ m, a, micMeter, stripId, lit, setRef }:
   { m: DeskModel; a: DeskActions; micMeter?: Meter; stripId: StripId | null; lit: boolean; setRef?: (el: HTMLElement | null) => void }) {
   const young = m.family === "young";
   const yourTurn = m.floor === "your_turn" || m.floor === "yielding";
-  const held = !!stripId && HOLDS_ANSWER.has(stripId);
+  // r5 QA D16: "Your answer is saved" only when an answer is actually waiting (offline at her turn with nothing said
+  // showed it too); the strip itself still says what the network is doing
+  const held = !!stripId && HOLDS_ANSWER.has(stripId) && m.answer?.delivery === "not_sent";
   const word = held ? t("floor.held")
     : stateWord(m.floor, { teacher: m.teacher.name, thinkingLabel: m.thinkingLabel, // r4-latency patch 01: no seconds counter while she thinks; her face carries the wait (rj-symbolic-wait-indicator)
       seconds: null, lastOne: m.lastOne, tapToTalk: m.mic.tapToTalk });
@@ -135,7 +137,7 @@ export function AnswerDock({ m, a, micMeter, stripId, lit, setRef }:
     ) : side("dock.type", "keyboard", () => a.setTyping(true), "type");
     body = (
       <div className="dk-dock-row">
-        {side("dock.hint", "lightbulb", a.openHint, "hint")}
+        {m.safeguard ? <span className="dk-side dk-side--empty" aria-hidden="true" /> : side("dock.hint", "lightbulb", a.openHint, "hint")}
         {m.answerForm === "tap_in_tray" || m.answerForm === "draw" ? (mic ? <span className="dk-mic-unlit">{mic}</span> : <span className="dk-dock-gap" />) : mic ?? <span className="dk-dock-gap" />}
         {m.answerForm === "choice" || m.answerForm === "tap_in_tray" || m.answerForm === "read_aloud" ? <span className="dk-side dk-side--empty" aria-hidden="true" /> : typeBtn}
       </div>
@@ -174,7 +176,7 @@ function TypeRow({ young, onSend, onClose, onFocus, canClose, initial = "" }: { 
   }, []);
   return (
     <form className="dk-type" onSubmit={(e) => { e.preventDefault(); if (v.trim()) { onSend(v.trim()); setV(""); } }}>
-      <input ref={ref} className="dk-input" value={v} onChange={(e) => setV(e.target.value)} placeholder={t("dock.type_label")} aria-label={t("dock.type_label")}
+      <input ref={ref} className="dk-input" value={v} onChange={(e) => setV(e.target.value)} placeholder={t("dock.type_placeholder")} aria-label={t("dock.type_label")}
         onFocus={() => onFocus(true)} onBlur={() => onFocus(false)} enterKeyHint="send" autoComplete="off" inputMode={young ? "numeric" : "text"} data-testid="child-input" />
       <button type="submit" className="dk-btn dk-btn--primary" disabled={!v.trim()} data-testid="send"><Glyph name="send" size={20} />{t("dock.send")}</button>
       {canClose && (

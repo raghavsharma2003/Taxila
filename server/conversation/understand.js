@@ -3,8 +3,9 @@
 // writes words the child hears. The model reads; code decides; the reply model words the move (model-full-orchestrator
 // broke hard rules 15/72; code 23/24 with 0 breaks).
 //
-// Model: taxila-gpt6 (gpt-6-sol, effort none): 330/355 (93%) policy-move accuracy vs the prod classifier's 313/355 (88%)
-// in the 2026-10-04 bake-off (evals/conversation-v2/results/2026-10-04-run1/understand-bakeoff). Override with
+// Model: a race of grok-4-1-fast-nr and taxila-fast (understandDeploys below, r5-latency); before round 5 taxila-gpt6
+// (gpt-6-sol, effort none): 330/355 (93%) policy-move accuracy uncapped in the 2026-10-04 bake-off
+// (evals/conversation-v2/results/2026-10-04-run1/understand-bakeoff), but too slow for the turn's cap. Override with
 // TAXILA_UNDERSTAND_DEPLOY. It is called only when the bytes decided nothing (classifyFast had no result), started in
 // parallel with classify(), and waited on only when classify() says the turn is not an answer (no_evidence) — so an
 // answer turn never waits on it.
@@ -14,7 +15,7 @@
 // A content-filter block on the NOTE is not a distress signal here: classify() already ran the child's words through the
 // filter and the predicate (the floor never depends on this call; a note's distress is OR-ed in, never subtracted).
 import { chat, isContentFilter } from "../azure.js";
-import { scrubPii } from "../director/safety.js";
+import { scrubPii, filterSafe } from "../director/safety.js";
 
 export const INTENTS = Object.freeze([
   "answer_correct", "answer_wrong", "answer_partial", "answer_hedged", "thinking_aloud", "self_correction", "dont_know", "ask_for_answer",
@@ -128,7 +129,16 @@ export const BREAKER_MS = 30_000;
 let openUntil = 0;
 /** Injectable for tests; production uses azure.js. */
 export const understandDeps = { chat, now: () => Date.now() };
-export const understandDeploy = () => process.env.TAXILA_UNDERSTAND_DEPLOY || "taxila-gpt6";
+/**
+ * r5-latency (model routing): the note is a RACE of fast deployments, the first usable note wins. taxila-gpt6 alone was
+ * 93% on the bake-off but p50/p90 1810/2174 ms, so under the turn's 2.4 s cap it timed out on the hot path (the owner's
+ * 2026-10-14 lesson) and was 317/355 (89.3%) in effect. Re-scored from the same bake-off rows (n = 355, US -> eastus2):
+ * first of grok-4-1-fast-nr | taxila-fast 313/355 (88.2%) at p50/p90 860/1188 ms; both are protected hot lanes
+ * (server/lanes.js). TAXILA_UNDERSTAND_DEPLOY = a comma list (one name = no race; "taxila-gpt6" = before round 5).
+ */
+export const UNDERSTAND_DEFAULT = "grok-4-1-fast-non-reasoning,taxila-fast";
+export const understandDeploys = () => String(process.env.TAXILA_UNDERSTAND_DEPLOY || UNDERSTAND_DEFAULT).split(",").map((x) => x.trim()).filter(Boolean);
+export const understandDeploy = () => understandDeploys()[0];
 /** Tests only: close the breaker. */
 export const resetBreaker = () => { openUntil = 0; };
 
@@ -142,14 +152,25 @@ export async function understand(ctx) {
   if (t0 < openUntil) return null;
   const said = scrubPii(String(ctx.said ?? "")).text;
   if (!said.trim()) return null;
-  const messages = [{ role: "system", content: SYSTEM }, { role: "user", content: userPrompt({ ...ctx, said }) }];
-  try {
-    const r = await understandDeps.chat(understandDeploy(), messages, { json: true, maxTokens: 160, effort: "none", timeoutMs: ctx.timeoutMs ?? 2400,
+  // "teen" as 3 in the copy the model reads (safety.js filterSafe); parseNote keeps the raw words
+  const messages = [{ role: "system", content: SYSTEM }, { role: "user", content: filterSafe(userPrompt({ ...ctx, said })) }];
+  const deps = understandDeploys();
+  const one = async (dep) => {
+    const r = await understandDeps.chat(dep, messages, { json: true, maxTokens: 160, effort: "none", timeoutMs: ctx.timeoutMs ?? 2400,
       retries: 0, trace: ctx.trace, quotaLane: "hot" });
-    return parseNote(r?.json, ctx.said);
-  } catch (e) {
-    if (e?.status === 429) openUntil = understandDeps.now() + BREAKER_MS;
-    if (!isContentFilter(e)) console.warn(`[understand] note unavailable (${e?.status ?? ""} ${String(e?.message ?? e).slice(0, 80)}): code-only reading`);
+    const note = parseNote(r?.json, ctx.said);
+    if (!note) throw Object.assign(new Error(`${dep}: unusable note`), { unusable: true });
+    return note;
+  };
+  try {
+    // the first USABLE note wins; a failed or unusable arm waits for the others (Promise.any)
+    return await Promise.any(deps.map(one));
+  } catch (agg) {
+    const errs = agg?.errors ?? [agg];
+    // the breaker opens only when every arm was throttled (one 429 among working arms is not an outage)
+    if (errs.length && errs.every((e) => e?.status === 429)) openUntil = understandDeps.now() + BREAKER_MS;
+    const e = errs.find((x) => !x?.unusable) ?? errs[0];
+    if (!errs.some((x) => isContentFilter(x)) && !errs.every((x) => x?.unusable)) console.warn(`[understand] note unavailable (${e?.status ?? ""} ${String(e?.message ?? e).slice(0, 80)}): code-only reading`);
     return null;
   }
 }

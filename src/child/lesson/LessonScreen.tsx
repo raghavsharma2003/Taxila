@@ -9,7 +9,7 @@ import { ApiError } from "../../lesson/api.ts";
 import type { RuntimeDeps } from "../../lesson/runtime.ts";
 import { RefusedScreen } from "./Refused.tsx";
 import { purposeOf, refusalOf, type StartRefusal } from "./answers.ts";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { ECHO_DEMOTE_FLAGS, UiBridge } from "../../lesson/uiBridge.ts";
 import { useLesson } from "../../lesson/useLesson.ts";
 import { TeacherNameProvider, teacherRecord } from "../../ui/teacher/useTeacher.ts";
@@ -47,6 +47,9 @@ export function LessonScreen({ variant, topicId, firstText }: LessonScreenProps)
   const { cid, child, me, band, family, lang, prefs, setPrefs, reducedMotion } = useChild();
   const navigate = useNavigate();
   const [search] = useSearchParams();
+  // r5 QA D24: /lesson/<id> (after a reload, a tab discard or the home's "continue") rejoins that open lesson
+  const { lid } = useParams();
+  const resumeLessonId = variant === "lesson" && lid && /^[0-9a-f-]{36}$/i.test(lid) ? lid : undefined;
   const [bridge] = useState(() => new UiBridge());
   useEffect(() => () => bridge.dispose(), [bridge]);
   // The start says what it is for (flows G1): Practice and Ask pass a "Done for today" plan; a lesson does not. A 409
@@ -82,6 +85,7 @@ export function LessonScreen({ variant, topicId, firstText }: LessonScreenProps)
     timing: [1, 1.5, 2].includes(Number(child.timing_multiplier)) ? Number(child.timing_multiplier) : 1,
     variant,
     topicId: topicId || search.get("topic") || undefined,
+    resumeLessonId,
     firstText,
     // the parent's per-child "Tap and type only" (Controls, server truth on every phone) or this device's "Type instead"
     textOnly: variant === "practice" || search.get("mode") === "text" || prefs.quiet || cachedTextOnly(cid),

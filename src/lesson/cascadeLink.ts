@@ -23,7 +23,9 @@ import { postJson } from "./api.ts";
 import { createLevelAnalyser } from "./level.ts";
 import type { LinkEvent, LinkLevels, MicTap, TeacherLink, TeacherReply } from "./link.ts";
 import { Emitter } from "./store.ts";
-import { fetchSpeechStream, PcmStreamPlayer, type SpeechStreamFetch, type StreamPlayback } from "./ttsStream.ts";
+import { fetchSpeechStream, PcmStreamPlayer, registerEarlyAudio, type EarlySay, type SpeechStreamFetch, type StreamPlayback } from "./ttsStream.ts";
+/** r5-latency: how long her streamed line's end waits for its turn to arrive (then the reply ends as if adopted). */
+const EARLY_HOLD_MS = 10_000;
 import { MicVad } from "./vad.ts";
 import { FragmentMerger, PREDICTIVE_SILENCE_MS, predictiveEnabled, resumeCeilingMs, turnContext, type TurnFinal } from "./turnModel.ts";
 // Round 2 latency: the stable partial transcript goes to POST /api/lesson/turn-prefetch the moment the child is quiet
@@ -37,6 +39,9 @@ import { puppetBus } from "../face-puppet/bus.ts";
 import type { CascadeDuplex, CascadeDuplexOptions, CascadeDuplexState } from "../duplex/cascadeDuplex.ts";
 import type { DuplexMode } from "../duplex/flags.ts";
 import { VoiceLinkTrace } from "../voice/trace.ts";
+
+/** Round 5: a spoken final this soon after a tapped / typed answer is never a second turn (the owner's chip race). */
+export const LINK_TAP_GUARD_MS = 3000;
 
 export type CascadeTransport = "webrtc" | "recording" | "typed";
 
@@ -328,6 +333,11 @@ interface CurrentReply {
   playing: boolean;
   /** Paused by a barge-in that the transcript has not yet decided. */
   paused: null | { by: "local" | "server"; at: number };
+  /**
+   * r5-latency: her words streamed BEFORE the turn arrived (turn-audio's agent lane; ttsStream registerEarlyAudio). Not
+   * adopted yet = the turn (its ui, hand-over, caption) has not come: her line's end is held until it does.
+   */
+  early?: { adopted: boolean; ended: "completed" | "stopped" | "failed" | null; announced?: boolean };
 }
 
 export class CascadeLink implements TeacherLink {
@@ -382,6 +392,7 @@ export class CascadeLink implements TeacherLink {
   private transportKind: CascadeTransport = "webrtc";
   private callUp = false;
   private closed = false;
+  private unEarly: (() => void) | null = null;
   private reconnecting = false;
   private pushToTalk = false;
   private talking = false;
@@ -408,6 +419,8 @@ export class CascadeLink implements TeacherLink {
 
   constructor(opts: CascadeLinkOptions) {
     this.lessonId = opts.lessonId;
+    // r5-latency: play the agent's streamed words the moment a turn-audio response starts them (adopted at promptTeacher)
+    this.unEarly = registerEarlyAudio(opts.lessonId, (stream) => this.playEarly(stream));
     this.levels = opts.levels;
     this.fetchToken = opts.fetchToken ?? defaultToken;
     this.speech = opts.speech ?? fetchSpeechStream;
@@ -419,7 +432,8 @@ export class CascadeLink implements TeacherLink {
     this.onTransport = opts.onTransport;
     this.ctx = opts.audioContext ?? null;
     this.merger = opts.predictive ?? predictiveEnabled() ? new FragmentMerger() : null;
-    this.ack = opts.ack ?? ackEnabled() ? new AckClient({ lessonId: opts.lessonId, onClip: (c) => this.playAck(c) }) : null;
+    // round 5: no continuer on D5 until its gate covers it (Voice Live's own turn detection has not been measured with one)
+    this.ack = opts.ack ?? ackEnabled() ? new AckClient({ lessonId: opts.lessonId, onClip: (c) => this.playAck(c), continuer: () => this.laneUsed !== "d5" }) : null;
     this.prefetcher = opts.prefetch ?? prefetchEnabled()
       ? new TurnPrefetcher({ lessonId: opts.lessonId, onSend: (b) => this.ack?.request(b.text) }) : null;
     this.unregisterLatency = registerLatencyTarget({ lessonId: opts.lessonId, prefetcher: this.prefetcher, ack: this.ack, duplexLive: () => this.duplexDeciding });
@@ -495,8 +509,12 @@ export class CascadeLink implements TeacherLink {
   /** The Director already used them to write the reply; nothing to apply on this transport. */
   applyInstructions(): void {}
 
+  /** Round 5: when the child last tapped or typed an answer (epoch ms). */
+  private typedAt = -Infinity;
+
   sendChild(text: string, opts: { chipId?: string } = {}): void {
     void this.ctx?.resume().catch(() => {}); // inside the child's tap: a user activation
+    this.typedAt = Date.now();
     this.duplex?.screen(opts.chipId ? "choice_pick" : "submit");
     this.interrupt();
     this.events.emit({ type: "child_final", text, startedAt: Date.now(), typed: true, chipId: opts.chipId });
@@ -505,6 +523,10 @@ export class CascadeLink implements TeacherLink {
   promptTeacher(reply?: TeacherReply): void {
     const text = reply?.text.trim();
     if (!text) return;
+    this.typedAt = -Infinity; // round 5: her reply to the tapped turn is here: that turn is answered, the guard lifts
+    // r5-latency: her words are already sounding from the turn's own response: adopt them, never fetch them again
+    const pending = this.current;
+    if (pending?.early && !pending.early.adopted) return this.adoptEarly(pending, text);
     this.stopReply("cancelled", false);
     const id = `cascade-${++this.replySeq}`;
     // ship5 p1-duplex: the child went on after the engine committed (a revoke): the reply to that commit is never voiced
@@ -554,13 +576,89 @@ export class CascadeLink implements TeacherLink {
     );
     void playback.ended.then((status) => {
       if (this.current !== cur) return;
-      if (status === "failed") {
-        this.events.emit({ type: "error", message: "the teacher's voice is unavailable; showing text only", fatal: false, code: "tts_failed" });
-      }
-      if (status === "completed") this.duplex?.replyEnded();
-      else this.duplex?.replyStopped();
-      this.stopReply(status === "stopped" ? "cancelled" : status, false);
+      this.finishReply(cur, status);
     });
+  }
+
+  /** Her line's audio ended: the error (when it failed), the duplex engine's view, then the reply's end events. */
+  private finishReply(cur: CurrentReply, status: "completed" | "stopped" | "failed"): void {
+    if (this.current !== cur) return;
+    if (status === "failed") {
+      this.events.emit({ type: "error", message: "the teacher's voice is unavailable; showing text only", fatal: false, code: "tts_failed" });
+    }
+    if (status === "completed") this.duplex?.replyEnded();
+    else this.duplex?.replyStopped();
+    this.stopReply(status === "stopped" ? "cancelled" : status, false);
+  }
+
+  /**
+   * r5-latency (the agent lane's streamed speech): a turn-audio response started her words before its turn frame. They
+   * play now; the caption grows with each clause; the turn's arrival (promptTeacher) adopts this reply. Never while the
+   * child is speaking (the response's audio is then parked by seq and played as before).
+   */
+  private playEarly(stream: ReadableStream<Uint8Array>): EarlySay | null {
+    if (this.closed || !this.player || this.talking) return null;
+    // r5 duplex: the child went on after the engine's commit (a revoke): its reply is never voiced. Parked instead, so
+    // promptTeacher's own check drops it (a peek here: consuming it would let the parked copy play)
+    if (this.duplexDeciding && this.duplex?.replyDropPending()) return null;
+    this.stopReply("cancelled", false);
+    const id = `cascade-${++this.replySeq}`;
+    this.turn.replyAt = Date.now();
+    this.ack?.replyStarting();
+    this.events.emit({ type: "response_start", responseId: id, at: Date.now() });
+    void this.ctx?.resume().catch(() => {});
+    const playback = this.player.play(async () => stream, { req: { lessonId: this.lessonId, seq: -1 } });
+    const cur: CurrentReply = { id, text: "", playback, playing: false, paused: null, early: { adopted: false, ended: null } };
+    this.current = cur;
+    playback.started.then(
+      (at) => {
+        if (this.current !== cur || cur.paused) return;
+        cur.playing = true;
+        this.turn.firstAudioAt = at;
+        this.recordTiming();
+        this.events.emit({ type: "teacher_audio_start" });
+        // r5 duplex: she is audible NOW (before her turn's text): the engine gates / hushes her as on any reply, with the
+        // clauses heard so far (the hands-free gate never runs open over her early words)
+        if (this.duplex && cur.early) {
+          this.duplex.setUi(turnContext());
+          this.duplex.replyAudible(cur.text);
+          cur.early.announced = true;
+        }
+      },
+      () => {},
+    );
+    void playback.ended.then((status) => {
+      if (this.current !== cur || !cur.early) return;
+      if (cur.early.adopted) return this.finishReply(cur, status);
+      // the turn has not come: her line's end waits for it (its hand-over decides the floor), at most EARLY_HOLD_MS
+      cur.early.ended = status;
+      setTimeout(() => { if (this.current === cur && cur.early && !cur.early.adopted) { cur.early.adopted = true; this.finishReply(cur, status); } }, EARLY_HOLD_MS);
+    });
+    return {
+      say: (text: string) => {
+        const t = text.trim();
+        if (this.current !== cur || !t) return;
+        this.events.emit({ type: "teacher_delta", responseId: id, delta: cur.text ? ` ${t}` : t });
+        cur.text = cur.text ? `${cur.text} ${t}` : t;
+      },
+    };
+  }
+
+  /** The turn arrived for a reply already sounding: its caption is the turn's own line; a held end is released. */
+  private adoptEarly(cur: CurrentReply, text: string): void {
+    if (!cur.early) return;
+    cur.early.adopted = true;
+    cur.text = text;
+    this.events.emit({ type: "teacher_done", responseId: cur.id, text });
+    if (cur.playing && this.duplex && !cur.early.announced) {
+      this.duplex.setUi(turnContext());
+      this.duplex.replyAudible(text);
+    } else if (this.duplex && cur.early.announced) {
+      // announced on its first clauses: the whole line now (its closing question decides handover vs idle at her end)
+      this.duplex.setUi(turnContext());
+      this.duplex.replyText(text);
+    }
+    if (cur.early.ended) this.finishReply(cur, cur.early.ended);
   }
 
   interrupt(): void {
@@ -604,6 +702,14 @@ export class CascadeLink implements TeacherLink {
    * Release 14: her voice is playing from outside this link (UiBridge's "phir se" replay): the hands-free engine gates it
    * like her acknowledgement clip, so its loudspeaker echo never becomes a child turn.
    */
+  /**
+   * D5 review #3: where a sound of hers played from outside this link goes (UiBridge's replay): her output node, so D5's
+   * reference channel carries it and the engine reads its level as hers. Null before the audio graph exists or once closed.
+   */
+  herOutput(): { ctx: AudioContext; output: AudioNode } | null {
+    return !this.closed && this.ctx && this.player ? { ctx: this.ctx, output: this.player.output } : null;
+  }
+
   externalAudio(on: boolean): void {
     if (on) this.duplex?.ackAudible();
     else this.duplex?.ackEnded();
@@ -657,10 +763,14 @@ export class CascadeLink implements TeacherLink {
     this.stopAck();
     this.ack?.onSpeech();
     this.prefetcher?.onSpeech();
-    if (this.transportKind === "webrtc") {
+    if (this.transportKind === "webrtc" && this.callUp) {
       this.protocol.talkStartedAt = at;
       this.setMicEnabled(true);
     } else {
+      // r5 QA: a press before the transcription call is up (it takes up to CHANNEL_OPEN_TIMEOUT_MS after the lesson opens,
+      // or a reconnect) records locally and uploads, as the fallback does: a commit to a channel that is not open was
+      // silently dropped, so the child's first answer vanished and the floor stayed on "Listening".
+      if (this.transportKind === "webrtc") this.setMicEnabled(true);
       this.startRecording(at);
     }
     this.events.emit({ type: "child_speech_start", at });
@@ -678,22 +788,29 @@ export class CascadeLink implements TeacherLink {
     // during speech (evals/latency/ptt-deltas.mjs: 8/8 had deltas before the commit; last delta p50 +711 ms, final +1,286 ms,
     // deltas = final 8/8), so the stable partial goes to the prefetch now instead of never (onQuiet was hands-free only).
     // The recording fallback has no partials: nothing to send.
-    if (this.transportKind === "webrtc") this.prefetcher?.onQuiet();
+    if (this.transportKind === "webrtc" && !this.recorder) this.prefetcher?.onQuiet();
     this.clearPttTail();
     this.pttTail = setTimeout(() => {
       this.pttTail = null;
       if (this.closed || this.talking) return;
-      if (this.transportKind === "webrtc") {
+      if (this.transportKind === "webrtc" && !this.recorder) {
         this.setMicEnabled(false);
         this.send({ type: "input_audio_buffer.commit" });
       } else {
+        const local = this.transportKind === "webrtc";
         this.finishRecording();
+        // a press recorded before the call came up: the call may have heard its tail; that audio is never committed
+        if (local) {
+          this.setMicEnabled(false);
+          if (this.callUp) this.send({ type: "input_audio_buffer.clear" });
+        }
       }
     }, PTT_TAIL_MS);
   }
 
   close(): void {
     if (this.closed) return;
+    this.unEarly?.();
     this.vtrace.close();
     // turn.predictive: a held fragment is delivered before teardown, never dropped (it can be a disclosure)
     this.clearMergeTimer();
@@ -705,6 +822,7 @@ export class CascadeLink implements TeacherLink {
     this.unregisterLatency = null;
     this.duplex?.close();
     this.duplex = null;
+    this.idleWait?.stop();
     this.clearMergeTimer();
     this.clearPttTail();
     this.clearBargeTimers();
@@ -755,11 +873,18 @@ export class CascadeLink implements TeacherLink {
   // ───────────── child side ─────────────
 
   private onChildEvent(e: LinkEvent): void {
+    // Round 5 (one turn at a time, BRIEF.md): within LINK_TAP_GUARD_MS of a tapped / typed answer, until her reply to it
+    // arrives, a spoken final is not a second turn (the child reading the chip aloud, or her echo over the tap): traced, dropped
+    if (e.type === "child_final" && !e.typed && Date.now() - this.typedAt < LINK_TAP_GUARD_MS) {
+      this.vtrace.bargein("final_after_tap_dropped", { msAfterTap: Date.now() - this.typedAt });
+      return;
+    }
     // Round 3: an STT final that is only her echo of the acknowledgement (speaker → mic, missed by the AEC) is not a
     // child turn; the child speaking again stops a clip and refuses any pending one
     if (this.ack) {
       if (e.type === "child_final" && !e.typed && this.ack.isEchoNow(e.text)) { this.events.emit({ type: "child_silent" }); return; }
       if (e.type === "child_speech_start") { this.stopAck(); this.ack.onSpeech(); }
+      if (e.type === "child_speech_end") this.ack.speechEnded(e.at); // round 5: the continuer's ~900 ms clock
     }
     // Round 2 latency: the prefetcher reads the partials and the item's end (it never changes what the turn sends)
     if (this.prefetcher) {
@@ -1088,8 +1213,7 @@ export class CascadeLink implements TeacherLink {
     if (this.pushToTalk) this.sendSession(null);
     else if (this.merger) this.sendSession(this.audioInput.turn_detection);
     // ship5 p1-duplex: a reconnect keeps the engine; the first call brings it up (off by default)
-    if (this.duplex?.deciding) this.sendDuplexVad();
-    else if (!this.duplex) void this.startDuplex();
+    this.duplexOnLane();
   }
 
   /**
@@ -1109,13 +1233,17 @@ export class CascadeLink implements TeacherLink {
       mic: this.mic,
       herOutput: this.player?.output ?? null,
       onEvent: (e) => this.onD5Event(e),
-      onFirstFrame: (t) => this.duplex?.audioOrigin(t),
+      onFirstFrame: (t) => { this.duplex?.audioOrigin(t); this.duplex?.audioClock((ms) => stream.toClient(ms)); },
       onLost: (why) => {
         if (this.d5 !== stream) return;
         this.d5 = null;
         this.callUp = false;
         this.vtrace.d5Closed(why, { framesSent: stream.stats.framesSent, framesDropped: stream.stats.framesDropped });
-        void this.lost();
+        // D5 review follow-up: the server ended an IDLE stream (no audio for 30 s: the phone locked, the tab in the
+        // background, the context suspended). Reconnecting now would open a session that idles out again, every 30 s,
+        // for as long as the lesson is away; reconnect once audio can flow again (context running, page visible)
+        if (why === "closed_client_idle" && !this.audioCanFlow()) this.reconnectWhenAudible();
+        else void this.lost();
       },
     });
     if (this.closed) {
@@ -1129,9 +1257,62 @@ export class CascadeLink implements TeacherLink {
     this.callUp = true;
     if (this.pushToTalk) this.sendSession(null);
     else if (this.merger) this.sendSession(this.audioInput.turn_detection);
+    this.duplexOnLane();
+  }
+
+  /**
+   * The ear is up: a reconnect on the same lane keeps the engine; the first one brings it up. D5 review #2/#7: a lane
+   * change (D5 lost, the lesson falls back to D4) REBUILDS it — an engine built for D5 (server-VAD gate, no probes, no
+   * half-duplex mic gate, Voice Live's clock) would decide a D4 call with D5's settings, open-mic, over her echo.
+   */
+  private duplexOnLane(): void {
+    if (this.duplex && this.duplexLaneBuilt !== null && this.duplexLaneBuilt !== this.laneUsed) {
+      const old = this.duplex;
+      this.vtrace.duplexStart("on", false, `lane_change:${this.duplexLaneBuilt}->${this.laneUsed}`);
+      this.duplex = null;
+      this.duplexLaneBuilt = null;
+      this.duplexVadMs = null;
+      try { old.close(); } catch { /* gone */ }
+      // nothing of the old engine outlives it: her gain, its mic gate, a reply it had paused
+      this.player?.duck(1);
+      if (this.micGated) { this.micGated = false; this.applyMic(); }
+      if (this.current?.paused) this.resumeReply();
+    }
     if (this.duplex?.deciding) this.sendDuplexVad();
     else if (!this.duplex) void this.startDuplex();
   }
+  /** The lane the running engine was built for. */
+  private duplexLaneBuilt: "d4" | "d5" | null = null;
+
+  /** The page can send audio now: its AudioContext runs and the document is visible. */
+  private audioCanFlow(): boolean {
+    const visible = typeof document === "undefined" || document.visibilityState !== "hidden";
+    return !!this.ctx && this.ctx.state === "running" && visible;
+  }
+
+  /** After an idle close: reconnect on the first sign audio flows again (statechange, visibilitychange, or a 5 s check). */
+  private reconnectWhenAudible(): void {
+    if (this.idleWait) return;
+    const ctx = this.ctx;
+    const check = () => {
+      if (this.closed) return stop();
+      if (!this.audioCanFlow()) return;
+      stop();
+      void this.lost();
+    };
+    const timer = setInterval(check, 5000);
+    const stop = () => {
+      clearInterval(timer);
+      try { ctx?.removeEventListener?.("statechange", check); } catch { /* gone */ }
+      try { if (typeof document !== "undefined") document.removeEventListener("visibilitychange", check); } catch { /* gone */ }
+      this.idleWait = null;
+    };
+    try { ctx?.addEventListener?.("statechange", check); } catch { /* no events: the timer checks */ }
+    try { if (typeof document !== "undefined") document.addEventListener("visibilitychange", check); } catch { /* no document */ }
+    this.idleWait = { stop };
+    this.vtrace.d5Closed("idle_wait", {});
+  }
+  private idleWait: { stop: () => void } | null = null;
 
   private onD5Event(e: Json): void {
     try {
@@ -1162,10 +1343,18 @@ export class CascadeLink implements TeacherLink {
       const { CascadeDuplex } = await import("../duplex/cascadeDuplex.ts");
       if (this.closed || this.duplex) return;
       const d = new CascadeDuplex(this.duplexSurface(), { ...this.duplexOptions, mode, face: this.duplexFace ?? null, lane: this.laneUsed });
-      if (this.laneUsed === "d5") d.audioOrigin(this.d5?.firstFrameAt ?? null);
+      if (this.laneUsed === "d5") {
+        const st = this.d5;
+        d.audioOrigin(st?.firstFrameAt ?? null);
+        if (st) d.audioClock((ms) => st.toClient(ms));
+      }
       this.duplex = d;
+      this.duplexLaneBuilt = this.laneUsed;
       if (!(await d.start())) { this.vtrace.duplexStart(mode, false, `engine_fallback:${d.fallback ?? "unknown"}`); return; } // it already restored today's path and reported the fallback
       this.vtrace.duplexStart(mode, d.deciding, d.deciding ? null : mode === "shadow" ? "shadow_never_decides" : "not_deciding");
+      // a rebuilt engine (a lane change mid-reply) learns of the reply already sounding, so it gates / hushes it as hers
+      const cur = this.current;
+      if (cur?.playing && !cur.paused && this.duplex === d) { d.setUi(turnContext()); d.replyAudible(cur.text); }
       // hands-free for the whole lesson: the engine owns the floor (a pause sheet may still switch the mic off)
       if (mode === "on" && this.pushToTalk && d.deciding) this.setPushToTalk(false);
     } catch (err) {
@@ -1191,6 +1380,11 @@ export class CascadeLink implements TeacherLink {
     return {
       lessonId: this.lessonId,
       audio: () => (this.mic && this.ctx && !this.closed ? { ctx: this.ctx, stream: this.mic, herOutput: this.player?.output ?? null } : null),
+      micGate: (gated) => {
+        if (this.micGated === gated) return;
+        this.micGated = gated;
+        this.applyMic();
+      },
       herSounding: () => (!!this.current?.playing && !this.current.paused) || !!this.ackNow?.sounding,
       duck: (level) => this.player?.duck(level),
       pause: () => {
@@ -1224,6 +1418,7 @@ export class CascadeLink implements TeacherLink {
         // a fallback is today's path at once: the engine never left the call, so only the turn logic switches back
         if (s.fallback && this.duplex && !this.duplex.deciding) {
           this.player?.duck(1);
+          if (this.micGated) { this.micGated = false; this.applyMic(); } // the engine's gate never outlives the engine
           if (this.current?.paused) this.resumeReply(); // a reply the engine had paused carries on
         }
         this.onDuplex?.(s);
@@ -1275,9 +1470,16 @@ export class CascadeLink implements TeacherLink {
   private useRecording(): void {
     // ship5 p1-duplex: no call, no engine: push-to-talk recording is today's fallback
     this.duplex?.degrade("stt_unavailable");
+    // r5 QA: a press already under way when the call fails (CHANNEL_OPEN_TIMEOUT_MS after the first tap) carries on as a
+    // recording; setPushToTalk resets `talking`, so without this the child's answer was never recorded and Done did nothing.
+    const pressing = this.talking;
     this.transportKind = "recording";
     this.pushToTalk = false;
     this.setPushToTalk(true);
+    if (pressing) {
+      this.talking = true;
+      if (!this.recorder) this.startRecording(this.protocol.talkStartedAt ?? Date.now());
+    }
     this.setMicEnabled(true); // the local VAD and the mic meter still listen; nothing is sent until a press
     this.onTransport?.("recording");
     this.events.emit({ type: "error", message: "hands-free listening is unavailable; hold the button to talk", fatal: false, code: "stt_fallback_ptt" });
@@ -1379,6 +1581,14 @@ export class CascadeLink implements TeacherLink {
   }
 
   private setMicEnabled(on: boolean): void {
+    this.micWanted = on;
+    this.applyMic();
+  }
+  /** Round 5 half-duplex: the engine's gate (her voice in the room) ANDs with what the link itself wants. */
+  private micWanted = true;
+  private micGated = false;
+  private applyMic(): void {
+    const on = this.micWanted && !this.micGated;
     for (const t of this.mic?.getAudioTracks() ?? []) t.enabled = on;
   }
 }
