@@ -5,8 +5,9 @@
 //     the Director's safeguard takes the turn), and the floor filter runs on her line after it (turn.js);
 //   - grading is code: the verified grade of the card's question (classify.js against the kit key) is handed to the agent
 //     as a fact of the event, never asked of it; a posed item must be one the harness offered (verified, key withheld);
-//   - screen truth: the board is drawn by code from her lines and reported back; a line that points at the screen is
-//     checked against what is mounted (director/say.js screenClaimProblem) and unpointed when it claims what is not there;
+//   - screen truth: board and picture go through stream 2's tools (studio/tools.js, the one whiteboard / tray gate), which
+//     return what ACTUALLY mounted; a line that points at the screen is checked against that (director/say.js
+//     screenClaimProblem / pointsAtScreen) and unpointed when it claims what is not there;
 //   - channel truth: on a spoken lane her words never ask the child to type or write (brain/say.js speakNotWrite);
 //   - silence never brings new content: on a silent event no new item, no new board, no picture;
 //   - budgets: per-turn time and per-lesson tokens and cost; over a budget the turn throws and the Director lane takes it.
@@ -16,7 +17,7 @@ import { speakNotWrite } from "../brain/say.js";
 import { promptFor } from "../director/items.js";
 import { comprehensionRead } from "../director/read.js";
 import { systemPrompt, stateMessage, offeredItems, TURN_SCHEMA } from "./prompt.js";
-import { boardScript, boardSlot } from "./board.js";
+import { screenTools, specOf } from "./tools.js";
 import { teacherDeployment, AGENT_LIMITS } from "./flags.js";
 
 export class AgentBudgetError extends Error { constructor(m) { super(m); this.code = "agent_budget"; } }
@@ -56,18 +57,61 @@ export function eventOf({ kind, childText, asrConfidence, chipId, chipLabel, typ
 }
 
 /**
- * One agent turn. → { say, intent, item, board: { script, shown } | null, cleared, picture, read, plan, end, usage, ms, notes[] }
+ * Her line without praise of the child's answer: a sentence that opens on praise or calls the answer right is dropped, a
+ * leading "haan," is dropped. Used only when the verified grade is not "correct". PURE.
+ */
+const PRAISE = /(?:^|[^\p{L}])(?:bilkul\s+sahi|ekdum\s+sahi|sahi\s+(?:hai|jawab|chuna|chuni|kaha|kahi|bataya|batayi|socha|pakda|pakdi|laga|lagaya)|bahut\s+(?:accha|achha|achchha|badhiya)|shabaa?sh|well\s+done|great\s+(?:job|work)|very\s+good|good\s+job|perfect|excellent|correct|that'?s\s+right|(?:you\s+|tum(?:ne)?\s+)?got\s+it|sahi|wah|बिल्कुल\s*सही|सही|शाबाश)(?![\p{L}])/iu;
+const OPEN_YES = /^\s*(?:haan|haa|han|ha|yes|ji\s+haan|हाँ|हां)\s*[,!.]?\s*/iu;
+export function withoutPraise(say) {
+  const parts = String(say ?? "").match(/[^.!?।]+[.!?।]*\s*/g) ?? [];
+  const kept = parts.filter((p, i) => !(PRAISE.test(p) && !/[?？]/.test(p) && (i === 0 || p.split(/\s+/).length <= 10)));
+  let out = (kept.length ? kept : parts).join("").trim();
+  if (kept.length) out = out.replace(OPEN_YES, "");
+  return out ? out[0].toUpperCase() + out.slice(1) : String(say ?? "");
+}
+
+/** Her line without pointing at the screen or promising a show that is not up (a refused or pending page, a picture job). */
+const SHOW_CLAIM = /(?:^|[^\p{L}])(?:dekho|dekhiye|dekhna|look|see\s+(?:the|this|here)|here\s+(?:it\s+is|is)|yeh\s+raha|ye\s+raha|dikhati\s+hoon|dikhaati\s+hoon|dikha\s+rahi|dikhaungi|dikhaoongi|bana\s+rahi|banati\s+hoon|draw\s+kar\s*(?:ti|rahi)|let\s+me\s+(?:show|draw)|i(?:'ll|\s+will)\s+(?:show|draw))(?![\p{L}])|screen|board|स्क्रीन|बोर्ड|देखो/iu;
+export function withoutShowClaims(say) {
+  const parts = String(say ?? "").match(/[^.!?।]+[.!?।]*\s*/g) ?? [];
+  const kept = parts.filter((p) => !(SHOW_CLAIM.test(p) && !/[?？]\s*$/.test(p.trim())));
+  const out = kept.join("").trim();
+  return out || stripScreenRefs(say) || String(say ?? "");
+}
+
+const MASTERY = /(?:^|[^\p{L}])(?:sikh\s+(?:liya|li|gaye|gayi|gaya)|seekh\s+(?:liya|li|gaye|gayi|gaya)|samajh\s+(?:gaye|gayi|gaya|liya|li)\s+(?:ho|hain|hai|ho\s+tum|aap)|pakka\s+ho\s+gaya|master\s+kar|you(?:'ve|\s+have)?\s+(?:learn(?:ed|t)|mastered|got\s+the\s+hang)|you\s+(?:now\s+)?(?:know|understand)\s+(?:how|this|it)|ab\s+(?:tum|aap)\s+(?:jaante|jaanti|samajhte|samajhti)\s+ho|सीख\s*(?:लिया|ली|गए|गई)|समझ\s*(?:गए|गई|गया))(?![\p{L}])/iu;
+/** Her line without a claim that the child has learnt it, unless the learner record holds some skill understood. PURE. */
+export function withoutMastery(say, learner) {
+  if (Object.values(learner ?? {}).some((v) => v.read === "understood")) return String(say ?? "");
+  const parts = String(say ?? "").match(/[^.!?।]+[.!?।]*\s*/g) ?? [];
+  const kept = parts.filter((p) => !(MASTERY.test(p) && !/[?？]\s*$/.test(p.trim())));
+  return kept.length && kept.length !== parts.length ? kept.join("").trim() : String(say ?? "");
+}
+
+const INTERNALS = /(?:^|[^\p{L}])(?:card\s+(?:ka|ke|ki|par|pe)\s+(?:check|jaanch|jawab|answer)|card'?s\s+check|check\s+(?:isse|se)\s+match|match\s+nahi\s+hua|verified\s+grade|the\s+grade|grade\s+(?:ne|mein|says)|harness|answer\s+key|key\s+(?:se|ke\s+saath)\s+match|system\s+(?:ne|says|ke\s+hisaab)|the\s+checker|checker\s+(?:ne|says))(?![\p{L}])/iu;
+/** Her line without sentences that voice the harness (the card's check, the grade, the key). PURE. */
+export function withoutInternals(say) {
+  const parts = String(say ?? "").match(/[^.!?।]+[.!?।]*\s*/g) ?? [];
+  const kept = parts.filter((p) => !INTERNALS.test(p));
+  return kept.length && kept.length !== parts.length ? kept.join("").trim() : String(say ?? "");
+}
+
+/**
+ * One agent turn. → { say, intent, item, board: ScreenTruth | null (a page that went up), cleared, picture: ScreenTruth | null,
+ *   screen: ScreenTruth (after her actions), slot, read, plan, end, usage, ms, notes[] }
  * Throws on a model error, a timeout, a bad output or a budget: the caller (brain/turn.js) then lets the Director lane take
  * the turn.
  */
-export async function agentTurn({ state, kit, event, silent = false, lessonId, lane = "voice", trace, chatFn = chat, now = Date.now() }) {
+export async function agentTurn({ state, kit, event, silent = false, verdict = null, lessonId, lane = "voice", child = null, trace, chatFn = chat, tools = screenTools, now = Date.now() }) {
   const a = state.agent ?? {};
   const usage = a.usage ?? { usd: 0, tokens: 0 };
   if (usage.usd >= AGENT_LIMITS.lessonUsd || usage.tokens >= AGENT_LIMITS.lessonTokens) throw new AgentBudgetError(`lesson budget spent (${usage.usd.toFixed(3)} USD, ${usage.tokens} tokens)`);
-  const onScreen = a.screen?.board ?? [];
+  const before = (() => { try { return tools.now(lessonId); } catch { return null; } })() ?? { on: "nothing", words: "nothing is on the screen", texts: [] };
+  const news = (() => { try { return tools.news?.(lessonId) ?? []; } catch { return []; } })();
   const offered = offeredItems(state, kit);
   const ctx = { ...state.ctx, classLevel: state.ctx?.classLevel };
-  const messages = [{ role: "system", content: systemPrompt(ctx) }, { role: "user", content: stateMessage({ state, kit, event, onScreen, lane }) }];
+  const ev = news.length ? `${news.join(". ")}. ${event}` : event;
+  const messages = [{ role: "system", content: systemPrompt(ctx) }, { role: "user", content: stateMessage({ state, kit, event: ev, onScreen: before.words, lane }) }];
   const dep = teacherDeployment();
   const t0 = Date.now();
   const res = await chatFn(dep, messages, { schema: TURN_SCHEMA, schemaName: "teacher_turn", effort: "low", maxTokens: AGENT_LIMITS.maxOutTokens,
@@ -84,23 +128,49 @@ export async function agentTurn({ state, kit, event, silent = false, lessonId, l
     item = offered.find((i) => i.id === out.pose_item) ?? (out.pose_item === state.activeItemId ? (kit.items ?? []).find((i) => i.id === state.activeItemId) : null);
     if (!item) notes.push(`refused pose_item ${clip(out.pose_item, 60)}: not an offered item`);
   }
-  let board = null, cleared = false;
+  let say = clip(out.say, AGENT_LIMITS.sayMaxChars);
+  let board = null, cleared = false, picture = null, game = null, screen = before, unconfirmed = false;
   if (silent) {
     // silence never brings new content: the same question at most, no new board, no picture
     if (item && item.id !== state.activeItemId) { notes.push("silence: new item dropped"); item = null; }
     if (out.board?.action === "show") notes.push("silence: board kept");
   } else if (out.board?.action === "show") {
-    const b = boardScript(out.board.lines, { lessonId, seq: (a.boards ?? 0) + 1, max: AGENT_LIMITS.boardLines });
-    if (b.ok) board = { script: b.script, shown: b.shown };
-    if (b.refused.length) notes.push(`board refused: ${b.refused.slice(0, 3).map((x) => clip(x, 30)).join(" / ")}`);
-  } else if (out.board?.action === "clear") cleared = true;
-  const picture = !silent && out.picture ? clip(out.picture, 40) : null;
-  // ── her line, checked ──
-  let say = clip(out.say, AGENT_LIMITS.sayMaxChars);
+    const spec = specOf(out.board);
+    if (!spec) notes.push(`board: nothing to draw for ${clip(out.board.kind, 20)}`);
+    else {
+      const t = await Promise.resolve().then(() => tools.show(lessonId, spec, { say, skillId: item?.skillId ?? a.skill ?? "", topicId: kit.topicId ?? "", lang: state.ctx?.lang ?? "hinglish" }))
+        .catch((e) => ({ ok: false, refused: { why: String(e?.message ?? e).slice(0, 80), checks: ["error"] } }));
+      if (t?.ok && !t.refused && t.on !== "nothing") { board = t; screen = t; } else { unconfirmed = true; notes.push(`board ${t?.pending ? "pending" : "refused"}: ${clip(t?.refused?.why, 80)}`); }
+    }
+  } else if (out.board?.action === "clear") { try { screen = tools.clear(lessonId); cleared = true; } catch { /* the board stays */ } }
+  if (!silent && out.play && tools.game) {
+    const g = await Promise.resolve().then(() => tools.game(lessonId, { skillId: item?.skillId ?? a.skill ?? "", topicId: kit.topicId ?? "", child }))
+      .catch((e) => ({ ok: false, refused: { why: String(e?.message ?? e).slice(0, 60) } }));
+    if (g?.ok) { game = g; screen = g; notes.push(`game up ${clip(g.game?.family, 30)}`); } else { unconfirmed = true; notes.push(`game refused: ${clip(g?.refused?.why, 60)}`); }
+  }
+  if (out.picture && !silent) unconfirmed = true;
+  if (!silent && out.picture) {
+    const t = (() => { try { return tools.picture(lessonId, clip(out.picture, 40)); } catch (e) { return { ok: false, refused: { why: String(e?.message ?? e).slice(0, 60) } }; } })();
+    picture = t;
+    notes.push(t?.ok && t.job ? `picture job ${clip(out.picture, 40)}` : `picture refused: ${clip(t?.refused?.why, 60)}`);
+  }
+  // ── her line, held to the verified grade: no praise or "sahi" on an answer the key says is wrong or only partly right
+  // (sim lab d6f93e7: misread_wrong_as_right 19/64, "Haan, 60,000 sahi chuna" while the misconception was live) ──
+  if (verdict && verdict !== "correct") { const held = withoutPraise(say); if (held !== say) { say = held; notes.push(`praise removed (${verdict})`); } }
+  // ── no mastery claim the record does not hold (sim lab 35c0b7c: "Tumne … sikh liya" for skills held at partly; the judge
+  // reads her words, the parent reads her summary) ──
+  { const held = withoutMastery(say, a.learner ?? {}); if (held !== say) { say = held; notes.push("mastery claim removed"); } }
+  // ── never the machinery: the card's check, the grade, the key, the harness are the harness's words, not hers (sim lab
+  // 3cf7cdc p08 #1: "Card ka check isse match nahi hua") ──
+  { const held = withoutInternals(say); if (held !== say) { say = held; notes.push("internals removed"); } }
+  // ── her line, checked against what is really up ──
   if (lane !== "text") { const spoken = speakNotWrite(say); if (spoken !== say) { say = spoken; notes.push("type/write rewritten to say"); } }
-  const stageNow = board ? board.shown : cleared ? [] : onScreen;
-  const ui = stageNow.length ? { studioSlot: { artifact: { kind: "whiteboard", script: { ops: stageNow.map((t) => ({ op: "text", text: t })) } } } } : {};
-  if (stageNow.length ? screenClaimProblem(say, ui, null) : pointsAtScreen(say)) {
+  const texts = screen?.on === "board" ? (screen.texts ?? []) : [];
+  const ui = texts.length ? { studioSlot: { artifact: { kind: "whiteboard", script: { ops: texts.map((t) => ({ op: "text", text: t })) } } } } : {};
+  // something she asked to show this turn that did not go up (refused, still being drawn, a picture job): her line may not
+  // point at the screen or promise it is there (sim lab 748ddff: points_empty_screen 23/64, "dono andaaze dikhati hoon")
+  if (unconfirmed && !board && !game) { const held = withoutShowClaims(say); if (held !== say) { say = held; notes.push("unconfirmed show unpointed"); } }
+  if (!screen || screen.on === "nothing" ? pointsAtScreen(say) : screen.on === "board" && screenClaimProblem(say, ui, null)) {
     const fixed = stripScreenRefs(say);
     notes.push("screen claim unpointed");
     say = fixed || say.replace(/\b(?:screen|board)\s+(?:par|pe|mein)\s+/gi, "");
@@ -111,11 +181,35 @@ export async function agentTurn({ state, kit, event, silent = false, lessonId, l
     say = `${say} ${promptFor(item, state.ctx?.lang)}`.trim();
     notes.push("card question appended");
   }
+  const slot = game?.slot ?? (board?.pageId ? (() => { try { return tools.slot?.(lessonId, board.pageId) ?? null; } catch { return null; } })() : null);
   return {
-    say, intent: MOVE_OF[out.intent] ?? "explain", item, board, cleared, picture,
+    say, intent: MOVE_OF[out.intent] ?? "explain", item, board, cleared, picture, game, screen, slot,
     read: out.read?.skill && out.read.level !== "unknown" ? { skill: clip(out.read.skill, 80), level: out.read.level, evidence: clip(out.read.evidence, 160) } : null,
     plan: clip(out.plan, 700), end: !!out.end && !silent, usage: { usd: turnUsd, tokens: (u.in ?? 0) + (u.out ?? 0) }, ms, notes, deployment: dep, at: now,
   };
+}
+
+/**
+ * The read the evidence allows (sim lab: r5-agent-vs-director 571b301 had 61/164 overclaims; the two-item rule of b185d50 let
+ * a "partly" child through about a quarter of the time, two plain items right in a row, and capped real understanders who
+ * missed one early). The kinds separate the states: a partly child gets the plain version right about half the time and
+ * cannot do the contrast / transfer / error-spot / predict / why kinds. So "understood" needs a right answer on one of those
+ * DEEP kinds plus another right answer (a plain item, or a second deep item), and no wrong or partly answer after the last
+ * deep right one; an early miss does not cap it. Anything right short of that is "partly". PURE.
+ */
+export const DEEP_KINDS = new Set(["contrast", "near_transfer", "far_transfer", "error_spot", "predict", "why", "teachback", "translate_rep"]);
+export function earnedRead(level, graded, { deepAvailable = true } = {}) {
+  if (level !== "understood") return level;
+  const right = graded.map((x, i) => ({ ...x, i })).filter((x) => x.g === "correct");
+  if (!right.length) return !graded.length || graded.some((x) => x.g.startsWith("partly")) ? "partly" : "not";
+  // a skill whose kit has no deep item (about 1 in 10): two different items right and nothing missed after
+  if (!deepAvailable) return new Set(right.map((x) => x.item)).size >= 2 && !graded.slice(right.at(-1).i + 1).some((x) => x.g !== "correct") ? "understood" : "partly";
+  const deep = right.filter((x) => DEEP_KINDS.has(x.kind));
+  if (!deep.length) return "partly";
+  const lastDeep = deep.at(-1).i;
+  if (graded.slice(lastDeep + 1).some((x) => x.g !== "correct")) return "partly";
+  const others = right.filter((x) => x.item !== deep.at(-1).item);
+  return others.length ? "understood" : "partly";
 }
 
 /**
@@ -130,16 +224,23 @@ export function applyAgentTurn(next, out, { kit, childText = "", cls = null, car
   const learner = { ...(a.learner ?? {}) };
   if (card && cls) {
     const k = card.skillId;
-    const g = cls.outcome === "correct" ? "correct" : cls.outcome === "partial" ? "partly" : ["incorrect", "misconception"].includes(cls.outcome) ? (cls.misconceptionId ? `wrong(${cls.misconceptionId})` : "wrong") : null;
-    if (g) learner[k] = { ...(learner[k] ?? {}), grades: [...(learner[k]?.grades ?? []), g].slice(-10) };
+    const g = cls.outcome === "correct" ? (cls.reasonMisconceptionId ? `partly(${cls.reasonMisconceptionId})` : "correct") : cls.outcome === "partial" ? "partly" : ["incorrect", "misconception"].includes(cls.outcome) ? (cls.misconceptionId ? `wrong(${cls.misconceptionId})` : "wrong") : null;
+    if (g) learner[k] = { ...(learner[k] ?? {}), grades: [...(learner[k]?.grades ?? []), g].slice(-10),
+      graded: [...(learner[k]?.graded ?? []), { item: card.id, kind: card.kind, g }].slice(-10),
+      ...(cls.misconceptionId ? { misconceptions: [...new Set([...(learner[k]?.misconceptions ?? []), cls.misconceptionId])] } : {}) };
   }
-  if (out.read) learner[out.read.skill] = { ...(learner[out.read.skill] ?? {}), read: out.read.level, evidence: out.read.evidence };
-  const screen = out.board ? { board: out.board.shown } : out.cleared ? { board: [] } : (a.screen ?? { board: [] });
+  if (out.read) {
+    const k = out.read.skill;
+    const deepAvailable = (kit.items ?? []).some((i) => i.skillId === k && DEEP_KINDS.has(i.kind) && i.kind !== "why" && i.kind !== "teachback");
+    const level = earnedRead(out.read.level, learner[k]?.graded ?? [], { deepAvailable });
+    learner[k] = { ...(learner[k] ?? {}), read: level, evidence: out.read.evidence, ...(level !== out.read.level ? { claimed: out.read.level } : {}) };
+  }
+  const screen = out.screen ? { on: out.screen.on, words: clip(out.screen.words, 300), texts: (out.screen.texts ?? []).slice(0, 12) } : (a.screen ?? { on: "nothing", words: "nothing is on the screen", texts: [] });
   next.agent = {
     ...a, plan: out.plan || a.plan, turns: turns.slice(-24), learner, screen,
     posed: out.item ? [...new Set([...(a.posed ?? []), out.item.id])] : (a.posed ?? []),
     skill: out.item?.skillId ?? a.skill ?? kit.skills?.[0]?.id,
-    boards: (a.boards ?? 0) + (out.board ? 1 : 0),
+    boards: (a.boards ?? 0) + (out.board ? 1 : 0), pictures: (a.pictures ?? 0) + (out.picture?.job ? 1 : 0),
     usage: { usd: +((a.usage?.usd ?? 0) + out.usage.usd).toFixed(5), tokens: (a.usage?.tokens ?? 0) + out.usage.tokens },
     lastMs: out.ms, notes: out.notes,
   };
@@ -158,6 +259,6 @@ export function applyAgentTurn(next, out, { kit, childText = "", cls = null, car
   const ui = { status: "your_turn", handover: out.end ? "finish" : "answer", answerForm: "words",
     ...(askItem ? { ask: { text: promptFor(askItem, next.ctx?.lang), itemId: askItem.id } } : {}), tray: out.board ? "studio" : out.cleared ? "none" : undefined };
   next.lastMove = move; next.lastUi = ui;
-  const studioSlot = out.board ? boardSlot(out.board.script, next.agent.boards) : null;
+  const studioSlot = out.slot ?? null;
   return { move, ui, studioSlot, end: !!out.end };
 }

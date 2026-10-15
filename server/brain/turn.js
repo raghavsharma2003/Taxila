@@ -512,7 +512,9 @@ export async function lessonTurn(req, body) {
     const silentNow = !String(childText ?? "").trim() && !body.chipId && (cls?.source === "empty" || body.asrConfidence === 0);
     const chipLabel = body.chipId ? (state.lastUi?.chips ?? []).find((c) => c.id === body.chipId)?.label ?? null : null;
     try {
-      agentOut = await agentTurn({ state, kit, lessonId: lesson.id, lane: state.mode, trace, silent: silentNow,
+      const verdict = card && cls ? (cls.outcome === "correct" && !cls.reasonMisconceptionId ? "correct" : cls.outcome === "correct" || cls.outcome === "partial" ? "partly"
+        : cls.outcome === "incorrect" || cls.outcome === "misconception" ? "wrong" : null) : null;
+      agentOut = await agentTurn({ state, kit, lessonId: lesson.id, lane: state.mode, trace, silent: silentNow, verdict, child,
         event: eventOf({ kind: silentNow ? "silence" : "turn", childText, asrConfidence: body.asrConfidence, chipId: body.chipId, chipLabel, typed, cls, card, kit, lang: state.ctx?.lang }) });
       // the Director's stepped state keeps its bookkeeping; the card and the phase are the agent's
       const agentNext = structuredClone(next);
@@ -520,7 +522,6 @@ export async function lessonTurn(req, body) {
       agentApplied = applyAgentTurn(agentNext, agentOut, { kit, childText, cls, card, lessonId: lesson.id });
       next = agentNext;
       r = { ...r, move: agentApplied.move, ui: agentApplied.ui, moduleCommands: [], state: next, end: agentApplied.end, hold: false };
-      if (agentOut.cleared) seamSafe("studio.clearBoard", () => (typeof studioSeam.clearBoard === "function" ? studioSeam.clearBoard(lesson.id) : null), null);
       mark("agent");
     } catch (e) {
       agentFallback = String(e?.code ?? e?.message ?? e).slice(0, 80);

@@ -40,6 +40,11 @@ const DEV_MORE = ("इक्कीस बाईस तेईस चौबीस 
   "इकसठ बासठ तिरसठ चौंसठ पैंसठ छियासठ सड़सठ अड़सठ उनहत्तर सत्तर इकहत्तर बहत्तर तिहत्तर चौहत्तर पचहत्तर छिहत्तर सतहत्तर अठहत्तर उनासी अस्सी " +
   "इक्यासी बयासी तिरासी चौरासी पचासी छियासी सत्तासी अट्ठासी नवासी नब्बे इक्यानवे बानवे तिरानवे चौरानवे पचानवे छियानवे सत्तानवे अट्ठानवे निन्यानवे").split(" ");
 DEV_MORE.forEach((w, i) => { if (!(w in DEV)) DEV[w] = 21 + i; });
+// the ASR's own spellings (sim lab r5-voice-numbers-eff989c, p43-c7 #9: "बालीस हज़ार" for 42,000): it drops य / या and
+// shortens ई in the -लीस / -आलीस forties
+Object.assign(DEV, { "बालीस": 42, "बालिस": 42, "बयालिस": 42, "छयालीस": 46, "छियालिस": 46, "छयालिस": 46, "इकतालिस": 41, "तैंतालिस": 43, "चवालिस": 44,
+  "पैंतालिस": 45, "सैंतालिस": 47, "अड़तालिस": 48, "चालिस": 40, "उनतालिस": 39, "पचपन": 55, "बावन": 52, "बासठ": 62, "सडसठ": 67, "छियासी": 86, "छयासी": 86,
+  "छियानवे": 96, "छयानवे": 96, "छियासठ": 66, "छयासठ": 66, "छियत्तर": 76, "छिहत्तर": 76 });
 Object.assign(DEV, { "छे": 6, "छै": 6, "जीरो": 0, "ज़ीरो": 0, "वन": 1, "टू": 2, "थ्री": 3, "फोर": 4, "फ़ोर": 4, "फाइव": 5, "सिक्स": 6, "सेवन": 7, "एट": 8, "नाइन": 9, "टेन": 10 });
 /** Devanagari spelling folded: the nukta dropped, candrabindu = anusvara (ASR writes either). */
 const devKey = (w) => w.normalize("NFD").replace(/\u093C/g, "").replace(/\u0901/g, "\u0902").normalize("NFC");
@@ -103,6 +108,33 @@ const FUSED_ROM = new RegExp(`(^|[^\\p{L}])(${ROM_UNITS})(?:sau|so|sow)(?![\\p{L
 function fuseHundreds(s) {
   return s.replace(FUSED_DEV, (_, pre, u) => `${pre}${u === "छे" || u === "छै" ? "छह" : u === "नो" ? "नौ" : u} सौ`)
     .replace(FUSED_ROM, (_, pre, u) => `${pre}${u} sau`);
+}
+
+/** An operation said aloud (the child is working): "times", "guna", "टाइम्स", "+", … */
+export const WORKING_ALOUD = /(?:^|[^\p{L}])(?:times|into|multiplied|plus|minus|divided|guna|gunaa|jod|jodo|ghatao|bhag|equals|barabar)(?![\p{L}])|टाइम्स|गुणा|गुना|इंटू|प्लस|माइनस|जोड़|जोड|घटा|भाग|बराबर|[×*+÷=]\s*\d|\d\s*x\s*\d/iu;
+const OPERATOR = /(?:^|(?<=[^\p{L}]))(?:times|into|multiplied(?:\s+by)?|plus|minus|divided(?:\s+by)?|guna|gunaa|jodo|jod|ghatao|bhag)(?![\p{L}])|टाइम्स|गुणा|गुना|इंटू|प्लस|माइनस|जोड़|जोड|घटा|भाग|[×*+÷]|(?<=\d\s*)x(?=\s*\d)/giu;
+/**
+ * Working aloud: the numbers a child STATES as results, apart from the operands of the operations they say. A number right
+ * before or right after an operation word is an operand ("6 times 4", "तीन टाइम्स चार"); every other number is a stated
+ * result, whether it comes first ("24 cm hoga... 6 times 4", sim lab 3cf7cdc p08 #1) or last ("… दो जीरो बारह सौ").
+ * → { results: number[], all: number[] } when an operation is said, else null. PURE.
+ */
+export function statedResults(raw) {
+  const text = String(raw ?? "");
+  if (!WORKING_ALOUD.test(text)) return null;
+  const chunks = text.split(OPERATOR);
+  if (chunks.length < 2) { const all = numberPhrases(text, { split: true }) ?? []; return { results: all, all }; }
+  const results = [], all = [];
+  chunks.forEach((c, i) => {
+    const ph = numberPhrases(c, { split: true }) ?? [];
+    all.push(...ph);
+    ph.forEach((v, j) => {
+      const operandBefore = j === ph.length - 1 && i < chunks.length - 1;   // "6" in "6 times"
+      const operandAfter = j === 0 && i > 0;                                // "4" in "times 4"
+      if (!operandBefore && !operandAfter) results.push(v);
+    });
+  });
+  return { results, all };
 }
 
 /**

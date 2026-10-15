@@ -4,7 +4,7 @@
 // reader, and it misread the ASR's Devanagari ("बारह सौ" → 100, "आठ हजार छह सौ चौदह" → 8600). It now reads with the ONE
 // reader (server/grading/spoken-number.js numberPhrases) in its split mode: every number phrase in order, two numbers said
 // back to back are two phrases (working aloud), never a null for the whole turn.
-import { numberPhrases } from "../../grading/spoken-number.js";
+import { numberPhrases, statedResults } from "../../grading/spoken-number.js";
 
 /**
  * Every number phrase in a child's turn, in order of appearance.
@@ -17,13 +17,16 @@ export function numbersIn(text, { lang = "mixed" } = {}) {
 }
 
 /**
- * R-KEY on numbers: the child's answer is the LAST number phrase (children self-correct: "3... nahi, 4").
+ * R-KEY on numbers: the child's answer is the LAST number phrase (children self-correct: "3... nahi, 4"); working aloud, a
+ * stated result (not an operand) equal to the key.
  * @returns {'correct'|'wrong'|'NA'}
  */
 export function matchNumber(text, key, { tol = 1e-9, relTol = 0, lang } = {}) {
   const ns = numbersIn(text, { lang });
   if (!ns.length) return "NA";
-  const v = ns.at(-1), k = Number(key);
-  const ok = Math.abs(v - k) <= Math.max(tol, relTol * Math.abs(k));
-  return ok ? "correct" : "wrong";
+  const k = Number(key), near = (v) => Math.abs(v - k) <= Math.max(tol, relTol * Math.abs(k));
+  // working aloud: the key among the numbers they STATE (never an operand of the working) is the answer
+  const w = statedResults(text);
+  if (w && w.all.length >= 2) return w.results.some(near) ? "correct" : near(w.results.at(-1) ?? ns.at(-1)) ? "correct" : "wrong";
+  return near(ns.at(-1)) ? "correct" : "wrong";
 }

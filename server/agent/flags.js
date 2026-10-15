@@ -38,7 +38,7 @@ export function laneFor(guardian, env = process.env) {
 export const teacherDeployment = (env = process.env) => env.TAXILA_TEACHER_DEPLOY || "taxila-gpt6";
 /** Per-turn and per-lesson budgets (AGENT.md §1: budgets are code, and a budget gate throws). */
 export const AGENT_LIMITS = Object.freeze({
-  turnTimeoutMs: Number(process.env.TAXILA_TEACHER_TIMEOUT_MS ?? 9000),
+  turnTimeoutMs: Number(process.env.TAXILA_TEACHER_TIMEOUT_MS ?? 6000),   // sim lab 571b301: 9 s timeouts + the Director cost 15-20 s turns
   maxOutTokens: 1200,
   lessonUsd: Number(process.env.TAXILA_TEACHER_LESSON_USD ?? 1.5),
   lessonTokens: 400_000,

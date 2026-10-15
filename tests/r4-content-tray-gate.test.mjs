@@ -45,8 +45,7 @@ const KNOWN = {
   "server/studio/qa/gate.js": "offline: the Studio build gate (renders builds in its own harness)",
   "server/forge/g2/serve.js": "forge-g2-made-for",
   "server/forge/render-check.mjs": "offline: the G1 render check",
-  "server/agent/board.js": "agent-board",                          // round 5: the Teacher agent's board.show
-  "server/agent/agent.js": "agent-board",                          // its screen-truth view of the board boardScript gated
+  "server/agent/agent.js": "agent-board",                          // round 5: its screen-truth view of what studio/tools.js mounted
 };
 
 describe("r4 content tray gate · A: every producer is registered and gated", () => {

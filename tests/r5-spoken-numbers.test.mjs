@@ -24,6 +24,8 @@ test("the ASR's fused hundreds: छेसो = छह सौ, and its kin in bot
   assert.deepEqual(numbersIn("तीन लाख एक हज़ार छेसो"), [301600]);
   for (const [w, v] of [["पाँचसो", 500], ["पांचसो", 500], ["सातसो", 700], ["आठसो", 800], ["नौसो", 900], ["दोसो", 200], ["तीनसो", 300], ["चारसो", 400],
     ["छह सो", 600], ["chheso", 600], ["paanchso", 500], ["teensau", 300]]) assert.equal(spokenNumber(w), v, w);
+  // the ASR's own spellings of the forties (sim lab voice re-run p43-c7 #9: "बालीस हज़ार" for 42,000)
+  for (const [w, v] of [["बालीस हज़ार", 42000], ["छयालीस", 46], ["चालिस", 40]]) assert.equal(spokenNumber(w), v, w);
   // a bare Roman "so" is English, never a hundred
   assert.equal(spokenNumber("paanch so"), 5);
 });
@@ -46,4 +48,16 @@ test("controls: the one-number reader still refuses two numbers back to back; sp
   assert.equal(spokenNumber("12 ya 13"), null, "a hedge is still no one number");
   assert.equal(matchNumber("3... nahi nahi, 4", 4), "correct");
   assert.deepEqual(numbersIn("I do not know", { lang: "en" }), []);
+});
+
+test("working aloud with the answer FIRST: '24 cm hoga... 6 times 4' is 24, the operands never decide (sim lab 3cf7cdc p08 #1)", () => {
+  const RH = "24 cm hoga... rhombus ki saari sides equal hoti hain, 6 times 4";
+  assert.equal(matchNumber(RH, 24), "correct");
+  assert.equal(rKey(RH, 24), "correct");
+  assert.equal(rKey(RH, 4), "wrong", "an operand is never the answer");
+  const target = { mode: "item", key: "24 cm", also: [], item: { id: "r1", prompt_en: "A rhombus has sides of 6 cm. What is its perimeter?" } };
+  assert.equal(classifyFast({ target, childText: RH, asrConfidence: 0.92, lang: "hinglish" }).result?.outcome, "correct");
+  // and the answer LAST still holds
+  assert.equal(rKey("6 times 4 is 24", 24), "correct");
+  assert.equal(rKey("6 times 4 is 25", 24), "wrong");
 });
