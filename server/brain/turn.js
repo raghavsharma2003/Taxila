@@ -955,7 +955,10 @@ export async function lessonTurn(req, body) {
     // (a visual ask with no thing named, e.g. the "Show me a picture" chip: the thing HER line says the picture shows is held
     // to the same rule; owner replay of a95d2ff1, turn 22: "Screen par potato ka picture dekhiye" over "a₃₀ = ___")
     const seeReq0 = r.move?.request === "visual" ? requestOfSee(r.move?.see) : null;
-    const lineSubject = r.move?.request === "visual" && !seeReq0?.subject && teacherReply ? pictureSubjectOf(teacherReply) : null;
+    // (only a PICTURE asked with no thing named takes its subject from her line: "whiteboard pe bana ke samjhao" asks to draw
+    // the idea on the table, and "rectangle" in her line over the area model it draws is not a thing the page must write;
+    // owner-5 on 14.1: her pointing was stripped on 2/2 such turns over the right board)
+    const lineSubject = r.move?.request === "visual" && !seeReq0?.subject && (seeReq0?.kind ?? "picture") === "picture" && teacherReply ? pictureSubjectOf(teacherReply) : null;
     const seeReq = lineSubject ? { ...(seeReq0 ?? { kind: "picture" }), subject: lineSubject } : seeReq0;
     // ... and a visual ask with no board coming at all (none accepted, none on screen for it: owner replay turn 10, "Screen par
     // 4, 7, 10 dekhiye" over an empty tray) never points either
