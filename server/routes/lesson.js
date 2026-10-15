@@ -355,7 +355,8 @@ export async function lessonStart(req, body) {
     const lane = laneFor(guardian);
     state.ctx = { ...state.ctx, teacher: lane };
     let opened = null;
-    if (lane === "agent") {
+    // a safeguarding opening (a carried check-in after an incident, an open episode) is the Director's, never hers
+    if (lane === "agent" && r.move.kind !== "safeguard" && !state.safeguard) {
       try {
         const out = await agentTurn({ state, kit, event: eventOf({ kind: "start" }), lessonId, lane: mode, trace });
         const floor = floorViolations(out.say, { content: floorContentOf(out.item ?? null) });
@@ -484,7 +485,7 @@ const STOP_WORDS = new Set(["the", "and", "with", "likes", "loves", "has", "have
 /** Topics never stored about a child, whatever they say (DPDP minimisation; harvest gurukul §8.5). */
 const SENSITIVE = /\b(religio|caste|jaati|dharm|hindu|muslim|christian|sikh|god|bhagwan|allah|address|phone|school name|divorce|fight|beat|sick|ill|hospital|medicine|money|poor|rich|password)/i;
 
-const END_SCHEMA = {
+export const END_SCHEMA = {
   type: "object", additionalProperties: false, required: ["summary", "parentNote", "memories"],
   properties: {
     summary: { type: "string", description: "3-5 short factual lines for the teacher's own record" },
@@ -515,6 +516,20 @@ const probesMisconception = (kit, itemId, misId) => itemId === `diag:${misId}` |
  * A misconception reports how often it showed and how many correct answers on its own items came after
  * the last time it showed — "mixed up, then got it twice after the strips" is a different note to a parent.
  */
+/**
+ * The Teacher agent lane's own read of one skill (state.agent.learner, held to earned evidence by server/agent/agent.js
+ * earnedRead) as the check the summary writer words it from, or null (the Director lane, or a skill she never read).
+ * Round 5 (main: agent overclaims 64 vs the Director's 35 in sim lab cc4b3d2; in 34 of them her own read was LOWER than
+ * what the record told the parent — the writer saw only right-answer counts). PURE.
+ */
+export function checkOf(entry) {
+  const r = entry?.read;
+  if (r === "understood") return "shown: right on a why or new-situation question as well as the practice";
+  if (r === "partly") return entry.depth === "untested" ? "practised: easy questions right, not yet checked with a why or new-situation question" : "partly: some right, not steady yet";
+  if (r === "not") return "still building";
+  return null;
+}
+
 function lessonFacts(state, evidence, kit) {
   const bySkill = {};
   for (const e of evidence) {
@@ -523,9 +538,11 @@ function lessonFacts(state, evidence, kit) {
     if (e.outcome === "correct" && e.hints_used === 0) s.unaided += 1;
   }
   const misIds = [...new Set(evidence.map((e) => e.misconception_id).filter(Boolean))];
+  const read = state.agent?.learner ?? {};
   return {
     topic: getTopic(state.topicId)?.title, minutes: state.minutes, teachbackPassed: state.teachbackPassed,
-    skills: Object.entries(bySkill).map(([id, s]) => ({ skill: kit.skills.find((k) => k.id === id)?.title ?? "an earlier skill", attempts: s.attempts, unaidedCorrect: s.unaided })),
+    skills: Object.entries(bySkill).map(([id, s]) => ({ skill: kit.skills.find((k) => k.id === id)?.title ?? "an earlier skill", attempts: s.attempts, unaidedCorrect: s.unaided,
+      ...(checkOf(read[id]) ? { check: checkOf(read[id]) } : {}) })),
     misconceptions: misIds.map((m) => {
       const last = evidence.map((e) => e.misconception_id).lastIndexOf(m);
       return {
@@ -581,6 +598,22 @@ async function engineRowsOf(childId, lessonId) {
 async function withPlanNext(did, child) {
   const next = await nextTopicOf(child);
   return { ...did, nextTitle: next?.title ?? did.nextTitle ?? null };
+}
+
+/** The end-of-lesson record's messages (the writer words the FACTS; it does not decide them). PURE. */
+export function endMessages({ child, teacher, facts, childTurns }) {
+  return [
+    { role: "system", content: [
+      `You write the record of one tutoring lesson with ${child.first_name} (class ${child.class_level}).`,
+      `The teacher is ${teacher.name}, an AI teacher (${teacher.pronouns?.subject ?? "they"}/${teacher.pronouns?.object ?? "them"}): name ${teacher.pronouns?.object ?? "them"} by name or with these pronouns only. Refer to the child by first name or "they".`,
+      "Write ONLY from the FACTS and the child's numbered turns. summary: short factual lines. parentNote: plain, warm, specific — what was practised, what went well (the method, not ability), any mix-up and whether it was corrected later in the lesson (correctAfterLastSeen), one way to help at home. Never use ability words (smart, weak, slow, intelligent, topper…), never compare with other children, never predict marks.",
+      "memories: at most 3 harmless things the child SAID about themself (interests, preferences, a win, a joke, a happy event). Cite the number of the child turn it came from. Never anything about religion, caste, health, family problems, money, location, school name or other people's names. Empty if nothing fits.",
+      // last: the rule that must fire (a skill's `check`, the agent lane's earned read, decides how far its words go)
+      ...(facts.skills?.some((s) => s.check) ? ["A skill with a check is worded only as far as its check: a \"shown\" skill may read as understood; every other skill reads as practised, with what is still to check next time, in summary and parentNote alike, never as understood, mastered, secure, done well or explained correctly."] : []),
+    ].join("\n") },
+    // the child's words reach the model with direct identifiers masked (scrubPii), like every other model call
+    { role: "user", content: `FACTS: ${JSON.stringify(facts)}\nCHILD TURNS:\n${childTurns.map((t, i) => `${i}. ${scrubbed(t.text)}`).join("\n") || "(none)"}` },
+  ];
 }
 
 /**
@@ -641,16 +674,7 @@ export async function endLesson({ lesson, guardian, child, endedBy = "client", d
 
   let summary, parentNote, memories = [];
   try {
-    const { json } = await chat(DEPLOY.fast, [
-      { role: "system", content: [
-        `You write the record of one tutoring lesson with ${child.first_name} (class ${child.class_level}).`,
-        `The teacher is ${teacher.name}, an AI teacher (${teacher.pronouns?.subject ?? "they"}/${teacher.pronouns?.object ?? "them"}): name ${teacher.pronouns?.object ?? "them"} by name or with these pronouns only. Refer to the child by first name or "they".`,
-        "Write ONLY from the FACTS and the child's numbered turns. summary: short factual lines. parentNote: plain, warm, specific — what was practised, what went well (the method, not ability), any mix-up and whether it was corrected later in the lesson (correctAfterLastSeen), one way to help at home. Never use ability words (smart, weak, slow, intelligent, topper…), never compare with other children, never predict marks.",
-        "memories: at most 3 harmless things the child SAID about themself (interests, preferences, a win, a joke, a happy event). Cite the number of the child turn it came from. Never anything about religion, caste, health, family problems, money, location, school name or other people's names. Empty if nothing fits.",
-      ].join("\n") },
-      // the child's words reach the model with direct identifiers masked (scrubPii), like every other model call
-      { role: "user", content: `FACTS: ${JSON.stringify(facts)}\nCHILD TURNS:\n${childTurns.map((t, i) => `${i}. ${scrubbed(t.text)}`).join("\n") || "(none)"}` },
-    ], { schema: END_SCHEMA, schemaName: "lesson_end", effort: "low", maxTokens: 2000, timeoutMs: 25_000, trace });
+    const { json } = await chat(DEPLOY.fast, endMessages({ child, teacher, facts, childTurns }), { schema: END_SCHEMA, schemaName: "lesson_end", effort: "low", maxTokens: 2000, timeoutMs: 25_000, trace });
     summary = json.summary;
     // Ability-label fence on what a parent reads: a sentence with a label is dropped, never rewritten.
     parentNote = json.parentNote.split(/(?<=[.!?।])\s+/).filter((s) => !hasAbilityLabel(s)).join(" ");

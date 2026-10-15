@@ -100,9 +100,17 @@ export function answersRequest(script, request, { drawnFor = false } = {}) {
   // a PICTURE asked with no thing named ("तस्वीर दिखाओ"): the lesson's ready-made flow chart is not a picture of anything she
   // describes (QA, round 5: "Dekho: ek tarazu…" over "Change to grams / Compare weights"); only the board drawn from her
   // own line answers it
-  if (!words.length) return request.kind !== "picture" || drawnFor;
+  // round 5 merge (main; owner-5 on 14.1, 'picture dikhao' 2/2 an empty stage and an ASCII line in her reply): a ready-made
+  // board that IS a drawing (a number line, a circle, a sector, a stroke: release 14 answered this ask with it) still does;
+  // a page of text boxes never does
+  if (!words.length) return request.kind !== "picture" || drawnFor || isDrawing(script);
   const all = textsOf(script).map(norm).join(" | ");
   return words.some((w) => all.includes(w));
+}
+
+/** A board that draws something (a figure or a number line), not only text boxes. PURE. */
+export function isDrawing(script) {
+  return (script?.ops ?? []).some((o) => ["circle", "ellipse", "sector", "stroke", "line", "x", "polygon", "path"].includes(o?.op) || (o?.op === "numwork" && o?.layout === "number_line"));
 }
 
 /** A worked page: three things written or more, two of them carrying numbers (the steps of an example). PURE. */

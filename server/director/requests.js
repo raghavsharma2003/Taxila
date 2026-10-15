@@ -142,7 +142,7 @@ const BARE_CLEAR = new RegExp(`^(?:(?:please|plz|ab|abhi|jaldi|isko|ise|ye|yeh|w
 // subject a child names, in either script, so the lesson can answer honestly about it. Generic words are not subjects.
 // release 13 integration (ms-r13-meta-subjects): the meta and pointing words a child uses for TODAY's work ('is cheez', 'pichle
 // wale', 'aaj ke topic') are never a subject named outside it
-const GENERIC = /^(?:ek|एक|zara|jara|ज़रा|जरा|thoda|thodi|थोड़ा|थोड़ी|diagram|picture|photo|image|images|drawing|game|games|video|kuch|koi|kuchh|ye|yeh|is|isko|use|usko|woh|wo|iss|us|uss|iske|uske|inke|unke|isme|usme|ismein|usmein|cheez|chiz|cheej|chij|pichle|pichla|pichli|pichhle|agle|agla|agli|wale|wala|wali|waala|waale|topic|chapter|lesson|sawal|sawaal|question|questions|answer|jawab|concept|aaj|abhi|mujhe|mere|mera|aap|tum|visualization|visualisation|chitra|tasveer|board|screen|chart|graph|model|animation|figure|sketch|map|table|ko|ka|ki|ke|ne|se|mein|me|par|pe|डायग्राम|डायग्रम|ड्रॉइंग|ड्राइंग|चित्र|ग्राफ|चार्ट|मॉडल|एनिमेशन|टेबल|को|का|की|के|ने|से|में|पर|इमेज|फोटो|पिक्चर|तस्वीर|गेम|वीडियो|कुछ|कोई|ये|यह|इसको|उसको|उसके|इसके|इसकी|उसकी|चीज़|चीज|पिछले|पिछला|अगले|अगला|वाले|वाला|वाली|सवाल|जवाब|टॉपिक|चैप्टर|आज|अभी|मुझे|मेरे|मेरा|आप|तुम)$/iu;
+const GENERIC = /^(?:ek|एक|zara|jara|ज़रा|जरा|thoda|thodi|थोड़ा|थोड़ी|diagram|picture|photo|image|images|drawing|game|games|video|kuch|koi|kuchh|ye|yeh|is|isko|use|usko|woh|wo|iss|us|uss|iske|uske|inke|unke|isme|usme|ismein|usmein|cheez|chiz|cheej|chij|pichle|pichla|pichli|pichhle|agle|agla|agli|wale|wala|wali|waala|waale|topic|chapter|lesson|sawal|sawaal|question|questions|answer|jawab|concept|aaj|abhi|mujhe|mere|mera|aap|tum|visualization|visualisation|chitra|tasveer|board|screen|whiteboard|blackboard|smartboard|slate|व्हाइटबोर्ड|ब्लैकबोर्ड|बोर्ड|स्क्रीन|chart|graph|model|animation|figure|sketch|map|table|ko|ka|ki|ke|ne|se|mein|me|par|pe|डायग्राम|डायग्रम|ड्रॉइंग|ड्राइंग|चित्र|ग्राफ|चार्ट|मॉडल|एनिमेशन|टेबल|को|का|की|के|ने|से|में|पर|इमेज|फोटो|पिक्चर|तस्वीर|गेम|वीडियो|कुछ|कोई|ये|यह|इसको|उसको|उसके|इसके|इसकी|उसकी|चीज़|चीज|पिछले|पिछला|अगले|अगला|वाले|वाला|वाली|सवाल|जवाब|टॉपिक|चैप्टर|आज|अभी|मुझे|मेरे|मेरा|आप|तुम)$/iu;
 /** A subject made only of generic, meta or pointing words ("is cheez", "aaj ke topic"): not a subject. PURE. */
 export const genericSubject = (sub) => { const w = String(sub ?? "").trim().split(/\s+/).filter(Boolean); return !w.length || w.every((x) => GENERIC.test(x)); };
 const LEAD_WORDS = /^(?:(?:mere|mujhe|hume|humein|hamein|ko|ka|ki|ek|mera|meri|please|plz|bhai|bhaiya|yaar|didi|मेरे|मुझे|हमें|को|का|की|एक|मेरा|मेरी|भई|यार)\s+)+/iu;
@@ -216,6 +216,9 @@ export function visualAskOf(text) {
   // "… hathi dekhna hai dikhao": nothing after the verbs, the thing is before the first one
   if (vi >= 0) words = vi + 1 < words.length ? words.slice(vi + 1) : words.slice(0, Math.max(0, words.findIndex(isVerb)));
   while (words.length && (ASK_STOP.test(words[0]) || GENERIC.test(words[0]))) words.shift();
+  // round 5 merge (main): where it is drawn is never part of what is drawn ("aloo whiteboard pe draw karo" → aloo)
+  words = words.filter((w) => !/^(?:whiteboard|blackboard|smartboard|board|screen|slate|व्हाइटबोर्ड|ब्लैकबोर्ड|बोर्ड|स्क्रीन)$/iu.test(w));
+  while (words.length && (ASK_STOP.test(words.at(-1)) || /^(?:ka|ki|ke|का|की|के|ko|को|pe|par|पे|पर)$/iu.test(words.at(-1)))) words.pop();
   words = words.slice(-4);
   const subject0 = words.join(" ").trim();
   const subject = subject0 && !genericSubject(subject0) && !words.every((w) => GENERIC.test(w) || ASK_STOP.test(w)) && !(words.length === 1 && SHOW_NOT_SUBJECT.test(words[0])) && !/\d/.test(subject0) ? subject0.slice(0, 40) : null;
