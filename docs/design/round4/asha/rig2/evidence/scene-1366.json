@@ -1,0 +1,103 @@
+{
+ "date": "2026-10-10",
+ "method": "Scene read-outs from a capture log (capture.mjs, 60 Hz driver ticks): the scene line's bilabial words (sealed = the\nmbp key at >= 0.9 inside [word start - 80 ms, word end], audio time; the line starts at 1.5 s), blinks (entries into\nthe closed key) per minute, key usage, the rigid pose range, and the safety read-outs (the smile key or a smile while\nshe speaks; head nod while listening).\n    python3 -I scene-log.py <capdir> <out.json>",
+ "capture": "cap-1366",
+ "ticks": 913,
+ "seconds": 15.2,
+ "bilabialWords": "11/11",
+ "words": [
+  {
+   "word": "ek",
+   "sealed": true
+  },
+  {
+   "word": "mazedaar",
+   "sealed": true
+  },
+  {
+   "word": "ek",
+   "sealed": true
+  },
+  {
+   "word": "dabbe",
+   "sealed": true
+  },
+  {
+   "word": "mein",
+   "sealed": true
+  },
+  {
+   "word": "baarah",
+   "sealed": true
+  },
+  {
+   "word": "pencil",
+   "sealed": true
+  },
+  {
+   "word": "hain",
+   "sealed": true
+  },
+  {
+   "word": "dabbon",
+   "sealed": true
+  },
+  {
+   "word": "mein",
+   "sealed": true
+  },
+  {
+   "word": "batao",
+   "sealed": true
+  }
+ ],
+ "blinks": 6,
+ "blinksPerMin": 23.7,
+ "mouthKeyTicks": {
+  "rest": 442,
+  "ltd": 126,
+  "ee": 92,
+  "eh": 97,
+  "mbp": 59,
+  "aa": 5,
+  "oh": 10,
+  "smile": 82
+ },
+ "eyeKeys": [
+  "closed",
+  "half",
+  "lookUp",
+  "open"
+ ],
+ "browKeys": [
+  "neutral",
+  "raised"
+ ],
+ "pose": {
+  "rotDeg": [
+   -1.2,
+   1.2
+  ],
+  "swayPx": [
+   -1.37,
+   3.5
+  ],
+  "nodPx": [
+   -2.83,
+   3.2
+  ]
+ },
+ "safety": {
+  "smileKeyTicksWhileSpeaking": 0,
+  "maxSmileWhileSpeaking": 0.042,
+  "calmKeyTicks": 0,
+  "listeningNodPxRange": [
+   -0.6,
+   3.2
+  ],
+  "listeningPitchDegRange": [
+   -0.28,
+   8.72
+  ]
+ }
+}
