@@ -160,6 +160,11 @@ export async function runLesson(p, { base, lane = "text", maxTurns = 14, voice =
     await api("POST", "/api/parent/controls", { childId: child.id, hoursStart: "00:00", hoursEnd: "23:59", dailyMinutes: 120 }).catch((e) => rec.errors.push({ at: "controls", msg: e.message }));
     const s = await api("POST", "/api/lesson/start", { childId: child.id, topicId: p.topicId, mode: "cascade" });
     rec.start = { ms: s._ms, topic: s.topic, teacher: s.teacher?.name, address: s.address ?? null };
+    // the rest of the start response (kit / plan / queue fields, whatever the server returns) so an early wrap can be read
+    // back from the record (main, ok10 r1); credential-shaped keys never kept, long strings cut
+    const keep = (v, d = 0) => typeof v === "string" ? v.slice(0, 200) : Array.isArray(v) ? (d > 3 ? `[${v.length}]` : v.slice(0, 40).map((x) => keep(x, d + 1)))
+      : v && typeof v === "object" ? (d > 3 ? "{…}" : Object.fromEntries(Object.entries(v).filter(([k]) => !/token|secret|key|password|cookie/i.test(k)).map(([k, x]) => [k, keep(x, d + 1)]))) : v;
+    rec.startRaw = keep(Object.fromEntries(Object.entries(s).filter(([k]) => !["_ms", "teacher"].includes(k))));
     rec.lessonId = s.lessonId; // TEST lesson id, so a turn can be traced server-side (never a child or account id)
     let screen = nextScreen({}, s);
     const decided = childMode() === "decided";
