@@ -4640,3 +4640,15 @@ The thought of harm with no subject named ('koi nuksan pahunchane ka khayal') is
 ## ms-r144-across-hate (2026-10-21, n = 283 lines × 2 deployments)
 
 The hate rule had to reach classify's distress reads as well as the probes. When every deployment blocks the brief only for hate, the read means no distress. That holds for 0 of 276 curated distress lines, and 22 of them stay blocked on harm categories and fail closed. It covers 2 of 7 false alarms, including QA's class 6 history answer.
+
+
+<!-- merged from inbox/r1441-burn-main.json -->
+## ms-r1441-lesson-burn (2026-10-21, n = 276 distress lines + 40,261 child lines)
+
+The idiom matches 0 curated distress lines and 8 lesson-pressure lines. The predicate misses most real fire and intruder lines, which is why unsafe_now itself stays sure.
+
+
+<!-- merged from inbox/r144-live-main.json -->
+## ms-r144-live (2026-10-21)
+
+Release 14.4 (5c127d1) has been live since about 20:07 UTC, and the canary smoke passed 4 of 4. The first deploy attempt hit a transient fetch failure before any traffic moved; the re-run reused the built image. Production holds no real lessons since the deploy yet. The baseline to compare against is 6 lessons, 4 safeguard moves and 3 helpline renders since 10-15.

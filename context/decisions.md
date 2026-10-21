@@ -6278,3 +6278,9 @@ The outage line asks the child to repeat. After a context block the repeat trips
 ## dc-r144-beside-wait — the tier waits for the read that names it (2026-10-21)
 
 The 14.4 tier needs the words-only read to say what a distress label is about. A 1.2 s wait was chosen to keep turns fast. But the read's fallback deployment answers at 1.6 s at the median, so every primary timeout (0.5% of calls, and more under load) became the full script. A tier that depends on load is not a tier. The turn now waits for the read's own bound, and the time is spent only on distress-labelled turns.
+
+
+<!-- merged from inbox/r1441-burn-main.json -->
+## dc-r1441-lesson-burn — 'my head is on fire' is not a fire (2026-10-21)
+
+The hyperbole and frustration idioms already made a model's self-harm read a check-in. Burning is the same shape: a child who says 'please skip, aag lag rahi hai' after a hard item is fried, not in danger. unsafe_now stays sure. The predicate misses many real emergencies, and the model read is their only route, so only the idiom shape moves.

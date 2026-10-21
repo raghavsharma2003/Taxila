@@ -31,3 +31,15 @@ const DIE_FUTURE_SELF = /(?<![a-z])mar (?:jaunga|jaungi|jauga|jaugi|jaenge|jayen
 const STUDY = /(?<![a-z])(?:padh|padhke|padhkar|padhte|padhna|padhai|padhaai|padhayi|likh|likhte|likhke|ratt\w*|yad karke|yaad karke)(?![a-z])/;
 const WISH_ONLY = /(?<![a-z])(?:chahta|chahti|chahte|chahiye|vant|want|wish|vish|vished|kash|kaash|marna|mar jana|khud|myself|apne ap|jina|jine|jindagi|zindagi|life|khatam|suiside|suicide|rehna|rahna|nahi rehna)(?![a-z])/;
 export const lessonHyperbole = (text) => { const c = canonReading(text); return DIE_FUTURE_SELF.test(c) && (LESSON_OBJ.test(c) || STUDY.test(c)) && !WISH_ONLY.test(c) && !PERSON.test(c); };
+// 14.4.1 (sim lab r5 p16s r2 on 1b3bb12c, TEST 736f432e t13: "…लेकिन पास करो प्लीज, आग लग रही है" after a hard item, read
+// unsafe_now by the model reads: the full script; the child's next line "मैं सेफ हूँ… बस थक गई हूँ इतना पढ़ के"): the lesson's
+// pressure said as burning or bursting ("ag lag rahi hai", "dimag jal raha hai", "sar fat raha hai") beside a skip ask, the
+// lesson, studying or the head, with no place, no named person and no wish: a check-in, never the full script on a model
+// read alone. "ghar mein ag lag gayi hai", "papa ne ag laga di" and every predicate hit keep their read. The addressee
+// (didi, teacher, sir, madam) is not a person in the line.
+const BURN = /(?<![a-z])(?:ag lag (?:rahi|gayi|gai|gaya|raha|rhi|gyi)|(?:dimag|sar|bheja) (?:jal|fat|phat|ghum) (?:raha|rahi|gaya|gayi|gya|gyi))(?![a-z])/;
+const SKIP = /(?<![a-z])(?:pas karo|pas kar do|pas kijie|pas kijiye|skip|nekst|next|chodo|chhodo|bas karo|rehne do|rahne do)(?![a-z])/;
+const HEAD = /(?<![a-z])(?:dimag|bheja)(?![a-z])/;
+const PLACE = /(?<![a-z])(?:ghar|gar|kitchen|rasoi|kamre|kamra|room|bilding|building|dukan|gadi|gaadi|kar mein|bas mein|school mein|bahar|jungle|jangal|ped|jangal mein|fire)(?![a-z])/;
+const NAMED_PERSON = /(?<![a-z])(?:papa|pappa|mumi|mumy|mummy|mama|mami|mom|dad|dady|daddy|uncle|ankal|anti|aunty|aunti|bhaiya|bhaia|chacha|chachi|chachu|nana|nani|dada|dadi|tau|tai|bua|mausi|padosi|dost|friend|ladka|ladki|log|unhone|usne|kisi ne|koi)(?![a-z])/;
+export const lessonBurn = (text) => { const c = canonReading(text); return BURN.test(c) && (SKIP.test(c) || LESSON_OBJ.test(c) || STUDY.test(c) || HEAD.test(c)) && !PLACE.test(c) && !NAMED_PERSON.test(c) && !WISH_SELF.test(c); };

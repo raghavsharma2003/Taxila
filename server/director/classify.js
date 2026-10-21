@@ -17,7 +17,7 @@ import { requestFromReading } from "../conversation/policy.js";
 import { p5Flag } from "../conversation/flags.js";
 import { itemSetAside, itemSetAsideMode } from "./itemSetAside.js";
 import { canonReading } from "../safety/fine.js";
-import { lessonIdiom, scoldOnly, lessonHyperbole } from "../safety/idioms.js";
+import { lessonIdiom, scoldOnly, lessonHyperbole, lessonBurn } from "../safety/idioms.js";
 export { lessonIdiom } from "../safety/idioms.js";
 
 // ───────────── the signals block (W2-E BR2; TEACHER-BRAIN TB4, §14.2-14.3; owner of this block: W2-E) ─────────────
@@ -384,6 +384,9 @@ const idiomCheck = (out, text) => {
   if (!out?.flags?.distress || ["self_harm", "abuse", "fear"].includes(out.flags.distressKind ?? "")) return out;
   if ((out.flags.distressAbout === "self_harm" || out.flags.distressAbout == null) && lessonIdiom(text)) return { ...out, flags: { ...out.flags, distressAbout: "none", idiom: "lesson_frustration" } };
   if (SCOLD_ABOUT.has(out.flags.distressAbout) && scoldOnly(text)) return { ...out, flags: { ...out.flags, distressAbout: "none", idiom: "scolding" } };
+  // 14.4.1 (sim lab p16s r2, TEST 736f432e t13: "…पास करो प्लीज, आग लग रही है" read unsafe_now): the lesson's pressure said as
+  // burning (idioms.js lessonBurn) is a check-in kind, never the full script on a model read alone
+  if ((out.flags.distressAbout === "unsafe_now" || out.flags.distressAbout == null) && lessonBurn(text)) return { ...out, flags: { ...out.flags, distressAbout: "none", idiom: "lesson_burn" } };
   return out;
 };
 /**
