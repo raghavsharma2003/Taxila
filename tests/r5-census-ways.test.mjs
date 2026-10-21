@@ -113,3 +113,15 @@ test("F3 (census 3437b744 t9/13/14): a faded step's question card carries the pr
     assert.equal(askText(p), p, "the card shows it whole (askText keeps the tail, which would drop a leading problem)");
   }
 });
+
+test("F9 (census b08fe8a7; sim lab p55): the thing to draw is a short noun phrase from the ask, never a clause the child said — no filler, verb or number word in it; 'X की ड्राइंग' names X", async () => {
+  const { visualAskOf, requestOf } = await import("../server/director/requests.js");
+  const subj = (t) => visualAskOf(t)?.subject ?? null;
+  assert.equal(subj("सात में से दो गया तो पाँच बचा, बस दिखाओ ना drawing."), null, "the sum the child said is not a thing");
+  assert.equal(subj("मैंने पहले ही बोला, पाँच बच्चे, अब दिखाओ न बस की ड्राइंग।"), "बस", "the bus");
+  assert.equal(requestOf("मैंने पहले ही बोला, पाँच बच्चे, अब दिखाओ न बस की ड्राइंग।")?.subject, "बस");
+  for (const [t, want] of [["windmill... umm... windmill dikhao na pehle?", "windmill"], ["umm... space... rocket dikhao na", "rocket"], ["Cheetah! Cheetah dikhao, please!", "cheetah"],
+    ["arey timeline ka photo dikhao", "timeline"], ["mujhe cake banana pasand hai, chocolate wala. cake dikhao na", "cake"], ["aloo dikhao", "aloo"], ["aloo whiteboard pe draw karo", "aloo"]]) assert.equal(subj(t), want, t);
+  for (const t of ["umm... mujhe addition thoda sahi lagta hai, par subtraction mein thoda problem hota hai... drawing dikhao", "High Court... par aapne draw nahi kiya abhi tak. Kahan hai? Mujhe dekhna hai, please dikhao",
+    "um… theek hai. dikhao. maybe 5 group lag rahe hain.", "नहीं, मेरे को आप डायग्राम दिखाओ, मुझे देखना है डायग्राम।"]) assert.equal(subj(t), null, t);
+});
