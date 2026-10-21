@@ -27,7 +27,7 @@ import type { EngineContext, AnswerForm, ExchangeContext, FloorPhase, HerAct, Ms
 import type { Floor } from "../lesson/floor.ts";
 import { EngineHost, NEUTRAL_CONTEXT, type HostCommand, type HostSttEvent, type ShadowRow } from "./host.ts";
 import type { SttEvent } from "../../server/duplex/fanin.js";
-import { WT1_DEFAULT } from "./config.ts";
+import { WT1_DEFAULT, VERDICT, VERDICT_HOLD_MS } from "./config.ts";
 import { vt } from "../voice/trace.ts";
 
 /** What the bridge asks of the link (CascadeLink implements it; tests fake it). */
@@ -73,6 +73,11 @@ export interface DuplexTurn {
    * runtime supersedes the revoked turn while it is still in flight, else sends only the new words (never an answer twice).
    */
   revokeOf?: { turnId: number; text: string };
+  /**
+   * Round 5 truth bar: her reply to this turn must not sound before this (client clock). Set on a closed answer carrying
+   * a value (the G7 stamp + VERDICT_HOLD_MS − VERDICT.delayMs); absent otherwise. CascadeLink holds the reply's first sound.
+   */
+  verdictHoldUntil?: number;
   /** TurnRequest.duplex (shared/contracts.ts): hashes and codes only, never words. */
   duplex: {
     transcriptHash: string;
@@ -982,6 +987,7 @@ export class DuplexLive {
           turnId, text, startedAt: pk.firstOnsetAt ?? c.t, itemId: this.lastItemId,
           ...(revokeOf ? { revokeOf } : {}),
           ...(text ? {} : { asrConfidence: 0 }),
+          ...(c.op === "speak" && typeof c.verdictNotBefore === "number" ? { verdictHoldUntil: c.verdictNotBefore + VERDICT_HOLD_MS - VERDICT.delayMs } : {}),
           duplex: {
             transcriptHash: c.textHash,
             safetyPending: s.distress ? { kind: (s.kind as "self_harm" | "abuse" | "fear" | null) ?? null, source: (s.source as "predicate" | "model_note" | null) ?? null } : null,

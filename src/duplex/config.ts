@@ -286,6 +286,13 @@ export const D5_CLOSED_NO_VALUE_BACKSTOP_MS = 900;
  * (evals/duplex-2026-10/arms-d5.mjs --replay) before it ships: self-corrections cut, values changed.
  */
 export const D5_CLOSED_AT_FINAL_MS = 600;
+/**
+ * Round 5 truth bar (main 2026-10-15): her reply to a closed answer carrying a value never SOUNDS before the value's end +
+ * this (the G7 stamp verdictNotBefore + VERDICT_HOLD_MS − VERDICT.delayMs, enforced by CascadeLink). A child who pauses up to
+ * 2.5 s and corrects herself ("दो बटा दो … नहीं, एक बटा दो") revokes the commit before any verdict on the value she
+ * abandoned is heard (stress set: evals/duplex-2026-10/stretch-repair.mjs). The ack clip is not held.
+ */
+export const VERDICT_HOLD_MS = 2500;
 /** Round 5 EOT step 2 (D5): an empty / failed final on a closed question → the re-ask this long after that final (was 900 ms). */
 export const D5_EMPTY_FINAL_REASK_MS = 300;
 export const FIRST_TEXT_P90: Record<string, Ms> = { live_transcribe: 2048, mai_stream: 3200, nemotron: 800, voicelive: 2000, sim: 2000, other: 2500 };
