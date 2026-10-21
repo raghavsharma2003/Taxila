@@ -693,7 +693,7 @@ export const studioSeam = {
     if (!L) return null;
     L.shown = null;
     // a safeguarding turn: the Help sheet replaces the Desk; whatever was on screen is frozen and retired, and nothing
-    // new is shown for the rest of the lesson (STUDENT-FLOW §5.7)
+    // new is shown until the safeguard closes (STUDENT-FLOW §5.7; onSafetyClosed)
     if (hint?.safety) { if (L.pendingPlay?.early) push(L, { t: "retract", intentId: L.pendingPlay.intentId }); studioSeam.onSafety(lessonId); L.pendingPlay = null; return null; }
     // round 3 forge: the play piece composeAsk built for the child's interactive ask this turn is shown now: the child's
     // own request takes the tray from the Director's show (the same rule as a requested Stagecraft piece), and whatever
@@ -1179,13 +1179,23 @@ export const studioSeam = {
     return true;
   },
 
-  /** A safeguarding turn: freeze and retire everything on screen; no new piece for the rest of the lesson. */
+  /** A safeguarding turn: freeze and retire everything on screen; no new piece while the safeguard is open (onSafetyClosed). */
   onSafety(lessonId) {
     const L = lessons.get(lessonId);
     if (!L) return;
     L.safety = true;
     stagecraft.noteSafety(lessonId, true);
     if (L.onScreen) retirePiece(L, L.onScreen, "safety");
+  },
+
+  /** Census 2026-10-21 F9 (one lesson: five theory asks after a safeguard, no visual): the Director's safeguard episode has
+   * closed (state.safeguard null, the move no safeguard), so Studio and Stagecraft draw again. What was retired stays
+   * retired; nothing from before the safeguard is re-shown. A check-in turn is a safeguard move and freezes as before. */
+  onSafetyClosed(lessonId) {
+    const L = lessons.get(lessonId);
+    if (!L?.safety) return;
+    L.safety = false;
+    stagecraft.noteSafety(lessonId, false);
   },
 };
 
