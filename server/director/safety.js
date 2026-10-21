@@ -262,12 +262,17 @@ const FIRST_PERSON_OBJECT = /(?<![\p{L}\p{M}])(?:mujhe|mujhko|mereko|me|i)(?![\p
 // distress word anywhere in the turn (its own veto: "zinda", "kyunki", "really" are how the science is said, so the Day-0
 // veto would keep every Roman-letter science line firing). Food is not a necessity here: "bina khane ke" can be neglect.
 const NECESSITY_BINA = /(?<![\p{L}\p{M}])(?:bina|binaa|without|बिना)(?![\p{L}\p{M}])/iu;
-const NECESSITY_THING = /(?<![\p{L}\p{M}])(?:oxygen|oxijan|oxyjan|aksijan|o2|ऑक्सीजन|ऑक्सिजन|आक्सीजन|ऑक्सीज़न|ओक्सीजन|hawa|hava|air|हवा|vayu|वायु|paani|pani|water|jal|पानी|जल|dhoop|dhup|sunlight|light|roshni|prakash|धूप|रोशनी|प्रकाश|carbon\s*dioxide|co2|कार्बन|nutrients?|poshak|पोषक|energy|urja|ऊर्जा|saans|sans|सांस|साँस)(?![\p{L}\p{M}])/iu;
+const NECESSITY_THING = /(?<![\p{L}\p{M}])(?:oxygen|oxijan|oxyjan|aksijan|oksijan|oksigen|oxigen|oxyzen|o2|ऑक्सीजन|ऑक्सिजन|आक्सीजन|ऑक्सीज़न|ओक्सीजन|hawa|hava|air|हवा|vayu|वायु|paani|pani|water|jal|पानी|जल|dhoop|dhup|sunlight|light|roshni|prakash|धूप|रोशनी|प्रकाश|carbon\s*dioxide|co2|कार्बन|nutrients?|poshak|पोषक|energy|urja|ऊर्जा|saans|sans|सांस|साँस)(?![\p{L}\p{M}])/iu;
 const LIVING_SUBJECT = /(?<![\p{L}\p{M}])(?:animals?|janwar|jaanwar|janwaron|जानवर|जानवरों|एनिमल्स|एनिमल|plants?|paudhe|paudha|paudhon|पौधे|पौधा|पौधों|पेड़|पेड|ped|trees?|insaan|insan|इंसान|humans?|log|लोग|jeev|jeev\s+jantu|जीव|living\s+things?|organisms?|koi\s+bhi|कोई\s+भी|koi|कोई|fish|machhli|machli|मछली|cells?|कोशिका|hum|हम|we|everyone|sab|सब|birds?|पक्षी|chidiya|चिड़िया|चिडिया|they|ve|वे|वो)(?![\p{L}\p{M}])/iu;
 const FIRST_SINGULAR = /(?<![\p{L}\p{M}])(?:main|mai|i|i'm|im|mujhe|mujhko|mereko|मैं|मै|मुझे|मुझको)(?![\p{L}\p{M}])/iu;
 const NECESSITY_VETO = /(?<![\p{L}\p{M}])(?:khud\s+ko|myself|suicid\w*|pills?|zeher|zehar|poison|chhat|roof|jump\w*|blood|khoon|akela|akeli|alone|lonely|udaas|udas|sad|darr?|scared|afraid|marna\s+chaht\w*|mar\s+jaa?na|hurt\w*|dard|खुद\s+को|ज़हर|जहर|छत|ख़ून|खून|अकेला|अकेली|उदास|डर|दर्द|मरना\s+चाहत\w*|मर\s+जाना)(?![\p{L}\p{M}])/iu;
+// 14.4.1 (main safety review; sim lab r5-rel144-cdac90c-p13p16 p16 voice t1, "बिना ऑक्सीजन के जी नहीं सकते", a science
+// answer with its subject dropped, the full script at once): the PLURAL verb ("sakte", "सकते", "paate") is the generic
+// subject when none is said ("[they / we] cannot live without oxygen"); a child speaking of themself says sakta / sakti, and
+// FIRST_SINGULAR and the whole-turn veto still hold
+const GENERIC_PLURAL = /(?<![\p{L}\p{M}])(?:sakte|sakate|सकते|paate|pate|पाते)(?![\p{L}\p{M}])/iu;
 /** One sentence that says a living thing cannot live without a necessity of life (and is not about "I"). */
-const necessitySentence = (s) => NECESSITY_BINA.test(s) && NECESSITY_THING.test(s) && LIVING_SUBJECT.test(s) && !FIRST_SINGULAR.test(s);
+const necessitySentence = (s) => NECESSITY_BINA.test(s) && NECESSITY_THING.test(s) && (LIVING_SUBJECT.test(s) || GENERIC_PLURAL.test(s)) && !FIRST_SINGULAR.test(s);
 /** The sentence of `t` (marks . ! ? । ; and new lines, never a comma) that holds `span`, or null. */
 function sentenceOf(t, span) {
   const i = span ? t.indexOf(span) : -1;
