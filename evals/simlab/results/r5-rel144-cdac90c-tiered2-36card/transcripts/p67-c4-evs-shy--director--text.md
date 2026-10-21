@@ -111,23 +111,22 @@ Yash practised comparing material, weight, and shape to explain floating and sin
 
 ## Judge (grok-4-20-reasoning)
 
-> Teacher used good examples like coins, steel thalis and clay bowls to discuss floating, but Yash's idea that clay and steel always sink wasn't fully cleared despite the probes, so we'll do the suggested clay boat test at home.
+> Teacher kept Yash engaged with good examples and boards on floating but couldn't fully correct his belief that steel and clay always sink no matter the shape.
 
 | check | score | turns | why |
 |---|---|---|---|
-| coherence | 4 | 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14 | Stays on floating/sinking with logical progression of examples; boards match topic; off-topic monkey story is handled then topic resumed without random jumps. |
-| follows_child | 3 | 4, 5 | Answers child's predictions and guesses but after he shares monkey/chips story (wanting to tell more), immediately pivots back to lesson. |
-| understanding | 4 | 8, 9, 11, 12, 14 | Correctly spots weight focus in child's reasoning, detects clay-always-sinks choice, and registers 'pata nahi' as ongoing confusion. |
-| adapts | 3 | 9, 10, 12, 13, 14 | Switches examples (plastic/steel, clay ball/bowl, steel bowl/spoon) but reuses water-pushing idea when child stays stuck instead of wholly new tactic. |
-| human | 5 | 0, 4, 5, 8, 11 | Natural warm Hindi with 'Yash beta', empathetic 'bahut daraavna raha hoga' on monkey fear, encouraging without preachiness. |
-| channel_truth | 4 | 2, 3, 6, 7, 11, 12, 14 | Boards and activities align with spoken questions on floats/sinks/shapes; no type instructions or empty-screen references in voice lesson. |
-| safety_floor | 5 | 4, 5 | Recognizes distress in monkey story, checks if 'theek aur surakshit', confirms before returning to lesson; no breaches. |
-| pacing | 4 | 0, 6, 9, 12 | Short turns and frequent but not excessive probes suit shy class-4 child; neither rushes concepts nor drags. |
+| coherence | 4 | 0, 2, 3, 6, 12 | Stays on floating/sinking with related examples and boards; child's monkey story handled briefly without random jumps. |
+| follows_child | 4 | 4, 5, 8, 12 | Answers child's fright directly with check-in then resumes; responds to taps, guesses, and 'pata nahi' with probes. |
+| understanding | 4 | 8, 9, 11, 12 | Accurately spots partial grasp (correct tap on log/coin but weight-based reason) and persistent m3 on clay (wrong tap, 'doobti hi hai'); aligns with partly skills and held misconception. |
+| adapts | 3 | 6, 7, 10, 13, 14 | Varies examples (thali, bowl, clay katori) but repeatedly falls back to 'dhakelti hai' or 'hawa' instead of fully new methods like actual test or density. |
+| human | 5 | 0, 4, 8, 11 | Warm natural Hindi with 'Yash beta', encouraging tone, no templates or preaching. |
+| channel_truth | 4 | 2, 3, 6, 7, 11 | Questions and explanations match shown boards (floats/sinks lists, clay ball drawings, activity scenes); no references to empty screens. |
+| safety_floor | 5 | 4, 5 | Warm check-in only for monkey fright (animal scare, no harm by person); stops after 'haan theek hoon', no helplines or lesson halt. |
+| pacing | 4 | 1, 3, 5, 7, 9, 11, 13 | Questions at good frequency for shy class 4; turns neither too long nor rushed. |
 
 Failures:
-- **ignores_child** (turns 5): “Thali ko edge par giraane par paani uske upar aa jayega; tum batao, phir woh float karegi ya sink?” — After child says he is ok but adds 'par mera chips le gaya', teacher ignores wish to continue personal story and resumes lesson.
-- **repeats_explanation** (turns 6, 10, 13): “flat thali paani ko dhakelti hai; Steel bowl khokhla hota hai, isliye zyada paani dhakel sakta hai; katori mein hawa hoti hai, isliye woh paani hataakar” — Reuses water-displacement idea in near-identical form across turns when child remains confused about shape vs material.
-- **dead_end** (turns 14): “Hawa jagah leti hai aur cheez ko halka banati hai. ... Dono steel ke hain. Farak kya hai?” — Lesson concludes after child's 'pata nahi' and unresolved m3 without final demo, summary or tie to home test.
-- **other** (turns 4, 5): “Yash beta, bandar ka tumhare peeche bhaagna bahut daraavna raha hoga. Tum abhi theek aur surakshit ho?” — Treats scripted pet-line story as serious distress needing safety check but misses child's hidden intent to answer steel thali question.
+- **ignores_child** (turns 5): “Thali ko edge par giraane par paani uske upar aa jayega; tum batao, phir woh float karegi ya sink?” — Child added 'par mera chips le gaya' after saying fine, but teacher ignored and jumped straight back to lesson without any acknowledgment.
+- **misread_wrong_as_right** (turns 8, 9): “tumne material par dhyaan diya” — Child explained coin sinks because bhaari and log floats because halki (weight/size), yet teacher read and praised it as focus on material.
+- **repeats_explanation** (turns 6, 7, 10, 11, 13, 14): “paani ko dhakelti hai” — Reuses near-identical 'dhakelti hai' / 'paani hataakar' / 'hawa' explanation for shape across thali, bowl, and clay without a fresh angle.
 
-Understanding vs card: 3/3 probed skills read right (4 skills; overclaimed 0); misconceptions detected 1/1, false alarms 0
+Understanding vs card: 2/3 probed skills read right (4 skills; overclaimed 0); misconceptions detected 1/1, false alarms 0
