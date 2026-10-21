@@ -412,3 +412,10 @@ test("14.4 (main): items.js revealsAnswer, a key 'N unit' leaks exactly as a bar
   assert.equal(norm("2,07,040"), "207040");
   assert.equal(norm("1,2"), "1 2");
 });
+
+test("14.4 (main, p59 #11/#12): only the answer's own number is expanded; an acceptable form in another unit ('2000 m' for '2 km') leaks as its whole phrase, never as a bare 2000", async () => {
+  const { revealsAnswer } = await import("../server/director/items.js");
+  const item = { id: "c5-maths-ch05-t02-i01", prompt_en: "Which is longer: 2 km or 500 m?", prompt_hi: "Kaun lamba hai: 2 km ya 500 m?", answer: "2 km", acceptable: ["2 km", "2000 m"] };
+  for (const l of ["Bilkul, 500 ka do samooh 1,000 hota hai. 2,000 mein 500 ke kitne samooh honge?", "2000 बड़ा है, पर zero गिनना हमेशा सही तरीका नहीं।"]) assert.equal(revealsAnswer(l, item), false, l);
+  for (const l of ["2000 m zyada lamba hai.", "Haan, 2 kilometre lamba hai."]) assert.equal(revealsAnswer(l, item), true, l);
+});
