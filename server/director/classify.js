@@ -592,7 +592,7 @@ export function classifyFast({ target, childText, asrConfidence, typed, chipId, 
     const o = target.options[Number(chipId.slice(4))];
     if (o) { const m = fromMatch(optionTag(o, target), target); return done(m.outcome, "chip", m); }
   }
-  // p5-interaction: a ways-in chip (state.js waysChips) is a request, never an answer and never read by a model
+  // p5-interaction: a ways-in chip (state.js WAYS) is a request, never an answer and never read by a model
   if (chipId && /^req:(visual|story|game)$/.test(chipId) && p5Flag("STEER")) {
     return done("no_evidence", "chip", { request: chipId === "req:story" ? { type: "story", whole: true } : { type: "visual", kind: chipId === "req:game" ? "game" : "diagram", whole: true } });
   }

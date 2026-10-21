@@ -148,6 +148,21 @@ const ACT_WORDS = new RegExp([
 /** A module drawn to be watched (W2-B fixer, minor 8): the explainer@1 board takes no tap; "look at the board" is fine. */
 const watchOnly = (module) => module?.engine === "explainer@1";
 
+// census 2026-10-21 F3 (b08fe8a7 t7: "is diagram mein …" with no diagram ever on screen): a sentence that points at a
+// diagram / picture / chart. Only the pointing forms (a deictic before the word, the word + mein/par + a look verb, "look
+// at the …"): the bare words are mostly not pointing ("tumhe drawing pasand hai?", "picture the next row", the ways offer
+// itself), measured on sim-lab 14.2-14.4 (4384 lines): the bare words 31 lines on an empty stage, all false; this form
+// 6 lines, all with something on stage, 0 on an empty one.
+const DIAG = "(?:diagrams?|charts?|chitra|tasveer|pictures?|figures?|drawings?|sketch|डायग्राम|चित्र|तस्वीर|चार्ट)";
+export const POINT_DIAG = new RegExp([
+  `(?:\\b(?:is|iss|us|uss|yeh|ye|yah|this|that)\\s+${DIAG}(?![\\p{L}]))`,
+  `(?:\\b${DIAG}\\s+(?:mein|me|par|pe|in|on)\\s+(?:\\S+\\s+){0,3}(?:dekh\\w*|look\\w*|see|notice|dikh\\w*))`,
+  `(?:\\b(?:look|dekh\\w*)\\s+(?:at\\s+)?(?:the\\s+|is\\s+|iss\\s+)?${DIAG}(?![\\p{L}]))`,
+  `(?:(?:इस|यह|ये|उस)\\s+${DIAG})`,
+].join("|"), "iu");
+/** Nothing on the stage at all: no Studio piece, no module in the tray. */
+export const emptyStage = (ui, module) => !ui?.studioSlot?.artifact && !module?.id;
+
 /**
  * G-SAY-1 → true when the line refers to the screen and nothing on it can be acted on, or when it asks the child to tap
  * / pick something while the only thing on screen is a board drawn to be watched.
@@ -161,6 +176,8 @@ export function screenProblem(text, ui, module, { coming = false } = {}) {
     // r12 RCA failure 5: LOOKING needs only something to look at — a whiteboard counts; what it shows is checked below
     if (!act && !screenHasTargets(ui, module) && !ui?.studioSlot?.artifact) return true;
   }
+  // census F3: she points at a diagram / picture and nothing is on the stage (and nothing is coming this turn)
+  if (!coming && emptyStage(ui, module) && POINT_DIAG.test(t)) return true;
   // release 13 integration (ms-r13-claims-in-flight): a piece this very turn brings (the child asked for a picture / game /
   // animation and the move answers with one) is drawn in sync with her line or lands a moment later, so it is not on the
   // stage yet when her words are checked; pointing at it is the point. A piece that then fails is the slot-failure path's.
@@ -266,9 +283,12 @@ export function unpointScreen(sentence) {
  * that only points keeps its content in words (unpointScreen); one that asks the child to act on the screen goes. */
 /** Does the line point at the screen / board at all (agent lane: nothing is up, so any pointing is a false claim)? */
 export const pointsAtScreen = (text) => POINT_AT.test(String(text ?? ""));
-export function stripScreenRefs(text) {
+export function stripScreenRefs(text, { stageEmpty = false } = {}) {
   const sentences = String(text ?? "").match(/[^.!?।]+[.!?।]*\s*/g) ?? [];
-  return sentences.map((s) => (refersToScreen(s) || POINT_AT.test(s) ? (unpointScreen(s) ? `${unpointScreen(s)} ` : "") : s)).join("").trim();
+  // census F3: on a stage the caller knows is empty, a sentence pointing at a diagram / picture goes too (nothing to
+  // unpoint it to); a caller that does not pass the stage strips exactly as before
+  const diag = (s) => stageEmpty && POINT_DIAG.test(s);
+  return sentences.map((s) => (diag(s) ? "" : refersToScreen(s) || POINT_AT.test(s) ? (unpointScreen(s) ? `${unpointScreen(s)} ` : "") : s)).join("").trim();
 }
 
 // ── the Question card ──

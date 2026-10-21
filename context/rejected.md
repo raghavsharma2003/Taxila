@@ -2700,3 +2700,24 @@ A pre-emptive 'the check was done' note, added while the care line still said 'o
 ## rj-r1441-unsafe-now-check-tier — not making every unsafe_now read a check-in (2026-10-21)
 
 Considered: putting unsafe_now in the check tier when only a model read it. Rejected: the predicate misses 'ghar mein aag lag gayi hai', 'mujhe bachao', 'koi mujhe pakad ke le ja raha hai' and 'help me someone is outside my door'. 'Are you okay?' as the first answer to 'mujhe bachao' is the wrong trade.
+
+
+<!-- merged from inbox/r5-census-s2.json -->
+## rj-r5-worked-number-guard (2026-10-21)
+
+- **Tried:** a reply guard for worked-example numbers on a non-worked-example move.
+- **What broke:** 14 of 1567 sim-lab lines, at most 2 real; the rest is legitimate teaching it would strip.
+- **Lesson:** the census turn's numbers came from the transcript history; the fix is the screen following the move.
+
+<!-- 14.4.1 integration: stream write-ups from their inbox titles (4B r144-duplex, stream 2 r5-census-s2) -->
+## rj-r144-governor-carry-check (2026-10-21)
+
+Not shipped: carrying a hushed burst over her line into the next turn at her_end when her line did NOT hand over (governor carryCheck: its words decide, a lone continuer or no words drop back to idle). Measured on the 132 recorded D5 runs (66 scenarios × owner + phone): 0 commits changed with it on or off, before and after the fan-in fix (the fold-in path, phase overlap at her_end, already carries; the loss was the fan-in's). Revisit only if production shows a request said over an explanation, read as a short burst, lost.
+
+## rj-r144-negation-never-subtracted (2026-10-21)
+
+Rejected (main 2026-10-21): the literal bar "a negation is never subtracted as echo, whatever". Measured on the same 41,259 sim lab pairs: negation loss 510 → 0, but her own echoed negations leak into the child's turn — echo floors 2,029 → 10,917 tokens left (same script) and 15,521 → 23,824 (cross-script); a stray "nahi" of hers beside the child's "haan" inverts the child, a more frequent meaning flip than the one it removes. Shipped instead: dc-r144-negation-surface-key (510 → 169 for +1 % cross-script floor, 0 D5 commits changed).
+
+## rj-r5-offer-guard (2026-10-21)
+
+Not built (census F4 P0 3437b744, main): a reply guard for an offer the turn has no path for. Sim-lab 14.2-14.4: 26 of 4384 lines name a game in a question, 11 in topics with no game path, of which most are interest questions, 2 the ways offer (fixed by 64a1b78b) and 1 a free-text offer: about 1 line in 4384. The census case was a topic-switch offer answered while the reply model was unavailable; its causes are an agreement to her own offer not read as that request (4A, requests.js) and the unavailable fallback ignoring a pending request (F10 family).

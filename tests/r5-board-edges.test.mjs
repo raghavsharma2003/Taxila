@@ -475,3 +475,29 @@ test("census F9 (main): a check-in (tier 'check') freezes Studio; 'haan theek ho
   assert.equal(r.state.safeguard, null);
   assert.equal(fine.frozen, false, "Studio may draw again on the teaching move");
 });
+
+test("D42 on 08f86dc5 (QA 9ce1e62e): a number the talk about this board already has is not a new problem — the rectangle drawn under 'length 50 m aur breadth 30 m' stays while she asks why its perimeter is 160 m; a new problem still takes it down", async () => {
+  const seam = await import("../server/studio/seam.js");
+  const { studioSeam } = seam;
+  const id = "L-d42-known";
+  seam.subscribe(id, () => {});
+  const L = seam._lesson(id);
+  const script = { v: 1, scriptId: "s", line: { lessonId: id }, anchor: "line_audio_start", board: { w: 677, h: 423, ground: "chalk" }, mode: "fresh", durationMs: 2000,
+    ops: [{ id: "r", op: "rect", startMs: 0, endMs: 800, at: [120, 100], w: 300, h: 180 }, { id: "a", op: "text", startMs: 800, endMs: 1400, at: [270, 90], text: "side", size: "m" },
+      { id: "t", op: "text", startMs: 1400, endMs: 2000, at: [270, 320], text: "rectangle", size: "m" }] };
+  const put = (lines) => { L.pieces.set("wb-1", { intentId: "wb-1", slotId: "slot-1", kind: "whiteboard", state: "revealed", artifact: { kind: "whiteboard", script }, revealedTurn: 1, lines }); L.onScreen = "wb-1"; };
+  const t1 = "Kabir, rectangle dekhiye: length 50 m aur breadth 30 m. Iske chaar sides mein kaun-se sides same hain—boliye.";
+  const t2 = "Kabir, 160 m tab milega jab chaaron sides jodenge: 50 + 30 + 50 + 30. Rectangle ka perimeter 160 m kyun hua?";
+  put([t1]);
+  assert.ok(studioSeam.keepBoardSlot(id, t2, []), "kept: 160 is 50 + 30 + 50 + 30, numbers the talk already has");
+  put([t1]);
+  assert.equal(studioSeam.keepBoardSlot(id, "Bilkul, aapne 160 metre nikala. Ab square ki har side 8 metre ho, perimeter batayiye?", []), null, "D43: a new problem");
+  put([t1]);
+  assert.equal(studioSeam.keepBoardSlot(id, "Ab square ki har side 8 metre hai. Iska perimeter 8 + 8 + 8 + 8 kitna hoga?", []), null, "a new problem set up in an earlier sentence");
+  put([]);
+  assert.equal(studioSeam.keepBoardSlot(id, t2, []), null, "without the line it was drawn under, 160 is not known (fail closed)");
+  // the board is drawn under its line: drawn() records it (the kept slot then carries the conversation on)
+  put([t1]);
+  studioSeam.keepBoardSlot(id, t2, []);
+  assert.deepEqual(L.pieces.get("wb-1").lines, [t1, t2]);
+});

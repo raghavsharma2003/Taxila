@@ -12,7 +12,7 @@ import { HELPLINES } from "../compiler/floor.js";
 import { registerBroken, toAap } from "../director/register.js";
 // round 3 fix (experience B6): arithmetic she states, and her own closed sums, checked in code
 import { arithmeticSlip, selfPosedVerdict } from "./arith.js";
-import { praiseProblem, stripPraise, screenProblem, stripScreenRefs, leaksStage, stripStage, saysCantShow, stripCantShow, askParity, endOnAsk, joinAsk, lastQuestionOnly, wrapsUp, stripWrap, correctsRight, stripCorrection } from "../director/say.js";
+import { praiseProblem, stripPraise, screenProblem, stripScreenRefs, emptyStage, leaksStage, stripStage, saysCantShow, stripCantShow, askParity, endOnAsk, joinAsk, lastQuestionOnly, wrapsUp, stripWrap, correctsRight, stripCorrection } from "../director/say.js";
 import { mixedUnitComparison, withoutMixedUnits } from "../director/units.js";
 import { screenContradiction, stripStrayParts } from "../director/modules.js";
 import { isBare, repeatsEarlier, tidy, leadWithoutQuestion, sentences } from "../conversation/guards.js";
@@ -712,9 +712,9 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
         : `it agrees with or praises their answer, but their answer was not marked right — no agreement or praise word for it; ${R3 ? "start from what they actually did" : "name what is sensible in it"}, then the next step`),
       found.includes("deny") && "it says their answer is wrong, but it was right — confirm it plainly",
       found.includes("corrects") && `it implies their answer was wrong or that the answer is something else, but their answer ${JSON.stringify(String(right.key))} was right — confirm it plainly and do not name any other answer as the result`,
-      found.includes("screen") && "it tells them to tap or pick something on the screen, but nothing is on the screen to tap this turn — ask them to say it",
+      found.includes("screen") && "it sends them to the screen (to tap or pick something, or to look at a picture or diagram), but nothing of that is on the screen this turn — say it in words, or ask them to say it",
       found.includes("parts") && `it names parts the screen does not show — ${screenContradiction(aboutScreen(own(reply)), module, partsLines)?.onScreen ?? ""}`,
-      found.includes("cantshow") && "it says you cannot show or draw — never say that; the board draws for you: talk about the idea itself",
+      found.includes("cantshow") && "it says you cannot show or draw — never say that; talk about the idea itself in words, and point at the screen only at what is on it now",
       found.includes("stage") && "it reads out a field name, markup or a text picture (like 'Whiteboard:', brackets or rows of symbols like ●●●) — plain spoken words only; the board draws pictures, never your words",
       found.includes("uiword") && "it names a screen part by an internal name (chips, bar1) — say what the child sees: the buttons on the screen, strip A or B",
       found.includes("register") && (address === "aap" ? "it uses tum forms — address the child with aap forms only (aap, aapka; verbs ending -iye)" : "it uses aap — address the child with tum forms (tum, tumhara)"),
@@ -791,7 +791,7 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
       if (found.includes("math")) { reply = keepOr(sentences(reply).filter((x) => !arithmeticSlip(own(x))).join(" ").trim()); guard.replaced = true; }
       if (found.includes("praise")) { reply = keepOr(stripPraise(reply)); guard.replaced = true; }
       if (found.includes("corrects")) { reply = keepOr(stripCorrection(reply, right)); guard.replaced = true; }
-      if (found.includes("screen")) { reply = keepOr(stripScreenRefs(reply)); guard.replaced = true; }
+      if (found.includes("screen")) { reply = keepOr(stripScreenRefs(reply, { stageEmpty: emptyStage(ui, module) })); guard.replaced = true; }
       // W2-B fixer: a rewrite that still names part counts the screen does not show loses those sentences
       if (found.includes("parts")) {
         // a requested example keeps its own sentences: only the ones about the screen are taken out

@@ -438,7 +438,9 @@ export async function lessonTurn(req, body, hooks = {}) {
   // A resume turn plans as a module-only turn with no events: the Director holds (the last move and UI stand).
   const planCtx = { kit, child, lesson, activeItem, moduleOnly: moduleOnly || laneResume, moduleEvents, playTokens, chipId: body.chipId, answer: help ? "" : answer, leaked, live: liveP, ...(cachedP ? { diffBase: cachedP } : {}), carried,
     childText, typed, asrConfidence: body.asrConfidence, bargeIn: !!body.teacherInterrupted, ...(studioView ? { studio: studioView } : {}),
-    ...(moduleUnverified ? { moduleUnverified: true } : {}), ...(late ? { late: true } : {}) };
+    ...(moduleUnverified ? { moduleUnverified: true } : {}), ...(late ? { late: true } : {}),
+    // census F4: the ways in Studio can answer now (the Director offers only those)
+    ways: seamSafe("studio.waysFor", () => studioSeam.waysFor?.(lesson.id, { skillId: state.lastMove?.skillId ?? activeItem?.skillId ?? null, topicId: lesson.topic_id ?? null }) ?? null, null) };
   // A module-only turn or a help request stored no child row, so the whole recent transcript is history.
   const historyOf = (next) => (moduleOnly || help || laneResume ? next.recent : next.recent.slice(0, -1));
 
@@ -1574,7 +1576,7 @@ export async function planTurn(base, cls, c) {
   if (c.rel?.forget && state.brief?.memoryCallbacks?.length) state.brief = { ...state.brief, memoryCallbacks: [] };
   // 2. the Director step on beliefs that include this answer (voice: capped tie-breakers only, CE8)
   const stepIn = { kit, cls: cls ?? undefined, chipId: c.chipId, answer: c.answer, now, comp: state.comp, voice: c.voice?.signals, voiceZ: c.voice?.z,
-    text: c.childText, bargeIn: c.bargeIn, typed: !!c.typed, ...(c.moduleUnverified ? { unverified: true } : {}), ...(c.late ? { late: true } : {}) };
+    text: c.childText, bargeIn: c.bargeIn, typed: !!c.typed, ...(c.ways ? { ways: c.ways } : {}), ...(c.moduleUnverified ? { unverified: true } : {}), ...(c.late ? { late: true } : {}) };
   const stepped = moduleOnly
     ? step(state, { ...stepIn, event: "module", moduleEvents: c.moduleEvents })
     : step(state, { ...stepIn, event: "turn" });

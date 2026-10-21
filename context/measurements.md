@@ -4652,3 +4652,46 @@ The idiom matches 0 curated distress lines and 8 lesson-pressure lines. The pred
 ## ms-r144-live (2026-10-21)
 
 Release 14.4 (5c127d1) has been live since about 20:07 UTC, and the canary smoke passed 4 of 4. The first deploy attempt hit a transient fetch failure before any traffic moved; the re-run reused the built image. Production holds no real lessons since the deploy yet. The baseline to compare against is 6 lessons, 4 safeguard moves and 3 helpline renders since 10-15.
+
+
+<!-- merged from inbox/r5-census-s2.json -->
+## ms-r5-game-coverage-830 (2026-10-21, n = 830 topics)
+
+219 topics have a game path (play coverage or the topic engine); 611 have none (all English, Hindi and SST topics).
+
+## ms-r5-diagram-pointing (2026-10-21, n = 4384 sim-lab lines)
+
+Bare diagram / picture words on an empty stage: 31 lines, all false. The narrow pointing form: 5 lines, all with a stage, 0 moved.
+
+## ms-r5-choice-shape (2026-10-21, n = 4640 non-numeric keys)
+
+2572 of 4511 chip sets had a key that stood out; after bf4b070c, 3421 offered, all alike.
+
+<!-- 14.4.1 integration: stream write-ups from their inbox titles (4B r144-duplex, stream 2 r5-census-s2) -->
+## ms-r144-d5-false-silence (2026-10-21)
+
+D5 empty turns read as SILENCE (main 2026-10-21, the owner's census F5 + 14.4's safeguard check-in tier; evals/duplex-2026-10/phantom-empty.mjs, results/phantom-empty-{owner,phone}.json). Method: a fresh live Voice Live D5 pass over all 66 bake scenarios, owner and phone-echo variants (today's ear, audio times recorded), then the SAME recorded ear events replayed through the base engine (int/r5-rel144 @ b8285b2b) and the fixed one; every empty commit classified against the gold (child speech under the ear item ≥ 150 ms = unheard; her playback only = echo; neither = noise; no item = no_item; the floor's hold offer). BEFORE: owner 7 empty of 46 commits (4 unheard, 3 hold offer), phone 6 of 44 (5 unheard, 1 hold offer); true phantoms (echo / noise / no item) 0 of 90 commits; every unheard turn reached the server as "" + asrConfidence 0 → cls source empty → isSilentTurn: a child who SPOKE read as silent in 9 of 90 commits (10%). AFTER: false silences 0 of 9 (each marked duplex.unheard → source asr); commit streams identical in all 132 runs (time and text); the new no-item drop fired 9 times, each on an empty SPEAK the base engine also never posted (held: one turn at a time). Earlier recorded arms agree (d5v200.owner 4 unheard + 3 hold offer; d5r11.owner 5 + 2). The harness's stereo AEC produced no echo-opened empty items; a real phone's may (production census F5) — only the item-less case is guarded at the client.
+
+## ms-r144-d5-overlap-words-lost (2026-10-21)
+
+D5 drops the child's words said OVER her line (census F5 #1, main's priority: the topic request lost in a barge-in merge; evals/duplex-2026-10/results/lost-words.json). Method: the live Voice Live D5 events of all 66 scenarios, owner + phone variants, replayed through the engine before / after; an ear final with content words (not a continuer / stop / hold phrase) that no commit carried is LOST. BEFORE: 12 content finals lost (owner 7, phone 5): every barge_fold_in (0/5 committed in EVERY D5 arm ever recorded, d5r5…d5v200, while D4-full committed 4/5) and the content barge_stops ("8 minutes duty"). Cause: over her playback the device detects the child's onset late (her echo masks it; 2,620 ms vs the ear's 1,996 in fold_in-0389), the fold-in carries the turn from that late onset, and the fan-in (server/duplex/fanin.js belongs) admitted only items that started after it — the burst's own item, with the words, was dropped as the old turn's; with no partials on D5 the words always land after her line, so the her-floor lexical yield never saw them either. AFTER (an item still open at the carried onset, opened ≤ 1.2 s before it, with a known audio end past it, joins): content lost 12 → 1 (phone barge_stop 0386 left); fold-ins committed owner 0/5 → 5/5, phone 0/5 → 3/5 (the other two heard "Yes." / nothing); control phrases unchanged (11 / 11, never turns); the duplex scorer's floor metrics unchanged on both variants (cut-offs, continuers, phantom, EOT p50/p90, skeleton CER) except lone words noticed 5/8 → 6/8. The carried request words also leaked into the HOLD OFFER (base already did on hold_long: "रुको, रुको।" sent as the offer's words, which the server reads as words, not a hold check-in): the hold offer is now always wordless (2 → 0 per variant).
+
+## ms-r144-negation-echo (2026-10-21)
+
+The echo filters ate the child's words with ONE-letter skeletons, the negation first (census F5 #2; the owner's e6392332 t14-15: नहीं→n, रहा→r, आप→p, क्या→k, है/हो/आ→empty stripped, "I don't understand" became "I understand something"; evals/duplex-2026-10/negation-echo.mjs, results/negation-echo.json). Cause: "नहीं" = "n" = her "हैं" / tag "ना" / "हाँ", and short runs of one-letter skeletons match her Roman Hinglish ("aap kya" → p k took the child's own "आप क्या"). Method: 41,259 distinct (her line → the child's heard reply) pairs of the cached sim lab voice records (20,109 with a negation), text level, base filters (int @ b8285b2b) vs fixed; floors: her own line fed back as echo in the same script, and CROSS-SCRIPT (her Roman line through the rules transliterator, as the ear writes her echo: 35,962 lines). Fixed (a negation keys on one class across scripts, नहीं/nahi → ¬nahi; a run of her words counts only with a match of 2+ letters; the whole-text echo share needs one too): replies losing a negation 510 → 169 (the rest: the child repeating her phrase, negation and all, in a long-anchored run); negated replies read whole as echo by the cascade lane's isEcho 1,823 → 937; child words removed in all 36,556 → 32,864; floors: same script 2,029 → 2,053 tokens left, cross-script 15,521 → 15,689 (+1%). The first cut pushed at d5788971 (negation keyed on its SURFACE) broke her cross-script echo runs at every negation: cross-script floor 15,521 → 22,761 (superseded here). Main's literal bar (a negation NEVER subtracted) measured: negation loss 0, but floors 2,029 → 10,917 and 15,521 → 23,824 (her own echoed negations leak into the child's turn, a stray "nahi" beside the child's "haan"). D5 bake replay (132 runs): 0 commits changed.
+
+## ms-r144-unheard-three-in-a-row (2026-10-21)
+
+How often three UNHEARD turns come in a row (main's check before relying on the check-in's fail-closed). The 132 recorded D5 runs are single exchanges: no run holds two unheard turns (max 1). Per committed turn, unheard is 4/53 = 7.5 % (owner) and 5/48 = 10.4 % (phone echo) after the fixes; the bake over-represents hard tails. If turns were independent, P(≥ 3 in a row in a lesson) = 0.7 % / 1.1 % / 1.9 % (owner, 20 / 30 / 50 turns) and 1.8 % / 2.8 % / 4.8 % (phone) — above main's ~1 in 100 bar on the phone variant; a bad microphone makes turns correlated (worse). No D5 production codes visible to this stream. Hence the tap path (safe:continue / safe:stop on every unheard wait) ships with it.
+
+## ms-r5-board-follows-kit (2026-10-21, n = 4384)
+
+Census F3 'board on the kit, speech on the child' on sim-lab: Studio pages sharing nothing with her line 129 of 746 (recent builds: 2183c32 1/75, rel143 2/46; one real case p52 voice, two cross-script misses पत्ता/patta); explainer@1 rungs 12 of 33, mostly legitimate by hand (the topic's template board through the teach steps under another example of the same skill or a paraphrase); an off-kit-line detector fired on 113 lines, none a real departure (numeric work, safeguard turns, Devanagari). Sim personas do not pull the reply off the kit, so the census shape is not measurable here; in both census lessons (6c45a7ea, 310b8c82) the Director never registered the child's departure (F1 upstream).
+
+Method: scratchpad boardspeech / rungspeech / offboard / offkit .mjs over sim-lab 14.2-14.4 records: a board page (boardPages, wb:N = record turn n, alignment checked at offsets -1/0/+1) or explainer@1 rung mount against her line that turn (studio/request.js syncedWithLine), her line >= 6 content words; an off-kit line = no content word in kitWordsOf
+
+## ms-r5-rect-is-drawing (2026-10-21, n = 670)
+
+QA 14.4.1 run 8 (aadae80b t1): a subject-less picture ask failed its slot when the live board failed (W6.timing, W2.text_clear_of_lines). The gated template was refused by answersRequest because isDrawing did not count a rect (the c6-maths-ch06-t01 field: rect + outside side labels + arrows + numwork), and nothing was logged. Fixed in cf25ca72 (a rect with no text inside it is a shape; gatedFallback logs the refusing step). Library templates: 0 of 316 change. Director rungs on a picture ask: 670, drawing 514 -> 516.
+
+Method: isDrawing before/after over every library template (316) and every Director board rung for a picture ask (kitFromFile), plus run 8 reproduced through answersRequest
