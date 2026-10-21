@@ -89,3 +89,32 @@ describe("the reply never makes the safeguarding call", () => {
     assert.ok(out.guard.caught?.includes?.("harmtalk") || JSON.stringify(out.guard).includes("harmtalk"), JSON.stringify(out.guard));
   });
 });
+
+describe("the understanding note alone (QA TEST 8a4ce363 X2c, 9e0d6167 XS1)", () => {
+  const note = () => withFlags({ distress: true, distressKind: "model_note" });
+  const opened = () => {
+    const r = turn(fresh(), "sab bekaar lagta hai, koi mujhse baat nahi karta", withFlags({ distress: true, distressKind: "model", distressAbout: "sad_or_lonely" }));
+    assert.equal(r.move.tier, "check");
+    return r.state;
+  };
+  test("a note-only read opens a check-in, never the full script", () => {
+    const r = turn(fresh(), "aaj kuch accha nahi laga", note());
+    assert.equal(r.move.kind, "safeguard");
+    assert.equal(r.move.tier, "check");
+    assert.ok(!r.ui?.whiteboard);
+  });
+  test("after a check-in, a right answer or fine words with a note-only read release; the note never escalates alone", () => {
+    const right = turn(opened(), "rectangle ke chaaron sides jodenge, 50 plus 30 plus 50 plus 30, 160 metre", { ...note(), outcome: "correct" }, { answer: "160" });
+    assert.notEqual(right.move.kind, "safeguard", JSON.stringify(right.move));
+    assert.equal(right.move.setAside, true);
+    const fine = turn(opened(), "Nahi, bleeding nahi hai ab. Thoda sa cut tha, bas. Ab theek hai. Mummy ne medicine lagayi, accha ho gaya.", note());
+    assert.notEqual(fine.move.kind, "safeguard", JSON.stringify(fine.move));
+    // ... a right answer with a sure words read is still never escalated on that read alone; the predicate still is
+    const sureRead = turn(opened(), "160 metre", { ...withFlags({ distress: true, distressKind: "model", distressAbout: "hurt_by_person" }), outcome: "correct" }, { answer: "160" });
+    assert.notEqual(sureRead.move.kind, "safeguard");
+    const pred = turn(opened(), "160 metre. papa ne kal belt se maara", { ...withFlags({ distress: true, distressKind: "abuse" }), outcome: "correct" }, { answer: "160" });
+    assert.equal(pred.move.escalated, true);
+    const low = turn(opened(), "160 metre, par sab bekaar lagta hai", { ...withFlags({ distress: true, distressKind: "model", distressAbout: "sad_or_lonely" }), outcome: "correct" }, { answer: "160" });
+    assert.equal(low.move.escalated, true, "a low mood said again is the full script");
+  });
+});

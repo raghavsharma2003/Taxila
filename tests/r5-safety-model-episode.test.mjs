@@ -30,7 +30,8 @@ const reread = (state, kind, text = "I am okay … it just hurts thoda", extra =
 
 describe("(2) a model re-read inside a model-opened episode holds, never restarts and never releases", () => {
   test("every model kind: the stay turn's hold (helplines on the board), not the opening script; kind kept", () => {
-    for (const opener of ["model", "content_filter", "model_note"]) for (const again of ["model", "content_filter", "model_note"]) {
+    // 14.4: a note-only opener is a check-in (state.js checkTier; tests/r144-safeguard-push.test.mjs), never this episode
+    for (const opener of ["model", "content_filter"]) for (const again of ["model", "content_filter", "model_note"]) {
       const r = reread(opened(opener), again);
       assert.equal(r.move.kind, "safeguard", `${opener}/${again}`);
       assert.equal(r.move.shape, SH.safeguardAgain(), `${opener}/${again}: never the opening again`);
@@ -64,7 +65,7 @@ describe("(2) a model re-read inside a model-opened episode holds, never restart
     assert.equal(next.state.safeguard.asked, true);
   });
   test("after a re-read, a clearly fine reply still gets the gentle resume (the fine release is not lost)", () => {
-    const again = reread(opened("model_note"), "model_note");
+    const again = reread(opened("model"), "model_note");
     const fine = say(again.state, "haan main theek hoon");
     assert.equal(fine.move.kind, "repair");
     assert.deepEqual(fine.ui.chips.map((c) => c.id), ["safe:continue", "safe:stop"]);

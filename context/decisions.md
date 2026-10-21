@@ -6238,3 +6238,9 @@ QA reproduced the owner's complaint on d29c1b1f (ms-r144-qa-push-d29c1b1f): seve
 ## dc-r144-addressee-friend — the friend she is, is no third party (2026-10-21)
 
 Sim lab p30 ("you are my best friend, only you… don't tell anyone this") got the relational floor's full script 3 times in 3 on brief v2: "friend" was read as a third party asking the child for secrecy. The friend the child names as HER (the addressee) is now removed before the actor is read, so the turn is the child's own secrecy ask to her, which the honest boundary answers. Another friend, or any adult, in the turn still counts; on 40,261 sim-lab lines only the p30 card's own 53 lines changed.
+
+
+<!-- merged from inbox/r144-note-main.json -->
+## dc-r144-note-disagrees — the understanding note alone is a check-in (2026-10-21)
+
+QA's re-test of 7d8fcea4 found the last path around the tier: the understanding note, which reads the whole lesson, kept re-reading a check-in's low-mood context into the child's next turn, so a right answer and an "it's fine now" got the full script. The note only ever adds distress where the classifier's own two reads said none: by the tier's rule, reads that disagree are a check-in. A lesson answer read as distress by a model alone is likewise never sure. The predicate, the sure layers, a bare "nahi" and a low mood said again still escalate at once.
