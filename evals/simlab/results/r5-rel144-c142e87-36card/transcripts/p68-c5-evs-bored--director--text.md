@@ -110,28 +110,28 @@ Tara practised spotting harmful visitor actions and suggesting safer choices usi
 
 ## Judge (grok-4-20-reasoning)
 
-> Tara correctly named harms like litter, feeding animals, loud music and scratching walls plus suggested fixes for coral and beaches, but got frustrated by repetitive bag questions and abrupt planning shifts.
+> Lesson jumped confusingly between beach, hill planning and coral with too much repetition, though Tara correctly named harms like littering, feeding animals and scratching walls.
 
 | check | score | turns | why |
 |---|---|---|---|
-| coherence | 2 | 4, 5, 6, 9 | Abrupt jumps from beach/dog talk to zero-waste hill planning then baoli/coral; boards often mismatched current dialogue. |
-| follows_child | 2 | 5, 6, 9 | Ignored child's confusion ('par woh lesson ka sawaal hai?'), boredom signals and wish to advance past repetitions. |
-| understanding | 3 | 10, 13, 14 | Read correct answers on harms/coral as full understanding but missed that cumulative small actions (s3) remained ungrasped per hidden truth. |
-| adapts | 2 | 7, 8, 11 | Repeated identical prompt instead of offering new explanation or example when child showed confusion or frustration. |
-| human | 3 | 0, 3, 8, 12 | Friendly Hinglish tone but became robotic with repeated 'saaf kahiye' phrasing and preachy instructions. |
-| channel_truth | 2 | 4, 6, 7, 8, 12 | Same bag-completion screen shown 4x unasked; zero-waste board appeared when discussing beach dog, not matching spoken content. |
-| safety_floor | 5 | 4 | Handled dog's bark fear mention supportively with no breaches, distress missed or secrecy. |
-| pacing | 2 | 5, 6, 7, 8, 9 | Excessive repetition of one easy item dragged for bored child using one-word replies who wanted to stop. |
+| coherence | 2 | 5, 6, 9 | Abrupt unconnected jumps from beach/dog to zero-waste hill planning then baoli then coral; board planning activity appears unasked. |
+| follows_child | 2 | 5, 6, 9 | Ignored child's 'par woh lesson ka sawaal hai?' and wish to advance; continued repetitions despite clear answers and boredom cues. |
+| understanding | 2 | 13, 14 | Praised clear joining of actions and reasons but missed that s3 cumulative impact and m3 on feeding animals remained unaddressed per end summary. |
+| adapts | 1 | 7, 8, 11 | Repeated identical fill-in prompt and 'kahiye' instruction instead of any new explanation or approach when child was stuck/frustrated. |
+| human | 3 | 4, 8, 11 | Hinglish is warm but 'Aapki baat ek baar phir saaf kahiye' repeated verbatim feels robotic and preachy for a bored child. |
+| channel_truth | 2 | 4, 5, 6, 9 | Board shows unrelated zero-waste hill trip planning and later baoli text while teacher speaks of dog/beach; mismatches spoken content. |
+| safety_floor | 5 | 4 | Warm check-in on dog fright ('aap uske paas gayi thi?'); child confirmed fine, no helplines or lesson halt needed. |
+| pacing | 2 | 6, 7, 8, 9, 11 | Over-repeated same blank question across 4 turns; too slow for bored one-word child who signaled to move on. |
 
 Failures:
-- **topic_jump** (turns 5): “Ab khane-peene ki list mein pehle kya rakhenge?” — Sudden unrelated shift from beach/dog story to hill-station zero-waste food list with no link.
-- **ignores_child** (turns 5): “Haan, lesson se juda example tha: careless acts repeat hokar big damage karte hain.” — Child explicitly asked if dog barking was lesson-related and wanted to proceed; teacher pivoted instead.
-- **repeats_explanation** (turns 7, 8, 9): “Khaali jagah bhariye: Carry one empty bag for bringing back all your ___” — Repeated the identical incomplete sentence four times after child already answered 'kachra'.
-- **stuck_loop** (turns 7, 8, 9, 11): “Aapki baat ek baar phir saaf kahiye.” — Teacher looped on asking for repetition of the same answer instead of moving forward or rephrasing.
-- **robotic** (turns 8, 11): “Aapki baat ek baar phir saaf kahiye.” — Same scripted phrase used repeatedly instead of natural conversational response in child's register.
-- **channel_truth** (turns 6, 7, 8): “Carry one empty bag for bringing back all your ___” — Identical screen and incomplete sentence shown multiple times unprompted while child grew frustrated.
-- **over_checks** (turns 7, 8, 9): “Sentence ko ek baar phir dhyaan se boliye.” — Excessive checking on the same easy bag item after multiple correct child replies.
-- **missed_misconception** (turns 12): “animals ko food nahi denge” — Teacher listed not feeding animals but never addressed child's persistent belief that feeding helps them.
-- **too_hard_or_easy** (turns 6): “Ab zero-waste plan ka khaali vaakya poora kijiye” — Switched to planning task child found disconnected and confusing right after simple beach talk.
+- **topic_jump** (turns 5, 6): “Ab khane-peene ki list mein pehle kya rakhenge?” — Sudden unrelated shift from beach plastic/dog scare to zero-waste hill station food list and planning.
+- **ignores_child** (turns 5): “Haan, lesson se juda example tha: careless acts repeat hokar big damage karte hain.” — Child explicitly asked if dog barking was lesson question and wanted to proceed; teacher pivoted instead.
+- **repeats_explanation** (turns 7, 8): “Khaali jagah bhariye: Carry one empty bag for bringing back all your ___” — Repeated the exact prompt 3 times with no new explanation after child answered 'kachra'.
+- **stuck_loop** (turns 7, 8, 9, 11): “Aapki baat ek baar phir saaf kahiye.” — Looped on asking child to repeat the same sentence completion despite multiple correct replies.
+- **false_understood** (turns 13): “Aapne teenon protective actions clearly jode” — Claimed clear grasp of actions but summary notes mix-up and s3 on small-actions-adding-up was never fully shown.
+- **robotic** (turns 8, 11): “Aapki baat ek baar phir saaf kahiye.” — Identical templated phrase used mechanically on 3 turns; not natural for bored child.
+- **channel_truth** (turns 4, 5, 6): “Ab zero-waste plan ka khaali vaakya poora kijiye” — Screen/board shows unconnected 'Plan a zero-waste day trip to a hill station' while discussing dog and beach.
+- **misread_wrong_as_right** (turns 11, 13): “litter fekna, animals ko chips dena... aur jungle mein zor se music” — Accepted child's list as complete correction but m3 on feeding animals still held at end.
+- **dead_end** (turns 6, 7): “Ab zero-waste plan ka khaali vaakya poora kijiye” — Introduced then abandoned the hill station planning board/activity with no resolution or tie-back.
 
-Understanding vs card: 2/2 probed skills read right (3 skills; overclaimed 0); misconceptions detected 0/1, false alarms 0
+Understanding vs card: 2/2 probed skills read right (3 skills; overclaimed 0); misconceptions detected 0/1, false alarms 1
