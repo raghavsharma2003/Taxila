@@ -20,10 +20,10 @@
 import { stopKind, signalsOf } from "../relational/signals.js";
 import * as SH from "./shapes.js";
 import { readFileSync } from "fs";
-import { buildPracticeQueue, findItem, isomorphicFor, probeFor, evidenceProbeFor, promptFor, optionsSpoken, selectNext, anchorOf, whyKey, PROBE_WEIGHT, revealsAnswer, choicesFor, stripRungLabel } from "./items.js";
+import { buildPracticeQueue, findItem, isomorphicFor, probeFor, promptFor, optionsSpoken, selectNext, anchorOf, whyKey, PROBE_WEIGHT, revealsAnswer, choicesFor, stripRungLabel } from "./items.js";
 import { registerNote } from "./register.js";
 import { askText } from "./say.js";
-import { getTopic, findTopic } from "../content/curriculum.js";
+import { getTopic, findTopic, topicSequence } from "../content/curriculum.js";
 import { planModule, topicGameFor } from "./modules.js";
 import { frustrationLoop, initialAffect, nextAffect, wheelSpinning } from "../learner/affect.js";
 import {
@@ -500,9 +500,18 @@ function teach(s, input, prefix) {
     if (stepName === "fade") {
       // Backward fading: the earlier steps shown, the next one a gap the child fills (graded against the blank's key,
       // with help). Posing it hands the lesson to practice.
-      s.teachIdx += 1;
       const item = s.fadeItem ? findItem(s, kit, s.fadeItem.id) : null;
       const we = kit.workedExample;
+      // census 14.5 (F8, 3437b744 t9-13: the a₃₀ gap posed when the worked steps never landed): a don't-know or an off-topic
+      // reply to the worked steps is no ground for a gap; the whole worked example is shown instead, then practice
+      const v = input.event === "turn" && s.lastMove?.kind === "worked_example" ? verdict(input.cls) : null;
+      if (item && we && (v === "stuck" || v === "off")) {
+        s.teachPlan = [...s.teachPlan.slice(0, s.teachIdx), "worked_example", ...s.teachPlan.slice(s.teachIdx + 1)];
+        s.fadeItem = undefined;
+        s.guidance = { ...s.guidance, level: "worked", reason: "fade.not_landed" };
+        continue;
+      }
+      s.teachIdx += 1;
       if (!item || !we) continue;
       const i = Number(item.id.slice(FADE_PREFIX.length));
       if (!s.introduced.includes(item.skillId)) s.introduced.push(item.skillId);
@@ -992,6 +1001,14 @@ function requestMove(s, input, item, req, labels) {
         // release 13 (A): never offer a picture that cannot be made: with a subject outside the kit named, the ways in are
         // words only (no "Show me a picture" chip; turn 21 offered "aloo par picture" and nothing could draw it)
         const off = offTopicNow(s, kit);
+        // census 14.5 (F1, 3437b744 / e6392332: the same ask three times, the same offer of ways into TODAY's idea): asked
+        // again within a few turns, they mean another topic, so real topics of their class are offered as buttons
+        const again = (s.topicAsks ?? []).some((t) => s.turn - t <= TOPIC_ASK_WINDOW);
+        s.topicAsks = [...(s.topicAsks ?? []), s.turn].slice(-4);
+        // (a subject they named outside the kit keeps release 13's own path below: words-only ways in about it)
+        const choices = again && !(p5Flag("R4CONV") && off) ? nextTopics(s, 2) : [];
+        if (choices.length) return plan("break", SH.topicChoices({ titles: choices.map((t) => t.title) }), {
+          chips: [...choices.map((t) => ({ id: `switch:${t.id}`, label: `${t.title}`.slice(0, 40) })), { id: "stop:continue", label: labels.back }], request: "change_topic" });
         const can = waysCan(s, input);
         if (p5Flag("R4CONV") && off) return plan("repair", SH.offerWaysOff({ subject: off }), { chips: waysOffer(labels, { ...can, picture: false }).chips, request: "change_topic" });
         const w = waysOffer(labels, can);
@@ -1002,11 +1019,13 @@ function requestMove(s, input, item, req, labels) {
     // round 3 fix (experience B8): a named subject to study INSTEAD: that topic of their class is offered (a button starts
     // it: switch:<topicId>), else an honest "not here" with the choices. Never the stop check-in, never a lesson question.
     case "switch": {
-      const subject = String(req.subject ?? "").replace(/[^\p{L}\p{N} ]/gu, "").trim().slice(0, 30);
+      // census 14.5 (F1, 310b8c82 / 3437b744): a chapter of their book by number is that chapter's first topic
+      const subject = req.chapter ? `chapter ${req.chapter}` : String(req.subject ?? "").replace(/[^\p{L}\p{N} ]/gu, "").trim().slice(0, 30);
       if (!subject) return null;
       if (unsafeChildPhrase(subject)) return item ? plan(moveKindFor(item), SH.leadThenPose({ item, lead: SH.declineOob() }), { item, probe: probeFor(item), chips: optionChips(item), request: "decline" })
         : plan("repair", SH.declineOob(), { request: "decline" });
-      const hit = findTopic(subject, s.ctx?.classLevel);
+      const hit = req.chapter ? chapterTopic(s, req.chapter) : findTopic(subject, s.ctx?.classLevel);
+      if (hit && req.chapter && chapterKey(hit.id) === chapterKey(s.topicId)) return resume(s, input, item, "they asked for the chapter you are already on: say so warmly in a few words, then carry on");
       if (hit && hit.id === s.topicId) return resume(s, input, item, "they asked for the topic you are already on: say so warmly in a few words, then carry on");
       // round 4 (session-first, (d)): inside a session the topic they asked for opens a new SEGMENT in this same lesson (its
       // own verified kit), never a new lesson; this turn is one short no-stage line, the next one teaches it
@@ -1036,6 +1055,24 @@ function requestMove(s, input, item, req, labels) {
     }
     // round 4 (session-first (f)): "aur batao / go deeper". With a practice question on the table: the harder question on the
     // same skill (the one on the table is left, no verdict); otherwise the same idea one layer further (no new step).
+    // census 14.5 (F1, 310b8c82: "theory first, in order"): the idea before any question. A card on the table waits (posed
+    // next, no verdict); a planned first-step probe or gap becomes plain teaching.
+    case "explain_first": {
+      if (s.phase === "warmup") s.phase = "teach";
+      if (s.phase === "teach") {
+        // (a gap after a planned worked example goes; with none planned it becomes one)
+        const ahead = s.teachPlan.slice(s.teachIdx);
+        const rest = ahead.map((x) => (x === "first_step" ? "explain" : x)).filter((x) => x !== "fade" || !ahead.includes("worked_example"))
+          .map((x) => (x === "fade" ? "worked_example" : x));
+        if (rest.join() !== ahead.join()) { s.teachPlan = [...s.teachPlan.slice(0, s.teachIdx), ...rest]; s.fadeItem = undefined; }
+        return { ...teach(s, input, SH.explainFirstAsked()), request: "explain_first" };
+      }
+      if (item && s.phase === "practice") { s.nextItemId = item.id; s.activeItemId = undefined; s.hintLevel = 0; }
+      const skillId = currentSkillId(s, kit, item);
+      if (!s.introduced.includes(skillId)) s.introduced.push(skillId);
+      const sk = kit.skills.find((k) => k.id === skillId) ?? kit.skills[0];
+      return plan("explain", SH.explain({ skillTitle: sk.title, prefix: SH.explainFirstAsked(), interest: interestFor(kit, s.ctx.interests, 1) }), { skillId: sk.id, format: kit.formats.primary, request: "explain_first" });
+    }
     case "deeper": {
       if (item && s.phase === "practice") {
         s.skipped.push(item.id);
@@ -1091,6 +1128,27 @@ export const drawableSubject = (subject) => {
   const w = String(subject ?? "").trim();
   return !!w && w.split(/\s+/).length <= 4 && !/\d/.test(w) && !NOT_DRAWABLE.test(w) && !unsafeChildPhrase(w);
 };
+/** A "something else" asked again within this many turns is a request for another topic (census 14.5, F1). */
+const TOPIC_ASK_WINDOW = 6;
+/** "c9-maths-ch08-t02" → "c9-maths-ch08". */
+const chapterKey = (id) => String(id ?? "").replace(/-t\d+$/, "");
+/** The first topic of chapter n of today's class and subject (their book's order), or null. */
+function chapterTopic(s, n) {
+  const cur = getTopic(s.topicId);
+  if (!cur) return null;
+  const tag = `-ch${String(n).padStart(2, "0")}-`;
+  const id = topicSequence(cur.classLevel, cur.subject).find((t) => t.includes(tag));
+  return id ? getTopic(id) : null;
+}
+/** Up to n other topics of the child's class and this subject, the ones after today's first (curriculum order). */
+function nextTopics(s, n) {
+  const cur = getTopic(s.topicId);
+  if (!cur) return [];
+  const seq = topicSequence(cur.classLevel, cur.subject);
+  const at = seq.indexOf(cur.id);
+  const order = at < 0 ? seq : [...seq.slice(at + 1), ...seq.slice(0, at).reverse()];
+  return order.map((id) => getTopic(id)).filter(Boolean).slice(0, n);
+}
 /** A request's subject when the kit does not teach it, else null. */
 const offSubject = (subject, kit) => (subject && !kitMentions(kit, subject) ? String(subject) : null);
 /** The off-kit subject the child named in the last few turns (state.offTopic), else null. */
@@ -1547,7 +1605,10 @@ function decide(s, input, item) {
     const t = getTopic(chipId.slice("switch:".length));
     if (t && t.classLevel === Number(s.ctx?.classLevel ?? t.classLevel)) { s.switchTo = t.id; const w = toWrap(s, { stopping: true }); return { ...w, shape: SH.switchGo({ title: t.title }), switchTo: t.id }; }
   }
-  if (flags.wantsToStop || s.rel?.overlay?.kind === "CHECK_IN") {
+  // census 14.5 (F1, 6c45a7ea t12): a topic ask the classifier ALSO read as a stop ("kuch aur padhte hain") is the topic
+  // ask: it is acted on in 2a, never met with the stop check-in (a goodbye or "I am leaving" still ends here)
+  const topicAsk = ["switch", "topic", "change_topic"].includes(cls?.request?.type) && stopKind(input.text) !== "leaving";
+  if ((flags.wantsToStop && !topicAsk) || s.rel?.overlay?.kind === "CHECK_IN") {
     const checkIn = s.rel?.overlay?.kind === "CHECK_IN";
     if (!checkIn && (cls?.relRelease || cls?.source === "relational" || stopKind(input.text) === "leaving" || cls?.request?.type === "goodbye" || (s.stopAsked != null && s.turn - s.stopAsked <= 2))) return toWrap(s, { stopping: true });
     if (s.stopAsked != null && checkIn) return toWrap(s, { stopping: true });      // the check-in was given: let them go
@@ -1562,7 +1623,7 @@ function decide(s, input, item) {
   const req = chipReq ?? cls?.request ?? null;
   // release 13 (A): the subject the child named ("aloo"), kept a few turns so a later "Show me a picture" chip is answered
   // honestly about IT (owner lesson a95d2ff1 turns 18-24)
-  if (p5Flag("R4CONV") && req && ["topic", "switch", "change_topic", "visual"].includes(req.type)) {
+  if (p5Flag("R4CONV") && req && !req.chapter && ["topic", "switch", "change_topic", "visual"].includes(req.type)) {
     const subject = req.subject ?? freeSubjectOf(input.text ?? "");
     if (subject && !genericSubject(subject)) s.offTopic = { subject: String(subject).slice(0, 30), turn: s.turn };
   }
@@ -2182,8 +2243,7 @@ export function evidenceFrom(s, cls, kit, { leaked = false, discount = 1 } = {})
   const item = findItem(s, kit, s.activeItemId);
   if (!item || s.hintLevel >= 4) return [];
   const why = s.pendingWhy === item.id;
-  const asked = why ? "P2" : probeFor(item);
-  const probe = why ? "P2" : evidenceProbeFor(item);
+  const probe = why ? "P2" : probeFor(item);
   const kitFactor = (item.kitVerified ?? kit.verified) ? 1 : 0.5;
   let w = PROBE_WEIGHT[probe] * kitFactor * discount;
   // Young children often cannot verbalise what they do understand: a missed "why" is weak evidence.
@@ -2193,8 +2253,7 @@ export function evidenceFrom(s, cls, kit, { leaked = false, discount = 1 } = {})
   const hintsUsed = leaked || s.spoiled?.includes(item.id) ? 4 : item.fade ? Math.max(1, s.hintLevel) : s.hintLevel;
   const rows = [{ skillId: item.skillId, itemId: item.id, probe, outcome: cls.outcome, ...mis, hintsUsed, weight: round2(w) }];
   // A reason volunteered with an unaided correct answer is a why-probe (P2) the child ran on themself.
-  // (a why-kind item's answer IS its reason: a deep: false one must not come back as a volunteered why)
-  if (asked !== "P2" && cls.outcome === "correct" && hintsUsed === 0 && cls.reason) {
+  if (probe !== "P2" && cls.outcome === "correct" && hintsUsed === 0 && cls.reason) {
     rows.push({
       skillId: item.skillId, itemId: item.id, probe: "P2", outcome: cls.reason === "right" ? "correct" : "misconception",
       ...(cls.reasonMisconceptionId ? { misconceptionId: cls.reasonMisconceptionId } : {}), hintsUsed: 0, weight: round2(PROBE_WEIGHT.P2 * kitFactor * discount),

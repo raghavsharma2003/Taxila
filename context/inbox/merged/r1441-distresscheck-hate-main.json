@@ -1,0 +1,15 @@
+{
+ "nodes": [
+  {
+   "id": "dc-r1441-distresscheck-hate-stays-closed",
+   "kind": "decision",
+   "at": "2026-10-21",
+   "title": "classify.js distressCheck, which runs on the outage, unreadable, stray-script and model-failure paths, still reads a content-filter block by the hate detectors alone as distress (fail closed). 14.4 made the reply probe (wordsTrip) and the across-deployment read (distressAcross) treat a hate-only block as no child-safety signal. Not this path, for two reasons. First, nothing has measured bullying lines that quote the slurs said to the child; the 276-line distress battery has none, and on the probe 0 of its lines were hate-only. Second, on this path a fail-closed read carries no sureBy, so state.js checkTier sends it to the gentle check-in, never the helpline script. A false positive costs one 'are you okay' and does not bring back the helpline over-firing. Reverse if real-lesson traces show a hate-only block here firing a check-in on a harmless line (e.g. a history answer), AND a bullying battery quoting slurs shows the predicate or the other reads still catch those lines without it."
+  }
+ ],
+ "edges": [ { "src": "dc-r1441-distresscheck-hate-stays-closed", "rel": "part_of", "dst": "dc-r144-hate-not-child-safety" } ],
+ "md": {
+  "decisions": "## dc-r1441-distresscheck-hate-stays-closed — the outage-path distress read keeps a hate block as a check-in (2026-10-21)\n\nThe reply probe and the across-deployment read stopped treating a hate-only filter block as distress in 14.4. The rare outage-path read still does, because no one has measured bullying lines that quote slurs. Here a fail-closed read is only a gentle check-in, never the helpline script.\n",
+  "measurements": "", "rejected": ""
+ }
+}

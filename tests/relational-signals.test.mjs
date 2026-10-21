@@ -143,3 +143,11 @@ test("14.4.1: the addressee friend is no actor; another friend or an adult still
   }
   void third;
 });
+
+// 14.4.1 (sim lab ok10x on 47ba26c7, 4/4): "To do gaps aage jaana padega, na?", the child's right answer on a number line,
+// was read as a goodbye and released the lesson at once on turn 3. Moving along a line is the lesson, never leaving.
+test("14.4.1: 'aage / peeche / … tak jaana padega' is motion in the lesson, never a goodbye; a real 'jaana padega' still is", async () => {
+  const { stopKind } = await import("../server/relational/signals.js");
+  for (const t of ["To do gaps aage jaana padega, na?", "2 steps peeche jaana padega", "number line par 3 tak jaana padega", "do jumps aage jaana padega"]) assert.equal(stopKind(t), null, t);
+  for (const t of ["mujhe jaana padega", "abhi jaana padega", "ok didi jaana padega", "mummy bula rahi hai, jaana padega"]) assert.equal(stopKind(t), "leaving", t);
+});

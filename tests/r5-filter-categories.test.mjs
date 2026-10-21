@@ -180,4 +180,20 @@ describe("14.4: the hate detectors alone are no child-safety signal", () => {
     // never "say that again": the same words would trip the filter again
     assert.doesNotMatch(out.reply, /phir se bata|say that again/i, out.reply);
   });
+  test("14.4.1: the blocked turn gets one more try with their words not shown, and her line is the move's own", async () => {
+    const r = lesson();
+    const said = "Thanks! Ab batao, is shape ke chaaron sides jodkar kya milega?";
+    const seen = [];
+    replyDeps.chat = async (_d, msgs, o) => {
+      if (o?.purpose === "filter_probe") throw block(["hate"]);
+      const u = msgs.filter((m) => m.role === "user").map((m) => m.content).join(" | ");
+      seen.push(u);
+      if (/not shown here/.test(u)) { assert.doesNotMatch(u, /race lagayi/, "the masked try never carries their words"); return { text: said }; }
+      throw block(["hate"]);
+    };
+    const out = await run(r, [{ who: "teacher", text: "Screen par 6000 aur 50 dekhiye" }, { who: "child", text: "humne race lagayi" }]);
+    assert.notEqual(out.filtered, true, JSON.stringify(out.guard));
+    assert.equal(out.reply, said);
+    assert.equal(out.guard.masked, true);
+  });
 });

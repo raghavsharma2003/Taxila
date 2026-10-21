@@ -28,9 +28,6 @@ interface TopicKit {
     hints: [string, string, string, string];   // pump → hint → prompt → assertion (shapes, short)
     targetsMisconception?: string; // misconception id this item can surface
     verified?: { solverAnswer: string; agrees: boolean; note?: string }  // filled by blind solver
-    deep?: false;                  // deep-kind audit: a deep-tagged item (error_spot / predict / why / contrast / transfer /
-                                   // translate_rep) that is recall, one step or read-off. Kind, key, grading and pose stay;
-                                   // its answer counts as PLAIN evidence (server/director/items.js plainEvidence)
   }[];                             // 10-16 items per topic, covering ≥5 kinds
   workedExample: { problem: string; steps: string[]; fadedVersion: string[] };  // fadedVersion has "___" blanks
   formats: { primary: "F1"|"F2"|"F3"|"F4"|"F5"|"F6"|"F7"|"F8"; secondary: string[]; engineHints: string[] }; // engineHints: manipulative/sim kind names

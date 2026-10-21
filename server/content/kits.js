@@ -51,19 +51,6 @@ export const kitHash = (kit) => createHash("sha256").update(JSON.stringify({ ...
  * @param {{ topicId: string, verified: boolean }} meta
  * @returns {import("../../shared/contracts").TopicKit | null}
  */
-// 14.4 measurement switch (main: measure the deep-kind audit's marks on the sim lab's decided child before applying them):
-// with TAXILA_KIT_DEEP_MARKS=1 the audit's 1,927 items (data/kits/deep-marks-2026-10-15.json) load as deep: false.
-// Off by default: no kit changes. On apply the marks are written into the kits and this switch goes.
-let deepMarks, deepMarksOn = null;
-/** Tests only: switch the marks on or off for this process without the environment (null = read the env again). */
-export const _deepMarksForTests = (on) => { deepMarksOn = on; };
-const deepMarked = (id) => {
-  if (!(deepMarksOn ?? process.env.TAXILA_KIT_DEEP_MARKS === "1")) return false;
-  // a tree without the list (a test's copy of server/) has no marks, never an error
-  deepMarks ??= (() => { try { return new Set(JSON.parse(readFileSync(new URL("deep-marks-2026-10-15.json", DEFAULT_DIR), "utf8")).items); } catch { return new Set(); } })();
-  return deepMarks.has(id);
-};
-
 export function normalizeKit(raw, { topicId, verified }) {
   if (!raw || typeof raw !== "object") return null;
   let skills = (Array.isArray(raw.skills) ? raw.skills : [])
@@ -110,8 +97,6 @@ export function normalizeKit(raw, { topicId, verified }) {
         // director/items.js itemGE() falls back to the difficulty proxy without them.
         ...(Number.isFinite(Number(it.ge)) && it.ge !== null && it.ge !== "" ? { ge: Number(it.ge) } : {}),
         ...(["recall", "apply", "reason", "transfer"].includes(it.demand) ? { demand: it.demand } : {}),
-        // deep-kind audit (director/items.js plainEvidence): a deep-tagged item whose answer is plain evidence
-        ...(it.deep === false || deepMarked(it.id) ? { deep: false } : {}),
         ...(it.verified ? { verified: it.verified } : {}),
       };
       item.hints = item.hints.map((h, rung) => {

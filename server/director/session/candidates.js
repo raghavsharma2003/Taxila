@@ -11,6 +11,7 @@ import { getTopic, topicSequence, SUBJECT_ORDER } from "../../content/curriculum
 import { conceptTokens, tokens } from "../../lesson/purpose.js";
 import { ACTIVITY_WORDS, contentWords } from "./intake.js";
 import { CONFIRM_MIN_P } from "./flags.js";
+import { romanLine } from "../requests.js";
 
 /**
  * School vocabulary → syllabus words (a reviewed list, child-free, library-level: TUTOR-MODEL §2.3 point 3). Each entry is
@@ -117,6 +118,24 @@ function vocab() {
   for (const bySubject of index().values()) for (const list of bySubject.values()) for (const tp of list) for (const w of [...tp.title, ...tp.chapter]) if (/^[a-z]{4,}$/.test(w)) VOCAB.add(w);
   return VOCAB;
 }
+/** Devanagari function and school words: never a topic word. */
+const DEVA_STOP = new Set(("में मे की के का को से पर और या है हैं था थी थे हो हुआ हुई हुए भी तो ही ना न नहीं मुझे मेरे मेरा मेरी हम हमें आज कल " +
+  "अब फिर एक कुछ यह ये वह वो इस उस बारे लिए साथ स्कूल क्लास पढ़ना पढ़नी पढ़ने पढ़ाया पढ़ाई पढ़ा पढ़ी सीखना सीखा समझ समझना " +
+  "बताओ समझाओ सिखाओ चाहिए चाहता चाहती दीदी मैम सर टीचर चैप्टर लेसन टॉपिक").split(" "));
+/** A word's consonant skeleton: spelling folds (ph/f, sh/s, w/v, z/j, q/k, c/k, g/j), vowels and y/h dropped, doubles collapsed. */
+const skeleton = (w) => String(w).toLowerCase().replace(/tion/g, "shon").replace(/ph/g, "f").replace(/([kgcjtdpbs])h/g, "$1").replace(/w/g, "v").replace(/z/g, "j").replace(/q/g, "k")
+  .replace(/x/g, "ks").replace(/c/g, "k").replace(/g/g, "j").replace(/[aeiouyh]/g, "").replace(/(.)\1+/g, "$1");
+let SKEL;
+/** The one syllabus word whose skeleton a romanised word has (≥ 4 consonants, ≥ 5 letters: a 3-consonant skeleton is a
+ * Hindi word as often as a loanword — "sakti" met "society"), else null. */
+function skeletonVocab(w) {
+  if (!/^[a-z]{5,}$/.test(w)) return null;
+  // (a syllabus plural keys its singular too: "fractions" for "फ्रैक्शन")
+  if (!SKEL) { SKEL = new Map(); const put = (k, v) => SKEL.set(k, SKEL.has(k) && SKEL.get(k) !== v ? null : v);
+    for (const v of vocab()) { put(skeleton(v), v); if (/[^s]s$/.test(v) && v.length >= 5) put(skeleton(v.slice(0, -1)), v); } }
+  const k = skeleton(w);
+  return k.length >= 4 ? SKEL.get(k) ?? null : null;
+}
 /** Edit distance with a cap (early exit). */
 function within(a, b, max) {
   if (Math.abs(a.length - b.length) > max) return false;
@@ -179,7 +198,11 @@ export function queryOf(text) {
   const q = conceptTokens(words.join(" "));
   // Devanagari words meet Devanagari titles as they are (purpose.js conceptTokens keeps only the ones it has a synonym for):
   // "हार की जीत", "तीन मछलियाँ", "नीम"
-  for (const w of words) if (/[\u0900-\u097F]/.test(w) && w.length >= 2) q.add(w.normalize("NFC"));
+  // (census 14.5: never a function or school word — "में" matched the Hindi chapter "शतरंज में मात" for "पौधों के बारे में पढ़ना है")
+  for (const w of words) if (/[\u0900-\u097F]/.test(w) && w.length >= 2 && !DEVA_STOP.has(w.normalize("NFC"))) q.add(w.normalize("NFC"));
+  // census 14.5 (F1): an English school word the recogniser wrote in Devanagari ("प्रोग्रेशन", "प्राइम नंबर") meets the
+  // syllabus word with the same consonant skeleton, when exactly one has it
+  for (const w of words) if (/[\u0900-\u097F]/.test(w)) { const hit = skeletonVocab(romanLine(w)); if (hit) q.add(hit); }
   // a misspelt school word ("simetry", "divison", "devide") meets the syllabus word one or two letters away (never a word the
   // syllabus already has; ≥ 5 letters; 2 edits only from 7 letters)
   for (const w of [...q]) {

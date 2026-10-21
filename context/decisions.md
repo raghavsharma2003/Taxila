@@ -6315,3 +6315,31 @@ Echo matching (src/lesson/cascadeLink.ts echoKey, shared by the duplex EchoSubtr
 ## dc-r144-unheard-never-escalates (2026-10-21)
 
 Main 2026-10-21: in an open safeguard check-in, an UNHEARD turn (D5: the ear covered speech and returned no words) NEVER escalates, however many come in a row: she says she could not make it out (distressCheckAgain({ unheard: true }): her ear, never their fault; okay, never safe; no lesson, no helplines) with the safe:continue / safe:stop chips on screen, so the child can answer without her ear. Why: unheard is the ear failing and adds no evidence of distress (the child spoke: they are responsive); the owner's bar is the helplines only when sure; the first cut's fail-closed on the third would have fired on 1.8-4.8 % of phone-echo lessons (ms-r144-unheard-three-in-a-row), mostly a bad microphone. Silence keeps its own rule (one wait, a second escalates); the predicate and every sure layer escalate at once whatever the ear did. Reversal: a recorded check-in that ends with a disclosure heard LATER, after 3 or more unheard turns.
+
+
+<!-- merged from inbox/r1441-masked-main.json -->
+## dc-r1441-masked-retry — her own line even when the filter will not show his words (2026-10-21)
+
+When the filter blocks the reply prompt on context and the child's words pass the probe, the reply model gets one more try with their words replaced by a note. The child then gets a real turn that ends on the move's question, not a stock thanks. The words stay with every safety read.
+
+
+<!-- merged from inbox/r1441-goodbye-main.json -->
+## dc-r1441-motion-not-leaving — going two gaps ahead is not going home (2026-10-21)
+
+A right answer on a number line ('do gaps aage jaana padega') ended a lesson as a goodbye because the lexicon's bare 'jaana padega' cannot tell motion along a line from leaving. A word of motion before it now keeps the turn in the lesson. Every real goodbye is unchanged, and the sim-lab corpus shows no other change.
+
+
+<!-- merged from inbox/r1441-endrecord-main.json -->
+## dc-r1441-record-learner-subject — the child did the learning (2026-10-21)
+
+The end-record writer used to make the teacher the one who practised ("Asha practised …") in about half of all notes, and lent her pronouns to the child. It now names the child as the learner and the subject of the parent note. The teacher is only the one who taught. Replay: 64/120 → 0/120.
+
+## dc-r1441-safeguarded-record-facts-only — a disclosure never reaches the guardian through the lesson record (2026-10-21)
+
+In a lesson with a safeguarding turn, the summary and parent note are written from the learning facts only, never from the child's words. Every record then passes a fence that drops distress, a reported harm or a safeguarding referral. The guardian can be the person the child named. A disclosure reaches a parent only through the safeguarding protocol and its human queue. Replay: disclosures in the note 8/30 → 0/30. The fence touched 0 of 288 ordinary records.
+
+
+<!-- merged from inbox/r1441-distresscheck-hate-main.json -->
+## dc-r1441-distresscheck-hate-stays-closed — the outage-path distress read keeps a hate block as a check-in (2026-10-21)
+
+The reply probe and the across-deployment read stopped treating a hate-only filter block as distress in 14.4. The rare outage-path read still does, because no one has measured bullying lines that quote slurs. Here a fail-closed read is only a gentle check-in, never the helpline script.

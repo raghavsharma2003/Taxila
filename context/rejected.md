@@ -2721,3 +2721,19 @@ Rejected (main 2026-10-21): the literal bar "a negation is never subtracted as e
 ## rj-r5-offer-guard (2026-10-21)
 
 Not built (census F4 P0 3437b744, main): a reply guard for an offer the turn has no path for. Sim-lab 14.2-14.4: 26 of 4384 lines name a game in a question, 11 in topics with no game path, of which most are interest questions, 2 the ways offer (fixed by 64a1b78b) and 1 a free-text offer: about 1 line in 4384. The census case was a topic-switch offer answered while the reply model was unavailable; its causes are an agreement to her own offer not read as that request (4A, requests.js) and the unavailable fallback ignoring a pending request (F10 family).
+
+
+<!-- merged from inbox/r1441-simlab-wire-main.json -->
+## rj-r5-simlab-turn-only-screen — a simulated child that sees only the turn response (2026-10-21)
+
+The sim lab's child saw only what the turn response carried. A board that arrived a second later never reached it. 1,521 turns in 938 lessons across 65 runs showed the child an empty screen that the real client would have filled. Judgements that rest on the child's 'nothing on screen' after a planning slot are not evidence of a product failure. A simulated client must subscribe to everything the real client subscribes to.
+
+
+<!-- merged from inbox/r1441-endrecord-main.json -->
+## rj-r1441-record-fence-alone (2026-10-21)
+
+An output-only fence using the child-speech safety predicate. It misses the writer's third-person report ("Riya said she wants to die") and the referral sentence that tips off the guardian. Withholding the child's words from the writer is the mechanism. The fence is the backstop.
+
+## rj-r145-kit-deep-marks (2026-10-21, stream 4A)
+
+The deep-kind audit's 1,927 "plain" marks were measured and rejected. Sim lab: 64 cards × 2 arms, agent, decided child. The judge read agreed 68% in both arms. The marks asked an understood child fewer deep items (66 → 47), and doubled the "untested" understood under-reads (11/42 → 23/46). The switch, the marks file and the plain-evidence patch are removed. Reverse if a later audit shows a marked-plain item mis-reads a child, measured the same way.

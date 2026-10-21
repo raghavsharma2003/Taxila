@@ -4695,3 +4695,69 @@ Method: scratchpad boardspeech / rungspeech / offboard / offkit .mjs over sim-la
 QA 14.4.1 run 8 (aadae80b t1): a subject-less picture ask failed its slot when the live board failed (W6.timing, W2.text_clear_of_lines). The gated template was refused by answersRequest because isDrawing did not count a rect (the c6-maths-ch06-t01 field: rect + outside side labels + arrows + numwork), and nothing was logged. Fixed in cf25ca72 (a rect with no text inside it is a shape; gatedFallback logs the refusing step). Library templates: 0 of 316 change. Director rungs on a picture ask: 670, drawing 514 -> 516.
 
 Method: isDrawing before/after over every library template (316) and every Director board rung for a picture ask (kitFromFile), plus run 8 reproduced through answersRequest
+
+
+<!-- merged from inbox/r1441-endrecord-main.json -->
+## ms-r1441-endrecord-replay (2026-10-21)
+
+Old vs new end-record writer on TEST lessons, taxila-fast, production call shape:
+
+- Run 1 (40×1): teacher-as-learner 26 → 1. The 1 was a teaching verb, a false hit.
+- Run 2 (60×2): 64 → 0; child named in the first sentence 81 → 120.
+- Run 3, as production now runs (30 safeguarded + 30 ordinary): teacher-as-learner 30 → 0; disclosures 8 → 0.
+- Fence on stored records: 0/288 ordinary records touched.
+- Prod: 0 of 15 notes carry disclosure words.
+
+## ms-r145-f1b-round2 (2026-10-21, stream 4A)
+
+Census F1 round 2. Three kinds of ask are now read:
+- a chapter ask ("chapter 1 se shuru karo");
+- an explain-first ask ("pehle theory batao");
+- a bare yes to her single we-proposal offer (offerAgreed).
+
+Before: 0 chapter and 0 explain-first asks in 4,293 sim-lab lines and 7,390 TEST child turns. That shape lives in production and stream 2's off-kit cards.
+
+False offer reads after: 0 of 4,690 sim-lab and 0 of 7,385 TEST (her line, reply) pairs. A first draft without the we-proposal form misread 8 TEST lesson questions as offers, so the form is required.
+
+Test: tests/r145-f1b-round2.test.mjs.
+
+## ms-r145-reason-head (2026-10-21, stream 4A)
+
+A right answer said first, followed by its own reason ("saat, kyunki …"), is now credited. Vetoes still block it: a correction, an alternative, a hedge, don't-know, another value after an answer cue, or a negated head.
+- Rescues: agent 9 of 107 and Director 3 of 41 right answers that had earned no evidence.
+- False credit on forms built from 112 items: 0 of 1,020 wrong-head and 0 of 667 contradicting with the model forced to "correct"; 0 of 340 and 0 of 223 on the real model.
+
+## ms-r145-f1-devanagari-requests (2026-10-21, stream 4A)
+
+A Devanagari line that reads as no request is read again in Roman letters. A game must be asked for: "khel" inside an answer is not a request. Over 4,698 sim-lab lines (851 Devanagari), 8 reads moved: 1 new real read and 7 false reads removed. Visual asks inside turns over 12 words are still unread (pre-existing).
+
+## ms-r145-whole-reply-vetoes (2026-10-21, stream 4A)
+
+The whole-reply credit now has the reason-head vetoes. Veto patterns bound on letters and marks ("या" inside "किया" had matched). False credit:
+- Real model: wrong head 4 → 2 of 340; contradicting reason 87 → 3 of 223.
+- Model forced to "correct": 14 → 5 of 1,020 and 311 → 9 of 667.
+- Rescue loss: TEST 0 of 136 credited answers; sim lab 23 of 193 in the worst case.
+
+## ms-r145-f1b-topic-asks (2026-10-21, stream 4A)
+
+- A topic ask that the classifier also read as a stop is the topic ask.
+- A change_topic asked again within 6 turns offers real topics of the child's class as switch chips.
+- The intake reads "X padhna hai" as a wish.
+
+Over 4,338 (class, sim-lab line) pairs, 156 moved. 94+ junk Hindi-chapter matches on function words were removed, and 20 new matches are mostly plausible. Test: tests/r145-topic-asks.test.mjs.
+
+## ms-r145-f1d-fade-landed (2026-10-21, stream 4A)
+
+A stuck or off-topic reply to the worked lead now gets the whole worked example instead of the faded gap. Before, the gap was posed whatever the reply (reproduced 24/24). In 353 sim-lab records, 8 of 140 fades posed right after the lead followed such a reply; those now get the example. Test: tests/r145-fade-landed.test.mjs.
+
+## ms-r145-stray-script (2026-10-21, stream 4A)
+
+One stray token in another script no longer makes a readable turn unreadable. The rule applies only under 25% of letter tokens with 3+ readable words left, and the model distress read still runs on the rest.
+- Distress: 0 of 8,780 distress draws lose their re-ask.
+- Lesson: FDB lesson segments 499 of 988 unreadable draws are now graded; TEST 0 of 7,390 and sim lab 0 of 4,293 lines move.
+
+Main safety review: approved for 14.4.1. Test: tests/r145-stray-script.test.mjs.
+
+## ms-r145-fade-key-number (2026-10-21, stream 4A)
+
+A faded step's key kept the sentence after the number ("5. 5 kites are still flying"), so a bare right "5" earned nothing (sim lab p55 t5). blankOf now keys the number. 2 kits grade in code; 2 keep the whole worked example because the number was already shown. Test: tests/r145-fade-key.test.mjs.
