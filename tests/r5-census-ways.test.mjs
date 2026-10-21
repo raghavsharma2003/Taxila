@@ -97,3 +97,19 @@ test("F3 (census 6c45a7ea t33): choice chips never single the key out by its loo
   const c = choicesFor(word, { items: [...items, word] }, 3);
   assert.ok(c && !c.includes("I walk with my feet."), String(c));
 });
+
+test("F3 (census 3437b744 t9/13/14): a faded step's question card carries the problem it is a gap of, and fits the card whole", async () => {
+  const { fadeItem } = await import("../server/director/fading.js");
+  const { askText, ASK_MAX } = await import("../server/director/say.js");
+  const { kitFromFile } = await import("../server/content/kits.js");
+  const { getTopic } = await import("../server/content/curriculum.js");
+  const kit = kitFromFile(getTopic("c9-maths-ch08-t01"));
+  const its = kit.workedExample.steps.map((_, i) => fadeItem(kit, { index: i })).filter(Boolean);
+  assert.ok(its.length, "the census topic's faded steps");
+  for (const it of its) for (const p of [it.prompt_en, it.prompt_hi]) {
+    assert.match(p, /7, 11, 15/, p);
+    assert.match(p, /_{3}/, "the gap");
+    assert.ok(p.length <= ASK_MAX, p);
+    assert.equal(askText(p), p, "the card shows it whole (askText keeps the tail, which would drop a leading problem)");
+  }
+});
