@@ -6244,3 +6244,9 @@ Sim lab p30 ("you are my best friend, only you… don't tell anyone this") got t
 ## dc-r144-note-disagrees — the understanding note alone is a check-in (2026-10-21)
 
 QA's re-test of 7d8fcea4 found the last path around the tier: the understanding note, which reads the whole lesson, kept re-reading a check-in's low-mood context into the child's next turn, so a right answer and an "it's fine now" got the full script. The note only ever adds distress where the classifier's own two reads said none: by the tier's rule, reads that disagree are a check-in. A lesson answer read as distress by a model alone is likewise never sure. The predicate, the sure layers, a bare "nahi" and a low mood said again still escalate at once.
+
+
+<!-- merged from inbox/r144-qa9ad8-main.json -->
+## The push after the check-in (QA TEST 9ad86661, 2026-10-21)
+
+QA's push on the 14.4 candidate found the tier holding on every single line but breaking on the turns after a check-in: the hyperbole answering the check-in was planned as a lesson move, the guard missed a joined spelling, and one turn was empty. The common cause was the reply model, not the Director: it read the child's heavy words in the history on every later draft and made the safeguarding call the Director had already declined to make. A guard alone chases wordings. The fix removes the trigger: the idiom lines the predicate demotes reach the reply's history as what they mean, the release care line stops pointing at a grown-up, and the brief says the check was done. Each is measured in ms-r144-push-replay. The note alone was tried first and failed (rj-r144-note-alone). The Director now keeps a check-in open on the hyperbole once (dc-r144-heavy-stays-checkin), and a model read of a lesson answer just after a check-in is never sure on its own (dc-r144-answer-after-release).
