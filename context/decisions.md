@@ -6118,3 +6118,43 @@ TTS frames type 5 = IMA ADPCM (4:1), negotiated by Accept `codec=adpcm`, asked f
 - **Why:** the grading call misses low-mood lines on production's model that the words-only read catches.
 - **Cost:** about 0.2% of ordinary turns flagged, which the model-episode release ends quickly, and p90 +150 ms.
 - **Reversal:** on production, false flags on lesson talk above 0.5% of graded turns, or more than 250 ms added at p90.
+
+
+<!-- merged from inbox/r143-kit-deep-kinds.json -->
+## dc-r143-kit-deep-false (2026-10-15, PROPOSED)
+
+**What:** a deep-tagged kit item that is recall, one step or read-off carries the optional field `deep: false`.
+
+- What stays: its kind, key, grading and pose.
+- What changes: its answer counts as plain evidence.
+  - KT: `evidenceProbeFor` gives P15, so the answer is `item.open`: no U / T facet and no generative pass.
+  - Agent lane: the evidence read uses the plain table, and `earnedRead`, `deepAvailable` and `offeredItems` count only real deep items.
+- Set: 1927 items, where both cross-family models agree and the human read does not overrule (`docs/research/kits/DEEP-KIND-AUDIT.md`).
+- How: patch `docs/research/kits/deep-kind-fix-2026-10-15.patch`, then mark the kits with `evals/kit-deep-kinds/apply.mjs --write`.
+
+**Why:**
+
+- One shallow "deep" right answer moves U past 0.6 (why) or T past 0.6 (far transfer). It can make a skill `learned_today`.
+- On the agent lane it lifts the evidence read from 0.715 (partly) to 0.816 (understood).
+- Retagging the kind would also change the grading path (a why item gets open grading and the held blind grader) and the teacher's pose. Its keys were verified as posed.
+- The probe-to-class route needs no migration.
+
+**Reversal:**
+
+- a second human read, or another rubric / model pair, overrules more than 10% of the set;
+- child data show `deep: false` items are no easier for partly children than real deep items, or under-reads rise more than the over-reads removed;
+- the kits are re-authored so that kind matches demand.
+
+
+<!-- merged from inbox/r5-stream2-14.4.json -->
+## r5-self-answered-question
+**When her line states, before its numeric question, the answer that question asks for (TEST 1695e941 '0 se 160 metres tak … boundary distance kitna hai?'; fa2f04e7 'Aap 160 par ungli rakhenge?'), the stating clause goes and a question naming it asks 'kis number' instead; the board never draws that answer.** (2026-10-15, 69fe6bc1, c57e5bfb)
+- Predicate: the question's operation from its own words (W18's reading), or the line's when the question names the answer; operands from the question, her line, her last two lines, the worked example's givens; the result stated AS a result (a result word or a range end); never a number the child said, a why / how question, or an earlier sum restated.
+- Measured: sim-lab 14.2 / 14.3, 4384 teacher lines: 2 before, 0 after; looser drafts fired 9-30, all extra hits false and pinned quiet in tests/r5-board-edges.
+- Reversal: a measured real self-answer the predicate misses that a broader reading catches without false hits.
+
+## r5-board-reshown-gated-now
+**A whiteboard drawn earlier is gated against the item open WHEN it is drawn; re-showing it later (keepBoardSlot D42, onScreenSlot late board, slotFor re-reveal, the subscribe replay on reload) now re-checks the open item's withheld values (whiteboard.js withheldValues, a key her line says stays hers) and fails closed when they cannot be computed or are omitted.** (2026-10-15, 205df090, a853362c, 86570734, 50c3622a; main's safety review)
+- A kept board also goes when the move asks another item / skill, or her last sentence brings a number it does not show (QA D43); units and fillers are no shared word (syncedWithLine stop list).
+- Text lane only for the keep: the voice lane's reply text is not on the server.
+- Reversal: a client-side page store that outlives the response (then the client must take the same gate).

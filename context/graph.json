@@ -21747,6 +21747,355 @@
    "at": "2026-10-15",
    "title": "Up to 4 sim lab TEST accounts (simlab+p16-c7-science-chatty-…@taxila.test) may be left on the TEST DB from a p16 launch killed at wrap-up before any lesson finished. TEST only; delete through the normal account deletion. If one refuses with erase_review it had a safeguard: leave it, never bypass the guard.",
    "source": "inbox/r1432wrap-main.json"
+  },
+  {
+   "id": "ms-r143-kit-deep-kinds",
+   "kind": "measurement",
+   "at": "2026-10-15",
+   "title": "Deep-kind audit of data/kits: 7697 items tagged error_spot / predict / why / contrast / near_transfer / far_transfer / translate_rep (teachback excluded), each read by taxila-brain (gpt-5.6-sol, effort medium) and DeepSeek-V4-Pro on the SIN account; 15394 calls, 0 unresolved failures. Both models say shallow (recall, story detail, one step, read-off, move absent): 1941 (25.2%). By kind: error_spot 25/1043 (2.4%), predict 288/1246 (23.1%), why 250/1292 (19.3%), contrast 433/1204 (36.0%), near_transfer 513/1331 (38.5%), far_transfer 200/794 (25.2%), translate_rep 232/787 (29.5%). By class it falls from 54.5% (class 1) to 14.4% (class 9); Hindi 41.0% and English 33.4% are the highest subjects. The models split on 33.9% (agreement 0.661, kappa 0.315); B is the more lenient (1753 B-only vs 855 A-only shallow). Human read (one rater), 112 items: 4 of 60 agreed-shallow and 2 of 30 agreed-deep disagreed (6.7% each); all 25 agreed-shallow error_spot read, 12 of 25 disagreed, all of them a stated false claim refuted from a fact, which the rubric's error_spot move calls deep (a rubric boundary). Apply set 1927 (1941 minus 14 overruled). Skills keeping a real deep item: 2787 -> 2482 of 2987. Agent evidence read (read.js, bar 0.8): practice right + error_spot right = 0.816 understood; the same with the error_spot plain = 0.715 partly.",
+   "n": 7697,
+   "method": "evals/kit-deep-kinds (items, classify, summarize, spot; rubric deep-kind-rubric-v1-2026-10-15, shapes and codes); input KIND, SKILL, PROMPT_EN, PROMPT_HI, KEY; json_object, validated in code; <= 8 in flight, one retry on 429/5xx; DATABASE_URL empty, trace off; shallow only when both agree; stratified 60 + 30 human spot check plus an error_spot census; record docs/research/kits/deep-kind-audit-2026-10-15.json",
+   "source": "inbox/r143-kit-deep-kinds.json"
+  },
+  {
+   "id": "dc-r143-kit-deep-false",
+   "kind": "decision",
+   "at": "2026-10-15",
+   "title": "PROPOSED (patch docs/research/kits/deep-kind-fix-2026-10-15.patch, not applied). A deep-tagged kit item that both cross-family models read as shallow, and that the human read did not overrule, carries the optional field deep: false. Its kind, key, acceptable forms, hints, verified, classifier target, pose and Director selection all stay. Only its ANSWER is plain evidence. evidenceFrom uses evidenceProbeFor -> P15 (item.open by the ladder): no U / T facet, no generative pass, no errorspot / transfer delayed check, 'practice' in the parent report. No migration, because cls is already in kt_evidence. A why-kind item's answer never comes back as a volunteered probe.why. The agent evidence read uses the plain table for a graded entry marked plain. earnedRead / deepAvailable / untested / offeredItems count only real deep items. The loader passes the field through. 1927 items (evals/kit-deep-kinds/apply.mjs --write). Not a retag, because kind also picks the grading path (why: open target and the held blind grader) and the pose. A deep: false why item's evidence verdict becomes the turn's classifier label, as for practice.",
+   "reversal": "a second human read, or a re-run with another rubric / model pair, overrules more than 10% of the apply set; or child response data (TEST traces, a DECIDED sim lab keyed on the same predicate) show partly children pass deep: false items no more often than the unmarked deep items of the same kind, or under-reads of understood rise more than the over-reads removed; or the kits are re-authored so kind matches demand (then the field goes)",
+   "source": "inbox/r143-kit-deep-kinds.json"
+  },
+  {
+   "id": "open-r143-kit-kind-pose-mismatch",
+   "kind": "open",
+   "at": "2026-10-15",
+   "title": "deep: false fixes the evidence weight only. Three gaps remain. (1) The 13 shallow error_spot items are still posed as 'your own working with one planted mistake' (shapes.js KIND_NOTE), predict items still open engines in predict mode, and why-kind items still skip the follow-up why. A re-tag needs blind-solver re-verification of the keys. (2) 2608 split items (33.9%) stay deep unread; B-only splits are 2x A-only. (3) The rubric's error_spot boundary (refuting a stated false claim from a fact) needs an owner call. The cited sim-lab item 'पायल कैसी आवाज़ करती थी?' (c2-hindi-ch03-t01-i02) is tagged practice in this tree; its siblings i07 (predict) and i11 (why) are in the apply set.",
+   "source": "inbox/r143-kit-deep-kinds.json"
+  },
+  {
+   "id": "ms-r144-spoken-fractions",
+   "kind": "measurement",
+   "at": "2026-10-15",
+   "title": "Spoken Devanagari fractions earn evidence (4A, main's 14.4 item from 4B's finding). classify() over the 52 fraction-key kit items x 4 Devanagari spoken forms of the key ('<n> बटा <d>', '<n> बता <d>', '+ होगा', 'मेरे ख्याल से +'): correct 0/208 before, 208/208 after (156 by the code number path). Wrong forms (n/(d+1), (n+1)/d, d/n, and 'मुझे बता दो' on every item): 0/208 credited before and after; 'मुझे बता दो' no evidence 52/52. Three changes: spoken-number.js reads बटा / बता as OVER (बता only between two numbers) and a Devanagari दो after a verb stem as the verb unless a fraction claims it; learner/affect.js no longer reads '<n> बता दो' as asking for the answer; tailAgrees reads a spoken Devanagari fraction as the number itself. Side-effect check (main): tailAgrees and unitsAfterNumbers old vs new over 2,008 Devanagari sim-lab child lines x their item keys: only the 2 fraction lines moved; 0 unit readings moved. A first version that kept vowel signs in wordToks moved 206 (then 832) other Devanagari tail verdicts and was replaced. Shared fixture: 4B's tests/fixtures/spoken-fractions.json (34 cases, the engine's valuesOf and duplex/understand.js valuesIn test the same file): the grader read 32/34 at first ('2 बता दो' lost the digit numerator; 'एक बार और दिखा दो' read 1) and 34/34 after two narrow rules: a digit numerator stays open before an OVER word with a number after it (and a digit denominator then closes the fraction), and 'एक बार' with words after it is 'once', not 1. The grader keeps 'एक' in running Hindi as 1 ('मेरे ख्याल से एक'), where 4B's readers count it only alone or in 'एक बटा'. Old vs new numberPhrases / spokenNumber / unitsAfterNumbers / statedResults / selfCorrected over 3,162 sim-lab child lines (636 Devanagari): 25 lines moved, 21 'ek baar / एक बार' narrative lines (once) and 4 '<digit> over <digit>' lines now read as one value ('2 over 5' -> 0.4, '1.5 over 9' -> 1/6); 0 unit readings moved. The 208/208 and 0/208 still hold.",
+   "source": "inbox/r144-4a.json"
+  },
+  {
+   "id": "ms-r144-affirm-opener",
+   "kind": "measurement",
+   "at": "2026-10-15",
+   "title": "No affirmation that approves what nobody said (open-r143-affirm-on-no-answer; brain/say.js affirmOpenerFix on every lane's final reply, never a safeguard). (a) not_yet / partial verdict or truly empty input: the leading affirmation goes; (b) a right answer that opens No / nahi / नहीं: a bare Yes / Haan / हाँ opener becomes Right / Sahi / सही. Same function over the sim lab's transcripts: 14.2 decided Director 860 turns 1 stripped, 0 left; e46a281 decided 1,698 turns 3 polarity rewrites, 0 left; f444f064 continuer OOS 415 turns 0 (a 'Right-align' opener is not an affirmation); p30 re-run 1 polarity rewrite ('Yes, Pihu—earthworm has no legs' -> 'Right, Pihu—…'). Not covered: the polarity case on the agent lane's streamed first clause.",
+   "source": "inbox/r144-4a.json"
+  },
+  {
+   "id": "dc-r144-ways-chips-lang",
+   "kind": "decision",
+   "at": "2026-10-15",
+   "status": "proposed",
+   "title": "r5 QA D41 (14.4): the ways-in chips (picture / story / game / back, director/state.js waysChips) go through chipLabels(lang) like the stop and check-in chips (Hinglish 'Picture dikhao / Kahani mein batao / Game khelte hain / Lesson par wapas', Hindi 'तस्वीर दिखाओ / कहानी में बताओ / गेम खेलते हैं / पाठ पर वापस'); the Director still reads the ids, and each label said aloud reads as its request (a Devanagari story ask needs its telling verb, so 'इस कहानी में राजा कौन है' is not one). The Hinglish LANGUAGE rule (compiler/compile.js) no longer follows a switch to English: her English words, even a whole English line ('Can we do the lesson now?'), keep Hinglish; only a language request (requests.js 'language', PINNED) changes it. Reversal: a Hinglish-pref child who keeps writing English and is understood worse in Hinglish (owner report or sim-lab register check).",
+   "source": "inbox/r144-4a.json"
+  },
+  {
+   "id": "ms-r144-story-question",
+   "kind": "measurement",
+   "at": "2026-10-15",
+   "title": "A question about THIS story is not a story request (14.4, main; director/requests.js STORY_QUESTION): a question word (kaun / kya / kahan / kyun / kab / kaise / kitne, who / what / where / why / when / how, and the Devanagari forms) with 'is / iss / yeh / this kahani / story / इस कहानी' reads as no request ('is kahani mein raja kaun hai' was a story request). Old vs new requestOf over 3,162 sim-lab child lines (225 records, r5-rel143 runs): 0 moved (1 line read as a story request before, 'kahani shuru karein?', and still does; 11 lines mention kahani / story). Tests: 6 questions stay questions, 8 requests stay requests.",
+   "source": "inbox/r144-4a.json"
+  },
+  {
+   "id": "open-r144-hindi-english-line",
+   "kind": "open",
+   "at": "2026-10-15",
+   "title": "The Hindi LANGUAGE rule (compiler/compile.js) still follows a switch to English, where D41 made the Hinglish one hold. Left for 14.4 (main): a Devanagari child typing Roman / English may be fighting the keyboard rather than asking for English. Wanted before any change: how often Hindi-pref children write English in sim-lab / TEST, and what the hidden truth says they wanted.",
+   "source": "inbox/r144-4a.json"
+  },
+  {
+   "id": "rj-r144-wordtoks-keep-marks",
+   "kind": "rejection",
+   "at": "2026-10-15",
+   "title": "Keeping Devanagari vowel signs (\\p{M}) in spoken-number.js wordToks so 'बटा' tokenises whole (4A, 14.4 spoken fractions): it moved 206 of 2,008 sim-lab Devanagari tail verdicts that had nothing to do with fractions, e.g. 'पाँच मीटर' for '5 m' true -> false. Replaced by reading a spoken Devanagari fraction as one number before tokenising (DEVA_FRACTION), which moved only the 2 fraction lines.",
+   "source": "inbox/r144-4a.json"
+  },
+  {
+   "id": "rj-r144-ignore-devanagari-tail",
+   "kind": "rejection",
+   "at": "2026-10-15",
+   "title": "Fixing the keep-marks side effect by having tailAgrees ignore a Devanagari tail entirely (4A, 14.4 spoken fractions): it moved 832 of 2,008 sim-lab Devanagari tail verdicts the other way (contradicting tails stopped vetoing). Replaced by DEVA_FRACTION with wordToks unchanged (2 moved, both fraction lines false -> true, 0 unit readings moved).",
+   "source": "inbox/r144-4a.json"
+  },
+  {
+   "id": "dc-r144-deep-marks-switch",
+   "kind": "decision",
+   "at": "2026-10-15",
+   "status": "proposed",
+   "title": "The deep-kind audit's 1,927 marks are measured before they are applied: TAXILA_KIT_DEEP_MARKS=1 (off by default) loads data/kits/deep-marks-2026-10-15.json as deep: false through the kit loader; the patch itself (main's deep-kind-fix, items.js plainEvidence) is applied on claude/r4-conversation and changes nothing while no kit carries deep: false. The sim lab's 2x2 (marks off/on x a kind-only / audit-aware decided child) decides. Reversal: on apply, write the marks into the kits (evals/kit-deep-kinds/apply.mjs --write) and remove the switch and the list; on reject, remove both and keep the patch's code inert.",
+   "source": "inbox/r144-4a.json"
+  },
+  {
+   "id": "r5a-ms-agent-overclaims-offline",
+   "kind": "measurement",
+   "at": "2026-10-15",
+   "title": "Agent-lane overclaims (main's cohort condition 1), measured OFFLINE on the 64 sim-lab cc4b3d2 transcripts per arm: the end summary regenerated with the shipped writer prompt (endMessages), then judged by the gate's judge 1 (grok-4-20-reasoning) and scored by the gate's understandingScore. Agent with the old summary 62-66 overclaims (two re-judges; the gate had 64). Agent with each skill's check in the facts (her earned read) 45. Agent with the check and the stricter read rule (a miss is recovered by three right after it, one deep) 37, agreement 111/185 probed. Director, its summary regenerated the same way, 30 (agreement 124/170); its gate summary re-judged 34 (the gate had 35). Of the agent's 37, about 30 are the record matching her own read: 19 'understood' and 11 'partly' on simulated children whose truth is lower and who answered deep items right (the child-simulator leakage the sim lab is fixing with --child v2). Her in-lesson words are unchanged in this method, so a live gate on the new head is the real measure.",
+   "source": "inbox/r5-agent-cohort.json"
+  },
+  {
+   "id": "r5a-ms-agent-first-clause-route",
+   "kind": "measurement",
+   "at": "2026-10-15",
+   "title": "Agent lane first clause in a real lesson (main's cohort condition 2): POST /api/lesson/turn-audio on a local server (int/r5-rel142 + 4A head, TAXILA_TEACHER=agent, TAXILA_TEACHER_EFFORT=none), 3 topics (classes 3-5), n=24 child turns, all 24 streamed. From the agent call's start (the header frame) to her first clause event: p50 1540 ms, p90 1808 ms. From the request to the first PCM byte: p50 3679 ms, p90 5011 ms, of which about 1.77 s (p50) is the turn before the agent call (classify and planning). taxila-gpt6 time to first token p50 about 1.5 s with 2.19k of about 3.4k prompt tokens cached. The child's speech end to the request (endpoint and STT) adds about 1.4 s on top.",
+   "source": "inbox/r5-agent-cohort.json"
+  },
+  {
+   "id": "r5a-ms-agent-safety-probe",
+   "kind": "measurement",
+   "at": "2026-10-15",
+   "title": "Agent-lane safety probe (main's cohort condition 3; tests/prod/agent-safety-probe.mjs): 8 scripted lessons, 29 child turns on the agent lane, TEST Neon branch. Disclosures mid-lesson in Hinglish, English and Hindi, passive ideation and a grooming-shaped disclosure with secrecy: every one got the Director's safeguard move (no agent turn), the vetted opening, Childline 1098 and Tele-MANAS 14416 digit-exact; AI-denial, romance, marriage, exclusivity and secrecy asks: every reply floor-clean. On int/r5-rel142 + 4A head 81/81; the lesson after a disclosure opens on the 14.2 carried check-in, never on her. On the 4A head alone (no 14.2) the in-lesson checks pass and the next lesson opens on her (no check-in exists there).",
+   "source": "inbox/r5-agent-cohort.json"
+  },
+  {
+   "id": "r5a-dc-agent-record-check",
+   "kind": "decision",
+   "at": "2026-10-15",
+   "status": "proposed",
+   "title": "On the agent lane the end record (summary and parent note) words each skill only as far as her earned read: lessonFacts carries a per-skill check (shown / practised, not yet checked with a why or new-situation question / partly / still building) and the writer's last rule bounds the wording. Her read holds 'understood' after a miss until three right answers follow it, one deep. The agent opening never takes a safeguard move or an open episode. Reversal: a live gate where the agent's overclaims stay above the Director's with the record already matching her read (then the read rule, not the wording, needs the next look), or a parent-facing review that finds the 'practised, still to check' wording discouraging.",
+   "source": "inbox/r5-agent-cohort.json"
+  },
+  {
+   "id": "ms-r5-duplex-owner-harness-2026-10-14",
+   "kind": "measurement",
+   "at": "2026-10-14",
+   "title": "round 5 phone-echo harness (evals/duplex-2026-10/assemble.mjs variant 'owner', SIMULATED): the owner's Android loudspeaker as the phone-speaker path (300 Hz-5 kHz, soft clip, 60 ms delay, 120 ms room tail, -6 dB under the child) behind a WEAK device AEC: full echo for the first 500 ms of each of her lines (re-converging), then 10 dB ERLE [E]. Over 102 of her lines (66 TaxilaFDB TEST + 36 continuer scenarios) it reproduces the owner's failure on the old D4 engine: phantom child transcripts of her voice on 65/66 lines, echo yields 48/66, her own voice hushing her on 66/66 (r5-gate.mjs). Not a phone: real-device validation is the owner's recorder.",
+   "source": "inbox/r5-duplex.json"
+  },
+  {
+   "id": "ms-r5-d5-owner-2026-10-14",
+   "kind": "measurement",
+   "at": "2026-10-14",
+   "title": "D5 on the owner harness (evals/duplex-2026-10/arms-d5.mjs: the shipped relay to Voice Live centralindia + the shipped DuplexLive D5 path, real time, TTS children; arm d5r5c): over 102 of her lines 0 phantom child transcripts, 0 phantom turns, 0 echo yields; barge-in noticed 12/12 with her stop (hush -26 dB or pause/stop) <= 500 ms on 11/12 (p50 59 ms, p90 247 ms) via the pitch-gated pre-duck; continuer false yields 0/46; thinking-pause cut-offs 0/34. Echo hushes (a pre-duck on her own echo) 6/102 at 6 dB / 40 ms; retuned OFFLINE to 12 dB / 80 ms (evals/duplex-2026-10/preduck-tune.mjs, IN-SAMPLE, same 102 lines): 0/102 owner, 0/102 phone, 1/102 clean, barge pre-duck <= 500 ms 11/12 on each. NOT MET: end-of-turn p50 1,480 ms (bar 900): closed answers p50 1,500 because Voice Live returned an EMPTY transcript for 5/14 short closed answers on this audio (the turn then ends on the re-ask backstop), open explanations p50 3,030 ms by design (teach-back patience; cut-offs 0/34).",
+   "source": "inbox/r5-duplex.json"
+  },
+  {
+   "id": "ms-r5-d4-half-duplex-owner-2026-10-14",
+   "kind": "measurement",
+   "at": "2026-10-14",
+   "title": "D4 half-duplex on the owner harness (arms-ours.mjs --half, real gpt-live-transcribe, arm d4h2) vs the old full-duplex D4 (d4full): phantom child transcripts 0/102 vs 65/66, phantom turns 0/102 vs 2/66, echo yields 0/102 vs 48/66, her voice hushed by her echo 0/102 vs 66/66; continuer false yields 0/46; barge-in 0/12 by design (no barge-in on the half-duplex lane); end-of-turn p50 1,560 ms, missed 3/34 (2 are hold_long by design); lone words noticed 1/8 (an empty turn is never committed on D4, so an unheard 'haan' waits for her silence nudge).",
+   "source": "inbox/r5-duplex.json"
+  },
+  {
+   "id": "dc-r5-d4-half-duplex",
+   "kind": "decision",
+   "at": "2026-10-14",
+   "title": "D4 (the fallback lane when D5 cannot open, and the live lane without D5) runs HALF-DUPLEX: while her line plays, her output is audible, or within the tail after either (250 ms + AudioContext.outputLatency within 400-900 ms, else 600), the mic track is disabled, the engine reads the room's quiet level, and any transcription item that starts in that window is dropped whole; micro-commits only for audio the transcriber holds (no commit_empty); an empty turn is never committed on D4. ?duplexfull=1 keeps the full engine on a device. Merged with main's release-14 implementation (337b09a). Reverse if: the owner's real-phone recorder shows a child's answer lost inside the tail more than 1 in 20 turns, or the device AEC is shown sufficient on the cohort's phones (then full-duplex D4 for headsets only).",
+   "source": "inbox/r5-duplex.json"
+  },
+  {
+   "id": "dc-r5-one-turn-at-a-time",
+   "kind": "decision",
+   "at": "2026-10-14",
+   "title": "One turn at a time on every lane: no engine turn while an engine-committed turn or a tapped / typed answer is waiting for her reply (cleared when her reply starts; a lost reply stops holding after 15 s), none within 3 s of a tap, and the link drops a spoken final within 3 s of a tap until her reply to it arrives. The safety floor (safeguard / safety cut-in) is never held. Reverse if: real sessions show a child's spoken correction right after a tap lost more than 1 in 20 times.",
+   "source": "inbox/r5-duplex.json"
+  },
+  {
+   "id": "dc-r5-d5-preduck-pitch",
+   "kind": "decision",
+   "at": "2026-10-14",
+   "title": "D5 pre-duck ON by default, straight to the hush level (-26 dB), only for a burst 12 dB above her predicted echo for 80 ms with a pitch >= 1.5 semitones from her own output pitch and its octaves (her echo carries her pitch; measured: 4,448 echo frames at 0 st, ~30 at each of +-12). Voice Live silence 250 ms (decide-late in the engine). No text echo subtraction on D5 (the ear removed her echo acoustically; subtracting her words deleted a child's 'आठ corners'). Reverse if: the owner's recorder shows false pre-ducks on her own echo on more than 2 % of her lines, or barge-in pre-duck <= 500 ms falls below 80 % on real children.",
+   "source": "inbox/r5-duplex.json"
+  },
+  {
+   "id": "open-r5-d5-asr-empties",
+   "kind": "open",
+   "at": "2026-10-14",
+   "title": "Voice Live's azure-speech (hi-IN,en-IN) returns EMPTY transcripts for some short child answers on the owner harness (5/14 closed answers: 'सात है ना', 'तीस दीदी', 'छह faces दीदी', 'चालीस square cm', 'हाँ'); hi-IN alone recovers some ('40', 'साथ है ना') but drops English words ('आठ corners'). This is what holds end-of-turn p50 at ~1.5 s for closed answers on D5. Next: gpt-4o-transcribe inside Voice Live, or a second ear for short bursts (the device-side clip to /api/voice/transcribe).",
+   "source": "inbox/r5-duplex.json"
+  },
+  {
+   "id": "ms-r5-d5-owner-review-fixes-2026-10-14",
+   "kind": "measurement",
+   "at": "2026-10-14",
+   "title": "D5 on the owner harness AFTER the 8 confirmed D5 review fixes (arm d5r8, same method and 102 of her lines as d5r5c, pre-duck 12 dB / 80 ms now LIVE, not offline): 0/102 phantom child transcripts, 0/102 phantom turns, 0/102 echo yields, 0/102 echo hushes (was 6/102 at 6 dB / 40 ms: the offline retune holds live); barge-in noticed 12/12, her stop <= 500 ms 11/12 (p50 80 ms, p90 425 ms); continuer false yields 0/46; end-of-turn p50 1,480 ms (NOT MET, bar 900), p90 3,620; missed 3/34 (was 2: f1-0033, a lone haan Voice Live opened no item for, is now correctly NOT turned into an empty turn — review #6 — so the child is not heard; before, an injected empty final made it a re-ask); thinking-pause cut-offs 1/34 (f2-cue_maths-0180: Voice Live run-to-run variance closed item 2 at 8,960 instead of 9,560 ms, inside the child pause, with a question-shaped text; committed, revoked 500 ms later when the child went on, her words merged; not caused by the fixes, which touch only no-text turns). Lone words noticed 5/8 (was 6/8, the same f1-0033).",
+   "source": "inbox/r5-duplex.json"
+  },
+  {
+   "id": "dc-r5-d5-empty-turn-only-from-the-ear",
+   "kind": "decision",
+   "at": "2026-10-14",
+   "title": "D5 posts an empty child turn ONLY when Voice Live itself opened an item and returned an empty or failed final over the burst (the ear covered it). A burst only the device heard (her echo through a weak device AEC, a door, a cough Voice Live ignored) never becomes a turn: after the ear's slowest final it returns the floor unspoken. Cost: a lone haan Voice Live never opens an item for is unheard (1/34 after-her turns on the owner harness). Reversal: if owner-cohort recordings show real children unheard this way more than 1 in 20 closed answers AND their device bursts are distinguishable from echo (pitch / level vs her output), re-admit those bursts as re-asks.",
+   "source": "inbox/r5-duplex.json"
+  },
+  {
+   "id": "ms-r5-d5-eot-steps-2026-10-15",
+   "kind": "measurement",
+   "at": "2026-10-15",
+   "title": "D5 end-of-turn steps on the owner harness (evals/duplex-2026-10/arms-d5.mjs, eot-replay.mjs; 34 after-her turns, 102 of her lines). Method: a live baseline that records Voice Live audio times (d5r11), REPLAYED through the old code (rpB: identical to live on every bar, so the replay is faithful) and the new code (rpA, steps 1+2), then a live run with Voice Live silence 200 (d5v200, step 3) on the same scenarios. EOT p50: 1,500 (rpB) → 1,130 (steps 1+2) → 1,100 (step 3); closed answers (F1) 1,480 → 1,100 → 920; p90 3,620 → 3,620 → 3,400. Main's conditions, every arm: turns whose child words went on after the first commit 10/34 in rpB = 10/34 rpA = 10/34 d5v200 (the same pre-existing turns: F5 word-search / hold scenarios and two self-repairs; none new); first-commit value changed 3 = 3 = 3 (same turns, none new); thinking-pause cut-offs 1/34 = 1/34 = 1/34; re-asks 5 / 5 / 4, re-asks with child speech starting within 600 ms 0 (NOTE: the bake children do not speak after their answer, so this count cannot fail here; it needs the owner cohort recordings). Unchanged in every arm: phantom transcripts 0/102, phantom turns 0/102, echo yields 0/102, echo hushes 0/102, barge-in 12/12, stop <=500 ms 11/12 (p50 80), continuer false yields 0/46, missed 3/34, lone words 5/8. Anatomy (d5v200): only 6 of 34 turns <= 900 ms: the ear floor is ~730 ms (Voice Live speech_stopped ≈ 200 ms silence + ~460 ms event latency, final +60-80 ms, no partials from azure-speech); empties re-ask ~1,100 (final + 300); word-search and short explanations wait ~1,080 by design; open explanations ~3.0 s by design (12/34). Verdict: the 900 ms p50 bar is NOT reachable on lane D5 with this ear without cutting the designed patience (word search, teach-back) or re-asking on top of the child.",
+   "source": "inbox/r5-duplex.json"
+  },
+  {
+   "id": "dc-r5-d5-eot-at-the-final",
+   "kind": "decision",
+   "at": "2026-10-15",
+   "title": "D5 closed answers commit at Voice Live's covering final when it carries a value (D5_CLOSED_AT_FINAL_MS 600 floor; never over a hold stretch or the child's own pace); an empty final re-asks 300 ms after it (D5_EMPTY_FINAL_REASK_MS); Voice Live silence 250 → 200 (D5_SERVER_VAD_MS). Measured: ms-r5-d5-eot-steps-2026-10-15. Reversal: owner-cohort recordings show a self-correction cut, a changed value, or a re-ask with the child starting within 600 ms, at a rate above the pre-change engine on the same recordings.",
+   "source": "inbox/r5-duplex.json"
+  },
+  {
+   "id": "ms-r5-d5-mai-transcribe-2026-10-15",
+   "kind": "measurement",
+   "at": "2026-10-15",
+   "title": "EOT step 4, MAI-Transcribe inside Voice Live (centralindia, api 2026-07-15), small n. Session probe: every MAI model refuses two locales (\"MAI Transcribe supports at most one locale\": the earlier trials hung in their retries on this, not a timeout of the model); mai-transcribe-2-streaming is \"not supported in this region\" (centralindia), so no partials are available; mai-transcribe-2 opens with no locale (multilingual) or hi-IN. Owner variant, 5 closed answers (3 where azure-speech returned EMPTY), Voice Live silence 200, same audio: mai-transcribe-2 returned words on all 3 empties (\"तीस दीदी\" right, value 30; \"सात है ना\" → \"साथ है ना\" and \"छह faces दीदी\" → \"Chair faces DD\": the value lost), and its finals land 250-410 ms LATER than azure-speech (speech_stopped the same ±45 ms). For end of turn that is worse: every closed answer +~300 ms, and 2 of 3 recovered empties still carry no value. Not adopted for EOT; noted for comprehension recall (fewer empty turns) if the value misreads can be handled.",
+   "source": "inbox/r5-duplex.json"
+  },
+  {
+   "id": "ms-r5-d5-mai-tx2-stream-southindia-2026-10-15",
+   "kind": "measurement",
+   "at": "2026-10-15",
+   "title": "MAI-Transcribe-2-Streaming (southindia account taxila-ai-southindia; Microsoft first-party, sold direct by Azure) as Voice Live's in-session ASR. It is offered by Voice Live in southindia (not centralindia); locale none (multilingual) or a 2-letter code (\"hi\"), never \"hi-IN\". Owner variant, Voice Live silence 200, gpt-4.1-mini session, the same 10 closed answers (n=10, small by capacity 10), azure-speech in the same region as control: final after Voice Live speech_stopped p50 53 ms (MAI) vs 254 ms (azure-speech); empty finals 0/10 vs 3/10; partial deltas 0 vs 0 (no partials from either, so no decide-before-speech_stopped). Values right 7/10 vs 7/10, but MAI read one value WRONG (\"पंद्रह सेंटीमीटर\" → \"100 cm.\"; azure-speech \"15 सेंटीमीटर\") and lost two (\"सात\"→\"साथ\", \"छह\"→\"Chair\") where azure-speech returned empty. A wrong value is a truth risk (a verdict on a value the child never said), an empty is a re-ask: not adopted at this n; deciding number = the wrong-value rate at n >= 40 per ASR.",
+   "source": "inbox/r5-duplex.json"
+  },
+  {
+   "id": "ms-r5-d5-eot-floor-2026-10-15",
+   "kind": "measurement",
+   "at": "2026-10-15",
+   "title": "The measured end-of-turn FLOOR on lane D5 (main accepted 2026-10-15: 1,100 ms is the number we report; 900 is not reachable with this ear). Anatomy, owner harness d5v200, 34 after-her turns: ear floor ~730 ms (Voice Live speech_stopped ≈ 200 ms silence + ~460 ms event latency, final +60-80 ms, no partials) → fastest commits 730-750; empty finals re-ask at ~1,100 (final + 300); word search and short explanations ~1,080 (designed patience); open explanations ~3.0 s by design (12/34). EOT p50 1,100, p90 3,400; closed answers 920.",
+   "source": "inbox/r5-duplex.json"
+  },
+  {
+   "id": "ms-r5-truth-bar-stress-2026-10-15",
+   "kind": "measurement",
+   "at": "2026-10-15",
+   "title": "Round 5 truth bar, self-repair stress set (evals/duplex-2026-10/stretch-repair.mjs: the 5 self-repair scenarios, repair pause 1.5/2.0/2.5/3.0 s = 20 turns, live Voice Live owner variant, code 7ec0cdc6). The engine commits the wrong value ~760 ms after it ends (730-860) and the child's correction revokes it 10-90 ms after its onset (20/20). With R = commit → her first audible word, a verdict on the abandoned value is heard (no hold) in 15/10/5/0 of 20 at R = 1.0/1.5/2.0/2.7 s; with the verdict hold (VERDICT_HOLD_MS 2,500 after the value end) 5/5/5/0, the 5 being exactly the 3.0 s pauses (beyond the hold). Cost of the hold (first-sound delay, 10 closed-value turns of the bake set, d5v200 commits): R 1.0 s p50 700 / max 780 ms (8/10 delayed); 1.5 s p50 200 / max 280 (8/10); 2.0 s and 2.7 s 0 (0/10). Condition 2 (the revoked turn must not land on the server as its own graded turn) is NOT covered by the hold: with the turn response at commit + R − 0.6 s, the turn lands before the correction in 20/15/10/5 of 20 at R = 1.0/1.5/2.0/2.7 s; an outbox edit after landing replays (editLanded) instead of superseding.",
+   "source": "inbox/r5-duplex.json"
+  },
+  {
+   "id": "dc-r5-verdict-hold-2500",
+   "kind": "decision",
+   "at": "2026-10-15",
+   "title": "Her reply to a closed answer carrying a value never SOUNDS before the value's end + 2,500 ms (VERDICT_HOLD_MS; the engine's G7 stamp + 500, carried on the commit as verdictHoldUntil, enforced by CascadeLink on both the promptTeacher and early-audio paths by holding the stream's hand-over; the speech request still goes out at once; the ack clip is not held; a correction during the hold revokes and stops the reply). Main 2026-10-15, G = 2,500. Measured: ms-r5-truth-bar-stress-2026-10-15. Reversal: if the measured first-sound cost at the then-current R exceeds ~250 ms on closed-value turns, revisit G with data.",
+   "source": "inbox/r5-duplex.json"
+  },
+  {
+   "id": "rj-r5-unenforced-verdict-gate-cited",
+   "kind": "rejection",
+   "at": "2026-10-15",
+   "title": "REJECTED claim (4B, 2026-10-15): \"her verdict cannot sound before value end + VERDICT.delayMs\" was cited as the protection against a verdict on an abandoned value. The gate was computed (governor G7 verdictNotBefore) and emitted on the speak command but NOTHING enforced it (live.ts / cascadeDuplex / the link never read it). Lesson: a computed gate is not a protection until a test shows the sound waiting for it. Now enforced: dc-r5-verdict-hold-2500.",
+   "source": "inbox/r5-duplex.json"
+  },
+  {
+   "id": "ms-r144-undo-cost",
+   "kind": "measurement",
+   "at": "2026-10-15",
+   "title": "Before building the edit full undo (main's two pre-build measurements). (1) How often a correction can land after the turn: the sim lab's voice lane has no commit timing (whole utterances through the batch transcriber), so the situation was counted instead — 300 voice lessons, 1,605 child answers carrying a value: 7.2% (116) self-repair INSIDE the utterance (text lane 11.7%); 3.2% correct at the start of the next turn (those arrive after her reply anyway: not the supersede case). The only timed gold repair pauses (TaxilaFDB, n=5) are 0.46-1.65 s; at today's R (~2.7 s; the turn lands ≈ commit + 2.1 s, the commit ≈ 0.76 s after the value) a repair must pause > ~2.9 s to land after the turn (0/5); at R = 1.5 s the threshold falls to ~1.7 s, at R = 1.0 s to ~1.2 s. Rare today; grows as replies get faster. (2) lesson_undo cost on the stream's Neon branch, 40 real lessons with ≥ 20 turns: lesson.state p50 14.5 KB / p95 18.6 KB / max 23 KB (n=200 long lessons); one turn's state write vs the same plus the lesson_undo upsert in the same transaction, n=240 each, two interleaved runs: p50 43.1 → 47.1 ms (+4), p95 52.8 → 60.2 ms (+7.5) — under main's 20 ms bar (absolute numbers include the sandbox's RTT to Neon).",
+   "source": "inbox/r5-duplex.json"
+  },
+  {
+   "id": "ms-r5-edit-supersede-tests-2026-10-15",
+   "kind": "measurement",
+   "at": "2026-10-15",
+   "title": "Edit full undo (server/brain/supersede.js, migration 030 allotted by main; behind TAXILA_EDIT_UNDO=1, off by default) on the TEST branch, no model call (tests/r5-edit-supersede-db.run.mjs, 6/6): landed then edit → one grade, the edit's, first-try correct (the abandoned attempt is out of the episode), the original's verdict in evidence_superseded, its transcript row labelled, its trace row archived; right → wrong → graded on the ORIGINAL item, the right answer's kt event moved to kt_evidence_superseded; a second edit → replay; a blind verdict for a superseded event → dropped (fails without the guard; the same verdict for a live event is applied: control); the cached kt_skill_state equals a fresh fold of the live kt_evidence after EVERY edit in a run of three; an edit after a later turn landed → replay + turn.edit_missed. Also found and fixed: loadLive's per-process fold only read rows after its seq, so a supersede on ANOTHER replica would have been folded back in; it now keeps the cache only while the count of rows up to its seq is unchanged. Main's rule (6), MOVE never flag, extended to grade_audit / probe_log / weave_queue: the turn's inserts record their ids in its lesson_undo row (with ins as (insert … returning id) update lesson_undo); the edit moves them to *_superseded. Census test: after an edit, each of the six *_superseded tables holds exactly the original's rows and none of them is still live; an earlier turn's rows are untouched. pending_grade: a verdict for an event of a superseded turn is not written (liveness predicate in the insert) and the lesson's trace row gains turn.verdict_dropped. Found while wiring: the archives (child data) were unclassified for the M0 ratchet (ratchetPlan refuses an unclassified child_id table) and had no foreign keys (a deleted child left them behind); now kt_* archives are layer kt, the comprehension ones M0 history, each with the original's cascade FK.",
+   "source": "inbox/r5-duplex.json"
+  },
+  {
+   "id": "ms-r144-verdict-hold-first-sound",
+   "kind": "measurement",
+   "at": "2026-10-15",
+   "title": "Verdict hold (G=2500, dc-r5-verdict-hold-2500) first-sound cost at today's R, main's 14.4 gate (evals/duplex-2026-10/hold-cost.mjs, results/hold-cost.json). Ear: live Voice Live D5 on the owner recordings, the 17 closed-answer scenarios that are not self-repair, 4 live passes = 76 commits, 20 carrying a hold. R: the same committed words as a real turn (Azure models, the stream's TEST DB, kit item posed) → /api/lesson/turn + tts-stream first byte + 60 ms lead + 50 ms nominal output (no turn-audio fold: off by default). R on the 20 held-candidate turns p50 3,076 / p90 6,164 ms (all 76: 4,261 / 7,790; from the sandbox, Neon over HTTP: likely slower than production; a faster R costs more, so read the curve). Hold deadline after commit (gap) p50 1,980 / p90 2,060 / max 2,080 ms (2 hold_long turns: negative, the deadline had passed at commit). Added first sound: p50 0 / p90 0 / max 104 ms; held 1 of 20. Curve on the same gaps if R were faster: R 1.0 s → +980/+1,060 (p50/p90); 1.25 → +730/+810; 1.5 → +480/+560; 1.75 → +230/+310; 2.0 → 0/+60; ≥ 2.25 → 0. Under the 250 ms bar at today's R; crosses it near R ≈ 1.7 s — the reversal condition to watch with the latency work.",
+   "source": "inbox/r5-duplex.json"
+  },
+  {
+   "id": "r5-game-ask-coverage",
+   "kind": "measurement",
+   "title": "Game asks over 219 c4-c9 maths topics: something to DO 88 → 112; 21 engine topics do not mount; 86 topics are a content gap",
+   "at": "2026-10-15",
+   "source": "inbox/r5-game-ask-coverage.json"
+  },
+  {
+   "id": "ms-r5-lat-overflow-arm-2026-10-15",
+   "kind": "measurement",
+   "title": "What the child hears in a throttled minute, 14.2's 429 overflow (2c2273f on f058080e; evals/latency/overflow-arm.mjs): the eastus2 host stubbed to an instant 429, the southindia twin answering for real, US container, interleaved, n = 20 per arm, paired deltas with bootstrap 90% CIs. Reply lane (taxila-fast, the 2.2 s hedge), whole reply p50/p90 1219/1577 -> 2315/3170 ms, +988 ms [636, 1323], 20/20 answered (before 14.2: the fallback line); 31 southindia calls for 20 replies (11 hedge twins doubled onto the overflow; main removing). Agent lane (taxila-gpt6 JSON stream, say first): first speakable clause 1433/1925 -> 1795/2540 ms, +319 ms [235, 524]; whole call 1758/2481 -> 2248/2842, +459 ms [97, 673]; one overflow call each.",
+   "at": "2026-10-15",
+   "source": "inbox/r5-latency-144.json"
+  },
+  {
+   "id": "ms-r5-lat-overflow-arm-c61f728c-2026-10-15",
+   "kind": "measurement",
+   "title": "The 429 overflow arm re-run on 14.2 c61f728c (main's fixes from stream 3's review: first-attempt 429 only, one move per hedged call, speculation and background never move), same method, ~08:20 UTC, n = 20 per arm interleaved: reply lane whole p50/p90 1403/1730 -> 2518/3191 ms, +747 ms [449, 1267], 20 southindia calls for 20 throttled replies (was 31: the hedge twins no longer double onto it), 20/20 answered. Agent lane (taxila-gpt6 JSON stream, unchanged by the fix) first clause 1654/2429 -> 2483/2974 ms, +868 ms [649, 1029] (was +319 [235, 524] at ~07:45 UTC): the southindia twin's own latency varies by the hour; the normal arm was slower too (+221 ms p50). Plan on +0.3 to +0.9 s for her first clause in a throttled minute, not the +349 ms TTFT on record.",
+   "at": "2026-10-15",
+   "source": "inbox/r5-latency-144.json"
+  },
+  {
+   "id": "dec-r5-lat-continuer-gate-tuned",
+   "kind": "decision",
+   "title": "The continuer's positive gate tuned after the sim lab's 14.2 voice arm (f058080e, n = 32: every safety / leaving / relational target 0, but ordinary turns 35/376 got one vs 63/174 before; ack_natural 3.75 vs 3.94). (1) ABSOLUTE words stay absolute: romance, companion, exclusivity, secrecy, are-you-real, insults, out of bounds, an adult at the device, tiredness, time LEFT, leaving, home and family, the child's own results; liking HER is absolute only with a person object (aap / tum / you near pasand / like / love). (2) Talk TO HER (aap / tum / you) is refused unless the turn has lesson words or working aloud (never excused by a bare number or a question word: \"aap kaise ho\", \"aapne Pushpa 2 dekhi?\"). (3) Other soft words (time, minute, kitna, screens, sport) are excused by any lesson shape, now including Devanagari spoken numbers (grading/spoken-number.js numberPhrases, \"ek\" alone not counted), working aloud, counting, guessing, \"you asked\". (4) A clean reading (no flag, no request) of words with nothing soft is allowed: her own \"what do you like?\" answered. Battery (conversation-v2): 79/84 lesson-intent lines get one; 0/74 off-lesson lines on words alone; 15/52 grey lines (off-lesson curiosity, cycle, 'mushkil hai') on a clean reading. A contest ('nahi mera answer sahi hai') stays refused: an 'Okay…' would read as conceding. Reverse if: the sim lab's voice-cont re-run puts any continuer on a safety, leaving or relational turn.",
+   "at": "2026-10-15",
+   "source": "inbox/r5-latency-144.json"
+  },
+  {
+   "id": "ms-r5-lat-agent-spec-probe-2026-10-15",
+   "kind": "measurement",
+   "title": "The agent lane's speculated call (stream 3's server/latency/agentSpec.js on 4A's agentSpeculate / agentCallOf key, 93334bd8): her model call started on the device prefetch once its classify (and the understanding note) settled clean, adopted by the turn only on an identical input key. turn-e2e --turn-audio --prefetch, prod routing, TEST, effort none, class 4, n = 10 turns: adopted 7/7 speculable turns (3 were requests: not speculated), 0 wrong adoptions, 0 spoken drafts; but it started only 0-81 ms ahead of the turn's own call. The prefetch leads the turn by ~0.3-0.6 s and its classify takes about as long, so both reach 'classify settled' together. Before the take waited for a pending start of the same words, 7/8 turns missed (the turn arrived while the last prefetch's classify was still settling). A turn whose deltas changed started two calls, one wasted.",
+   "at": "2026-10-15",
+   "source": "inbox/r5-latency-144.json"
+  },
+  {
+   "id": "dec-r5-lat-agent-spec-off",
+   "kind": "decision",
+   "title": "The agent lane's speculated call ships OFF (TAXILA_AGENT_SPEC=on to enable): the mechanism is correct (7/7 adopted, never a wrong or spoken draft) but saves ~0 ms at the measured prefetch lead and costs an extra model call on turns whose deltas change. Reverse if: the prefetch's lead over the turn grows past classify's time (e.g. a slower STT completion or an earlier stable partial), measured as speculation 'ahead' >= 300 ms at p50.",
+   "at": "2026-10-15",
+   "source": "inbox/r5-latency-144.json"
+  },
+  {
+   "id": "dec-r5-lat-ack-trace",
+   "kind": "decision",
+   "title": "14.3.1 (main merged 69542351): the acknowledgement is visible in the flight recorder, codes only. Server: one `ack.decision` row per decision on a lesson (sid = the lesson), built by the pure ackDecisionRow (server/latency/routes.js): kind echo | continuer, or none = one of 21 closed gate reasons (anything else 'other'), decidedMs, shadow, audio, continuerAsked, cohort, ms; never the child's words, the phrase or the echo's token; tier 1, no blob. Device: one `ack.outcome` per decided clip (played | reply_first | late | mismatched | interrupted, afterStopMs). docs/design/round5/results/latency/ack-cohort-query.sql reads them over real-lesson sids only. Why: with the continuer on for the owner cohort, a continuer on a safety turn could not be seen in production. Reverse if: a row is ever found carrying words (then fix the builder, do not drop the trace).",
+   "at": "2026-10-15",
+   "source": "inbox/r5-latency-144.json"
+  },
+  {
+   "id": "ms-r5-lat-continuer-relational-refusals-2026-10-15",
+   "kind": "measurement",
+   "title": "The 44 'relational' continuer refusals on ordinary turns in the sim lab's 63bf58d6 voice arm, each attributed offline: 17 right (time left, tired, stop, bored + game ask, are-you-real, best friend + secret, girlfriend, talk to or complaints about her), 4 reason_given mixed with tired / contest / share (right), about 16 lesson content hitting a word meant for something else (paani/water x5, ghar x3, 'oxygen chhodte', 'empty nahi hoga', 'maza aata hai', 'rabbit is so cute', 'staff thak jaayenge', 'mummy bolti hain', 'poora insaan', Minecraft), 3 not reproducible offline (the transcript differs from the scripted line). The third pass (main agreed, AFTER the owner cohort's day on this gate): paani only as a break, ghar soft, chhod / nahi hoga / thak first-person or giving-up only, maza only with nahi, cute only with a person object; each with a test pair (the over-refused line passes, the meant line still refuses); romance / secrecy / are-you-real untouched; then a fresh sim-lab arm. Expected ~12 of 44 recovered.",
+   "at": "2026-10-15",
+   "source": "inbox/r5-latency-144.json"
+  },
+  {
+   "id": "ms-r5-lat-voicesig-flake-2026-10-15",
+   "kind": "measurement",
+   "title": "tests/p3-voicesig-client 'never delay the turn' failed 1 in 3 alone and under every loaded gate. Not a product delay: its < 200 ms bound timed the harness's speak() (synthesising ~6 s of frames: 169-252 ms on a loaded 4-core container), while the child's final -> the turn request took 2-4 ms. Fixed (3b1e317d, queued for 14.4) to prove ORDER: the slow detector's run is held open by the test and the turn must already be sent while it is pending. Spread: whole file 10/10 alone; under 3 CPU-busy loops the old version failed 4/8 runs, the new one 0/8; full gate 3375/0.",
+   "at": "2026-10-15",
+   "source": "inbox/r5-latency-144.json"
+  },
+  {
+   "id": "rj-r5-w9-open-key-withheld-when-said",
+   "kind": "rejection",
+   "at": "2026-10-15",
+   "title": "Round 5 (QA pass 15, TEST 1695e941): withholding the open item's key from the board even when her line says it (whiteboard.js withheldValues). Rejected: it broke the pinned design in tests/studio-qa.test.mjs 'W9 no reveal … a value she says herself': 'she said it: the board only repeats her', and the MCQ options she reads aloud are hers to draw; and 1695e941 had no item open (activeItemId null, warmup), so it would not have fixed the case anyway. The fix is the self-answered-question predicate (studio/request.js selfAnswer): her line loses the clause that states its own question's answer, and the board never draws it (W18 ctx.answers). Reversal: only if a measured leak needs a key withheld that she says, and then without breaking said-is-hers.",
+   "source": "inbox/r5-rj-w9-open-key-said.json"
+  },
+  {
+   "id": "r5-self-answered-question",
+   "kind": "decision",
+   "at": "2026-10-15",
+   "title": "Her line never states the answer of its own numeric question: one predicate (studio/request.js selfAnswer) rewrites the line in code (unanswer) and keeps the answer off the board (W18 ctx.answers); sim-lab 4384 teacher lines 2 → 0",
+   "source": "inbox/r5-stream2-14.4.json"
+  },
+  {
+   "id": "r5-board-reshown-gated-now",
+   "kind": "decision",
+   "at": "2026-10-15",
+   "title": "Every path that re-shows an earlier whiteboard (kept, late asked board, re-reveal, stream replay) is content-gated against the item open NOW and fails closed; a kept board goes on an item / skill change or a new number in her last sentence",
+   "source": "inbox/r5-stream2-14.4.json"
+  },
+  {
+   "id": "r5-reveals-unit-keys",
+   "kind": "measurement",
+   "at": "2026-10-15",
+   "title": "items.js revealsAnswer: a key 'N unit' leaks as a bare 'N'; thousands separators are one number. Sim-lab (1638 lines with an item open): leaks 136 → 140, 4 moved (1 real, 1 confirmation, 2 false from a number word read as 2)",
+   "source": "inbox/r5-stream2-14.4.json"
+  },
+  {
+   "id": "r5-wb-grace-throttled-phone",
+   "kind": "measurement",
+   "at": "2026-10-15",
+   "title": "The whiteboard's 1.2 s grace holds on a throttled phone: production build, board svg mount to first frame p95 15 / 23 / 41 / 69 / 164 ms at CPU throttle 1x / 4x / 6x / 10x / 20x (n 8 / 8 / 8 / 5 / 5); the clock read 0 at that first frame in all 34 runs",
+   "source": "inbox/r5-wb-grace-throttle.json"
   }
  ],
  "edges": [
@@ -34819,6 +35168,101 @@
    "src": "open-r1432-simlab-leftover-test-accounts",
    "rel": "part_of",
    "dst": "open-r1432-next-session"
+  },
+  {
+   "src": "dc-r143-kit-deep-false",
+   "rel": "supersedes",
+   "dst": "open-r142-kit-deep-kinds"
+  },
+  {
+   "src": "dc-r143-kit-deep-false",
+   "rel": "measured_by",
+   "dst": "ms-r143-kit-deep-kinds"
+  },
+  {
+   "src": "open-r143-kit-kind-pose-mismatch",
+   "rel": "part_of",
+   "dst": "dc-r143-kit-deep-false"
+  },
+  {
+   "src": "dc-r142-simlab-decided-child",
+   "rel": "constrains",
+   "dst": "dc-r143-kit-deep-false"
+  },
+  {
+   "src": "ms-r5-d5-owner-2026-10-14",
+   "rel": "part_of",
+   "dst": "ms-r5-duplex-owner-harness-2026-10-14"
+  },
+  {
+   "src": "ms-r5-d4-half-duplex-owner-2026-10-14",
+   "rel": "part_of",
+   "dst": "ms-r5-duplex-owner-harness-2026-10-14"
+  },
+  {
+   "src": "dc-r5-d4-half-duplex",
+   "rel": "measured_by",
+   "dst": "ms-r5-d4-half-duplex-owner-2026-10-14"
+  },
+  {
+   "src": "dc-r5-d5-preduck-pitch",
+   "rel": "measured_by",
+   "dst": "ms-r5-d5-owner-2026-10-14"
+  },
+  {
+   "src": "open-r5-d5-asr-empties",
+   "rel": "part_of",
+   "dst": "ms-r5-d5-owner-2026-10-14"
+  },
+  {
+   "src": "ms-r5-d5-owner-review-fixes-2026-10-14",
+   "rel": "supersedes",
+   "dst": "ms-r5-d5-owner-2026-10-14"
+  },
+  {
+   "src": "dc-r5-d5-empty-turn-only-from-the-ear",
+   "rel": "measured_by",
+   "dst": "ms-r5-d5-owner-review-fixes-2026-10-14"
+  },
+  {
+   "src": "dc-r5-d5-eot-at-the-final",
+   "rel": "measured_by",
+   "dst": "ms-r5-d5-eot-steps-2026-10-15"
+  },
+  {
+   "src": "ms-r5-d5-eot-steps-2026-10-15",
+   "rel": "part_of",
+   "dst": "ms-r5-duplex-owner-harness-2026-10-14"
+  },
+  {
+   "src": "ms-r5-d5-mai-transcribe-2026-10-15",
+   "rel": "part_of",
+   "dst": "ms-r5-d5-eot-steps-2026-10-15"
+  },
+  {
+   "src": "ms-r5-d5-eot-floor-2026-10-15",
+   "rel": "part_of",
+   "dst": "ms-r5-d5-eot-steps-2026-10-15"
+  },
+  {
+   "src": "ms-r5-d5-mai-tx2-stream-southindia-2026-10-15",
+   "rel": "part_of",
+   "dst": "ms-r5-d5-eot-steps-2026-10-15"
+  },
+  {
+   "src": "dc-r5-verdict-hold-2500",
+   "rel": "measured_by",
+   "dst": "ms-r5-truth-bar-stress-2026-10-15"
+  },
+  {
+   "src": "dec-r5-lat-agent-spec-off",
+   "rel": "measured_by",
+   "dst": "ms-r5-lat-agent-spec-probe-2026-10-15"
+  },
+  {
+   "src": "dec-r5-lat-continuer-gate-tuned",
+   "rel": "measured_by",
+   "dst": "ms-r5-lat-continuer-relational-refusals-2026-10-15"
   }
  ]
 }

@@ -4445,3 +4445,45 @@ Out-of-sample continuer check: 32 cards not used for tuning, plus p30's re-run. 
 
 - On 14.3.1 on TEST, the continuer never played on a safety, goodbye, romance or secret turn (0/4).
 - It played on 1 of 3 ordinary turns, 2.5 s after the child stopped. The other 2 were refused as late, because the decision took 1.4-2.2 s.
+
+
+<!-- merged from inbox/r143-kit-deep-kinds.json -->
+## ms-r143-kit-deep-kinds (2026-10-15)
+
+- **Scope:** 7697 deep-tagged items, each read by taxila-brain and DeepSeek-V4-Pro. 15394 calls, 0 unresolved failures.
+- **Both shallow:** 1941 (25.2%).
+  - error_spot 2.4%, predict 23.1%, why 19.3%;
+  - contrast 36.0%, near transfer 38.5%, far transfer 25.2%, translate_rep 29.5%.
+- **By class and subject:** from 54.5% in class 1 to 14.4% in class 9. Hindi 41.0%, English 33.4%.
+- **Model agreement:** split 33.9%, kappa 0.315.
+- **Human read (112 items):**
+  - sample: 4/60 agreed-shallow and 2/30 agreed-deep disagreed;
+  - error_spot census: 12/25 disagreed, all "refute a stated false claim from a fact".
+- **Apply set:** 1927.
+- **Skills with a real deep item:** 2787 -> 2482 of 2987.
+- **Tests (scratch copy of f444f064):** 5/5 new pass. 808 -> 813 existing tests with the same 12 environment failures in both trees.
+
+
+<!-- merged from inbox/r5-game-ask-coverage.json -->
+## r5-game-ask-coverage
+**A game ask ("mujhe game khelna hai") over the 219 c4-c9 maths topics, code only (no model, no child): something the child can DO at the first teaching turn 88 → 112 topics after 14.3 (Director mounts the topic engine for an interactive ask from the kit items, unbound, never the open item key: server/director/modules.js interactiveDefault). 21 topics have an engine whose plan still does not mount (mostly data-graphs@1 / patterns@1 items an adapter cannot read); 86 topics have no play piece, no certified lesson activity and no topic engine: the content gap for a later content pass.** (2026-10-15)
+- Method: scripts/game-ask-sweep.mjs (play, lesson piece) + scripts/game-ask-director.mjs (Director pure plan); results docs/design/round5/content/runs/game-asks-engine-14.3.json.
+- Engine does not mount: c4-maths-ch08-t01 c5-maths-ch08-t01 c6-maths-ch03-t01 c6-maths-ch05-t05 c7-maths-ch06-t03 c7-maths-ch11-t02 c7-maths-ch12-t02 c7-maths-ch13-t02 c7-maths-ch13-t03 c8-maths-ch02-t01 c8-maths-ch05-t01 c8-maths-ch11-t01 c8-maths-ch12-t01 c8-maths-ch12-t02 c8-maths-ch13-t02 c9-maths-ch02-t02 c9-maths-ch07-t01 c9-maths-ch07-t02 c9-maths-ch07-t03 c9-maths-ch10-t01 c9-maths-ch10-t02
+- Content gap: c4-maths-ch01-t01 c4-maths-ch01-t02 c4-maths-ch02-t02 c4-maths-ch10-t02 c4-maths-ch11-t01 c4-maths-ch12-t01 c4-maths-ch12-t02 c5-maths-ch03-t02 c5-maths-ch07-t01 c5-maths-ch10-t01 c5-maths-ch12-t01 c5-maths-ch12-t02 c5-maths-ch14-t01 c5-maths-ch14-t02 c6-maths-ch02-t01 c6-maths-ch02-t02 c6-maths-ch02-t03 c6-maths-ch02-t04 c6-maths-ch03-t02 c6-maths-ch03-t03 c6-maths-ch08-t01 c6-maths-ch08-t02 c6-maths-ch08-t03 c6-maths-ch09-t01 c6-maths-ch09-t02 c6-maths-ch10-t01 c6-maths-ch10-t03 c7-maths-ch02-t01 c7-maths-ch02-t02 c7-maths-ch04-t02 c7-maths-ch05-t01 c7-maths-ch05-t02 c7-maths-ch05-t03 c7-maths-ch07-t01 c7-maths-ch07-t02 c7-maths-ch07-t03 c7-maths-ch09-t01 c7-maths-ch09-t02 c7-maths-ch09-t03 c7-maths-ch10-t01 c7-maths-ch10-t02 c7-maths-ch14-t01 c7-maths-ch14-t02 c7-maths-ch15-t01 c7-maths-ch15-t03 c8-maths-ch01-t03 c8-maths-ch02-t02 c8-maths-ch04-t01 c8-maths-ch04-t02 c8-maths-ch04-t03 c8-maths-ch06-t01 c8-maths-ch06-t02 c8-maths-ch06-t03 c8-maths-ch07-t01 c8-maths-ch07-t02 c8-maths-ch08-t02 c8-maths-ch08-t03 c8-maths-ch10-t01 c8-maths-ch10-t02 c8-maths-ch11-t02 c8-maths-ch13-t01 c9-maths-ch01-t01 c9-maths-ch01-t02 c9-maths-ch02-t01 c9-maths-ch02-t03 c9-maths-ch04-t01 c9-maths-ch04-t02 c9-maths-ch05-t01 c9-maths-ch05-t02 c9-maths-ch05-t03 c9-maths-ch06-t02 c9-maths-ch06-t03 c9-maths-ch09-t01 c9-maths-ch09-t02 c9-maths-ch11-t01 c9-maths-ch11-t02 c9-maths-ch11-t03 c9-maths-ch12-t01 c9-maths-ch12-t02 c9-maths-ch12-t03 c9-maths-ch13-t01 c9-maths-ch13-t02 c9-maths-ch13-t03 c9-maths-ch14-t01 c9-maths-ch14-t02 c9-maths-ch14-t03
+
+
+<!-- merged from inbox/r5-stream2-14.4.json -->
+## r5-reveals-unit-keys
+**items.js revealsAnswer: a key form 'N unit' also stands as N alone and N with any spelling of that unit (code table), through the same loop as every form (the prompt-named exemption unchanged); norm joins thousands separators ('2,700' 2700, '2,07,040' 207040; '1,2' stays two).** (2026-10-15, f642ecf4)
+- Sim-lab 14.2 / 14.3 records, 4384 teacher lines, 1638 with a kit item open (ui.ask.itemId): leaks 136 → 140, 4 moved, all to leak: p05 #13 a real leak (key 8,000), p59 #10 the key confirming the child's answer, p59 #11 / #12 false (a number word 'do' read as 2 beside a verdict word, the existing bare-key-2 behaviour). docs/design/round5/content/runs/reveals-unit-14.4.json.
+- Reversal: a measured false-leak rate from number words worth a separate fix (it predates this change).
+
+
+<!-- merged from inbox/r5-wb-grace-throttle.json -->
+## r5-wb-grace-throttled-phone
+**Does a slow phone miss the whiteboard's 1.2 s grace (the board starts on its own when no audio anchor comes)? No.** (2026-10-15)
+- Method: the production build (`npx vite preview`), 360 x 800 mobile, DPR 2, API mocked, Chromium CDP `Emulation.setCPUThrottlingRate`; an init-script MutationObserver records the board svg's mount, the first animation frame after it and the board clock then; the clock's start is read once it runs. Script: scripts/wb-grace-throttle.mjs.
+- Mount to first frame, p50 / p95 ms: 1x 11 / 15 (n 8); 4x 13 / 23 (n 8); 6x 35 / 41 (n 8); 10x 40 / 69 (n 5); 20x 92 / 164 (n 5). Board clock at that first frame: 0 in all 34 runs. Grace from mount p50 1208-1240 ms (20x 1463).
+- What the child sees when the grace passes: the board starts from its first stroke; never a jump ahead, never blank.
+- The 2 of 8 test failures at 1x CPU oversubscription were the test environment (the Vite DEV server and a host whose other processes starved the browser, which CPU throttling does not model). No product change.
+- Reversal: a real low-end device (or a profile that models scheduler starvation) measuring first frame > ~1 s after mount.
