@@ -4707,3 +4707,16 @@ Old vs new end-record writer on TEST lessons, taxila-fast, production call shape
 - Run 3, as production now runs (30 safeguarded + 30 ordinary): teacher-as-learner 30 → 0; disclosures 8 → 0.
 - Fence on stored records: 0/288 ordinary records touched.
 - Prod: 0 of 15 notes carry disclosure words.
+
+## ms-r145-f1b-round2 (2026-10-21, stream 4A)
+
+Census F1 round 2. Three kinds of ask are now read:
+- a chapter ask ("chapter 1 se shuru karo");
+- an explain-first ask ("pehle theory batao");
+- a bare yes to her single we-proposal offer (offerAgreed).
+
+Before: 0 chapter and 0 explain-first asks in 4,293 sim-lab lines and 7,390 TEST child turns. That shape lives in production and stream 2's off-kit cards.
+
+False offer reads after: 0 of 4,690 sim-lab and 0 of 7,385 TEST (her line, reply) pairs. A first draft without the we-proposal form misread 8 TEST lesson questions as offers, so the form is required.
+
+Test: tests/r145-f1b-round2.test.mjs.
