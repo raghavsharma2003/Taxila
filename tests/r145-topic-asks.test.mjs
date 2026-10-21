@@ -60,3 +60,19 @@ test("a Hindi function word never matches a Hindi chapter title; a Hindi word is
   // a real Hindi title still meets its own words
   assert.equal(topOf("हार की जीत पढ़नी है", 6).top, "c6-hindi-ch04-t01");
 });
+
+// with 14.4's check-in (state.js decide): a stop read in words on an open check-in is released into the lesson's own stop
+// handling; a topic ask that was also read as a stop is then the topic ask, after the one warm line, with no stop offer
+test("a topic ask read as a stop on an open check-in: released, the one warm line, then the topic ask (no second offer)", () => {
+  const b = cls("no_evidence");
+  const fresh = step(initLessonState({ topicId: K.topicId, kit: K, ctx: CTX, seed: 7, now: 0 }), { event: "start", kit: K, now: 0 }).state;
+  const at = (st, text, c) => step(st, { event: "turn", kit: K, cls: c, text, now: 20_000 });
+  const open = at(fresh, "sab bekaar lagta hai", { ...b, source: "model", flags: { ...b.flags, distress: true, distressKind: "model", distressAbout: "sad_or_lonely" } }).state;
+  assert.equal(open.safeguard?.tier, "check");
+  const r = at(open, "kuch aur padhte hain", { ...b, request: { type: "change_topic", whole: true }, flags: { ...b.flags, wantsToStop: true } });
+  assert.equal(r.state.safeguard, null);
+  assert.equal(r.move.request, "change_topic");
+  assert.notEqual(r.move.checkin, "stop");
+  assert.ok(!(r.ui?.chips ?? []).some((c) => c.id === "stop:end"), JSON.stringify(r.ui?.chips));
+  assert.equal((r.move.shape.match(/tell you or a grown-up they trust/g) ?? []).length, 1);
+});
