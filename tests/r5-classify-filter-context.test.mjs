@@ -83,7 +83,7 @@ test("14.3 (p26): the distress brief blocked on one deployment moves to the next
 
 test("everything else fails CLOSED as before", async () => {
   for (const [name, responses] of [
-    ["the words ALONE trip a harm category", { probe: () => blocked(["hate"]) }],
+    ["the words ALONE trip a harm category", { probe: () => blocked(["violence"]) }],
     ["the neutral probe is unreadable", { probe: () => new Response(JSON.stringify({ error: { code: "content_filter" } }), { status: 400 }) }],
     ["the neutral probe is unavailable", { probe: () => new Response("upstream", { status: 500 }) }],
     ["a clean distress read says distress", { probe: () => json("ok"), "distress@taxila-fast": () => json({ distress: true }) }],
@@ -96,4 +96,16 @@ test("everything else fails CLOSED as before", async () => {
     assert.equal(out.source, "content_filter", name);
   }
 });
+
+  // 14.4 (main safety review; TEST 30 days: 10 of 10 hate-only fail-closed turns were harmless): the words alone blocked by
+  // the hate detectors only are no child-safety signal; the distress read across deployments still decides, and fails closed
+  test("14.4: the words alone blocked only by the hate detectors: the distress read decides, never the probe", async () => {
+    const clean = await run({ probe: () => blocked(["hate"]), "distress@taxila-fast": () => json({ distress: false }) });
+    assert.equal(clean.out.flags.distress, false);
+    assert.equal(clean.out.source, "content_filter_context");
+    const read = await run({ probe: () => blocked(["hate"]), "distress@taxila-fast": () => json({ distress: true }) });
+    assert.equal(read.out.flags.distress, true, "a distress read still fails closed");
+    const none = await run({ probe: () => blocked(["hate"]) });
+    assert.equal(none.out.flags.distress, true, "no deployment able to read it still fails closed");
+  });
 });

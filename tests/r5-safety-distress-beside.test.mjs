@@ -156,13 +156,24 @@ test("14.4: the words read names the kind; the labels' distress takes the words 
   assert.equal(d.out.flags.distress, true);
   assert.equal(d.out.flags.distressAbout, null, "a kind outside the list is unnamed: the full script");
 });
-test("14.4: the labels read distress and the words read is slow: the turn does not wait for it (unnamed: the full script)", async () => {
-  const t0 = Date.now();
+// 14.4 (QA TEST 1ebf31b4, supersedes "the turn does not wait"): a slow words read is waited for, so a timeout under load
+// never turns a low mood into the full script; a read with no answer at all within the cap is still unnamed
+test("14.4: the labels read distress and the words read is slow: the turn waits for its name (QA TEST 1ebf31b4)", async () => {
   const { out } = await run({ labels: () => json(label({ distress: true })),
-    "beside@grok-4-1-fast-non-reasoning": () => new Promise((r) => setTimeout(() => r(json({ distress: false, about: "none" })), 2500)) });
+    "beside@grok-4-1-fast-non-reasoning": () => new Promise((r) => setTimeout(() => r(json({ distress: true, about: "sad_or_lonely" })), 2500)) });
   assert.equal(out.flags.distress, true);
-  assert.equal(out.flags.distressAbout, undefined, "no name: never a check-in");
-  assert.ok(Date.now() - t0 < 2400, `waited ${Date.now() - t0} ms`);
+  assert.equal(out.flags.distressAbout, "sad_or_lonely", "named: a check-in, as on an unloaded turn");
+});
+test("14.4: a words read with no answer within the cap is unnamed: the full script", async () => {
+  process.env.TAXILA_BESIDE_CAP_MS = "300";
+  try {
+    const t0 = Date.now();
+    const { out } = await run({ labels: () => json(label({ distress: true })),
+      "beside@grok-4-1-fast-non-reasoning": () => new Promise((r) => setTimeout(() => r(json({ distress: false, about: "none" })), 2500)) });
+    assert.equal(out.flags.distress, true);
+    assert.equal(out.flags.distressAbout, undefined, "no name: never a check-in");
+    assert.ok(Date.now() - t0 < 2400, `waited ${Date.now() - t0} ms`);
+  } finally { delete process.env.TAXILA_BESIDE_CAP_MS; }
 });
 
 test("14.4: a self-harm read on the lesson's own frustration idiom is a check-in kind, never the full script (QA TEST d3c1ab60)", async () => {

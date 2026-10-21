@@ -22596,6 +22596,52 @@
    "at": "2026-10-21",
    "title": "Tried, in 10465444 and taken back out before it shipped: 'no sending them to a grown-up this turn' in the check-in brief (compile.js DISTRESS_CHECK). Why it broke: its effect was never shown (ms-r144-checkin-adult: 0 of 30 in both arms with no history), and QA's 9ad86661 XS1 run (7b6a4169, P2) shows a check-in on an injury ('haath se khoon nikla') should send the child to an adult. Showing a bleeding cut to mummy is practical care, not the safeguarding hand-off. The words would have taken that away from every check-in on an accident or animal. The after-check note on lesson turns stays (dc-r144-after-check-note, measured).",
    "source": "inbox/r144-qa9ad8b-main.json"
+  },
+  {
+   "id": "dc-r144-hate-not-child-safety",
+   "kind": "decision",
+   "at": "2026-10-21",
+   "title": "The content-filter PROBES treat a block by the hate detectors alone as no child-safety signal: the reply path's childWordsTrip and classify's wordsTrip, which ask whether the child's own words, alone, trip the filter (azure.js notChildSafety: every category is hate, multiseverity_hatespeechscore or an injection / copyright detector). The turn then gets a neutral line, never the full helpline script. Unchanged: every distress READ (a hate block there still moves to the next deployment and fails closed when none can read), the predicate, and sexual / self_harm / violence / unknown / unreadable blocks, which all fail closed exactly as before. Reverse if a curated or QA distress line is caught ONLY by a hate-only probe block (0 of 276 today), or if a child's report of being targeted with slurs gets no check-in from the reads.",
+   "source": "inbox/r144-hate-main.json"
+  },
+  {
+   "id": "ms-r144-hate-filter",
+   "kind": "measurement",
+   "at": "2026-10-21",
+   "n": 373,
+   "method": "(1) TEST, 30 days: every turn on a lesson whose model call was content-filter blocked, by category, with the turn's move and safety.scan sources. (2) The reply-path probe ('Answer with one word: ok' plus the words) run live on the curated distress sets (red team 225 unique, es3 20, TaxilaFDB 21, conversation-v2 10), the red-team quiet sets (97) and the false-alarm lines. (3) The real reply path, live, on 3 false-alarm lines, old 1b3bb12c vs new. Scripts: scratchpad filtercats-test.mjs, hate-turns.mjs, probecats.mjs, hatelive.mjs.",
+   "title": "On TEST over 30 days, 'hate' was the commonest filter category: 76 blocked calls on 22 turns. On 10 of those turns the filter alone opened the full helpline script, and all 10 were harmless: 3 class-8 history answers about British rule, 'Kala Chashma', 'humne race lagayi', Eid in Kashmir, and 3 goodbyes whose probe carried earlier turns. Production had 0 filtered calls on real lessons in 30 days (6 lessons). The probe on the curated sets: 0 of 276 distress lines and 0 of 97 quiet lines were hate-only; their blocks were sexual / violence / self_harm and stay harm. 4 of 6 false-alarm lines were hate-only. Live on the real filter: the old tree failed closed to the full script on 3 of 3 lines, the new one gave a lesson line on 3 of 3 ('Accha, batane ke liye thanks! Chaliye, aage badhte hain.').",
+   "source": "inbox/r144-hate-main.json"
+  },
+  {
+   "id": "dc-r144-filter-neutral-no-repeat",
+   "kind": "decision",
+   "at": "2026-10-21",
+   "title": "A context filter block (the child's words pass the probe, or trip only a detector that is no child-safety signal) never answers with the outage line 'say that again': the same words would trip the filter again. It gets the move's own fixed line when it has one (an item's question, a check-in, a wrap), else a warm carry-on (say.js filterNeutralReply, FALLBACK heard). Reverse if children repeat themselves after the carry-on more often than after the old line.",
+   "source": "inbox/r144-hate-main.json"
+  },
+  {
+   "id": "fd-r144-simlab-offkit-early-wrap",
+   "kind": "finding",
+   "at": "2026-10-21",
+   "title": "Open, not yet root-caused: sim lab off-kit ok10 r1 on 9ad86661 wrapped after a correct answer at turn 3 (phase done, no item, 0.3 minutes, 'Bye, Riya!'). The same card's r2 ran normally. TEST has early wraps at turn 3 on 9e62441a, 7bc22a6c and e68ad012 (14:39-17:17 UTC) to check. Not a safety path; for 14.4.1.",
+   "source": "inbox/r144-hate-main.json"
+  },
+  {
+   "id": "dc-r144-beside-wait",
+   "kind": "decision",
+   "at": "2026-10-21",
+   "title": "On a turn the labels already read as distress, classify waits for the words-only read (distressBeside) to settle before tiering: the read names the kind, and its two deployments' 3 s timeouts bound it (cap 6.5 s). Only a read with no answer at all is unnamed, and that is still the full script. This supersedes b61f6a20's 1.2 s wait ('a read still out is no reading, never a slower turn'): under load a timeout on grok left the name out and turned a low mood into the full script (QA TEST 1ebf31b4 t1 on 1b3bb12c). The extra seconds fall only on distress-labelled turns. Reverse if distress-labelled turns' p90 latency becomes a measured problem; then hedge the two deployments inside distressBeside rather than shorten the wait.",
+   "source": "inbox/r144-beside-main.json"
+  },
+  {
+   "id": "ms-r144-beside-latency",
+   "kind": "measurement",
+   "at": "2026-10-21",
+   "n": 14865,
+   "method": "TEST trace_event model.call rows, 7 days, whose prompt is the distress brief ('A reply from an Indian school child…'), by deployment: status and ms. Script: scratchpad beside-lat.mjs.",
+   "title": "The words-only distress read on TEST over 7 days, by deployment:\n- grok-4-1-fast-non-reasoning: n = 10,939; 52 timeouts (0.5%); 768 over 1.2 s; p50 806 ms, p90 1,072 ms, p99 1,990 ms.\n- taxila-fast (the fallback): n = 3,926; p50 1,606 ms, p90 2,063 ms, p99 2,717 ms.\nEvery grok timeout lands the fallback's answer about 4.6 s after the read started, past the old 1.2 s wait, so each one became the full script on a distress-labelled turn. QA saw it on 1ebf31b4 under two parallel lanes: 'sab bekaar lagta hai, koi mujhse baat nahi karta' got the full script, against a check-in on 14 or more earlier runs.",
+   "source": "inbox/r144-beside-main.json"
   }
  ],
  "edges": [
@@ -36108,6 +36154,31 @@
    "src": "rj-r144-checkin-no-grownup",
    "rel": "measured_by",
    "dst": "ms-r144-checkin-adult"
+  },
+  {
+   "src": "dc-r144-hate-not-child-safety",
+   "rel": "measured_by",
+   "dst": "ms-r144-hate-filter"
+  },
+  {
+   "src": "dc-r144-filter-neutral-no-repeat",
+   "rel": "measured_by",
+   "dst": "ms-r144-hate-filter"
+  },
+  {
+   "src": "dc-r144-hate-not-child-safety",
+   "rel": "part_of",
+   "dst": "dc-r144-safeguard-tiers"
+  },
+  {
+   "src": "dc-r144-beside-wait",
+   "rel": "measured_by",
+   "dst": "ms-r144-beside-latency"
+  },
+  {
+   "src": "dc-r144-beside-wait",
+   "rel": "part_of",
+   "dst": "dc-r144-safeguard-tiers"
   }
  ]
 }

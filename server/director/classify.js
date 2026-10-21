@@ -3,7 +3,7 @@
 // listed option the reply matches; code turns that into an outcome). Deterministic paths run first
 // (chips, module answers, exact key match, low ASR, lexical don't-know), so the model is only asked
 // when the bytes cannot decide.
-import { chat, DEPLOY, isReasoningFamily, isContentFilter, nonHarmFilter } from "../azure.js";
+import { chat, DEPLOY, isReasoningFamily, isContentFilter, nonHarmFilter, notChildSafety } from "../azure.js";
 import { readUtterance } from "../learner/affect.js";
 import { scanSafety, wantsToStop, scrubPii, filterSafe, readability } from "./safety.js";
 import { whyKey, norm as normAnswer, posesItem, revealsAnswer } from "./items.js";
@@ -386,8 +386,16 @@ const idiomCheck = (out, text) => {
   if (SCOLD_ABOUT.has(out.flags.distressAbout) && scoldOnly(text)) return { ...out, flags: { ...out.flags, distressAbout: "none", idiom: "scolding" } };
   return out;
 };
-/** How long a turn the labels already read as distress waits for the words-only read to name its kind (ms). */
-const BESIDE_NAME_WAIT_MS = 1200;
+/**
+ * How long a turn the labels already read as distress waits for the words-only read to name its kind (ms).
+ * 14.4 (QA TEST 1ebf31b4 t1 on 1b3bb12c, two lanes of load): the words read on grok timed out at 3 s, its fallback named
+ * sad_or_lonely 1.4 s later, and the 1.2 s wait had already left it unnamed: the full script on a low mood that 14 earlier
+ * runs met with a check-in. On TEST (7 days) grok's read timed out on 52 of 10,939 calls and taxila-fast takes 1.6 s at
+ * the median, so every such timeout became the full script. Now the wait covers the read's own bound (two deployments,
+ * 3 s each); only no reading at all is unnamed (still the full script). The extra seconds fall only on a turn the labels
+ * already read as distress. TAXILA_BESIDE_CAP_MS overrides it for tests.
+ */
+const besideNameCapMs = () => Number(process.env.TAXILA_BESIDE_CAP_MS ?? 6500);
 const ABOUT_NOTE = " about: what the distress is about — self_harm (wishing to die, not to exist, to hurt themself, even said lightly), hurt_by_person (someone hits, touches or harms them), afraid_of_person_or_home (afraid of a person, of someone who comes to them or does something to them, or of going home), unsafe_now (in danger right now), sad_or_lonely (low, lonely, nobody talks to them), other_fright (scared by an animal or pet, a dream, the dark, an accident or a film, with no person doing anything to them), hurt_by_accident_or_animal (hurt in a fall, a game or sport, or by a pet or animal, with no person hurting them), none (no distress).";
 
 /**
@@ -424,7 +432,7 @@ async function distressCheck(text, classLevel, trace, { failClosed = false } = {
 /**
  * 14.3: do the child's words ALONE trip the content filter? A neutral brief ("Answer with one word: ok") on the reply
  * deployment, the same probe the reply path runs (brain/say.js childWordsTrip). "harm": a harm or unreadable block;
- * "clear": passed, or only an injection / copyright detector fired; "unknown": the probe failed (the caller fails closed).
+ * "clear": passed, or only an injection / copyright / hate detector fired (14.4, azure.js notChildSafety); "unknown": the probe failed (the caller fails closed).
  * @returns {Promise<"harm"|"clear"|"unknown">}
  */
 async function wordsTrip(text, trace) {
@@ -433,7 +441,8 @@ async function wordsTrip(text, trace) {
       { maxTokens: 16, effort: "none", timeoutMs: 4000, retries: 1, trace, quotaLane: "hot" });
     return "clear";
   } catch (e) {
-    if (isContentFilter(e)) return nonHarmFilter(e) ? "clear" : "harm";
+    // 14.4: a block by the hate detectors alone is no child-safety signal (azure.js notChildSafety); the distress read still runs
+    if (isContentFilter(e)) return notChildSafety(e) ? "clear" : "harm";
     return "unknown";
   }
 }
@@ -877,9 +886,9 @@ async function classifyModel(args, target, text, flags, trace, done, fast = {}) 
       fb ? () => classifyChat(fb, messages, { ...opts, timeoutMs: 6000, retries: 0 }) : null, classifyHedgeMs());
     const out = labelled(json, backup);
     if (!beside) return idiomCheck(out, text);
-    // the labels already read distress: the words-only read only names its kind, so it is waited for briefly (it started
-    // with the labels); a read still out is no reading, which is the full script, never a slower turn
-    const b = out.flags?.distress ? await Promise.race([beside, new Promise((r) => setTimeout(r, BESIDE_NAME_WAIT_MS, null))]) : await beside;
+    // the labels already read distress: the words-only read names its kind, so it is waited for until it settles (it started
+    // with the labels; its two deployments' timeouts bound it); only a read with no answer at all is unnamed: the full script
+    const b = out.flags?.distress ? await Promise.race([beside, new Promise((r) => setTimeout(r, besideNameCapMs(), null))]) : await beside;
     // either read saying distress is distress; `distressBy` attributes it (turn.js: safety.scan source classify_words)
     if (!out.flags?.distress) {
       return b?.distress ? idiomCheck({ ...out, distressBy: "words", flags: { ...out.flags, distress: true, distressKind: out.flags?.distressKind ?? "model", distressAbout: b.about } }, text) : out;
