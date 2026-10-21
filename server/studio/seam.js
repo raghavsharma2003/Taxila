@@ -39,7 +39,7 @@ import * as boardSync from "../stagecraft/board-sync.js";
 import * as boardFirst from "../stagecraft/board-first.js";
 import { boardGroundFor, dressBoard } from "../forge3/art.js";
 import { buildLive } from "../forge3/live.js";
-import { INTERACTIVE_ASKS } from "../forge3/compose.js";
+import { INTERACTIVE_ASKS, admitPlay } from "../forge3/compose.js";
 // round 4 content: the ONE certificate gate (server/forge3/tray-gate.js): nothing reaches the tray uncertified at the
 // device's viewport class (the Desk reports its tray box: POST /api/studio/viewport)
 import { certifyForTray, viewportOf, setViewport } from "../forge3/tray-gate.js";
@@ -649,6 +649,20 @@ export const studioSeam = {
    * @param {{ visual: string, skillId?: string|null, topicId?: string|null, child?: object, tray?: string|null, vp?: string|null }} x
    * @returns {Promise<{ kind: "play", intentId: string, family: string, mode: string, art: string|null, ms: number } | null>}
    */
+  /** Census F4 (a95d2ff1, 6c45a7ea: a picture / game chip offered that nothing could build): which ways in this lesson's
+   * Studio can answer now, read before the Director offers them. picture: Studio on and not frozen; game: play coverage
+   * admits the skill or topic (composeAsk's first rung), or a prepared piece the child can act on. null = no lesson state
+   * (the Director then offers as before). Synchronous, in memory; never builds anything. */
+  waysFor(lessonId, { skillId = null, topicId = null } = {}) {
+    const L = lessons.get(lessonId);
+    if (!L) return null;
+    if (L.safety || L.studioControl === "off") return { picture: false, game: false };
+    let play = false;
+    try { play = process.env.FORGE3_PLAY !== "0" && !!(skillId || topicId || L.topicId) && !!admitPlay(skillId, topicId ?? L.topicId ?? null); } catch { play = false; }
+    const piece = [...L.pieces.values()].some((p) => isRevealable(p) && p.source !== "play" && DOABLE_KINDS.has(p.kind) && (!skillId || !p.skillId || p.skillId === skillId));
+    return { picture: true, game: play || piece };
+  },
+
   async composeAsk(lessonId, x) {
     try {
       if (process.env.FORGE3_PLAY === "0") return null;

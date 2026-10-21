@@ -24,7 +24,7 @@ import { buildPracticeQueue, findItem, isomorphicFor, probeFor, evidenceProbeFor
 import { registerNote } from "./register.js";
 import { askText } from "./say.js";
 import { getTopic, findTopic } from "../content/curriculum.js";
-import { planModule } from "./modules.js";
+import { planModule, topicGameFor } from "./modules.js";
 import { frustrationLoop, initialAffect, nextAffect, wheelSpinning } from "../learner/affect.js";
 import {
   newProbeSession, openSession, recordTurn, nextProbe, markAsked, fits, bandOf, shapeById, testWeight,
@@ -974,8 +974,10 @@ function requestMove(s, input, item, req, labels) {
         // release 13 (A): never offer a picture that cannot be made: with a subject outside the kit named, the ways in are
         // words only (no "Show me a picture" chip; turn 21 offered "aloo par picture" and nothing could draw it)
         const off = offTopicNow(s, kit);
-        if (p5Flag("R4CONV") && off) return plan("repair", SH.offerWaysOff({ subject: off }), { chips: waysChips(labels).filter((c) => c.id !== "req:visual"), request: "change_topic" });
-        return plan("repair", SH.offerWays(), { chips: waysChips(labels), request: "change_topic" });
+        const can = waysCan(s, input);
+        if (p5Flag("R4CONV") && off) return plan("repair", SH.offerWaysOff({ subject: off }), { chips: waysOffer(labels, { ...can, picture: false }).chips, request: "change_topic" });
+        const w = waysOffer(labels, can);
+        return plan("repair", SH.offerWays({ ways: w.words }), { chips: w.chips, request: "change_topic" });
       }
       s.sidebar = { asked: s.turn };
       return plan("break", SH.changeTopic(), { chips: [{ id: "stop:continue", label: labels.back }, { id: "break:rest", label: labels.rest }, { id: "stop:end", label: labels.stop }], request: "change_topic" });
@@ -1076,8 +1078,22 @@ const offTopicNow = (s, kit) => (s.offTopic && s.turn - s.offTopic.turn <= 4 ? o
 const TEACH_KINDS = new Set(["hook", "explain", "worked_example", "reteach"]);
 /** The ways-in chips (the child's words, in her language; r5 QA D41): a picture, a story, a game, or back to the lesson.
  * The Director reads the ids; a label spoken aloud reads as the same request (director/requests.js). */
-const waysChips = (labels) => [{ id: "req:visual", label: labels.visual }, { id: "req:story", label: labels.story },
-  { id: "req:game", label: labels.game }, { id: "stop:continue", label: labels.back }];
+/** census F4 (main: "the words and the chips from the same list in code"): each way in, its chip and how her shape names
+ * it. The chips a turn offers and the words of its shape are both read from this one list (waysOffer). */
+const WAYS = [{ id: "req:visual", label: "visual", words: "a picture", needs: "picture" }, { id: "req:story", label: "story", words: "a story" },
+  { id: "req:game", label: "game", words: "a game", needs: "game" }];
+const waysOffer = (labels, can = { picture: true, game: true }) => {
+  const ways = WAYS.filter((w) => !w.needs || can[w.needs]);
+  return { words: ways.map((w) => w.words), chips: [...ways.map((w) => ({ id: w.id, label: labels[w.label] })), { id: "stop:continue", label: labels.back }] };
+};
+/** census F4 (a95d2ff1, 6c45a7ea, c85501ec: a picture / game offered that no path could build): the ways in that can be
+ * answered now. Studio's read (input.ways, brain/turn.js) for a picture and a play piece; a game also when the topic's own
+ * engine can mount one. No read (tests, old callers): every way, as before. */
+function waysCan(s, input) {
+  const w = input.ways;
+  if (!w) return { picture: true, game: true };
+  return { picture: w.picture !== false, game: !!w.game || topicGameFor(s, input.kit, s.ctx?.lang, s.probeSess?.band) };
+}
 /** The request types p5-interaction adds (conversation/lexicon.js readings and the UNDERSTAND note, via policy.js). */
 export const P5_REQUESTS = new Set(["clarify", "repeat", "back", "skip", "know", "harder", "easier", "boredom", "frustration", "thinking", "identity",
   "uptake", "decline", "answer_q", "adapt", "adopt", "adult", "park", "detour", "stop", "hold_checkin", "ask_invite", "unclear", "play_act"]);
@@ -1176,7 +1192,7 @@ function p5RequestMove(s, input, item, req, labels) {
       else { const h = hardestFor(s, kit, item.skillId); if (h) s.nextItemId = h.id; }
       return { ...poseNext(s, input, req.type === "harder" ? SH.levelHarder() : SH.levelEasier()), request: req.type };
     }
-    case "boredom": return plan("repair", SH.boredOffer(), { chips: waysChips(labels), request: "boredom" });
+    case "boredom": { const w = waysOffer(labels, waysCan(s, input)); return plan("repair", SH.boredOffer({ ways: w.words }), { chips: w.chips, request: "boredom" }); }
     case "frustration": {
       // round 3: no question on the table: the re-explanation still opens with the empathy line (it had none)
       if (!item) { const t = teachAgainPlan(s, kit, "another"); return p5Flag("R3CONV") ? { ...t, shape: join(SH.frustrationTeach(), t.shape), request: "frustration" } : t; }

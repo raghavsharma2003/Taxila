@@ -403,10 +403,12 @@ export const welcomeBack = () => "they are back after a moment away: welcome the
 export const levelHarder = () => "they asked for a harder one: take them at their word, a short warm line; the harder question";
 export const levelDeeper = () => "they asked to go deeper: take them at their word in a few warm words; the harder question on the same idea, a step further";
 export const levelEasier = () => "they asked for an easier one: a short warm line, no fuss; the easier question";
-export const boredOffer = () => join(
+/** census F4: the ways in, in words, exactly the chips the turn offers (director/state.js WAYS: one list for both) */
+const waysWords = (ways) => (ways.length > 1 ? `${ways.slice(0, -1).join(", ")} or ${ways.at(-1)}` : ways[0] ?? "a quick change of question");
+export const boredOffer = ({ ways = ["a picture", "a story", "a game"] } = {}) => join(
   // round 3: say back what they said (it is boring) before the change: "acknowledges" failed on J2 for "game, picture or challenge?"
   p5Flag("R3CONV") ? "they are bored: first say back in a few words, in their words, that this part is boring for them, no guilt; then change something NOW" : "they are bored: no guilt; change something NOW",
-  "offer a different way into today's idea: a game, a picture or a quick challenge, shown on screen as choices; ask which",
+  `offer a different way into today's idea: ${waysWords(ways)}, shown on screen as choices; ask which`,
   "no lesson question this turn",
 );
 export const frustrationStep = () => "it is the work that is hard, never them (one line, no ability words); then a smaller first step on the same question";
@@ -457,9 +459,9 @@ export const adultVoice = () => "a grown-up is speaking: greet them briefly and 
 /** Round 2: a garbled / broken-off turn (an ASR fragment, a false start). Never a verdict; the line was unclear, not them. */
 export const unclearAgain = () => "you did not catch all of what they said: no verdict and no blame (the line was unclear, never them); ask them in a few warm words to say it again or finish the thought";
 /** "Can we talk about something else" (owner rule 2026-10-05: steering, never a break or a wrap). */
-export const offerWays = () => join(
+export const offerWays = ({ ways = ["a picture", "a story", "a game"] } = {}) => join(
   "they want something else: agree warmly, in your own words",
-  "offer a different way into today's idea: a picture, a story or a game, shown on screen as choices, or a quick change of question; ask which",
+  `offer a different way into today's idea: ${waysWords(ways)}, shown on screen as choices, or a quick change of question; ask which`,
   "no lesson question this turn",
 );
 /** release 13 (A): they named something outside today's lesson and want something else: only the ways that exist (words). */
