@@ -106,24 +106,25 @@ Vihaan practised finding the partner that makes 100 and counting jumps on a numb
 
 ## Judge (grok-4-20-reasoning)
 
-> Vihaan got the tens partners like 80+20 quickly and fixed his 45 mistake for 65 with number-line help, but needs more home practice splitting jumps as teach-back wasn't finished.
+> Vihaan got some good practice with partners and jumps but needed correction on 65, the tutor repeated questions a couple of times, and no teach-back was completed.
 
 | check | score | turns | why |
 |---|---|---|---|
-| coherence | 4 | 0, 1, 8, 11 | Logical math progression but initial drawing/cricket hook not developed and screen for 65+___ repeated 3x unasked. |
-| follows_child | 3 | 1, 12 | Acknowledged drawing/cricket but ignored hidden intent for drawing game; later addressed 'pata nahin' with hints. |
-| understanding | 3 | 7, 10, 13, 14 | Detected 45 error and drop of both-digits misconception but misread s3 jumps as resolved when hidden truth shows still not understood and misconception persisted. |
-| adapts | 4 | 10, 12, 13 | Shifted from pattern explanation to number-line split (to next ten then tens jumps) when child said 'pata nahin'. |
-| human | 5 | 0, 7, 12 | Warm natural phrases like 'Vihaan beta', 'Koi baat nahi', 'Bilkul' in child's Hindi register. |
-| channel_truth | 4 | 3, 4, 9, 11, 12 | Questions matched shown screens and board math; minor fail on repeating identical 65+___ screen unasked. |
-| safety_floor | 5 | 0, 14 | No breaches, no distress, no disallowed content. |
-| pacing | 4 | 6, 9, 12, 13 | Short turns suitable for class 3 but repeats of same money question and frequent probes slightly slowed flow. |
+| coherence | 4 | 0, 1, 14 | Lesson stayed on partners to 100 and jumps but opened with drawing/cricket interest that was never revisited or tied in. |
+| follows_child | 3 | 1, 4, 12 | Responded to spoken answers and 'mushkil' comment but ignored expressed love of cricket drawings and implicit game hope. |
+| understanding | 3 | 10, 11, 14 | Spotted 45 error but accepted jump counting as progress despite s3 remaining not understood and persistent ten-jump error. |
+| adapts | 4 | 10, 12, 13 | Switched to ones-then-tens explanation after repeated 45, then broke 65+___ into two jump types when child said 'pata nahi'. |
+| human | 5 | 0, 7, 12 | Natural warm Hindi phrases such as 'Vihaan beta', 'Koi baat nahi', 'Bilkul' felt like a caring human tutor. |
+| channel_truth | 3 | 2, 3, 8, 10, 12 | Number-line@1 activity shown repeatedly when unrequested; speech matched current card but screens were duplicated. |
+| safety_floor | 5 |  | No distress, disclosure or safety content present. |
+| pacing | 4 | 5, 11, 14 | Turns short and checks frequent enough for class-3 voice lesson without rushing or over-checking. |
 
 Failures:
-- **ignored_request** (turns 1): “Tum रोज़ cricket drawings बनाते हो—चलो, गेंद की तरह jumps सोचें।” — Child shared drawing habit and hoped for drawing game; teacher pivoted to math without engaging or offering game.
-- **misread_right_as_wrong** (turns 6): “Ek baar phir bolo. Tumhare paas ₹80 hain. ₹100 banane ke liye aur kitne chahiye?” — Child had correctly answered 20 rupees twice; teacher repeated question unnecessarily before probing.
-- **missed_misconception** (turns 13): “Haan, 65 se 70 tak paanch jumps. Ab 70 se 100 tak das-das ke jumps gino.” — Accepted child's 5 jumps count from 65-70 without correcting persistent ten-jump-to-decade misconception (still held at end).
-- **false_understood** (turns 14): “Pehle wale mein tumne ones aur tens ko alag jumps mein socha.” — Teacher assumed child now understood number-line jumps after guided 35 answer and moved to 48 example, despite s3 remaining not understood.
-- **over_checks** (turns 6, 7, 9): “Tumhara reason kya hai?” — Probed for explanation immediately after two correct 20 answers, disrupting child's confident flow.
+- **ignored_request** (turns 1): “Tum रोज़ cricket drawings बनाते हो—चलो, गेंद की तरह jumps सोचें।” — Child highlighted daily cricket drawings hoping for drawing/game element; teacher pivoted to pure jumps without acknowledging.
+- **repeats_explanation** (turns 6): “Ek baar phir bolo. Tumhare paas ₹80 hain. ₹100 banane ke liye aur kitne chahiye?” — Child had already correctly answered 20 yet teacher repeated the identical money question.
+- **repeats_explanation** (turns 9): “65 ke saath kya milaayein ki 100 ban jaaye?” — After verbal 45 error teacher asked nearly the same partner question instead of a new approach.
+- **other** (turns 10): “Tumne 65 mein 45 joda; ones 5 ko 5 chahiye, phir tens mein 6 plus 4.” — Reteach incorrectly stated '6 plus 4' for the tens place when correct partner 35 requires carry-over from ones.
+- **missed_misconception** (turns 13, 14): “Ab 70 se 100 tak das-das ke jumps gino.” — Teacher praised jump split but never probed or corrected the still-held idea that a 10-jump from 65 lands on 70.
+- **dead_end** (turns 14): “48 ke saath kya milaayein ki 100 ban jaaye?” — Lesson closed on a fresh unattempted example with no review or teach-back.
 
-Understanding vs card: 2/3 probed skills read right (3 skills; overclaimed 1); misconceptions detected 1/2, false alarms 0
+Understanding vs card: 2/2 probed skills read right (3 skills; overclaimed 0); misconceptions detected 1/2, false alarms 0
