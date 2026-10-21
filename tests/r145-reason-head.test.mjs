@@ -91,3 +91,29 @@ test("constructed adversarial forms on real items: no wrong head and no taken-ba
   }
   assert.ok(n >= 100);
 });
+
+// 14.5 (main's review of f867cbd9): a doubt aside after a right head, and an answer said as a question, are hedges
+test("main's two cases: a right head with a doubt after it, and a head said as a question, are not credited", () => {
+  assert.notEqual(grade("c1-maths-ch04-t01-i02", "2... kyunki 8 ke baad 9...10, do fingers aur. Par maine to pehle hi bata diya tha na, sirf 5 aur 5 hota hai?").outcome, "correct");
+  assert.notEqual(grade("c1-maths-ch04-t01-i02", "2... kyunki 8 ke baad 9, 10—do ungliyan aur, dekho... par mujhe laga sirf 5 aur 5 se 10 banta hai").outcome, "correct");
+  assert.notEqual(grade("c5-maths-ch04-t02-i01", "8,000... kyunki 5 aur 3 milke 8 hota hai na, toh 8,000?").outcome, "correct");
+  // a tag on the reason is not a question about the answer
+  assert.equal(reasonTakesBack("kyunki uska ek angle 90 degree ka hai. yeh sahi hai na?", "right-angled triangle", [90], new Set(["triangle"])), null);
+});
+
+// 14.5 (main; open-r145-whole-reply-contradiction): the whole-reply credit has the same vetoes
+test("a whole reply that carries the key but takes it back is not credited", () => {
+  const id = "c4-maths-ch05-t01-i01";
+  const key = targetOf(id).key;
+  for (const t of [`${key}, kyunki maine dekha... nahi nahi, half`, `${key} ya half, kyunki maine dekha`, `${key}, kyunki maine dekha, toh answer half hai`,
+    `${key}, kyunki maine dekha. wait, half`, `${key}, kyunki maine dekha... pata nahi`]) assert.notEqual(grade(id, t).outcome, "correct", t);
+  // a different short answer before the reason, the key only inside the reason
+  assert.notEqual(grade("c2-maths-ch02-t01-i03", "Sphere, isliye cuboid").outcome, "correct");
+});
+
+test("what is NOT taken back: a self-correction that ends on the key, a musing after it, another form of the same answer", () => {
+  assert.equal(grade("c4-maths-ch05-t01-i01", "One quarter. Ya phir one-fourth kehte hain na.").outcome, "correct");
+  assert.equal(grade("c7-science-ch02-t02-i01", "Neutralisation! The base reacts with extra acid and makes it calm, like... neutral. But wait, that means acid-base mix in her stomach? That's weird... I thought that makes poison or something?").outcome, "correct");
+  // Devanagari: "या" inside "किया" and "पर" inside "ऊपर" are not an alternative or a doubt
+  assert.equal(reasonTakesBack("दस x माइनस x किया तो 1.5 हुआ, और राइट साइड ऊपर है", "", [1.5], new Set(), [], { negation: false, cues: false }), null);
+});

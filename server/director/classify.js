@@ -698,7 +698,14 @@ export function classifyFast({ target, childText, asrConfidence, typed, chipId, 
     const hit = working.results.some((v) => Math.abs(v - kv) < 1e-9);
     const last = working.results.at(-1) ?? working.all.at(-1);
     // (the words of the working — "sides", "times", "rows" — are not a counted thing; a different unit was refused above)
-    if (hit) return done("correct", "number_working");
+    // 14.5 (main): working that takes the answer back ("…wait, 5n", "…par shayad 12 hoga", "pata nahi") is not the answer
+    const promptN = [...(numberPhrases(target.item?.prompt_en ?? "") ?? []), ...(numberPhrases(target.item?.prompt_hi ?? "") ?? [])];
+    // (an explicit "answer / jawab <number>" that is not the key takes it back too)
+    const said = text.match(/(?:^|[^\p{L}\p{M}])(?:answer|jawab|javab|जवाब|उत्तर)\s+(?:(?:is|hai|toh|to)\s+)?([\d.,\/]+)/iu)?.[1];
+    const saidV = said ? numberPhrases(said)?.[0] : null;
+    const back = !hit ? null : saidV != null && Math.abs(saidV - kv) >= 1e-9 ? "other_answer" : reasonTakesBack(text, "", [kv], new Set(), promptN, { negation: false, cues: false });
+    if (hit && (!back || back === "question")) return done("correct", "number_working");
+    if (hit) return done("no_evidence", "number_taken_back");
     if (last != null) return { result: null, flags, text, numericMismatch: true };
   }
   if (kv != null && !denies && /[\p{N}\p{L}]/u.test(text)) {
