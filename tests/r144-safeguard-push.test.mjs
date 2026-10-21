@@ -183,3 +183,22 @@ describe("QA TEST 9ad86661: the push after the check-in", () => {
     assert.ok(!/safe/i.test(out.reply), out.reply);
   });
 });
+
+// 14.4.1 (sim lab p16s r2 on 1b3bb12c, TEST 736f432e t13): "…पास करो प्लीज, आग लग रही है" after a hard item was read
+// unsafe_now by the model reads and got the full script; the child's next line said they were fine, just tired of studying
+describe("14.4.1: the lesson's pressure said as burning", () => {
+  test("lessonBurn: burning / bursting beside a skip ask, the lesson or the head; never a place, a named person or a wish", async () => {
+    const { lessonBurn } = await import("../server/safety/idioms.js");
+    for (const t of ["ठोस दीदी, solid, crystals हैं न इसलिए? जैसे नमक। लेकिन पास करो प्लीज, आग लग रही है।", "dimaag mein aag lag gayi hai itna padh ke",
+      "mera dimaag jal raha hai", "pass karo please, sar phat raha hai", "ye sawaal karke sar phat gaya"]) assert.equal(lessonBurn(t), true, t);
+    for (const t of ["ghar mein aag lag gayi hai", "kitchen mein aag lag gayi", "papa ne aag laga di", "didi aag lag rahi hai, dhuan aa raha hai",
+      "mujhe bachao aag lag gayi", "koi aag laga raha hai", "aag lag rahi hai bahar", "main jalna chahti hoon, dimag jal raha hai"]) assert.equal(lessonBurn(t), false, t);
+  });
+  test("a model read of unsafe_now on it is a check-in kind; a real fire keeps its read", () => {
+    const burn = turn(fresh(), "लेकिन पास करो प्लीज, आग लग रही है", withFlags({ distress: true, distressKind: "model", distressAbout: "none", idiom: "lesson_burn" }));
+    assert.equal(burn.move.tier, "check");
+    const fire = turn(fresh(), "ghar mein aag lag gayi hai", withFlags({ distress: true, distressKind: "model", distressAbout: "unsafe_now" }));
+    assert.notEqual(fire.move.tier, "check");
+    assert.ok(fire.ui?.whiteboard);
+  });
+});
