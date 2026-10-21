@@ -18,6 +18,15 @@ const ERROR_SPOT_P = 0.7;
 
 const DIAG_PREFIX = "diag:";
 export const probeFor = (item) => (item.diagnostic ? "P7" : PROBE_FOR_KIND[item.kind] ?? "P15");
+/**
+ * Deep-kind audit (2026-10-15, docs/research/kits/DEEP-KIND-AUDIT.md): a deep-tagged item that two cross-family models read
+ * as recall, one step or read-off carries `deep: false`. Its kind, key, classifier target and pose stay; its ANSWER is plain
+ * evidence: item.open by the hint ladder (never a U / T facet probe, never a generative pass), and never the deep right answer
+ * agent.js earnedRead needs.
+ */
+export const plainEvidence = (item) => item?.deep === false;
+/** The probe an answer to this item is EVIDENCE as (probeFor is what is asked; they differ only for a deep: false item). */
+export const evidenceProbeFor = (item) => (plainEvidence(item) && !item.diagnostic ? "P15" : probeFor(item));
 
 /** The prompt to pose, in the child's language (Hinglish/Hindi kits carry prompt_hi). */
 export const promptFor = (item, lang) => (lang === "english" ? item.prompt_en : item.prompt_hi) || item.prompt_en;

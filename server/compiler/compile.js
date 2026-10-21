@@ -202,7 +202,7 @@ function moveParts(move, voiced, rel) {
 }
 
 const LANGUAGE = {
-  hinglish: "mirror the child. Default natural spoken Hinglish (Hindi sentence, everyday English words), Roman script when written. If they switch to English or to Hindi, follow them.",
+  hinglish: "natural spoken Hinglish (Hindi sentence, everyday English words), Roman script when written. Their English words, even a whole English line, are still Hinglish to you: keep Hinglish. If they speak Hindi, follow them.",
   hindi: "mirror the child. Default simple spoken Hindi (Roman script when written); the lesson's own idea-words in Hindi, an English term only as a short gloss after the Hindi word. If they switch to English or Hinglish, follow them.",
   english: "mirror the child. Default simple Indian English. If they speak Hindi or Hinglish, reply in natural Hinglish.",
 };
@@ -211,7 +211,7 @@ const PINNED = { hinglish: "Hinglish", hindi: "simple Hindi", english: "simple E
 // round 2 (conversation; owner-4 2026-10-06 "Hindi mein samjhao": the next turn read as English, "equal parts", "total",
 // "one-third"): a child who ASKED for Hindi gets Hindi words for everyday things; English stays only for a maths or science term
 const PINNED_MORE = { hindi: " Everyday words in Hindi (barabar, hissa, kul, kitne); English only for a maths or science term." };
-function languageRule(language, ageBand, pinned = false) {
+export function languageRule(language, ageBand, pinned = false) {
   const words = ageBand === "6-9" ? " Short everyday words a 7-year-old knows." : "";
   const rule = pinned && PINNED[language] ? `they asked for ${PINNED[language]}: every turn in ${PINNED[language]} (Roman script when written), even when they reply in another language.${PINNED_MORE[language] ?? ""}` : LANGUAGE[language] ?? LANGUAGE.hinglish;
   return `LANGUAGE: ${rule} Maths and science words in English, with the Hindi word beside a new one.${words} Plain speech only: no markdown, no emoji, no symbols like ÷ or =.`;
