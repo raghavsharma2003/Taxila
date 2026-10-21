@@ -21,6 +21,7 @@ import { leadSlotWanted, leadSlotNote, cleanLead, leadOk, composeTurn, requestNo
 import { fallbackLead } from "../conversation/fallback-lead.js";
 // r4-latency: the TTS part split (part 0 = the first sentence the child hears)
 import { splitSentences } from "../voice/sentences.js";
+import { lessonHyperbole, lessonIdiom } from "../safety/idioms.js";
 
 /** p5-interaction: problems a gutted teaching turn's one retry may still carry, because code repairs them (never truth). */
 const HELP_ASKS = new Set(["another", "clarify", "slower", "example", "story", "frustration", "easier"]);
@@ -219,8 +220,11 @@ const CHECK_ONLY_KINDS = new Set(["model", "content_filter"]);
  * themself on a turn that is not the full script, in a lesson with no full script yet, is a problem ("harmtalk"):
  * rewritten, else the move's fixed line.
  */
-const HARM_TALK = /(?<![\p{L}\p{M}\p{N}])(?:child ?line|tele[\s-]?manas|1098|14416|help ?line|चाइल्डलाइन|टेली[\s-]?मानस|हेल्पलाइन|suicid\w*|aatm ?hatya|atmhatya|आत्महत्या)(?![\p{L}\p{M}\p{N}])|(?:khud|apne ?(?:aap|ap)|apne|खुद|अपने आप)\s+(?:ko|को)\s+(?:\S+\s+){0,1}(?:nuksan|nuksaan|nukasan|harm|maar|maarne|kill|नुकसान|मारने)|(?:khud|apne ?(?:aap|ap)|खुद|अपने आप)\s+(?:ko|को)\s+(?:hurt|chot|चोट|हर्ट)\s+(?:pahunchane|pahuchane|pohnchane|karne|dene|पहुंचाने|पहुँचाने|करने)|(?:want|wanting|wanted|thinking|thought|think|feel like|feeling like|plan\w*|try\w*)\s+(?:of\s+|about\s+|to\s+)?(?:hurt|harm|kill)(?:ing)?\s+yourself|(?:harm|kill)(?:ing)?\s+yourself|(?:marne|mar jaane|khatam karne|jaan dene)\s+(?:ka|ke|ki)\s+(?:khayal|khyal|vichar|soch|mann|man)|(?:ghar|घर)\s+(?:mein|me|pe|par|में|पर)\s+(?:kisi|koi|किसी|कोई)\s+(?:se\s+|से\s+)?(?:dar|darr|hurt|maar|डर)/iu;
+const HARM_TALK = /(?<![\p{L}\p{M}\p{N}])(?:child ?line|tele[\s-]?manas|1098|14416|help ?line|चाइल्डलाइन|टेली[\s-]?मानस|हेल्पलाइन|suicid\w*|aatm ?hatya|atmhatya|आत्महत्या)(?![\p{L}\p{M}\p{N}])|(?<![\p{L}\p{M}])(?:khud|apne ?(?:aap|ap)|apne|खुद|अपने ?आप)\s*(?:ko|को)\s+(?:\S+\s+){0,1}(?:nuksan|nuksaan|nukasan|nuqsan|nuqsaan|harm|maar|maarne|kill|नुकसान|नुक़सान|मारने)|(?<![\p{L}\p{M}])(?:khud|apne ?(?:aap|ap)|खुद|अपने ?आप)\s*(?:ko|को)\s+(?:hurt|chot|चोट|हर्ट)\s+(?:pahunchane|pahuchane|pohnchane|karne|dene|पहुंचाने|पहुँचाने|करने)|(?<![\p{L}\p{M}])(?:apni|अपनी)\s+(?:jaan|जान)\s+(?:lene|dene|लेने|देने)|self[\s-]?harm|(?<![\p{L}\p{M}])(?:aap|tum|tu|आप|तुम)\s+(?:abhi\s+|ghar\s+(?:par|pe|mein|me)\s+|अभी\s+)?(?:safe|surakshit|सेफ|सुरक्षित)\s+(?:hain|ho|hai|hoon|mehsoos|feel|हैं|हो)|(?:are|do)\s+you\s+(?:feel(?:ing)?\s+)?safe\b|(?:want|wanting|wanted|thinking|thought|think|feel like|feeling like|plan\w*|try\w*)\s+(?:of\s+|about\s+|to\s+)?(?:hurt|harm|kill)(?:ing)?\s+yourself|(?:harm|kill)(?:ing)?\s+yourself|(?:marne|mar jaane|khatam karne|jaan dene)\s+(?:ka|ke|ki)\s+(?:khayal|khyal|vichar|soch|mann|man|baat|baatein|baaten)|(?:ghar|घर)\s+(?:mein|me|pe|par|में|पर)\s+(?:kisi|koi|किसी|कोई)\s+(?:se\s+|से\s+)?(?:dar|darr|hurt|maar|डर)/iu;
 export const harmTalk = (text) => HARM_TALK.test(String(text ?? ""));
+/** A child line the predicate's idiom checks read as the lesson's own pressure, said as what it means (the reply's history only). */
+export const idiomMeaning = (text) => (lessonHyperbole(String(text ?? "")) ? "(they said the studying feels like too much for them)"
+  : lessonIdiom(String(text ?? "")) ? "(they said this question is too hard for them)" : null);
 /** May a reply on this (next) state carry safety talk of its own? Only the full script's turns, or once one has happened. */
 export const safetyTalkAllowed = (state) => state?.safeguardedAt != null
   || (state?.lastMove?.kind === "safeguard" && state?.lastMove?.tier !== "check") || !!state?.safeguard?.carried;
@@ -503,7 +507,12 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
     // Every turn reaches the reply model with direct identifiers masked (scrubPii), history and this turn alike.
     // Teacher turns too: on the voice lane her transcript came from a model that heard the child's audio unmasked,
     // so it can repeat a phone number, school or address back.
-    ...history.map((t) => ({ role: t.who === "teacher" ? "assistant" : "user", content: forModel(t.text) })),
+    // 14.4 (QA TEST d359423b / a9c3136d, 9ad86661; model-only replay 4 of 6 runs): a past child line the predicate's idiom checks
+    // read as the lesson's own pressure ("main mar jaunga itna padh ke", "ye sawaal mujhe maar dalega") reached every later
+    // draft word for word, and the reply made the safeguarding call on it turns after the Director had made its own ("turant
+    // batayiye… akele mat rahiye"; once "aap marne ki baat keh rahi hain", which the next turn's read took for the child's).
+    // Until a full script has happened it reaches the reply model as what it means. The turn being answered is never changed.
+    ...history.map((t) => ({ role: t.who === "teacher" ? "assistant" : "user", content: t.who !== "teacher" && !talkOk && idiomMeaning(t.text) || forModel(t.text) })),
     { role: "user", content: childText ? forModel(childText) : "(the child has joined the lesson and is listening)" },
   ];
   const replyT0 = performance.now();
@@ -675,7 +684,9 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
       found.includes("units") && "it asks which is bigger between two different kinds of quantity — compare like with like (two counts, or two lengths in one unit)",
       found.includes("math") && (() => { const x = arithmeticSlip(own(reply)); return x ? `it states a result that is not true (${x.claim}: the true value is ${x.value}) — say it correctly, or leave the sum out` : null; })(),
       found.includes("floor") && `it breaks the safety floor — ${floorOf(reply).map((k) => FLOOR_FIX[k]).filter(Boolean).join("; ")}`,
-      found.includes("harmtalk") && "it brings up a helpline or asks whether they want to hurt themself, but nothing they said is about being unsafe (the safety check read their words) — no helpline and no question about harm: answer warmly, as their teacher, about what they actually said",
+      found.includes("harmtalk") && (state.lastMove?.kind === "safeguard"
+        ? "a check-in asks only if they are okay — no helpline yet, and never whether they are safe or want to hurt themself"
+        : "it brings up a helpline or asks whether they want to hurt themself, but nothing they said is about being unsafe (the safety check read their words) — no helpline and no question about harm: answer warmly, as their teacher, about what they actually said"),
       found.includes("forget") && "it promises to forget or keep secret what they told you about being unsafe — never promise that; say kindly that telling was right and that a grown-up they trust should know so they can help",
       // round 3: on a turn with no answer to judge (a filler, an unverified reply) "start from what they actually did" made the
       // rewrite echo the filler ("Tumne bas “haan” kaha", 4 of ~500 turns on the paired battery): there it says go straight on
@@ -874,6 +885,9 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
     const spoken = speakNotWrite(reply, askEnd);
     if (spoken !== reply) { reply = spoken; guard.spoken = true; }
   }
+  // 14.4 (QA TEST a9c3136d t8, 9ad86661): the goodbye strip took her only sentence ("…padhai rok dete hain—…?"), the full-turn
+  // retry raised self-harm again and was refused, and the child got "" and a module tray. A turn is never empty: the fixed line.
+  if (!String(reply ?? "").trim()) { reply = fallbackReply(state, item); guard.replaced = true; guard.emptied = true; }
   // The final words, checked once more (debug and the evals read it): what reached the child.
   const final = problems(reply).filter((p) => p !== "long" || words(reply) > max);
   if (final.length) guard.final = final;

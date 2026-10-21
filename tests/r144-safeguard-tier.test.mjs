@@ -104,7 +104,7 @@ describe("(1) the turn after a check-in", () => {
       assert.notEqual(r.move.kind, "safeguard", text);
       assert.equal(r.state.safeguard, null, text);
       assert.ok(!r.ui?.whiteboard || !/1098/.test(JSON.stringify(r.ui.whiteboard)), text);
-      assert.match(r.move.shape, /tell you or a grown-up they trust/, text);
+      assert.match(r.move.shape, /they can always tell you if something bothers them/, text);
       if (c.flags.distress) assert.equal(r.move.setAside, true, `${text}: the set-aside read writes no incident`);
     }
   });

@@ -68,6 +68,7 @@ const SAFEGUARD_CHECK = "care first: no lesson content this turn; a trusted adul
 const SAFEGUARD_CHECK_VOICE = "care first: no lesson content this turn; a trusted adult and Childline if not said yet.";
 // 14.4: the check-in tier (state.js checkTier): a person noticing and asking, no helpline numbers this turn
 const DISTRESS_CHECK = "care first: no lesson content this turn; notice it warmly, then ask gently if they are okay (okay, never safe); no helpline numbers this turn.";
+const AFTER_CHECK = "the safety check already read their earlier heavy words: no helpline, no telling them to go to a grown-up now, no question about harm or being safe; answer what they said now, as their teacher";
 const STOP = "they want to stop → stop, short warm goodbye";
 /**
  * Corrective shapes after the teacher's own words broke the floor (director/safety.js floorViolations, whose
@@ -296,6 +297,12 @@ function lastParts({ lessonState: s, move, item, branches, ageBand, language, pr
   const pc = move.kind !== "safeguard" && move.kind !== "wrap" && s.playOn?.mode ? playCheck(s.playOn, language) : null;
   if (pc) check = pc;
   if (fix.length) check = `your last turn broke the floor — first ${fix.join("; ")}; then ${check}`;
+  // 14.4 (QA TEST d359423b / a9c3136d t7-t8, 9ad86661): the turns a check-in released, and a read the Director set aside, still
+  // carry the child's heavy words in the history, and the reply made the safeguarding call itself from them ("mar jaunga ko
+  // main seriously leta hoon… aap safe hain?", "turant batayiye… akele mat rahiye") on 4 of 4 drafts. The call is made: last.
+  if (move.kind !== "safeguard" && s.safeguardedAt == null && (move.setAside || (s.checkReleased != null && s.turn - s.checkReleased <= 3))) {
+    check = `${check}; ${AFTER_CHECK}`;
+  }
   // round 3 (relational-human): a memory about THIS child from the record (last lesson's learning, a win), said FIRST in a
   // few words of her own. Here, not mid-brief: position is mechanism (memory-2day 2026-10-09: in the MOVE section the
   // opener callback was voiced 0/3, and 0/3 again as a bare "FIRST" note under a hook shape that also says how to open). A note, never a line;
