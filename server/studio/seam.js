@@ -955,6 +955,8 @@ export const studioSeam = {
       p.artifact = { kind: "whiteboard", stage: { w: r.script.board.w, h: r.script.board.h }, script: r.script };
       p.facts = r.script.facts ?? null;
       p.state = "revealed"; p.revealedAt = Date.now(); p.revealedTurn = L.turn; p.boardSource = r.source ?? "line"; p.syncMs = r.syncMs ?? null;
+      // the line the page was drawn under: the numbers the talk about this board already has (keepBoardSlot)
+      p.lines = [String(ask?.line?.text ?? "").slice(0, 600)];
       L.wbPrev = r.script;
       (L.wbSeen ??= new Set()).add(pageSig(r.script));
       // a KEPT board is the page already up, not a new one: the notebook (board_page) does not list it twice
@@ -1112,16 +1114,29 @@ export const studioSeam = {
     const L = lessons.get(lessonId);
     const on = L?.onScreen ? L.pieces.get(L.onScreen) : null;
     if (!on || on.kind !== "whiteboard" || !on.artifact?.script || on.retired || !VISIBLE.has(on.state) || L.safety) return null;
-    if (movedFrom(on, move)) return null;
-    if (!syncedWithLine(on.artifact.script, line)) return null;
+    // QA on D42: which rule let a board go is a trace row (the turn's reasons said nothing)
+    const notKept = (why) => { traceRecord("studio.board_not_kept", { intentId: on.intentId, why }); return null; };
+    if (movedFrom(on, move)) return notKept("moved");
+    if (!syncedWithLine(on.artifact.script, line)) return notKept("unsynced");
     // QA D43: her LAST sentence brings a number the board does not show ("Ab square ki har side 8 metre ho, perimeter
     // batayiye" under the 50 x 30 rectangle): that is a new problem, and the old page goes
-    const last = String(line ?? "").trim().split(/(?<=[.!?।])\s+/u).filter(Boolean).pop() ?? "";
-    const onBoard = new Set(boardNumbersIn(textsOf(on.artifact.script).join(" ")));
-    if ([...boardNumbersIn(last)].some((n) => !onBoard.has(n))) return null;
-    if (!Array.isArray(withhold) || writesWithheld(on.artifact.script, withhold)) return null;   // fail closed: unknown → not re-sent
+    // D42 on 08f86dc5 (QA 9ce1e62e): a number the talk about THIS board already has is not new. Known: the board's own
+    // numbers, the lines it was drawn and kept under (t1 "length 50 m aur breadth 30 m" over a rectangle with no numbers),
+    // and an earlier sentence of this line whose other numbers are all known ("160 m … 50 + 30 + 50 + 30"); a sentence
+    // that starts its own numbers ("Ab square ki har side 8 metre") adds nothing, so D43's new problem still drops the page
+    const sentences = String(line ?? "").trim().split(/(?<=[.!?।])\s+/u).filter(Boolean);
+    const last = sentences.pop() ?? "";
+    const known = new Set([...boardNumbersIn(textsOf(on.artifact.script).join(" ")), ...(on.lines ?? []).flatMap((x) => [...boardNumbersIn(x)])]);
+    for (const x of sentences) {
+      const ns = [...boardNumbersIn(x)];
+      if (ns.some((n) => known.has(n)) && ns.filter((n) => !known.has(n)).length <= 1) for (const n of ns) known.add(n);
+    }
+    if ([...boardNumbersIn(last)].some((n) => !known.has(n))) return notKept("new_number");
+    if (!Array.isArray(withhold) || writesWithheld(on.artifact.script, withhold)) return notKept("withheld");   // fail closed: unknown → not re-sent
     const g = gatedSlot(L, on, on.state, "on_screen");
-    if (g) L.shown = { intentId: on.intentId, revealing: false };
+    if (!g) return notKept("uncertified");
+    L.shown = { intentId: on.intentId, revealing: false };
+    on.lines = [...(on.lines ?? []), String(line ?? "").slice(0, 600)].slice(-3);
     return g;
   },
 
