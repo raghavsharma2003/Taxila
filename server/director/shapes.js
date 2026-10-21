@@ -325,8 +325,11 @@ export const afterCareCheck = () => "first, one short warm line of your own to w
 // 14.4 (QA TEST 47f4bb3f U2b): the check-in asks if they are OKAY, never if they are safe: "safe" belongs to the full
 // script, and "pata nahi" to "are you safe?" reads as not knowing if they are safe
 // 14.4 (QA TEST d359423b / a9c3136d t7: "main mar jaunga itna padh ke" answering the check-in got a lesson item): `heavy`, the
-// lesson's own pressure said as dying, read by the predicate's idiom check (classify.js lessonHyperbole), not danger
-export const distressCheckAgain = ({ unsure = false, heavy = false } = {}) => `${heavy ? "they said the studying feels like too much (the lesson's pressure, in their words): say warmly you hear it and you can slow down or take a short break, no telling them what to do"
+// lesson's own pressure said as dying, read by the predicate's idiom check (classify.js lessonHyperbole), not danger.
+// D5 `unheard` (census 4B): they DID answer and the microphone could not make it out — her ear, never their fault.
+export const distressCheckAgain = ({ unsure = false, heavy = false, unheard = false } = {}) => unheard
+  ? "you could not make out what they said (your ear, never their fault): say so warmly and that you are right here, then ask once more, gently, if they are okay (okay, never safe); they can also tap or type; no lesson content; no helpline numbers yet; never promise secrecy"
+  : `${heavy ? "they said the studying feels like too much (the lesson's pressure, in their words): say warmly you hear it and you can slow down or take a short break, no telling them what to do"
   : unsure ? "they said they don't know: say warmly that is okay, no need to know, and you are right here" : "they have not answered yet: say warmly there is no rush and you are right here"}, then ask once more, gently, if they are okay (okay, never safe); no lesson content; no helpline numbers yet; never promise secrecy`;
 export const distressCheck = () => "something they said sounded heavy or scary: notice it warmly in your own words, then ask ONE short gentle question, only one (are they okay right now: okay, never safe), never two joined with or; no lesson content; no helpline numbers yet; never promise secrecy; never say they disclosed or reported anything";
 export const safeguardAgain = () => "they may still be upset: stay with them, gently ask if they are okay right now, no lesson content; a trusted grown-up and Childline 1098 / Tele-MANAS 14416 are there any time; never promise secrecy; do not repeat your earlier words";
@@ -404,16 +407,20 @@ export const boardCleared = () => "they asked to clear the board: it is cleared 
 export const lightCheck = () => "they say they understood: great, one quick light question to try it out, warm and easy; never ask whether they really understood";
 // round 5 (owner 2026-10-14): silence is never a cue to move on
 export const silenceAgain = () => "they said nothing this time (the microphone heard no words): no rush; ask again kindly in a few words";
+/** D5 unheard (census 4B): they DID speak and the microphone could not make out the words — her ear, never their fault. */
+export const unheardAgain = () => "they spoke but the microphone could not make out the words (her ear, not their fault): ask them kindly to say it once more, in a few words";
 export const sameStepAgain = () => "the same point as your last turn, said more simply; nothing new, no new topic, no new question";
 export const silenceCheck = () => "they have been quiet for a while: kindly check they can hear you, and offer to carry on or take a short break; nothing new, no lesson question";
 export const welcomeBack = () => "they are back after a moment away: welcome them back in two or three words, no goodbye and no fuss; carry on";
 export const levelHarder = () => "they asked for a harder one: take them at their word, a short warm line; the harder question";
 export const levelDeeper = () => "they asked to go deeper: take them at their word in a few warm words; the harder question on the same idea, a step further";
 export const levelEasier = () => "they asked for an easier one: a short warm line, no fuss; the easier question";
-export const boredOffer = () => join(
+/** census F4: the ways in, in words, exactly the chips the turn offers (director/state.js WAYS: one list for both) */
+const waysWords = (ways) => (ways.length > 1 ? `${ways.slice(0, -1).join(", ")} or ${ways.at(-1)}` : ways[0] ?? "a quick change of question");
+export const boredOffer = ({ ways = ["a picture", "a story", "a game"] } = {}) => join(
   // round 3: say back what they said (it is boring) before the change: "acknowledges" failed on J2 for "game, picture or challenge?"
   p5Flag("R3CONV") ? "they are bored: first say back in a few words, in their words, that this part is boring for them, no guilt; then change something NOW" : "they are bored: no guilt; change something NOW",
-  "offer a different way into today's idea: a game, a picture or a quick challenge, shown on screen as choices; ask which",
+  `offer a different way into today's idea: ${waysWords(ways)}, shown on screen as choices; ask which`,
   "no lesson question this turn",
 );
 export const frustrationStep = () => "it is the work that is hard, never them (one line, no ability words); then a smaller first step on the same question";
@@ -464,9 +471,9 @@ export const adultVoice = () => "a grown-up is speaking: greet them briefly and 
 /** Round 2: a garbled / broken-off turn (an ASR fragment, a false start). Never a verdict; the line was unclear, not them. */
 export const unclearAgain = () => "you did not catch all of what they said: no verdict and no blame (the line was unclear, never them); ask them in a few warm words to say it again or finish the thought";
 /** "Can we talk about something else" (owner rule 2026-10-05: steering, never a break or a wrap). */
-export const offerWays = () => join(
+export const offerWays = ({ ways = ["a picture", "a story", "a game"] } = {}) => join(
   "they want something else: agree warmly, in your own words",
-  "offer a different way into today's idea: a picture, a story or a game, shown on screen as choices, or a quick change of question; ask which",
+  `offer a different way into today's idea: ${waysWords(ways)}, shown on screen as choices, or a quick change of question; ask which`,
   "no lesson question this turn",
 );
 /** release 13 (A): they named something outside today's lesson and want something else: only the ways that exist (words). */

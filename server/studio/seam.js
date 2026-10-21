@@ -39,7 +39,7 @@ import * as boardSync from "../stagecraft/board-sync.js";
 import * as boardFirst from "../stagecraft/board-first.js";
 import { boardGroundFor, dressBoard } from "../forge3/art.js";
 import { buildLive } from "../forge3/live.js";
-import { INTERACTIVE_ASKS } from "../forge3/compose.js";
+import { INTERACTIVE_ASKS, admitPlay } from "../forge3/compose.js";
 // round 4 content: the ONE certificate gate (server/forge3/tray-gate.js): nothing reaches the tray uncertified at the
 // device's viewport class (the Desk reports its tray box: POST /api/studio/viewport)
 import { certifyForTray, viewportOf, setViewport } from "../forge3/tray-gate.js";
@@ -649,6 +649,20 @@ export const studioSeam = {
    * @param {{ visual: string, skillId?: string|null, topicId?: string|null, child?: object, tray?: string|null, vp?: string|null }} x
    * @returns {Promise<{ kind: "play", intentId: string, family: string, mode: string, art: string|null, ms: number } | null>}
    */
+  /** Census F4 (a95d2ff1, 6c45a7ea: a picture / game chip offered that nothing could build): which ways in this lesson's
+   * Studio can answer now, read before the Director offers them. picture: Studio on and not frozen; game: play coverage
+   * admits the skill or topic (composeAsk's first rung), or a prepared piece the child can act on. null = no lesson state
+   * (the Director then offers as before). Synchronous, in memory; never builds anything. */
+  waysFor(lessonId, { skillId = null, topicId = null } = {}) {
+    const L = lessons.get(lessonId);
+    if (!L) return null;
+    if (L.safety || L.studioControl === "off") return { picture: false, game: false };
+    let play = false;
+    try { play = process.env.FORGE3_PLAY !== "0" && !!(skillId || topicId || L.topicId) && !!admitPlay(skillId, topicId ?? L.topicId ?? null); } catch { play = false; }
+    const piece = [...L.pieces.values()].some((p) => isRevealable(p) && p.source !== "play" && DOABLE_KINDS.has(p.kind) && (!skillId || !p.skillId || p.skillId === skillId));
+    return { picture: true, game: play || piece };
+  },
+
   async composeAsk(lessonId, x) {
     try {
       if (process.env.FORGE3_PLAY === "0") return null;
@@ -878,7 +892,10 @@ export const studioSeam = {
         const t = boardSync.templateBoard(ask, fb.script, boardSync.gateCtxFor(ask, { kit: L.kit ?? undefined, redact: L.redact ?? [], prior }))?.script ?? null;
         // round 5 (stream 2): the template is the lesson's own board: shown for a request only when it shows what was asked,
         // and never as the same page again
-        return t && answersRequest(t, request) && !shownBefore(t, { avoid: onPage, seen: L.wbSeen }) ? t : null;
+        // telemetry names the refusing step (QA run 8: a template refused here left no line saying why)
+        const why = !t ? "gate" : !answersRequest(t, request) ? `not_the_ask(${request?.kind ?? "-"})` : shownBefore(t, { avoid: onPage, seen: L.wbSeen }) ? "same_page" : null;
+        if (why) console.info(`[studio] template board refused: ${why}`);
+        return why ? null : t;
       } catch { return null; }
     };
     // round 2 content: a CONTINUED board that draws nothing new (her line restates what the board already shows: measured
@@ -941,6 +958,8 @@ export const studioSeam = {
       p.artifact = { kind: "whiteboard", stage: { w: r.script.board.w, h: r.script.board.h }, script: r.script };
       p.facts = r.script.facts ?? null;
       p.state = "revealed"; p.revealedAt = Date.now(); p.revealedTurn = L.turn; p.boardSource = r.source ?? "line"; p.syncMs = r.syncMs ?? null;
+      // the line the page was drawn under: the numbers the talk about this board already has (keepBoardSlot)
+      p.lines = [String(ask?.line?.text ?? "").slice(0, 600)];
       L.wbPrev = r.script;
       (L.wbSeen ??= new Set()).add(pageSig(r.script));
       // a KEPT board is the page already up, not a new one: the notebook (board_page) does not list it twice
@@ -1098,16 +1117,29 @@ export const studioSeam = {
     const L = lessons.get(lessonId);
     const on = L?.onScreen ? L.pieces.get(L.onScreen) : null;
     if (!on || on.kind !== "whiteboard" || !on.artifact?.script || on.retired || !VISIBLE.has(on.state) || L.safety) return null;
-    if (movedFrom(on, move)) return null;
-    if (!syncedWithLine(on.artifact.script, line)) return null;
+    // QA on D42: which rule let a board go is a trace row (the turn's reasons said nothing)
+    const notKept = (why) => { traceRecord("studio.board_not_kept", { intentId: on.intentId, why }); return null; };
+    if (movedFrom(on, move)) return notKept("moved");
+    if (!syncedWithLine(on.artifact.script, line)) return notKept("unsynced");
     // QA D43: her LAST sentence brings a number the board does not show ("Ab square ki har side 8 metre ho, perimeter
     // batayiye" under the 50 x 30 rectangle): that is a new problem, and the old page goes
-    const last = String(line ?? "").trim().split(/(?<=[.!?।])\s+/u).filter(Boolean).pop() ?? "";
-    const onBoard = new Set(boardNumbersIn(textsOf(on.artifact.script).join(" ")));
-    if ([...boardNumbersIn(last)].some((n) => !onBoard.has(n))) return null;
-    if (!Array.isArray(withhold) || writesWithheld(on.artifact.script, withhold)) return null;   // fail closed: unknown → not re-sent
+    // D42 on 08f86dc5 (QA 9ce1e62e): a number the talk about THIS board already has is not new. Known: the board's own
+    // numbers, the lines it was drawn and kept under (t1 "length 50 m aur breadth 30 m" over a rectangle with no numbers),
+    // and an earlier sentence of this line whose other numbers are all known ("160 m … 50 + 30 + 50 + 30"); a sentence
+    // that starts its own numbers ("Ab square ki har side 8 metre") adds nothing, so D43's new problem still drops the page
+    const sentences = String(line ?? "").trim().split(/(?<=[.!?।])\s+/u).filter(Boolean);
+    const last = sentences.pop() ?? "";
+    const known = new Set([...boardNumbersIn(textsOf(on.artifact.script).join(" ")), ...(on.lines ?? []).flatMap((x) => [...boardNumbersIn(x)])]);
+    for (const x of sentences) {
+      const ns = [...boardNumbersIn(x)];
+      if (ns.some((n) => known.has(n)) && ns.filter((n) => !known.has(n)).length <= 1) for (const n of ns) known.add(n);
+    }
+    if ([...boardNumbersIn(last)].some((n) => !known.has(n))) return notKept("new_number");
+    if (!Array.isArray(withhold) || writesWithheld(on.artifact.script, withhold)) return notKept("withheld");   // fail closed: unknown → not re-sent
     const g = gatedSlot(L, on, on.state, "on_screen");
-    if (g) L.shown = { intentId: on.intentId, revealing: false };
+    if (!g) return notKept("uncertified");
+    L.shown = { intentId: on.intentId, revealing: false };
+    on.lines = [...(on.lines ?? []), String(line ?? "").slice(0, 600)].slice(-3);
     return g;
   },
 

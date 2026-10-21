@@ -5,6 +5,8 @@
 // board-first pick, a speculative board, the kit's code board, the template rung) must pass them before it is drawn for a
 // request; the line planner is told the request and draws it. PURE: no model, no I/O.
 
+import { canonKey } from "../safety/normalize.js";
+
 /** Words that are never the subject itself ("plant ki life cycle" → plant, life, cycle). */
 const GLUE = new Set(["ka", "ki", "ke", "ko", "aur", "and", "of", "the", "a", "an", "se", "me", "mein", "par", "pe", "wala", "wali", "wale",
   "का", "की", "के", "को", "और", "से", "में", "पर"]);
@@ -131,7 +133,14 @@ const syncWords = (s) => new Set(String(s ?? "").toLowerCase().normalize("NFKC")
   .flatMap((w) => NUM_WORDS[w] ?? [w])
   // a word and its other-language name are one word ("भिन्न" in her line, "fraction" on the board): the SAME table above
   .flatMap((w) => (SAME_OF.has(w) ? [w, SAME_OF.get(w)[0]] : [w]))
-  .filter((w) => (w.length >= 4 || /^\p{N}+$/u.test(w)) && !SYNC_STOP.has(w)).map((w) => (/^\p{N}+$/u.test(w) ? w : w.slice(0, 5))));
+  .filter((w) => (w.length >= 4 || /^\p{N}+$/u.test(w)) && !SYNC_STOP.has(w))
+  // census 2026-10-21 (main: the overlap measure's cross-script false misses, "पत्ता" on the board, "patta" in her line):
+  // a word is also its canonical reading in either script (safety/normalize.js canonKey: पत्ता / patta → "pata")
+  // (the whole reading, never a prefix: "kahaniyan" is not "कहाँ"; never for a token with digits: "30th" is not "100th")
+  // (QA on D42 run 3: the board's "side" and her "sides" are one word: a Roman plural is also its singular)
+  .flatMap((w) => (/^\p{N}+$/u.test(w) ? [w] : [w.slice(0, 5), ...singularOf(w), ...canonOf(w)])));
+const singularOf = (w) => (/^[a-z]{4,}(?:es|s)$/.test(w) && !/(?:ss|us|is)$/.test(w) ? [w.replace(/(?:es|s)$/, "").slice(0, 5), w.slice(0, -1).slice(0, 5)] : []);
+const canonOf = (w) => { if (/\p{N}/u.test(w)) return []; const k = canonKey(w); return k && k.length >= 4 ? [`~${k}`] : []; };
 export function syncedWithLine(script, line) {
   const text = String(line ?? "").trim();
   const page = textsOf(script).join(" ");
@@ -144,7 +153,13 @@ export function syncedWithLine(script, line) {
 
 /** A board that draws something (a figure or a number line), not only text boxes. PURE. */
 export function isDrawing(script) {
-  return (script?.ops ?? []).some((o) => ["circle", "ellipse", "sector", "stroke", "line", "x", "polygon", "path"].includes(o?.op) || (o?.op === "numwork" && o?.layout === "number_line"));
+  const ops = script?.ops ?? [];
+  // QA on 14.4.1 (aadae80b t1: a picture ask; the rung's rectangle with "50 m" / "30 m" on its sides was refused as "a page
+  // of text boxes", the live board failed, and the child saw nothing): a rectangle no text sits inside is a drawn shape; a
+  // rectangle around its text is a box (flow@1), as before
+  const texts = ops.filter((o) => (o?.op === "text" || o?.op === "label") && Array.isArray(o.at));
+  const shapeRect = (o) => o?.op === "rect" && Array.isArray(o.at) && !texts.some((t) => t.at[0] > o.at[0] + 2 && t.at[0] < o.at[0] + o.w - 2 && t.at[1] > o.at[1] + 2 && t.at[1] < o.at[1] + o.h - 2);
+  return ops.some((o) => ["circle", "ellipse", "sector", "stroke", "line", "x", "polygon", "path"].includes(o?.op) || (o?.op === "numwork" && o?.layout === "number_line") || shapeRect(o));
 }
 
 /** A worked page: three things written or more, two of them carrying numbers (the steps of an example). PURE. */

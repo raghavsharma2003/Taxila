@@ -41,6 +41,8 @@ const FUNCTION_WORDS = new Set(["a", "an", "the", "for", "to", "of", "in", "on",
   "hai", "ka", "ki", "ke", "se", "me", "mein", "ko", "aur", "ya", "to", "bhi", "है", "का", "की", "के", "से", "में", "को", "और", "या"]);
 /** The whiteboard's text limit (ui.whiteboard value; the anchor and every board the Director writes). */
 export const BOARD_MAX = 120;
+/** The Question card's limit (director/say.js ASK_MAX; not imported: say.js imports the Director's items). */
+const FADE_CARD_MAX = 120;
 const LEARNED = new Set(["learned_today", "mastered", "due"]);
 
 const correctShare = (outcomes) => outcomes.filter((o) => o === "correct").length / outcomes.length;
@@ -179,10 +181,19 @@ export function fadeItem(kit, { band = "B3", index } = {}) {
   const process = band === "B1";
   const skillId = kit.skills?.[0]?.id;
   if (!skillId) return null;
+  // census 2026-10-21 F3 P0 3437b744 t9/13/14: the card carried only the gap line, and the problem's board left the tray
+  // when the pad or the choices took it, so the child saw "a₁ = ___, add ___" with no sequence. The question itself now
+  // carries the problem, shortened so the whole card fits (ASK_MAX: askText keeps the tail, which would drop it); what is
+  // said, shown and graded stays one text. Measured over every kit: 2 of 1895 fade cards carried their problem before.
+  const withProblem = (ask) => {
+    const room = FADE_CARD_MAX - ask.length - 1;
+    const problem = room >= 16 && we.problem ? clip(we.problem, room) : "";
+    return problem ? `${problem} ${ask}` : ask;
+  };
   const item = {
     id: `${FADE_PREFIX}${i}`, kind: "practice", skillId, fade: true, difficulty: 1,
-    prompt_en: process ? `What do we do next? ${line}` : `Fill the gap: ${line}`,
-    prompt_hi: process ? `Ab aage kya karenge? ${line}` : `Khaali jagah bharo: ${line}`,
+    prompt_en: withProblem(process ? `What do we do next? ${line}` : `Fill the gap: ${line}`),
+    prompt_hi: withProblem(process ? `Ab aage kya karenge? ${line}` : `Khaali jagah bharo: ${line}`),
     answer, acceptable: [we.steps[i]],
     hints: [
       "pump: look at the step just before; what does it give us",

@@ -6284,3 +6284,40 @@ The 14.4 tier needs the words-only read to say what a distress label is about. A
 ## dc-r1441-lesson-burn — 'my head is on fire' is not a fire (2026-10-21)
 
 The hyperbole and frustration idioms already made a model's self-harm read a check-in. Burning is the same shape: a child who says 'please skip, aag lag rahi hai' after a hard item is fried, not in danger. unsafe_now stays sure. The predicate misses many real emergencies, and the model read is their only route, so only the idiom shape moves.
+
+
+<!-- merged from inbox/r5-census-s2.json -->
+## dc-r5-studio-thaws-after-safeguard (2026-10-21)
+
+Studio draws again once the Director's safeguard episode closes; every safeguard turn, the check-in tier included, still freezes it; nothing retired is re-shown (bfc57b9a).
+
+## dc-r5-ways-by-capability (2026-10-21)
+
+The ways-in chips offer only a picture or a game that can be built, and her words name exactly the chips offered, from one list in code (64a1b78b).
+
+## dc-r5-same-page-not-redrawn (2026-10-21)
+
+A re-sent page that draws exactly what the board shows is shown complete at once: no wipe, no replay, no new page.
+
+<!-- 14.4.1 integration: stream write-ups from their inbox titles (4B r144-duplex, stream 2 r5-census-s2) -->
+## dc-r144-d5-unheard-not-silence (2026-10-21)
+
+D5: an empty turn over speech the ear could not read is UNHEARD, never silence. The client marks it (duplex.unheard, set only when Voice Live's own item ended with no words since the last commit) and never posts an empty SPEAK with no ear item behind it (the safety floor and the hold offer untouched); the server classifies an unheard turn as source asr; the Director asks again with its own shape (unheardAgain: her ear, not their fault) and never counts it toward the are-you-there break; in an open safeguard CHECK-IN every unheard turn re-asks it (her own wording, the safe:continue / safe:stop chips on screen) and never uses up its one silence nor escalates (dc-r144-unheard-never-escalates). Reversal: production traces showing unheard turns that were really silence (the ear opening an item on room noise), or a child whose distress went unescalated behind repeated unheard turns.
+
+## dc-r144-fanin-carried-burst-item (2026-10-21)
+
+The fold-in's carried turn keeps the burst's OWN ear item: an item still open at the carried onset (opened at most CARRY_PRE_MS = 1,200 ms before it, with a KNOWN audio end past it) belongs to the turn; the hold offer after "wait" is always wordless. Not changed (tried, no effect on the 132 recorded runs): carrying a hushed burst at her_end when her line did not hand over (governor carryCheck) — kept as a candidate if production shows a request said over an explanation, read as a short burst, lost. Reversal: production traces showing the previous turn's words (an echo item, the last answer) folded into the next turn.
+
+## dc-r144-negation-surface-key (2026-10-21)
+
+Echo matching (src/lesson/cascadeLink.ts echoKey, shared by the duplex EchoSubtractor and isEcho): a negation keys on ONE class across scripts (नहीं / नही / nahi / nahin → ¬nahi; ना / na; मत / mat; no; not …), never its consonant skeleton; a run of her words is echo only with at least one match of two letters or more, and the whole-text echo share needs one too — so a one-letter skeleton (नहीं, रहा, आप, क्या) never anchors a removal, while her Roman line echoed back in Devanagari still goes. Main's literal "never subtracted" bar was measured and is left to main (see ms-r144-negation-echo). Reversal: device traces with her echo leaking short words into the child's turn, or a child's negation still removed inside a long run.
+
+## dc-r144-unheard-never-escalates (2026-10-21)
+
+Main 2026-10-21: in an open safeguard check-in, an UNHEARD turn (D5: the ear covered speech and returned no words) NEVER escalates, however many come in a row: she says she could not make it out (distressCheckAgain({ unheard: true }): her ear, never their fault; okay, never safe; no lesson, no helplines) with the safe:continue / safe:stop chips on screen, so the child can answer without her ear. Why: unheard is the ear failing and adds no evidence of distress (the child spoke: they are responsive); the owner's bar is the helplines only when sure; the first cut's fail-closed on the third would have fired on 1.8-4.8 % of phone-echo lessons (ms-r144-unheard-three-in-a-row), mostly a bad microphone. Silence keeps its own rule (one wait, a second escalates); the predicate and every sure layer escalate at once whatever the ear did. Reversal: a recorded check-in that ends with a disclosure heard LATER, after 3 or more unheard turns.
+
+
+<!-- merged from inbox/r1441-masked-main.json -->
+## dc-r1441-masked-retry — her own line even when the filter will not show his words (2026-10-21)
+
+When the filter blocks the reply prompt on context and the child's words pass the probe, the reply model gets one more try with their words replaced by a note. The child then gets a real turn that ends on the move's question, not a stock thanks. The words stay with every safety read.

@@ -92,6 +92,16 @@ const FRACTION = /^(\d+)\s*\/\s*(\d+)$/;
  * one distractor exists (the caller gives a hint instead).
  * @returns {string[] | null} the tile labels, the key among them
  */
+/** What a choice looks like at a glance: digits, money, working or a note (brackets, =, +, a colon, comma or slash, "so"), a
+ * sentence, its length in words. */
+export const choiceShape = (x) => {
+  const t = String(x ?? "").trim();
+  return { digits: /\d/.test(t), money: /₹|\brs\.?\s*\d/i.test(t), working: /[()=+×÷:;,/]|\s[—–-]\s|\b(?:so|because|kyunki|isliye)\b/i.test(t),
+    sentence: /[.!?।]$/.test(t), words: t.split(/\s+/).filter(Boolean).length };
+};
+const sameShape = (a, b) => a.digits === b.digits && a.money === b.money && a.working === b.working && a.sentence === b.sentence
+  && Math.max(a.words, b.words) <= 2 * Math.min(a.words, b.words) + 1;
+
 export function choicesFor(item, kit, seed = 0) {
   const key = String(item?.answer ?? "").trim();
   if (!key || key.length > 40) return null;
@@ -111,7 +121,11 @@ export function choicesFor(item, kit, seed = 0) {
   } else {
     const others = (kit?.items ?? []).filter((i) => i.id !== item.id && i.kind !== "teachback" && i.kind !== "why")
       .sort((a, b) => (b.skillId === item.skillId) - (a.skillId === item.skillId));
-    pool = others.map((i) => String(i.answer ?? "").trim()).filter((x) => x && x.length <= 40 && x.split(/\s+/).length <= 5);
+    // census 2026-10-21 F3 (6c45a7ea t33: the key showed its own working beside two bare ₹ answers, so the right chip was
+    // obvious): a distractor from another item is offered only when it LOOKS like the key (choiceShape); measured over the
+    // kits, 2572 of 4511 non-numeric chip sets had a key that stood out. None alike: no chips (the hint rung instead).
+    const want = choiceShape(key);
+    pool = others.map((i) => String(i.answer ?? "").trim()).filter((x) => x && x.length <= 40 && x.split(/\s+/).length <= 5 && sameShape(choiceShape(x), want));
   }
   const distractors = [...new Set(pool.filter(ok))].slice(0, 2);
   if (!distractors.length) return null;

@@ -172,7 +172,7 @@ const BARE_CLEAR = new RegExp(`^(?:(?:please|plz|ab|abhi|jaldi|isko|ise|ye|yeh|w
 // subject a child names, in either script, so the lesson can answer honestly about it. Generic words are not subjects.
 // release 13 integration (ms-r13-meta-subjects): the meta and pointing words a child uses for TODAY's work ('is cheez', 'pichle
 // wale', 'aaj ke topic') are never a subject named outside it
-const GENERIC = /^(?:ek|एक|zara|jara|ज़रा|जरा|thoda|thodi|थोड़ा|थोड़ी|diagram|picture|photo|image|images|drawing|game|games|video|kuch|koi|kuchh|ye|yeh|is|isko|use|usko|woh|wo|iss|us|uss|iske|uske|inke|unke|isme|usme|ismein|usmein|cheez|chiz|cheej|chij|pichle|pichla|pichli|pichhle|agle|agla|agli|wale|wala|wali|waala|waale|topic|chapter|lesson|sawal|sawaal|question|questions|answer|jawab|concept|aaj|abhi|mujhe|mere|mera|aap|tum|visualization|visualisation|chitra|tasveer|board|screen|whiteboard|blackboard|smartboard|slate|व्हाइटबोर्ड|ब्लैकबोर्ड|बोर्ड|स्क्रीन|chart|graph|model|animation|figure|sketch|map|table|ko|ka|ki|ke|ne|se|mein|me|par|pe|डायग्राम|डायग्रम|ड्रॉइंग|ड्राइंग|चित्र|ग्राफ|चार्ट|मॉडल|एनिमेशन|टेबल|को|का|की|के|ने|से|में|पर|इमेज|फोटो|पिक्चर|तस्वीर|गेम|वीडियो|कुछ|कोई|ये|यह|इसको|उसको|उसके|इसके|इसकी|उसकी|चीज़|चीज|पिछले|पिछला|अगले|अगला|वाले|वाला|वाली|सवाल|जवाब|टॉपिक|चैप्टर|आज|अभी|मुझे|मेरे|मेरा|आप|तुम)$/iu;
+const GENERIC = /^(?:ek|एक|zara|jara|ज़रा|जरा|thoda|thodi|थोड़ा|थोड़ी|diagram|picture|photo|image|images|drawing|game|games|video|kuch|koi|kuchh|ye|yeh|is|isko|use|usko|woh|wo|iss|us|uss|iske|uske|inke|unke|isme|usme|ismein|usmein|cheez|chiz|cheej|chij|pichle|pichla|pichli|pichhle|agle|agla|agli|wale|wala|wali|waala|waale|topic|chapter|lesson|sawal|sawaal|question|questions|answer|jawab|concept|aaj|abhi|mujhe|mere|mera|aap|tum|visualization|visualisation|chitra|tasveer|board|screen|whiteboard|blackboard|smartboard|slate|व्हाइटबोर्ड|ब्लैकबोर्ड|बोर्ड|स्क्रीन|chart|graph|model|animation|figure|sketch|map|table|ko|ka|ki|ke|ne|se|mein|me|par|pe|डायग्राम|डायग्रम|ड्रॉइंग|ड्राइंग|स्केच|चित्र|ग्राफ|चार्ट|मॉडल|एनिमेशन|टेबल|को|का|की|के|ने|से|में|पर|इमेज|फोटो|पिक्चर|तस्वीर|गेम|वीडियो|कुछ|कोई|ये|यह|इसको|उसको|उसके|इसके|इसकी|उसकी|चीज़|चीज|पिछले|पिछला|अगले|अगला|वाले|वाला|वाली|सवाल|जवाब|टॉपिक|चैप्टर|आज|अभी|मुझे|मेरे|मेरा|आप|तुम)$/iu;
 /** A subject made only of generic, meta or pointing words ("is cheez", "aaj ke topic"): not a subject. PURE. */
 export const genericSubject = (sub) => { const w = String(sub ?? "").trim().split(/\s+/).filter(Boolean); return !w.length || w.every((x) => GENERIC.test(x)); };
 const LEAD_WORDS = /^(?:(?:mere|mujhe|hume|humein|hamein|ko|ka|ki|ek|mera|meri|please|plz|bhai|bhaiya|yaar|didi|मेरे|मुझे|हमें|को|का|की|एक|मेरा|मेरी|भई|यार)\s+)+/iu;
@@ -207,8 +207,8 @@ const DRAW_RE = new RegExp(`(?<![\\p{L}])(?:${DRAW_VERB}|${DRAW_WORD})(?![\\p{L}
 const SHOW_RE = new RegExp(`(?<![\\p{L}])${SHOW_VERB}(?![\\p{L}])`, "iu");
 // the words before the first show/draw word (or "ka photo"/"ka diagram"), at most 4: the thing asked for
 const ASK_HEAD = new RegExp(`^(.*?)\\s+(?:(?:ka|ki|ke|का|की|के)\\s+)?(?:(?:${PIC_WORD}|${DRAW_WORD})\\s+)?(?:(?:${DRAW_VERB})(?:\\s+(?:karke|kar\\s+ke|karo|kijiye|kar\\s+do))?\\s+)?(?:${SHOW_VERB}|${DRAW_VERB}|${PIC_WORD}|${DRAW_WORD})(?![\\p{L}])`, "iu");
-const ASK_STOP = /^(?:एक|इसकी|इसका|इसके|इसे|इसको|उसकी|उसका|उसके|यह|ये|वो|वह|मुझे|मेरे|कोई|ज़रा|जरा|थोड़ा|ज़रा|अब|फिर|और|kaise|kaisa|kya|kyun|kyon|kab|kahan|how|what|why|where|which|mujhe|muje|hume|humein|mere|iska|iski|iske|isko|ise|uska|uski|uske|usko|lekin|magar|but|bar|baar|please|plz|zara|jara|thoda|ek|aap|tum|didi|bhaiya|sir|ma'?am|teacher|ab|abhi|phir|fir|dobara|wapas|again|now|na|naa|yaar|bhi|bas|sirf|sab|sabhi|to|toh|so|ok|okay|achha|accha|haan|ji|draw|bana|banao|karke|kar|ke|se|me|mein|pe|par|on|in|of|the|a|an|me)$/iu;
-const VERBISH = /^(?:hai|hain|ho|hoon|hun|hu|tha|thi|the|hoga|hogi|aata|aati|aate|jata|jati|jate|raha|rahi|rahe|kar|karo|karna|karte|karta|karti|kiya|kiye|diya|diye|liya|lena|dena|chahiye|chahta|chahti|sakta|sakti|sakte|lagta|lagti|pata|mila|mili|dekha|dekhi|bolo|batao|suna|is|are|was|were|am|want|wanna|like|need|have|has|can|could|show|see|है|हैं|था|थी|हो|आता|आती|जाता|रहा|रही|करो|करना|चाहिए|चाहता|चाहती|सकता|सकती|देखा|बताओ)$/iu;
+const ASK_STOP = /^(?:एक|इसकी|इसका|इसके|इसे|इसको|उसकी|उसका|उसके|यह|ये|वो|वह|मुझे|मेरे|कोई|ज़रा|जरा|थोड़ा|ज़रा|अब|फिर|और|kaise|kaisa|kya|kyun|kyon|kab|kahan|how|what|why|where|which|mujhe|muje|hume|humein|mere|iska|iski|iske|isko|ise|uska|uski|uske|usko|lekin|magar|but|bar|baar|please|plz|zara|jara|thoda|ek|aap|tum|didi|bhaiya|sir|ma'?am|teacher|ab|abhi|phir|fir|dobara|wapas|again|now|na|naa|yaar|bhi|bas|sirf|sab|sabhi|to|toh|so|ok|okay|achha|accha|haan|ji|draw|bana|banao|karke|kar|ke|se|me|mein|pe|par|on|in|of|the|a|an|me|umm+|hmm+|uh+|aur|matlab|waise|vaise|i|think|actually|basically|waisa|vaisa|aisa|aise|wala|wali|wale|arey|arre|are|yahan|wahan|nahi|nahin|nai|aapne|maine|humne|tumne|pehle|baad|achhe|theek|thik|bahut|bohot|poora|pura|kuch|kuchh|jo|ya|kyunki|kyuki|isliye|kidhar|idhar|udhar|blank|mann|dar|samajh|confusion|interesting|easy|yeah|yes|no|exam|screenshot|sentence|sorry|wait|dekh|chal|sahi|galat|asli|real|acchi|achhi|achcha|acha|jaise|jaisa|tak|hi|bata|meri|mera|aapke|aapki|paas|koi|aaya|aayi|lag|she|he|it|my|main|haaun|mujhse|kaunsi|kaunsa|sa|si|hue|hua|तो|ना|न|भी|ही|सिर्फ़|सिर्फ|हाँ|हां|अरे|ऐसे|वैसे|लेकिन|मगर|पर|यहाँ|वहाँ|उम्म|नहीं|नही|आपने|मैंने|पहले|कुछ|जो|या|क्योंकि|कहाँ|कहां|सुनिए|बहुत|पूरा|ठीक|समझ|असली|क्या|आप|मैम|जैसे|पता|में|मुझसे|मेरी|मेरा|मतलब|बार)$/iu;
+const VERBISH = /^(?:hai|hain|ho|hoon|hun|hu|tha|thi|the|hoga|hogi|aata|aati|aate|jata|jati|jate|raha|rahi|rahe|kar|karo|karna|karte|karta|karti|kiya|kiye|diya|diye|liya|lena|dena|chahiye|chahta|chahti|sakta|sakti|sakte|lagta|lagti|pata|mila|mili|dekha|dekhi|bolo|batao|suna|is|are|was|were|am|want|wanna|like|need|have|has|can|could|show|see|है|हैं|था|थी|हो|आता|आती|जाता|रहा|रही|करो|करना|चाहिए|चाहता|चाहती|सकता|सकती|देखा|बताओ|hota|hoti|hote|gaya|gayi|gaye|bacha|bachi|bache|bola|boli|bole|li|banaya|banayi|banti|banta|bante|lagi|laga|dikha|dikhi|dikhe|samjha|samjhi|pakad|daali|daala|गया|गयी|गई|गए|बचा|बची|बचे|बोला|बोली|बोले|होता|होती|होते|लगा|लगी|किया|किये|किए|लिया|बनाया|बनता|बनती|समझा|समझ|खींच|खींचो|दिखाओ|दिखाइए|दिखा|दिखाना|बनाओ|dikhao|dikhaya|dikh|khinch|kheench|daalna|dalna|daalo|animated)$/iu;
 const SHOW_NOT_SUBJECT = /^(?:answer|jawab|score|result|marks|next|agla|aage|phir|fir|dobara|wapas|again|sab|sabhi|all|more|aur|baaki|baki|naya|new|number|numbers|sawal|sawaal|question|questions|example|examples|udaharan|game|games|khel|video|videos|animation|step|steps|tarika|tareeka|way|method|hint|hints)$/iu;
 /** The numbers a child names for a number line ("1 se 9", "23 plus 14", "1/4", "minus 3", "0.5"). PURE. */
 const numbersSaid = (t) => {
@@ -221,6 +221,11 @@ const numbersSaid = (t) => {
  * "number line pe 1/4 dikhao" → { show: "number_line", said: ["1/4"] }; "isko draw karo" → { show: "draw" } (no subject:
  * the thing on the table); "ek example do", "game khelna hai", "answer dikhao" → null (not a thing to see).
  */
+// census F9: a number word is never the thing to draw ("सात में से दो गया तो पाँच बचा": the sum, not a thing)
+const NUMBER_WORD = /^(?:ek|do|teen|char|chaar|paanch|panch|chhe|chah|saat|aath|nau|das|zero|one|two|three|four|five|six|seven|eight|nine|ten|एक|दो|तीन|चार|पाँच|पांच|छह|छः|सात|आठ|नौ|दस|शून्य)$/iu;
+// "बस की ड्राइंग", "aloo ki photo": the thing is named right before ki / ka + the picture word, wherever the show verb is
+const THING_OF = new RegExp(`(?:^|[\\s,.!?।])([\\p{L}][\\p{L}\\p{M}]*(?:\\s+[\\p{L}][\\p{L}\\p{M}]*){0,3})\\s+(?:ka|ki|ke|का|की|के)\\s+(?:${PIC_WORD}|${DRAW_WORD})(?![\\p{L}])`, "iu");
+
 export function visualAskOf(text) {
   const raw = String(text ?? "").normalize("NFKC");
   const t = T(raw);
@@ -232,8 +237,12 @@ export function visualAskOf(text) {
   // English: "a picture of a potato", "draw a triangle", "show me the moon"
   const en = core(t).match(/\b(?:picture|photo|image|drawing|diagram|sketch)\s+of\s+(?:a|an|the|some)?\s*([\p{L} ]{2,40}?)\s*(?:please|plz|na)?[?.!]*$/iu)
     ?? core(t).match(/^(?:can\s+you\s+|please\s+)?(?:draw|show)\s+(?:me\s+)?(?:a|an|the|some)\s+([\p{L} ]{2,40}?)\s*(?:please|plz)?[?.!]*$/iu);
-  const m = en ? [null, en[1]] : core(t).match(ASK_HEAD);
-  let words = (m?.[1] ?? "").replace(/[?!.,;:"“”'()]/g, " ").split(/\s+/).filter(Boolean);
+  const of = en ? null : core(t).match(THING_OF);
+  const m = en ? [null, en[1]] : of ? [null, of[1]] : core(t).match(ASK_HEAD);
+  // census F9 (b08fe8a7; sim lab p55 "सात में से दो गया तो पाँच बचा, बस दिखाओ ना drawing" drew "तो पाँच बचा बस"): only the
+  // last clause before the ask names the thing; what came before a comma or a full stop is something else they said
+  const head = String(m?.[1] ?? "").split(/[,;.!?।…]+/u).filter((x) => x.trim()).pop() ?? "";
+  let words = head.replace(/[?!.,;:"“”'()]/g, " ").split(/\s+/).filter(Boolean);
   // cut at a question word ("shadow kaise banta hai draw karke dikhao" asks for a shadow), then drop lead/filler words; a
   // question word first ("kaise karte hain dikhao") names no thing
   const qi = words.findIndex((w) => /^(?:kaise|kaisa|kyun|kyon|kab|kahan|how|why|when|where)$/i.test(w));
@@ -249,9 +258,15 @@ export function visualAskOf(text) {
   while (words.length && (ASK_STOP.test(words[0]) || GENERIC.test(words[0]))) words.shift();
   // round 5 merge (main): where it is drawn is never part of what is drawn ("aloo whiteboard pe draw karo" → aloo)
   words = words.filter((w) => !/^(?:whiteboard|blackboard|smartboard|board|screen|slate|व्हाइटबोर्ड|ब्लैकबोर्ड|बोर्ड|स्क्रीन)$/iu.test(w));
-  while (words.length && (ASK_STOP.test(words.at(-1)) || /^(?:ka|ki|ke|का|की|के|ko|को|pe|par|पे|पर)$/iu.test(words.at(-1)))) words.pop();
-  words = words.slice(-4);
-  const subject0 = words.join(" ").trim();
+  while (words.length && (ASK_STOP.test(words.at(-1)) || /^(?:ka|ki|ke|का|की|के|ko|को|pe|par|पे|पर|mein|में)$/iu.test(words.at(-1)))) words.pop();
+  // "बस दिखाओ" is "just show it": a lone बस before the ask is the filler, never the bus ("बस की ड्राइंग" is, above)
+  if (!of && words.length === 1 && /^(?:बस)$/u.test(words[0])) words = [];
+  // census F9: a thing is a short noun phrase: no filler, verb or number word inside it, at most three words (a longer run
+  // is a clause the child said, and the board wrote it as a label)
+  // ("baraf aur bhaap": two things joined by and stay one ask)
+  const joins = (w, i) => i > 0 && i < words.length - 1 && /^(?:aur|and|और)$/iu.test(w);
+  const clean = words.length <= 3 && words.every((w, i) => joins(w, i) || (!ASK_STOP.test(w) && !VERBISH.test(w) && !NUMBER_WORD.test(w)));
+  const subject0 = clean ? words.join(" ").trim() : "";
   const subject = subject0 && !genericSubject(subject0) && !words.every((w) => GENERIC.test(w) || ASK_STOP.test(w)) && !(words.length === 1 && SHOW_NOT_SUBJECT.test(words[0])) && !/\d/.test(subject0) ? subject0.slice(0, 40) : null;
   const kind = pic ? "picture" : draw ? "draw" : "show";
   // a bare "X dikhao" is a visual ask only when X is a thing ("aloo dikhao"), never "answer dikhao" / "phir se dikhao"

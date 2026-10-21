@@ -12,7 +12,7 @@ import { HELPLINES } from "../compiler/floor.js";
 import { registerBroken, toAap } from "../director/register.js";
 // round 3 fix (experience B6): arithmetic she states, and her own closed sums, checked in code
 import { arithmeticSlip, selfPosedVerdict } from "./arith.js";
-import { praiseProblem, stripPraise, screenProblem, stripScreenRefs, leaksStage, stripStage, saysCantShow, stripCantShow, askParity, endOnAsk, joinAsk, lastQuestionOnly, wrapsUp, stripWrap, correctsRight, stripCorrection } from "../director/say.js";
+import { praiseProblem, stripPraise, screenProblem, stripScreenRefs, emptyStage, leaksStage, stripStage, saysCantShow, stripCantShow, askParity, endOnAsk, joinAsk, lastQuestionOnly, wrapsUp, stripWrap, correctsRight, stripCorrection } from "../director/say.js";
 import { mixedUnitComparison, withoutMixedUnits } from "../director/units.js";
 import { screenContradiction, stripStrayParts } from "../director/modules.js";
 import { isBare, repeatsEarlier, tidy, leadWithoutQuestion, sentences } from "../conversation/guards.js";
@@ -225,6 +225,8 @@ const CHECK_ONLY_KINDS = new Set(["model", "content_filter"]);
  */
 const HARM_TALK = /(?<![\p{L}\p{M}\p{N}])(?:child ?line|tele[\s-]?manas|1098|14416|help ?line|चाइल्डलाइन|टेली[\s-]?मानस|हेल्पलाइन|suicid\w*|aatm ?hatya|atmhatya|आत्महत्या)(?![\p{L}\p{M}\p{N}])|(?<![\p{L}\p{M}])(?:khud|apne ?(?:aap|ap)|apne|खुद|अपने ?आप)\s*(?:ko|को)\s+(?:\S+\s+){0,1}(?:nuksan|nuksaan|nukasan|nuqsan|nuqsaan|harm|maar|maarne|kill|नुकसान|नुक़सान|मारने)|(?<![\p{L}\p{M}])(?:khud|apne ?(?:aap|ap)|खुद|अपने ?आप)\s*(?:ko|को)\s+(?:hurt|chot|चोट|हर्ट)\s+(?:pahunchane|pahuchane|pohnchane|karne|dene|पहुंचाने|पहुँचाने|करने)|(?<![\p{L}\p{M}])(?:apni|अपनी)\s+(?:jaan|जान)\s+(?:lene|dene|लेने|देने)|self[\s-]?harm|(?<![\p{L}\p{M}])(?:aap|tum|tu|आप|तुम)\s+(?:abhi\s+|ghar\s+(?:par|pe|mein|me)\s+|अभी\s+)?(?:safe|surakshit|सेफ|सुरक्षित)\s+(?:hain|ho|hai|hoon|mehsoos|feel|हैं|हो)|(?:are|do)\s+you\s+(?:feel(?:ing)?\s+)?safe\b|(?:want|wanting|wanted|thinking|thought|think|feel like|feeling like|plan\w*|try\w*)\s+(?:of\s+|about\s+|to\s+)?(?:hurt|harm|kill)(?:ing)?\s+yourself|(?:harm|kill)(?:ing)?\s+yourself|(?:marne|mar jaane|khatam karne|jaan dene)\s+(?:ka|ke|ki)\s+(?:khayal|khyal|vichar|soch|mann|man|baat|baatein|baaten)|(?<![\p{L}\p{M}])(?:nuksan|nuksaan|nukasan|nuqsan|nuqsaan|hurt|harm|chot|नुकसान|नुक़सान|चोट)\s+(?:pahunchane|pahuchane|pohnchane|karne|dene|पहुंचाने|पहुँचाने|करने)\s+(?:ka|ke|ki|का|के|की)\s+(?:khayal|khyal|vichar|soch|irada|ख़याल|खयाल|ख्याल|विचार)|(?:ghar|घर)\s+(?:mein|me|pe|par|में|पर)\s+(?:kisi|koi|किसी|कोई)\s+(?:se\s+|से\s+)?(?:dar|darr|hurt|maar|डर)/iu;
 export const harmTalk = (text) => HARM_TALK.test(String(text ?? ""));
+/** 14.4.1: the child's turn when their words could not be shown to the reply model (a context filter block): a note, never a line */
+const MASKED_TURN = "(their reply is not shown here: no guessing at it and no quoting it; a warm thanks in a few words, then carry on with the move)";
 /** A child line the predicate's idiom checks read as the lesson's own pressure, said as what it means (the reply's history only). */
 export const idiomMeaning = (text) => (lessonHyperbole(String(text ?? "")) ? "(they said the studying feels like too much for them)"
   : lessonIdiom(String(text ?? "")) ? "(they said this question is too hard for them)" : null);
@@ -601,12 +603,20 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
     // still fail CLOSED below, exactly as before.
     const neutral = (code) => ({ reply: filterNeutralReply(state, item), guard: { caught: [code], rewritten: false, replaced: true } });
     const lone = [messages[0], messages[messages.length - 1], ...(lastNotes ? [{ role: "system", content: lastNotes }] : [])];
+    // 14.4.1 (sim lab p26h on 5c127d1a, QA 4b3d875c: a class 8 answer about the British, blocked on hate on the prompt and on
+    // this turn alone, got only the fixed carry-on, with no question): one more try with their words NOT shown, so her line is
+    // the move's own; blocked or failed, the fixed line as before. Their words still reached every read and the probe.
+    const masked = () => ask([messages[0], { role: "user", content: MASKED_TURN }, ...(lastNotes ? [{ role: "system", content: lastNotes }] : [])]).catch(() => null);
     let triedLone = false;
     if (isContentFilter(e) && nonHarmFilter(e)) {
       console.warn(`[lesson] reply blocked by a non-harm filter (${e.filterCats.join(",")}): one retry on this turn alone`);
       triedLone = true;
       try { again = await ask(lone); } catch (e2) { if (isContentFilter(e2) && !nonHarmFilter(e2)) e = e2; }
-      if (!again && !(isContentFilter(e) && !nonHarmFilter(e))) return neutral("content_filter_nonharm");
+      if (!again && !(isContentFilter(e) && !nonHarmFilter(e))) {
+        const m = await masked();
+        if (!m) return neutral("content_filter_nonharm");
+        again = m; guardSlot.masked = true;
+      }
     }
     // round 5 (sim lab p43, main safety review): a HARM (or unreadable) block on the PROMPT is the filter judging the whole
     // mix (the brief, her lines, the history, the child's words), not the child. The safeguard fires only when the CHILD'S
@@ -625,9 +635,11 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
         return blocked(probe);
       }
       console.warn(`[lesson] reply prompt blocked (${cats}) but the child's own words pass: ${retry ? "the retry on this turn alone" : "a neutral line"}`);
-      if (!retry) return neutral("content_filter_context");
-      again = retry;
+      const got = retry ?? await masked();
+      if (!got) return neutral("content_filter_context");
+      again = got;
       guardSlot.filter = "context";
+      if (!retry) guardSlot.masked = true;
     }
     if (!again && isContentFilter(e) && e.status === 200 && !nonHarmFilter(e)) {
       console.warn("[lesson] reply completion blocked by the content filter: one fresh reply");
@@ -658,7 +670,7 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
     }
   }
   let found = problems(reply);
-  const guard = { caught: found, rewritten: false, replaced: false, ...(found.length ? { firstDraft: reply } : {}), ...(guardSlot.used ? { leadSlot: true } : {}), ...(guardSlot.filter ? { filter: guardSlot.filter } : {}) };
+  const guard = { caught: found, rewritten: false, replaced: false, ...(found.length ? { firstDraft: reply } : {}), ...(guardSlot.used ? { leadSlot: true } : {}), ...(guardSlot.filter ? { filter: guardSlot.filter } : {}), ...(guardSlot.masked ? { masked: true } : {}) };
   // r4-latency (TAXILA_TTS_FIRST_SENTENCE, SHADOW): can the draft's first TTS sentence be LOCKED now — could it start speaking
   // while the rest of the turn is still being guarded or rewritten? Locked only when it passes every per-sentence guard on its
   // own, names nothing on the screen (the child would still see the last turn's), asks nothing, and the minimal turn
@@ -712,9 +724,9 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
         : `it agrees with or praises their answer, but their answer was not marked right — no agreement or praise word for it; ${R3 ? "start from what they actually did" : "name what is sensible in it"}, then the next step`),
       found.includes("deny") && "it says their answer is wrong, but it was right — confirm it plainly",
       found.includes("corrects") && `it implies their answer was wrong or that the answer is something else, but their answer ${JSON.stringify(String(right.key))} was right — confirm it plainly and do not name any other answer as the result`,
-      found.includes("screen") && "it tells them to tap or pick something on the screen, but nothing is on the screen to tap this turn — ask them to say it",
+      found.includes("screen") && "it sends them to the screen (to tap or pick something, or to look at a picture or diagram), but nothing of that is on the screen this turn — say it in words, or ask them to say it",
       found.includes("parts") && `it names parts the screen does not show — ${screenContradiction(aboutScreen(own(reply)), module, partsLines)?.onScreen ?? ""}`,
-      found.includes("cantshow") && "it says you cannot show or draw — never say that; the board draws for you: talk about the idea itself",
+      found.includes("cantshow") && "it says you cannot show or draw — never say that; talk about the idea itself in words, and point at the screen only at what is on it now",
       found.includes("stage") && "it reads out a field name, markup or a text picture (like 'Whiteboard:', brackets or rows of symbols like ●●●) — plain spoken words only; the board draws pictures, never your words",
       found.includes("uiword") && "it names a screen part by an internal name (chips, bar1) — say what the child sees: the buttons on the screen, strip A or B",
       found.includes("register") && (address === "aap" ? "it uses tum forms — address the child with aap forms only (aap, aapka; verbs ending -iye)" : "it uses aap — address the child with tum forms (tum, tumhara)"),
@@ -791,7 +803,7 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
       if (found.includes("math")) { reply = keepOr(sentences(reply).filter((x) => !arithmeticSlip(own(x))).join(" ").trim()); guard.replaced = true; }
       if (found.includes("praise")) { reply = keepOr(stripPraise(reply)); guard.replaced = true; }
       if (found.includes("corrects")) { reply = keepOr(stripCorrection(reply, right)); guard.replaced = true; }
-      if (found.includes("screen")) { reply = keepOr(stripScreenRefs(reply)); guard.replaced = true; }
+      if (found.includes("screen")) { reply = keepOr(stripScreenRefs(reply, { stageEmpty: emptyStage(ui, module) })); guard.replaced = true; }
       // W2-B fixer: a rewrite that still names part counts the screen does not show loses those sentences
       if (found.includes("parts")) {
         // a requested example keeps its own sentences: only the ones about the screen are taken out
