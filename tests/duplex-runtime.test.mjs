@@ -516,6 +516,23 @@ test("fan-in: epochs drop the last turn's late final; a carried overlap folds in
   assert.equal(f.view(3300).text, "बारह");
 });
 
+test("census F5: the carried burst's OWN item joins the fold-in though the ear opened it before the device's late onset", () => {
+  // D5 over her playback: the device sees the child at 2620 (her echo masks the start), Voice Live's VAD opened the item at
+  // 1996; the final lands after her line ended. Those words are the fold-in's, never dropped with the old turn.
+  const f = new TurnTranscript({ source: "voicelive" });
+  f.begin(0);
+  f.begin(3340, { carryFrom: 2620 });
+  f.push({ type: "final", itemId: "burst", text: "8 corners", t: 3760, audioStartMs: 1996, audioEndMs: 3200 });
+  assert.equal(f.view(3760).text, "8 corners");
+  // an item that ENDED before the carried onset is the last turn's, and stays out; so does one opened far earlier
+  const g = new TurnTranscript({ source: "voicelive" });
+  g.begin(0);
+  g.begin(3340, { carryFrom: 2620 });
+  g.push({ type: "final", itemId: "before", text: "पुराना", t: 3400, audioStartMs: 1700, audioEndMs: 2400 });
+  g.push({ type: "final", itemId: "early", text: "बहुत पहले", t: 3500, audioStartMs: 900, audioEndMs: 3000 });
+  assert.equal(g.view(3500).text, "");
+});
+
 test("echo subtraction removes a run of her words and keeps a single-word answer that repeats one of hers", () => {
   const e = new EchoSubtractor();
   e.heardText("u1", "हर हिस्सा एक चौथाई होता है", 0, 70);

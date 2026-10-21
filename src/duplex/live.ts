@@ -991,7 +991,9 @@ export class DuplexLive {
         this.stats.commits++;
         this.pendingTurn = turnId;
         this.pendingAt = c.t;
-        const text = String(c.text ?? "").trim();
+        // the hold offer is the floor's own move after "wait": the request's words were acted on (the hold) and are never sent
+        // again as the child's words (the server reads a wordless hold offer as a check-in; "रुको" would read as a stop)
+        const text = c.op === "cut_in" && c.reason === "hold_offer" ? "" : String(c.text ?? "").trim();
         const revokeOf = this.revoked;
         this.revoked = null;
         this.lastCommit = { turnId, text };

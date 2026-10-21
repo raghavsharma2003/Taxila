@@ -209,6 +209,20 @@ test("D5 #6: a burst only the device heard (Voice Live opened no item) is never 
   assert.deepEqual(r.acts.filter((a) => a[1] === "commit").map((c) => c[2]), ["छप्पन"]);
 });
 
+test("census F5: the hold offer after 'wait' is the floor's own wordless move; the hold request's words are never re-sent", () => {
+  const r = afterQuestion();
+  const f = burst(3000, 3500);
+  r.run(3600, f);
+  r.live.stt({ type: "input_audio_buffer.speech_started", item_id: "w1", audio_start_ms: 3000 - 210 });
+  r.run(3900, f);
+  r.live.stt({ type: "input_audio_buffer.speech_stopped", item_id: "w1", audio_end_ms: 3500 + 340 });
+  r.live.stt({ type: "conversation.item.input_audio_transcription.completed", item_id: "w1", transcript: "रुको" });
+  r.run(30000, f);
+  const c = r.acts.filter((a) => a[1] === "commit");
+  assert.ok(c.length >= 1, `the hold offer came: ${JSON.stringify(r.acts.filter((a) => a[1] !== "duck"))}`);
+  assert.deepEqual(c.map((x) => x[2]), c.map(() => ""), "no commit carries the hold request's words");
+});
+
 for (const ending of ["failed", "empty"]) {
   test(`D5 #6: Voice Live opened an item and its final was ${ending}: the ear covered the burst → the Director's re-ask (an empty turn)`, () => {
     const r = afterQuestion();

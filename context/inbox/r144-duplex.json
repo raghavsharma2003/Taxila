@@ -11,12 +11,29 @@
       "kind": "decision",
       "at": "2026-10-21",
       "title": "D5: an empty turn over speech the ear could not read is UNHEARD, never silence. The client marks it (duplex.unheard, set only when Voice Live's own item ended with no words since the last commit) and never posts an empty SPEAK with no ear item behind it (the safety floor and the hold offer untouched); the server classifies an unheard turn as source asr; the Director asks again with its own shape (unheardAgain: her ear, not their fault) and never counts it toward the are-you-there break; in an open safeguard CHECK-IN an unheard turn re-asks the check-in and does not use up its one silence, failing closed on the THIRD unheard turn in a row (UNHEARD_CHECKS = 2). Reversal: production traces showing unheard turns that were really silence (the ear opening an item on room noise), or a child whose distress went unescalated behind repeated unheard turns."
+    },
+    {
+      "id": "ms-r144-d5-overlap-words-lost",
+      "kind": "measurement",
+      "at": "2026-10-21",
+      "title": "D5 drops the child's words said OVER her line (census F5 #1, main's priority: the topic request lost in a barge-in merge; evals/duplex-2026-10/results/lost-words.json). Method: the live Voice Live D5 events of all 66 scenarios, owner + phone variants, replayed through the engine before / after; an ear final with content words (not a continuer / stop / hold phrase) that no commit carried is LOST. BEFORE: 12 content finals lost (owner 7, phone 5): every barge_fold_in (0/5 committed in EVERY D5 arm ever recorded, d5r5…d5v200, while D4-full committed 4/5) and the content barge_stops (\"8 minutes duty\"). Cause: over her playback the device detects the child's onset late (her echo masks it; 2,620 ms vs the ear's 1,996 in fold_in-0389), the fold-in carries the turn from that late onset, and the fan-in (server/duplex/fanin.js belongs) admitted only items that started after it — the burst's own item, with the words, was dropped as the old turn's; with no partials on D5 the words always land after her line, so the her-floor lexical yield never saw them either. AFTER (an item still open at the carried onset, opened ≤ 1.2 s before it, with a known audio end past it, joins): content lost 12 → 1 (phone barge_stop 0386 left); fold-ins committed owner 0/5 → 5/5, phone 0/5 → 3/5 (the other two heard \"Yes.\" / nothing); control phrases unchanged (11 / 11, never turns); the duplex scorer's floor metrics unchanged on both variants (cut-offs, continuers, phantom, EOT p50/p90, skeleton CER) except lone words noticed 5/8 → 6/8. The carried request words also leaked into the HOLD OFFER (base already did on hold_long: \"रुको, रुको।\" sent as the offer's words, which the server reads as words, not a hold check-in): the hold offer is now always wordless (2 → 0 per variant)."
+    },
+    {
+      "id": "dc-r144-fanin-carried-burst-item",
+      "kind": "decision",
+      "at": "2026-10-21",
+      "title": "The fold-in's carried turn keeps the burst's OWN ear item: an item still open at the carried onset (opened at most CARRY_PRE_MS = 1,200 ms before it, with a KNOWN audio end past it) belongs to the turn; the hold offer after \"wait\" is always wordless. Not changed (tried, no effect on the 132 recorded runs): carrying a hushed burst at her_end when her line did not hand over (governor carryCheck) — kept as a candidate if production shows a request said over an explanation, read as a short burst, lost. Reversal: production traces showing the previous turn's words (an echo item, the last answer) folded into the next turn."
     }
   ],
   "edges": [
     {
       "from": "dc-r144-d5-unheard-not-silence",
       "to": "ms-r144-d5-false-silence",
+      "rel": "measured_by"
+    },
+    {
+      "from": "dc-r144-fanin-carried-burst-item",
+      "to": "ms-r144-d5-overlap-words-lost",
       "rel": "measured_by"
     }
   ]
