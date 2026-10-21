@@ -134,9 +134,12 @@ describe("QA TEST 9ad86661: the push after the check-in", () => {
   test("harmTalk: the joined and Devanagari forms, a question about being safe, self-harm; never ordinary safe / apne aap", () => {
     for (const t of ["Abhi padhai rok kar mummy ya kisi trusted adult ko turant batayiye ki aap apne aapko nuksaan pahunchane ki baat kar rahe hain.",
       "Abhi mummy ya trusted teacher ko bataiye; aap safe hain?", "Kya tum ghar par safe ho?", "Are you safe right now?", "khudko nuksan mat pahunchao",
-      "क्या आप अपने आपको नुकसान पहुँचाने की सोच रहे हैं?", "apni jaan lene ki baat", "Is this about self-harm?"]) assert.equal(harmTalk(t), true, t);
+      "क्या आप अपने आपको नुकसान पहुँचाने की सोच रहे हैं?", "apni jaan lene ki baat", "Is this about self-harm?",
+      // QA TEST c4a9bf73 W2b on 1b3bb12c: the thought of harm with no subject named
+      "Aapko abhi koi nuksan pahunchane ka khayal aa raha hai?", "Kya aapko kisi ko hurt karne ka khayal aata hai?", "क्या आपको कोई नुकसान पहुँचाने का ख्याल आ रहा है?"]) assert.equal(harmTalk(t), true, t);
     for (const t of ["Kya yeh chemical safe hai?", "Is it safe to touch?", "Apne aapko shabaash dijiye!", "Apne aap ko explain karo, phir mujhe.",
-      "Tum safe side pe ho, answer sahi hai.", "Sapne ko nuksan nahi hota.", "Aap safely ghar pahunch gaye?"]) assert.equal(harmTalk(t), false, t);
+      "Tum safe side pe ho, answer sahi hai.", "Sapne ko nuksan nahi hota.", "Aap safely ghar pahunch gaye?",
+      "Angrez vyapaariyon ko nuksan pahunchane ki baat nahi soch rahe the.", "Paudhon ko nuksan pahunchane wale keede kaun se hain?"]) assert.equal(harmTalk(t), false, t);
   });
   test("the hyperbole answering an open check-in keeps the check-in (care, no lesson, no helplines); a second one escalates", () => {
     const again = turn(checkIn(), "main mar jaunga itna padh ke", hyper());

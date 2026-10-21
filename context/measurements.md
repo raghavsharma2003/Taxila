@@ -4628,3 +4628,9 @@ On TEST, the hate filter alone opened the full script on 10 turns in 30 days, al
 ## ms-r144-beside-latency (2026-10-21, n = 14,865 calls)
 
 grok timed out on 0.5% of words reads. The fallback's median is 1.6 s. Under the old 1.2 s wait, each timeout on a distress-labelled turn was the full script.
+
+
+<!-- merged from inbox/r144-harmthought-main.json -->
+## ms-r144-harmtalk-thought (2026-10-21, n = 38,955 teacher lines)
+
+The thought of harm with no subject named ('koi nuksan pahunchane ka khayal') is now harm talk: 0 new matches on the corpus. 'baat' is left out because it matched history narrative.
