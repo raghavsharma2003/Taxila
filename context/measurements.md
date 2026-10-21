@@ -4761,3 +4761,13 @@ Main safety review: approved for 14.4.1. Test: tests/r145-stray-script.test.mjs.
 ## ms-r145-fade-key-number (2026-10-21, stream 4A)
 
 A faded step's key kept the sentence after the number ("5. 5 kites are still flying"), so a bare right "5" earned nothing (sim lab p55 t5). blankOf now keys the number. 2 kits grade in code; 2 keep the whole worked example because the number was already shown. Test: tests/r145-fade-key.test.mjs.
+
+
+<!-- merged from inbox/r5-38aad918-s2.json -->
+## ms-r5-subject-not-verb (2026-10-21, n = 3,790 distinct sim-lab child lines)
+
+freeSubjectOf readings go 157 -> 113. All 44 removed were fillers or verbs. No real subject is lost, and visualAskOf is unchanged.
+
+## ms-r5-picture-under-board (2026-10-21, n = 3 turns of 38aad918)
+
+Empty screen at turn end goes 3 -> 0, from main's per-turn studio events walked through the new rules. The sim-lab records have no pictures to count.
