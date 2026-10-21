@@ -4431,3 +4431,17 @@ Out-of-sample continuer check: 32 cards not used for tuning, plus p30's re-run. 
 
 - 14.3.2 verified on TEST: 5/5 low-mood lines safeguarded, two of them caught by the new words-only read.
 - 0/3 boredom lines safeguarded.
+
+
+<!-- merged from inbox/r1432wrap-main.json -->
+## ms-r143-decided-gate-director-vs-agent (2026-10-15, n=128)
+
+- **Judges:** they rate the agent lane higher on every axis (coherence 4.06 vs 3.36, adapts 3.47 vs 2.52, human 4.36 vs 3.98). It also finds more misconceptions (59 vs 47 of 74).
+- **Reading the child:** the agent lane reads probed skills right less often (64% vs 74%) and raises more false alarms (12 vs 7).
+- **Speed:** it is slower, with turn p50 of 6.0 s vs 3.4 s.
+- **Defect:** it opens a correct 'No' with Yes in 9/14 cases; the Director does this 0/6.
+
+## ms-r1431-qa-continuer (2026-10-15)
+
+- On 14.3.1 on TEST, the continuer never played on a safety, goodbye, romance or secret turn (0/4).
+- It played on 1 of 3 ordinary turns, 2.5 s after the child stopped. The other 2 were refused as late, because the decision took 1.4-2.2 s.

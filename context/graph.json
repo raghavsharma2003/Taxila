@@ -21708,6 +21708,45 @@
    "at": "2026-10-15",
    "title": "Final stream heads for 14.4 integration (all pushed, gated, trees clean; inboxes inside each branch): stream 2 claude/r4-content 4a4660fe (86570734 reviewed + f642ecf4 revealsAnswer unit keys, 4 moved lines in docs/design/round5/content/runs/reveals-unit-14.4.json + 50c3622a null default; QA still to pass the reload test on a kept board); 4A claude/r4-conversation 2e56df1a (spoken fractions 34/34, D41 d8491037, story question; deep-marks switch OFF); 4B claude/r4-duplex 67de456e (verdict hold measured: added first sound p50 0 / p90 0 / max 104 ms at today's R, crosses 250 ms p50 near R ≈ 1.7 s, so it ships; full undo behind TAXILA_EDIT_UNDO=1, migration 030 only on 4B's DB / TEST); stream 3 claude/r4-latency 003992e9 (incl. 3b1e317d). QA on 14.3.1: continuer 0/4 on safety / goodbye / romance / secret; 1/3 ordinary turns played, 2 refused late (decisions 1.4-2.2 s), the one played started 2.5 s after the child stopped (design ~900 ms): for stream 3's third pass. Remaining: the sim lab's 32-card classify_words false-safeguard run; the ack-cohort SQL after a day.",
    "source": "inbox/r1432final-main.json"
+  },
+  {
+   "id": "ms-r143-decided-gate-director-vs-agent",
+   "kind": "measurement",
+   "at": "2026-10-15",
+   "n": 128,
+   "method": "sim lab run r5-rel143-9a30285-decided-gate (claude/r5-simlab 551f72dd): 14.3 final 9a30285d, Director vs agent_gpt6, 64 cards x text, decided child, southindia; judge 1 grok, judge 2 Kimi; facts.mjs per opportunity",
+   "title": "Director vs agent lane on 14.3 (128 lessons, 0/1707 turns unavailable). Read right vs hidden truth: agent 117/182 probed skills (64%), overclaimed 23; Director 120/163 (74%), overclaimed 22: the agent probes more skills and reads a smaller share right. Judge 1 means, agent vs Director: coherence 4.06 vs 3.36, follows_child 3.78 vs 3.16, adapts 3.47 vs 2.52, understanding 3.38 vs 3.11, human 4.36 vs 3.98; judge 2 agrees on direction. Misconceptions found 59/74 vs 47/74, false alarms 12 vs 7. Turn p50 agent 6,001 ms vs Director 3,435 ms. Per opportunity: yesOnNoAnswer agent 9/14 correct 'No' answers opened with Yes/Haan vs Director 0/6 (an agent-lane defect; the before for 4A's 14.4 affirmation guard); affirmOnNonCorrect agent 0/182 vs Director 1/77.",
+   "source": "inbox/r1432wrap-main.json"
+  },
+  {
+   "id": "ms-r1431-qa-continuer",
+   "kind": "measurement",
+   "at": "2026-10-15",
+   "n": 7,
+   "method": "QA local TEST on 3a18c0ee (14.3.1), a class 6 guardian in TAXILA_ACK_CONTINUER_FOR, spoken turns from child-voice WAVs (recording fallback lane), one fresh lesson per turn; ack.decision / ack.outcome rows read from the trace",
+   "title": "The continuer on 14.3.1, out of sample on TEST: refused on every safety / goodbye / romance / best-friend-secret turn (0/4 played: none relational, leaving, relational, safety; each turn routed right: safeguard by relational floor, wrap, hook, safeguard by predicate). Ordinary turns: 1/3 played ('मुझे नहीं पता': continuer decided at 2,190 ms, played 2,532 ms after the child stopped, against the ~900 ms design); 2/3 refused as late (decisions at 1.4-2.2 s). The ack.decision rows matched what played, codes only. For stream 3's third pass: the decision latency on this lane, not the gate, is what keeps the continuer late.",
+   "source": "inbox/r1432wrap-main.json"
+  },
+  {
+   "id": "open-r1432-agent-yes-on-no",
+   "kind": "open",
+   "at": "2026-10-15",
+   "title": "The agent lane opens a correct 'No' answer with Yes/Haan 9 times in 14 (Director 0/6), ms-r143-decided-gate-director-vs-agent. 4A's 14.4 affirmation guard (4477af35 + ba413d78: the streamed first clause gets the same Yes-before-No rewrite as the caption) targets it; its after is the same 64 cards on 14.4 int.",
+   "source": "inbox/r1432wrap-main.json"
+  },
+  {
+   "id": "open-r143-agent-vs-director-tradeoff",
+   "kind": "open",
+   "at": "2026-10-15",
+   "title": "Which lane leads: the agent lane is judged more coherent, more following, more adaptive and more human (judge 1: +0.7 / +0.6 / +0.95 / +0.4) and finds more misconceptions (59 vs 47 of 74), but reads fewer probed skills right (64% vs 74%), raises more false alarms (12 vs 7) and is 2.6 s slower per turn at p50 (6.0 vs 3.4 s). No decision until the agent lane's yes-on-no and read accuracy are fixed and its turn time is measured against the latency work; measure on the same 64 decided cards.",
+   "source": "inbox/r1432wrap-main.json"
+  },
+  {
+   "id": "open-r1432-simlab-leftover-test-accounts",
+   "kind": "open",
+   "at": "2026-10-15",
+   "title": "Up to 4 sim lab TEST accounts (simlab+p16-c7-science-chatty-…@taxila.test) may be left on the TEST DB from a p16 launch killed at wrap-up before any lesson finished. TEST only; delete through the normal account deletion. If one refuses with erase_review it had a safeguard: leave it, never bypass the guard.",
+   "source": "inbox/r1432wrap-main.json"
   }
  ],
  "edges": [
@@ -34758,6 +34797,26 @@
   },
   {
    "src": "open-r1432-handover-heads",
+   "rel": "part_of",
+   "dst": "open-r1432-next-session"
+  },
+  {
+   "src": "open-r1432-agent-yes-on-no",
+   "rel": "caused_by",
+   "dst": "ms-r143-decided-gate-director-vs-agent"
+  },
+  {
+   "src": "open-r143-agent-vs-director-tradeoff",
+   "rel": "caused_by",
+   "dst": "ms-r143-decided-gate-director-vs-agent"
+  },
+  {
+   "src": "ms-r1431-qa-continuer",
+   "rel": "measured_by",
+   "dst": "dc-r143-continuer-owner-cohort"
+  },
+  {
+   "src": "open-r1432-simlab-leftover-test-accounts",
    "rel": "part_of",
    "dst": "open-r1432-next-session"
   }
