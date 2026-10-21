@@ -74,6 +74,8 @@ export interface Move {
   tier?: "check";
   /** 14.4: this safeguard escalated from a check-in. */
   escalated?: boolean;
+  /** 14.4: a check-kind distress read on this turn was set aside (the check-in released, or its cooldown): no incident. */
+  setAside?: boolean;
 }
 
 export type LessonPhase = "warmup" | "teach" | "practice" | "teachback" | "wrap" | "done";

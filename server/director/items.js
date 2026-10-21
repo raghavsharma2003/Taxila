@@ -581,7 +581,7 @@ function distinguishingNumbers(item) {
 /**
  * 14.4 (QA pass 16 / main: "Aap 160 par ungli rakhenge?" under the key "160 m" was no leak, the key's run being "160 m"): a key
  * "N unit" is also its number alone and the number with any spelling of the same unit, so it leaks exactly as a bare key "N"
- * does today. The added forms go through the same loop as every form: the existing exemption (a form the item's own prompt
+ * does today (for the answer's own number only: an acceptable form in another unit stays its whole phrase). The added forms go through the same loop as every form: the existing exemption (a form the item's own prompt
  * names leaks only next to a verdict word) applies to them unchanged; no new exemption. Code-only table.
  */
 const UNIT_GROUPS = [
@@ -596,8 +596,11 @@ const UNIT_OF = new Map(UNIT_GROUPS.flatMap((g) => g.map((u) => [u, g])));
 function withUnitForms(forms) {
   const out = [...forms];
   const has = (f) => out.some((x) => x.length === f.length && x.every((w, i) => w === f[i]));
+  // 14.4 (stream 2, main): only the answer's own number is expanded. An acceptable form in another unit ("2000 m" for
+  // "2 km") stays its whole phrase, never a bare "2000" (p59 #12 said "2,000" while teaching and was flagged by mention)
+  const key = new Set((forms[0] ?? []).filter((w) => /^-?\d+(?:[./]\d+)?$/.test(w)));
   for (const f of forms) {
-    if (f.length !== 2 || !/^-?\d+(?:[./]\d+)?$/.test(f[0]) || !UNIT_OF.has(f[1])) continue;
+    if (f.length !== 2 || !key.has(f[0]) || !UNIT_OF.has(f[1])) continue;
     for (const g of [[f[0]], ...UNIT_OF.get(f[1]).map((u) => [f[0], u])]) if (!has(g)) out.push(g);
   }
   return out;

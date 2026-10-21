@@ -60,7 +60,12 @@ export const MODEL_EPISODE_KINDS = Object.freeze(new Set(["model", "content_filt
  * an understanding note, a read naming self-harm / a person hurting them / fear of a person or home / danger now, or a
  * read that could not name a kind.
  */
-const CHECK_ABOUT = Object.freeze(new Set(["sad_or_lonely", "other_fright", "none"]));
+const CHECK_ABOUT = Object.freeze(new Set(["sad_or_lonely", "other_fright", "hurt_by_accident_or_animal", "none"]));
+/** The classification with a check-kind distress read set aside (a check-in that released, or its cooldown): the lesson
+ *  reads the rest of it as usual. Never used on a sure read. */
+const quiet = (cls) => (cls?.flags?.distress && checkTier(cls.flags) ? { ...cls, flags: { ...cls.flags, distress: false, distressSetAside: cls.flags.distressAbout ?? "check" } } : cls);
+/** The step that set a check-kind read aside marks its move (brain/turn.js writes no incident for it). */
+const setAside = (s) => { s.setAside = s.turn; };
 export const checkTier = (flags = {}) => !!flags.distress && !flags.sureBy
   && ((flags.distressKind === "model" && CHECK_ABOUT.has(flags.distressAbout ?? "")) || (flags.distressKind === "content_filter" && flags.filterUnsure === true));
 
@@ -1350,12 +1355,22 @@ function decide(s, input, item) {
   // floor and a carried check-in always restart the full script.
   const sameEpisode = !!(flags.distress && s.safeguard && !s.safeguard.carried && MODEL_EPISODE_KINDS.has(s.safeguard.kind)
     && MODEL_EPISODE_KINDS.has(flags.distressKind ?? ""));
-  // 14.4: an open CHECK-IN is decided by the next turn. Distress again, or words that neither say the child is fine nor carry
-  // on with the lesson, is the full script (the vetted opening, the helplines on the board, an incident: escalated); the
-  // child clearly fine, asking to carry on, asking for something or answering the lesson goes back to it; a stop ends it.
+  // 14.4: an open CHECK-IN is decided by the next turn. It escalates to the full script (the vetted opening, the helplines
+  // on the board, an incident: escalated) only on what would be sure on its own: a sure signal (the predicate, a sure kind,
+  // the relational floor, a block the words trip, an unnamed read), a low mood read AGAIN after she asked, or a second
+  // silence. Everything else goes back to the lesson with one warm line: a restated fright ("bas bhaunka… main dar gayi
+  // thi"), "okay, bas tired", "pata nahi", an answer (graded and served as it stands), a request; a stop ends it.
+  // (Sim lab r5-rel144-b8285b2-tiered-36card p68 / p30, 14.4 first cut: escalating every reply that was not clearly fine
+  // turned the check-in's own question into its escalation: the child answered "what happened?" and got the script.)
   if (s.safeguard?.tier === "check") {
-    const words = input.text ?? input.answer ?? "";
     const answered = !!cls && ["correct", "partial", "incorrect", "misconception"].includes(cls.outcome);
+    // the child's clear words win over a MODEL re-read of them (QA TEST 3560088c: "haan theek hoon" re-read as distress by
+    // the understanding note escalated a check-in); the predicate's families and every sure layer still escalate
+    const words = input.text ?? input.answer ?? "";
+    const fineWords = clearlyFine(words) || bareOk(words);
+    const modelOnly = !!flags.distress && !flags.sureBy && ["model", "model_note"].includes(flags.distressKind ?? "");
+    const sure = !!flags.distress && !checkTier(flags) && !(fineWords && modelOnly);
+    const lowAgain = !!flags.distress && flags.distressAbout === "sad_or_lonely" && !fineWords;
     if (!flags.distress && (flags.wantsToStop || chipId === "safe:stop")) { s.safeguard = null; return toWrap(s, { stopping: true }); }
     // speech the ear could not read (D5 unheard, census 4B): her mishearing is never the child's answer. She asks the check-in
     // again; it never escalates on her ear alone, until a third unheard turn in a row (then the full script: fail closed)
@@ -1365,26 +1380,38 @@ function decide(s, input, item) {
     }
     // silence (the duplex backstop's empty commit, a phantom turn: census 4B) is no answer yet: the check-in waits once,
     // gently; a second silence in a row is the full script
-    if (isSilentTurn(input) && !s.safeguard.quiet) { s.safeguard = { ...s.safeguard, quiet: 1 }; return plan("safeguard", SH.distressCheckAgain(), { tier: "check" }); }
+    const silent = isSilentTurn(input);
+    if (silent && !s.safeguard.quiet) { s.safeguard = { ...s.safeguard, quiet: 1 }; return plan("safeguard", SH.distressCheckAgain(), { tier: "check" }); }
+    if (sure || lowAgain || silent) {
+      s.safeguard = { calm: 0, asked: false, kind: flags.distress ? (flags.distressKind ?? s.safeguard.kind ?? null) : (s.safeguard.kind ?? null) };
+      s.safeguardedAt ??= s.turn;
+      return plan("safeguard", SH.safeguard(), { whiteboard: HELPLINES, escalated: true });
+    }
+    s.safeguard = null;
+    s.checkReleased = s.turn;
+    if (flags.distress) setAside(s);
     // an answer to the lesson or a request ("…you misheard, let's study something else": the owner's lesson e6392332) is
     // taken as it stands, graded and served, never re-posed over (census F13 / F1: a right answer during an episode earned
     // nothing and "study something else" was ignored twice); the move's words open with one warm line (SH.afterCareCheck)
-    if (!flags.distress && (answered || (cls?.request && cls.request.type !== "goodbye"))) {
-      s.safeguard = null;
+    if (answered || (cls?.request && cls.request.type !== "goodbye")) {
       s.careLine = s.turn;
-      return decide(s, input, item);
+      return decide(s, { ...input, cls: quiet(cls) }, item);
     }
-    if (!flags.distress && (clearlyFine(words) || bareOk(words) || asksToCarryOn(words) || chipId === "safe:continue")) {
-      s.safeguard = null;
-      return item ? plan(moveKindFor(item), SH.pose({ item, prefix: "gently back to the lesson; first one short warm line that they can always tell you or a grown-up they trust if something bothers them" }), { item, probe: probeFor(item) })
-        : decide(s, { ...input, cls: null }, item);
-    }
-    s.safeguard = { calm: 0, asked: false, kind: flags.distress ? (flags.distressKind ?? s.safeguard.kind ?? null) : (s.safeguard.kind ?? null) };
-    s.safeguardedAt ??= s.turn;
-    return plan("safeguard", SH.safeguard(), { whiteboard: HELPLINES, escalated: true });
+    if (item) return plan(moveKindFor(item), SH.pose({ item, prefix: "gently back to the lesson; first one short warm line that they can always tell you or a grown-up they trust if something bothers them" }), { item, probe: probeFor(item) });
+    s.careLine = s.turn;
+    return decide(s, { ...input, cls: null }, item);
   }
-  // ... never on a late answer (the page-hide beacon closed the lesson): no next turn would follow a check-in up
+  // ... never on a late answer (the page-hide beacon closed the lesson): no next turn would follow a check-in up. For four
+  // turns after a check-in released, another check-kind read of a fright opens no second check-in (the child is still
+  // telling the same story: sim lab p65 asked "are you safe now?" again after the child had said so); a low mood read
+  // again is the full script, and a sure read always is.
   if (flags.distress && !sameEpisode && !s.safeguard && checkTier(flags) && !input.late) {
+    const recent = s.checkReleased != null && s.turn - s.checkReleased <= 4;
+    if (recent && flags.distressAbout === "sad_or_lonely") {
+      s.safeguard = { calm: 0, asked: false, kind: flags.distressKind ?? null }; s.safeguardedAt ??= s.turn;
+      return plan("safeguard", SH.safeguard(), { whiteboard: HELPLINES, escalated: true });
+    }
+    if (recent) { setAside(s); return decide(s, { ...input, cls: quiet(cls) }, item); }
     s.safeguard = { calm: 0, asked: false, kind: flags.distressKind ?? null, tier: "check" };
     return plan("safeguard", SH.distressCheck(), { tier: "check" });
   }
@@ -1739,6 +1766,8 @@ export function step(prev, input) {
   // out of one (brain/turn.js writes its incident; brain/say.js, compile.js and the client read the tier)
   if (p.tier) move.tier = p.tier;
   if (p.escalated) move.escalated = true;
+  if (!input.branch && s.setAside === s.turn && p.kind !== "safeguard") move.setAside = true;
+  if (!input.branch) delete s.setAside;
   // round 4 (session-first): the intake's move (no stage build) and, for the confirm probe, the kit question it poses
   delete s.servedNow;
   if (p.intake) { move.intake = true; if (p.ask) move.ask = String(p.ask).slice(0, 300); if (p.segment) move.segment = p.segment; }

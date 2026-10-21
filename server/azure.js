@@ -6,6 +6,7 @@
 import { EndpointConfigError, laneEndpoint, laneKey, realtimeLane, resolveLane } from "./endpoints.js";
 import { admit, settle } from "./lanes.js";
 import { recordModelCall } from "./trace/model.js";
+import { record } from "./trace/writer.js";
 
 const DEFAULT_TIMEOUT_MS = 20_000;
 const RETRY_DELAY_MS = 400;
@@ -229,11 +230,36 @@ export function effortFor(deployment, effort) {
   return effort === "none" && EFFORT_FLOOR.test(deployment) ? "low" : effort;
 }
 
+/**
+ * round 5 (14.4, main's GO 2026-10-21; stream 3's evals/latency/reply-hedge-arm.mjs): TAXILA_REPLY_TWIN=off sends a hedged
+ * reply's twin to the same deployment again (as before). Default: the twin of an opted-in call (`twin: "overflow"`, the hot
+ * reply only) goes to the deployment's overflow twin.
+ */
+export const replyTwinOn = (env = process.env) => !/^(off|0|false|no)$/i.test(String(env.TAXILA_REPLY_TWIN ?? ""));
+
 export async function chat(deployment, messages, opts = {}) {
   const hedgeMs = Number(opts.hedgeMs) || 0;
-  if (!(hedgeMs > 0)) return chatOnce(deployment, messages, opts);
+  const { twin, ...rest } = opts;
+  if (!(hedgeMs > 0)) return chatOnce(deployment, messages, rest);
   const overflowOnce = { moved: false }; // the two arms share ONE overflow move (post())
-  return hedged((signal) => chatOnce(deployment, messages, { ...opts, hedgeMs: 0, retries: 0, overflowOnce, signal: linkSignals(opts.signal, signal) }), hedgeMs);
+  // the hot reply's twin on the overflow account (10-16: the primary account stood at the 6 s cap on 29% of reply calls, and
+  // a twin on the SAME deployment hit the same wall; measured: hung primary 0/12 answered today vs 12/12 at p50 4.7 s on the
+  // twin, slow-but-alive a tie, normal day 0/60 firings). Never for a speculative bet (overflow: false), a background or job
+  // call, and only while no arm has already moved there: one overflow move per call, so a throttled twin is today's
+  // behaviour, never a third call.
+  const twinLane = twin === "overflow" && replyTwinOn() && rest.overflow !== false && rest.quotaLane !== "background" ? overflowFor(rest.lane ?? "CHAT", deployment) : null;
+  let fired = null, winner = null;
+  const t0 = performance.now();
+  const out = hedged((signal, i) => {
+    const toTwin = i === 1 && twinLane && !overflowOnce.moved;
+    if (toTwin) { overflowOnce.moved = true; fired = { at: Math.round(performance.now() - t0) }; }
+    return chatOnce(deployment, messages, { ...rest, hedgeMs: 0, retries: 0, overflowOnce, signal: linkSignals(rest.signal, signal), ...(toTwin ? { lane: twinLane } : {}) })
+      .then((v) => { winner ??= toTwin ? "twin" : "primary"; return v; });
+  }, hedgeMs);
+  // a code on every firing (main's condition 3): which arm answered and when, so production's "after" is readable
+  if (twinLane) out.then(() => fired && record("reply.twin", { deployment, winner, firedAtMs: fired.at, ms: Math.round(performance.now() - t0) }),
+    () => fired && record("reply.twin", { deployment, winner: "none", firedAtMs: fired.at, ms: Math.round(performance.now() - t0) })).catch(() => {});
+  return out;
 }
 
 /** One AbortSignal that aborts when either does (the caller's, the hedge's). */

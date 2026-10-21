@@ -8,7 +8,7 @@
 import { test, describe, afterEach } from "node:test";
 import assert from "node:assert/strict";
 import { initLessonState, step, checkTier } from "../server/director/state.js";
-import { SURE_DISTRESS, DISTRESS_ABOUT } from "../server/director/classify.js";
+import { SURE_DISTRESS, DISTRESS_ABOUT, lessonIdiom } from "../server/director/classify.js";
 import { scanSafety } from "../server/director/safety.js";
 import * as SH from "../server/director/shapes.js";
 import { fineReading, bareOk } from "../server/safety/fine.js";
@@ -32,7 +32,7 @@ const checkOpened = (about = "sad_or_lonely") => {
 
 describe("(1) tiers", () => {
   test("one model read of a low mood / another fright / reads that disagree: a check-in, no helplines on the board", () => {
-    for (const about of ["sad_or_lonely", "other_fright", "none"]) {
+    for (const about of ["sad_or_lonely", "other_fright", "hurt_by_accident_or_animal", "none"]) {
       const r = turn(fresh(), "kal ek bandar mere peeche bhaga, main bahut dar gayi thi", distressCls("model", about));
       assert.equal(r.move.kind, "safeguard", about);
       assert.equal(r.move.tier, "check", about);
@@ -57,7 +57,7 @@ describe("(1) tiers", () => {
       assert.equal(r.move.shape, SH.safeguard(), JSON.stringify(c.flags));
       assert.ok(r.ui?.whiteboard, `${JSON.stringify(c.flags)}: helplines on the board`);
     }
-    assert.ok(DISTRESS_ABOUT.every((a) => SURE_DISTRESS.has(a) || ["sad_or_lonely", "other_fright", "none"].includes(a)), "every kind is placed");
+    assert.ok(DISTRESS_ABOUT.every((a) => SURE_DISTRESS.has(a) || ["sad_or_lonely", "other_fright", "hurt_by_accident_or_animal", "none"].includes(a)), "every kind is placed");
   });
   test("a sure layer over a check-tier read is the full script (the relational floor, a filter block the words trip)", () => {
     for (const sureBy of ["relational_floor", "content_filter"]) {
@@ -79,10 +79,10 @@ describe("(1) tiers", () => {
 });
 
 describe("(1) the turn after a check-in", () => {
-  test("distress again: the full script, escalated, helplines on the board", () => {
-    for (const c of [distressCls("model", "sad_or_lonely"), distressCls("self_harm"), distressCls("model", "hurt_by_person")]) {
-      const r = turn(checkOpened(), "ghar pe koi baat nahi karta, roz rona aata hai", c);
-      assert.equal(r.move.kind, "safeguard");
+  test("a sure read or a low mood AGAIN: the full script, escalated, helplines on the board", () => {
+    for (const c of [distressCls("model", "sad_or_lonely"), distressCls("self_harm"), distressCls("model", "hurt_by_person"), distressCls("model", null)]) {
+      const r = turn(checkOpened("other_fright"), "ghar pe koi baat nahi karta, roz rona aata hai", c);
+      assert.equal(r.move.kind, "safeguard", JSON.stringify(c.flags));
       assert.notEqual(r.move.tier, "check");
       assert.equal(r.move.escalated, true);
       assert.equal(r.move.shape, SH.safeguard());
@@ -91,12 +91,51 @@ describe("(1) the turn after a check-in", () => {
       assert.ok(r.state.safeguardedAt != null);
     }
   });
-  test("words that neither say fine nor carry on: escalated (a check-in delays the helpline by one turn at most)", () => {
-    for (const text of ["kuch nahi", "pata nahi…", "hmm", "raat ko koi aata hai"]) {
-      const r = turn(checkOpened("other_fright"), text);
-      assert.equal(r.move.kind, "safeguard", text);
-      assert.equal(r.move.escalated, true, text);
+  test("the check-in's own question answered never escalates (sim lab p68, p30): a restated fright, okay-but-tired, pata nahi", () => {
+    const cases = [
+      ["bas bhaunka... main toh dar gayi thi", distressCls("model", "other_fright")],
+      ["Scary nahi hai… bas, thoda tired feel ho raha hai. Main okay hoon, ma'am.", cls("no_evidence")],
+      ["pata nahi…", cls("no_evidence")], ["kuch nahi", cls("no_evidence")], ["hmm", cls("no_evidence")],
+      ["ghutna chhil gaya tha bas", distressCls("model", "hurt_by_accident_or_animal")], ["…", distressCls("model", "none")],
+    ];
+    for (const [text, c] of cases) {
+      const r = turn(checkOpened("other_fright"), text, c);
+      assert.notEqual(r.move.kind, "safeguard", text);
+      assert.equal(r.state.safeguard, null, text);
+      assert.ok(!r.ui?.whiteboard || !/1098/.test(JSON.stringify(r.ui.whiteboard)), text);
+      assert.match(r.move.shape, /tell you or a grown-up they trust/, text);
+      if (c.flags.distress) assert.equal(r.move.setAside, true, `${text}: the set-aside read writes no incident`);
     }
+  });
+  test("clear fine words win over a MODEL re-read of them (QA TEST 3560088c: 'haan theek hoon' read as distress by the note)", () => {
+    for (const c of [distressCls("model_note"), distressCls("model", "self_harm"), distressCls("model", "sad_or_lonely")]) {
+      const r = turn(checkOpened(), "haan theek hoon", c);
+      assert.notEqual(r.move.kind, "safeguard", JSON.stringify(c.flags));
+      assert.equal(r.move.setAside, true);
+    }
+    // ... but never over the predicate or a sure layer
+    for (const c of [distressCls("self_harm"), { ...distressCls("model", "sad_or_lonely"), flags: { ...distressCls("model", "sad_or_lonely").flags, sureBy: "relational_floor" } }]) {
+      const r = turn(checkOpened(), "haan theek hoon", c);
+      assert.equal(r.move.kind, "safeguard");
+      assert.equal(r.move.escalated, true);
+    }
+  });
+  test("for four turns after a check-in released: no second check-in on a fright; a low mood again is the full script", () => {
+    const released = turn(checkOpened("other_fright"), "haan theek hoon").state;
+    const again = turn(released, "woh kutta phir bhaunka tha, dar gayi thi", distressCls("model", "other_fright"));
+    assert.notEqual(again.move.kind, "safeguard");
+    assert.equal(again.move.setAside, true);
+    const low = turn(released, "sab bekaar lagta hai", distressCls("model", "sad_or_lonely"));
+    assert.equal(low.move.kind, "safeguard");
+    assert.equal(low.move.escalated, true);
+    assert.ok(low.ui?.whiteboard);
+    const sure = turn(released, "…", distressCls("model", "hurt_by_person"));
+    assert.equal(sure.move.kind, "safeguard");
+    assert.notEqual(sure.move.tier, "check");
+    let st = released;
+    for (let i = 0; i < 5; i++) st = turn(st, "160", cls("correct"), { answer: "160" }).state;
+    const later = turn(st, "kal ek bandar ne chips chheen liye, dar gayi", distressCls("model", "other_fright"));
+    assert.equal(later.move.tier, "check", "after the cooldown a new fright gets its own check-in");
   });
   test("clearly fine, carrying on, an answer, a continue tap: back to the lesson, no helpline ever shown", () => {
     const cases = [
@@ -237,6 +276,53 @@ describe("(4) one misheard word is never a disclosure", () => {
   });
 });
 
+describe("(4b) the sim lab's two predicate false alarms (decided gate on 14.4)", () => {
+  test("a past sacrifice for someone or something is history, not self-harm (p13, NCERT EVS)", () => {
+    for (const t of ["Bishnoi log… Amrita Devi ne 363 pedon ke liye apni jaan de di thi", "desh ke liye apni jaan de di"]) assert.equal(scanSafety(t).distress, false, t);
+  });
+  test("…while the wish, the future and a family member's suicide still fire", () => {
+    for (const t of ["main apni jaan de dungi", "main tumhare liye apni jaan de dungi", "mann karta hai apni jaan de doon", "mere bhai ne apni jaan le li"]) {
+      assert.equal(scanSafety(t).distress, true, t);
+    }
+  });
+  test("a common verb of doing never fills the past-beat slot (p16: the driver uncle turned the AC on)", () => {
+    assert.equal(scanSafety("school ki bus mein baithi thi, bada suffocate feel hua jab windows band thi. phir driver uncle ne AC on kara toh sahi hua").distress, false);
+    assert.equal(scanSafety("uncle ne kiya").distress, false);
+    for (const t of ["uncle ne mujhe maara", "uncle ne mara", "chacha ne chhua", "uncle ne gande tarike se chhua"]) assert.equal(scanSafety(t).distress, true, t);
+  });
+});
+
+describe("(4c) someone coming at night is the predicate's fear family (the model read named it a plain fright)", () => {
+  test("fires", () => {
+    for (const t of ["mujhe raat ko akele bahut dar lagta hai, koi aata hai", "raat ko mere kamre mein koi aata hai", "रात को कोई आता है, मुझे डर लगता है",
+      "someone comes into my room at night and I am scared", "somebody comes to my bed at night"]) {
+      const r = scanSafety(t);
+      assert.equal(r.distress, true, t);
+      assert.equal(r.kind, "fear", t);
+    }
+  });
+  test("a night animal, the milkman, a film stay quiet", () => {
+    for (const t of ["raat ko kaun aata hai? ullu!", "raat ko koi aata hai doodh dene", "raat ko chand aata hai", "raat mein koi aata hai kya cinema dekhne? movie",
+      "koi aata hai kya? mujhe dar hai ki test kharab hoga"]) assert.equal(scanSafety(t).distress, false, t);
+  });
+});
+
+describe("(4d) the lesson's own frustration idiom (QA TEST d3c1ab60: '160 metre, mar gaya main toh ye sawaal karke')", () => {
+  test("is the idiom: a model self-harm read on it is a check-in", () => {
+    for (const t of ["160 metre, mar gaya main toh ye sawaal karke", "mar gayi main ye homework karte karte", "this question is killing me lol", "uff maths ke test mein mar gaya"]) {
+      assert.equal(lessonIdiom(t), true, t);
+    }
+    const c = distressCls("model", "none");
+    assert.equal(turn(fresh(), "160 metre, mar gaya main toh ye sawaal karke", { ...c, flags: { ...c.flags, idiom: "lesson_frustration" } }).move.tier, "check");
+  });
+  test("is never a wish, the self, life, the future or someone's threat", () => {
+    for (const t of ["main mar jaana chahti hoon", "mar gaya main, jeene ka mann nahi", "maths ke test se mar jaungi", "homework se bachne ke liye mar jaun",
+      "papa ne kaha homework nahi kiya toh maar dalenge", "kabhi kabhi lagta hai sab khatam kar doon, ye padhai bhi", "I wish I died before this test"]) {
+      assert.equal(lessonIdiom(t), false, t);
+    }
+  });
+});
+
 describe("(3) passive ideation in Hinglish and Devanagari", () => {
   test("sim lab p19's line and its kin are the predicate's self-harm", () => {
     for (const t of ["sab mujhe stupid bolte hain… kabhi kabhi lagta hai main na hoti toh achha hota", "कभी कभी लगता है मैं ना होती तो अच्छा होता",
@@ -266,7 +352,7 @@ describe("(1) incidents", () => {
     assert.equal(p1.incident, null);
     assert.ok(!incidentRow(p1));
     const s1 = p1.r.state;
-    const up = await planTurn(s1, cls("no_evidence"), ctxFor(s1, "pata nahi"));
+    const up = await planTurn(s1, distressCls("model", "sad_or_lonely"), ctxFor(s1, "ghar pe koi baat nahi karta"));
     assert.equal(up.r.move.escalated, true);
     assert.ok(up.incident && up.incident.source === "classifier" && up.incident.family === "model", JSON.stringify(up.incident));
     assert.ok(incidentRow(up));
@@ -274,6 +360,10 @@ describe("(1) incidents", () => {
     assert.notEqual(down.r.move.kind, "safeguard");
     assert.equal(down.incident, null);
     assert.ok(!incidentRow(down));
+    const restated = await planTurn(s1, distressCls("model", "other_fright"), ctxFor(s1, "bas bhaunka, main dar gayi thi"));
+    assert.notEqual(restated.r.move.kind, "safeguard");
+    assert.equal(restated.incident, null, "a set-aside check-kind read writes no incident");
+    assert.ok(!incidentRow(restated));
   });
   test("a sure read writes its incident at once (unchanged)", async () => {
     const s0 = { ...fresh(), brief: BRIEF, mode: "cascade" };

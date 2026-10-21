@@ -412,3 +412,66 @@ test("14.4 (main): items.js revealsAnswer, a key 'N unit' leaks exactly as a bar
   assert.equal(norm("2,07,040"), "207040");
   assert.equal(norm("1,2"), "1 2");
 });
+
+test("14.4 (main, p59 #11/#12): only the answer's own number is expanded; an acceptable form in another unit ('2000 m' for '2 km') leaks as its whole phrase, never as a bare 2000", async () => {
+  const { revealsAnswer } = await import("../server/director/items.js");
+  const item = { id: "c5-maths-ch05-t02-i01", prompt_en: "Which is longer: 2 km or 500 m?", prompt_hi: "Kaun lamba hai: 2 km ya 500 m?", answer: "2 km", acceptable: ["2 km", "2000 m"] };
+  for (const l of ["Bilkul, 500 ka do samooh 1,000 hota hai. 2,000 mein 500 ke kitne samooh honge?", "2000 बड़ा है, पर zero गिनना हमेशा सही तरीका नहीं।"]) assert.equal(revealsAnswer(l, item), false, l);
+  for (const l of ["2000 m zyada lamba hai.", "Haan, 2 kilometre lamba hai."]) assert.equal(revealsAnswer(l, item), true, l);
+});
+
+test("census 2026-10-21 F9: Studio is frozen through the whole safeguard episode (opening, stay, resume offer) and draws again once the Director's episode closes; what was retired stays retired", async () => {
+  const { initLessonState, step } = await import("../server/director/state.js");
+  const { safeguardClosed } = await import("../server/brain/turn.js");
+  const { kit: mk, CTX, cls } = await import("./fixtures/kit.mjs");
+  const seam = await import("../server/studio/seam.js");
+  const { studioSeam } = seam;
+  const kit = mk();
+  let r = step(initLessonState({ topicId: kit.topicId, kit, ctx: CTX, seed: 7, now: 0 }), { event: "start", kit, now: 0 });
+  const id = "L-f9";
+  seam.subscribe(id, () => {});
+  const L = seam._lesson(id);
+  L.pieces.set("wb-0", { intentId: "wb-0", slotId: "s0", kind: "whiteboard", state: "revealed", artifact: { kind: "whiteboard" }, revealedTurn: 1 });
+  L.onScreen = "wb-0";
+  const turn = (c, extra = {}) => {
+    r = step(r.state, { event: "turn", kit, cls: c, text: "x", now: 10_000 * (r.state.turn + 1), ...extra });
+    if (r.move.kind === "safeguard") studioSeam.onSafety(id);
+    else if (safeguardClosed(r.state, r.move, null)) studioSeam.onSafetyClosed(id);
+    return { kind: r.move.kind, frozen: L.safety };
+  };
+  const seen = [turn(cls("no_evidence", { flags: { distress: true, distressKind: "model" } })), turn(cls("no_evidence")), turn(cls("no_evidence"))];
+  assert.ok(seen.every((x) => x.frozen), JSON.stringify(seen));
+  assert.equal(L.pieces.get("wb-0").state, "retired");
+  const back = turn(cls("no_evidence"), { chipId: "safe:continue" });
+  assert.notEqual(back.kind, "safeguard");
+  assert.equal(back.frozen, false, "the board comes back after the episode closes");
+  assert.equal(L.onScreen, null, "nothing from before the safeguard is re-shown");
+  assert.equal(L.pieces.get("wb-0").state, "retired");
+  // a new disclosure freezes again
+  assert.equal(turn(cls("no_evidence", { flags: { distress: true, distressKind: "model" } })).frozen, true);
+});
+
+test("census F9 (main): a check-in (tier 'check') freezes Studio; 'haan theek hoon' closes it and the next teaching move may draw again", async () => {
+  const { initLessonState, step } = await import("../server/director/state.js");
+  const { safeguardClosed } = await import("../server/brain/turn.js");
+  const { kit: mk, CTX, cls } = await import("./fixtures/kit.mjs");
+  const seam = await import("../server/studio/seam.js");
+  const { studioSeam } = seam;
+  const kit = mk();
+  let r = step(initLessonState({ topicId: kit.topicId, kit, ctx: CTX, seed: 7, now: 0 }), { event: "start", kit, now: 0 });
+  const id = "L-f9-check";
+  seam.subscribe(id, () => {});
+  const L = seam._lesson(id);
+  const turn = (c, text) => {
+    r = step(r.state, { event: "turn", kit, cls: c, text, now: 10_000 * (r.state.turn + 1) });
+    if (r.move.kind === "safeguard") studioSeam.onSafety(id);
+    else if (safeguardClosed(r.state, r.move, null)) studioSeam.onSafetyClosed(id);
+    return { kind: r.move.kind, tier: r.move.tier ?? null, frozen: L.safety };
+  };
+  const check = turn(cls("no_evidence", { flags: { distress: true, distressKind: "model", distressAbout: "sad_or_lonely" } }), "x");
+  assert.deepEqual([check.kind, check.tier, check.frozen], ["safeguard", "check", true]);
+  const fine = turn(cls("no_evidence"), "haan theek hoon");
+  assert.notEqual(fine.kind, "safeguard");
+  assert.equal(r.state.safeguard, null);
+  assert.equal(fine.frozen, false, "Studio may draw again on the teaching move");
+});
