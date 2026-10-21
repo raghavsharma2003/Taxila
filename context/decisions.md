@@ -6321,3 +6321,9 @@ Main 2026-10-21: in an open safeguard check-in, an UNHEARD turn (D5: the ear cov
 ## dc-r1441-masked-retry — her own line even when the filter will not show his words (2026-10-21)
 
 When the filter blocks the reply prompt on context and the child's words pass the probe, the reply model gets one more try with their words replaced by a note. The child then gets a real turn that ends on the move's question, not a stock thanks. The words stay with every safety read.
+
+
+<!-- merged from inbox/r1441-goodbye-main.json -->
+## dc-r1441-motion-not-leaving — going two gaps ahead is not going home (2026-10-21)
+
+A right answer on a number line ('do gaps aage jaana padega') ended a lesson as a goodbye because the lexicon's bare 'jaana padega' cannot tell motion along a line from leaving. A word of motion before it now keeps the turn in the lesson. Every real goodbye is unchanged, and the sim-lab corpus shows no other change.

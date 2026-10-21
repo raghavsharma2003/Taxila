@@ -22877,6 +22877,20 @@
    "at": "2026-10-21",
    "title": "A reply whose prompt is filter-blocked on context (the child's words pass the probe, or trip only a detector that is no child-safety signal), and whose retry on this turn alone is blocked too, gets one more try with the child's words NOT shown: the brief plus a note saying their reply is not shown, no guessing, a warm thanks, then the move (say.js MASKED_TURN; guard.masked). Only if that also fails does the fixed carry-on line stand. Sim lab p26h on 5c127d1a, and QA 4b3d875c, f4ba38ec and 1096c69c: a class 8 answer about British attitudes got only 'Thanks for telling me! Let's keep going.', with no question. Live on the real filter, the 3 hate lines now get the move's own line ending on its question ('Thanks, Riya. Cricket ground ke chaaron taraf boundary rope lagani ho, toh aap kya naapenge?'). The child's words still reach the predicate, every read and the probe. Reverse if a masked reply claims or guesses what the child said.",
    "source": "inbox/r1441-masked-main.json"
+  },
+  {
+   "id": "fd-r1441-motion-goodbye",
+   "kind": "finding",
+   "at": "2026-10-21",
+   "title": "Root cause of the sim lab's early wrap (ok10 r1 on 9ad86661; reproduced 4 of 4 by ok10x on 47ba26c7: 377107ef, e3ef2513, b5ba2d6c, d493819c on TEST). The child's right answer on a number line, 'To do gaps aage jaana padega, na? Haan, do gaps!…', matched the bare goodbye entry '(?:jaana|jana) padega' in relational/lexicon/hl.js. stopKind read it as 'leaving', the stop check released the lesson at once (release.goodbye_wrap, shape 'they want to stop'), and the lesson ended on turn 3 at 0.3 minutes. The classifier's own reads said no stop (wantsToStop false; the note said thinking_aloud).",
+   "source": "inbox/r1441-goodbye-main.json"
+  },
+  {
+   "id": "dc-r1441-motion-not-leaving",
+   "kind": "decision",
+   "at": "2026-10-21",
+   "title": "The bare goodbye 'jaana padega' no longer fires after a word of motion in the lesson: aage, peeche, upar, neeche, left, right, daaye, baaye, gap(s), step(s), kadam, jump(s), tak, wapas, zero se. 'mujhe / abhi / ok didi … jaana padega' and 'mummy bula rahi hai, jaana padega' still release as goodbyes. Measured on 40,261 sim-lab child lines: 0 stopKind changes (92 leaving, 505 end_request before and after); the hand cases are 4 motion lines → none and 4 real goodbyes → leaving. Reverse if a real goodbye with one of those words before 'jaana padega' is missed in QA, the sim lab or production.",
+   "source": "inbox/r1441-goodbye-main.json"
   }
  ],
  "edges": [
@@ -36464,6 +36478,11 @@
    "src": "dc-r1441-masked-retry",
    "rel": "part_of",
    "dst": "dc-r144-filter-neutral-no-repeat"
+  },
+  {
+   "src": "dc-r1441-motion-not-leaving",
+   "rel": "caused_by",
+   "dst": "fd-r1441-motion-goodbye"
   }
  ]
 }
