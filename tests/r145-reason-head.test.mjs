@@ -117,3 +117,13 @@ test("what is NOT taken back: a self-correction that ends on the key, a musing a
   // Devanagari: "या" inside "किया" and "पर" inside "ऊपर" are not an alternative or a doubt
   assert.equal(reasonTakesBack("दस x माइनस x किया तो 1.5 हुआ, और राइट साइड ऊपर है", "", [1.5], new Set(), [], { negation: false, cues: false }), null);
 });
+
+// 14.5 (main): the question rule is "a question with no confirmation after it"
+test("an answer said as a question and then said again without one is credited; a question left standing is not", () => {
+  assert.equal(grade("c8-maths-ch03-t02-i12", "aath hazaar...? aath hazaar hoga.").outcome, "correct");
+  assert.equal(grade("c5-maths-ch04-t02-i05", "4000 ke aas-paas? 6,800 minus 2,900… haan, lagbhag 4,000.").outcome, "correct");
+  assert.notEqual(grade("c5-maths-ch04-t02-i01", "8,000... kyunki 5 aur 3 milke 8 hota hai na, toh 8,000?").outcome, "correct");
+  // a "shayad … hoga" after the question is a hedge, never its confirmation (the plain number path's own hedged-answer rule,
+  // exact_hedged, is unchanged)
+  assert.notEqual(reasonTakesBack("shayad aath hazaar hoga.", "aath hazaar...?", [8000], new Set()), null);
+});

@@ -254,7 +254,7 @@ export function reasonTakesBack(rest, head, answerNums, formWords, promptNums = 
   if (DONT_KNOW.test(rest)) return "unsure";
   // 14.5 (main): a doubt after it ("… par maine to pehle hi bata diya tha na, sirf 5 aur 5 hota hai?", "but I thought only …")
   if (DOUBT.test(rest)) return "doubt";
-  const toks = String(rest).toLowerCase().normalize("NFC").replace(/(?<=\d),(?=\d)/g, "").split(/[^\p{L}\p{M}\p{N}=.]+/u).filter(Boolean);
+  const toks = String(rest).toLowerCase().normalize("NFC").replace(/(?<=\d),(?=\d)/g, "").split(/[^\p{L}\p{M}\p{N}=.]+/u).map((w) => w.replace(/^\.+|\.+$/g, "")).filter(Boolean);
   const isNum = (i) => { const w = toks[i]; if (!w || SCALE_ONLY.has(w)) return false; const v = numberPhrases(w); return /\d/.test(w) || (v !== null && v.length > 0); };
   const valAt = (i) => { const v = numberPhrases(toks.slice(i, i + 2).join(" ")) ?? numberPhrases(toks[i]); return v?.[0]; };
   const answerTok = (w) => formWords.has(CANON.get(w) ?? stem(w));
@@ -290,8 +290,13 @@ export function reasonTakesBack(rest, head, answerNums, formWords, promptNums = 
   // reason, "yeh sahi hai na?", is not)
   const lastClause = String(rest).replace(/(?<=\d),(?=\d)/g, "").split(/[.!,;।]+/).map((x) => x.trim()).filter(Boolean).at(-1) ?? "";
   const lastNums = nums(lastClause) ?? [];
-  if (/\?/.test(head) || (/\?\s*$/.test(rest) && (lastNums.some((v) => answerNums.some((a) => Math.abs(a - v) < 1e-9))
-    || [...content(lastClause)].some((w) => formWords.has(w) && !CANON.has(w))))) return "question";
+  const sayAnswer = (seg) => (nums(seg) ?? []).some((v) => answerNums.some((a) => Math.abs(a - v) < 1e-9))
+    || [...content(seg)].some((w) => formWords.has(w) && !CANON.has(w));
+  const restAsks = /\?\s*$/.test(rest) && (lastNums.some((v) => answerNums.some((a) => Math.abs(a - v) < 1e-9)) || [...content(lastClause)].some((w) => formWords.has(w) && !CANON.has(w)));
+  // (main: a question with no confirmation after it; a later clause that says the answer again without "?" confirms it:
+  // "aath hazaar…? aath hazaar hoga", "4000 ke aas-paas? … haan, lagbhag 4,000")
+  const confirmed = (String(rest).replace(/(?<=\d),(?=\d)/g, "").match(/[^.!?।]+[.!?।]*/g) ?? []).some((seg) => !/\?/.test(seg) && sayAnswer(seg));
+  if (restAsks || (/\?/.test(head) && !confirmed)) return "question";
   // a hedge towards another answer ("par shayad X hoga", "maybe it is X answer")
   if (HEDGE.test(rest) && toks.some((w) => ANSWER_AFTER.has(w) || ANSWER_WORD.has(w))) return "alternative";
   // an answer said again in words that are not this form's ("toh answer Physical hai")
