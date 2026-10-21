@@ -39,7 +39,7 @@ const core = (t) => t.replace(/^(?:(?:ok(?:ay)?|achha|accha|acha|hmm+|haan|ha|ji
   .replace(/[\s,!.]*(?:please|plz|pls|na|naa|yaar|ji|didi|bhaiya|ma'?am|sir)?[\s.!?]*$/i, "").trim();
 
 /** A real goodbye: the child is leaving now. Mirrors safety.js wantsToStop's leave-now forms (kept in step by the test). */
-const GOODBYE = /\b(?:bye|bye[\s-]*bye|good\s*night|tata|alvida|see\s+you|mujhe\s+ja(?:a)?na\s+(?:hai|padega|h)|main\s+ja\s+(?:raha|rahi)\s+(?:hoon|hu)|i\s+(?:have|need|gotta|got)\s+to\s+(?:go|leave)|i\s+(?:want|wanna)\s+to\s+leave|i'?m\s+leaving|i\s+am\s+leaving|mummy\s+bula\s+rahi\s+(?:hai|h)\s*,?\s*(?:bye|jaana))\b|अलविदा|मुझे\s*जाना\s*है|(?<![\p{L}\p{M}])बाय(?:\s*बाय)?(?![\p{L}\p{M}])/iu;
+const GOODBYE = /\b(?:bye|bye[\s-]*bye|good\s*night|tata|alvida|see\s+you\s+(?:later|tomorrow|soon|kal|again)|see\s+you\s*[.!]*$|mujhe\s+ja(?:a)?na\s+(?:hai|padega|h)|main\s+ja\s+(?:raha|rahi)\s+(?:hoon|hu)|i\s+(?:have|need|gotta|got)\s+to\s+(?:go|leave)|i\s+(?:want|wanna)\s+to\s+leave|i'?m\s+leaving|i\s+am\s+leaving|mummy\s+bula\s+rahi\s+(?:hai|h)\s*,?\s*(?:bye|jaana))\b|अलविदा|मुझे\s*जाना\s*है|(?<![\p{L}\p{M}])बाय(?:\s*बाय)?(?![\p{L}\p{M}])/iu;
 /** A short break (toilet, water): never a goodbye and never a stop (safety.js SHORT_BREAK). */
 const SHORT_BREAK = /\b(?:toilet|bathroom|washroom|loo|pee|potty|susu|paani|pani|water|drink)\b/i;
 const STOP = new RegExp([
@@ -105,10 +105,11 @@ const ANIMATION = /\b(?:animation|animate|video(?!\s*games?\b)|cartoon|simulatio
 // subject to study instead is a SWITCH request, read before the stop words: the Director offers that topic (when the
 // child's class has it) or says where to find it, never a stop question. No subject named ("yeh nahi padhna") stays a stop.
 const SW_NOT = String.raw`(?:(?:mujhe|muje|hume|humein|main|mai)\s+)?(?:ab\s+)?(?:yeh|ye|is(?:e|ko)?|this|aaj\s+yeh)\s+(?:wala\s+)?(?:nahi|nahin|nhi|not|na)\s+(?:padhna|padhni|seekhna|sikhna|karna|krna|do|study|learn)(?:\s+(?:hai|h|chahta|chahti|want))?`;
-const SW_WANT = String.raw`(?:(?:mujhe|muje|hume|humein|main|mai)\s+)?([\p{L}][\p{L} ]{2,30}?)\s+(?:padhna|padhni|seekhna|sikhna|samajhna)\s+(?:hai|h|chahta\s+(?:hoon|hu|hun)|chahti\s+(?:hoon|hu|hun)|chahiye)`;
+// (census 14.5, 38aad918: "geometry padhao" — teach me X — is the same wish)
+const SW_WANT = String.raw`(?:(?:mujhe|muje|hume|humein|main|mai)\s+)?([\p{L}][\p{L} ]{2,30}?)\s+(?:(?:padhna|padhni|seekhna|sikhna|samajhna)\s+(?:hai|h|chahta\s+(?:hoon|hu|hun)|chahti\s+(?:hoon|hu|hun)|chahiye)|padhao|padhaao|sikhao|sikhaao|padha\s+do|sikha\s+do)`;
 const SWITCH_HL = new RegExp(String.raw`^(?:${SW_NOT}[\s,;.]+(?:balki\s+|bas\s+)?)?${SW_WANT}[\s.!?]*$`, "iu");
 const SWITCH_EN = /^(?:(?:no|nah|not this)[\s,]+)?(?:can\s+we|could\s+we|let'?s|i\s+want\s+to|i'?d\s+like\s+to|i\s+wanna)\s+(?:do|learn|study|start)\s+([\p{L}][\p{L} ]{2,30}?)(?:\s+instead|\s+now|\s+please)*[\s.!?]*$/iu;
-const SW_STOPWORDS = /^(?:yeh|ye|is|isko|ise|this|it|that|aur|more|kuch|abhi|aage|nahi|lesson|class|padhai|maths|math|science|homework|game|games|ek|do|mujhe|muje|hume|humein|main|mai|ab|aaj|bhi|wala|wali|dusra|doosra)$/i;
+const SW_STOPWORDS = /^(?:bas|sab|yeh|ye|is|isko|ise|this|it|that|aur|more|kuch|abhi|aage|nahi|lesson|class|padhai|maths|math|science|homework|game|games|ek|do|mujhe|muje|hume|humein|main|mai|ab|aaj|bhi|wala|wali|dusra|doosra)$/i;
 /** PURE. The subject a child asks to study INSTEAD, or null. */
 export function switchSubjectOf(text) {
   const r = switchSubjectOfLine(text);
@@ -314,6 +315,62 @@ export function offerAgreed(heard, text) {
 
 /** PURE. The request a child's turn makes, or null (a Devanagari line that reads as nothing is read again in Roman). */
 export function requestOf(text) {
+  const r = requestOfTurn(text);
+  if (r?.whole) return r;
+  // (a non-whole read gives way only to the same request read whole from its clause: "didi, picture dikhao, maine kal …")
+  const c = clauseRequest(text);
+  return !r ? c : c && (c.type === r.type || (STOP_FAMILY.has(c.type) && STOP_FAMILY.has(r.type))) ? c : r;
+}
+
+// census 14.5 (F1 round 3; 38aad918 t1 "Picture dikhao, maine kal ek peacock banaya tha, …", p10 #8 "… thak gayi, can we stop
+// now?"): a request that OPENS or CLOSES a long turn was lost to the length rule (a turn of 13+ words is an answer with a
+// request tacked on), and the understanding note's share / hedge took the empty slot. Its first or last clause, read on
+// its own as a whole request and no answer attempt, is the turn's request; the rest rides along.
+const CLAUSE_SPLIT = /(?<=[.!?।…])\s+|[,;]\s+|\s+(?:par|lekin|magar|but|aur\s+phir)\s+/iu;
+// A clause is read only in its explicit ask form (sim lab, 4,357 lines: "bas." / "khatam" closing an answer, "tap band karo"
+// inside one, "mujhe drawing pasand hai", "dheere dheere tha na" were no requests): the ask word each kind must carry.
+const CLAUSE_ASK = {
+  visual: /(?<![\p{L}\p{M}])(?:dikhao|dikhaao|dikhaiye|dikhayiye|dikha\s+(?:do|dijiye|sakti|sakte|sakta)|दिखाओ|दिखाइए|दिखा\s+(?:दो|दीजिए|सकती|सकते)|draw\s+(?:karo|kijiye|karke)|bana(?:o|iye|\s+do|\s+dijiye)|बनाओ|बनाइए|बना\s+दो|khel(?:ein|en|e|enge|te\s+hain)|khel\s+sakte|खेलें|खेले|खेलेंगे|play\s+a\s+game|let'?s\s+play|show\s+me)(?![\p{L}\p{M}])/iu,
+  story: /(?<![\p{L}\p{M}])(?:sunao|सुनाओ|batao|बताओ|tell)(?![\p{L}\p{M}])/iu,
+  stop: /\b(?:can\s+we\s+stop|let'?s\s+stop|stop\s+(?:now|please|karo|karte|karein|kar\s+do|karna\s+hai)|i\s+want\s+to\s+stop|aaj\s+ke\s+liye\s+bas|(?:ab\s+)?bas\s+(?:karo|karna\s+hai|karte\s+hain|kar\s+do)|band\s+(?:karte\s+hain|karna\s+hai)|ruk\s+jaate\s+hain)\b|आज\s+के\s+लिए\s+बस|बस\s+करो/iu,
+  goodbye: /\b(?:bye|tata|alvida|good\s*night)\b|अलविदा|बाय/iu,
+  break: /\b(?:break|aaram|rest|ruk|thak\s+(?:gayi|gaya|gyi|gya)|tired)\b|थक\s+(?:गई|गया|गयी)/iu,
+  explain_first: /./u,
+  another: /(?<![\p{L}\p{M}])(?:samjhao|samjhaiye|batao|bataiye|explain|सम(?:झाओ|झाइए))(?![\p{L}\p{M}])/iu,
+  example: /\bexample\s+(?:do|dijiye|de\s+do|dikhao|batao|please|chahiye)\b|\bgive\s+(?:me\s+)?an?\s+example\b|उदाहरण\s+(?:दो|दीजिए)/iu,
+  slower: /\b(?:bolo|boliye|batao|samjhao|please|plz|slow\s+down)\b/iu,
+};
+// (a different topic only as the turn's opening words: "geometry padhao, fractions boring hai, …")
+const CLAUSE_LEAD_ONLY = new Set(["switch", "topic", "change_topic"]);
+const STOP_FAMILY = new Set(["stop", "goodbye", "break"]);
+const FILLER = /^(?:(?:didi|di|bhaiya|ma'?am|maam|sir|teacher|haan|han|ha|ji|haan\s+ji|ok|okay|achha|accha|acha|umm*|hmm*|uh+|arre|arey|oh|wait|ruko|toh|to|so|well|yaar|दीदी|हाँ|हां|जी|अच्छा)[\s.…!?]*)+$/iu;
+function clauseRequest(text) {
+  const all = String(text ?? "").split(CLAUSE_SPLIT).map((x) => x.trim()).filter(Boolean);
+  // (a leading address or filler is not the opening clause: "didi, …", "haan, …", "umm…")
+  const parts = all.slice(all.findIndex((x) => !FILLER.test(x)));
+  if (all.length < 2 || !parts.length) return null;
+  // an explicit wish to study something else, wherever it sits ("didi, pehla gap… fractions boring hai, geometry padhao, triangles")
+  for (const c of parts) {
+    if (wordCount(T(c)) > 8 || attemptLike(T(c))) continue;
+    const r = requestOfTurn(c);
+    if (r?.type === "switch" && r.subject && !genericSubject(r.subject)) return { ...r, whole: true, clause: "wish" };
+  }
+  for (const [c, at, rest] of [[parts[0], "lead", parts.slice(1)], [parts.at(-1), "tail", parts.slice(0, -1)]]) {
+    if (attemptLike(T(c)) || wordCount(T(c)) > 8) continue;
+    // (an explicit stop ask closing the turn is a stop even where the line reader has no form for it: "…, bas karna hai")
+    const r = requestOfTurn(c) ?? (at === "tail" && CLAUSE_ASK.stop.test(c) ? { type: "stop", whole: true } : null);
+    if (!r?.whole) continue;
+    if (CLAUSE_LEAD_ONLY.has(r.type) ? at !== "lead" : !CLAUSE_ASK[r.type]?.test(c)) continue;
+    // (an answer in the rest stays an answer, except for the stop family at the END: "…thirteen… bas, thak gayi. Can we
+    // stop now?" is a stop / break (main, 14.4.2), never an answer; stop and goodbye still let the answer be graded)
+    if (!STOP_FAMILY.has(r.type) && rest.some((x) => attemptLike(T(x)) || /\d/.test(x))) continue;
+    if (STOP_FAMILY.has(r.type) && r.type === "break" && at !== "tail") continue;
+    return { ...r, whole: true, clause: at };
+  }
+  return null;
+}
+
+function requestOfTurn(text) {
   const r = requestOfLine(text);
   if (r || !DEVA.test(String(text ?? ""))) return r;
   // (the Roman reading when the whole turn is the request, or an explicit show / draw ask or a topic ask inside a longer
