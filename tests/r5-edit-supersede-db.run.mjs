@@ -223,6 +223,30 @@ describe("r5 edit supersede (test branch)", { skip: SKIP, concurrency: false, ti
     await foldAgrees(kid);
   });
 
+  test("switch OFF (production today): an edit after its turn landed is replayed, nothing re-graded, and the trace counts it", async () => {
+    delete process.env.TAXILA_EDIT_UNDO;
+    try {
+      const kid = await newChild(); await controls(kid);
+      const L = await lesson(kid, "c3-maths-ch08-t01-i02");
+      let r = await L.turn("5", { turnSeq: 1 });
+      assert.equal(r.status, 200, JSON.stringify(r.body));
+      assert.equal((await q("select 1 from lesson_undo where lesson_id = $1", [L.lessonId])).length, 0, "no snapshot with the switch off");
+      r = await L.turn("4", { turnSeq: 1, edited: true, retried: true });
+      assert.deepEqual([r.status, r.body.duplicate, r.body.editLanded], [200, true, true]);
+      assert.deepEqual(await verdicts(kid), ["c3-maths-ch08-t01-i02:incorrect"], "the landed grade stands");
+      await new Promise((res) => setTimeout(res, 500));
+      const tr = await one("select reasons from brain_trace where lesson_id = $1 and turn = 1", [L.lessonId]);
+      assert.ok(tr.reasons.includes("turn.edit_after_landed"), JSON.stringify(tr.reasons));
+      // a client retry of the same edit is not a second correction
+      await L.turn("4", { turnSeq: 1, edited: true, retried: true });
+      await new Promise((res) => setTimeout(res, 500));
+      const tr2 = await one("select reasons from brain_trace where lesson_id = $1 and turn = 1", [L.lessonId]);
+      assert.equal(tr2.reasons.filter((x) => x === "turn.edit_after_landed").length, 1);
+    } finally {
+      process.env.TAXILA_EDIT_UNDO = "1";
+    }
+  });
+
   test("an edit after a LATER turn landed is missed: no re-grade, the response replayed, the trace says so", async () => {
     const kid = await newChild(); await controls(kid);
     const L = await lesson(kid, "c3-maths-ch08-t01-i02");
