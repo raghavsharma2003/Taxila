@@ -6272,3 +6272,9 @@ Since 14.1 the filter probes have been the neutral judge of whether the child's 
 ## dc-r144-filter-neutral-no-repeat — never 'say that again' on a filter block (2026-10-21)
 
 The outage line asks the child to repeat. After a context block the repeat trips the same filter, so the turn gets the move's own fixed line or a warm carry-on instead.
+
+
+<!-- merged from inbox/r144-beside-main.json -->
+## dc-r144-beside-wait — the tier waits for the read that names it (2026-10-21)
+
+The 14.4 tier needs the words-only read to say what a distress label is about. A 1.2 s wait was chosen to keep turns fast. But the read's fallback deployment answers at 1.6 s at the median, so every primary timeout (0.5% of calls, and more under load) became the full script. A tier that depends on load is not a tier. The turn now waits for the read's own bound, and the time is spent only on distress-labelled turns.
