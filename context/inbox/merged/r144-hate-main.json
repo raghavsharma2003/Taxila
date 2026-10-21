@@ -1,0 +1,40 @@
+{
+ "nodes": [
+  {
+   "id": "dc-r144-hate-not-child-safety",
+   "kind": "decision",
+   "at": "2026-10-21",
+   "title": "The content-filter PROBES treat a block by the hate detectors alone as no child-safety signal: the reply path's childWordsTrip and classify's wordsTrip, which ask whether the child's own words, alone, trip the filter (azure.js notChildSafety: every category is hate, multiseverity_hatespeechscore or an injection / copyright detector). The turn then gets a neutral line, never the full helpline script. Unchanged: every distress READ (a hate block there still moves to the next deployment and fails closed when none can read), the predicate, and sexual / self_harm / violence / unknown / unreadable blocks, which all fail closed exactly as before. Reverse if a curated or QA distress line is caught ONLY by a hate-only probe block (0 of 276 today), or if a child's report of being targeted with slurs gets no check-in from the reads."
+  },
+  {
+   "id": "ms-r144-hate-filter",
+   "kind": "measurement",
+   "at": "2026-10-21",
+   "n": 373,
+   "method": "(1) TEST, 30 days: every turn on a lesson whose model call was content-filter blocked, by category, with the turn's move and safety.scan sources. (2) The reply-path probe ('Answer with one word: ok' plus the words) run live on the curated distress sets (red team 225 unique, es3 20, TaxilaFDB 21, conversation-v2 10), the red-team quiet sets (97) and the false-alarm lines. (3) The real reply path, live, on 3 false-alarm lines, old 1b3bb12c vs new. Scripts: scratchpad filtercats-test.mjs, hate-turns.mjs, probecats.mjs, hatelive.mjs.",
+   "title": "On TEST over 30 days, 'hate' was the commonest filter category: 76 blocked calls on 22 turns. On 10 of those turns the filter alone opened the full helpline script, and all 10 were harmless: 3 class-8 history answers about British rule, 'Kala Chashma', 'humne race lagayi', Eid in Kashmir, and 3 goodbyes whose probe carried earlier turns. Production had 0 filtered calls on real lessons in 30 days (6 lessons). The probe on the curated sets: 0 of 276 distress lines and 0 of 97 quiet lines were hate-only; their blocks were sexual / violence / self_harm and stay harm. 4 of 6 false-alarm lines were hate-only. Live on the real filter: the old tree failed closed to the full script on 3 of 3 lines, the new one gave a lesson line on 3 of 3 ('Accha, batane ke liye thanks! Chaliye, aage badhte hain.')."
+  },
+  {
+   "id": "dc-r144-filter-neutral-no-repeat",
+   "kind": "decision",
+   "at": "2026-10-21",
+   "title": "A context filter block (the child's words pass the probe, or trip only a detector that is no child-safety signal) never answers with the outage line 'say that again': the same words would trip the filter again. It gets the move's own fixed line when it has one (an item's question, a check-in, a wrap), else a warm carry-on (say.js filterNeutralReply, FALLBACK heard). Reverse if children repeat themselves after the carry-on more often than after the old line."
+  },
+  {
+   "id": "fd-r144-simlab-offkit-early-wrap",
+   "kind": "finding",
+   "at": "2026-10-21",
+   "title": "Open, not yet root-caused: sim lab off-kit ok10 r1 on 9ad86661 wrapped after a correct answer at turn 3 (phase done, no item, 0.3 minutes, 'Bye, Riya!'). The same card's r2 ran normally. TEST has early wraps at turn 3 on 9e62441a, 7bc22a6c and e68ad012 (14:39-17:17 UTC) to check. Not a safety path; for 14.4.1."
+  }
+ ],
+ "edges": [
+  { "src": "dc-r144-hate-not-child-safety", "rel": "measured_by", "dst": "ms-r144-hate-filter" },
+  { "src": "dc-r144-filter-neutral-no-repeat", "rel": "measured_by", "dst": "ms-r144-hate-filter" },
+  { "src": "dc-r144-hate-not-child-safety", "rel": "part_of", "dst": "dc-r144-safeguard-tiers" }
+ ],
+ "md": {
+  "decisions": "## dc-r144-hate-not-child-safety — a hate-filter block is not a child in danger (2026-10-21)\n\nSince 14.1 the filter probes have been the neutral judge of whether the child's own words trip the filter. The probe itself trips on 'hate' for Indian social studies and everyday words, though: British rule, 'race', 'Kala Chashma', Eid in Kashmir. Ten harmless turns on TEST got the full helpline script that way. A child in danger shows up as sexual, self-harm or violence blocks and in the predicate and reads, and 0 of 276 curated distress lines needed a hate-only block. Only the probes change. The distress reads keep hate as a block and fail closed as before.\n\n## dc-r144-filter-neutral-no-repeat — never 'say that again' on a filter block (2026-10-21)\n\nThe outage line asks the child to repeat. After a context block the repeat trips the same filter, so the turn gets the move's own fixed line or a warm carry-on instead.\n",
+  "measurements": "## ms-r144-hate-filter (2026-10-21, n = 373 probed lines + 22 TEST turns)\n\nOn TEST, the hate filter alone opened the full script on 10 turns in 30 days, all of them harmless. The probe finds 0 hate-only blocks across 276 distress and 97 quiet curated lines, and 4 of 6 on the false alarms. Live on the real filter: fail-closed 3/3 on the old tree, a lesson line 3/3 on the new.\n",
+  "rejected": ""
+ }
+}

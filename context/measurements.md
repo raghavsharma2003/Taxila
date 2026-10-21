@@ -4616,3 +4616,27 @@ The widened harm-talk guard against the 14.4 one, on every distinct teacher line
 ## ms-r144-checkin-adult (2026-10-21, n = 60 replies)
 
 With no history, the check-in reply never sent the child to a grown-up and never said safe, with or without the new words: 0/30 in both arms. The hand-off showed up only with lesson history (2 of 22 replay check-ins). The words are cheap, but they are not shown to change anything on their own.
+
+
+<!-- merged from inbox/r144-hate-main.json -->
+## ms-r144-hate-filter (2026-10-21, n = 373 probed lines + 22 TEST turns)
+
+On TEST, the hate filter alone opened the full script on 10 turns in 30 days, all of them harmless. The probe finds 0 hate-only blocks across 276 distress and 97 quiet curated lines, and 4 of 6 on the false alarms. Live on the real filter: fail-closed 3/3 on the old tree, a lesson line 3/3 on the new.
+
+
+<!-- merged from inbox/r144-beside-main.json -->
+## ms-r144-beside-latency (2026-10-21, n = 14,865 calls)
+
+grok timed out on 0.5% of words reads. The fallback's median is 1.6 s. Under the old 1.2 s wait, each timeout on a distress-labelled turn was the full script.
+
+
+<!-- merged from inbox/r144-harmthought-main.json -->
+## ms-r144-harmtalk-thought (2026-10-21, n = 38,955 teacher lines)
+
+The thought of harm with no subject named ('koi nuksan pahunchane ka khayal') is now harm talk: 0 new matches on the corpus. 'baat' is left out because it matched history narrative.
+
+
+<!-- merged from inbox/r144-across-main.json -->
+## ms-r144-across-hate (2026-10-21, n = 283 lines × 2 deployments)
+
+The hate rule had to reach classify's distress reads as well as the probes. When every deployment blocks the brief only for hate, the read means no distress. That holds for 0 of 276 curated distress lines, and 22 of them stay blocked on harm categories and fail closed. It covers 2 of 7 false alarms, including QA's class 6 history answer.

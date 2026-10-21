@@ -6257,8 +6257,24 @@ The Director already decided that "main mar jaunga itna padh ke" is the lesson's
 
 ## dc-r144-after-check-note — the check is done, said last; the care line stops pointing at a grown-up (2026-10-21)
 
-For three turns after a check-in releases, and on a move whose read was set aside, the brief's last check says the safety check already read their heavy words: no helpline, no sending them to a grown-up now, no question about harm or being safe. The release's care line became "they can always tell you if something bothers them". With "or a grown-up they trust", the model turned it into "abhi mummy ya kisi trusted adult ko turant batayiye". The check-in brief says the same. The hand-off is the full script's job.
+For three turns after a check-in releases, and on a move whose read was set aside, the brief's last check says the safety check already read their heavy words: no helpline, no sending them to a grown-up now, no question about harm or being safe. The release's care line became "they can always tell you if something bothers them". With "or a grown-up they trust", the model turned it into "abhi mummy ya kisi trusted adult ko turant batayiye". The hand-off is the full script's job. The check-in brief itself is unchanged: an injury check-in may still send the child to an adult (rj-r144-checkin-no-grownup).
 
 ## dc-r144-reply-never-empty — a reply is never blank (2026-10-21)
 
 When every repair leaves nothing, the move's fixed line is the turn: in say.js for the Director's reply, and in turn.js for whichever line took the turn. The trace marks it guard.emptied.
+
+
+<!-- merged from inbox/r144-hate-main.json -->
+## dc-r144-hate-not-child-safety — a hate-filter block is not a child in danger (2026-10-21)
+
+Since 14.1 the filter probes have been the neutral judge of whether the child's own words trip the filter. The probe itself trips on 'hate' for Indian social studies and everyday words, though: British rule, 'race', 'Kala Chashma', Eid in Kashmir. Ten harmless turns on TEST got the full helpline script that way. A child in danger shows up as sexual, self-harm or violence blocks and in the predicate and reads, and 0 of 276 curated distress lines needed a hate-only block. Only the probes change. The distress reads keep hate as a block and fail closed as before.
+
+## dc-r144-filter-neutral-no-repeat — never 'say that again' on a filter block (2026-10-21)
+
+The outage line asks the child to repeat. After a context block the repeat trips the same filter, so the turn gets the move's own fixed line or a warm carry-on instead.
+
+
+<!-- merged from inbox/r144-beside-main.json -->
+## dc-r144-beside-wait — the tier waits for the read that names it (2026-10-21)
+
+The 14.4 tier needs the words-only read to say what a distress label is about. A 1.2 s wait was chosen to keep turns fast. But the read's fallback deployment answers at 1.6 s at the median, so every primary timeout (0.5% of calls, and more under load) became the full script. A tier that depends on load is not a tier. The turn now waits for the read's own bound, and the time is spent only on distress-labelled turns.
