@@ -31,6 +31,7 @@
 
 import { stopKind } from "../relational/signals.js";
 import { sexualAsk } from "../conversation/lexicon.js";
+import { devaToRoman } from "../safety/normalize.js";
 
 const T = (s) => String(s ?? "").toLowerCase().normalize("NFKC").replace(/[’`]/g, "'").replace(/\s+/g, " ").trim();
 /** Strip the leading politeness and fillers a child wraps a request in ("ok", "please", "didi", "ma'am"). */
@@ -38,7 +39,7 @@ const core = (t) => t.replace(/^(?:(?:ok(?:ay)?|achha|accha|acha|hmm+|haan|ha|ji
   .replace(/[\s,!.]*(?:please|plz|pls|na|naa|yaar|ji|didi|bhaiya|ma'?am|sir)?[\s.!?]*$/i, "").trim();
 
 /** A real goodbye: the child is leaving now. Mirrors safety.js wantsToStop's leave-now forms (kept in step by the test). */
-const GOODBYE = /\b(?:bye|bye[\s-]*bye|good\s*night|tata|alvida|see\s+you|mujhe\s+ja(?:a)?na\s+(?:hai|padega|h)|main\s+ja\s+(?:raha|rahi)\s+(?:hoon|hu)|i\s+(?:have|need|gotta|got)\s+to\s+(?:go|leave)|i\s+(?:want|wanna)\s+to\s+leave|i'?m\s+leaving|i\s+am\s+leaving|mummy\s+bula\s+rahi\s+(?:hai|h)\s*,?\s*(?:bye|jaana))\b|अलविदा|मुझे\s*जाना\s*है|बाय/i;
+const GOODBYE = /\b(?:bye|bye[\s-]*bye|good\s*night|tata|alvida|see\s+you|mujhe\s+ja(?:a)?na\s+(?:hai|padega|h)|main\s+ja\s+(?:raha|rahi)\s+(?:hoon|hu)|i\s+(?:have|need|gotta|got)\s+to\s+(?:go|leave)|i\s+(?:want|wanna)\s+to\s+leave|i'?m\s+leaving|i\s+am\s+leaving|mummy\s+bula\s+rahi\s+(?:hai|h)\s*,?\s*(?:bye|jaana))\b|अलविदा|मुझे\s*जाना\s*है|(?<![\p{L}\p{M}])बाय(?:\s*बाय)?(?![\p{L}\p{M}])/iu;
 /** A short break (toilet, water): never a goodbye and never a stop (safety.js SHORT_BREAK). */
 const SHORT_BREAK = /\b(?:toilet|bathroom|washroom|loo|pee|potty|susu|paani|pani|water|drink)\b/i;
 const STOP = new RegExp([
@@ -54,7 +55,7 @@ const STOP = new RegExp([
 ].join("|"), "i");
 const CONTINUE = /^(?:(?:no|nahi|nahin)[\s,]+)*(?:(?:let'?s|lets|chalo|ok(?:ay)?)\s+)?(?:keep\s+going|continue(?:\s+karte\s+hain|\s+karo|\s+please)?|carry\s+on|go\s+on|aage\s+(?:chalo|badho|karo|bado)|chalo\s+(?:padhte|aage|continue|shuru)\b.*|padhte\s+hain|nahi\s+rukna|don'?t\s+stop|continue\s+karte\s+hain|wapas\s+lesson|back\s+to\s+(?:the\s+)?lesson)\b/i;
 const BREAK = /\b(?:(?:short|small|quick|chhota|thoda|ek)\s+break|break\s+(?:chahiye|lena|le\s+sakte|le\s+lu|le\s+loon|please|lete\s+hain)|take\s+a\s+(?:short\s+)?break|need\s+a\s+break|can\s+i\s+(?:take\s+a\s+)?(?:short\s+)?break|i'?m\s+tired|thak\s+(?:gaya|gayi|gyi|gya)|thoda\s+aaram|rest\s+(?:karna|chahiye|please))\b/i;
-const CHANGE_TOPIC = /\b(?:something\s+else|kuch\s+aur\s+(?:baat|padh|karte|batao|karo|sikha)|kuch\s+(?:alag|dusra|doosra)|dusri\s+baat|doosri\s+baat|(?:change|badlo|badal\s+do)\s+(?:the\s+)?topic|topic\s+(?:change|badlo|badal\s+do)|(?:dusra|doosra|another|different|new)\s+topic|talk\s+about\s+(?:something|anything)|is\s+(?:ke|ki)\s+(?:alawa|alava|siva))\b/i;
+const CHANGE_TOPIC = /\b(?:something\s+else|kuch\s+aur\s+(?:baat|padh\w*|karte|batao|karo|sikha\w*|seekh\w*|sikh\w*)|kuch\s+(?:alag|dusra|doosra)|dusri\s+baat|doosri\s+baat|(?:change|badlo|badal\s+do)\s+(?:the\s+)?topic|topic\s+(?:change|badlo|badal\s+do)|(?:dusra|doosra|another|different|new)\s+topic|talk\s+about\s+(?:something|anything)|is\s+(?:ke|ki)\s+(?:alawa|alava|siva))\b/i;
 const TOPIC = /\b(?:([\p{L}\p{N} ]{2,30}?)\s+(?:ke|ki)\s+(?:baare|bare)\s+(?:mein|me|main)\s+(?:baat\s+(?:karo|karte\s+hain|karein|kare)|batao|bataiye|sikhao)|(?:let'?s\s+)?(?:talk|tell\s+me)\s+about\s+([\p{L}\p{N} ]{2,30}))/iu;
 const LANG = { hindi: /\b(?:hindi|हिंदी|हिन्दी)\b/i, english: /\b(?:english|angrezi|अंग्रेज़ी|इंग्लिश)\b/i, hinglish: /\bhinglish\b/i };
 const LANG_REQ = /\b(?:hindi|english|angrezi|hinglish)\s+(?:me|mein|main|mai|में)\b|\b(?:in|speak|talk|explain\s+in|say\s+it\s+in)\s+(?:hindi|english|hinglish)\b|\b(?:hindi|english|hinglish)\s+(?:please|plz)\b|^(?:hindi|english|hinglish)$|(?:हिंदी|हिन्दी|अंग्रेज़ी|इंग्लिश)\s*में/i;
@@ -72,7 +73,9 @@ const STORY_QUESTION = new RegExp(`(?<![\\p{L}\\p{M}])${STORY_THIS}(?![\\p{L}\\p
 const SLOWER = /\b(?:slow(?:ly)?(?:\s+please)?|slower|dheere(?:\s+(?:bolo|boliye|se|please|batao|bataiye))?|dhire(?:\s+(?:bolo|boliye|se))?|aaram\s+se\s+(?:bolo|batao|samjhao)|too\s+fast|bahut\s+(?:tez|fast|jaldi)|itna\s+(?:tez|fast|jaldi)|jaldi\s+mat|ruk\s+ruk\s+ke|step\s+by\s+step)\b/i;
 const VISUAL = /\b(?:(?:show|draw|make)\s+(?:me\s+)?(?:a\s+|the\s+|it\s+|this\s+)?(?:diagram|picture|drawing|image|figure|graph|chart|model|it|this)|(?:diagram|picture|photo|image|drawing|chitra|tasveer|figure)\s+(?:dikhao|dikhaiye|banao|banaiye|bana\s+do|draw|show|please|chahiye|se\s+samjhao)|(?:draw|bana(?:\s+ke|kar)?)\s+(?:karke\s+)?(?:samjhao|dikhao|batao)|draw\s+(?:it|this|karo|kijiye)|whiteboard\s+(?:pe|par|per|mein|me|on)|(?:on|use)\s+the\s+(?:whiteboard|board)|board\s+(?:pe|par|per)\s+(?:bana|likh|dikha)\w*|can\s+you\s+(?:show|draw)|dikha\s+(?:ke|kar)\s+samjhao|dikhao\s+na)\b/i;
 // round 5 (QA D07, "मुझे एक गेम खेलना है" read as nothing): the Devanagari forms too (\b does not bound Devanagari)
-const GAME = /\b(?:game|khel|activity)\s*(?:khelna|khelte|khelo|khel\s+sakte|chahiye|dikhao|karo|karna|please)?\b|\blet'?s\s+play\b|\bplay\s+a\s+game\b|(?<![\p{L}\p{M}])(?:गेम|खेल)(?:ना|ते|ो|ें)?(?![\p{L}\p{M}])/iu;
+// census 14.5 (F1c): a game is ASKED for ("game khelein?", "khelna hai", "play a game"); "khel" / "खेल" inside an answer
+// ("bacche khel rahe the", "खेल का मैदान") is not a request. A bare "game" / "गेम" as the whole turn still is.
+const GAME = /\b(?:game|games|khel|activity)\s+(?:khelna|khelni|khelte|khelo|khelen|khelein|khele|khelenge|khel\s+sakte|chahiye|dikhao|karo|karna|karein|karen|karte|please)\b|\b(?:khelna|khelni)\s+(?:hai|h|chahta|chahti|chahiye)\b|\bkhel(?:en|ein|e|enge)\s*\?|\blet'?s\s+play\b|\bplay\s+a\s+game\b|\bcan\s+we\s+play\b|^(?:ek\s+|koi\s+)?(?:game|games|activity)\s*(?:please|plz)?\s*\??$|(?<![\p{L}\p{M}])(?:गेम|खेल)\s+(?:खेलें|खेले|खेलना|खेलते|खेलो|खेलेंगे|चाहिए|करें)(?![\p{L}\p{M}])|(?<![\p{L}\p{M}])खेल(?:ें|े|ेंगे)\s*\?|^(?:कोई\s+|एक\s+)?गेम\s*\??$/iu;
 // round 4 (stream 4A, session-first (f)): the "go deeper" family beside "simpler": "aur batao", "tell me more", "go deeper",
 // "detail mein samjhao", "isme aur kya hota hai". The same idea one layer further (the why behind it, where it shows up, how it
 // links to what comes next), never a new skill and never "say it again". A harder QUESTION ("mushkil wala do", "too easy")
@@ -80,7 +83,7 @@ const GAME = /\b(?:game|khel|activity)\s*(?:khelna|khelte|khelo|khel\s+sakte|cha
 const DEEPER = /\b(?:aur\s+(?:batao|bataiye|bataao|samjhao|samjhaiye|sunao|jaanna\s+hai|janna\s+hai|detail|details|gehra[ie]?|andar\s+tak)|(?:aur\s+)?detail\s+(?:mein|me|main|se)(?:\s+(?:batao|bataiye|samjhao|samjhaiye|explain))?|(?:tell|teach|show)\s+me\s+more|more\s+(?:about\s+(?:it|this|that)|details?|on\s+(?:this|that|it))|(?:go|dig|let'?s\s+go)\s+deeper|deeper|in\s+depth|explain\s+(?:it\s+|this\s+)?(?:more|further|in\s+detail)|(?:isme|ismein|is\s+mein|iske\s+baare\s+mein)\s+aur\s+(?:kya|kuch)|gehrai\s+(?:se|mein)|aage\s+ka\s+(?:batao|samjhao)|next\s+level)\b|और\s+(?:बताओ|बताइए|समझाओ)|विस्तार\s+से/i;
 // round 3 forge (patch 08): "simulation dikhao" / "simulate karo" is an interactive ask too; before, no pattern matched it and
 // only the model classifier's flag sometimes made it one (2 of 5 forge acceptance runs read it as a plain worked example)
-const ANIMATION = /\b(?:animation|animate|video|cartoon|simulation|simulate|simulator)\s*(?:dikhao|dikhaiye|chahiye|please|banao|show|karo|kijiye)?\b|\bshow\s+(?:me\s+)?(?:an?\s+)?(?:animation|video|simulation)\b/i;
+const ANIMATION = /\b(?:animation|animate|video(?!\s*games?\b)|cartoon|simulation|simulate|simulator)\s*(?:dikhao|dikhaiye|chahiye|please|banao|show|karo|kijiye)?\b|\bshow\s+(?:me\s+)?(?:an?\s+)?(?:animation|video|simulation)\b/i;
 
 // round 3 fix (experience B8): "sir mujhe ab yeh nahi padhna, photosynthesis padhna hai" (I don't want this, I want to study
 // photosynthesis) got the STOP check-in (keep going / break / stop), with no way to the thing they asked for. A named
@@ -93,6 +96,10 @@ const SWITCH_EN = /^(?:(?:no|nah|not this)[\s,]+)?(?:can\s+we|could\s+we|let'?s|
 const SW_STOPWORDS = /^(?:yeh|ye|is|isko|ise|this|it|that|aur|more|kuch|abhi|aage|nahi|lesson|class|padhai|maths|math|science|homework|game|games|ek|do|mujhe|muje|hume|humein|main|mai|ab|aaj|bhi|wala|wali|dusra|doosra)$/i;
 /** PURE. The subject a child asks to study INSTEAD, or null. */
 export function switchSubjectOf(text) {
+  const r = switchSubjectOfLine(text);
+  return r || !DEVA.test(String(text ?? "")) ? r : switchSubjectOfLine(romanLine(text));
+}
+function switchSubjectOfLine(text) {
   const t = core(T(text)) || T(text);
   const m = t.match(SWITCH_HL) ?? t.match(SWITCH_EN);
   const subject = (m?.[1] ?? "").replace(/^(?:the|a|an|ab|aaj)\s+/i, "").trim();
@@ -178,13 +185,14 @@ const NUMLINE = /\bnumber\s*-?\s*line\b|\bnumberline\b|\bsankhya\s+rekha\b|स�
 const PIC_WORD = "(?:photo|photos|foto|picture|pictures|pic|image|images|tasveer|tasvir|tasveeren|chitra|फोटो|पिक्चर|तस्वीर|इमेज|चित्र)";
 const DRAW_WORD = "(?:diagram|drawing|sketch|डायग्राम|ड्राइंग)";
 const SHOW_VERB = "(?:dikhao|dikhaao|dikhaiye|dikhayiye|dikha\\s+do|dikha\\s+dijiye|dikhana|dikha\\s+sakti|dikha\\s+sakte|show(?:\\s+me)?|दिखाओ|दिखाइए|दिखा\\s+दो|दिखा\\s+दीजिए)";
-const DRAW_VERB = "(?:draw|bana(?:o|iye|ao|\\s+do|\\s+dijiye|\\s+ke|\\s+kar|kar|ke)?|sketch|बनाओ|बनाइए|बना\\s+दो|ड्रा)";
+// (census 14.5: a bare "bana" is make / cook — "khana bana sakte hain?" — never a drawing; a draw form only)
+const DRAW_VERB = "(?:draw|bana(?:o|iye|ao|\\s+do|\\s+dijiye|\\s+ke|\\s+kar|kar|ke)|sketch|बनाओ|बनाइए|बना\\s+दो|ड्रा)";
 const PIC_RE = new RegExp(`(?<![\\p{L}])${PIC_WORD}(?![\\p{L}])`, "iu");
 const DRAW_RE = new RegExp(`(?<![\\p{L}])(?:${DRAW_VERB}|${DRAW_WORD})(?![\\p{L}])`, "iu");
 const SHOW_RE = new RegExp(`(?<![\\p{L}])${SHOW_VERB}(?![\\p{L}])`, "iu");
 // the words before the first show/draw word (or "ka photo"/"ka diagram"), at most 4: the thing asked for
 const ASK_HEAD = new RegExp(`^(.*?)\\s+(?:(?:ka|ki|ke|का|की|के)\\s+)?(?:(?:${PIC_WORD}|${DRAW_WORD})\\s+)?(?:(?:${DRAW_VERB})(?:\\s+(?:karke|kar\\s+ke|karo|kijiye|kar\\s+do))?\\s+)?(?:${SHOW_VERB}|${DRAW_VERB}|${PIC_WORD}|${DRAW_WORD})(?![\\p{L}])`, "iu");
-const ASK_STOP = /^(?:एक|इसकी|इसका|इसके|इसे|इसको|उसकी|उसका|उसके|यह|ये|वो|वह|मुझे|मेरे|कोई|ज़रा|जरा|थोड़ा|ज़रा|अब|फिर|और|kaise|kaisa|kya|kyun|kyon|kab|kahan|how|what|why|where|which|mujhe|muje|hume|humein|mere|please|plz|zara|jara|thoda|ek|aap|tum|didi|bhaiya|sir|ma'?am|teacher|ab|abhi|phir|fir|dobara|wapas|again|now|na|naa|yaar|bhi|bas|sirf|sab|sabhi|to|toh|so|ok|okay|achha|accha|haan|ji|draw|bana|banao|karke|kar|ke|se|me|mein|pe|par|on|in|of|the|a|an|me)$/iu;
+const ASK_STOP = /^(?:एक|इसकी|इसका|इसके|इसे|इसको|उसकी|उसका|उसके|यह|ये|वो|वह|मुझे|मेरे|कोई|ज़रा|जरा|थोड़ा|ज़रा|अब|फिर|और|kaise|kaisa|kya|kyun|kyon|kab|kahan|how|what|why|where|which|mujhe|muje|hume|humein|mere|iska|iski|iske|isko|ise|uska|uski|uske|usko|lekin|magar|but|bar|baar|please|plz|zara|jara|thoda|ek|aap|tum|didi|bhaiya|sir|ma'?am|teacher|ab|abhi|phir|fir|dobara|wapas|again|now|na|naa|yaar|bhi|bas|sirf|sab|sabhi|to|toh|so|ok|okay|achha|accha|haan|ji|draw|bana|banao|karke|kar|ke|se|me|mein|pe|par|on|in|of|the|a|an|me)$/iu;
 const VERBISH = /^(?:hai|hain|ho|hoon|hun|hu|tha|thi|the|hoga|hogi|aata|aati|aate|jata|jati|jate|raha|rahi|rahe|kar|karo|karna|karte|karta|karti|kiya|kiye|diya|diye|liya|lena|dena|chahiye|chahta|chahti|sakta|sakti|sakte|lagta|lagti|pata|mila|mili|dekha|dekhi|bolo|batao|suna|is|are|was|were|am|want|wanna|like|need|have|has|can|could|show|see|है|हैं|था|थी|हो|आता|आती|जाता|रहा|रही|करो|करना|चाहिए|चाहता|चाहती|सकता|सकती|देखा|बताओ)$/iu;
 const SHOW_NOT_SUBJECT = /^(?:answer|jawab|score|result|marks|next|agla|aage|phir|fir|dobara|wapas|again|sab|sabhi|all|more|aur|baaki|baki|naya|new|number|numbers|sawal|sawaal|question|questions|example|examples|udaharan|game|games|khel|video|videos|animation|step|steps|tarika|tareeka|way|method|hint|hints)$/iu;
 /** The numbers a child names for a number line ("1 se 9", "23 plus 14", "1/4", "minus 3", "0.5"). PURE. */
@@ -236,7 +244,33 @@ export function visualAskOf(text) {
   return { show: kind, ...(subject ? { subject } : {}) };
 }
 
+// census 14.5 (F1a): the request patterns are Roman; a Devanagari ASR line ("कुछ और पढ़ते हैं", "पिक्चर दिखाओ ना") matched
+// none of them. A line with Devanagari that reads as nothing is read again in Roman letters (safety/normalize.js
+// devaToRoman, the Hindi schwa rule), English loanwords the recogniser writes in Devanagari mapped to their English word.
+const DEVA = /[\u0900-\u097F]/;
+const LOAN = { "टॉपिक": "topic", "टोपिक": "topic", "पिक्चर": "picture", "पिक्चरें": "pictures", "फोटो": "photo", "फ़ोटो": "photo", "इमेज": "image",
+  "ड्रॉइंग": "drawing", "ड्राइंग": "drawing", "डायग्राम": "diagram", "गेम": "game", "गेम्स": "games", "वीडियो": "video", "एनिमेशन": "animation",
+  "सिमुलेशन": "simulation", "एक्टिविटी": "activity", "क्विज़": "quiz", "क्विज": "quiz", "स्टोरी": "story", "एग्जांपल": "example", "एग्ज़ाम्पल": "example",
+  "एग्जाम्पल": "example", "बोर्ड": "board", "स्क्रीन": "screen", "व्हाइटबोर्ड": "whiteboard", "चार्ट": "chart", "ग्राफ": "graph", "ग्राफ़": "graph",
+  "सब्जेक्ट": "subject", "चैप्टर": "chapter", "लेसन": "lesson", "क्लास": "class", "प्लीज": "please", "प्लीज़": "please", "ब्रेक": "break" };
+const ROMAN_FIX = { men: "mein", mein: "mein", hain: "hain", nahin: "nahi", vishay: "topic" };
+/** A line's Devanagari words in Roman letters (Latin words untouched). PURE. */
+export function romanLine(text) {
+  return String(text ?? "").normalize("NFC").replace(/[\u0900-\u097F]+/g, (w) => { const r = LOAN[w] ?? devaToRoman(w); return ROMAN_FIX[r] ?? r; }).replace(/[।॥]/g, ".");
+}
+
+/** PURE. The request a child's turn makes, or null (a Devanagari line that reads as nothing is read again in Roman). */
 export function requestOf(text) {
+  const r = requestOfLine(text);
+  if (r || !DEVA.test(String(text ?? ""))) return r;
+  // (the Roman reading when the whole turn is the request, or an explicit show / draw ask or a topic ask inside a longer
+  // line; a line about the board inside an answer is not one)
+  const rr = requestOfLine(romanLine(text));
+  // (never a story: Devanagari has its own, stricter story form, STORY_HI, that needs the telling verb)
+  return rr && rr.type !== "story" && (rr.whole || rr.see || ["switch", "topic", "change_topic"].includes(rr.type)) ? rr : null;
+}
+
+function requestOfLine(text) {
   const raw = T(text);
   if (!raw) return null;
   // round 3 fix (adversarial B4): a sexual-content ask is never one of these requests ("nangi video dekhti ho?" was a
