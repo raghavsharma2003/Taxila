@@ -135,3 +135,12 @@ test("census (main): a board and her line meet across scripts — पत्त�
   assert.equal(syncedWithLine(page("कहाँ"), "Aapne teen sources bataye, aur bolkar chali aayi kahaniyan."), false, "kahaniyan is not कहाँ");
   assert.equal(syncedWithLine(page("100th step", "every step"), "Khaali jagah bhariye: 30th term?"), false, "30th is not 100th");
 });
+
+test("F9 re-check after ca0a5e11 (main): the last fillers and verbs out of a drawn subject — 'flat jaise' → flat, 'leaves daalna' → leaves, 'बेंच का मतलब' → बेंच, a bare sketch word names nothing", async () => {
+  const { visualAskOf } = await import("../server/director/requests.js");
+  const subj = (t) => visualAskOf(t)?.subject ?? null;
+  assert.equal(subj("umm... chonch toh lambi aur tez, aur pair... aise flat jaise? photo dikhao na"), "flat");
+  assert.equal(subj("um... leaves daalna hai? drawing dikhao"), "leaves");
+  assert.equal(subj("हाँ, जयपुर बेंच बोल सकते हैं, लेकिन बेंच का मतलब क्या है? फोटो दिखाओ न"), "बेंच");
+  assert.equal(subj("बस फॉर्म बदला है, स्केच दिखाओ"), null);
+});
