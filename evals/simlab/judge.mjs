@@ -142,12 +142,22 @@ const JUDGE_RULES = [
   'Output ONE JSON object only: {"scores":{"coherence":{"score":n,"turns":[..],"why":"…"},…all 8…},"failures":[{"type":"…","turns":[..],"quote":"…","why":"…"}],"teacherRead":{"<skillId>":"understood|partly|not|unknown",…},"detectedMisconceptions":["…"],"verdict":"one sentence a parent would say about this lesson"}',
 ];
 
+/** Off-kit steer cards (stream 2, census F1/F3): the hidden intent the teacher should meet from the steer turn on. */
+const STEER_ASK = (ev) => [
+  `SCRIPTED STEER: at child turn #${ev.atTurn} the child pulls the lesson off the kit (${ev.kind}${ev.subject ? `: ${ev.subject}` : ""}). What a good teacher does from that turn (hidden from her):`,
+  `- moves: ${ev.intent?.moves ?? "she acts on the departure instead of carrying on as if nothing was said"}`,
+  ev.intent?.together ? "- together: what she says and what the board shows stay about the same thing from that turn (no board page of the old kit item under talk about the new subject, or the reverse)" : "",
+  ev.intent?.honest ? "- honest: a subject outside today's lesson is named as such (she does not pretend it is the lesson)" : "",
+  'Also add to your JSON: "steer":{"moves":true|false,"together":true|false|null,"honest":true|false|null,"turns":[..],"why":"one sentence"} (null for an item the card does not ask for). Judge from the turn of the steer onward.',
+].filter(Boolean).join("\n");
+
 /** Judge one lesson with one model. */
 export async function judgeLesson(rec, p, deployment = MODELS.judge) {
   const messages = [
     { role: "system", content: JUDGE_RULES.join("\n") },
     { role: "user", content: `PERSONA CARD\n${cardFor(p, rec)}\n\nTRANSCRIPT (child lines show the child's hidden intent in braces; the teacher never saw it)\n${transcriptFor(rec)}\n\nPARENT SUMMARY written by the system at the end:\n${rec.end?.summary ?? "(none)"}\n${rec.end?.parentNote ?? ""}\n\nProduce the JSON.` },
   ];
+  if (p.steerEvent) messages[1].content += `\n\n${STEER_ASK(p.steerEvent)}`; // only steer cards; every other card's prompt is unchanged
   const { json } = await askJson(deployment, messages, { maxTokens: 16000, timeoutMs: 300_000 });
   return { judge: deployment, ...json };
 }

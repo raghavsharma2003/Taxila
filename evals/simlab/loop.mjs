@@ -30,7 +30,9 @@ const arg = (k, d) => {
 };
 const flag = (k) => argv.includes(`--${k}`);
 
-const PERSONAS = JSON.parse(readFileSync(join(ROOT, "evals/simlab/personas.json"), "utf8"));
+// --cards <file>: extra cards on top of personas.json (e.g. stream 2's off-kit steer cards, evals/simlab/cards/*.json)
+const PERSONAS = JSON.parse(readFileSync(join(ROOT, "evals/simlab/personas.json"), "utf8"))
+  .concat(argv.includes("--cards") ? JSON.parse(readFileSync(join(ROOT, argv[argv.indexOf("--cards") + 1]), "utf8")) : []);
 const byId = new Map(PERSONAS.map((p) => [p.id, p]));
 
 const rejudge = arg("rejudge", null);
