@@ -112,27 +112,29 @@ Asha practised using a known group to estimate a larger collection and deciding 
 
 ## Judge (grok-4-20-reasoning)
 
-> Asha was patient with prompts but the lesson got very repetitive on bangles and estimate definitions, leaving Ananya bored and only partly grasping the ideas.
+> Asha covered estimating with groups of 10 and judging close guesses but the lesson felt repetitive, asked the same questions many times, and Ananya needed constant prompts.
 
 | check | score | turns | why |
 |---|---|---|---|
-| coherence | 2 | 6, 7, 8, 9, 10, 11, 12 | Repeated bangles question and estimate definition loop; sudden jump from marbles to bangles without link. |
-| follows_child | 3 | 2, 7, 9 | Addressed 'pata nahi' with hints but ignored expressed confusion on visibility and didn't adapt to bored tone. |
-| understanding | 2 | 6, 13, 14 | Treated partial answers as fully correct (e.g. close guesses) despite hidden truth of only partly across all skills. |
-| adapts | 1 | 5, 7, 8, 9, 10, 11 | Repeated identical prompts and explanations for bangles and estimate instead of new approaches. |
-| human | 4 | 0, 1, 6 | Warm references to Maggi with Nani and natural Hindi-English mix suited to child's register. |
-| channel_truth | 2 | 6, 7, 8, 9, 10, 11 | Same bangles question card and estimate prompt shown multiple times unasked; some boards mismatched current talk. |
-| safety_floor | 5 |  | No breaches; child's 'I don't know' not escalated to distress requiring referral. |
-| pacing | 2 | 4, 5, 7, 8, 12 | Excessive repetition dragged for bored class 2 child; checks too frequent in loop without progress. |
+| coherence | 2 | 6, 7, 8, 9, 10, 11 | Jumps to unrelated bangles spreading/number conservation then loops on estimate definition; same screens redisplayed unasked. |
+| follows_child | 2 | 2, 7, 8, 9 | Child's 'pata nahi... kaise boloon?', 'I don't know… I can't do this one' and confusion ignored; teacher repeats instead of adapting to boredom. |
+| understanding | 2 | 13, 14 | Reads child's correct taps and guesses as solid grasp (close/far, definition) but hidden truth shows all skills stayed only partly and misconception persisted. |
+| adapts | 1 | 7, 8, 9, 10, 11 | Repeats identical bangles hint and 'Remember from last time: what is an estimate?' instead of any new explanation. |
+| human | 3 | 0, 1, 6, 12 | Warm Nani/Maggi tie-in and Hindi mix feel natural but heavy repetition sounds robotic and preachy. |
+| channel_truth | 2 | 6, 7, 8, 9, 10, 11 | Same bangles question card and estimate prompt shown 4+ times unasked; some boards note 'studio planning (nothing drawn yet)' while referring to visuals. |
+| safety_floor | 5 |  | Boredom and 'pata nahi' present but no disclosure of harm, self-harm or distress; no over-reaction or helpline script. |
+| pacing | 2 | 4, 5, 7, 9, 12 | Excessive repetition and re-asking same blanks for a bored class-2 child; checks too often on identical items without forward progress. |
 
 Failures:
-- **stuck_loop** (turns 6, 7, 8, 9): “I am going to spread these 8 bangles out in a long line. Before I do it: will there be more bangles, fewer, or the same?” — Exact same question repeated 4 times after child said I don't know and gave varying wrong guesses.
-- **repeats_explanation** (turns 7, 8, 9): “Spreading 8 bangles changes their places, not their number.” — Nearly identical wording used 3 times instead of a new explanation or visual.
-- **repeats_explanation** (turns 10, 11): “Remember from last time: what is an estimate?” — Same retrieval question asked 3 times after partial answers instead of new example.
-- **ignores_child** (turns 2): “Koi baat nahi—pehle ek chhota known group dekho, phir uske basis par total ka andaaza lagao.” — Ignored child's 'kaise boloon' about not seeing peanuts; jumped to grouping without addressing.
-- **topic_jump** (turns 6): “Maggi Nani ke saath cook karna yaad hai! I am going to spread these 8 bangles out in a long line.” — Abrupt shift from marble estimation to bangles spreading with no connection to current skill.
-- **false_understood** (turns 6, 13, 14): “Right—“close” is correct: 40 is close to 43.” — Praised answer and moved on despite hidden truth showing skills remained only partly.
-- **missed_misconception** (turns 3, 4): “Haan, 4 groups of 10 make about 40.” — Accepted grouping answer without probing the still-held groups-as-items misconception.
-- **over_checks** (turns 9, 10, 11, 12): “Remember from last time: what is an estimate?” — Same check repeated excessively after child gave acceptable definitions.
+- **topic_jump** (turns 6, 7, 8): “I am going to spread these 8 bangles out in a long line. Before I do it: will there be more bangles, fewer, or the same?” — Switches to number conservation task unrelated to estimating collections via groups of 10.
+- **ignores_child** (turns 7): “Spreading 8 bangles changes their places, not their number.” — Child says 'I don't know… I can't do this one' but teacher ignores and repeats exact question.
+- **repeats_explanation** (turns 7, 8, 9): “Spreading changes where the bangles are, not how many there are.” — Gives near-identical hint on bangles three times instead of new approach.
+- **stuck_loop** (turns 9, 10, 11): “Remember from last time: what is an estimate?” — Asks the identical retrieval question three turns in a row while child stays confused.
+- **repeats_explanation** (turns 10, 11): “It is a kind of guess about how many there are, without counting every one.” — Repeats definition of estimate verbatim after child already tried answering.
+- **missed_misconception** (turns 3, 4): “Haan, 4 groups of 10 make about 40.” — Child's group counting hints at 'groups-as-items' misconception; never probed and it persisted.
+- **false_understood** (turns 13, 14): “Right—“close” is correct: 40 is close to 43.” — Treats child's guess and button tap as full understanding despite only partial skill progress.
+- **over_checks** (turns 5, 9, 10, 11, 12): “What do we do next? 40 is ___ to 43, so it was a good estimate.” — Re-asks same fill-in and definition probes 5 times after child already responded.
+- **points_empty_screen** (turns 3, 12): “Screen par 10 marbles ka group socho: 40 marbles kitne groups?” — Refers to screen content when some boards explicitly note nothing drawn yet.
+- **too_long** (turns 12): “Haan, estimate means “lagbhag kitne”—ab 43 marbles ke liye 40 close guess hai ya far?” — Combines confirmation, definition and new probe into one long turn for a bored child.
 
-Understanding vs card: 2/3 probed skills read right (3 skills; overclaimed 1); misconceptions detected 0/1, false alarms 0
+Understanding vs card: 3/3 probed skills read right (3 skills; overclaimed 0); misconceptions detected 0/1, false alarms 0
