@@ -100,7 +100,8 @@ function studioWire(base, cookie, lessonId) {
     let slot = ui.studioSlot ?? null, via = slot?.artifact ? "turn" : null, waited = 0;
     if (slot && !slot.artifact && slot.intentId) {
       const t0 = Date.now();
-      while (!w.pieces.get(slot.intentId)?.artifact && !w.pieces.get(slot.intentId)?.retracted && Date.now() - t0 < waitMs) await new Promise((ok) => setTimeout(ok, 100));
+      const pending = () => { const q = w.pieces.get(slot.intentId); return !q?.artifact && !q?.retracted && q?.status?.state !== "failed"; };
+      while (pending() && Date.now() - t0 < waitMs) await new Promise((ok) => setTimeout(ok, 100));
       waited = Date.now() - t0;
       const p = w.pieces.get(slot.intentId);
       let artifact = p?.artifact ?? null;
@@ -239,9 +240,12 @@ export async function runLesson(p, { base, lane = "text", maxTurns = 14, voice =
     rec.lessonId = s.lessonId; // TEST lesson id, so a turn can be traced server-side (never a child or account id)
     // SIMLAB_WIRE=off: the old harness (turn slot only), to compare runs made before 2026-10-21
     wire = process.env.SIMLAB_WIRE === "off" ? null : studioWire(base, api.cookie(), s.lessonId);
-    const waitMs = Number(process.env.SIMLAB_WIRE_WAIT_MS ?? 4000);
-    rec.wire = wire ? { waitMs } : "off";
-    const startSettled = wire ? await wire.settle(s, Date.now(), waitMs) : { r: s, wire: null };
+    // the child is hearing the reply while a pending board lands: wait about as long as it takes to say (~14 chars/s), at
+    // least SIMLAB_WIRE_WAIT_MS (4 s) and at most 15 s (b7413e5f wire arm: 6 boards landed 4-6 s after the reply)
+    const waitMin = Number(process.env.SIMLAB_WIRE_WAIT_MS ?? 4000);
+    const waitFor = (text) => Math.min(15_000, Math.max(waitMin, Math.round(String(text ?? "").length / 14 * 1000)));
+    rec.wire = wire ? { waitMs: waitMin, waitRule: "max(min, reply chars / 14 per s), cap 15 s" } : "off";
+    const startSettled = wire ? await wire.settle(s, Date.now(), waitFor(s.teacherOpening)) : { r: s, wire: null };
     let screen = nextScreen({}, startSettled.r);
     const decided = childMode() === "decided";
     let posed = decided ? await posedItem(s.ui?.ask, s.lessonId) : null;
@@ -295,7 +299,7 @@ export async function runLesson(p, { base, lane = "text", maxTurns = 14, voice =
       const ackRes = ackP ? await ackP : null;
       // played as the device would: it arrived before her reply was ready (the reply's round trip)
       if (ackRes && ackRes.phrase) ackRes.played = (ackRes.readyMs ?? Infinity) < r._ms;
-      const settled = wire ? await wire.settle(r, Date.now(), waitMs) : { r, wire: null };
+      const settled = wire ? await wire.settle(r, Date.now(), waitFor(r.teacherReply)) : { r, wire: null };
       screen = nextScreen(screen, settled.r);
       const teacher = r.teacherReply ?? "";
       if (teacher) heard.push({ who: "teacher", text: teacher });
