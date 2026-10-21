@@ -46,6 +46,7 @@ describe("census F1: topic asks", () => {
 // study ("X padhna hai", Roman and Devanagari) and finds the topic for a loanword the recogniser wrote in Devanagari
 import { intakeParse } from "../server/director/session/intake.js";
 import { intakeCandidates } from "../server/director/session/candidates.js";
+import * as SH from "../server/director/shapes.js";
 const topOf = (t, cl) => { const f = intakeParse(t); const c = intakeCandidates(f, t, { classLevel: cl }); return { kind: f.kind, top: c.top?.topicId ?? null }; };
 test("the intake reads 'X padhna hai' as a wish and finds X, in Roman and in Devanagari", () => {
   assert.deepEqual(topOf("school ki baat chhodo, mujhe progression padhna hai", 9), { kind: "want", top: "c9-maths-ch08-t02" });
@@ -74,5 +75,5 @@ test("a topic ask read as a stop on an open check-in: released, the one warm lin
   assert.equal(r.move.request, "change_topic");
   assert.notEqual(r.move.checkin, "stop");
   assert.ok(!(r.ui?.chips ?? []).some((c) => c.id === "stop:end"), JSON.stringify(r.ui?.chips));
-  assert.equal((r.move.shape.match(/tell you or a grown-up they trust/g) ?? []).length, 1);
+  assert.equal(r.move.shape.split(SH.afterCareCheck()).length - 1, 1, "the one warm line, once");
 });
