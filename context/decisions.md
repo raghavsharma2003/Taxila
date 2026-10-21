@@ -6337,3 +6337,9 @@ The end-record writer used to make the teacher the one who practised ("Asha prac
 ## dc-r1441-safeguarded-record-facts-only — a disclosure never reaches the guardian through the lesson record (2026-10-21)
 
 In a lesson with a safeguarding turn, the summary and parent note are written from the learning facts only, never from the child's words. Every record then passes a fence that drops distress, a reported harm or a safeguarding referral. The guardian can be the person the child named. A disclosure reaches a parent only through the safeguarding protocol and its human queue. Replay: disclosures in the note 8/30 → 0/30. The fence touched 0 of 288 ordinary records.
+
+
+<!-- merged from inbox/r1441-distresscheck-hate-main.json -->
+## dc-r1441-distresscheck-hate-stays-closed — the outage-path distress read keeps a hate block as a check-in (2026-10-21)
+
+The reply probe and the across-deployment read stopped treating a hate-only filter block as distress in 14.4. The rare outage-path read still does, because no one has measured bullying lines that quote slurs. Here a fail-closed read is only a gentle check-in, never the helpline script.

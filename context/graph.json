@@ -22933,6 +22933,90 @@
    "at": "2026-10-21",
    "title": "Fencing the end record's OUTPUT with the one safety predicate alone, keeping the child's turns in the writer's input. The predicate reads child speech in the first person and misses the writer's third-person report: 'Riya said she wants to die.' passes scanSafety. The referral line that tips off the guardian ('Please check on Myra's immediate safety and arrange support from a trusted safeguarding professional.') carries no distress words at all. Withholding the child's words from the writer in a safeguarded lesson is the mechanism. The widened fence (REPORTED + REFERRAL) is the backstop for lessons that wrote no incident.",
    "source": "inbox/r1441-endrecord-main.json"
+  },
+  {
+   "id": "dc-r1441-distresscheck-hate-stays-closed",
+   "kind": "decision",
+   "at": "2026-10-21",
+   "title": "classify.js distressCheck, which runs on the outage, unreadable, stray-script and model-failure paths, still reads a content-filter block by the hate detectors alone as distress (fail closed). 14.4 made the reply probe (wordsTrip) and the across-deployment read (distressAcross) treat a hate-only block as no child-safety signal. Not this path, for two reasons. First, nothing has measured bullying lines that quote the slurs said to the child; the 276-line distress battery has none, and on the probe 0 of its lines were hate-only. Second, on this path a fail-closed read carries no sureBy, so state.js checkTier sends it to the gentle check-in, never the helpline script. A false positive costs one 'are you okay' and does not bring back the helpline over-firing. Reverse if real-lesson traces show a hate-only block here firing a check-in on a harmless line (e.g. a history answer), AND a bullying battery quoting slurs shows the predicate or the other reads still catch those lines without it.",
+   "source": "inbox/r1441-distresscheck-hate-main.json"
+  },
+  {
+   "id": "ms-r145-agent-misread-rca",
+   "kind": "measurement",
+   "at": "2026-10-21",
+   "title": "Why the agent lane reads probed skills right less often than the Director (4A root cause of ms-r143-decided-gate-director-vs-agent; sim lab run r5-rel143-9a30285-decided-gate, claude/r5-simlab 551f72dd, 64 cards x 2 arms, text, decided child). The misreads are UNDER-reads, not over-claims. Agent 117/182 agree, 42 under, 23 over; Director 120/163, 21 under, 22 over. The agent's excess is understood->partly: 38 vs 11. Maths carries it: 23 under vs 7. The judge mirrors the agent's own end check on 34 of those 38 (23 'partly: some right, not steady yet', 11 'practised: not yet checked with a why'), so the cause is the agent's read, fed by its grades. The evidence read was replayed on the truth=understood skills (n=73) using the grades the server actually gave; 20 read understood. Of the 53 that did not: 18 had no right deep answer at all (probe coverage); 15 had a right deep answer lost to no_evidence (grading); 6 had no answer for the skill; 6 had a miss or partly in the record (a slip, or learned mid-lesson); 5 had a deep answer graded right and still sat under the 0.8 bar (the read rule). Grading, both arms: of the agent's right answers to a posed card, 127 came back no_evidence, about 38% (Director 56, a similar rate on 233 card turns vs the agent's 774). Of the 127, 107 were graded against the card the child answered. Re-classified offline on the current code (answer head and Devanagari fractions in), 98 of the 107 are still no_evidence, nearly all a model 'correct' vetoed by corroboration: foreign_number 24, low_cover 24, negated 12, number_hedge 8, unreadable_number 8, missing_number 7, swapped_word 7, number_order 4, missing_decisive 2. 46 of the 107 carried a reason ('kyunki ...'), the shape the agent invites by asking why. With every decided answer graded perfectly, the same read agrees 110/168 with 47 under: grading costs about 26 agreements, and the read rule (bar 0.8, the deep requirement, 2-3 answers per skill in 14 turns) is the second limit. Not covered by 14.4: the answer head rescues only foreign / extra / unreadable_number without an explanation, the deep marks (switch off) would make more skills plain-only, and the clauseGate / affirm work does not touch reads.",
+   "source": "inbox/r145-4a.json"
+  },
+  {
+   "id": "ms-r145-reason-head",
+   "kind": "measurement",
+   "at": "2026-10-21",
+   "title": "The reason head (14.5 (a), main's conditions; grading/corroborate.js reasonHead + the number path in director/classify.js). A right answer said first, then its own reason, is credited when the text before the first reason marker (kyunki / kyuki / kyonki / because / taaki / isliye / so / क्योंकि / ताकि / इसलिए) carries a complete form on its own and the reason does not take it back. Vetoes: a correction; an alternative or hedge ('ya 8 lakh', 'par shayad X hoga'); don't-know; another value after an answer cue ('toh answer 8 lakh hai', '… toh 8 lakh hoga'); a negated head ('225 nahi'). A misconception read in the reason stays on the result; why and teach-back items are excluded. The 14.4 answer head now carries the same vetoes: before this it credited 68 constructed contradictions with the model forced to 'correct'. (1) Rescues of right answers that earned no evidence against the card the child answered (sim lab r5-rel143-9a30285-decided-gate, re-classified offline on the final code): agent 9 of 107 (5 number path, 4 corroboration), Director 3 of 41. Most of the rest have no listed marker (66 of 98 agent): 'matlab', a reason first, or no reason. Adding matlab / jaise / yaani as markers would rescue 1 more per arm. (2) False credit by the head rules on forms constructed from the same 112 items: 0 of 1,020 wrong-head + reason and 0 of 667 right-head + contradicting reason with the model forced to 'correct'; 0 of 340 and 0 of 223 with the real model. (3) Moved over 2,765 sim-lab child lines (r5-rel143 runs), worst case model 'correct': 17 of 1,191 (line, graded card) pairs, all no_evidence -> correct, listed in the commit's report to main.",
+   "source": "inbox/r145-4a.json"
+  },
+  {
+   "id": "ms-r145-f1-devanagari-requests",
+   "kind": "measurement",
+   "at": "2026-10-21",
+   "title": "Census F1 (topic not followed), causes (a) and (c), in director/requests.js. (a) A Devanagari line that reads as no request is read again in Roman letters: safety/normalize.js devaToRoman (import only), a loanword map (टॉपिक topic, पिक्चर picture, गेम game, ड्रॉइंग drawing …) and men -> mein. That Roman read counts only when the whole turn is the request, or when it is an explicit show / draw ask or a topic / switch ask; it never yields a story request (D41's Devanagari story form stands). (c) A game must be asked for ('khelein?', 'khelna hai', 'game karte hain?', a bare 'game'); 'khel' / 'खेल' inside an answer is not a request. Fixed on the way: 'बायाँ' (left) read as a goodbye (बाय had no word boundary); 'kuch aur padh\\b' missed 'padhte' (Roman too); a bare 'bana' (make, cook) read as a draw ask; 'video games' read as an animation ask; junk subjects iska / lekin / bar. Measured on 4,698 sim-lab child lines (851 Devanagari), old vs new requestOf and switchSubjectOf: 8 moved, all checked: 1 new read (a Devanagari break ask) and 7 false reads removed (1 goodbye, 2 'video games', 2 'bana', 2 'game' mentions). Not covered: a visual ask inside a turn longer than 12 words stays unread in both scripts (pre-existing). Main's production trace confirms (b) followed from (a): an unread Devanagari ask was graded against the card and the card was re-posed.",
+   "source": "inbox/r145-4a.json"
+  },
+  {
+   "id": "ms-r145-whole-reply-vetoes",
+   "kind": "measurement",
+   "at": "2026-10-21",
+   "title": "The whole-reply credit now has the reason-head vetoes (14.5, main; was open-r145-whole-reply-contradiction). corroborate.js wholeTakesBack: a correction or doubt (unless what follows it carries the key, or it is a long musing ending in a question), don't-know, an alternative or a second answer at the answer's place ('X ya Y', 'toh answer Y hai'), a hedge with an answer verb, a negated answer, or a different short answer of its own before a reason ('Sphere, isliye cuboid'). The same checks on number_working. The reason head adds main's two vetoes: a doubt aside after the head ('par maine to … sirf 5 aur 5 hota hai?') and an answer said as a question (the head, or a last clause that restates it with '?'; a tag like 'yeh sahi hai na?' is not one). The veto patterns bound on letters AND marks: 'या' inside 'किया' and 'पर' inside 'ऊपर' had matched; this also fixes the 14.4 head rule's EXPLAIN / CORRECTION. False credit, before -> after, on forms built from 112 items. Real model: wrong head + reason 4 -> 2 of 340; right head + contradicting reason 87 -> 3 of 223. Model forced to 'correct': 14 -> 5 of 1,020 and 311 -> 9 of 667. The residue is long multi-sentence keys with 'ya' / 'nahi' appended, keys that are themselves negative, and a wrong first number followed by working that ends on the key (number_working, by design). Rescue loss: TEST branch graded child answers (read-only, evidence joined to turn), 136 credited, 0 lost. Sim-lab (line, card) pairs with the model forced to 'correct': 23 of 193 lost, each listed in the report to main; nearly all don't-know, wrong-answer, hedged or alternative lines. Two are main's question rule as specified on a child who then confirms ('aath hazaar…? aath hazaar hoga', '4000 ke aas-paas? … haan, lagbhag 4,000'). Moved over the same pairs vs the 14.4 base (worst case): 36 (13 newly credited by the reason head, 23 no longer credited). Rescues on the 14.3 decided gate: agent 8 of 107 (1 fewer: '6 lakh? kyunki …' is now a question hedge), Director 3 of 41.",
+   "source": "inbox/r145-4a.json"
+  },
+  {
+   "id": "open-r145-tera-thirteen",
+   "kind": "open",
+   "at": "2026-10-21",
+   "title": "'तेरा' for 13 (also 'your') is not read as a number: 1 right answer on the 14.3 decided gate earned no evidence (p03 #13). Out of scope for the reason head (main); needs a context rule if it recurs.",
+   "source": "inbox/r145-4a.json"
+  },
+  {
+   "id": "rj-r145-kit-deep-marks",
+   "kind": "rejection",
+   "at": "2026-10-21",
+   "title": "The deep-kind audit's 1,927 marks (deep: false on items whose kind says deep but whose question is plain), measured before applying (dc-r144-deep-marks-switch) and rejected. Sim lab run r5-deepmarks-9f1fc91-min (claude/r5-simlab), 64 cards x 2 arms, agent teacher, text, decided child (seed taxila), 0 unavailable turns. off_kind (marks off, the child answers by kind) vs on_audit (TAXILA_KIT_DEEP_MARKS=1, the child answers marked items on the plain row): judge read agree 122/180 (68%) vs 125/184 (68%), overclaimed 22 vs 21, false alarms 8 vs 13; her own read agree 88/160 (55%) vs 97/174 (56%), over 20 vs 21, under 52 vs 56; rubric means inside the A/A band on every axis. The marks made the real gap worse: deep items asked of an understood child 66 vs 47, and of the understood under-reads 11/42 vs 23/46 were 'untested' (never given a deep item to pass). About 40% of marked-item answers were unverified in both arms (the grading loss ms-r145-whole-reply-vetoes targets). Removed: the switch, data/kits/deep-marks-2026-10-15.json, and main's deep-kind patch (items.js plainEvidence, the kit deep: false field, the agent's plain flag and read.js plain row), since the next step, one deep item per probed skill, does not use them. Reversal: a later audit showing a marked-plain item mis-reads a child, measured the same way.",
+   "source": "inbox/r145-4a.json"
+  },
+  {
+   "id": "ms-r145-f1b-topic-asks",
+   "kind": "measurement",
+   "at": "2026-10-21",
+   "title": "Census F1 (topic not followed), cause (b), in director/state.js and director/session/{intake,candidates}.js. (1) An explicit topic / switch / change_topic request that the classifier also read as a stop is the topic ask, never the stop check-in (a real goodbye still ends). (2) A change_topic asked again within 6 turns gets real topics of the child's class (topicSequence after today's, then earlier ones) as switch chips plus back-to-today, with SH.topicChoices, instead of today's ways-in once more (production 3437b744, e6392332; 6c45a7ea t12); not while an off-kit subject is pending (r13-visual-honest). (3) The intake reads 'X padhna / padhni hai' as a wish (Roman and Devanagari); a Devanagari line read as taught / unknown / share / nothing is read again through requests.js romanLine; Devanagari query words drop Hindi function words (में की के का …) and a transliterated loanword finds its vocab word by a consonant skeleton (5+ letters, 4+ consonants, unique match): प्रोग्रेशन -> c9-maths-ch08-t02 (2790c473 kept the planned topic). Measured over 4,338 (class, sim-lab line) pairs, old vs new intakeParse + intakeCandidates top: 156 moved; 94+ were junk Hindi-chapter matches on function words, removed ('में' meeting a Hindi title); 20 new matches, mostly plausible; the rest are kind changes to want. Tests that fail on the base: tests/r145-topic-asks.test.mjs (4).",
+   "source": "inbox/r145-4a.json"
+  },
+  {
+   "id": "ms-r145-f1d-fade-landed",
+   "kind": "measurement",
+   "at": "2026-10-21",
+   "title": "Census F8 / F1(d) (3437b744 t9-13: the a₃₀ gap posed with no worked example landed), in director/state.js teach(). The faded step was posed on the turn after the worked lead whatever the reply: reproduced 24/24 (8 seeds x engaged / don't-know / off-topic). Now a stuck (don't know, asks for the answer) or off-topic reply to the worked lead turns the planned fade into the whole worked example (guidance reason fade.not_landed), then practice; an engaged reply still gets the gap. Sim lab (353 records, r5-rel143 decided-gate + sl3): 181 first fade posings, 140 right after the worked lead; 8 of those 140 followed a stuck or off-topic reply (offTopic 4, dontKnow 2, asksForAnswer 2) and now get the worked example instead. Test that fails on the base: tests/r145-fade-landed.test.mjs.",
+   "source": "inbox/r145-4a.json"
+  },
+  {
+   "id": "ms-r145-stray-script",
+   "kind": "measurement",
+   "at": "2026-10-21",
+   "title": "One token in another script made a whole readable spoken turn unreadable (lowAsr: no evidence, re-ask; production 6c45a7ea t26, a Bengali token). classify.js classifyFast now drops a stray token when other-script tokens are under 25% of the letter tokens and 3+ readable words remain, and classifies the readable rest; classify() still always runs the model distress read on that rest (distressCheck, the unreadable path's backup), in parallel and OR-ed in. The predicate has read the whole turn before this point. Explicit depth guard (_stray, main's review). Measured: safety-robust 20 seeds, 0 of 8,780 distress draws lose their re-ask (FDB 51 of 1,680 move, all already caught by the predicate; es3 / held-out / cv2 / red team 0 move); FDB lesson segments 499 of 988 unreadable draws are graded instead of re-asked (es1, hard negatives, quiet 0 move); TEST 0 of 7,390 child turns and sim lab 0 of 4,293 lines move. Thresholds 0.15 / 0.2 / 0.34: distress losses 0, lesson moves 392 / 443 / 578. Main safety review: approved for 14.4.1. Test: tests/r145-stray-script.test.mjs (fails on the base).",
+   "source": "inbox/r145-4a.json"
+  },
+  {
+   "id": "ms-r145-fade-key-number",
+   "kind": "measurement",
+   "at": "2026-10-21",
+   "title": "A faded step's key kept the sentence after the answer when the kit's faded line ended at its gap ('Write it: 7 − 2 = ___.' on 'Write it: 7 − 2 = 5. 5 kites are still flying.'): key '5. 5 kites are still flying', so a bare right '5' missed the code grader and earned no evidence (sim lab p55 t5, Director lane; 1 of 49 bare numeric replies to a posed card in 353 records, the other 3 no_evidence were an echo, a sub-step and an asked-another answer). fading.js blankOf: a number then a sentence end and more text keys the number. Kits: 6 of 584 faded steps carried text after the answer; the 4 numeric ones are fixed: c1-maths-ch06-t02 and c5-maths-ch09-t01 now key '3' / '5' (graded correct in code); c1-maths-ch05-t01 and c1-maths-ch05-t02 now have no faded step, because their number is already shown in the steps before the gap (gapGivenAway), so they keep the whole worked example. The 2 abbreviation keys (c6-science-ch04-t03 'e.g.', c9-hindi-ch06-t01 'बी.ए.') are unchanged. Related finding, no change: the '130 metre' of QA 12fbd625 / a769071e answered a step inside the worked-example lead (c6-maths-ch06-t01), never graded by design (main agreed). Test: tests/r145-fade-key.test.mjs (fails on the base).",
+   "source": "inbox/r145-4a.json"
+  },
+  {
+   "id": "ms-r145-f1b-round2",
+   "kind": "measurement",
+   "at": "2026-10-21",
+   "title": "Census F1 round 2 (production 310b8c82 / 3437b744 / 6c45a7ea, stream 2's trace: the Director never registered the departure, so the board followed the kit while the reply followed the child). director/requests.js: (1) a chapter ask ('chapter 1 se shuru karo', 'start from chapter 1', 'pehla chapter se shuru karo', 'lesson 4 start karo') is a switch with that chapter, and state.js offers the chapter's first topic of the class and subject (today's chapter: carry on); (2) an explain-first ask ('pehle theory batao', 'theory first, in order', 'pehle samjhao') is explain_first: in practice the card waits (posed next, no verdict) and the idea is taught now; in teaching a planned first-step probe or gap becomes plain teaching; (3) offerAgreed: a bare yes ('haan', 'ok', 'ji', 'yes please', 'haan karte hain') to her SINGLE offer (her last sentence a question in a we-proposal form: '…karein / lein / dekhein?', 'kya hum…', 'shall we…', 'let's…'; no 'ya / or / या' choice) is the request that offer names, via requestOf on her offer; classify.js uses it only when the child's own words read as no request. 3437b744's 'haan' to 'Kya Chapter 1 se shuru karein?' with a card on the table is now the switch, never graded, the card not re-posed. Measured, before: 0 chapter asks and 0 explain-first asks in 4,293 sim-lab lines and 7,390 TEST child turns (the shape lives in production and stream 2's off-kit cards, not yet run). False reads after: offer agreements 0 of 4,690 sim-lab and 0 of 7,385 TEST (her line, reply) pairs; a first draft without the we-proposal form read 8 TEST lesson questions ('…chitra banaiye—kya badla?', 'Aur ek example?') as offers, all false, so the form is required. The choice offers (continue / break / stop) TEST showed are never read. Not done: a chapter beyond the book's 30 reads as no ask. Tests: tests/r145-f1b-round2.test.mjs (fail on the base).",
+   "source": "inbox/r145-4a.json"
   }
  ],
  "edges": [
@@ -36555,6 +36639,16 @@
    "src": "dc-r1441-safeguarded-record-facts-only",
    "rel": "measured_by",
    "dst": "ms-r1441-endrecord-replay"
+  },
+  {
+   "src": "dc-r1441-distresscheck-hate-stays-closed",
+   "rel": "part_of",
+   "dst": "dc-r144-hate-not-child-safety"
+  },
+  {
+   "src": "rj-r145-kit-deep-marks",
+   "rel": "supersedes",
+   "dst": "dc-r144-deep-marks-switch"
   }
  ]
 }
