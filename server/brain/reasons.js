@@ -15,7 +15,9 @@ const REQUEST_TYPES = ["another", "example", "story", "slower", "visual", "langu
   "frustration", "identity", "uptake", "decline", "answer_q", "adapt", "adopt", "adult", "park", "detour", "hold_checkin", "ask_invite", "unclear",
   // round 3 fix: a closed voice-grammar command to the play piece on screen (adversarial B2), and a named subject to study
   // instead (experience B8)
-  "play_act", "switch"];
+  "play_act", "switch",
+  // census 14.5 (F1): the idea first, before any question
+  "explain_first"];
 // the CONVERSATION-V2 note's intents (conversation/understand.js INTENTS; a test keeps the two lists equal)
 const CONV2_INTENTS = ["answer_correct", "answer_wrong", "answer_partial", "answer_hedged", "thinking_aloud", "self_correction", "dont_know",
   "ask_for_answer", "insist_wrong", "check_my_work", "question_on_topic", "clarify", "curiosity_offlesson", "explain_differently",

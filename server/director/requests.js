@@ -56,6 +56,21 @@ const STOP = new RegExp([
 const CONTINUE = /^(?:(?:no|nahi|nahin)[\s,]+)*(?:(?:let'?s|lets|chalo|ok(?:ay)?)\s+)?(?:keep\s+going|continue(?:\s+karte\s+hain|\s+karo|\s+please)?|carry\s+on|go\s+on|aage\s+(?:chalo|badho|karo|bado)|chalo\s+(?:padhte|aage|continue|shuru)\b.*|padhte\s+hain|nahi\s+rukna|don'?t\s+stop|continue\s+karte\s+hain|wapas\s+lesson|back\s+to\s+(?:the\s+)?lesson)\b/i;
 const BREAK = /\b(?:(?:short|small|quick|chhota|thoda|ek)\s+break|break\s+(?:chahiye|lena|le\s+sakte|le\s+lu|le\s+loon|please|lete\s+hain)|take\s+a\s+(?:short\s+)?break|need\s+a\s+break|can\s+i\s+(?:take\s+a\s+)?(?:short\s+)?break|i'?m\s+tired|thak\s+(?:gaya|gayi|gyi|gya)|thoda\s+aaram|rest\s+(?:karna|chahiye|please))\b/i;
 const CHANGE_TOPIC = /\b(?:something\s+else|kuch\s+aur\s+(?:baat|padh\w*|karte|batao|karo|sikha\w*|seekh\w*|sikh\w*)|kuch\s+(?:alag|dusra|doosra)|dusri\s+baat|doosri\s+baat|(?:change|badlo|badal\s+do)\s+(?:the\s+)?topic|topic\s+(?:change|badlo|badal\s+do)|(?:dusra|doosra|another|different|new)\s+topic|talk\s+about\s+(?:something|anything)|is\s+(?:ke|ki)\s+(?:alawa|alava|siva))\b/i;
+// census 14.5 (F1, 310b8c82 / 3437b744: "Chapter 1 se shuru karo", "start from chapter 1" were no request at all): a chapter
+// of their book by number, to start (the Director offers its first topic: state.js "switch")
+const CH_NUM = String.raw`(\d{1,2}|one|two|three|four|five|first|1st|pehla|pehle|pahla|ek|teen|char|paanch)`;
+const CHAPTER = new RegExp(String.raw`\b(?:chapter|chaptar|adhyay|adhyaay|paath|lesson)\s*(?:no\.?\s*|number\s*)?${CH_NUM}\b(?:\s+(?:se|say|from))?\s+(?:shuru|start|padh\w*|sikha\w*|karo|karte|karein|karen|kare|batao|le\s+lo|lete)|\b(?:start|begin|do|teach|learn|study)\s+(?:from\s+|with\s+)?(?:the\s+)?(?:chapter|lesson)\s*${CH_NUM}\b|\b(?:start|begin)\s+(?:from|with)\s+(?:the\s+)?(?:first|1st)\s+(?:chapter|lesson)\b|\b(?:pehla|pehle|pahla|first)\s+(?:chapter|adhyay|paath)\s+(?:se\s+)?(?:shuru|start|padh\w*|karo|karte|karein|sikha\w*)`, "iu");
+const CH_WORD = { one: 1, first: 1, "1st": 1, pehla: 1, pehle: 1, pahla: 1, ek: 1, two: 2, three: 3, teen: 3, four: 4, char: 4, five: 5, paanch: 5 };
+/** The chapter number a chapter ask names, or null. */
+export function chapterAskOf(text) {
+  const m = CHAPTER.exec(T(text));
+  if (!m) return null;
+  const w = m.slice(1).find(Boolean) ?? "first";
+  const n = /^\d+$/.test(w) ? Number(w) : CH_WORD[String(w).toLowerCase()] ?? 1;
+  return n >= 1 && n <= 30 ? n : null;
+}
+// census 14.5 (F1, 310b8c82: "theory first, in order" was no request): the idea taught before any question
+const EXPLAIN_FIRST = /\b(?:pehle|pahle|first)\s+(?:theory|concept|basics?|samjhao|samjha\s+do|samjhaiye|sikhao|sikha\s+do|padhao|explain|batao|bataiye)\b|\b(?:theory|concept|basics?)\s+(?:first|pehle|pahle)\b|\bexplain\s+(?:it\s+|this\s+|the\s+\w+\s+)?first\b|\b(?:teach|explain)\s+(?:me\s+)?(?:the\s+)?(?:theory|concept)\b|\bsawal\s+(?:baad|later)\s+mein\b|\bquestions?\s+later\b|\border\s+(?:mein|me|se)\s+(?:padhao|samjhao|batao|sikhao)\b|\bin\s+order\b(?!\s+to\b)/i;
 const TOPIC = /\b(?:([\p{L}\p{N} ]{2,30}?)\s+(?:ke|ki)\s+(?:baare|bare)\s+(?:mein|me|main)\s+(?:baat\s+(?:karo|karte\s+hain|karein|kare)|batao|bataiye|sikhao)|(?:let'?s\s+)?(?:talk|tell\s+me)\s+about\s+([\p{L}\p{N} ]{2,30}))/iu;
 const LANG = { hindi: /\b(?:hindi|हिंदी|हिन्दी)\b/i, english: /\b(?:english|angrezi|अंग्रेज़ी|इंग्लिश)\b/i, hinglish: /\bhinglish\b/i };
 const LANG_REQ = /\b(?:hindi|english|angrezi|hinglish)\s+(?:me|mein|main|mai|में)\b|\b(?:in|speak|talk|explain\s+in|say\s+it\s+in)\s+(?:hindi|english|hinglish)\b|\b(?:hindi|english|hinglish)\s+(?:please|plz)\b|^(?:hindi|english|hinglish)$|(?:हिंदी|हिन्दी|अंग्रेज़ी|इंग्लिश)\s*में/i;
@@ -116,7 +131,7 @@ const wordCount = (t) => t.split(/\s+/).filter(Boolean).length;
 /**
  * PURE. The request a child's turn makes, or null.
  * @param {string} text  the child's words (typed, or an ASR transcript)
- * @returns {null | { type: "goodbye"|"stop"|"continue"|"break"|"change_topic"|"topic"|"language"|"another"|"example"|"story"|"slower"|"deeper"|"visual",
+ * @returns {null | { type: "goodbye"|"stop"|"continue"|"break"|"change_topic"|"topic"|"language"|"another"|"example"|"story"|"slower"|"deeper"|"visual"|"explain_first",
  *   subject?: string, lang?: "hindi"|"english"|"hinglish", kind?: "diagram"|"game"|"animation", whole: boolean }}
  *   whole: the turn is ONLY the request (no attempt alongside it), so it may be acted on with no classifier call.
  */
@@ -259,6 +274,28 @@ export function romanLine(text) {
   return String(text ?? "").normalize("NFC").replace(/[\u0900-\u097F]+/g, (w) => { const r = LOAN[w] ?? devaToRoman(w); return ROMAN_FIX[r] ?? r; }).replace(/[।॥]/g, ".");
 }
 
+// census 14.5 (F1, 3437b744 t3-t5: her "Kya Chapter 1 se shuru karein?", then "haan", got the card posed over it): a bare
+// yes to ONE offer of hers is the request that offer names. A choice ("continue, break, ya stop?") is not one: a bare yes
+// picks nothing.
+const AGREE = /^(?:(?:haan|han|haa|ha|hmm+|yes|yeah|yup|ok|okay|theek|thik|chalo|sure|ji|bilkul|zaroor|jaroor|हाँ|हां|ठीक|चलो|जी|ओके|बिल्कुल|ज़रूर)(?:[\s,!.]+|$))+(?:(?:hai|h|karte\s+hain|karo|karein|kar\s+do|please|plz|didi|ma'?am|sir|है|करते\s+हैं|करो)[\s,!.]*)*$/iu;
+const OFFER_FORM = /(?:karein|karen|karte\s+hain|lein|len|lete\s+hain|dekhein|dekhen|dekhte\s+hain|chalein|chalen|padhein|padhen|sunein|khelein|khelen|banayein|banaayein|करें|लें|देखें|चलें|पढ़ें|खेलें)$|^(?:to\s+)?(?:kya\s+)?(?:hum|ham)\s|^(?:shall|should)\s+we\b|^let'?s\b|^kya\s+(?:hum|ham)\b|^क्या\s+हम/iu;
+const CHOICE = /(?<![\p{L}\p{M}])(?:ya|yaa|or|athva|या|अथवा)(?![\p{L}\p{M}])/iu;
+/** PURE. A bare agreement to her single offer (her last sentence, a question): the request it names, or null. */
+export function offerAgreed(heard, text) {
+  if (!AGREE.test(T(text))) return null;
+  const last = (String(heard ?? "").match(/[^.!?।]*[?？]\s*$/u) ?? [])[0];
+  if (!last || CHOICE.test(last)) return null;
+  // an OFFER, not a lesson question that names a request word ("…ka chitra banaiye—kya badla?", "aur ek example?"): a
+  // we-proposal ("…shuru karein?", "kya hum…", "shall we…", "let's…")
+  const offer = last.replace(/[?？]\s*$/u, "").trim();
+  if (!OFFER_FORM.test(offer)) return null;
+  const r = requestOf(offer);
+  if (!r || ["goodbye", "clear_board", "language"].includes(r.type)) return null;
+  // (a picture she offers is of today's idea: her own words are no subject to draw)
+  if (r.type === "visual") { const { subject: _s, see, ...v } = r; return { ...v, ...(see ? { see: { show: see.show } } : {}), whole: true, offer: true }; }
+  return { ...r, whole: true, offer: true };
+}
+
 /** PURE. The request a child's turn makes, or null (a Devanagari line that reads as nothing is read again in Roman). */
 export function requestOf(text) {
   const r = requestOfLine(text);
@@ -296,6 +333,10 @@ function requestOfLine(text) {
   // the easier ask (conversation/lexicon.js reads it; the tiredness rides along as the second need), never a break
   if (BREAK.test(t) && !/\b(?:easy|aasan|asaan|simple)\s+(?:kar|karo|karke|kijiye|bana|banao)\b|\bmake\s+it\s+(?:easier|simpler)\b/.test(t)) return { type: "break", whole };
   if (CHANGE_TOPIC.test(t)) return { type: "change_topic", whole };
+  // (a chapter number is no answer attempt: the chapter pattern itself needs the word and a start / study verb)
+  const chapter = chapterAskOf(t);
+  if (chapter) return { type: "switch", chapter, whole: n <= 12 };
+  if (!attemptLike(t) && EXPLAIN_FIRST.test(t)) return { type: "explain_first", whole };
   // round 3 fix (experience B8): a named subject to study instead (before the stop words it may carry: "yeh nahi padhna")
   const switchTo = !attemptLike(t) ? switchSubjectOf(t) : null;
   if (switchTo) return { type: "switch", subject: switchTo, whole };

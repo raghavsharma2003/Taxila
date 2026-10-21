@@ -11,7 +11,7 @@ import { INTEREST_IDS } from "../../shared/interests.js";
 import { partsOf } from "../content/parts.js";
 import { corroborate, reasonHead, reasonTakesBack } from "../grading/corroborate.js";
 import { plainNumberKey, numberPhrases, statedResults, selfCorrected, unitsAfterNumbers, tailAgrees, signConflict, bareOfDecisive } from "../grading/spoken-number.js";
-import { requestOf, FLOW_REQUESTS } from "./requests.js";
+import { requestOf, FLOW_REQUESTS, offerAgreed } from "./requests.js";
 import { readIntent, sexualAsk } from "../conversation/lexicon.js";
 import { requestFromReading } from "../conversation/policy.js";
 import { p5Flag } from "../conversation/flags.js";
@@ -639,6 +639,8 @@ export function classifyFast({ target, childText, asrConfidence, typed, chipId, 
   const reading = sexual ? { type: "oob", whole: true, src: "p5" } : !chipId && !moduleAnswer && p5Flag("STEER") ? readIntent(text) : null;
   let request = reading?.type === "oob" || reading?.type === "adult" ? requestFromReading(reading) : !chipId && !moduleAnswer ? requestOf(text) : null;
   if (!request && reading) request = requestFromReading(reading);
+  // census 14.5 (F1, 3437b744): a bare yes to her single offer is the request her offer named
+  if (!request && !chipId && !moduleAnswer) request = offerAgreed(heard, text);
   if (sexual) { flags.wantsToStop = false; return done("no_evidence", "request", { request }); }
   // Day-0 gates review (2026-10-05): a request word that is the ITEM's own answer content is an answer, never a request.
   // 244 of 44,103 kit answers / acceptables / options read as a whole request ("Good night, Mummy!" → goodbye ended the

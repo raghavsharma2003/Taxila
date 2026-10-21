@@ -504,6 +504,8 @@ export const switchOffer = ({ title }) => join(
   "they can start it now with the button on the screen, or carry on with today's work if they like; no guilt either way, no lesson question this turn",
 );
 /** census 14.5 (F1): they asked again for something else: real topics of their class, as buttons. */
+/** census 14.5 (F1, 310b8c82): they asked for the idea first, before any question (the card waits). */
+export const explainFirstAsked = () => "they asked for the idea first, before any question: yes, warmly, and teach it plainly now; the question waits";
 export const topicChoices = ({ titles }) => join(
   "they have asked again for something else: say yes warmly and mean it, in your own words",
   `offer these topics of their class as the buttons on screen: ${(titles ?? []).map((t) => clean(t)).filter(Boolean).join("; ")}; or they can tell you what they want, or go back to today's work`,

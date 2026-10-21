@@ -1005,11 +1005,13 @@ function requestMove(s, input, item, req, labels) {
     // round 3 fix (experience B8): a named subject to study INSTEAD: that topic of their class is offered (a button starts
     // it: switch:<topicId>), else an honest "not here" with the choices. Never the stop check-in, never a lesson question.
     case "switch": {
-      const subject = String(req.subject ?? "").replace(/[^\p{L}\p{N} ]/gu, "").trim().slice(0, 30);
+      // census 14.5 (F1, 310b8c82 / 3437b744): a chapter of their book by number is that chapter's first topic
+      const subject = req.chapter ? `chapter ${req.chapter}` : String(req.subject ?? "").replace(/[^\p{L}\p{N} ]/gu, "").trim().slice(0, 30);
       if (!subject) return null;
       if (unsafeChildPhrase(subject)) return item ? plan(moveKindFor(item), SH.leadThenPose({ item, lead: SH.declineOob() }), { item, probe: probeFor(item), chips: optionChips(item), request: "decline" })
         : plan("repair", SH.declineOob(), { request: "decline" });
-      const hit = findTopic(subject, s.ctx?.classLevel);
+      const hit = req.chapter ? chapterTopic(s, req.chapter) : findTopic(subject, s.ctx?.classLevel);
+      if (hit && req.chapter && chapterKey(hit.id) === chapterKey(s.topicId)) return resume(s, input, item, "they asked for the chapter you are already on: say so warmly in a few words, then carry on");
       if (hit && hit.id === s.topicId) return resume(s, input, item, "they asked for the topic you are already on: say so warmly in a few words, then carry on");
       // round 4 (session-first, (d)): inside a session the topic they asked for opens a new SEGMENT in this same lesson (its
       // own verified kit), never a new lesson; this turn is one short no-stage line, the next one teaches it
@@ -1039,6 +1041,24 @@ function requestMove(s, input, item, req, labels) {
     }
     // round 4 (session-first (f)): "aur batao / go deeper". With a practice question on the table: the harder question on the
     // same skill (the one on the table is left, no verdict); otherwise the same idea one layer further (no new step).
+    // census 14.5 (F1, 310b8c82: "theory first, in order"): the idea before any question. A card on the table waits (posed
+    // next, no verdict); a planned first-step probe or gap becomes plain teaching.
+    case "explain_first": {
+      if (s.phase === "warmup") s.phase = "teach";
+      if (s.phase === "teach") {
+        // (a gap after a planned worked example goes; with none planned it becomes one)
+        const ahead = s.teachPlan.slice(s.teachIdx);
+        const rest = ahead.map((x) => (x === "first_step" ? "explain" : x)).filter((x) => x !== "fade" || !ahead.includes("worked_example"))
+          .map((x) => (x === "fade" ? "worked_example" : x));
+        if (rest.join() !== ahead.join()) { s.teachPlan = [...s.teachPlan.slice(0, s.teachIdx), ...rest]; s.fadeItem = undefined; }
+        return { ...teach(s, input, SH.explainFirstAsked()), request: "explain_first" };
+      }
+      if (item && s.phase === "practice") { s.nextItemId = item.id; s.activeItemId = undefined; s.hintLevel = 0; }
+      const skillId = currentSkillId(s, kit, item);
+      if (!s.introduced.includes(skillId)) s.introduced.push(skillId);
+      const sk = kit.skills.find((k) => k.id === skillId) ?? kit.skills[0];
+      return plan("explain", SH.explain({ skillTitle: sk.title, prefix: SH.explainFirstAsked(), interest: interestFor(kit, s.ctx.interests, 1) }), { skillId: sk.id, format: kit.formats.primary, request: "explain_first" });
+    }
     case "deeper": {
       if (item && s.phase === "practice") {
         s.skipped.push(item.id);
@@ -1093,6 +1113,16 @@ export const drawableSubject = (subject) => {
 };
 /** A "something else" asked again within this many turns is a request for another topic (census 14.5, F1). */
 const TOPIC_ASK_WINDOW = 6;
+/** "c9-maths-ch08-t02" → "c9-maths-ch08". */
+const chapterKey = (id) => String(id ?? "").replace(/-t\d+$/, "");
+/** The first topic of chapter n of today's class and subject (their book's order), or null. */
+function chapterTopic(s, n) {
+  const cur = getTopic(s.topicId);
+  if (!cur) return null;
+  const tag = `-ch${String(n).padStart(2, "0")}-`;
+  const id = topicSequence(cur.classLevel, cur.subject).find((t) => t.includes(tag));
+  return id ? getTopic(id) : null;
+}
 /** Up to n other topics of the child's class and this subject, the ones after today's first (curriculum order). */
 function nextTopics(s, n) {
   const cur = getTopic(s.topicId);
@@ -1549,7 +1579,7 @@ function decide(s, input, item) {
   const req = chipReq ?? cls?.request ?? null;
   // release 13 (A): the subject the child named ("aloo"), kept a few turns so a later "Show me a picture" chip is answered
   // honestly about IT (owner lesson a95d2ff1 turns 18-24)
-  if (p5Flag("R4CONV") && req && ["topic", "switch", "change_topic", "visual"].includes(req.type)) {
+  if (p5Flag("R4CONV") && req && !req.chapter && ["topic", "switch", "change_topic", "visual"].includes(req.type)) {
     const subject = req.subject ?? freeSubjectOf(input.text ?? "");
     if (subject && !genericSubject(subject)) s.offTopic = { subject: String(subject).slice(0, 30), turn: s.turn };
   }
