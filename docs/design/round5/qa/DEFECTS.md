@@ -408,7 +408,12 @@ the recording lane; the two-turn spoken run uses one WAV with both lines, and th
   - W2b waits with no harm question (718a1211).
 
 **Studio fallback, b6c9c154 (cf25ca72):** 4 runs, the live board drew every time, with board_kept on t2 ×4. The run-8 failure
-did not recur, so the template fallback is not seen live.
+did not recur, so the template fallback is not seen live. Stream 2's seam test (f2380599,
+`tests/r5-run8-template-fallback.test.mjs`) reproduces it:
+- **On the fix:** it passes, with `whiteboard drawn source=template`.
+- **On cf25ca72~1's request.js:** it fails with `template board refused: not_the_ask(picture)`, the run-8 shape.
+
+Closed.
 
 **D42 on 86b54376 (the plural fix): fixed**
 - "160 metre" with the board revealed: `board_not_kept {why: "new_number"}` as her line moves to the square (8a39216c).
